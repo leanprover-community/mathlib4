@@ -150,6 +150,8 @@ lemma insert_erase_invOn :
 
 theorem erase_ssubset {a : α} {s : Finset α} (h : a ∈ s) : s.erase a ⊂ s := by grind
 
+theorem erase_union_eq (a : α) (s : Finset α) (h : a ∈ s) : (erase s a) ∪ {a} = s := by grind
+
 theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t.erase a := by
   grind
 
@@ -323,8 +325,6 @@ theorem disjoint_filter_filter_not (s t : Finset α) (p : α → Prop)
     Disjoint (s.filter p) (t.filter fun a => ¬p a) :=
   s.disjoint_filter_filter' t disjoint_compl_right
 
-@[deprecated (since := "2025-12-12")] alias disjoint_filter_filter_neg := disjoint_filter_filter_not
-
 theorem filter_disjUnion (s : Finset α) (t : Finset α) (h : Disjoint s t) :
     (s.disjUnion t h).filter p = (s.filter p).disjUnion (t.filter p) (disjoint_filter_filter h) :=
   eq_of_veq <| Multiset.filter_add _ _ _
@@ -392,7 +392,7 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
     · grind
     · grind
     · intro x
-      simp only [coe_filter, Set.mem_setOf_eq, and_imp]
+      simp only [coe_filter, Set.mem_ofPred_eq, and_imp]
       intro hx hx₂
       exact ⟨Or.resolve_left (h hx) hx₂, hx₂⟩
 
@@ -425,8 +425,6 @@ theorem filter_union_filter_of_codisjoint (s : Finset α) (h : Codisjoint p q) :
 theorem filter_union_filter_not_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
     (s.filter p ∪ s.filter fun a => ¬p a) = s :=
   filter_union_filter_of_codisjoint _ _ _ <| @codisjoint_hnot_right _ _ p
-
-@[deprecated (since := "2025-12-12")] alias filter_union_filter_neg_eq := filter_union_filter_not_eq
 
 end
 
@@ -513,6 +511,9 @@ theorem toFinset_filter (s : List α) (p : α → Bool) :
     (s.filter p).toFinset = s.toFinset.filter (p ·) := by
   ext; simp [List.mem_filter]
 
+theorem filter_toFinset (s : List α) (p : α → Prop) [DecidablePred p] :
+    s.toFinset.filter p = (s.filter p).toFinset := by simp
+
 end List
 
 namespace Finset
@@ -567,6 +568,9 @@ theorem choose_property (hp : ∃! a, a ∈ l ∧ p a) : p (l.choose p hp) :=
 
 grind_pattern choose_property => l.choose p hp
 
+theorem choose_eq_iff (hp : ∃! a, a ∈ l ∧ p a) {a : α} : choose p l hp = a ↔ a ∈ l ∧ p a :=
+  l.val.choose_eq_iff _ hp
+
 end Choose
 
 end Finset
@@ -582,14 +586,51 @@ def Finset.union (s t : Finset α) (h : Disjoint s t) :
   Equiv.setCongr (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
-theorem Finset.union_symm_inl (h : Disjoint s t) (x : s) :
+theorem Finset.union_inl (h : Disjoint s t) (x : s) :
     Equiv.Finset.union s t h (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
   rfl
 
 @[simp]
-theorem Finset.union_symm_inr (h : Disjoint s t) (y : t) :
+theorem Finset.union_inr (h : Disjoint s t) (y : t) :
     Equiv.Finset.union s t h (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
   rfl
+
+@[simp]
+theorem Finset.union_symm_left (h : Disjoint s t) {i : α} (hi : i ∈ s)
+    (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inl ⟨i, hi⟩ := by
+  simp [Equiv.symm_apply_eq]
+
+@[simp]
+theorem Finset.union_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
+    (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inr ⟨i, hi⟩ := by
+  simp [Equiv.symm_apply_eq]
+
+/-- The disjoint union of finsets is a sum -/
+def Finset.disjUnionEquiv (s t : Finset α) (h : Disjoint s t) :
+    s ⊕ t ≃ s.disjUnion t h :=
+  Equiv.setCongr (coe_disjUnion h) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+
+@[simp]
+theorem Finset.disjUnionEquiv_inl (h : Disjoint s t) (x : s) :
+    Equiv.Finset.disjUnionEquiv s t h (Sum.inl x) = ⟨x, Finset.mem_disjUnion.mpr <| Or.inl x.2⟩ :=
+  rfl
+
+@[simp]
+theorem Finset.disjUnionEquiv_inr (h : Disjoint s t) (y : t) :
+    Equiv.Finset.disjUnionEquiv s t h (Sum.inr y) = ⟨y, Finset.mem_disjUnion.mpr <| Or.inr y.2⟩ :=
+  rfl
+
+@[simp]
+theorem Finset.disjUnionEquiv_symm_left (h : Disjoint s t) {i : α} (hi : i ∈ s)
+    (hi' : i ∈ s.disjUnion t h) :
+    (Equiv.Finset.disjUnionEquiv s t h).symm ⟨i, hi'⟩ = Sum.inl ⟨i, hi⟩ := by
+  simp [Equiv.symm_apply_eq]
+
+@[simp]
+theorem Finset.disjUnionEquiv_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
+    (hi' : i ∈ s.disjUnion t h) :
+    (Equiv.Finset.disjUnionEquiv s t h).symm ⟨i, hi'⟩ = Sum.inr ⟨i, hi⟩ := by
+  simp [Equiv.symm_apply_eq]
 
 /-- The type of dependent functions on the disjoint union of finsets `s ∪ t` is equivalent to the
   type of pairs of functions on `s` and on `t`. This is similar to `Equiv.sumPiEquivProdPi`. -/
@@ -597,6 +638,22 @@ def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h
     ((∀ i : s, α i) × ∀ i : t, α i) ≃ ∀ i : (s ∪ t : Finset ι), α i :=
   let e := Equiv.Finset.union s t h
   sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma piFinsetUnion_left {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
+    (h : Disjoint s t) {f g} {i : ι} (hi : i ∈ s) (hi' : i ∈ s ∪ t) :
+    piFinsetUnion α h (f, g) ⟨i, hi'⟩ = f ⟨i, hi⟩ := by
+  simp_rw [piFinsetUnion, sumPiEquivProdPi, piCongrLeft, piCongrLeft', trans_apply, coe_fn_symm_mk]
+  rw! [Finset.union_symm_left h hi hi']
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+lemma piFinsetUnion_right {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
+    (h : Disjoint s t) {f g} {i : ι} (hi : i ∈ t) (hi' : i ∈ s ∪ t) :
+    Equiv.piFinsetUnion α h (f, g) ⟨i, hi'⟩ = g ⟨i, hi⟩ := by
+  simp_rw [piFinsetUnion, sumPiEquivProdPi, piCongrLeft, piCongrLeft', trans_apply, coe_fn_symm_mk]
+  rw! [Finset.union_symm_right h hi hi']
+  rfl
 
 /-- A finset is equivalent to its coercion as a set. -/
 def _root_.Finset.equivToSet (s : Finset α) : s ≃ (s : Set α) where
@@ -624,8 +681,8 @@ variable {α : Type*}
 
 theorem mem_union_of_disjoint [DecidableEq α]
     {s t : Finset α} (h : Disjoint s t) {x : α} :
-    x ∈ s ∪ t ↔ Xor' (x ∈ s) (x ∈ t) := by
-  rw [Finset.mem_union, Xor']
+    x ∈ s ∪ t ↔ Xor (x ∈ s) (x ∈ t) := by
+  rw [Finset.mem_union, Xor]
   have := disjoint_left.1 h
   tauto
 

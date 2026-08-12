@@ -33,8 +33,11 @@ namespace Complex
 /-- The complex sine function is everywhere strictly differentiable, with the derivative `cos x`. -/
 theorem hasStrictDerivAt_sin (x : ℂ) : HasStrictDerivAt sin (cos x) x := by
   simp only [cos, div_eq_mul_inv]
-  convert ((((hasStrictDerivAt_id x).fun_neg.mul_const I).cexp.sub
-    ((hasStrictDerivAt_id x).mul_const I).cexp).mul_const I).mul_const (2 : ℂ)⁻¹ using 1
+  convert!
+    ((((hasStrictDerivAt_id x).fun_neg.mul_const I).cexp.sub
+              ((hasStrictDerivAt_id x).mul_const I).cexp).mul_const
+          I).mul_const
+      (2 : ℂ)⁻¹ using 1
   simp only [id]
   rw [sub_mul, mul_assoc, mul_assoc, I_mul_I, neg_one_mul, neg_neg, mul_one, one_mul, mul_assoc,
     I_mul_I, mul_neg_one, sub_neg_eq_add, add_comm]
@@ -43,7 +46,7 @@ theorem hasStrictDerivAt_sin (x : ℂ) : HasStrictDerivAt sin (cos x) x := by
 theorem hasDerivAt_sin (x : ℂ) : HasDerivAt sin (cos x) x :=
   (hasStrictDerivAt_sin x).hasDerivAt
 
-theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using (hasDerivAt_sin 0).isLittleO
+theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using! (hasDerivAt_sin 0).isLittleO
 
 @[fun_prop]
 theorem contDiff_sin {n} : ContDiff ℂ n sin :=
@@ -82,8 +85,10 @@ theorem deriv_sin : deriv sin = cos :=
 `-sin x`. -/
 theorem hasStrictDerivAt_cos (x : ℂ) : HasStrictDerivAt cos (-sin x) x := by
   simp only [sin, div_eq_mul_inv, neg_mul_eq_neg_mul]
-  convert (((hasStrictDerivAt_id x).mul_const I).cexp.add
-    ((hasStrictDerivAt_id x).fun_neg.mul_const I).cexp).mul_const (2 : ℂ)⁻¹ using 1
+  convert!
+    (((hasStrictDerivAt_id x).mul_const I).cexp.add
+          ((hasStrictDerivAt_id x).fun_neg.mul_const I).cexp).mul_const
+      (2 : ℂ)⁻¹ using 1
   simp only [id]
   ring
 
@@ -315,7 +320,7 @@ theorem hasStrictDerivAt_sin (x : ℝ) : HasStrictDerivAt sin (cos x) x :=
 theorem hasDerivAt_sin (x : ℝ) : HasDerivAt sin (cos x) x :=
   (hasStrictDerivAt_sin x).hasDerivAt
 
-theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using (hasDerivAt_sin 0).isLittleO
+theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using! (hasDerivAt_sin 0).isLittleO
 
 @[fun_prop]
 theorem contDiff_sin {n} : ContDiff ℝ n sin :=
@@ -738,14 +743,18 @@ theorem Real.logDeriv_cos : logDeriv (Real.cos) = -Real.tan := by
   rw [logDeriv, Real.deriv_cos', Pi.div_apply, Pi.neg_apply, neg_div, Real.tan_eq_sin_div_cos]
 
 @[simp]
-theorem Complex.LogDeriv_exp : logDeriv (Complex.exp) = 1 := by
+theorem Complex.logDeriv_exp : logDeriv (Complex.exp) = 1 := by
   ext
   rw [logDeriv, Complex.deriv_exp, Pi.div_apply, ← exp_sub, sub_self, exp_zero, Pi.one_apply]
 
+@[deprecated (since := "2026-02-05")] alias Complex.LogDeriv_exp := Complex.logDeriv_exp
+
 @[simp]
-theorem Real.LogDeriv_exp : logDeriv (Real.exp) = 1 := by
+theorem Real.logDeriv_exp : logDeriv (Real.exp) = 1 := by
   ext
   rw [logDeriv, Real.deriv_exp, Pi.div_apply, ← exp_sub, sub_self, exp_zero, Pi.one_apply]
+
+@[deprecated (since := "2026-02-05")] alias Real.LogDeriv_exp := Real.logDeriv_exp
 
 end LogDeriv
 

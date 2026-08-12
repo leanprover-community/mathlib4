@@ -6,6 +6,7 @@ Authors: Kalle Kytölä
 module
 
 public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
 /-!
@@ -81,7 +82,7 @@ theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter
     (fs_bdd : ∀ᶠ i in L, ∀ᵐ ω : Ω ∂μ, fs i ω ≤ c)
     (fs_lim : ∀ᵐ ω ∂μ, Tendsto (fun i ↦ fs i ω) L (𝓝 (indicator E (fun _ ↦ (1 : ℝ≥0)) ω))) :
     Tendsto (fun n ↦ lintegral μ fun ω ↦ fs n ω) L (𝓝 (μ E)) := by
-  convert tendsto_lintegral_nn_filter_of_le_const μ fs_bdd fs_lim
+  convert! tendsto_lintegral_nn_filter_of_le_const μ fs_bdd fs_lim
   have aux : ∀ ω, indicator E (fun _ ↦ (1 : ℝ≥0∞)) ω = ↑(indicator E (fun _ ↦ (1 : ℝ≥0)) ω) :=
     fun ω ↦ by simp only [ENNReal.coe_indicator, ENNReal.coe_one]
   simp_rw [← aux, lintegral_indicator E_mble]
@@ -216,7 +217,7 @@ end HasOuterApproxClosed --namespace
 
 noncomputable instance (X : Type*) [TopologicalSpace X]
     [TopologicalSpace.PseudoMetrizableSpace X] : HasOuterApproxClosed X := by
-  letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
+  let : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   refine ⟨fun F hF ↦ ?_⟩
   use fun n ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) Nat.one_div_pos_of_nat F
   refine ⟨?_, ⟨?_, ?_⟩⟩

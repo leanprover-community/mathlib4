@@ -1,4 +1,4 @@
-## The `lint` benchmark
+# The `lint` benchmark
 
 This benchmark runs `lake exe runLinter Mathlib`.
 It measures the following metrics:

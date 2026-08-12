@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.AbsMax
 public import Mathlib.Analysis.Complex.RemovableSingularity
+public import Mathlib.Analysis.Normed.Module.HahnBanach
 
 /-!
 # Schwarz lemma
@@ -95,10 +96,10 @@ theorem schwarz_aux {f : ℂ → ℂ} {c z : ℂ} {R₁ R₂ : ℝ} {n : ℕ}
   set g : ℂ → ℂ := fun w ↦ ((w - c) ^ (n + 1))⁻¹ * (f w - f c)
   set g' := update g c (limUnder (𝓝[≠] c) g)
   have hdg' : DifferentiableOn ℂ g' (closedBall c R₁) := by
-    refine .mono ?_ (subset_insert_diff_singleton c _)
+    refine .mono ?_ (subset_insert_sdiff_singleton c _)
     apply differentiableOn_update_limUnder_insert_of_isLittleO
-    · exact diff_mem_nhdsWithin_compl (closedBall_mem_nhds _ hR₁) _
-    · refine .mul ?_ (hd.mono diff_subset |>.sub_const _)
+    · exact sdiff_mem_nhdsWithin_compl (closedBall_mem_nhds _ hR₁) _
+    · refine .mul ?_ (hd.mono sdiff_subset |>.sub_const _)
       fun_prop (disch := simp +contextual [sub_eq_zero])
     · refine Asymptotics.isBigO_refl (fun w ↦ ((w - c) ^ (n + 1))⁻¹) _ |>.mul_isLittleO hn
         |>.mono (nhdsWithin_le_nhds (s := {c}ᶜ)) |>.congr' ?_ ?_
@@ -118,7 +119,8 @@ theorem schwarz_aux {f : ℂ → ℂ} {c z : ℂ} {R₁ R₂ : ℝ} {n : ℕ}
   · grw [frontier_ball_subset_sphere]
     intro w hw
     have hwc := ne_of_mem_sphere hw hR₁.ne'
-    have hfw : ‖f w - f c‖ ≤ R₂ := by simpa using h_maps (sphere_subset_closedBall hw)
+    have hfw : ‖f w - f c‖ ≤ R₂ := by
+      simpa [dist_eq_norm] using h_maps (sphere_subset_closedBall hw)
     rw [mem_sphere_iff_norm] at hw
     simpa [g', hwc, g, hw, field]
   · exact subset_closure hz
@@ -131,6 +133,7 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedAddCommGroup F] [NormedSpace ℂ F]
   {R R₁ R₂ : ℝ} {f : E → F} {c z : E}
 
+set_option backward.isDefEq.respectTransparency.types false in
 open AffineMap in
 /-- Let `f : E → F` be a complex analytic map
 sending an open ball of radius `R₁` to a closed ball of radius `R₂`.
@@ -152,7 +155,7 @@ theorem dist_le_mul_div_pow_of_mapsTo_ball_of_isLittleO {f : E → F} {c z : E} 
   have hne : z ≠ c := ne_of_apply_ne _ hfne
   -- Let `g : F → ℂ` be a continuous linear function such that `‖g‖ = 1`
   -- and `‖g (f z - f c)‖ = ‖f z - f c‖`.
-  rcases exists_dual_vector ℂ _ (sub_ne_zero.mpr hfne) with ⟨g, hg, hgf⟩
+  rcases exists_dual_vector ℂ _ (norm_sub_eq_zero_iff.not.mpr hfne) with ⟨g, hg, hgf⟩
   -- Consider `h : ℂ → ℂ` given by `h w = g (f (c + w * (z - c)))`.
   set h : ℂ → ℂ := g ∘ f ∘ lineMap c z
   -- This map is differentiable on the ball with center at the origin and radius `R₁ / dist z c`
@@ -215,9 +218,6 @@ theorem dist_le_dist_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R))
     dist (f z) (f c) ≤ dist z c := by
   simpa [(nonempty_ball.1 ⟨z, hz⟩).ne'] using dist_le_div_mul_dist_of_mapsTo_ball hd h_maps hz
 
-@[deprecated (since := "2026-01-03")]
-alias dist_le_dist_of_mapsTo_ball_self := dist_le_dist_of_mapsTo_ball
-
 /-- The **Schwarz Lemma**. Let `f : E → F` be a complex analytic function
 on an open ball with center `c` and a positive radius.
 If `f` sends this ball to a closed ball with center `f c` and the same radius,
@@ -236,9 +236,6 @@ theorem norm_le_norm_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball 0 R))
     (h_maps : MapsTo f (ball 0 R) (closedBall 0 R)) (h₀ : f 0 = 0) (hz : ‖z‖ < R) :
     ‖f z‖ ≤ ‖z‖ := by
   simpa [h₀] using dist_le_dist_of_mapsTo_ball hd (by rwa [h₀]) (mem_ball_zero_iff.mpr hz)
-
-@[deprecated (since := "2026-01-03")]
-alias norm_le_norm_of_mapsTo_ball_self := norm_le_norm_of_mapsTo_ball
 
 end NormedSpace
 
@@ -325,10 +322,6 @@ theorem affine_of_mapsTo_ball_of_norm_dslope_eq_div [StrictConvexSpace ℝ E]
   have : dslope f c z = dslope f c z₀ := eq_of_norm_eq_of_norm_add_eq heq <| by
     simp only [heq, SameRay.rfl.norm_add, heq_add]
   simp [← this]
-
-@[deprecated (since := "2026-01-03")]
-alias affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div :=
-  affine_of_mapsTo_ball_of_norm_dslope_eq_div
 
 /-- Equality case in the **Schwarz Lemma**: in the setup of `norm_dslope_le_div_of_mapsTo_ball`,
 if there exists a point `z₀` in the ball such that `‖dslope f c z₀‖ = R₂ / R₁`,

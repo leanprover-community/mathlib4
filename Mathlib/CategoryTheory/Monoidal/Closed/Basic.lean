@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Adjunction.Mates
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
+public import Mathlib.Tactic.BDSimp
 
 /-!
 # Closed monoidal categories
@@ -45,7 +46,7 @@ class Closed {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] (X : C) wher
 class MonoidalClosed (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
   closed (X : C) : Closed X := by infer_instance
 
-attribute [instance 100] MonoidalClosed.closed
+attribute [instance_reducible, instance 100] MonoidalClosed.closed
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 
@@ -53,6 +54,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 This isn't an instance because it's not usually how we want to construct internal homs,
 we'll usually prove all objects are closed uniformly.
 -/
+@[instance_reducible]
 def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) where
   rightAdj := Closed.rightAdj X ⋙ Closed.rightAdj Y
   adj := (hY.adj.comp hX.adj).ofNatIsoLeft (MonoidalCategory.tensorLeftTensor X Y).symm
@@ -61,6 +63,7 @@ def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) wh
 This isn't an instance because most of the time we'll prove closedness for all objects at once,
 rather than just for this one.
 -/
+@[instance_reducible]
 def unitClosed : Closed (𝟙_ C) where
   rightAdj := 𝟭 C
   adj := Adjunction.id.ofNatIsoLeft (MonoidalCategory.leftUnitorNatIso C).symm
@@ -82,6 +85,9 @@ def adjunction : tensorLeft A ⊣ ihom A :=
 instance : (tensorLeft A).IsLeftAdjoint :=
   (ihom.adjunction A).isLeftAdjoint
 
+instance : (ihom A).IsRightAdjoint :=
+  (ihom.adjunction A).isRightAdjoint
+
 /-- The evaluation natural transformation. -/
 def ev : ihom A ⋙ tensorLeft A ⟶ 𝟭 C :=
   (ihom.adjunction A).counit
@@ -98,11 +104,15 @@ theorem ihom_adjunction_counit : (ihom.adjunction A).counit = ev A :=
 theorem ihom_adjunction_unit : (ihom.adjunction A).unit = coev A :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in -- Needed in DayConvolution/Closed.lean
 @[reassoc (attr := simp)]
 theorem ev_naturality {X Y : C} (f : X ⟶ Y) :
     A ◁ (ihom A).map f ≫ (ev A).app Y = (ev A).app X ≫ f :=
   (ev A).naturality f
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem coev_naturality {X Y : C} (f : X ⟶ Y) :
     f ≫ (coev A).app Y = (coev A).app X ≫ (ihom A).map (A ◁ f) :=
@@ -195,18 +205,22 @@ theorem uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟶[C] X) →
 
 variable (A X)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem uncurry_id_eq_ev : uncurry (𝟙 (A ⟶[C] X)) = (ihom.ev A).app X := by
   simp [uncurry_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
   rw [curry_eq, (ihom A).map_id (A ⊗ _)]
   apply comp_id
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma whiskerLeft_curry_ihom_ev_app (g : A ⊗ Y ⟶ X) :
     A ◁ curry g ≫ (ihom.ev A).app X = g := by
   simp [curry_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem uncurry_ihom_map (g : Y ⟶ Y') :
     uncurry ((ihom A).map g) = (ihom.ev A).app Y ≫ g := by
   apply curry_injective
@@ -279,6 +293,12 @@ def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
 
+instance [MonoidalClosed C] (X : Cᵒᵖ) : (internalHom.obj X).IsRightAdjoint := by
+  bdsimp
+  infer_instance
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The parametrized adjunction between `curriedTensor C : C ⥤ C ⥤ C`
 and `internalHom : Cᵒᵖ ⥤ C ⥤ C` -/
 @[simps!]
@@ -294,6 +314,7 @@ variable (F : C ⥤ D) {G : D ⥤ C} (adj : F ⊣ G)
   [F.Monoidal] [F.IsEquivalence] [MonoidalClosed D]
 
 /-- Transport the property of being monoidal closed across a monoidal equivalence of categories -/
+@[instance_reducible]
 noncomputable def ofEquiv : MonoidalClosed C where
   closed X :=
     { rightAdj := F ⋙ ihom (F.obj X) ⋙ G
@@ -301,6 +322,8 @@ noncomputable def ofEquiv : MonoidalClosed C where
           adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft
             (Iso.compInverseIso (H := adj.toEquivalence) (Functor.Monoidal.commTensorLeft F X)) }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
 monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
 resulting currying map `Hom(X ⊗ Y, Z) → Hom(Y, (X ⟶[C] Z))`. (`X ⟶[C] Z` is defined to be
@@ -316,12 +339,13 @@ theorem ofEquiv_curry_def {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
   -- This whole proof used to be `rfl` before https://github.com/leanprover-community/mathlib4/pull/16317.
   change ((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _ _ = _
-  dsimp only [Adjunction.ofNatIsoLeft]
-  rw [Adjunction.mkOfHomEquiv_homEquiv]
+  rw [Adjunction.homEquiv_ofNatIsoLeft_apply]
   dsimp
   rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
 monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
 resulting uncurrying map `Hom(Y, (X ⟶[C] Z)) → Hom(X ⊗ Y ⟶ Z)`. (`X ⟶[C] Z` is
@@ -338,8 +362,7 @@ theorem ofEquiv_uncurry_def {X Y Z : C} :
   -- This whole proof used to be `rfl` before https://github.com/leanprover-community/mathlib4/pull/16317.
   change (((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _).symm _ = _
-  dsimp only [Adjunction.ofNatIsoLeft]
-  rw [Adjunction.mkOfHomEquiv_homEquiv]
+  rw [Adjunction.homEquiv_ofNatIsoLeft_symm_apply]
   dsimp
   rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
   rfl
@@ -387,11 +410,12 @@ lemma comp_eq (x y z : C) [Closed x] [Closed y] : comp x y z = curry (compTransp
 
 /-!
 The proofs of associativity and unitality use the following outline:
-  1. Take adjoint transpose on each side of the equality (uncurry_injective)
-  2. Do whatever rewrites/simps are necessary to apply uncurry_curry
+  1. Take adjoint transpose on each side of the equality (`uncurry_injective`)
+  2. Do whatever rewrites/simps are necessary to apply `uncurry_curry`
   3. Conclude with simp
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Left unitality of the enriched structure -/
 @[reassoc (attr := simp)]
 lemma id_comp (x y : C) [Closed x] :
@@ -402,6 +426,7 @@ lemma id_comp (x y : C) [Closed x] :
       uncurry_curry, triangle_assoc_comp_right_assoc, whiskerLeft_inv_hom_assoc,
       uncurry_id_eq_ev _ _]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Right unitality of the enriched structure -/
 @[reassoc (attr := simp)]
 lemma comp_id (x y : C) [Closed x] [Closed y] :
@@ -414,6 +439,7 @@ lemma comp_id (x y : C) [Closed x] [Closed y] :
   rw [← uncurry_natural_left]
   simp [id_eq, uncurry_id_eq_ev]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Associativity of the enriched structure -/
 @[reassoc]
 lemma assoc (w x y z : C) [Closed w] [Closed x] [Closed y] :
@@ -479,6 +505,7 @@ lemma whiskerLeft_curry'_ihom_ev_app {X Y : C} [Closed X] (f : X ⟶ Y) :
   dsimp [curry']
   simp only [whiskerLeft_curry_ihom_ev_app]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma curry'_whiskerRight_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) :
     curry' f ▷ _ ≫ comp X Y Z = (λ_ _).hom ≫ (pre f).app Z := by
@@ -489,6 +516,7 @@ lemma curry'_whiskerRight_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) :
     whiskerLeft_curry'_ihom_ev_app, comp_whiskerRight_assoc, triangle_assoc_comp_right_assoc,
     whiskerLeft_inv_hom_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma whiskerLeft_curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : Y ⟶ Z) :
     _ ◁ curry' f ≫ comp X Y Z = (ρ_ _).hom ≫ (ihom X).map f := by

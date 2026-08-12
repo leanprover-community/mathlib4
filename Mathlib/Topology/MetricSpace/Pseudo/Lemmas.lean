@@ -13,7 +13,7 @@ public import Mathlib.Topology.UniformSpace.Compact
 # Extra lemmas about pseudo-metric spaces
 -/
 
-@[expose] public section
+public section
 
 open Bornology Filter Metric Set
 open scoped NNReal Topology
@@ -58,11 +58,9 @@ lemma eventually_ball_subset {x : α} {u : Set α} (hu : u ∈ 𝓝 x) : ∀ᶠ 
 namespace Metric
 variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
 
-lemma isClosed_closedBall : IsClosed (closedBall x ε) :=
-  isClosed_le (continuous_id.dist continuous_const) continuous_const
+lemma isClosed_closedBall : IsClosed (closedBall x ε) := isClosed_le (by fun_prop) continuous_const
 
-lemma isClosed_sphere : IsClosed (sphere x ε) :=
-  isClosed_eq (continuous_id.dist continuous_const) continuous_const
+lemma isClosed_sphere : IsClosed (sphere x ε) := isClosed_eq (by fun_prop) continuous_const
 
 @[simp]
 lemma closure_closedBall : closure (closedBall x ε) = closedBall x ε :=
@@ -76,10 +74,10 @@ lemma closure_ball_subset_closedBall : closure (ball x ε) ⊆ closedBall x ε :
   closure_minimal ball_subset_closedBall isClosed_closedBall
 
 lemma frontier_ball_subset_sphere : frontier (ball x ε) ⊆ sphere x ε :=
-  frontier_lt_subset_eq (continuous_id.dist continuous_const) continuous_const
+  frontier_lt_subset_eq (by fun_prop) continuous_const
 
 lemma frontier_closedBall_subset_sphere : frontier (closedBall x ε) ⊆ sphere x ε :=
-  frontier_le_subset_eq (continuous_id.dist continuous_const) continuous_const
+  frontier_le_subset_eq (by fun_prop) continuous_const
 
 lemma closedBall_zero' (x : α) : closedBall x 0 = closure {x} :=
   Subset.antisymm
@@ -121,7 +119,7 @@ end Metric
 
 theorem lebesgue_number_lemma_of_metric {s : Set α} {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i := by
-  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, dist_comm]
+  simpa only [ball, UniformSpace.ball, preimage_ofPred_eq, dist_comm]
     using uniformity_basis_dist.lebesgue_number_lemma hs hc₁ hc₂
 
 theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (hs : IsCompact s)

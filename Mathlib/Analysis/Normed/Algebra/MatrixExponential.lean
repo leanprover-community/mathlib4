@@ -10,7 +10,9 @@ public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Topology.UniformSpace.Matrix
+public import Mathlib.Topology.Instances.Matrix
 
 /-!
 # Lemmas about the matrix exponential
@@ -67,7 +69,7 @@ open scoped Matrix
 
 open NormedSpace -- For `exp`.
 
-variable {m n : Type*} {n' : m → Type*} {𝔸 : Type*}
+variable {m n : Type*} {n' : m → Type*} {α 𝔸 : Type*}
 
 namespace Matrix
 
@@ -98,6 +100,11 @@ theorem IsHermitian.exp [StarRing 𝔸] [ContinuousStar 𝔸] {A : Matrix m m �
     (exp A).IsHermitian :=
   (exp_conjTranspose _).symm.trans <| congr_arg _ h
 
+theorem BlockTriangular.exp [LinearOrder α] [Algebra ℚ 𝔸] {M : Matrix m m 𝔸} {b : m → α}
+    (hM : BlockTriangular M b) :
+    (exp M).BlockTriangular b :=
+  exp_mem (s := blockTriangularSubalgebra ℚ _ b) isClosed_setOfPred_blockTriangular hM
+
 end Ring
 
 section CommRing
@@ -119,10 +126,12 @@ section Normed
 
 variable [Fintype m] [DecidableEq m] [NormedRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
+set_option backward.isDefEq.respectTransparency false in
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
     exp (A + B) = exp A * exp B :=
   open scoped Norms.Operator in exp_add_of_commute h
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise (Commute on f)) :
@@ -130,12 +139,15 @@ nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m �
       s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp :=
   open scoped Norms.Operator in exp_sum_of_commute s f h
 
+set_option backward.isDefEq.respectTransparency false in
 nonrec theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp (n • A) = exp A ^ n :=
   open scoped Norms.Operator in exp_nsmul n A
 
+set_option backward.isDefEq.respectTransparency false in
 nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp A) :=
   open scoped Norms.Operator in isUnit_exp A
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: without disabling this instance we get a timeout, see lean4#10414:
 -- https://github.com/leanprover/lean4/issues/10414
 -- and zulip discussion at
@@ -161,6 +173,7 @@ section NormedComm
 variable [Fintype m] [DecidableEq m]
   [NormedCommRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exp_neg (A : Matrix m m 𝔸) : exp (-A) = (exp A)⁻¹ := by
   rw [nonsing_inv_eq_ringInverse]
   open scoped Norms.Operator in exact (Ring.inverse_exp A).symm

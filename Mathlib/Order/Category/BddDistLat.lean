@@ -48,7 +48,6 @@ abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat where
 theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `BddDistLat R`. -/
 @[ext]
 structure Hom (X Y : BddDistLat.{u}) where
@@ -98,7 +97,7 @@ lemma coe_comp {X Y Z : BddDistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X �
 
 @[simp]
 lemma forget_map {X Y : BddDistLat} (f : X ⟶ Y) :
-    (forget BddDistLat).map f = f := rfl
+    (forget BddDistLat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : BddDistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

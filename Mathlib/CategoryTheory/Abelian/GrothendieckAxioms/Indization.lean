@@ -19,7 +19,7 @@ We show that `Ind C` satisfies Grothendieck's axiom AB5 if `C` has finite limits
 `Ind C` is Grothendieck abelian if `C` is small and abelian.
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

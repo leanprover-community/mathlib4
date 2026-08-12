@@ -36,7 +36,7 @@ variable [DecidableEq α]
 iff `α` has decidable equality. -/
 @[to_additive
 /-- The maximal reduction of a word. It is computable iff `α` has decidable equality. -/]
-def reduce : (L : List (α × Bool)) -> List (α × Bool) :=
+def reduce : (L : List (α × Bool)) → List (α × Bool) :=
   List.rec [] fun hd1 _tl1 ih =>
     List.casesOn ih [hd1] fun hd2 tl2 =>
       if hd1.1 = hd2.1 ∧ hd1.2 = not hd2.2 then tl2 else hd1 :: hd2 :: tl2

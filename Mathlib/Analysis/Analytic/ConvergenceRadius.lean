@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 # Radius of convergence of a power series
@@ -42,7 +43,7 @@ build the general theory. We do not define it here.
 
 noncomputable section
 
-variable {𝕜 E F G : Type*}
+variable {𝕜 𝕜' E F G : Type*}
 
 open Topology NNReal Filter ENNReal Set Asymptotics
 open scoped Pointwise
@@ -58,6 +59,25 @@ variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 priori, it only behaves well when `‖x‖ < p.radius`. -/
 protected def sum (p : FormalMultilinearSeries 𝕜 E F) (x : E) : F :=
   ∑' n : ℕ, p n fun _ => x
+
+theorem sum_mem {S : Type*} {s : S} [SetLike S F] [AddSubmonoidClass S F]
+    (h_closed : IsClosed (s : Set F)) (p : FormalMultilinearSeries 𝕜 E F) (x : E)
+    (h : ∀ k, p k (fun _ : Fin k => x) ∈ s) :
+    p.sum x ∈ s :=
+  tsum_mem h_closed h
+
+variable {𝕜' : Type} [DivisionSemiring 𝕜'] [Module 𝕜' F] [ContinuousConstSMul 𝕜' F]
+  [SMulCommClass 𝕜 𝕜' F]
+
+theorem const_smul_sum_apply [T2Space F] (a : 𝕜') (f : FormalMultilinearSeries 𝕜 E F) (z : E) :
+    a • f.sum z = (a • f).sum z := by
+  unfold FormalMultilinearSeries.sum
+  simp [tsum_const_smul'']
+
+theorem const_smul_sum [T2Space F] (a : 𝕜') (f : FormalMultilinearSeries 𝕜 E F) :
+    a • f.sum = (a • f).sum := by
+  ext z
+  apply const_smul_sum_apply
 
 /-- Given a formal multilinear series `p` and a vector `x`, then `p.partialSum n x` is the sum
 `Σ pₖ xᵏ` for `k ∈ {0,..., n-1}`. -/
@@ -225,8 +245,8 @@ theorem summable_norm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥
     hp ((summable_geometric_of_lt_one ha.1.le ha.2).mul_left _)
 
 theorem summable_norm_apply (p : FormalMultilinearSeries 𝕜 E F) {x : E}
-    (hx : x ∈ EMetric.ball (0 : E) p.radius) : Summable fun n : ℕ => ‖p n fun _ => x‖ := by
-  rw [mem_emetric_ball_zero_iff] at hx
+    (hx : x ∈ Metric.eball (0 : E) p.radius) : Summable fun n : ℕ => ‖p n fun _ => x‖ := by
+  rw [mem_eball_zero_iff] at hx
   refine .of_nonneg_of_le
     (fun _ ↦ norm_nonneg _) (fun n ↦ ((p n).le_opNorm _).trans_eq ?_) (p.summable_norm_mul_pow hx)
   simp
@@ -238,7 +258,7 @@ theorem summable_nnnorm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ�
   exact p.summable_norm_mul_pow h
 
 protected theorem summable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x : E}
-    (hx : x ∈ EMetric.ball (0 : E) p.radius) : Summable fun n : ℕ => p n fun _ => x :=
+    (hx : x ∈ Metric.eball (0 : E) p.radius) : Summable fun n : ℕ => p n fun _ => x :=
   (p.summable_norm_apply hx).of_norm
 
 theorem radius_eq_top_of_summable_norm (p : FormalMultilinearSeries 𝕜 E F)
@@ -295,16 +315,18 @@ theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
 theorem radius_neg (p : FormalMultilinearSeries 𝕜 E F) : (-p).radius = p.radius := by
   simp only [radius, neg_apply, norm_neg]
 
-theorem radius_le_smul {p : FormalMultilinearSeries 𝕜 E F} {c : 𝕜} : p.radius ≤ (c • p).radius := by
+theorem radius_le_smul {p : FormalMultilinearSeries 𝕜 E F} {𝕜' : Type*} {c : 𝕜'} [NormedRing 𝕜']
+    [Module 𝕜' F] [SMulCommClass 𝕜 𝕜' F] [IsBoundedSMul 𝕜' F] :
+    p.radius ≤ (c • p).radius := by
   simp only [radius, smul_apply]
   refine iSup_mono fun r ↦ iSup_mono' fun C ↦ ⟨‖c‖ * C, iSup_mono' fun h ↦ ?_⟩
   simp only [le_refl, exists_prop, and_true]
   intro n
-  rw [norm_smul c (p n), mul_assoc]
-  gcongr
-  exact h n
+  grw [norm_smul_le, mul_assoc, h]
 
-theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜} (hc : c ≠ 0) :
+theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F)
+    {𝕜' : Type*} {c : 𝕜'} [NormedDivisionRing 𝕜'] [Module 𝕜' F] [NormSMulClass 𝕜' F]
+    [SMulCommClass 𝕜 𝕜' F] (hc : c ≠ 0) :
     (c • p).radius = p.radius := by
   apply eq_of_le_of_ge _ radius_le_smul
   exact radius_le_smul.trans_eq (congr_arg _ <| inv_smul_smul₀ hc p)
@@ -369,7 +391,7 @@ theorem radius_compContinuousLinearMap_linearIsometryEquiv_eq [Nontrivial E]
     (p.compContinuousLinearMap u.toLinearIsometry.toContinuousLinearMap).radius = p.radius := by
   refine le_antisymm ?_ <| le_radius_compContinuousLinearMap _ _
   have _ : Nontrivial F := u.symm.toEquiv.nontrivial
-  convert radius_compContinuousLinearMap_le p u.toContinuousLinearEquiv
+  convert! radius_compContinuousLinearMap_le p u.toContinuousLinearEquiv
   have : u.toContinuousLinearEquiv.symm.toContinuousLinearMap =
     u.symm.toLinearIsometry.toContinuousLinearMap := rfl
   simp [this]
@@ -432,7 +454,7 @@ theorem radius_unshift (p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z 
   rw [← radius_shift, unshift_shift]
 
 protected theorem hasSum [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x : E}
-    (hx : x ∈ EMetric.ball (0 : E) p.radius) : HasSum (fun n : ℕ => p n fun _ => x) (p.sum x) :=
+    (hx : x ∈ Metric.eball (0 : E) p.radius) : HasSum (fun n : ℕ => p n fun _ => x) (p.sum x) :=
   (p.summable hx).hasSum
 
 theorem radius_le_radius_continuousLinearMap_comp (p : FormalMultilinearSeries 𝕜 E F)
@@ -442,6 +464,6 @@ theorem radius_le_radius_continuousLinearMap_comp (p : FormalMultilinearSeries �
   apply (IsBigO.trans_isLittleO _ (p.isLittleO_one_of_lt_radius hr)).isBigO
   refine IsBigO.mul (@IsBigOWith.isBigO _ _ _ _ _ ‖f‖ _ _ _ ?_) (isBigO_refl _ _)
   refine IsBigOWith.of_bound (Eventually.of_forall fun n => ?_)
-  simpa only [norm_norm] using f.norm_compContinuousMultilinearMap_le (p n)
+  simpa only [norm_norm] using! f.norm_compContinuousMultilinearMap_le (p n)
 
 end FormalMultilinearSeries

@@ -5,10 +5,8 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.FieldTheory.Normal.Basic
-public import Mathlib.Order.Closure
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
 /-!
 # Normal closures
 
@@ -96,6 +94,7 @@ lemma isNormalClosure_iff : IsNormalClosure F K L ↔
     simpa only [normalClosure_eq_iSup_adjoin_of_splits splits] using h
 -- TODO: IntermediateField.isNormalClosure_iff similar to IntermediateField.isSplittingField_iff
 
+set_option backward.isDefEq.respectTransparency false in
 include splits in
 /-- `normalClosure F K L` is a valid normal closure if `K/F` is algebraic
   and all minimal polynomials of `K/F` splits in `L/F`. -/
@@ -173,15 +172,14 @@ instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
 @[stacks 0BMG "When `L` is normal over `K`, this agrees with 0BMG (1) finiteness."]
 instance is_finiteDimensional [FiniteDimensional F K] :
     FiniteDimensional F (normalClosure F K L) := by
-  haveI : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f ↦
+  have : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f ↦
     f.toLinearMap.finiteDimensional_range
   apply IntermediateField.finiteDimensional_iSup_of_finite
 
 variable [Algebra K L] [IsScalarTower F K L]
 
-noncomputable instance algebra :
-    Algebra K (normalClosure F K L) :=
-  IntermediateField.algebra'
+noncomputable instance algebra : Algebra K (normalClosure F K L) :=
+  inferInstanceAs <| Algebra K
     { ⨆ f : K →ₐ[F] L, f.fieldRange with
       algebraMap_mem' := fun r ↦ (toAlgHom F K L).fieldRange_le_normalClosure ⟨r, rfl⟩ }
 
@@ -261,8 +259,6 @@ noncomputable def normalClosureOperator : ClosureOperator (IntermediateField F L
   monotone' K K' := normalClosure_mono K K'
   le_closure' := le_normalClosure
   idempotent' K := normalClosure_of_normal (normalClosure F K L)
-
-@[deprecated (since := "2025-11-21")] alias closureOperator := normalClosureOperator
 
 variable {K : IntermediateField F L} {F L}
 

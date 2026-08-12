@@ -105,7 +105,7 @@ lemma mulEquivHaarChar_smul_preimage
     (μ : Measure G) [IsHaarMeasure μ] [Regular μ] {X : Set G} (φ : G ≃ₜ* G) :
     mulEquivHaarChar φ • μ (φ ⁻¹' X) = μ X := by
   nth_rw 2 [← mulEquivHaarChar_smul_map μ φ]
-  simp only [smul_apply, nnreal_smul_coe_apply]
+  simp only [Measure.smul_apply, nnreal_smul_coe_apply]
   exact congr_arg _ <| (MeasurableEquiv.map_apply φ.toMeasurableEquiv X).symm
 
 @[to_additive (attr := simp)]
@@ -130,5 +130,21 @@ lemma mulEquivHaarChar_symm {φ : G ≃ₜ* G} :
   symm
   apply inv_eq_of_mul_eq_one_right
   simp [← mulEquivHaarChar_trans]
+
+open TopologicalSpace Set in
+@[to_additive addEquivAddHaarChar_eq_one_of_compactSpace]
+lemma mulEquivHaarChar_eq_one_of_compactSpace [CompactSpace G] (φ : G ≃ₜ* G) :
+    mulEquivHaarChar φ = 1 := by
+  set μ := haarMeasure (⟨⟨univ, isCompact_univ⟩, by simp⟩ : PositiveCompacts G)
+  have hμ : μ univ = 1 := haarMeasure_self
+  rw [mulEquivHaarChar_eq μ]
+  suffices (μ.haarScalarFactor (map φ μ) : ℝ≥0∞) = 1 by exact_mod_cast this
+  calc
+    _ = μ.haarScalarFactor (map φ μ) • (1 : ℝ≥0∞) := by rw [ENNReal.smul_def, smul_eq_mul, mul_one]
+    _ = μ.haarScalarFactor (map φ μ) • (map φ μ univ) := by
+          rw [map_apply (map_continuous φ).measurable .univ, Set.preimage_univ, hμ]
+    _ = μ univ := by
+          conv_rhs => rw [isMulInvariant_eq_smul_of_compactSpace μ (map φ μ), Measure.smul_apply]
+    _ = 1 := hμ
 
 end MeasureTheory

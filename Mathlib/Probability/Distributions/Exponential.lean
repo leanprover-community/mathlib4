@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Probability.CDF
 public import Mathlib.Probability.Distributions.Gamma
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-! # Exponential distributions over ℝ
 
@@ -54,7 +55,7 @@ lemma exponentialPDF_of_neg {r x : ℝ} (hx : x < 0) : exponentialPDF r x = 0 :=
 
 lemma exponentialPDF_of_nonneg {r x : ℝ} (hx : 0 ≤ x) :
     exponentialPDF r x = ENNReal.ofReal (r * rexp (-(r * x))) := by
-  simp only [exponentialPDF_eq, if_pos hx]
+  simp only [exponentialPDF_eq, ite_eq_left hx]
 
 /-- The Lebesgue integral of the exponential pdf over nonpositive reals equals 0 -/
 lemma lintegral_exponentialPDF_of_nonpos {x r : ℝ} (hx : x ≤ 0) :
@@ -90,42 +91,28 @@ end ExponentialPDF
 open MeasureTheory
 
 /-- Measure defined by the exponential distribution -/
+@[wikidata Q237193]
 noncomputable
 def expMeasure (r : ℝ) : Measure ℝ := gammaMeasure 1 r
 
 lemma isProbabilityMeasure_expMeasure {r : ℝ} (hr : 0 < r) :
     IsProbabilityMeasure (expMeasure r) := isProbabilityMeasure_gammaMeasure zero_lt_one hr
 
-@[deprecated (since := "2025-08-29")] alias isProbabilityMeasureExponential :=
-  isProbabilityMeasure_expMeasure
-
 section ExponentialCDF
-
-/-- CDF of the exponential distribution -/
-@[deprecated "Use `cdf (expMeasure r)` instead." (since := "2025-08-28")]
-noncomputable
-def exponentialCDFReal (r : ℝ) : StieltjesFunction ℝ :=
-  cdf (expMeasure r)
 
 lemma cdf_expMeasure_eq_integral {r : ℝ} (hr : 0 < r) (x : ℝ) :
     cdf (expMeasure r) x = ∫ x in Iic x, exponentialPDFReal r x :=
   cdf_gammaMeasure_eq_integral zero_lt_one hr x
 
-@[deprecated (since := "2025-08-28")] alias exponentialCDFReal_eq_integral :=
-  cdf_expMeasure_eq_integral
-
 lemma cdf_expMeasure_eq_lintegral {r : ℝ} (hr : 0 < r) (x : ℝ) :
     cdf (expMeasure r) x = ENNReal.toReal (∫⁻ x in Iic x, exponentialPDF r x) :=
   cdf_gammaMeasure_eq_lintegral zero_lt_one hr x
-
-@[deprecated (since := "2025-08-28")] alias exponentialCDFReal_eq_lintegral :=
-  cdf_expMeasure_eq_lintegral
 
 open Topology
 
 lemma hasDerivAt_neg_exp_mul_exp {r x : ℝ} :
     HasDerivAt (fun a ↦ -exp (-(r * a))) (r * exp (-(r * x))) x := by
-  convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
+  convert! (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
   · simp only [one_mul, id_eq, neg_mul]
   simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
 
@@ -135,8 +122,6 @@ lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :
   simp only [neg_mul_eq_neg_mul]
   exact (exp_neg_integrableOn_Ioi _ hb).mono_set Ioc_subset_Ioi_self
 
--- TODO: non-terminal simp followed by positivity
-set_option linter.flexible false in
 lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
     ∫⁻ y in Iic x, exponentialPDF r y
     = ENNReal.ofReal (if 0 ≤ x then 1 - exp (-(r * x)) else 0) := by
@@ -144,7 +129,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
   case neg =>
     simp only [exponentialPDF_eq]
     rw [setLIntegral_congr_fun measurableSet_Iic, lintegral_zero, ENNReal.ofReal_zero]
-    exact fun a (_ : a ≤ _) ↦ by rw [if_neg (by linarith), ENNReal.ofReal_eq_zero]
+    exact fun a (_ : a ≤ _) ↦ by rw [ite_eq_right (by linarith), ENNReal.ofReal_eq_zero]
   case pos =>
     rw [lintegral_Iic_eq_lintegral_Iio_add_Icc _ h, lintegral_exponentialPDF_of_nonpos (le_refl 0),
       zero_add]
@@ -155,17 +140,18 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
         ← integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall fun _ ↦ le_of_lt
         (mul_pos hr (exp_pos _)))]
     · have : ∫ a in uIoc 0 x, r * rexp (-(r * a)) = ∫ a in 0..x, r * rexp (-(r * a)) := by
-        rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, if_pos h, one_mul]
+        rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, ite_eq_left h, one_mul]
       rw [integral_Icc_eq_integral_Ioc, ← uIoc_of_le h, this]
       rw [intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le h
         (f := fun a ↦ -1 * rexp (-(r * a))) _ _]
-      · rw [ENNReal.toReal_ofReal_eq_iff.2 (by simp; positivity)]
+      · rw [ENNReal.toReal_ofReal_eq_iff.2
+          (sub_nonneg.2 (Real.exp_le_one_iff.2 <| by nlinarith))]
         norm_num; ring
       · simp only [intervalIntegrable_iff, uIoc_of_le h]
         exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
       · have : Continuous (fun a ↦ rexp (-(r * a))) := by
-          simp only [← neg_mul]; exact (continuous_mul_left (-r)).rexp
-        exact Continuous.continuousOn (Continuous.comp' (continuous_mul_left (-1)) this)
+          simp only [← neg_mul]; exact (continuous_const_mul (-r)).rexp
+        exact Continuous.continuousOn (Continuous.comp' (continuous_const_mul (-1)) this)
       · simp only [neg_mul, one_mul]
         exact fun _ _ ↦ HasDerivAt.hasDerivWithinAt hasDerivAt_neg_exp_mul_exp
     · refine Integrable.aestronglyMeasurable (Integrable.const_mul ?_ _)
@@ -184,8 +170,6 @@ lemma cdf_expMeasure_eq {r : ℝ} (hr : 0 < r) (x : ℝ) :
   · simp only [sub_nonneg, exp_le_one_iff, Left.neg_nonpos_iff]
     exact mul_nonneg hr.le h
   · exact le_rfl
-
-@[deprecated (since := "2025-08-28")] alias exponentialCDFReal_eq := cdf_expMeasure_eq
 
 end ExponentialCDF
 

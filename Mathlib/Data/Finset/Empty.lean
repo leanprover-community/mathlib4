@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Defs
 public import Mathlib.Data.Multiset.ZeroCons
-public meta import Aesop
+public import Aesop
 
 /-!
 # Empty and nonempty finite sets
@@ -73,6 +73,10 @@ theorem Nonempty.exists_mem {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈
 theorem Nonempty.forall_const {s : Finset α} (h : s.Nonempty) {p : Prop} : (∀ x ∈ s, p) ↔ p :=
   let ⟨x, hx⟩ := h
   ⟨fun h => h x hx, fun h _ _ => h⟩
+
+@[simp]
+theorem forall_mem_const {s : Finset α} [Nonempty s] {p : Prop} : (∀ x ∈ s, p) ↔ p :=
+  (nonempty_coe_sort.mp ‹_›).forall_const
 
 theorem Nonempty.to_subtype {s : Finset α} : s.Nonempty → Nonempty s :=
   nonempty_coe_sort.2

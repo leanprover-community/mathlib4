@@ -45,7 +45,6 @@ universe v u
 
 variable (R : Type u) [Semiring R]
 
-set_option backward.privateInPublic true in
 /-- The category of R-semimodules and their morphisms.
 
 Note that in the case of `R = ℕ`, we can not
@@ -59,6 +58,7 @@ structure SemimoduleCat where
   [isAddCommMonoid : AddCommMonoid carrier]
   [isModule : Module R carrier]
 
+initialize_simps_projections SemimoduleCat (-isModule, -isAddCommMonoid)
 attribute [instance] SemimoduleCat.isAddCommMonoid SemimoduleCat.isModule
 
 namespace SemimoduleCat
@@ -143,7 +143,7 @@ lemma hom_ext {M N : SemimoduleCat.{v} R} {f g : M ⟶ N} (hf : f.hom = g.hom) :
 
 lemma hom_bijective {M N : SemimoduleCat.{v} R} :
     Function.Bijective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) where
-  left f g h := by cases f; cases g; simpa using h
+  left f g h := by cases f; cases g; simpa using! h
   right f := ⟨⟨f⟩, rfl⟩
 
 /-- Convenience shortcut for `SemimoduleCat.hom_bijective.injective`. -/
@@ -192,11 +192,12 @@ end
 
 /- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
 definitional equality issues. -/
-lemma forget_obj {M : SemimoduleCat.{v} R} : (forget (SemimoduleCat.{v} R)).obj M = M := rfl
+lemma forget_obj {M : SemimoduleCat.{v} R} : ((forget (SemimoduleCat.{v} R)).obj M : Type _) = M :=
+  rfl
 
-@[simp]
+@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-02-25")]
 lemma forget_map {M N : SemimoduleCat.{v} R} (f : M ⟶ N) :
-    (forget (SemimoduleCat.{v} R)).map f = f :=
+    (forget (SemimoduleCat.{v} R)).map f = (f : _ → _) :=
   rfl
 
 instance hasForgetToAddCommMonoid : HasForget₂ (SemimoduleCat R) AddCommMonCat where
@@ -262,7 +263,7 @@ namespace CategoryTheory.Iso
 
 /-- Build a `LinearEquiv` from an isomorphism in the category `SemimoduleCat R`. -/
 def toLinearEquivₛ {X Y : SemimoduleCat R} (i : X ≅ Y) : X ≃ₗ[R] Y :=
-  LinearEquiv.ofLinear i.hom.hom i.inv.hom (by aesop) (by aesop)
+  LinearEquiv.ofLinearMap i.hom.hom i.inv.hom (by aesop) (by aesop)
 
 end CategoryTheory.Iso
 
@@ -270,9 +271,10 @@ end CategoryTheory.Iso
 in `SemimoduleCat` -/
 @[simps]
 def linearEquivIsoModuleIsoₛ {X Y : Type u} [AddCommMonoid X] [AddCommMonoid Y] [Module R X]
-    [Module R Y] : (X ≃ₗ[R] Y) ≅ SemimoduleCat.of R X ≅ SemimoduleCat.of R Y where
-  hom e := e.toModuleIsoₛ
-  inv i := i.toLinearEquivₛ
+    [Module R Y] : (X ≃ₗ[R] Y) ≅
+      ((SemimoduleCat.of R X) ≅ (SemimoduleCat.of R Y)) where
+  hom := ↾fun e ↦ e.toModuleIsoₛ
+  inv := ↾fun i ↦ i.toLinearEquivₛ
 
 end
 
@@ -296,10 +298,6 @@ instance : SMul ℕ (M ⟶ N) where
   smul n f := ⟨n • f.hom⟩
 
 @[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
-
--- There is no `ℤ`-smul operation on a general semimodule!
-@[deprecated (since := "2026-01-06")]
-alias hom_zsmul := hom_nsmul
 
 instance : AddCommMonoid (M ⟶ N) :=
   Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)

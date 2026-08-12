@@ -113,11 +113,11 @@ variable [DecidableEq α] {s t u : Multiset α}
 
 @[simp]
 theorem count_replicate_self (a : α) (n : ℕ) : count a (replicate n a) = n := by
-  convert List.count_replicate_self (a := a)
+  convert! List.count_replicate_self (a := a)
   rw [← coe_count, coe_replicate]
 
 theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if b = a then n else 0 := by
-  convert List.count_replicate (a := a)
+  convert! List.count_replicate (a := a)
   · rw [← coe_count, coe_replicate]
   · simp
 
@@ -166,7 +166,7 @@ theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a 
       h a t (by rwa [cons_add, cons_add, Multiset.zero_add] at s_eq)⟩
 
 theorem nodup_iff_pairwise {α} {s : Multiset α} : Nodup s ↔ Pairwise (· ≠ ·) s :=
-  Quotient.inductionOn s fun _ => (pairwise_coe_iff_pairwise fun _ _ => Ne.symm).symm
+  Quotient.inductionOn s fun _ ↦ pairwise_coe_iff_pairwise.symm
 
 protected theorem Nodup.pairwise : (∀ a ∈ s, ∀ b ∈ s, a ≠ b → r a b) → Nodup s → Pairwise r s :=
   Quotient.inductionOn s fun l h hl => ⟨l, rfl, hl.imp_of_mem fun {a b} ha hb => h a ha b hb⟩

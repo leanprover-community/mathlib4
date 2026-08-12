@@ -20,7 +20,7 @@ does `f`. We also prove that `Nat.cast : ℕ → R` tends to `Filter.atTop` alon
 well as version of these two results for `ℤ` (and a ring `R`) and `ℚ` (and a field `R`).
 -/
 
-@[expose] public section
+public section
 
 
 variable {α R : Type*}
@@ -36,6 +36,10 @@ theorem tendsto_natCast_atTop_iff [Semiring R] [PartialOrder R] [IsStrictOrdered
     [Archimedean R] {f : α → ℕ}
     {l : Filter α} : Tendsto (fun n => (f n : R)) l atTop ↔ Tendsto f l atTop :=
   tendsto_atTop_embedding (fun _ _ => Nat.cast_le) exists_nat_ge
+
+theorem PNat.tendsto_comp_val_iff {β : Type*} {f : ℕ → β} {l : Filter β} :
+    Tendsto (fun x : ℕ+ => f x) atTop l ↔ Tendsto f atTop l := by
+  exact tendsto_comp_val_Ioi_atTop
 
 theorem tendsto_natCast_atTop_atTop [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [Archimedean R] :
@@ -210,20 +214,20 @@ section LinearOrderedRing
 variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R]
 
 /-- See also `Filter.Tendsto.atTop_mul_const_of_neg` for a version of this lemma for
-`LinearOrderedField`s which does not require the `Archimedean` assumption. -/
+linearly ordered fields which does not require the `Archimedean` assumption. -/
 theorem Tendsto.atTop_mul_const_of_neg' (hr : r < 0) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atBot := by
   simpa only [tendsto_neg_atTop_iff, mul_neg] using hf.atTop_mul_const' (neg_pos.mpr hr)
 
 /-- See also `Filter.Tendsto.atBot_mul_const` for a version of this lemma for
-`LinearOrderedField`s which does not require the `Archimedean` assumption. -/
+linearly ordered fields which does not require the `Archimedean` assumption. -/
 theorem Tendsto.atBot_mul_const' (hr : 0 < r) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atBot := by
   simp only [← tendsto_neg_atTop_iff, ← neg_mul] at hf ⊢
   exact hf.atTop_mul_const' hr
 
 /-- See also `Filter.Tendsto.atBot_mul_const_of_neg` for a version of this lemma for
-`LinearOrderedField`s which does not require the `Archimedean` assumption. -/
+linearly ordered fields which does not require the `Archimedean` assumption. -/
 theorem Tendsto.atBot_mul_const_of_neg' (hr : r < 0) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atTop := by
   simpa only [mul_neg, tendsto_neg_atBot_iff] using hf.atBot_mul_const' (neg_pos.2 hr)

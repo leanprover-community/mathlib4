@@ -92,7 +92,7 @@ namespace StrictPseudofunctor
 
 variable {B C}
 
-/-- An alternate constructor for strictly unitary lax functors that does not
+/-- An alternate constructor for strict pseudofunctors that does not
 require the `mapId` or `mapComp` fields, and that adapts the compatibility conditions
 to the fact that the pseudofunctor is strict -/
 @[simps]
@@ -128,6 +128,7 @@ variable (B) in
 def id : StrictPseudofunctor B B where
   __ := StrictlyUnitaryPseudofunctor.id B
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictPseudofunctor`. -/
 @[simps!]
 def comp (F : StrictPseudofunctor B C)

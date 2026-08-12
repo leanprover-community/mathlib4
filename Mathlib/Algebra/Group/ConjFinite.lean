@@ -6,13 +6,13 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Algebra.Group.Conj
-public import Mathlib.Data.Fintype.Units
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 
 /-!
 # Conjugacy of elements of finite groups
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

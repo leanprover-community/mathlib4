@@ -36,6 +36,10 @@ theorem Complex.sqrt_eq_real_add_ite {a : ℂ} :
   simp only [re_add_im, ↓reduceIte, h.not_ge, neg_one_mul, ← ofReal_neg,
     ← cpow_inv_two_im_eq_neg_sqrt h]
 
+open Complex in
+lemma sqrt_eq_exp {z : ℂ} (hz : z ≠ 0) : sqrt z = exp (log z / 2) := by
+  simp [sqrt, cpow_def, hz, div_eq_mul_inv]
+
 /-- The square root on `RCLike`. -/
 noncomputable def RCLike.sqrt (a : 𝕜) : 𝕜 := map ℂ 𝕜 (map 𝕜 ℂ a).sqrt
 
@@ -78,6 +82,7 @@ theorem RCLike.re_sqrt_ofReal {a : ℝ} :
 @[simp] theorem RCLike.sqrt_complex {a : ℂ} :
     sqrt a = a.sqrt := by simp [sqrt]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Complex.sqrt_of_nonneg {a : ℂ} (ha : 0 ≤ a) :
     a.sqrt = √a.re := by
   obtain ⟨α : ℝ, hα, rfl⟩ := RCLike.nonneg_iff_exists_ofReal.mp ha
@@ -99,7 +104,7 @@ theorem RCLike.sqrt_of_nonneg {a : 𝕜} (ha : 0 ≤ a) :
     sqrt a = √(re a) := by
   obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := 𝕜)
   · simp [h, sqrt_eq_ite]
-  rw [sqrt_eq_ite, dif_pos h, RingEquiv.symm_apply_eq, Complex.sqrt_of_nonneg (by simpa)]
+  rw [sqrt_eq_ite, dite_eq_left h, RingEquiv.symm_apply_eq, Complex.sqrt_of_nonneg (by simpa)]
   simp
 
 theorem Complex.sqrt_neg_of_nonneg {a : ℂ} (ha : 0 ≤ a) :
@@ -114,7 +119,7 @@ theorem RCLike.sqrt_neg_of_nonneg {a : 𝕜} (ha : 0 ≤ a) :
     sqrt (-a) = I * sqrt a := by
   obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := 𝕜)
   · simp [h, sqrt_eq_ite, Real.sqrt_eq_zero', nonneg_iff.mp ha]
-  rw [sqrt_eq_ite, dif_pos h, RingEquiv.symm_apply_eq, map_neg,
+  rw [sqrt_eq_ite, dite_eq_left h, RingEquiv.symm_apply_eq, map_neg,
     Complex.sqrt_neg_of_nonneg (by simpa)]
   simp [h, sqrt, map_mul]
 

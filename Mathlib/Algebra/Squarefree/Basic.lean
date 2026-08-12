@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Squarefree elements of monoids
+
 An element of a monoid is squarefree when it is not divisible by any squares
 except the squares of units.
 
@@ -82,6 +83,10 @@ theorem Squarefree.of_mul_right [CommMonoid R] {m n : R} (hmn : Squarefree (m * 
 
 theorem Squarefree.squarefree_of_dvd [Monoid R] {x y : R} (hdvd : x ∣ y) (hsq : Squarefree y) :
     Squarefree x := fun _ h => hsq _ (h.trans hdvd)
+
+theorem Associated.squarefree_iff [Monoid R] {x y : R} (h : Associated x y) :
+    Squarefree x ↔ Squarefree y :=
+  ⟨fun hx ↦ hx.squarefree_of_dvd h.dvd', fun hy ↦ hy.squarefree_of_dvd h.dvd⟩
 
 theorem Squarefree.eq_zero_or_one_of_pow_of_not_isUnit [Monoid R] {x : R} {n : ℕ}
     (h : Squarefree (x ^ n)) (h' : ¬ IsUnit x) :
@@ -180,7 +185,7 @@ theorem pow_dvd_of_squarefree_of_pow_succ_dvd_mul_right {k : ℕ}
     p ^ k ∣ y := by
   by_cases hxp : p ∣ x
   · obtain ⟨x', rfl⟩ := hxp
-    have hx' : ¬ p ∣ x' := fun contra ↦ hp.not_unit <| hx p (mul_dvd_mul_left p contra)
+    have hx' : ¬ p ∣ x' := fun contra ↦ hp.not_isUnit <| hx p (mul_dvd_mul_left p contra)
     replace h : p ^ k ∣ x' * y := by
       rw [pow_succ', mul_assoc] at h
       exact (mul_dvd_mul_iff_left hp.ne_zero).mp h
@@ -265,7 +270,7 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
   classical
   rw [squarefree_iff_emultiplicity_le_one, Multiset.nodup_iff_count_le_one]
-  haveI := nontrivial_of_ne x 0 x0
+  have := nontrivial_of_ne x 0 x0
   constructor <;> intro h a
   · by_cases hmem : a ∈ normalizedFactors x
     · have ha := irreducible_of_normalized_factor _ hmem

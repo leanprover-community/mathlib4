@@ -72,7 +72,7 @@ theorem iUnion_toPrepartition : π.toPrepartition.iUnion = π.iUnion := rfl
 
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
-  convert Set.mem_iUnion₂
+  convert! Set.mem_iUnion₂
   rw [Box.mem_coe, mem_toPrepartition, exists_prop]
 
 theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=
@@ -317,11 +317,12 @@ theorem iUnion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
 
 theorem disjUnion_tag_of_mem_left (h : Disjoint π₁.iUnion π₂.iUnion) (hJ : J ∈ π₁) :
     (π₁.disjUnion π₂ h).tag J = π₁.tag J :=
-  dif_pos hJ
+  dite_eq_left hJ
 
 theorem disjUnion_tag_of_mem_right (h : Disjoint π₁.iUnion π₂.iUnion) (hJ : J ∈ π₂) :
     (π₁.disjUnion π₂ h).tag J = π₂.tag J :=
-  dif_neg fun h₁ => h.le_bot ⟨π₁.subset_iUnion h₁ J.upper_mem, π₂.subset_iUnion hJ J.upper_mem⟩
+  dite_eq_right fun h₁ =>
+    h.le_bot ⟨π₁.subset_iUnion h₁ J.upper_mem, π₂.subset_iUnion hJ J.upper_mem⟩
 
 theorem IsSubordinate.disjUnion [Fintype ι] (h₁ : IsSubordinate π₁ r) (h₂ : IsSubordinate π₂ r)
     (h : Disjoint π₁.iUnion π₂.iUnion) : IsSubordinate (π₁.disjUnion π₂ h) r := by

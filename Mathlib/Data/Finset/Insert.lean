@@ -285,6 +285,7 @@ theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
 
 @[simp] theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nonempty_mk {m : Multiset α} {hm} : (⟨m, hm⟩ : Finset α).Nonempty ↔ m ≠ 0 := by
   induction m using Multiset.induction_on <;> simp
@@ -433,7 +434,7 @@ instance (i : α) (s : Finset α) : Nonempty ((insert i s : Finset α) : Set α)
   (Finset.coe_nonempty.mpr (s.insert_nonempty i)).to_subtype
 
 theorem ne_insert_of_notMem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ insert a t := by
-  contrapose! h
+  contrapose h
   simp [h]
 
 theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by grind
@@ -546,7 +547,7 @@ def prodPiInsert (f : α → Type*) {a : α} (x : f a × Π i ∈ s, f i) : (Π 
     if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_insert_of_ne hi h)
 
 /-- The equivalence between pi types on insert and the product. -/
-def insertPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+def insertPiProdEquiv {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
     (Π i ∈ insert a s, f i) ≃ f a × Π i ∈ s, f i where
   toFun := insertPiProd f
   invFun := prodPiInsert f

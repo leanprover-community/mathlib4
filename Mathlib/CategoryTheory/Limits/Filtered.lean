@@ -18,7 +18,7 @@ finite category there is some `X : C` such that `lim Hom(F·, X)` is nonempty.
 Furthermore, we define the type classes `HasCofilteredLimitsOfSize` and `HasFilteredColimitsOfSize`.
 -/
 
-@[expose] public section
+public section
 
 
 universe w' w w₂' w₂ v u
@@ -70,13 +70,17 @@ section
 variable (C)
 
 /-- Class for having all cofiltered limits of a given size. -/
-@[pp_with_univ]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the shape universes in
+-- `HasCofilteredLimitsOfSize` and `HasFilteredColimitsOfSize` would default to universe
+-- output parameters. See Note [universe output parameters and typeclass caching].
+@[univ_out_params, pp_with_univ]
 class HasCofilteredLimitsOfSize : Prop where
   /-- For all filtered types of size `w`, we have limits -/
   HasLimitsOfShape : ∀ (I : Type w) [Category.{w'} I] [IsCofiltered I], HasLimitsOfShape I C
 
 /-- Class for having all filtered colimits of a given size. -/
-@[pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class HasFilteredColimitsOfSize : Prop where
   /-- For all filtered types of a size `w`, we have colimits -/
   HasColimitsOfShape : ∀ (I : Type w) [Category.{w'} I] [IsFiltered I], HasColimitsOfShape I C

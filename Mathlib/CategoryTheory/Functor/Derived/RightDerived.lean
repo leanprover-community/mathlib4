@@ -27,8 +27,8 @@ along the localization functor `L`.
 ## TODO
 
 - refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
-material enters mathlib: derived categories, injective/projective derivability
-structures, existence of derived functors from derivability structures.
+  material enters mathlib: derived categories, injective/projective derivability
+  structures, existence of derived functors from derivability structures.
 
 ## References
 
@@ -190,7 +190,7 @@ section
 
 variable (F) [F.HasRightDerivedFunctor W] (L W)
 
-/-- Given a functor `F : C ⥤ H`, and a localization functor `L : D ⥤ H` for `W`,
+/-- Given a functor `F : C ⥤ H`, and a localization functor `L : C ⥤ D` for `W`,
 this is the right derived functor `D ⥤ H` of `F`, i.e. the left Kan extension
 of `F` along `L`. -/
 noncomputable def totalRightDerived : D ⥤ H :=

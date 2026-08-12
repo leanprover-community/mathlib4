@@ -55,7 +55,7 @@ lemma surjective_tensorToSpan : Surjective (p.tensorToSpan A) := by
   obtain ⟨f, hf⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp v.property
   use f.sum fun x a ↦ a ⊗ₜ x
   rw [map_finsuppSum, Subtype.ext_iff, ← Submodule.subtype_apply, map_finsuppSum]
-  simpa using hf
+  simpa using! hf
 
 variable [Algebra.IsEpi R A] [Module.Flat R A]
 

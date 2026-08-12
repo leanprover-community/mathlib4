@@ -26,14 +26,14 @@ open CategoryTheory
 @[pp_with_univ]
 structure FiniteGrp where
   /-- A group that is finite -/
-  toGrp : GrpCat
+  toGrp : GrpCat.{u}
   [isFinite : Finite toGrp]
 
 /-- The category of finite additive groups. -/
 @[pp_with_univ]
 structure FiniteAddGrp where
   /-- An additive group that is finite -/
-  toAddGrp : AddGrpCat
+  toAddGrp : AddGrpCat.{u}
   [isFinite : Finite toAddGrp]
 
 attribute [to_additive] FiniteGrp
@@ -46,10 +46,11 @@ instance : CoeSort FiniteGrp.{u} (Type u) where
 
 @[to_additive]
 instance : Category FiniteGrp :=
-  inferInstanceAs (Category (InducedCategory _ FiniteGrp.toGrp))
+  inferInstanceAs <| Category (InducedCategory _ FiniteGrp.toGrp)
 
 @[to_additive]
-instance : ConcreteCategory FiniteGrp (· →* ·) := InducedCategory.concreteCategory FiniteGrp.toGrp
+instance : ConcreteCategory FiniteGrp (· →* ·) :=
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toGrp) _
 
 @[to_additive]
 instance (G : FiniteGrp) : Group G := inferInstanceAs <| Group G.toGrp

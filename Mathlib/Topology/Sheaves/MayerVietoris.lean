@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
 public import Mathlib.CategoryTheory.Sites.Spaces
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # Mayer-Vietoris squares
@@ -32,8 +31,6 @@ namespace Opens
 open CategoryTheory Limits TopologicalSpace
 
 variable {T : Type u} [TopologicalSpace T]
-
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
 
 /-- A square consisting of opens `X₂ ⊓ X₃`, `X₂`, `X₃` and `X₂ ⊔ X₃` is
 a Mayer-Vietoris square. -/

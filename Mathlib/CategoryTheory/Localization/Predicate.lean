@@ -39,7 +39,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C) (E : Type*)
   [Category* E]
@@ -69,9 +69,9 @@ end Functor
 
 namespace Localization
 
-/-- This universal property states that a functor `L : C ⥤ D` inverts morphisms
-in `W` and that all functors `D ⥤ E` (for a fixed category `E`) uniquely factor
-through `L`. -/
+/-- This universal property states that a functor `L : C ⥤ D` inverts the morphisms
+in `W` and every functor `F : C ⥤ E` (for a fixed category `E`) inverting `W` admits
+a unique factorisation through `L`. -/
 structure StrictUniversalPropertyFixedTarget where
   /-- the functor `L` inverts `W` -/
   inverts : W.IsInvertedBy L
@@ -126,6 +126,9 @@ theorem IsLocalization.mk' (h₁ : Localization.StrictUniversalPropertyFixedTarg
 theorem IsLocalization.for_id (hW : W ≤ MorphismProperty.isomorphisms C) : (𝟭 C).IsLocalization W :=
   IsLocalization.mk' _ _ (Localization.strictUniversalPropertyFixedTargetId W _ hW)
     (Localization.strictUniversalPropertyFixedTargetId W _ hW)
+
+instance : (𝟭 C).IsLocalization (MorphismProperty.isomorphisms C) :=
+  IsLocalization.for_id _ (by rfl)
 
 end Functor
 
@@ -208,6 +211,8 @@ def whiskeringLeftFunctor : (D ⥤ E) ⥤ W.FunctorsInverting E :=
   ObjectProperty.lift _ ((whiskeringLeft _ _ E).obj L)
     (MorphismProperty.IsInvertedBy.of_comp W L (inverts L W))
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
   let iso : (whiskeringLeft (MorphismProperty.Localization W) D E).obj
     (equivalenceFromModel L W).functor ⋙
@@ -231,6 +236,7 @@ the composition with a localization functor `L : C ⥤ D` with respect to
 def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
   (whiskeringLeftFunctor L W E).asEquivalence
 
+set_option linter.overlappingInstances false in
 /-- The functor `(D ⥤ E) ⥤ (C ⥤ E)` given by the composition with a localization
 functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 @[nolint unusedArguments]
@@ -267,11 +273,19 @@ lemma faithful_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*)
     ((whiskeringLeft C D E).obj L).Faithful :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Faithful
 
+/-- The precomposition with a localization functor gives fully faithful functors
+between functor categories. -/
+def fullyFaithfulWhiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category* E] :
+    ((whiskeringLeft C D E).obj L).FullyFaithful := by
+  have := full_whiskeringLeft L W E
+  have := faithful_whiskeringLeft L W E
+  exact FullyFaithful.ofFullyFaithful _
+
 variable {E}
 
 theorem natTrans_ext (L : C ⥤ D) (W) [L.IsLocalization W] {F₁ F₂ : D ⥤ E} {τ τ' : F₁ ⟶ F₂}
     (h : ∀ X : C, τ.app (L.obj X) = τ'.app (L.obj X)) : τ = τ' := by
-  haveI := essSurj L W
+  have := essSurj L W
   ext Y
   rw [← cancel_epi (F₁.map (L.objObjPreimageIso Y).hom), τ.naturality, τ'.naturality, h]
 
@@ -281,8 +295,6 @@ is commutative up to an isomorphism. -/
 class Lifting (L : C ⥤ D) (W : MorphismProperty C) (F : C ⥤ E) (F' : D ⥤ E) where
   /-- the isomorphism relating the localization functor and the two other given functors -/
   iso (L W F F') : L ⋙ F' ≅ F
-
-@[deprecated (since := "2025-08-22")] alias Lifting.iso' := Lifting.iso
 
 variable {W}
 
@@ -364,7 +376,7 @@ instance compLeft (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := ⟨Iso
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ D`, then a functor `F₂'` which
 is isomorphic to `F₁'` also lifts a functor `F₂` that is isomorphic to `F₁`. -/
-@[simps]
+@[simps, instance_reducible]
 def ofIsos {F₁ F₂ : C ⥤ E} {F₁' F₂' : D ⥤ E} (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') [Lifting L W F₁ F₁'] :
     Lifting L W F₂ F₂' :=
   ⟨isoWhiskerLeft L e'.symm ≪≫ iso L W F₁ F₁' ≪≫ e⟩
@@ -409,7 +421,7 @@ instance (F : D ⥤ E) [F.IsEquivalence] [L.IsLocalization W] :
 lemma of_isEquivalence (L : C ⥤ D) (W : MorphismProperty C)
     (hW : W ≤ MorphismProperty.isomorphisms C) [IsEquivalence L] :
     L.IsLocalization W := by
-  haveI : (𝟭 C).IsLocalization W := for_id W hW
+  have : (𝟭 C).IsLocalization W := for_id W hW
   exact of_equivalence_target (𝟭 C) W L L.asEquivalence L.leftUnitor
 
 end IsLocalization
@@ -426,6 +438,7 @@ same `MorphismProperty C`, this is an equivalence of categories `D₁ ≌ D₂`.
 def uniq : D₁ ≌ D₂ :=
   (equivalenceFromModel L₁ W').symm.trans (equivalenceFromModel L₂ W')
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma uniq_symm : (uniq L₁ L₂ W').symm = uniq L₂ L₁ W' := by
   dsimp [uniq, Equivalence.trans]
   ext <;> aesop
@@ -455,6 +468,7 @@ def isoUniqFunctor (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) :
   letI : Lifting L₁ W' L₂ F := ⟨e⟩
   liftNatIso L₁ W' L₂ L₂ F (uniq L₁ L₂ W').functor (Iso.refl L₂)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma morphismProperty_eq_top [L.IsLocalization W] (P : MorphismProperty D) [P.RespectsIso]
     [P.IsMultiplicative] (h₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (L.map f))
     (h₂ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (hf : W f), P (isoOfHom L W f hf).inv) :
@@ -485,6 +499,7 @@ instance : IsGroupoid (⊤ : MorphismProperty C).Localization :=
   isGroupoid <| MorphismProperty.Q ⊤
 
 /-- Localization of a category with respect to all morphisms results in a groupoid. -/
+@[instance_reducible]
 def groupoid : Groupoid (⊤ : MorphismProperty C).Localization :=
   Groupoid.ofIsGroupoid
 

@@ -44,10 +44,10 @@ theorem exists_homeomorph_extension {E : Type*} [NormedAddCommGroup E] [NormedSp
   have hg : ApproximatesLinearOn g (f' : E →L[ℝ] F) univ (lipschitzExtensionConstant F * c) := by
     apply LipschitzOnWith.approximatesLinearOn
     rw [lipschitzOnWith_univ]
-    convert hu
+    convert! hu
     ext x
     simp only [g, add_sub_cancel_left, ContinuousLinearEquiv.coe_coe, Pi.sub_apply]
-  haveI : FiniteDimensional ℝ E := f'.symm.finiteDimensional
+  have : FiniteDimensional ℝ E := f'.symm.finiteDimensional
   exact ⟨hg.toHomeomorph g hc, fg⟩
 
 end ApproximatesLinearOn

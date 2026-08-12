@@ -96,7 +96,7 @@ Projection of a needle onto the x-axis. The needle's center is at x-coordinate `
 `l` and angle `θ`. Note, `θ` is measured relative to the y-axis, that is, a vertical needle has
 `θ = 0`.
 -/
-def needleProjX (x θ : ℝ) : Set ℝ := Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)
+noncomputable def needleProjX (x θ : ℝ) : Set ℝ := Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)
 
 /--
 The indicator function of whether a needle at position `⟨x, θ⟩ : ℝ × ℝ` crosses the line `x = 0`.
@@ -120,7 +120,7 @@ noncomputable def N : Ω → ℝ := needleCrossesIndicator l ∘ B
 /--
 The possible x-positions and angle relative to the y-axis of a needle.
 -/
-abbrev needleSpace : Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
+noncomputable abbrev needleSpace : Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
 
 include hd in
 lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
@@ -130,14 +130,10 @@ lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
 
 lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) := by
   unfold needleCrossesIndicator
-  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.and ?l ?r))
-  all_goals simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
-  case' l => refine isClosed_le continuous_fst ?_
-  case' r => refine isClosed_le (Continuous.neg continuous_fst) ?_
-  all_goals
-    refine Continuous.mul (Continuous.mul ?_ continuous_const) continuous_const
-    simp_rw [← Function.comp_apply (f := Real.sin) (g := Prod.snd),
-      Continuous.comp Real.continuous_sin continuous_snd]
+  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.and ?_ ?_)) <;>
+    simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
+  · exact isClosed_le continuous_fst (by fun_prop)
+  · exact isClosed_le continuous_fst.neg (by fun_prop)
 
 lemma stronglyMeasurable_needleCrossesIndicator :
     MeasureTheory.StronglyMeasurable (needleCrossesIndicator l) := by
@@ -225,8 +221,8 @@ lemma buffon_integral :
         -(Real.sin θ * l) / 2 ≤ x ∧ x ≤ Real.sin θ * l / 2 := by
       rw [neg_div, and_comm, ← tsub_le_iff_right, zero_sub]
     by_cases h : x ≤ Real.sin θ * l / 2 ∧ 0 ≤ x + Real.sin θ * l / 2
-    · rw [if_pos h, if_pos (this.mp h)]
-    · rw [if_neg h, if_neg (this.not.mp h)]
+    · rw [ite_eq_left h, ite_eq_left (this.mp h)]
+    · rw [ite_eq_right h, ite_eq_right (this.not.mp h)]
   simp_rw [indicator_eq, MeasureTheory.setIntegral_indicator measurableSet_Icc, Pi.one_apply]
 
 include hl in
@@ -274,8 +270,7 @@ the integral lemmas below.
 -/
 lemma intervalIntegrable_min_const_sin_mul (a b : ℝ) :
     IntervalIntegrable (fun (θ : ℝ) => min d (θ.sin * l)) ℙ a b := by
-  apply Continuous.intervalIntegrable
-  exact Continuous.min continuous_const (Continuous.mul Real.continuous_sin continuous_const)
+  apply Continuous.intervalIntegrable (by fun_prop)
 
 /--
 This equality is useful since `θ.sin` is increasing in `0..π / 2` (but not in `0..π`).

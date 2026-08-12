@@ -77,14 +77,15 @@ def zmodHom : AddChar (ZMod n) (AddChar (ZMod n) Circle) where
   map_add_eq_mul' := by simp
 
 /-- Character on a product of `ZMod`s given by `x ↦ ∏ i, e ^ (2 * π * I * x i * y / n)`. -/
-private def mkZModAux {ι : Type} [DecidableEq ι] (n : ι → ℕ) [∀ i, NeZero (n i)]
+private def mkZModAux {ι : Type*} [DecidableEq ι] (n : ι → ℕ) [∀ i, NeZero (n i)]
     (u : ∀ i, ZMod (n i)) : AddChar (⨁ i, ZMod (n i)) Circle :=
   AddChar.directSum fun i ↦ zmod (n i) (u i)
 
-private lemma mkZModAux_injective {ι : Type} [DecidableEq ι] {n : ι → ℕ} [∀ i, NeZero (n i)] :
+private lemma mkZModAux_injective {ι : Type*} [DecidableEq ι] {n : ι → ℕ} [∀ i, NeZero (n i)] :
     Injective (mkZModAux n) :=
   AddChar.directSum_injective.comp fun f g h ↦ by simpa [funext_iff] using h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The circle-valued characters of a finite abelian group are the same as its complex-valued
 characters. -/
 def circleEquivComplex [Finite α] : AddChar α Circle ≃+ AddChar α ℂ where
@@ -144,7 +145,7 @@ lemma exists_apply_ne_zero : (∃ ψ : AddChar α ℂ, ψ a ≠ 1) ↔ a ≠ 0 :
   have h₀ := congr_fun ((complexBasis α).sum_repr f) 0
   have h₁ := congr_fun ((complexBasis α).sum_repr f) a
   simp only [complexBasis_apply, Fintype.sum_apply, Pi.smul_apply, h, smul_eq_mul, mul_one,
-    map_zero_eq_one, if_pos rfl, if_neg ha, f] at h₀ h₁
+    map_zero_eq_one, ite_eq_left rfl, ite_eq_right ha, f] at h₀ h₁
   exact one_ne_zero (h₁.symm.trans h₀)
 
 lemma forall_apply_eq_zero : (∀ ψ : AddChar α ℂ, ψ a = 1) ↔ a = 0 := by
@@ -152,7 +153,7 @@ lemma forall_apply_eq_zero : (∀ ψ : AddChar α ℂ, ψ a = 1) ↔ a = 0 := by
 
 lemma doubleDualEmb_injective : Injective (doubleDualEmb : α → AddChar (AddChar α ℂ) ℂ) :=
   doubleDualEmb.ker_eq_bot_iff.1 <| eq_bot_iff.2 fun a ha ↦
-    forall_apply_eq_zero.1 fun ψ ↦ by simpa using DFunLike.congr_fun ha (Additive.ofMul ψ)
+    forall_apply_eq_zero.1 fun ψ ↦ by simpa using! DFunLike.congr_fun ha (Additive.ofMul ψ)
 
 lemma doubleDualEmb_bijective : Bijective (doubleDualEmb : α → AddChar (AddChar α ℂ) ℂ) := by
   cases nonempty_fintype α
