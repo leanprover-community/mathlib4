@@ -14,7 +14,7 @@ public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.CrossRefAttribute
 
@@ -594,7 +594,7 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   | one => simp [npowRec']
   | bit b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
-    cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
+    cases b <;> simp only [Nat.bit, Bool.cond_false, Bool.cond_true, npowRec'_two_mul]
     rw [npowRec'_succ (by lia), npowRec'_two_mul, ← npowRec'_two_mul,
       ← npowRec'_mul_comm (by lia), mul_assoc]
 
@@ -1117,7 +1117,7 @@ theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mu
 
 @[to_additive]
 theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc]
 
 @[to_additive (attr := simp)]
 theorem one_div (a : G) : 1 / a = a⁻¹ :=
