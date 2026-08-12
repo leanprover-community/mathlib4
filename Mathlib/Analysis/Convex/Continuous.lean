@@ -221,19 +221,6 @@ protected lemma ConvexOn.locallyLipschitz (hf : ConvexOn ℝ univ f) : LocallyLi
 protected lemma ConcaveOn.locallyLipschitz (hf : ConcaveOn ℝ univ f) : LocallyLipschitz f := by
   simpa using hf.locallyLipschitzOn_interior
 
--- Commented out since `intrinsicInterior` is not imported (but should be once these are proved)
--- proof_wanted ConvexOn.locallyLipschitzOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
---     ContinuousOn f (intrinsicInterior ℝ C)
-
--- proof_wanted ConcaveOn.locallyLipschitzOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
---     ContinuousOn f (intrinsicInterior ℝ C)
-
--- proof_wanted ConvexOn.continuousOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
---     ContinuousOn f (intrinsicInterior ℝ C)
-
--- proof_wanted ConcaveOn.continuousOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
---     ContinuousOn f (intrinsicInterior ℝ C)
-
 section Intervals
 
 lemma ConvexOn.continuousOn_Ici {f : ℝ → ℝ} {y : ℝ} (hf_cvx : ConvexOn ℝ (Ici y) f)
