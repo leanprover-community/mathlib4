@@ -259,7 +259,7 @@ section LE
 
 variable [LE A] [IsConcreteLE A B] {p q : A}
 
-theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T :=
+theorem le_def : p ≤ q ↔ ∀ ⦃x : B⦄, x ∈ p → x ∈ q :=
   IsConcreteLE.le_iff'
 
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
@@ -292,7 +292,7 @@ section LE
 
 variable [LE A] [IsConcreteLE A B] {p q : A}
 
-@[simp, norm_cast, gcongr] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
+@[simp, norm_cast, gcongr] lemma coe_subset_coe : (p : Set B) ⊆ q ↔ p ≤ q :=
   (SetLike.le_def (A := A)).symm
 
 end LE
@@ -310,7 +310,7 @@ section PartialOrder
 
 variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
 
-@[simp, norm_cast, gcongr] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
+@[simp, norm_cast, gcongr] lemma coe_ssubset_coe : (p : Set B) ⊂ q ↔ p < q := by
   rw [ssubset_iff_subset_ne, lt_iff_le_and_ne, coe_subset_coe, SetLike.coe_ne_coe]
 
 @[gcongr, mono]
