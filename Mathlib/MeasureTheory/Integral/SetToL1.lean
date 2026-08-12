@@ -926,12 +926,12 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
     filter_upwards [hfsi] with i hi
     refine lintegral_congr_ae ?_
     filter_upwards [hi.coeFn_toL1, hfi.coeFn_toL1] with x hxi hxf
-    simp_rw [F_lp, dif_pos hi, hxi, f_lp, hxf]
+    simp_rw [F_lp, dite_eq_left hi, hxi, f_lp, hxf]
   suffices Tendsto (fun i => setToFun μ T hT (F_lp i)) l (𝓝 (setToFun μ T hT f)) by
     refine (tendsto_congr' ?_).mp this
     filter_upwards [hfsi] with i hi
     suffices h_ae_eq : F_lp i =ᵐ[μ] fs i from setToFun_congr_ae hT h_ae_eq
-    simp_rw [F_lp, dif_pos hi]
+    simp_rw [F_lp, dite_eq_left hi]
     exact hi.coeFn_toL1
   rw [setToFun_congr_ae hT hfi.coeFn_toL1.symm]
   exact ((continuous_setToFun hT).tendsto f_lp).comp tendsto_L1
@@ -1433,7 +1433,7 @@ theorem StronglyMeasurable.setToFun_prod_right {β : Type*} {mβ : MeasurableSpa
         apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
         filter_upwards with y
         simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
-      simp only [mem_setOf_eq, hfx, indicator_of_mem, this,
+      simp only [mem_ofPred_eq, hfx, indicator_of_mem, this,
         ← setToFun_simpleFunc_eq_setToSimpleFunc hT, f']
       refine
         tendsto_setToFun_of_dominated_convergence hT (fun y => ‖f x y‖ + ‖f x y‖)

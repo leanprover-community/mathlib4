@@ -195,7 +195,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     intro x y
     refine IsOpen.mem_nhds ?_ ?_
     · apply isOpen_lt <;> fun_prop
-    · rw [Set.mem_setOf_eq, w₂]
+    · rw [Set.mem_ofPred_eq, w₂]
       exact sub_lt_self _ pos
   -- Fixing `x` for a moment, we have a family of functions `fun y ↦ g x y`
   -- which on different patches (the `U x y`) are greater than `f z - ε`.
@@ -229,7 +229,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     intro x
     refine IsOpen.mem_nhds ?_ ?_
     · apply isOpen_lt <;> fun_prop
-    · dsimp only [W, Set.mem_setOf_eq]
+    · dsimp only [W, Set.mem_ofPred_eq]
       rw [h_eq]
       exact lt_add_of_pos_right _ pos
   -- Since `X` is compact, there is some finset `ys t`
@@ -339,8 +339,8 @@ theorem exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
     simp
   obtain ⟨⟨gK, hgKAK⟩, hgapprox⟩ :=
     @ContinuousMap.exists_mem_subalgebra_near_continuous_of_separatesPoints _ _
-    (isCompact_iff_compactSpace.mp hK) AK hsep (K.restrict f)
-    (ContinuousOn.restrict (Continuous.continuousOn f.continuous)) ε pos
+    (isCompact_iff_compactSpace.mp hK) AK hsep (K.domRestrict f)
+    (ContinuousOn.domRestrict (Continuous.continuousOn f.continuous)) ε pos
   obtain ⟨g, hgA, hgKAK⟩ := Subalgebra.mem_map.mp hgKAK
   use g, hgA
   intro x hxK
@@ -591,7 +591,6 @@ lemma ker_evalStarAlgHom_inter_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) :
     refine fun hf ↦ ⟨?_, nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom h0 hf⟩
     exact adjoin_le_starAlgebra_adjoin _ _ hf
 
-set_option backward.isDefEq.respectTransparency false in
 -- the statement should be in terms of nonunital subalgebras, but we lack API
 open RingHom Filter Topology in
 theorem AlgHom.closure_ker_inter {F S K A : Type*} [CommRing K] [Ring A] [Algebra K A]

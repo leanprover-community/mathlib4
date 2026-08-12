@@ -30,7 +30,7 @@ for which the union of `{i}` and the range of `α` is not all of `n`
 (when viewing `α` as monotone function `m → n`). -/
 @[simps -isSimp obj]
 def horn (n : ℕ) (i : Fin (n + 1)) : (Δ[n] : SSet.{u}).Subcomplex where
-  obj _ := setOf (fun s ↦ Set.range (stdSimplex.asOrderHom s) ∪ {i} ≠ Set.univ)
+  obj _ := Set.ofPred (fun s ↦ Set.range (stdSimplex.asOrderHom s) ∪ {i} ≠ Set.univ)
   map φ s hs h := hs (by
     rw [Set.eq_univ_iff_forall] at h ⊢; intro j
     apply Or.imp _ id (h j)

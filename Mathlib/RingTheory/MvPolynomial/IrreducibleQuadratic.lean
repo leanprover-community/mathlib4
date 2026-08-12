@@ -129,8 +129,6 @@ end
 section
 /-! ## The quadratic polynomial $$\sum_{i=1}^n X_i Y_i$$. -/
 
-open Polynomial
-
 variable {n : Type*} {R : Type*} [CommRing R]
 
 theorem irreducible_of_totalDegree_eq_one
@@ -168,7 +166,7 @@ theorem coeff_sumSMulX (i : n) :
   rw [Finset.sum_eq_single i _ (by simp)]
   · simp
   intro j hj hji
-  rw [coeff_smul, coeff_X, if_neg]
+  rw [coeff_smul, coeff_X, ite_eq_right]
   · simp
   · rwa [Finsupp.single_left_inj Nat.one_ne_zero]
 

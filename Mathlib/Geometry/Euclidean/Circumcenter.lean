@@ -67,8 +67,9 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
   let cr₂ := √(cr * cr + ycc₂ * ycc₂)
   use ⟨cc₂, cr₂⟩
   simp -zeta -proj only
-  have hpo : p = (1 : ℝ) • (p -ᵥ orthogonalProjection s p : V) +ᵥ (orthogonalProjection s p : P) :=
-    by simp
+  have hpo : p = (1 : ℝ) • (p -ᵥ orthogonalProjection s p : V) +ᵥ
+    (orthogonalProjection s p : P) := by
+    simp
   constructor
   · constructor
     · refine vadd_mem_of_mem_direction ?_ (mem_affineSpan ℝ (Set.mem_insert_of_mem _ hcc))
@@ -158,7 +159,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       classical
       have hc : Fintype.card ι2 = m + 1 := by
         rw [Fintype.card_of_subtype {x | x ≠ i}]
-        · rw [Finset.filter_not, Finset.filter_eq' _ i, if_pos (Finset.mem_univ _),
+        · rw [Finset.filter_not, Finset.filter_eq' _ i, ite_eq_left (Finset.mem_univ _),
             Finset.card_sdiff, Finset.card_univ, hn]
           simp
         · simp
@@ -578,7 +579,7 @@ theorem sum_reflectionCircumcenterWeightsWithCircumcenter {n : ℕ} {i₁ i₂ :
     sum_const, filter_or, filter_eq']
   rw [card_union_of_disjoint]
   · norm_num
-  · simpa only [if_true, mem_univ, disjoint_singleton] using h
+  · simpa only [ite_true, mem_univ, disjoint_singleton] using h
 
 /-- The reflection of the circumcenter of a simplex in an edge, in
 terms of `pointsWithCircumcenter`. -/
