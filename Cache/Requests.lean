@@ -1031,14 +1031,21 @@ def getFiles
 
   let elapsed := (← IO.monoMsNow) - startTime
   if decompress then
-    if bgDecomp.isSome && parallel then
-      -- Background task handled pre-cached files, download pipeline handled new files
+    if parallel then
+      -- No sweep here. The pipeline unpacks every file that it fetches, and
+      -- the background task unpacks every already-cached file that needs it.
+      -- With `forceDownload` there is no background task, and the pipeline
+      -- fetches and unpacks everything instead. A failure on either side
+      -- exits above, so no work is left at this point.
       IO.println s!"Completed successfully in {elapsed} ms!"
-      -- Every file of `hashMap` is unpacked at this root hash. `unpackCache`
-      -- records the same hash on the other branch.
+      -- Files that the server lacks stay stale in the build directory. The
+      -- record is still safe to write, because these files are also absent
+      -- from the cache directory, so a later run downloads them and the
+      -- pipeline overwrites them without a check. This write is sound only
+      -- while the pipeline overwrites every file that it fetches.
       if fullRun then IO.writeUnpackedRootHash rootHash
     else
-      -- Either no background decompression ran, or non-parallel mode needs final sweep
+      -- Serial mode downloads without the pipeline, so unpack everything here.
       IO.unpackCache hashMap forceUnpack rootHash fullRun
   else
     IO.println "Downloaded all files successfully!"
