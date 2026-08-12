@@ -42,8 +42,6 @@ set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory.MorphismProperty
 
-open Limits
-
 section Comma
 
 variable {A : Type*} [Category* A] {B : Type*} [Category* B] {T : Type*} [Category* T]
