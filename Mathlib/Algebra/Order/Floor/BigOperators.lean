@@ -10,7 +10,7 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
-# Hermite's identity for the floor function
+# Results about big operators with values in floor rings
 
 This file proves the classical Hermite identity for the floor function: for every
 element `x` of a linearly ordered floor field and every natural number `n`,
