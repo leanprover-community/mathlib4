@@ -238,8 +238,9 @@ theorem _root_.ContinuousLinearMap.isInvertible_inverse_iff :
   ⟨.of_isInvertible_inverse, .inverse⟩
 
 theorem isInvertible_iff_isHomeomorph :
-    f.IsInvertible ↔ IsHomeomorph f := by
-  sorry
+    f.IsInvertible ↔ IsHomeomorph f :=
+  ⟨fun ⟨e, he⟩ ↦ he ▸ e.isHomeomorph,
+    fun hf ↦ ⟨.ofIsHomeomorph (.ofBijective f.toLinearMap hf.bijective) hf, rfl⟩⟩
 
 end IsInvertible
 
