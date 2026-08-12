@@ -363,8 +363,7 @@ lemma exists_tendstoUniformlyOn_subseq_tonelliApproximation (hf : IsPeano f t₀
         Tendsto (fun n ↦ boundedTonelliApproximation hf (φ n) t') atTop (nhds (β t')) :=
       h_uniform.tendsto_at t'
     apply isClosed_closedBall.mem_of_tendsto h_pointwise
-    apply Eventually.of_forall
-    intro n
+    filter_upwards with n
     change tonelliApproximation f t₀ x₀ (φ n) t ∈ closedBall x₀ r
     exact mapsTo_tonelliApproximation_closedBall hf (φ n) ht
   · have h_uniform : TendstoUniformly (fun n ↦ boundedTonelliApproximation hf (φ n)) β atTop :=
