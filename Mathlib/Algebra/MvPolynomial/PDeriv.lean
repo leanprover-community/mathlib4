@@ -49,7 +49,7 @@ universe u v
 
 namespace MvPolynomial
 
-open Set Function Finsupp
+open Function Finsupp
 
 variable {R : Type u} {σ : Type v} {a a' a₁ a₂ : R} {s : σ →₀ ℕ}
 
@@ -130,7 +130,7 @@ theorem coeff_pderiv {i : σ} (p : MvPolynomial σ R) (m : σ →₀ ℕ) :
     simp only [h, ↓reduceIte, zero_mul]
     by_cases hn : n i = 0
     · simp [hn]
-    apply if_neg
+    apply ite_eq_right
     rwa [tsub_eq_iff_eq_add_of_le (fun _ ↦ by grind)]
 
 theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R} {i : σ} :
