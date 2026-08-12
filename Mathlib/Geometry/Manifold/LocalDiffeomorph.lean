@@ -156,6 +156,11 @@ open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such tha
 def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
   ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
 
+variable {I J n} in
+lemma isLocalDiffeomorphAt_iff {f : M → N} {x : M} :
+    IsLocalDiffeomorphAt I J n f x ↔
+      ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source := Iff.rfl
+
 lemma PartialDiffeomorph.isLocalDiffeomorphAt (φ : PartialDiffeomorph I J M N n)
     {x : M} (hx : x ∈ φ.source) : IsLocalDiffeomorphAt I J n φ x :=
   ⟨φ, hx, Set.eqOn_refl _ _⟩

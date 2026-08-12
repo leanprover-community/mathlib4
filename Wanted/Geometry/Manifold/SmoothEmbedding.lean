@@ -5,7 +5,6 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.SmoothEmbedding
 
 open scoped ContDiff
@@ -33,9 +32,5 @@ proof_wanted comp -- [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [Com
     IsSmoothEmbedding I J' n (g ∘ f)
 
 end IsSmoothEmbedding
-
--- TODO: prove the same result for local diffeomorphisms and deduce it as a corollary
-proof_wanted Diffeomorph.isSmoothEmbedding [IsManifold I n M]
-    (φ : Diffeomorph I I M M n) : IsSmoothEmbedding I I n φ
 
 end Manifold

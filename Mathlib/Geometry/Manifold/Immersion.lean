@@ -8,6 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+public import Mathlib.Geometry.Manifold.LocalDiffeomorph
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Analysis.Normed.Module.Shrink  -- shake: keep (NormedAddCommGroup (Shrink ...)), cf. lean#13417
@@ -63,6 +64,9 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `ContMDiffAt.iff_comp_isImmersionAt` and `ContMDiff.iff_comp_isImmersion`: a function `f : M → N`
   is `C^n` (at `x`) if and only if it is continuous (at `x`) and its composition `φ ∘ f` with a
   `C^n` immersion `φ : N → P` (at `f x`) is `C^n`.
+* `IsLocalDiffeomorphAt.isImmersionAt` and `IsLocalDiffeomorph.isImmersion`: a local
+  diffeomorphism (at `x`) between manifolds over the same model is an immersion (at `x`).
+* `Diffeomorph.isImmersion`: in particular, a diffeomorphism is an immersion.
 
 ## Implementation notes
 
@@ -91,9 +95,6 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.comp`: the composition of immersions (between Banach manifolds) is an immersion
 * If `f : M → N` is a map between finite-dimensional manifolds, `mfderiv I J f x` being injective
   implies `f` is an immersion at `x`.
-* `IsLocalDiffeomorphAt.isImmersionAt` and `IsLocalDiffeomorph.isImmersion`:
-  a local diffeomorphism (at `x`) is an immersion (at `x`)
-* `Diffeomorph.isImmersion`: in particular, a diffeomorphism is an immersion
 
 ## References
 
@@ -900,5 +901,65 @@ lemma _root_.ContMDiff.iff_comp_isImmersion {f : M → N} {φ : N → N'} (hφ :
   rw [ContMDiff.iff_comp_isImmersionOfComplement hφ.isImmersionOfComplement_complement]
 
 end IsImmersion
+
+/-! ### Local diffeomorphisms are immersions -/
+
+section LocalDiffeomorph
+
+open IsManifold
+
+variable {P : Type*} [TopologicalSpace P] [ChartedSpace H P]
+  [IsManifold I n M] [IsManifold I n P] {f : M → P} {x : M}
+
+/-- A `C^n` local diffeomorphism at `x` between manifolds over the same model
+is an immersion at `x`, with the trivial complement `PUnit`. -/
+theorem _root_.IsLocalDiffeomorphAt.isImmersionAtOfComplement
+    (hf : IsLocalDiffeomorphAt I I n f x) : IsImmersionAtOfComplement PUnit I I n f x := by
+  obtain ⟨Φ, hx, heq⟩ := isLocalDiffeomorphAt_iff.mp hf
+  set φ : OpenPartialHomeomorph M H := (chartAt H x).restr Φ.source
+  have hφ_source : φ.source = (chartAt H x).source ∩ Φ.source :=
+    (chartAt H x).restr_source' _ Φ.open_source
+  have hφ_mem : φ ∈ maximalAtlas I n M :=
+    restr_mem_maximalAtlas _ (chart_mem_maximalAtlas x) Φ.open_source
+  set ψ : OpenPartialHomeomorph P H := Φ.symm.toOpenPartialHomeomorph.trans φ with hψ_def
+  have hψ_mem : ψ ∈ maximalAtlas I n P := by
+    apply ψ.mem_maximalAtlas_of_contMDiffOn
+    · rw [hψ_def, OpenPartialHomeomorph.coe_trans]
+      exact (contMDiffOn_of_mem_maximalAtlas hφ_mem).comp' Φ.symm.contMDiffOn
+    · rw [hψ_def, OpenPartialHomeomorph.coe_trans_symm]
+      exact Φ.contMDiffOn.comp' (contMDiffOn_symm_of_mem_maximalAtlas hφ_mem)
+  have hmap : φ.source ⊆ f ⁻¹' ψ.source := fun y hy ↦ by
+    have hyΦ : y ∈ Φ.source := (hφ_source ▸ hy).2
+    simp [hψ_def, heq hyΦ, Φ.map_source hyΦ, Φ.left_inv hyΦ, hy]
+  have hxφ : x ∈ φ.source := hφ_source ▸ ⟨mem_chart_source H x, hx⟩
+  apply IsImmersionAtOfComplement.mk_of_charts (.prodUnique 𝕜 E PUnit) φ ψ hxφ (hmap hxφ) hφ_mem
+    hψ_mem hmap
+  intro u hu
+  rw [OpenPartialHomeomorph.extend_target] at hu
+  have hyΦ : φ.symm (I.symm u) ∈ Φ.source := (hφ_source ▸ φ.map_target hu.1).2
+  simp [hψ_def, heq hyΦ, Φ.left_inv hyΦ, φ.right_inv hu.1, I.right_inv hu.2]
+
+/-- A `C^n` local diffeomorphism at `x` between manifolds over the same model
+is an immersion at `x`. -/
+theorem _root_.IsLocalDiffeomorphAt.isImmersionAt (hf : IsLocalDiffeomorphAt I I n f x) :
+    IsImmersionAt I I n f x :=
+  ⟨PUnit, inferInstance, inferInstance, hf.isImmersionAtOfComplement⟩
+
+/-- A `C^n` local diffeomorphism between manifolds over the same model is an immersion,
+with the trivial complement `PUnit`. -/
+theorem _root_.IsLocalDiffeomorph.isImmersionOfComplement (hf : IsLocalDiffeomorph I I n f) :
+    IsImmersionOfComplement PUnit I I n f :=
+  fun y ↦ (hf y).isImmersionAtOfComplement
+
+/-- A `C^n` local diffeomorphism between manifolds over the same model is an immersion. -/
+theorem _root_.IsLocalDiffeomorph.isImmersion (hf : IsLocalDiffeomorph I I n f) :
+    IsImmersion I I n f :=
+  ⟨PUnit, inferInstance, inferInstance, hf.isImmersionOfComplement⟩
+
+/-- A `C^n` diffeomorphism between manifolds over the same model is an immersion. -/
+theorem _root_.Diffeomorph.isImmersion (φ : M ≃ₘ^n⟮I, I⟯ P) : IsImmersion I I n φ :=
+  φ.isLocalDiffeomorph.isImmersion
+
+end LocalDiffeomorph
 
 end Manifold

@@ -26,6 +26,10 @@ This will be useful to define embedded submanifolds.
   `Sum.inl : M → M ⊕ N` and `Sum.inr : N → M ⊕ N` are `C^n` embeddings
 * `IsSmoothEmbedding.contMDiff`: if `f` is a `C^n` embedding, it is automatically `C^n`
   in the sense of `ContMDiff`.
+* `IsLocalDiffeomorph.isSmoothEmbedding`: an injective local diffeomorphism between manifolds
+  over the same model is a `C^n` embedding
+* `Diffeomorph.isSmoothEmbedding`: a diffeomorphism between manifolds over the same model
+  is a `C^n` embedding
 
 ## Implementation notes
 
@@ -39,8 +43,6 @@ This will be useful to define embedded submanifolds.
 ## TODO
 * `IsSmoothEmbedding.comp`: the composition of smooth embeddings (between Banach manifolds)
   is a smooth embedding
-* `IsLocalDiffeomorph.isSmoothEmbedding`, `Diffeomorph.isSmoothEmbedding`:
-  a local diffeomorphism (and in particular, a diffeomorphism) is a smooth embedding
 
 -/
 
@@ -115,5 +117,23 @@ lemma contMDiff (hf : IsSmoothEmbedding I J n f) :
   hf.isImmersion.contMDiff
 
 end IsSmoothEmbedding
+
+section LocalDiffeomorph
+
+variable {P : Type*} [TopologicalSpace P] [ChartedSpace H P]
+  [IsManifold I n M] [IsManifold I n P]
+
+/-- An injective `C^n` local diffeomorphism between manifolds over the same model
+is a `C^n` embedding. -/
+theorem _root_.IsLocalDiffeomorph.isSmoothEmbedding {f : M → P} (hf : IsLocalDiffeomorph I I n f)
+  (hf' : Function.Injective f) :
+    IsSmoothEmbedding I I n f :=
+  ⟨hf.isImmersion, (hf.isLocalHomeomorph.isOpenEmbedding_of_injective hf').isEmbedding⟩
+
+/-- A `C^n` diffeomorphism between manifolds over the same model is a `C^n` embedding. -/
+theorem _root_.Diffeomorph.isSmoothEmbedding (φ : M ≃ₘ^n⟮I, I⟯ P) : IsSmoothEmbedding I I n φ :=
+  φ.isLocalDiffeomorph.isSmoothEmbedding (EquivLike.injective φ)
+
+end LocalDiffeomorph
 
 end Manifold
