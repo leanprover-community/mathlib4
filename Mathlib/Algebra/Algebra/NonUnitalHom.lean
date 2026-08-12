@@ -369,7 +369,6 @@ def snd : A × B →ₙₐ[R] B where
 variable {R A B}
 variable [DistribMulAction R C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The prod of two morphisms is a morphism. -/
 @[simps toFun]
 def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C where

@@ -209,7 +209,6 @@ instance (B : Bicone F) (j : J) : IsSplitMono (B.ι j) := (B.retract j).instIsSp
 
 instance (B : Bicone F) (j : J) : IsSplitEpi (B.π j) := (B.retract j).instIsSplitEpiR
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- We can turn any limit cone over a discrete collection of objects into a bicone. -/
 @[simps]
@@ -219,7 +218,6 @@ def ofLimitCone {f : J → C} {t : Cone (Discrete.functor f)} (ht : IsLimit t) :
   ι j := ht.lift (Fan.mk _ fun j' => if h : j = j' then eqToHom (congr_arg f h) else 0)
   ι_π j j' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem ι_of_isLimit {f : J → C} {t : Bicone f} (ht : IsLimit t.toCone) (j : J) :
     t.ι j = ht.lift (Fan.mk _ fun j' => if h : j = j' then eqToHom (congr_arg f h) else 0) :=
@@ -227,7 +225,6 @@ theorem ι_of_isLimit {f : J → C} {t : Bicone f} (ht : IsLimit t.toCone) (j : 
     rw [ht.fac]
     simp [t.ι_π]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- We can turn any colimit cocone over a discrete collection of objects into a bicone. -/
 @[simps]
@@ -238,7 +235,6 @@ def ofColimitCocone {f : J → C} {t : Cocone (Discrete.functor f)} (ht : IsColi
   ι j := t.ι.app ⟨j⟩
   ι_π j j' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem π_of_isColimit {f : J → C} {t : Bicone f} (ht : IsColimit t.toCocone) (j : J) :
     t.π j = ht.desc (Cofan.mk _ fun j' => if h : j' = j then eqToHom (congr_arg f h) else 0) :=
@@ -264,7 +260,6 @@ section Whisker
 
 variable {K : Type w'}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Whisker a bicone with an equivalence between the indexing types. -/
 @[simps]
 def whisker {f : J → C} (c : Bicone f) (g : K ≃ J) : Bicone (f ∘ g) where
@@ -529,7 +524,6 @@ theorem biproduct.isoProduct_hom {f : J → C} [HasBiproduct f] :
     (biproduct.isoProduct f).hom = Pi.lift (biproduct.π f) :=
   limit.hom_ext fun j => by simp [biproduct.isoProduct]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biproduct.isoProduct_inv {f : J → C} [HasBiproduct f] :
     (biproduct.isoProduct f).inv = biproduct.lift (Pi.π f) :=
@@ -545,7 +539,6 @@ theorem biproduct.isoCoproduct_inv {f : J → C} [HasBiproduct f] :
     (biproduct.isoCoproduct f).inv = Sigma.desc (biproduct.ι f) :=
   colimit.hom_ext fun j => by simp [biproduct.isoCoproduct]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biproduct.isoCoproduct_hom {f : J → C} [HasBiproduct f] :
     (biproduct.isoCoproduct f).hom = biproduct.desc (Sigma.ι f) :=
@@ -611,7 +604,6 @@ def biproduct.mapIso {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ 
   inv := biproduct.map fun b => (p b).inv
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance biproduct.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ j, f j ⟶ g j)
     [∀ j, Epi (p j)] : Epi (biproduct.map p) := by
   classical
@@ -626,21 +618,18 @@ instance biproduct.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p 
   rw [this]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance Pi.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ j, f j ⟶ g j)
     [∀ j, Epi (p j)] : Epi (Pi.map p) := by
   rw [show Pi.map p = (biproduct.isoProduct _).inv ≫ biproduct.map p ≫
     (biproduct.isoProduct _).hom by aesop]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance biproduct.map_mono {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ j, f j ⟶ g j)
     [∀ j, Mono (p j)] : Mono (biproduct.map p) := by
   rw [show biproduct.map p = (biproduct.isoProduct _).hom ≫ Pi.map p ≫
     (biproduct.isoProduct _).inv by aesop]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance Sigma.map_mono {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ j, f j ⟶ g j)
     [∀ j, Mono (p j)] : Mono (Sigma.map p) := by
   rw [show Sigma.map p = (biproduct.isoCoproduct _).inv ≫ biproduct.map p ≫
@@ -835,7 +824,6 @@ section
 
 variable (f : J → C) (i : J) [HasBiproduct f] [HasBiproduct (Subtype.restrict (fun j => j ≠ i) f)]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- The kernel of `biproduct.π f i` is the inclusion from the biproduct which omits `i`
 from the index set `J` into the biproduct over `J`. -/
@@ -862,7 +850,6 @@ instance : HasKernel (biproduct.π f i) :=
 def kernelBiproductπIso : kernel (biproduct.π f i) ≅ ⨁ Subtype.restrict (fun j => j ≠ i) f :=
   limit.isoLimitCone ⟨_, biproduct.isLimitFromSubtype f i⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- The cokernel of `biproduct.ι f i` is the projection from the biproduct over the index set `J`
 onto the biproduct omitting `i`. -/
