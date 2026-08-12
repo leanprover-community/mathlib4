@@ -6,9 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Galois.Basic
-public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 /-!
 # Full subcategories of Galois categories
@@ -42,10 +42,10 @@ class IsGaloisSubcategory (P : ObjectProperty C) : Prop where
     P.IsClosedUnderLimitsOfShape WalkingCospan := by infer_instance
   /-- `P` is stable under finite coproducs. -/
   isClosedUnderColimitsOfShape_discrete (ι : Type) [Finite ι] :
-    P.IsClosedUnderColimitsOfShape (Discrete ι) := by infer_instance
+    P.IsClosedUnderColimitsOfShape (Discrete ι) := by intros; infer_instance
   /-- `P` is stable under quotients by finite groups. -/
   isClosedUnderColimitsOfShape_singleObj (G : Type v) [Group G] [Finite G] :
-    P.IsClosedUnderColimitsOfShape (SingleObj G) := by infer_instance
+    P.IsClosedUnderColimitsOfShape (SingleObj G) := by intros; infer_instance
   isClosedUnderSubobjects : P.IsClosedUnderSubobjects := by infer_instance
   preservesEpimorphisms : P.ι.PreservesEpimorphisms := by infer_instance
 

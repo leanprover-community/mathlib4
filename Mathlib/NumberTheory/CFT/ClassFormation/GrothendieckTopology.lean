@@ -95,6 +95,12 @@ abbrev isConnectedTopology :
     GrothendieckTopology (isConnected C).FullSubcategory :=
   regularTopology (isConnected C).FullSubcategory
 
+lemma generate_singleton_mem_isConnectedTopology {X Y : (isConnected C).FullSubcategory} (f : X ⟶ Y) :
+    (Sieve.generate (.singleton f)) ∈ isConnectedTopology C Y := by
+  dsimp [isConnectedTopology]
+  rw [regularTopology.mem_sieves_iff_hasEffectiveEpi]
+  exact ⟨_ ,f, inferInstance, Sieve.le_generate _ _ _ (by simp)⟩
+
 /-- A fiber functor on a Galois category `C` induces a fiber functor on the
 site of connected objects in `C`. -/
 def isConnectedTopologyFiberFunctor
