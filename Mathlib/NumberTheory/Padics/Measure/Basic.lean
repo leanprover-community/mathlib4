@@ -60,7 +60,7 @@ instance : ContinuousLinearMapClass (AbstractMeasure X R E) R C(X, R) E :=
 instance : AddCommGroup (AbstractMeasure X R E) :=
   inferInstanceAs (AddCommGroup (C(X, R) →L[R] E))
 
-instance isAddApply : IsAddApply (AbstractMeasure X R E) C(X, R) E where
+instance isAddApply : IsAddApply (AbstractMeasure X R E) where
   add_apply _ _ _ := rfl
 
 end NoContinuousSMul
@@ -73,7 +73,7 @@ variable [ContinuousSMul R E]
 instance : Module R (AbstractMeasure X R E) :=
   inferInstanceAs (Module R (C(X, R) →L[R] E))
 
-instance isSMulApply : IsSMulApply R (AbstractMeasure X R E) C(X, R) E where
+instance isSMulApply : IsSMulApply R (AbstractMeasure X R E) where
   smul_apply _ _ _ := rfl
 
 /-- The defining equivalence between measures and continuous linear maps on continuous functions. -/
