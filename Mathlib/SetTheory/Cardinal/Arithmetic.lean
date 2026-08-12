@@ -849,13 +849,11 @@ section compl
 
 theorem mk_compl_of_infinite {α : Type*} [Infinite α] (s : Set α) (h2 : #s < #α) :
     #(sᶜ : Set α) = #α := by
-  refine eq_of_add_eq_of_aleph0_le ?_ h2 (aleph0_le_mk α)
-  exact mk_sum_compl s
+  rw [compl_eq_univ_sdiff, mk_sdiff_eq_left Set.infinite_univ (by rwa [mk_univ]), mk_univ]
 
 theorem mk_compl_finset_of_infinite {α : Type*} [Infinite α] (s : Finset α) :
     #((↑s)ᶜ : Set α) = #α := by
-  apply mk_compl_of_infinite
-  exact (finset_card_lt_aleph0 s).trans_le (aleph0_le_mk α)
+  rw [compl_eq_univ_sdiff, mk_sdiff_eq_left_of_finite Set.infinite_univ s.finite_toSet, mk_univ]
 
 theorem mk_compl_eq_mk_compl_infinite {α : Type*} [Infinite α] {s t : Set α} (hs : #s < #α)
     (ht : #t < #α) : #(sᶜ : Set α) = #(tᶜ : Set α) := by
