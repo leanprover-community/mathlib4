@@ -374,6 +374,17 @@ theorem uniformContinuous_iff [PseudoEMetricSpace β] {f : α → β} :
     UniformContinuous f ↔ ∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, edist a b < δ → edist (f a) (f b) < ε :=
   uniformity_basis_edist.uniformContinuous_iff uniformity_basis_edist
 
+/-- Version of `EMetric.uniformContinuousOn_iff` with non-strict inequalities. -/
+theorem uniformContinuousOn_iff_le [PseudoEMetricSpace β] {f : α → β} {s : Set α} :
+    UniformContinuousOn f s ↔
+      ∀ ε > 0, ∃ δ > 0, ∀ a ∈ s, ∀ b ∈ s, edist a b ≤ δ → edist (f a) (f b) ≤ ε :=
+  uniformity_basis_edist_le.uniformContinuousOn_iff uniformity_basis_edist_le
+
+/-- Version of `EMetric.uniformContinuous_iff` with non-strict inequalities. -/
+theorem uniformContinuous_iff_le [PseudoEMetricSpace β] {f : α → β} :
+    UniformContinuous f ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃a b : α⦄, edist a b ≤ δ → edist (f a) (f b) ≤ ε :=
+  uniformity_basis_edist_le.uniformContinuous_iff uniformity_basis_edist_le
+
 end EMetric
 
 end
