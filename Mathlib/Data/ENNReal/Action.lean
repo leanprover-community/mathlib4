@@ -18,7 +18,7 @@ This file defines basic scalar actions on extended nonnegative reals, showing th
 
 @[expose] public section
 
-open Set NNReal ENNReal
+open NNReal ENNReal
 
 namespace ENNReal
 

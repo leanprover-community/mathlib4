@@ -229,7 +229,7 @@ theorem natDegree_monomial_le (a : R) {m : ℕ} : (monomial m a).natDegree ≤ m
 
 theorem natDegree_monomial_eq (i : ℕ) {r : R} (r0 : r ≠ 0) : (monomial i r).natDegree = i :=
   letI := Classical.decEq R
-  Eq.trans (natDegree_monomial _ _) (if_neg r0)
+  Eq.trans (natDegree_monomial _ _) (ite_eq_right r0)
 
 theorem coeff_ne_zero_of_eq_degree (hn : degree p = n) : coeff p n ≠ 0 := fun h =>
   mem_support_iff.mp (mem_of_max hn) h
@@ -317,7 +317,7 @@ theorem nextCoeff_C_eq_zero (c : R) : nextCoeff (C c) = 0 := by
 
 theorem nextCoeff_of_natDegree_pos (hp : 0 < p.natDegree) :
     nextCoeff p = p.coeff (p.natDegree - 1) := by
-  rw [nextCoeff, if_neg]
+  rw [nextCoeff, ite_eq_right]
   contrapose! hp
   simpa
 
@@ -415,7 +415,7 @@ theorem leadingCoeff_monomial (a : R) (n : ℕ) : leadingCoeff (monomial n a) = 
   classical
   by_cases ha : a = 0
   · simp only [ha, (monomial n).map_zero, leadingCoeff_zero]
-  · rw [leadingCoeff, natDegree_monomial, if_neg ha, coeff_monomial]
+  · rw [leadingCoeff, natDegree_monomial, ite_eq_right ha, coeff_monomial]
     simp
 
 theorem leadingCoeff_C_mul_X_pow (a : R) (n : ℕ) : leadingCoeff (C a * X ^ n) = a := by

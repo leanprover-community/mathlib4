@@ -20,7 +20,7 @@ TODO: Extend this formula to vector-valued harmonic functions
 
 public section
 
-open Complex InnerProductSpace Metric Real Topology
+open Complex InnerProductSpace Metric Real
 
 variable
   {f : ℂ → ℝ} {c w : ℂ} {R : ℝ}
