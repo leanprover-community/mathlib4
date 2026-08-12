@@ -465,24 +465,20 @@ lemma exists_eq_forall_mem_Icc_eq_integral_forward (hf : IsPeano f t₀ x₀ r L
     ((Tendsto.const_add x₀ ?_).congr (fun n ↦ (tonelliApproximation_eq_integral (φ n) t ht).symm))⟩
   apply intervalIntegral.tendsto_integral_filter_of_dominated_convergence (bound := fun _ ↦ L)
     _ _ intervalIntegrable_const _
-  · apply Eventually.of_forall
-    intro n
+  · filter_upwards with n
     have h_cont := continuousOn_comp_tonelliApproximation_delayedInput hf (φ n)
     rw [uIoc_of_le ht.1]
     exact (h_cont.mono (Ioc_subset_Icc_self.trans
       (Icc_subset_Icc le_rfl ht.2))).aestronglyMeasurable measurableSet_Ioc
-  · apply Eventually.of_forall
-    intro n
-    apply Eventually.of_forall
-    intro s hs
+  · filter_upwards with n
+    filter_upwards with s hs
     have hs := mem_Icc_of_mem_uIoc ht hs
     apply hf.norm_le s ⟨t₀.2.1.trans hs.1, hs.2⟩
     exact mapsTo_tonelliApproximation_delayedInput hf (φ n) hs
   · have h_lim :=
       tendsto_tonelliApproximation_delayedInput_of_tendstoUniformlyOn_tonelliApproximation
         hφ_mono hα_cont hα_tendsto
-    apply Eventually.of_forall
-    intro s hs
+    filter_upwards with s hs
     have hs := mem_Icc_of_mem_uIoc ht hs
     apply Tendsto.comp (hf.continuousOn.continuousWithinAt _)
     · refine tendsto_nhdsWithin_iff.mpr
