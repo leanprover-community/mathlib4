@@ -1,7 +1,11 @@
+module
+
 /-
 manually ported from
 https://github.com/leanprover-community/mathlib/blob/4f4a1c875d0baa92ab5d92f3fb1bb258ad9f3e5b/test/matrix.lean
 -/
+
+public import Lean
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
@@ -9,11 +13,11 @@ import Mathlib.LinearAlgebra.Matrix.Notation
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NormDet
-import Qq
+meta import Mathlib.Data.Fin.VecNotation
+meta import Mathlib.Data.Matrix.Basic
+meta import Qq
 
 open Qq
-
-variable {α β : Type} [Semiring α] [Ring β]
 
 namespace Matrix
 
@@ -113,6 +117,8 @@ section delaborators
 #guard_msgs in #check (!![] : Matrix (Fin 0) (Fin 0) ℕ)
 
 end delaborators
+
+variable {α β : Type} [Semiring α] [Ring β]
 
 example {a a' b b' c c' d d' : α} :
   !![a, b; c, d] + !![a', b'; c', d'] = !![a + a', b + b'; c + c', d + d'] := by
