@@ -391,7 +391,9 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("mapMod", "MapAddMod"),
   ("modObj", "AddModObj"),
   ("yonedaMon", "YonedaAddMon"),
-  ("conGen", "AddConGen")]
+  ("conGen", "AddConGen"),
+  ("unoneD", "unzeroD"),
+  ("unone", "unzero")]
 
 @[inherit_doc GuessName.GuessNameExt]
 initialize guessNameExt : GuessName.GuessNameExt ←

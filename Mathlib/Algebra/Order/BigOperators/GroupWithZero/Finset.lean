@@ -45,6 +45,34 @@ lemma prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i)
     gcongr
     exacts [prod_nonneg h0.2, h0.1.trans h1.1, h1.1, ih h0.2 h1.2]
 
+/-- A finite product of nonnegative monotone functions is monotone. See also
+`Monotone.finsetProd'` for the case of an ordered commutative multiplicative monoid. -/
+theorem _root_.Monotone.finsetProd {γ : Type*} [Preorder γ] {f : ι → γ → R}
+    (hf : ∀ i ∈ s, Monotone (f i)) (hf₀ : ∀ i ∈ s, ∀ x, 0 ≤ f i x) :
+    Monotone fun x ↦ ∏ i ∈ s, f i x :=
+  fun _ _ hab ↦ prod_le_prod (fun i hi ↦ hf₀ i hi _) fun i hi ↦ hf i hi hab
+
+/-- A finite product of functions nonnegative and monotone on `u` is monotone on `u`. See also
+`MonotoneOn.finsetProd'` for the case of an ordered commutative multiplicative monoid. -/
+theorem _root_.MonotoneOn.finsetProd {γ : Type*} [Preorder γ] {u : Set γ} {f : ι → γ → R}
+    (hf : ∀ i ∈ s, MonotoneOn (f i) u) (hf₀ : ∀ i ∈ s, ∀ x ∈ u, 0 ≤ f i x) :
+    MonotoneOn (fun x ↦ ∏ i ∈ s, f i x) u :=
+  fun _ ha _ hb hab ↦ prod_le_prod (fun i hi ↦ hf₀ i hi _ ha) fun i hi ↦ hf i hi ha hb hab
+
+/-- A finite product of nonnegative antitone functions is antitone. See also
+`Antitone.finsetProd'` for the case of an ordered commutative multiplicative monoid. -/
+theorem _root_.Antitone.finsetProd {γ : Type*} [Preorder γ] {f : ι → γ → R}
+    (hf : ∀ i ∈ s, Antitone (f i)) (hf₀ : ∀ i ∈ s, ∀ x, 0 ≤ f i x) :
+    Antitone fun x ↦ ∏ i ∈ s, f i x :=
+  fun _ _ hab ↦ prod_le_prod (fun i hi ↦ hf₀ i hi _) fun i hi ↦ hf i hi hab
+
+/-- A finite product of functions nonnegative and antitone on `u` is antitone on `u`. See also
+`AntitoneOn.finsetProd'` for the case of an ordered commutative multiplicative monoid. -/
+theorem _root_.AntitoneOn.finsetProd {γ : Type*} [Preorder γ] {u : Set γ} {f : ι → γ → R}
+    (hf : ∀ i ∈ s, AntitoneOn (f i) u) (hf₀ : ∀ i ∈ s, ∀ x ∈ u, 0 ≤ f i x) :
+    AntitoneOn (fun x ↦ ∏ i ∈ s, f i x) u :=
+  fun _ ha _ hb hab ↦ prod_le_prod (fun i hi ↦ hf₀ i hi _ hb) fun i hi ↦ hf i hi ha hb hab
+
 /-- If each `f i`, `i ∈ s` belongs to `[0, 1]`, then their product is less than or equal to one.
 See also `Finset.prod_le_one'` for the case of an ordered commutative multiplicative monoid. -/
 lemma prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 := by

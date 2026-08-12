@@ -227,6 +227,7 @@ instance commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
 
 end NonemptyInterval
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance Interval.mulOneClass [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     MulOneClass (Interval α) where
@@ -655,7 +656,7 @@ end Interval
 end Length
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity NonemptyInterval.length _]
