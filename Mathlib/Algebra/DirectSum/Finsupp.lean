@@ -24,7 +24,7 @@ noncomputable section
 
 open DirectSum
 
-open LinearMap Submodule
+open LinearMap
 
 variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
 

@@ -17,7 +17,7 @@ cardinality of a cofinal subset.
 
 public noncomputable section
 
-open Function Cardinal Set Order
+open Cardinal Set Order
 
 universe u v w
 
