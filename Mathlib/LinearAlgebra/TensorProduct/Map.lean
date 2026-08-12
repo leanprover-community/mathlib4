@@ -26,21 +26,17 @@ bilinear, tensor, tensor product
 
 section Semiring
 
-variable {R R₂ R₃ R' R'' : Type*}
-variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃] [Monoid R'] [Semiring R'']
+variable {R R₂ R₃ : Type*}
+variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃]
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-variable {A M N P Q S : Type*}
-variable {M₂ M₃ N₂ N₃ P' P₂ P₃ Q' Q₂ Q₃ : Type*}
+variable {M N P Q S : Type*}
+variable {M₂ M₃ N₂ N₃ P₃ : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [AddCommMonoid S]
-variable [AddCommMonoid P'] [AddCommMonoid Q']
-variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Q₂]
-variable [AddCommMonoid M₃] [AddCommMonoid N₃] [AddCommMonoid P₃] [AddCommMonoid Q₃]
-variable [DistribMulAction R' M]
-variable [Module R'' M]
+variable [AddCommMonoid M₂] [AddCommMonoid N₂]
+variable [AddCommMonoid M₃] [AddCommMonoid N₃] [AddCommMonoid P₃]
 variable [Module R M] [Module R N] [Module R S]
-variable [Module R P'] [Module R Q']
-variable [Module R₂ M₂] [Module R₂ N₂] [Module R₂ P₂] [Module R₂ Q₂]
-variable [Module R₃ M₃] [Module R₃ N₃] [Module R₃ P₃] [Module R₃ Q₃]
+variable [Module R₂ M₂] [Module R₂ N₂]
+variable [Module R₃ M₃] [Module R₃ N₃] [Module R₃ P₃]
 
 variable (M N)
 
@@ -102,9 +98,6 @@ theorem map₂_eq_range_lift_comp_mapIncl (f : P →ₗ[R] Q →ₗ[R] M)
 
 section
 
-variable {P' Q' : Type*}
-variable [AddCommMonoid P'] [Module R P']
-variable [AddCommMonoid Q'] [Module R Q']
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 theorem map_comp (f₂ : M₂ →ₛₗ[σ₂₃] M₃) (g₂ : N₂ →ₛₗ[σ₂₃] N₃)
