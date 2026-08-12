@@ -36,7 +36,7 @@ generating pretopologies.
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
 
@@ -60,7 +60,6 @@ def Cover.toPresieveOver {X : Over S} (𝒰 : Cover.{u} (precoverage P) X.left) 
     Presieve X :=
   Presieve.ofArrows (fun i ↦ (𝒰.X i).asOver S) (fun i ↦ (𝒰.f i).asOver S)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The presieve defined by a `P`-cover of `S`-schemes with `Q`. -/
 def Cover.toPresieveOverProp {X : Q.Over ⊤ S} (𝒰 : Cover.{u} (precoverage P) X.left) [𝒰.Over S]
     (h : ∀ j, Q (𝒰.X j ↘ S)) : Presieve X :=
@@ -178,7 +177,6 @@ lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
     obtain ⟨Y, f, y, hR, hP, hy⟩ := h x
     exact ⟨_, _, ⟨⟨⟨hR, hP⟩⟩⟩, y, hy⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_smallGrothendieckTopology (X : P.Over ⊤ S) (R : Sieve X) :
     R ∈ S.smallGrothendieckTopology P X ↔
       ∃ (𝒰 : Cover.{u} (precoverage P) X.left) (_ : 𝒰.Over S) (h : ∀ j, P (𝒰.X j ↘ S)),

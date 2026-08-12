@@ -76,20 +76,20 @@ section spectrum
 lemma Pi.spectrum_eq [CommSemiring R] [∀ i, Ring (κ i)] [∀ i, Algebra R (κ i)]
     (a : ∀ i, κ i) : spectrum R a = ⋃ i, spectrum R (a i) := by
   apply compl_injective
-  simp_rw [spectrum, Set.compl_iUnion, compl_compl, resolventSet, Set.iInter_setOf,
+  simp_rw [spectrum, Set.compl_iUnion, compl_compl, resolventSet, Set.iInter_ofPred,
     Pi.isUnit_iff, sub_apply, algebraMap_apply]
 
 lemma Prod.spectrum_eq [CommSemiring R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
     (a : A) (b : B) : spectrum R (⟨a, b⟩ : A × B) = spectrum R a ∪ spectrum R b := by
   apply compl_injective
-  simp_rw [spectrum, Set.compl_union, compl_compl, resolventSet, ← Set.setOf_and,
+  simp_rw [spectrum, Set.compl_union, compl_compl, resolventSet, ← Set.ofPred_and,
     Prod.isUnit_iff, algebraMap_apply, mk_sub_mk]
 
 lemma Pi.quasispectrum_eq [Nonempty ι] [CommSemiring R] [∀ i, NonUnitalRing (κ i)]
     [∀ i, Module R (κ i)] (a : ∀ i, κ i) :
     quasispectrum R a = ⋃ i, quasispectrum R (a i) := by
   ext r
-  simp only [quasispectrum, Set.mem_setOf_eq, Set.mem_iUnion]
+  simp only [quasispectrum, Set.mem_ofPred_eq, Set.mem_iUnion]
   by_cases hr : IsUnit r
   · lift r to Rˣ using hr with r' hr'
     simp [isQuasiregular_pi_iff]
@@ -100,7 +100,8 @@ lemma Prod.quasispectrum_eq [CommSemiring R] [NonUnitalRing A] [NonUnitalRing B]
     quasispectrum R (⟨a, b⟩ : A × B) = quasispectrum R a ∪ quasispectrum R b := by
   apply compl_injective
   ext r
-  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall, not_not, Set.mem_union]
+  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_ofPred_eq, not_forall, not_not,
+    Set.mem_union]
   by_cases hr : IsUnit r
   · lift r to Rˣ using hr with r' hr'
     simp [isQuasiregular_prod_iff]

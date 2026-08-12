@@ -180,7 +180,7 @@ instance : MulRightMono α where
 theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z where
   mp h1 := by
     grw [h1]
-    simp_all only [leftMulResiduation, sSup_mul_distrib, Set.mem_setOf_eq,
+    simp_all only [leftMulResiduation, sSup_mul_distrib, Set.mem_ofPred_eq,
       iSup_le_iff, implies_true]
   mpr h1 := le_sSup h1
 
@@ -188,7 +188,7 @@ theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z wher
 theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z where
   mp h1 := by
     grw [h1]
-    simp_all only [rightMulResiduation, mul_sSup_distrib, Set.mem_setOf_eq,
+    simp_all only [rightMulResiduation, mul_sSup_distrib, Set.mem_ofPred_eq,
       iSup_le_iff, implies_true]
   mpr h1 := le_sSup h1
 
