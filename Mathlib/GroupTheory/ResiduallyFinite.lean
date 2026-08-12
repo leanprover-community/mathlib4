@@ -78,7 +78,9 @@ theorem residuallyFinite_iff_exists_finiteIndex :
 
 /-- If `G` is residually finite, for every pair of distinct elements `g`, `h` there exists a finite
 index normal subgroup `H` such that `g` and `h` differ in the quotient `G ⧸ H`. -/
-@[to_additive]
+@[to_additive /-- If `G` is residually finite, for every pair of distinct elements `g`, `h` there
+exists a finite index normal additive subgroup `H` such that `g` and `h` differ in the quotient
+`G ⧸ H`. -/]
 theorem exists_finiteIndexNormalSubgroup_of_residuallyFinite [ResiduallyFinite G] (g h : G)
     (hgh : g ≠ h) : ∃ H : FiniteIndexNormalSubgroup G, (g : G ⧸ H.toSubgroup) ≠ ↑h := by
   obtain ⟨H, hH⟩ :=
@@ -87,7 +89,8 @@ theorem exists_finiteIndexNormalSubgroup_of_residuallyFinite [ResiduallyFinite G
 
 /-- `G` is residually finite if for every element `g` not equal to `1` there exists a group
 homomorphism `f` to a finite group `H` such that `f g ≠ 1`. -/
-@[to_additive]
+@[to_additive /-- `G` is residually finite if for every element `g` not equal to `0` there exists an
+additive group homomorphism `f` to a finite additive group `H` such that `f g ≠ 0`. -/]
 theorem residuallyFinite_of_forall_exists_finite_monoidHom.{u}
     (h : ∀ g : G, g ≠ 1 → ∃ (H : Type u) (_ : Group H) (_ : Finite H) (f : G →* H), f g ≠ 1) :
     ResiduallyFinite G := by
