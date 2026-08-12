@@ -11,7 +11,6 @@ public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.MeasureTheory.Group.IntegralConvolution
 public import Mathlib.MeasureTheory.Integral.Pi
 public import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
-public import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 
 /-!
 # Characteristic Function of a Finite Measure
