@@ -55,6 +55,7 @@ instance (P : ObjectProperty C) [P.IsClosedUnderFiniteColimits]
   obtain ⟨G', _, _, ⟨e⟩⟩ := Finite.exists_type_univ_nonempty_mulEquiv G
   rw [isClosedUnderColimitsOfShape_iff_of_equivalence _ e.toSingleObjEquiv]
   infer_instance
+
 namespace IsGaloisSubcategory
 
 attribute [instance] isClosedUnderLimitsOfShape_discrete_pEmpty
