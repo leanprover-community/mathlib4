@@ -407,6 +407,19 @@ def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
   right_triangle_components R :=
     Scheme.Hom.ext' <| locallyRingedSpaceAdjunction.right_triangle_components R
 
+/-- The ring homomorphism `R ⟶ Γ(X, ⊤)` induced by a morphism `f : X ⟶ Spec R`, obtained from
+`Scheme.Hom.appTop` by identifying `Γ(Spec R, ⊤)` with `R` via `Scheme.ΓSpecIso`.
+
+This is one direction of the bijection `(X ⟶ Spec R) ≃ (R ⟶ Γ(X, ⊤))` coming from the Γ–Spec
+adjunction; compare `Spec.homEquiv` for the case when `X` is itself affine. -/
+noncomputable def _root_.AlgebraicGeometry.Scheme.Hom.appTopOfSpec {X : Scheme.{u}}
+    {R : CommRingCat.{u}} (f : X ⟶ Spec R) : R ⟶ Γ(X, ⊤) :=
+  (Scheme.ΓSpecIso R).inv ≫ f.appTop
+
+lemma _root_.AlgebraicGeometry.Scheme.Hom.appTopOfSpec_apply {X : Scheme.{u}}
+    {R : CommRingCat.{u}} (f : X ⟶ Spec R) (r : R) :
+    f.appTopOfSpec r = f.appTop ((Scheme.ΓSpecIso R).inv r) := rfl
+
 /-- Given `f, g : X ⟶ Spec(R)`, if the two induced maps `R ⟶ Γ(X)` are equal, then `f = g`. -/
 lemma _root_.AlgebraicGeometry.ext_to_Spec {X : Scheme} {R : Type*} [CommRing R]
     {f g : X ⟶ Spec (.of R)}

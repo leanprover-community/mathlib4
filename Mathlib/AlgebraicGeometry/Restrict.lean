@@ -206,6 +206,23 @@ instance ΓRestrictAlgebra {X : Scheme.{u}} (U : X.Opens) :
     Algebra Γ(X, ⊤) Γ(U, ⊤) :=
   U.ι.appTop.hom.toAlgebra
 
+/-- Restriction of a global section to an open `U`, as a ring homomorphism.
+
+This is not made an `Algebra` instance, unlike `ΓRestrictAlgebra`: at `U = ⊤` the two sides are
+the same ring and it would clash with `Algebra.id`. -/
+noncomputable def globalRestrict {X : Scheme.{u}} (U : X.Opens) : Γ(X, ⊤) →+* Γ(X, U) :=
+  (X.presheaf.map U.leTop.op).hom
+
+lemma globalRestrict_apply {X : Scheme.{u}} (U : X.Opens) (r : Γ(X, ⊤)) :
+    globalRestrict U r = X.presheaf.map U.leTop.op r := rfl
+
+/-- Restricting a global section is compatible with further restriction. -/
+lemma map_globalRestrict {X : Scheme.{u}} {U V : X.Opens} (i : U ⟶ V) (r : Γ(X, ⊤)) :
+    X.presheaf.map i.op (globalRestrict V r) = globalRestrict U r := by
+  rw [globalRestrict_apply, globalRestrict_apply, ← ConcreteCategory.comp_apply,
+    ← X.presheaf.map_comp]
+  congr 1
+
 set_option backward.isDefEq.respectTransparency false in
 /-- A variant where `r` is first mapped into `Γ(X, U)` before taking the basic open. -/
 lemma Scheme.Opens.ι_image_basicOpen' (r : Γ(U, ⊤)) :

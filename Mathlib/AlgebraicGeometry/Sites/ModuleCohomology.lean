@@ -20,7 +20,7 @@ in its second variable. No morphism to an affine scheme is involved; see
 `AlgebraicGeometry.Scheme.Modules.globalSectionsModule`.
 
 If `X` is a scheme over `R` via `f : X ⟶ Spec R`, an `R`-module structure is obtained from this by
-restriction of scalars along `globalSectionsRingHom f : R →+* Γ(X, ⊤)`; see `cohomologyModule`.
+restriction of scalars along `f.appTopOfSpec : R ⟶ Γ(X, ⊤)`; see `cohomologyModule`.
 
 ## TODO
 
@@ -66,15 +66,15 @@ variable {R : CommRingCat} (f : X ⟶ Spec R)
 
 /-- The `R`-module structure on the degree-`n` cohomology of the abelian sheaf underlying an
 `𝒪_X`-module `F`, for `X` a scheme over `R` via `f : X ⟶ Spec R`. It is restriction of scalars of
-the intrinsic `Γ(X, ⊤)`-action along `globalSectionsRingHom f`. -/
+the intrinsic `Γ(X, ⊤)`-action along `f.appTopOfSpec`. -/
 @[reducible] noncomputable def cohomologyModule (n : ℕ) : Module R (F.H n) :=
   letI := F.globalSectionsModule n
-  Module.compHom _ (globalSectionsRingHom f)
+  Module.compHom _ f.appTopOfSpec.hom
 
 lemma cohomologyModule_smul_def (n : ℕ) (r : R) (x : F.H n) :
     letI := F.cohomologyModule f n
     letI := F.globalSectionsModule n
-    r • x = globalSectionsRingHom f r • x := rfl
+    r • x = f.appTopOfSpec r • x := rfl
 
 /--
 For a morphism `f : X ⟶ Spec R` and a sheaf of modules `F : X.Modules`, `F.h f n` gives the finrank

@@ -38,33 +38,6 @@ variable (X) in
 /-- The category of sheaves of modules over a scheme. -/
 def Modules := SheafOfModules.{u} X.ringCatSheaf
 
-section GlobalSections
-
-/-- Restriction of a global section to an open `U`, as a ring homomorphism. -/
-noncomputable def globalRestrict (U : X.Opens) : Γ(X, ⊤) →+* Γ(X, U) :=
-  (X.presheaf.map U.leTop.op).hom
-
-lemma globalRestrict_apply (U : X.Opens) (r : Γ(X, ⊤)) :
-    globalRestrict U r = X.presheaf.map U.leTop.op r := rfl
-
-/-- Restricting a global section is compatible with further restriction. -/
-lemma map_globalRestrict {U V : X.Opens} (i : U ⟶ V) (r : Γ(X, ⊤)) :
-    X.presheaf.map i.op (globalRestrict V r) = globalRestrict U r := by
-  rw [globalRestrict_apply, globalRestrict_apply, ← ConcreteCategory.comp_apply,
-    ← X.presheaf.map_comp]
-  congr 1
-
-/-- A morphism `f : X ⟶ Spec R` induces a ring homomorphism `R →+* Γ(X, ⊤)` via the
-Γ–Spec adjunction (`ΓSpecIso`). Composing with this is how an `R`-module structure is obtained
-from the intrinsic `Γ(X, ⊤)`-module structures below. -/
-noncomputable def globalSectionsRingHom {R : CommRingCat} (f : X ⟶ Spec R) : R →+* Γ(X, ⊤) :=
-  ((Scheme.ΓSpecIso R).inv ≫ f.appTop).hom
-
-lemma globalSectionsRingHom_apply {R : CommRingCat} (f : X ⟶ Spec R) (r : R) :
-    globalSectionsRingHom f r = ((Scheme.ΓSpecIso R).inv ≫ f.appTop).hom r := rfl
-
-end GlobalSections
-
 namespace Modules
 
 /-- Morphisms between `𝒪ₓ`-modules. Use `Hom.app` to act on sections. -/
@@ -671,7 +644,7 @@ noncomputable def smulNatTrans (r : Γ(X, ⊤)) :
 underlying abelian sheaf of the `𝒪_X`-module `F`.
 
 This is the intrinsic action: no morphism to an affine scheme is involved. An action of a ring `R`
-on a scheme `X` over `Spec R` is obtained by composing with `globalSectionsRingHom`. -/
+on a scheme `X` over `Spec R` is obtained by composing with `Scheme.Hom.appTopOfSpec`. -/
 noncomputable def smulEnd :
     Γ(X, ⊤) →+* CategoryTheory.End ((SheafOfModules.toSheaf _).obj F) where
   toFun r := Sheaf.homEquiv.symm (smulNatTrans F r)
