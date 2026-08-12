@@ -512,12 +512,6 @@ lemma dist_secondInter_point_eq_dist_secondInter_excenter (signs : Finset (Fin 3
         (t.excenter signs) := by
   let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
   let t' : Triangle ℝ S := t.restrict S le_rfl
-  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
-    simp_rw [S]
-    rw [direction_affineSpan, t.independent.finrank_vectorSpan]
-    simp⟩
-  have : Module.Oriented ℝ S.direction (Fin 2) :=
-    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
   suffices dist ((t'.circumsphere.secondInter (t'.points i₁)
         (t'.excenter signs -ᵥ t'.points i₁)) : P)
       (t'.points i₂) =
