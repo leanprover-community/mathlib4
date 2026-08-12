@@ -217,7 +217,7 @@ variable (R)
 
 /-- Any Bézout domain is a GCD domain. This is not an instance since `GCDMonoid` contains data,
 and this might not be how we would like to construct it. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def toGCDDomain [IsBezout R] [IsCancelMulZero R] [DecidableEq R] : GCDMonoid R :=
   gcdMonoidOfGCD (gcd · ·) (gcd_dvd_left · ·) (gcd_dvd_right · ·) dvd_gcd
 
@@ -299,7 +299,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
                     { x : R | x ∈ S ∧ x ≠ 0 } :=
                   fun h₁ => WellFounded.not_lt_min wf _ h₁ (mod_lt x hmin.2)
                 have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h = 0 := by
-                  simp only [not_and_or, Set.mem_setOf_eq, not_ne_iff] at this
+                  simp only [not_and_or, Set.mem_ofPred_eq, not_ne_iff] at this
                   exact this.neg_resolve_left <| (mod_mem_iff hmin.1).2 hx
                 simp [*]),
               fun hx =>
@@ -330,6 +330,11 @@ theorem isMaximal_of_irreducible [CommSemiring R] [IsPrincipalIdealRing R] {p : 
       rw [Ideal.submodule_span_eq, Ideal.submodule_span_eq,
         Ideal.span_singleton_le_span_singleton, IsUnit.mul_right_dvd hb]⟩⟩
 
+theorem _root_.Ideal.irreducible_iff_isMaximal_span_singleton
+    [CommSemiring R] [IsPrincipalIdealRing R] [IsDomain R] {p : R} (hp : p ≠ 0) :
+    Irreducible p ↔ Ideal.IsMaximal (span R ({p} : Set R)) :=
+  ⟨isMaximal_of_irreducible, Ideal.irreducible_of_isMaximal_span_singleton hp⟩
+
 variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 
 section
@@ -341,7 +346,7 @@ noncomputable def factors (a : R) : Multiset R :=
 
 theorem factors_spec (a : R) (h : a ≠ 0) :
     (∀ b ∈ factors a, Irreducible b) ∧ Associated (factors a).prod a := by
-  unfold factors; rw [dif_neg h]
+  unfold factors; rw [dite_eq_right h]
   exact Classical.choose_spec (WfDvdMonoid.exists_factors a h)
 
 theorem ne_zero_of_mem_factors {R : Type v} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
@@ -482,7 +487,7 @@ theorem Prime.coprime_iff_not_dvd {p n : R} (hp : Prime p) : IsCoprime p n ↔ �
 theorem exists_associated_pow_of_mul_eq_pow' {a b c : R} (hab : IsCoprime a b) {k : ℕ}
     (h : a * b = c ^ k) : ∃ d : R, Associated (d ^ k) a := by
   classical
-  letI := IsBezout.toGCDDomain R
+  let := IsBezout.toGCDDomain R
   exact exists_associated_pow_of_mul_eq_pow ((gcd_isUnit_iff _ _).mpr hab) h
 
 theorem exists_associated_pow_of_associated_pow_mul {a b c : R} (hab : IsCoprime a b) {k : ℕ}

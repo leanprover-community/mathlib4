@@ -226,7 +226,7 @@ morphisms for some other reason, for example from additivity. Library code that 
 the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
 asks for an instance of `HasZeroObject`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsZero.hasZeroMorphisms {O : C} (hO : IsZero O) : HasZeroMorphisms C where
   zero X Y := { zero := hO.from_ X ≫ hO.to_ Y }
   zero_comp X {Y Z} f := by
@@ -254,7 +254,7 @@ morphisms for some other reason, for example from additivity. Library code that 
 the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
 asks for an instance of `HasZeroObject`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
   zero X _ := { zero := (default : X ⟶ 0) ≫ default }
   zero_comp X {Y Z} f := by
@@ -547,6 +547,7 @@ def imageZero {X Y : C} : image (0 : X ⟶ Y) ≅ 0 :=
 def imageZero' {X Y : C} {f : X ⟶ Y} (h : f = 0) [HasImage f] : image f ≅ 0 :=
   image.eqToIso h ≪≫ imageZero
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem image.ι_zero {X Y : C} [HasImage (0 : X ⟶ Y)] : image.ι (0 : X ⟶ Y) = 0 := by

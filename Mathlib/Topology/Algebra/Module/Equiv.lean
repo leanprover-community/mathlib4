@@ -861,6 +861,7 @@ section AutRing
 
 variable (R : Type*) [Semiring R] [TopologicalSpace R] [ContinuousMul R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Continuous linear equivalences `R ≃L[R] R` are enumerated by `Rˣ`. -/
 def unitsEquivAut : Rˣ ≃ R ≃L[R] R where
   toFun u :=
@@ -1079,7 +1080,7 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
 /-- By definition, if `f` is not invertible then `inverse f = 0`. -/
 @[simp] lemma inverse_of_not_isInvertible
     {f : M →L[R] M₂} (hf : ¬ f.IsInvertible) : f.inverse = 0 :=
-  dif_neg hf
+  dite_eq_right hf
 
 @[simp]
 theorem isInvertible_zero_iff :

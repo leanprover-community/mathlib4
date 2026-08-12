@@ -80,6 +80,7 @@ theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) :
 namespace NatTrans
 
 /-- `NatTrans.id F` is the identity natural transformation on a functor `F`. -/
+@[implicit_reducible]
 protected def id (F : C ⥤ D) : NatTrans F F where app X := 𝟙 (F.obj X)
 
 @[simp]
@@ -96,7 +97,7 @@ section
 variable {F G H : C ⥤ D}
 
 /-- `vcomp α β` is the vertical compositions of natural transformations. -/
-@[to_dual self (reorder := F H, α β)]
+@[implicit_reducible, to_dual self (reorder := F H, α β)]
 def vcomp (α : NatTrans F G) (β : NatTrans G H) : NatTrans F H where
   app X := α.app X ≫ β.app X
 

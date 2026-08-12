@@ -55,13 +55,14 @@ open Module Polynomial
 
 variable {D}
 
-@[implicit_reducible]
+@[instance_reducible]
 private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
     [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
     mul_comm := fun x y ↦ Subtype.ext <| hD hR x.2 y.2 }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- We prove that if every subring of `D` is central, then so is `D`. -/
 private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ := by
   classical
@@ -69,7 +70,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   set Z := Subring.center D
   -- We proceed by contradiction; that is, we assume the center is strictly smaller than `D`.
   by_contra! hZ
-  letI : Field Z := hD.field hZ.lt_top
+  let : Field Z := hD.field hZ.lt_top
   set q := card Z with card_Z
   have hq : 1 < q := by rw [card_Z]; exact one_lt_card
   let n := finrank Z D
@@ -118,12 +119,12 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
     by_contra! hZx
     refine (ConjClasses.mk_bijOn (Dˣ)).mapsTo (Set.subset_center_units ?_) hx
     exact Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _
-  letI : Field Zx := hD.field hZx.lt_top
-  letI : Algebra Z Zx := (Subring.inclusion <| Subring.center_le_centralizer {(x : D)}).toAlgebra
+  let : Field Zx := hD.field hZx.lt_top
+  let : Algebra Z Zx := (Subring.inclusion <| Subring.center_le_centralizer {(x : D)}).toAlgebra
   let d := finrank Z Zx
   have card_Zx : card Zx = q ^ d := Module.card_eq_pow_finrank
   have h1qd : 1 ≤ q ^ d := by rw [← card_Zx]; exact card_pos
-  haveI : IsScalarTower Z Zx D := ⟨fun x y z ↦ mul_assoc _ _ _⟩
+  have : IsScalarTower Z Zx D := ⟨fun x y z ↦ mul_assoc _ _ _⟩
   rw [card_units, card_Zx]
   push_cast [h1qd, h1qn]
   apply Int.dvd_div_of_mul_dvd
@@ -173,5 +174,4 @@ theorem Finite.isDomain_to_isField (D : Type*) [Finite D] [Ring D] [IsDomain D] 
   classical
   cases nonempty_fintype D
   let _ := Fintype.divisionRingOfIsDomain D
-  let _ := littleWedderburn D
   exact Field.toIsField D

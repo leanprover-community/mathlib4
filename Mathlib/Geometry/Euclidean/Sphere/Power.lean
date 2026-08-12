@@ -198,7 +198,7 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
   have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
     rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
     simp⟩
-  letI : Module.Oriented ℝ S.direction (Fin 2) :=
+  let : Module.Oriented ℝ S.direction (Fin 2) :=
     ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
   have hncol : ¬ Collinear ℝ {p₁', p', p₃'} := by
     rw [← affineIndependent_iff_not_collinear_set,

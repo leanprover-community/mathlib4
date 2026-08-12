@@ -44,9 +44,6 @@ lemma W_eq_isLocal_range_sheafToPresheaf_obj :
   · rintro ⟨F, rfl⟩
     exact F.property
 
-@[deprecated (since := "2025-11-20")] alias W_eq_W_range_sheafToPresheaf_obj :=
-  W_eq_isLocal_range_sheafToPresheaf_obj
-
 lemma W_sheafToPresheaf_map_iff_isIso {F₁ F₂ : Sheaf J A} (φ : F₁ ⟶ F₂) :
     J.W ((sheafToPresheaf J A).map φ) ↔ IsIso φ := by
   rw [W_eq_isLocal_range_sheafToPresheaf_obj,

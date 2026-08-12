@@ -141,6 +141,7 @@ def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
 
 variable (G : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance functoriality_full [G.PreservesZeroMorphisms] [G.Full] [G.Faithful] :
     (functoriality F G).Full where
   map_surjective t :=
@@ -274,6 +275,7 @@ def whisker {f : J → C} (c : Bicone f) (g : K ≃ J) : Bicone (f ∘ g) where
     simp only [c.ι_π]
     split_ifs with h h' h' <;> simp [Equiv.apply_eq_iff_eq g] at h h' <;> tauto
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Taking the cone of a whiskered bicone results in a cone isomorphic to one gained
 by whiskering the cone and postcomposing with a suitable isomorphism. -/
@@ -283,6 +285,7 @@ def whiskerToCone {f : J → C} (c : Bicone f) (g : K ≃ J) :
         (c.toCone.whisker (Discrete.functor (Discrete.mk ∘ g))) :=
   Cone.ext (Iso.refl _) (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Taking the cocone of a whiskered bicone results in a cone isomorphic to one gained
 by whiskering the cocone and precomposing with a suitable isomorphism. -/
@@ -296,11 +299,11 @@ def whiskerToCocone {f : J → C} (c : Bicone f) (g : K ≃ J) :
 noncomputable def whiskerIsBilimitIff {f : J → C} (c : Bicone f) (g : K ≃ J) :
     (c.whisker g).IsBilimit ≃ c.IsBilimit := by
   refine equivOfSubsingletonOfSubsingleton (fun hc => ⟨?_, ?_⟩) fun hc => ⟨?_, ?_⟩
-  · let this := IsLimit.ofIsoLimit hc.isLimit (Bicone.whiskerToCone c g)
-    let this := (IsLimit.postcomposeHomEquiv (Discrete.functorComp f g).symm _) this
+  · let := IsLimit.ofIsoLimit hc.isLimit (Bicone.whiskerToCone c g)
+    let := (IsLimit.postcomposeHomEquiv (Discrete.functorComp f g).symm _) this
     exact IsLimit.ofWhiskerEquivalence (Discrete.equivalence g) this
-  · let this := IsColimit.ofIsoColimit hc.isColimit (Bicone.whiskerToCocone c g)
-    let this := (IsColimit.precomposeHomEquiv (Discrete.functorComp f g) _) this
+  · let := IsColimit.ofIsoColimit hc.isColimit (Bicone.whiskerToCocone c g)
+    let := (IsColimit.precomposeHomEquiv (Discrete.functorComp f g) _) this
     exact IsColimit.ofWhiskerEquivalence (Discrete.equivalence g) this
   · apply IsLimit.ofIsoLimit _ (Bicone.whiskerToCone c g).symm
     apply (IsLimit.postcomposeHomEquiv (Discrete.functorComp f g).symm _).symm _
@@ -391,7 +394,7 @@ theorem hasBiproductsOfShape_of_equiv {K : Type w'} [HasBiproductsOfShape K C] (
 instance (priority := 100) hasBiproductsOfShape_finite [HasFiniteBiproducts C] [Finite J] :
     HasBiproductsOfShape J C := by
   rcases Finite.exists_equiv_fin J with ⟨n, ⟨e⟩⟩
-  haveI : HasBiproductsOfShape (Fin n) C := HasFiniteBiproducts.out n
+  have : HasBiproductsOfShape (Fin n) C := HasFiniteBiproducts.out n
   exact hasBiproductsOfShape_of_equiv C e
 
 instance (priority := 100) hasFiniteProducts_of_hasFiniteBiproducts [HasFiniteBiproducts C] :
@@ -690,6 +693,7 @@ lemma biproduct.whiskerEquiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ 
     · rintro rfl
       simp at h
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local simp] Sigma.forall in
 instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
@@ -749,10 +753,10 @@ theorem biproduct.fromSubtype_π [DecidablePred p] (j : J) :
   ext i
   rw [biproduct.fromSubtype, biproduct.ι_desc_assoc, biproduct.ι_π]
   by_cases h : p j
-  · rw [dif_pos h, biproduct.ι_π]
+  · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
     exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
-  · rw [dif_neg h, dif_neg (show (i : J) ≠ j from fun h₂ => h (h₂ ▸ i.2)), comp_zero]
+  · rw [dite_eq_right h, dite_eq_right (show (i : J) ≠ j from fun h₂ => h (h₂ ▸ i.2)), comp_zero]
 
 theorem biproduct.fromSubtype_eq_lift [DecidablePred p] :
     biproduct.fromSubtype f p =
@@ -783,10 +787,10 @@ theorem biproduct.ι_toSubtype [DecidablePred p] (j : J) :
   ext i
   rw [biproduct.toSubtype, Category.assoc, biproduct.lift_π, biproduct.ι_π]
   by_cases h : p j
-  · rw [dif_pos h, biproduct.ι_π]
+  · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
     exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
-  · rw [dif_neg h, dif_neg (show j ≠ i from fun h₂ => h (h₂.symm ▸ i.2)), zero_comp]
+  · rw [dite_eq_right h, dite_eq_right (show j ≠ i from fun h₂ => h (h₂.symm ▸ i.2)), zero_comp]
 
 theorem biproduct.toSubtype_eq_desc [DecidablePred p] :
     biproduct.toSubtype f p =
@@ -844,8 +848,8 @@ def biproduct.isLimitFromSubtype :
       rw [KernelFork.ι_ofι, Category.assoc, Category.assoc,
         biproduct.toSubtype_fromSubtype_assoc, biproduct.map_π]
       rcases Classical.em (i = j) with (rfl | h)
-      · rw [if_neg (Classical.not_not.2 rfl), comp_zero, comp_zero, KernelFork.condition]
-      · rw [if_pos (Ne.symm h), Category.comp_id], by
+      · rw [ite_eq_right (Classical.not_not.2 rfl), comp_zero, comp_zero, KernelFork.condition]
+      · rw [ite_eq_left (Ne.symm h), Category.comp_id], by
       intro m hm
       rw [← hm, KernelFork.ι_ofι, Category.assoc, biproduct.fromSubtype_toSubtype]
       exact (Category.comp_id _).symm⟩
@@ -870,8 +874,8 @@ def biproduct.isColimitToSubtype :
       apply biproduct.hom_ext'; intro j
       rw [CokernelCofork.π_ofπ, biproduct.toSubtype_fromSubtype_assoc, biproduct.ι_map_assoc]
       rcases Classical.em (i = j) with (rfl | h)
-      · rw [if_neg (Classical.not_not.2 rfl), zero_comp, CokernelCofork.condition]
-      · rw [if_pos (Ne.symm h), Category.id_comp], by
+      · rw [ite_eq_right (Classical.not_not.2 rfl), zero_comp, CokernelCofork.condition]
+      · rw [ite_eq_left (Ne.symm h), Category.id_comp], by
       intro m hm
       rw [← hm, CokernelCofork.π_ofπ, ← Category.assoc, biproduct.fromSubtype_toSubtype]
       exact (Category.id_comp _).symm⟩
@@ -904,7 +908,7 @@ def kernelForkBiproductToSubtype (p : K → Prop) :
         ext j k
         simp only [Category.assoc, biproduct.ι_fromSubtype_assoc, biproduct.ι_toSubtype_assoc,
           comp_zero, zero_comp]
-        rw [dif_neg k.2]
+        rw [dite_eq_right k.2]
         simp only [zero_comp])
   isLimit :=
     KernelFork.IsLimit.ofι _ _ (fun {_} g _ => g ≫ biproduct.toSubtype f pᶜ)
@@ -942,7 +946,7 @@ def cokernelCoforkBiproductFromSubtype (p : K → Prop) :
         ext j k
         simp only [Category.assoc, Pi.compl_apply, biproduct.ι_fromSubtype_assoc,
           biproduct.ι_toSubtype_assoc, comp_zero, zero_comp]
-        rw [dif_neg]
+        rw [dite_eq_right]
         · simp only [zero_comp]
         · exact not_not.mpr k.2)
   isColimit :=
@@ -1043,6 +1047,7 @@ theorem biproduct.conePointUniqueUpToIso_inv (f : J → C) [HasBiproduct f] {b :
   rw [Category.assoc, IsLimit.conePointUniqueUpToIso_inv_comp, Bicone.toCone_π_app,
     biproduct.bicone_π, biproduct.ι_desc, biproduct.ι_π, b.toCone_π_app, b.ι_π]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Biproducts are unique up to isomorphism. This already follows because bilimits are limits,
 but in the case of biproducts we can give an isomorphism with particularly nice definitional
 properties, namely that `biproduct.lift b.π` and `biproduct.desc b.ι` are inverses of each

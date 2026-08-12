@@ -83,6 +83,7 @@ variable (C)
 
 attribute [local simp] XIsoOfEq_hom_naturality
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The shift functor by `n` on `CochainComplex C ℤ` identifies to the identity
 functor when `n = 0`. -/
@@ -111,6 +112,7 @@ def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂) :
 
 attribute [local simp] XIsoOfEq
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : HasShift (CochainComplex C ℤ) ℤ := hasShiftMk _ _
   { F := shiftFunctor C
@@ -127,23 +129,28 @@ instance (n : ℤ) {R : Type*} [Ring R] [Linear R C] :
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma shiftFunctor_obj_X' (K : CochainComplex C ℤ) (n p : ℤ) :
     ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).obj K).X p = K.X (p + n) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma shiftFunctor_map_f' {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n p : ℤ) :
     ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).map φ).f p = φ.f (p + n) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma shiftFunctor_obj_d' (K : CochainComplex C ℤ) (n i j : ℤ) :
     ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).obj K).d i j =
       n.negOnePow • K.d _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma shiftFunctorAdd_inv_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
     ((shiftFunctorAdd (CochainComplex C ℤ) a b).inv.app K).f n =
       (K.XIsoOfEq (by dsimp; rw [add_comm a, add_assoc])).hom := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma shiftFunctorAdd_hom_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
     ((shiftFunctorAdd (CochainComplex C ℤ) a b).hom.app K).f n =
       (K.XIsoOfEq (by dsimp; rw [add_comm a, add_assoc])).hom := by
@@ -175,6 +182,7 @@ lemma XIsoOfEq_shift (K : CochainComplex C ℤ) (n : ℤ) {p q : ℤ} (hpq : p =
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma shiftFunctorAdd'_eq (a b c : ℤ) (h : a + b = c) :
     CategoryTheory.shiftFunctorAdd' (CochainComplex C ℤ) a b c h =
       shiftFunctorAdd' C a b c h := by
@@ -206,6 +214,7 @@ variable (C)
 
 attribute [local simp] XIsoOfEq_hom_naturality
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Shifting cochain complexes by `n` and evaluating in a degree `i` identifies
 to the evaluation in degree `i'` when `n + i = i'`. -/

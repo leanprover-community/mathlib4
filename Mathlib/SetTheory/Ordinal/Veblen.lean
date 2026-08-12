@@ -68,11 +68,11 @@ termination_by o
 
 @[simp]
 theorem veblenWith_zero (f : Ordinal → Ordinal) : veblenWith f 0 = f := by
-  rw [veblenWith, if_pos rfl]
+  rw [veblenWith, ite_eq_left rfl]
 
 theorem veblenWith_of_ne_zero (f : Ordinal → Ordinal) (h : o ≠ 0) :
     veblenWith f o = derivFamily fun x : Iio o ↦ veblenWith f x.1 := by
-  rw [veblenWith, if_neg h]
+  rw [veblenWith, ite_eq_right h]
 
 /-- `veblenWith f o` is always normal for `o ≠ 0`. See `isNormal_veblenWith` for a version which
 assumes `IsNormal f`. -/
@@ -89,9 +89,6 @@ theorem isNormal_veblenWith (o : Ordinal) : IsNormal (veblenWith f o) := by
   obtain rfl | h := eq_or_ne o 0
   · rwa [veblenWith_zero]
   · exact isNormal_veblenWith' f h
-
-@[deprecated (since := "2025-12-25")]
-protected alias IsNormal.veblenWith := isNormal_veblenWith
 
 theorem mem_range_veblenWith (h : o ≠ 0) :
     a ∈ range (veblenWith f o) ↔ ∀ b < o, veblenWith f b a = a := by
@@ -212,9 +209,6 @@ theorem isNormal_veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
     rw [veblenWith_veblenWith_of_lt hf]
     rw [lt_succ_iff]
     exact le_max_left _ b
-
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.veblenWith_zero := isNormal_veblenWith_zero
 
 theorem veblenWith_veblenWith_eq_veblenWith_iff (h : o₂ ≤ o₁) :
     veblenWith f o₁ (veblenWith f o₂ a) = veblenWith f o₂ a ↔ veblenWith f o₁ a = a := by
