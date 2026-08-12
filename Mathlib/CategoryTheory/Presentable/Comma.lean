@@ -39,16 +39,22 @@ variable [F₁.IsCardinalAccessible κ]
 
 instance : HasCardinalFilteredColimits (Comma F₁ F₂) κ where
   hasColimitsOfShape J _ _ := by
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C₁ κ J
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C₂ κ J
     have := Functor.preservesColimitsOfShape_of_isCardinalAccessible F₁ κ J
     infer_instance
 
 instance : (Comma.fst F₁ F₂).IsCardinalAccessible κ where
   preservesColimitOfShape J _ _ := by
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C₁ κ J
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C₂ κ J
     have := Functor.preservesColimitsOfShape_of_isCardinalAccessible F₁ κ J
     infer_instance
 
 instance : (Comma.snd F₁ F₂).IsCardinalAccessible κ where
   preservesColimitOfShape J _ _ := by
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C₁ κ J
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C₂ κ J
     have := Functor.preservesColimitsOfShape_of_isCardinalAccessible F₁ κ J
     infer_instance
 
@@ -66,6 +72,8 @@ lemma isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
     IsCardinalPresentable (Comma.mk _ _ f) κ :=
   .mk (fun J _ _ G c hc ↦ by
     have := isFiltered_of_isCardinalFiltered J κ
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C₁ κ J
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C₂ κ J
     have := Functor.preservesColimitsOfShape_of_isCardinalAccessible F₁ κ J
     have := Functor.preservesColimitsOfShape_of_isCardinalAccessible F₂ κ J
     refine ⟨fun g ↦ ?_, fun j f₁ f₂ hf ↦ ?_⟩
@@ -216,6 +224,7 @@ lemma J.exists_hom {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.snd ⟶ j
     (by simp [← dsimp% (CostructuredArrow.w a)]), J.homMk g₁ (g₂ ≫ a) (by simpa),
     J.homMk (𝟙 _) a (by simp), by simp⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma exists_of_j₁_of_j₂' (j₁ : J₁ κ f) (j₂ : J₂ κ f) :
     ∃ (j₂' : J₂ κ f) (_ : j₂ ⟶ j₂') (b : F₁.obj j₁.left.obj ⟶ F₂.obj j₂'.left.obj),
@@ -260,6 +269,7 @@ instance : PreservesColimitsOfShape (J₂ κ f) F₂ :=
   F₂.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
 
 open IsCardinalFiltered in
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : IsCardinalFiltered (J κ f) κ := by
   rw [isCardinalFiltered_iff']
@@ -311,6 +321,7 @@ instance : PreservesColimitsOfShape (J κ f) F₁ :=
 instance : IsFiltered (J κ f) :=
   isFiltered_of_isCardinalFiltered _ κ
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : (π₁ κ f).Final := by
   rw [Functor.final_iff_of_isFiltered]
@@ -323,6 +334,7 @@ instance : (π₁ κ f).Final := by
   simp [← h₁, reassoc_of% dsimp% (CostructuredArrow.proj _ _ ⋙
     ObjectProperty.ι _).congr_map ha]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : (π₂ κ f).Final := by
   rw [Functor.final_iff_of_isFiltered]
