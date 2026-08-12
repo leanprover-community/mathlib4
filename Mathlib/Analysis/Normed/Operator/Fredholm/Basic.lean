@@ -469,10 +469,9 @@ theorem IsFredholm.comp_iff_left {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf 
 theorem IsFredholm.comp_iff_right {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf' : IsFredholm f') :
     IsFredholm (f' ∘L f) ↔ IsFredholm f := by
   refine ⟨fun hcomp ↦ ?_, fun hf ↦ hf'.comp hf⟩
-  rw [isFredholm_iff_exists_isQuasiInverse, toLinearMap_comp] at *
-  rcases hf' with ⟨g', hg'⟩
-  rcases hcomp with ⟨w, hw⟩
-  exact ⟨w ∘L f', hg'.of_comp_right hw⟩
+  obtain ⟨g', hg'⟩ := hf'.exists_isQuasiInverse
+  obtain ⟨w, hw⟩ := hcomp.exists_isQuasiInverse
+  exact .of_isQuasiInverse (mod_cast hg'.of_comp_right hw)
 
 @[simp]
 theorem isFredholm_comp_equiv {f : E ≃L[𝕜] F} {f' : F →L[𝕜] G} :
@@ -505,9 +504,6 @@ theorem isFredholm_codRestrict_iff {f : E →L[𝕜] F} {B : Submodule 𝕜 F}
   rw [← (isFredholm_subtypeL hB).comp_iff_right, subtypeL_comp_codRestrict]
 
 alias ⟨IsFredholm.of_codRestrict, IsFredholm.codRestrict⟩ := isFredholm_codRestrict_iff
-  obtain ⟨g', hg'⟩ := hf'.exists_isQuasiInverse
-  obtain ⟨w, hw⟩ := hcomp.exists_isQuasiInverse
-  exact .of_isQuasiInverse (mod_cast hg'.of_comp_right hw)
 
 end Constructions
 
