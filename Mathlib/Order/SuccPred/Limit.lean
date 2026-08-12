@@ -151,41 +151,31 @@ protected theorem _root_.IsMin.not_isSuccLimit (h : IsMin a) : ¬ IsSuccLimit a 
 protected theorem _root_.IsMin.isSuccPrelimit : IsMin a → IsSuccPrelimit a := fun h _ hab =>
   not_isMin_of_lt hab.lt h
 
-@[to_dual none]
-theorem isSuccPrelimit_iff_forall_lt_exists : IsSuccPrelimit a ↔ ∀ b < a, ∃ c, b < c ∧ c < a := by
-  refine forall_congr' fun _ ↦ ⟨fun _ ↦ ?_, fun _ _ ↦ ?_⟩ <;> unfold CovBy at * <;> grind
+@[to_dual]
+theorem isSuccPrelimit_iff_forall_lt_nonempty_Ioo :
+    IsSuccPrelimit a ↔ ∀ b < a, (Set.Ioo b a).Nonempty := by
+  grind [IsSuccPrelimit, not_covBy_iff_nonempty_Ioo, CovBy.lt]
 
-@[to_dual none]
-theorem isPredPrelimit_iff_forall_lt_exists : IsPredPrelimit a ↔ ∀ b > a, ∃ c, a < c ∧ c < b := by
-  refine forall_congr' fun _ ↦ ⟨fun _ ↦ ?_, fun _ _ ↦ ?_⟩ <;> unfold CovBy at * <;> grind
+@[to_dual]
+theorem IsSuccPrelimit.nonempty_Ioo_of_lt (ha : IsSuccPrelimit a) (hlt : b < a) :
+    (Set.Ioo b a).Nonempty :=
+  isSuccPrelimit_iff_forall_lt_nonempty_Ioo.mp ha b hlt
 
-@[to_dual none]
-theorem IsSuccPrelimit.exists_lt_lt_of_lt (ha : IsSuccPrelimit a) (hlt : b < a) :
-    ∃ c, b < c ∧ c < a :=
-  isSuccPrelimit_iff_forall_lt_exists.mp ha b hlt
+@[to_dual]
+theorem IsSuccPrelimit.lt_iff_nonempty_Ioo (h : IsSuccPrelimit a) : b < a ↔ (Set.Ioo b a).Nonempty
+    where
+  mp hba := isSuccPrelimit_iff_forall_lt_nonempty_Ioo.mp h b hba
+  mpr := fun ⟨_, h⟩ ↦ mem_Ioo.mp h |>.elim .trans
 
-@[to_dual none]
-theorem IsPredPrelimit.exists_lt_lt_of_lt (ha : IsPredPrelimit a) (hlt : a < b) :
-    ∃ c, a < c ∧ c < b :=
-  isPredPrelimit_iff_forall_lt_exists.mp ha b hlt
+@[to_dual (attr := deprecated (since := "2026-08-12"))]
+alias IsSuccPrelimit.lt_iff_exists_lt := IsSuccPrelimit.lt_iff_nonempty_Ioo
 
-@[to_dual none]
-theorem IsSuccPrelimit.lt_iff_exists_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c, a < c ∧ c < b where
-  mp hab := isSuccPrelimit_iff_forall_lt_exists.mp h a hab
-  mpr := fun ⟨_, hac, hcb⟩ ↦ hac.trans hcb
+@[to_dual]
+theorem IsSuccLimit.lt_iff_nonempty_Ioo (h : IsSuccLimit a) : b < a ↔ (Set.Ioo b a).Nonempty :=
+  h.isSuccPrelimit.lt_iff_nonempty_Ioo
 
-@[to_dual none]
-theorem IsPredPrelimit.lt_iff_exists_lt (h : IsPredPrelimit b) : b < a ↔ ∃ c, b < c ∧ c < a where
-  mp hab := isPredPrelimit_iff_forall_lt_exists.mp h a hab
-  mpr := fun ⟨_, hac, hcb⟩ ↦ hac.trans hcb
-
-@[to_dual none]
-theorem IsSuccLimit.lt_iff_exists_lt (h : IsSuccLimit b) : a < b ↔ ∃ c, a < c ∧ c < b :=
-  h.isSuccPrelimit.lt_iff_exists_lt
-
-@[to_dual none]
-theorem IsPredLimit.lt_iff_exists_lt (h : IsPredLimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
-  h.isPredPrelimit.lt_iff_exists_lt
+@[to_dual (attr := deprecated (since := "2026-08-12"))]
+alias IsSuccLimit.lt_iff_exists_lt := IsSuccLimit.lt_iff_nonempty_Ioo
 
 @[to_dual]
 theorem IsSuccLimit.nonempty_Iio (h : IsSuccLimit a) : (Set.Iio a).Nonempty :=
@@ -503,7 +493,7 @@ variable {α : Type*} [SemilatticeInf α] {a : α}
 @[to_dual]
 theorem IsSuccPrelimit.isLUB_Iio (ha : IsSuccPrelimit a) : IsLUB (Iio a) a := by
   refine ⟨fun _ ↦ le_of_lt, fun b hb ↦ eq_or_lt_of_le inf_le_left |>.elim le_of_inf_eq fun h ↦ ?_⟩
-  have ⟨c, habc, hca⟩ := ha.exists_lt_lt_of_lt h
+  have ⟨c, habc, hca⟩ := ha.nonempty_Ioo_of_lt h |>.imp fun _ ↦ Set.mem_Ioo.mp
   exact absurd (le_inf hca.le <| hb hca) habc.not_ge
 
 @[to_dual]
