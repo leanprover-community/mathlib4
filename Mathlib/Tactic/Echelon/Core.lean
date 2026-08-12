@@ -135,15 +135,6 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
       r := r + 1
   return { L, swaps, pivot }
 
-/-- Fold the row scales into the transform: scale column `j` by the factor of the row
-that ends up in position `j`. -/
-def foldScales {V : Type} (ops : RingOps V) (scales : Array V) (d : BareissData V) :
-    BareissData V :=
-  let order := d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b)
-    (Array.range d.L.size)
-  { d with L := d.L.map fun row =>
-      row.mapIdx fun j a => ops.mul a (scales.getD (order.getD j 0) ops.one) }
-
 /-- Assemble a producer from a computation model's parts.
 `ops` describes the ring operation structure;
 `prepare` turns the parsed entries into the values the elimination runs on, plus a
