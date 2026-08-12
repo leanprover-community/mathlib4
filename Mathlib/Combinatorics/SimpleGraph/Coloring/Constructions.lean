@@ -147,25 +147,22 @@ theorem completeEquipartiteGraph_colorable :
 
 end CompleteEquipartiteGraph
 
-open Walk
-lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
-    G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), Even w.length := by
+open Walk in
+lemma isBipartite_iff_forall_walk_even_length {V : Type*} {G : SimpleGraph V} :
+    G.IsBipartite ↔ ∀ (v : V) (p : G.Walk v v), Even p.length := by
   simp_rw [← Nat.not_odd_iff_even]
-  constructor <;> intro h
-  · intro _ w ho
-    have := (w.three_le_chromaticNumber_of_odd_loop ho).trans h.chromaticNumber_le
+  refine ⟨fun h _ w ho ↦ ?_, fun h ↦ colorable_iff_forall_connectedComponent.mpr fun c ↦ ?_⟩
+  · have := (w.three_le_chromaticNumber_of_odd_loop ho).trans h.chromaticNumber_le
     norm_cast
-  · apply colorable_iff_forall_connectedComponent.2
-    intro c
-    obtain ⟨_, hv⟩ := c.nonempty_supp
-    use fun a ↦ Fin.ofNat 2 (c.connected_toSimpleGraph ⟨_, hv⟩ a).some.length
-    intro a b hab he
-    apply h _ <| (((c.connected_toSimpleGraph ⟨_, hv⟩ a).some.concat hab).append
-                 (c.connected_toSimpleGraph ⟨_, hv⟩ b).some.reverse).map c.toSimpleGraph_hom
-    rw [length_map, length_append, length_concat, length_reverse, add_right_comm]
-    have : ((Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ a)).length) % 2 =
-        (Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ b)).length % 2 := by
-      simp_rw [← Fin.val_natCast, ← Fin.ofNat_eq_cast, he]
-    exact (Nat.even_iff.mpr (by lia)).add_one
+  · have ⟨v, hv⟩ := c.nonempty_supp
+    let f (u : c) := (c.connected_toSimpleGraph ⟨v, hv⟩ u).some
+    refine ⟨fun u ↦ .ofNat 2 (f u).length, fun {a b} hab he ↦ ?_⟩
+    apply h _ <| (((f a).concat hab).append (f b).reverse).map c.toSimpleGraph_hom
+    rw [length_map, length_append, length_concat, length_reverse, Nat.odd_iff]
+    have : (f a).length % 2 = (f b).length % 2 := by simpa using congr(($he : ℕ))
+    lia
+
+@[deprecated (since := "2026-08-12")]
+alias two_colorable_iff_forall_loop_even := isBipartite_iff_forall_walk_even_length
 
 end SimpleGraph
