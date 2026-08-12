@@ -156,7 +156,6 @@ def restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs : IsUpperSet s) :
     obtain ⟨⟨i, j⟩, hij, e⟩ := Finset.exists_ne_zero_of_sum_ne_zero hm
     refine hs (by simp_all [eq_comm]) (hy (show j ∈ y.support by aesop))
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrictScalars_restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs) :
     (restrictSupportIdeal (R := R) s hs).restrictScalars R = restrictSupport R s :=
@@ -180,7 +179,6 @@ theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
   rw [totalDegree, Finset.sup_le_iff]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ s ∈ p.support, ∀ i, (s : σ →₀ ℕ) i ≤ n := by
   rw [restrictDegree, restrictSupport, AddMonoidAlgebra.mem_supported]
