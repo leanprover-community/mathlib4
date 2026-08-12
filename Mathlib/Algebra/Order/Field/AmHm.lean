@@ -32,6 +32,8 @@ specializations.
 * `nine_le_add_add_mul_inv_add_inv_add_inv`: the three-term case.
 * `div_add_div_eq_two_iff`: the criterion for equality in the two-term case.
 * `sq_card_eq_sum_mul_sum_inv_iff`: the criterion for equality in general.
+* `nesbitt_inequality`: Nesbitt's inequality, as a corollary of the three-term case.
+* `nesbitt_inequality_eq_iff`: the equality case of Nesbitt's inequality.
 
 ## Implementation notes
 
@@ -54,10 +56,11 @@ which is what makes the semifield generality possible.
 ## References
 
 * <https://en.wikipedia.org/wiki/HM-GM-AM-QM_inequalities>
+* <https://en.wikipedia.org/wiki/Nesbitt%27s_inequality>
 
 ## Tags
 
-mean inequality, AM-HM, harmonic mean, arithmetic mean
+mean inequality, AM-HM, harmonic mean, arithmetic mean, Nesbitt
 -/
 
 public section
@@ -123,6 +126,26 @@ theorem nine_le_add_add_mul_inv_add_inv_add_inv (hx : 0 < x) (hy : 0 < y) (hz : 
         add_le_add (add_le_add (add_le_add le_rfl (two_le_div_add_div hx hy))
           (two_le_div_add_div hy hz)) (two_le_div_add_div hx hz)
 
+/-- **Nesbitt's inequality**, as a corollary of the three-term AM-HM inequality.
+
+Adding `1` to each summand turns the left side into `(a+b+c) * ((b+c)⁻¹ + (c+a)⁻¹ + (a+b)⁻¹)`,
+and the three denominators sum to `2 * (a+b+c)`, so AM-HM gives `S + 3 ≥ 9 / 2`. -/
+theorem nesbitt_inequality {a b c : R} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
+    3 / 2 ≤ a / (b + c) + b / (c + a) + c / (a + b) := by
+  have hbc : (0 : R) < b + c := by positivity
+  have hca : (0 : R) < c + a := by positivity
+  have hab : (0 : R) < a + b := by positivity
+  have key := nine_le_add_add_mul_inv_add_inv_add_inv hbc hca hab
+  have expand : a / (b + c) + b / (c + a) + c / (a + b) + 3
+      = (b + c + (c + a) + (a + b)) * ((b + c)⁻¹ + (c + a)⁻¹ + (a + b)⁻¹) / 2 := by
+    field_simp; ring
+  have half : (9 : R) / 2 ≤ a / (b + c) + b / (c + a) + c / (a + b) + 3 := by
+    rw [expand, le_div_iff₀ (by norm_num)]
+    calc (9 : R) / 2 * 2 = 9 := by ring
+      _ ≤ _ := key
+  rw [show (9 : R) / 2 = 3 / 2 + 3 by norm_num] at half
+  exact le_of_add_le_add_right half
+
 section Field
 
 variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] {x y : K}
@@ -175,5 +198,38 @@ theorem sq_card_eq_sum_mul_sum_inv_iff (z : ι → K) (s : Finset ι) (hz : ∀ 
         (div_add_div_eq_two_iff (hz i hi) (hz j hj)).mpr (hall i hi j hj)
     rw [hsplit, hcomm, hconst, ← hprod] at hsum
     linarith [hsum]
+
+/-- **The equality case of Nesbitt's inequality**: the sum equals `3 / 2` exactly when
+`a = b = c`. Like the other equality criteria this is stated over a field, since its
+certificate is a sum-of-squares identity. -/
+theorem nesbitt_inequality_eq_iff {a b c : K} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
+    a / (b + c) + b / (c + a) + c / (a + b) = 3 / 2 ↔ a = b ∧ b = c := by
+  have hbc : (0 : K) < b + c := by linarith
+  have hca : (0 : K) < c + a := by linarith
+  have hab : (0 : K) < a + b := by linarith
+  constructor
+  · intro h
+    rw [show a / (b + c) + b / (c + a) + c / (a + b)
+          = (a * ((c + a) * (a + b)) + b * ((b + c) * (a + b)) + c * ((b + c) * (c + a)))
+            / ((b + c) * ((c + a) * (a + b))) by field_simp] at h
+    rw [div_eq_div_iff (by positivity) (by norm_num)] at h
+    have key : (a + b) * (a - b) ^ 2 + (b + c) * (b - c) ^ 2 + (c + a) * (c - a) ^ 2 = 0 := by
+      linear_combination h
+    have t1 : 0 ≤ (a + b) * (a - b) ^ 2 := by positivity
+    have t2 : 0 ≤ (b + c) * (b - c) ^ 2 := by positivity
+    have t3 : 0 ≤ (c + a) * (c - a) ^ 2 := by positivity
+    have e1 : (a + b) * (a - b) ^ 2 = 0 := by linarith
+    have e2 : (b + c) * (b - c) ^ 2 = 0 := by linarith
+    refine ⟨?_, ?_⟩
+    · rcases mul_eq_zero.mp e1 with h' | h'
+      · exact absurd h' (by positivity)
+      · have := sq_eq_zero_iff.mp h'; linarith
+    · rcases mul_eq_zero.mp e2 with h' | h'
+      · exact absurd h' (by positivity)
+      · have := sq_eq_zero_iff.mp h'; linarith
+  · rintro ⟨rfl, rfl⟩
+    have h2 : a + a ≠ 0 := by positivity
+    field_simp
+    norm_num
 
 end Field
