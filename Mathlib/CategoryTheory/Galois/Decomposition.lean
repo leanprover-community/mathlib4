@@ -39,12 +39,11 @@ universe u₁ u₂ w
 
 namespace CategoryTheory
 
-open Limits CategoryTheory.Functor
+open Limits CategoryTheory.Functor GaloisCategory
 
 variable {C : Type u₁} [Category.{u₂} C]
 
 namespace PreGaloisCategory
-
 
 section Decomposition
 
@@ -119,7 +118,7 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
 theorem has_decomp_connected_components (X : C) :
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → f i ⟶ X) (_ : IsColimit (Cofan.mk X g)),
       (∀ i, IsConnected (f i)) ∧ Finite ι := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   exact has_decomp_connected_components_aux F (Nat.card <| F.obj X) X rfl
 
 /-- In a Galois category, every object is the sum of connected objects. -/
@@ -314,8 +313,7 @@ lemma exists_hom_from_galois_of_fiber_nonempty (X : C) (h : Nonempty (F.obj X)) 
 /-- Any connected object admits a hom from a Galois object. -/
 lemma exists_hom_from_galois_of_connected (X : C) [IsConnected X] :
     ∃ (A : C) (_ : A ⟶ X), IsGalois A :=
-  exists_hom_from_galois_of_fiber_nonempty
-    (GaloisCategory.getFiberFunctor C) X inferInstance
+  exists_hom_from_galois_of_fiber_nonempty (getFiberFunctor C) X inferInstance
 
 /-- To check equality of natural transformations `F ⟶ G`, it suffices to check it on
 Galois objects. -/

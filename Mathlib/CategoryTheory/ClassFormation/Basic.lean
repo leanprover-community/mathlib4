@@ -133,12 +133,13 @@ lemma PreGaloisCategory.smul_def
 lemma Aut.autMulEquivOfIso_apply_hom {X Y : C} (e : X ≅ Y) (g : Aut X) :
     (autMulEquivOfIso e g).hom = e.inv ≫ g.hom ≫ e.hom := rfl
 
+open GaloisCategory in
 open ConcreteCategory in
 lemma PreGaloisCategory.IsGalois.of_iso [GaloisCategory C]
     {X Y : C} [hX : PreGaloisCategory.IsGalois X] (e : X ≅ Y) :
     IsGalois Y := by
   have := IsConnected.of_iso e
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   rw [isGalois_iff_pretransitive F, MulAction.isPretransitive_iff] at hX ⊢
   intro x y
   obtain ⟨x, rfl⟩ := (bijective_of_isIso (F.map e.hom)).surjective x
@@ -178,7 +179,7 @@ instance [GaloisCategory C] : HasFiniteLimits C := by
 instance [GaloisCategory C] : HasFiniteColimits C where
   out _ _ _ :=
     Adjunction.hasColimitsOfShape_of_equivalence
-      (functorToContAction (GaloisCategory.getFiberFunctor C))
+      (functorToContAction (getFiberFunctor C))
 
 -- ???
 attribute [local instance] comp_preservesFiniteColimits comp_preservesFiniteLimits
@@ -218,7 +219,7 @@ instance (G : D ⥤ FintypeCat.{w}) [FiberFunctor G] :
 
 instance (X : C) [PreGaloisCategory.IsGalois X] :
     IsGalois (F.obj X) := by
-  let G := GaloisCategory.getFiberFunctor D
+  let G := getFiberFunctor D
   have : F.IsEquivalence := inferInstance
   have hX := (isGalois_iff_pretransitive (F ⋙ G) X).1 inferInstance
   rw [isGalois_iff_pretransitive G]
@@ -253,7 +254,7 @@ lemma has_connected_component [GaloisCategory C] (X : C) (hX : IsInitial X → F
 
 instance [GaloisCategory C] {X Y : (isConnected C).FullSubcategory} (f : X ⟶ Y) :
     Epi f.hom := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   exact epi_of_nonempty_of_isConnected F _
 
 instance [GaloisCategory C] {X Y : (isConnected C).FullSubcategory} (f : X ⟶ Y) :
@@ -277,7 +278,7 @@ instance : IsRegularEpiCategory FintypeCat.{w} := by
 
 lemma effectiveEpi_of_epi [GaloisCategory C] {X Y : C} (f : X ⟶ Y) [Epi f] :
     EffectiveEpi f := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   rw [← isRegularEpi_iff_effectiveEpi]
   exact ⟨⟨{
     W := pullback f f
@@ -319,7 +320,7 @@ instance [GaloisCategory C] {X Y : (isConnected C).FullSubcategory} (f : X ⟶ Y
 instance [GaloisCategory C] : Preregular (isConnected C).FullSubcategory where
   exists_fac {X Y Z} f g _ := by
     obtain ⟨X₀, a, _, _⟩ := has_connected_component (pullback f.hom g.hom) (by
-      let F := GaloisCategory.getFiberFunctor C
+      let F := getFiberFunctor C
       rw [not_initial_iff_fiber_nonempty F]
       let x : F.obj X.obj := Classical.arbitrary _
       have ⟨z, hz⟩ := surjective_on_fiber_of_epi F g.hom (F.map f.hom x)
@@ -459,7 +460,7 @@ end
 
 instance [GaloisCategory C] (S : C) [PreGaloisCategory.IsConnected S] :
     GaloisCategory (Over S) :=
-  ⟨fiberFunctorOver (GaloisCategory.getFiberFunctor C) S
+  ⟨fiberFunctorOver (getFiberFunctor C) S
     (Classical.arbitrary _), inferInstance⟩
 
 abbrev IsGaloisCover [GaloisCategory C] {Y X : C} (f : Y ⟶ X)
@@ -493,7 +494,7 @@ lemma isGaloisOver_of_isGalois [GaloisCategory C]
   have : PreGaloisCategory.IsConnected (Over.mk f).left := by
     dsimp
     infer_instance
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   rw [isGaloisCover_def]
   let s : F.obj X := Classical.arbitrary _
   rw [isGalois_iff_pretransitive (fiberFunctorOver F X s),
