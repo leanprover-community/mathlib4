@@ -12,7 +12,7 @@ public import Mathlib.Topology.UniformSpace.Pi
 # Indexed product of extended metric spaces
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 
@@ -75,8 +75,6 @@ instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (X b)] : PseudoEMetricS
 end Pi
 
 section Pi
-
-open Finset
 
 variable {X : β → Type*} [Fintype β]
 

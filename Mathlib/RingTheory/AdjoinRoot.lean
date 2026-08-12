@@ -369,10 +369,13 @@ theorem isDomain_of_prime (hf : Prime f) : IsDomain (AdjoinRoot f) :=
   (Ideal.Quotient.isDomain_iff_prime (span {f} : Ideal R[X])).mpr <|
     (Ideal.span_singleton_prime hf.ne_zero).mpr hf
 
-theorem noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f)
+theorem isTorsionFree_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f)
     (hf' : f.degree ≠ 0) : IsTorsionFree R (AdjoinRoot f) :=
   haveI := isDomain_of_prime hf
   isTorsionFree_iff_algebraMap_injective.mpr (of.injective_of_degree_ne_zero hf')
+
+@[deprecated (since := "2026-07-27")]
+alias noZeroSMulDivisors_of_prime_of_degree_ne_zero := isTorsionFree_of_prime_of_degree_ne_zero
 
 end Prime
 
@@ -627,7 +630,6 @@ theorem powerBasisAux'_repr_apply_to_fun (hg : g.Monic) (f : AdjoinRoot g) (i : 
     (powerBasisAux' hg).repr f i = (modByMonicHom hg f).coeff ↑i :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The power basis `1, root g, ..., root g ^ (d - 1)` for `AdjoinRoot g`,
 where `g` is a monic polynomial of degree `d`. -/
 @[simps]
@@ -847,11 +849,9 @@ def quotMapOfEquivQuotMapCMapMk :
       AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (AdjoinRoot.mk f) :=
   Ideal.quotEquivOfEq (by rw [of, AdjoinRoot.mk, Ideal.map_map])
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated (since := "2026-03-02")]
 alias quotMapOfEquivQuotMapCMapSpanMk := quotMapOfEquivQuotMapCMapMk
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem quotMapOfEquivQuotMapCMapMk_mk (x : AdjoinRoot f) :
     quotMapOfEquivQuotMapCMapMk I f (Ideal.Quotient.mk (I.map (of f)) x) =
@@ -940,7 +940,6 @@ def quotAdjoinRootEquivQuotPolynomialQuot :
       ((Ideal.quotEquivOfEq (by rw [map_span, Set.image_singleton])).trans
         (Polynomial.quotQuotEquivComm I f).symm))
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem quotAdjoinRootEquivQuotPolynomialQuot_mk_of (p : R[X]) :
     quotAdjoinRootEquivQuotPolynomialQuot I f (Ideal.Quotient.mk (I.map (of f)) (mk f p)) =
@@ -1034,7 +1033,6 @@ open AdjoinRoot AlgEquiv
 
 variable [CommRing R] [CommRing S] [Algebra R S]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `α` have minimal polynomial `f` over `R` and `I` be an ideal of `R`,
 then `R[α] / (I) = (R[x] / (f)) / pS = (R/p)[x] / (f mod p)`. -/
 @[simps!]

@@ -34,7 +34,7 @@ universe u v w v₁ v₂ u₁ u₂
 
 noncomputable section
 
-open CategoryTheory Limits TopologicalSpace Opposite
+open CategoryTheory TopologicalSpace Opposite
 
 namespace TopCat.Presheaf
 

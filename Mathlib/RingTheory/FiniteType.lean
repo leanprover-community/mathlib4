@@ -45,8 +45,6 @@ variable [Semiring R]
 
 namespace Finite
 
-open Submodule Set
-
 variable {R S M N}
 
 section Algebra

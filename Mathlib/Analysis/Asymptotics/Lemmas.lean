@@ -18,7 +18,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 public section
 
-open Set Topology Filter NNReal
+open Set Topology Filter
 
 namespace Asymptotics
 

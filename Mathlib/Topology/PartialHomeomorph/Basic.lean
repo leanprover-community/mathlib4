@@ -21,7 +21,7 @@ public import Mathlib.Topology.PartialHomeomorph.Defs
 
 @[expose] public section
 
-open Function Set Filter Topology
+open Function Set Topology
 
 variable {X : Type*} {Y : Type*}
   [TopologicalSpace X] [TopologicalSpace Y]

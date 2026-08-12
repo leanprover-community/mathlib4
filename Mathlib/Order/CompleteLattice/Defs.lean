@@ -44,7 +44,7 @@ In lemma names,
 
 @[expose] public section
 
-open Function OrderDual Set
+open OrderDual Set
 
 variable {α β : Type*} {ι : Sort*}
 

@@ -37,7 +37,7 @@ especially when defining iterated derivatives.
 @[expose] public section
 
 
-open Function Fin Set
+open Function Fin
 
 universe u v w w₁ w₁' w₂ w₃ w₄
 

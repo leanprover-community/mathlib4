@@ -18,7 +18,7 @@ public import Mathlib.Tactic.Bound.Attribute
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton
 
-open Function Int
+open Function
 
 variable {α M R : Type*}
 

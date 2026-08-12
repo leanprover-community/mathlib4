@@ -35,7 +35,7 @@ homeomorphism, ball
 
 @[expose] public section
 
-open Set Metric Pointwise
+open Set Metric
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 noncomputable section

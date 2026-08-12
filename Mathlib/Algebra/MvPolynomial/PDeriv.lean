@@ -49,7 +49,7 @@ universe u v
 
 namespace MvPolynomial
 
-open Set Function Finsupp
+open Function Finsupp
 
 variable {R : Type u} {σ : Type v} {a : R} {s : σ →₀ ℕ}
 

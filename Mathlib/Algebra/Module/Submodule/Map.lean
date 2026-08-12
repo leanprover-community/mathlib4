@@ -28,7 +28,7 @@ submodule, subspace, linear map, pushforward, pullback
 
 @[expose] public section
 
-open Function Pointwise Set
+open Function Set
 
 variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {M : Type*} {M₂ : Type*} {M₃ : Type*}

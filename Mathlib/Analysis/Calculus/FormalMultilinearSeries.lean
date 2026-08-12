@@ -29,7 +29,7 @@ multilinear, formal series
 
 noncomputable section
 
-open Set Fin Topology
+open Set Fin
 
 universe u u' v w x y
 variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x} {H : Type y}
@@ -283,7 +283,6 @@ theorem order_zero : (0 : FormalMultilinearSeries 𝕜 E F).order = 0 := by simp
 
 theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by simp [h] at hp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem order_eq_find [DecidablePred fun n => p n ≠ 0] (hp : ∃ n, p n ≠ 0) :
     p.order = Nat.find hp := by convert! Nat.sInf_def hp
 

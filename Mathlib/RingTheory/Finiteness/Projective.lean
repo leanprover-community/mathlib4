@@ -21,8 +21,6 @@ namespace Module
 
 namespace Finite
 
-open Submodule Set
-
 variable {R M : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 

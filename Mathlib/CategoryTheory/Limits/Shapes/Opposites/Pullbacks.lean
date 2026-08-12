@@ -41,7 +41,6 @@ instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
     hasLimitsOfShape_of_equivalence walkingSpanOpEquiv.symm
   infer_instance
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism relating `Span f.op g.op` and `(Cospan f g).op` -/
 @[simps!]
@@ -53,7 +52,6 @@ def spanOp {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     | .right => .refl _)
     (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism relating `span f.unop g.unop` and `(cospan f g).leftOp` -/
 @[simps!]
@@ -77,7 +75,6 @@ def opCospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
       Functor.associator _ _ _
     _ ≅ walkingCospanOpEquiv.functor ⋙ span f.op g.op := isoWhiskerLeft _ (spanOp f g).symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism relating `Cospan f.op g.op` and `(Span f g).op` -/
 @[simps!]
@@ -89,7 +86,6 @@ def cospanOp {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     | .right => .refl _)
     (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism relating `cospan f.unop g.unop` and `(span f g).leftOp` -/
 @[simps!]

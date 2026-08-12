@@ -21,7 +21,7 @@ public section
 
 open scoped Congruent EuclideanGeometry
 
-open Similar NNReal Affine
+open Similar
 
 namespace EuclideanGeometry
 

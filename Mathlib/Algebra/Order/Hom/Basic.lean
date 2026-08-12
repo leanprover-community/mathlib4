@@ -73,8 +73,6 @@ There are two workarounds:
   `Middle.toTop`'s parameter, in this example replacing `[Left α]` with `[Leaf α]`.
 -/
 
-open Function
-
 variable {F α β : Type*}
 
 /-! ### Basics -/

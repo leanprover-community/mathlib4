@@ -346,7 +346,7 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
     -- Hence `l(M)` is projective because `0 → l(M) → N → N ⧸ l(M) → 0` splits.
     have : Module.Projective R (LinearMap.range l) := by
       have := (Exact.split_tfae (LinearMap.exact_subtype_mkQ (LinearMap.range l))
-        Subtype.val_injective (Submodule.mkQ_surjective _)).out 0 1
+        Subtype.val_injective (Submodule.mkQ_surjective _)).out 1 2
       obtain ⟨l', hl'⟩ := this.mp
          (Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _))
       exact Module.Projective.of_split _ _ hl'
@@ -356,7 +356,7 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
           (l.codRestrict (LinearMap.range l) (LinearMap.mem_range_self l)) := by
         rw [LinearMap.exact_iff, LinearMap.ker_rangeRestrict, Submodule.range_subtype]
       have := (Exact.split_tfae this
-        Subtype.val_injective (fun ⟨x, y, e⟩ ↦ ⟨y, Subtype.ext e⟩)).out 0 1
+        Subtype.val_injective (fun ⟨x, y, e⟩ ↦ ⟨y, Subtype.ext e⟩)).out 1 2
       exact this.mp (Module.projective_lifting_property _ _ (fun ⟨x, y, e⟩ ↦ ⟨y, Subtype.ext e⟩))
     have : Module.Finite R (LinearMap.ker l) := by
       refine Module.Finite.of_surjective l' ?_
@@ -378,7 +378,7 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
       rwa [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot,
         ← IsLocalRing.subsingleton_tensorProduct (R := R)]
     -- Whence `M ≃ l(M)` is projective and the result follows.
-    have := (Exact.split_tfae l.exact_map_mkQ_range this (Submodule.mkQ_surjective _)).out 0 1
+    have := (Exact.split_tfae l.exact_map_mkQ_range this (Submodule.mkQ_surjective _)).out 1 2
     rw [← this]
     exact Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _)
 

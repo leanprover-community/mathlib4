@@ -210,7 +210,6 @@ def secondMap : FirstObj P R ⟶ SecondObj P R :=
     haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
-set_option backward.isDefEq.respectTransparency false in
 theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
   dsimp
   ext fg
@@ -318,7 +317,6 @@ each pullback.
 def secondMap : FirstObj P X ⟶ SecondObj P X π :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
-set_option backward.isDefEq.respectTransparency false in
 theorem w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P X π := by
   ext x ij
   dsimp [forkMap, firstMap, secondMap]
@@ -355,7 +353,6 @@ lemma compatible_iff_of_small (x : FirstObj P X) :
   · apply_fun Pi.π (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2)))) ⟨i, j⟩ at t
     simpa [firstMap, secondMap] using t
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `P` is a sheaf for `Presieve.ofArrows X π`, iff the fork given by `w` is an equalizer. -/
 @[stacks 00VM]
 theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔

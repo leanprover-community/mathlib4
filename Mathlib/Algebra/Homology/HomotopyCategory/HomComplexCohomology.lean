@@ -53,7 +53,6 @@ def coboundaries : AddSubgroup (Cocycle K L n) where
     rintro α ⟨m, hm, β, hβ⟩
     exact ⟨m, hm, -β, by aesop⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {K L n} in
 lemma mem_coboundaries_iff (α : Cocycle K L n) (m : ℤ) (hm : m + 1 = n) :
     α ∈ coboundaries K L n ↔ ∃ (β : Cochain K L m), δ m n β = α := by
@@ -140,7 +139,6 @@ def toHom :
 lemma toHom_mk (x : Cocycle K L n) :
     toHom (mk x) = (HomotopyCategory.quotient C _).map (Cocycle.equivHomShift.symm x) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toHom_mk_eq_zero_iff (x : Cocycle K L n) :
     toHom (mk x) = 0 ↔ x ∈ coboundaries K L n := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩

@@ -28,7 +28,7 @@ zmod, quotient ring, ideal quotient
 
 @[expose] public section
 
-open QuotientAddGroup Set ZMod
+open Set ZMod
 
 variable (n : ℕ) {R : Type*} [Ring R]
 

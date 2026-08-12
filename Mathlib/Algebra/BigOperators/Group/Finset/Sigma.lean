@@ -17,7 +17,7 @@ public section
 
 variable {ι κ α β γ : Type*}
 
-open Fin Function
+open Function
 
 variable {s : Finset α} {a : α} {f : α → β}
 

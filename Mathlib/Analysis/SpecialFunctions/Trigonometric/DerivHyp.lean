@@ -789,7 +789,7 @@ end LogDeriv
 end
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 alias ⟨_, sinh_pos_of_pos⟩ := Real.sinh_pos_iff
 alias ⟨_, sinh_nonneg_of_nonneg⟩ := Real.sinh_nonneg_iff

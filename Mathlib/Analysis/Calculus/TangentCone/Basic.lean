@@ -18,7 +18,7 @@ and `UniqueDiffOn`.
 
 public section
 
-open Filter Set Metric
+open Filter Set
 open scoped Topology Pointwise
 
 variable {𝕜 E : Type*}
