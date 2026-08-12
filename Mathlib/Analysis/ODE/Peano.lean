@@ -65,9 +65,7 @@ lemma stepSize_nonneg (t₀ : Icc tmin tmax) (n : ℕ) : 0 ≤ stepSize t₀ n :
 lemma add_mul_stepSize_eq_tmax (t₀ : Icc tmin tmax) (n : ℕ) :
     t₀.val + ((n : ℝ) + 1) * stepSize t₀ (n + 1) = tmax := by
   rw [stepSize]
-  field_simp
-  push_cast
-  ring
+  grind
 
 noncomputable def delayedInput (t₀ : Icc tmin tmax) (n : ℕ) : ℝ → ℝ :=
   fun t ↦ max (t - stepSize t₀ n) t₀
@@ -106,8 +104,8 @@ lemma lipschitzWith_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
   intro x y
   have h_dist :=
     abs_max_sub_max_le_abs (x - stepSize t₀ n) (y - stepSize t₀ n) t₀.val
-  simp at h_dist
-  tauto
+  rw [sub_sub_sub_cancel_right] at h_dist
+  assumption
 
 /-- The recursively defined curves used to build the Tonelli approximations. -/
 noncomputable def tonelliIterate (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x₀ : E) (n : ℕ) :
@@ -130,9 +128,7 @@ lemma tonelliIterate_eq_succ_on_Icc (n : ℕ) (k : ℕ) (t : ℝ)
     tonelliIterate f t₀ x₀ n k t = tonelliIterate f t₀ x₀ n (k + 1) t := by
   induction k generalizing t with
   | zero =>
-    obtain rfl : t = (t₀ : ℝ) := by
-      simp only [Nat.cast_zero, zero_mul, add_zero] at ht
-      exact le_antisymm ht.2 ht.1
+    obtain rfl : t = (t₀ : ℝ) := by simp_all
     unfold tonelliIterate
     simp
   | succ k ih =>
