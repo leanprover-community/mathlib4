@@ -39,8 +39,8 @@ Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι 
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   Π₀ i, β i
 
-set_option backward.inferInstanceAs.wrap.data false in
-deriving instance CoeFun for DirectSum
+instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i, β i :=
+  ⟨DFunLike.coe (F := Π₀ i, β i)⟩
 
 /-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
 Taking the direct sum over multiple arguments is possible, e.g. `⨁ (i) (j), f i j`. -/

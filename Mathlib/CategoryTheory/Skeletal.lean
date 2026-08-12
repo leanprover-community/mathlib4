@@ -76,9 +76,8 @@ deriving
   Category,
   [Inhabited C] → Inhabited _
 
--- Without this we get errors in Mathlib/RingTheory/PicardGroup.lean
-set_option backward.inferInstanceAs.wrap.data false in
-deriving instance (α : Sort _) → [CoeSort C α] → CoeSort _ α for Skeleton C
+instance (α : Sort _) [CoeSort C α] : CoeSort (Skeleton C) α :=
+  InducedCategory.hasCoeToSort Quotient.out
 
 end
 
