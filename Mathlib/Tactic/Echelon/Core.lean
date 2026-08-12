@@ -93,28 +93,28 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
     MetaM (BareissData V) := do
   let rows := A.size
   let cols := (A.getD 0 #[]).size
-  let get (M : Array (Array V)) (i j : Nat) : V := (M.getD i #[]).getD j ops.zero
-  let eliminate : V → V → V → Array V → Array V → Array V :=
-    fun piv f prev rowI rowR => rowI.mapIdx fun j a =>
-      ops.divExact (ops.sub (ops.mul piv a) (ops.mul f (rowR.getD j ops.zero))) prev
+  let getEntry (M : Array (Array V)) (i j : Nat) : V := (M.getD i #[]).getD j ops.zero
+  let eliminate (piv f prev : V) (row pivotRow : Array V) : Array V :=
+    Array.zipWith (fun a b => ops.divExact (ops.sub (ops.mul piv a) (ops.mul f b)) prev)
+      row pivotRow
   let mut W := A
   let mut L : Array (Array V) :=
     (Array.range rows).map fun i =>
       (Array.range rows).map fun j => if i == j then ops.one else ops.zero
   let mut swaps : Array (Nat × Nat) := #[]
-  let mut pivots : Array Nat := #[]
+  let mut pivot : Array Nat := #[]
   let mut r : Nat := 0
   -- the pivot of the previous round: the exact divisor of the elimination step
   let mut prev : V := ops.one
   for c in [0:cols] do
     if r == rows then break
     -- find the first row at or below `r` with a nonzero entry in column `c`
-    let mut p : Nat := rows
+    let mut p? : Option Nat := none
     for q in [r:rows] do
-      if !(← ops.isZero (get W q c)) then
-        p := q
+      if !(← ops.isZero (getEntry W q c)) then
+        p? := some q
         break
-    if p < rows then
+    if let some p := p? then
       if p ≠ r then
         W := W.swapIfInBounds r p
         -- row swap
@@ -123,17 +123,17 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
         -- row vanishes at both columns
         L := (L.modify r (·.swapIfInBounds r p)).modify p (·.swapIfInBounds r p)
         swaps := swaps.push (r, p)
-      pivots := pivots.push c
-      let piv := get W r c
-      let rowR := W.getD r #[]
+      pivot := pivot.push c
+      let piv := getEntry W r c
+      let wRow := W.getD r #[]
       let lRow := L.getD r #[]
       for i in [r+1:rows] do
-        let f := get W i c
-        W := W.set! i (eliminate piv f prev (W.getD i #[]) rowR)
+        let f := getEntry W i c
+        W := W.set! i (eliminate piv f prev (W.getD i #[]) wRow)
         L := L.set! i (eliminate piv f prev (L.getD i #[]) lRow)
       prev := piv
       r := r + 1
-  return { L, swaps, pivot := pivots }
+  return { L, swaps, pivot }
 
 /-- Fold the row scales into the transform: scale column `j` by the factor of the row
 that ends up in position `j`. -/
