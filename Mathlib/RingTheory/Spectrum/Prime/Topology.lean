@@ -1314,7 +1314,7 @@ variable {R}
 theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalRing S]
     (f : R →+* S) : IsLocalHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
   -- Porting note: inline `this` does **not** work
-  have := (local_hom_TFAE f).out 0 4
+  have := (local_hom_TFAE f).out 1 5
   rw [this, PrimeSpectrum.ext_iff]
   rfl
 

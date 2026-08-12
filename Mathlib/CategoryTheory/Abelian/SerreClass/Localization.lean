@@ -181,7 +181,7 @@ lemma mono_map_tfae {X Y : C} (f : X ⟶ Y) :
 
 lemma mono_map_iff {X Y : C} (f : X ⟶ Y) :
     Mono (L.map f) ↔ P.monoModSerre f :=
-  (mono_map_tfae L P f).out 0 1
+  (mono_map_tfae L P f).out 1 2
 
 lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
     List.TFAE [Epi (L.map f),
@@ -215,7 +215,7 @@ lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
 
 lemma epi_map_iff {X Y : C} (f : X ⟶ Y) :
     Epi (L.map f) ↔ P.epiModSerre f :=
-  (epi_map_tfae L P f).out 0 1
+  (epi_map_tfae L P f).out 1 2
 
 lemma inverseImage_monomorphisms :
     (MorphismProperty.monomorphisms _).inverseImage L = P.monoModSerre := by
@@ -432,13 +432,13 @@ lemma hasZeroObject : HasZeroObject D :=
 
 lemma preservesFiniteLimits : PreservesFiniteLimits L := by
   let := abelian L P
-  rw [((Functor.preservesFiniteLimits_tfae L).out 3 2 :)]
+  rw [((Functor.preservesFiniteLimits_tfae L).out 4 3 :)]
   intro _ _ f
   exact preservesKernel L P f
 
 lemma preservesFiniteColimits : PreservesFiniteColimits L := by
   let := abelian L P
-  rw [((Functor.preservesFiniteColimits_tfae L).out 3 2 :)]
+  rw [((Functor.preservesFiniteColimits_tfae L).out 4 3 :)]
   intro _ _ f
   exact preservesCokernel L P f
 
@@ -462,7 +462,7 @@ lemma preservesFiniteLimits_comp_iff :
   refine ⟨fun _ ↦ ?_, fun _ ↦ comp_preservesFiniteLimits _ _⟩
   have := (Localization.functor_additive_iff L P.isoModSerre G).mpr
     (L ⋙ G).additive_of_preserves_binary_products
-  refine ((Functor.preservesFiniteLimits_tfae G).out 2 3).mp (fun _ _ f ↦ ?_)
+  refine ((Functor.preservesFiniteLimits_tfae G).out 3 4).mp (fun _ _ f ↦ ?_)
   obtain ⟨f', ⟨iso⟩⟩ :=
     (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
   have : PreservesLimit (parallelPair (L.map f'.hom) 0) G :=
@@ -485,7 +485,7 @@ lemma preservesFiniteColimits_comp_iff :
   have := (Localization.functor_additive_iff L P.isoModSerre G).mpr (by
     have := preservesBinaryBiproducts_of_preservesBinaryCoproducts (L ⋙ G)
     exact Functor.additive_of_preservesBinaryBiproducts _)
-  refine ((Functor.preservesFiniteColimits_tfae G).out 2 3).mp (fun _ _ f ↦ ?_)
+  refine ((Functor.preservesFiniteColimits_tfae G).out 3 4).mp (fun _ _ f ↦ ?_)
   obtain ⟨f', ⟨iso⟩⟩ :=
     (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
   have : PreservesColimit (parallelPair (L.map f'.hom) 0) G :=

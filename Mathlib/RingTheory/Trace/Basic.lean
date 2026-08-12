@@ -516,7 +516,7 @@ theorem traceForm_nondegenerate_tfae [FiniteDimensional K L] :
 
 theorem Algebra.trace_ne_zero [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     Algebra.trace K L ≠ 0 :=
-  ((traceForm_nondegenerate_tfae K L).out 0 1).mp ‹_›
+  ((traceForm_nondegenerate_tfae K L).out 1 2).mp ‹_›
 
 theorem Algebra.trace_surjective [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     Function.Surjective (Algebra.trace K L) := by

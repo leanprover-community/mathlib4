@@ -107,19 +107,19 @@ lemma le_tfae (hp : IsStarProjection p) (hq : IsStarProjection q) :
 
 lemma le_iff_mul_eq_right (hp : IsStarProjection p) (hq : IsStarProjection q) :
     p ≤ q ↔ q * p = p :=
-  hp.le_tfae hq |>.out 0 1
+  hp.le_tfae hq |>.out 1 2
 
 lemma le_iff_mul_eq_left (hp : IsStarProjection p) (hq : IsStarProjection q) :
     p ≤ q ↔ p * q = p :=
-  hp.le_tfae hq |>.out 0 2
+  hp.le_tfae hq |>.out 1 3
 
 lemma le_iff_sub (hp : IsStarProjection p) (hq : IsStarProjection q) :
     p ≤ q ↔ IsStarProjection (q - p) :=
-  hp.le_tfae hq |>.out 0 3
+  hp.le_tfae hq |>.out 1 4
 
 lemma le_iff_idempotent_sub (hp : IsStarProjection p) (hq : IsStarProjection q) :
     p ≤ q ↔ IsIdempotentElem (q - p) :=
-  hp.le_tfae hq |>.out 0 4
+  hp.le_tfae hq |>.out 1 5
 
 lemma commute_of_le (hp : IsStarProjection p) (hq : IsStarProjection q) (h : p ≤ q) :
     Commute p q := by

@@ -374,7 +374,7 @@ namespace CondensedSet.LocallyConstant
 /-- The functor from sets to condensed sets given by locally constant maps into the set. -/
 abbrev functor : Type (u + 1) ⥤ CondensedSet.{u} :=
   CompHausLike.LocallyConstant.functor.{u, u + 1} (P := fun _ ↦ True)
-    (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+    (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 1 3).mp)
 
 /--
 `CondensedSet.LocallyConstant.functor` is isomorphic to `Condensed.discrete`

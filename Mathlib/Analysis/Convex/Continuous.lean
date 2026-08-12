@@ -174,7 +174,7 @@ lemma ConvexOn.locallyLipschitzOn_iff_continuousOn (hC : IsOpen C) (hf : ConvexO
     LocallyLipschitzOn C f ↔ ContinuousOn f C := by
   obtain rfl | hC' := C.eq_empty_or_nonempty
   · simp
-  · exact (hf.continuousOn_tfae hC hC').out 0 1
+  · exact (hf.continuousOn_tfae hC hC').out 1 2
 
 lemma ConcaveOn.locallyLipschitzOn_iff_continuousOn (hC : IsOpen C) (hf : ConcaveOn ℝ C f) :
     LocallyLipschitzOn C f ↔ ContinuousOn f C := by
@@ -187,7 +187,7 @@ protected lemma ConvexOn.locallyLipschitzOn (hC : IsOpen C) (hf : ConvexOn ℝ C
   obtain rfl | ⟨x₀, hx₀⟩ := C.eq_empty_or_nonempty
   · simp
   · obtain ⟨b, hx₀b, hbC⟩ := exists_mem_interior_convexHull_affineBasis (hC.mem_nhds hx₀)
-    refine ((hf.continuousOn_tfae hC ⟨x₀, hx₀⟩).out 3 0).mp ?_
+    refine ((hf.continuousOn_tfae hC ⟨x₀, hx₀⟩).out 4 1).mp ?_
     refine ⟨x₀, hx₀, BddAbove.isBoundedUnder (IsOpen.mem_nhds isOpen_interior hx₀b) ?_⟩
     exact (hf.bddAbove_convexHull ((subset_convexHull ..).trans hbC)
       ((finite_range _).image _).bddAbove).mono (by gcongr; exact interior_subset)

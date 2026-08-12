@@ -78,7 +78,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
 theorem mem_closure_iff_iSup :
     a ∈ closure s ↔
       ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
-  apply ((mem_closure_tfae a s).out 0 4).trans
+  apply ((mem_closure_tfae a s).out 1 5).trans
   simp_rw [exists_prop]
 
 theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :

@@ -356,11 +356,11 @@ theorem isFredholm_tfae (u : E →L[𝕜] F) :
 /-- If `u` has a Fredholm package, it is Fredholm. -/
 theorem FredholmPackage.isFredholm {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
     IsFredholm u :=
-  isFredholm_tfae u |>.out 3 0 |>.mp (Nonempty.intro pkg)
+  isFredholm_tfae u |>.out 4 1 |>.mp (Nonempty.intro pkg)
 
 theorem isFredholm_iff_exists_isQuasiInverse {u : E →L[𝕜] F} :
     IsFredholm u ↔ ∃ v : F →L[𝕜] E, v.IsQuasiInverse u :=
-  isFredholm_tfae u |>.out 0 1
+  isFredholm_tfae u |>.out 1 2
 
 alias ⟨IsFredholm.exists_isQuasiInverse, _⟩ := isFredholm_iff_exists_isQuasiInverse
 
