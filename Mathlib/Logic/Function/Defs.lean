@@ -23,6 +23,13 @@ variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
+attribute [mfld_simps] id_comp comp_id
+
+theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
+  rfl
+
+/- ### Dependent composition -/
+
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
 and type of `f (g x)` depends on `x` and `g x`. -/
 @[inline, reducible]
@@ -31,18 +38,106 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
 
 @[inherit_doc] infixr:80 " ∘' " => Function.dcomp
 
+section DComp
+
+variable {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*} (f : ∀ {i : ι} (y : β i), φ y)
+    (g : ∀ i, β i) (i : ι)
+
+theorem dcomp_def : @f ∘' g = fun i => f (g i) := rfl
+
+theorem dcomp_apply : dcomp @f g i = f (g i) := rfl
+
+@[simp] theorem dcomp_eq_comp {α β γ} (f : β → γ) (g : α → β) : f ∘' g = f ∘ g := rfl
+
+end DComp
+
+/- ### The product of functions -/
+
 /-- Product of functions: `Function.prod f g i = (f i, g i)`, where the types of `f i` and
 `g i` may depend on `i`. -/
 protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
     α i × β i := (f i, g i)
 
-@[simp] lemma prod_apply {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
-    Function.prod f g i = (f i , g i) := rfl
+section DProd
 
-lemma prod_fst_snd {α β} : Function.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
-  rfl
-lemma prod_snd_fst {α β} : Function.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = .swap :=
-  rfl
+variable {ι} {α β : ι → Type*} (f f' : ∀ i, α i) (g g' : ∀ i, β i)
+
+theorem prod_def : Function.prod f g = fun i : ι => (f i, g i) := rfl
+
+@[simp, grind =] lemma prod_apply (i : ι) : Function.prod f g i = (f i, g i) := rfl
+
+variable {f f' g g'} in
+@[simp] theorem prod_inj : Function.prod f g = Function.prod f' g' ↔ f = f' ∧ g = g' := by
+  simp [funext_iff, Prod.ext_iff, forall_and]
+
+end DProd
+
+section Prod
+
+variable {α β : Type*} {ι : Sort*} (f : ι → α) (g : ι → β)
+
+theorem prod_ext_iff {h h' : ι → α × β} :
+    h = h' ↔ Prod.fst ∘ h = Prod.fst ∘ h' ∧ Prod.snd ∘ h = Prod.snd ∘ h' :=
+  prod_inj
+
+@[simp] lemma prod_fst_snd : Function.prod (Prod.fst : _ → α) (Prod.snd : _ → β) = id := rfl
+@[simp] lemma prod_snd_fst : Function.prod (Prod.snd : _ → β) (Prod.fst : _ → α) = .swap := rfl
+
+@[simp] theorem fst_comp_prod : Prod.fst ∘ Function.prod f g = f := rfl
+@[simp] theorem snd_comp_prod : Prod.snd ∘ Function.prod f g = g := rfl
+
+@[simp] theorem prod_fst_comp_snd_comp (h : ι → α × β) :
+    Function.prod (Prod.fst ∘ h) (Prod.snd ∘ h) = h := rfl
+
+theorem const_prod (p : α × β) : const ι p = Function.prod (const ι p.1) (const ι p.2) := rfl
+
+@[simp] theorem prod_const_const (a : α) (b : β) :
+    Function.prod (const ι a) (const ι b) = const ι (a, b) := rfl
+
+theorem prod_comp {κ} (h : κ → ι) : Function.prod f g ∘ h = Function.prod (f ∘ h) (g ∘ h) := rfl
+
+@[simp] theorem prod_comp_fst_comp_snd {α₁ α₂ β₁ β₂} (f : α₁ → α₂) (g : β₁ → β₂) :
+    Function.prod (f ∘ Prod.fst) (g ∘ Prod.snd) = Prod.map f g := rfl
+
+@[simp] theorem map_comp_prod {γ δ} (h : α → γ) (k : β → δ) :
+    Prod.map h k ∘ Function.prod f g = Function.prod (h ∘ f) (k ∘ g) := rfl
+
+theorem prod_comp_prod {γ δ} (h : α × β → γ) (k : α × β → δ) :
+    Function.prod h k ∘ Function.prod f g =
+      Function.prod (h ∘ Function.prod f g) (k ∘ Function.prod f g) := rfl
+
+@[simp] theorem swap_comp_prod : Prod.swap ∘ Function.prod f g = Function.prod g f := rfl
+
+end Prod
+
+/- ### The diagonal map -/
+
+/-- The diagonal map into `Prod`. -/
+@[inline] protected def diag {α} : α → α × α := fun a : α ↦ (a, a)
+
+section Diag
+
+variable {α β γ : Type*} (f : α → β) (g : α → γ) (a b : α)
+
+theorem diag_def : Function.diag = fun a : α ↦ (a, a) := rfl
+
+@[simp, grind =] theorem diag_apply : Function.diag a = (a, a) := rfl
+
+theorem diag_injective : Injective (α := α) Function.diag := fun _ _ ↦ congrArg Prod.fst
+
+@[simp] theorem prod_id_id : Function.prod (@id α) id = Function.diag := rfl
+@[simp] theorem fst_comp_diag : Prod.fst ∘ Function.diag = @id α := rfl
+@[simp] theorem snd_comp_diag : Prod.snd ∘ Function.diag = @id α := rfl
+
+@[simp] theorem diag_comp : Function.diag ∘ f = Function.prod f f := rfl
+
+@[simp] theorem map_comp_diag : Prod.map f g ∘ Function.diag = Function.prod f g := rfl
+
+@[simp] theorem swap_comp_diag : Prod.swap ∘ Function.diag = Function.diag (α := α) := rfl
+
+end Diag
+
+/- ### `onFun` function -/
 
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
@@ -52,6 +147,8 @@ abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x 
 @[inherit_doc onFun]
 scoped infixl:2 " on " => onFun
 
+/- ### The argument-reversing map -/
+
 /-- For a two-argument function `f`, `swap f` is the same function but taking the arguments
 in the reverse order. `swap f y x = f x y`. -/
 abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
@@ -60,10 +157,7 @@ theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f =
 
 theorem onFun_swap_comm (f : β → β → φ) (g : α → β) : (swap f on g) = swap (f on g) := rfl
 
-attribute [mfld_simps] id_comp comp_id
-
-theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
-  rfl
+/- ### Bijective functions -/
 
 /-- A function is called bijective if it is both injective and surjective. -/
 def Bijective (f : α → β) :=
@@ -80,6 +174,8 @@ variable {f : α → β}
 theorem Injective.beq_eq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
     (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
   by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
+
+/- ### Bicomposition -/
 
 section Bicomp
 
@@ -112,6 +208,8 @@ namespace Function
 
 variable {α : Type u₁} {β : Type u₂}
 
+/- ### Fixed points of functions -/
+
 /-- A point `x` is a fixed point of `f : α → α` if `f x = x`. -/
 def IsFixedPt (f : α → α) (x : α) := f x = x
 
@@ -139,6 +237,8 @@ end Function
 namespace Pi
 
 variable {ι : Sort*} {α β : ι → Sort*}
+
+/- ### `Pi.map` function -/
 
 /-- Sends a dependent function `a : ∀ i, α i` to a dependent function `Pi.map f a : ∀ i, β i`
 by applying `f i` to `i`-th component. -/

@@ -20,7 +20,7 @@ We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
 
 noncomputable section
 
-open Real ComplexConjugate Finset Set
+open Real Finset Set
 
 /-
 ## Definitions
@@ -49,7 +49,7 @@ theorem rpow_def_of_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) :
       (Complex.ofReal_mul _ _).symm, Complex.exp_ofReal_re, Complex.ofReal_eq_zero]
 
 theorem rpow_def_of_pos {x : ℝ} (hx : 0 < x) (y : ℝ) : x ^ y = exp (log x * y) := by
-  rw [rpow_def_of_nonneg (le_of_lt hx), if_neg (ne_of_gt hx)]
+  rw [rpow_def_of_nonneg (le_of_lt hx), ite_eq_right (ne_of_gt hx)]
 
 theorem exp_mul (x y : ℝ) : exp (x * y) = exp x ^ y := by rw [rpow_def_of_pos (exp_pos _), log_exp]
 
@@ -93,7 +93,7 @@ lemma rpow_ne_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y ≠ 0 ↔ x ≠ 0 := by
 open Real
 
 theorem rpow_def_of_neg {x : ℝ} (hx : x < 0) (y : ℝ) : x ^ y = exp (log x * y) * cos (y * π) := by
-  rw [rpow_def, Complex.cpow_def, if_neg]
+  rw [rpow_def, Complex.cpow_def, ite_eq_right]
   · have : Complex.log x * y = ↑(log (-x) * y) + ↑(y * π) * Complex.I := by
       simp only [Complex.log, Complex.norm_real, norm_eq_abs, abs_of_neg hx, log_neg_eq_log,
         Complex.arg_ofReal_of_neg hx, Complex.ofReal_mul]
@@ -370,12 +370,13 @@ end Complex
 /-! ### Positivity extension -/
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: exponentiation by a real number is positive (namely 1)
 when the exponent is zero. The other cases are done in `evalRpow`. -/
 @[positivity (_ : ℝ) ^ (0 : ℝ)]
-meta def evalRpowZero : PositivityExt where eval {u α} _ _ e := do
+meta def evalRpowZero : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q($a ^ (0 : ℝ)) =>
     assertInstancesCommute
@@ -385,16 +386,17 @@ meta def evalRpowZero : PositivityExt where eval {u α} _ _ e := do
 /-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
 the base is nonnegative and positive when the base is positive. -/
 @[positivity (_ : ℝ) ^ (_ : ℝ)]
-meta def evalRpow : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRpow : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q($a ^ ($b : ℝ)) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa =>
-        pure (.positive q(Real.rpow_pos_of_pos $pa $b))
+      pure (.positive q(Real.rpow_pos_of_pos $pa $b))
     | .nonnegative pa =>
-        pure (.nonnegative q(Real.rpow_nonneg $pa $b))
+      pure (.nonnegative q(Real.rpow_nonneg $pa $b))
     | _ => pure .none
   | _, _, _ => throwError "not Real.rpow"
 

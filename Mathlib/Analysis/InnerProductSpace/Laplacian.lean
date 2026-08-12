@@ -128,6 +128,7 @@ variable (f s) in
 Laplacian for functions on real inner product spaces, with respect to a set `s`. Use `open
 InnerProductSpace` to access the notation `Δ[s]` for `InnerProductSpace.LaplacianWithin`.
 -/
+@[wikidata Q203484]
 noncomputable def laplacianWithin : E → F :=
   fun x ↦ tensorIteratedFDerivWithinTwo ℝ f s x (InnerProductSpace.canonicalCovariantTensor E)
 
@@ -137,9 +138,6 @@ scoped[InnerProductSpace] notation "Δ[" s "] " f:60 => laplacianWithin f s
 noncomputable
 instance instLaplacian : Laplacian (E → F) (E → F) where
   laplacian f x := tensorIteratedFDerivTwo ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
-
-@[deprecated (since := "2025-12-31")]
-alias InnerProduct.laplacian := _root_.Laplacian.laplacian
 
 open Laplacian
 

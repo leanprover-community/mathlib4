@@ -48,10 +48,10 @@ namespace Module
 
 variable (A : Type u) [Ring A]
 
+set_option linter.checkUnivs false in
 /-- Given a ring `A`, this structure involves a family of elements (indexed by a type `R`)
 in a free module `G →₀ A`. This allows to define an `A`-module by generators and relations,
 see `Relations.Quotient`. -/
-@[nolint checkUnivs]
 structure Relations where
   /-- the index type for generators -/
   G : Type w₀
@@ -364,7 +364,7 @@ variable {solution' : relations.Solution N} (h' : solution'.IsPresentation)
 
 /-- Uniqueness (up to a unique linear equivalence) of the module defined
 by generators and relations. -/
-def uniq : M ≃ₗ[A] N := LinearEquiv.ofLinear
+def uniq : M ≃ₗ[A] N := LinearEquiv.ofLinearMap
   (h.desc solution') (h'.desc solution)
     (h'.postcomp_injective (by simp))
     (h.postcomp_injective (by simp))
@@ -459,7 +459,7 @@ lemma isPresentation {solution : relations.Solution M}
     solution.IsPresentation where
   bijective := by
     let e : relations.Quotient ≃ₗ[A] M :=
-      LinearEquiv.ofLinear solution.fromQuotient
+      LinearEquiv.ofLinearMap solution.fromQuotient
       ((down.{v} h).desc (ofQuotient relations))
       ((down.{max u w₀} h).postcomp_injective (by aesop)) (by aesop)
     exact e.bijective
@@ -488,9 +488,9 @@ end Relations
 
 variable (M : Type v) [AddCommGroup M] [Module A M]
 
+set_option linter.checkUnivs false in
 /-- Given an `A`-module `M`, a term in this type is a presentation by `M` by
 generators and relations. -/
-@[nolint checkUnivs]
 structure Presentation extends Relations.{w₀, w₁} A,
   toRelations.Solution M, toSolution.IsPresentation where
 

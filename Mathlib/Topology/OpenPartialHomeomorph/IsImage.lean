@@ -31,7 +31,7 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 
 @[expose] public section
 
-open Function Set Filter Topology
+open Set Filter Topology
 
 variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
   [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y] [TopologicalSpace Y']
@@ -171,7 +171,7 @@ theorem isOpen_iff (h : e.IsImage s t) : IsOpen (e.source ∩ s) ↔ IsOpen (e.t
     h.preimage_eq' ▸ e.isOpen_inter_preimage hs⟩
 
 /-- Restrict an `OpenPartialHomeomorph` to a pair of corresponding open sets. -/
-@[simps! -fullyApplied apply symm_apply toPartialEquiv]
+@[simps! -fullyApplied apply symm_apply toPartialHomeomorph]
 def restr (h : e.IsImage s t) (hs : IsOpen (e.source ∩ s)) : OpenPartialHomeomorph X Y where
   toPartialEquiv := h.toPartialEquiv.restr
   open_source := hs
@@ -315,7 +315,8 @@ theorem eqOnSource_iff (e e' : OpenPartialHomeomorph X Y) :
 
 /-- `EqOnSource` is an equivalence relation. -/
 instance eqOnSourceSetoid : Setoid (OpenPartialHomeomorph X Y) :=
-  { PartialEquiv.eqOnSourceSetoid.comap toPartialEquiv with r := EqOnSource }
+  { PartialEquiv.eqOnSourceSetoid.comap
+    (fun x ↦ (toPartialHomeomorph x).toPartialEquiv) with r := EqOnSource }
 
 theorem eqOnSource_refl : e ≈ e := Setoid.refl _
 
@@ -356,6 +357,18 @@ theorem Set.EqOn.restr_eqOn_source {e e' : OpenPartialHomeomorph X Y}
     exact Set.inter_comm _ _
   · rw [e.restr_source' _ e'.open_source]
     refine (EqOn.trans ?_ h).trans ?_ <;> simp only [mfld_simps, eqOn_refl]
+
+theorem restr_eqOnSource_of_eqOn {e e' : OpenPartialHomeomorph X Y} {s : Set X}
+    (heq : EqOn e e' (e'.source ∩ interior s)) (hsub : e'.source ∩ interior s ⊆ e.source) :
+    e.restr (e'.source ∩ interior s) ≈ e'.restr s := by
+  refine ⟨?_, fun z hz ↦ heq (by simpa [e'.open_source.interior_eq] using hz.2)⟩
+  rw [e'.restr_source s, e.restr_source' _ (e'.open_source.inter isOpen_interior),
+    inter_eq_right.mpr hsub]
+
+theorem restr_eqOnSource_of_eqOn' {e e' : OpenPartialHomeomorph X Y} {s : Set X} (hs : IsOpen s)
+    (heq : EqOn e e' s) (hsub : e'.source ∩ s ⊆ e.source) :
+    e.restr (e'.source ∩ s) ≈ e'.restr s :=
+  (hs.interior_eq ▸ restr_eqOnSource_of_eqOn) (heq.mono Set.inter_subset_right) hsub
 
 theorem eq_of_eqOnSource_univ {e e' : OpenPartialHomeomorph X Y} (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' :=

@@ -95,7 +95,7 @@ lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
   by_cases hn : f.natDegree = 0
   · ext ⟨i, hi⟩; lia
   ext ⟨i, hi⟩ ⟨j, hj⟩
-  rw [sylvesterDeriv, dif_neg hn]
+  rw [sylvesterDeriv, dite_eq_right hn]
   rcases ne_or_eq i (2 * f.natDegree - 2) with hi' | rfl
   · -- Top part of matrix
     rw [Matrix.updateRow_ne (Fin.ne_of_val_ne hi'),
@@ -150,7 +150,6 @@ theorem resultant_C_zero_left : resultant (C r) g 0 m = r ^ m := by simp
 set_option backward.defeqAttrib.useBackward true in
 /-- `Res(f, g) = (-1)ᵐⁿ Res(g, f)` -/
 lemma resultant_comm : resultant f g m n = (-1) ^ (m * n) * resultant g f n m := by
-  classical
   rw [resultant, resultant, sylvester_comm, Matrix.det_reindex, Equiv.Perm.sign_eq_prod_prod_Ioi]
   congr 1
   dsimp
@@ -225,7 +224,7 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
           have : Fin.mk (n := m + n) (m + ↑i + (k + m)) (by lia) =
               Fin.natAdd m ⟨↑i + (k + m), by lia⟩ := Fin.ext (by simp; lia)
           simp only [Fin.addCases_right, Fin.val_natAdd, sub_eq_self, this]
-          rw [if_neg, mul_zero]
+          rw [ite_eq_right, mul_zero]
           lia
       lia
   rw [resultant, resultant, ← this m le_rfl]
@@ -307,7 +306,7 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
       · congr 1; lia
       · simp [pow_add]
     · simp only [sylvester, Set.mem_Icc, Matrix.of_apply, Fin.val_last, Fin.addCases_left]
-      rw [if_pos (by lia)]
+      rw [ite_eq_left (by lia)]
       simp [add_assoc, add_comm 1]
     · ext i j
       simp only [sylvester, Set.mem_Icc, Matrix.submatrix_apply, Function.comp_apply,
@@ -401,6 +400,7 @@ theorem resultant_C_left (r : R) :
     f.resultant (X + C r) m 1 = (-1) ^ m * eval (-r) f := by
   rw [← resultant_X_sub_C_right f m (-r) hf, map_neg, sub_neg_eq_add]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` and `g` are monic and splits, then `Res(f, g) = ∏ (α - β)`,
 where `α` and `β` runs through the roots of `f` and `g` respectively. -/
 lemma resultant_eq_prod_roots_sub
@@ -473,6 +473,7 @@ lemma resultant_eq_prod_roots_sub
   · rw [f.modByMonic_add_div, natDegree_divByMonic _ hg, Nat.sub_add_cancel hfg]
   · simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` splits with leading coeff `a` and degree `n`,
 then `Res(f, g) = aⁿ * ∏ g(α)` where `α` runs through the roots of `f`. -/
 nonrec lemma resultant_eq_prod_eval [IsDomain R]
@@ -490,7 +491,7 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
   by_cases hf0 : f = 0
   · simp [hf0]
   wlog hfm : f.Monic
-  · letI inst := hR.toField
+  · let inst := hR.toField
     have H : (C f.leadingCoeff⁻¹ * f).Monic := by
       rw [Monic, ← coeff_natDegree, natDegree_C_mul (by simp [hf0]), coeff_C_mul]; simp [hf0]
     have := this (C f.leadingCoeff⁻¹ * f) g n hg (.mul (.C _) hf) hR (by simpa) H
@@ -504,12 +505,12 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
     · obtain ⟨r, rfl⟩ := hfm.natDegree_eq_zero.mp hf'; simp
     simp [← hf.natDegree_eq_card_roots, hf']
   wlog hgm : g.Monic
-  · letI inst := hR.toField
+  · let inst := hR.toField
     have := this f (C g.leadingCoeff⁻¹ * g) n (by simpa [hg0, natDegree_C_mul]) hf hR hfm (by simpa)
       (by rw [Monic, ← coeff_natDegree, natDegree_C_mul (by simp [hg0]), coeff_C_mul]; simp [hg0])
     rw [resultant_C_mul_right, inv_pow, inv_mul_eq_iff_eq_mul₀ (by simp [hg0])] at this
     simpa [← hf.natDegree_eq_card_roots, inv_pow, mul_left_comm (_ ^ g.natDegree), hg0] using this
-  letI inst := hR.toField
+  let inst := hR.toField
   let L := g.SplittingField
   apply (algebraMap R L).injective
   have := resultant_eq_prod_roots_sub (f.map (algebraMap R L))
@@ -545,10 +546,10 @@ nonrec lemma induction_of_Splits_of_injective_of_surjective.{u}
   · exact injective _ _ _ (FaithfulSMul.algebraMap_injective R (FractionRing R)) _
       (this _ inferInstance (Field.toIsField _))
   wlog hp : p.Splits generalizing R
-  · letI inst := hR.toField
+  · let inst := hR.toField
     exact injective _ _ _ (algebraMap R p.SplittingField).injective _
       (this _ inferInstance (Field.toIsField _) (SplittingField.splits _))
-  letI inst := hR.toField
+  let inst := hR.toField
   exact Splits _ _ hp
 
 /-- `Res(f, g₁ * g₂) = Res(f, g₁) * Res(f, g₂)`. -/
@@ -930,6 +931,7 @@ discriminant. -/
 noncomputable def discr (f : R[X]) : R :=
   f.sylvesterDeriv.det * (-1) ^ (f.natDegree * (f.natDegree - 1) / 2)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant of a constant polynomial is `1`. -/
 @[simp] lemma discr_C (r : R) : discr (C r) = 1 := by
   let e : Fin ((C r).natDegree - 1 + (C r).natDegree) ≃ Fin 0 := finCongr (by simp)
