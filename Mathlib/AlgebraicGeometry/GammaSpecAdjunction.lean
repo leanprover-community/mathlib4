@@ -407,19 +407,6 @@ def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
   right_triangle_components R :=
     Scheme.Hom.ext' <| locallyRingedSpaceAdjunction.right_triangle_components R
 
-/-- The ring homomorphism `R ⟶ Γ(X, ⊤)` induced by a morphism `f : X ⟶ Spec R`, obtained from
-`Scheme.Hom.appTop` by identifying `Γ(Spec R, ⊤)` with `R` via `Scheme.ΓSpecIso`.
-
-This is one direction of the bijection `(X ⟶ Spec R) ≃ (R ⟶ Γ(X, ⊤))` coming from the Γ–Spec
-adjunction; compare `Spec.homEquiv` for the case when `X` is itself affine. -/
-noncomputable def _root_.AlgebraicGeometry.Scheme.Hom.appTopOfSpec {X : Scheme.{u}}
-    {R : CommRingCat.{u}} (f : X ⟶ Spec R) : R ⟶ Γ(X, ⊤) :=
-  (Scheme.ΓSpecIso R).inv ≫ f.appTop
-
-lemma _root_.AlgebraicGeometry.Scheme.Hom.appTopOfSpec_apply {X : Scheme.{u}}
-    {R : CommRingCat.{u}} (f : X ⟶ Spec R) (r : R) :
-    f.appTopOfSpec r = f.appTop ((Scheme.ΓSpecIso R).inv r) := rfl
-
 /-- Given `f, g : X ⟶ Spec(R)`, if the two induced maps `R ⟶ Γ(X)` are equal, then `f = g`. -/
 lemma _root_.AlgebraicGeometry.ext_to_Spec {X : Scheme} {R : Type*} [CommRing R]
     {f g : X ⟶ Spec (.of R)}
@@ -520,6 +507,42 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ΓSpec_adjunction_homEquiv_eq {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
     ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).appTop = (Scheme.ΓSpecIso B).hom ≫ φ := by
   rw [← Iso.inv_comp_eq, ΓSpecIso_inv_ΓSpec_adjunction_homEquiv]
+
+/-- The ring homomorphism `R ⟶ Γ(X, ⊤)` induced by a morphism `f : X ⟶ Spec R`, obtained from
+`Scheme.Hom.appTop` by identifying `Γ(Spec R, ⊤)` with `R` via `Scheme.ΓSpecIso`.
+
+This is the forward direction of `AlgebraicGeometry.Scheme.specΓHomEquiv`. -/
+noncomputable def _root_.AlgebraicGeometry.Scheme.Hom.appTopOfSpec {X : Scheme.{u}}
+    {R : CommRingCat.{u}} (f : X ⟶ Spec R) : R ⟶ Γ(X, ⊤) :=
+  (Scheme.ΓSpecIso R).inv ≫ f.appTop
+
+lemma _root_.AlgebraicGeometry.Scheme.Hom.appTopOfSpec_apply {X : Scheme.{u}}
+    {R : CommRingCat.{u}} (f : X ⟶ Spec R) (r : R) :
+    f.appTopOfSpec r = f.appTop ((Scheme.ΓSpecIso R).inv r) := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The morphism `X ⟶ Spec R` corresponding to a ring homomorphism `φ : R ⟶ Γ(X, ⊤)` under the
+Γ–Spec adjunction is `X.toSpecΓ ≫ Spec.map φ`. -/
+lemma ΓSpec_adjunction_homEquiv_op {X : Scheme.{u}} {R : CommRingCat.{u}} (φ : R ⟶ Γ(X, ⊤)) :
+    ΓSpec.adjunction.homEquiv X (op R) φ.op = X.toSpecΓ ≫ Spec.map φ := by
+  rw [Adjunction.homEquiv_apply]
+  rfl
+
+/-- The Γ–Spec adjunction as a bijection between morphisms of schemes `X ⟶ Spec R` and ring
+homomorphisms `R ⟶ Γ(X, ⊤)`. For `X` itself affine, compare `Spec.homEquiv`. -/
+@[simps]
+noncomputable def _root_.AlgebraicGeometry.Scheme.specΓHomEquiv {X : Scheme.{u}}
+    {R : CommRingCat.{u}} : (X ⟶ Spec R) ≃ (R ⟶ Γ(X, ⊤)) where
+  toFun f := f.appTopOfSpec
+  invFun φ := X.toSpecΓ ≫ Spec.map φ
+  left_inv f := by
+    change X.toSpecΓ ≫ Spec.map ((Scheme.ΓSpecIso R).inv ≫ f.appTop) = f
+    rw [Spec.map_comp, ← Category.assoc, ← Scheme.toSpecΓ_naturality, Category.assoc,
+      toSpecΓ_SpecMap_ΓSpecIso_inv, Category.comp_id]
+  right_inv φ := by
+    change (X.toSpecΓ ≫ Spec.map φ).appTopOfSpec = φ
+    rw [← ΓSpec_adjunction_homEquiv_op]
+    exact ΓSpecIso_inv_ΓSpec_adjunction_homEquiv φ
 
 set_option backward.isDefEq.respectTransparency false in
 theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
