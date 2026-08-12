@@ -50,6 +50,8 @@ that the declarations of the file use. -/
 public structure UsedModules where
   /-- The modules that define the constants used so far. -/
   used : NameSet := {}
+  /-- Whether a terminal command already produced the report of the file. -/
+  reported : Bool := false
   deriving Inhabited
 
 @[inherit_doc Mathlib.Linter.linter.unneededImport]
@@ -77,7 +79,7 @@ def unneededImportPost (readPre : PreStateFn) (stx : Syntax) (self : UsedModules
         for c in ci.getUsedConstantsAsSet do
           if let some idx := env.getModuleIdxFor? c then
             used := used.insert env.allImportedModuleNames[idx.toNat]!
-  if Parser.isTerminalCommand stx then
+  if Parser.isTerminalCommand stx && !self.reported then
     let tc := env.importGraph.transitiveClosure
     let directs := env.header.imports.map (·.module) |>.filter fun m =>
       m != `Mathlib.Init && m.getRoot != `Init
@@ -100,7 +102,8 @@ def unneededImportPost (readPre : PreStateFn) (stx : Syntax) (self : UsedModules
         logLint linter.unneededImport stx
           m!"import '{m}' is possibly unneeded: the other imports cover every constant that \
             this file uses from its import closure; {impact}"
-  return { used }
+    return { used, reported := true }
+  return { self with used }
 
 @[inherit_doc Mathlib.Linter.linter.unneededImport]
 public initialize unneededImport : StatefulLinter UsedModules Unit ←
