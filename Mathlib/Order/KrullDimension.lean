@@ -12,6 +12,8 @@ public import Mathlib.Order.Atoms
 public import Mathlib.Order.RelSeries
 public import Mathlib.Tactic.FinCases
 
+import Mathlib.Data.Nat.Cast.Order.Basic
+
 /-!
 # Krull dimension of a preordered set and height of an element
 
