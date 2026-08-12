@@ -13,6 +13,8 @@ public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCover
 
 -/
 
+@[expose] public section
+
 universe w v u
 
 namespace CategoryTheory
