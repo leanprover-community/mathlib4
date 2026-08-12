@@ -18,9 +18,11 @@ imports cover every used module of its import closure. The message also reports 
 modules that removal drops from the import closure, so findings with an effect on the closure
 identify themselves.
 
-Usage marking has two sources: the constants that the declarations of the file use, and the
-defining modules of the syntax node kinds of each command. The second source covers imports
-that only provide syntax, tactics, or attributes.
+Usage marking has three sources: the constants that the declarations of the file use, the
+defining modules of the syntax node kinds of each command, and the defining modules of the
+options that each command names. The second source covers imports that only provide syntax,
+tactics, or attributes; the third covers imports that only provide an option, because
+`set_option` belongs to core and its node kinds name no module of the file.
 -/
 
 meta section
