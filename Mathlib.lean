@@ -956,6 +956,7 @@ public import Mathlib.Algebra.Order.CauSeq.Completion
 public import Mathlib.Algebra.Order.Chebyshev
 public import Mathlib.Algebra.Order.CompleteField
 public import Mathlib.Algebra.Order.Disjointed
+public import Mathlib.Algebra.Order.Field.AmHm
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Field.Canonical
 public import Mathlib.Algebra.Order.Field.GeomSum
@@ -1076,7 +1077,6 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Order.Monoid.Units
 public import Mathlib.Algebra.Order.Monoid.WithTop
 public import Mathlib.Algebra.Order.Monovary
-public import Mathlib.Algebra.Order.Nesbitt
 public import Mathlib.Algebra.Order.Nonneg.Basic
 public import Mathlib.Algebra.Order.Nonneg.Field
 public import Mathlib.Algebra.Order.Nonneg.Floor
