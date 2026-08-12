@@ -30,7 +30,7 @@ well as such computations in `ℝ` when the natural proof passes through a fact 
 
 noncomputable section
 
-open Set Function Filter Finset Metric Module Asymptotics Topology Nat NNReal ENNReal
+open Set Function Filter Finset Metric Module Asymptotics Topology Nat
 open scoped Ring
 
 variable {α : Type*}
@@ -285,8 +285,6 @@ instance {R : Type*} [NormedRing R] [CompleteSpace R] : HasSummableGeomSeries R 
 section HasSummableGeometricSeries
 
 variable {R : Type*} [NormedRing R]
-
-open NormedSpace
 
 /-- Bound for the sum of a geometric series in a normed ring. This formula does not assume that the
 normed ring satisfies the axiom `‖1‖ = 1`. -/
@@ -605,7 +603,7 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
     (mul_nonneg_iff_of_pos_right <| pow_pos hr₀ N).mp ((norm_nonneg _).trans <| h N <| le_refl N)
   have : ∀ n ≥ N, u n = v n := by
     intro n hn
-    simp [v, if_neg (not_lt.mpr hn)]
+    simp [v, ite_eq_right (not_lt.mpr hn)]
   apply cauchySeq_sum_of_eventually_eq this
     (NormedAddCommGroup.cauchy_series_of_le_geometric' hr₁ _)
   · exact C

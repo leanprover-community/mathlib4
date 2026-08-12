@@ -8,6 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.NumberTheory.ArithmeticFunction.Misc
+import Mathlib.NumberTheory.Chebyshev
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-! # Tests for the `positivity` tactic
@@ -398,6 +399,8 @@ example {a : ℝ} (ha : 0 < a) : 0 < ⌈a⌉₊ := by positivity
 example {a : ℝ} (ha : 0 < a) : 0 < ⌈a⌉ := by positivity
 example {a : ℝ} (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by positivity
 
+example (a : ℝ) : 0 ≤ Int.fract a := by positivity
+
 end FloorCeil
 
 section Abs
@@ -486,6 +489,10 @@ example (r : ℝ) : 0 < Real.cos (Real.arctan r) := by positivity
 example {r : ℝ} (hr : 0 < r) : 0 < Real.sin (Real.arctan r) := by positivity
 example {r : ℝ} (hr : r ≠ 0) : Real.sin (Real.arctan r) ≠ 0 := by positivity
 example {r : ℝ} (hr : 0 ≤ r) : 0 ≤ Real.sin (Real.arctan r) := by positivity
+
+example (n : ℕ) : 0 ≤ ArithmeticFunction.vonMangoldt n := by positivity
+example (x : ℝ) : 0 ≤ Chebyshev.theta x := by positivity
+example (x : ℝ) : 0 ≤ Chebyshev.psi x := by positivity
 
 end SpecialFunctions
 

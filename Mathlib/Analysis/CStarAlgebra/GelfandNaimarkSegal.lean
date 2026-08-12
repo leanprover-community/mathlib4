@@ -135,7 +135,7 @@ consequence.
 -/
 @[simp]
 private lemma completion_leftMulMapPreGNS_map_smul (m : ℂ) (x : A) :
-   (f.leftMulMapPreGNS (m • x)).completion = m • (f.leftMulMapPreGNS x).completion := by
+    (f.leftMulMapPreGNS (m • x)).completion = m • (f.leftMulMapPreGNS x).completion := by
   ext a
   induction a using induction_on with
   | hp =>
@@ -180,7 +180,6 @@ lemma gnsNonUnitalStarAlgHom_apply_coe {a : A} {b : f.PreGNS} :
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A →ₚ[ℂ] ℂ)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 private lemma gnsNonUnitalStarAlgHom_map_one : f.gnsNonUnitalStarAlgHom 1 = 1 := by
   ext b
