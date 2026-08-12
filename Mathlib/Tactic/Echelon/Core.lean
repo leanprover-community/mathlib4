@@ -106,6 +106,9 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
   let mut r : Nat := 0
   -- the pivot of the previous round: the exact divisor of the elimination step
   let mut prev : V := ops.one
+  /- TODO: if we're handling larger matrices (beyond 10⁴ entries), add a checkSystem call
+  per column to honor user interruption. At current realistic sizes this computation is
+  almost instant. -/
   for c in [0:cols] do
     if r == rows then break
     -- find the first row at or below `r` with a nonzero entry in column `c`
