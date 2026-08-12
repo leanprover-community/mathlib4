@@ -213,7 +213,7 @@ end SetLike
 
 /--
 A class to indicate that the order on a type corresponds to set inclusion.
-An instance of this class is automatically available on any order defined via `LE.ofMembership`.
+An instance of this class is automatically available on any order defined via `LE.ofSetLike`.
 -/
 class IsConcreteLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
   /-- The order corresponds to set inclusion. -/
