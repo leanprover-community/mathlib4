@@ -1455,14 +1455,6 @@ open Measure
 
 open MeasureTheory
 
-protected theorem _root_.AEMeasurable.nullMeasurable {f : α → β} (h : AEMeasurable f μ) :
-    NullMeasurable f μ :=
-  let ⟨_g, hgm, hg⟩ := h; hgm.nullMeasurable.congr hg.symm
-
-lemma _root_.AEMeasurable.nullMeasurableSet_preimage {f : α → β} {s : Set β}
-    (hf : AEMeasurable f μ) (hs : MeasurableSet s) : NullMeasurableSet (f ⁻¹' s) μ :=
-  hf.nullMeasurable hs
-
 @[simp]
 theorem ae_eq_bot : ae μ = ⊥ ↔ μ = 0 := by
   rw [← empty_mem_iff_bot, mem_ae_iff, compl_empty, measure_univ_eq_zero]
@@ -1476,6 +1468,33 @@ instance Measure.ae.neBot [NeZero μ] : (ae μ).NeBot := ae_neBot.2 <| NeZero.ne
 @[simp]
 theorem ae_zero {_m0 : MeasurableSpace α} : ae (0 : Measure α) = ⊥ :=
   ae_eq_bot.2 rfl
+
+@[gcongr, mono]
+theorem ae_mono (h : μ ≤ ν) : ae μ ≤ ae ν :=
+  fun s hs ↦ bot_unique <| (h sᶜ).trans_eq hs
+
+protected theorem AEDisjoint.of_le (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≤ μ) :
+    AEDisjoint ν s t :=
+  bot_unique <| (h' (s ∩ t)).trans_eq h
+
+theorem NullMeasurableSet.mono (h : NullMeasurableSet s μ) (h' : ν ≤ μ) :
+    NullMeasurableSet s ν := by
+  obtain ⟨t, ht, hst⟩ := h
+  exact ⟨t, ht, hst.filter_mono (ae_mono h')⟩
+
+lemma NullMeasurableSet.smul_measure (h : NullMeasurableSet s μ) (c : ℝ≥0∞) :
+    NullMeasurableSet s (c • μ) := by
+  obtain ⟨t, ht, hst⟩ := h
+  exact ⟨t, ht, hst.filter_mono (ae_smul_measure_le c)⟩
+
+lemma nullMeasurableSet_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
+    NullMeasurableSet s (c • μ) ↔ NullMeasurableSet s μ := by
+  simp only [nullMeasurableSet_iff_eventuallyMeasurableSet, μ.ae_ennreal_smul_measure_eq hc]
+
+theorem _root_.AEMeasurable.mono_measure {f : α → β} (h : AEMeasurable f μ) (h' : ν ≤ μ) :
+    AEMeasurable f ν := by
+  obtain ⟨g, hg, hfg⟩ := h
+  exact ⟨g, hg, hfg.filter_mono (ae_mono h')⟩
 
 section Intervals
 
