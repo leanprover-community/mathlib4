@@ -59,8 +59,7 @@ lemma card_fiber_eq_card_hom
   obtain ⟨γ, rfl⟩ := (isPretransitive_of_isGalois F Y).exists_smul_eq y z
   exact ⟨γ.hom ≫ f, by cat_disch⟩
 
-
-lemma deg_eq_card_fiber [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] (X : C) :
+lemma deg_eq_card_fiber (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] (X : C) :
     deg X = Nat.card (F.obj X) := by
   induction X using obj_rec with
   | of_isInitial X hX =>
