@@ -49,7 +49,7 @@ theorem subsingleton_iff_discrete_and_indiscrete :
 
 /-- A non-trivial connected T1 space has no isolated points.
 
-This is now a consequence of the `PerfectSpace` instance for connected T1 nontrivial spaces
-defined in `Mathlib.Topology.Perfect`. -/
+Under an old definition of `PerfectSpace` this instance was not automatic, but the conclusion of
+this example is exactly the definition of `PerfectSpace`, so typeclass resolution can prove it. -/
 example [ConnectedSpace X] [Nontrivial X] [T1Space X] (x : X) :
     NeBot (𝓝[≠] x) := inferInstance
