@@ -37,7 +37,6 @@ theorem length'_of_not_terminates {s : Seq α} (h : ¬ s.Terminates) :
     s.length' = ⊤ := by
   simp [length', h]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem length_nil : length (nil : Seq α) terminates_nil = 0 :=
   (Nat.find_eq_zero _).mpr terminatedAt_nil

@@ -29,7 +29,7 @@ of `HasForget₂` instances.
 
 @[expose] public section
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable (V : Type*) [Category* V] {FV : V → V → Type*} {CV : V → Type*}
     [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV] [HasForget₂ V TopCat]

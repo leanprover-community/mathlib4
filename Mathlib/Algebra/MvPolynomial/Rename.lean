@@ -137,7 +137,7 @@ theorem killCompl_C (r : R) : killCompl hf (C r) = C r := algHom_C _ _
 theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
   algHom_ext fun i => by
     dsimp
-    rw [rename_X, killCompl, aeval_X, dif_pos ⟨i, rfl⟩, Equiv.ofInjective_symm_apply]
+    rw [rename_X, killCompl, aeval_X, dite_eq_left ⟨i, rfl⟩, Equiv.ofInjective_symm_apply]
 
 @[simp]
 theorem killCompl_rename_app (p : MvPolynomial σ R) : killCompl hf (rename f p) = p :=
@@ -346,7 +346,6 @@ theorem coeff_rename_embDomain (f : σ ↪ τ) (φ : MvPolynomial σ R) (d : σ 
     (rename f φ).coeff (d.embDomain f) = φ.coeff d := by
   rw [Finsupp.embDomain_eq_mapDomain f, coeff_rename_mapDomain f f.injective]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ →₀ ℕ)
     (h : ∀ u : σ →₀ ℕ, u.mapDomain f = d → φ.coeff u = 0) : (rename f φ).coeff d = 0 := by
   classical

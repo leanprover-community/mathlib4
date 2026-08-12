@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Galois.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 /-!
 # Full subcategories of Galois categories
@@ -33,14 +34,18 @@ namespace ObjectProperty
 `IsGaloisSubcategory` expresses stability properties which imply that
 the fullsubcategory given by `P` is also a Galois category. -/
 class IsGaloisSubcategory (P : ObjectProperty C) : Prop where
+  /-- If `C` has a terminal object,`P` is sat. -/
   isClosedUnderLimitsOfShape_discrete_pEmpty :
     P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty) := by infer_instance
+  /-- `P` is stable under pullbacks. -/
   isClosedUnderLimitsOfShape_walkingCospan :
-    P.IsClosedUnderLimitsOfShape WalkingCospan  := by infer_instance
+    P.IsClosedUnderLimitsOfShape WalkingCospan := by infer_instance
+  /-- `P` is stable under finite coproducs. -/
   isClosedUnderColimitsOfShape_discrete (ι : Type) [Finite ι] :
-    P.IsClosedUnderColimitsOfShape (Discrete.{0} ι) := by intros; infer_instance
+    P.IsClosedUnderColimitsOfShape (Discrete ι) := by infer_instance
+  /-- `P` is stable under quotients by finite groups. -/
   isClosedUnderColimitsOfShape_singleObj (G : Type v) [Group G] [Finite G] :
-    P.IsClosedUnderColimitsOfShape (SingleObj G) := by intros; infer_instance
+    P.IsClosedUnderColimitsOfShape (SingleObj G) := by infer_instance
   isClosedUnderSubobjects : P.IsClosedUnderSubobjects := by infer_instance
   preservesEpimorphisms : P.ι.PreservesEpimorphisms := by infer_instance
 
@@ -50,7 +55,6 @@ instance (P : ObjectProperty C) [P.IsClosedUnderFiniteColimits]
   obtain ⟨G', _, _, ⟨e⟩⟩ := Finite.exists_type_univ_nonempty_mulEquiv G
   rw [isClosedUnderColimitsOfShape_iff_of_equivalence _ e.toSingleObjEquiv]
   infer_instance
-
 namespace IsGaloisSubcategory
 
 attribute [instance] isClosedUnderLimitsOfShape_discrete_pEmpty
