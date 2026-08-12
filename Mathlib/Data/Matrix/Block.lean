@@ -340,11 +340,11 @@ theorem blockDiagonal_apply (M : o → Matrix m n α) (ik jk) :
 @[simp]
 theorem blockDiagonal_apply_eq (M : o → Matrix m n α) (i j k) :
     blockDiagonal M (i, k) (j, k) = M k i j :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem blockDiagonal_apply_ne (M : o → Matrix m n α) (i j) {k k'} (h : k ≠ k') :
     blockDiagonal M (i, k) (j, k') = 0 :=
-  if_neg h
+  ite_eq_right h
 
 theorem blockDiagonal_map (M : o → Matrix m n α) (f : α → β) (hf : f 0 = 0) :
     (blockDiagonal M).map f = blockDiagonal fun k => (M k).map f := by
@@ -594,11 +594,11 @@ theorem blockDiagonal'_apply (M : ∀ i, Matrix (m' i) (n' i) α) (ik jk) :
 @[simp]
 theorem blockDiagonal'_apply_eq (M : ∀ i, Matrix (m' i) (n' i) α) (k i j) :
     blockDiagonal' M ⟨k, i⟩ ⟨k, j⟩ = M k i j :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem blockDiagonal'_apply_ne (M : ∀ i, Matrix (m' i) (n' i) α) {k k'} (i j) (h : k ≠ k') :
     blockDiagonal' M ⟨k, i⟩ ⟨k', j⟩ = 0 :=
-  dif_neg h
+  dite_eq_right h
 
 theorem blockDiagonal'_map (M : ∀ i, Matrix (m' i) (n' i) α) (f : α → β) (hf : f 0 = 0) :
     (blockDiagonal' M).map f = blockDiagonal' fun k => (M k).map f := by
@@ -679,10 +679,10 @@ theorem blockDiagonal'_mul [NonUnitalNonAssocSemiring α] [∀ i, Fintype (n' i)
   ext ⟨k, i⟩ ⟨k', j⟩
   simp only [blockDiagonal'_apply, mul_apply, ← Finset.univ_sigma_univ, Finset.sum_sigma]
   rw [Fintype.sum_eq_single k]
-  · simp only [dif_pos]
+  · simp only [dite_eq_left]
     split_ifs <;> simp
   · intro j' hj'
-    exact Finset.sum_eq_zero fun _ _ => by rw [dif_neg hj'.symm, zero_mul]
+    exact Finset.sum_eq_zero fun _ _ => by rw [dite_eq_right hj'.symm, zero_mul]
 
 section
 
@@ -857,7 +857,6 @@ lemma Matrix.comp_toSquareBlock {b : m → α}
 
 variable [Zero R] [DecidableEq m]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Matrix.comp_diagonal (d) :
     comp m m n n R (diagonal d) =
       (blockDiagonal d).reindex (.prodComm ..) (.prodComm ..) := by
