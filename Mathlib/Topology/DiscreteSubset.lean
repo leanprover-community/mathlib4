@@ -255,12 +255,32 @@ theorem mem_nhdsWithin_of_mem_codiscreteWithin {S T : Set X} (hS : S ∈ codiscr
     {x : X} (hx : x ∈ T) : S ∈ 𝓝[T \ {x}] x :=
   mem_codiscreteWithin_iff_forall_mem_nhdsWithin.1 hS x hx
 
+/-- A property holds along `codiscreteWithin U` iff, for every point `x` of `U`, it holds along
+the punctured neighborhood of `x`, at every point of `U`. -/
+theorem eventually_codiscreteWithin_iff_forall_eventually_nhdsNE {U : Set X} {p : X → Prop} :
+    (∀ᶠ x in codiscreteWithin U, p x) ↔ ∀ x ∈ U, ∀ᶠ y in 𝓝[≠] x, y ∈ U → p y := by
+  simp [mem_codiscreteWithin_iff_forall_mem_nhdsNE, Filter.eventually_iff, Set.union_def,
+    imp_iff_not_or, or_comm]
+
+omit [TopologicalSpace Y] in
+/-- Two functions agree along `codiscreteWithin U` iff, for every point `x` of `U`, they agree
+along the punctured neighborhood of `x`, at every point of `U`. -/
+theorem eventuallyEq_codiscreteWithin_iff_forall_eventually_nhdsNE {U : Set X} :
+    f₁ =ᶠ[codiscreteWithin U] f₂ ↔ ∀ x ∈ U, ∀ᶠ y in 𝓝[≠] x, y ∈ U → f₁ y = f₂ y :=
+  eventually_codiscreteWithin_iff_forall_eventually_nhdsNE
+
+/-- A property holds along `codiscreteWithin U` iff, for every point `x` of `U`, it holds along
+the punctured neighborhood within `U` of `x`. -/
+theorem eventually_codiscreteWithin_iff_forall_eventually_nhdsWithin {U : Set X} {p : X → Prop} :
+    (∀ᶠ x in codiscreteWithin U, p x) ↔ ∀ x ∈ U, ∀ᶠ y in 𝓝[U \ {x}] x, p y :=
+  mem_codiscreteWithin_iff_forall_mem_nhdsWithin
+
 omit [TopologicalSpace Y] in
 /-- Two functions agree along `codiscreteWithin U` iff, for every point `x` of `U`, they agree
 along the punctured neighborhood within `U` of `x`. -/
 theorem eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsWithin {U : Set X} :
-    f₁ =ᶠ[codiscreteWithin U] f₂ ↔ ∀ x ∈ U, f₁ =ᶠ[𝓝[U \ {x}] x] f₂ := by
-  simp [codiscreteWithin, EventuallyEq]
+    f₁ =ᶠ[codiscreteWithin U] f₂ ↔ ∀ x ∈ U, f₁ =ᶠ[𝓝[U \ {x}] x] f₂ :=
+  eventually_codiscreteWithin_iff_forall_eventually_nhdsWithin
 
 lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
@@ -429,14 +449,22 @@ lemma mem_nhdsNE_of_mem_codiscrete (hs : s ∈ Filter.codiscrete X) (x : X) :
     s ∈ 𝓝[≠] x :=
   mem_codiscrete_iff_forall_mem_nhdsNE.1 hs x
 
+/--
+A property holds along the codiscrete filter iff it holds along the punctured neighborhood of
+every point. -/
+@[simp]
+lemma eventually_codiscrete_iff_forall_eventually_nhdsNE {p : X → Prop} :
+    (∀ᶠ x in Filter.codiscrete X, p x) ↔ ∀ x, ∀ᶠ y in 𝓝[≠] x, p y :=
+  mem_codiscrete_iff_forall_mem_nhdsNE
+
 omit [TopologicalSpace Y] in
 /--
 Two functions agree along the codiscrete filter iff they agree along the punctured neighborhood of
 every point. -/
 @[simp]
 lemma eventuallyEq_codiscrete_iff_forall_eventuallyEq_nhdsNE :
-    f₁ =ᶠ[Filter.codiscrete X] f₂ ↔ ∀ x, f₁ =ᶠ[𝓝[≠] x] f₂ := by
-  simp [EventuallyEq, Filter.Eventually, mem_codiscrete_iff_forall_mem_nhdsNE]
+    f₁ =ᶠ[Filter.codiscrete X] f₂ ↔ ∀ x, f₁ =ᶠ[𝓝[≠] x] f₂ :=
+  eventually_codiscrete_iff_forall_eventually_nhdsNE
 
 lemma mem_codiscrete_accPt {S : Set X} :
     S ∈ codiscrete X ↔ ∀ x, ¬AccPt x (𝓟 Sᶜ) := by
