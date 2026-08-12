@@ -669,6 +669,13 @@ noncomputable def smulEnd :
     let := globalModule F U.unop
     exact add_smul r s y
 
+@[simp] lemma smulNatTrans_app_apply (r : Γ(X, ⊤)) (U : (TopologicalSpace.Opens X)ᵒᵖ)
+    (x : Γ(F, U.unop)) :
+    ((smulNatTrans F r).app U).hom x = globalRestrict U.unop r • x := rfl
+
+lemma smulEnd_eq_homEquiv_symm (r : Γ(X, ⊤)) :
+    smulEnd F r = Sheaf.homEquiv.symm (smulNatTrans F r) := rfl
+
 end GlobalAction
 
 end AlgebraicGeometry.Scheme.Modules

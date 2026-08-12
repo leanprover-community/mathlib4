@@ -544,6 +544,29 @@ noncomputable def _root_.AlgebraicGeometry.Scheme.specΓHomEquiv {X : Scheme.{u}
     rw [← ΓSpec_adjunction_homEquiv_op]
     exact ΓSpecIso_inv_ΓSpec_adjunction_homEquiv φ
 
+/-- Naturality of `Scheme.specΓHomEquiv` in the scheme variable. -/
+@[simp]
+lemma _root_.AlgebraicGeometry.Scheme.Hom.comp_appTopOfSpec {X Y : Scheme.{u}}
+    {R : CommRingCat.{u}} (g : Y ⟶ X) (f : X ⟶ Spec R) :
+    (g ≫ f).appTopOfSpec = f.appTopOfSpec ≫ g.appTop := by
+  simp [Scheme.Hom.appTopOfSpec]
+
+/-- Naturality of `Scheme.specΓHomEquiv` in the ring variable. Not a `simp` lemma: its left-hand
+side is already reduced by `comp_appTopOfSpec` and `specMap_appTopOfSpec`. -/
+lemma _root_.AlgebraicGeometry.Scheme.Hom.appTopOfSpec_comp_specMap {X : Scheme.{u}}
+    {R S : CommRingCat.{u}} (f : X ⟶ Spec S) (φ : R ⟶ S) :
+    (f ≫ Spec.map φ).appTopOfSpec = φ ≫ f.appTopOfSpec := by
+  have key : (Scheme.ΓSpecIso R).inv ≫ (Spec.map φ).appTop = φ ≫ (Scheme.ΓSpecIso S).inv := by
+    rw [Iso.inv_comp_eq, ← Category.assoc, ← Scheme.ΓSpecIso_naturality]
+    simp
+  rw [Scheme.Hom.appTopOfSpec, Scheme.Hom.comp_appTop, ← Category.assoc, key, Category.assoc]
+  rfl
+
+@[simp]
+lemma _root_.AlgebraicGeometry.Scheme.Hom.specMap_appTopOfSpec {R S : CommRingCat.{u}}
+    (φ : R ⟶ S) : (Spec.map φ).appTopOfSpec = φ ≫ (Scheme.ΓSpecIso S).inv := by
+  simp [Scheme.Hom.appTopOfSpec]
+
 set_option backward.isDefEq.respectTransparency false in
 theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
     (Scheme.ΓSpecIso Γ(X, U)).hom = (Spec.map U.topIso.inv).appTop ≫
@@ -617,6 +640,15 @@ def Spec.homEquiv {R S : CommRingCat} : (Spec S ⟶ Spec R) ≃ (R ⟶ S) where
   invFun := Spec.map
   left_inv := Spec.map_preimage
   right_inv := Spec.preimage_map
+
+/-- For `X` affine, `Scheme.specΓHomEquiv` is `Spec.homEquiv` followed by the identification of
+`Γ(Spec S, ⊤)` with `S`. -/
+lemma Scheme.specΓHomEquiv_eq_homEquiv {R S : CommRingCat.{u}} (f : Spec S ⟶ Spec R) :
+    Scheme.specΓHomEquiv f = Spec.homEquiv f ≫ (Scheme.ΓSpecIso S).inv := by
+  change f.appTopOfSpec = _
+  conv_lhs => rw [← Spec.map_preimage f]
+  rw [Scheme.Hom.specMap_appTopOfSpec]
+  rfl
 
 @[simp]
 lemma Spec.preimage_id {R : CommRingCat} : Spec.preimage (𝟙 (Spec R)) = 𝟙 R :=
