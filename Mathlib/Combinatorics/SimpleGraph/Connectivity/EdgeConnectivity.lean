@@ -185,8 +185,8 @@ The edge connectivity number of a graph `G` is the largest `k` such that `G` is 
 noncomputable def edgeConnectivity (G : SimpleGraph V) : ℕ∞ :=
   ⨆ (k : ℕ) (_ : G.IsEdgeConnected k), k
 
-theorem edgeReachability_of_Reachable (G : SimpleGraph V) (u v : V) (h : G.Reachable u v)
-  : G.edgeReachability u v ≠ 0 := by
+theorem edgeReachability_of_Reachable (G : SimpleGraph V) (u v : V)
+    (h : G.Reachable u v) : G.edgeReachability u v ≠ 0 := by
   rw [Order.one_le_iff_ne_zero.symm]
   have : G.IsEdgeReachable 1 u v := isEdgeReachable_one.mpr h
   simp only [le_iSup_iff, edgeReachability]
