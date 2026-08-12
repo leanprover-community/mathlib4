@@ -47,6 +47,7 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
     ext
     exact aeval_algebraMap_apply S (⟨x, _⟩ : K[x]) _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K[x]`,
 where `d` is the degree of the minimal polynomial of `x`. See `Algebra.adjoin.powerBasis'` for
 a version over a more general base ring. -/
@@ -66,10 +67,12 @@ noncomputable def _root_.PowerBasis.ofAdjoinEqTop {x : S} (hx : IsIntegral K x)
     (hx' : K[x] = ⊤) : PowerBasis K S :=
   (adjoin.powerBasis hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem _root_.PowerBasis.ofAdjoinEqTop_gen {x : S} (hx : IsIntegral K x)
     (hx' : K[x] = ⊤) : (PowerBasis.ofAdjoinEqTop hx hx').gen = x := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem _root_.PowerBasis.ofAdjoinEqTop_dim {x : S} (hx : IsIntegral K x)
     (hx' : K[x] = ⊤) :
@@ -107,7 +110,7 @@ theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen)
   have hlt : Q.natDegree < B.dim := by
     rw [← B.natDegree_minpoly, hmin, (minpoly.monic hB).natDegree_map,
       natDegree_lt_natDegree_iff hQ]
-    letI : Nontrivial R := Nontrivial.of_polynomial_ne hQ
+    let : Nontrivial R := Nontrivial.of_polynomial_ne hQ
     exact degree_modByMonic_lt _ (minpoly.monic hB)
   rw [this, aeval_eq_sum_range' hlt]
   simp only [map_sum, Finset.sum_apply']
@@ -117,7 +120,7 @@ theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen)
     Algebra.smul_def, map_smul]
   simp only [algebraMap_smul, Finsupp.coe_smul, Pi.smul_apply, B.basis.repr_self_apply]
   by_cases hij : (⟨j, hj⟩ : Fin _) = i
-  · simp only [hij, if_true]
+  · simp only [hij, ite_true]
     rw [Algebra.smul_def, mul_one]
     exact isIntegral_algebraMap
   · simp [hij, isIntegral_zero]

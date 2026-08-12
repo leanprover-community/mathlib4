@@ -140,7 +140,7 @@ theorem eventually_isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ}
     exact hcard_edges.trans (mod_cast card_edgeFinset_le_extremalNumber h_free)
   · exact antitoneOn_extremalNumber_div_choose_two H hm (hm.trans hn) hn
 
-open Classical in
+open scoped Classical in
 /-- The edge density of `H`-free simple graphs on `turanDensityConst H ε` vertices
 is at most `turanDensity H + ε`.
 
@@ -154,13 +154,13 @@ noncomputable abbrev turanDensityConst (H : SimpleGraph W) (ε : ℝ) :=
     Nat.find <| eventually_atTop.mp <| eventually_isContained_of_card_edgeFinset H h
   else 0
 
-open Classical in
 /-- Simple graphs on `card V` vertices having at least `(turanDensity H + o(1)) * (card V) ^ 2`
 edges contain `H`, for sufficiently large `card V`. -/
 theorem isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ} (hε_pos : 0 < ε)
     {V : Type*} [Fintype V] (h_verts : card V ≥ turanDensityConst H ε)
     (G : SimpleGraph V) [DecidableRel G.Adj] :
     #G.edgeFinset ≥ (turanDensity H + ε) * (card V).choose 2 → H ⊑ G := by
+  classical
   rw [(G.overFinIso rfl).card_edgeFinset_eq, isContained_congr Iso.refl (G.overFinIso rfl)]
   apply Nat.find_spec <| eventually_atTop.mp <| eventually_isContained_of_card_edgeFinset H hε_pos
   simpa only [turanDensityConst, hε_pos, ↓reduceDIte] using h_verts

@@ -43,6 +43,7 @@ lemma map_condition : G.map c.ι ≫ G.map f = 0 := by
 
 /-- A kernel fork for `f` is mapped to a kernel fork for `G.map f` if `G` is a functor
 which preserves zero morphisms. -/
+@[implicit_reducible]
 def map : KernelFork (G.map f) :=
   KernelFork.ofι (G.map c.ι) (c.map_condition G)
 
@@ -172,6 +173,7 @@ lemma map_condition : G.map f ≫ G.map c.π = 0 := by
 
 /-- A cokernel cofork for `f` is mapped to a cokernel cofork for `G.map f` if `G` is a functor
 which preserves zero morphisms. -/
+@[implicit_reducible]
 def map : CokernelCofork (G.map f) :=
   CokernelCofork.ofπ (G.map c.π) (c.map_condition G)
 
@@ -304,6 +306,7 @@ instance preservesKernel_zero :
     refine IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (G.map_zero _ _)) ?_
     exact (Fork.ext (G.mapIso (asIso (Fork.ι c))).symm (by simp))⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 noncomputable instance preservesCokernel_zero :
     PreservesColimit (parallelPair (0 : X ⟶ Y) 0) G where
@@ -333,6 +336,7 @@ variable [HasZeroObject C] [HasZeroObject D]
 
 variable {X Y : C} (f : X ⟶ Y)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Mapping a `zeroKernelFork` of `f : X ⟶ Y` along a functor `G` that preserves zero morphisms
 is isomorphic to the `zeroKernelFork` of `G.map f`. -/
 def mapZeroKernelFork :

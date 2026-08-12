@@ -272,6 +272,7 @@ def singleFunctorsPostcompQIso :
       SingleFunctors.postcompIsoOfIso
         (CochainComplex.singleFunctors C) (quotientCompQhIso C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).hom.hom n = 𝟙 _ := by
@@ -282,6 +283,7 @@ lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
   erw [Category.id_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).inv.hom n = 𝟙 _ := by

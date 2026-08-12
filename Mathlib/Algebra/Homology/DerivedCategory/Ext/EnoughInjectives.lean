@@ -101,7 +101,7 @@ lemma eq_zero_of_injective [HasExt.{w} C] {X I : C} {n : ℕ} [Injective I]
     (e : Ext X I (n + 1)) : e = 0 := by
   let K := (CochainComplex.singleFunctor C 0).obj X
   have := K.isStrictlyGE_of_ge (-n) 0 (by lia)
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   apply homEquiv.injective
   simp only [← cancel_mono (((singleFunctors C).shiftIso (n + 1) (-(n + 1)) 0
     (by lia)).hom.app _), zero_hom, Limits.zero_comp]
@@ -125,7 +125,7 @@ instances, we would have to specify the universe explicitly almost
 everywhere, which would be an inconvenience. Then, we must be
 very selective regarding `HasExt` instances. -/
 lemma hasExt_of_enoughInjectives [LocallySmall.{w} C] [EnoughInjectives C] : HasExt.{w} C := by
-    letI := HasDerivedCategory.standard C
+    let := HasDerivedCategory.standard C
     have := hasExt_of_hasDerivedCategory C
     rw [hasExt_iff_small_ext.{w}]
     intro X Y n
