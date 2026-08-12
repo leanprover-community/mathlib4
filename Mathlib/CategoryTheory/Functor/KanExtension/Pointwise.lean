@@ -220,7 +220,6 @@ variable {F L}
 variable (E : LeftExtension L F)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cocone for `CostructuredArrow.proj L Y ⋙ F` attached to `E : LeftExtension L F`.
 The point of this cocone is `E.right.obj Y` -/
 @[simps]
@@ -264,6 +263,7 @@ lemma IsPointwiseLeftKanExtensionAt.isIso_hom_app
     IsIso (E.hom.app X) := by
   simpa using h.isIso_ι_app_of_isTerminal _ CostructuredArrow.mkIdTerminal
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The condition of being a pointwise left Kan extension at an object `Y` is
 unchanged by replacing `Y` by an isomorphic object `Y'`. -/
@@ -453,6 +453,7 @@ lemma IsPointwiseRightKanExtensionAt.isIso_hom_app
     IsIso (E.hom.app X) := by
   simpa using h.isIso_π_app_of_isInitial _ StructuredArrow.mkIdInitial
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The condition of being a pointwise right Kan extension at an object `Y` is
 unchanged by replacing `Y` by an isomorphic object `Y'`. -/
@@ -651,7 +652,6 @@ instance : HasLeftKanExtension L F :=
   HasLeftKanExtension.mk _ (pointwiseLeftKanExtensionUnit L F)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary cocone used in the lemma `pointwiseLeftKanExtension_desc_app` -/
 @[simps]
 def costructuredArrowMapCocone (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
@@ -759,7 +759,6 @@ instance : HasRightKanExtension L F :=
   HasRightKanExtension.mk _ (pointwiseRightKanExtensionCounit L F)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary cocone used in the lemma `pointwiseRightKanExtension_lift_app` -/
 @[simps]
 def structuredArrowMapCone (G : D ⥤ H) (α : L ⋙ G ⟶ F) (Y : D) :
