@@ -205,10 +205,7 @@ def GeneratingSections.localGeneratorsData {M : SheafOfModules.{u} R} (G : M.Gen
     M.LocalGeneratorsData where
   I := C
   X := id
-  coversTop x := GrothendieckTopology.covering_of_eq_top J <| by
-    rw [Sieve.ext_iff]
-    intro _ f
-    simp [Sieve.top_apply]
+  coversTop x := GrothendieckTopology.covering_of_eq_top J <| by simp
   generators x := G.over x
 
 variable [∀ X Y, ((J.over X).over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
