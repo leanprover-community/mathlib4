@@ -76,10 +76,10 @@ lemma IsGalois.of_iso [GaloisCategory C]
   simp only [autMulFiber_def, Aut.autMulEquivOfIso_apply_hom,
     ← ConcreteCategory.comp_apply, ← Functor.map_comp, Iso.hom_inv_id_assoc]
 
-instance [GaloisCategory C] {X Y : (isConnected C).FullSubcategory} (f : X ⟶ Y) :
-    Epi f.hom := by
-  let F := getFiberFunctor C
-  exact epi_of_nonempty_of_isConnected F _
+instance [GaloisCategory C] {X Y : C} [PreGaloisCategory.IsConnected X]
+    [PreGaloisCategory.IsConnected Y] (f : X ⟶ Y) :
+    Epi f :=
+  epi_of_nonempty_of_isConnected (getFiberFunctor C) _
 
 instance [GaloisCategory C] {X Y : (isConnected C).FullSubcategory} (f : X ⟶ Y) :
     Epi f where
