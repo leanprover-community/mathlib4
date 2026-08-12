@@ -19,10 +19,12 @@ coincide.
 
 ## Main definitions
 
-* `Function.locallyFinsuppWithin.toFinsupp`: a function with locally finite support within a
-  compact set is finitely supported.
-* `Function.locallyFinsupp.ofFinsupp`, `Function.locallyFinsupp.equivFinsupp`,
-  `Function.locallyFinsupp.addEquivFinsupp`: on a compact space the two notions agree.
+* `Function.locallyFinsuppWithin.toFinsupp`: a function with locally finite support that in fact
+  has finite support, as a `Finsupp`.
+* `Function.locallyFinsupp.ofFinsupp`, `Function.locallyFinsupp.ofFinsuppAddHom`: a finitely
+  supported function as a function with locally finite support.
+* `Function.locallyFinsupp.equivFinsupp`, `Function.locallyFinsupp.addEquivFinsupp`: on a compact
+  space the two notions agree.
 * `Function.locallyFinsupp.singleSet`: the indicator functions `single p g` with `p ∈ s`
   and `g ∈ G`.
 
@@ -50,18 +52,22 @@ variable {X Y : Type*} [TopologicalSpace X] {U s : Set X}
 
 namespace Function.locallyFinsuppWithin
 
-/-- On a compact set, a function with locally finite support is finitely supported. -/
-noncomputable def toFinsupp [Zero Y] (D : locallyFinsuppWithin U Y) (hU : IsCompact U) :
+/-- A function with locally finite support that in fact has finite support, as a `Finsupp`.
+
+The hypothesis is automatic when `U` is compact, see
+`Function.locallyFinsuppWithin.finiteSupport`. -/
+noncomputable def toFinsupp [Zero Y] (D : locallyFinsuppWithin U Y) (h : D.support.Finite) :
     X →₀ Y where
-  support := (D.finiteSupport hU).toFinset
+  support := h.toFinset
   toFun := D
   mem_support_toFun _ := by simp [mem_support]
 
-@[simp] lemma coe_toFinsupp [Zero Y] (D : locallyFinsuppWithin U Y) (hU : IsCompact U) :
-    ⇑(D.toFinsupp hU) = D := rfl
+@[simp] lemma coe_toFinsupp [Zero Y] (D : locallyFinsuppWithin U Y) (h : D.support.Finite) :
+    ⇑(D.toFinsupp h) = D := rfl
 
-@[simp] lemma coe_support_toFinsupp [Zero Y] (D : locallyFinsuppWithin U Y) (hU : IsCompact U) :
-    ((D.toFinsupp hU).support : Set X) = D.support := by simp [toFinsupp]
+@[simp] lemma support_toFinsupp [Zero Y] (D : locallyFinsuppWithin U Y) (h : D.support.Finite) :
+    (D.toFinsupp h).support = h.toFinset := rfl
+
 
 end Function.locallyFinsuppWithin
 
@@ -91,21 +97,21 @@ def ofFinsupp (f : X →₀ Y) : locallyFinsupp X Y where
   ext x
   simp [Finsupp.single_apply, single_apply, eq_comm]
 
+@[simp] lemma ofFinsupp_toFinsupp (D : locallyFinsupp X Y) (h : D.support.Finite) :
+    ofFinsupp (D.toFinsupp h) = D := rfl
+
+@[simp] lemma toFinsupp_ofFinsupp (f : X →₀ Y) (h : (ofFinsupp f).support.Finite) :
+    (ofFinsupp f).toFinsupp h = f := by ext; rfl
+
 variable [CompactSpace X]
-
-@[simp] lemma ofFinsupp_toFinsupp (D : locallyFinsupp X Y) :
-    ofFinsupp (D.toFinsupp isCompact_univ) = D := rfl
-
-@[simp] lemma toFinsupp_ofFinsupp (f : X →₀ Y) :
-    (ofFinsupp f).toFinsupp isCompact_univ = f := by ext; rfl
 
 /-- On a compact space, functions with locally finite support are exactly the finitely supported
 functions. -/
 @[simps] noncomputable def equivFinsupp : locallyFinsupp X Y ≃ (X →₀ Y) where
-  toFun D := D.toFinsupp isCompact_univ
+  toFun D := D.toFinsupp (D.finiteSupport isCompact_univ)
   invFun := ofFinsupp
-  left_inv := ofFinsupp_toFinsupp
-  right_inv := toFinsupp_ofFinsupp
+  left_inv D := ofFinsupp_toFinsupp D _
+  right_inv f := toFinsupp_ofFinsupp f _
 
 end OfFinsupp
 
@@ -117,6 +123,15 @@ variable [AddMonoid Y]
 
 @[simp] lemma ofFinsupp_add (f g : X →₀ Y) : ofFinsupp (f + g) = ofFinsupp f + ofFinsupp g := rfl
 
+variable (X Y) in
+/-- `Function.locallyFinsupp.ofFinsupp` as an additive monoid homomorphism. Unlike
+`Function.locallyFinsupp.addEquivFinsupp` this needs no compactness assumption, so it can be used
+to transport identities such as `Finsupp.sum_single` to functions with locally finite support. -/
+@[simps] def ofFinsuppAddHom : (X →₀ Y) →+ locallyFinsupp X Y where
+  toFun := ofFinsupp
+  map_zero' := ofFinsupp_zero
+  map_add' := ofFinsupp_add
+
 /-- On a compact space, functions with locally finite support are additively equivalent to the
 finitely supported functions. -/
 noncomputable def addEquivFinsupp [CompactSpace X] :
@@ -125,7 +140,7 @@ noncomputable def addEquivFinsupp [CompactSpace X] :
   map_add' _ _ := by ext; rfl
 
 @[simp] lemma addEquivFinsupp_apply [CompactSpace X] (D : locallyFinsupp X Y) :
-    addEquivFinsupp D = D.toFinsupp isCompact_univ := rfl
+    addEquivFinsupp D = D.toFinsupp (D.finiteSupport isCompact_univ) := rfl
 
 @[simp] lemma coe_addEquivFinsupp_symm [CompactSpace X] :
     ⇑(addEquivFinsupp : locallyFinsupp X Y ≃+ (X →₀ Y)).symm = ofFinsupp := rfl
@@ -143,7 +158,8 @@ protected theorem induction [DecidableEq X] [CompactSpace X] [AddMonoid Y]
     (add_single : ∀ (p : X) (y : Y) (E : locallyFinsupp X Y), p ∉ E.support → y ≠ 0 →
       motive E → motive (E + single p y)) :
     motive D := by
-  suffices h : ∀ f : X →₀ Y, motive (ofFinsupp f) by simpa using h (D.toFinsupp isCompact_univ)
+  suffices h : ∀ f : X →₀ Y, motive (ofFinsupp f) by
+    simpa using h (D.toFinsupp (D.finiteSupport isCompact_univ))
   intro f
   induction f using Finsupp.induction₂ with
   | zero => simpa using zero
@@ -187,7 +203,7 @@ lemma mem_closure_singleSet_iff [DecidableEq X] [CompactSpace X] [AddGroup Y] {G
     simp
   rw [himg, AddSubgroup.mem_map_equiv, AddEquiv.symm_symm,
     Finsupp.mem_addSubgroup_closure_setOf_single_iff hG, addEquivFinsupp_apply,
-    coe_support_toFinsupp]
+    support_toFinsupp, Set.Finite.coe_toFinset]
 
 variable (s) in
 /-- On a compact space, the functions supported in `s` are exactly the additive subgroup generated
