@@ -33,7 +33,7 @@ Theorems about PID's are in the `PrincipalIdealRing` namespace.
 ## Main results
 
 - `Ideal.IsPrime.to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
-- `EuclideanDomain.to_principal_ideal_domain` : a Euclidean domain is a PID.
+- `EuclideanDomain.instIsPrincipalIdealRing`: a Euclidean domain is a PID.
 - `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
 
 -/
@@ -284,37 +284,29 @@ theorem mod_mem_iff {S : Ideal R} {x y : R} (hy : y ∈ S) : x % y ∈ S ↔ x �
     (mod_eq_sub_mul_div x y).symm ▸ S.sub_mem hx (S.mul_mem_right _ hy)⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincipalIdealRing R where
-  principal S := by classical exact
-    ⟨if h : { x : R | x ∈ S ∧ x ≠ 0 }.Nonempty then
-        have wf : WellFounded (EuclideanDomain.r : R → R → Prop) := EuclideanDomain.r_wellFounded
-        have hmin : WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∈ S ∧
-            WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ≠ 0 :=
-          WellFounded.min_mem wf { x : R | x ∈ S ∧ x ≠ 0 } h
-        ⟨WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h,
-          Submodule.ext fun x => ⟨fun hx =>
-            div_add_mod x (WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h) ▸
-              (Ideal.mem_span_singleton.2 <| dvd_add (dvd_mul_right _ _) <| by
-                have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∉
-                    { x : R | x ∈ S ∧ x ≠ 0 } :=
-                  fun h₁ => WellFounded.not_lt_min wf _ h₁ (mod_lt x hmin.2)
-                have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h = 0 := by
-                  simp only [not_and_or, Set.mem_ofPred_eq, not_ne_iff] at this
-                  exact this.neg_resolve_left <| (mod_mem_iff hmin.1).2 hx
-                simp [*]),
-              fun hx =>
-                let ⟨y, hy⟩ := Ideal.mem_span_singleton.1 hx
-                hy.symm ▸ S.mul_mem_right _ hmin.1⟩⟩
-      else ⟨0, Submodule.ext fun a => by
-            rw [← @Submodule.bot_coe R R _ _ _, span_eq, Submodule.mem_bot]
-            exact ⟨fun haS => by_contra fun ha0 => h ⟨a, ⟨haS, ha0⟩⟩,
-              fun h₁ => h₁.symm ▸ S.zero_mem⟩⟩⟩
+instance (priority := 100) EuclideanDomain.instIsPrincipalIdealRing : IsPrincipalIdealRing R where
+  principal S := by
+    by_cases h : { x : R | x ∈ S ∧ x ≠ 0 }.Nonempty
+    · let ⟨m, ⟨hms, hm0⟩, hl⟩ := EuclideanDomain.r_wellFounded.has_min _ h
+      use m
+      ext x
+      refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+      · rw [← Ideal.span, Ideal.mem_span_singleton, ← mod_eq_zero]
+        have : x % m ∉ { x : R | x ∈ S ∧ x ≠ 0 } := (hl _ · (mod_lt x hm0))
+        rw [Set.mem_ofPred_eq, not_and_or, not_not] at this
+        exact this.neg_resolve_left <| (mod_mem_iff hms).2 hx
+      · obtain ⟨y, rfl⟩ := Ideal.mem_span_singleton.1 hx
+        exact S.mul_mem_right _ hms
+    · use 0
+      rw [span_zero_singleton, Submodule.eq_bot_iff]
+      exact fun a haS ↦ by_contra (h ⟨a, ⟨haS, ·⟩⟩)
 
 end
 
 theorem IsField.isPrincipalIdealRing {R : Type*} [Ring R] (h : IsField R) :
     IsPrincipalIdealRing R :=
-  @EuclideanDomain.to_principal_ideal_domain R (@Field.toEuclideanDomain R h.toField)
+  let := h.toField
+  inferInstance
 
 namespace PrincipalIdealRing
 
