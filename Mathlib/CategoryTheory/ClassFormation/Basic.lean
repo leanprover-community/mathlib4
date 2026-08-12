@@ -16,14 +16,14 @@ public import Mathlib.CategoryTheory.Galois.ContAction
 public import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.CategoryTheory.Limits.Over
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 
 /-!
-# ...
+# Class formations
 
 -/
 
--- #42397, #42396, #42320, #42568
+-- depends on: #42397, #42396, #42320, #42568
 
 @[expose] public section
 
@@ -31,6 +31,20 @@ universe w v u
 
 open CategoryTheory Limits Opposite
 open scoped FintypeCatDiscrete
+
+namespace CategoryTheory
+variable {C : Type*} [Category* C]
+
+@[implicit_reducible]
+def Aut.overMap {Z Y X : C} (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ X)
+    (fac : f ≫ g = fg := by cat_disch) :
+    Aut (Over.mk f) →* Aut (Over.mk fg) where
+  toFun σ := Over.isoMk ((Over.forget ..).mapIso σ)
+    (by simp [← fac, Functor.mapIso, dsimp% σ.hom.w_assoc])
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+end CategoryTheory
 
 namespace FintypeCat
 
@@ -625,8 +639,7 @@ variable {Y X : C} (f : Y ⟶ X) [PreGaloisCategory.IsConnected X]
   [PreGaloisCategory.IsConnected Y]
 
 def representation [IsGaloisCover f] :
-    Representation (ULift.{v} ℤ) (Aut (Over.mk f))
-  (Φ.sheaf.obj.obj (op ⟨Y, inferInstance⟩)) where
+    Representation (ULift.{v} ℤ) (Aut (Over.mk f)) (Φ.sheaf.obj.obj (op ⟨Y, inferInstance⟩)) where
   toFun g :=
     { toFun := (Φ.sheaf.obj.map (ObjectProperty.homMk g.inv.left).op).hom.toFun
       map_add' := by simp
@@ -646,6 +659,26 @@ variable [IsGaloisCover f]
 
 abbrev rep : Rep.{v} (ULift.{v} ℤ) (Aut (Over.mk f)) := Rep.of (Φ.representation f)
 
+section
+
+variable {Y X' X : C}
+  [PreGaloisCategory.IsConnected Y] [PreGaloisCategory.IsConnected X']
+  [PreGaloisCategory.IsConnected X]
+  (f : Y ⟶ X') (g : X' ⟶ X) (fg : Y ⟶ X)
+  [IsGaloisCover fg] [IsGaloisCover f]
+
+abbrev resIntertwiningMap (fac : f ≫ g = fg := by cat_disch) :
+  Representation.IntertwiningMap (MonoidHom.comp (Φ.rep fg).ρ (Aut.overMap f g fg))
+    (Φ.representation f) where
+  toLinearMap := .id
+  isIntertwining' _ := rfl
+
+abbrev resRep (fac : f ≫ g = fg := by cat_disch) :
+    Rep.res (Aut.overMap f g fg) (Φ.rep fg) ⟶ Φ.rep f :=
+  Rep.ofHom (Φ.resIntertwiningMap f g fg)
+
+end
+
 noncomputable abbrev H (n : ℕ) := groupCohomology (Φ.rep f) n
 
 end
@@ -659,14 +692,14 @@ def inflation {Y' Y X : C}
     Φ.H g n ⟶ Φ.H fg n := by
   sorry
 
-def restriction {Y X' X : C}
+noncomputable def restriction {Y X' X : C}
     [PreGaloisCategory.IsConnected Y] [PreGaloisCategory.IsConnected X']
     [PreGaloisCategory.IsConnected X]
     (f : Y ⟶ X') (g : X' ⟶ X) (fg : Y ⟶ X)
     [IsGaloisCover fg] [IsGaloisCover f] (n : ℕ)
     (fac : f ≫ g = fg := by cat_disch) :
-    Φ.H fg n ⟶ Φ.H f n := by
-  sorry
+    Φ.H fg n ⟶ Φ.H f n :=
+  groupCohomology.map (Aut.overMap f g fg) (Φ.resRep f g fg) _
 
 /-def corestriction {Y X' X : C}
     [PreGaloisCategory.IsConnected Y] [PreGaloisCategory.IsConnected X']
@@ -689,7 +722,7 @@ structure FieldFormation extends Formation C where
     [PreGaloisCategory.IsConnected Y] [IsGaloisCover f] :
       IsZero (toFormation.H f 1)
 
--- This is the alternative definition suggested in _Corps locaux_ p. 176
+-- This is the alternative definition suggested by Serre in _Corps locaux_ p. 176
 -- (this is chosen in order to involve only group cohomology of finite
 -- groups rather than any "colimit" of these groups, which could also
 -- be interpreted here as the cohomology for the Grothendieck
@@ -697,6 +730,7 @@ structure FieldFormation extends Formation C where
 -- we may only get a subgroup of `ℚ / ℤ`
 variable (C) in
 structure ClassFormation extends FieldFormation C where
+  /-- The fundamental class attached to a Galois cover -/
   u {Y X : C} (f : Y ⟶ X) [PreGaloisCategory.IsConnected X]
     [PreGaloisCategory.IsConnected Y] [IsGaloisCover f] : toFormation.H f 2
   addOrderOf_u {Y X : C} (f : Y ⟶ X) [PreGaloisCategory.IsConnected X]
