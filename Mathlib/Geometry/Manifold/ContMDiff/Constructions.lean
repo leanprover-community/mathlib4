@@ -8,7 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.ContMDiff.Basic
 
 /-!
-## Smoothness of standard maps associated to the product of manifolds
+# Smoothness of standard maps associated to the product of manifolds
 
 This file contains results about smoothness of standard maps associated to products and sums
 (disjoint unions) of smooth manifolds:
