@@ -34,7 +34,7 @@ discussion.
 
 public section
 
-open Filter Metric Real Set Topology
+open Filter Metric Real Set
 
 variable {f : ℂ → ℂ} {R : ℝ}
 
