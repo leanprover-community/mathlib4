@@ -233,11 +233,7 @@ theorem IsNilpotent.of_add_eq_zero_left (hy : IsNilpotent y) (h : x + y = 0) :
     IsNilpotent x := by
   obtain ⟨n, hn⟩ := hy
   refine ⟨2 * n, ?_⟩
-  calc
-    x ^ (2 * n) = (x ^ 2) ^ n := pow_mul x 2 n
-    _ = (y ^ 2) ^ n := by rw [sq_eq_sq_of_add_eq_zero h]
-    _ = (y ^ n) ^ 2 := by rw [← pow_mul, mul_comm, pow_mul]
-    _ = 0 := by simp [hn]
+  rw [pow_mul, sq_eq_sq_of_add_eq_zero h, ← pow_mul, mul_comm, pow_mul, hn, pow_two, mul_zero]
 
 theorem isNilpotent_iff_of_add_eq_zero (h : x + y = 0) :
     IsNilpotent x ↔ IsNilpotent y :=
