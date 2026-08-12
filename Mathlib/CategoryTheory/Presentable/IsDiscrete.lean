@@ -52,13 +52,6 @@ protected instance (priority := low) isCardinalAccessible
 
 instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [Subsingleton C] [Nonempty C] :
-    IsCardinalFiltered C κ where
-  nonempty_cocone F _ :=
-    ⟨Cocone.mk (Classical.arbitrary _)
-      { app _ := eqToHom (by subsingleton) }⟩
-
-instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [Subsingleton C] [Nonempty C] :
     IsCardinalLocallyPresentable C κ where
   has_colimits_of_shape J := ⟨fun F ↦
     ⟨Cocone.mk (Classical.arbitrary C)
