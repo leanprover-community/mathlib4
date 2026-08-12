@@ -219,7 +219,7 @@ class IsMemLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
   /-- The order corresponds to set inclusion. -/
   protected le_iff' {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
 
-@[deprecated (since := "2026-08-12")] alias IsMemLE := IsMemLE
+@[deprecated (since := "2026-08-12")] alias IsConcreteLE := IsMemLE
 
 section default
 
