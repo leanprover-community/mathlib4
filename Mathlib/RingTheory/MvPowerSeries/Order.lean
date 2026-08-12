@@ -123,7 +123,7 @@ namespace MvPowerSeries
 
 noncomputable section
 
-open ENat WithTop Finsupp
+open ENat Finsupp
 
 variable {σ R : Type*} [Semiring R]
 
