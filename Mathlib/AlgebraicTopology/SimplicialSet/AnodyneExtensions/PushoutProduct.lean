@@ -40,7 +40,7 @@ the file `Mathlib/AlgebraicTopology/SimplicialSet/Skeleton.lean`).
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
