@@ -48,6 +48,9 @@ env:
   # are valid by-products of the Mathlib build. Build artifacts fetched from Lake's cache do
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
+  # Route cache reads through the cache resolver; writes still authenticate
+  # against Azure directly.
+  MATHLIB_CACHE_BASE_URL: https://cache.mathlib.org
 
 jobs:
   build:
