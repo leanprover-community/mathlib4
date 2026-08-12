@@ -38,7 +38,6 @@ protected instance (priority := low) isCardinalPresentable
     let j : J := Classical.arbitrary _
     exact ⟨j, eqToHom (IsDiscrete.eq_of_hom (c.ι.app j)).symm, by subsingleton⟩)
 
-set_option backward.defeqAttrib.useBackward true in
 protected instance (priority := low) isCardinalAccessible
     {D : Type*} [Category* D]
     (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
