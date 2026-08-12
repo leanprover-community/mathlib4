@@ -420,6 +420,13 @@ prefix keeps the file clear of any name that Lake itself uses.
 The record states the root hash of the last full unpack. It does not state the
 root hash of the checkout. A run with a module argument covers one closure
 only, so such a run does not write the record.
+
+The record makes this claim: every artifact that came from the cache directory
+is unpacked at this root hash. Files that the server lacks are outside the
+claim. They stay stale in the build directory, and the record is still safe,
+because these files are also absent from the cache directory: a later run
+downloads them, and the download pipeline overwrites every file that it
+fetches without a check.
 -/
 def rootHashFile : FilePath :=
   ".lake" / "build" / "mathlib-cache-roothash"
@@ -448,24 +455,23 @@ def writeUnpackedRootHash (rootHash : UInt64) (path : FilePath := rootHashFile) 
 Report whether the root hash differs from the root hash of the last unpack.
 
 `needsDecompression` compares Lake dep hashes. A dep hash covers the source of
-a module and the sources of its imports. It does not cover the toolchain, the
-lakefile or the manifest. The mathlib cache hash covers all three through
-`rootHash`. Two different cache hashes can therefore carry the same dep hash,
-and the unpack then keeps an artifact that the new `.ltar` replaces.
+a module and the output hashes of its imports. It does not cover the
+toolchain, the lakefile or the manifest. The mathlib cache hash covers all
+three through `rootHash` (see `Cache.Hashing.getHash`).
 
-A change of the root hash changes every artifact, so compare the root hash to
-catch what the dep hash cannot show.
+At a fixed root hash, an equal dep hash means that the artifacts on disk
+satisfy Lake for the current checkout:
+* a change to the source of the module moves its dep hash;
+* a change to the outputs of an import moves the dep hash of this module;
+* a change to an import that keeps its outputs equal, for example a
+  proof-only change, can keep the dep hash of this module equal — the
+  artifacts on disk then stay valid, and the skip is correct;
+* a new module name gives a new trace path, so `needsDecompression` finds no
+  trace file there and unpacks the module.
 
-The root hash is the only part of a cache hash that a dep hash cannot show.
-`Cache.Hashing.getHash` builds a cache hash from `rootHash`, `pathHash`, the
-hash of the content, and the cache hashes of the imports. Hold the root hash
-fixed, and each other part is safe:
-* the hash of the content moves only when the source moves, and the dep hash
-  then moves with it;
-* an import hash moves only when that import moves, which moves either its own
-  dep hash or its name, and a new name moves the `import` line of this module;
-* `pathHash` is a function of the module name, so a new name gives a new trace
-  path, and `needsDecompression` finds no trace file there.
+A change of the root hash breaks this rule: it renames every `.ltar` and can
+change every artifact, and no dep hash moves with it. So compare the root
+hash separately.
 -/
 def rootHashChanged (rootHash : UInt64) (path : FilePath := rootHashFile) : IO Bool := do
   return (← readUnpackedRootHash path) != some rootHash
@@ -534,8 +540,7 @@ def prepareDecompConfig (hashMap : ModuleHashMap) (force : Bool) :
 /-- Decompresses build files into their respective folders.
 
 `fullRun` states that `hashMap` holds every module of the cache. Only a full
-run records the root hash, because the record claims that the whole build
-directory is unpacked at that hash. -/
+run records the root hash; see `rootHashFile` for what the record claims. -/
 def unpackCache (hashMap : ModuleHashMap) (force : Bool) (rootHash : UInt64)
     (fullRun : Bool := true) : CacheM Unit := do
   -- The per-module check below cannot see a change of the toolchain, the
