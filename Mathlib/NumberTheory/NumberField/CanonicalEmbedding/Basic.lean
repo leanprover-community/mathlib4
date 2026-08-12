@@ -125,7 +125,7 @@ noncomputable def latticeBasis [NumberField K] :
   -- In order to prove that the determinant is nonzero, we show that it is equal to the
   -- square of the discriminant of the integral basis and thus it is not zero
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
-      RingHom.equivRatAlgHom
+      (RingHom.equivRatAlgHom K ℂ)
     rw [show M = N.transpose by { ext : 2; rfl }]
     rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
     convert!
@@ -133,7 +133,7 @@ noncomputable def latticeBasis [NumberField K] :
         (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
     rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
     exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
-      (fun i => integralBasis K (e i)) RingHom.equivRatAlgHom).symm
+      (fun i => integralBasis K (e i)) (RingHom.equivRatAlgHom K ℂ)).symm
 
 @[simp]
 theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
@@ -351,12 +351,12 @@ theorem normAtPlace_real (w : InfinitePlace K) (c : ℝ) :
 
 theorem normAtPlace_apply_of_isReal {w : InfinitePlace K} (hw : IsReal w) (x : mixedSpace K) :
     normAtPlace w x = ‖x.1 ⟨w, hw⟩‖ := by
-  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dif_pos]
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_eq_left]
 
 theorem normAtPlace_apply_of_isComplex {w : InfinitePlace K} (hw : IsComplex w) (x : mixedSpace K) :
     normAtPlace w x = ‖x.2 ⟨w, hw⟩‖ := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
-    dif_neg (not_isReal_iff_isComplex.mpr hw)]
+    dite_eq_right (not_isReal_iff_isComplex.mpr hw)]
 
 @[simp]
 theorem normAtPlace_apply (w : InfinitePlace K) (x : K) :
@@ -900,13 +900,13 @@ variable {s}
 @[simp]
 theorem negAt_apply_isReal_and_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∈ s) :
     (negAt s x).1 w = -x.1 w := by
-  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_pos hw,
+  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, ite_eq_left hw,
     ContinuousLinearEquiv.neg_apply]
 
 @[simp]
 theorem negAt_apply_isReal_and_notMem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∉ s) :
     (negAt s x).1 w = x.1 w := by
-  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_neg hw,
+  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, ite_eq_right hw,
     ContinuousLinearEquiv.refl_apply]
 
 @[simp]
@@ -927,9 +927,9 @@ theorem volume_preserving_negAt [NumberField K] :
     MeasurePreserving (negAt s) := by
   refine MeasurePreserving.prod (volume_preserving_pi fun w ↦ ?_) (MeasurePreserving.id _)
   by_cases hw : w ∈ s
-  · simp_rw [if_pos hw]
+  · simp_rw [ite_eq_left hw]
     exact Measure.measurePreserving_neg _
-  · simp_rw [if_neg hw]
+  · simp_rw [ite_eq_right hw]
     exact MeasurePreserving.id _
 
 variable (s) in
@@ -954,10 +954,10 @@ theorem negAt_symm :
   ext x w
   · by_cases hw : w ∈ s
     · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prodCongr_symm,
-        prodCongr_apply, piCongrRight_symm_apply, if_pos hw, symm_neg,
+        prodCongr_apply, piCongrRight_symm_apply, ite_eq_left hw, symm_neg,
         ContinuousLinearEquiv.neg_apply]
     · simp_rw [negAt_apply_isReal_and_notMem _ hw, negAt, prodCongr_symm,
-        prodCongr_apply, piCongrRight_symm_apply, if_neg hw, refl_symm,
+        prodCongr_apply, piCongrRight_symm_apply, ite_eq_right hw, refl_symm,
         refl_apply]
   · rfl
 
@@ -1153,12 +1153,12 @@ abbrev normAtComplexPlaces (x : mixedSpace K) : realSpace K :=
 @[simp]
 theorem normAtComplexPlaces_apply_isReal {x : mixedSpace K} (w : {w // IsReal w}) :
     normAtComplexPlaces x w = x.1 w := by
-  rw [normAtComplexPlaces, dif_pos]
+  rw [normAtComplexPlaces, dite_eq_left]
 
 @[simp]
 theorem normAtComplexPlaces_apply_isComplex {x : mixedSpace K} (w : {w // IsComplex w}) :
     normAtComplexPlaces x w = ‖x.2 w‖ := by
-  rw [normAtComplexPlaces, dif_neg (not_isReal_iff_isComplex.mpr w.prop),
+  rw [normAtComplexPlaces, dite_eq_right (not_isReal_iff_isComplex.mpr w.prop),
     normAtPlace_apply_of_isComplex]
 
 theorem normAtComplexPlaces_mixedSpaceOfRealSpace {x : realSpace K}

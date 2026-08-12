@@ -80,7 +80,9 @@ theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
 
 /-- The theory of algebraically closed fields of characteristic `p` as a theory over
 the language of rings -/
-def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory .ring :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory .ring :=
   Theory.fieldOfChar p ∪ genericMonicPolyHasRoot '' {n | 0 < n}
 
 instance [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
@@ -185,7 +187,7 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
   have f : ∀ ψ ∈ Theory.ACF 0,
       { s : Finset Nat.Primes // ∀ q : Nat.Primes, q ∉ s → Theory.ACF q ⊨ᵇ ψ } := by
     intro ψ hψ
-    rw [Theory.ACF, Theory.fieldOfChar, Set.union_right_comm, Set.mem_union, if_pos rfl,
+    rw [Theory.ACF, Theory.fieldOfChar, Set.union_right_comm, Set.mem_union, ite_eq_left rfl,
       Set.mem_image] at hψ
     apply Classical.choice
     rcases hψ with h | ⟨p, hp, rfl⟩

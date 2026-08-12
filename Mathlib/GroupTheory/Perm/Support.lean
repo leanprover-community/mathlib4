@@ -226,7 +226,7 @@ theorem set_support_apply_mem {p : Perm α} {a : α} :
 
 theorem set_support_zpow_subset (n : ℤ) : { x | (p ^ n) x ≠ x } ⊆ { x | p x ≠ x } := by
   intro x
-  simp only [Set.mem_setOf_eq, Ne]
+  simp only [Set.mem_ofPred_eq, Ne]
   intro hx H
   simp [zpow_apply_eq_self_of_apply_eq_self H] at hx
 

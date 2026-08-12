@@ -49,10 +49,6 @@ class LocallyOfFinitePresentation (f : X ⟶ Y) : Prop where
 
 alias Scheme.Hom.finitePresentation_appLE := LocallyOfFinitePresentation.finitePresentation_appLE
 
-@[deprecated (since := "2026-01-20")]
-alias LocallyOfFinitePresentation.finitePresentation_of_affine_subset :=
-  Scheme.Hom.finitePresentation_appLE
-
 instance : HasRingHomProperty @LocallyOfFinitePresentation RingHom.FinitePresentation where
   isLocal_ringHomProperty := RingHom.finitePresentation_isLocal
   eq_affineLocally' := by
@@ -137,7 +133,7 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X ⟶ Y)
       ((Scheme.homeoOfIso (Y.affineCover.f i).isoOpensRange).image_eq_preimage_symm _)
     apply Set.image_injective.mpr Subtype.val_injective
     rw [Set.image_preimage_eq_inter_range, ← Set.image_comp, ← Set.image_comp,
-      Subtype.range_coe_subtype, Set.setOf_mem_eq]
+      Subtype.range_coe_subtype, Set.ofPred_mem_eq]
     change _ = (Y.affineCover.pullbackHom f i ≫
       (Y.affineCover.f i).isoOpensRange.hom ≫ Opens.ι _).base.hom '' _
     rw [Scheme.Hom.isoOpensRange_hom_ι, Cover.pullbackHom_map, Scheme.Hom.comp_base,
