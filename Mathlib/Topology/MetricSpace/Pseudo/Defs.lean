@@ -254,7 +254,7 @@ theorem dist_nonneg {x y : α} : 0 ≤ dist x y :=
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
 @[positivity Dist.dist _ _]
@@ -995,25 +995,16 @@ theorem Metric.eball_ofReal {x : α} {ε : ℝ} : eball x (.ofReal ε) = ball x 
   simp only [mem_eball, mem_ball, edist_dist]
   exact ENNReal.ofReal_lt_ofReal_iff_of_nonneg dist_nonneg
 
-@[deprecated (since := "2026-01-24")]
-alias Metric.emetric_ball := Metric.eball_ofReal
-
 /-- Balls defined using the distance or the edistance coincide -/
 @[simp]
 theorem Metric.eball_coe {x : α} {ε : ℝ≥0} : eball x ε = ball x ε := by
   rw [← eball_ofReal]
   simp
 
-@[deprecated (since := "2026-01-24")]
-alias Metric.emetric_ball_nnreal := Metric.eball_coe
-
 /-- Closed balls defined using the distance or the edistance coincide -/
 theorem Metric.closedEBall_ofReal {x : α} {ε : ℝ} (h : 0 ≤ ε) :
     closedEBall x (.ofReal ε) = closedBall x ε := by
   ext y; simp [edist_le_ofReal h]
-
-@[deprecated (since := "2026-01-24")]
-alias Metric.emetric_closedBall := Metric.closedEBall_ofReal
 
 /-- Closed balls defined using the distance or the edistance coincide -/
 @[simp]
@@ -1021,15 +1012,9 @@ theorem Metric.closedEBall_coe {x : α} {ε : ℝ≥0} :
     closedEBall x ε = closedBall x ε := by
   rw [← closedEBall_ofReal ε.coe_nonneg, ENNReal.ofReal_coe_nnreal]
 
-@[deprecated (since := "2026-01-24")]
-alias Metric.emetric_closedBall_nnreal := Metric.closedEBall_coe
-
 @[simp]
 theorem Metric.eball_top (x : α) : eball x ⊤ = univ :=
   eq_univ_of_forall fun _ => edist_lt_top _ _
-
-@[deprecated (since := "2026-01-24")]
-alias Metric.emetric_ball_top := Metric.eball_top
 
 /-- Build a new pseudometric space from an old one where the bundled uniform structure is provably
 (but typically non-definitionaly) equal to some given uniform structure.
@@ -1076,7 +1061,9 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {X : Type*} [e : PseudoEMetr
     (dist : X → X → ℝ) (dist_nonneg : ∀ x y, 0 ≤ dist x y)
     (h : ∀ x y, edist x y = .ofReal (dist x y)) : PseudoMetricSpace X where
   dist := dist
-  dist_self x := by simpa [h, (dist_nonneg _ _).ge_iff_eq', -edist_self] using edist_self x
+  dist_self x := by
+    refine le_antisymm ?_ (dist_nonneg x x)
+    rw [← ENNReal.zero_eq_ofReal, ← h x x, edist_self]
   dist_comm x y := by simpa [h, dist_nonneg] using edist_comm x y
   dist_triangle x y z := by
     simpa [h, dist_nonneg, add_nonneg, ← ENNReal.ofReal_add] using edist_triangle x y z

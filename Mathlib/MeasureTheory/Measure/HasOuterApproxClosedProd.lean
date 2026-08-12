@@ -55,7 +55,7 @@ bounded continuous function, product measure
 
 public section
 
-open BoundedContinuousFunction MeasureTheory Topology Filter Set ENNReal NNReal MeasurableSpace
+open BoundedContinuousFunction MeasureTheory Filter Set ENNReal NNReal MeasurableSpace
 open scoped Topology ENNReal NNReal
 
 namespace Measure

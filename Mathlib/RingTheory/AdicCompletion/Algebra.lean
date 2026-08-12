@@ -158,7 +158,7 @@ theorem surjective_evalₐ (n : ℕ) : Function.Surjective (evalₐ I n) := by
   simp only [evalₐ, smul_eq_mul, Ideal.quotientEquivAlgOfEq_coe_eq_factorₐ,
     AlgHom.coe_comp]
   apply Function.Surjective.comp
-  · exact factor_surjective Ideal.mul_le_right
+  · exact factor_surjective Ideal.mul_le_left
   · exact eval_surjective I R n
 
 set_option backward.isDefEq.respectTransparency false in
@@ -347,8 +347,6 @@ example : module I = @Algebra.toModule (AdicCompletion I R)
   with_reducible_and_instances rfl
 
 section liftRingHom
-
-open Quotient
 
 variable {R S : Type*} [NonAssocSemiring R] [CommRing S] (I : Ideal S)
 

@@ -230,26 +230,16 @@ theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
   · rw [ht₂]
     exact hsc.finsetSup_mem h ht₁
 
-theorem IsSupClosedCompact.wellFoundedGT (h : IsSupClosedCompact α) :
-    WellFoundedGT α where
-  wf := by
-    refine RelEmbedding.wellFounded_iff_isEmpty.mpr ⟨fun a => ?_⟩
-    suffices sSup (Set.range a) ∈ Set.range a by
-      obtain ⟨n, hn⟩ := Set.mem_range.mp this
-      have h' : sSup (Set.range a) < a (n + 1) := by
-        change _ > _
-        simp [← hn, a.map_rel_iff]
-      apply lt_irrefl (a (n + 1))
-      apply lt_of_le_of_lt _ h'
-      apply le_sSup
-      apply Set.mem_range_self
-    apply h (Set.range a)
-    · use a 37
-      apply Set.mem_range_self
-    · rintro x ⟨m, hm⟩ y ⟨n, hn⟩
-      use m ⊔ n
-      rw [← hm, ← hn]
-      apply RelHomClass.map_sup a
+theorem IsSupClosedCompact.wellFoundedGT (h : IsSupClosedCompact α) : WellFoundedGT α := by
+  rw [wellFoundedGT_iff_monotone_chain_condition']
+  intro a
+  obtain ⟨n, hn⟩ : sSup (range a) ∈ range a := by
+    apply h _ (range_nonempty a)
+    rintro x ⟨m, rfl⟩ y ⟨n, rfl⟩
+    exact ⟨_, map_sup a m n⟩
+  refine ⟨n, fun m hm ↦ ?_⟩
+  rw [hn]
+  exact (le_sSup (mem_range_self m)).not_gt
 
 theorem isSupFiniteCompact_iff_all_elements_compact :
     IsSupFiniteCompact α ↔ ∀ k : α, IsCompactElement k := by
@@ -277,14 +267,14 @@ theorem wellFoundedGT_characterisations : List.TFAE
 
 theorem wellFoundedGT_iff_isSupFiniteCompact :
     WellFoundedGT α ↔ IsSupFiniteCompact α :=
-  (wellFoundedGT_characterisations α).out 0 1
+  (wellFoundedGT_characterisations α).out 1 2
 
 theorem isSupFiniteCompact_iff_isSupClosedCompact : IsSupFiniteCompact α ↔ IsSupClosedCompact α :=
-  (wellFoundedGT_characterisations α).out 1 2
+  (wellFoundedGT_characterisations α).out 2 3
 
 theorem isSupClosedCompact_iff_wellFoundedGT :
     IsSupClosedCompact α ↔ WellFoundedGT α :=
-  (wellFoundedGT_characterisations α).out 2 0
+  (wellFoundedGT_characterisations α).out 3 1
 
 alias ⟨_, IsSupFiniteCompact.wellFoundedGT⟩ := wellFoundedGT_iff_isSupFiniteCompact
 

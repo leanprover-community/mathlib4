@@ -30,7 +30,7 @@ outer measure
 
 noncomputable section
 
-open Set Function Filter
+open Set Function
 open scoped NNReal Topology ENNReal
 
 namespace MeasureTheory
