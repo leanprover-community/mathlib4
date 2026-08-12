@@ -123,7 +123,6 @@ theorem tfae_equational_criterion : List.TFAE [
     ∀ {l : ℕ} {f : Fin l →₀ R} {x : (Fin l →₀ R) →ₗ[R] M}, x f = 0 →
       ∃ (k : ℕ) (a : (Fin l →₀ R) →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M),
         x = y ∘ₗ a ∧ a f = 0] := by
-  classical
   tfae_have 1 ↔ 2 := iff_rTensor_injective'
   tfae_have 3 ↔ 2 := forall_vanishesTrivially_iff_forall_rTensor_injective R
   tfae_have 3 ↔ 4 := by
@@ -169,7 +168,7 @@ a module $M$ is flat if and only if every relation $\sum_i f_i x_i = 0$ in $M$ i
 @[stacks 00HK]
 theorem iff_forall_isTrivialRelation : Flat R M ↔ ∀ {l : ℕ} {f : Fin l → R} {x : Fin l → M},
     ∑ i, f i • x i = 0 → IsTrivialRelation f x :=
-  (tfae_equational_criterion R M).out 0 3
+  (tfae_equational_criterion R M).out 1 4
 
 /-- **Equational criterion for flatness**, forward direction.
 
@@ -198,7 +197,7 @@ $y \colon R^k \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
 theorem iff_forall_exists_factorization : Flat R M ↔
     ∀ {l : ℕ} {f : Fin l →₀ R} {x : (Fin l →₀ R) →ₗ[R] M}, x f = 0 →
       ∃ (k : ℕ) (a : (Fin l →₀ R) →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M),
-        x = y ∘ₗ a ∧ a f = 0 := (tfae_equational_criterion R M).out 0 4
+        x = y ∘ₗ a ∧ a f = 0 := (tfae_equational_criterion R M).out 1 5
 
 /-- **Equational criterion for flatness**, backward direction, alternate form.
 
@@ -272,7 +271,7 @@ theorem exists_factorization_of_finitePresentation [Flat R M] {P : Type*} [AddCo
     [Module R P] [FinitePresentation R P] (h₁ : P →ₗ[R] M) :
     ∃ (k : ℕ) (h₂ : P →ₗ[R] (Fin k →₀ R)) (h₃ : (Fin k →₀ R) →ₗ[R] M), h₁ = h₃ ∘ₗ h₂ := by
   have ⟨_, K, ϕ, hK⟩ := FinitePresentation.exists_fin R P
-  haveI : Module.Finite R K := .of_fg hK
+  have : Module.Finite R K := .of_fg hK
   have : (h₁ ∘ₗ ϕ.symm ∘ₗ K.mkQ) ∘ₗ K.subtype = 0 := by
     simp_rw [comp_assoc, (LinearMap.exact_subtype_mkQ K).linearMap_comp_eq_zero, comp_zero]
   obtain ⟨k, a, y, hay, ha⟩ := exists_factorization_of_comp_eq_zero_of_free this

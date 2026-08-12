@@ -127,6 +127,9 @@ noncomputable def addEquivFinsupp [CompactSpace X] :
 @[simp] lemma addEquivFinsupp_apply [CompactSpace X] (D : locallyFinsupp X Y) :
     addEquivFinsupp D = D.toFinsupp isCompact_univ := rfl
 
+@[simp] lemma coe_addEquivFinsupp_symm [CompactSpace X] :
+    ⇑(addEquivFinsupp : locallyFinsupp X Y ≃+ (X →₀ Y)).symm = ofFinsupp := rfl
+
 @[simp] lemma addEquivFinsupp_symm_apply [CompactSpace X] (f : X →₀ Y) :
     addEquivFinsupp.symm f = ofFinsupp f := rfl
 

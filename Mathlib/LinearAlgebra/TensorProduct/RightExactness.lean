@@ -204,6 +204,7 @@ noncomputable def lTensor.toFun (hfg : Exact f g) :
     rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp,
       ← lTensor_comp, hfg.linearMap_comp_eq_zero, lTensor_zero, ker_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse map in `lTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
 noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
@@ -311,6 +312,7 @@ noncomputable def rTensor.toFun (hfg : Exact f g) :
     rw [range_le_iff_comap, ← ker_comp, ← rTensor_comp,
       hfg.linearMap_comp_eq_zero, rTensor_zero, ker_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse map in `rTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
 noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
