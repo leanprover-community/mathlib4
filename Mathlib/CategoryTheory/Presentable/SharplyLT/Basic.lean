@@ -297,7 +297,7 @@ instance (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) :
 `IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J`. -/
 abbrev singleton (j : J) : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J) :=
   ⟨{j}, by
-    letI : OrderTop ({j} : Set J) :=
+    let : OrderTop ({j} : Set J) :=
       { top := ⟨j, by simp⟩
         le_top := by simp }
     exact isCardinalFiltered_of_hasTerminal _ _,
@@ -308,7 +308,7 @@ abbrev singleton (j : J) : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ�
 abbrev pair {j j' : J} (h : j ≤ j') :
     Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J) :=
   ⟨{j, j'}, by
-    letI : OrderTop ({j, j'} : Set J) :=
+    let : OrderTop ({j, j'} : Set J) :=
       { top := ⟨j', by simp⟩
         le_top := by aesop }
     apply isCardinalFiltered_of_hasTerminal,
@@ -342,7 +342,7 @@ lemma colimit.w (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J))
     {a b : J} (hab : a ≤ b) (ha : a ∈ A.val) (hb : b ∈ A.val) :
     p.diag.map (homOfLE hab) ≫ colimit.ι κ₁ κ₂ p A b hb = colimit.ι κ₁ κ₂ p A a ha :=
   Limits.colimit.w (A.val.mono_coe.functor ⋙ p.diag)
-    (j := ⟨a, ha⟩) (j' := ⟨b, hb⟩) (homOfLE hab)
+    (j' := ⟨a, ha⟩) (j := ⟨b, hb⟩) (homOfLE hab)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The functoriality of `colimit` with respect to the subset `A`. -/
