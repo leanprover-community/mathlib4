@@ -59,13 +59,13 @@ variable {J : Type w} [Category.{v} J] (F : J ⥤ (Spec R).Modules)
 
 instance : (isQuasicoherent (Spec R)).IsClosedUnderColimitsOfShape J := by
   rw [← isQuasicoherent_iff_isIso_fromSpecΓ]
-  exact instIsClosedUnderColimitsOfShapeEssImageOfHasColimitsOfShapeOfPreservesColimitsOfShapeOfFullOfFaithful (tilde.functor R)
+  infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [Finite J] : (isQuasicoherent (Spec R)).IsClosedUnderLimitsOfShape (Discrete J) := by
   rw [← isQuasicoherent_iff_isIso_fromSpecΓ]
-  exact instIsClosedUnderLimitsOfShapeEssImageOfHasLimitsOfShapeOfPreservesLimitsOfShapeOfFullOfFaithful (tilde.functor R)
+  infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
 instance epi_of_epi {M N : (Spec R).Modules} (f : M ⟶ N) [M.IsQuasicoherent] [N.IsQuasicoherent]
