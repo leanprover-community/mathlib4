@@ -187,7 +187,7 @@ by the indicator functions `single p g` with `p ∈ s` and `g` in a generating s
 group. -/
 theorem closure_singleSet [DecidableEq X] [CompactSpace X] [AddGroup Y] {G : Set Y}
     (hG : AddSubgroup.closure G = ⊤) :
-    AddSubgroup.closure (singleSet s G) = supported univ Y s :=
+    AddSubgroup.closure (singleSet s G) = supported Y univ s :=
   AddSubgroup.ext fun _ ↦ (mem_closure_singleSet_iff s hG).trans mem_supported.symm
 
 /-- Induction principle for `ℤ`-valued functions with locally finite support on a compact space
