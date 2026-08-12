@@ -59,7 +59,7 @@ in order to conveniently use the full strength of Fredholmness.
   one can build a canonical continuous quasi-inverse of `u`.
 * `ContinuousLinearMap.IsFredholm.of_isInvertible_restrict`: if a continuous linear map induces
   an isomorphism between finite codimension subspaces, then it is Fredholm.
-* `ContinuousLinearMap.IsFredholm.of_restrict` (not in Mathlib yet) is a generalization
+* `ContinuousLinearMap.IsFredholm.of_restrict` is a generalization
   of the above: if a continuous linear map induces a Fredholm operator between finite codimension
   subspaces, then the original map is Fredholm as well.
 * `IsFredholm.nonempty_fredholmPackage`: every Fredholm operator admits a Fredholm package.
@@ -252,7 +252,7 @@ variable [CompleteSpace 𝕜]
 subspaces `E₁` and `F₁`. Then `u` is Fredholm.
 
 In fact it is enough to assume that the restriction `E₁ →L[𝕜] F₁` is Fredholm, see
-`IsFredholm.of_restrict` (not in Mathlib yet). -/
+`IsFredholm.of_restrict`. -/
 theorem IsFredholm.of_isInvertible_restrict {u : E →L[𝕜] F}
     {E₁ : Submodule 𝕜 E} (E₁_closed : IsClosed (E₁ : Set E)) [E₁_coFG : E₁.CoFG]
     {F₁ : Submodule 𝕜 F} (F₁_closed : IsClosed (F₁ : Set F)) [F₁_coFG : F₁.CoFG]
@@ -376,24 +376,6 @@ section Constructions
 ## Constructions of Fredholm operators
 -/
 
-theorem _root_.ContinuousLinearEquiv.isFredholm (e : E ≃L[𝕜] F) :
-    IsFredholm (e : E →L[𝕜] F) where
-  isStrictMap := e.isHomeomorph.isStrictMap
-  isClosed_range := by simp
-  finite_ker := by
-    rw [LinearMap.ker_eq_bot.2 (by exact e.injective)]
-    infer_instance
-  finite_coker := by simp
-  closedComplemented_ker := by simp
-
-protected theorem IsFredholm.id : IsFredholm (.id 𝕜 E) :=
-  ContinuousLinearEquiv.refl 𝕜 E |>.isFredholm
-
-theorem IsInvertible.isFredholm {f : E →L[𝕜] F} (hf : f.IsInvertible) :
-    IsFredholm f := by
-  rcases hf with ⟨e, rfl⟩
-  exact e.isFredholm
-
 theorem _root_.Topology.IsClosedEmbedding.isFredholm {f : E →L[𝕜] F}
     (hf : IsClosedEmbedding f) (h_cofg : f.range.CoFG) :
     IsFredholm f where
@@ -406,6 +388,18 @@ theorem _root_.Topology.IsClosedEmbedding.isFredholm {f : E →L[𝕜] F}
   closedComplemented_ker := by
     rw [LinearMap.ker_eq_bot.2 hf.injective]
     exact closedComplemented_bot
+
+theorem _root_.ContinuousLinearEquiv.isFredholm (e : E ≃L[𝕜] F) :
+    IsFredholm (e : E →L[𝕜] F) :=
+  e.isHomeomorph.isClosedEmbedding.isFredholm (by simp)
+
+protected theorem IsFredholm.id : IsFredholm (.id 𝕜 E) :=
+  ContinuousLinearEquiv.refl 𝕜 E |>.isFredholm
+
+theorem IsInvertible.isFredholm {f : E →L[𝕜] F} (hf : f.IsInvertible) :
+    IsFredholm f := by
+  rcases hf with ⟨e, rfl⟩
+  exact e.isFredholm
 
 theorem _root_.Submodule.isFredholm_subtypeL {p : Submodule 𝕜 E}
     (hp : IsClosed (p : Set E)) [p.CoFG] :
