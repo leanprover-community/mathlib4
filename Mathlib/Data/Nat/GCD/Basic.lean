@@ -263,10 +263,18 @@ lemma div_dvd_div_left (hkm : m ∣ k) (hkn : n ∣ m) : k / m ∣ k / n :=
   ⟨_, (div_mul_div hkm hkn).symm⟩
 
 /-- `k / m ∣ k / n` iff `n ∣ m`, when both `m` and `n` divide `k`. -/
-lemma div_dvd_div_iff (hk : 0 < k) (hm : 0 < m) (hmk : m ∣ k) (hnk : n ∣ k) :
+lemma div_dvd_div_iff_left (hk : 0 < k) (hmk : m ∣ k) (hnk : n ∣ k) :
     k / m ∣ k / n ↔ n ∣ m := by
-  rw [Nat.div_dvd_iff_dvd_mul hmk hm, ← Nat.mul_div_assoc _ hnk,
+  rw [Nat.div_dvd_iff_dvd_mul hmk (Nat.pos_of_dvd_of_pos hmk hk), ← Nat.mul_div_assoc _ hnk,
     Nat.dvd_div_iff_mul_dvd (hnk.mul_left m), Nat.mul_dvd_mul_iff_right hk]
+
+/-- `m / k ∣ n / k` iff `m ∣ n`, when `k` divides both `m` and `n`. -/
+lemma div_dvd_div_iff_right (hkm : k ∣ m) (hkn : k ∣ n) : m / k ∣ n / k ↔ m ∣ n := by
+  rcases k.eq_zero_or_pos with rfl | hk
+  · simp_all
+  obtain ⟨m, rfl⟩ := hkm
+  obtain ⟨n, rfl⟩ := hkn
+  rw [Nat.mul_div_cancel_left _ hk, Nat.mul_div_cancel_left _ hk, Nat.mul_dvd_mul_iff_left hk]
 
 lemma div_lcm_eq_div_gcd (hkm : m ∣ k) (hkn : n ∣ k) : (k / m).lcm (k / n) = k / (m.gcd n) := by
   rw [Nat.lcm_eq_iff]
