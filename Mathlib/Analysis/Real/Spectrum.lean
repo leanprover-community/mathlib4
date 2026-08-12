@@ -18,7 +18,7 @@ public section
 
 namespace SpectrumRestricts
 
-open NNReal ENNReal
+open NNReal
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
 
@@ -57,12 +57,11 @@ end SpectrumRestricts
 
 namespace QuasispectrumRestricts
 
-open NNReal ENNReal
+open NNReal
 local notation "σₙ" => quasispectrum
 
 variable {A : Type*} [NonUnitalRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A} :
     QuasispectrumRestricts a ContinuousMap.realToNNReal ↔ ∀ x ∈ σₙ ℝ a, 0 ≤ x := by
   rw [quasispectrumRestricts_iff_spectrumRestricts_inr,
@@ -73,13 +72,11 @@ lemma nnreal_of_nonneg [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ
     QuasispectrumRestricts a ContinuousMap.realToNNReal :=
   nnreal_iff.mpr <| quasispectrum_nonneg_of_nonneg _ ha
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
     (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ quasispectrum ℝ≥0 a, x ≤ r) ↔ ∀ x ∈ quasispectrum ℝ a, x ≤ r := by
   simp [← ha.algebraMap_image]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lt_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
     (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ quasispectrum ℝ≥0 a, x < r) ↔ ∀ x ∈ quasispectrum ℝ a, x < r := by

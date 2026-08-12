@@ -7,23 +7,23 @@ module
 
 public import Mathlib.CategoryTheory.Equivalence
 
-/-! Tools for compatibilities between Dold-Kan equivalences
+/-! # Tools for compatibilities between Dold-Kan equivalences
 
 The purpose of this file is to introduce tools which will enable the
 construction of the Dold-Kan equivalence `SimplicialObject C ≌ ChainComplex C ℕ`
 for a pseudoabelian category `C` from the equivalence
 `Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ)` and the two
-equivalences `simplicial_object C ≅ Karoubi (SimplicialObject C)` and
-`ChainComplex C ℕ ≅ Karoubi (ChainComplex C ℕ)`.
+equivalences `SimplicialObject C ≌ Karoubi (SimplicialObject C)` and
+`ChainComplex C ℕ ≌ Karoubi (ChainComplex C ℕ)`.
 
 It is certainly possible to get an equivalence `SimplicialObject C ≌ ChainComplex C ℕ`
-using a compositions of the three equivalences above, but then neither the functor
+using a composition of the three equivalences above, but then neither the functor
 nor the inverse would have good definitional properties. For example, it would be better
 if the inverse functor of the equivalence was exactly the functor
-`Γ₀ : SimplicialObject C ⥤ ChainComplex C ℕ` which was constructed in `FunctorGamma.lean`.
+`Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C` which was constructed in `FunctorGamma.lean`.
 
-In this file, given four categories `A`, `A'`, `B`, `B'`, equivalences `eA : A ≅ A'`,
-`eB : B ≅ B'`, `e' : A' ≅ B'`, functors `F : A ⥤ B'`, `G : B ⥤ A` equipped with certain
+In this file, given four categories `A`, `A'`, `B`, `B'`, equivalences `eA : A ≌ A'`,
+`eB : B ≌ B'`, `e' : A' ≌ B'`, functors `F : A ⥤ B'`, `G : B ⥤ A` equipped with certain
 compatibilities, we construct successive equivalences:
 - `equivalence₀` from `A` to `B'`, which is the composition of `eA` and `e'`.
 - `equivalence₁` from `A` to `B'`, with the same inverse functor as `equivalence₀`,
@@ -40,6 +40,8 @@ unit and counit isomorphisms of `equivalence`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 
@@ -55,14 +57,14 @@ variable {A A' B B' : Type*} [Category* A] [Category* A'] [Category* B] [Categor
   (eB : B ≌ B') (e' : A' ≌ B') {F : A ⥤ B'} (hF : eA.functor ⋙ e'.functor ≅ F) {G : B ⥤ A}
   (hG : eB.functor ⋙ e'.inverse ≅ G ⋙ eA.functor)
 
-/-- A basic equivalence `A ≅ B'` obtained by composing `eA : A ≅ A'` and `e' : A' ≅ B'`. -/
+/-- A basic equivalence `A ≌ B'` obtained by composing `eA : A ≌ A'` and `e' : A' ≌ B'`. -/
 @[simps! functor inverse unitIso_hom_app]
 def equivalence₀ : A ≌ B' :=
   eA.trans e'
 
 variable {eA} {e'}
 
-/-- An intermediate equivalence `A ≅ B'` whose functor is `F` and whose inverse is
+/-- An intermediate equivalence `A ≌ B'` whose functor is `F` and whose inverse is
 `e'.inverse ⋙ eA.inverse`. -/
 @[simps! functor]
 def equivalence₁ : A ≌ B' := (equivalence₀ eA e').changeFunctor hF
@@ -83,6 +85,8 @@ def equivalence₁CounitIso : (e'.inverse ⋙ eA.inverse) ⋙ F ≅ 𝟭 B' :=
     _ ≅ e'.inverse ⋙ e'.functor := isoWhiskerLeft _ (leftUnitor _)
     _ ≅ 𝟭 B' := e'.counitIso
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence₁CounitIso hF := by
   ext Y
   simp [equivalence₁, equivalence₀]
@@ -100,11 +104,13 @@ def equivalence₁UnitIso : 𝟭 A ≅ F ⋙ e'.inverse ⋙ eA.inverse :=
     _ ≅ (eA.functor ⋙ e'.functor) ⋙ e'.inverse ⋙ eA.inverse := (associator _ _ _).symm
     _ ≅ F ⋙ e'.inverse ⋙ eA.inverse := isoWhiskerRight hF _
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 theorem equivalence₁UnitIso_eq : (equivalence₁ hF).unitIso = equivalence₁UnitIso hF := by
   ext X
   simp [equivalence₁]
 
-/-- An intermediate equivalence `A ≅ B` obtained as the composition of `equivalence₁` and
+/-- An intermediate equivalence `A ≌ B` obtained as the composition of `equivalence₁` and
 the inverse of `eB : B ≌ B'`. -/
 @[simps! functor]
 def equivalence₂ : A ≌ B :=
@@ -127,6 +133,7 @@ def equivalence₂CounitIso : (eB.functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F �
     _ ≅ eB.functor ⋙ eB.inverse := isoWhiskerLeft _ (leftUnitor _)
     _ ≅ 𝟭 B := eB.unitIso.symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem equivalence₂CounitIso_eq :
     (equivalence₂ eB hF).counitIso = equivalence₂CounitIso eB hF := by
@@ -149,14 +156,16 @@ def equivalence₂UnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.
     _ ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.inverse ⋙ eA.inverse :=
       associator _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 theorem equivalence₂UnitIso_eq : (equivalence₂ eB hF).unitIso = equivalence₂UnitIso eB hF := by
   ext X
   simp [equivalence₂, equivalence₁]
 
 variable {eB}
 
-/-- The equivalence `A ≅ B` whose functor is `F ⋙ eB.inverse` and
-whose inverse is `G : B ≅ A`. -/
+/-- The equivalence `A ≌ B` whose functor is `F ⋙ eB.inverse` and
+whose inverse functor is `G : B ⥤ A`. -/
 @[simps! inverse]
 def equivalence : A ≌ B :=
   ((equivalence₂ eB hF).changeInverse
@@ -204,6 +213,7 @@ def equivalenceCounitIso : G ⋙ F ⋙ eB.inverse ≅ 𝟭 B :=
 
 variable {η hF hG}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem equivalenceCounitIso_eq (hη : τ₀ = τ₁ hF hG η) :
     (equivalence hF hG).counitIso = equivalenceCounitIso η := by
@@ -262,6 +272,7 @@ def equivalenceUnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ G :=
 
 variable {ε hF hG}
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem equivalenceUnitIso_eq (hε : υ hF = ε) :
     (equivalence hF hG).unitIso = equivalenceUnitIso hG ε := by
   ext1; apply NatTrans.ext; ext X

@@ -29,8 +29,7 @@ namespace CommGroup
 
 open MonoidHom
 
-private
-lemma dvd_exponent {ι G : Type*} [Finite ι] [Monoid G] {n : ι → ℕ}
+private lemma dvd_exponent {ι G : Type*} [Monoid G] {n : ι → ℕ}
     (e : G ≃* ((i : ι) → Multiplicative (ZMod (n i)))) (i : ι) :
     n i ∣ Monoid.exponent G := by
   classical -- to get `DecidableEq ι`
@@ -54,7 +53,7 @@ lemma exists_apply_ne_one_aux
     exact (MulEquiv.map_eq_one_iff e).mp <| funext ha
   obtain ⟨φi, hφi⟩ := H (n i) (dvd_exponent e i) ((e a i).toAdd) hi
   use (φi.comp (Pi.evalMonoidHom (fun (i : ι) ↦ Multiplicative (ZMod (n i))) i)).comp e
-  simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using hφi
+  simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using! hφi
 
 variable [hM : HasEnoughRootsOfUnity M (Monoid.exponent G)]
 
@@ -70,7 +69,7 @@ theorem exists_apply_ne_one_of_hasEnoughRootsOfUnity {a : G} (ha : a ≠ 1) :
 
 variable {M} in
 @[simp]
- theorem forall_apply_eq_apply_iff {g g' : G} :
+theorem forall_apply_eq_apply_iff {g g' : G} :
     (∀ φ : G →* Mˣ, φ g = φ g') ↔ g = g' := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
   simpa [← not_forall, not_imp_not, mul_inv_eq_one, h] using
@@ -105,8 +104,8 @@ such that `G →* Mˣ` and `H →* Mˣ` are both finite (this is the case for ex
 commutative domain) and with enough `n`th roots of unity, where `n` is the exponent
 of `G`, then any homomorphism `H →* Mˣ` can be extended to an homomorphism `G →* Mˣ`.
 -/
-theorem _root_.MonoidHom.restrict_surjective (H : Subgroup G) :
-    Function.Surjective (MonoidHom.restrictHom H Mˣ) := by
+theorem _root_.MonoidHom.domRestrict_surjective (H : Subgroup G) :
+    Function.Surjective (MonoidHom.domRestrictHom H Mˣ) := by
   have : Fintype H := Fintype.ofFinite H
   have : HasEnoughRootsOfUnity M (Monoid.exponent H) :=
     hM.of_dvd M <| Monoid.exponent_submonoid_dvd H.toSubmonoid
@@ -117,7 +116,10 @@ theorem _root_.MonoidHom.restrict_surjective (H : Subgroup G) :
     H.card_eq_card_quotient_mul_card_subgroup,
     mul_div_cancel_right₀ _ (Fintype.card_eq_nat_card ▸ Fintype.card_ne_zero),
     ← card_monoidHom_of_hasEnoughRootsOfUnity (G ⧸ H) M,
-    Nat.card_congr (restrictHomKerEquiv Mˣ H).toEquiv]
+    Nat.card_congr (domRestrictHomKerEquiv Mˣ H).toEquiv]
+
+@[deprecated (since := "2026-07-19")]
+alias _root_.MonoidHom.restrict_surjective := _root_.MonoidHom.domRestrict_surjective
 
 @[simp]
 theorem forall_monoidHom_apply_eq_one_iff (H : Subgroup G) (x : G) :
@@ -127,6 +129,15 @@ theorem forall_monoidHom_apply_eq_one_iff (H : Subgroup G) (x : G) :
   refine ⟨fun h ↦ ?_, fun hx φ hφ ↦ hφ x hx⟩
   simp only [← QuotientGroup.eq_one_iff, ← forall_apply_eq_apply_iff _ (M := M), map_one] at h ⊢
   exact fun φ ↦ h (φ.comp (QuotientGroup.mk' H)) fun y hy ↦ hy φ
+
+theorem card_domRestrictHom_ker (H : Subgroup G) :
+    Nat.card (domRestrictHom H Mˣ).ker = Nat.card (G ⧸ H) := by
+  have : HasEnoughRootsOfUnity M (Monoid.exponent (G ⧸ H)) :=
+    hM.of_dvd M <| Group.exponent_quotient_dvd H
+  rw [Nat.card_congr (MonoidHom.domRestrictHomKerEquiv Mˣ H).toEquiv,
+    card_monoidHom_of_hasEnoughRootsOfUnity]
+
+@[deprecated (since := "2026-07-19")] alias card_restrictHom_ker := card_domRestrictHom_ker
 
 variable (G) in
 /--
@@ -163,11 +174,11 @@ where `G` is a finite commutative group and `M` is a commutative monoid with eno
 unity, where `n` is the exponent of `G`.
 -/
 noncomputable def subgroupOrderIsoSubgroupMonoidHom : Subgroup G ≃o (Subgroup (G →* Mˣ))ᵒᵈ where
-  toFun H := OrderDual.toDual (restrictHom H Mˣ).ker
-  invFun Φ := (monoidHomMonoidHomEquiv G M).mapSubgroup (restrictHom Φ.ofDual Mˣ).ker
+  toFun H := OrderDual.toDual (domRestrictHom H Mˣ).ker
+  invFun Φ := (monoidHomMonoidHomEquiv G M).mapSubgroup (domRestrictHom Φ.ofDual Mˣ).ker
   map_rel_iff' {H₁} {H₂} := by
     simp_rw [Equiv.coe_fn_mk, OrderDual.toDual_le_toDual,
-      SetLike.le_def, mem_ker, restrictHom_apply, restrict_eq_one_iff]
+      SetLike.le_def, mem_ker, domRestrictHom_apply, domRestrict_eq_one_iff]
     grind [forall_monoidHom_apply_eq_one_iff M H₂]
   left_inv H := by
     ext x
@@ -177,7 +188,7 @@ noncomputable def subgroupOrderIsoSubgroupMonoidHom : Subgroup G ≃o (Subgroup 
     have : HasEnoughRootsOfUnity M (Monoid.exponent (G →* Mˣ)) := by
       rwa [Monoid.exponent_eq_of_mulEquiv (monoidHom_mulEquiv_of_hasEnoughRootsOfUnity G M).some]
     ext φ
-    rw [OrderDual.ofDual_toDual, mem_ker, restrictHom_apply, restrict_eq_one_iff]
+    rw [OrderDual.ofDual_toDual, mem_ker, domRestrictHom_apply, domRestrict_eq_one_iff]
     simp
 
 @[simp]
@@ -191,7 +202,13 @@ theorem mem_subgroupOrderIsoSubgroupMonoidHom_symm_iff (Φ : Subgroup (G →* M�
     g ∈ (subgroupOrderIsoSubgroupMonoidHom G M).symm (OrderDual.toDual Φ) ↔ ∀ φ ∈ Φ, φ g = 1 := by
   simp_rw [subgroupOrderIsoSubgroupMonoidHom, OrderIso.symm_mk, RelIso.coe_fn_mk,
     Equiv.coe_fn_symm_mk, OrderDual.ofDual_toDual, MulEquiv.coe_mapSubgroup,
-    Subgroup.mem_map_equiv, mem_ker, restrictHom_apply, restrict_eq_one_iff,
+    Subgroup.mem_map_equiv, mem_ker, domRestrictHom_apply, domRestrict_eq_one_iff,
     monoidHomMonoidHomEquiv_symm_apply_apply]
+
+/-- The cardinality of the dual subgroup of `G →* Mˣ` associated to a subgroup `H` of `G`
+equals the index of `H` in `G`. -/
+theorem card_subgroupOrderIsoSubgroupMonoidHom (H : Subgroup G) :
+    Nat.card (subgroupOrderIsoSubgroupMonoidHom G M H).ofDual = Nat.card (G ⧸ H) :=
+  card_domRestrictHom_ker _ _
 
 end CommGroup

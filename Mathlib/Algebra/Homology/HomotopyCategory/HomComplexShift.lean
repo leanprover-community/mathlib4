@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Tactic.Linarith
 
-/-! Shifting cochains
+/-! # Shifting cochains
 
 Let `C` be a preadditive category. Given two cochain complexes (indexed by `ℤ`),
 the type of cochains `HomComplex.Cochain K L n` of degree `n` was introduced
@@ -116,6 +116,8 @@ lemma shift_v (a : ℤ) (p q : ℤ) (hpq : p + n = q) (p' q' : ℤ)
   subst hp' hq'
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma shift_v' (a : ℤ) (p q : ℤ) (hpq : p + n = q) :
     (γ.shift a).v p q hpq = γ.v (p + a) (q + a) (by lia) := by
   simp only [shift_v γ a p q hpq _ _ rfl rfl, shiftFunctor_obj_X, shiftFunctorObjXIso,
@@ -204,7 +206,7 @@ def leftShiftAddEquiv (n a n' : ℤ) (hn' : n + a = n') :
 /-- The additive map `Cochain K L n →+ Cochain (K⟦a⟧) (L⟦a⟧) n`. -/
 @[simps!]
 def shiftAddHom (n a : ℤ) : Cochain K L n →+ Cochain (K⟦a⟧) (L⟦a⟧) n :=
-  AddMonoidHom.mk' (fun γ => γ.shift a) (by intros; dsimp; simp only [shift_add])
+  AddMonoidHom.mk' (fun γ => γ.shift a) (by intros; simp only [shift_add])
 
 variable (n)
 
@@ -309,6 +311,7 @@ lemma shift_smul (a : ℤ) (x : R) :
 
 variable (K L R)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The linear equivalence `Cochain K L n ≃+ Cochain K L⟦a⟧ n'` when `n' + a = n` and
 the category is `R`-linear. -/
 @[simps!]
@@ -317,6 +320,7 @@ def rightShiftLinearEquiv (n a n' : ℤ) (hn' : n' + a = n) :
   (rightShiftAddEquiv K L n a n' hn').toLinearEquiv
     (fun x γ => by dsimp; simp only [rightShift_smul])
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The additive equivalence `Cochain K L n ≃+ Cochain (K⟦a⟧) L n'` when `n + a = n'` and
 the category is `R`-linear. -/
 @[simps!]
@@ -325,6 +329,7 @@ def leftShiftLinearEquiv (n a n' : ℤ) (hn : n + a = n') :
   (leftShiftAddEquiv K L n a n' hn).toLinearEquiv
     (fun x γ => by dsimp; simp only [leftShift_smul])
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The linear map `Cochain K L n ≃+ Cochain (K⟦a⟧) (L⟦a⟧) n` when the category is `R`-linear. -/
 @[simps!]
 def shiftLinearMap (n a : ℤ) :
@@ -429,6 +434,7 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
   · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by lia)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, rightShift_zero, smul_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n)
     (m m' : ℤ) (hm' : m' + a = m) :
@@ -438,6 +444,7 @@ lemma δ_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn 
   simp only [rightUnshift_rightShift, γ'.δ_rightShift a n' m' hn m hm', rightUnshift_units_smul,
     smul_smul, Int.units_mul_self, one_smul]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m') :
     δ n' m' (γ.leftShift a n' hn') = a.negOnePow • (δ n m γ).leftShift a m' hm' := by
@@ -462,6 +469,7 @@ lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m
   · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by lia)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, leftShift_zero, smul_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_leftUnshift {a n' : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n')
     (m m' : ℤ) (hm' : m + a = m') :
@@ -486,6 +494,7 @@ lemma δ_shift (a m : ℤ) :
     rw [smul_comm]
   · rw [δ_shape _ _ hnm, δ_shape _ _ hnm, shift_zero, smul_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma leftShift_rightShift (a n' : ℤ) (hn' : n' + a = n) :
     (γ.rightShift a n' hn').leftShift a n hn' =
@@ -496,6 +505,7 @@ lemma leftShift_rightShift (a n' : ℤ) (hn' : n' + a = n) :
   dsimp
   rw [id_comp, comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma rightShift_leftShift (a n' : ℤ) (hn' : n + a = n') :
     (γ.leftShift a n' hn').rightShift a n hn' =
@@ -574,6 +584,7 @@ def equivHomShift :
     (K ⟶ L⟦n⟧) ≃+ Cocycle K L n :=
   (equivHom _ _).trans (rightShiftAddEquiv _ _ _ (zero_add n)).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma equivHomShift_comp {K' : CochainComplex C ℤ}
     (g : K' ⟶ K) (f : K ⟶ L⟦n⟧) :
     equivHomShift (g ≫ f) = Cocycle.precomp (equivHomShift f) g := by
@@ -585,6 +596,7 @@ lemma equivHomShift_symm_precomp
     equivHomShift.symm (z.precomp g) = g ≫ equivHomShift.symm z :=
   equivHomShift.injective (by simp [equivHomShift_comp])
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma equivHomShift_comp_shift (f : K ⟶ L⟦n⟧) {L' : CochainComplex C ℤ} (g : L ⟶ L') :
     equivHomShift (f ≫ g⟦n⟧') = Cocycle.postcomp (equivHomShift f) g := by
   ext p q rfl

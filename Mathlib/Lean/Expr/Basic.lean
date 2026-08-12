@@ -8,7 +8,7 @@ module
 
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header  --shake: keep
+import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Meta.AppBuilder
 public import Lean.Meta.Match.MatcherInfo
 public import Lean.Meta.Transform
@@ -199,7 +199,7 @@ Each entry in the array is an `Expr.app`,
 and this array has the same length as the one returned by `Lean.Expr.getAppArgs`. -/
 @[inline]
 def getAppApps (e : Expr) : Array Expr :=
-  let dummy := mkSort levelZero
+  let dummy := mkSort .zero
   let nargs := e.getAppNumArgs
   getAppAppsAux e (.replicate nargs dummy) (nargs-1)
 

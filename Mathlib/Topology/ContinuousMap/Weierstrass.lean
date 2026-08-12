@@ -87,7 +87,6 @@ theorem continuousMap_mem_polynomialFunctions_closure (a b : ℝ) (f : C(Set.Icc
 
 open scoped Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An alternative statement of Weierstrass' theorem,
 for those who like their epsilons.
 
@@ -110,7 +109,7 @@ can be approximated to within any `ε > 0` on `[a,b]` by some polynomial.
 theorem exists_polynomial_near_of_continuousOn (a b : ℝ) (f : ℝ → ℝ)
     (c : ContinuousOn f (Set.Icc a b)) (ε : ℝ) (pos : 0 < ε) :
     ∃ p : ℝ[X], ∀ x ∈ Set.Icc a b, |p.eval x - f x| < ε := by
-  let f' : C(Set.Icc a b, ℝ) := ⟨fun x => f x, continuousOn_iff_continuous_restrict.mp c⟩
+  let f' : C(Set.Icc a b, ℝ) := ⟨fun x => f x, continuousOn_iff_continuous_domRestrict.mp c⟩
   obtain ⟨p, b⟩ := exists_polynomial_near_continuousMap a b f' ε pos
   use p
   rw [norm_lt_iff _ pos] at b

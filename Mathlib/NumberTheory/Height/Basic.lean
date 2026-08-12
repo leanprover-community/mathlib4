@@ -44,7 +44,7 @@ We define the following variants.
   This is the height of an element of `K`.
 * `Height.mulHeight x` and `Height.logHeight x` for `x : ι → K` with `ι` finite. This is the height
   of a tuple of elements of `K` representing a point in projective space. When `x = 0`, we
-  define the multiplicative height to be `1` (so the loarithmic height is `0`).
+  define the multiplicative height to be `1` (so the logarithmic height is `0`).
   It is invariant under scaling by nonzero elements of `K`.
 * `Finsupp.mulHeight x` and `Finsupp.logHeight x` for `x : α →₀ K`. This is the same
   as the height of `x` restricted to the support of `x`.
@@ -107,7 +107,7 @@ variable {K}
 /-!
 ### Heights of field elements
 
-We use the subscipt `₁` to denote multiplicative and logarithmic heights of field elements
+We use the subscript `₁` to denote multiplicative and logarithmic heights of field elements
 (this is because we are in the one-dimensional case of (affine) heights).
 -/
 
@@ -128,7 +128,7 @@ lemma mulHeight₁_zero : mulHeight₁ (0 : K) = 1 := by
 lemma mulHeight₁_one : mulHeight₁ (1 : K) = 1 := by
   simp [mulHeight₁_eq]
 
-/-- The mutliplicative height of a field element is always at least `1`. -/
+/-- The multiplicative height of a field element is always at least `1`. -/
 lemma one_le_mulHeight₁ (x : K) : 1 ≤ mulHeight₁ x :=
   one_le_mul_of_one_le_of_one_le (Multiset.one_le_prod_map fun _ _ ↦ le_max_right ..) <|
     one_le_finprod fun _ ↦ le_max_right ..
@@ -170,7 +170,7 @@ lemma logHeight₁_eq (x : K) :
   rw [mulHeight₁_eq] at H
   have : ∀ a ∈ archAbsVal.map (fun v ↦ max (v x) 1), a ≠ 0 := by
     intro a ha
-    contrapose! ha
+    contrapose ha
     rw [ha]
     exact Multiset.prod_eq_zero_iff.not.mp <| left_ne_zero_of_mul H
   rw [log_mul (left_ne_zero_of_mul H) (right_ne_zero_of_mul H), log_multiset_prod this,
@@ -189,7 +189,8 @@ open Lean.Meta Qq Height
 
 /-- Extension for the `positivity` tactic: `Height.mulHeight₁` is always positive. -/
 @[positivity Height.mulHeight₁ _]
-meta def evalMulHeight₁ : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulHeight₁ : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight₁ $K $KF $KA $a) =>
     assertInstancesCommute
@@ -198,7 +199,8 @@ meta def evalMulHeight₁ : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for the `positivity` tactic: `Height.logHeight₁` is always nonnegative. -/
 @[positivity Height.logHeight₁ _]
-meta def evalLogHeight₁ : PositivityExt where eval {u α} _ _ e := do
+meta def evalLogHeight₁ : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight₁ $K $KF $KA $a) =>
     assertInstancesCommute
@@ -314,7 +316,7 @@ private lemma hasFiniteMulSupport_iSup_nonarchAbsVal {x : ι → K} (hx : x ≠ 
     (fun v : nonarchAbsVal ↦ ⨆ i, v.val (x i)).HasFiniteMulSupport := by
   have : Nonempty {j // x j ≠ 0} := nonempty_subtype.mpr <| ne_iff.mp hx
   suffices (fun v : nonarchAbsVal ↦ ⨆ i : {j // x j ≠ 0}, v.val (x i)).HasFiniteMulSupport by
-    convert this with v
+    convert! this with v
     obtain ⟨i, hi⟩ : ∃ j, x j ≠ 0 := Function.ne_iff.mp hx
     have : Nonempty ι := .intro i
     refine le_antisymm (ciSup_le fun j ↦ ?_) (ciSup_le fun ⟨j, hj⟩ ↦ Finite.le_ciSup_of_le j le_rfl)
@@ -329,7 +331,7 @@ private lemma hasFiniteMulSupport_max_nonarchAbsVal (x : K) :
     (fun v : nonarchAbsVal ↦ v.val x ⊔ 1).HasFiniteMulSupport := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp [HasFiniteMulSupport]
-  fun_prop (disch := assumption)
+  fun_prop
 
 /-- The multiplicative height of a tuple does not change under scaling. -/
 lemma mulHeight_smul_eq_mulHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
@@ -340,7 +342,7 @@ lemma mulHeight_smul_eq_mulHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
   have hcx : c • x ≠ 0 := by simp [hc, hx]
   simp only [mulHeight_eq hx, mulHeight_eq hcx, Pi.smul_apply, smul_eq_mul, map_mul,
     ← mul_iSup_of_nonneg <| AbsoluteValue.nonneg .., Multiset.prod_map_mul]
-  rw [finprod_mul_distrib (by fun_prop (disch := assumption)) (by fun_prop (disch := assumption)),
+  rw [finprod_mul_distrib (by fun_prop) (by fun_prop),
     mul_mul_mul_comm, product_formula hc, one_mul]
 
 lemma one_le_mulHeight (x : ι → K) : 1 ≤ mulHeight x := by
@@ -398,7 +400,7 @@ lemma mulHeight_sumElim_zero_eq (x : ι → K) :
   have : Nonempty ι := .intro i
   have hx' : Sum.elim x (0 : ι' → K) ≠ 0 := ne_iff.mpr ⟨.inl i, by simpa using hi⟩
   rw [mulHeight_eq hx, mulHeight_eq hx']
-  have H (v : AbsoluteValue K ℝ) :  ⨆ j, v (Sum.elim x (0 : ι' → K) j) = ⨆ i, v (x i) := by
+  have H (v : AbsoluteValue K ℝ) : ⨆ j, v (Sum.elim x (0 : ι' → K) j) = ⨆ i, v (x i) := by
     refine le_antisymm ?_ <| ciSup_le fun i ↦ Finite.le_ciSup_of_le (.inl i) le_rfl
     refine ciSup_le fun j ↦ ?_
     cases j with
@@ -421,7 +423,7 @@ lemma mulHeight_eq_mulHeight_restrict_support (x : ι → K) :
     simp only [comp_apply]
     cases i with
     | inl val => simp [e]
-    | inr val => exact notMem_support.mp <| (Set.mem_compl_iff _ _ ).mp val.prop
+    | inr val => exact notMem_support.mp <| (Set.mem_compl_iff _ _).mp val.prop
   rw [← mulHeight_comp_equiv e, hx]
   exact mulHeight_sumElim_zero_eq ..
 
@@ -437,7 +439,7 @@ lemma mulHeight_eq_one_of_subsingleton {ι : Type*} [Subsingleton ι] (x : ι �
   obtain ⟨i, hi⟩ := Function.ne_iff.mp hx
   have : Nonempty ι := .intro i
   rw [← mulHeight_smul_eq_mulHeight x (inv_ne_zero hi)]
-  convert mulHeight_one
+  convert! mulHeight_one
   ext1 j
   simpa [Subsingleton.elim j i] using inv_mul_cancel₀ hi
 
@@ -445,6 +447,56 @@ lemma mulHeight_eq_one_of_subsingleton {ι : Type*} [Subsingleton ι] (x : ι �
 lemma logHeight_eq_zero_of_subsingleton {ι : Type*} [Subsingleton ι] (x : ι → K) :
     logHeight x = 0 := by
   simp [logHeight_eq_log_mulHeight]
+
+section tuple
+
+/-
+This section contains `simp` lemmas that remove a zero from one of the first three positions
+in a tuple, when `mulHeight` or `logHeight` is applied to it.
+
+TODO: Write a `simproc` that removes *all* (syntactic) zeros from a tuple in this situation.
+-/
+
+open Matrix
+
+variable {n : ℕ} (a b : K) (x : Fin n → K)
+
+@[simp]
+lemma mulHeight_cons_zero : mulHeight (vecCons 0 x) = mulHeight x := by
+  let e := (Equiv.sumComm ..).trans <| finSumFinEquiv.trans <| finCongr n.one_add
+  have he : Matrix.vecCons 0 x ∘ ⇑e = Sum.elim x 0 := by
+    ext j : 1
+    match j with
+    | .inl _ => simp [e]
+    | .inr ⟨i, h⟩ =>
+      simp [show i = 0 by lia, e, show Fin.castAdd n 0 = 0 from Fin.castAdd_mk _ _ zero_lt_one]
+  rw [← mulHeight_comp_equiv e, he, mulHeight_sumElim_zero_eq]
+
+@[simp]
+lemma logHeight_cons_zero : logHeight (Matrix.vecCons 0 x) = logHeight x := by
+  simp [logHeight_eq_log_mulHeight]
+
+@[simp]
+lemma mulHeight_cons_cons_zero : mulHeight (vecCons a (vecCons 0 x)) = mulHeight (vecCons a x) := by
+  rw [← mulHeight_comp_equiv (Equiv.swap 0 1)]
+  simp
+
+@[simp]
+lemma logHeight_cons_cons_zero : logHeight (vecCons a (vecCons 0 x)) = logHeight (vecCons a x) := by
+  simp [logHeight_eq_log_mulHeight]
+
+@[simp]
+lemma mulHeight_cons_cons_cons_zero :
+    mulHeight (vecCons a (vecCons b (vecCons 0 x))) = mulHeight (vecCons a (vecCons b x)) := by
+  rw [← mulHeight_comp_equiv (Equiv.swap (Fin.succ 0) (Fin.succ 1)), ← cons_swap]
+  simp
+
+@[simp]
+lemma logHeight_cons_cons_cons_zero :
+    logHeight (vecCons a (vecCons b (vecCons 0 x))) = logHeight (vecCons a (vecCons b x)) := by
+  simp [logHeight_eq_log_mulHeight]
+
+end tuple
 
 end Height
 
@@ -458,7 +510,8 @@ open Lean.Meta Qq Height
 
 /-- Extension for the `positivity` tactic: `Height.mulHeight` is always positive. -/
 @[positivity Height.mulHeight _]
-meta def evalMulHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulHeight : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight $K $KF $KA $ι $a) =>
     -- Check whether there is a `Finite` instance for `$ι` around.
@@ -471,7 +524,8 @@ meta def evalMulHeight : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for the `positivity` tactic: `Height.logHeight` is always nonnegative. -/
 @[positivity Height.logHeight _]
-meta def evalLogHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalLogHeight : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight $K $KF $KA $ι $a) =>
     -- Check whether there is a `Finite` instance for `$ι` around.
@@ -512,13 +566,7 @@ lemma logHeight₁_eq_logHeight (x : K) : logHeight₁ x = logHeight ![x, 1] := 
 lemma mulHeight₁_div_eq_mulHeight (x y : K) :
     mulHeight₁ (x / y) = mulHeight ![x, y] := by
   rcases eq_or_ne y 0 with rfl | hy
-  · simp only [div_zero, mulHeight₁_zero]
-    rcases eq_or_ne x 0 with rfl | hx
-    · rw [show (![0, 0] : Fin 2 → K) = 0 by simp]
-      simp
-    · have := mulHeight_smul_eq_mulHeight ![1, 0] hx
-      simp only [Matrix.smul_cons, smul_eq_mul, mul_one, mul_zero, Matrix.smul_empty] at this
-      rw [this, mulHeight_swap, ← mulHeight₁_eq_mulHeight, mulHeight₁_zero]
+  · simp
   · rw [mulHeight₁_eq_mulHeight, ← mulHeight_smul_eq_mulHeight _ hy]
     simp [mul_div_cancel₀ x hy]
 
@@ -526,7 +574,6 @@ lemma logHeight₁_div_eq_logHeight (x y : K) :
     logHeight₁ (x / y) = logHeight ![x, y] := by
   rw [logHeight₁_eq_log_mulHeight₁, logHeight_eq_log_mulHeight, mulHeight₁_div_eq_mulHeight x y]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicative height of the coordinate-wise `n`th power of a tuple
 is the `n`th power of its multiplicative height. -/
 lemma mulHeight_pow (x : ι → K) (n : ℕ) :
@@ -572,7 +619,7 @@ lemma mulHeight₁_pow (x : K) (n : ℕ) : mulHeight₁ (x ^ n) = mulHeight₁ x
   fin_cases i <;> simp
 
 /-- The logarithmic height of the `n`th power of a field element `x` (with `n : ℕ`)
-is `n` times the logaritmic height of `x`. -/
+is `n` times the logarithmic height of `x`. -/
 lemma logHeight₁_pow (x : K) (n : ℕ) : logHeight₁ (x ^ n) = n * logHeight₁ x := by
   simp only [logHeight₁_eq_log_mulHeight₁, mulHeight₁_pow, log_pow]
 
@@ -624,7 +671,7 @@ lemma mulHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0
     simp_rw [ne_iff, Pi.zero_def] at hx ⊢
     choose f hf using hx
     exact ⟨f, prod_ne_zero_iff.mpr fun a _ ↦ hf a⟩
-  simp_rw [map_prod, Real.iSup_prod_eq_prod_iSup_of_nonnegHomClass]
+  simp_rw [_root_.map_prod, Real.iSup_prod_eq_prod_iSup_of_nonnegHomClass]
   rw [Multiset.prod_map_prod,
     finprod_prod_comm _ _ fun b _ ↦ hasFiniteMulSupport_iSup_nonarchAbsVal (hx b),
     ← prod_mul_distrib]
@@ -712,7 +759,7 @@ lemma mulHeight_mul_le (x y : ι → K) : mulHeight (x * y) ≤ mulHeight x * mu
   rcases eq_or_ne y 0 with rfl | hy
   · simpa using one_le_mulHeight x
   rw [← mulHeight_fun_mul_eq hx hy,
-    show x * y = (fun a ↦ x a.1 * y a.2) ∘ fun i ↦ (i, i) by ext1; simp]
+    show x * y = (fun a ↦ x a.1 * y a.2) ∘ Function.diag by ext1; simp]
   exact mulHeight_comp_le ..
 
 open Real in
@@ -797,7 +844,7 @@ lemma max_abv_sum_one_le_of_isNonarchimedean {v : AbsoluteValue R S} (hv : IsNon
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
   refine sup_le ?_ <| s.one_le_prod fun _ _ ↦ le_max_right ..
-  grw [hv.apply_sum_le_sup_of_isNonarchimedean hs]
+  grw [hv.apply_sum_le_sup hs]
   exact sup'_le hs (fun i ↦ v (x i)) fun i hi ↦ le_prod_max_one hi fun i ↦ v (x i)
 
 end Finset

@@ -19,7 +19,7 @@ This is in some sense a finitary version of the second Borel-Cantelli lemma.
 ## References
 
 [Bergelson, *Sets of recurrence of `ℤᵐ`-actions and properties of sets of differences in
-`ℤᵐ`][bergelson1985]
+`ℤᵐ`*][bergelson1985]
 
 ## TODO
 
@@ -37,7 +37,6 @@ open scoped ENNReal
 
 variable {ι α : Type*} [MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] {r : ℝ≥0∞}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Bergelson Intersectivity Lemma**: In a finite measure space, a sequence of events that have
 measure at least `r` has an infinite subset whose finite intersections all have positive volume.
 
@@ -57,7 +56,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     simp_rw [pos_iff_ne_zero]
     rintro ⟨x, hx⟩ hu
     refine hx.2 (mem_iUnion.2 ⟨u, ?_⟩)
-    rw [mem_setOf, indicator_of_mem hx.1, eLpNormEssSup_eq_zero_iff.2]
+    rw [mem_ofPred, indicator_of_mem hx.1, eLpNormEssSup_eq_zero_iff.2]
     · simp
     · rwa [indicator_ae_eq_zero, Function.support_one, inter_univ]
   -- Define `f n` to be the average of the first `n + 1` indicators of the `s k`.
@@ -79,7 +78,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     simp_rw [hfapp]
     rw [lintegral_const_mul _ <| Finset.measurable_fun_sum _
         fun _ _ ↦ measurable_one.indicator <| hs _,
-      lintegral_finset_sum _ fun _ _ ↦ measurable_one.indicator (hs _)]
+      lintegral_finsetSum _ fun _ _ ↦ measurable_one.indicator (hs _)]
     simp only [lintegral_indicator_one (hs _)]
     rw [← ENNReal.div_eq_inv_mul, ENNReal.le_div_iff_mul_le (by simp) (by simp), ← nsmul_eq_mul']
     simpa using Finset.card_nsmul_le_sum (Finset.range (n + 1)) _ _ fun _ _ ↦ hr _
@@ -109,7 +108,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
           tendsto_add_atTop_nat 1) (.inr <| ENNReal.natCast_ne_top _)
       · classical
         simpa only [Finset.sum_apply, indicator_apply, Pi.one_apply, Finset.sum_boole, Nat.cast_le]
-          using Finset.card_le_card fun m hm ↦ hxs.mem_toFinset.2 (Finset.mem_filter.1 hm).2
+          using! Finset.card_le_card fun m hm ↦ hxs.mem_toFinset.2 (Finset.mem_filter.1 hm).2
     · simp_rw [← hu.mem_toFinset]
       exact hN₁ _ ⟨x, mem_iInter₂.2 fun n hn ↦ hux <| hu.mem_toFinset.1 hn, hxN⟩
   · refine Eventually.of_forall fun n ↦ ?_

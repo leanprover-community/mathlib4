@@ -101,23 +101,30 @@ instance [Add α] : Add (Holor α ds) :=
 instance [Neg α] : Neg (Holor α ds) :=
   ⟨fun a t => -a t⟩
 
-instance [AddSemigroup α] : AddSemigroup (Holor α ds) := Pi.addSemigroup
+instance [AddSemigroup α] : AddSemigroup (Holor α ds) :=
+  inferInstanceAs <| AddSemigroup (HolorIndex ds → α)
 
-instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) := Pi.addCommSemigroup
+instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) :=
+  inferInstanceAs <| AddCommSemigroup (HolorIndex ds → α)
 
-instance [AddMonoid α] : AddMonoid (Holor α ds) := Pi.addMonoid
+instance [AddMonoid α] : AddMonoid (Holor α ds) :=
+  inferInstanceAs <| AddMonoid (HolorIndex ds → α)
 
-instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) := Pi.addCommMonoid
+instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) :=
+  inferInstanceAs <| AddCommMonoid (HolorIndex ds → α)
 
-instance [AddGroup α] : AddGroup (Holor α ds) := Pi.addGroup
+instance [AddGroup α] : AddGroup (Holor α ds) :=
+  inferInstanceAs <| AddGroup (HolorIndex ds → α)
 
-instance [AddCommGroup α] : AddCommGroup (Holor α ds) := Pi.addCommGroup
+instance [AddCommGroup α] : AddCommGroup (Holor α ds) :=
+  inferInstanceAs <| AddCommGroup (HolorIndex ds → α)
 
 -- scalar product
 instance [Mul α] : SMul α (Holor α ds) :=
   ⟨fun a x => fun t => a * x t⟩
 
-instance [Semiring α] : Module α (Holor α ds) := Pi.module _ _ _
+instance [Semiring α] : Module α (Holor α ds) :=
+  inferInstanceAs <| Module α (HolorIndex ds → α)
 
 /-- The tensor product of two holors. -/
 def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ ds₂) := fun t =>
@@ -137,6 +144,7 @@ def assocRight : Holor α (ds₁ ++ ds₂ ++ ds₃) → Holor α (ds₁ ++ (ds�
 def assocLeft : Holor α (ds₁ ++ (ds₂ ++ ds₃)) → Holor α (ds₁ ++ ds₂ ++ ds₃) :=
   cast (congr_arg (Holor α) (append_assoc ds₁ ds₂ ds₃).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_assoc0 [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₃) :
     x ⊗ y ⊗ z = (x ⊗ (y ⊗ z)).assocLeft :=
   funext fun t : HolorIndex (ds₁ ++ ds₂ ++ ds₃) => by
@@ -164,6 +172,7 @@ nonrec theorem zero_mul {α : Type} [MulZeroClass α] (x : Holor α ds₂) : (0 
 nonrec theorem mul_zero {α : Type} [MulZeroClass α] (x : Holor α ds₁) : x ⊗ (0 : Holor α ds₂) = 0 :=
   funext fun t => mul_zero (x (HolorIndex.take t))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_scalar_mul [Mul α] (x : Holor α []) (y : Holor α ds) :
     x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by
   simp +unfoldPartialApp [mul, SMul.smul, HolorIndex.take, HolorIndex.drop,
@@ -196,6 +205,7 @@ theorem slice_eq (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) (h : slice x 
         _ = slice y i hid ⟨is, hisds⟩ := by rw [h]
         _ = y ⟨i :: is, _⟩ := congr_arg y (Subtype.ext rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem slice_unitVec_mul [Semiring α] {i : ℕ} {j : ℕ} (hid : i < d) (x : Holor α ds) :
     slice (unitVec d j ⊗ x) i hid = if i = j then x else 0 :=
   funext fun t : HolorIndex ds =>
@@ -211,7 +221,7 @@ theorem slice_zero [Zero α] (i : ℕ) (hid : i < d) : slice (0 : Holor α (d ::
 
 theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Finset β)
     (f : β → Holor α (d :: ds)) : (∑ x ∈ s, slice (f x) i hid) = slice (∑ x ∈ s, f x) i hid := by
-  letI := Classical.decEq β
+  let := Classical.decEq β
   refine Finset.induction_on s ?_ ?_
   · simp [slice_zero]
   · intro _ _ h_not_in ih

@@ -158,7 +158,7 @@ variable {I J}
 theorem coe_subset_coe : (I : Set (ι → ℝ)) ⊆ J ↔ I ≤ J := Iff.rfl
 
 theorem le_iff_bounds : I ≤ J ↔ J.lower ≤ I.lower ∧ I.upper ≤ J.upper :=
-  (le_TFAE I J).out 0 3
+  (le_TFAE I J).out 1 4
 
 theorem injective_coe : Injective ((↑) : Box ι → Set (ι → ℝ)) := by
   rintro ⟨l₁, u₁, h₁⟩ ⟨l₂, u₂, h₂⟩ h
@@ -182,7 +182,7 @@ instance : PartialOrder (Box ι) :=
 
 /-- Closed box corresponding to `I : BoxIntegral.Box ι`. -/
 protected def Icc : Box ι ↪o Set (ι → ℝ) :=
-  OrderEmbedding.ofMapLEIff (fun I : Box ι ↦ Icc I.lower I.upper) fun I J ↦ (le_TFAE I J).out 2 0
+  OrderEmbedding.ofMapLEIff (fun I : Box ι ↦ Icc I.lower I.upper) fun I J ↦ (le_TFAE I J).out 3 1
 
 theorem Icc_def : Box.Icc I = Icc I.lower I.upper := rfl
 
@@ -201,7 +201,7 @@ theorem Icc_eq_pi : Box.Icc I = pi univ fun i ↦ Icc (I.lower i) (I.upper i) :=
   (pi_univ_Icc _ _).symm
 
 theorem le_iff_Icc : I ≤ J ↔ Box.Icc I ⊆ Box.Icc J :=
-  (le_TFAE I J).out 0 2
+  (le_TFAE I J).out 1 3
 
 theorem antitone_lower : Antitone fun I : Box ι ↦ I.lower :=
   fun _ _ H ↦ (le_iff_bounds.1 H).1
@@ -456,7 +456,6 @@ theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
   have hn0 := (map_ne_zero Real.nnabs).2 this.ne'
   simp_rw [NNReal.finset_sup_div, div_div_div_cancel_right₀ hn0]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
     nndist I.lower I.upper ≤ I.distortion * nndist (I.lower i) (I.upper i) :=
   calc

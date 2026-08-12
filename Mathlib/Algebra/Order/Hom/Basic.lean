@@ -47,7 +47,7 @@ multiplicative ring norms but outside of this use we only consider real-valued s
 Finitary versions of the current lemmas.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -60,6 +60,7 @@ Diamond inheritance cannot depend on `outParam`s in the following circumstances:
 * the instance `Bottom.toMiddle` takes a `[Left α]` parameter
 * the instance `Middle.toTop` takes a `[Right α]` parameter
 * there is a `Leaf` class that inherits from both `Left` and `Right`.
+
 In that case, given instances `Bottom α` and `Leaf α`, Lean cannot synthesize a `Top α` instance,
 even though the hypotheses of the instances `Bottom.toMiddle` and `Middle.toTop` are satisfied.
 
@@ -71,8 +72,6 @@ There are two workarounds:
 * You could weaken the `Bottom.toMiddle` instance by making it depend on a subclass of
   `Middle.toTop`'s parameter, in this example replacing `[Left α]` with `[Leaf α]`.
 -/
-
-open Function
 
 variable {ι F α β γ δ : Type*}
 

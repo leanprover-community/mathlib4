@@ -157,6 +157,7 @@ lemma ext_iff_of_isSymm (hB : IsSymm B) (hC : IsSymm C) :
 
 end polarization
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
     IsSymm B ↔ ∀ i j, B (b i) (b j) = B (b j) (b i) where
   mp := fun ⟨h⟩ i j ↦ h _ _
@@ -316,7 +317,7 @@ theorem Nondegenerate.congr {B : BilinForm R M} (e : M ≃ₗ[R] M') (h : B.Nond
 theorem nondegenerate_congr_iff {B : BilinForm R M} (e : M ≃ₗ[R] M') :
     (congr e B).Nondegenerate ↔ B.Nondegenerate :=
   ⟨fun h => by
-    convert h.congr e.symm
+    convert! h.congr e.symm
     rw [congr_congr, e.self_trans_symm, congr_refl, LinearEquiv.refl_apply], Nondegenerate.congr e⟩
 
 theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
@@ -360,8 +361,6 @@ lemma apply_toDual_symm_apply {B : BilinForm K V} {hB : B.Nondegenerate}
     B ((B.toDual hB).symm f) v = f v := by
   change B.toDual hB ((B.toDual hB).symm f) v = f v
   simp only [LinearEquiv.apply_symm_apply]
-
-@[deprecated (since := "2026-01-17")] alias nonDegenerateFlip_iff := nondegenerate_flip_iff
 
 end FiniteDimensional
 
@@ -412,7 +411,7 @@ lemma dualBasis_flip_dualBasis (hB : B.Nondegenerate) (b : Basis ι K V) :
 lemma dualBasis_dualBasis (hB : B.Nondegenerate) (hB' : B.IsSymm)
     (b : Basis ι K V) :
     B.dualBasis hB (B.dualBasis hB b) = b := by
-  convert dualBasis_dualBasis_flip hB.flip b
+  convert! dualBasis_dualBasis_flip hB.flip b
   rwa [eq_comm, ← isSymm_iff_flip]
 
 lemma dualBasis_involutive (hB : B.Nondegenerate) (hB' : B.IsSymm) :

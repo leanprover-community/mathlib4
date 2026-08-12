@@ -49,7 +49,7 @@ theorem isUnit_of_eventually_isUnit {x : Πʳ i, [R i, B i]_[𝓕]} (hx : ∀ i,
     simp [← Units.eq_inv_of_mul_eq_one_left hu])
   simp [RestrictedProduct.ext_iff]
 
-theorem eventualy_isUnit_of_isUnit {x : Πʳ i, [R i, B i]_[𝓕]} (hx : IsUnit x) :
+theorem eventually_isUnit_of_isUnit {x : Πʳ i, [R i, B i]_[𝓕]} (hx : IsUnit x) :
     (∀ i, IsUnit (x i)) ∧ ∀ᶠ i in 𝓕, ∃ (h : x i ∈ B i), IsUnit (⟨x i, h⟩ : B i) := by
   simp only [isUnit_iff_exists, RestrictedProduct.ext_iff, ← forall_and] at hx
   simp only [isUnit_iff_exists]
@@ -57,14 +57,18 @@ theorem eventualy_isUnit_of_isUnit {x : Πʳ i, [R i, B i]_[𝓕]} (hx : IsUnit 
   exact ⟨Classical.skolem.symm.1 ⟨b, hb⟩, by filter_upwards [x.2, b.2] using
     fun i hx hb ↦ ⟨hx, ⟨b i, hb⟩, by simp_all [← SetLike.coe_eq_coe]⟩⟩
 
+@[deprecated (since := "2026-04-06")]
+alias eventualy_isUnit_of_isUnit := eventually_isUnit_of_isUnit
+
 theorem isUnit_iff {x : Πʳ i, [R i, B i]_[𝓕]} :
     IsUnit x ↔ (∀ i, IsUnit (x i)) ∧ ∀ᶠ i in 𝓕, ∃ (h : x i ∈ B i), IsUnit (⟨x i, h⟩ : B i) :=
-  ⟨eventualy_isUnit_of_isUnit, fun h ↦ isUnit_of_eventually_isUnit h.1 h.2⟩
+  ⟨eventually_isUnit_of_isUnit, fun h ↦ isUnit_of_eventually_isUnit h.1 h.2⟩
 
 /-- The homomorphism from the units of a restricted product to the regular product of unit. -/
 def coeUnits : Πʳ i, [R i, B i]_[𝓕]ˣ →* (i : ι) → (R i)ˣ :=
   MulEquiv.piUnits.toMonoidHom.comp <| Units.map coeMonoidHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs a unit in a restricted product `Πʳ i, [R i, B i]_[𝓕]` given an element `x` of
 the usual product and the condition that `x` is eventually in the units of `B i` along `𝓕`. -/
 def mkUnit (x : Π i, (R i)ˣ) (hx : ∀ᶠ i in 𝓕, x i ∈ (Submonoid.ofClass (B i)).units) :

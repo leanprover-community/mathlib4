@@ -27,7 +27,7 @@ braided/symmetric structure.
 * Add monoidal/braided versions of `ObjectProperty.Lift`
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -95,7 +95,6 @@ instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
     { μIso _ _ := Iso.refl _
       εIso := Iso.refl _ }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
 ("forgetting" the condition).
 -/
@@ -129,7 +128,8 @@ section
 
 variable {P} {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P')
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a monoidal functor between full monoidal subcategories. -/
 instance : (ιOfLE h).Monoidal :=
@@ -148,13 +148,11 @@ section Braided
 
 variable [BraidedCategory C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The braided structure on a full subcategory inherited by the braided structure on `C`.
 -/
 instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
   .ofFaithful P.ι fun X Y ↦ P.isoMk (β_ X.1 Y.1)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful braided functor from a full braided subcategory into the original category
 ("forgetting" the condition).
 -/
@@ -162,7 +160,8 @@ instance : P.ι.Braided where
 
 variable {P}
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a braided functor between full braided subcategories. -/
 instance {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P') :
@@ -183,6 +182,7 @@ section Closed
 
 variable [MonoidalClosed C] [P.IsMonoidalClosed]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
   closed X :=
@@ -200,8 +200,6 @@ theorem ihom_obj (X Y : P.FullSubcategory) :
 theorem ihom_map_hom (X : P.FullSubcategory) {Y Z : P.FullSubcategory}
     (f : Y ⟶ Z) : ((ihom X).map f).hom = (ihom X.obj).map f.hom :=
   rfl
-
-@[deprecated (since := "2025-12-18")] alias ihom_map := ihom_map_hom
 
 end Closed
 

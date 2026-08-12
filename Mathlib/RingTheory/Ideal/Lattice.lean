@@ -20,16 +20,16 @@ Some basic results on lattice operations on ideals: `⊥`, `⊤`, `⊔`, `⊓`.
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
 
 variable {α : Type u} {β : Type v} {F : Type w}
 
-open Set Function
+open Set
 
-open Pointwise
+open scoped Pointwise
 
 section Semiring
 

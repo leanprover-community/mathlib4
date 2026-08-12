@@ -5,11 +5,8 @@ Authors: Riccardo Brasca, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.RingTheory.Algebraic.Integral
-public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Minimal polynomials on an algebra over a field
@@ -58,7 +55,7 @@ theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
   apply degree_le_of_ne_zero A x hnz (by simp [hp]) |>.not_gt
-  apply degree_sub_lt _ (minpoly.ne_zero hx)
+  apply degree_sub_lt_left _ (minpoly.ne_zero hx)
   · rw [(monic hx).leadingCoeff, pmonic.leadingCoeff]
   · exact le_antisymm (min A x pmonic hp) (pmin (minpoly A x) (monic hx) (aeval A x))
 
@@ -161,6 +158,19 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
   · rw [aeval_mul, hp2, zero_mul]
   · rwa [Polynomial.Monic, leadingCoeff_mul, leadingCoeff_C, mul_inv_cancel₀]
 
+theorem Irreducible.eq_minpoly [Nontrivial B] {p : A[X]} (hi : Irreducible p)
+    (hx : Polynomial.aeval x p = 0) : p = C p.leadingCoeff * minpoly A x := by
+  rw [← minpoly.eq_of_irreducible hi hx, mul_comm, mul_assoc, ← C_mul,
+    inv_mul_cancel₀ (leadingCoeff_ne_zero.mpr hi.ne_zero), C_1, mul_one]
+
+theorem _root_.Irreducible.dvd_iff_aeval_eq_zero [Nontrivial B] {p q : A[X]} (hi : Irreducible p)
+    {b : B} (hfa : p.aeval b = 0) : q.aeval b = 0 ↔ p ∣ q := by
+  refine ⟨fun hga ↦ dvd_trans ?_ (minpoly.dvd A b hga), ?_⟩
+  · rw [← minpoly.eq_of_irreducible hi hfa]
+    exact dvd_mul_right _ _
+  · rintro ⟨g, rfl⟩
+    simp [hfa]
+
 theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
   by_cases hx : IsIntegral A x
@@ -211,6 +221,7 @@ section AlgHomFintype
 
 open scoped Classical in
 /-- A technical finiteness result. -/
+@[instance_reducible]
 noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L : Type*}
     (F : E → Multiset L) : Fintype (∀ x : X, { l : L // l ∈ F x }) :=
   @Pi.instFintype _ _ _ (Finite.fintype hX) _
@@ -218,7 +229,7 @@ noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L
 variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]
 
-/-- Function from Hom_K(E,L) to pi type Π (x : basis), roots of min poly of x -/
+/-- Function from `Hom_K(E,L)` to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
     (x : range (Module.finBasis F E : _ → E)) :
     { l : K // l ∈ (minpoly F x.1).aroots K } :=
@@ -304,7 +315,7 @@ theorem coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔
 
 /-- The minimal polynomial of a nonzero element has nonzero constant coefficient. -/
 theorem coeff_zero_ne_zero (hx : IsIntegral A x) (h : x ≠ 0) : coeff (minpoly A x) 0 ≠ 0 := by
-  contrapose! h
+  contrapose h
   simpa only [hx, coeff_zero_eq_zero] using h
 
 end IsDomain
@@ -327,7 +338,7 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
     simp_rw [← AlgEquiv.pow_toLinearMap] at hs
     apply hq.ne_zero
     simpa using Fintype.linearIndependent_iff.mp
-      (((linearIndependent_algHom_toLinearMap' K L L).comp _ AlgEquiv.coe_algHom_injective).comp _
+      (((linearIndependent_algHom_toLinearMap' K L L).comp _ AlgEquiv.coe_toAlgHom_injective).comp _
         (Subtype.val_injective.comp ((finEquivPowers hσ).injective)))
       (q.coeff ∘ (↑)) hs ⟨_, H⟩
 

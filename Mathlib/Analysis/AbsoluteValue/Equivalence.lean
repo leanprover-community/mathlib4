@@ -43,10 +43,6 @@ theorem IsEquiv.symm (h : v.IsEquiv w) : w.IsEquiv v := fun _ _ ↦ (h _ _).symm
 theorem IsEquiv.trans {u : AbsoluteValue R S} (h₁ : v.IsEquiv w)
     (h₂ : w.IsEquiv u) : v.IsEquiv u := fun _ _ ↦ (h₁ _ _).trans (h₂ _ _)
 
-@[deprecated (since := "2025-09-12")] alias isEquiv_refl := IsEquiv.refl
-@[deprecated (since := "2025-09-12")] alias isEquiv_symm := IsEquiv.symm
-@[deprecated (since := "2025-09-12")] alias isEquiv_trans := IsEquiv.trans
-
 instance : Setoid (AbsoluteValue R S) where
   r := IsEquiv
   iseqv := {
@@ -102,9 +98,6 @@ lemma isEquiv_trivial_iff_eq_trivial [DecidablePred fun x : R ↦ x = 0] [NoZero
     [IsStrictOrderedRing S] {f : AbsoluteValue R S} :
     f.IsEquiv .trivial ↔ f = .trivial :=
   ⟨fun h ↦ by aesop (add simp [h.eq_one_iff, AbsoluteValue.trivial]), fun h ↦ h ▸ .rfl⟩
-
-@[deprecated (since := "2025-09-12")]
-alias eq_trivial_of_isEquiv_trivial := isEquiv_trivial_iff_eq_trivial
 
 variable [IsStrictOrderedRing S]
 
@@ -351,7 +344,6 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
         rcases eq_or_ne x 0 with rfl | h₀ <;>
         aesop (add simp [h.isNontrivial_congr])⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.equivWithAbs_image_mem_nhds_zero (h : v.IsEquiv w) {U : Set (WithAbs v)}
     (hU : U ∈ 𝓝 0) : WithAbs.congr v w (.refl F) '' U ∈ 𝓝 0 := by
   rw [Metric.mem_nhds_iff] at hU ⊢
@@ -370,13 +362,18 @@ theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
   refine IsInducing.isEmbedding <| isInducing_iff_nhds_zero.2 <| Filter.ext fun U ↦
     ⟨fun hU ↦ ?_, fun hU ↦ ?_⟩
   · exact ⟨WithAbs.congr v w (.refl F)'' U, h.equivWithAbs_image_mem_nhds_zero hU,
-      by grind [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]⟩
+      by
+        #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+        (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+        goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+        the new canonicalizer; a minimization would help. The original proof was:
+        `grind [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]` -/
+        rw [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]; simp⟩
   · rw [← RingEquiv.coe_toEquiv, ← Filter.map_equiv_symm] at hU
     obtain ⟨s, hs, hss⟩ := Filter.mem_map_iff_exists_image.1 hU
     rw [← RingEquiv.coe_toEquiv_symm, WithAbs.congr_symm] at hss
     exact Filter.mem_of_superset (h.symm.equivWithAbs_image_mem_nhds_zero hs) hss
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isEquiv_iff_isHomeomorph (v w : AbsoluteValue F ℝ) :
     v.IsEquiv w ↔ IsHomeomorph (WithAbs.congr v w (.refl F)) := by
   rw [isHomeomorph_iff_isEmbedding_surjective]
@@ -391,5 +388,52 @@ theorem isEquiv_iff_isHomeomorph (v w : AbsoluteValue F ℝ) :
       continuous_id |>.tendsto 0 |>.comp h ⟩
 
 end Real
+
+section WeakApproximation
+
+open Filter
+open scoped Topology
+
+variable {F : Type*} [Field F]
+
+/--
+If `v : ι → AbsoluteValue F ℝ` is a finite family of nontrivial, pairwise inequivalent
+real absolute values on a field `F`, then the diagonal embedding
+`algebraMap F ((i : ι) → WithAbs (v i))` has dense range.
+
+This is the abstract weak approximation theorem; see
+`NumberField.InfinitePlace.denseRange_algebraMap_pi` for the number-field special case.
+-/
+theorem denseRange_algebraMap_pi {ι : Type*} [Finite ι] {v : ι → AbsoluteValue F ℝ}
+    (h : ∀ i, (v i).IsNontrivial)
+    (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
+    DenseRange <| algebraMap F ((i : ι) → WithAbs (v i)) := by
+  classical
+  have := Fintype.ofFinite ι
+  refine Metric.denseRange_iff.mpr fun z r hr ↦ ?_
+  choose a hx using exists_one_lt_lt_one_pi_of_not_isEquiv h hv
+  let y := fun n : ℕ ↦ ∑ i, (1 / (1 + (a i)⁻¹ ^ n)) * WithAbs.equiv (v i) (z i)
+  have htend : atTop.Tendsto (fun n i ↦ (WithAbs.equiv (v i)).symm (y n)) (𝓝 z) := by
+    refine tendsto_pi_nhds.mpr fun u ↦ ?_
+    simp_rw [← Fintype.sum_pi_single u z, y, map_sum, map_mul]
+    refine tendsto_finsetSum _ fun w _ ↦ ?_
+    by_cases hw : u = w
+    · rw [← hw, Pi.single_eq_same]
+      have hlt : (v u) (a u)⁻¹ < 1 := by
+        simpa [← inv_pow, inv_lt_one_iff₀] using Or.inr (hx u).1
+      simpa using (WithAbs.tendsto_one_div_one_add_pow_nhds_one hlt).mul_const (z u)
+    · rw [Pi.single_eq_of_ne (M := fun i ↦ WithAbs (v i)) hw (z w)]
+      have hgt : 1 < (v u) (a w)⁻¹ := by
+        rw [map_inv₀]
+        refine one_lt_inv_iff₀.mpr ⟨(v u).pos_iff.mpr fun ha ↦ ?_, (hx w).2 u hw⟩
+        linarith [map_zero (v w) ▸ ha ▸ (hx w).1]
+      have := (v u).tendsto_div_one_add_pow_nhds_zero hgt
+      simp_rw [← WithAbs.norm_toAbs_eq] at this
+      simpa using (tendsto_zero_iff_norm_tendsto_zero.2 this).mul_const
+        ((WithAbs.equiv (v u)).symm _)
+  let ⟨N, hN⟩ := Metric.tendsto_atTop.1 htend r hr
+  exact ⟨y N, dist_comm z (algebraMap F _ (y N)) ▸ hN N le_rfl⟩
+
+end WeakApproximation
 
 end AbsoluteValue

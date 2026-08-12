@@ -90,6 +90,10 @@ In the above example, the `simp` is added to all 3 lemmas. All other options to 
 (like the generated name or `(reorder := ...)`) are not passed down,
 and can be given manually to each individual `to_additive` call.
 
+The `(rename := ...)` syntax can be used for specifying the argument names of the generated
+declaration, overriding the automatic translation of names. For example, `(rename := x → a, y ↔ z)`
+will translate `lemma mul_foo (x y z : α) ...` to `lemma add_foo (a z y : α) ...`.
+
 ## Implementation notes
 
 The transport process generally works by taking all the names of
@@ -186,8 +190,8 @@ mismatch error.
   This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:
   * Ensure that the order of arguments of all relevant declarations are the same for the
     multiplicative and additive version. This might mean that arguments have an "unnatural" order
-    (e.g. `Monoid.npow n x` corresponds to `x ^ n`, but it is convenient that `Monoid.npow` has this
-    argument order, since it matches `AddMonoid.nsmul n x`.
+    (e.g. `NPow.npow n x` corresponds to `x ^ n`, but it is convenient that `NPow.npow` has this
+    argument order, since it matches `NSMul.nsmul n x`.
   * If this is not possible, add `(reorder := ...)` argument to `to_additive`.
 
 If neither of these solutions work, and `to_additive` is unable to automatically generate the
@@ -287,6 +291,7 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("smul", ["VAdd"]),
   ("inv", ["Neg"]),
   ("div", ["Sub"]),
+  ("sdiv", ["VSub"]),
   ("prod", ["Sum"]),
   ("hmul", ["HAdd"]),
   ("hsmul", ["HVAdd"]),
@@ -303,6 +308,7 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("group", ["Add", "Group"]),
   ("subgroup", ["Add", "Subgroup"]),
   ("semigroup", ["Add", "Semigroup"]),
+  ("torsor", ["Add", "Torsor"]),
   ("magma", ["Add", "Magma"]),
   ("haar", ["Add", "Haar"]),
   ("prehaar", ["Add", "Prehaar"]),
@@ -313,6 +319,9 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("grp", ["Add", "Grp"]),
   ("commute", ["Add", "Commute"]),
   ("semiconj", ["Add", "Semiconj"]),
+  ("conjugates", ["Add", "Conjugates"]),
+  ("conj", ["Add", "Conj"]),
+  ("commutator", ["Add", "Commutator"]),
   ("rootable", ["Divisible"]),
   ("zpowers", ["ZMultiples"]),
   ("powers", ["Multiples"]),
@@ -342,9 +351,12 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("le_zero", "Nonpos"),
   ("ltzero", "Neg"),
   ("lt_zero", "Neg"),
+  ("addAntidiagonal", "Antidiagonal"),
   ("addSingle", "Single"),
   ("addSupport", "Support"),
   ("addTSupport", "TSupport"),
+  ("addPointed", "Pointed"),
+  ("addSpanning", "Spanning"),
   ("addIndicator", "Indicator"),
   ("isEven", "Even"),
   -- "Regular" is well-used in mathlib with various meanings (e.g. in
@@ -368,8 +380,24 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("divisionAddMonoid", "SubtractionMonoid"),
   ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
   ("modularCharacter", "AddModularCharacter"),
+  ("addShift", "Shift"),
+  ("addSubshift", "Subshift"),
   ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
-  ("addExact", "exact")]
+  ("addExact", "Exact"),
+  ("isMonHom", "IsAddMonHom"),
+  ("mapMon", "MapAddMon"),
+  ("monObj", "AddMonObj"),
+  ("isModHom", "IsAddModHom"),
+  ("mapMod", "MapAddMod"),
+  ("modObj", "AddModObj"),
+  ("yonedaMon", "YonedaAddMon"),
+  ("conGen", "AddConGen"),
+  ("unoneD", "unzeroD"),
+  ("unone", "unzero")]
+
+@[inherit_doc GuessName.GuessNameExt]
+initialize guessNameExt : GuessName.GuessNameExt ←
+  GuessName.registerGuessNameExt { nameDict, abbreviationDict }
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
@@ -377,13 +405,14 @@ def data : TranslateData where
   attrName := `to_additive
   changeNumeral := true
   isDual := false
-  guessNameData := { nameDict, abbreviationDict }
+  guessNameExt
 
 initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr data src (← elabTranslationAttr src stx) kind
+      profileitM Exception "to_additive" (← getOptions) do
+        addTranslationAttr data src (← elabTranslationAttr src stx) kind
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
@@ -393,5 +422,10 @@ into the `to_additive` dictionary. This is useful for translating namespaces tha
 have a corresponding translated declaration. -/
 elab "insert_to_additive_translation" src:ident tgt:ident : command => do
   translations.add src.getId { translation := tgt.getId }
+
+/-- `to_additive_name_hint src tgt` lets `to_additive` translate the name segment `src` to `tgt`
+for the rest of the file current. `src` and `tgt` should both be capitalized. -/
+elab "to_additive_name_hint" src:ident tgt:ident : command => do
+  guessNameExt.addTranslation src tgt
 
 end Mathlib.Tactic.ToAdditive

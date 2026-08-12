@@ -47,12 +47,16 @@ def Scheme.Hom.fiberToSpecResidueField (f : X ⟶ Y) (y : Y) :
     f.fiber y ⟶ Spec (Y.residueField y) :=
   pullback.snd _ _
 
+@[reassoc]
+lemma Scheme.Hom.fiber_fac (f : X ⟶ Y) (y : Y) :
+    f.fiberι y ≫ f = f.fiberToSpecResidueField y ≫ Y.fromSpecResidueField y :=
+  pullback.condition
+
 /-- The fiber of `f` at `y` is naturally a `κ(y)`-scheme. -/
 @[reducible] def Scheme.Hom.fiberOverSpecResidueField
     (f : X ⟶ Y) (y : Y) : (f.fiber y).Over (Spec (Y.residueField y)) where
   hom := f.fiberToSpecResidueField y
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.fiberToSpecResidueField_apply (f : X ⟶ Y) (y : Y) (x : f.fiber y) :
     f.fiberToSpecResidueField y x = IsLocalRing.closedPoint (Y.residueField y) :=
   Subsingleton.elim (α := PrimeSpectrum _) _ _
@@ -66,7 +70,7 @@ lemma isPullback_fiberToSpecResidueField_of_isPullback {P X Y Z : Scheme.{u}} {f
       (Spec.map (g.residueFieldMap y)) := by
   refine .of_right (h₁₂ := pullback.fst _ _) ?_ ?_
       (IsPullback.of_hasPullback f (Z.fromSpecResidueField (g y)))
-  · simpa using (IsPullback.of_hasPullback _ _).paste_horiz h
+  · simpa using! (IsPullback.of_hasPullback _ _).paste_horiz h
   · simp [Scheme.Hom.fiberToSpecResidueField]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -91,6 +95,7 @@ lemma Scheme.Hom.range_fiberι (f : X ⟶ Y) (y : Y) :
     Set.range (f.fiberι y) = f ⁻¹' {y} := by
   simp [fiber, fiberι, Scheme.Pullback.range_fst, Scheme.range_fromSpecResidueField]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (y : Y) : IsPreimmersion (f.fiberι y) :=
   MorphismProperty.pullback_fst _ _ inferInstance
 
@@ -115,6 +120,7 @@ def Scheme.Hom.asFiber (f : X ⟶ Y) (x : X) : f.fiber (f x) :=
 lemma Scheme.Hom.fiberι_asFiber (f : X ⟶ Y) (x : X) : f.fiberι _ (f.asFiber x) = x :=
   f.fiberι_fiberHomeo_symm _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) [QuasiCompact f] (y : Y) : CompactSpace (f.fiber y) :=
   haveI : QuasiCompact (f.fiberToSpecResidueField y) :=
       MorphismProperty.pullback_snd _ _ inferInstance
@@ -128,11 +134,13 @@ lemma Scheme.Hom.isCompact_preimage_singleton (f : X ⟶ Y) [QuasiCompact f] (y 
 @[deprecated (since := "2026-02-05")]
 alias QuasiCompact.isCompact_preimage_singleton := Scheme.Hom.isCompact_preimage_singleton
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) [IsAffineHom f] (y : Y) : IsAffine (f.fiber y) :=
   haveI : IsAffineHom (f.fiberToSpecResidueField y) :=
     MorphismProperty.pullback_snd _ _ inferInstance
   isAffine_of_isAffineHom (f.fiberToSpecResidueField y)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (y : Y) [LocallyOfFiniteType f] : JacobsonSpace (f.fiber y) :=
   have : LocallyOfFiniteType (f.fiberToSpecResidueField y) :=
     MorphismProperty.pullback_snd _ _ inferInstance

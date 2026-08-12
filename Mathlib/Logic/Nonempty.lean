@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Tactic.TypeStar
+public import Mathlib.Init
 /-!
 # Nonempty types
 

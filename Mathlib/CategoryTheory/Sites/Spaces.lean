@@ -5,10 +5,10 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Grothendieck
+public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 public import Mathlib.CategoryTheory.Sites.Pretopology
 public import Mathlib.CategoryTheory.Limits.Lattice
-public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Topology.Sets.OpenCover
 
 /-!
 # Grothendieck topology on a topological space
@@ -57,7 +57,9 @@ def grothendieckTopology : GrothendieckTopology (Opens T) where
     rcases hR hf _ hU with ⟨V, g, hg, hV⟩
     exact ⟨_, g ≫ f, hg, hV⟩
 
-set_option backward.isDefEq.respectTransparency false in
+lemma mem_grothendieckTopology {U : Opens T} {S : Sieve U} :
+    S ∈ Opens.grothendieckTopology T U ↔ ∀ x ∈ U, ∃ (V : _) (f : V ⟶ U), S f ∧ x ∈ V := .rfl
+
 /-- The Grothendieck pretopology associated to a topological space. -/
 def pretopology : Pretopology (Opens T) where
   coverings X := {R | ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), R f ∧ x ∈ U}
@@ -73,7 +75,6 @@ def pretopology : Pretopology (Opens T) where
     rcases hTi f hf x hU with ⟨V, g, hg, hV⟩
     exact ⟨_, _, ⟨_, g, f, hf, hg, rfl⟩, hV⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pretopology associated to a space is the largest pretopology that
 generates the Grothendieck topology associated to the space. -/
 @[simp]
@@ -87,10 +88,6 @@ theorem toPretopology_grothendieckTopology :
     rcases hR x hx with ⟨U, f, hf, hU⟩
     exact ⟨U, f, Sieve.le_generate R U _ hf, hU⟩
 
-@[deprecated (since := "2025-09-19")]
-alias pretopology_ofGrothendieck := toPretopology_grothendieckTopology
-
-set_option backward.isDefEq.respectTransparency false in
 /-- The pretopology associated to a space induces the Grothendieck topology associated to the space.
 -/
 @[simp]
@@ -98,5 +95,17 @@ theorem pretopology_toGrothendieck :
     (Opens.pretopology T).toGrothendieck = Opens.grothendieckTopology T := by
   rw [← toPretopology_grothendieckTopology]
   apply (Pretopology.gi (Opens T)).l_u_eq
+
+lemma coversTop_iff {ι : Type*} (U : ι → Opens T) :
+    (grothendieckTopology T).CoversTop U ↔ IsOpenCover U := by
+  rw [GrothendieckTopology.coversTop_iff_of_isTerminal _ ⊤ isTerminalTop]
+  dsimp [Opens.grothendieckTopology]
+  simp only [IsOpenCover, eq_top_iff, SetLike.le_def, exists_and_right, Opens.mem_top,
+    Opens.mem_iSup, forall_const]
+  refine ⟨fun h x ↦ ?_, fun hU x hx ↦ ?_⟩
+  · obtain ⟨V, ⟨u, ⟨i, ⟨hi⟩⟩⟩, hx⟩ := h x trivial
+    use i, leOfHom hi hx
+  · obtain ⟨i, hi⟩ := hU (x := x)
+    exact ⟨U i, ⟨homOfLE le_top, ⟨i, ⟨𝟙 _⟩⟩⟩, hi⟩
 
 end Opens

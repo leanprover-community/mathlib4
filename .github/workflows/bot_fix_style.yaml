@@ -12,6 +12,14 @@ on:
     # triggers on a review comment
     types: [created, edited]
 
+# `lint-style-action` in `fix` mode pushes a style-fix commit and reacts/comments
+# on the PR. Grant exactly those scopes rather than inheriting the default token
+# permissions; all other scopes are implicitly 'none'.
+permissions:
+  contents: write       # push the style-fix commit to the PR branch
+  pull-requests: write  # add the bot's reaction/comment
+  issues: write         # PR comment reactions go through the issues API
+
 jobs:
   fix_style:
     # we set some variables. The ones of the form `${{ X }}${{ Y }}` are typically not

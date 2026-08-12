@@ -15,13 +15,13 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace FGModuleCat
 

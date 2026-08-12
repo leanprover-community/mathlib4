@@ -52,13 +52,11 @@ to the Dirichlet series in the convergence range. -/
 noncomputable def hurwitzZeta (a : UnitAddCircle) (s : ℂ) :=
   hurwitzZetaEven a s + hurwitzZetaOdd a s
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hurwitzZetaEven_eq (a : UnitAddCircle) (s : ℂ) :
     hurwitzZetaEven a s = (hurwitzZeta a s + hurwitzZeta (-a) s) / 2 := by
   simp only [hurwitzZeta, hurwitzZetaEven_neg, hurwitzZetaOdd_neg]
   ring_nf
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hurwitzZetaOdd_eq (a : UnitAddCircle) (s : ℂ) :
     hurwitzZetaOdd a s = (hurwitzZeta a s - hurwitzZeta (-a) s) / 2 := by
   simp only [hurwitzZeta, hurwitzZetaEven_neg, hurwitzZetaOdd_neg]
@@ -73,8 +71,9 @@ lemma differentiableAt_hurwitzZeta (a : UnitAddCircle) {s : ℂ} (hs : s ≠ 1) 
 restrict to `a ∈ Icc 0 1` to simplify the statement. -/
 lemma hasSum_hurwitzZeta_of_one_lt_re {a : ℝ} (ha : a ∈ Icc 0 1) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ 1 / (n + a : ℂ) ^ s) (hurwitzZeta a s) := by
-  convert (hasSum_nat_hurwitzZetaEven_of_mem_Icc ha hs).add
-      (hasSum_nat_hurwitzZetaOdd_of_mem_Icc ha hs) using 1
+  convert!
+    (hasSum_nat_hurwitzZetaEven_of_mem_Icc ha hs).add (hasSum_nat_hurwitzZetaOdd_of_mem_Icc ha hs)
+    using 1
   ext1 n
   -- plain `ring_nf` works here, but the following is faster:
   apply show ∀ (x y : ℂ), x = (x + y) / 2 + (x - y) / 2 by intros; ring
@@ -116,7 +115,6 @@ lemma differentiable_hurwitzZeta_sub_hurwitzZeta (a b : UnitAddCircle) :
 noncomputable def expZeta (a : UnitAddCircle) (s : ℂ) :=
   cosZeta a s + I * sinZeta a s
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cosZeta_eq (a : UnitAddCircle) (s : ℂ) :
     cosZeta a s = (expZeta a s + expZeta (-a) s) / 2 := by
   rw [expZeta, expZeta, cosZeta_neg, sinZeta_neg]
@@ -129,7 +127,7 @@ lemma sinZeta_eq (a : UnitAddCircle) (s : ℂ) :
 
 lemma hasSum_expZeta_of_one_lt_re (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ cexp (2 * π * I * a * n) / n ^ s) (expZeta a s) := by
-  convert (hasSum_nat_cosZeta a hs).add ((hasSum_nat_sinZeta a hs).mul_left I) using 1
+  convert! (hasSum_nat_cosZeta a hs).add ((hasSum_nat_sinZeta a hs).mul_left I) using 1
   ext1 n
   simp only [mul_right_comm _ I, ← cos_add_sin_I, push_cast]
   rw [add_div, mul_div, mul_comm _ I]
@@ -170,13 +168,12 @@ lemma hurwitzZeta_one_sub (a : UnitAddCircle) {s : ℂ}
   generalize (-(↑π * s / 2) * I).exp = z
   ring_nf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functional equation for the exponential zeta function. -/
 lemma expZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1 - n) :
     expZeta a (1 - s) = (2 * π) ^ (-s) * Gamma s *
     (exp (π * I * s / 2) * hurwitzZeta a s + exp (-π * I * s / 2) * hurwitzZeta (-a) s) := by
   have hs' (n : ℕ) : s ≠ -↑n := by
-    convert hs (n + 1) using 1
+    convert! hs (n + 1) using 1
     push_cast
     ring
   rw [expZeta, cosZeta_one_sub a hs, sinZeta_one_sub a hs', hurwitzZeta, hurwitzZeta,
