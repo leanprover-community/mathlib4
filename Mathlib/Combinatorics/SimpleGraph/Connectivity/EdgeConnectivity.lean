@@ -155,7 +155,6 @@ lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e
 lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
   simp [isEdgeConnected_add_one]
 
-
 lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
     ∃ w : V, G.Adj u w ∧ G.IsEdgeReachable 2 u w := by
   obtain ⟨w, hw⟩ := h.reachable (by simp) |>.exists_isPath
@@ -222,7 +221,7 @@ theorem notEdgeReachable_degree_add_one [Fintype <| G.neighborSet u] [DecidableE
   unfold IsEdgeReachable at h
   have this2:= @h (G.incidenceSet u)
   have : (G.incidenceSet u).encard = G.degree u := by
-    grind [card_incidenceSet_eq_degree, Set.coe_fintypeCard , Set.coe_ncard_eq_encard]
+    grind [card_incidenceSet_eq_degree, Set.coe_fintypeCard, Set.coe_ncard_eq_encard]
   rw [this] at this2
   have := this2 (by simp only [Nat.cast_add, Nat.cast_one, ENat.natCast_lt_succ])
   rcases this with ⟨p⟩
