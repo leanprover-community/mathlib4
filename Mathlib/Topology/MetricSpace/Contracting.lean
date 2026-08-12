@@ -48,7 +48,7 @@ namespace ContractingWith
 
 variable [EMetricSpace α] {K : ℝ≥0} {f : α → α}
 
-open EMetric Set
+open Set
 
 theorem toLipschitzWith (hf : ContractingWith K f) : LipschitzWith K f := hf.2
 
