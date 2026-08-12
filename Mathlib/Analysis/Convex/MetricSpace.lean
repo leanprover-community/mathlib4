@@ -43,8 +43,6 @@ public section
 
 namespace Convexity
 
-open ConvexSpace
-
 variable {I X : Type*}
 
 variable (X) in
@@ -276,7 +274,7 @@ instance (priority := low) {V P : Type*}
 instance IsConvexDist.subtype (s : Set X) (hs : IsConvexSet ℝ s) :
     letI : ConvexSpace ℝ s := .subtype s hs
     IsConvexDist s := by
-  letI : ConvexSpace ℝ s := .subtype s hs
+  let : ConvexSpace ℝ s := .subtype s hs
   refine ⟨fun f ↦ ?_⟩
   convert dist_iConvexComb_fst_snd_le (X := X) (f.map fun x ↦ (x.1, x.2)) <;>
     simp [Subtype.dist_eq, Finsupp.sum_mapDomain_index, add_mul]

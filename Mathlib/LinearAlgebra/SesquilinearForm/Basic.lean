@@ -59,23 +59,19 @@ variable [CommSemiring R] [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ 
 def IsOrtho (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x : M₁) (y : M₂) : Prop :=
   B x y = 0
 
-set_option linter.deprecated false in
 @[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem isOrtho_def {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} {x y} : B.IsOrtho x y ↔ B x y = 0 :=
   Iff.rfl
 
-set_option linter.deprecated false in
 @[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem isOrtho_zero_left (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B (0 : M₁) x := by
   dsimp only [IsOrtho]
   rw [map_zero B, zero_apply]
 
-set_option linter.deprecated false in
 @[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem isOrtho_zero_right (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B x (0 : M₂) :=
   map_zero (B x)
 
-set_option linter.deprecated false in
 @[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem isOrtho_flip {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {x y} : B.IsOrtho x y ↔ B.flip.IsOrtho y x := by
   simp_rw [isOrtho_def, flip_apply]
@@ -103,7 +99,6 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
   [Field K₂] [AddCommGroup V₂] [Module K₂ V₂]
   {I₁ : K₁ →+* K} {I₂ : K₂ →+* K} {I₁' : K₁ →+* K} {J₁ : K →+* K} {J₂ : K →+* K}
 
-set_option linter.deprecated false in
 @[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₁} (ha : a ≠ 0) :
     IsOrtho B x y ↔ IsOrtho B (a • x) y := by
@@ -116,7 +111,6 @@ theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} 
       trivial
     · exact H
 
-set_option linter.deprecated false in
 @[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₂} {ha : a ≠ 0} :
     IsOrtho B x y ↔ IsOrtho B x (a • y) := by
@@ -126,17 +120,16 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y}
   independent if for all `i`, `B (v i) (v i) ≠ 0`. -/
 theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ[I₁'] V} {v : n → V₁}
     (hv₁ : B.IsOrthoᵢ v) (hv₂ : ∀ i, B (v i) (v i) ≠ 0) : LinearIndependent K₁ v := by
-  classical
-    rw [linearIndependent_iff']
-    intro s w hs i hi
-    have : B (s.sum fun i : n ↦ w i • v i) (v i) = 0 := by rw [hs, map_zero, zero_apply]
-    have hsum : (s.sum fun j : n ↦ I₁ (w j) • B (v j) (v i)) = I₁ (w i) • B (v i) (v i) := by
-      apply Finset.sum_eq_single_of_mem i hi
-      intro j _hj hij
-      rw [isOrthoᵢ_def.1 hv₁ _ _ hij, smul_zero]
-    simp_rw [B.map_sum₂, map_smulₛₗ₂, hsum] at this
-    apply (map_eq_zero I₁).mp
-    exact (smul_eq_zero.mp this).elim _root_.id (hv₂ i · |>.elim)
+  rw [linearIndependent_iff']
+  intro s w hs i hi
+  have : B (s.sum fun i : n ↦ w i • v i) (v i) = 0 := by rw [hs, map_zero, zero_apply]
+  have hsum : (s.sum fun j : n ↦ I₁ (w j) • B (v j) (v i)) = I₁ (w i) • B (v i) (v i) := by
+    apply Finset.sum_eq_single_of_mem i hi
+    intro j _hj hij
+    rw [isOrthoᵢ_def.1 hv₁ _ _ hij, smul_zero]
+  simp_rw [B.map_sum₂, map_smulₛₗ₂, hsum] at this
+  apply (map_eq_zero I₁).mp
+  exact (smul_eq_zero.mp this).elim _root_.id (hv₂ i · |>.elim)
 
 end Field
 
@@ -814,6 +807,7 @@ end Nondegenerate
 
 namespace BilinForm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma apply_smul_sub_smul_sub_eq [CommRing R] [AddCommGroup M] [Module R M]
     (B : LinearMap.BilinForm R M) (x y : M) :
     B ((B x y) • x - (B x x) • y) ((B x y) • x - (B x x) • y) =
@@ -905,6 +899,7 @@ lemma nondegenerate_restrict_iff_disjoint_ker (hs : ∀ x, 0 ≤ B x x) (hB : B.
 
 variable [IsTorsionFree R M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite forms. -/
 lemma apply_mul_apply_lt_iff_linearIndependent (hp : ∀ x, x ≠ 0 → 0 < B x x) (x y : M) :
     B x y * B y x < B x x * B y y ↔ LinearIndependent R ![x, y] := by

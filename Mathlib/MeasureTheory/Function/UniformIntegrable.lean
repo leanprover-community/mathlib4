@@ -177,7 +177,7 @@ theorem tendsto_indicator_ge (f : α → β) (x : α) :
     Tendsto (fun M : ℕ => { x | (M : ℝ) ≤ ‖f x‖₊ }.indicator f x) atTop (𝓝 0) := by
   refine tendsto_atTop_of_eventually_const (i₀ := Nat.ceil (‖f x‖₊ : ℝ) + 1) fun n hn => ?_
   rw [Set.indicator_of_notMem]
-  simp only [not_le, Set.mem_setOf_eq]
+  simp only [not_le, Set.mem_ofPred_eq]
   refine lt_of_le_of_lt (Nat.le_ceil _) ?_
   refine lt_of_lt_of_le (lt_add_one _) ?_
   norm_cast
@@ -239,7 +239,7 @@ theorem MemLp.integral_indicator_norm_ge_nonneg_le (hf : MemLp f 1 μ) {ε : ℝ
   refine ⟨M, hM_pos, (le_of_eq ?_).trans hfM⟩
   refine lintegral_congr_ae ?_
   filter_upwards [hf.1.ae_eq_mk] with x hx
-  simp only [Set.indicator_apply, coe_nnnorm, Set.mem_setOf_eq, hx.symm]
+  simp only [Set.indicator_apply, coe_nnnorm, Set.mem_ofPred_eq, hx.symm]
 
 theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ)
     (hmeas : StronglyMeasurable f) :
@@ -252,7 +252,7 @@ theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ)
       have : { x : α | (eLpNormEssSup f μ + 1).toReal ≤ ‖f x‖ } ⊆
           { x : α | eLpNormEssSup f μ < ‖f x‖₊ } := by
         intro x hx
-        rw [Set.mem_setOf_eq, ← ENNReal.toReal_lt_toReal hbdd.ne ENNReal.coe_lt_top.ne,
+        rw [Set.mem_ofPred_eq, ← ENNReal.toReal_lt_toReal hbdd.ne ENNReal.coe_lt_top.ne,
           ENNReal.coe_toReal, coe_nnnorm]
         refine lt_of_lt_of_le ?_ hx
         rw [ENNReal.toReal_lt_toReal hbdd.ne]
@@ -295,11 +295,11 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) (hmeas : Strongly
   by_cases hx : x ∈ { x : α | M ^ (1 / p.toReal) ≤ ‖f x‖₊ }
   · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.enorm_of_nonneg (by positivity),
       ← ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) ENNReal.toReal_nonneg, ofReal_norm]
-    rw [Set.mem_setOf_eq]
+    rw [Set.mem_ofPred_eq]
     rwa [← hiff]
   · rw [Set.indicator_of_notMem hx, Set.indicator_of_notMem]
     · simp [ENNReal.toReal_pos hp_ne_zero hp_ne_top]
-    · rw [Set.mem_setOf_eq]
+    · rw [Set.mem_ofPred_eq]
       rwa [← hiff]
 
 /-- This lemma implies that a single function is uniformly integrable (in the probability sense). -/
@@ -623,7 +623,7 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
       · refine (Disjoint.inf_right' _ ?_).inf_left' _
         rw [disjoint_iff_inf_le]
         rintro x ⟨hx₁, hx₂⟩
-        rw [Set.mem_setOf_eq] at hx₁ hx₂
+        rw [Set.mem_ofPred_eq] at hx₁ hx₂
         exact False.elim (hx₂.ne (eq_of_le_of_not_lt hx₁ (not_lt.2 hx₂.le)).symm)
     _ ≤ eLpNorm (Set.indicator { x | C ≤ ‖f i x‖₊ } (f i)) p μ +
         (C : ℝ≥0∞) * μ s ^ (1 / ENNReal.toReal p) := by
@@ -665,9 +665,9 @@ theorem unifIntegrable_of (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β
     filter_upwards [(Exists.choose_spec <| hf i).2] with x hx
     by_cases hfx : x ∈ { x | C ≤ ‖f i x‖₊ }
     · rw [Set.indicator_of_mem hfx, Set.indicator_of_mem, hx]
-      rwa [Set.mem_setOf, hx] at hfx
+      rwa [Set.mem_ofPred, hx] at hfx
     · rw [Set.indicator_of_notMem hfx, Set.indicator_of_notMem]
-      rwa [Set.mem_setOf, hx] at hfx
+      rwa [Set.mem_ofPred, hx] at hfx
   refine ⟨max C 1, lt_max_of_lt_right one_pos, fun i => le_trans (eLpNorm_mono fun x => ?_) (hCg i)⟩
   rw [norm_indicator_eq_indicator_norm, norm_indicator_eq_indicator_norm]
   grw [← le_max_left]
@@ -818,9 +818,9 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
   filter_upwards [(Exists.choose_spec <| hf i).2] with x hx
   by_cases hfx : x ∈ { x | C ≤ ‖f i x‖₊ }
   · rw [Set.indicator_of_mem hfx, Set.indicator_of_mem, hx]
-    rwa [Set.mem_setOf, hx] at hfx
+    rwa [Set.mem_ofPred, hx] at hfx
   · rw [Set.indicator_of_notMem hfx, Set.indicator_of_notMem]
-    rwa [Set.mem_setOf, hx] at hfx
+    rwa [Set.mem_ofPred, hx] at hfx
 
 /-- This lemma is superseded by `UniformIntegrable.spec` which does not require measurability. -/
 theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, StronglyMeasurable (f i))
@@ -869,9 +869,9 @@ theorem UniformIntegrable.spec (hp : p ≠ 0) (hp' : p ≠ ∞) (hfu : UniformIn
   filter_upwards [(Exists.choose_spec <| hfu.1 i).2] with x hx
   by_cases hfx : x ∈ { x | C ≤ ‖f i x‖₊ }
   · rw [Set.indicator_of_mem hfx, Set.indicator_of_mem, hx]
-    rwa [Set.mem_setOf, hx] at hfx
+    rwa [Set.mem_ofPred, hx] at hfx
   · rw [Set.indicator_of_notMem hfx, Set.indicator_of_notMem]
-    rwa [Set.mem_setOf, hx] at hfx
+    rwa [Set.mem_ofPred, hx] at hfx
 
 /-- The definition of uniform integrable in mathlib is equivalent to the definition commonly
 found in literature. -/

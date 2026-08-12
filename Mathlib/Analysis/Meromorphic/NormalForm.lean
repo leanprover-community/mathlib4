@@ -25,7 +25,8 @@ form at a single point and along a set, respectively.
 
 @[expose] public section
 
-open Topology WithTop
+open Metric Set Topology WithTop
+open scoped Pointwise
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -79,7 +80,7 @@ theorem meromorphicNFAt_iff_analyticAt_or :
       · right
         use analyticOrderNatAt f x
         have : analyticOrderAt f x ≠ ⊤ := h₂f
-        rw [← ENat.coe_toNat_eq_self, eq_comm, h.analyticOrderAt_eq_natCast] at this
+        rw [← ENat.natCast_toNat_eq_self, eq_comm, h.analyticOrderAt_eq_natCast] at this
         obtain ⟨g, h₁g, h₂g, h₃g⟩ := this
         use g, h₁g, h₂g
         simpa
@@ -393,7 +394,7 @@ theorem MeromorphicNFAt.comp_analyticAt (hf : MeromorphicNFAt f (g x)) (hg : Ana
     IsUnit.smul_eq_zero, true_and]
   filter_upwards [h₃p, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
     with a h₁a h₂a
-  simp_all only [Pi.smul_apply', Pi.pow_apply, Set.preimage_setOf_eq, Set.mem_setOf_eq,
+  simp_all only [Pi.smul_apply', Pi.pow_apply, Set.preimage_ofPred_eq, Set.mem_ofPred_eq,
     Function.comp_apply, ← smul_assoc, mul_zpow, smul_eq_mul]
   congr 2
   rw [mul_comm, zpow_mul, zpow_natCast]
@@ -408,6 +409,22 @@ theorem meromorphicNFAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero
   simp [meromorphicNFAt_iff_analyticAt_or, analyticAt_comp_iff_of_deriv_ne_zero hg hg',
     meromorphicAt_comp_iff_of_deriv_ne_zero hg hg',
     meromorphicOrderAt_comp_of_deriv_ne_zero hg hg']
+
+/-- `MeromorphicNFAt` is invariant under translation. -/
+@[to_fun meromorphicNFAt_fun_comp_add_const_iff_meromorphicNFAt]
+theorem meromorphicNFAt_comp_add_const_iff_meromorphicNFAt {c : 𝕜} {f : 𝕜 → E} :
+    MeromorphicNFAt (f ∘ (· + c)) x ↔ MeromorphicNFAt f (x + c) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [show f = ((f ∘ fun x ↦ x + c) ∘ fun z ↦ z - c) by aesop]
+    rw [show x = (x + c) - c by ring] at h
+    exact h.comp_analyticAt (g := fun z ↦ z - c) (by fun_prop)
+  · exact h.comp_analyticAt (g := fun z ↦ z + c) (by fun_prop)
+
+/-- `MeromorphicNFAt` is invariant under translation. -/
+@[to_fun meromorphicNFAt_fun_comp_sub_const_iff_meromorphicNFAt]
+theorem meromorphicNFAt_comp_sub_const_iff_meromorphicNFAt {c : 𝕜} {f : 𝕜 → E} :
+    MeromorphicNFAt (f ∘ (· - c)) x ↔ MeromorphicNFAt f (x - c) := by
+  simp_rw [sub_eq_add_neg, meromorphicNFAt_comp_add_const_iff_meromorphicNFAt]
 
 /-!
 ### Continuous extension and conversion to normal form
@@ -436,6 +453,10 @@ lemma MeromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt (hf : MeromorphicAt f
 @[simp] lemma toMeromorphicNFAt_of_not_meromorphicAt (hf : ¬MeromorphicAt f x) :
     toMeromorphicNFAt f x = 0 := by
   simp [toMeromorphicNFAt, hf]
+
+@[simp] lemma toMeromorphicNFAt_of_meromorphicOrderAt_ne_zero
+    (horder : meromorphicOrderAt f x ≠ 0) : toMeromorphicNFAt f x x = 0 := by
+  simp [toMeromorphicNFAt, meromorphicAt_of_meromorphicOrderAt_ne_zero, horder]
 
 /-- Conversion to normal form at `x` changes the value only at x. -/
 lemma MeromorphicAt.eq_nhdsNE_toMeromorphicNFAt (hf : MeromorphicAt f x) :
@@ -471,6 +492,39 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
       · simp [h₃f, zero_zpow]
   · simp only [toMeromorphicNFAt, hf, ↓reduceDIte]
     exact analyticAt_const.meromorphicNFAt
+
+@[simp]
+lemma MeromorphicAt.meromorphicOrderAt_toMeromorphicNFAt (hf : MeromorphicAt f x) :
+    meromorphicOrderAt (toMeromorphicNFAt f x) x = meromorphicOrderAt f x :=
+  (meromorphicOrderAt_congr hf.eq_nhdsNE_toMeromorphicNFAt).symm
+
+lemma MeromorphicAt.meromorphicOrderAt_eq_zero_iff_toMeromorphicNFAt_ne_zero
+    (hf : MeromorphicAt f x) :
+    meromorphicOrderAt f x = 0 ↔ toMeromorphicNFAt f x x ≠ 0 := by
+  simp [← meromorphicNFAt_toMeromorphicNFAt.meromorphicOrderAt_eq_zero_iff, hf]
+
+lemma MeromorphicAt.meromorphicOrderAt_nonneg_iff_analyticAt_toMeromorphicNFAt
+    (hf : MeromorphicAt f x) :
+    0 ≤ meromorphicOrderAt f x ↔ AnalyticAt 𝕜 (toMeromorphicNFAt f x) x := by
+  simp [← meromorphicNFAt_toMeromorphicNFAt.meromorphicOrderAt_nonneg_iff_analyticAt, hf]
+
+@[gcongr]
+lemma toMeromorphicNFAt_eventuallyEq_nhds_congr {f g : 𝕜 → E} (hfg : f =ᶠ[𝓝[≠] x] g) :
+    toMeromorphicNFAt f x =ᶠ[𝓝 x] toMeromorphicNFAt g x := by
+  by_cases hf : MeromorphicAt f x
+  · exact meromorphicNFAt_toMeromorphicNFAt.eventuallyEq_nhdsNE_iff_eventuallyEq_nhds
+        meromorphicNFAt_toMeromorphicNFAt |>.mp <| hf.eq_nhdsNE_toMeromorphicNFAt.symm.trans
+      <| hfg.trans ((MeromorphicAt.meromorphicAt_congr hfg).mp hf).eq_nhdsNE_toMeromorphicNFAt
+  · simp [hf, MeromorphicAt.meromorphicAt_congr hfg |>.not.mp]
+
+@[simp]
+lemma MeromorphicAt.toMeromorphicNFAt_eventuallyEq_nhds_iff {f g : 𝕜 → E} (hf : MeromorphicAt f x)
+    (hg : MeromorphicAt g x) :
+    toMeromorphicNFAt f x =ᶠ[𝓝 x] toMeromorphicNFAt g x ↔ f =ᶠ[𝓝[≠] x] g where
+  mp h :=
+    hf.eq_nhdsNE_toMeromorphicNFAt.trans (h.filter_mono nhdsWithin_le_nhds)
+      |>.trans hg.eq_nhdsNE_toMeromorphicNFAt.symm
+  mpr := toMeromorphicNFAt_eventuallyEq_nhds_congr
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
 @[simp] theorem toMeromorphicNFAt_eq_self :
@@ -685,6 +739,44 @@ A function to 𝕜 is meromorphic in normal form on `U` iff its inverse is.
 theorem meromorphicNFOn_fun_inv {f : 𝕜 → 𝕜} :
     MeromorphicNFOn (fun x ↦ (f x)⁻¹) U ↔ MeromorphicNFOn f U :=
   meromorphicNFOn_inv
+
+/-- `MeromorphicNFOn` is invariant under translation. -/
+@[to_fun meromorphicNFOn_fun_comp_add_const_iff_meromorphicNFOn]
+theorem meromorphicNFOn_comp_add_const_iff_meromorphicNFOn {c : 𝕜} {U : Set 𝕜} :
+    MeromorphicNFOn (f ∘ (· + c)) U ↔ MeromorphicNFOn f (U + {c}) := by
+  refine ⟨fun h y hy ↦ ?_, fun h y hy ↦ ?_⟩
+  · rw [add_singleton, mem_image] at hy
+    obtain ⟨x, h₁x, h₂x⟩ := hy
+    simpa [← h₂x, ← meromorphicNFAt_comp_add_const_iff_meromorphicNFAt] using h h₁x
+  · rw [meromorphicNFAt_comp_add_const_iff_meromorphicNFAt]
+    aesop
+
+/-- `MeromorphicNFOn` is invariant under translation. -/
+@[to_fun meromorphicNFOn_fun_comp_sub_const_iff_meromorphicNFOn]
+theorem meromorphicNFOn_comp_sub_const_iff_meromorphicNFOn {c : 𝕜} {U : Set 𝕜} :
+    MeromorphicNFOn (f ∘ (· - c)) U ↔ MeromorphicNFOn f (U - {c}) := by
+  simp_rw [sub_eq_add_neg, meromorphicNFOn_comp_add_const_iff_meromorphicNFOn, neg_singleton]
+
+/-- `MeromorphicNFOn` is invariant under translation, special case where the set is a ball. -/
+@[to_fun (attr := simp) meromorphicNFOn_ball_fun_comp_sub_const_iff_meromorphicNFOn_ball]
+theorem meromorphicNFOn_ball_comp_sub_const_iff_meromorphicNFOn_ball {c : 𝕜} {R : ℝ} :
+    MeromorphicNFOn (f ∘ (· - c)) (ball c R) ↔ MeromorphicNFOn f (ball 0 R) := by
+  rw [meromorphicNFOn_comp_sub_const_iff_meromorphicNFOn, ball_sub_singleton, sub_self]
+
+/--
+`MeromorphicNFOn` is invariant under translation, special case where the set is a closed ball.
+-/
+@[to_fun (attr := simp)
+  meromorphicNFOn_closedBall_fun_comp_sub_const_iff_meromorphicNFOn_closedBall]
+theorem meromorphicNFOn_closedBall_comp_sub_const_iff_meromorphicNFOn_closedBall {c : 𝕜} {R : ℝ} :
+    MeromorphicNFOn (f ∘ (· - c)) (closedBall c R) ↔ MeromorphicNFOn f (closedBall 0 R) := by
+  rw [meromorphicNFOn_comp_sub_const_iff_meromorphicNFOn, closedBall_sub_singleton, sub_self]
+
+/-- `MeromorphicNFOn` is invariant under translation, special case where the set is a sphere. -/
+@[to_fun (attr := simp) meromorphicNFOn_sphere_fun_comp_sub_const_iff_meromorphicNFOn_sphere]
+theorem meromorphicNFOn_sphere_comp_sub_const_iff_meromorphicNFOn_sphere {c : 𝕜} {R : ℝ} :
+    MeromorphicNFOn (f ∘ (· - c)) (sphere c R) ↔ MeromorphicNFOn f (sphere 0 R) := by
+  rw [meromorphicNFOn_comp_sub_const_iff_meromorphicNFOn, sphere_sub_singleton, sub_self]
 
 /-!
 ### Continuous extension and conversion to normal form

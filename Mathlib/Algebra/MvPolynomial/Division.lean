@@ -66,9 +66,10 @@ theorem zero_divMonomial (s : σ →₀ ℕ) : (0 : MvPolynomial σ R) /ᵐᵒ�
 theorem divMonomial_zero (x : MvPolynomial σ R) : x /ᵐᵒⁿᵒᵐⁱᵃˡ 0 = x :=
   x.divOf_zero
 
+set_option backward.isDefEq.respectTransparency false in
 theorem add_divMonomial (x y : MvPolynomial σ R) (s : σ →₀ ℕ) :
-    (x + y) /ᵐᵒⁿᵒᵐⁱᵃˡ s = x /ᵐᵒⁿᵒᵐⁱᵃˡ s + y /ᵐᵒⁿᵒᵐⁱᵃˡ s :=
-  map_add (N := _ →₀ _) _ _ _
+    (x + y) /ᵐᵒⁿᵒᵐⁱᵃˡ s = x /ᵐᵒⁿᵒᵐⁱᵃˡ s + y /ᵐᵒⁿᵒᵐⁱᵃˡ s := by
+  simp [divMonomial, MvPolynomial, AddMonoidAlgebra.add_divOf]
 
 theorem divMonomial_add (a b : σ →₀ ℕ) (x : MvPolynomial σ R) :
     x /ᵐᵒⁿᵒᵐⁱᵃˡ (a + b) = x /ᵐᵒⁿᵒᵐⁱᵃˡ a /ᵐᵒⁿᵒᵐⁱᵃˡ b :=
@@ -97,15 +98,12 @@ local infixl:70 " %ᵐᵒⁿᵒᵐⁱᵃˡ " => modMonomial
 @[simp]
 theorem coeff_modMonomial_of_not_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (h : ¬s ≤ s') :
     coeff s' (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) = coeff s' x :=
-  x.modOf_apply_of_not_exists_add s s'
-    (by
-      rintro ⟨d, rfl⟩
-      exact h le_self_add)
+  x.coeff_modOf_of_not_exists_add s s' <| by rintro ⟨d, rfl⟩; exact h le_self_add
 
 @[simp]
 theorem coeff_modMonomial_of_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (h : s ≤ s') :
     coeff s' (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) = 0 :=
-  x.modOf_apply_of_exists_add _ _ <| exists_add_of_le h
+  x.coeff_modOf_of_exists_add _ _ <| exists_add_of_le h
 
 @[simp]
 theorem monomial_mul_modMonomial (s : σ →₀ ℕ) (x : MvPolynomial σ R) :
@@ -194,7 +192,7 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
     have hj := hx j
     have hi := hx i
     classical
-    simp_rw [coeff_monomial, if_pos] at hj hi
+    simp_rw [coeff_monomial, ite_eq_left] at hj hi
     simp_rw [coeff_monomial_mul'] at hi hj
     split_ifs at hj with hi
     · exact ⟨Or.inr hi, _, hj⟩
@@ -268,8 +266,6 @@ theorem eq_modMonomial_single_iff (h : X i ∣ p - r) :
 theorem X_dvd_mul_iff [IsCancelMulZero R] :
     X i ∣ p * q ↔ X i ∣ p ∨ X i ∣ q := by
   nontriviality R
-  have _ : NoZeroDivisors (MvPolynomial σ R) :=
-    IsLeftCancelMulZero.to_noZeroDivisors (MvPolynomial σ R)
   constructor
   · intro h
     suffices (p.modMonomial (Finsupp.single i 1)) * (q.modMonomial (Finsupp.single i 1)) =
@@ -342,7 +338,6 @@ theorem dvd_monomial_mul_iff_exists [IsCancelMulZero R] {n : σ →₀ ℕ} :
     refine ⟨n, le_refl n⟩
   suffices ∀ (d) (n : σ →₀ ℕ) (hd : n.degree = d) (p q : MvPolynomial σ R),
     p ∣ monomial n 1 * q ↔ ∃ m r, m ≤ n ∧ r ∣ q ∧ p = monomial m 1 * r from this n.degree n rfl p q
-  classical
   intro d
   induction d with
   | zero =>
