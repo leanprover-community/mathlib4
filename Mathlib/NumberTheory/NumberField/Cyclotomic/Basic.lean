@@ -932,12 +932,12 @@ theorem IsCyclotomicExtension.Rat.torsionOrder_eq [NeZero n] [NumberField K]
   have h_main := (IsCyclotomicExtension.Rat.finrank n K).symm.trans <|
     (IsCyclotomicExtension.Rat.finrank (n.lcm (torsionOrder K)) K)
   obtain hn | hn := Nat.even_or_odd n
-  · rw [if_pos hn]
+  · rw [ite_eq_left hn]
     apply dvd_antisymm
     · have := hn.eq_of_totient_eq_totient (Nat.dvd_lcm_left _ _) h_main
       rwa [eq_comm, Nat.lcm_eq_left_iff_dvd] at this
     · exact dvd_torsionOrder_of_isPrimitiveRoot hζ
-  · rw [if_neg (Nat.not_even_iff_odd.mpr hn)]
+  · rw [ite_eq_right (Nat.not_even_iff_odd.mpr hn)]
     have := (Nat.eq_or_eq_of_totient_eq_totient (Nat.dvd_lcm_left _ _) h_main).resolve_left ?_
     · rw [this, eq_comm, Nat.lcm_eq_right_iff_dvd]
       exact dvd_torsionOrder_of_isPrimitiveRoot hζ

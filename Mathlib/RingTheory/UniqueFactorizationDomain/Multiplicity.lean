@@ -48,7 +48,7 @@ theorem FiniteMultiplicity.of_not_isUnit [CommMonoidWithZero α] [IsCancelMulZer
 
 theorem FiniteMultiplicity.of_prime_left [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
     {a b : α} (ha : Prime a) (hb : b ≠ 0) : FiniteMultiplicity a b :=
-  .of_not_isUnit ha.not_unit hb
+  .of_not_isUnit ha.not_isUnit hb
 
 namespace UniqueFactorizationMonoid
 
