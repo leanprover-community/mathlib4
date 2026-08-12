@@ -478,6 +478,11 @@ lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
     ∃ a' > a, ∃ b' < b, ∀ x < a', ∀ y > b', x < y := by
   grind
 
+@[to_dual (rename := a ↔ b) (reorder := a b)]
+theorem CovBy.isLUB_Iio_of_linearOrder {α : Type*} [LinearOrder α] {a b : α} (h : a ⋖ b) :
+    IsLUB (.Iio b) a :=
+  ⟨fun _ ↦ h.le_of_lt, fun _ hc ↦ hc h.lt⟩
+
 end LinearOrder
 
 namespace Bool
