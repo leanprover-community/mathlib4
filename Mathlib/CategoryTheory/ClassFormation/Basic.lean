@@ -350,7 +350,10 @@ abbrev isConnectedTopology [GaloisCategory C] :
     GrothendieckTopology (isConnected C).FullSubcategory :=
   regularTopology (isConnected C).FullSubcategory
 
-/-def isConnectedTopologyFiberFunctor [GaloisCategory C]
+/-
+/-- A fiber functor on a Galois category `C` induced a fiber functor on the
+site of connected objects in `C`. -/
+def isConnectedTopologyFiberFunctor [GaloisCategory C]
     (F : C ⥤ FintypeCat.{w}) [EssentiallySmall.{w} C] [FiberFunctor F] :
     GrothendieckTopology.Point.{w} (isConnectedTopology C) where
   fiber := ObjectProperty.ι _ ⋙ F ⋙ ObjectProperty.ι _
