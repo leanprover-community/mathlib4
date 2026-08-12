@@ -74,7 +74,6 @@ noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elemental �
 
 variable (a : A) [IsStarNormal a]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural map from `characterSpace ℂ (elemental ℂ x)` to `spectrum ℂ x` given
 by evaluating `φ` at `x`. This is essentially just evaluation of the `gelfandTransform` of `x`,
 but because we want something in `spectrum ℂ x`, as opposed to
@@ -92,7 +91,6 @@ theorem continuous_characterSpaceToSpectrum (x : A) :
   continuous_induced_rng.2
     (map_continuous <| gelfandTransform ℂ (elemental ℂ x) ⟨x, self_mem ℂ x⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bijective_characterSpaceToSpectrum :
     Function.Bijective (characterSpaceToSpectrum a) := by
   refine ⟨fun φ ψ h => starAlgHomClass_ext ℂ ?_ ?_ ?_, ?_⟩

@@ -58,7 +58,6 @@ non-trivial subobjects which have strictly smaller fiber and conclude by the ind
 
 -/
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The trivial case if `X` is connected. -/
 private lemma has_decomp_connected_components_aux_conn (X : C) [IsConnected X] :
