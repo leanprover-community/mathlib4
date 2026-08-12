@@ -332,10 +332,6 @@ theorem isBigO_atBot_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atBot]
 
 section Cobounded
 
-lemma eventually_cofinite_not_isRoot {R : Type*} [CommRing R] [IsDomain R] {P : R[X]} (hP : P ≠ 0) :
-    ∀ᶠ x in cofinite, ¬P.IsRoot x :=
-  (finite_setOfPred_isRoot hP).compl_mem_cofinite
-
 open Bornology
 
 variable {R : Type*} [NormedRing R] [NormMulClass R] {P Q : R[X]}
