@@ -307,7 +307,7 @@ theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α
   | empty => cases n <;> simp [powersetCard_zero_left]
   | cons t s ih => cases n <;> simp [ih]
 
-lemma Disjoint.powersetCard_powersetCard {s t : Multiset α}
+lemma _root_.Disjoint.powersetCard_powersetCard_multiset {s t : Multiset α}
     (h : Disjoint s t) {n : ℕ} (hn : n ≠ 0) (m : ℕ) :
     Disjoint (powersetCard n s) (powersetCard m t) := by
   rw [disjoint_left]

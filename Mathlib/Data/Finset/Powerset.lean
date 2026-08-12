@@ -296,7 +296,7 @@ theorem powersetCard_self (s : Finset α) : powersetCard s.card s = {s} := by
   · rintro rfl
     simp
 
-lemma Disjoint.powersetCard_powersetCard {s t : Finset α}
+lemma _root_.Disjoint.powersetCard_powersetCard {s t : Finset α}
     (h : Disjoint s t) {n : ℕ} (hn : n ≠ 0) (m : ℕ) :
     Disjoint (powersetCard n s) (powersetCard m t) := by
   grind [disjoint_left]
