@@ -541,13 +541,13 @@ theorem exists_eq_forall_mem_Icc_eq_integral
     unfold EqOn
     intro t ht
     unfold α
-    rw [if_pos ht.1]
+    rw [ite_eq_left ht.1]
   have hα_eq_α₂ : EqOn α α₂ (Icc tmin t₀) := by
     unfold EqOn
     intro t ht
     unfold α
     by_cases ht_t₀ : t = t₀.val
-    · rw [if_pos (ge_of_eq ht_t₀)]
+    · rw [ite_eq_left (ge_of_eq ht_t₀)]
       rw [hα₁_eq, hα₂_eq, ht_t₀]
       · simp
       · exact ht
@@ -556,7 +556,7 @@ theorem exists_eq_forall_mem_Icc_eq_integral
         · apply le_of_eq ht_t₀.symm
         · apply le_trans ht.2 t₀.prop.2
     · replace ht_t₀ := not_le_of_gt (lt_of_le_of_ne ht.2 ht_t₀)
-      rw [if_neg ht_t₀]
+      rw [ite_eq_right ht_t₀]
   have h_union : Icc tmin t₀ ∪ Icc t₀ tmax = Icc tmin tmax := by
     apply Set.Icc_union_Icc_eq_Icc
     · exact t₀.prop.1
