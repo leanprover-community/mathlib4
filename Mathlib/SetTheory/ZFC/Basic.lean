@@ -563,7 +563,7 @@ def powersetEquiv (x : ZFSet.{u}) : x.powerset ≃ 𝒫 (x : Set ZFSet) where
   toFun y := ⟨y.1, Set.mem_powerset (mem_powerset.1 y.2)⟩
   invFun s := ⟨x.sep (· ∈ s.1), mem_powerset.2 sep_subset⟩
   left_inv := by simp +contextual [Function.LeftInverse]
-  right_inv := by simp +contextual [Function.LeftInverse, Function.RightInverse, Set.setOf_and]
+  right_inv := by simp +contextual [Function.LeftInverse, Function.RightInverse, Set.ofPred_and]
 
 theorem insert_eq (x y : ZFSet) : insert x y = {x} ∪ y := by
   ext; simp

@@ -21,7 +21,7 @@ underlying types are just the limits in the category of types.
 @[expose] public section
 
 
-open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
+open TopologicalSpace CategoryTheory CategoryTheory.Limits
 
 universe v u u' w
 

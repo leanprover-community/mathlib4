@@ -36,7 +36,7 @@ universe u
 
 namespace groupCohomology
 
-open CategoryTheory Finsupp TensorProduct Rep
+open CategoryTheory Rep
 
 variable {k G : Type u} [CommRing k] [Group G] {S : Subgroup G} (A : Rep k S)
 
