@@ -79,46 +79,52 @@ theorem solutionSetCondition_of_isRightAdjoint [G.IsRightAdjoint] : SolutionSetC
 /-- The general adjoint functor theorem says that if `G : D ⥤ C` preserves limits and `D` has them,
 if `G` satisfies the solution set condition then `G` is a right adjoint.
 -/
-lemma isRightAdjoint_of_preservesLimits_of_solutionSetCondition [HasLimits D]
-    [PreservesLimitsOfSize.{v₁, v₁} G] (hG : SolutionSetCondition.{v₁} G) : G.IsRightAdjoint := by
-  refine @isRightAdjointOfStructuredArrowInitials _ _ _ _ G ?_
+lemma isRightAdjoint_of_preservesLimits_of_solutionSetCondition [HasLimitsOfSize.{w, w} D]
+    [PreservesLimitsOfSize.{w, w} G] (hG : SolutionSetCondition.{w} G)
+    [LocallySmall.{w} D] : G.IsRightAdjoint := by
+  apply +allowSynthFailures isRightAdjointOfStructuredArrowInitials
   intro A
-  specialize hG A
-  choose ι B f g using hG
-  let B' : ι → StructuredArrow A G := fun i => StructuredArrow.mk (f i)
+  choose ι B f g using hG A
+  let B' (i : ι) : StructuredArrow A G := StructuredArrow.mk (f i)
   have hB' : ∀ A' : StructuredArrow A G, ∃ i, Nonempty (B' i ⟶ A') := by
     intro A'
     obtain ⟨i, _, t⟩ := g _ A'.hom
     exact ⟨i, ⟨StructuredArrow.homMk _ t⟩⟩
   obtain ⟨T, hT⟩ := has_weakly_initial_of_weakly_initial_set_and_hasProducts hB'
-  apply hasInitial_of_weakly_initial_and_hasWideEqualizers hT
+  exact hasInitial_of_weakly_initial_and_hasWideEqualizers hT
 
 end GeneralAdjointFunctorTheorem
 
 section SpecialAdjointFunctorTheorem
 
-variable {D : Type u'} [Category.{v} D]
+variable {D : Type u₁} [Category.{v₁} D]
 
 /-- The special adjoint functor theorem: if `G : D ⥤ C` preserves limits and `D` is complete,
 well-powered and has a small coseparating set, then `G` has a left adjoint.
 -/
-lemma isRightAdjoint_of_preservesLimits_of_isCoseparating [HasLimits D] [WellPowered.{v} D]
-    {P : ObjectProperty D} [ObjectProperty.Small.{v} P]
-    (hP : P.IsCoseparating) (G : D ⥤ C) [PreservesLimits G] :
+lemma isRightAdjoint_of_preservesLimits_of_isCoseparating [HasLimitsOfSize.{w, w} D]
+    [LocallySmall.{w} C] [LocallySmall.{w} D] [WellPowered.{w} D]
+    {P : ObjectProperty D} [ObjectProperty.Small.{w} P]
+    (hP : P.IsCoseparating) (G : D ⥤ C) [PreservesLimitsOfSize.{w, w} G] :
     G.IsRightAdjoint := by
-  have : ∀ A, HasInitial (StructuredArrow A G) := fun A ↦
-    hasInitial_of_isCoseparating.{v} (StructuredArrow.isCoseparating_inverseImage_proj A G hP)
+  have := hasFiniteLimits_of_hasLimitsOfSize D
+  have := PreservesLimitsOfSize.preservesFiniteLimits G
+  have (A : C) : HasInitial (StructuredArrow A G) :=
+    hasInitial_of_isCoseparating (StructuredArrow.isCoseparating_inverseImage_proj A G hP)
   exact isRightAdjointOfStructuredArrowInitials _
 
 /-- The special adjoint functor theorem: if `F : C ⥤ D` preserves colimits and `C` is cocomplete,
 well-copowered and has a small separating set, then `F` has a right adjoint.
 -/
-lemma isLeftAdjoint_of_preservesColimits_of_isSeparating [HasColimits C] [WellPowered.{v} Cᵒᵖ]
-    {P : ObjectProperty C} [ObjectProperty.Small.{v} P]
-    (h𝒢 : P.IsSeparating) (F : C ⥤ D) [PreservesColimits F] :
+lemma isLeftAdjoint_of_preservesColimits_of_isSeparating [HasColimitsOfSize.{w, w} C]
+    [LocallySmall.{w} C] [LocallySmall.{w} D] [WellPowered.{w} Cᵒᵖ]
+    {P : ObjectProperty C} [ObjectProperty.Small.{w} P]
+    (h𝒢 : P.IsSeparating) (F : C ⥤ D) [PreservesColimitsOfSize.{w, w} F] :
     F.IsLeftAdjoint :=
-  have : ∀ A, HasTerminal (CostructuredArrow F A) := fun A =>
-    hasTerminal_of_isSeparating.{v} (CostructuredArrow.isSeparating_inverseImage_proj F A h𝒢)
+  have := hasFiniteColimits_of_hasColimitsOfSize C
+  have := PreservesColimitsOfSize.preservesFiniteColimits F
+  have (A : D) : HasTerminal (CostructuredArrow F A) :=
+    hasTerminal_of_isSeparating.{w} (CostructuredArrow.isSeparating_inverseImage_proj F A h𝒢)
   isLeftAdjoint_of_costructuredArrowTerminals _
 
 end SpecialAdjointFunctorTheorem
@@ -127,30 +133,36 @@ namespace Limits
 
 /-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
     has a small coseparating set, then it is cocomplete. -/
-theorem hasColimits_of_hasLimits_of_isCoseparating [HasLimits C] [WellPowered.{v} C]
-    {P : ObjectProperty C} [ObjectProperty.Small.{v} P] (hP : P.IsCoseparating) : HasColimits C :=
+theorem hasColimits_of_hasLimits_of_isCoseparating
+    [HasLimitsOfSize.{w, w} C] [LocallySmall.{w} C] [WellPowered.{w} C]
+    {P : ObjectProperty C} [ObjectProperty.Small.{w} P] (hP : P.IsCoseparating) :
+    HasColimitsOfSize.{w, w} C :=
   { has_colimits_of_shape := fun _ _ =>
       hasColimitsOfShape_iff_isRightAdjoint_const.2
         (isRightAdjoint_of_preservesLimits_of_isCoseparating hP _) }
 
 /-- A consequence of the special adjoint functor theorem: if `C` is cocomplete, well-copowered and
     has a small separating set, then it is complete. -/
-theorem hasLimits_of_hasColimits_of_isSeparating [HasColimits C] [WellPowered.{v} Cᵒᵖ]
-    {P : ObjectProperty C} [ObjectProperty.Small.{v} P] (hP : P.IsSeparating) : HasLimits C :=
+theorem hasLimits_of_hasColimits_of_isSeparating
+    [HasColimitsOfSize.{w, w} C] [LocallySmall.{w} C] [WellPowered.{w} Cᵒᵖ]
+    {P : ObjectProperty C} [ObjectProperty.Small.{w} P] (hP : P.IsSeparating) :
+    HasLimitsOfSize.{w, w} C :=
   { has_limits_of_shape := fun _ _ =>
       hasLimitsOfShape_iff_isLeftAdjoint_const.2
         (isLeftAdjoint_of_preservesColimits_of_isSeparating hP _) }
 
 /-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
     has a separator, then it is complete. -/
-theorem hasLimits_of_hasColimits_of_hasSeparator [HasColimits C] [HasSeparator C]
-    [WellPowered.{v} Cᵒᵖ] : HasLimits C :=
+theorem hasLimits_of_hasColimits_of_hasSeparator
+    [HasColimitsOfSize.{w, w} C] [HasSeparator C] [LocallySmall.{w} C]
+    [WellPowered.{w} Cᵒᵖ] : HasLimitsOfSize.{w, w} C :=
   hasLimits_of_hasColimits_of_isSeparating <| isSeparator_separator C
 
 /-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
     has a coseparator, then it is cocomplete. -/
-theorem hasColimits_of_hasLimits_of_hasCoseparator [HasLimits C] [HasCoseparator C]
-    [WellPowered.{v} C] : HasColimits C :=
+theorem hasColimits_of_hasLimits_of_hasCoseparator
+    [HasLimitsOfSize.{w, w} C] [HasCoseparator C] [LocallySmall.{w} C]
+    [WellPowered.{w} C] : HasColimitsOfSize.{w, w} C :=
   hasColimits_of_hasLimits_of_isCoseparating <| isCoseparator_coseparator C
 
 end Limits
