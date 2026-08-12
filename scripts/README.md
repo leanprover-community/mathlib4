@@ -311,7 +311,6 @@ please do not add new entries to these files. PRs removing (the need for) entrie
 - `forbiddenDirs.json` is read by the `directoryDependency` linter
   (in `Mathlib/Tactic/Linter/DirectoryDependency.lean`): it records which directories are not
   allowed to import from each other, to keep mathlib's import graph manageable.
-  Lines starting with (possibly whitespace and) `//` are treated as comments and ignored.
 
 **Grind tactic analysis**
 - `grind_unused_lemmas.sh` `[N] [logfile]`
