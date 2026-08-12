@@ -309,8 +309,8 @@ lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) 
       obtain rfl : g = minpoly K x := by simpa using hg₂
       cases hx hg₁
     | succ n =>
-      rw [nextCoeff, if_neg, ← hg₂, coeff_expand (by positivity),
-        if_neg, neg_zero, mul_zero, LinearMap.zero_apply]
+      rw [nextCoeff, ite_eq_right, ← hg₂, coeff_expand (by positivity),
+        ite_eq_right, neg_zero, mul_zero, LinearMap.zero_apply]
       · rw [natDegree_expand]
         intro h
         have := Nat.dvd_sub (dvd_mul_left (p ^ (n + 1)) g.natDegree) h
@@ -516,7 +516,7 @@ theorem traceForm_nondegenerate_tfae [FiniteDimensional K L] :
 
 theorem Algebra.trace_ne_zero [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     Algebra.trace K L ≠ 0 :=
-  ((traceForm_nondegenerate_tfae K L).out 0 1).mp ‹_›
+  ((traceForm_nondegenerate_tfae K L).out 1 2).mp ‹_›
 
 theorem Algebra.trace_surjective [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     Function.Surjective (Algebra.trace K L) := by
