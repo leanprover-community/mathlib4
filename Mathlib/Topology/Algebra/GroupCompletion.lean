@@ -37,7 +37,7 @@ variable {M R α β : Type*}
 
 section Group
 
-open UniformSpace CauchyFilter Filter Set
+open UniformSpace
 
 variable [UniformSpace α]
 
