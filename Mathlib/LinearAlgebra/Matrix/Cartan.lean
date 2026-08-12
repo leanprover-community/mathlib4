@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.Tactic.NormDet
 
 /-!
 # Cartan matrices
@@ -257,16 +258,16 @@ theorem G₂_det : G₂.det = 1 := by decide
 
 theorem F₄_det : F₄.det = 1 := by decide
 
-/-! The determinants of E₆, E₇, E₈ are 3, 2, 1 respectively.
-`decide` fails for these larger matrices without increasing the max recursion depth.
-We could write manual proofs (e.g., expanding via `det_succ_column_zero`),
-but prefer to wait for a more principled determinant tactic. -/
+/-! The determinants of E₆, E₇, E₈ are 3, 2, 1 respectively. -/
 
-proof_wanted E₆_det : E₆.det = 3
+theorem E₆_det : E₆.det = 3 := by
+  simp only [E₆, norm_det]
 
-proof_wanted E₇_det : E₇.det = 2
+theorem E₇_det : E₇.det = 2 := by
+  simp only [E₇, norm_det]
 
-proof_wanted E₈_det : E₈.det = 1
+theorem E₈_det : E₈.det = 1 := by
+  simp only [E₈, norm_det]
 
 /-- A Cartan matrix is simply laced if its off-diagonal entries are all `0` or `-1`. -/
 def _root_.Matrix.IsSimplyLaced {ι : Type*} (A : Matrix ι ι ℤ) : Prop :=

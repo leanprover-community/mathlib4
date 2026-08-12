@@ -216,8 +216,6 @@ end Basis
 
 section Fintype
 
-open Basis
-
 open Fintype
 
 /-- A module over `R` with a finite basis is linearly equivalent to functions from its basis to `R`.

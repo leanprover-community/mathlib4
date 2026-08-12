@@ -300,7 +300,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   intro α hα
   -- Once again, we are left with showing that `⁅y, _⁆` acts nilpotently on `E`.
   rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
-    (LinearMap.charpoly_eq_X_pow_iff _).mpr, coeff_X_pow, if_neg hi.ne]
+    (LinearMap.charpoly_eq_X_pow_iff _).mpr, coeff_X_pow, ite_eq_right hi.ne]
   -- To do so, it suffices to show that the Engel subalgebra of `v = a • u + x` is contained in `E`.
   let v := α • u + x'
   suffices engel K (v : L) ≤ engel K x by

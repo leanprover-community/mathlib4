@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 universe v u
 
-open LinearMap CategoryTheory Limits
+open LinearMap CategoryTheory
 
 variable {R : Type u} [CommRing R]
 
