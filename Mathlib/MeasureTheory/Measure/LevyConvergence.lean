@@ -235,4 +235,14 @@ lemma tendstoInDistribution_of_tendsto_charFun
     apply ProbabilityMeasure.tendsto_of_tendsto_charFun
     simpa only [ProbabilityMeasure.coe_mk] using h
 
+lemma tendstoInDistribution_iff_tendsto_charFun
+    (hX : ∀ n, AEMeasurable (X n) (P n)) (hX' : AEMeasurable X' P') :
+    (∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t))) ↔
+    TendstoInDistribution X atTop X' P P' := by
+  constructor
+  · exact tendstoInDistribution_of_tendsto_charFun hX hX'
+  · intro h
+    simpa only [ProbabilityMeasure.coe_mk] using
+      ProbabilityMeasure.tendsto_iff_tendsto_charFun.mp h.tendsto
+
 end MeasureTheory
