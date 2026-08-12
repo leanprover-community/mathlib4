@@ -235,7 +235,7 @@ protected theorem of_isInvertible_inverse (hf : f.inverse.IsInvertible) : f.IsIn
 end IsInvertible
 
 @[simp]
-theorem _root_.ContinuousLinearMap.isInvertible_inverse_iff {f : M →L[R] M₂} :
+theorem isInvertible_inverse_iff {f : M →L[R] M₂} :
     f.inverse.IsInvertible ↔ f.IsInvertible :=
   ⟨.of_isInvertible_inverse, .inverse⟩
 
@@ -244,5 +244,6 @@ theorem isInvertible_iff_isHomeomorph {f : M →L[R] M₂} :
   ⟨fun ⟨e, he⟩ ↦ he ▸ e.isHomeomorph,
     fun hf ↦ ⟨.ofIsHomeomorph (.ofBijective f.toLinearMap hf.bijective) hf, rfl⟩⟩
 
+alias ⟨IsInvertible.isHomeomorph, IsInvertible.of_isHomeomorph⟩ := isInvertible_iff_isHomeomorph
 
 end ContinuousLinearMap
