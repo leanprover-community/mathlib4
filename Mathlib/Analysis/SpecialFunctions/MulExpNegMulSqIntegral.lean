@@ -41,7 +41,7 @@ it is shown that a subalgebra of functions that separates points separates finit
 
 public section
 
-open MeasureTheory Real NNReal ENNReal BoundedContinuousFunction Filter
+open MeasureTheory Real ENNReal BoundedContinuousFunction Filter
 
 open scoped Topology
 

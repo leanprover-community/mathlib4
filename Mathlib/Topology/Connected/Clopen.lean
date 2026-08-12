@@ -27,7 +27,7 @@ to clopen sets.
 
 @[expose] public section
 
-open Set Function Topology TopologicalSpace Relation
+open Set Function Topology TopologicalSpace
 
 universe u v
 
