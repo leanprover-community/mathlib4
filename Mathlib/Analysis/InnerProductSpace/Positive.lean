@@ -184,6 +184,24 @@ instance : IsOrderedAddMonoid (E →ₗ[𝕜] E) where add_le_add_left a b hab c
 
 end PartialOrder
 
+section IsOrderedModule
+
+instance : AddLeftMono (E →ₗ[𝕜] E) := by
+  refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
+  simpa [LinearMap.le_def] using hg₁₂
+
+instance : AddRightMono (E →ₗ[𝕜] E) := by
+  refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
+  simpa [LinearMap.le_def] using hg₁₂
+
+instance instIsOrderedModule : IsOrderedModule 𝕜 (E →ₗ[𝕜] E) where
+  smul_le_smul_of_nonneg_left f hf b₁ b₂ hb := by
+    simpa [LinearMap.le_def, ← smul_sub] using (sub_nonneg.mpr hb).smul_of_nonneg hf
+  smul_le_smul_of_nonneg_right f hf b₁ b₂ hb := by
+    simpa [LinearMap.le_def, ← sub_smul] using hf.smul_of_nonneg (sub_nonneg.mpr hb)
+
+end IsOrderedModule
+
 /-- An idempotent linear map is positive iff it is symmetric. -/
 theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT : IsIdempotentElem T) :
     T.IsPositive ↔ T.IsSymmetric := by
