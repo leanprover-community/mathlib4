@@ -5,14 +5,12 @@ Authors: Yury G. Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.DiffContOnCl
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # Displacement is at most the integral of the speed
@@ -24,7 +22,7 @@ the displacement (`dist (f a) (f b)`) is at most the integral of `‖deriv f‖`
 
 public section
 
-open Filter Set MeasureTheory Measure Metric
+open Filter Set MeasureTheory Metric
 open scoped Topology
 
 variable {E F : Type*}
@@ -106,7 +104,7 @@ lemma norm_sub_le_mul_volume_of_norm_deriv_le_of_le {C : ℝ} (hab : a ≤ b)
         setIntegral_const, smul_eq_mul, mul_comm]
       simp only [s, Measure.real,
         Measure.measure_toMeasurable_inter_of_sFinite measurableSet_Ioo]
-      simp only [inter_def, mem_setOf_eq, and_comm]
+      simp only [inter_def, mem_ofPred_eq, and_comm]
 
 end Line
 

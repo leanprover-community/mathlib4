@@ -78,7 +78,6 @@ infixr:25 " →*₀ " => MonoidWithZeroHom
 
 /-- Turn an element of a type `F` satisfying `MonoidWithZeroHomClass F α β` into an actual
 `MonoidWithZeroHom`. -/
-@[coe]
 def MonoidWithZeroHom.ofClass [FunLike F α β] [MonoidWithZeroHomClass F α β]
     (f : F) : α →*₀ β := { (f : α →* β), (f : ZeroHom α β) with }
 
@@ -89,7 +88,7 @@ attribute [nolint docBlame] toZeroHom
 
 instance funLike : FunLike (α →*₀ β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance monoidWithZeroHomClass : MonoidWithZeroHomClass (α →*₀ β) α β where
   map_mul := MonoidWithZeroHom.map_mul'
@@ -232,12 +231,12 @@ lemma one_apply_def {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass 
 lemma one_apply_zero {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
     [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] :
     (1 : M₀ →*₀ N₀) 0 = 0 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 lemma one_apply_of_ne_zero {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
     [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] {x : M₀} (hx : x ≠ 0) :
     (1 : M₀ →*₀ N₀) x = 1 :=
-  if_neg hx
+  ite_eq_right hx
 
 @[simp]
 lemma one_apply_eq_zero_iff {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]

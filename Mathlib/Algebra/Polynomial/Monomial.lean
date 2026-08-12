@@ -49,7 +49,7 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
   · rintro ⟨n, a, rfl⟩
     rw [← Finset.card_singleton n]
     apply Finset.card_le_card
-    exact support_monomial' _ _
+    exact support_monomial_subset _ _
 
 theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a) = g (C a))
     (h₂ : f X = g X) : f = g := by

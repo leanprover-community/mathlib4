@@ -147,9 +147,7 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
         rw [← Real.rpow_natCast, ← Real.rpow_add (by positivity), Nat.cast_sub hd]
         norm_cast
     _ ≤ 2 * d * 3 ^ (d - 1) * ε ^ r * ∑ k ∈ range (n + 1), (k : ℝ) ^ (d - 1 + r) := by
-        gcongr
-        rw [Finset.sum_range_succ', le_add_iff_nonneg_right]
-        positivity
+        grw [Finset.sum_range_succ', Nat.cast_zero, ← Real.rpow_nonneg le_rfl, add_zero]
     _ ≤ 2 * d * 3 ^ (d - 1) * ε ^ r * ∑' k : ℕ, (k : ℝ) ^ (d - 1 + r) := by
         gcongr
         refine Summable.sum_le_tsum _ (fun _ _ ↦ by positivity) (Real.summable_nat_rpow.mpr ?_)
@@ -160,7 +158,6 @@ variable (L)
 lemma exists_finsetSum_norm_rpow_le_tsum :
     ∃ A > (0 : ℝ), ∀ r < (-Module.finrank ℤ L : ℝ), ∀ s : Finset L,
       ∑ z ∈ s, ‖z‖ ^ r ≤ A ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) := by
-  classical
   cases subsingleton_or_nontrivial L
   · refine ⟨1, zero_lt_one, fun r hr s ↦ ?_⟩
     have hr : r ≠ 0 := by linarith

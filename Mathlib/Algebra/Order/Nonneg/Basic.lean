@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Algebra.Ring.Defs
@@ -38,8 +38,6 @@ assert_not_exists GeneralizedHeytingAlgebra
 assert_not_exists IsOrderedMonoid
 -- TODO -- assert_not_exists PosMulMono
 assert_not_exists mem_upperBounds
-
-open Set
 
 variable {α : Type*}
 

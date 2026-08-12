@@ -62,6 +62,7 @@ noncomputable def TopCat.toSSetObjEquiv (X : TopCat.{u}) (n : SimplexCategoryᵒ
   Equiv.ulift.{0}.trans (ConcreteCategory.homEquiv.trans
     (Homeomorph.ulift.continuousMapCongr (.refl _)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The *geometric realization functor* is
 the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
 
@@ -88,6 +89,7 @@ noncomputable def SSet.toTopSimplex :
     SSet.stdSimplex.{u} ⋙ SSet.toTop ≅ SimplexCategory.toTop :=
   Presheaf.isExtensionAlongULiftYoneda _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : SSet.toTop.{u}.IsLeftKanExtension SSet.toTopSimplex.inv :=
   inferInstanceAs (Functor.IsLeftKanExtension _
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop.{u}))
@@ -104,6 +106,9 @@ noncomputable def TopCat.toSSetIsoConst (X : TopCat.{u}) [TotallyDisconnectedSpa
     ((TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace _ X).symm.trans
       (X.toSSetObjEquiv n).symm))).symm
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical map `Δ[n] ⟶ Simp(Δₜ[n])` (where `Δₜ[n]` is the topological `n`-simplex). -/
 @[simps! -isSimp] noncomputable def SSet.stdSimplexToTop :
     SSet.stdSimplex.{u} ⟶ SimplexCategory.toTop ⋙ TopCat.toSSet :=

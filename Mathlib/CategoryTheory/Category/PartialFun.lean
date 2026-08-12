@@ -50,11 +50,13 @@ instance : Inhabited PartialFun.{u} :=
   ⟨PartialFun.of PUnit⟩
 
 -- TODO: wrap morphisms in this category into a one-field `PFun.Hom` structure
+set_option backward.isDefEq.respectTransparency.types false in
 instance largeCategory : LargeCategory.{u} PartialFun where
   Hom X Y := PFun X Y
   id X := PFun.id X
   comp f g := g.comp f
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructs a partial function isomorphism between types from an equivalence between them. -/
 @[simps]
 def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
@@ -146,7 +148,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
             exact hw.symm
   counitIso :=
     NatIso.ofComponents
-      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
+      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) rfl)
       fun {X Y} f ↦ Pointed.Hom.ext <| funext fun a ↦ by
         obtain _ | ⟨a, ha⟩ := a
         · exact f.map_point.symm

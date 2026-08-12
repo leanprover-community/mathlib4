@@ -289,10 +289,8 @@ instance : AddCommGroup (T₁ ⟶ T₂) where
   add_comm f g := by ext <;> apply add_comm
   neg_add_cancel f := by ext <;> apply neg_add_cancel
   sub_eq_add_neg f g := by ext <;> apply sub_eq_add_neg
-  nsmul n f := n • f
   nsmul_zero f := by cat_disch
   nsmul_succ n f := by ext <;> apply AddMonoid.nsmul_succ
-  zsmul n f := n • f
   zsmul_zero' := by cat_disch
   zsmul_succ' n f := by ext <;> apply SubNegMonoid.zsmul_succ'
   zsmul_neg' n f := by ext <;> apply SubNegMonoid.zsmul_neg'
@@ -372,7 +370,6 @@ def productTriangle.π (j : J) :
 def productTriangle.fan : Fan T := Fan.mk (productTriangle T) (productTriangle.π T)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A family of morphisms `T' ⟶ T j` lifts to a morphism `T' ⟶ productTriangle T`. -/
 @[simps]
 def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
@@ -396,7 +393,6 @@ def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
       exact Pi.hom_ext _ _ (fun j => (by simp [← hm])))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
     (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
     (productTriangle T).mor₃ ≫ (productTriangle T).mor₁⟦1⟧' = 0 := by
@@ -473,7 +469,7 @@ end
 
 section
 
-open Functor
+open CategoryTheory.Functor
 
 variable {J : Type*} [Category* J]
 
