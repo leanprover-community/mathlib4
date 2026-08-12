@@ -217,8 +217,7 @@ variable {D : Type*} [Category* D]
 
 variable (D) in
 /-- Functor composition induces a functor on simplicial objects. -/
-@[simps!]
-def whiskering : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
+abbrev whiskering : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
   whiskeringRight _ _ _
 
 set_option backward.defeqAttrib.useBackward true in
@@ -242,8 +241,7 @@ namespace Truncated
 
 variable (C) in
 /-- Functor composition induces a functor on truncated simplicial objects. -/
-@[simps!]
-def whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
+abbrev whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
 open Mathlib.Tactic (subscriptTerm) in
@@ -428,7 +426,6 @@ lemma w_app {X Y : Augmented C} (f : X ⟶ Y) (n : SimplexCategoryᵒᵖ) :
     dsimp% f.left.app n ≫ Y.hom.app n = X.hom.app n ≫ f.right :=
   congr_app f.w n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor from augmented objects to arrows. -/
 @[simps]
 def toArrow : Augmented C ⥤ Arrow C where
@@ -454,7 +451,6 @@ theorem w₀ {X Y : Augmented C} (f : X ⟶ Y) :
 variable (C)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simp]
 def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
@@ -467,7 +463,6 @@ def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augm
       right := F.map η.right
       w := by ext; simp [← Functor.map_comp, w_app] }
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simps]
@@ -548,7 +543,6 @@ scoped[Simplicial]
   notation3:1000 X " ^⦋" n "⦌" =>
     (X : CategoryTheory.CosimplicialObject _).obj (SimplexCategory.mk n)
 
-set_option backward.isDefEq.respectTransparency false in
 instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (CosimplicialObject C) := by
   dsimp [CosimplicialObject]
@@ -557,7 +551,6 @@ instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
 instance [HasLimits C] : HasLimits (CosimplicialObject C) :=
   ⟨inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
     HasColimitsOfShape J (CosimplicialObject C) := by
   dsimp [CosimplicialObject]
@@ -695,8 +688,8 @@ theorem σ_naturality {X' X : CosimplicialObject C} (f : X ⟶ X') {n : ℕ} (i 
 variable (C)
 
 /-- Functor composition induces a functor on cosimplicial objects. -/
-@[simps!]
-def whiskering (D : Type*) [Category* D] : (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
+abbrev whiskering (D : Type*) [Category* D] :
+    (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
   whiskeringRight _ _ _
 
 /-- Truncated cosimplicial objects. -/
@@ -728,8 +721,7 @@ instance {n} [HasColimits C] : HasColimits (CosimplicialObject.Truncated C n) :=
 
 variable (C) in
 /-- Functor composition induces a functor on truncated cosimplicial objects. -/
-@[simps!]
-def whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
+abbrev whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
 open Mathlib.Tactic (subscriptTerm) in
