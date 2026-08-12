@@ -227,20 +227,23 @@ end Partrec
 end Nat
 
 /-- Partially recursive partial functions `α → σ` between `Primcodable` types -/
+@[expose]
 def Partrec {α σ} [Primcodable α] [Primcodable σ] (f : α →. σ) :=
   Nat.Partrec fun n => Part.bind (decode (α := α) n) fun a => (f a).map encode
 
 /-- Partially recursive partial functions `α → β → σ` between `Primcodable` types -/
+@[expose]
 def Partrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f : α → β →. σ) :=
   Partrec fun p : α × β => f p.1 p.2
 
 /-- Computable functions `α → σ` between `Primcodable` types:
   a function is computable if and only if it is partially recursive (as a partial function) -/
-@[wikidata Q1148456]
+@[expose, wikidata Q1148456]
 def Computable {α σ} [Primcodable α] [Primcodable σ] (f : α → σ) :=
   Partrec (f : α →. σ)
 
 /-- Computable functions `α → β → σ` between `Primcodable` types -/
+@[expose]
 def Computable₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f : α → β → σ) :=
   Computable fun p : α × β => f p.1 p.2
 
