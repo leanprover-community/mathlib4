@@ -5,7 +5,6 @@ Authors: Fernando Chu, Andrew Yang, Violeta Hernández Palacios, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Data.ENat.Basic
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Clopen
