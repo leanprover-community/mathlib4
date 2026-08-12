@@ -31,7 +31,7 @@ set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 
-open CategoryTheory.Functor NatIso Category
+open CategoryTheory.Functor
 
 namespace Equivalence
 
