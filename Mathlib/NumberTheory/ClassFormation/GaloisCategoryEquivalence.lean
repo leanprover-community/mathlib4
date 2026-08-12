@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ClassFormation.GaloisCategoryConnected
+public import Mathlib.NumberTheory.ClassFormation.GaloisCategoryConnected
 
 
 /-!

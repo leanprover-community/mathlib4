@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ClassFormation.FintypeCat
-public import Mathlib.CategoryTheory.ClassFormation.GaloisCategoryConnected
-public import Mathlib.CategoryTheory.ClassFormation.GaloisCategoryLimits
+public import Mathlib.NumberTheory.ClassFormation.FintypeCat
+public import Mathlib.NumberTheory.ClassFormation.GaloisCategoryConnected
+public import Mathlib.NumberTheory.ClassFormation.GaloisCategoryLimits
 public import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 

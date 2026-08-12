@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ClassFormation.FintypeCat
-public import Mathlib.CategoryTheory.ClassFormation.GaloisCategoryLimits
+public import Mathlib.NumberTheory.ClassFormation.FintypeCat
+public import Mathlib.NumberTheory.ClassFormation.GaloisCategoryLimits
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.Over

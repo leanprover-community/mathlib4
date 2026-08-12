@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ClassFormation.GaloisCategoryEquivalence
-public import Mathlib.CategoryTheory.ClassFormation.GaloisCategoryOver
-public import Mathlib.CategoryTheory.ClassFormation.GrothendieckTopology
+public import Mathlib.NumberTheory.ClassFormation.GaloisCategoryEquivalence
+public import Mathlib.NumberTheory.ClassFormation.GaloisCategoryOver
+public import Mathlib.NumberTheory.ClassFormation.GrothendieckTopology
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
