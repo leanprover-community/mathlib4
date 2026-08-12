@@ -161,12 +161,12 @@ theorem IsSuccPrelimit.exists_lt_lt_of_lt (ha : IsSuccPrelimit a) (hlt : b < a) 
   isSuccPrelimit_iff_forall_lt_exists.mp ha b hlt
 
 @[to_dual]
-theorem IsSuccPrelimit.lt_iff_exists_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c < b, a < c where
-  mp hab := isSuccPrelimit_iff_forall_lt_exists.mp h a hab |>.imp fun _ ↦ .symm
-  mpr := fun ⟨_, hcb, hac⟩ ↦ hac.trans hcb
+theorem IsSuccPrelimit.lt_iff_exists_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c, a < c ∧ c < b where
+  mp hab := isSuccPrelimit_iff_forall_lt_exists.mp h a hab
+  mpr := fun ⟨_, hac, hcb⟩ ↦ hac.trans hcb
 
 @[to_dual]
-theorem IsSuccLimit.lt_iff_exists_lt (h : IsSuccLimit b) : a < b ↔ ∃ c < b, a < c :=
+theorem IsSuccLimit.lt_iff_exists_lt (h : IsSuccLimit b) : a < b ↔ ∃ c, a < c ∧ c < b :=
   h.isSuccPrelimit.lt_iff_exists_lt
 
 @[to_dual]
