@@ -20,7 +20,7 @@ We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
 
 noncomputable section
 
-open Real ComplexConjugate Finset Set
+open Real Finset Set
 
 /-
 ## Definitions
@@ -370,7 +370,7 @@ end Complex
 /-! ### Positivity extension -/
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: exponentiation by a real number is positive (namely 1)
 when the exponent is zero. The other cases are done in `evalRpow`. -/
