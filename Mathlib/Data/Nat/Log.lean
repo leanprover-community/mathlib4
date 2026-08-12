@@ -336,7 +336,7 @@ lemma log_eq_findGreatest {b n : ℕ} :
   rcases b with (_ | _ | b)
   · simp
   · simp
-  rw [if_pos (by omega), findGreatest_eq_iff.mpr]
+  rw [ite_eq_left (by omega), findGreatest_eq_iff.mpr]
   and_intros
   · grw [log_le_self]
   · exact fun _ ↦ pow_log_le_self _ (by aesop)
@@ -530,7 +530,7 @@ theorem clog_eq_log_pred {b n : ℕ} : clog b n = if 1 < b ∧ 1 < n then log b 
   · cases hb.eq_or_lt <;> simp_all
   by_cases hn : n ≤ 1
   · cases hn.eq_or_lt <;> simp_all
-  push_neg at hb hn
+  push Not at hb hn
   simp only [hb, hn]
   apply le_antisymm
   · rw [clog_le_iff_le_pow hb]
