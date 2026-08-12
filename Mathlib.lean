@@ -7930,7 +7930,6 @@ public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
 public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.EMetricSpace.Diam
-public import Mathlib.Topology.EMetricSpace.HeineCantor
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.EMetricSpace.PairReduction
 public import Mathlib.Topology.EMetricSpace.Paracompact
@@ -8043,7 +8042,6 @@ public import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
 public import Mathlib.Topology.MetricSpace.HausdorffAlexandroff
 public import Mathlib.Topology.MetricSpace.HausdorffDimension
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
-public import Mathlib.Topology.MetricSpace.HeineCantor
 public import Mathlib.Topology.MetricSpace.Holder
 public import Mathlib.Topology.MetricSpace.HolderNorm
 public import Mathlib.Topology.MetricSpace.Infsep
