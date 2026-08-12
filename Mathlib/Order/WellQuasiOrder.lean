@@ -88,8 +88,8 @@ product of well-quasi-ordered sets and `Pi.wellQuasiOrderedLE` when the relation
 theorem WellQuasiOrdered.pi {ι : Type*} {α : ι → Type*} [Finite ι] {r : ∀ i, (α i → α i → Prop)}
     [∀ i, IsPreorder (α i) (r i)] (hr : ∀ i, WellQuasiOrdered (r i)) :
     WellQuasiOrdered fun a b : ∀ i, α i => ∀ i, r i (a i) (b i) := by
-  haveI := Fintype.ofFinite ι
-  haveI : IsPreorder (∀ i, α i) (fun a b : ∀ i, α i => ∀ i, r i (a i) (b i)) :=
+  have := Fintype.ofFinite ι
+  have : IsPreorder (∀ i, α i) (fun a b : ∀ i, α i => ∀ i, r i (a i) (b i)) :=
     { refl a i := refl (a i)
       trans a b c hab hbc i := _root_.trans (hab i) (hbc i) }
   suffices ∀ (s : Finset ι) (f : ℕ → ∀ i, α i),
@@ -112,6 +112,13 @@ theorem RelIso.wellQuasiOrdered_iff {α β} {r : α → α → Prop} {s : β →
   apply (Equiv.arrowCongr (.refl ℕ) f).forall_congr
   congr! with g a b
   simp [f.map_rel_iff]
+
+theorem WellQuasiOrdered.of_surjective {α β} {r : α → α → Prop}
+    {s : β → β → Prop} (h : WellQuasiOrdered r) (f : r →r s) (hf : Function.Surjective f) :
+    WellQuasiOrdered s := by
+  intro seq
+  have ⟨_, _, hle, hr⟩ := h (Function.surjInv hf ∘ seq)
+  exact ⟨_, _, hle, by simpa [Function.surjInv_eq] using f.map_rel hr⟩
 
 /-- A typeclass for an order with a well-quasi-ordered `≤` relation.
 
@@ -177,6 +184,16 @@ theorem wellQuasiOrderedLE_iff :
 
 instance [WellQuasiOrderedLE α] [Preorder β] [WellQuasiOrderedLE β] : WellQuasiOrderedLE (α × β) :=
   ⟨wellQuasiOrdered_le.prod wellQuasiOrdered_le⟩
+
+theorem Monotone.wellQuasiOrderedLE_of_wellQuasiOrderedLE_of_surjective [Preorder β]
+    [WellQuasiOrderedLE α] {f : α → β} (mono : Monotone f) (hf : Function.Surjective f) :
+    WellQuasiOrderedLE β :=
+  ⟨wellQuasiOrdered_le.of_surjective ⟨_, (mono ·)⟩ hf⟩
+
+theorem OrderHom.wellQuasiOrderedLE_of_wellQuasiOrderedLE_of_surjective [Preorder β]
+    [WellQuasiOrderedLE α] (f : α →o β) (hf : Function.Surjective f) :
+    WellQuasiOrderedLE β :=
+  f.monotone.wellQuasiOrderedLE_of_wellQuasiOrderedLE_of_surjective hf
 
 end Preorder
 

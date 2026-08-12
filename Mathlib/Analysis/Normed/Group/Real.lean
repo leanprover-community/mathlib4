@@ -22,8 +22,8 @@ public section
 
 variable {𝓕 α ι κ E F G : Type*}
 
-open Filter Function Metric Bornology
-open ENNReal Filter NNReal Uniformity Pointwise Topology
+open Filter
+open ENNReal Filter NNReal
 
 namespace NNReal
 
@@ -103,6 +103,9 @@ lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖�
 
 theorem enorm_eq_ofReal (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
   rw [← ofReal_norm, norm_of_nonneg hr]
+
+@[simp] lemma enorm_toReal {a : ℝ≥0∞} (ha : a ≠ ∞) : ‖a.toReal‖ₑ = a := by
+  simp [enorm_eq_ofReal, ha]
 
 theorem enorm_eq_ofReal_abs (r : ℝ) : ‖r‖ₑ = ENNReal.ofReal |r| := by
   rw [← enorm_eq_ofReal (abs_nonneg _), enorm_abs]

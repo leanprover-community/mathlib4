@@ -59,7 +59,6 @@ abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [Conti
 lemma coe_of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : (of R M) = M := rfl
 
-set_option backward.privateInPublic true in
 variable {R} in
 /-- Homs in `TopModuleCat` as one field structures over `ContinuousLinearMap`. -/
 structure Hom (X Y : TopModuleCat.{v} R) where
@@ -156,9 +155,11 @@ section CommRing
 
 variable {S : Type*} [CommRing S] [TopologicalSpace S]
 
-instance {X Y : TopModuleCat S} : Module S (X ⟶ Y) where
+instance {X Y : TopModuleCat S} : SMul S (X ⟶ Y) where
   smul r f := ofHom (r • f.hom)
-  __ := Equiv.module _ CategoryTheory.ConcreteCategory.homEquiv
+
+instance {X Y : TopModuleCat S} : Module S (X ⟶ Y) := fast_instance%
+  { homEquiv (Y := Y) with map_add' _ _ := rfl : (X ⟶ Y) ≃+ (X →L[S] Y) }.module S
 
 instance : Linear S (TopModuleCat S) where
   smul_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_smul _ _ _)

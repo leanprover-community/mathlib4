@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 
 /-!
 # HasPullback
+
 `HasPullback f g` and `pullback f g` provides API for `HasLimit` and `limit` in the case of
 pullbacks.
 
@@ -483,8 +484,6 @@ end
 
 section PullbackSymmetry
 
-open WalkingCospan
-
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- Making this a global instance would make the typeclass search go in an infinite loop. -/
@@ -519,8 +518,6 @@ theorem pullbackSymmetry_inv_comp_snd [HasPullback f g] :
 end PullbackSymmetry
 
 section PushoutSymmetry
-
-open WalkingCospan
 
 variable (f : X ⟶ Y) (g : X ⟶ Z)
 
