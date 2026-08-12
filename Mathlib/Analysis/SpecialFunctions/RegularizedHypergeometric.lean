@@ -55,9 +55,9 @@ Convergence:
 
 namespace Complex
 
-open scoped Nat Real
 open Filter
-open scoped Topology
+
+open scoped Nat Real Topology
 
 variable {p q : ℕ}
 

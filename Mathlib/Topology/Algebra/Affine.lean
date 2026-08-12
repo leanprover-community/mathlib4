@@ -69,6 +69,7 @@ theorem lineMap_continuous {p q : P} :
   fun_prop
 
 open Filter
+
 open scoped Topology
 
 section Tendsto

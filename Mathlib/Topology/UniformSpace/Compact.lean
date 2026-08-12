@@ -25,8 +25,8 @@ variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*
 section Compact
 
 open Set Filter UniformSpace
-open scoped Uniformity
-open scoped SetRel Topology
+
+open scoped Uniformity SetRel Topology
 
 variable [UniformSpace α] {K : Set α}
 

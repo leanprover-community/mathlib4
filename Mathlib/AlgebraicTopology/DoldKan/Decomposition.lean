@@ -36,6 +36,7 @@ reflects isomorphisms.
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
   Opposite
+
 open scoped Simplicial
 
 noncomputable section

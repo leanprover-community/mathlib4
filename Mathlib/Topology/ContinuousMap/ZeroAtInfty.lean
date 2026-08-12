@@ -31,6 +31,7 @@ universe u v w
 variable {F : Type*} {α : Type u} {β : Type v} {γ : Type w} [TopologicalSpace α]
 
 open BoundedContinuousFunction Bornology
+
 open scoped Topology
 
 open Filter Metric

@@ -30,6 +30,7 @@ Furthermore, we have the following results:
 public section
 
 open Set Filter
+
 open scoped Topology
 
 variable {α X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter X}

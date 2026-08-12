@@ -23,6 +23,7 @@ Basic inequalities on trigonometric functions.
 noncomputable section
 
 open Filter Set Filter Real
+
 open scoped Topology
 
 namespace Real

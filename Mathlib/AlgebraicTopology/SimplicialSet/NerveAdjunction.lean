@@ -42,6 +42,7 @@ universe u
 
 open CategoryTheory Nerve SimplicialObject.Truncated
   SimplexCategory.Truncated Opposite Limits
+
 open scoped Simplicial
 
 namespace SSet

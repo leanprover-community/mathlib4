@@ -21,6 +21,7 @@ for any `n : ℕ`.
 universe u
 
 open CategoryTheory
+
 open scoped Simplicial
 
 namespace SSet

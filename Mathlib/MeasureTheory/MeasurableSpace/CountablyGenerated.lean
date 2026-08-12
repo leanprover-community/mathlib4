@@ -45,6 +45,7 @@ The file also contains measurability results about `memPartition`, from which th
 @[expose] public section
 
 open Set
+
 open scoped MeasureTheory
 
 namespace MeasurableSpace

@@ -27,6 +27,7 @@ variable
   {U : Set 𝕜} {x : 𝕜} {f g : 𝕜 → E}
 
 open Filter
+
 open scoped Topology
 
 namespace MeromorphicAt

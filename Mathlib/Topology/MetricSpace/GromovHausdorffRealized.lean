@@ -40,8 +40,9 @@ noncomputable section
 universe u v w
 
 open NNReal Set Function TopologicalSpace Filter Metric Quotient BoundedContinuousFunction
-open scoped Topology
 open Sum (inl inr)
+
+open scoped Topology
 
 attribute [local instance] metricSpaceSum
 

@@ -23,6 +23,7 @@ which will be used in the definition of homotopy groups of Kan complexes.
 universe u
 
 open CategoryTheory
+
 open scoped Simplicial
 namespace SSet
 

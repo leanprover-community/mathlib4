@@ -37,6 +37,7 @@ Note that this notion is especially relevant in a non-archimedean context, for i
 
 
 open TopologicalSpace Function
+
 open scoped Topology
 
 /-- The type of open subgroups of a topological additive group. -/

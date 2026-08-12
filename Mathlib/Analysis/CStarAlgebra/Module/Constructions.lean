@@ -169,6 +169,7 @@ noncomputable def normedAddCommGroupProdAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A
 attribute [local instance] normedAddCommGroupProdAux
 
 open Filter Bornology
+
 open scoped Uniformity
 
 private lemma antilipschitzWith_two_equiv_prod_aux : AntilipschitzWith 2 (equiv A (E × F)) :=
@@ -298,6 +299,7 @@ noncomputable def normedAddCommGroupPiAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A, 
 attribute [local instance] normedAddCommGroupPiAux
 
 open Bornology
+
 open scoped Uniformity
 
 private lemma antilipschitzWith_card_equiv_pi_aux :

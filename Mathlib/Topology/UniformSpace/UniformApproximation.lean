@@ -33,6 +33,7 @@ public section
 noncomputable section
 
 open Filter SetRel Set Uniform
+
 open scoped Topology Uniformity
 
 variable {α β ι : Type*} [TopologicalSpace α] [UniformSpace β]

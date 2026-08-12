@@ -31,6 +31,7 @@ For the existence of orthonormal bases, Hilbert bases, etc., see the file
 noncomputable section
 
 open RCLike Real Module Finsupp
+
 open scoped ComplexConjugate
 
 open LinearMap (BilinForm)

@@ -18,6 +18,7 @@ public import Mathlib.Data.Complex.Basic
 noncomputable section
 
 open Set
+
 open scoped ComplexConjugate
 
 namespace Complex

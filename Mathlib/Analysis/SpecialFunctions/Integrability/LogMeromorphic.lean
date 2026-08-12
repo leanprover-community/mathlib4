@@ -26,6 +26,7 @@ functions are circle integrable over every circle in the complex plane.
 public section
 
 open Filter MeasureTheory MeromorphicOn Metric Real
+
 open scoped Interval
 
 /-!

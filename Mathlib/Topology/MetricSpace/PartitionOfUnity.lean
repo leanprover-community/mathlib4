@@ -30,6 +30,7 @@ metric space, partition of unity, locally finite
 public section
 
 open ENNReal NNReal Filter Set TopologicalSpace Metric
+
 open scoped Topology
 
 variable {ι X : Type*}

@@ -24,6 +24,7 @@ This file defines the `Majorized` predicate, along with a few basic lemmas.
 namespace Tactic.ComputeAsymptotics
 
 open Filter Asymptotics
+
 open scoped Topology
 
 /-- `Majorized f g exp` for real functions `f` and `g` means that for any `exp' > exp`,

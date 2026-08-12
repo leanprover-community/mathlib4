@@ -28,6 +28,7 @@ Define a bundled `SubadditiveHom`, use it.
 noncomputable section
 
 open Set Filter
+
 open scoped Topology
 
 /-- A real-valued sequence is subadditive if it satisfies the inequality `u (m + n) ≤ u m + u n`

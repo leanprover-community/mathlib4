@@ -23,6 +23,7 @@ set `X`.
 universe w v v' u u'
 
 open CategoryTheory Limits AlgebraicTopology TypeCat
+
 open scoped Simplicial
 
 variable {C : Type u} [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]

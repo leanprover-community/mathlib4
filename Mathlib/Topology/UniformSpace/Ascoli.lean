@@ -73,6 +73,7 @@ equicontinuity, uniform convergence, ascoli
 public section
 
 open Set Filter Topology Function
+
 open scoped UniformConvergence
 
 variable {ι X α : Type*} [TopologicalSpace X] [UniformSpace α] {F : ι → X → α}

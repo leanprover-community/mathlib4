@@ -22,6 +22,7 @@ public section
 universe u
 
 open CategoryTheory
+
 open scoped Simplicial
 
 namespace SSet

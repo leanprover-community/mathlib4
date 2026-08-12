@@ -80,6 +80,7 @@ partition of unity, bump function, Urysohn's lemma, normal space, paracompact sp
 universe u v
 
 open Function Set Filter
+
 open scoped Topology
 
 noncomputable section

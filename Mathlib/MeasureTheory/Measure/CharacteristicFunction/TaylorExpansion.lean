@@ -31,8 +31,8 @@ public section
 
 
 open Complex Set VectorFourier
-open scoped ProbabilityTheory
-open scoped Nat RealInnerProductSpace Topology
+
+open scoped ProbabilityTheory Nat RealInnerProductSpace Topology
 
 namespace MeasureTheory
 

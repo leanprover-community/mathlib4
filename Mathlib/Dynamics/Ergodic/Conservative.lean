@@ -45,6 +45,7 @@ noncomputable section
 namespace MeasureTheory
 
 open Set Filter Finset Function TopologicalSpace
+
 open scoped Topology
 
 variable {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}

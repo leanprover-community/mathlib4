@@ -26,6 +26,7 @@ variable
   {f g : 𝕜 → E} {x : 𝕜}
 
 open Filter
+
 open scoped Topology
 
 variable (f x) in

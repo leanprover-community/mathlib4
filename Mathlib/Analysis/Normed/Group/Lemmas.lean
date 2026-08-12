@@ -23,6 +23,7 @@ public section
 
 variable {E : Type*} [SeminormedAddCommGroup E]
 open NNReal
+
 open scoped Topology
 
 theorem eventually_nnnorm_sub_lt (x₀ : E) {ε : ℝ≥0} (ε_pos : 0 < ε) :

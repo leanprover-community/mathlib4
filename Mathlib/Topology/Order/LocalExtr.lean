@@ -40,6 +40,7 @@ universe u v w x
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x} [TopologicalSpace α]
 
 open Set Filter
+
 open scoped Topology
 
 section Preorder

@@ -45,6 +45,7 @@ the file `Mathlib/AlgebraicTopology/SimplicialSet/Skeleton.lean`).
 universe u
 
 open CategoryTheory MonoidalCategory MonoidalClosed HomotopicalAlgebra Limits
+
 open scoped Simplicial
 
 namespace SSet

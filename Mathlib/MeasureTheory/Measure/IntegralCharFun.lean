@@ -33,6 +33,7 @@ relating the measure of some sets to integrals of characteristic functions.
 public section
 
 open Real Complex NormedSpace
+
 open scoped RealInnerProductSpace
 
 namespace MeasureTheory

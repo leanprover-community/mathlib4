@@ -31,8 +31,8 @@ well as such computations in `ℝ` when the natural proof passes through a fact 
 noncomputable section
 
 open Set Function Filter Finset Metric Module Asymptotics Nat
-open scoped Topology
-open scoped Ring
+
+open scoped Topology Ring
 
 variable {α : Type*}
 

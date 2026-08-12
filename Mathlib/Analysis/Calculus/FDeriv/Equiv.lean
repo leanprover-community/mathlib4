@@ -25,6 +25,7 @@ The inverse function theorem is in `Mathlib/Analysis/Calculus/InverseFunctionThe
 public section
 
 open Filter Asymptotics ContinuousLinearMap Set NNReal
+
 open scoped Topology
 
 noncomputable section

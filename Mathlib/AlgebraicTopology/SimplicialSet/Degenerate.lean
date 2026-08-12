@@ -26,6 +26,7 @@ for an epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌` and a non-degenerate `m`-simplex `y
 universe u
 
 open CategoryTheory Limits Opposite
+
 open scoped Simplicial
 
 namespace SSet

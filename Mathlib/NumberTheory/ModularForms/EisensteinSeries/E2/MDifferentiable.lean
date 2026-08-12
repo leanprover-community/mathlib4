@@ -20,6 +20,7 @@ public section
 
 open UpperHalfPlane hiding I
 open Real Complex EisensteinSeries ModularForm
+
 open scoped Manifold
 
 

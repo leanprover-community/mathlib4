@@ -38,6 +38,7 @@ category of simplicial sets in such a way that morphisms in
 universe v u
 
 open CategoryTheory Category MonoidalCategory
+
 open scoped Simplicial
 
 namespace CategoryTheory

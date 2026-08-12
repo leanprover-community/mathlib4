@@ -260,6 +260,7 @@ end TemperedDistribution
 /-! ## Classical distributions -/
 
 open TopologicalSpace
+
 open scoped Distributions
 
 variable

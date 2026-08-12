@@ -34,10 +34,10 @@ literature.
 
 noncomputable section
 
-open scoped BoundedContinuousFunction NNReal ENNReal
 open Set Function TopologicalSpace CompactlySupportedContinuousMap
   MeasureTheory
-open scoped CompactlySupported
+
+open scoped BoundedContinuousFunction NNReal ENNReal CompactlySupported
 
 variable {X : Type*} [TopologicalSpace X]
 variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)

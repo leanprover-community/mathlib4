@@ -88,8 +88,8 @@ and a future formalization of Poincaré lemma.
 @[expose] public section
 
 open Metric MeasureTheory Set AffineMap Convex Filter
-open scoped Topology Interval
-open scoped Pointwise unitInterval
+
+open scoped Topology Interval Pointwise unitInterval
 
 section Defs
 

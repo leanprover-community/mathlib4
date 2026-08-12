@@ -23,6 +23,7 @@ This file proves a dominated convergence theorem for infinite products of terms 
 -/
 
 open Filter
+
 open scoped Topology
 
 variable {α R β : Type*} [NormedCommRing R] [NormOneClass R] [CompleteSpace R] {g : β → R}

@@ -32,6 +32,7 @@ universe u
 namespace SSet
 
 open CategoryTheory Limits HomotopicalAlgebra
+
 open scoped Simplicial
 
 open modelCategoryQuillen in

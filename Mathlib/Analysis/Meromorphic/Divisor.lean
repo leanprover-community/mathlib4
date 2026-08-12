@@ -24,6 +24,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 open Filter Metric
+
 open scoped Topology
 
 namespace MeromorphicOn

@@ -424,6 +424,7 @@ end Matrix
 namespace IsCoprime
 
 open Matrix SpecialLinearGroup
+
 open scoped MatrixGroups
 
 variable {R : Type*} [CommRing R]

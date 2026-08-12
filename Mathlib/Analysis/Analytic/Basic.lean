@@ -59,8 +59,8 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 open NNReal Filter ENNReal Set Asymptotics
-open scoped Topology
-open scoped Pointwise
+
+open scoped Topology Pointwise
 
 /-! ### Expanding a function as a power series -/
 

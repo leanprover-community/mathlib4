@@ -78,6 +78,7 @@ banach-steinhaus, uniform boundedness, equicontinuity
 @[expose] public section
 
 open Filter Set ContinuousLinearMap
+
 open scoped Topology
 
 section defs

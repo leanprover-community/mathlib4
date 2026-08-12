@@ -27,6 +27,7 @@ variable {𝓕 α ι κ E F G : Type*}
 
 open Filter Function Metric Bornology
 open ENNReal Filter NNReal Pointwise
+
 open scoped Uniformity Topology
 
 section SeminormedGroup

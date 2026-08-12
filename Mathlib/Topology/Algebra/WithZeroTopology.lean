@@ -36,6 +36,7 @@ a linearly ordered commutative group with zero. You can locally activate this to
 public section
 
 open Filter TopologicalSpace Filter Set Function
+
 open scoped Topology
 
 namespace WithZeroTopology

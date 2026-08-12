@@ -60,6 +60,7 @@ instance : Countable ℕ∪{∞} := (inferInstance : Countable <| Option _)
 instance : Coe ℕ ℕ∪{∞} := optionCoe
 
 open Filter
+
 open scoped Topology
 
 lemma continuous_iff_convergent {Y : Type*} [TopologicalSpace Y] (f : ℕ∪{∞} → Y) :

@@ -32,6 +32,7 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 @[expose] public section
 
 open Set Filter
+
 open scoped Topology
 
 variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}

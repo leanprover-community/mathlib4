@@ -39,6 +39,7 @@ variable {E F : Type*}
   [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 
 open SchwartzMap MeasureTheory FourierTransform
+
 open scoped ComplexInnerProductSpace
 
 variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]

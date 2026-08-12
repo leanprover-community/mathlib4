@@ -477,6 +477,7 @@ end norm
 noncomputable section stdBasis
 
 open Complex MeasureTheory MeasureTheory.Measure ZSpan Matrix
+
 open scoped ComplexConjugate
 
 variable [NumberField K]

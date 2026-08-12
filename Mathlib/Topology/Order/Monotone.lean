@@ -20,6 +20,7 @@ has left and right limits at any point (`Monotone.tendsto_nhdsLT`, `Monotone.ten
 public section
 
 open Set Filter TopologicalSpace Function
+
 open scoped Topology
 
 open OrderDual (toDual ofDual)

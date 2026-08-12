@@ -30,6 +30,7 @@ public section
 universe u
 
 open CategoryTheory HomotopicalAlgebra
+
 open scoped Simplicial
 
 namespace SSet

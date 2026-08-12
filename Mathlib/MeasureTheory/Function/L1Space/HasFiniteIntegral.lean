@@ -33,6 +33,7 @@ finite integral
 noncomputable section
 
 open ENNReal MeasureTheory NNReal
+
 open scoped Topology
 
 open Set Filter TopologicalSpace ENNReal MeasureTheory

@@ -41,6 +41,7 @@ via the Gram determinant formula: on decomposable elements,
 namespace exteriorPower
 
 open Matrix
+
 open scoped RealInnerProductSpace
 
 variable {n : ℕ} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]

@@ -44,6 +44,7 @@ profinite
 universe v u
 
 open CategoryTheory CompHausLike
+
 open scoped Topology
 
 /-- The type of profinite topological spaces. -/

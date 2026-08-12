@@ -56,6 +56,7 @@ set_option backward.defeqAttrib.useBackward true
 
 
 open CategoryTheory Category SimplicialObject.Augmented Opposite
+
 open scoped Simplicial
 
 namespace CategoryTheory

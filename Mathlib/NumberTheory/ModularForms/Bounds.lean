@@ -27,6 +27,7 @@ bounds for its q-expansion coefficients. The main results are
 public section
 
 open Filter Asymptotics Matrix.SpecialLinearGroup Matrix.GeneralLinearGroup
+
 open scoped Topology
 
 open UpperHalfPlane hiding I

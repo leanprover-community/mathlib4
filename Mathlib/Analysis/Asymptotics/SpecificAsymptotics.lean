@@ -19,6 +19,7 @@ theory developed in `Mathlib/Analysis/Asymptotics/Defs.lean` and
 public section
 
 open Bornology Filter Asymptotics Set
+
 open scoped Topology
 
 section NormedField

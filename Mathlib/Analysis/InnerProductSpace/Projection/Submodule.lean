@@ -111,6 +111,7 @@ theorem orthogonal_eq_bot_iff [K.HasOrthogonalProjection] : Kᗮ = ⊥ ↔ K = �
   rwa [h, sup_comm, bot_sup_eq] at this
 
 open RCLike Real Filter
+
 open scoped Topology
 
 /-- Given a monotone family `U` of complete submodules of `E` and a fixed `x : E`,

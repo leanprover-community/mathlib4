@@ -32,6 +32,7 @@ with a functor (definitionally) equal to `normalizedMooreComplex A`.
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
   CategoryTheory.Subobject CategoryTheory.Idempotents
+
 open scoped DoldKan
 
 noncomputable section

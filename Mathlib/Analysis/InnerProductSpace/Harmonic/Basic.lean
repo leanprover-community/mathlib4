@@ -23,6 +23,7 @@ variable
   {x : E} {s t : Set E} {c : ℝ}
 
 open Laplacian
+
 open scoped Topology
 
 namespace InnerProductSpace

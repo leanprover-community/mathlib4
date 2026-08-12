@@ -23,6 +23,7 @@ Examples of approximate units include:
 public section
 
 open Filter
+
 open scoped Topology
 
 /-- An *approximate unit* is a proper filter (i.e., `≠ ⊥`) such that multiplication on the left

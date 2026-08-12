@@ -35,6 +35,7 @@ defined using pentagonal numbers. We then show that this series is equal to both
 -/
 
 open Filter PowerSeries WithPiTopology
+
 open scoped Topology
 variable (R : Type*) [CommRing R]
 

@@ -35,6 +35,7 @@ endowed with an order.
 
 
 open Set Function Filter
+
 open scoped Topology
 
 /-!

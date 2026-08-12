@@ -20,8 +20,8 @@ public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 universe u v
 
 open Filter Function TopologicalSpace Set UniformSpace
-open scoped Topology Uniformity
-open scoped SetRel
+
+open scoped Topology Uniformity SetRel
 
 variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
 

@@ -28,6 +28,7 @@ local minimum, local maximum, extremum, Rolle's Theorem
 public section
 
 open Filter Set
+
 open scoped Topology
 
 variable {X Y : Type*}

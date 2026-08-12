@@ -21,6 +21,7 @@ that are not in `A`.
 universe u
 
 open CategoryTheory
+
 open scoped Simplicial
 
 namespace SSet.Subcomplex

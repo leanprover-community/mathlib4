@@ -19,6 +19,7 @@ as simplicial objects are functors from `SimplexCategory`.
 @[expose] public section
 
 open CategoryTheory
+
 open scoped Simplicial
 
 /-- The category whose objects are denoted `⦋n⦌ₛ` for `n : ℕ` and

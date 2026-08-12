@@ -20,6 +20,7 @@ powers and the logarithm.
 public section
 
 open MeasureTheory Real Set
+
 open scoped Interval
 
 variable {a b c d : ℝ} (n : ℕ) {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]

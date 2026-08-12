@@ -37,6 +37,7 @@ public section
 
 
 open Filter
+
 open scoped Topology Uniformity
 
 variable {α β ι : Type*} [PseudoMetricSpace α]

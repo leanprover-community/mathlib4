@@ -26,6 +26,7 @@ of length `n`.
 universe v u
 
 open CategoryTheory Opposite SimplexCategory
+
 open scoped Simplicial
 
 namespace SSet

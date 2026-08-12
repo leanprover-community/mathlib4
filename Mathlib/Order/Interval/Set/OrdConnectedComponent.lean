@@ -21,6 +21,7 @@ so we only add API needed for this lemma.
 
 
 open Function OrderDual
+
 open scoped Interval
 
 namespace Set

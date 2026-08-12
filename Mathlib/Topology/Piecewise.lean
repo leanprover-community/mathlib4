@@ -14,6 +14,7 @@ public import Mathlib.Topology.ContinuousOn
 public section
 
 open Set Filter Function Filter
+
 open scoped Topology
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]

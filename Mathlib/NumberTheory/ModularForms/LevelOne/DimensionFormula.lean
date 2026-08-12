@@ -32,6 +32,7 @@ for `𝒮ℒ` (= `SL(2, ℤ)`) of even weight.
 
 open UpperHalfPlane ModularForm SlashInvariantForm SlashInvariantFormClass
   CuspFormClass OnePoint Filter EisensteinSeries Asymptotics
+
 open scoped MatrixGroups
 
 open scoped Topology

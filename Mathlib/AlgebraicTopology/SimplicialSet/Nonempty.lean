@@ -17,6 +17,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 universe u
 
 open CategoryTheory Limits
+
 open scoped Simplicial
 
 namespace SSet

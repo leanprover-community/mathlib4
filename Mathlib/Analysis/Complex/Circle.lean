@@ -46,6 +46,7 @@ is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
 noncomputable section
 
 open Complex Function Metric
+
 open scoped ComplexConjugate
 
 /-- The unit circle in `ℂ`. -/

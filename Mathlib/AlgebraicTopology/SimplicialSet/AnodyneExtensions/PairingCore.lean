@@ -25,6 +25,7 @@ their dimensions are respectively `dim s` or `dim s + 1` for `s : ι`.
 universe v u
 
 open CategoryTheory
+
 open scoped Simplicial
 
 namespace SSet.Subcomplex

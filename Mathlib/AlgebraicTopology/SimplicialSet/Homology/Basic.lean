@@ -24,6 +24,7 @@ in degree `n : ℕ` is `X.homology R n`.
 @[expose] public section
 
 open CategoryTheory Limits
+
 open scoped Simplicial
 
 universe w v u

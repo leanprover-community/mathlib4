@@ -21,6 +21,7 @@ In this file we give the definition and prove basic properties of locally finite
 
 -- locally finite family [General Topology (Bourbaki, 1995)]
 open Set Function Filter
+
 open scoped Topology
 
 variable {ι ι' α X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f g : ι → Set X}

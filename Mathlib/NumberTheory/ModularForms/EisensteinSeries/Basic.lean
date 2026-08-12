@@ -27,6 +27,7 @@ noncomputable section
 namespace ModularForm
 
 open EisensteinSeries CongruenceSubgroup
+
 open scoped MatrixGroups
 
 /-- This defines Eisenstein series as modular forms of weight `k`, level `Γ(N)` and congruence

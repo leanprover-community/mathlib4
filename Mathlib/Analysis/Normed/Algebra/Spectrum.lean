@@ -285,6 +285,7 @@ end SpectrumCompact
 section resolvent
 
 open Filter Asymptotics Bornology
+
 open scoped Topology
 
 variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
@@ -488,6 +489,7 @@ local notation "σ" => spectrum
 variable {𝕜 A SA : Type*} [NormedRing A] [CompleteSpace A] [SetLike SA A] [SubringClass SA A]
 
 open Filter Set
+
 open scoped Topology
 
 section NormedField
@@ -552,6 +554,7 @@ lemma Subalgebra.frontier_subset_frontier :
   grw [inter_subset_right, spectrum.subset_subalgebra]
 
 open Set
+
 open scoped Notation
 
 /-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any `x : S`, the spectrum of `x`

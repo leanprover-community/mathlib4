@@ -51,6 +51,7 @@ public section
 
 
 open Set
+
 open scoped Topology
 
 /-- If `f` is continuous at `b` and differentiable on `Ioo a b`, then `f` is continuous on

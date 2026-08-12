@@ -109,6 +109,7 @@ But it makes a more systematic use of the filter library.
 @[expose] public section
 
 open Set Filter
+
 open scoped Topology
 
 universe u v ua ub uc ud

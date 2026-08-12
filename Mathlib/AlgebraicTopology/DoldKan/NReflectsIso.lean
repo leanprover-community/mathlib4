@@ -27,6 +27,7 @@ public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Idempotents Opposite
+
 open scoped Simplicial
 
 namespace AlgebraicTopology

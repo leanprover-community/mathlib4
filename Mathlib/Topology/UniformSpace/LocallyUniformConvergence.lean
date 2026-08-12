@@ -40,6 +40,7 @@ Uniform limit, uniform convergence, tends uniformly to
 noncomputable section
 
 open Filter Set
+
 open scoped Topology Uniformity
 
 variable {α β γ ι : Type*} [TopologicalSpace α] [UniformSpace β]

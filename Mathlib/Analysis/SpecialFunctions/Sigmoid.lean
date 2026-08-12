@@ -124,6 +124,7 @@ lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
     exact ⟨-(log (x⁻¹ - 1)), by simp [sigmoid_def, exp_log hx]⟩
 
 open Filter
+
 open scoped Topology
 
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
@@ -261,6 +262,7 @@ lemma range_sigmoid : range unitInterval.sigmoid = Ioo 0 1 := by
   simp
 
 open Filter
+
 open scoped Topology
 
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) :=

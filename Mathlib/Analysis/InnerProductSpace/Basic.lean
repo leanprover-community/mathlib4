@@ -34,6 +34,7 @@ inner product space, Hilbert space, norm
 noncomputable section
 
 open RCLike Real Filter Topology Finsupp
+
 open scoped ComplexConjugate
 
 open LinearMap (BilinForm)

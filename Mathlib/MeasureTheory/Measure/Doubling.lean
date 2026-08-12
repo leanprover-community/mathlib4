@@ -31,6 +31,7 @@ assert_not_exists Real.instPow
 noncomputable section
 
 open Set Filter Metric MeasureTheory ENNReal NNReal
+
 open scoped Topology
 
 /-- A measure `μ` is said to be a uniformly locally doubling measure if there exists a constant `C`

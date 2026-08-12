@@ -50,6 +50,7 @@ https://ncatlab.org/nlab/show/rapidly+decreasing+function
 namespace Asymptotics
 
 open Polynomial
+
 open scoped Topology
 
 open Filter

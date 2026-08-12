@@ -20,6 +20,7 @@ involves the dilogarithm, this can be seen as computing special values of `Li₂
 public section
 
 open Filter Real
+
 open scoped Interval
 
 /-

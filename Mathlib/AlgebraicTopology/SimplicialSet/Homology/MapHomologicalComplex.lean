@@ -26,6 +26,7 @@ functor `ModuleCat R₁ ⥤ ModuleCat R₂` is replaced by an arbitrary functor
 universe w v v' u u'
 
 open CategoryTheory Limits AlgebraicTopology
+
 open scoped Simplicial
 
 namespace SSet

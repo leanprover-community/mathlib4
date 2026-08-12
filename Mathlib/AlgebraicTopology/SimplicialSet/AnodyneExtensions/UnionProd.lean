@@ -57,6 +57,7 @@ is obtained by removing `x (l.pred _)` from the walk.
 universe u
 
 open CategoryTheory MonoidalCategory
+
 open scoped Simplicial
 
 namespace SSet

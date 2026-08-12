@@ -83,6 +83,7 @@ derivative, differentiable, Fréchet, calculus
 @[expose] public section
 
 open Filter Asymptotics ContinuousLinearMap Set
+
 open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

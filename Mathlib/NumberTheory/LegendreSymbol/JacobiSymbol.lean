@@ -502,6 +502,7 @@ We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 set_option backward.privateInPublic true
 
 open jacobiSym
+
 open scoped NumberTheorySymbols
 
 /-- Computes `J(a | b)` (or `-J(a | b)` if `flip` is set to `true`) given assumptions, by reducing

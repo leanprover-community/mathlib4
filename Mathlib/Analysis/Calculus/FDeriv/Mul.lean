@@ -24,9 +24,9 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 public section
 
-open scoped Ring
 open Asymptotics ContinuousLinearMap
-open scoped Topology
+
+open scoped Ring Topology
 
 section
 

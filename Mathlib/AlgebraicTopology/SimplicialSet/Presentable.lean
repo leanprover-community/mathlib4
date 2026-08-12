@@ -24,6 +24,7 @@ public section
 universe u
 
 open CategoryTheory Limits Opposite
+
 open scoped Simplicial
 
 namespace SSet

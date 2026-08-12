@@ -22,6 +22,7 @@ universe u
 variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
 
 open Set OpenPartialHomeomorph
+
 open scoped Manifold
 
 section HasGroupoid

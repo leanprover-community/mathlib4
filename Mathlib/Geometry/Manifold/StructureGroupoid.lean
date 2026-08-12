@@ -52,6 +52,7 @@ the arrow. -/
 @[inherit_doc] scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
 
 open Set OpenPartialHomeomorph
+
 open scoped Manifold
 
 /-! ### Structure groupoids -/

@@ -26,6 +26,7 @@ standard formula for computing the Laplacian in terms of orthonormal bases of `E
 @[expose] public section
 
 open Filter TensorProduct
+
 open scoped Topology
 
 section secondDerivativeAPI

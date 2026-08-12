@@ -23,6 +23,7 @@ public section
 
 open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex
   CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic
+
 open scoped MatrixGroups
 
 local notation "𝕢" => qParam

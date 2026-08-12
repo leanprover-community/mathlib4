@@ -30,6 +30,7 @@ public section
 open scoped Topology
 
 open Function Set
+
 open scoped Manifold
 
 variable

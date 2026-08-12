@@ -27,6 +27,7 @@ We also prove that these filters are all `NeBot` and `LeAtTop`.
 @[expose] public section
 
 open Finset Function Filter SummationFilter
+
 open scoped Topology
 
 namespace SummationFilter

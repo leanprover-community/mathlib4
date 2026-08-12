@@ -18,6 +18,7 @@ unbounded.
 public section
 
 open AffineSpace Bornology Filter
+
 open scoped Topology
 
 variable

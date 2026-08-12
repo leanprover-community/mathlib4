@@ -50,6 +50,7 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
   {P : Type u} [TopologicalSpace P] [ChartedSpace HP P]
 
 open AlgebraicGeometry TopologicalSpace Topology
+
 open scoped Manifold
 
 set_option backward.isDefEq.respectTransparency.types false in

@@ -22,6 +22,7 @@ measure-theoretic result.
 public section
 
 open Filter
+
 open scoped Topology
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised

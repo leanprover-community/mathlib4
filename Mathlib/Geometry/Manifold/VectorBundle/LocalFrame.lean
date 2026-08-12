@@ -97,6 +97,7 @@ vector bundle, local frame, smoothness
 
 @[expose] public section
 open Bundle Filter Function Module
+
 open scoped Topology
 
 open scoped Bundle Manifold ContDiff

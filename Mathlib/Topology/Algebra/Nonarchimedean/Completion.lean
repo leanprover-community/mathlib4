@@ -20,6 +20,7 @@ The completion of a nonarchimedean ring is a nonarchimedean ring.
 public section
 
 open UniformSpace UniformSpace.Completion AddSubgroup OpenAddSubgroup
+
 open scoped Topology
 
 /-- The completion of a nonarchimedean additive group is a nonarchimedean additive group. -/

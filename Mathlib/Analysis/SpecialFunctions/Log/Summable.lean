@@ -21,6 +21,7 @@ public section
 variable {ι : Type*}
 
 open Filter SummationFilter
+
 open scoped Topology
 
 namespace Complex

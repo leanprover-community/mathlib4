@@ -19,6 +19,7 @@ respect to some affine basis.
 
 
 open Matrix
+
 open scoped Affine
 
 open Set

@@ -67,6 +67,7 @@ The proof of `G2_S_transform` is the heart of this file. The strategy is:
 open UpperHalfPlane hiding I
 
 open ModularForm ModularGroup Filter Complex Set SummationFilter
+
 open scoped MatrixGroups
 
 open scoped Real Topology

@@ -42,6 +42,7 @@ absolute value, Ostrowski's theorem
 @[expose] public section
 
 open Filter Nat Real
+
 open scoped Topology
 
 -- For any `C > 0`, the limit of `C ^ (1/k)` is 1 as `k → ∞`

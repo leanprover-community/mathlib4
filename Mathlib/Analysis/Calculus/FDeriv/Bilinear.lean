@@ -21,6 +21,7 @@ public section
 
 
 open Asymptotics
+
 open scoped Topology
 
 noncomputable section

@@ -35,6 +35,7 @@ public section
 
 
 open Filter
+
 open scoped Topology
 
 variable {α : Type*} {A : Set α}

@@ -33,8 +33,8 @@ public section
 universe u
 
 open CategoryTheory Opposite
-open scoped MonoidalCategory
-open scoped Simplicial
+
+open scoped MonoidalCategory Simplicial
 
 namespace SSet
 

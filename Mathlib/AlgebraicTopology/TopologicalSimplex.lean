@@ -22,6 +22,7 @@ This is used to define `TopCat.toSSet` in `AlgebraicTopology.SingularSet`.
 universe u
 
 open CategoryTheory
+
 open scoped Simplicial
 
 namespace SimplexCategory

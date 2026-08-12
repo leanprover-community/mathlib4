@@ -27,6 +27,7 @@ public section
 
 
 open Pointwise
+
 open scoped Interval
 
 variable {α : Type*}

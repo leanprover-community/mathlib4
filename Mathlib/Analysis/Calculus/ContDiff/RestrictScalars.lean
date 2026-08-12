@@ -26,6 +26,7 @@ variable
   {x : E} {f : E → F} {n : ℕ} {s : Set E}
 
 open ContinuousMultilinearMap
+
 open scoped Topology
 
 /-- Derivation rule for compositions of scalar restriction with continuous multilinear maps. -/

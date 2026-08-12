@@ -21,6 +21,7 @@ formalized.
 public section
 
 open CategoryTheory MorphismProperty Limits
+
 open scoped Simplicial
 
 universe u

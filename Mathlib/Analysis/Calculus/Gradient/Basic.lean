@@ -45,6 +45,7 @@ This file develops the following aspects of the theory of gradients:
 @[expose] public section
 
 open InnerProductSpace Function Set
+
 open scoped ComplexConjugate Topology
 
 noncomputable section

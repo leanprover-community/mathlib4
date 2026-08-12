@@ -29,6 +29,7 @@ Throughout the present file, `X` denotes a topologically space and `U` a subset 
 @[expose] public section
 
 open Filter Function Set
+
 open scoped Topology
 
 variable

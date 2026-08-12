@@ -23,6 +23,7 @@ continuity, continuous function
 @[expose] public section
 
 open Set Filter
+
 open scoped Topology
 
 variable {X Y Z : Type*}

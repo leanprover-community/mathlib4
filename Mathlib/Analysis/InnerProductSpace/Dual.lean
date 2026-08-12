@@ -42,6 +42,7 @@ dual, Fréchet-Riesz
 noncomputable section
 
 open Module
+
 open scoped ComplexConjugate
 
 namespace InnerProductSpace

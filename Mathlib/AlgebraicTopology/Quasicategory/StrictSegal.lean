@@ -25,6 +25,7 @@ universe u
 
 open CategoryTheory
 open SimplicialObject SimplexCategory
+
 open scoped Simplicial
 
 namespace SSet.StrictSegal

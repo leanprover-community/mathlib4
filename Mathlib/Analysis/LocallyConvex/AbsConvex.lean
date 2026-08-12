@@ -42,6 +42,7 @@ disks, convex, balanced
 open NormedField Set
 
 open NNReal Pointwise
+
 open scoped Topology
 
 variable {𝕜 E : Type*}

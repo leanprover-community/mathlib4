@@ -22,6 +22,7 @@ normalized Moore complex and the alternating face map complex of a simplicial ob
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
   CategoryTheory.Preadditive
+
 open scoped Simplicial DoldKan
 
 noncomputable section

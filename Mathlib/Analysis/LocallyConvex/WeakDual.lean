@@ -96,8 +96,8 @@ lemma dualEmbedding_injective_of_separatingRight (B : E →ₗ[𝕜] F →ₗ[�
 variable {ι 𝕜 E F : Type*}
 
 open TopologicalSpace
-open scoped Topology
-open scoped NNReal
+
+open scoped Topology NNReal
 
 section
 

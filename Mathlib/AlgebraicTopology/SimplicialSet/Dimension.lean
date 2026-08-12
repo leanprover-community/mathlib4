@@ -21,6 +21,7 @@ public section
 universe u
 
 open CategoryTheory Opposite
+
 open scoped Simplicial
 
 namespace SSet

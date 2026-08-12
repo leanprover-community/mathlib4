@@ -27,6 +27,7 @@ properties of its epimorphisms and monomorphisms.
 universe u
 
 open CategoryTheory Limits
+
 open scoped Simplicial
 
 namespace SimplexCategory

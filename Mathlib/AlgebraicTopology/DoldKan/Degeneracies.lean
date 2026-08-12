@@ -33,6 +33,7 @@ public section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
   CategoryTheory.Preadditive
+
 open scoped Simplicial
 
 namespace AlgebraicTopology

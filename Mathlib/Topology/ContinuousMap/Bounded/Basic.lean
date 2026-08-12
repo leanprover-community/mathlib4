@@ -22,6 +22,7 @@ assert_not_exists CStarRing
 noncomputable section
 
 open Topology Bornology NNReal
+
 open scoped UniformConvergence
 
 open Set Filter Metric Function

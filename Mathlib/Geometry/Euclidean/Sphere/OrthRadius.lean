@@ -30,8 +30,8 @@ namespace EuclideanGeometry
 namespace Sphere
 
 open AffineSubspace Function
-open scoped RealInnerProductSpace
-open scoped Affine
+
+open scoped RealInnerProductSpace Affine
 
 variable {V P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]

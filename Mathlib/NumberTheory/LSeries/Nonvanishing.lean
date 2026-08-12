@@ -48,8 +48,9 @@ whose hypotheses do not turn out to be contradictory.
 -/
 
 open Complex Asymptotics Filter
-open scoped Topology
 open ArithmeticFunction hiding log
+
+open scoped Topology
 
 -- We use the ordering on `ℂ` given by comparing real parts for fixed imaginary part
 open scoped ComplexOrder

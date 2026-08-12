@@ -49,8 +49,8 @@ but rather extend the relation properties as needed.
 @[expose] public section
 
 open Set Filter
-open scoped Topology
-open scoped SetRel Uniformity
+
+open scoped Topology SetRel Uniformity
 
 variable {X : Type*}
 

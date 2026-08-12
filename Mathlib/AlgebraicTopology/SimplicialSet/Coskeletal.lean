@@ -30,8 +30,9 @@ As an example, `SimplicialObject.IsCoskeletal (nerve C) 2` shows that nerves of 
 universe v u
 
 open CategoryTheory SimplexCategory Truncated
-open scoped Simplicial
 open Opposite Category Functor Limits
+
+open scoped Simplicial
 
 namespace SSet
 

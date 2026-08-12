@@ -23,6 +23,7 @@ example of a proof needing to construct a sequence by induction in the middle of
 public section
 
 open Filter Finset
+
 open scoped Topology
 
 local notation "d" => dist

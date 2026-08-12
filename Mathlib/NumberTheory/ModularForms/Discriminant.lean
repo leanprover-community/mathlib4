@@ -37,6 +37,7 @@ function, and proves its key properties including invariance under the generator
 -/
 
 open Function Complex SlashInvariantForm Filter
+
 open scoped MatrixGroups
 
 open UpperHalfPlane hiding I

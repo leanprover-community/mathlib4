@@ -30,6 +30,7 @@ universe w v u
 
 open CategoryTheory Limits HomologicalComplex
   AlgebraicTopology.DoldKan
+
 open scoped Simplicial
 
 namespace SSet

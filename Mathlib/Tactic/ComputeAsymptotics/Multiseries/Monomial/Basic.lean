@@ -37,6 +37,7 @@ In this file we show how to find a limit of `Monomial` and how to asymptotically
 namespace Tactic.ComputeAsymptotics
 
 open Asymptotics Filter Real
+
 open scoped Topology
 
 /-- Structure for representing monomials with coefficients. -/

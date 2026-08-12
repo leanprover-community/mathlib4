@@ -29,8 +29,8 @@ public section
 open Set Function
 
 open Filter Function Metric Set
-open scoped Topology
-open scoped Finset ENNReal NNReal
+
+open scoped Topology Finset ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 

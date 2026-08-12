@@ -65,6 +65,7 @@ We use this to prove several versions of the Borel isomorphism theorem.
 
 
 open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter MeasureTheory
+
 open scoped Topology
 
 /-! ### Standard Borel Spaces -/

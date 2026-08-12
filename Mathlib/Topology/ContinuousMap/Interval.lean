@@ -17,6 +17,7 @@ In this file we prove a few results about `ContinuousMap` when the domain is an 
 @[expose] public section
 
 open Set ContinuousMap Filter
+
 open scoped Topology
 
 namespace ContinuousMap

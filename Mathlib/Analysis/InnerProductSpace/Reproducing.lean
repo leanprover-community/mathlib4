@@ -38,8 +38,8 @@ positive semidefinite matrices.
 public noncomputable section
 
 open ContinuousLinearMap InnerProductSpace Submodule Filter
-open scoped ComplexConjugate
-open scoped Topology
+
+open scoped ComplexConjugate Topology
 
 /--
 A reproducing kernel Hilbert space is a Hilbert space with an

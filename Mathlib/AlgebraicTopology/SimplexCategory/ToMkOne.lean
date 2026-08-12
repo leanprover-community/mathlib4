@@ -21,6 +21,7 @@ in the study of simplices in the simplicial set `Δ[1]`.
 universe u
 
 open CategoryTheory
+
 open scoped Simplicial
 
 namespace SimplexCategory

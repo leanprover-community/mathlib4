@@ -26,6 +26,7 @@ a family of maps `X _⦋n⦌ → Y _⦋n + 1⦌` for all `n : ℕ` and `i : Fin 
 @[expose] public section
 
 open CategoryTheory SimplicialObject MonoidalCategory Opposite
+
 open scoped Simplicial
 
 universe u

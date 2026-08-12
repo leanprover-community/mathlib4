@@ -136,6 +136,7 @@ lemma CStarAlgebra.directedOn_nonneg_ball :
 section ApproximateUnit
 
 open Metric Filter
+
 open scoped Topology
 
 /-- An *increasing approximate unit* in a C⋆-algebra is an approximate unit contained in the

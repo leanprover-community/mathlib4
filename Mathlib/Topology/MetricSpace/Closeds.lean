@@ -29,6 +29,7 @@ public section
 noncomputable section
 
 open Set Function TopologicalSpace Filter ENNReal
+
 open scoped Topology
 
 namespace Metric

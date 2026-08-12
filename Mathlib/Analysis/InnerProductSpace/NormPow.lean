@@ -24,8 +24,8 @@ public section
 section ContDiffNormPow
 
 open Asymptotics Real
-open scoped Topology
-open scoped NNReal
+
+open scoped Topology NNReal
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]

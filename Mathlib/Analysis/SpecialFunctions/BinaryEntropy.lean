@@ -263,6 +263,7 @@ lemma hasDerivAt_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
   deriv_qaryEntropy hp₀ hp₁ ▸ (differentiableAt_qaryEntropy hp₀ hp₁).hasDerivAt
 
 open Filter Set
+
 open scoped Topology
 
 private lemma tendsto_log_one_sub_sub_log_nhdsGT_atAtop :

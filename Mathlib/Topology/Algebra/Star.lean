@@ -19,6 +19,7 @@ This file defines the `ContinuousStar` typeclass, along with instances on `Pi`, 
 @[expose] public section
 
 open Filter
+
 open scoped Topology
 
 /-- Basic hypothesis to talk about a topological space with a continuous `star` operator. -/

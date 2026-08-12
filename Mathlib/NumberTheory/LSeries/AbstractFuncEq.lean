@@ -68,6 +68,7 @@ applies a scaling factor to `f` and `g` to reduce to the `N = 1` case.
 noncomputable section
 
 open Real Complex Filter Asymptotics Set MeasureTheory
+
 open scoped Topology
 
 variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℂ E]

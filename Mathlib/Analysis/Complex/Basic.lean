@@ -59,6 +59,7 @@ namespace Complex
 variable {z : ℂ}
 
 open Topology Filter
+
 open scoped ComplexConjugate
 
 instance : NormedField ℂ where

@@ -62,6 +62,7 @@ We then use a limit argument to cover the case when either of the sides are `0`.
 
 
 open Set Filter Function Complex
+
 open scoped Topology
 
 namespace Complex

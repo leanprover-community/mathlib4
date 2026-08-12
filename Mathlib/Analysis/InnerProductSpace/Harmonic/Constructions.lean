@@ -21,6 +21,7 @@ part, imaginary part, and complex conjugate. If `f` has no zero, then `log â€–fâ
 public section
 
 open Complex InnerProductSpace
+
 open scoped ComplexConjugate Topology
 
 variable

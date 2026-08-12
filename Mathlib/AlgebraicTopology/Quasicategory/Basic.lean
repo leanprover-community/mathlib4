@@ -30,6 +30,7 @@ public section
 namespace SSet
 
 open CategoryTheory
+
 open scoped Simplicial
 
 /-- A simplicial set `S` is a *quasicategory* if it satisfies the following horn-filling condition:

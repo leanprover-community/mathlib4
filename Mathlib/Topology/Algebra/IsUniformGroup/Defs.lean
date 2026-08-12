@@ -51,6 +51,7 @@ assert_not_exists Cauchy
 noncomputable section
 
 open Topology Filter
+
 open scoped Uniformity
 
 section LeftRight

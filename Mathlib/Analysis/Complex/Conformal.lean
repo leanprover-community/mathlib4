@@ -60,6 +60,7 @@ this file.
 noncomputable section
 
 open Complex ContinuousLinearMap
+
 open scoped ComplexConjugate
 
 theorem isConformalMap_conj : IsConformalMap (conjLIE : ℂ →L[ℝ] ℂ) :=

@@ -25,6 +25,7 @@ if `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ
 
 
 open TopologicalSpace Bornology Filter Pointwise
+
 open scoped Topology
 
 variable {𝕜 𝕜' E F : Type*}

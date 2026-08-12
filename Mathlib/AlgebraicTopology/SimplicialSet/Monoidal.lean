@@ -30,6 +30,7 @@ universe u
 
 open CategoryTheory MonoidalCategory CartesianMonoidalCategory
   Limits SimplicialObject.Truncated
+
 open scoped Simplicial
 
 namespace SSet

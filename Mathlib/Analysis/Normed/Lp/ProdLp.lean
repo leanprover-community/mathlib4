@@ -51,6 +51,7 @@ the only remaining results are about `Lipschitz` and `Antilipschitz`.
 @[expose] public section
 
 open Real Set Filter Bornology NNReal ENNReal
+
 open scoped Uniformity
 
 noncomputable section

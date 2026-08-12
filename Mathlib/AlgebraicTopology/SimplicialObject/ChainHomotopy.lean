@@ -26,6 +26,7 @@ universe v u
 
 open CategoryTheory CategoryTheory.SimplicialObject
 open SimplexCategory Opposite AlgebraicTopology
+
 open scoped Simplicial
 
 namespace CategoryTheory.SimplicialObject.Homotopy

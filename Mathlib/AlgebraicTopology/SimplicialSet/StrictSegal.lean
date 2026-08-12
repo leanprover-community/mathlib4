@@ -30,6 +30,7 @@ in `Mathlib/AlgebraicTopology/SimplicialSet/Coskeletal.lean`.
 universe v u
 
 open CategoryTheory SimplexCategory
+
 open scoped Simplicial
 
 namespace SSet
