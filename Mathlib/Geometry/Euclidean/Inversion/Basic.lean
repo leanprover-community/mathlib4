@@ -28,7 +28,7 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 
 noncomputable section
 
-open Metric Function AffineMap Set AffineSubspace
+open Metric Function AffineMap Set
 open scoped Topology
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
