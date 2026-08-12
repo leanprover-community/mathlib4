@@ -691,20 +691,13 @@ of `K` in `L`. -/
 theorem fixingSubgroup_range_algebraMap :
     fixingSubgroup G (Set.range (algebraMap A B)) =
       fixingSubgroup G (Set.range (algebraMap K L)) := by
-  ext g
-  simp only [mem_fixingSubgroup_iff, Set.mem_range]
-  refine ⟨?_, ?_⟩
-  · rintro h _ ⟨x, rfl⟩
-    have {x} : g • (algebraMap A L) x = (algebraMap A L) x := by
-      rw [IsScalarTower.algebraMap_apply A B L, ← algebraMap.smul', h _ ⟨x, rfl⟩]
-    obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective A x
-    simp only [map_div₀, ← IsScalarTower.algebraMap_apply, smul_div₀', this]
-  · rintro h _ ⟨x, rfl⟩
-    apply FaithfulSMul.algebraMap_injective B L
-    rw [algebraMap.smul']
-    apply h
-    use algebraMap A K x
-    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+  simp_rw [Subgroup.ext_iff, mem_fixingSubgroup_iff, Set.forall_mem_range]
+  refine fun g ↦ ⟨fun h x ↦ ?_, fun h x ↦ FaithfulSMul.algebraMap_injective B L ?_⟩
+  · obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective A x
+    simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply A B L, smul_div₀', ← algebraMap.smul', h]
+  · simp_rw [algebraMap.smul', ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply A K L, h]
 
 end MulAction
 
