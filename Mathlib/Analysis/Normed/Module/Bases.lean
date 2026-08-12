@@ -5,9 +5,7 @@ Authors: Michał Świętek
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
@@ -131,16 +129,33 @@ abbrev UnconditionalSchauderBasis (β : Type*)
     (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X] :=
   GeneralSchauderBasis β 𝕜 X (SummationFilter.unconditional β)
 
+namespace Module.Basis
+
+open SummationFilter
+
+variable [CompleteSpace 𝕜] [Finite β]
+
 /-- When there is a finite basis, it can be regarded as a generalized Schauder basis.
 The assumption `L.LeAtTop` is needed to ensure that a finite sum converges along `L`. -/
-def Module.Basis.toGeneralSchauderBasis [CompleteSpace 𝕜] [Fintype β]
-    {L : SummationFilter β} [L.LeAtTop] (b : Module.Basis β 𝕜 X) :
+def toGeneralSchauderBasis (L := unconditional β) [L.LeAtTop] (b : Module.Basis β 𝕜 X) :
     GeneralSchauderBasis β 𝕜 X L :=
+  letI : Fintype β := Fintype.ofFinite β
   letI : FiniteDimensional 𝕜 X := b.finiteDimensional_of_finite
   { basis := b
     coord i := (b.coord i).toContinuousLinearMap
     ortho i j := by simp [Finsupp.single]
     expansion x := by simpa using hasSum_fintype (fun i ↦ b.coord i x • b i) L }
+
+@[simp]
+lemma basis_toGeneralSchauderBasis (L := unconditional β) [L.LeAtTop] (b : Module.Basis β 𝕜 X) :
+    (b.toGeneralSchauderBasis L).basis = b := rfl
+
+@[simp]
+lemma coord_toGeneralSchauderBasis_eq_coord (L := unconditional β) [L.LeAtTop]
+    (b : Module.Basis β 𝕜 X) (i : β) (x : X) :
+    (b.toGeneralSchauderBasis L).coord i x = b.coord i x := rfl
+
+end Module.Basis
 
 /-- Coercion from a `GeneralSchauderBasis` to the underlying basis function. -/
 instance : CoeFun (GeneralSchauderBasis β 𝕜 X L) (fun _ ↦ β → X) where

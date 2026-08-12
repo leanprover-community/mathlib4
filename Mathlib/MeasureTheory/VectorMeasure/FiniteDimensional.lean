@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Module.Bases
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
 
-import Mathlib.Topology.Algebra.Module.FiniteDimension
-
 /-!
 # Decomposition of a vector measure in a finite-dimensional `ℝ`-vector space with respect to a basis
 
@@ -44,11 +42,9 @@ protected noncomputable def coord (b : GeneralSchauderBasis ι 𝕜 V L) (μ : V
 lemma coord_apply (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) (i : ι) (E : Set X) :
     μ.coord b i E = b.coord i (μ E) := by simp [VectorMeasure.coord]
 
-@[simp]
 theorem sum_toSpanSingleton_coord_eq [CompleteSpace 𝕜] [Fintype ι] [L.LeAtTop] [L.NeBot]
     (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) :
-    ∑ i, mapRangeₗ (toSpanSingleton 𝕜 V (b i))
-      ((toSpanSingleton 𝕜 V (b i)).continuous_of_finiteDimensional) (μ.coord b i) = μ := by
-  ext; simp
+    μ = ∑ i, mapRangeₗ (toSpanSingleton 𝕜 V (b i))
+      ((toSpanSingleton 𝕜 V (b i)).continuous_of_finiteDimensional) (μ.coord b i) := by ext; simp
 
 end MeasureTheory.VectorMeasure
