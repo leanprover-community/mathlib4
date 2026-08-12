@@ -24,7 +24,7 @@ cardinals `κ₁ < κ₂`, this condition can be described in different ways:
   of cardinality `< κ₂`, there exists a `κ₁`-directed subset `B` of `X` containing `A`
   that is of cardinality `< κ₂`.
 The equivalence of these conditions (i)-(iv) is Theorem 2.11 in the book by Adámek and Rosický.
-Here, we take (i) as the definition, and the equivalences between the various definitions
+Here, we take (i) as the definition, and the equivalence between the various definitions
 is obtained in the lemma `Cardinal.SharplyLT.tfae`. In particular, using (ii),
 we show that `Cardinal.SharplyLT` is transitive.
 
