@@ -454,7 +454,7 @@ variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
 /-- The region between two measurable functions on a measurable set is measurable. -/
 theorem measurableSet_regionBetween (hf : Measurable f) (hg : Measurable g) (hs : MeasurableSet s) :
     MeasurableSet (regionBetween f g s) := by
-  dsimp only [regionBetween, Ioo, mem_ofPred_eq, ofPred_and]
+  dsimp only [regionBetween, Ioo, mem_ofPred, ofPred_and]
   refine
     MeasurableSet.inter ?_
       ((measurableSet_lt (hf.comp measurable_fst) measurable_snd).inter
@@ -466,7 +466,7 @@ a version for the region together with the graph of the upper function. -/
 theorem measurableSet_region_between_oc (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst) } := by
-  dsimp only [regionBetween, Ioc, mem_ofPred_eq, ofPred_and]
+  dsimp only [regionBetween, Ioc, mem_ofPred, ofPred_and]
   refine
     MeasurableSet.inter ?_
       ((measurableSet_lt (hf.comp measurable_fst) measurable_snd).inter
@@ -478,7 +478,7 @@ a version for the region together with the graph of the lower function. -/
 theorem measurableSet_region_between_co (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst) } := by
-  dsimp only [regionBetween, Ico, mem_ofPred_eq, ofPred_and]
+  dsimp only [regionBetween, Ico, mem_ofPred, ofPred_and]
   refine
     MeasurableSet.inter ?_
       ((measurableSet_le (hf.comp measurable_fst) measurable_snd).inter
@@ -490,7 +490,7 @@ a version for the region together with the graphs of both functions. -/
 theorem measurableSet_region_between_cc (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst) } := by
-  dsimp only [regionBetween, Icc, mem_ofPred_eq, ofPred_and]
+  dsimp only [regionBetween, Icc, mem_ofPred, ofPred_and]
   refine
     MeasurableSet.inter ?_
       ((measurableSet_le (hf.comp measurable_fst) measurable_snd).inter

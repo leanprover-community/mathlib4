@@ -318,7 +318,7 @@ theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α 
   have : ∀ k, (fun x ↦ Set.indicator {x | C ≤ ‖f k x‖} (fun a ↦ ‖f k a‖) x) = F ∘ f k := by
     intro k
     ext x
-    simp only [Set.indicator, Set.mem_ofPred_eq]; norm_cast
+    simp only [Set.indicator, Set.mem_ofPred]; norm_cast
   rw [this, this, ← eLpNorm_map_measure F_meas.aestronglyMeasurable (hf i).aemeasurable_fst,
     (hf i).map_eq, eLpNorm_map_measure F_meas.aestronglyMeasurable (hf j).aemeasurable_fst]
 

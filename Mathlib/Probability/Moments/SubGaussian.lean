@@ -353,7 +353,7 @@ lemma measure_pos_eq_zero_of_hasSubGaussianMGF_zero (h : HasSubgaussianMGF X 0 �
     ∀ᵐ ω' ∂ν, (κ ω') {ω | 0 < X ω} = 0 := by
   have hs : {ω | 0 < X ω} = ⋃ ε : {ε : ℚ // 0 < ε}, {ω | ε ≤ X ω} := by
     ext ω
-    simp only [Set.mem_ofPred_eq, Set.mem_iUnion, Subtype.exists, exists_prop]
+    simp only [Set.mem_ofPred, Set.mem_iUnion, Subtype.exists, exists_prop]
     constructor
     · intro hp
       obtain ⟨q, h1, h2⟩ := exists_rat_btwn hp

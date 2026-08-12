@@ -135,7 +135,7 @@ theorem le_mem_nhds [OrderTopology α] {a b : α} (h : a < b) : ∀ᶠ x in 𝓝
 theorem nhds_eq_order [OrderTopology α] (a : α) :
     𝓝 a = (⨅ b ∈ Iio a, 𝓟 (Ioi b)) ⊓ ⨅ b ∈ Ioi a, 𝓟 (Iio b) := by
   rw [OrderTopology.topology_eq_generate_intervals (α := α), nhds_generateFrom]
-  simp_rw [mem_ofPred_eq, @and_comm (a ∈ _), exists_or, or_and_right, iInf_or, iInf_and,
+  simp_rw [mem_ofPred, @and_comm (a ∈ _), exists_or, or_and_right, iInf_or, iInf_and,
     iInf_exists, iInf_inf_eq, iInf_comm (ι := Set α), iInf_iInf_eq_left, mem_Ioi, mem_Iio]
 
 @[to_dual none]
@@ -715,7 +715,7 @@ instance instIsCountablyGenerated_atTop [SeparableSpace α] :
   · obtain ⟨s, s_count, hs⟩ := exists_countable_dense α
     have : atTop = generate (Ici '' s) := by
       refine atTop_eq_generate_of_not_bddAbove fun ⟨x, hx⟩ ↦ ?_
-      simp only [eq_empty_iff_forall_notMem, IsTop, mem_ofPred_eq, not_forall, not_le] at h
+      simp only [eq_empty_iff_forall_notMem, IsTop, mem_ofPred, not_forall, not_le] at h
       obtain ⟨y, hy, hxy⟩ := hs.exists_mem_open isOpen_Ioi (h x)
       exact (hx hy).not_gt hxy
     rw [this]

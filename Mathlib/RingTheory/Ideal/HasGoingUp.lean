@@ -81,7 +81,7 @@ lemma exists_ltSeries_of_hasGoingUp [Algebra.HasGoingUp R S]
       Ideal.exists_ideal_gt_liesOver_of_lt P lt
     obtain ⟨L, len, head, spec⟩ := ih Q
     refine ⟨L.cons ⟨P, inferInstance⟩ (by
-      simp_all only [Set.mem_ofPred_eq]
+      simp_all only [Set.mem_ofPred]
       exact PQlt), by simpa using len, rfl, ?_⟩
     simpa [spec, PrimeSpectrum.ext_iff] using lo.over.symm
 

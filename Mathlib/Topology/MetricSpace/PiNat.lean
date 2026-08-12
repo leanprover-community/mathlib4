@@ -422,7 +422,7 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
             { p : (∀ n : ℕ, E n) × ∀ n : ℕ, E n | p.fst i = p.snd i }
         · simp only [mem_principal, ofPred_subset_ofPred, imp_self, imp_true_iff]
         · rintro ⟨x, y⟩ hxy
-          simp only [Finset.mem_coe, Finset.mem_range, iInter_coe_set, mem_iInter, mem_ofPred_eq]
+          simp only [Finset.mem_coe, Finset.mem_range, iInter_coe_set, mem_iInter, mem_ofPred]
             at hxy
           apply lt_of_le_of_lt _ hn
           rw [← mem_cylinder_iff_dist_le, mem_cylinder_iff]
@@ -859,7 +859,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
         refine mem_iInf_of_mem δ (mem_iInf_of_mem δpos ?_)
         simp only [mem_principal, Subset.rfl]
       · rintro ⟨x, y⟩ hxy
-        simp only [mem_iInter, mem_ofPred_eq, SetCoe.forall, Finset.mem_coe] at hxy
+        simp only [mem_iInter, mem_ofPred, SetCoe.forall, Finset.mem_coe] at hxy
         calc
           edist x y = ∑' i : ι, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
           _ = ∑ i ∈ K, min (2⁻¹ ^ encode i) (edist (x i) (y i)) +

@@ -129,7 +129,7 @@ theorem MonotoneOn.countable_not_continuousWithinAt_Ioi (hf : MonotoneOn f s) :
     Set.Countable {x ∈ s | ¬ContinuousWithinAt f (s ∩ Ioi x) x} := by
   apply (countable_image_lt_image_Ioi_within s f).mono
   rintro x ⟨xs, hx : ¬ContinuousWithinAt f (s ∩ Ioi x) x⟩
-  dsimp only [mem_ofPred_eq]
+  dsimp only [mem_ofPred]
   contrapose! hx
   refine tendsto_order.2 ⟨fun m hm => ?_, fun u hu => ?_⟩
   · filter_upwards [@self_mem_nhdsWithin _ _ x (s ∩ Ioi x)] with y hy
@@ -155,7 +155,7 @@ theorem MonotoneOn.countable_not_continuousWithinAt (hf : MonotoneOn f s) :
   refine compl_subset_compl.1 ?_
   simp only [compl_union]
   rintro x ⟨hx, h'x⟩
-  simp only [mem_compl_iff, mem_ofPred_eq, not_and, not_not] at hx h'x ⊢
+  simp only [mem_compl_iff, mem_ofPred, not_and, not_not] at hx h'x ⊢
   intro xs
   exact continuousWithinAt_iff_continuous_left'_right'.2 ⟨h'x xs, hx xs⟩
 

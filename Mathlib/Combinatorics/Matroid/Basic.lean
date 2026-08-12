@@ -1124,7 +1124,7 @@ theorem finite_setOfPred_matroid {E : Set α} (hE : E.Finite) :
   rw [← Set.finite_image_iff hf.injOn]
   refine (hE.finite_subsets.prod hE.finite_subsets.finite_subsets).subset ?_
   rintro _ ⟨M, hE : M.E ⊆ E, rfl⟩
-  simp only [Set.mem_prod, Set.mem_ofPred_eq]
+  simp only [Set.mem_prod, Set.mem_ofPred]
   exact ⟨hE, fun B hB ↦ hB.subset_ground.trans hE⟩
 
 @[deprecated (since := "2026-07-09")]

@@ -961,14 +961,14 @@ theorem MeasurableSet.image_of_monotoneOn [SecondCountableTopology β]
     rw [← image_union]
     congr!
     ext
-    simp only [sdiff_sep_self, not_not, mem_union, mem_ofPred_eq, t']
+    simp only [sdiff_sep_self, not_not, mem_union, mem_ofPred, t']
     tauto
   rw [this]
   apply MeasurableSet.union _ (ht'.image g).measurableSet
   apply MeasurableSet.image_of_monotoneOn_of_continuousOn (ht.diff ht'.measurableSet)
     (hg.mono sdiff_subset)
   intro x hx
-  simp only [sdiff_sep_self, not_not, mem_ofPred_eq, t'] at hx
+  simp only [sdiff_sep_self, not_not, mem_ofPred, t'] at hx
   exact hx.2.mono sdiff_subset
 
 /-- The image of a measurable set under an antitone map is measurable. -/

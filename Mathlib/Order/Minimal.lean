@@ -463,7 +463,7 @@ theorem image_monotone_setOfPred_minimal (hf : ∀ ⦃x y⦄, P x → P y → (f
   refine Set.ext fun x ↦ ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨x, (hx : Minimal _ x), rfl⟩
     exact (minimal_mem_image_monotone_iff hx.prop hf).2 hx
-  obtain ⟨y, hy, rfl⟩ := (mem_ofPred_eq ▸ h).prop
+  obtain ⟨y, hy, rfl⟩ := (mem_ofPred ▸ h).prop
   exact mem_image_of_mem _ <| (minimal_mem_image_monotone_iff (s := Set.ofPred P) hy hf).1 h
 
 @[deprecated (since := "2026-07-09")]
@@ -545,7 +545,7 @@ alias image_setOf_minimal := image_setOfPred_minimal
 @[to_dual]
 theorem inter_preimage_setOfPred_minimal_eq_of_subset (hts : t ⊆ f '' s) :
     x ∈ s ∩ f ⁻¹' {y | Minimal (· ∈ t) y} ↔ Minimal (· ∈ s ∩ f ⁻¹' t) x := by
-  simp_rw [mem_inter_iff, preimage_ofPred_eq, mem_ofPred_eq, mem_preimage,
+  simp_rw [mem_inter_iff, preimage_ofPred_eq, mem_ofPred, mem_preimage,
     f.minimal_apply_mem_iff (hts.trans (image_subset_range _ _)),
     minimal_and_iff_left_of_imp (fun _ hx ↦ f.injective.mem_set_image.1 <| hts hx)]
 

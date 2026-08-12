@@ -75,7 +75,7 @@ def toValued : Valued K ℝ≥0 :=
         rcases RankLeOne.exists_val_lt (valuation (K := K)) with H | H
         · use Units.mk0 (valuation.restrict 1) (by simp)
           intro x hx
-          simp only [Units.val_mk0, mem_ofPred_eq, map_one] at hx
+          simp only [Units.val_mk0, mem_ofPred, map_one] at hx
           by_cases hx0 : x = 0
           · exact h (hx0 ▸ Metric.mem_ball_self hε)
           · exfalso
@@ -90,7 +90,7 @@ def toValued : Valued K ℝ≥0 :=
           intro y hy
           apply h
           simp only [Metric.mem_ball, dist_zero_right]
-          simp only [Units.val_mk0, mem_ofPred_eq, restrict_lt_iff, ← NNReal.coe_lt_coe] at hy
+          simp only [Units.val_mk0, mem_ofPred, restrict_lt_iff, ← NNReal.coe_lt_coe] at hy
           apply lt_trans hy
           simpa [RankLeOne.hom', valuation.restrict_def] using! hxy
       · rintro ⟨ε, hε⟩
@@ -176,7 +176,7 @@ def toNormedField : NormedField L :=
           use δ, hδ_pos
           apply subset_trans _ hε
           intro x hx
-          simp only [mem_ofPred_eq, Valuation.norm, hδ, NNReal.coe_lt_coe] at hx
+          simp only [mem_ofPred, Valuation.norm, hδ, NNReal.coe_lt_coe] at hx
           rw [mem_ofPred, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
         · have : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
@@ -185,7 +185,7 @@ def toNormedField : NormedField L :=
           use u
           apply subset_trans _ hr
           intro x hx
-          simp only [Valuation.norm, mem_ofPred_eq]
+          simp only [Valuation.norm, mem_ofPred]
           apply lt_trans _ hu
           rw [NNReal.coe_lt_coe, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mpr hx

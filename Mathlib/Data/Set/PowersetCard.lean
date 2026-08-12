@@ -40,7 +40,7 @@ open Finset Set Function
 @[simp]
 theorem mem_iff {s : Finset α} :
     s ∈ powersetCard α n ↔ s.card = n := by
-  rw [powersetCard, Set.mem_ofPred_eq]
+  rw [powersetCard, Set.mem_ofPred]
 
 instance : SetLike (powersetCard α n) α := SetLike.instSubtype
 

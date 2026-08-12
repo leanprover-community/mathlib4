@@ -63,7 +63,7 @@ def splitLower (I : Box ι) (i : ι) (x : ℝ) : WithBot (Box ι) :=
 theorem coe_splitLower : (splitLower I i x : Set (ι → ℝ)) = ↑I ∩ { y | y i ≤ x } := by
   rw [splitLower, coe_mk']
   ext y
-  simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_ofPred_eq, forall_and, ← Pi.le_def,
+  simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_ofPred, forall_and, ← Pi.le_def,
     le_update_iff, le_min_iff, and_assoc, and_forall_ne (p := fun j => y j ≤ upper I j) i, mem_def]
   rw [and_comm (a := y i ≤ x)]
 
@@ -101,7 +101,7 @@ theorem coe_splitUpper : (splitUpper I i x : Set (ι → ℝ)) = ↑I ∩ { y | 
   classical
   rw [splitUpper, coe_mk']
   ext y
-  simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_ofPred_eq, forall_and,
+  simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_ofPred, forall_and,
     forall_update_iff I.lower fun j z => z < y j, max_lt_iff, and_assoc (a := x < y i),
     and_forall_ne (p := fun j => lower I j < y j) i, mem_def]
   exact and_comm

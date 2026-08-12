@@ -71,8 +71,8 @@ theorem subgroups_basis :
       use γ₀
       rintro - ⟨r, r_in, s, s_in, rfl⟩
       simp only [ltAddSubgroup, Units.coe_map, MonoidHom.coe_coe, AddSubgroup.coe_set_mk,
-        AddSubmonoid.coe_set_mk, AddSubsemigroup.coe_set_mk, mem_ofPred_eq] at r_in s_in
-      simp only [coe_ltAddSubgroup, Units.coe_map, MonoidHom.coe_coe, mem_ofPred_eq]
+        AddSubmonoid.coe_set_mk, AddSubsemigroup.coe_set_mk, mem_ofPred] at r_in s_in
+      simp only [coe_ltAddSubgroup, Units.coe_map, MonoidHom.coe_coe, mem_ofPred]
       rw [← restrict_lt_iff_lt_embedding] at *
       calc
         v.restrict (r * s) = v.restrict r * v.restrict s := Valuation.map_mul _ _ _
@@ -83,7 +83,7 @@ theorem subgroups_basis :
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
       · use (1 : (ValueGroup₀ (.ofClass v))ˣ)
         rintro y _
-        simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred_eq]
+        simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred]
         rw [Valuation.map_mul, Hx, zero_mul]
         exact Units.zero_lt _
       · set u : (ValueGroup₀ (.ofClass v))ˣ := Units.mk0 ((restrict₀ (.ofClass v)) x)
@@ -92,7 +92,7 @@ theorem subgroups_basis :
           simp [restrict₀_apply, embedding_apply, hu_def, Hx]
         use u⁻¹ * γ
         rintro y (vy_lt : v y < ValueGroup₀.embedding (u⁻¹ * γ).1)
-        simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred_eq]
+        simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred]
         rw [Valuation.map_mul, Hx, mul_comm]
         rw [Units.val_mul, mul_comm, map_mul, hu] at vy_lt
         simpa using mul_inv_lt_of_lt_mul₀ vy_lt
@@ -101,7 +101,7 @@ theorem subgroups_basis :
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
       · use 1
         rintro y _
-        simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred_eq, Valuation.map_mul, Hx,
+        simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred, Valuation.map_mul, Hx,
           mul_zero, Units.zero_lt]
       · set u : (ValueGroup₀ (.ofClass v))ˣ := Units.mk0 ((restrict₀ (.ofClass v)) x)
           (by simp [restrict₀_apply]; aesop) with hu_def
@@ -109,7 +109,7 @@ theorem subgroups_basis :
           hu_def, Hx]
         use u⁻¹ * γ
         rintro y (vy_lt : v y < ValueGroup₀.embedding (u⁻¹ * γ).1)
-        simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred_eq, Valuation.map_mul, Hx]
+        simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred, Valuation.map_mul, Hx]
         rw [Units.val_mul, mul_comm, map_mul, hu] at vy_lt
         simpa using mul_inv_lt_of_lt_mul₀ vy_lt }
 
@@ -197,7 +197,7 @@ section Discrete
 lemma discreteTopology_of_forall_map_eq_one (h : ∀ x : R, x ≠ 0 → v x = 1) :
     DiscreteTopology R := by
   simp only [discreteTopology_iff_isOpen_singleton_zero, isOpen_iff_mem_nhds, mem_singleton_iff,
-    forall_eq, mem_nhds_zero, subset_singleton_iff, mem_ofPred_eq]
+    forall_eq, mem_nhds_zero, subset_singleton_iff, mem_ofPred]
   use 1
   contrapose! h
   obtain ⟨x, hx, hx'⟩ := h
@@ -267,7 +267,7 @@ theorem isClosed_closedBall (r : ValueGroup₀ (.ofClass _i.v)) :
     IsClosed {x | v.restrict x ≤ r} := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
-  simp only [mem_compl_iff, mem_ofPred_eq, not_le] at hx
+  simp only [mem_compl_iff, mem_ofPred, not_le] at hx
   rw [mem_nhds]
   have hx' : v.restrict x ≠ 0 := hx.ne_zero
   exact ⟨Units.mk0 _ hx', fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v.restrict x y ▸

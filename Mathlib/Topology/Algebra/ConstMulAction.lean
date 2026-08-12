@@ -624,7 +624,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   by_cases H : γ ∈ bad_Γ_set
   · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
-    simp only [bad_Γ_set, image_smul, not_nonempty_iff_eq_empty, mem_ofPred_eq] at H
+    simp only [bad_Γ_set, image_smul, not_nonempty_iff_eq_empty, mem_ofPred] at H
     exact eq_empty_iff_forall_notMem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
 
 /-- The quotient of a second countable space by a group action is second countable. -/

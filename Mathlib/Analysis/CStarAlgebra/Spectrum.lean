@@ -222,7 +222,7 @@ lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
   case' lower => apply Complex.isConnected_of_lowerHalfPlane ?_ <| Set.inter_subset_right
   all_goals
     refine Set.subset_inter (fun z hz hz' ↦ ?_) (fun _ ↦ by simpa using le_of_lt)
-    rw [Set.mem_ofPred_eq, ha.im_eq_zero_of_mem_spectrum hz'] at hz
+    rw [Set.mem_ofPred, ha.im_eq_zero_of_mem_spectrum hz'] at hz
     simp_all
 
 namespace StarSubalgebra

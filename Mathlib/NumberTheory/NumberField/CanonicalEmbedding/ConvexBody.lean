@@ -165,7 +165,7 @@ theorem convexBodyLT'_mem {x : K} :
   · by_cases hw : IsReal w
     · exact norm_embedding_eq w _ ▸ h₁ w hw
     · specialize h₂ w (not_isReal_iff_isComplex.mp hw)
-      rw [apply_ite (w.embedding x ∈ ·), Set.mem_ofPred_eq,
+      rw [apply_ite (w.embedding x ∈ ·), Set.mem_ofPred,
         mem_ball_zero_iff, norm_embedding_eq] at h₂
       rwa [ite_eq_right (by exact Subtype.coe_ne_coe.1 h_ne)] at h₂
   · simpa [ite_true] using h₂ w₀.val w₀.prop
@@ -214,7 +214,7 @@ theorem convexBodyLT'_volume :
     · simp_rw [Set.preimage_ofPred_eq, Complex.measurableEquivRealProd_symm_apply]
       rw [show {a : ℝ × ℝ | |a.1| < 1 ∧ |a.2| < B ^ 2} =
         Set.Ioo (-1 : ℝ) (1 : ℝ) ×ˢ Set.Ioo (-(B : ℝ) ^ 2) ((B : ℝ) ^ 2) by
-          ext; simp_rw [Set.mem_ofPred_eq, Set.mem_prod, Set.mem_Ioo, abs_lt]]
+          ext; simp_rw [Set.mem_ofPred, Set.mem_prod, Set.mem_Ioo, abs_lt]]
       simp_rw [volume_eq_prod, prod_prod, Real.volume_Ioo, sub_neg_eq_add, one_add_one_eq_two,
         ← two_mul, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
         ofReal_coe_nnreal, ← mul_assoc, show (2 : ℝ≥0∞) * 2 = 4 by norm_num]
@@ -328,13 +328,13 @@ theorem convexBodySum_volume_eq_zero_of_le_zero {B} (hB : B ≤ 0) :
     linarith [convexBodySumFun_nonneg x]
   · suffices convexBodySum K B = { 0 } by rw [this, measure_singleton]
     ext
-    rw [convexBodySum, Set.mem_ofPred_eq, Set.mem_singleton_iff, hB, ← convexBodySumFun_eq_zero_iff]
+    rw [convexBodySum, Set.mem_ofPred, Set.mem_singleton_iff, hB, ← convexBodySumFun_eq_zero_iff]
     exact (convexBodySumFun_nonneg _).ge_iff_eq'
 
 theorem convexBodySum_mem {x : K} :
     mixedEmbedding K x ∈ (convexBodySum K B) ↔
       ∑ w : InfinitePlace K, (mult w) * w.val x ≤ B := by
-  simp_rw [Set.mem_ofPred_eq, convexBodySumFun, normAtPlace_apply]
+  simp_rw [Set.mem_ofPred, convexBodySumFun, normAtPlace_apply]
   rfl
 
 theorem convexBodySum_neg_mem {x : mixedSpace K} (hx : x ∈ (convexBodySum K B)) :

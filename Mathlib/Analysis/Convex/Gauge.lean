@@ -136,7 +136,7 @@ theorem gauge_le_of_mem (ha : 0 ≤ a) (hx : x ∈ a • s) : gauge s x ≤ a :=
 theorem setOfPred_gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Absorbent ℝ s)
     (ha : 0 ≤ a) : { x | gauge s x ≤ a } = ⋂ (r : ℝ) (_ : a < r), r • s := by
   ext x
-  simp_rw [Set.mem_iInter, Set.mem_ofPred_eq]
+  simp_rw [Set.mem_iInter, Set.mem_ofPred]
   refine ⟨fun h r hr => ?_, fun h => le_of_forall_pos_lt_add fun ε hε => ?_⟩
   · have hr' := ha.trans_lt hr
     rw [mem_smul_set_iff_inv_smul_mem₀ hr'.ne']
@@ -415,7 +415,7 @@ theorem mem_closure_of_gauge_le_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : 
   have : ∀ᶠ r : ℝ in 𝓝[<] 1, r • x ∈ s := by
     filter_upwards [Ico_mem_nhdsLT one_pos] with r ⟨hr₀, hr₁⟩
     apply setOfPred_gauge_lt_one_subset_self hc hs₀ ha
-    rw [mem_ofPred_eq, gauge_smul_of_nonneg hr₀]
+    rw [mem_ofPred, gauge_smul_of_nonneg hr₀]
     exact mul_lt_one_of_nonneg_of_lt_one_left hr₀ hr₁ h
   refine mem_closure_of_tendsto ?_ this
   exact Filter.Tendsto.mono_left (Continuous.tendsto' (by fun_prop) _ _ (one_smul _ _))

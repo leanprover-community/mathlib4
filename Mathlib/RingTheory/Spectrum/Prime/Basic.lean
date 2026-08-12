@@ -166,7 +166,7 @@ theorem coe_vanishingIdeal (t : Set (PrimeSpectrum R)) :
 
 theorem mem_vanishingIdeal (t : Set (PrimeSpectrum R)) (f : R) :
     f ∈ vanishingIdeal t ↔ ∀ x ∈ t, f ∈ x.asIdeal := by
-  rw [← SetLike.mem_coe, coe_vanishingIdeal, Set.mem_ofPred_eq]
+  rw [← SetLike.mem_coe, coe_vanishingIdeal, Set.mem_ofPred]
 
 @[simp]
 theorem vanishingIdeal_singleton (x : PrimeSpectrum R) :

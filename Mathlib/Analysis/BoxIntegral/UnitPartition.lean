@@ -220,7 +220,7 @@ def admissibleIndex (B : Box ι) : Finset (ι → ℤ) := by
 variable {n} in
 theorem mem_admissibleIndex_iff {B : Box ι} {ν : ι → ℤ} :
     ν ∈ admissibleIndex n B ↔ box n ν ≤ B := by
-  rw [admissibleIndex, Set.Finite.mem_toFinset, Set.mem_ofPred_eq, Box.coe_subset_coe]
+  rw [admissibleIndex, Set.Finite.mem_toFinset, Set.mem_ofPred, Box.coe_subset_coe]
 
 open scoped Classical in
 /-- For `B : BoxIntegral.Box`, the `TaggedPrepartition` formed by the set of all

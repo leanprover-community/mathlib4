@@ -77,7 +77,7 @@ private theorem exists_isSemilinearSet_setOfPred_le {s : Set M} (hs : IsSlice s)
         zero_mem' := by simpa
         add_mem' := by
           intro a b ha hb
-          simp only [mem_ofPred_eq] at *
+          simp only [mem_ofPred] at *
           rw [← add_assoc]
           exact hs _ hx _ _ ha hb }
     else ⊥
@@ -98,7 +98,7 @@ private theorem exists_isSemilinearSet_setOfPred_le {s : Set M} (hs : IsSlice s)
   refine ⟨a, ha.1, ?_⟩
   convert_to IsSemilinearSet (a +ᵥ (f a : Set M))
   · ext x
-    simp only [le_iff_exists_add, mem_ofPred_eq, ha.1, ↓reduceDIte, coe_set_mk,
+    simp only [le_iff_exists_add, mem_ofPred, ha.1, ↓reduceDIte, coe_set_mk,
       AddSubsemigroup.coe_set_mk, mem_vadd_set, vadd_eq_add, f]
     grind
   · refine IsSemilinearSet.vadd a (.of_fg (AddSubmonoid.fg_of_subtractive ?_))
@@ -151,7 +151,7 @@ private theorem Nat.isSemilinearSet_of_isSlice {ι : Type*} [Finite ι] {s : Set
   convert_to IsSemilinearSet ({ y ∈ s | x ≤ y } ∪ ⋃ i ∈ t, ⋃ j ∈ Finset.range (x i),
     { y ∈ s | y i = j })
   · ext y
-    simp only [Finset.mem_range, mem_union, mem_ofPred_eq, mem_iUnion, Pi.le_def]
+    simp only [Finset.mem_range, mem_union, mem_ofPred, mem_iUnion, Pi.le_def]
     grind
   · refine hx'.union (.biUnion_finset fun i hi => .biUnion_finset fun j hj => ?_)
     simp only [Finset.mem_range] at hj
@@ -607,7 +607,7 @@ private theorem isSemilinearSet_setOfFractNe : IsSemilinearSet hs.setOfFractNe :
   convert_to IsSemilinearSet (⋃ u ∈ hs.fundamentalDomain \ {hs.base}, { x |
     ∃ y ∈ closure hs.basisSet, ∃ y' ∈ closure hs.basisSet, x + y' = u + y }) using 1
   · ext x
-    simp only [setOfFractNe, mem_iUnion, mem_ofPred_eq, exists_prop]
+    simp only [setOfFractNe, mem_iUnion, mem_ofPred, exists_prop]
     constructor
     · intro hx
       refine ⟨hs.fract x, ⟨hs.fract_mem_fundamentalDomain x, hx⟩, ∑ i, (hs.floor x i).toNat • i.1,
@@ -644,7 +644,7 @@ private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg
     ∃ z ∈ closure (hs.basisSet \ {i.1}), ∃ z' ∈ closure (hs.basisSet \ {i.1}),
       x + i.1 + y + z' = hs.base + z }) using 1
   · ext x
-    simp only [setOfFloorNeg, mem_iUnion, mem_ofPred_eq]
+    simp only [setOfFloorNeg, mem_iUnion, mem_ofPred]
     constructor
     · intro ⟨hx, i, hi⟩
       refine ⟨i, ((- hs.floor x i).toNat - 1) • i.1, ?_,
@@ -707,7 +707,7 @@ private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos
     { x | ∃ y ∈ closure {i.1}, ∃ z ∈ closure (hs.basisSet \ {i.1}),
       ∃ z' ∈ closure (hs.basisSet \ {i.1}), x + z' = hs.base + i.1 + y + z }) using 1
   · ext x
-    simp only [setOfFloorPos, mem_iUnion, mem_ofPred_eq, exists_prop]
+    simp only [setOfFloorPos, mem_iUnion, mem_ofPred, exists_prop]
     constructor
     · intro ⟨hx, i, hi, hi'⟩
       refine ⟨i, hi, ((hs.floor x i).toNat - 1) • i.1, ?_,
@@ -768,7 +768,7 @@ private lemma Nat.isSemilinearSet_compl_of_isProperLinearSet [Finite ι] {s : Se
       hs.isSemilinearSet_setOfFloorNeg.union <| hs.isSemilinearSet_setOfFloorPos using 1
   ext
   simp only [mem_compl_iff, hs.mem_iff_fract_eq_and_floor_nonneg, IsProperLinearSet.setOfFractNe,
-    IsProperLinearSet.setOfFloorNeg, IsProperLinearSet.setOfFloorPos, mem_union, mem_ofPred_eq]
+    IsProperLinearSet.setOfFloorNeg, IsProperLinearSet.setOfFloorPos, mem_union, mem_ofPred]
   grind
 
 private theorem Nat.isSemilinearSet_compl [Finite ι] {s : Set (ι → ℕ)} (hs : IsSemilinearSet s) :

@@ -121,7 +121,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
       To ensure a large enough denominator, we take `d * k`, where
       `1 + 1 ≤ k • (d • (x + y) - a.num • 1)`. -/
     intro h
-    rw [Set.mem_ofPred_eq] at h
+    rw [Set.mem_ofPred] at h
     obtain ⟨k, hk⟩ := Archimedean.arch (1 + 1) <| sub_pos.mpr h
     have hk0 : k ≠ 0 := by
       contrapose! hk
@@ -145,7 +145,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
   · -- `u ∈ ratLt 1 x`, `v ∈ ratLt 1 y` → `u + v ∈ ratLt 1 (x + y)`
     intro ⟨u, hu, v, hv, huv⟩
     rw [← huv]
-    rw [Set.mem_ofPred_eq] at hu hv ⊢
+    rw [Set.mem_ofPred] at hu hv ⊢
     exact num_smul_one_lt_den_smul_add hu hv
 
 theorem ratLt'_bddAbove (x : M) : BddAbove (ratLt' x) :=

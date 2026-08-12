@@ -211,7 +211,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
         apply Submodule.smul_mem
         apply Submodule.subset_span
         refine ⟨m, ⟨?_, rfl⟩⟩
-        simp only [Set.mem_ofPred_eq]
+        simp only [Set.mem_ofPred]
         have hmas : m.val ≤ as :=
           hc (by simpa only [Finset.mem_coe, Finsupp.mem_support_iff] using hm)
         refine le_trans hmas ?_
