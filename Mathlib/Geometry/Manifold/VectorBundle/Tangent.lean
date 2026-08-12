@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Heather Macbeth
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+
 import Mathlib.Geometry.Manifold.Notation
 
 /-! # Tangent bundles

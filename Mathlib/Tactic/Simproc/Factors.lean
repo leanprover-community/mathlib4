@@ -5,9 +5,10 @@ Authors: Mario Carneiro, Eric Wieser
 -/
 module
 
-import all Mathlib.Tactic.NormNum.Prime  -- for accessing `evalMinFac.core`
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.Tactic.NormNum.Prime
+
+import all Mathlib.Tactic.NormNum.Prime  -- for accessing `evalMinFac.core`
 
 /-!
 # `simproc` for `Nat.primeFactorsList`

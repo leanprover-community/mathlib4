@@ -6,9 +6,9 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Square root on `RCLike`

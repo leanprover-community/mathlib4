@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Polynomial.Chebyshev
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.MeasureTheory.Integral.IntegrableOn
