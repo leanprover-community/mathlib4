@@ -403,6 +403,11 @@ theorem preservesColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ 
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
+lemma preservesColimit_comp_iff {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B} :
+    PreservesColimit (F ⋙ G) H ↔ PreservesColimit G H :=
+  ⟨fun _ ↦ preservesColimit_of_comp F, fun _ ↦ inferInstance⟩
+
+set_option backward.defeqAttrib.useBackward true in
 theorem reflectsColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [ReflectsColimit (F ⋙ G) H] : ReflectsColimit G H where
   reflects {c} hc := by
@@ -753,6 +758,11 @@ theorem preservesLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
 set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
+lemma preservesLimit_comp_iff {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B} :
+    PreservesLimit (F ⋙ G) H ↔ PreservesLimit G H :=
+  ⟨fun _ ↦ preservesLimit_of_comp F, fun _ ↦ inferInstance⟩
+
 set_option backward.defeqAttrib.useBackward true in
 theorem reflectsLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [ReflectsLimit (F ⋙ G) H] : ReflectsLimit G H where
