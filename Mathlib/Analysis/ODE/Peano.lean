@@ -25,7 +25,6 @@ convergent subsequence using the Arzelà–Ascoli theorem.
 - `IsPeano.delayedInput`: the delayed time argument used in the Tonelli approximations.
 - `IsPeano.tonelliIterate`: the recursively defined curves used in the construction.
 - `IsPeano.tonelliApproximation`: the diagonal sequence of Tonelli approximations.
-- `IsPeano.boundedTonelliApproximation`: the approximations as bounded continuous functions.
 
 ## Implementation notes
 
@@ -259,22 +258,22 @@ end TonelliApproximation
 section ArzelaAscoli
 
 /-- Restrict a curve on `ℝ` to the interval `Icc t₀ tmax`. -/
-def restrictToIcc (α : ℝ → E) : Icc t₀.val tmax → E :=
+private def restrictToIcc (α : ℝ → E) : Icc t₀.val tmax → E :=
   fun t ↦ α t
 
 /-- Package a continuous function on `Icc t₀ tmax` as a continuous map. -/
-def continuousMapOnIcc (α : Icc t₀.val tmax → E) (hα : Continuous α) :
+private def continuousMapOnIcc (α : Icc t₀.val tmax → E) (hα : Continuous α) :
     C(Icc t₀.val tmax, E) where
   toFun := α
   continuous_toFun := hα
 
 /-- Package a continuous map on the compact interval `Icc t₀ tmax` as a bounded continuous map. -/
-def boundedContinuousFunctionOnIcc (α : C(Icc t₀.val tmax, E)) :
+private def boundedContinuousFunctionOnIcc (α : C(Icc t₀.val tmax, E)) :
     Icc t₀.val tmax →ᵇ E :=
   BoundedContinuousFunction.mkOfCompact α
 
 /-- The Tonelli approximations as bounded continuous functions on `Icc t₀ tmax`. -/
-noncomputable def boundedTonelliApproximation
+private noncomputable def boundedTonelliApproximation
     (hf : IsPeano f t₀ x₀ r L) (n : ℕ) : Icc t₀.val tmax →ᵇ E :=
   boundedContinuousFunctionOnIcc
     (continuousMapOnIcc (restrictToIcc (tonelliApproximation f t₀ x₀ n))
@@ -282,7 +281,7 @@ noncomputable def boundedTonelliApproximation
         (lipschitzOnWith_tonelliApproximation hf n).continuousOn))
 
 /-- The bounded continuous form of each Tonelli approximation has Lipschitz constant `L`. -/
-lemma lipschitzWith_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
+private lemma lipschitzWith_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
     LipschitzWith L (boundedTonelliApproximation hf n) := by
   rw [lipschitzWith_iff_dist_le_mul]
   intro t s
@@ -290,7 +289,7 @@ lemma lipschitzWith_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) (
   exact (lipschitzOnWith_tonelliApproximation hf n).dist_le_mul t.val t.property s.val s.property
 
 /-- The family of bounded continuous Tonelli approximations is equicontinuous. -/
-lemma equicontinuous_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
+private lemma equicontinuous_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
     Equicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) := by
   have : UniformEquicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) :=
     LipschitzWith.uniformEquicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) L
@@ -300,7 +299,7 @@ lemma equicontinuous_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) 
 variable [FiniteDimensional ℝ E]
 
 /-- The closure of the family of the Tonelli approximations is compact. -/
-lemma isCompact_closure_range_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
+private lemma isCompact_closure_range_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
     IsCompact (closure (range (boundedTonelliApproximation hf))) := by
   apply BoundedContinuousFunction.arzela_ascoli (closedBall x₀ r) _ _ _ _
   · apply isCompact_closedBall
@@ -316,7 +315,7 @@ lemma isCompact_closure_range_boundedTonelliApproximation (hf : IsPeano f t₀ x
     simp
 
 /-- The Tonelli approximations admit a convergent subsequence of bounded continuous functions. -/
-lemma exists_tendsto_subseq_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
+private lemma exists_tendsto_subseq_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
     ∃ β : Icc t₀.val tmax →ᵇ E, ∃ φ : ℕ → ℕ, StrictMono φ ∧
       Tendsto (boundedTonelliApproximation hf ∘ φ) atTop (nhds β) := by
   let s : Set (Icc t₀.val tmax →ᵇ E) := closure (range (boundedTonelliApproximation hf))
