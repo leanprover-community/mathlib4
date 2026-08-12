@@ -155,7 +155,7 @@ theorem condDistrib_ae_eq_of_measure_eq_compProd_of_measurable
   rw [heq, condDistrib]
   symm
   refine eq_condKernel_of_measure_eq_compProd _ ?_
-  convert hκ
+  convert! hκ
   exact heq.symm
 
 /-- `condDistrib` is a.e. uniquely defined as the kernel satisfying the defining property of
@@ -202,11 +202,11 @@ lemma condDistrib_comp_self (X : α → β) {f : β → Ω} (hf : Measurable f) 
   simp [Function.comp_def]
 
 lemma condDistrib_self (Y : α → Ω) : condDistrib Y Y μ =ᵐ[μ.map Y] Kernel.id := by
-  simpa using condDistrib_comp_self Y measurable_id
+  simpa using! condDistrib_comp_self Y measurable_id
 
-set_option backward.proofsInPublic true in
 lemma condDistrib_const (X : α → β) (c : Ω) :
-    condDistrib (fun _ ↦ c) X μ =ᵐ[μ.map X] Kernel.deterministic (fun _ ↦ c) (by fun_prop) := by
+    condDistrib (fun _ ↦ c) X μ =ᵐ[μ.map X]
+      Kernel.deterministic (mα := mβ) (fun _ ↦ c) (by fun_prop) := by
   have : (fun _ : α ↦ c) = (fun _ : β ↦ c) ∘ X := rfl
   rw [this]
   filter_upwards [condDistrib_comp_self X (measurable_const (a := c))] with b hb
@@ -410,7 +410,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk {Ω F} {m�
     · exact measurable_snd hs
   · rw [Measure.map_of_not_aemeasurable]
     · simp
-    · contrapose! hX; exact measurable_fst.comp_aemeasurable hX
+    · contrapose hX; exact measurable_fst.comp_aemeasurable hX
 
 theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk
     {Ω} {mΩ : MeasurableSpace Ω} (X : Ω → β) {μ : Measure Ω} {f : Ω → F} (hf_int : Integrable f μ) :
@@ -422,7 +422,7 @@ theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk
     exact hf_int.2
   · rw [Measure.map_of_not_aemeasurable]
     · simp
-    · contrapose! hX; exact measurable_fst.comp_aemeasurable hX
+    · contrapose hX; exact measurable_fst.comp_aemeasurable hX
 
 theorem aestronglyMeasurable_comp_snd_map_prodMk_iff {Ω F} {_ : MeasurableSpace Ω}
     [TopologicalSpace F] {X : Ω → β} {μ : Measure Ω} (hX : Measurable X) {f : Ω → F} :

@@ -108,9 +108,8 @@ variable [FunLike F α β]
 -- See note [lower instance priority]
 @[to_dual]
 instance (priority := 100) SupHomClass.toOrderHomClass [SemilatticeSup α] [SemilatticeSup β]
-    [SupHomClass F α β] : OrderHomClass F α β :=
-  { ‹SupHomClass F α β› with
-    map_rel := fun f a b h => by rw [← sup_eq_right, ← map_sup, sup_eq_right.2 h] }
+    [SupHomClass F α β] : OrderHomClass F α β where
+  map_rel := fun f a b h => by rw [← sup_eq_right, ← map_sup, sup_eq_right.2 h]
 
 end Hom
 
@@ -121,15 +120,13 @@ variable [EquivLike F α β]
 -- See note [lower instance priority]
 @[to_dual]
 instance (priority := 100) OrderIsoClass.toSupHomClass [SemilatticeSup α] [SemilatticeSup β]
-    [OrderIsoClass F α β] : SupHomClass F α β :=
-  { show OrderHomClass F α β from inferInstance with
-    map_sup := fun f a b =>
-      eq_of_forall_ge_iff fun c => by simp only [← le_map_inv_iff, sup_le_iff] }
+    [OrderIsoClass F α β] : SupHomClass F α β where
+  map_sup := fun f a b =>
+    eq_of_forall_ge_iff fun c => by simp only [← le_map_inv_iff, sup_le_iff]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toLatticeHomClass [Lattice α] [Lattice β]
-    [OrderIsoClass F α β] : LatticeHomClass F α β :=
-  { OrderIsoClass.toSupHomClass, OrderIsoClass.toInfHomClass with }
+    [OrderIsoClass F α β] : LatticeHomClass F α β where
 
 end Equiv
 
@@ -172,7 +169,7 @@ variable [Max β] [Max γ] [Max δ]
 @[to_dual]
 instance : FunLike (SupHom α β) α β where
   coe := SupHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_dual]
 instance : SupHomClass (SupHom α β) α β where
@@ -371,7 +368,7 @@ variable [Lattice α] [Lattice β] [Lattice γ] [Lattice δ]
 
 instance : FunLike (LatticeHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance : LatticeHomClass (LatticeHom α β) α β where
   map_sup f := f.map_sup'

@@ -22,7 +22,7 @@ In this file we show that
 descend along faithfully flat base change.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
@@ -34,7 +34,6 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 lemma Module.Finite.of_finite_tensorProduct_of_faithfullyFlat {M : Type*} [AddCommGroup M]
     [Module R M] [Module.FaithfullyFlat R T] [Module.Finite T (T ⊗[R] M)] :
     Module.Finite R M := by
-  classical
   obtain ⟨n, s, hs⟩ := Module.Finite.exists_fin (R := T) (M := T ⊗[R] M)
   choose k t m h using fun i : Fin n ↦ TensorProduct.exists_sum_tmul_eq (s i)
   let f₀ : ((Σ i, Fin (k i)) → R) →ₗ[R] M := (Pi.basisFun R _).constr R fun ⟨i, j⟩ ↦ m i j
@@ -93,7 +92,6 @@ lemma FiniteType.of_finiteType_tensorProduct_of_faithfullyFlat
     simp [f, ← h, i]
   exact (Module.FaithfullyFlat.lTensor_surjective_iff_surjective _ T _).mp hf
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- If `T ⊗[R] S` is of finite presentation over `T` and `T` is `R`-faithfully flat,
 then `S` is of finite presentation over `R` -/

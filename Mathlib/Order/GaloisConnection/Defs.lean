@@ -27,7 +27,7 @@ such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 
 assert_not_exists CompleteLattice RelIso
 
-open Function OrderDual Set
+open Function OrderDual
 
 universe u v w x
 
@@ -43,6 +43,8 @@ def GaloisConnection [Preorder α] [Preorder β] (l : α → β) (u : β → α)
 
 to_dual_insert_cast GaloisConnection := by
   rw [forall_comm]; simp only [Iff.comm]
+
+to_dual_name_hint U L
 
 namespace GaloisConnection
 
@@ -246,7 +248,7 @@ def GaloisConnection.toGaloisInsertion {α β : Type*} [Preorder α] [Preorder �
     choice_eq := fun _ _ => rfl }
 
 /-- Lift the bottom along a Galois connection -/
-@[to_dual (attr := implicit_reducible) /-- Lift the top along a Galois connection -/]
+@[to_dual (attr := instance_reducible) /-- Lift the top along a Galois connection -/]
 def GaloisConnection.liftOrderBot {α β : Type*} [Preorder α] [OrderBot α] [PartialOrder β]
     {l : α → β} {u : β → α} (gc : GaloisConnection l u) :
     OrderBot β where

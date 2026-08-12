@@ -16,6 +16,7 @@ Given `0 < a, b`, it computes the unique `(w, x, y, z, d)` such that the followi
 * `a = (w + x) d`
 * `b = (y + z) d`
 * `w * z = x * y + 1`
+
 `d` is then the gcd of `a` and `b`, and `a' := a / d = w + x` and `b' := b / d = y + z` are coprime.
 
 This story is closely related to the structure of SL₂(ℕ) (as a free monoid on two generators) and
@@ -134,6 +135,7 @@ def IsSpecial : Prop :=
 def IsSpecial' : Prop :=
   u.w * u.z = succPNat (u.x * u.y)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   dsimp [IsSpecial, IsSpecial']
   let ⟨wp, x, y, zp, ap, bp⟩ := u
@@ -233,7 +235,9 @@ theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   dsimp [start, v, XgcdType.a, XgcdType.b, w, z]
   have := a.pos
   have := b.pos
-  lia
+  #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+  we need to re-enable model-based theory combination in `lia` for this to go through. -/
+  lia +mbtc
 
 /-- `finish` happens when the reducing process ends. -/
 def finish : XgcdType :=
@@ -305,11 +309,11 @@ decreasing_by apply u.step_wf _h
 
 theorem reduce_a {u : XgcdType} (h : u.r = 0) : u.reduce = u.finish := by
   rw [reduce]
-  exact if_pos h
+  exact ite_eq_left h
 
 theorem reduce_b {u : XgcdType} (h : u.r ≠ 0) : u.reduce = u.step.reduce.flip := by
   rw [reduce]
-  exact if_neg h
+  exact ite_eq_right h
 
 theorem reduce_isReduced : ∀ u : XgcdType, u.reduce.IsReduced
   | u =>

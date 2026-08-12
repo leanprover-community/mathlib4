@@ -65,7 +65,6 @@ theorem monoidalClosed_uncurry
     MonoidalClosed.uncurry f (x ⊗ₜ[R] y) = (f y).hom x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Describes the counit of the adjunction `M ⊗ - ⊣ Hom(M, -)`. Given an `R`-module `N` this
 should give a map `M ⊗ Hom(M, N) ⟶ N`, so we flip the order of the arguments in the identity map
 `Hom(M, N) ⟶ (M ⟶ N)` and uncurry the resulting map `M ⟶ Hom(M, N) ⟶ N.` -/
@@ -85,7 +84,6 @@ theorem ihom_coev_app (M N : ModuleCat.{u} R) :
     (ihom.coev M).app N = ModuleCat.ofHom₂ (TensorProduct.mk _ _ _).flip :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem monoidalClosed_pre_app {M N : ModuleCat.{u} R} (P : ModuleCat.{u} R) (f : N ⟶ M) :
     (MonoidalClosed.pre f).app P = ofHom (homLinearEquiv.symm.toLinearMap ∘ₗ
       LinearMap.lcomp _ _ f.hom ∘ₗ homLinearEquiv.toLinearMap) :=

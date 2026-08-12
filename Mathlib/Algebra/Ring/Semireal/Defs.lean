@@ -25,7 +25,7 @@ not.
   [lam_1984](https://doi.org/10.1216/RMJ-1984-14-4-767)
 -/
 
-@[expose] public section
+public section
 
 variable (R : Type*)
 

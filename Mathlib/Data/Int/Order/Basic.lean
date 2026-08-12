@@ -14,7 +14,7 @@ public import Mathlib.Tactic.ByCases
 # The order relation on the integers
 -/
 
-@[expose] public section
+public section
 
 open Nat
 

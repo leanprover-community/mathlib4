@@ -23,7 +23,7 @@ accessible category, any object is presentable.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

@@ -101,8 +101,9 @@ theorem singularValues_nonneg (i : ℕ) : 0 ≤ T.singularValues i := by
   rw [singularValues, Finsupp.embDomain_apply, Finsupp.ofSupportFinite_coe]
   split_ifs <;> positivity
 
-theorem singularValues_pos_iff_ne_zero (i : ℕ) : 0 < T.singularValues i ↔ T.singularValues i ≠ 0 :=
-  by grind [T.singularValues_nonneg i]
+theorem singularValues_pos_iff_ne_zero (i : ℕ) :
+    0 < T.singularValues i ↔ T.singularValues i ≠ 0 := by
+  grind [T.singularValues_nonneg i]
 
 /--
 Connection between `LinearMap.singularValues` and `LinearMap.IsSymmetric.eigenvalues`.
@@ -121,7 +122,7 @@ theorem singularValues_of_lt {n : ℕ} (hn : finrank 𝕜 E = n) {i : ℕ} (hi :
   T.singularValues_fin hn ⟨i, hi⟩
 
 theorem singularValues_of_finrank_le {i : ℕ} (hi : finrank 𝕜 E ≤ i) : T.singularValues i = 0 := by
-  apply Finsupp.embDomain_notin_range
+  apply Finsupp.embDomain_of_notMem_range
   simp [hi]
 
 theorem sq_singularValues_fin {n : ℕ} (hn : finrank 𝕜 E = n) (i : Fin n) :
@@ -134,7 +135,7 @@ theorem sq_singularValues_of_lt {n : ℕ} (hn : finrank 𝕜 E = n) {i : ℕ} (h
 
 theorem hasEigenvalue_adjoint_comp_self_sq_singularValues {n : ℕ} (hn : n < finrank 𝕜 E) :
     End.HasEigenvalue (adjoint T ∘ₗ T) (T.singularValues n ^ 2) := by
-  convert T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨n, hn⟩ using 1
+  convert! T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨n, hn⟩ using 1
   simp [← T.sq_singularValues_fin]
 
 theorem singularValues_antitone : Antitone T.singularValues := by
@@ -162,7 +163,7 @@ theorem injective_iff_forall_lt_finrank_singularValues_pos :
     use i, i.isLt
     simp [RCLike.ofReal_eq_zero.mp hi, T.singularValues_fin rfl]
   · intro ⟨i, h, hz⟩
-    convert T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, h⟩
+    convert! T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, h⟩
     rw [← sq_singularValues_of_lt, le_antisymm hz (T.singularValues_nonneg i)]
     simp
 

@@ -11,13 +11,11 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
 variable {α : Type u}
-
-open Function
 
 namespace WithTop
 
@@ -63,5 +61,9 @@ protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd �
   · simp
   · rw [← WithBot.coe_add, WithBot.coe_le_coe]
     exact le_add_self
+
+lemma lt_zero_iff_eq_bot {α : Type*} [AddMonoid α] [Preorder α] [CanonicallyOrderedAdd α]
+    (a : WithBot α) : a < 0 ↔ a = ⊥ := by
+  induction a <;> simp
 
 end WithBot

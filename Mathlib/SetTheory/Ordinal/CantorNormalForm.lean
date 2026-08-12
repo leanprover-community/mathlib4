@@ -54,12 +54,12 @@ decreasing_by exact mod_opow_log_lt_self b h
 @[simp]
 theorem rec_zero {C : Ordinal → Sort*} (b : Ordinal) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : CNF.rec b H0 H 0 = H0 := by
-  rw [CNF.rec, dif_pos rfl]
+  rw [CNF.rec, dite_eq_left rfl]
 
 theorem rec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) :
     CNF.rec b H0 H o = H o ho (@CNF.rec b C H0 H _) := by
-  rw [CNF.rec, dif_neg]
+  rw [CNF.rec, dite_eq_right]
 
 /-- The Cantor normal form of an ordinal `o` is the list of coefficients and exponents in the
 base-`b` expansion of `o`.
@@ -104,7 +104,7 @@ protected theorem one_left {o : Ordinal} (ho : o ≠ 0) : CNF 1 o = [(0, o)] := 
   simp [CNF.ne_zero ho]
 
 protected theorem of_le_one {b o : Ordinal} (hb : b ≤ 1) (ho : o ≠ 0) : CNF b o = [(0, o)] := by
-  rcases le_one_iff.1 hb with (rfl | rfl)
+  rcases Order.le_one_iff.1 hb with (rfl | rfl)
   exacts [CNF.zero_left ho, CNF.one_left ho]
 
 protected theorem of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = [(0, o)] := by
@@ -140,9 +140,6 @@ theorem snd_pos {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o →
   · exact div_opow_log_pos b ho
   · exact IH h
 
-@[deprecated (since := "2026-01-11")]
-alias lt_snd := snd_pos
-
 /-- Every coefficient in the Cantor normal form `CNF b o` is less than `b`. -/
 theorem snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
     x ∈ CNF b o → x.2 < b := by
@@ -172,9 +169,6 @@ protected theorem sortedGT (b o : Ordinal) : ((CNF b o).map Prod.fst).SortedGT :
         rcases H with ⟨⟨a, a'⟩, H, rfl⟩
         exact (fst_le_log H).trans_lt (log_mod_opow_log_lt_log_self hb hbo)
 
-@[deprecated (since := "2026-01-11")]
-alias sorted := CNF.sortedGT
-
 private theorem nodupKeys (b o : Ordinal) : (map Prod.toSigma (CNF b o)).NodupKeys := by
   rw [NodupKeys, List.keys, map_map, Prod.fst_comp_toSigma]
   exact (CNF.sortedGT ..).nodup
@@ -189,6 +183,7 @@ Cantor Normal Form (`CNF`) of `o`, for each `e`. -/
 def coeff (b o : Ordinal) : Ordinal →₀ Ordinal :=
   lookupFinsupp ⟨_, nodupKeys b o⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_coeff (b o : Ordinal) :
     (coeff b o).support = ((CNF b o).map Prod.fst).toFinset := by
   rw [coeff, lookupFinsupp_support, filter_eq_self.2]
@@ -205,9 +200,6 @@ theorem coeff_of_mem_CNF {b o e c : Ordinal} (h : ⟨e, c⟩ ∈ CNF b o) :
 theorem coeff_of_notMem_CNF {b o e : Ordinal} (h : e ∉ (CNF b o).map Prod.fst) :
     coeff b o e = 0 := by
   rwa [← notMem_support_iff, support_coeff, mem_toFinset]
-
-@[deprecated (since := "2026-01-11")]
-alias coeff_of_not_mem_CNF := coeff_of_notMem_CNF
 
 theorem coeff_lt {b : Ordinal} (hb : 1 < b) (o e : Ordinal) : coeff b o e < b := by
   by_cases he : e ∈ (CNF b o).map Prod.fst

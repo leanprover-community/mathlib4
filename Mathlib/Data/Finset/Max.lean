@@ -286,12 +286,10 @@ theorem ofDual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofDual_max' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (max' s hs) = min' (s.image ofDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toDual_min' {s : Finset α} (hs : s.Nonempty) :
     toDual (min' s hs) = max' (s.image toDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
@@ -341,7 +339,7 @@ theorem min'_lt_of_mem_erase_min' [DecidableEq α] {a : α} (ha : a ∈ s.erase 
 theorem max'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
     (h : (s.image f).Nonempty) : (s.image f).max' h = f (s.max' h.of_image) := by
   simp only [max', sup'_image]
-  exact .symm <| comp_sup'_eq_sup'_comp _ _ fun _ _ ↦ hf.map_max
+  exact .symm <| apply_sup'_eq_sup'_comp _ _ fun _ _ ↦ hf.map_max
 
 /-- A version of `Finset.max'_image` with LHS and RHS reversed.
 Also, this version assumes that `s` is nonempty, not its image. -/
@@ -354,7 +352,7 @@ lemma _root_.Monotone.map_finset_max' [LinearOrder β] {f : α → β} (hf : Mon
 theorem min'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
     (h : (s.image f).Nonempty) : (s.image f).min' h = f (s.min' h.of_image) := by
   simp only [min', inf'_image]
-  exact .symm <| comp_inf'_eq_inf'_comp _ _ fun _ _ ↦ hf.map_min
+  exact .symm <| apply_inf'_eq_inf'_comp _ _ fun _ _ ↦ hf.map_min
 
 /-- A version of `Finset.min'_image` with LHS and RHS reversed.
 Also, this version assumes that `s` is nonempty, not its image. -/
@@ -440,7 +438,7 @@ theorem card_le_of_interleaved {s t : Finset α}
     _ ≤ t.card + 1 := (card_insert_le _ _).trans (Nat.add_le_add_right card_image_le _)
 
 /-- If finsets `s` and `t` are interleaved, then `Finset.card s ≤ Finset.card (t \ s) + 1`. -/
-theorem card_le_diff_of_interleaved {s t : Finset α}
+theorem card_le_sdiff_of_interleaved {s t : Finset α}
     (h :
       ∀ᵉ (x ∈ s) (y ∈ s),
         x < y → (∀ z ∈ s, z ∉ Set.Ioo x y) → ∃ z ∈ t, x < z ∧ z < y) :
@@ -448,6 +446,9 @@ theorem card_le_diff_of_interleaved {s t : Finset α}
   card_le_of_interleaved fun x hx y hy hxy hs =>
     let ⟨z, hzt, hxz, hzy⟩ := h x hx y hy hxy hs
     ⟨z, mem_sdiff.2 ⟨hzt, fun hzs => hs z hzs ⟨hxz, hzy⟩⟩, hxz, hzy⟩
+
+@[deprecated (since := "2026-06-03")]
+alias card_le_diff_of_interleaved := card_le_sdiff_of_interleaved
 
 /-- Induction principle for `Finset`s in a linearly ordered type: a predicate is true on all
 `s : Finset α` provided that:

@@ -17,10 +17,10 @@ sufficient condition for there to exist a nilpotent endomorphism `n` and a semis
 `s`, such that `f = n + s` and both `n` and `s` are polynomial expressions in `f`.
 
 The condition is that there exists a separable polynomial `P` such that the endomorphism `P(f)` is
-nilpotent. This condition is always satisfied when the coefficients are a perfect field.
+nilpotent. This condition is always satisfied when the coefficient field is perfect.
 
 The proof given here uses Newton's method and is taken from Chambert-Loir's notes:
-[Algebre](http://webusers.imj-prg.fr/~antoine.chambert-loir/enseignement/2022-23/agreg/algebre.pdf)
+[Algèbre](http://webusers.imj-prg.fr/~antoine.chambert-loir/enseignement/2022-23/agreg/algebre.pdf)
 
 ## Main definitions / results:
 
@@ -94,7 +94,7 @@ theorem isNilpotent_isSemisimple_unique [PerfectField K]
   have hsf : Commute s (n₁ + s₁) := heq ▸ hc.symm.add_right (Commute.refl s)
   have hnf : Commute n (n₁ + s₁) := heq ▸ (Commute.refl n).add_right hc
   have hnil : IsNilpotent (s - s₀) := by
-    rw [show s - s₀ = n₀ - n from by grind]
+    rw [show s - s₀ = n₀ - n by grind]
     exact (commute_of_mem_adjoin_singleton_of_commute hn₀ hnf).symm.isNilpotent_sub hn₀_nil hn
   have hss : (s - s₀).IsSemisimple :=
     hs.sub_of_commute (commute_of_mem_adjoin_singleton_of_commute hs₀ hsf) hs₀_ss

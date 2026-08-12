@@ -47,7 +47,7 @@ multiplicative ring norms but outside of this use we only consider real-valued s
 Finitary versions of the current lemmas.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -72,8 +72,6 @@ There are two workarounds:
 * You could weaken the `Bottom.toMiddle` instance by making it depend on a subclass of
   `Middle.toTop`'s parameter, in this example replacing `[Left α]` with `[Leaf α]`.
 -/
-
-open Function
 
 variable {ι F α β γ δ : Type*}
 

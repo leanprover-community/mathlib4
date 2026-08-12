@@ -19,11 +19,11 @@ inner product space, Hilbert space, norm
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp
+open RCLike Real Filter Topology
 open LinearMap renaming BilinForm → BilinForm
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
@@ -62,7 +62,7 @@ theorem _root_.isBoundedBilinearMap_inner [NormedSpace ℝ E] [IsScalarTower ℝ
 
 theorem continuous_inner : Continuous fun p : E × E => ⟪p.1, p.2⟫ :=
   letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
-  letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
+  haveI := IsScalarTower.restrictScalars ℝ 𝕜 E
   isBoundedBilinearMap_inner.continuous
 
 variable {α : Type*}

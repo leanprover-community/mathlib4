@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Tight
 
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
@@ -79,7 +80,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
       refine limsup_le_limsup (.of_forall fun n ↦ h_le n r hr) ?_ ?_
       · exact IsCoboundedUnder.of_frequently_ge <| .of_forall fun _ ↦ ENNReal.toReal_nonneg
       · refine ⟨4, ?_⟩
-        simp only [eventually_map, eventually_atTop, ge_iff_le]
+        simp only [eventually_map, eventually_atTop]
         exact ⟨0, fun n _ ↦ h_le_4 n r hr⟩
     _ = 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - f (t • z)‖ := by
       refine ((Tendsto.norm ?_).const_mul _).limsup_eq
@@ -97,7 +98,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
   · filter_upwards [eventually_gt_atTop 0] with r hr
     refine le_limsup_of_le ?_ fun u hu ↦ ?_
     · refine ⟨4, ?_⟩
-      simp only [eventually_map, eventually_atTop, ge_iff_le]
+      simp only [eventually_map, eventually_atTop]
       exact ⟨0, fun n _ ↦ (h_le n r hr).trans (h_le_4 n r hr)⟩
     · exact ENNReal.toReal_nonneg.trans hu.exists.choose_spec
   · filter_upwards [eventually_gt_atTop 0] with r hr using h_limsup_le r hr
@@ -121,7 +122,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     refine (hδ_lt ?_).le
     simp only [norm_smul, Real.norm_eq_abs, mul_one, hz]
     calc |x|
-    _ ≤ 2 * r⁻¹ := by simp at hx; grind
+    _ ≤ 2 * r⁻¹ := by grind
     _ < δ := by
       rw [← lt_div_iff₀' (by positivity), inv_lt_comm₀ hr (by positivity)]
       refine lt_of_lt_of_le ?_ hrδ
@@ -157,7 +158,7 @@ lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCL
     {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} (hA : (A.map (toContinuousMapStarₐ 𝕜)).SeparatesPoints)
     (hμ : ∀ g ∈ A, Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) 𝓕 (𝓝 (∫ x, g x ∂μ₀))) :
     Tendsto μ 𝓕 (𝓝 μ₀) := by
-  letI := TopologicalSpace.upgradeIsCompletelyMetrizable E
+  let := TopologicalSpace.upgradeIsCompletelyMetrizable E
   obtain rfl | _ := 𝓕.eq_or_neBot
   · simp
   refine (Filter.tendsto_iff_ultrafilter _ _ _).2 fun U hU ↦ ?_
@@ -165,7 +166,7 @@ lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCL
     isCompact_closure_of_isTightMeasureSet (by simpa using h_tight)
   obtain ⟨μ', -, hμ' : Tendsto _ _ _⟩ := h_compact.ultrafilter_le_nhds (U.map μ)
     (.trans (by simp) (monotone_principal subset_closure))
-  suffices (μ' : Measure E) = μ₀ by convert hμ'; ext; rw [this]
+  suffices (μ' : Measure E) = μ₀ by convert! hμ'; ext; rw [this]
   refine ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable hA
     fun g hg ↦ tendsto_nhds_unique ?_ ((hμ g hg).comp hU)
   rw [ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜] at hμ'
@@ -173,7 +174,7 @@ lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCL
 
 variable {ι : Type*} {𝓕 : Filter ι} {μ₀ : ProbabilityMeasure E}
 
-set_option backward.isDefEq.respectTransparency false
+set_option backward.isDefEq.respectTransparency.types false in
 omit [FiniteDimensional ℝ E] in
 lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun {μ : ι → ProbabilityMeasure E}
     (h : ∀ t : E, Tendsto (fun n ↦ charFun (μ n) t) 𝓕 (𝓝 (charFun μ₀ t)))
@@ -182,16 +183,16 @@ lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun {μ : ι → Probab
   rw [mem_charPoly] at hg
   obtain ⟨w, hw⟩ := hg
   have h_eq (μ : Measure E) (hμ : IsProbabilityMeasure μ) :
-      ∫ x, g x ∂μ = ∑ a ∈ w.support, w a * ∫ x, (probChar (innerₗ E x a) : ℂ) ∂μ := by
-    simp_rw [hw]
-    rw [integral_finset_sum]
+      ∫ x, g x ∂μ = w.coeff.sum (fun a z ↦ z * ∫ x, (probChar (innerₗ E x a) : ℂ) ∂μ) := by
+    simp_rw [hw, Finsupp.sum]
+    rw [integral_finsetSum]
     · congr with y
       rw [integral_const_mul]
     · refine fun i hi ↦ Integrable.const_mul ?_ _
       change Integrable (innerProbChar i) μ
       exact BoundedContinuousFunction.integrable μ _
   simp_rw [h_eq (μ _), h_eq μ₀]
-  refine tendsto_finset_sum _ fun y hy ↦ Tendsto.const_mul _ ?_
+  refine tendsto_finsetSum _ fun y hy ↦ Tendsto.const_mul _ ?_
   simpa [← charFun_eq_integral_probChar] using h y
 
 variable {μ : ℕ → ProbabilityMeasure E}

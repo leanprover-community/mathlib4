@@ -73,7 +73,7 @@ Non-commutative Jordan algebras have connections to the Vidav-Palmer theorem
 
 -/
 
-@[expose] public section
+public section
 
 
 variable (A : Type*)
@@ -154,6 +154,8 @@ end Commute
 
 variable {A} [NonUnitalNonAssocCommRing A]
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-!
 The endomorphisms on an additive monoid `AddMonoid.End` form a `Ring`, and this may be equipped
 with a Lie Bracket via `Ring.bracket`.
@@ -164,11 +166,12 @@ theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add [IsCommJordan A] (a b :
     2 • (⁅L a, L (a * b)⁆ + ⁅L b, L (b * a)⁆) = ⁅L (a * a), L b⁆ + ⁅L (b * b), L a⁆ := by
   suffices 2 • ⁅L a, L (a * b)⁆ + 2 • ⁅L b, L (b * a)⁆ + ⁅L b, L (a * a)⁆ + ⁅L a, L (b * b)⁆ = 0 by
     rwa [← sub_eq_zero, ← sub_sub, sub_eq_add_neg, sub_eq_add_neg, lie_skew, lie_skew, nsmul_add]
-  convert (commute_lmul_lmul_sq (a + b)).lie_eq using 1
+  convert (commute_lmul_lmul_sq (a + b)).lie_eq
   simp only [add_mul, mul_add, map_add, lie_add, add_lie, mul_comm b a,
     (commute_lmul_lmul_sq a).lie_eq, (commute_lmul_lmul_sq b).lie_eq, zero_add, add_zero, two_smul]
   abel
 
+set_option backward.isDefEq.respectTransparency false in
 -- Porting note: the monolithic `calc`-based proof of `two_nsmul_lie_lmul_lmul_add_add_eq_zero`
 -- has had four auxiliary parts `aux{0,1,2,3}` split off from it.
 private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c))⁆ =
@@ -231,6 +234,7 @@ private theorem aux3 {a b c : A} :
   iterate 2 rw [← lie_skew (L (a * a)), ← lie_skew (L (b * b)), ← lie_skew (L (c * c))]
   abel
 
+set_option backward.isDefEq.respectTransparency false in
 theorem two_nsmul_lie_lmul_lmul_add_add_eq_zero (a b c : A) :
     2 • (⁅L a, L (b * c)⁆ + ⁅L b, L (c * a)⁆ + ⁅L c, L (a * b)⁆) = 0 := by
   symm

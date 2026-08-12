@@ -20,7 +20,7 @@ We show that `Grp C` has limits.
 
 namespace CategoryTheory
 
-open Functor Grp Limits MonObj
+open CategoryTheory.Functor Grp Limits MonObj
 
 universe w v
 
@@ -47,7 +47,7 @@ noncomputable instance : CreatesLimitsOfShape J (forget₂Mon C) where
   CreatesLimit {F} := createsLimitOfFullyFaithfulOfIso (limitAux F) (.refl (limitAux F).toMon)
 
 noncomputable instance : CreatesLimitsOfShape J (Grp.forget C) :=
-  (inferInstance : CreatesLimitsOfShape J (forget₂Mon C ⋙ Mon.forget C))
+  inferInstanceAs <| CreatesLimitsOfShape J (forget₂Mon C ⋙ Mon.forget C)
 
 instance : HasLimitsOfShape J (Grp C) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Grp.forget C)

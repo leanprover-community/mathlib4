@@ -36,6 +36,8 @@ universe u v w w₁ w₂
 
 section LieSubalgebra
 
+open Set
+
 variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- A Lie subalgebra of a Lie algebra is submodule that is closed under the Lie bracket.
@@ -60,11 +62,11 @@ namespace LieSubalgebra
 
 instance : SetLike (LieSubalgebra R L) L where
   coe L' := L'.carrier
-  coe_injective' L' L'' h := by
+  coe_injective L' L'' h := by
     rcases L' with ⟨⟨⟩⟩
     rcases L'' with ⟨⟨⟩⟩
     congr
-    exact SetLike.coe_injective' h
+    exact SetLike.coe_injective h
 
 instance : PartialOrder (LieSubalgebra R L) := .ofSetLike (LieSubalgebra R L) L
 
@@ -374,6 +376,15 @@ def comap : LieSubalgebra R L :=
 
 @[simp] lemma mem_comap {x : L} : x ∈ K₂.comap f ↔ f x ∈ K₂ := Iff.rfl
 
+/-- A Lie subalgebra is equivalent to its push forward along an injective linear map. -/
+@[simps!] noncomputable def equivMapOfInjective (hf : Function.Injective f) :
+    K ≃ₗ⁅R⁆ K.map f where
+  __ := Submodule.equivMapOfInjective f.toLinearMap hf K
+  map_lie' {x y} := by
+    ext
+    change f ⁅(x : L), (y : L)⁆ = ⁅f (x : L), f (y : L)⁆
+    simp
+
 section LatticeStructure
 
 open Set
@@ -438,7 +449,7 @@ instance : InfSet (LieSubalgebra R L) :=
   ⟨fun S ↦
     { sInf {(s : Submodule R L) | s ∈ S} with
       lie_mem' := @fun x y hx hy ↦ by
-        simp only [Submodule.mem_carrier, mem_iInter, Submodule.coe_sInf, mem_setOf_eq,
+        simp only [Submodule.mem_carrier, mem_iInter, Submodule.coe_sInf, mem_ofPred_eq,
           forall_apply_eq_imp_iff₂, exists_imp, and_imp] at hx hy ⊢
         intro K hK
         exact K.lie_mem (hx K hK) (hy K hK) }⟩
@@ -539,6 +550,8 @@ variable (R L)
 
 instance wellFoundedGT_of_noetherian [IsNoetherian R L] : WellFoundedGT (LieSubalgebra R L) :=
   RelHomClass.isWellFounded (⟨toSubmodule, @fun _ _ h ↦ h⟩ : _ →r (· > ·))
+
+theorem map_top : f.range = LieSubalgebra.map f ⊤ := by ext; simp
 
 variable {R L K K' f}
 
@@ -668,6 +681,13 @@ theorem coe_lieSpan_eq_span_of_forall_lie_eq_zero
   | smul_left r x y _ _ h => simp [smul_mem _ r h]
   | smul_right r x y _ _ h => simp [smul_mem _ r h]
 
+theorem map_lieSpan :
+    (lieSpan R L s).map f = lieSpan R L₂ (f '' s) := by
+  refine le_antisymm ?_ (lieSpan_le.mpr <| Set.image_mono subset_lieSpan)
+  rw [map_le_iff_le_comap, lieSpan_le]
+  change s ⊆ f ⁻¹' (lieSpan R L₂ (f '' s))
+  exact image_subset_iff.mp <| subset_lieSpan
+
 variable (R L)
 
 /-- `lieSpan` forms a Galois insertion with the coercion from `LieSubalgebra` to `Set`. -/
@@ -722,6 +742,41 @@ theorem lieSpan_induction {p : (x : L) → x ∈ lieSpan R L s → Prop}
   | add _ _ _ _ hu hv => exact add_mem hu hv
   | smul t _ _ hu => exact SMulMemClass.smul_mem t hu
   | lie _ _ _ _ hu hv => exact lie_mem _ hu hv
+
+variable {R} in
+@[simp] lemma lieSpan_lieSpan_coe_preimage : lieSpan R _ (((↑) : lieSpan R L s → L) ⁻¹' s) = ⊤ := by
+  rw [eq_top_iff]
+  rintro ⟨x, hx⟩ -
+  induction hx using lieSpan_induction with
+  | mem u hu => exact subset_lieSpan <| by simpa
+  | zero => exact zero_mem _
+  | add u v _ _ hu hv => revert hu hv; exact add_mem
+  | smul t u _ hu => revert hu; exact LieSubalgebra.smul_mem _ _
+  | lie u v _ _ hu hv => revert hu hv; exact LieSubalgebra.lie_mem _
+
+lemma comap_lieSpan_range_eq {ι : Type*} (f : ι → K) :
+    (lieSpan R L (range ((↑) ∘ f))).comap K.incl = lieSpan R K (range f) := by
+  apply le_antisymm
+  · intro ⟨x, hx⟩ hx'
+    simp only [mem_comap, coe_incl] at hx'
+    suffices x ∈ (lieSpan R K (range f)).map K.incl by aesop
+    clear hx
+    induction hx' using lieSpan_induction with
+    | mem u hu =>
+      have (i : ι) : f i ∈ lieSpan R K (range f) := subset_lieSpan <| mem_range_self i
+      aesop
+    | zero => exact zero_mem _
+    | add u v _ _ hu hv => revert hu hv; exact add_mem
+    | smul t u _ hu => revert hu; exact LieSubalgebra.smul_mem _ _
+    | lie u v _ _ hu hv => revert hu hv; exact lie_mem _
+  · rw [lieSpan_le]
+    rintro - ⟨i, rfl⟩
+    simp only [SetLike.mem_coe, mem_comap, coe_incl]
+    exact subset_lieSpan <| by simp
+
+@[simp] theorem comap_incl_eq_top : K'.comap K.incl = ⊤ ↔ K ≤ K' := by
+  simp only [SetLike.ext_iff, mem_comap, coe_incl, mem_top, iff_true, le_def, Set.subset_def,
+    SetLike.mem_coe, Subtype.forall]
 
 end LieSpan
 

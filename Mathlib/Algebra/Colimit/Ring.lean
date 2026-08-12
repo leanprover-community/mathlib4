@@ -33,6 +33,7 @@ the disjoint union so as to make the operations (addition etc.) "computable".
 assert_not_exists Cardinal
 
 suppress_compilation
+noncomputable section -- needed for `deriving`
 
 variable {ι : Type*} [Preorder ι] (G : ι → Type*)
 
@@ -58,22 +59,9 @@ def DirectLimit : Type _ :=
           (∃ i, of (⟨i, 1⟩ : Σ i, G i) - 1 = a) ∨
             (∃ i x y, of (⟨i, x + y⟩ : Σ i, G i) - (of ⟨i, x⟩ + of ⟨i, y⟩) = a) ∨
               ∃ i x y, of (⟨i, x * y⟩ : Σ i, G i) - of ⟨i, x⟩ * of ⟨i, y⟩ = a }
+deriving Zero, One, AddCommMonoid, Ring, CommRing, Inhabited
 
 namespace DirectLimit
-
-instance commRing : CommRing (DirectLimit G f) :=
-  Ideal.Quotient.commRing _
-
-instance ring : Ring (DirectLimit G f) :=
-  CommRing.toRing
-
--- Porting note: Added a `Zero` instance to get rid of `0` errors.
-instance zero : Zero (DirectLimit G f) := by
-  unfold DirectLimit
-  exact ⟨0⟩
-
-instance : Inhabited (DirectLimit G f) :=
-  ⟨0⟩
 
 /-- The canonical map from a component to the direct limit. -/
 nonrec def of (i) : G i →+* DirectLimit G f :=
@@ -92,14 +80,13 @@ theorem quotientMk_of (i x) : Ideal.Quotient.mk _ (.of ⟨i, x⟩) = of G f i x 
 @[simp] theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x :=
   Ideal.Quotient.eq.2 <| subset_span <| Or.inl ⟨i, j, hij, x, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every element of the direct limit corresponds to some element in
 some component of the directed system. -/
 theorem exists_of [Nonempty ι] [IsDirectedOrder ι] (z : DirectLimit G f) :
     ∃ i x, of G f i x = z := by
   obtain ⟨z, rfl⟩ := Ideal.Quotient.mk_surjective z
-  refine z.induction_on ⟨Classical.arbitrary ι, -1, by simp⟩ (fun ⟨i, x⟩ ↦ ⟨i, x, rfl⟩) ?_ ?_ <;>
-    rintro x' y' ⟨i, x, hx⟩ ⟨j, y, hy⟩ <;> have ⟨k, hik, hjk⟩ := exists_ge_ge i j
+  refine z.induction_on ⟨Classical.arbitrary ι, -1, by simp; rfl⟩ (fun ⟨i, x⟩ ↦ ⟨i, x, rfl⟩) ?_ ?_
+    <;> rintro x' y' ⟨i, x, hx⟩ ⟨j, y, hy⟩ <;> have ⟨k, hik, hjk⟩ := exists_ge_ge i j
   · exact ⟨k, f i k hik x + f j k hjk y, by rw [map_add, of_f, of_f, hx, hy]; rfl⟩
   · exact ⟨k, f i k hik x * f j k hjk y, by rw [map_mul, of_f, of_f, hx, hy]; rfl⟩
 
@@ -176,7 +163,6 @@ theorem lift_comp_of (F : DirectLimit G f →+* P) :
 theorem lift_of' : lift G f _ (of G f) (fun i j hij x ↦ by simp) = .id _ := by
   ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lift_injective [Nonempty ι] [IsDirectedOrder ι]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective (lift G f P g Hg) := by
@@ -200,9 +186,11 @@ def ringEquiv [Nonempty ι] : DirectLimit G (f' · · ·) ≃+* _root_.DirectLim
     (by ext; simp)
     (by ext; simp)
 
+@[simp]
 theorem ringEquiv_of [Nonempty ι] {i g} : ringEquiv G f' (of _ _ i g) = ⟦⟨i, g⟩⟧ := by
-  simp [ringEquiv]; rfl
+  simp [ringEquiv]
 
+@[simp]
 theorem ringEquiv_symm_mk [Nonempty ι] {g} : (ringEquiv G f').symm ⟦g⟧ = of _ _ g.1 g.2 := rfl
 
 variable {G f'}
@@ -268,6 +256,7 @@ lemma map_comp (g₁ : (i : ι) → G i →+* G' i) (g₂ : (i : ι) → G' i �
       DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G'' fun _ _ h ↦ f'' _ _ h) := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
 family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` induces an equivalence
@@ -291,6 +280,7 @@ lemma congr_apply_of (e : (i : ι) → G i ≃+* G' i)
     congr e he (of G _ i g) = of G' (fun _ _ h ↦ f' _ _ h) i (e i g) :=
   map_apply_of _ he _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma congr_symm_apply_of (e : (i : ι) → G i ≃+* G' i)
     (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G' i) :
@@ -323,7 +313,6 @@ instance nontrivial [DirectedSystem G (f' · · ·)] :
           rw [(f' i j hij).map_one] at hf
           exact one_ne_zero hf⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_inv {p : Ring.DirectLimit G f} : p ≠ 0 → ∃ y, p * y = 1 :=
   Ring.DirectLimit.induction_on p fun i x H ↦
     ⟨Ring.DirectLimit.of G f i x⁻¹, by
@@ -334,13 +323,13 @@ theorem exists_inv {p : Ring.DirectLimit G f} : p ≠ 0 → ∃ y, p * y = 1 :=
 section
 
 
-open Classical in
+open scoped Classical in
 /-- Noncomputable multiplicative inverse in a direct limit of fields. -/
 noncomputable def inv (p : Ring.DirectLimit G f) : Ring.DirectLimit G f :=
   if H : p = 0 then 0 else Classical.choose (DirectLimit.exists_inv G f H)
 
 protected theorem mul_inv_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : p * inv G f p = 1 := by
-  rw [inv, dif_neg hp, Classical.choose_spec (DirectLimit.exists_inv G f hp)]
+  rw [inv, dite_eq_right hp, Classical.choose_spec (DirectLimit.exists_inv G f hp)]
 
 protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv G f p * p = 1 := by
   rw [_root_.mul_comm, DirectLimit.mul_inv_cancel G f hp]
@@ -353,7 +342,7 @@ protected noncomputable abbrev field [DirectedSystem G (f' · · ·)] :
   -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
   inv := inv G (f' · · ·)
   mul_inv_cancel := fun _ ↦ DirectLimit.mul_inv_cancel G (f' · · ·)
-  inv_zero := dif_pos rfl
+  inv_zero := dite_eq_left rfl
   nnqsmul := _
   nnqsmul_def _ _ := rfl
   qsmul := _

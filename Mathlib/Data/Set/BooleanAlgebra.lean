@@ -21,7 +21,7 @@ Indexed union/intersection are defined in `Mathlib.Order.SetNotation`; lemmas ar
   See `Set.instBooleanAlgebra`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

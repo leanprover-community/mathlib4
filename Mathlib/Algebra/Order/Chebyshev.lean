@@ -58,7 +58,6 @@ monotone/antitone), the scalar product of their sum is less than the size of the
 scalar product. -/
 theorem MonovaryOn.sum_smul_sum_le_card_smul_sum (hfg : MonovaryOn f g s) :
     (∑ i ∈ s, f i) • ∑ i ∈ s, g i ≤ #s • ∑ i ∈ s, f i • g i := by
-  classical
   obtain ⟨σ, hσ, hs⟩ := s.countable_toSet.exists_cycleOn
   rw [← card_range #s, sum_smul_sum_eq_sum_perm hσ]
   exact sum_le_card_nsmul _ _ _ fun n _ ↦
@@ -173,4 +172,5 @@ theorem sum_div_card_sq_le_sum_sq_div_card :
   · simp
   rw [div_pow, div_le_div_iff₀ (by positivity) (by positivity), sq (#s : α), mul_left_comm,
     ← mul_assoc]
-  exact mul_le_mul_of_nonneg_right sq_sum_le_card_mul_sum_sq (by positivity)
+  gcongr
+  exact sq_sum_le_card_mul_sum_sq

@@ -18,17 +18,11 @@ This file defines instances and prove some properties about the nonnegative elem
 `{x : α // 0 ≤ x}` of an arbitrary type `α`.
 
 This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatically.
-
-## Main declarations
-
-* `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedSemifield` if `α` is a `LinearOrderedField`.
 -/
 
 @[expose] public section
 
 assert_not_exists abs_inv
-
-open Set
 
 variable {α : Type*}
 
@@ -120,6 +114,6 @@ end LinearOrderedSemifield
 
 instance linearOrderedCommGroupWithZero [Field α] [LinearOrder α] [IsStrictOrderedRing α] :
     LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
-  CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero
+  fast_instance% CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero
 
 end Nonneg

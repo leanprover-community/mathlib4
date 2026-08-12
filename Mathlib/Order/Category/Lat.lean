@@ -48,7 +48,6 @@ attribute [coe] Lat.carrier
 /-- Construct a bundled `Lat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [Lattice X] : Lat := ⟨X⟩
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Lat R`. -/
 @[ext]
 structure Hom (X Y : Lat.{u}) where
@@ -154,7 +153,6 @@ instance hasForgetToPartOrd : HasForget₂ Lat PartOrd where
   forget₂.obj X := .of X
   forget₂.map f := PartOrd.ofHom f.hom
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : Lat.{u}} (e : α ≃o β) : α ≅ β where

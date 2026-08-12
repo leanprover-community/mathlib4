@@ -68,21 +68,19 @@ namespace CategoryTheory.Linear
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 instance preadditiveNatLinear : Linear ℕ C where
-  smul_comp X _Y _Z r f g := by exact (Preadditive.rightComp X g).map_nsmul f r
-  comp_smul _X _Y Z f r g := by exact (Preadditive.leftComp Z f).map_nsmul g r
+  smul_comp X _Y _Z r f g := by exact (Preadditive.rightComp X g).map_nsmul r f
+  comp_smul _X _Y Z f r g := by exact (Preadditive.leftComp Z f).map_nsmul r g
 
 instance preadditiveIntLinear : Linear ℤ C where
-  smul_comp X _Y _Z r f g := by exact (Preadditive.rightComp X g).map_zsmul f r
-  comp_smul _X _Y Z f r g := by exact (Preadditive.leftComp Z f).map_zsmul g r
+  smul_comp X _Y _Z r f g := by exact (Preadditive.rightComp X g).map_zsmul r f
+  comp_smul _X _Y Z f r g := by exact (Preadditive.leftComp Z f).map_zsmul r g
 
 section End
 
 variable {R : Type w}
 
-set_option backward.isDefEq.respectTransparency false in
-instance [Semiring R] [Linear R C] (X : C) : Module R (End X) := by
-  dsimp [End]
-  infer_instance
+instance [Semiring R] [Linear R C] (X : C) : Module R (End X) :=
+  inferInstanceAs <| Module R (X ⟶ X)
 
 instance [CommSemiring R] [Linear R C] (X : C) : Algebra R (End X) :=
   Algebra.ofModule (fun _ _ _ => comp_smul _ _ _ _ _ _) fun _ _ _ => smul_comp _ _ _ _ _ _
@@ -100,7 +98,7 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Linear.{w, v} R (InducedCategory C F) where
-  homModule X Y := Equiv.module _ InducedCategory.homEquiv
+  homModule X Y := InducedCategory.homAddEquiv.module _
   smul_comp _ _ _ _ _ _ := by ext; apply smul_comp
   comp_smul _ _ _ _ _ _ := by ext; apply comp_smul
 

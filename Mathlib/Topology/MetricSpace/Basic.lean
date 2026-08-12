@@ -15,7 +15,7 @@ public import Mathlib.Topology.MetricSpace.Defs
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Bornology Topology
 open scoped NNReal Uniformity
@@ -126,7 +126,7 @@ end Real
 section NNReal
 
 instance : MetricSpace ℝ≥0 :=
-  Subtype.metricSpace
+  inferInstanceAs <| MetricSpace (Subtype _)
 
 theorem NNReal.isUniformEmbedding_coe : IsUniformEmbedding NNReal.toReal :=
   isUniformEmbedding_subtype_val
@@ -140,7 +140,7 @@ theorem NNReal.isClosedEmbedding_coe : Topology.IsClosedEmbedding NNReal.toReal 
 end NNReal
 
 instance [MetricSpace β] : MetricSpace (ULift β) :=
-  MetricSpace.induced ULift.down ULift.down_injective ‹_›
+  fast_instance% MetricSpace.induced ULift.down ULift.down_injective ‹_›
 
 section Prod
 
@@ -150,8 +150,6 @@ instance Prod.metricSpaceMax [MetricSpace β] : MetricSpace (γ × β) :=
 end Prod
 
 section Pi
-
-open Finset
 
 variable {X : β → Type*} [Fintype β] [∀ b, MetricSpace (X b)]
 
@@ -163,8 +161,6 @@ end Pi
 namespace Metric
 
 section SecondCountable
-
-open TopologicalSpace
 
 -- TODO: use `Countable` instead of `Encodable`
 /-- A metric space is second countable if one can reconstruct up to any `ε>0` any element of the

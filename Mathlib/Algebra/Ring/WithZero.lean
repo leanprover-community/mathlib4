@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Ring.Defs
 # Adjoining a zero to a semiring
 -/
 
-@[expose] public section
+public section
 
 namespace WithZero
 variable {α : Type*}

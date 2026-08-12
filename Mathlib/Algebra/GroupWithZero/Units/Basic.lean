@@ -37,7 +37,7 @@ theorem ne_zero [Nontrivial M₀] (u : M₀ˣ) : (u : M₀) ≠ 0 :=
   left_ne_zero_of_mul_eq_one u.mul_inv
 
 -- We can't use `mul_eq_zero` + `Units.ne_zero` in the next two lemmas because we don't assume
--- `Nonzero M₀`.
+-- `Nontrivial M₀`.
 @[simp]
 theorem mul_left_eq_zero (u : M₀ˣ) {a : M₀} : a * u = 0 ↔ a = 0 :=
   ⟨fun h => by simpa using mul_eq_zero_of_left h ↑u⁻¹, fun h => mul_eq_zero_of_left h u⟩
@@ -74,7 +74,7 @@ theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
 
 namespace Ring
 
-open Classical in
+open scoped Classical in
 /-- Introduce a function `inverse` on a monoid with zero `M₀`, which sends `x` to `x⁻¹` if `x` is
 invertible and to `0` otherwise.  This definition is somewhat ad hoc, but one needs a fully (rather
 than partially) defined inverse function for some purposes, including for calculus.
@@ -88,14 +88,14 @@ scoped postfix:max "⁻¹ʳ" => inverse
 
 /-- By definition, if `x` is invertible then `inverse x = x⁻¹`. -/
 theorem inverse_unit (u : M₀ˣ) : (u : M₀)⁻¹ʳ = (u⁻¹ : M₀ˣ) := by
-  rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
+  rw [inverse, dite_eq_left u.isUnit, IsUnit.unit_of_val_units]
 
-theorem inverse_of_isUnit {x : M₀} (h : IsUnit x) : x⁻¹ʳ = ((h.unit⁻¹ : M₀ˣ) : M₀) := dif_pos h
+theorem inverse_of_isUnit {x : M₀} (h : IsUnit x) : x⁻¹ʳ = ((h.unit⁻¹ : M₀ˣ) : M₀) := dite_eq_left h
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
 @[simp]
 theorem inverse_non_unit (x : M₀) (h : ¬IsUnit x) : x⁻¹ʳ = 0 :=
-  dif_neg h
+  dite_eq_right h
 
 theorem mul_inverse_cancel (x : M₀) (h : IsUnit x) : x * x⁻¹ʳ = 1 := by
   rcases h with ⟨u, rfl⟩
@@ -125,16 +125,21 @@ theorem eq_mul_inverse_iff_mul_eq (x y z : M₀) (h : IsUnit z) : x = y * z⁻¹
   ⟨fun h1 => by rw [h1, inverse_mul_cancel_right _ _ h],
   fun h1 => by rw [← h1, mul_inverse_cancel_right _ _ h]⟩
 
-variable (M₀)
-
+variable (M₀) in
 @[simp, grind =]
 theorem inverse_one : (1 : M₀)⁻¹ʳ = 1 :=
   inverse_unit 1
 
+variable (M₀) in
 @[simp, grind =]
 theorem inverse_zero : (0 : M₀)⁻¹ʳ = 0 := by
   nontriviality
   exact inverse_non_unit _ not_isUnit_zero
+
+@[grind =]
+theorem inverse_inverse {a : M₀} (h : IsUnit a) : a⁻¹ʳ⁻¹ʳ = a := by
+  obtain ⟨u, rfl⟩ := h
+  rw [inverse_unit, inverse_unit, inv_inv]
 
 end Ring
 
@@ -147,14 +152,25 @@ theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit a⁻¹ʳ
 theorem isUnit_ringInverse {a : M₀} : IsUnit a⁻¹ʳ ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
-    · convert h
+    · convert! h
     · contrapose h
       rw [Ring.inverse_non_unit _ h]
       exact not_isUnit_zero,
     IsUnit.ringInverse⟩
 
+@[grind =]
+theorem Ring.inverse_mul {a b : M₀} (h : IsUnit a ∨ IsUnit b) : (a * b)⁻¹ʳ = b⁻¹ʳ * a⁻¹ʳ := by
+  obtain (⟨ha, hb⟩ | ⟨ha, hb⟩ | ⟨ha, hb⟩) :
+      (IsUnit a ∧ ¬ IsUnit b) ∨ (¬ IsUnit a ∧ IsUnit b) ∨ (IsUnit a ∧ IsUnit b) := by grind
+  · have : ¬ IsUnit (a * b) := by simpa [ha.mul_left_iff]
+    simp [Ring.inverse_non_unit, hb, this]
+  · have : ¬ IsUnit (a * b) := by simpa [hb.mul_right_iff]
+    simp [Ring.inverse_non_unit, ha, this]
+  · simp [Ring.inverse_of_isUnit, ha, hb, ha.mul hb, ← Units.val_mul, ← mul_inv_rev]
+    simp
+
 theorem Ring.isUnit_iff_inverse_ne_zero [Nontrivial M₀] {x : M₀} : IsUnit x ↔ x⁻¹ʳ ≠ 0 :=
- ⟨(IsUnit.ringInverse · |>.ne_zero), by simpa using mt <| Ring.inverse_non_unit (x := x)⟩
+  ⟨(IsUnit.ringInverse · |>.ne_zero), by simpa using mt <| Ring.inverse_non_unit (x := x)⟩
 
 grind_pattern Ring.isUnit_iff_inverse_ne_zero => IsUnit x, x⁻¹ʳ
 
@@ -176,11 +192,6 @@ theorem Ring.isUnit_iff_inverse_mul_cancel (x : M₀) : IsUnit x ↔ x⁻¹ʳ * 
   simp +contextual [not_isUnit_iff_inverse_eq_zero]
 
 grind_pattern Ring.isUnit_iff_inverse_mul_cancel => IsUnit x, x⁻¹ʳ
-
-@[grind =]
-theorem Ring.inverse_inverse {a : M₀} (h : IsUnit a) : a⁻¹ʳ⁻¹ʳ = a := by
-  obtain ⟨u, rfl⟩ := h
-  rw [inverse_unit, inverse_unit, inv_inv]
 
 @[simp, grind =]
 theorem Ring.inverse_inverse_inverse {a : M₀} : a⁻¹ʳ⁻¹ʳ⁻¹ʳ = a⁻¹ʳ := by
@@ -497,22 +508,22 @@ section NoncomputableDefs
 
 variable {M : Type*} [Nontrivial M]
 
-open Classical in
+open scoped Classical in
 /-- Constructs a `GroupWithZero` structure on a `MonoidWithZero`
   consisting only of units and 0. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M]
     (h : ∀ a : M, IsUnit a ∨ a = 0) : GroupWithZero M :=
   { hM with
     inv := fun a => if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).unit⁻¹,
-    inv_zero := dif_pos rfl,
+    inv_zero := dite_eq_left rfl,
     mul_inv_cancel := fun a h0 => by
       change (a * if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).unit⁻¹) = 1
-      rw [dif_neg h0, Units.mul_inv_eq_iff_eq_mul, one_mul, IsUnit.unit_spec] }
+      rw [dite_eq_right h0, Units.mul_inv_eq_iff_eq_mul, one_mul, IsUnit.unit_spec] }
 
 /-- Constructs a `CommGroupWithZero` structure on a `CommMonoidWithZero`
   consisting only of units and 0. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
     (h : ∀ a : M, IsUnit a ∨ a = 0) : CommGroupWithZero M :=
   { groupWithZeroOfIsUnitOrEqZero h, hM with }

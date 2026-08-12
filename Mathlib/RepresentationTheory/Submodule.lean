@@ -60,6 +60,7 @@ instance [Nontrivial V] : Nontrivial ρ.invtSubmodule :=
 
 end invtSubmodule
 
+set_option backward.isDefEq.respectTransparency false in
 lemma asAlgebraHom_mem_of_forall_mem (p : Submodule k V) (hp : ∀ g, ∀ v ∈ p, ρ g v ∈ p)
     (v : V) (hv : v ∈ p) (x : k[G]) :
     ρ.asAlgebraHom x v ∈ p := by
@@ -79,7 +80,7 @@ noncomputable def mapSubmodule : ρ.invtSubmodule ≃o Submodule k[G] ρ.asModul
     rw [invtSubmodule, Sublattice.mem_iInf]
     intro g v hv
     simp only [Submodule.orderIsoMapComap_symm_apply, Submodule.mem_comap] at hv ⊢
-    convert q.smul_mem (MonoidAlgebra.of k G g) hv using 1
+    convert! q.smul_mem (MonoidAlgebra.of k G g) hv using 1
     rw [LinearEquiv.coe_coe, ← asModuleEquiv_symm_map_rho]⟩
   left_inv p := by ext; simp
   right_inv q := by ext; aesop
