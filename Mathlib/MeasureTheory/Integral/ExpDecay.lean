@@ -49,12 +49,11 @@ theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
     ho ⟨Ioi b, Ioi_mem_atTop b, exp_neg_integrableOn_Ioi b h0⟩
 
 /-- If `f` is locally integrable on `[c, ∞)` and `f x = O(exp (a * x))` at `∞`, then
-`exp (-b * x) • f x` is integrable on `(c, ∞)` for every `a < b`. -/
+`exp (-b * x) • f x` is integrable on `[c, ∞)` for every `a < b`. -/
 theorem integrableOn_exp_neg_smul_of_isBigO_exp {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] {a b c : ℝ} {f : ℝ → E} (hfc : LocallyIntegrableOn f (Ici c))
     (hf : f =O[atTop] fun x : ℝ => exp (a * x)) (hab : a < b) :
-    IntegrableOn (fun x : ℝ => exp (-b * x) • f x) (Ioi c) := by
-  refine integrableOn_Ici_iff_integrableOn_Ioi (by finiteness) |>.mp ?_
+    IntegrableOn (fun x : ℝ => exp (-b * x) • f x) (Ici c) := by
   have hloc : LocallyIntegrableOn (fun x : ℝ => exp (-b * x) • f x) (Ici c) :=
     hfc.continuousOn_smul isClosed_Ici.isLocallyClosed (by fun_prop)
   exact hloc.integrableOn_of_isBigO_atTop (g := fun x : ℝ => exp ((a - b) * x))
@@ -66,5 +65,5 @@ theorem integrableOn_exp_neg_smul_of_isBigO_exp {E : Type*} [NormedAddCommGroup 
 /-- Real-valued specialization of `integrableOn_exp_neg_smul_of_isBigO_exp`. -/
 theorem integrableOn_exp_neg_mul_of_isBigO_exp {a b c : ℝ} {f : ℝ → ℝ}
     (hfc : LocallyIntegrableOn f (Ici c)) (hf : f =O[atTop] fun x : ℝ => exp (a * x))
-    (hab : a < b) : IntegrableOn (fun x : ℝ => exp (-b * x) * f x) (Ioi c) := by
+    (hab : a < b) : IntegrableOn (fun x : ℝ => exp (-b * x) * f x) (Ici c) := by
   simpa using integrableOn_exp_neg_smul_of_isBigO_exp hfc hf hab
