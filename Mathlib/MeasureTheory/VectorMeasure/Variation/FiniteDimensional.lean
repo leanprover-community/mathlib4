@@ -62,6 +62,6 @@ instance [NormedSpace ℝ V] [FiniteDimensional ℝ V] (μ : VectorMeasure X V) 
     (L := SummationFilter.unconditional (Fin (Module.finrank ℝ V)))
   apply isFiniteMeasure_of_le (∑ i, ‖b i‖₊ • (μ.coord b i).variation)
   apply variation_le_sum_smul
-  intro E; symm; exact sum_coord_smul_eq b μ E
+  simp
 
 end MeasureTheory.VectorMeasure

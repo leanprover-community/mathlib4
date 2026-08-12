@@ -131,7 +131,6 @@ abbrev UnconditionalSchauderBasis (β : Type*)
     (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X] :=
   GeneralSchauderBasis β 𝕜 X (SummationFilter.unconditional β)
 
-
 /-- When there is a finite basis, it can be regarded as a generalized Schauder basis.
 The assumption `L.LeAtTop` is needed to ensure that a finite sum converges along `L`. -/
 def Module.Basis.toGeneralSchauderBasis [CompleteSpace 𝕜] [Fintype β]
@@ -153,6 +152,16 @@ attribute [coe] GeneralSchauderBasis.basis
 namespace GeneralSchauderBasis
 
 variable (b : GeneralSchauderBasis β 𝕜 X L)
+
+/-- The expansion of `x` as `tsum`. -/
+@[simp]
+theorem tsum_coord_smul [L.NeBot] (x : X) :
+    ∑'[L] i, b.coord i x • b i = x := (b.expansion x).tsum_eq
+
+/-- The expansion of `x` as `sum` when `Fintype β`. -/
+@[simp]
+theorem sum_coord_smul_eq_of_fintype [Fintype β] [L.LeAtTop] [L.NeBot] (x : X) :
+    ∑ i, b.coord i x • b i = x := (hasSum_fintype _ L).unique (b.expansion x)
 
 /-- The basis vectors are linearly independent. -/
 theorem linearIndependent : LinearIndependent 𝕜 b := by

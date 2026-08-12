@@ -44,19 +44,11 @@ protected noncomputable def coord (b : GeneralSchauderBasis ι 𝕜 V L) (μ : V
 lemma coord_apply (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) (i : ι) (E : Set X) :
     μ.coord b i E = b.coord i (μ E) := by simp [VectorMeasure.coord]
 
-theorem hasSum_coord_smul (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) (E : Set X) :
-    HasSum (fun (i : ι) => (b.coord i) (μ E) • b i) (μ E) L := b.expansion (μ E)
-
-@[simp]
-theorem sum_coord_smul_eq [Fintype ι] [L.LeAtTop] [L.NeBot] (b : GeneralSchauderBasis ι 𝕜 V L)
-    (μ : VectorMeasure X V) (E : Set X) : ∑ i, (μ.coord b i E) • b i = μ E := by
-  simpa [coord_apply] using (hasSum_fintype _ L).unique (b.expansion (μ E))
-
 @[simp]
 theorem sum_toSpanSingleton_coord_eq [CompleteSpace 𝕜] [Fintype ι] [L.LeAtTop] [L.NeBot]
     (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) :
     ∑ i, mapRangeₗ (toSpanSingleton 𝕜 V (b i))
       ((toSpanSingleton 𝕜 V (b i)).continuous_of_finiteDimensional) (μ.coord b i) = μ := by
-  ext; simpa using sum_coord_smul_eq b μ _
+  ext; simp
 
 end MeasureTheory.VectorMeasure
