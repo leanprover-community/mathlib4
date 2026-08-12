@@ -1076,6 +1076,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Order.Monoid.Units
 public import Mathlib.Algebra.Order.Monoid.WithTop
 public import Mathlib.Algebra.Order.Monovary
+public import Mathlib.Algebra.Order.Nesbitt
 public import Mathlib.Algebra.Order.Nonneg.Basic
 public import Mathlib.Algebra.Order.Nonneg.Field
 public import Mathlib.Algebra.Order.Nonneg.Floor
