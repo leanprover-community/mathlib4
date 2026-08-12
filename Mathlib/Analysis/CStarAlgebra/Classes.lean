@@ -75,6 +75,32 @@ noncomputable instance NonUnitalStarSubalgebra.nonUnitalCommCStarAlgebra {S A : 
 
 noncomputable instance : CommCStarAlgebra ℂ where
 
+namespace IsMulCommutative
+
+/-- A `NonUnitalCStarAlgebra` which `IsMulCommutative` is a `NonUnitalCommCStarAlgebra`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+scoped instance (priority := 50) {A : Type*} [NonUnitalCStarAlgebra A] [IsMulCommutative A] :
+    NonUnitalCommCStarAlgebra A where
+
+/-- A `CStarAlgebra` which `IsMulCommutative` is a `CommCStarAlgebra`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+scoped instance (priority := 50) {A : Type*} [CStarAlgebra A] [IsMulCommutative A] :
+    CommCStarAlgebra A where
+
+end IsMulCommutative
+
 section Elemental
 
 variable {A : Type*}
@@ -88,9 +114,11 @@ noncomputable instance [NonUnitalCStarAlgebra A] (x : A) :
   NonUnitalStarSubalgebra.nonUnitalCStarAlgebra _
     (h_closed := NonUnitalStarAlgebra.elemental.isClosed ℂ x)
 
+open scoped IsMulCommutative in
 noncomputable instance [CStarAlgebra A] (x : A) [IsStarNormal x] :
     CommCStarAlgebra (StarAlgebra.elemental ℂ x) where
 
+open scoped IsMulCommutative in
 noncomputable instance [NonUnitalCStarAlgebra A] (x : A) [IsStarNormal x] :
     NonUnitalCommCStarAlgebra (NonUnitalStarAlgebra.elemental ℂ x) where
 
