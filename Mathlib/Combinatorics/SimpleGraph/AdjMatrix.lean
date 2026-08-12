@@ -315,9 +315,6 @@ theorem one_add_adjMatrix_add_compl_adjMatrix_eq_of_one [DecidableEq V] [Decidab
     [AddMonoid α] [One α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = of 1 := by
   aesop (add simp [add_assoc])
 
-@[deprecated (since := "2026-01-30")] alias one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes :=
-  one_add_adjMatrix_add_compl_adjMatrix_eq_of_one
-
 variable (V)
 
 @[simp] theorem compl_adjMatrix_completeGraph [Zero α] [One α] [DecidableEq α] [DecidableEq V] :

@@ -596,12 +596,6 @@ instance : ConcreteCategory SimplexCategory (fun i j => Fin (i.len + 1) →o Fin
   hom := Hom.toOrderHom
   ofHom f := Hom.mk f
 
-instance (x : SimplexCategory) : Fintype (ToType x) :=
-  inferInstanceAs (Fintype (Fin _))
-
-instance (x : SimplexCategory) (n : ℕ) : OfNat (ToType x) n :=
-  inferInstanceAs (OfNat (Fin _) n)
-
 lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 
 @[simp]
@@ -745,7 +739,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋
   by_cases h' : x ≤ Fin.castSucc i
   · rw [Fin.predAbove_of_le_castSucc i x h']
     dsimp [δ]
-    rw [Fin.succAbove_of_castSucc_lt _ _ _]
+    rw [Fin.succAbove_of_castSucc_lt]
     · rw [Fin.castSucc_castPred]
     · exact (Fin.castSucc_lt_succ_iff.mpr h')
   · simp only [not_le] at h'

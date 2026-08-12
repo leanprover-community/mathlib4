@@ -229,11 +229,11 @@ theorem eq_of_mem {a b : Part α} (ha : a.Dom) (hb : a.get ha ∈ b) : a = b := 
 
 @[simp]
 theorem none_toOption [Decidable (@none α).Dom] : (none : Part α).toOption = Option.none :=
-  dif_neg id
+  dite_eq_right id
 
 @[simp]
 theorem some_toOption (a : α) [Decidable (some a).Dom] : (some a).toOption = Option.some a :=
-  dif_pos trivial
+  dite_eq_left trivial
 
 instance noneDecidable : Decidable (@none α).Dom :=
   instDecidableFalse
@@ -248,11 +248,11 @@ def getOrElse (a : Part α) [Decidable a.Dom] (d : α) :=
 
 theorem getOrElse_of_dom (a : Part α) (h : a.Dom) [Decidable a.Dom] (d : α) :
     getOrElse a d = a.get h :=
-  dif_pos h
+  dite_eq_left h
 
 theorem getOrElse_of_not_dom (a : Part α) (h : ¬a.Dom) [Decidable a.Dom] (d : α) :
     getOrElse a d = d :=
-  dif_neg h
+  dite_eq_right h
 
 @[simp]
 theorem getOrElse_none (d : α) [Decidable (none : Part α).Dom] : getOrElse none d = d :=
@@ -276,7 +276,7 @@ theorem toOption_eq_some_iff {o : Part α} [Decidable o.Dom] {a : α} :
   rw [← Option.mem_def, mem_toOption]
 
 protected theorem Dom.toOption {o : Part α} [Decidable o.Dom] (h : o.Dom) : o.toOption = o.get h :=
-  dif_pos h
+  dite_eq_left h
 
 theorem toOption_eq_none_iff {a : Part α} [Decidable a.Dom] : a.toOption = Option.none ↔ ¬a.Dom :=
   Ne.dite_eq_right_iff fun _ => Option.some_ne_none _

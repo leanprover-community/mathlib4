@@ -93,10 +93,10 @@ theorem equivToOpposite_symm_coe : (equivToOpposite.symm : αᵒᵖ → α) = un
   rfl
 
 theorem op_eq_iff_eq_unop {x : α} {y} : op x = y ↔ x = unop y :=
-  equivToOpposite.apply_eq_iff_eq_symm_apply
+  equivToOpposite.eq_symm_apply.symm
 
 theorem unop_eq_iff_eq_op {x} {y : α} : unop x = y ↔ x = op y :=
-  equivToOpposite.symm.apply_eq_iff_eq_symm_apply
+  equivToOpposite.symm.eq_symm_apply.symm
 
 instance [Inhabited α] : Inhabited αᵒᵖ :=
   ⟨op default⟩
