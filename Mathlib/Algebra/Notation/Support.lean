@@ -65,11 +65,7 @@ lemma ext_iff_mulSupport : f = g ↔ f.mulSupport = g.mulSupport ∧ ∀ x ∈ f
 @[to_additive]
 lemma ext_iff_mulSupport_union :
     f = g ↔ ∀ x ∈ f.mulSupport ∪ g.mulSupport, f x = g x := by
-  rw [funext_iff]
-  refine ⟨fun h x _ ↦ h x, fun h x ↦ ?_⟩
-  by_cases o : x ∈ f.mulSupport ∪ g.mulSupport
-  · exact h x o
-  simp_all
+  grind [mem_mulSupport]
 
 @[to_additive]
 lemma mulSupport_update_of_ne_one [DecidableEq ι] (f : ι → M) (x : ι) {y : M} (hy : y ≠ 1) :
