@@ -56,11 +56,9 @@ def unneededImportPost (readPre : PreStateFn) (stx : Syntax) (self : UsedModules
   let mut used := self.used
   -- The node kinds of the command name their parser constants, and each constant has a
   -- defining module. This marks imports that only provide syntax, tactics, or attributes.
-  let mut kinds : NameSet := {}
   for k in collectKinds stx {} do
     if let some idx := env.getModuleIdxFor? k then
       used := used.insert env.allImportedModuleNames[idx.toNat]!
-  let _ := kinds
   if let some p := readPre declaredNames then
     for n in p.new do
       if let some ci := env.find? n then
@@ -85,7 +83,8 @@ def unneededImportPost (readPre : PreStateFn) (stx : Syntax) (self : UsedModules
         let impact := if exclusive == 0 then
           m!"the closure does not change: the other imports cover all of it"
         else
-          m!"removing it also drops {exclusive} modules from the import closure"
+          let modules := if exclusive == 1 then "module" else "modules"
+          m!"removing it also drops {exclusive} {modules} from the import closure"
         logLint linter.unneededImport stx
           m!"import '{m}' is possibly unneeded: the other imports cover every constant that \
             this file uses from its import closure; {impact}"
