@@ -1067,25 +1067,6 @@ section Continuity
 variable [NontriviallyNormedField 𝕜] [SeminormedRing 𝕝] [AddCommGroup E] [Module 𝕜 E]
 variable [Module 𝕝 E]
 
-@[fun_prop]
-protected theorem continuous_finsetSum [TopologicalSpace E]
-    {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hcont : ∀ i ∈ s, Continuous (p i)) :
-    Continuous (∑ i ∈ s, p i : Seminorm 𝕝 E) := by
-  suffices Continuous fun x ↦ ∑ i ∈ s, p i x from this.congr (fun x ↦ by simp)
-  exact continuous_finsetSum _ hcont
-
-@[fun_prop]
-theorem continuous_finset_sup [TopologicalSpace E]
-    {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hcont : ∀ i ∈ s, Continuous (p i)) :
-    Continuous (s.sup p : Seminorm 𝕝 E) := by
-  classical
-  induction s using Finset.induction with
-  | empty => rw [Finset.sup_empty, coe_bot]; fun_prop
-  | insert j t _ H =>
-    rw [Finset.sup_insert, coe_sup]
-    exact (hcont _ <| Finset.mem_insert_self j _).sup
-      (H fun i hi ↦ hcont i (Finset.mem_insert_of_mem hi))
-
 /-- A seminorm is continuous at `0` if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.continuousAt_zero'`. -/
@@ -1198,9 +1179,9 @@ theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]
   exact isOpen_lt hq continuous_const
 
 /-- The sum over a finite set of continuous seminorms is continuous. -/
-theorem continuous_finsetSum' [TopologicalSpace E]
+theorem continuous_finsetSum [TopologicalSpace E]
     {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hp : ∀ i ∈ s, Continuous (p i)) :
-    Continuous ((∑ i ∈ s, p i : Seminorm 𝕝 E) : E → ℝ) := by
+    Continuous (∑ i ∈ s, p i : Seminorm 𝕝 E) := by
   change Continuous (fun x ↦ FunLike.coeAddMonoidHom _ _ _ (∑ i ∈ s, p i) x)
   simp_rw [map_sum, Finset.sum_apply]
   exact _root_.continuous_finsetSum s hp
@@ -1208,8 +1189,8 @@ theorem continuous_finsetSum' [TopologicalSpace E]
 /-- The supremum over a finite set of continuous seminorms is continuous. -/
 theorem continuous_finsetSup [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hp : ∀ i ∈ s, Continuous (p i)) :
-    Continuous ((s.sup p : Seminorm 𝕝 E) : E → ℝ) := by
-  exact continuous_of_le (continuous_finsetSum' hp) (finset_sup_le_sum p s)
+    Continuous (s.sup p : Seminorm 𝕝 E) := by
+  exact continuous_of_le (continuous_finsetSum hp) (finset_sup_le_sum p s)
 
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
     (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) := by

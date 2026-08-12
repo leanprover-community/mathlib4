@@ -94,10 +94,11 @@ theorem isLittleOTVS_iff :
   simp_rw [isLittleOTVS_iff_le, Filter.EventuallyLE, Asymptotics.isLittleO_iff]
   congrm ∀ p p_cont, ∃ q, _ ∧ ?_
   constructor <;> intro H ε hε
-  · have : (⟨ε, hε.le⟩ : ℝ≥0) ≠ 0 := by simpa [← NNReal.coe_ne_zero] using hε.ne'
-    simpa (discharger := positivity) [abs_of_nonneg] using H ⟨ε, hε.le⟩ this
+  · have : NNReal.mk ε hε.le ≠ 0 := by simpa [← NNReal.coe_ne_zero] using hε.ne'
+    simpa (discharger := positivity) [abs_of_nonneg, NNReal.smul_def] using
+      H (NNReal.mk ε hε.le) this
   · simp (discharger := positivity) only [Function.comp_apply, Real.norm_of_nonneg] at H
-    exact @H ε (by positivity)
+    exact H (by positivity)
 
 end PolynormableSpace
 
@@ -129,22 +130,23 @@ theorem isBigOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
   rw [hp.isBigOTVS_iff_le_continuous]
   congrm ∀ i, ?_
   constructor
-  · rintro ⟨r, r_cont, hr⟩
+  · intro ⟨r, r_cont, hr⟩
     obtain ⟨s, C, C_ne, hC⟩ := Seminorm.bound_of_continuous hq r r_cont
     exact ⟨s, C, hr.mono fun x hx ↦ hx.trans (hC _)⟩
-  · rintro ⟨s, C, hC⟩
+  · intro ⟨s, C, hC⟩
     use C • s.sup q
-    use (Seminorm.continuous_finset_sup fun i _ ↦ hq.continuous_seminorm i).const_smul _
+    have := hq.topologicalAddGroup
+    use (Seminorm.continuous_finsetSup fun i _ ↦ hq.continuous_seminorm i).const_smul _
 
 theorem isBigOTVS_iff (hp : WithSeminorms p) (hq : WithSeminorms q) :
     f =O[𝕜; l] g ↔ ∀ i : ι, ∃ s : Finset κ, (p i ∘ f) =O[l] ((s.sup q : Seminorm 𝕜 F) ∘ g) := by
   simp_rw [hp.isBigOTVS_iff_le hq, Filter.EventuallyLE]
   congrm ∀ i, ∃ s, ?_
   constructor
-  · rintro ⟨C, hC⟩
+  · intro ⟨C, hC⟩
     exact .of_bound C <| by simpa (discharger := positivity) [abs_of_nonneg]
   · rw [Asymptotics.isBigO_iff']
-    rintro ⟨C, C_pos, hC⟩
+    intro ⟨C, C_pos, hC⟩
     simp (discharger := positivity) only [Function.comp_apply, Real.norm_of_nonneg] at hC
     refine ⟨C.toNNReal, ?_⟩
     simpa [NNReal.smul_def, C_pos.le]
@@ -161,13 +163,13 @@ theorem isLittleOTVS_iff_le_continuous (hp : WithSeminorms p) [PolynormableSpace
     refine Seminorm.induction_add_of_continuous hp ?_ ?_ ?_ ?_ ?_ r_cont
     · assumption
     · exact ⟨0, continuous_zero, fun _ _ ↦ by simpa using .rfl⟩
-    · rintro r₁ r₂ ⟨q₁, q₁_cont, hq₁⟩ ⟨q₂, q₂_cont, hq₂⟩
+    · intro r₁ r₂ ⟨q₁, q₁_cont, hq₁⟩ ⟨q₂, q₂_cont, hq₂⟩
       refine ⟨q₁ + q₂, q₁_cont.add q₂_cont, fun ε ε_ne ↦ ?_⟩
       filter_upwards [hq₁ ε ε_ne, hq₂ ε ε_ne] with x hx₁ hx₂
       simpa using add_le_add hx₁ hx₂
     · rintro r₁ r₂ h ⟨q, q_cont, hq⟩
       exact ⟨q, q_cont, fun ε ε_ne ↦ (hq ε ε_ne).mono fun x hx ↦ (h _).trans hx⟩
-    · rintro r C ⟨q, q_cont, hq⟩
+    · intro r C ⟨q, q_cont, hq⟩
       refine ⟨C • q, q_cont.const_smul _, fun ε ε_ne ↦ (hq ε ε_ne).mono fun x hx ↦ ?_⟩
       rw [smul_comm]
       exact smul_le_smul_of_nonneg_left hx C.2
@@ -179,23 +181,25 @@ theorem isLittleOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
   rw [hp.isLittleOTVS_iff_le_continuous]
   congrm ∀ i, ?_
   constructor
-  · rintro ⟨r, r_cont, hr⟩
+  · intro ⟨r, r_cont, hr⟩
     obtain ⟨s, C, C_ne, hC⟩ := Seminorm.bound_of_continuous hq r r_cont
     refine ⟨s, fun ε ε_ne ↦ (hr (ε/C) (by positivity)).mono fun x hx ↦ ?_⟩
-    simp only [Function.comp_apply, Seminorm.le_def, Seminorm.smul_apply] at hx hC ⊢
+    simp only [Function.comp_apply, Seminorm.le_def, smul_apply] at hx hC ⊢
     grw [hx, hC _, ← mul_smul, div_mul_cancel₀ _ C_ne]
   · rintro ⟨s, hs⟩
-    use s.sup q, Seminorm.continuous_finset_sup fun i _ ↦ hq.continuous_seminorm i
+    have := hq.topologicalAddGroup
+    use s.sup q, Seminorm.continuous_finsetSup fun i _ ↦ hq.continuous_seminorm i
 
 theorem isLittleOTVS_iff (hp : WithSeminorms p) (hq : WithSeminorms q) :
     f =o[𝕜; l] g ↔ ∀ i : ι, ∃ s : Finset κ, (p i ∘ f) =o[l] ((s.sup q : Seminorm 𝕜 F) ∘ g) := by
   simp_rw [hp.isLittleOTVS_iff_le hq, Filter.EventuallyLE, Asymptotics.isLittleO_iff]
   congrm ∀ i, ∃ s, ?_
   constructor <;> intro H ε hε
-  · have : (⟨ε, hε.le⟩ : ℝ≥0) ≠ 0 := by simpa [← NNReal.coe_ne_zero] using hε.ne'
-    simpa (discharger := positivity) [abs_of_nonneg] using H ⟨ε, hε.le⟩ this
+  · have : NNReal.mk ε hε.le ≠ 0 := by simpa [← NNReal.coe_ne_zero] using hε.ne'
+    simpa (discharger := positivity) [abs_of_nonneg, NNReal.smul_def] using
+      H (NNReal.mk ε hε.le) this
   · simp (discharger := positivity) only [Function.comp_apply, Real.norm_of_nonneg] at H
-    exact @H ε (by positivity)
+    exact H (by positivity)
 
 end WithSeminorms
 

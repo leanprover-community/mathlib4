@@ -343,7 +343,8 @@ theorem PolynormableSpace.hasBasis_zero_ball [PolynormableSpace 𝕜 E] :
   · intro ⟨s, r⟩ hr
     use r⁻¹.toNNReal • (s.sup fun p ↦ (p : Seminorm 𝕜 E))
     constructor
-    · exact .const_smul (Seminorm.continuous_finset_sup fun t ht ↦ t.2) _
+    · have := PolynormableSpace.topologicalAddGroup
+      exact .const_smul (Seminorm.continuous_finsetSup fun t ht ↦ t.2) _
     · rw [ball_smul, Real.coe_toNNReal, one_div, inv_inv] <;>
       positivity
   · intro p p_cont
@@ -944,7 +945,10 @@ lemma bound_sum_of_continuous [t : TopologicalSpace E] (hp : WithSeminorms p)
     (q : Seminorm 𝕜 E) (hq : Continuous q) :
     ∃ s : Finset ι, ∃ C : ℝ≥0, C ≠ 0 ∧ q ≤ C • ∑ i ∈ s, p i := by
   obtain ⟨s, C, C_ne, hC⟩ := bound_of_continuous hp q hq
-  use s, C, C_ne, hC.trans <| smul_le_smul (finset_sup_le_sum _ _) le_rfl
+  use s, C, C_ne
+  calc
+    _ ≤ C • s.sup p := hC
+    _ ≤ _ := by gcongr; apply finset_sup_le_sum
 
 @[elab_as_elim]
 lemma induction_sup_of_continuous [TopologicalSpace E] (hp : WithSeminorms p)
@@ -960,7 +964,7 @@ lemma induction_sup_of_continuous [TopologicalSpace E] (hp : WithSeminorms p)
   rcases bound_of_continuous hp q cont with ⟨s, C, hC, hs⟩
   refine le _ _ hs (smul _ _ ?_)
   refine s.induction_on ?_ ?_
-  · simpa using zero
+  · simpa [bot_eq_zero] using zero
   · intro _ t _ ht
     rw [Finset.sup_insert]
     exact sup _ _ (base _) ht

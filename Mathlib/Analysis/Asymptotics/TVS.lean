@@ -711,7 +711,10 @@ theorem isLittleOTVS_sInf {s : Set (TopologicalSpace E)}
     (letI : TopologicalSpace E := sInf s; f =o[𝕜; l] g) ↔ ∀ t ∈ s,
       (letI : TopologicalSpace E := t; f =o[𝕜; l] g) := by
   rw [Subtype.forall'] at hs ⊢
-  simp_rw [sInf_eq_iInf', isLittleOTVS_iInf]
+  rw [sInf_eq_iInf', isLittleOTVS_iInf]
+  intro i
+  apply hs
+
 
 omit [TopologicalSpace E] in
 theorem isLittleOTVS_inf {t₁ t₂ : TopologicalSpace E}
@@ -719,7 +722,7 @@ theorem isLittleOTVS_inf {t₁ t₂ : TopologicalSpace E}
     (letI : TopologicalSpace E := t₁ ⊓ t₂; f =o[𝕜; l] g) ↔
       (letI : TopologicalSpace E := t₁; f =o[𝕜; l] g) ∧
       (letI : TopologicalSpace E := t₂; f =o[𝕜; l] g) := by
-  rw [inf_eq_iInf, isLittleOTVS_iInf, Bool.forall_bool, cond_false, cond_true, and_comm]
+  rw [inf_eq_iInf, isLittleOTVS_iInf, Bool.forall_bool, and_comm]
   intro i; cases i <;> assumption
 
 protected theorem IsBigOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
@@ -764,7 +767,8 @@ theorem isBigOTVS_sInf {s : Set (TopologicalSpace E)}
     (letI : TopologicalSpace E := sInf s; f =O[𝕜; l] g) ↔ ∀ t ∈ s,
       (letI : TopologicalSpace E := t; f =O[𝕜; l] g) := by
   rw [Subtype.forall'] at hs ⊢
-  simp_rw [sInf_eq_iInf', isBigOTVS_iInf]
+  rw [sInf_eq_iInf', isBigOTVS_iInf]
+  intro; apply hs
 
 omit [TopologicalSpace E] in
 theorem isBigOTVS_inf {t₁ t₂ : TopologicalSpace E}
@@ -772,7 +776,7 @@ theorem isBigOTVS_inf {t₁ t₂ : TopologicalSpace E}
     (letI : TopologicalSpace E := t₁ ⊓ t₂; f =O[𝕜; l] g) ↔
       (letI : TopologicalSpace E := t₁; f =O[𝕜; l] g) ∧
       (letI : TopologicalSpace E := t₂; f =O[𝕜; l] g) := by
-  rw [inf_eq_iInf, isBigOTVS_iInf, Bool.forall_bool, cond_false, cond_true, and_comm]
+  rw [inf_eq_iInf, isBigOTVS_iInf, Bool.forall_bool, and_comm]
   intro i; cases i <;> assumption
 
 protected lemma IsLittleOTVS.smul_left (h : f =o[𝕜; l] g) (c : α → 𝕜) :
