@@ -17,7 +17,6 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 * `coord` : for a `𝕜`-Schauder basis `b` in an `𝕜`-vector space `V` and a `V`-valued vector measure
   `μ`, one has the equality `μ E = ∑ i, a i E • b i` for each `E : Set X`. Then the coordinate
   `a i E` is a `𝕜`-valued vector measure, which we call `μ.coord b i`.
-* `sum_coord_smul_eq` : the characterizing equality `∑ i, (μ.coord b i E) • b i = μ E ` for `coord`.
 * `sum_toSpanSingleton_coord_eq` : `μ` as a linear combination of vector measures.
 
 -/

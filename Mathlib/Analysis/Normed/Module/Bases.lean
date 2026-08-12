@@ -138,12 +138,11 @@ def Module.Basis.toGeneralSchauderBasis [CompleteSpace 𝕜] [Fintype β]
     GeneralSchauderBasis β 𝕜 X L :=
   letI : FiniteDimensional 𝕜 X := b.finiteDimensional_of_finite
   { basis := b
-    coord := fun i ↦ LinearMap.toContinuousLinearMap (b.coord i)
+    coord i := LinearMap.toContinuousLinearMap (b.coord i)
     ortho i j := by
       rw [coe_toContinuousLinearMap']
       by_cases h : i = j <;> simp [h]
-    expansion x := by
-      simpa using hasSum_fintype (fun i ↦ b.coord i x • b i) L }
+    expansion x := by simpa using hasSum_fintype (fun i ↦ b.coord i x • b i) L }
 
 /-- Coercion from a `GeneralSchauderBasis` to the underlying basis function. -/
 instance : CoeFun (GeneralSchauderBasis β 𝕜 X L) (fun _ ↦ β → X) where
