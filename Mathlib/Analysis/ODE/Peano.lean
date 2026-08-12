@@ -57,10 +57,8 @@ variable [NormedSpace ℝ E]
 
 section TonelliApproximation
 
-/-- The time-step size of the `n`th Tonelli approximation. -/
 noncomputable def stepSize (t₀ : Icc tmin tmax) (n : ℕ) : ℝ := (tmax - t₀) / n
 
-/-- The time-step size of every Tonelli approximation is nonnegative. -/
 lemma stepSize_nonneg (t₀ : Icc tmin tmax) (n : ℕ) : 0 ≤ stepSize t₀ n :=
   div_nonneg (sub_nonneg.mpr t₀.2.2) (Nat.cast_nonneg n)
 
@@ -71,7 +69,6 @@ lemma add_mul_stepSize_eq_tmax (t₀ : Icc tmin tmax) (n : ℕ) :
   push_cast
   ring
 
-/-- The delayed time input used in the Tonelli approximations. -/
 noncomputable def delayedInput (t₀ : Icc tmin tmax) (n : ℕ) : ℝ → ℝ :=
   fun t ↦ max (t - stepSize t₀ n) t₀
 
