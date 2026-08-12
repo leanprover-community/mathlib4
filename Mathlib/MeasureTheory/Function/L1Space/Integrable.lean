@@ -1126,7 +1126,7 @@ theorem Integrable.im (hf : Integrable f μ) : Integrable (fun x => RCLike.im (f
 
 lemma Integrable.iff_ofReal {f : α → ℝ} :
     Integrable f μ ↔ Integrable (fun x ↦ (f x : 𝕜)) μ :=
-  ⟨fun hf ↦ hf.ofReal, fun hf ↦ by simpa only [RCLike.ofReal_re] using hf.re⟩
+  ⟨fun hf ↦ hf.ofReal, fun hf ↦ by simpa using hf.re⟩
 
 end RCLike
 
