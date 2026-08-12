@@ -118,9 +118,7 @@ noncomputable def tonelliIterate (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x�
 /-- Every recursively defined curve takes the value `x₀` at `t₀`. -/
 lemma tonelliIterate_apply_t₀ (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x₀ : E) (n : ℕ) (k : ℕ) :
     tonelliIterate f t₀ x₀ n k t₀ = x₀ := by
-  induction k with
-  | zero => simp [tonelliIterate]
-  | succ => simp [tonelliIterate]
+  induction k <;> simp [tonelliIterate]
 
 /-- Consecutive recursive curves agree on the first `k` time steps. -/
 lemma tonelliIterate_eq_succ_on_Icc (n : ℕ) (k : ℕ) (t : ℝ)
