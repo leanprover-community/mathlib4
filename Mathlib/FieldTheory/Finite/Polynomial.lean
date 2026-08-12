@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
-## Polynomials over finite fields
+# Polynomials over finite fields
 -/
 
 @[expose] public section
