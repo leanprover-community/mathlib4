@@ -23,7 +23,7 @@ We prove one direction of the Cramér-Wold theorem.
 
 -/
 
-open MeasureTheory Filter Complex BoundedContinuousFunction RealInnerProductSpace ProbabilityMeasure
+open MeasureTheory Filter BoundedContinuousFunction RealInnerProductSpace ProbabilityMeasure
 
 open scoped Topology
 
