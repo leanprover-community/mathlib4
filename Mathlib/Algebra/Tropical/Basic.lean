@@ -119,10 +119,10 @@ theorem tropEquiv_symm_coe_fn : (tropEquiv.symm : Tropical R → R) = untrop :=
   rfl
 
 theorem trop_eq_iff_eq_untrop {x : R} {y} : trop x = y ↔ x = untrop y :=
-  tropEquiv.apply_eq_iff_eq_symm_apply
+  tropEquiv.eq_symm_apply.symm
 
 theorem untrop_eq_iff_eq_trop {x} {y : R} : untrop x = y ↔ x = trop y :=
-  tropEquiv.symm.apply_eq_iff_eq_symm_apply
+  tropEquiv.symm.eq_symm_apply.symm
 
 theorem injective_trop : Function.Injective (trop : R → Tropical R) :=
   tropEquiv.injective

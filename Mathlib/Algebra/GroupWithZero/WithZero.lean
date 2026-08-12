@@ -300,7 +300,6 @@ def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
 instance [Nontrivial α] : Nontrivial (WithZero α)ˣ :=
   unitsWithZeroEquiv.toEquiv.surjective.nontrivial
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :
     ↑(unitsWithZeroEquiv γ) = γ.val := by
   simp only [WithZero.unitsWithZeroEquiv, MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.coe_unzero]
@@ -321,7 +320,6 @@ lemma withZeroUnitsEquiv_symm_apply_coe {G : Type*} [GroupWithZero G]
     WithZero.withZeroUnitsEquiv.symm (a : G) = a := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A version of `Equiv.optionCongr` for `WithZero`. -/
 @[simps!]
 def _root_.MulEquiv.withZero [Group β] :
@@ -413,7 +411,7 @@ def log (x : Mᵐ⁰) : M := x.recZeroCoe 0 Multiplicative.toAdd
 lemma log_mul {x y : Mᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x * y) = log x + log y := by
   lift x to Multiplicative M using hx; lift y to Multiplicative M using hy; rfl
 
-@[simp← ] lemma exp_nsmul (n : ℕ) (a : M) : exp (n • a) = exp a ^ n := rfl
+@[simp ←] lemma exp_nsmul (n : ℕ) (a : M) : exp (n • a) = exp a ^ n := rfl
 
 @[simp]
 lemma log_pow : ∀ (x : Mᵐ⁰) (n : ℕ), log (x ^ n) = n • log x
@@ -458,7 +456,7 @@ lemma log_inv : ∀ x : Gᵐ⁰, log x⁻¹ = -log x
   | 0 => by simp
   | (x : Multiplicative G) => rfl
 
-@[simp← ] lemma exp_zsmul (n : ℤ) (a : G) : exp (n • a) = exp a ^ n := rfl
+@[simp ←] lemma exp_zsmul (n : ℤ) (a : G) : exp (n • a) = exp a ^ n := rfl
 
 @[simp]
 lemma log_zpow (x : Gᵐ⁰) (n : ℤ) : log (x ^ n) = n • log x := by cases n <;> simp [log_pow, log_inv]
