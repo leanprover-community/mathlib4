@@ -562,11 +562,9 @@ theorem exists_eq_forall_mem_Icc_eq_integral
   use α
   refine ⟨?_, ?_, ?_⟩
   · rw [← h_union]
-    apply ContinuousOn.union_of_isClosed
+    apply ContinuousOn.union_of_isClosed ?_ ?_ isClosed_Icc isClosed_Icc
     · apply ContinuousOn.congr hα₂_cont hα_eq_α₂
     · apply ContinuousOn.congr hα₁_cont hα_eq_α₁
-    · apply isClosed_Icc
-    · apply isClosed_Icc
   · rw [← h_union]
     apply MapsTo.union (MapsTo.congr hα₂_maps hα_eq_α₂.symm)
       (MapsTo.congr hα₁_maps hα_eq_α₁.symm)
@@ -607,9 +605,7 @@ theorem exists_eq_forall_mem_Icc_hasDerivWithinAt₀ (hf : IsPeano f t₀ x₀ r
   obtain ⟨α, hα_cont, hα_maps, hα_eq⟩ := exists_eq_forall_mem_Icc_eq_integral hf
   use α
   constructor
-  · rw [hα_eq t₀]
-    · simp
-    · exact t₀.2
+  · simp [hα_eq t₀]
   · intro t ht
     apply HasDerivWithinAt.congr _ hα_eq (hα_eq t ht)
     simp only [hasDerivWithinAt_const_add_iff]
