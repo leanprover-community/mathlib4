@@ -236,7 +236,7 @@ instance [Membership B A] : letI := LE.ofSetLike A B; IsConcreteLE A B :=
 /-- The preorder induced from a `Membership` instance by inclusion.
 A preorder defined this way automatically makes available an instance of `IsConcreteLE`.
 -/
-@[reducible] def Preorder.ofMembership [SetLike A B] : Preorder A where
+@[reducible] def Preorder.ofSetLike [SetLike A B] : Preorder A where
   __ := LE.ofSetLike A B
   lt s t := letI := LE.ofSetLike A B; s ≤ t ∧ ¬t ≤ s
   __ := Preorder.lift (SetLike.coe : A → Set B)
@@ -245,7 +245,7 @@ A preorder defined this way automatically makes available an instance of `IsConc
 A partial order defined this was will automatically makes available an instance of `IsConcreteLE`.
 -/
 @[reducible] def PartialOrder.ofSetLike [SetLike A B] : PartialOrder A where
-  __ := Preorder.ofMembership A B
+  __ := Preorder.ofSetLike A B
   __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
 
 end default
