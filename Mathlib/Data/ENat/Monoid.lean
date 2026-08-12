@@ -26,7 +26,7 @@ deriving instance
 
 namespace ENat
 
-variable {a b c d m n : ℕ∞}
+variable {a b c m n : ℕ∞}
 
 @[simp] lemma natCast_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
 
@@ -169,6 +169,7 @@ lemma self_le_mul_right (a : ℕ∞) (hc : c ≠ 0) : a ≤ a * c := by
       nth_rewrite 1 [← mul_one (M := ℕ∞) (a + 1 :)]
       rwa [ENat.mul_le_mul_left_iff] <;> simp
 
+-- TODO: match name with `le_mul_of_one_le_left'`?
 lemma self_le_mul_left (a : ℕ∞) (hc : c ≠ 0) : a ≤ c * a := by
   rw [mul_comm]
   exact ENat.self_le_mul_right a hc

@@ -18,7 +18,7 @@ deriving instance SuccOrder for ENat
 
 namespace ENat
 
-variable {a b c d m n : ℕ∞}
+variable {a b m n : ℕ∞}
 
 @[simp] theorem succ_natCast (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := WithTop.succ_coe
 
