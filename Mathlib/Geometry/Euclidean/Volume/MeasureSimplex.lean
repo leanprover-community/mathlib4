@@ -24,7 +24,7 @@ interior.
   is equal to the volume measure of the closed interior.
 -/
 
-open MeasureTheory Measure Module Submodule
+open MeasureTheory Measure Module Submodule AffineSubspace
 
 public section
 
@@ -47,30 +47,26 @@ private theorem convert_shifted_plane (s : Simplex ℝ P (n + 1)) (i : Fin (n + 
       (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ ⊓ affineSpan ℝ (Set.range s.points) =
       -- RHS: shift the base towards the vertex.
       (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
-  rw [AffineSubspace.shift_eq ⟨s.altitudeFoot i, altitudeFoot_mem_affineSpan_image_compl s i⟩]
+  rw [shift_eq ⟨s.altitudeFoot i, altitudeFoot_mem_affineSpan_image_compl s i⟩]
   conv_rhs => conv in affineSpan _ _ =>
-    rw [← AffineSubspace.mk'_eq (altitudeFoot_mem_affineSpan_image_compl s i)]
-  rw [AffineSubspace.map_mk']
+    rw [← mk'_eq (altitudeFoot_mem_affineSpan_image_compl s i)]
+  rw [map_mk']
   have h : x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i ∈
       affineSpan ℝ (Set.range s.points) := by
-    apply AffineSubspace.vadd_mem_of_mem_direction
-    · apply Submodule.smul_mem
-      apply AffineSubspace.vsub_mem_direction (s.altitudeFoot_mem_affineSpan _)
-      exact mem_affineSpan ℝ (by simp)
-    · exact mem_affineSpan ℝ (by simp)
-  apply AffineSubspace.ext_of_direction_eq
-  · rw [AffineSubspace.direction_inf_of_mem (by simp) h]
+    refine vadd_mem_of_mem_direction (smul_mem _ _ ?_) (mem_affineSpan ℝ (by simp))
+    exact vsub_mem_direction (s.altitudeFoot_mem_affineSpan _) (mem_affineSpan ℝ (by simp))
+  apply ext_of_direction_eq
+  · rw [direction_inf_of_mem (by simp) h]
     suffices (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ ⊓
       (affineSpan ℝ (Set.range s.points)).direction = (affineSpan ℝ (s.points '' {i}ᶜ)).direction by
       simpa
-    rw [← vectorSpan_pair, ← direction_affineSpan,
-      affineSpan_pair_altitudeFoot_eq_altitude, direction_altitude, direction_affineSpan]
-    rw [← (vectorSpan ℝ (Set.range s.points)).orthogonal_orthogonal, Submodule.inf_orthogonal]
-    rw [inf_sup_assoc_of_le _ (Submodule.orthogonal_le (vectorSpan_mono ℝ (by simp)))]
+    rw [← vectorSpan_pair, ← direction_affineSpan, affineSpan_pair_altitudeFoot_eq_altitude,
+      direction_altitude, direction_affineSpan]
+    rw [← (vectorSpan ℝ (Set.range s.points)).orthogonal_orthogonal, inf_orthogonal]
+    rw [inf_sup_assoc_of_le _ (orthogonal_le (vectorSpan_mono ℝ (by simp)))]
     rw [((vectorSpan ℝ (Set.range s.points))ᗮ).isCompl_orthogonal.codisjoint.symm.eq_top]
-    rw [inf_top_eq, Submodule.orthogonal_orthogonal, direction_affineSpan]
-  · use x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i
-    constructor
+    rw [inf_top_eq, orthogonal_orthogonal, direction_affineSpan]
+  · refine ⟨x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i, ?_, ?_⟩
     · simpa using h
     · rw [sub_smul, sub_eq_add_neg, ← smul_neg]
       simp
@@ -116,15 +112,15 @@ theorem euclideanHausdorffMeasure_closedInterior (s : Simplex ℝ P (n + 1)) (i 
     exact s.independent.finrank_vectorSpan (by simp)
   conv in μHE[n + 1] => rw [← hn]
   -- Convert the LHS to integrating the cross-section of the interior
-  have haltitudeFoot : s.altitudeFoot i -ᵥ s.points i ≠ 0 :=
+  have haltitude0 : s.altitudeFoot i -ᵥ s.points i ≠ 0 :=
     vsub_eq_zero_iff_eq.ne.mpr (s.ne_altitudeFoot i).symm
   have haltitudeMem : s.altitudeFoot i -ᵥ s.points i ∈
       (affineSpan ℝ (Set.range s.points)).direction := by
     apply vsub_mem_vectorSpan _ (s.altitudeFoot_mem_affineSpan _)
     exact mem_affineSpan _ (by simp)
-  rw [EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral' (s.points i) haltitudeFoot
+  rw [EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral' (s.points i) haltitude0
     s.measurableSet_closedInterior haltitudeMem closedInterior_subset_affineSpan, ← ofReal_norm,
-    ← dist_eq_norm_vsub', ← Simplex.height, Nat.sub_eq_of_eq_add hn]
+    ← dist_eq_norm_vsub', ← height, Nat.sub_eq_of_eq_add hn]
   simp_rw [convert_shifted_plane' s i]
   rw [← setLIntegral_eq_of_support_subset (cross_section_support s i),
     lintegral_congr_ae (measure_cross_section s i)]

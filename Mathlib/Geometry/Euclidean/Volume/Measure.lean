@@ -376,11 +376,10 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral' (p : P) {v : V
       apply ext_of_direction_eq
       · ext u
         simp [direction_inf_of_mem h1 h2, v', Submodule.mem_orthogonal_singleton_iff_inner_right]
-      · use x • v +ᵥ (orthogonalProjection s p).val
-        exact ⟨self_mem_mk' _ _, h1, h2⟩
+      · exact ⟨x • v +ᵥ (orthogonalProjection s p).val, self_mem_mk' _ _, h1, h2⟩
     have h : Subtype.val '' (mk' (x • v' +ᵥ orthogonalProjection s p) (ℝ ∙ v')ᗮ : Set s) =
         (mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ : Set P) ∩ (s : Set P) := by
       simpa using congr(SetLike.coe $h)
     rw [← s.euclideanHausdorffMeasure_coe_image, Set.image_inter Subtype.val_injective,
-      coe_subtypeA, Set.image_preimage_eq_of_subset (by simpa using hts),
-      h, ← Set.inter_assoc, Set.inter_right_comm, Set.inter_eq_left.mpr hts]
+      coe_subtypeA, Set.image_preimage_eq_of_subset (by simpa using hts), h, ← Set.inter_assoc,
+      Set.inter_right_comm, Set.inter_eq_left.mpr hts]
