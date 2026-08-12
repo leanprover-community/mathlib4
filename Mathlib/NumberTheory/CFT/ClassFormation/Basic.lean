@@ -39,16 +39,18 @@ def Aut.overMap {Z Y X : C} (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ X)
 
 open PreGaloisCategory GaloisCategory
 
+-- The assumption `[EssentiallySmall.{v} C]` may be required in some places
+
 variable (C) in
 /-- A formation for a Galois category `C` is a sheaf of abelian groups
 on the category of connected objects in `C` (equipped with the regular topology). -/
-structure Formation [GaloisCategory C] [EssentiallySmall.{v} C] where
+structure Formation [GaloisCategory C] where
   /-- the underlying sheaf on the category of connected objects on the Galois category -/
   sheaf : Sheaf (isConnectedTopology C) Ab.{v}
 
 namespace Formation
 
-variable [GaloisCategory C] [EssentiallySmall.{v} C] (Φ : Formation C)
+variable [GaloisCategory C] (Φ : Formation C)
 
 section
 
@@ -143,7 +145,7 @@ end Formation
 
 section
 
-variable [GaloisCategory C] [EssentiallySmall.{v} C]
+variable [GaloisCategory C]
 
 variable (C) in
 /-- A field formation is a formation which which the cohomology is trivial
