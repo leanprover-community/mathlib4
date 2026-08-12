@@ -18,7 +18,7 @@ on a fixed `I : ModelWithCorners 𝕜 E H`, along with the forgetful functor to 
 * Show that `ModelWithCorners.MfldCat I n` has coproducts given by disjoint unions.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 open scoped Manifold ContDiff
