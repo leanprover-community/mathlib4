@@ -258,6 +258,36 @@ theorem add {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeighte
     IsWeightedHomogeneous w (φ + ψ) n :=
   (weightedHomogeneousSubmodule R w n).add_mem hφ hψ
 
+section CommRing
+
+-- In this section we shadow the semiring `R` with a ring `R`.
+variable {R : Type*} [CommRing R] {w : σ → M} {φ ψ : MvPolynomial σ R}
+
+/-- The negation of a weighted homogeneous polynomial of degree `n` is weighted homogeneous
+  of weighted degree `n`. -/
+theorem neg (hφ : IsWeightedHomogeneous w φ n) : IsWeightedHomogeneous w (-φ) n :=
+  (weightedHomogeneousSubmodule R w n).neg_mem hφ
+
+/-- The difference of two weighted homogeneous polynomials of degree `n` is weighted homogeneous
+  of weighted degree `n`. -/
+theorem sub (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeightedHomogeneous w ψ n) :
+    IsWeightedHomogeneous w (φ - ψ) n :=
+  (weightedHomogeneousSubmodule R w n).sub_mem hφ hψ
+
+end CommRing
+
+/-- A weighted homogeneous polynomial of degree `n` is zero if no monomial has weight `n`. -/
+theorem eq_zero_of_no_monomials {w : σ → M} (hφ : IsWeightedHomogeneous w φ n)
+    (hno : ∀ d : σ →₀ ℕ, weight w d ≠ n) : φ = 0 :=
+  support_eq_empty.mp <| Finset.eq_empty_of_forall_notMem
+    fun _ hd ↦ hno _ (hφ (mem_support_iff.mp hd))
+
+/-- A weighted homogeneous polynomial of degree `n` whose support degrees are all equal to a
+fixed `d₀` is a single monomial. -/
+theorem eq_monomial_of_unique_weight {w : σ → M} {d₀ : σ →₀ ℕ} (hφ : IsWeightedHomogeneous w φ n)
+    (huniq : ∀ d, weight w d = n → d = d₀) : φ = monomial d₀ (coeff d₀ φ) :=
+  eq_monomial_of_support_subset_singleton fun d hd ↦ huniq d (hφ (mem_support_iff.mp hd))
+
 /-- The sum of weighted homogeneous polynomials of degree `n` is weighted homogeneous of
   weighted degree `n`. -/
 theorem sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : M) {w : σ → M}
@@ -382,7 +412,7 @@ theorem weightedHomogeneousComponent_isWeightedHomogeneous :
   classical
   intro d hd
   contrapose! hd
-  rw [coeff_weightedHomogeneousComponent, if_neg hd]
+  rw [coeff_weightedHomogeneousComponent, ite_eq_right hd]
 
 theorem weightedHomogeneousComponent_mem (w : σ → M) (φ : MvPolynomial σ R) (m : M) :
     weightedHomogeneousComponent w m φ ∈ weightedHomogeneousSubmodule R w m := by
@@ -432,14 +462,14 @@ theorem sum_weightedHomogeneousComponent :
   ext1 d
   simp only [coeff_sum, coeff_weightedHomogeneousComponent]
   rw [Finset.sum_eq_single (weight w d)]
-  · rw [if_pos rfl]
+  · rw [ite_eq_left rfl]
   · intro m _ hm'
-    rw [if_neg hm'.symm]
+    rw [ite_eq_right hm'.symm]
   · intro hm
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
     simp only [Finite.mem_toFinset, mem_support, Ne, Classical.not_not] at hm
     have := coeff_weightedHomogeneousComponent (w := w) (weight w d) φ d
-    rw [hm, if_pos rfl, coeff_zero] at this
+    rw [hm, ite_eq_left rfl, coeff_zero] at this
     exact this.symm
 
 theorem finsum_weightedHomogeneousComponent :
@@ -458,7 +488,7 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_same {m : M} {p : MvP
   · split_ifs
     · rfl
     rw [zero_coeff]
-  · rw [hp zero_coeff, if_pos rfl]
+  · rw [hp zero_coeff, ite_eq_left rfl]
 
 theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
     {p : MvPolynomial σ R} (hp : IsWeightedHomogeneous w p m) :
@@ -469,7 +499,7 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
   · simp [zero_coeff]
-  · rw [if_neg]
+  · rw [ite_eq_right]
     · rw [coeff_zero]
     · rw [hp zero_coeff]; exact Ne.symm hn
 
@@ -555,8 +585,8 @@ theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [IsAddTorsio
   classical
   ext1 d
   rcases Classical.em (d = 0) with (rfl | hd)
-  · simp only [coeff_weightedHomogeneousComponent, if_pos, map_zero, coeff_zero_C]
-  · rw [coeff_weightedHomogeneousComponent, if_neg, coeff_C, if_neg (Ne.symm hd)]
+  · simp only [coeff_weightedHomogeneousComponent, ite_eq_left, map_zero, coeff_zero_C]
+  · rw [coeff_weightedHomogeneousComponent, ite_eq_right, coeff_C, ite_eq_right (Ne.symm hd)]
     simp only [weight, LinearMap.toAddMonoidHom_coe, Finsupp.linearCombination_apply, Finsupp.sum,
       sum_eq_zero_iff, Finsupp.mem_support_iff, Ne, smul_eq_zero, not_forall, not_or,
       and_self_left, exists_prop]

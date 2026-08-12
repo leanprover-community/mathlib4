@@ -45,7 +45,7 @@ end
 
 variable {R : Type*} [Ring R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
 
-open ValuativeRel TopologicalSpace Filter Topology Set
+open ValuativeRel TopologicalSpace Filter Set
 
 local notation "v" => valuation R
 

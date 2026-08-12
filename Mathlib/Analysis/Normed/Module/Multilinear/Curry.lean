@@ -37,7 +37,7 @@ suppress_compilation
 
 noncomputable section
 
-open NNReal Finset Metric ContinuousMultilinearMap Fin Function
+open Finset ContinuousMultilinearMap Fin Function
 
 /-!
 ### Type variables

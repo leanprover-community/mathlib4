@@ -369,17 +369,13 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
 
 @[simp] theorem zero_lt_top : 0 < ∞ := coe_lt_top
 
-@[simp, norm_cast] theorem coe_le_coe : (↑r : ℝ≥0∞) ≤ ↑q ↔ r ≤ q := WithTop.coe_le_coe
+@[simp, norm_cast, gcongr] theorem coe_le_coe : (↑r : ℝ≥0∞) ≤ ↑q ↔ r ≤ q := WithTop.coe_le_coe
 
-@[simp, norm_cast] theorem coe_lt_coe : (↑r : ℝ≥0∞) < ↑q ↔ r < q := WithTop.coe_lt_coe
+@[simp, norm_cast, gcongr] theorem coe_lt_coe : (↑r : ℝ≥0∞) < ↑q ↔ r < q := WithTop.coe_lt_coe
 
--- Needed until `@[gcongr]` accepts iff statements
-alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
-attribute [gcongr] ENNReal.coe_le_coe_of_le
+@[deprecated (since := "2026-08-04")] alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
 
--- Needed until `@[gcongr]` accepts iff statements
-alias ⟨_, coe_lt_coe_of_lt⟩ := coe_lt_coe
-attribute [gcongr] ENNReal.coe_lt_coe_of_lt
+@[deprecated (since := "2026-08-04")] alias ⟨_, coe_lt_coe_of_lt⟩ := coe_lt_coe
 
 theorem coe_mono : Monotone ofNNReal := fun _ _ => coe_le_coe.2
 
@@ -743,7 +739,7 @@ unsafe instance : Repr ℝ≥0∞ where
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
 @[positivity ENNReal.toReal _]
