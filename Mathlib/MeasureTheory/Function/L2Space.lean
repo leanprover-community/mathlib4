@@ -6,8 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Analysis.InnerProductSpace.GramMatrix
-public import Mathlib.Analysis.InnerProductSpace.LinearMap
-public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap

@@ -70,9 +70,11 @@ theorem mem_sym2_iff {m : Multiset α} {z : Sym2 α} :
     z ∈ m.sym2 ↔ ∀ y ∈ z, y ∈ m :=
   m.inductionOn fun xs => by simp [List.mem_sym2_iff]
 
-lemma setOf_mem_sym2 {m : Multiset α} :
+lemma setOfPred_mem_sym2 {m : Multiset α} :
     {z : Sym2 α | z ∈ m.sym2} = {x : α | x ∈ m}.sym2 :=
   Set.ext fun z ↦ z.ind fun a b => by simp [mk_mem_sym2_iff]
+
+@[deprecated (since := "2026-07-09")] alias setOf_mem_sym2 := setOfPred_mem_sym2
 
 protected theorem Nodup.sym2 {m : Multiset α} (h : m.Nodup) : m.sym2.Nodup :=
   m.inductionOn (fun _ h => List.Nodup.sym2 h) h

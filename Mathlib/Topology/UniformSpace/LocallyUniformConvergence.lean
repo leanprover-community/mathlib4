@@ -39,7 +39,7 @@ Uniform limit, uniform convergence, tends uniformly to
 
 noncomputable section
 
-open Topology Uniformity Filter Set Uniform
+open Topology Uniformity Filter Set
 
 variable {α β γ ι : Type*} [TopologicalSpace α] [UniformSpace β]
 variable {F : ι → α → β} {f : α → β} {s s' : Set α} {x : α} {p : Filter ι}
@@ -141,7 +141,7 @@ theorem tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace [CompactSpa
 /-- For a compact set `s`, locally uniform convergence on `s` is just uniform convergence on `s`. -/
 theorem tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact (hs : IsCompact s) :
     TendstoLocallyUniformlyOn F f p s ↔ TendstoUniformlyOn F f p s := by
-  haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
+  have : CompactSpace s := isCompact_iff_compactSpace.mp hs
   refine ⟨fun h => ?_, TendstoUniformlyOn.tendstoLocallyUniformlyOn⟩
   rwa [tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe,
     tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace, ←

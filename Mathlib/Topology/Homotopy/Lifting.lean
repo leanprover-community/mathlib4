@@ -98,9 +98,9 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
     change g' (t n, a) ∈ (q e).source; rw [g'_a _ le_rfl]
     exact h_sub ⟨le_rfl, t_mono n.le_succ⟩
   · rw [← t_0]; exact ⟨t_mono n.zero_le, le_rfl⟩
-  · have ht := Set.mem_setOf.mp (frontier_le_subset_eq continuous_fst continuous_const hfr)
+  · have ht := Set.mem_ofPred.mp (frontier_le_subset_eq continuous_fst continuous_const hfr)
     have : f ta ∈ (q e).target := huv ⟨hu (by rw [ht]; exact ⟨le_rfl, t_mono n.le_succ⟩), hav⟩
-    rw [if_pos this]
+    rw [ite_eq_left this]
     -- here we use that {tₙ} × Nₙ₊₁ is mapped to the domain of `q e`
     apply (q e).injOn (by rwa [← ta.eta, ht]) ((q e).map_target this)
     rw [(q e).right_inv this, ← hpq e]; exact congr($g'_lifts ta)
@@ -108,13 +108,13 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
     exact ⟨⟨hta.1.1, ht⟩, hta.2.2.1⟩
   · simp_rw [not_le]; exact (ContinuousOn.congr ((q e).continuousOn_invFun.comp f.2.continuousOn
       fun _ h ↦ huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩)
-      fun _ h ↦ if_pos <| huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩).mono
+      fun _ h ↦ ite_eq_left <| huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩).mono
         (Set.inter_subset_inter_right _ <| closure_lt_subset_le continuous_const continuous_fst)
   · ext ta; rw [Function.comp_apply]; split_ifs with _ hv
     · exact congr($g'_lifts ta)
     · rw [hpq e, (q e).right_inv hv]
     · exact congr($g_lifts ta)
-  · rw [← g'_0]; exact if_pos bot_le
+  · rw [← g'_0]; exact ite_eq_left bot_le
   · dsimp only; split_ifs with htn hf
     · exact g'_a t0 htn
     · apply (q e).injOn ((q e).map_target hf) (h_sub ⟨le_of_not_ge htn, htn1⟩)
@@ -253,7 +253,7 @@ theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
     exact ⟨t_sub ⟨closure_lt_subset_le continuous_const continuous_subtype_val h.2, h.1.2⟩, ⟨⟩⟩
   · rw [Function.comp_apply]; split_ifs with h
     exacts [eqOn ⟨hs.1, h⟩, q.proj_symm_apply' (t_sub ⟨le_of_not_ge h, hs.2⟩)]
-  · dsimp only; rwa [if_pos (t_0 ▸ t_mono n.zero_le)]
+  · dsimp only; rwa [ite_eq_left (t_0 ▸ t_mono n.zero_le)]
 
 /-- The lift of a path to a covering space given a lift of the left endpoint. -/
 def liftPath : C(I, E) := (cov.exists_path_lifts γ e γ_0).choose
@@ -325,6 +325,7 @@ lemma eq_liftHomotopy_iff' (H' : C(I × A, E)) :
 
 variable {f₀ f₁ : C(A, X)} {S : Set A} (F : f₀.HomotopyRel f₁ S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 open ContinuousMap in
 /-- The lift to a covering space of a homotopy between two continuous maps relative to a set
 given compatible lifts of the continuous maps. -/
@@ -348,6 +349,7 @@ def liftHomotopyRel [PreconnectedSpace A]
       exact (congr_fun (cov.liftHomotopy_lifts F f₀' _) (1, a)).trans (F.apply_one a)
     prop' := rel }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Two continuous maps from a preconnected space to the total space of a covering map
   are homotopic relative to a set `S` if and only if their compositions with the covering map
   are homotopic relative to `S`, assuming that they agree at a point in `S`. -/
@@ -362,6 +364,7 @@ theorem homotopicRel_liftPath {γ₀ γ₁ : C(I, X)}
   h.map fun H ↦ cov.liftHomotopyRel (f₀' := cov.liftPath γ₀ e h₀) (f₁' := cov.liftPath γ₁ e h₁) H
     ⟨0, .inl rfl, by simp_rw [liftPath_zero]⟩ (liftPath_lifts ..) (liftPath_lifts ..)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Lifting two paths that are homotopic relative to `{0,1}`
   starting from the same point also ends up in the same point. -/
 theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
@@ -405,6 +408,7 @@ theorem monodromy_map {x y : E} (γ : Path.Homotopic.Quotient x y) :
   obtain ⟨γ⟩ := γ
   exact congr($((cov.eq_liftPath_iff' _).mpr ⟨rfl, γ.source⟩) 1).symm.trans γ.target
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem monodromy_eq_of_map_eq {x y : X} {γ : Path.Homotopic.Quotient x y}
     {ex : p ⁻¹' {x}} {ey : p ⁻¹' {y}} (Γ : Path.Homotopic.Quotient ex.1 ey)
     (eq : Γ.map ⟨p, cov.continuous⟩ = γ.cast ex.2 ey.2) :
@@ -460,9 +464,6 @@ lemma injective_path_homotopic_map (e₀ e₁ : E) :
   iterate 2 rw [Path.Homotopic.Quotient.eq]
   exact (cov.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
 
-@[deprecated (since := "2025-11-20")]
-alias injective_path_homotopic_mapFn := injective_path_homotopic_map
-
 /-- A continuous map `f` from a simply-connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X`, after specifying any lift
   `e₀ : E` of any point `a₀ : A`. -/
@@ -482,6 +483,7 @@ theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocallyPathCo
     rw [eq_liftPath_iff']
   exacts [⟨Γ_lifts, Γ_0⟩, ⟨Γ'_lifts, Γ'_0⟩]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open FundamentalGroup Path.Homotopic.Quotient in
 /-- A continuous map `f` from a path connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X` (such that `f a₀` is lifted to `e₀`)
@@ -548,6 +550,7 @@ namespace IsQuotientCoveringMap
 
 variable {G : Type*} [Group G] [MulAction G E] (hp : IsQuotientCoveringMap p G) {g : G}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The monodromy action of a quotient covering map commutes with the group action. -/
 theorem monodromy_toPermFiber {x y : X} {γ : Path.Homotopic.Quotient x y} {e : p ⁻¹' {x}} :
     letI monodromy := hp.isCoveringMap.monodromy
@@ -561,7 +564,6 @@ theorem monodromy_toPermFiber {x y : X} {γ : Path.Homotopic.Quotient x y} {e : 
     convert hp.isCoveringMap.map_liftPathQuotient γ e using 2
     · simp [g', p', hp.map_smul]
     · simp [g', p', hp.map_smul]
-    · grind
     · grind
 
 theorem commute_monodromyPerm_toPermFiber {x : X} {γ : FundamentalGroup X x} :
@@ -587,6 +589,7 @@ theorem monodromy_eq_id_iff :
   mpr eq := (hp.monodromy_ext e (eq.trans congr($hp.isCoveringMap.monodromy_refl e).symm)).trans
     hp.isCoveringMap.monodromy_refl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ker_monodromyPerm :
     (hp.isCoveringMap.monodromyPerm x).ker =
     (FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ e.2).range := by

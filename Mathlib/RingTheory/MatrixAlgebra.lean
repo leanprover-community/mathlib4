@@ -44,7 +44,7 @@ attribute [local ext] ext_linearMap
 /-- `Matrix.kroneckerTMul` as a linear equivalence, when the two arguments are tensored. -/
 def kroneckerTMulLinearEquiv :
     Matrix l m M ⊗[R] Matrix n p N ≃ₗ[S] Matrix (l × n) (m × p) (M ⊗[R] N) :=
-  .ofLinear
+  .ofLinearMap
     (AlgebraTensorModule.lift <| kroneckerTMulBilinear R S)
     (Matrix.liftLinear R fun ii jj =>
       AlgebraTensorModule.map (singleLinearMap S ii.1 jj.1) (singleLinearMap R ii.2 jj.2))
@@ -209,8 +209,6 @@ variable [Fintype n] [DecidableEq n]
 -/
 def matrixEquivTensor : Matrix n n A ≃ₐ[R] A ⊗[R] Matrix n n R :=
   AlgEquiv.symm { MatrixEquivTensor.toFunAlgHom n R A, MatrixEquivTensor.equiv n R A with }
-
-open MatrixEquivTensor
 
 @[simp]
 theorem matrixEquivTensor_apply (M : Matrix n n A) :

@@ -25,8 +25,6 @@ comma, arrow, preadditive
 
 namespace CategoryTheory
 
-open Category
-
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {A : Type u₁} [Category.{v₁} A] [Preadditive A]
@@ -106,6 +104,12 @@ lemma Arrow.Hom.add_left (α β : u ⟶ v) : (α + β).left = α.left + β.left 
 
 @[simp]
 lemma Arrow.Hom.add_right (α β : u ⟶ v) : (α + β).right = α.right + β.right := rfl
+
+@[simp]
+lemma Arrow.Hom.sub_left (α β : u ⟶ v) : (α - β).left = α.left - β.left := rfl
+
+@[simp]
+lemma Arrow.Hom.sub_right (α β : u ⟶ v) : (α - β).right = α.right - β.right := rfl
 
 @[simp]
 lemma Arrow.Hom.zero_left : (0 : u ⟶ v).left = 0 := rfl

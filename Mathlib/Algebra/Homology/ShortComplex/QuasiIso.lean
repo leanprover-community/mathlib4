@@ -104,7 +104,7 @@ lemma LeftHomologyMapData.quasiIso_iff {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHom
   rw [ShortComplex.quasiIso_iff, γ.homologyMap_eq]
   constructor
   · intro h
-    haveI : IsIso (γ.φH ≫ (LeftHomologyData.homologyIso h₂).inv) :=
+    have : IsIso (γ.φH ≫ (LeftHomologyData.homologyIso h₂).inv) :=
       IsIso.of_isIso_comp_left (LeftHomologyData.homologyIso h₁).hom _
     exact IsIso.of_isIso_comp_right _ (LeftHomologyData.homologyIso h₂).inv
   · intro h
@@ -116,7 +116,7 @@ lemma RightHomologyMapData.quasiIso_iff {φ : S₁ ⟶ S₂} {h₁ : S₁.RightH
   rw [ShortComplex.quasiIso_iff, γ.homologyMap_eq]
   constructor
   · intro h
-    haveI : IsIso (γ.φH ≫ (RightHomologyData.homologyIso h₂).inv) :=
+    have : IsIso (γ.φH ≫ (RightHomologyData.homologyIso h₂).inv) :=
       IsIso.of_isIso_comp_left (RightHomologyData.homologyIso h₁).hom _
     exact IsIso.of_isIso_comp_right _ (RightHomologyData.homologyIso h₂).inv
   · intro h
