@@ -423,7 +423,8 @@ theorem _root_.Function.Bijective.isFredholm_iff (f : E →L[𝕜] F)
     (f_bij : Function.Bijective f) :
     IsFredholm f ↔ f.IsInvertible := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ hf.isFredholm⟩
-  sorry -- missing API linking `IsHomeomorph` with `IsInvertible`...
+  simpa [isInvertible_iff_isHomeomorph, isHomeomorph_iff_isStrictMap_bijective, f_bij]
+    using hf.isStrictMap
 
 theorem _root_.Topology.IsQuotientMap.isFredholm {f : E →L[𝕜] F} (hq : IsQuotientMap f)
     (hcompl : f.ker.ClosedComplemented) (hfg : FiniteDimensional 𝕜 f.ker) :

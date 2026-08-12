@@ -232,16 +232,17 @@ protected theorem of_isInvertible_inverse (hf : f.inverse.IsInvertible) : f.IsIn
   obtain ⟨_, _⟩ : Subsingleton M₂ ∧ Subsingleton M := by simpa [inverse, H] using hf
   simp_all [Subsingleton.elim f 0]
 
+end IsInvertible
+
 @[simp]
-theorem _root_.ContinuousLinearMap.isInvertible_inverse_iff :
+theorem _root_.ContinuousLinearMap.isInvertible_inverse_iff {f : M →L[R] M₂} :
     f.inverse.IsInvertible ↔ f.IsInvertible :=
   ⟨.of_isInvertible_inverse, .inverse⟩
 
-theorem isInvertible_iff_isHomeomorph :
+theorem isInvertible_iff_isHomeomorph {f : M →L[R] M₂} :
     f.IsInvertible ↔ IsHomeomorph f :=
   ⟨fun ⟨e, he⟩ ↦ he ▸ e.isHomeomorph,
     fun hf ↦ ⟨.ofIsHomeomorph (.ofBijective f.toLinearMap hf.bijective) hf, rfl⟩⟩
 
-end IsInvertible
 
 end ContinuousLinearMap
