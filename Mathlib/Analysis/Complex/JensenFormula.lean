@@ -265,8 +265,10 @@ circle average `circleAverage (log ‖g ·‖) c R` equals `log ‖g c‖`.
 lemma AnalyticOnNhd.circleAverage_log_norm_of_ne_zero {R : ℝ} {c : ℂ} {g : ℂ → ℂ}
     (h₁g : AnalyticOnNhd ℂ g (closedBall c |R|)) (h₂g : ∀ u ∈ closedBall c |R|, g u ≠ 0) :
     circleAverage (Real.log ‖g ·‖) c R = Real.log ‖g c‖ :=
-  HarmonicOnNhd.circleAverage_eq (fun x hx ↦ (h₁g x hx).harmonicAt_log_norm (h₂g x hx))
+  InnerProductSpace.HarmonicOnNhd.circleAverage_eq
+    (fun x hx ↦ (h₁g x hx).harmonicAt_log_norm (h₂g x hx))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Reformulation of a finsum that appears in Jensen's formula and in the definition of the counting
 function of Value Distribution Theory, as discussed in
@@ -279,7 +281,7 @@ lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ
   · have {g : ℂ → ℝ} : (fun u ↦ D u * g u).support ⊆ hD.toFinset :=
       fun x ↦ by simp +contextual
     simp only [finsum_eq_sum_of_support_subset _ this,
-      Finset.sum_eq_sum_diff_singleton_add ((Set.Finite.mem_toFinset hD).mpr h), sub_self,
+      Finset.sum_eq_sum_sdiff_singleton_add ((Set.Finite.mem_toFinset hD).mpr h), sub_self,
       norm_zero, log_zero, sub_zero, inv_zero, mul_zero, add_zero, add_left_inj]
     refine Finset.sum_congr rfl fun x hx ↦ ?_
     simp only [Finset.mem_sdiff, Finset.notMem_singleton] at hx

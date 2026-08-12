@@ -94,6 +94,7 @@ section
 variable {R : Type*} [Semiring R] [Module R ℝ]
 variable [ContinuousConstSMul R ℝ] [ContinuousConstSMul R ℂ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The complex measures form a linear isomorphism to the type of pairs of signed measures. -/
 @[simps]
 def equivSignedMeasureₗ : ComplexMeasure α ≃ₗ[R] SignedMeasure α × SignedMeasure α :=
@@ -108,6 +109,7 @@ def equivSignedMeasureₗ : ComplexMeasure α ≃ₗ[R] SignedMeasure α × Sign
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 theorem absolutelyContinuous_ennreal_iff (c : ComplexMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     c ≪ᵥ μ ↔ ComplexMeasure.re c ≪ᵥ μ ∧ ComplexMeasure.im c ≪ᵥ μ := by
   constructor <;> intro h

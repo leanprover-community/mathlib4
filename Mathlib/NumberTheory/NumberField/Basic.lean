@@ -10,9 +10,11 @@ public import Mathlib.Algebra.CharZero.AddMonoidHom
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Number fields
+
 This file defines a number field and the ring of integers corresponding to it.
 
 ## Main definitions
@@ -38,7 +40,7 @@ number field, ring of integers
 
 /-- A number field is a field which has characteristic zero and is finite
 dimensional over ℚ. -/
-@[stacks 09GA]
+@[stacks 09GA, wikidata Q616608]
 class NumberField (K : Type*) [Field K] : Prop where
   [to_charZero : CharZero K]
   [to_finiteDimensional : FiniteDimensional ℚ K]
@@ -97,6 +99,7 @@ much more effective use of the discrimination tree than instances of the form
 `SMul (Subtype _) (Subtype _)`.
 The drawback is we have to copy over instances manually.
 -/
+@[wikidata Q1358313]
 def RingOfIntegers : Type _ :=
   integralClosure ℤ K
 deriving CommRing, IsDomain, Nontrivial
@@ -172,6 +175,7 @@ lemma mk_eq_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) = ⟨y, hy⟩ ↔ x = 
 @[simp] lemma neg_mk (x : K) (hx) : (-⟨x, hx⟩ : 𝓞 K) = ⟨-x, neg_mem hx⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ring homomorphism `(𝓞 K) →+* (𝓞 L)` given by restricting a ring homomorphism
   `f : K →+* L` to `𝓞 K`. -/
 def mapRingHom {K L : Type*} [Field K] [Field L] (f : K →+* L) : (𝓞 K) →+* (𝓞 L) where

@@ -34,7 +34,7 @@ two processes `martingalePart f ℱ μ` and `predictablePart f ℱ μ`.
 @[expose] public section
 
 
-open TopologicalSpace Filter
+open Filter
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 
@@ -99,8 +99,8 @@ lemma Submartingale.predictablePart_nonneg
   filter_upwards [hf.monotone_predictablePart] with ω hω n
   simpa [predictablePart_zero] using hω (Nat.zero_le n)
 
-lemma IsStronglyPredictable.predictablePart_eq [SecondCountableTopology E] [MeasurableSpace E]
-    [BorelSpace E] [SigmaFiniteFiltration μ ℱ] (hf : IsStronglyPredictable ℱ f)
+lemma IsStronglyPredictable.predictablePart_eq
+    [SigmaFiniteFiltration μ ℱ] (hf : IsStronglyPredictable ℱ f)
     (hfint : ∀ n, Integrable (f n) μ) (n : ℕ) :
     predictablePart f ℱ μ n =ᵐ[μ] f n - f 0 := by
   simp only [predictablePart, ← Finset.sum_range_sub]
@@ -148,8 +148,7 @@ lemma Martingale.martingalePart_eq [CompleteSpace E] (hf : Martingale f ℱ μ) 
   filter_upwards [hf.predictablePart_eq_zero n] with ω hω
   simp [martingalePart, hω]
 
-lemma IsPredictable.martingalePart_eq [SecondCountableTopology E] [MeasurableSpace E]
-    [BorelSpace E] [SigmaFiniteFiltration μ ℱ] (hf : IsStronglyPredictable ℱ f)
+lemma IsPredictable.martingalePart_eq [SigmaFiniteFiltration μ ℱ] (hf : IsStronglyPredictable ℱ f)
     (hfint : ∀ n, Integrable (f n) μ) (n : ℕ) :
     martingalePart f ℱ μ n =ᵐ[μ] f 0 := by
   filter_upwards [hf.predictablePart_eq (μ := μ) hfint n] with ω hω
@@ -245,22 +244,18 @@ theorem predictablePart_add_ae_eq [CompleteSpace E] [SigmaFiniteFiltration μ �
 
 section Difference
 
-theorem predictablePart_bdd_difference {R : ℝ≥0} {f : ℕ → Ω → ℝ} (ℱ : Filtration ℕ m0)
-    (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
-    ∀ᵐ ω ∂μ, ∀ i, |predictablePart f ℱ μ (i + 1) ω - predictablePart f ℱ μ i ω| ≤ R := by
+theorem predictablePart_bdd_difference [CompleteSpace E] {R : ℝ} {f : ℕ → Ω → E}
+    (ℱ : Filtration ℕ m0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, ‖f (i + 1) ω - f i ω‖ ≤ R) :
+    ∀ᵐ ω ∂μ, ∀ i, ‖predictablePart f ℱ μ (i + 1) ω - predictablePart f ℱ μ i ω‖ ≤ R := by
   simp_rw [predictablePart, Finset.sum_apply, Finset.sum_range_succ_sub_sum]
-  exact ae_all_iff.2 fun i => ae_bdd_condExp_of_ae_bdd <| ae_all_iff.1 hbdd i
+  exact ae_all_iff.2 fun i => ae_bdd_norm_condExp_of_ae_bdd_norm <| ae_all_iff.1 hbdd i
 
-theorem martingalePart_bdd_difference {R : ℝ≥0} {f : ℕ → Ω → ℝ} (ℱ : Filtration ℕ m0)
-    (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
-    ∀ᵐ ω ∂μ, ∀ i, |martingalePart f ℱ μ (i + 1) ω - martingalePart f ℱ μ i ω| ≤ ↑(2 * R) := by
+theorem martingalePart_bdd_difference [CompleteSpace E] {R : ℝ} {f : ℕ → Ω → E}
+    (ℱ : Filtration ℕ m0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, ‖f (i + 1) ω - f i ω‖ ≤ R) :
+    ∀ᵐ ω ∂μ, ∀ i, ‖martingalePart f ℱ μ (i + 1) ω - martingalePart f ℱ μ i ω‖ ≤ 2 * R := by
   filter_upwards [hbdd, predictablePart_bdd_difference ℱ hbdd] with ω hω₁ hω₂ i
-  simp only [two_mul, martingalePart, Pi.sub_apply]
-  have : |f (i + 1) ω - predictablePart f ℱ μ (i + 1) ω - (f i ω - predictablePart f ℱ μ i ω)| =
-      |f (i + 1) ω - f i ω - (predictablePart f ℱ μ (i + 1) ω - predictablePart f ℱ μ i ω)| := by
-    ring_nf -- `ring` suggests `ring_nf` despite proving the goal
-  rw [this]
-  exact (abs_sub _ _).trans (add_le_add (hω₁ i) (hω₂ i))
+  simpa [two_mul, martingalePart, sub_sub_sub_comm] using
+    (norm_sub_le _ _).trans (add_le_add (hω₁ i) (hω₂ i))
 
 end Difference
 

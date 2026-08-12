@@ -43,14 +43,14 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toSSetObj₁Equiv_apply_zero (s : toSSet.obj X _⦋1⦌) :
     X.toSSetObj₁Equiv s 0 = toSSetObj₀Equiv ((toSSet.obj X).δ 1 s) := by
-  simp [toSSetObj₀Equiv, toSSetObj₁Equiv,
+  simp [toSSetObj₀Equiv, toSSetObj₁Equiv, -ContinuousMap.coe_mk,
     Subsingleton.elim (default : stdSimplex ℝ (Fin 1)) (stdSimplex.vertex 0)]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toSSetObj₁Equiv_apply_one (s : toSSet.obj X _⦋1⦌) :
     X.toSSetObj₁Equiv s 1 = toSSetObj₀Equiv ((toSSet.obj X).δ 0 s) := by
-  simp [toSSetObj₀Equiv, toSSetObj₁Equiv,
+  simp [toSSetObj₀Equiv, toSSetObj₁Equiv, -ContinuousMap.coe_mk,
     Subsingleton.elim (default : stdSimplex ℝ (Fin 1)) (stdSimplex.vertex 0)]
 
 @[simp]
@@ -98,7 +98,7 @@ lemma zerothHomotopyEquiv_symm_mk (x : (toSSet.obj X) _⦋0⦌) :
     zerothHomotopyEquiv.symm (.mk x) = .mk (toSSetObj₀Equiv x) := rfl
 
 instance [PathConnectedSpace X] : (toSSet.obj X).IsConnected := by
-  letI : Unique (ZerothHomotopy X) := Nonempty.some (by
+  let : Unique (ZerothHomotopy X) := Nonempty.some (by
     rw [unique_iff_subsingleton_and_nonempty]
     constructor <;> infer_instance)
   rw [SSet.isConnected_iff_nonempty_unique]

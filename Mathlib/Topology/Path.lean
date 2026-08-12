@@ -63,7 +63,7 @@ structure Path (x y : X) extends C(I, X) where
 
 instance Path.instFunLike : FunLike (Path x y) I X where
   coe γ := ⇑γ.toContinuousMap
-  coe_injective' γ₁ γ₂ h := by
+  coe_injective γ₁ γ₂ h := by
     simp only [DFunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
 
@@ -307,7 +307,7 @@ theorem extend_trans_of_le_half (γ₁ : Path x y) (γ₂ : Path y z) {t : ℝ} 
     (γ₁.trans γ₂).extend t = γ₁.extend (2 * t) := by
   obtain _ | ht₀ := le_total t 0
   · repeat rw [extend_of_le_zero _ (by linarith)]
-  · rwa [extend_apply _ ⟨ht₀, by linarith⟩, trans_apply, dif_pos, extend_apply]
+  · rwa [extend_apply _ ⟨ht₀, by linarith⟩, trans_apply, dite_eq_left, extend_apply]
 
 theorem extend_trans_of_half_le (γ₁ : Path x y) (γ₂ : Path y z) {t : ℝ} (ht : 1 / 2 ≤ t) :
     (γ₁.trans γ₂).extend t = γ₂.extend (2 * t - 1) := by

@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 import Mathlib.Probability.Notation
-public import Mathlib.Probability.Notation
 
 /-! # Conditional Lebesgue expectation
 
@@ -61,7 +60,7 @@ namespace MeasureTheory
 
 variable {Ω : Type*} {mΩ₀ mΩ : MeasurableSpace Ω} {P : Measure[mΩ₀] Ω} {X Y : Ω → ℝ≥0∞}
 
-open Classical in
+open scoped Classical in
 /-- Conditional (Lebesgue) expectation of a function, with notation `P⁻[X|mΩ]`.
 
 It is defined as `0` if either `¬ mΩ ≤ mΩ₀` or `hm : mΩ ≤ mΩ₀` but `¬ SigmaFinite (P.trim hm)`.
@@ -78,7 +77,7 @@ noncomputable irreducible_def condLExp (mΩ : MeasurableSpace Ω) (P : Measure[m
   else 0
 
 @[inherit_doc MeasureTheory.condLExp]
-scoped macro:max P:term noWs "⁻[" X:term "|" mΩ:term "]" : term =>
+scoped macro:max P:term noWs "⁻[" X:term " | " mΩ:term "]" : term =>
   `(MeasureTheory.condLExp $mΩ $P $X)
 
 /-- Unexpander for `μ⁻[f|m]` notation. -/
@@ -87,18 +86,18 @@ meta def condLExpUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $mΩ $P $X) => `($P⁻[$X|$mΩ])
   | _ => throw ()
 
-/-- info: P⁻[X|mΩ] : Ω → ℝ≥0∞ -/
+/-- info: P⁻[X | mΩ] : Ω → ℝ≥0∞ -/
 #guard_msgs in
 #check P⁻[X|mΩ]
-/-- info: P⁻[X|mΩ] sorry : ℝ≥0∞ -/
+/-- info: P⁻[X | mΩ] sorry : ℝ≥0∞ -/
 #guard_msgs in
 #check P⁻[X|mΩ] (sorry : Ω)
 
 theorem condLExp_of_not_le (hm_not : ¬mΩ ≤ mΩ₀) : P⁻[X|mΩ] = 0 := by
-  rw [condLExp, dif_neg hm_not]
+  rw [condLExp, dite_eq_right hm_not]
 
 theorem condLExp_of_not_sigmaFinite (hm : mΩ ≤ mΩ₀) (hμm_not : ¬SigmaFinite (P.trim hm)) :
-    P⁻[X|mΩ] = 0 := by simp [condLExp, dif_pos hm, hμm_not]
+    P⁻[X|mΩ] = 0 := by simp [condLExp, dite_eq_left hm, hμm_not]
 
 theorem condLExp_eq_self (hm : mΩ ≤ mΩ₀) (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
     (hX : Measurable[mΩ] X) : P⁻[X|mΩ] = X := by
@@ -171,7 +170,7 @@ theorem ae_eq_condLExp₀ {P : Measure[mΩ₀] Ω} [hσ : SigmaFinite (P.trim hm
   rw [setLIntegral_trim_ae hm hY hs, setLIntegral_condLExp_trim _ _ _ hs]
   exact hXY s hs
 
-/- The conditional (Lebesgue) expectation `P⁻[X|mΩ]` is defined uniquely as an `mΩ`-measurable
+/-- The conditional (Lebesgue) expectation `P⁻[X|mΩ]` is defined uniquely as an `mΩ`-measurable
 function up to `P`-ae equality by its (Lebesgue) integral over all `mΩ`-measurable sets. -/
 theorem ae_eq_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
     (X : Ω → ℝ≥0∞) (hY : Measurable[mΩ] Y)
