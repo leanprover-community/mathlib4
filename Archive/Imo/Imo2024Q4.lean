@@ -62,11 +62,6 @@ structure Imo2024q4Cfg where
   K_eq_midpoint_AC : K = midpoint ℝ A C
   L_eq_midpoint_AB : L = midpoint ℝ A B
 
-/-- A default choice of orientation, for lemmas that need to pick one. -/
-@[implicit_reducible]
-def someOrientation [hd2 : Fact (finrank ℝ V = 2)] : Module.Oriented ℝ V (Fin 2) :=
-  ⟨Basis.orientation (finBasisOfFinrankEq _ _ hd2.out)⟩
-
 variable {V Pt}
 
 namespace Imo2024q4Cfg
@@ -493,8 +488,9 @@ lemma two_zsmul_oangle_A'PB_eq_two_zsmul_oangle_A'XB :
 
 end Oriented
 
+open scoped Module.Oriented.Arbitrary
+
 lemma cospherical_A'PBX : Cospherical ({cfg.A', cfg.P, cfg.B, cfg.X} : Set Pt) := by
-  have := someOrientation V
   suffices Cospherical ({cfg.A', cfg.P, cfg.X, cfg.B} : Set Pt) by
     convert this using 1
     grind
@@ -566,7 +562,6 @@ lemma two_zsmul_oangle_KIL_add_oangle_YPX_eq_zero :
 end Oriented
 
 theorem result : ∠ cfg.K cfg.I cfg.L + ∠ cfg.Y cfg.P cfg.X = π := by
-  have := someOrientation V
   rw [angle_eq_abs_oangle_toReal cfg.K_ne_I cfg.L_ne_I,
     angle_eq_abs_oangle_toReal cfg.Y_ne_P cfg.X_ne_P]
   exact Real.Angle.abs_toReal_add_abs_toReal_eq_pi_of_two_zsmul_add_eq_zero_of_sign_eq
