@@ -6,8 +6,8 @@ Authors: Ivo Malinowski
 module
 
 public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
-public import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
-public import Mathlib.MeasureTheory.Measure.LevyConvergence
+
+import Mathlib.MeasureTheory.Measure.LevyConvergence
 
 /-!
 # Cramèr-Wold Theorem
