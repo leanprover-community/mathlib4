@@ -348,13 +348,13 @@ lemma exists_tendstoUniformlyOn_subseq_tonelliApproximation (hf : IsPeano f t₀
     have h_restrict : (Set.Icc t₀.val tmax).domRestrict α = β := by
       ext x
       simp only [α, Set.domRestrict]
-      exact dif_pos x.prop
+      exact dite_eq_left x.prop
     rw [h_restrict]
     exact β.continuous
   · intro t ht
     have hα_apply : α t = β ⟨t, ht⟩ := by
       simp only [α]
-      exact dif_pos ht
+      exact dite_eq_left ht
     rw [hα_apply]
     let t' : Icc t₀.val tmax := ⟨t, ht⟩
     have h_uniform : TendstoUniformly (fun n ↦ boundedTonelliApproximation hf (φ n)) β atTop :=
@@ -373,7 +373,7 @@ lemma exists_tendstoUniformlyOn_subseq_tonelliApproximation (hf : IsPeano f t₀
     have hα_comp : α ∘ Subtype.val = ⇑β := by
       ext t
       simp only [Function.comp_apply, α]
-      exact dif_pos t.prop
+      exact dite_eq_left t.prop
     rw [hα_comp]
     change TendstoUniformly
       (fun n (t : Icc t₀.val tmax) ↦ boundedTonelliApproximation hf (φ n) t) ⇑β atTop
