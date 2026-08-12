@@ -108,9 +108,10 @@ instance : HasCokernel (chainComplexFunctorLeftToRight.{w} C) :=
   hasCokernel_of_hasCokernel_app _
 
 /--
-The chain complex associated to a *pair* of simplicial sets, with coefficients in `R : C`.
+The relative chain complex associated to a *pair* of simplicial sets, with
+coefficients in `R : C`, as a bifunctor `C ⥤ SSetPair.{w} ⥤ ChainComplex C ℕ`.
 It computes the simplicial homology of a pair of simplicial sets with coefficients
-in `R`. One can recover the ordinary simplicial chain complex when `C := Ab`
+in `R`. One can recover the ordinary relative simplicial chain complex when `C := Ab`
 and `R := ℤ`.
 -/
 @[no_expose]
@@ -191,14 +192,17 @@ instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
 
 variable {C} (P P' P'' : SSetPair.{w}) (f : P ⟶ P') (g : P' ⟶ P'') (R : C)
 
-/-- The chain complex of a pair of simplicial sets
-with coefficients in `R : C` (e.g. `C := Ab` and `R := ℤ`.) -/
+/-- The relative chain complex of a pair `P` of simplicial sets
+with coefficients in `R : C` (e.g. `C := Ab` and `R := ℤ`.)
+This identifies to the cokernel of the morphism
+`P.left.chainComplex R ⟶ P.right.chainComplex R` of simplicial
+chain complexes. -/
 noncomputable abbrev chainComplex : ChainComplex C ℕ :=
   ((SSetPair.chainComplexFunctor C).obj R).obj P
 
 variable {P P'} in
-/-- The morphism of simplicial chain complexes induces by a morphism
-of simplicial sets. -/
+/-- The morphism of relative simplicial chain complexes induces by a morphism
+of pairs of simplicial sets. -/
 noncomputable abbrev chainComplexMap : P.chainComplex R ⟶ P'.chainComplex R :=
   ((SSetPair.chainComplexFunctor C).obj R).map f
 
