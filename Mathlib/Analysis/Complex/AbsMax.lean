@@ -83,7 +83,7 @@ maximum modulus principle, complex analysis
 public section
 
 
-open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap Bornology
+open TopologicalSpace Metric Set Filter Function AffineMap Bornology
 
 open scoped Topology Filter NNReal Real
 

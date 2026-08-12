@@ -41,7 +41,7 @@ is a convenience class and no instance should be registered for it.
 
 @[expose] public section
 
-open Filter Function Set Topology
+open Filter Set Topology
 
 variable {X Y : Type*}
 

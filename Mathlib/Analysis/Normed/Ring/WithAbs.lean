@@ -25,8 +25,6 @@ public import Mathlib.Topology.Algebra.Ring.Basic
 
 @[expose] public section
 
-open Topology
-
 variable {R : Type*} {S : Type*} [Semiring S] [PartialOrder S]
 
 /-- Type synonym for a semiring which depends on an absolute value. This is a function that takes
@@ -244,7 +242,7 @@ instance moduleLeft [AddCommMonoid T] [Module R T] : Module (WithAbs v) T :=
 @[deprecated (since := "2026-03-02")] alias instModule_left := moduleLeft
 
 instance [Semiring T] [Module T R] : Module T (WithAbs v) :=
-  fast_instance% (equiv v).module T
+  fast_instance% (equiv v).toAddEquiv.module T
 
 @[deprecated (since := "2026-03-02")] alias instModule_right := instModule
 
@@ -253,7 +251,7 @@ variable [Semiring T] [Module R T] (v : AbsoluteValue T S)
 variable (R) in
 /-- The canonical `R`-linear isomorphism between `WithAbs v` and `T`, when
 `v : AbsoluteValue T S`. -/
-def linearEquiv : WithAbs v ≃ₗ[R] T := (equiv v).linearEquiv R
+def linearEquiv : WithAbs v ≃ₗ[R] T := (equiv v).toAddEquiv.linearEquiv R
 
 variable {v}
 
