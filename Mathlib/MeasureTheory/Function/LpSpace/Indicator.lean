@@ -79,11 +79,10 @@ This is the `ENNReal`-valued version of `HasCompactSupport.memLp_of_bound`. -/
 theorem _root_.HasCompactSupport.memLp_of_enorm_bound {f : X → E} (hf : HasCompactSupport f)
     (h2f : AEStronglyMeasurable f μ) {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) (hC : C ≠ ⊤) :
       MemLp f p μ := by
-  have : MemLp f ∞ μ :=
-    by
-      unfold MemLp
-      rw [eLpNorm_exponent_top h2f]
-      exact eLpNormEssSup_le_of_ae_enorm_bound hfC |>.trans_lt hC.lt_top
+  have : MemLp f ∞ μ := by
+    unfold MemLp
+    rw [eLpNorm_exponent_top h2f]
+    exact eLpNormEssSup_le_of_ae_enorm_bound hfC |>.trans_lt hC.lt_top
   exact this.mono_exponent_of_measure_support_ne_top
     (fun x ↦ image_eq_zero_of_notMem_tsupport) hf.measure_ne_top le_top
 
