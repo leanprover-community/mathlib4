@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.PEmptyInstances
 public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
@@ -75,7 +75,6 @@ structure AddMagmaCat.Hom (A B : AddMagmaCat.{u}) where
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `MagmaCat R`. -/
 @[to_additive, ext]
 structure MagmaCat.Hom (A B : MagmaCat.{u}) where
@@ -128,9 +127,7 @@ lemma coe_id {X : MagmaCat} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : MagmaCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[to_additive (attr := simp)]
-lemma forget_map {X Y : MagmaCat} (f : X ⟶ Y) :
-    (forget MagmaCat).map f = (f : _ → _) := rfl
+@[deprecated (since := "2026-02-10")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MagmaCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -239,7 +236,6 @@ structure AddSemigrp.Hom (A B : AddSemigrp.{u}) where
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Semigrp R`. -/
 @[to_additive, ext]
 structure Semigrp.Hom (A B : Semigrp.{u}) where
@@ -292,7 +288,7 @@ lemma coe_id {X : Semigrp} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : Semigrp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[simp] lemma forget_map {X Y : Semigrp} (f : X ⟶ Y) : (forget Semigrp).map f = (f : X → Y) := rfl
+@[deprecated (since := "2026-02-10")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : Semigrp} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -420,9 +416,9 @@ in `MagmaCat` -/
     /-- additive equivalences between `Add`s are the same
     as (isomorphic to) isomorphisms in `AddMagmaCat` -/]
 def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] :
-    X ≃* Y ≅ MagmaCat.of X ≅ MagmaCat.of Y where
-  hom e := e.toMagmaCatIso
-  inv i := i.magmaCatIsoToMulEquiv
+    (X ≃* Y) ≅ (MagmaCat.of X ≅ MagmaCat.of Y) where
+  hom := ↾fun e ↦ e.toMagmaCatIso
+  inv := ↾fun i ↦ i.magmaCatIsoToMulEquiv
 
 /-- multiplicative equivalences between `Semigroup`s are the same as (isomorphic to) isomorphisms
 in `Semigroup` -/
@@ -430,9 +426,9 @@ in `Semigroup` -/
   /-- additive equivalences between `AddSemigroup`s are
   the same as (isomorphic to) isomorphisms in `AddSemigroup` -/]
 def mulEquivIsoSemigrpIso {X Y : Type u} [Semigroup X] [Semigroup Y] :
-    X ≃* Y ≅ Semigrp.of X ≅ Semigrp.of Y where
-  hom e := e.toSemigrpIso
-  inv i := i.semigrpIsoToMulEquiv
+    (X ≃* Y) ≅ (Semigrp.of X ≅ Semigrp.of Y) where
+  hom := ↾fun e ↦ e.toSemigrpIso
+  inv := ↾fun i ↦ i.semigrpIsoToMulEquiv
 
 @[to_additive]
 instance MagmaCat.forgetReflectsIsos : (forget MagmaCat.{u}).ReflectsIsomorphisms where
@@ -449,7 +445,8 @@ instance Semigrp.forgetReflectsIsos : (forget Semigrp.{u}).ReflectsIsomorphisms 
     exact e.toSemigrpIso.isIso_hom
 
 /-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms. -/
-@[to_additive]
+@[to_additive /-- Ensure that `forget₂ AddCommMonCat AddMonCat` automatically reflects
+isomorphisms. -/]
 instance Semigrp.forget₂_full : (forget₂ Semigrp MagmaCat).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩
 

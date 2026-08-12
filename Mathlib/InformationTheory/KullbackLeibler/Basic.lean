@@ -52,7 +52,7 @@ namespace InformationTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α}
 
-open Classical in
+open scoped Classical in
 /-- Kullback-Leibler divergence between two measures. -/
 noncomputable irreducible_def klDiv (μ ν : Measure α) : ℝ≥0∞ :=
   if μ ≪ ν ∧ Integrable (llr μ ν) μ
@@ -62,29 +62,29 @@ noncomputable irreducible_def klDiv (μ ν : Measure α) : ℝ≥0∞ :=
 lemma klDiv_of_ac_of_integrable (h1 : μ ≪ ν) (h2 : Integrable (llr μ ν) μ) :
     klDiv μ ν = ENNReal.ofReal (∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ) := by
   rw [klDiv_def]
-  exact if_pos ⟨h1, h2⟩
+  exact ite_eq_left ⟨h1, h2⟩
 
 @[simp]
 lemma klDiv_of_not_ac (h : ¬ μ ≪ ν) : klDiv μ ν = ∞ := by
   rw [klDiv_def]
-  exact if_neg (not_and_of_not_left _ h)
+  exact ite_eq_right (not_and_of_not_left _ h)
 
 @[simp]
 lemma klDiv_of_not_integrable (h : ¬ Integrable (llr μ ν) μ) : klDiv μ ν = ∞ := by
   rw [klDiv_def]
-  exact if_neg (not_and_of_not_right _ h)
+  exact ite_eq_right (not_and_of_not_right _ h)
 
 @[simp]
 lemma klDiv_self (μ : Measure α) [SigmaFinite μ] : klDiv μ μ = 0 := by
   have h := llr_self μ
-  rw [klDiv_def, if_pos]
+  rw [klDiv_def, ite_eq_left]
   · simp [integral_congr_ae h]
   · rw [integrable_congr h]
     exact ⟨Measure.AbsolutelyContinuous.rfl, integrable_zero _ _ μ⟩
 
 @[simp]
 lemma klDiv_zero_left [IsFiniteMeasure ν] : klDiv 0 ν = ν univ := by
-  convert klDiv_of_ac_of_integrable (Measure.AbsolutelyContinuous.zero _) integrable_zero_measure
+  convert! klDiv_of_ac_of_integrable (Measure.AbsolutelyContinuous.zero _) integrable_zero_measure
   simp
 
 @[simp]
@@ -107,7 +107,7 @@ section AlternativeFormulas
 
 variable [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
-open Classical in
+open scoped Classical in
 lemma klDiv_eq_integral_klFun :
     klDiv μ ν = if μ ≪ ν ∧ Integrable (llr μ ν) μ
       then ENNReal.ofReal (∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν)
@@ -115,7 +115,7 @@ lemma klDiv_eq_integral_klFun :
   rw [klDiv_def]
   exact if_ctx_congr Iff.rfl (fun h ↦ by rw [integral_klFun_rnDeriv h.1 h.2]) fun _ ↦ rfl
 
-open Classical in
+open scoped Classical in
 lemma klDiv_eq_lintegral_klFun :
     klDiv μ ν = if μ ≪ ν then ∫⁻ x, ENNReal.ofReal (klFun (μ.rnDeriv ν x).toReal) ∂ν else ∞ := by
   rw [klDiv_eq_integral_klFun]
@@ -170,13 +170,12 @@ lemma toReal_klDiv_of_measure_eq (h : μ ≪ ν) (h_eq : μ univ = ν univ) :
 lemma toReal_klDiv_eq_integral_klFun (h : μ ≪ ν) :
     (klDiv μ ν).toReal = ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν := by
   by_cases h_int : Integrable (llr μ ν) μ
-  · rw [klDiv_eq_integral_klFun, if_pos ⟨h, h_int⟩, ENNReal.toReal_ofReal]
+  · rw [klDiv_eq_integral_klFun, ite_eq_left ⟨h, h_int⟩, ENNReal.toReal_ofReal]
     exact integral_nonneg fun _ ↦ klFun_nonneg ENNReal.toReal_nonneg
   · rw [integral_undef]
     · rw [klDiv_of_not_integrable h_int, ENNReal.toReal_top]
     · rwa [integrable_klFun_rnDeriv_iff h]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toReal_klDiv_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) (c : ℝ≥0) :
     (klDiv (c • μ) ν).toReal =
       c * (klDiv μ ν).toReal + (1 - c) * ν.real univ + c * log c * μ.real univ := by
@@ -194,7 +193,6 @@ lemma toReal_klDiv_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν)
   simp [h_smul]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toReal_klDiv_smul_right_eq_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ)
     (c : ℝ≥0) :
     (klDiv μ (c • ν)).toReal = c * (klDiv (c⁻¹ • μ) ν).toReal := by
@@ -227,7 +225,6 @@ lemma toReal_klDiv_smul_right (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν
   simp only [NNReal.coe_inv, log_inv, mul_neg, neg_mul, ← sub_eq_add_neg]
   field_simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toReal_klDiv_smul_same (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) (c : ℝ≥0) :
     (klDiv (c • μ) (c • ν)).toReal = c * (klDiv μ ν).toReal := by
   by_cases hc : c = 0
@@ -240,7 +237,6 @@ lemma toReal_klDiv_smul_same (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν)
 
 end Real
 
-set_option backward.isDefEq.respectTransparency false in
 lemma klDiv_smul_right_eq_smul_left [IsFiniteMeasure μ] [IsFiniteMeasure ν] {c : ℝ≥0} (hc : c ≠ 0) :
     klDiv μ (c • ν) = c * klDiv (c⁻¹ • μ) ν := by
   have hc' : (c : ℝ≥0∞) ≠ 0 := by simpa
@@ -287,7 +283,6 @@ lemma klDiv_smul_right_eq_smul_left [IsFiniteMeasure μ] [IsFiniteMeasure ν] {c
   rw [ENNReal.ofReal_toReal]
   exact klDiv_ne_top (hμν.smul_left _) h_int_left
 
-set_option backward.isDefEq.respectTransparency false in
 lemma klDiv_smul_same [IsFiniteMeasure μ] [IsFiniteMeasure ν] (c : ℝ≥0) :
     klDiv (c • μ) (c • ν) = c * klDiv μ ν := by
   by_cases hc : c = 0
@@ -338,7 +333,7 @@ lemma integral_llr_add_mul_log_nonneg (hμν : μ ≪ ν) (h_int : Integrable (l
     exact h_int.sub (integrable_const _)
   rw [integral_congr_ae (llr_smul_right hμν (ν univ)⁻¹ (by simp) (by simp [hν])),
     integral_sub h_int (integrable_const _), integral_const, smul_eq_mul] at h
-  simpa using h
+  simpa using! h
 
 lemma mul_klFun_le_toReal_klDiv (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     ν.real univ * klFun (μ.real univ / ν.real univ) ≤ (klDiv μ ν).toReal := by
@@ -384,7 +379,7 @@ lemma klDiv_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ klDiv_self _⟩
   have h_ne : klDiv μ ν ≠ ⊤ := by simp [h]
   rw [klDiv_ne_top_iff] at h_ne
-  rw [klDiv_eq_lintegral_klFun, if_pos h_ne.1, lintegral_eq_zero_iff (by fun_prop)] at h
+  rw [klDiv_eq_lintegral_klFun, ite_eq_left h_ne.1, lintegral_eq_zero_iff (by fun_prop)] at h
   refine (Measure.rnDeriv_eq_one_iff_eq h_ne.1).mp ?_
   filter_upwards [h] with x hx
   simp only [Pi.zero_apply, ENNReal.ofReal_eq_zero] at hx

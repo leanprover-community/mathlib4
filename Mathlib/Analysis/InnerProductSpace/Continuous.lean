@@ -19,11 +19,11 @@ inner product space, Hilbert space, norm
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp
+open RCLike Real Filter Topology
 open LinearMap renaming BilinForm → BilinForm
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]

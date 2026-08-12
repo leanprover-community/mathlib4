@@ -35,7 +35,7 @@ theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ 
     rw [← preimage_univ, ← iUnion_of_singleton, preimage_iUnion]
     exact
       mk_iUnion_le_sum_mk.trans_lt <| (sum_le_mk_mul_iSup _).trans_lt <|
-        mul_lt_of_lt h₁ (h₂.trans_le <| cof_ord_le _) (iSup_lt h₂ h)
+        mul_lt_of_lt h₁ (h₂.trans_le <| cof_ord_le _) (iSup_lt_of_lt_cof_ord h₂ h)
   obtain ⟨x, h⟩ := this
   refine ⟨x, h.antisymm' ?_⟩
   rw [le_mk_iff_exists_set]
@@ -60,7 +60,7 @@ theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ
       ha.trans
         (ge_of_eq <|
           Quotient.sound ⟨Equiv.trans ?_ (Equiv.subtypeSubtypeEquivSubtypeExists _ _).symm⟩)
-    simp only [coe_eq_subtype, mem_singleton_iff, mem_preimage, mem_setOf_eq]
+    simp only [coe_eq_subtype, mem_singleton_iff, mem_preimage, mem_ofPred_eq]
     rfl
   rintro x ⟨_, hx'⟩; exact hx'
 
@@ -121,8 +121,5 @@ theorem le_range_of_union_finset_eq_univ {α β : Type*} [Infinite β] (f : α �
     apply fun b => (u b).choose_spec
   obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h
   exact (@Infinite.of_injective _ _ p (inclusion (v' a)) (inclusion_injective _)).false
-
-@[deprecated (since := "2026-01-17")] alias le_range_of_union_finset_eq_top :=
-  le_range_of_union_finset_eq_univ
 
 end Cardinal

@@ -59,7 +59,7 @@ instance : LargeCategory.{u} UniformSpaceCat.{u} where
 instance instFunLike (X Y : UniformSpaceCat) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
-  coe_injective' _ _ h := Subtype.ext h
+  coe_injective _ _ h := Subtype.ext h
 
 instance : ConcreteCategory UniformSpaceCat ({ f : · → · // UniformContinuous f }) where
   hom f := f.hom'
@@ -157,20 +157,20 @@ instance : Inhabited CpltSepUniformSpace :=
 
 /-- The category instance on `CpltSepUniformSpace`. -/
 instance category : LargeCategory CpltSepUniformSpace :=
-  inferInstanceAs (Category (InducedCategory _ toUniformSpace))
+  inferInstanceAs <| Category (InducedCategory _ toUniformSpace)
 
 instance instFunLike (X Y : CpltSepUniformSpace) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
-  coe_injective' _ _ h := Subtype.ext h
+  coe_injective _ _ h := Subtype.ext h
 
 /-- The concrete category instance on `CpltSepUniformSpace`. -/
 instance concreteCategory : ConcreteCategory CpltSepUniformSpace
     ({ f : · → · // UniformContinuous f }) :=
-  InducedCategory.concreteCategory toUniformSpace
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toUniformSpace) _
 
 instance hasForgetToUniformSpace : HasForget₂ CpltSepUniformSpace UniformSpaceCat :=
-  InducedCategory.hasForget₂ toUniformSpace
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toUniformSpace) _
 
 @[simp]
 theorem hom_comp {X Y Z : CpltSepUniformSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :
@@ -231,8 +231,6 @@ theorem extension_comp_hom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (extensionHom (completionHom X ≫ f)).hom = f := by
   ext x
   exact congr_fun (Completion.extension_comp_coe f.hom.property) x
-
-@[deprecated (since := "2025-12-18")] alias extension_comp_coe := extension_comp_hom
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The completion functor is left adjoint to the forgetful functor. -/

@@ -51,7 +51,7 @@ noncomputable def uniformEquiv_unitization_addEquiv_prod :
     WithLp 1 (Unitization 𝕜 A) ≃ᵤ WithLp 1 (𝕜 × A) :=
   { unitization_addEquiv_prod 𝕜 A with
     uniformContinuous_invFun := uniformContinuous_comap' uniformContinuous_id
-    uniformContinuous_toFun := uniformContinuous_iff.mpr le_rfl }
+    uniformContinuous_toFun := uniformContinuous_iff_le_comap.mpr le_rfl }
 
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (WithLp 1 (Unitization 𝕜 A)) :=
@@ -80,7 +80,7 @@ lemma unitization_nnnorm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖₊ 
 
 lemma unitization_isometry_inr : Isometry fun x : A ↦ toLp 1 (x : Unitization 𝕜 A) :=
   AddMonoidHomClass.isometry_of_norm
-    ((WithLp.linearEquiv 1 𝕜 (Unitization 𝕜 A)).symm.comp <| Unitization.inrHom 𝕜 A)
+    ((WithLp.linearEquiv 1 𝕜 (Unitization 𝕜 A)).symm.comp <| Unitization.inrHom 𝕜 𝕜 A)
     unitization_norm_inr
 
 variable [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]

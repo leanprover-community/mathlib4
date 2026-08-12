@@ -103,12 +103,12 @@ theorem exists_ratio_hasDerivAt_eq_ratio_slope' {lfa lga lfb lgb : ℝ}
   have hha : Tendsto h (𝓝[>] a) (𝓝 <| lgb * lfa - lfb * lga) := by
     have : Tendsto h (𝓝[>] a) (𝓝 <| (lgb - lga) * lfa - (lfb - lfa) * lga) :=
       (tendsto_const_nhds.mul hfa).sub (tendsto_const_nhds.mul hga)
-    convert this using 2
+    convert! this using 2
     ring
   have hhb : Tendsto h (𝓝[<] b) (𝓝 <| lgb * lfa - lfb * lga) := by
     have : Tendsto h (𝓝[<] b) (𝓝 <| (lgb - lga) * lfb - (lfb - lfa) * lgb) :=
       (tendsto_const_nhds.mul hfb).sub (tendsto_const_nhds.mul hgb)
-    convert this using 2
+    convert! this using 2
     ring
   let h' x := (lgb - lga) * f' x - (lfb - lfa) * g' x
   have hhh' : ∀ x ∈ Ioo a b, HasDerivAt h (h' x) x := by
@@ -128,6 +128,7 @@ theorem exists_hasDerivAt_eq_slope : ∃ c ∈ Ioo a b, f' c = (f b - f a) / (b 
 
 include hab hfc hgc hgd hfd in
 /-- Cauchy's Mean Value Theorem, `deriv` version. -/
+@[wikidata Q189136]
 theorem exists_ratio_deriv_eq_ratio_slope :
     ∃ c ∈ Ioo a b, (g b - g a) * deriv f c = (f b - f a) * deriv g c :=
   exists_ratio_hasDerivAt_eq_ratio_slope f (deriv f) hab hfc
@@ -171,12 +172,12 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
   case neg =>
     intro hcontra
     have := hcontra.continuousWithinAt
-    rw [← ContinuousWithinAt.diff_iff this] at hcont_at_a
+    rw [← ContinuousWithinAt.sdiff_iff this] at hcont_at_a
     simp at hcont_at_a
   case pos =>
     intro hdiff
     replace hdiff := hdiff.hasDerivWithinAt
-    rw [hasDerivWithinAt_iff_tendsto_slope, Set.diff_singleton_eq_self self_notMem_Ioi] at hdiff
+    rw [hasDerivWithinAt_iff_tendsto_slope, Set.sdiff_singleton_eq_self self_notMem_Ioi] at hdiff
     have h₀ : ∀ᶠ b in 𝓝[>] a,
         ∀ x ∈ Ioc a b, max (derivWithin f (Ioi a) a + 1) 0 < derivWithin f (Ioi a) x := by
       rw [(nhdsGT_basis a).eventually_iff]
@@ -337,7 +338,7 @@ theorem Convex.image_sub_lt_mul_sub_of_deriv_lt {D : Set ℝ} (hD : Convex ℝ D
   have hf'_gt : ∀ x ∈ interior D, -C < deriv (fun y => -f y) x := fun x hx => by
     rw [deriv.fun_neg, neg_lt_neg_iff]
     exact lt_hf' x hx
-  linarith [hD.mul_sub_lt_image_sub_of_lt_deriv hf.neg hf'.neg hf'_gt x hx y hy hxy]
+  linarith [hD.mul_sub_lt_image_sub_of_lt_deriv hf.fun_neg hf'.neg hf'_gt x hx y hy hxy]
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f' < C`, then `f` grows slower than
 `C * x` on `D`, i.e., `f y - f x < C * (y - x)` whenever `x < y`. -/
@@ -357,7 +358,7 @@ theorem Convex.image_sub_le_mul_sub_of_deriv_le {D : Set ℝ} (hD : Convex ℝ D
   have hf'_ge : ∀ x ∈ interior D, -C ≤ deriv (fun y => -f y) x := fun x hx => by
     rw [deriv.fun_neg, neg_le_neg_iff]
     exact le_hf' x hx
-  linarith [hD.mul_sub_le_image_sub_of_le_deriv hf.neg hf'.neg hf'_ge x hx y hy hxy]
+  linarith [hD.mul_sub_le_image_sub_of_le_deriv hf.fun_neg hf'.neg hf'_ge x hx y hy hxy]
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f' ≤ C`, then `f` grows at most as fast
 as `C * x`, i.e., `f y - f x ≤ C * (y - x)` whenever `x ≤ y`. -/

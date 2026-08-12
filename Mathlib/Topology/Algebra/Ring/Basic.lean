@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.Algebra.Ring.Prod
 public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Group.GroupTopology
 
 /-!
@@ -169,13 +170,21 @@ theorem topologicalClosure_mono {s t : NonUnitalSubsemiring R} (h : s ≤ t) :
   _root_.closure_mono h
 
 /-- If a non-unital subsemiring of a non-unital topological semiring is commutative, then so is its
+topological closure. -/
+instance isMulCommutative_topologicalClosure [T2Space R] (s : NonUnitalSubsemiring R)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubsemigroup.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
+/-- If a non-unital subsemiring of a non-unital topological semiring is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances] -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space R] (s : NonUnitalSubsemiring R)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
-  { NonUnitalSubsemiringClass.toNonUnitalSemiring s.topologicalClosure,
-    s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 end NonUnitalSubsemiring
 
@@ -228,12 +237,21 @@ theorem Subsemiring.topologicalClosure_mono {s t : Subsemiring R} (h : s ≤ t) 
   _root_.closure_mono h
 
 /-- If a subsemiring of a topological semiring is commutative, then so is its
+topological closure. -/
+instance Subsemiring.isMulCommutative_topologicalClosure [T2Space R] (s : Subsemiring R)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubmonoid.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
+/-- If a subsemiring of a topological semiring is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
 abbrev Subsemiring.commSemiringTopologicalClosure [T2Space R] (s : Subsemiring R)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
-  { s.topologicalClosure.toSemiring, s.toSubmonoid.commMonoidTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 end
 
@@ -374,6 +392,30 @@ theorem mulRight_continuous (x : R) : Continuous (AddMonoidHom.mulRight x) :=
 
 end
 
+namespace ContinuousAddEquiv
+
+variable [Semiring R] [IsTopologicalSemiring R]
+
+/-- The additive homeomorphism from a topological ring to itself,
+induced by left multiplication by a unit. -/
+@[simps! apply]
+def mulLeft (r : Rˣ) : R ≃ₜ+ R where
+  __ := r.mulLeft
+  map_add' x₁ x₂ := left_distrib ↑r x₁ x₂
+  continuous_toFun := continuous_const_mul _
+  continuous_invFun := continuous_const_mul _
+
+/-- The additive homeomorphism from a topological ring to itself,
+induced by right multiplication by a unit. -/
+@[simps! apply]
+def mulRight (r : Rˣ) : R ≃ₜ+ R where
+  __ := r.mulRight
+  map_add' x₁ x₂ := right_distrib x₁ x₂ r
+  continuous_toFun := continuous_mul_const _
+  continuous_invFun := continuous_mul_const _
+
+end ContinuousAddEquiv
+
 namespace NonUnitalSubring
 
 variable [NonUnitalRing R]
@@ -411,12 +453,21 @@ theorem topologicalClosure_mono {s t : NonUnitalSubring R} (h : s ≤ t) :
   _root_.closure_mono h
 
 /-- If a non-unital subring of a non-unital topological ring is commutative, then so is its
+topological closure. -/
+instance isMulCommutative_topologicalClosure [T2Space R] (s : NonUnitalSubring R)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubsemigroup.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
+/-- If a non-unital subring of a non-unital topological ring is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances] -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
 abbrev nonUnitalCommRingTopologicalClosure [T2Space R] (s : NonUnitalSubring R)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
-  { s.topologicalClosure.toNonUnitalRing, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 end NonUnitalSubring
 
@@ -458,12 +509,20 @@ theorem Subring.topologicalClosure_mono {s t : Subring R} (h : s ≤ t) :
     s.topologicalClosure ≤ t.topologicalClosure :=
   _root_.closure_mono h
 
+/-- If a subring of a topological ring is commutative, then so is its topological closure. -/
+instance Subring.isMulCommutative_topologicalClosure [T2Space R] (s : Subring R)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubsemigroup.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
 /-- If a subring of a topological ring is commutative, then so is its topological closure.
 
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
 abbrev Subring.commRingTopologicalClosure [T2Space R] (s : Subring R)
     (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
-  { s.topologicalClosure.toRing, s.toSubmonoid.commMonoidTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 end IsTopologicalSemiring
 

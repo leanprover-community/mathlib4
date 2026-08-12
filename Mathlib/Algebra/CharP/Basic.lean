@@ -24,7 +24,7 @@ imports of `Mathlib/Algebra/CharP/Lemmas.lean`.
 As such, we can probably reorganize and find a better home for most of these lemmas.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset TwoSidedIdeal
 
@@ -145,7 +145,7 @@ instance Nat.lcm.charP [CharP S q] : CharP (R × S) (Nat.lcm p q) where
 /-- The characteristic of the product of two rings of the same characteristic
   is the same as the characteristic of the rings -/
 instance Prod.charP [CharP S p] : CharP (R × S) p := by
-  convert Nat.lcm.charP R S p p; simp
+  convert! Nat.lcm.charP R S p p; simp
 
 instance Prod.charZero_of_left [CharZero R] : CharZero (R × S) where
   cast_injective _ _ h := CharZero.cast_injective congr(Prod.fst $h)

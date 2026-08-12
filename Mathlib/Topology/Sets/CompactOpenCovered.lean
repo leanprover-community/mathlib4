@@ -85,7 +85,7 @@ lemma of_iUnion_eq_of_finite {κ : Type*} [Finite κ] (s : κ → Set S) (hs : �
     (H : ∀ i, IsCompactOpenCovered f (s i)) : IsCompactOpenCovered f U := by
   rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
   have (i : κ) : ∃ (V : Opens (Σ i, X i)), IsCompact V.1 ∧ (f _ ·.snd) '' V.1 = s i := by
-    convert H i; rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
+    convert! H i; rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
   choose V hVeq hVc using this
   exact ⟨⨆ i, V i, by simpa using isCompact_iUnion hVeq, by simp_all [Set.image_iUnion, ← hs]⟩
 
@@ -124,7 +124,6 @@ lemma of_finite {U : Set S} {κ : Type*} [Finite κ] (a : κ → ι) (V : ∀ k,
     IsCompactOpenCovered f U :=
   of_iUnion_eq_of_finite _ hU (fun _ ↦ .image _ (hV _))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `U` is compact-open covered and the `X i` have a basis of compact opens,
 `U` can be written as the union of images of elements of the basis. -/
 lemma exists_mem_of_isBasis {B : ∀ i, Set (Opens (X i))} (hB : ∀ i, IsBasis (B i))

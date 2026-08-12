@@ -359,7 +359,7 @@ open MulOpposite in
   contains a unique pair with the `UniqueMul` property. Strojnowski showed that if `G` is
   a group, then we only need to check this when `A = B`.
   Here we generalize the result to cancellative semigroups.
-  Non-cancellative counterexample: the AddMonoid {0,1} with 1+1=1. -/
+  Non-cancellative counterexample: the AddMonoid `{0,1}` with 1+1=1. -/
 @[to_additive] theorem of_same {G} [Semigroup G] [IsCancelMul G]
     (h : ∀ {A : Finset G}, A.Nonempty → ∃ a1 ∈ A, ∃ a2 ∈ A, UniqueMul A A a1 a2) :
     UniqueProds G where
@@ -560,7 +560,7 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
     simp_rw [mem_product] at h1 h2 ⊢
     refine ⟨(_, _), ⟨?_, ?_⟩, (_, _), ⟨?_, ?_⟩, ?_, hu1.of_mulOpposite, hu2.of_mulOpposite⟩
     pick_goal 5
-    · contrapose! hne; rw [Prod.ext_iff] at hne ⊢
+    · contrapose hne; rw [Prod.ext_iff] at hne ⊢
       exact ⟨unop_injective hne.2, unop_injective hne.1⟩
     all_goals apply (mem_map' f).mp
     exacts [h1.2, h1.1, h2.2, h2.1]

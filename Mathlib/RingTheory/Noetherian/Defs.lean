@@ -49,11 +49,11 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finsupp.linearCombination Matrix Pi.basis
 
-open Set Pointwise
+open Set
 
 /-- `IsNoetherian R M` is the proposition that `M` is a Noetherian `R`-module,
 implemented as the predicate that all `R`-submodules of `M` are finitely generated.
@@ -112,7 +112,7 @@ variable {R M P : Type*} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M
   [Module R N] [AddCommMonoid P] [Module R P]
 
 theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
-  refine .trans ?_ ((CompleteLattice.wellFoundedGT_characterisations <| Submodule R M).out 0 3).symm
+  refine .trans ?_ ((CompleteLattice.wellFoundedGT_characterisations <| Submodule R M).out 1 4).symm
   exact
     ⟨fun ⟨h⟩ => fun k => (fg_iff_compact k).mp (h k), fun h =>
       ⟨fun k => (fg_iff_compact k).mpr (h k)⟩⟩
@@ -140,7 +140,7 @@ theorem isNoetherian_iff_fg_wellFounded :
     intro N
     obtain ⟨⟨N₀, h₁⟩, e : N₀ ≤ N, h₂⟩ :=
       WellFounded.has_min H.wf { N' : α | N'.1 ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
-    convert h₁
+    convert! h₁
     refine (e.antisymm ?_).symm
     by_contra h₃
     obtain ⟨x, hx₁ : x ∈ N, hx₂ : x ∉ N₀⟩ := Set.not_subset.mp h₃
@@ -192,6 +192,7 @@ end
 
 /-- A (semi)ring is Noetherian if it is Noetherian as a module over itself,
 i.e. all its ideals are finitely generated. -/
+@[wikidata Q582271]
 abbrev IsNoetherianRing (R) [Semiring R] :=
   IsNoetherian R R
 

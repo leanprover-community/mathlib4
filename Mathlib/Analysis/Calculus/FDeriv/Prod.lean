@@ -22,7 +22,7 @@ Cartesian products of functions, and functions into Pi-types.
 public section
 
 
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
+open Filter Asymptotics ContinuousLinearMap Set
 
 noncomputable section
 
@@ -481,6 +481,15 @@ theorem fderivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (φ i) s x)
 theorem fderiv_pi (h : ∀ i, DifferentiableAt 𝕜 (φ i) x) :
     fderiv 𝕜 (fun x i => φ i x) x = pi fun i => fderiv 𝕜 (φ i) x :=
   (hasFDerivAt_pi.2 fun i => (h i).hasFDerivAt).fderiv
+
+theorem fderivWithin_apply (hΦ : DifferentiableWithinAt 𝕜 Φ s x)
+    (hs : UniqueDiffWithinAt 𝕜 s x) (i : ι) :
+    fderivWithin 𝕜 (fun x => Φ x i) s x = (proj i).comp (fderivWithin 𝕜 Φ s x) :=
+  (hasFDerivWithinAt_pi'.1 hΦ.hasFDerivWithinAt i).fderivWithin hs
+
+theorem fderiv_apply (hΦ : DifferentiableAt 𝕜 Φ x) (i : ι) :
+    fderiv 𝕜 (fun x => Φ x i) x = (proj i).comp (fderiv 𝕜 Φ x) :=
+  (hasFDerivAt_pi'.1 hΦ.hasFDerivAt i).fderiv
 
 end Pi
 

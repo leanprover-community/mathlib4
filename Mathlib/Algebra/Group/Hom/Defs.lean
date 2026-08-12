@@ -191,7 +191,7 @@ class OneHomClass (F : Type*) (M N : outParam Type*) [One M] [One N] [FunLike F 
 @[to_additive]
 instance OneHom.funLike : FunLike (OneHom M N) M N where
   coe := OneHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_additive]
 instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
@@ -312,7 +312,7 @@ class MulHomClass (F : Type*) (M N : outParam Type*) [Mul M] [Mul N] [FunLike F 
 @[to_additive]
 instance MulHom.funLike : FunLike (M →ₙ* N) M N where
   coe := MulHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 /-- `MulHom` is a type of multiplication-preserving homomorphisms -/
 @[to_additive /-- `AddHom` is a type of addition-preserving homomorphisms -/]
@@ -362,7 +362,7 @@ you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `MonoidHomClass`.
 -/
-@[to_additive]
+@[to_additive (attr := wikidata Q868169)]
 structure MonoidHom (M : Type*) (N : Type*) [MulOne M] [MulOne N]
   extends OneHom M N, M →ₙ* N
 
@@ -382,11 +382,11 @@ class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOne M] [MulOne N]
 @[to_additive]
 instance MonoidHom.instFunLike : FunLike (M →* N) M N where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 @[to_additive]
@@ -466,7 +466,7 @@ lemma map_comp_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (
     f ∘ (g / h) = f ∘ g / f ∘ h := by ext; simp
 
 /-- See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid, grind =) (reorder := 9 10)]
+@[to_additive (attr := simp mid, grind =) (reorder := a n)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
     ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
@@ -490,7 +490,7 @@ lemma map_comp_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f
 /-- Group homomorphisms preserve integer power.
 
 See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid, grind =) (reorder := 9 10)
+@[to_additive (attr := simp mid, grind =) (reorder := g n)
 /-- Additive group homomorphisms preserve integer scaling. -/]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
@@ -711,25 +711,42 @@ theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y *
     (hf : Function.Injective f) [IsDedekindFiniteMonoid N] : IsDedekindFiniteMonoid M where
   mul_eq_one_symm eq := hf <| by simpa [mul_eq_one_comm] using congr_arg f eq
 
-@[deprecated (since := "2025-12-14")]
-alias isDedekindFiniteMonoid_of_injective := IsDedekindFiniteMonoid.of_injective
+@[to_additive]
+instance {M N : Type*} [Monoid M] [LeftCancelMonoid N] : MonoidHomClass (M →ₙ* N) M N where
+  map_mul := MulHom.map_mul'
+  map_one f := by
+    have h : f 1 * 1 = f 1 * f 1 := by simpa using f.map_mul' 1 1
+    exact (mul_left_cancel h).symm
+
+@[to_additive]
+instance {M N : Type*} [Monoid M] [RightCancelMonoid N] : MonoidHomClass (M →ₙ* N) M N where
+  map_mul := MulHom.map_mul'
+  map_one f := by
+    have h : 1 * f 1 = f 1 * f 1 := by simpa using f.map_mul' 1 1
+    exact (mul_right_cancel h).symm
+
+@[to_additive]
+instance {M N : Type*} [Monoid M] [CancelMonoid N] : MonoidHomClass (M →ₙ* N) M N where
 
 end MonoidHom
 
 /-- The identity map from a type with 1 to itself. -/
-@[to_additive (attr := simps) /-- The identity map from a type with zero to itself. -/]
+@[to_additive (attr := simps, instance_reducible)
+/-- The identity map from a type with zero to itself. -/]
 def OneHom.id (M : Type*) [One M] : OneHom M M where
   toFun x := x
   map_one' := rfl
 
 /-- The identity map from a type with multiplication to itself. -/
-@[to_additive (attr := simps) /-- The identity map from a type with addition to itself. -/]
+@[to_additive (attr := simps, instance_reducible)
+/-- The identity map from a type with addition to itself. -/]
 def MulHom.id (M : Type*) [Mul M] : M →ₙ* M where
   toFun x := x
   map_mul' _ _ := rfl
 
 /-- The identity map from a monoid to itself. -/
-@[to_additive (attr := simps) /-- The identity map from an additive monoid to itself. -/]
+@[to_additive (attr := simps, instance_reducible)
+/-- The identity map from an additive monoid to itself. -/]
 def MonoidHom.id (M : Type*) [MulOne M] : M →* M where
   toFun x := x
   map_one' := rfl
@@ -745,22 +762,23 @@ lemma MulHom.coe_id {M : Type*} [Mul M] : (MulHom.id M : M → M) = _root_.id :=
 lemma MonoidHom.coe_id {M : Type*} [MulOne M] : (MonoidHom.id M : M → M) = _root_.id := rfl
 
 /-- Composition of `OneHom`s as a `OneHom`. -/
-@[to_additive /-- Composition of `ZeroHom`s as a `ZeroHom`. -/]
+@[to_additive (attr := instance_reducible) /-- Composition of `ZeroHom`s as a `ZeroHom`. -/]
 def OneHom.comp [One M] [One N] [One P] (hnp : OneHom N P) (hmn : OneHom M N) : OneHom M P where
-  toFun := hnp ∘ hmn
+  toFun x := hnp (hmn x)
   map_one' := by simp
 
 /-- Composition of `MulHom`s as a `MulHom`. -/
-@[to_additive /-- Composition of `AddHom`s as an `AddHom`. -/]
+@[to_additive (attr := instance_reducible) /-- Composition of `AddHom`s as an `AddHom`. -/]
 def MulHom.comp [Mul M] [Mul N] [Mul P] (hnp : N →ₙ* P) (hmn : M →ₙ* N) : M →ₙ* P where
-  toFun := hnp ∘ hmn
+  toFun x := hnp (hmn x)
   map_mul' x y := by simp
 
 /-- Composition of monoid morphisms as a monoid morphism. -/
-@[to_additive /-- Composition of additive monoid morphisms as an additive monoid morphism. -/]
+@[to_additive (attr := instance_reducible)
+/-- Composition of additive monoid morphisms as an additive monoid morphism. -/]
 def MonoidHom.comp [MulOne M] [MulOne N] [MulOne P] (hnp : N →* P) (hmn : M →* N) :
     M →* P where
-  toFun := hnp ∘ hmn
+  toFun x := hnp (hmn x)
   map_one' := by simp
   map_mul' := by simp
 
@@ -875,11 +893,11 @@ theorem MulHom.id_comp [Mul M] [Mul N] (f : M →ₙ* N) : (MulHom.id N).comp f 
 theorem MonoidHom.id_comp [MulOne M] [MulOne N] (f : M →* N) :
     (MonoidHom.id N).comp f = f := MonoidHom.ext fun _ => rfl
 
-@[to_additive]
+@[to_additive (reorder := a n)]
 protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] (f : M →* N) (a : M) (n : ℕ) :
     f (a ^ n) = f a ^ n := map_pow f a n
 
-@[to_additive]
+@[to_additive (reorder := a n)]
 protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M →* N)
     (hf : ∀ x, f x⁻¹ = (f x)⁻¹) (a : M) (n : ℤ) :
     f (a ^ n) = f a ^ n := map_zpow' f hf a n
@@ -910,14 +928,12 @@ and `M` is commutative, then `N` is commutative. -/
 @[to_additive
 /-- If `M` and `N` have additions, `f : M →ₙ+ N` is a surjective additive map,
 and `M` is commutative, then `N` is commutative. -/]
-theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N}
-    (is_surj : Function.Surjective f) (is_comm : Std.Commutative (· * · : M → M → M)) :
-    Std.Commutative (· * · : N → N → N) where
-  comm := fun a b ↦ by
-    obtain ⟨a', ha'⟩ := is_surj a
-    obtain ⟨b', hb'⟩ := is_surj b
-    simp only [← ha', ← hb', ← map_mul]
-    rw [is_comm.comm]
+theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N} (is_surj : Function.Surjective f)
+    (is_comm : IsMulCommutative M) : IsMulCommutative N where
+  is_comm.comm a b := by
+    have ⟨a', ha'⟩ := is_surj a
+    have ⟨b', hb'⟩ := is_surj b
+    simp [← ha', ← hb', ← map_mul, mul_comm']
 
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
 @[to_additive (attr := simps)
@@ -940,9 +956,15 @@ protected def End := M →* M
 namespace End
 
 @[to_additive]
-instance instFunLike : FunLike (Monoid.End M) M M := MonoidHom.instFunLike
+instance instFunLike : FunLike (Monoid.End M) M M := inferInstanceAs <| FunLike (M →* M) M M
+
+@[to_additive (attr := ext)]
+theorem ext {f g : Monoid.End M} (h : ∀ x : M, f x = g x) : f = g :=
+  DFunLike.ext _ _ h
+
 @[to_additive]
-instance instMonoidHomClass : MonoidHomClass (Monoid.End M) M M := MonoidHom.instMonoidHomClass
+instance instMonoidHomClass : MonoidHomClass (Monoid.End M) M M :=
+  inferInstanceAs <| MonoidHomClass (M →* M) M M
 
 @[to_additive instOne]
 instance instOne : One (Monoid.End M) where one := .id _
@@ -1033,7 +1055,7 @@ protected theorem map_inv [Group α] [DivisionMonoid β] (f : α →* β) (a : �
   map_inv f _
 
 /-- Group homomorphisms preserve integer power. -/
-@[to_additive /-- Additive group homomorphisms preserve integer scaling. -/]
+@[to_additive (reorder := g n) /-- Additive group homomorphisms preserve integer scaling. -/]
 protected theorem map_zpow [Group α] [DivisionMonoid β] (f : α →* β) (g : α) (n : ℤ) :
     f (g ^ n) = f g ^ n := map_zpow f g n
 

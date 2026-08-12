@@ -19,12 +19,14 @@ This equivalence is characterized in both directions.
 @[expose] public section
 
 namespace CategoryTheory.Join
-open Opposite Functor
+open Opposite CategoryTheory.Functor
 
 universe v₁ v₂ u₁ u₂
 
 variable (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `(C ⋆ D)ᵒᵖ ≌ Dᵒᵖ ⋆ Cᵒᵖ` induced by `Join.opEquivFunctor` and
 `Join.opEquivInverse`. -/
 def opEquiv : (C ⋆ D)ᵒᵖ ≌ Dᵒᵖ ⋆ Cᵒᵖ where

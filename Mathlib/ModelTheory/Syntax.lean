@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Set.Prod
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.ModelTheory.LanguageMap
+public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
@@ -39,7 +40,7 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
 - `FirstOrder.Language.Term.constantsVarsEquiv` and
   `FirstOrder.Language.BoundedFormula.constantsVarsEquiv` switch terms and formulas between having
   constants in the language and having extra free variables indexed by the same type.
-- `Formula.subst_definitions` rewrites a formula into another language, given definitions of
+- `Formula.substDefinitions` rewrites a formula into another language, given definitions of
    functions and relations into the other language.
 
 ## Implementation Notes
@@ -54,8 +55,8 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
 ## References
 
 For the Flypitch project:
-- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-  [flypitch_cpp]
+- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum
+  hypothesis*][flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
 -/
@@ -199,6 +200,7 @@ def varsToConstants : L.Term (γ ⊕ α) → L[[γ]].Term α
   | var (Sum.inl c) => Constants.term (Sum.inr c)
   | func f ts => func (Sum.inl f) fun i => (ts i).varsToConstants
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A bijection between terms with constants and terms with extra variables. -/
 @[simps]
 def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=
@@ -789,6 +791,12 @@ noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formul
     ((φ.relabel (fun a => Sum.elim (.inl ∘ .inl) .inr a)).imp <|
       .iInf fun g => Term.equal (var (.inr g)) (var (.inl (.inr g))))
 
+variable [DecidableEq α] in
+/-- `exClosure φ` is the sentence asserting that there exist values for all free variables of `φ`
+such that `φ` holds. -/
+noncomputable def exClosure (φ : L.Formula α) : L.Sentence :=
+  iExs φ.freeVarFinset (Formula.relabel Sum.inr (φ.restrictFreeVar id))
+
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
@@ -856,25 +864,25 @@ section Definability
 /-- Given a term in language L, and a set of formulas that define L in terms of another language L'
 on a structure M, this produces a term in L' that will evaluate to the same value on that structure.
 It comes with a type `β` of extra variables to use, and a list of side conditions that must be
-fulfilled. This proof of that this evaluation is correct is `Term.subst_definitions_eq`. -/
-def Term.subst_definitions
-    (t : L.Term α) (Fs : ∀ {n} (_ : L.Functions n), L'.Formula (Fin n ⊕ Unit))
+fulfilled. This proof of that this evaluation is correct is `Term.substDefinitions_eq`. -/
+def Term.substDefinitions
+    (t : L.Term α) (Fs : ∀ {n} (_ : L.Functions n), L'.Formula (Option (Fin n)))
     : (c : ℕ) × (L'.Term (α ⊕ Fin c)) × List (L'.Formula (α ⊕ Fin c)) :=
   match t with
   | var a => ⟨0, var (Sum.inl a), []⟩
   | @func _ _ n f args =>
       --Map all subexpressions
-      let subExprs := fun i ↦ subst_definitions (args i) Fs
+      let subExprs := fun i ↦ substDefinitions (args i) Fs
       --The side-type is the union of all the subexpression side-types, plus one new symbol
       let cTot := ∑ i, (subExprs i).1
       --The function that will re-map the subexpressions to the new side-type α ⊕ β
-      let remapper {i} : (α ⊕ Fin (subExprs i).1) → (α ⊕ Fin _) :=
+      let remapper {i} : (α ⊕ Fin (subExprs i).1) → (α ⊕ Fin (cTot + 1)) :=
         Sum.map id fun βi ↦ finSumFinEquiv <| Sum.inl <| finSigmaFinEquiv ⟨i,βi⟩
       --We represent the output of the function with the new symbol
       let thisVar := var <| Sum.inr <| finSumFinEquiv <| Sum.inr 0
       --We have our own side condition to express that we're the output of this function
       let thisCond : L'.Formula (α ⊕ Fin (cTot + 1)) :=
-        (Fs f).subst <| Sum.elim (fun i ↦ (subExprs i).2.1.relabel remapper) (fun () ↦ thisVar)
+        (Fs f).subst fun o ↦ o.elim thisVar fun i ↦ (subExprs i).2.1.relabel remapper
       --And we add all of the subexpressions' side conditions,
       --appropriately re-indexed to use the new side-type β
       let subConds := (List.finRange n).flatMap fun i ↦
@@ -883,16 +891,16 @@ def Term.subst_definitions
 
 /-- Given a bounded formula in language L, and a set of formulas that define L in terms of another
 language L' on a structure M, this produces a term in L' that will evaluate to the same value on
-that structure. This proof of this evaluation is `BoundedFormula.subst_definitions_eq`. -/
-def BoundedFormula.subst_definitions {k : ℕ} (f : L.BoundedFormula α k)
-    (Fs : ∀ {n} (_ : L.Functions n), L'.Formula (Fin n ⊕ Unit))
+that structure. This proof of this evaluation is `BoundedFormula.substDefinitions_eq`. -/
+def BoundedFormula.substDefinitions {k : ℕ} (f : L.BoundedFormula α k)
+    (Fs : ∀ {n} (_ : L.Functions n), L'.Formula (Option (Fin n)))
     (Rs : ∀ {n} (_ : L.Relations n), L'.Formula (Fin n))
     : (L'.BoundedFormula α k) :=
   match f with
   | falsum => falsum
   | equal t₁ t₂ =>
-    let t₁s := t₁.subst_definitions Fs
-    let t₂s := t₂.subst_definitions Fs
+    let t₁s := t₁.substDefinitions Fs
+    let t₂s := t₂.substDefinitions Fs
     let relabel₁ := Sum.elim Sum.inl fun j ↦ Sum.inr <| finSumFinEquiv <| Sum.inl j
     let relabel₂ := Sum.elim Sum.inl fun j ↦ Sum.inr <| finSumFinEquiv <| Sum.inr j
     let t₁r := t₁s.2.1.relabel relabel₁
@@ -903,11 +911,11 @@ def BoundedFormula.subst_definitions {k : ℕ} (f : L.BoundedFormula α k)
     let fullConds := (sideConds₁ ++ sideConds₂).foldr BoundedFormula.imp feq
     BoundedFormula.relabel id fullConds.alls
   | imp f₁ f₂ =>
-      imp (f₁.subst_definitions Fs Rs) (f₂.subst_definitions Fs Rs)
+      imp (f₁.substDefinitions Fs Rs) (f₂.substDefinitions Fs Rs)
   | all f =>
-      all (f.subst_definitions Fs Rs)
+      all (f.substDefinitions Fs Rs)
   | rel R ts =>
-    let tss := fun i ↦ (ts i).subst_definitions Fs
+    let tss := fun i ↦ (ts i).substDefinitions Fs
     let relabels := fun i ↦ Sum.elim Sum.inl fun j ↦ Sum.inr <| finSigmaFinEquiv ⟨i,j⟩
     let tsr : (i : Fin _) → L'.Term ((α ⊕ Fin k) ⊕ Fin (∑ i, (tss i).1)) :=
       fun i ↦ (tss i).2.1.relabel (relabels i)
@@ -916,12 +924,12 @@ def BoundedFormula.subst_definitions {k : ℕ} (f : L.BoundedFormula α k)
     let fullConds := (List.ofFn sideConds).flatten.foldr BoundedFormula.imp newRel
     BoundedFormula.relabel id fullConds.alls
 
-/-- See `BoundedFormula.subst_definitions`, but this is specialized to `Formula`. -/
-def Formula.subst_definitions (f : L.Formula α)
-    (Fs : ∀ {n} (_ : L.Functions n), L'.Formula (Fin n ⊕ Unit))
+/-- See `BoundedFormula.substDefinitions`, but this is specialized to `Formula`. -/
+def Formula.substDefinitions (f : L.Formula α)
+    (Fs : ∀ {n} (_ : L.Functions n), L'.Formula (Option (Fin n)))
     (Rs : ∀ {n} (_ : L.Relations n), L'.Formula (Fin n))
     : (L'.Formula α) :=
-  BoundedFormula.subst_definitions f Fs Rs
+  BoundedFormula.substDefinitions f Fs Rs
 
 end Definability
 

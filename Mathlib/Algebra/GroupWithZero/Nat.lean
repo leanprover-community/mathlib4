@@ -17,7 +17,7 @@ This file contains the `CommMonoidWithZero` and `IsCancelMulZero` instances on t
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 

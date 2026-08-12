@@ -74,7 +74,7 @@ instance isProbabilityMeasure_stdGaussian : IsProbabilityMeasure (stdGaussian E)
 
 @[simp]
 lemma integral_id_stdGaussian : ∫ x, x ∂(stdGaussian E) = 0 := by
-  rw [stdGaussian, integral_map _ (by fun_prop), integral_finset_sum]
+  rw [stdGaussian, integral_map _ (by fun_prop), integral_finsetSum]
   · simp [integral_smul_const, integral_eval]
   · exact fun i _ ↦ Integrable.smul_const (integrable_eval IsGaussian.integrable_id) _
   · exact (Finset.measurable_sum _ (by fun_prop)).aemeasurable
@@ -91,7 +91,6 @@ lemma variance_dual_stdGaussian (L : StrongDual ℝ E) :
     simp
   · exact fun i ↦ IsGaussian.memLp_two_id.const_mul _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma charFun_stdGaussian (t : E) :
     charFun (stdGaussian E) t = exp (- ‖t‖ ^ 2 / 2) := by
   rw [charFun_apply, stdGaussian, integral_map (Measurable.aemeasurable (by fun_prop))
@@ -105,7 +104,6 @@ lemma charFun_stdGaussian (t : E) :
   simp_rw [← exp_sum, Finset.sum_neg_distrib, ← Finset.sum_div, ← ofReal_pow,
     ← ofReal_sum, (stdOrthonormalBasis ℝ E).sum_sq_inner_right, neg_div]
 
-set_option backward.isDefEq.respectTransparency false in
 instance isGaussian_stdGaussian : IsGaussian (stdGaussian E) := by
   refine isGaussian_iff_gaussian_charFun.2 ⟨0, innerSL ℝ,
     LinearMap.BilinForm.isPosSemidef_iff.2 isPosSemidef_inner, ?_⟩
@@ -119,7 +117,6 @@ lemma charFunDual_stdGaussian (L : StrongDual ℝ E) :
     charFunDual (stdGaussian E) L = exp (- ‖L‖ ^ 2 / 2) := by
   simp [IsGaussian.charFunDual_eq, integral_complex_ofReal, variance_dual_stdGaussian, neg_div]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma covarianceBilin_stdGaussian :
     covarianceBilin (stdGaussian E) = innerSL ℝ := by
   refine gaussian_charFun_congr 0 _ ?_ ?_ |>.2.symm
@@ -132,7 +129,7 @@ lemma stdGaussian_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ 
   have := f.finiteDimensional
   apply Measure.ext_of_charFunDual
   ext L
-  simp_rw [show ⇑f = f.toLinearIsometry.toContinuousLinearMap from rfl, charFunDual_map,
+  simp_rw [show ⇑f = f.toContinuousLinearEquiv.toContinuousLinearMap from rfl, charFunDual_map,
     charFunDual_stdGaussian, L.opNorm_comp_linearIsometryEquiv]
 
 lemma map_pi_eq_stdGaussian :
@@ -170,7 +167,6 @@ def multivariateGaussian (μ : EuclideanSpace ℝ ι) (S : Matrix ι ι ℝ) :
     Measure (EuclideanSpace ℝ ι) :=
   (stdGaussian (EuclideanSpace ℝ ι)).map (fun x ↦ μ + toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S) x)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma multivariateGaussian_of_not_posSemidef (μ : EuclideanSpace ℝ ι) {S : Matrix ι ι ℝ}
     (hS : ¬ S.PosSemidef) : multivariateGaussian μ S = .dirac μ := by
   rw [multivariateGaussian, CFC.sqrt, cfcₙ_apply_of_not_predicate]
@@ -201,7 +197,6 @@ lemma integral_id_multivariateGaussian : ∫ x, x ∂(multivariateGaussian μ S)
 
 lemma integral_id_multivariateGaussian' : (multivariateGaussian μ S)[id] = μ := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma covarianceBilin_multivariateGaussian (hS : S.PosSemidef) (x y : EuclideanSpace ℝ ι) :
     covarianceBilin (multivariateGaussian μ S) x y = x ⬝ᵥ S *ᵥ y := by
   have h : (fun x ↦ μ + x) ∘ ((toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S))) =
@@ -215,7 +210,6 @@ lemma covarianceBilin_multivariateGaussian (hS : S.PosSemidef) (x y : EuclideanS
   · exact (CFC.sqrt_nonneg S).isSelfAdjoint.map _
   · exact IsGaussian.memLp_two_id
 
-set_option backward.isDefEq.respectTransparency false in
 lemma covariance_eval_multivariateGaussian (hS : S.PosSemidef) (i j : ι) :
     cov[fun x ↦ x i, fun x ↦ x j; multivariateGaussian μ S] = S i j := by
   have (i : ι) : (fun x : EuclideanSpace ℝ ι ↦ x i) =
@@ -244,7 +238,6 @@ lemma charFun_multivariateGaussian (hS : S.PosSemidef) (x : EuclideanSpace ℝ �
       exp (⟪x, μ⟫ * I - x ⬝ᵥ S *ᵥ x / 2) := by
   simp [IsGaussian.charFun_eq', covarianceBilin_multivariateGaussian hS]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If one restricts a multivariate Gaussian measure indexed by a finite set `I` to
 coordinates indexed by `J ⊆ I`, one obtains the multivariate Gaussian measure whose
 covariance matrix is given by the corresponding submatrix. -/

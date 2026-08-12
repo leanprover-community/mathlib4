@@ -76,7 +76,7 @@ hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n°
   typeclass inference.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Filter

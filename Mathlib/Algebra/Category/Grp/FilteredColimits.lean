@@ -130,7 +130,7 @@ noncomputable def colimitCocone : Cocone F where
   ι.app J := GrpCat.ofHom ((MonCat.FilteredColimits.colimitCocone
     (F ⋙ forget₂ GrpCat MonCat)).ι.app J).hom
   ι.naturality _ _ f := (forget₂ _ MonCat).map_injective
-    ((MonCat.FilteredColimits.colimitCocone _).ι.naturality f)
+    ((MonCat.FilteredColimits.colimitCocone (F ⋙ forget₂ GrpCat MonCat)).ι.naturality f)
 
 /-- The proposed colimit cocone is a colimit in `GrpCat`. -/
 @[to_additive /-- The proposed colimit cocone is a colimit in `AddGroup`. -/]
@@ -191,7 +191,7 @@ noncomputable def colimitCocone : Cocone F where
   ι.app J := CommGrpCat.ofHom
     ((GrpCat.FilteredColimits.colimitCocone (F ⋙ forget₂ CommGrpCat GrpCat)).ι.app J).hom
   ι.naturality _ _ f := (forget₂ _ GrpCat).map_injective
-    ((GrpCat.FilteredColimits.colimitCocone _).ι.naturality f)
+    ((GrpCat.FilteredColimits.colimitCocone (F ⋙ forget₂ CommGrpCat GrpCat)).ι.naturality f)
 
 /-- The proposed colimit cocone is a colimit in `CommGrpCat`. -/
 @[to_additive /-- The proposed colimit cocone is a colimit in `AddCommGroup`. -/]

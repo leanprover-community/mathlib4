@@ -41,7 +41,6 @@ namespace Generators
 variable (P : Generators R S ι) {u : σ → ι} (hu : Function.Injective u)
   {v : κ → ι} (hv : Function.Injective v)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `H¹(L_{S/R}) = 0` and `R[xᵢ] → S` are generators indexed by `σ ⊕ κ` such that the images
 of `dxₖ` for `k : κ` span `Ω[S⁄R]` and the span of the `dXₖ` for `k : κ` in
@@ -111,6 +110,7 @@ open Generators
 
 variable (P : PreSubmersivePresentation R S ι σ) [Finite σ]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- To show a pre-submersive presentation with kernel `I = (fᵢ)` is submersive, it suffices to show
 that the images of the `fᵢ` form a basis of `I/I²` and that the restricted
 cotangent complex `I/I² → S ⊗[R] (Ω[R[Xᵢ]⁄R]) = ⊕ᵢ S → ⊕ⱼ S` is bijective. -/

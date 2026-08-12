@@ -45,9 +45,6 @@ Unbounded operators, closed operators
 
 @[expose] public section
 
-
-open Topology
-
 variable {R E F : Type*}
 variable [CommRing R] [AddCommGroup E] [AddCommGroup F]
 variable [Module R E] [Module R F]
@@ -68,7 +65,7 @@ variable [TopologicalSpace R] [ContinuousSMul R E] [ContinuousSMul R F]
 
 /-- An unbounded operator is closable iff the closure of its graph is a graph. -/
 def IsClosable (f : E →ₗ.[R] F) : Prop :=
-  ∃ f' : LinearPMap R E F, f.graph.topologicalClosure = f'.graph
+  ∃ f' : E →ₗ.[R] F, f.graph.topologicalClosure = f'.graph
 
 /-- A closed operator is trivially closable. -/
 theorem IsClosed.isClosable {f : E →ₗ.[R] F} (hf : f.IsClosed) : f.IsClosable :=
@@ -91,7 +88,7 @@ theorem IsClosable.existsUnique {f : E →ₗ.[R] F} (hf : f.IsClosable) :
   refine existsUnique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph ?_
   rw [← hy₁, ← hy₂]
 
-open Classical in
+open scoped Classical in
 /-- If `f` is closable, then `f.closure` is the closure. Otherwise it is defined
 as `f.closure = f`. -/
 noncomputable def closure (f : E →ₗ.[R] F) : E →ₗ.[R] F :=

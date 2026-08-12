@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn, Alex Meiburg. All rights reserved.
+Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn, Alex Meiburg
 -/
@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finset.Basic
 public import Mathlib.ModelTheory.Syntax
 public import Mathlib.Data.List.ProdSigma
+public import Mathlib.Data.Rel
 
 /-!
 # Basics on First-Order Semantics
@@ -33,7 +34,7 @@ in a style inspired by the [Flypitch project](https://flypitch.github.io/).
 - Several results in this file show that syntactic constructions such as `relabel`, `castLE`,
   `liftAt`, `subst`, and the actions of language maps commute with realization of terms, formulas,
   sentences, and theories.
-- `Formula.subst_definitions_eq`: Evaluating `Formula.subst_definitions` gives an equivalent
+- `Formula.substDefinitions_eq`: Evaluating `Formula.substDefinitions` gives an equivalent
   formula in the new language.
 
 ## Implementation Notes
@@ -44,8 +45,8 @@ in a style inspired by the [Flypitch project](https://flypitch.github.io/).
 ## References
 
 For the Flypitch project:
-- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-  [flypitch_cpp]
+- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum
+  hypothesis*][flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
 -/
@@ -137,6 +138,7 @@ theorem realize_substFunc [L'.Structure M] {c : {n : ℕ} → L.Functions n → 
   | var => simp
   | func f ts ih => simp [← ih, ← hc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {f : t.varFinset → β}
     {v : β → M} (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :
     (t.restrictVar f).realize v = t.realize v' := by
@@ -152,6 +154,7 @@ theorem realize_restrictVar' [DecidableEq α] {t : L.Term α} {s : Set α} (h : 
     {v : α → M} : (t.restrictVar (Set.inclusion h)).realize (v ∘ (↑)) = t.realize v :=
   realize_restrictVar _ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_restrictVarLeft [DecidableEq α] {γ : Type*} {t : L.Term (α ⊕ γ)}
     {f : t.varFinsetLeft → β}
     {xs : β ⊕ γ → M} (xs' : α → M) (hxs' : ∀ a, xs (Sum.inl (f a)) = xs' a) :
@@ -274,7 +277,7 @@ theorem realize_top : (⊤ : L.BoundedFormula α l).Realize v xs ↔ True := by 
 
 @[simp]
 theorem realize_inf : (φ ⊓ ψ).Realize v xs ↔ φ.Realize v xs ∧ ψ.Realize v xs := by
-  simp [Realize]
+  simp [Realize, Min.min]
 
 @[simp]
 theorem realize_foldr_inf (l : List (L.BoundedFormula α n)) (v : α → M) (xs : Fin n → M) :
@@ -393,7 +396,7 @@ theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → β 
   apply realize_mapTermRel_add_castLe <;> simp
 
 theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + n') → M}
-    (hmn : m + n' ≤ n + 1) :
+    (hmn : m ≤ n) :
     (φ.liftAt n' m).Realize v xs ↔
       φ.Realize v (xs ∘ fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat i n') := by
   rw [liftAt]
@@ -404,7 +407,7 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
   | imp _ _ ih1 ih2 => simp only [mapTermRel, Realize, ih1 hmn, ih2 hmn]
   | @all k _ ih3 =>
     have h : k + 1 + n' = k + n' + 1 := by rw [add_assoc, add_comm 1 n', ← add_assoc]
-    simp only [mapTermRel, Realize, realize_castLE_of_eq h, ih3 (hmn.trans k.succ.le_succ)]
+    simp only [mapTermRel, Realize, realize_castLE_of_eq h, ih3 (hmn.trans k.le_succ)]
     refine forall_congr' fun x => iff_eq_eq.mpr (congr rfl (funext (Fin.lastCases ?_ fun i => ?_)))
     · simp only [Function.comp_apply, val_last, snoc_last]
       refine (congr rfl (Fin.ext ?_)).trans (snoc_last _ _)
@@ -425,7 +428,7 @@ theorem realize_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : α �
     {xs : Fin (n + 1) → M} : (φ.liftAt 1 n).Realize v xs ↔ φ.Realize v (xs ∘ castSucc) := by
   rw [realize_liftAt_one (refl n), iff_eq_eq]
   refine congr rfl (congr rfl (funext fun i => ?_))
-  rw [if_pos i.is_lt]
+  rw [ite_eq_left i.is_lt]
 
 @[simp]
 theorem realize_subst {φ : L.BoundedFormula α n} {tf : α → L.Term β} {v : β → M} {xs : Fin n → M} :
@@ -439,6 +442,7 @@ theorem realize_subst {φ : L.BoundedFormula α n} {tf : α → L.Term β} {v : 
       · rfl)
     (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormula α n}
     {f : φ.freeVarFinset → β} {v : β → M} {xs : Fin n → M}
     (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :
@@ -446,16 +450,16 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
   induction φ with
   | falsum => rfl
   | equal =>
-    simp only [Realize, restrictFreeVar, freeVarFinset]
+    simp only [Realize, restrictFreeVar]
     rw [realize_restrictVarLeft v' (by simp [hv']), realize_restrictVarLeft v' (by simp [hv'])]
     simp
   | rel =>
-    simp only [Realize, freeVarFinset.eq_3, restrictFreeVar]
+    simp only [Realize, restrictFreeVar]
     congr!
     rw [realize_restrictVarLeft v' (by simp [hv'])]
     simp
   | imp _ _ ih1 ih2 =>
-    simp only [Realize, restrictFreeVar, freeVarFinset]
+    simp only [Realize, restrictFreeVar]
     rw [ih1, ih2] <;> simp [hv']
   | all _ ih3 =>
     simp only [restrictFreeVar, Realize]
@@ -470,6 +474,7 @@ theorem realize_restrictFreeVar' [DecidableEq α] {n : ℕ} {φ : L.BoundedFormu
     (φ.restrictFreeVar (Set.inclusion h)).Realize (v ∘ (↑)) xs ↔ φ.Realize v xs :=
   realize_restrictFreeVar _ (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {n} {φ : L[[α]].BoundedFormula β n} {v : β → M} {xs : Fin n → M} :
@@ -612,10 +617,14 @@ theorem LHom.realize_onFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansi
   φ.realize_onBoundedFormula ψ
 
 @[simp]
-theorem LHom.setOf_realize_onFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M]
-    (ψ : L.Formula α) : (setOf (φ.onFormula ψ).Realize : Set (α → M)) = setOf ψ.Realize := by
+theorem LHom.setOfPred_realize_onFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M]
+    (ψ : L.Formula α) :
+    (Set.ofPred (φ.onFormula ψ).Realize : Set (α → M)) = Set.ofPred ψ.Realize := by
   ext
   simp
+
+@[deprecated (since := "2026-07-09")]
+alias LHom.setOf_realize_onFormula := LHom.setOfPred_realize_onFormula
 
 variable (M)
 
@@ -627,9 +636,39 @@ nonrec def Sentence.Realize (φ : L.Sentence) : Prop :=
 @[inherit_doc Sentence.Realize]
 infixl:51 " ⊨ " => Sentence.Realize
 
+namespace Sentence
+
+variable {φ ψ : L.Sentence}
+
 @[simp]
-theorem Sentence.realize_not {φ : L.Sentence} : M ⊨ φ.not ↔ ¬M ⊨ φ :=
+theorem realize_not : M ⊨ φ.not ↔ ¬M ⊨ φ :=
   Iff.rfl
+
+@[simp]
+theorem not_realize_bot : ¬(M ⊨ (⊥ : L.Sentence)) :=
+  False.elim
+
+@[simp]
+theorem realize_top : M ⊨ (⊤ : L.Sentence) :=
+  False.elim
+
+@[simp]
+theorem realize_inf : M ⊨ φ ⊓ ψ ↔ M ⊨ φ ∧ M ⊨ ψ :=
+  Formula.realize_inf
+
+@[simp]
+theorem realize_sup : M ⊨ φ ⊔ ψ ↔ M ⊨ φ ∨ M ⊨ ψ :=
+  Formula.realize_sup
+
+@[simp]
+theorem realize_imp : M ⊨ φ.imp ψ ↔ M ⊨ φ → M ⊨ ψ :=
+  Formula.realize_imp
+
+@[simp]
+theorem realize_iff : M ⊨ φ.iff ψ ↔ (M ⊨ φ ↔ M ⊨ ψ) :=
+  Formula.realize_iff
+
+end Sentence
 
 namespace Formula
 
@@ -687,7 +726,7 @@ theorem mem_completeTheory {φ : Sentence L} : φ ∈ L.completeTheory M ↔ M �
   Iff.rfl
 
 theorem elementarilyEquivalent_iff : M ≅[L] N ↔ ∀ φ : L.Sentence, M ⊨ φ ↔ N ⊨ φ := by
-  simp only [ElementarilyEquivalent, Set.ext_iff, completeTheory, Set.mem_setOf_eq]
+  simp only [ElementarilyEquivalent, Set.ext_iff, completeTheory, Set.mem_ofPred_eq]
 
 variable (M)
 
@@ -904,6 +943,44 @@ theorem realize_iExsUnique [Finite γ] {φ : L.Formula (α ⊕ γ)} {v : α → 
 
 end BoundedFormula
 
+namespace Formula
+
+@[simp]
+theorem realize_exClosure [DecidableEq α] (φ : L.Formula α) :
+    φ.exClosure.Realize M ↔
+      ∃ v : φ.freeVarFinset → M, Formula.Realize (φ.restrictFreeVar id) v := by
+  simp [Sentence.Realize, Formula.exClosure, Formula.realize_iExs]
+
+theorem realize_exClosure_of_realize_equivSentence [DecidableEq α] [L[[α]].Structure M]
+    [(L.lhomWithConstants α).IsExpansionOn M] {φ : L.Formula α}
+    (h : (Formula.equivSentence φ).Realize M) : φ.exClosure.Realize M := by
+  rw [Formula.realize_exClosure]
+  exists fun a => (L.con (a : α) : M)
+  simpa [Formula.Realize, BoundedFormula.realize_restrictFreeVar] using h
+
+theorem exists_realize_equivSentence_iff_realize_exClosure
+    [DecidableEq α] [Nonempty M] {φ : L.Formula α} :
+    (∃ v : α → M,
+      letI := (constantsOn.structure v);
+      (Formula.equivSentence φ).Realize M) ↔ (φ.exClosure.Realize M) := by
+  constructor
+  · rintro ⟨v, hv⟩
+    exact (Formula.realize_exClosure φ).mpr ⟨fun a => v a,
+      (BoundedFormula.realize_restrictFreeVar (φ := φ) (f := id) (v := fun a => v a) (v' := v)
+        (fun _ => rfl)).2
+        (by simpa [Formula.Realize]
+          using (realize_equivSentence_symm M (Formula.equivSentence φ) v).2 hv)⟩
+  · intro h
+    obtain ⟨v, hv⟩ := (Formula.realize_exClosure φ).1 h
+    let v' := fun a => if hmem : a ∈ φ.freeVarFinset
+      then v ⟨a, hmem⟩ else Classical.choice inferInstance
+    exists v'
+    refine (Formula.realize_equivSentence_symm M (Formula.equivSentence φ) v').mp ?_
+    simpa [Equiv.symm_apply_apply, Formula.Realize] using
+      (BoundedFormula.realize_restrictFreeVar v' (by grind)).1 hv
+
+end Formula
+
 namespace StrongHomClass
 
 variable {F : Type*} [EquivLike F M N] [StrongHomClass L F M N] (g : F)
@@ -959,21 +1036,24 @@ open BoundedFormula
 variable {r : L.Relations 2}
 
 @[simp]
-theorem realize_reflexive : M ⊨ r.reflexive ↔ Reflexive fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ => realize_rel₂
+theorem realize_reflexive : M ⊨ r.reflexive ↔ Std.Refl fun x y : M => RelMap r ![x, y] := by
+  rw [refl_def]
+  exact forall_congr' fun _ ↦ realize_rel₂
 
 @[simp]
-theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Std.Irrefl fun x y : M => RelMap r ![x, y] :=
-  (forall_congr' fun _ ↦ not_congr realize_rel₂).trans ⟨(⟨·⟩), (·.irrefl)⟩
+theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Std.Irrefl fun x y : M => RelMap r ![x, y] := by
+  rw [irrefl_def]
+  exact forall_congr' fun _ ↦ not_congr realize_rel₂
 
 @[simp]
-theorem realize_symmetric : M ⊨ r.symmetric ↔ Symmetric fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ => forall_congr' fun _ => imp_congr realize_rel₂ realize_rel₂
+theorem realize_symmetric : M ⊨ r.symmetric ↔ Std.Symm fun x y : M => RelMap r ![x, y] := by
+  rw [symm_def]
+  exact forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ realize_rel₂
 
 @[simp]
 theorem realize_antisymmetric :
     M ⊨ r.antisymmetric ↔ Std.Antisymm fun x y : M => RelMap r ![x, y] := by
-  refine .trans ?_ ⟨Std.Antisymm.mk, (·.antisymm)⟩
+  rw [antisymm_def]
   exact forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ <| imp_congr realize_rel₂ .rfl
 
 @[simp]
@@ -983,8 +1063,8 @@ theorem realize_transitive : M ⊨ r.transitive ↔ IsTrans M fun x y ↦ RelMap
 
 @[simp]
 theorem realize_total : M ⊨ r.total ↔ Std.Total fun x y : M ↦ RelMap r ![x, y] := by
-  refine .trans ?_ ⟨Std.Total.mk, (·.total)⟩
-  exact forall₂_congr fun _ _ ↦ realize_sup.trans (or_congr realize_rel₂ realize_rel₂)
+  rw [total_def]
+  exact forall₂_congr fun _ _ ↦ realize_sup.trans <| or_congr realize_rel₂ realize_rel₂
 
 end Relations
 
@@ -1002,10 +1082,7 @@ theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ #M 
   · rintro ⟨xs, h⟩
     refine ⟨⟨xs, fun i j ij => ?_⟩⟩
     contrapose! ij
-    have hij := h _ i j (by simpa using ij) rfl
-    simp only [BoundedFormula.realize_not, Term.realize, BoundedFormula.realize_bdEqual,
-      Sum.elim_inr] at hij
-    exact hij
+    exact h _ i j (by simpa using ij) rfl
   · rintro _ i j ij rfl
     simpa using ij
 
@@ -1083,47 +1160,45 @@ end ElementarilyEquivalent
 
 section Definability
 
-variable [inst' : L'.Structure M] {Fs : ∀ {n}, L.Functions n → L'.Formula (Fin n ⊕ Unit)}
+variable [inst' : L'.Structure M] {Fs : ∀ {n}, L.Functions n → L'.Formula (Option (Fin n))}
+
+set_option backward.isDefEq.respectTransparency false
 
 namespace Term
 
-variable (t : L.Term α) {sideVals : Fin (t.subst_definitions Fs).1 → M} (v : α → M)
+variable (t : L.Term α) {sideVals : Fin (t.substDefinitions Fs).1 → M} (v : α → M)
 
-/-- `Term.subst_definitions` agrees with the original formula once realized, assuming all the side
+/-- `Term.substDefinitions` agrees with the original formula once realized, assuming all the side
 conditions are met. -/
-theorem subst_definitions_eq
+theorem substDefinitions_eq
     (hFs : ∀ {n} g, ((@Fs n g).Realize : Set (_ → M)) = Function.tupleGraph (g.term.realize ·))
-    (hSideVals : ∀ s ∈ (t.subst_definitions Fs).2.2, s.Realize (Sum.elim v sideVals)) :
-    (t.subst_definitions Fs).2.1.realize (Sum.elim v sideVals) = t.realize v := by
+    (hSideVals : ∀ s ∈ (t.substDefinitions Fs).2.2, s.Realize (Sum.elim v sideVals)) :
+    (t.substDefinitions Fs).2.1.realize (Sum.elim v sideVals) = t.realize v := by
   induction t
-  · simp [subst_definitions]
+  · simp [substDefinitions]
   next f args ih =>
-    simp only [subst_definitions, isValue, finSumFinEquiv_apply_right, finSumFinEquiv_apply_left,
+    simp only [substDefinitions, isValue, finSumFinEquiv_apply_right, finSumFinEquiv_apply_left,
       List.mem_cons, List.mem_flatMap, List.mem_finRange, List.mem_map, true_and,
       forall_eq_or_imp, forall_exists_index, and_imp] at hSideVals
-
     --Break the "hSideVals" hypothesis list into the hypothesis on the function output,
     -- and the hypotheses on the function inputs
     replace ⟨hOutput, hSideVals⟩ := hSideVals
     simp only [Formula.Realize, isValue, BoundedFormula.realize_subst] at hOutput
-
     --We use hFs to simplify the function output condition
     replace hFs := funext_iff.mp (hFs f)
     simp only [Function.tupleGraph, realize_function_term] at hFs
     rw [← Formula.Realize.eq_def, hFs] at hOutput; clear hFs
-
     --This gives us the left hand side of the goal
-    simp only [setOf, Sum.elim_inr] at hOutput
-    simp only [subst_definitions, finSumFinEquiv_apply_right, realize_func]
+    simp only [Set.ofPred, Option.elim_none] at hOutput
+    simp only [substDefinitions, finSumFinEquiv_apply_right, realize_func]
     rw [← hOutput]; clear hOutput
-
     --Congruence inward + reduce
     congr! with i
-    simp only [Function.comp_apply, Sum.elim_inl, realize_relabel]
-
+    simp only [Option.elim_some, Function.comp_apply, realize_relabel]
     --Apply the inductive hypothesis, with the appropriate arguments plugged in
     replace ih : ∀ (i : Fin _), _ := fun i ↦ ih i
-      (fun s hs ↦ by  simpa only [FirstOrder.Language.Formula.realize_relabel, Sum.elim_comp_map]
+      (fun s hs ↦ by  simpa only [FirstOrder.Language.Formula.realize_relabel, Sum.elim_comp_map,
+            Function.comp_id]
           using hSideVals (s.relabel <| Sum.map id fun βi ↦
             finSumFinEquiv <| Sum.inl <| finSigmaFinEquiv ⟨i,βi⟩) i s hs rfl)
     simp_rw [← ih]; clear ih
@@ -1131,41 +1206,43 @@ theorem subst_definitions_eq
     rfl
 
 variable (Fs) in
-/-- The extra side-values produced by `Term.subst_definitions`. -/
-def subst_definitions_extraVals (t : L.Term α) : Fin (t.subst_definitions Fs).1 → M :=
+/-- The extra side-values produced by `Term.substDefinitions`. -/
+def substDefinitionsExtraVals (t : L.Term α) : Fin (t.substDefinitions Fs).1 → M :=
   match t with
   | var a => by
-    rw [subst_definitions]
+    rw [substDefinitions]
     exact default
   | func f args => fun a ↦
       (finSumFinEquiv.symm a).rec (fun a₁ ↦
         (finSigmaFinEquiv.symm a₁).rec fun ai aj ↦
-        (args ai).subst_definitions_extraVals aj
+        (args ai).substDefinitionsExtraVals aj
       ) (fun _ ↦ (func f args).realize v)
 
-/-- The side conditions produced by subst_definitions always have a satisfying assignment, which
+/-- The side conditions produced by substDefinitions always have a satisfying assignment, which
  is the extra side-values. -/
-theorem subst_definitions_extraVals_spec
+theorem substDefinitionsExtraVals_spec
     (hFs : ∀ {n} g, ((@Fs n g).Realize : Set (_ → M)) = Function.tupleGraph (g.term.realize ·))
     (v : α → M) :
-    ∀ s ∈ (t.subst_definitions Fs).2.2, s.Realize (Sum.elim v (t.subst_definitions_extraVals Fs v))
+    ∀ s ∈ (t.substDefinitions Fs).2.2, s.Realize (Sum.elim v (t.substDefinitionsExtraVals Fs v))
     := by
   induction t
   next =>
-    simp [subst_definitions_extraVals, subst_definitions]
+    simp [substDefinitionsExtraVals, substDefinitions]
   next f args ih =>
-    simp only [subst_definitions, Fin.isValue, finSumFinEquiv_apply_right,
+    simp only [substDefinitions, Fin.isValue, finSumFinEquiv_apply_right,
         finSumFinEquiv_apply_left, List.mem_cons, List.mem_flatMap, List.mem_finRange,
         List.mem_map, true_and, forall_eq_or_imp, forall_exists_index
       ]
     constructor
     · have hFs' := congrFun (hFs f)
       simp only [Function.tupleGraph, realize_function_term, Formula.Realize] at hFs'
-      simp only [Formula.Realize, BoundedFormula.realize_subst, hFs', setOf, Sum.elim_inr,
-        realize_var, Fin.isValue]
+      simp only [Formula.Realize, BoundedFormula.realize_subst, hFs', Set.ofPred,
+        Option.elim_none, realize_var, Fin.isValue]
       unfold Function.comp
-      simp only [subst_definitions_extraVals,  ← fun x ↦ (args x).subst_definitions_eq v hFs (ih x),
-        realize_func, Sum.elim_inl, realize_relabel, finSumFinEquiv_symm_apply_natAdd]
+      simp only [Option.elim_some, substDefinitionsExtraVals,
+        ← fun x ↦ (args x).substDefinitions_eq v hFs (ih x),
+        realize_func, Sum.elim_inr, realize_relabel,
+        finSumFinEquiv_symm_apply_natAdd]
       congr! with x
       funext sum
       cases sum
@@ -1174,7 +1251,7 @@ theorem subst_definitions_extraVals_spec
           finSumFinEquiv_symm_apply_castAdd]
         rw [Equiv.leftInverse_symm finSigmaFinEquiv]
     · intro a i b ⟨hb,rfl⟩
-      simp only [subst_definitions_extraVals, Formula.realize_relabel]
+      simp only [substDefinitionsExtraVals, Formula.realize_relabel]
       convert ih i b hb
       funext sum
       cases sum
@@ -1183,13 +1260,13 @@ theorem subst_definitions_extraVals_spec
           finSumFinEquiv_symm_apply_castAdd]
         rw [Equiv.leftInverse_symm finSigmaFinEquiv]
 
-/-- `Term.subst_definitions_extraVals` bundled with their defining property
-  `Term.subst_definitions_extraVals_spec`. -/
-def subst_definitions_extraVals_X
+/-- `Term.substDefinitionsExtraVals` bundled with their defining property
+  `Term.substDefinitionsExtraVals_spec`. -/
+def substDefinitionsExtraValsX
     (hFs : ∀ {n} g, ((@Fs n g).Realize : Set (_ → M)) = Function.tupleGraph (g.term.realize ·)) :
-    { xs : Fin (t.subst_definitions Fs).1 → M //
-      ∀ s ∈ (t.subst_definitions Fs).2.2, s.Realize (Sum.elim v xs)} :=
-  ⟨t.subst_definitions_extraVals Fs v, t.subst_definitions_extraVals_spec hFs v⟩
+    { xs : Fin (t.substDefinitions Fs).1 → M //
+      ∀ s ∈ (t.substDefinitions Fs).2.2, s.Realize (Sum.elim v xs)} :=
+  ⟨t.substDefinitionsExtraVals Fs v, t.substDefinitionsExtraVals_spec hFs v⟩
 
 end Term
 
@@ -1197,16 +1274,16 @@ variable {Rs : ∀ {n}, L.Relations n → L'.Formula (Fin n)}
 
 namespace BoundedFormula
 
-/-- `BoundedFormula.subst_definitions` agrees with the original formula once realized. -/
-theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
+/-- `BoundedFormula.substDefinitions` agrees with the original formula once realized. -/
+theorem substDefinitions_eq {k : ℕ} (f : L.BoundedFormula α k)
     (hFs : ∀ {n} g, ((@Fs n g).Realize : Set (_ → M)) = Function.tupleGraph (g.term.realize ·))
     (hRs : ∀ {n} g, (@Rs n g).Realize = RelMap (M := M) g) :
-    ∀ vL vR, (f.subst_definitions Fs Rs).Realize (M := M) vL vR ↔ f.Realize vL vR := by
+    ∀ vL vR, (f.substDefinitions Fs Rs).Realize (M := M) vL vR ↔ f.Realize vL vR := by
   induction f
   next =>
-    simp [Realize, subst_definitions]
+    simp [Realize, substDefinitions]
   next n t₁ t₂ =>
-    simp only [subst_definitions, finSumFinEquiv_apply_left, finSumFinEquiv_apply_right,
+    simp only [substDefinitions, finSumFinEquiv_apply_left, finSumFinEquiv_apply_right,
       Nat.add_zero, realize_relabel, castAdd_zero, cast_refl, Function.comp_id, Realize]
     intro vL vR
     rw [show (vR ∘ @Fin.natAdd 0 n) = default from Unique.eq_default _]
@@ -1215,10 +1292,10 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
     simp_rw [BoundedFormula.Realize]
     constructor
     · intro h
-      have ⟨xs₁, hxs₁⟩ := t₁.subst_definitions_extraVals_X (Sum.elim vL vR) hFs
-      have ⟨xs₂, hxs₂⟩ := t₂.subst_definitions_extraVals_X (Sum.elim vL vR) hFs
-      have ht₁ := t₁.subst_definitions_eq (Sum.elim vL vR) hFs hxs₁
-      have ht₂ := t₂.subst_definitions_eq (Sum.elim vL vR) hFs hxs₂
+      have ⟨xs₁, hxs₁⟩ := t₁.substDefinitionsExtraValsX (Sum.elim vL vR) hFs
+      have ⟨xs₂, hxs₂⟩ := t₂.substDefinitionsExtraValsX (Sum.elim vL vR) hFs
+      have ht₁ := t₁.substDefinitions_eq (Sum.elim vL vR) hFs hxs₁
+      have ht₂ := t₂.substDefinitions_eq (Sum.elim vL vR) hFs hxs₂
       rw [← ht₁, ← ht₂]
       clear ht₁ ht₂
       replace h := h (Fin.appendEquiv _ _ ⟨xs₁,xs₂⟩) (by
@@ -1238,7 +1315,7 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
         funext sum
         cases sum <;> simp}
     · intro h xs is
-      have ht₁ := t₁.subst_definitions_eq _ hFs (by
+      have ht₁ := t₁.substDefinitions_eq _ hFs (by
         simp_rw [List.mem_append, List.mem_map] at is
         intro s hs
         replace is := is (.relabel (n := _ + _) _ s) (.inl ⟨s, ⟨hs, rfl⟩⟩)
@@ -1247,7 +1324,7 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
         convert is
         funext sum
         cases sum <;> rfl)
-      have ht₂ := t₂.subst_definitions_eq _ hFs (by
+      have ht₂ := t₂.substDefinitions_eq _ hFs (by
         simp_rw [List.mem_append, List.mem_map] at is
         intro s hs
         replace is := is (.relabel (n := _ + _) _ s) (.inr ⟨s, ⟨hs, rfl⟩⟩)
@@ -1264,7 +1341,7 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
       <;> rfl
   next n m R ts =>
     intro vL vR
-    simp only [subst_definitions, Nat.add_zero, realize_relabel, castAdd_zero, cast_refl,
+    simp only [substDefinitions, Nat.add_zero, realize_relabel, castAdd_zero, cast_refl,
       Function.comp_id, Realize]
     rw [show (vR ∘ @Fin.natAdd 0 n) = default from Unique.eq_default _,
       ← Formula.Realize, realize_alls]
@@ -1272,10 +1349,10 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
     constructor
     · intro h
       rw [← hRs R]
-      let xs : Fin (∑ i : Fin m, ((ts i).subst_definitions fun {n} ↦ Fs).fst) → M :=
+      let xs : Fin (∑ i : Fin m, ((ts i).substDefinitions fun {n} ↦ Fs).fst) → M :=
         fun ij ↦ let ⟨i,j⟩ := finSigmaFinEquiv.symm ij;
-          ((ts i).subst_definitions_extraVals_X (Sum.elim vL vR) hFs).1 j
-      let hxs := fun i ↦ ((ts i).subst_definitions_extraVals_X (Sum.elim vL vR) hFs).2
+          ((ts i).substDefinitionsExtraValsX (Sum.elim vL vR) hFs).1 j
+      let hxs := fun i ↦ ((ts i).substDefinitionsExtraValsX (Sum.elim vL vR) hFs).2
       replace h := h xs (by
         intro i hi
         simp only [List.mem_flatten] at hi
@@ -1289,13 +1366,17 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
         rw [realize_relabel]
         convert this
         funext sum
-        cases sum <;> simp [xs]
-        rw [Equiv.leftInverse_symm])
+        cases sum
+        · simp only [Nat.add_zero, castAdd_zero, cast_refl, Function.comp_id, Function.comp_apply,
+            Sum.elim_inl, xs]
+        · simp only [Nat.add_zero, castAdd_zero, cast_refl, Function.comp_id, Function.comp_apply,
+            Sum.elim_inr, xs]
+          rw [Equiv.leftInverse_symm])
       simp only [realize_relabel, Nat.add_zero, castAdd_zero, cast_refl, Function.comp_id,
         realize_subst, Term.realize_relabel, xs] at h
       rw [Formula.Realize]
       convert h with i
-      have := (ts i).subst_definitions_eq (Sum.elim vL vR) hFs
+      have := (ts i).substDefinitions_eq (Sum.elim vL vR) hFs
         (sideVals := xs ∘ fun j ↦ (finSigmaFinEquiv ⟨i, j⟩)) (by
         unfold xs
         convert hxs i
@@ -1304,14 +1385,13 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
       convert this.symm
       funext sum
       cases sum <;> rfl
-
     · intro h xs is
       simp only [realize_relabel, Nat.add_zero, Fin.castAdd_zero, Fin.cast_refl, Function.comp_id,
         realize_subst, Term.realize_relabel]
       rw [← hRs R, Formula.Realize] at h
       rw [show (xs ∘ @Fin.natAdd 0 (∑ i : Fin m, _)) = default from Unique.eq_default _]
       convert h with i
-      have hti := (ts i).subst_definitions_eq (Sum.elim vL vR) hFs (by
+      have hti := (ts i).substDefinitions_eq (Sum.elim vL vR) hFs (by
           simp only [List.mem_flatten, List.mem_ofFn, exists_exists_eq_and, List.mem_map,
             forall_exists_index, and_imp] at is
           intro s hs
@@ -1325,21 +1405,21 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
       funext sum
       cases sum <;> rfl
   next ih₁ ih₂ =>
-    simp [subst_definitions, ih₁, ih₂]
+    simp [substDefinitions, ih₁, ih₂]
   next ih =>
-    simp [subst_definitions, ih]
+    simp [substDefinitions, ih]
 
 end BoundedFormula
 
 namespace Formula
 
-/-- `Formula.subst_definitions` agrees with the original formula once realized. -/
-theorem subst_definitions_eq (f : L.Formula α)
+/-- `Formula.substDefinitions` agrees with the original formula once realized. -/
+theorem substDefinitions_eq (f : L.Formula α)
     (hFs : ∀ {n} g, ((@Fs n g).Realize : Set (_ → M)) = Function.tupleGraph (g.term.realize ·))
     (hRs : ∀ {n} g, (@Rs n g).Realize = RelMap (M := M) g) :
-    (f.subst_definitions Fs Rs).Realize (M := M) = f.Realize := by
-  apply funext
-  simpa [Realize] using BoundedFormula.subst_definitions_eq f hFs hRs
+    (f.substDefinitions Fs Rs).Realize (M := M) = f.Realize := by
+  funext v
+  exact propext (BoundedFormula.substDefinitions_eq f hFs hRs v default)
 
 end Formula
 

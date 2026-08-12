@@ -68,7 +68,8 @@ def toProd : K ⋊⁅ψ⁆ L ≃ K × L where
 
 instance : AddCommGroup (K ⋊⁅ψ⁆ L) := toProd.addCommGroup
 
-instance : Module R (K ⋊⁅ψ⁆ L) := toProd.module R
+instance : Module R (K ⋊⁅ψ⁆ L) :=
+  { toProd with map_add' _ _ := rfl : (K ⋊⁅ψ⁆ L) ≃+ K × L }.module R
 
 /-- `LieAlgebra.SemiDirectSum.toProd` as a linear equivalence. -/
 def toProdl : (K ⋊⁅ψ⁆ L) ≃ₗ[R] K × L :=
@@ -155,7 +156,7 @@ end
 variable (R K L) in
 /-- The product of two Lie algebras realized through a semidirect sum with trivial `ψ` -/
 @[simps!]
-def prod_iso : (K ⋊⁅(0 : L→ₗ⁅R⁆ (LieDerivation R K K))⁆ L) ≃ₗ⁅R⁆ (K × L) where
+def prod_iso : (K ⋊⁅(0 : L →ₗ⁅R⁆ (LieDerivation R K K))⁆ L) ≃ₗ⁅R⁆ (K × L) where
   __ := toProdl 0
   map_lie' {_ _} := by simp
 

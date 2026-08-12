@@ -157,7 +157,7 @@ Tensor product does not need to be strictly associative on objects, but there is
 specified associator, `α_ X Y Z : (X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)`. There is a tensor unit `𝟙_ C`,
 with specified left and right unitor isomorphisms `λ_ X : 𝟙_ C ⊗ X ≅ X` and `ρ_ X : X ⊗ 𝟙_ C ≅ X`.
 These associators and unitors satisfy the pentagon and triangle equations. -/
-@[stacks 0FFK]
+@[stacks 0FFK, wikidata Q1945014]
 -- Porting note: The Mathport did not translate the temporary notation
 class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCategoryStruct C where
   tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
@@ -786,7 +786,7 @@ variable (C)
 attribute [local simp] whisker_exchange
 
 /-- The tensor product expressed as a functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def tensor : C × C ⥤ C where
   obj X := X.1 ⊗ X.2
   map {X Y : C × C} (f : X ⟶ Y) := f.1 ⊗ₘ f.2
@@ -820,7 +820,7 @@ theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) :
   rfl
 
 /-- The tensor product bifunctor `C ⥤ C ⥤ C` of a monoidal category. -/
-@[simps]
+@[simps, implicit_reducible]
 def curriedTensor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⊗ Y
@@ -851,16 +851,20 @@ abbrev tensorUnitRight : C ⥤ C := tensorRight (𝟙_ C)
 def associatorNatIso : leftAssocTensor C ≅ rightAssocTensor C :=
   NatIso.ofComponents (fun _ => MonoidalCategory.associator _ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The left unitor as a natural isomorphism. -/
 @[simps!]
 def leftUnitorNatIso : tensorUnitLeft C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.leftUnitor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The right unitor as a natural isomorphism. -/
 @[simps!]
 def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.rightUnitor
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The associator as a natural isomorphism between trifunctors `C ⥤ C ⥤ C ⥤ C`. -/
 @[simps!]
 def curriedAssociatorNatIso :
@@ -873,6 +877,7 @@ section
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the left with `X ⊗ Y` is naturally isomorphic to
 tensoring on the left with `Y`, and then again with `X`.
 -/
@@ -908,6 +913,7 @@ We later show this is a monoidal functor.
 -/
 abbrev tensoringRight : C ⥤ C ⥤ C := (curriedTensor C).flip
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (tensoringRight C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
@@ -916,6 +922,7 @@ instance : (tensoringRight C).Faithful where
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the right with `X ⊗ Y` is naturally isomorphic to
 tensoring on the right with `X`, and then again with `Y`.
 -/
@@ -939,7 +946,7 @@ section
 
 universe v₁ v₂ u₁ u₂
 
-open Prod
+open CategoryTheory.Prod
 
 variable (C₁ : Type u₁) [Category.{v₁} C₁] [MonoidalCategory.{v₁} C₁]
 variable (C₂ : Type u₂) [Category.{v₂} C₂] [MonoidalCategory.{v₂} C₂]

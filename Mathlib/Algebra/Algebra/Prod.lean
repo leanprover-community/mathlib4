@@ -77,7 +77,7 @@ theorem snd_apply (a) : snd R A B a = a.2 := rfl
 
 variable {R}
 
-/-- The `Pi.prod` of two morphisms is a morphism. -/
+/-- The `Function.prod` of two morphisms is a morphism. -/
 @[simps!]
 def prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : A →ₐ[R] B × C :=
   { f.toRingHom.prod g.toRingHom with
@@ -85,7 +85,7 @@ def prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : A →ₐ[R] B × C :=
       simp only [toRingHom_eq_coe, RingHom.toFun_eq_coe, RingHom.prod_apply, coe_toRingHom,
         commutes, Prod.algebraMap_apply] }
 
-theorem coe_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[simp]
