@@ -250,8 +250,9 @@ A partial order defined this was will automatically makes available an instance 
 
 end default
 
--- TODO : rename namespace to `Membership`
 namespace SetLike
+
+section Membership
 
 variable {A B : Type*} [Membership B A]
 
@@ -282,9 +283,9 @@ theorem exists_of_lt (h : p < q) : ∃ x ∈ q, x ∉ p :=
 
 end PartialOrder
 
-end SetLike
+end Membership
 
-namespace SetLike
+section SetLike
 
 variable {A B : Type*} [SetLike A B]
 
@@ -339,5 +340,7 @@ attribute [local instance] instSubtypeSet instSubtype
 end
 
 end PartialOrder
+
+end SetLike
 
 end SetLike
