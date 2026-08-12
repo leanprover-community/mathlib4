@@ -16,14 +16,14 @@ We prove one direction of the Cramér-Wold theorem.
 
 ## Main statement
 
-* `tendsto_map_of_tendsto_map_inner`: Given measurable `E`-valued random variables `Xn : ℕ → Ω → E`
-  and `X : Ω' → E`, if for every `t : E` the pushforward distributions of the inner products
-  `⟪Xn n, t⟫` under `P` converge to the pushforward distribution of `⟪X, t⟫` under `Q`, then the
-  distributions of `Xn` under `P` converge to the distribution of `X` under `Q`.
+* `tendsto_map_of_tendsto_map_inner`: Given measurable `E`-valued random variables `X : ℕ → Ω → E`
+  and `X' : Ω' → E`, if for every `t : E` the pushforward distributions of the inner products
+  `⟪X n, t⟫` under `P` converge to the pushforward distribution of `⟪X', t⟫` under `Q`, then the
+  distributions of `X` under `P` converge to the distribution of `X'` under `Q`.
 
 -/
 
-open MeasureTheory Filter Complex BoundedContinuousFunction RealInnerProductSpace ProbabilityMeasure
+open MeasureTheory Filter BoundedContinuousFunction RealInnerProductSpace ProbabilityMeasure
 
 open scoped Topology
 
