@@ -25,7 +25,7 @@ Note that over commutative rings, left ideals and two-sided ideals are equivalen
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
