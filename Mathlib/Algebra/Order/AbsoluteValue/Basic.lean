@@ -185,7 +185,7 @@ omit [Nontrivial R] in
 /-- An absolute value satisfies `f (n : R) ≤ n` for every `n : ℕ`. -/
 lemma apply_nat_le_self [IsOrderedRing S] (n : ℕ) : abv n ≤ n := by
   cases subsingleton_or_nontrivial R
-  · simp [Subsingleton.eq_zero (n : R)]
+  · simp [Subsingleton.eq_zero (α := R)]
   induction n with
   | zero => simp
   | succ n ih =>
@@ -317,7 +317,7 @@ def trivial : AbsoluteValue R S where
 
 @[simp]
 lemma trivial_apply {x : R} (hx : x ≠ 0) : AbsoluteValue.trivial (S := S) x = 1 :=
-  if_neg hx
+  ite_eq_right hx
 
 end trivial
 

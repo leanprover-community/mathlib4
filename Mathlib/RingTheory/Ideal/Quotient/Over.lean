@@ -10,7 +10,7 @@ public import Mathlib.RingTheory.Ideal.Over
 
 /-! # Lemmas about `primesOver` in quotient rings. -/
 
-@[expose] public section
+public section
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
 
