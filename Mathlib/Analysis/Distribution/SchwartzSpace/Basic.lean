@@ -248,7 +248,7 @@ instance instSMul : SMul 𝕜 𝓢(E, F) :=
             gcongr
             apply f.le_seminormAux }⟩
 
-instance : IsSMulApply 𝕜 𝓢(E, F) E F where
+instance : IsSMulApply 𝕜 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
@@ -272,7 +272,7 @@ instance instNSMul : SMul ℕ 𝓢(E, F) :=
       smooth' := by exact (f.smooth _).const_smul c
       decay' := by simpa [← Nat.cast_smul_eq_nsmul ℝ] using! ((c : ℝ) • f).decay' }⟩
 
-instance : IsSMulApply ℕ 𝓢(E, F) E F where
+instance : IsSMulApply ℕ 𝓢(E, F) where
 
 instance instZSMul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
@@ -280,7 +280,7 @@ instance instZSMul : SMul ℤ 𝓢(E, F) :=
       smooth' := by exact (f.smooth _).const_smul c
       decay' := by simpa [← Int.cast_smul_eq_zsmul ℝ] using! ((c : ℝ) • f).decay' }⟩
 
-instance : IsSMulApply ℤ 𝓢(E, F) E F where
+instance : IsSMulApply ℤ 𝓢(E, F) where
 
 end SMul
 
@@ -294,7 +294,7 @@ instance instZero : Zero 𝓢(E, F) :=
 instance instInhabited : Inhabited 𝓢(E, F) :=
   ⟨0⟩
 
-instance : IsZeroApply 𝓢(E, F) E F where
+instance : IsZeroApply 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] alias coe_zero := FunLike.coe_zero
 
@@ -317,7 +317,7 @@ instance instNeg : Neg 𝓢(E, F) :=
       intro x
       grw [f.decay_neg_aux k n x, f.le_seminormAux k n x]⟩⟩
 
-instance : IsNegApply 𝓢(E, F) E F where
+instance : IsNegApply 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
@@ -332,7 +332,7 @@ instance instAdd : Add 𝓢(E, F) :=
       intro x
       grw [decay_add_le_aux k n f g x, f.le_seminormAux k n x, g.le_seminormAux k n x]⟩⟩
 
-instance : IsAddApply 𝓢(E, F) E F where
+instance : IsAddApply 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
@@ -357,7 +357,7 @@ instance instSub : Sub 𝓢(E, F) :=
       rw [← decay_neg_aux k n g x]
       exact decay_add_le_aux k n f (-g) x⟩⟩
 
-instance : IsSubApply 𝓢(E, F) E F where
+instance : IsSubApply 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
