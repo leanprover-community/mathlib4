@@ -165,16 +165,16 @@ variable (n : ℕ)
 @[simp] theorem D_diag (i : Fin n) : D n i i = 2 := by simp [D, Matrix.of_apply]
 
 theorem A_apply_le_zero_of_ne (i j : Fin n) (h : i ≠ j) : A n i j ≤ 0 := by
-  simp only [A, Matrix.of_apply]; split_ifs <;> omega
+  simp only [A, Matrix.of_apply]; split_ifs <;> lia
 
 theorem B_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : B n i j ≤ 0 := by
-  simp only [B, Matrix.of_apply]; split_ifs <;> omega
+  simp only [B, Matrix.of_apply]; split_ifs <;> lia
 
 theorem C_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : C n i j ≤ 0 := by
-  simp only [C, Matrix.of_apply]; split_ifs <;> omega
+  simp only [C, Matrix.of_apply]; split_ifs <;> lia
 
 theorem D_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : D n i j ≤ 0 := by
-  simp only [D, Matrix.of_apply]; split_ifs <;> omega
+  simp only [D, Matrix.of_apply]; split_ifs <;> lia
 
 /-! ### Transpose properties -/
 
@@ -256,7 +256,7 @@ theorem E₈_diag (i : Fin 8) : E 8 i i = 2 := E_diag 8 i
 
 theorem E_off_diag_nonpos (n : ℕ) (i j : Fin n) (h : i ≠ j) : E n i j ≤ 0 := by
   simp only [E, of_apply]
-  split_ifs <;> omega
+  split_ifs <;> lia
 
 @[deprecated "Use `E_off_diag_nonpos` instead" (since := "2026-08-11")]
 theorem E₆_off_diag_nonpos (i j : Fin 6) (h : i ≠ j) : E 6 i j ≤ 0 :=
@@ -312,12 +312,10 @@ theorem F₄_det : F₄.det = 1 := by decide
 private def reverseE (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
   (E n).reindex Fin.revPerm Fin.revPerm
 
-private def headLink {n : ℕ} (i : Fin n) : ℤ :=
-  if i.val = 0 then -1 else 0
-
 private def extendPath {n : ℕ} (M : Matrix (Fin n) (Fin n) ℤ) :
     Matrix (Fin n.succ) (Fin n.succ) ℤ :=
-  fun i j =>
+  letI headLink := fun i : Fin n ↦ if i.val = 0 then -1 else 0
+  fun i j ↦
     Fin.cases (Fin.cases 2 headLink j)
       (fun i ↦ Fin.cases (headLink i) (fun j ↦ M i j) j) i
 
@@ -329,77 +327,56 @@ private theorem extendPath_minor {n : ℕ} (M : Matrix (Fin n.succ) (Fin n.succ)
     ((extendPath M).submatrix Fin.succ (Fin.succAbove 1)).det =
       -(M.submatrix Fin.succ Fin.succ).det := by
   let B := (extendPath M).submatrix Fin.succ (Fin.succAbove 1)
-  have hhead : B 0 0 = -1 := by
-    change extendPath M (Fin.succ 0) 0 = -1
-    rfl
-  have hzero (i : Fin n) : B i.succ 0 = 0 := by
-    simp [B, extendPath, headLink]
+  have hhead : B 0 0 = -1 := rfl
+  have hzero (i : Fin n) : B i.succ 0 = 0 := by simp [B, extendPath]
   have hminor : B.submatrix Fin.succ Fin.succ = M.submatrix Fin.succ Fin.succ := by
-    ext
-    simp [B, extendPath]
+    ext; simp [B, extendPath]
   change B.det = _
-  rw [Matrix.det_succ_column_zero, Fin.sum_univ_succ]
-  simp [hhead, hzero, hminor]
+  simp [Matrix.det_succ_column_zero, Fin.sum_univ_succ, hhead, hzero, hminor]
 
 private theorem extendPath_det {n : ℕ} (M : Matrix (Fin n.succ) (Fin n.succ) ℤ) :
     (extendPath M).det = 2 * M.det - (M.submatrix Fin.succ Fin.succ).det := by
   rw [Matrix.det_succ_row_zero, Fin.sum_univ_succ]
-  simp [extendPath, headLink, extendPath_tail, extendPath_minor, sub_eq_add_neg]
+  simp [extendPath, extendPath_tail, extendPath_minor, sub_eq_add_neg]
 
 private theorem reverseE_succ (n : ℕ) (hn : 4 ≤ n) :
     reverseE (n + 1) = extendPath (reverseE n) := by
   ext i j
   refine Fin.cases ?_ (fun i ↦ Fin.cases ?_ (fun j ↦ ?_) j) i
   · refine Fin.cases ?_ (fun j ↦ ?_) j
-    · simp only [reverseE, reindex_apply, submatrix_apply, E, of_apply]
-      simp [extendPath]
-    · simp only [reverseE, reindex_apply, submatrix_apply, E, of_apply]
-      simp [extendPath, headLink, Fin.rev_succ, Fin.ext_iff]
-      split_ifs <;> omega
+    · simp [reverseE, extendPath]
+    · simp [reverseE, E, extendPath]
+      simp [Fin.ext_iff]
+      grind
   · simp only [reverseE, reindex_apply, submatrix_apply, E, of_apply]
-    simp [extendPath, headLink, Fin.rev_succ, Fin.ext_iff]
-    split_ifs <;> omega
+    simp [extendPath, Fin.rev_succ, Fin.ext_iff]
+    grind
   · simp only [reverseE, reindex_apply, submatrix_apply, E, of_apply]
-    simp [extendPath, headLink, Fin.rev_succ, Fin.ext_iff]
+    simp [extendPath, Fin.rev_succ, Fin.ext_iff]
 
-private theorem reverseE_det_recurrence (n : ℕ) (hn : 4 ≤ n) :
-    (reverseE (n + 2)).det = 2 * (reverseE (n + 1)).det - (reverseE n).det := by
+theorem det_E_add_two (n : ℕ) (hn : 4 ≤ n) :
+    (E (n + 2)).det = 2 * (E (n + 1)).det - (E n).det := by
+  suffices (reverseE (n + 2)).det = 2 * (reverseE (n + 1)).det - (reverseE n).det by
+    simpa [reverseE] using this
   have htail : (reverseE (n + 1)).submatrix Fin.succ Fin.succ = reverseE n := by
     rw [reverseE_succ n hn, extendPath_tail]
-  rw [reverseE_succ (n + 1) (by omega), extendPath_det, htail]
-
-private theorem reverseE_three_det : (reverseE 3).det = 6 := by decide
-
-private theorem reverseE_four_det : (reverseE 4).det = 5 := by decide
-
-private theorem reverseE_five_det : (reverseE 5).det = 4 := by
-  have htail : (reverseE 4).submatrix Fin.succ Fin.succ = reverseE 3 := by decide
-  rw [reverseE_succ 4 (by omega), extendPath_det, htail, reverseE_three_det,
-    reverseE_four_det]
-  norm_num
-
-private theorem reverseE_det_from_four (n : ℕ) :
-    (reverseE (n + 4)).det = 5 - (n : ℤ) := by
-  induction n using Nat.twoStepInduction with
-  | zero => exact reverseE_four_det
-  | one => exact reverseE_five_det
-  | more n hn hn1 =>
-      rw [reverseE_det_recurrence (n + 4) (by omega), hn, hn1]
-      push_cast
-      ring
+  rw [reverseE_succ (n + 1) (by lia), extendPath_det, htail]
 
 /-- The determinant of `E n` is `9 - n` for `n ≥ 3`. -/
-theorem E_det {n : ℕ} (hn : 3 ≤ n) : (E n).det = 9 - (n : ℤ) := by
-  rw [← Matrix.det_reindex_self Fin.revPerm (E n)]
-  by_cases h3 : n = 3
-  · subst n
-    exact reverseE_three_det
-  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le (show 4 ≤ n by omega)
-  rw [show 4 + n = n + 4 by omega]
-  change (reverseE (n + 4)).det = 9 - ((n + 4 : ℕ) : ℤ)
-  rw [reverseE_det_from_four]
-  push_cast
-  ring
+theorem E_det {n : ℕ} (hn : 3 ≤ n) : (E n).det = 9 - n := by
+  rcases eq_or_ne n 3 with rfl | hn; · decide
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' (show 4 ≤ n by lia)
+  induction n using Nat.twoStepInduction with
+  | zero => decide
+  | one =>
+    have : E 5 =
+      !![ 2,  0, -1,  0,  0;
+          0,  2,  0, -1,  0;
+         -1,  0,  2, -1,  0;
+          0, -1, -1,  2, -1;
+          0,  0,  0, -1,  2] := by decide
+    simp [this, norm_det]
+  | more n hn hn1 => rw [det_E_add_two (n + 4) (by lia)]; grind
 
 /-! The determinants of E₆, E₇, E₈ are 3, 2, 1 respectively. -/
 
