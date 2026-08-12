@@ -424,6 +424,20 @@ theorem _root_.Submodule.isFredholm_mkQL {p : Submodule 𝕜 E} (hcompl : p.Clos
     IsFredholm p.mkQL :=
   p.isQuotientMap_mkQL.isFredholm (by simpa) (by rwa [toLinearMap_mkQL, ker_mkQ])
 
+theorem _root_.Submodule.isFredholm_projectionOntoL [ContinuousSub E] {p q : Submodule 𝕜 E}
+    (hcompl : IsTopCompl p q)
+    [FiniteDimensional 𝕜 q] :
+    IsFredholm (p.projectionOntoL q hcompl) :=
+  isQuotientMap_projectionOntoL hcompl |>.isFredholm
+    (by simpa using hcompl.symm.closedComplemented)
+    (by rwa [ker_projectionOntoL])
+
+theorem _root_.FredholmDecomposition.isFredholm_proj [ContinuousSub E]
+    (dec : FredholmDecomposition 𝕜 E) :
+    IsFredholm dec.proj :=
+  have := dec.finite_X₀
+  isFredholm_projectionOntoL dec.isTopCompl
+
 variable [CompleteSpace 𝕜] [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
   [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] [ContinuousSMul 𝕜 G]
   [T2Space E] [T2Space F] [T2Space G]
@@ -498,6 +512,13 @@ theorem isFredholm_codRestrict_iff {f : E →L[𝕜] F} {B : Submodule 𝕜 F}
   rw [← (isFredholm_subtypeL hB).comp_iff_right, subtypeL_comp_codRestrict]
 
 alias ⟨IsFredholm.of_codRestrict, IsFredholm.codRestrict⟩ := isFredholm_codRestrict_iff
+
+theorem _root_.Submodule.isFredholm_projectionL {p q : Submodule 𝕜 E}
+    (hcompl : IsTopCompl p q)
+    [FiniteDimensional 𝕜 q] :
+    IsFredholm (p.projectionL q hcompl) :=
+  have : p.CoFG := FG.cofg_of_isCompl hcompl.isCompl.symm .of_finite
+  isFredholm_subtypeL hcompl.isClosed |>.comp <| isFredholm_projectionOntoL hcompl
 
 end Constructions
 
