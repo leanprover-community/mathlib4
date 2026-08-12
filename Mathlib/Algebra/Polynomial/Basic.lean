@@ -617,7 +617,7 @@ theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 :=
   coeff_monomial
 
 theorem coeff_X_of_ne_one {n : ℕ} (hn : n ≠ 1) : coeff (X : R[X]) n = 0 := by
-  rw [coeff_X, if_neg hn.symm]
+  rw [coeff_X, ite_eq_right hn.symm]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
@@ -636,7 +636,7 @@ theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
 theorem coeff_C_zero : coeff (C a) 0 = a :=
   coeff_monomial
 
-theorem coeff_C_of_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, if_neg h]
+theorem coeff_C_of_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, ite_eq_right h]
 
 @[deprecated (since := "2026-05-20")] alias coeff_C_ne_zero := coeff_C_of_ne_zero
 
@@ -711,7 +711,7 @@ theorem ext {p q : R[X]} : (∀ n, coeff p n = coeff q n) → p = q :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Monomials generate the additive monoid of polynomials. -/
-theorem addSubmonoid_closure_setOf_eq_monomial :
+theorem addSubmonoid_closure_setOfPred_eq_monomial :
     AddSubmonoid.closure { p : R[X] | ∃ n a, p = monomial n a } = ⊤ := by
   apply top_unique
   rw [← AddSubmonoid.map_equiv_top (toFinsuppIso R).symm.toAddEquiv, ← addSubmonoidClosure_single,
@@ -720,10 +720,13 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
   rintro _ ⟨n, a, rfl⟩
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
 
+@[deprecated (since := "2026-07-09")]
+alias addSubmonoid_closure_setOf_eq_monomial := addSubmonoid_closure_setOfPred_eq_monomial
+
 @[ext high]
 theorem addHom_ext {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
     (h : ∀ n a, f (monomial n a) = g (monomial n a)) : f = g :=
-  AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOf_eq_monomial <| by
+  AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOfPred_eq_monomial <| by
     rintro p ⟨n, a, rfl⟩
     exact h n a
 
@@ -1014,10 +1017,10 @@ theorem coeff_update_apply (p : R[X]) (n : ℕ) (a : R) (i : ℕ) :
 
 @[simp]
 theorem coeff_update_same (p : R[X]) (n : ℕ) (a : R) : (p.update n a).coeff n = a := by
-  rw [p.coeff_update_apply, if_pos rfl]
+  rw [p.coeff_update_apply, ite_eq_left rfl]
 
 theorem coeff_update_ne (p : R[X]) {n i : ℕ} (a : R) (h : i ≠ n) :
-    (p.update n a).coeff i = p.coeff i := by rw [p.coeff_update_apply, if_neg h]
+    (p.update n a).coeff i = p.coeff i := by rw [p.coeff_update_apply, ite_eq_right h]
 
 @[simp]
 theorem update_zero_eq_erase (p : R[X]) (n : ℕ) : p.update n 0 = p.erase n := by
@@ -1033,7 +1036,7 @@ theorem support_update_zero (p : R[X]) (n : ℕ) : support (p.update n 0) = p.su
   rw [update_zero_eq_erase, support_erase]
 
 theorem support_update_ne_zero (p : R[X]) (n : ℕ) {a : R} (ha : a ≠ 0) :
-    support (p.update n a) = insert n p.support := by classical rw [support_update, if_neg ha]
+    support (p.update n a) = insert n p.support := by classical rw [support_update, ite_eq_right ha]
 
 end Update
 

@@ -103,6 +103,7 @@ theorem isOpen_sUnion {s : Set (Set X)} (h : ∀ t ∈ s, IsOpen t) : IsOpen (�
   TopologicalSpace.isOpen_sUnion s h
 
 /-- A set is closed if its complement is open -/
+@[wikidata Q320357]
 class IsClosed (s : Set X) : Prop where
   /-- The complement of a closed set is an open set. -/
   isOpen_compl : IsOpen sᶜ
@@ -205,7 +206,7 @@ scoped notation (name := closure_of) "closure[" t "]" => @closure _ t
 scoped notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
 
-open Topology Lean.PrettyPrinter.Delaborator Delab.Noncanonical
+open Lean.PrettyPrinter.Delaborator Delab.Noncanonical
 
 /-- Delaborator for `IsOpen[_]`. -/
 @[scoped app_delab IsOpen] meta def delabIsOpen : Delab := delabUnary 2 1 fun x ↦ `(IsOpen[$x])

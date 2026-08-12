@@ -145,12 +145,14 @@ lemma hφ₀ (B : Set X) (hB : HasCardinalLT B κ₂) {T : Type w} (f : T → B)
 
 open scoped Classical in
 /-- This coincides with `φ₀` when `HasCardinalLT B κ₂` holds. -/
-def φ (B : Set X) : Set X :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def φ (B : Set X) : Set X :=
   if hB : HasCardinalLT B κ₂ then φ₀ Y m B hB else B
 
 omit [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] [PartialOrder X] in
 lemma φ_eq (B : Set X) (hB : HasCardinalLT B κ₂) :
-  φ Y m B = φ₀ Y m B hB := dif_pos hB
+  φ Y m B = φ₀ Y m B hB := dite_eq_left hB
 
 include hY' in
 omit [Fact κ₂.IsRegular] [PartialOrder X] in
