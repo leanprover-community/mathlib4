@@ -49,7 +49,7 @@ namespace MvPolynomial
 
 noncomputable section
 
-open Set LinearMap Submodule
+open LinearMap Submodule
 
 variable {K : Type*} {σ : Type*}
 
@@ -115,7 +115,6 @@ section
 
 variable (K σ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `MvPolynomial.eval` as a `K`-linear map. -/
 @[simps]
 def evalₗ [CommSemiring K] : MvPolynomial σ K →ₗ[K] (σ → K) → K where

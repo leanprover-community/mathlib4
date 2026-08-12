@@ -531,7 +531,7 @@ noncomputable def Group.nilpotencyClass : ℕ :=
 @[to_additive]
 theorem Group.nilpotencyClass_of_not_nilpotent (hG : ¬ IsNilpotent G) :
     Group.nilpotencyClass G = 0 :=
-  dif_neg hG
+  dite_eq_right hG
 
 variable [hG : IsNilpotent G]
 
@@ -539,7 +539,7 @@ open scoped Classical in
 @[to_additive]
 theorem Group.nilpotencyClass_def :
     Group.nilpotencyClass G = Nat.find (IsNilpotent.nilpotent G) :=
-  dif_pos hG
+  dite_eq_left hG
 
 namespace Subgroup
 
@@ -1255,7 +1255,7 @@ theorem Group.isNilpotent_of_finite_tfae :
   tfae_finish
 
 instance [IsNilpotent G] {p : ℕ} [Fact p.Prime] {P : Sylow p G} : P.Normal :=
-  isNilpotent_of_finite_tfae.out 0 3 rfl rfl |>.mp ‹_› p ‹_› P
+  isNilpotent_of_finite_tfae.out 1 4 rfl rfl |>.mp ‹_› p ‹_› P
 
 end WithFiniteGroup
 

@@ -25,14 +25,14 @@ Note that over commutative rings, left ideals and two-sided ideals are equivalen
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
 
 variable {α : Type u} {β : Type v} {F : Type w}
 
-open Set Function
+open Set
 
 open scoped Pointwise
 
