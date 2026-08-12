@@ -228,7 +228,7 @@ theorem notEdgeReachable_degree_add_one [Fintype <| G.neighborSet u] [DecidableE
   cases p with
   | nil =>
       exact huv rfl
-  | cons h p =>{
+  | cons h p => {
       have h' := deleteEdges_adj.mp h
       exact h'.2 (by grind [mem_incidenceSet])
   }
