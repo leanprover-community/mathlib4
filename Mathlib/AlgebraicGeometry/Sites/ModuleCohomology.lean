@@ -23,6 +23,15 @@ in its second variable. No morphism to an affine scheme is involved; see
 If `X` is a scheme over `R` via `f : X ⟶ Spec R`, an `R`-module structure is obtained from this by
 restriction of scalars along `f.appTopOfSpec : R ⟶ Γ(X, ⊤)`; see `cohomologyModule`.
 
+## Main definitions
+
+* `AlgebraicGeometry.Scheme.Modules.H`: the degree-`n` cohomology of the abelian sheaf underlying
+  an `𝒪_X`-module.
+* `AlgebraicGeometry.Scheme.Modules.globalSectionsModule`: its `Γ(X, ⊤)`-module structure.
+* `AlgebraicGeometry.Scheme.Modules.cohomologyModule`: its `R`-module structure, for a scheme over
+  `Spec R`.
+* `AlgebraicGeometry.Scheme.Modules.h`: the `R`-dimension of the degree-`n` cohomology.
+
 ## TODO
 
 The action should ultimately come from a presheaf of `𝒪_X`-modules structure on
@@ -39,7 +48,7 @@ applies to `Sheaf.H` and to every value of `Sheaf.cohomologyPresheaf` at once.
 
 universe u
 
-open CategoryTheory AlgebraicGeometry Scheme
+open CategoryTheory
 
 namespace AlgebraicGeometry.Scheme.Modules
 
@@ -48,10 +57,10 @@ variable {X : Scheme.{u}} (F : X.Modules)
 /--
 The cohomology of a sheaf of modules in degree `n`.
 
-This is the cohomology of the *abelian sheaf* underlying `F`, that is, `Ext` taken in
-`Sheaf J AddCommGrpCat` rather than in `X.Modules`. The two agree, but mathlib does not yet have
-the comparison isomorphism, which amounts to injective `𝒪_X`-modules being acyclic for abelian
-sheaf cohomology.
+This is the cohomology of the *abelian sheaf* underlying `F`, that is, `Ext` taken in the
+category of abelian sheaves on `X` rather than in `X.Modules`. The two agree, but mathlib does not
+yet have the comparison isomorphism, which amounts to injective `𝒪_X`-modules being acyclic for
+abelian sheaf cohomology.
 -/
 abbrev H := ((SheafOfModules.toSheaf _).obj F).H
 
@@ -64,7 +73,7 @@ key; make it a local instance where it is needed. -/
 @[reducible] noncomputable def globalSectionsModule (n : ℕ) : Module Γ(X, ⊤) (F.H n) :=
   Abelian.Ext.moduleOfRingHom (smulEnd F) n
 
-lemma globalSectionsModule_smul_def (n : ℕ) (r : Γ(X, ⊤)) (x : F.H n) :
+lemma globalSectionsModule_smul (n : ℕ) (r : Γ(X, ⊤)) (x : F.H n) :
     letI := F.globalSectionsModule n
     r • x = x.comp (Abelian.Ext.mk₀ (smulEnd F r)) (add_zero n) := rfl
 
@@ -77,7 +86,7 @@ the intrinsic `Γ(X, ⊤)`-action along `f.appTopOfSpec`. -/
   letI := F.globalSectionsModule n
   Module.compHom _ f.appTopOfSpec.hom
 
-lemma cohomologyModule_smul_def (n : ℕ) (r : R) (x : F.H n) :
+lemma cohomologyModule_smul (n : ℕ) (r : R) (x : F.H n) :
     letI := F.cohomologyModule f n
     letI := F.globalSectionsModule n
     r • x = f.appTopOfSpec r • x := rfl
