@@ -103,14 +103,26 @@ lemma LocallyFiniteSupport.locallyFinite_support [Zero Y] (f : X → Y) (h : Loc
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) :=
   (LocallyFiniteSupport.iff_locallyFinite_support f).mpr h
 
+/--
+If the support of `f : X → Y` is finite in a neighbourhood of every point of a compact set `W`,
+then it meets `W` in a finite set.
+-/
+lemma _root_.IsCompact.finite_inter_support [Zero Y] {W : Set X} {f : X → Y} (hW : IsCompact W)
+    (h : ∀ z ∈ W, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)) :
+    (W ∩ f.support).Finite := by
+  choose! V hV hVfin using h
+  obtain ⟨t, htW, htcover⟩ := hW.elim_nhds_subcover V hV
+  refine Set.Finite.subset (t.finite_toSet.biUnion fun z hz ↦ hVfin z (htW z hz)) ?_
+  rintro x ⟨hxW, hxf⟩
+  have hx : x ∈ ⋃ z ∈ t, V z := htcover hxW
+  simp only [Set.mem_iUnion, exists_prop] at hx
+  obtain ⟨z, hz, hxz⟩ := hx
+  exact Set.mem_biUnion hz ⟨hxz, hxf⟩
+
 lemma LocallyFiniteSupport.finite_inter_support_of_isCompact {W : Set X}
    [Zero Y] {f : X → Y} (h : LocallyFiniteSupport f)
-   (hW : IsCompact W) : (W ∩ f.support).Finite := by
-  have := LocallyFinite.finite_nonempty_inter_compact
-    (LocallyFiniteSupport.locallyFinite_support f h) hW
-  have lem {α : Type u_1} (s t : Set α) : {i : s | ({↑i} ∩ t).Nonempty} = (t ∩ s) := by aesop
-  rw [← lem f.support W]
-  exact Finite.image Subtype.val this
+   (hW : IsCompact W) : (W ∩ f.support).Finite :=
+  hW.finite_inter_support fun z _ ↦ h z
 
 lemma Function.locallyFinsupp.locallyFiniteSupport [Zero Y] (f : locallyFinsupp X Y) :
     LocallyFiniteSupport f.toFun :=
@@ -252,11 +264,8 @@ If `U` is compact, then the support of a function with locally finite support wi
 -/
 theorem finiteSupport [Zero Y] (D : locallyFinsuppWithin U Y) (hU : IsCompact U) :
     Set.Finite D.support := by
-  choose! V hV hVfin using D.supportLocallyFiniteWithinDomain
-  obtain ⟨t, hts, htcover⟩ := hU.elim_nhds_subcover V hV
-  refine Set.Finite.subset (t.finite_toSet.biUnion fun z hz ↦ hVfin z (hts z hz)) fun x hx ↦ ?_
-  obtain ⟨z, hz, hxz⟩ := by simpa using htcover (D.supportWithinDomain hx)
-  exact Set.mem_biUnion hz ⟨hxz, hx⟩
+  simpa [Set.inter_eq_self_of_subset_right D.supportWithinDomain] using
+    hU.finite_inter_support D.supportLocallyFiniteWithinDomain
 
 /-!
 ## Lattice ordered group structure
