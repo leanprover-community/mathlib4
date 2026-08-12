@@ -269,7 +269,7 @@ lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
 @[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
     s.powersetCard (s.card + n) = ∅ := by simpa
 
-lemma Disjoint.powersetCard_powersetCard {s t : Finset α}
+lemma _root_.Disjoint.powersetCard_powersetCard {s t : Finset α}
     (h : Disjoint s t) {n : ℕ} (hn : n ≠ 0) (m : ℕ) :
     Disjoint (powersetCard n s) (powersetCard m t) := by
   rw [disjoint_left]
