@@ -218,27 +218,6 @@ def symbolsNotIn (A : LatinRectangle k n α) (j : n) :=
   let D := Finset.image (LatinRectangle.col A j) Finset.univ
   Finset.univ \ D
 
-/-- The property that Latin rectangle's meet the hypotheses of Hall's Marriage Theorem. -/
-lemma forall_finset_card_le_card_biUnion {α : Type*} [DecidableEq α] {n : Type*} [Fintype n]
-    [DecidableEq n] {k : Type*} [Fintype k] {B : n → Finset α}
-    (h₁ : Fintype.card k < Fintype.card n)
-    (h₂ : ∀ j, Finset.card (B j) = Fintype.card n - Fintype.card k)
-    (h₃ : ∀ x, ∀ (t : Finset n),
-    Finset.card {j | j ∈ t ∧ x ∈ B j} ≤ Fintype.card n - Fintype.card k) :
-    ∀ (s : Finset n), (Finset.card s) ≤ (Finset.card (s.biUnion B)) := by
-  intro s
-  apply Finset.card_le_card_biUnion_of_card_le_card
-    (n := Fintype.card n - Fintype.card k) B s (by lia)
-  · intro j _
-    exact (h₂ j).ge
-  · intro x _
-    have ht : Finset.card {j | j ∈ s ∧ x ∈ B j} = Finset.card {j ∈ s | x ∈ B j} := by
-      congr 1
-      ext j
-      simp [and_comm]
-    rw [← ht]
-    exact h₃ x s
-
 /-- For a k × n Latin rectangle, the set of entries in each column has cardinality k. -/
 lemma col_card {k n : Type*} [Fintype k] [Fintype n] (A : LatinRectangle k n α) :
     ∀ j, (Finset.image (LatinRectangle.col A j) Finset.univ).card = Fintype.card k := by
@@ -388,8 +367,10 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
   have exactly_n_minus_k_cols_without_x := LatinRectangle.card_symbolsNotIn_eq (n := n) (k := k)
     (α := α) A h
   have pre_property_H := LatinRectangle.card_symbolsNotIn_le (n := n) (k := k) (α := α) A h
+  have _ : NeZero (Fintype.card n - Fintype.card k )  := ⟨by lia⟩ 
   let halls := hallMatchingsOn.nonempty (B)
-    (forall_finset_card_le_card_biUnion h Bj_size pre_property_H) (Finset.univ)
+    (Finset.card_le_card_biUnion_of_card_eq_of_card_filter_le (k := Fintype.card n - Fintype.card k)
+    Bj_size pre_property_H) (Finset.univ)
   set f := Classical.choice halls with hx
   simp only [hallMatchingsOn] at f
   obtain ⟨ f', hf⟩ := f
