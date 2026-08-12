@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 public import Mathlib.Tactic.FieldSimp
@@ -39,9 +40,10 @@ specializations.
 
 The inequalities hold in a linearly ordered semifield with `ExistsAddOfLE`, so in particular
 over `ℚ≥0` and `NNReal`. Semifields have no subtraction, so the usual sum-of-squares argument
-is unavailable; the substitute is `two_mul_le_add_sq`, the division-free AM-GM for linearly
-ordered commutative semirings. Dividing it by `x * y` gives `two_le_div_add_div`, and summing
-that over a `Finset` is the whole content of the general inequality.
+is unavailable. The general inequality is `Finset.sq_sum_div_le_sum_sq_div` (Sedrakyan's lemma)
+with every numerator equal to `1`; the two- and three-term cases come instead from
+`two_mul_le_add_sq`, the division-free AM-GM for linearly ordered commutative semirings, whose
+`ExistsAddOfLE` hypothesis is what keeps all of this subtraction-free.
 
 The equality criteria are stated over a field rather than a semifield, since the two-term
 case amounts to `(x - y) ^ 2 = 0` and so needs subtraction. The general criterion is proved
@@ -82,37 +84,17 @@ theorem two_le_div_add_div (hx : 0 < x) (hy : 0 < y) : 2 ≤ x / y + y / x := by
 `(#s) ^ 2 ≤ (∑ i ∈ s, z i) * (∑ i ∈ s, (z i)⁻¹)`.
 
 This rearranges to the statement that the harmonic mean of `z` is at most its arithmetic mean.
-The induction step adjoins an element `a`, producing the cross term
-`∑ i ∈ s, (z a / z i + z i / z a)`, each summand of which is at least `2`; that supplies exactly
-the `2 * #s` needed by the square of the incremented cardinality. -/
-theorem sq_card_le_sum_mul_sum_inv (z : ι → R) :
-    ∀ s : Finset ι, (∀ i ∈ s, 0 < z i) →
-      (#s : R) ^ 2 ≤ (∑ i ∈ s, z i) * (∑ i ∈ s, (z i)⁻¹) := by
-  intro s
-  induction s using Finset.cons_induction with
-  | empty => intro _; simp
-  | cons a s ha ih =>
-    intro hz
-    have hza : 0 < z a := hz a (by simp)
-    have hzs : ∀ i ∈ s, 0 < z i := fun i hi => hz i (by simp [hi])
-    have ihs := ih hzs
-    rw [Finset.sum_cons, Finset.sum_cons, Finset.card_cons]
-    have cross_eq : z a * (∑ i ∈ s, (z i)⁻¹) + (z a)⁻¹ * (∑ i ∈ s, z i)
-        = ∑ i ∈ s, (z a / z i + z i / z a) := by
-      rw [Finset.mul_sum, Finset.mul_sum, ← Finset.sum_add_distrib]
-      exact Finset.sum_congr rfl fun i _ => by ring
-    have cross : 2 * (#s : R) ≤ z a * (∑ i ∈ s, (z i)⁻¹) + (z a)⁻¹ * (∑ i ∈ s, z i) := by
-      rw [cross_eq]
-      calc 2 * (#s : R) = ∑ _i ∈ s, (2 : R) := by
-            rw [Finset.sum_const, nsmul_eq_mul]; ring
-        _ ≤ ∑ i ∈ s, (z a / z i + z i / z a) :=
-            Finset.sum_le_sum fun i hi => two_le_div_add_div hza (hzs i hi)
-    push_cast
-    calc ((#s : R) + 1) ^ 2 = (#s : R) ^ 2 + 2 * (#s : R) + 1 := by ring
-      _ ≤ (∑ i ∈ s, z i) * (∑ i ∈ s, (z i)⁻¹)
-            + (z a * (∑ i ∈ s, (z i)⁻¹) + (z a)⁻¹ * (∑ i ∈ s, z i)) + 1 :=
-          add_le_add (add_le_add ihs cross) le_rfl
-      _ = (z a + ∑ i ∈ s, z i) * ((z a)⁻¹ + ∑ i ∈ s, (z i)⁻¹) := by field_simp; ring
+It is `Finset.sq_sum_div_le_sum_sq_div` (Sedrakyan's lemma) with every numerator equal to `1`. -/
+theorem sq_card_le_sum_mul_sum_inv (s : Finset ι) (z : ι → R) (hz : ∀ i ∈ s, 0 < z i) :
+    (#s : R) ^ 2 ≤ (∑ i ∈ s, z i) * (∑ i ∈ s, (z i)⁻¹) := by
+  rcases s.eq_empty_or_nonempty with rfl | hne
+  · simp
+  have hsum : 0 < ∑ i ∈ s, z i := Finset.sum_pos hz hne
+  have key := Finset.sq_sum_div_le_sum_sq_div s (fun _ => (1 : R)) hz
+  simp only [Finset.sum_const, nsmul_eq_mul, mul_one, one_pow, one_div] at key
+  rw [div_le_iff₀ hsum] at key
+  calc (#s : R) ^ 2 ≤ (∑ i ∈ s, (z i)⁻¹) * ∑ i ∈ s, z i := key
+    _ = (∑ i ∈ s, z i) * ∑ i ∈ s, (z i)⁻¹ := mul_comm _ _
 
 /-- The three-term AM-HM inequality: `9 ≤ (x + y + z) * (x⁻¹ + y⁻¹ + z⁻¹)`. Expanding the
 product leaves three ones and three reciprocal pairs, each pair at least `2`. -/
@@ -166,7 +148,7 @@ theorem div_add_div_eq_two_iff (hx : 0 < x) (hy : 0 < y) : x / y + y / x = 2 ↔
 
 Symmetrizing the double sum turns the product into terms `z i / z j + z j / z i`, each at
 least `2` with total `2 * (#s) ^ 2`; so equality forces every term to equal `2`. -/
-theorem sq_card_eq_sum_mul_sum_inv_iff (z : ι → K) (s : Finset ι) (hz : ∀ i ∈ s, 0 < z i) :
+theorem sq_card_eq_sum_mul_sum_inv_iff (s : Finset ι) (z : ι → K) (hz : ∀ i ∈ s, 0 < z i) :
     (#s : K) ^ 2 = (∑ i ∈ s, z i) * (∑ i ∈ s, (z i)⁻¹) ↔ ∀ i ∈ s, ∀ j ∈ s, z i = z j := by
   have hprod : (∑ i ∈ s, z i) * (∑ i ∈ s, (z i)⁻¹) = ∑ i ∈ s, ∑ j ∈ s, z i / z j := by
     rw [Finset.sum_mul_sum]
