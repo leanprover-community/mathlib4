@@ -466,7 +466,7 @@ theorem restrict_top (hb : b ≤ a) : restrict ⊤ hb = ⊤ := by
   simp_rw [Top.top]
   rcases eq_or_ne b ⊥ with rfl | hb'
   · exact Subsingleton.elim ..
-  rw [dif_neg (ne_bot_of_le_ne_bot hb' hb), dif_neg hb']
+  rw [dite_eq_right (ne_bot_of_le_ne_bot hb' hb), dite_eq_right hb']
   ext1
   simp_rw [parts_restrict, indiscrete_parts, image_singleton, inf_eq_right.mpr hb,
     erase_eq_of_notMem (mem_singleton.not.mpr hb'.symm)]
