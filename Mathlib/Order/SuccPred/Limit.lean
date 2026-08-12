@@ -152,14 +152,22 @@ protected theorem _root_.IsMin.isSuccPrelimit : IsMin a → IsSuccPrelimit a := 
   not_isMin_of_lt hab.lt h
 
 @[to_dual]
-theorem isSuccPrelimit_iff_forall_lt_exists {α : Type*} [Preorder α] {a : α} :
-    IsSuccPrelimit a ↔ ∀ b < a, ∃ c, b < c ∧ c < a := by
+theorem isSuccPrelimit_iff_forall_lt_exists : IsSuccPrelimit a ↔ ∀ b < a, ∃ c, b < c ∧ c < a := by
   refine forall_congr' fun _ ↦ ⟨fun _ ↦ ?_, fun _ _ ↦ ?_⟩ <;> unfold CovBy at * <;> grind
 
 @[to_dual]
 theorem IsSuccPrelimit.exists_lt_lt_of_lt (ha : IsSuccPrelimit a) (hlt : b < a) :
     ∃ c, b < c ∧ c < a :=
   isSuccPrelimit_iff_forall_lt_exists.mp ha b hlt
+
+@[to_dual]
+theorem IsSuccPrelimit.lt_iff_exists_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c < b, a < c where
+  mp hab := isSuccPrelimit_iff_forall_lt_exists.mp h a hab |>.imp fun _ ↦ .symm
+  mpr := fun ⟨_, hcb, hac⟩ ↦ hac.trans hcb
+
+@[to_dual]
+theorem IsSuccLimit.lt_iff_exists_lt (h : IsSuccLimit b) : a < b ↔ ∃ c < b, a < c :=
+  h.isSuccPrelimit.lt_iff_exists_lt
 
 @[to_dual]
 theorem IsSuccLimit.nonempty_Iio (h : IsSuccLimit a) : (Set.Iio a).Nonempty :=
@@ -500,15 +508,6 @@ theorem IsSuccPrelimit.le_iff_forall_le (h : IsSuccPrelimit a) : a ≤ b ↔ ∀
 @[to_dual]
 theorem IsSuccLimit.le_iff_forall_le (h : IsSuccLimit a) : a ≤ b ↔ ∀ c < a, c ≤ b :=
   h.isSuccPrelimit.le_iff_forall_le
-
-@[to_dual]
-theorem IsSuccPrelimit.lt_iff_exists_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c < b, a < c := by
-  rw [← not_iff_not]
-  simp [h.le_iff_forall_le]
-
-@[to_dual]
-theorem IsSuccLimit.lt_iff_exists_lt (h : IsSuccLimit b) : a < b ↔ ∃ c < b, a < c :=
-  h.isSuccPrelimit.lt_iff_exists_lt
 
 @[to_dual]
 lemma _root_.IsLUB.isSuccPrelimit_of_notMem {s : Set α} (hs : IsLUB s a) (ha : a ∉ s) :
