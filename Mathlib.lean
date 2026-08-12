@@ -5742,7 +5742,9 @@ public import Mathlib.NumberTheory.Bertrand
 public import Mathlib.NumberTheory.CFT.ClassFormation.Basic
 public import Mathlib.NumberTheory.CFT.ClassFormation.FintypeCat
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryConnected
+public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryDegree
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryEquivalence
+public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryInduction
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryLimits
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryOver
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCover
