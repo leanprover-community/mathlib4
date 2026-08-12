@@ -425,7 +425,7 @@ theorem _root_.Topology.IsQuotientMap.isFredholm {f : E →L[𝕜] F} (hq : IsQu
     exact Submodule.CoFG.top
   closedComplemented_ker := hcompl
 
-theorem _root_.Submodule.mkQL_isFredholm {p : Submodule 𝕜 E} (hcompl : p.ClosedComplemented)
+theorem _root_.Submodule.isFredholm_mkQL {p : Submodule 𝕜 E} (hcompl : p.ClosedComplemented)
     [FiniteDimensional 𝕜 p] :
     IsFredholm p.mkQL :=
   p.isQuotientMap_mkQL.isFredholm (by simpa) (by rwa [toLinearMap_mkQL, ker_mkQ])
