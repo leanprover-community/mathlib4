@@ -219,7 +219,7 @@ theorem notEdgeReachable_degree_add_one [Fintype <| G.neighborSet u] [DecidableE
     (huv : u ≠ v) : ¬G.IsEdgeReachable (G.degree u + 1) u v  := by
   intro h
   unfold IsEdgeReachable at h
-  have this2:= @h (G.incidenceSet u)
+  have this2 := @h (G.incidenceSet u)
   have : (G.incidenceSet u).encard = G.degree u := by
     grind [card_incidenceSet_eq_degree, Set.coe_fintypeCard, Set.coe_ncard_eq_encard]
   rw [this] at this2
