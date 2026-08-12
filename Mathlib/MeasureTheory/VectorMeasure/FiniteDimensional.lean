@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Bases
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
+
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Decomposition of a vector measure in a finite-dimensional `ℝ`-vector space with respect to a basis
@@ -35,9 +36,9 @@ variable {X : Type*} {mX : MeasurableSpace X}
 
 /-- For a Schauder basis `b` in `V` indexed by `ι`, `i : ι` and a vector measure `μ`, `μ.coord b i`
 gives the `i`-th component of `μ` as a `𝕜`-valued vector measure. -/
-protected noncomputable def coord (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) :
-    ι → VectorMeasure X 𝕜 :=
-  fun i ↦ mapRangeₗ (b.coord i).toLinearMap (b.coord i).continuous μ
+protected noncomputable def coord (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V)
+    (i : ι) : VectorMeasure X 𝕜 :=
+  mapRangeₗ (b.coord i).toLinearMap (b.coord i).continuous μ
 
 @[simp]
 lemma coord_apply (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) (i : ι) (E : Set X) :

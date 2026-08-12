@@ -138,10 +138,8 @@ def Module.Basis.toGeneralSchauderBasis [CompleteSpace 𝕜] [Fintype β]
     GeneralSchauderBasis β 𝕜 X L :=
   letI : FiniteDimensional 𝕜 X := b.finiteDimensional_of_finite
   { basis := b
-    coord i := LinearMap.toContinuousLinearMap (b.coord i)
-    ortho i j := by
-      rw [coe_toContinuousLinearMap']
-      by_cases h : i = j <;> simp [h]
+    coord i := (b.coord i).toContinuousLinearMap
+    ortho i j := by simp [Finsupp.single]
     expansion x := by simpa using hasSum_fintype (fun i ↦ b.coord i x • b i) L }
 
 /-- Coercion from a `GeneralSchauderBasis` to the underlying basis function. -/
@@ -159,7 +157,7 @@ theorem tsum_coord_smul [L.NeBot] (x : X) :
 
 /-- The expansion of `x` as `sum` when `Fintype β`. -/
 @[simp]
-theorem sum_coord_smul_eq_of_fintype [Fintype β] [L.LeAtTop] [L.NeBot] (x : X) :
+theorem sum_coord_smul [Fintype β] [L.LeAtTop] [L.NeBot] (x : X) :
     ∑ i, b.coord i x • b i = x := (hasSum_fintype _ L).unique (b.expansion x)
 
 /-- The basis vectors are linearly independent. -/

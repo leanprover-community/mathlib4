@@ -54,14 +54,13 @@ lemma variation_le_sum_smul {ι : Type*} [Fintype ι] (μ : VectorMeasure X V)
         gcongr with i; exact enorm_measure_le_variation (s i) E
     _ = (∑ i, ‖v i‖₊ • (s i).variation) E := by simp [enorm_eq_nnnorm]
 
-/-- The variation of a vector measure with values in a finite-dimensional `ℝ`-normed vector space is
-finite. -/
+/-- The variation of a vector measure with values in a real finite-dimensional normed vector space
+is finite. -/
 instance [NormedSpace ℝ V] [FiniteDimensional ℝ V] (μ : VectorMeasure X V) :
     IsFiniteMeasure μ.variation := by
-  obtain b := (Module.finBasis ℝ V).toGeneralSchauderBasis
+  let b := (Module.finBasis ℝ V).toGeneralSchauderBasis
     (L := SummationFilter.unconditional (Fin (Module.finrank ℝ V)))
-  apply isFiniteMeasure_of_le (∑ i, ‖b i‖₊ • (μ.coord b i).variation)
-  apply variation_le_sum_smul
-  simp
+  exact isFiniteMeasure_of_le (∑ i, ‖b i‖₊ • (μ.coord b i).variation)
+    (variation_le_sum_smul (by simp))
 
 end MeasureTheory.VectorMeasure
