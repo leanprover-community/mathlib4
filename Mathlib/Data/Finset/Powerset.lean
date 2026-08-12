@@ -307,10 +307,7 @@ theorem powersetCard_self (s : Finset α) : powersetCard s.card s = {s} := by
 
 lemma disjoint_powersetCard_of_ne {m n : ℕ} (h : m ≠ n) (s t : Finset α) :
     Disjoint (powersetCard m s) (powersetCard n t) := by
-  rw [disjoint_left]
-  intro x hx hy
-  rw [mem_powersetCard] at hx hy
-  exact h (hx.2.symm.trans hy.2)
+  grind [disjoint_left]
 
 theorem pairwise_disjoint_powersetCard (s : Finset α) :
     Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) :=
