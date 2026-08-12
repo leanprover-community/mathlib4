@@ -63,13 +63,9 @@ fields, etc.
 
 assert_not_exists mfderiv
 
-open Bundle Set OpenPartialHomeomorph
-
+open Bundle Filter Set OpenPartialHomeomorph
 open Function (id_def)
-
-open Filter
-
-open scoped Manifold Bundle Topology ContDiff
+open scoped Manifold Topology ContDiff
 
 variable {n : ℕ∞ω} {𝕜 B B' F M : Type*} {E : B → Type*}
 
