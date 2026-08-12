@@ -37,11 +37,12 @@ instance : GaloisCategory (EtaleAlgCat K)ᵒᵖ := by
   sorry
 
 @[implicit_reducible]
-def formationUnits : Formation (EtaleAlgCat K)ᵒᵖ where
+def fieldFormationUnits : FieldFormation (EtaleAlgCat K)ᵒᵖ where
   sheaf.obj.obj X := .of (Additive (Units X.unop.obj.unop.obj.right))
   sheaf.obj.map f :=
     AddCommGrpCat.ofHom (Units.map (f.unop.hom.unop.hom.right.hom.toMonoidHom)).toAdditive
   sheaf.property := sorry
+  isZero_H_one := sorry
 
 end EtaleAlgCat
 
@@ -49,8 +50,7 @@ end EtaleAlgCat
 def IsNonarchimedeanLocalField.classFormation
     [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K] :
     ClassFormation (EtaleAlgCat K)ᵒᵖ where
-  toFormation := EtaleAlgCat.formationUnits K
-  isZero_H_one := sorry
+  toFieldFormation := EtaleAlgCat.fieldFormationUnits K
   u := sorry
   addOrderOf_u := sorry
   zmultiples_u := sorry
