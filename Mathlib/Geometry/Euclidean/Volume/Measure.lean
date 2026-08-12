@@ -345,12 +345,13 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (p : P) {v : V}
   simp_rw [(AffineSubspace.mk' p (ℝ ∙ v)).euclideanHausdorffMeasure_eq_lintegral ht, hx,
     hm, lintegral_smul_measure, hg.lintegral_map, smul_eq_mul, hrank', AffineSubspace.direction_mk']
 
+omit [FiniteDimensional ℝ V] in
 /-- An alternative version of `EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral` that allows
 the ambient space to have a dimension larger than the measure dimension. It still requires the set
 to be contained in a subspace of the measure dimension. -/
 theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral' (p : P) {v : V} (hv : v ≠ 0)
     {t : Set P} (ht : MeasurableSet t) {s : AffineSubspace ℝ P} (hvs : v ∈ s.direction)
-    (hts : t ⊆ s) :
+    (hts : t ⊆ s) [FiniteDimensional ℝ s.direction] :
     μHE[finrank ℝ s.direction] t = ‖v‖ₑ * ∫⁻ (x : ℝ),
       μHE[finrank ℝ s.direction - 1] (t ∩ AffineSubspace.mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ) := by
   open AffineSubspace in

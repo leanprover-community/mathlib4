@@ -40,76 +40,53 @@ theorem measurableSet_closedInterior (s : Simplex ℝ P n) : MeasurableSet s.clo
 omit [MeasurableSpace P] [BorelSpace P] in
 /-- Auxiliary lemma that converts the shifted plane from integral formula style
 to `AffineSubspace.shift`. -/
-private theorem convert_shifted_plane [FiniteDimensional ℝ V]
-    (hn : finrank ℝ V = n + 1) (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) (x : ℝ) :
-    -- LHS: through a point on the altitude, draw the perpendicular plane
+private theorem convert_shifted_plane (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) (x : ℝ) :
+    -- LHS: through a point on the altitude, draw the perpendicular plane, restricted to the
+    -- affine span of the simplex.
     AffineSubspace.mk' (x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i)
-      (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ =
-      -- RHS: shift the base towards the vertex
-      (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
-  have htop : vectorSpan ℝ (Set.range s.points) = ⊤ :=
-    s.independent.vectorSpan_eq_top_of_card_eq_finrank_add_one (by simp [hn])
-  rw [AffineSubspace.shift_eq ⟨s.altitudeFoot i, altitudeFoot_mem_affineSpan_image_compl s i⟩]
-  conv in affineSpan _ _ =>
-    rw [← AffineSubspace.mk'_eq (altitudeFoot_mem_affineSpan_image_compl s i)]
-  rw [AffineSubspace.map_mk']
-  congrm AffineSubspace.mk' ?_ ?_
-  · rw [AffineEquiv.coe_toAffineMap, AffineEquiv.constVAdd_apply, sub_smul, sub_eq_add_neg,
-      ← smul_neg, neg_vsub_eq_vsub_rev, one_smul, add_comm (s.points i -ᵥ s.altitudeFoot i),
-      add_vadd, vsub_vadd]
-  · rw [AffineEquiv.linear_toAffineMap, AffineEquiv.linear_constVAdd,
-      LinearEquiv.refl_toLinearMap, Submodule.map_id, ← vectorSpan_pair, ← direction_affineSpan,
-      affineSpan_pair_altitudeFoot_eq_altitude, direction_altitude, htop, inf_top_eq,
-      direction_affineSpan, orthogonal_orthogonal]
-
-omit [MeasurableSpace P] [BorelSpace P] in
-/-- Auxiliary lemma that converts the shifted plane from integral formula style
-to `AffineSubspace.shift`. -/
-private theorem convert_shifted_plane_inter (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) (x : ℝ) :
-    -- LHS: through a point on the altitude, draw the perpendicular plane
-
-      AffineSubspace.mk' (x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i)
       (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ ⊓ affineSpan ℝ (Set.range s.points) =
-      -- RHS: shift the base towards the vertex
+      -- RHS: shift the base towards the vertex.
       (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
-
-
   rw [AffineSubspace.shift_eq ⟨s.altitudeFoot i, altitudeFoot_mem_affineSpan_image_compl s i⟩]
   conv_rhs => conv in affineSpan _ _ =>
     rw [← AffineSubspace.mk'_eq (altitudeFoot_mem_affineSpan_image_compl s i)]
   rw [AffineSubspace.map_mk']
+  have h : x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i ∈
+      affineSpan ℝ (Set.range s.points) := by
+    apply AffineSubspace.vadd_mem_of_mem_direction
+    · apply Submodule.smul_mem
+      apply AffineSubspace.vsub_mem_direction (s.altitudeFoot_mem_affineSpan _)
+      exact mem_affineSpan ℝ (by simp)
+    · exact mem_affineSpan ℝ (by simp)
   apply AffineSubspace.ext_of_direction_eq
-  · rw [AffineSubspace.direction_inf_of_mem (p := sorry) sorry sorry]
+  · rw [AffineSubspace.direction_inf_of_mem (by simp) h]
     suffices (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ ⊓
       (affineSpan ℝ (Set.range s.points)).direction = (affineSpan ℝ (s.points '' {i}ᶜ)).direction by
       simpa
     rw [← vectorSpan_pair, ← direction_affineSpan,
       affineSpan_pair_altitudeFoot_eq_altitude, direction_altitude, direction_affineSpan]
     rw [← (vectorSpan ℝ (Set.range s.points)).orthogonal_orthogonal, Submodule.inf_orthogonal]
-
-    sorry
-
-
-  ·
-    sorry
+    rw [inf_sup_assoc_of_le _ (Submodule.orthogonal_le (vectorSpan_mono ℝ (by simp)))]
+    rw [((vectorSpan ℝ (Set.range s.points))ᗮ).isCompl_orthogonal.codisjoint.symm.eq_top]
+    rw [inf_top_eq, Submodule.orthogonal_orthogonal, direction_affineSpan]
+  · use x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i
+    constructor
+    · simpa using h
+    · rw [sub_smul, sub_eq_add_neg, ← smul_neg]
+      simp
 
 omit [MeasurableSpace P] [BorelSpace P] in
 /-- Auxiliary lemma that converts the shifted plane from integral formula style
 to `AffineSubspace.shift`. -/
 private theorem convert_shifted_plane' (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) (x : ℝ) :
-    -- LHS: through a point on the altitude, draw the perpendicular plane
+    -- LHS: through a point on the altitude, draw the perpendicular plane, intersecting with the
+    -- interior.
     s.closedInterior ∩ AffineSubspace.mk' (x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i)
       (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ =
-      -- RHS: shift the base towards the vertex
+      -- RHS: shift the base towards the vertex, intersecting with the interior.
       s.closedInterior ∩ (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
-
-
-  rw [AffineSubspace.shift_eq ⟨s.altitudeFoot i, altitudeFoot_mem_affineSpan_image_compl s i⟩]
-  conv in affineSpan _ _ =>
-    rw [← AffineSubspace.mk'_eq (altitudeFoot_mem_affineSpan_image_compl s i)]
-
-
-  sorry
+  rw [← convert_shifted_plane, AffineSubspace.coe_inf, ← Set.inter_assoc,
+    Set.inter_right_comm, Set.inter_eq_left.mpr closedInterior_subset_affineSpan]
 
 /-- The volume of the cross-section is scaled from the base because of homothety -/
 private theorem measure_cross_section (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
@@ -128,21 +105,26 @@ private theorem cross_section_support (s : Simplex ℝ P (n + 1)) (i : Fin (n + 
   refine Function.support_subset_iff'.mpr fun x hx ↦ ?_
   rw [(s.disjoint_closedInterior_shift i (by grind)).inter_eq, measure_empty]
 
-/-- Simplex volume formula that requires matching dimension of the simplex and the ambient space.
-For the public version without this requirement, use
-`Affine.Simplex.euclideanHausdorffMeasure_closedInterior`. -/
-private theorem euclideanHausdorffMeasure_closedInterior_aux [FiniteDimensional ℝ V]
-    (hn : finrank ℝ V = n + 1) (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
+/-- The $n$-volume of the closed interior of a $n$-simplex is equal to $h * b / n$, where $h$ is the
+height and $b$ is the $(n - 1)$-volume of the base. This version is expressed in `ENNReal`. -/
+theorem euclideanHausdorffMeasure_closedInterior (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     μHE[n + 1] s.closedInterior =
       (.ofReal ↑(n + 1))⁻¹ * .ofReal (s.height i) * μHE[n] (s.faceOpposite i).closedInterior := by
   borelize V
+  have hn : finrank ℝ (affineSpan ℝ (Set.range s.points)).direction = n + 1 := by
+    rw [direction_affineSpan]
+    exact s.independent.finrank_vectorSpan (by simp)
   conv in μHE[n + 1] => rw [← hn]
   -- Convert the LHS to integrating the cross-section of the interior
   have haltitudeFoot : s.altitudeFoot i -ᵥ s.points i ≠ 0 :=
     vsub_eq_zero_iff_eq.ne.mpr (s.ne_altitudeFoot i).symm
-  rw [EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (s.points i) haltitudeFoot
-    s.measurableSet_closedInterior, ← ofReal_norm, ← dist_eq_norm_vsub', ← Simplex.height,
-    Nat.sub_eq_of_eq_add hn]
+  have haltitudeMem : s.altitudeFoot i -ᵥ s.points i ∈
+      (affineSpan ℝ (Set.range s.points)).direction := by
+    apply vsub_mem_vectorSpan _ (s.altitudeFoot_mem_affineSpan _)
+    exact mem_affineSpan _ (by simp)
+  rw [EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral' (s.points i) haltitudeFoot
+    s.measurableSet_closedInterior haltitudeMem closedInterior_subset_affineSpan, ← ofReal_norm,
+    ← dist_eq_norm_vsub', ← Simplex.height, Nat.sub_eq_of_eq_add hn]
   simp_rw [convert_shifted_plane' s i]
   rw [← setLIntegral_eq_of_support_subset (cross_section_support s i),
     lintegral_congr_ae (measure_cross_section s i)]
@@ -166,26 +148,6 @@ private theorem euclideanHausdorffMeasure_closedInterior_aux [FiniteDimensional 
   _ = _ := by
     rw [ENNReal.toReal_inv, ENNReal.toReal_ofReal (by positivity)]
     simp
-
-/-- The $n$-volume of the closed interior of a $n$-simplex is equal to $h * b / n$, where $h$ is the
-height and $b$ is the $(n - 1)$-volume of the base. This version is expressed in `ENNReal`. -/
-theorem euclideanHausdorffMeasure_closedInterior (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
-    μHE[n + 1] s.closedInterior =
-      (.ofReal ↑(n + 1))⁻¹ * .ofReal (s.height i) * μHE[n] (s.faceOpposite i).closedInterior := by
-  have hn : finrank ℝ (affineSpan ℝ (Set.range s.points)).direction = n + 1 := by
-    rw [direction_affineSpan]
-    exact s.independent.finrank_vectorSpan (by simp)
-  convert ← (s.restrict _ le_rfl).euclideanHausdorffMeasure_closedInterior_aux hn i using 0
-  congrm ?_ = _ * ENNReal.ofReal ?_ * ?_
-  · rw [closedInterior_restrict, isometry_subtype_coe.euclideanHausdorffMeasure_preimage]
-    congrm μHE[n + 1] $(by simpa using closedInterior_subset_affineSpan)
-  · simp
-  · rw [faceOpposite_restrict, closedInterior_restrict,
-      isometry_subtype_coe.euclideanHausdorffMeasure_preimage]
-    congrm μHE[n] ?_
-    rw [Set.inter_eq_left]
-    apply (s.closedInterior_faceOpposite_subset_closedInterior i).trans
-    simpa using closedInterior_subset_affineSpan
 
 /-- The $n$-volume of the closed interior of a $n$-simplex is equal to $h * b / n$, where $h$ is the
 height and $b$ is the $(n - 1)$-volume of the base. This version is expressed in `Real`. -/
