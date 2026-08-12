@@ -272,7 +272,7 @@ variable (hκ : κ₁ < κ₂)
     ∃ (B : Set X), A ⊆ B ∧ IsCardinalFiltered B κ₁ ∧ HasCardinalLT B κ₂)
 
 variable (κ₁ κ₂) in
-/-- Given a partially ordered type `J`, this is the type
+/-- Given a partially ordered type `J`, this is the property
 of subsets of `J` that are `κ₁`-directed and of cardinality `< κ₂`. -/
 @[implicit_reducible]
 def IsCardinalFilteredAndHasCardinalLT
