@@ -39,33 +39,30 @@ variable {R : Type t} [Semiring R] {C : Type u} [Category.{v} C] [Abelian C] [Ha
 @[reducible] noncomputable def smulOfRingHom (n : ℕ) : SMul R (Ext A G n) where
   smul r x := x.comp (mk₀ (φ r)) (add_zero n)
 
+lemma smulOfRingHom_smul (n : ℕ) (r : R) (x : Ext A G n) :
+    letI := smulOfRingHom φ n (A := A) (G := G)
+    r • x = x.comp (mk₀ (φ r)) (add_zero n) := rfl
+
 /-- A ring homomorphism `φ : R →+* End G` makes each `Ext A G n` an `R`-module, with `r` acting
 by postcomposition with `mk₀ (φ r)`; this is the additivity of `Ext` in its second variable
 packaged as a module structure.
 
 Unlike the `Module R (Ext X Y n)` instance further down, this does not require the ambient
 category to be `R`-linear: only the single object `G` needs an action of `R`. When `C` is
-`R`-linear the two agree, see `Abelian.Ext.moduleOfRingHom_algebraMap`. It is not an instance
-because `φ` cannot be recovered from `Ext A G n`. -/
+`R`-linear the two agree, see `Abelian.Ext.moduleOfRingHom_algebraMap`. -/
 @[reducible] noncomputable def moduleOfRingHom (n : ℕ) : Module R (Ext A G n) where
   __ := smulOfRingHom φ n (A := A) (G := G)
-  one_smul x := by
-    change x.comp (mk₀ (φ 1)) (add_zero n) = x
-    simp [End.one_def]
+  one_smul x := by simp [smulOfRingHom_smul, End.one_def]
   mul_smul r s x := by
-    change x.comp (mk₀ (φ (r * s))) _ = (x.comp (mk₀ (φ s)) _).comp (mk₀ (φ r)) _
+    simp only [smulOfRingHom_smul]
     rw [map_mul, End.mul_def, ← mk₀_comp_mk₀, comp_assoc_of_third_deg_zero]
-  smul_zero r := by
-    change (0 : Ext A G n).comp (mk₀ (φ r)) _ = 0
-    simp
+  smul_zero r := by simp [smulOfRingHom_smul]
   zero_smul x := by
-    change x.comp (mk₀ (φ 0)) _ = 0
+    simp only [smulOfRingHom_smul]
     rw [map_zero, show (0 : End G) = (0 : G ⟶ G) from rfl, mk₀_zero, comp_zero]
-  smul_add r x y := by
-    change (x + y).comp (mk₀ (φ r)) _ = x.comp (mk₀ (φ r)) _ + y.comp (mk₀ (φ r)) _
-    simp
+  smul_add r x y := by simp [smulOfRingHom_smul]
   add_smul r s x := by
-    change x.comp (mk₀ (φ (r + s))) _ = x.comp (mk₀ (φ r)) _ + x.comp (mk₀ (φ s)) _
+    simp only [smulOfRingHom_smul]
     rw [map_add, show mk₀ (φ r + φ s) = mk₀ (φ r) + mk₀ (φ s) from mk₀_add (φ r) (φ s), comp_add]
 
 lemma moduleOfRingHom_smul (n : ℕ) (r : R) (x : Ext A G n) :
