@@ -12,7 +12,7 @@ public import Mathlib.Topology.UniformSpace.Pi
 # Indexed product of extended metric spaces
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 
@@ -77,8 +77,6 @@ end Pi
 variable {γ : Type w} [EMetricSpace γ]
 
 section Pi
-
-open Finset
 
 variable {X : β → Type*} [Fintype β]
 

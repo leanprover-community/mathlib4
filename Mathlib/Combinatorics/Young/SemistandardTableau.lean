@@ -130,10 +130,10 @@ theorem col_weak {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i1 i2 j 
 def highestWeight (μ : YoungDiagram) : SemistandardYoungTableau μ where
   entry i j := if (i, j) ∈ μ then i else 0
   row_weak' hj hcell := by
-    rw [if_pos hcell, if_pos (μ.up_left_mem (by rfl) (le_of_lt hj) hcell)]
+    rw [ite_eq_left hcell, ite_eq_left (μ.up_left_mem (by rfl) (le_of_lt hj) hcell)]
   col_strict' hi hcell := by
-    rwa [if_pos hcell, if_pos (μ.up_left_mem (le_of_lt hi) (by rfl) hcell)]
-  zeros' not_cell := if_neg not_cell
+    rwa [ite_eq_left hcell, ite_eq_left (μ.up_left_mem (le_of_lt hi) (by rfl) hcell)]
+  zeros' not_cell := ite_eq_right not_cell
 
 @[simp]
 theorem highestWeight_apply {μ : YoungDiagram} {i j : ℕ} :
