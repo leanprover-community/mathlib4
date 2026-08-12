@@ -20,7 +20,7 @@ preserves colimits of shape `Jᵒᵖ`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.ParametrizedAdjunction
 
