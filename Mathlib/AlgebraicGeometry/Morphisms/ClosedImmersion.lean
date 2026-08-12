@@ -47,9 +47,6 @@ class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop extends SurjectiveOn
 
 alias Scheme.Hom.isClosedEmbedding := IsClosedImmersion.isClosedEmbedding
 
-@[deprecated (since := "2026-01-20")]
-alias IsClosedImmersion.base_closed := Scheme.Hom.isClosedEmbedding
-
 namespace IsClosedImmersion
 
 lemma eq_inf : @IsClosedImmersion = (topologically IsClosedEmbedding) ⊓
@@ -239,8 +236,6 @@ end IsClosedImmersion
 section Affine
 
 variable {X Y : Scheme.{u}} [IsAffine Y] {f : X ⟶ Y}
-
-open IsClosedImmersion LocallyRingedSpace
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f : X ⟶ Y` is a morphism of schemes with quasi-compact source and affine target,

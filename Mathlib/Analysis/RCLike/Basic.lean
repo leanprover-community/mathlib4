@@ -714,8 +714,6 @@ theorem im_eq_zero_of_le {a : K} (h : ‖a‖ ≤ re a) : im a = 0 := by
 theorem re_eq_self_of_le {a : K} (h : ‖a‖ ≤ re a) : (re a : K) = a := by
   rw [← conj_eq_iff_re, conj_eq_iff_im, im_eq_zero_of_le h]
 
-open IsAbsoluteValue
-
 theorem abs_re_div_norm_le_one (z : K) : |re z / ‖z‖| ≤ 1 := by
   rw [abs_div, abs_norm]
   exact div_le_one_of_le₀ (abs_re_le_norm _) (norm_nonneg _)
@@ -728,7 +726,7 @@ theorem norm_I_of_ne_zero (hI : (I : K) ≠ 0) : ‖(I : K)‖ = 1 := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,
     I_mul_I_of_nonzero hI, norm_neg, norm_one]
 
-theorem norm_I : ‖(I : K)‖ = if (I : K) ≠ 0 then 1 else 0 := by
+theorem norm_I : ‖(I : K)‖ = if (I : K) = 0 then 0 else 1 := by
   grind [norm_I_of_ne_zero, norm_eq_zero]
 
 theorem re_eq_norm_of_mul_conj (x : K) : re (x * conj x) = ‖x * conj x‖ := by
