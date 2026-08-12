@@ -333,41 +333,6 @@ lemma mk₀_neg (f : X ⟶ Y) :
     mk₀ (-f) = -mk₀ f := by
   let := HasDerivedCategory.standard C; ext; simp [neg_hom']
 
-section Module
-
-variable {R : Type*} [Semiring R] {A G : C} (φ : R →+* End G)
-
-/-- Given a ring homomorphism `φ : R →+* End G` into the endomorphism ring of an object `G`
-of an abelian category, scalar multiplication on `Ext A G n` where `r : R` acts on
-`x : Ext A G n` by postcomposition with `mk₀ (φ r)`. -/
-@[reducible] noncomputable def smulOfRingHom (n : ℕ) : SMul R (Ext A G n) where
-  smul r x := x.comp (mk₀ (φ r)) (add_zero n)
-
-lemma smulOfRingHom_smul_def (n : ℕ) (r : R) (x : Ext A G n) :
-    letI := smulOfRingHom φ n (A := A) (G := G)
-    r • x = x.comp (mk₀ (φ r)) (add_zero n) := rfl
-
-/-- Given a ring homomorphism `φ : R →+* End G` into the endomorphism ring of an object `G`
-of an abelian category, the groups `Ext A G n` become `R`-modules, with `r` acting by
-postcomposition with `mk₀ (φ r)`. This is the additivity of `Ext` (in the second variable)
-packaged as a module structure. -/
-@[reducible] noncomputable def moduleOfRingHom (n : ℕ) : Module R (Ext A G n) where
-  __ := smulOfRingHom φ n (A := A) (G := G)
-  one_smul x := by simp [smulOfRingHom_smul_def, End.one_def]
-  mul_smul r s x := by
-    simp only [smulOfRingHom_smul_def]
-    rw [map_mul, End.mul_def, ← mk₀_comp_mk₀, comp_assoc_of_third_deg_zero]
-  smul_zero r := by simp [smulOfRingHom_smul_def]
-  zero_smul x := by
-    simp only [smulOfRingHom_smul_def]
-    rw [map_zero, show (0 : End G) = (0 : G ⟶ G) from rfl, mk₀_zero, comp_zero]
-  smul_add r x y := by simp [smulOfRingHom_smul_def]
-  add_smul r s x := by
-    simp only [smulOfRingHom_smul_def]
-    rw [map_add, show mk₀ (φ r + φ s) = mk₀ (φ r) + mk₀ (φ s) from mk₀_add (φ r) (φ s), comp_add]
-
-end Module
-
 section
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBiproducts in

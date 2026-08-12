@@ -6,6 +6,7 @@ Authors: Raphael Douglas Giles
 module
 
 public import Mathlib.Algebra.Category.Grp.AB
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.HasExt
