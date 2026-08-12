@@ -22,39 +22,42 @@ This file proves the arithmetic mean-harmonic mean inequality in the division-fr
 
 `(#s) ^ 2 ≤ (∑ i ∈ s, z i) * (∑ i ∈ s, (z i)⁻¹)`
 
-for positive `z`, together with its two- and three-term specializations, and derives
-Nesbitt's inequality as a corollary.
+for positive `z`, together with its criterion for equality and its two- and three-term
+specializations.
 
 ## Main statements
 
 * `two_le_div_add_div`: the two-term case, `2 ≤ x / y + y / x`.
 * `sq_card_le_sum_mul_sum_inv`: the AM-HM inequality.
-* `nesbitt_inequality`: Nesbitt's inequality, as a corollary.
-* `nesbitt_inequality_eq_iff`: the equality case of Nesbitt's inequality, over a field.
+* `nine_le_add_add_mul_inv_add_inv_add_inv`: the three-term case.
+* `div_add_div_eq_two_iff`: the criterion for equality in the two-term case.
+* `sq_card_eq_sum_mul_sum_inv_iff`: the criterion for equality in general.
 
 ## Implementation notes
 
-Everything here holds in a linearly ordered semifield with `ExistsAddOfLE`, so in particular
+The inequalities hold in a linearly ordered semifield with `ExistsAddOfLE`, so in particular
 over `ℚ≥0` and `NNReal`. Semifields have no subtraction, so the usual sum-of-squares argument
 is unavailable; the substitute is `two_mul_le_add_sq`, the division-free AM-GM for linearly
 ordered commutative semirings. Dividing it by `x * y` gives `two_le_div_add_div`, and summing
 that over a `Finset` is the whole content of the general inequality.
 
+The equality criteria are stated over a field rather than a semifield, since the two-term
+case amounts to `(x - y) ^ 2 = 0` and so needs subtraction. The general criterion is proved
+by symmetrizing: writing the product as `∑ i, ∑ j, z i / z j` and adding it to its own
+transpose produces the terms `z i / z j + z j / z i`, each at least `2`, so equality forces
+every one of them to equal `2`.
+
 Mathlib's other mean inequalities in `Mathlib/Analysis/MeanInequalities.lean` go through
 `Real.log` and `Real.exp` and so are stated over `ℝ`. The version here is purely algebraic,
 which is what makes the semifield generality possible.
 
-The equality case of Nesbitt's inequality is stated over a field rather than a semifield,
-since its certificate is a sum-of-squares identity and so needs subtraction.
-
 ## References
 
 * <https://en.wikipedia.org/wiki/HM-GM-AM-QM_inequalities>
-* <https://en.wikipedia.org/wiki/Nesbitt%27s_inequality>
 
 ## Tags
 
-mean inequality, AM-HM, harmonic mean, arithmetic mean, Nesbitt
+mean inequality, AM-HM, harmonic mean, arithmetic mean
 -/
 
 public section
@@ -62,7 +65,7 @@ public section
 open Finset
 
 variable {ι R : Type*} [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R]
-  {x y : R}
+  {x y z : R}
 
 /-- The two-term AM-HM inequality. This is `two_mul_le_add_sq` divided by `x * y`, and so is
 division-free at heart. -/
@@ -108,79 +111,69 @@ theorem sq_card_le_sum_mul_sum_inv (z : ι → R) :
           add_le_add (add_le_add ihs cross) le_rfl
       _ = (z a + ∑ i ∈ s, z i) * ((z a)⁻¹ + ∑ i ∈ s, (z i)⁻¹) := by field_simp; ring
 
-/-- **Nesbitt's inequality**, as a corollary of the three-term case of AM-HM.
-
-Adding `1` to each summand turns the left side into `(a+b+c) * ((b+c)⁻¹ + (c+a)⁻¹ + (a+b)⁻¹)`,
-and the three denominators sum to `2 * (a+b+c)`, so AM-HM gives `S + 3 ≥ 9 / 2`. -/
-theorem nesbitt_inequality {a b c : R} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
-    3 / 2 ≤ a / (b + c) + b / (c + a) + c / (a + b) := by
-  have hbc : (0 : R) < b + c := by positivity
-  have hca : (0 : R) < c + a := by positivity
-  have hab : (0 : R) < a + b := by positivity
-  have nine : (9 : R) ≤ (b + c + (c + a) + (a + b))
-      * ((b + c)⁻¹ + (c + a)⁻¹ + (a + b)⁻¹) := by
-    have key : (b + c + (c + a) + (a + b)) * ((b + c)⁻¹ + (c + a)⁻¹ + (a + b)⁻¹)
-        = 3 + ((b + c) / (c + a) + (c + a) / (b + c))
-          + ((c + a) / (a + b) + (a + b) / (c + a))
-          + ((b + c) / (a + b) + (a + b) / (b + c)) := by
-      field_simp
-      ring
-    rw [key]
-    calc (9 : R) = 3 + 2 + 2 + 2 := by norm_num
-      _ ≤ 3 + ((b + c) / (c + a) + (c + a) / (b + c))
-            + ((c + a) / (a + b) + (a + b) / (c + a))
-            + ((b + c) / (a + b) + (a + b) / (b + c)) :=
-          add_le_add (add_le_add (add_le_add le_rfl (two_le_div_add_div hbc hca))
-            (two_le_div_add_div hca hab)) (two_le_div_add_div hbc hab)
-  have expand : a / (b + c) + b / (c + a) + c / (a + b) + 3
-      = (b + c + (c + a) + (a + b)) * ((b + c)⁻¹ + (c + a)⁻¹ + (a + b)⁻¹) / 2 := by
-    field_simp
-    ring
-  have half : (9 : R) / 2 ≤ a / (b + c) + b / (c + a) + c / (a + b) + 3 := by
-    rw [expand, le_div_iff₀ (by norm_num)]
-    calc (9 : R) / 2 * 2 = 9 := by ring
-      _ ≤ _ := nine
-  rw [show (9 : R) / 2 = 3 / 2 + 3 by norm_num] at half
-  exact le_of_add_le_add_right half
+/-- The three-term AM-HM inequality: `9 ≤ (x + y + z) * (x⁻¹ + y⁻¹ + z⁻¹)`. Expanding the
+product leaves three ones and three reciprocal pairs, each pair at least `2`. -/
+theorem nine_le_add_add_mul_inv_add_inv_add_inv (hx : 0 < x) (hy : 0 < y) (hz : 0 < z) :
+    9 ≤ (x + y + z) * (x⁻¹ + y⁻¹ + z⁻¹) := by
+  have key : (x + y + z) * (x⁻¹ + y⁻¹ + z⁻¹)
+      = 3 + (x / y + y / x) + (y / z + z / y) + (x / z + z / x) := by field_simp; ring
+  rw [key]
+  calc (9 : R) = 3 + 2 + 2 + 2 := by norm_num
+    _ ≤ 3 + (x / y + y / x) + (y / z + z / y) + (x / z + z / x) :=
+        add_le_add (add_le_add (add_le_add le_rfl (two_le_div_add_div hx hy))
+          (two_le_div_add_div hy hz)) (two_le_div_add_div hx hz)
 
 section Field
 
-variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] {a b c : K}
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] {x y : K}
 
-/-- **The equality case of Nesbitt's inequality**: the sum equals `3 / 2` exactly when
-`a = b = c`.
-
-Unlike the inequality itself this is stated over a field rather than a semifield, since the
-forward direction certifies the sum-of-squares identity
-`(a+b)*(a-b)^2 + (b+c)*(b-c)^2 + (c+a)*(c-a)^2 = 0` and so needs subtraction. -/
-theorem nesbitt_inequality_eq_iff (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
-    a / (b + c) + b / (c + a) + c / (a + b) = 3 / 2 ↔ a = b ∧ b = c := by
-  have hbc : (0 : K) < b + c := by linarith
-  have hca : (0 : K) < c + a := by linarith
-  have hab : (0 : K) < a + b := by linarith
+/-- Equality holds in the two-term AM-HM inequality exactly when the two terms agree. -/
+theorem div_add_div_eq_two_iff (hx : 0 < x) (hy : 0 < y) : x / y + y / x = 2 ↔ x = y := by
+  rw [div_add_div _ _ hy.ne' hx.ne', div_eq_iff (by positivity)]
   constructor
   · intro h
-    rw [show a / (b + c) + b / (c + a) + c / (a + b)
-          = (a * ((c + a) * (a + b)) + b * ((b + c) * (a + b)) + c * ((b + c) * (c + a)))
-            / ((b + c) * ((c + a) * (a + b))) by field_simp] at h
-    rw [div_eq_div_iff (by positivity) (by norm_num)] at h
-    have key : (a + b) * (a - b) ^ 2 + (b + c) * (b - c) ^ 2 + (c + a) * (c - a) ^ 2 = 0 := by
-      linear_combination h
-    have t1 : 0 ≤ (a + b) * (a - b) ^ 2 := by positivity
-    have t2 : 0 ≤ (b + c) * (b - c) ^ 2 := by positivity
-    have t3 : 0 ≤ (c + a) * (c - a) ^ 2 := by positivity
-    have e1 : (a + b) * (a - b) ^ 2 = 0 := by linarith
-    have e2 : (b + c) * (b - c) ^ 2 = 0 := by linarith
-    refine ⟨?_, ?_⟩
-    · rcases mul_eq_zero.mp e1 with h' | h'
-      · exact absurd h' (by positivity)
-      · have := sq_eq_zero_iff.mp h'; linarith
-    · rcases mul_eq_zero.mp e2 with h' | h'
-      · exact absurd h' (by positivity)
-      · have := sq_eq_zero_iff.mp h'; linarith
-  · rintro ⟨rfl, rfl⟩
-    have h2 : a + a ≠ 0 := by positivity
-    field_simp
-    norm_num
+    have h2 : (x - y) ^ 2 = 0 := by linear_combination h
+    have := sq_eq_zero_iff.mp h2
+    linarith
+  · rintro rfl
+    ring
+
+/-- **The equality criterion for the AM-HM inequality**: equality holds exactly when all the
+`z i` coincide.
+
+Symmetrizing the double sum turns the product into terms `z i / z j + z j / z i`, each at
+least `2` with total `2 * (#s) ^ 2`; so equality forces every term to equal `2`. -/
+theorem sq_card_eq_sum_mul_sum_inv_iff (z : ι → K) (s : Finset ι) (hz : ∀ i ∈ s, 0 < z i) :
+    (#s : K) ^ 2 = (∑ i ∈ s, z i) * (∑ i ∈ s, (z i)⁻¹) ↔ ∀ i ∈ s, ∀ j ∈ s, z i = z j := by
+  have hprod : (∑ i ∈ s, z i) * (∑ i ∈ s, (z i)⁻¹) = ∑ i ∈ s, ∑ j ∈ s, z i / z j := by
+    rw [Finset.sum_mul_sum]
+    exact Finset.sum_congr rfl fun i _ =>
+      Finset.sum_congr rfl fun j _ => (div_eq_mul_inv _ _).symm
+  have hsplit : ∑ i ∈ s, ∑ j ∈ s, (z i / z j + z j / z i)
+      = (∑ i ∈ s, ∑ j ∈ s, z i / z j) + (∑ i ∈ s, ∑ j ∈ s, z j / z i) := by
+    rw [← Finset.sum_add_distrib]
+    exact Finset.sum_congr rfl fun i _ => Finset.sum_add_distrib
+  have hcomm : (∑ i ∈ s, ∑ j ∈ s, z j / z i) = ∑ i ∈ s, ∑ j ∈ s, z i / z j := Finset.sum_comm
+  have hconst : ∑ _i ∈ s, ∑ _j ∈ s, (2 : K) = 2 * (#s : K) ^ 2 := by
+    simp [Finset.sum_const, nsmul_eq_mul]
+    ring
+  have hterm : ∀ i ∈ s, ∀ j ∈ s, (2 : K) ≤ z i / z j + z j / z i :=
+    fun i hi j hj => two_le_div_add_div (hz i hi) (hz j hj)
+  constructor
+  · intro heq
+    have hsum : ∑ i ∈ s, ∑ j ∈ s, (z i / z j + z j / z i) = ∑ _i ∈ s, ∑ _j ∈ s, (2 : K) := by
+      rw [hsplit, hcomm, hconst, ← hprod]
+      linarith [heq]
+    have houter := (Finset.sum_eq_sum_iff_of_le
+      (fun i hi => Finset.sum_le_sum fun j hj => hterm i hi j hj)).mp hsum.symm
+    intro i hi j hj
+    have hinner := (Finset.sum_eq_sum_iff_of_le (fun j hj => hterm i hi j hj)).mp (houter i hi)
+    exact (div_add_div_eq_two_iff (hz i hi) (hz j hj)).mp (hinner j hj).symm
+  · intro hall
+    have hsum : ∑ i ∈ s, ∑ j ∈ s, (z i / z j + z j / z i) = ∑ _i ∈ s, ∑ _j ∈ s, (2 : K) :=
+      Finset.sum_congr rfl fun i hi => Finset.sum_congr rfl fun j hj =>
+        (div_add_div_eq_two_iff (hz i hi) (hz j hj)).mpr (hall i hi j hj)
+    rw [hsplit, hcomm, hconst, ← hprod] at hsum
+    linarith [hsum]
 
 end Field
