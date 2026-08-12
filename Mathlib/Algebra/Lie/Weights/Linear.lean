@@ -43,8 +43,6 @@ or `R` has characteristic zero.
 
 @[expose] public section
 
-open Set
-
 variable (k R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 

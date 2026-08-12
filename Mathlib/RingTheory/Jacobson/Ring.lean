@@ -338,7 +338,7 @@ theorem jacobson_bot_of_integral_localization
     have hRₘ : IsJacobsonRing Rₘ := isJacobsonRing_localization x
     have hSₘ : IsJacobsonRing Sₘ := isJacobsonRing_of_isIntegral' φ' hφ'
     refine eq_bot_iff.mpr (le_trans ?_ (le_of_eq hϕ'))
-    rw [← hSₘ.out isRadical_bot_of_noZeroDivisors, comap_jacobson]
+    rw [← hSₘ.out isRadical_bot, comap_jacobson]
     exact sInf_le_sInf fun j hj => ⟨bot_le,
       let ⟨J, hJ⟩ := hj
       hJ.2 ▸ this J hJ.1.2⟩
@@ -370,7 +370,7 @@ private theorem isJacobsonRing_polynomial_of_domain (R : Type*) [CommRing R] [Is
     P.jacobson = P := by
   by_cases Pb : P = ⊥
   · exact Pb.symm ▸
-      jacobson_bot_polynomial_of_jacobson_bot (hR.out isRadical_bot_of_noZeroDivisors)
+      jacobson_bot_polynomial_of_jacobson_bot (hR.out isRadical_bot)
   · rw [jacobson_eq_iff_jacobson_quotient_eq_bot]
     let P' := P.comap (C : R →+* R[X])
     have : P'.IsPrime := comap_isPrime C P
@@ -435,7 +435,7 @@ theorem isMaximal_comap_C_of_isMaximal [IsJacobsonRing R] [Nontrivial R]
   let P' := comap (C : R →+* R[X]) P
   have hP'_prime : P'.IsPrime := comap_isPrime C P
   obtain ⟨⟨m, hmem_P⟩, hm⟩ :=
-    Submodule.nonzero_mem_of_bot_lt (bot_lt_of_maximal P polynomial_not_isField)
+    Submodule.nonzero_mem_of_bot_lt (bot_lt_of_maximal P (Polynomial.not_isField R))
   have hm' : m ≠ 0 := by
     simpa [Submodule.coe_eq_zero] using hm
   let φ : R ⧸ P' →+* R[X] ⧸ P := quotientMap P (C : R →+* R[X]) le_rfl
@@ -478,8 +478,8 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
     ((Ideal.Quotient.mk P).comp C : R →+* R[X] ⧸ P).IsIntegral := by
   refine (isIntegral_quotientMap_iff _).mp ?_
   let P' : Ideal R := P.comap C
-  obtain ⟨pX, hpX, hp0⟩ :=
-    exists_nonzero_mem_of_ne_bot (ne_of_lt (bot_lt_of_maximal P polynomial_not_isField)).symm hP'
+  obtain ⟨pX, hpX, hp0⟩ := exists_nonzero_mem_of_ne_bot
+    (ne_of_lt (bot_lt_of_maximal P (Polynomial.not_isField R))).symm hP'
   let a : R ⧸ P' := (pX.map (Ideal.Quotient.mk P')).leadingCoeff
   let M : Submonoid (R ⧸ P') := Submonoid.powers a
   let φ : R ⧸ P' →+* R[X] ⧸ P := quotientMap P C le_rfl
