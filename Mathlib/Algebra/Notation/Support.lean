@@ -82,7 +82,7 @@ lemma mulSupport_extend_one_subset {f : ι → κ} {g : ι → N} :
     mulSupport (f.extend g 1) ⊆ f '' mulSupport g :=
   mulSupport_subset_iff'.mpr fun x hfg ↦ by
     by_cases hf : ∃ a, f a = x
-    · rw [extend, dif_pos hf, ← notMem_mulSupport]
+    · rw [extend, dite_eq_left hf, ← notMem_mulSupport]
       rw [← Classical.choose_spec hf] at hfg
       exact fun hg ↦ hfg ⟨_, hg, rfl⟩
     · rw [extend_apply' _ _ _ hf]; rfl
@@ -175,7 +175,7 @@ lemma mulSupport_comp_eq_preimage (g : κ → M) (f : ι → κ) :
 lemma mulSupport_prodMk (f : ι → M) (g : ι → N) :
     mulSupport (fun x ↦ (f x, g x)) = mulSupport f ∪ mulSupport g :=
   Set.ext fun x ↦ by
-    simp only [mulSupport, not_and_or, mem_union, mem_setOf_eq, Prod.mk_eq_one, Ne]
+    simp only [mulSupport, not_and_or, mem_union, mem_ofPred_eq, Prod.mk_eq_one, Ne]
 
 @[to_additive support_prodMk']
 lemma mulSupport_prodMk' (f : ι → M × N) :

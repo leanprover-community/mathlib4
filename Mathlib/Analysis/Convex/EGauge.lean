@@ -335,7 +335,7 @@ variable {c : 𝕜} {x : E} {r : ℝ≥0}
 
 lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ ‖x‖ ≠ 0) :
     egauge 𝕜 (ball 0 r) x ≤ ‖c‖ₑ * ‖x‖ₑ / r := by
-  letI : NontriviallyNormedField 𝕜 := ⟨c, hc⟩
+  let : NontriviallyNormedField 𝕜 := ⟨c, hc⟩
   rcases eq_zero_or_pos r with rfl | hr
   · rw [ENNReal.coe_zero, ENNReal.div_zero (mul_ne_zero _ _)]
     · apply le_top

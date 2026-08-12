@@ -139,15 +139,6 @@ instance instFourierInvPair : FourierInvPair 𝓢(V, E) 𝓢(V, E) where
     rw [fourier_coe, fourierInv_coe, f.continuous.fourier_fourierInv_eq f.integrable
       (𝓕 f).integrable]
 
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformCLE := FourierTransform.fourierCLE
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformCLE_apply := FourierTransform.fourierCLE_apply
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformCLE_symm_apply := FourierTransform.fourierCLE_symm_apply
-
 end definition
 
 section eval
@@ -241,9 +232,6 @@ theorem integral_bilin_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[
   simpa using! VectorFourier.integral_bilin_fourierIntegral_eq_flip M (L := innerₗ V)
     continuous_fourierChar continuous_inner f.integrable g.integrable
 
-@[deprecated (since := "2025-11-16")]
-alias integral_bilin_fourierIntegral_eq := integral_bilin_fourier_eq
-
 /-- The Fourier transform satisfies `∫ 𝓕 f • g = ∫ f • 𝓕 g`, i.e., it is self-adjoint. -/
 theorem integral_fourier_smul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, F)) :
     ∫ ξ, 𝓕 f ξ • g ξ = ∫ x, f x • 𝓕 g x :=
@@ -277,9 +265,6 @@ theorem integral_sesq_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L�
     ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
   simpa [fourierInv_coe] using! VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M
     (L := innerₗ V) continuous_fourierChar continuous_inner f.integrable g.integrable
-
-@[deprecated (since := "2025-11-16")]
-alias integral_sesq_fourierIntegral_eq := integral_sesq_fourier_eq
 
 /-- Plancherel's theorem for Schwartz functions.
 

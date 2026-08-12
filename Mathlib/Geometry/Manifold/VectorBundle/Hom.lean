@@ -131,6 +131,46 @@ instance ContMDiffVectorBundle.continuousLinearMap :
 
 end
 
+section symmL
+
+variable {𝕜 B F₁ : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
+  {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B] [ChartedSpace HB B]
+  {E₁ : B → Type*} [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)]
+  [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+  [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
+
+/-- Let `e` be a trivialization of a `C^n` vector bundle `E₁` over `B`. Then `m ↦ e.symmL 𝕜 m`
+defines a section of the bundle of continuous linear maps `F₁ →L[𝕜] E₁` over `B`, and this section
+is `C^n` at any point in `e.baseSet`. -/
+lemma Bundle.Trivialization.contMDiffAt_symmL [ContMDiffVectorBundle n F₁ E₁ IB]
+    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e]
+    {x : B} (hx : x ∈ e.baseSet) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₁)) n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₁) m (e.symmL 𝕜 m)) x := by
+  have hx' : x ∈ (trivializationAt F₁ E₁ x).baseSet := mem_baseSet_trivializationAt F₁ E₁ x
+  refine contMDiffAt_totalSpace.mpr ⟨contMDiffAt_id, ?_⟩
+  apply (contMDiffAt_coordChangeL hx hx').congr_of_eventuallyEq
+  filter_upwards [e.open_baseSet.mem_nhds hx,
+    (trivializationAt F₁ E₁ x).open_baseSet.mem_nhds hx'] with b hb hb'
+  ext v
+  simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
+    coordChangeL_apply' e _ ⟨hb, hb'⟩, coe_linearMapAt_of_mem _ hb',
+    e.symmL_apply hb, e.mk_symm hb]
+
+/-- Let `e` be a trivialization of a `C^n` vector bundle `E₁` over `B`. Then `m ↦ e.symmL 𝕜 m`
+defines a section of the bundle of continuous linear maps `F₁ →L[𝕜] E₁` over `B`, and this section
+is `C^n` on `e.baseSet`. -/
+lemma Bundle.Trivialization.contMDiffOn_symmL [ContMDiffVectorBundle n F₁ E₁ IB]
+    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e] :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₁)) n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₁) m (e.symmL 𝕜 m)) e.baseSet :=
+  fun _ hx ↦ (e.contMDiffAt_symmL hx).contMDiffWithinAt
+
+end symmL
+
 section
 
 /- Declare two manifolds `B₁` and `B₂` (with models `IB₁ : HB₁ → EB₁` and `IB₂ : HB₂ → EB₂`),

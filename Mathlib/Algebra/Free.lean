@@ -319,7 +319,7 @@ inductive AddMagma.AssocRel (α : Type u) [Add α] : α → α → Prop
   | left : ∀ w x y z, AddMagma.AssocRel α (w + (x + y + z)) (w + (x + (y + z)))
 
 /-- Associativity relations for a magma. -/
-@[to_additive AddMagma.AssocRel /-- Associativity relations for an additive magma. -/]
+@[to_additive AddMagma.AssocRel]
 inductive Magma.AssocRel (α : Type u) [Mul α] : α → α → Prop
   | intro : ∀ x y z, Magma.AssocRel α (x * y * z) (x * (y * z))
   | left : ∀ w x y z, Magma.AssocRel α (w * (x * y * z)) (w * (x * (y * z)))
@@ -344,6 +344,7 @@ theorem quot_mk_assoc_left (x y z w : α) :
     Quot.mk (AssocRel α) (x * (y * z * w)) = Quot.mk _ (x * (y * (z * w))) :=
   Quot.sound (AssocRel.left _ _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance : Semigroup (AssocQuotient α) where
   mul x y := by

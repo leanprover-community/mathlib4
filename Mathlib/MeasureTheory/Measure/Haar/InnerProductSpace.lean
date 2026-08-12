@@ -81,7 +81,7 @@ end
 parallelepiped spanned by any orthonormal basis. -/
 theorem OrthonormalBasis.volume_parallelepiped (b : OrthonormalBasis ι ℝ F) :
     volume (parallelepiped b) = 1 := by
-  haveI : Fact (finrank ℝ F = finrank ℝ F) := ⟨rfl⟩
+  have : Fact (finrank ℝ F = finrank ℝ F) := ⟨rfl⟩
   let o := (stdOrthonormalBasis ℝ F).toBasis.orientation
   rw [← o.measure_eq_volume]
   exact o.measure_orthonormalBasis b

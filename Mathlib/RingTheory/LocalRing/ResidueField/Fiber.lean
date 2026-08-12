@@ -24,7 +24,7 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 
 @[expose] public section
 
-open Algebra TensorProduct nonZeroDivisors
+open Algebra TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
 
@@ -194,9 +194,6 @@ noncomputable def PrimeSpectrum.preimageOrderIsoFiber (p : PrimeSpectrum R) :
         simpa using! H hx
       · rw [← q₂.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₂.1.asIdeal.ResidueField]
       · rw [← q₁.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₁.1.asIdeal.ResidueField]
-
-@[deprecated (since := "2025-12-07")]
-alias PrimeSpectrum.preimageOrderIsoTensorResidueField := PrimeSpectrum.preimageOrderIsoFiber
 
 variable (R S) in
 /-- The `OrderIso` between the set of primes lying over a prime ideal `p : Ideal R`,

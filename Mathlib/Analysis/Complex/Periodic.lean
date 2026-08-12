@@ -74,6 +74,9 @@ theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
   rw [norm_qParam, Real.exp_lt_exp, div_lt_div_iff_of_pos_right hh, mul_lt_mul_left_of_neg]
   simpa using Real.pi_pos
 
+theorem norm_qParam_lt_one (hh : 0 < h) {z : ℂ} (hz : 0 < im z) : ‖𝕢 h z‖ < 1 := by
+  simpa using (norm_qParam_lt_iff hh 0 z).mpr hz
+
 lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
   simp [qParam, exp_ne_zero]
 
