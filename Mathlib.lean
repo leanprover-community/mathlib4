@@ -5752,6 +5752,7 @@ public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryLimits
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryOver
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCover
 public import Mathlib.NumberTheory.CFT.ClassFormation.GrothendieckTopology
+public import Mathlib.NumberTheory.CFT.ClassFormation.Local
 public import Mathlib.NumberTheory.CFT.ClassFormation.Sheaves
 public import Mathlib.NumberTheory.Chebyshev
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
