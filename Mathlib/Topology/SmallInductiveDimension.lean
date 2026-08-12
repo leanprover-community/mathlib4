@@ -5,15 +5,18 @@ Authors: Fernando Chu, Andrew Yang, Violeta Hernández Palacios, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Clopen
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Data.ENat.Basic
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Clopen
 
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Fintype.Option
 import Mathlib.Topology.Algebra.Indicator
 import Mathlib.Topology.Compactness.Compact
+
+import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Small inductive dimension
