@@ -31,8 +31,8 @@ section Comp
 section Semiring
 
 variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [AddCommMonoid α]
-  [IsZeroApply F α α] [IsAddApply F α α] [IsOneApplyEqSelf F α] [IsMulApplyEqComp F α]
-  [SMul ℕ F] [IsSMulApply ℕ F α α] [AddMonoidHomClass F α α] [NatCast F] [IsNatCastApplyEqSMul F α]
+  [IsZeroApply F] [IsAddApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F]
+  [SMul ℕ F] [IsSMulApply ℕ F] [AddMonoidHomClass F α α] [NatCast F] [IsNatCastApplyEqSMul F]
 
 /-- A `FunLike` type with `(f * g) x = f (g x)` is a `Semiring`. -/
 protected abbrev compSemiring : Semiring F where
@@ -49,11 +49,11 @@ section Ring
 
 variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [Neg F] [Sub F]
   [AddCommGroup α]
-  [IsZeroApply F α α] [IsAddApply F α α] [IsOneApplyEqSelf F α] [IsMulApplyEqComp F α]
-  [IsNegApply F α α] [IsSubApply F α α]
-  [SMul ℕ F] [IsSMulApply ℕ F α α]
-  [SMul ℤ F] [IsSMulApply ℤ F α α] [AddMonoidHomClass F α α]
-  [NatCast F] [IsNatCastApplyEqSMul F α] [IntCast F] [IsIntCastApplyEqSMul F α]
+  [IsZeroApply F] [IsAddApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F]
+  [IsNegApply F] [IsSubApply F]
+  [SMul ℕ F] [IsSMulApply ℕ F]
+  [SMul ℤ F] [IsSMulApply ℤ F] [AddMonoidHomClass F α α]
+  [NatCast F] [IsNatCastApplyEqSMul F] [IntCast F] [IsIntCastApplyEqSMul F]
 
 /-- A `FunLike` type with `(f * g) x = f (g x)` is a `Ring`. -/
 protected abbrev compRing : Ring F where
@@ -72,130 +72,130 @@ variable [FunLike F α β] [Zero F] [One F] [Add F] [Neg F] [Sub F] [Mul F] [SMu
   [Pow F ℕ] [NatCast F] [IntCast F]
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `Distrib` if `β` is a `Distrib`. -/
-protected abbrev distrib [Distrib β] [IsAddApply F α β] [IsMulApply F α β] :
+protected abbrev distrib [Distrib β] [IsAddApply F] [IsMulApply F] :
     Distrib F :=
   DFunLike.coe_injective.distrib (fun (f : F) ↦ (f : α → β)) coe_add coe_mul
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `HasDistribNeg` if `β` is a
 `HasDistribNeg`. -/
-protected abbrev hasDistribNeg [Mul β] [HasDistribNeg β] [IsNegApply F α β] [IsMulApply F α β] :
+protected abbrev hasDistribNeg [Mul β] [HasDistribNeg β] [IsNegApply F] [IsMulApply F] :
     HasDistribNeg F :=
   DFunLike.coe_injective.hasDistribNeg (fun (f : F) ↦ (f : α → β)) coe_neg coe_mul
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is an `AddMonoidWithOne` if `β` is an
 `AddMonoidWithOne`. -/
-protected abbrev addMonoidWithOne [AddMonoidWithOne β] [IsZeroApply F α β] [IsOneApply F α β]
-    [IsAddApply F α β] [IsSMulApply ℕ F α β] [IsNatCastApply F α β] :
+protected abbrev addMonoidWithOne [AddMonoidWithOne β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsSMulApply ℕ F] [IsNatCastApply F] :
     AddMonoidWithOne F :=
   DFunLike.coe_injective.addMonoidWithOne (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
     coe_smul coe_natCast
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is an `AddGroupWithOne` if `β` is an
 `AddGroupWithOne`. -/
-protected abbrev addGroupWithOne [AddGroupWithOne β] [IsZeroApply F α β] [IsOneApply F α β]
-    [IsAddApply F α β] [IsNegApply F α β] [IsSubApply F α β] [IsSMulApply ℕ F α β]
-    [IsSMulApply ℤ F α β] [IsNatCastApply F α β] [IsIntCastApply F α β] :
+protected abbrev addGroupWithOne [AddGroupWithOne β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsNegApply F] [IsSubApply F] [IsSMulApply ℕ F]
+    [IsSMulApply ℤ F] [IsNatCastApply F] [IsIntCastApply F] :
     AddGroupWithOne F :=
   DFunLike.coe_injective.addGroupWithOne (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
     coe_neg coe_sub coe_smul coe_smul coe_natCast coe_intCast
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonUnitalNonAssocSemiring` if `β` is a
 `NonUnitalNonAssocSemiring`. -/
-protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] [IsZeroApply F α β]
-    [IsAddApply F α β] [IsMulApply F α β] [IsSMulApply ℕ F α β] :
+protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] [IsZeroApply F]
+    [IsAddApply F] [IsMulApply F] [IsSMulApply ℕ F] :
     NonUnitalNonAssocSemiring F :=
   DFunLike.coe_injective.nonUnitalNonAssocSemiring (fun (f : F) ↦ (f : α → β)) coe_zero coe_add
     coe_mul coe_smul
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonUnitalSemiring` if `β` is a
 `NonUnitalSemiring`. -/
-protected abbrev nonUnitalSemiring [NonUnitalSemiring β] [IsZeroApply F α β]
-    [IsAddApply F α β] [IsMulApply F α β] [IsSMulApply ℕ F α β] :
+protected abbrev nonUnitalSemiring [NonUnitalSemiring β] [IsZeroApply F]
+    [IsAddApply F] [IsMulApply F] [IsSMulApply ℕ F] :
     NonUnitalSemiring F :=
   DFunLike.coe_injective.nonUnitalSemiring (fun (f : F) ↦ (f : α → β)) coe_zero coe_add coe_mul
     coe_smul
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonAssocSemiring` if `β` is a
 `NonAssocSemiring`. -/
-protected abbrev nonAssocSemiring [NonAssocSemiring β] [IsZeroApply F α β] [IsOneApply F α β]
-    [IsAddApply F α β] [IsMulApply F α β] [IsSMulApply ℕ F α β] [IsNatCastApply F α β] :
+protected abbrev nonAssocSemiring [NonAssocSemiring β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsMulApply F] [IsSMulApply ℕ F] [IsNatCastApply F] :
     NonAssocSemiring F :=
   DFunLike.coe_injective.nonAssocSemiring (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
     coe_mul coe_smul coe_natCast
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `Semiring` if `β` is a `Semiring`. -/
-protected abbrev semiring [Semiring β] [IsZeroApply F α β] [IsOneApply F α β] [IsAddApply F α β]
-    [IsMulApply F α β] [IsSMulApply ℕ F α β] [IsPowApply ℕ F α β] [IsNatCastApply F α β] :
+protected abbrev semiring [Semiring β] [IsZeroApply F] [IsOneApply F] [IsAddApply F]
+    [IsMulApply F] [IsSMulApply ℕ F] [IsPowApply ℕ F] [IsNatCastApply F] :
     Semiring F :=
   DFunLike.coe_injective.semiring (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
     coe_mul coe_smul coe_pow coe_natCast
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonUnitalCommSemiring` if `β` is a
 `NonUnitalCommSemiring`. -/
-protected abbrev nonUnitalCommSemiring [NonUnitalCommSemiring β] [IsZeroApply F α β]
-    [IsAddApply F α β] [IsMulApply F α β] [IsSMulApply ℕ F α β] :
+protected abbrev nonUnitalCommSemiring [NonUnitalCommSemiring β] [IsZeroApply F]
+    [IsAddApply F] [IsMulApply F] [IsSMulApply ℕ F] :
     NonUnitalCommSemiring F :=
   DFunLike.coe_injective.nonUnitalCommSemiring (fun (f : F) ↦ (f : α → β)) coe_zero coe_add coe_mul
     coe_smul
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `CommSemiring` if `β` is a `CommSemiring`. -/
-protected abbrev commSemiring [CommSemiring β] [IsZeroApply F α β] [IsOneApply F α β]
-    [IsAddApply F α β] [IsMulApply F α β] [IsSMulApply ℕ F α β] [IsPowApply ℕ F α β]
-    [IsNatCastApply F α β] :
+protected abbrev commSemiring [CommSemiring β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsMulApply F] [IsSMulApply ℕ F] [IsPowApply ℕ F]
+    [IsNatCastApply F] :
     CommSemiring F :=
   DFunLike.coe_injective.commSemiring (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
     coe_mul coe_smul coe_pow coe_natCast
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonUnitalNonAssocRing` if `β` is a
 `NonUnitalNonAssocRing`. -/
-protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing β] [IsZeroApply F α β]
-    [IsAddApply F α β] [IsMulApply F α β] [IsNegApply F α β] [IsSubApply F α β]
-    [IsSMulApply ℕ F α β] [IsSMulApply ℤ F α β] :
+protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing β] [IsZeroApply F]
+    [IsAddApply F] [IsMulApply F] [IsNegApply F] [IsSubApply F]
+    [IsSMulApply ℕ F] [IsSMulApply ℤ F] :
     NonUnitalNonAssocRing F :=
   DFunLike.coe_injective.nonUnitalNonAssocRing (fun (f : F) ↦ (f : α → β)) coe_zero coe_add
     coe_mul coe_neg coe_sub coe_smul coe_smul
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonUnitalRing` if `β` is a
 `NonUnitalRing`. -/
-protected abbrev nonUnitalRing [NonUnitalRing β] [IsZeroApply F α β]
-    [IsAddApply F α β] [IsMulApply F α β] [IsNegApply F α β] [IsSubApply F α β]
-    [IsSMulApply ℕ F α β] [IsSMulApply ℤ F α β] :
+protected abbrev nonUnitalRing [NonUnitalRing β] [IsZeroApply F]
+    [IsAddApply F] [IsMulApply F] [IsNegApply F] [IsSubApply F]
+    [IsSMulApply ℕ F] [IsSMulApply ℤ F] :
     NonUnitalRing F :=
   DFunLike.coe_injective.nonUnitalRing (fun (f : F) ↦ (f : α → β)) coe_zero coe_add
     coe_mul coe_neg coe_sub coe_smul coe_smul
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonAssocRing` if `β` is a `NonAssocRing`. -/
-protected abbrev nonAssocRing [NonAssocRing β] [IsZeroApply F α β] [IsOneApply F α β]
-    [IsAddApply F α β] [IsMulApply F α β] [IsNegApply F α β] [IsSubApply F α β]
-    [IsSMulApply ℕ F α β] [IsSMulApply ℤ F α β] [IsNatCastApply F α β]
-    [IsIntCastApply F α β] :
+protected abbrev nonAssocRing [NonAssocRing β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsMulApply F] [IsNegApply F] [IsSubApply F]
+    [IsSMulApply ℕ F] [IsSMulApply ℤ F] [IsNatCastApply F]
+    [IsIntCastApply F] :
     NonAssocRing F :=
   DFunLike.coe_injective.nonAssocRing (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
     coe_mul coe_neg coe_sub coe_smul coe_smul coe_natCast coe_intCast
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `Ring` if `β` is a `Ring`. -/
-protected abbrev ring [Ring β] [IsZeroApply F α β] [IsOneApply F α β]
-    [IsAddApply F α β] [IsMulApply F α β] [IsNegApply F α β] [IsSubApply F α β]
-    [IsSMulApply ℕ F α β] [IsSMulApply ℤ F α β] [IsPowApply ℕ F α β] [IsNatCastApply F α β]
-    [IsIntCastApply F α β] :
+protected abbrev ring [Ring β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsMulApply F] [IsNegApply F] [IsSubApply F]
+    [IsSMulApply ℕ F] [IsSMulApply ℤ F] [IsPowApply ℕ F] [IsNatCastApply F]
+    [IsIntCastApply F] :
     Ring F :=
   DFunLike.coe_injective.ring (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
     coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonUnitalCommRing` if `β` is a
 `NonUnitalCommRing`. -/
-protected abbrev nonUnitalCommRing [NonUnitalCommRing β] [IsZeroApply F α β]
-    [IsAddApply F α β] [IsMulApply F α β] [IsNegApply F α β] [IsSubApply F α β]
-    [IsSMulApply ℕ F α β] [IsSMulApply ℤ F α β] :
+protected abbrev nonUnitalCommRing [NonUnitalCommRing β] [IsZeroApply F]
+    [IsAddApply F] [IsMulApply F] [IsNegApply F] [IsSubApply F]
+    [IsSMulApply ℕ F] [IsSMulApply ℤ F] :
     NonUnitalCommRing F :=
   DFunLike.coe_injective.nonUnitalCommRing (fun (f : F) ↦ (f : α → β)) coe_zero coe_add
     coe_mul coe_neg coe_sub coe_smul coe_smul
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `CommRing` if `β` is a `CommRing`. -/
-protected abbrev commRing [CommRing β] [IsZeroApply F α β] [IsOneApply F α β]
-    [IsAddApply F α β] [IsMulApply F α β] [IsNegApply F α β] [IsSubApply F α β]
-    [IsSMulApply ℕ F α β] [IsSMulApply ℤ F α β] [IsPowApply ℕ F α β] [IsNatCastApply F α β]
-    [IsIntCastApply F α β] :
+protected abbrev commRing [CommRing β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsMulApply F] [IsNegApply F] [IsSubApply F]
+    [IsSMulApply ℕ F] [IsSMulApply ℤ F] [IsPowApply ℕ F] [IsNatCastApply F]
+    [IsIntCastApply F] :
     CommRing F :=
   DFunLike.coe_injective.commRing (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
     coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
