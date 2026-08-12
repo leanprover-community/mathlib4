@@ -212,7 +212,7 @@ variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 /-- For any `S' : Solution'`, the multiplicity of `λ` in `S'.c` is finite. -/
 lemma Solution'.multiplicity_lambda_c_finite :
     FiniteMultiplicity (hζ.toInteger - 1) S'.c :=
-  .of_not_isUnit hζ.zeta_sub_one_prime'.not_unit S'.hc
+  .of_not_isUnit hζ.zeta_sub_one_prime'.not_isUnit S'.hc
 
 /-- Given `S' : Solution'`, `S'.multiplicity` is the multiplicity of `λ` in `S'.c`, as a natural
 number. -/
