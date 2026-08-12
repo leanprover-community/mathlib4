@@ -18,7 +18,7 @@ public section
 
 section Finite
 
-open Module Basis Cardinal Set Submodule Finsupp
+open Module Cardinal Set Submodule Finsupp
 
 universe u v w w'
 

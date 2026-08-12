@@ -3,11 +3,13 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.UniqueProds.Basic
-import Mathlib.Algebra.MonoidAlgebra.Defs
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Algebra.Group.UniqueProds.Basic
+public import Mathlib.Algebra.MonoidAlgebra.Defs
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # Examples of zero-divisors in `AddMonoidAlgebra`s
@@ -40,7 +42,7 @@ finitely supported function is lexicographic, matching the list notation.  The i
 `[1, 1] > [1, 0]`.
 -/
 
-
+@[expose] public section
 
 open Finsupp hiding single
 open AddMonoidAlgebra
@@ -242,8 +244,8 @@ example : ¬UniqueProds ℕ := by
 
 /-- Some Types that do not have `UniqueSums`. -/
 example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) := by
-  haveI : Fintype (ZMod n) := @ZMod.fintype n ⟨(zero_lt_two.trans_le n2).ne'⟩
-  haveI : Nontrivial (ZMod n) := CharP.nontrivial_of_char_ne_one (one_lt_two.trans_le n2).ne'
+  have : Fintype (ZMod n) := @ZMod.fintype n ⟨(zero_lt_two.trans_le n2).ne'⟩
+  have : Nontrivial (ZMod n) := CharP.nontrivial_of_char_ne_one (one_lt_two.trans_le n2).ne'
   rintro ⟨h⟩
   refine not_not.mpr (h Finset.univ_nonempty Finset.univ_nonempty) ?_
   suffices ∀ x y : ZMod n, ∃ x' y' : ZMod n, x' + y' = x + y ∧ (x' = x → ¬y' = y) by
