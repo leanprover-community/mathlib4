@@ -27,6 +27,26 @@ namespace GaloisCategory
 
 variable [GaloisCategory C]
 
+open Limits
+
+lemma not_isInitial_pullback_of_isConnected
+    {X₁ X₂ S : C}
+    [PreGaloisCategory.IsConnected X₁] [PreGaloisCategory.IsConnected X₂]
+    [PreGaloisCategory.IsConnected S]
+    (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S) (h : IsInitial (pullback f₁ f₂)) :
+    False := by
+  sorry
+
+lemma exists_pullbackCone_isConnected {X₁ X₂ S : C}
+    [PreGaloisCategory.IsConnected X₁] [PreGaloisCategory.IsConnected X₂]
+    [PreGaloisCategory.IsConnected S]
+    (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S) :
+    ∃ (Y : C) (_ : PreGaloisCategory.IsConnected Y) (p₁ : Y ⟶ X₁) (p₂ : Y ⟶ X₂),
+      p₁ ≫ f₁ = p₂ ≫ f₂ := by
+  obtain ⟨Y, f, _, _⟩ := has_connected_component _ (not_isInitial_pullback_of_isConnected f₁ f₂)
+  exact ⟨Y, inferInstance, f ≫ pullback.fst _ _, f ≫ pullback.snd _ _,by
+    simp [pullback.condition]⟩
+
 lemma isSheafFor_singleton (P : (isConnected C).FullSubcategoryᵒᵖ ⥤ Type w)
     (hP : Presieve.IsSheaf (isConnectedTopology C) P)
     {Y X : (isConnected C).FullSubcategory} (f : Y ⟶ X) :
@@ -45,8 +65,10 @@ lemma isSheaf_type_iff (P : (isConnected C).FullSubcategoryᵒᵖ ⥤ Type w) :
       exact Presieve.IsSeparatedFor.of_singleton_comp _ _ (hP (g ≫ f.hom)).isSeparatedFor
     intro X R hR
     obtain ⟨Y, _, f, _, hf⟩ := exists_isGaloisCover_of_mem_isConnectedTopology R hR
-    refine Presieve.IsSheafFor.of_singleton (hP f) hf ?_
-    sorry⟩
+    refine Presieve.IsSheafFor.of_singleton (hP f) hf (fun {Z} g hg ↦ ?_)
+    obtain ⟨W, _, p₁, p₂, fac⟩ := exists_pullbackCone_isConnected g.hom f
+    exact ⟨isConnectedMk W, isConnectedHomMk p₁, isConnectedHomMk p₂,
+      by ext; exact fac, H _⟩⟩
 
 end GaloisCategory
 
