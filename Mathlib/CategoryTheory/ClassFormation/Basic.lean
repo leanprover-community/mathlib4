@@ -35,6 +35,8 @@ open scoped FintypeCatDiscrete
 namespace CategoryTheory
 variable {C : Type*} [Category* C]
 
+/-- If `f ≫ g = fg`, this is the morphism between the group of automorphisms
+of `Over.mk f` to the group of automorphism of `Over.mk fg`.-/
 @[implicit_reducible]
 def Aut.overMap {Z Y X : C} (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ X)
     (fac : f ≫ g = fg := by cat_disch) :
@@ -50,6 +52,8 @@ namespace FintypeCat
 
 variable {S : FintypeCat.{w}} (s : S)
 
+/-- Given `S : FintypeCat` and `s : S`, this is the functor `Over S ⥤ FintypeCat`
+which sends `f : X ⟶ S` to `f ⁻¹' {s}`. -/
 @[implicit_reducible, simps]
 def overFiber : Over S ⥤ FintypeCat.{w} where
   obj X := of (X.hom ⁻¹' {s})
@@ -57,11 +61,13 @@ def overFiber : Over S ⥤ FintypeCat.{w} where
     simpa only [Set.mem_preimage, Set.mem_singleton_iff,
       ← ConcreteCategory.comp_apply, f.w] using x.prop⟩)
 
+/-- The left adjoint to `FintypeCat.overFiber`. -/
 @[implicit_reducible, simps]
 def overFiberLeftAdjoint : FintypeCat.{w} ⥤ Over S where
   obj Y := Over.mk (Y := Y) (homMk (fun _ ↦ s))
   map f := Over.homMk f
 
+/-- The functor `FintypeCat.overFiber` has a left adjoint. -/
 def overFiberLeftAdjunction :
     overFiberLeftAdjoint s ⊣ overFiber s where
   unit.app Y := homMk (fun y ↦ ⟨y, by simp⟩)
@@ -69,6 +75,7 @@ def overFiberLeftAdjunction :
     (by ext ⟨_, _⟩; simpa)
 
 
+/-- The right adjoint to `FintypeCat.overFiber`. -/
 @[implicit_reducible, simps]
 def overFiberRightAdjoint : FintypeCat.{w} ⥤ Over S where
   obj X :=
@@ -90,6 +97,7 @@ private lemma overFiberRightAdjunction_obj_left_ext_iff (X : FintypeCat.{w})
     obtain rfl : a' = b' := by ext ⟨⟨t, rfl⟩, rfl⟩; exact h rfl
     rfl
 
+/-- The functor `FintypeCat.overFiber` has a right adjoint. -/
 def overFiberRightAdjunction :
     overFiber s ⊣ overFiberRightAdjoint s where
   unit.app X :=
@@ -123,6 +131,8 @@ lemma Aut.one_def (X : C) : (1 : Aut X) = Iso.refl _ := rfl
 lemma ObjectProperty.homMk_id {P : ObjectProperty C} (X : P.FullSubcategory) :
     (homMk (𝟙 _) : X ⟶ X) = 𝟙 _ := rfl
 
+/-- Let `S : C`, assuming that `Over.forget S : Over S ⥤ C`, this is the bijection
+expressing that an object `X : Over S` is initial if and only if `X.left` is. -/
 noncomputable def Over.isInitialEquiv {S : C} {X : Over S}
     [PreservesColimit (Functor.empty (Over S)) (Over.forget S)] :
     IsInitial X ≃ IsInitial X.left where
@@ -165,6 +175,8 @@ lemma PreGaloisCategory.IsGalois.of_iso [GaloisCategory C]
     ← ConcreteCategory.comp_apply, ← Functor.map_comp, Iso.hom_inv_id_assoc]
 
 variable (C) in
+/-- The property of objects satisfied by conencted objects (in a pre-Galois
+category). -/
 abbrev PreGaloisCategory.isConnected : ObjectProperty C :=
   IsConnected
 
@@ -346,6 +358,8 @@ instance [GaloisCategory C] : Preregular (isConnected C).FullSubcategory where
     simp [pullback.condition]
 
 variable (C) in
+/-- The regular topology on the category of connected objects in a
+Galois category. -/
 abbrev isConnectedTopology [GaloisCategory C] :
     GrothendieckTopology (isConnected C).FullSubcategory :=
   regularTopology (isConnected C).FullSubcategory
@@ -412,7 +426,9 @@ lemma exists_aut_of_isConnected
   refine ⟨g, ?_⟩
   rwa [← NatTrans.naturality_apply]
 
-set_option backward.privateInPublic true in
+/-- If `F : C ⥤ FintypeCat.{w}` is a fiber functor, and `s : F.obj S` where
+`S` is a connected object of `C`, this is the fiber functor
+on `Over S` which sends `f : X ⟶ S` to the inverse image of `s` by `F.map f`. -/
 @[implicit_reducible, simps]
 def fiberFunctorOver (s : F.obj S) : Over S ⥤ FintypeCat.{w} where
   obj X := .of ((F.map X.hom) ⁻¹' {s})
@@ -480,6 +496,9 @@ instance [GaloisCategory C] (S : C) [PreGaloisCategory.IsConnected S] :
   ⟨fiberFunctorOver (getFiberFunctor C) S
     (Classical.arbitrary _), inferInstance⟩
 
+/-- In a Galois category, a morphism `f : Y ⟶ X` is a Galois cover
+if `X` is connected and `Over.mk f` is a Galois object in
+the Galois category `Over X`. -/
 abbrev IsGaloisCover [GaloisCategory C] {Y X : C} (f : Y ⟶ X)
     [PreGaloisCategory.IsConnected X] : Prop :=
   IsGalois (Over.mk f)
@@ -546,6 +565,8 @@ lemma exists_isGaloisCover [GaloisCategory C]
   obtain ⟨Z, g, _⟩ := exists_hom_from_galois_of_connected (Over.mk f)
   exact ⟨Z.left, g.left, by rwa [dsimp% g.w]⟩
 
+/-- The degree of an object `X` in a Galois category. This is the cardinality
+of `F.obj X` for any fiber functor `F`, see the lemma `deg_eq_card_fiber` below. -/
 @[no_expose]
 noncomputable def deg [GaloisCategory C] (X : C) : ℕ :=
   Nat.card ((getFiberFunctor C).obj X)
@@ -620,16 +641,23 @@ lemma deg_eq_card_fiber [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunc
     simp only [deg] at hX hY
     simp [deg, card_fiber_eq_add_of_isColimit _ hb, hX, hY]
 
+/-- The degree of a morphism `f : Y ⟶ X` in a Galois category, where `X`
+is connected. -/
 noncomputable def degMap [GaloisCategory C] {Y X : C}
     [PreGaloisCategory.IsConnected X] (f : Y ⟶ X) : ℕ :=
   deg (Over.mk f)
+
+-- TODO: show the multiplicativity of degrees
 
 end GaloisCategory
 
 open GaloisCategory
 
 variable (C) in
+/-- A formation for a Galois category `C` is a sheaf of abelian groups
+on the category of connected objects in `C` (equipped with the regular topology). -/
 structure Formation [GaloisCategory C] [EssentiallySmall.{v} C] where
+  /-- the underlying sheaf on the category of connected objects on the Galois category -/
   sheaf : Sheaf (isConnectedTopology C) Ab.{v}
 
 namespace Formation
@@ -641,6 +669,9 @@ section
 variable {Y X : C} (f : Y ⟶ X) [PreGaloisCategory.IsConnected X]
   [PreGaloisCategory.IsConnected Y]
 
+/-- If `Φ` is a formation and `f : Y ⟶ X` is a Galois cover, this is the induced
+representation of the group of automorphisms of `Over.mk f`. -/
+@[nolint unusedArguments]
 def representation [IsGaloisCover f] :
     Representation (ULift.{v} ℤ) (Aut (Over.mk f)) (Φ.sheaf.obj.obj (op ⟨Y, inferInstance⟩)) where
   toFun g :=
@@ -660,6 +691,9 @@ def representation [IsGaloisCover f] :
 
 variable [IsGaloisCover f]
 
+/-- If `Φ` is a formation and `f : Y ⟶ X` is a Galois cover, this is the induced
+representation of the group of automorphisms of `Over.mk f`, as an object
+in `Rep`. -/
 abbrev rep : Rep.{v} (ULift.{v} ℤ) (Aut (Over.mk f)) := Rep.of (Φ.representation f)
 
 section
@@ -670,22 +704,27 @@ variable {Y X' X : C}
   (f : Y ⟶ X') (g : X' ⟶ X) (fg : Y ⟶ X)
   [IsGaloisCover fg] [IsGaloisCover f]
 
+/-- Auxiliary definition for `resRep`. -/
 abbrev resIntertwiningMap (fac : f ≫ g = fg := by cat_disch) :
   Representation.IntertwiningMap (MonoidHom.comp (Φ.rep fg).ρ (Aut.overMap f g fg))
     (Φ.representation f) where
   toLinearMap := .id
   isIntertwining' _ := rfl
 
+/-- If `Φ` is a formation, and `f ≫ g = fg`, when this is the morphism
+from the restriction of `Φ.rep fg` to `Φ.rep f`. -/
 abbrev resRep (fac : f ≫ g = fg := by cat_disch) :
     Rep.res (Aut.overMap f g fg) (Φ.rep fg) ⟶ Φ.rep f :=
   Rep.ofHom (Φ.resIntertwiningMap f g fg)
 
 end
 
+/-- The cohomology of a Galois cover for a formation. -/
 noncomputable abbrev H (n : ℕ) := groupCohomology (Φ.rep f) n
 
 end
 
+/-- The inflation morphisms on the cohomology of a formation. -/
 def inflation {Y' Y X : C}
     [PreGaloisCategory.IsConnected Y'] [PreGaloisCategory.IsConnected Y]
     [PreGaloisCategory.IsConnected X]
@@ -695,6 +734,7 @@ def inflation {Y' Y X : C}
     Φ.H g n ⟶ Φ.H fg n := by
   sorry
 
+/-- The restriction morphisms on the cohomology of a formation. -/
 noncomputable def restriction {Y X' X : C}
     [PreGaloisCategory.IsConnected Y] [PreGaloisCategory.IsConnected X']
     [PreGaloisCategory.IsConnected X]
@@ -702,7 +742,7 @@ noncomputable def restriction {Y X' X : C}
     [IsGaloisCover fg] [IsGaloisCover f] (n : ℕ)
     (fac : f ≫ g = fg := by cat_disch) :
     Φ.H fg n ⟶ Φ.H f n :=
-  groupCohomology.map (Aut.overMap f g fg) (Φ.resRep f g fg) _
+  groupCohomology.map (Aut.overMap f g fg) (Φ.resRep f g fg) n
 
 /-def corestriction {Y X' X : C}
     [PreGaloisCategory.IsConnected Y] [PreGaloisCategory.IsConnected X']
@@ -720,18 +760,28 @@ section
 variable [GaloisCategory C] [EssentiallySmall.{v} C]
 
 variable (C) in
+/-- A field formation is a formation which which the cohomology is trivial
+in degree `1`. -/
 structure FieldFormation extends Formation C where
   isZero_H_one {Y X : C} (f : Y ⟶ X) [PreGaloisCategory.IsConnected X]
     [PreGaloisCategory.IsConnected Y] [IsGaloisCover f] :
       IsZero (toFormation.H f 1)
 
--- This is the alternative definition suggested by Serre in _Corps locaux_ p. 176
--- (this is chosen in order to involve only group cohomology of finite
--- groups rather than any "colimit" of these groups, which could also
--- be interpreted here as the cohomology for the Grothendieck
--- topology `isConnectedTopology C`). With these axioms,
--- we may only get a subgroup of `ℚ / ℤ`
+/-! The definition below is suggested by Serre in _Corps locaux_ p. 176
+(this is chosen in order to involve only group cohomology of finite
+groups rather than any "colimit" of these groups, which could also
+be interpreted here as the cohomology for the Grothendieck
+topology `isConnectedTopology C`). With these axioms, when taking a
+suitable colimit, we should get a subgroup of `ℚ / ℤ` which may
+not be the whole `ℚ / ℤ`. If we want that the invariant is an isomorphism
+with `ℚ / ℤ`, an extra condition on `C` should be done. -/
+
 variable (C) in
+/-- A class formation is a field formation for which the cohomology
+in degree `2` of a Galois cover `f : Y ⟶ X` identifies to `ℤ / dℤ` where
+`d` is the degree of `f`, and the isomorphisms should satisfy compatibilities
+with inflation and restriction maps. In this implementation,
+the isomorphisms are given by the data of the fundamental class in `H f 2`. -/
 structure ClassFormation extends FieldFormation C where
   /-- The fundamental class attached to a Galois cover -/
   u {Y X : C} (f : Y ⟶ X) [PreGaloisCategory.IsConnected X]
