@@ -49,7 +49,7 @@ namespace MvPolynomial
 
 noncomputable section
 
-open Set LinearMap Submodule
+open LinearMap Submodule
 
 variable {K : Type*} {σ : Type*}
 

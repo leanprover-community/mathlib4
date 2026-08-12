@@ -197,7 +197,7 @@ lemma leftUnitor'_inv (i : I) :
   congr 2
   rw [← cancel_epi (GradedObject.Monoidal.tensorUnit₀ (I := I)).hom, Iso.hom_inv_id_assoc]
   dsimp [tensorUnitIso]
-  rw [dif_pos rfl]
+  rw [dite_eq_left rfl]
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
@@ -248,7 +248,7 @@ lemma rightUnitor'_inv (i : I) :
   congr 2
   rw [← cancel_epi (GradedObject.Monoidal.tensorUnit₀ (I := I)).hom, Iso.hom_inv_id_assoc]
   dsimp [tensorUnitIso]
-  rw [dif_pos rfl]
+  rw [dite_eq_left rfl]
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
