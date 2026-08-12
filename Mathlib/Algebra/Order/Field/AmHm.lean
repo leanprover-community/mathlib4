@@ -25,6 +25,13 @@ This file proves the arithmetic mean-harmonic mean inequality in the division-fr
 for positive `z`, together with its two- and three-term specializations, and derives
 Nesbitt's inequality as a corollary.
 
+## Main statements
+
+* `two_le_div_add_div`: the two-term case, `2 ≤ x / y + y / x`.
+* `sq_card_le_sum_mul_sum_inv`: the AM-HM inequality.
+* `nesbitt_inequality`: Nesbitt's inequality, as a corollary.
+* `nesbitt_inequality_eq_iff`: the equality case of Nesbitt's inequality, over a field.
+
 ## Implementation notes
 
 Everything here holds in a linearly ordered semifield with `ExistsAddOfLE`, so in particular
@@ -33,18 +40,21 @@ is unavailable; the substitute is `two_mul_le_add_sq`, the division-free AM-GM f
 ordered commutative semirings. Dividing it by `x * y` gives `two_le_div_add_div`, and summing
 that over a `Finset` is the whole content of the general inequality.
 
-Mathlib's other mean inequalities (`Real.inner_le_nnorm_mul_nnorm`-style AM-GM and HM-GM in
-`Mathlib/Analysis/MeanInequalities.lean`) go through `Real.log` and `Real.exp` and so are
-stated over `ℝ`. The version here is purely algebraic, which is what makes the semifield
-generality possible.
+Mathlib's other mean inequalities in `Mathlib/Analysis/MeanInequalities.lean` go through
+`Real.log` and `Real.exp` and so are stated over `ℝ`. The version here is purely algebraic,
+which is what makes the semifield generality possible.
 
-## Main declarations
+The equality case of Nesbitt's inequality is stated over a field rather than a semifield,
+since its certificate is a sum-of-squares identity and so needs subtraction.
 
-* `two_le_div_add_div`: `2 ≤ x / y + y / x`.
-* `sq_card_le_sum_mul_sum_inv`: the AM-HM inequality.
-* `nine_le_sum_mul_sum_inv`: the three-term specialization.
-* `nesbitt_inequality`: Nesbitt's inequality, as a corollary.
-* `nesbitt_inequality_eq_iff`: the equality case, over a field.
+## References
+
+* <https://en.wikipedia.org/wiki/HM-GM-AM-QM_inequalities>
+* <https://en.wikipedia.org/wiki/Nesbitt%27s_inequality>
+
+## Tags
+
+mean inequality, AM-HM, harmonic mean, arithmetic mean, Nesbitt
 -/
 
 public section
@@ -52,7 +62,7 @@ public section
 open Finset
 
 variable {ι R : Type*} [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R]
-  {x y z : R}
+  {x y : R}
 
 /-- The two-term AM-HM inequality. This is `two_mul_le_add_sq` divided by `x * y`, and so is
 division-free at heart. -/
@@ -98,19 +108,7 @@ theorem sq_card_le_sum_mul_sum_inv (z : ι → R) :
           add_le_add (add_le_add ihs cross) le_rfl
       _ = (z a + ∑ i ∈ s, z i) * ((z a)⁻¹ + ∑ i ∈ s, (z i)⁻¹) := by field_simp; ring
 
-/-- The three-term AM-HM inequality: `9 ≤ (x + y + z) * (x⁻¹ + y⁻¹ + z⁻¹)`. Expanding the
-product leaves three ones and three reciprocal pairs, each pair at least `2`. -/
-theorem nine_le_sum_mul_sum_inv (hx : 0 < x) (hy : 0 < y) (hz : 0 < z) :
-    9 ≤ (x + y + z) * (x⁻¹ + y⁻¹ + z⁻¹) := by
-  have key : (x + y + z) * (x⁻¹ + y⁻¹ + z⁻¹)
-      = 3 + (x / y + y / x) + (y / z + z / y) + (x / z + z / x) := by field_simp; ring
-  rw [key]
-  calc (9 : R) = 3 + 2 + 2 + 2 := by norm_num
-    _ ≤ 3 + (x / y + y / x) + (y / z + z / y) + (x / z + z / x) :=
-        add_le_add (add_le_add (add_le_add le_rfl (two_le_div_add_div hx hy))
-          (two_le_div_add_div hy hz)) (two_le_div_add_div hx hz)
-
-/-- **Nesbitt's inequality**, as a corollary of the three-term AM-HM inequality.
+/-- **Nesbitt's inequality**, as a corollary of the three-term case of AM-HM.
 
 Adding `1` to each summand turns the left side into `(a+b+c) * ((b+c)⁻¹ + (c+a)⁻¹ + (a+b)⁻¹)`,
 and the three denominators sum to `2 * (a+b+c)`, so AM-HM gives `S + 3 ≥ 9 / 2`. -/
@@ -119,16 +117,29 @@ theorem nesbitt_inequality {a b c : R} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
   have hbc : (0 : R) < b + c := by positivity
   have hca : (0 : R) < c + a := by positivity
   have hab : (0 : R) < a + b := by positivity
-  have key := nine_le_sum_mul_sum_inv hbc hca hab
+  have nine : (9 : R) ≤ (b + c + (c + a) + (a + b))
+      * ((b + c)⁻¹ + (c + a)⁻¹ + (a + b)⁻¹) := by
+    have key : (b + c + (c + a) + (a + b)) * ((b + c)⁻¹ + (c + a)⁻¹ + (a + b)⁻¹)
+        = 3 + ((b + c) / (c + a) + (c + a) / (b + c))
+          + ((c + a) / (a + b) + (a + b) / (c + a))
+          + ((b + c) / (a + b) + (a + b) / (b + c)) := by
+      field_simp
+      ring
+    rw [key]
+    calc (9 : R) = 3 + 2 + 2 + 2 := by norm_num
+      _ ≤ 3 + ((b + c) / (c + a) + (c + a) / (b + c))
+            + ((c + a) / (a + b) + (a + b) / (c + a))
+            + ((b + c) / (a + b) + (a + b) / (b + c)) :=
+          add_le_add (add_le_add (add_le_add le_rfl (two_le_div_add_div hbc hca))
+            (two_le_div_add_div hca hab)) (two_le_div_add_div hbc hab)
   have expand : a / (b + c) + b / (c + a) + c / (a + b) + 3
-      = ((b + c) + ((c + a) + (a + b))) * ((b + c)⁻¹ + (c + a)⁻¹ + (a + b)⁻¹) / 2 := by
-    field_simp; ring
+      = (b + c + (c + a) + (a + b)) * ((b + c)⁻¹ + (c + a)⁻¹ + (a + b)⁻¹) / 2 := by
+    field_simp
+    ring
   have half : (9 : R) / 2 ≤ a / (b + c) + b / (c + a) + c / (a + b) + 3 := by
     rw [expand, le_div_iff₀ (by norm_num)]
     calc (9 : R) / 2 * 2 = 9 := by ring
-      _ ≤ ((b + c) + ((c + a) + (a + b))) * ((b + c)⁻¹ + (c + a)⁻¹ + (a + b)⁻¹) := by
-          rw [show (b + c) + ((c + a) + (a + b)) = (b + c) + (c + a) + (a + b) by ring]
-          exact key
+      _ ≤ _ := nine
   rw [show (9 : R) / 2 = 3 / 2 + 3 by norm_num] at half
   exact le_of_add_le_add_right half
 
