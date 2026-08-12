@@ -222,7 +222,7 @@ theorem notEdgeReachable_degree_add_one [Fintype <| G.neighborSet u] [DecidableE
   unfold IsEdgeReachable at h
   have this2:= @h (G.incidenceSet u)
   have : (G.incidenceSet u).encard = G.degree u := by
-    grind [card_incidenceSet_eq_degree, Set.coe_fintypeCard , Set.coe_ncard_eq_encard]
+    grind [card_incidenceSet_eq_degree, Set.coe_fintypeCard, Set.coe_ncard_eq_encard]
   rw [this] at this2
   have := this2 (by simp only [Nat.cast_add, Nat.cast_one, ENat.natCast_lt_succ])
   rcases this with ⟨p⟩
