@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.Deriv.Slope
 
 /-!
@@ -299,6 +299,17 @@ theorem HasFDerivAt.apply_self_eq_smul_of_homogeneous {w : 𝕜 → 𝕜} {w' : 
     (hf : HasFDerivAt f L x) (hw : HasDerivAt w w' 1)
     (hhom : ∀ t y, f (t • y) = w t • f y) : L x = w' • f x :=
   hf.apply_self_eq_smul_of_eventuallyEq hw <| .of_forall fun t ↦ hhom t x
+
+/-- A vector-valued version of Euler's theorem for a homogeneous function of natural degree.
+
+If `f (t • y) = t ^ k • f y` for all scalars `t` and points `y`, then the derivative of `f` at
+`x`, applied to `x`, is `k • f x`.
+-/
+theorem HasFDerivAt.apply_self_eq_nsmul_of_homogeneous {k : ℕ} (hf : HasFDerivAt f L x)
+    (hhom : ∀ (t : 𝕜) y, f (t • y) = t ^ k • f y) : L x = k • f x := by
+  have : L x = ((k : 𝕜) * 1 ^ (k - 1)) • f x :=
+    hf.apply_self_eq_smul_of_homogeneous (hasDerivAt_pow k (1 : 𝕜)) hhom
+  simpa [Nat.cast_smul_eq_nsmul]
 
 theorem DifferentiableAt.lineDifferentiableAt (hf : DifferentiableAt 𝕜 f x) :
     LineDifferentiableAt 𝕜 f x v :=
