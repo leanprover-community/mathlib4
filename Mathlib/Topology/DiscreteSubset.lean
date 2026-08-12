@@ -249,11 +249,11 @@ theorem mem_codiscreteWithin_iff_forall_mem_nhdsWithin {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, S ∈ 𝓝[T \ {x}] x := by
   simp [codiscreteWithin]
 
-/-- If `S` is codiscrete within `T`, then `S` is a punctured neighborhood within `T` of every
-point of `T`. -/
-theorem mem_nhdsWithin_of_mem_codiscreteWithin {S T : Set X} (hS : S ∈ codiscreteWithin T)
-    {x : X} (hx : x ∈ T) : S ∈ 𝓝[T \ {x}] x :=
-  mem_codiscreteWithin_iff_forall_mem_nhdsWithin.1 hS x hx
+/-- At every point `x` of `T`, the punctured neighborhood filter within `T` is finer than
+`codiscreteWithin T`. -/
+theorem nhdsWithin_le_codiscreteWithin {T : Set X} {x : X} (hx : x ∈ T) :
+    𝓝[T \ {x}] x ≤ codiscreteWithin T :=
+  le_iSup₂ (f := fun y (_ : y ∈ T) ↦ 𝓝[T \ {y}] y) x hx
 
 /-- A property holds along `codiscreteWithin U` iff, for every point `x` of `U`, it holds along
 the punctured neighborhood of `x`, at every point of `U`. -/
@@ -444,10 +444,10 @@ lemma mem_codiscrete_iff_forall_mem_nhdsNE :
     s ∈ Filter.codiscrete X ↔ ∀ x, s ∈ 𝓝[≠] x := by
   simp [Filter.codiscrete, mem_codiscreteWithin_iff_forall_mem_nhdsNE]
 
-/-- Codiscrete sets are punctured neighborhoods of every point. -/
-lemma mem_nhdsNE_of_mem_codiscrete (hs : s ∈ Filter.codiscrete X) (x : X) :
-    s ∈ 𝓝[≠] x :=
-  mem_codiscrete_iff_forall_mem_nhdsNE.1 hs x
+/-- At every point, the punctured neighborhood filter is finer than the codiscrete filter. -/
+lemma nhdsNE_le_codiscrete (x : X) : 𝓝[≠] x ≤ Filter.codiscrete X := by
+  simpa [Filter.codiscrete, ← compl_eq_univ_sdiff] using
+    nhdsWithin_le_codiscreteWithin (T := univ) (mem_univ x)
 
 /--
 A property holds along the codiscrete filter iff it holds along the punctured neighborhood of
