@@ -70,7 +70,7 @@ theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] (bc : a * b ≤ a * c) : b 
 theorem mul_le_mul_left [i : MulRightMono α] (bc : b ≤ c) (a : α) : b * a ≤ c * a :=
   i.elim a bc
 
-@[to_additive le_of_add_le_add_right, to_dual self]
+@[to_additive (attr := to_dual self) le_of_add_le_add_right]
 theorem le_of_mul_le_mul_right' [MulRightReflectLE α] (bc : b * a ≤ c * a) :
     b ≤ c :=
   MulRightReflectLE.le_of_mul_le_mul_right' bc
