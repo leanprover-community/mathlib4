@@ -275,6 +275,8 @@ end Oriented
 
 section Unoriented
 
+open scoped Module.Oriented.Arbitrary
+
 variable (t : Triangle ℝ P)
 
 /-- The incenter of a triangle bisects the angle at a vertex. -/
@@ -283,12 +285,6 @@ lemma angle_incenter_eq_angle_div_two {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ �
     ∠ (t.points i₂) (t.points i₁) t.incenter = ∠ (t.points i₂) (t.points i₁) (t.points i₃) / 2 := by
   let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
   let t' : Triangle ℝ S := t.restrict S le_rfl
-  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
-    simp_rw [S]
-    rw [direction_affineSpan, t.independent.finrank_vectorSpan]
-    simp⟩
-  have : Module.Oriented ℝ S.direction (Fin 2) :=
-    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
   suffices ∠ (t'.points i₂) (t'.points i₁) t'.incenter =
       ∠ (t'.points i₂) (t'.points i₁) (t'.points i₃) / 2 by
     simpa [t', ← S.angle_coe] using this
@@ -303,12 +299,6 @@ lemma angle_excenter_singleton_eq_angle_div_two {i₁ i₂ i₃ : Fin 3} (h₁�
       ∠ (t.points i₂) (t.points i₁) (t.points i₃) / 2 := by
   let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
   let t' : Triangle ℝ S := t.restrict S le_rfl
-  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
-    simp_rw [S]
-    rw [direction_affineSpan, t.independent.finrank_vectorSpan]
-    simp⟩
-  have : Module.Oriented ℝ S.direction (Fin 2) :=
-    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
   suffices ∠ (t'.points i₂) (t'.points i₁) (t'.excenter {i₁}) =
       ∠ (t'.points i₂) (t'.points i₁) (t'.points i₃) / 2 by
     simpa [t', ← S.angle_coe, t.excenterExists_singleton i₁] using this
@@ -324,12 +314,6 @@ lemma angle_excenter_singleton_eq_angle_add_pi_div_two {i₁ i₂ i₃ : Fin 3} 
       (∠ (t.points i₁) (t.points i₂) (t.points i₃) + π) / 2 := by
   let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
   let t' : Triangle ℝ S := t.restrict S le_rfl
-  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
-    simp_rw [S]
-    rw [direction_affineSpan, t.independent.finrank_vectorSpan]
-    simp⟩
-  have : Module.Oriented ℝ S.direction (Fin 2) :=
-    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
   suffices ∠ (t'.points i₁) (t'.points i₂) (t'.excenter {i₁}) =
       (∠ (t'.points i₁) (t'.points i₂) (t'.points i₃) + π) / 2 by
     simpa [t', ← S.angle_coe, t.excenterExists_singleton i₁] using this
@@ -344,12 +328,6 @@ lemma angle_excenter_singleton_eq_pi_sub_angle_div_two {i₁ i₂ i₃ : Fin 3} 
       (π - ∠ (t.points i₃) (t.points i₂) (t.points i₁)) / 2 := by
   let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
   let t' : Triangle ℝ S := t.restrict S le_rfl
-  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
-    simp_rw [S]
-    rw [direction_affineSpan, t.independent.finrank_vectorSpan]
-    simp⟩
-  have : Module.Oriented ℝ S.direction (Fin 2) :=
-    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
   suffices ∠ (t'.points i₃) (t'.points i₂) (t'.excenter {i₁}) =
       (π - ∠ (t'.points i₃) (t'.points i₂) (t'.points i₁)) / 2 by
     simpa [t', ← S.angle_coe, t.excenterExists_singleton i₁] using this
