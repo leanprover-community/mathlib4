@@ -25,6 +25,11 @@ positive semidefinite matrices.
 - `RKHS.OfKernel`: RKHS constructed from a positive semidefinite matrix.
 - `RKHS.kernel_ofKernel`: The kernel of the constructed RKHS is equal to the matrix, this is
     essentially Moore's theorem.
+- `RKHS.subRKHS`: the closed subspace of an RKHS is again an RKHS.
+- `RKHS.kerFun_subRKHS`: the kernel functions of the subRKHS are an orthogonal projection of the
+  full RKHS.
+- `RKHS.kernel_subRKHS`: the kernel of the subRKHS is formed by composing the adjoint of the kernel
+  function of the full RKHS with a star projection acting on the kernel function of the full RKHS.
 
 ## TODO
 
@@ -342,4 +347,30 @@ theorem kernel_ofKernel : kernel (OfKernel K) = K := by
   simp [kernel, adjoint_inner_left, -inner_kerFun, -kerFun_inner,
     coeCLM, OfKernel.kerFun, inner_H₀_def, RKHS.kerFun]
 
-end RKHS.OfKernel
+end OfKernel
+
+section subRKHS
+
+variable (H₀ : Submodule 𝕜 H) [CompleteSpace H₀]
+
+instance instSubRKHS : RKHS 𝕜 H₀ X V where
+  coeCLM := (coeCLM 𝕜 (H:=H)).comp H₀.subtypeL
+  coeCLM_injective := coeCLM_injective.comp H₀.subtype_injective
+
+lemma kerFun_subRKHS (x : X) :
+    kerFun H₀ x = H₀.orthogonalProjectionOnto.comp (kerFun H x) := by
+  ext1
+  refine ext_inner_right 𝕜 fun v ↦ ?_
+  simp [kerFun_inner, comp_apply, -coe_inner, inner_orthogonalProjectionOnto_eq_of_mem_right]
+  rfl
+
+lemma kernel_subRKHS (x y : X) :
+    kernel H₀ x y = (kerFun H x).adjoint ∘L (H₀.starProjection.comp (kerFun H y)) := by
+  rw [kernel_apply]
+  ext v
+  refine ext_inner_right 𝕜 fun v ↦ ?_
+  simp [comp_apply, kerFun_subRKHS, Submodule.adjoint_orthogonalProjectionOnto]
+
+end subRKHS
+
+end RKHS
