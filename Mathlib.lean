@@ -2605,6 +2605,13 @@ public import Mathlib.CategoryTheory.Center.Linear
 public import Mathlib.CategoryTheory.Center.Localization
 public import Mathlib.CategoryTheory.Center.NegOnePow
 public import Mathlib.CategoryTheory.Center.Preadditive
+public import Mathlib.CategoryTheory.ClassFormation.Basic
+public import Mathlib.CategoryTheory.ClassFormation.FintypeCat
+public import Mathlib.CategoryTheory.ClassFormation.GaloisCategoryConnected
+public import Mathlib.CategoryTheory.ClassFormation.GaloisCategoryEquivalence
+public import Mathlib.CategoryTheory.ClassFormation.GaloisCategoryLimits
+public import Mathlib.CategoryTheory.ClassFormation.GaloisCategoryOver
+public import Mathlib.CategoryTheory.ClassFormation.GrothendieckTopology
 public import Mathlib.CategoryTheory.CodiscreteCategory
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.CategoryTheory.CommSq
