@@ -55,7 +55,7 @@ noncomputable section
 
 universe u v w
 
-open Function Set Uniformity Topology
+open Function Set Uniformity
 
 namespace Metric
 
@@ -342,7 +342,7 @@ theorem dist_same (i : ι) (x y : E i) : dist (Sigma.mk i x) ⟨i, y⟩ = dist x
 @[simp]
 theorem dist_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
     dist (⟨i, x⟩ : Σ k, E k) ⟨j, y⟩ = dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨y⟩) y :=
-  dif_neg h
+  dite_eq_right h
 
 theorem one_le_dist_of_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
     1 ≤ dist (⟨i, x⟩ : Σ k, E k) ⟨j, y⟩ := by
@@ -421,7 +421,7 @@ protected def metricSpace : MetricSpace (Σ i, E i) := by
   · rintro ⟨i, x⟩ ⟨j, y⟩
     rcases eq_or_ne i j with (rfl | h)
     · simp [Sigma.dist, dist_comm]
-    · simp only [Sigma.dist, dist_comm, h, h.symm, not_false_iff, dif_neg]
+    · simp only [Sigma.dist, dist_comm, h, h.symm, not_false_iff, dite_eq_right]
       abel
   · rintro ⟨i, x⟩ ⟨j, y⟩
     rcases eq_or_ne i j with (rfl | hij)
@@ -433,10 +433,6 @@ protected def metricSpace : MetricSpace (Σ i, E i) := by
         _ < 1 := by rw [h]; exact zero_lt_one
 
 attribute [local instance] Sigma.metricSpace
-
-open Topology
-
-open Filter
 
 /-- The injection of a space in a disjoint union is an isometry -/
 theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σ k, E k) :=

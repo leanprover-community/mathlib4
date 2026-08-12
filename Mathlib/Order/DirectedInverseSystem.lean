@@ -321,15 +321,14 @@ variable [PartialOrder ι] [DecidableEq ι]
 def piSplitLE : piLT X i × X i ≃ ∀ j : Iic i, X j where
   toFun f j := if h : j = i then h.symm ▸ f.2 else f.1 ⟨j, j.2.lt_of_ne h⟩
   invFun f := (fun j ↦ f ⟨j, j.2.le⟩, f ⟨i, le_rfl⟩)
-  left_inv f := by ext j; exacts [dif_neg j.2.ne, dif_pos rfl]
+  left_inv f := by ext j; exacts [dite_eq_right j.2.ne, dite_eq_left rfl]
   right_inv f := by grind
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem piSplitLE_eq {f : piLT X i × X i} :
     piSplitLE f ⟨i, le_rfl⟩ = f.2 := by simp [piSplitLE]
 
 theorem piSplitLE_lt {f : piLT X i × X i} {j} (hj : j < i) :
-    piSplitLE f ⟨j, hj.le⟩ = f.1 ⟨j, hj⟩ := dif_neg hj.ne
+    piSplitLE f ⟨j, hj.le⟩ = f.1 ⟨j, hj⟩ := dite_eq_right hj.ne
 
 end
 

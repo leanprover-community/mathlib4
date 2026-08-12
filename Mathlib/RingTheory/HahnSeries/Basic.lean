@@ -43,7 +43,7 @@ in the file `Mathlib/RingTheory/LaurentSeries.lean`.
 @[expose] public section
 
 
-open Finset Function
+open Function
 
 noncomputable section
 
@@ -257,7 +257,7 @@ def orderTop (x : R⟦Γ⟧) : WithTop Γ :=
 
 @[simp]
 theorem orderTop_zero : orderTop (0 : R⟦Γ⟧) = ⊤ :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 @[simp]
 theorem orderTop_of_subsingleton [Subsingleton R] : x.orderTop = ⊤ :=
@@ -265,7 +265,7 @@ theorem orderTop_of_subsingleton [Subsingleton R] : x.orderTop = ⊤ :=
 
 theorem orderTop_of_ne_zero (hx : x ≠ 0) :
     orderTop x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
-  dif_neg hx
+  dite_eq_right hx
 
 @[simp] lemma orderTop_eq_top : orderTop x = ⊤ ↔ x = 0 := by simp [orderTop]
 
@@ -361,11 +361,11 @@ def order (x : R⟦Γ⟧) : Γ :=
 
 @[simp]
 theorem order_zero : order (0 : R⟦Γ⟧) = 0 :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem order_of_ne {x : R⟦Γ⟧} (hx : x ≠ 0) :
     order x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
-  dif_neg hx
+  dite_eq_right hx
 
 theorem order_eq_orderTop_of_ne_zero (hx : x ≠ 0) : order x = orderTop x := by
   rw [order_of_ne hx, orderTop_of_ne_zero hx]
@@ -439,7 +439,7 @@ def embDomain (f : Γ ↪o Γ') : R⟦Γ⟧ → R⟦Γ'⟧ := fun x =>
     isPWO_support' :=
       (x.isPWO_support.image_of_monotone f.monotone).mono fun b hb => by
         contrapose hb
-        rw [Function.mem_support, dif_neg hb, Classical.not_not] }
+        rw [Function.mem_support, dite_eq_right hb, Classical.not_not] }
 
 @[simp]
 theorem embDomain_coeff {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {a : Γ} :
@@ -447,9 +447,9 @@ theorem embDomain_coeff {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {a : Γ} :
   rw [embDomain]
   dsimp only
   by_cases ha : a ∈ x.support
-  · rw [dif_pos (Set.mem_image_of_mem f ha)]
+  · rw [dite_eq_left (Set.mem_image_of_mem f ha)]
     exact congr rfl (f.injective (Classical.choose_spec (Set.mem_image_of_mem f ha)).2)
-  · rw [dif_neg, Classical.not_not.1 fun c => ha ((mem_support _ _).2 c)]
+  · rw [dite_eq_right, Classical.not_not.1 fun c => ha ((mem_support _ _).2 c)]
     contrapose ha
     obtain ⟨b, hb1, hb2⟩ := (Set.mem_image _ _ _).1 ha
     rwa [f.injective hb2] at hb1
@@ -462,7 +462,7 @@ theorem embDomain_mk_coeff {f : Γ → Γ'} (hfi : Function.Injective f)
 
 theorem embDomain_notin_image_support {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {b : Γ'}
     (hb : b ∉ f '' x.support) : (embDomain f x).coeff b = 0 :=
-  dif_neg hb
+  dite_eq_right hb
 
 theorem support_embDomain_subset {f : Γ ↪o Γ'} {x : R⟦Γ⟧} :
     support (embDomain f x) ⊆ f '' x.support := by
@@ -547,17 +547,6 @@ section LinearOrder
 
 variable [Zero R] [LinearOrder Γ]
 
-@[deprecated "directly use n as a lower bound." (since := "2026-01-02")]
-theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀ (m : Γ), m < n → f m = 0) :
-    BddBelow (Function.support f) := by
-  refine ⟨n, fun _ ↦ ?_⟩
-  contrapose
-  simp_all
-
-@[deprecated bddBelow_empty (since := "2026-01-02")]
-theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
-  simp
-
 theorem le_orderTop_iff_forall {x : R⟦Γ⟧} {i : WithTop Γ} :
     i ≤ x.orderTop ↔ ∀ j : Γ, j < i → x.coeff j = 0 where
   mp hi j hj := coeff_eq_zero_of_lt_orderTop (hj.trans_le hi)
@@ -587,11 +576,6 @@ theorem order_lt_iff_exists [Zero Γ] {x : R⟦Γ⟧} {i : Γ} (h : x ≠ 0) :
 
 variable [LocallyFiniteOrder Γ]
 
-@[deprecated BddBelow.isWF (since := "2026-01-02")]
-theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
-    (Function.support f).IsPWO :=
-  hf.isWF.isPWO
-
 /-- Construct a Hahn series from any function whose support is bounded below. -/
 @[simps]
 def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : R⟦Γ⟧ :=
@@ -601,9 +585,6 @@ def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : R⟦Γ�
 theorem ofSuppBddBelow_zero [Nonempty Γ] : ofSuppBddBelow 0 (by simp) = (0 : R⟦Γ⟧) :=
   rfl
 
-@[deprecated (since := "2026-01-02")]
-alias zero_ofSuppBddBelow := ofSuppBddBelow_zero
-
 @[simp]
 theorem ofSuppBddBelow_eq_zero {f : Γ → R} {hf} : ofSuppBddBelow f hf = 0 ↔ f = 0 :=
   HahnSeries.ext_iff
@@ -611,14 +592,6 @@ theorem ofSuppBddBelow_eq_zero {f : Γ → R} {hf} : ofSuppBddBelow f hf = 0 ↔
 @[simp]
 theorem coeff_ofSuppBddBelow {f : Γ → R} {hf} : (ofSuppBddBelow f hf).coeff = f :=
   rfl
-
-@[deprecated le_order_iff_forall (since := "2026-01-02")]
-theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
-    (hn : ∀ (m : Γ), m < n → f m = 0) :
-    n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
-  rw [le_order_iff_forall]
-  · exact hn
-  · simpa
 
 end LinearOrder
 
