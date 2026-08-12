@@ -250,7 +250,7 @@ open HomogeneousLocalization
 variable {𝒜}
 variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m)
 
-open Lean Meta Elab Tactic
+open Lean
 
 /-- `mem_tac` tries to prove goals of the form `x ∈ 𝒜 i` when `x` has the form of:
 * `y ^ n` where `i = n • j` and `y ∈ 𝒜 j`.

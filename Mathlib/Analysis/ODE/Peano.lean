@@ -25,7 +25,6 @@ convergent subsequence using the Arzelà–Ascoli theorem.
 - `IsPeano.delayedInput`: the delayed time argument used in the Tonelli approximations.
 - `IsPeano.tonelliIterate`: the recursively defined curves used in the construction.
 - `IsPeano.tonelliApproximation`: the diagonal sequence of Tonelli approximations.
-- `IsPeano.boundedTonelliApproximation`: the approximations as bounded continuous functions.
 
 ## Implementation notes
 
@@ -63,13 +62,12 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 lemma mul_abs_sub_le_radius {t : ℝ} (hf : IsPeano f t₀ x₀ r L)
     (ht : t ∈ Icc t₀.val tmax) : L * |t - t₀| ≤ r := by
-  have h_abs : |t - t₀| = t - t₀ := abs_of_nonneg (sub_nonneg.mpr ht.1)
   have h_diff : t - t₀ ≤ max (tmax - t₀) (t₀ - tmin) := by
     calc
       t - t₀ ≤ tmax - t₀ := sub_le_sub_right ht.2 t₀
       tmax - t₀ ≤ max (tmax - t₀) (t₀ - tmin) := le_max_left (tmax - t₀) (t₀ - tmin)
   calc
-    L * |t - t₀| = L * (t - t₀) := by rw [h_abs]
+    L * |t - t₀| = L * (t - t₀) := by rw [abs_of_nonneg (sub_nonneg.mpr ht.1)]
     L * (t - t₀) ≤ L * max (tmax - t₀) (t₀ - tmin) := by
       apply mul_le_mul_of_nonneg_left h_diff
       positivity
@@ -84,16 +82,13 @@ section TonelliApproximation
 /-- The time-step size of the `n`th Tonelli approximation. -/
 noncomputable def stepSize (t₀ : Icc tmin tmax) (n : ℕ) : ℝ := (tmax - t₀) / n
 
-/-- The time-step size of every Tonelli approximation is nonnegative. -/
 lemma stepSize_nonneg (t₀ : Icc tmin tmax) (n : ℕ) : 0 ≤ stepSize t₀ n :=
   div_nonneg (sub_nonneg.mpr t₀.2.2) (Nat.cast_nonneg n)
 
 lemma add_mul_stepSize_eq_tmax (t₀ : Icc tmin tmax) (n : ℕ) :
     t₀.val + ((n : ℝ) + 1) * stepSize t₀ (n + 1) = tmax := by
   rw [stepSize]
-  field_simp
-  push_cast
-  ring
+  grind
 
 /-- The delayed time input used in the Tonelli approximations. -/
 noncomputable def delayedInput (t₀ : Icc tmin tmax) (n : ℕ) : ℝ → ℝ :=
@@ -133,8 +128,8 @@ lemma lipschitzWith_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
   intro x y
   have h_dist :=
     abs_max_sub_max_le_abs (x - stepSize t₀ n) (y - stepSize t₀ n) t₀.val
-  simp at h_dist
-  tauto
+  rw [sub_sub_sub_cancel_right] at h_dist
+  assumption
 
 /-- The recursively defined curves used to build the Tonelli approximations. -/
 noncomputable def tonelliIterate (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x₀ : E) (n : ℕ) :
@@ -147,9 +142,7 @@ noncomputable def tonelliIterate (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x�
 /-- Every recursively defined curve takes the value `x₀` at `t₀`. -/
 lemma tonelliIterate_apply_t₀ (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x₀ : E) (n : ℕ) (k : ℕ) :
     tonelliIterate f t₀ x₀ n k t₀ = x₀ := by
-  induction k with
-  | zero => simp [tonelliIterate]
-  | succ => simp [tonelliIterate]
+  induction k <;> simp [tonelliIterate]
 
 /-- Every recursively defined curve stays in the cylinder and has Lipschitz constant `L`. -/
 private lemma tonelliIterate_bounds (hf : IsPeano f t₀ x₀ r L) (n k : ℕ) :
@@ -214,9 +207,7 @@ lemma tonelliIterate_eq_succ_on_Icc (n : ℕ) (k : ℕ) (t : ℝ)
     tonelliIterate f t₀ x₀ n k t = tonelliIterate f t₀ x₀ n (k + 1) t := by
   induction k generalizing t with
   | zero =>
-    obtain rfl : t = (t₀ : ℝ) := by
-      simp only [Nat.cast_zero, zero_mul, add_zero] at ht
-      exact le_antisymm ht.2 ht.1
+    obtain rfl : t = (t₀ : ℝ) := by simp_all
     unfold tonelliIterate
     simp
   | succ k ih =>
@@ -267,22 +258,22 @@ end TonelliApproximation
 section ArzelaAscoli
 
 /-- Restrict a curve on `ℝ` to the interval `Icc t₀ tmax`. -/
-def restrictToIcc (α : ℝ → E) : Icc t₀.val tmax → E :=
+private def restrictToIcc (α : ℝ → E) : Icc t₀.val tmax → E :=
   fun t ↦ α t
 
 /-- Package a continuous function on `Icc t₀ tmax` as a continuous map. -/
-def continuousMapOnIcc (α : Icc t₀.val tmax → E) (hα : Continuous α) :
+private def continuousMapOnIcc (α : Icc t₀.val tmax → E) (hα : Continuous α) :
     C(Icc t₀.val tmax, E) where
   toFun := α
   continuous_toFun := hα
 
 /-- Package a continuous map on the compact interval `Icc t₀ tmax` as a bounded continuous map. -/
-def boundedContinuousFunctionOnIcc (α : C(Icc t₀.val tmax, E)) :
+private def boundedContinuousFunctionOnIcc (α : C(Icc t₀.val tmax, E)) :
     Icc t₀.val tmax →ᵇ E :=
   BoundedContinuousFunction.mkOfCompact α
 
 /-- The Tonelli approximations as bounded continuous functions on `Icc t₀ tmax`. -/
-noncomputable def boundedTonelliApproximation
+private noncomputable def boundedTonelliApproximation
     (hf : IsPeano f t₀ x₀ r L) (n : ℕ) : Icc t₀.val tmax →ᵇ E :=
   boundedContinuousFunctionOnIcc
     (continuousMapOnIcc (restrictToIcc (tonelliApproximation f t₀ x₀ n))
@@ -290,7 +281,7 @@ noncomputable def boundedTonelliApproximation
         (lipschitzOnWith_tonelliApproximation hf n).continuousOn))
 
 /-- The bounded continuous form of each Tonelli approximation has Lipschitz constant `L`. -/
-lemma lipschitzWith_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
+private lemma lipschitzWith_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
     LipschitzWith L (boundedTonelliApproximation hf n) := by
   rw [lipschitzWith_iff_dist_le_mul]
   intro t s
@@ -298,7 +289,7 @@ lemma lipschitzWith_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) (
   exact (lipschitzOnWith_tonelliApproximation hf n).dist_le_mul t.val t.property s.val s.property
 
 /-- The family of bounded continuous Tonelli approximations is equicontinuous. -/
-lemma equicontinuous_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
+private lemma equicontinuous_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
     Equicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) := by
   have : UniformEquicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) :=
     LipschitzWith.uniformEquicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) L
@@ -308,7 +299,7 @@ lemma equicontinuous_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) 
 variable [FiniteDimensional ℝ E]
 
 /-- The closure of the family of the Tonelli approximations is compact. -/
-lemma isCompact_closure_range_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
+private lemma isCompact_closure_range_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
     IsCompact (closure (range (boundedTonelliApproximation hf))) := by
   apply BoundedContinuousFunction.arzela_ascoli (closedBall x₀ r) _ _ _ _
   · apply isCompact_closedBall
@@ -324,7 +315,7 @@ lemma isCompact_closure_range_boundedTonelliApproximation (hf : IsPeano f t₀ x
     simp
 
 /-- The Tonelli approximations admit a convergent subsequence of bounded continuous functions. -/
-lemma exists_tendsto_subseq_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
+private lemma exists_tendsto_subseq_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
     ∃ β : Icc t₀.val tmax →ᵇ E, ∃ φ : ℕ → ℕ, StrictMono φ ∧
       Tendsto (boundedTonelliApproximation hf ∘ φ) atTop (nhds β) := by
   let s : Set (Icc t₀.val tmax →ᵇ E) := closure (range (boundedTonelliApproximation hf))

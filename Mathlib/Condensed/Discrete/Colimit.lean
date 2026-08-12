@@ -40,7 +40,7 @@ abbrev locallyConstantPresheaf : Profinite.{u}ᵒᵖ ⥤ Type (u + 1) :=
 #adaptation_note
 /--
 In this declaration and `isColimitLocallyConstantPresheaf`, `coe_comp` interferes with rewriting via
-`Cone.w`, so we needed to manualy exclude it.
+`Cone.w`, so we needed to manually exclude it.
 -/
 set_option backward.defeqAttrib.useBackward true in
 /--
@@ -175,7 +175,7 @@ def lanSheafProfinite (X : Type (u + 1)) :
     rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
       fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _)]
     exact ((CompHausLike.LocallyConstant.functor.{u, u + 1}
-      (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 0 2).mp)).obj X).property
+      (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 1 3).mp)).obj X).property
 
 /-- `lanPresheaf (locallyConstantPresheaf X)` as a condensed set. -/
 def lanCondensedSet (X : Type (u + 1)) : CondensedSet.{u} :=
