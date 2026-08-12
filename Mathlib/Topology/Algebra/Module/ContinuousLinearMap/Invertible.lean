@@ -55,39 +55,6 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
     {f : M →L[R] M₂} (hf : ¬ f.IsInvertible) : f.inverse = 0 :=
   dite_eq_right hf
 
-@[simp]
-theorem isInvertible_zero_iff :
-    IsInvertible (0 : M →L[R] M₂) ↔ Subsingleton M ∧ Subsingleton M₂ := by
-  refine ⟨fun ⟨e, he⟩ ↦ ?_, ?_⟩
-  · have A : Subsingleton M := by
-      refine ⟨fun x y ↦ e.injective ?_⟩
-      simp [he, ← ContinuousLinearEquiv.coe_coe]
-    exact ⟨A, e.toEquiv.symm.subsingleton⟩
-  · rintro ⟨hM, hM₂⟩
-    let e : M ≃L[R] M₂ :=
-    { toFun := 0
-      invFun := 0
-      left_inv x := Subsingleton.elim _ _
-      right_inv x := Subsingleton.elim _ _
-      map_add' x y := Subsingleton.elim _ _
-      map_smul' c x := Subsingleton.elim _ _ }
-    refine ⟨e, ?_⟩
-    ext x
-    exact Subsingleton.elim _ _
-
-@[simp] theorem inverse_zero : inverse (0 : M →L[R] M₂) = 0 := by
-  by_cases h : IsInvertible (0 : M →L[R] M₂)
-  · rcases isInvertible_zero_iff.1 h with ⟨hM, hM₂⟩
-    ext x
-    exact Subsingleton.elim _ _
-  · exact inverse_of_not_isInvertible h
-
-lemma IsInvertible.comp {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
-    (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘L f).IsInvertible := by
-  rcases hg with ⟨N, rfl⟩
-  rcases hf with ⟨M, rfl⟩
-  exact ⟨M.trans N, rfl⟩
-
 lemma IsInvertible.of_inverse {f : M →L[R] M₂} {g : M₂ →L[R] M}
     (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
     f.IsInvertible :=
@@ -99,6 +66,29 @@ lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M}
   have : f = ContinuousLinearEquiv.equivOfInverse' f g hf hg := rfl
   rw [this, inverse_equiv]
   rfl
+
+@[simp]
+theorem isInvertible_zero_iff :
+    IsInvertible (0 : M →L[R] M₂) ↔ Subsingleton M ∧ Subsingleton M₂ := by
+  refine ⟨fun ⟨e, he⟩ ↦ ?_, ?_⟩
+  · have A : Subsingleton M := by
+      refine ⟨fun x y ↦ e.injective ?_⟩
+      simp [he, ← ContinuousLinearEquiv.coe_coe]
+    exact ⟨A, e.toEquiv.symm.subsingleton⟩
+  · rintro ⟨hM, hM₂⟩
+    refine .of_inverse (g := 0) ?_ ?_ <;> exact Subsingleton.elim _ _
+
+@[simp] theorem inverse_zero : inverse (0 : M →L[R] M₂) = 0 := by
+  by_cases h : IsInvertible (0 : M →L[R] M₂)
+  · rcases isInvertible_zero_iff.1 h with ⟨hM, hM₂⟩
+    exact Subsingleton.elim _ _
+  · exact inverse_of_not_isInvertible h
+
+lemma IsInvertible.comp {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
+    (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘L f).IsInvertible := by
+  rcases hg with ⟨N, rfl⟩
+  rcases hf with ⟨M, rfl⟩
+  exact ⟨M.trans N, rfl⟩
 
 lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf : f.IsInvertible) :
     f.inverse y = x ↔ y = f x := by
@@ -246,6 +236,10 @@ protected theorem of_isInvertible_inverse (hf : f.inverse.IsInvertible) : f.IsIn
 theorem _root_.ContinuousLinearMap.isInvertible_inverse_iff :
     f.inverse.IsInvertible ↔ f.IsInvertible :=
   ⟨.of_isInvertible_inverse, .inverse⟩
+
+theorem isInvertible_iff_isHomeomorph :
+    f.IsInvertible ↔ IsHomeomorph f := by
+  sorry
 
 end IsInvertible
 
