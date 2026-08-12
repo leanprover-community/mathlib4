@@ -40,6 +40,11 @@ partial def collectKinds (s : Syntax) (acc : NameSet) : NameSet :=
   let acc := if s.isOfKind `null ∨ s.isIdent ∨ s.isAtom then acc else acc.insert s.getKind
   s.getArgs.foldl (fun a c => collectKinds c a) acc
 
+/-- Collects the identifiers of a syntax tree. -/
+partial def collectIdents (s : Syntax) (acc : NameSet) : NameSet :=
+  let acc := if s.isIdent then acc.insert s.getId else acc
+  s.getArgs.foldl (fun a c => collectIdents c a) acc
+
 /-- Persistent state of the `unneededImport` linter: the defining modules of all constants
 that the declarations of the file use. -/
 public structure UsedModules where
@@ -59,6 +64,13 @@ def unneededImportPost (readPre : PreStateFn) (stx : Syntax) (self : UsedModules
   for k in collectKinds stx {} do
     if let some idx := env.getModuleIdxFor? k then
       used := used.insert env.allImportedModuleNames[idx.toNat]!
+  -- An option name is the only reference that a `set_option` makes to the module that declares
+  -- the option, so the option table provides the defining constant of each name.
+  let optionDecls ← getOptionDecls
+  for i in collectIdents stx {} do
+    if let some d := optionDecls.find? i then
+      if let some idx := env.getModuleIdxFor? d.declName then
+        used := used.insert env.allImportedModuleNames[idx.toNat]!
   if let some p := readPre declaredNames then
     for n in p.new do
       if let some ci := env.find? n then
