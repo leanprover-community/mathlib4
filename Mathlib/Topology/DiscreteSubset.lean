@@ -243,23 +243,6 @@ theorem mem_codiscreteWithin_iff_forall_mem_nhdsNE {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, S ∪ Tᶜ ∈ 𝓝[≠] x := by
   simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_sdiff]
 
-/-- If `S` is codiscrete within `T`, then `S ∪ Tᶜ` is a punctured neighborhood of every point
-of `T`. -/
-theorem mem_nhdsNE_of_mem_codiscreteWithin {S T : Set X} (hS : S ∈ codiscreteWithin T) {x : X}
-    (hx : x ∈ T) : S ∪ Tᶜ ∈ 𝓝[≠] x :=
-  mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 hS x hx
-
-omit [TopologicalSpace Y] in
-/-- Two functions agree along `codiscreteWithin U` iff, near every point of `U`, they agree at
-every point of `U`. -/
-theorem eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsNE {U : Set X} :
-    f₁ =ᶠ[codiscreteWithin U] f₂ ↔ ∀ x ∈ U, ∀ᶠ y in 𝓝[≠] x, y ∈ U → f₁ y = f₂ y := by
-  have h : {y | f₁ y = f₂ y} ∪ Uᶜ = {y | y ∈ U → f₁ y = f₂ y} := by
-    ext y
-    simp [imp_iff_or_not]
-  rw [EventuallyEq, eventually_iff, mem_codiscreteWithin_iff_forall_mem_nhdsNE, h]
-  rfl
-
 /-- A set `S` is codiscrete within `T` iff it is a punctured neighborhood within `T` of every
 point of `T`. -/
 theorem mem_codiscreteWithin_iff_forall_mem_nhdsWithin {S T : Set X} :
