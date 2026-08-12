@@ -175,7 +175,6 @@ theorem tendstoUniformly_of_norm_kerFun_le {C : ℝ} (hC : ∀ x, ‖kerFun H x�
   rw [← tendstoUniformlyOn_univ]
   exact tendstoUniformlyOn_of_norm_kerFun_le (fun x _ => hC x) h
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The span of the kernel functions is dense. -/
 theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) = ⊤ := by
   refine (orthogonal_eq_bot_iff.mp ((Submodule.eq_bot_iff _).mpr fun f fin ↦ DFunLike.ext f 0 ?_))
@@ -219,9 +218,9 @@ theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X 
     ] := by
   have {h p1 p2 p3 : Prop} (htfae : h → List.TFAE [p1, p2, p3]) :
       List.TFAE [h ∧ p1, h ∧ p2, h ∧ p3] := by
-    tfae_have 1 → 2 := fun ⟨h, t⟩ ↦ ⟨h, ((htfae h).out 0 1).mp t⟩
-    tfae_have 2 → 3 := fun ⟨h, t⟩ ↦ ⟨h, ((htfae h).out 1 2).mp t⟩
-    tfae_have 3 → 1 := fun ⟨h, t⟩ ↦ ⟨h, ((htfae h).out 2 0).mp t⟩
+    tfae_have 1 → 2 := fun ⟨h, t⟩ ↦ ⟨h, ((htfae h).out 1 2).mp t⟩
+    tfae_have 2 → 3 := fun ⟨h, t⟩ ↦ ⟨h, ((htfae h).out 2 3).mp t⟩
+    tfae_have 3 → 1 := fun ⟨h, t⟩ ↦ ⟨h, ((htfae h).out 3 1).mp t⟩
     tfae_finish
   refine this fun hHerm ↦ ?_
   simp only [nonneg_iff_isPositive, isPositive_def', isSelfAdjoint_finsuppSum hHerm,
@@ -266,7 +265,7 @@ instance instPreInnerProductSpaceCoreH₀ : PreInnerProductSpace.Core 𝕜 (H₀
   smul_left _ _ _ := by
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.mul_sum, ← mul_assoc]
   re_inner_nonneg := by
-    have := (posSemidef_tfae.out 0 1).mp (Fact.out : K.PosSemidef)
+    have := (posSemidef_tfae.out 1 2).mp (Fact.out : K.PosSemidef)
     exact this.2
 
 instance instSeminormedAddCommGroupH₀ : SeminormedAddCommGroup (H₀ K) :=
