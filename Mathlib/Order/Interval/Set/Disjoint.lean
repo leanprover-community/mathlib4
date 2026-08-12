@@ -192,10 +192,9 @@ variable [PartialOrder α] {s : Set α} {a : α}
 @[to_dual]
 theorem biUnion_Ici_eq_Ici_iff : ⋃ x ∈ s, Ici x = Ici a ↔ IsLeast s a := by
   refine ⟨fun h ↦ ?_, IsLeast.biUnion_Ici_eq_Ici⟩
-  have hleast := h ▸ isLeast_Ici
-  have hlb : a ∈ lowerBounds s := fun b hbs ↦ hleast.right <| mem_iUnion₂_of_mem hbs self_mem_Ici
-  have ⟨b, hbs, hba⟩ := Set.mem_iUnion₂.mp hleast.left
-  exact ⟨hba.antisymm (hlb hbs) ▸ hbs, hlb⟩
+  have hlb : a ∈ lowerBounds s := fun b hbs ↦ h.le <| mem_biUnion hbs self_mem_Ici
+  have ⟨b, hbs, hba⟩ := mem_iUnion₂.mp <| h.ge self_mem_Ici
+  exact ⟨hlb hbs |>.antisymm hba ▸ hbs, hlb⟩
 
 end PartialOrder
 
