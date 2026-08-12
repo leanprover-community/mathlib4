@@ -148,12 +148,12 @@ theorem round_ofNat_add (n : ℕ) [n.AtLeastTwo] (x : α) :
 theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract x) := by
   simp_rw [round, min_def_lt, two_mul, ← lt_tsub_iff_left]
   rcases lt_or_ge (fract x) (1 - fract x) with hx | hx
-  · rw [if_pos hx, if_pos hx, self_sub_floor, abs_fract]
+  · rw [ite_eq_left hx, ite_eq_left hx, self_sub_floor, abs_fract]
   · have : 0 < fract x := by
       replace hx : 0 < fract x + fract x := lt_of_lt_of_le zero_lt_one (tsub_le_iff_left.mp hx)
       simpa only [← two_mul, mul_pos_iff_of_pos_left, zero_lt_two] using hx
-    rw [if_neg (not_lt.mpr hx), if_neg (not_lt.mpr hx), abs_sub_comm, ceil_sub_self_eq this.ne.symm,
-      abs_one_sub_fract]
+    rw [ite_eq_right (not_lt.mpr hx), ite_eq_right (not_lt.mpr hx), abs_sub_comm,
+      ceil_sub_self_eq this.ne.symm, abs_one_sub_fract]
 
 theorem round_le (x : α) (z : ℤ) : |x - round x| ≤ |x - z| := by
   rw [abs_sub_round_eq_min, min_le_iff]

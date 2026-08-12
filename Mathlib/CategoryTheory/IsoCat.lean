@@ -31,7 +31,7 @@ to be preferred.
 
 namespace CategoryTheory
 
-open CategoryTheory.Functor NatIso Category
+open CategoryTheory.Functor
 
 variable {C : Type*} {D : Type*} {E : Type*} [Category* C] [Category* D] [Category* E]
 variable (F : C ⥤ D) (G : D ⥤ E)
@@ -199,9 +199,11 @@ instance [F.IsIso] : F.strictInv.IsIso := F.asIsomorphism.symm.isIso_functor
 instance [F.IsIso] [G.IsIso] : (F ⋙ G).IsIso :=
   (F.asIsomorphism.trans G.asIsomorphism).isIso_functor
 
-namespace InducedCategory
+section
 
 variable {C D : Type*} [Category* C] (e : D ≃ C)
+
+namespace InducedCategory
 
 /-- The isomorphism of categories between `InducedCategory C e` and `C` when
 `e : D ≃ C` is a bijection. -/
@@ -209,15 +211,21 @@ variable {C D : Type*} [Category* C] (e : D ≃ C)
 def isoCat : IsoCat (InducedCategory C e) C where
   functor := inducedFunctor e
   inverse.obj X := e.symm X
-  inverse.map f :=  { hom := eqToHom (by simp) ≫ f ≫ eqToHom (by simp) }
+  inverse.map f := { hom := eqToHom (by simp) ≫ f ≫ eqToHom (by simp) }
   unit_eq := Functor.ext (by simp) (by cat_disch)
   counit_eq := Functor.ext (by simp) (by cat_disch)
 
 /-- The equivalence of categories between `InducedCategory C e` and `C` when
 `e : D ≃ C` is a bijection. -/
-abbrev equivalence : (InducedCategory C e) ≌ C :=
+abbrev equivalence : InducedCategory C e ≌ C :=
   (isoCat e).toEquivalence
 
 end InducedCategory
+
+lemma isIso_inducedFunctor_of_bijective (f : D → C) (hf : Function.Bijective f) :
+    (inducedFunctor f).IsIso :=
+  inferInstanceAs (InducedCategory.isoCat (.ofBijective f hf)).functor.IsIso
+
+end
 
 end CategoryTheory
