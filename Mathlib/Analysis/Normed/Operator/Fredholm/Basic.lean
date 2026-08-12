@@ -466,6 +466,13 @@ theorem _root_.Submodule.isFredholm_projectionOntoL [ContinuousSub E] {p q : Sub
     (by simpa using hcompl.symm.closedComplemented)
     (by rwa [ker_projectionOntoL])
 
+theorem _root_.Submodule.isFredholm_projectionOntoL_iff [ContinuousSub E] {p q : Submodule 𝕜 E}
+    (hcompl : IsTopCompl p q) :
+    IsFredholm (p.projectionOntoL q hcompl) ↔ FiniteDimensional 𝕜 q := by
+  rw [(projectionOntoL_surjective hcompl).isFredholm_iff _, ← fg_iff_finiteDimensional,
+    ← fg_iff_finiteDimensional]
+  simp [isQuotientMap_projectionOnto hcompl, hcompl.symm.closedComplemented]
+
 theorem _root_.FredholmDecomposition.isFredholm_proj [ContinuousSub E]
     (dec : FredholmDecomposition 𝕜 E) :
     IsFredholm dec.proj :=
@@ -553,6 +560,12 @@ theorem _root_.Submodule.isFredholm_projectionL {p q : Submodule 𝕜 E}
     IsFredholm (p.projectionL q hcompl) :=
   have : p.CoFG := FG.cofg_of_isCompl hcompl.isCompl.symm .of_finite
   isFredholm_subtypeL hcompl.isClosed |>.comp <| isFredholm_projectionOntoL hcompl
+
+theorem _root_.Submodule.isFredholm_projectionL_iff {p q : Submodule 𝕜 E}
+    (hcompl : IsTopCompl p q) :
+    IsFredholm (p.projectionL q hcompl) ↔ FiniteDimensional 𝕜 q := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ isFredholm_projectionL hcompl⟩
+  simpa [← fg_iff_finiteDimensional, -toLinearMap_projectionL, ker_projectionL] using h.finite_ker
 
 end Constructions
 
