@@ -1095,7 +1095,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     if !todoNext.isEmpty && str ∉ cfg.notRecursive then
       let firstTodo := todoNext.head!.1
       throwError "Invalid simp lemma {nm.update (dropLast firstTodo) false |>.toName}.\n\
-        Projection {(splitOnNotNumber firstTodo "_")[1]!} doesn't exist, \
+        Projection {(splitOnNotNumber firstTodo "_")[0]!} doesn't exist, \
         because target {str} is not a structure."
     if cfg.fullyApplied then
       addProjection stxProj univs nm.toName tgt lhsAp rhsAp newArgs cfg
