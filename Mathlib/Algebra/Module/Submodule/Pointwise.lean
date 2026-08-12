@@ -251,7 +251,6 @@ theorem smul_eq_self_of_isUnit [SMul α R] [IsScalarTower α R M] {N : Submodule
   refine le_antisymm (N.smul_le_self_of_tower u) ?_
   grw [← (u • N).smul_le_self_of_tower hu.unit⁻¹.val, ← mul_smul, IsUnit.val_inv_mul, one_smul]
 
-@[simp]
 theorem smul_eq_self {α : Type*} [Group α] [SMul α R] [DistribMulAction α M] [SMulCommClass α R M]
     [IsScalarTower α R M] {N : Submodule R M} (u : α) : u • N = N :=
   smul_eq_self_of_isUnit (Group.isUnit u)
