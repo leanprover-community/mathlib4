@@ -460,6 +460,8 @@ section Rec
 ### recursion and induction principles
 -/
 
+-- false positive on `ih`, which is used by the `casesExpand` tactic code action
+set_option linter.unusedVariables false in
 @[elab_as_elim]
 lemma strong_induction_on {n : ℕ} {motive : Fin n → Prop}
     (ind : ∀ (j : Fin n) (ih : ∀ (k : Fin n), k < j → motive k), motive j) (i : Fin n) :
