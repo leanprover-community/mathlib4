@@ -533,6 +533,7 @@ theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
   rw [← not_lt, lt_aleph0_iff_finite, not_finite_iff_infinite]
 
 lemma aleph0_le_mk_iff : ℵ₀ ≤ #α ↔ Infinite α := infinite_iff.symm
+
 @[simp] lemma aleph0_le_mk_set {s : Set α} : ℵ₀ ≤ #s ↔ s.Infinite := by
   rw [aleph0_le_mk_iff, Set.infinite_coe_iff]
 
