@@ -272,11 +272,7 @@ lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
 lemma _root_.Disjoint.powersetCard_powersetCard {s t : Finset α}
     (h : Disjoint s t) {n : ℕ} (hn : n ≠ 0) (m : ℕ) :
     Disjoint (powersetCard n s) (powersetCard m t) := by
-  rw [disjoint_left]
-  intro u hu hv
-  rw [mem_powersetCard] at hu hv
-  obtain ⟨x, hx⟩ := card_pos.mp (hu.2.symm ▸ Nat.pos_of_ne_zero hn)
-  exact disjoint_left.1 h (hu.1 hx) (hv.1 hx)
+  grind [disjoint_left]
 
 theorem powersetCard_eq_filter {n} {s : Finset α} :
     powersetCard n s = (powerset s).filter fun x => x.card = n := by
