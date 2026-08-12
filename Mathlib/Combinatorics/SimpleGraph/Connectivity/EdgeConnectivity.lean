@@ -216,7 +216,7 @@ theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReac
   iSup₂_le fun _ hi ↦ IsEdgeReachable.le_edgeReachability (hi u v)
 
 theorem notEdgeReachable_degree_add_one [Fintype <| G.neighborSet u] [DecidableEq V]
-    (huv : u ≠ v) : ¬G.IsEdgeReachable (G.degree u + 1) u v  := by
+    (huv : u ≠ v) : ¬G.IsEdgeReachable (G.degree u + 1) u v := by
   intro h
   unfold IsEdgeReachable at h
   have this2 := @h (G.incidenceSet u)
