@@ -184,10 +184,10 @@ theorem pullbackCompatible_iff (x : FamilyOfElements P R) [R.HasPairwisePullback
   constructor
   · intro t Y₁ Y₂ f₁ f₂ hf₁ hf₂
     apply t
-    haveI := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
+    have := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
     apply pullback.condition
   · intro t Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ comm
-    haveI := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
+    have := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
     rw [← pullback.lift_fst _ _ comm, op_comp, Functor.map_comp, comp_apply,
       t hf₁ hf₂, ← comp_apply, ← Functor.map_comp, ← op_comp, pullback.lift_snd]
 
@@ -683,9 +683,6 @@ theorem isSheafFor_top (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (⊤ : Presieve X
   rw [← isSheafFor_iff_generate]
   apply isSheafFor_singleton_iso
 
-@[deprecated (since := "2026-01-22")]
-alias isSheafFor_top_sieve := isSheafFor_top
-
 /-- If `P₁ : Cᵒᵖ ⥤ Type w` and `P₂  : Cᵒᵖ ⥤ Type w` are two naturally equivalent
 presheaves, and `P₁` is a sheaf for a presieve `R`, then `P₂` is also a sheaf for `R`. -/
 lemma isSheafFor_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Type w'}
@@ -750,6 +747,7 @@ lemma IsSeparatedFor.of_mono (f : P ⟶ Q) [Mono f] (h : R.IsSeparatedFor Q) :
   intro x t₁ t₂ ht₁ ht₂
   exact injective_of_mono _ <|  h (x.map f) _ _ (ht₁.map f) (ht₂.map f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If a presieve `R` on `X` has a subsieve `S` such that:
 
 * `P` is a sheaf for `S`.
@@ -898,7 +896,6 @@ lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
   simp [e]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isSheafFor_over_map_op_comp_ofArrows_iff
     {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
     {X : Over B} {Y : I → Over B} (f : ∀ i, Y i ⟶ X) :

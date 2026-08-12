@@ -263,6 +263,7 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
   simp [← hq_mem, IsIrreducible.eq_top_of_invtSubmodule_reflection q hq hq₀]
 
 -- TODO Derive from `LinearIndependent.injective`
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Matrix in
 lemma injective_pairingIn {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsCrystallographic]
     (b : P.Base) :

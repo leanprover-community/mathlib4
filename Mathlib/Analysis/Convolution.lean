@@ -89,7 +89,7 @@ assert_not_exists ContDiffAt HasDerivAt
 @[expose] public section
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
-open Bornology ContinuousLinearMap Metric Topology
+open ContinuousLinearMap Metric Topology
 open scoped Pointwise NNReal Filter
 
 universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
@@ -807,8 +807,8 @@ theorem convolution_tendsto_right {ι} {g : ι → G → E'} {l : Filter ι} {x�
   have hgi : dist (g i (k i)) z₀ < ε / 3 := hgδ hpi (hki.trans <| half_lt_self hδ)
   have h1 : ∀ x' ∈ ball (k i) (δ / 2), dist (g i x') (g i (k i)) ≤ ε / 3 + ε / 3 := by
     intro x' hx'
-    refine (dist_triangle_right _ _ _).trans (add_le_add (hgδ hpi ?_).le hgi.le)
-    exact ((dist_triangle _ _ _).trans_lt (add_lt_add hx'.out hki)).trans_eq (add_halves δ)
+    grw [dist_triangle_right, hgδ hpi ?_, hgi]
+    grw [dist_triangle, hx'.out, hki, add_halves]
   have := dist_convolution_le (add_pos h2ε h2ε).le hφi hnφi hiφi hmgi h1
   refine ((dist_triangle _ _ _).trans_lt (add_lt_add_of_le_of_lt this hgi)).trans_eq ?_
   ring
