@@ -58,9 +58,6 @@ instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     ⟨Cocone.mk (Classical.arbitrary _)
       { app _ := eqToHom (by subsingleton) }⟩
 
-instance (α : Type*) [Preorder α] [Subsingleton α] : IsDiscrete α where
-  eq_of_hom _ := by subsingleton
-
 instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [Subsingleton C] [Nonempty C] :
     IsCardinalLocallyPresentable C κ where
