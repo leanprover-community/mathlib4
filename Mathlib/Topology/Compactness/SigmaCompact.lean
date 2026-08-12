@@ -199,7 +199,9 @@ variable [SigmaCompactSpace X]
 open SigmaCompactSpace
 
 /-- A choice of compact covering for a `σ`-compact space, chosen to be monotone. -/
-def compactCovering : ℕ → Set X :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def compactCovering : ℕ → Set X :=
   accumulate exists_compact_covering.choose
 
 theorem isCompact_compactCovering (n : ℕ) : IsCompact (compactCovering X n) :=

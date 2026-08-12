@@ -336,9 +336,9 @@ theorem coeff_coe (i : ℤ) :
     ((f : R⟦X⟧) : R⸨X⸩).coeff i =
       if i < 0 then 0 else PowerSeries.coeff i.natAbs f := by
   cases i
-  · rw [Int.ofNat_eq_natCast, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_gt,
+  · rw [Int.ofNat_eq_natCast, coeff_coe_powerSeries, ite_eq_right (Int.natCast_nonneg _).not_gt,
       Int.natAbs_natCast]
-  · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
+  · rw [ofPowerSeries_apply, embDomain_notin_image_support, ite_eq_left (Int.negSucc_lt_zero _)]
     simp
 
 theorem coe_C (r : R) : ((C r : R⟦X⟧) : R⸨X⸩) = HahnSeries.C r :=
@@ -415,7 +415,7 @@ def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
   isPrime := PowerSeries.span_X_isPrime
   ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
 
-open IsDedekindDomain.HeightOneSpectrum RatFunc WithZero
+open IsDedekindDomain.HeightOneSpectrum WithZero
 
 variable {K}
 
@@ -501,7 +501,7 @@ theorem valuation_single_zpow (s : ℤ) :
   · rw [Int.negSucc_eq, ← inv_inj, ← map_inv₀, inv_single, neg_neg, ← Int.natCast_succ, inv_one,
       ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow, valuation_X_pow, exp_neg]
 
-/- The coefficients of a power series vanish in degree strictly less than its valuation. -/
+/-- The coefficients of a power series vanish in degree strictly less than its valuation. -/
 theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
     (H : Valued.v (f : K⸨X⸩) ≤ exp (-d : ℤ)) :
     n < d → coeff n f = 0 := by
@@ -511,7 +511,7 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
     intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d, PowerSeries.idealX,
     Ideal.span_singleton_pow, Ideal.span_singleton_dvd_span_singleton_iff_dvd] at H
 
-/- The valuation of a power series is the order of the first non-zero coefficient. -/
+/-- The valuation of a power series is the order of the first non-zero coefficient. -/
 theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
     Valued.v (f : K⸨X⸩) ≤ exp (-d : ℤ) ↔
       ∀ n : ℕ, n < d → coeff n f = 0 := by
@@ -631,7 +631,7 @@ variable {K : Type*} [Field K]
 
 section Complete
 
-open Filter WithZero PowerSeries
+open Filter WithZero
 
 variable (K) in
 lemma valuation_surjective : Function.Surjective (Valued.v (R := K⸨X⸩)) := by
@@ -824,7 +824,7 @@ theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤᵐ⁰ˣ) :
       (Multiplicative.ofAdd (-(d + 1 : ℤ))) := by
       apply (intValuation_le_iff_coeff_lt_eq_zero K _).mpr
       simpa only [map_sub, sub_eq_zero, Polynomial.coeff_coe, coeff_trunc] using
-        fun _ h ↦ (if_pos h).symm
+        fun _ h ↦ (ite_eq_left h).symm
     rw [neg_add, ofAdd_add, ← hd, ofAdd_toAdd, WithZero.coe_mul, coe_unzero,
       ← coe_algebraMap] at this
     rw [← valuation_of_algebraMap (K := K⸨X⸩) (PowerSeries.idealX K) (F - F.trunc (d + 1))]
@@ -1070,7 +1070,6 @@ theorem valuation_LaurentSeries_equal_extension :
     rfl
   · exact Valued.continuous_valuation_of_surjective (valuation_surjective K)
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem tendsto_valuation (a : (idealX K).adicCompletion K⟮X⟯) :
     Tendsto (Valued.v : K⟮X⟯ → ℤᵐ⁰) (comap (↑) (𝓝 a)) (𝓝 (Valued.v a : ℤᵐ⁰)) := by
   have := Valued.is_topological_valuation (R := (idealX K).adicCompletion K⟮X⟯)

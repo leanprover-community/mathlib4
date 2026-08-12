@@ -192,7 +192,7 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
     have hj := hx j
     have hi := hx i
     classical
-    simp_rw [coeff_monomial, if_pos] at hj hi
+    simp_rw [coeff_monomial, ite_eq_left] at hj hi
     simp_rw [coeff_monomial_mul'] at hi hj
     split_ifs at hj with hi
     · exact ⟨Or.inr hi, _, hj⟩
@@ -266,8 +266,6 @@ theorem eq_modMonomial_single_iff (h : X i ∣ p - r) :
 theorem X_dvd_mul_iff [IsCancelMulZero R] :
     X i ∣ p * q ↔ X i ∣ p ∨ X i ∣ q := by
   nontriviality R
-  have _ : NoZeroDivisors (MvPolynomial σ R) :=
-    IsLeftCancelMulZero.to_noZeroDivisors (MvPolynomial σ R)
   constructor
   · intro h
     suffices (p.modMonomial (Finsupp.single i 1)) * (q.modMonomial (Finsupp.single i 1)) =
