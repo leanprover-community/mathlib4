@@ -269,7 +269,6 @@ theorem H0π_comp_map :
   simp [H0π]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_id_comp_H0Iso_hom {A B : Rep k G} (f : A ⟶ B) :
     map (MonoidHom.id G) f 0 ≫ (H0Iso B).hom =

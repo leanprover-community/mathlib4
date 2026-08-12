@@ -1077,7 +1077,6 @@ end Adjunction
 
 namespace Equivalence
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories lifts to an equivalence of their monoid objects. -/
 @[to_additive (attr := simps)

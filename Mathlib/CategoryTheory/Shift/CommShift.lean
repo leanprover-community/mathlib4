@@ -480,7 +480,6 @@ variable [AddMonoid A] [HasShift D A]
 
 namespace CommShift
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ D` is a fully faithful functor which is used
 to construct a shift by `A` on `C` from a shift on `D`,
 then the functor `F` itself commutes with the shift by `A`. -/

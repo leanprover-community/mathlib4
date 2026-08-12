@@ -237,7 +237,6 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
 def stalkMap (x : X) : Y.presheaf.stalk (f x) ⟶ X.presheaf.stalk x :=
   f.toLRSHom.stalkMap x
 
-set_option backward.isDefEq.respectTransparency.types false in
 protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g := by
@@ -428,7 +427,6 @@ instance isIso_toPshHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toPshHo
 instance isIso_base {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
   Scheme.forgetToTop.map_isIso f
 
-set_option backward.isDefEq.respectTransparency false in
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.app U) :=
   haveI := PresheafedSpace.c_isIso_of_iso f.toPshHom
   NatIso.isIso_app_of_isIso f.c _
@@ -483,7 +481,6 @@ def Spec.map {R S : CommRingCat} (f : R ⟶ S) : Spec S ⟶ Spec R :=
 theorem Spec.map_id (R : CommRingCat) : Spec.map (𝟙 R) = 𝟙 (Spec R) :=
   Scheme.Hom.ext' <| Spec.locallyRingedSpaceMap_id R
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc, simp]
 theorem Spec.map_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.map (f ≫ g) = Spec.map g ≫ Spec.map f :=

@@ -881,7 +881,6 @@ lemma preservesRightHomology_of_zero_g (hg : S.g = 0)
     g' := Limits.preservesKernel_zero' _ _
       (by rw [← cancel_epi h.p, h.p_g', comp_zero, hg]) }⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a short complex `S` is such that `S.g = 0` and that the cokernel of `S.f` is preserved
 by a functor `F`, then `F` preserves the left homology of `S`. -/
 lemma preservesLeftHomology_of_zero_g (hg : S.g = 0)
@@ -896,7 +895,6 @@ lemma preservesLeftHomology_of_zero_g (hg : S.g = 0)
         parallelPair.ext (Iso.refl _) (asIso h.i) (by simp) (by simp)
       exact Limits.preservesColimit_of_iso_diagram F e.symm}⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a short complex `S` is such that `S.f = 0` and that the kernel of `S.g` is preserved
 by a functor `F`, then `F` preserves the right homology of `S`. -/
 lemma preservesRightHomology_of_zero_f (hf : S.f = 0)

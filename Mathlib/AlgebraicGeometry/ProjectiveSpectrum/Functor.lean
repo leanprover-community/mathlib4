@@ -103,7 +103,6 @@ set_option backward.isDefEq.respectTransparency.types false in
     { base := TopCat.ofHom <| comap f hf
       c := { app U := CommRingCat.ofHom <| comapStructureSheaf f hf _ _ Set.Subset.rfl } }
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma germ_map_sectionInBasicOpen {p : ProjectiveSpectrum ℬ}
     (c : NumDenSameDeg 𝒜 (p.comap f hf).1.toIdeal.primeCompl) :
     (toSheafedSpace ℬ).presheaf.germ
@@ -164,7 +163,6 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem ι_comp_map (s : A) : (basicOpen ℬ (f s)).ι ≫ map f hf =
     (map f hf).resLE _ _ le_rfl ≫ (basicOpen 𝒜 s).ι := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc] lemma awayToSection_comp_appLE {i : ℕ} {s : A} (hs : s ∈ 𝒜 i) :
     awayToSection 𝒜 s ≫
       Scheme.Hom.appLE (map f hf) (basicOpen 𝒜 s) (basicOpen ℬ (f s)) (by rfl) =

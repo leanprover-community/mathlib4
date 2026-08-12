@@ -348,7 +348,6 @@ end Fork
 
 namespace Cofork
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `Cofork.ofπ f pullback.condition` is a colimit cocone if and only if
 `Fork.ofι f.op pushout.condition` in the opposite category is a limit cone. -/
@@ -365,7 +364,6 @@ def isColimitCoforkPushoutEquivIsColimitForkOpPullback
   left_inv := by cat_disch
   right_inv := by cat_disch
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `Cofork.ofπ f pullback.condition` is a colimit cocone in `Cᵒᵖ` if and only if
 `Fork.ofι f.unop pushout.condition` in `C` is a limit cone. -/
@@ -387,7 +385,6 @@ end Cofork
 
 namespace Fork
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `Fork.ofι f pushout.condition` is a limit cone if and only if
 `Cofork.ofπ f.op pullback.condition` in the opposite category is a colimit cocone. -/
@@ -409,7 +406,6 @@ def isLimitForkPushoutEquivIsColimitForkOpPullback
   left_inv := by cat_disch
   right_inv := by cat_disch
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `Fork.ofι f pushout.condition` is a limit cone in `Cᵒᵖ` if and only if
 `Cofork.ofπ f.op pullback.condition` in `C` is a colimit cocone. -/

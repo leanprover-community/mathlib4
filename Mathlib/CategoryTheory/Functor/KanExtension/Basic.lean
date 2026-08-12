@@ -335,12 +335,10 @@ def RightExtension.postcomp₁ (f : L ⋙ G ⟶ L') (F : C ⥤ H) :
 
 variable [IsEquivalence G]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (f : L' ⟶ L ⋙ G) [IsIso f] (F : C ⥤ H) :
     IsEquivalence (LeftExtension.postcomp₁ G f F) := by
   apply StructuredArrow.isEquivalenceMap₂
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (f : L ⋙ G ⟶ L') [IsIso f] (F : C ⥤ H) :
     IsEquivalence (RightExtension.postcomp₁ G f F) := by
   apply CostructuredArrow.isEquivalenceMap₂
@@ -467,11 +465,9 @@ def RightExtension.precomp : RightExtension L F ⥤ RightExtension (G ⋙ L) (G 
 
 variable [IsEquivalence G]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : IsEquivalence (LeftExtension.precomp L F G) := by
   apply StructuredArrow.isEquivalenceMap₂
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : IsEquivalence (RightExtension.precomp L F G) := by
   apply CostructuredArrow.isEquivalenceMap₂
 
@@ -502,7 +498,6 @@ lemma isLeftKanExtension_iff_precomp (α : F ⟶ L ⋙ F') :
   · exact fun _ => ⟨⟨eq (isUniversalOfIsLeftKanExtension _ _)⟩⟩
   · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isRightKanExtension_iff_precomp (α : L ⋙ F' ⟶ F) :
     F'.IsRightKanExtension α ↔
@@ -574,7 +569,6 @@ section
 
 variable {L : C ⥤ D} {F₁ F₂ : C ⥤ H}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When two left extensions `α₁ : LeftExtension L F₁` and `α₂ : LeftExtension L F₂`
 are essentially the same via an isomorphism of functors `F₁ ≅ F₂`,
 then `α₁` is universal iff `α₂` is. -/
@@ -596,7 +590,6 @@ lemma isLeftKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : F₁ ⟶
   · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsLeftKanExtension F₁' α₁)⟩⟩
   · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsLeftKanExtension F₂' α₂)⟩⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- When two right extensions `α₁ : RightExtension L F₁` and `α₂ : RightExtension L F₂`
 are essentially the same via an isomorphism of functors `F₁ ≅ F₂`,
 then `α₁` is universal iff `α₂` is. -/
@@ -824,7 +817,6 @@ noncomputable def coneOfIsRightKanExtension (c : Cone F) : Cone F' where
   pt := c.pt
   π := F'.liftOfIsRightKanExtension α _ c.π
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `c` is a limit cone for a functor `F : C ⥤ H` and `α : L ⋙ F' ⟶ F` is the counit of any
 right Kan extension `F' : D ⥤ H` of `F` along `L : C ⥤ D`, then `coneOfIsRightKanExtension α c` is
 a limit cone, too. -/

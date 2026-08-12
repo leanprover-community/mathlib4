@@ -29,7 +29,6 @@ namespace CategoryTheory.Limits
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /- If the morphisms in `C` were in `Type w`, the functor
 `sigmaConst.{w}`
 would be a left adjoint (see `sigmaConstAdj`). In general, we cannot
@@ -92,7 +91,6 @@ lemma ι_sigmaConstCokernelCofork_π_eq_zero (a : α) :
   exact dite_eq_right (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cokernel of the map `∐ fun (_ : α) ↦ R ⟶ ∐ fun (_ : β) ↦ R` induced
 by a map `f : α → β` identifies to the coproduct of copies of `R`
 indexed by the complement of the range of `f`. -/

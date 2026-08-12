@@ -403,7 +403,6 @@ theorem repr_injective :
   cases g
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `b i` is the `i`th basis vector. -/
 instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
@@ -855,7 +854,6 @@ lemma equiv_self_rfl : b.equiv b (.refl ι) = .refl 𝕜 E := by
   apply b.toBasis.ext_linearIsometryEquiv
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma equiv_apply (x : E) : b.equiv b' e x = ∑ i, b.repr x i • b' (e i) := by
   nth_rw 1 [← b.sum_repr x, map_sum]
   simp_rw [map_smul, equiv_apply_basis]
@@ -1284,7 +1282,6 @@ theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike �
     Basis.coe_singleton, Matrix.vecMulVec_one, OrthonormalBasis.coe_singleton, star_one,
     Matrix.one_vecMulVec, Matrix.vecMulVec_eq Unit]
 
-set_option backward.isDefEq.respectTransparency false in
 open Matrix LinearMap EuclideanSpace in
 theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike 𝕜] [Fintype m]
     [Fintype n] [DecidableEq n] (x : EuclideanSpace 𝕜 m) (y : EuclideanSpace 𝕜 n) :

@@ -1148,7 +1148,6 @@ lemma BinaryCofan.map_inl {X Y : C} (s : BinaryCofan X Y) : (s.map F).inl = F.ma
 @[simp]
 lemma BinaryCofan.map_inr {X Y : C} (s : BinaryCofan X Y) : (s.map F).inr = F.map s.inr := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `F.mapCone s` being limiting is the same as the induced binary fan being limiting. -/
 def BinaryFan.isLimitMapConeEquiv {X Y : C} {s : BinaryFan X Y} :
@@ -1156,7 +1155,6 @@ def BinaryFan.isLimitMapConeEquiv {X Y : C} {s : BinaryFan X Y} :
   IsLimit.equivOfNatIsoOfIso (diagramIsoPair _) _ _ <| ext (Iso.refl _)
     (by simp [fst]) (by simp [snd])
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `F.mapCocone s` being colimiting is the same as the induced binary cofan being colimiting. -/
 def BinaryCofan.isColimitMapConeEquiv {X Y : C} {s : BinaryCofan X Y} :
@@ -1345,7 +1343,6 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Over.coprod`. -/
 @[simps]

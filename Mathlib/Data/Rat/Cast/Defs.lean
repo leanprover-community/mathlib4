@@ -176,7 +176,6 @@ lemma cast_add_of_ne_zero {q r : ℚ} (hq : (q.den : α) ≠ 0) (hr : (r.den : �
 
 @[simp, norm_cast] lemma cast_neg (q : ℚ) : ↑(-q) = (-q : α) := by simp [cast_def, neg_div]
 
-set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] lemma cast_sub_of_ne_zero (hp : (p.den : α) ≠ 0) (hq : (q.den : α) ≠ 0) :
     ↑(p - q) = (p - q : α) := by simp [sub_eq_add_neg, cast_add_of_ne_zero, hp, hq]
 

@@ -56,7 +56,6 @@ theorem support_coeff_mul_single_subset [DecidableEq G] (x : k[G]) (r : k) (a : 
   change image₂ _ _ _ ⊆ _
   rw [image₂_singleton_right]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := k) support_coeff_single_mul_eq_image]
 theorem support_coeff_single_mul_eq_image [DecidableEq G] (f : k[G]) {r : k}
     (hr : ∀ y, r * y = 0 ↔ y = 0) {x : G} (lx : IsLeftRegular x) :
@@ -65,7 +64,6 @@ theorem support_coeff_single_mul_eq_image [DecidableEq G] (f : k[G]) {r : k}
   obtain ⟨y, yf, rfl⟩ : ∃ a ∈ f.coeff.support, x * a = y := by grind
   simp [coeff_mul, mem_support_iff.mp yf, hr, lx.eq_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := k) support_coeff_mul_single_eq_image]
 theorem support_coeff_mul_single_eq_image [DecidableEq G] (f : k[G]) {r : k}
     (hr : ∀ y, y * r = 0 ↔ y = 0) {x : G} (rx : IsRightRegular x) :

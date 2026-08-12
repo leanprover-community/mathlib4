@@ -188,7 +188,6 @@ instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
   intro x y z
   rw [← @IsScalarTower.algebraMap_smul S R, ← @IsScalarTower.algebraMap_smul S R, smul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     monomial i r • single R j m = single R (i + j) (r • m) := by
@@ -235,7 +234,6 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
       (monomial f_n f_a).coeff i • g.coeff j, monomial_smul_apply]
     simp [Polynomial.coeff_monomial]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
 def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
   toAddEquiv := coeffAddEquiv.trans <| AddMonoidAlgebra.coeffAddEquiv.symm.trans
@@ -318,7 +316,6 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
     | monomial => rw [monomial_smul_single, map_single, Polynomial.map_monomial, map_single,
         monomial_smul_single, f.map_smul, algebraMap_smul]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
 @[simps! -isSimp]
 def eval (r : R) : PolynomialModule R M →ₗ[R] M where

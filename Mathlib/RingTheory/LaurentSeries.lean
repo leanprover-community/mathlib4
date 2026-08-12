@@ -905,7 +905,6 @@ lemma exists_ratFunc_eq_v (x : K⸨X⸩) : ∃ f : K⟮X⟯, Valued.v f = Valued
 
 open MonoidWithZeroHom.ValueGroup₀
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [isUniformInducing_iff, Filter.comap]
   ext S
@@ -1145,7 +1144,6 @@ lemma powerSeriesEquivSubring_coe_apply (f : K⟦X⟧) :
     (powerSeriesEquivSubring K f : K⸨X⸩) = ofPowerSeries ℤ K f :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Through the isomorphism `LaurentSeriesRingEquiv`, power series land in the unit ball inside the
 completion of `K⟮X⟯`. -/
 theorem mem_integers_of_powerSeries (F : K⟦X⟧) :

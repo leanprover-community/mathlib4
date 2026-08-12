@@ -143,7 +143,6 @@ lemma isSheaf (M : X.Modules) : M.presheaf.IsSheaf := SheafOfModules.isSheaf M
 @[simp] lemma toPresheaf_obj : (toPresheaf X).obj M = M.presheaf := rfl
 @[simp] lemma toPresheaf_map : (toPresheaf X).map φ = φ.mapPresheaf := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Hom.isIso_iff_isIso_app {M N : X.Modules} {φ : M ⟶ N} :
     IsIso φ ↔ ∀ U, IsIso (φ.app U) := by
   rw [← isIso_iff_of_reflects_iso _ (toPresheaf X), NatTrans.isIso_iff_isIso_app]
@@ -194,11 +193,9 @@ section
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
   preservesBinaryBiproducts_of_preservesBinaryProducts
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : (pullback f).IsLeftAdjoint := (pullbackPushforwardAdjunction f).isLeftAdjoint
 instance : (pushforward f).IsRightAdjoint := (pullbackPushforwardAdjunction f).isRightAdjoint
 instance : (pushforward f).Additive := Functor.additive_of_preservesBinaryBiproducts _
-set_option backward.isDefEq.respectTransparency.types false in
 instance : (pullback f).Additive := Functor.additive_of_preservesBinaryBiproducts _
 
 end
@@ -212,14 +209,12 @@ def pushforwardId : pushforward (𝟙 X) ≅ 𝟭 _ :=
 @[simp] lemma pushforwardId_hom_app_app : ((pushforwardId X).hom.app M).app U = 𝟙 _ := rfl
 @[simp] lemma pushforwardId_inv_app_app : ((pushforwardId X).inv.app M).app U = 𝟙 _ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (X) in
 /-- The pullback of sheaves of modules by the identity morphism identifies
 to the identity functor. -/
 def pullbackId : pullback (𝟙 X) ≅ 𝟭 _ :=
   SheafOfModules.pullbackId _
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (X) in
 lemma conjugateEquiv_pullbackId_hom :
     conjugateEquiv .id (pullbackPushforwardAdjunction (𝟙 X)) (pullbackId X).hom =
@@ -248,15 +243,12 @@ def pushforwardCongr {f g : X ⟶ Y} (hf : f = g) : pushforward f ≅ pushforwar
     pushforwardNatIso _ (Opens.mapIso _ _ (hf ▸ rfl)) ≪≫
       SheafOfModules.pushforwardCongr (by cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma pushforwardCongr_hom_app_app {f g : X ⟶ Y} (hf : f = g) (U : Y.Opens) :
     ((pushforwardCongr hf).hom.app M).app U = M.presheaf.map (eqToHom (hf ▸ rfl)).op := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma pushforwardCongr_inv_app_app {f g : X ⟶ Y} (hf : f = g) (U : Y.Opens) :
     ((pushforwardCongr hf).inv.app M).app U = M.presheaf.map (eqToHom (hf ▸ rfl)).op := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Inverse images along equal morphisms are isomorphic. -/
 def pullbackCongr {f g : X ⟶ Y} (hf : f = g) : pullback f ≅ pullback g :=
   eqToIso (hf ▸ rfl)
@@ -448,7 +440,6 @@ lemma restrictAdjunction_counit_app_app (M : X.Modules) (U : X.Opens) :
     ((restrictAdjunction f).counit.app M).app U =
       M.presheaf.map (eqToHom (f.preimage_image_eq U).symm).op := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Restriction is naturally isomorphic to the inverse image. -/
 def restrictFunctorIsoPullback : restrictFunctor f ≅ pullback f :=
   (restrictAdjunction f).leftAdjointUniq (pullbackPushforwardAdjunction f)

@@ -1267,7 +1267,6 @@ the type of finitely supported functions from `s`. -/
     letI := Classical.decPred (· ∈ s); Subtype.ext <| extendDomain_subtypeDomain f.1 f.prop
   right_inv _ := letI := Classical.decPred (· ∈ s); subtypeDomain_extendDomain _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma restrictSupportEquiv_symm_apply_coe (s : Set α) (M : Type*) [AddCommMonoid M]
     [DecidablePred (· ∈ s)] (f : s →₀ M) :
     (restrictSupportEquiv s M).symm f = f.extendDomain := by

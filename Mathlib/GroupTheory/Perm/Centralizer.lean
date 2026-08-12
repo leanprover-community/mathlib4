@@ -345,7 +345,6 @@ theorem ofPermHomFun_one (x : α) : (ofPermHomFun a 1) x = x := by
   · rw [ofPermHomFun_apply_of_mem_fixedPoints a _ hx]
   · rw [ofPermHomFun_apply_of_cycleOf_mem a _ hc hm, OneMemClass.coe_one, coe_one, id_eq, hm]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `a : g.Basis` and a permutation of `g.cycleFactorsFinset` that
   preserve the lengths of the cycles, a permutation of `α` that
   moves the `Basis` and commutes with `g` -/
@@ -459,7 +458,6 @@ theorem range_toPermHom_eq_range_toPermHom' :
   ext τ
   rw [mem_range_toPermHom_iff, mem_range_toPermHom'_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nat_card_range_toPermHom :
     Nat.card (toPermHom g).range =
       ∏ n ∈ g.cycleType.toFinset, (g.cycleType.count n)! := by

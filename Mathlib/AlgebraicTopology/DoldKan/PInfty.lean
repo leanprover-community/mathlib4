@@ -64,7 +64,6 @@ theorem PInfty_f_0 : (PInfty.f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 𝟙 _ := rfl
 theorem PInfty_f (n : ℕ) : (PInfty.f n : X _⦋n⦌ ⟶ X _⦋n⦌) = (P n).f n :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem QInfty_f_0 : (QInfty.f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 0 := by
   dsimp [QInfty]
