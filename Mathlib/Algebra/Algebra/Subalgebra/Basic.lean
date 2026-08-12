@@ -675,7 +675,7 @@ theorem range_val : S.val.range = S :=
 
 This is the subalgebra version of `Submodule.inclusion`, or `Subring.inclusion` -/
 def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T where
-  toFun := Set.inclusion (id h)
+  toFun := Set.inclusion h
   map_one' := rfl
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
