@@ -328,8 +328,8 @@ theorem sum_single_mul_expand_contract (n : ℕ+) (f : R⸨X⸩) :
     (Int.toNat_lt (Int.emod_nonneg j hn0.ne')).mpr (Int.emod_lt_of_pos j hn0)
   rw [HahnSeries.coeff_sum, Finset.sum_eq_single_of_mem ⟨(j % n).toNat, hjn⟩
     (Finset.mem_univ _) fun r _ hr ↦ (coeff_single_mul_expand n r _ j).trans
-      (if_neg fun h ↦ hr (Fin.ext (show (r : ℕ) = (j % n).toNat by omega))),
-    coeff_single_mul_expand, if_pos (Int.toNat_of_nonneg (Int.emod_nonneg j hn0.ne')).symm,
+      (ite_eq_right fun h ↦ hr (Fin.ext (show (r : ℕ) = (j % n).toNat by omega))),
+    coeff_single_mul_expand, ite_eq_left (Int.toNat_of_nonneg (Int.emod_nonneg j hn0.ne')).symm,
     coeff_contract, Fin.val_mk, Int.toNat_of_nonneg (Int.emod_nonneg j hn0.ne'),
     Int.mul_ediv_add_emod]
 
@@ -345,9 +345,9 @@ theorem contract_eq_of_sum_eq {n : ℕ+} {f : R⸨X⸩} {g : Fin n → R⸨X⸩}
     rw [add_comm, Int.add_mul_emod_self_left, Int.emod_eq_of_lt (Int.natCast_nonneg _) hlt]
   ext k
   rw [coeff_contract, ← hg, HahnSeries.coeff_sum, Finset.sum_eq_single_of_mem r (Finset.mem_univ _)
-    (fun s _ hs ↦ (coeff_single_mul_expand n s _ _).trans (if_neg fun h ↦
+    (fun s _ hs ↦ (coeff_single_mul_expand n s _ _).trans (ite_eq_right fun h ↦
       hs (Fin.ext (Nat.cast_injective (h.symm.trans (hmod k)))))),
-    coeff_single_mul_expand, if_pos (hmod k), add_comm, Int.add_mul_ediv_left _ _ hn0.ne',
+    coeff_single_mul_expand, ite_eq_left (hmod k), add_comm, Int.add_mul_ediv_left _ _ hn0.ne',
     Int.ediv_eq_zero_of_lt (Int.natCast_nonneg _) hlt, zero_add]
 
 end Semiring
