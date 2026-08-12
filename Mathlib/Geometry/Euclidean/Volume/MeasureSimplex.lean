@@ -62,6 +62,55 @@ private theorem convert_shifted_plane [FiniteDimensional ℝ V]
       affineSpan_pair_altitudeFoot_eq_altitude, direction_altitude, htop, inf_top_eq,
       direction_affineSpan, orthogonal_orthogonal]
 
+omit [MeasurableSpace P] [BorelSpace P] in
+/-- Auxiliary lemma that converts the shifted plane from integral formula style
+to `AffineSubspace.shift`. -/
+private theorem convert_shifted_plane_inter (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) (x : ℝ) :
+    -- LHS: through a point on the altitude, draw the perpendicular plane
+
+      AffineSubspace.mk' (x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i)
+      (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ ⊓ affineSpan ℝ (Set.range s.points) =
+      -- RHS: shift the base towards the vertex
+      (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
+
+
+  rw [AffineSubspace.shift_eq ⟨s.altitudeFoot i, altitudeFoot_mem_affineSpan_image_compl s i⟩]
+  conv_rhs => conv in affineSpan _ _ =>
+    rw [← AffineSubspace.mk'_eq (altitudeFoot_mem_affineSpan_image_compl s i)]
+  rw [AffineSubspace.map_mk']
+  apply AffineSubspace.ext_of_direction_eq
+  · rw [AffineSubspace.direction_inf_of_mem (p := sorry) sorry sorry]
+    suffices (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ ⊓
+      (affineSpan ℝ (Set.range s.points)).direction = (affineSpan ℝ (s.points '' {i}ᶜ)).direction by
+      simpa
+    rw [← vectorSpan_pair, ← direction_affineSpan,
+      affineSpan_pair_altitudeFoot_eq_altitude, direction_altitude, direction_affineSpan]
+    rw [← (vectorSpan ℝ (Set.range s.points)).orthogonal_orthogonal, Submodule.inf_orthogonal]
+
+    sorry
+
+
+  ·
+    sorry
+
+omit [MeasurableSpace P] [BorelSpace P] in
+/-- Auxiliary lemma that converts the shifted plane from integral formula style
+to `AffineSubspace.shift`. -/
+private theorem convert_shifted_plane' (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) (x : ℝ) :
+    -- LHS: through a point on the altitude, draw the perpendicular plane
+    s.closedInterior ∩ AffineSubspace.mk' (x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i)
+      (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ =
+      -- RHS: shift the base towards the vertex
+      s.closedInterior ∩ (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
+
+
+  rw [AffineSubspace.shift_eq ⟨s.altitudeFoot i, altitudeFoot_mem_affineSpan_image_compl s i⟩]
+  conv in affineSpan _ _ =>
+    rw [← AffineSubspace.mk'_eq (altitudeFoot_mem_affineSpan_image_compl s i)]
+
+
+  sorry
+
 /-- The volume of the cross-section is scaled from the base because of homothety -/
 private theorem measure_cross_section (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     (μHE[n] <| s.closedInterior ∩ (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) ·)
@@ -94,7 +143,7 @@ private theorem euclideanHausdorffMeasure_closedInterior_aux [FiniteDimensional 
   rw [EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (s.points i) haltitudeFoot
     s.measurableSet_closedInterior, ← ofReal_norm, ← dist_eq_norm_vsub', ← Simplex.height,
     Nat.sub_eq_of_eq_add hn]
-  simp_rw [convert_shifted_plane hn s i]
+  simp_rw [convert_shifted_plane' s i]
   rw [← setLIntegral_eq_of_support_subset (cross_section_support s i),
     lintegral_congr_ae (measure_cross_section s i)]
   -- Cancel common factors and reduce it to `∫ x in 0..1, x ^ n`

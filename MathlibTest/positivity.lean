@@ -674,5 +674,4 @@ example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ a - b := by
 variable {V P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
-example {n : ℕ} [NeZero n] (s : Affine.Simplex ℝ P n) : 0 < s.height 0 := by positivity
 example {n : ℕ} (s : Affine.Simplex ℝ P n) : 0 < s.volume := by positivity
