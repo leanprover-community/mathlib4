@@ -430,7 +430,10 @@ In general you should use `NonUnitalRing`, `Ring`, etc. -/
 @[mk_iff] class IsUnital (A : Type*) [Mul A] : Prop where
   isUnital : ∃ u : A, ∀ x : A, u * x = x ∧ x * u = x
 
-/-- A multiplicative magma is **not-unital** if there does not exist a unit. -/
+/-- A multiplicative magma is **not-unital** if there does not exist a unit.
+
+**Note**: Do not use this unless it is the only reasonable way to phrase or prove a statement.
+In general you should use `NonUnitalRing`, `Ring`, etc. -/
 @[mk_iff] class IsNotUnital (A : Type*) [Mul A] : Prop where
   isNotUnital : ∀ u : A, ∃ x : A, u * x ≠ x ∨ x * u ≠ x
 
