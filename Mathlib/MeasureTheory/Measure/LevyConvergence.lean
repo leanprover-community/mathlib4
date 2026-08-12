@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Tight
+public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
 
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 import Mathlib.MeasureTheory.Measure.IntegralCharFun
@@ -219,5 +220,19 @@ theorem ProbabilityMeasure.tendsto_iff_tendsto_charFun :
   rw [ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto ℂ] at h
   simp_rw [charFun_eq_integral_innerProbChar]
   exact h (innerProbChar t)
+
+variable {Ω' : Type*} {Ω : ℕ → Type*} {m : ∀ n, MeasurableSpace (Ω n)}
+  {P : (n : ℕ) → Measure (Ω n)} [∀ n, IsProbabilityMeasure (P n)]
+  {m' : MeasurableSpace Ω'} {P' : Measure Ω'} [IsProbabilityMeasure P']
+  {X : (n : ℕ) → Ω n → E} {X' : Ω' → E}
+
+lemma tendstoInDistribution_of_tendsto_charFun
+    (hX : ∀ n, AEMeasurable (X n) (P n)) (hX' : AEMeasurable X' P')
+    (h : ∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t))) :
+    TendstoInDistribution X atTop X' P P' where
+  forall_aemeasurable n := (hX n)
+  tendsto := by
+    apply ProbabilityMeasure.tendsto_of_tendsto_charFun
+    simpa only [ProbabilityMeasure.coe_mk] using h
 
 end MeasureTheory
