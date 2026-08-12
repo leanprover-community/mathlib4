@@ -89,7 +89,7 @@ theorem cfcHom_mem_elemental {a : A} (ha : p a) (f : C(spectrum 𝕜 a, 𝕜)) :
 theorem cfc_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
     cfc f a ∈ elemental 𝕜 a :=
   cfc_cases _ a f (zero_mem _) fun hf ha ↦
-    cfcHom_mem_elemental ha ⟨_, hf.restrict⟩
+    cfcHom_mem_elemental ha ⟨_, hf.domRestrict⟩
 
 @[deprecated (since := "2026-03-20")] alias cfc_apply_mem_elemental := cfc_mem_elemental
 
@@ -198,7 +198,7 @@ theorem cfcₙHom_mem_elemental {a : A} (ha : p a) (f : C(quasispectrum 𝕜 a, 
 theorem cfcₙ_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
     cfcₙ f a ∈ elemental 𝕜 a :=
   cfcₙ_cases _ a f (zero_mem _) fun hf hf₀ ha ↦
-    cfcₙHom_mem_elemental ha ⟨⟨_, hf.restrict⟩, hf₀⟩
+    cfcₙHom_mem_elemental ha ⟨⟨_, hf.domRestrict⟩, hf₀⟩
 
 @[deprecated (since := "2026-03-20")] alias cfcₙ_apply_mem_elemental := cfcₙ_mem_elemental
 

@@ -153,6 +153,9 @@ theorem symm_apply_apply (h : X ≃ₜ Y) (x : X) : h.symm (h x) = x :=
 theorem symm_apply_eq (h : X ≃ₜ Y) {x : X} {y : Y} : h.symm y = x ↔ y = h x :=
   Equiv.symm_apply_eq _
 
+theorem eq_symm_apply (h : X ≃ₜ Y) {x : X} {y : Y} : x = h.symm y ↔ h x = y :=
+  Equiv.eq_symm_apply _
+
 @[simp]
 theorem self_trans_symm (h : X ≃ₜ Y) : h.trans h.symm = Homeomorph.refl X := by
   ext
