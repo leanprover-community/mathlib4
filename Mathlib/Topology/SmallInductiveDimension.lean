@@ -12,11 +12,9 @@ public import Mathlib.Topology.Clopen
 
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Topology.Algebra.Indicator
 import Mathlib.Topology.Compactness.Compact
-
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Small inductive dimension
