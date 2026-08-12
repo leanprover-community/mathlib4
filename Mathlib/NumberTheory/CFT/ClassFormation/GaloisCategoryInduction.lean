@@ -21,6 +21,7 @@ universe w v u
 namespace CategoryTheory
 
 open Limits PreGaloisCategory
+
 variable {C : Type*} [Category* C]
 
 namespace PreGaloisCategory

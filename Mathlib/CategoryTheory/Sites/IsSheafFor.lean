@@ -1004,7 +1004,6 @@ lemma IsSheafFor.of_singleton_comp {S : C} (p : Y ⟶ X) (f : X ⟶ S)
     exact hβ _ _ (by simpa))).exists
   exact ⟨γ, h' (by simpa using hγ)⟩
 
-
 lemma IsSheafFor.of_singleton {S : C} {f : X ⟶ S} (hf : IsSheafFor P (singleton f))
     {R : Presieve S} (hf' : R f)
     (H : ∀ {Y : C} (g : Y ⟶ S) (_ : R g),

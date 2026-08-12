@@ -21,21 +21,6 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
-namespace PreGaloisCategory
-
-/-- Constructor for objects in the full subcategory of connected objects in a Galois category. -/
-abbrev isConnectedMk (X : C) [PreGaloisCategory.IsConnected X] :
-    (isConnected C).FullSubcategory := ⟨X, inferInstance⟩
-
-/-- Constructor for morphisms in the full subcategory of connected objects
-in a Galois category. -/
-abbrev isConnectedHomMk {X Y : C} (f : X ⟶ Y) [PreGaloisCategory.IsConnected X]
-    [PreGaloisCategory.IsConnected Y] :
-    isConnectedMk X ⟶ isConnectedMk Y :=
-  ObjectProperty.homMk f
-
-end PreGaloisCategory
-
 open PreGaloisCategory
 
 namespace GaloisCategory
@@ -54,8 +39,14 @@ lemma isSheaf_type_iff (P : (isConnected C).FullSubcategoryᵒᵖ ⥤ Type w) :
         [PreGaloisCategory.IsConnected X] (f : Y ⟶ X) [IsGaloisCover f],
           Presieve.IsSheafFor P (.singleton (isConnectedHomMk f)) :=
   ⟨fun hP _ _ _ _ _ _ ↦ isSheafFor_singleton _ hP _, fun hP ↦ by
+    have H {Y X : (isConnected C).FullSubcategory} (f : Y ⟶ X) :
+        Presieve.IsSeparatedFor P (.singleton f) := by
+      obtain ⟨Z, g, _, _⟩ := exists_isGaloisCover f.hom
+      exact Presieve.IsSeparatedFor.of_singleton_comp _ _ (hP (g ≫ f.hom)).isSeparatedFor
+    intro X R hR
+    obtain ⟨Y, _, f, _, hf⟩ := exists_isGaloisCover_of_mem_isConnectedTopology R hR
+    refine Presieve.IsSheafFor.of_singleton (hP f) hf ?_
     sorry⟩
-
 
 end GaloisCategory
 

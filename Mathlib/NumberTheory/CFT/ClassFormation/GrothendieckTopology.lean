@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.CFT.ClassFormation.FintypeCat
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryConnected
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryLimits
+public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCover
 public import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 
@@ -101,6 +102,17 @@ lemma generate_singleton_mem_isConnectedTopology
   dsimp [isConnectedTopology]
   rw [regularTopology.mem_sieves_iff_hasEffectiveEpi]
   exact ⟨_ ,f, inferInstance, Sieve.le_generate _ _ _ (by simp)⟩
+
+lemma exists_isGaloisCover_of_mem_isConnectedTopology
+    {X : C} [PreGaloisCategory.IsConnected X] (R : Sieve (isConnectedMk X))
+    (hR : R ∈ isConnectedTopology C _) :
+    ∃ (Y : C) (_ : PreGaloisCategory.IsConnected Y) (f : Y ⟶ X),
+      IsGaloisCover f ∧ R (isConnectedHomMk f) := by
+  rw [regularTopology.mem_sieves_iff_hasEffectiveEpi] at hR
+  obtain ⟨Z, g, _, hg⟩ := hR
+  obtain ⟨Y, f, _, _⟩ := exists_isGaloisCover g.hom
+  exact ⟨Y, inferInstance, f ≫ g.hom, inferInstance,
+    R.downward_closed (g := isConnectedHomMk f) hg⟩
 
 /-
 /-- A fiber functor on a Galois category `C` induces a fiber functor on the

@@ -92,9 +92,11 @@ lemma isGaloisCover_of_comp [GaloisCategory C]
 lemma exists_isGaloisCover [GaloisCategory C]
     {Y X : C} (f : Y ⟶ X) [PreGaloisCategory.IsConnected Y]
       [PreGaloisCategory.IsConnected X] :
-    ∃ (Z : C) (g : Z ⟶ Y), IsGaloisCover (g ≫ f) := by
+    ∃ (Z : C) (g : Z ⟶ Y), PreGaloisCategory.IsConnected Z ∧ IsGaloisCover (g ≫ f) := by
   obtain ⟨Z, g, _⟩ := exists_hom_from_galois_of_connected (Over.mk f)
-  exact ⟨Z.left, g.left, by rwa [dsimp% g.w]⟩
+  refine ⟨Z.left, g.left, ?_, by rwa [dsimp% g.w]⟩
+  rw [← isConnected_over_iff]
+  infer_instance
 
 end GaloisCategory
 

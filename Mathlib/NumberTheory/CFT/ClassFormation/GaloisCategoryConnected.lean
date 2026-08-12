@@ -40,12 +40,26 @@ variable (C) in
 category). -/
 abbrev isConnected : ObjectProperty C := PreGaloisCategory.IsConnected
 
+instance (X : (isConnected C).FullSubcategory) :
+    PreGaloisCategory.IsConnected X.obj := X.property
+
 instance : (PreGaloisCategory.isConnected C).IsClosedUnderIsomorphisms where
   of_iso e _ := PreGaloisCategory.IsConnected.of_iso e
 
 instance (X : (PreGaloisCategory.isConnected C).FullSubcategory) :
     PreGaloisCategory.IsConnected X.obj :=
   X.property
+
+/-- Constructor for objects in the full subcategory of connected objects in a Galois category. -/
+abbrev isConnectedMk (X : C) [PreGaloisCategory.IsConnected X] :
+    (isConnected C).FullSubcategory := ⟨X, inferInstance⟩
+
+/-- Constructor for morphisms in the full subcategory of connected objects
+in a Galois category. -/
+abbrev isConnectedHomMk {X Y : C} (f : X ⟶ Y) [PreGaloisCategory.IsConnected X]
+    [PreGaloisCategory.IsConnected Y] :
+    isConnectedMk X ⟶ isConnectedMk Y :=
+  ObjectProperty.homMk f
 
 open ConcreteCategory in
 lemma IsGalois.of_iso [GaloisCategory C]
