@@ -30,7 +30,7 @@ Approximation*][MR3156076] for a detailed discussion.
 public section
 namespace ValueDistribution
 
-open Asymptotics Filter Function.locallyFinsuppWithin MeromorphicAt MeromorphicOn Metric Real
+open Asymptotics Filter Function.locallyFinsuppWithin MeromorphicOn Metric Real
 
 section FirstPart
 
