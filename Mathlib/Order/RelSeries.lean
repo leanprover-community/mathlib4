@@ -890,11 +890,17 @@ lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty 
   obtain ⟨p, _⟩ := (SetRel.finiteDimensional_iff _).mp ‹_›
   exact ⟨p 0⟩
 
-instance [FiniteDimensionalOrder α] : WellFoundedLT α where
+/-- This is not an instance because it loops with `Submodule`s
+`IsArtinian → IsNoetherian → FiniteDimensionalOrder` instance. -/
+theorem _root_.FiniteDimensionalOrder.wellFoundedLT [FiniteDimensionalOrder α] :
+    WellFoundedLT α where
   wf := SetRel.IsWellFounded.of_finiteDimensional {(a, b) : α × α | a < b}
 
+/-- This is not an instance because it loops with `Submodule`s
+`IsArtinian → IsNoetherian → FiniteDimensionalOrder` instance. -/
 @[to_dual existing]
-instance [FiniteDimensionalOrder α] : WellFoundedGT α where
+theorem _root_.FiniteDimensionalOrder.wellFoundedGT [FiniteDimensionalOrder α] :
+    WellFoundedGT α where
   wf := SetRel.IsWellFounded.inv_of_finiteDimensional {(a, b) : α × α | a < b}
 
 variable {α}
