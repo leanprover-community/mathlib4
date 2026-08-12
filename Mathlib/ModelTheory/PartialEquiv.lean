@@ -113,7 +113,6 @@ theorem subtype_toEquiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
       (subtype _).comp f.toEquiv.toEmbedding := by
   let ⟨_, eq⟩ := h; exact eq
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem toEquiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
     g.toEquiv.toEmbedding.comp (Substructure.inclusion (dom_le_dom h)) =
       (Substructure.inclusion (cod_le_cod h)).comp f.toEquiv.toEmbedding := by
@@ -121,7 +120,6 @@ theorem toEquiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
   ext
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem toEquiv_inclusion_apply {f g : M ≃ₚ[L] N} (h : f ≤ g) (x : f.dom) :
     g.toEquiv (Substructure.inclusion (dom_le_dom h) x) =
       Substructure.inclusion (cod_le_cod h) (f.toEquiv x) := by
@@ -141,7 +139,6 @@ theorem le_iff {f g : M ≃ₚ[L] N} : f ≤ g ↔
     rw [le_def]
     exact ⟨dom_le_dom, by ext; change subtype _ (g.toEquiv _) = _; rw [← h_eq]; rfl⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 -- probably the initial design intended this to be private, just like `le_refl` and `le_antisymm`?
 theorem le_trans (f g h : M ≃ₚ[L] N) : f ≤ g → g ≤ h → f ≤ h := by
   rintro ⟨le_fg, eq_fg⟩ ⟨le_gh, eq_gh⟩
@@ -430,7 +427,6 @@ lemma isExtensionPair_iff_cod : L.IsExtensionPair M N ↔
     obtain ⟨g, h1, h2⟩ := h f.symm m
     exact ⟨g.symm, h1, monotone_symm h2⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- An alternate characterization of an extension pair is that every finitely generated partial
 isomorphism can be extended to include any particular element of the domain. -/
 theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :

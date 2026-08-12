@@ -78,7 +78,6 @@ theorem Finset.rado_selection (g : Finset α → (a : α) → β a) :
     exact ⟨_, subset_biUnion_of_mem id hi, by simp⟩
   simpa using! CompactSpace.iInter_nonempty he' he''
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given a (dependent) function `g s : (a : s) → β a` for each finset `s` of `α`, provided that
 each `β a` is finite, we can find another function `χ : (a : α) → β a` such that on every `s`,
@@ -88,7 +87,7 @@ each `s`, `χ` can be expressed in terms of one of the `g`.
 -/
 theorem Finset.rado_selection_subtype (g : (s : Finset α) → (a : s) → β a) :
     ∃ χ : (a : α) → β a, ∀ s : Finset α,
-      ∃ (t : Finset α) (hst : s ⊆ t), ∀ x : s, χ x = g t (Set.inclusion hst x) := by
+      ∃ (t : Finset α) (hst : s ⊆ t), ∀ x : s, χ x = g t (Set.inclusion (id hst) x) := by
   classical
   have (a : α) : Nonempty (β a) := ⟨g {a} ⟨a, by simp⟩⟩
   let g' (s) (a : α) : β a := if ha : a ∈ s then g s ⟨a, ha⟩ else Classical.arbitrary (β a)
@@ -110,7 +109,6 @@ theorem Set.Finite.rado_selection (g : (s : Set α) → s.Finite → (a : α) �
   obtain ⟨t, ht, ht'⟩ := hχ hs.toFinset
   exact ⟨t, by simp_all⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given a (dependent) function `g s : (a : s) → β a` for each finite set `s` of `α`, provided that
 each `β a` is finite, we can find another function `χ : (a : α) → β a` such that on every `s`,
