@@ -797,7 +797,7 @@ structure ClassFormation extends FieldFormation C where
     (f : Y' ⟶ Y) (g : Y ⟶ X) (fg : Y' ⟶ X)
     [IsGaloisCover g] [IsGaloisCover fg]
     (fac : f ≫ g = fg := by cat_disch) :
-    (toFormation.inflation f g fg 2) (u g) = (degMap f) • u fg
+    (toFormation.inflation f g fg 2) (u g) = degMap f • u fg
   restriction_u {Y X' X : C} [PreGaloisCategory.IsConnected Y]
     [PreGaloisCategory.IsConnected X'] [PreGaloisCategory.IsConnected X]
     (f : Y ⟶ X') (g : X' ⟶ X) (fg : Y ⟶ X)
