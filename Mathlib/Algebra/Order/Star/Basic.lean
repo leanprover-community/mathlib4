@@ -472,7 +472,7 @@ instance (priority := 100) StarRingEquivClass.instOrderIsoClass [EquivLike F R S
 
 /-- While `IsSelfAdjoint.map` assumes the map is star-preserving, this lemma instead assumes the
 map is an order-preserving additive map from a space where self-adjoint elements can be expressed as
-differences of nonnegative elemens, and whose codomain is a star-ordered ring. When such maps are
+differences of nonnegative elements, and whose codomain is a star-ordered ring. When such maps are
 linear over `ℂ`, they are also star-preserving, and this lemma is used to establish that one by
 splitting into real and imaginary parts. -/
 @[aesop safe apply (rule_sets := [CStarAlgebra])]

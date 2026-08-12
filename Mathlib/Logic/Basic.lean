@@ -46,7 +46,7 @@ simproc_decl eqComm (_ = _) := fun e => do
     -- These theorems would cause an infinite loop:
     ``eq_comm, ``Bool.not_eq_eq_eq_not, `inv_eq_iff_eq_inv, `eq_inv_mul_iff_mul_eq,
     `eq_mul_inv_iff_mul_eq, `neg_eq_iff_eq_neg, `Function.Involutive.eq_iff,
-    `vadd_eq_iff_eq_neg_vadd, `Equiv.apply_eq_iff_eq_symm_apply,
+    `vadd_eq_iff_eq_neg_vadd, `Equiv.eq_symm_apply,
     -- These theorems aren't commute-resistant (they turn an equality into a non-equality in a
     -- non-commutative way.)
     ``beq_iff_eq, ``funext_iff, ``eq_iff_iff, `Prod.swap_eq_iff_eq_swap, ``left_eq_dite_iff,
@@ -192,9 +192,6 @@ section Propositional
 /-! ### Declarations about `implies` -/
 
 alias Iff.imp := imp_congr
-
-@[deprecated (since := "2026-01-30")] alias imp_iff_right_iff := Classical.imp_iff_right_iff
-@[deprecated (since := "2026-01-30")] alias and_or_imp := Classical.and_or_imp
 
 /-- Provide modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mt {a b : Prop} : (a → b) → ¬b → ¬a := mt
@@ -358,10 +355,6 @@ theorem imp_iff_or_not {b a : Prop} : b → a ↔ a ∨ ¬b :=
 
 theorem not_imp_not : ¬a → ¬b ↔ b → a := open scoped Classical in Decidable.not_imp_not
 
-@[deprecated Classical.imp_and_neg_imp_iff (since := "2026-01-30")]
-theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q :=
-  Classical.imp_and_neg_imp_iff p
-
 /-- Provide the reverse of modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mtr : (¬a → ¬b) → b → a := not_imp_not.mp
 
@@ -385,8 +378,6 @@ theorem imp_or {a b c : Prop} : a → b ∨ c ↔ (a → b) ∨ (a → c) :=
 
 theorem imp_or' {a : Sort*} {b c : Prop} : a → b ∨ c ↔ (a → b) ∨ (a → c) :=
   open scoped Classical in Decidable.imp_or'
-
-@[deprecated (since := "2026-01-30")] alias not_imp := Classical.not_imp
 
 theorem peirce (a b : Prop) : ((a → b) → a) → a := open scoped Classical in Decidable.peirce _ _
 
@@ -904,8 +895,9 @@ theorem eq_ite_iff : a = ite P b c ↔ P ∧ a = b ∨ ¬P ∧ a = c :=
   eq_comm.trans <| ite_eq_iff.trans <| (Iff.rfl.and eq_comm).or (Iff.rfl.and eq_comm)
 
 theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
-  ⟨fun he ↦ ⟨fun h ↦ (dif_pos h).symm.trans he, fun h ↦ (dif_neg h).symm.trans he⟩, fun he ↦
-    (em P).elim (fun h ↦ (dif_pos h).trans <| he.1 h) fun h ↦ (dif_neg h).trans <| he.2 h⟩
+  ⟨fun he ↦ ⟨fun h ↦ (dite_eq_left h).symm.trans he, fun h ↦ (dite_eq_right h).symm.trans he⟩,
+    fun he ↦ (em P).elim (fun h ↦ (dite_eq_left h).trans <| he.1 h) fun h ↦
+      (dite_eq_right h).trans <| he.2 h⟩
 
 theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := dite_eq_iff'
 
@@ -948,10 +940,10 @@ protected theorem Ne.ite_ne_right_iff (h : a ≠ b) : ite P a b ≠ b ↔ P :=
 variable (P Q a b)
 
 theorem dite_eq_or_eq : (∃ h, dite P A B = A h) ∨ ∃ h, dite P A B = B h :=
-  if h : _ then .inl ⟨h, dif_pos h⟩ else .inr ⟨h, dif_neg h⟩
+  if h : _ then .inl ⟨h, dite_eq_left h⟩ else .inr ⟨h, dite_eq_right h⟩
 
 theorem ite_eq_or_eq : ite P a b = a ∨ ite P a b = b :=
-  if h : _ then .inl (if_pos h) else .inr (if_neg h)
+  if h : _ then .inl (ite_eq_left h) else .inr (ite_eq_right h)
 
 /-- A two-argument function applied to two `dite`s is a `dite` of that two-argument function
 applied to each of the branches. -/

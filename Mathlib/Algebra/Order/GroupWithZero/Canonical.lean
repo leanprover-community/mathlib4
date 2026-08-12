@@ -104,8 +104,6 @@ instance instLinearOrderedAddCommMonoidWithTopOrderDualAdditive :
   top_add' a := by ext; simp; simp [bot_eq_zero (α := α)]
   isAddLeftRegular_of_ne_top := by simp; simp +contextual [bot_eq_zero, IsRegular.of_ne_zero]
 
-variable [NoZeroDivisors α]
-
 lemma pow_pos_iff (hn : n ≠ 0) : 0 < a ^ n ↔ 0 < a := by
   simp_rw [pos_iff_ne_zero, pow_ne_zero_iff hn]
 
@@ -210,7 +208,7 @@ section Bot
 instance instBot : Bot (WithZero α) :=
   ⟨none⟩
 
-@[simp← ]
+@[simp ←]
 lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 
 end Bot
