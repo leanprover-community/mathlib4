@@ -434,7 +434,6 @@ instance : hoFunctor₂.{u}.Monoidal :=
       right_unitality X := by ext; apply right_unitality
       associativity _ _ _ := by ext; apply associativity }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
 instance hoFunctor.monoidal : hoFunctor.{u}.Monoidal :=
   inferInstanceAs (truncation 2 ⋙ hoFunctor₂).Monoidal
@@ -446,7 +445,7 @@ objects of `hoFunctor.obj X`. -/
 def hoFunctor.unitHomEquiv (X : SSet.{u}) :
     (𝟙_ SSet ⟶ X) ≃ Cat.chosenTerminal ⥤ hoFunctor.obj X :=
   (SSet.unitHomEquiv X).trans <|
-    (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
+    HomotopyCategory.objEquiv.symm.trans Cat.fromChosenTerminalEquiv.symm
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem hoFunctor.unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
