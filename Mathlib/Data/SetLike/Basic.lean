@@ -28,7 +28,7 @@ has an injective map to `Set B`.  This module provides standard
 boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set,
 and various extensionality and simp lemmas. The order induced by set inclusion is
 called `PartialOrder.ofSetlike`: this is not an instance for flexibility in choosing orders.
-The class `IsConcreteLE` abstractly states the order is equal to that induced by set inclusion;
+The class `IsMemLE` abstractly states the order is equal to that induced by set inclusion;
 an instance is automatically available when defining a `PartialOrder` as
 `.ofSetLike (MySubobject X) X`.
 
@@ -219,7 +219,7 @@ class IsMemLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
   /-- The order corresponds to set inclusion. -/
   protected le_iff' {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
 
-@[deprecated (since := "2026-08-12")] alias IsConcreteLE := IsMemLE
+@[deprecated (since := "2026-08-12")] alias IsMemLE := IsMemLE
 
 section default
 
@@ -227,7 +227,7 @@ variable (A B : Type*)
 
 -- TODO : rename to `ofMembership`
 /-- The order induced from a `Membership` instance by inclusion.
-An order defined this way automatically makes available an instance of `IsConcreteLE`.
+An order defined this way automatically makes available an instance of `IsMemLE`.
 -/
 @[reducible] def LE.ofMembership [Membership B A] : LE A where
   le := fun H K ↦ ∀ ⦃x⦄, x ∈ H → x ∈ K
@@ -238,7 +238,7 @@ instance [Membership B A] : letI := LE.ofMembership A B; IsMemLE A B :=
   letI := LE.ofMembership A B; { le_iff' := .rfl }
 
 /-- The preorder induced from a `Membership` instance by inclusion.
-A preorder defined this way automatically makes available an instance of `IsConcreteLE`.
+A preorder defined this way automatically makes available an instance of `IsMemLE`.
 -/
 @[reducible] def Preorder.ofMembership [SetLike A B] : Preorder A where
   __ := LE.ofMembership A B
@@ -246,7 +246,7 @@ A preorder defined this way automatically makes available an instance of `IsConc
   __ := Preorder.lift (SetLike.coe : A → Set B)
 
 /-- The partial order induced from a `SetLike` instance by inclusion.
-A partial order defined this was will automatically makes available an instance of `IsConcreteLE`.
+A partial order defined this was will automatically makes available an instance of `IsMemLE`.
 -/
 @[reducible] def PartialOrder.ofSetLike [SetLike A B] : PartialOrder A where
   __ := Preorder.ofMembership A B
