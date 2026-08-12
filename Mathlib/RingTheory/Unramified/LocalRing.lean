@@ -68,9 +68,8 @@ lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R
     IsField (S ⧸ (maximalIdeal R).map (algebraMap R S)) := by
   let mR := (maximalIdeal R).map (algebraMap R S)
   have hmR : mR ≤ maximalIdeal S := ((local_hom_TFAE (algebraMap R S)).out 1 3 rfl rfl).mp ‹_›
-  let : Algebra (ResidueField R) (S ⧸ mR) := by
-    unfold ResidueField
-    exact Ideal.Quotient.algebraQuotientMapQuotient
+  let : Algebra (ResidueField R) (S ⧸ mR) :=
+    Ideal.Quotient.algebraQuotientOfLEComap Ideal.le_comap_map
   have : IsScalarTower R (ResidueField R) (S ⧸ mR) := (inferInstanceAs <| IsScalarTower R (R ⧸ _) _)
   have : FormallyUnramified (ResidueField R) (S ⧸ mR) := .of_restrictScalars R _ _
   have : EssFiniteType (ResidueField R) (S ⧸ mR) := .of_comp R _ _
