@@ -209,7 +209,7 @@ protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical
           h <| eq_zero_of_fst_eq_zero (sec_spec (nonZeroDivisors A) z) h0⟩
 
 protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv A x = 1 := by
-  rw [IsFractionRing.inv, dif_neg hx, ←
+  rw [IsFractionRing.inv, dite_eq_right hx, ←
     IsUnit.mul_left_inj
       (map_units K
         ⟨(sec _ x).1,
@@ -226,7 +226,9 @@ noncomputable abbrev toField : Field K where
   __ := IsFractionRing.isDomain A
   inv := IsFractionRing.inv A
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
-  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
+  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by
+    rw [IsFractionRing.inv]
+    exact dite_eq_left rfl
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
@@ -433,7 +435,6 @@ fraction rings `K ≃+* L`. -/
 noncomputable def ringEquivOfRingEquiv : K ≃+* L :=
   IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ringEquivOfRingEquiv_algebraMap
     (a : A) : ringEquivOfRingEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
   simp

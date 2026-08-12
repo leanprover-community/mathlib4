@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finsupp.Lex
 public import Mathlib.Data.Finsupp.WellFounded
 public import Mathlib.Data.List.TFAE
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-! # Monomial orders
 
@@ -21,7 +22,7 @@ get them as instances.
 In this formalization, they are presented as a structure `MonomialOrder` which encapsulates
 `MonomialOrder.toSyn`, an additive and monotone isomorphism to a linearly ordered cancellative
 additive commutative monoid.
-The entry `MonomialOrder.wf` asserts that `MonomialOrder.syn` is well founded.
+The entry `MonomialOrder.wellFoundedLT_syn` asserts that `MonomialOrder.syn` is well founded.
 
 The terminology comes from commutative algebra and algebraic geometry, especially Gröbner bases,
 where `c : σ →₀ ℕ` are exponents of monomials.
@@ -77,15 +78,15 @@ structure MonomialOrder (σ : Type*) where
 attribute [instance] MonomialOrder.addCommMonoidSyn MonomialOrder.linearOrderSyn
   MonomialOrder.isOrderedAddMonoid_syn MonomialOrder.wellFoundedLT_syn
 
+namespace MonomialOrder
+
+variable {σ : Type*} (m : MonomialOrder σ)
+
 @[deprecated (since := "2026-07-07")] alias acm := MonomialOrder.addCommMonoidSyn
 
 @[deprecated (since := "2026-07-07")] alias lo := MonomialOrder.linearOrderSyn
 
 @[deprecated (since := "2026-07-07")] alias wf := MonomialOrder.wellFoundedLT_syn
-
-namespace MonomialOrder
-
-variable {σ : Type*} (m : MonomialOrder σ)
 
 instance : AddCancelCommMonoid m.syn where
   add_left_cancel := m.toSyn.symm.injective.isLeftCancelAdd _ (map_add _) |>.add_left_cancel
@@ -94,6 +95,9 @@ instance isOrderedCancelAddMonoid_syn : IsOrderedCancelAddMonoid m.syn :=
   IsOrderedAddMonoid.toIsOrderedCancelAddMonoid'
 
 @[deprecated (since := "2026-07-07")] alias iocam := MonomialOrder.isOrderedCancelAddMonoid_syn
+
+/-- A `WithBot m.syn` version of `m.toSyn`. -/
+noncomputable def toWithBotSyn : WithBot (σ →₀ ℕ) ≃+ WithBot m.syn := m.toSyn.withBotCongr
 
 lemma le_add_right (a b : σ →₀ ℕ) :
     m.toSyn a ≤ m.toSyn a + m.toSyn b := by
@@ -123,6 +127,32 @@ lemma toSyn_lt_iff_ne_zero {a : m.syn} :
 lemma toSyn_strictMono : StrictMono (m.toSyn) := by
   apply m.toSyn_monotone.strictMono_of_injective m.toSyn.injective
 
+@[simp]
+lemma toWithBotSyn_apply_bot : m.toWithBotSyn ⊥ = ⊥ := rfl
+
+@[simp]
+lemma toWithBotSyn_symm_apply_bot : m.toWithBotSyn.symm ⊥ = ⊥ := rfl
+
+@[simp]
+lemma toWithBotSyn_apply_eq_bot_iff (a) : m.toWithBotSyn a = ⊥ ↔ a = ⊥ := by
+  simp [← m.toWithBotSyn.eq_symm_apply]
+
+lemma toWithBotSyn_apply_le_bot_iff (a) : m.toWithBotSyn a ≤ ⊥ ↔ a = ⊥ := by
+  simp
+
+@[simp]
+lemma toWithBotSyn_apply_coe (a : σ →₀ ℕ) : m.toWithBotSyn a = m.toSyn a := rfl
+
+@[simp]
+lemma bot_lt_toWithBotSyn_apply_iff (a) : ⊥ < m.toWithBotSyn a ↔ ⊥ < a := by
+  simp [bot_lt_iff_ne_bot]
+
+@[simp]
+lemma toWithBotSyn_symm_apply_eq_bot (a) : m.toWithBotSyn.symm a = ⊥ ↔ a = ⊥ := by
+  simp [m.toWithBotSyn.symm_apply_eq]
+
+lemma toWithBotSyn_apply (a : WithBot (σ →₀ ℕ)) : m.toWithBotSyn a = a.map m.toSyn := rfl
+
 /-- Given a monomial order, notation for the corresponding strict order relation on `σ →₀ ℕ` -/
 scoped
 notation:50 c " ≺[" m:25 "] " d:50 => (MonomialOrder.toSyn m c < MonomialOrder.toSyn m d)
@@ -130,6 +160,18 @@ notation:50 c " ≺[" m:25 "] " d:50 => (MonomialOrder.toSyn m c < MonomialOrder
 /-- Given a monomial order, notation for the corresponding order relation on `σ →₀ ℕ` -/
 scoped
 notation:50 c " ≼[" m:25 "] " d:50 => (MonomialOrder.toSyn m c ≤ MonomialOrder.toSyn m d)
+
+/-- Given a monomial order with bot, notation for the corresponding strict order relation on
+`WithBot (σ →₀ ℕ)` -/
+scoped
+notation:50 c " ≺'[" m:25 "] " d:50 =>
+  (MonomialOrder.toWithBotSyn m c < MonomialOrder.toWithBotSyn m d)
+
+/-- Given a monomial order with bot, notation for the corresponding order relation on
+`WithBot (σ →₀ ℕ)` -/
+scoped
+notation:50 c " ≼'[" m:25 "] " d:50 =>
+  (MonomialOrder.toWithBotSyn m c ≤ MonomialOrder.toWithBotSyn m d)
 
 end MonomialOrder
 
