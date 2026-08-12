@@ -152,7 +152,7 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [∀ X Y, ((J.over X).over Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Being locally free is local -/
+/-- If a `SheafOfModules` is locally free when restricted to a cover, then it is locally free. -/
 theorem LocalGenertorsData.IsLocallFreeData.of_coversTop (M : SheafOfModules.{u} R) {I : Type w}
     (X : I → C) (hX : J.CoversTop X) (D : Π i, LocalGeneratorsData (M.over (X i)))
     [h : ∀ i, (D i).IsLocallyFreeData] : (LocalGeneratorsData.bind M X hX D).IsLocallyFreeData where
