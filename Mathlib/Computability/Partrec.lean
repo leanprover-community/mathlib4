@@ -128,6 +128,7 @@ theorem rfind_zero_none (p : ℕ →. Bool) (p0 : p 0 = Part.none) : rfind p = P
 
 /-- Find the smallest `n` satisfying `f n`, where all `f k` for `k < n` are defined as false.
 Returns a `Part`. -/
+@[expose]
 def rfindOpt {α} (f : ℕ → Option α) : Part α :=
   (rfind fun n => (f n).isSome).bind fun n => f n
 
