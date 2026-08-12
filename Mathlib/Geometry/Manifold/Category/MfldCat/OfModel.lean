@@ -31,7 +31,6 @@ variable {𝕜 : Type v} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H]
 
-set_option backward.privateInPublic true in
 /-- The category of `C^n` manifolds modeled on a fixed model with corners `I`. -/
 structure MfldCat (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω) where
   private mk ::
