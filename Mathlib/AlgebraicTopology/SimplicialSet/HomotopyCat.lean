@@ -537,8 +537,7 @@ end Truncated
 
 /-- The homotopy category of a simplicial set is defined as the homotopy
 category of its `2`-truncation. -/
-def HomotopyCategory (X : SSet.{u}) : Type u := ((truncation 2).obj X).HomotopyCategory
-deriving Category
+abbrev HomotopyCategory (X : SSet.{u}) : Type u := ((truncation 2).obj X).HomotopyCategory
 
 /-- The functor `X.HomotopyCategory ⥤ Y.HomotopyCategory` that is induced
 by a morphism `X ⟶ Y` of simplicial sets. -/
@@ -552,7 +551,7 @@ namespace HomotopyCategory
 variable {X Y : SSet.{u}}
 
 /-- Constructor for objects of the homotopy category of a simplicial set. -/
-abbrev mk (x : X _⦋0⦌) : X.HomotopyCategory := Truncated.HomotopyCategory.mk x
+def mk (x : X _⦋0⦌) : X.HomotopyCategory := Truncated.HomotopyCategory.mk x
 
 /-- The bijection `X.HomotopyCategory ≃ X _⦋0⦌` when `X` is a simplicial set. -/
 @[implicit_reducible, simps symm_apply, simps -isSimp apply]
