@@ -113,6 +113,6 @@ theorem result : {a : ℤ | 0 < a ∧ a ^ n + a ^ 2 - 1 ∣ a ^ m + a - 1}.Infin
   conv =>
     enter [1, 1, a]
     rw [show a ^ 5 + a - 1 = (a ^ 2 - a + 1) * (a ^ 3 + a ^ 2 - 1) by ring]
-  simpa using Set.Ioi_infinite 0
+  simpa using! Set.Ioi_infinite 0
 
 end Imo2002Q3

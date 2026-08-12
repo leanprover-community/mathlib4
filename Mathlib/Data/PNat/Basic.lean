@@ -256,7 +256,7 @@ theorem le_sub_one_of_lt {a b : ℕ+} (hab : a < b) : a ≤ b - (1 : ℕ+) := by
 theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
   fun h =>
     PNat.eq <| by
-      rw [add_coe, sub_coe, if_pos h]
+      rw [add_coe, sub_coe, ite_eq_left h]
       exact add_tsub_cancel_of_le h.le
 
 theorem sub_add_of_lt {a b : ℕ+} (h : b < a) : a - b + b = a := by
@@ -307,15 +307,11 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
   split_ifs with h
   · have hm : (m : ℕ) > 0 := m.pos
     rw [← Nat.mod_add_div (m : ℕ) (k : ℕ), h, zero_add] at hm ⊢
-    by_cases h₁ : (m : ℕ) / (k : ℕ) = 0
-    · rw [h₁, mul_zero] at hm
-      exact (lt_irrefl _ hm).elim
-    · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
-        Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))
-      rw [mul_one] at h₂
-      exact ⟨h₂, le_refl (k : ℕ)⟩
+    simp
+    lia
   · exact ⟨Nat.mod_le (m : ℕ) (k : ℕ), (Nat.mod_lt (m : ℕ) k.pos).le⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
   constructor <;> intro h
   · rcases h with ⟨_, rfl⟩
@@ -332,12 +328,12 @@ theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by
   rw [Nat.dvd_iff_mod_eq_zero]; constructor
   · intro h
     apply PNat.eq
-    rw [mod_coe, if_pos h]
+    rw [mod_coe, ite_eq_left h]
   · intro h
     by_cases h' : (m : ℕ) % (k : ℕ) = 0
     · exact h'
     · replace h : (mod m k : ℕ) = (k : ℕ) := congr_arg _ h
-      rw [mod_coe, if_neg h'] at h
+      rw [mod_coe, ite_eq_right h'] at h
       exact ((Nat.mod_lt (m : ℕ) k.pos).ne h).elim
 
 theorem le_of_dvd {m n : ℕ+} : m ∣ n → m ≤ n := by

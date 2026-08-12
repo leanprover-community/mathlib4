@@ -84,7 +84,7 @@ end ConstructorsEtc
 
 section ScientificNotation
 
-variable [DivisionRing α] [CharZero α]
+variable [DivisionSemiring α] [CharZero α]
 
 example : (0.1 : ℚ) = 1/10 := by norm_num1
 example : (3.14 : ℚ) = 157/50 := by norm_num1
@@ -333,7 +333,7 @@ end LinearOrderedRing
 
 section Rat
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
 -- Normalize to True
 example : (1 : ℚ) ≤ 1 := by norm_num1
@@ -710,7 +710,7 @@ example : - ((94 * 89) + (79 - (23 - (((- 1 / 55) + 95) * (28 - (54 / - - - 22))
 example : (- 23 + 61) = (38 : α) := by norm_num1
 example : - (93 / 69) = (-31/23 : α) := by norm_num1
 example : (- - ((68 / (39 + (((45 * - (59 - (37 + 35))) / (53 - 75)) -
- - (100 + - (50 / (- 30 - 59)))))) - (69 - (23 * 30))) / (57 + 17)) = (137496481/16368578 : α) := by
+    - (100 + - (50 / (- 30 - 59)))))) - (69 - (23 * 30))) / (57 + 17)) = (137496481/16368578 : α) := by
   norm_num1
 example : (- 19 * - - (75 * - - 41)) = (-58425 : α) := by norm_num1
 example : ((3 / ((- 28 * 45) * (19 + ((- (- 88 - (- (- 1 + 90) + 8)) + 87) * 48)))) + 1) =

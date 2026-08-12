@@ -34,6 +34,7 @@ section TrivialStar
 
 variable [TrivialStar 𝕜] {s : Set 𝕜} {L : Filter (𝕜 × 𝕜)}
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected theorem HasDerivAtFilter.star (h : HasDerivAtFilter f f' L) :
     HasDerivAtFilter (fun x => star (f x)) (star f') L := by
   simpa using h.hasFDerivAtFilter.star.hasDerivAtFilter

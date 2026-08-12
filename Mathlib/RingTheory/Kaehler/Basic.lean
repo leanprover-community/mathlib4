@@ -9,7 +9,7 @@ public import Mathlib.RingTheory.Derivation.ToSquareZero
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.EssentialFiniteness
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.Tactic.SuppressCompilation
 
@@ -152,15 +152,15 @@ Note that the slash is `\textfractionsolidus`.
 -/
 def KaehlerDifferential : Type v :=
   (KaehlerDifferential.ideal R S).Cotangent
-deriving AddCommGroup, Module (S ⊗[R] S), IsScalarTower S (S ⊗[R] S), Inhabited
+deriving Inhabited
+
+-- The `SMul R'` instance exists to avoid a zsmul diamond.
+variable {R' : Type*} [CommRing R'] [Algebra R' S] [SMulCommClass R R' S] in
+deriving instance SMul R', AddCommGroup, Module R', Module (S ⊗[R] S), IsScalarTower S (S ⊗[R] S)
+  for KaehlerDifferential R S
 
 @[inherit_doc KaehlerDifferential]
 notation "Ω[" S "⁄" R "]" => KaehlerDifferential R S
-
-instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
-    [SMulCommClass R R' S] :
-    Module R' Ω[S⁄R] :=
-  inferInstanceAs <| Module R' (_ ⧸ _)
 
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]
@@ -192,6 +192,7 @@ theorem KaehlerDifferential.DLinearMap_apply (s : S) :
       (KaehlerDifferential.ideal R S).toCotangent
         ⟨1 ⊗ₜ s - s ⊗ₜ 1, KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R s⟩ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The universal derivation into `Ω[S⁄R]`. -/
 def KaehlerDifferential.D : Derivation R S Ω[S⁄R] :=
@@ -503,11 +504,12 @@ theorem KaehlerDifferential.kerTotal_mkQ_single_algebraMap_one (x) : (x𝖣1) = 
   rw [← (algebraMap R S).map_one, KaehlerDifferential.kerTotal_mkQ_single_algebraMap]
 
 theorem KaehlerDifferential.kerTotal_mkQ_single_smul (r : R) (x y) : (y𝖣r • x) = r • y𝖣x := by
-  letI : SMulZeroClass R S := inferInstance
+  let : SMulZeroClass R S := inferInstance
   rw [Algebra.smul_def, KaehlerDifferential.kerTotal_mkQ_single_mul,
     KaehlerDifferential.kerTotal_mkQ_single_algebraMap, add_zero, ← LinearMap.map_smul_of_tower,
     Finsupp.smul_single, mul_comm, Algebra.smul_def]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The (universal) derivation into `(S →₀ S) ⧸ KaehlerDifferential.kerTotal R S`. -/
 noncomputable def KaehlerDifferential.derivationQuotKerTotal :
     Derivation R S ((S →₀ S) ⧸ KaehlerDifferential.kerTotal R S) where

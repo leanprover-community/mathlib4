@@ -49,7 +49,7 @@ lemma hom_eq (p : ℕ) :
 @[simp]
 lemma hom_eq_zero (p q : ℕ) (hpq : p + 1 ≠ q) :
     hom H p q = 0 :=
-  dif_neg hpq
+  dite_eq_right hpq
 
 private lemma comm_zero :
     letI d : Y _⦋1⦌ ⟶ Y _⦋0⦌ := ((alternatingFaceMapComplex C).obj Y).d 1 0
@@ -171,6 +171,6 @@ noncomputable def toChainHomotopy (H : Homotopy f g) :
 theorem map_homology_eq [CategoryWithHomology C] (H : Homotopy f g) (n : ℕ) :
     (HomologicalComplex.homologyFunctor C _ n).map ((alternatingFaceMapComplex C).map f) =
     (HomologicalComplex.homologyFunctor C _ n).map ((alternatingFaceMapComplex C).map g) := by
-  simpa using (H.toChainHomotopy).homologyMap_eq n
+  simpa using! (H.toChainHomotopy).homologyMap_eq n
 
 end CategoryTheory.SimplicialObject.Homotopy

@@ -85,7 +85,7 @@ alias IsCyclic.commutative := IsCyclic.isMulCommutative
 open scoped IsMulCommutative in
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
       /-- A cyclic group is always commutative. This is not an `instance` because often we have
       a better proof of `AddCommGroup`. -/]
 def IsCyclic.commGroup [Group α] [IsCyclic α] : CommGroup α :=
@@ -414,7 +414,6 @@ theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
 @[to_additive]
 lemma IsCyclic.ext [Finite G] [IsCyclic G] {d : ℕ} {a b : ZMod d}
     (hGcard : Nat.card G = d) (h : ∀ t : G, t ^ a.val = t ^ b.val) : a = b := by
-  have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
   specialize h g
   subst hGcard

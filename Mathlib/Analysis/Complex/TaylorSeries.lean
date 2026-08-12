@@ -54,7 +54,7 @@ lemma hasSum_taylorSeries_on_ball :
   have H := (hf.mono <| Metric.closedBall_subset_ball hr').hasFPowerSeriesOnBall hr'₀
       |>.hasSum_iteratedFDeriv hz'
   simp only [add_sub_cancel] at H
-  convert! H using 4 with n
+  convert H with n
   simpa only [iteratedDeriv_eq_iteratedFDeriv, smul_eq_mul, mul_one, Finset.prod_const,
     Finset.card_fin]
     using ((iteratedFDeriv ℂ n f c).map_smul_univ (fun _ ↦ z - c) (fun _ ↦ 1)).symm
@@ -93,18 +93,12 @@ lemma hasSum_taylorSeries_on_eball :
   rw [← Metric.eball_coe]
   exact hf.mono <| Metric.eball_subset_eball hr'.le
 
-@[deprecated (since := "2026-01-24")]
-alias hasSum_taylorSeries_on_emetric_ball := hasSum_taylorSeries_on_eball
-
 include hf hz in
 /-- A function that is complex differentiable on the open ball of radius `r ≤ ∞` around `c`
 is given by evaluating its Taylor series at `c` on this open ball. -/
 lemma taylorSeries_eq_on_eball :
     ∑' n : ℕ, (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c = f z :=
   (hasSum_taylorSeries_on_eball hf hz).tsum_eq
-
-@[deprecated (since := "2026-01-24")]
-alias taylorSeries_eq_on_emetric_ball := taylorSeries_eq_on_eball
 
 include hz in
 /-- A function that is complex differentiable on the open ball of radius `r ≤ ∞` around `c`
@@ -113,9 +107,6 @@ lemma taylorSeries_eq_on_eball' {f : ℂ → ℂ} (hf : DifferentiableOn ℂ f (
     ∑' n : ℕ, (n ! : ℂ)⁻¹ * iteratedDeriv n f c * (z - c) ^ n = f z := by
   convert! taylorSeries_eq_on_eball hf hz using 3 with n
   rw [mul_right_comm, smul_eq_mul, smul_eq_mul, mul_assoc]
-
-@[deprecated (since := "2026-01-24")]
-alias taylorSeries_eq_on_emetric_ball' := taylorSeries_eq_on_eball'
 
 end emetric
 

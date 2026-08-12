@@ -15,13 +15,13 @@ public import Mathlib.Order.SetNotation
 We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
 interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
 the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If `α` is a
-`LinearOrderedField`, then this condition is also equivalent to `Convex α s`.
+linearly ordered field, then this condition is also equivalent to `Convex α s`.
 
 In this file we prove that intersection of a family of `OrdConnected` sets is `OrdConnected` and
 that all standard intervals are `OrdConnected`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Interval
 open Set
@@ -137,7 +137,7 @@ theorem dual_ordConnected {s : Set α} [OrdConnected s] : OrdConnected (ofDual �
 
 @[simp]
 theorem ordConnected_dual {s : Set α} : OrdConnected (OrderDual.ofDual ⁻¹' s) ↔ OrdConnected s :=
-  ⟨fun h => by simpa only [ordConnected_def] using h.dual, fun h => h.dual⟩
+  ⟨fun h => by simpa only [ordConnected_def] using! h.dual, fun h => h.dual⟩
 
 theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
     OrdConnected (⋂₀ S) :=

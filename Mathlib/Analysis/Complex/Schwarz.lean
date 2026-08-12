@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.AbsMax
 public import Mathlib.Analysis.Complex.RemovableSingularity
+public import Mathlib.Analysis.Normed.Module.HahnBanach
 
 /-!
 # Schwarz lemma
@@ -54,7 +55,7 @@ we state it for maps between any two normed spaces.
 Schwarz lemma
 -/
 
-open Metric Set Function Filter TopologicalSpace
+open Metric Set Function Filter
 
 open scoped Topology ComplexConjugate
 
@@ -95,10 +96,10 @@ theorem schwarz_aux {f : ℂ → ℂ} {c z : ℂ} {R₁ R₂ : ℝ} {n : ℕ}
   set g : ℂ → ℂ := fun w ↦ ((w - c) ^ (n + 1))⁻¹ * (f w - f c)
   set g' := update g c (limUnder (𝓝[≠] c) g)
   have hdg' : DifferentiableOn ℂ g' (closedBall c R₁) := by
-    refine .mono ?_ (subset_insert_diff_singleton c _)
+    refine .mono ?_ (subset_insert_sdiff_singleton c _)
     apply differentiableOn_update_limUnder_insert_of_isLittleO
-    · exact diff_mem_nhdsWithin_compl (closedBall_mem_nhds _ hR₁) _
-    · refine .mul ?_ (hd.mono diff_subset |>.sub_const _)
+    · exact sdiff_mem_nhdsWithin_compl (closedBall_mem_nhds _ hR₁) _
+    · refine .mul ?_ (hd.mono sdiff_subset |>.sub_const _)
       fun_prop (disch := simp +contextual [sub_eq_zero])
     · refine Asymptotics.isBigO_refl (fun w ↦ ((w - c) ^ (n + 1))⁻¹) _ |>.mul_isLittleO hn
         |>.mono (nhdsWithin_le_nhds (s := {c}ᶜ)) |>.congr' ?_ ?_
@@ -132,6 +133,7 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedAddCommGroup F] [NormedSpace ℂ F]
   {R R₁ R₂ : ℝ} {f : E → F} {c z : E}
 
+set_option backward.isDefEq.respectTransparency.types false in
 open AffineMap in
 /-- Let `f : E → F` be a complex analytic map
 sending an open ball of radius `R₁` to a closed ball of radius `R₂`.
@@ -216,9 +218,6 @@ theorem dist_le_dist_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R))
     dist (f z) (f c) ≤ dist z c := by
   simpa [(nonempty_ball.1 ⟨z, hz⟩).ne'] using dist_le_div_mul_dist_of_mapsTo_ball hd h_maps hz
 
-@[deprecated (since := "2026-01-03")]
-alias dist_le_dist_of_mapsTo_ball_self := dist_le_dist_of_mapsTo_ball
-
 /-- The **Schwarz Lemma**. Let `f : E → F` be a complex analytic function
 on an open ball with center `c` and a positive radius.
 If `f` sends this ball to a closed ball with center `f c` and the same radius,
@@ -237,9 +236,6 @@ theorem norm_le_norm_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball 0 R))
     (h_maps : MapsTo f (ball 0 R) (closedBall 0 R)) (h₀ : f 0 = 0) (hz : ‖z‖ < R) :
     ‖f z‖ ≤ ‖z‖ := by
   simpa [h₀] using dist_le_dist_of_mapsTo_ball hd (by rwa [h₀]) (mem_ball_zero_iff.mpr hz)
-
-@[deprecated (since := "2026-01-03")]
-alias norm_le_norm_of_mapsTo_ball_self := norm_le_norm_of_mapsTo_ball
 
 end NormedSpace
 
@@ -326,10 +322,6 @@ theorem affine_of_mapsTo_ball_of_norm_dslope_eq_div [StrictConvexSpace ℝ E]
   have : dslope f c z = dslope f c z₀ := eq_of_norm_eq_of_norm_add_eq heq <| by
     simp only [heq, SameRay.rfl.norm_add, heq_add]
   simp [← this]
-
-@[deprecated (since := "2026-01-03")]
-alias affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div :=
-  affine_of_mapsTo_ball_of_norm_dslope_eq_div
 
 /-- Equality case in the **Schwarz Lemma**: in the setup of `norm_dslope_le_div_of_mapsTo_ball`,
 if there exists a point `z₀` in the ball such that `‖dslope f c z₀‖ = R₂ / R₁`,

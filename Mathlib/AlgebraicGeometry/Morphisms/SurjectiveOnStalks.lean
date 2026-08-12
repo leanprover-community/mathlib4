@@ -39,9 +39,6 @@ class SurjectiveOnStalks (f : X ⟶ Y) : Prop where
 
 alias Scheme.Hom.stalkMap_surjective := SurjectiveOnStalks.stalkMap_surjective
 
-@[deprecated (since := "2026-01-20")]
-alias SurjectiveOnStalks.surj_on_stalks := Scheme.Hom.stalkMap_surjective
-
 namespace SurjectiveOnStalks
 
 instance (priority := 900) [IsOpenImmersion f] : SurjectiveOnStalks f :=
@@ -54,6 +51,7 @@ instance : MorphismProperty.IsMultiplicative @SurjectiveOnStalks where
     rw [Scheme.Hom.stalkMap_comp]
     exact (f.stalkMap_surjective x).comp (g.stalkMap_surjective (f x))
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [SurjectiveOnStalks f]
     [SurjectiveOnStalks g] : SurjectiveOnStalks (f ≫ g) :=
   MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance
@@ -104,6 +102,7 @@ lemma mono_of_injective [SurjectiveOnStalks f] (hf : Function.Injective f) : Mon
   · exact hf
   · exact fun x ↦ ConcreteCategory.epi_of_surjective _ (f.stalkMap_surjective x)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a subset of
 `X × Y` (Cartesian product as topological spaces) with the induced topology. -/

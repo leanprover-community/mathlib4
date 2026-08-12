@@ -41,13 +41,14 @@ universe u u' v v' u₁' w w'
 variable {R : Type u} {S : Type u'} {M : Type v} {M' : Type v'} {M₁ : Type v}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
-open Basis Cardinal DirectSum Function Module Set Submodule
+open Cardinal DirectSum Function Module Set Submodule
 
 section Quotient
 
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
 variable [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LinearIndependent.sumElim_of_quotient
     {M' : Submodule R M} {ι₁ ι₂} {f : ι₁ → M'} (hf : LinearIndependent R f) (g : ι₂ → M)
     (hg : LinearIndependent R (Submodule.Quotient.mk (p := M') ∘ g)) :
@@ -92,8 +93,8 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   rw [Cardinal.ciSup_add_ciSup _ bddAbove_of_small _ bddAbove_of_small]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Submodule.Quotient.mk_surjective M'
-  simpa [add_comm] using (LinearIndependent.sumElim_of_quotient ht (fun (i : s) ↦ f i)
-    (by simpa [Function.comp_def, hf] using hs)).cardinal_le_rank
+  simpa [add_comm] using! (LinearIndependent.sumElim_of_quotient ht (fun (i : s) ↦ f i)
+    (by simpa [Function.comp_def, hf] using! hs)).cardinal_le_rank
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
   (mkQ p).rank_le_of_surjective Quot.mk_surjective
@@ -272,8 +273,6 @@ variable [StrongRankCondition R] [Module.Free R M]
 variable [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)] [∀ i, Module.Free R (φ i)]
 
 open Module.Free
-
-open LinearMap
 
 /-- The rank of a finite product of free modules is the sum of the ranks. -/
 -- this result is not true without the freeness assumption
@@ -603,6 +602,7 @@ theorem sumQuot_repr_left (i : m) :
     (sumQuot bW bQ).repr (bW i) = Finsupp.single (Sum.inl i) 1 := by
   rw [← Module.Basis.apply_eq_iff, sumQuot_inl]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sumQuot_repr_inl (w : W) (i : m) :
     (sumQuot bW bQ).repr w (Sum.inl i) = bW.repr w i := by
   classical

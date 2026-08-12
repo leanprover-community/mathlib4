@@ -59,15 +59,12 @@ lemma isOpenImmersion_SpecMap_iff_of_surjective {R S : CommRingCat}
       ← RingHom.ker_eq_comap_bot]
     simp [φ]
   · rintro ⟨e, he, he'⟩
-    letI := f.hom.toAlgebra
+    let := f.hom.toAlgebra
     have : IsLocalization.Away (1 - e) S :=
-      IsLocalization.away_of_isIdempotentElem he.one_sub (by simpa using he') hf
+      IsLocalization.away_of_isIdempotentElem he.one_sub (by simpa using! he') hf
     exact IsOpenImmersion.of_isLocalization (1 - e)
 
 variable {X Y : Scheme.{u}}
-
-@[deprecated (since := "2026-01-20")]
-alias isOpenImmersion_iff_stalk := IsOpenImmersion.iff_isIso_stalkMap
 
 set_option backward.isDefEq.respectTransparency false in
 theorem IsOpenImmersion.of_openCover_source (f : X ⟶ Y)
