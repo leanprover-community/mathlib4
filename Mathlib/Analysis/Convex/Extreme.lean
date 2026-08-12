@@ -43,7 +43,7 @@ Prove lemmas relating extreme sets and points to the intrinsic frontier.
 @[expose] public section
 
 
-open Function Module Set Affine
+open Function Module Set
 
 variable {𝕜 E F ι : Type*} {M : ι → Type*}
 
@@ -117,7 +117,7 @@ theorem isExtreme_iInter {ι : Sort*} [Nonempty ι] {F : ι → Set E}
 
 theorem isExtreme_biInter {F : Set (Set E)} (hF : F.Nonempty) (hA : ∀ B ∈ F, IsExtreme 𝕜 A B) :
     IsExtreme 𝕜 A (⋂ B ∈ F, B) := by
-  haveI := hF.to_subtype
+  have := hF.to_subtype
   simpa only [iInter_subtype] using isExtreme_iInter fun i : F ↦ hA _ i.2
 
 theorem isExtreme_sInter {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ F, IsExtreme 𝕜 A B) :

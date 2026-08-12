@@ -123,7 +123,6 @@ which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d A n) fun n => by
-    classical
     rw [d_eq, d_eq]
     slice_lhs 3 4 => rw [Iso.hom_inv_id]
     slice_lhs 2 4 => rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d]
