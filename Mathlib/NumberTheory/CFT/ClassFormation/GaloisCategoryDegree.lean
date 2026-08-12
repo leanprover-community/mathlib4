@@ -80,7 +80,6 @@ noncomputable def degMap {Y X : C}
 
 -- TODO: show the multiplicativity of degrees
 
-
 end GaloisCategory
 
 end CategoryTheory
