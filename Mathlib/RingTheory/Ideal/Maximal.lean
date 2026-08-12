@@ -233,22 +233,23 @@ theorem irreducible_of_isMaximal_of_eq_span_singleton_of_not_isIdempotentElem {a
     (max : (Ideal.span {a}).IsMaximal)
     (idem : ∀ x, Ideal.span {a} = Ideal.span {x} → ¬IsIdempotentElem x) :
     Irreducible a := by
-  refine ⟨by grind [span_singleton_eq_top, max.ne_top], fun u v ha ↦ ?_⟩
-  by_contra! ⟨hu, hv⟩
-  have hu₂ : span {a} = span {u} :=
-    (max.eq_of_le (span_singleton_ne_top hu) (by simp [ha, Ideal.mem_span_singleton]))
-  have hv₂ : span {a} = span {v} :=
-    (max.eq_of_le (span_singleton_ne_top hv) (by simp [ha, Ideal.mem_span_singleton]))
-  obtain ⟨c, rfl⟩ : a ∣ u := by simp [← Ideal.mem_span_singleton, hu₂]
-  obtain ⟨d, rfl⟩ : a ∣ v := by simp [← Ideal.mem_span_singleton, hv₂]
-  refine idem (a * (c * d)) ?_ ?_
-  · apply le_antisymm <;> rw [span_singleton_le_span_singleton]
-    · convert dvd_mul_right (a * (c * d)) a
-      grind
-    · apply dvd_mul_right
-  · rw [isIdempotentElem_iff]
-    nth_rw 3 [ha]
-    ring
+  refine ⟨fun ha ↦ max.ne_top ?_, fun u v ha ↦ ?_⟩
+  · simpa using ha
+  · by_contra! ⟨hu, hv⟩
+    have hu₂ : span {a} = span {u} :=
+      (max.eq_of_le (span_singleton_ne_top hu) (by simp [ha, Ideal.mem_span_singleton]))
+    have hv₂ : span {a} = span {v} :=
+      (max.eq_of_le (span_singleton_ne_top hv) (by simp [ha, Ideal.mem_span_singleton]))
+    obtain ⟨c, rfl⟩ : a ∣ u := by simp [← Ideal.mem_span_singleton, hu₂]
+    obtain ⟨d, rfl⟩ : a ∣ v := by simp [← Ideal.mem_span_singleton, hv₂]
+    refine idem (a * (c * d)) ?_ ?_
+    · apply le_antisymm <;> rw [span_singleton_le_span_singleton]
+      · convert dvd_mul_right (a * (c * d)) a
+        grind
+      · apply dvd_mul_right
+    · rw [isIdempotentElem_iff]
+      nth_rw 3 [ha]
+      ring
 
 theorem irreducible_of_isMaximal_span_singleton [IsDomain α] {a : α}
     (ha : a ≠ 0) (max : (Ideal.span {a}).IsMaximal) :
