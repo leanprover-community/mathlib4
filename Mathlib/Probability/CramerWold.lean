@@ -41,10 +41,10 @@ variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsProbability
 Convergence in distribution of all scalar projections of a sequence of
 random variables in a finite-dimensional real inner product space implies the
 convergence in distribution of the sequence itself. -/
-theorem tendstoInDistribution_of_inner (hX' : Measurable X') (hX : ∀ n, Measurable (X n))
+theorem tendstoInDistribution_of_inner (hX' : AEMeasurable X' P') (hX : ∀ n, AEMeasurable (X n) P)
     (h : ∀ t, TendstoInDistribution (⟪X · ·, t⟫) atTop (⟪X' ·, t⟫) (fun _ ↦ P) P') :
     TendstoInDistribution X atTop X' (fun _ ↦ P) P' where
-  forall_aemeasurable n := (hX n).aemeasurable
+  forall_aemeasurable n := (hX n)
   tendsto := by
     apply ProbabilityMeasure.tendsto_iff_tendsto_charFun.mpr
     intro t
