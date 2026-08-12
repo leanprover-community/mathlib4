@@ -22,8 +22,6 @@ universe v u
 
 namespace CategoryTheory
 
-open Bicategory
-
 section
 
 variable {C D E : Type u} [Category.{v} C] [Category.{v} D] [Category.{v} E]
