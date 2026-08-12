@@ -235,11 +235,17 @@ theorem D_four : D 4 = !![ 2, -1,  0,  0;
 
 /-! ### Exceptional matrix diagonal entries -/
 
-@[simp] theorem E₆_diag (i : Fin 6) : E 6 i i = 2 := by fin_cases i <;> decide
+@[simp] theorem E_diag (n : ℕ) (i : Fin n) : E n i i = 2 := by
+  simp [E]
 
-@[simp] theorem E₇_diag (i : Fin 7) : E 7 i i = 2 := by fin_cases i <;> decide
+@[deprecated "Use `E_diag` instead" (since := "2026-08-11")]
+theorem E₆_diag (i : Fin 6) : E 6 i i = 2 := E_diag 6 i
 
-@[simp] theorem E₈_diag (i : Fin 8) : E 8 i i = 2 := by fin_cases i <;> decide
+@[deprecated "Use `E_diag` instead" (since := "2026-08-11")]
+theorem E₇_diag (i : Fin 7) : E 7 i i = 2 := E_diag 7 i
+
+@[deprecated "Use `E_diag` instead" (since := "2026-08-11")]
+theorem E₈_diag (i : Fin 8) : E 8 i i = 2 := E_diag 8 i
 
 @[simp] theorem F₄_diag (i : Fin 4) : F₄ i i = 2 := by fin_cases i <;> decide
 
@@ -248,14 +254,21 @@ theorem D_four : D 4 = !![ 2, -1,  0,  0;
 
 /-! ### Exceptional matrix off-diagonal entries -/
 
-theorem E₆_off_diag_nonpos (i j : Fin 6) (h : i ≠ j) : E 6 i j ≤ 0 := by
-  fin_cases i <;> fin_cases j <;> simp_all [E]
+theorem E_off_diag_nonpos (n : ℕ) (i j : Fin n) (h : i ≠ j) : E n i j ≤ 0 := by
+  simp only [E, of_apply]
+  split_ifs <;> omega
 
-theorem E₇_off_diag_nonpos (i j : Fin 7) (h : i ≠ j) : E 7 i j ≤ 0 := by
-  fin_cases i <;> fin_cases j <;> simp_all [E]
+@[deprecated "Use `E_off_diag_nonpos` instead" (since := "2026-08-11")]
+theorem E₆_off_diag_nonpos (i j : Fin 6) (h : i ≠ j) : E 6 i j ≤ 0 :=
+  E_off_diag_nonpos 6 i j h
 
-theorem E₈_off_diag_nonpos (i j : Fin 8) (h : i ≠ j) : E 8 i j ≤ 0 := by
-  fin_cases i <;> fin_cases j <;> simp_all [E]
+@[deprecated "Use `E_off_diag_nonpos` instead" (since := "2026-08-11")]
+theorem E₇_off_diag_nonpos (i j : Fin 7) (h : i ≠ j) : E 7 i j ≤ 0 :=
+  E_off_diag_nonpos 7 i j h
+
+@[deprecated "Use `E_off_diag_nonpos` instead" (since := "2026-08-11")]
+theorem E₈_off_diag_nonpos (i j : Fin 8) (h : i ≠ j) : E 8 i j ≤ 0 :=
+  E_off_diag_nonpos 8 i j h
 
 theorem F₄_off_diag_nonpos (i j : Fin 4) (h : i ≠ j) : F₄ i j ≤ 0 := by
   fin_cases i <;> fin_cases j <;> simp_all [F₄]
@@ -265,13 +278,30 @@ theorem G₂_off_diag_nonpos (i j : Fin 2) (h : i ≠ j) : G₂ i j ≤ 0 := by
 
 /-! ### Exceptional matrix transpose properties -/
 
-@[simp] theorem E₆_transpose : (E 6).transpose = E 6 := by decide
-@[simp] theorem E₇_transpose : (E 7).transpose = E 7 := by decide
-@[simp] theorem E₈_transpose : (E 8).transpose = E 8 := by decide
+@[simp] theorem E_transpose (n : ℕ) : (E n).transpose = E n := by
+  ext i j
+  simp only [E, transpose_apply, of_apply]
+  grind
 
-theorem E₆_isSymm : (E 6).IsSymm := E₆_transpose
-theorem E₇_isSymm : (E 7).IsSymm := E₇_transpose
-theorem E₈_isSymm : (E 8).IsSymm := E₈_transpose
+theorem E_isSymm (n : ℕ) : (E n).IsSymm := E_transpose n
+
+@[deprecated "Use `E_transpose` instead" (since := "2026-08-11")]
+theorem E₆_transpose : (E 6).transpose = E 6 := E_transpose 6
+
+@[deprecated "Use `E_transpose` instead" (since := "2026-08-11")]
+theorem E₇_transpose : (E 7).transpose = E 7 := E_transpose 7
+
+@[deprecated "Use `E_transpose` instead" (since := "2026-08-11")]
+theorem E₈_transpose : (E 8).transpose = E 8 := E_transpose 8
+
+@[deprecated "Use `E_isSymm` instead" (since := "2026-08-11")]
+theorem E₆_isSymm : (E 6).IsSymm := E_isSymm 6
+
+@[deprecated "Use `E_isSymm` instead" (since := "2026-08-11")]
+theorem E₇_isSymm : (E 7).IsSymm := E_isSymm 7
+
+@[deprecated "Use `E_isSymm` instead" (since := "2026-08-11")]
+theorem E₈_isSymm : (E 8).IsSymm := E_isSymm 8
 
 /-! ### Exceptional matrix determinants -/
 
@@ -417,17 +447,19 @@ theorem isSimplyLaced_D (n : ℕ) : IsSimplyLaced (D n) := by
   simp only [D, of_apply]
   grind
 
-set_option backward.isDefEq.respectTransparency.types false in
-theorem isSimplyLaced_E₆ : IsSimplyLaced (E 6) := by
-  rw [Matrix.isSimplyLaced_iff_of_linearOrder (E 6) E₆_isSymm]; decide
+theorem isSimplyLaced_E (n : ℕ) : IsSimplyLaced (E n) := by
+  intro i j h
+  simp only [E, of_apply]
+  split_ifs <;> simp_all
 
-set_option backward.isDefEq.respectTransparency.types false in
-theorem isSimplyLaced_E₇ : IsSimplyLaced (E 7) := by
-  rw [Matrix.isSimplyLaced_iff_of_linearOrder (E 7) E₇_isSymm]; decide
+@[deprecated "Use `isSimplyLaced_E` instead" (since := "2026-08-11")]
+theorem isSimplyLaced_E₆ : IsSimplyLaced (E 6) := isSimplyLaced_E 6
 
-set_option backward.isDefEq.respectTransparency.types false in
-theorem isSimplyLaced_E₈ : IsSimplyLaced (E 8) := by
-  rw [Matrix.isSimplyLaced_iff_of_linearOrder (E 8) E₈_isSymm]; decide
+@[deprecated "Use `isSimplyLaced_E` instead" (since := "2026-08-11")]
+theorem isSimplyLaced_E₇ : IsSimplyLaced (E 7) := isSimplyLaced_E 7
+
+@[deprecated "Use `isSimplyLaced_E` instead" (since := "2026-08-11")]
+theorem isSimplyLaced_E₈ : IsSimplyLaced (E 8) := isSimplyLaced_E 8
 
 /-! The Cartan matrices F₄ and G₂ are not simply laced because they contain
 off-diagonal entries that are neither 0 nor -1. -/
