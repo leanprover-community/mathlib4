@@ -551,7 +551,8 @@ lemma Subalgebra.frontier_subset_frontier :
   rw [frontier_eq_closure_inter_closure]
   grw [inter_subset_right, spectrum.subset_subalgebra]
 
-open Set Notation
+open Set
+open scoped Notation
 
 /-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any `x : S`, the spectrum of `x`
 is the spectrum of `↑x : A` along with the connected components of the complement of the spectrum of
