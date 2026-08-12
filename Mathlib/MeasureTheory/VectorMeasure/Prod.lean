@@ -26,7 +26,7 @@ The API is modelled on the one for the product of positive measures.
 public section
 
 open Filter Function MeasureTheory Set TopologicalSpace
-open scoped ENNReal NNReal Finset
+open scoped ENNReal NNReal Finset Topology
 
 variable {ι X Y E F G H I J : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
