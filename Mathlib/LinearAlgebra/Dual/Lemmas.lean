@@ -104,7 +104,7 @@ end Module
 
 section
 
-open Module Module.Dual Submodule LinearMap Cardinal Function
+open Module Module.Dual LinearMap Cardinal Function
 
 universe uR uM uK uV uι
 variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
@@ -620,7 +620,7 @@ vanish on `W`.
 The inverse of this is `Submodule.dualCopairing`. -/
 def dualQuotEquivDualAnnihilator (W : Submodule R M) :
     Module.Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ =>
       W.range_dualMap_mkQ_eq ▸ LinearMap.mem_range_self W.mkQ.dualMap φ)
     W.dualCopairing (by ext; rfl) (by ext; rfl)
