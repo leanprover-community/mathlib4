@@ -309,58 +309,64 @@ theorem G₂_det : G₂.det = 1 := by decide
 
 theorem F₄_det : F₄.det = 1 := by decide
 
-private def reverseE (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
-  (E n).reindex Fin.revPerm Fin.revPerm
-
+/-- Append a new node to the end of a path-like Dynkin diagram: `M` occupies the top-left block
+and the new node (index `Fin.last`) is joined to the previous final node by a `-1` edge. -/
 private def extendPath {n : ℕ} (M : Matrix (Fin n) (Fin n) ℤ) :
     Matrix (Fin n.succ) (Fin n.succ) ℤ :=
-  letI headLink := fun i : Fin n ↦ if i.val = 0 then -1 else 0
+  letI tailLink := fun i : Fin n ↦ if i.val + 1 = n then -1 else 0
   fun i j ↦
-    Fin.cases (Fin.cases 2 headLink j)
-      (fun i ↦ Fin.cases (headLink i) (fun j ↦ M i j) j) i
+    Fin.lastCases (Fin.lastCases 2 tailLink j)
+      (fun i ↦ Fin.lastCases (tailLink i) (fun j ↦ M i j) j) i
 
 private theorem extendPath_tail {n : ℕ} (M : Matrix (Fin n) (Fin n) ℤ) :
-    (extendPath M).submatrix Fin.succ Fin.succ = M := by
-  rfl
+    (extendPath M).submatrix Fin.castSucc Fin.castSucc = M := by
+  ext i j
+  simp [extendPath]
 
 private theorem extendPath_minor {n : ℕ} (M : Matrix (Fin n.succ) (Fin n.succ) ℤ) :
-    ((extendPath M).submatrix Fin.succ (Fin.succAbove 1)).det =
-      -(M.submatrix Fin.succ Fin.succ).det := by
-  let B := (extendPath M).submatrix Fin.succ (Fin.succAbove 1)
-  have hhead : B 0 0 = -1 := rfl
-  have hzero (i : Fin n) : B i.succ 0 = 0 := by simp [B, extendPath]
-  have hminor : B.submatrix Fin.succ Fin.succ = M.submatrix Fin.succ Fin.succ := by
+    ((extendPath M).submatrix Fin.castSucc (Fin.succAbove (Fin.castSucc (Fin.last n)))).det =
+      -(M.submatrix Fin.castSucc Fin.castSucc).det := by
+  let B := (extendPath M).submatrix Fin.castSucc (Fin.succAbove (Fin.castSucc (Fin.last n)))
+  have hlast : B (Fin.last n) (Fin.last n) = -1 := by simp [B, extendPath]
+  have hzero (i : Fin n) : B i.castSucc (Fin.last n) = 0 := by simp [B, extendPath]; grind
+  have hminor : B.submatrix Fin.castSucc Fin.castSucc = M.submatrix Fin.castSucc Fin.castSucc := by
     ext; simp [B, extendPath]
   change B.det = _
-  simp [Matrix.det_succ_column_zero, Fin.sum_univ_succ, hhead, hzero, hminor]
+  simp [Matrix.det_succ_column B (Fin.last n), Fin.sum_univ_castSucc, hlast, hzero, hminor]
 
 private theorem extendPath_det {n : ℕ} (M : Matrix (Fin n.succ) (Fin n.succ) ℤ) :
-    (extendPath M).det = 2 * M.det - (M.submatrix Fin.succ Fin.succ).det := by
-  rw [Matrix.det_succ_row_zero, Fin.sum_univ_succ]
-  simp [extendPath, extendPath_tail, extendPath_minor, sub_eq_add_neg]
+    (extendPath M).det = 2 * M.det - (M.submatrix Fin.castSucc Fin.castSucc).det := by
+  rw [Matrix.det_succ_row (extendPath M) (Fin.last _), Fin.sum_univ_castSucc]
+  simp only [extendPath, extendPath_tail, Fin.lastCases_last, Fin.lastCases_castSucc,
+    Fin.val_last, Fin.val_castSucc, Fin.succAbove_last]
+  rw [Finset.sum_eq_single_of_mem (Fin.last n) (Finset.mem_univ _)]
+  · rw [ite_eq_left (by rfl), extendPath_minor, Fin.val_last, Odd.neg_one_pow ⟨n, by ring⟩,
+      Even.neg_one_pow ⟨n + 1, rfl⟩]
+    ring
+  · intro b _ hb
+    rw [ite_eq_right (fun h => hb (Fin.ext (by rw [Fin.val_last]; lia)))]
+    ring
 
-private theorem reverseE_succ (n : ℕ) (hn : 4 ≤ n) :
-    reverseE (n + 1) = extendPath (reverseE n) := by
+private theorem E_succ (n : ℕ) (hn : 4 ≤ n) :
+    E (n + 1) = extendPath (E n) := by
   ext i j
-  refine Fin.cases ?_ (fun i ↦ Fin.cases ?_ (fun j ↦ ?_) j) i
-  · refine Fin.cases ?_ (fun j ↦ ?_) j
-    · simp [reverseE, extendPath]
-    · simp [reverseE, E, extendPath]
-      simp [Fin.ext_iff]
+  refine Fin.lastCases ?_ (fun i ↦ Fin.lastCases ?_ (fun j ↦ ?_) j) i
+  · refine Fin.lastCases ?_ (fun j ↦ ?_) j
+    · simp [E, extendPath]
+    · simp only [E, of_apply, extendPath, Fin.lastCases_last, Fin.lastCases_castSucc,
+        Fin.val_last, Fin.val_castSucc]
       grind
-  · simp only [reverseE, reindex_apply, submatrix_apply, E, of_apply]
-    simp [extendPath, Fin.rev_succ, Fin.ext_iff]
+  · simp only [E, of_apply, extendPath, Fin.lastCases_last, Fin.lastCases_castSucc,
+      Fin.val_last, Fin.val_castSucc]
     grind
-  · simp only [reverseE, reindex_apply, submatrix_apply, E, of_apply]
-    simp [extendPath, Fin.rev_succ, Fin.ext_iff]
+  · simp only [E, of_apply, extendPath, Fin.lastCases_castSucc, Fin.val_castSucc,
+      Fin.castSucc_inj]
 
 theorem det_E_add_two (n : ℕ) (hn : 4 ≤ n) :
     (E (n + 2)).det = 2 * (E (n + 1)).det - (E n).det := by
-  suffices (reverseE (n + 2)).det = 2 * (reverseE (n + 1)).det - (reverseE n).det by
-    simpa [reverseE] using this
-  have htail : (reverseE (n + 1)).submatrix Fin.succ Fin.succ = reverseE n := by
-    rw [reverseE_succ n hn, extendPath_tail]
-  rw [reverseE_succ (n + 1) (by lia), extendPath_det, htail]
+  have htail : (E (n + 1)).submatrix Fin.castSucc Fin.castSucc = E n := by
+    rw [E_succ n hn, extendPath_tail]
+  rw [E_succ (n + 1) (by lia), extendPath_det, htail]
 
 /-- The determinant of `E n` is `9 - n` for `n ≥ 3`. -/
 theorem E_det {n : ℕ} (hn : 3 ≤ n) : (E n).det = 9 - n := by
