@@ -369,10 +369,13 @@ theorem isDomain_of_prime (hf : Prime f) : IsDomain (AdjoinRoot f) :=
   (Ideal.Quotient.isDomain_iff_prime (span {f} : Ideal R[X])).mpr <|
     (Ideal.span_singleton_prime hf.ne_zero).mpr hf
 
-theorem noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f)
+theorem isTorsionFree_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f)
     (hf' : f.degree ≠ 0) : IsTorsionFree R (AdjoinRoot f) :=
   haveI := isDomain_of_prime hf
   isTorsionFree_iff_algebraMap_injective.mpr (of.injective_of_degree_ne_zero hf')
+
+@[deprecated (since := "2026-07-27")]
+alias noZeroSMulDivisors_of_prime_of_degree_ne_zero := isTorsionFree_of_prime_of_degree_ne_zero
 
 end Prime
 

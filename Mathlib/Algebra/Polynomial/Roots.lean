@@ -618,7 +618,7 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
     fun _ _ => Finset.finite_toSet _
 
 /-- A version of `mem_rootSet` that requires the polynomial to be non-zero after mapping
-instead of requiring it to be non-zero and `NoZeroSMulDivisors`. -/
+instead of requiring it to be non-zero and `Module.IsTorsionFree`. -/
 theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
     a ∈ p.rootSet S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
   classical
