@@ -218,7 +218,7 @@ theorem monoidalPreadditive
     (hadd : ∀ ⦃X Y : C⦄ (f₁ f₂ g₁ g₂ : X ⟶ Y) (_ : r f₁ f₂) (_ : r g₁ g₂), r (f₁ + g₁) (f₂ + g₂)) :
     letI := preadditive r hadd
     MonoidalPreadditive (Quotient r) := by
-  letI := preadditive r hadd
+  let := preadditive r hadd
   constructor
   · intro
     exact congr_arg (functor r).map MonoidalPreadditive.whiskerLeft_zero
@@ -245,10 +245,10 @@ theorem monoidalLinear
     letI := linear R r hsmul
     letI := monoidalPreadditive r hadd
     MonoidalLinear R (Quotient r) := by
-  letI := preadditive r hadd
-  letI := functor_additive r hadd
-  letI := linear R r hsmul
-  letI := monoidalPreadditive r hadd
+  let := preadditive r hadd
+  let := functor_additive r hadd
+  let := linear R r hsmul
+  let := monoidalPreadditive r hadd
   constructor
   · intro _ _ _ _ f
     obtain ⟨f, rfl⟩ := (functor r).map_surjective f
