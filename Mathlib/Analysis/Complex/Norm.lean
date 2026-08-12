@@ -17,7 +17,7 @@ public import Mathlib.Data.Complex.Basic
 
 noncomputable section
 
-open ComplexConjugate Topology Filter Set
+open ComplexConjugate Set
 
 namespace Complex
 variable {z : ℂ}
