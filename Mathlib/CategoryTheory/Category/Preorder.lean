@@ -80,9 +80,7 @@ theorem homOfLE_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
 theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 
-@[inherit_doc leOfHom]
-theorem _root_.Quiver.Hom.le (x y : X) (h : x ⟶ y) : x ≤ y :=
-  leOfHom h
+alias _root_.Quiver.Hom.le := leOfHom
 
 @[simp]
 theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
