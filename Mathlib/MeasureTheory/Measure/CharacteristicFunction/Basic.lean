@@ -197,13 +197,8 @@ lemma intervalIntegrable_charFun {μ : Measure ℝ} [IsFiniteMeasure μ] {a b : 
     stronglyMeasurable_charFun.aestronglyMeasurable (ae_of_all _ norm_charFun_le)
 
 lemma charFun_map_eq_integral_map_inner {α : Type*} {mα : MeasurableSpace α} [BorelSpace E]
-<<<<<<< HEAD
   (μ : Measure α) {Y : α → E} (hY : AEMeasurable Y μ) (t : E) :
   charFun (μ.map Y) t = charFun (μ.map (⟪Y ·, t⟫)) (1 : ℝ) := by
-=======
-    (μ : Measure α) {Y : α → E} (hY : Measurable Y) (t : E) :
-    charFun (μ.map Y) t = charFun (μ.map (⟪Y ·, t⟫)) (1 : ℝ) := by
->>>>>>> 458941bc9cc70abf0f1d886c749c2252f85319b2
   rw [charFun_apply, charFun_apply_real, integral_map, integral_map]
   · simp
   all_goals fun_prop
