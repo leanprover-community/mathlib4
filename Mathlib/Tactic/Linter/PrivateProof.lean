@@ -8,6 +8,9 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Linter.Basic
 public meta import Lean.Meta.Tactic.TryThis
+-- for the syntax kind of the `private` term elaborator, which the linter suggests and must not
+-- fire inside of
+public meta import Mathlib.Util.PrivateProof
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
@@ -118,6 +121,14 @@ private structure Occurrence where
   /-- The private constant that was referenced. -/
   privateName : Name
 
+/-- Whether this term is already wrapped in something that elaborates it in a non-exporting
+environment: either the `private` term elaborator, or `private_decl%`, which is what
+`field := private ..` in a structure instance expands to (see
+`Lean.Elab.Term.StructInst.mkStructInstField`). -/
+private def isPrivateWrapper (ti : TermInfo) : Bool :=
+  ti.stx.isOfKind ``Mathlib.Tactic.PrivateProof.privateElab ||
+    ti.stx.isOfKind ``Parser.Term.privateDecl
+
 /-- Collects the references to constants in `privateNames` which were elaborated in an exporting
 environment, together with their enclosing terms and `by` blocks. -/
 private partial def collect (privateNames : NameSet) (ctx? : Option ContextInfo)
@@ -130,8 +141,11 @@ private partial def collect (privateNames : NameSet) (ctx? : Option ContextInfo)
       | some ctx, .ofTermInfo ti =>
         let path := path.push (ctx, ti)
         let acc := match ti.expr with
+          -- Note the `isIdent` check: wrapper nodes such as `(..)` also carry the constant as
+          -- their `expr`, and are not references to it.
           | .const n _ =>
-            if !ti.isBinder && ctx.env.isExporting && privateNames.contains n then
+            if ti.stx.isIdent && !ti.isBinder && ctx.env.isExporting && privateNames.contains n
+                && !path.any (isPrivateWrapper ·.2) then
               acc.push ⟨path, byBlocks, n⟩
             else
               acc
