@@ -413,7 +413,7 @@ lemma meromorphicAt_mul_iff_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜
     MeromorphicAt (g * f) x ↔ MeromorphicAt f x :=
   meromorphicAt_smul_iff_of_ne_zero hg hg'
 
-/-- MeromorphicAt is invariant under scaling. -/
+/-- `MeromorphicAt` is invariant under scaling. -/
 @[simp] theorem meromorphicAt_const_smul_iff_meromorphicAt {f : 𝕜 → E} {s : 𝕜} (hs : s ≠ 0) :
     MeromorphicAt (s • f) x ↔ MeromorphicAt f x := by
   constructor
@@ -422,7 +422,7 @@ lemma meromorphicAt_mul_iff_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜
     fun_prop
   · fun_prop
 
-/-- MeromorphicAt is invariant under scaling. -/
+/-- `MeromorphicAt` is invariant under scaling. -/
 @[simp] theorem meromorphicAt_fun_const_smul_iff_meromorphicAt {f : 𝕜 → E} {s : 𝕜} (hs : s ≠ 0) :
     MeromorphicAt (fun x ↦ s • f x) x ↔ MeromorphicAt f x :=
   meromorphicAt_const_smul_iff_meromorphicAt hs

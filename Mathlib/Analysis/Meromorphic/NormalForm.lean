@@ -43,7 +43,7 @@ variable
 
 variable (f x) in
 /--
-A function is 'meromorphic in normal form' at `x` if it vanishes around `x` or if it can locally be
+A function is **meromorphic in normal form** at `x` if it vanishes around `x` or if it can locally be
 written as `fun z ↦ (z - x) ^ n • g` where `g` is analytic and does not vanish at `x`.
 -/
 @[fun_prop]
