@@ -161,7 +161,7 @@ lemma OrderEmbedding.range_inj_of_wellFoundedLT [LinearOrder α] [WellFoundedLT 
     {f g : α ↪o β} : Set.range f = Set.range g ↔ f = g := by
   rw [f.strictMono.range_inj_of_wellFoundedLT g.strictMono, DFunLike.coe_fn_eq]
 
-@[deprecated (since := "2026-06-21")]
+@[deprecated (since := "2026-08-13")]
 alias OrderEmbedding.range_inj := OrderEmbedding.range_inj_of_wellFoundedLT
 
 namespace OrderIso
