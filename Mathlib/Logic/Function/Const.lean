@@ -3,15 +3,22 @@ Copyright (c) 2026 Martin Winter. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Winter
 -/
+module
 
-import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Function.Basic
 
 /-!
 # Constant functions
 
-This file defines `Function.IsConst`, the predicate that a function takes
-the same value at every pair of inputs.
+This file defines `Function.IsConst`, the predicate that a function takes the same value
+at every pair of inputs.
+
+Note that a function with empty domain and codomain is considered constant.
+If a constant function has non-empty domain, then it can be represented by `Function.const`,
+see `isConst_iff_exists_eq_const`.
 -/
+
+public section
 
 namespace Function
 
@@ -21,8 +28,9 @@ variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- A function is constant if it takes equal values at any two inputs.
 
-In particular, a function is also constant if both its domain and codomain are empty.
-This is more general than functions representable via `Function.const`. -/
+Note that a function with empty domain and codomain is considered constant.
+If a constant function has non-empty domain, then it can be represented by `Function.const`,
+see `isConst_iff_exists_eq_const` -/
 def IsConst (f : α → β) : Prop :=
   ∀ x y, f x = f y
 
@@ -35,19 +43,19 @@ theorem IsConst.eq {f : α → β} (hf : IsConst f) (x y : α) :
   hf x y
 
 @[simp]
-theorem isConst_const (b : β) :
+theorem IsConst.const (b : β) :
     IsConst (const α b) := fun _ _ => rfl
 
 /- All function on a subsingleton domain are constant. -/
-theorem isConst_of_subsingleton_domain [Subsingleton α] (f : α → β) :
-    IsConst f := fun _ _ => congrArg f <| Subsingleton.elim _ _
+theorem IsConst.of_subsingleton_domain [Subsingleton α] (f : α → β) : IsConst f :=
+  fun _ _ => congrArg f <| Subsingleton.elim _ _
 
 /- All function on into a subsingleton codomain are constant. -/
-theorem isConst_of_subsingleton_codomain [Subsingleton β] (f : α → β) :
-    IsConst f := fun _ _ => Subsingleton.elim _ _
+theorem IsConst.of_subsingleton_codomain [Subsingleton β] (f : α → β) : IsConst f :=
+  fun _ _ => Subsingleton.elim _ _
 
-theorem isConst_of_forall_eq {f : α → β} (b : β) (h : ∀ x, f x = b) :
-    IsConst f := fun x y => (h x).trans (h y).symm
+theorem IsConst.of_forall_eq {f : α → β} (b : β) (h : ∀ x, f x = b) : IsConst f :=
+  fun x y => (h x).trans (h y).symm
 
 /-- A function `f : α → β` is constant on a non-empty domain if and only if there is `b : β` so that
 `f a = b` for all `a : α`. -/
@@ -58,7 +66,7 @@ theorem isConst_iff_exists_eq [Nonempty α] {f : α → β} :
     exact ⟨f x₀, (hf · x₀)⟩
   mpr := by
     rintro ⟨b, hb⟩
-    exact isConst_of_forall_eq b hb
+    exact .of_forall_eq b hb
 
 /-- A function `α → β` is constant on a non-empty domain if and only if there is `b : β` so that
 the function can be written as `Function.const α b`. -/
@@ -71,8 +79,7 @@ theorem isConst_iff_exists_eq_const [Nonempty α] {f : α → β} :
   · rintro ⟨b, hb⟩
     exact ⟨b, congrFun hb⟩
 
-theorem IsConst.congr {f g : α → β} (hf : IsConst f)
-    (hfg : ∀ x, f x = g x) : IsConst g :=
+theorem IsConst.congr {f g : α → β} (hf : IsConst f) (hfg : ∀ x, f x = g x) : IsConst g :=
   fun x y => (hfg x).symm.trans ((hf x y).trans (hfg y))
 
 theorem isConst_congr {f g : α → β} (hfg : ∀ x, f x = g x) :
@@ -106,8 +113,7 @@ theorem not_isConst_iff_exists_apply_ne {f : α → β} :
 
 @[simp]
 /- The identity function on a type is constant if and only if the type is a singleton. -/
-theorem isConst_id_iff :
-    IsConst (id : α → α) ↔ Subsingleton α :=
-  ⟨fun h => ⟨fun x y => h x y⟩, fun _ => isConst_of_subsingleton_domain _⟩
+theorem isConst_id_iff : IsConst (id : α → α) ↔ Subsingleton α :=
+  ⟨fun h => ⟨fun x y => h x y⟩, fun _ => .of_subsingleton_domain _⟩
 
 end Function
