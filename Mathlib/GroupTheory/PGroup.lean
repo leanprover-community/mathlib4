@@ -73,7 +73,7 @@ theorem of_card {n : ℕ} (hG : Nat.card G = p ^ n) : IsPGroup p G :=
 
 variable (p G) in
 theorem of_subsingleton [Subsingleton G] : IsPGroup p G :=
-  of_card (n := 0) (by simp)
+  of_card (n := 0) (by simp [Nat.card_unique])
 
 theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
   .of_subsingleton p _
