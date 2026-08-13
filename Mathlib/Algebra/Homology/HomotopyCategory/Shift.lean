@@ -176,8 +176,7 @@ variable (C)
 
 attribute [local simp] XIsoOfEq_hom_naturality
 
-attribute [local implicit_reducible] HomologicalComplex.eval
-
+set_option backward.defeqAttrib.useBackward true in
 /-- Shifting cochain complexes by `n` and evaluating in a degree `i` identifies
 to the evaluation in degree `i'` when `n + i = i'`. -/
 @[simps!]

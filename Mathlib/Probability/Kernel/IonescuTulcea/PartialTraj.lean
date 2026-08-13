@@ -111,7 +111,7 @@ section Basic
 deterministic and is equal to the restriction of the trajectory up to time `a`. -/
 lemma partialTraj_le (hba : b ≤ a) :
     partialTraj κ a b = deterministic (frestrictLe₂ hba) (measurable_frestrictLe₂ _) := by
-  rw [partialTraj, dif_pos hba]
+  rw [partialTraj, dite_eq_left hba]
 
 @[simp]
 lemma partialTraj_self (a : ℕ) : partialTraj κ a a = Kernel.id := by rw [partialTraj_le le_rfl]; rfl
@@ -127,12 +127,12 @@ lemma partialTraj_le_def (hab : a ≤ b) : partialTraj κ a b =
     b hab := by
   obtain rfl | hab := eq_or_lt_of_le hab
   · simp
-  · rw [partialTraj, dif_neg (not_le.2 hab)]
+  · rw [partialTraj, dite_eq_right (not_le.2 hab)]
 
 lemma partialTraj_succ_of_le (hab : a ≤ b) : partialTraj κ a (b + 1) =
     ((Kernel.id ×ₖ ((κ b).map (piSingleton b))) ∘ₖ partialTraj κ a b).map
     (IicProdIoc b (b + 1)) := by
-  rw [partialTraj, dif_neg (by lia)]
+  rw [partialTraj, dite_eq_right (by lia)]
   induction b, hab using Nat.le_induction with
   | base => simp
   | succ k hak hk => rw [Nat.leRec_succ, ← partialTraj_le_def]; lia
@@ -243,7 +243,6 @@ lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
 
 variable [∀ n, IsMarkovKernel (κ n)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pushforward of `partialTraj κ a (a + 1)` along the the point at time `a + 1` is `κ a`. -/
 lemma map_partialTraj_succ_self (a : ℕ) :
     (partialTraj κ a (a + 1)).map (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) = κ a := by
