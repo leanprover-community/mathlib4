@@ -47,9 +47,9 @@ lemma smulOfRingHom_smul (n : ℕ) (r : R) (x : Ext A G n) :
 by postcomposition with `mk₀ (φ r)`; this is the additivity of `Ext` in its second variable
 packaged as a module structure.
 
-Unlike the `Module R (Ext X Y n)` instance further down, this does not require the ambient
-category to be `R`-linear: only the single object `G` needs an action of `R`. When `C` is
-`R`-linear the two agree, see `Abelian.Ext.moduleOfRingHom_algebraMap`. -/
+Note that this does not require the ambient category to be `R`-linear: only the single object `G`
+needs an action of `R`. There is also an `R`-module instance on `Ext A G n` in the case where `C` is
+`R`-linear. When `C` is `R`-linear the two agree, see `Abelian.Ext.moduleOfRingHom_algebraMap`. -/
 @[reducible] noncomputable def moduleOfRingHom (n : ℕ) : Module R (Ext A G n) where
   __ := smulOfRingHom φ n (A := A) (G := G)
   one_smul x := by simp [smulOfRingHom_smul, End.one_def]
