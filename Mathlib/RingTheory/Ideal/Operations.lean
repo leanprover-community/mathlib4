@@ -284,27 +284,27 @@ theorem pow_mem_pow {x : R} (hx : x ∈ I) (n : ℕ) : x ^ n ∈ I ^ n :=
 theorem mul_le : I * J ≤ K ↔ ∀ r ∈ I, ∀ s ∈ J, r * s ∈ K :=
   Submodule.smul_le
 
-theorem mul_le_left : I * J ≤ J :=
+theorem mul_le_right : I * J ≤ J :=
   mul_le.2 fun _ _ _ => J.mul_mem_left _
 
 @[simp]
 theorem sup_mul_left_self : I ⊔ J * I = I :=
-  sup_eq_left.2 mul_le_left
+  sup_eq_left.2 mul_le_right
 
 @[simp]
 theorem mul_left_self_sup : J * I ⊔ I = I :=
-  sup_eq_right.2 mul_le_left
+  sup_eq_right.2 mul_le_right
 
-theorem mul_le_right [I.IsTwoSided] : I * J ≤ I :=
+theorem mul_le_left [I.IsTwoSided] : I * J ≤ I :=
   mul_le.2 fun _ hr _ _ ↦ I.mul_mem_right _ hr
 
 @[simp]
 theorem sup_mul_right_self [I.IsTwoSided] : I ⊔ I * J = I :=
-  sup_eq_left.2 mul_le_right
+  sup_eq_left.2 mul_le_left
 
 @[simp]
 theorem mul_right_self_sup [I.IsTwoSided] : I * J ⊔ I = I :=
-  sup_eq_right.2 mul_le_right
+  sup_eq_right.2 mul_le_left
 
 protected theorem mul_assoc : I * J * K = I * (J * K) :=
   Submodule.smul_assoc I J K
@@ -353,7 +353,7 @@ theorem pow_le_pow_right {m n : ℕ} (h : m ≤ n) : I ^ n ≤ I ^ m := by
   · rw [Submodule.pow_zero, one_eq_top]; exact le_top
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
   rw [add_comm, Submodule.pow_add _ m.add_one_ne_zero]
-  exact mul_le_left
+  exact mul_le_right
 
 theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
   calc
@@ -382,7 +382,7 @@ instance (priority := low) : (I ^ n).IsTwoSided :=
     (fun _ _ ↦ by rw [Submodule.pow_succ]; infer_instance)
 
 protected theorem mul_one : I * 1 = I :=
-  mul_le_right.antisymm
+  mul_le_left.antisymm
     fun i hi ↦ mul_one i ▸ mul_mem_mul hi (one_eq_top (R := R) ▸ Submodule.mem_top)
 
 protected theorem pow_add : I ^ (m + n) = I ^ m * I ^ n := by
@@ -445,14 +445,14 @@ lemma inf_ne_bot_of_ne_bot [NoZeroDivisors R] {I J : Ideal R} [I.IsTwoSided]
   exact not_or_intro hI hJ
 
 theorem sup_mul_eq_of_coprime_left [I.IsTwoSided] (h : I ⊔ J = ⊤) : I ⊔ J * K = I ⊔ K :=
-  le_antisymm (sup_le_sup_left mul_le_left _) fun i hi => by
+  le_antisymm (sup_le_sup_left mul_le_right _) fun i hi => by
     rw [eq_top_iff_one] at h; rw [Submodule.mem_sup] at h hi ⊢
     obtain ⟨i1, hi1, j, hj, h⟩ := h; obtain ⟨i', hi', k, hk, rfl⟩ := hi
     refine ⟨_, add_mem hi' (mul_mem_right k _ hi1), _, mul_mem_mul hj hk, ?_⟩
     rw [add_assoc, ← add_mul, h, one_mul]
 
 theorem sup_mul_eq_of_coprime_right [J.IsTwoSided] (h : I ⊔ K = ⊤) : I ⊔ J * K = I ⊔ J :=
-  le_antisymm (sup_le_sup_left mul_le_right _) fun i hi ↦ by
+  le_antisymm (sup_le_sup_left mul_le_left _) fun i hi ↦ by
     rw [eq_top_iff_one] at h; rw [Submodule.mem_sup] at h hi ⊢
     obtain ⟨i1, hi1, k, hk, h⟩ := h; obtain ⟨i', hi', j, hj, rfl⟩ := hi
     refine ⟨_, add_mem hi' (mul_mem_left _ j hi1), _, mul_mem_mul hj hk, ?_⟩
@@ -565,9 +565,9 @@ lemma sup_pow_add_le_pow_sup_pow {n m : ℕ} : (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔
   apply Finset.sup_le
   intro i hi
   by_cases hn : n ≤ i
-  · exact (Ideal.mul_le_right.trans (Ideal.mul_le_right.trans
+  · exact (Ideal.mul_le_left.trans (Ideal.mul_le_left.trans
       ((Ideal.pow_le_pow_right hn).trans le_sup_left)))
-  · refine (Ideal.mul_le_right.trans (Ideal.mul_le_left.trans
+  · refine (Ideal.mul_le_left.trans (Ideal.mul_le_right.trans
       ((Ideal.pow_le_pow_right ?_).trans le_sup_right)))
     lia
 
@@ -715,7 +715,7 @@ theorem isCoprime_iff_codisjoint : IsCoprime I J ↔ Codisjoint I J := by
   · rintro ⟨x, y, hxy⟩
     rw [eq_top_iff_one]
     apply (show x * I + y * J ≤ I ⊔ J from
-      sup_le (mul_le_left.trans le_sup_left) (mul_le_left.trans le_sup_right))
+      sup_le (mul_le_right.trans le_sup_left) (mul_le_right.trans le_sup_right))
     rw [hxy]
     simp only [one_eq_top, Submodule.mem_top]
   · intro h
@@ -965,13 +965,17 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
     hrm <|
       this.radical.symm ▸ (sInf_le ⟨hIm, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 
+@[deprecated isRadical_bot (since := "2026-08-03")]
 theorem isRadical_bot_of_noZeroDivisors {R} [CommSemiring R] [NoZeroDivisors R] :
-    (⊥ : Ideal R).IsRadical := fun _ hx => hx.recOn fun _ hn => eq_zero_of_pow_eq_zero hn
+    (⊥ : Ideal R).IsRadical := isRadical_bot
 
 @[simp]
-theorem radical_bot_of_noZeroDivisors {R : Type u} [CommSemiring R] [NoZeroDivisors R] :
+theorem radical_bot_of_isReduced {R : Type u} [CommSemiring R] [IsReduced R] :
     radical (⊥ : Ideal R) = ⊥ :=
-  eq_bot_iff.2 isRadical_bot_of_noZeroDivisors
+  eq_bot_iff.2 isRadical_bot
+
+@[deprecated (since := "2026-08-03")]
+alias radical_bot_of_noZeroDivisors := radical_bot_of_isReduced
 
 instance : IdemCommSemiring (Ideal R) :=
   inferInstance
@@ -1334,7 +1338,7 @@ theorem range_finsuppTotal :
     rw [finsuppTotal_apply, Finsupp.sum_mapRange_index]
     · apply Finsupp.sum_congr
       intro i _
-      rw [dif_pos (ha i)]
+      rw [dite_eq_left (ha i)]
     · exact fun _ => zero_smul _ _
 
 end Total

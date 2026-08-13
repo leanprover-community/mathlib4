@@ -117,21 +117,21 @@ instance instAdd : Add (SlashInvariantForm Γ k) :=
       slash_action_eq' := fun γ hγ ↦ by
         rw [SlashAction.add_slash, slash_action_eqn f γ hγ, slash_action_eqn g γ hγ] }⟩
 
-@[simp]
-theorem coe_add (f g : SlashInvariantForm Γ k) : ⇑(f + g) = f + g :=
-  rfl
+instance : IsAddApply (SlashInvariantForm Γ k) ℍ ℂ where
+  add_apply _ _ _ := rfl
 
-@[simp]
-theorem add_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_add := FunLike.coe_add
+
+@[deprecated (since := "2026-07-10")] protected alias add_apply := add_apply
 
 instance instZero : Zero (SlashInvariantForm Γ k) :=
   ⟨{toFun := 0
     slash_action_eq' := fun _ _ ↦ SlashAction.zero_slash _ _}⟩
 
-@[simp]
-theorem coe_zero : ⇑(0 : SlashInvariantForm Γ k) = (0 : ℍ → ℂ) :=
-  rfl
+instance : IsZeroApply (SlashInvariantForm Γ k) ℍ ℂ where
+  zero_apply _ := rfl
+
+@[deprecated (since := "2026-07-10")] alias coe_zero := FunLike.coe_zero
 
 section smul
 
@@ -145,13 +145,12 @@ instance instSMul : SMul α (SlashInvariantForm Γ k) where
       rw [← smul_one_smul ℂ]
       simp [-smul_assoc, smul_slash, slash_action_eqn _ _ hγ, σ, Subgroup.HasDetOne.det_eq hγ] }
 
-@[simp]
-theorem coe_smul (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
-  rfl
+instance : IsSMulApply α (SlashInvariantForm Γ k) ℍ ℂ where
+  smul_apply _ _ _ := rfl
 
-@[simp]
-theorem smul_apply (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) : (n • f) z = n • f z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-07-10")] protected alias smul_apply := smul_apply
 
 end smul
 
@@ -167,14 +166,12 @@ instance instSMulℝ : SMul α (SlashInvariantForm Γ k) where
       rw [← smul_one_smul ℝ, ← smul_one_smul ℂ, smul_slash,
         Complex.real_smul, mul_one, σ_ofReal, slash_action_eqn _ _ hγ] }
 
-@[simp]
-theorem coe_smulℝ (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
-  rfl
+instance : IsSMulApply α (SlashInvariantForm Γ k) ℍ ℂ where
+  smul_apply _ _ _ := rfl
 
-@[simp]
-theorem smul_applyℝ (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) :
-    (n • f) z = n • f z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_smulℝ := FunLike.coe_smul
+
+@[deprecated (since := "2026-07-10")] protected alias smul_applyℝ := smul_apply
 
 end smulℝ
 
@@ -183,44 +180,34 @@ instance instNeg : Neg (SlashInvariantForm Γ k) :=
     { toFun := -f
       slash_action_eq' := fun γ hγ => by rw [SlashAction.neg_slash, slash_action_eqn f γ hγ] }⟩
 
-@[simp]
-theorem coe_neg (f : SlashInvariantForm Γ k) : ⇑(-f) = -f :=
-  rfl
+instance : IsNegApply (SlashInvariantForm Γ k) ℍ ℂ where
+  neg_apply _ _ := rfl
 
-@[simp]
-theorem neg_apply (f : SlashInvariantForm Γ k) (z : ℍ) : (-f) z = -f z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_neg := FunLike.coe_neg
+
+@[deprecated (since := "2026-07-10")] protected alias neg_apply := neg_apply
 
 instance instSub : Sub (SlashInvariantForm Γ k) :=
   ⟨fun f g => f + -g⟩
 
-@[simp]
-theorem coe_sub (f g : SlashInvariantForm Γ k) : ⇑(f - g) = f - g :=
-  rfl
+instance : IsSubApply (SlashInvariantForm Γ k) ℍ ℂ where
+  sub_apply _ _ _ := rfl
 
-@[simp]
-theorem sub_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_sub := FunLike.coe_sub
 
-instance : AddCommGroup (SlashInvariantForm Γ k) :=
-  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smulℝ coe_smulℝ
+@[deprecated (since := "2026-07-10")] protected alias sub_apply := sub_apply
 
-/-- Additive coercion from `SlashInvariantForm` to `ℍ → ℂ`. -/
-def coeHom : SlashInvariantForm Γ k →+ ℍ → ℂ where
-  toFun f := f
-  map_zero' := rfl
-  map_add' _ _ := rfl
+instance : AddCommGroup (SlashInvariantForm Γ k) := fast_instance% FunLike.addCommGroup
 
-theorem coeHom_injective : Function.Injective (@coeHom Γ k) :=
-  DFunLike.coe_injective
+@[deprecated (since := "2026-07-10")] alias coeHom := FunLike.coeMonoidHom
+
+@[deprecated (since := "2026-07-10")] alias coeHom_injective := FunLike.coeMonoidHom_injective
 
 instance instModuleComplex [Γ.HasDetOne] {α : Type*} [Semiring α] [Module α ℂ]
-    [IsScalarTower α ℂ ℂ] : Module α (SlashInvariantForm Γ k) :=
-  coeHom_injective.module α _ (fun _ _ ↦ rfl)
+    [IsScalarTower α ℂ ℂ] : Module α (SlashInvariantForm Γ k) := FunLike.module
 
 instance instModuleReal {α : Type*} [Semiring α] [Module α ℝ] [Module α ℂ] [IsScalarTower α ℝ ℂ] :
-    Module α (SlashInvariantForm Γ k) :=
-  coeHom_injective.module α _ (fun _ _ ↦ rfl)
+    Module α (SlashInvariantForm Γ k) := FunLike.module
 
 /-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
 @[simps -fullyApplied]

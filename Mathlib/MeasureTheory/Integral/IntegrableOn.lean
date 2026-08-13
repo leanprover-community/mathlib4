@@ -768,7 +768,7 @@ theorem ContinuousOn.aestronglyMeasurable [TopologicalSpace α] [TopologicalSpac
         mem_of_superset (self_mem_ae_restrict hs) (subset_preimage_image _ _)⟩
   cases h.out
   · rw [image_eq_range]
-    exact isSeparable_range <| continuousOn_iff_continuous_restrict.1 hf
+    exact isSeparable_range <| continuousOn_iff_continuous_domRestrict.1 hf
   · exact .of_separableSpace _
 
 /-- A function which is continuous on a compact set `s` is almost everywhere strongly measurable
