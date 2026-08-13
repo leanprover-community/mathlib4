@@ -328,7 +328,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α := by
   rw [dite_eq_right ane0]
   by_cases h : b = 0
   · simp [h, lt_top_iff_ne_top]
-  · rw [dite_eq_right h, Nat.cast_lt]
+  · rw [dite_eq_right h, ENat.natCast_lt_natCast]
     have cne0 : c ≠ 0 := by
       refine mt (fun con => ?_) h
       rw [b_eq, con, mul_zero]
