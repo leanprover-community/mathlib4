@@ -185,10 +185,10 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
   · simp only [Ideal.mem_comap, and_imp]
     exact (fun _ _ ↦ isMaximal_of_isMaximal_under (powers y) S J)
 
-/-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
-correspond to maximal ideals in the original ring `R` that don't contain `y`.
+/-- Maximal ideals in the localization at `y` correspond to maximal ideals in the original ring `R`
+that don't contain `y`.
 This lemma gives the correspondence in the particular case of an ideal and its map.
-See `le_relIso_of_maximal` for the more general statement, and the reverse of this implication -/
+See `le_relIso_of_maximal` for the more general statement, and the reverse of this implication. -/
 theorem IsLocalization.isMaximal_of_isMaximal_notMem
     (I : Ideal R) (hI : I.IsMaximal)
     (hy : y ∉ I) : (I.map (algebraMap R S)).IsMaximal :=
