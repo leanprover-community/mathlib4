@@ -365,7 +365,7 @@ namespace LocallyLipschitz
 variable [TopologicalSpace α] [WeakPseudoEMetricSpace α] [TopologicalSpace β]
   [WeakPseudoEMetricSpace β] [TopologicalSpace γ] [WeakPseudoEMetricSpace γ]
   [PseudoEMetricSpace δ] [PseudoEMetricSpace τ] [PseudoEMetricSpace ζ] {f : α → β} {g : δ → τ}
-  {h : δ → β}
+  {r : δ → β}
 
 /-- A Lipschitz function is locally Lipschitz. -/
 protected lemma _root_.LipschitzWith.locallyLipschitz {K : ℝ≥0} (hf : LipschitzWith K f) :
@@ -381,10 +381,10 @@ protected lemma const (b : β) : LocallyLipschitz (fun _ : α ↦ b) :=
 
 /-- A locally Lipschitz function is continuous. (The converse is false: for example,
 $x ↦ \sqrt{x}$ is continuous, but not locally Lipschitz at 0.) -/
-protected theorem continuous (hh : LocallyLipschitz h) : Continuous h := by
+protected theorem continuous (hr : LocallyLipschitz r) : Continuous r := by
   rw [continuous_iff_continuousAt]
   intro x
-  rcases hh x with ⟨K, t, ht, hK⟩
+  rcases hr x with ⟨K, t, ht, hK⟩
   exact hK.continuousOn.continuousAt ht
 
 /-- The composition of locally Lipschitz functions is locally Lipschitz. -/
@@ -399,8 +399,8 @@ protected lemma comp {f : β → γ} {g : δ → β}
     ((mapsTo_preimage g u).mono_left inter_subset_right)
 
 /-- If `f` and `g` are locally Lipschitz, so is the induced map `f × g` to the product type. -/
-protected lemma prodMk {f : α → τ} (hf : LocallyLipschitz f) {g : α → ζ}
-    (hg : LocallyLipschitz g) : LocallyLipschitz fun x => (f x, g x) := by
+protected lemma prodMk {f : α → τ} (hf : LocallyLipschitz f) {g : α → ζ} (hg : LocallyLipschitz g) :
+    LocallyLipschitz fun x => (f x, g x) := by
   intro x
   rcases hf x with ⟨Kf, t₁, h₁t, hfL⟩
   rcases hg x with ⟨Kg, t₂, h₂t, hgL⟩
@@ -430,8 +430,8 @@ protected theorem pow_end {f : Function.End δ} (h : LocallyLipschitz f) :
 end LocallyLipschitz
 
 namespace LocallyLipschitzOn
-variable [TopologicalSpace β] [WeakPseudoEMetricSpace β] [PseudoEMetricSpace δ]
-  {f : δ → β} {s : Set δ}
+variable [TopologicalSpace β] [WeakPseudoEMetricSpace β] [PseudoEMetricSpace δ] {f : δ → β}
+  {s : Set δ}
 
 protected lemma continuousOn (hf : LocallyLipschitzOn s f) : ContinuousOn f s :=
   continuousOn_iff_continuous_domRestrict.2 hf.restrict.continuous
