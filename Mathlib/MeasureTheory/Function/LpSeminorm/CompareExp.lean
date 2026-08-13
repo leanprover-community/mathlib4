@@ -262,7 +262,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm {p q r : ℝ≥0∞} (hf : AEStr
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
 `fun x => b (f x) (g x)`. -/
-theorem eLpNorm_le_eLpNorm_mul_eLpNorm'_of_enorm {p q r : ℝ≥0∞} (hf : AEStronglyMeasurable f μ)
+theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm {p q r : ℝ≥0∞} (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) (b : E → F → G) (c : ℝ≥0)
     (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖ₑ ≤ c * ‖f x‖ₑ * ‖g x‖ₑ) [hpqr : HolderTriple p q r] :
     eLpNorm (fun x => b (f x) (g x)) r μ ≤ c * eLpNorm f p μ * eLpNorm g q μ :=
