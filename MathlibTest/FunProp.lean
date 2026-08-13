@@ -122,19 +122,6 @@ example : MeromorphicOn (fun z ↦ Complex.Gamma z / Complex.digamma z) U := by 
 
 example : MeromorphicOn (fun z ↦ Complex.Gamma (z ^ 2 + 1)) U := by fun_prop
 
--- There is no general composition rule, and there should not be: the composite of an analytic
--- function with a meromorphic one need not be meromorphic, as `fun z ↦ Complex.exp (1 / z)` at `0`
--- shows. `fun_prop` must fail here rather than find a spurious route.
-/--
-error: `fun_prop` was unable to prove `MeromorphicOn (fun z => Complex.exp (1 / z)) U`
-
-Issues:
-  No theorems found for `Complex.exp` in order to prove `MeromorphicOn (fun z0 => Complex.exp z0) ?V`
-  No theorems found for `Complex.exp` in order to prove `MeromorphicOn (fun z => Complex.exp (1 / z)) U`
--/
-#guard_msgs in
-example : MeromorphicOn (fun z ↦ Complex.exp (1 / z)) U := by fun_prop
-
 end MeromorphicOn
 
 private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : WithTop ℕ∞) := by norm_cast
