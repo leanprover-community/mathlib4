@@ -52,7 +52,8 @@ that the sets one uses are nonempty and bounded above as these are only conditio
 open scoped NNReal ENNReal Topology UniformConvergence
 open Set Filter OrderDual
 
-variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
+variable {α : Type*} [LinearOrder α] {E M : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpace E]
+  [PseudoEMetricSpace M]
 
 /-- The (extended-real-valued) variation of a function `f` on a set `s` inside a linear order is
 the supremum of the sum of `edist (f (u (i+1))) (f (u i))` over all finite increasing
@@ -225,7 +226,7 @@ theorem _root_.BoundedVariationOn.of_subsingleton {f : α → E} {s : Set α} (h
     BoundedVariationOn f s := by
   simp [BoundedVariationOn, hs]
 
-theorem lowerSemicontinuous_aux {ι : Type*} {F : ι → α → E} {p : Filter ι} {f : α → E} {s : Set α}
+theorem lowerSemicontinuous_aux {ι : Type*} {F : ι → α → M} {p : Filter ι} {f : α → M} {s : Set α}
     (Ffs : ∀ x ∈ s, Tendsto (fun i => F i x) p (𝓝 (f x))) {v : ℝ≥0∞} (hv : v < eVariationOn f s) :
     ∀ᶠ n : ι in p, v < eVariationOn (F n) s := by
   obtain ⟨⟨n, ⟨u, um, us⟩⟩, hlt⟩ :
@@ -243,16 +244,16 @@ Pointwise convergence on `s` is encoded here as uniform convergence on the famil
 singletons of elements of `s`.
 -/
 protected theorem lowerSemicontinuous (s : Set α) :
-    LowerSemicontinuous fun f : α →ᵤ[s.image singleton] E => eVariationOn f s := fun f ↦ by
-  apply @lowerSemicontinuous_aux _ _ _ _ (UniformOnFun α E (s.image singleton)) id (𝓝 f) f s _
+    LowerSemicontinuous fun f : α →ᵤ[s.image singleton] M => eVariationOn f s := fun f ↦ by
+  apply @lowerSemicontinuous_aux _ _ _ _ (UniformOnFun α M (s.image singleton)) id (𝓝 f) f s _
   simpa only [UniformOnFun.tendsto_iff_tendstoUniformlyOn, mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, tendstoUniformlyOn_singleton_iff_tendsto] using! @tendsto_id _ (𝓝 f)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The map `(eVariationOn · s)` is lower semicontinuous for uniform convergence on `s`. -/
 theorem lowerSemicontinuous_uniformOn (s : Set α) :
-    LowerSemicontinuous fun f : α →ᵤ[{s}] E => eVariationOn f s := fun f ↦ by
-  apply @lowerSemicontinuous_aux _ _ _ _ (UniformOnFun α E {s}) id (𝓝 f) f s _
+    LowerSemicontinuous fun f : α →ᵤ[{s}] M => eVariationOn f s := fun f ↦ by
+  apply @lowerSemicontinuous_aux _ _ _ _ (UniformOnFun α M {s}) id (𝓝 f) f s _
   have := @tendsto_id _ (𝓝 f)
   rw [UniformOnFun.tendsto_iff_tendstoUniformlyOn] at this
   simp_rw [← tendstoUniformlyOn_singleton_iff_tendsto]
@@ -598,7 +599,7 @@ end Monotone
 contribution of `a`, i.e., the distance between the left limit and the value at `a`.
 We give a version relative to a set `s`. -/
 theorem eVariationOn_on_inter_Iic_eq_Iio_add_edist
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} {a : α} {l : E}
+    [TopologicalSpace α] [OrderTopology α] {f : α → M} {s : Set α} {a : α} {l : M}
     (h : (𝓝[s ∩ Iio a] a).NeBot) (ha : a ∈ s)
     (h'f : Tendsto f (𝓝[s ∩ Iio a] a) (𝓝 l)) :
     eVariationOn f (s ∩ Iic a) = eVariationOn f (s ∩ Iio a) + edist (f a) l := by
@@ -664,7 +665,7 @@ theorem eVariationOn_on_inter_Iic_eq_Iio_add_edist
 contribution of `a`, i.e., the distance between the right limit and the value at `a`.
 We give a version relative to a set `s`. -/
 theorem eVariationOn_on_inter_Ici_eq_Ioi_add_edist
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} {a : α} {l : E}
+    [TopologicalSpace α] [OrderTopology α] {f : α → M} {s : Set α} {a : α} {l : M}
     (h : (𝓝[s ∩ Ioi a] a).NeBot) (ha : a ∈ s)
     (h'f : Tendsto f (𝓝[s ∩ Ioi a] a) (𝓝 l)) :
     eVariationOn f (s ∩ Ici a) = eVariationOn f (s ∩ Ioi a) + edist (f a) l := by
@@ -674,7 +675,7 @@ theorem eVariationOn_on_inter_Ici_eq_Ioi_add_edist
 /-- If a function is continuous on the left at a point `a`, then its variations on `Iio a` and
 on `Iic a` coincide. We give a version relative to a set `s`. -/
 lemma eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} {a : α}
+    [TopologicalSpace α] [OrderTopology α] {f : α → M} {s : Set α} {a : α}
     (h : (𝓝[s ∩ Iio a] a).NeBot) (h' : ContinuousWithinAt f (s ∩ Iic a) a) :
     eVariationOn f (s ∩ Iio a) = eVariationOn f (s ∩ Iic a) := by
   by_cases ha : a ∈ s
@@ -686,14 +687,14 @@ lemma eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt
 /-- If a function is continuous on the right at a point `a`, then its variations on `Ioi a` and
 on `Ici a` coincide. We give a version relative to a set `s`. -/
 lemma eVariationOn_inter_Ioi_eq_inter_Ici_of_continuousWithinAt
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} {a : α}
+    [TopologicalSpace α] [OrderTopology α] {f : α → M} {s : Set α} {a : α}
     (h : (𝓝[s ∩ Ioi a] a).NeBot) (h' : ContinuousWithinAt f (s ∩ Ici a) a) :
     eVariationOn f (s ∩ Ioi a) = eVariationOn f (s ∩ Ici a) := by
   rw [← comp_ofDual f, ← comp_ofDual f]
   exact eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt h h'
 
 lemma eVariationOn_Ioc_eq_Icc_of_continuousWithinAt'
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {a b : α}
+    [TopologicalSpace α] [OrderTopology α] {f : α → M} {a b : α}
     [h : (𝓝[>] a).NeBot] (h' : ContinuousWithinAt f (Ici a) a) :
     eVariationOn f (Ioc a b) = eVariationOn f (Icc a b) := by
   rcases le_or_gt b a with hab | hab
@@ -705,7 +706,7 @@ lemma eVariationOn_Ioc_eq_Icc_of_continuousWithinAt'
     (h'.mono inter_subset_right) <;> grind
 
 lemma eVariationOn_Ioc_eq_Icc_of_continuousWithinAt
-    [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α] {f : α → E} {a b : α}
+    [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α] {f : α → M} {a b : α}
     (h' : ContinuousWithinAt f (Ici a) a) :
     eVariationOn f (Ioc a b) = eVariationOn f (Icc a b) := by
   rcases le_or_gt b a with hab | hab
@@ -714,14 +715,14 @@ lemma eVariationOn_Ioc_eq_Icc_of_continuousWithinAt
   exact eVariationOn_Ioc_eq_Icc_of_continuousWithinAt' h'
 
 lemma eVariationOn_Ico_eq_Icc_of_continuousWithinAt'
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {a b : α}
+    [TopologicalSpace α] [OrderTopology α] {f : α → M} {a b : α}
     [h : (𝓝[<] a).NeBot] (h' : ContinuousWithinAt f (Iic a) a) :
     eVariationOn f (Ico b a) = eVariationOn f (Icc b a) := by
   rw [← comp_ofDual f, ← comp_ofDual f, ← Ioc_toDual, ← Icc_toDual]
   exact eVariationOn_Ioc_eq_Icc_of_continuousWithinAt' h'
 
 lemma eVariationOn_Ico_eq_Icc_of_continuousWithinAt
-    [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α] {f : α → E} {a b : α}
+    [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α] {f : α → M} {a b : α}
     (h' : ContinuousWithinAt f (Iic a) a) :
     eVariationOn f (Ico b a) = eVariationOn f (Icc b a) := by
   rw [← comp_ofDual f, ← comp_ofDual f, ← Ioc_toDual, ← Icc_toDual]
@@ -805,8 +806,8 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ici_zero_of_filter
 
 /-- A bounded variation function has a limit on its left within a set. Version with a general
 filter, covering both left neighborhoods of points and `atTop`. -/
-theorem _root_.BoundedVariationOn.exists_tendsto_left_of_filter [CompleteSpace E]
-    {f : α → E} {s : Set α} (hf : BoundedVariationOn f s)
+theorem _root_.BoundedVariationOn.exists_tendsto_left_of_filter [CompleteSpace M]
+    {f : α → M} {s : Set α} (hf : BoundedVariationOn f s)
     (L : Filter α) (hL : ∀ y ∈ s, s ∩ Ici y ∈ L) (hs : s.Nonempty) :
     ∃ l, Tendsto f L (𝓝 l) := by
   rcases hs with ⟨x₀, hx₀⟩
@@ -855,8 +856,8 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ioc_zero [TopologicalSpac
   exact hf.ofDual.tendsto_eVariationOn_Ico_zero (toDual x)
 
 /-- A bounded variation function has a limit on its left within a set. -/
-theorem _root_.BoundedVariationOn.exists_tendsto_left [CompleteSpace E] [TopologicalSpace α]
-    [OrderTopology α] {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) (x : α) :
+theorem _root_.BoundedVariationOn.exists_tendsto_left [CompleteSpace M] [TopologicalSpace α]
+    [OrderTopology α] {f : α → M} {s : Set α} (hf : BoundedVariationOn f s) (x : α) :
     ∃ l, Tendsto f (𝓝[s ∩ Iio x] x) (𝓝 l) := by
   rcases eq_empty_or_nonempty (s ∩ Iio x) with hs | hs
   · simp only [hs, nhdsWithin_empty, tendsto_bot, exists_const_iff, and_true]
@@ -865,27 +866,27 @@ theorem _root_.BoundedVariationOn.exists_tendsto_left [CompleteSpace E] [Topolog
     (hf.mono inter_subset_left) _ (fun y hy ↦ inter_mem_nhdsWithin _ (Ici_mem_nhds hy.2)) hs
 
 /-- A bounded variation function has a limit on its right within a set. -/
-theorem _root_.BoundedVariationOn.exists_tendsto_right [CompleteSpace E] [TopologicalSpace α]
-    [OrderTopology α] {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) (x : α) :
+theorem _root_.BoundedVariationOn.exists_tendsto_right [CompleteSpace M] [TopologicalSpace α]
+    [OrderTopology α] {f : α → M} {s : Set α} (hf : BoundedVariationOn f s) (x : α) :
     ∃ l, Tendsto f (𝓝[s ∩ Ioi x] x) (𝓝 l) :=
   hf.ofDual.exists_tendsto_left (toDual x)
 
 /-- A bounded variation function tends to its left-limit on its left. -/
-theorem _root_.BoundedVariationOn.tendsto_leftLim [CompleteSpace E] [TopologicalSpace α]
-    [OrderTopology α] {f : α → E} (hf : BoundedVariationOn f univ) (x : α) :
+theorem _root_.BoundedVariationOn.tendsto_leftLim [CompleteSpace M] [TopologicalSpace α]
+    [OrderTopology α] {f : α → M} (hf : BoundedVariationOn f univ) (x : α) :
     Tendsto f (𝓝[<] x) (𝓝 (f.leftLim x)) := by
   apply tendsto_leftLim_of_tendsto
   convert! hf.exists_tendsto_left x
   simp
 
 /-- A bounded variation function tends to its right-limit on its right. -/
-theorem _root_.BoundedVariationOn.tendsto_rightLim [CompleteSpace E] [TopologicalSpace α]
-    [OrderTopology α] {f : α → E} (hf : BoundedVariationOn f univ) (x : α) :
+theorem _root_.BoundedVariationOn.tendsto_rightLim [CompleteSpace M] [TopologicalSpace α]
+    [OrderTopology α] {f : α → M} (hf : BoundedVariationOn f univ) (x : α) :
     Tendsto f (𝓝[>] x) (𝓝 (f.rightLim x)) :=
   hf.ofDual.tendsto_leftLim x
 
-theorem _root_.BoundedVariationOn.eVariationOn_Iic_eq_Iio_add_edist [CompleteSpace E]
-    [DenselyOrdered α] {f : α → E} {a : α} (hf : BoundedVariationOn f univ) :
+theorem _root_.BoundedVariationOn.eVariationOn_Iic_eq_Iio_add_edist [CompleteSpace M]
+    [DenselyOrdered α] {f : α → M} {a : α} (hf : BoundedVariationOn f univ) :
     eVariationOn f (Iic a) = eVariationOn f (Iio a) + edist (f a) (f.leftLim a) := by
   let : TopologicalSpace α := Preorder.topology α
   have : OrderTopology α := ⟨rfl⟩
@@ -900,8 +901,8 @@ theorem _root_.BoundedVariationOn.eVariationOn_Iic_eq_Iio_add_edist [CompleteSpa
     simpa only [univ_inter] using hf.tendsto_leftLim _
   simpa using this
 
-theorem _root_.BoundedVariationOn.eVariationOn_Ici_eq_Ioi_add_edist [CompleteSpace E]
-    [DenselyOrdered α] {f : α → E} {a : α} (hf : BoundedVariationOn f univ) :
+theorem _root_.BoundedVariationOn.eVariationOn_Ici_eq_Ioi_add_edist [CompleteSpace M]
+    [DenselyOrdered α] {f : α → M} {a : α} (hf : BoundedVariationOn f univ) :
     eVariationOn f (Ici a) = eVariationOn f (Ioi a) + edist (f a) (f.rightLim a) := by
   rw [← eVariationOn.comp_ofDual f, ← eVariationOn.comp_ofDual f]
   exact hf.ofDual.eVariationOn_Iic_eq_Iio_add_edist (a := toDual a)
@@ -910,7 +911,7 @@ theorem _root_.BoundedVariationOn.eVariationOn_Ici_eq_Ioi_add_edist [CompleteSpa
 small closed intervals to the left of this point tends to the contribution of the point, i.e.,
 the distance between the left limit and the value at the point -/
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_left
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} {l : E}
+    [TopologicalSpace α] [OrderTopology α] {f : α → M} {s : Set α} {l : M}
     (hf : BoundedVariationOn f s) {x : α} (h'f : Tendsto f (𝓝[s ∩ Iio x] x) (𝓝 l)) (hx : x ∈ s) :
     Tendsto (fun y ↦ eVariationOn f (s ∩ Icc y x)) (𝓝[s ∩ Iio x] x) (𝓝 (edist (f x) l)) := by
   rcases eq_or_neBot (𝓝[s ∩ Iio x] x) with h | h
@@ -936,7 +937,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_left
 small closed intervals to the right of this point tends to the contribution of the point, i.e.,
 the distance between the right limit and the value at the point -/
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_right
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} {l : E}
+    [TopologicalSpace α] [OrderTopology α] {f : α → M} {s : Set α} {l : M}
     (hf : BoundedVariationOn f s) {x : α} (h'f : Tendsto f (𝓝[s ∩ Ioi x] x) (𝓝 l)) (hx : x ∈ s) :
     Tendsto (fun y ↦ eVariationOn f (s ∩ Icc x y)) (𝓝[s ∩ Ioi x] x) (𝓝 (edist (f x) l)) := by
   have : (fun y ↦ eVariationOn f (s ∩ Icc x y)) =
@@ -950,7 +951,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_right
 small closed intervals to the left of this point tends to the contribution of the point, i.e.,
 the distance between the left limit and the value at the point -/
 theorem _root_.LocallyBoundedVariationOn.tendsto_eVariationOn_Icc_left
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} {l : E}
+    [TopologicalSpace α] [OrderTopology α] {f : α → M} {s : Set α} {l : M}
     (hf : LocallyBoundedVariationOn f s) {x : α}
     (h'f : Tendsto f (𝓝[s ∩ Iio x] x) (𝓝 l)) (hx : x ∈ s) :
     Tendsto (fun y ↦ eVariationOn f (s ∩ Icc y x)) (𝓝[s ∩ Iio x] x) (𝓝 (edist (f x) l)) := by
@@ -971,7 +972,7 @@ theorem _root_.LocallyBoundedVariationOn.tendsto_eVariationOn_Icc_left
 small closed intervals to the right of this point tends to the contribution of the point, i.e.,
 the distance between the right limit and the value at the point -/
 theorem _root_.LocallyBoundedVariationOn.tendsto_eVariationOn_Icc_right
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} {l : E}
+    [TopologicalSpace α] [OrderTopology α] {f : α → M} {s : Set α} {l : M}
     (hf : LocallyBoundedVariationOn f s) {x : α}
     (h'f : Tendsto f (𝓝[s ∩ Ioi x] x) (𝓝 l)) (hx : x ∈ s) :
     Tendsto (fun y ↦ eVariationOn f (s ∩ Icc x y)) (𝓝[s ∩ Ioi x] x) (𝓝 (edist (f x) l)) := by
@@ -985,7 +986,7 @@ theorem _root_.LocallyBoundedVariationOn.tendsto_eVariationOn_Icc_right
 /-- If a function has bounded variation and is left-continuous at a point, then the variation on
 small closed intervals to the left of this point tends to `0`. -/
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_left
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α}
+    [TopologicalSpace α] [OrderTopology α] {f : α → M} {s : Set α}
     (hf : BoundedVariationOn f s) {x : α} (h : ContinuousWithinAt f (s ∩ Iic x) x) :
     Tendsto (fun y ↦ eVariationOn f (s ∩ Icc y x)) (𝓝[s] x) (𝓝 0) := by
   rcases eq_or_neBot (𝓝[s ∩ Iio x] x) with h' | h'
@@ -1010,7 +1011,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_left
 /-- If a function has bounded variation and is right-continuous at a point, then the variation on
 small closed intervals to the right of this point tends to `0`. -/
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_right
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α}
+    [TopologicalSpace α] [OrderTopology α] {f : α → M} {s : Set α}
     (hf : BoundedVariationOn f s) (x : α) (h : ContinuousWithinAt f (s ∩ Ici x) x) :
     Tendsto (fun y ↦ eVariationOn f (s ∩ Icc x y)) (𝓝[s] x) (𝓝 0) := by
   have : (fun y ↦ eVariationOn f (s ∩ Icc x y)) =
@@ -1024,7 +1025,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_right
 generally a cluster point of the values of `f` around `x`) then the variation of `g` is bounded
 by that of `f`. -/
 private lemma eVariationOn_le_of_mapClusterPt
-    [TopologicalSpace α] [OrderTopology α] {f g : α → E}
+    [TopologicalSpace α] [OrderTopology α] {f g : α → M}
     {s : Set α} (hg : ∀ x ∈ s, MapClusterPt (g x) (𝓝[s] x) f) :
     eVariationOn g s ≤ eVariationOn f s := by
   rw [eVariationOn_eq_strictMonoOn]
@@ -1033,14 +1034,14 @@ private lemma eVariationOn_le_of_mapClusterPt
   simp only
   have : Nonempty α := ⟨u 0⟩
   apply le_of_forall_lt (fun c hc ↦ ?_)
-  have : ∀ᶠ (b : ℕ → E) in 𝓝 (fun i ↦ g (u i)),
+  have : ∀ᶠ (b : ℕ → M) in 𝓝 (fun i ↦ g (u i)),
       c < ∑ i ∈ Finset.range n, edist (b (i + 1)) (b i) := by
-    have : Continuous (fun (v : ℕ → E) ↦ ∑ i ∈ Finset.range n, edist (v (i + 1)) (v i)) := by
+    have : Continuous (fun (v : ℕ → M) ↦ ∑ i ∈ Finset.range n, edist (v (i + 1)) (v i)) := by
       fun_prop
     exact (tendsto_order.1 (this.continuousAt (x := fun i ↦ g (u i))).tendsto).1 c hc
   rw [nhds_pi] at this
   obtain ⟨I, I_fin, t, t_mem, ht⟩ : ∃ (I : Set ℕ), I.Finite ∧ ∃ t, (∀ (i : ℕ), t i ∈ 𝓝 (g (u i))) ∧
-      I.pi t ⊆ {b : ℕ → E | c < ∑ i ∈ Finset.range n, edist (b (i + 1)) (b i)} := mem_pi.1 this
+      I.pi t ⊆ {b : ℕ → M | c < ∑ i ∈ Finset.range n, edist (b (i + 1)) (b i)} := mem_pi.1 this
   have : ∀ᶠ b in 𝓝 u, ∀ i ∈ ((Finset.Iic n) ×ˢ (Finset.Iic n)).filter
       (fun i ↦ i.1 < i.2), b i.1 < b i.2 := by
     rw [Filter.eventually_all_finset]
@@ -1073,37 +1074,37 @@ private lemma eVariationOn_le_of_mapClusterPt
     grind
   exact sum_le_of_monotoneOn_Iic v_mono.monotoneOn (by grind)
 
-lemma eVariationOn_leftLim_le [TopologicalSpace α] [OrderTopology α] {f : α → E}
+lemma eVariationOn_leftLim_le [TopologicalSpace α] [OrderTopology α] {f : α → M}
     {s : Set α} (hs : IsOpen s) :
     eVariationOn f.leftLim s ≤ eVariationOn f s := by
   apply eVariationOn_le_of_mapClusterPt (fun x hx ↦ ?_)
   rw [IsOpen.nhdsWithin_eq hs hx]
   exact (mapClusterPt_leftLim f x).mono nhdsWithin_le_nhds
 
-lemma eVariationOn_rightLim_le [TopologicalSpace α] [OrderTopology α] {f : α → E}
+lemma eVariationOn_rightLim_le [TopologicalSpace α] [OrderTopology α] {f : α → M}
     {s : Set α} (hs : IsOpen s) :
     eVariationOn f.rightLim s ≤ eVariationOn f s := by
   apply eVariationOn_le_of_mapClusterPt (fun x hx ↦ ?_)
   rw [IsOpen.nhdsWithin_eq hs hx]
   exact (mapClusterPt_rightLim f x).mono nhdsWithin_le_nhds
 
-lemma _root_.BoundedVariationOn.leftLim [TopologicalSpace α] [OrderTopology α] {f : α → E}
+lemma _root_.BoundedVariationOn.leftLim [TopologicalSpace α] [OrderTopology α] {f : α → M}
     (hf : BoundedVariationOn f univ) : BoundedVariationOn f.leftLim univ :=
   ((eVariationOn_leftLim_le isOpen_univ).trans_lt hf.lt_top).ne
 
-lemma _root_.BoundedVariationOn.rightLim [TopologicalSpace α] [OrderTopology α] {f : α → E}
+lemma _root_.BoundedVariationOn.rightLim [TopologicalSpace α] [OrderTopology α] {f : α → M}
     (hf : BoundedVariationOn f univ) : BoundedVariationOn f.rightLim univ :=
   ((eVariationOn_rightLim_le isOpen_univ).trans_lt hf.lt_top).ne
 
 lemma _root_.BoundedVariationOn.continuousWithinAt_leftLim [TopologicalSpace α] [OrderTopology α]
-    [CompleteSpace E] [T3Space E] {f : α → E} (hf : BoundedVariationOn f univ) {x : α} :
+    [CompleteSpace M] [T3Space M] {f : α → M} (hf : BoundedVariationOn f univ) {x : α} :
     ContinuousWithinAt f.leftLim (Iic x) x := by
   have : Tendsto f.leftLim (𝓝[<] x) (𝓝 (f.leftLim.leftLim x)) := hf.leftLim.tendsto_leftLim x
   rw [leftLim_leftLim (hf.tendsto_leftLim x)] at this
   exact continuousWithinAt_Iio_iff_Iic.1 this
 
 lemma _root_.BoundedVariationOn.continuousWithinAt_rightLim [TopologicalSpace α] [OrderTopology α]
-    [CompleteSpace E] [T3Space E] {f : α → E} (hf : BoundedVariationOn f univ) {x : α} :
+    [CompleteSpace M] [T3Space M] {f : α → M} (hf : BoundedVariationOn f univ) {x : α} :
     ContinuousWithinAt f.rightLim (Ici x) x :=
   BoundedVariationOn.continuousWithinAt_leftLim hf.ofDual
 
@@ -1130,8 +1131,8 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Iic_zero
   exact hf.ofDual.tendsto_eVariationOn_Ici_zero
 
 /-- A bounded variation function has a limit at `+∞`. -/
-theorem _root_.BoundedVariationOn.exists_tendsto_atTop [CompleteSpace E] [hE : Nonempty E]
-    {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
+theorem _root_.BoundedVariationOn.exists_tendsto_atTop [CompleteSpace M] [hM : Nonempty M]
+    {f : α → M} {s : Set α} (hf : BoundedVariationOn f s) :
     ∃ l, Tendsto f (𝓟 s ⊓ atTop) (𝓝 l) := by
   rcases eq_empty_or_nonempty s with rfl | hs
   · simp
@@ -1139,18 +1140,18 @@ theorem _root_.BoundedVariationOn.exists_tendsto_atTop [CompleteSpace E] [hE : N
       (fun y hy ↦ inter_mem_inf (mem_principal_self s) (Ici_mem_atTop _)) hs
 
 /-- A bounded variation function has a limit at `-∞`. -/
-theorem _root_.BoundedVariationOn.exists_tendsto_atBot [CompleteSpace E] [hE : Nonempty E]
-    {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
+theorem _root_.BoundedVariationOn.exists_tendsto_atBot [CompleteSpace M] [hM : Nonempty M]
+    {f : α → M} {s : Set α} (hf : BoundedVariationOn f s) :
     ∃ l, Tendsto f (𝓟 s ⊓ atBot) (𝓝 l) :=
   hf.ofDual.exists_tendsto_atTop
 
-theorem _root_.BoundedVariationOn.tendsto_atTop_limUnder [CompleteSpace E] [hE : Nonempty E]
-    {f : α → E} (hf : BoundedVariationOn f univ) :
+theorem _root_.BoundedVariationOn.tendsto_atTop_limUnder [CompleteSpace M] [hM : Nonempty M]
+    {f : α → M} (hf : BoundedVariationOn f univ) :
     Tendsto f atTop (𝓝 (limUnder atTop f)) :=
   tendsto_nhds_limUnder (by simpa using hf.exists_tendsto_atTop)
 
-theorem _root_.BoundedVariationOn.tendsto_atBot_limUnder [CompleteSpace E] [hE : Nonempty E]
-    {f : α → E} (hf : BoundedVariationOn f univ) :
+theorem _root_.BoundedVariationOn.tendsto_atBot_limUnder [CompleteSpace M] [hM : Nonempty M]
+    {f : α → M} (hf : BoundedVariationOn f univ) :
     Tendsto f atBot (𝓝 (limUnder atBot f)) :=
   tendsto_nhds_limUnder (by simpa using hf.exists_tendsto_atBot)
 
@@ -1230,8 +1231,8 @@ section LipschitzOnWith
 
 variable {F : Type*} [PseudoEMetricSpace F]
 
-theorem LipschitzOnWith.comp_eVariationOn_le {f : E → F} {C : ℝ≥0} {t : Set E}
-    (h : LipschitzOnWith C f t) {g : α → E} {s : Set α} (hg : MapsTo g s t) :
+theorem LipschitzOnWith.comp_eVariationOn_le {f : M → F} {C : ℝ≥0} {t : Set M}
+    (h : LipschitzOnWith C f t) {g : α → M} {s : Set α} (hg : MapsTo g s t) :
     eVariationOn (f ∘ g) s ≤ C * eVariationOn g s := by
   apply iSup_le _
   rintro ⟨n, ⟨u, hu, us⟩⟩
@@ -1242,32 +1243,32 @@ theorem LipschitzOnWith.comp_eVariationOn_le {f : E → F} {C : ℝ≥0} {t : Se
     _ = C * ∑ i ∈ Finset.range n, edist (g (u (i + 1))) (g (u i)) := by rw [Finset.mul_sum]
     _ ≤ C * eVariationOn g s := by grw [eVariationOn.sum_le hu us]
 
-theorem LipschitzOnWith.comp_boundedVariationOn {f : E → F} {C : ℝ≥0} {t : Set E}
-    (hf : LipschitzOnWith C f t) {g : α → E} {s : Set α} (hg : MapsTo g s t)
+theorem LipschitzOnWith.comp_boundedVariationOn {f : M → F} {C : ℝ≥0} {t : Set M}
+    (hf : LipschitzOnWith C f t) {g : α → M} {s : Set α} (hg : MapsTo g s t)
     (h : BoundedVariationOn g s) : BoundedVariationOn (f ∘ g) s :=
   ne_top_of_le_ne_top (by finiteness) (hf.comp_eVariationOn_le hg)
 
-theorem LipschitzOnWith.comp_locallyBoundedVariationOn {f : E → F} {C : ℝ≥0} {t : Set E}
-    (hf : LipschitzOnWith C f t) {g : α → E} {s : Set α} (hg : MapsTo g s t)
+theorem LipschitzOnWith.comp_locallyBoundedVariationOn {f : M → F} {C : ℝ≥0} {t : Set M}
+    (hf : LipschitzOnWith C f t) {g : α → M} {s : Set α} (hg : MapsTo g s t)
     (h : LocallyBoundedVariationOn g s) : LocallyBoundedVariationOn (f ∘ g) s :=
   fun x y xs ys =>
   hf.comp_boundedVariationOn (hg.mono_left inter_subset_left) (h x y xs ys)
 
-theorem LipschitzWith.comp_boundedVariationOn {f : E → F} {C : ℝ≥0} (hf : LipschitzWith C f)
-    {g : α → E} {s : Set α} (h : BoundedVariationOn g s) : BoundedVariationOn (f ∘ g) s :=
+theorem LipschitzWith.comp_boundedVariationOn {f : M → F} {C : ℝ≥0} (hf : LipschitzWith C f)
+    {g : α → M} {s : Set α} (h : BoundedVariationOn g s) : BoundedVariationOn (f ∘ g) s :=
   hf.lipschitzOnWith.comp_boundedVariationOn (mapsTo_univ _ _) h
 
-theorem LipschitzWith.comp_locallyBoundedVariationOn {f : E → F} {C : ℝ≥0}
-    (hf : LipschitzWith C f) {g : α → E} {s : Set α} (h : LocallyBoundedVariationOn g s) :
+theorem LipschitzWith.comp_locallyBoundedVariationOn {f : M → F} {C : ℝ≥0}
+    (hf : LipschitzWith C f) {g : α → M} {s : Set α} (h : LocallyBoundedVariationOn g s) :
     LocallyBoundedVariationOn (f ∘ g) s :=
   hf.lipschitzOnWith.comp_locallyBoundedVariationOn (mapsTo_univ _ _) h
 
-theorem LipschitzOnWith.locallyBoundedVariationOn {f : ℝ → E} {C : ℝ≥0} {s : Set ℝ}
+theorem LipschitzOnWith.locallyBoundedVariationOn {f : ℝ → M} {C : ℝ≥0} {s : Set ℝ}
     (hf : LipschitzOnWith C f s) : LocallyBoundedVariationOn f s :=
   hf.comp_locallyBoundedVariationOn (mapsTo_id _)
     (@monotoneOn_id ℝ _ s).locallyBoundedVariationOn
 
-theorem LipschitzWith.locallyBoundedVariationOn {f : ℝ → E} {C : ℝ≥0} (hf : LipschitzWith C f)
+theorem LipschitzWith.locallyBoundedVariationOn {f : ℝ → M} {C : ℝ≥0} (hf : LipschitzWith C f)
     (s : Set ℝ) : LocallyBoundedVariationOn f s :=
   hf.lipschitzOnWith.locallyBoundedVariationOn
 
