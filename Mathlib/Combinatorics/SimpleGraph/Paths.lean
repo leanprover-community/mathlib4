@@ -522,11 +522,6 @@ set_option warn.sorry false in
 set_option linter.style.longLine false in
 theorem isCycle_iff_isPath_dropLast_and_le_length {v} {p : G.Walk v v} : p.IsCycle ↔ p.dropLast.IsPath ∧ 3 ≤ p.length := sorry
 
--- #41460
-set_option warn.sorry false in
-set_option linter.style.longLine false in
-theorem getVert_dropLast {u v n} {p : G.Walk u v} (h : n < p.length) : p.dropLast.getVert n = p.getVert n := sorry
-
 -- moved up from below
 theorem isCycle_iff_isPath_tail_and_le_length {p : G.Walk u u} :
     p.IsCycle ↔ p.tail.IsPath ∧ 3 ≤ p.length := by
@@ -554,9 +549,8 @@ theorem isCycle_iff_getVert_injOn_Ioc {v : V} {p : G.Walk v v} :
     p.IsCycle ↔ Set.InjOn p.getVert (.Ioc 0 p.length) ∧ 3 ≤ p.length := by
   rw [isCycle_iff_isPath_tail_and_le_length, ← IsPath.getVert_injOn_iff]
   refine and_congr_left fun hlen ↦ ?_
-  have hnil : ¬p.Nil := by grind [length_eq_zero_iff]
-  simp_rw [Set.Iic_def, ← Set.Icc_bot, ← Set.Ico_add_one_right_eq_Icc, length_tail_add_one hnil,
-    ← Set.Icc_add_one_left_eq_Ioc]
+  simp_rw [Set.Iic_def, ← Set.Icc_bot, ← Set.Ico_add_one_right_eq_Icc,
+    p.length_tail_add_one <| by grind, ← Set.Icc_add_one_left_eq_Ioc]
   convert add_left_injective 1 |>.injOn.comp_iff
   all_goals ext; simp
 
