@@ -87,8 +87,7 @@ theorem mem_spectrum_iff_isRoot_charpoly {r : K} : r ∈ spectrum K A ↔ IsRoot
 
 /-- A matrix and its transpose have the same spectrum. -/
 @[simp] theorem spectrum_transpose (A : Matrix n n K) : spectrum K Aᵀ = spectrum K A := by
-  ext μ
-  rw [mem_spectrum_iff_isRoot_charpoly, mem_spectrum_iff_isRoot_charpoly, charpoly_transpose]
+  ext; simp [mem_spectrum_iff_isRoot_charpoly]
 
 theorem det_eq_prod_roots_charpoly_of_splits [IsDomain R] (hAps : B.charpoly.Splits) :
     B.det = (Matrix.charpoly B).roots.prod := by
