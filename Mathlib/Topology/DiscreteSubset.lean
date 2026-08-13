@@ -262,11 +262,11 @@ theorem eventually_codiscreteWithin_iff_forall_eventually_nhdsNE {U : Set X} {p 
   simp [mem_codiscreteWithin_iff_forall_mem_nhdsNE, Filter.eventually_iff, Set.union_def,
     imp_iff_not_or, or_comm]
 
-omit [TopologicalSpace Y] in
 /-- Two functions agree along `codiscreteWithin U` iff, for every point `x` of `U`, they agree
 along the punctured neighborhood of `x`, at every point of `U`. -/
-theorem eventuallyEq_codiscreteWithin_iff_forall_eventually_nhdsNE {U : Set X} :
-    f₁ =ᶠ[codiscreteWithin U] f₂ ↔ ∀ x ∈ U, ∀ᶠ y in 𝓝[≠] x, y ∈ U → f₁ y = f₂ y :=
+theorem eventuallyEq_codiscreteWithin_iff_forall_eventually_nhdsNE {U : Set X} {Z : Type*}
+  {g₁ g₂ : X → Z} :
+    g₁ =ᶠ[codiscreteWithin U] g₂ ↔ ∀ x ∈ U, ∀ᶠ y in 𝓝[≠] x, y ∈ U → g₁ y = g₂ y :=
   eventually_codiscreteWithin_iff_forall_eventually_nhdsNE
 
 /-- A property holds along `codiscreteWithin U` iff, for every point `x` of `U`, it holds along
