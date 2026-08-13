@@ -145,6 +145,10 @@ theorem zpowers_mul_le_sup (g h : G) : zpowers (g * h) ≤ zpowers g ⊔ zpowers
 
 end Subgroup
 
+theorem Int.zmultiples_le_zmultiples_iff {a b : ℤ} :
+    AddSubgroup.zmultiples a ≤ AddSubgroup.zmultiples b ↔ b ∣ a := by
+  rw [AddSubgroup.zmultiples_le, Int.mem_zmultiples_iff]
+
 theorem Int.zmultiples_natAbs (a : ℤ) :
     AddSubgroup.zmultiples (a.natAbs : ℤ) = AddSubgroup.zmultiples a := by
   simp [le_antisymm_iff, Int.mem_zmultiples_iff, Int.dvd_natAbs, Int.natAbs_dvd]
