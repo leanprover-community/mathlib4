@@ -71,13 +71,13 @@ noncomputable section
 /-- Construct the skeleton category as the induced category on the isomorphism classes, and derive
 its category structure.
 -/
+@[instance_reducible]
 def Skeleton : Type u₁ := InducedCategory (C := Quotient (isIsomorphicSetoid C)) C Quotient.out
 deriving
   Category,
   [Inhabited C] → Inhabited _
 
-instance (α : Sort _) [CoeSort C α] : CoeSort (Skeleton C) α :=
-  InducedCategory.hasCoeToSort Quotient.out
+deriving instance (α : Sort _) → [CoeSort C α] → CoeSort _ α for Skeleton C
 
 end
 
