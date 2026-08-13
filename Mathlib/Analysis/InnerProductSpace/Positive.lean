@@ -522,24 +522,6 @@ theorem IsIdempotentElem.TFAE [CompleteSpace E] {p : E →L[𝕜] E} (hp : IsIde
     (LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp.toLinearMap)
   tfae_finish
 
-section IsOrderedModule
-
-instance : AddLeftMono (E →L[𝕜] E) := by
-  refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
-  simpa [ContinuousLinearMap.le_def] using hg₁₂
-
-instance : AddRightMono (E →L[𝕜] E) := by
-  refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
-  simpa [ContinuousLinearMap.le_def] using hg₁₂
-
-instance instIsOrderedModule : IsOrderedModule 𝕜 (E →L[𝕜] E) where
-  smul_le_smul_of_nonneg_left f hf b₁ b₂ hb := by
-    simpa [ContinuousLinearMap.le_def, ← smul_sub] using (sub_nonneg.mpr hb).smul_of_nonneg hf
-  smul_le_smul_of_nonneg_right f hf b₁ b₂ hb := by
-    simpa [ContinuousLinearMap.le_def, ← sub_smul] using hf.smul_of_nonneg (sub_nonneg.mpr hb)
-
-end IsOrderedModule
-
 end ContinuousLinearMap
 
 /-- `U.starProjection ≤ V.starProjection` iff `U ≤ V`. -/
