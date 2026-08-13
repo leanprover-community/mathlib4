@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Presentable.Dense
-public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 
 /-!
 # Pure subobjects
