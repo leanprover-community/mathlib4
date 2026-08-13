@@ -182,7 +182,7 @@ def starMulAut [CommSemigroup R] [StarMul R] : MulAut R :=
     map_mul' := star_mul' }
 
 variable (R) in
-@[simp, grind =_]
+@[simp, grind =]
 theorem star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
   op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans op_one.symm
 
@@ -256,7 +256,7 @@ theorem symm_starAddEquiv [AddMonoid R] [StarAddMonoid R] :
   rfl
 
 variable (R) in
-@[simp, grind =_]
+@[simp, grind =]
 theorem star_zero [AddMonoid R] [StarAddMonoid R] : star (0 : R) = 0 :=
   (starAddEquiv : R ≃+ R).map_zero
 
