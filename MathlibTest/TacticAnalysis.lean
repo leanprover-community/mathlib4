@@ -37,6 +37,90 @@ example : List.sum ([1,2,3].map fun x ↦ x + 1) = 9 := by
 
 end terminalReplacement
 
+section rwaSuggestion
+
+set_option linter.tacticAnalysis.rwaSuggestion true
+
+/--
+info: Try this:
+  [apply] rwa [h₁]
+-/
+#guard_msgs in
+example (a b c : ℕ) (h₁ : a = b) (h₂ : b = c) : a = c := by
+  rw [h₁]
+  assumption
+
+-- Also detect tactics separated by `;`.
+/--
+info: Try this:
+  [apply] rwa [h₁]
+-/
+#guard_msgs in
+example (a b c : ℕ) (h₁ : a = b) (h₂ : b = c) : a = c := by
+  rw [h₁]; assumption
+
+-- Preserve an `at` location.
+/--
+info: Try this:
+  [apply] rwa [hab] at h
+-/
+#guard_msgs in
+example (P : ℕ → Prop) (a b : ℕ) (hab : a = b) (h : P a) : P b := by
+  rw [hab] at h
+  assumption
+
+-- Preserve multiple rewrite rules.
+/--
+info: Try this:
+  [apply] rwa [h₁, h₂]
+-/
+#guard_msgs in
+example (a b c d : ℕ) (h₁ : a = b) (h₂ : b = c) (h₃ : c = d) : a = d := by
+  rw [h₁, h₂]
+  assumption
+
+-- Preserve reverse rewrites.
+/--
+info: Try this:
+  [apply] rwa [← h₁]
+-/
+#guard_msgs in
+example (a b c : ℕ) (h₁ : a = b) (h₂ : a = c) : b = c := by
+  rw [← h₁]
+  assumption
+
+-- The sliding window should detect the second `rw`.
+/--
+info: Try this:
+  [apply] rwa [h₂]
+-/
+#guard_msgs in
+example (a b c d : ℕ) (h₁ : a = b) (h₂ : b = c) (h₃ : c = d) : a = d := by
+  rw [h₁]
+  rw [h₂]
+  assumption
+
+-- `rw` and `assumption` are not adjacent, so don't suggest `rwa`.
+#guard_msgs in
+example (a b c : ℕ) (h₁ : a = b) (h₂ : c = b) : a = c := by
+  rw [h₁]
+  symm
+  assumption
+
+-- Tactics in nested `by` blocks should also be analyzed.
+/--
+info: Try this:
+  [apply] rwa [h₁]
+-/
+#guard_msgs in
+example (a b c : ℕ) (h₁ : a = b) (h₂ : b = c) : a = c := by
+  have h : a = c := by
+    rw [h₁]
+    assumption
+  exact h
+
+end rwaSuggestion
+
 section rwMerge
 
 set_option linter.tacticAnalysis.rwMerge true
