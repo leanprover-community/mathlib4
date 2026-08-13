@@ -786,8 +786,7 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
   rw [connectedComponent_eq_iInter_isClopen b] at h
   -- Now we show that this can be reduced to some clopen containing `↑b` being disjoint to `↑a`
   obtain ⟨U, V, hU, ha, hb, rfl⟩ : ∃ (U : Set X) (V : Set (ConnectedComponents X)),
-      IsClopen U ∧ Disjoint (connectedComponent a) U ∧ connectedComponent b ⊆ U ∧
-        (↑) ⁻¹' V = U := by
+    IsClopen U ∧ Disjoint (connectedComponent a) U ∧ connectedComponent b ⊆ U ∧ (↑) ⁻¹' V = U := by
     have h :=
       (isClosed_connectedComponent (α := X)).isCompact.elim_finite_subfamily_closed
         _ (fun s : { s : Set X // IsClopen s ∧ b ∈ s } => s.2.1.1) h
