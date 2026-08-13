@@ -51,6 +51,7 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 
 open AlgebraicGeometry Manifold TopologicalSpace Topology
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The units of the stalk at `x` of the sheaf of smooth functions from `M` to `𝕜`, considered as a
 sheaf of commutative rings, are the functions whose values at `x` are nonzero. -/
 theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
@@ -130,6 +131,7 @@ instance smoothSheafCommRing.instLocalRing_stalk (x : M) :
 variable (M)
 
 /-- A smooth manifold can be considered as a locally ringed space. -/
+@[implicit_reducible]
 def ChartedSpace.locallyRingedSpace : LocallyRingedSpace where
   carrier := TopCat.of M
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
@@ -139,7 +141,7 @@ def ChartedSpace.locallyRingedSpace : LocallyRingedSpace where
 @[deprecated (since := "2026-04-01")]
 alias IsManifold.locallyRingedSpace := ChartedSpace.locallyRingedSpace
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable {M IM IN}
 
@@ -163,7 +165,6 @@ lemma ChartedSpace.stalkMap_locallyRingedSpaceMapAux (f : M → N) (hf : ContMDi
   refine Eq.trans ?_ (smoothSheafCommRing.evalHom_germ _ _ _ _ _ _ _ a).symm
   apply smoothSheafCommRing.evalHom_germ
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A smooth function of manifolds `f : M → N` induces a morphism of locally ringed spaces. -/
 @[simps! base]
 def ChartedSpace.locallyRingedSpaceMap (f : M → N) (hf : ContMDiff IM IN ∞ f) :

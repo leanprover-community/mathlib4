@@ -42,11 +42,11 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
   rcases exists_countable_basis X with ⟨B, hBc, -, hB⟩
   let s : Set (Set X × Set X) := { UV ∈ B ×ˢ B | closure UV.1 ⊆ UV.2 }
   -- `s` is a countable set.
-  haveI : Encodable s := ((hBc.prod hBc).mono (sep_subset _ _)).toEncodable
+  have : Encodable s := ((hBc.prod hBc).mono (sep_subset _ _)).toEncodable
   -- We don't have the space of bounded (possibly discontinuous) functions, so we equip `s`
   -- with the discrete topology and deal with `s →ᵇ ℝ` instead.
-  letI : TopologicalSpace s := ⊥
-  haveI : DiscreteTopology s := ⟨rfl⟩
+  let : TopologicalSpace s := ⊥
+  have : DiscreteTopology s := ⟨rfl⟩
   rsuffices ⟨f, hf⟩ : ∃ f : X → s →ᵇ ℝ, IsInducing f
   · exact ⟨fun x => (f x).extend (Encodable.encode' s) 0,
       (BoundedContinuousFunction.isometry_extend (Encodable.encode' s)

@@ -343,7 +343,6 @@ namespace Limits
 
 variable {J : Type u'} [SmallCategory J] (F : J ⥤ CommRingCat.{u}) {c : Cone F}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_iff_forall_isUnit (hc : IsLimit c) (r : c.pt) : IsUnit r ↔
     ∀ (j : J), IsUnit (c.π.app j r) := by
   refine ⟨fun h _ ↦ h.map _, fun h ↦ ?_⟩

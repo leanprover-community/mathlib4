@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Basics on bilinear maps
@@ -512,9 +513,6 @@ variable {R}
 lemma lsmul_eq_distribSMultoLinearMap (r : R) :
     lsmul R M r = DistribSMul.toLinearMap R M r := rfl
 
-@[deprecated (since := "2026-01-07")]
-alias lsmul_eq_DistribMulAction_toLinearMap := lsmul_eq_distribSMultoLinearMap
-
 variable {M}
 
 @[simp]
@@ -526,6 +524,7 @@ protected abbrev BilinMap : Type _ := M →ₗ[R] M →ₗ[R] Nₗ
 
 variable (R M) in
 /-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
+@[wikidata Q837924]
 protected abbrev BilinForm : Type _ := LinearMap.BilinMap R M R
 
 end CommSemiring
@@ -569,6 +568,7 @@ noncomputable def restrictScalarsRange :
     M' →ₗ[S] P' :=
   ((f.restrictScalars S).comp i).codLift k hk hf
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrictScalarsRange_apply (m : M') :
     k (restrictScalarsRange i k hk f hf m) = f (i m) := by
@@ -608,6 +608,7 @@ noncomputable def restrictScalarsRange₂ :
   (((LinearMap.restrictScalarsₗ S R _ _ _).comp
     (B.restrictScalars S)).compl₁₂ i j).codRestrict₂ k hk hB
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma restrictScalarsRange₂_apply (m : M') (n : N') :
     k (restrictScalarsRange₂ i j k hk B hB m n) = B (i m) (j n) := by
   simp [restrictScalarsRange₂]

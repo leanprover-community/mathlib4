@@ -55,7 +55,7 @@ lemma res_obj_V : (res f M).V = M.V := rfl
 lemma resMap_hom_toLinearMap {M N : Rep k G} (p : M ⟶ N) :
     (resMap f p).hom.toLinearMap = p.hom.toLinearMap := rfl
 
-@[deprecated (since := "26/06/2026")]
+@[deprecated (since := "2026-06-26")]
 alias res_map_hom_toLinearMap := resMap_hom_toLinearMap
 
 @[simp]
@@ -118,6 +118,7 @@ lemma res_map_exact {k : Type u} [CommRing k]
     (S.map (resFunctor f)).Exact ↔ S.Exact := by
   rw [ShortComplex.exact_map_iff_of_faithful]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma shortExact_res {k : Type u} [CommRing k] (φ : H →* G) {S : ShortComplex (Rep.{w} k G)} :
     (S.map (resFunctor φ)).ShortExact ↔ S.ShortExact := by
   constructor
