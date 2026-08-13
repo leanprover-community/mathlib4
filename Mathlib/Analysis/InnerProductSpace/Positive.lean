@@ -175,10 +175,10 @@ instance instLoewnerPartialOrder : PartialOrder (E →ₗ[𝕜] E) where
     rw [← h₂.isSymmetric.coe_re_inner_apply_self, RCLike.ofReal_eq_zero]
     exact le_antisymm hba2 (h₂.2 _)
 
-lemma le_def (f g : E →ₗ[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
+lemma le_def {f g : E →ₗ[𝕜] E} : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
 lemma nonneg_iff_isPositive {f : E →ₗ[𝕜] E} : 0 ≤ f ↔ f.IsPositive := by
-  simpa using le_def 0 f
+  simpa using le_def (f:=0) (g:=f)
 
 instance : IsOrderedAddMonoid (E →ₗ[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
 
@@ -471,7 +471,7 @@ instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
   le_trans _ _ _ h₁ h₂ := by simpa using h₁.add h₂
   le_antisymm _ _ h₁ h₂ := coe_inj.mp (le_antisymm h₁.toLinearMap h₂.toLinearMap)
 
-lemma le_def (f g : E →L[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
+lemma le_def {f g : E →L[𝕜] E} : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
 @[simp]
 lemma coe_le_coe_iff {f g : E →L[𝕜] E} :
@@ -479,7 +479,7 @@ lemma coe_le_coe_iff {f g : E →L[𝕜] E} :
   isPositive_toLinearMap_iff (g - f)
 
 lemma nonneg_iff_isPositive {f : E →L[𝕜] E} : 0 ≤ f ↔ f.IsPositive := by
-  simpa using le_def 0 f
+  simpa using le_def (f:=0) (g:=f)
 
 instance : IsOrderedAddMonoid (E →L[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
 
