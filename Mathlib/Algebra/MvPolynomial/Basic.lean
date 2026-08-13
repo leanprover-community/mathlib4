@@ -228,9 +228,11 @@ theorem monomial_pow : monomial s a ^ e = monomial (e • s) (a ^ e) :=
   AddMonoidAlgebra.single_pow ..
 
 @[simp]
-theorem monomial_mul {s s' : σ →₀ ℕ} {a b : R} :
+theorem monomial_mul_monomial {s s' : σ →₀ ℕ} {a b : R} :
     monomial s a * monomial s' b = monomial (s + s') (a * b) :=
   AddMonoidAlgebra.single_mul_single ..
+
+@[deprecated (since := "2026-08-08")] alias monomial_mul := monomial_mul_monomial
 
 variable (σ R)
 
@@ -248,10 +250,10 @@ theorem X_pow_eq_monomial : X n ^ e = monomial (Finsupp.single n e) (1 : R) := b
   simp [X, monomial_pow]
 
 theorem monomial_add_single : monomial (s + Finsupp.single n e) a = monomial s a * X n ^ e := by
-  rw [X_pow_eq_monomial, monomial_mul, mul_one]
+  rw [X_pow_eq_monomial, monomial_mul_monomial, mul_one]
 
 theorem monomial_single_add : monomial (Finsupp.single n e + s) a = X n ^ e * monomial s a := by
-  rw [X_pow_eq_monomial, monomial_mul, one_mul]
+  rw [X_pow_eq_monomial, monomial_mul_monomial, one_mul]
 
 theorem C_mul_X_pow_eq_monomial {s : σ} {a : R} {n : ℕ} :
     C a * X s ^ n = monomial (Finsupp.single s n) a := by
@@ -1059,7 +1061,7 @@ lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M *
   · intro r hr s
     induction hr using Submodule.mul_induction_on' with
     | mem_mul_mem m hm n hn =>
-      rw [← add_zero s, ← monomial_mul]
+      rw [← add_zero s, ← monomial_mul_monomial]
       apply Submodule.mul_mem_mul <;> simpa
     | add x _ y _ hx hy =>
       simpa [map_add] using add_mem hx hy
