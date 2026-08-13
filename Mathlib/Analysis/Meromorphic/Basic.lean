@@ -647,7 +647,7 @@ protected theorem deriv [CompleteSpace E] : MeromorphicOn (deriv f) U := fun z h
 include hf in
 /-- Iterated derivatives of meromorphic functions are meromorphic. -/
 @[fun_prop]
-theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
+theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (deriv^[n] f) U :=
   fun z hz ↦ (hf z hz).iterated_deriv
 
 /-- If `f` is meromorphic on a set, then so is its logarithmic derivative. -/
