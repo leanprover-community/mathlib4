@@ -243,8 +243,9 @@ theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u 
 theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v :=
   iSup₂_le fun _ hi ↦ IsEdgeReachable.le_edgeReachability (hi u v)
 
-theorem notEdgeReachable_degree_add_one [Fintype <| G.neighborSet u] [DecidableEq V]
+theorem notEdgeReachable_degree_add_one [Fintype <| G.neighborSet u]
     (huv : u ≠ v) : ¬G.IsEdgeReachable (G.degree u + 1) u v := by
+  classical
   intro h
   unfold IsEdgeReachable at h
   have this2 := @h (G.incidenceSet u)
@@ -260,7 +261,7 @@ theorem notEdgeReachable_degree_add_one [Fintype <| G.neighborSet u] [DecidableE
       exact h'.2 (by grind [mem_incidenceSet])
   }
 
-theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u] [DecidableEq V]
+theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u] 
     (huv : u ≠ v) : G.edgeReachability u v ≤ G.degree u := by
   simp only [edgeReachability, iSup_le_iff, Nat.cast_le]
   intro i h
@@ -268,7 +269,7 @@ theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u] [DecidableE
   apply G.notEdgeReachable_degree_add_one huv
   exact IsEdgeReachable.anti hcont h
 
-theorem edgeReachability_le_degree_right [Fintype <| G.neighborSet v] [DecidableEq V]
+theorem edgeReachability_le_degree_right [Fintype <| G.neighborSet v]
     (huv : u ≠ v) : G.edgeReachability u v ≤ G.degree v := by
   rw [edgeReachability_comm]
   exact edgeReachability_le_degree_left huv.symm
