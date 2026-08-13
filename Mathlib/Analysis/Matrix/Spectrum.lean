@@ -41,6 +41,12 @@ theorem spectrum_toLpLin [DecidableEq n] (p : ENNReal) :
     spectrum 𝕜 (toLpLin p p A) = spectrum 𝕜 A :=
   AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv (PiLp.basisFun p 𝕜 n)) _
 
+/-- The spectral radii of a matrix and its transpose are equal. See `Matrix.spectrum_transpose`. -/
+@[simp] theorem spectralRadius_transpose {K : Type*} [NormedField K] [DecidableEq n]
+    (A : Matrix n n K) :
+    spectralRadius K Aᵀ = spectralRadius K A := by
+  simp [spectralRadius]
+
 namespace IsHermitian
 
 section DecidableEq
