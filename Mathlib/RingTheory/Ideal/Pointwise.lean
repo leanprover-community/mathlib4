@@ -162,6 +162,19 @@ theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
 
 @[simp]
+theorem smul_top (a : M) : a • (⊤ : Ideal R) = ⊤ :=
+  eq_top_iff.mpr fun _ _ ↦ mem_pointwise_smul_iff_inv_smul_mem.mpr trivial
+
+@[simp]
+theorem stabilizer_top : MulAction.stabilizer M (⊤ : Ideal R) = ⊤ :=
+  eq_top_iff.mpr fun x _ ↦ MulAction.mem_stabilizer_iff.mpr (smul_top x)
+
+@[simp]
+theorem inertia_top {R : Type*} [Ring R] [MulSemiringAction M R] :
+    inertia M (⊤ : Ideal R) = ⊤ :=
+  eq_top_iff.mpr fun _ _ ↦ (AddSubgroup.mem_inertia).mpr fun _ ↦ trivial
+
+@[simp]
 theorem inertia_bot {R : Type*} [Ring R] [MulSemiringAction M R] [FaithfulSMul M R] :
     inertia M (⊥ : Ideal R) = ⊥ := by
   refine eq_bot_iff.mpr fun σ hσ ↦ Subgroup.mem_bot.mpr <| eq_of_smul_eq_smul (α := R) fun x ↦ ?_
