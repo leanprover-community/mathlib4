@@ -45,7 +45,7 @@ instance [Algebra.IsAlgebraic K L] : let := IsIntegralClosure.MulSemiringAction 
 theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K L] :
     letI := IsIntegralClosure.MulSemiringAction A K L B
     Algebra.IsInvariant A B Gal(L/K) := by
-  replace h := ((IsGalois.tfae (F := K) (E := L)).out 0 1).mp h
+  replace h := ((IsGalois.tfae (F := K) (E := L)).out 1 2).mp h
   let := IsIntegralClosure.MulSemiringAction A K L B
   refine ⟨fun b hb ↦ ?_⟩
   replace hb : algebraMap B L b ∈ IntermediateField.fixedField (⊤ : Subgroup Gal(L/K)) := by

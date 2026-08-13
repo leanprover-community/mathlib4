@@ -52,7 +52,7 @@ Instances for `Subsemiring`, `Subring`, `Subalgebra`.
 kleene algebra, idempotent semiring
 -/
 
-@[expose] public section
+public section
 
 open Function
 
