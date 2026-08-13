@@ -28,6 +28,8 @@ In this file we define the cycle type of a permutation.
 
 - `sum_cycleType` : The sum of `σ.cycleType` equals `σ.support.card`
 - `lcm_cycleType` : The lcm of `σ.cycleType` equals `orderOf σ`
+- `IsCycle.cycleType_pow` : A power of a cycle of length `n` is either the identity or a product
+  of `gcd n k` disjoint cycles of the common length `n / gcd n k`.
 - `isConj_iff_cycleType_eq` : Two permutations are conjugate if and only if they have the same
   cycle type.
 - `exists_prime_orderOf_dvd_card`: For every prime `p` dividing the order of a finite group `G`
@@ -226,6 +228,70 @@ theorem pow_prime_eq_one_iff {σ : Perm α} {p : ℕ} [hp : Fact (Nat.Prime p)] 
 theorem cycleType_of_pow_prime_eq_one {σ : Perm α} {p : ℕ} [Fact (Nat.Prime p)] (hσ : σ ^ p = 1) :
     σ.cycleType = Multiset.replicate σ.cycleType.card p :=
   Multiset.eq_replicate.mpr ⟨rfl, pow_prime_eq_one_iff.mp hσ⟩
+
+/-- Any two cycles in the cycle decomposition of a power `f ^ k` of a cycle `f` have the same
+length, namely the order `n / gcd n k` of `f ^ k`, where `n` is the length of `f`. -/
+private theorem card_support_of_mem_cycleFactorsFinset_pow {f : Perm α} (hf : f.IsCycle) {k : ℕ}
+    {c : Perm α} (hc : c ∈ (f ^ k).cycleFactorsFinset) :
+    #c.support = #f.support / (#f.support).gcd k := by
+  have horder : orderOf (f ^ k) = #f.support / (#f.support).gcd k := by
+    rw [orderOf_pow, hf.orderOf]
+  have hcyc : c.IsCycle := (mem_cycleFactorsFinset_iff.mp hc).1
+  obtain ⟨x, hx, -⟩ := id hcyc
+  have hxf : x ∈ f.support :=
+    support_pow_le f k (mem_cycleFactorsFinset_support_le hc (mem_support.mpr hx))
+  have hcx : c = (f ^ k).cycleOf x := cycle_is_cycleOf (mem_support.mpr hx) hc
+  rw [← hcyc.orderOf, ← horder]
+  refine Nat.dvd_antisymm (orderOf_dvd_of_pow_eq_one ?_) (orderOf_dvd_of_pow_eq_one ?_)
+  · -- `c` raised to the order of `f ^ k` fixes `x`, hence is the identity.
+    refine (hcyc.pow_eq_one_iff' hx).mpr ?_
+    rw [hcx, cycleOf_pow_apply_self, pow_orderOf_eq_one, one_apply]
+  · -- conversely, `f ^ k` raised to the order of `c` fixes `x`, hence is the identity.
+    have hfix : (f ^ (k * orderOf c)) x = x := by
+      rw [pow_mul, ← cycleOf_pow_apply_self, ← hcx, pow_orderOf_eq_one, one_apply]
+    rw [← pow_mul]
+    exact orderOf_dvd_iff_pow_eq_one.mp ((hf.pow_apply_eq_self_iff (mem_support.mp hxf)).mp hfix)
+
+/-- **Cycle type of a power of a cycle.** If `f` is a cycle of length `n = #f.support` and `n`
+does not divide `k` (equivalently, `f ^ k ≠ 1`), then `f ^ k` is a product of `gcd n k` disjoint
+cycles, all of length `n / gcd n k`.
+
+The nondivisibility hypothesis rules out exactly the case `f ^ k = 1`, whose cycle type is `0`
+because `cycleType` records no fixed points; see `Equiv.Perm.IsCycle.cycleType_pow` for the
+unconditional form. -/
+theorem IsCycle.cycleType_pow_of_not_dvd {f : Perm α} (hf : f.IsCycle) {k : ℕ}
+    (hk : ¬#f.support ∣ k) : (f ^ k).cycleType =
+      Multiset.replicate ((#f.support).gcd k) (#f.support / (#f.support).gcd k) := by
+  have hn : 0 < #f.support := zero_lt_two.trans_le hf.two_le_card_support
+  have hd : (#f.support).gcd k ∣ #f.support := Nat.gcd_dvd_left _ _
+  have hsupp : (f ^ k).support = f.support := hf.support_pow_eq_iff.mpr (by rwa [hf.orderOf])
+  have hrep : (f ^ k).cycleType =
+      Multiset.replicate (f ^ k).cycleType.card (#f.support / (#f.support).gcd k) := by
+    refine Multiset.eq_replicate.mpr ⟨rfl, fun m hm => ?_⟩
+    rw [cycleType_def, Multiset.mem_map] at hm
+    obtain ⟨c, hc, rfl⟩ := hm
+    exact card_support_of_mem_cycleFactorsFinset_pow hf hc
+  have hsum : (f ^ k).cycleType.card * (#f.support / (#f.support).gcd k) = #f.support := by
+    have := (f ^ k).sum_cycleType
+    rwa [hrep, Multiset.sum_replicate, smul_eq_mul, hsupp] at this
+  have hcard : (f ^ k).cycleType.card = (#f.support).gcd k := by
+    have hpos : 0 < #f.support / (#f.support).gcd k :=
+      Nat.div_pos (Nat.le_of_dvd hn hd) (Nat.gcd_pos_of_pos_left k hn)
+    refine Nat.eq_of_mul_eq_mul_right hpos ?_
+    rw [hsum, Nat.mul_div_cancel' hd]
+  rw [hrep, hcard]
+
+/-- **Cycle type of a power of a cycle**, unconditional form: the power `f ^ k` of a cycle of
+length `n = #f.support` is either the identity, when `n ∣ k`, or a product of `gcd n k` disjoint
+cycles of the common length `n / gcd n k`. -/
+theorem IsCycle.cycleType_pow {f : Perm α} (hf : f.IsCycle) (k : ℕ) :
+    (f ^ k).cycleType =
+      if #f.support ∣ k then 0
+      else Multiset.replicate ((#f.support).gcd k) (#f.support / (#f.support).gcd k) := by
+  split_ifs with h
+  · rw [← hf.orderOf, orderOf_dvd_iff_pow_eq_one] at h
+    rw [h, cycleType_one]
+  · exact hf.cycleType_pow_of_not_dvd h
 
 theorem isCycle_of_prime_order {σ : Perm α} (h1 : (orderOf σ).Prime)
     (h2 : #σ.support < 2 * orderOf σ) : σ.IsCycle := by
