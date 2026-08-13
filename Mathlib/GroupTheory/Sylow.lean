@@ -736,46 +736,39 @@ theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
   | succ n ih =>
     obtain ⟨t, htcard, hst, htH⟩ : ∃ t : Subgroup G, Nat.card t = p ^ (n + 1) ∧ (∀ g ∈ s, g ≤ t)
         ∧ t ≤ H := by
-      by_cases h : ∃ t ∈ s, Nat.card t = p ^ (n + 1)
-      · obtain ⟨t, hts, hcardt⟩ := h
-        refine ⟨t, hcardt, fun g hg ↦ hchain.le_of_not_gt hts hg fun h ↦ ?_, hle t hts⟩
-        grind [card_lt_of_lt h, Nat.le_of_dvd (Nat.pow_pos hp.pos) (hcard g hg)]
-      · let : Fintype s := Fintype.ofFinite _
-        let : LinearOrder s := hchain.linearOrder
-        let left := if h : (Finset.univ : Finset s).Nonempty then (Finset.max' _ h).val else ⊥
-        obtain ⟨hleft, hleftH⟩ : Nat.card left ∣ p ^ (n + 1) ∧ left ≤ H := by
-          unfold left
-          split_ifs with h
-          · refine ⟨hcard _ (Finset.max' _ h).prop, hle _ (Finset.max' _ h).prop⟩
-          · simp
-        obtain ⟨t, hcardt, hlet, htle⟩ := exists_subgroup_card_pow_prime_le_le hp hleft hdvd hleftH
-        refine ⟨t, hcardt, fun g hg ↦ le_trans ?_ hlet, htle⟩
-        have h : (Finset.univ : Finset s).Nonempty := ⟨⟨g, hg⟩, by simp⟩
-        simp only [left, h, ↓reduceDIte]
-        exact (Finset.univ : Finset s).le_max' ⟨g, hg⟩ (Finset.mem_univ _)
-    have hdvd' : p ^ n ∣ Nat.card t := by simp [htcard, pow_add]
-    have hchain' : IsChain (· ≤ ·) (s \ {t}) := hchain.mono Set.sdiff_subset
+      let : Fintype s := Fintype.ofFinite _
+      let : LinearOrder s := hchain.linearOrder
+      let left := if h : (Finset.univ : Finset s).Nonempty then (Finset.max' _ h).val else ⊥
+      obtain ⟨hleft, hleftH⟩ : Nat.card left ∣ p ^ (n + 1) ∧ left ≤ H := by
+        unfold left
+        split_ifs with h
+        · exact ⟨hcard _ (Finset.max' _ h).prop, hle _ (Finset.max' _ h).prop⟩
+        · simp
+      obtain ⟨t, hcardt, hlet, htle⟩ := exists_subgroup_card_pow_prime_le_le hp hleft hdvd hleftH
+      refine ⟨t, hcardt, fun g hg ↦ le_trans ?_ hlet, htle⟩
+      have h : (Finset.univ : Finset s).Nonempty := ⟨⟨g, hg⟩, by simp⟩
+      simp only [left, h, ↓reduceDIte]
+      exact (Finset.univ : Finset s).le_max' ⟨g, hg⟩ (Finset.mem_univ _)
     have hcard' (g : Subgroup G) (hg : g ∈ s \ {t}) : Nat.card g ∣ p ^ n := by
-      obtain ⟨m, hmn, hm⟩ := (Nat.dvd_prime_pow hp).mp <| hcard g <| Set.mem_of_mem_sdiff hg
-      rw [hm, Nat.pow_dvd_pow_iff_le_right hp.one_lt, ← Nat.lt_add_one_iff,
-        ← pow_lt_pow_iff_right₀ hp.one_lt, ← hm, ← htcard]
-      refine card_lt_of_lt <| lt_of_le_of_ne (hst g (Set.mem_of_mem_sdiff hg)) ?_
-      simpa using Set.notMem_of_mem_sdiff hg
-    have hle' (g : Subgroup G) (hg : g ∈ s \ {t}) : g ≤ t := hst g (Set.mem_of_mem_sdiff hg)
-    obtain ⟨f', hsf', hf'⟩ := ih t hdvd' (s \ {t}) hchain' hcard' hle'
+      obtain ⟨m, hmn, hm⟩ := (Nat.dvd_prime_pow hp).mp (hcard g hg.1)
+      have hlt : Nat.card g < Nat.card t :=
+        card_lt_of_lt <| (hst g hg.1).lt_of_ne (by simpa using hg.2)
+      rw [hm, htcard, pow_lt_pow_iff_right₀ hp.one_lt, Nat.lt_add_one_iff] at hlt
+      exact hm ▸ pow_dvd_pow p hlt
+    obtain ⟨f', hsf', hf'⟩ := ih t (by simp [htcard, pow_add]) (s \ {t})
+      (hchain.mono Set.sdiff_subset) hcard' fun g hg ↦ hst g hg.1
     let f := fun x ↦ if hx : x = Fin.last (n + 1) then t else f' (x.castPred hx)
     have hf : StrictMono f := fun x y h ↦ by
       by_cases hy : y = Fin.last (n + 1)
       · simp only [f, Fin.ne_last_of_lt h, hy, ↓reduceDIte]
         apply lt_of_le_of_ne (hf' _).2
-        grind [card_map_of_injective t.subtype_injective, Nat.pow_right_inj hp.one_lt]
+        grind [Nat.pow_right_inj hp.one_lt]
       · simpa [f, Fin.ne_last_of_lt h, hy] using h
     refine ⟨.ofStrictMono f hf, fun g hg ↦ ?_, fun x ↦ ?_⟩
     · rw [OrderEmbedding.coe_ofStrictMono, Set.mem_range]
       by_cases hgt : g = t
       · exact ⟨Fin.last (n + 1), by simp [f, hgt]⟩
-      have hgf' : g ∈ Set.range f' := by grind
-      obtain ⟨x, hx⟩ := Set.mem_range.mp hgf'
+      obtain ⟨x, hx⟩ := hsf' ⟨hg, hgt⟩
       exact ⟨x.castSucc, by simp [f, hx]⟩
     · simp only [OrderEmbedding.coe_ofStrictMono, f]
       split_ifs with hx
