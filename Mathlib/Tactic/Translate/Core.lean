@@ -658,7 +658,7 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     MetaM (ConstantInfo × Option RelevantArg) :=
   -- Set `Elab.async` to `false` so that we can catch kernel errors.
   withOptions (Elab.async.set · false) do
-  let decl ←
+  let decl ← withExporting (isExporting := (← getEnv).hasExposedBody srcDecl.name) do←
     if let some unfoldBoundaries := t.unfoldBoundaries? then
       let env ← getEnv
       -- First attempt to generate the translation without unfold boundaries.
@@ -680,12 +680,13 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     return decl
   catch ex =>
     try
-      withExporting (isExporting := !isPrivateName tgt) do check decl.1.type
+      check (decl.1.value! (allowOpaque := true))
     catch ex =>
       throwError "`@[{t.attrName}]` failed to add declaration `{.ofConstName decl.1.name}`.\n  \
         The translated type is not type correct.\n\
         {ex.toMessageData}\n\n\
         For help, see the docstring of `to_additive`, section `Troubleshooting`."
+    withExporting (isExporting := (← getEnv).hasExposedBody srcDecl.name) do
     try
       check value
     catch ex =>
@@ -775,7 +776,6 @@ occurring in `src` using the `translations` dictionary.
 -/
 partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt src : Name)
     (reorder : ArgReorder := {}) (rename : NameMap Name := {}) : CoreM Unit := do
-  withExporting (isExporting := (← getEnv).hasExposedBody src) do
   let env ← getEnv
   trace[translate_detail] "visiting {src}"
   -- if we have already translated this declaration, we do nothing.
@@ -799,7 +799,7 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
     return
   let srcDecl ← getConstInfo src
   -- we first unfold all auxlemmas, since they are not always able to be translated on their own
-  let srcDecl ← MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
+  let srcDecl ← withoutExporting do MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `rootSrc`
   for n in ← findAuxDecls srcDecl rootSrc do
     transformDeclRec t cfg rootSrc rootTgt n
