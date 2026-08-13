@@ -370,7 +370,6 @@ def productTriangle.π (j : J) :
 def productTriangle.fan : Fan T := Fan.mk (productTriangle T) (productTriangle.π T)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A family of morphisms `T' ⟶ T j` lifts to a morphism `T' ⟶ productTriangle T`. -/
 @[simps]
 def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
@@ -394,7 +393,6 @@ def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
       exact Pi.hom_ext _ _ (fun j => (by simp [← hm])))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
     (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
     (productTriangle T).mor₃ ≫ (productTriangle T).mor₁⟦1⟧' = 0 := by
