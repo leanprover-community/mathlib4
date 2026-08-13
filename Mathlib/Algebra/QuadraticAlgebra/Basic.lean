@@ -24,6 +24,8 @@ Let `R` be a commutative ring. We define:
 * `QuadraticAlgebra.map` and `QuadraticAlgebra.mapEquiv`: the `R`-algebra map, respectively
   isomorphism (when `u` is a unit), induced by the change of generator `ω ↦ u • ω + k`
 
+* `QuadraticAlgebra.algHom`: the `R`-algebra map induced by a base change `R → S`
+
 We prove:
 
 * `QuadraticAlgebra.isUnit_iff_norm_isUnit`:
@@ -430,6 +432,50 @@ def mapEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
   right_inv _ := by ext <;> simp [mul_assoc]
 
 end map
+
+section algHom
+
+variable {R S : Type*} (S)
+
+section CommSemiring
+
+variable [CommSemiring R] [CommRing S] [Algebra R S] (a b : R)
+
+/-- The `R`-algebra map between quadratic algebras induced by the base change `R → S`,
+sending `ω` to `ω`. -/
+@[simps!]
+def algHom :
+    QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b) :=
+  lift ⟨omega, by ext <;> simp [Algebra.algebraMap_eq_smul_one]⟩
+
+theorem algHom_omega :
+    algHom S a b ω = ω := by
+  ext <;> simp
+
+theorem algHom_injective [FaithfulSMul R S] :
+    Function.Injective (algHom S a b) := by
+  intro _ _ h
+  simp only [QuadraticAlgebra.ext_iff, re_algHom_apply, ← Algebra.algebraMap_eq_smul_one,
+    algebraMap.coe_inj, im_algHom_apply] at h
+  exact QuadraticAlgebra.ext_iff.mpr h
+
+end CommSemiring
+
+section CommRing
+
+variable [CommRing R] [CommRing S] [Algebra R S] (a b : R)
+
+theorem norm_algHom (x : QuadraticAlgebra R a b) :
+    norm (algHom S a b x) = algebraMap R S (norm x) := by
+  simp [norm_def, Algebra.smul_def]
+
+theorem trace_algHom (x : QuadraticAlgebra R a b) :
+    trace (algHom S a b x) = algebraMap R S (trace x) := by
+  simp [trace_def, Algebra.smul_def, map_ofNat]
+
+end CommRing
+
+end algHom
 
 section field
 
