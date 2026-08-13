@@ -199,7 +199,6 @@ lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
           (sigmaIncl f _).op ≫ (componentHom f g.unop a).op :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The counit is natural in `S : CompHausLike P` -/
 @[simps! app]
@@ -332,7 +331,6 @@ lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
   rw [← map_eq_image _ a x]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 `CompHausLike.LocallyConstant.functor` is left adjoint to the forgetful functor.
 -/
