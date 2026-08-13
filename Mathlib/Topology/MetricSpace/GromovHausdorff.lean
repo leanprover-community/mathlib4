@@ -190,7 +190,6 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
     in `ℓ^∞(ℝ)` and therefore bounded below by the Gromov-Hausdorff-distance. However, `γ` is not
     separable in general. We restrict to the union of the images of `X` and `Y` in `γ`, which is
     separable and therefore embeddable in `ℓ^∞(ℝ)`. -/
-  rcases exists_mem_of_nonempty X with ⟨xX, _⟩
   let s : Set γ := range Φ ∪ range Ψ
   let Φ' : X → s := fun y => ⟨Φ y, mem_union_left _ (mem_range_self _)⟩
   let Ψ' : Y → s := fun y => ⟨Ψ y, mem_union_right _ (mem_range_self _)⟩
@@ -259,7 +258,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     rcases eq_toGHSpace_iff.1 hp with ⟨Φ, ⟨Φisom, Φrange⟩⟩
     rcases eq_toGHSpace_iff.1 hq with ⟨Ψ, ⟨Ψisom, Ψrange⟩⟩
     have I : diam (range Φ ∪ range Ψ) ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by
-      rcases exists_mem_of_nonempty X with ⟨xX, _⟩
+      have xX : X := default
       have : ∃ y ∈ range Ψ, dist (Φ xX) y < diam (univ : Set X) + 1 + diam (univ : Set Y) := by
         rw [Ψrange]
         have : Φ xX ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
@@ -540,7 +539,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
     (hs : ∀ x : X, ∃ y ∈ s, dist x y ≤ ε₁) (hs' : ∀ x : Y, ∃ y : s, dist x (Φ y) ≤ ε₃)
     (H : ∀ x y : s, |dist x y - dist (Φ x) (Φ y)| ≤ ε₂) : ghDist X Y ≤ ε₁ + ε₂ / 2 + ε₃ := by
   refine le_of_forall_pos_le_add fun δ δ0 => ?_
-  rcases exists_mem_of_nonempty X with ⟨xX, _⟩
+  obtain ⟨xX⟩ := ‹Nonempty X›
   rcases hs xX with ⟨xs, hxs, Dxs⟩
   have sne : s.Nonempty := ⟨xs, hxs⟩
   let _ : Nonempty s := sne.to_subtype
@@ -600,7 +599,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
       exact le_of_eq (glueDist_glued_points (Z := s) Subtype.val Φ (ε₂ / 2 + δ) x)
   have : hausdorffDist (Fr '' range Φ) (range Fr) ≤ ε₃ := by
     rw [← @image_univ _ _ Fr, hausdorffDist_image Ir]
-    rcases exists_mem_of_nonempty Y with ⟨xY, _⟩
+    obtain ⟨xY⟩ := ‹Nonempty Y›
     rcases hs' xY with ⟨xs', Dxs'⟩
     have : 0 ≤ ε₃ := le_trans dist_nonneg Dxs'
     refine hausdorffDist_le_of_mem_dist this

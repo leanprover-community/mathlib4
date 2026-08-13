@@ -695,7 +695,7 @@ theorem finrank_eq_fixingSubgroup_index (L : IntermediateField F E') [IsGalois F
   classical
   rw [← IsGalois.card_fixingSubgroup_eq_finrank L', ← IsGalois.card_aut_eq_finrank F E] at h
   rw [← L'.fixingSubgroup.index_mul_card, Nat.mul_left_inj Finite.card_pos.ne'] at h
-  rw [(restrict_algEquiv hle).toLinearEquiv.finrank_eq, h, ← L'.map_fixingSubgroup_index E']
+  rw [(restrictAlgEquiv hle).toLinearEquiv.finrank_eq, h, ← L'.map_fixingSubgroup_index E']
   congr 2
   exact lift_restrict hle
 

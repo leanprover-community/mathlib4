@@ -194,7 +194,6 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
     ℱ'.obj.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x) := rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem pushforwardFamily_apply [G.IsLocallyFull K]
     {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y ⟶ X) :
@@ -509,7 +508,6 @@ instance full_sheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
   map_surjective α := ⟨⟨sheafHom α.hom⟩, Sheaf.hom_ext <| sheafHom_restrict_eq α.hom⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     Faithful (G.sheafPushforwardContinuous A J K) where
@@ -751,7 +749,6 @@ lemma sheafifyHomEquivOfIsEquivalence_naturality_right
 
 variable (A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Assuming that `(C, J)` is a dense subsite of `(D, K)` (via a functor `G : C ⥤ D`)
 and `sheafPushforwardContinuous G A J K` is an equivalence of categories, and
 that `HasWeakSheafify J A` holds, then this adjunction shows the existence
