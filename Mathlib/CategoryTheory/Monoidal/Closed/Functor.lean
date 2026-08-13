@@ -81,7 +81,6 @@ variable [Limits.PreservesLimitsOfShape (Discrete Limits.WalkingPair) F]
 def expComparison (A : C) : TwoSquare (ihom A) F F (ihom (F.obj A)) :=
   mateEquiv (ihom.adjunction A) (ihom.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
 
-set_option backward.isDefEq.respectTransparency false in
 theorem expComparison_ev (A B : C) :
     F.obj A ◁ ((expComparison F A).natTrans.app B) ≫ (ihom.ev (F.obj A)).app (F.obj B) =
       inv (prodComparison F _ _) ≫ F.map ((ihom.ev _).app _) := by
@@ -90,7 +89,6 @@ theorem expComparison_ev (A B : C) :
   simp only [prodComparisonNatTrans_app, prodComparisonNatIso_inv, NatIso.isIso_inv_app,
     IsIso.hom_inv_id]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coev_expComparison (A B : C) :
     F.map ((ihom.coev A).app B) ≫ (expComparison F A).natTrans.app (A ⊗ B) =
       (ihom.coev _).app (F.obj B) ≫ (ihom (F.obj A)).map (inv (prodComparison F A B)) := by
@@ -134,7 +132,6 @@ class MonoidalClosedFunctor : Prop where
 
 attribute [instance] MonoidalClosedFunctor.comparison_iso
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
     conjugateEquiv (h.comp (ihom.adjunction A)) ((ihom.adjunction (F.obj A)).comp h)

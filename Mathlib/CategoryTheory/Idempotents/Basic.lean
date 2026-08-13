@@ -59,7 +59,6 @@ class IsIdempotentComplete : Prop where
 
 namespace Idempotents
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A category is idempotent complete iff for all idempotent endomorphisms,
 the equalizer of the identity and this idempotent exists. -/
 theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
