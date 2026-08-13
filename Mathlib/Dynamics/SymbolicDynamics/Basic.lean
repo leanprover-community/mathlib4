@@ -107,7 +107,7 @@ between the two viewpoints, since both may naturally want to reuse names like
 @[expose] public section
 
 noncomputable section
-open Set Topology
+open Set
 
 namespace SymbolicDynamics
 
@@ -157,14 +157,18 @@ def mulShift (g : G) (x : G → A) : G → A :=
   ext h; simp [mulShift]
 
 /-- Composition of left-translation shifts corresponds to multiplication in the monoid `G`. -/
-@[to_additive] lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
+@[to_additive
+/-- Composition of left-translation shifts corresponds to addition in the additive monoid `G`. -/]
+lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
     mulShift (g₁ * g₂) x = mulShift g₂ (mulShift g₁ x) := by
   ext h; simp [mulShift, mul_assoc]
 
 variable [TopologicalSpace A]
 
 /-- The left-translation shift is continuous. -/
-@[to_additive (attr := fun_prop)] lemma continuous_mulShift (g : G) :
+@[to_additive (attr := fun_prop)
+/-- The left-translation shift is continuous. -/]
+lemma continuous_mulShift (g : G) :
     Continuous (mulShift (A := A) g) := by
   -- coordinate projections are continuous; composition preserves continuity
   unfold mulShift
@@ -390,7 +394,7 @@ noncomputable def fromConfig (x : G → A) (U : Finset G) : Pattern A G := by
   classical
   exact { config := fun g => if g ∈ U then x g else default,
           support := U,
-          condition := fun g hg => if_neg hg }
+          condition := fun g hg => ite_eq_right hg }
 
 /-- On the translated support, `p.mulShift v` agrees with `p.config` at the preimage.
 
@@ -511,7 +515,7 @@ variable {A : Type*} [TopologicalSpace A] [Inhabited A]
 variable {G : Type*} [Monoid G] [IsLeftCancelMul G]
 
 /-- Occurrence sets are open. -/
-@[to_additive isOpen_occursInAt]
+@[to_additive isOpen_occursInAt /-- Occurrence sets are open. -/]
 lemma isOpen_mulOccursInAt [DiscreteTopology A] (p : Pattern A G) (g : G) :
     IsOpen { x | p.mulOccursInAt x g } := by
   simpa [mulOccursInAt_eq_cylinder] using isOpen_cylinder _ _
@@ -543,7 +547,7 @@ lemma isClosed_mulForbidden [DiscreteTopology A] (F : Set (Pattern A G)) :
   simpa [this, isClosed_compl_iff] using isOpen_mulOccursInAt (A := A) (G := G) p v
 
 /-- Occurrence sets are closed. -/
-@[to_additive isClosed_occursInAt]
+@[to_additive isClosed_occursInAt /-- Occurrence sets are closed. -/]
 lemma isClosed_mulOccursInAt [T1Space A] (p : Pattern A G) (g : G) :
     IsClosed { x | p.mulOccursInAt x g } := by
   simpa [mulOccursInAt_eq_cylinder] using isClosed_cylinder _ _

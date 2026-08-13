@@ -146,7 +146,7 @@ instance instDecidableComapAdj (f : V → W) (G : SimpleGraph W) [DecidableRel G
 
 lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
     G.comap e.symm.toEmbedding = G.map e.toEmbedding := by
-  ext; simp only [Equiv.apply_eq_iff_eq_symm_apply, comap_adj, map_adj, Equiv.toEmbedding_apply,
+  ext; simp only [← Equiv.eq_symm_apply, comap_adj, map_adj, Equiv.toEmbedding_apply,
     exists_eq_right_right, exists_eq_right]
 
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
@@ -794,7 +794,6 @@ theorem neighborSet_map_equiv (e : V ≃ W) (w : W) :
     (G.map e).neighborSet w = e.symm ⁻¹' G.neighborSet (e.symm w) :=
   Iso.map e G |>.symm.toEmbedding.preimage_neighborSet w |>.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The graph induced on `Set.univ` is isomorphic to the original graph. -/
 @[simps!]
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
