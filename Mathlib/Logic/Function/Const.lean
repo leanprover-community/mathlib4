@@ -30,7 +30,11 @@ variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 Note that a function with empty domain and codomain is considered constant.
 If a constant function has non-empty domain, then it can be represented by `Function.const`,
-see `isConst_iff_exists_eq_const` -/
+see `isConst_iff_exists_eq_const`.
+
+The intended use is for expressing that a function is constant when the exact constant value is
+not known, unqiue or easily expressible. If the constant value can be stated explicitly, one
+shoud use `Function.const`. -/
 def IsConst (f : α → β) : Prop :=
   ∀ x y, f x = f y
 
