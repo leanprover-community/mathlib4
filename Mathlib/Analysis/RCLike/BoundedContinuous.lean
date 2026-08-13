@@ -14,7 +14,7 @@ public import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 public section
 
-open Filter Real RCLike BoundedContinuousFunction
+open Real RCLike BoundedContinuousFunction
 
 open scoped Topology
 

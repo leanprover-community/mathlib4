@@ -97,8 +97,10 @@ open LinearMap.FiniteRangeSetoid
 namespace ContinuousLinearMap
 section TVS
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [AddCommGroup F]
-    [Module 𝕜 E] [Module 𝕜 F] [TopologicalSpace E] [TopologicalSpace F]
+variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
+    [AddCommGroup E] [AddCommGroup F] [AddCommGroup G]
+    [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
+    [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
 
 /-!
 ## Definition and equivalent conditions
@@ -354,11 +356,11 @@ theorem isFredholm_tfae (u : E →L[𝕜] F) :
 /-- If `u` has a Fredholm package, it is Fredholm. -/
 theorem FredholmPackage.isFredholm {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
     IsFredholm u :=
-  isFredholm_tfae u |>.out 3 0 |>.mp (Nonempty.intro pkg)
+  isFredholm_tfae u |>.out 4 1 |>.mp (Nonempty.intro pkg)
 
 theorem isFredholm_iff_exists_isQuasiInverse {u : E →L[𝕜] F} :
     IsFredholm u ↔ ∃ v : F →L[𝕜] E, v.IsQuasiInverse u :=
-  isFredholm_tfae u |>.out 0 1
+  isFredholm_tfae u |>.out 1 2
 
 alias ⟨IsFredholm.exists_isQuasiInverse, _⟩ := isFredholm_iff_exists_isQuasiInverse
 
@@ -367,6 +369,85 @@ theorem IsFredholm.of_isQuasiInverse {u : E →L[𝕜] F} {v : F →L[𝕜] E} (
   isFredholm_iff_exists_isQuasiInverse.mpr ⟨v, h⟩
 
 end DefTFAE
+
+section Constructions
+
+/-!
+## Constructions of Fredholm operators
+-/
+
+theorem _root_.ContinuousLinearEquiv.isFredholm (e : E ≃L[𝕜] F) :
+    IsFredholm (e : E →L[𝕜] F) where
+  isStrictMap := e.isHomeomorph.isStrictMap
+  isClosed_range := by simp
+  finite_ker := by
+    rw [LinearMap.ker_eq_bot.2 (by exact e.injective)]
+    infer_instance
+  finite_coker := by simp
+  closedComplemented_ker := by simp
+
+protected theorem IsFredholm.id : IsFredholm (.id 𝕜 E) :=
+  ContinuousLinearEquiv.refl 𝕜 E |>.isFredholm
+
+theorem IsInvertible.isFredholm {f : E →L[𝕜] F} (hf : f.IsInvertible) :
+    IsFredholm f := by
+  rcases hf with ⟨e, rfl⟩
+  exact e.isFredholm
+
+variable [CompleteSpace 𝕜] [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
+  [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] [ContinuousSMul 𝕜 G]
+  [T2Space E] [T2Space F] [T2Space G]
+
+theorem isFredholm_congr {u u' : E →L[𝕜] F} (h : u.toLinearMap ≈ u'.toLinearMap) :
+    IsFredholm u ↔ IsFredholm u' := by
+  simp_rw [isFredholm_iff_exists_isQuasiInverse]
+  exact exists_congr fun _ ↦ isQuasiInverse_congr (Setoid.refl _) (Setoid.symm h)
+
+theorem IsFredholm.congr {u u' : E →L[𝕜] F} (hu : IsFredholm u)
+    (h : u.toLinearMap ≈ u'.toLinearMap) :
+    IsFredholm u' := (isFredholm_congr h).mp hu
+
+theorem IsFredholm.add_hasFiniteRange {u v : E →L[𝕜] F} (hu : IsFredholm u)
+    (hv : HasFiniteRange v.toLinearMap) :
+    IsFredholm (u + v) :=
+  hu.congr (by simpa [equiv_iff_hasFiniteRange] using hv.neg)
+
+theorem IsFredholm.hasFiniteRange_add {u v : E →L[𝕜] F} (hu : IsFredholm u)
+    (hv : HasFiniteRange v.toLinearMap) :
+    IsFredholm (v + u) :=
+  add_comm u v ▸ hu.add_hasFiniteRange hv
+
+theorem IsFredholm.comp {f' : F →L[𝕜] G} {f : E →L[𝕜] F} (hf' : IsFredholm f')
+    (hf : IsFredholm f) : IsFredholm (f' ∘L f) := by
+  obtain ⟨g, hg⟩ := hf.exists_isQuasiInverse
+  obtain ⟨g', hg'⟩ := hf'.exists_isQuasiInverse
+  exact .of_isQuasiInverse (mod_cast hg.comp hg')
+
+theorem IsFredholm.comp_iff_left {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholm f) :
+    IsFredholm (f' ∘L f) ↔ IsFredholm f' := by
+  refine ⟨fun hcomp ↦ ?_, fun hf' ↦ hf'.comp hf⟩
+  obtain ⟨g, hg⟩ := hf.exists_isQuasiInverse
+  obtain ⟨w, hw⟩ := hcomp.exists_isQuasiInverse
+  exact .of_isQuasiInverse (mod_cast hg.of_comp_left hw)
+
+theorem IsFredholm.comp_iff_right {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf' : IsFredholm f') :
+    IsFredholm (f' ∘L f) ↔ IsFredholm f := by
+  refine ⟨fun hcomp ↦ ?_, fun hf ↦ hf'.comp hf⟩
+  obtain ⟨g', hg'⟩ := hf'.exists_isQuasiInverse
+  obtain ⟨w, hw⟩ := hcomp.exists_isQuasiInverse
+  exact .of_isQuasiInverse (mod_cast hg'.of_comp_right hw)
+
+@[simp]
+theorem isFredholm_comp_equiv {f : E ≃L[𝕜] F} {f' : F →L[𝕜] G} :
+    IsFredholm (f' ∘L (f : E →L[𝕜] F)) ↔ IsFredholm f' :=
+  f.isFredholm.comp_iff_left
+
+@[simp]
+theorem isFredholm_equiv_comp {f : E →L[𝕜] F} {f' : F ≃L[𝕜] G} :
+    IsFredholm ((f' : F →L[𝕜] G) ∘L f) ↔ IsFredholm f :=
+  f'.isFredholm.comp_iff_right
+
+end Constructions
 
 end TVS
 end ContinuousLinearMap

@@ -204,7 +204,7 @@ theorem real_inner_self_nonneg {x : F} : 0 ≤ ⟪x, x⟫_ℝ :=
   @inner_self_nonneg ℝ F _ _ _ x
 
 theorem inner_self_ofReal_re (x : E) : (re ⟪x, x⟫ : 𝕜) = ⟪x, x⟫ :=
-  ((RCLike.is_real_TFAE (⟪x, x⟫ : 𝕜)).out 2 3).2 (inner_self_im (𝕜 := 𝕜) x)
+  ((RCLike.is_real_TFAE (⟪x, x⟫ : 𝕜)).out 3 4).2 (inner_self_im (𝕜 := 𝕜) x)
 
 @[simp]
 theorem inner_self_eq_norm_sq_to_K (x : E) : ⟪x, x⟫ = (‖x‖ : 𝕜) ^ 2 := by
@@ -729,7 +729,7 @@ theorem norm_inner_eq_norm_iff {x y : E} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
     ‖⟪x, y⟫‖ = ‖x‖ * ‖y‖ ↔ ∃ r : 𝕜, r ≠ 0 ∧ y = r • x :=
   calc
     ‖⟪x, y⟫‖ = ‖x‖ * ‖y‖ ↔ x = 0 ∨ ∃ r : 𝕜, y = r • x :=
-      (norm_inner_eq_norm_tfae 𝕜 x y).out 0 2
+      (norm_inner_eq_norm_tfae 𝕜 x y).out 1 3
     _ ↔ ∃ r : 𝕜, y = r • x := or_iff_right hx₀
     _ ↔ ∃ r : 𝕜, r ≠ 0 ∧ y = r • x :=
       ⟨fun ⟨r, h⟩ => ⟨r, fun hr₀ => hy₀ <| h.symm ▸ smul_eq_zero.2 <| Or.inl hr₀, h⟩,
@@ -763,7 +763,7 @@ theorem inner_eq_norm_mul_iff_div {x y : E} (h₀ : x ≠ 0) :
   rw [← norm_ne_zero_iff, Ne, ← @ofReal_eq_zero 𝕜] at h₀'
   constructor <;> intro h
   · have : x = 0 ∨ y = (⟪x, y⟫ / ⟪x, x⟫ : 𝕜) • x :=
-      ((norm_inner_eq_norm_tfae 𝕜 x y).out 0 1).1 (by simp [h])
+      ((norm_inner_eq_norm_tfae 𝕜 x y).out 1 2).1 (by simp [h])
     rw [this.resolve_left h₀, h]
     simp [norm_smul, mul_div_cancel_right₀ _ h₀']
   · conv_lhs => rw [← h, inner_smul_right, inner_self_eq_norm_sq_to_K]

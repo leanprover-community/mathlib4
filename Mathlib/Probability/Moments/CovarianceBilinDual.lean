@@ -42,7 +42,7 @@ The hypothesis that `μ` has a second moment is written as `MemLp id 2 μ` in th
 @[expose] public section
 
 
-open MeasureTheory ProbabilityTheory Complex NormedSpace
+open MeasureTheory ProbabilityTheory NormedSpace
 open scoped ENNReal NNReal Real Topology
 
 variable {E : Type*} [NormedAddCommGroup E] {mE : MeasurableSpace E} {μ : Measure E} {p : ℝ≥0∞}
@@ -67,12 +67,12 @@ def toLpₗ (μ : Measure E) (p : ℝ≥0∞) :
 @[simp]
 lemma toLpₗ_apply (h_Lp : MemLp id p μ) (L : StrongDual 𝕜 E) :
     L.toLpₗ μ p = MemLp.toLp L (h_Lp.continuousLinearMap_comp L) := by
-  simp [toLpₗ, dif_pos h_Lp]
+  simp [toLpₗ, dite_eq_left h_Lp]
 
 @[simp]
 lemma toLpₗ_of_not_memLp (h_Lp : ¬ MemLp id p μ) (L : StrongDual 𝕜 E) :
     L.toLpₗ μ p = 0 := by
-  simp [toLpₗ, dif_neg h_Lp]
+  simp [toLpₗ, dite_eq_right h_Lp]
 
 lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) :
     ‖L.toLpₗ μ p‖ ≤ ‖L‖ * (eLpNorm id p μ).toReal := by
