@@ -37,8 +37,6 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 /-- Construct a cone for the empty diagram given an object. -/
 @[simps, implicit_reducible]
 def asEmptyCone (X : C) : Cone (Functor.empty.{0} C) :=
@@ -46,8 +44,6 @@ def asEmptyCone (X : C) : Cone (Functor.empty.{0} C) :=
     π :=
     { app := by cat_disch } }
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 /-- Construct a cocone for the empty diagram given an object. -/
 @[implicit_reducible, simps]
 def asEmptyCocone (X : C) : Cocone (Functor.empty.{0} C) :=
