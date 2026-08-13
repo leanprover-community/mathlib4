@@ -5,7 +5,7 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Mathlib.Tactic.Group
+public import Mathlib.Tactic.Group  -- shake: keep (tactic dependency: `_zsmul_trick` lemmas)
 
 /-!
 # `add_group` tactic
