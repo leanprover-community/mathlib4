@@ -82,11 +82,9 @@ end Map
 
 section Pullback
 
-set_option backward.isDefEq.respectTransparency false in
 instance (f : X ⟶ Y) [P.HasPullbacksAlong f] (A : P.Over Q Y) : HasPullback A.hom f :=
   HasPullbacksAlong.hasPullback A.hom A.prop
 
-set_option backward.isDefEq.respectTransparency false in
 instance {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z)
     [P.HasPullbacksAlong f] [P.HasPullbacksAlong g] [P.IsStableUnderBaseChangeAlong g]
     (A : P.Over Q Z) : HasPullback (pullback.snd A.hom g) f :=
@@ -267,11 +265,9 @@ end Map
 
 section Pushout
 
-set_option backward.isDefEq.respectTransparency false in
 instance (f : X ⟶ Y) [P.HasPushoutsAlong f] (A : P.Under Q X) : HasPushout A.hom f :=
   HasPushoutsAlong.hasPushout A.hom A.prop
 
-set_option backward.isDefEq.respectTransparency false in
 instance {X Y Z} (f : Y ⟶ X) (g : Z ⟶ Y)
     [P.HasPushoutsAlong f] [P.HasPushoutsAlong g] [P.IsStableUnderCobaseChangeAlong g]
     (A : P.Under Q Z) : HasPushout (pushout.inr A.hom g) f :=
