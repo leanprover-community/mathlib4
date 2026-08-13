@@ -29,6 +29,7 @@ abbrev EtaleAlgCat (R : Type u) [CommRing R] : Type (u + 1) :=
 
 variable (K : Type u) [Field K]
 
+/-
 namespace EtaleAlgCat
 
 instance : GaloisCategory (EtaleAlgCat K)ᵒᵖ := by
@@ -56,3 +57,5 @@ def IsNonarchimedeanLocalField.classFormation
   zmultiples_u := sorry
   inflation_u := sorry
   restriction_u := sorry
+
+-/
