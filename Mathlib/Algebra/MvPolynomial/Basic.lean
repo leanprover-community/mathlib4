@@ -228,9 +228,11 @@ theorem monomial_pow : monomial s a ^ e = monomial (e • s) (a ^ e) :=
   AddMonoidAlgebra.single_pow ..
 
 @[simp]
-theorem monomial_mul {s s' : σ →₀ ℕ} {a b : R} :
+theorem monomial_mul_monomial {s s' : σ →₀ ℕ} {a b : R} :
     monomial s a * monomial s' b = monomial (s + s') (a * b) :=
   AddMonoidAlgebra.single_mul_single ..
+
+@[deprecated (since := "2026-08-08")] alias monomial_mul := monomial_mul_monomial
 
 variable (σ R)
 
@@ -248,10 +250,10 @@ theorem X_pow_eq_monomial : X n ^ e = monomial (Finsupp.single n e) (1 : R) := b
   simp [X, monomial_pow]
 
 theorem monomial_add_single : monomial (s + Finsupp.single n e) a = monomial s a * X n ^ e := by
-  rw [X_pow_eq_monomial, monomial_mul, mul_one]
+  rw [X_pow_eq_monomial, monomial_mul_monomial, mul_one]
 
 theorem monomial_single_add : monomial (Finsupp.single n e + s) a = X n ^ e * monomial s a := by
-  rw [X_pow_eq_monomial, monomial_mul, one_mul]
+  rw [X_pow_eq_monomial, monomial_mul_monomial, one_mul]
 
 theorem C_mul_X_pow_eq_monomial {s : σ} {a : R} {n : ℕ} :
     C a * X s ^ n = monomial (Finsupp.single s n) a := by
@@ -479,12 +481,12 @@ theorem support_add [DecidableEq σ] : (p + q).support ⊆ p.support ∪ q.suppo
   Finsupp.support_add
 
 theorem support_X [Nontrivial R] : (X n : MvPolynomial σ R).support = {Finsupp.single n 1} := by
-  classical rw [X, support_monomial, if_neg]; exact one_ne_zero
+  classical rw [X, support_monomial, ite_eq_right]; exact one_ne_zero
 
 theorem support_X_pow [Nontrivial R] (s : σ) (n : ℕ) :
     (X s ^ n : MvPolynomial σ R).support = {Finsupp.single s n} := by
   classical
-    rw [X_pow_eq_monomial, support_monomial, if_neg (one_ne_zero' R)]
+    rw [X_pow_eq_monomial, support_monomial, ite_eq_right (one_ne_zero' R)]
 
 @[simp]
 theorem support_zero : (0 : MvPolynomial σ R).support = ∅ :=
@@ -581,13 +583,24 @@ theorem coeff_monomial [DecidableEq σ] (m n) (a) :
     coeff (monomial n a : MvPolynomial σ R) m = if n = m then a else 0 :=
   Finsupp.single_apply
 
+/-- A polynomial all of whose support degrees equal a fixed `d₀` is the single monomial
+`monomial d₀ (coeff d₀ φ)`. -/
+theorem eq_monomial_of_support_subset_singleton {φ : MvPolynomial σ R} {d₀ : σ →₀ ℕ}
+    (h : ∀ d ∈ φ.support, d = d₀) : φ = monomial d₀ (coeff φ d₀) := by
+  classical
+  ext d
+  rcases eq_or_ne d d₀ with rfl | hd
+  · rw [coeff_monomial, ite_eq_left rfl]
+  · rw [notMem_support_iff.mp fun hmem ↦ hd (h d hmem), coeff_monomial,
+      ite_eq_right fun e ↦ hd e.symm]
+
 @[simp]
 theorem coeff_C [DecidableEq σ] (m) (a) :
     coeff (C a : MvPolynomial σ R) m = if 0 = m then a else 0 :=
   Finsupp.single_apply
 
 theorem coeff_C_of_ne_zero {m : σ →₀ ℕ} (h : m ≠ 0) (a : R) : coeff (C a) m = 0 := by
-  classical rw [coeff_C, if_neg h.symm]
+  classical rw [coeff_C, ite_eq_right h.symm]
 
 -- The intended use case of this theorem is for `n = 1` (often useful for `pderiv`).
 @[simp]
@@ -627,9 +640,8 @@ alias coeff_X' := coeff_X
 @[simp]
 theorem coeff_X_same (i : σ) :
     (X i : MvPolynomial σ R).coeff (Finsupp.single i 1) = 1 := by
-  classical rw [coeff_X, if_pos rfl]
+  classical rw [coeff_X, ite_eq_left rfl]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_C_mul (m) (a : R) (p : MvPolynomial σ R) : (C a * p).coeff m = a * p.coeff m := by
   classical
@@ -1042,7 +1054,7 @@ lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M *
   · intro r hr s
     induction hr using Submodule.mul_induction_on' with
     | mem_mul_mem m hm n hn =>
-      rw [← add_zero s, ← monomial_mul]
+      rw [← add_zero s, ← monomial_mul_monomial]
       apply Submodule.mul_mem_mul <;> simpa
     | add x _ y _ hx hy =>
       simpa [map_add] using add_mem hx hy
