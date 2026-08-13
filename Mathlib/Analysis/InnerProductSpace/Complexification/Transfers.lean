@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.CStarAlgebra.Projection
-public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.InnerProductSpace.Complexification.Basic
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
@@ -201,14 +200,5 @@ variable (𝕜 E) in
       · simp [cfcₙ_apply_of_not_continuousOn, hf]
     · simp [cfcₙ_apply_of_not_predicate, hT]
   · simp [cfcₙ_apply_of_not_map_zero, hf0]
-
-@[simp] lemma toComplexification_sqrt [NormedSpace ℝ E] [IsScalarTower ℝ 𝕜 E] (T : E →L[𝕜] E) :
-    (CFC.sqrt T).toComplexification = CFC.sqrt T.toComplexification := by
-  by_cases h : 0 ≤ T
-  · rw [CFC.sqrt_eq_real_sqrt .., CFC.sqrt_eq_real_sqrt ..]; simp
-  · simp [CFC.sqrt_of_not_nonneg, h]
-
-@[simp] lemma toComplexification_abs [NormedSpace ℝ E] [IsScalarTower ℝ 𝕜 E] (T : E →L[𝕜] E) :
-    (CFC.abs T).toComplexification = CFC.abs T.toComplexification := by simp [CFC.abs]
 
 end ContinuousLinearMap

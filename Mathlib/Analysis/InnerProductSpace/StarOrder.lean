@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Positive
+public import Mathlib.Analysis.InnerProductSpace.Complexification.Transfers
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
@@ -28,7 +28,7 @@ open RCLike
 open scoped NNReal
 
 variable {𝕜 H : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
-variable [Algebra ℝ (H →L[𝕜] H)] [IsScalarTower ℝ 𝕜 (H →L[𝕜] H)]
+variable [NormedSpace ℝ H] [IsScalarTower ℝ 𝕜 H]
 
 open scoped InnerProductSpace in
 lemma IsPositive.spectrumRestricts {f : H →L[𝕜] H} (hf : f.IsPositive) :
@@ -53,8 +53,7 @@ instance : NonnegSpectrumClass ℝ (H →L[𝕜] H) where
   quasispectrum_nonneg_of_nonneg f hf :=
     QuasispectrumRestricts.nnreal_iff.mp <| sub_zero f ▸ hf.spectrumRestricts
 
-instance instStarOrderedRingRCLike
-    [ContinuousFunctionalCalculus ℝ (H →L[𝕜] H) IsSelfAdjoint] :
+instance instStarOrderedRingRCLike :
     StarOrderedRing (H →L[𝕜] H) where
   le_iff f g := by
     constructor
@@ -72,5 +71,14 @@ instance instStarOrderedRingRCLike
         simpa using! ContinuousLinearMap.IsPositive.adjoint_conj isPositive_one f
       | zero => exact isPositive_zero
       | add f g _ _ hf hg => exact hf.add hg
+
+@[simp] lemma toComplexification_sqrt (T : H →L[𝕜] H) :
+    (CFC.sqrt T).toComplexification = CFC.sqrt T.toComplexification := by
+  by_cases h : 0 ≤ T
+  · rw [CFC.sqrt_eq_real_sqrt .., CFC.sqrt_eq_real_sqrt ..]; simp
+  · simp [CFC.sqrt_of_not_nonneg, h]
+
+@[simp] lemma toComplexification_abs (T : H →L[𝕜] H) :
+    (CFC.abs T).toComplexification = CFC.abs T.toComplexification := by simp [CFC.abs]
 
 end ContinuousLinearMap
