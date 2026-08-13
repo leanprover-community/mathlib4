@@ -6,7 +6,6 @@ Authors: Dexin Zhang
 module
 
 public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Set.Lattice
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 
 /-!

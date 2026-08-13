@@ -6,7 +6,7 @@ Authors: Emilie Burgun
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Commute.Basic
+public import Mathlib.Algebra.Group.Semiconj.Basic
 public import Mathlib.Dynamics.PeriodicPts.Defs
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom

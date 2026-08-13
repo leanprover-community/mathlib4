@@ -5,9 +5,7 @@ Authors: Emilie Burgun
 -/
 module
 
-public import Mathlib.Dynamics.PeriodicPts.Lemmas
 public import Mathlib.GroupTheory.Exponent
-public import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 # Period of a group action
@@ -124,6 +122,5 @@ theorem period_bounded_of_exponent_pos (exp_pos : 0 < Monoid.exponent M) (m : M)
   simpa [upperBounds] using period_le_exponent exp_pos _
 
 end MonoidExponent
-
 
 end MulAction
