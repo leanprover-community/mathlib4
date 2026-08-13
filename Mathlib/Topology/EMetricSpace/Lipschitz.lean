@@ -137,8 +137,7 @@ open Metric
 variable [TopologicalSpace α] [WeakPseudoEMetricSpace α] [TopologicalSpace β]
   [WeakPseudoEMetricSpace β] [TopologicalSpace γ] [WeakPseudoEMetricSpace γ]
   [PseudoEMetricSpace δ] [PseudoEMetricSpace τ] [PseudoEMetricSpace ζ]
-variable {K : ℝ≥0} {f : α → β} {g : δ → τ} {x y : α} {t : δ → β}
-  {r : ℝ≥0∞} {s : Set α}
+variable {K : ℝ≥0} {f : α → β} {g : δ → τ} {x y : α} {t : δ → β} {r : ℝ≥0∞} {s : Set α}
 
 protected theorem lipschitzOnWith (h : LipschitzWith K f) : LipschitzOnWith K f s :=
   fun x _ y _ => h x y
