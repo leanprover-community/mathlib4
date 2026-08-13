@@ -148,7 +148,7 @@ def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
 
 /-- A monoid homomorphism `f: M → End X` into the endomorphisms of an object `X` of a category `C`
 induces a functor `SingleObj M ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def functor {X : C} (f : M →* End X) : SingleObj M ⥤ C where
   obj _ := X
   map a := f a

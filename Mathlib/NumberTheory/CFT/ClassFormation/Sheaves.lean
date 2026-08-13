@@ -38,7 +38,7 @@ namespace CategoryTheory
 
 open Limits Opposite PreGaloisCategory
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] {A : Type*} [Category* A]
 
 namespace GaloisCategory
 
@@ -78,7 +78,6 @@ lemma exists_aut_of_isGalois {Z Y : C}
 
 lemma exists_aut_of_isGaloisCover
     {Z Y X : C} [PreGaloisCategory.IsConnected Z]
-    [PreGaloisCategory.IsConnected Y]
     [PreGaloisCategory.IsConnected X] (f : Y ⟶ X)
     [IsGaloisCover f] (p₁ : Z ⟶ Y) (p₂ : Z ⟶ Y)
     (fac : p₁ ≫ f = p₂ ≫ f) :
@@ -139,6 +138,80 @@ lemma isSheafFor_singleton_iff_of_isGaloisCover
     refine existsUnique_of_exists_of_unique (hz₂ _ (fun g ↦ ?_))
       (fun x₁ x₂ hx₁ hx₂ ↦ hz₁ (by rw [hx₁, hx₂]))
     simpa using! hy (isConnectedHomMk g.hom.left) (𝟙 _) (by ext; simpa using g.hom.w)
+
+section
+
+variable (P : (isConnected C).FullSubcategoryᵒᵖ ⥤ A)
+
+section
+
+variable {Y X : C} [PreGaloisCategory.IsConnected Y] [PreGaloisCategory.IsConnected X]
+  (f : Y ⟶ X)
+
+/-- If `P` is a presheaf on the category of connected objects of a Galois category `C`,
+and `f : Y ⟶ X` is a morphism in `C`, this is the object `P.obj (op (isConnectedMk Y))`
+which its action of `Aut (Over.mk f)`, as a functor `SingleObj (Aut (Over.mk f)) ⥤ A`. -/
+@[implicit_reducible, simps!]
+def singleObjFunctorOfPresheaf :
+    SingleObj (Aut (Over.mk f)) ⥤ A :=
+  SingleObj.functor (X := P.obj (op (isConnectedMk Y)))
+    { toFun g :=
+        P.map ((isConnectedHomMk g.inv.left).op)
+      map_one' := P.map_id _
+      map_mul' g₁ g₂ := by
+        simp [← Functor.map_comp, ← op_comp]
+        rfl }
+
+/-- If `P` is a presheaf on the category of connected objects of a Galois category `C`,
+and `f : Y ⟶ X` is a morphism in `C`, this is the cone with point `P.obj (op (isConnectedMk X))`
+for the functor `SingleObj (Aut (Over.mk f)) ⥤ A` given by ``P.obj (op (isConnectedMk Y))`. -/
+@[implicit_reducible, simps, nolint unusedArguments]
+def coneOfPresheaf [IsGaloisCover f] :
+    Cone (singleObjFunctorOfPresheaf P f) where
+  pt := P.obj (op (isConnectedMk X))
+  π := SingleObj.natTrans (P.map (isConnectedHomMk f).op) (fun g ↦ by
+    dsimp
+    simp only [Category.id_comp, ← Functor.map_comp, ← op_comp]
+    congr 2
+    ext
+    simpa using g.inv.w.symm)
+
+lemma nonempty_isLimit_coneOfPresheaf_iff [IsGaloisCover f] :
+    Nonempty (IsLimit (coneOfPresheaf P f)) ↔
+      ∀ (E : A), Presieve.IsSheafFor (P ⋙ coyoneda.obj (op E))
+        (Presieve.singleton (isConnectedHomMk f)) := by
+  simp only [isSheafFor_singleton_iff_of_isGaloisCover]
+  refine ⟨fun ⟨h⟩ E ↦ ⟨fun y₁ y₂ hy ↦ h.hom_ext (fun ⟨⟩ ↦ hy), fun y hy ↦ ?_⟩,
+    fun h ↦ ?_⟩
+  · let s : Cone (singleObjFunctorOfPresheaf P f) :=
+      { pt := E
+        π := SingleObj.natTrans y (fun g ↦ by simpa using! (hy g⁻¹).symm) }
+    exact ⟨h.lift s, h.fac s (SingleObj.star _)⟩
+  · have H (s : Cone (singleObjFunctorOfPresheaf P f)) :
+        ∃ (l : s.pt ⟶ P.obj (op (isConnectedMk X))),
+          l ≫ P.map (isConnectedHomMk f).op = s.π.app (SingleObj.star _) :=
+      (h s.pt).2 _ (fun g ↦ by simpa using! s.w (SingleObj.toEnd _ g⁻¹))
+    exact ⟨{
+      lift s := (H s).choose
+      fac s _ := (H s).choose_spec
+      uniq s m hm := (h s.pt).1 (by
+        have := hm (SingleObj.star _)
+        dsimp at this
+        simp only [SingleObj.natTrans_app] at this
+        simp [this, (H s).choose_spec])
+    }⟩
+
+end
+
+lemma isSheaf_iff :
+    Presheaf.IsSheaf (isConnectedTopology C) P ↔
+    ∀ ⦃Y X : C⦄ [PreGaloisCategory.IsConnected Y]
+      [PreGaloisCategory.IsConnected X] (f : Y ⟶ X) [IsGaloisCover f],
+        Nonempty (IsLimit (coneOfPresheaf P f)) := by
+  simp only [Presheaf.IsSheaf, isSheaf_type_iff, nonempty_isLimit_coneOfPresheaf_iff]
+  tauto
+
+end
 
 end GaloisCategory
 
