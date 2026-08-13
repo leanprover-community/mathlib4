@@ -270,6 +270,13 @@ theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
   · rw [Ne, span_singleton_eq_bot]
     exact Int.ofNat_ne_zero.mpr hI.ne_zero
 
+variable {A : Type*} [CommRing A] [Algebra A S] [IsDedekindDomain A] [Module.Free ℤ A] in
+/-- The norm of `I.under A` divides the norm of `I`. -/
+theorem absNorm_under_dvd_absNorm (I : Ideal S) : absNorm (I.under A) ∣ absNorm I := by
+  rw [absNorm_apply, absNorm_apply, Submodule.cardQuot_apply, Submodule.cardQuot_apply]
+  exact AddSubgroup.card_dvd_of_injective (quotientMap I (algebraMap A S) le_rfl)
+    quotientMap_injective
+
 variable [Module.Finite ℤ S]
 
 /-- Let `e : S ≃ I` be an additive isomorphism (therefore a `ℤ`-linear equiv).

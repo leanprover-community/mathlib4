@@ -8,6 +8,11 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.NumberTheory.SumPrimeReciprocals
+public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.RamificationInertia.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
+public import Mathlib.NumberTheory.NumberField.Ideal.Basic
 
 /-!
 # Dirichlet density of a set of prime ideals
@@ -27,11 +32,15 @@ it does not exist).
 
 ## Main results
 
-* `NumberField.primeIdealZetaSum_le_card_of_finite` — for a finite `S`, the partial sum is bounded
-  above by the number of elements of `S`.
-* `NumberField.hasDirichletDensity_empty` — the empty set has Dirichlet density `0`.
-* `NumberField.dirichletDensity_nonneg` — the Dirichlet density is nonnegative.
-* `NumberField.dirichletDensity_le_one` — the Dirichlet density is at most `1`.
+* `NumberField.Set.primeIdealZetaSum_le_card_of_finite` — for a finite `S`, the partial sum is
+  bounded above by the number of elements of `S`.
+* `NumberField.Set.summable_primeIdealZetaSum` — the prime-ideal zeta sum converges for real
+  `s > 1`.
+* `NumberField.Set.hasDirichletDensity_empty` — the empty set has Dirichlet density `0`.
+* `NumberField.Set.hasDirichletDensity_univ` — the set of all nonzero prime ideals has Dirichlet
+  density `1`.
+* `NumberField.Set.dirichletDensity_nonneg` — the Dirichlet density is nonnegative.
+* `NumberField.Set.dirichletDensity_le_one` — the Dirichlet density is at most `1`.
 
 -/
 
@@ -39,7 +48,7 @@ public section
 
 noncomputable section
 
-open Filter IsDedekindDomain Topology Set
+open Filter IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Topology Set
 
 namespace NumberField.Set
 
@@ -58,6 +67,31 @@ theorem primeIdealZetaSum_nonneg (s : ℝ) :
     0 ≤ S.primeIdealZetaSum s :=
   tsum_nonneg fun _ ↦ by positivity
 
+private theorem sum_fiber_le {s : ℝ} (hs : 0 ≤ s) (v : HeightOneSpectrum ℤ) :
+    ∑' 𝔭 : {𝔭 : HeightOneSpectrum (𝓞 K) // 𝔭.under ℤ = v}, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s)
+        ≤ (Module.finrank ℤ (𝓞 K) : ℝ) * (Ideal.absNorm v.asIdeal : ℝ) ^ (-s) := by
+  have := Fintype.ofFinite {𝔭 : HeightOneSpectrum (𝓞 K) // 𝔭.under ℤ = v}
+  rw [tsum_fintype, ← nsmul_eq_mul]
+  refine (Finset.univ.sum_le_card_nsmul _ _ fun 𝔭 _ ↦
+    Real.rpow_le_rpow_of_nonpos ?_ (Nat.cast_le.mpr <| Nat.le_of_dvd ?_ ?_)
+      (by rwa [neg_nonpos])).trans <| nsmul_le_nsmul_left (by positivity) ?_
+  · exact Nat.cast_pos.mpr <| Nat.pos_of_ne_zero v.absNorm_ne_zero
+  · exact Nat.pos_of_ne_zero 𝔭.1.absNorm_ne_zero
+  · nth_rewrite 1 [← 𝔭.prop]
+    exact Ideal.absNorm_under_dvd_absNorm _
+  · rw [Finset.card_univ, ← Nat.card_eq_fintype_card, Nat.card_congr (primesOverEquiv v)]
+    exact Ideal.ncard_primesOver_le v.asIdeal (𝓞 K)
+
+/-- The prime-ideal zeta sum converges for real `s > 1`. -/
+theorem summable_primeIdealZetaSum {s : ℝ} (hs : 1 < s) :
+    Summable (fun 𝔭 : HeightOneSpectrum (𝓞 K) ↦ (Ideal.absNorm 𝔭.asIdeal : ℝ) ^ (-s)) := by
+  simp only [← (Equiv.sigmaFiberEquiv (fun 𝔭 : HeightOneSpectrum (𝓞 K) ↦ 𝔭.under ℤ)).summable_iff,
+    Function.comp_def, Equiv.sigmaFiberEquiv_apply]
+  refine (summable_sigma_of_nonneg (fun _ ↦ by positivity)).mpr ⟨fun _ ↦ .of_finite, ?_⟩
+  refine .of_nonneg_of_le (fun _ ↦ by positivity) (sum_fiber_le (by linarith)) (.mul_left _ ?_)
+  rw [← primesEquiv.symm.summable_iff]
+  simpa [Function.comp_def] using Nat.Primes.summable_rpow.mpr <| by rwa [neg_lt_neg_iff]
+
 variable {S} in
 /-- For a finite set `S` of prime ideals, the partial sum
 $\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}$ is bounded above by the number of
@@ -68,6 +102,16 @@ theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 �
   grw [primeIdealZetaSum_def, Real.rpow_le_one_of_one_le_of_nonpos] <;>
   simp [Summable.of_finite, Nat.one_le_iff_ne_zero,
     Ideal.absNorm_eq_zero_iff, hs, HeightOneSpectrum.ne_bot]
+
+variable {S} in
+/-- For `s > 1`, the partial sum $\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}$ over a
+nonempty set `S` is positive. -/
+theorem primeIdealZetaSum_pos (hS : S.Nonempty) {s : ℝ} (hs : 1 < s) :
+    0 < S.primeIdealZetaSum s := by
+  obtain ⟨v, hv⟩ := hS
+  refine Summable.tsum_pos ((summable_primeIdealZetaSum hs).comp_injective Subtype.coe_injective)
+    (fun _ ↦ by positivity) ⟨v, hv⟩ ?_
+  exact Real.rpow_pos_of_pos (by exact_mod_cast Nat.pos_of_ne_zero v.absNorm_ne_zero) _
 
 /-- `S` has Dirichlet density `δ` when the ratio of the partial sum over `S` to the sum over all
 nonzero prime ideals,
@@ -104,11 +148,24 @@ theorem hasDirichletDensity_empty :
     HasDirichletDensity (∅ : Set (HeightOneSpectrum (𝓞 K))) 0 := by
   simp [HasDirichletDensity, primeIdealZetaSum_def]
 
+/-- The set of all nonzero prime ideals has Dirichlet density `1`. -/
+theorem hasDirichletDensity_univ :
+    HasDirichletDensity (univ : Set (HeightOneSpectrum (𝓞 K))) 1 := by
+  refine tendsto_const_nhds.congr' ?_
+  filter_upwards [self_mem_nhdsWithin] with s (hs : 1 < s)
+  exact (div_self (ne_of_gt (primeIdealZetaSum_pos univ_nonempty hs))).symm
+
 /-- The Dirichlet density of the empty set is `0`. -/
 @[simp]
 theorem dirichletDensity_empty :
     dirichletDensity (∅ : Set (HeightOneSpectrum (𝓞 K))) = 0 :=
   hasDirichletDensity_empty.dirichletDensity_eq
+
+/-- The Dirichlet density of the set of all nonzero prime ideals is `1`. -/
+@[simp]
+theorem dirichletDensity_univ :
+    dirichletDensity (univ : Set (HeightOneSpectrum (𝓞 K))) = 1 :=
+  hasDirichletDensity_univ.dirichletDensity_eq
 
 /-- The Dirichlet density is nonnegative. -/
 theorem HasDirichletDensity.nonneg {δ : ℝ} (h : S.HasDirichletDensity δ) :
