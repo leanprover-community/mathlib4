@@ -313,20 +313,19 @@ theorem LowerSemicontinuousOn.isCompact_inter_preimage_Iic {f : α → γ}
   exact hv' ▸ ks.inter_right hv
 
 open scoped Set.Notation in
-/-- An intersection of sublevel sets of a lower semicontinuous function
-on a compact set is empty if and only if a finite sub-intersection is already empty. -/
-theorem LowerSemicontinuousOn.inter_biInter_preimage_Iic_eq_empty_iff_exists_finset
+/-- An intersection of sublevel sets of a lower semicontinuous function on a compact set is
+disjoint from the compact set if and only if a finite sub-intersection already is. -/
+theorem LowerSemicontinuousOn.disjoint_biInter_preimage_Iic_iff_exists_finset
     {ι : Type*} {f : ι → α → γ}
     (ks : IsCompact s) {I : Set ι} {c : γ} (hfi : ∀ i ∈ I, LowerSemicontinuousOn (f i) s) :
-    s ∩ ⋂ i ∈ I, (f i) ⁻¹' Iic c = ∅ ↔ ∃ u : Finset I, ∀ x ∈ s, ∃ i ∈ u, c < f i x := by
+    Disjoint s (⋂ i ∈ I, (f i) ⁻¹' Iic c) ↔ ∃ u : Finset I, ∀ x ∈ s, ∃ i ∈ u, c < f i x := by
   refine ⟨fun H ↦ ?_, fun ⟨u, hu⟩ ↦ ?_⟩
   · suffices ∀ i ∈ I, IsClosed (s ↓∩ (fun i ↦ f i ⁻¹' Iic c) i) by
       simpa [Set.disjoint_left] using
-        ks.elim_finite_subfamily_isClosed_subtype _ this (disjoint_iff_inter_eq_empty.mpr H)
+        ks.elim_finite_subfamily_isClosed_subtype _ this H
     exact fun i hi ↦ lowerSemicontinuous_restrict_iff.mpr (hfi i hi) |>.isClosed_preimage c
-  · rw [Set.eq_empty_iff_forall_notMem]
-    simp only [mem_inter_iff, mem_iInter, mem_preimage, mem_Iic, not_and, not_forall,
-      exists_prop, not_le]
+  · rw [Set.disjoint_left]
+    simp only [mem_iInter, mem_preimage, mem_Iic, not_forall, exists_prop, not_le]
     grind
 
 variable [TopologicalSpace γ] [ClosedIciTopology γ]
@@ -874,13 +873,13 @@ theorem UpperSemicontinuousOn.isCompact_inter_preimage_Ici {f : α → γ}
   LowerSemicontinuousOn.isCompact_inter_preimage_Iic (γ := γᵒᵈ) hfs ks c
 
 open scoped Set.Notation in
-/-- An intersection of overlevel sets of a lower semicontinuous function
-on a compact set is empty if and only if a finite sub-intersection is already empty. -/
-theorem UpperSemicontinuousOn.inter_biInter_preimage_Ici_eq_empty_iff_exists_finset
+/-- An intersection of overlevel sets of an upper semicontinuous function on a compact set is
+disjoint from the compact set if and only if a finite sub-intersection already is. -/
+theorem UpperSemicontinuousOn.disjoint_biInter_preimage_Ici_iff_exists_finset
     {ι : Type*} {f : ι → α → γ}
     (ks : IsCompact s) {I : Set ι} {c : γ} (hfi : ∀ i ∈ I, UpperSemicontinuousOn (f i) s) :
-    s ∩ ⋂ i ∈ I, (f i) ⁻¹' Ici c = ∅ ↔ ∃ u : Finset I, ∀ x ∈ s, ∃ i ∈ u, f i x < c :=
-  LowerSemicontinuousOn.inter_biInter_preimage_Iic_eq_empty_iff_exists_finset ks hfi (γ := γᵒᵈ)
+    Disjoint s (⋂ i ∈ I, (f i) ⁻¹' Ici c) ↔ ∃ u : Finset I, ∀ x ∈ s, ∃ i ∈ u, f i x < c :=
+  LowerSemicontinuousOn.disjoint_biInter_preimage_Iic_iff_exists_finset ks hfi (γ := γᵒᵈ)
 
 variable [TopologicalSpace γ] [ClosedIicTopology γ]
 
