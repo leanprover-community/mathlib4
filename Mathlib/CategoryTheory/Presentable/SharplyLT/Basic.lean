@@ -558,7 +558,7 @@ public lemma exists_cofinal (h : SharplyLT κ₁ κ₂)
     {X : Type w} (hX : HasCardinalLT X κ₂) :
     ∃ (A : Set (CardinalDirectedPoset.SetCardinalLT κ₁ X)),
       HasCardinalLT A κ₂ ∧ IsCofinal A := by
-  have := (tfae h.lt).out 1 3
+  have := (tfae h.lt).out 2 4
   exact this.1 h.isCardinalAccessible_cardinalDirectedPoset X hX
 
 public lemma of_exists_cofinal (h₀ : κ₁ < κ₂)
@@ -566,13 +566,13 @@ public lemma of_exists_cofinal (h₀ : κ₁ < κ₂)
       ∃ (A : Set (CardinalDirectedPoset.SetCardinalLT κ₁ X)),
       HasCardinalLT A κ₂ ∧ IsCofinal A) :
     SharplyLT κ₁ κ₂ :=
-  ((tfae h₀).out 3 0).1 h
+  ((tfae h₀).out 4 1).1 h
 
 public lemma exists_isCardinalFiltered_set (h : SharplyLT κ₁ κ₂)
     {X : Type w} [PartialOrder X] [IsCardinalFiltered X κ₁]
     (A : Set X) (hA : HasCardinalLT A κ₂) :
     ∃ (B : Set X), A ⊆ B ∧ IsCardinalFiltered B κ₁ ∧ HasCardinalLT B κ₂ := by
-  have := (tfae h.lt).out 1 4
+  have := (tfae h.lt).out 2 5
   exact this.1 h.isCardinalAccessible_cardinalDirectedPoset A hA
 
 public lemma isCardinalFilteredGenerator (h : SharplyLT κ₁ κ₂)
