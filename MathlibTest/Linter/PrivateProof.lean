@@ -44,6 +44,9 @@ private theorem fooLeRefl (a : Foo) : a.n ≤ a.n := Nat.le_refl _
 /--
 info: This proof term requires `backward.privateInPublic`; wrap it instead:
   [apply] private eq0
+---
+info: With the proof terms of this command wrapped in `private`, this `set_option` should be unnecessary; delete it:
+  [apply] (delete)
 -/
 #guard_msgs in
 set_option backward.privateInPublic true in
@@ -54,6 +57,9 @@ set_option backward.privateInPublic true in
 /--
 info: This proof term requires `backward.privateInPublic`; wrap it instead:
   [apply] private eq0' 0 eq0
+---
+info: With the proof terms of this command wrapped in `private`, this `set_option` should be unnecessary; delete it:
+  [apply] (delete)
 -/
 #guard_msgs in
 set_option backward.privateInPublic true in
@@ -64,6 +70,9 @@ set_option backward.privateInPublic true in
 /--
 info: This proof term requires `backward.privateInPublic`; wrap it instead:
   [apply] (private eq0)
+---
+info: With the proof terms of this command wrapped in `private`, this `set_option` should be unnecessary; delete it:
+  [apply] (delete)
 -/
 #guard_msgs in
 set_option backward.privateInPublic true in
@@ -73,6 +82,9 @@ set_option backward.privateInPublic true in
 /--
 info: This proof term requires `backward.privateInPublic`; wrap it instead:
   [apply] (private eq0)
+---
+info: With the proof terms of this command wrapped in `private`, this `set_option` should be unnecessary; delete it:
+  [apply] (delete)
 -/
 #guard_msgs in
 set_option backward.privateInPublic true in
@@ -84,12 +96,57 @@ def typ1 (_ : FEq eq0) : Bool := true
 /--
 info: This proof term requires `backward.privateInPublic`; wrap it instead:
   [apply] private fooLeRefl
+---
+info: With the proof terms of this command wrapped in `private`, this `set_option` should be unnecessary; delete it:
+  [apply] (delete)
 -/
 #guard_msgs in
 set_option backward.privateInPublic true in
 instance inst1 : MyPreorder Foo where
   le a b := a.n ≤ b.n
   le_refl := fooLeRefl
+
+/-!
+## Deleting the `set_option`s
+
+Once every reference in a command can be wrapped, the `set_option`s which enable
+`backward.privateInPublic` for it should no longer be needed, and each is suggested for deletion in
+its own message. The suggested range runs from the `set_option` keyword through the whitespace
+following the `in`, so that applying it removes the whole line.
+-/
+
+/--
+info: This proof term requires `backward.privateInPublic`; wrap it instead:
+  [apply] private eq0
+---
+info: With the proof terms of this command wrapped in `private`, this `set_option` should be unnecessary; delete it:
+  [apply] (delete)
+---
+info: With the proof terms of this command wrapped in `private`, this `set_option` should be unnecessary; delete it:
+  [apply] (delete)
+-/
+#guard_msgs in
+set_option backward.privateInPublic.warn false in
+set_option backward.privateInPublic true in
+@[expose] def stacked : Foo := ⟨0, eq0⟩
+
+-- Unrelated `set_option`s in the chain are left alone: there are three here, but only two
+-- deletions are suggested.
+/--
+info: This proof term requires `backward.privateInPublic`; wrap it instead:
+  [apply] private eq0
+---
+info: With the proof terms of this command wrapped in `private`, this `set_option` should be unnecessary; delete it:
+  [apply] (delete)
+---
+info: With the proof terms of this command wrapped in `private`, this `set_option` should be unnecessary; delete it:
+  [apply] (delete)
+-/
+#guard_msgs in
+set_option linter.unusedVariables false in
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+@[expose] def stacked' : Foo := ⟨0, eq0⟩
 
 /-!
 ## Negative tests

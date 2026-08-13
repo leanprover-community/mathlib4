@@ -255,6 +255,31 @@ private def findWrap (source : String) (occ : Occurrence) : CommandElabM (Option
   else
     return some ⟨innerTi, innerRange, true⟩
 
+/-- Whether `stx` is the `optionValue` `val`. The value of a `set_option` is an atom, but we also
+look through a single wrapping node in case that changes. -/
+private def isOptionValue (stx : Syntax) (val : String) : Bool :=
+  let atom := if stx.isAtom then stx else if stx.getNumArgs == 1 then stx[0] else .missing
+  match atom with
+  | .atom _ v => v == val
+  | _ => false
+
+/-- The ranges, in the chain of `set_option .. in`s wrapping the current command, of those which
+set `backward.privateInPublic` to `true` or `backward.privateInPublic.warn` to `false`, each
+running from the `set_option` keyword through the whitespace following the `in`. -/
+private partial def redundantOptionRanges (stx : Syntax) : Array Lean.Syntax.Range :=
+  if stx.isOfKind ``Parser.Command.in && stx[0].isOfKind ``Parser.Command.set_option then
+    -- `Command.in` is a trailing parser: the `set_option` command, the `in` token, the command it
+    -- applies to (which is the rest of the chain).
+    let rest := redundantOptionRanges stx[2]
+    let redundant :=
+      (stx[0][1].getId == `backward.privateInPublic && isOptionValue stx[0][3] "true") ||
+      (stx[0][1].getId == `backward.privateInPublic.warn && isOptionValue stx[0][3] "false")
+    match redundant, stx[0].getPos?, stx[1].getTrailingTailPos? with
+    | true, some start, some stop => rest.push ⟨start, stop⟩
+    | _, _, _ => rest
+  else
+    #[]
+
 /-- The private declarations of the current module which appear in public positions of the
 declarations added by the current command.
 
@@ -279,9 +304,11 @@ private def publicPrivateNames (newDecls : Array Name) (moduleNames : NameSet) :
         offenders := offenders.insert c
   return offenders
 
-/-- The main entry point of the `privateProof` linter, run on the command with any leading
-`set_option ... in`s peeled off. -/
-private def check (newDecls : Array Name) (moduleNames : NameSet) : CommandElabM Unit := do
+/-- The main entry point of the `privateProof` linter. It is run with the options of the command
+with any leading `set_option ... in`s peeled off, but `stx` is the whole command, so that we can
+also suggest deleting those `set_option`s. -/
+private def check (stx : Syntax) (newDecls : Array Name) (moduleNames : NameSet) :
+    CommandElabM Unit := do
   let debug := debugPrivateProof.get (← getOptions)
   unless ← ResolveName.backward.privateInPublic.getM do return
   -- The private declarations of the current module: a reference to one of these in an exporting
@@ -323,14 +350,24 @@ private def check (newDecls : Array Name) (moduleNames : NameSet) : CommandElabM
     liftCoreM <| addSuggestion wrap.ti.stx { suggestion := .string suggestion }
       (origSpan? := wrap.ti.stx)
       (header := "This proof term requires `backward.privateInPublic`; wrap it instead:")
-  unless unfixable.isEmpty do
+  if unfixable.isEmpty then
+    -- Every reference in this command can be wrapped, so the `set_option`s enabling the option for
+    -- it should no longer be needed. One suggestion per `set_option`, not per wrap.
+    unless outermostWraps.isEmpty do
+      for range in redundantOptionRanges stx do
+        liftCoreM <| addSuggestion (Syntax.ofRange range)
+          { suggestion := .string "", messageData? := m!"(delete)" }
+          (origSpan? := Syntax.ofRange range)
+          (header := "With the proof terms of this command wrapped in `private`, this \
+            `set_option` should be unnecessary; delete it:")
+  else
     let stillPublic ← publicPrivateNames newDecls moduleNames
-    for (stx, name) in unfixable do
+    for (refStx, name) in unfixable do
       let note := if stillPublic.contains name then
           " (and it is still referenced publicly after elaboration)"
         else
           ""
-      logLint linter.privateProof stx m!"The private declaration `{name}` is referenced in an \
+      logLint linter.privateProof refStx m!"The private declaration `{name}` is referenced in an \
         exporting environment here{note}, but no enclosing proof term could be wrapped in \
         `private`."
 
@@ -344,7 +381,9 @@ public initialize privateProofLinter : StatefulLinter Unit Unit ←
       let some newDecls := readPre moduleDecls | return
       if newDecls.isEmpty then return
       let moduleNames := (readPrev moduleDecls).insertMany newDecls
-      withSetOptionIn (fun _ => check newDecls moduleNames) stx)
+      -- Note that the options are those of the innermost command, but `check` is given the whole
+      -- command syntax, `set_option .. in`s and all.
+      withSetOptionIn (fun _ => check stx newDecls moduleNames) stx)
 
 end PrivateProof
 
