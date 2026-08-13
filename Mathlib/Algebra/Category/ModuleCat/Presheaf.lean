@@ -77,7 +77,6 @@ lemma map_comp_apply {U V W : Cᵒᵖ} (i : U ⟶ V) (j : V ⟶ W) (x) :
     M.map (i ≫ j) x = M.map j (M.map i x) := by
   rw [M.map_comp]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The restriction map `M.map f` of a presheaf of modules `M`, bundled as a semilinear map
 along the ring map `R.map f`. -/
 noncomputable def restrictₛₗ {X Y : Cᵒᵖ} (f : X ⟶ Y) :
@@ -460,7 +459,6 @@ noncomputable def forgetToPresheafModuleCatMap
     ext x
     exact naturality_apply f g x
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 The forgetful functor from presheaves of modules over a presheaf of rings `R` to presheaves of
 `R(X)`-modules where `X` is an initial object.
