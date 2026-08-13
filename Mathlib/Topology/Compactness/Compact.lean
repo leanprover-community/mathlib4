@@ -264,7 +264,7 @@ theorem IsCompact.disjoint_nhdsSet_right {l : Filter X} (hs : IsCompact s) :
     Disjoint l (𝓝ˢ s) ↔ ∀ x ∈ s, Disjoint l (𝓝 x) := by
   simpa only [disjoint_comm] using hs.disjoint_nhdsSet_left
 
-/-- For every directed family of closed sets disjoint from a compact set,
+/-- For every directed family of closed sets whose intersection is disjoint from a compact set,
 there exists a single element of the family which itself is disjoint from this compact set. -/
 theorem IsCompact.elim_directed_family_closed {ι : Type v} [Nonempty ι] (hs : IsCompact s)
     (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : Disjoint s (⋂ i, t i))
@@ -273,7 +273,7 @@ theorem IsCompact.elim_directed_family_closed {ι : Type v} [Nonempty ι] (hs : 
   exact hs.elim_directed_cover (compl ∘ t) (fun i ↦ (htc i).isOpen_compl) hst
     (hdt.mono_comp _ fun _ _ ↦ compl_subset_compl.mpr)
 
-/-- For every family of closed sets disjoint from a compact set,
+/-- For every family of closed sets whose intersection is disjoint from a compact set,
 there exists a finite subfamily whose intersection is disjoint from this compact set. -/
 theorem IsCompact.elim_finite_subfamily_closed {ι : Type v} (hs : IsCompact s)
     (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : Disjoint s (⋂ i, t i)) :
@@ -311,8 +311,7 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
   let i₀ := hι.some
   suffices (t i₀ ∩ ⋂ i, t i).Nonempty by
     rwa [inter_eq_right.mpr (iInter_subset _ i₀)] at this
-  rw [← not_disjoint_iff_nonempty_inter]
-  intro hst
+  refine not_disjoint_iff_nonempty_inter.1 fun hst ↦ ?_
   obtain ⟨i, hi⟩ := (htc i₀).elim_directed_family_closed t htcl hst htd
   rcases htd i₀ i with ⟨j, hji₀, hji⟩
   obtain ⟨x, hx⟩ := htn j
@@ -363,7 +362,7 @@ theorem isCompact_of_finite_subcover
   rw [subset_compl_comm, compl_iInter₂]
   simpa only [compl_compl]
 
-/-- A set `s` is compact if for every family of closed sets disjoint from `s`,
+/-- A set `s` is compact if for every family of closed sets whose intersection is disjoint from `s`,
 there exists a finite subfamily whose intersection is disjoint from `s`. -/
 theorem isCompact_of_finite_subfamily_closed
     (h : ∀ {ι : Type u} (t : ι → Set X), (∀ i, IsClosed (t i)) → Disjoint s (⋂ i, t i) →
@@ -383,8 +382,8 @@ theorem isCompact_iff_finite_subcover :
   ⟨fun hs => hs.elim_finite_subcover, isCompact_of_finite_subcover⟩
 
 /-- A set `s` is compact if and only if
-for every family of closed sets disjoint from `s`,
-there exists a finite subfamily whose intersection is disjoint from `s`. -/
+/-- A set `s` is compact if and only if for every family of closed sets whose intersection is 
+disjoint from `s`, there exists a finite subfamily whose intersection is disjoint from `s`. -/
 theorem isCompact_iff_finite_subfamily_closed :
     IsCompact s ↔ ∀ {ι : Type u} (t : ι → Set X),
       (∀ i, IsClosed (t i)) → Disjoint s (⋂ i, t i) → ∃ u : Finset ι, Disjoint s (⋂ i ∈ u, t i) :=
