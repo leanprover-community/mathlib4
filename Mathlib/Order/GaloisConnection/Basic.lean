@@ -114,6 +114,10 @@ theorem l_iSup₂ {f : ∀ i, κ i → α} :
 theorem l_sSup {s : Set α} : l (sSup s) = ⨆ a ∈ s, l a := by
   simp only [sSup_eq_iSup, gc.l_iSup]
 
+@[to_dual]
+theorem l_sSup' {s : Set α} : l (sSup s) = sSup (l '' s) := by
+  rw [sSup_image, l_sSup gc]
+
 end CompleteLattice
 
 -- Constructing Galois connections

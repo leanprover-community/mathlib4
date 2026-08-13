@@ -92,20 +92,23 @@ theorem orthogonalBilin_span_singleton (x : M₁) : orthogonalBilin B (R₁ ∙ 
 @[deprecated (since := "2026-06-19")]
 alias _root_.LinearMap.orthogonal_span_singleton_eq_to_lin_ker := orthogonalBilin_span_singleton
 
+variable (B) in
+lemma orthogonalBilin_gc :
+    @GaloisConnection (Submodule R₁ M₁) (Submodule R₂ M₂)ᵒᵈ _ _
+      (orthogonalBilin B) (orthogonalBilin B.flip) :=
+  fun _ _ ↦ ⟨fun h _ hx _ hy ↦ h hy _ hx, fun h _ hy _ hx ↦ h hx _ hy⟩
+
 theorem orthogonalBilin_sSup (s : Set (Submodule R₁ M₁)) :
-    orthogonalBilin B (sSup s) = sInf (orthogonalBilin B '' s) := by
-  ext y
-  simp only [mem_orthogonalBilin, mem_sInf, Set.mem_image, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂]
-  exact ⟨fun h _ ha _ hn ↦ h _ (le_sSup ha hn), fun h _ hn ↦ mem_sSup.mp hn (B.flip y).ker h⟩
+    orthogonalBilin B (sSup s) = ⨅ S ∈ s, orthogonalBilin B S :=
+  (orthogonalBilin_gc B).l_sSup
 
 theorem orthogonalBilin_iSup {ι : Sort*} (f : ι → Submodule R₁ M₁) :
-    orthogonalBilin B (⨆ i, f i) = ⨅ i, orthogonalBilin B (f i) := by
-  simpa only [sSup_range, sInf_image, iInf_range] using orthogonalBilin_sSup (Set.range f)
+    orthogonalBilin B (⨆ i, f i) = ⨅ i, orthogonalBilin B (f i) :=
+  (orthogonalBilin_gc B).l_iSup
 
 theorem orthogonalBilin_sup (S T) :
-    orthogonalBilin B (S ⊔ T) = orthogonalBilin B S ⊓ orthogonalBilin B T := by
-  simpa [Set.image_pair] using orthogonalBilin_sSup {S, T}
+    orthogonalBilin B (S ⊔ T) = orthogonalBilin B S ⊓ orthogonalBilin B T :=
+  (orthogonalBilin_gc B).l_sup
 
 variable (B) in
 @[simp] theorem orthogonalBilin_sup_ker (S) :
