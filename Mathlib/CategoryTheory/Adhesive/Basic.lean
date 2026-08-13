@@ -327,7 +327,8 @@ attribute [local instance] Limits.hasPullback_symmetry in
 open IsPullback IsPushout pullback pushout in
 /-- If `a : A ⟶ Z` and `b : B ⟶ Z` are monomorphisms in an adhesive category, then the map
 `pushout (pullback.fst a b) (pullback.snd a b) ⟶ Z` induced by their pullback is a monomorphism.
-See Theorem 5.1 in Lack and Sobociński. See also `IsPushout.desc_mono_of_isPullback`. -/
+See Theorem 5.1 in [Lack and Sobociński's *Adhesive Categories*][adhesive2004]. See
+also `CategoryTheory.IsPushout.desc_mono_of_isPullback`. -/
 instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
     {a : A ⟶ Z} {b : B ⟶ Z} [Mono a] [Mono b] :
     Mono (pushout.desc a b pullback.condition) where
@@ -426,12 +427,12 @@ instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
 
 /-- In an adhesive category, if `a : A ⟶ Z` and `b : B ⟶ Z` are monomorphisms, and we have
 `IsPullback p₁ p₂ a b` and `IsPushout p₁ p₂ q₁ q₂`, then the induced map from the pushout into `Z`
-is a monomorphism. See also `Adhesive.desc_mono_of_mono`. -/
+is a monomorphism. See also `CategoryTheory.Adhesive.desc_mono_of_mono`. -/
 instance IsPushout.desc_mono_of_isPullback [Adhesive C] {A B Z P₁ P₂ : C}
     {a : A ⟶ Z} {b : B ⟶ Z} {p₁ : P₁ ⟶ A} {p₂ : P₁ ⟶ B}
     {q₁ : A ⟶ P₂} {q₂ : B ⟶ P₂} (h₂ : IsPushout p₁ p₂ q₁ q₂) (h₁ : IsPullback p₁ p₂ a b)
     [Mono a] [Mono b] : Mono (h₂.desc a b h₁.w) := by
-  let h₂' : IsPushout (pullback.fst a b) (pullback.snd a b) q₁ q₂ :=
+  have h₂' : IsPushout (pullback.fst a b) (pullback.snd a b) q₁ q₂ :=
     h₂.of_iso h₁.isoPullback (Iso.refl _) (Iso.refl _) (Iso.refl _)
       (by simp) (by simp) (by simp) (by simp)
   have : h₂.desc a b h₁.w = ((of_hasPushout _ _).isoIsPushout _ _ h₂').inv ≫

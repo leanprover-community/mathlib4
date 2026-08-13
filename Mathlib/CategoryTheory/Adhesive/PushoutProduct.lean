@@ -30,8 +30,8 @@ variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
   {F : C₁ ⥤ C₂ ⥤ C₃} {X₁ Y₁ : C₁} {X₂ Y₂ : C₂}
   {f₁ : X₁ ⟶ Y₁} {f₂ : X₂ ⟶ Y₂}
 
-/-- A Leibniz pushout is a monomorphism if its naturality square is a pullback and the morphisms
-being pulled back are monomorphisms. -/
+/-- The induced pushout map (Leibniz pushout) of an `F.PushoutObjObj` is a monomorphism if its
+naturality square is a pullback and the morphisms being pulled back are monomorphisms. -/
 theorem mono_ι_of_isPullback [Adhesive C₃] (sq : F.PushoutObjObj f₁ f₂)
     (h : IsPullback ((F.map f₁).app X₂) ((F.obj X₁).map f₂) ((F.obj Y₁).map f₂) ((F.map f₁).app Y₂))
     [Mono ((F.obj Y₁).map f₂)] [Mono ((F.map f₁).app Y₂)] : Mono sq.ι := by
@@ -51,8 +51,8 @@ open CartesianMonoidalCategory in
 monomorphism. -/
 instance [CartesianMonoidalCategory C] [Adhesive C] {X Y : Arrow C} [Mono X.hom] [Mono Y.hom] :
     Mono (X □ Y).hom := by
-  let : Mono (((curriedTensor C).obj X.right).map Y.hom) := (tensorLeft X.right).map_mono Y.hom
-  let : Mono (((curriedTensor C).map X.hom).app Y.right) := (tensorRight Y.right).map_mono X.hom
+  have : Mono (((curriedTensor C).obj X.right).map Y.hom) := (tensorLeft X.right).map_mono Y.hom
+  have : Mono (((curriedTensor C).map X.hom).app Y.right) := (tensorRight Y.right).map_mono X.hom
   refine mono_ι_of_isPullback (ofHasPushout (curriedTensor C) X.hom Y.hom)
     (IsPullback.mk' (whisker_exchange _ _).symm ?_ ?_)
   · intro _ _ _ h₁ h₂
