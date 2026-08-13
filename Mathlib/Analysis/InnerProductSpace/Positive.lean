@@ -177,7 +177,7 @@ instance instLoewnerPartialOrder : PartialOrder (E →ₗ[𝕜] E) where
 
 lemma le_def (f g : E →ₗ[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
-lemma nonneg_iff_isPositive (f : E →ₗ[𝕜] E) : 0 ≤ f ↔ f.IsPositive := by
+lemma nonneg_iff_isPositive {f : E →ₗ[𝕜] E} : 0 ≤ f ↔ f.IsPositive := by
   simpa using le_def 0 f
 
 instance : IsOrderedAddMonoid (E →ₗ[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
@@ -473,11 +473,12 @@ instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
 
 lemma le_def (f g : E →L[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
-lemma coe_le_coe_iff (f g : E →L[𝕜] E) :
+@[simp]
+lemma coe_le_coe_iff {f g : E →L[𝕜] E} :
     (f : E →ₗ[𝕜] E) ≤ g ↔ f ≤ g :=
   isPositive_toLinearMap_iff (g - f)
 
-lemma nonneg_iff_isPositive (f : E →L[𝕜] E) : 0 ≤ f ↔ f.IsPositive := by
+lemma nonneg_iff_isPositive {f : E →L[𝕜] E} : 0 ≤ f ↔ f.IsPositive := by
   simpa using le_def 0 f
 
 instance : IsOrderedAddMonoid (E →L[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
