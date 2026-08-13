@@ -15,9 +15,9 @@ TODO
 
 @[expose] public section
 
-variable (A : Type*) {B : Type*} [Membership B A]
-
 section defs
+
+variable (A : Type*) {B : Type*} [Membership B A]
 
 /-- A class to indicate that the bottom element on a type has no members. -/
 class IsMemBot [Bot A] where
@@ -63,32 +63,74 @@ class IsMemSSup [SupSet A] where
 
 end defs
 
-section instances
+section default
 
--- TODO : all the instances like OrderBot, SemilatticeInf, CompleteLattice
+variable (A : Type*) {B : Type*}
+
+@[reducible] def OrderBot.ofMembership [Membership B A] [Bot A] [IsMemBot A] :
+    letI := LE.ofMembership A; OrderBot A where
+  __ := LE.ofMembership A
+  bot := ⊥
+  bot_le := by simp [SetLike.le_def]
+
+@[reducible] def OrderTop.ofMembership [Membership B A] [Top A] [IsMemTop A] :
+    letI := LE.ofMembership A; OrderTop A where
+  __ := LE.ofMembership A
+  top := ⊤
+  le_top := by simp [SetLike.le_def]
+
+@[reducible] def SemilatticeInf.ofSetLike [SetLike A B] [Min A] [IsMemInf A] :
+    SemilatticeInf A where
+  __ := PartialOrder.ofSetLike A
+  inf := (· ⊓ ·)
+  inf_le_left := by simp [SetLike.le_def]; grind
+  inf_le_right := by simp [SetLike.le_def]
+  le_inf := by simp [SetLike.le_def]; grind
+
+@[reducible] def SemilatticeSup.ofSetLike [SetLike A B] [Max A] [IsMemSup A] :
+    SemilatticeSup A where
+  __ := PartialOrder.ofSetLike A
+  sup := (· ⊔ ·)
+  le_sup_left := by simp [SetLike.le_def]; grind
+  le_sup_right := by simp [SetLike.le_def]; grind
+  sup_le := by simp [SetLike.le_def]; grind
+
+@[reducible] def CompleteLattice.ofSetLikeSInf [SetLike A B] [InfSet A] [IsMemSInf A] :
+    CompleteLattice A :=
+  letI := PartialOrder.ofSetLike A
+  completeLatticeOfInf A fun s ↦
+    ⟨by simp_all [lowerBounds, SetLike.le_def],
+    by simp_all [upperBounds, lowerBounds, SetLike.le_def]⟩
+
+@[reducible] def CompleteLattice.ofSetLikeSSup [SetLike A B] [SupSet A] [IsMemSSup A] :
+    CompleteLattice A :=
+  letI := PartialOrder.ofSetLike A
+  completeLatticeOfSup A fun s ↦
+    ⟨by simp_all [upperBounds, SetLike.le_def]; grind,
+    by simp_all [lowerBounds, upperBounds, SetLike.le_def]; grind⟩
 
 /- Matches the definition in `completeLatticeOfInf`. -/
-instance [InfSet A] [IsMemSInf A] :
+instance [Membership B A] [InfSet A] [IsMemSInf A] :
     letI : Min A := { min := (sInf {·, ·}) }; IsMemInf A :=
   letI : Min A := { min := (sInf {·, ·}) }
   { mem_inf := by simp }
 
 /- Matches the definition in `completeLatticeOfInf`. -/
-instance [InfSet A] [IsMemSInf A] :
+instance [Membership B A] [InfSet A] [IsMemSInf A] :
     letI : Top A := { top := sInf ∅ }; IsMemTop A :=
   letI : Top A := { top := sInf ∅ }
   { mem_top := by simp }
 
 /- Matches the definition in `completeLatticeOfSup`. -/
-instance [SupSet A] [IsMemSSup A] :
+instance [Membership B A] [SupSet A] [IsMemSSup A] :
     letI : Max A := { max := (sSup {·, ·}) }; IsMemSup A :=
   letI : Max A := { max := (sSup {·, ·}) }
   { mem_sup := by simp }
 
 /- Matches the definition in `completeLatticeOfSup`. -/
-instance [SupSet A] [IsMemSSup A] :
+instance [Membership B A] [SupSet A] [IsMemSSup A] :
     letI : Bot A := { bot := sSup ∅ }; IsMemBot A :=
   letI : Bot A := { bot := sSup ∅ }
   { notMem_bot := by simp }
 
-end instances
+end default
