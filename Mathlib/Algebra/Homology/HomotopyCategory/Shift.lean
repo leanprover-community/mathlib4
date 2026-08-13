@@ -168,18 +168,15 @@ lemma shiftFunctorComm_hom_app_f (K : CochainComplex C ℤ) (a b p : ℤ) :
       (K.XIsoOfEq (show p + b + a = p + a + b
         by rw [add_assoc, add_comm b, add_assoc])).hom := by
   rw [shiftFunctorComm_eq _ _ _ _ rfl]
-  dsimp
-  rw [shiftFunctorAdd'_inv_app_f', shiftFunctorAdd'_hom_app_f']
-  simp only [XIsoOfEq, eqToIso.hom, eqToHom_trans]
+  simp [shiftFunctorAdd'_inv_app_f', shiftFunctorAdd'_hom_app_f']
 
 variable (C)
 
 attribute [local simp] XIsoOfEq_hom_naturality
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Shifting cochain complexes by `n` and evaluating in a degree `i` identifies
 to the evaluation in degree `i'` when `n + i = i'`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def shiftEval (n i i' : ℤ) (hi : n + i = i') :
     (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n) ⋙
       HomologicalComplex.eval C (ComplexShape.up ℤ) i ≅
@@ -199,8 +196,6 @@ variable {C}
 variable (F : C ⥤ D) [F.Additive]
 
 attribute [local simp] Functor.map_zsmul
-
-attribute [local implicit_reducible] Functor.mapHomologicalComplex
 
 /-- The commutation with the shift isomorphism for the functor on cochain complexes
 induced by an additive functor between preadditive categories. -/
