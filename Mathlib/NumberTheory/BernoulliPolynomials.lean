@@ -80,7 +80,7 @@ theorem bernoulli_one : bernoulli 1 = X - C 2⁻¹ := by
 
 @[simp]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
-  rw [← coeff_zero_eq_eval_zero, coeff_bernoulli, if_pos (Nat.zero_le n), Nat.sub_zero,
+  rw [← coeff_zero_eq_eval_zero, coeff_bernoulli, ite_eq_left (Nat.zero_le n), Nat.sub_zero,
     Nat.choose_zero_right, Nat.cast_one, mul_one]
 
 @[simp]
@@ -179,7 +179,6 @@ theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
   apply eq_add_of_sub_eq'
   rw [sum_range_pow_eq_bernoulli_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_comp_one_add_X (n : ℕ) :
     (bernoulli n).comp (1 + X) = bernoulli n + n • X ^ (n - 1) := by
   refine Nat.strong_induction_on n fun d hd => ?_
@@ -214,7 +213,6 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
   have := bernoulli_comp_one_add_X n
   simpa using congr(Polynomial.eval x $this)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_comp_neg_X (n : ℕ) :
     (bernoulli n).comp (-X) = (-1) ^ n • (bernoulli n + n • X ^ (n - 1)) := by
   cases n with
@@ -289,7 +287,7 @@ theorem bernoulli_generating_function (t : A) :
   -- factorials and binomial coefficients between ℕ and ℚ and A.
   intro i hi
   -- deal with coefficients of e^X-1
-  simp only [Nat.cast_choose ℚ (mem_range_le hi), coeff_mk, if_neg (mem_range_sub_ne_zero hi),
+  simp only [Nat.cast_choose ℚ (mem_range_le hi), coeff_mk, ite_eq_right (mem_range_sub_ne_zero hi),
     PowerSeries.coeff_one, coeff_exp, sub_zero, Algebra.smul_def,
     mul_right_comm _ ((aeval t) _), ← mul_assoc, ← map_mul, ← Polynomial.C_eq_algebraMap,
     Polynomial.aeval_mul, Polynomial.aeval_C]
