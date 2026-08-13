@@ -305,7 +305,6 @@ lemma LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int {A : Type*}
     map_add' := add_zsmul g
     map_le_map_iff' := zsmul_le_zsmul_iff_left hg' }⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linearly-ordered abelian group is cyclic iff it is isomorphic to `Multiplicative ℤ` as an
 ordered monoid. -/
 lemma LinearOrderedCommGroup.isCyclic_iff_nonempty_equiv_int {G : Type*}

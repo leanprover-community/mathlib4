@@ -414,6 +414,20 @@ theorem NullMeasurable.congr {g : α → β} (hf : NullMeasurable f μ) (hg : f 
 
 end NullMeasurable
 
+section AEMeasurable
+
+variable {m : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α} {f : α → β}
+
+protected theorem _root_.AEMeasurable.nullMeasurable (h : AEMeasurable f μ) :
+    NullMeasurable f μ :=
+  let ⟨_g, hgm, hg⟩ := h; hgm.nullMeasurable.congr hg.symm
+
+theorem _root_.AEMeasurable.nullMeasurableSet_preimage {s : Set β} (hf : AEMeasurable f μ)
+    (hs : MeasurableSet s) : NullMeasurableSet (f ⁻¹' s) μ :=
+  hf.nullMeasurable hs
+
+end AEMeasurable
+
 section IsComplete
 
 /-- A measure is complete if every null set is also measurable.
