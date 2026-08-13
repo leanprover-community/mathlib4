@@ -150,10 +150,38 @@ lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e
   simp [isEdgeReachable_add_one]
 
 /-- A graph is 2-edge-connected iff it has no bridge. -/
--- TODO: This should be `G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e` after
--- https://github.com/leanprover-community/mathlib4/pull/32583
-lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
+lemma isEdgeConnected_two_iff_Preconnected :
+    G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
   simp [isEdgeConnected_add_one]
+
+@[deprecated (since := "2026-08-13")]
+alias isEdgeConnected_two := isEdgeConnected_two_iff_Preconnected
+
+lemma all_notBridge_Preconnected : (∀ e , ¬G.IsBridge e) → G.Preconnected  := by
+  intro h u v
+  by_contra huv
+  exact h s(u,v) (IsBridge.of_not_reachable huv)
+
+/-- A graph is 2-edge-connected iff it has no bridge. -/
+theorem isEdgeConnected_two_iff_notBridge : G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e := by
+  constructor
+  · intro h
+    rw [isEdgeConnected_two_iff_Preconnected] at h
+    intro e
+    cases e ; expose_names
+    intro hbridge
+    exact (isBridge_iff.mp hbridge) (h s(x, y) x y)
+  · intro h
+    rw [isEdgeConnected_two_iff_Preconnected]
+    intro e
+    cases e ; expose_names
+    by_cases hV : Nonempty V
+    · have hG : G.Preconnected := by
+        exact all_notBridge_Preconnected h
+      have hG' : G.Connected := G.connected_iff.mpr ⟨hG, hV⟩
+      exact (hG'.connected_delete_edge_of_not_isBridge (h (s(x, y)))).preconnected
+    · intro u v
+      exact False.elim (hV ⟨u⟩)
 
 lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
     ∃ w : V, G.Adj u w ∧ G.IsEdgeReachable 2 u w := by
@@ -193,8 +221,8 @@ theorem edgeReachability_of_Reachable (G : SimpleGraph V) (u v : V)
   specialize h' 1
   grind [isEdgeReachable_one, Nat.cast_one, iSup_le_iff]
 
-theorem IsEdgeReachable.le_edgeReachability (h : G.IsEdgeReachable k u v)
-  : k ≤ G.edgeReachability u v :=
+theorem IsEdgeReachable.le_edgeReachability 
+    (h : G.IsEdgeReachable k u v) : k ≤ G.edgeReachability u v :=
   le_iSup₂ (α := ℕ∞) k h
 
 theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
@@ -243,7 +271,7 @@ theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u] [DecidableE
 theorem edgeReachability_le_degree_right [Fintype <| G.neighborSet v] [DecidableEq V]
     (huv : u ≠ v) : G.edgeReachability u v ≤ G.degree v := by
   rw [edgeReachability_comm]
-  exact edgeReachability_le_degree_left (id (Ne.symm huv))
+  exact edgeReachability_le_degree_left huv.symm
 
 /-!
 ### 2-reachability
