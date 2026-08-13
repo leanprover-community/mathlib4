@@ -191,11 +191,9 @@ protected theorem uniformContinuous (hg : LipschitzWith K g) : UniformContinuous
     ⟨ε / K, ENNReal.div_pos_iff.2 ⟨ne_of_gt εpos, ENNReal.coe_ne_top⟩, hg.edist_lt_of_edist_lt_div⟩
 
 /-- A Lipschitz function is continuous. -/
-protected theorem continuous (ht : LipschitzWith K t) : Continuous t := by
-  apply continuous_def.mpr fun o ho ↦ ?_
+protected theorem continuous (ht : LipschitzWith K t) : Continuous t :=
   let := PseudoEMetricSpace.ofEDist (α := β) edist edist_self edist_comm edist_triangle
-  exact continuous_def.mp (UniformContinuous.continuous ht.uniformContinuous) o <|
-    WeakPseudoEMetricSpace.topology_le o ho
+  continuous_le_rng WeakPseudoEMetricSpace.topology_le ht.uniformContinuous.continuous
 
 /-- Constant functions are Lipschitz (with any constant). -/
 protected theorem const (b : β) : LipschitzWith 0 fun _ : α => b := fun x y => by
