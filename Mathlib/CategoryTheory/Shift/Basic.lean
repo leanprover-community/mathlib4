@@ -235,7 +235,6 @@ lemma shiftFunctorAdd'_zero_add (a : A) :
     eqToHom_map, Category.id_comp]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd'_add_zero (a : A) :
     shiftFunctorAdd' C a 0 a (add_zero a) = (rightUnitor _).symm ≪≫
@@ -723,7 +722,6 @@ def zero : s 0 ≅ 𝟭 C :=
   (hF.whiskeringRight C).preimageIso ((i 0) ≪≫ isoWhiskerLeft F (shiftFunctorZero D A) ≪≫
     rightUnitor _ ≪≫ (leftUnitor _).symm)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma map_zero_hom_app (X : C) :
@@ -731,7 +729,6 @@ lemma map_zero_hom_app (X : C) :
       (i 0).hom.app X ≫ (shiftFunctorZero D A).hom.app (F.obj X) := by
   simp [zero]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma map_zero_inv_app (X : C) :
@@ -746,7 +743,6 @@ def add (a b : A) : s (a + b) ≅ s a ⋙ s b :=
       associator _ _ _ ≪≫ (isoWhiskerLeft _ (i b).symm) ≪≫
       (associator _ _ _).symm)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma map_add_hom_app (a b : A) (X : C) :
@@ -756,7 +752,6 @@ lemma map_add_hom_app (a b : A) (X : C) :
   dsimp [add]
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma map_add_inv_app (a b : A) (X : C) :

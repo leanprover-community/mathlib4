@@ -29,7 +29,7 @@ The analogous version for quotient regular sequence is also provided.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
