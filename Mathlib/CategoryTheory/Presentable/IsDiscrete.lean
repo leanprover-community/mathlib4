@@ -56,7 +56,7 @@ instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
   has_colimits_of_shape J := ⟨fun F ↦
     ⟨Cocone.mk (Classical.arbitrary C)
       { app _ := eqToHom (by subsingleton) },
-      { desc _ := eqToHom (by subsingleton) }⟩ ⟩
+      { desc _ := eqToHom (by subsingleton) }⟩⟩
   exists_generator := by
     let X : C := Classical.arbitrary _
     refine ⟨.ofObj (fun (_ : PUnit.{w + 1}) ↦ X), inferInstance,
