@@ -405,13 +405,9 @@ theorem ker_zero : (0 : E →ₛₗ.[σ] F).ker = ⊤ := by
 
 @[simp]
 theorem ker_eq_top {f : E →ₛₗ.[σ] F} : f.ker = ⊤ ↔ f = 0 := by
-  refine ⟨?_, by grind⟩
-  intro h
-  ext x hf _
-  · suffices f.domain = ⊤ by simp [this]
-    grind [eq_top_iff, ker_le_domain]
-  have : x ∈ f.ker := by simp [h]
-  grind [mem_ker_iff]
+  refine ⟨fun h ↦ ?_, by grind⟩
+  have : f.domain = ⊤ := eq_top_mono ker_le_domain h
+  ext x hf _ <;> grind [mem_ker_iff]
 
 theorem eqLocus_zero {f : E →ₛₗ.[σ] F} : f.eqLocus 0 = f.ker := by
   ext
