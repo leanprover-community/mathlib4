@@ -10,7 +10,7 @@ public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.Data.Rat.Lemmas
 
 /-!
-# The quadratic order `QuadraticAlgebra ℤ a b` and its fraction ring
+# Quadratic algebras over `ℤ`
 
 For `a b : ℤ`, `QuadraticAlgebra ℤ a b` is an order in `QuadraticAlgebra ℚ a b`.
 
