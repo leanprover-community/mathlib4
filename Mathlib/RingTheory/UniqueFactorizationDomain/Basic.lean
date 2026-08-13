@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 module
 
 public import Mathlib.Algebra.BigOperators.Associated
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.Monoid
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 /-!
