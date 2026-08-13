@@ -300,7 +300,7 @@ instance Prod.contMDiffConstSMul [SMul Γ N] [ContMDiffConstSMul I n Γ M]
 all elements of `G` acting on `M`, then it is also true for all elements of `Γ` acting on `M`. -/
 lemma IsScalarTower.contMDiffConstSMul (G : Type*) [TopologicalSpace G] [ChartedSpace H' G]
     [Monoid G] [SMul Γ G] [MulAction G M] [IsScalarTower Γ G M]
-    [ContMDiffConstSMul I' n Γ G] [ContMDiffConstSMul I n G M] : ContMDiffConstSMul I n Γ M where
+    [ContMDiffConstSMul I n G M] : ContMDiffConstSMul I n Γ M where
   contMDiff_const_smul γ := by
     suffices h : CMDiff n (fun x : M ↦ (γ • (1 : G)) • x) by
       rwa [show (fun x : M ↦ (γ • (1 : G)) • x) = fun x : M ↦ γ • x by simp] at h
