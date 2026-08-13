@@ -159,7 +159,7 @@ theorem IsPositive.nonneg_eigenvalues [FiniteDimensional 𝕜 E]
     inner_self_eq_norm_sq, OrthonormalBasis.norm_eq_one, one_pow, mul_one]
       using hT.right (hT.isSymmetric.eigenvectorBasis hn i)
 
-section PartialOrder
+section Order
 
 /-- The (Loewner) partial order on linear maps on a Hilbert space determined by `f ≤ g`
 if and only if `g - f` is a positive linear map (in the sense of `LinearMap.IsPositive`). -/
@@ -175,14 +175,20 @@ instance instLoewnerPartialOrder : PartialOrder (E →ₗ[𝕜] E) where
     rw [← h₂.isSymmetric.coe_re_inner_apply_self, RCLike.ofReal_eq_zero]
     exact le_antisymm hba2 (h₂.2 _)
 
-lemma le_def (f g : E →ₗ[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
+lemma le_def {f g : E →ₗ[𝕜] E} : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
-lemma nonneg_iff_isPositive (f : E →ₗ[𝕜] E) : 0 ≤ f ↔ f.IsPositive := by
-  simpa using le_def 0 f
+lemma nonneg_iff_isPositive {f : E →ₗ[𝕜] E} : 0 ≤ f ↔ f.IsPositive := by
+  simpa using le_def (f:=0) (g:=f)
 
 instance : IsOrderedAddMonoid (E →ₗ[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
 
-end PartialOrder
+instance instIsOrderedModule : IsOrderedModule 𝕜 (E →ₗ[𝕜] E) where
+  smul_le_smul_of_nonneg_left f hf b₁ b₂ hb := by
+    simpa [LinearMap.le_def, ← smul_sub] using (sub_nonneg.mpr hb).smul_of_nonneg hf
+  smul_le_smul_of_nonneg_right f hf b₁ b₂ hb := by
+    simpa [LinearMap.le_def, ← sub_smul] using hf.smul_of_nonneg (sub_nonneg.mpr hb)
+
+end Order
 
 /-- An idempotent linear map is positive iff it is symmetric. -/
 theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT : IsIdempotentElem T) :
@@ -452,7 +458,7 @@ theorem isPositive_iff_complex (T : E' →L[ℂ] E') :
 
 end Complex
 
-section PartialOrder
+section Order
 
 /-- The (Loewner) partial order on continuous linear maps on a Hilbert space determined by
 `f ≤ g` if and only if `g - f` is a positive linear map (in the sense of
@@ -464,16 +470,25 @@ instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
   le_trans _ _ _ h₁ h₂ := by simpa using h₁.add h₂
   le_antisymm _ _ h₁ h₂ := coe_inj.mp (le_antisymm h₁.toLinearMap h₂.toLinearMap)
 
-lemma le_def (f g : E →L[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
+lemma le_def {f g : E →L[𝕜] E} : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
-lemma coe_le_coe_iff (f g : E →L[𝕜] E) :
+@[simp]
+lemma coe_le_coe_iff {f g : E →L[𝕜] E} :
     (f : E →ₗ[𝕜] E) ≤ g ↔ f ≤ g :=
   isPositive_toLinearMap_iff (g - f)
 
-lemma nonneg_iff_isPositive (f : E →L[𝕜] E) : 0 ≤ f ↔ f.IsPositive := by
-  simpa using le_def 0 f
+lemma nonneg_iff_isPositive {f : E →L[𝕜] E} : 0 ≤ f ↔ f.IsPositive := by
+  simpa using le_def (f:=0) (g:=f)
 
-end PartialOrder
+instance : IsOrderedAddMonoid (E →L[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
+
+instance instIsOrderedModule : IsOrderedModule 𝕜 (E →L[𝕜] E) where
+  smul_le_smul_of_nonneg_left f hf b₁ b₂ hb := by
+    rw [← coe_le_coe_iff] at hb ⊢; exact smul_le_smul_of_nonneg_left hb hf
+  smul_le_smul_of_nonneg_right f hf b₁ b₂ hb := by
+    rw [← coe_le_coe_iff]; exact smul_le_smul_of_nonneg_right hb (by simpa)
+
+end Order
 
 /-- An idempotent operator is positive if and only if it is self-adjoint. -/
 @[grind →]
