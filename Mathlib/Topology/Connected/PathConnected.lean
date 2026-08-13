@@ -78,6 +78,10 @@ theorem Joined.symm {x y : X} (h : Joined x y) : Joined y x :=
 theorem Joined.trans {x y z : X} (hxy : Joined x y) (hyz : Joined y z) : Joined x z :=
   ⟨hxy.somePath.trans hyz.somePath⟩
 
+theorem Joined.map {x y : X} {f : X → Y} (h : Joined x y) (hf : Continuous f) :
+    Joined (f x) (f y) :=
+  ⟨h.somePath.map hf⟩
+
 @[to_additive]
 theorem Joined.mul {M : Type*} [Mul M] [TopologicalSpace M] [ContinuousMul M]
     {a b c d : M} (hs : Joined a b) (ht : Joined c d) : Joined (a * c) (b * d) :=
@@ -607,11 +611,25 @@ section Prod
 
 variable {s : Set X} {t : Set Y}
 
+/-- If `x₁` is joined to `x₂` and `y₁` is joined to `y₂`, then `(x₁, y₁)` is joined to
+`(x₂, y₂)` in the product space. -/
+theorem Joined.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : Joined x₁ x₂) (hy : Joined y₁ y₂) :
+    Joined (x₁, y₁) (x₂, y₂) :=
+  ⟨hx.somePath.prod hy.somePath⟩
+
 /-- If `x₁` is joined to `x₂` within `s` and `y₁` to `y₂` within `t`, then `(x₁, y₁)` is joined
 to `(x₂, y₂)` within `s ×ˢ t`. -/
 theorem JoinedIn.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : JoinedIn s x₁ x₂) (hy : JoinedIn t y₁ y₂) :
     JoinedIn (s ×ˢ t) (x₁, y₁) (x₂, y₂) :=
   ⟨hx.somePath.prod hy.somePath, by simp⟩
+
+/-- The path component of `(x, y)` in the product space is the product of the path components
+of `x` and `y`. -/
+theorem pathComponent_prod (x : X) (y : Y) :
+    pathComponent (x, y) = pathComponent x ×ˢ pathComponent y := by
+  ext ⟨a, b⟩
+  simp only [Set.mem_prod, mem_pathComponent_iff]
+  exact ⟨fun h ↦ ⟨h.map continuous_fst, h.map continuous_snd⟩, fun ⟨h₁, h₂⟩ ↦ h₁.prod h₂⟩
 
 /-- The product of two path-connected sets is path-connected. -/
 theorem IsPathConnected.prod (hs : IsPathConnected s) (ht : IsPathConnected t) :
@@ -631,11 +649,23 @@ section Pi
 
 variable {Z : ι → Type*} [∀ i, TopologicalSpace (Z i)]
 
+/-- If for each `i`, `x i` is joined to `y i`, then `x` is joined to `y` in the product space. -/
+theorem Joined.pi {x y : ∀ i, Z i} (h : ∀ i, Joined (x i) (y i)) : Joined x y :=
+  ⟨.pi fun i ↦ (h i).somePath⟩
+
 /-- If for each `i`, `x i` is joined to `y i` within `s i`, then `x` is joined to `y` within the
 product set `Set.univ.pi s`. -/
 theorem JoinedIn.pi {s : ∀ i, Set (Z i)} {x y : ∀ i, Z i}
     (h : ∀ i, JoinedIn (s i) (x i) (y i)) : JoinedIn (Set.univ.pi s) x y :=
   ⟨.pi (fun i ↦ (h i).somePath), by simp⟩
+
+/-- The path component of `x` in a product space is the product of the path components of its
+coordinates. -/
+theorem pathComponent_pi (x : ∀ i, Z i) :
+    pathComponent x = Set.univ.pi fun i ↦ pathComponent (x i) := by
+  ext y
+  simp only [Set.mem_univ_pi, mem_pathComponent_iff]
+  exact ⟨fun h i ↦ h.map (continuous_apply i), fun h ↦ .pi h⟩
 
 /-- The product of a family of path-connected sets is path-connected. -/
 theorem IsPathConnected.pi {s : ∀ i, Set (Z i)} (h : ∀ i, IsPathConnected (s i)) :

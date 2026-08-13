@@ -144,7 +144,7 @@ lemma tendsto_of_lintegral_tendsto_of_monotone_aux {α : Type*} {mα : Measurabl
     then h.choose else ∞
   have hF'_tendsto : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F' a)) := by
     filter_upwards [h_exists] with a ha
-    simp_rw [F', dif_pos ha]
+    simp_rw [F', dite_eq_left ha]
     exact ha.choose_spec
   suffices F' =ᵐ[μ] F by
     filter_upwards [this, hF'_tendsto] with a h_eq h_tendsto using h_eq ▸ h_tendsto
@@ -223,7 +223,7 @@ lemma tendsto_of_lintegral_tendsto_of_antitone {α : Type*} {mα : MeasurableSpa
     then h.choose else ∞
   have hF'_tendsto : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F' a)) := by
     filter_upwards [h_exists] with a ha
-    simp_rw [F', dif_pos ha]
+    simp_rw [F', dite_eq_left ha]
     exact ha.choose_spec
   suffices F' =ᵐ[μ] F by
     filter_upwards [this, hF'_tendsto] with a h_eq h_tendsto using h_eq ▸ h_tendsto
