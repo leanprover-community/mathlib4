@@ -96,11 +96,10 @@ noncomputable def toTrivialization {x : X} [Nonempty I] (h : IsEvenlyCovered f x
 theorem mem_toTrivialization_baseSet {x : X} [Nonempty I] (h : IsEvenlyCovered f x I) :
     x ∈ h.toTrivialization.baseSet := h.2.choose_spec.1
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem toTrivialization_apply {x : E} [Nonempty I] (h : IsEvenlyCovered f (f x) I) :
     (h.toTrivialization x).2 = ⟨x, rfl⟩ :=
   h.fiberHomeomorph.symm.injective <| by
-    simp [toTrivialization, toTrivialization', dif_pos h.2.choose_spec.1, fiberHomeomorph]
+    simp [toTrivialization, toTrivialization', dite_eq_left h.2.choose_spec.1, fiberHomeomorph]
 
 protected theorem continuousAt {x : E} (h : IsEvenlyCovered f (f x) I) : ContinuousAt f x :=
   have ⟨_, _, hxU, _, _, H, _⟩ := h
@@ -454,14 +453,14 @@ Then `f` admits a `Bundle.Trivialization` over the base set `V`. -/
     source := f ⁻¹' V,
     target := V ×ˢ Set.univ,
     map_source' x hx := ⟨hx, ⟨⟩⟩
-    map_target' x hx := by rw [dif_pos hx.1]; apply (f_inv _ hx.1).symm ▸ hx.1,
+    map_target' x hx := by rw [dite_eq_left hx.1]; apply (f_inv _ hx.1).symm ▸ hx.1,
     left_inv' e he := by
-      simp_rw [dif_pos (id he : f e ∈ V)]
+      simp_rw [dite_eq_left (id he : f e ∈ V)]
       exact inj _ (inv_U _ he) (idx_U e he) (f_inv _ _)
     right_inv' x hx := by
-      rw [dif_pos hx.1]
+      rw [dite_eq_left hx.1]
       refine Prod.ext (f_inv _ hx.1) ?_
-      rw [dif_pos ((f_inv _ hx.1).symm ▸ hx.1)]
+      rw [dite_eq_left ((f_inv _ hx.1).symm ▸ hx.1)]
       by_contra h; exact (disjoint h).le_bot ⟨idx_U .., inv_U _ _⟩ }
   have open_preim {W} (hWV : W ⊆ V) (open_W : IsOpen W) : IsOpen (f ⁻¹' W) := by
     convert! isOpen_iUnion (fun i ↦ (open_iff i hWV).mp open_W)
@@ -484,14 +483,14 @@ Then `f` admits a `Bundle.Trivialization` over the base set `V`. -/
     target_eq := rfl,
     proj_toFun _ _ := rfl }
   · by_contra h; apply (disjoint h).le_bot
-    · dsimp only; rw [dif_pos (by exact he'.2)]; exact ⟨he'.1, idx_U ..⟩
+    · dsimp only; rw [dite_eq_left (by exact he'.2)]; exact ⟨he'.1, idx_U ..⟩
   · rwa [Set.inter_comm, ← open_iff _ subset_rfl]
   · simp_rw [F, Set.prodMk_mem_set_prod_eq, Set.mem_univ, and_true]
     refine (continuousOn_open_iff open_V).mpr fun W open_W ↦ ?_
     rw [open_iff i Set.inter_subset_left]
     convert! ((open_iff i subset_rfl).mp open_V).inter open_W using 1
     refine Set.ext fun e ↦ and_right_comm.trans (and_congr_right fun ⟨hV, hU⟩ ↦ ?_)
-    rw [Set.mem_preimage, dif_pos hV, inj i (inv_U i _) hU (f_inv i _)]
+    rw [Set.mem_preimage, dite_eq_left hV, inj i (inv_U i _) hU (f_inv i _)]
 
 variable {s}
 

@@ -77,7 +77,7 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 noncomputable section
 
-open DirectSum Pointwise
+open DirectSum
 
 open DirectSum SetLike
 
@@ -102,7 +102,7 @@ end
 
 namespace NumDenSameDeg
 
-open SetLike.GradedMonoid Submodule
+open SetLike.GradedMonoid
 
 @[ext]
 theorem ext {𝒜 : ι → σ} (x : Submonoid A)
@@ -696,7 +696,6 @@ abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization 𝒜 Q :=
   map (.id _) h
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma map_mk (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) (x) :
     map g comap_le (mk x) = mk ⟨x.1, ⟨_, map_mem g x.2.2⟩, ⟨_, map_mem g x.3.2⟩, comap_le x.4⟩ :=
   rfl

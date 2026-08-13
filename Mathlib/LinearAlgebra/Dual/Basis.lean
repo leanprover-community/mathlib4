@@ -34,7 +34,7 @@ This file concerns bases on dual vector spaces.
 
 @[expose] public section
 
-open Module Dual Submodule LinearMap Function
+open Module Submodule LinearMap Function
 
 noncomputable section
 
@@ -57,7 +57,6 @@ theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 
   rw [toDual, constr_basis b, constr_basis b]
   simp only [eq_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
     b.toDual (Finsupp.linearCombination R b f) (b i) = f i := by
@@ -65,7 +64,6 @@ theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
   simp_rw [map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
     Finset.sum_ite_eq', Finsupp.if_mem_support]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
     b.toDual (b i) (Finsupp.linearCombination R b f) = f i := by
@@ -145,7 +143,7 @@ theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
   cases nonempty_fintype ι
   rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype, LinearMap.sum_apply]
   · simp_rw [LinearMap.smul_apply, smul_eq_mul, dualBasis_apply_self, mul_boole,
-      Finset.sum_ite_eq, if_pos (Finset.mem_univ i)]
+      Finset.sum_ite_eq, ite_eq_left (Finset.mem_univ i)]
   · intro
     rw [zero_smul]
 
@@ -230,7 +228,7 @@ end DualBases
 
 namespace Module.DualBases
 
-open LinearMap Function
+open LinearMap
 
 variable {R M ι : Type*}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
