@@ -417,33 +417,6 @@ but with stronger type class assumptions (i.e., `CompleteSpace`). -/
 theorem IsStarNormal.orthogonal_range (hT : IsStarNormal T) : T.rangeᗮ = T.ker :=
   T.orthogonal_range ▸ hT.ker_adjoint_eq_ker
 
-set_option backward.isDefEq.respectTransparency false in
-/- TODO: As we have a more general result of this for elements in non-unital C⋆-algebras
-(see `Mathlib/Analysis/CStarAlgebra/Projection.lean`), we will want to simplify the proof
-by using the complexification of an inner product space over `𝕜`. -/
-/-- An idempotent operator is self-adjoint iff it is normal. -/
-theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal (hT : IsIdempotentElem T) :
-    IsSelfAdjoint T ↔ IsStarNormal T := by
-  refine ⟨fun h => by rw [isStarNormal_iff, h], fun h => ?_⟩
-  suffices T = star T * T from this ▸ IsSelfAdjoint.star_mul_self _
-  rw [← sub_eq_zero, ContinuousLinearMap.ext_iff]
-  simp_rw [zero_apply, ← norm_eq_zero (E := E)]
-  have :=
-    calc (∀ x : E, ‖(T - star T * T) x‖ = 0) ↔ ∀ x, ‖(adjoint (1 - T)) (T x)‖ = 0 := by
-          simp [star_eq_adjoint, one_def]
-      _ ↔ ∀ x, ‖(1 - T) (T x)‖ = 0 := by
-          simp only [isStarNormal_iff_norm_eq_adjoint.mp h.one_sub]
-      _ ↔ ∀ x, ‖(T - T * T) x‖ = 0 := by simp
-      _ ↔ T - T * T = 0 := by simp only [norm_eq_zero, ContinuousLinearMap.ext_iff, zero_apply]
-      _ ↔ IsIdempotentElem T := by simp only [sub_eq_zero, IsIdempotentElem, eq_comm]
-  exact this.mpr hT
-
-/-- A continuous linear map is a star projection iff it is idempotent and normal. -/
-theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
-    IsStarProjection T ↔ IsIdempotentElem T ∧ IsStarNormal T := by
-  rw [isStarProjection_iff, and_congr_right_iff]
-  exact fun h => IsIdempotentElem.isSelfAdjoint_iff_isStarNormal h
-
 theorem isStarProjection_iff_isSymmetricProjection :
     IsStarProjection T ↔ T.IsSymmetricProjection := by
   simp [isStarProjection_iff, LinearMap.isSymmetricProjection_iff,

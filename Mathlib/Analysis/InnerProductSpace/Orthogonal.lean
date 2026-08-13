@@ -58,6 +58,18 @@ other way round. -/
 theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 := by
   simp_rw [mem_orthogonal, inner_eq_zero_symm]
 
+/-- When a vector is in `Kᗮ`, with the inner product being real. -/
+lemma mem_orthogonal_iff_re_inner_eq_zero (y : E) :
+    y ∈ Kᗮ ↔ ∀ u ∈ K, RCLike.re ⟪u, y⟫ = 0 := by
+  simp only [mem_orthogonal]
+  refine ⟨fun hy u hu ↦ by simp_all, fun h u hu ↦ ?_⟩
+  simpa [inner_smul_left, RCLike.conj_mul, -inner_conj_symm] using h (⟪u, y⟫ • u) (K.smul_mem _ hu)
+
+/-- When a vector is in `Kᗮ`, with the inner product being real, the other way round. -/
+lemma mem_orthogonal_iff_re_inner_eq_zero' (y : E) :
+    y ∈ Kᗮ ↔ ∀ u ∈ K, RCLike.re ⟪y, u⟫ = 0 := by
+  simp [mem_orthogonal_iff_re_inner_eq_zero, inner_re_symm]
+
 variable {K}
 
 /-- A vector in `K` is orthogonal to one in `Kᗮ`. -/

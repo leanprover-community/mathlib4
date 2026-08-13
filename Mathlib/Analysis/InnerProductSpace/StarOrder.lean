@@ -55,7 +55,7 @@ instance : NonnegSpectrumClass ℝ (H →L[𝕜] H) where
 
 /-- Because this takes `ContinuousFunctionalCalculus ℝ (H →L[𝕜] H) IsSelfAdjoint` as an argument,
 and for the moment we only have this for `𝕜 := ℂ`, this is not registered as an instance. -/
-lemma instStarOrderedRingRCLike
+instance instStarOrderedRingRCLike
     [ContinuousFunctionalCalculus ℝ (H →L[𝕜] H) IsSelfAdjoint] :
     StarOrderedRing (H →L[𝕜] H) where
   le_iff f g := by
@@ -74,9 +74,5 @@ lemma instStarOrderedRingRCLike
         simpa using! ContinuousLinearMap.IsPositive.adjoint_conj isPositive_one f
       | zero => exact isPositive_zero
       | add f g _ _ hf hg => exact hf.add hg
-
-instance instStarOrderedRing {H : Type*} [NormedAddCommGroup H]
-    [InnerProductSpace ℂ H] [CompleteSpace H] : StarOrderedRing (H →L[ℂ] H) :=
-  instStarOrderedRingRCLike
 
 end ContinuousLinearMap
