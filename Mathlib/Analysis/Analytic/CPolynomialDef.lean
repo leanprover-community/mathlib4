@@ -7,7 +7,10 @@ module
 
 public import Mathlib.Analysis.Analytic.ChangeOrigin
 
-/-! We specialize the theory of analytic functions to the case of functions that admit a
+/-!
+# Continuously polynomial functions
+
+We specialize the theory of analytic functions to the case of functions that admit a
 development given by a *finite* formal multilinear series. We call them "continuously polynomial",
 which is abbreviated to `CPolynomial`. One reason to do that is that we no longer need a
 completeness assumption on the target space `F` to make the series converge, so some of the results

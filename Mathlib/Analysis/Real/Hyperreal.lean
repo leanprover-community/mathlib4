@@ -23,7 +23,7 @@ non-archimedean fields. In particular:
   infinite (`mk x < 0`).
 - `ArchimedeanClass.stdPart` generalizes the standard part function to a general ordered field.
 
-## Todo
+## TODO
 
 Use Łoś's Theorem `FirstOrder.Language.Ultraproduct.sentence_realize` to formalize the transfer
 principle on `Hyperreal`.
