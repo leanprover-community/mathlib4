@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Combinatorics.Enumerative.Partition.YoungDiagram
-public import Mathlib.Data.List.Lex
 
 /-!
 # The dominance order on partitions
@@ -16,13 +15,17 @@ every prefix sum of the decreasingly sorted parts of `μ` is at least the corres
 sum for `ν`. Dominance is the triangular order governing Kostka numbers and the occurrence of
 Specht modules in permutation modules.
 
-## Main results
+## Main definitions
 
 * `Nat.Partition.Dominates`: the dominance relation, with the orientation that `μ.Dominates ν`
-  means "`μ` dominates `ν`". It is decidable, reflexive, transitive
-  (`Nat.Partition.Dominates.trans`) and antisymmetric (`Nat.Partition.Dominates.antisymm`).
-* `Nat.Partition.indiscrete_dominates`: the one-part partition dominates every partition, and
-  (`Nat.Partition.dominates_indiscrete_iff`) is the only partition dominating it.
+  means "`μ` dominates `ν`".
+
+## Main results
+
+* `Nat.Partition.Dominates.refl`, `Nat.Partition.Dominates.trans`, and
+  `Nat.Partition.Dominates.antisymm`: dominance is reflexive, transitive, and antisymmetric.
+* `Nat.Partition.indiscrete_dominates`: the one-part partition dominates every partition;
+  `Nat.Partition.dominates_indiscrete_iff` says that it is dominated only by itself.
 * `Nat.Partition.conjugate_dominates_conjugate_iff`: conjugation reverses dominance.
 
 The dominance *order instance* on `Nat.Partition n` is deliberately not installed here: it would
@@ -106,15 +109,8 @@ private theorem sum_map_min_le_of_prefix_sum_le {l₁ l₂ : List ℕ}
     (hle : ∀ r, (l₂.take r).sum ≤ (l₁.take r).sum) (k : ℕ) :
     (l₁.map (min k)).sum ≤ (l₂.map (min k)).sum := by
   let r := (l₂.takeWhile fun x => decide (k < x)).length
-  have htake : l₂.take r = l₂.takeWhile fun x => decide (k < x) := by
-    dsimp only [r]
-    calc
-      l₂.take (l₂.takeWhile fun x => decide (k < x)).length =
-          ((l₂.takeWhile fun x => decide (k < x)) ++
-            l₂.dropWhile fun x => decide (k < x)).take
-              (l₂.takeWhile fun x => decide (k < x)).length := by
-        rw [l₂.takeWhile_append_dropWhile]
-      _ = l₂.takeWhile fun x => decide (k < x) := List.take_left
+  have htake : l₂.take r = l₂.takeWhile fun x => decide (k < x) :=
+    (List.prefix_iff_eq_take.mp (List.takeWhile_prefix _)).symm
   have hexcess : (l₂.map fun x => x - k).sum + k * r = (l₂.take r).sum := by
     rw [htake]
     exact sum_sub_add_mul_length_takeWhile hl₂ k
@@ -126,8 +122,8 @@ private theorem sum_map_min_le_of_prefix_sum_le {l₁ l₂ : List ℕ}
   have hsplit₂ := sum_min_add_sum_sub l₂ k
   omega
 
-/-- If two lists of positive naturals have equal sums but the prefix sums of `l₁` dominate those
-of `l₂`, then `l₂` precedes `l₁` lexicographically, strictly if the lists differ. -/
+/-- If two different lists of positive naturals have equal sums and the prefix sums of `l₁`
+dominate those of `l₂`, then `l₂` strictly precedes `l₁` lexicographically. -/
 private theorem lex_lt_of_prefix_sum_le {l₁ l₂ : List ℕ}
     (hsum : l₁.sum = l₂.sum)
     (hpos₁ : ∀ i ∈ l₁, 0 < i) (hpos₂ : ∀ i ∈ l₂, 0 < i)
@@ -247,7 +243,7 @@ private theorem sum_sort_parts (μ : Partition n) : (μ.parts.sort (· ≥ ·)).
 
 private theorem length_sort_parts_le (μ : Partition n) : (μ.parts.sort (· ≥ ·)).length ≤ n :=
   le_of_le_of_eq
-    (List.length_le_sum_of_one_le _ fun i hi => μ.parts_pos ((Multiset.mem_sort _).mp hi))
+    (List.length_le_sum_of_one_le _ fun _ hi => μ.parts_pos ((Multiset.mem_sort _).mp hi))
     (sum_sort_parts μ)
 
 /-- A partition `μ` of `n` *dominates* a partition `ν` of `n` when every prefix sum of the
@@ -279,7 +275,6 @@ instance (μ ν : Partition n) : Decidable (μ.Dominates ν) :=
 protected theorem Dominates.refl (μ : Partition n) : μ.Dominates μ := fun _ => le_rfl
 
 /-- Dominance is transitive. -/
-@[trans]
 protected theorem Dominates.trans (hμν : μ.Dominates ν) (hνξ : ν.Dominates ξ) :
     μ.Dominates ξ :=
   fun k => (hνξ k).trans (hμν k)
@@ -299,6 +294,9 @@ private theorem lex_lt_of_dominates_of_ne (hdom : μ.Dominates ν) (hne : μ ≠
 protected theorem Dominates.antisymm (hμν : μ.Dominates ν) (hνμ : ν.Dominates μ) : μ = ν := by
   by_contra hne
   exact (lex_lt_of_dominates_of_ne hμν hne).asymm (lex_lt_of_dominates_of_ne hνμ (Ne.symm hne))
+
+instance : Trans (α := Partition n) (β := Partition n) (γ := Partition n)
+    Dominates Dominates Dominates := ⟨Dominates.trans⟩
 
 /-- The one-part partition dominates every partition of the same natural number. -/
 @[simp]
