@@ -22,10 +22,6 @@ injective and that the image of `F(X)` identifies
 to the invariants of `F(Y)` under the group of
 automorphisms of `f` in the category `Over X`.
 
-TODO: Deduce a similar characterization for sheaves of
-abelian groups (and sheaves with values in more general
-categories).
-
 -/
 
 -- to be moved to `CategoryTheory/Galois`
