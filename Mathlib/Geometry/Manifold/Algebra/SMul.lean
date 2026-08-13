@@ -296,14 +296,14 @@ instance Prod.contMDiffConstSMul [SMul Γ N] [ContMDiffConstSMul I n Γ M]
   contMDiff_const_smul γ := ContMDiff.prodMk
     (ContMDiff.const_smul contMDiff_fst γ) (ContMDiff.const_smul contMDiff_snd γ)
 
-/-- If the action on `G` by any element of `Γ` is continuously differentiable and the same holds for
-all elements of `G` acting on `M`, then it is also true for all elements of `Γ` acting on `M`. -/
-lemma IsScalarTower.contMDiffConstSMul (G : Type*) [Monoid G] [SMul Γ G] [MulAction G M]
-    [IsScalarTower Γ G M] [ContMDiffConstSMul I n G M] : ContMDiffConstSMul I n Γ M where
+/-- If the action by any element of `Γ` on `Γ'` is continuously differentiable and the same holds
+for all elements of `Γ'` acting on `M`, then it also holds for all elements of `Γ` acting on `M`. -/
+lemma IsScalarTower.contMDiffConstSMul (Γ' : Type*) [Monoid Γ'] [SMul Γ Γ'] [MulAction Γ' M]
+    [IsScalarTower Γ Γ' M] [ContMDiffConstSMul I n Γ' M] : ContMDiffConstSMul I n Γ M where
   contMDiff_const_smul γ := by
-    suffices h : CMDiff n (fun x : M ↦ (γ • (1 : G)) • x) by
-      rwa [show (fun x : M ↦ (γ • (1 : G)) • x) = fun x : M ↦ γ • x by simp] at h
-    exact contMDiff_const_smul (γ • (1 : G))
+    suffices h : CMDiff n (fun x : M ↦ (γ • (1 : Γ')) • x) by
+      rwa [show (fun x : M ↦ (γ • (1 : Γ')) • x) = fun x : M ↦ γ • x by simp] at h
+    exact contMDiff_const_smul (γ • (1 : Γ'))
 
 /-- If the action on `M` by any element of `Γ` is continuously differentiable, then post-composing
 this action with any homomorphism `f : Γ' →* Γ` makes again the action on `M` by any element of `Γ'`
