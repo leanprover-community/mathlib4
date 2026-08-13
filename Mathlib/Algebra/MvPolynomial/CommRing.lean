@@ -39,7 +39,7 @@ As in other polynomial files, we typically use the notation:
 
 noncomputable section
 
-open Set Function Finsupp
+open Function Finsupp
 
 universe u v
 
@@ -117,7 +117,6 @@ section Degrees
 theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem degrees_sub_le [DecidableEq σ] {p q : MvPolynomial σ R} :
     (p - q).degrees ≤ p.degrees ∪ q.degrees := by
   simpa [degrees_def] using! AddMonoidAlgebra.supDegree_sub_le
