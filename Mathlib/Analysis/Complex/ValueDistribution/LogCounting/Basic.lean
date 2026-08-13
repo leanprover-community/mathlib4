@@ -295,13 +295,13 @@ theorem sum_toClosedBall_le_logCounting {D : Function.locallyFinsupp ℂ ℤ} {�
     intro z hz
     by_cases hz0 : z = 0
     · subst hz0
-      rw [if_pos rfl, toClosedBall_eval_within _ (by simp),
+      rw [ite_eq_left rfl, toClosedBall_eval_within _ (by simp),
         toClosedBall_eval_within _ (by simp)]
       simp only [norm_zero, inv_zero, mul_zero, log_zero, mul_zero, zero_add]
       apply mul_le_mul_of_nonneg_left _ (by exact_mod_cast hD' 0)
       apply Real.log_le_log (by positivity)
       exact div_le_self hr₀.le hρ
-    · rw [if_neg hz0, add_zero]
+    · rw [ite_eq_right hz0, add_zero]
       by_cases hzρ : z ∈ closedBall (0 : ℂ) |ρ|
       · have hz_norm : ‖z‖ ≤ ρ := by rwa [mem_closedBall_zero_iff, habsρ] at hzρ
         have hz_pos : (0 : ℝ) < ‖z‖ := norm_pos_iff.2 hz0
@@ -328,7 +328,7 @@ theorem sum_toClosedBall_le_logCounting {D : Function.locallyFinsupp ℂ ℤ} {�
           + (if z = 0 then (D 0 : ℝ) * Real.log r else 0)) := Finset.sum_le_sum key
     _ = (∑ z ∈ t, (D.toClosedBall r z : ℝ) * Real.log (r * ‖z‖⁻¹)) + (D 0 : ℝ) * Real.log r := by
         rw [Finset.sum_add_distrib, Finset.sum_ite_eq' t 0 (fun _ ↦ (D 0 : ℝ) * Real.log r),
-          if_pos (Finset.mem_insert_self 0 hfin.toFinset)]
+          ite_eq_left (Finset.mem_insert_self 0 hfin.toFinset)]
 
 end Function.locallyFinsuppWithin
 
