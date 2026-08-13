@@ -6,16 +6,13 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
-public import Mathlib.Data.Nat.Prime.Int
-public import Mathlib.LinearAlgebra.Determinant
 
 /-!
 # Discriminant of a quadratic algebra
 
 This file introduces the discriminant of a quadratic algebra `QuadraticAlgebra R a b` (with the
-convention `ω² = a + b·ω`), describes how it transforms under a change of generator, and derives
-the classification of quadratic algebras up to isomorphism together with a criterion, over a
-field, for `QuadraticAlgebra K a b` to be a field.
+convention `ω² = a + b·ω`), describes how it transforms under a change of generator, and derives,
+over a field, a criterion for `QuadraticAlgebra K a b` to be a field.
 
 ## Main definitions
 
@@ -27,9 +24,6 @@ field, for `QuadraticAlgebra K a b` to be a field.
   generator `ω ↦ u • ω + k`.
 * `QuadraticAlgebra.exists_sq_eq_iff_isSquare_discr`: over a ring with `2` invertible,
   `X ^ 2 - b * X - a` has a root iff `discr a b` is a square.
-* `QuadraticAlgebra.nonempty_algEquiv_iff_of_invertible_two` and
-  `QuadraticAlgebra.nonempty_algEquiv_int_iff`: the discriminant classifies quadratic algebras
-  up to isomorphism, modulo squares of units when `2` is invertible and exactly over `ℤ`.
 * `QuadraticAlgebra.isField_iff_not_isSquare_discr`: over a field with `2 ≠ 0`,
   `QuadraticAlgebra K a b` is a field iff `discr a b` is not a square.
 -/
@@ -77,116 +71,6 @@ theorem exists_sq_eq_iff_isSquare_discr [CommRing R] [Invertible (2 : R)] {a b :
   grind
 
 end discr
-
-section classification
-
-variable [CommRing R] {a b a' b' : R} (f : QuadraticAlgebra R a' b' →ₐ[R] QuadraticAlgebra R a b)
-
-private theorem smul_omega_sub_eq :
-    (trace (f ω) - b') • f ω = algebraMap R _ (norm (f ω)) + a' • 1 := by
-  rw [sub_smul, ← sub_neg_eq_add, sub_eq_sub_iff_sub_eq_sub, ← sq_eq_trace_smul_sub_norm,
-    sub_neg_eq_add, ← map_pow, sq, omega_mul_omega_eq_add, map_add, map_smul, map_smul, map_one,
-    add_comm]
-
-/-- If `(f ω).im` is regular, an algebra map sends `ω` to an element of trace `b'`. -/
-theorem trace_map_omega (h : IsRegular (f ω).im) :
-    trace (f ω) = b' := by
-  simpa [h.right.mul_right_eq_zero_iff, sub_eq_zero] using congr_arg im (smul_omega_sub_eq f)
-
-/-- If `(f ω).im` is regular, an algebra map sends `ω` to an element of norm `-a'`. -/
-theorem norm_map_omega (h : IsRegular (f ω).im) :
-    norm (f ω) = -a' := by
-  simpa [trace_map_omega f h, ← Algebra.algebraMap_eq_smul_one, add_eq_zero_iff_eq_neg,
-    ← map_neg] using (smul_omega_sub_eq f).symm
-
-/-- If `(f ω).im` is regular, an algebra map commutes with conjugation. -/
-theorem map_star (h : IsRegular (f ω).im) (x : QuadraticAlgebra R a' b') :
-    f (star x) = star (f x) := by
-  have hs : ∀ {c d : R} (r : R) (y : QuadraticAlgebra R c d), star (r • y) = r • star y := by
-    intro c d r y; ext <;> simp only [re_star, im_star, re_smul, im_smul, smul_eq_mul] <;> ring
-  have ha : ∀ {c d : R} (r : R),
-      star (algebraMap R (QuadraticAlgebra R c d) r) = algebraMap R _ r := by
-    intro c d r; ext <;> simp
-  have homega : f (star ω) = star (f ω) := by
-    rw [star_eq, map_sub, AlgHom.commutes, star_eq (f ω), trace_map_omega f h, trace_omega]
-  rw [← mk_eta x, mk_eq_add_smul_omega]
-  simp only [star_add, ha, hs, map_add, map_smul, AlgHom.commutes, homega]
-
-/-- If `(f ω).im` is regular, an algebra map preserves traces. -/
-theorem trace_map (h : IsRegular (f ω).im) (x : QuadraticAlgebra R a' b') :
-    trace (f x) = trace x := by
-  have key : algebraMap R (QuadraticAlgebra R a b) (trace (f x)) =
-      algebraMap R (QuadraticAlgebra R a b) (trace x) := by
-    rw [algebraMap_trace_eq_add_star, ← AlgHom.commutes f (trace x),
-      algebraMap_trace_eq_add_star, map_add, map_star f h]
-  simpa using congr_arg re key
-
-/-- The transformation law in the case when `(f ω).im` is regular. -/
-theorem discr_eq_im_sq_mul_discr (h : IsRegular (f ω).im) :
-    discr a' b' = (f ω).im ^ 2 * discr a b := by
-  rw [im_sq_mul_discr (f ω), trace_map_omega f h, norm_map_omega f h, discr_def]
-  ring
-
-/-- Any `R`-algebra isomorphism between quadratic algebras sends `ω` to an element
-whose imaginary part is a unit. -/
-theorem isUnit_im_omega_of_algEquiv (e : QuadraticAlgebra R a' b' ≃ₐ[R] QuadraticAlgebra R a b) :
-    IsUnit (e ω).im := by
-  simpa [Module.Basis.det_apply, Matrix.det_fin_two, Module.Basis.toMatrix_apply] using
-    (basis a b).isUnit_det ((basis a' b').map e.toLinearEquiv)
-
-/-- `discr_eq_im_sq_mul_discr` for an `R`-algebra isomorphism `e`, for which `(e ω).im` is
-automatically a unit (`isUnit_im_omega_of_algEquiv`). -/
-theorem discr_eq_im_sq_mul_discr' (e : QuadraticAlgebra R a' b' ≃ₐ[R] QuadraticAlgebra R a b) :
-    discr a' b' = (e ω).im ^ 2 * discr a b := by
-  rw [discr_eq_im_sq_mul_discr e.toAlgHom, AlgEquiv.toAlgHom_apply]
-  exact (isUnit_im_omega_of_algEquiv e).isRegular
-
-/-- If `2` is a unit, `QuadraticAlgebra R a b` is isomorphic to the standard form
-`QuadraticAlgebra R (discr a b) 0`. -/
-def algEquivDiscrZero [Invertible (2 : R)] (a b : R) :
-    QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R (discr a b) 0 :=
-  (mapEquiv a b (unitOfInvertible (2 : R)) (-b) (by grind [discr_def, val_unitOfInvertible])
-    (by grind [val_unitOfInvertible])).symm
-
-/-- If `2` is regular, `QuadraticAlgebra R a b` and `QuadraticAlgebra R a' b'` are isomorphic
-iff `discr a b = u ^ 2 * discr a' b'` for some unit `u` with `2 ∣ b - u * b'`. -/
-theorem nonempty_algEquiv_iff (h : IsRegular (2 : R)) :
-    Nonempty (QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a' b') ↔
-      ∃ u : Rˣ, discr a b = (u : R) ^ 2 * discr a' b' ∧ 2 ∣ (b - u * b') := by
-  refine ⟨fun ⟨e⟩ ↦ ?_, fun ⟨u, hu, ⟨k, hk⟩⟩ ↦ ⟨mapEquiv a' b' u k ?_ (by grind)⟩⟩
-  · refine ⟨(isUnit_im_omega_of_algEquiv e).unit,
-      by rw [discr_eq_im_sq_mul_discr' e, IsUnit.unit_spec], ⟨(e ω).re, ?_⟩⟩
-    rw [IsUnit.unit_spec, sub_eq_iff_eq_add', add_comm, mul_comm _ b', ← trace_def, eq_comm]
-    exact trace_map_omega e.toAlgHom (isUnit_im_omega_of_algEquiv e).isRegular
-  · rw [discr_def, discr_def] at hu
-    rw [← h.left.eq_iff, mul_sub, mul_sub, ← mul_rotate, ← mul_assoc, ← mul_assoc, ← mul_assoc,
-      ← hk, ← h.left.eq_iff, mul_sub, ← mul_assoc, ← mul_assoc, ← pow_two, ← mul_pow, ← hk]
-    grind
-
-/-- If `2` is invertible, the discriminant classifies quadratic algebras up to
-isomorphism, modulo squares of units. -/
-theorem nonempty_algEquiv_iff_of_invertible_two [Invertible (2 : R)] :
-    Nonempty (QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a' b') ↔
-      ∃ u : Rˣ, discr a b = (u : R) ^ 2 * discr a' b' := by
-  rw [nonempty_algEquiv_iff (isUnit_of_invertible (2 : R)).isRegular]
-  simp [(isUnit_of_invertible (2 : R)).dvd]
-
-/-- Over `ℤ` the discriminant is a complete invariant of quadratic algebras up to
-isomorphism. -/
-theorem nonempty_algEquiv_int_iff {a b a' b' : ℤ} :
-    Nonempty (QuadraticAlgebra ℤ a b ≃ₐ[ℤ] QuadraticAlgebra ℤ a' b') ↔
-      discr a b = discr a' b' := by
-  rw [nonempty_algEquiv_iff (IsRegular.of_ne_zero two_ne_zero)]
-  refine ⟨fun ⟨u, hu, _⟩ ↦ by rwa [Int.isUnit_sq u.isUnit, one_mul] at hu, fun h ↦ ?_⟩
-  obtain _ | _ : 2 ∣ (b + b') ∨ 2 ∣ (b - b') := by
-    rw [← Prime.dvd_mul Int.prime_two, ← sq_sub_sq]
-    refine ⟨2 * a' - 2 * a, ?_⟩
-    rwa [mul_sub, ← mul_assoc, ← mul_assoc, show (2 : ℤ) * 2 = 4 by norm_num,
-      sub_eq_sub_iff_add_eq_add, ← discr_def, add_comm, ← discr_def]
-  · exact ⟨-1, by simpa, by simpa⟩
-  · exact ⟨1, by simpa, by simpa⟩
-
-end classification
 
 section field
 
