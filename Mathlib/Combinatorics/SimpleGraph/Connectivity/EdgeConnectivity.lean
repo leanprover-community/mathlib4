@@ -167,13 +167,13 @@ theorem isEdgeConnected_two_iff_notBridge : G.IsEdgeConnected 2 ↔ ∀ e, ¬G.I
   · intro h
     rw [isEdgeConnected_two_iff_Preconnected] at h
     intro e
-    cases e ; expose_names
+    cases e; expose_names
     intro hbridge
     exact (isBridge_iff.mp hbridge) (h s(x, y) x y)
   · intro h
     rw [isEdgeConnected_two_iff_Preconnected]
     intro e
-    cases e ; expose_names
+    cases e; expose_names
     by_cases hV : Nonempty V
     · have hG : G.Preconnected := by
         exact all_notBridge_Preconnected h
