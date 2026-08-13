@@ -54,7 +54,7 @@ Cantor's theorem, König's theorem, Konig's theorem
 
 assert_not_exists Monoid
 
-open List Function Set
+open List
 
 noncomputable section
 

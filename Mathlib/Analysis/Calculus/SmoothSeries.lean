@@ -26,7 +26,7 @@ We also give versions of these statements which are localized to a set.
 public section
 
 
-open Set Metric TopologicalSpace Function Asymptotics Filter
+open Set TopologicalSpace Function Filter
 
 open scoped Topology NNReal
 

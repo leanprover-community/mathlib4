@@ -223,10 +223,10 @@ def gaussianReal (μ : ℝ) (v : ℝ≥0) : Measure ℝ :=
   if v = 0 then Measure.dirac μ else volume.withDensity (gaussianPDF μ v)
 
 lemma gaussianReal_of_var_ne_zero (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
-    gaussianReal μ v = volume.withDensity (gaussianPDF μ v) := if_neg hv
+    gaussianReal μ v = volume.withDensity (gaussianPDF μ v) := ite_eq_right hv
 
 @[simp]
-lemma gaussianReal_zero_var (μ : ℝ) : gaussianReal μ 0 = Measure.dirac μ := if_pos rfl
+lemma gaussianReal_zero_var (μ : ℝ) : gaussianReal μ 0 = Measure.dirac μ := ite_eq_left rfl
 
 instance instIsProbabilityMeasureGaussianReal (μ : ℝ) (v : ℝ≥0) :
     IsProbabilityMeasure (gaussianReal μ v) where

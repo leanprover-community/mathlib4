@@ -126,7 +126,6 @@ lemma comp_hom {D₁ D₂ D₃ : F.DescentData f} (φ : D₁ ⟶ D₂) (φ' : D�
     (φ ≫ φ').hom i = φ.hom i ≫ φ'.hom i := rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of morphisms `f : X i ⟶ S`, and `M : F.obj (.mk (op S))`,
 this is the object in `F.DescentData f` that is obtained by pulling back `M`
 over the `X i`. -/
@@ -256,7 +255,6 @@ def pullFunctor : F.DescentData f ⥤ F.DescentData f' where
         rw [mapComp'_inv_naturality_assoc, ← mapComp'_hom_naturality,
           reassoc_of% this] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given families of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S'`, suitable
 commutative diagrams `w j : p' j ≫ f (α j) = f' j ≫ p`, this is the natural
 isomorphism between the descent data relative to `f'` that are obtained either:
@@ -297,7 +295,6 @@ def toDescentDataCompPullFunctorIso :
       ext i
       exact (F.isoMapOfCommSq (CommSq.mk (w i)).op.toLoc).inv.toNatTrans.naturality f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Up to a (unique) isomorphism, the functor
 `pullFunctor : F.DescentData f ⥤ F.DescentData f'` does not depend
 on the auxiliary data. -/
@@ -437,7 +434,6 @@ lemma isEquivalence_toDescentData_iff_of_sieve_eq
   exact ⟨fun _ ↦ inferInstance,
     fun _ ↦ Functor.isEquivalence_of_comp_right _ e.functor⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms between objects in the image of the functor `F.toDescentData f`
 identify to compatible families of sections of the presheaf `F.presheafHom M N` on
 the object `Over.mk (𝟙 S)`, relatively to the family of morphisms in `Over S`
@@ -558,7 +554,6 @@ lemma bijective_toDescentData_map_iff (M N : F.obj (.mk (op S))) :
   ext φ : 1
   apply DescentData.subtypeCompatibleHomEquiv_toCompatible_presheafHomObjHomEquiv
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isPrestackFor_iff_isSheafFor {S : C} (R : Sieve S) :
     F.IsPrestackFor R.arrows ↔ ∀ (M N : F.obj (.mk (op S))),
       Presieve.IsSheafFor (P := F.presheafHom M N)
@@ -575,7 +570,6 @@ lemma isPrestackFor_iff_isSheafFor {S : C} (R : Sieve S) :
   · rintro _ _ ⟨_, h⟩
     exact h
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isPrestackFor_iff_isSheafFor' {S : C} (R : Sieve S) :
     F.IsPrestackFor R.arrows ↔ ∀ ⦃S₀ : C⦄ (M N : F.obj (.mk (op S₀))) (a : S ⟶ S₀),
       Presieve.IsSheafFor (F.presheafHom M N) ((Sieve.overEquiv (Over.mk a)).symm R).arrows := by
@@ -597,7 +591,6 @@ lemma isPrestackFor_iff_isSheafFor' {S : C} (R : Sieve S) :
     change R.arrows b.left
     simpa [fac] using R.downward_closed h d.left
 
-set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 lemma IsPrestackFor.isSheafFor'
     {S₀ : C} (S : Over S₀) {R : Sieve S} (hF : F.IsPrestackFor (Sieve.overEquiv _ R).arrows)
@@ -609,7 +602,6 @@ lemma IsPrestackFor.isSheafFor'
 
 variable {J : GrothendieckTopology C}
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If `F` is a prestack for a Grothendieck topology `J`, and `f` is a covering
 family of morphisms, then the functor `F.toDescentData f` is fully faithful. -/
 noncomputable def fullyFaithfulToDescentData [F.IsPrestack J] (hf : Sieve.ofArrows _ f ∈ J S) :

@@ -17,11 +17,11 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
-open LinearMap CategoryTheory Limits
+open LinearMap CategoryTheory
 
 variable {R : Type u} [CommRing R]
 

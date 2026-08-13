@@ -80,7 +80,7 @@ open scoped Classical in
 theorem trace_eq_matrix_trace_of_finset {s : Finset M} (b : Basis s R M) (f : M →ₗ[R] M) :
     trace R M f = Matrix.trace (LinearMap.toMatrix b b f) := by
   have : ∃ s : Finset M, Nonempty (Basis s R M) := ⟨s, ⟨b⟩⟩
-  rw [trace, dif_pos this, ← traceAux_def]
+  rw [trace, dite_eq_left this, ← traceAux_def]
   congr 1
   apply traceAux_eq
 
@@ -106,7 +106,7 @@ theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g 
   · let ⟨s, ⟨b⟩⟩ := H
     simp_rw [trace_eq_matrix_trace R b, LinearMap.toMatrix_mul]
     apply Matrix.trace_mul_comm
-  · rw [trace, dif_neg H, LinearMap.zero_apply, LinearMap.zero_apply]
+  · rw [trace, dite_eq_right H, LinearMap.zero_apply, LinearMap.zero_apply]
 
 lemma trace_mul_cycle (f g h : M →ₗ[R] M) :
     trace R M (f * g * h) = trace R M (h * f * g) := by
@@ -299,7 +299,7 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
     have := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
     rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
       LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, id_comp]
-  · rw [trace, trace, dif_neg hM, dif_neg ?_, zero_apply, zero_apply]
+  · rw [trace, trace, dite_eq_right hM, dite_eq_right ?_, zero_apply, zero_apply]
     rintro ⟨s, ⟨b⟩⟩
     exact hM ⟨s.image e.symm, ⟨(b.map e.symm).reindex
       ((e.symm.toEquiv.image s).trans (Equiv.setCongr Finset.coe_image.symm))⟩⟩
@@ -352,7 +352,7 @@ lemma isNilpotent_trace_of_isNilpotent {f : M →ₗ[R] M} (hf : IsNilpotent f) 
     IsNilpotent (trace R M f) := by
   by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
   swap
-  · rw [LinearMap.trace, dif_neg H]
+  · rw [LinearMap.trace, dite_eq_right H]
     exact IsNilpotent.zero
   obtain ⟨s, ⟨b⟩⟩ := H
   classical

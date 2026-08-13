@@ -995,8 +995,6 @@ end Thin
 
 section IsPullbackOverPullback
 
-open Limits
-
 variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullbacksAlong g]
 
 namespace IsPullback

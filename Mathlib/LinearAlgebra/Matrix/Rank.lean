@@ -68,7 +68,6 @@ theorem cRank_subsingleton [Subsingleton R] (A : Matrix m n R) : A.cRank = 1 :=
 lemma cRank_toNat_eq_finrank (A : Matrix m n R) :
     A.cRank.toNat = Module.finrank R (span R (range A.col)) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lift_cRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     lift.{um} (A.submatrix r c).cRank ≤ lift.{um₀} A.cRank := by
   have h : ((A.submatrix r id).submatrix id c).cRank ≤ (A.submatrix r id).cRank :=
@@ -138,7 +137,6 @@ noncomputable def rank [CommSemiring R] (A : Matrix m n R) : ℕ :=
 theorem rank_subsingleton [CommSemiring R] [Subsingleton R] (A : Matrix m n R) : A.rank = 1 :=
   finrank_subsingleton
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cRank_one [Semiring R] [Nontrivial R] [DecidableEq m] [StrongRankCondition R] :
     (cRank (1 : Matrix m m R)) = lift.{uR} #m := by
@@ -344,7 +342,6 @@ theorem eRank_reindex {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix m 
     (en : n ≃ n₀) : eRank (A.reindex em en) = eRank A :=
   eRank_submatrix ..
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The rank of a matrix equals the dimension of the range of the corresponding linear map,
 and is therefore independent of the choice of bases. -/
 theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type*} [CommSemiring R]
@@ -382,7 +379,8 @@ theorem rank_le_card_of_support_subset [CommSemiring R] [StrongRankCondition R] 
     simp only [hBdef, mul_apply, of_apply, submatrix_apply, id_eq]
     by_cases hi : i ∈ s
     · rw [Fintype.sum_eq_single (⟨i, hi⟩ : {x // x ∈ s})
-        fun a ha => by rw [if_neg fun he => ha (Subtype.ext he), zero_mul], if_pos rfl, one_mul]
+        fun a ha => by rw [ite_eq_right fun he => ha (Subtype.ext he), zero_mul],
+        ite_eq_left rfl, one_mul]
     · have h0 : A i = 0 := hz i hi
       aesop
   calc A.rank = (B * A.submatrix Subtype.val id).rank := by rw [hB]
@@ -453,7 +451,6 @@ theorem exists_rank_normal_form [Fintype m] [DecidableEq m] (M : Matrix m m R) :
   refine congrArg _ (funext fun i ↦ ?_)
   split_ifs with hi <;> simp [he, hi]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     (diagonal w).cRank = lift.{uR} #{i // (w i) ≠ 0} := by
   classical

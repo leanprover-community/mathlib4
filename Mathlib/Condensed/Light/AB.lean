@@ -20,7 +20,7 @@ public section
 
 universe u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace LightCondensed
 

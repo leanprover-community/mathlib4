@@ -16,7 +16,7 @@ as an extended nonnegative real number.
 
 @[expose] public section
 
-open Set Filter
+open Set
 
 open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 
@@ -153,35 +153,3 @@ theorem ediam_pos_iff' : 0 < ediam s ↔ ∃ x ∈ s, ∃ y ∈ s, x ≠ y := by
 end EMetricSpace
 
 end Metric
-
-namespace EMetric
-
-open Metric
-
-@[deprecated (since := "2026-01-04")] alias diam := Metric.ediam
-@[deprecated (since := "2026-01-04")] alias diam_eq_sSup := ediam_eq_sSup
-@[deprecated (since := "2026-01-04")] alias diam_le_iff := ediam_le_iff
-@[deprecated (since := "2026-01-04")] alias diam_image_le_iff := ediam_image_le_iff
-@[deprecated (since := "2026-01-04")] alias edist_le_of_diam_le := edist_le_of_ediam_le
-@[deprecated (since := "2026-01-04")] alias edist_le_diam_of_mem := edist_le_ediam_of_mem
-@[deprecated (since := "2026-01-04")] alias diam_le := ediam_le
-@[deprecated (since := "2026-01-04")] alias diam_subsingleton := ediam_subsingleton
-@[deprecated (since := "2026-01-04")] alias diam_empty := ediam_empty
-@[deprecated (since := "2026-01-04")] alias diam_singleton := ediam_singleton
-@[deprecated (since := "2026-01-04")] alias diam_zero := ediam_zero
-@[to_additive existing, deprecated (since := "2026-01-04")] alias diam_one := ediam_one
-@[deprecated (since := "2026-01-04")] alias diam_iUnion_mem_option := ediam_iUnion_mem_option
-@[deprecated (since := "2026-01-04")] alias diam_insert := ediam_insert
-@[deprecated (since := "2026-01-04")] alias diam_pair := ediam_pair
-@[deprecated (since := "2026-01-04")] alias diam_triple := ediam_triple
-@[deprecated (since := "2026-01-04")] alias diam_mono := ediam_mono
-@[deprecated (since := "2026-01-04")] alias diam_union := ediam_union_le_add_edist
-@[deprecated (since := "2026-01-04")] alias diam_union' := ediam_union_le
-@[deprecated (since := "2026-01-04")] alias diam_closedBall := ediam_closedEBall_le
-@[deprecated (since := "2026-01-04")] alias diam_ball := ediam_eball_le
-@[deprecated (since := "2026-01-04")] alias diam_pi_le_of_le := ediam_pi_le_of_le
-@[deprecated (since := "2026-01-04")] alias diam_eq_zero_iff := ediam_eq_zero_iff
-@[deprecated (since := "2026-01-04")] alias diam_pos_iff := ediam_pos_iff
-@[deprecated (since := "2026-01-04")] alias diam_pos_iff' := ediam_pos_iff'
-
-end EMetric

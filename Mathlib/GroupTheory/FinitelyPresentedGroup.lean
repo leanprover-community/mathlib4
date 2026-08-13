@@ -172,7 +172,7 @@ instance [IsFinitelyPresented G] [IsFinitelyPresented H] :
 variable (G)
 
 /-- Any finite group is finitely presented. -/
-@[to_additive]
+@[to_additive /-- Any finite additive group is finitely presented. -/]
 instance [Finite G] : IsFinitelyPresented G :=
   of_surjective FreeGroup.prod FreeGroup.prod_surjective (.of_FG FreeGroup.prod.ker)
 

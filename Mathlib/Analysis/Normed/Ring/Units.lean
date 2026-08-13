@@ -194,7 +194,7 @@ end NormedRing
 
 namespace Units
 
-open MulOpposite Filter NormedRing
+open NormedRing
 
 /-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
 induced topology from the embedding in `R × R`) to `R` is an open embedding. -/

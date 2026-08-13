@@ -86,7 +86,7 @@ section Monoid
 variable {M} [Monoid M]
 
 /-- The center of a monoid is commutative. -/
-@[to_additive]
+@[to_additive /-- The center of an additive monoid is additively commutative. -/]
 instance center.commMonoid : CommMonoid (center M) :=
   { (center M).toMonoid, Subsemigroup.center.commSemigroup with }
 

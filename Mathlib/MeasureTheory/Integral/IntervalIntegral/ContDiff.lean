@@ -18,7 +18,7 @@ public section
 
 noncomputable section
 
-open MeasureTheory Set Filter Function Asymptotics
+open MeasureTheory Set Filter Function
 
 open scoped Topology ENNReal Interval NNReal
 

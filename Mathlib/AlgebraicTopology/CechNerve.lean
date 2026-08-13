@@ -334,7 +334,6 @@ abbrev cechConerveAdjunction : augmentedCechConerve ⊣ (Augmented.toArrow : _ �
 
 end CosimplicialObject
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `X : C`, the natural simplicial object sending `⦋n⦌` to `Xⁿ⁺¹`. -/
 def cechNerveTerminalFrom {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C) :
     SimplicialObject C where
@@ -408,7 +407,6 @@ lemma wideCospan.limitIsoPi_inv_comp_pi [Finite ι] (X : C) (j : ι) :
     (wideCospan.limitIsoPi ι X).inv ≫ WidePullback.π _ j = Pi.π _ j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma wideCospan.limitIsoPi_hom_comp_pi [Finite ι] (X : C) (j : ι) :
     (wideCospan.limitIsoPi ι X).hom ≫ Pi.π _ j = WidePullback.π _ j := by

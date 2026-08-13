@@ -443,7 +443,7 @@ def dirac (x : β) (v : M) : VectorMeasure β M where
     grind
 
 @[simp] lemma dirac_apply_of_mem (hs : MeasurableSet s) (hx : x ∈ s) : dirac x v s = v :=
-  if_pos (And.intro hs hx)
+  ite_eq_left (And.intro hs hx)
 
 @[simp] lemma dirac_apply_of_notMem (hx : x ∉ s) : dirac x v s = 0 := by
   simp [dirac, hx]
@@ -463,9 +463,9 @@ open scoped Classical in
 def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure α where
   measureOf' s := if MeasurableSet s then μ.real s else 0
   empty' := by simp
-  not_measurable' _ hi := if_neg hi
+  not_measurable' _ hi := ite_eq_right hi
   m_iUnion' f hf₁ hf₂ := by
-    simp only [*, MeasurableSet.iUnion hf₁, if_true, measure_iUnion hf₂ hf₁, measureReal_def]
+    simp only [*, MeasurableSet.iUnion hf₁, ite_true, measure_iUnion hf₂ hf₁, measureReal_def]
     rw [ENNReal.tsum_toReal_eq]
     exacts [(summable_measure_toReal hf₁ hf₂).hasSum, fun _ ↦ measure_ne_top _ _]
 
@@ -476,7 +476,7 @@ theorem toSignedMeasure_apply (μ : Measure α) [hμ : IsFiniteMeasure μ] (i : 
 
 theorem toSignedMeasure_apply_measurable {μ : Measure α} [IsFiniteMeasure μ] {i : Set α}
     (hi : MeasurableSet i) : μ.toSignedMeasure i = μ.real i :=
-  if_pos hi
+  ite_eq_left hi
 
 -- Without this lemma, `singularPart_neg` in
 -- `Mathlib/MeasureTheory/Measure/Decomposition/Lebesgue.lean` is extremely slow
@@ -519,11 +519,11 @@ open scoped Classical in
 def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
   measureOf' i := if MeasurableSet i then μ i else 0
   empty' := by simp
-  not_measurable' _ hi := if_neg hi
+  not_measurable' _ hi := ite_eq_right hi
   m_iUnion' _ hf₁ hf₂ := by
-    rw [Summable.hasSum_iff ENNReal.summable, if_pos (MeasurableSet.iUnion hf₁),
+    rw [Summable.hasSum_iff ENNReal.summable, ite_eq_left (MeasurableSet.iUnion hf₁),
       MeasureTheory.measure_iUnion hf₂ hf₁]
-    exact tsum_congr fun n => if_pos (hf₁ n)
+    exact tsum_congr fun n => ite_eq_left (hf₁ n)
 
 open scoped Classical in
 @[simp]
@@ -532,7 +532,7 @@ theorem toENNRealVectorMeasure_apply (μ : Measure α) (i : Set α) :
 
 theorem toENNRealVectorMeasure_apply_measurable {μ : Measure α} {i : Set α} (hi : MeasurableSet i) :
     μ.toENNRealVectorMeasure i = μ i :=
-  if_pos hi
+  ite_eq_left hi
 
 @[simp]
 theorem toENNRealVectorMeasure_zero : (0 : Measure α).toENNRealVectorMeasure = 0 := by
@@ -607,21 +607,21 @@ def map (v : VectorMeasure α M) (f : α → β) : VectorMeasure β M :=
   if hf : Measurable f then
     { measureOf' := fun s => if MeasurableSet s then v (f ⁻¹' s) else 0
       empty' := by simp
-      not_measurable' := fun _ hi => if_neg hi
+      not_measurable' := fun _ hi => ite_eq_right hi
       m_iUnion' := by
         intro g hg₁ hg₂
         convert! v.m_iUnion (fun i => hf (hg₁ i)) fun i j hij => (hg₂ hij).preimage _
-        · rw [if_pos (hg₁ _)]
-        · rw [Set.preimage_iUnion, if_pos (MeasurableSet.iUnion hg₁)] }
+        · rw [ite_eq_left (hg₁ _)]
+        · rw [Set.preimage_iUnion, ite_eq_left (MeasurableSet.iUnion hg₁)] }
   else 0
 
 theorem map_not_measurable {f : α → β} (hf : ¬Measurable f) : v.map f = 0 :=
-  dif_neg hf
+  dite_eq_right hf
 
 theorem map_apply {f : α → β} (hf : Measurable f) {s : Set β} (hs : MeasurableSet s) :
     v.map f s = v (f ⁻¹' s) := by
-  rw [map, dif_pos hf]
-  exact if_pos hs
+  rw [map, dite_eq_left hf]
+  exact ite_eq_left hs
 
 @[simp]
 theorem map_id : v.map id = v :=
@@ -632,7 +632,7 @@ theorem map_zero (f : α → β) : (0 : VectorMeasure α M).map f = 0 := by
   by_cases hf : Measurable f
   · ext i hi
     rw [map_apply _ hf hi, zero_apply, zero_apply]
-  · exact dif_neg hf
+  · exact dite_eq_right hf
 
 section
 
@@ -695,7 +695,6 @@ theorem mapRange_smul {v : VectorMeasure α M} {f : M →ₗ[R] N} (hf : Continu
 
 variable [ContinuousAdd M] [ContinuousAdd N]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a continuous linear map `f : M → N`, `mapRangeₗ` is the linear map mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
 def mapRangeₗ {α : Type*} [MeasurableSpace α] (f : M →ₗ[R] N) (hf : Continuous f) :
@@ -714,23 +713,23 @@ open scoped Classical in
   if hi : MeasurableSet i then
     { measureOf' := fun s => if MeasurableSet s then v (s ∩ i) else 0
       empty' := by simp
-      not_measurable' := fun _ hi => if_neg hi
+      not_measurable' := fun _ hi => ite_eq_right hi
       m_iUnion' := by
         intro f hf₁ hf₂
         convert!
           v.m_iUnion (fun n => (hf₁ n).inter hi)
             (hf₂.mono fun i j => Disjoint.mono inf_le_left inf_le_left)
-        · rw [if_pos (hf₁ _)]
-        · rw [Set.iUnion_inter, if_pos (MeasurableSet.iUnion hf₁)] }
+        · rw [ite_eq_left (hf₁ _)]
+        · rw [Set.iUnion_inter, ite_eq_left (MeasurableSet.iUnion hf₁)] }
   else 0
 
 theorem restrict_not_measurable {i : Set α} (hi : ¬MeasurableSet i) : v.restrict i = 0 :=
-  dif_neg hi
+  dite_eq_right hi
 
 theorem restrict_apply {i : Set α} (hi : MeasurableSet i) {j : Set α} (hj : MeasurableSet j) :
     v.restrict i j = v (j ∩ i) := by
-  rw [restrict, dif_pos hi]
-  exact if_pos hj
+  rw [restrict, dite_eq_left hi]
+  exact ite_eq_left hj
 
 @[simp] theorem restrict_apply_univ {i : Set α} :
     v.restrict i univ = v i := by
@@ -756,7 +755,7 @@ theorem restrict_zero {i : Set α} : (0 : VectorMeasure α M).restrict i = 0 := 
   by_cases hi : MeasurableSet i
   · ext j hj
     rw [restrict_apply 0 hi hj, zero_apply, zero_apply]
-  · exact dif_neg hi
+  · exact dite_eq_right hi
 
 theorem restrict_dirac {s : Set α} {x : α} {m : M} (hs : MeasurableSet s) [Decidable (x ∈ s)] :
     (dirac x m).restrict s = if x ∈ s then dirac x m else 0 := by
@@ -811,7 +810,7 @@ theorem map_add (v w : VectorMeasure α M) (f : α → β) : (v + w).map f = v.m
   by_cases hf : Measurable f
   · ext i hi
     simp [map_apply _ hf hi]
-  · simp [map, dif_neg hf]
+  · simp [map, dite_eq_right hf]
 
 /-- `VectorMeasure.map` as an additive monoid homomorphism. -/
 @[simps]
@@ -904,7 +903,7 @@ theorem map_smul {v : VectorMeasure α M} {f : α → β} (c : R) : (c • v).ma
   by_cases hf : Measurable f
   · ext i hi
     simp [map_apply _ hf hi]
-  · simp only [map, dif_neg hf]
+  · simp only [map, dite_eq_right hf]
     -- `smul_zero` does not work since we do not require `ContinuousAdd`
     ext i
     simp
@@ -1327,29 +1326,29 @@ def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :
     @VectorMeasure α m M _ _ :=
   @VectorMeasure.mk α m M _ _
     (fun i => if MeasurableSet[m] i then v i else 0)
-    (by rw [if_pos (@MeasurableSet.empty _ m), v.empty])
-    (fun i hi => by rw [if_neg hi])
+    (by rw [ite_eq_left (@MeasurableSet.empty _ m), v.empty])
+    (fun i hi => by rw [ite_eq_right hi])
     (fun f hf₁ hf₂ => by
       have hf₁' : ∀ k, MeasurableSet[n] (f k) := fun k => hle _ (hf₁ k)
       convert! v.m_iUnion hf₁' hf₂ using 1
       · ext n
-        rw [if_pos (hf₁ n)]
-      · rw [if_pos (@MeasurableSet.iUnion _ _ m _ _ hf₁)])
+        rw [ite_eq_left (hf₁ n)]
+      · rw [ite_eq_left (@MeasurableSet.iUnion _ _ m _ _ hf₁)])
 
 variable {n : MeasurableSpace α} {v : VectorMeasure α M}
 
 theorem trim_eq_self : v.trim le_rfl = v := by
   ext i hi
-  exact if_pos hi
+  exact ite_eq_left hi
 
 @[simp]
 theorem zero_trim (hle : m ≤ n) : (0 : VectorMeasure α M).trim hle = 0 := by
   ext i hi
-  exact if_pos hi
+  exact ite_eq_left hi
 
 theorem trim_measurableSet_eq (hle : m ≤ n) {i : Set α} (hi : MeasurableSet[m] i) :
     v.trim hle i = v i :=
-  if_pos hi
+  ite_eq_left hi
 
 theorem restrict_trim (hle : m ≤ n) {i : Set α} (hi : MeasurableSet[m] i) :
     @VectorMeasure.restrict α m M _ _ (v.trim hle) i = (v.restrict i).trim hle := by

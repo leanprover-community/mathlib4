@@ -107,12 +107,10 @@ def flipping : C ⥤ D ⥤ E ≌ D ⥤ C ⥤ E where
   counitIso := NatIso.ofComponents (fun _ ↦ NatIso.ofComponents
     (fun _ ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _)))
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E` is fully faithful. -/
 def fullyFaithfulUncurry : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).FullyFaithful :=
   currying.fullyFaithfulFunctor
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E` is fully faithful. -/
 def fullyFaithfulCurry : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).FullyFaithful :=
   currying.fullyFaithfulInverse

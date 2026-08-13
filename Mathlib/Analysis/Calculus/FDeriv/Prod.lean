@@ -22,7 +22,7 @@ Cartesian products of functions, and functions into Pi-types.
 public section
 
 
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
+open Filter Asymptotics ContinuousLinearMap Set
 
 noncomputable section
 

@@ -125,7 +125,7 @@ protected theorem nonzero {q : ℚ} (hq : q ≠ 0) : padicNorm p q ≠ 0 := by
 /-- If the `p`-adic norm of `q` is 0, then `q` is `0`. -/
 theorem zero_of_padicNorm_eq_zero {q : ℚ} (h : padicNorm p q = 0) : q = 0 := by
   apply by_contradiction; intro hq
-  unfold padicNorm at h; rw [if_neg hq] at h
+  unfold padicNorm at h; rw [ite_eq_right hq] at h
   apply absurd h
   apply zpow_ne_zero
   exact mod_cast hp.1.ne_zero
@@ -150,7 +150,7 @@ protected theorem div (q r : ℚ) : padicNorm p (q / r) = padicNorm p q / padicN
 protected theorem of_int (z : ℤ) : padicNorm p z ≤ 1 := by
   obtain rfl | hz := eq_or_ne z 0
   · simp
-  · rw [padicNorm, if_neg (mod_cast hz)]
+  · rw [padicNorm, ite_eq_right (mod_cast hz)]
     exact zpow_le_one_of_nonpos₀ (mod_cast hp.1.one_le) (by simp)
 
 private theorem nonarchimedean_aux {q r : ℚ} (h : padicValRat p q ≤ padicValRat p r) :

@@ -383,7 +383,7 @@ lemma one_apply_def (x : R) : (1 : Valuation R Γ₀) x = if x = 0 then 0 else 1
 
 @[simp] lemma toMonoidWithZeroHom_one : (1 : Valuation R Γ₀).toMonoidWithZeroHom = 1 := rfl
 
-lemma one_apply_of_ne_zero {x : R} (hx : x ≠ 0) : (1 : Valuation R Γ₀) x = 1 := if_neg hx
+lemma one_apply_of_ne_zero {x : R} (hx : x ≠ 0) : (1 : Valuation R Γ₀) x = 1 := ite_eq_right hx
 
 @[simp]
 lemma one_apply_eq_zero_iff [Nontrivial Γ₀] {x : R} : (1 : Valuation R Γ₀) x = 0 ↔ x = 0 :=
@@ -463,6 +463,7 @@ lemma leAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.leAddSubgroup 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 /-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
+@[implicit_reducible]
 def restrict : Valuation R (ValueGroup₀ (.ofClass v)) where
   __ := restrict₀ (.ofClass v)
   map_add_le_max' x y := by
@@ -735,10 +736,6 @@ theorem eq_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r = 0 ↔ v₂ r = 0 := b
 lemma ofClass_eq_zero (h : v₁.IsEquiv v₂) {r : R} : (MonoidWithZeroHom.ofClass v₁) r = 0 ↔
   (MonoidWithZeroHom.ofClass v₂) r = 0 := eq_zero h
 
-@[deprecated "use `(eq_zero _).ne` instead." (since := "2026-01-05")]
-theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 :=
-  (eq_zero h).ne
-
 lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} : 0 < v₁ x ↔ 0 < v₂ x := by
   rw [zero_lt_iff, zero_lt_iff, h.eq_zero.ne]
 
@@ -831,7 +828,7 @@ theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : (MonoidWithZeroH
     (hs' : (MonoidWithZeroHom.ofClass w) s ≠ 0 := h.ofClass_eq_zero.ne.1 hs) :
     valueGroup₀Fun h (valueGroup.mk (.ofClass v) r s hr hs) =
       valueGroup.mk (.ofClass w) r s hr' hs' := by
-  rw [valueGroup₀Fun, dif_neg (by simp)]
+  rw [valueGroup₀Fun, dite_eq_right (by simp)]
   generalize_proofs _ _ _ _ H _
   have c_spec := H.choose_spec
   simp only [MonoidWithZeroHom.coe_ofClass, ne_eq, WithZero.coe_inj, valueGroup.mk_inj] at c_spec ⊢
@@ -1044,7 +1041,7 @@ theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = 0 :=
   Iff.rfl
 
 /-- The support of a valuation is a prime ideal. -/
-instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
+instance [Nontrivial Γ₀] : Ideal.IsPrime (supp v) :=
   ⟨fun h =>
     one_ne_zero (α := Γ₀) <|
       calc

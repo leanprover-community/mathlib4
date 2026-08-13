@@ -135,7 +135,6 @@ lemma overEquiv_symm_iff {X : C} {Y : Over X} (S : Sieve Y.left) {Z : Over X} (f
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 lemma overEquiv_iff {X : C} {Y : Over X} (S : Sieve Y) {Z : C} (f : Z ⟶ Y.left) :
     overEquiv Y S f ↔ S (Over.homMk f : Over.mk (f ≫ Y.hom) ⟶ Y) := by
   obtain ⟨S, rfl⟩ := (overEquiv Y).symm.surjective S
@@ -183,7 +182,6 @@ lemma overEquiv_symm_generate {X : C} {Y : Over X} (R : Presieve Y.left) :
     exact fun Z g hg ↦ le_generate _ _ _ hg
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Sieve Z.left) :
     Sieve.functorPushforward (Over.map f) ((Sieve.overEquiv Z).symm S) =
@@ -298,7 +296,6 @@ lemma over_map_coverPreserving {X Y : C} (f : X ⟶ Y) :
     simpa [mem_over_iff] using! hS
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
     CompatiblePreserving (J.over Y) (Over.map f) where
   compatible {F Z _ x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by

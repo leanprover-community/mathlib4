@@ -12,7 +12,7 @@ public import Mathlib.Tactic.Ring.RingNF
 /-! # Lemmas for the `algebra` tactic.
 -/
 
-@[expose] public section
+public section
 
 open Mathlib.Meta.NormNum
 

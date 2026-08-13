@@ -37,7 +37,6 @@ section
 
 variable {P X Y Z : C} (f : P ⟶ X) (g : P ⟶ Y)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 The map of a binary fan is a limit iff the fork consisting of the mapped morphisms is a limit. This

@@ -132,6 +132,7 @@ theorem prod_Ico_eq_prod_range (f : ℕ → M) (m n : ℕ) :
   · replace h := h.le
     rw [Ico_eq_empty_of_le h, tsub_eq_zero_iff_le.mpr h, range_zero, prod_empty, prod_empty]
 
+@[to_additive]
 theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1) :
     (∏ j ∈ Ico k m, f (n - j)) = ∏ j ∈ Ico (n + 1 - m) (n + 1 - k), f j := by
   have : ∀ i < m, i ≤ n := by
@@ -148,10 +149,7 @@ theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1)
       exact hkm
     simp only [hkm, Ico_eq_empty_of_le, prod_empty, Ico_eq_empty_of_le this]
 
-theorem sum_Ico_reflect {δ : Type*} [AddCommMonoid δ] (f : ℕ → δ) (k : ℕ) {m n : ℕ}
-    (h : m ≤ n + 1) : (∑ j ∈ Ico k m, f (n - j)) = ∑ j ∈ Ico (n + 1 - m) (n + 1 - k), f j :=
-  @prod_Ico_reflect (Multiplicative δ) _ f k m n h
-
+@[to_additive]
 theorem prod_range_reflect (f : ℕ → M) (n : ℕ) :
     (∏ j ∈ range n, f (n - 1 - j)) = ∏ j ∈ range n, f j := by
   cases n
@@ -159,10 +157,6 @@ theorem prod_range_reflect (f : ℕ → M) (n : ℕ) :
   · simp only [← Nat.Ico_zero_eq_range, Nat.succ_sub_succ_eq_sub, tsub_zero]
     rw [prod_Ico_reflect _ _ le_rfl]
     simp
-
-theorem sum_range_reflect {δ : Type*} [AddCommMonoid δ] (f : ℕ → δ) (n : ℕ) :
-    (∑ j ∈ range n, f (n - 1 - j)) = ∑ j ∈ range n, f j :=
-  @prod_range_reflect (Multiplicative δ) _ f n
 
 @[simp]
 theorem prod_Ico_id_eq_factorial : ∀ n : ℕ, (∏ x ∈ Ico 1 (n + 1), x) = n !

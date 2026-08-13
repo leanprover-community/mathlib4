@@ -76,8 +76,6 @@ end Bool
 
 section Fintype
 
-open Finset
-
 -- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] [Finite α] :
     IsCoatomic α :=

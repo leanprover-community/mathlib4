@@ -96,7 +96,6 @@ section mk'
 
 open MorphismProperty
 
-set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations C]
     [CategoryWithWeakEquivalences C]

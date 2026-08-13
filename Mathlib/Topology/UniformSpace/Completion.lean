@@ -231,7 +231,7 @@ variable [T0Space β]
 
 theorem extend_pureCauchy {f : α → β} (hf : UniformContinuous f) (a : α) :
     extend f (pureCauchy a) = f a := by
-  rw [extend, if_pos hf]
+  rw [extend, ite_eq_left hf]
   exact uniformly_extend_of_ind isUniformInducing_pureCauchy denseRange_pureCauchy hf _
 
 end T0Space
@@ -241,9 +241,9 @@ variable [CompleteSpace β]
 @[fun_prop]
 theorem uniformContinuous_extend {f : α → β} : UniformContinuous (extend f) := by
   by_cases hf : UniformContinuous f
-  · rw [extend, if_pos hf]
+  · rw [extend, ite_eq_left hf]
     exact uniformContinuous_uniformly_extend isUniformInducing_pureCauchy denseRange_pureCauchy hf
-  · rw [extend, if_neg hf]
+  · rw [extend, ite_eq_right hf]
     exact uniformContinuous_of_const fun a _b => by congr
 
 end Extend
@@ -555,8 +555,6 @@ section Extension₂
 
 variable (f : α → β → γ)
 
-open Function
-
 /-- Extend a two variable map to the Hausdorff completions. -/
 protected def extension₂ (f : α → β → γ) : Completion α → Completion β → γ :=
   cPkg.extend₂ cPkg f
@@ -580,8 +578,6 @@ theorem uniformContinuous_extension₂ : UniformContinuous₂ (Completion.extens
 end Extension₂
 
 section Map₂
-
-open Function
 
 /-- Lift a two variable map to the Hausdorff completions. -/
 protected def map₂ (f : α → β → γ) : Completion α → Completion β → Completion γ :=

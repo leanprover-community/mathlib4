@@ -38,7 +38,7 @@ universe u₀ u v v' v'' u₁' w w'
 variable {K : Type u} {V V₁ V₂ V₃ : Type v}
 variable {ι : Type w}
 
-open Cardinal Basis Submodule Function Set
+open Cardinal Submodule Function Set
 
 section Module
 

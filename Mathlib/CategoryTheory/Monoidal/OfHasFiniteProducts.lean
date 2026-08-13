@@ -127,8 +127,6 @@ section
 
 attribute [local instance] monoidalOfHasFiniteCoproducts
 
-open MonoidalCategory
-
 set_option backward.isDefEq.respectTransparency false in
 /-- The monoidal structure coming from finite coproducts is symmetric.
 -/

@@ -102,7 +102,7 @@ protected noncomputable def inertiaDeg : ℕ :=
 
 theorem inertiaDeg_of_liesOver [w.LiesOver v] :
     v.inertiaDeg w = (⊥ : Ideal w.Completion).inertiaDeg v.Completion := by
-  simp only [InfinitePlace.inertiaDeg, dif_pos]
+  simp only [InfinitePlace.inertiaDeg, dite_eq_left]
 
 theorem inertiaDeg_eq_finrank [w.LiesOver v] :
     v.inertiaDeg w = Module.finrank v.Completion w.Completion := by

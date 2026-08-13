@@ -22,7 +22,7 @@ The definition of subcomplexes is in the file `Mathlib/Topology/CWComplex/Classi
 * [K. Jänich, *Topology*][Janich1984]
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

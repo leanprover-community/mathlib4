@@ -162,7 +162,6 @@ instance : HasLimits Cat.{v, v} where
   has_limits_of_shape _ :=
     { has_limit := fun F => ⟨⟨⟨HasLimits.limitCone F, HasLimits.limitConeIsLimit F⟩⟩⟩ }
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : PreservesLimits Cat.objects.{v, v} where
   preservesLimitsOfShape :=
     { preservesLimit := fun {F} =>

@@ -70,11 +70,11 @@ variable {p}
 
 
 theorem nth_of_card_le (hf : (Set.ofPred p).Finite) {n : ℕ} (hn : #hf.toFinset ≤ n) :
-    nth p n = 0 := by rw [nth, dif_pos hf, List.getD_eq_default]; rwa [Finset.length_sort]
+    nth p n = 0 := by rw [nth, dite_eq_left hf, List.getD_eq_default]; rwa [Finset.length_sort]
 
 theorem nth_eq_getD_sort (h : (Set.ofPred p).Finite) (n : ℕ) :
     nth p n = h.toFinset.sort.getD n 0 :=
-  dif_pos h
+  dite_eq_left h
 
 theorem nth_eq_orderEmbOfFin (hf : (Set.ofPred p).Finite) {n : ℕ} (hn : n < #hf.toFinset) :
     nth p n = hf.toFinset.orderEmbOfFin rfl ⟨n, hn⟩ := by
@@ -134,7 +134,8 @@ theorem exists_lt_card_finite_nth_eq (hf : (Set.ofPred p).Finite) {x} (h : p x) 
 
 /-- When `s` is an infinite set, `nth` agrees with `Nat.Subtype.orderIsoOfNat`. -/
 theorem nth_apply_eq_orderIsoOfNat (hf : (Set.ofPred p).Infinite) (n : ℕ) :
-    nth p n = @Nat.Subtype.orderIsoOfNat (Set.ofPred p) hf.to_subtype n := by rw [nth, dif_neg hf]
+    nth p n = @Nat.Subtype.orderIsoOfNat (Set.ofPred p) hf.to_subtype n := by
+  rw [nth, dite_eq_right hf]
 
 /-- When `s` is an infinite set, `nth` agrees with `Nat.Subtype.orderIsoOfNat`. -/
 theorem nth_eq_orderIsoOfNat (hf : (Set.ofPred p).Infinite) :
@@ -238,7 +239,6 @@ theorem nth_zero : nth p 0 = sInf (Set.ofPred p) := by rw [nth_eq_sInf]; simp
 @[simp]
 theorem nth_zero_of_zero (h : p 0) : nth p 0 = 0 := by simp [nth_zero, h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nth_zero_of_exists [DecidablePred p] (h : ∃ n, p n) : nth p 0 = Nat.find h := by
   rw [nth_zero]; convert! Nat.sInf_def h
 
@@ -303,7 +303,7 @@ lemma nth_le_of_strictMonoOn_of_mapsTo {p : ℕ → Prop} (f : ℕ → ℕ)
     have : f k < f n := by apply hmono <;> grind
     grind
   · rcases hn with ⟨hf, hn⟩
-    rw [nth, dif_pos hf, List.getD_eq_default _ _ (by simp [hn])]
+    rw [nth, dite_eq_left hf, List.getD_eq_default _ _ (by simp [hn])]
     exact Nat.zero_le _
 
 /-- `Nat.nth p` is the greatest monotone function whose image contains `Set.ofPred p`. -/
@@ -449,11 +449,11 @@ theorem surjective_count_of_infinite_setOfPred (h : {n | p n}.Infinite) :
 alias surjective_count_of_infinite_setOf := surjective_count_of_infinite_setOfPred
 
 theorem count_nth_succ {n : ℕ} (hn : ∀ hf : (Set.ofPred p).Finite, n < #hf.toFinset) :
-    count p (nth p n + 1) = n + 1 := by rw [count_succ, count_nth hn, if_pos (nth_mem _ hn)]
+    count p (nth p n + 1) = n + 1 := by rw [count_succ, count_nth hn, ite_eq_left (nth_mem _ hn)]
 
 lemma count_nth_succ_of_infinite (hp : (Set.ofPred p).Infinite) (n : ℕ) :
     count p (nth p n + 1) = n + 1 := by
-  rw [count_succ, count_nth_of_infinite hp, if_pos (nth_mem_of_infinite hp _)]
+  rw [count_succ, count_nth_of_infinite hp, ite_eq_left (nth_mem_of_infinite hp _)]
 
 @[simp]
 theorem nth_count {n : ℕ} (hpn : p n) : nth p (count p n) = n :=

@@ -135,7 +135,7 @@ end Field
 
 section RCLike
 
-open Asymptotics Filter Real Set Nat
+open Filter Real Nat
 
 open scoped Topology
 

@@ -19,7 +19,7 @@ with sums instead of integrals.
 
 public section
 
-open MeasureTheory Function
+open MeasureTheory
 open scoped ENNReal NNReal
 
 namespace ProbabilityTheory

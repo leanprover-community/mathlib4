@@ -302,7 +302,6 @@ def ofCocomplex : CochainComplex C ℕ :=
   CochainComplex.mk' (Injective.under Z) (Injective.syzygies (Injective.ι Z))
     (Injective.d (Injective.ι Z)) fun f => ⟨_, Injective.d f, by simp⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ofCocomplex_d_0_1 :
     (ofCocomplex Z).d 0 1 = d (Injective.ι Z) := by
   simp [ofCocomplex]
@@ -319,7 +318,6 @@ lemma ofCocomplex_exactAt_succ (n : ℕ) :
   | n + 1 => apply exact_f_d ((CochainComplex.mkAux _ _ _
       (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ (n + 1)).f)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Injective.injective_under
 

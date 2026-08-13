@@ -299,7 +299,6 @@ def of : X ≃ CofiniteTopology X := (WithTopology.equiv _ _).symm
 
 instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite := by
   simp_rw [isOpen_coinduced, TopologicalSpace.cofinite, isOpen_mk, ← Set.preimage_compl,
     WithTopology.preimage_toTopology, image_nonempty,
@@ -1088,10 +1087,10 @@ theorem isOpen_pi_iff {s : Set (∀ a, A a)} :
     refine ⟨I, fun a => ite (a ∈ I) (t a) univ, fun i => ?_, ?_⟩
     · by_cases hi : i ∈ I
       · use t i
-        simp_rw [if_pos hi]
+        simp_rw [ite_eq_left hi]
         exact ⟨Subset.rfl, (h1 i) hi⟩
       · use univ
-        simp_rw [if_neg hi]
+        simp_rw [ite_eq_right hi]
         exact ⟨Subset.rfl, isOpen_univ, mem_univ _⟩
     · rw [← univ_pi_ite]
       simp only [← ite_and, ← Finset.mem_coe, and_self_iff, univ_pi_ite, h2]

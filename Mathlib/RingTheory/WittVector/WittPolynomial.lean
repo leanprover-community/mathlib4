@@ -124,7 +124,7 @@ theorem constantCoeff_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   simp only [wittPolynomial, map_sum, constantCoeff_monomial]
   rw [sum_eq_zero]
   rintro i _
-  rw [if_neg]
+  rw [ite_eq_right]
   rw [Finsupp.single_eq_zero]
   exact ne_of_gt (pow_pos hp.1.pos _)
 

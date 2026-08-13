@@ -30,7 +30,7 @@ sorted, nodup
 public section
 
 
-open Nat Function
+open Nat
 
 namespace List
 

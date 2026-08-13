@@ -369,11 +369,9 @@ def lift : V.HomotopyCategory ⥤ D :=
       simp only [Functor.map_comp]
       convert! map_comp h <;> apply Cat.FreeRefl.lift'_map)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma lift_obj_mk (x : V _⦋0⦌₂) : (lift obj map map_id map_comp).obj (mk x) = obj x := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma lift_map_homMk {x y : V _⦋0⦌₂} (e : Edge x y) :
     (lift obj map map_id map_comp).map (homMk e) = map e :=
@@ -399,7 +397,6 @@ def mkNatTrans : F ⟶ G where
       morphismProperty_eq_top (fun e ↦ hφ e)
     exact this.symm.le f (by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatTrans_app_mk (v : V _⦋0⦌₂) :
@@ -413,19 +410,16 @@ variable (iso : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ≅ G.obj (mk x))
   (hiso : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y), F.map (homMk e) ≫ (iso y).hom =
     (iso x).hom ≫ G.map (homMk e) := by cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 /-- Constructor for natural isomorphisms between functors from `V.HomotopyCategory`. -/
 def mkNatIso : F ≅ G :=
   NatIso.ofComponents (fun _ ↦ iso _) (fun f ↦ (mkNatTrans _ hiso).naturality f)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatIso_hom_app_mk (v : V _⦋0⦌₂) :
     (mkNatIso iso hiso).hom.app (mk v) = (iso v).hom := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatIso_inv_app_mk (v : V _⦋0⦌₂) :
@@ -433,7 +427,6 @@ lemma mkNatIso_inv_app_mk (v : V _⦋0⦌₂) :
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma functor_ext {F G : V.HomotopyCategory ⥤ D}
     (h₁ : ∀ (x : V _⦋0⦌₂), F.obj (mk x) = G.obj (mk x))
     (h₂ : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y),

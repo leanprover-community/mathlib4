@@ -54,7 +54,6 @@ def tensorAlgebraAdj : tensorAlgebra.{u} R ⊣ forget₂ (AlgCat.{u} R) (ModuleC
     ext
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 instance (R : Type v) [CommRing R] [Small.{u} R] :
     (forget₂ (AlgCat.{u} R) (ModuleCat.{u} R)).IsRightAdjoint := by
   let e : AlgCat.{u} R ≌ AlgCat.{u} (Shrink.{u} R) :=

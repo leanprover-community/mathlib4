@@ -24,7 +24,7 @@ variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 open scoped Topology
-open Set Filter Asymptotics NNReal ENNReal
+open Set Filter ENNReal
 
 variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞} {n m : ℕ}
 
@@ -111,14 +111,12 @@ namespace ContinuousMultilinearMap
 variable {ι : Type*} {Em : ι → Type*} [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
   [Fintype ι] (f : ContinuousMultilinearMap 𝕜 Em F) {x : Π i, Em i} {s : Set (Π i, Em i)}
 
-open FormalMultilinearSeries
-
 protected theorem hasFiniteFPowerSeriesOnBall :
     HasFiniteFPowerSeriesOnBall f f.toFormalMultilinearSeries 0 (Fintype.card ι + 1) ⊤ :=
-  .mk' (fun _ hm ↦ dif_neg (Nat.succ_le_iff.mp hm).ne) ENNReal.zero_lt_top fun y _ ↦ by
+  .mk' (fun _ hm ↦ dite_eq_right (Nat.succ_le_iff.mp hm).ne) ENNReal.zero_lt_top fun y _ ↦ by
     rw [Finset.sum_eq_single_of_mem _ (Finset.self_mem_range_succ _), zero_add]
-    · rw [toFormalMultilinearSeries, dif_pos rfl]; rfl
-    · intro m _ ne; rw [toFormalMultilinearSeries, dif_neg ne.symm]; rfl
+    · rw [toFormalMultilinearSeries, dite_eq_left rfl]; rfl
+    · intro m _ ne; rw [toFormalMultilinearSeries, dite_eq_right ne.symm]; rfl
 
 lemma cpolynomialAt : CPolynomialAt 𝕜 f x :=
   f.hasFiniteFPowerSeriesOnBall.cpolynomialAt_of_mem
@@ -162,12 +160,12 @@ protected theorem hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear :
       f.toFormalMultilinearSeriesOfMultilinear 0 (Fintype.card (Option ι) + 1) ⊤ := by
   apply HasFiniteFPowerSeriesOnBall.mk' ?_ ENNReal.zero_lt_top ?_
   · intro m hm
-    apply dif_neg
+    apply dite_eq_right
     exact Nat.ne_of_lt hm
   · intro y _
     rw [Finset.sum_eq_single_of_mem _ (Finset.self_mem_range_succ _), zero_add]
-    · rw [toFormalMultilinearSeriesOfMultilinear, dif_pos rfl]; rfl
-    · intro m _ ne; rw [toFormalMultilinearSeriesOfMultilinear, dif_neg ne.symm]; rfl
+    · rw [toFormalMultilinearSeriesOfMultilinear, dite_eq_left rfl]; rfl
+    · intro m _ ne; rw [toFormalMultilinearSeriesOfMultilinear, dite_eq_right ne.symm]; rfl
 
 lemma cpolynomialAt_uncurry_of_multilinear :
     CPolynomialAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=

@@ -50,17 +50,18 @@ def auxMat : Matrix m m S :=
 lemma auxMat_blockTriangular : (auxMat M k).BlockTriangular (· ≠ k) :=
   fun i j lt ↦ by
     simp_rw [lt_iff_not_ge, le_Prop_eq, Classical.not_imp, not_not] at lt
-    rw [auxMat, of_apply, if_pos lt.2, if_neg lt.1]
+    rw [auxMat, of_apply, ite_eq_left lt.2, ite_eq_right lt.1]
 
 lemma auxMat_toSquareBlock_ne : (auxMat M k).toSquareBlock (· ≠ k) True = M k k • 1 := by
   ext i j
-  simp [auxMat, toSquareBlock_def, if_neg (of_eq_true i.2), if_neg (of_eq_true j.2),
+  simp [auxMat, toSquareBlock_def, ite_eq_right (of_eq_true i.2), ite_eq_right (of_eq_true j.2),
     Matrix.one_apply, Subtype.ext_iff]
 
 lemma auxMat_toSquareBlock_eq : (auxMat M k).toSquareBlock (· ≠ k) False = 1 := by
   ext ⟨i, hi⟩ ⟨j, hj⟩
   rw [eq_iff_iff, iff_false, not_not] at hi hj
-  simp [auxMat, toSquareBlock_def, if_pos hi, if_pos hj, Matrix.one_apply, if_pos (hj ▸ hi)]
+  simp [auxMat, toSquareBlock_def, ite_eq_left hi, ite_eq_left hj, Matrix.one_apply,
+    ite_eq_left (hj ▸ hi)]
 
 variable [Fintype m]
 
@@ -68,9 +69,9 @@ variable [Fintype m]
 lemma mul_auxMat_blockTriangular : (M * auxMat M k).BlockTriangular (· = k) :=
   fun i j lt ↦ by
     simp_rw [lt_iff_not_ge, le_Prop_eq, Classical.not_imp] at lt
-    simp_rw [Matrix.mul_apply, auxMat, of_apply, if_neg lt.2, mul_ite, mul_neg, mul_zero]
-    rw [Finset.sum_ite, Finset.filter_eq', if_pos (Finset.mem_univ _), Finset.sum_singleton,
-      Finset.sum_ite_eq', if_pos, lt.1, mul_comm, neg_add_cancel]
+    simp_rw [Matrix.mul_apply, auxMat, of_apply, ite_eq_right lt.2, mul_ite, mul_neg, mul_zero]
+    rw [Finset.sum_ite, Finset.filter_eq', ite_eq_left (Finset.mem_univ _), Finset.sum_singleton,
+      Finset.sum_ite_eq', ite_eq_left, lt.1, mul_comm, neg_add_cancel]
     exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, lt.2⟩
 
 /-- The lower-right corner of `M * aux M k` is the same as the corner of `M`. -/

@@ -32,7 +32,7 @@ universe u
 variable {α : Type u}
 
 open Lean
-open Lean.Meta Qq Lean.Elab Term
+open Lean.Meta Qq Lean.Elab
 
 namespace Mathlib
 namespace Meta.NormNum

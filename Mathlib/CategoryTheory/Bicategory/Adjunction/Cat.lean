@@ -22,8 +22,6 @@ universe v u
 
 namespace CategoryTheory
 
-open Bicategory
-
 section
 
 variable {C D E : Type u} [Category.{v} C] [Category.{v} D] [Category.{v} E]
@@ -80,7 +78,6 @@ lemma Adjunction.ofCat_id (C : Cat.{v, u}) :
     Adjunction.ofCat (Adjunction.id C) = CategoryTheory.Adjunction.id :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma Adjunction.ofCat_comp {C D E : Cat.{v, u}}
     {F : C ⟶ D} {G : D ⟶ C} (adj : F ⊣ G)

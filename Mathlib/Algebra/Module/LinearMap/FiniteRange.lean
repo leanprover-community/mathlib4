@@ -238,9 +238,13 @@ lemma equiv_iff_hasFiniteRange [IsNoetherianRing K] {u v : V →ₗ[K] V₂} :
 lemma equiv_zero_iff_hasNoetherianRange {u : V →ₗ[K] V₂} : u ≈ 0 ↔ u.HasNoetherianRange := by
   simp [equiv_iff_hasNoetherianRange]
 
+alias ⟨_, _root_.LinearMap.HasNoetherianRange.equiv_zero⟩ := equiv_zero_iff_hasNoetherianRange
+
 lemma equiv_zero_iff_hasFiniteRange [IsNoetherianRing K] {u : V →ₗ[K] V₂} :
     u ≈ 0 ↔ u.HasFiniteRange := by
   simp [equiv_iff_hasFiniteRange]
+
+alias ⟨_, _root_.LinearMap.HasFiniteRange.equiv_zero⟩ := equiv_zero_iff_hasFiniteRange
 
 lemma equiv_iff_isNoetherian_quotient_eqLocus {u v : V →ₗ[K] V₂} :
     u ≈ v ↔ IsNoetherian K (V ⧸ eqLocus u v) := by

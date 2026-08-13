@@ -21,7 +21,7 @@ public section
 
 noncomputable section
 
-open Filter Int Metric Set TopologicalSpace Bornology
+open Filter Int Metric Set TopologicalSpace
 open scoped Topology Uniformity Interval
 
 universe u v w

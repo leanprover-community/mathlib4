@@ -74,9 +74,6 @@ theorem nonempty_algHom_of_exists_root (h : ∀ x : E, ∃ y : K, aeval y (minpo
   exact ((botEquiv K K').toAlgHom.restrictScalars F).comp
     (ω.choose.codRestrict K₀.toSubalgebra fun x ↦ ω.choose_spec trivial)
 
-@[deprecated (since := "2026-01-31")]
-alias nonempty_algHom_of_exist_roots := nonempty_algHom_of_exists_root
-
 theorem nonempty_algHom_of_minpoly_eq
     (h : ∀ x : E, ∃ y : K, minpoly F x = minpoly F y) :
     Nonempty (E →ₐ[F] K) :=
@@ -121,8 +118,5 @@ theorem _root_.IsAlgClosure.of_exists_root
       have := Algebra.IsAlgebraic.isIntegral (K := F).1 x
       h _ (minpoly.monic this) (minpoly.irreducible this)
     Splits.of_algHom (SplittingField.splits _) σ
-
-@[deprecated (since := "2026-01-31")]
-alias _root_.IsAlgClosure.of_exist_roots := IsAlgClosure.of_exists_root
 
 end Field

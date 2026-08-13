@@ -183,12 +183,12 @@ lemma defaultRatCDF_le_one (q : ℚ) : defaultRatCDF q ≤ 1 := by
 lemma tendsto_defaultRatCDF_atTop : Tendsto defaultRatCDF atTop (𝓝 1) := by
   refine (tendsto_congr' ?_).mp tendsto_const_nhds
   rw [EventuallyEq, eventually_atTop]
-  exact ⟨0, fun q hq => (if_neg (not_lt.mpr hq)).symm⟩
+  exact ⟨0, fun q hq => (ite_eq_right (not_lt.mpr hq)).symm⟩
 
 lemma tendsto_defaultRatCDF_atBot : Tendsto defaultRatCDF atBot (𝓝 0) := by
   refine (tendsto_congr' ?_).mp tendsto_const_nhds
   rw [EventuallyEq, eventually_atBot]
-  refine ⟨-1, fun q hq => (if_pos (hq.trans_lt ?_)).symm⟩
+  refine ⟨-1, fun q hq => (ite_eq_left (hq.trans_lt ?_)).symm⟩
   linarith
 
 set_option backward.isDefEq.respectTransparency false in
@@ -205,7 +205,7 @@ lemma iInf_rat_gt_defaultRatCDF (t : ℚ) :
   · refine le_antisymm ?_ (le_ciInf fun x ↦ ?_)
     · obtain ⟨q, htq, hq_neg⟩ : ∃ q, t < q ∧ q < 0 := ⟨t / 2, by linarith, by linarith⟩
       refine (ciInf_le h_bdd ⟨q, htq⟩).trans ?_
-      rw [if_pos]
+      rw [ite_eq_left]
       rwa [Subtype.coe_mk]
     · split_ifs
       exacts [le_rfl, zero_le_one]
@@ -214,7 +214,7 @@ lemma iInf_rat_gt_defaultRatCDF (t : ℚ) :
       split_ifs
       exacts [zero_le_one, le_rfl]
     · refine le_ciInf fun x ↦ ?_
-      rw [if_neg]
+      rw [ite_eq_right]
       rw [not_lt] at h ⊢
       exact h.trans (mem_Ioi.mp x.prop).le
 
@@ -248,7 +248,7 @@ def toRatCDF (f : α → ℚ → ℝ) : α → ℚ → ℝ := fun a ↦
 
 lemma toRatCDF_of_isRatStieltjesPoint {a : α} (h : IsRatStieltjesPoint f a) (q : ℚ) :
     toRatCDF f a q = f a q := by
-  rw [toRatCDF, if_pos h]
+  rw [toRatCDF, ite_eq_left h]
 
 lemma toRatCDF_unit_prod (a : α) :
     toRatCDF (fun (p : Unit × α) ↦ f p.2) ((), a) = toRatCDF f a := by
@@ -291,18 +291,15 @@ lemma IsMeasurableRatCDF.stieltjesFunctionAux_unit_prod {f : α → ℚ → ℝ}
 variable {f : α → ℚ → ℝ} [MeasurableSpace α] (hf : IsMeasurableRatCDF f)
 include hf
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsMeasurableRatCDF.stieltjesFunctionAux_eq (a : α) (r : ℚ) :
     IsMeasurableRatCDF.stieltjesFunctionAux f a r = f a r := by
   rw [← hf.iInf_rat_gt_eq a r, IsMeasurableRatCDF.stieltjesFunctionAux]
   refine Equiv.iInf_congr ?_ ?_
   · exact
       { toFun := fun t ↦ ⟨t.1, mod_cast t.2⟩
-        invFun := fun t ↦ ⟨t.1, mod_cast t.2⟩
-        left_inv := fun t ↦ by simp only [Subtype.coe_eta]
-        right_inv := fun t ↦ by simp only [Subtype.coe_eta] }
+        invFun := fun t ↦ ⟨t.1, mod_cast t.2⟩ }
   · intro t
-    simp only [Equiv.coe_fn_mk, Subtype.coe_mk]
+    rfl
 
 lemma IsMeasurableRatCDF.stieltjesFunctionAux_nonneg (a : α) (r : ℝ) :
     0 ≤ IsMeasurableRatCDF.stieltjesFunctionAux f a r := by

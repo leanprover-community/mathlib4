@@ -267,14 +267,14 @@ theorem wellFoundedGT_characterisations : List.TFAE
 
 theorem wellFoundedGT_iff_isSupFiniteCompact :
     WellFoundedGT α ↔ IsSupFiniteCompact α :=
-  (wellFoundedGT_characterisations α).out 0 1
+  (wellFoundedGT_characterisations α).out 1 2
 
 theorem isSupFiniteCompact_iff_isSupClosedCompact : IsSupFiniteCompact α ↔ IsSupClosedCompact α :=
-  (wellFoundedGT_characterisations α).out 1 2
+  (wellFoundedGT_characterisations α).out 2 3
 
 theorem isSupClosedCompact_iff_wellFoundedGT :
     IsSupClosedCompact α ↔ WellFoundedGT α :=
-  (wellFoundedGT_characterisations α).out 2 0
+  (wellFoundedGT_characterisations α).out 3 1
 
 alias ⟨_, IsSupFiniteCompact.wellFoundedGT⟩ := wellFoundedGT_iff_isSupFiniteCompact
 

@@ -348,12 +348,6 @@ theorem comap_ringConGen_ringEquiv {R R'} [NonAssocSemiring R] [NonAssocSemiring
   · rw [← comap_nonUnitalRingHomComp]
     simp
 
--- This one probably needs the RingCon version of `Setoid.comap_surjective`
-proof_wanted comap_ringConGen_equiv
-    {F} [FunLike F R' R] [MulHomClass F R' R] [AddHomClass F R' R] [EquivLike F R' R]
-    (r : R → R → Prop) (f : F) :
-    (ringConGen r).comap f = ringConGen (r on f)
-
 end Lattice
 
 end RingCon

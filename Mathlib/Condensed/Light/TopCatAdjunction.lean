@@ -90,7 +90,6 @@ noncomputable def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toT
       rw [continuous_coinduced_dom]
       continuity }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is sequential).
 -/
@@ -132,7 +131,6 @@ noncomputable def topCatAdjunction : lightCondSetToTopCat.{u} ⊣ topCatToLightC
     change Y.obj.map (𝟙 _) _ = _
     simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (X : TopCat) : Epi (topCatAdjunction.counit.app X) := by
   rw [TopCat.epi_iff_surjective]
   exact (topCatAdjunctionCounit_bijective _).2

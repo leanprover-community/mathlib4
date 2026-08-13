@@ -59,7 +59,7 @@ assert_not_exists Module.Basis
 
 noncomputable section
 
-open Set Function MeasurableSpace Topology Filter ENNReal NNReal
+open Set Function MeasurableSpace Filter ENNReal
 
 open Filter hiding map
 

@@ -58,7 +58,6 @@ def colimit.smul (r : (R ⋙ forget _).ColimitType) (m : (M ⋙ forget _).Colimi
     simp [*, ← R.map_comp_apply, ← M.map_comp_apply, -Functor.map_comp]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The module structure on `AddCommGrpCat.FilteredColimits.colimit`. -/
 noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.colimit R)
     (AddCommGrpCat.FilteredColimits.colimit M) where
@@ -132,7 +131,6 @@ noncomputable abbrev IsColimit.module {cR : Cocone R} (hcR : IsColimit cR) {cM :
           (RingCat.FilteredColimits.colimitCoconeIsColimit R)).ringCatIsoToRingEquiv.toRingHom
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma IsColimit.ι_smul {cR : Cocone R} (hcR : IsColimit cR) {cM : Cocone M}
     (hcM : IsColimit cM) (i : C) (r : R.obj i) (m : M.obj i) :
     letI := IsColimit.module R M H hcR hcM

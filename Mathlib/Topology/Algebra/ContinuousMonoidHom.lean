@@ -28,7 +28,7 @@ assert_not_exists ContinuousLinearEquiv
 
 section
 
-open Function Topology
+open Function
 
 variable (F A B C D E : Type*)
 variable [Monoid A] [Monoid B] [Monoid C] [Monoid D]

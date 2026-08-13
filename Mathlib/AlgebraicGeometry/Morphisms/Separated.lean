@@ -45,12 +45,9 @@ class IsSeparated : Prop where
   /-- A morphism is separated if the diagonal map is a closed immersion. -/
   isClosedImmersion_diagonal : IsClosedImmersion (pullback.diagonal f) := by infer_instance
 
-@[deprecated (since := "2026-01-20")]
-alias IsSeparated.diagonal_isClosedImmersion := IsSeparated.isClosedImmersion_diagonal
-
 namespace IsSeparated
 
-attribute [instance] diagonal_isClosedImmersion
+attribute [instance] isClosedImmersion_diagonal
 
 theorem isSeparated_eq_diagonal_isClosedImmersion :
     @IsSeparated = MorphismProperty.diagonal @IsClosedImmersion := by
@@ -287,7 +284,6 @@ instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSepa
   convert! (inferInstance : IsClosedImmersion (pullback.diagonal Y.hom))
   ext1 <;> simp [← Over.comp_left]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Suppose `X` is a reduced scheme and that `f g : X ⟶ Y` agree over some separated `Y ⟶ Z`.
 Then `f = g` if `ι ≫ f = ι ≫ g` for some dominant `ι`.

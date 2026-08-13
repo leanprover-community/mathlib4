@@ -999,7 +999,7 @@ unsafe instance : Repr ℝ≥0 where
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 

@@ -18,7 +18,7 @@ hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
 
 @[expose] public section
 
-open CauSeq Finset IsAbsoluteValue
+open Finset
 open scoped ComplexConjugate
 
 namespace Complex
@@ -839,7 +839,7 @@ nonrec theorem cosh_three_mul : cosh (3 * x) = 4 * cosh x ^ 3 - 3 * cosh x := by
 nonrec theorem sinh_three_mul : sinh (3 * x) = 4 * sinh x ^ 3 + 3 * sinh x := by
   rw [← ofReal_inj]; simp [sinh_three_mul]
 
-open IsAbsoluteValue Nat
+open Nat
 
 /-- `Real.cosh` is always positive -/
 theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=

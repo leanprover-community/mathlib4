@@ -35,7 +35,7 @@ As corollaries, we get:
 public section
 
 
-open Finset LinearMap Set Convex Pointwise
+open Finset Set Convex
 
 variable {𝕜 E F β ι : Type*}
 

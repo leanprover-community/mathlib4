@@ -24,7 +24,7 @@ public section
 
 noncomputable section
 
-open Set LinearMap Submodule
+open Submodule
 
 universe u v
 

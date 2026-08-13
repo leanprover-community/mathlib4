@@ -20,7 +20,7 @@ preserves colimits of shape `Jᵒᵖ`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.ParametrizedAdjunction
 
@@ -33,7 +33,6 @@ variable {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C
 include adj₂
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma preservesLimit_flip_obj (P : J ⥤ C₁ᵒᵖ)
     [∀ (X₂ : C₂), PreservesColimit P.leftOp (F.flip.obj X₂)] (X₃ : C₃) :
     PreservesLimit P (G.flip.obj X₃) where

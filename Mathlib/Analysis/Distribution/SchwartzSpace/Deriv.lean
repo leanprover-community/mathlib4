@@ -216,7 +216,7 @@ section integration_by_parts
 
 variable [NormedSpace ℝ E]
 
-open ENNReal MeasureTheory
+open MeasureTheory
 
 section one_dim
 

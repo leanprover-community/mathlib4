@@ -573,6 +573,9 @@ theorem le_coe_unbotD (x : WithBot α) (b : α) : x ≤ x.unbotD b := by cases x
 @[to_dual (attr := simp) coe_top_lt]
 theorem lt_coe_bot [OrderBot α] : x < (⊥ : α) ↔ x = ⊥ := by cases x <;> simp
 
+@[to_dual (attr := simp) le_coe_top]
+theorem coe_bot_le [OrderBot α] : (⊥ : α) ≤ x ↔ x ≠ ⊥ := by cases x <;> simp
+
 @[to_dual eq_top_iff_forall_gt]
 lemma eq_bot_iff_forall_lt : x = ⊥ ↔ ∀ b : α, x < b := by
   cases x <;> simp; simpa using ⟨_, lt_irrefl _⟩

@@ -87,7 +87,7 @@ theorem exists_surjective_of_not_isLocalRing.{u} {R : Type u} [CommRing R] [Nont
     ∃ (K₁ K₂ : Type u) (_ : Field K₁) (_ : Field K₂) (f : R →+* K₁ × K₂),
       Function.Surjective f := by
   /- get two different maximal ideals and project on the product of quotients -/
-  obtain ⟨m₁, m₂, _, _, hm₁m₂⟩ := (not_isLocalRing_tfae.out 0 2).mp h
+  obtain ⟨m₁, m₂, _, _, hm₁m₂⟩ := (not_isLocalRing_tfae.out 1 3).mp h
   let e := Ideal.quotientInfEquivQuotientProd m₁ m₂ <| Ideal.isCoprime_of_isMaximal hm₁m₂
   let f := e.toRingHom.comp <| Ideal.Quotient.mk (m₁ ⊓ m₂)
   use R ⧸ m₁, R ⧸ m₂, Ideal.Quotient.field m₁, Ideal.Quotient.field m₂, f

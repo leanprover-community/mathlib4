@@ -69,11 +69,11 @@ lemma Fun.coe_mk {X Y : Type*} (f : X → Y) : (Fun.mk f : X → Y) = f :=
   rfl
 
 /-- The identity function as a `Fun`. -/
-@[simps! +dsimpLhs]
+@[implicit_reducible, simps!]
 def Fun.id (X : Type*) : Fun X X := Fun.mk _root_.id
 
 /-- Composition of `Fun`s. -/
-@[simps! +dsimpLhs]
+@[implicit_reducible, simps!]
 def Fun.comp {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) : Fun X Z := mk (f.toFun ∘ g.toFun)
 
 /-- The equivalence between `Fun`s and functions between types. -/
@@ -281,8 +281,8 @@ theorem eqToHom_map_comp_apply (p : X = Y) (q : Y = Z) (x : F.obj X) :
 variable {D : Type u'} [𝒟 : Category.{u'} D] (I J : D ⥤ C) (ρ : I ⟶ J) {W : D}
 
 @[deprecated "No replacement" (since := "2026-02-09")]
-theorem hcomp (x : (I ⋙ F).obj W) : (ρ ◫ σ).app W x = (G.map (ρ.app W)) (σ.app (I.obj W) x) :=
-  rfl
+theorem hcomp (x : (I ⋙ F).obj W) : (ρ ◫ σ).app W x = (G.map (ρ.app W)) (σ.app (I.obj W) x) := by
+  rw [NatTrans.hcomp_app]; rfl
 
 attribute [elementwise nosimp] Functor.map_hom_inv Functor.map_inv_hom
   Functor.map_hom_inv' Functor.map_inv_hom'

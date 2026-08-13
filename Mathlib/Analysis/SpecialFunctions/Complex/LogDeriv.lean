@@ -20,7 +20,7 @@ public section
 
 assert_not_exists IsConformalMap Conformal
 
-open Set Filter
+open Set
 
 open scoped Real Topology
 
@@ -57,7 +57,7 @@ end Complex
 
 section LogDeriv
 
-open Complex Filter
+open Complex
 
 open scoped Topology
 

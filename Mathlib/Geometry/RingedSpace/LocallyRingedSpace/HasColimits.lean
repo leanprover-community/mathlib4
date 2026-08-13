@@ -177,7 +177,6 @@ noncomputable def imageBasicOpen : Opens Y :=
       ((coequalizer.π f.toShHom g.toShHom).hom.c.app (op U)) s)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem imageBasicOpen_image_preimage :
     (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).hom.base ''
@@ -254,7 +253,6 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
 
 end HasCoequalizer
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The coequalizer of two locally ringed spaces in the category of sheafed spaces is a locally
 ringed space. -/
 noncomputable def coequalizer : LocallyRingedSpace where

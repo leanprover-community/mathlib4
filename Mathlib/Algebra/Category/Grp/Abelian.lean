@@ -18,7 +18,7 @@ public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 @[expose] public section
 
-open CategoryTheory Limits
+open CategoryTheory
 
 universe u
 

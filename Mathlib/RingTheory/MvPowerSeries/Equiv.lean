@@ -85,7 +85,7 @@ private theorem optionFunLeft_monomial (x : Option σ →₀ ℕ) (r : R) :
   · replace h1 : ¬ y = x.some := fun h ↦ by
       absurd h1; ext u
       cases u <;> simp_all
-    rw [coeff_monomial, if_neg h1]
+    rw [coeff_monomial, ite_eq_right h1]
   · rw [coeff_zero]
 
 private lemma optionFunLeft_mul (p q : MvPowerSeries (Option σ) R) :
@@ -184,7 +184,7 @@ theorem finSuccEquiv_X_zero : finSuccEquiv R n (X 0) = .X := by
   split_ifs with h1 h2 h3
   · simp [h1.left]
   · tauto
-  · rw [coeff_one, if_neg (by tauto)]
+  · rw [coeff_one, ite_eq_right (by tauto)]
   · rw [coeff_zero]
 
 @[simp]
@@ -194,7 +194,7 @@ theorem finSuccEquiv_X_succ (j : Fin n) : finSuccEquiv R n (X j.succ) = .C (X j)
   split_ifs with h1 h2 h3
   · simp [h1.left]
   · tauto
-  · rw [coeff_X, if_neg (by tauto)]
+  · rw [coeff_X, ite_eq_right (by tauto)]
   · rw [coeff_zero]
 
 @[simp]
@@ -205,7 +205,7 @@ theorem finSuccEquiv_C (r : R) : (finSuccEquiv R n) (C r) = PowerSeries.C (C r) 
   split_ifs with h1 h2 h3
   · simp [h1.right]
   · tauto
-  · rw [coeff_C, if_neg (by tauto)]
+  · rw [coeff_C, ite_eq_right (by tauto)]
   · rw [coeff_zero]
 
 theorem finSuccEquiv_comp_C : (MvPowerSeries.finSuccEquiv R n).symm.toRingHom.comp

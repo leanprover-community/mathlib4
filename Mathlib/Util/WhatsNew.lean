@@ -12,7 +12,7 @@ Defines a command wrapper that prints the changes the command makes to the
 environment.
 
 ```
-whatsnew in
+#whats_new in
 theorem foo : 42 = 6 * 7 := rfl
 ```
 -/
@@ -115,14 +115,21 @@ def whatsNew (old new : Environment) : CoreM MessageData := do
 
   pure <| MessageData.joinSep diffs.toList "\n\n"
 
-/-- `whatsnew in $command` executes the command and then prints the
+/-- `#whats_new in` executes the following command and then prints the
 declarations that were added to the environment. -/
-elab "whatsnew " "in" ppLine cmd:command : command => do
+elab "#whats_new " "in" ppLine cmd:command : command => do
   let oldEnv ← getEnv
   try
     elabCommand cmd
   finally
     let newEnv ← getEnv
     logInfo (← liftCoreM <| whatsNew oldEnv newEnv)
+
+/-- `#whats_new in` executes the following command and then prints the
+declarations that were added to the environment. -/
+macro (name := oldStx) "whatsnew " "in" ppLine cmd:command : command =>
+  `(command| #whats_new in $cmd)
+
+deprecated_syntax oldStx "use `#whats_new` instead of `whatsnew`" (since := "2026-08-07")
 
 end Mathlib.WhatsNew

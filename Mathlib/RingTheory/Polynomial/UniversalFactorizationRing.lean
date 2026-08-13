@@ -55,7 +55,7 @@ lemma coeff_freeMonic :
   by_cases h : k < n
   · simp +contextual [Finset.sum_eq_single (ι := Fin n) (a := ⟨k, h⟩),
       Fin.ext_iff, @eq_comm _ k, h, h.ne']
-  · rw [Finset.sum_eq_zero fun x _ ↦ if_neg (by cases x; lia), add_zero, dif_neg h]
+  · rw [Finset.sum_eq_zero fun x _ ↦ ite_eq_right (by cases x; lia), add_zero, dite_eq_right h]
 
 lemma degree_freeMonic [Nontrivial R] : (freeMonic R n).degree = n :=
   Polynomial.degree_eq_of_le_of_coeff_ne_zero ((Polynomial.degree_le_iff_coeff_zero _ _).mpr
@@ -142,7 +142,6 @@ def universalFactorizationMap (hn : n = m + k) :
     rw [((monic_freeMonic R m).map _).natDegree_mul ((monic_freeMonic R k).map _)]
     simp_rw [(monic_freeMonic R _).natDegree_map, natDegree_freeMonic, hn]⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma universalFactorizationMap_freeMonic :
     (freeMonic R n).map (toRingHom <| universalFactorizationMap R n m k hn) =
       (freeMonic R m).map (algebraMap _ _) *
@@ -167,7 +166,6 @@ lemma universalFactorizationMap_comp_map :
       Polynomial.map_map, ← map_map_freeMonic (f := algebraMap R S)]
     congr 2 <;> ext <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Lifts along `universalFactorizationMap` corresponds to factorization of `p` into
 monic polynomials with fixed degrees. -/
 def universalFactorizationMapLiftEquiv (p : MonicDegreeEq S n) :
@@ -244,7 +242,6 @@ set_option backward.isDefEq.respectTransparency false in
     map := finSumFinEquiv.symm ∘ finCongr hn
     map_inj := finSumFinEquiv.symm.injective.comp (finCongr hn).injective }
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma pderiv_inl_universalFactorizationMap_X (i j) :
     pderiv (Sum.inl i) (tensorEquivSum R (Fin m) (Fin k) R
       (universalFactorizationMap R n m k hn (X j))) =
@@ -257,18 +254,17 @@ lemma pderiv_inl_universalFactorizationMap_X (i j) :
       apply_dite, apply_ite, ← Algebra.TensorProduct.one_def,
       Pi.single_apply, Fin.ext_iff, ← ite_and]
   · obtain h | h := lt_or_ge j.1 i.1
-    · rw [Finset.sum_eq_zero, if_pos h]
+    · rw [Finset.sum_eq_zero, ite_eq_left h]
       simp only [Finset.mem_antidiagonal, Prod.forall]
       intro a b hab
       simp [show a ≠ i by lia]
-    rw [Finset.sum_eq_single ⟨i.1, j.1 - i.1⟩, if_neg h.not_gt]
+    rw [Finset.sum_eq_single ⟨i.1, j.1 - i.1⟩, ite_eq_right h.not_gt]
     · simp
     · simp only [Finset.mem_antidiagonal, ne_eq, Prod.forall, Prod.mk.injEq, not_and]
       intro a b e h
       simp [show a ≠ i by lia]
     · simp [h]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma pderiv_inr_universalFactorizationMap_X (i j) :
     pderiv (Sum.inr i) (tensorEquivSum R (Fin m) (Fin k) R
       (universalFactorizationMap R n m k hn (X j))) =
@@ -280,10 +276,10 @@ lemma pderiv_inr_universalFactorizationMap_X (i j) :
       apply_dite, apply_ite, ← Algebra.TensorProduct.one_def,
       Pi.single_apply, Fin.ext_iff, ← ite_and]
   · obtain h | h := lt_or_ge j.1 i.1
-    · rw [Finset.sum_eq_zero, if_pos h]
+    · rw [Finset.sum_eq_zero, ite_eq_left h]
       simp only [Finset.mem_antidiagonal]
       lia
-    rw [Finset.sum_eq_single ⟨j.1 - i.1, i.1⟩, if_neg h.not_gt]
+    rw [Finset.sum_eq_single ⟨j.1 - i.1, i.1⟩, ite_eq_right h.not_gt]
     · simp
     · simp only [Finset.mem_antidiagonal, ne_eq, ite_eq_right_iff, Prod.forall, Prod.mk.injEq]
       intro a b _ _ _
@@ -335,7 +331,6 @@ lemma finitePresentation_universalFactorizationMap :
   letI := (universalFactorizationMap R n m k hn).toAlgebra
   (universalFactorizationMapPresentation R n m k hn).finitePresentation_of_isFinite
 
-set_option backward.isDefEq.respectTransparency false in
 lemma finite_universalFactorizationMap :
     (universalFactorizationMap R n m k hn).Finite := by
   refine RingHom.IsIntegral.to_finite ?_

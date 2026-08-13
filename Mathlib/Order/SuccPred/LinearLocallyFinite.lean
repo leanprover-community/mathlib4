@@ -213,11 +213,11 @@ def toZ (i0 i : ι) : ℤ :=
     -Nat.find (exists_pred_iterate_of_le (α := ι) (not_le.mp hi).le)
 
 theorem toZ_of_ge (hi : i0 ≤ i) : toZ i0 i = Nat.find (exists_succ_iterate_of_le hi) :=
-  dif_pos hi
+  dite_eq_left hi
 
 theorem toZ_of_lt (hi : i < i0) :
     toZ i0 i = -Nat.find (exists_pred_iterate_of_le (α := ι) hi.le) :=
-  dif_neg (not_le.mpr hi)
+  dite_eq_right (not_le.mpr hi)
 
 @[simp]
 theorem toZ_of_eq : toZ i0 i0 = 0 := by
@@ -351,7 +351,6 @@ instance (priority := 100) countable_of_linear_succ_pred_arch : Countable ι := 
   · infer_instance
   · exact Countable.of_equiv _ orderIsoRangeToZOfLinearSuccPredArch.symm.toEquiv
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If the order has neither bot nor top, `toZ` defines an `OrderIso` between `ι` and `ℤ`. -/
 noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι] [hι : Nonempty ι] :
     ι ≃o ℤ where
@@ -360,22 +359,21 @@ noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι
   left_inv i := by
     rcases le_or_gt hι.some i with hi | hi
     · have h_nonneg : 0 ≤ toZ hι.some i := toZ_nonneg hi
-      simp_rw [if_pos h_nonneg]
+      simp_rw [ite_eq_left h_nonneg]
       exact iterate_succ_toZ i hi
     · have h_neg : toZ hι.some i < 0 := toZ_neg hi
-      simp_rw [if_neg (not_le.mpr h_neg)]
+      simp_rw [ite_eq_right (not_le.mpr h_neg)]
       exact iterate_pred_toZ i hi
   right_inv n := by
     rcases le_or_gt 0 n with hn | hn
-    · simp_rw [if_pos hn]
+    · simp_rw [ite_eq_left hn]
       rw [toZ_iterate_succ]
       exact Int.toNat_of_nonneg hn
-    · simp_rw [if_neg (not_le.mpr hn)]
+    · simp_rw [ite_eq_right (not_le.mpr hn)]
       rw [toZ_iterate_pred]
       simp only [hn.le, Int.toNat_of_nonneg, Int.neg_nonneg_of_nonpos, Int.neg_neg]
   map_rel_iff' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the order has a bot but no top, `toZ` defines an `OrderIso` between `ι` and `ℕ`. -/
 def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ where
   toFun i := (toZ ⊥ i).toNat
@@ -392,7 +390,6 @@ def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ 
     simp only [Equiv.coe_fn_mk, Int.toNat_le]
     rw [← toZ_le_toZ (i0 := (⊥ : ι)), Int.toNat_of_nonneg (toZ_nonneg bot_le)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the order has both a bot and a top, `toZ` gives an `OrderIso` between `ι` and
 `Finset.range n` for some `n`. -/
 def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :

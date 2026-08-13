@@ -642,14 +642,14 @@ variable {a b}
 
 theorem modEq_iff_forall_notMem_Ioo_mod :
     a ≡ b [PMOD p] ↔ ∀ z : ℤ, b - z • p ∉ Set.Ioo a (a + p) :=
-  (tfae_modEq hp a b).out 0 1
+  (tfae_modEq hp a b).out 1 2
 
 theorem modEq_iff_toIcoMod_ne_toIocMod : a ≡ b [PMOD p] ↔ toIcoMod hp a b ≠ toIocMod hp a b :=
-  (tfae_modEq hp a b).out 0 2
+  (tfae_modEq hp a b).out 1 3
 
 theorem modEq_iff_toIcoMod_add_period_eq_toIocMod :
     a ≡ b [PMOD p] ↔ toIcoMod hp a b + p = toIocMod hp a b :=
-  (tfae_modEq hp a b).out 0 3
+  (tfae_modEq hp a b).out 1 4
 
 theorem not_modEq_iff_toIcoMod_eq_toIocMod : ¬a ≡ b [PMOD p] ↔ toIcoMod hp a b = toIocMod hp a b :=
   (modEq_iff_toIcoMod_ne_toIocMod _).not_left

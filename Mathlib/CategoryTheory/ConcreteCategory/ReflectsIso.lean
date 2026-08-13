@@ -9,6 +9,8 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
+# Forgetful functors that reflect isomorphisms
+
 A `forget₂ C D` forgetful functor between concrete categories `C` and `D`
 whose forgetful functors both reflect isomorphisms, itself reflects isomorphisms.
 -/

@@ -179,7 +179,7 @@ def signAux {n : ℕ} (a : Perm (Fin n)) : ℤˣ :=
 theorem signAux_one (n : ℕ) : signAux (1 : Perm (Fin n)) = 1 := by
   unfold signAux
   conv => rhs; rw [← @Finset.prod_const_one _ _ (finPairsLT n)]
-  exact Finset.prod_congr rfl fun a ha => if_neg (mem_finPairsLT.1 ha).not_ge
+  exact Finset.prod_congr rfl fun a ha => ite_eq_right (mem_finPairsLT.1 ha).not_ge
 
 /-- `signBijAux f ⟨a, b⟩` returns the pair consisting of `f a` and `f b` in decreasing order. -/
 def signBijAux {n : ℕ} (f : Perm (Fin n)) (a : Σ _ : Fin n, Fin n) : Σ _ : Fin n, Fin n :=
@@ -201,13 +201,13 @@ theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
   fun ⟨a₁, a₂⟩ ha =>
     if hxa : f.symm a₂ < f.symm a₁ then
       ⟨⟨f.symm a₁, f.symm a₂⟩, mem_finPairsLT.2 hxa, by
-       simp [signBijAux, if_pos (mem_finPairsLT.1 ha)]⟩
+       simp [signBijAux, ite_eq_left (mem_finPairsLT.1 ha)]⟩
     else
       ⟨⟨f.symm a₂, f.symm a₁⟩,
         mem_finPairsLT.2 <|
           (le_of_not_gt hxa).lt_of_ne fun h => by
             simp [mem_finPairsLT, f⁻¹.injective h] at ha, by
-              simp [signBijAux, if_neg (mem_finPairsLT.1 ha).le.not_gt]⟩
+              simp [signBijAux, ite_eq_right (mem_finPairsLT.1 ha).le.not_gt]⟩
 
 theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
     ∀ a : Σ _ : Fin n, Fin n, a ∈ finPairsLT n → signBijAux f a ∈ finPairsLT n :=
@@ -223,7 +223,7 @@ theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
   prod_nbij (signBijAux f⁻¹) signBijAux_mem signBijAux_injOn signBijAux_surj fun ⟨a, b⟩ hab ↦ by
     by_cases h : f.symm b < f.symm a
     · simp_all [signBijAux, (mem_finPairsLT.1 hab).not_ge]
-    · simp_all [signBijAux, dif_neg h, (mem_finPairsLT.1 hab).le]
+    · simp_all [signBijAux, dite_eq_right h, (mem_finPairsLT.1 hab).le]
 
 theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f * signAux g := by
   rw [← signAux_inv g]
@@ -253,14 +253,14 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
     · simp only [and_true, heq_iff_eq, mem_singleton, Sigma.mk.inj_iff] at ha₂
       have : 1 < a₁ := lt_of_le_of_ne' (Nat.succ_le_of_lt ha₁) ha₂
       have h01 : Equiv.swap (0 : Fin (n + 2)) 1 0 = 1 := by simp
-      rw [swap_apply_of_ne_of_ne (ne_of_gt H) ha₂, h01, if_neg this.not_ge]
+      rw [swap_apply_of_ne_of_ne (ne_of_gt H) ha₂, h01, ite_eq_right this.not_ge]
     · have le : 1 ≤ a₂ := Nat.succ_le_of_lt H'
       have lt : 1 < a₁ := le.trans_lt ha₁
       have h01 : Equiv.swap (0 : Fin (n + 2)) 1 1 = 0 := by simp only [swap_apply_right]
       rcases le.eq_or_lt with (rfl | lt')
-      · rw [swap_apply_of_ne_of_ne H.ne' lt.ne', h01, if_neg H.not_ge]
+      · rw [swap_apply_of_ne_of_ne H.ne' lt.ne', h01, ite_eq_right H.not_ge]
       · rw [swap_apply_of_ne_of_ne (ne_of_gt H) (ne_of_gt lt),
-          swap_apply_of_ne_of_ne (ne_of_gt H') (ne_of_gt lt'), if_neg ha₁.not_ge]
+          swap_apply_of_ne_of_ne (ne_of_gt H') (ne_of_gt lt'), ite_eq_right ha₁.not_ge]
 
 private theorem signAux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
     signAux (swap (⟨0, lt_of_lt_of_le (by decide) hn⟩ : Fin n) ⟨1, lt_of_lt_of_le (by decide) hn⟩) =
@@ -288,7 +288,6 @@ def signAux2 : List α → Perm α → ℤˣ
   | [], _ => 1
   | x::l, f => if x = f x then signAux2 l f else -signAux2 l (swap x (f x) * f)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem signAux_eq_signAux2 {n : ℕ} :
     ∀ (l : List α) (f : Perm α) (e : α ≃ Fin n) (_h : ∀ x, f x ≠ x → x ∈ l),
       signAux ((e.symm.trans f).trans e) = signAux2 l f
@@ -298,7 +297,7 @@ theorem signAux_eq_signAux2 {n : ℕ} :
   | x::l, f, e, h => by
     rw [signAux2]
     by_cases hfx : x = f x
-    · rw [if_pos hfx]
+    · rw [ite_eq_left hfx]
       exact
         signAux_eq_signAux2 l f _ fun y (hy : f y ≠ y) =>
           List.mem_of_ne_of_mem (fun h : y = x => by simp [h, hfx.symm] at hy) (h y hy)
@@ -313,7 +312,7 @@ theorem signAux_eq_signAux2 {n : ℕ} :
         simp [swap, swapCore]
         split_ifs <;> rfl
       have hefx : e x ≠ e (f x) := mt e.injective.eq_iff.1 hfx
-      rw [if_neg hfx, ← signAux_eq_signAux2 _ _ e hy, this, signAux_mul, signAux_swap hefx]
+      rw [ite_eq_right hfx, ← signAux_eq_signAux2 _ _ e hy, this, signAux_mul, signAux_swap hefx]
       simp only [neg_neg, one_mul, neg_mul]
 
 /-- When the multiset `s : Multiset α` contains all nonfixed points of the permutation `f : Perm α`,

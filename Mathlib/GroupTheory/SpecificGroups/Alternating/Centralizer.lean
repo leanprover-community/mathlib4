@@ -107,13 +107,13 @@ theorem card_of_cycleType (m : Multiset ℕ) :
       else 0 := by
   split_ifs with hm
   · -- m is an even cycle_type
-    rw [← Finset.card_map, map_subtype_of_cycleType, if_pos hm.2,
-      Equiv.Perm.card_of_cycleType α m, if_pos hm.1, mul_assoc]
+    rw [← Finset.card_map, map_subtype_of_cycleType, ite_eq_left hm.2,
+      Equiv.Perm.card_of_cycleType α m, ite_eq_left hm.1, mul_assoc]
   · -- m does not correspond to a permutation, or to an odd one,
     rw [← Finset.card_map, map_subtype_of_cycleType]
     rw [apply_ite Finset.card, Finset.card_empty]
     split_ifs with hm'
-    · rw [Equiv.Perm.card_of_cycleType, if_neg]
+    · rw [Equiv.Perm.card_of_cycleType, ite_eq_right]
       obtain hm | hm := not_and_or.mp hm
       · exact hm
       · contradiction

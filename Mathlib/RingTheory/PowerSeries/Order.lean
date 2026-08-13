@@ -30,8 +30,6 @@ proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries
 @[expose] public section
 noncomputable section
 
-open Polynomial
-
 open Finset (antidiagonal mem_antidiagonal)
 
 namespace PowerSeries
@@ -58,7 +56,7 @@ def order (φ : R⟦X⟧) : ℕ∞ :=
 /-- The order of the `0` power series is infinite. -/
 @[simp]
 theorem order_zero : order (0 : R⟦X⟧) = ⊤ :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem order_finite_iff_ne_zero : (order φ < ⊤) ↔ φ ≠ 0 := by
   simp only [order]
@@ -76,14 +74,14 @@ theorem coe_toNat_order {φ : R⟦X⟧} (hf : φ ≠ 0) : φ.order.toNat = φ.or
 then the coefficient indexed by the order is nonzero. -/
 theorem coeff_order (h : φ ≠ 0) : coeff φ.order.toNat φ ≠ 0 := by
   classical
-  simp only [order, h, not_false_iff, dif_neg]
+  simp only [order, h, not_false_iff, dite_eq_right]
   generalize_proofs h
   exact Nat.find_spec h
 
 /-- If the `n`th coefficient of a formal power series is nonzero,
 then the order of the power series is less than or equal to `n`. -/
 theorem order_le (n : ℕ) (h : coeff n φ ≠ 0) : order φ ≤ n := by
-  rw [order, dif_neg]
+  rw [order, dite_eq_right]
   · simpa using ⟨n, le_rfl, h⟩
   · exact exists_coeff_ne_zero_iff_ne_zero.mp ⟨n, h⟩
 
@@ -123,7 +121,7 @@ theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
     order φ = n ↔ coeff n φ ≠ 0 ∧ ∀ i, i < n → coeff i φ = 0 := by
   rcases eq_or_ne φ 0 with (rfl | hφ)
   · simp
-  simp [order, dif_neg hφ, Nat.find_eq_iff]
+  simp [order, dite_eq_right hφ, Nat.find_eq_iff]
 
 /-- The order of a formal power series is exactly `n` if the `n`th coefficient is nonzero,
 and the `i`th coefficient is `0` for all `i < n`. -/
@@ -240,13 +238,13 @@ theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
     · simp only [Nat.cast_inj] at hi
       rwa [hi, coeff_monomial_same]
     · simp only [Nat.cast_lt] at hi
-      rw [coeff_monomial, if_neg]
+      rw [coeff_monomial, ite_eq_right]
       exact ne_of_lt hi
 
 /-- The order of the monomial `a*X^n` is `n` if `a ≠ 0`. -/
 theorem order_monomial_of_ne_zero (n : ℕ) (a : R) (h : a ≠ 0) : order (monomial n a) = n := by
   classical
-  rw [order_monomial, if_neg h]
+  rw [order_monomial, ite_eq_right h]
 
 /-- If `n` is strictly smaller than the order of `ψ`, then the `n`th coefficient of its product
 with any other power series is `0`. -/

@@ -27,14 +27,14 @@ variable {α : Type*}
 theorem isNNRat_ofScientific_of_true [DivisionSemiring α] :
     {m e : ℕ} → {n : ℕ} → {d : ℕ} →
     IsNNRat (NNRat.divNat m (10 ^ e) : α) n d → IsNNRat (OfScientific.ofScientific m true e : α) n d
-  | _, _, _, _, ⟨_, eq⟩ => ⟨‹_›, by rwa [NNRatCast.ofScientific_eq_ite, if_pos rfl]⟩
+  | _, _, _, _, ⟨_, eq⟩ => ⟨‹_›, by rwa [NNRatCast.ofScientific_eq_ite, ite_eq_left rfl]⟩
 
 -- see note [norm_num lemma function equality]
 theorem isNat_ofScientific_of_false [DivisionSemiring α] : {m e nm ne n : ℕ} →
     IsNat m nm → IsNat e ne → n = Nat.mul nm ((10 : ℕ) ^ ne) →
     IsNat (OfScientific.ofScientific m false e : α) n
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, (rfl : (_ : ℕ) = _ * _) => ⟨by
-    rw [NNRatCast.ofScientific_eq_ite, if_neg Bool.false_ne_true]
+    rw [NNRatCast.ofScientific_eq_ite, ite_eq_right Bool.false_ne_true]
     norm_cast⟩
 
 /-- The `norm_num` extension which identifies expressions in scientific notation, normalizing them

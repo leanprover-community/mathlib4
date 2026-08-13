@@ -33,7 +33,7 @@ variable {K : Type u} {V : Type v}
 
 namespace Submodule
 
-open IsNoetherian Module
+open Module
 
 section DivisionRing
 
@@ -309,7 +309,7 @@ theorem coe_basisOfPiSpaceOfLinearIndependent
     ⇑(basisOfPiSpaceOfLinearIndependent hb) = b := by
   by_cases hι : Nonempty ι
   · simp [hι, basisOfPiSpaceOfLinearIndependent]
-  · rw [basisOfPiSpaceOfLinearIndependent, dif_neg hι]
+  · rw [basisOfPiSpaceOfLinearIndependent, dite_eq_right hι]
     ext i
     exact ((not_nonempty_iff.mp hι).false i).elim
 

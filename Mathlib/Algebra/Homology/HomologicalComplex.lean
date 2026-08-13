@@ -170,7 +170,7 @@ theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down �
 
 @[simp]
 theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
-  refine dif_neg ?_
+  refine dite_eq_right ?_
   push Not
   intro
   apply Nat.noConfusion
@@ -194,7 +194,7 @@ theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
 
 @[simp]
 theorem prev_nat_zero : (ComplexShape.up ℕ).prev 0 = 0 := by
-  refine dif_neg ?_
+  refine dite_eq_right ?_
   push Not
   intro
   apply Nat.noConfusion
@@ -269,6 +269,14 @@ theorem eqToHom_f {C₁ C₂ : HomologicalComplex V c} (h : C₁ = C₂) (n : ι
   subst h
   rfl
 
+lemma ext_of_hom {C₁ C₂ : HomologicalComplex V c} (f : C₁ ⟶ C₂) (h₁ : ∀ i, C₁.X i = C₂.X i)
+    (h₂ : ∀ i, f.f i = eqToHom (h₁ i) := by cat_disch) : C₁ = C₂ :=
+  HomologicalComplex.ext (by cat_disch) (fun _ _ _ ↦ by simp [← h₂])
+
+lemma ext_of_iso {C₁ C₂ : HomologicalComplex V c} (e : C₁ ≅ C₂) (h₁ : ∀ i, C₁.X i = C₂.X i)
+    (h₂ : ∀ i, e.hom.f i = eqToHom (h₁ i) := by cat_disch) : C₁ = C₂ :=
+  ext_of_hom e.hom h₁ h₂
+
 -- We'll use this later to show that `HomologicalComplex V c` is preadditive when `V` is.
 theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
     Function.Injective fun f : Hom C₁ C₂ => f.f := by cat_disch
@@ -325,7 +333,7 @@ section
 variable (V c)
 
 /-- The functor picking out the `i`-th object of a complex. -/
-@[simps]
+@[simps, implicit_reducible]
 def eval (i : ι) : HomologicalComplex V c ⥤ V where
   obj C := C.X i
   map f := f.f i
@@ -333,7 +341,7 @@ def eval (i : ι) : HomologicalComplex V c ⥤ V where
 instance (i : ι) : (eval V c i).PreservesZeroMorphisms where
 
 /-- The functor forgetting the differential in a complex, obtaining a graded object. -/
-@[simps]
+@[simps, implicit_reducible]
 def forget : HomologicalComplex V c ⥤ GradedObject ι V where
   obj C := C.X
   map f := f.f
@@ -343,16 +351,14 @@ instance : (forget V c).Faithful where
     ext i
     exact congr_fun h i
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Forgetting the differentials than picking out the `i`-th object is the same as
 just picking out the `i`-th object. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
   NatIso.ofComponents fun _ => Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The differential as a natural transformation between `eval`. -/
-@[simps] def dNatTrans (i j : ι) :
+@[implicit_reducible, simps] def dNatTrans (i j : ι) :
     HomologicalComplex.eval V c i ⟶ HomologicalComplex.eval V c j where
   app X := X.d i j
 
@@ -412,7 +418,7 @@ def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
     congr_arg C.X
       (by
         dsimp [ComplexShape.prev]
-        rw [dif_neg]
+        rw [dite_eq_right]
         push Not; intro i hi
         have : c.prev j = i := c.prev_eq' hi
         rw [this] at h; contradiction)
@@ -431,7 +437,7 @@ def xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) : C.xNext i ≅ C.X i :=
     congr_arg C.X
       (by
         dsimp [ComplexShape.next]
-        rw [dif_neg]; rintro ⟨j, hj⟩
+        rw [dite_eq_right]; rintro ⟨j, hj⟩
         have : c.next i = j := c.next_eq' hj
         rw [this] at h; contradiction)
 
@@ -503,7 +509,7 @@ def isoApp (f : C₁ ≅ C₂) (i : ι) : C₁.X i ≅ C₂.X i :=
 
 /-- Construct an isomorphism of chain complexes from isomorphism of the objects
 which commute with the differentials. -/
-@[simps]
+@[simps, implicit_reducible]
 def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
     (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by cat_disch) :
     C₁ ≅ C₂ where
@@ -634,7 +640,6 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 def of.d (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (i : α) (j : α) : X i ⟶ X j :=
   if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
 abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
@@ -655,10 +660,10 @@ theorem of_X : (of X d sq).X = X :=
 @[simp]
 theorem of_d (j : α) : of.d X d (j + 1) j = d j := by
   dsimp [of.d]
-  rw [if_pos rfl, Category.id_comp]
+  rw [ite_eq_left rfl, Category.id_comp]
 
 theorem of_d_ne {i j : α} (h : i ≠ j + 1) : of.d X d i j = 0 := by
-  simp [of.d, dif_neg h]
+  simp [of.d, dite_eq_right h]
 
 end Of
 
@@ -722,12 +727,12 @@ theorem mk_X_2 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 2 = X₂ :=
 @[simp]
 theorem mk_d_1_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 0 = d₀ := by
   change ite (1 = 0 + 1) (𝟙 X₁ ≫ d₀) 0 = d₀
-  rw [if_pos rfl, Category.id_comp]
+  rw [ite_eq_left rfl, Category.id_comp]
 
 @[simp]
 theorem mk_d_2_1 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 2 1 = d₁ := by
   change ite (2 = 1 + 1) (𝟙 X₂ ≫ d₁) 0 = d₁
-  rw [if_pos rfl, Category.id_comp]
+  rw [ite_eq_left rfl, Category.id_comp]
 
 lemma mk_congr_succ_X₃ {S S' : ShortComplex V} (h : S = S') :
     (succ S).1 = (succ S').1 := by rw [h]
@@ -765,7 +770,7 @@ lemma mk_d (n : ℕ) :
     rw [eqToHom_refl, comp_id] at eq
   refine Eq.trans ?_ eq
   dsimp only [mk, of, of.d]
-  rw [dif_pos (by rfl), eqToHom_refl, id_comp]
+  rw [dite_eq_left (by rfl), eqToHom_refl, id_comp]
   rfl
 
 /-- A simpler inductive constructor for `ℕ`-indexed chain complexes.
@@ -793,7 +798,7 @@ theorem mk'_X_1 : (mk' X₀ X₁ d₀ succ').X 1 = X₁ :=
 @[simp]
 theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
   change ite (1 = 0 + 1) (𝟙 X₁ ≫ d₀) 0 = d₀
-  rw [if_pos rfl, Category.id_comp]
+  rw [ite_eq_left rfl, Category.id_comp]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism from `(mk' X₀ X₁ d₀ succ').X (n + 2)` that is given by
@@ -895,14 +900,13 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 def of.d (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (i : α) (j : α) : X i ⟶ X j :=
   if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct an `α`-indexed cochain complex from a dependently-typed differential.
 -/
 abbrev of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :
     CochainComplex V α :=
   { X := X
     d := of.d X d
-    shape := fun i j w => dif_neg (c := i + 1 = j) w
+    shape := fun i j w => dite_eq_right (c := i + 1 = j) w
     d_comp_d' := fun i j k => by
       dsimp [of.d]
       split_ifs with h h' h'
@@ -918,10 +922,10 @@ theorem of_X : (of X d sq).X = X :=
 @[simp]
 theorem of_d (j : α) : of.d X d j (j + 1) = d j := by
   dsimp [of.d]
-  rw [if_pos rfl, Category.comp_id]
+  rw [ite_eq_left rfl, Category.comp_id]
 
 theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : of.d X d i j = 0 := by
-  simp [of.d, dif_neg h]
+  simp [of.d, dite_eq_right h]
 
 end Of
 
@@ -984,12 +988,12 @@ theorem mk_X_2 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 2 = X₂ :=
 @[simp]
 theorem mk_d_1_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 0 1 = d₀ := by
   change ite (1 = 0 + 1) (d₀ ≫ 𝟙 X₁) 0 = d₀
-  rw [if_pos rfl, Category.comp_id]
+  rw [ite_eq_left rfl, Category.comp_id]
 
 @[simp]
 theorem mk_d_2_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 2 = d₁ := by
   change ite (2 = 1 + 1) (d₁ ≫ 𝟙 X₂) 0 = d₁
-  rw [if_pos rfl, Category.comp_id]
+  rw [ite_eq_left rfl, Category.comp_id]
 
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
 /-- A simpler inductive constructor for `ℕ`-indexed cochain complexes.
@@ -1017,7 +1021,7 @@ theorem mk'_X_1 : (mk' X₀ X₁ d₀ succ').X 1 = X₁ :=
 @[simp]
 theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 0 1 = d₀ := by
   change ite (1 = 0 + 1) (d₀ ≫ 𝟙 X₁) 0 = d₀
-  rw [if_pos rfl, Category.comp_id]
+  rw [ite_eq_left rfl, Category.comp_id]
 
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
 end Mk

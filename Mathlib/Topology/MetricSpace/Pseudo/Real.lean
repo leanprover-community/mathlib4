@@ -14,7 +14,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Pi
 
 public section
 
-open Bornology Filter Metric Set
+open Set
 open scoped NNReal Topology
 
 namespace Real

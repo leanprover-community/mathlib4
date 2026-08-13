@@ -17,7 +17,7 @@ This file characterises the stabilizer of a set/finset under the pointwise actio
 
 public section
 
-open Function MulOpposite Set
+open MulOpposite Set
 open scoped Pointwise
 
 namespace MulAction

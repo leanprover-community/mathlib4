@@ -139,9 +139,8 @@ This is exactly `IsDedekindRing` plus the `IsDomain` hypothesis.
 The integral closure condition is independent of the choice of field of fractions:
 use `isDedekindDomain_iff` to prove `IsDedekindDomain` for a given `fraction_map`.
 
-This is the default implementation, but there are equivalent definitions,
-`IsDedekindDomainDvr` and `IsDedekindDomainInv`.
--/
+See also `isDedekindDomain_iff_isDiscreteValuationRing_atPrime` and
+`isDedekindDomain_iff_mul_inv_cancel`. -/
 class IsDedekindDomain : Prop
   extends IsDomain A, IsDedekindRing A
 

@@ -186,8 +186,8 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
     simp only [Set.mulIndicator_apply, Set.mem_ofPred_eq, Finset.mem_coe, Nat.mem_primeFactors,
       ne_eq, mul_ite, mul_one]
     by_cases h : p.Prime; swap
-    · simp only [h, false_and, if_false]
-    simp only [h, true_and, if_true]
+    · simp only [h, false_and, ite_false]
+    simp only [h, true_and, ite_true]
     by_cases hp' : p ∣ N; swap
     · simp only [hp', false_and, ↓reduceIte, inv_inj, sub_right_inj, mul_eq_mul_right_iff,
         cpow_eq_zero_iff, Nat.cast_eq_zero, h.ne_zero, ne_eq, neg_eq_zero, or_false]
@@ -209,7 +209,7 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
 section LogDirichlet
 
 open Real hiding log exp_nat_mul exp_add
-open ArithmeticFunction Primes Summable
+open ArithmeticFunction Summable
 
 variable {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
 

@@ -43,9 +43,6 @@ ring_seminorm, ring_norm
 
 @[expose] public section
 
-
-open NNReal
-
 variable {R : Type*}
 
 /-- A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes nonnegative
@@ -124,12 +121,12 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       mul_le' := fun x y => by
         by_cases h : x * y = 0
-        · refine (if_pos h).trans_le (mul_nonneg ?_ ?_) <;>
+        · refine (ite_eq_left h).trans_le (mul_nonneg ?_ ?_) <;>
             · change _ ≤ ite _ _ _
               split_ifs
               exacts [le_rfl, zero_le_one]
         · change ite _ _ _ ≤ ite _ _ _ * ite _ _ _
-          simp only [if_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one,
+          simp only [ite_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one,
             le_refl] }⟩
 
 @[simp]
@@ -308,7 +305,7 @@ variable [DecidableEq R] [NoZeroDivisors R] [Nontrivial R]
 every other element. -/
 instance : One (MulRingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
-      map_one' := if_neg one_ne_zero
+      map_one' := ite_eq_right one_ne_zero
       map_mul' := fun x y => by
         obtain rfl | hx := eq_or_ne x 0
         · simp
@@ -423,8 +420,6 @@ def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f 
 @[simps!]
 def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
   { normAddGroupNorm R, normRingSeminorm R with }
-
-open Int
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The seminorm on a `SeminormedRing`, as a `RingSeminorm`. -/

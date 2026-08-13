@@ -31,7 +31,7 @@ This has the effect of, when taking the intersection of non-compatible graphs,
 
 public section
 
-open Function Set
+open Set
 
 variable {α β : Type*} {x y : α} {e : β} {G H : Graph α β}
 

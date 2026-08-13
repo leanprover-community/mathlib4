@@ -52,7 +52,7 @@ birkhoff, representation, stone duality, lattice embedding
 
 @[expose] public section
 
-open Finset Function OrderDual UpperSet LowerSet
+open Finset Function UpperSet LowerSet
 
 variable {α : Type*}
 

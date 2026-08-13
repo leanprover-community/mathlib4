@@ -299,13 +299,14 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
             eq_comm, Icc_self]
           simp
         · simp only [one_apply, mul_one, smul_eq_mul, mul_apply, zero_mul,
-            constSMul_apply, ← ite_and, ite_mul, mul_ite, map_mul, mul_zero, if_neg h]
+            constSMul_apply, ← ite_and, ite_mul, mul_ite, map_mul, mul_zero, ite_eq_right h]
           refine (sum_eq_zero fun x _ ↦ ?_).symm
-          exact if_neg fun hx ↦ h <| hx.2.trans hx.1
+          exact ite_eq_right fun hx ↦ h <| hx.2.trans hx.1
     map_zero' := by rw [map_zero, zero_smul]
     map_add' c d := by rw [map_add, add_smul] }
-  commutes' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, mul_comm]
-  smul_def' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, Algebra.smul_def]
+  commutes' c f := by classical ext a b hab; simp [ite_eq_left hab, constSMul_apply, mul_comm]
+  smul_def' c f := by
+    classical ext a b hab; simp [ite_eq_left hab, constSMul_apply, Algebra.smul_def]
 
 /-! ### The Lambda function -/
 
@@ -316,7 +317,7 @@ variable (𝕜) [Zero 𝕜] [One 𝕜] [Preorder α] [DecidableRel (α := α) (�
 interval of cardinality one or two. -/
 @[simps]
 def lambda : IncidenceAlgebra 𝕜 α :=
-  ⟨fun a b ↦ if a ⩿ b then 1 else 0, fun _a _b h ↦ if_neg fun hh ↦ h hh.le⟩
+  ⟨fun a b ↦ if a ⩿ b then 1 else 0, fun _a _b h ↦ ite_eq_right fun hh ↦ h hh.le⟩
 
 end Lambda
 
@@ -327,13 +328,13 @@ variable (𝕜) [Zero 𝕜] [One 𝕜] [LE α] [DecidableLE α] {a b : α}
 
 /-- The zeta function of the incidence algebra is the function that assigns 1 to every nonempty
 interval, convolution with this function sums functions over intervals. -/
-def zeta : IncidenceAlgebra 𝕜 α := ⟨fun a b ↦ if a ≤ b then 1 else 0, fun _a _b h ↦ if_neg h⟩
+def zeta : IncidenceAlgebra 𝕜 α := ⟨fun a b ↦ if a ≤ b then 1 else 0, fun _a _b h ↦ ite_eq_right h⟩
 
 variable {𝕜}
 
 @[simp] lemma zeta_apply (a b : α) : zeta 𝕜 a b = if a ≤ b then 1 else 0 := rfl
 
-lemma zeta_of_le (h : a ≤ b) : zeta 𝕜 a b = 1 := if_pos h
+lemma zeta_of_le (h : a ≤ b) : zeta 𝕜 a b = 1 := ite_eq_left h
 
 end Zeta
 
@@ -383,7 +384,7 @@ lemma mu_apply (a b : α) : mu 𝕜 a b = if a = b then 1 else -∑ x ∈ Ico a 
 @[simp] lemma mu_self (a : α) : mu 𝕜 a a = 1 := by simp [mu_apply]
 
 lemma mu_eq_neg_sum_Ico_of_ne (hab : a ≠ b) :
-    mu 𝕜 a b = -∑ x ∈ Ico a b, mu 𝕜 a x := by rw [mu_apply, if_neg hab]
+    mu 𝕜 a b = -∑ x ∈ Ico a b, mu 𝕜 a x := by rw [mu_apply, ite_eq_right hab]
 
 variable (𝕜 α)
 /-- The Euler characteristic of a finite bounded order. -/
@@ -443,7 +444,7 @@ private lemma mu'_apply (a b : α) : mu' 𝕜 a b = if a = b then 1 else -∑ x 
 @[simp] private lemma mu'_apply_self (a : α) : mu' 𝕜 a a = 1 := by simp [mu'_apply]
 
 private lemma mu'_eq_sum_Ioc_of_ne (h : a ≠ b) : mu' 𝕜 a b = -∑ x ∈ Ioc a b, mu' 𝕜 x b := by
-  rw [mu'_apply, if_neg h]
+  rw [mu'_apply, ite_eq_right h]
 
 end Mu'
 
@@ -516,7 +517,7 @@ lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
   simp only [mul_boole, one_apply, mul_apply, zeta_apply]
   calc
     ∑ x ∈ Icc a b, (if x ≤ b then mud a x else 0) = ∑ x ∈ Icc a b, mud a x := by
-      congr! with x hx; exact if_pos (mem_Icc.1 hx).2
+      congr! with x hx; exact ite_eq_left (mem_Icc.1 hx).2
     _ = ∑ x ∈ Icc (ofDual b) (ofDual a), mu 𝕜 x (ofDual a) := by simp [Icc_orderDual_def, mud]
     _ = if ofDual b = ofDual a then 1 else 0 := sum_Icc_mu_left ..
     _ = if a = b then 1 else 0 := by simp [eq_comm]
@@ -543,7 +544,7 @@ lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici 
     _ = ∑ y ∈ Ici x, mu 𝕜 x y * ∑ z ∈ Ici y, zeta 𝕜 y z * f z := by
       congr with y
       rw [sum_congr rfl fun z hz ↦ ?_]
-      rw [zeta_apply, if_pos (mem_Ici.mp ‹_›), one_mul]
+      rw [zeta_apply, ite_eq_left (mem_Ici.mp ‹_›), one_mul]
     _ = ∑ y ∈ Ici x, ∑ z ∈ Ici y, mu 𝕜 x y * zeta 𝕜 y z * f z := by simp [mul_sum]
     _ = ∑ z ∈ Ici x, ∑ y ∈ Icc x z, mu 𝕜 x y * zeta 𝕜 y z * f z := by
       rw [sum_sigma' (Ici x) fun y ↦ Ici y]
@@ -556,11 +557,11 @@ lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici 
     _ = ∑ y ∈ Ici x, ∑ z ∈ Ici y, (1 : IncidenceAlgebra 𝕜 α) x z * f z := by
       simp only [mu_mul_zeta 𝕜, one_apply, ite_mul, one_mul, zero_mul, sum_ite_eq, mem_Ici, le_refl,
         ↓reduceIte, ← add_sum_Ioi_eq_sum_Ici, left_eq_add]
-      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_ge
+      exact sum_eq_zero fun y hy ↦ ite_eq_right (mem_Ioi.mp hy).not_ge
     _ = f x := by
       simp only [one_apply, ite_mul, one_mul, zero_mul, sum_ite_eq, mem_Ici,
         ← add_sum_Ioi_eq_sum_Ici, le_refl, ↓reduceIte, add_eq_left]
-      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_ge
+      exact sum_eq_zero fun y hy ↦ ite_eq_right (mem_Ioi.mp hy).not_ge
 
 end InversionTop
 

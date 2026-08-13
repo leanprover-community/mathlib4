@@ -14,11 +14,6 @@ public import Mathlib.Data.Fintype.Basic
 
 public section
 
-
-open Function
-
-open Nat
-
 universe u v
 
 variable {ι α β : Type*}

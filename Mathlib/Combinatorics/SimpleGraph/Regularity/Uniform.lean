@@ -131,29 +131,29 @@ noncomputable def nonuniformWitnesses (ε : 𝕜) (s t : Finset α) : Finset α 
 
 theorem left_nonuniformWitnesses_subset (h : ¬G.IsUniform ε s t) :
     (G.nonuniformWitnesses ε s t).1 ⊆ s := by
-  rw [nonuniformWitnesses, dif_pos h]
+  rw [nonuniformWitnesses, dite_eq_left h]
   exact (not_isUniform_iff.1 h).choose_spec.1
 
 theorem left_nonuniformWitnesses_card (h : ¬G.IsUniform ε s t) :
     #s * ε ≤ #(G.nonuniformWitnesses ε s t).1 := by
-  rw [nonuniformWitnesses, dif_pos h]
+  rw [nonuniformWitnesses, dite_eq_left h]
   exact (not_isUniform_iff.1 h).choose_spec.2.choose_spec.2.1
 
 theorem right_nonuniformWitnesses_subset (h : ¬G.IsUniform ε s t) :
     (G.nonuniformWitnesses ε s t).2 ⊆ t := by
-  rw [nonuniformWitnesses, dif_pos h]
+  rw [nonuniformWitnesses, dite_eq_left h]
   exact (not_isUniform_iff.1 h).choose_spec.2.choose_spec.1
 
 theorem right_nonuniformWitnesses_card (h : ¬G.IsUniform ε s t) :
     #t * ε ≤ #(G.nonuniformWitnesses ε s t).2 := by
-  rw [nonuniformWitnesses, dif_pos h]
+  rw [nonuniformWitnesses, dite_eq_left h]
   exact (not_isUniform_iff.1 h).choose_spec.2.choose_spec.2.2.1
 
 theorem nonuniformWitnesses_spec (h : ¬G.IsUniform ε s t) :
     ε ≤
       |G.edgeDensity (G.nonuniformWitnesses ε s t).1 (G.nonuniformWitnesses ε s t).2 -
           G.edgeDensity s t| := by
-  rw [nonuniformWitnesses, dif_pos h]
+  rw [nonuniformWitnesses, dite_eq_left h]
   exact (not_isUniform_iff.1 h).choose_spec.2.choose_spec.2.2.2
 
 open scoped Classical in
@@ -180,10 +180,10 @@ theorem nonuniformWitness_spec (h₁ : s ≠ t) (h₂ : ¬G.IsUniform ε s t) : 
     (G.nonuniformWitness ε s t) (G.nonuniformWitness ε t s) - G.edgeDensity s t| := by
   unfold nonuniformWitness
   rcases trichotomous_of WellOrderingRel s t with (lt | rfl | gt)
-  · rw [if_pos lt, if_neg (asymm lt)]
+  · rw [ite_eq_left lt, ite_eq_right (asymm lt)]
     exact G.nonuniformWitnesses_spec h₂
   · cases h₁ rfl
-  · rw [if_neg (asymm gt), if_pos gt, edgeDensity_comm, edgeDensity_comm _ s]
+  · rw [ite_eq_right (asymm gt), ite_eq_left gt, edgeDensity_comm, edgeDensity_comm _ s]
     apply G.nonuniformWitnesses_spec fun i => h₂ i.symm
 
 end SimpleGraph

@@ -39,9 +39,13 @@ space.
 open scoped ComplexOrder InnerProductSpace
 open Complex ContinuousLinearMap UniformSpace Completion
 
-variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] (f : A →ₚ[ℂ] ℂ)
+variable {A : Type*}
 
 namespace PositiveLinearMap
+
+section PreGNS
+
+variable [NonUnitalRing A] [PartialOrder A] [Module ℂ A] (f : A →ₚ[ℂ] ℂ)
 
 set_option linter.unusedVariables false in
 /-- The Gelfand─Naimark─Segal (GNS) space constructed from a positive linear functional on a
@@ -67,7 +71,8 @@ lemma toPreGNS_ofPreGNS (a : f.PreGNS) : f.toPreGNS (f.ofPreGNS a) = a := rfl
 @[simp]
 lemma ofPreGNS_toPreGNS (a : A) : f.ofPreGNS (f.toPreGNS a) = a := rfl
 
-variable [StarOrderedRing A]
+variable [StarRing A] [StarOrderedRing A] [SelfAdjointDecompose A] [StarModule ℂ A]
+    [IsScalarTower ℂ A A] (f : A →ₚ[ℂ] ℂ)
 
 /--
 The (semi-)inner product space whose elements are the elements of `A`, but which has an
@@ -95,6 +100,38 @@ lemma preGNS_norm_sq (a : f.PreGNS) :
     ‖a‖ ^ 2 = f (star (f.ofPreGNS a) * f.ofPreGNS a) := by
   have : 0 ≤ f (star (f.ofPreGNS a) * f.ofPreGNS a) := f.map_nonneg (star_mul_self_nonneg _)
   simp [preGNS_norm_def, ← ofReal_pow, Real.sq_sqrt this.1, conj_eq_iff_re.mp this.star_eq]
+
+lemma preGNS_norm_def' (f : A →ₚ[ℂ] ℂ) (a : f.PreGNS) :
+    ‖a‖ = √‖f (star (f.ofPreGNS a) * f.ofPreGNS a)‖ := by
+  rw [← sq_eq_sq₀ (by positivity) (by positivity), ← Complex.ofReal_inj]
+  simp [preGNS_norm_sq, ← Complex.eq_coe_norm_of_nonneg, map_nonneg]
+
+variable {F : Type*} [FunLike F A ℂ] [LinearMapClass F ℂ A ℂ] [OrderHomClass F A ℂ]
+
+/-- The **Cauchy--Schwarz** lemma for positive linear functionals on a non-unital
+star-ordered `ℂ`-algebra. -/
+lemma norm_map_star_mul_le (f : F) (x y : A) :
+    ‖f (star x * y)‖ ≤ √‖f (star x * x)‖ * √‖f (star y * y)‖ := by
+  simpa [preGNS_inner_def, preGNS_norm_def'] using!
+    norm_inner_le_norm ((ofClass f).toPreGNS x) ((ofClass f).toPreGNS y)
+
+alias cauchy_schwarz_star_mul := norm_map_star_mul_le
+
+/-- The **Cauchy--Schwarz** lemma for positive linear functionals on a non-unital
+star-ordered `ℂ`-algebra. -/
+lemma norm_map_mul_star_le (f : F) (x y : A) :
+    ‖f (x * star y)‖ ≤ √‖f (x * star x)‖ * √‖f (y * star y)‖ := by
+  simpa using cauchy_schwarz_star_mul f (star x) (star y)
+
+alias cauchy_schwarz_mul_star := norm_map_mul_star_le
+
+end PreGNS
+
+section GNS
+
+section NonUnital
+
+variable [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A →ₚ[ℂ] ℂ)
 
 /--
 The Hilbert space constructed from a positive linear functional on a C⋆-algebra.
@@ -178,9 +215,12 @@ lemma gnsNonUnitalStarAlgHom_apply_coe {a : A} {b : f.PreGNS} :
     f.gnsNonUnitalStarAlgHom a b = f.leftMulMapPreGNS a b := by
   simp [gnsNonUnitalStarAlgHom_apply]
 
-variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A →ₚ[ℂ] ℂ)
+end NonUnital
 
-set_option backward.isDefEq.respectTransparency false in
+section Unital
+
+variable [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A →ₚ[ℂ] ℂ)
+
 @[simp]
 private lemma gnsNonUnitalStarAlgHom_map_one : f.gnsNonUnitalStarAlgHom 1 = 1 := by
   ext b
@@ -199,5 +239,9 @@ noncomputable def gnsStarAlgHom : A →⋆ₐ[ℂ] (f.GNS →L[ℂ] f.GNS) where
   __ := f.gnsNonUnitalStarAlgHom
   map_one' := by simp
   commutes' r := by simp [Algebra.algebraMap_eq_smul_one]
+
+end Unital
+
+end GNS
 
 end PositiveLinearMap

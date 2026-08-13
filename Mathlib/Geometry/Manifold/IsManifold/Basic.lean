@@ -194,7 +194,7 @@ def ModelWithCorners.ofTargetUniv (𝕜 : Type*) [NontriviallyNormedField 𝕜]
   source_eq := hsource
   convex_range' := by
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
-    simp only [this, htarget, dite_else_true]
+    simp only [this, htarget, dite_true_right]
     intro h
     let := h.rclike 𝕜
     let := NormedSpace.restrictScalars ℝ 𝕜 E
@@ -738,7 +738,6 @@ theorem symm_trans_mem_contDiffGroupoid (e : OpenPartialHomeomorph M H) :
 
 variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product of two `C^n` open partial homeomorphisms is `C^n`. -/
 theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
     {e : OpenPartialHomeomorph H H} {e' : OpenPartialHomeomorph H' H'}
@@ -990,15 +989,17 @@ theorem OpenPartialHomeomorph.isManifold_singleton
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
     {M : Type*} [TopologicalSpace M] (e : OpenPartialHomeomorph M H) (h : e.source = Set.univ) :
-    @IsManifold 𝕜 _ E _ _ H _ I n M _ (e.singletonChartedSpace h) :=
-  @IsManifold.mk' _ _ _ _ _ _ _ _ _ _ _ (id _) <|
-    e.singleton_hasGroupoid h (contDiffGroupoid n I)
+    letI := e.singletonChartedSpace h
+    IsManifold I n M :=
+  let := e.singletonChartedSpace h
+  IsManifold.mk' (gr := e.singleton_hasGroupoid h (contDiffGroupoid n I))
 
 theorem Topology.IsOpenEmbedding.isManifold_singleton {𝕜 E H : Type*}
     [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
     {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
     {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H} (h : IsOpenEmbedding f) :
-    @IsManifold 𝕜 _ E _ _ H _ I n M _ h.singletonChartedSpace :=
+    letI := h.singletonChartedSpace
+    IsManifold I n M :=
   (h.toOpenPartialHomeomorph f).isManifold_singleton (by simp)
 
 namespace TopologicalSpace.Opens

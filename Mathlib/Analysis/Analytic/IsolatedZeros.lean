@@ -40,7 +40,7 @@ in this setup.
 
 public section
 
-open Filter Function Module Nat FormalMultilinearSeries EMetric Set
+open Filter Function Module Nat FormalMultilinearSeries Set
 
 open scoped Topology
 

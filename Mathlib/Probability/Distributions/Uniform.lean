@@ -221,7 +221,7 @@ def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
       simpa only [Ne, Nat.cast_eq_zero, Finset.card_eq_zero] using
         Finset.nonempty_iff_ne_empty.1 hs
     exact ENNReal.mul_inv_cancel this <| ENNReal.natCast_ne_top s.card
-  · exact fun x hx => by simp only [hx, if_false]
+  · exact fun x hx => by simp only [hx, ite_false]
 
 variable {s : Finset α} (hs : s.Nonempty) {a : α}
 
@@ -261,11 +261,11 @@ theorem toOuterMeasure_uniformOfFinset_apply :
     _ = ∑' x, if x ∈ s ∧ x ∈ t then (#s : ℝ≥0∞)⁻¹ else 0 :=
       tsum_congr fun x => by simp_rw [uniformOfFinset_apply, ← ite_and, and_comm]
     _ = ∑ x ∈ s with x ∈ t, if x ∈ s ∧ x ∈ t then (#s : ℝ≥0∞)⁻¹ else 0 :=
-      tsum_eq_sum fun _ hx => if_neg fun h => hx (Finset.mem_filter.2 h)
+      tsum_eq_sum fun _ hx => ite_eq_right fun h => hx (Finset.mem_filter.2 h)
     _ = ∑ x ∈ s with x ∈ t, (#s : ℝ≥0∞)⁻¹ :=
       Finset.sum_congr rfl fun x hx => by
         have : x ∈ s ∧ x ∈ t := by simpa using hx
-        simp only [this, and_self_iff, if_true]
+        simp only [this, and_self_iff, ite_true]
     _ = #{x ∈ s | x ∈ t} / #s := by
         simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]
 

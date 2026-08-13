@@ -79,11 +79,11 @@ theorem coeff_p [CharP R p] (i : ℕ) : (p : 𝕎 R).coeff i = if i = 1 then 1 e
 
 @[simp]
 theorem coeff_p_zero [CharP R p] : (p : 𝕎 R).coeff 0 = 0 := by
-  rw [coeff_p, if_neg]
+  rw [coeff_p, ite_eq_right]
   exact zero_ne_one
 
 @[simp]
-theorem coeff_p_one [CharP R p] : (p : 𝕎 R).coeff 1 = 1 := by rw [coeff_p, if_pos rfl]
+theorem coeff_p_one [CharP R p] : (p : 𝕎 R).coeff 1 = 1 := by rw [coeff_p, ite_eq_left rfl]
 
 theorem p_nonzero [Nontrivial R] [CharP R p] : (p : 𝕎 R) ≠ 0 := by
   intro h

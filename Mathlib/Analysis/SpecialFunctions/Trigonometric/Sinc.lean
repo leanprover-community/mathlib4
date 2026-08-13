@@ -26,7 +26,6 @@ This file contains the definition of the sinc function and some of its propertie
 
 @[expose] public section
 
-open Filter
 open scoped Topology
 
 namespace Real

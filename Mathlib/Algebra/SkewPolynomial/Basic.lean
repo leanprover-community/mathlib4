@@ -364,14 +364,14 @@ lemma coeff_one [MulSemiringAction (Multiplicative ℕ) R] (n : ℕ) :
 lemma coeff_X : coeff (X : SkewPolynomial R) n = if 1 = n then 1 else 0 := coeff_monomial
 
 lemma coeff_X_of_ne_one {n : ℕ} (hn : n ≠ 1) : coeff (X : SkewPolynomial R) n = 0 := by
-  rw [coeff_X, if_neg hn.symm]
+  rw [coeff_X, ite_eq_right hn.symm]
 
 lemma coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
   convert! coeff_monomial using 2; simp [eq_comm]
 
 @[simp] lemma coeff_C_zero : coeff (C a) 0 = a := coeff_monomial
 
-lemma coeff_C_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, if_neg h]
+lemma coeff_C_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, ite_eq_right h]
 
 @[simp]
 lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff_C]
@@ -710,11 +710,11 @@ lemma coeff_update_apply (p : SkewPolynomial R) (n : ℕ) (a : R) (i : ℕ) :
 
 @[deprecated coeff_update (since := "2026-07-06")]
 lemma coeff_update_same (p : SkewPolynomial R) (n : ℕ) (a : R) : (p.update n a).coeff n = a := by
-  rw [p.coeff_update_apply, if_pos rfl]
+  rw [p.coeff_update_apply, ite_eq_left rfl]
 
 @[deprecated coeff_update (since := "2026-07-06")]
 lemma coeff_update_ne (p : SkewPolynomial R) {n i : ℕ} (a : R) (h : i ≠ n) :
-    (p.update n a).coeff i = p.coeff i := by rw [p.coeff_update_apply, if_neg h]
+    (p.update n a).coeff i = p.coeff i := by rw [p.coeff_update_apply, ite_eq_right h]
 
 @[simp]
 lemma update_zero_eq_erase (p : SkewPolynomial R) (n : ℕ) : p.update n 0 = p.erase n := by
@@ -730,7 +730,7 @@ lemma support_update_zero (p : SkewPolynomial R) (n : ℕ) :
   simp
 
 lemma support_update_ne_zero (p : SkewPolynomial R) (n : ℕ) {a : R} (ha : a ≠ 0) :
-    support (p.update n a) = insert n p.support := by classical rw [support_update, if_neg ha]
+    support (p.update n a) = insert n p.support := by classical rw [support_update, ite_eq_right ha]
 
 end update
 

@@ -30,7 +30,7 @@ original set.
 
 @[expose] public section
 
-open Finset Nat Real SimpleGraph Sum3 SimpleGraph.TripartiteFromTriangles
+open Finset Nat Real SimpleGraph SimpleGraph.TripartiteFromTriangles
 open Fintype (card)
 open scoped Pointwise
 

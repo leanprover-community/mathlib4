@@ -15,7 +15,7 @@ public import Mathlib.Topology.UniformSpace.Compact
 
 public section
 
-open Bornology Filter Metric Set
+open Filter Metric Set
 open scoped NNReal Topology
 
 variable {ι α : Type*} [PseudoMetricSpace α]

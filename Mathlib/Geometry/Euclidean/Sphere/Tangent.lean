@@ -431,7 +431,6 @@ lemma IsIntTangent.dist_center {s₁ s₂ : Sphere P} (h : s₁.IsIntTangent s�
   rw [← dist_add_dist_eq_iff, mem_sphere'.1 h₁, mem_sphere'.1 h₂] at h
   simp [← h, dist_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isExtTangent_iff_dist_center {s₁ s₂ : Sphere P} : s₁.IsExtTangent s₂ ↔
     dist s₁.center s₂.center = s₁.radius + s₂.radius ∧ 0 ≤ s₁.radius ∧ 0 ≤ s₂.radius := by
   refine ⟨fun h ↦ ⟨h.dist_center, ?_⟩, ?_⟩
@@ -456,7 +455,6 @@ lemma isExtTangent_iff_dist_center {s₁ s₂ : Sphere P} : s₁.IsExtTangent s�
         · rw [div_le_one (by positivity)]
           linarith
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIntTangent_iff_dist_center [Nontrivial V] {s₁ s₂ : Sphere P} : s₁.IsIntTangent s₂ ↔
     dist s₁.center s₂.center = s₂.radius - s₁.radius ∧ 0 ≤ s₁.radius ∧ 0 ≤ s₂.radius := by
   refine ⟨fun h ↦ ⟨h.dist_center, ?_⟩, ?_⟩

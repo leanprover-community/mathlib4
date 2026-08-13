@@ -141,7 +141,7 @@ def ChartedSpace.locallyRingedSpace : LocallyRingedSpace where
 @[deprecated (since := "2026-04-01")]
 alias IsManifold.locallyRingedSpace := ChartedSpace.locallyRingedSpace
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable {M IM IN}
 
@@ -152,7 +152,6 @@ def ChartedSpace.locallyRingedSpaceMapAux (f : M → N) (hf : ContMDiff IM IN �
   base := TopCat.ofHom ⟨f, hf.continuous⟩
   c := (hf.smoothSheafCommRingHom _ _ f).hom
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- (Implementation): Use `ChartedSpace.stalkMap_locallyRingedSpaceMap_evalHom`. -/
 lemma ChartedSpace.stalkMap_locallyRingedSpaceMapAux (f : M → N) (hf : ContMDiff IM IN ∞ f)
     (x : M) :
@@ -166,7 +165,6 @@ lemma ChartedSpace.stalkMap_locallyRingedSpaceMapAux (f : M → N) (hf : ContMDi
   refine Eq.trans ?_ (smoothSheafCommRing.evalHom_germ _ _ _ _ _ _ _ a).symm
   apply smoothSheafCommRing.evalHom_germ
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A smooth function of manifolds `f : M → N` induces a morphism of locally ringed spaces. -/
 @[simps! base]
 def ChartedSpace.locallyRingedSpaceMap (f : M → N) (hf : ContMDiff IM IN ∞ f) :

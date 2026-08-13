@@ -23,9 +23,6 @@ public import Mathlib.RingTheory.OrzechProperty
 
 @[expose] public section
 
-
-open Set Filter Pointwise
-
 open IsNoetherian Submodule Function
 
 section

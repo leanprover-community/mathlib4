@@ -32,7 +32,7 @@ adjoin, algebra, finitely-generated algebra
 
 universe u v w
 
-open Subsemiring Ring Submodule
+open Ring Submodule
 
 open scoped Pointwise
 

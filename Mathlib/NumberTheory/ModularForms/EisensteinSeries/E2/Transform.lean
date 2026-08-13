@@ -180,7 +180,7 @@ lemma tsum_G2Term_eq_tsum' (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
     exact H.prod_factor
 
 
-@[expose] public section
+public section
 
 section transform
 

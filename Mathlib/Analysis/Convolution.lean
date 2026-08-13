@@ -89,7 +89,7 @@ assert_not_exists ContDiffAt HasDerivAt
 @[expose] public section
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
-open Bornology ContinuousLinearMap Metric Topology
+open ContinuousLinearMap Metric Topology
 open scoped Pointwise NNReal Filter
 
 universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP

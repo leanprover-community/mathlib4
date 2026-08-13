@@ -294,7 +294,6 @@ nonnegative degree coincide with the ones of `f`.  The terms of negative degree 
 def trunc : R[T;T⁻¹] →+ R[X] :=
   (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomainAddMonoidHom (↑) Nat.cast_injective
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
   apply (toFinsuppIso R).injective
@@ -316,7 +315,7 @@ theorem leftInverse_trunc_toLaurent :
     simp only [hf, hg, map_add]
   · intro n r
     simp only [Polynomial.toLaurent_C_mul_T, trunc_C_mul_T, Int.natCast_nonneg, Int.toNat_natCast,
-      if_true]
+      ite_true]
 
 @[simp]
 theorem _root_.Polynomial.trunc_toLaurent (f : R[X]) : trunc (toLaurent f) = f :=

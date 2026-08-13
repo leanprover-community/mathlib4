@@ -30,7 +30,7 @@ a convex set.
 
 @[expose] public section
 
-open LinearMap Set Convex Pointwise
+open LinearMap Set Convex
 
 variable {𝕜 E F α β ι : Type*}
 

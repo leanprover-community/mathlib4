@@ -18,9 +18,9 @@ public import Mathlib.Topology.ContinuousMap.Star
 
 noncomputable section
 
-open Topology Bornology NNReal uniformity UniformConvergence RCLike BoundedContinuousFunction
+open BoundedContinuousFunction
 
-open Set Filter Metric Function
+open Set
 
 universe u v w
 

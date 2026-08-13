@@ -22,7 +22,7 @@ public section
 
 universe u v
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable (R : Type u) [Ring R]
 

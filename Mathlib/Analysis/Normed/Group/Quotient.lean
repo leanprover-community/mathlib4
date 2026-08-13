@@ -259,7 +259,7 @@ def quotientQuotientIsometryEquivQuotient (h : S ≤ T) : (M ⧸ S) ⧸ T.map (m
 
 end QuotientGroup
 
-open QuotientAddGroup Metric Set Topology NNReal
+open QuotientAddGroup Metric Set NNReal
 
 variable {M N : Type*} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
 

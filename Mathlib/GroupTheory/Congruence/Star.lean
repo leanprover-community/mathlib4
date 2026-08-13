@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Star.Basic
 TODO: consider defining `Star` versions of `Con` and `AddCon`.
 -/
 
-@[expose] public section
+public section
 
 section Mul
 variable {M : Type*} [Mul M] [StarMul M] {r : M → M → Prop}

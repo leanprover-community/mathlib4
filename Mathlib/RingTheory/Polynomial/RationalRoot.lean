@@ -37,7 +37,7 @@ section ScaleRoots
 variable {A K R S : Type*} [CommRing A] [Field K] [CommRing R] [CommRing S]
 variable {M : Submonoid A} [Algebra A S] [IsLocalization M S] [Algebra A K] [IsFractionRing A K]
 
-open Finsupp IsFractionRing IsLocalization Polynomial
+open IsFractionRing IsLocalization Polynomial
 
 theorem scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
     (hr : aeval (mk' S r s) p = 0) : aeval (algebraMap A S r) (scaleRoots p s) = 0 := by

@@ -46,7 +46,7 @@ but rather extend the relation properties as needed.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Topology
 open scoped SetRel Uniformity

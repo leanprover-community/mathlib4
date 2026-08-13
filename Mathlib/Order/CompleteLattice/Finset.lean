@@ -21,7 +21,7 @@ public section
 
 assert_not_exists IsOrderedMonoid MonoidWithZero
 
-open Function Multiset OrderDual
+open Function
 
 variable {F α β γ ι κ : Type*}
 

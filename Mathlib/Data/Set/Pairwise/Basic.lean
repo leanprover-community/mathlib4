@@ -32,7 +32,7 @@ on `Set.PairwiseDisjoint`, even though the latter unfolds to something nicer.
 @[expose] public section
 
 
-open Function Order Set
+open Function Set
 
 variable {α β γ ι ι' : Type*} {r p : α → α → Prop}
 

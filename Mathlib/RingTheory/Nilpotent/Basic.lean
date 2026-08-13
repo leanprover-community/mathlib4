@@ -181,9 +181,9 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
     IsNilpotent (finsum f) := by
   classical
   by_cases h : HasFiniteSupport f
-  · rw [finsum_def, dif_pos h]
+  · rw [finsum_def, dite_eq_left h]
     exact Commute.isNilpotent_sum (fun b _ ↦ hf b) (fun _ _ _ _ ↦ h_comm _ _)
-  · simp only [finsum_def, dif_neg h, IsNilpotent.zero]
+  · simp only [finsum_def, dite_eq_right h, IsNilpotent.zero]
 
 protected lemma isNilpotent_mul_right_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsRight R) :
     IsNilpotent (x * y) ↔ IsNilpotent x := by

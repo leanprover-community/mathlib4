@@ -89,7 +89,7 @@ lemma volume_eq_lintegral (s : Set ℍ) :
 instance : SMulInvariantMeasure (GL (Fin 2) ℝ) ℍ volume := by
   -- It suffices to show `volume (g • s) = volume s` for measurable sets `s`. First
   -- we write this as a lintegral over subsets of `ℂ`.
-  refine ((smulInvariantMeasure_tfae _ _).out 2 0).mp fun g s hs ↦ ?_
+  refine ((smulInvariantMeasure_tfae _ _).out 3 1).mp fun g s hs ↦ ?_
   rw [volume_eq_lintegral, volume_eq_lintegral, ← Set.image_smul, Set.image_image]
   -- We want to apply the Jacobian change-of-variable formula.
   have hinj : Set.InjOn (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (UpperHalfPlane.coe '' s) :=

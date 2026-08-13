@@ -26,8 +26,6 @@ morphism `T ⟶ U.obj i₀` for some `i₀`.
 
 universe w t v u
 
-open Simplicial
-
 namespace CategoryTheory.Limits.FormalCoproduct
 
 variable {C : Type u} [Category.{v} C] [HasFiniteProducts C]
@@ -61,7 +59,6 @@ lemma cechIsoCechNerveApp_hom_π (n : SimplexCategoryᵒᵖ) (i : ToType n.unop)
       WidePullback.π (fun _ ↦ (isTerminalIncl T hT).from U) i = U.powerπ i :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma cechIsoCechNerveApp_inv_π (n : SimplexCategoryᵒᵖ) (i : ToType n.unop) :
     (U.cechIsoCechNerveApp hT n).inv ≫ U.powerπ i =

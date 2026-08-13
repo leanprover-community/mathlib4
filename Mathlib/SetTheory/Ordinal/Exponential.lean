@@ -35,11 +35,11 @@ instance instPow : Pow Ordinal Ordinal :=
 
 private theorem opow_of_ne_zero {a b : Ordinal} (h : a ≠ 0) : a ^ b =
     limitRecOn b 1 (fun _ x ↦ x * a) fun o _ f ↦ ⨆ x : Iio o, f x.1 x.2 :=
-  if_neg h
+  ite_eq_right h
 
 /-- `0 ^ a = 1` if `a = 0` and `0 ^ a = 0` otherwise. -/
 theorem zero_opow' (a : Ordinal) : 0 ^ a = 1 - a :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem zero_opow_le (a : Ordinal) : (0 : Ordinal) ^ a ≤ 1 := by
   rw [zero_opow']
@@ -524,10 +524,6 @@ theorem lt_omega0_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
 theorem natCast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^ n
   | 0 => by simp
   | n + 1 => by simp [pow_succ, natCast_pow m n]
-
-@[deprecated natCast_pow (since := "2026-01-31")]
-theorem natCast_opow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^ (n : Ordinal) := by
-  simp
 
 theorem iSup_pow_natCast {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ ω := by
   rcases (one_le_iff_pos.2 ho).lt_or_eq with ho₁ | rfl

@@ -50,7 +50,7 @@ a theorem in `isOpen_isPathConnected_basis`.
 
 noncomputable section
 
-open Topology Filter unitInterval Set Function
+open Topology Filter Set Function
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*} {F : Set X}
 

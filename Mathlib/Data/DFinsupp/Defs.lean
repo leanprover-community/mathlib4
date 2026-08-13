@@ -401,7 +401,7 @@ variable [DecidableEq ι]
 defined on this `Finset`. -/
 def mk (s : Finset ι) (x : ∀ i : (↑s : Set ι), β (i : ι)) : Π₀ i, β i :=
   ⟨fun i => if H : i ∈ s then x ⟨i, H⟩ else 0,
-    Trunc.mk ⟨s.1, fun i => if H : i ∈ s then Or.inl H else Or.inr <| dif_neg H⟩⟩
+    Trunc.mk ⟨s.1, fun i => if H : i ∈ s then Or.inl H else Or.inr <| dite_eq_right H⟩⟩
 
 variable {s : Finset ι} {x : ∀ i : (↑s : Set ι), β i} {i : ι}
 
@@ -410,10 +410,10 @@ theorem mk_apply : (mk s x : ∀ i, β i) i = if H : i ∈ s then x ⟨i, H⟩ e
   rfl
 
 theorem mk_of_mem (hi : i ∈ s) : (mk s x : ∀ i, β i) i = x ⟨i, hi⟩ :=
-  dif_pos hi
+  dite_eq_left hi
 
 theorem mk_of_notMem (hi : i ∉ s) : (mk s x : ∀ i, β i) i = 0 :=
-  dif_neg hi
+  dite_eq_right hi
 
 theorem mk_injective (s : Finset ι) : Function.Injective (@mk ι β _ _ s) := by
   intro x y H
@@ -513,11 +513,11 @@ theorem filter_single (p : ι → Prop) [DecidablePred p] (i : ι) (x : β i) :
 
 @[simp]
 theorem filter_single_pos {p : ι → Prop} [DecidablePred p] (i : ι) (x : β i) (h : p i) :
-    (single i x).filter p = single i x := by rw [filter_single, if_pos h]
+    (single i x).filter p = single i x := by rw [filter_single, ite_eq_left h]
 
 @[simp]
 theorem filter_single_neg {p : ι → Prop} [DecidablePred p] (i : ι) (x : β i) (h : ¬p i) :
-    (single i x).filter p = 0 := by rw [filter_single, if_neg h]
+    (single i x).filter p = 0 := by rw [filter_single, ite_eq_right h]
 
 /-- Equality of sigma types is sufficient (but not necessary) to show equality of `DFinsupp`s. -/
 theorem single_eq_of_sigma_eq {i j} {xi : β i} {xj : β j} (h : (⟨i, xi⟩ : Sigma β) = ⟨j, xj⟩) :
@@ -600,11 +600,11 @@ theorem erase_single (j : ι) (i : ι) (x : β i) :
 
 @[simp]
 theorem erase_single_same (i : ι) (x : β i) : (single i x).erase i = 0 := by
-  rw [erase_single, if_pos rfl]
+  rw [erase_single, ite_eq_left rfl]
 
 @[simp]
 theorem erase_single_ne {i j : ι} (x : β i) (h : i ≠ j) : (single i x).erase j = single i x := by
-  rw [erase_single, if_neg h]
+  rw [erase_single, ite_eq_right h]
 
 section Update
 
@@ -719,16 +719,18 @@ theorem erase_sub {β : ι → Type v} [∀ i, AddGroup (β i)] (i : ι) (f g : 
 theorem single_add_erase (i : ι) (f : Π₀ i, β i) : single i (f i) + f.erase i = f :=
   ext fun i' =>
     if h : i = i' then by
-      subst h; simp only [add_apply, single_apply, erase_apply, add_zero, dite_eq_ite, if_true]
+      subst h; simp only [add_apply, single_apply, erase_apply, add_zero, dite_eq_ite, ite_true]
     else by
-      simp only [add_apply, single_apply, erase_apply, dif_neg h, if_neg (Ne.symm h), zero_add]
+      simp only [add_apply, single_apply, erase_apply, dite_eq_right h, ite_eq_right (Ne.symm h),
+        zero_add]
 
 theorem erase_add_single (i : ι) (f : Π₀ i, β i) : f.erase i + single i (f i) = f :=
   ext fun i' =>
     if h : i = i' then by
-      subst h; simp only [add_apply, single_apply, erase_apply, zero_add, dite_eq_ite, if_true]
+      subst h; simp only [add_apply, single_apply, erase_apply, zero_add, dite_eq_ite, ite_true]
     else by
-      simp only [add_apply, single_apply, erase_apply, dif_neg h, if_neg (Ne.symm h), add_zero]
+      simp only [add_apply, single_apply, erase_apply, dite_eq_right h, ite_eq_right (Ne.symm h),
+        add_zero]
 
 protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (single i b + f)) : p f := by
@@ -1105,7 +1107,6 @@ theorem comapDomain'_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i
     comapDomain' h hh' (single (h k) x) = single k x := by
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing terms of a dfinsupp.
 
 This is the dfinsupp version of `Equiv.piCongrLeft'`. -/
