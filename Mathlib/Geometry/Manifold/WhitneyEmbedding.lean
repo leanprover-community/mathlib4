@@ -113,8 +113,8 @@ public theorem exists_immersion_euclidean {ι : Type*} [Finite ι] (f : SmoothBu
       CMDiff ∞ e ∧ Injective e ∧ ∀ x : M, Injective (mfderiv% e x) := by
   cases nonempty_fintype ι
   set F := EuclideanSpace ℝ (Fin <| finrank ℝ (ι → E × ℝ))
-  letI : IsNoetherian ℝ (E × ℝ) := IsNoetherian.iff_fg.2 inferInstance
-  letI : FiniteDimensional ℝ (ι → E × ℝ) := IsNoetherian.iff_fg.1 inferInstance
+  let : IsNoetherian ℝ (E × ℝ) := IsNoetherian.iff_fg.2 inferInstance
+  let : FiniteDimensional ℝ (ι → E × ℝ) := IsNoetherian.iff_fg.1 inferInstance
   set eEF : (ι → E × ℝ) ≃L[ℝ] F :=
     ContinuousLinearEquiv.ofFinrankEq finrank_euclideanSpace_fin.symm
   refine ⟨_, eEF ∘ f.embeddingPiTangent,
@@ -135,6 +135,6 @@ public theorem exists_embedding_euclidean_of_compact [T2Space M] [CompactSpace M
       CMDiff ∞ e ∧ IsClosedEmbedding e ∧ ∀ x : M, Injective (mfderiv% e x) := by
   rcases SmoothBumpCovering.exists_isSubordinate I isClosed_univ fun (x : M) _ => univ_mem with
     ⟨ι, f, -⟩
-  haveI := f.fintype
+  have := f.fintype
   rcases f.exists_immersion_euclidean with ⟨n, e, hsmooth, hinj, hinj_mfderiv⟩
   exact ⟨n, e, hsmooth, hsmooth.continuous.isClosedEmbedding hinj, hinj_mfderiv⟩

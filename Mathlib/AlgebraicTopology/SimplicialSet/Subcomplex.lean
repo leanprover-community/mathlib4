@@ -258,8 +258,12 @@ lemma preimage_id (A : X.Subcomplex) : A.preimage (𝟙 X) = A := rfl
 lemma preimage_comp {Z : SSet.{u}} (A : Z.Subcomplex) (f : X ⟶ Y) (g : Y ⟶ Z) :
     A.preimage (f ≫ g) = (A.preimage g).preimage f := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preimage_ι (A : X.Subcomplex) : A.preimage A.ι = ⊤ := by aesop
+
+lemma preimage_monotone (f : Y ⟶ X) : Monotone (fun (S : X.Subcomplex) ↦ S.preimage f) :=
+  fun _ _ h _ _ hx ↦ h _ hx
 
 end
 
@@ -340,6 +344,20 @@ lemma preimage_eq_top_iff (B : X.Subcomplex) (f : Y ⟶ X) :
 lemma image_preimage_le (B : X.Subcomplex) (f : Y ⟶ X) :
     (B.preimage f).image f ≤ B := by
   rw [image_le_iff]
+
+@[simp]
+lemma preimage_image (S : X.Subcomplex) (f : X ⟶ Y) [Mono f] :
+    (S.image f).preimage f = S := by
+  refine le_antisymm ?_ (by rw [← image_le_iff])
+  intro n x ⟨y, hy, h⟩
+  rwa [← injective_of_mono (f.app n) h]
+
+@[simp]
+lemma image_le_image_iff (f : X ⟶ Y) [Mono f] {S₁ S₂ : X.Subcomplex} :
+    S₁.image f ≤ S₂.image f ↔ S₁ ≤ S₂ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ image_monotone f h⟩
+  rw [← S₁.preimage_image f, ← S₂.preimage_image f]
+  exact preimage_monotone f h
 
 @[simp]
 lemma preimage_image_of_isIso (f : X ⟶ Y) (B : Y.Subcomplex) [IsIso f] :

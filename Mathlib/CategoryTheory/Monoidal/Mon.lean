@@ -107,7 +107,7 @@ attribute [to_additive existing (attr := reassoc (attr := simp))] one_mul mul_on
 
 /-- Transfer `MonObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[to_additive (attr := simps! -isSimp, implicit_reducible)
+@[to_additive (attr := simps! -isSimp, instance_reducible)
 /-- Transfer `AddMonObj` along an isomorphism. -/]
 def ofIso (e : M ≅ X) : MonObj X where
   one := η[M] ≫ e.hom
@@ -230,7 +230,7 @@ instance instIsMonHomComp (f : M ⟶ N) (g : N ⟶ O) [IsMonHom f] [IsMonHom g] 
 attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
 @[to_additive]
 instance isMonHom_ofIso (e : M ≅ X) : letI := MonObj.ofIso e; IsMonHom e.hom := by
-  letI := MonObj.ofIso e; exact { }
+  let := MonObj.ofIso e; exact { }
 
 @[to_additive]
 instance (f : M ≅ N) [IsMonHom f.hom] : IsMonHom f.inv where
@@ -909,6 +909,7 @@ set_option backward.defeqAttrib.useBackward true in
 def mapMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] : F.mapMon ⟶ F'.mapMon where
   app X := .mk' (f.app _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Natural isomorphisms between functors lift to monoid objects. -/
 @[to_additive (attr := simps!)
@@ -1005,7 +1006,7 @@ variable [BraidedCategory C] [BraidedCategory D] (F)
 open scoped Obj
 
 attribute [-simp] IsMonHom.one_hom_assoc in
-attribute [local simp← ] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
+attribute [local simp ←] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
 attribute [local simp] tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc MonObj.tensorObj.one_def
   MonObj.tensorObj.mul_def in
 @[to_additive instIsAddMonHomμ]
@@ -1025,7 +1026,7 @@ instance [F.LaxBraided] : F.mapMon.LaxMonoidal where
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [-simp] IsMonHom.one_hom IsMonHom.one_hom_assoc IsMonHom.mul_hom in
-attribute [local simp← ] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
+attribute [local simp ←] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
 attribute [local simp] ε_tensorHom_comp_μ_assoc tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc
   MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 @[to_additive]
@@ -1058,7 +1059,7 @@ def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon C ⥤ Mon D where
 
 end Functor
 
-open Functor
+open CategoryTheory.Functor
 
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.LaxMonoidal] [a.IsMonoidal]
@@ -1147,6 +1148,9 @@ def unitIso :
   NatIso.ofComponents
     (fun F ↦ LaxMonoidalFunctor.isoOfComponents (fun _ ↦ F.mapIso (eqToIso (by ext))))
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `counitIso`. -/
 @[to_additive (attr := simps!) /-- Auxiliary definition for `counitIso`. -/]
 def counitIsoAux (F : Mon C) :
@@ -1185,6 +1189,7 @@ open EquivLaxMonoidalFunctorPUnit
 
 attribute [local simp] eqToIso_map
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Monoid objects in `C` are "just" lax monoidal functors from the trivial monoidal category to `C`.

@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
 We define a typeclass `Functor.PreservesProjectiveObjects`.
 
-We restate the existing result that if `F ⊣ G` is an adjunction and `G` preserves monomorphisms,
+We restate the existing result that if `F ⊣ G` is an adjunction and `G` preserves epimorphisms,
 then `F` preserves projective objects. We show that the converse is true if the domain of `F` has
 enough projectives.
 -/
@@ -55,7 +55,6 @@ instance (priority := low) Functor.preservesProjectiveObjects_of_isEquivalence {
     [IsEquivalence F] : F.PreservesProjectiveObjects :=
   preservesProjectiveObjects_of_adjunction_of_preservesEpimorphisms F.asEquivalence.toAdjunction
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Functor.preservesEpimorphisms_of_adjunction_of_preservesProjectiveObjects
     [EnoughProjectives C] {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.PreservesProjectiveObjects] :
     G.PreservesEpimorphisms where

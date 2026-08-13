@@ -219,7 +219,6 @@ lemma familyOfElements_eq {i : ι} {Z : Over (X i)} (g : Z ⟶ Over.mk (𝟙 (X 
       exact mem_sieve _ _ fac) = mor w φ _ _ fac :=
   mor_unique _ _ _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma compatible_familyOfElements (i : ι) :
     (familyOfElements w φ i).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ fac
@@ -299,6 +298,7 @@ end full_pullFunctor
 
 public section
 
+set_option backward.isDefEq.respectTransparency.types false in
 open full_pullFunctor in
 include w hf' in
 lemma full_pullFunctor :
@@ -378,6 +378,7 @@ section
 variable {F} [HasPullbacks C] {J : Precoverage C}
   [J.HasIsos] [J.IsStableUnderBaseChange] [J.IsStableUnderComposition]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If a precoverage satisfies `HasIsos`, `IsStableUnderBaseChange` and
 `IsStableUnderComposition` (which is a slightly stronger condition as compared
 to pretopologies), then in order to check that a pseudofunctor is a prestack

@@ -216,8 +216,6 @@ end Basis
 
 section Fintype
 
-open Basis
-
 open Fintype
 
 /-- A module over `R` with a finite basis is linearly equivalent to functions from its basis to `R`.
@@ -231,11 +229,12 @@ def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
       (ι →₀ R) ≃ₗ[R] ι → R)
 
 /-- A module over a finite ring that admits a finite basis is finite. -/
-@[implicit_reducible]
+@[instance_reducible]
 def fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
   haveI := Classical.decEq ι
   Fintype.ofEquiv _ b.equivFun.toEquiv.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a basis `v` indexed by `ι`, the canonical linear equivalence between `ι → R` and `M` maps
 a function `x : ι → R` to the linear combination `∑_i x i • v i`. -/
 @[simp]
@@ -377,7 +376,6 @@ variable {R' : Type*} [Semiring R'] [Module R' M] (f : R ≃+* R')
 
 attribute [local instance] SMul.comp.isScalarTower
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `R` and `R'` are isomorphic rings that act identically on a module `M`,
 then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module.
 
