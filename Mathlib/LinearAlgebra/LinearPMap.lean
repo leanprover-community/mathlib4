@@ -147,18 +147,14 @@ theorem ker_eq_bot : f.ker = ⊥ ↔ Function.Injective f := by
 theorem mem_ker_iff {x : E} : x ∈ f.ker ↔ ∃ (y : f.domain) (_h : x = y), f y = 0 := by
   simp [ker]
 
+theorem coe_mem_ker_iff {x : f.domain} : ↑x ∈ f.ker ↔ f x = 0 := by
+  simp [mem_ker_iff]
+
 theorem sub_mem_ker_iff {x y : f.domain} : ↑(x - y) ∈ f.ker ↔ f x = f y := by
-  rw [mem_ker_iff]
-  simp only [exists_prop, Subtype.exists, exists_and_left,
-    exists_eq_left', SetLike.coe_mem, exists_true_left]
-  calc
-    f (x - y) = 0 ↔ f x = f y := by simp [map_sub, sub_eq_zero]
+  rw [coe_mem_ker_iff, map_sub, sub_eq_zero]
 
 theorem ker_le_domain : f.ker ≤ f.domain := by
-  intro x h
-  rw [mem_ker_iff] at h
-  obtain ⟨y, rfl, h⟩ := h
-  simp
+  simpa [ker, range_subtype] using f.domain.subtype.map_le_range
 
 end kernel
 
@@ -416,6 +412,10 @@ theorem ker_eq_top {f : E →ₛₗ.[σ] F} : f.ker = ⊤ ↔ f = 0 := by
     grind [eq_top_iff, ker_le_domain]
   have : x ∈ f.ker := by simp [h]
   grind [mem_ker_iff]
+
+theorem eqLocus_zero {f : E →ₛₗ.[σ] F} : f.eqLocus 0 = f.ker := by
+  ext
+  simp [eqLocus, mem_ker_iff]
 
 end Zero
 
