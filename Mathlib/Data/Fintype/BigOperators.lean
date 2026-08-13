@@ -31,8 +31,6 @@ public section
 
 assert_not_exists MulAction
 
-open Mathlib
-
 universe u v
 
 variable {α : Type*} {β : Type*} {γ : Type*}
