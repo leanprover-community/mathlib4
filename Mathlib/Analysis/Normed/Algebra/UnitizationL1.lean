@@ -96,6 +96,15 @@ instance {R : Type*} [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A] [I
   (WithLp.equiv 1 (Unitization 𝕜 A)).algebra R
 
 @[simp]
+lemma unitization_ofLp_one : ofLp (1 : WithLp 1 (Unitization 𝕜 A)) = 1 := rfl
+
+@[simp]
+lemma unitization_toLp_one : toLp 1 (1 : Unitization 𝕜 A) = 1 := rfl
+
+instance : NormOneClass (WithLp 1 (Unitization 𝕜 A)) where
+  norm_one := by simp [unitization_norm_def]
+
+@[simp]
 lemma unitization_algebraMap (r : 𝕜) :
     ofLp (algebraMap 𝕜 (WithLp 1 (Unitization 𝕜 A)) r) = algebraMap 𝕜 (Unitization 𝕜 A) r := rfl
 

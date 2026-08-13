@@ -182,9 +182,10 @@ theorem abs_rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
 theorem spectralRadius_eq_nnnorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
     spectralRadius 𝕜 T = ‖T‖₊ := by
   nontriviality E
-  apply le_antisymm (spectrum.spectralRadius_le_nnnorm T)
+  apply le_antisymm (spectralRadius_le_nnnorm T)
   suffices h : algebraMap ℝ 𝕜 ‖T‖ ∈ spectrum 𝕜 T ∨ algebraMap ℝ 𝕜 (-‖T‖) ∈ spectrum 𝕜 T by
-    rcases h with h | h <;> exact le_trans (by simp) (le_biSup _ h)
+    rcases h with h | h <;>
+      exact le_trans (by simp) (le_biSup _ (spectrum_subset_quasispectrum 𝕜 T h))
   simp_rw [spectrum, Set.mem_compl_iff, map_neg]
   by_contra! h
   obtain ⟨c, hc0, hc⟩ := T.abs_rayleighQuotient_le_of_norm_mem_resolventSet h.1 h.2

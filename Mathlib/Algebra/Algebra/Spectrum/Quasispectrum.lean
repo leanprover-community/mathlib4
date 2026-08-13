@@ -268,6 +268,19 @@ instance quasispectrum.instZero [Nontrivial R] (a : A) : Zero (quasispectrum R a
 
 variable {R}
 
+@[simp]
+lemma quasispectrum_zero {R A : Type*} [Field R] [NonUnitalRing A] [Module R A] :
+    quasispectrum R (0 : A) = {0} := by
+  refine Set.eq_singleton_iff_unique_mem.mpr ⟨quasispectrum.zero_mem R 0, fun r hr => ?_⟩
+  by_contra h
+  exact hr (isUnit_iff_ne_zero.mpr h) (by simp only [smul_zero, neg_zero]; exact ⟨1, rfl⟩)
+
+@[simp]
+theorem quasispectrum.of_subsingleton {R A : Type*} [Field R] [NonUnitalRing A]
+    [Module R A] [Subsingleton A] (a : A) :
+    quasispectrum R a = {0} := by
+  rw [Subsingleton.elim a 0, quasispectrum_zero]
+
 set_option backward.isDefEq.respectTransparency false in
 /-- A version of `NonUnitalAlgHom.quasispectrum_apply_subset` which allows for `quasispectrum R`,
 where `R` is a *semi*ring, but `φ` must still function over a scalar ring `S`. In this case, we
