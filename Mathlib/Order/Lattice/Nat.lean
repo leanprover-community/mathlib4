@@ -35,15 +35,15 @@ noncomputable instance : SupSet ℕ :=
 
 open scoped Classical in
 theorem sInf_def {s : Set ℕ} (h : s.Nonempty) : sInf s = @Nat.find (fun n ↦ n ∈ s) _ h :=
-  dif_pos _
+  dite_eq_left _
 
 open scoped Classical in
 theorem sSup_def {s : Set ℕ} (h : ∃ n, ∀ a ∈ s, a ≤ n) :
     sSup s = @Nat.find (fun n ↦ ∀ a ∈ s, a ≤ n) _ h :=
-  dif_pos _
+  dite_eq_left _
 
 theorem _root_.Set.Infinite.Nat.sSup_eq_zero {s : Set ℕ} (h : s.Infinite) : sSup s = 0 :=
-  dif_neg fun ⟨n, hn⟩ ↦
+  dite_eq_right fun ⟨n, hn⟩ ↦
     let ⟨k, hks, hk⟩ := h.exists_gt n
     (hn k hks).not_gt hk
 
@@ -137,7 +137,7 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
       intro s hs
       simp only [sSup,
         mem_empty_iff_false, IsEmpty.forall_iff, forall_const, exists_const, dite_true]
-      rw [dif_neg]
+      rw [dite_eq_right]
       · exact le_antisymm (zero_le _) (find_le trivial)
       · exact hs
     csInf_of_not_bddBelow := fun s hs ↦ by simp at hs }

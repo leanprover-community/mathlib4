@@ -63,13 +63,13 @@ theorem TFAE_mem_nhdsGT {a b : α} (hab : a < b) (s : Set α) :
 
 theorem mem_nhdsGT_iff_exists_mem_Ioc_Ioo_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioc a u', Ioo a u ⊆ s :=
-  (TFAE_mem_nhdsGT hu' s).out 0 3
+  (TFAE_mem_nhdsGT hu' s).out 1 4
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u)`
 with `a < u < u'`, provided `a` is not a top element. -/
 theorem mem_nhdsGT_iff_exists_Ioo_subset' {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioi a, Ioo a u ⊆ s :=
-  (TFAE_mem_nhdsGT hu' s).out 0 4
+  (TFAE_mem_nhdsGT hu' s).out 1 5
 
 theorem nhdsGT_basis_of_exists_gt {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
   let ⟨_, h⟩ := h
@@ -205,13 +205,13 @@ theorem TFAE_mem_nhdsLT {a b : α} (h : a < b) (s : Set α) :
 
 theorem mem_nhdsLT_iff_exists_mem_Ico_Ioo_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Ico l' a, Ioo l a ⊆ s :=
-  (TFAE_mem_nhdsLT hl' s).out 0 3
+  (TFAE_mem_nhdsLT hl' s).out 1 4
 
 /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval `(l, a)`
 with `l < a`, provided `a` is not a bottom element. -/
 theorem mem_nhdsLT_iff_exists_Ioo_subset' {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ioo l a ⊆ s :=
-  (TFAE_mem_nhdsLT hl' s).out 0 4
+  (TFAE_mem_nhdsLT hl' s).out 1 5
 
 /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval `(l, a)`
 with `l < a`. -/
@@ -279,13 +279,13 @@ theorem TFAE_mem_nhdsGE {a b : α} (hab : a < b) (s : Set α) :
 
 theorem mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioc a u', Ico a u ⊆ s :=
-  (TFAE_mem_nhdsGE hu' s).out 0 3 (by simp) (by simp)
+  (TFAE_mem_nhdsGE hu' s).out 1 4 (by simp) (by simp)
 
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u)`
 with `a < u < u'`, provided `a` is not a top element. -/
 theorem mem_nhdsGE_iff_exists_Ico_subset' {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioi a, Ico a u ⊆ s :=
-  (TFAE_mem_nhdsGE hu' s).out 0 4 (by simp) (by simp)
+  (TFAE_mem_nhdsGE hu' s).out 1 5 (by simp) (by simp)
 
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u)`
 with `a < u`. -/
@@ -328,13 +328,13 @@ theorem TFAE_mem_nhdsLE {a b : α} (h : a < b) (s : Set α) :
 
 theorem mem_nhdsLE_iff_exists_mem_Ico_Ioc_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Ico l' a, Ioc l a ⊆ s :=
-  (TFAE_mem_nhdsLE hl' s).out 0 3 (by simp) (by simp)
+  (TFAE_mem_nhdsLE hl' s).out 1 4 (by simp) (by simp)
 
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `(l, a]`
 with `l < a`, provided `a` is not a bottom element. -/
 theorem mem_nhdsLE_iff_exists_Ioc_subset' {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Iio a, Ioc l a ⊆ s :=
-  (TFAE_mem_nhdsLE hl' s).out 0 4 (by simp) (by simp)
+  (TFAE_mem_nhdsLE hl' s).out 1 5 (by simp) (by simp)
 
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `(l, a]`
 with `l < a`. -/
