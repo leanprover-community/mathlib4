@@ -135,12 +135,12 @@ theorem image_center_subset {F} [FunLike F M N] [MulHomClass F M N] {f : F}
 
 @[to_additive preimage_addCenter_subset]
 theorem preimage_center_subset {F} [FunLike F M N] [MulHomClass F M N] {f : F}
-    (hf : Function.Injective f) : f ⁻¹' (Set.center N) ⊆ Set.center M :=
+    (hf : Function.Injective f) : f ⁻¹' Set.center N ⊆ Set.center M :=
   fun _ hx ↦ Set.mem_center_iff.mpr (hx.of_map hf)
 
 @[to_additive (attr := simp) image_addCenter_eq]
 theorem image_center_eq {F} [EquivLike F M N] [MulEquivClass F M N] (f : F) :
-    f '' (Set.center M) = Set.center N := by
+    f '' Set.center M = Set.center N := by
   refine le_antisymm (image_center_subset <| EquivLike.surjective f) fun x hx ↦ ?_
   obtain ⟨a, rfl⟩ := EquivLike.surjective f x
   have := image_center_subset (MulEquivClass.toMulEquiv f).symm.surjective (mem_image_of_mem _ hx)

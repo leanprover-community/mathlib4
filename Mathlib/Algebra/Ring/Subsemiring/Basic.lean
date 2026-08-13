@@ -304,11 +304,11 @@ instance decidableMemCenter {R} [Semiring R] [DecidableEq R] [Fintype R] :
 
 theorem map_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
     (hf : Function.Surjective f) : map f (center R) ≤ center S :=
-  NonUnitalSubsemiring.map_center_le_center hf
+  Set.image_center_subset hf
 
 theorem comap_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
     (hf : Function.Injective f) : comap f (center S) ≤ center R :=
-  NonUnitalSubsemiring.comap_center_le_center hf
+  Set.preimage_center_subset hf
 
 @[simp]
 theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :

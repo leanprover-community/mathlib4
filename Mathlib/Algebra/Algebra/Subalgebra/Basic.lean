@@ -929,11 +929,11 @@ theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :
 
 theorem map_center_le_center {f : A →ₐ[R] B} (hf : Function.Surjective f) :
     map f (center R A) ≤ center R B :=
-  NonUnitalSubsemiring.map_center_le_center hf
+  Set.image_center_subset hf
 
 theorem comap_center_le_center {f : A →ₐ[R] B} (hf : Function.Injective f) :
     comap f (center R B) ≤ center R A :=
-  NonUnitalSubsemiring.comap_center_le_center hf
+  Set.preimage_center_subset hf
 
 @[simp]
 theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
