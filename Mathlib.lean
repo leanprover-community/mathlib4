@@ -433,6 +433,7 @@ public import Mathlib.Algebra.Group.PNatPowAssoc
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.BigOperators
@@ -2746,6 +2747,7 @@ public import Mathlib.CategoryTheory.Galois.Equivalence
 public import Mathlib.CategoryTheory.Galois.EssSurj
 public import Mathlib.CategoryTheory.Galois.Examples
 public import Mathlib.CategoryTheory.Galois.Full
+public import Mathlib.CategoryTheory.Galois.FullSubcategory
 public import Mathlib.CategoryTheory.Galois.GaloisObjects
 public import Mathlib.CategoryTheory.Galois.IsFundamentalgroup
 public import Mathlib.CategoryTheory.Galois.Prorepresentability
@@ -3871,7 +3873,9 @@ public import Mathlib.Data.ENat.Basic
 public import Mathlib.Data.ENat.BigOperators
 public import Mathlib.Data.ENat.Defs
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Data.ENat.Pow
+public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.Data.EReal.Basic
 public import Mathlib.Data.EReal.Inv
 public import Mathlib.Data.EReal.Operations
