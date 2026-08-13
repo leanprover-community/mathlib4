@@ -24,7 +24,7 @@ constant.
 
 @[expose] public section
 
-open EMetric Set
+open Set
 open scoped NNReal ENNReal
 
 noncomputable section

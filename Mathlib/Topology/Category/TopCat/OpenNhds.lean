@@ -66,7 +66,6 @@ instance (x : X) : OrderTop (OpenNhds x) where
     cases x
     simp [le_def]
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩
 
