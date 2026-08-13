@@ -1048,7 +1048,7 @@ variable [Group G] {x y : G}
 
 @[to_additive]
 theorem orderOf_pow_natAbs (x : G) (n : ℤ) : orderOf (x ^ n.natAbs) = orderOf (x ^ n) := by
-  obtain ⟨a, (rfl | rfl)⟩ := Int.eq_nat_or_neg n <;> simp
+  cases n <;> simp
 
 @[to_additive]
 theorem orderOf_zpow' (x : G) {n : ℤ} (h : n ≠ 0) :
