@@ -114,7 +114,7 @@ theorem Finsupp.mapDomain_tendstoCofinite [TendstoCofinite f] :
   let s := Finset.sup x.support (fun t ↦ (TendstoCofinite.finite_preimage_singleton f t).toFinset)
   let e : s ↪ α := Function.Embedding.subtype (fun u ↦ u ∈ s)
   refine Set.Finite.subset (Set.Finite.image (embDomain e) <| finite_of_degree_le (degree x)) ?_
-  simp only [Set.subset_def, Set.mem_preimage, Set.mem_singleton_iff, Set.mem_image,
+  simp only [Set.subset_def, Set.mem_preimage, Set.mem_singleton, Set.mem_image,
     Set.mem_ofPred_eq]
   refine fun y hy ↦ ⟨y.comapDomain e e.injective.injOn, ?_, embDomain_comapDomain ?_⟩
   · rw [← hy, degree_mapDomain]

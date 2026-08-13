@@ -400,7 +400,7 @@ theorem finrank_cotangentSpace_le_one_iff [IsNoetherianRing R] :
   simp_rw [← Set.image_singleton, eq_comm (a := ⊤), CotangentSpace.span_image_eq_top_iff,
     ← (map_injective_of_injective (injective_subtype _)).eq_iff, map_span, Set.image_singleton,
     Submodule.map_top, range_subtype, eq_comm (a := maximalIdeal R)]
-  exact ⟨fun ⟨x, h⟩ ↦ ⟨_, h⟩, fun ⟨x, h⟩ ↦ ⟨⟨x, h ▸ subset_span (Set.mem_singleton x)⟩, h⟩⟩
+  exact ⟨fun ⟨x, h⟩ ↦ ⟨_, h⟩, fun ⟨x, h⟩ ↦ ⟨⟨x, h ▸ subset_span (Set.mem_singleton_self x)⟩, h⟩⟩
 
 end IsLocalRing
 

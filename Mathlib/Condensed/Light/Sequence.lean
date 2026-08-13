@@ -61,7 +61,7 @@ lemma fibres_compl_eq_iUnion (π : T → S × Option X) (σ : Option X → S →
   -- simp? says:
   simp only [Set.mem_compl_iff, mem_fibres_iff, not_or, not_exists, Set.mem_iUnion,
     Set.mem_inter_iff, Set.mem_range, Set.mem_preimage, Function.comp_apply,
-    Set.mem_singleton_iff]
+    Set.mem_singleton]
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ?_, fun ⟨n, hn, hn'⟩ ↦ ?_⟩
   · obtain ⟨n, hn⟩ := Option.ne_none_iff_exists'.mp h₁
     exact ⟨n, h₂ n, hn⟩

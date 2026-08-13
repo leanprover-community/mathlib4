@@ -513,7 +513,7 @@ theorem collinear_pair (p₁ p₂ : P) : Collinear k ({p₁, p₂} : Set P) := b
   rw [collinear_iff_exists_forall_eq_smul_vadd]
   use p₁, p₂ -ᵥ p₁
   intro p hp
-  rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hp
+  rw [Set.mem_insert_iff, Set.mem_singleton] at hp
   rcases hp with hp | hp
   · use 0
     simp [hp]

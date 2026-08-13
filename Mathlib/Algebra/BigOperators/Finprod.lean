@@ -1097,7 +1097,7 @@ lemma finprod_mem_powerset_sdiff_elem {f : Set α → M} {s : Set α} {a : α} (
     * ∏ᶠ t ∈ 𝒫 (s \ {a}), f (insert a t) := by
   nth_rw 1 2 [← Set.insert_sdiff_self_of_mem has] -- second appearance hidden by notation
   exact finprod_mem_powerset_insert (hs.subset Set.sdiff_subset)
-    (notMem_sdiff_of_mem (Set.mem_singleton a))
+    (notMem_sdiff_of_mem (mem_singleton_self a))
 
 @[deprecated (since := "2026-06-03")]
 alias finprod_mem_powerset_diff_elem := finprod_mem_powerset_sdiff_elem

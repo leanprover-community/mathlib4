@@ -686,7 +686,7 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
   simp_rw [Set.indicator_const_preimage_eq_union]
   apply hs _ fun i _hi ↦ ?_
   have hsi : MeasurableSet[generateFrom {s i}] (s i) :=
-    measurableSet_generateFrom (Set.mem_singleton _)
+    measurableSet_generateFrom (mem_singleton_self _)
   refine
     MeasurableSet.union (MeasurableSet.ite' (fun _ => hsi) fun _ => ?_)
       (MeasurableSet.ite' (fun _ => hsi.compl) fun _ => ?_)

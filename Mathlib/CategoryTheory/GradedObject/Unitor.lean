@@ -84,7 +84,7 @@ noncomputable def mapBifunctorLeftUnitorCofanIsColimit (j : J) :
       rintro ⟨⟨i, j'⟩, h⟩
       by_cases hi : i = 0
       · subst hi
-        simp only [Set.mem_preimage, hp, Set.mem_singleton_iff] at h
+        simp only [Set.mem_preimage, hp, Set.mem_singleton] at h
         subst h
         simp
       · apply IsInitial.hom_ext
@@ -201,7 +201,7 @@ noncomputable def mapBifunctorRightUnitorCofanIsColimit (j : J) :
       rintro ⟨⟨j', i⟩, h⟩
       by_cases hi : i = 0
       · subst hi
-        simp only [Set.mem_preimage, hp, Set.mem_singleton_iff] at h
+        simp only [Set.mem_preimage, hp, Set.mem_singleton] at h
         subst h
         rw [mapBifunctorRightUnitorCofan_inj, assoc, Iso.hom_inv_id_app_assoc,
           ← Functor.map_comp_assoc, Iso.hom_inv_id, Functor.map_id, id_comp]

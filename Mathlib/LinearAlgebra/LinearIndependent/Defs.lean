@@ -519,7 +519,7 @@ theorem LinearIndependent.eq_zero_of_smul_mem_span (hv : LinearIndependent R v) 
   rcases ha with ⟨l, hl, e⟩
   rw [linearIndependent_iffₛ.1 hv l (Finsupp.single i a) (by simp [e])] at hl
   by_contra hn
-  exact (notMem_of_mem_sdiff (hl <| by simp [hn])) (mem_singleton _)
+  exact (notMem_of_mem_sdiff (hl <| by simp [hn])) (mem_singleton_self _)
 
 nonrec lemma LinearIndepOn.eq_zero_of_smul_mem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) (a : R)
     (ha : a • v i ∈ span R (v '' (s \ {i}))) : a = 0 :=

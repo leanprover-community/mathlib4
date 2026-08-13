@@ -979,7 +979,7 @@ theorem mk_eq_two_iff : #α = 2 ↔ ∃ x y : α, x ≠ y ∧ ({x, y} : Set α) 
 theorem mk_eq_two_iff' (x : α) : #α = 2 ↔ ∃! y, y ≠ x := by
   rw [mk_eq_two_iff]; constructor
   · rintro ⟨a, b, hne, h⟩
-    simp only [eq_univ_iff_forall, mem_insert_iff, mem_singleton_iff] at h
+    simp only [eq_univ_iff_forall, mem_insert_iff, mem_singleton] at h
     rcases h x with (rfl | rfl)
     exacts [⟨b, hne.symm, fun z => (h z).resolve_left⟩, ⟨a, hne, fun z => (h z).resolve_right⟩]
   · rintro ⟨y, hne, hy⟩

@@ -301,7 +301,7 @@ theorem sSupIndep_pair {a b : α} (hab : a ≠ b) :
     sSupIndep ({a, b} : Set α) ↔ Disjoint a b := by
   constructor
   · intro h
-    exact h.pairwiseDisjoint (mem_insert _ _) (mem_insert_of_mem _ (mem_singleton _)) hab
+    exact h.pairwiseDisjoint (mem_insert _ _) (mem_insert_of_mem _ (mem_singleton_self _)) hab
   · rintro h c ((rfl : c = a) | (rfl : c = b))
     · convert! h using 1
       simp [hab, sSup_singleton]
@@ -314,7 +314,7 @@ subset of the rest. -/
 theorem sSupIndep.disjoint_sSup {x : α} {y : Set α} (hx : x ∈ s) (hy : y ⊆ s) (hxy : x ∉ y) :
     Disjoint x (sSup y) := by
   have := (hs.mono <| insert_subset_iff.mpr ⟨hx, hy⟩) (mem_insert x _)
-  rw [insert_sdiff_of_mem _ (mem_singleton _), sdiff_singleton_eq_self hxy] at this
+  rw [insert_sdiff_of_mem _ (mem_singleton_self _), sdiff_singleton_eq_self hxy] at this
   exact this
 
 /-- An independent indexed family of elements in a complete lattice is one in which every element

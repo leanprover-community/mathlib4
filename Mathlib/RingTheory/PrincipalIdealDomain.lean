@@ -93,7 +93,7 @@ theorem _root_.Ideal.span_singleton_generator (I : Ideal R) [I.IsPrincipal] :
 
 @[simp]
 theorem generator_mem (S : Submodule R M) [S.IsPrincipal] : generator S ∈ S := by
-  have : generator S ∈ span R {generator S} := subset_span (mem_singleton _)
+  have : generator S ∈ span R {generator S} := subset_span (mem_singleton_self _)
   convert! this
   exact span_singleton_generator S |>.symm
 

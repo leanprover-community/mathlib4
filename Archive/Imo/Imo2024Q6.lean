@@ -145,7 +145,7 @@ lemma Aquaesulian.card_le_two : #(Set.range (fun x ↦ f x + f (-x))) ≤ 2 := b
     intro y hy
     rcases hs y hy with ⟨t, ht⟩
     simp only [Finset.coe_insert, Finset.coe_singleton, Set.mem_image, Set.mem_insert_iff,
-               Set.mem_singleton_iff, exists_eq_or_imp, neg_zero, exists_eq_left, h.apply_zero,
+               Set.mem_singleton, exists_eq_or_imp, neg_zero, exists_eq_left, h.apply_zero,
                add_zero]
     by_cases h0 : y = 0
     · simp [h0]
@@ -226,7 +226,7 @@ lemma floor_fExample (x : ℚ) :
 lemma card_range_fExample : #(Set.range (fun x ↦ fExample x + fExample (-x))) = 2 := by
   have h : Set.range (fun x ↦ fExample x + fExample (-x)) = {0, -2} := by
     ext x
-    simp only [Set.mem_range, Set.mem_insert_iff, Set.mem_singleton_iff]
+    simp only [Set.mem_range, Set.mem_insert_iff, Set.mem_singleton]
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · rcases h with ⟨y, rfl⟩
       rw [← Int.floor_add_fract (fExample y), ← Int.floor_add_fract (fExample (-y))]

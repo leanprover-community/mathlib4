@@ -177,7 +177,7 @@ theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s �
       inter_mem hx hy
 
 @[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
-  le_antisymm (fun _t ht ↦ mem_of_superset (mem_generate_of_mem <| mem_singleton _) ht) <|
+  le_antisymm (fun _t ht ↦ mem_of_superset (mem_generate_of_mem <| mem_singleton_self _) ht) <|
     le_generate_iff.2 <| singleton_subset_iff.2 Subset.rfl
 
 /-- `mkOfClosure s hs` constructs a filter on `α` whose elements set is exactly

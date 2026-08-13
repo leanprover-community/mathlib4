@@ -91,11 +91,11 @@ theorem lowerPolar_empty : lowerPolar r ∅ = univ :=
 
 @[simp]
 theorem mem_upperPolar_singleton : b ∈ upperPolar r {a} ↔ r a b := by
-  simp_rw [mem_upperPolar_iff, mem_singleton_iff, forall_eq]
+  simp_rw [mem_upperPolar_iff, mem_singleton, forall_eq]
 
 @[simp]
 theorem mem_lowerPolar_singleton : a ∈ lowerPolar r {b} ↔ r a b := by
-  simp_rw [mem_lowerPolar_iff, mem_singleton_iff, forall_eq]
+  simp_rw [mem_lowerPolar_iff, mem_singleton, forall_eq]
 
 @[simp]
 theorem upperPolar_union (s₁ s₂ : Set α) :

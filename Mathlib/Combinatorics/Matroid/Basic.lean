@@ -647,8 +647,8 @@ theorem IsBase.mem_of_insert_indep (hB : M.IsBase B) (heB : M.Indep (insert e B)
 /-- If the difference of two IsBases is a singleton, then they differ by an insertion/removal -/
 theorem IsBase.eq_exchange_of_sdiff_eq_singleton (hB : M.IsBase B) (hB' : M.IsBase B')
     (h : B \ B' = {e}) : ∃ f ∈ B' \ B, B' = (insert f B) \ {e} := by
-  obtain ⟨f, hf, hb⟩ := hB.exchange hB' (h.symm.subset (mem_singleton e))
-  have hne : f ≠ e := by rintro rfl; exact hf.2 (h.symm.subset (mem_singleton f)).1
+  obtain ⟨f, hf, hb⟩ := hB.exchange hB' (h.symm.subset (mem_singleton_self e))
+  have hne : f ≠ e := by rintro rfl; exact hf.2 (h.symm.subset (mem_singleton_self f)).1
   rw [insert_sdiff_singleton_comm hne] at hb
   refine ⟨f, hf, (hb.eq_of_subset_isBase hB' ?_).symm⟩
   rw [sdiff_subset_iff, insert_subset_iff, union_comm, ← sdiff_subset_iff, h,

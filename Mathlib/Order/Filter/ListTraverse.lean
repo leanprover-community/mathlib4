@@ -31,7 +31,7 @@ theorem sequence_mono : ∀ as bs : List (Filter α), Forall₂ (· ≤ ·) as b
 theorem mem_traverse :
     ∀ (fs : List β) (us : List γ),
       Forall₂ (fun b c => s c ∈ f b) fs us → traverse s us ∈ traverse f fs
-  | [], [], Forall₂.nil => mem_pure.2 <| mem_singleton _
+  | [], [], Forall₂.nil => mem_pure.2 <| mem_singleton_self _
   | _::fs, _::us, Forall₂.cons h hs => seq_mem_seq (image_mem_map h) (mem_traverse fs us hs)
 
 -- TODO: add a `Filter.HasBasis` statement

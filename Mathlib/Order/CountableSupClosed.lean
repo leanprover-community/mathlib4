@@ -87,12 +87,12 @@ protected lemma CountableSupClosed.singleton [PartialOrder α] {x : α} :
   isLUB_mem s hs_subset hs_ne _ y hy := by
     have h_eq : s = {x} := by
       ext y
-      simp_all only [subset_singleton_iff, mem_singleton_iff]
+      simp_all only [subset_singleton_iff, mem_singleton]
       refine ⟨hs_subset y, ?_⟩
       rintro rfl
       obtain ⟨z, hzs⟩ := hs_ne
       rwa [hs_subset z hzs] at hzs
-    simp_all only [subset_refl, singleton_nonempty, countable_singleton, mem_singleton_iff]
+    simp_all only [subset_refl, singleton_nonempty, countable_singleton, mem_singleton]
     exact IsLUB.unique hy isLUB_singleton
 
 @[to_dual (attr := simp)]

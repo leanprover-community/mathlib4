@@ -197,10 +197,10 @@ lemma differentiableAt_negMulLog_iff {x : ℝ} : DifferentiableAt ℝ negMulLog 
     exact not_DifferentiableAt_log_mul_zero h
   · intro hx
     have : x ∈ ({0} : Set ℝ)ᶜ := by
-      simp_all only [ne_eq, Set.mem_compl_iff, Set.mem_singleton_iff, not_false_eq_true]
+      simp_all only [ne_eq, Set.mem_compl_iff, Set.mem_singleton, not_false_eq_true]
     have := differentiableOn_negMulLog x this
     apply DifferentiableWithinAt.differentiableAt (s := {0}ᶜ) <;>
-    simp_all only [ne_eq, Set.mem_compl_iff, Set.mem_singleton_iff, not_false_eq_true,
+    simp_all only [ne_eq, Set.mem_compl_iff, Set.mem_singleton, not_false_eq_true,
       compl_singleton_mem_nhds_iff]
 
 @[fun_prop] alias ⟨_, differentiableAt_negMulLog⟩ := differentiableAt_negMulLog_iff

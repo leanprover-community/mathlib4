@@ -301,7 +301,7 @@ lemma fundCircuit_restrict {R : Set α} (hIR : I ⊆ R) (heR : e ∈ R) (hR : R 
   refine closure_subset_closure_of_subset_closure ?_
   rw [restrict_closure_eq _ (hJI.trans hIR) hR] at heJ
   simp only [subset_inter_iff, inter_subset_right, and_true] at heJ
-  exact subset_trans (by simpa [M.mem_closure_of_mem' (mem_singleton e) (hR heR)]) heJ
+  exact subset_trans (by simpa [M.mem_closure_of_mem' (mem_singleton_self e) (hR heR)]) heJ
 
 @[simp] lemma fundCircuit_restrict_univ (M : Matroid α) :
     (M ↾ univ).fundCircuit e I = M.fundCircuit e I := by
@@ -466,7 +466,7 @@ lemma IsCircuit.strong_multi_elimination (hC₀ : M.IsCircuit C₀) (x : ι → 
     exact h_mem_C₀ i
   · rintro ⟨i, hi, rfl⟩
     exact hzC _ (h_mem i)
-  simp only [mem_sdiff, mem_singleton_iff, not_and, not_not]
+  simp only [mem_sdiff, mem_singleton, not_and, not_not]
   exact fun i hzi ↦ (hzC i hzi).elim
 
 /-- A version of `Circuit.strong_multi_elimination` where the collection of circuits is

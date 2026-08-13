@@ -487,7 +487,7 @@ end
 
 @[to_dual (attr := simp)]
 theorem isGreatest_singleton : IsGreatest {a} a :=
-  ⟨mem_singleton a, fun _ hx => le_of_eq <| eq_of_mem_singleton hx⟩
+  ⟨mem_singleton_self a, fun _ hx => le_of_eq <| eq_of_mem_singleton hx⟩
 
 @[to_dual (attr := simp)]
 theorem isLUB_singleton : IsLUB {a} a :=
@@ -874,7 +874,7 @@ def SemilatticeSup.ofIsLUB [PartialOrder α] (sup : α → α → α)
     SemilatticeSup α where
   sup := sup
   le_sup_left a b := (isLUB_pair a b).1 (mem_insert _ _)
-  le_sup_right a b := (isLUB_pair a b).1 (mem_insert_of_mem _ (mem_singleton _))
+  le_sup_right a b := (isLUB_pair a b).1 (mem_insert_of_mem _ (mem_singleton_self _))
   sup_le a b _ hac hbc := (isLUB_pair a b).2 (forall_insert_of_forall (forall_eq.mpr hbc) hac)
 
 /-- An alternative constructor for `Lattice` using `IsLUB` and `IsGLB`. -/

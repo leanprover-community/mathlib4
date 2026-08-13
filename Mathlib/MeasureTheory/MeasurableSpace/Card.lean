@@ -60,7 +60,7 @@ theorem self_subset_generateMeasurableRec (s : Set (Set α)) (i : Ordinal) :
 theorem empty_mem_generateMeasurableRec (s : Set (Set α)) (i : Ordinal) :
     ∅ ∈ generateMeasurableRec s i := by
   unfold generateMeasurableRec
-  exact mem_union_left _ (mem_union_left _ (mem_union_right _ (mem_singleton ∅)))
+  exact mem_union_left _ (mem_union_left _ (mem_union_right _ (mem_singleton_self ∅)))
 
 theorem compl_mem_generateMeasurableRec {s : Set (Set α)} {i j : Ordinal} (h : j < i) {t : Set α}
     (ht : t ∈ generateMeasurableRec s j) : tᶜ ∈ generateMeasurableRec s i := by

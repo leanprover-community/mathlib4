@@ -80,7 +80,7 @@ instance : IrreducibleSpace (X.irreducibleComponent Z hZ) :=
 include hZ in
 theorem irreducibleComponentOpen_eq_top [IrreducibleSpace X] :
     irreducibleComponentOpen X Z = ⊤ := by
-  rw [irreducibleComponents_eq_singleton, Set.mem_singleton_iff] at hZ
+  rw [irreducibleComponents_eq_singleton, Set.mem_singleton] at hZ
   simp [irreducibleComponentOpen, irreducibleComponents_eq_singleton, hZ]
 
 set_option backward.isDefEq.respectTransparency false in

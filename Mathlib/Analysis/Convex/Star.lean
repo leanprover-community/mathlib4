@@ -94,7 +94,7 @@ theorem starConvex_iff_pointwise_add_subset :
     StarConvex 𝕜 x s ↔ ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → a • {x} + b • s ⊆ s := by
   refine
     ⟨?_, fun h y hy a b ha hb hab =>
-      h ha hb hab (add_mem_add (smul_mem_smul_set <| mem_singleton _) ⟨_, hy, rfl⟩)⟩
+      h ha hb hab (add_mem_add (smul_mem_smul_set <| mem_singleton_self _) ⟨_, hy, rfl⟩)⟩
   rintro hA a b ha hb hab w ⟨au, ⟨u, rfl : u = x, rfl⟩, bv, ⟨v, hv, rfl⟩, rfl⟩
   exact hA hv ha hb hab
 

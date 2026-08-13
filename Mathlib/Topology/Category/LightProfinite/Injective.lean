@@ -84,7 +84,7 @@ lemma exists_lift_of_finite_of_injective_of_surjective {X Y S T : Type*}
   -- each `Z i` is contained in `D i`
   have Z_subset_D i : Z i ⊆ D i := by
     intro z hz
-    rw [mem_preimage, mem_singleton_iff]
+    rw [mem_preimage, mem_singleton]
     obtain ⟨x, _, _⟩ := (mem_image _ _ _).mp hz
     have h_comm' : g' (f x) = f' (g x) := congr_fun h_comm x
     simp_all

@@ -436,7 +436,7 @@ instance : SemilatticeInf (Finpartition a) :=
 def restrict (P : Finpartition a) (hb : b ≤ a) : Finpartition b where
   parts := (P.parts.image (· ⊓ b)).erase ⊥
   supIndep := supIndep_iff_pairwiseDisjoint.mpr fun x hx y hy hxy => by
-    simp only [coe_erase, coe_image, Set.mem_sdiff, Set.mem_image, Set.mem_singleton_iff] at hx hy
+    simp only [coe_erase, coe_image, Set.mem_sdiff, Set.mem_image, Set.mem_singleton] at hx hy
     obtain ⟨⟨px, hpx, rfl⟩, _⟩ := hx
     obtain ⟨⟨py, hpy, rfl⟩, _⟩ := hy
     simpa [Function.onFun, id_eq]

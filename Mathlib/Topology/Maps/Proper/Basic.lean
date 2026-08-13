@@ -312,7 +312,7 @@ theorem isProperMap_const_iff [T1Space Y] (y : Y) :
     exact ⟨by simpa using h y⟩
   · intro H
     refine ⟨continuous_const, isClosedMap_const, fun y' ↦ ?_⟩
-    simp [preimage_const, mem_singleton_iff, apply_ite, isCompact_univ]
+    simp [preimage_const, mem_singleton, apply_ite, isCompact_univ]
 
 theorem isProperMap_const [h : CompactSpace X] [T1Space Y] (y : Y) :
     IsProperMap (fun _ : X ↦ y) :=

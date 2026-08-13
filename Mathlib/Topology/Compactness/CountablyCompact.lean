@@ -242,7 +242,7 @@ instance (priority := 50) [SequentialSpace E] [CountablyCompactSpace E] :
   -- being a cluster point.
   obtain ⟨a, ha⟩ : ∃ a ∈ A, MapClusterPt a atTop x := by
     refine isCountablyCompact_iff_seq_clusterPt.1 this _ (.of_forall fun n => ?_)
-    exact mem_iUnion_of_mem n <| subset_closure <| mem_singleton (x n)
+    exact mem_iUnion_of_mem n <| subset_closure <| mem_singleton_self (x n)
   obtain ⟨k, hk⟩ : ∃ k, ∀ n > k, a ∉ closure {x n} := by
     by_contra!
     obtain ⟨φ, hφ1, hφ2⟩ := Nat.exists_strictMono_subsequence this

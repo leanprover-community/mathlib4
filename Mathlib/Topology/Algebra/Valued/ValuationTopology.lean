@@ -196,7 +196,7 @@ section Discrete
 
 lemma discreteTopology_of_forall_map_eq_one (h : ∀ x : R, x ≠ 0 → v x = 1) :
     DiscreteTopology R := by
-  simp only [discreteTopology_iff_isOpen_singleton_zero, isOpen_iff_mem_nhds, mem_singleton_iff,
+  simp only [discreteTopology_iff_isOpen_singleton_zero, isOpen_iff_mem_nhds, mem_singleton,
     forall_eq, mem_nhds_zero, subset_singleton_iff, mem_ofPred_eq]
   use 1
   contrapose! h

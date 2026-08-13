@@ -117,7 +117,7 @@ def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
     μ.FiniteSpanningSetsIn (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) where
   set n := Ioo (-(n + 1)) (n + 1)
   set_mem n := by
-    simp only [mem_iUnion, mem_singleton_iff]
+    simp only [mem_iUnion, mem_singleton]
     refine ⟨-(n + 1 : ℕ), n + 1, ?_, by simp⟩
     -- TODO: norm_cast fails here?
     push_cast
@@ -131,7 +131,7 @@ def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
 theorem measure_ext_Ioo_rat {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ]
     (h : ∀ a b : ℚ, μ (Ioo a b) = ν (Ioo a b)) : μ = ν :=
   (finiteSpanningSetsInIooRat μ).ext borel_eq_generateFrom_Ioo_rat isPiSystem_Ioo_rat <| by
-    simp only [mem_iUnion, mem_singleton_iff]
+    simp only [mem_iUnion, mem_singleton]
     rintro _ ⟨a, b, -, rfl⟩
     apply h
 

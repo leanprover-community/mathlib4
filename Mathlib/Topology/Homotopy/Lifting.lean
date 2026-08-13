@@ -73,13 +73,13 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
     (fun n ⟨N, haN, N_open, g', cont_g', g'_lifts, g'_0, g'_a⟩ ↦ ?_)
   · -- the n = 0 case is covered by the hypothesis cont_0.
     refine (cont_0.comp continuous_snd).continuousOn.congr (fun ta ⟨ht, _⟩ ↦ ?_)
-    rw [t_0, Set.Icc_self, Set.mem_singleton_iff] at ht; rw [← ta.eta, ht]; rfl
+    rw [t_0, Set.Icc_self, Set.mem_singleton] at ht; rw [← ta.eta, ht]; rfl
   /- Since g ([tₙ, tₙ₊₁] × {a}) is contained in the domain of some local homeomorphism `q e` and
     g lifts f, f ([tₙ, tₙ₊₁] × {a}) is contained in the codomain (`target`) of `q e`. -/
   obtain ⟨e, h_sub⟩ := t_sub n
   have : Set.Icc (t n) (t (n + 1)) ×ˢ {a} ⊆ f ⁻¹' (q e).target := by
     rintro ⟨t0, a'⟩ ⟨ht, ha⟩
-    rw [Set.mem_singleton_iff] at ha; dsimp only at ha
+    rw [Set.mem_singleton] at ha; dsimp only at ha
     rw [← g_lifts, hpq e, ha]
     exact (q e).map_source (h_sub ht)
   /- Using compactness of [tₙ, tₙ₊₁], we can find a neighborhood v of a such that
@@ -232,7 +232,7 @@ theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
   induction n with
   | zero =>
     refine ⟨fun _ ↦ e, continuous_const.continuousOn, fun t ht ↦ ?_, rfl⟩
-    rw [t_0, Set.Icc_self, Set.mem_singleton_iff] at ht; subst ht; exact γ_0.symm
+    rw [t_0, Set.Icc_self, Set.mem_singleton] at ht; subst ht; exact γ_0.symm
   | succ n ih => ?_
   obtain ⟨Γ, cont, eqOn, Γ_0⟩ := ih
   obtain ⟨x, t_sub⟩ := t_sub n

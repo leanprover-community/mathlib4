@@ -185,7 +185,7 @@ attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 lemma inter_orthRadius_eq_singleton_of_dist_eq_radius {s : Sphere P} {p : P}
     (hp : dist p s.center = s.radius) : (s ∩ s.orthRadius p : Set P) = {p} := by
   ext p'
-  simp only [Set.mem_inter_iff, Metric.mem_sphere, mem_coe', SetLike.mem_coe, Set.mem_singleton_iff]
+  simp only [Set.mem_inter_iff, Metric.mem_sphere, mem_coe', SetLike.mem_coe, Set.mem_singleton]
   constructor
   · rintro ⟨hp's, hp'i⟩
     have h' := dist_sq_eq_of_mem_orthRadius hp'i
@@ -198,7 +198,7 @@ lemma inter_orthRadius_eq_singleton_iff {s : Sphere P} {p q : P} :
     (s ∩ s.orthRadius p : Set P) = {q} ↔ q = p ∧ dist p s.center = s.radius := by
   constructor
   · intro h
-    have hq : q ∈ (s ∩ s.orthRadius p : Set P) := h ▸ Set.mem_singleton _
+    have hq : q ∈ (s ∩ s.orthRadius p : Set P) := h ▸ Set.mem_singleton_self _
     have h' (q' : P) : q' ∈ (s ∩ s.orthRadius p : Set P) ↔ q' = q := by simp [h]
     have hr : 0 ≤ s.radius := radius_nonneg_of_mem hq.1
     simp_rw [mem_inter_orthRadius_iff_vsub_mem_and_norm_sq hr] at h'
@@ -324,7 +324,7 @@ lemma inter_orthRadius_eq_of_dist_le_radius_of_norm_eq_one [hf2 : Fact (Module.f
     exact le_abs.2 (.inl hp)
   ext p'
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← vsub_vadd p' p, Set.mem_insert_iff, Set.mem_singleton_iff, vadd_right_cancel_iff,
+  · rw [← vsub_vadd p' p, Set.mem_insert_iff, Set.mem_singleton, vadd_right_cancel_iff,
       vadd_right_cancel_iff]
     have h' : p' -ᵥ p ∈ (ℝ ∙ (p -ᵥ s.center))ᗮ := by
       rw [← direction_orthRadius, vsub_right_mem_direction_iff_mem (s.self_mem_orthRadius p)]

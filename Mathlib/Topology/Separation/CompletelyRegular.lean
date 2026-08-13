@@ -104,7 +104,7 @@ instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] [R0Space X] :
   let ⟨⟨f, cf⟩, hfx, hfK, hficc⟩ := exists_continuous_zero_one_of_isClosed cx hK d
   let g : X → I := fun x => ⟨f x, hficc x⟩
   have cg : Continuous g := cf.subtype_mk hficc
-  have hgx : g x = 0 := Subtype.ext (hfx (subset_closure (mem_singleton x)))
+  have hgx : g x = 0 := Subtype.ext (hfx (subset_closure (mem_singleton_self x)))
   have hgK : EqOn g 1 K := fun k hk => Subtype.ext (hfK hk)
   exact ⟨g, cg, hgx, hgK⟩
 
@@ -181,7 +181,7 @@ lemma isInducing_stoneCechUnit [CompletelyRegularSpace X] :
     rw [← compl_subset_comm, ← preimage_compl, ← stoneCechExtend_extends hf, preimage_comp] at hfU
     refine ⟨stoneCechExtend hf ⁻¹' {1}ᶜ, ?_,
       isOpen_compl_singleton.preimage (continuous_stoneCechExtend hf), hfU⟩
-    rw [mem_preimage, stoneCechExtend_stoneCechUnit, efx, mem_compl_iff, mem_singleton_iff]
+    rw [mem_preimage, stoneCechExtend_stoneCechUnit, efx, mem_compl_iff, mem_singleton]
     simp
 
 lemma isDenseInducing_stoneCechUnit [CompletelyRegularSpace X] :

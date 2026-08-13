@@ -402,7 +402,7 @@ theorem indepSets_singleton_iff {s t : Set Ω} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} :
     IndepSets {s} {t} κ μ ↔ ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t :=
   ⟨fun h ↦ h s t rfl rfl,
-   fun h s1 t1 hs1 ht1 ↦ by rwa [Set.mem_singleton_iff.mp hs1, Set.mem_singleton_iff.mp ht1]⟩
+   fun h s1 t1 hs1 ht1 ↦ by rwa [Set.mem_singleton.mp hs1, Set.mem_singleton.mp ht1]⟩
 
 end Indep
 
@@ -596,8 +596,8 @@ theorem iIndepSet.indep_generateFrom_of_disjoint {s : ι → Set Ω}
     IndepSets.indep'
       (fun t ht => generateFrom_piiUnionInter_le _ ?_ _ _ (measurableSet_generateFrom ht))
       (fun t ht => generateFrom_piiUnionInter_le _ ?_ _ _ (measurableSet_generateFrom ht)) ?_ ?_ ?_
-  · exact fun k => generateFrom_le fun t ht => (Set.mem_singleton_iff.1 ht).symm ▸ hsm k
-  · exact fun k => generateFrom_le fun t ht => (Set.mem_singleton_iff.1 ht).symm ▸ hsm k
+  · exact fun k => generateFrom_le fun t ht => (Set.mem_singleton.1 ht).symm ▸ hsm k
+  · exact fun k => generateFrom_le fun t ht => (Set.mem_singleton.1 ht).symm ▸ hsm k
   · exact isPiSystem_piiUnionInter _ (fun k => IsPiSystem.singleton _) _
   · exact isPiSystem_piiUnionInter _ (fun k => IsPiSystem.singleton _) _
   · exact indepSets_piiUnionInter_of_disjoint (iIndep.iIndepSets (fun n => rfl) (hs.congr η_eq)) hST
@@ -647,7 +647,7 @@ theorem iIndepSet.indep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
   convert!
     iIndepSet.indep_generateFrom_of_disjoint hsm hs { i } {j | j < i}
       (Set.disjoint_singleton_left.mpr (lt_irrefl _)) using 1
-  simp only [Set.mem_singleton_iff, exists_eq_left, Set.ofPred_eq_eq_singleton']
+  simp only [Set.mem_singleton, exists_eq_left, Set.ofPred_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) {k : ι} (hk : i < k) :
@@ -655,7 +655,7 @@ theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
   convert!
     iIndepSet.indep_generateFrom_of_disjoint hsm hs { k } {j | j ≤ i}
       (Set.disjoint_singleton_left.mpr hk.not_ge) using 1
-  simp only [Set.mem_singleton_iff, exists_eq_left, Set.ofPred_eq_eq_singleton']
+  simp only [Set.mem_singleton, exists_eq_left, Set.ofPred_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le_nat {s : ℕ → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (n : ℕ) :
@@ -787,8 +787,8 @@ theorem indepSet_iff_indepSets_singleton {m0 : MeasurableSpace Ω} (hs_meas : Me
     IndepSet s t κ μ ↔ IndepSets {s} {t} κ μ :=
   ⟨Indep.indepSets, fun h =>
     IndepSets.indep
-      (generateFrom_le fun u hu => by rwa [Set.mem_singleton_iff.mp hu])
-      (generateFrom_le fun u hu => by rwa [Set.mem_singleton_iff.mp hu])
+      (generateFrom_le fun u hu => by rwa [Set.mem_singleton.mp hu])
+      (generateFrom_le fun u hu => by rwa [Set.mem_singleton.mp hu])
       (IsPiSystem.singleton s) (IsPiSystem.singleton t) rfl rfl h⟩
 
 theorem indepSet_iff_measure_inter_eq_mul {_m0 : MeasurableSpace Ω} (hs_meas : MeasurableSet s)
@@ -829,8 +829,8 @@ theorem indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {_m0 : Measur
     (κ : Kernel α Ω) (μ : Measure α) :
     Indep m₁ m₂ κ μ ↔ ∀ s t, MeasurableSet[m₁] s → MeasurableSet[m₂] t → IndepSet s t κ μ :=
   ⟨fun h => fun _s _t hs ht => h.indepSet_of_measurableSet hs ht, fun h s t hs ht =>
-    h s t hs ht s t (measurableSet_generateFrom (Set.mem_singleton s))
-      (measurableSet_generateFrom (Set.mem_singleton t))⟩
+    h s t hs ht s t (measurableSet_generateFrom (Set.mem_singleton_self s))
+      (measurableSet_generateFrom (Set.mem_singleton_self t))⟩
 
 end IndepSet
 

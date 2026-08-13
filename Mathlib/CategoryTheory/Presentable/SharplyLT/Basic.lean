@@ -94,7 +94,7 @@ public lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalDirectedPose
   refine ⟨_, ⟨j'', rfl⟩, fun b hb ↦ ?_⟩
   have : y' b ≤ j'' := (leOfHom (IsCardinalFiltered.toMax (fun b ↦ y' b.val) hB ⟨b, hb⟩) :)
   refine (p.ι.app j').hom.hom.monotone this ?_
-  convert Set.mem_singleton b
+  convert Set.mem_singleton_self b
   exact Subtype.ext_iff.1 (hy' b)
 
 section

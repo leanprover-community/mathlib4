@@ -144,7 +144,7 @@ positive coefficients belongs to the corresponding open ball. -/
 theorem combo_mem_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ closedBall z r) (hne : x ≠ y)
     (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) : a • x + b • y ∈ ball z r := by
   rcases eq_or_ne r 0 with (rfl | hr)
-  · rw [closedBall_zero, mem_singleton_iff] at hx hy
+  · rw [closedBall_zero, mem_singleton] at hx hy
     exact (hne (hx.trans hy.symm)).elim
   · simp only [← interior_closedBall _ hr] at hx hy ⊢
     exact strictConvex_closedBall ℝ z r hx hy hne ha hb hab

@@ -387,7 +387,7 @@ theorem CovBy.Icc_eq (h : a ⋖ b) : Icc a b = {a, b} :=
 @[to_dual]
 theorem Set.Ico_eq_singleton_iff : Ico a b = {c} ↔ a = c ∧ a ⋖ b where
   mp h := by
-    simp_rw [Set.ext_iff, mem_Ico, mem_singleton_iff] at h
+    simp_rw [Set.ext_iff, mem_Ico, mem_singleton] at h
     have ⟨hac, hcb⟩ := (h c).mpr rfl
     obtain rfl := (h a).mp ⟨le_refl a, hac.trans_lt hcb⟩
     exact ⟨rfl, ⟨hcb, fun d hcd hdb ↦ hcd.ne ((h d).mp ⟨hcd.le, hdb⟩).symm⟩⟩
@@ -425,7 +425,7 @@ theorem CovBy.Ioo_eq_Ico (h : a ⋖ b) (c : α) : Ioo a c = Ico b c :=
 @[to_dual none]
 theorem Set.Ioo_eq_singleton_iff : Ioo a b = {c} ↔ a ⋖ c ∧ c ⋖ b where
   mp h := by
-    simp_rw [Set.ext_iff, mem_Ioo, mem_singleton_iff] at h
+    simp_rw [Set.ext_iff, mem_Ioo, mem_singleton] at h
     have ⟨hac, hcb⟩ := (h c).mpr rfl
     exact ⟨⟨hac, fun d had hdc ↦ hdc.ne ((h d).mp ⟨had, hdc.trans hcb⟩)⟩,
       ⟨hcb, fun d hcd hdb ↦ hcd.ne ((h d).mp ⟨hac.trans hcd, hdb⟩).symm⟩⟩
@@ -435,7 +435,7 @@ theorem Set.Ioo_eq_singleton_iff : Ioo a b = {c} ↔ a ⋖ c ∧ c ⋖ b where
 @[to_dual]
 theorem Set.Ioi_eq_singleton_iff : Ioi a = {b} ↔ IsTop b ∧ a ⋖ b where
   mp h := by
-    simp_rw [Set.ext_iff, mem_Ioi, mem_singleton_iff] at h
+    simp_rw [Set.ext_iff, mem_Ioi, mem_singleton] at h
     have hb : a < b := (h b).mpr rfl
     exact ⟨fun c ↦ not_lt.mp fun hc ↦ hc.ne.symm ((h c).mp (hb.trans hc)),
       ⟨hb, fun c hac hcb ↦ hcb.ne ((h c).mp hac)⟩⟩

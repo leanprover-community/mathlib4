@@ -149,7 +149,7 @@ def preorderTheory : L.Theory :=
   {leSymb.reflexive, leSymb.transitive}
 
 instance : Theory.IsUniversal L.preorderTheory := ⟨by
-  simp only [preorderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
+  simp only [preorderTheory, Set.mem_insert_iff, Set.mem_singleton, forall_eq_or_imp, forall_eq]
   exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_transitive⟩⟩
 
 /-- The theory of partial orders. -/

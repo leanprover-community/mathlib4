@@ -470,7 +470,7 @@ theorem map_fst_nhdsWithin (x : X × Y) : map Prod.fst (𝓝[Prod.snd ⁻¹' {x.
   rcases x with ⟨x, y⟩
   rw [mem_map, nhdsWithin, mem_inf_principal, mem_nhds_prod_iff] at hs
   rcases hs with ⟨u, hu, v, hv, H⟩
-  simp only [prod_subset_iff, mem_singleton_iff, mem_ofPred_eq, mem_preimage] at H
+  simp only [prod_subset_iff, mem_singleton, mem_ofPred_eq, mem_preimage] at H
   exact mem_of_superset hu fun z hz => H _ hz _ (mem_of_mem_nhds hv) rfl
 
 @[simp]
@@ -488,7 +488,7 @@ theorem map_snd_nhdsWithin (x : X × Y) : map Prod.snd (𝓝[Prod.fst ⁻¹' {x.
   rcases x with ⟨x, y⟩
   rw [mem_map, nhdsWithin, mem_inf_principal, mem_nhds_prod_iff] at hs
   rcases hs with ⟨u, hu, v, hv, H⟩
-  simp only [prod_subset_iff, mem_singleton_iff, mem_ofPred_eq, mem_preimage] at H
+  simp only [prod_subset_iff, mem_singleton, mem_ofPred_eq, mem_preimage] at H
   exact mem_of_superset hv fun z hz => H _ (mem_of_mem_nhds hu) _ hz rfl
 
 @[simp]

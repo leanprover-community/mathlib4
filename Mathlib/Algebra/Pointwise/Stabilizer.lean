@@ -114,7 +114,8 @@ lemma op_smul_set_stabilizer_subset (ha : a ∈ s) : (stabilizer G s : Set G) <�
 
 @[to_additive]
 lemma stabilizer_subset_div_right (ha : a ∈ s) : ↑(stabilizer G s) ⊆ s / {a} := fun b hb ↦
-  ⟨_, by rwa [← smul_eq_mul, mem_stabilizer_set.1 hb], _, mem_singleton _, mul_div_cancel_right _ _⟩
+  ⟨_, by rwa [← smul_eq_mul, mem_stabilizer_set.1 hb], _,
+    mem_singleton_self _, mul_div_cancel_right _ _⟩
 
 @[to_additive]
 lemma stabilizer_finite (hs₀ : s.Nonempty) (hs : s.Finite) : (stabilizer G s : Set G).Finite := by

@@ -149,7 +149,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton]
       constructor
       · simp_rw [hi default, Set.singleton_subset_iff]
-        exact ⟨⟨⟩, by simp only [Metric.sphere_zero, Set.mem_singleton_iff]⟩
+        exact ⟨⟨⟩, by simp only [Metric.sphere_zero, Set.mem_singleton]⟩
       · rintro ⟨cc, cr⟩
         rintro ⟨rfl, hdist⟩
         replace hdist : 0 = cr := by simpa using hdist

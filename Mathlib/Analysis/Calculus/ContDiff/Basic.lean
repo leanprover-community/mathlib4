@@ -398,7 +398,7 @@ theorem ContDiffWithinAt.comp_continuousLinearMap {x : G} (g : G →L[𝕜] E)
     obtain ⟨u, hu, p, hp, h'p⟩ := hf
     refine ⟨g ⁻¹' u, ?_, _, hp.compContinuousLinearMap g, ?_⟩
     · refine g.continuous.continuousWithinAt.tendsto_nhdsWithin ?_ hu
-      exact (mapsTo_singleton.2 <| mem_singleton _).union_union (mapsTo_preimage _ _)
+      exact (mapsTo_singleton.2 <| mem_singleton_self _).union_union (mapsTo_preimage _ _)
     · intro i
       change AnalyticOn 𝕜 (fun x ↦
         ContinuousMultilinearMap.compContinuousLinearMapL (fun _ ↦ g) (p (g x) i)) (⇑g ⁻¹' u)
@@ -410,7 +410,7 @@ theorem ContDiffWithinAt.comp_continuousLinearMap {x : G} (g : G →L[𝕜] E)
     rcases hf m hm with ⟨u, hu, p, hp⟩
     refine ⟨g ⁻¹' u, ?_, _, hp.compContinuousLinearMap g⟩
     refine g.continuous.continuousWithinAt.tendsto_nhdsWithin ?_ hu
-    exact (mapsTo_singleton.2 <| mem_singleton _).union_union (mapsTo_preimage _ _)
+    exact (mapsTo_singleton.2 <| mem_singleton_self _).union_union (mapsTo_preimage _ _)
 
 /-- Composition by continuous linear maps on the right preserves `C^n` functions on domains. -/
 theorem ContDiffOn.comp_continuousLinearMap (hf : ContDiffOn 𝕜 n f s) (g : G →L[𝕜] E) :

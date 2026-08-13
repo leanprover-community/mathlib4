@@ -155,7 +155,7 @@ theorem IsPreconnected.biUnion_of_reflTransGen {ι : Type*} {t : Set ι} {s : ι
       ∃ p, p ⊆ t ∧ i ∈ p ∧ j ∈ p ∧ IsPreconnected (⋃ j ∈ p, s j) := fun i hi j hj h => by
     induction h with
     | refl =>
-      refine ⟨{i}, singleton_subset_iff.mpr hi, mem_singleton i, mem_singleton i, ?_⟩
+      refine ⟨{i}, singleton_subset_iff.mpr hi, mem_singleton_self i, mem_singleton_self i, ?_⟩
       rw [biUnion_singleton]
       exact H i hi
     | @tail j k _ hjk ih =>
@@ -514,7 +514,7 @@ theorem connectedComponentIn_eq_empty {F : Set α} {x : α} (h : x ∉ F) :
   dite_eq_right h
 
 theorem mem_connectedComponent {x : α} : x ∈ connectedComponent x :=
-  mem_sUnion_of_mem (mem_singleton x) ⟨isPreconnected_singleton, mem_singleton x⟩
+  mem_sUnion_of_mem (mem_singleton_self x) ⟨isPreconnected_singleton, mem_singleton_self x⟩
 
 theorem mem_connectedComponentIn {x : α} {F : Set α} (hx : x ∈ F) :
     x ∈ connectedComponentIn F x := by

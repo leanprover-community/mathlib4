@@ -190,7 +190,7 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
     by_cases hj : j = i
     · rw [hj, mapDomain_apply (Function.injective_of_subsingleton _), single_eq_same]
     · rw [mapDomain_of_notMem_range, single_eq_of_ne hj]
-      simp [Set.range_const, Set.mem_singleton_iff, hj]
+      simp [Set.range_const, Set.mem_singleton, hj]
 
 variable [Finite σ]
 

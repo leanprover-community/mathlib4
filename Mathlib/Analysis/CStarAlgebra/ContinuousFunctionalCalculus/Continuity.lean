@@ -130,7 +130,7 @@ theorem ContinuousOn.cfc_fun [TopologicalSpace X] {f : X → R → R} {a : A} {s
     (hf : ∀ x ∈ s, ContinuousOn (f x) (spectrum R a) := by cfc_cont_tac) :
     ContinuousOn (fun x ↦ cfc (f x) a) s := by
   rw [ContinuousOn] at h_cont ⊢
-  simp only [ContinuousWithinAt, UniformOnFun.tendsto_iff_tendstoUniformlyOn, Set.mem_singleton_iff,
+  simp only [ContinuousWithinAt, UniformOnFun.tendsto_iff_tendstoUniformlyOn, Set.mem_singleton,
     Function.comp_def, toFun_ofFun, forall_eq] at h_cont
   refine fun x hx ↦ continuousWithinAt_cfc_fun (h_cont x hx) ?_
   filter_upwards [self_mem_nhdsWithin] with x hx
@@ -666,7 +666,7 @@ theorem ContinuousOn.cfcₙ_fun [TopologicalSpace X] {f : X → R → R} {a : A}
     (hf0 : ∀ x ∈ s, f x 0 = 0) :
     ContinuousOn (fun x ↦ cfcₙ (f x) a) s := by
   rw [ContinuousOn] at h_cont ⊢
-  simp only [ContinuousWithinAt, UniformOnFun.tendsto_iff_tendstoUniformlyOn, Set.mem_singleton_iff,
+  simp only [ContinuousWithinAt, UniformOnFun.tendsto_iff_tendstoUniformlyOn, Set.mem_singleton,
     Function.comp_def, toFun_ofFun, forall_eq] at h_cont
   refine fun x hx ↦ continuousWithinAt_cfcₙ_fun (h_cont x hx) ?_ ?_
   all_goals filter_upwards [self_mem_nhdsWithin] with x hx

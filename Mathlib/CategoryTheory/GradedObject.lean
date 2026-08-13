@@ -441,7 +441,7 @@ given cofans are. -/
 def cofanMapObjComp : X.CofanMapObjFun r k :=
   CofanMapObjFun.mk _ _ _ c'.pt (fun i hi =>
     (c (p i) (by rw [hpqr, hi])).inj ⟨i, rfl⟩ ≫ c'.inj (⟨p i, by
-      rw [Set.mem_preimage, Set.mem_singleton_iff, hpqr, hi]⟩))
+      rw [Set.mem_preimage, Set.mem_singleton, hpqr, hi]⟩))
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -458,7 +458,7 @@ def isColimitCofanMapObjComp :
     (fun s => Cofan.IsColimit.desc hc'
       (fun ⟨j, (hj : q j = k)⟩ => Cofan.IsColimit.desc (hc j hj)
         (fun ⟨i, (hi : p i = j)⟩ => s.inj ⟨i, by
-          simp only [Set.mem_preimage, Set.mem_singleton_iff, ← hpqr, hi, hj]⟩)))
+          simp only [Set.mem_preimage, Set.mem_singleton, ← hpqr, hi, hj]⟩)))
     (fun s ⟨i, (hi : r i = k)⟩ => by simp)
     (fun s m hm => by
       apply Cofan.IsColimit.hom_ext hc'

@@ -54,7 +54,7 @@ variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
 def ofStabilizer (a : α) : SubMulAction (stabilizer G a) α where
   carrier := {a}ᶜ
   smul_mem' g x := by
-    simp only [Set.mem_compl_iff, Set.mem_singleton_iff]
+    simp only [Set.mem_compl_iff, Set.mem_singleton]
     rw [not_imp_not, smul_eq_iff_eq_inv_smul]
     intro hgx
     apply symm

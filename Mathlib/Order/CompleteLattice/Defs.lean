@@ -175,7 +175,7 @@ def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
   le_inf a b c hab hac := by
     apply (isGLB_sInf _).2
     simp [*]
-  inf_le_right _ _ := (isGLB_sInf _).1 <| mem_insert_of_mem _ <| mem_singleton _
+  inf_le_right _ _ := (isGLB_sInf _).1 <| mem_insert_of_mem _ <| mem_singleton_self _
   inf_le_left _ _ := (isGLB_sInf _).1 <| mem_insert _ _
   sup_le a b c hac hbc := (isGLB_sInf _).1 <| by simp [*]
   le_sup_left _ _ := (isGLB_sInf _).2 fun _ => And.left
@@ -220,7 +220,7 @@ def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
   sup a b := sSup {a, b}
   sup_le a b c hac hbc := (isLUB_sSup _).2 (by simp [*])
   le_sup_left _ _ := (isLUB_sSup _).1 <| mem_insert _ _
-  le_sup_right _ _ := (isLUB_sSup _).1 <| mem_insert_of_mem _ <| mem_singleton _
+  le_sup_right _ _ := (isLUB_sSup _).1 <| mem_insert_of_mem _ <| mem_singleton_self _
   inf a b := sSup { x | x ≤ a ∧ x ≤ b }
   le_inf a b c hab hac := (isLUB_sSup _).1 <| by simp [*]
   inf_le_left _ _ := (isLUB_sSup _).2 fun _ => And.left

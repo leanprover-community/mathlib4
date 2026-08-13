@@ -392,7 +392,7 @@ and `ofFixingSubgroup M {a}`. -/
 and `ofFixingAddSubgroup M {a}`. -/]
 def ofFixingSubgroup_of_singleton (a : α) :
     let φ : fixingSubgroup M ({a} : Set α) → stabilizer M a := fun ⟨m, hm⟩ =>
-      ⟨m, ((mem_fixingSubgroup_iff M).mp hm) a (Set.mem_singleton a)⟩
+      ⟨m, ((mem_fixingSubgroup_iff M).mp hm) a (Set.mem_singleton_self a)⟩
     ofFixingSubgroup M ({a} : Set α) →ₑ[φ] ofStabilizer M a where
   toFun x := ⟨x, by simp⟩
   map_smul' _ _ := rfl

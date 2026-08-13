@@ -102,7 +102,7 @@ variable [Finite ι] [CharZero R] [IsDomain R]
 @[simp]
 lemma not_isG2_iff_isNotG2 :
     ¬ P.IsG2 ↔ P.IsNotG2 := by
-  simp only [isG2_iff, isNotG2_iff, not_exists, Set.mem_insert_iff, mem_singleton_iff]
+  simp only [isG2_iff, isNotG2_iff, not_exists, Set.mem_insert_iff, Set.mem_singleton]
   refine ⟨fun h i j ↦ ?_, fun h i j ↦ ?_⟩
   · have hij := h (P.reflectionPerm i i) j
     have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
@@ -119,14 +119,14 @@ lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
                      P.pairingIn ℤ j i = 2 * P.pairingIn ℤ i j) by
     have aux₁ := P.forall_pairingIn_eq_swap_or.resolve_left this i j
     have aux₂ := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i j h h'
-    simp only [mem_insert_iff, mem_singleton_iff, Prod.mk_zero_zero, Prod.mk_eq_zero,
+    simp only [mem_insert_iff, Set.mem_singleton, Prod.mk_zero_zero, Prod.mk_eq_zero,
       Prod.mk_one_one, Prod.mk_eq_one, Prod.mk.injEq] at aux₂ ⊢
     lia
   obtain ⟨k, l, hkl⟩ := exists_pairingIn_neg_three (P := P)
   push Not
   refine ⟨k, l, ?_⟩
   have aux := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed k l
-  simp only [mem_insert_iff, mem_singleton_iff, Prod.mk_zero_zero, Prod.mk_eq_zero,
+  simp only [mem_insert_iff, Set.mem_singleton, Prod.mk_zero_zero, Prod.mk_eq_zero,
       Prod.mk_one_one, Prod.mk_eq_one, Prod.mk.injEq] at aux
   omega
 
@@ -262,7 +262,7 @@ lemma allRoots_subset_range_root [DecidableEq M] :
     ↑(allRoots P).toFinset ⊆ range P.root := by
   intro x hx
   simp only [toFinset_cons, toFinset_nil, insert_empty_eq, Finset.coe_insert,
-    Finset.coe_singleton, mem_insert_iff, mem_singleton_iff] at hx
+    Finset.coe_singleton, mem_insert_iff, Set.mem_singleton] at hx
   rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> simp
 
 variable [Finite ι] [CharZero R] [IsDomain R]

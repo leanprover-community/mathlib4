@@ -41,7 +41,7 @@ lemma sigmaIsoHom_inj : Function.Injective (sigmaIsoHom f) := by
   rintro ⟨⟨_, _, rfl⟩, ⟨_, hx⟩⟩ ⟨⟨_, _, rfl⟩, ⟨_, hy⟩⟩ h
   refine Sigma.subtype_ext ?_ h
   simp only [sigmaIsoHom_apply] at h
-  rw [Set.mem_preimage, Set.mem_singleton_iff] at hx hy
+  rw [Set.mem_preimage, Set.mem_singleton] at hx hy
   simp [← hx, ← hy, h]
 
 lemma sigmaIsoHom_surj : Function.Surjective (sigmaIsoHom f) :=

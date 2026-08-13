@@ -82,7 +82,7 @@ lemma frontier_closedBall_subset_sphere : frontier (closedBall x ε) ⊆ sphere 
 lemma closedBall_zero' (x : α) : closedBall x 0 = closure {x} :=
   Subset.antisymm
     (fun _y hy =>
-      mem_closure_iff.2 fun _ε ε0 => ⟨x, mem_singleton x, (mem_closedBall.1 hy).trans_lt ε0⟩)
+      mem_closure_iff.2 fun _ε ε0 => ⟨x, mem_singleton_self x, (mem_closedBall.1 hy).trans_lt ε0⟩)
     (closure_minimal (singleton_subset_iff.2 (dist_self x).le) isClosed_closedBall)
 
 lemma eventually_isCompact_closedBall [WeaklyLocallyCompactSpace α] (x : α) :

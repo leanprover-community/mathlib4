@@ -118,7 +118,7 @@ lemma pairwiseDisjoint_pair_insert [DecidableEq α] {a : α} (ha : a ∉ s) :
     (s.powerset : Set (Finset α)).PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Finset α)) := by
   simp_rw [Set.pairwiseDisjoint_iff, mem_coe, mem_powerset]
   rintro i hi j hj
-  simp only [Set.Nonempty, Set.mem_inter_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+  simp only [Set.Nonempty, Set.mem_inter_iff, Set.mem_insert_iff, Set.mem_singleton,
     exists_eq_or_imp, exists_eq_left, or_imp, imp_self, true_and]
   refine ⟨?_, ?_, insert_erase_invOn.2.injOn (notMem_mono hi ha) (notMem_mono hj ha)⟩ <;>
     rintro rfl <;>

@@ -176,7 +176,7 @@ theorem IsClosed.exists_closed_singleton [T0Space X] [CompactSpace X] {S : Set X
     (hS : IsClosed S) (hne : S.Nonempty) : ∃ x : X, x ∈ S ∧ IsClosed ({x} : Set X) := by
   obtain ⟨V, Vsub, Vne, Vcls, hV⟩ := hS.exists_minimal_nonempty_closed_subset hne
   rcases minimal_nonempty_closed_eq_singleton Vcls Vne hV with ⟨x, rfl⟩
-  exact ⟨x, Vsub (mem_singleton x), Vcls⟩
+  exact ⟨x, Vsub (mem_singleton_self x), Vcls⟩
 
 theorem minimal_nonempty_open_subsingleton [T0Space X] {s : Set X} (hs : IsOpen s)
     (hmin : ∀ t, t ⊆ s → t.Nonempty → IsOpen t → t = s) : s.Subsingleton := by
@@ -425,7 +425,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
     simp only [isOpen_compl_iff]
   tfae_have 5 ↔ 3 := by
     refine forall_comm.trans ?_
-    simp only [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton_iff]
+    simp only [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton]
   tfae_have 5 ↔ 6 := by
     simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
   tfae_have 5 ↔ 7 := by
@@ -446,7 +446,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
     exact (Set.Finite.isClosed <| by simp) |>.preimage h
   tfae_have 2 ↔ 10 := by
     simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
-      mem_singleton_iff, eq_comm]
+      mem_singleton, eq_comm]
   tfae_have 10 ↔ 11 :=
     ⟨fun h => ⟨⟨fun _ _ h₂ => h h₂.specializes⟩, ⟨⟨fun _ _ h₂ => specializes_of_eq (h h₂).symm⟩⟩⟩,
       fun ⟨_, _⟩ _ _ h => (h.antisymm h.symm).eq⟩
@@ -608,7 +608,7 @@ theorem nhdsWithin_insert_of_ne [T1Space X] {x y : X} {s : Set X} (hxy : x ≠ y
   refine le_antisymm (Filter.le_def.2 fun t ht => ?_) (nhdsWithin_mono x <| subset_insert y s)
   obtain ⟨o, ho, hxo, host⟩ := mem_nhdsWithin.mp ht
   refine mem_nhdsWithin.mpr ⟨o \ {y}, ho.sdiff isClosed_singleton, ⟨hxo, hxy⟩, ?_⟩
-  rw [inter_insert_of_notMem <| notMem_sdiff_of_mem (mem_singleton y)]
+  rw [inter_insert_of_notMem <| notMem_sdiff_of_mem (mem_singleton_self y)]
   exact (inter_subset_inter sdiff_subset Subset.rfl).trans host
 
 /-- If `t` is a subset of `s`, except for one point,
@@ -763,7 +763,7 @@ theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
 theorem ContinuousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space Y]
     {f : X → Y} {s : Set X} {x : X} {c : Y} (h : ContinuousWithinAt f s x) (hx : x ∈ closure s)
     (ht : ∀ y ∈ s, f y = c) : f x = c := by
-  rw [← Set.mem_singleton_iff, ← closure_singleton]
+  rw [← Set.mem_singleton, ← closure_singleton]
   exact h.mem_closure hx ht
 
 theorem ContinuousWithinAt.eqOn_const_closure [TopologicalSpace Y] [T1Space Y]

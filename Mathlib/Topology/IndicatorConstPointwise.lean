@@ -48,12 +48,12 @@ lemma tendsto_ite {β : Type*} {p : ι → Prop} [DecidablePred p] {q : Prop} [D
   · by_cases hq : q
     · simp only [hq, ite_true] at h
       filter_upwards [mem_map.mp (h hbF)] with i hi
-      simp only [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff,
+      simp only [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton,
         ite_eq_right_iff, not_forall, exists_prop] at hi
       tauto
     · simp only [hq, ite_false] at h
       filter_upwards [mem_map.mp (h haG)] with i hi
-      simp only [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff,
+      simp only [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton,
         ite_eq_left_iff, not_forall, exists_prop] at hi
       tauto
   · have obs : (fun _ ↦ if q then a else b) =ᶠ[L] (fun i ↦ if p i then a else b) := by
@@ -66,7 +66,7 @@ lemma tendsto_ite {β : Type*} {p : ι → Prop} [DecidablePred p] {q : Prop} [D
       simp
     · simp only [hq, ite_false]
       apply le_trans _ hbG
-      simp only [principal_singleton, le_pure_iff, mem_map, Set.mem_singleton_iff,
+      simp only [principal_singleton, le_pure_iff, mem_map, Set.mem_singleton,
         Set.preimage_const_of_mem, univ_mem]
 
 lemma tendsto_indicator_const_apply_iff_eventually' (b : β)

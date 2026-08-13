@@ -290,7 +290,7 @@ theorem A₁_ne_B : cfg.A₁ ≠ cfg.B := by
     hc.affineIndependent_of_mem_of_ne (Set.mem_insert_of_mem _ (Set.mem_insert _ _))
       (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_insert _ _)))
       (Set.mem_insert_of_mem _
-        (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))))
+        (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton_self _))))
       hBQ₁ cfg.Q_ne_B.symm hQQ₁.symm
   rw [affineIndependent_iff_not_collinear_set] at hBQ₁Q
   refine hBQ₁Q ?_
@@ -373,10 +373,10 @@ theorem two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂ :
   refine two_zsmul_oangle_of_parallel cfg.QP_parallel_BA ?_
   convert! AffineSubspace.Parallel.refl (k := ℝ) (P := Pt) _ using 1
   rw [cfg.collinear_PAA₁A₂.affineSpan_eq_of_ne (Set.mem_insert_of_mem _
-    (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))))
+    (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton_self _))))
     (Set.mem_insert_of_mem _ (Set.mem_insert _ _)) cfg.A₂_ne_A,
       cfg.collinear_PAA₁A₂.affineSpan_eq_of_ne (Set.mem_insert_of_mem _
-    (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))))
+    (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton_self _))))
     (Set.mem_insert _ _) cfg.A₂_ne_P]
 
 end Oriented

@@ -289,7 +289,7 @@ namespace NonUnitalSubsemiring
 instance : Bot (NonUnitalSubsemiring R) :=
   ⟨{  carrier := {0}
       add_mem' := fun _ _ => by simp_all
-      zero_mem' := Set.mem_singleton 0
+      zero_mem' := Set.mem_singleton_self 0
       mul_mem' := fun _ _ => by simp_all }⟩
 
 instance : Inhabited (NonUnitalSubsemiring R) :=
@@ -299,7 +299,7 @@ theorem coe_bot : ((⊥ : NonUnitalSubsemiring R) : Set R) = {0} :=
   rfl
 
 theorem mem_bot {x : R} : x ∈ (⊥ : NonUnitalSubsemiring R) ↔ x = 0 :=
-  Set.mem_singleton_iff
+  Set.mem_singleton
 
 /-- The inf of two non-unital subsemirings is their intersection. -/
 instance : Min (NonUnitalSubsemiring R) :=

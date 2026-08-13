@@ -58,7 +58,7 @@ lemma disjoint_memPartition (f : ℕ → Set α) (n : ℕ) {u v : Set α}
   induction n with
   | zero =>
     intro u v hu hv huv
-    simp only [memPartition_zero, mem_singleton_iff] at hu hv
+    simp only [memPartition_zero, mem_singleton] at hu hv
     rw [hu, hv] at huv
     exact absurd rfl huv
   | succ n ih =>
