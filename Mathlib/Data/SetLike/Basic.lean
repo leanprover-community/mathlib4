@@ -217,7 +217,7 @@ An instance of this class is automatically available on any order defined via `L
 -/
 class IsMemLE (A : Type*) {B : Type*} [Membership B A] [LE A] where
   /-- The order corresponds to set inclusion. -/
-  protected le_iff' {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
+  protected le_iff {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
 
 section default
 
@@ -230,7 +230,7 @@ An order defined this way automatically makes available an instance of `IsMemLE`
   le := fun H K ↦ ∀ ⦃x⦄, x ∈ H → x ∈ K
 
 instance [Membership B A] : letI := LE.ofMembership A; IsMemLE A :=
-  letI := LE.ofMembership A; { le_iff' := .rfl }
+  letI := LE.ofMembership A; { le_iff := .rfl }
 
 /-- The preorder induced from a `Membership` instance by inclusion.
 A preorder defined this way automatically makes available an instance of `IsMemLE`.
@@ -260,7 +260,7 @@ section LE
 variable [LE A] [IsMemLE A] {p q : A}
 
 theorem le_def : p ≤ q ↔ ∀ ⦃x : B⦄, x ∈ p → x ∈ q :=
-  IsMemLE.le_iff'
+  IsMemLE.le_iff
 
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
 alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def

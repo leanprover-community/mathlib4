@@ -15,86 +15,80 @@ TODO
 
 @[expose] public section
 
-section defs
-
 variable (A : Type*) {B : Type*} [Membership B A]
 
-/-- A class to indicate that bottom on a `SetLike` type is the empty set. -/
-class IsMemBot [Bot A] where
-  /-- The coercion from a `SetLike` type preserves bottom. -/
-  protected coe_bot' : SetLike.coe (⊥ : A) = ∅
+section defs
 
-/-- A class to indicate that top on a `SetLike` type is the universal set. -/
+/-- A class to indicate that the bottom element on a type has no members. -/
+class IsMemBot [Bot A] where
+  /-- The bottom element corresponds to the empty set. -/
+  protected notMem_bot {x : B} : x ∉ (⊥ : A) := by rfl
+
+@[simp] alias SetLike.notMem_bot := IsMemBot.notMem_bot
+
+/-- A class to indicate that the top element on a type contains every member. -/
 class IsMemTop [Top A] where
-  /-- The coercion from a `SetLike` type preserves top. -/
-  protected coe_top' : SetLike.coe (⊤ : A) = Set.univ
+  /-- The top element corresponds to the universal set. -/
+  protected mem_top {x : B} : x ∈ (⊤ : A) := by rfl
+
+@[simp] alias SetLike.mem_top := IsMemTop.mem_top
 
 /-- A class to indicate that the infimum on a type corresponds to set intersection. -/
 class IsMemInf [Min A] where
-  /-- The coercion from a `SetLike` type preserves infima. -/
+  /-- The infimum corresponds to set intersection. -/
   protected mem_inf {S T : A} {x : B} : x ∈ S ⊓ T ↔ x ∈ S ∧ x ∈ T := by rfl
 
 @[simp] alias SetLike.mem_inf := IsMemInf.mem_inf
 
-/-- A class to indicate that supremum on a `SetLike` type is union. -/
+/-- A class to indicate that the supremum on a type corresponds to set union. -/
 class IsMemSup [Max A] where
-  /-- The coercion from a `SetLike` type preserves suprema. -/
-  protected coe_sup' {S T : A} :
-    SetLike.coe (S ⊔ T) = SetLike.coe S ∪ SetLike.coe T
+  /-- The supremum corresponds to set union. -/
+  protected mem_sup {S T : A} {x : B} : x ∈ S ⊔ T ↔ x ∈ S ∨ x ∈ T := by rfl
 
-/-- A class to indicate that set infimum on a `SetLike` type is intersection. -/
+@[simp] alias SetLike.mem_sup := IsMemSup.mem_sup
+
+/-- A class to indicate that the set infimum on a type corresponds to set intersection. -/
 class IsMemSInf [InfSet A] where
-  /-- The coercion from a `SetLike` type preserves arbitrary infima. -/
-  protected coe_sInf' {S : Set A} :
-    SetLike.coe (sInf S) = sInf (SetLike.coe '' S)
+  /-- The set infimum corresponds to set intersection. -/
+  protected mem_sInf {S : Set A} {x : B} : x ∈ sInf S ↔ ∀ T ∈ S, x ∈ T := by rfl
 
-/-- A class to indicate that set supremum on a `SetLike` type is union. -/
+@[simp] alias SetLike.mem_sInf := IsMemSInf.mem_sInf
+
+/-- A class to indicate that the set supremum on a type corresponds to set union. -/
 class IsMemSSup [SupSet A] where
-  /-- The coercion from a `SetLike` type preserves arbitrary suprema. -/
-  protected coe_sSup' {S : Set A} :
-    SetLike.coe (sSup S) = sSup (SetLike.coe '' S)
+  /-- The set supremum corresponds to set union. -/
+  protected mem_sSup {S : Set A} {x : B} : x ∈ sSup S ↔ ∃ T ∈ S, x ∈ T := by rfl
+
+@[simp] alias SetLike.mem_sSup := IsMemSSup.mem_sSup
 
 end defs
 
-section default
+section instances
 
-variable (A : Type*) {B : Type*} [SetLike A B]
+-- TODO : all the instances like OrderBot, SemilatticeInf, CompleteLattice
 
 /- Matches the definition in `completeLatticeOfInf`. -/
-instance [InfSet A] [IsMemSInf A B] :
-    letI : Min A := { min := (sInf {·, ·}) }; IsMemInf A B :=
+instance [InfSet A] [IsMemSInf A] :
+    letI : Min A := { min := (sInf {·, ·}) }; IsMemInf A :=
   letI : Min A := { min := (sInf {·, ·}) }
-  { coe_inf' := fun {S T} ↦ by
-      rw [Min.min, IsMemSInf.coe_sInf']
-      ext
-      simp [Set.image_insert_eq]
-  }
+  { mem_inf := by simp }
 
 /- Matches the definition in `completeLatticeOfInf`. -/
-instance [InfSet A] [IsMemSInf A B] :
-    letI : Top A := { top := sInf ∅ }; IsMemTop A B :=
+instance [InfSet A] [IsMemSInf A] :
+    letI : Top A := { top := sInf ∅ }; IsMemTop A :=
   letI : Top A := { top := sInf ∅ }
-  { coe_top' := by
-      rw [Top.top, IsMemSInf.coe_sInf']
-      ext
-      simp }
+  { mem_top := by simp }
 
 /- Matches the definition in `completeLatticeOfSup`. -/
-instance [SupSet A] [IsMemSSup A B] :
-    letI : Max A := { max := (sSup {·, ·}) }; IsMemSup A B :=
+instance [SupSet A] [IsMemSSup A] :
+    letI : Max A := { max := (sSup {·, ·}) }; IsMemSup A :=
   letI : Max A := { max := (sSup {·, ·}) }
-  { coe_sup' := fun {S T} ↦ by
-      rw [Max.max, IsMemSSup.coe_sSup']
-      ext
-      simp [Set.image_insert_eq] }
+  { mem_sup := by simp }
 
 /- Matches the definition in `completeLatticeOfSup`. -/
-instance [SupSet A] [IsMemSSup A B] :
-    letI : Bot A := { bot := sSup ∅ }; IsMemBot A B :=
+instance [SupSet A] [IsMemSSup A] :
+    letI : Bot A := { bot := sSup ∅ }; IsMemBot A :=
   letI : Bot A := { bot := sSup ∅ }
-  { coe_bot' := by
-      rw [Bot.bot, IsMemSSup.coe_sSup']
-      ext
-      simp }
+  { notMem_bot := by simp }
 
-end default
+end instances
