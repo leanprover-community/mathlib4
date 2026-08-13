@@ -220,7 +220,6 @@ theorem IsInertiaRing.finrank_bot [FaithfulSMul C B] [P.IsPrime] [P.IsInertiaRin
     ← IsGaloisGroup.card_eq_finrank' G A B, mul_assoc, mul_comm (p.inertiaDegIn B),
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G]
 
-
 /-- The degree `[C' : C]` of the inertia ring `C'` over the decomposition ring `C` equals the
 inertia degree of `p` in `B`. -/
 theorem IsInertiaRing.finrank_decompositionRing (C' : Type*) [CommRing C'] [Algebra C' B]
