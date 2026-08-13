@@ -45,8 +45,6 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R
 
 namespace Finite
 
-open Submodule Set
-
 variable {R S M N}
 
 section Algebra
@@ -230,10 +228,8 @@ end Finite
 
 namespace FiniteType
 
--- TODO: should infer_instance be marked as normalising?
-set_option linter.flexible false in
 variable (A) in
-theorem id : FiniteType (RingHom.id A) := by simp [FiniteType]; infer_instance
+theorem id : FiniteType (RingHom.id A) := by rw [FiniteType]; infer_instance
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by
