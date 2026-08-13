@@ -60,7 +60,7 @@ instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
   nonempty_cocone F _ :=
     ⟨Cocone.mk (Classical.arbitrary _)
       { app _ := eqToHom (by subsingleton)
-        naturality _ _ _ := by subsingleton  }⟩
+        naturality _ _ _ := by subsingleton }⟩
 
 variable {J : Type u} [Category.{v} J] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
   [IsCardinalFiltered J κ]
