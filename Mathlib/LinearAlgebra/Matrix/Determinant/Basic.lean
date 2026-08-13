@@ -81,7 +81,7 @@ theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
     obtain ⟨x, h3⟩ := not_forall.1 (mt Equiv.ext h2)
     convert! mul_zero (ε σ)
     apply Finset.prod_eq_zero (mem_univ x)
-    exact if_neg h3
+    exact ite_eq_right h3
   · simp
   · simp
 
@@ -607,7 +607,6 @@ theorem det_eq_of_forall_col_eq_smul_add_pred {n : ℕ} {A B : Matrix (Fin (n + 
 
 end DetEq
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Matrix n n R) :
     (blockDiagonal M).det = ∏ k, (M k).det := by
@@ -736,7 +735,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
   refine Finset.sum_congr rfl fun i _ => Fin.cases ?_ (fun i => ?_) i
   · simp only [Fin.prod_univ_succ, Matrix.det_apply, Finset.mul_sum,
       Equiv.Perm.decomposeFin_symm_apply_zero, Fin.val_zero, one_mul,
-      Equiv.Perm.decomposeFin.symm_sign, Equiv.swap_self, if_true, id,
+      Equiv.Perm.decomposeFin.symm_sign, Equiv.swap_self, ite_true, id,
       Equiv.Perm.decomposeFin_symm_apply_succ, Fin.succAbove_zero, Equiv.coe_refl, pow_zero,
       mul_smul_comm, of_apply]
   -- `univ_perm_fin_succ` gives a different embedding of `Perm (Fin n)` into
@@ -747,7 +746,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
     ← det_permute, Matrix.det_apply, Finset.mul_sum, Finset.mul_sum]
   -- now we just need to move the corresponding parts to the same place
   refine Finset.sum_congr rfl fun σ _ => ?_
-  rw [Equiv.Perm.decomposeFin.symm_sign, if_neg (Fin.succ_ne_zero i)]
+  rw [Equiv.Perm.decomposeFin.symm_sign, ite_eq_right (Fin.succ_ne_zero i)]
   calc
     ((-1 * Perm.sign σ : ℤ) • ∏ i', A (Perm.decomposeFin.symm (Fin.succ i, σ) i') i') =
         (-1 * Perm.sign σ : ℤ) • (A (Fin.succ i) 0 *
