@@ -98,7 +98,7 @@ lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 <
   calc μ.real {x | r < |x|}
   _ = μ.real {x | 2 < |2 * r⁻¹ * x|} := by
     congr 1 with x
-    simp only [Set.mem_setOf_eq, abs_mul, Nat.abs_ofNat]
+    simp only [Set.mem_ofPred_eq, abs_mul, Nat.abs_ofNat]
     rw [abs_of_nonneg (a := r⁻¹) (by positivity), mul_assoc, ← inv_mul_lt_iff₀ (by positivity),
       inv_mul_cancel₀ (by positivity), lt_inv_mul_iff₀ (by positivity), mul_one]
   _ = ∫ x in {x | 2 < |2 * r⁻¹ * x|}, 1 ∂μ := by simp
@@ -114,7 +114,7 @@ lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 <
     · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
     · have hx_ne : 2 * r⁻¹ * x ≠ 0 := by
         intro hx0
-        simp only [hx0, Set.mem_setOf_eq, abs_zero] at hx
+        simp only [hx0, Set.mem_ofPred_eq, abs_zero] at hx
         linarith
       rw [le_sub_iff_add_le, ← le_sub_iff_add_le']
       norm_num

@@ -28,7 +28,7 @@ public section
 
 universe v v' u u'
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
 

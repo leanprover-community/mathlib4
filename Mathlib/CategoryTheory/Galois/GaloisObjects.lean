@@ -33,9 +33,11 @@ universe u₁ u₂ v₁ v₂ v w
 
 namespace CategoryTheory
 
+open GaloisCategory
+
 namespace PreGaloisCategory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 noncomputable instance {G : Type v} [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) FintypeCat.incl.{w} := by
@@ -139,7 +141,7 @@ section AutMap
 of `A`, there exists a unique automorphism of `B` making the canonical diagram commute. -/
 lemma exists_autMap {A B : C} (f : A ⟶ B) [IsConnected A] [IsGalois B] (σ : Aut A) :
     ∃! (τ : Aut B), f ≫ τ.hom = σ.hom ≫ f := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   refine ⟨?_, ?_, ?_⟩
   · exact (evaluationEquivOfIsGalois F B (F.map f a)).symm (F.map (σ.hom ≫ f) a)
@@ -187,7 +189,7 @@ lemma autMap_comp {X Y Z : C} [IsConnected X] [IsGalois Y] [IsGalois Z] (f : X �
 lemma autMap_surjective_of_isGalois {A B : C} [IsGalois A] [IsGalois B] (f : A ⟶ B) :
     Function.Surjective (autMap f) := by
   intro σ
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   obtain ⟨a', ha'⟩ := surjective_of_nonempty_fiber_of_isConnected F f (F.map σ.hom (F.map f a))
   obtain ⟨τ, (hτ : F.map τ.hom a = a')⟩ := MulAction.exists_smul_eq (Aut A) a a'
@@ -195,10 +197,11 @@ lemma autMap_surjective_of_isGalois {A B : C} [IsGalois A] [IsGalois B] (f : A �
   apply evaluation_aut_injective_of_isConnected F B (F.map f a)
   simp [hτ, ha']
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma autMap_apply_mul {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ τ : Aut A) :
     autMap f (σ * τ) = autMap f σ * autMap f τ := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply evaluation_aut_injective_of_isConnected F (B : C) (F.map f a)
   simp [Aut.Aut_mul_def]

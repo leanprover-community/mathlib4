@@ -16,6 +16,7 @@ public import Mathlib.CategoryTheory.Presentable.SharplyLT.Lemmas
 
 universe w v v' u u'
 
+set_option backward.isDefEq.respectTransparency.types false in
 open CategoryTheory Limits Cardinal.SharplyLT.IsCardinalFilteredAndHasCardinalLT in
 lemma Cardinal.SharplyLT.exists_retract_of_isCardinalPresentable
     {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
@@ -37,7 +38,8 @@ lemma Cardinal.SharplyLT.exists_retract_of_isCardinalPresentable
     (isColimit κ₁ κ₂ p) (𝟙 X)
   exact ⟨colimit κ₁ κ₂ p K,
     { i := i, r := colimit.π κ₁ κ₂ p K }, Subtype K.val,
-    inferInstance, K.prop.1, K.prop.2, ⟨.colimit _ (fun k ↦ p.prop_diag_obj _)⟩⟩
+    inferInstance, K.prop.1, K.prop.2, ⟨.colimit (K.val.mono_coe.functor ⋙ p.diag)
+      (fun _ ↦ p.prop_diag_obj _)⟩⟩
 
 namespace CategoryTheory
 

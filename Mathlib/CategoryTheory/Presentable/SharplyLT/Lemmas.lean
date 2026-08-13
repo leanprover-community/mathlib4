@@ -64,12 +64,12 @@ lemma of_pow_lt {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular] [Fact κ₂.
     · simpa [hasCardinalLT_iff_cardinal_mk_lt] using
         h _ _ hα (by rwa [hasCardinalLT_iff_cardinal_mk_lt] at hX))
 
-lemma of_le {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular] --[Fact κ₂.IsRegular]
+lemma of_le {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular]
     (h₀ : κ₁ ≤ κ₂) (hκ₂ : Cardinal.aleph0 ≤ κ₂) :
     letI : Fact (Cardinal.IsRegular (Order.succ (2 ^ κ₂))) :=
       ⟨isRegular_succ (hκ₂.trans (cantor _).le)⟩
     SharplyLT κ₁ (Order.succ (2 ^ κ₂)) := by
-  letI : Fact (Cardinal.IsRegular (Order.succ (2 ^ κ₂))) :=
+  let : Fact (Cardinal.IsRegular (Order.succ (2 ^ κ₂))) :=
     ⟨isRegular_succ (hκ₂.trans (cantor _).le)⟩
   refine of_pow_lt ?_ (fun α β hα hβ ↦ ?_)
   · simp only [Order.lt_succ_iff]

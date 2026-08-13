@@ -12,9 +12,6 @@ public import Mathlib.Data.Fintype.EquivFin
 
 public section
 
-
-open Set
-
 variable (M : Type*) [AddMonoidWithOne M] [CharZero M]
 
 -- see Note [lower instance priority]

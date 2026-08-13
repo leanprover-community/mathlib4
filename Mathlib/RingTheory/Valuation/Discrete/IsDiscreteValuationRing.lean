@@ -117,6 +117,7 @@ lemma mker_valuation_eq_isUnitSubmonoid :
   · obtain ⟨x, h, rfl⟩ := h
     simpa [IsDiscreteValuationRing.maximalIdeal] using! h
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem associated_of_valuation_eq (x y : K)
     (h : ((maximalIdeal A).valuation K) x =
     ((maximalIdeal A).valuation K) y) : ∃ u : Aˣ, u • x = y := by
