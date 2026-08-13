@@ -206,8 +206,8 @@ protected theorem const' (b : β) {K : ℝ≥0} : LipschitzWith K fun _ : α => 
   simp only [edist_self, zero_le]
 
 @[simp]
-lemma zero_iff {α β : Type*} [EDist α] [TopologicalSpace β] [WeakEMetricSpace β]
-    (f : α → β) : LipschitzWith 0 f ↔ ∀ x y, f x = f y := by
+lemma zero_iff {α β : Type*} [EDist α] [TopologicalSpace β] [WeakEMetricSpace β] (f : α → β) :
+    LipschitzWith 0 f ↔ ∀ x y, f x = f y := by
   simp [LipschitzWith]
 
 /-- The identity is 1-Lipschitz. -/
