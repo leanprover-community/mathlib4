@@ -9,7 +9,7 @@ public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.GroupTheory.Coset.Basic
 
-/-! Results about the cardinality of a quotient module. -/
+/-! # Results about the cardinality of a quotient module -/
 
 public section
 
