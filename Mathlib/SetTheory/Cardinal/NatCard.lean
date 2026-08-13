@@ -266,11 +266,11 @@ namespace Multiset
 
 variable {m : Multiset α} {s : Set α}
 
-theorem ncard_setOf_mem [DecidableEq α] : {a | a ∈ m}.ncard = m.dedup.card := by
+theorem ncard_ofPred_mem [DecidableEq α] : {a | a ∈ m}.ncard = m.dedup.card := by
   rw [← coe_toFinset, Set.ncard_coe_finset, card_toFinset]
 
-theorem encard_setOf_mem [DecidableEq α] : {a | a ∈ m}.encard = m.dedup.card := by
-  rw [← m.finite_toSet.cast_ncard_eq, ncard_setOf_mem]
+theorem encard_ofPred_mem [DecidableEq α] : {a | a ∈ m}.encard = m.dedup.card := by
+  rw [← m.finite_toSet.cast_ncard_eq, ncard_ofPred_mem]
 
 namespace Nodup
 
@@ -298,11 +298,11 @@ namespace List
 
 variable {l : List α} {s : Set α}
 
-theorem ncard_setOf_mem [DecidableEq α] : {a | a ∈ l}.ncard = l.dedup.length := by
+theorem ncard_ofPred_mem [DecidableEq α] : {a | a ∈ l}.ncard = l.dedup.length := by
   rw [← coe_toFinset, Set.ncard_coe_finset, card_toFinset]
 
-theorem encard_setOf_mem [DecidableEq α] : {a | a ∈ l}.encard = l.dedup.length := by
-  rw [← l.finite_toSet.cast_ncard_eq, ncard_setOf_mem]
+theorem encard_ofPred_mem [DecidableEq α] : {a | a ∈ l}.encard = l.dedup.length := by
+  rw [← l.finite_toSet.cast_ncard_eq, ncard_ofPred_mem]
 
 namespace Nodup
 
