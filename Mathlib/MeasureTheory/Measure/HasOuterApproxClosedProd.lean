@@ -55,7 +55,7 @@ bounded continuous function, product measure
 
 public section
 
-open BoundedContinuousFunction MeasureTheory Topology Filter Set ENNReal NNReal MeasurableSpace
+open BoundedContinuousFunction MeasureTheory Filter Set ENNReal NNReal MeasurableSpace
 open scoped Topology ENNReal NNReal
 
 namespace Measure
@@ -204,7 +204,6 @@ lemma eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction {μ : Measure 
     ξ = μ.prod ν :=
   ext_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ by rw [h, ← integral_prod_mul]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.flexible false in -- simp followed by fun_prop
 lemma ext_of_integral_prod_mul_boundedContinuousFunction {μ ν : Measure ((Π i, X i) × T)}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν]
