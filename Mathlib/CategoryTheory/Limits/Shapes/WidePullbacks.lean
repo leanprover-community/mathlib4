@@ -36,12 +36,14 @@ namespace CategoryTheory.Limits
 variable (J : Type w)
 
 /-- A wide pullback shape for any type `J` can be written simply as `Option J`. -/
+@[implicit_reducible]
 def WidePullbackShape := Option J
 
 instance : Inhabited (WidePullbackShape J) where
   default := none
 
 /-- A wide pushout shape for any type `J` can be written simply as `Option J`. -/
+@[implicit_reducible]
 def WidePushoutShape := Option J
 
 instance : Inhabited (WidePushoutShape J) where
@@ -113,6 +115,7 @@ def wideCospan (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : Wid
     · apply 𝟙 _
     · exact arrows j
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideCospan` -/
 def diagramIsoWideCospan (F : WidePullbackShape J ⥤ C) :
@@ -243,6 +246,7 @@ def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WideP
     · cases g
       simp only [hom_id, Category.comp_id]; congr
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideSpan` -/
 def diagramIsoWideSpan (F : WidePushoutShape J ⥤ C) :
@@ -389,6 +393,7 @@ def π (s : WidePullbackCone f) (i : ι) : s.pt ⟶ Y i :=
 def base (s : WidePullbackCone f) : s.pt ⟶ X :=
   (Cone.π s).app none
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma condition (s : WidePullbackCone f) (i : ι) : s.π i ≫ f i = s.base := by

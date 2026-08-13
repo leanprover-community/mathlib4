@@ -30,7 +30,7 @@ sorted, nodup
 public section
 
 
-open Nat Function
+open Nat
 
 namespace List
 
@@ -39,6 +39,13 @@ variable {α β : Type*} {R : α → α → Prop} {l : List α} {a : α}
 mk_iff_of_inductive_prop List.Pairwise List.pairwise_iff
 
 /-! ### Pairwise -/
+
+theorem pairwise_iff_forall_infix {α : Type*} {l : List α} {R : α → α → Prop} :
+    l.Pairwise R ↔
+      ∀ l', (h : 1 < l'.length) → l' <:+: l → R (l'.head <| by grind) (l'.getLast <| by grind) := by
+  refine l.pairwise_iff_getElem.trans ⟨fun h l' hne ⟨l₁, l₂, hl⟩ ↦ ?_, fun h i j hi hj hij ↦ ?_⟩
+  · grind [getElem_append_left', getElem_append_right']
+  · grind [h _ _ <| List.drop_suffix i _ |>.isInfix.trans <| l.take_prefix (j + 1) |>.isInfix]
 
 theorem Pairwise.forall_of_forall [Std.Symm R] (H₁ : ∀ x ∈ l, R x x) (H₂ : l.Pairwise R) :
     ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → R x y :=
