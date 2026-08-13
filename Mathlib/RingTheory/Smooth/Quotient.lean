@@ -21,8 +21,6 @@ In this file, we formalize the result [Stacks 031L] : For flat ring homomorphism
 
 public section
 
-open IsLocalRing
-
 variable {R : Type*} [CommRing R]
 
 /-- For any surjection `f : M →ₗ[R] N`, with `N` a flat `R`-module,
@@ -77,18 +75,18 @@ private lemma mul_le_ker_of_range_le_mul_of_sq_zero {J I : Ideal R} (sq : I ^ 2 
     (le : f.range ≤ (Submodule.comap J.subtype (I * J)).map J.toCotangent) :
     (Submodule.comap J.subtype (I * J)).map J.toCotangent ≤ f.ker := by
   rw [pow_two] at sq
-  have {x : R} (h : x ∈ I * J) : f (J.toCotangent ⟨x, Ideal.mul_le_left h⟩) = 0 := by
+  have {x : R} (h : x ∈ I * J) : f (J.toCotangent ⟨x, Ideal.mul_le_right h⟩) = 0 := by
     induction h using Submodule.mul_induction_on' with
     | mem_mul_mem y hy z hz =>
       rcases Submodule.mem_map.mp (le (f.mem_range_self (J.toCotangent ⟨z, hz⟩))) with ⟨w, hw, eqz⟩
       have mem_bot := Ideal.mul_mem_mul hy (Submodule.mem_comap.mp hw)
       simp only [← mul_assoc, sq, Submodule.bot_mul, Submodule.mem_bot] at mem_bot
       have eq0 : y • w = 0 := SetCoe.ext mem_bot
-      have : ⟨y * z, Ideal.mul_le_left (Submodule.mul_mem_mul hy hz)⟩ = y • (⟨z, hz⟩ : J) := rfl
+      have : ⟨y * z, Ideal.mul_le_right (Submodule.mul_mem_mul hy hz)⟩ = y • (⟨z, hz⟩ : J) := rfl
       rw [this, map_smul, map_smul, ← eqz, ← map_smul, eq0, map_zero]
     | add y ymem z zmem hy hz =>
-      have : (⟨y + z, Ideal.mul_le_left (add_mem ymem zmem)⟩ : J) =
-        ⟨y, Ideal.mul_le_left ymem⟩ + ⟨z, Ideal.mul_le_left zmem⟩ := rfl
+      have : (⟨y + z, Ideal.mul_le_right (add_mem ymem zmem)⟩ : J) =
+        ⟨y, Ideal.mul_le_right ymem⟩ + ⟨z, Ideal.mul_le_right zmem⟩ := rfl
       rw [this, map_add, map_add, hy, hz, add_zero]
   intro x hx
   rcases Submodule.mem_map.mp hx with ⟨x', hx', eq⟩
