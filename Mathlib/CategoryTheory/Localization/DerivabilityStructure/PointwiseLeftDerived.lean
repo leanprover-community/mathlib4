@@ -41,7 +41,7 @@ universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 namespace CategoryTheory
 
-open Limits Category Functor
+open Limits Category CategoryTheory.Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {H : Type u₃}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} H]
@@ -86,6 +86,7 @@ lemma leftDerivedFunctorComparison_fac_app (X : C₁) :
 
 variable [Φ.IsLeftDerivabilityStructure]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma hasPointwiseLeftDerivedFunctorAt_iff_of_isLeftDerivabilityStructure (X : C₁) :
     (Φ.functor ⋙ F).HasPointwiseLeftDerivedFunctorAt W₁ X ↔
       F.HasPointwiseLeftDerivedFunctorAt W₂ (Φ.functor.obj X) := by

@@ -116,6 +116,8 @@ def compFunctor {J : Type*} [LinearOrder J]
   obj x := x.1 ≫ x.2
   map f := ⟨⟨⟨Set.union_subset_union f.1.1.1.1 f.2.1.1.1⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 attribute [local ext (iff := false)] Functor.ext in
 attribute [local simp] types_tensorObj_def in
 @[simps -isSimp]
@@ -143,6 +145,7 @@ alias orderHom := functorMap
 
 attribute [local simp] nerveMap_app
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local simp] types_tensorObj_def in
 /--
 The simplicial thickening defines a functor from the category of linear orders to the category of

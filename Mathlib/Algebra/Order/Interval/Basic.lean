@@ -227,6 +227,7 @@ instance commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
 
 end NonemptyInterval
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance Interval.mulOneClass [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     MulOneClass (Interval α) where
@@ -655,12 +656,13 @@ end Interval
 end Length
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity NonemptyInterval.length _]
 meta def evalNonemptyIntervalLength : PositivityExt where
-  eval {u α} _ _ e := do
+  eval {u α} _ pα? e :=
+    match pα? with | none => pure .none | some _ => do
     let ~q(@NonemptyInterval.length _ $ig $ipo $a) := e |
       throwError "not NonemptyInterval.length"
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
@@ -670,7 +672,8 @@ meta def evalNonemptyIntervalLength : PositivityExt where
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity Interval.length _]
 meta def evalIntervalLength : PositivityExt where
-  eval {u α} _ _ e := do
+  eval {u α} _ pα? e :=
+    match pα? with | none => pure .none | some _ => do
     let ~q(@Interval.length _ $ig $ipo $a) := e | throwError "not Interval.length"
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
     assumeInstancesCommute

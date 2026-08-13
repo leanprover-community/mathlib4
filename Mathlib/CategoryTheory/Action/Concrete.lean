@@ -70,6 +70,7 @@ theorem ofMulAction_apply {G : Type*} {H : Type*} [Monoid G] [MulAction G H] (g 
     (ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a family `F` of types with `G`-actions, this is the limit cone demonstrating that the
 product of `F` as types is a product in the category of `G`-sets. -/
 def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι → Type max v u)
@@ -132,6 +133,7 @@ notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G (FintypeCat.
 
 variable {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `N` is a normal subgroup of `G`, then this is the group homomorphism
 sending an element `g` of `G` to the `G`-endomorphism of `G ⧸ₐ N` given by
 multiplication with `g⁻¹` on the right. -/
@@ -217,7 +219,7 @@ instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
       ConcreteCategory.hom (X.ρ g) ((ConcreteCategory.hom (X.ρ h)) x)
     simp
 
-/- Specialize `instMulAction` to assist typeclass inference. -/
+/-- Specialize `instMulAction` to assist typeclass inference. -/
 instance {G : Type*} [Monoid G] (X : Action FintypeCat G) : MulAction G X.V :=
   Action.instMulAction X
 

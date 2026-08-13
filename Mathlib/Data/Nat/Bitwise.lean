@@ -75,7 +75,7 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
     (h : n ≠ 0) :
     binaryRec z f n = n.bit_bodd_div2 ▸ f n.bodd n.div2 (binaryRec z f n.div2) := by
-  rw [binaryRec, dif_neg h, eqRec_eq_cast, eqRec_eq_cast]; rfl
+  rw [binaryRec, dite_eq_right h, eqRec_eq_cast, eqRec_eq_cast]; rfl
 
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
@@ -204,14 +204,14 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
       · subst hi
         simp only [testBit_bit_zero] at hn hm
         have : n = m :=
-          eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
+          eq_of_testBit_eq fun i => by convert! hnm (i + 1) (Nat.zero_lt_succ _) using 1
           <;> rw [testBit_bit_succ]
         rw [hn, hm, this, bit_false, bit_true]
         exact Nat.lt_succ_self _
       · obtain ⟨i', rfl⟩ := exists_eq_succ_of_ne_zero hi
         simp only [testBit_bit_succ] at hn hm
         have := hn' _ hn hm fun j hj => by
-          convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
+          convert! hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
         exact bit_lt_bit b b' this
 
 theorem bitwise_swap {f : Bool → Bool → Bool} :

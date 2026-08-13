@@ -77,15 +77,14 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rwa [← RingHom.mem_ker, that] at this
     apply h _ (fun i ↦ S (e i))
     · intro i
-      classical
-      convert Hdeg (e i)
+      convert! Hdeg (e i)
       conv_lhs => rw [← e.symm_apply_apply i, degreeOf_rename_of_injective e.symm.injective]
     · intro x hx
       simp only [MvPolynomial.eval_rename]
       apply Heval
       intro s
       simp only [Function.comp_apply]
-      convert hx (e.symm s)
+      convert! hx (e.symm s)
       simp only [Equiv.apply_symm_apply]
   | h_empty =>
     suffices P = C (constantCoeff P) by
@@ -111,7 +110,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         intro d hd
         simp only [hQ]
         rw [MvPolynomial.coeff_eval_eq_eval_coeff]
-        convert map_zero (MvPolynomial.eval x)
+        convert! map_zero (MvPolynomial.eval x)
         ext m
         simp only [coeff_zero]
         set n := (embDomain Function.Embedding.some m).update none d with hn
@@ -121,7 +120,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         apply not_le.mpr hd
         rw [MvPolynomial.degreeOf_eq_sup]
         rw [← ne_eq, ← MvPolynomial.mem_support_iff] at hm
-        convert Finset.le_sup hm
+        convert! Finset.le_sup hm
         exact hn.1.symm
     ext m d
     simp only [Polynomial.coeff_zero, coeff_zero]
@@ -135,7 +134,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rw [eq_option_embedding_update_none_iff] at hn
       rw [hQ, ← hn.1, ← hn.2, optionEquivLeft_coeff_some_coeff_none, ← ne_eq,
         ← MvPolynomial.mem_support_iff] at he
-      convert Finset.le_sup he
+      convert! Finset.le_sup he
       rw [← hn.2, some_apply]
     · intro x hx
       specialize Heval' x hx
@@ -164,7 +163,7 @@ private theorem Alon.degree_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset 
     exact isRegular_one
 
 /-- The leading coefficient of `Alon.P S i` is `1`. -/
-private theorem Alon.monic_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
+private theorem Alon.monic_P (m : MonomialOrder σ) (S : Finset R) (i : σ) :
     m.Monic (P S i) :=
   Monic.prod (fun r _ ↦ m.monic_X_sub_C i r)
 
@@ -174,23 +173,23 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
     (hm : m ∈ (Alon.P S i).support) :
     ∃ e ≤ S.card, m = single i e := by
   classical
-  have hP : Alon.P S i = .rename (fun _ ↦ i) (Alon.P S ()) := by simp [Alon.P, map_prod]
+  have hP : Alon.P S i = .rename (fun _ ↦ i) (Alon.P S ()) := by simp [Alon.P]
   rw [hP, support_rename_of_injective (Function.injective_of_subsingleton _)] at hm
   simp only [Finset.mem_image, mem_support_iff, ne_eq] at hm
   obtain ⟨e, he, hm⟩ := hm
-  haveI : Nontrivial R := nontrivial_of_ne _ _ he
+  have : Nontrivial R := nontrivial_of_ne _ _ he
   refine ⟨e (), ?_, ?_⟩
   · suffices e ≼[lex] single () #S by
       simpa [MonomialOrder.lex_le_iff_of_unique] using this
     rw [← Alon.degree_P]
     apply MonomialOrder.le_degree
     rw [mem_support_iff]
-    convert he
+    convert! he
   · rw [← hm]
     ext j
     by_cases hj : j = i
     · rw [hj, mapDomain_apply (Function.injective_of_subsingleton _), single_eq_same]
-    · rw [mapDomain_notin_range, single_eq_of_ne hj]
+    · rw [mapDomain_of_notMem_range, single_eq_of_ne hj]
       simp [Set.range_const, Set.mem_singleton_iff, hj]
 
 variable [Finite σ]
@@ -210,7 +209,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     ∃ (h : σ →₀ MvPolynomial σ R),
       (∀ i, ((∏ s ∈ S i, (X i - C s)) * h i).totalDegree ≤ f.totalDegree) ∧
       f = linearCombination (MvPolynomial σ R) (fun i ↦ ∏ r ∈ S i, (X i - C r)) h := by
-  letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
+  let : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
       (fun i ↦ by simp only [(Alon.monic_P ..).leadingCoeff_eq_one, isUnit_one]) f
   use h
@@ -227,8 +226,8 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
       linearCombination_apply, map_finsuppSum, Finsupp.sum, Finset.sum_eq_zero]
     intro i _
     rw [smul_eq_mul, map_mul]
-    convert mul_zero _
-    rw [Alon.P, map_prod]
+    convert! mul_zero _
+    rw [Alon.P, _root_.map_prod]
     apply Finset.prod_eq_zero (hx i)
     simp
 
@@ -245,7 +244,6 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     (S : σ → Finset R) (htS : ∀ i, t i < #(S i)) :
     ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 := by
   let _ : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
-  classical
   by_contra! Heval
   apply ht
   obtain ⟨h, hh, hf⟩ := combinatorial_nullstellensatz_exists_linearCombination S

@@ -5,7 +5,10 @@ Authors: Kenny Lau
 -/
 module
 
+public import Mathlib.Algebra.Category.CommAlgCat.Basic
+public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Grassmannians
@@ -16,6 +19,9 @@ public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
   to be the set of submodules of `M` whose **quotient** is locally free of rank `k`. Note that there
   is another convention in literature where the `k`ᵗʰ Grassmannian would instead be `k`-dimensional
   subspaces of a given vector space over a field. See implementation notes below.
+
+- `Module.Grassmannian.functor`: The Grassmannian functor that sends an `R`-algebra `A` to the set
+  `G(k, A ⊗[R] M; A)`.
 
 ## Implementation notes
 
@@ -39,8 +45,6 @@ to `G(n - k, V; F)` and also to `G(k, V →ₗ[F] F; F)`, where `n` is the dimen
 
 ## TODO
 - Define and recover the subspace-definition (i.e. the first definition above).
-- Define the functor `Module.Grassmannian.functor R M k` that sends an `R`-algebra `A` to the set
-  `G(k, A ⊗[R] M; A)`.
 - Define `chart x` indexed by `x : Fin k → M` as a subtype consisting of those
   `N ∈ G(k, A ⊗[R] M; A)` such that the composition `R^k → M → M⧸N` is an isomorphism.
 - Define `chartFunctor x` to turn `chart x` into a subfunctor of `Module.Grassmannian.functor`. This
@@ -79,6 +83,115 @@ instance : CoeOut G(k, M; R) (Submodule R M) :=
 
 @[ext] lemma ext {N₁ N₂ : G(k, M; R)} (h : (N₁ : Submodule R M) = N₂) : N₁ = N₂ := by
   cases N₁; cases N₂; congr 1
+
+section Functor
+
+open CategoryTheory TensorProduct AlgebraTensorModule
+
+attribute [local ext high] ConcreteCategory.hom_ext
+
+variable {A : Type w} [CommRing A] [Algebra R A]
+variable (B : Type w) [CommRing B] [Algebra R B]
+
+section BaseChangeMkQ
+
+variable [Algebra A B] [IsScalarTower R A B] (N : Submodule A (A ⊗[R] M))
+
+/-- The surjective `B`-linear map `B ⊗[R] M → B ⊗[A] ((A ⊗[R] M) ⧸ N)` obtained as the base change
+of `N.mkQ` along `A → B` -/
+def baseChangeMkQ : B ⊗[R] M →ₗ[B] B ⊗[A] ((A ⊗[R] M) ⧸ N) :=
+  N.mkQ.baseChange B ∘ₗ (cancelBaseChange R A B B M).symm.toLinearMap
+
+variable {B}
+
+theorem baseChangeMkQ_surjective : Function.Surjective (baseChangeMkQ B N) :=
+  (LinearMap.baseChange_surjective B (Submodule.mkQ_surjective _)).comp
+    (cancelBaseChange R A B B M).symm.surjective
+
+/-- The `B`-linear equivalence `(B ⊗[R] M) ⧸ ker (baseChangeMkQ N) ≃ₗ[B] B ⊗[A] ((A ⊗[R] M) ⧸ N)`
+underlying `Module.Grassmannian.map`. -/
+noncomputable def baseChangeMkQEquiv :=
+  (baseChangeMkQ B N).quotKerEquivOfSurjective (baseChangeMkQ_surjective N)
+
+end BaseChangeMkQ
+
+variable {B} (f : A →ₐ[R] B)
+
+/-- The map on Grassmannians induced by base change along an algebra map `A → B`.
+Given a submodule `N` of `A ⊗[R] M`, the image is the kernel of the composition
+B ⊗[R] M ≃ B ⊗[A] (A ⊗[R] M) → B ⊗[A] ((A ⊗[R] M) ⧸ N)`. -/
+def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
+  letI : Algebra A B := f.toAlgebra
+  letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <| IsScalarTower.algebraMap_eq R A B
+  haveI equiv := baseChangeMkQEquiv N.toSubmodule
+  { toSubmodule := (baseChangeMkQ B N.toSubmodule).ker
+    finite_quotient := Module.Finite.equiv equiv.symm
+    projective_quotient := Module.Projective.of_equiv equiv.symm
+    rankAtStalk_eq p := by
+      calc
+        _ = rankAtStalk (R := B) (B ⊗[A] ((A ⊗[R] M) ⧸ N.toSubmodule)) p := by
+          simpa using congrArg (fun g => g p) <| Module.rankAtStalk_eq_of_equiv equiv
+        _ = rankAtStalk (R := A) (A ⊗[R] M ⧸ N.toSubmodule)
+            (PrimeSpectrum.comap (algebraMap A B) p) := by
+          simpa using Module.rankAtStalk_baseChange ..
+        _ = k := N.rankAtStalk_eq _ }
+
+theorem map_toSubmodule (N : G(k, A ⊗[R] M; A)) :
+  letI : Algebra A B := f.toAlgebra
+  letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <| IsScalarTower.algebraMap_eq R A B
+  (map f N).toSubmodule = (baseChangeMkQ B N.toSubmodule).ker := by rfl
+
+variable (k)
+
+@[simp] theorem map_id (A : CommAlgCat R) (N : G(k, A ⊗[R] M; A)) :
+    map (.id R A) N = N := by
+  ext : 1
+  exact (ker_baseChange_comp_cancelBaseChange_symm N.mkQ).trans N.toSubmodule.ker_mkQ
+
+variable {C : Type w} [CommRing C] [Algebra R C]
+variable (g : B →ₐ[R] C)
+
+theorem map_comp (N : G(k, A ⊗[R] M; A)) :
+    map (g.comp f) N = map g (map f N) := by
+  algebraize [f.toRingHom, g.toRingHom, (g.comp f).toRingHom]
+  -- FIXME: `algebraize` doesn't generate this instance, even though it seems like it should
+  let : IsScalarTower A B C := by apply IsScalarTower.of_algebraMap_eq'; rfl
+  let fAB := baseChangeMkQ B N.toSubmodule
+  let fAC := baseChangeMkQ C N.toSubmodule
+  let fBC := baseChangeMkQ C fAB.ker
+  have hfAB : Function.Surjective fAB :=
+    (LinearMap.baseChange_surjective B (Submodule.mkQ_surjective _)).comp
+      (cancelBaseChange R A B B M).symm.surjective
+  let e := (fAB.quotKerEquivOfSurjective hfAB).baseChange B C ≪≫ₗ
+    cancelBaseChange A B C C (A ⊗[R] M ⧸ N.toSubmodule)
+  ext x
+  have hfAC_ker_eq : (map (g.comp f) N).toSubmodule = fAC.ker := map_toSubmodule (g.comp f) N
+  have hfBC_ker_eq : (map g (map f N)).toSubmodule = fBC.ker := by
+    rw [map_toSubmodule g (map f N), map_toSubmodule f N]
+  have hcomp : fAC = e.toLinearMap.comp fBC := by
+    apply LinearMap.ext
+    intro z
+    induction z using TensorProduct.induction_on with
+    | zero => simp [fAC, fBC, e]
+    | tmul c m =>
+      simp only [fAC, fBC, e, baseChangeMkQ, LinearMap.comp_apply, cancelBaseChange_symm_tmul,
+         LinearMap.baseChange_tmul, Submodule.mkQ_apply, LinearEquiv.coe_trans, LinearEquiv.coe_coe,
+         LinearEquiv.coe_baseChange, LinearMap.quotKerEquivOfSurjective_apply_mk]
+      simp [fAB, baseChangeMkQ]
+    | add x y hx hy =>
+      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, map_add] at *
+      rw [hx, hy]
+  rw [hfAC_ker_eq, hfBC_ker_eq, hcomp, LinearEquiv.ker_comp]
+
+/-- The Grassmannian functor sends an `R`-algebra `A` to `G(k, A ⊗[R] M; A)`. -/
+@[expose, simps]
+def functor : CommAlgCat.{w, u} R ⥤ Type (max v w) where
+  obj A := G(k, (A ⊗[R] M); A)
+  map f := ↾map f.hom
+  map_id A := by ext N : 1; exact map_id k A N
+  map_comp f g := by ext N : 1; exact map_comp k f.hom g.hom N
+
+end Functor
 
 end Grassmannian
 

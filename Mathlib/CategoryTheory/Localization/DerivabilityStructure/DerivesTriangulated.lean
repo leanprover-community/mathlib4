@@ -43,6 +43,8 @@ variable {Φ : LocalizerMorphism W₁ W₂}
   {L : C₂ ⥤ D₂} [L.IsLocalization W₂] [L.CommShift ℤ] [L.IsTriangulated]
   [L.mapArrow.EssSurj]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 include hF in
 lemma isTriangulated_of_isRightDerivedFunctor
     [Φ.IsRightDerivabilityStructure] [Φ.arrow.HasRightResolutions]
@@ -55,10 +57,13 @@ lemma isTriangulated_of_isRightDerivedFunctor
     let R : Φ.arrow.RightResolution φ := Classical.arbitrary _
     obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle R.X₁.hom
     exact ⟨_, Φ.functor.map_distinguished _ hT,
-      hF.isIso _ _, hF.isIso _ _, hF.isIso _ _,
+      hF.isIso_of_isRightDerivedFunctor _ _, hF.isIso_of_isRightDerivedFunctor _ _,
+        hF.isIso_of_isRightDerivedFunctor _ _,
       ⟨(Arrow.isoMk (Localization.isoOfHom L _ _ R.hw.1)
         (Localization.isoOfHom L _ _ R.hw.2) (by simp [← Functor.map_comp])).symm ≪≫ eφ⟩⟩)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 include hF in
 lemma isTriangulated_of_isLeftDerivedFunctor
     [Φ.IsLeftDerivabilityStructure] [Φ.arrow.HasLeftResolutions]
@@ -75,7 +80,7 @@ lemma isTriangulated_of_isLeftDerivedFunctor
         ⟨?_ ≪≫ eφ⟩⟩
     exact Arrow.isoMk (Localization.isoOfHom L _ _ R.hw.1)
       (Localization.isoOfHom L _ _ R.hw.2)
-      (by simp [← Functor.map_comp, dsimp% Arrow.w R.w]))
+      (by simp [← Functor.map_comp]))
 
 end LocalizerMorphism.Derives
 

@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Functor
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
 public import Mathlib.Control.Basic
 
 /-!
@@ -18,7 +18,7 @@ This allows us to use Lean's `Type`-based applicative functors in category theor
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -26,6 +26,7 @@ section
 
 variable (F : Type* → Type*) [Applicative F] [LawfulApplicative F]
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] map_seq seq_map_assoc types_tensorObj_def types_tensorUnit_def
   LawfulApplicative.pure_seq LawfulApplicative.seq_assoc in
 /-- A lawful `Applicative` gives a category theory `LaxMonoidal` functor

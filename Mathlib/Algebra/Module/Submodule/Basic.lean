@@ -22,7 +22,7 @@ As such it is a good target for organizing and splitting further.
 submodule, subspace, linear map
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -131,7 +131,7 @@ theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Submodule R M →
 theorem toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
   Iff.rfl
 
-@[gcongr, mono]
+@[mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   toAddSubgroup_strictMono.monotone
 
