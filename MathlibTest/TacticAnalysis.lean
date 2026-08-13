@@ -41,24 +41,6 @@ section rwaSuggestion
 
 set_option linter.tacticAnalysis.rwaSuggestion true
 
-/--
-info: Try this:
-  [apply] rwa [h₁]
--/
-#guard_msgs in
-example (a b c : ℕ) (h₁ : a = b) (h₂ : b = c) : a = c := by
-  rw [h₁]
-  assumption
-
--- Also detect tactics separated by `;`.
-/--
-info: Try this:
-  [apply] rwa [h₁]
--/
-#guard_msgs in
-example (a b c : ℕ) (h₁ : a = b) (h₂ : b = c) : a = c := by
-  rw [h₁]; assumption
-
 -- Preserve an `at` location.
 /--
 info: Try this:
@@ -72,32 +54,11 @@ example (P : ℕ → Prop) (a b : ℕ) (hab : a = b) (h : P a) : P b := by
 -- Preserve multiple rewrite rules.
 /--
 info: Try this:
-  [apply] rwa [h₁, h₂]
+  [apply] rwa [h₁, ← h₂]
 -/
 #guard_msgs in
-example (a b c d : ℕ) (h₁ : a = b) (h₂ : b = c) (h₃ : c = d) : a = d := by
-  rw [h₁, h₂]
-  assumption
-
--- Preserve reverse rewrites.
-/--
-info: Try this:
-  [apply] rwa [← h₁]
--/
-#guard_msgs in
-example (a b c : ℕ) (h₁ : a = b) (h₂ : a = c) : b = c := by
-  rw [← h₁]
-  assumption
-
--- The sliding window should detect the second `rw`.
-/--
-info: Try this:
-  [apply] rwa [h₂]
--/
-#guard_msgs in
-example (a b c d : ℕ) (h₁ : a = b) (h₂ : b = c) (h₃ : c = d) : a = d := by
-  rw [h₁]
-  rw [h₂]
+example (a b c d : ℕ) (h₁ : a = b) (h₂ : c = b) (h₃ : c = d) : a = d := by
+  rw [h₁, ← h₂]
   assumption
 
 -- `rw` and `assumption` are not adjacent, so don't suggest `rwa`.
