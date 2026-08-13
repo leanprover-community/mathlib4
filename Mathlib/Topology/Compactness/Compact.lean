@@ -382,7 +382,7 @@ theorem isCompact_iff_finite_subcover :
   ⟨fun hs => hs.elim_finite_subcover, isCompact_of_finite_subcover⟩
 
 /-- A set `s` is compact if and only if
-/-- A set `s` is compact if and only if for every family of closed sets whose intersection is 
+/-- A set `s` is compact if and only if for every family of closed sets whose intersection is
 disjoint from `s`, there exists a finite subfamily whose intersection is disjoint from `s`. -/
 theorem isCompact_iff_finite_subfamily_closed :
     IsCompact s ↔ ∀ {ι : Type u} (t : ι → Set X),
