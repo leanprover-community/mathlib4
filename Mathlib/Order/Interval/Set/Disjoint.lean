@@ -179,7 +179,7 @@ theorem IsLeast.biUnion_Ici_eq_Ici (h : IsLeast s a) : ⋃ x ∈ s, Ici x = Ici 
   refine (iUnion₂_subset fun x hx ↦ ?_).antisymm fun x hx ↦ mem_iUnion₂.mpr ⟨a, h.left, hx⟩
   exact Ici_subset_Ici.mpr <| mem_lowerBounds.mp h.right x hx
 
-@[to_dual]
+@[to_dual (attr := deprecated IsLeast.biUnion_Ici_eq_Ici (since := "2026-08-13"))]
 theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) : ⋃ x ∈ s, Ici x = Ici a :=
   a_glb.isLeast a_mem |>.biUnion_Ici_eq_Ici
 
@@ -248,8 +248,7 @@ theorem iUnion_Iic_eq_Iio_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R
 
 theorem iUnion_Ici_eq_Ici_iInf {R : Type*} [CompleteLattice R] {f : ι → R}
     (has_least_elem : (⨅ i, f i) ∈ range f) : ⋃ i : ι, Ici (f i) = Ici (⨅ i, f i) := by
-  simp only [← IsGLB.biUnion_Ici_eq_Ici (@isGLB_iInf _ _ _ f) has_least_elem, mem_range,
-    iUnion_exists, iUnion_iUnion_eq']
+  simp [← isGLB_iInf.isLeast has_least_elem |>.biUnion_Ici_eq_Ici]
 
 theorem iUnion_Iic_eq_Iic_iSup {R : Type*} [CompleteLattice R] {f : ι → R}
     (has_greatest_elem : (⨆ i, f i) ∈ range f) : ⋃ i : ι, Iic (f i) = Iic (⨆ i, f i) :=
