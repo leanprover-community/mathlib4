@@ -46,6 +46,8 @@ variable {Y' Y X : C}
   [PreGaloisCategory.IsConnected X] (f : Y' ⟶ Y) (g : Y ⟶ X) (fg : Y' ⟶ X)
   [IsGaloisCover fg] [IsGaloisCover g]
 
+/-- If `f ≫ g = fg` where both `fg` and `g` are Galois covers, this is
+the canonical morphism `Aut (Over.mk fg) →* Aut (Over.mk g)`. -/
 noncomputable def autMapOfIsGaloisCover (h : f ≫ g = fg := by cat_disch) :
     Aut (Over.mk fg) →* Aut (Over.mk g) :=
   autMapHom (Over.homMk f)

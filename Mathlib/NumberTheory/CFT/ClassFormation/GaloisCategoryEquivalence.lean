@@ -81,6 +81,9 @@ lemma exists_fiber_functor [GaloisCategory D] :
   ⟨getFiberFunctor D ⋙ FintypeCat.uSwitch, inferInstance⟩
 
 variable (D) in
+/-- A choice of a fiber functor on a Galois category. The difference with
+`getFiberFunctor` is that here, we can choose an arbitrary universe `w`
+for the target category `FintypeCat.{w}`. -/
 @[no_expose]
 noncomputable def getFiberFunctor' [GaloisCategory D] : D ⥤ FintypeCat.{w} :=
   getFiberFunctor D ⋙ FintypeCat.uSwitch

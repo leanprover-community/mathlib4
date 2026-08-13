@@ -38,7 +38,7 @@ namespace CategoryTheory
 
 open Limits Opposite PreGaloisCategory
 
-variable {C : Type u} [Category.{v} C] {A : Type*} [Category* A]
+variable {C : Type u} [Category.{v} C] {A A' : Type*} [Category* A] [Category* A']
 
 namespace GaloisCategory
 
@@ -142,10 +142,7 @@ lemma isSheafFor_singleton_iff_of_isGaloisCover
 section
 
 variable (P : (isConnected C).FullSubcategoryᵒᵖ ⥤ A)
-
-section
-
-variable {Y X : C} [PreGaloisCategory.IsConnected Y] [PreGaloisCategory.IsConnected X]
+  {Y X : C} [PreGaloisCategory.IsConnected Y] [PreGaloisCategory.IsConnected X]
   (f : Y ⟶ X)
 
 /-- If `P` is a presheaf on the category of connected objects of a Galois category `C`,
@@ -203,7 +200,7 @@ lemma nonempty_isLimit_coneOfPresheaf_iff [IsGaloisCover f] :
 
 end
 
-lemma isSheaf_iff :
+lemma isSheaf_iff (P : (isConnected C).FullSubcategoryᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (isConnectedTopology C) P ↔
     ∀ ⦃Y X : C⦄ [PreGaloisCategory.IsConnected Y]
       [PreGaloisCategory.IsConnected X] (f : Y ⟶ X) [IsGaloisCover f],
@@ -211,7 +208,16 @@ lemma isSheaf_iff :
   simp only [Presheaf.IsSheaf, isSheaf_type_iff, nonempty_isLimit_coneOfPresheaf_iff]
   tauto
 
-end
+lemma isSheaf_of_reflectsFiniteLimits
+    {P : (isConnected C).FullSubcategoryᵒᵖ ⥤ A} (F : A ⥤ A') [ReflectsFiniteLimits F]
+    (hP : Presheaf.IsSheaf (isConnectedTopology C) (P ⋙ F)) :
+    Presheaf.IsSheaf (isConnectedTopology C) P := by
+  rw [isSheaf_iff] at hP ⊢
+  intro Y X _ _ f _
+  have : ReflectsLimitsOfShape (SingleObj (Aut (Over.mk f))) F := by
+    obtain ⟨G', hg, hf, ⟨e⟩⟩ := Finite.exists_type_univ_nonempty_mulEquiv.{_, 0} (Aut (Over.mk f))
+    exact reflectsLimitsOfShape_of_equiv e.toSingleObjEquiv.symm _
+  exact ⟨isLimitOfReflects F (hP f).some⟩
 
 end GaloisCategory
 
