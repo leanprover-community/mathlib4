@@ -313,7 +313,7 @@ theorem injective_comp_right_iff_surjective {γ : Type*} [Nontrivial γ] :
   have ⟨b₀, hb⟩ := not_forall.mp not_surj
   classical have := inj (a₁ := fun _ ↦ c) (a₂ := (if · = b₀ then c' else c)) ?_
   · simpa using congr_fun this b₀
-  ext a; simp only [comp_apply, if_neg fun h ↦ hb ⟨a, h⟩]
+  ext a; simp only [comp_apply, ite_eq_right fun h ↦ hb ⟨a, h⟩]
 
 protected theorem Surjective.right_cancellable (hf : Surjective f) {g₁ g₂ : β → γ} :
     g₁ ∘ f = g₂ ∘ f ↔ g₁ = g₂ :=
@@ -498,13 +498,13 @@ theorem Injective.isPartialInv {α β} {f : α → β} (I : Injective f) : IsPar
     have hpi : partialInv f b = if h : ∃ a, f a = b then some (Classical.choose h) else none :=
       rfl
     if h' : ∃ a, f a = b
-    then by rw [hpi, dif_pos h'] at h
+    then by rw [hpi, dite_eq_left h'] at h
             injection h with h
             subst h
             apply Classical.choose_spec h'
-    else by rw [hpi, dif_neg h'] at h; contradiction,
+    else by rw [hpi, dite_eq_right h'] at h; contradiction,
   fun e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
-              (dif_pos h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
+              (dite_eq_left h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
 
 @[deprecated (since := "2026-03-11")] alias partialInv_of_injective := Injective.isPartialInv
 
@@ -525,14 +525,14 @@ noncomputable def invFun {α : Sort u} {β} [Nonempty α] (f : α → β) : β �
   fun y ↦ if h : (∃ x, f x = y) then h.choose else Classical.arbitrary α
 
 theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b := by
-  simp only [invFun, dif_pos h, h.choose_spec]
+  simp only [invFun, dite_eq_left h, h.choose_spec]
 
 theorem apply_invFun_apply {α β : Type*} {f : α → β} {a : α} :
     f (@invFun _ _ ⟨a⟩ f (f a)) = f a :=
   @invFun_eq _ _ ⟨a⟩ _ _ ⟨_, rfl⟩
 
 theorem invFun_neg (h : ¬∃ a, f a = b) : invFun f b = Classical.choice ‹_› :=
-  dif_neg h
+  dite_eq_right h
 
 theorem invFun_eq_of_injective_of_rightInverse {g : β → α} (hf : Injective f)
     (hg : RightInverse g f) : invFun f = g :=
@@ -640,11 +640,11 @@ def update (f : ∀ a, β a) (a' : α) (v : β a') (a : α) : β a :=
 
 @[simp]
 theorem update_self (a : α) (v : β a) (f : ∀ a, β a) : update f a v a = v :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 @[simp]
 theorem update_of_ne {a a' : α} (h : a ≠ a') (v : β a') (f : ∀ a, β a) : update f a' v a = f a :=
-  dif_neg h
+  dite_eq_right h
 
 /--
 A congruence lemma for `Function.update`, specialized for the non-dependent case. Without this,
@@ -844,7 +844,7 @@ lemma Injective.factorsThrough (hf : Injective f) (g : α → γ) : g.FactorsThr
 lemma FactorsThrough.extend_apply {g : α → γ} (hf : g.FactorsThrough f) (e' : β → γ) (a : α) :
     extend f g e' (f a) = g a := by
   classical
-  simp only [extend_def, dif_pos, exists_apply_eq_apply]
+  simp only [extend_def, dite_eq_left, exists_apply_eq_apply]
   exact hf (Classical.choose_spec (exists_apply_eq_apply f a))
 
 @[simp]
@@ -925,7 +925,7 @@ theorem surjective_comp_right_iff_injective {γ : Type*} [Nontrivial γ] :
   have ⟨f, hf⟩ := surj (if · = a₂ then c else c')
   have h₁ := congr_fun hf a₁
   have h₂ := congr_fun hf a₂
-  simp only [comp_apply, if_neg ne, reduceIte] at h₁ h₂
+  simp only [comp_apply, ite_eq_right ne, reduceIte] at h₁ h₂
   rw [← h₁, eq, h₂]
 
 theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ ↦ g ∘ f :=
@@ -1106,7 +1106,7 @@ noncomputable def sometimes {α β} [Nonempty β] (f : α → β) : β :=
   if h : Nonempty α then f (Classical.choice h) else Classical.choice ‹_›
 
 theorem sometimes_eq {p : Prop} {α} [Nonempty α] (f : p → α) (a : p) : sometimes f = f a :=
-  dif_pos ⟨a⟩
+  dite_eq_left ⟨a⟩
 
 theorem sometimes_spec {p : Prop} {α} [Nonempty α] (P : α → Prop) (f : p → α) (a : p)
     (h : P (f a)) : P (sometimes f) := by
