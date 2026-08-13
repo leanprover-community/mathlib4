@@ -195,14 +195,6 @@ def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 @[deprecated Std.Irrefl (since := "2026-02-12")]
 def Irreflexive := ∀ x, ¬x ≺ x
 
-/-- `Std.Antisymm` as a definition, suitable for use in proofs. -/
-@[deprecated Std.Antisymm (since := "2026-02-09")]
-def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
-
-/-- `Std.Total` as a definition, suitable for use in proofs. -/
-@[deprecated Std.Total (since := "2026-02-10")]
-def Total := ∀ x y, x ≺ y ∨ y ≺ x
-
 theorem Equivalence.stdRefl (h : Equivalence r) : Std.Refl r where
   refl := h.refl
 

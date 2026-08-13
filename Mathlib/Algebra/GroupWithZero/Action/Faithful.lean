@@ -19,7 +19,3 @@ assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul Ring
 
 variable {α : Type*}
 
-/-- `Monoid.toMulAction` is faithful on nontrivial cancellative monoids with zero. -/
-@[nolint unusedArguments, deprecated "subsumed by `instFaithfulSMul`" (since := "2026-02-03")]
-lemma IsRightCancelMulZero.faithfulSMul [MonoidWithZero α] [IsRightCancelMulZero α] :
-    FaithfulSMul α α := inferInstance

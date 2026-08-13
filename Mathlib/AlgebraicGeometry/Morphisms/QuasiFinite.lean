@@ -175,9 +175,6 @@ lemma Scheme.Hom.finite_preimage_singleton [LocallyQuasiFinite f] [QuasiCompact 
     (f ⁻¹' {y}).Finite := by
   simpa [Scheme.Hom.range_fiberι] using Set.finite_univ.image (f.fiberι y)
 
-@[deprecated (since := "2026-02-05")]
-alias IsFinite.finite_preimage_singleton := Scheme.Hom.finite_preimage_singleton
-
 lemma Scheme.Hom.finite_preimage [LocallyQuasiFinite f] [QuasiCompact f]
     {s : Set Y} (hs : s.Finite) : (f ⁻¹' s).Finite :=
   hs.preimage' fun _ _ ↦ f.finite_preimage_singleton _
