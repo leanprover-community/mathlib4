@@ -42,7 +42,7 @@ theorem MeromorphicOn.logDeriv_mul_eventuallyEq (hf : MeromorphicOn f U) (hg : M
     hf.eventually_codiscreteWithin_apply_ne_zero h'f,
     hg.eventually_codiscreteWithin_apply_ne_zero h'g]
     with y h₁y h₂y h₃y h₄y
-  rw [Pi.add_apply, Pi.mul_def]
+  rw [Pi.add_apply]
   exact logDeriv_mul y h₃y h₄y h₁y.differentiableAt h₂y.differentiableAt
 
 /--
@@ -73,7 +73,7 @@ theorem MeromorphicOn.logDeriv_prod_eventuallyEq {ι : Type*} {s : Finset ι} {F
     (eventually_all_finset s).2 fun i hi ↦ (h i hi).eventually_codiscreteWithin_apply_ne_zero
       (h' i hi)
   filter_upwards [hA, hN] with y h₁y h₂y
-  rw [Finset.sum_apply, Finset.prod_fn]
+  rw [Finset.sum_apply]
   exact logDeriv_prod h₂y fun i hi ↦ (h₁y i hi).differentiableAt
 
 /--
@@ -158,7 +158,7 @@ theorem MeromorphicOn.logDeriv_finprod_zpow_eventuallyEq {ι : Type*} {F : ι �
   have hsub : support (fun i ↦ d i • logDeriv (F i) y) ⊆ hd.toFinset := by
     simp +contextual [-support_mul, -mul_eq_zero, Set.subset_def, not_imp_not]
   calc logDeriv (∏ᶠ i, F i ^ d i) y
-      = logDeriv (fun z ↦ ∏ i ∈ hd.toFinset, (F i ^ d i) z) y := by rw [h₀, Finset.prod_fn]
+      = logDeriv (∏ i ∈ hd.toFinset, F i ^ d i) y := by rw [h₀]
     _ = ∑ i ∈ hd.toFinset, logDeriv (F i ^ d i) y :=
         logDeriv_prod (fun i hi ↦ zpow_ne_zero _ (h₂y i hi))
           (fun i hi ↦ ((h₁y i hi).zpow (h₂y i hi)).differentiableAt)
