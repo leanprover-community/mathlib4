@@ -557,7 +557,7 @@ theorem ConvolutionExists.of_memLp_memLp [IsAddRightInvariant μ] {p q : ENNReal
 
 /-- If `p` and `q` are Hölder conjugates, then the convolution of `f` and `g` is bounded everywhere
 by `‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ`. -/
-theorem enorm_convolution_le_enorm_mul_eLpNorm_mul_eLpNorm {p q : ENNReal}
+theorem enorm_convolution_le {p q : ENNReal}
     [hpq : p.HolderConjugate q] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (x₀ : G) : ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
   (enorm_integral_le_lintegral_enorm _).trans <|
