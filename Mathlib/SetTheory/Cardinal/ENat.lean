@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Order.Hom.Ring
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
@@ -240,7 +240,7 @@ lemma ofENat_toENat_le (a : Cardinal) : ↑(toENat a) ≤ a := enat_gc.l_u_le _
 @[simp]
 lemma ofENat_toENat_eq_self {a : Cardinal} : toENat a = a ↔ a ≤ ℵ₀ := by
   rw [eq_comm, ← enat_gc.exists_eq_l]
-  simpa only [mem_range, eq_comm] using Set.ext_iff.1 range_ofENat a
+  simpa only [mem_range, eq_comm] using! Set.ext_iff.1 range_ofENat a
 
 @[simp] alias ⟨_, ofENat_toENat⟩ := ofENat_toENat_eq_self
 
@@ -254,8 +254,6 @@ variable {c c' : Cardinal.{u}} {n : ℕ}
 @[simp] lemma toENat_le_one : toENat c ≤ 1 ↔ c ≤ 1 := toENat_le_natCast
 @[simp] lemma toENat_le_ofNat [n.AtLeastTwo] : toENat c ≤ ofNat(n) ↔ c ≤ ofNat(n) :=
   toENat_le_natCast
-
-@[deprecated (since := "2026-01-13")] alias toENat_le_nat := toENat_le_natCast
 
 lemma toENat_le_iff_of_le_aleph0 (hc : c ≤ ℵ₀) : toENat c ≤ toENat c' ↔ c ≤ c' := by
   lift c to ℕ∞ using hc; simp_rw [toENat_ofENat, enat_gc _]
@@ -274,7 +272,6 @@ lemma toENat_eq_iff_of_le_aleph0 (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) : toE
   natCast_le_toENat
 
 @[simp] lemma toENat_lt_natCast : toENat c < n ↔ c < n := by simp [← not_le]
-@[simp] lemma toENat_lt_one : toENat c < 1 ↔ c < 1 := toENat_lt_natCast
 @[simp] lemma toENat_lt_ofNat [n.AtLeastTwo] : toENat c < ofNat(n) ↔ c < ofNat(n) :=
   toENat_lt_natCast
 
@@ -289,7 +286,8 @@ lemma toENat_eq_iff_of_le_aleph0 (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) : toE
 @[simp] lemma toENat_eq_ofNat [n.AtLeastTwo] : toENat c = ofNat(n) ↔ c = ofNat(n) :=
   toENat_eq_natCast
 
-@[deprecated (since := "2026-01-13")] alias toENat_eq_nat := toENat_eq_natCast
+@[deprecated toENat_eq_zero (since := "2026-05-25")]
+lemma toENat_lt_one : toENat c < 1 ↔ c < 1 := by simp
 
 @[simp] lemma natCast_eq_toENat : n = toENat c ↔ n = c := by simp [eq_comm (a := Nat.cast _)]
 @[simp] lemma ofNat_eq_toENat [n.AtLeastTwo] : ofNat(n) = toENat c ↔ ofNat(n) = c :=

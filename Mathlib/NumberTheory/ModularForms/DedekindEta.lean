@@ -110,8 +110,8 @@ lemma multipliableLocallyUniformlyOn_eta :
 
 lemma eta_tprod_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : ∏' n, (1 - eta_q n z) ≠ 0 := by
   refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z) ?_ ?_
-  · exact fun i ↦ by simpa using one_sub_eta_q_ne_zero i hz
-  · simpa [eta_q, ← summable_norm_iff] using summable_eta_q ⟨z, hz⟩
+  · exact fun i ↦ by simpa using! one_sub_eta_q_ne_zero i hz
+  · simpa [eta_q, ← summable_norm_iff] using! summable_eta_q ⟨z, hz⟩
 
 /-- Eta is non-vanishing on the upper half plane. -/
 lemma eta_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : η z ≠ 0 :=
@@ -162,13 +162,13 @@ lemma logDeriv_qParam (h : ℝ) (z : ℂ) : logDeriv (𝕢 h) z = 2 * π * I / h
 lemma summable_logDeriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
     Summable fun i ↦ logDeriv (1 - eta_q i ·) z := by
   have := summable_norm_pow_mul_geometric_div_one_sub 1 (norm_qParam_lt_one 1 ⟨z, hz⟩)
-  convert ((summable_nat_add_iff 1).mpr this).mul_left (-2 * π * I) using 1 with n
+  convert! ((summable_nat_add_iff 1).mpr this).mul_left (-2 * π * I) using 1 with n
   grind [one_sub_eta_logDeriv_eq]
 
 open EisensteinSeries in
 lemma logDeriv_eta_eq_E2 (z : ℍ) : logDeriv eta z = (π * I / 12) * E2 z := by
   unfold eta
-  rw [logDeriv_mul _ (Periodic.qParam_ne_zero _) (eta_tprod_ne_zero z.2) (by fun_prop)
+  rw [logDeriv_fun_mul _ (Periodic.qParam_ne_zero _) (eta_tprod_ne_zero z.2) (by fun_prop)
     (differentiableAt_eta_tprod z.2)]
   have HG := logDeriv_tprod_eq_tsum isOpen_upperHalfPlaneSet z.2
     (one_sub_eta_q_ne_zero · z.2) (by fun_prop) (summable_logDeriv_one_sub_eta_q z.2)

@@ -40,7 +40,7 @@ Gaussian measure, characteristic function
 public section
 
 
-open Complex MeasureTheory WithLp ContinuousLinearMap
+open Complex MeasureTheory ContinuousLinearMap
 
 open scoped Matrix NNReal Real RealInnerProductSpace ProbabilityTheory
 

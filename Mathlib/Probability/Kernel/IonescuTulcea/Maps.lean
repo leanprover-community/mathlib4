@@ -180,10 +180,10 @@ lemma _root_.IicProdIoc_preimage {a b : ι} (hab : a ≤ b) (s : (i : Iic b) →
   simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, IicProdIoc_def, forall_const,
     Subtype.forall, mem_Iic, Set.mem_prod, frestrictLe₂_apply, restrict₂, mem_Ioc]
   refine ⟨fun h ↦ ⟨fun i hi ↦ ?_, fun i ⟨hi1, hi2⟩ ↦ ?_⟩, fun ⟨h1, h2⟩ i hi ↦ ?_⟩
-  · convert h i (hi.trans hab)
-    rw [dif_pos hi]
-  · convert h i hi2
-    rw [dif_neg (not_le.2 hi1)]
+  · convert! h i (hi.trans hab)
+    rw [dite_eq_left hi]
+  · convert! h i hi2
+    rw [dite_eq_right (not_le.2 hi1)]
   · split_ifs with hi3
     · exact h1 i hi3
     · exact h2 i ⟨not_le.1 hi3, hi⟩

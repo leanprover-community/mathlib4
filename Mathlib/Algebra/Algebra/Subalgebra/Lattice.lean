@@ -296,6 +296,9 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
     AlgEquiv.ofBijective (Algebra.ofId R _)
       ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy :), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.ext hx⟩⟩
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bottom subalgebra is isomorphic to the field. -/
 @[simps! symm_apply]
 noncomputable def botEquiv (F R : Type*) [Field F] [Semiring R] [Nontrivial R] [Algebra F R] :
@@ -369,20 +372,19 @@ section Equalizer
 namespace AlgHom
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-variable {F : Type*}
-
-variable [FunLike F A B] [AlgHomClass F R A B]
 
 @[simp]
-theorem equalizer_eq_top {φ ψ : F} : equalizer φ ψ = ⊤ ↔ φ = ψ := by
+theorem equalizer_eq_top {φ ψ : A →ₐ[R] B} : equalizer φ ψ = ⊤ ↔ φ = ψ := by
   simp [SetLike.ext_iff, DFunLike.ext_iff]
 
 @[simp]
-theorem equalizer_same (φ : F) : equalizer φ φ = ⊤ := equalizer_eq_top.2 rfl
+theorem equalizer_same (φ : A →ₐ[R] B) : equalizer φ φ = ⊤ := equalizer_eq_top.2 rfl
+
+variable {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
 
 theorem eqOn_sup {φ ψ : F} {S T : Subalgebra R A} (hS : Set.EqOn φ ψ S) (hT : Set.EqOn φ ψ T) :
     Set.EqOn φ ψ ↑(S ⊔ T) := by
-  rw [← le_equalizer] at hS hT ⊢
+  rw [← AlgHom.coe_coe φ, ← AlgHom.coe_coe ψ, ← le_equalizer] at hS hT ⊢
   exact sup_le hS hT
 
 theorem ext_on_codisjoint {φ ψ : F} {S T : Subalgebra R A} (hST : Codisjoint S T)
@@ -516,6 +518,34 @@ theorem subset_adjoin : s ⊆ adjoin R s :=
 
 @[aesop 80% (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin hx
+
+/-
+The following set-up allows one to write `xₖ : R[x₁, ..., xₙ]` instead of
+`(⟨xₖ, "membership proof"⟩ : R[x₁, ..., xₙ])`.
+
+The idea is to recurse through the list of `x₁, ..., xₙ` until we find the appropriate `xₖ`.
+By design, it only triggers if the set is of the form `insert x₁ (insert x₂ (...(s)))` or
+`{x₁, ..., xₙ}`.
+-/
+
+variable {α : Type*}
+
+/-- Supporting class for coercions `xₖ : R[x₁, ..., xₙ]`. -/
+class CoeAdjoinAux (x : α) (s : Set α) : Prop where mem : x ∈ s
+
+scoped instance (x : α) : CoeAdjoinAux x {x} := ⟨Set.mem_singleton x⟩
+
+scoped instance (x : α) (s : Set α) : CoeAdjoinAux x (insert x s) := ⟨Set.mem_insert x s⟩
+
+scoped instance (x y : α) (s : Set α) [CoeAdjoinAux x s] : CoeAdjoinAux x (insert y s) :=
+  ⟨Set.mem_insert_of_mem y CoeAdjoinAux.mem⟩
+
+/-- Enables notation `xₖ : R[x₁, ..., xₙ]` instead of
+`(⟨xₖ, "membership proof"⟩ : R[x₁, ..., xₙ])`. -/
+scoped instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B]
+    (s : Set B) (x : B) [CoeAdjoinAux x s] :
+    CoeDep B x (adjoin A s) where
+  coe := ⟨x, mem_adjoin_of_mem CoeAdjoinAux.mem⟩
 
 theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
   Algebra.gc.l_le H
@@ -700,19 +730,11 @@ theorem adjoin_span {s : Set A} : adjoin R (Submodule.span R s : Set A) = adjoin
   le_antisymm (adjoin_le (span_le_adjoin _ _)) (adjoin_mono Submodule.subset_span)
 
 theorem adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjoin R s).map f :=
-  le_antisymm (adjoin_le <| Set.image_mono subset_adjoin) <|
-    Subalgebra.map_le.2 <| adjoin_le <| Set.image_subset_iff.1 <| by
-      simp only [Set.image_id', coe_carrier_toSubmonoid, Subalgebra.coe_toSubsemiring,
-        Subalgebra.coe_comap]
-      exact fun x hx => subset_adjoin ⟨x, hx, rfl⟩
+  eq_of_forall_ge_iff fun t ↦ by simp [Subalgebra.map_le, adjoin_le_iff]
 
 @[simp]
 theorem adjoin_insert_adjoin (x : A) : adjoin R (insert x ↑(adjoin R s)) = adjoin R (insert x s) :=
-  le_antisymm
-    (adjoin_le
-      (Set.insert_subset_iff.mpr
-        ⟨subset_adjoin (Set.mem_insert _ _), adjoin_mono (Set.subset_insert _ _)⟩))
-    (Algebra.adjoin_mono (Set.insert_subset_insert Algebra.subset_adjoin))
+  eq_of_forall_ge_iff fun t ↦ by simp [adjoin_le_iff, Set.insert_subset_iff]
 
 theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a₂, f (a₁ * a₂) = f a₁ * f a₂)
     (h : x ∈ adjoin R s) : f x ∈ adjoin R (f '' (s ∪ {1})) := by
@@ -721,7 +743,7 @@ theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a�
   | algebraMap r =>
     have : f 1 ∈ adjoin R (f '' (s ∪ {1})) :=
       subset_adjoin ⟨1, ⟨Set.subset_union_right <| Set.mem_singleton 1, rfl⟩⟩
-    convert Subalgebra.smul_mem (adjoin R (f '' (s ∪ {1}))) this r
+    convert! Subalgebra.smul_mem (adjoin R (f '' (s ∪ { 1 }))) this r
     rw [algebraMap_eq_smul_one]
     exact f.map_smul _ _
   | add y z _ _ hy hz => simpa [hy, hz] using Subalgebra.add_mem _ hy hz
@@ -863,13 +885,13 @@ theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ :
 theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A} :
     Set.EqOn φ ψ (adjoin R s) ↔ Set.EqOn φ ψ s := by
   have (S : Set A) : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
-  simp only [← this, Set.le_eq_subset, SetLike.coe_subset_coe, adjoin_le_iff]
+  simp only [← this, SetLike.coe_subset_coe, adjoin_le_iff]
 
 theorem adjoin_ext {s : Set A} ⦃φ₁ φ₂ : adjoin R s →ₐ[R] B⦄
     (h : ∀ x hx, φ₁ ⟨x, subset_adjoin hx⟩ = φ₂ ⟨x, subset_adjoin hx⟩) : φ₁ = φ₂ :=
   ext fun ⟨x, hx⟩ ↦ adjoin_induction h (fun _ ↦ φ₂.commutes _ ▸ φ₁.commutes _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl) hx
+    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl) hx
 
 theorem ext_of_eq_adjoin {S : Subalgebra R A} {s : Set A} (hS : S = adjoin R s) ⦃φ₁ φ₂ : S →ₐ[R] B⦄
     (h : ∀ x hx, φ₁ ⟨x, hS.ge (subset_adjoin hx)⟩ = φ₂ ⟨x, hS.ge (subset_adjoin hx)⟩) :
@@ -985,7 +1007,7 @@ theorem comap_map_eq (f : A →ₐ[R] B) (S : Subalgebra R A) :
 
 theorem comap_map_eq_self {f : A →ₐ[R] B} {S : Subalgebra R A}
     (h : f ⁻¹' {0} ⊆ S) : (S.map f).comap f = S := by
-  convert comap_map_eq f S
+  convert! comap_map_eq f S
   rwa [left_eq_sup, Algebra.adjoin_le_iff]
 
 end Subalgebra

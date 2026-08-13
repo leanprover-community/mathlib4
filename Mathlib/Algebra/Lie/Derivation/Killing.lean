@@ -91,7 +91,7 @@ instance instIsKilling_range_ad : LieAlgebra.IsKilling R 𝕀 :=
 the adjoint action is nondegenerate. -/
 lemma killingForm_restrict_range_ad_nondegenerate :
     ((killingForm R 𝔻).restrict 𝕀).Nondegenerate := by
-  convert LieAlgebra.IsKilling.killingForm_nondegenerate R 𝕀
+  convert! LieAlgebra.IsKilling.killingForm_nondegenerate R 𝕀
   exact killingForm_restrict_range_ad R L
 
 set_option backward.isDefEq.respectTransparency false in

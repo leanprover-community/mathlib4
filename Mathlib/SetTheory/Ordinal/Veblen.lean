@@ -31,7 +31,6 @@ The following notation is scoped to the `Ordinal` namespace.
 ## TODO
 
 - Prove that `ε₀` and `Γ₀` are countable.
-- Prove that the exponential principal ordinals are the epsilon ordinals (and 0, 1, 2, ω).
 - Prove that the ordinals principal under `veblen` are the gamma ordinals (and 0).
 
 ## References
@@ -69,11 +68,11 @@ termination_by o
 
 @[simp]
 theorem veblenWith_zero (f : Ordinal → Ordinal) : veblenWith f 0 = f := by
-  rw [veblenWith, if_pos rfl]
+  rw [veblenWith, ite_eq_left rfl]
 
 theorem veblenWith_of_ne_zero (f : Ordinal → Ordinal) (h : o ≠ 0) :
     veblenWith f o = derivFamily fun x : Iio o ↦ veblenWith f x.1 := by
-  rw [veblenWith, if_neg h]
+  rw [veblenWith, ite_eq_right h]
 
 /-- `veblenWith f o` is always normal for `o ≠ 0`. See `isNormal_veblenWith` for a version which
 assumes `IsNormal f`. -/
@@ -90,9 +89,6 @@ theorem isNormal_veblenWith (o : Ordinal) : IsNormal (veblenWith f o) := by
   obtain rfl | h := eq_or_ne o 0
   · rwa [veblenWith_zero]
   · exact isNormal_veblenWith' f h
-
-@[deprecated (since := "2025-12-25")]
-protected alias IsNormal.veblenWith := isNormal_veblenWith
 
 theorem mem_range_veblenWith (h : o ≠ 0) :
     a ∈ range (veblenWith f o) ↔ ∀ b < o, veblenWith f b a = a := by
@@ -213,9 +209,6 @@ theorem isNormal_veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
     rw [veblenWith_veblenWith_of_lt hf]
     rw [lt_succ_iff]
     exact le_max_left _ b
-
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.veblenWith_zero := isNormal_veblenWith_zero
 
 theorem veblenWith_veblenWith_eq_veblenWith_iff (h : o₂ ≤ o₁) :
     veblenWith f o₁ (veblenWith f o₂ a) = veblenWith f o₂ a ↔ veblenWith f o₁ a = a := by
@@ -511,7 +504,7 @@ theorem invVeblen₂_lt (x : Ordinal) : invVeblen₂ x < ω ^ x := by
 theorem invVeblen₂_le (x : Ordinal) : invVeblen₂ x ≤ x := by
   obtain h | h := eq_zero_or_pos (invVeblen₁ x)
   · rw [invVeblen₂_le_iff, h, veblen_zero]
-  · convert (invVeblen₂_lt x).le
+  · convert! (invVeblen₂_lt x).le
     rw [← veblen_zero_apply, veblen_eq_of_lt_invVeblen₁ h]
 
 theorem invVeblen₂_of_lt_opow (h : a < ω ^ a) : invVeblen₂ a = a := by
@@ -537,7 +530,7 @@ theorem veblen_eq_opow_iff (h : a < veblen o a) :
     · rw [← veblen_veblen_of_lt ho, veblen_zero_apply, opow_right_inj one_lt_omega0]
       rintro rfl
       simp [invVeblen₁_veblen h, invVeblen₂_veblen ho.ne' h]
-  · convert ← veblen_invVeblen₁_invVeblen₂ x
+  · convert! ← veblen_invVeblen₁_invVeblen₂ x
 
 /-! ### Epsilon function -/
 

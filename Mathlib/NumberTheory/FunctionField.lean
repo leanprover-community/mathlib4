@@ -77,7 +77,7 @@ theorem functionField_iff (Ft : Type*) [Field Ft] [Algebra F[X] Ft]
     exact (b.mapCoeffs e this).finiteDimensional_of_finite
   · let b := Module.finBasis Ft K
     refine (b.mapCoeffs e.symm ?_).finiteDimensional_of_finite
-    intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
+    intro c x; convert! (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 
 namespace FunctionField
 

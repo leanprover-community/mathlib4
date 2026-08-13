@@ -23,8 +23,6 @@ assert_not_exists Prod.swap_eq_iff_eq_swap
 assert_not_exists Ring
 assert_not_exists Set.range
 
-open Function
-
 open Nat hiding one_pos
 
 namespace List
@@ -87,6 +85,28 @@ theorem tail_iterate (l : List α) (n : ℕ) : (List.tail^[n]) l = l.drop n := b
   induction n generalizing l with
   | zero => rfl
   | succ n ih => cases l <;> simp [*]
+
+section TailDropLast
+
+variable (l : List α) (n : ℕ)
+
+theorem tail_take_eq_take_tail : (l.take n).tail = l.tail.take (n - 1) := by
+  ext
+  grind
+
+theorem dropLast_take_eq_take_dropLast : (l.take n).dropLast = l.dropLast.take (n - 1) := by
+  ext
+  grind
+
+theorem tail_drop_eq_drop_tail : (l.drop n).tail = l.tail.drop n := by
+  ext
+  grind
+
+theorem dropLast_drop_eq_drop_dropLast : (l.drop n).dropLast = l.dropLast.drop n := by
+  ext
+  grind
+
+end TailDropLast
 
 section TakeI
 
@@ -154,7 +174,7 @@ private theorem span.loop_eq_take_drop :
 
 @[simp]
 theorem span_eq_takeWhile_dropWhile (l : List α) : span p l = (takeWhile p l, dropWhile p l) := by
-  simpa using span.loop_eq_take_drop p l []
+  simpa using! span.loop_eq_take_drop p l []
 
 end Filter
 

@@ -73,7 +73,7 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
   · rintro ⟨i, j⟩ _hij
     obtain H | H := le_or_gt n j
     · aesop
-    rw [if_pos H, if_pos]
+    rw [ite_eq_left H, ite_eq_left]
     · rfl
     refine ⟨?_, fun hh ↦ H.not_ge ?_⟩
     · rintro ⟨⟩
@@ -96,7 +96,7 @@ theorem coeff_invOfUnit (n : ℕ) (φ : R⟦X⟧) (u : Rˣ) :
 @[simp]
 theorem constantCoeff_invOfUnit (φ : R⟦X⟧) (u : Rˣ) :
     constantCoeff (invOfUnit φ u) = ↑u⁻¹ := by
-  rw [← coeff_zero_eq_constantCoeff_apply, coeff_invOfUnit, if_pos rfl]
+  rw [← coeff_zero_eq_constantCoeff_apply, coeff_invOfUnit, ite_eq_left rfl]
 
 @[simp]
 theorem mul_invOfUnit (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff φ = u) :
@@ -236,15 +236,15 @@ def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
 theorem isUnit_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) :
     IsUnit (divXPowOrder f) :=
   ⟨Unit_of_divided_by_X_pow_order f,
-    by simp only [Unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]⟩
+    by simp only [Unit_of_divided_by_X_pow_order, dite_eq_right hf, Units.val_mk]⟩
 
 theorem Unit_of_divided_by_X_pow_order_nonzero {f : k⟦X⟧} (hf : f ≠ 0) :
     ↑(Unit_of_divided_by_X_pow_order f) = divXPowOrder f := by
-  simp only [Unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]
+  simp only [Unit_of_divided_by_X_pow_order, dite_eq_right hf, Units.val_mk]
 
 @[simp]
 theorem Unit_of_divided_by_X_pow_order_zero : Unit_of_divided_by_X_pow_order (0 : k⟦X⟧) = 1 := by
-  simp only [Unit_of_divided_by_X_pow_order, dif_pos]
+  simp only [Unit_of_divided_by_X_pow_order, dite_eq_left]
 
 theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
     f = divXPowOrder f ↔ IsUnit f :=
@@ -311,17 +311,15 @@ theorem maximalIdeal_eq_span_X : IsLocalRing.maximalIdeal (k⟦X⟧) = Ideal.spa
       apply Ideal.eq_top_of_isUnit_mem I hfI0 (IsUnit.map C (Ne.isUnit hfX))
   rw [IsLocalRing.eq_maximalIdeal hX]
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
-instance : NormalizationMonoid k⟦X⟧ where
+instance : StrongNormalizationMonoid k⟦X⟧ where
   normUnit f := (Unit_of_divided_by_X_pow_order f)⁻¹
   normUnit_zero := by simp only [Unit_of_divided_by_X_pow_order_zero, inv_one]
-  normUnit_mul  := fun hf hg ↦ by
+  normUnit_mul hf hg := by
     simp only [← mul_inv, inv_inj]
     simp only [Unit_of_divided_by_X_pow_order_nonzero (mul_ne_zero hf hg),
       Unit_of_divided_by_X_pow_order_nonzero hf, Unit_of_divided_by_X_pow_order_nonzero hg,
       Units.ext_iff, Units.val_mul, ← divXPowOrder_mul]
-  normUnit_coe_units := by
-    intro u
+  normUnit_coe_units u := by
     set u₀ := u.1 with hu
     have h₀ : IsUnit u₀ := ⟨u, hu.symm⟩
     rw [inv_inj, Units.ext_iff, ← hu, Unit_of_divided_by_X_pow_order_nonzero h₀.ne_zero]

@@ -6,10 +6,10 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.MeasureTheory.Group.Measure
-public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Measure theory in the product of groups
+
 In this file we show properties about measure theory in products of measurable groups
 and properties of iterated integrals in measurable groups.
 
@@ -100,7 +100,7 @@ theorem measurable_measure_mul_right (hs : MeasurableSet s) :
   suffices
     Measurable fun y =>
       μ ((fun x => (x, y)) ⁻¹' ((fun z : G × G => ((1 : G), z.1 * z.2)) ⁻¹' univ ×ˢ s))
-    by convert this using 1; ext1 x; congr 1 with y : 1; simp
+    by convert! this using 1; ext1 x; congr 1 with y : 1; simp
   apply measurable_measure_prodMk_right
   apply measurable_const.prodMk measurable_mul (MeasurableSet.univ.prod hs)
   infer_instance
@@ -134,8 +134,8 @@ where `S` is the map `(x, y) ↦ (x, xy)` and `R` is `Prod.swap`. -/
 /-- The map `(x, y) ↦ (y + x, - x)` is measure-preserving. -/]
 theorem measurePreserving_mul_prod_inv [IsMulLeftInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.2 * z.1, z.1⁻¹)) (μ.prod ν) (μ.prod ν) := by
-  convert (measurePreserving_prod_inv_mul_swap ν μ).comp (measurePreserving_prod_mul_swap μ ν)
-    using 1
+  convert!
+    (measurePreserving_prod_inv_mul_swap ν μ).comp (measurePreserving_prod_mul_swap μ ν) using 1
   ext1 ⟨x, y⟩
   simp_rw [Function.comp_apply, mul_inv_rev, inv_mul_cancel_right]
 
@@ -191,7 +191,7 @@ theorem lintegral_lintegral_mul_inv [IsMulLeftInvariant ν] (f : G → G → ℝ
   conv_rhs => rw [← (measurePreserving_mul_prod_inv μ ν).map_eq]
   symm
   exact
-    lintegral_map' (hf.mono' (measurePreserving_mul_prod_inv μ ν).map_eq.absolutelyContinuous)
+    lintegral_map' (hf.mono_ac (measurePreserving_mul_prod_inv μ ν).map_eq.absolutelyContinuous)
       h.aemeasurable
 
 @[to_additive]
@@ -234,7 +234,7 @@ theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) 
     fun x => measurable_const.indicator (measurable_mul_const _ sm)
   have : ∀ x y, s.indicator (fun _ : G => (1 : ℝ≥0∞)) (y * x) =
       ((fun z => z * x) ⁻¹' s).indicator (fun b : G => 1) y := by
-    intro x y; symm; convert indicator_comp_right (M := ℝ≥0∞) fun y => y * x using 2; ext1; rfl
+    intro x y; symm; convert! indicator_comp_right (M := ℝ≥0∞) fun y => y * x using 2; ext1; rfl
   simp_rw [this, lintegral_mul_const _ (ms _), lintegral_indicator (measurable_mul_const _ sm),
     setLIntegral_one]
 
@@ -331,7 +331,7 @@ theorem measure_mul_measure_eq (s t : Set G) (h2s : ν' s ≠ 0) (h3s : ν' s �
 theorem measure_eq_div_smul (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
     μ' = (μ' s / ν' s) • ν' := by
   ext1 t -
-  rw [smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
+  rw [Measure.smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
     measure_mul_measure_eq μ' ν' s t h2s h3s, mul_div_assoc, ENNReal.mul_div_cancel h2s h3s]
 
 end SigmaFinite
@@ -388,8 +388,8 @@ theorem measurePreserving_div_prod [IsMulRightInvariant μ] :
 /-- The map `(x, y) ↦ (x + y, - x)` is measure-preserving. -/]
 theorem measurePreserving_mul_prod_inv_right [IsMulRightInvariant μ] [IsMulRightInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.1 * z.2, z.1⁻¹)) (μ.prod ν) (μ.prod ν) := by
-  convert (measurePreserving_prod_div_swap ν μ).comp (measurePreserving_prod_mul_swap_right μ ν)
-    using 1
+  convert!
+    (measurePreserving_prod_div_swap ν μ).comp (measurePreserving_prod_mul_swap_right μ ν) using 1
   ext1 ⟨x, y⟩
   simp_rw [Function.comp_apply, div_mul_eq_div_div_swap, div_self', one_div]
 

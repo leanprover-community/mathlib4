@@ -38,7 +38,7 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 
 namespace Finset
 
-open Multiset Subtype Function
+open Multiset
 
 /-! ### range -/
 
@@ -91,6 +91,9 @@ theorem subset_range {s n} : s ⊆ range n ↔ ∀ x, x ∈ s → x < n := by gr
 theorem range_subset_range {n m} : range n ⊆ range m ↔ n ≤ m := by grind
 
 theorem range_mono : Monotone range := fun _ _ => range_subset_range.2
+
+theorem strictMono_range : StrictMono range :=
+  strictMono_nat_of_lt_succ fun _ ↦ by simp [ssubset_def]
 
 theorem mem_range_succ_iff {a b : ℕ} : a ∈ range b.succ ↔ a ≤ b := by grind
 
