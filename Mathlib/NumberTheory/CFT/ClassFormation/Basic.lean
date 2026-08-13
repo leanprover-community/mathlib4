@@ -181,7 +181,7 @@ be interpreted here as the cohomology for the Grothendieck
 topology `isConnectedTopology C`). With these axioms, when taking a
 suitable colimit, we should get a subgroup of `ℚ / ℤ` which may
 not be the whole `ℚ / ℤ`. If we want that the invariant is an isomorphism
-with `ℚ / ℤ`, an extra condition on `C` should be done. -/
+with `ℚ / ℤ`, an extra condition on `C` should be added. -/
 
 variable (C) in
 /-- A class formation is a field formation for which the cohomology
