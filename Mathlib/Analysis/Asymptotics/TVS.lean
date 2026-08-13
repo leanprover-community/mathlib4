@@ -446,7 +446,6 @@ lemma _root_.ContinuousLinearMap.isThetaTVS_comp (g : E →L[𝕜] F) (hg : Topo
 private lemma _root_.Topology.IsInducing.comap_nhds_zero_le {φ : E →ₗ[𝕜] G} (hφ : IsInducing φ) :
     comap φ (𝓝 0) ≤ 𝓝 0 := by rw [hφ.nhds_eq_comap, map_zero]
 
-set_option trace.Meta.grewrite true in
 lemma _root_.Topology.IsInducing.isBigOTVS_iff_left (φ : E →ₗ[𝕜] G) (hφ : IsInducing φ) :
     ((φ ∘ f) =O[𝕜; l] g) ↔ (f =O[𝕜; l] g) := by
   let Φ : E →L[𝕜] G := ⟨φ, hφ.continuous⟩
