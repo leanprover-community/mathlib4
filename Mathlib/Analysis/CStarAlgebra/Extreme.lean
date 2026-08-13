@@ -146,8 +146,7 @@ with initial projection `p = star x * x` and final projection `q = x * star x`,
 "`(1 - q) A (1 - p) = 0`". Note: This notation is an informal
 shorthand used in paper proofs to make them more transparent, but it is
 nonsense to refer to `1`, and the notation means that everything should be
-considered as fully expanded. This is reflected in the statement below.
-*The converse is Sakai 1.6.4.* -/
+considered as fully expanded. This is reflected in the statement below. -/
 private theorem eq_zero_of_eq_sub_of_mem_closedBall_of_mem_extremePoints_unitClosedBall
     {x a b : A} (hx : x ∈ extremePoints ℝ (closedBall 0 1)) (ha : a ∈ closedBall 0 1)
     (hb : a = b - b * (star x * x) - (x * star x) * b + (x * star x) * b * (star x * x)) :
