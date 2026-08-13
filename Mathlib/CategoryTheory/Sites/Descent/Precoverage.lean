@@ -198,7 +198,6 @@ lemma mor_unique ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i)
   rw [mor_eq _ _ _ _ _ _ _ rfl rfl, mor_eq _ _ _ _ _ _ _ rfl rfl, this]
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given two family of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S`,
 two objects `D₁ D₂ : F.DescentData f`, a morphism `φ` between the images in
 `F.DescentData f'` of `D₁` and `D₂` by a functor `pullFunctor`. This is
@@ -213,7 +212,6 @@ noncomputable def familyOfElements (i : ι) :
       ext
       simpa using (Over.w q).symm))
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma familyOfElements_eq {i : ι} {Z : Over (X i)} (g : Z ⟶ Over.mk (𝟙 (X i)))
     ⦃j : ι'⦄ (a : Z.left ⟶ X' j) (fac : a ≫ f' j = Z.hom ≫ f i := by cat_disch) :
     familyOfElements w φ i g (by
@@ -221,7 +219,6 @@ lemma familyOfElements_eq {i : ι} {Z : Over (X i)} (g : Z ⟶ Over.mk (𝟙 (X 
       exact mem_sieve _ _ fac) = mor w φ _ _ fac :=
   mor_unique _ _ _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma compatible_familyOfElements (i : ι) :
     (familyOfElements w φ i).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ fac
