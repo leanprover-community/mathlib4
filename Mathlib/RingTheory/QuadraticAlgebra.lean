@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Discr
 public import Mathlib.RingTheory.Discriminant
+public import Mathlib.RingTheory.Polynomial.Resultant.Basic
 
 /-!
 # Ring-theoretic properties of quadratic algebras
@@ -15,6 +16,8 @@ This file collects ring-theoretic properties of `QuadraticAlgebra R a b` as an `
 
 ## Main results
 
+* `QuadraticAlgebra.polynomial_discr_eq_discr`: the discriminant of the polynomial
+  `X ^ 2 - b • X - C a` equals `discr a b`.
 * `Algebra.trace_quadraticAlgebra_apply` and `Algebra.norm_quadraticAlgebra_apply`:
   `Algebra.trace` and `Algebra.norm` on `QuadraticAlgebra R a b` agree with
   `QuadraticAlgebra.trace` and `QuadraticAlgebra.norm`.
@@ -25,7 +28,21 @@ This file collects ring-theoretic properties of `QuadraticAlgebra R a b` as an `
 
 open QuadraticAlgebra
 
-variable {R : Type*} [CommRing R] {a b : R}
+variable {R : Type*} [CommRing R] (a b : R)
+
+open Polynomial in
+/-- The discriminant of the polynomial `X ^ 2 - b • X - C a` is the discriminant `discr a b` of
+the quadratic algebra `QuadraticAlgebra R a b`. -/
+theorem QuadraticAlgebra.polynomial_discr_eq_discr :
+    (X ^ 2 - b • X - C a).discr = discr a b := by
+  nontriviality R
+  have : (X ^ 2 - b • X - C a).degree = 2 := by
+    compute_degree!
+    simp [coeff_X]
+  rw [discr_of_degree_eq_two this]
+  simp [coeff_X, discr_def]
+
+variable {a b}
 
 /-- The algebra trace of `QuadraticAlgebra R a b` is the elementary trace. -/
 @[simp]
