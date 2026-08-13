@@ -151,6 +151,8 @@ initialize translations : NameMapExtension TranslationInfo ← registerNameMapEx
 def nameDict : Std.HashMap String (List String) := .ofList [
   ("top", ["Bot"]),
   ("bot", ["Top"]),
+  ("untop", ["Unbot"]),
+  ("unbot", ["Untop"]),
   ("inf", ["Sup"]),
   ("sup", ["Inf"]),
   ("inf₂", ["Sup₂"]),
@@ -159,10 +161,12 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("ssup", ["SInf"]),
   ("min", ["Max"]),
   ("max", ["Min"]),
+  ("min?", ["Max?"]),
+  ("max?", ["Min?"]),
   ("argmin", ["Argmax"]),
   ("argmax", ["Argmin"]),
-  ("untop", ["Unbot"]),
-  ("unbot", ["Untop"]),
+  ("minimum", ["Maximum"]),
+  ("maximum", ["Minimum"]),
   ("minimal", ["Maximal"]),
   ("maximal", ["Minimal"]),
   ("lower", ["Upper"]),
@@ -201,6 +205,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
   -- ("mono", ["Epi"]),
+  ("epimorphisms", ["Monomorphisms"]),
+  ("monomorphisms", ["Epimorphisms"]),
   ("terminal", ["Initial"]),
   ("initial", ["Terminal"]),
   ("precompose", ["Postcompose"]),
@@ -213,6 +219,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cofan", ["Fan"]),
   ("limit", ["Colimit"]),
   ("colimit", ["Limit"]),
+  ("lim", ["Colim"]),
+  ("colim", ["Lim"]),
   ("limits", ["Colimits"]),
   ("colimits", ["Limits"]),
   ("product", ["Coproduct"]),
@@ -257,9 +265,14 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("galoisCoinsertion", "GaloisInsertion"),
   ("leftOrdContinuous", "RightOrdContinuous"),
   ("rightOrdContinuous", "LeftOrdContinuous"),
+  ("bihimp", "SymmDiff"),
+  ("symmDiff", "Bihimp"),
 
+  -- Revert translations if they should not happen in certain word combinations:
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
+  ("ofSucc", "OfPred"),
+  ("maximalAxioms", "MinimalAxioms"),
 ]
 
 @[inherit_doc GuessName.GuessNameExt]

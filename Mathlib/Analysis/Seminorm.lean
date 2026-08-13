@@ -5,6 +5,7 @@ Authors: Jean Lo, Yaël Dillies, Moritz Doll
 -/
 module
 
+public import Mathlib.Algebra.Order.AddTorsor
 public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
@@ -133,13 +134,12 @@ instance instZero : Zero (Seminorm 𝕜 E) :=
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with
     smul' := fun _ _ => (mul_zero _).symm }⟩
 
-@[simp]
-theorem coe_zero : ⇑(0 : Seminorm 𝕜 E) = 0 :=
-  rfl
+instance : IsZeroApply (Seminorm 𝕜 E) E ℝ where
+  zero_apply _ := rfl
 
-@[simp]
-theorem zero_apply (x : E) : (0 : Seminorm 𝕜 E) x = 0 :=
-  rfl
+@[deprecated (since := "2026-06-22")] alias coe_zero := FunLike.coe_zero
+
+@[deprecated (since := "2026-06-22")] protected alias zero_apply := zero_apply
 
 instance : Inhabited (Seminorm 𝕜 E) :=
   ⟨0⟩
@@ -155,19 +155,16 @@ instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : 
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
         rw [map_smul_eq_mul, mul_left_comm] }
 
+instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : IsSMulApply R (Seminorm 𝕜 E) E ℝ where
+  smul_apply _ _ _ := rfl
+
 instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' ℝ] [SMul R' ℝ≥0]
     [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
-    IsScalarTower R R' (Seminorm 𝕜 E) where
-  smul_assoc r a p := ext fun x => smul_assoc r a (p x)
+    IsScalarTower R R' (Seminorm 𝕜 E) := FunLike.isScalarTower
 
-theorem coe_smul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p : Seminorm 𝕜 E) :
-    ⇑(r • p) = r • ⇑p :=
-  rfl
+@[deprecated (since := "2026-06-22")] alias coe_smul := FunLike.coe_smul
 
-@[simp]
-theorem smul_apply [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p : Seminorm 𝕜 E)
-    (x : E) : (r • p) x = r • p x :=
-  rfl
+@[deprecated (since := "2026-06-22")] protected alias smul_apply := smul_apply
 
 instance instAdd : Add (Seminorm 𝕜 E) where
   add p q :=
@@ -175,50 +172,43 @@ instance instAdd : Add (Seminorm 𝕜 E) where
       toFun := fun x => p x + q x
       smul' := fun a x => by simp only [map_smul_eq_mul, map_smul_eq_mul, mul_add] }
 
-theorem coe_add (p q : Seminorm 𝕜 E) : ⇑(p + q) = p + q :=
-  rfl
+instance : IsAddApply (Seminorm 𝕜 E) E ℝ where
+  add_apply _ _ _ := rfl
 
-@[simp]
-theorem add_apply (p q : Seminorm 𝕜 E) (x : E) : (p + q) x = p x + q x :=
-  rfl
+@[deprecated (since := "2026-06-22")] alias coe_add := FunLike.coe_add
 
-instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) :=
-  DFunLike.coe_injective.addMonoid _ rfl coe_add fun _ _ => by rfl
+@[deprecated (since := "2026-06-22")] protected alias add_apply := add_apply
 
-instance instAddCommMonoid : AddCommMonoid (Seminorm 𝕜 E) :=
-  DFunLike.coe_injective.addCommMonoid _ rfl coe_add fun _ _ => by rfl
+instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) := fast_instance% FunLike.addMonoid
+
+instance instAddCommMonoid : AddCommMonoid (Seminorm 𝕜 E) := fast_instance% FunLike.addCommMonoid
 
 instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid (Seminorm 𝕜 E) :=
-  Function.Injective.isOrderedCancelAddMonoid DFunLike.coe coe_add .rfl
+  Function.Injective.isOrderedCancelAddMonoid DFunLike.coe FunLike.coe_add .rfl
 
 instance instMulAction [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
-    MulAction R (Seminorm 𝕜 E) :=
-  DFunLike.coe_injective.mulAction _ (by intros; rfl)
+    MulAction R (Seminorm 𝕜 E) := fast_instance% FunLike.mulAction
 
 variable (𝕜 E)
 
-/-- `coeFn` as an `AddMonoidHom`. Helper definition for showing that `Seminorm 𝕜 E` is a module. -/
-@[simps]
-def coeFnAddMonoidHom : AddMonoidHom (Seminorm 𝕜 E) (E → ℝ) where
-  toFun := (↑)
-  map_zero' := coe_zero
-  map_add' := coe_add
+@[deprecated (since := "2026-06-22")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
 
-theorem coeFnAddMonoidHom_injective : Function.Injective (coeFnAddMonoidHom 𝕜 E) :=
-  show @Function.Injective (Seminorm 𝕜 E) (E → ℝ) (↑) from DFunLike.coe_injective
+@[deprecated (since := "2026-06-22")] alias coeFnAddMonoidHom_apply := FunLike.coeAddMonoidHom_apply
+
+@[deprecated (since := "2026-06-22")] alias coeFnAddMonoidHom_injective :=
+  FunLike.coeAddMonoidHom_injective
 
 variable {𝕜 E}
 
 instance instDistribMulAction [Monoid R] [DistribMulAction R ℝ] [SMul R ℝ≥0]
-    [IsScalarTower R ℝ≥0 ℝ] : DistribMulAction R (Seminorm 𝕜 E) :=
-  (coeFnAddMonoidHom_injective 𝕜 E).distribMulAction _ (by intros; rfl)
+    [IsScalarTower R ℝ≥0 ℝ] : DistribMulAction R (Seminorm 𝕜 E) := fast_instance%
+  FunLike.distribMulAction
 
 instance instModule [Semiring R] [Module R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
-    Module R (Seminorm 𝕜 E) :=
-  (coeFnAddMonoidHom_injective 𝕜 E).module R _ (by intros; rfl)
+    Module R (Seminorm 𝕜 E) := fast_instance% FunLike.module
 
 instance instSup : Max (Seminorm 𝕜 E) where
   max p q :=
@@ -258,6 +248,14 @@ theorem lt_def {p q : Seminorm 𝕜 E} : p < q ↔ p ≤ q ∧ ∃ x, p x < q x 
 
 instance instSemilatticeSup : SemilatticeSup (Seminorm 𝕜 E) :=
   DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
+
+instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [Preorder R] [Zero R]
+    [IsOrderedModule R ℝ] : IsOrderedSMul R (Seminorm 𝕜 E) where
+  smul_le_smul_left p q hpq c x := calc
+    _ ≤ (c • (1 : ℝ≥0)) • p x := by simp
+    _ ≤ _ := by grw [hpq x]; simp
+  smul_le_smul_right a b hab p x := by
+    grw [smul_apply, hab, smul_apply]
 
 end SMul
 
@@ -335,7 +333,8 @@ theorem coe_bot : ⇑(⊥ : Seminorm 𝕜 E) = 0 :=
 theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
   rfl
 
-theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
+@[deprecated IsOrderedSMul.smul_le_smul (since := "2026-07-31")]
+protected theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
     a • p ≤ b • q := by
   simp_rw [le_def]
   intro x
@@ -407,10 +406,8 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 variable [AddCommGroup E] [AddCommGroup E₂] [Module 𝕜 E] [Module 𝕜₂ E₂]
 
 theorem comp_smul (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (c : 𝕜₂) :
-    p.comp (c • f) = ‖c‖₊ • p.comp f :=
-  ext fun _ => by
-    rw [comp_apply, smul_apply, LinearMap.smul_apply, map_smul_eq_mul, NNReal.smul_def, coe_nnnorm,
-      smul_eq_mul, comp_apply]
+    p.comp (c • f) = ‖c‖₊ • p.comp f := by
+  ext; simp [NNReal.smul_def, map_smul_eq_mul]
 
 theorem comp_smul_apply (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (c : 𝕜₂) (x : E) :
     p.comp (c • f) x = ‖c‖ * p (f x) :=
@@ -471,7 +468,7 @@ theorem smul_inf [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r 
 
 section Classical
 
-open Classical in
+open scoped Classical in
 /-- We define the supremum of an arbitrary subset of `Seminorm 𝕜 E` as follows:
 * if `s` is `BddAbove` *as a set of functions `E → ℝ`* (that is, if `s` is pointwise bounded
   above), we take the pointwise supremum of all elements of `s`, and we prove that it is indeed a
@@ -501,7 +498,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
           rcases h with ⟨q, hq⟩
           obtain rfl | h := s.eq_empty_or_nonempty
           · simp [Real.iSup_of_isEmpty]
-          haveI : Nonempty ↑s := h.coe_sort
+          have : Nonempty ↑s := h.coe_sort
           simp only [iSup_apply]
           refine ciSup_le fun i =>
             ((i : Seminorm 𝕜 E).add_le' x y).trans <| add_le_add
@@ -527,7 +524,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
 
 protected theorem coe_sSup_eq' {s : Set <| Seminorm 𝕜 E}
     (hs : BddAbove ((↑) '' s : Set (E → ℝ))) : ↑(sSup s) = ⨆ p : s, ((p : Seminorm 𝕜 E) : E → ℝ) :=
-  congr_arg _ (dif_pos hs)
+  congr_arg _ (dite_eq_left hs)
 
 protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
     BddAbove s ↔ BddAbove ((↑) '' s : Set (E → ℝ)) :=
@@ -568,7 +565,7 @@ protected theorem sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
 set_option backward.privateInPublic true in
 private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
     IsLUB s (sSup s) := by
-  refine ⟨fun p hp x => ?_, fun p hp x => ?_⟩ <;> haveI : Nonempty ↑s := hs₂.coe_sort <;>
+  refine ⟨fun p hp x => ?_, fun p hp x => ?_⟩ <;> have : Nonempty ↑s := hs₂.coe_sort <;>
     dsimp <;> rw [Seminorm.coe_sSup_eq hs₁, iSup_apply]
   · rcases hs₁ with ⟨q, hq⟩
     exact le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
@@ -669,11 +666,11 @@ theorem closedBall_smul (p : Seminorm 𝕜 E) {c : NNReal} (hc : 0 < c) (r : ℝ
 
 theorem ball_sup (p : Seminorm 𝕜 E) (q : Seminorm 𝕜 E) (e : E) (r : ℝ) :
     ball (p ⊔ q) e r = ball p e r ∩ ball q e r := by
-  simp_rw [ball, ← Set.setOf_and, coe_sup, Pi.sup_apply, sup_lt_iff]
+  simp_rw [ball, ← Set.ofPred_and, coe_sup, Pi.sup_apply, sup_lt_iff]
 
 theorem closedBall_sup (p : Seminorm 𝕜 E) (q : Seminorm 𝕜 E) (e : E) (r : ℝ) :
     closedBall (p ⊔ q) e r = closedBall p e r ∩ closedBall q e r := by
-  simp_rw [closedBall, ← Set.setOf_and, coe_sup, Pi.sup_apply, sup_le_iff]
+  simp_rw [closedBall, ← Set.ofPred_and, coe_sup, Pi.sup_apply, sup_le_iff]
 
 theorem ball_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Nonempty) (e : E) (r : ℝ) :
     ball (s.sup' H p) e r = s.inf' H fun i => ball (p i) e r := by
@@ -738,12 +735,12 @@ lemma closedBall_eq_metric :
 
 /-- The image of a ball under addition with a singleton is another ball. -/
 theorem vadd_ball (p : Seminorm 𝕜 E) : x +ᵥ p.ball y r = p.ball (x +ᵥ y) r := by
-  letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+  let := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
   simp [ball_eq_metric]
 
 /-- The image of a closed ball under addition with a singleton is another closed ball. -/
 theorem vadd_closedBall (p : Seminorm 𝕜 E) : x +ᵥ p.closedBall y r = p.closedBall (x +ᵥ y) r := by
-  letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+  let := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
   simp [closedBall_eq_metric]
 
 end SMul
@@ -757,22 +754,22 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 theorem ball_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
     (p.comp f).ball x r = f ⁻¹' p.ball (f x) r := by
   ext
-  simp_rw [ball, mem_preimage, comp_apply, Set.mem_setOf_eq, map_sub]
+  simp_rw [ball, mem_preimage, comp_apply, Set.mem_ofPred_eq, map_sub]
 
 theorem closedBall_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
     (p.comp f).closedBall x r = f ⁻¹' p.closedBall (f x) r := by
   ext
-  simp_rw [closedBall, mem_preimage, comp_apply, Set.mem_setOf_eq, map_sub]
+  simp_rw [closedBall, mem_preimage, comp_apply, Set.mem_ofPred_eq, map_sub]
 
 variable (p : Seminorm 𝕜 E)
 
 theorem preimage_metric_ball {r : ℝ} : p ⁻¹' Metric.ball 0 r = { x | p x < r } := by
   ext x
-  simp only [mem_setOf, mem_preimage, mem_ball_zero_iff, Real.norm_of_nonneg (apply_nonneg p _)]
+  simp only [mem_ofPred, mem_preimage, mem_ball_zero_iff, Real.norm_of_nonneg (apply_nonneg p _)]
 
 theorem preimage_metric_closedBall {r : ℝ} : p ⁻¹' Metric.closedBall 0 r = { x | p x ≤ r } := by
   ext x
-  simp only [mem_setOf, mem_preimage, mem_closedBall_zero_iff,
+  simp only [mem_ofPred, mem_preimage, mem_closedBall_zero_iff,
     Real.norm_of_nonneg (apply_nonneg p _)]
 
 theorem ball_zero_eq_preimage_ball {r : ℝ} : p.ball 0 r = p ⁻¹' Metric.ball 0 r := by
@@ -810,13 +807,13 @@ theorem balanced_closedBall_zero (r : ℝ) : Balanced 𝕜 (closedBall p 0 r) :=
 theorem ball_finset_sup_eq_iInter (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ}
     (hr : 0 < r) : ball (s.sup p) x r = ⋂ i ∈ s, ball (p i) x r := by
   lift r to NNReal using hr.le
-  simp_rw [ball, iInter_setOf, finset_sup_apply, NNReal.coe_lt_coe,
+  simp_rw [ball, iInter_ofPred, finset_sup_apply, NNReal.coe_lt_coe,
     Finset.sup_lt_iff (show ⊥ < r from hr), ← NNReal.coe_lt_coe, NNReal.coe_mk]
 
 theorem closedBall_finset_sup_eq_iInter (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ}
     (hr : 0 ≤ r) : closedBall (s.sup p) x r = ⋂ i ∈ s, closedBall (p i) x r := by
   lift r to NNReal using hr
-  simp_rw [closedBall, iInter_setOf, finset_sup_apply, NNReal.coe_le_coe, Finset.sup_le_iff, ←
+  simp_rw [closedBall, iInter_ofPred, finset_sup_apply, NNReal.coe_le_coe, Finset.sup_le_iff, ←
     NNReal.coe_le_coe, NNReal.coe_mk]
 
 theorem ball_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ} (hr : 0 < r) :
@@ -894,18 +891,9 @@ end AddCommGroup
 
 end SeminormedRing
 
-section NormedField
+section NormedDivisionRing
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
-
-theorem closedBall_iSup {ι : Sort*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E)
-    {r : ℝ} (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
-  cases isEmpty_or_nonempty ι
-  · rw [iSup_of_empty', iInter_of_empty, Seminorm.sSup_empty]
-    exact closedBall_bot _ hr
-  · ext x
-    have := Seminorm.bddAbove_range_iff.mp hp (x - e)
-    simp only [mem_closedBall, mem_iInter, Seminorm.iSup_apply hp, ciSup_le_iff this]
+variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
 
 theorem ball_norm_mul_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
     p.ball 0 (‖k‖ * r) ⊆ k • p.ball 0 r := by
@@ -986,11 +974,26 @@ theorem smul_closedBall_preimage (p : Seminorm 𝕜 E) (y : E) (r : ℝ) (a : �
     rw [mem_preimage, mem_closedBall, mem_closedBall, le_div_iff₀ (norm_pos_iff.mpr ha), mul_comm, ←
       map_smul_eq_mul p, smul_sub, smul_inv_smul₀ ha]
 
+end NormedDivisionRing
+
+section NormedField
+
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
+
+theorem closedBall_iSup {ι : Sort*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E)
+    {r : ℝ} (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
+  cases isEmpty_or_nonempty ι
+  · rw [iSup_of_empty', iInter_of_empty, Seminorm.sSup_empty]
+    exact closedBall_bot _ hr
+  · ext x
+    have := Seminorm.bddAbove_range_iff.mp hp (x - e)
+    simp only [mem_closedBall, mem_iInter, Seminorm.iSup_apply hp, ciSup_le_iff this]
+
 end NormedField
 
 section Convex
 
-variable [NormedField 𝕜] [AddCommGroup E] [NormedSpace ℝ 𝕜] [Module 𝕜 E]
+variable [NormedField 𝕜] [AddCommGroup E] [SMul ℝ 𝕜] [NormSMulClass ℝ 𝕜] [Module 𝕜 E]
 
 section SMul
 
@@ -1031,7 +1034,7 @@ end Convex
 
 section RestrictScalars
 
-variable (𝕜) {𝕜' : Type*} [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable (𝕜) {𝕜' : Type*} [NormedField 𝕜] [SeminormedRing 𝕜'] [SMul 𝕜 𝕜'] [NormSMulClass 𝕜 𝕜']
   [NormOneClass 𝕜'] [AddCommGroup E] [Module 𝕜' E] [SMul 𝕜 E] [IsScalarTower 𝕜 𝕜' E]
 
 /-- Reinterpret a seminorm over a field `𝕜'` as a seminorm over a smaller field `𝕜`. This will
@@ -1106,8 +1109,8 @@ protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [IsUni
 
 protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : Continuous p := by
-  letI := IsTopologicalAddGroup.rightUniformSpace E
-  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  let := IsTopologicalAddGroup.rightUniformSpace E
+  have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   exact (Seminorm.uniformContinuous_of_continuousAt_zero hp).continuous
 
 /-- A seminorm is uniformly continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
@@ -1175,10 +1178,10 @@ theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]
   exact isOpen_lt hq continuous_const
 
 /-- The sum over a finite set of continuous seminorms is continuous. -/
-theorem continuous_finsetSum [TopologicalSpace E] [IsTopologicalAddGroup E]
+theorem continuous_finsetSum [TopologicalSpace E]
     {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hp : ∀ i ∈ s, Continuous (p i)) :
     Continuous ((∑ i ∈ s, p i : Seminorm 𝕝 E) : E → ℝ) := by
-  change Continuous (fun x ↦ coeFnAddMonoidHom _ _ (∑ i ∈ s, p i) x)
+  change Continuous (fun x ↦ FunLike.coeAddMonoidHom _ _ _ (∑ i ∈ s, p i) x)
   simp_rw [map_sum, Finset.sum_apply]
   exact _root_.continuous_finsetSum s hp
 
@@ -1190,7 +1193,7 @@ theorem continuous_finsetSup [TopologicalSpace E] [IsTopologicalAddGroup E]
 
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
     (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) := by
-  have this : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
+  have : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
   simpa only [p.ball_zero_eq] using! this (Iio_mem_nhds hr)
 
 lemma uniformSpace_eq_of_hasBasis
@@ -1346,12 +1349,12 @@ variable {𝕜 E} {x : E}
 /-- Balls at the origin are absorbent. -/
 theorem absorbent_ball_zero (hr : 0 < r) : Absorbent 𝕜 (Metric.ball (0 : E) r) := by
   rw [← ball_normSeminorm 𝕜]
-  exact (normSeminorm _ _).absorbent_ball_zero hr
+  exact (normSeminorm 𝕜 _).absorbent_ball_zero hr
 
 /-- Balls containing the origin are absorbent. -/
 theorem absorbent_ball (hx : ‖x‖ < r) : Absorbent 𝕜 (Metric.ball x r) := by
   rw [← ball_normSeminorm 𝕜]
-  exact (normSeminorm _ _).absorbent_ball hx
+  exact (normSeminorm 𝕜 _).absorbent_ball hx
 
 /-- Balls at the origin are balanced. -/
 theorem balanced_ball_zero : Balanced 𝕜 (Metric.ball (0 : E) r) := by

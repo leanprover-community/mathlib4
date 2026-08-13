@@ -146,15 +146,9 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     · apply Complex.mem_slitPlane_of_norm_lt_one
       simpa [B] using hz
 
-@[deprecated (since := "2025-12-08")]
-alias _root_.one_add_cpow_hasFPowerSeriesOnBall_zero := one_add_cpow_hasFPowerSeriesOnBall_zero
-
 theorem one_add_cpow_hasFPowerSeriesAt_zero {a : ℂ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0 :=
   one_add_cpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
-
-@[deprecated (since := "2025-12-08")]
-alias _root_.one_add_cpow_hasFPowerSeriesAt_zero := one_add_cpow_hasFPowerSeriesAt_zero
 
 theorem one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a : ℂ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ a)
@@ -186,7 +180,7 @@ theorem one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {z : ℂ} (hz : z �
   simp only [one_div, FunLike.coe_smul, H, Function.comp_def] at this
   convert (this.const_smul (c := (z ^ (a + 1))⁻¹)).congr ?_
   · ext n
-    simp only [FormalMultilinearSeries.smul_apply, ContinuousMultilinearMap.smul_apply,
+    simp only [FormalMultilinearSeries.smul_apply, smul_apply,
       FormalMultilinearSeries.compContinuousLinearMap_apply]
     simp [add_assoc, pow_add _ _ (a + 1), mul_assoc]
   · intro w hw
@@ -235,7 +229,7 @@ end Complex
 
 namespace Real
 
-attribute [local simp← ] Complex.ofReal_choose in
+attribute [local simp ←] Complex.ofReal_choose in
 attribute [-simp] FormalMultilinearSeries.apply_eq_prod_smul_coeff in
 theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 1 := by
@@ -247,15 +241,9 @@ theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
   · simp
   · intro x hx; simp_all; norm_cast
 
-@[deprecated (since := "2025-12-08")]
-alias _root_.one_add_rpow_hasFPowerSeriesOnBall_zero := one_add_rpow_hasFPowerSeriesOnBall_zero
-
 theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 :=
   one_add_rpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
-
-@[deprecated (since := "2025-12-08")]
-alias _root_.one_add_rpow_hasFPowerSeriesAt_zero := one_add_rpow_hasFPowerSeriesAt_zero
 
 theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ a)
@@ -316,8 +304,5 @@ theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℝ) :
       (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
   · simp [div_eq_mul_inv]
   · ext; simp; ring
-
-@[deprecated (since := "2025-12-28")]
-alias hasFPowerSeriesOnBall_linear_zero := hasFPowerSeriesOnBall_ofScalars_mul_add_zero
 
 end Real
