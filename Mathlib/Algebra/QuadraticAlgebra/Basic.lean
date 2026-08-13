@@ -472,6 +472,14 @@ instance : Field (QuadraticAlgebra K a b) where
   nnqsmul_def q x := by ext <;> simp [NNRat.smul_def]
   qsmul_def q x := by ext <;> simp [Rat.smul_def]
 
+/-- When `b = 0`, the `Field` instance is inferable from `¬ IsSquare a` alone: it provides the
+no-root condition `∀ r, r ^ 2 ≠ a + 0 * r`. -/
+instance {a : K} [Fact (¬ IsSquare a)] : Fact (∀ r : K, r ^ 2 ≠ a + 0 * r) :=
+  ⟨fun r hr ↦ Fact.out (p := ¬ IsSquare a) ⟨r, by simpa [sq] using hr.symm⟩⟩
+
+-- The `b = 0` bridge makes the `Field` instance inferable from `¬ IsSquare a` alone.
+example {a : K} [Fact (¬ IsSquare a)] : Field (QuadraticAlgebra K a 0) := inferInstance
+
 end field
 
 end QuadraticAlgebra
