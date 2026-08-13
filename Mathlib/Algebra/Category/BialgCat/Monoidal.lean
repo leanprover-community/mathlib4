@@ -28,7 +28,7 @@ using `Monoidal.induced`.
 universe u
 
 namespace BialgCat
-open CategoryTheory MonoidalCategory TensorProduct
+open CategoryTheory TensorProduct
 
 variable (R : Type u) [CommRing R]
 

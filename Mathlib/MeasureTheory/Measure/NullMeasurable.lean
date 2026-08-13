@@ -205,7 +205,7 @@ theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
     simpa only [union_empty] using hst.symm.union this
 
 theorem toMeasurable_ae_eq (h : NullMeasurableSet s μ) : toMeasurable μ s =ᵐ[μ] s := by
-  rw [toMeasurable_def, dif_pos]
+  rw [toMeasurable_def, dite_eq_left]
   exact (exists_measurable_superset_ae_eq h).choose_spec.2.2
 
 theorem compl_toMeasurable_compl_ae_eq (h : NullMeasurableSet s μ) : (toMeasurable μ sᶜ)ᶜ =ᵐ[μ] s :=
@@ -413,6 +413,20 @@ theorem NullMeasurable.congr {g : α → β} (hf : NullMeasurable f μ) (hg : f 
   exact EventuallyMeasurable.congr hf hg.symm
 
 end NullMeasurable
+
+section AEMeasurable
+
+variable {m : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α} {f : α → β}
+
+protected theorem _root_.AEMeasurable.nullMeasurable (h : AEMeasurable f μ) :
+    NullMeasurable f μ :=
+  let ⟨_g, hgm, hg⟩ := h; hgm.nullMeasurable.congr hg.symm
+
+theorem _root_.AEMeasurable.nullMeasurableSet_preimage {s : Set β} (hf : AEMeasurable f μ)
+    (hs : MeasurableSet s) : NullMeasurableSet (f ⁻¹' s) μ :=
+  hf.nullMeasurable hs
+
+end AEMeasurable
 
 section IsComplete
 

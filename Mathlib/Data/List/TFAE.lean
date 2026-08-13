@@ -48,9 +48,14 @@ theorem tfae_reverse : TFAE l.reverse ↔ TFAE l := tfae_congr (reverse_perm l)
 theorem tfae_of_forall (h : ∀ a ∈ l, a ↔ b) : TFAE l :=
   fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
 
-theorem TFAE.out (h : TFAE l) (n₁ n₂ : Nat) {a b}
-    (h₁ : l[n₁]? = some a := by rfl)
-    (h₂ : l[n₂]? = some b := by rfl) :
+/-- `(TFAE [P₁, P₂, P₃, ...]).out i j`, where `i`, `j` are the **1-indexed** indices for TFAE
+statements, yields a proof of `Pᵢ ↔ Pⱼ`. Indices therefore must be greater than `0`. This
+convention matches the statement numbering in `tfae` tactics. -/
+theorem TFAE.out {l} (h : TFAE l) (i j : Nat) {a b}
+    (h₁ : l[i - 1]? = some a := by rfl)
+    (h₂ : l[j - 1]? = some b := by rfl)
+    (_ : i ≠ 0 := by first | decide +kernel | fail "TFAE indices start at 1.")
+    (_ : j ≠ 0 := by first | decide +kernel | fail "TFAE indices start at 1.") :
     a ↔ b :=
   h _ (List.mem_of_getElem? h₁) _ (List.mem_of_getElem? h₂)
 
