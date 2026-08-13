@@ -5,7 +5,11 @@ Authors: Martin Winter
 -/
 module
 
+public import Mathlib.Logic.IsEmpty.Defs
 public import Mathlib.Logic.Function.Basic
+
+import Mathlib.Logic.IsEmpty.Basic
+import Mathlib.Logic.Nonempty
 
 /-!
 # Constant functions
@@ -50,45 +54,48 @@ theorem IsConst.eq {f : α → β} (hf : IsConst f) (x y : α) :
 theorem IsConst.const (b : β) :
     IsConst (const α b) := fun _ _ => rfl
 
-/- All function on a subsingleton domain are constant. -/
+/-- All function on a subsingleton domain are constant. -/
+@[simp]
 theorem IsConst.of_subsingleton_domain [Subsingleton α] (f : α → β) : IsConst f :=
   fun _ _ => congrArg f <| Subsingleton.elim _ _
 
-/- All function on into a subsingleton codomain are constant. -/
+/-- All function on into a subsingleton codomain are constant. -/
+@[simp]
 theorem IsConst.of_subsingleton_codomain [Subsingleton β] (f : α → β) : IsConst f :=
   fun _ _ => Subsingleton.elim _ _
 
 theorem IsConst.of_forall_eq {f : α → β} (b : β) (h : ∀ x, f x = b) : IsConst f :=
   fun x y => (h x).trans (h y).symm
 
-/-- A function `f : α → β` is constant on a non-empty domain if and only if there is `b : β` so that
-`f a = b` for all `a : α`. -/
-theorem isConst_iff_exists_eq [Nonempty α] {f : α → β} :
+/-- A function `f : α → β` is constant on a non-empty codomain if and only if there is `b : β` so
+that `f a = b` for all `a : α`. -/
+theorem isConst_iff_exists_forall_eq [Nonempty β] {f : α → β} :
     IsConst f ↔ ∃ b, ∀ x, f x = b where
   mp hf := by
-    rcases ‹Nonempty α› with ⟨x₀⟩
-    exact ⟨f x₀, (hf · x₀)⟩
+    cases isEmpty_or_nonempty α
+    · exact ⟨Classical.arbitrary β, isEmptyElim⟩
+    · exact ⟨f (Classical.arbitrary α), fun x => hf x _⟩
   mpr := by
-    rintro ⟨b, hb⟩
-    exact .of_forall_eq b hb
+    rintro ⟨b, hb⟩ x y
+    exact (hb x).trans (hb y).symm
+
+/-- A function `f : α → β` is constant on a non-empty domain if and only if there is `b : β` so
+that `f a = b` for all `a : α`. -/
+theorem isConst_iff_exists_forall_eq_of_nonempty_domain [Nonempty α] {f : α → β} :
+    IsConst f ↔ ∃ b, ∀ x, f x = b :=
+  haveI := Nonempty.map f inferInstance; isConst_iff_exists_forall_eq
+
+/-- A function `α → β` is constant on a non-empty codomain if and only if there is `b : β` so that
+the function can be written as `Function.const α b`. -/
+theorem isConst_iff_exists_eq_const [Nonempty β] {f : α → β} :
+    IsConst f ↔ ∃ b, f = const α b := by
+  simp only [isConst_iff_exists_forall_eq, funext_iff, const_apply]
 
 /-- A function `α → β` is constant on a non-empty domain if and only if there is `b : β` so that
 the function can be written as `Function.const α b`. -/
-theorem isConst_iff_exists_eq_const [Nonempty α] {f : α → β} :
-    IsConst f ↔ ∃ b, f = const α b := by
-  rw [isConst_iff_exists_eq]
-  constructor
-  · rintro ⟨b, hb⟩
-    exact ⟨b, funext hb⟩
-  · rintro ⟨b, hb⟩
-    exact ⟨b, congrFun hb⟩
-
-theorem IsConst.congr {f g : α → β} (hf : IsConst f) (hfg : ∀ x, f x = g x) : IsConst g :=
-  fun x y => (hfg x).symm.trans ((hf x y).trans (hfg y))
-
-theorem isConst_congr {f g : α → β} (hfg : ∀ x, f x = g x) :
-    IsConst f ↔ IsConst g :=
-  ⟨fun hf => hf.congr hfg, fun hg => hg.congr fun x => (hfg x).symm⟩
+theorem isConst_iff_exists_eq_const_of_nonempty_domain [Nonempty α] {f : α → β} :
+    IsConst f ↔ ∃ b, f = const α b :=
+  haveI := Nonempty.map f inferInstance; isConst_iff_exists_eq_const
 
 /-- Postcomposition preserves being constant. -/
 theorem IsConst.comp {f : α → β} (hf : IsConst f) (g : β → γ) :
@@ -104,19 +111,11 @@ theorem not_isConst_of_apply_ne {f : α → β} {x y : α} (h : f x ≠ f y) :
     ¬ IsConst f := fun hf => h (hf x y)
 
 theorem not_isConst_iff_exists_apply_ne {f : α → β} :
-    ¬ IsConst f ↔ ∃ x y, f x ≠ f y := by classical
-  constructor
-  · intro h
-    by_contra h'
-    apply h
-    intro x y
-    by_contra hxy
-    exact h' ⟨x, y, hxy⟩
-  · rintro ⟨x, y, hxy⟩ hf
-    exact hxy (hf x y)
+    ¬ IsConst f ↔ ∃ x y, f x ≠ f y := by
+  simp [isConst_iff]
 
+/-- The identity function on a type is constant if and only if the type is a singleton. -/
 @[simp]
-/- The identity function on a type is constant if and only if the type is a singleton. -/
 theorem isConst_id_iff : IsConst (id : α → α) ↔ Subsingleton α :=
   ⟨fun h => ⟨fun x y => h x y⟩, fun _ => .of_subsingleton_domain _⟩
 
