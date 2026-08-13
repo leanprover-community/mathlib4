@@ -122,7 +122,7 @@ theorem X_pow_sub_C_irreducible_of_odd
     rw [← map_pow, hb, ← AdjoinRoot.powerBasis_gen irred.ne_zero,
       Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly, AdjoinRoot.powerBasis_dim,
       minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a hp.ne_zero),
-      natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow, if_neg hp.ne_zero.symm,
+      natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow, ite_eq_right hp.ne_zero.symm,
       zero_sub, (Nat.odd_mul.mp hn).1.neg_pow, one_pow, neg_one_mul, neg_neg]
 
 theorem X_pow_sub_C_irreducible_iff_forall_prime_of_odd {n : ℕ} (hn : Odd n) {a : K} :
