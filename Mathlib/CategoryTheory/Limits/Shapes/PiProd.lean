@@ -38,7 +38,6 @@ noncomputable def Pi.binaryFanOfProp : BinaryFan (∏ᶜ (fun (i : {x : I // P x
   BinaryFan.mk (P := ∏ᶜ X) (Pi.map' Subtype.val fun _ ↦ 𝟙 _)
     (Pi.map' Subtype.val fun _ ↦ 𝟙 _)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /--
 A product indexed by `I` is a binary product of the products indexed by a subset of `I` and its
