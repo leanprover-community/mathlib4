@@ -911,7 +911,6 @@ section
 
 variable (P Q) [HasBinaryBiproduct P Q]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `op (P ⊞ Q) ≅ op P ⊞ op Q`. -/
 def biprod.opIso : op (P ⊞ Q) ≅ op P ⊞ op Q :=
   biprod.uniqueUpToIso _ _ (getBinaryBiproductData P Q).op.isBilimit
