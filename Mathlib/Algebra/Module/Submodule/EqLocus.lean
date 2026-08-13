@@ -68,6 +68,10 @@ theorem le_eqLocus {f g : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     S ≤ eqLocus f g ↔ Set.EqOn f g S :=
   Iff.rfl
 
+theorem eqOn_eqLocus {f g : M →ₛₗ[τ₁₂] M₂} :
+    Set.EqOn f g (eqLocus f g) :=
+  fun _ h ↦ h
+
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
 include τ₁₂ in

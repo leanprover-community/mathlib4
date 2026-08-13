@@ -96,6 +96,7 @@ lemma IsCardinalAccessibleCategory.mono_iff [IsCardinalAccessibleCategory C κ]
     fun hf ↦ ⟨fun {Z} g₁ g₂ h ↦ ((isCardinalPresentable C κ).ι.denseAt Z).hom_ext
       (by cat_disch)⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- In a `κ`-accessible category, `κ`-pure morphisms are monomorphisms.
 (This is proposition 2.29 in [Adamek_Rosicky_1994].) -/
@@ -142,7 +143,6 @@ instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered 
   obtain ⟨ρ, _⟩ := IsCardinalPure.exists_of_commSq κ sq'
   exact ⟨ρ ≫ c₁.ι.app j', by cat_disch⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ D` is a `κ`-accessible functor (with `C` a `κ`-accessible category),
 then `F` maps `κ`-pure morphisms to `κ`-morphisms.
 (This is proposition 2.29 in [Adamek_Rosicky_1994], without the unnecessary

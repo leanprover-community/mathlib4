@@ -317,10 +317,12 @@ theorem coe_liftHom : (h.liftHom x hx' : S →+* T) = h.lift (algebraMap R T) x 
 
 theorem lift_algebraMap_apply (z : S) : h.lift (algebraMap R T) x hx' z = h.liftHom x hx' z := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem liftHom_map (z : R[X]) : h.liftHom x hx' (h.map z) = aeval x z := by
   rw [← lift_algebraMap_apply, lift_map, aeval_def]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem liftHom_root : h.liftHom x hx' h.root = x := by rw [← lift_algebraMap_apply, lift_root]
 
@@ -438,7 +440,7 @@ def basis : Basis (Fin (natDegree f)) R S where
     rw [degree_eq_natDegree h.monic.ne_zero, degree_lt_iff_coeff_zero]
     intro m hm
     rw [Polynomial.coeff]
-    rw [Finsupp.mapDomain_notin_range]
+    rw [Finsupp.mapDomain_of_notMem_range]
     rw [Set.mem_range, not_exists]
     rintro i rfl
     exact i.prop.not_ge hm
@@ -576,6 +578,7 @@ variable (h : IsAdjoinRoot S f)
 
 section lift
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem lift_self_apply (x : S) : h.lift (algebraMap R S) h.root h.aeval_root_self x = x := by
   rw [← h.map_repr x, lift_map, ← aeval_def, h.aeval_root_eq_map]
@@ -643,6 +646,7 @@ theorem minpoly_eq [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyCl
             (hirr.isUnit_or_isUnit hq).resolve_left <| minpoly.not_isUnit R h.root
       rw [mul_one]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `α` generates `S` as an algebra and `S` is free and finite,
 then `S` is given by adjoining a root of `minpoly R α`.
 Does not require that `R` is an integral domain, unlike `mkOfAdjoinEqTop`. -/
@@ -682,7 +686,7 @@ theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [IsTors
     minpoly R x = minpoly R (Algebra.adjoin.powerBasis' hx').gen := by
   have := isDomain_of_prime (prime_of_isIntegrallyClosed hx')
   have :=
-    noZeroSMulDivisors_of_prime_of_degree_ne_zero (prime_of_isIntegrallyClosed hx')
+    isTorsionFree_of_prime_of_degree_ne_zero (prime_of_isIntegrallyClosed hx')
       (degree_pos hx').ne'
   rw [← minpolyGen_eq, adjoin.powerBasis', minpolyGen_map, minpolyGen_eq,
     AdjoinRoot.powerBasis'_gen, ← isAdjoinRoot_root_eq_root _,
