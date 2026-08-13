@@ -181,7 +181,7 @@ theorem IsLeast.biUnion_Ici_eq_Ici (h : IsLeast s a) : ⋃ x ∈ s, Ici x = Ici 
 
 @[to_dual]
 theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) : ⋃ x ∈ s, Ici x = Ici a :=
-  IsLeast.biUnion_Ici_eq_Ici ⟨a_mem, a_glb.left⟩
+  a_glb.isLeast a_mem |>.biUnion_Ici_eq_Ici
 
 end Preorder
 
