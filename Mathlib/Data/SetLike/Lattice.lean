@@ -22,14 +22,14 @@ variable (A : Type*) {B : Type*} [Membership B A]
 /-- A class to indicate that the bottom element on a type has no members. -/
 class IsMemBot [Bot A] where
   /-- The bottom element corresponds to the empty set. -/
-  protected notMem_bot {x : B} : x ∉ (⊥ : A) := by rfl
+  protected notMem_bot {x : B} : x ∉ (⊥ : A) := by exact fun h ↦ h
 
 @[simp] alias SetLike.notMem_bot := IsMemBot.notMem_bot
 
 /-- A class to indicate that the top element on a type contains every member. -/
 class IsMemTop [Top A] where
   /-- The top element corresponds to the universal set. -/
-  protected mem_top {x : B} : x ∈ (⊤ : A) := by rfl
+  protected mem_top {x : B} : x ∈ (⊤ : A) := by exact trivial
 
 @[simp] alias SetLike.mem_top := IsMemTop.mem_top
 
