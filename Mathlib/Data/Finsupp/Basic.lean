@@ -444,6 +444,10 @@ theorem mapDomain_surjective {f : α → β} (hf : f.Surjective) :
   use mapDomain (surjInv hf) x
   rw [← mapDomain_comp, (rightInverse_surjInv hf).id, mapDomain_id]
 
+lemma mapDomain_fintype [Fintype α] (f : α → β) (g : α →₀ M) :
+    Finsupp.mapDomain f g = ∑ (a : α), .single (f a) (g a) :=
+  Finsupp.sum_fintype _ _ (by simp)
+
 /-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
 def mapDomainEmbedding {α β : Type*} (f : α ↪ β) : (α →₀ ℕ) ↪ β →₀ ℕ :=
@@ -1009,8 +1013,6 @@ def curryEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   left_inv := uncurry_curry
   right_inv := curry_uncurry
 
-@[deprecated (since := "2026-01-03")] noncomputable alias finsuppProdEquiv := curryEquiv
-
 theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by
   ext a b
@@ -1265,7 +1267,6 @@ the type of finitely supported functions from `s`. -/
     letI := Classical.decPred (· ∈ s); Subtype.ext <| extendDomain_subtypeDomain f.1 f.prop
   right_inv _ := letI := Classical.decPred (· ∈ s); subtypeDomain_extendDomain _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma restrictSupportEquiv_symm_apply_coe (s : Set α) (M : Type*) [AddCommMonoid M]
     [DecidablePred (· ∈ s)] (f : s →₀ M) :
     (restrictSupportEquiv s M).symm f = f.extendDomain := by

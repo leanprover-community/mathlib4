@@ -75,13 +75,11 @@ noncomputable def nonDegenerateEquiv :
           Fin.coe_ofNat_eq_mod, Nat.zero_mod, add_zero] at this
         lia)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma nonDegenerateEquiv_fst (i : Fin (p + 1)) :
     dsimp% (nonDegenerateEquiv i).val.1 =
       (stdSimplex.objEquiv (m := op ⦋p + 1⦌)).symm (SimplexCategory.σ i) := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma nonDegenerateEquiv_snd (i : Fin (p + 1)) :
     dsimp% (nonDegenerateEquiv i).val.2 =
