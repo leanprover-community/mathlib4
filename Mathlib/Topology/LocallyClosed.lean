@@ -336,6 +336,10 @@ lemma isLocallyClosed_tfae (s : Set X) :
       inter_eq_right.mpr subset_closure, inter_comm, eq_comm]
   tfae_finish
 
+lemma isLocallyClosed_iff_isLocallyClosedAt :
+    IsLocallyClosed s ↔ ∀ x ∈ s, IsLocallyClosedAt s x :=
+  (isLocallyClosed_tfae s).out 1 2
+
 lemma isLocallyClosed_iff_isOpen_coborder : IsLocallyClosed s ↔ IsOpen (coborder s) :=
   (isLocallyClosed_tfae s).out 1 4
 
