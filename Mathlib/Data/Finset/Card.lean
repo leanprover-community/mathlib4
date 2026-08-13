@@ -203,6 +203,9 @@ theorem Multiset.dedup_card_eq_card_iff_nodup {m : Multiset α} :
 theorem Multiset.toFinset_card_eq_card_iff_nodup {m : Multiset α} :
     #m.toFinset = card m ↔ m.Nodup := dedup_card_eq_card_iff_nodup
 
+theorem nodup_iff_le_length_dedup : m.Nodup ↔ m.card ≤ m.dedup.card := by
+  rw [← dedup_card_eq_card_iff_nodup, card_le_card m.dedup_le |>.ge_iff_eq]
+
 theorem List.card_toFinset : #l.toFinset = l.dedup.length :=
   rfl
 
@@ -211,6 +214,11 @@ theorem List.toFinset_card_le : #l.toFinset ≤ l.length :=
 
 theorem List.toFinset_card_of_nodup {l : List α} (h : l.Nodup) : #l.toFinset = l.length :=
   Multiset.toFinset_card_of_nodup h
+
+lemma List.Nodup.card_eq_countP {l : List α} {P : α → Prop} [DecidablePred P] (h : l.Nodup) :
+    (l.toFinset.filter P).card = countP P l := by
+  rw [l.countP_eq_length_filter, l.filter_toFinset P]
+  exact toFinset_card_of_nodup (h.filter P)
 
 end ToMultiset
 

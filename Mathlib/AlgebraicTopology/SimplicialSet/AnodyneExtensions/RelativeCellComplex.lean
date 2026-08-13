@@ -79,7 +79,6 @@ abbrev map : Δ[c.dim + 1] ⟶ X :=
   yonedaEquiv.symm
     ((P.p c.s).val.cast (P.isUniquelyCodimOneFace c.s).dim_eq).simplex
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma range_map : Subcomplex.range c.map = (P.p c.s).val.subcomplex := by
@@ -92,7 +91,6 @@ lemma map_app_objEquiv_symm_δ_index :
       c.s.val.simplex :=
   (P.isUniquelyCodimOneFace c.s).δ_index rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma subcomplex_not_le_image_horn : ¬ c.s.val.subcomplex ≤ c.horn.image c.map := by
   intro h
   simp only [Subfunctor.ofSection_le_iff, image_obj, Set.mem_image] at h

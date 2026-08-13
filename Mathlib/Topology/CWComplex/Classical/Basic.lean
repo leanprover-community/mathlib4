@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Hannah Scholz
 module
 
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
-public import Mathlib.Data.ENat.Basic
 public import Mathlib.Logic.Equiv.PartialEquiv
 public import Mathlib.Util.AliasIn
 
@@ -71,10 +70,10 @@ together.
   below for a restriction on when we want to create aliases.
 * For types and definitions relevant to CW complexes like `cell`, `openCell`, `closedCell`,
   `cellFrontier`, `skeletonLT` and similar, we want there to exist only one actually used version,
-  namely the version in the `RelCWComplex` namespace (and thus no seperate definition in the
+  namely the version in the `RelCWComplex` namespace (and thus no separate definition in the
   `CWComplex` namespace.) This is to avoid unnecessary duplication of lemmas. To achieve this,
   definitions from the `RelCWComplex` namespace should be added to the `CWComplex` namespace with
-  `export` intead of `alias_in`/`alias`. These will then apply to the absolute CW complex through
+  `export` instead of `alias_in`/`alias`. These will then apply to the absolute CW complex through
   the instance `CWComplex.instRelCWComplex`.
 * For statements, the auxiliary construction `skeletonLT` is preferred over `skeleton` as it makes
   the base case of inductions easier. The statement about `skeleton` should then be derived from the

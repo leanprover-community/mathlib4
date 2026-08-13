@@ -139,7 +139,9 @@ theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
 theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b) :
     (s.cons a ha).erase b = (s.erase b).cons a fun h => ha <| erase_subset _ _ h := by grind
 
-@[simp] theorem insert_erase (h : a ∈ s) : insert a (s.erase a) = s := by grind
+@[simp] theorem insert_erase_eq_insert : insert a (s.erase a) = insert a s := by grind
+
+theorem insert_erase (h : a ∈ s) : insert a (s.erase a) = s := by simpa
 
 lemma erase_eq_iff_eq_insert (hs : a ∈ s) (ht : a ∉ t) : s.erase a = t ↔ s = insert a t := by
   aesop
@@ -510,6 +512,9 @@ alias ⟨_, Aesop.toFinset_nonempty_of_ne⟩ := toFinset_nonempty_iff
 theorem toFinset_filter (s : List α) (p : α → Bool) :
     (s.filter p).toFinset = s.toFinset.filter (p ·) := by
   ext; simp [List.mem_filter]
+
+theorem filter_toFinset (s : List α) (p : α → Prop) [DecidablePred p] :
+    s.toFinset.filter p = (s.filter p).toFinset := by simp
 
 end List
 
