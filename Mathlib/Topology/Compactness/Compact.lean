@@ -381,7 +381,6 @@ theorem isCompact_iff_finite_subcover :
       (∀ i, IsOpen (U i)) → (s ⊆ ⋃ i, U i) → ∃ t : Finset ι, s ⊆ ⋃ i ∈ t, U i :=
   ⟨fun hs => hs.elim_finite_subcover, isCompact_of_finite_subcover⟩
 
-/-- A set `s` is compact if and only if
 /-- A set `s` is compact if and only if for every family of closed sets whose intersection is
 disjoint from `s`, there exists a finite subfamily whose intersection is disjoint from `s`. -/
 theorem isCompact_iff_finite_subfamily_closed :
@@ -1036,13 +1035,13 @@ theorem IsCompact.elim_finite_subfamily_isClosed_subtype
     {X : Type*} [TopologicalSpace X] {s : Set X} (ks : IsCompact s)
     {ι : Type*} (t : ι → Set X) {I : Set ι}
     (htc : ∀ i ∈ I, IsClosed (s ↓∩ (t i) : Set s))
-    (hst : s ∩ ⋂ i ∈ I, t i = ∅) :
-    ∃ u : Finset I, s ∩ ⋂ i ∈ u, t i = ∅ := by
+    (hst : Disjoint s (⋂ i ∈ I, t i)) :
+    ∃ u : Finset I, Disjoint s (⋂ i ∈ u, t i) := by
   suffices ⋂ i, (fun i : I ↦ s ↓∩ t i) i = ∅ by
-    simpa [eq_empty_iff_forall_notMem] using
+    simpa [eq_empty_iff_forall_notMem, disjoint_left, Subtype.forall] using
       (isCompact_iff_isCompact_univ.mp ks).elim_finite_subfamily_closed
       (fun i : I ↦ s ↓∩ t i) (fun i ↦ htc i.val i.prop) (univ_disjoint.mpr this)
-  simpa [Set.eq_empty_iff_forall_notMem, Subtype.forall] using hst
+  simpa [Set.eq_empty_iff_forall_notMem, Subtype.forall, disjoint_left] using hst
 
 theorem isCompact_iff_compactSpace : IsCompact s ↔ CompactSpace s :=
   isCompact_iff_isCompact_univ.trans isCompact_univ_iff

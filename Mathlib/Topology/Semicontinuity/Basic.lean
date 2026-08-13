@@ -321,8 +321,8 @@ theorem LowerSemicontinuousOn.inter_biInter_preimage_Iic_eq_empty_iff_exists_fin
     s ∩ ⋂ i ∈ I, (f i) ⁻¹' Iic c = ∅ ↔ ∃ u : Finset I, ∀ x ∈ s, ∃ i ∈ u, c < f i x := by
   refine ⟨fun H ↦ ?_, fun ⟨u, hu⟩ ↦ ?_⟩
   · suffices ∀ i ∈ I, IsClosed (s ↓∩ (fun i ↦ f i ⁻¹' Iic c) i) by
-      simpa [Set.eq_empty_iff_forall_notMem] using
-        ks.elim_finite_subfamily_isClosed_subtype _ this H
+      simpa [Set.disjoint_left] using
+        ks.elim_finite_subfamily_isClosed_subtype _ this (disjoint_iff_inter_eq_empty.mpr H)
     exact fun i hi ↦ lowerSemicontinuous_restrict_iff.mpr (hfi i hi) |>.isClosed_preimage c
   · rw [Set.eq_empty_iff_forall_notMem]
     simp only [mem_inter_iff, mem_iInter, mem_preimage, mem_Iic, not_and, not_forall,
