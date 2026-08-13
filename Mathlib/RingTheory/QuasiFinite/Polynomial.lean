@@ -10,7 +10,7 @@ public import Mathlib.RingTheory.QuasiFinite.Weakly
 
 /-! # Quasi-finite primes in polynomial algebras -/
 
-@[expose] public section
+public section
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]

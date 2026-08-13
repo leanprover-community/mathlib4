@@ -378,6 +378,7 @@ theorem wbtw_self_left (x y : P) : Wbtw R x x y :=
 theorem wbtw_self_right (x y : P) : Wbtw R x y y :=
   right_mem_affineSegment _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
   refine ⟨fun h => ?_, fun h => ?_⟩

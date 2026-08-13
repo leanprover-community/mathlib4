@@ -267,6 +267,7 @@ theorem appIso_inv_app (U) :
     (f.appIso U).inv ≫ f.app (f ''ᵁ U) = X.presheaf.map (eqToHom (preimage_image_eq f U)).op :=
   (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise nosimp]
 lemma appLE_appIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U : Y.Opens}
@@ -299,6 +300,7 @@ lemma id_appIso (U : X.Opens) :
     (𝟙 X :).appIso U = X.presheaf.mapIso (eqToIso (by simp)).op := by
   ext; simp [appIso_hom]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma comp_appIso {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion f]
     [IsOpenImmersion g] (U : X.Opens) :
@@ -330,6 +332,7 @@ instance {R} [CommRing R] (f : R) :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) :=
   isOpenImmersion_SpecMap_localizationAway (R := .of R) f
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Hom.opensRange_localizationAway {R : CommRingCat.{u}} (g : R) :
     (Spec.map <| CommRingCat.ofHom <| algebraMap R (Localization.Away g)).opensRange =
@@ -450,6 +453,7 @@ lemma Scheme.ofRestrict_appLE (V W e) :
   dsimp [Hom.appLE]
   exact (X.presheaf.map_comp _ _).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Scheme.ofRestrict_appIso (U) :
     (X.ofRestrict h).appIso U = Iso.refl _ := by
@@ -597,6 +601,7 @@ instance : IsOpenImmersion (pullback.fst g f) := by
   rw [← pullbackSymmetry_hom_comp_snd]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [IsOpenImmersion g] :
     IsOpenImmersion (limit.π (cospan f g) WalkingCospan.one) := by
   rw [← limit.w (cospan f g) WalkingCospan.Hom.inl]
@@ -855,6 +860,7 @@ lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :
   · simp only [Set.mem_inter_iff, hx, and_false, iff_false]
     exact fun H ↦ hx (Set.image_subset_range _ _ H)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If
 ```
   P --fst--> X

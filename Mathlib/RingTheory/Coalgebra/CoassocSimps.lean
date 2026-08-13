@@ -73,8 +73,8 @@ attribute [coassoc_simps] LinearMap.comp_id LinearMap.id_comp TensorProduct.map_
   LinearEquiv.coe_trans LinearEquiv.trans_symm
   LinearEquiv.refl_toLinearMap TensorProduct.toLinearMap_congr
   LinearEquiv.comp_symm LinearEquiv.symm_comp LinearEquiv.symm_symm
-  LinearEquiv.coe_lTensor LinearEquiv.coe_lTensor_symm
-  LinearEquiv.coe_rTensor LinearEquiv.coe_rTensor_symm
+  LinearEquiv.coe_lTensor LinearEquiv.symm_lTensor
+  LinearEquiv.coe_rTensor LinearEquiv.symm_rTensor
   IsCocomm.comm_comp_comul TensorProduct.AlgebraTensorModule.map_eq
   TensorProduct.AlgebraTensorModule.assoc_eq TensorProduct.AlgebraTensorModule.rightComm_eq
   TensorProduct.tensorTensorTensorComm TensorProduct.AlgebraTensorModule.tensorTensorTensorComm
@@ -82,7 +82,7 @@ attribute [coassoc_simps] LinearMap.comp_id LinearMap.id_comp TensorProduct.map_
   LinearEquiv.symm_comp_assoc TensorProduct.rightComm_def TensorProduct.leftComm_def
   TensorProduct.comm_symm TensorProduct.comm_comp_comm TensorProduct.comm_comp_comm_assoc
 
-attribute [coassoc_simps← ] TensorProduct.map_comp TensorProduct.map_map_comp_assoc_eq
+attribute [coassoc_simps ←] TensorProduct.map_comp TensorProduct.map_map_comp_assoc_eq
   TensorProduct.map_map_comp_assoc_symm_eq
 
 @[coassoc_simps]
@@ -91,13 +91,13 @@ lemma TensorProduct.map_comp_assoc
     map g g' ∘ₗ map f f' ∘ₗ φ = map (g ∘ₗ f) (g' ∘ₗ f') ∘ₛₗ φ := by
   rw [← LinearMap.comp_assoc, TensorProduct.map_comp]
 
-@[coassoc_simps← ]
+@[coassoc_simps ←]
 lemma TensorProduct.map_map_comp_assoc_eq_assoc
     (f₁ : M₁ →ₗ[R] N₁) (f₂ : M₂ →ₗ[R] N₂) (f₃ : M₃ →ₗ[R] N₃) (f : M →ₗ[R] M₁ ⊗[R] M₂ ⊗[R] M₃) :
     f₁ ⊗ₘ (f₂ ⊗ₘ f₃) ∘ₗ α ∘ₗ f = α ∘ₗ ((f₁ ⊗ₘ f₂) ⊗ₘ f₃) ∘ₗ f := by
   rw [← LinearMap.comp_assoc, ← LinearMap.comp_assoc, TensorProduct.map_map_comp_assoc_eq]
 
-@[coassoc_simps← ]
+@[coassoc_simps ←]
 lemma TensorProduct.map_map_comp_assoc_symm_eq_assoc
     (f₁ : M₁ →ₗ[R] N₁) (f₂ : M₂ →ₗ[R] N₂) (f₃ : M₃ →ₗ[R] N₃) (f : M →ₗ[R] M₁ ⊗[R] (M₂ ⊗[R] M₃)) :
     (f₁ ⊗ₘ f₂) ⊗ₘ f₃ ∘ₗ α⁻¹ ∘ₗ f = α⁻¹ ∘ₗ (f₁ ⊗ₘ (f₂ ⊗ₘ f₃)) ∘ₗ f := by
