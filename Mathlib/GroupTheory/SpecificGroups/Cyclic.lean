@@ -449,7 +449,7 @@ is of the form `zpowers (g ^ i)` for some `i : ℤ`. -/
 every subgroup `H` is of the form `zmultiples (i • g)` for some `i : ℤ`. -/]
 theorem Subgroup.exists_zpowers_eq_of_zpowers_eq_top [Group G] {g : G}
     (hg : zpowers g = ⊤) (H : Subgroup G) : ∃ i : ℤ, zpowers (g ^ i) = H := by
-  haveI : IsCyclic G := isCyclic_iff_exists_zpowers_eq_top.mpr ⟨g, hg⟩
+  have : IsCyclic G := isCyclic_iff_exists_zpowers_eq_top.mpr ⟨g, hg⟩
   obtain ⟨⟨x, _⟩, hx'⟩ := (isCyclic_iff_exists_zpowers_eq_top (α := H)).mp inferInstance
   obtain ⟨i, rfl⟩ := (Subgroup.eq_top_iff' _).mp hg x
   exact ⟨i, by simpa [Subgroup.map_top] using congr_arg (Subgroup.map H.subtype) hx'⟩
