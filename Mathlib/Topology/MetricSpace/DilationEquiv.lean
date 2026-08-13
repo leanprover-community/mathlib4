@@ -15,6 +15,8 @@ that `edist (f x) (f y) = r * edist x y` for some `r : ℝ≥0`, `r ≠ 0`.
 
 We also develop basic API about these equivalences.
 
+The definition only requires `EDist`; stronger metric assumptions are added when needed.
+
 ## TODO
 
 - Add missing lemmas (compare to other `*Equiv` structures).
@@ -29,7 +31,7 @@ open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
 
 section Class
 
-variable (F : Type*) (X Y : outParam Type*) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
+variable (F : Type*) (X Y : outParam Type*) [EDist X] [EDist Y]
 
 /-- Typeclass saying that `F` is a type of bundled equivalences such that all `e : F` are
 dilations. -/
@@ -43,7 +45,7 @@ end Class
 
 /-- Type of equivalences `X ≃ Y` such that `∀ x y, edist (f x) (f y) = r * edist x y` for some
 `r : ℝ≥0`, `r ≠ 0`. -/
-structure DilationEquiv (X Y : Type*) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
+structure DilationEquiv (X Y : Type*) [EDist X] [EDist Y]
     extends X ≃ Y, Dilation X Y
 
 @[inherit_doc] infixl:25 " ≃ᵈ " => DilationEquiv
@@ -52,7 +54,8 @@ namespace DilationEquiv
 
 section PseudoEMetricSpace
 
-variable {X Y Z : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
+variable {X Y Z : Type*} [EDist X] [EDist Y] [EDist Z]
+variable {δ τ : Type*} [PseudoEMetricSpace δ] [PseudoEMetricSpace τ]
 
 instance : EquivLike (X ≃ᵈ Y) X Y where
   coe f := f.1
@@ -102,7 +105,7 @@ lemma ratio_toDilation (e : X ≃ᵈ Y) : ratio e.toDilation = ratio e := rfl
 
 /-- Identity map as a `DilationEquiv`. -/
 @[simps! -fullyApplied apply]
-def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
+def refl (X : Type*) [EDist X] : X ≃ᵈ X where
   toEquiv := .refl X
   edist_eq' := ⟨1, one_ne_zero, fun _ _ ↦ by simp⟩
 
@@ -189,54 +192,55 @@ theorem coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
 -- TODO: Once `IsometryEquiv` follows the `*EquivClass` pattern, replace this with an instance
 -- of `DilationEquivClass` assuming `IsometryEquivClass`.
 /-- Every isometry equivalence is a dilation equivalence of ratio `1`. -/
-def _root_.IsometryEquiv.toDilationEquiv (e : X ≃ᵢ Y) : X ≃ᵈ Y where
+def _root_.IsometryEquiv.toDilationEquiv (e : δ ≃ᵢ τ) : δ ≃ᵈ τ where
   edist_eq' := ⟨1, one_ne_zero, by simpa using! e.isometry⟩
   __ := e.toEquiv
 
 @[simp]
-lemma _root_.IsometryEquiv.toDilationEquiv_apply (e : X ≃ᵢ Y) (x : X) :
+lemma _root_.IsometryEquiv.toDilationEquiv_apply (e : δ ≃ᵢ τ) (x : δ) :
     e.toDilationEquiv x = e x :=
   rfl
 
 @[simp]
-lemma _root_.IsometryEquiv.toDilationEquiv_symm (e : X ≃ᵢ Y) :
+lemma _root_.IsometryEquiv.toDilationEquiv_symm (e : δ ≃ᵢ τ) :
     e.symm.toDilationEquiv = e.toDilationEquiv.symm :=
   rfl
 
 @[simp]
-lemma _root_.IsometryEquiv.coe_toDilationEquiv (e : X ≃ᵢ Y) : ⇑e.toDilationEquiv = e :=
+lemma _root_.IsometryEquiv.coe_toDilationEquiv (e : δ ≃ᵢ τ) : ⇑e.toDilationEquiv = e :=
   rfl
 
 @[simp]
-lemma _root_.IsometryEquiv.coe_symm_toDilationEquiv (e : X ≃ᵢ Y) :
+lemma _root_.IsometryEquiv.coe_symm_toDilationEquiv (e : δ ≃ᵢ τ) :
     ⇑e.toDilationEquiv.symm = e.symm :=
   rfl
 
 @[simp]
-lemma _root_.IsometryEquiv.toDilationEquiv_toDilation (e : X ≃ᵢ Y) :
-    (e.toDilationEquiv.toDilation : X →ᵈ Y) = e.isometry.toDilation :=
+lemma _root_.IsometryEquiv.toDilationEquiv_toDilation (e : δ ≃ᵢ τ) :
+    (e.toDilationEquiv.toDilation : δ →ᵈ τ) = e.isometry.toDilation :=
   rfl
 
 @[simp]
-lemma _root_.IsometryEquiv.toDilationEquiv_ratio (e : X ≃ᵢ Y) : ratio e.toDilationEquiv = 1 := by
+lemma _root_.IsometryEquiv.toDilationEquiv_ratio (e : δ ≃ᵢ τ) :
+    ratio e.toDilationEquiv = 1 := by
   rw [← ratio_toDilation, IsometryEquiv.toDilationEquiv_toDilation, Isometry.toDilation_ratio]
 
 /-- Reinterpret a `DilationEquiv` as a homeomorphism. -/
-def toHomeomorph (e : X ≃ᵈ Y) : X ≃ₜ Y where
+def toHomeomorph (e : δ ≃ᵈ τ) : δ ≃ₜ τ where
   continuous_toFun := Dilation.toContinuous e
   continuous_invFun := Dilation.toContinuous e.symm
   __ := e.toEquiv
 
 @[simp]
-lemma toHomeomorph_symm (e : X ≃ᵈ Y) : e.symm.toHomeomorph = e.toHomeomorph.symm :=
+lemma toHomeomorph_symm (e : δ ≃ᵈ τ) : e.symm.toHomeomorph = e.toHomeomorph.symm :=
   rfl
 
 @[simp]
-lemma coe_toHomeomorph (e : X ≃ᵈ Y) : ⇑e.toHomeomorph = e :=
+lemma coe_toHomeomorph (e : δ ≃ᵈ τ) : ⇑e.toHomeomorph = e :=
   rfl
 
 @[simp]
-lemma coe_symm_toHomeomorph (e : X ≃ᵈ Y) : ⇑e.toHomeomorph.symm = e.symm :=
+lemma coe_symm_toHomeomorph (e : δ ≃ᵈ τ) : ⇑e.toHomeomorph.symm = e.symm :=
   rfl
 
 end PseudoEMetricSpace
