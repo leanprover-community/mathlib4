@@ -56,12 +56,15 @@ def omega : QuadraticAlgebra R a b :=
 scoped notation "ω" => omega
 
 @[simp]
-theorem omega_re : (ω : QuadraticAlgebra R a b).re = 0 :=
+theorem re_omega : (ω : QuadraticAlgebra R a b).re = 0 :=
   rfl
 
 @[simp]
-theorem omega_im : (ω : QuadraticAlgebra R a b).im = 1 :=
+theorem im_omega : (ω : QuadraticAlgebra R a b).im = 1 :=
   rfl
+
+@[deprecated (since := "2026-08-13")] alias omega_re := re_omega
+@[deprecated (since := "2026-08-13")] alias omega_im := im_omega
 
 end
 
