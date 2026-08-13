@@ -336,7 +336,7 @@ theorem StieltjesIntegrable.hasStieltjesIntegral (h : StieltjesIntegrable a b B 
 theorem HasStieltjesIntegral.stieltjesIntegral_eq
     (h : HasStieltjesIntegral a b B f g L) : ∫ˢ x in a..b, f x ∂[B; g] = L := by
   classical
-  simp only [stieltjesIntegral, dif_pos h.stieltjesIntegrable]
+  simp only [stieltjesIntegral, dite_eq_left h.stieltjesIntegrable]
   exact h.stieltjesIntegrable.choose_spec.unique h
 
 theorem StieltjesIntegrable.hasStieltjesIntegral_iff (h : StieltjesIntegrable a b B f g) (L : G) :
