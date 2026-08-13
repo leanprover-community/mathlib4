@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.Complex.TaylorSeries
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.RingTheory.Polynomial.Hermite.Basic
 
 /-!
@@ -22,8 +21,9 @@ polynomials,
 
 * `Polynomial.hasSum_hermite_generating_function`: the complex `HasSum` form, which carries the
   summability of the series and holds for all complex `x` and `t`.
-* `Polynomial.hermite_generating_function`: the real `tsum` form, obtained from the complex
-  statement by casting.
+* `Polynomial.hasSum_hermite_generating_function_real` and
+  `Polynomial.hermite_generating_function`: the real `HasSum` and `tsum` forms, obtained from the
+  complex statement by casting.
 
 ## Proof outline
 
@@ -48,7 +48,7 @@ public section
 
 namespace Polynomial
 
-open Complex
+open Complex Nat
 
 /-- Derivative of the entire function `z ↦ exp (x * z - z ^ 2 / 2)`: its value at `z` times
 `x - z`. -/
@@ -56,17 +56,7 @@ private theorem hasDerivAt_cexp_quadratic (x z : ℂ) :
     HasDerivAt (fun w : ℂ => Complex.exp (x * w - w ^ 2 / 2))
       (Complex.exp (x * z - z ^ 2 / 2) * (x - z)) z := by
   have hu : HasDerivAt (fun w : ℂ => x * w - w ^ 2 / 2) (x - z) z := by
-    have h1 : HasDerivAt (fun w : ℂ => x * w) (x * 1) z :=
-      (hasDerivAt_id z).const_mul _
-    have h2 := (hasDerivAt_pow 2 z).div_const (2 : ℂ)
-    have hv : x * 1 - ((2 : ℕ) : ℂ) * z ^ (2 - 1) / 2 = x - z := by
-      have he : (2 : ℕ) - 1 = 1 := rfl
-      rw [he, pow_one]
-      push_cast
-      ring
-    have h3 := h1.sub h2
-    rw [hv] at h3
-    exact h3
+    simpa using ((hasDerivAt_id z).const_mul x).fun_sub ((hasDerivAt_pow 2 z).div_const 2)
   exact hu.cexp
 
 /-- Closed form for the iterated derivatives of `z ↦ exp (x * z - z ^ 2 / 2)`: the `n`-th
@@ -100,10 +90,9 @@ private theorem iteratedDeriv_cexp_quadratic (x : ℂ) (n : ℕ) (z : ℂ) :
 for all complex `x` and `t`, the family `Hₙ(x) * tⁿ / n !` is summable with sum
 `exp (x * t - t ^ 2 / 2)`, where `Hₙ = Polynomial.hermite n`.
 
-This form carries the summability that the `tsum` form
-`Polynomial.hermite_generating_function` discards, and it holds over all of `ℂ`. -/
+This form carries the summability that a `tsum` equality discards, and it holds over all of `ℂ`. -/
 theorem hasSum_hermite_generating_function (x t : ℂ) :
-    HasSum (fun n : ℕ => aeval x (hermite n) * t ^ n / (n.factorial : ℂ))
+    HasSum (fun n : ℕ => aeval x (hermite n) * t ^ n / (n ! : ℂ))
       (Complex.exp (x * t - t ^ 2 / 2)) := by
   -- The entire function `f z = exp (x * z - z ^ 2 / 2)` on the complex plane.
   set f : ℂ → ℂ := fun z => Complex.exp (x * z - z ^ 2 / 2) with hf_def
@@ -120,8 +109,8 @@ theorem hasSum_hermite_generating_function (x t : ℂ) :
   have htaylor := hasSum_taylorSeries_of_entire hf_diff 0 t
   -- Rewrite the Taylor terms into the generating-function terms.
   have hfun_eq :
-      (fun n : ℕ => (n.factorial : ℂ)⁻¹ • (t - 0) ^ n • iteratedDeriv n f 0)
-        = fun n : ℕ => aeval x (hermite n) * t ^ n / (n.factorial : ℂ) := by
+      (fun n : ℕ => (n ! : ℂ)⁻¹ • (t - 0) ^ n • iteratedDeriv n f 0)
+        = fun n : ℕ => aeval x (hermite n) * t ^ n / (n ! : ℂ) := by
     funext n
     rw [hval n]
     simp only [sub_zero, smul_eq_mul]
@@ -131,6 +120,34 @@ theorem hasSum_hermite_generating_function (x t : ℂ) :
   rw [hfun_eq, hft] at htaylor
   exact htaylor
 
+/-- **Exponential generating function of the probabilists' Hermite polynomials**, real summable
+form: for all real `x` and `t`, the family `Hₙ(x) * tⁿ / n !` is summable with sum
+`exp (x * t - t ^ 2 / 2)`. -/
+theorem hasSum_hermite_generating_function_real (x t : ℝ) :
+    HasSum (fun n : ℕ => aeval x (hermite n) * t ^ n / (n ! : ℝ))
+      (Real.exp (x * t - t ^ 2 / 2)) := by
+  -- Compatibility of `aeval` with the coercion `ℝ → ℂ`.
+  have hcast_aeval : ∀ n : ℕ, ((aeval x (hermite n) : ℝ) : ℂ) = aeval (x : ℂ) (hermite n) := by
+    intro n
+    exact (aeval_algHom_apply Complex.ofRealHom.toIntAlgHom x (hermite n)).symm
+  -- Cast the complex `HasSum` down to `ℝ`.
+  rw [← Complex.hasSum_ofReal]
+  have hterm : ∀ n : ℕ,
+      ((aeval x (hermite n) * t ^ n / (n ! : ℝ) : ℝ) : ℂ)
+        = aeval (x : ℂ) (hermite n) * (t : ℂ) ^ n / (n ! : ℂ) := by
+    intro n
+    rw [← hcast_aeval n]
+    push_cast
+    ring
+  have hexp : ((Real.exp (x * t - t ^ 2 / 2) : ℝ) : ℂ)
+      = Complex.exp ((x : ℂ) * (t : ℂ) - (t : ℂ) ^ 2 / 2) := by
+    rw [Complex.ofReal_exp]
+    congr 1
+    push_cast
+    ring
+  simp only [hterm, hexp]
+  exact hasSum_hermite_generating_function (x : ℂ) (t : ℂ)
+
 /-- **Exponential generating function of the probabilists' Hermite polynomials**: for all real
 `x` and `t`,
 
@@ -139,34 +156,8 @@ theorem hasSum_hermite_generating_function (x t : ℂ) :
 where `Hₙ = Polynomial.hermite n`. This is the real specialization of
 `Polynomial.hasSum_hermite_generating_function`. -/
 theorem hermite_generating_function (x t : ℝ) :
-    ∑' n : ℕ, aeval x (hermite n) * t ^ n / (n.factorial : ℝ)
+    ∑' n : ℕ, aeval x (hermite n) * t ^ n / (n ! : ℝ)
       = Real.exp (x * t - t ^ 2 / 2) := by
-  -- Compatibility of `aeval` with the coercion `ℝ → ℂ`.
-  have hcast_aeval : ∀ n : ℕ, ((aeval x (hermite n) : ℝ) : ℂ) = aeval (x : ℂ) (hermite n) := by
-    intro n
-    have h : (algebraMap ℤ ℂ).comp (RingHom.id ℤ) = (algebraMap ℝ ℂ).comp (algebraMap ℤ ℝ) := by
-      ext k; simp
-    simpa [Polynomial.map_id, Complex.coe_algebraMap] using
-      map_aeval_eq_aeval_map h (hermite n) x
-  -- Cast the complex `HasSum` down to `ℝ`, then read off the `tsum`.
-  have hsum : HasSum (fun n : ℕ => aeval x (hermite n) * t ^ n / (n.factorial : ℝ))
-      (Real.exp (x * t - t ^ 2 / 2)) := by
-    rw [← Complex.hasSum_ofReal]
-    have hterm : ∀ n : ℕ,
-        ((aeval x (hermite n) * t ^ n / (n.factorial : ℝ) : ℝ) : ℂ)
-          = aeval (x : ℂ) (hermite n) * (t : ℂ) ^ n / (n.factorial : ℂ) := by
-      intro n
-      rw [← hcast_aeval n]
-      push_cast
-      ring
-    have hexp : ((Real.exp (x * t - t ^ 2 / 2) : ℝ) : ℂ)
-        = Complex.exp ((x : ℂ) * (t : ℂ) - (t : ℂ) ^ 2 / 2) := by
-      rw [Complex.ofReal_exp]
-      congr 1
-      push_cast
-      ring
-    simp only [hterm, hexp]
-    exact hasSum_hermite_generating_function (x : ℂ) (t : ℂ)
-  exact hsum.tsum_eq
+  exact (hasSum_hermite_generating_function_real x t).tsum_eq
 
 end Polynomial
