@@ -143,7 +143,6 @@ def liftedLimitMapsToOriginal {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c 
     (t : IsLimit c) : F.mapCone (liftLimit t) ≅ c :=
   (CreatesLimit.lifts c t).validLift
 
-set_option backward.isDefEq.respectTransparency false in
 lemma liftedLimitMapsToOriginal_inv_map_π
     {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (j : J) :
       (liftedLimitMapsToOriginal t).inv.hom ≫ F.map ((liftLimit t).π.app j) = c.π.app j := by
@@ -151,7 +150,6 @@ lemma liftedLimitMapsToOriginal_inv_map_π
     from (by simp), ← Category.assoc, ← Cone.category_comp_hom]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma liftedLimitMapsToOriginal_hom_π
     {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (j : J) :
       (liftedLimitMapsToOriginal t).hom.hom ≫ c.π.app j = F.map ((liftLimit t).π.app j) := by
@@ -252,7 +250,6 @@ structure LiftsToColimit (K : J ⥤ C) (F : C ⥤ D) (c : Cocone (K ⋙ F)) (t :
   /-- the lifted cocone is colimit -/
   makesColimit : IsColimit liftedCocone
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If `F` reflects isomorphisms and we can lift any limit cone to a limit cone,
 then `F` creates limits.
 In particular here we don't need to assume that F reflects limits.
@@ -321,7 +318,6 @@ def createsLimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Fa
   createsLimitOfFullyFaithfulOfLift' (limit.isLimit _) c i
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cone maps,
 -- so the constructed limits may not be ideal, definitionally.
@@ -377,7 +373,6 @@ instance (priority := 100) preservesLimits_of_createsLimits_and_hasLimits (F : C
     [CreatesLimitsOfSize.{w, w'} F] [HasLimitsOfSize.{w, w'} D] :
     PreservesLimitsOfSize.{w, w'} F where
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If `F` reflects isomorphisms and we can lift any colimit cocone to a colimit cocone,
 then `F` creates colimits.
 In particular here we don't need to assume that F reflects colimits.

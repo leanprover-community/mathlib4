@@ -1089,7 +1089,6 @@ section StoppedValueOfMemFinset
 
 variable [Nonempty ι] {μ : Measure Ω} {τ : Ω → WithTop ι} {E : Type*} {p : ℝ≥0∞} {u : ι → Ω → E}
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem stoppedValue_eq_of_mem_finset [AddCommMonoid E] {s : Finset ι}
    (hbdd : ∀ ω, τ ω ∈ (WithTop.some '' s)) :
     stoppedValue u τ = ∑ i ∈ s, Set.indicator {ω | τ ω = i} (u i) := by
@@ -1196,6 +1195,7 @@ theorem integrable_stoppedValue_of_mem_finset (hτ : IsStoppingTime ℱ τ)
 
 variable (ι)
 
+@[fun_prop]
 theorem integrable_stoppedValue [LocallyFiniteOrderBot ι] (hτ : IsStoppingTime ℱ τ)
     (hu : ∀ n, Integrable (u n) μ) {N : ι} (hbdd : ∀ ω, τ ω ≤ N) :
     Integrable (stoppedValue u τ) μ := by

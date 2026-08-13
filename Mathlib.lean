@@ -213,6 +213,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackFree
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Submodule
 public import Mathlib.Algebra.Category.ModuleCat.Simple
 public import Mathlib.Algebra.Category.ModuleCat.Stalk
 public import Mathlib.Algebra.Category.ModuleCat.Subobject
@@ -432,6 +433,7 @@ public import Mathlib.Algebra.Group.PNatPowAssoc
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.BigOperators
@@ -964,6 +966,7 @@ public import Mathlib.Algebra.Order.Field.Pointwise
 public import Mathlib.Algebra.Order.Field.Power
 public import Mathlib.Algebra.Order.Field.Rat
 public import Mathlib.Algebra.Order.Field.Subfield
+public import Mathlib.Algebra.Order.Floor.BigOperators
 public import Mathlib.Algebra.Order.Floor.Defs
 public import Mathlib.Algebra.Order.Floor.Div
 public import Mathlib.Algebra.Order.Floor.Extended
@@ -2744,6 +2747,7 @@ public import Mathlib.CategoryTheory.Galois.Equivalence
 public import Mathlib.CategoryTheory.Galois.EssSurj
 public import Mathlib.CategoryTheory.Galois.Examples
 public import Mathlib.CategoryTheory.Galois.Full
+public import Mathlib.CategoryTheory.Galois.FullSubcategory
 public import Mathlib.CategoryTheory.Galois.GaloisObjects
 public import Mathlib.CategoryTheory.Galois.IsFundamentalgroup
 public import Mathlib.CategoryTheory.Galois.Prorepresentability
@@ -2817,6 +2821,7 @@ public import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStruct
 public import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.Cones
 public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.ConstructLimitMap
 public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 public import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
@@ -3868,7 +3873,9 @@ public import Mathlib.Data.ENat.Basic
 public import Mathlib.Data.ENat.BigOperators
 public import Mathlib.Data.ENat.Defs
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Data.ENat.Pow
+public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.Data.EReal.Basic
 public import Mathlib.Data.EReal.Inv
 public import Mathlib.Data.EReal.Operations
