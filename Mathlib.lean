@@ -5747,6 +5747,7 @@ public import Mathlib.NumberTheory.BernoulliPolynomials
 public import Mathlib.NumberTheory.Bertrand
 public import Mathlib.NumberTheory.CFT.ClassFormation.Basic
 public import Mathlib.NumberTheory.CFT.ClassFormation.FintypeCat
+public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryAut
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryConnected
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryDegree
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryEquivalence

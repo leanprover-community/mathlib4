@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryAut
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryDegree
 public import Mathlib.NumberTheory.CFT.ClassFormation.GrothendieckTopology
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
@@ -21,21 +22,10 @@ public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoria
 universe w v u
 
 open CategoryTheory Limits Opposite
-open scoped FintypeCatDiscrete
 
 namespace CategoryTheory
-variable {C : Type u} [Category.{v} C]
 
-/-- If `f ≫ g = fg`, this is the morphism between the group of automorphisms
-of `Over.mk f` to the group of automorphism of `Over.mk fg`. -/
-@[implicit_reducible]
-def Aut.overMap {Z Y X : C} (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ X)
-    (fac : f ≫ g = fg := by cat_disch) :
-    Aut (Over.mk f) →* Aut (Over.mk fg) where
-  toFun σ := Over.isoMk ((Over.forget ..).mapIso σ)
-    (by simp [← fac, Functor.mapIso, dsimp% σ.hom.w_assoc])
-  map_one' := rfl
-  map_mul' _ _ := rfl
+variable {C : Type u} [Category.{v} C]
 
 open PreGaloisCategory GaloisCategory
 
@@ -84,6 +74,11 @@ representation of the group of automorphisms of `Over.mk f`, as an object
 in `Rep`. -/
 abbrev rep : Rep.{v} (ULift.{v} ℤ) (Aut (Over.mk f)) := Rep.of (Φ.representation f)
 
+/-- The cohomology of a Galois cover for a formation. -/
+noncomputable abbrev H (n : ℕ) := groupCohomology (Φ.rep f) n
+
+end
+
 section
 
 variable {Y X' X : C}
@@ -94,33 +89,16 @@ variable {Y X' X : C}
 
 /-- Auxiliary definition for `resRep`. -/
 abbrev resIntertwiningMap (fac : f ≫ g = fg := by cat_disch) :
-  Representation.IntertwiningMap (MonoidHom.comp (Φ.rep fg).ρ (Aut.overMap f g fg))
+  Representation.IntertwiningMap ((Φ.rep fg).ρ.comp (Aut.overMap f g fg))
     (Φ.representation f) where
   toLinearMap := .id
   isIntertwining' _ := rfl
 
-/-- If `Φ` is a formation, and `f ≫ g = fg`, when this is the morphism
-from the restriction of `Φ.rep fg` to `Φ.rep f`. -/
+/-- If `Φ` is a formation, and `f ≫ g = fg` where `fg` and `f` are Galois covers,
+then this is the morphism from the restriction of `Φ.rep fg` to `Φ.rep f`. -/
 abbrev resRep (fac : f ≫ g = fg := by cat_disch) :
     Rep.res (Aut.overMap f g fg) (Φ.rep fg) ⟶ Φ.rep f :=
   Rep.ofHom (Φ.resIntertwiningMap f g fg)
-
-end
-
-/-- The cohomology of a Galois cover for a formation. -/
-noncomputable abbrev H (n : ℕ) := groupCohomology (Φ.rep f) n
-
-end
-
-/-- The inflation morphisms on the cohomology of a formation. -/
-def inflation {Y' Y X : C}
-    [PreGaloisCategory.IsConnected Y'] [PreGaloisCategory.IsConnected Y]
-    [PreGaloisCategory.IsConnected X]
-    (f : Y' ⟶ Y) (g : Y ⟶ X) (fg : Y' ⟶ X)
-    [IsGaloisCover g] [IsGaloisCover fg] (n : ℕ)
-    (fac : f ≫ g = fg := by cat_disch) :
-    Φ.H g n ⟶ Φ.H fg n := by
-  sorry
 
 /-- The restriction morphisms on the cohomology of a formation. -/
 noncomputable def restriction {Y X' X : C}
@@ -131,6 +109,47 @@ noncomputable def restriction {Y X' X : C}
     (fac : f ≫ g = fg := by cat_disch) :
     Φ.H fg n ⟶ Φ.H f n :=
   groupCohomology.map (Aut.overMap f g fg) (Φ.resRep f g fg) n
+
+
+end
+
+section
+
+variable {Y' Y X : C}
+  [PreGaloisCategory.IsConnected Y'] [PreGaloisCategory.IsConnected Y]
+  [PreGaloisCategory.IsConnected X]
+  (f : Y' ⟶ Y) (g : Y ⟶ X) (fg : Y' ⟶ X)
+  [IsGaloisCover g] [IsGaloisCover fg]
+
+/-- Auxiliary definition for `infRep`. -/
+abbrev infIntertwiningMap (fac : f ≫ g = fg := by cat_disch) :
+  Representation.IntertwiningMap ((Φ.rep g).ρ.comp
+    (autMapOfIsGaloisCover f g fg)) (Φ.representation fg) where
+  toLinearMap :=
+    { toFun x := (Φ.sheaf.obj.map (isConnectedHomMk f).op) x
+      map_add' := by simp
+      map_smul' := by simp }
+  isIntertwining' g := by
+    ext x
+    dsimp [representation]
+    simp only [← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp]
+    congr 4
+    ext : 1
+    simp
+
+/-- If `Φ` is a formation, and `f ≫ g = fg` where `fg` and `g` are Galois covers,
+then this is the morphism from the restriction of `Φ.rep fg` to `Φ.rep f`. -/
+noncomputable abbrev infRep (fac : f ≫ g = fg := by cat_disch) :
+    Rep.res (autMapOfIsGaloisCover f g fg) (Φ.rep g) ⟶ Φ.rep fg :=
+  Rep.ofHom (Φ.infIntertwiningMap f g fg)
+
+/-- The inflation morphisms on the cohomology of a formation. -/
+noncomputable def inflation (n : ℕ)
+    (fac : f ≫ g = fg := by cat_disch) :
+    Φ.H g n ⟶ Φ.H fg n :=
+  groupCohomology.map (autMapOfIsGaloisCover f g fg) (Φ.infRep f g fg) n
+
+end
 
 /-def corestriction {Y X' X : C}
     [PreGaloisCategory.IsConnected Y] [PreGaloisCategory.IsConnected X']
