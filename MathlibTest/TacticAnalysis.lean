@@ -39,8 +39,6 @@ end terminalReplacement
 
 section rwaSuggestion
 
-set_option linter.tacticAnalysis.rwaSuggestion true
-
 -- Preserve an `at` location.
 /--
 info: Try this:

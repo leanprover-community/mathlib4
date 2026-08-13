@@ -231,8 +231,7 @@ register_option linter.tacticAnalysis.rwaSuggestion : Bool := {
   inherit_doc linter.tacticAnalysis.rwaSuggestion]
 def Mathlib.TacticAnalysis.rwaSuggestion : TacticAnalysis.Config where
   run seq := do
-    let tactics := seq.toList
-    for (first, second) in tactics.zip tactics.tail do
+    for (first, second) in seq.toList.zip seq.toList.tail do
       match first.tacI.stx, second.tacI.stx with
       | `(tactic| rw $rws:rwRuleSeq $[$loc:location]?), `(tactic| assumption) => do
         if let some start := first.tacI.stx.getPos? then
