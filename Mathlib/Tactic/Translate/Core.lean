@@ -678,28 +678,28 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   try
     addDecl decl.1.toDeclaration!
     return decl
-  catch ex => withoutExporting do
+  catch ex =>
     try
-      check decl.1.type
+      withExporting (isExporting := !isPrivateName tgt) do check decl.1.type
     catch ex =>
-      throwError "@[{t.attrName}] failed to add declaration `{decl.1.name}`.\n  \
+      throwError "`@[{t.attrName}]` failed to add declaration `{.ofConstName decl.1.name}`.\n  \
         The translated type is not type correct.\n\
         {ex.toMessageData}\n\n\
         For help, see the docstring of `to_additive`, section `Troubleshooting`."
     try
       check value
     catch ex =>
-      throwError "@[{t.attrName}] failed to add declaration `{decl.1.name}`.\n  \
+      throwError "`@[{t.attrName}]` failed to add declaration `{.ofConstName decl.1.name}`.\n  \
         The translated value is not type correct.\n\
         {ex.toMessageData}\n\n\
         For help, see the docstring of `to_additive`, section `Troubleshooting`."
     unless ← isDefEq (← inferType value) decl.1.type do
-      throwError "@[{t.attrName}] failed to add declaration `{decl.1.name}`.\n  \
+      throwError "`@[{t.attrName}]` failed to add declaration `{.ofConstName decl.1.name}`.\n  \
         The translated value does not have the translated type.\n\
         The value{indentExpr value}\nhas type{indentExpr (← inferType value)}\n\
         but is expected to have type{indentExpr decl.1.type}\n\n\
         For help, see the docstring of `to_additive`, section `Troubleshooting`."
-    throwError "@[{t.attrName}] failed to add declaration `{decl.1.name}`. \
+    throwError "`@[{t.attrName}]` failed to add declaration `{.ofConstName decl.1.name}`. \
       Nested error message:\n{ex.toMessageData}"
 
 /-- Unfold `simp`, `gcongr` and `hcongr`/`congr_simp` auxlemmas in the type and value.
