@@ -300,6 +300,10 @@ theorem Continuous.mapsTo_pathComponent {f : X → Y} (hf : Continuous f) (x : X
     MapsTo f (pathComponent x) (pathComponent (f x)) :=
   fun _ hy ↦ hy.map hf
 
+theorem Continuous.image_pathComponent_subset {f : X → Y} (hf : Continuous f) (x : X) :
+    f '' (pathComponent x) ⊆ pathComponent (f x) :=
+  hf.mapsTo_pathComponent x |>.image_subset
+
 theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = pathComponent y := by
   ext z
   constructor
@@ -469,11 +473,9 @@ theorem Homeomorph.isPathConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
 /-- A homeomorphism maps path components onto path components. -/
 theorem Homeomorph.image_pathComponent (h : X ≃ₜ Y) (x : X) :
     h '' pathComponent x = pathComponent (h x) := by
-  apply (h.continuous.mapsTo_pathComponent x).image_subset.antisymm
-  intro y hy
-  refine ⟨h.symm y, ?_, ?_⟩
-  · simpa using h.symm.continuous.mapsTo_pathComponent (h x) hy
-  · exact h.apply_symm_apply y
+  apply (h.continuous.image_pathComponent_subset x).antisymm
+  simpa [image_image] using
+    image_mono (f := h) <| h.symm.continuous.image_pathComponent_subset (h x)
 
 theorem Homeomorph.preimage_pathComponent (h : X ≃ₜ Y) (y : Y) :
     h ⁻¹' pathComponent y = pathComponent (h.symm y) := by
