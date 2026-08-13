@@ -269,7 +269,6 @@ theorem H0π_comp_map :
   simp [H0π]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_id_comp_H0Iso_hom {A B : Rep k G} (f : A ⟶ B) :
     map (MonoidHom.id G) f 0 ≫ (H0Iso B).hom =
@@ -320,6 +319,7 @@ theorem mapShortComplexH1_zero :
 theorem mapShortComplexH1_id : mapShortComplexH1 (MonoidHom.id G) (𝟙 A) = 𝟙 _ := by
   ext <;> simp [shortComplexH1]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mapShortComplexH1_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :
@@ -537,6 +537,7 @@ previous assumptions. -/
 
 end OfTrivial
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)`. The first map is the
 "corestriction" map induced by the inclusion `ι : S →* G` and the identity on `Res(ι)(A)`, and the
 second map is the "coinflation" map induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S`. -/
@@ -740,6 +741,7 @@ theorem mapShortComplexH2_id : mapShortComplexH2 (MonoidHom.id _) (𝟙 A) = �
     ext
     simp }
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mapShortComplexH2_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :

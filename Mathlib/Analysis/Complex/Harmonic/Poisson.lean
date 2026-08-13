@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mihai Iancu, Stefan Kebekus, Sebastian Schleissinger, Aristotle AI
+Authors: Mihai Iancu, Stefan Kebekus, Sebastian Schleissinger
 -/
 module
 
@@ -20,7 +20,7 @@ TODO: Extend this formula to vector-valued harmonic functions
 
 public section
 
-open Complex InnerProductSpace Metric Real Topology
+open Complex InnerProductSpace Metric Real
 
 variable
   {f : ℂ → ℝ} {c w : ℂ} {R : ℝ}
@@ -42,7 +42,7 @@ theorem HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
     (hf : HarmonicOnNhd f (closedBall c R)) (hw : w ∈ ball c R) :
     Real.circleAverage ((re ∘ herglotzRieszKernel c w) • f) c R = f w := by
   obtain ⟨e, h₁e, h₂e⟩ := (isCompact_closedBall c R).exists_thickening_subset_open
-    (isOpen_setOf_harmonicAt f) (by aesop)
+    (isOpen_setOfPred_harmonicAt f) (by aesop)
   rw [thickening_closedBall h₁e (pos_of_mem_ball hw).le] at h₂e
   obtain ⟨F, h₁F, h₂F⟩ := HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq h₂e
   have h₃F : DifferentiableOn ℂ F (closure (ball c R)) := by

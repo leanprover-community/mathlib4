@@ -86,7 +86,7 @@ protected theorem HasSubst.monomial {n : τ →₀ ℕ} (hn : n ≠ 0) (s : S) :
   classical
   apply HasSubst.of_constantCoeff_zero
   rw [← MvPowerSeries.coeff_zero_eq_constantCoeff, MvPowerSeries.coeff_monomial,
-    if_neg hn.symm]
+    ite_eq_right hn.symm]
 
 /-- A variant of `HasSubst.monomial` to avoid the expansion of `Unit`. -/
 protected theorem HasSubst.monomial' {n : ℕ} (hn : n ≠ 0) (s : S) :
@@ -124,7 +124,7 @@ theorem HasSubst.smul (r : MvPowerSeries τ S) {a : MvPowerSeries τ S} (ha : Ha
 
 /-- Families of `PowerSeries` that can be substituted, as an `Ideal`. -/
 noncomputable def HasSubst.ideal : Ideal (MvPowerSeries τ S) where
-  carrier := setOf HasSubst
+  carrier := Set.ofPred HasSubst
   add_mem' := HasSubst.add
   zero_mem' := HasSubst.zero
   smul_mem' := HasSubst.smul
@@ -262,19 +262,19 @@ theorem coeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) (n : ℕ)
   · rw [coeff_subst' (.X_pow hk), finsum_eq_single _ (n / k), ← pow_mul, Nat.mul_div_cancel' h,
       coeff_X_pow_self, Algebra.algebraMap_eq_smul_one]
     intro j hj
-    rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
+    rw [← pow_mul, coeff_X_pow, ite_eq_right, smul_zero]
     contrapose hj
     rw [hj, Nat.mul_div_cancel_left j hk.pos]
   · rw [coeff_subst' (.X_pow hk), finsum_eq_zero_of_forall_eq_zero]
     intro j
-    rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
+    rw [← pow_mul, coeff_X_pow, ite_eq_right, smul_zero]
     contrapose h
     use j
 
 @[simp]
 theorem constantCoeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
     constantCoeff (subst (X ^ k) f) = algebraMap R S f.constantCoeff := by
-  rw [← coeff_zero_eq_constantCoeff, coeff_subst_X_pow hk, if_pos (dvd_zero k),
+  rw [← coeff_zero_eq_constantCoeff, coeff_subst_X_pow hk, ite_eq_left (dvd_zero k),
     Nat.zero_div, coeff_zero_eq_constantCoeff]
 
 theorem constantCoeff_subst_eq_zero (ha : a.constantCoeff = 0) (f : PowerSeries R)
@@ -540,7 +540,7 @@ lemma coeff_one_substInv : P.substInv.coeff 1 = ⅟(P.coeff 1) := by
 
 include hP in
 lemma subst_substInv_left : P.substInv.subst P = X := by
-  haveI : Invertible (P.substInv.coeff 1) := by simpa using invertibleInvOf
+  have : Invertible (P.substInv.coeff 1) := by simpa using invertibleInvOf
   let Q := P.substInv.substInv
   have hQ : HasSubst Q := HasSubst.substInv P.substInv
   have eq_aux : P.substInv.subst Q = X := subst_substInv_right P.substInv P.constantCoeff_substInv
@@ -580,18 +580,18 @@ lemma HasSubst.substInvOfIsUnit : HasSubst (P.substInvOfIsUnit hP') := by
 
 @[simp]
 lemma coeff_one_substInvOfIsUnit : (P.substInvOfIsUnit hP').coeff 1 = hP'.unit⁻¹ := by
-  letI := hP'.invertible
+  let := hP'.invertible
   rw [substInvOfIsUnit_eq_substInv, coeff_one_substInv]
   exact Units.mul_eq_one_iff_eq_inv.mp Invertible.invOf_mul_self
 
 include hP in
 lemma subst_substInvOfIsUnit_right : P.subst (substInvOfIsUnit P hP') = X := by
-  letI := hP'.invertible
+  let := hP'.invertible
   rw [P.substInvOfIsUnit_eq_substInv hP', P.subst_substInv_right hP]
 
 include hP in
 lemma subst_substInvOfIsUnit_left : (P.substInvOfIsUnit hP').subst P = X := by
-  letI := hP'.invertible
+  let := hP'.invertible
   rw [P.substInvOfIsUnit_eq_substInv hP', P.subst_substInv_left hP]
 
 end IsUnit
