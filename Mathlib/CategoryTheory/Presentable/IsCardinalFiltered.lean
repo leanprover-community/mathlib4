@@ -54,6 +54,14 @@ lemma hasCardinalLT_arrow_walkingParallelFamily {T : Type u}
 
 namespace IsCardinalFiltered
 
+instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (J : Type*) [Category* J] [Subsingleton J] [Nonempty J] [Quiver.IsThin J] :
+    IsCardinalFiltered J κ where
+  nonempty_cocone F _ :=
+    ⟨Cocone.mk (Classical.arbitrary _)
+      { app _ := eqToHom (by subsingleton)
+        naturality _ _ _ := by subsingleton }⟩
+
 variable {J : Type u} [Category.{v} J] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
   [IsCardinalFiltered J κ]
 
@@ -94,6 +102,11 @@ this is a choice of map `S k ⟶ max S hS` for any `k : K`. -/
 noncomputable def toMax (k : K) :
     S k ⟶ max S hS :=
   (cocone (κ := κ) (Discrete.functor S) (by simpa using hS)).ι.app ⟨k⟩
+
+include hS in
+lemma exists_max :
+    ∃ (j : J), Nonempty (∀ (k : K), S k ⟶ j) :=
+  ⟨max S hS, ⟨toMax S hS⟩⟩
 
 end max
 
@@ -219,7 +232,6 @@ instance isCardinalFiltered_under
               dsimp at this ⊢
               simp only [reassoc_of% this, Category.comp_id] } }⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance isCardinalFiltered_prod (J₁ : Type u) (J₂ : Type u')
     [Category.{v} J₁] [Category.{v'} J₂] (κ : Cardinal.{w}) [Fact κ.IsRegular]
@@ -305,6 +317,24 @@ lemma isCardinalFiltered_iff :
     pt := l
     ι.app i := a i ≫ b
     ι.naturality _ _ f := by simpa using hb (Arrow.mk f) }⟩
+
+/-- Same as `isCardinalFiltered_iff`, but for the second condition involving
+coequalizing morphisms, we assume that the index type `ι` is nonempty. -/
+lemma isCardinalFiltered_iff' :
+    IsCardinalFiltered J κ ↔
+      (∀ ⦃ι : Type w⦄ (j : ι → J) (_ : HasCardinalLT ι κ),
+        ∃ (k : J), ∀ (i : ι), Nonempty (j i ⟶ k)) ∧
+      ∀ ⦃ι : Type w⦄ ⦃j k : J⦄ (f : ι → (j ⟶ k)) (_ : HasCardinalLT ι κ) (_ : Nonempty ι),
+        ∃ (l : J) (a : k ⟶ l) (b : j ⟶ l), ∀ (i : ι), f i ≫ a = b := by
+  rw [isCardinalFiltered_iff]
+  refine ⟨fun h ↦ ⟨h.1, by tauto⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun ι j k f hι ↦ ?_⟩⟩
+  by_cases hι' : Nonempty ι
+  · exact h₂ f hι hι'
+  · obtain ⟨l, hl⟩ := h₁ (fun (x : ULift.{w} (Fin 2)) ↦ match x with
+      | ULift.up 0 => j
+      | ULift.up 1 => k)
+      (hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out))
+    exact ⟨l, (hl ⟨1⟩).some, (hl ⟨0⟩).some, by tauto⟩
 
 end
 
