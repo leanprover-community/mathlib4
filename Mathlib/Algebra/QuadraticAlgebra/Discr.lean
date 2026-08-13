@@ -190,13 +190,9 @@ end classification
 
 section field
 
--- These two `Fact (∀ r, r ^ 2 ≠ …)` instances are the bridge that lets the `Field`
--- instance on `QuadraticAlgebra K a b` fire from `¬ IsSquare (discr a b)` (or `¬ IsSquare a`
--- when `b = 0`) alone.
-instance {K : Type*} [Field K] {a : K} [Fact (¬ IsSquare a)] :
-    Fact (∀ r : K, r ^ 2 ≠ a + 0 * r) :=
-  ⟨fun r hr ↦ Fact.out (p := ¬ IsSquare a) ⟨r, by simpa [sq] using hr.symm⟩⟩
-
+-- This `Fact (∀ r, r ^ 2 ≠ …)` instance is the bridge that lets the `Field` instance on
+-- `QuadraticAlgebra K a b` fire from `¬ IsSquare (discr a b)` alone (the `b = 0` bridge from
+-- `¬ IsSquare a` lives in `Basic.lean`).
 instance {K : Type*} [Field K] {a b : K} [NeZero (2 : K)] [Fact (¬ IsSquare (discr a b))] :
     Fact (∀ r : K, r ^ 2 ≠ a + b * r) :=
   letI : Invertible (2 : K) := invertibleOfNonzero two_ne_zero
@@ -224,9 +220,6 @@ theorem isField_iff_not_isSquare_discr [NeZero (2 : K)] {a b : K} :
   refine ⟨fun hfield h ↦ not_isField_of_isSquare_discr h hfield, fun h ↦ ?_⟩
   have : Fact (¬ IsSquare (discr a b)) := ⟨h⟩
   exact Field.toIsField (QuadraticAlgebra K a b)
-
--- The `b = 0` bridge makes the `Field` instance inferable from `¬ IsSquare a` alone.
-example {a : K} [Fact (¬ IsSquare a)] : Field (QuadraticAlgebra K a 0) := inferInstance
 
 -- The general bridge makes the `Field` instance inferable from `¬ IsSquare (discr a b)`
 -- if `2 ≠ 0` in the field.

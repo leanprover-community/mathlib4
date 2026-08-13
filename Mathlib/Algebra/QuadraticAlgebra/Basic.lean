@@ -100,14 +100,12 @@ theorem mk_eq_add_smul_omega (x y : R) :
 
 variable {A : Type*} [Ring A] [Algebra R A]
 
-set_option backward.isDefEq.respectTransparency false in
 @[ext]
 theorem algHom_ext {f g : QuadraticAlgebra R a b →ₐ[R] A}
     (h : f ω = g ω) : f = g := by
   ext ⟨x, y⟩
   simp [mk_eq_add_smul_omega, h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The unique `AlgHom` from `QuadraticAlgebra R a b` to an `R`-algebra `A`,
 constructed by replacing `ω` with the provided root.
 Conversely, this associates to every algebra morphism `QuadraticAlgebra R a b →ₐ[R] A`
@@ -475,6 +473,14 @@ instance : Field (QuadraticAlgebra K a b) where
   qsmul := (· • ·)
   nnqsmul_def q x := by ext <;> simp [NNRat.smul_def]
   qsmul_def q x := by ext <;> simp [Rat.smul_def]
+
+/-- When `b = 0`, the `Field` instance is inferable from `¬ IsSquare a` alone: it provides the
+no-root condition `∀ r, r ^ 2 ≠ a + 0 * r`. -/
+instance {a : K} [Fact (¬ IsSquare a)] : Fact (∀ r : K, r ^ 2 ≠ a + 0 * r) :=
+  ⟨fun r hr ↦ Fact.out (p := ¬ IsSquare a) ⟨r, by simpa [sq] using hr.symm⟩⟩
+
+-- The `b = 0` bridge makes the `Field` instance inferable from `¬ IsSquare a` alone.
+example {a : K} [Fact (¬ IsSquare a)] : Field (QuadraticAlgebra K a 0) := inferInstance
 
 end field
 
