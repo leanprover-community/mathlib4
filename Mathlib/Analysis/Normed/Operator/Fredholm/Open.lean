@@ -9,7 +9,10 @@ public import Mathlib.Analysis.Normed.Operator.Fredholm.Basic
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
-# The set of Fredholm operators between two Banach spaces is open
+# The set of Fredholm operators is open
+
+In this file, we show that the set of Fredholm operators between two Banach spaces is open
+(for the operator norm) in the space of continuous linear maps.
 -/
 
 @[expose] public noncomputable section
@@ -22,6 +25,8 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
     [CompleteSpace 𝕜] [CompleteSpace E]
 
+/-- If `T` is a Fredholm operators between two Banach spaces, then every operator `S` close
+enough to `T` (in operator norm) is also Fredholm. -/
 protected theorem IsFredholm.eventually
     {T : E →L[𝕜] F} (hT : T.IsFredholm) : ∀ᶠ S in 𝓝 T, S.IsFredholm := by
   obtain ⟨pkg⟩ := hT.nonempty_fredholmPackage
