@@ -254,7 +254,6 @@ lemma erase_le_erase (ha : a ∈ s) (hb : b ∈ s) :
     toColex (s.erase a) ≤ toColex (s.erase b) ↔ b ≤ a := by
   obtain rfl | hab := eq_or_ne a b
   · simp
-  classical
   rw [← toColex_sdiff_le_toColex_sdiff', erase_sdiff_erase hab hb, erase_sdiff_erase hab.symm ha,
     singleton_le_singleton]
 
@@ -269,7 +268,6 @@ variable [LinearOrder α] [LinearOrder β] {f : α → β} {𝒜 𝒜₁ 𝒜₂
 
 instance instLinearOrder : LinearOrder (Colex (Finset α)) where
   le_total s t := by
-    classical
     obtain rfl | hts := eq_or_ne t s
     · simp
     have ⟨a, ha, hamax⟩ := exists_max_image _ id
@@ -430,7 +428,6 @@ def IsInitSeg (𝒜 : Finset (Finset α)) (r : ℕ) : Prop :=
 /-- Initial segments are nested in some way. In particular, if they're the same size they're equal.
 -/
 lemma IsInitSeg.total (h₁ : IsInitSeg 𝒜₁ r) (h₂ : IsInitSeg 𝒜₂ r) : 𝒜₁ ⊆ 𝒜₂ ∨ 𝒜₂ ⊆ 𝒜₁ := by
-  classical
   simp_rw [← sdiff_eq_empty_iff_subset]
   by_contra! h
   have ⟨⟨s, hs⟩, t, ht⟩ := h
@@ -458,6 +455,7 @@ lemma isInitSeg_initSeg : IsInitSeg (initSeg s) #s := by
   rw [mem_initSeg] at ht₁
   exact ht₂.1.le.trans ht₁.2
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsInitSeg.exists_initSeg (h𝒜 : IsInitSeg 𝒜 r) (h𝒜₀ : 𝒜.Nonempty) :
     ∃ s : Finset α, #s = r ∧ 𝒜 = initSeg s := by
   have hs := sup'_mem (ofColex ⁻¹' 𝒜) (LinearOrder.supClosed _) 𝒜 h𝒜₀ toColex

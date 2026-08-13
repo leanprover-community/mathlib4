@@ -93,7 +93,8 @@ variable {K : Type*} [Field K] {R : Type*} [CommRing R] [Algebra R K] [IsDedekin
 
 /-- The embedding of a field inside its `adicCompletion` with respect to `v`. -/
 noncomputable def FinitePlace.embedding : K →+* adicCompletion K v :=
-  UniformSpace.Completion.coeRingHom.comp (WithVal.equiv (v.valuation K)).symm
+  (adicCompletion.equiv K v).symm.toRingHom.comp
+    (UniformSpace.Completion.coeRingHom.comp (WithVal.equiv (v.valuation K)).symm)
 
 theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
 
@@ -424,7 +425,7 @@ theorem hasFiniteMulSupport_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
   have h_inj : Set.InjOn FinitePlace.maximalIdeal {w | w.maximalIdeal.asIdeal ∣ span {x}} :=
     Function.Injective.injOn maximalIdeal_injective
   refine (h.subset ?_).of_finite_image h_inj
-  simp only [dvd_span_singleton, Set.image_subset_iff, Set.preimage_setOf_eq, subset_refl]
+  simp only [dvd_span_singleton, Set.image_subset_iff, Set.preimage_ofPred_eq, subset_refl]
 
 @[deprecated (since := "2026-03-03")] alias mulSupport_finite_int := hasFiniteMulSupport_int
 

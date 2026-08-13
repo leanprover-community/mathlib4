@@ -315,7 +315,7 @@ theorem leftInverse_trunc_toLaurent :
     simp only [hf, hg, map_add]
   · intro n r
     simp only [Polynomial.toLaurent_C_mul_T, trunc_C_mul_T, Int.natCast_nonneg, Int.toNat_natCast,
-      if_true]
+      ite_true]
 
 @[simp]
 theorem _root_.Polynomial.trunc_toLaurent (f : R[X]) : trunc (toLaurent f) = f :=
@@ -518,6 +518,7 @@ theorem mk'_one_X_pow (n : ℕ) :
     IsLocalization.mk' R[T;T⁻¹] 1 (⟨X^n, n, rfl⟩ : Submonoid.powers (X : R[X])) = T (-n) := by
   rw [mk'_eq 1 n, toLaurent_one, one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk'_one_X :
     IsLocalization.mk' R[T;T⁻¹] 1 (⟨X, 1, pow_one X⟩ : Submonoid.powers (X : R[X])) = T (-1) := by
