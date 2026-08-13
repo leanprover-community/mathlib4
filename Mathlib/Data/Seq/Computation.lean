@@ -265,8 +265,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       · constructor <;> dsimp at h
         · rw [h]
         · rw [h] at r
-          rw [tail_pure, tail_pure, h]
-          assumption
+          rwa [tail_pure, tail_pure, h]
       · rw [destruct_pure, destruct_think] at h
         exact False.elim h
       · rw [destruct_pure, destruct_think] at h
