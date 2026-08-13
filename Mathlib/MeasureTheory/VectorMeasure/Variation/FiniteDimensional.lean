@@ -41,7 +41,6 @@ is finite. -/
 instance [NormedSpace ℝ V] [FiniteDimensional ℝ V] (μ : VectorMeasure X V) :
     IsFiniteMeasure μ.variation := by
   let b := (Module.finBasis ℝ V).toGeneralSchauderBasis
-    (L := SummationFilter.unconditional (Fin (Module.finrank ℝ V)))
   exact isFiniteMeasure_of_le (∑ i, ‖b i‖₊ • (μ.coord b i).variation)
     (variation_le_sum_smul (by simp))
 

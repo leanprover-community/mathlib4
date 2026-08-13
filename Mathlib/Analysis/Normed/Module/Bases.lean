@@ -144,16 +144,16 @@ def toGeneralSchauderBasis (b : Module.Basis β 𝕜 X) :
   { basis := b
     coord i := (b.coord i).toContinuousLinearMap
     ortho i j := by simp [Finsupp.single]
-    expansion x := by simpa using hasSum_fintype (fun i ↦ b.coord i x • b i) L }
+    expansion x := by simpa using hasSum_fintype (fun i ↦ b.coord i x • b i) }
 
 @[simp]
 lemma basis_toGeneralSchauderBasis (L := unconditional β) [L.LeAtTop] (b : Module.Basis β 𝕜 X) :
-    (b.toGeneralSchauderBasis L).basis = b := rfl
+    b.toGeneralSchauderBasis.basis = b := rfl
 
 @[simp]
 lemma coord_toGeneralSchauderBasis_eq_coord (L := unconditional β) [L.LeAtTop]
     (b : Module.Basis β 𝕜 X) (i : β) (x : X) :
-    (b.toGeneralSchauderBasis L).coord i x = b.coord i x := rfl
+    b.toGeneralSchauderBasis.coord i x = b.coord i x := rfl
 
 end Module.Basis
 
