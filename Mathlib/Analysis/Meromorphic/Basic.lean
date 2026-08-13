@@ -698,7 +698,6 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace �
   [IsScalarTower 𝕜 𝕜' F] {V : Set 𝕜'}
 
 /-- The composition of a meromorphic and an analytic function is meromorphic. -/
-@[fun_prop]
 lemma comp_analyticOnNhd {f : 𝕜' → F} {g : 𝕜 → 𝕜'} (hf : MeromorphicOn f V)
     (hg : AnalyticOnNhd 𝕜 g U) (hUV : Set.MapsTo g U V) :
     MeromorphicOn (f ∘ g) U :=

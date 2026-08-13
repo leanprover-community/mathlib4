@@ -112,9 +112,6 @@ example (hf : Meromorphic f) : MeromorphicOn (fun z ↦ f z + Complex.sin z) U :
 -- Composition: the outer function must be the meromorphic one.
 example (hf : Meromorphic f) : MeromorphicOn (fun z ↦ f (z ^ 2 + 1)) U := by fun_prop
 
-example (hf : MeromorphicOn f V) (hUV : Set.MapsTo (fun z ↦ z ^ 2) U V) :
-    MeromorphicOn (fun z ↦ f (z ^ 2)) U := by fun_prop (disch := assumption)
-
 example (N : Finset ℕ) (F : ℕ → ℂ → ℂ) (h : ∀ n ∈ N, MeromorphicOn (F n) U) :
     MeromorphicOn (fun z ↦ ∑ n ∈ N, F n z) U := by fun_prop
 
