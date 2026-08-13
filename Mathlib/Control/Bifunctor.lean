@@ -114,6 +114,7 @@ instance LawfulBifunctor.const : LawfulBifunctor Const where
 instance Bifunctor.flip : Bifunctor (flip F) where
   bimap {_α α' _β β'} f f' x := (bimap f' f x : F β' α')
 
+set_option backward.isDefEq.respectTransparency false in
 instance LawfulBifunctor.flip [LawfulBifunctor F] : LawfulBifunctor (flip F) where
   id_bimap := by simp [bimap, functor_norm]
   bimap_bimap := by simp [bimap, functor_norm]
@@ -141,6 +142,7 @@ variable (G : Type* → Type u₀) (H : Type* → Type u₁) [Functor G] [Functo
 instance Function.bicompl.bifunctor : Bifunctor (bicompl F G H) where
   bimap {_α α' _β β'} f f' x := (bimap (map f) (map f') x : F (G α') (H β'))
 
+set_option backward.isDefEq.respectTransparency false in
 instance Function.bicompl.lawfulBifunctor [LawfulFunctor G] [LawfulFunctor H] [LawfulBifunctor F] :
     LawfulBifunctor (bicompl F G H) := by
   constructor <;> intros <;> simp [bimap, map_id, map_comp_map, functor_norm]
@@ -154,6 +156,7 @@ variable (G : Type u₂ → Type*) [Functor G]
 instance Function.bicompr.bifunctor : Bifunctor (bicompr G F) where
   bimap {_α α' _β β'} f f' x := (map (bimap f f') x : G (F α' β'))
 
+set_option backward.isDefEq.respectTransparency false in
 instance Function.bicompr.lawfulBifunctor [LawfulFunctor G] [LawfulBifunctor F] :
     LawfulBifunctor (bicompr G F) := by
   constructor <;> intros <;> simp [bimap, functor_norm]

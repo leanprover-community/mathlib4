@@ -801,17 +801,21 @@ The manifold derivative of `f` will just be the derivative of this conjugated fu
 def writtenInExtChartAt (x : M) (f : M → M') : E → E' :=
   extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I x (chartAt H x) y = y := by simp_all only [mfld_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I (chartAt H x x) (chartAt H x).symm y = y := by
   simp_all only [mfld_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I 𝓘(𝕜, E) x (extChartAt I x) y = y := by
   simp_all only [mfld_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
@@ -831,7 +835,6 @@ variable {G G' F F' N N' : Type*}
   {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F' G'}
   [ChartedSpace G N] [ChartedSpace G' N']
 
-set_option backward.isDefEq.respectTransparency false in
 lemma writtenInExtChartAt_prod {f : M → N} {g : M' → N'} {x : M} {x' : M'} :
     (writtenInExtChartAt (I.prod I') (J.prod J') (x, x') (Prod.map f g)) =
       Prod.map (writtenInExtChartAt I J x f) (writtenInExtChartAt I' J' x' g) := by
@@ -850,6 +853,7 @@ theorem extChartAt_self_eq {x : H} : ⇑(extChartAt I x) = I :=
 theorem extChartAt_self_apply {x y : H} : extChartAt I x y = I y :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the case of the manifold structure on a vector space, the extended charts are just the
 identity. -/
 theorem extChartAt_model_space_eq_id (x : E) : extChartAt 𝓘(𝕜, E) x = PartialEquiv.refl E := by
@@ -860,7 +864,6 @@ theorem ext_chart_model_space_apply {x y : E} : extChartAt 𝓘(𝕜, E) x y = y
 
 variable {𝕜}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extChartAt_prod (x : M × M') :
     extChartAt (I.prod I') x = (extChartAt I x.1).prod (extChartAt I' x.2) := by
   simp only [mfld_simps]
@@ -874,14 +877,14 @@ theorem extChartAt_comp [ChartedSpace H H'] (x : M') :
 theorem writtenInExtChartAt_chartAt_comp [ChartedSpace H H'] (x : M') {y}
     (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
     (letI := ChartedSpace.comp H H' M'; writtenInExtChartAt I I x (chartAt H' x) y) = y := by
-  letI := ChartedSpace.comp H H' M'
+  let := ChartedSpace.comp H H' M'
   simp_all only [mfld_simps, chartAt_comp]
 
 theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
     (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
     (letI := ChartedSpace.comp H H' M'
      writtenInExtChartAt I I (chartAt H' x x) (chartAt H' x).symm y) = y := by
-  letI := ChartedSpace.comp H H' M'
+  let := ChartedSpace.comp H H' M'
   simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts

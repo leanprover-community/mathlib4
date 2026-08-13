@@ -221,6 +221,16 @@ protected theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F]
   rw [← h.fderiv_eq, add_sub_cancel]
   simpa only [edist_eq_enorm_sub, Metric.mem_eball] using! hz
 
+protected theorem FormalMultilinearSeries.fderiv_sum [CompleteSpace F] (h : ‖x‖ₑ < p.radius) :
+    fderiv 𝕜 p.sum x = p.derivSeries.sum x := by
+  simpa using (p.hasFPowerSeriesOnBall (zero_le.trans_lt h)).fderiv.sum (by simpa using h)
+
+protected theorem FormalMultilinearSeries.hasFDerivAt_sum [CompleteSpace F] (h : ‖x‖ₑ < p.radius) :
+    HasFDerivAt p.sum (p.derivSeries.sum x) x := by
+  rw [← FormalMultilinearSeries.fderiv_sum h]
+  exact p.hasFPowerSeriesOnBall (zero_le.trans_lt h)
+    |>.analyticAt_of_mem (by simpa using h) |>.differentiableAt.hasFDerivAt
+
 /-- If a function has a power series within a set on a ball, then so does its derivative. -/
 protected theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r) (hu : UniqueDiffOn 𝕜 (insert x s)) :
@@ -577,7 +587,7 @@ theorem changeOriginSeries_support {k l : ℕ} (h : k + l ≠ Fintype.card ι) :
     f.toFormalMultilinearSeries.changeOriginSeries k l = 0 :=
   Finset.sum_eq_zero fun _ _ ↦ by
     simp_rw [FormalMultilinearSeries.changeOriginSeriesTerm,
-      toFormalMultilinearSeries, dif_neg h.symm, LinearIsometryEquiv.map_zero]
+      toFormalMultilinearSeries, dite_eq_right h.symm, LinearIsometryEquiv.map_zero]
 
 variable {n : WithTop ℕ∞} (x : ∀ i, E i)
 
@@ -609,7 +619,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
     obtain ⟨a, ha⟩ := card_eq_one.mp h
     exact ⟨a, Subtype.ext (compl_eq_comm.mp ha)⟩
   rw [Function.comp_apply, Subtype.coe_mk, compl_singleton, piecewise_erase_univ,
-    toFormalMultilinearSeries, dif_pos (Nat.add_sub_of_le Fintype.card_pos).symm]
+    toFormalMultilinearSeries, dite_eq_left (Nat.add_sub_of_le Fintype.card_pos).symm]
   simp_rw [domDomCongr_apply, compContinuousLinearMap_apply, ContinuousLinearMap.proj_apply,
     Function.update_apply, (Equiv.injective _).eq_iff, ite_apply]
   congr
@@ -722,6 +732,7 @@ private lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [De
   simp_rw [this]
   simp [-Equiv.embeddingFinSucc_fst]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A continuous multilinear function `f` admits a Taylor series, whose successive terms are given
 by `f.iteratedFDeriv n`. This is the point of the definition of `f.iteratedFDeriv`. -/
 theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
