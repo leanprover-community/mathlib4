@@ -46,7 +46,7 @@ argument, and return `LipschitzWith (Real.toNNReal K) f`.
 
 universe u v w x
 
-open Filter Function Set Topology NNReal ENNReal Bornology
+open Filter Function Set Topology NNReal ENNReal
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
@@ -149,14 +149,8 @@ theorem edist_lt_mul_of_lt (h : LipschitzWith K f) (hK : K ≠ 0) (hr : edist x 
 theorem mapsTo_closedEBall (h : LipschitzWith K f) (x : α) (r : ℝ≥0∞) :
     MapsTo f (closedEBall x r) (closedEBall (f x) (K * r)) := fun _y hy => h.edist_le_mul_of_le hy
 
-@[deprecated (since := "2026-01-24")]
-alias mapsTo_emetric_closedBall := mapsTo_closedEBall
-
 theorem mapsTo_eball (h : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r : ℝ≥0∞) :
     MapsTo f (eball x r) (eball (f x) (K * r)) := fun _y hy => h.edist_lt_mul_of_lt hK hy
-
-@[deprecated (since := "2026-01-24")]
-alias mapsTo_emetric_ball := mapsTo_eball
 
 theorem edist_lt_top (hf : LipschitzWith K f) {x y : α} (h : edist x y ≠ ⊤) :
     edist (f x) (f y) < ⊤ :=
