@@ -163,22 +163,42 @@ private partial def collect (privateNames : NameSet) (ctx? : Option ContextInfo)
   | .hole _ => acc
 
 /-- Whether `private` could abstract this term into a public auxiliary theorem: it must be a proof,
-and its type must not itself mention private declarations. -/
-private def isWrappableProof (ctx : ContextInfo) (ti : TermInfo) : CommandElabM Bool :=
-  ctx.runMetaM ti.lctx do
-    let e ← instantiateMVars ti.expr
-    if e.hasSorry || e.isFVar then return false
-    unless ← isProof e do return false
-    let ty ← instantiateMVars (← inferType e)
-    return !ty.getUsedConstants.any isPrivateName
+and its type must not itself mention private declarations.
+
+The metavariable context we have here is the one saved at the nearest enclosing context node, not
+the one in force when this term was elaborated, so `instantiateMVars` can produce an expression
+mentioning free variables which are not in `ti.lctx` (giving "unknown free variable"), or leave
+metavariables which `inferType` then cannot handle. There is nothing useful to say about such a
+term, so we treat a failure as "not wrappable"; if no enclosing term is wrappable, the reference is
+reported for manual inspection anyway. -/
+private def isWrappableProof (ctx : ContextInfo) (ti : TermInfo) : CommandElabM Bool := do
+  try
+    ctx.runMetaM ti.lctx do
+      let e ← instantiateMVars ti.expr
+      if e.hasSorry || e.isFVar then return false
+      unless ← isProof e do return false
+      let ty ← instantiateMVars (← inferType e)
+      return !ty.getUsedConstants.any isPrivateName
+  catch _ =>
+    return false
 
 /-- Whether this `by` block proves a proposition: such a block is elaborated in a non-exporting
 environment and abstracted into an auxiliary theorem, so nothing inside it needs `private`. (This is
-not visible in the infotree contexts, which are saved further out.) -/
+not visible in the infotree contexts, which are saved further out.)
+
+As in `isWrappableProof`, the check can fail on ill-scoped expressions; we assume a proof in that
+case, since `by` blocks proving propositions are the overwhelming majority and a spurious
+suggestion inside one would be worse than a missed one. -/
 private def isProofByBlock (ctx : ContextInfo) (ti : TacticInfo) : CommandElabM Bool := do
   let some goal := ti.goalsBefore.head? | return false
+  let some decl := ti.mctxBefore.decls.find? goal | return false
   let ctx := { ctx with mctx := ti.mctxBefore }
-  ctx.runMetaM {} do isProp (← instantiateMVars (← goal.getType))
+  try
+    -- Note that the goal's own local context is required here: its type generally mentions the
+    -- local hypotheses of the declaration being elaborated.
+    ctx.runMetaM decl.lctx do isProp (← instantiateMVars decl.type)
+  catch _ =>
+    return true
 
 /-- Tokens after which a term of precedence 0 may appear, so that `private t` need not be
 parenthesized. -/
