@@ -1,14 +1,16 @@
 /-
 Copyright (c) 2022 Siddhartha Prasad, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Siddhartha Prasad, Yaël Dillies
+Authors: Siddhartha Prasad, Yaël Dillies, Jack Wickham
 -/
 module
 
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Ring.ULift
 public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
@@ -43,7 +45,7 @@ Kleene star, such that (informally) `a∗ = 1 + a + a * a + a * a * a + ...`
 
 ## TODO
 
-Instances for `AddOpposite`, `MulOpposite`, `ULift`, `Subsemiring`, `Subring`, `Subalgebra`.
+Instances for `Subsemiring`, `Subring`, `Subalgebra`.
 
 ## Tags
 
@@ -315,6 +317,102 @@ theorem kstar_apply (a : ∀ i, π i) (i : ι) : a∗ i = (a i)∗ :=
   rfl
 
 end Pi
+
+namespace MulOpposite
+
+instance instIdemSemiring [IdemSemiring α] : IdemSemiring αᵐᵒᵖ where
+  __ := MulOpposite.instSemiring
+  le x y := unop x ≤ unop y
+  le_refl _ := le_refl _
+  le_trans _ _ _ := le_trans
+  le_antisymm _ _ h1 h2 := unop_injective (le_antisymm h1 h2)
+  sup x y := op (unop x ⊔ unop y)
+  le_sup_left _ _ := le_sup_left
+  le_sup_right _ _ := le_sup_right
+  sup_le _ _ _ := sup_le
+  bot := op ⊥
+  bot_le _ := bot_le
+  add_eq_sup _ _ := unop_injective <| add_eq_sup _ _
+
+instance [IdemCommSemiring α] : IdemCommSemiring αᵐᵒᵖ where
+  __ := MulOpposite.instCommSemiring
+  __ := instIdemSemiring
+
+instance [KleeneAlgebra α] : KleeneAlgebra αᵐᵒᵖ where
+  kstar a := op (unop a)∗
+  one_le_kstar _ := one_le_kstar
+  mul_kstar_le_kstar _ := kstar_mul_le_kstar
+  kstar_mul_le_kstar _ := mul_kstar_le_kstar
+  mul_kstar_le_self _ _ h := kstar_mul_le_self h
+  kstar_mul_le_self _ _ h := mul_kstar_le_self h
+
+end MulOpposite
+
+namespace AddOpposite
+
+instance instIdemSemiring [IdemSemiring α] : IdemSemiring αᵃᵒᵖ where
+  __ := AddOpposite.instSemiring
+  le x y := unop x ≤ unop y
+  le_refl _ := le_refl _
+  le_trans _ _ _ := le_trans
+  le_antisymm _ _ h1 h2 := unop_injective (le_antisymm h1 h2)
+  sup x y := op (unop x ⊔ unop y)
+  le_sup_left _ _ := le_sup_left
+  le_sup_right _ _ := le_sup_right
+  sup_le _ _ _ := sup_le
+  bot := op ⊥
+  bot_le _ := bot_le
+  add_eq_sup a b := unop_injective <| by
+    change unop b + unop a = unop a ⊔ unop b
+    rw [add_comm, add_eq_sup]
+
+instance [IdemCommSemiring α] : IdemCommSemiring αᵃᵒᵖ where
+  __ := AddOpposite.instCommSemiring
+  __ := instIdemSemiring
+
+instance [KleeneAlgebra α] : KleeneAlgebra αᵃᵒᵖ where
+  kstar a := op (unop a)∗
+  one_le_kstar _ := one_le_kstar
+  mul_kstar_le_kstar _ := mul_kstar_le_kstar
+  kstar_mul_le_kstar _ := kstar_mul_le_kstar
+  mul_kstar_le_self _ _ h := mul_kstar_le_self h
+  kstar_mul_le_self _ _ h := kstar_mul_le_self h
+
+end AddOpposite
+
+namespace ULift
+
+instance instIdemSemiring [IdemSemiring α] : IdemSemiring (ULift α) :=
+  IdemSemiring.ofSemiring fun ⟨a⟩ => congrArg ULift.up (add_idem a)
+
+instance [IdemCommSemiring α] : IdemCommSemiring (ULift α) where
+  __ := (inferInstance : CommSemiring (ULift α))
+  __ := instIdemSemiring
+
+instance [KleeneAlgebra α] : KleeneAlgebra (ULift α) where
+  __ := instIdemSemiring
+  kstar a := ⟨(a.down)∗⟩
+  one_le_kstar a := by
+    change (1 : ULift α) + ⟨(a.down)∗⟩ = ⟨(a.down)∗⟩
+    exact congrArg ULift.up one_le_kstar.add_eq_right
+  mul_kstar_le_kstar a := by
+    change a * ⟨(a.down)∗⟩ + ⟨(a.down)∗⟩ = ⟨(a.down)∗⟩
+    exact congrArg ULift.up mul_kstar_le_kstar.add_eq_right
+  kstar_mul_le_kstar a := by
+    change ⟨(a.down)∗⟩ * a + ⟨(a.down)∗⟩ = ⟨(a.down)∗⟩
+    exact congrArg ULift.up kstar_mul_le_kstar.add_eq_right
+  mul_kstar_le_self a b h := by
+    change b * ⟨(a.down)∗⟩ + b = b
+    have : b.down * a.down ≤ b.down :=
+      add_eq_right_iff_le.1 (congrArg ULift.down h)
+    exact congrArg ULift.up (mul_kstar_le_self this).add_eq_right
+  kstar_mul_le_self a b h := by
+    change ⟨(a.down)∗⟩ * b + b = b
+    have : a.down * b.down ≤ b.down :=
+      add_eq_right_iff_le.1 (congrArg ULift.down h)
+    exact congrArg ULift.up (kstar_mul_le_self this).add_eq_right
+
+end ULift
 
 namespace Function.Injective
 
