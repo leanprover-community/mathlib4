@@ -25,7 +25,7 @@ This file defines regular, singular, and inaccessible cardinals.
   `ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c`.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -103,9 +103,6 @@ theorem _root_.Ordinal.iSup_lt_omega_one {α : Type*} [Countable α] {f : α →
 
 @[deprecated (since := "2026-03-23")]
 alias iSup_sequence_lt_omega_one := Ordinal.iSup_lt_omega_one
-
-@[deprecated (since := "2025-12-22")]
-alias iSup_sequence_lt_omega1 := Ordinal.iSup_lt_omega_one
 
 theorem isRegular_preAleph_add_one {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (o + 1)) := by
   rw [← succ_preAleph]
