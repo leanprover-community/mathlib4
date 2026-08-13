@@ -775,6 +775,7 @@ occurring in `src` using the `translations` dictionary.
 -/
 partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt src : Name)
     (reorder : ArgReorder := {}) (rename : NameMap Name := {}) : CoreM Unit := do
+  withExporting (isExporting := (← getEnv).hasExposedBody src) do
   let env ← getEnv
   trace[translate_detail] "visiting {src}"
   -- if we have already translated this declaration, we do nothing.
@@ -789,21 +790,20 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
   -- we find, or guess, the translated name of `src`
   let tgt ← findTargetName env t src rootSrc rootTgt
   -- we skip if we already transformed this declaration before.
-  if env.setExporting false |>.contains tgt then
+  if env.contains tgt then
     if tgt == src then
       -- Note: this can happen for equation lemmas of declarations without a translation.
       trace[translate_detail] "Auxiliary declaration {src} will be translated to itself."
     else
       trace[translate_detail] "Already visited {tgt} as translation of {src}."
     return
-  let srcDecl ← withoutExporting do getConstInfo src
+  let srcDecl ← getConstInfo src
   -- we first unfold all auxlemmas, since they are not always able to be translated on their own
-  let srcDecl ← withoutExporting do MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
+  let srcDecl ← MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `rootSrc`
   for n in ← findAuxDecls srcDecl rootSrc do
     transformDeclRec t cfg rootSrc rootTgt n
   -- expose target body when source body is exposed
-  withExporting (isExporting := (← getEnv).setExporting true |>.find? src |>.any (·.hasValue)) do
   -- We still lack a heuristic that automatically infers the `dontTranslate`,
   -- so for now we do a best guess based on argument names.
   let dontTranslate ← if cfg.dontTranslate.isEmpty then pure [] else
