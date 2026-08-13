@@ -144,7 +144,7 @@ theorem ker_eq_bot' : f.ker = ⊥ ↔ ∀ x, f x = 0 → x = 0 := by
 theorem ker_eq_bot : f.ker = ⊥ ↔ Function.Injective f := by
   simp [ker, ← LinearMap.le_ker_iff_map, LinearMap.ker_eq_bot]
 
-theorem mem_ker_iff {x : E} : x ∈ f.ker ↔ ∃ (y : f.domain) (_h : x = y), f y = 0 := by
+theorem mem_ker_iff {x : E} : x ∈ f.ker ↔ ∃ (y : f.domain), x = y ∧ f y = 0 := by
   simp [ker]
 
 theorem coe_mem_ker_iff {x : f.domain} : ↑x ∈ f.ker ↔ f x = 0 := by
