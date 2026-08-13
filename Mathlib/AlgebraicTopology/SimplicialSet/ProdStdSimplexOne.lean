@@ -159,11 +159,11 @@ lemma δ_succ_nonDegenerateEquiv (j : Fin (p + 1)) :
 
 end prodStdSimplex₁
 
-@[deprecated (since := "2026-07-12")]
+@[deprecated (since := "2026-08-13")]
 alias prodStdSimplex.nonDegenerateEquiv₁ := prodStdSimplex₁.nonDegenerateEquiv
-@[deprecated (since := "2026-07-12")]
+@[deprecated (since := "2026-08-13")]
 alias prodStdSimplex.nonDegenerateEquiv₁_fst := prodStdSimplex₁.nonDegenerateEquiv_fst
-@[deprecated (since := "2026-07-12")]
+@[deprecated (since := "2026-08-13")]
 alias prodStdSimplex.nonDegenerateEquiv₂_snd := prodStdSimplex₁.nonDegenerateEquiv_snd
 
 end SSet
