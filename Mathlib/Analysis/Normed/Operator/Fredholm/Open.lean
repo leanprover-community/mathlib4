@@ -44,6 +44,8 @@ protected theorem IsFredholm.eventually
   rw [← A.comp_iff_left, ← B.comp_iff_right]
   exact Φ_S_inv.isFredholm
 
+/-- The set of Fredholm operators between two Banach spaces is open (for the operator norm)
+in the space of continuous linear maps. -/
 theorem isOpen_setOfPred_isFredholm : IsOpen {T : E →L[𝕜] F | T.IsFredholm} :=
   isOpen_iff_mem_nhds.mpr fun _ ↦ IsFredholm.eventually
 
