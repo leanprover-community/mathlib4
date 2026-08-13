@@ -250,7 +250,7 @@ theorem card_le_encard (h : ∀ a ∈ s, a ∈ s') : s.card ≤ s'.encard := by
   grw [← Set.encard_coe_eq_coe_finsetCard, Set.encard_le_encard (h · <| by simpa using ·)]
 
 theorem card_le_ncard (hs : s'.Finite) (h : ∀ a ∈ s, a ∈ s') : s.card ≤ s'.ncard := by
-  grw [← ENat.coe_le_coe, hs.cast_ncard_eq, s.card_le_encard h]
+  grw [← ENat.natCast_le_natCast, hs.cast_ncard_eq, s.card_le_encard h]
 
 variable (s) in
 theorem card_le_enatCard : s.card ≤ ENat.card α := by
@@ -282,7 +282,7 @@ theorem card_le_encard (h : ∀ a ∈ m, a ∈ s) : m.card ≤ s.encard := by
   grw [← toFinset_card_of_nodup hm, Finset.card_le_encard (h · <| by simpa using ·)]
 
 theorem card_le_ncard (hs : s.Finite) (h : ∀ a ∈ m, a ∈ s) : m.card ≤ s.ncard := by
-  grw [← ENat.coe_le_coe, hs.cast_ncard_eq, hm.card_le_encard h]
+  grw [← ENat.natCast_le_natCast, hs.cast_ncard_eq, hm.card_le_encard h]
 
 theorem card_le_enatCard : m.card ≤ ENat.card α := by
   simp [← Set.encard_univ, hm.card_le_encard]
@@ -313,7 +313,7 @@ theorem length_le_encard (h : ∀ a ∈ l, a ∈ s) : l.length ≤ s.encard := b
   grw [← Multiset.coe_card, Multiset.coe_nodup.mpr hl |>.card_le_encard h]
 
 theorem length_le_ncard (hs : s.Finite) (h : ∀ a ∈ l, a ∈ s) : l.length ≤ s.ncard := by
-  grw [← ENat.coe_le_coe, hs.cast_ncard_eq, hl.length_le_encard h]
+  grw [← ENat.natCast_le_natCast, hs.cast_ncard_eq, hl.length_le_encard h]
 
 theorem length_le_enatCard : l.length ≤ ENat.card α := by
   simp [← Set.encard_univ, hl.length_le_encard]
