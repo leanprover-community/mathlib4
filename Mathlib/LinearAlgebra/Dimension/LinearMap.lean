@@ -25,7 +25,7 @@ universe u v v' v''
 
 variable {K : Type u} {V V₁ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
 
-open Cardinal Basis Submodule Function Set
+open Cardinal Submodule Function Set
 
 namespace LinearMap
 
