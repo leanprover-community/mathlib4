@@ -222,19 +222,6 @@ protected lemma ConvexOn.locallyLipschitz (hf : ConvexOn ℝ univ f) : LocallyLi
 protected lemma ConcaveOn.locallyLipschitz (hf : ConcaveOn ℝ univ f) : LocallyLipschitz f := by
   simpa using hf.locallyLipschitzOn_interior
 
-/-- If `f` is locally Lipschitz on `s` after precomposition with an isometry `g`, then `f` is
-locally Lipschitz on `g '' s`. -/
-lemma Isometry.locallyLipschitzOn_image {α β γ : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
-    [PseudoEMetricSpace γ] {g : α → β} {h : β → γ} {s : Set α} (hg : Isometry g)
-    (hL : LocallyLipschitzOn s (h ∘ g)) : LocallyLipschitzOn (g '' s) h := by
-  rintro _ ⟨x, hx, rfl⟩
-  obtain ⟨K, t, ht, hK⟩ := hL hx
-  refine ⟨K, g '' t, ?_, ?_⟩
-  · rw [← hg.isEmbedding.map_nhdsWithin_eq]
-    exact Filter.image_mem_map ht
-  · rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
-    simpa [hg.edist_eq] using hK ha hb
-
 lemma ConvexOn.locallyLipschitzOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
     LocallyLipschitzOn (intrinsicInterior ℝ C) f := by
   obtain rfl | ⟨p, hp⟩ := C.eq_empty_or_nonempty
