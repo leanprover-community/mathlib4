@@ -920,23 +920,6 @@ end WithZero
 
 section SubgroupCard
 
-/-- In a cyclic group, if `K` is finite then `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/
-@[to_additive
-/-- In an additive cyclic group, if `K` is finite then `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/]
-theorem IsCyclic.subgroup_le_subgroup_iff [Group G] [IsCyclic G] {H K : Subgroup G} [Finite K] :
-    H ≤ K ↔ Nat.card H ∣ Nat.card K := by
-  obtain _ | _ := finite_or_infinite G
-  · obtain ⟨g, hg⟩ := isCyclic_iff_exists_zpowers_eq_top.mp ‹_›
-    obtain ⟨i, rfl⟩ := Subgroup.exists_zpowers_eq_of_zpowers_eq_top hg H
-    obtain ⟨j, rfl⟩ := Subgroup.exists_zpowers_eq_of_zpowers_eq_top hg K
-    rw [Subgroup.zpowers_le_zpowers_iff, Nat.card_zpowers, orderOf_zpow,
-      Nat.card_zpowers, orderOf_zpow, Nat.div_dvd_div_iff_left (orderOf_pos g)
-      (Nat.gcd_dvd_left _ _) (Nat.gcd_dvd_left _ _), Int.gcd_eq_natAbs, Int.gcd_eq_natAbs,
-      Int.natAbs_natCast, Nat.gcd_comm, Nat.gcd_comm _ (orderOf g)]
-  · obtain _ | _ := subsingleton_or_nontrivial K
-    · simp [Subgroup.eq_bot_of_subsingleton]
-    · exact (not_finite K).elim
-
 /-- In a cyclic group, `H ≤ K` iff `K.index ∣ H.index`. -/
 @[to_additive /-- In an additive cyclic group, `H ≤ K` iff `K.index ∣ H.index`. -/]
 theorem IsCyclic.subgroup_le_iff_index_dvd [Group G] [IsCyclic G] {H K : Subgroup G} :
@@ -947,6 +930,20 @@ theorem IsCyclic.subgroup_le_iff_index_dvd [Group G] [IsCyclic G] {H K : Subgrou
   obtain ⟨j, rfl⟩ := Subgroup.exists_zpowers_eq_of_zpowers_eq_top hg K
   rw [Subgroup.index_zpowers_zpow hg, Subgroup.index_zpowers_zpow hg] at h
   rwa [Subgroup.zpowers_le_zpowers_iff]
+
+/-- In a cyclic group, if `K` is finite then `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/
+@[to_additive
+/-- In an additive cyclic group, if `K` is finite then `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/]
+theorem IsCyclic.subgroup_le_subgroup_iff [Group G] [IsCyclic G] {H K : Subgroup G} [h : Finite K] :
+    H ≤ K ↔ Nat.card H ∣ Nat.card K := by
+  obtain _ | _ := subsingleton_or_nontrivial K
+  · simp [Subgroup.eq_bot_of_subsingleton]
+  · have : Finite G := by
+      contrapose! h
+      infer_instance
+    rw [subgroup_le_iff_index_dvd, Subgroup.index_eq_card_div, Subgroup.index_eq_card_div,
+      Nat.div_dvd_div_iff_left Nat.card_pos (Subgroup.card_subgroup_dvd_card K)
+      (Subgroup.card_subgroup_dvd_card H)]
 
 /-- In a cyclic group, if `H` and `K` are finite then `H = K` iff `Nat.card H = Nat.card K`. -/
 @[to_additive

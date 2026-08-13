@@ -352,6 +352,11 @@ theorem index_eq_card : H.index = Nat.card (G ⧸ H) :=
 theorem index_mul_card : H.index * Nat.card H = Nat.card G := by
   rw [mul_comm, card_mul_index]
 
+/-- The index of a finite subgroup is the quotient of the cardinalities. -/
+@[to_additive /-- The index of a finite additive subgroup is the quotient of the cardinalities. -/]
+theorem index_eq_card_div [Finite H] : H.index = Nat.card G / Nat.card H := by
+  rw [← card_mul_index H, Nat.mul_div_cancel_left _ Nat.card_pos]
+
 @[to_additive]
 theorem index_dvd_card : H.index ∣ Nat.card G :=
   ⟨Nat.card H, H.index_mul_card.symm⟩
