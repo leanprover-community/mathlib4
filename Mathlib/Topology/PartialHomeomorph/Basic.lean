@@ -23,8 +23,7 @@ public import Mathlib.Topology.PartialHomeomorph.Defs
 
 open Function Set Topology
 
-variable {X : Type*} {Y : Type*}
-  [TopologicalSpace X] [TopologicalSpace Y]
+variable {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 namespace PartialHomeomorph
 

@@ -23,8 +23,7 @@ public import Mathlib.Topology.PartialHomeomorph.Basic
 
 open Function Set Filter Topology
 
-variable {X : Type*} {Y : Type*}
-  [TopologicalSpace X] [TopologicalSpace Y]
+variable {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 namespace OpenPartialHomeomorph
 

@@ -492,8 +492,7 @@ end Multiset
 
 namespace List
 
-variable [DecidableEq α] {l l' : List α} {a : α}
-  {s : Finset α}
+variable [DecidableEq α] {l l' : List α} {a : α} {s : Finset α}
 
 @[simp]
 theorem toFinset_union (l l' : List α) : (l ∪ l').toFinset = l.toFinset ∪ l'.toFinset := by

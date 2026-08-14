@@ -1148,8 +1148,7 @@ end Trim
 
 section SigmaFinite
 
-variable {m0 : MeasurableSpace α}
-  {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+variable {m0 : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem integrable_of_forall_fin_meas_le' {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (C : ℝ≥0∞) (hC : C < ∞) {f : α → ε} (hf_meas : AEStronglyMeasurable f μ)

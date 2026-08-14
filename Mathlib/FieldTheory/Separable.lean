@@ -698,7 +698,6 @@ theorem Algebra.IsSeparable.of_algHom [Field E] [Field E'] [Algebra F E] [Algebr
     [Algebra.IsSeparable F E'] (f : E →ₐ[F] E') : Algebra.IsSeparable F E :=
   ⟨fun x => (Algebra.IsSeparable.isSeparable F (f x)).of_algHom⟩
 
-
 namespace IntermediateField
 
 variable [Field K] [Algebra F K] (M : IntermediateField F K)

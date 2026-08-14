@@ -781,7 +781,6 @@ protected theorem EMetricSpace.ext
   ext1
   assumption
 
-
 /-- A weak extended metric space extends a `WeakPseudoEMetricSpace` with the condition
 `edist x y = 0 ↔ x = y`. -/
 class WeakEMetricSpace

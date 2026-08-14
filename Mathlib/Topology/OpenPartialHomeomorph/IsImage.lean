@@ -33,8 +33,7 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 
 open Set Filter Topology
 
-variable {X : Type*} {Y : Type*}
-  [TopologicalSpace X] [TopologicalSpace Y]
+variable {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 namespace OpenPartialHomeomorph
 

@@ -98,8 +98,7 @@ end Finset
 
 namespace List
 
-variable [DecidableEq α] {l l' : List α} {a : α}
-  {s : Finset α}
+variable [DecidableEq α] {l l' : List α} {a : α} {s : Finset α}
 
 /-- `toFinset l` removes duplicates from the list `l` to produce a finset. -/
 def toFinset (l : List α) : Finset α :=

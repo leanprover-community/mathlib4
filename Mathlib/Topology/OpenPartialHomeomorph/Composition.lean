@@ -19,8 +19,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
 open Function Set
 
 variable {X : Type*} {Y : Type*} {Z Z' : Type*}
-  [TopologicalSpace X] [TopologicalSpace Y]
-  [TopologicalSpace Z] [TopologicalSpace Z']
+  [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
 namespace OpenPartialHomeomorph
 
