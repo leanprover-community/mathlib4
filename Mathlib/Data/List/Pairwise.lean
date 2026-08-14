@@ -160,7 +160,7 @@ theorem tfae_iff_pairwise : TFAE l ↔ l.Pairwise (· ↔ ·) :=
   ⟨pairwise_of_forall_mem_list, Pairwise.forall_of_forall fun _ _ ↦ .rfl⟩
 
 theorem tfae_append :
-    TFAE (l₁ ++ l₂) ↔ TFAE l₁ ∧ TFAE l₂ ∧ (∀ a ∈ l₁, ∀ b ∈ l₂, (a ↔ b)) := by
+    TFAE (l₁ ++ l₂) ↔ TFAE l₁ ∧ TFAE l₂ ∧ (∀ a ∈ l₁, ∀ b ∈ l₂, a ↔ b) := by
   simp [tfae_iff_pairwise, pairwise_append]
 
 theorem tfae_append_of_mem (ha : a ∈ l₁) (hb : b ∈ l₂) :
