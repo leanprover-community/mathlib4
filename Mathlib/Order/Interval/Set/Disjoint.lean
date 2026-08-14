@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Order.Interval.Set.LinearOrder
-public import Mathlib.Order.MinMax
 
 /-!
 # Extra lemmas about intervals
