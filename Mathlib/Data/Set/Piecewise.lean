@@ -17,7 +17,7 @@ public section
 
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 
-open Equiv Equiv.Perm Function
+open Equiv.Perm Function
 
 namespace Set
 

@@ -38,7 +38,6 @@ def functorHomEquiv (G H : C ⥤ Type (max w v u)) : (G ⟶ F.functorHom H) ≃ 
   (Functor.functorHomEquiv F H G).trans (homObjEquiv F H G)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A right adjoint of `tensorLeft F`. -/
 @[simps! obj_obj obj_map map_app]
 def rightAdj : (C ⥤ Type (max w v u)) ⥤ C ⥤ Type (max w v u) where
