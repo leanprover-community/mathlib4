@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Northcott
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
+public import Mathlib.Data.SetLike.Fintype
 
 /-! # Counting ideals of bounded norm in rings with finite quotients
 
