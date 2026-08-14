@@ -734,7 +734,7 @@ theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
   classical
   have : Fact p.Prime := ⟨hp⟩
   induction n generalizing H s with
-  | zero => exact ⟨.ofStrictMono ![⊥] (by simp), by simpa [card_le_one_iff_eq_bot] using hcard⟩
+  | zero => exact ⟨.ofStrictMono ![⊥] (by simp), by simpa using hcard⟩
   | succ n ih =>
     have h : ∃ t ≤ H, Nat.card t ∣ p ^ (n + 1) ∧ ∀ g ∈ s, g ≤ t := by
       let : LinearOrder s := hchain.linearOrder
@@ -756,16 +756,14 @@ theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
     have hf : StrictMono (Fin.snoc f' t) := fun x y h ↦ by
       obtain ⟨x, rfl⟩ := Fin.exists_castSucc_eq.mpr (Fin.ne_last_of_lt h)
       rcases y.eq_castSucc_or_eq_last with ⟨y, rfl⟩ | rfl
-      · simpa using h
-      · simp only [Fin.snoc_castSucc, Fin.snoc_last, ]
+      · simpa
+      · rw [Fin.snoc_castSucc, Fin.snoc_last]
         apply lt_of_le_of_ne (hf' _).2
         grind [Nat.pow_right_inj hp.one_lt]
     refine ⟨.ofStrictMono (Fin.snoc f' t) hf, fun g hg ↦ ?_, fun x ↦ ?_⟩
-    · rw [OrderEmbedding.coe_ofStrictMono, Set.mem_range]
-      by_cases hgt : g = t
-      · exact ⟨Fin.last (n + 1), by simp [hgt]⟩
-      obtain ⟨x, hx⟩ := hsf' ⟨hg, hgt⟩
-      exact ⟨x.castSucc, by simp [hx]⟩
+    · rw [Set.sdiff_subset_iff, Set.singleton_union] at hsf'
+      rw [OrderEmbedding.coe_ofStrictMono, Fin.range_snoc]
+      exact hsf' hg
     · rcases x.eq_castSucc_or_eq_last with ⟨x, rfl⟩ | rfl
       · simp [(hf' x).1, (hf' x).2.trans htH]
       · simp [htcard, htH]
