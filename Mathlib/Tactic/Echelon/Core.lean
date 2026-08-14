@@ -99,8 +99,8 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
       row pivotRow
   let mut W := A
   let mut L : Array (Array V) :=
-    (Array.range rows).map fun i =>
-      (Array.range rows).map fun j => if i == j then ops.one else ops.zero
+    Array.ofFn (n := rows) fun i =>
+      Array.ofFn (n := rows) fun j => if i == j then ops.one else ops.zero
   let mut swaps : Array (Nat × Nat) := #[]
   let mut pivotCols : Array Nat := #[]
   let mut r : Nat := 0
@@ -109,7 +109,7 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
   /- TODO: if we're handling larger matrices (beyond 10⁴ entries), add a checkSystem call
   per column to honor user interruption. At current realistic sizes this computation is
   almost instant. -/
-  for c in [0:cols] do
+  for c in 0...cols do
     if r == rows then break
     -- find the first row at or below `r` with a nonzero entry in column `c`
     let mut p? : Option Nat := none
@@ -130,7 +130,7 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
       let pivot := getEntry W r c
       let wRow := W.getD r #[]
       let lRow := L.getD r #[]
-      for i in [r+1:rows] do
+      for i in r<...rows do
         let coef := getEntry W i c
         W := W.set! i (eliminate pivot coef prevPivot (W.getD i #[]) wRow)
         L := L.set! i (eliminate pivot coef prevPivot (L.getD i #[]) lRow)

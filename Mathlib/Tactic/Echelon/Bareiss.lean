@@ -6,10 +6,7 @@ Authors: Rao Xiaojia
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition
-public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.Echelon.Rat
-
-public meta import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # The Bareiss decomposition driver
@@ -42,18 +39,18 @@ def mkFinNumeral (n : ℕ) (i : ℕ) : MetaM Q(Fin $n) :=
 /-- Build the pivot literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
 first rows to their pivot columns and the remaining rows to `⊤`. -/
 def mkPivotLit (m n : Nat) (pivots : Array Nat) : MetaM Expr := do
-  let entries : Array Q(WithTop (Fin $n)) ← (Array.range m).mapM fun i => do
+  let entries : Array Q(WithTop (Fin $n)) ← Array.ofFnM (n := m) fun i => do
     if hi : i < pivots.size then
       return q(WithTop.some $(← mkFinNumeral n pivots[i]))
     else
-      return q((⊤ : WithTop (Fin $n)))
-  return PiFin.mkLiteralQ (α := q(WithTop (Fin $n))) (n := m) fun i => entries[i.1]!
+      return q(⊤ : WithTop (Fin $n))
+  return PiFin.mkLiteralQ (α := q(WithTop (Fin $n))) (n := m) fun i => entries[i]!
 
 /-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
 def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Expr := do
   let mut acc : Q(Equiv.Perm (Fin $m)) := q(Equiv.refl (Fin $m))
   for (a, b) in swaps do
-    acc := q($acc * Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b))
+    acc := q((Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b)).trans $acc)
   return acc
 
 /-- Check that equality with zero in `R` reduces to a verdict in the kernel, as the
@@ -127,8 +124,7 @@ def mkBareissDecomposition (A : Expr) (m n : Nat) (R : Expr)
   let d ← (← producerFor R) entries
   let u ← getDecLevel R
   have R : Q(Type u) := R
-  let L := Matrix.mkLiteralQ (α := R) (m := m) (n := m)
-    (.of fun i j => show Q($R) from (d.L[i.1]!)[j.1]!)
+  let L := Matrix.mkLiteralQ (α := R) (m := m) (n := m) (.of fun i j => (d.L[i]!)[j]!)
   elabCertificate A L (← mkPerm m d.swaps) (← mkPivotLit m n d.pivot)
 
 end Mathlib.Tactic.Echelon
