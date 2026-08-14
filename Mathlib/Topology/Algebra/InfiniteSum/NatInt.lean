@@ -375,7 +375,7 @@ lemma tprod_of_nat_of_neg_add_one [T2Space M] {f : ℤ → M}
 
 /-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` have products `a`, `b` respectively, then
 the `ℤ`-indexed sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position) has
-product `a + b`. -/
+product `a * b`. -/
 @[to_additive /-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` have sums `a`, `b` respectively, then
 the `ℤ`-indexed sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position) has
 sum `a + b`. -/]
@@ -425,12 +425,12 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
       congr 1
       refine (prod_subset_one_on_sdiff inter_subset_union ?_ ?_).symm
       · intro x hx
-        suffices x ≠ 0 by simp only [this, if_false]
+        suffices x ≠ 0 by simp only [this, ite_false]
         rintro rfl
         simp [u1, u2] at hx
       · intro x hx
         simp only [u1, u2, mem_inter, mem_image] at hx
-        suffices x = 0 by simp only [this, if_true]
+        suffices x = 0 by simp only [this, ite_true]
         lia
     _ = (∏ x ∈ u1, f x) * ∏ x ∈ u2, f x := prod_union_inter
     _ = (∏ b ∈ v', f b) * ∏ b ∈ v', f (-b) := by simp [u1, u2]
@@ -542,8 +542,26 @@ lemma multipliable_pnat_iff_multipliable_nat [TopologicalSpace G] [IsTopological
   rw [multipliable_pnat_iff_multipliable_succ, multipliable_nat_add_iff]
 
 @[to_additive]
+theorem hasProd_pnat_iff_hasProd_succ {f : ℕ → M} :
+    HasProd (fun x : ℕ+ ↦ f x) m ↔ HasProd (fun x : ℕ ↦ f (x + 1)) m :=
+  Equiv.pnatEquivNat.symm.hasProd_iff.symm
+
+@[to_additive]
+theorem hasProd_pnat_iff [TopologicalSpace G] [IsTopologicalGroup G] {f : ℕ → G} {a : G} :
+    HasProd (fun x : ℕ+ ↦ f x) a ↔ HasProd f (a * f 0) := by
+  simp [hasProd_pnat_iff_hasProd_succ, hasProd_nat_add_iff]
+
+@[to_additive]
 theorem tprod_pnat_eq_tprod_succ {f : ℕ → M} : ∏' n : ℕ+, f n = ∏' n, f (n + 1) :=
   (Equiv.pnatEquivNat.symm.tprod_eq _).symm
+
+@[to_additive]
+theorem tprod_pnat_eq_tprod_of_eq_one {f : ℕ → M} (hf : f 0 = 1) :
+    ∏' n : ℕ+, f n = ∏' n : ℕ, f n :=
+  PNat.coe_injective.tprod_eq fun n hn ↦ by
+    rcases Nat.eq_zero_or_pos n with rfl | h
+    · exact absurd hf hn
+    · exact ⟨⟨n, h⟩, rfl⟩
 
 @[to_additive]
 lemma tprod_zero_pnat_eq_tprod_nat [TopologicalSpace G] [IsTopologicalGroup G] [T2Space G]

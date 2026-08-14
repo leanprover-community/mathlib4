@@ -60,13 +60,13 @@ theorem coeff_derivative (p : R[X]) (n : ℕ) :
   rw [derivative_apply]
   simp only [coeff_X_pow, coeff_sum, coeff_C_mul]
   rw [sum, Finset.sum_eq_single (n + 1)]
-  · simp only [Nat.add_succ_sub_one, add_zero, mul_one, if_true]; norm_cast
+  · simp only [Nat.add_succ_sub_one, add_zero, mul_one, ite_true]; norm_cast
   · intro b
     cases b
     · intros
       rw [Nat.cast_zero, mul_zero, zero_mul]
     · intro _ H
-      rw [Nat.add_one_sub_one, if_neg (mt (congr_arg Nat.succ) H.symm), mul_zero]
+      rw [Nat.add_one_sub_one, ite_eq_right (mt (congr_arg Nat.succ) H.symm), mul_zero]
   · simp_all
 
 @[simp]
@@ -319,8 +319,9 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
             n.choose k • (derivative^[n - k + 1] p * derivative^[k] q)) +
           ∑ k ∈ range n.succ,
             n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) := by
-        simp_rw [derivative_sum, derivative_smul, derivative_mul, Function.iterate_succ_apply',
-          smul_add, sum_add_distrib]
+        simp only [Nat.succ_eq_add_one, nsmul_eq_mul, derivative_mul, derivative_natCast, zero_mul,
+          derivative_sum, zero_add, Function.iterate_succ', Function.comp_apply]
+        simp_rw [mul_add, sum_add_distrib]
       _ = (∑ k ∈ range n.succ,
                 n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
               1 • (derivative^[n + 1] p * derivative^[0] q) +
@@ -356,9 +357,6 @@ noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
     contrapose; simp_all [iterate_derivative_eq_zero]
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
-
-@[deprecated (since := "2025-12-15")]
-alias derivativeFinsupp_apply_toFun := derivativeFinsupp_apply_apply
 
 @[simp]
 theorem support_derivativeFinsupp_subset_range {p : R[X]} {n : ℕ} (h : p.natDegree < n) :
@@ -538,9 +536,7 @@ theorem iterate_derivative_X_add_pow (n k : ℕ) (c : R) :
   induction k with
   | zero => simp
   | succ k IH =>
-      rw [Nat.sub_succ', Function.iterate_succ_apply', IH, derivative_smul,
-        derivative_X_add_C_pow, map_natCast, Nat.descFactorial_succ, nsmul_eq_mul, nsmul_eq_mul,
-        Nat.cast_mul]
+      simp [Nat.sub_succ', Function.iterate_succ_apply', IH, derivative_X_add_C_pow]
       ring
 
 theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :

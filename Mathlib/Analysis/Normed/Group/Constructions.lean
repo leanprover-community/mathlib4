@@ -16,7 +16,7 @@ This file constructs the infinity norm on finite products of normed groups and p
 for type synonyms.
 -/
 
-@[expose] public section
+public section
 
 open NNReal
 
@@ -256,11 +256,12 @@ instance Prod.seminormedGroup : SeminormedGroup (E × F) where
 
 /-- Multiplicative version of `Prod.nnnorm_def`.
 Earlier, this name was used for the additive version. -/
-@[to_additive Prod.nnnorm_def]
+@[to_additive Prod.nnnorm_def /-- Additive version of `Prod.nnnorm_def'`.
+Earlier, this name was used for the multiplicative version. -/]
 lemma Prod.nnnorm_def' (x : E × F) : ‖x‖₊ = max ‖x.1‖₊ ‖x.2‖₊ := rfl
 
 /-- Multiplicative version of `Prod.nnnorm_mk`. -/
-@[to_additive (attr := simp) Prod.nnnorm_mk]
+@[to_additive (attr := simp) Prod.nnnorm_mk /-- Additive version of `Prod.nnnorm_mk'`. -/]
 lemma Prod.nnnorm_mk' (x : E) (y : F) : ‖(x, y)‖₊ = max ‖x‖₊ ‖y‖₊ := rfl
 
 end SeminormedGroup
@@ -365,6 +366,31 @@ lemma pi_norm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖ = ‖a‖ :=
 @[to_additive (attr := simp) pi_nnnorm_const]
 lemma pi_nnnorm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖₊ = ‖a‖₊ :=
   NNReal.eq <| pi_norm_const' a
+
+@[to_additive pi_norm_comp_le]
+lemma pi_norm_comp_le' [Fintype F] (g : ι → E) (f : F → ι) : ‖g ∘ f‖ ≤ ‖g‖ := by
+  rw [pi_norm_le_iff_of_nonneg' (by positivity)]
+  exact fun x ↦ norm_le_pi_norm' g (f x)
+
+@[to_additive IsGreatest.pi_norm]
+lemma IsGreatest.pi_norm' [Nonempty ι] (f : ι → E) : IsGreatest (Set.range (‖f ·‖)) ‖f‖ := by
+  constructor
+  · rw [Pi.norm_def' f]
+    obtain ⟨x, -, hx⟩ := (Finset.univ (α := ι)).exists_mem_eq_sup (by simp) (‖f ·‖₊)
+    simp [hx]
+  · rintro - ⟨x, rfl⟩
+    exact norm_le_pi_norm' f x
+
+@[to_additive Function.Surjective.pi_norm_comp]
+lemma Function.Surjective.pi_norm_comp' [Fintype F] {f : ι → F} (hf : Function.Surjective f)
+    (g : F → E) : ‖g ∘ f‖ = ‖g‖ := by
+  obtain (h | h) := isEmpty_or_nonempty F
+  · have : IsEmpty ι := f.isEmpty
+    simp [Subsingleton.elim g 1]
+  apply le_antisymm (pi_norm_comp_le' g f)
+  obtain ⟨⟨x, h⟩, -⟩ := IsGreatest.pi_norm' g
+  obtain ⟨y, rfl⟩ := hf x
+  exact h ▸ norm_le_pi_norm' (g ∘ f) y
 
 /-- The $L^1$ norm is less than the $L^\infty$ norm scaled by the cardinality. -/
 @[to_additive Pi.sum_norm_apply_le_norm /-- The $L^1$ norm is less than the $L^\infty$ norm scaled

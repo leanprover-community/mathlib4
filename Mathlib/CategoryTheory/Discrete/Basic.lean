@@ -6,6 +6,7 @@ Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 module
 
 public import Mathlib.CategoryTheory.Pi.Basic
+public import Mathlib.Data.Set.Image
 
 /-!
 # Discrete categories
@@ -62,6 +63,9 @@ def discreteEquiv {α : Type u₁} : Discrete α ≃ α where
   invFun := Discrete.mk
   left_inv := by cat_disch
   right_inv := by cat_disch
+
+lemma Discrete.as_bijective {α : Type*} : (Discrete.as (α := α)).Bijective :=
+  discreteEquiv.bijective
 
 instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
   discreteEquiv.decidableEq
@@ -159,6 +163,7 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
 /-- Any function `I → C` gives a functor `Discrete I ⥤ C`. -/
+@[implicit_reducible]
 def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
   obj := F ∘ Discrete.as
   map {X Y} f := by
@@ -178,6 +183,10 @@ theorem functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i)
 theorem functor_obj_eq_as {I : Type u₁} (F : I → C) (X : Discrete I) :
     (Discrete.functor F).obj X = F X.as :=
   rfl
+
+@[simp]
+lemma range_functor {I : Type*} (X : I → C) : Set.range (Discrete.functor X).obj = Set.range X := by
+  simp [Discrete.functor, Set.range_comp, Discrete.as_bijective.surjective.range_eq]
 
 @[ext]
 lemma functor_ext {I : Type u₁} {G F : Discrete I ⥤ C} (h : (i : I) → G.obj ⟨i⟩ = F.obj ⟨i⟩) :
@@ -199,7 +208,7 @@ def functorComp {I : Type u₁} {J : Type u₁'} (f : J → C) (g : I → J) :
 a natural transformation is just a collection of maps,
 as the naturality squares are trivial.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def natTrans {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ⟶ G.obj i) :
     F ⟶ G where
   app := f
@@ -295,7 +304,7 @@ end Discrete
 lemma Discrete.forall {α : Type*} {p : Discrete α → Prop} :
     (∀ (a : Discrete α), p a) ↔ ∀ (a' : α), p ⟨a'⟩ := by
   rw [iff_iff_eq, discreteEquiv.forall_congr_left]
-  simp [discreteEquiv]
+  simp only [discreteEquiv, Equiv.symm_mk, Equiv.coe_fn_mk]
 
 @[simp]
 lemma Discrete.exists {α : Type*} {p : Discrete α → Prop} :
@@ -339,6 +348,9 @@ attribute [instance] IsDiscrete.subsingleton
 
 instance Discrete.isDiscrete (C : Type*) : IsDiscrete (Discrete C) where
   eq_of_hom := by rintro ⟨_⟩ ⟨_⟩ ⟨⟨rfl⟩⟩; rfl
+
+instance {C : Type*} [Category C] [Subsingleton C] [Quiver.IsThin C] : IsDiscrete C where
+  eq_of_hom _ := by subsingleton
 
 section
 

@@ -135,6 +135,7 @@ theorem realize_substFunc [L'.Structure M] {c : {n : ℕ} → L.Functions n → 
   | var => simp
   | func f ts ih => simp [← ih, ← hc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {f : t.varFinset → β}
     {v : β → M} (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :
     (t.restrictVar f).realize v = t.realize v' := by
@@ -150,6 +151,7 @@ theorem realize_restrictVar' [DecidableEq α] {t : L.Term α} {s : Set α} (h : 
     {v : α → M} : (t.restrictVar (Set.inclusion h)).realize (v ∘ (↑)) = t.realize v :=
   realize_restrictVar _ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_restrictVarLeft [DecidableEq α] {γ : Type*} {t : L.Term (α ⊕ γ)}
     {f : t.varFinsetLeft → β}
     {xs : β ⊕ γ → M} (xs' : α → M) (hxs' : ∀ a, xs (Sum.inl (f a)) = xs' a) :
@@ -391,7 +393,7 @@ theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → β 
   apply realize_mapTermRel_add_castLe <;> simp
 
 theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + n') → M}
-    (hmn : m + n' ≤ n + 1) :
+    (hmn : m ≤ n) :
     (φ.liftAt n' m).Realize v xs ↔
       φ.Realize v (xs ∘ fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat i n') := by
   rw [liftAt]
@@ -402,7 +404,7 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
   | imp _ _ ih1 ih2 => simp only [mapTermRel, Realize, ih1 hmn, ih2 hmn]
   | @all k _ ih3 =>
     have h : k + 1 + n' = k + n' + 1 := by rw [add_assoc, add_comm 1 n', ← add_assoc]
-    simp only [mapTermRel, Realize, realize_castLE_of_eq h, ih3 (hmn.trans k.succ.le_succ)]
+    simp only [mapTermRel, Realize, realize_castLE_of_eq h, ih3 (hmn.trans k.le_succ)]
     refine forall_congr' fun x => iff_eq_eq.mpr (congr rfl (funext (Fin.lastCases ?_ fun i => ?_)))
     · simp only [Function.comp_apply, val_last, snoc_last]
       refine (congr rfl (Fin.ext ?_)).trans (snoc_last _ _)
@@ -423,7 +425,7 @@ theorem realize_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : α �
     {xs : Fin (n + 1) → M} : (φ.liftAt 1 n).Realize v xs ↔ φ.Realize v (xs ∘ castSucc) := by
   rw [realize_liftAt_one (refl n), iff_eq_eq]
   refine congr rfl (congr rfl (funext fun i => ?_))
-  rw [if_pos i.is_lt]
+  rw [ite_eq_left i.is_lt]
 
 @[simp]
 theorem realize_subst {φ : L.BoundedFormula α n} {tf : α → L.Term β} {v : β → M} {xs : Fin n → M} :
@@ -437,6 +439,7 @@ theorem realize_subst {φ : L.BoundedFormula α n} {tf : α → L.Term β} {v : 
       · rfl)
     (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormula α n}
     {f : φ.freeVarFinset → β} {v : β → M} {xs : Fin n → M}
     (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :
@@ -611,10 +614,14 @@ theorem LHom.realize_onFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansi
   φ.realize_onBoundedFormula ψ
 
 @[simp]
-theorem LHom.setOf_realize_onFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M]
-    (ψ : L.Formula α) : (setOf (φ.onFormula ψ).Realize : Set (α → M)) = setOf ψ.Realize := by
+theorem LHom.setOfPred_realize_onFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M]
+    (ψ : L.Formula α) :
+    (Set.ofPred (φ.onFormula ψ).Realize : Set (α → M)) = Set.ofPred ψ.Realize := by
   ext
   simp
+
+@[deprecated (since := "2026-07-09")]
+alias LHom.setOf_realize_onFormula := LHom.setOfPred_realize_onFormula
 
 variable (M)
 
@@ -716,7 +723,7 @@ theorem mem_completeTheory {φ : Sentence L} : φ ∈ L.completeTheory M ↔ M �
   Iff.rfl
 
 theorem elementarilyEquivalent_iff : M ≅[L] N ↔ ∀ φ : L.Sentence, M ⊨ φ ↔ N ⊨ φ := by
-  simp only [ElementarilyEquivalent, Set.ext_iff, completeTheory, Set.mem_setOf_eq]
+  simp only [ElementarilyEquivalent, Set.ext_iff, completeTheory, Set.mem_ofPred_eq]
 
 variable (M)
 
@@ -961,7 +968,6 @@ theorem exists_realize_equivSentence_iff_realize_exClosure
         (by simpa [Formula.Realize]
           using (realize_equivSentence_symm M (Formula.equivSentence φ) v).2 hv)⟩
   · intro h
-    classical
     obtain ⟨v, hv⟩ := (Formula.realize_exClosure φ).1 h
     let v' := fun a => if hmem : a ∈ φ.freeVarFinset
       then v ⟨a, hmem⟩ else Classical.choice inferInstance

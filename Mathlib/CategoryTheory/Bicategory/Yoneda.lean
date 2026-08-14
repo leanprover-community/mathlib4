@@ -19,7 +19,7 @@ In this file we define the bicategorical Yoneda embedding.
 
 namespace CategoryTheory
 
-open Bicategory Bicategory.Opposite Opposite Pseudofunctor StrongTrans
+open Bicategory.Opposite Opposite Pseudofunctor StrongTrans
 
 universe w v u
 
@@ -55,7 +55,6 @@ def associatorNatIsoRightCat {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (d : B) :
   Cat.Hom.isoMk <| NatIso.ofComponents (α_ f g ·)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Middle component of the associator as a 2-isomorphism in `Cat`. -/
 @[simps!]
 def associatorNatIsoMiddleCat {a b c d : B} (f : a ⟶ b) (h : c ⟶ d) :
