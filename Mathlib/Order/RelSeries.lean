@@ -134,7 +134,6 @@ def fromListIsChain (x : List α) (x_ne_nil : x ≠ []) (hx : x.IsChain (· ~[r]
   toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x_ne_nil) i]
   step i := List.isChain_iff_getElem.mp hx i _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other. -/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.IsChain (· ~[r] ·)} where
@@ -637,7 +636,6 @@ lemma snoc_cast_castSucc (s : RelSeries r) (a : α) (h : s.last ~[r] a) (i : Fin
     (i : Fin (s.length + 1)) : snoc s a connect (Fin.castSucc i) = s i :=
   Fin.append_left _ _ i
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_snoc {p : RelSeries r} {newLast : α} {rel : p.last ~[r] newLast} {x : α} :
     x ∈ p.snoc newLast rel ↔ x ∈ p ∨ x = newLast := by
   simp only [snoc, append, mem_def, Set.mem_range]
@@ -699,7 +697,6 @@ lemma cons_self_tail {p : RelSeries r} (hp : p.length ≠ 0) :
 theorem tail_lt (h : p.length ≠ 0) : p.tail h < p :=
   ⟨by simp [List.tail_sublist], (by simpa using ·.length_le)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 To show a proposition `p` for `xs : RelSeries r` it suffices to show it for all singletons
 and to show that when `p` holds for `xs` it also holds for `xs` prepended with one element.
@@ -785,7 +782,6 @@ variable (p) in
 theorem eraseLast_le : p.eraseLast ≤ p :=
   eq_or_ne p.length 0 |>.elim (eraseLast_eq_self_iff.mpr · |>.le) (eraseLast_lt · |>.le)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 To show a proposition `p` for `xs : RelSeries r` it suffices to show it for all singletons
 and to show that when `p` holds for `xs` it also holds for `xs` appended with one element.
@@ -1162,7 +1158,6 @@ theorem exists_relSeries_covBy
       simp [RelSeries.smash_castLE]
     all_goals simp [Fin.snoc, Fin.castPred_zero, hi₁]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_relSeries_covBy_and_head_eq_bot_and_last_eq_bot
     {α} [PartialOrder α] [BoundedOrder α] [WellFoundedLT α] [WellFoundedGT α] (s : LTSeries α) :
     ∃ (t : RelSeries {(a, b) : α × α | a ⋖ b}) (i : Fin (s.length + 1) ↪ Fin (t.length + 1)),
