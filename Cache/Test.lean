@@ -258,12 +258,12 @@ def test_effectiveGetURLs : IO Unit := do
     IO.println "  skipped: MATHLIB_CACHE_GET_URL or MATHLIB_CACHE_FROM is set"
     return
   let base ← getBaseURL
-  assert "default chain pairs each container with its read URL"
+  assertTrue "default chain pairs each container with its read URL"
     ((← effectiveGetURLs MATHLIBREPO) ==
       [(some .master, s!"{base}/mathlib4-master"),
        (some .legacy, s!"{base}/mathlib4")])
   cacheFromOverride.set (some [.forks, .master])
-  assert "--cache-from override keeps its order"
+  assertTrue "--cache-from override keeps its order"
     ((← effectiveGetURLs MATHLIBREPO) ==
       [(some .forks, s!"{base}/mathlib4-forks"),
        (some .master, s!"{base}/mathlib4-master")])
