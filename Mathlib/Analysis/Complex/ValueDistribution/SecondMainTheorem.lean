@@ -42,7 +42,8 @@ private lemma sum_posLog_inv_norm_sub_le {s : Finset 𝕜} {w : 𝕜} {c : ℝ} 
     ∑ a ∈ s, log⁺ ‖w - a‖⁻¹ ≤ #s * log⁺ c⁻¹ := by
   calc ∑ a ∈ s, log⁺ ‖w - a‖⁻¹
       ≤ ∑ a ∈ s, log⁺ c⁻¹ := by
-        refine sum_le_sum fun a ha ↦ posLog_le_posLog (by positivity) ?_
+        refine sum_le_sum fun a ha ↦
+          posLog_le_posLog (le_trans (by norm_num) (by positivity : (0:ℝ) ≤ ‖w - a‖⁻¹)) ?_
         gcongr
         exact h a ha
     _ = #s * log⁺ c⁻¹ := by rw [sum_const, nsmul_eq_mul]
@@ -95,6 +96,7 @@ theorem exists_sum_posLog_inv_norm_sub_le (s : Finset 𝕜) :
       have htail : ∑ b ∈ s.erase a₀, log⁺ ‖w - b‖⁻¹ ≤ (#s - 1) * log⁺ (2 * #s / δ) := by
         have h1 := sum_posLog_inv_norm_sub_le (by positivity) hother
         rw [inv_div, hcaste] at h1
+        have hd2 : (0 : ℝ) < 2 / δ := by positivity
         apply h1.trans
         gcongr <;> linarith
       -- Head estimate: the singular term `(w - a₀)⁻¹` dominates `∑ a ∈ s, (w - a)⁻¹`, so
@@ -130,7 +132,10 @@ theorem exists_sum_posLog_inv_norm_sub_le (s : Finset 𝕜) :
             have h8 : 0 ≤ (#s - 1) * (‖w - a₀‖⁻¹ - #s * (2 / δ)) := by
               apply mul_nonneg <;> linarith
             nlinarith [mul_le_mul_of_nonneg_left hlow (by positivity : (0 : ℝ) ≤ #s)]
-          calc log⁺ ‖w - a₀‖⁻¹ ≤ log⁺ (#s * ‖∑ a ∈ s, (w - a)⁻¹‖) := by gcongr
+          calc log⁺ ‖w - a₀‖⁻¹ ≤ log⁺ (#s * ‖∑ a ∈ s, (w - a)⁻¹‖) := by
+                have : (0 : ℝ) ≤ ‖w - a₀‖⁻¹ := by positivity
+                gcongr
+                linarith
             _ ≤ log #s + log⁺ ‖∑ a ∈ s, (w - a)⁻¹‖ := posLog_nat_mul
       -- Assemble the two estimates.
       rw [← add_sum_erase s (fun a ↦ log⁺ ‖w - a‖⁻¹) ha₀]
