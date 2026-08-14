@@ -77,8 +77,8 @@ end OfNotation
 
 open OfNotation
 
-/-- `↧X` is the object of a concrete category corresponding to the type `X`, i.e. `FooCat.of X` where
-the category `FooCat` is determined by the expected type.
+/-- `↧X` is the object of a concrete category corresponding to the type `X`, i.e. `FooCat.of X`
+where the category `FooCat` is determined by the expected type.
 
 `↧X` elaborates to a literal application of `FooCat.of`.
 * `(↧R : CommRingCat)` is `CommRingCat.of R`,
