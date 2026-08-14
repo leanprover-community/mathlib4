@@ -13,9 +13,10 @@ public import Mathlib.CategoryTheory.Triangulated.Functor
 Let `F : C ⥤ D`, `L : C ⥤ H`, `F' : H ⥤ D` be functors between
 pretriangulated categories. Let `α : F ⟶ L ⋙ F'` be a natural transformation.
 We show that `F'` is triangulated if `F`, `L`, `F'` and `α` commute with
-shifts, and for any morphism `f` in `H`, there exists a distinguished
-triangle `T` in `C` such that `Arrow.mk (L.map T.mor₁) ≅ Arrow.mk f`,
-and `α.app T.obj₁`, `α.app T.obj₂`, `α.app T.obj₃` are isomorphisms.
+shifts, `F` and `L` are triangulated, and for any morphism `f` in `H`,
+there exists a distinguished triangle `T` in `C` such that
+`Arrow.mk (L.map T.mor₁) ≅ Arrow.mk f`, and `α.app T.obj₁`, `α.app T.obj₂`,
+and `α.app T.obj₃` are isomorphisms.
 
 -/
 
