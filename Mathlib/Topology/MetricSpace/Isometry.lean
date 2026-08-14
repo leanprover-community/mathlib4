@@ -718,6 +718,19 @@ lemma Isometry.lipschitzWith_iff {α β γ : Type*} [PseudoEMetricSpace α] [Pse
     LipschitzWith K (g ∘ f) ↔ LipschitzWith K f := by
   simp [LipschitzWith, h.edist_eq]
 
+/-- If `f` is locally Lipschitz on `s` after precomposition with an isometry `g`, then `f` is
+locally Lipschitz on `g '' s`. -/
+lemma Isometry.locallyLipschitzOn_image {α β γ : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
+    [PseudoEMetricSpace γ] {g : α → β} {h : β → γ} {s : Set α} (hg : Isometry g)
+    (hL : LocallyLipschitzOn s (h ∘ g)) : LocallyLipschitzOn (g '' s) h := by
+  rintro _ ⟨x, hx, rfl⟩
+  obtain ⟨K, t, ht, hK⟩ := hL hx
+  refine ⟨K, g '' t, ?_, ?_⟩
+  · rw [← hg.isEmbedding.map_nhdsWithin_eq]
+    exact Filter.image_mem_map ht
+  · rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
+    simpa [hg.edist_eq] using hK ha hb
+
 namespace IsometryClass
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [EquivLike F α β] [IsometryClass F α β]
