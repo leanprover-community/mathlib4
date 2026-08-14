@@ -28,7 +28,6 @@ def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Ex
     MetaM Simp.Result := do
   let res ← (mkBareissDecomposition A m n R entries).run'
   let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[res.cert]
-  -- the rank, as untrusted data: the kernel verifies it when checking the type hint
   let k := mkNatLit res.data.pivot.size
   return { expr := k, proof? := some (← mkExpectedTypeHint pf (← mkEq e k)) }
 

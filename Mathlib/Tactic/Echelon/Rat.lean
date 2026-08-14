@@ -41,7 +41,7 @@ def scaleRowsIntegral (ratRows : Array (Array Rat)) : Array (Array Int) × Array
 
 /-- The restoration for `scaleRowsIntegral`: fold the row scales into the transform,
 scaling column `j` by the factor of the row that ends up in position `j`. -/
-def restoreScaling (scales : Array Int) (d : BareissData Int) : BareissData Int :=
+def restoreScaling (scales : Array Nat) (d : BareissData Int) : BareissData Int :=
   let order := d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b)
     (Array.range d.L.size)
   { d with L := d.L.map fun row =>
@@ -79,12 +79,12 @@ def ratProducer (R : Expr) : MetaM Producer := do
     mul := (· * ·)
     sub := (· - ·)
     divExact := (· / ·)
-    isZero := if p == 0 then (· == 0) else fun v => v % (p : Int) == 0 }
+    isZero := if p == 0 then (· == 0) else fun v => v % p == 0 }
   let prepare (entries : Array (Array Expr)) :
       MetaM (Array (Array Int) × (BareissData Int → BareissData Int)) := do
     let ratRows ← entries.mapM (·.mapM (evalRatEntry (p == 0)))
     let (values, scales) := scaleRowsIntegral ratRows
-    return (values, restoreScaling (scales.map Int.ofNat))
+    return (values, restoreScaling scales)
   return mkProducer ops prepare (mkIntNumeral R)
 
 end Mathlib.Tactic.Echelon

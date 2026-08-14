@@ -20,6 +20,7 @@ itself is the model-parameterized `bareissDecomp` in `Mathlib.Tactic.Echelon.Cor
 ## Main definitions
 
 - `mkBareissDecomposition`: produce and elaborate the decomposition of a matrix literal.
+- `BareissResult`: the elaborated certificate together with the computed decomposition data.
 - `checkBareissApplicable`: the applicability check of the Bareiss method.
 - `producerFor`: select the computation model for a ring.
 -/
@@ -125,7 +126,7 @@ structure BareissResult where
   data : BareissData Expr
 
 /-- Produce and elaborate the `Echelon.Decomposition` certificate of the matrix literal
-`A`, returned together with the computed `BareissData`. -/
+`A`. -/
 def mkBareissDecomposition (A : Expr) (m n : Nat) (R : Expr)
     (entries : Array (Array Expr)) : TermElabM BareissResult := do
   let d ← (← producerFor R) entries
