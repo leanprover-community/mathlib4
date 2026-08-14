@@ -25,7 +25,7 @@ namespace Mathlib.Tactic.Echelon
 
 /-- Data-only evaluation of a matrix entry to its rational value via `norm_num`.
 Fraction values are accepted only in characteristic zero. -/
-def evalEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
+def evalRatEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
   unless charZero do
     let stripped := match_expr e with
       | Neg.neg _ _ a => a
@@ -93,7 +93,7 @@ def ratProducer (R : Expr) : MetaM Producer := do
     isZero := if p == 0 then (· == 0) else fun v => v % (p : Int) == 0 }
   let prepare (entries : Array (Array Expr)) :
       MetaM (Array (Array Int) × (BareissData Int → BareissData Int)) := do
-    let ratRows ← entries.mapM (·.mapM (evalEntry (p == 0)))
+    let ratRows ← entries.mapM (·.mapM (evalRatEntry (p == 0)))
     let (values, scales) := scaleRowsIntegral ratRows
     return (values, restoreScaling ops (scales.map Int.ofNat))
   return mkProducer ops prepare (mkIntNumeral R)

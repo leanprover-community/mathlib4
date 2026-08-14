@@ -5,16 +5,17 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.Tactic.Echelon.Rat
+public import Mathlib.Tactic.Echelon.Core
+public import Mathlib.Tactic.NormNum.Basic
 
 public meta import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
 # The `ℤ√d` model for the Bareiss elimination
 
-The computable model of the quadratic extensions `ℤ√d`: values are pairs `(a, b)`
-denoting `a + b√d`, with the multiplication reduced by `√d * √d = d` and exact division
-by conjugation. Entries are `⟨a, b⟩` literals, `√d`, or numerals.
+The computable model of the quadratic extensions `ℤ√d`: the elimination runs on `ℤ√d`
+values with the ring's own arithmetic, with exact division by conjugation. Entries are
+`⟨a, b⟩` literals, `√d`, or numerals.
 -/
 
 public meta section
@@ -23,41 +24,43 @@ open Lean Meta Qq
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Evaluate an entry or component of the `ℤ√d` model to an integer. -/
+/-- Evaluate an entry or component of the `ℤ√d` model to an integer, via `norm_num`. -/
 def evalInt (e : Expr) : MetaM Int := do
-  let v ← evalEntry true e
+  let ⟨_, _, eQ⟩ ← inferTypeQ' e
+  let r ← try some <$> Meta.NormNum.derive eQ catch _ => pure none
+  let some v := r.bind (·.toRat)
+    | throwError "the entry does not evaluate to an integer numeral{indentExpr e}"
   unless v.den == 1 do
     throwError "the value does not evaluate to an integer numeral{indentExpr e}"
   return v.num
 
-/-- Evaluate a `ℤ√d` entry to its pair of integer components: a `⟨a, b⟩` literal, `√d`
-itself, or an entry without `√d` content evaluating through `norm_num`. -/
-def evalZsqrtdEntry (e : Expr) : MetaM (Int × Int) := do
+/-- Evaluate a `ℤ√d` entry to a `ℤ√d` value: a `⟨a, b⟩` literal, `√d` itself, or an
+entry without `√d` content evaluating through `norm_num`. -/
+def evalZsqrtdEntry (d : ℤ) (e : Expr) : MetaM (ℤ√d) := do
   match_expr e with
-  | Zsqrtd.mk _ a b => return (← evalInt a, ← evalInt b)
-  | Zsqrtd.sqrtd _ => return (0, 1)
-  | _ => return (← evalInt e, 0)
+  | Zsqrtd.mk _ a b => return ⟨← evalInt a, ← evalInt b⟩
+  | Zsqrtd.sqrtd _ => return .sqrtd
+  | _ => return ⟨← evalInt e, 0⟩
 
-/-- The `ℤ√d` model, for `d` the value of the integer literal `dQ`: values are pairs
-`(a, b)` denoting `a + b√d`, and the elimination runs on integer pairs. -/
+/-- The `ℤ√d` model, for `d` the value of the integer literal `dQ`: the elimination runs
+on `ℤ√d` values with the ring's own arithmetic. -/
 def zsqrtdProducer (dQ : Q(ℤ)) (d : Int) : Producer :=
-  let ops : RingOps (Int × Int) := {
-    zero := (0, 0)
-    one := (1, 0)
-    mul := fun (x, y) (x', y') => (x * x' + d * y * y', x * y' + y * x')
-    sub := fun (x, y) (x', y') => (x - x', y - y')
-    divExact := fun (x, y) (x', y') =>
-      -- multiply by the conjugate `x' - y'√d` and divide by the norm, exactly
-      let norm := x' * x' - d * y' * y'
-      ((x * x' - d * y * y') / norm, (y * x' - x * y') / norm)
-    isZero := fun (x, y) => x == 0 && y == 0 }
+  let ops : RingOps (ℤ√d) := {
+    zero := 0
+    one := 1
+    mul := (· * ·)
+    sub := (· - ·)
+    divExact := fun x y =>
+      let z := x * star y
+      let n := y.norm
+      ⟨z.re / n, z.im / n⟩
+    isZero := (· == 0) }
   let prepare (entries : Array (Array Expr)) :
-      MetaM (Array (Array (Int × Int)) ×
-        (BareissData (Int × Int) → BareissData (Int × Int))) := do
-    let values ← entries.mapM (·.mapM evalZsqrtdEntry)
+      MetaM (Array (Array (ℤ√d)) × (BareissData (ℤ√d) → BareissData (ℤ√d))) := do
+    let values ← entries.mapM (·.mapM (evalZsqrtdEntry d))
     return (values, id)
-  let render : Int × Int → MetaM Expr := fun (a, b) =>
-    return q((⟨$(mkIntLitQ a), $(mkIntLitQ b)⟩ : Zsqrtd $dQ))
+  let render : ℤ√d → MetaM Expr := fun v =>
+    return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ))
   mkProducer ops prepare render
 
 /-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`. -/
