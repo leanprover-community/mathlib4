@@ -8,6 +8,7 @@ module
 public import Mathlib.Combinatorics.Hall.Finite
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.Data.Rel
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 
 /-!
 # Hall's Marriage Theorem
