@@ -734,21 +734,16 @@ theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
   induction n generalizing H s with
   | zero => exact ⟨.ofStrictMono ![⊥] (by simp), by simpa [card_le_one_iff_eq_bot] using hcard⟩
   | succ n ih =>
-    obtain ⟨t, htcard, hst, htH⟩ : ∃ t : Subgroup G, Nat.card t = p ^ (n + 1) ∧ (∀ g ∈ s, g ≤ t)
-        ∧ t ≤ H := by
-      let : Fintype s := Fintype.ofFinite _
+    have h : ∃ t ≤ H, Nat.card t ∣ p ^ (n + 1) ∧ ∀ g ∈ s, g ≤ t := by
       let : LinearOrder s := hchain.linearOrder
-      let left := if h : (Finset.univ : Finset s).Nonempty then (Finset.max' _ h).val else ⊥
-      obtain ⟨hleft, hleftH⟩ : Nat.card left ∣ p ^ (n + 1) ∧ left ≤ H := by
-        unfold left
-        split_ifs with h
-        · exact ⟨hcard _ (Finset.max' _ h).prop, hle _ (Finset.max' _ h).prop⟩
-        · simp
-      obtain ⟨t, hcardt, hlet, htle⟩ := exists_subgroup_card_pow_prime_le_le hp hleft hdvd hleftH
-      refine ⟨t, hcardt, fun g hg ↦ le_trans ?_ hlet, htle⟩
-      have h : (Finset.univ : Finset s).Nonempty := ⟨⟨g, hg⟩, by simp⟩
-      simp only [left, h, ↓reduceDIte]
-      exact (Finset.univ : Finset s).le_max' ⟨g, hg⟩ (Finset.mem_univ _)
+      by_cases! h : Nonempty s
+      · obtain ⟨⟨t, hts⟩, ht⟩ := Finite.exists_max (fun x : s ↦ x)
+        exact ⟨t, hle t hts, hcard t hts, fun g hg ↦ ht ⟨g, hg⟩⟩
+      · exact ⟨⊥, by simp [s.eq_empty_of_isEmpty]⟩
+    obtain ⟨t, htH, htcard, hst⟩ : ∃ t ≤ H, Nat.card t = p ^ (n + 1) ∧ ∀ g ∈ s, g ≤ t := by
+      obtain ⟨t, htH, htcard, hst⟩ := h
+      obtain ⟨t, hcardt, hlet, htle⟩ := exists_subgroup_card_pow_prime_le_le hp htcard hdvd htH
+      exact ⟨t, htle, hcardt, fun g hg ↦ (hst g hg).trans hlet⟩
     have hcard' (g : Subgroup G) (hg : g ∈ s \ {t}) : Nat.card g ∣ p ^ n := by
       obtain ⟨m, hmn, hm⟩ := (Nat.dvd_prime_pow hp).mp (hcard g hg.1)
       have hlt : Nat.card g < Nat.card t := card_lt_of_lt <| (hst g hg.1).lt_of_ne hg.2
