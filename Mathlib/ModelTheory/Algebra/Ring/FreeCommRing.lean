@@ -32,7 +32,6 @@ section
 
 attribute [local instance] compatibleRingOfRing
 
-set_option backward.privateInPublic true in
 private theorem exists_term_realize_eq_freeCommRing (p : FreeCommRing α) :
     ∃ t : Language.ring.Term α,
       (t.realize FreeCommRing.of : FreeCommRing α) = p :=

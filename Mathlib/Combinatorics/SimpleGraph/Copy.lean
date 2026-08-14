@@ -591,7 +591,6 @@ to get a graph `H'` that doesn't contain `G`.
 than `G`.
 -/
 
-set_option backward.privateInPublic true in
 private lemma aux (hH : H ≠ ⊥) {G' : G.Subgraph} :
     Nonempty (H ≃g G'.coe) → G'.edgeSet.Nonempty := by
   obtain ⟨e, he⟩ := edgeSet_nonempty.2 hH
