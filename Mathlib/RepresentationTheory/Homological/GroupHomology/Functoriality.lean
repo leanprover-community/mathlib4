@@ -269,7 +269,6 @@ theorem H0π_comp_map :
   simp [H0π]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_id_comp_H0Iso_hom {A B : Rep k G} (f : A ⟶ B) :
     map (MonoidHom.id G) f 0 ≫ (H0Iso B).hom =
@@ -320,6 +319,7 @@ theorem mapShortComplexH1_zero :
 theorem mapShortComplexH1_id : mapShortComplexH1 (MonoidHom.id G) (𝟙 A) = 𝟙 _ := by
   ext <;> simp [shortComplexH1]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mapShortComplexH1_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :
@@ -429,9 +429,8 @@ instance mapCycles₁_quotientGroupMk'_epi :
   rw [ModuleCat.epi_iff_surjective]
   rintro ⟨x, hx⟩
   choose! s hs using QuotientGroup.mk_surjective (s := S)
-  have hs₁ : QuotientGroup.mk ∘ s = id := funext hs
   refine ⟨⟨mapDomain s x, ?_⟩, Subtype.ext <| by
-    simp [mapCycles₁_hom, ← mapDomain_comp, hs₁, res, Rep.hom_id (of _)]⟩
+    simp [mapCycles₁_hom, ← mapDomain_comp, hs, res, Rep.hom_id (of _)]⟩
   simpa [mem_cycles₁_iff, ← (mem_cycles₁_iff _).1 hx, sum_mapDomain_index_inj (f := s)
       (fun x y h => by rw [← hs x, ← hs y, h])]
     using Finsupp.sum_congr fun a b => QuotientGroup.induction_on a fun a => by
@@ -489,7 +488,7 @@ theorem H1CoresCoinfOfTrivial_exact :
       (d₂₁ (A.ofQuotient S)).hom y := by
     have := congr($((mapShortComplexH1 (QuotientGroup.mk' S)
       (resOfQuotientIso A S).inv).comm₁₂.symm) z)
-    simp_all [shortComplexH1, z, ← mapDomain_comp, Prod.map_comp_map, Rep.hom_id (res _ _)]
+    simp_all [shortComplexH1, z, ← mapDomain_comp, Prod.map_map, Rep.hom_id (res _ _)]
   let v := x - (d₂₁ _).hom z
 /- We have `C₁(s ∘ π)(v) = ∑ v(g)·s(π(g)) = 0`, since `C₁(π)(v) = dC₁(π)(z) - C₁(π)(dz) = 0` by
 previous assumptions. -/
@@ -537,6 +536,7 @@ previous assumptions. -/
 
 end OfTrivial
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)`. The first map is the
 "corestriction" map induced by the inclusion `ι : S →* G` and the identity on `Res(ι)(A)`, and the
 second map is the "coinflation" map induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S`. -/
@@ -570,6 +570,7 @@ theorem comap_coinvariantsKer_pOpcycles_range_subtype_pOpcycles_eq_top :
   apply (moduleCat_pOpcycles_eq_iff _ _ _).2 ⟨Z, ?_⟩
   change d₂₁ A Z = mapRange id rfl (lmapDomain _ k Subtype.val Y) -
     mapRange.linearMap (Submodule.subtype _) (mapDomain id x)
+  simp only [mapDomain]
   simpa [map_finsuppSum, mapDomain, map_sub, ← hX, sum_single_index, curryLinearEquiv,
     curryEquiv, Finsupp.uncurry, d₂₁, Y, Z, sum_mapRange_index,
     chains₁ToCoinvariantsKer, d₁₀, single_sum, mul_assoc, sub_add_eq_add_sub,
@@ -740,6 +741,7 @@ theorem mapShortComplexH2_id : mapShortComplexH2 (MonoidHom.id _) (𝟙 A) = �
     ext
     simp }
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mapShortComplexH2_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :
@@ -853,10 +855,8 @@ noncomputable def coresNatTrans (n : ℕ) :
     simp only [← cancel_epi (groupHomology.π _ n), Functor.comp_map,
       functor_map, HomologicalComplex.homologyπ_naturality_assoc,
       HomologicalComplex.homologyπ_naturality, ← HomologicalComplex.cyclesMap_comp_assoc,
-      ← chainsMap_comp, res_obj_ρ, Rep.hom_id, Category.id_comp]
+      ← chainsMap_comp, Category.id_comp]
     rfl
-
-
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, this sends `A : Rep k G` to the `n`th "coinflation" map

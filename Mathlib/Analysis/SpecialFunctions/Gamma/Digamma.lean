@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Meromorphic.Complex
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 
-import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
 /-!
 # The digamma function
@@ -63,6 +62,10 @@ theorem digamma_apply_add_one (s : ℂ) (hs : ∀ m : ℕ, s ≠ - m) :
   have hs0 : s ≠ 0 := by simpa using hs 0
   rw [digamma_def, logDeriv_apply, logDeriv_apply, deriv_Gamma_add_one s hs0, Gamma_add_one s hs0,
     add_div, div_mul_cancel_right₀ (Gamma_ne_zero hs), mul_div_mul_left _ _ hs0, add_comm]
+
+@[fun_prop]
+theorem meromorphic_digamma : Meromorphic digamma :=
+  Meromorphic.Gamma.logDeriv
 
 /-- **The iterated digamma recurrence** `ψ(s + n) = ψ(s) + ∑_{k < n} 1 / (s + k)`, for
 `s ∉ {0, -1, -2, …}`. Proved by induction from `digamma_apply_add_one`. -/
@@ -160,8 +163,5 @@ theorem digamma_two_mul {s : ℂ} (hs : ∀ m : ℕ, s ≠ -(m : ℂ))
             ((hasDerivAt_id' (x := s)).const_mul 2).logDeriv_Gamma h2s, hcpow]
           ring
   linear_combination (-1 / 2 : ℂ) * key
-
-theorem meromorphic_digamma : Meromorphic digamma :=
-  Meromorphic.Gamma.logDeriv
 
 end Complex

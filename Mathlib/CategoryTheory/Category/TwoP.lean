@@ -86,6 +86,9 @@ noncomputable def swap : TwoP ⥤ TwoP where
         map_fst := f.hom.map_snd
         map_snd := f.hom.map_fst }
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence between `TwoP` and itself induced by `Prod.swap` both ways. -/
 @[simps!]
 noncomputable def swapEquiv : TwoP ≌ TwoP where
