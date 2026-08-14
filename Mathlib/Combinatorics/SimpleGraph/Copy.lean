@@ -606,7 +606,8 @@ noncomputable irreducible_def killCopies (G : SimpleGraph V) (H : SimpleGraph W)
     SimpleGraph V := by
   classical exact
   if hH : H = ⊥ then G
-  else G.deleteEdges <| ⋃ (G' : G.Subgraph) (hG' : Nonempty (H ≃g G'.coe)), {(private aux hH hG').some}
+  else G.deleteEdges <|
+    ⋃ (G' : G.Subgraph) (hG' : Nonempty (H ≃g G'.coe)), {(private aux hH hG' :).some}
 
 /-- Removing an edge from `G` for each subgraph isomorphic to `H` results in a subgraph of `G`. -/
 lemma killCopies_le_left : G.killCopies H ≤ G := by
