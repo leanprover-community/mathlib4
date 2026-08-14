@@ -7,7 +7,6 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
-public meta import Lean.Linter.Basic
 public meta import Lean.Elab.AssertExists
 public import Lean.Message
 
@@ -284,6 +283,11 @@ outside `Mathlib/Algebra/Notation.lean`.
 def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra),
   (`Mathlib, `Mathlib.Deprecated),
+  -- Files in `Wanted` look like theorems but have no proofs (`proof_wanted`), so importing them
+  -- is banned everywhere: they may import from `Mathlib`, never the other way around.
+  (`Mathlib, `Wanted),
+  (`Archive, `Wanted),
+  (`Counterexamples, `Wanted),
 
   -- This is used to test the linter.
   (`MathlibTest.Header, `Mathlib.Deprecated),

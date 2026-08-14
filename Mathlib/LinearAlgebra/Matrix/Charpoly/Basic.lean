@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.RingTheory.MatrixPolynomialAlgebra
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -129,6 +130,7 @@ lemma charmatrix_blockTriangular_iff {α : Type*} [Preorder α] {M : Matrix n n 
 alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmatrix_blockTriangular_iff
 
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$. -/
+@[wikidata Q849705]
 def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
 
@@ -196,9 +198,12 @@ lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h :
     M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by
   simp only [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
 
-lemma charpoly_of_upperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.BlockTriangular id) :
+lemma charpoly_of_isUpperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.IsUpperTriangular) :
     M.charpoly = ∏ i : n, (X - C (M i i)) := by
-  simp [charpoly, det_of_upperTriangular h.charmatrix]
+  simp [charpoly, det_of_isUpperTriangular h.charmatrix]
+
+@[deprecated (since := "2026-07-30")]
+alias charpoly_of_upperTriangular := charpoly_of_isUpperTriangular
 
 -- This proof follows http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 /-- The **Cayley-Hamilton Theorem**, that the characteristic polynomial of a matrix,
@@ -287,7 +292,6 @@ theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
     (M.val⁻¹ * N * M.val).charpoly = N.charpoly := by
   simpa using charpoly_units_conj M⁻¹ N
 
-set_option backward.isDefEq.respectTransparency false in
 theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
     (M - scalar n μ).charpoly = M.charpoly.comp (X + C μ) := by
   simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]
