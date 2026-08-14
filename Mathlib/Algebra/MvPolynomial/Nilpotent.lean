@@ -65,7 +65,7 @@ theorem isUnit_iff : IsUnit P ↔ IsUnit (P.coeff 0) ∧ ∀ i ≠ 0, IsNilpoten
     simp only [ne_eq, isNilpotent_iff] at H
     convert! ← H (n.equivMapDomain (Equiv.optionSubtypeNe i).symm).some
     refine (optionEquivLeft_coeff_some_coeff_none _ _ _ _).trans ?_
-    simp [Finsupp.equivMapDomain_eq_mapDomain,
+    simp [Finsupp.equivMapDomain_eq_mapDomain, -Equiv.optionSubtypeNe_symm_apply,
       coeff_rename_mapDomain _ (Equiv.optionSubtypeNe i).symm.injective]
   · have : IsNilpotent (P - C (P.coeff 0)) := by
       simp +contextual [isNilpotent_iff, apply_ite, eq_comm, h₂]
