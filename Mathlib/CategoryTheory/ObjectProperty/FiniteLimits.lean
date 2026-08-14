@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Limits.FullSubcategory
 /-!
 # Properties of objects that are closed under finite limits
 
-In this file, we introduce a typeclasse `IsClosedUnderFiniteLimits`
+In this file, we introduce a typeclass `IsClosedUnderFiniteLimits`
 saying that a property of objects `P : ObjectProperty C` of a category `C`
 is closed under finite limits. The dual definition `IsClosedUnderFiniteLimits`
 is also introduced.
