@@ -405,7 +405,7 @@ theorem span_mul_span (S T : Set R) [(span S).IsTwoSided] :
     span S * span T = span (S * T) :=
   Submodule.span_smul_span S T
 
-@[deprecated (since := "2026-05-24")]
+@[deprecated (since := "2026-08-14")]
 alias span_mul_span' := span_mul_span
 
 theorem span_singleton_mul_span_singleton (r s : R) [(span {r}).IsTwoSided] :
