@@ -349,6 +349,9 @@ attribute [instance] IsDiscrete.subsingleton
 instance Discrete.isDiscrete (C : Type*) : IsDiscrete (Discrete C) where
   eq_of_hom := by rintro ⟨_⟩ ⟨_⟩ ⟨⟨rfl⟩⟩; rfl
 
+instance {C : Type*} [Category C] [Subsingleton C] [Quiver.IsThin C] : IsDiscrete C where
+  eq_of_hom _ := by subsingleton
+
 section
 
 variable {C : Type*} [Category* C] [IsDiscrete C]
