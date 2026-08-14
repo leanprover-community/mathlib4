@@ -115,8 +115,9 @@ theorem l_sSup {s : Set α} : l (sSup s) = ⨆ a ∈ s, l a := by
   simp only [sSup_eq_iSup, gc.l_iSup]
 
 @[to_dual]
-theorem l_sSup' {s : Set α} : l (sSup s) = sSup (l '' s) := by
-  rw [sSup_image, l_sSup gc]
+theorem l_sSup_eq_sSup_image {s : Set α} : l (sSup s) = sSup (l '' s) := by
+  rw [sSup_image]
+  exact gc.l_sSup
 
 end CompleteLattice
 
