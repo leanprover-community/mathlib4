@@ -20,10 +20,6 @@ In particular, `ℂ`-scalar multiplication is given by
 and the `ℂ`-inner product is given by
 `⟪(x, y), (z, w)⟫_ℂ = ℜ (⟪x, z⟫_𝕜 + ⟪y, w⟫_𝕜) + (ℜ (⟪x, w⟫_𝕜 - ⟪y, z⟫_𝕜)) * I`.
 
-The complexification space of a real space `E` is equivalent to `ℂ ⊗[ℝ] E` (see
-`Complexification.toTensor`.) And so the complexification of a tensor product is the tensor product
-of the complexifications (see `TensorProduct.complexificationLinearEquiv`).
-
 ## Main definitions and results
 
 * `Complexification.instSMul`: Complex scalar multiplication on complexifications.
@@ -37,7 +33,7 @@ of the complexifications (see `TensorProduct.complexificationLinearEquiv`).
 
 ## References
 
-[roman_advanced_linear_algebra]
+[Steven Roman, *Advanced linear algebra*][roman_advanced_linear_algebra]
 
 -/
 

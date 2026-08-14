@@ -10,8 +10,12 @@ public import Mathlib.Analysis.InnerProductSpace.TensorProduct
 
 /-! Tensor product description of complexifications
 
+The complexification space of a real space `E` is equivalent to `ℂ ⊗[ℝ] E` (see
+`Complexification.toTensor`.) And so the complexification of a tensor product is the tensor product
+of the complexifications (see `TensorProduct.complexificationLinearEquiv`).
 
--/
+The matrix of a complexified operator is essentially the matrix of the original operator lifted
+to `ℂ`. -/
 
 public section
 
