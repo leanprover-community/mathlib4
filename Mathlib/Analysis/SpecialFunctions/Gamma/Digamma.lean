@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Meromorphic.Complex
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 
-import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
 /-!
 # The digamma function
@@ -74,6 +73,7 @@ theorem digamma_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) :
   simp [digamma_def] at this ⊢
   grind
 
+@[fun_prop]
 theorem meromorphic_digamma : Meromorphic digamma :=
   Meromorphic.Gamma.logDeriv
 

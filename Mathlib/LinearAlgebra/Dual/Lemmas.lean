@@ -104,7 +104,7 @@ end Module
 
 section
 
-open Module Module.Dual Submodule LinearMap Cardinal Function
+open Module Module.Dual LinearMap Cardinal Function
 
 universe uR uM uK uV uι
 variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
@@ -620,7 +620,7 @@ vanish on `W`.
 The inverse of this is `Submodule.dualCopairing`. -/
 def dualQuotEquivDualAnnihilator (W : Submodule R M) :
     Module.Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ =>
       W.range_dualMap_mkQ_eq ▸ LinearMap.mem_range_self W.mkQ.dualMap φ)
     W.dualCopairing (by ext; rfl) (by ext; rfl)
@@ -881,11 +881,12 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
 -- for `Module.Dual R (Π (i : ι), V ⧸ W i) ≃ₗ[K] Π (i : ι), Module.Dual R (V ⧸ W i)`, which is not
 -- true for infinite `ι`. One would need to add additional hypothesis on `W` (for example, it might
 -- be true when the family is inf-closed).
--- TODO: generalize to `Sort`
-theorem dualAnnihilator_iInf_eq {ι : Type*} [Finite ι] (W : ι → Subspace K V₁) :
+theorem dualAnnihilator_iInf_eq {ι : Sort*} [Finite ι] (W : ι → Subspace K V₁) :
     (⨅ i : ι, W i).dualAnnihilator = ⨆ i : ι, (W i).dualAnnihilator := by
-  revert ι
-  apply Finite.induction_empty_option
+  rw [← iInf_plift_down W, ← iSup_plift_down fun i ↦ (W i).dualAnnihilator]
+  refine Finite.induction_empty_option
+    (P := fun α ↦ ∀ W : α → _, (⨅ i, W i).dualAnnihilator = ⨆ i, (W i).dualAnnihilator) ?_ ?_ ?_
+    (PLift ι) (fun i ↦ W i.down)
   · intro α β h hyp W
     rw [← h.iInf_comp, hyp _, ← h.iSup_comp]
   · intro W

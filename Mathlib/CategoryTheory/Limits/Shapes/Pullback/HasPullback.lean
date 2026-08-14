@@ -484,8 +484,6 @@ end
 
 section PullbackSymmetry
 
-open WalkingCospan
-
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- Making this a global instance would make the typeclass search go in an infinite loop. -/
@@ -520,8 +518,6 @@ theorem pullbackSymmetry_inv_comp_snd [HasPullback f g] :
 end PullbackSymmetry
 
 section PushoutSymmetry
-
-open WalkingCospan
 
 variable (f : X ⟶ Y) (g : X ⟶ Z)
 
@@ -640,13 +636,11 @@ section
 variable {X Y : C} (f : X ⟶ Y) (Z : C) [HasBinaryProduct Y Z] [HasBinaryProduct X Z]
   [HasPullback f (prod.fst : Y ⨯ Z ⟶ _)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdFstIsoProd_hom_fst :
     (pullbackProdFstIsoProd f Z).hom ≫ prod.fst = pullback.fst _ _ := by
   simp [pullbackProdFstIsoProd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdFstIsoProd_hom_snd :
     (pullbackProdFstIsoProd f Z).hom ≫ prod.snd = pullback.snd _ _ ≫ prod.snd := by
@@ -689,13 +683,11 @@ noncomputable def pullbackProdSndIsoProd {X Y : C} (f : X ⟶ Y) (Z : C)
 variable {X Y : C} (f : X ⟶ Y) (Z : C) [HasBinaryProduct Z Y] [HasBinaryProduct Z X]
   [HasPullback (prod.snd : Z ⨯ Y ⟶ Y) f]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdSndIsoProd_hom_fst :
     (pullbackProdSndIsoProd f Z).hom ≫ prod.fst = pullback.fst _ _ ≫ prod.fst := by
   simp [pullbackProdSndIsoProd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdSndIsoProd_hom_snd :
     (pullbackProdSndIsoProd f Z).hom ≫ prod.snd = pullback.snd _ _ := by

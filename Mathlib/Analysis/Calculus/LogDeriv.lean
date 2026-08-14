@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.Analysis.Calculus.MeanValue
 
-import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Analysis.Calculus.Deriv.Slope
 /-!
 # Logarithmic Derivatives
 
@@ -40,6 +38,36 @@ lemma logDeriv_eq_zero_of_not_differentiableAt (f : 𝕜 → 𝕜') (x : 𝕜) (
     logDeriv f x = 0 := by
   simp only [logDeriv_apply, deriv_zero_of_not_differentiableAt h, zero_div]
 
+/-- If two functions agree in a neighborhood of `x`, then so do their logarithmic derivatives. -/
+lemma logDeriv_congr_nhds {f g : 𝕜 → 𝕜'} {x : 𝕜} (h : f =ᶠ[𝓝 x] g) :
+    logDeriv f =ᶠ[𝓝 x] logDeriv g := h.deriv.div h
+
+/--
+If two functions agree in a punctured neighborhood of `x`, then so do their logarithmic derivatives.
+-/
+lemma logDeriv_congr_nhdsNE {f g : 𝕜 → 𝕜'} {x : 𝕜} (h : f =ᶠ[𝓝[≠] x] g) :
+    logDeriv f =ᶠ[𝓝[≠] x] logDeriv g := h.nhdsNE_deriv.div h
+
+/--
+If two functions agree on a codiscrete subset of an open set `U`, then so do their logarithmic
+derivatives.
+-/
+theorem logDeriv_congr_codiscreteWithin {f g : 𝕜 → 𝕜'} {U : Set 𝕜} (hU : IsOpen U)
+    (h : f =ᶠ[codiscreteWithin U] g) :
+    logDeriv f =ᶠ[codiscreteWithin U] logDeriv g := by
+  refine mem_codiscreteWithin_iff_forall_mem_nhdsNE.2 fun x hx ↦ ?_
+  refine mem_of_superset (logDeriv_congr_nhdsNE ?_) Set.subset_union_left
+  filter_upwards [mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 h x hx,
+    nhdsWithin_le_nhds (hU.mem_nhds hx)] with z hz hzU
+  exact hz.resolve_right (not_not_intro hzU)
+
+/--
+If two functions agree on a codiscrete subset of `𝕜`, then so do their logarithmic derivatives.
+-/
+theorem logDeriv_congr_codiscrete {f g : 𝕜 → 𝕜'} (h : f =ᶠ[codiscrete 𝕜] g) :
+    logDeriv f =ᶠ[codiscrete 𝕜] logDeriv g :=
+  logDeriv_congr_codiscreteWithin isOpen_univ h
+
 @[simp]
 theorem logDeriv_id (x : 𝕜) : logDeriv id x = 1 / x := by
   simp [logDeriv_apply]
@@ -51,14 +79,16 @@ theorem logDeriv_const (a : 𝕜') : logDeriv (fun _ : 𝕜 ↦ a) = 0 := by
   ext
   simp [logDeriv_apply]
 
+@[to_fun logDeriv_fun_mul]
 theorem logDeriv_mul {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
-      logDeriv (fun z => f z * g z) x = logDeriv f x + logDeriv g x := by
+      logDeriv (f * g) x = logDeriv f x + logDeriv g x := by
   simp [field, logDeriv_apply, *]
 
+@[to_fun logDeriv_fun_div]
 theorem logDeriv_div {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
-    logDeriv (fun z => f z / g z) x = logDeriv f x - logDeriv g x := by
+    logDeriv (f / g) x = logDeriv f x - logDeriv g x := by
   simp [field, logDeriv_apply, *]
 
 theorem logDeriv_mul_const {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0) :
@@ -70,19 +100,19 @@ theorem logDeriv_const_mul {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a �
   simp only [logDeriv_apply, deriv_const_mul_field, mul_div_mul_left _ _ ha]
 
 /-- The logarithmic derivative of a finite product is the sum of the logarithmic derivatives. -/
+@[to_fun logDeriv_fun_prod]
 theorem logDeriv_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜'} {x : 𝕜} (hf : ∀ i ∈ s, f i x ≠ 0)
     (hd : ∀ i ∈ s, DifferentiableAt 𝕜 (f i) x) :
-    logDeriv (∏ i ∈ s, f i ·) x = ∑ i ∈ s, logDeriv (f i) x := by
+    logDeriv (∏ i ∈ s, f i) x = ∑ i ∈ s, logDeriv (f i) x := by
   induction s using Finset.cons_induction with
-  | empty => simp
+  | empty => simp [Pi.one_def]
   | cons a s ha ih =>
     rw [Finset.forall_mem_cons] at hf hd
-    simp_rw [Finset.prod_cons, Finset.sum_cons]
-    rw [logDeriv_mul, ih hf.2 hd.2]
+    rw [Finset.prod_cons, Finset.sum_cons, logDeriv_mul, ih hf.2 hd.2]
     · exact hf.1
     · simpa [Finset.prod_eq_zero_iff] using hf.2
     · exact hd.1
-    · exact .fun_finsetProd hd.2
+    · exact .finsetProd hd.2
 
 lemma logDeriv_fun_zpow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 𝕜 f x) (n : ℤ) :
     logDeriv (f · ^ n) x = n * logDeriv f x := by
