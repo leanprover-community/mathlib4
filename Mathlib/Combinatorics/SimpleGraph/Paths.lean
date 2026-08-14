@@ -177,10 +177,10 @@ theorem IsTrail.length_le_ncard_edgeSet [Finite G.edgeSet] (hp : p.IsTrail) :
   grw [← length_edges, hp.edges_nodup.length_le_ncard ‹_› p.edges_subset_edgeSet]
 
 theorem IsPath.length_lt_enatCard (hp : p.IsPath) : p.length < ENat.card V := by
-  simpa [← ENat.coe_add_one_le_iff] using hp.support_nodup.length_le_enatCard
+  simpa [← ENat.natCast_add_one_le_iff] using hp.support_nodup.length_le_enatCard
 
 theorem IsPath.length_lt_natCard [Finite V] (hp : p.IsPath) : p.length < Nat.card V := by
-  simpa [← ENat.coe_add_one_le_iff] using hp.support_nodup.length_le_natCard
+  simpa [← ENat.natCast_add_one_le_iff] using hp.support_nodup.length_le_natCard
 
 theorem IsCycle.length_le_enatCard {p : G.Walk v v} (hp : p.IsCycle) : p.length ≤ ENat.card V := by
   simpa using hp.support_nodup.length_le_enatCard
