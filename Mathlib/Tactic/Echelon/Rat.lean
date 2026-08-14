@@ -41,12 +41,11 @@ def scaleRowsIntegral (ratRows : Array (Array Rat)) : Array (Array Int) × Array
 
 /-- The restoration for `scaleRowsIntegral`: fold the row scales into the transform,
 scaling column `j` by the factor of the row that ends up in position `j`. -/
-def restoreScaling {V : Type} (ops : RingOps V) (scales : Array V) (d : BareissData V) :
-    BareissData V :=
+def restoreScaling (scales : Array Int) (d : BareissData Int) : BareissData Int :=
   let order := d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b)
     (Array.range d.L.size)
   { d with L := d.L.map fun row =>
-      row.mapIdx fun j a => ops.mul a (scales.getD (order.getD j 0) ops.one) }
+      row.mapIdx fun j a => a * scales.getD (order.getD j 0) 1 }
 
 /-- Build the numeral of an integer in `R`: `mkNumeral` on the absolute value, negated if
 `i` is negative. -/
@@ -85,7 +84,7 @@ def ratProducer (R : Expr) : MetaM Producer := do
       MetaM (Array (Array Int) × (BareissData Int → BareissData Int)) := do
     let ratRows ← entries.mapM (·.mapM (evalRatEntry (p == 0)))
     let (values, scales) := scaleRowsIntegral ratRows
-    return (values, restoreScaling ops (scales.map Int.ofNat))
+    return (values, restoreScaling (scales.map Int.ofNat))
   return mkProducer ops prepare (mkIntNumeral R)
 
 end Mathlib.Tactic.Echelon
