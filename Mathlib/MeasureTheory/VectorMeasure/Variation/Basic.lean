@@ -417,20 +417,6 @@ lemma _root_.MeasureTheory.SignedMeasure.exists_subset_lt_enorm_apply_of_lt_vari
     · exact Finset.measurableSet_biUnion _ (by grind)
     · exact hP.trans_le (by gcongr)
 
-/-- If a vector measure decomposes as a finite linear combination `μ E = ∑ i, s i E • v i` of
-`𝕜`-valued measures `s i` with coefficients the vectors `v i`, then its variation is bounded by
-`∑ i, ‖v i‖₊ • (s i).variation`. -/
-lemma variation_le_sum_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V]
-    {ι : Type*} [Fintype ι] {s : ι → VectorMeasure X 𝕜} {v : ι → V}
-    (h : ∀ E, μ E = ∑ i, s i E • v i) : μ.variation ≤ ∑ i, ‖v i‖₊ • (s i).variation := by
-  refine variation_le_of_forall_enorm_le fun E _ ↦ ?_
-  calc ‖μ E‖ₑ = ‖∑ i, s i E • v i‖ₑ := by rw [h]
-    _ ≤ ∑ i, ‖s i E • v i‖ₑ := enorm_sum_le _ _
-    _ = ∑ i, ‖v i‖ₑ * ‖s i E‖ₑ := by simp_rw [enorm_smul, mul_comm]
-    _ ≤ ∑ i, ‖v i‖ₑ * (s i).variation E := by
-        gcongr with i; exact enorm_measure_le_variation (s i) E
-    _ = (∑ i, ‖v i‖₊ • (s i).variation) E := by simp [enorm_eq_nnnorm]
-
 end NormedAddCommGroup
 
 section ENNReal

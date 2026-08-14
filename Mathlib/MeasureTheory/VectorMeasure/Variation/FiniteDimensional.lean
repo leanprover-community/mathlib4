@@ -41,7 +41,20 @@ is finite. -/
 instance [NormedSpace ℝ V] [FiniteDimensional ℝ V] (μ : VectorMeasure X V) :
     IsFiniteMeasure μ.variation := by
   let b := (Module.finBasis ℝ V).toGeneralSchauderBasis
-  exact isFiniteMeasure_of_le (∑ i, ‖b i‖₊ • (μ.coord b i).variation)
-    (variation_le_sum_smul (by simp))
+  apply isFiniteMeasure_of_le (∑ i, ‖b i‖₊ • (μ.coord b i).variation)
+  nth_rw 1 [sum_toSpanSingleton_coord_eq b μ]
+  apply le_trans (variation_finsetSum_le _ _)
+  gcongr
+  refine variation_le_of_forall_enorm_le fun E _ ↦ ?_
+  simp only [mapRangeₗ_apply, coord_apply, LinearMap.toSpanSingleton_apply, Measure.smul_apply,
+    Measure.nnreal_smul_coe_apply]
+  calc
+    ‖(b.coord i) (μ E) • b i‖ₑ ≤ ‖b i‖ₑ * ‖(b.coord i) (μ E)‖ₑ := by
+        rw [mul_comm]
+        exact enorm_smul_le
+    _ ≤ ‖b i‖₊ * ‖VectorMeasure.coord b μ i E‖ₑ := by
+        gcongr <;> simp
+    _ ≤ ‖b i‖₊ * (VectorMeasure.coord b μ i).variation E := by
+        gcongr; exact enorm_measure_le_variation _ _
 
 end MeasureTheory.VectorMeasure
