@@ -700,6 +700,9 @@ abbrev Function.Injective.linearOrder [LinearOrder β] [LE α] [LT α] [Max α] 
     (compare : ∀ x y, compare (f x) (f y) = compare x y) :
     LinearOrder α where
   toPartialOrder := hf.partialOrder _ le lt
+  toDecidableLE := ‹_›
+  toDecidableEq := ‹_›
+  toDecidableLT := ‹_›
   le_total _ _ := by simp only [← le, le_total]
   min_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← min_def, min]
   max_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← max_def, max]
@@ -1050,10 +1053,9 @@ abbrev LinearOrder.ofSubsingleton {α : Type*} [Subsingleton α] : LinearOrder �
   le_refl _ := trivial
   le_trans x y z _ _ := trivial
   le_antisymm x y _ _ := Subsingleton.elim x y
-  lt_iff_le_not_ge _ _ := by simp
   le_total _ _ := .inl trivial
+  lt_iff_le_not_ge _ _ := by simp
   toDecidableLE _ _ := instDecidableTrue
-  toDecidableEq := decidableEq_of_subsingleton
   toDecidableLT _ _ := instDecidableFalse
 
 instance : LinearOrder Empty := .ofSubsingleton

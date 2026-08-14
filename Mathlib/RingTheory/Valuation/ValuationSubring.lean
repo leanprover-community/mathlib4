@@ -400,6 +400,7 @@ open scoped Classical in
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where
   le_total := (le_total_ideal A).1
   max_def a b := congr_fun₂ sup_eq_maxDefault a b
+  toDecidableLE := _
 
 section
 

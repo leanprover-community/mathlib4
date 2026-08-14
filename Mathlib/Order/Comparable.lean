@@ -45,9 +45,13 @@ variable {α : Type*} {a b c d : α}
 
 /-- A partial order where any two elements are comparable is a linear order. -/
 @[instance_reducible]
-def Relation.linearOrderOfSymmGen [PartialOrder α] [DecidableLE α] [DecidableLT α] [DecidableEq α]
+def Relation.linearOrderOfSymmGen [PartialOrder α]
+    [decLE : DecidableLE α] [decLT : DecidableLT α] [decEq : DecidableEq α]
     (h : ∀ a b : α, Relation.SymmGen (· ≤ ·) a b) : LinearOrder α where
   le_total := h
+  toDecidableLE := decLE
+  toDecidableEq := decEq
+  toDecidableLT := decLT
 
 /-! ### Incomparability relation -/
 
