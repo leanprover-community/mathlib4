@@ -70,7 +70,7 @@ Some examples of EDSs include
 
 ## Main statements
 
-* `isEllipticSequence_normEDS`: `normEDS` satisfies `IsEllipticSequence`.
+* `IsEllipticSequence.normEDS`: `normEDS` satisfies `IsEllipticSequence`.
 * TODO: prove that a sequence satisfying `IsEllipticDvdSequence` can be normalised to a `normEDS`.
 
 ## Implementation notes
@@ -123,18 +123,18 @@ lemma atom_same (a : ℤ) : atom W a a = W a * W 0 := by
 
 variable {W} in
 @[simp]
-lemma neg_atom (odd : W.Odd) (a b : ℤ) : -atom W a b = atom W b a := by
-  rw [atom, atom, add_comm, ← neg_sub a, Int.neg_tdiv, odd, mul_neg]
+lemma neg_atom (neg : W.Odd) (a b : ℤ) : -atom W a b = atom W b a := by
+  rw [atom, atom, add_comm, ← neg_sub a, Int.neg_tdiv, neg, mul_neg]
 
 variable {W} in
-lemma atom_mul_atom (odd : W.Odd) (a b c d : ℤ) :
+lemma atom_mul_atom (neg : W.Odd) (a b c d : ℤ) :
     atom W a b * atom W c d = atom W b a * atom W d c := by
-  rw [← neg_atom odd a b, ← neg_atom odd c d, neg_mul_neg]
+  rw [← neg_atom neg a b, ← neg_atom neg c d, neg_mul_neg]
 
 variable {W} in
 @[simp]
-lemma atom_neg_left (odd : W.Odd) (a b : ℤ) : atom W (-a) b = atom W a b := by
-  rw [atom, atom, neg_add_eq_sub, ← neg_sub a, ← neg_add', Int.neg_tdiv, odd, Int.neg_tdiv, odd,
+lemma atom_neg_left (neg : W.Odd) (a b : ℤ) : atom W (-a) b = atom W a b := by
+  rw [atom, atom, neg_add_eq_sub, ← neg_sub a, ← neg_add', Int.neg_tdiv, neg, Int.neg_tdiv, neg,
     neg_mul_neg, mul_comm]
 
 @[simp]
@@ -143,8 +143,8 @@ lemma atom_neg_right (a b : ℤ) : atom W a (-b) = atom W a b := by
 
 variable {W} in
 @[simp]
-lemma atom_abs_left (odd : W.Odd) (a b : ℤ) : atom W |a| b = atom W a b := by
-  rcases abs_choice a with h | h <;> simp only [h, atom_neg_left odd]
+lemma atom_abs_left (neg : W.Odd) (a b : ℤ) : atom W |a| b = atom W a b := by
+  rcases abs_choice a with h | h <;> simp only [h, atom_neg_left neg]
 
 @[simp]
 lemma atom_abs_right (a b : ℤ) : atom W a |b| = atom W a b := by
@@ -172,12 +172,12 @@ lemma atomRel_same₁₂ (a b c : ℤ) : atomRel W a a b c = W a * W 0 * atom W 
 
 variable {W} in
 @[simp]
-lemma atomRel_same₁₃ (odd : W.Odd) (a b c : ℤ) : atomRel W a b a c = W a * W 0 * atom W c b := by
+lemma atomRel_same₁₃ (neg : W.Odd) (a b c : ℤ) : atomRel W a b a c = W a * W 0 * atom W c b := by
   grind only [atomRel, atom_same, neg_atom]
 
 variable {W} in
 @[simp]
-lemma atomRel_same₁₄ (odd : W.Odd) (a b c : ℤ) : atomRel W a b c a = W a * W 0 * atom W b c := by
+lemma atomRel_same₁₄ (neg : W.Odd) (a b c : ℤ) : atomRel W a b c a = W a * W 0 * atom W b c := by
   grind only [atomRel, atom_same, neg_atom]
 
 @[simp]
@@ -186,7 +186,7 @@ lemma atomRel_same₂₃ (a b c : ℤ) : atomRel W a b b c = W b * W 0 * atom W 
 
 variable {W} in
 @[simp]
-lemma atomRel_same₂₄ (odd : W.Odd) (a b c : ℤ) : atomRel W a b c b = W b * W 0 * atom W c a := by
+lemma atomRel_same₂₄ (neg : W.Odd) (a b c : ℤ) : atomRel W a b c b = W b * W 0 * atom W c a := by
   grind only [atomRel, atom_same, neg_atom]
 
 @[simp]
@@ -194,63 +194,63 @@ lemma atomRel_same₃₄ (a b c : ℤ) : atomRel W a b c c = W c * W 0 * atom W 
   grind only [atomRel, atom_same]
 
 variable {W} in
-lemma neg_atomRel₁₂ (odd : W.Odd) (a b c d : ℤ) : -atomRel W a b c d = atomRel W b a c d := by
+lemma neg_atomRel₁₂ (neg : W.Odd) (a b c d : ℤ) : -atomRel W a b c d = atomRel W b a c d := by
   grind only [atomRel, neg_atom]
 
 variable {W} in
-lemma neg_atomRel₂₃ (odd : W.Odd) (a b c d : ℤ) : -atomRel W a b c d = atomRel W a c b d := by
+lemma neg_atomRel₂₃ (neg : W.Odd) (a b c d : ℤ) : -atomRel W a b c d = atomRel W a c b d := by
   grind only [atomRel, neg_atom]
 
 variable {W} in
-lemma neg_atomRel₃₄ (odd : W.Odd) (a b c d : ℤ) : -atomRel W a b c d = atomRel W a b d c := by
+lemma neg_atomRel₃₄ (neg : W.Odd) (a b c d : ℤ) : -atomRel W a b c d = atomRel W a b d c := by
   grind only [atomRel, neg_atom]
 
 variable {W} in
 @[simp]
-lemma atomRel_neg₁ (odd : W.Odd) (a b c d : ℤ) : atomRel W (-a) b c d = atomRel W a b c d := by
-  simp_rw [atomRel, atom_neg_left odd]
+lemma atomRel_neg₁ (neg : W.Odd) (a b c d : ℤ) : atomRel W (-a) b c d = atomRel W a b c d := by
+  simp_rw [atomRel, atom_neg_left neg]
 
 variable {W} in
 @[simp]
-lemma atomRel_neg₂ (odd : W.Odd) (a b c d : ℤ) : atomRel W a (-b) c d = atomRel W a b c d := by
-  simp_rw [atomRel, atom_neg_left odd, atom_neg_right]
+lemma atomRel_neg₂ (neg : W.Odd) (a b c d : ℤ) : atomRel W a (-b) c d = atomRel W a b c d := by
+  simp_rw [atomRel, atom_neg_left neg, atom_neg_right]
 
 variable {W} in
 @[simp]
-lemma atomRel_neg₃ (odd : W.Odd) (a b c d : ℤ) : atomRel W a b (-c) d = atomRel W a b c d := by
-  simp_rw [atomRel, atom_neg_left odd, atom_neg_right]
+lemma atomRel_neg₃ (neg : W.Odd) (a b c d : ℤ) : atomRel W a b (-c) d = atomRel W a b c d := by
+  simp_rw [atomRel, atom_neg_left neg, atom_neg_right]
 
 @[simp]
 lemma atomRel_neg₄ (a b c d : ℤ) : atomRel W a b c (-d) = atomRel W a b c d := by
   simp_rw [atomRel, atom_neg_right]
 
 variable {W} in
-lemma atomRel_neg (odd : W.Odd) (a b c d : ℤ) :
+lemma atomRel_neg (neg : W.Odd) (a b c d : ℤ) :
     atomRel W (-a) (-b) (-c) (-d) = atomRel W a b c d := by
-  rw [atomRel_neg₁ odd, atomRel_neg₂ odd, atomRel_neg₃ odd, atomRel_neg₄]
+  rw [atomRel_neg₁ neg, atomRel_neg₂ neg, atomRel_neg₃ neg, atomRel_neg₄]
 
 variable {W} in
 @[simp]
-lemma atomRel_abs₁ (odd : W.Odd) (a b c d : ℤ) : atomRel W |a| b c d = atomRel W a b c d := by
-  simp_rw [atomRel, atom_abs_left odd]
+lemma atomRel_abs₁ (neg : W.Odd) (a b c d : ℤ) : atomRel W |a| b c d = atomRel W a b c d := by
+  simp_rw [atomRel, atom_abs_left neg]
 
 variable {W} in
 @[simp]
-lemma atomRel_abs₂ (odd : W.Odd) (a b c d : ℤ) : atomRel W a |b| c d = atomRel W a b c d := by
-  simp_rw [atomRel, atom_abs_left odd, atom_abs_right]
+lemma atomRel_abs₂ (neg : W.Odd) (a b c d : ℤ) : atomRel W a |b| c d = atomRel W a b c d := by
+  simp_rw [atomRel, atom_abs_left neg, atom_abs_right]
 
 variable {W} in
 @[simp]
-lemma atomRel_abs₃ (odd : W.Odd) (a b c d : ℤ) : atomRel W a b |c| d = atomRel W a b c d := by
-  simp_rw [atomRel, atom_abs_left odd, atom_abs_right]
+lemma atomRel_abs₃ (neg : W.Odd) (a b c d : ℤ) : atomRel W a b |c| d = atomRel W a b c d := by
+  simp_rw [atomRel, atom_abs_left neg, atom_abs_right]
 
 @[simp]
 lemma atomRel_abs₄ (a b c d : ℤ) : atomRel W a b c |d| = atomRel W a b c d := by
   simp_rw [atomRel, atom_abs_right]
 
 variable {W} in
-lemma atomRel_abs (odd : W.Odd) (a b c d : ℤ) : atomRel W |a| |b| |c| |d| = atomRel W a b c d := by
-  rw [atomRel_abs₁ odd, atomRel_abs₂ odd, atomRel_abs₃ odd, atomRel_abs₄]
+lemma atomRel_abs (neg : W.Odd) (a b c d : ℤ) : atomRel W |a| |b| |c| |d| = atomRel W a b c d := by
+  rw [atomRel_abs₁ neg, atomRel_abs₂ neg, atomRel_abs₃ neg, atomRel_abs₄]
 
 lemma atomRel_avg_sub {a b c d : ℤ} (parity : [a, b, c, d].Pairwise (· % 2 = · % 2)) :
     atomRel W ((a + b + c + d) / 2 - d) ((a + b + c + d) / 2 - c) ((a + b + c + d) / 2 - b)
@@ -356,8 +356,8 @@ lemma atomRel_eq {a b c d : ℤ} (parity : [a, b, c, d].Pairwise (· % 2 = · % 
 
 variable {W} in
 @[simp]
-lemma rel_neg (odd : W.Odd) (p q r s : ℤ) : rel W (-p) (-q) (-r) (-s) = rel W p q r s := by
-  simp_rw [rel_eq, mul_neg, ← neg_add, atomRel_neg odd]
+lemma rel_neg (neg : W.Odd) (p q r s : ℤ) : rel W (-p) (-q) (-r) (-s) = rel W p q r s := by
+  simp_rw [rel_eq, mul_neg, ← neg_add, atomRel_neg neg]
 
 /-- The even elliptic relator `ER(m + 1, m - 1, 1, 0)` for all `m ∈ ℤ`. -/
 lemma rel_even (m : ℤ) : rel W (m + 1) (m - 1) 1 0 = W (2 * m) * W 2 * W 1 ^ 2 -
@@ -417,21 +417,23 @@ end IsEllipticNet
 
 namespace IsEllipticSequence
 
+open IsEllipticNet
+
 variable {W}
 
 protected lemma id : IsEllipticSequence (id : ℤ → ℤ) :=
   IsEllipticNet.id.isEllipticSequence
 
 protected lemma smul (h : IsEllipticSequence W) (x : R) : IsEllipticSequence <| x • W :=
-  fun p q r ↦ by grind [IsEllipticNet.rel, h p q r, Pi.smul_apply, smul_eq_mul]
+  fun p q r ↦ by grind [rel, h p q r, Pi.smul_apply, smul_eq_mul]
 
 protected lemma comp (h : IsEllipticSequence W) (f : F) : IsEllipticSequence <| f ∘ W :=
-  fun _ _ _ ↦ by rw [← IsEllipticNet.map_rel, h, map_zero]
+  fun _ _ _ ↦ by rw [← map_rel, h, map_zero]
 
 /-- If a sequence satisfies the even and odd elliptic relations, then it is an elliptic sequence. -/
 theorem of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
-    (even : ∀ m : ℤ, IsEllipticNet.rel W (m + 1) (m - 1) 1 0 = 0)
-    (odd : ∀ m : ℤ, IsEllipticNet.rel W (m + 1) m 1 0 = 0) : IsEllipticSequence W :=
+    (even : ∀ m : ℤ, rel W (m + 1) (m - 1) 1 0 = 0) (odd : ∀ m : ℤ, rel W (m + 1) m 1 0 = 0) :
+    IsEllipticSequence W :=
   IsEllipticNet.of_even_odd neg one two even odd |>.isEllipticSequence
 
 end IsEllipticSequence
@@ -502,13 +504,14 @@ lemma preNormEDS'_four : preNormEDS' b c d 4 = d := by
 lemma preNormEDS'_even (m : ℕ) : preNormEDS' b c d (2 * (m + 3)) =
     preNormEDS' b c d (m + 2) ^ 2 * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 5) -
       preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 4) ^ 2 := by
-  rw [show 2 * (m + 3) = 2 * m + 1 + 5 by rfl, preNormEDS', dif_neg m.not_even_two_mul_add_one]
+  rw [show 2 * (m + 3) = 2 * m + 1 + 5 by rfl, preNormEDS',
+    dite_eq_right m.not_even_two_mul_add_one]
   simp [Nat.mul_add_div two_pos]
 
 lemma preNormEDS'_odd (m : ℕ) : preNormEDS' b c d (2 * (m + 2) + 1) =
     preNormEDS' b c d (m + 4) * preNormEDS' b c d (m + 2) ^ 3 * (if Even m then b else 1) -
       preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) ^ 3 * (if Even m then 1 else b) := by
-  rw [show 2 * (m + 2) + 1 = 2 * m + 5 by rfl, preNormEDS', dif_pos <| even_two_mul m,
+  rw [show 2 * (m + 2) + 1 = 2 * m + 5 by rfl, preNormEDS', dite_eq_left <| even_two_mul m,
     m.mul_div_cancel_left two_pos]
 
 /-- The auxiliary sequence for a normalised EDS `W : ℤ → R`, with initial values
@@ -603,12 +606,12 @@ lemma complEDS₂_two : complEDS₂ b c d 2 = d := by
 
 @[simp]
 lemma complEDS₂_three : complEDS₂ b c d 3 = preNormEDS (b ^ 4) c d 5 * b - d ^ 2 * b := by
-  simp [complEDS₂, if_neg (by decide : ¬Even (3 : ℤ)), sub_mul]
+  simp [complEDS₂, ite_eq_right (by decide : ¬Even (3 : ℤ)), sub_mul]
 
 @[simp]
 lemma complEDS₂_four : complEDS₂ b c d 4 =
     c ^ 2 * preNormEDS (b ^ 4) c d 6 - preNormEDS (b ^ 4) c d 5 ^ 2 := by
-  simp [complEDS₂, if_pos (by decide : Even (4 : ℤ))]
+  simp [complEDS₂, ite_eq_left (by decide : Even (4 : ℤ))]
 
 @[simp]
 lemma complEDS₂_neg (k : ℤ) : complEDS₂ b c d (-k) = complEDS₂ b c d k := by
@@ -663,7 +666,7 @@ lemma normEDS_neg (n : ℤ) : normEDS b c d (-n) = -normEDS b c d n := by
 lemma normEDS_mul_complEDS₂ (k : ℤ) :
     normEDS b c d k * complEDS₂ b c d k = normEDS b c d (2 * k) := by
   simp_rw [normEDS, mul_right_comm, preNormEDS_mul_complEDS₂, mul_assoc, apply_ite₂, one_mul,
-    mul_one, ite_self, if_pos <| even_two_mul k]
+    mul_one, ite_self, ite_eq_left <| even_two_mul k]
 
 lemma normEDS_dvd_normEDS_two_mul (k : ℤ) : normEDS b c d k ∣ normEDS b c d (2 * k) :=
   ⟨complEDS₂ .., (normEDS_mul_complEDS₂ ..).symm⟩
@@ -684,8 +687,8 @@ lemma normEDS_even (m : ℤ) : normEDS b c d (2 * m) * b =
 lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
     normEDS b c d (m + 2) * normEDS b c d m ^ 3 -
       normEDS b c d (m - 1) * normEDS b c d (m + 1) ^ 3 := by
-  simp_rw [normEDS, preNormEDS_odd, if_neg m.not_even_two_mul_add_one, Int.even_add, Int.even_sub,
-    even_two, iff_true, Int.not_even_one, iff_false]
+  simp_rw [normEDS, preNormEDS_odd, ite_eq_right m.not_even_two_mul_add_one, Int.even_add,
+    Int.even_sub, even_two, iff_true, Int.not_even_one, iff_false]
   split_ifs <;> ring1
 
 lemma normEDS_atomRel_even (m : ℤ) :
@@ -764,7 +767,7 @@ lemma complEDS'_one : complEDS' b c d k 1 = 1 := by
 
 lemma complEDS'_even (m : ℕ) : complEDS' b c d k (2 * (m + 1)) =
     complEDS' b c d k (m + 1) * complEDS₂ b c d ((m + 1) * k) := by
-  rw [show 2 * (m + 1) = 2 * m + 2 by rfl, complEDS', dif_pos <| even_two_mul m,
+  rw [show 2 * (m + 1) = 2 * m + 2 by rfl, complEDS', dite_eq_left <| even_two_mul m,
     m.mul_div_cancel_left two_pos, Nat.cast_succ]
 
 lemma complEDS'_odd (m : ℕ) : complEDS' b c d k (2 * (m + 1) + 1) =
@@ -772,7 +775,7 @@ lemma complEDS'_odd (m : ℕ) : complEDS' b c d k (2 * (m + 1) + 1) =
         * normEDS b c d ((m + 2) * k + 1) * normEDS b c d ((m + 2) * k - 1) -
       complEDS' b c d k (m + 2) ^ 2
           * normEDS b c d ((m + 1) * k + 1) * normEDS b c d ((m + 1) * k - 1) := by
-  rw [show 2 * (m + 1) + 1 = 2 * m + 3 by rfl, complEDS', dif_neg m.not_even_two_mul_add_one]
+  rw [show 2 * (m + 1) + 1 = 2 * m + 3 by rfl, complEDS', dite_eq_right m.not_even_two_mul_add_one]
   simp [Nat.mul_add_div two_pos, add_assoc]
 
 /-- The complement sequence `Wᶜ : ℤ × ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
@@ -900,9 +903,12 @@ lemma map_complEDS (k n : ℤ) : f (complEDS b c d k n) = complEDS (f b) (f c) (
 end Map
 
 open Polynomial in
-/-- The canonical normalised EDS is an elliptic sequence. -/
-theorem isEllipticSequence_normEDS : IsEllipticSequence <| normEDS b c d := by
-  convert IsEllipticSequence.of_even_odd (normEDS_neg X (C c) (C d)) (by simp)
-    (by simp [X_mem_nonZeroDivisors]) (normEDS_rel_even _ _ _) (normEDS_rel_odd _ _ _) |>.comp <|
-    evalRingHom b
+/-- The canonical normalised EDS is an elliptic net. -/
+theorem IsEllipticNet.normEDS : IsEllipticNet <| normEDS b c d := by
+  convert of_even_odd (normEDS_neg X (C c) (C d)) (by simp) (by simp [X_mem_nonZeroDivisors])
+    (normEDS_rel_even _ _ _) (normEDS_rel_odd _ _ _) |>.comp <| evalRingHom b
   ext; simp_rw [Function.comp_apply, map_normEDS, coe_evalRingHom, eval_X, eval_C]
+
+/-- The canonical normalised EDS is an elliptic sequence. -/
+theorem IsEllipticSequence.normEDS : IsEllipticSequence <| normEDS b c d :=
+  IsEllipticNet.normEDS b c d |>.isEllipticSequence
