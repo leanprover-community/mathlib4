@@ -21,8 +21,6 @@ In this file, we formalize the result [Stacks 031L] : For flat ring homomorphism
 
 public section
 
-open IsLocalRing
-
 variable {R : Type*} [CommRing R]
 
 /-- For any surjection `f : M →ₗ[R] N`, with `N` a flat `R`-module,
