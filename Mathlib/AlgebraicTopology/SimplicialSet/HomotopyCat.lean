@@ -348,6 +348,24 @@ lemma morphismProperty_eq_top {W : MorphismProperty V.HomotopyCategory}
     rintro _ _ _ ⟨_, _, e⟩
     exact hW e)
 
+/-- Induction principle for proving a property for all the morphisms
+in the homotopy category of a `2`-truncated simplicial set: it suffices
+to show that the property holds for morphisms induced by edges and that
+the property is stable under composition. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+lemma hom_rec {motive : ∀ {x y : V.HomotopyCategory}, (x ⟶ y) → Prop}
+    (homMk : ∀ {x y : V _⦋0⦌₂} (e : Edge x y), motive (homMk e))
+    (comp : ∀ {x y z : V.HomotopyCategory} (f : x ⟶ y) (g : y ⟶ z),
+      motive f → motive g → motive (f ≫ g))
+    {x y : V.HomotopyCategory} (f : x ⟶ y) : motive f := by
+  let W : MorphismProperty V.HomotopyCategory := fun _ _ f ↦ motive f
+  have : W.IsMultiplicative :=
+    { id_mem x := by
+        obtain ⟨x, rfl⟩ := x.mk_surjective
+        simpa using! homMk (.id x)
+      comp_mem := comp }
+  exact (morphismProperty_eq_top (W := W) homMk).symm.le f (by simp)
+
 section
 
 variable {D : Type*} [Category* D]
