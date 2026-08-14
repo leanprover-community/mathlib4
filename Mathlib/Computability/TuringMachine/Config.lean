@@ -110,9 +110,9 @@ or in some cases `n :: v` where `v` will be ignored by a subsequent function.
   * `fix f v = fix f w` if `f v = n+1 :: w` (the exact value of `n` is discarded)
 -/
 def Code.eval : Code → List ℕ →. List ℕ
-  | Code.zero' => fun v : List ℕ => 0 :: v
-  | Code.succ => fun v : List ℕ => [v.headI.succ]
-  | Code.tail => fun v : List ℕ => v.tail
+  | Code.zero' => fun v ↦. pure (0 :: v)
+  | Code.succ => fun v ↦. pure [v.headI.succ]
+  | Code.tail => fun v ↦. pure v.tail
   | Code.cons f fs => fun v ↦. do
     let n ← Code.eval f v
     let ns ← Code.eval fs v
@@ -332,8 +332,8 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.bind_some,
       Code.cons_eval, Code.comp_eval, Code.fix_eval, Code.tail_eval, Code.succ_eval,
       Code.zero'_eval, Code.pred_eval, Part.map_some, false_eq_decide_iff,
-      Part.mem_bind_iff, Part.mem_map_iff, Nat.mem_rfind, PFun.mk_apply, PFun.coe_val,
-      List.tail_cons, true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
+      Part.mem_bind_iff, Part.mem_map_iff, Nat.mem_rfind, PFun.mk_apply, List.tail_cons,
+      true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
     constructor
     · rintro ⟨v', h1, rfl⟩
       suffices ∀ v₁ : List ℕ, v' ∈ PFun.fix
@@ -645,7 +645,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
         refine ⟨_, PFun.mem_fix_iff.2 ?_, h₃⟩
         simp only [PFun.mk_apply, Part.eq_some_iff.2 hv₁, Part.map_some, Part.mem_some_iff]
         split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂));
-        exact Or.inr ⟨_, rfl, hv₂⟩]
+          exact Or.inr ⟨_, rfl, hv₂⟩]
     · exact IH _ rfl _ _ stepRet_then (ReflTransGen.tail hr rfl)
   · rintro ⟨v', he, hr⟩
     rw [reaches_eval] at hr

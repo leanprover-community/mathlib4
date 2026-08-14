@@ -103,23 +103,27 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
 pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
 be computable because `= Option.none` is decidable while the domain of a general `Part` isn't. -/
 @[simps obj map]
-noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
-  obj X := ⟨Option X, none⟩
-  map f := ⟨Option.elim' none fun a => (f.toFun a).toOption, rfl⟩
-  map_id X := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
-    simp [CategoryStruct.id, Part.some_toOption]
-  map_comp f g := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
-    simp [CategoryStruct.comp, Pointed.Hom.comp, Option.elim'_eq_elim, Part.bind_toOption]
+noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
+  classical
+  exact
+    { obj X := ⟨Option X, none⟩
+      map f := ⟨Option.elim' none fun a => (f.toFun a).toOption, rfl⟩
+      map_id X := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
+        simp [CategoryStruct.id, Part.some_toOption]
+      map_comp f g := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
+        simp [CategoryStruct.comp, Pointed.Hom.comp, Option.elim'_eq_elim,
+          Part.bind_toOption] }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
 `Part.equivOption` made functorial. -/
-@[simps! functor inverse]
+@[simps! functor_obj_X functor_obj_point functor_map_toFun inverse_obj inverse_map_apply_Dom
+  inverse_map_apply_get_coe unitIso_hom_app unitIso_inv_app counitIso_hom_app_toFun
+  counitIso_inv_app_toFun]
 noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
   functor := partialFunToPointed
   inverse := pointedToPartialFun
@@ -159,6 +163,12 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
     · classical
       change Equiv.optionSubtypeNe (none : Option X) ((PFun.lift _ x).toOption) = some x
       simp
+
+@[backward_defeq]
+alias partialFunEquivPointed_inverse_map_Dom := partialFunEquivPointed_inverse_map_apply_Dom
+@[backward_defeq]
+alias partialFunEquivPointed_inverse_map_get_coe :=
+  partialFunEquivPointed_inverse_map_apply_get_coe
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

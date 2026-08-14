@@ -34,7 +34,7 @@ inductive Partrec' : ∀ {n}, (List.Vector ℕ n →. ℕ) → Prop
       Partrec' fun v ↦. (List.Vector.mOfFn fun i => g i v) >>= f
   | rfind {n} {f : List.Vector ℕ (n + 1) → ℕ} :
     @Partrec' (n + 1) f →
-      Partrec' fun v ↦. Nat.rfind fun n => decide (f (n ::ᵥ v) = 0)
+      Partrec' fun v ↦. Nat.rfind fun n ↦. .some (decide (f (n ::ᵥ v) = 0))
 
 end Nat
 
@@ -63,18 +63,16 @@ theorem of_prim {n} {f : List.Vector ℕ n → ℕ} (hf : Primrec f) : @Partrec'
 theorem head {n : ℕ} : @Partrec' n.succ (@head ℕ n) :=
   prim Nat.Primrec'.head
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v ↦. f v.tail :=
   (hf.comp _ fun i => @prim _ _ <| Nat.Primrec'.get i.succ).of_eq fun v => by
-    have h_vec : List.Vector.ofFn (fun i => v.get i.succ) = v.tail := by
-      ext i; rw [List.Vector.get_ofFn]; exact (List.Vector.get_tail v i).symm
-    ext b; simp [h_vec]
+    simp only [PFun.mk_apply]
+    rw [← ofFn_get v.tail, funext (get_tail_succ v)]
+    simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     @Partrec' n fun v ↦. (f v).bind fun a => g (a ::ᵥ v) :=
-  (@comp n (n + 1) g (Fin.cases f (fun i => fun v : List.Vector ℕ n => v.get i)) hg <|
-    Fin.cases (by simpa using hf) (fun i => by simpa using prim (Nat.Primrec'.get i))).of_eq
+  (@comp n (n + 1) g (Fin.cases f (fun i => fun v ↦. .some (v.get i))) hg <|
+    Fin.cases (by simpa using hf) (fun i => by simpa using! prim (Nat.Primrec'.get i))).of_eq
     fun v => by simp [mOfFn, Part.bind_assoc, pure]
 
 protected theorem map {n f} {g : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f)
@@ -85,7 +83,7 @@ protected theorem map {n f} {g : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
   vector-valued functions. -/
 def Vec {n m} (f : List.Vector ℕ n → List.Vector ℕ m) :=
-  ∀ i, @Partrec' n fun v : List.Vector ℕ n => (f v).get i
+  ∀ i, @Partrec' n fun v ↦. (f v).get i
 
 nonrec theorem Vec.prim {n m f} (hf : @Nat.Primrec'.Vec n m f) : Vec f := fun i => prim <| hf i
 
@@ -93,12 +91,11 @@ protected theorem nil {n} : @Vec n 0 fun _ => nil := fun i => i.elim0
 
 protected theorem cons {n m} {f : List.Vector ℕ n → ℕ} {g} (hf : @Partrec' n f)
     (hg : @Vec n m g) : Vec fun v => f v ::ᵥ g v := fun i =>
-  Fin.cases (by simpa using hf) (fun i => by simp only [hg i, get_cons_succ]) i
+  Fin.cases (by simpa using! hf) (fun i => by simp only [hg i, get_cons_succ]) i
 
 theorem idv {n} : @Vec n n id :=
   Vec.prim Nat.Primrec'.idv
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem comp' {n m f g} (hf : @Partrec' m f) (hg : @Vec n m g) :
     Partrec' fun v ↦. f (g v) :=
   (hf.comp _ hg).of_eq fun v => by simp
@@ -112,9 +109,9 @@ theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 
     @Partrec' n fun v ↦. Nat.rfindOpt fun a => ofNat (Option ℕ) (f (a ::ᵥ v)) :=
   ((rfind <|
         (of_prim (Primrec.nat_sub.comp (_root_.Primrec.const 1) Primrec.vector_head)).comp₁
-          (fun n => 1 - n) hf).bind
+          (fun n ↦. .some (1 - n)) hf).bind
     ((prim Nat.Primrec'.pred).comp₁ Nat.pred hf)).of_eq fun v => Part.ext fun b => by
-      simp only [Nat.rfindOpt, Nat.sub_eq_zero_iff_le, PFun.coe_mk, PFun.coe_val,
+      simp only [Nat.rfindOpt, Nat.sub_eq_zero_iff_le, PFun.mk_apply, PFun.coe_val,
         Part.mem_bind_iff, Part.mem_some_iff, Part.mem_coe, Option.mem_def]
       refine exists_congr fun a =>
         (and_congr (iff_of_eq ?_) Iff.rfl).trans (and_congr_right fun h => ?_)
@@ -122,7 +119,7 @@ theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 
         funext n
         cases f (n ::ᵥ v) <;> simp <;> rfl
       · have := Nat.rfind_spec h
-        simp only [PFun.coe_val, Part.mem_some_iff] at this
+        simp only [Part.coe_some, PFun.mk_apply, Part.mem_some_iff, Bool.true_eq] at this
         revert this; rcases f (a ::ᵥ v) with - | c <;> intro this
         · cases this
         rw [← Option.some_inj, eq_comm]
