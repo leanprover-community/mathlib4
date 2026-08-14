@@ -509,7 +509,6 @@ lemma mapHomotopyCategory_homMk {x y : V _⦋0⦌₂} (e : Edge x y) :
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor that takes a 2-truncated simplicial set to its homotopy category. -/
 def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u, u} where
   obj V := Cat.of V.HomotopyCategory
