@@ -5,9 +5,7 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Orthogonal
 public import Mathlib.Analysis.InnerProductSpace.Positive
-public import Mathlib.Analysis.InnerProductSpace.TensorProduct
 
 /-! # Complexification of inner product spaces
 
@@ -273,8 +271,6 @@ def _root_.Submodule.complexification (K : Submodule 𝕜 E) : Submodule ℂ (Co
 @[simp] lemma _root_.Submodule.mem_complexification {K : Submodule 𝕜 E} (x : Complexification 𝕜 E) :
     x ∈ K.complexification ↔ x.re ∈ K ∧ x.im ∈ K := by simp [Submodule.complexification]
 
-section Real
-
 variable (𝕜 E) in
 /-- The inclusion map of a real space into its complexification as a linear isometry, given by
 `x ↦ (x, 0)`. -/
@@ -304,73 +300,6 @@ lemma _root_.Submodule.exists_complexification_eq_iff (U : Submodule ℂ (Comple
   · convert Submodule.smul_mem _ (2 * Complex.I)⁻¹ (sub_mem h2 (h _ h2))
     simp [Complexification.ext_iff, conj_apply, ← two_smul ℝ]
 
-section tensor
-variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
-
-open TensorProduct
-
-/-- The complexification of a space `E` is `ℂ`-linearly equivalent to `ℂ ⊗[ℝ] E`. -/
-@[expose] noncomputable def toTensor :
-    Complexification 𝕜 E ≃ₗ[ℂ] ℂ ⊗[ℝ] E := .symm
-  { toLinearMap := AlgebraTensorModule.lift (.toSpanSingleton ℂ _ (inclusion 𝕜 E).toLinearMap)
-    invFun v := 1 ⊗ₜ v.re + Complex.I ⊗ₜ v.im
-    right_inv _ := by simp
-    left_inv x := by
-      induction x using TensorProduct.induction_on with
-      | zero => simp
-      | tmul z x =>
-        conv_rhs => rw [← Complex.re_add_im z]
-        simp [-Complex.re_add_im, add_tmul, smul_def, smul_tmul']
-      | add _ _ h1 h2 =>
-        conv_rhs => rw [← h1, ← h2]
-        simp [tmul_add]
-        grind }
-
-@[simp] lemma toTensor_apply (v : Complexification 𝕜 E) : v.toTensor = 1 ⊗ₜ v.re + .I ⊗ₜ v.im :=
-  rfl
-
-@[simp] lemma symm_toTensor_tmul (z : ℂ) (x : E) :
-    toTensor.symm (z ⊗ₜ x) = .mk 𝕜 (z.re • x) (z.im • x) := by simp [smul_def, toTensor]
-
-/-- The rank of the complexification of a space over `ℂ` is equal to the rank of the original
-space over `ℝ`. -/
-@[simp] lemma rank_eq : Module.rank ℂ (Complexification 𝕜 E) = Module.rank ℝ E := by
-  simp [toTensor.rank_eq]
-
-@[simp] lemma finrank_eq : Module.finrank ℂ (Complexification 𝕜 E) = Module.finrank ℝ E := by
-  simp [toTensor.finrank_eq]
-
-variable (𝕜) in
-/-- The complexication of a basis, given by `b.complexification i = (b i, 0)`. -/
-@[expose] noncomputable def _root_.Module.Basis.complexification {ι} (b : Module.Basis ι ℝ E) :
-    Module.Basis ι ℂ (Complexification 𝕜 E) := (b.baseChange ℂ).map toTensor.symm
-
-@[simp] lemma _root_.Module.Basis.complexification_apply {ι} (b : Module.Basis ι ℝ E) (i : ι) :
-    b.complexification 𝕜 i = .mk 𝕜 (b i) 0 := by simp [Module.Basis.complexification]
-
-@[simp] lemma _root_.Module.Basis.complexification_repr_apply {ι} (b : Module.Basis ι ℝ E) (v) :
-    (b.complexification 𝕜).repr v = (b.baseChange ℂ).repr (1 ⊗ₜ[ℝ] v.re) +
-      (b.baseChange ℂ).repr (Complex.I ⊗ₜ[ℝ] v.im)  := by simp [Module.Basis.complexification]
-
-/-- Complexifying `ℝ`-tensor products of real spaces is equivalent to `ℂ`-tensor products
-of the complexification of each of those spaces. -/
-@[expose, simps! -isSimp] noncomputable def _root_.TensorProduct.complexificationLinearEquiv :
-    Complexification ℝ (Eₗ ⊗[ℝ] Fₗ) ≃ₗ[ℂ] Complexification ℝ Eₗ ⊗[ℂ] Complexification ℝ Fₗ :=
-  toTensor ≪≫ₗ
-    (AlgebraTensorModule.assoc ..).symm ≪≫ₗ
-    (AlgebraTensorModule.cancelBaseChange ..).symm ≪≫ₗ
-    TensorProduct.congr toTensor.symm toTensor.symm
-
-@[simp] lemma _root_.TensorProduct.complexificationLinearEquiv_mk_tmul (x : Eₗ) (y : Fₗ) :
-    TensorProduct.complexificationLinearEquiv (.mk ℝ (x ⊗ₜ y) 0) =
-      .mk ℝ x 0 ⊗ₜ .mk ℝ y 0 := by simp [TensorProduct.complexificationLinearEquiv_apply]
-
-@[simp] lemma _root_.TensorProduct.symm_complexificationLinearEquiv_mk_tmul_mk (x : Eₗ) (y : Fₗ) :
-    TensorProduct.complexificationLinearEquiv.symm (.mk ℝ x 0 ⊗ₜ .mk ℝ y 0) =
-      .mk ℝ (x ⊗ₜ y) 0 := by simp [TensorProduct.complexificationLinearEquiv_symm_apply]
-
-end tensor
-end Real
 end Complexification
 
 namespace ContinuousLinearMap
@@ -613,13 +542,6 @@ lemma exists_toComplexification_eq_iff
         (algebraMapCLM 𝕜 (F →L[𝕜] F) RCLike.I).toComplexification ∘SL T := by
   refine ⟨fun ⟨S, hS⟩ ↦ ?_, fun ⟨h1, h2⟩ ↦ ⟨_, toComplexification_ofComplexification h2 h1⟩⟩
   simp [← hS, ContinuousLinearMap.ext_iff]
-
-lemma toMatrix_complexification_toComplexification [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
-    {F ι₁ ι₂ : Type*} [NormedAddCommGroup F]
-    [InnerProductSpace 𝕜 F] [Module ℝ F] [IsScalarTower ℝ 𝕜 F] [Fintype ι₁] [Finite ι₂]
-    [DecidableEq ι₁] (T : E →L[𝕜] F) (b₁ : Module.Basis ι₁ ℝ E) (b₂ : Module.Basis ι₂ ℝ F) :
-    T.toComplexification.toMatrix (b₁.complexification 𝕜) (b₂.complexification 𝕜) =
-      (T.toMatrix b₁ b₂).map (algebraMap ℝ ℂ) := by ext; simp [LinearMap.toMatrix_apply]
 
 variable [CompleteSpace E] [CompleteSpace F]
 

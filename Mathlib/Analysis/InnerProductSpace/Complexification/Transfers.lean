@@ -34,19 +34,16 @@ protected lemma IsSelfAdjoint.norm_add_eq_max {S T : E →L[𝕜] E}
   simp
 
 /-- `Complexification.conjugate` as a real star algebra equivalence. -/
-@[expose] noncomputable def conjugateStarAlgEquiv :
+@[expose, simps! apply] noncomputable def conjugateStarAlgEquiv :
     (Complexification 𝕜 E →L[ℂ] Complexification 𝕜 E) ≃⋆ₐ[ℝ]
       (Complexification 𝕜 E →L[ℂ] Complexification 𝕜 E) where
-  __ := conjugate.toAddEquiv
+  __ := conjugate
   map_mul' := by simp
   map_star' := by simp
   map_smul' _ _ := by ext <;> simp [conj_apply]
 
-lemma conjugateStarAlgEquiv_apply (T : Complexification 𝕜 E →L[ℂ] Complexification 𝕜 E) :
-    conjugateStarAlgEquiv T = T.conjugate := rfl
-
-lemma symm_conjugateStarAlgEquiv_apply (T : Complexification 𝕜 E →L[ℂ] Complexification 𝕜 E) :
-    conjugateStarAlgEquiv.symm T = conjugate.symm T := rfl
+@[simp] lemma symm_conjugateStarAlgEquiv :
+    (conjugateStarAlgEquiv (𝕜 := 𝕜) (E := E)).symm = conjugateStarAlgEquiv := rfl
 
 lemma conjugateStarAlgEquiv_comp_cfcHom_toComplexification {T : E →L[𝕜] E}
     (hT : IsSelfAdjoint T) :
@@ -56,13 +53,13 @@ lemma conjugateStarAlgEquiv_comp_cfcHom_toComplexification {T : E →L[𝕜] E}
   · eta_expand
     simp only [StarAlgHom.comp_apply, StarAlgEquiv.toStarAlgHom_apply, conjugateStarAlgEquiv_apply]
     fun_prop
-  · simp [cfcHom_id hT.toComplexification, conjugateStarAlgEquiv_apply]
+  · simp [cfcHom_id hT.toComplexification]
 
 theorem conjugate_cfcHom_toComplexification {T : E →L[𝕜] E} (hT : IsSelfAdjoint T)
     (g : C(spectrum ℝ T.toComplexification, ℝ)) :
     (cfcHom hT.toComplexification g).conjugate = cfcHom hT.toComplexification g := by
   conv_lhs => rw [← conjugateStarAlgEquiv_comp_cfcHom_toComplexification hT]
-  simp [conjugateStarAlgEquiv_apply]
+  simp
 
 private lemma commute_cfcHom_toComplexification_algebraMapCLM_I (T : E →L[𝕜] E)
     (hT : IsSelfAdjoint T) (g : C(spectrum ℝ T.toComplexification, ℝ)) :
@@ -152,8 +149,8 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
     (LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp.toLinearMap)
   tfae_finish
 
-lemma spectralRadius_toComplexification {T : E →L[𝕜] E}
-    (hT : IsSelfAdjoint T) : spectralRadius ℂ T.toComplexification = spectralRadius 𝕜 T := by
+lemma spectralRadius_toComplexification {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) :
+    spectralRadius ℂ T.toComplexification = spectralRadius 𝕜 T := by
   simp [hT.toComplexification.spectralRadius_eq_nnnorm, spectralRadius_eq_nnnorm _ hT]
 
 instance instIsometricCFC [NormedSpace ℝ E] [IsScalarTower ℝ 𝕜 E] :
