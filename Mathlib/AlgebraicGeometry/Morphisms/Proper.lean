@@ -153,6 +153,7 @@ theorem _root_.IsArtinianRing.isField_of_isReduced_of_connectedSpace (R : Type*)
   let _ : Subsingleton (PrimeSpectrum R) := PreconnectedSpace.trivial_of_discrete
   exact PrimeSpectrum.subsingleton_iff_isField_of_isReduced.mp inferInstance
 
+open scoped Algebra in
 /-- A reduced integral algebra over a field with connected prime spectrum is a field. -/
 theorem _root_.isField_of_isIntegral_of_isField_of_isReduced_of_connectedSpace
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.IsIntegral R S]
@@ -161,19 +162,18 @@ theorem _root_.isField_of_isIntegral_of_isField_of_isReduced_of_connectedSpace
   mul_comm := mul_comm
   mul_inv_cancel {x} hx := by
     let := hR.toField
-    let B := Algebra.adjoin R {x}
-    let x' : B := ⟨x, Algebra.self_mem_adjoin_singleton R x⟩
-    have hx' : x' ≠ 0 := fun h => hx (congr_arg ((↑) : B → S) h)
-    have : Module.Finite R B :=
+    let x' : R[x] := ⟨x, Algebra.self_mem_adjoin_singleton R x⟩
+    have hx' : x' ≠ 0 := fun h => hx (congr_arg ((↑) : R[x] → S) h)
+    have : Module.Finite R R[x] :=
       Algebra.finite_adjoin_simple_of_isIntegral (Algebra.IsIntegral.isIntegral x)
-    have : IsArtinianRing B := IsArtinianRing.of_finite R B
-    have := isReduced_of_injective B.val Subtype.val_injective
-    have : Algebra.IsIntegral B S := ⟨fun y ↦ (Algebra.IsIntegral.isIntegral (R := R) y).tower_top⟩
-    have : ConnectedSpace (PrimeSpectrum B) :=
-      (Algebra.IsIntegral.comap_surjective B S).connectedSpace (PrimeSpectrum.continuous_comap _)
-    have hB : IsField B := IsArtinianRing.isField_of_isReduced_of_connectedSpace B
-    let := hB.toField
-    obtain ⟨y, rfl⟩ := RingHom.isUnit_map B.val.toRingHom (isUnit_iff_ne_zero.mpr hx')
+    have : IsArtinianRing R[x] := IsArtinianRing.of_finite R R[x]
+    have := isReduced_of_injective R[x].val Subtype.val_injective
+    have : Algebra.IsIntegral R[x] S :=
+      ⟨fun y ↦ (Algebra.IsIntegral.isIntegral (R := R) y).tower_top⟩
+    have : ConnectedSpace (PrimeSpectrum R[x]) :=
+      (Algebra.IsIntegral.comap_surjective R[x] S).connectedSpace (PrimeSpectrum.continuous_comap _)
+    let : Field R[x] := (IsArtinianRing.isField_of_isReduced_of_connectedSpace R[x]).toField
+    obtain ⟨y, rfl⟩ := RingHom.isUnit_map R[x].val.toRingHom (isUnit_iff_ne_zero.mpr hx')
     exact ⟨y.inv, y.val_inv⟩
 
 /-- If `X` is an integral scheme that is universally closed over `Spec K`,
