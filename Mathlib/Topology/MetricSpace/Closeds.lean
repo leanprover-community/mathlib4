@@ -28,7 +28,7 @@ public section
 
 noncomputable section
 
-open Set Function TopologicalSpace Filter Topology ENNReal
+open Set Function TopologicalSpace Filter Topology ENNReal Metric
 
 namespace Metric
 
@@ -284,25 +284,23 @@ end NonemptyCompacts
 
 end TopologicalSpace
 
-namespace Metric
-
-section
+namespace TopologicalSpace.NonemptyCompacts
 
 variable {α : Type*} [MetricSpace α]
 
 /-- `NonemptyCompacts α` inherits a metric space structure, as the Hausdorff
 edistance between two such sets is finite. -/
-instance NonemptyCompacts.instMetricSpace : MetricSpace (NonemptyCompacts α) :=
+instance : MetricSpace (NonemptyCompacts α) :=
   EMetricSpace.toMetricSpace fun x y =>
-    hausdorffEDist_ne_top_of_nonempty_of_bounded x.nonempty y.nonempty x.isCompact.isBounded
+    Metric.hausdorffEDist_ne_top_of_nonempty_of_bounded x.nonempty y.nonempty x.isCompact.isBounded
       y.isCompact.isBounded
 
 /-- The distance on `NonemptyCompacts α` is the Hausdorff distance, by construction -/
-theorem NonemptyCompacts.dist_eq {x y : NonemptyCompacts α} :
-    dist x y = hausdorffDist (x : Set α) y :=
+theorem dist_eq {x y : NonemptyCompacts α} : dist x y = hausdorffDist (x : Set α) y :=
   rfl
 
-theorem lipschitz_infDist_set (x : α) : LipschitzWith 1 fun s : NonemptyCompacts α => infDist x s :=
+theorem lipschitz_infDist_const (x : α) :
+    LipschitzWith 1 fun s : NonemptyCompacts α => infDist x s :=
   LipschitzWith.of_le_add fun s t => by
     rw [dist_comm]
     exact infDist_le_infDist_add_hausdorffDist (edist_ne_top t s)
@@ -310,12 +308,22 @@ theorem lipschitz_infDist_set (x : α) : LipschitzWith 1 fun s : NonemptyCompact
 theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α => infDist p.1 p.2 := by
   rw [← one_add_one_eq_two]
   exact LipschitzWith.uncurry
-    (fun s : NonemptyCompacts α => lipschitz_infDist_pt (s : Set α)) lipschitz_infDist_set
+    (fun s : NonemptyCompacts α => lipschitz_infDist_pt (s : Set α)) lipschitz_infDist_const
 
-theorem uniformContinuous_infDist_Hausdorff_dist :
+theorem uniformContinuous_infDist :
     UniformContinuous fun p : α × NonemptyCompacts α => infDist p.1 p.2 :=
   lipschitz_infDist.uniformContinuous
 
-end --section
+end TopologicalSpace.NonemptyCompacts
 
-end Metric --namespace
+@[deprecated (since := "2026-08-14")]
+alias Metric.NonemptyCompacts.dist_eq := NonemptyCompacts.dist_eq
+
+@[deprecated (since := "2026-08-14")]
+alias Metric.lipschitz_infDist_set := NonemptyCompacts.lipschitz_infDist_const
+
+@[deprecated (since := "2026-08-14")]
+alias Metric.lipschitz_infDist := NonemptyCompacts.lipschitz_infDist
+
+@[deprecated (since := "2026-08-14")]
+alias Metric.uniformContinuous_infDist_Hausdorff_dist := NonemptyCompacts.uniformContinuous_infDist
