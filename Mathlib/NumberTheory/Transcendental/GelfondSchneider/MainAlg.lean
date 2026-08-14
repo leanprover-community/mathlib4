@@ -8,7 +8,7 @@ module
 
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.NumberTheory.NumberField.House
-public import Mathlib.RingTheory.Algebraic.NatDenominator
+public import Mathlib.RingTheory.Algebraic.Denominator
 
 /-!
 # Hilbert's Seventh Problem (Gelfond–Schneider Theorem)
@@ -109,18 +109,16 @@ lemma log_α_ne_zero : log α ≠ 0 :=
 
 variable [NumberField K]
 
-open AlgebraicDenominator
-
 /-- Every element of a number field is algebraic over `ℤ`. -/
 lemma isAlgebraic_int (α : K) : IsAlgebraic ℤ α := by
   obtain ⟨y, hy, hr⟩ := exists_integral_multiples ℤ ℚ (L := K) {α}
   exact IsAlgebraic.of_smul_isIntegral (by simp [hy]) (hr α (mem_singleton_self _))
 
-/-- The integer denominator of `α`, given by `natDenominator`. -/
-abbrev intDenom (α : K) : ℤ := (natDenominator α).cast
+/-- The integer denominator of `α`, given by `Algebra.natDenominator`. -/
+abbrev intDenom (α : K) : ℤ := (Algebra.natDenominator α).cast
 
 lemma intDenom_ne_zero (α : K) : intDenom α ≠ 0 :=
-  Int.natCast_ne_zero.mpr (natDenominator_ne_zero (isAlgebraic_int α))
+  Int.natCast_ne_zero.mpr (isAlgebraic_int α).natDenominator_ne_zero
 
 /-- `c₁` is a positive integer such that `c₁ • α'`, `c₁ • β'`, and `c₁ • γ'`
 are algebraic integers. -/
@@ -146,7 +144,7 @@ private lemma isIntegral_c₁_smul_aux (x : K) (a b : ℤ)
   rw [c₁, ← he]
   exact isIntegral_zsmul_of_abs <| by
     simpa [zsmul_eq_mul, mul_assoc, intDenom] using
-      IsIntegral.smul (a * b) (isIntegral_natDenominator_smul x)
+      IsIntegral.smul (a * b) (Algebra.isIntegral_natDenominator_smul x)
 
 omit [NumberField K] in
 lemma isIntegral_c₁α : IsIntegral ℤ (c₁ α' β' γ' • α') :=
@@ -245,7 +243,7 @@ lemma isIntegral_c₁_pow_smul_pow (u : K) (n k a l : ℕ) (hnk : a * l ≤ n * 
     (H : IsIntegral ℤ (↑(c₁ α' β' γ') * u)) :
     IsIntegral ℤ (c₁ α' β' γ' ^ (n * k) • u ^ (a * l)) := by
   rw [zsmul_eq_mul, Int.cast_pow, ← Nat.sub_add_cancel hnk, pow_add, mul_assoc, ← mul_pow]
-  exact ((IsIntegral.Cast (c₁ α' β' γ')).pow _).mul (H.pow _)
+  exact ((isIntegral_intCast (c₁ α' β' γ')).pow _).mul (H.pow _)
 
 lemma isIntegral_c₁_pow_smul_α'_pow' :
     IsIntegral ℤ (c₁ α' β' γ' ^ (m K * q) • α' ^ (a q t * l q u)) :=
@@ -268,10 +266,10 @@ lemma isIntegral_c₁_pow_smul_add_smul_pow (n k : ℕ) (hkn : k ≤ n - 1) (a b
     IsIntegral ℤ (c₁ α' β' γ' ^ (n - 1) • (↑a + ↑b • β') ^ k) := by
   rw [zsmul_eq_mul, Int.cast_pow, ← Nat.sub_add_cancel hkn, pow_add, mul_assoc, ← mul_pow,
     mul_add]
-  refine ((IsIntegral.Cast _).pow _).mul ((IsIntegral.add ?_ ?_).pow _)
-  · exact (IsIntegral.Cast _).mul (IsIntegral.Nat _)
+  refine ((isIntegral_intCast _).pow _).mul ((IsIntegral.add ?_ ?_).pow _)
+  · exact (isIntegral_intCast _).mul (isIntegral_natCast _)
   · rw [nsmul_eq_mul, ← mul_assoc, mul_comm (c₁ α' β' γ' : K), mul_assoc]
-    exact (IsIntegral.Nat _).mul (by grind [isIntegral_c₁β])
+    exact (isIntegral_natCast _).mul (by grind [isIntegral_c₁β])
 
 /-!
 Multiplying the system by `c₁^(n-1) c₁^(mq) c₁^(mq) = c₁^(n-1+2mq) ≤ c₂^n` ensures the
@@ -297,6 +295,17 @@ def A : Matrix (Fin (m K * n K q)) (Fin (q * q)) (𝓞 K) :=
   fun i j ↦ RingOfIntegers.restrict _
   (fun _ ↦ isIntegral_cCoeffs_smul_systemCoeffs α' β' γ' q i j) ℤ
 
+/-- The value of an entry of `A` in `K`. Stated as a lemma so that proofs never have to unfold
+`RingOfIntegers.restrict`, whose anonymous constructor is not type-correct at reducible
+transparency now that `integralClosure` is not exposed. -/
+lemma algebraMap_A_apply (i : Fin (m K * n K q)) (j : Fin (q * q)) :
+    algebraMap (𝓞 K) K (A α' β' γ' q i j) = cCoeffs α' β' γ' q • systemCoeffs α' β' γ' q i j :=
+  rfl
+
+lemma val_A_apply (i : Fin (m K * n K q)) (j : Fin (q * q)) :
+    (A α' β' γ' q i j).val = cCoeffs α' β' γ' q • systemCoeffs α' β' γ' q i j :=
+  rfl
+
 include α β σ hirr htriv habc in
 lemma c₁α_ne_zero : c₁ α' β' γ' • α' ≠ 0 :=
   smul_ne_zero (c₁_ne_zero _ _ _)
@@ -320,8 +329,8 @@ omit [NumberField K] in
 private lemma isIntegral_c₁_smul_addNSMul (a b : ℕ) :
     IsIntegral ℤ (c₁ α' β' γ' • ((a : K) + b • β')) := by
   simpa [smul_add, zsmul_eq_mul, nsmul_eq_mul, mul_assoc, mul_left_comm, mul_comm] using
-    ((IsIntegral.Cast (c₁ α' β' γ')).mul (IsIntegral.Nat a)).add
-      ((IsIntegral.Nat b).mul (isIntegral_c₁β α' β' γ'))
+    ((isIntegral_intCast (c₁ α' β' γ')).mul (isIntegral_natCast a)).add
+      ((isIntegral_natCast b).mul (isIntegral_c₁β α' β' γ'))
 
 omit [NumberField K] in
 /-- The scaled sum `c₁ • (q + q • β')` is an algebraic integer over `ℤ`. -/
@@ -403,6 +412,7 @@ lemma bl_le_mq : b q t * l q u ≤ m K * q := by
 
 include h2mq in
 lemma mq_le_m_two_mnq : m K * q ≤ m K * (2 * (m K * n K q)) := by
+  unfold n
   simpa [mul_assoc] using Nat.mul_le_mul_left (m K)
     ((Nat.le_pow Nat.zero_lt_two).trans (Nat.mul_div_cancel' h2mq).symm.le)
 
@@ -506,8 +516,9 @@ lemma house_smul_pow_le_abs :
         mul_one_add (((|(q : ℤ)| : ℤ) : ℝ)) (house β')]
     refine (house_add_le _ _).trans (add_le_add ?_ ((house_mul_le _ _).trans ?_)) <;>
       simp only [house_intCast]
-    · simpa using (finProdFinEquiv.symm t).1.isLt
-    · gcongr; simpa using (finProdFinEquiv.symm t).2.isLt
+    · simp only [a, Nat.abs_cast, Equiv.toFun_as_coe]
+      exact_mod_cast (finProdFinEquiv.symm t).1.isLt
+    · gcongr; simpa [b] using (finProdFinEquiv.symm t).2.isLt
   · exact (pow_le_pow_left₀ (house_nonneg _) (hbd _) _).trans (pow_le_pow_right₀
       ((one_le_house_of_isIntegral (isIntegral_c₁α α' β' γ')
         (c₁α_ne_zero α β σ α' β' γ' hirr htriv habc)).trans (hbd _)) (hal.trans h_mq))
@@ -601,8 +612,7 @@ include α β K σ α' β' γ' hirr htriv habc hq0 h2mq u t q in
 lemma house_matrixA_le :
     house ((algebraMap (𝓞 K) K) ((A α' β' γ' q) u t)) ≤
       (c₃ α' β' γ' ^ (n K q : ℝ) * (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2)) := by
-  simp only [A, systemCoeffs, RingOfIntegers.restrict, RingOfIntegers.map_mk]
-  rw [house_cCoeffs_smul_eq_factorized]
+  rw [algebraMap_A_apply, house_cCoeffs_smul_eq_factorized]
   exact (@house_factorized_le_prod K _ α β σ α' β' γ' hirr htriv habc _ q hq0 u t h2mq).trans
     ((@house_prod_le_smul_pow K _ α β σ α' β' γ' hirr htriv habc _ q hq0 u t h2mq).trans
       ((@house_smul_pow_le_abs K _ α β σ α' β' γ' hirr htriv habc _ q hq0 u t h2mq).trans
@@ -618,7 +628,8 @@ lemma A_ne_zero : A α' β' γ' q ≠ 0 := by
   let u : Fin _ := ⟨0, Nat.mul_pos (one_le_m K) (n_one_le q hq0 h2mq)⟩
   let t : Fin _ := ⟨0, mul_pos hq0 hq0⟩
   have H_eval : (A α' β' γ' q u t).val = 0 := by rw [H]; rfl
-  simp only [A, RingOfIntegers.restrict, zsmul_eq_mul, Int.cast_mul, Int.cast_pow] at H_eval
+  rw [val_A_apply] at H_eval
+  simp only [systemCoeffs, cCoeffs, zsmul_eq_mul, Int.cast_mul, Int.cast_pow] at H_eval
   obtain ⟨hα, _, hγ⟩ := alpha'_beta'_gamma'_ne_zero α β σ α' β' γ' hirr htriv habc
   have := β'_ne_zero α β σ α' β' γ' hirr habc q t
   revert H_eval; simp [c₁_ne_zero, hα, hγ]; grind
