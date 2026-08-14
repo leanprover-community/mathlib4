@@ -26,7 +26,7 @@ This file defines oriented angles in Euclidean affine spaces.
 
 noncomputable section
 
-open Module Complex
+open Module
 
 open scoped Affine EuclideanGeometry Real RealInnerProductSpace ComplexConjugate
 
