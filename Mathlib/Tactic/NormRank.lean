@@ -26,13 +26,10 @@ namespace Mathlib.Tactic.Echelon
 literal `A`. -/
 def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Expr)) :
     MetaM Simp.Result := do
-  let decomp ← (mkBareissDecomposition A m n R entries).run'
-  let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[decomp]
-  -- the statement's right-hand side: the pivot count of the certificate
-  let cnt := (← inferType pf).appArg!
-  let some len := ((Kernel.whnf (← getEnv) (← getLCtx) cnt).toOption).bind (·.rawNatLit?)
-    | throwError "the pivot count does not reduce to a literal"
-  let k := mkNatLit len
+  let res ← (mkBareissDecomposition A m n R entries).run'
+  let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[res.cert]
+  -- the rank, as untrusted data: the kernel verifies it when checking the type hint
+  let k := mkNatLit res.data.pivot.size
   return { expr := k, proof? := some (← mkExpectedTypeHint pf (← mkEq e k)) }
 
 /-- Core of the `norm_rank` simproc. -/

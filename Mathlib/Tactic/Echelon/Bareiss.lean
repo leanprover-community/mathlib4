@@ -117,14 +117,22 @@ def producerFor (R : Expr) : MetaM Producer := do
       return p
   ratProducer R
 
+/-- The result of producing a decomposition by Bareiss. -/
+structure BareissResult where
+  /-- The elaborated `Echelon.Decomposition` certificate term. -/
+  cert : Expr
+  /-- The decomposition data underlying the certificate. -/
+  data : BareissData Expr
+
 /-- Produce and elaborate the `Echelon.Decomposition` certificate of the matrix literal
-`A`. -/
+`A`, returned together with the computed `BareissData`. -/
 def mkBareissDecomposition (A : Expr) (m n : Nat) (R : Expr)
-    (entries : Array (Array Expr)) : TermElabM Expr := do
+    (entries : Array (Array Expr)) : TermElabM BareissResult := do
   let d ← (← producerFor R) entries
   let u ← getDecLevel R
   have R : Q(Type u) := R
   let L := Matrix.mkLiteralQ (α := R) (m := m) (n := m) (.of fun i j => (d.L[i]!)[j]!)
-  elabCertificate A L (← mkPerm m d.swaps) (← mkPivotLit m n d.pivot)
+  return { cert := ← elabCertificate A L (← mkPerm m d.swaps) (← mkPivotLit m n d.pivot)
+           data := d }
 
 end Mathlib.Tactic.Echelon
