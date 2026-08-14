@@ -115,6 +115,11 @@ and convert using
 Ordinal.ToType.mk : Iio o → o.ToType
 Ordinal.ToType.toOrd : o.ToType → Iio o
 ```
+
+TODO: since `ToType` is defined through `Quotient.out`, its API is fragile under refactors of `Ordinal`.
+Rewrite the parts of the library depending on it using `Iio o` where possible, and
+consider replacing the remaining uses by `Shrink (Iio o)`. See
+https://github.com/leanprover-community/mathlib4/pull/40725 for discussion.
 -/
 @[no_expose]
 def Ordinal.ToType (o : Ordinal.{u}) : Type u :=
