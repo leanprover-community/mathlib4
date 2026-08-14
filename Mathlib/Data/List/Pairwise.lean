@@ -174,15 +174,19 @@ theorem tfae_cons (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
 theorem tfae_cons_of_mem (h : a ∈ l) : TFAE (a :: l) ↔ TFAE l := by
   simp [tfae_iff_pairwise, pairwise_cons_of_mem h]
 
-theorem tfae_concat_of_mem (h : b ∈ l) :
-    TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := by
+theorem tfae_concat (h : b ∈ l) : TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := by
   simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (b := a) h, iff_comm]
+
+@[simp]
+theorem tfae_concat_of_mem (h : a ∈ l) : TFAE (l ++ [a]) ↔ TFAE l := by
+  simp [tfae_concat h]
 
 theorem tfae_cons_cons : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
   tfae_cons (Mem.head _)
 
-@[simp]
-theorem tfae_cons_self : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by simp
+@[deprecated tfae_cons_of_mem +typeChanged (since := "2026-08-14")]
+theorem tfae_cons_self : TFAE (a :: a :: l) ↔ TFAE (a :: l) :=
+  tfae_cons_of_mem (l := a :: l) (by simp)
 
 theorem tfae_of_cycle (h_chain : List.IsChain (· → ·) (a :: b :: l))
     (h_last : getLastD l b → a) : TFAE (a :: b :: l) := by
