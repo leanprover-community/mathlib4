@@ -229,6 +229,6 @@ theorem UniformSpace.Completion.isometry_mapRingHom {f : α →+* β} (h : Isome
 
 @[deprecated Completion.isometry_mapRingHom (since := "2026-08-11")]
 theorem Isometry.isometry_mapRingHom {f : α →+* β} (h : Isometry f) : Isometry h.mapRingHom :=
-    Completion.isometry_mapRingHom h
+  Completion.isometry_mapRingHom h
 
 end extension_maps
