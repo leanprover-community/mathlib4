@@ -90,14 +90,14 @@ theorem inertiaDeg'_algebraMap [P.LiesOver p] :
     inertiaDeg' p P = finrank (R ⧸ p) (S ⧸ P) := by
   rw [inertiaDeg', dite_eq_left (over_def P p).symm]
 
+@[deprecated (since := "2026-07-03")] alias inertiaDeg_algebraMap := inertiaDeg'_algebraMap
+
 @[deprecated "Use `inertiaDeg_eq_of_isMaximal` instead." (since := "2026-08-14")]
 theorem inertiaDeg'_eq_inertiaDeg [P.LiesOver p] [p.IsMaximal] [P.IsMaximal] :
     p.inertiaDeg' P = P.inertiaDeg R := by
   rw [inertiaDeg'_algebraMap, inertiaDeg_eq_of_isMaximal p P]
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_eq_inertiaDeg' := inertiaDeg'_eq_inertiaDeg
-
-@[deprecated (since := "2026-07-03")] alias inertiaDeg_algebraMap := inertiaDeg'_algebraMap
 
 @[deprecated "Use `Ideal.inertiaDeg_pos` instead." (since := "2026-08-14")]
 theorem inertiaDeg'_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg' p P :=
