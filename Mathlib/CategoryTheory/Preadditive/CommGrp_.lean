@@ -68,7 +68,7 @@ def commGrpEquivalenceAux : CommGrp.forget C ⋙ toCommGrp C ≅
   · exact ((IsZero.iff_id_eq_zero _).2 (Subsingleton.elim _ _)).eq_of_src _ _
   · simp only [Functor.id_obj,
       mul_def, Iso.refl_hom, Category.comp_id, tensorHom_id, id_whiskerRight, Category.id_comp]
-    apply (private monoidal_hom_ext)
+    refine private monoidal_hom_ext ?_ ?_
     · simp only [comp_add, lift_fst, lift_snd, add_zero]
       convert! (MonObj.lift_comp_one_right _ 0).symm
       · simp
