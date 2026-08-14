@@ -237,6 +237,34 @@ lemma card_le_card_biUnion_of_card_le_card [DecidableEq β]
     _ ≤ ∑ x ∈ s.biUnion B, n := Finset.sum_le_sum h_ub
     _ = Finset.card (s.biUnion B) * n := by simp
 
+/-- For a family of finsets `B` indexed by `n`, if every set `B j` is
+nonempty with size `k` and every element `x` belongs
+to at most `k` sets within any index subset `t`, then
+the cardinality of any set of indices `s` is bounded by the
+cardinality of its bipartite union `s.biUnion B`.
+
+This effectively verifies the Hall marriage condition for the family
+`B` using a double-counting argument.
+-/
+lemma card_le_card_biUnion_of_card_eq_of_card_filter_le {α : Type*} [DecidableEq α]
+    {n : Type*} [Fintype n] [DecidableEq n] {B : n → Finset α} (k : ℕ) [h₁ : NeZero k]
+    (h₂ : ∀ j, Finset.card (B j) = k)
+    (h₃ : ∀ x, ∀ (t : Finset n), Finset.card {j | j ∈ t ∧ x ∈ B j} ≤ k) :
+    ∀ (s : Finset n), (Finset.card s) ≤ (Finset.card (s.biUnion B)) := by
+  intro s
+  have : 0 < k := by grind [h₁.out]
+  apply Finset.card_le_card_biUnion_of_card_le_card (n := k) B s (by lia)
+  · intro j _
+    exact (h₂ j).ge
+  · intro x _
+    have ht : Finset.card {j | j ∈ s ∧ x ∈ B j} = Finset.card {j ∈ s | x ∈ B j} := by
+      congr 1
+      ext j
+      simp [and_comm]
+    rw [← ht]
+    exact h₃ x s
+
+
 end Bipartite
 
 end Finset
