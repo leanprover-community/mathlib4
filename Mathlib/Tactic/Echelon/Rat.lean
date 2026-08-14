@@ -6,9 +6,9 @@ Authors: Rao Xiaojia
 module
 
 public import Mathlib.Tactic.Echelon.Core
-
-public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.NormNum.Basic
+
+public meta import Mathlib.Algebra.CharP.Defs
 
 /-!
 # The rational model for the Bareiss elimination
