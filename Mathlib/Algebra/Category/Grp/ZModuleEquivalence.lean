@@ -20,7 +20,7 @@ universe u
 
 namespace ModuleCat
 
-/-- The forgetful functor from `ℤ` modules to `AddCommGrpCat` admits an inverse. -/
+/-- The forgetful functor from `ℤ` modules to `Ab` admits an inverse. -/
 @[expose] def intEquivalence : ModuleCat.{u} ℤ ≌ Ab.{u} where
   functor := forget₂ ..
   inverse :=
@@ -31,15 +31,15 @@ namespace ModuleCat
     fun _ ↦ rfl
   counitIso := .refl _
 
-instance forget₂AddCommGroupIsEquivalence : (forget₂ (ModuleCat ℤ) AddCommGrpCat.{u}).IsEquivalence :=
+instance forget₂AddCommGroupIsEquivalence : (forget₂ (ModuleCat ℤ) Ab.{u}).IsEquivalence :=
   intEquivalence.isEquivalence_functor
 
-/-- The forgetful functor from `ℤ` modules to `AddCommGrpCat` is full. -/
-instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGrpCat.{u}).Full :=
+/-- The forgetful functor from `ℤ` modules to `Ab` is full. -/
+instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) Ab.{u}).Full :=
   inferInstance
 
-/-- The forgetful functor from `ℤ` modules to `AddCommGrpCat` is essentially surjective. -/
-instance forget₂_addCommGrp_essSurj : (forget₂ (ModuleCat ℤ) AddCommGrpCat.{u}).EssSurj :=
+/-- The forgetful functor from `ℤ` modules to `Ab` is essentially surjective. -/
+instance forget₂_addCommGrp_essSurj : (forget₂ (ModuleCat ℤ) Ab.{u}).EssSurj :=
   inferInstance
 
 end ModuleCat
