@@ -11,6 +11,7 @@ public import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Number fields
@@ -99,6 +100,7 @@ much more effective use of the discrimination tree than instances of the form
 `SMul (Subtype _) (Subtype _)`.
 The drawback is we have to copy over instances manually.
 -/
+@[wikidata Q1358313]
 def RingOfIntegers : Type _ :=
   integralClosure ℤ K
 deriving CommRing, IsDomain, Nontrivial

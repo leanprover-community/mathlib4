@@ -48,8 +48,6 @@ local notation "f" => algebraMap R S
 
 open Module
 
-open UniqueFactorizationMonoid
-
 attribute [local instance] Ideal.Quotient.field
 
 section DecEq
@@ -78,7 +76,7 @@ theorem inertiaDeg'_of_subsingleton [hp : p.IsMaximal] [hQ : Subsingleton (S ⧸
     inertiaDeg' p P = 0 := by
   have := Ideal.Quotient.subsingleton_iff.mp hQ
   subst this
-  exact dif_neg fun h => hp.ne_top <| h.symm.trans comap_top
+  exact dite_eq_right fun h => hp.ne_top <| h.symm.trans comap_top
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_of_subsingleton :=
   inertiaDeg'_of_subsingleton
@@ -86,7 +84,7 @@ theorem inertiaDeg'_of_subsingleton [hp : p.IsMaximal] [hQ : Subsingleton (S ⧸
 @[simp]
 theorem inertiaDeg'_algebraMap [P.LiesOver p] :
     inertiaDeg' p P = finrank (R ⧸ p) (S ⧸ P) := by
-  rw [inertiaDeg', dif_pos (over_def P p).symm]
+  rw [inertiaDeg', dite_eq_left (over_def P p).symm]
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_algebraMap := inertiaDeg'_algebraMap
 
@@ -114,8 +112,8 @@ lemma inertiaDeg'_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
   by_cases h : P.LiesOver p
   · rw [inertiaDeg'_algebraMap, inertiaDeg'_algebraMap]
     exact (Quotient.algEquivOfEqComap p e rfl).toLinearEquiv.finrank_eq
-  · rw [inertiaDeg', dif_neg (fun eq => h ⟨(he.mp eq).symm⟩)]
-    rw [inertiaDeg', dif_neg (fun eq => h ⟨eq.symm⟩)]
+  · rw [inertiaDeg', dite_eq_right (fun eq => h ⟨(he.mp eq).symm⟩)]
+    rw [inertiaDeg', dite_eq_right (fun eq => h ⟨eq.symm⟩)]
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_comap_eq := inertiaDeg'_comap_eq
 
@@ -130,7 +128,7 @@ lemma inertiaDeg'_map_eq (P : Ideal S)
 theorem inertiaDeg'_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
     [hP : P.LiesOver (⊥ : Ideal R)] :
     (⊥ : Ideal R).inertiaDeg' P = finrank R S := by
-  rw [inertiaDeg', dif_pos (over_def P (⊥ : Ideal R)).symm]
+  rw [inertiaDeg', dite_eq_left (over_def P (⊥ : Ideal R)).symm]
   replace hP : P = ⊥ := eq_bot_of_liesOver_bot R P
   rw [Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot R).symm
     ((quotEquivOfEq hP).trans (RingEquiv.quotientBot S)).symm]
@@ -197,7 +195,7 @@ theorem inertiaDeg'_algebra_tower (p : Ideal R) (P : Ideal S) (I : Ideal T) [p.I
   have h₁ := P.over_def p
   have h₂ := I.over_def P
   have h₃ := (LiesOver.trans I P p).over
-  simp only [inertiaDeg', dif_pos h₁.symm, dif_pos h₂.symm, dif_pos h₃.symm]
+  simp only [inertiaDeg', dite_eq_left h₁.symm, dite_eq_left h₂.symm, dite_eq_left h₃.symm]
   let : Algebra (R ⧸ p) (S ⧸ P) := Ideal.Quotient.algebraQuotientOfLEComap h₁.le
   let : Algebra (S ⧸ P) (T ⧸ I) := Ideal.Quotient.algebraQuotientOfLEComap h₂.le
   let : Algebra (R ⧸ p) (T ⧸ I) := Ideal.Quotient.algebraQuotientOfLEComap h₃.le
