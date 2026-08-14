@@ -192,7 +192,6 @@ lemma IsSeparating.strictMap_leftAdjoint
       simpa [adj.homEquiv_counit] using
         h _ (.mk X hX) (F.map a ≫ adj.counit.app Y))))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsCoseparating.strictMap_rightAdjoint
     (hP : P.IsCoseparating) {F : C ⥤ D} {G : D ⥤ C} [G.Faithful]
     (adj : G ⊣ F) :

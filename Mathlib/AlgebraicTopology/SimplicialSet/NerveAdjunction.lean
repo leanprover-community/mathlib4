@@ -453,7 +453,7 @@ lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
     (Presheaf.isColimitTautologicalCocone' X)
 
 instance isIso_prodComparison (X Y : SSet.{u}) :
-    IsIso (prodComparison hoFunctor.{u} X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
+    IsIso (prodComparison hoFunctor X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
   convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
     prodComparison hoFunctor Δ[m] X ≫ (prod.braiding _ _).hom)
   · rw [map_braiding_hom_comp_prodComparison_assoc, Iso.inv_hom_id, Category.comp_id]
