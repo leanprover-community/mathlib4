@@ -113,9 +113,9 @@ variable {S}
 lemma mem_overGrothendieckTopology (X : Over S) (R : Sieve X) :
     R ∈ S.overGrothendieckTopology P X ↔
       ∃ (𝒰 : Cover.{u} (precoverage P) X.left) (_ : 𝒰.Over S), 𝒰.toPresieveOver ≤ R.arrows := by
-  simp_rw [GrothendieckTopology.mem_over_iff, mem_grothendieckTopology_iff]
+  simp only [GrothendieckTopology.mem_over_iff, mem_grothendieckTopology_iff]
   refine exists_congr fun 𝒰 ↦ ?_
-  simp_rw [Cover.toPresieveOver_le_arrows_iff]
+  simp only [Cover.toPresieveOver_le_arrows_iff]
   rw [exists_const_iff, iff_and_self]
   intro
   let (i : 𝒰.I₀) : (𝒰.X i).Over S := ⟨𝒰.f i ≫ X.hom⟩
