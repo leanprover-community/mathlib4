@@ -388,7 +388,7 @@ variable [RKHS 𝕜 H' X V]
 def equiv (h : kernel H = kernel H') : H ≃ₗᵢ[𝕜] H' :=
   (OfKernel.equivAux rfl).symm.trans (OfKernel.equivAux h)
 
-theorem equiv_kerFun_eq_kerFun (h : kernel H = kernel H') (x : X) (v : V) :
+theorem equiv_kerFun (h : kernel H = kernel H') (x : X) (v : V) :
     equiv h (kerFun H x v) = kerFun H' x v := by
   have h1 := UniformSpace.Completion.extension_coe
     (OfKernel.toH' H h).isometry.uniformContinuous (Finsupp.single (x, v) 1)
@@ -405,7 +405,7 @@ theorem equiv_kerFun_eq_kerFun (h : kernel H = kernel H') (x : X) (v : V) :
 theorem coe_equiv (h : kernel H = kernel H') (f : H) : ⇑(equiv h f) = f := by
   ext
   refine ext_inner_left 𝕜 fun v ↦ ?_
-  simp_rw [← kerFun_inner, ← LinearIsometryEquiv.inner_map_map (equiv h), equiv_kerFun_eq_kerFun]
+  simp_rw [← kerFun_inner, ← LinearIsometryEquiv.inner_map_map (equiv h), equiv_kerFun]
 
 end Equiv
 
