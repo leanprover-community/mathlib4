@@ -722,9 +722,8 @@ theorem not_sq_dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
   have h2 : (bernoulli (2 * k)).den ∣ p * ((p : ℚ) * bernoulli (2 * k)).den := by
     have hd := Rat.mul_den_dvd (1 / (p : ℚ)) ((p : ℚ) * bernoulli (2 * k))
     rwa [one_div, inv_mul_cancel_left₀ hpne, show ((p : ℚ)⁻¹).den = p by simp [hp.ne_zero]] at hd
-  intro hsq
-  rw [pow_two] at hsq
-  exact h1 ((Nat.mul_dvd_mul_iff_left hp.pos).mp (hsq.trans h2))
+  contrapose! h1
+  simpa [Nat.mul_dvd_mul_iff_left hp.pos, pow_two] using h1.trans h2
 
 end Valuation
 
