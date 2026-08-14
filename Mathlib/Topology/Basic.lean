@@ -107,8 +107,8 @@ theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsOpe
   (finite_range _).isOpen_sInter (forall_mem_range.2 h)
 
 lemma IsOpen.iInter_of_finite_ne_univ {ι : Type*} {s : ι → Set X} (hs : ∀ i, IsOpen (s i))
-    (hs_nonempty : {i | s i ≠ univ}.Finite) : IsOpen (⋂ i, s i) := by
-  simpa using hs_nonempty.isOpen_biInter (f := s) fun _ _ ↦ hs _
+    (hs_ne_univ : {i | s i ≠ univ}.Finite) : IsOpen (⋂ i, s i) := by
+  simpa using hs_ne_univ.isOpen_biInter (f := s) fun _ _ ↦ hs _
 
 theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
