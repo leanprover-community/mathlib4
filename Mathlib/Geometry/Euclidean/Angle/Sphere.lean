@@ -205,27 +205,27 @@ theorem oangle_center_eq_two_zsmul_oangle {s : Sphere P} {p₁ p₂ p₃ : P} (h
 
 end
 
+open scoped Module.Oriented.Arbitrary in
 /-- The angle at the center of a circle equals twice the angle at the circumference, unoriented
 angle version, provided twice the angle at the circumference is at most `π`. -/
 theorem angle_center_eq_two_mul_angle_of_two_mul_angle_le_pi {s : Sphere P} {p₁ p₂ p₃ : P}
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₃ : p₂ ≠ p₃)
     (h : 2 * ∠ p₁ p₂ p₃ ≤ π) : ∠ p₁ s.center p₃ = 2 * ∠ p₁ p₂ p₃ := by
-  have : FiniteDimensional ℝ V := .of_finrank_eq_succ hd2.out
-  have : Module.Oriented ℝ V (Fin 2) := ⟨Basis.orientation (finBasisOfFinrankEq _ _ hd2.out)⟩
+  have : FiniteDimensional ℝ V := .of_fact_finrank_eq_two
   have hp₁c : p₁ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₁ hp₂ hp₂p₁.symm
   have hp₃c : p₃ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₃ hp₂ hp₂p₃.symm
   rw [angle_eq_abs_oangle_toReal hp₁c hp₃c,
     Sphere.oangle_center_eq_two_zsmul_oangle hp₁ hp₂ hp₃ hp₂p₁ hp₂p₃]
   exact (two_mul_angle_eq_abs_two_zsmul_oangle_toReal hp₂p₁.symm hp₂p₃.symm (by linarith)).symm
 
+open scoped Module.Oriented.Arbitrary in
 /-- The angle at the center of a circle is `2 * π` minus twice the angle at the circumference,
 unoriented angle version, provided twice the angle at the circumference is at least `π`. -/
 theorem angle_center_eq_two_pi_sub_two_mul_angle_of_pi_le_two_mul_angle {s : Sphere P}
     {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁)
     (hp₂p₃ : p₂ ≠ p₃) (h : π ≤ 2 * ∠ p₁ p₂ p₃) :
     ∠ p₁ s.center p₃ = 2 * π - 2 * ∠ p₁ p₂ p₃ := by
-  have : FiniteDimensional ℝ V := .of_finrank_eq_succ hd2.out
-  have : Module.Oriented ℝ V (Fin 2) := ⟨Basis.orientation (finBasisOfFinrankEq _ _ hd2.out)⟩
+  have : FiniteDimensional ℝ V := .of_fact_finrank_eq_two
   have hp₁c : p₁ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₁ hp₂ hp₂p₁.symm
   have hp₃c : p₃ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₃ hp₂ hp₂p₃.symm
   rw [angle_eq_abs_oangle_toReal hp₁c hp₃c,
