@@ -615,12 +615,12 @@ lemma killCopies_le_left : G.killCopies H ≤ G := by
   rw [killCopies]; split_ifs; exacts [le_rfl, deleteEdges_le _]
 
 @[simp] lemma killCopies_bot (G : SimpleGraph V) : G.killCopies (⊥ : SimpleGraph W) = G := by
-  rw [killCopies]; exact dif_pos rfl
+  rw [killCopies]; exact dite_eq_left rfl
 
 private lemma killCopies_of_ne_bot (hH : H ≠ ⊥) (G : SimpleGraph V) :
     G.killCopies H =
       G.deleteEdges (⋃ (G' : G.Subgraph) (hG' : Nonempty (H ≃g G'.coe)), {(aux hH hG').some}) := by
-  rw [killCopies]; exact dif_neg hH
+  rw [killCopies]; exact dite_eq_right hH
 
 /-- `G.killCopies H` has no effect on `G` if and only if `G` already contained no copies of `H`. See
 `Free.killCopies_eq_left` for the reverse implication with no assumption on `H`. -/
