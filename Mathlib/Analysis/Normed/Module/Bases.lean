@@ -147,12 +147,11 @@ def toGeneralSchauderBasis (b : Module.Basis β 𝕜 X) :
     expansion x := by simpa using hasSum_fintype (fun i ↦ b.coord i x • b i) }
 
 @[simp]
-lemma basis_toGeneralSchauderBasis (L := unconditional β) [L.LeAtTop] (b : Module.Basis β 𝕜 X) :
+lemma basis_toGeneralSchauderBasis (b : Module.Basis β 𝕜 X) :
     b.toGeneralSchauderBasis.basis = b := rfl
 
 @[simp]
-lemma coord_toGeneralSchauderBasis_eq_coord (L := unconditional β) [L.LeAtTop]
-    (b : Module.Basis β 𝕜 X) (i : β) (x : X) :
+lemma coord_toGeneralSchauderBasis_eq_coord (b : Module.Basis β 𝕜 X) (i : β) (x : X) :
     b.toGeneralSchauderBasis.coord i x = b.coord i x := rfl
 
 end Module.Basis
