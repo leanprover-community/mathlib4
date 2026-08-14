@@ -66,21 +66,28 @@ theorem ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
 def equivCauchy : ℝ ≃ CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
   ⟨Real.cauchy, Real.ofCauchy, fun ⟨_⟩ => rfl, fun _ => rfl⟩
 
+set_option backward.privateInPublic true in
+-- irreducible doesn't work for instances: https://github.com/leanprover-community/lean/issues/511
 private irreducible_def zero : ℝ :=
   ⟨0⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def one : ℝ :=
   ⟨1⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def add : ℝ → ℝ → ℝ
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def neg : ℝ → ℝ
   | ⟨a⟩ => ⟨-a⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def mul : ℝ → ℝ → ℝ
   | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
 
+set_option backward.privateInPublic true in
 private noncomputable irreducible_def inv' : ℝ → ℝ
   | ⟨a⟩ => ⟨a⁻¹⟩
 
@@ -259,6 +266,7 @@ def mk (x : CauSeq ℚ abs) : ℝ :=
 theorem mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
   ext_cauchy_iff.trans CauSeq.Completion.mk_eq
 
+set_option backward.privateInPublic true in
 private irreducible_def lt : ℝ → ℝ → Prop
   | ⟨x⟩, ⟨y⟩ =>
     (Quotient.liftOn₂ x y (· < ·)) fun _ _ _ _ hf hg =>
@@ -295,6 +303,7 @@ theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
 
 lemma mk_const {x : ℚ} : mk (const abs x) = x := rfl
 
+set_option backward.privateInPublic true in
 private irreducible_def le (x y : ℝ) : Prop :=
   x < y ∨ x = y
 
@@ -374,6 +383,7 @@ instance instIsOrderedRing : IsOrderedRing ℝ :=
 instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid ℝ :=
   inferInstance
 
+set_option backward.privateInPublic true in
 private irreducible_def sup : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy => sup_equiv_sup hx hy) x y⟩
 
@@ -391,6 +401,7 @@ theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨
 theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
   ofCauchy_sup _ _
 
+set_option backward.privateInPublic true in
 private irreducible_def inf : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy => inf_equiv_inf hx hy) x y⟩
 
