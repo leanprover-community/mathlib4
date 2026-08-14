@@ -495,7 +495,7 @@ theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : Ii
   rw [enum_lt_enum (r := r), not_lt]
 
 @[simp]
-theorem enum_le_enum' [LinearOrder α] [IsWellOrder α (· < ·)]
+theorem enum_le_enum' [LinearOrder α] [WellFoundedLT α]
     {o₁ o₂ : Iio (type (α := α) (· < ·))} :
     enum (α := α) (· < ·) o₁ ≤ enum (α := α) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
   rw [← enum_le_enum, not_lt]
