@@ -93,6 +93,10 @@ lemma of_obj_bijective : Function.Bijective (of C).obj where
   left _ _ h := by cases h; rfl
   right X := ⟨X.as.as, rfl⟩
 
+/-- Induction principle for proving a property for all the morphisms
+in the free groupoid of a category `C`: it suffices to prove the property
+for morphisms coming from the category `C`, and that the property is
+stable under inverses and composition. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 lemma hom_rec {motive : ∀ ⦃x y : FreeGroupoid C⦄ (_ : x ⟶ y), Prop}
     (homMk : ∀ ⦃x y : C⦄ (f : x ⟶ y), motive (homMk f))
