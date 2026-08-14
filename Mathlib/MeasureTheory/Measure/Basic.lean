@@ -310,16 +310,16 @@ lemma measure_inter_conull (ht : μ tᶜ = 0) : μ (s ∩ t) = μ s := by
   rw [← sdiff_compl, measure_sdiff_null ht]
 
 @[simp]
-theorem union_ae_eq_left_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] s ↔ t ≤ᵐ[μ] s := by
+theorem union_ae_eq_left_iff_ae_subset : s ∪ t =ᵐ[μ] s ↔ t ≤ᵐ[μ] s := by
   rw [ae_le_set]
   refine
     ⟨fun h => by simpa only [union_sdiff_left] using (ae_eq_set.mp h).1, fun h =>
-      eventuallyLE_antisymm_iff.mpr
+      eventuallySubset_antisymm_iff.mpr
         ⟨by rwa [ae_le_set, union_sdiff_left],
-          LE.le.eventuallyLE subset_union_left⟩⟩
+          .of_subset subset_union_left⟩⟩
 
 @[simp]
-theorem union_ae_eq_right_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] t ↔ s ≤ᵐ[μ] t := by
+theorem union_ae_eq_right_iff_ae_subset : s ∪ t =ᵐ[μ] t ↔ s ≤ᵐ[μ] t := by
   rw [union_comm, union_ae_eq_left_iff_ae_subset]
 
 theorem ae_eq_of_ae_subset_of_measure_ge (h₁ : s ≤ᵐ[μ] t) (h₂ : μ t ≤ μ s)
@@ -344,7 +344,7 @@ theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → S
       _ ≤ μ (s i) := hi ▸ h_le i
       _ ≤ μ (⋃ i, s i) := measure_mono <| subset_iUnion _ _
   set M := toMeasurable μ
-  have H : ∀ b, (M (t b) ∩ M (⋃ b, s b) : Set α) =ᵐ[μ] M (t b) := by
+  have H : ∀ b, M (t b) ∩ M (⋃ b, s b) =ᵐ[μ] M (t b) := by
     refine fun b => ae_eq_of_subset_of_measure_ge inter_subset_left ?_ ?_ ?_
     · calc
         μ (M (t b)) = μ (t b) := measure_toMeasurable _
@@ -359,7 +359,7 @@ theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → S
   calc
     μ (⋃ b, t b) ≤ μ (⋃ b, M (t b)) := measure_mono (iUnion_mono fun b => subset_toMeasurable _ _)
     _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) :=
-      measure_congr (Filter.EventuallyEq.countable_iUnion H).symm
+      measure_congr (.symm <| .countable_iUnion H)
     _ ≤ μ (M (⋃ b, s b)) := measure_mono (iUnion_subset fun b => inter_subset_right)
     _ = μ (⋃ b, s b) := measure_toMeasurable _
 
@@ -462,7 +462,7 @@ theorem Measure.measure_inter_eq_of_measure_eq (hs : MeasurableSet s) (h : μ t 
 lemma Measure.measure_inter_eq_of_ae (h : ∀ᵐ a ∂μ, a ∈ t) :
     μ (t ∩ s) = μ s := by
   refine le_antisymm (measure_mono inter_subset_right) ?_
-  apply EventuallyLE.measure_le
+  apply EventuallySubset.measure_le
   filter_upwards [h] with x hx h'x using ⟨hx, h'x⟩
 
 /-- The measurable superset `toMeasurable μ t` of `t` (which has the same measure as `t`)
