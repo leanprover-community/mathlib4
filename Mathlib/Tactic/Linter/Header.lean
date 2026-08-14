@@ -274,7 +274,7 @@ def headerToPreludeTk? (header : TSyntax ``Parser.Module.header) : Option Syntax
   | `(Parser.Module.header| $[module]? $[prelude%$tk]? $_*) => tk
   | _ => none
 
-namespace Style.header
+namespace Style.Header
 
 /-- Check the `Syntax` `imports` for broad imports:
 `Mathlib.Tactic`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`. -/
@@ -387,6 +387,6 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter headerLinter
 
-end Style.header
+end Style.Header
 
 end Mathlib.Linter
