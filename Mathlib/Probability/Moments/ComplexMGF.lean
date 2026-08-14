@@ -59,7 +59,7 @@ properties of the mgf from those of the characteristic function).
 @[expose] public section
 
 
-open MeasureTheory Filter Finset Real Complex
+open MeasureTheory Filter Real Complex
 
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
 
@@ -241,7 +241,7 @@ the same `integrableExpSet`. -/
 lemma integrableExpSet_eq_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ μ' = 0) :
     integrableExpSet X μ = integrableExpSet Y μ' := by
   ext t
-  simp only [integrableExpSet, Set.mem_setOf_eq]
+  simp only [integrableExpSet, Set.mem_ofPred_eq]
   by_cases hμ : μ = 0
   · simp [hμ, hμμ'.mp hμ]
   have : NeZero μ := ⟨hμ⟩

@@ -48,7 +48,7 @@ def supported (s : Set α) : Submodule R (α →₀ M) where
     refine Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) ?_) (union_subset hp hq)
     rw [Finset.coe_union]
   zero_mem' := by
-    simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
+    simp only [subset_def, Finset.mem_coe, Set.mem_ofPred_eq, mem_support_iff, zero_apply]
     intro h ha
     exact (ha rfl).elim
   smul_mem' _ _ hp := Subset.trans (Finset.coe_subset.2 support_smul) hp
@@ -156,7 +156,7 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
 
 theorem supported_union (s t : Set α) :
     supported M R (s ∪ t) = supported M R s ⊔ supported M R t := by
-  rw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq, cond_true, cond_false]
+  rw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq, Bool.cond_true, Bool.cond_false]
 
 theorem supported_iInter {ι : Type*} (s : ι → Set α) :
     supported M R (⋂ i, s i) = ⨅ i, supported M R (s i) :=
