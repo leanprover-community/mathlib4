@@ -17,6 +17,8 @@ This is necessary because the do-notation has a hardcoded list of keywords which
 as term-mode and do-elem syntax (like for example `let` or `have`).
 -/
 
+deprecated_module "`haveI'` and `letI'` are deprecated" (since := "2026-07-14")
+
 public meta section
 
 namespace Mathlib.Tactic.HaveI
@@ -30,6 +32,7 @@ macro_rules
 
 (This is the do-notation version of the term-mode `haveI`.)
 -/
+@[deprecated "prefer `have` over `haveI'`" (since := "2026-07-14")]
 macro "haveI' " hd:letDecl : doElem =>
   `(doElem| assert! haveIDummy $hd:letDecl)
 
@@ -42,6 +45,7 @@ macro_rules
 
 (This is the do-notation version of the term-mode `haveI`.)
 -/
+@[deprecated "prefer `let` over `letI'`" (since := "2026-07-14")]
 macro "letI' " hd:letDecl : doElem =>
   `(doElem| assert! letIDummy $hd:letDecl)
 
