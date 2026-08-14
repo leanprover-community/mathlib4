@@ -129,8 +129,6 @@ end
 section
 /-! ## The quadratic polynomial $$\sum_{i=1}^n X_i Y_i$$. -/
 
-open Polynomial
-
 variable {n : Type*} {R : Type*} [CommRing R]
 
 theorem irreducible_of_totalDegree_eq_one
@@ -213,7 +211,7 @@ theorem irreducible_sumSMulXSMulY [IsDomain R]
      fun i j ↦ by simp +contextual [Finsupp.ext_iff, Finsupp.single_apply, ite_eq_iff']⟩
   have aux : sumSMulXSMulY c = .ofCoeff (c.embDomain ι) := by
     rw [← Finsupp.sum_single (Finsupp.embDomain _ _)]
-    simp [Finsupp.sum_embDomain, sumSMulXSMulY, X, monomial_mul,
+    simp [Finsupp.sum_embDomain, sumSMulXSMulY, X, monomial_mul_monomial,
       Finsupp.linearCombination_apply, smul_monomial, ι]
     rfl
   have hcoeff (i : n) : coeff (ι i) (sumSMulXSMulY c) = c i := by
