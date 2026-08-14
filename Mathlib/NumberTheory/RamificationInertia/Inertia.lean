@@ -89,7 +89,7 @@ theorem inertiaDeg'_algebraMap [P.LiesOver p] :
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_algebraMap := inertiaDeg'_algebraMap
 
-@[deprecated "Use `Ideal.inertiaDeg` instead." (since := "2026-08-14")]
+@[deprecated "Use `Ideal.inertiaDeg_pos` instead." (since := "2026-08-14")]
 theorem inertiaDeg'_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg' p P :=
   have : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
   finrank_pos.trans_eq (inertiaDeg'_algebraMap p P).symm
