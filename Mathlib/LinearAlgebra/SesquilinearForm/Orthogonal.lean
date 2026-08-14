@@ -75,7 +75,7 @@ theorem le_orthogonalBilin_flip_iff_le_orthogonalBilin {T : Submodule R₂ M₂}
     S ≤ orthogonalBilin B.flip T ↔ T ≤ orthogonalBilin B S :=
   ((orthogonalBilin_gc B) S T).symm
 
-alias ⟨le_orthogonalBilin_flip_of_le_orthogonBilin, _⟩ :=
+alias ⟨le_orthogonalBilin_of_le_orthogonBilin_flip, le_orthogonalBilin_flip_of_le_orthogonBilin⟩ :=
   le_orthogonalBilin_flip_iff_le_orthogonalBilin
 
 @[simp] theorem orthogonalBilin_bot : orthogonalBilin B ⊥ = ⊤ :=
