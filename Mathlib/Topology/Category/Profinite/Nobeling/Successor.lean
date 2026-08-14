@@ -121,7 +121,9 @@ theorem union_C0C1_eq : (C0 C ho) ∪ (C1 C ho) = C := by
 The intersection of `C0` and the projection of `C1`. We will apply the inductive hypothesis to
 this set.
 -/
-def C' := C0 C ho ∩ π (C1 C ho) (ord I · < o)
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def C' := C0 C ho ∩ π (C1 C ho) (ord I · < o)
 
 include hC in
 theorem isClosed_C' : IsClosed (C' C ho) :=
@@ -475,7 +477,7 @@ theorem Products.max_eq_eval [Inhabited I] (l : Products I) (hl : l.val ≠ [])
     apply forall_congr; intro i; apply forall_congr; intro hi; rw [hi' i hi]
   simp only [H]
   split_ifs with h₁ h₂ h₃ <;> try (dsimp [e])
-  · rw [if_pos (swapTrue_eq_true _ _), if_neg]
+  · rw [ite_eq_left (swapTrue_eq_true _ _), ite_eq_right]
     · rfl
     · simp [mem_C'_eq_false C ho x x.prop]
   · push Not at h₂; obtain ⟨i, hi⟩ := h₂; exfalso; rw [hi' i hi.1] at hi; exact hi.2 (h₁ i hi.1)
