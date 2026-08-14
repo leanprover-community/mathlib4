@@ -28,11 +28,10 @@ namespace Mathlib.Tactic.Echelon
 def evalInt (e : Expr) : MetaM Int := do
   let ⟨_, _, eQ⟩ ← inferTypeQ' e
   let r ← try some <$> Meta.NormNum.derive eQ catch _ => pure none
-  let some v := r.bind (·.toRat)
-    | throwError "the entry does not evaluate to an integer numeral{indentExpr e}"
-  unless v.den == 1 do
-    throwError "the value does not evaluate to an integer numeral{indentExpr e}"
-  return v.num
+  if let some v := r.bind (·.toRat) then
+    if v.den == 1 then
+      return v.num
+  throwError "the following entry cannot be simplified to an integer numeral{indentExpr e}"
 
 /-- Evaluate a `ℤ√d` entry to a `ℤ√d` value: a `⟨a, b⟩` literal, `√d` itself, or an
 entry without `√d` content evaluating through `norm_num`. -/

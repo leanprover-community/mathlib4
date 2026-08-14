@@ -26,21 +26,12 @@ namespace Mathlib.Tactic.Echelon
 /-- Data-only evaluation of a matrix entry to its rational value via `norm_num`.
 Fraction values are accepted only in characteristic zero. -/
 def evalRatEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
-  unless charZero do
-    let stripped := match_expr e with
-      | Neg.neg _ _ a => a
-      | _ => e
-    if stripped.isAppOf ``HDiv.hDiv then
-      throwError "the rational model supports division entries only in characteristic \
-        zero{indentExpr e}"
   let ⟨_, _, eQ⟩ ← inferTypeQ' e
   let r ← try some <$> Meta.NormNum.derive eQ catch _ => pure none
-  let some v := r.bind (·.toRat)
-    | throwError "the entry does not evaluate to a rational numeral{indentExpr e}"
-  unless v.den == 1 || charZero do
-    throwError "the rational model supports division entries only in characteristic \
-      zero{indentExpr e}"
-  return v
+  if let some v := r.bind (·.toRat) then
+    if v.den == 1 || charZero then
+      return v
+  throwError "the following entry cannot be simplified to a numeral{indentExpr e}"
 
 /-- Scale each row by the lcm of its denominators to clear them. Returns the integer
 matrix together with the row scales, which are later folded back into `L`. -/
@@ -78,8 +69,7 @@ def ratProducer (R : Expr) : MetaM Producer := do
   have _cr : Q(CommRing $R) := ← synthInstanceQ q(CommRing $R)
   let pE : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
   let .some _ ← trySynthInstanceQ q(CharP $R $pE)
-    | throwError "the rational model could not determine the characteristic of the element \
-        type{indentExpr R}"
+    | throwError "could not determine the characteristic of the element type{indentExpr R}"
   -- `whnfD`: the ambient transparency inside `simp` is `reducible`, which does not reduce
   -- the numeral to a literal
   let some p := (← whnfD (← instantiateMVars pE)).rawNatLit?
