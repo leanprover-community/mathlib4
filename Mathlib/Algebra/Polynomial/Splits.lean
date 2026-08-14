@@ -482,12 +482,6 @@ theorem splits_prod_iff {ι : Type*} {f : ι → R[X]} {s : Finset ι} (hf : ∀
   ⟨fun h _ hx ↦ h.of_dvd (Finset.prod_ne_zero_iff.mpr hf) (Finset.dvd_prod_of_mem f hx),
     Splits.prod⟩
 
-@[deprecated "Use `Splits.degree_le_one_of_irreducible` instead." (since := "2026-01-13")]
-theorem Splits.splits (hf : Splits f) :
-    f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g ≤ 1 :=
-  or_iff_not_imp_left.mpr fun hf0 _ hg hgf ↦ degree_le_of_natDegree_le <|
-    (hf.of_dvd hf0 hgf).natDegree_le_one_of_irreducible hg
-
 lemma map_sub_sprod_roots_eq_prod_map_eval
     (s : Multiset R) (g : R[X]) (hg : g.Monic) (hg' : g.Splits) :
     ((s ×ˢ g.roots).map fun ij ↦ ij.1 - ij.2).prod = (s.map g.eval).prod := by
@@ -498,7 +492,6 @@ lemma map_sub_sprod_roots_eq_prod_map_eval
   congr! with x hx
   ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_sub_roots_sprod_eq_prod_map_eval
     (s : Multiset R) (g : R[X]) (hg : g.Monic) (hg' : g.Splits) :
     ((g.roots ×ˢ s).map fun ij ↦ ij.1 - ij.2).prod =
@@ -670,26 +663,9 @@ theorem Splits.of_natDegree_eq_two {x : R} (h₁ : f.natDegree = 2) (h₂ : f.ev
 theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x = 0) : Splits f :=
   Splits.of_natDegree_eq_two (natDegree_eq_of_degree_eq_some h₁) h₂
 
-open UniqueFactorizationMonoid in
-@[deprecated "Use `Splits.degree_eq_one_of_irreducible` instead." (since := "2026-01-13")]
-theorem splits_iff_splits {f : R[X]} :
-    Splits f ↔ f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g = 1 := by
-  refine ⟨fun hf ↦ or_iff_not_imp_left.mpr fun h0 g hg hgf ↦
-    (hf.of_dvd h0 hgf).degree_eq_one_of_irreducible hg, ?_⟩
-  rintro (rfl | hf)
-  · aesop
-  by_cases hf0 : f = 0
-  · simp [hf0]
-  obtain ⟨u, hu⟩ := factors_prod hf0
-  rw [← hu]
-  refine (Splits.multisetProd fun g hg ↦ ?_).mul u.isUnit.splits
-  exact Splits.of_degree_eq_one (hf (irreducible_of_factor g hg) (dvd_of_mem_factors hg))
-
 end Field
 
 noncomputable section
-
-open Polynomial
 
 universe u v w
 
@@ -716,8 +692,6 @@ section UFD
 attribute [local instance] PrincipalIdealRing.to_uniqueFactorizationMonoid
 
 local infixl:50 " ~ᵤ " => Associated
-
-open UniqueFactorizationMonoid Associates
 
 end UFD
 
