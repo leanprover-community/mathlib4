@@ -61,9 +61,10 @@ def explicitArgs? (declName : Name) : MetaM (Option (Nat × Nat)) := do
 /-- Find the bundling map `FooCat.of` to use for the type `ty`, along with its number of explicit
 arguments.
 
-We check the head constant `FooCat` of `ty` before unfolding `ty`, since a category can be reducibly
+Before unfolding `ty`, we check the head constant `FooCat` of, since a category can be reducibly
 defined in terms of another one while still having its own `of`: `Profinite` reduces to
-`CompHausLike _`, yet `↧X : Profinite` should be `Profinite.of X`, not `CompHausLike.of _ X`. -/
+`CompHausLike _`, yet `↧X : Profinite` should be `Profinite.of X`, not `CompHausLike.of _ X`.
+If no  `.of` is found for the non-unfolded `ty`, we unfold it and try again. -/
 partial def findOf? (ty : Expr) : MetaM (Option (Name × Nat)) := do
   let ty ← whnfCore ty
   if let .const declName _ := ty.getAppFn then
@@ -76,7 +77,7 @@ end OfNotation
 
 open OfNotation
 
-/-- `↧X` is the object of a concrete category corresponding to the type `X`, ie `FooCat.of X` where
+/-- `↧X` is the object of a concrete category corresponding to the type `X`, i.e. `FooCat.of X` where
 the category `FooCat` is determined by the expected type.
 
 `↧X` elaborates to a literal application of `FooCat.of`.
@@ -109,9 +110,7 @@ by `delabStructureInstance` even if delaboration fails in case `FooCat.of` is th
 `structure FooCat`. -/
 def delabOf : Delab := go <|> delabApp where
   /-- Delaborate `FooCat.of … X` to `↧X`, failing if the `↧` notation does not apply. -/
-  go := do
-    guard <| ← getPPOption getPPNotation
-    guard <| !(← getPPOption getPPExplicit)
+  go := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
     let e ← getExpr
     let .const declName _ := e.getAppFn | failure
     let some (_, lastIdx) ← explicitArgs? declName | failure
