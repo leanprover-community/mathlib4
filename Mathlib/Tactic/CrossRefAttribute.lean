@@ -41,9 +41,9 @@ inductive PiBaseTopic where
 
 namespace PiBaseTopic
 
-/-- The string such that `https://{topic.urlHeader}.pi-base.org` is the base url of the π-Base
+/-- The string such that `https://{topic.urlSubdomain}.pi-base.org` is the base url of the π-Base
 project identfied by this topic. -/
-def urlHeader : PiBaseTopic → String
+def urlSubdomain : PiBaseTopic → String
   | topology => "topology"
 
 /-- The display label used in docstring links and trace output. Used in `Database.label`. -/
@@ -78,7 +78,7 @@ def url : Database → String → String
         | 'S' :: _ => "spaces"
         | 'T' :: _ => "theorems"
         | _ => ""
-      s!"https://{topic.urlHeader}.pi-base.org/{path}/{id}"
+      s!"https://{topic.urlSubdomain}.pi-base.org/{path}/{id}"
   | .stacks, id => s!"https://stacks.math.columbia.edu/tag/{id}"
   | .wikidata, id => s!"https://www.wikidata.org/wiki/{id}"
 
