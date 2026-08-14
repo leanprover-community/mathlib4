@@ -715,10 +715,8 @@ theorem not_sq_dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
     ¬ p ^ 2 ∣ (bernoulli (2 * k)).den := by
   have hp : p.Prime := Fact.out
   have hpne : (p : ℚ) ≠ 0 := by exact_mod_cast hp.ne_zero
-  have hv : Rat.padicValuation p ((p : ℚ) * bernoulli (2 * k)) = 1 := by
-    rw [map_mul, padicValuation_bernoulli hk hpk, Rat.padicValuation_self, ← WithZero.exp_add]
-    simp
-  have h1 : ¬ p ∣ ((p : ℚ) * bernoulli (2 * k)).den := Rat.padicValuation_le_one_iff.mp hv.le
+  have h1 : ¬ p ∣ (p * bernoulli (2 * k)).den := by
+    simp [← Rat.padicValuation_le_one_iff, padicValuation_bernoulli hk hpk, ← WithZero.exp_add]
   have h2 : (bernoulli (2 * k)).den ∣ p * ((p : ℚ) * bernoulli (2 * k)).den := by
     have hd := Rat.mul_den_dvd (1 / (p : ℚ)) ((p : ℚ) * bernoulli (2 * k))
     rwa [one_div, inv_mul_cancel_left₀ hpne, show ((p : ℚ)⁻¹).den = p by simp [hp.ne_zero]] at hd
