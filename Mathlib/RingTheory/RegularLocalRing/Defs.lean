@@ -79,8 +79,7 @@ lemma iff_finrank_cotangentSpace [IsLocalRing R] [IsNoetherianRing R] :
 instance [IsLocalRing R] [IsDomain R] [IsPrincipalIdealRing R] : IsRegularLocalRing R := by
   by_cases isf : IsField R
   · let := isf.toField
-    have : OrderBot (Submodule R R) := inferInstance
-    simp [isRegularLocalRing_iff, maximalIdeal_eq_bot]
+    simp [isRegularLocalRing_iff, maximalIdeal_eq_bot, -bot_eq_zero']
   · apply of_spanFinrank_maximalIdeal_le
     rcases IsPrincipalIdealRing.principal (maximalIdeal R) with ⟨x, hx⟩
     simpa only [(IsPrincipalIdealRing.ringKrullDim_eq_one R) isf,
