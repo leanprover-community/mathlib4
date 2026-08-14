@@ -1264,6 +1264,12 @@ lemma exists_le_of_small {ι : Type*} [Small.{u} ι] (κ : ι → Cardinal.{u}) 
   simpa [T] using Cardinal.mk_le_of_injective
     (sigma_mk_injective (β := fun i ↦ (κ ((equivShrink _).symm i)).ord.ToType))
 
+lemma mk_iio_le_lift (κ : Cardinal.{u}) :
+    Cardinal.mk (Set.Iio κ) ≤ Cardinal.lift.{u + 1} κ := by
+  conv_rhs => rw [← card_ord κ, ← mk_Iio_ordinal]
+  rw [Cardinal.le_def]
+  exact ⟨⟨fun ⟨a, ha⟩ ↦ ⟨a.ord, by simpa⟩, fun _ _ h ↦ by aesop⟩⟩
+
 end Cardinal
 
 namespace Ordinal

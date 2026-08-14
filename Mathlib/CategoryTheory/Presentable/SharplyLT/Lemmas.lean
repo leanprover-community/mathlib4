@@ -26,12 +26,6 @@ universe u
 
 open CategoryTheory Limits
 
-lemma Cardinal.mk_iio_le_lift (κ : Cardinal.{u}) :
-    Cardinal.mk (Set.Iio κ) ≤ Cardinal.lift.{u + 1} κ := by
-  conv_rhs => rw [← card_ord κ, ← mk_Iio_ordinal]
-  rw [Cardinal.le_def]
-  exact ⟨⟨fun ⟨a, ha⟩ ↦ ⟨a.ord, by simpa⟩, fun _ _ h ↦ by aesop⟩⟩
-
 namespace CategoryTheory.CardinalDirectedPoset.SetCardinalLT
 
 variable (κ : Cardinal.{u}) (X : Type u)
