@@ -92,34 +92,11 @@ noncomputable instance instPartialOrder : PartialOrder A⁺¹ :=
 instance instStarOrderedRing : StarOrderedRing A⁺¹ :=
     CStarAlgebra.spectralOrderedRing _
 
-lemma inr_le_inr_iff (a b : A) (ha : IsSelfAdjoint a := by cfc_tac)
-    (hb : IsSelfAdjoint b := by cfc_tac) :
-    (a : A⁺¹) ≤ (b : A⁺¹) ↔ a ≤ b := by
-  -- TODO: prove the more general result for star monomorphisms and use it here.
-  rw [← sub_nonneg, ← sub_nonneg (a := b), StarOrderedRing.nonneg_iff_spectrum_nonneg (R := ℝ) _,
-    ← inr_sub ℂ b a, ← Unitization.quasispectrum_eq_spectrum_inr' ℝ ℂ]
-  exact StarOrderedRing.nonneg_iff_quasispectrum_nonneg _ |>.symm
-
-@[deprecated (since := "2026-08-06")] alias inr_le_iff := inr_le_inr_iff
-
-lemma inr_le_inr {a b : A} (hab : a ≤ b) (ha : IsSelfAdjoint a := by cfc_tac)
-    (hb : IsSelfAdjoint b := by cfc_tac) :
-    (a : A⁺¹) ≤ (b : A⁺¹) :=
-  inr_le_inr_iff a b |>.mpr hab
-
-lemma le_of_inr {a b : A} (hab : (a : A⁺¹) ≤ (b : A⁺¹)) (ha : IsSelfAdjoint a := by cfc_tac)
-    (hb : IsSelfAdjoint b := by cfc_tac) :
-    a ≤ b :=
-  inr_le_inr_iff a b |>.mp hab
-
 @[simp, norm_cast]
 lemma inr_nonneg_iff {a : A} : 0 ≤ (a : A⁺¹) ↔ 0 ≤ a := by
-  by_cases ha : IsSelfAdjoint a
-  · exact inr_zero ℂ (A := A) ▸ inr_le_inr_iff 0 a
-  · refine ⟨?_, ?_⟩
-    all_goals refine fun h ↦ (ha ?_).elim
-    · exact isSelfAdjoint_inr (R := ℂ) |>.mp <| .of_nonneg h
-    · exact .of_nonneg h
+  -- TODO: prove the more general result for star monomorphisms and use it here.
+  simp [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts,
+    ← quasispectrumRestricts_iff_spectrumRestricts_inr']
 
 alias ⟨LE.le.of_inr, LE.le.inr⟩ := inr_nonneg_iff
 
@@ -127,20 +104,27 @@ lemma inr_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) : 0 ≤ (a : A⁺¹) := ha
 
 lemma nonneg_of_inr (a : A) (ha : 0 ≤ (a : A⁺¹) := by cfc_tac) : 0 ≤ a := inr_nonneg_iff.mp ha
 
+@[simp]
+lemma inr_le_inr_iff {a b : A} : (a : A⁺¹) ≤ (b : A⁺¹) ↔ a ≤ b := by
+  rw [← sub_nonneg, ← sub_nonneg (a := b), ← inr_sub ℂ b a, inr_nonneg_iff]
+
+@[deprecated (since := "2026-08-06")] alias inr_le_iff := inr_le_inr_iff
+
+alias ⟨le_of_inr, inr_le_inr⟩ := inr_le_inr_iff
+
+
 lemma convexOn_of_convexOn_inr_comp {f : A → A} {s : Set A}
-    (hf : ∀ x, IsSelfAdjoint (f x))
-    (hf₂ : ConvexOn ℝ s (inr (R := ℂ) ∘ f)) : ConvexOn ℝ s f := by
-  refine ⟨hf₂.1, ?_⟩
+    (hf : ConvexOn ℝ s (inr (R := ℂ) ∘ f)) : ConvexOn ℝ s f := by
+  refine ⟨hf.1, ?_⟩
   intro x hx y hy a b ha hb hab
-  rw [← inr_le_inr_iff _ _]
-  simpa using hf₂.2 hx hy ha hb hab
+  rw [← inr_le_inr_iff]
+  simpa using hf.2 hx hy ha hb hab
 
 lemma concaveOn_of_concaveOn_inr_comp {f : A → A} {s : Set A}
-    (hf : ∀ x, IsSelfAdjoint (f x))
     (hf₂ : ConcaveOn ℝ s (inr (R := ℂ) ∘ f)) : ConcaveOn ℝ s f := by
   refine ⟨hf₂.1, ?_⟩
   intro x hx y hy a b ha hb hab
-  rw [← inr_le_inr_iff _ _]
+  rw [← inr_le_inr_iff]
   simpa using hf₂.2 hx hy ha hb hab
 
 lemma nnreal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
@@ -469,7 +453,7 @@ lemma norm_le_norm_of_le_of_nonneg {a b : A} (hab : a ≤ b) (ha : 0 ≤ a := by
   suffices ∀ a b : A⁺¹, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by
     have hb := ha.trans hab
     simpa only [ge_iff_le, Unitization.norm_inr] using
-      this a b (by simpa) (by rwa [Unitization.inr_le_inr_iff a b])
+      this a b (by simpa) (by rwa [Unitization.inr_le_inr_iff])
   intro a b ha hab
   have hb : 0 ≤ b := ha.trans hab
   exact (norm_le_iff_le_algebraMap a (norm_nonneg _) ha).2 <| hab.trans <|
@@ -488,7 +472,7 @@ alias nnnorm_le_nnnorm_of_nonneg_of_le := nnnorm_le_nnnorm_of_le_of_nonneg
 lemma star_left_conjugate_le_norm_smul (a b : A) (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
   suffices ∀ a b : A⁺¹, IsSelfAdjoint b → star a * b * a ≤ ‖b‖ • (star a * a) by
-    rw [← Unitization.inr_le_inr_iff _ _ (by aesop) ((IsSelfAdjoint.all _).smul (.star_mul_self a))]
+    rw [← Unitization.inr_le_inr_iff]
     simpa [Unitization.norm_inr] using this a b <| hb.inr ℂ
   intro a b hb
   calc
@@ -531,7 +515,7 @@ lemma convexOn_cfcₙ_of_convexOn_cfc {f : ℝ → ℝ} {s : Set A}
     refine convexOn_const _ ?_
     have : Convex ℝ (inrl ⁻¹' inrl '' s) := Convex.linear_preimage hf.1 _
     rwa [Set.preimage_image_eq _ inrHom_injective] at this
-  refine convexOn_of_convexOn_inr_comp (fun _ => IsSelfAdjoint.cfcₙ) ?_
+  refine convexOn_of_convexOn_inr_comp ?_
   have h₁ : inr (R := ℂ) ∘ (cfcₙ f) = fun x : A => ((cfcₙ f x : A) : A⁺¹) := rfl
   have h₂ : (fun x : A => ((cfcₙ f x : A) : A⁺¹))
       = fun x : A => cfc f (x : A⁺¹) := by ext1; rw [real_cfcₙ_eq_cfc_inr ..]
@@ -583,7 +567,7 @@ lemma IsStarProjection.mul_right_and_mul_left_of_nonneg_of_le {a e : A}
   suffices a * e = a from
     ⟨this, by simpa [ha.star_eq, he.isSelfAdjoint.star_eq] using congr(star $this)⟩
   suffices ∀ a e : A⁺¹, IsStarProjection e → 0 ≤ a → a ≤ e → a * e = a from
-    mod_cast this a e he.inr ha.inr (inr_le_inr_iff a e |>.mpr hae)
+    mod_cast this a e he.inr ha.inr (inr_le_inr hae)
   intro a e he ha hae
   suffices sqrt a * (1 - e : A⁺¹) = 0 by
     simpa [← mul_assoc, sqrt_mul_sqrt_self a, mul_sub, sub_eq_zero, eq_comm (a := a)]

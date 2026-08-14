@@ -54,8 +54,8 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
     MonotoneOn (cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a ha b hb hab
   simp only [Set.mem_Ici] at ha hb
-  rw [← inr_le_inr_iff .., nnreal_cfcₙ_eq_cfc_inr a _, nnreal_cfcₙ_eq_cfc_inr b _]
-  rw [← inr_le_inr_iff a b (.of_nonneg ha) (.of_nonneg hb)] at hab
+  rw [← inr_le_inr_iff, nnreal_cfcₙ_eq_cfc_inr a _, nnreal_cfcₙ_eq_cfc_inr b _]
+  rw [← inr_le_inr_iff] at hab
   rw [← inr_nonneg_iff] at ha hb
   have h_cfc_one_sub (c : A⁺¹) (hc : 0 ≤ c := by cfc_tac) :
       cfc (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) c = 1 - cfc (·⁻¹ : ℝ≥0 → ℝ≥0) (1 + c) := by
