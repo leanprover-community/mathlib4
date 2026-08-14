@@ -62,6 +62,36 @@ lemma IsSelfAdjoint.map_quasispectrum_real {F A B : Type*}
   replace hφ : Function.Injective (φ : A →⋆ₙₐ[ℂ] B) := hφ
   simpa [Unitization.starMap_inr, ← Unitization.quasispectrum_eq_spectrum_inr']
     using (ha.inr ℂ).map_spectrum_real _ (Unitization.starMap_injective hφ)
+
+variable {F A B : Type*}
+    [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+    [NonUnitalCStarAlgebra B] [PartialOrder B] [StarOrderedRing B]
+    [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
+
+/-- A non-unital star monomorphism between C⋆-algebras is an order embedding. -/
+def NonUnitalStarAlgHom.orderEmbedding (φ : A →⋆ₙₐ[ℂ] B) (hφ : Function.Injective φ) :
+    A ↪o B where
+  toFun := φ
+  inj' := hφ
+  map_rel_iff' {a b} := by
+    simp only [Function.Embedding.coeFn_mk]
+    refine ⟨?_, (OrderHomClass.mono φ ·)⟩
+    rw [← sub_nonneg, ← sub_nonneg (a := b), ← map_sub φ]
+    simp_rw [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts, QuasispectrumRestricts.nnreal_iff]
+    rintro ⟨h₁, h₂⟩
+    have h_sa := h₁.of_map φ hφ
+    exact ⟨h_sa, by rwa [← h_sa.map_quasispectrum_real φ hφ]⟩
+
+/-- A non-unital star monomorphism between C⋆-algebras is an order embedding. -/
+protected lemma NonUnitalStarAlgHom.map_le_map_iff (f : F) (hf : Function.Injective f) {x y : A} :
+    f x ≤ f y ↔ x ≤ y :=
+  (orderEmbedding (f : A →⋆ₙₐ[ℂ] B) hf).le_iff_le
+
+protected lemma NonUnitalStarAlgHom.map_lt_map_iff (f : F) (hf : Function.Injective f) {x y : A} :
+    f x < f y ↔ x < y :=
+  (orderEmbedding (f : A →⋆ₙₐ[ℂ] B) hf).lt_iff_lt
+
+end OrderEmbedding
 namespace NonUnitalStarAlgHom
 
 variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B]

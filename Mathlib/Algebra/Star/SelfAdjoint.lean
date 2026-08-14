@@ -108,6 +108,14 @@ theorem map {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHomClass F R 
     {x : R} (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx
 
+lemma of_map {F R S : Type*} [AddCancelMonoid R] [AddMonoid S]
+    [StarAddMonoid R] [StarAddMonoid S]
+    [FunLike F R S] [StarHomClass F R S] [AddMonoidHomClass F R S] (f : F)
+    {x : R} (hx : IsSelfAdjoint (f x)) (hf : Function.Injective f) :
+    IsSelfAdjoint x := by
+  have : star x + x = x + x := hf <| by simp [map_star, hx.star_eq]
+  simpa
+
 /- note: this lemma is *not* marked as `simp` so that Lean doesn't look for a `[TrivialStar R]`
 instance every time it sees `⊢ IsSelfAdjoint (f x)`, which will likely occur relatively often. -/
 theorem _root_.isSelfAdjoint_map {F R S : Type*} [Star R] [Star S] [FunLike F R S]

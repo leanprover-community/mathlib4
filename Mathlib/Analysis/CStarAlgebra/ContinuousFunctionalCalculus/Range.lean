@@ -139,6 +139,17 @@ lemma range_cfc_nnreal
   exact cfc_cases _ a f ⟨0, by simp, by simp⟩ fun hf' ha' ↦
     ⟨f, (cfc_nonneg_iff f a hf' ha').mp (by simpa), by simp [cfc_apply f a ha' hf']⟩
 
+theorem cfc_nnreal_mem {𝕜 : Type*} [RCLike 𝕜] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+    {S : Type*} [MulAction 𝕜 A] [SetLike S A]
+    [SubringClass S A] [IsScalarTower ℝ 𝕜 A]
+    [SMulMemClass S 𝕜 A] [StarMemClass S A] {s : S} [hs : IsClosed (s : Set A)]
+    (f : ℝ≥0 → ℝ≥0) {a : A} (has : a ∈ s) :
+    cfc f a ∈ s := by
+  by_cases ha : 0 ≤ a
+  · rw [cfc_nnreal_eq_real ..]
+    exact cfc_mem _ has
+  · simp [cfc_apply_of_not_predicate _ ha]
+
 end Unital
 
 section NonUnital
@@ -255,5 +266,18 @@ lemma range_cfcₙ_nnreal [NonUnitalClosedEmbeddingContinuousFunctionalCalculus 
   · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_continuousOn a h]⟩
   · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_map_zero a h]⟩
   · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_predicate a h]⟩
+
+open NNReal in
+theorem cfcₙ_nnreal_mem {𝕜 : Type*} [RCLike 𝕜]
+    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+    {S : Type*} [MulAction 𝕜 A] [SetLike S A]
+    [NonUnitalSubringClass S A] [IsScalarTower ℝ 𝕜 A]
+    [SMulMemClass S 𝕜 A] [StarMemClass S A] {s : S} [hs : IsClosed (s : Set A)]
+    (f : ℝ≥0 → ℝ≥0) {a : A} (has : a ∈ s) :
+    cfcₙ f a ∈ s := by
+  by_cases ha : 0 ≤ a
+  · rw [cfcₙ_nnreal_eq_real ..]
+    exact cfcₙ_mem _ has
+  · simp [cfcₙ_apply_of_not_predicate _ ha]
 
 end NonUnital
