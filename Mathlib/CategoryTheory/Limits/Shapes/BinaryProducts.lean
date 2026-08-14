@@ -1242,9 +1242,7 @@ lemma map_braiding_hom_comp_prodComparison
     [HasBinaryProduct B A] [HasBinaryProduct (F.obj B) (F.obj A)] :
     F.map (prod.braiding _ _).hom ≫ prodComparison F A B  =
     prodComparison F B A ≫ (prod.braiding _ _).inv := by
-  ext
-  · simp [← Functor.map_comp, prod.lift_fst]
-  · simp [← Functor.map_comp, prod.lift_snd]
+  ext <;> simp [← Functor.map_comp]
 
 end ProdComparison
 
