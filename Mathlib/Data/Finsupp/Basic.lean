@@ -294,6 +294,7 @@ lemma mem_range_of_mapDomain_ne_zero {f : α → β} {x : α →₀ M} {b : β} 
 @[to_fun mapDomain_fun_id]
 lemma mapDomain_id : mapDomain id v = v := sum_single _
 
+attribute [simp↓] mapDomain_id
 attribute [simp] mapDomain_fun_id
 
 lemma mapDomain_fun_comp (f : α → β) (g : β → γ) :
