@@ -10,6 +10,8 @@ public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.GroupTheory.PGroup
 public import Mathlib.GroupTheory.NoncommPiCoprod
 
+import Mathlib.Data.Fintype.Lattice
+
 /-!
 # Sylow theorems
 
