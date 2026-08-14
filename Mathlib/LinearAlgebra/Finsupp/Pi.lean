@@ -285,7 +285,7 @@ lemma map_id [Finite X] : map (_root_.id : X → X) (M := M) = _root_.id := by
 lemma map_comp [Finite X] [Finite Y] [Finite Z] (g : Y → Z) (f : X → Y) :
     map (g.comp f) (M := M) = (map g).comp (map f) := by
   ext s
-  simp [map, Finsupp.mapDomain_comp]
+  simp [map, Finsupp.mapDomain_fun_comp]
 
 end
 

@@ -306,7 +306,6 @@ lemma pseudofunctor_right_unitality :
   simp [← this]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] pseudofunctor_associativity pseudofunctor_left_unitality
   pseudofunctor_right_unitality Bicategory.toNatTrans_conjugateEquiv
   conjugateEquiv_pullbackId_hom Adjunction.ofCat_comp conjugateEquiv_pullbackComp_inv in

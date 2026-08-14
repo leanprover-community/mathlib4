@@ -47,14 +47,12 @@ abbrev pullbackFst (F : WalkingParallelPair ⥤ C) :
     constructEqualizer F ⟶ F.obj WalkingParallelPair.zero :=
   pullback.fst _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pullbackFst_eq_pullback_snd (F : WalkingParallelPair ⥤ C) :
     pullbackFst F = pullback.snd _ _ := by
   convert!
     (eq_whisker pullback.condition Limits.prod.fst :
       (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.zero) = _) <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define the equalizing cone -/
 abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
   Cone.ofFork

@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Zichen Wang
 -/
 module
 
+public import Mathlib.Analysis.Convex.Intrinsic
 public import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!
@@ -220,6 +221,34 @@ protected lemma ConvexOn.locallyLipschitz (hf : ConvexOn ℝ univ f) : LocallyLi
 
 protected lemma ConcaveOn.locallyLipschitz (hf : ConcaveOn ℝ univ f) : LocallyLipschitz f := by
   simpa using hf.locallyLipschitzOn_interior
+
+lemma ConvexOn.locallyLipschitzOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
+    LocallyLipschitzOn (intrinsicInterior ℝ C) f := by
+  obtain rfl | ⟨p, hp⟩ := C.eq_empty_or_nonempty
+  · simp
+  have : Nonempty (affineSpan ℝ C) := ⟨⟨p, subset_affineSpan ℝ C hp⟩⟩
+  set ψ := (AffineIsometryEquiv.constVSub ℝ (⟨p, subset_affineSpan ℝ C hp⟩ : affineSpan ℝ C)).symm
+  have hiso : Isometry (Subtype.val ∘ ⇑ψ) := isometry_subtype_coe.comp ψ.isometry
+  have hL := (hf.comp_affineMap
+    ((affineSpan ℝ C).subtype.comp ψ.toAffineEquiv.toAffineMap)).locallyLipschitzOn_interior
+  refine (hiso.locallyLipschitzOn_image (by simpa using hL)).mono ?_
+  rw [Set.preimage_comp]
+  rintro x hx
+  obtain ⟨w, hw, rfl⟩ := mem_intrinsicInterior.1 hx
+  exact ⟨ψ.symm w, preimage_interior_subset_interior_preimage ψ.continuous (by simpa using hw),
+    by simp⟩
+
+lemma ConcaveOn.locallyLipschitzOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
+    LocallyLipschitzOn (intrinsicInterior ℝ C) f := by
+  simpa using hf.neg.locallyLipschitzOn_intrinsicInterior
+
+lemma ConvexOn.continuousOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
+    ContinuousOn f (intrinsicInterior ℝ C) :=
+  hf.locallyLipschitzOn_intrinsicInterior.continuousOn
+
+lemma ConcaveOn.continuousOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
+    ContinuousOn f (intrinsicInterior ℝ C) :=
+  hf.locallyLipschitzOn_intrinsicInterior.continuousOn
 
 section Intervals
 

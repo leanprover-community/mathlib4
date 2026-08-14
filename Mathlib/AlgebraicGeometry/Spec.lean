@@ -284,7 +284,6 @@ def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace
 instance isIso_toSpecΓ (R : CommRingCat.{u}) : IsIso (toSpecΓ R) :=
   (ConcreteCategory.isIso_iff_bijective _).mpr algebraMap_obj_top_bijective
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
     f ≫ toSpecΓ S = toSpecΓ R ≫ Γ.map (Spec.toLocallyRingedSpace.map f.op).op := by

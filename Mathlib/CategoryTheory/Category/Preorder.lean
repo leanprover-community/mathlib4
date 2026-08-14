@@ -154,6 +154,7 @@ open CategoryTheory
 variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
 /-- A monotone function between preorders induces a functor between the associated categories. -/
+@[implicit_reducible]
 def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
   obj := f
   map g := CategoryTheory.homOfLE (h g.le)

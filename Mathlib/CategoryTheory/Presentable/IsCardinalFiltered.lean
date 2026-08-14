@@ -54,6 +54,14 @@ lemma hasCardinalLT_arrow_walkingParallelFamily {T : Type u}
 
 namespace IsCardinalFiltered
 
+instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (J : Type*) [Category* J] [Subsingleton J] [Nonempty J] [Quiver.IsThin J] :
+    IsCardinalFiltered J κ where
+  nonempty_cocone F _ :=
+    ⟨Cocone.mk (Classical.arbitrary _)
+      { app _ := eqToHom (by subsingleton)
+        naturality _ _ _ := by subsingleton }⟩
+
 variable {J : Type u} [Category.{v} J] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
   [IsCardinalFiltered J κ]
 

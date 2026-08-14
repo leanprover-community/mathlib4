@@ -515,6 +515,10 @@ section Irreducible
 
 variable [Field K] {f : K[X]}
 
+theorem isField_iff_irreducible : IsField (AdjoinRoot f) ↔ Irreducible f :=
+  (Ideal.Quotient.maximal_ideal_iff_isField_quotient _).symm.trans
+    (Ideal.irreducible_iff_isMaximal_span_singleton_of_not_isField (Polynomial.not_isField K)).symm
+
 instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaximal :=
   PrincipalIdealRing.isMaximal_of_irreducible <| Fact.out
 

@@ -6,8 +6,9 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.Complement
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-! # Continuous linear maps with a continuous left/right inverse
 

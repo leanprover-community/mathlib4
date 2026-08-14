@@ -160,6 +160,7 @@ lemma analyticWithinAt_id : AnalyticWithinAt 𝕜 (id : E → E) s z :=
   analyticAt_id.analyticWithinAt
 
 /-- `id` is entire -/
+@[fun_prop]
 theorem analyticOnNhd_id : AnalyticOnNhd 𝕜 (fun x : E ↦ x) s :=
   fun _ _ ↦ analyticAt_id
 

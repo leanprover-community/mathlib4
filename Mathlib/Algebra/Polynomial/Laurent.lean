@@ -390,7 +390,8 @@ alias support_C_mul_T_of_ne_zero := support_coeff_C_mul_T_of_ne_zero
 shows that the support of `f.toLaurent` is the same finset, but viewed in `ℤ` under the natural
 inclusion `ℕ ↪ ℤ`. -/
 theorem support_coeff_toLaurent (f : R[X]) :
-    f.toLaurent.coeff.support = f.support.map Nat.castEmbedding := by simp [Polynomial.support]
+    f.toLaurent.coeff.support = f.support.map Nat.castEmbedding := by
+  simp [-Nat.castEmbedding_apply, Polynomial.support]
 
 @[deprecated (since := "2026-06-18")] alias toLaurent_support := support_coeff_toLaurent
 

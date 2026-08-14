@@ -35,7 +35,6 @@ variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
   [HasShift C ℤ] [HasShift D ℤ] [HasShift E ℤ]
   (F : C ⥤ D) [F.CommShift ℤ] (G : D ⥤ E) [G.CommShift ℤ]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Triangle C ⥤ Triangle D` that is induced by a functor `F : C ⥤ D`
 which commutes with shift by `ℤ`. -/
 @[simps]
@@ -60,7 +59,6 @@ instance [Faithful F] : Faithful F.mapTriangle where
     · exact congr_arg TriangleMorphism.hom₂ h
     · exact congr_arg TriangleMorphism.hom₃ h
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 instance [Full F] [Faithful F] : Full F.mapTriangle where
   map_surjective {X Y} f :=
@@ -207,7 +205,6 @@ instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
     rw [h₁, F.map_comp, F.map_comp, F.map_id, h₂, zero_comp, comp_zero]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance [F.IsTriangulated] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by
@@ -365,7 +362,6 @@ lemma isTriangulated_of_essSurj_mapComposableArrows_two
     (comm₂₃ := ComposableArrows.naturality' e.inv 1 2)
     (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) ..⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma IsTriangulated.of_fully_faithful_triangulated_functor
     (F : C ⥤ D) [F.CommShift ℤ]
     [F.IsTriangulated] [F.Full] [F.Faithful] [IsTriangulated D] :

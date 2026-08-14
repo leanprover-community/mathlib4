@@ -798,7 +798,6 @@ lemma isRightKanExtension_postcompose₂_iff
 
 end postcompose₂
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLeftKanExtension_iff_precomp_equivalence
     {F₁' : D ⥤ H} {L₁ : C ⥤ D} {F₁ : C ⥤ H} (α₁ : F₁ ⟶ L₁ ⋙ F₁')
     {F₂' : D' ⥤ H} {L₂ : C' ⥤ D'} {F₂ : C' ⥤ H} (α₂ : F₂ ⟶ L₂ ⋙ F₂')
@@ -816,7 +815,6 @@ lemma isLeftKanExtension_iff_precomp_equivalence
   exact Equiv.nonempty_congr ((IsInitial.isInitialIffObj Φ _).trans
     (IsInitial.equivOfIso (StructuredArrow.isoMk e')))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isRightKanExtension_iff_precomp_equivalence
     {F₁' : D ⥤ H} {L₁ : C ⥤ D} {F₁ : C ⥤ H} (α₁ : L₁ ⋙ F₁' ⟶ F₁)
     {F₂' : D' ⥤ H} {L₂ : C' ⥤ D'} {F₂ : C' ⥤ H} (α₂ : L₂ ⋙ F₂' ⟶ F₂)

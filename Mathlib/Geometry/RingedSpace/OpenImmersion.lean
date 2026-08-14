@@ -453,7 +453,6 @@ instance hasPullback_of_left : HasPullback f g :=
 instance hasPullback_of_right : HasPullback g f :=
   hasPullback_symmetry f g
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Open immersions are stable under base-change. -/
 instance pullbackSndOfLeft : IsOpenImmersion (pullback.snd f g) := by
   delta pullback.snd
@@ -465,7 +464,6 @@ instance pullbackFstOfRight : IsOpenImmersion (pullback.fst g f) := by
   rw [← pullbackSymmetry_hom_comp_snd]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance pullbackToBaseIsOpenImmersion [IsOpenImmersion g] :
     IsOpenImmersion (limit.π (cospan f g) WalkingCospan.one) := by
   rw [← limit.w (cospan f g) WalkingCospan.Hom.inl, cospan_map_inl]
@@ -737,7 +735,6 @@ instance sheafedSpace_pullback_fst_of_right :
   rw [← this]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance sheafedSpace_pullback_to_base_isOpenImmersion [SheafedSpace.IsOpenImmersion g] :
     SheafedSpace.IsOpenImmersion (limit.π (cospan f g) one : pullback f g ⟶ Z) := by
   rw [← limit.w (cospan f g) Hom.inl, cospan_map_inl]
@@ -1051,7 +1048,6 @@ instance hasPullback_of_left : HasPullback f g :=
 instance hasPullback_of_right : HasPullback g f :=
   hasPullback_symmetry f g
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Open immersions are stable under base-change. -/
 instance pullback_snd_of_left :
     LocallyRingedSpace.IsOpenImmersion (pullback.snd f g) := by
@@ -1065,7 +1061,6 @@ instance pullback_fst_of_right :
   rw [← pullbackSymmetry_hom_comp_snd]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance pullback_to_base_isOpenImmersion [LocallyRingedSpace.IsOpenImmersion g] :
     LocallyRingedSpace.IsOpenImmersion (limit.π (cospan f g) WalkingCospan.one) := by
   rw [← limit.w (cospan f g) WalkingCospan.Hom.inl, cospan_map_inl]

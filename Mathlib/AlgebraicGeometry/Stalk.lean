@@ -238,7 +238,6 @@ def stalkClosedPointIso :
   Spec.stalkIso _ _ ≪≫ (IsLocalization.atUnits R
       (closedPoint R).asIdeal.primeCompl fun _ ↦ not_not.mp).toRingEquiv.toCommRingCatIso.symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma stalkClosedPointIso_inv :
     (stalkClosedPointIso R).inv = StructureSheaf.toStalk R _ := by
   ext x

@@ -105,7 +105,8 @@ taking supremums completes the proof (see `iSup_edist_pairSet`).
 
 open scoped ENNReal NNReal Finset
 
-variable {T : Type*} [PseudoEMetricSpace T] {a c : ℝ≥0∞} {n : ℕ} {V J : Finset T} {t : T}
+variable {T : Type*} [TopologicalSpace T] [WeakPseudoEMetricSpace T]
+  {a c : ℝ≥0∞} {n : ℕ} {V J : Finset T} {t : T}
 
 namespace PairReduction
 
@@ -392,7 +393,8 @@ lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
   obtain ⟨⟨ht, hdist⟩, rfl⟩ := h'
   grw [hdist, radius_logSizeBallSeq_le hJ ha hn hJ_card i]
 
-lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T → E) :
+lemma iSup_edist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpace E] (ha : 1 < a)
+    (f : T → E) :
     ⨆ (s : J) (t : { t : J // edist s t ≤ c}), edist (f s) (f t)
         ≤ 2 * ⨆ p : pairSet J a c, edist (f p.1.1) (f p.1.2) := by
   rw [iSup_le_iff]; rintro ⟨s, hs⟩
@@ -473,8 +475,8 @@ set `K ⊆ J²` such that for any function `f : T → E`:
 2. `∀ (s, t) ∈ K, d(s, t) ≤ cn`
 3. `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t)) ≤ 2 sup_{(s, t) ∈ K} d(f(s), f(t))`
 -/
-theorem EMetric.pair_reduction
-    (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [PseudoEMetricSpace E] :
+theorem EMetric.pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [TopologicalSpace E]
+      [WeakPseudoEMetricSpace E] :
     ∃ K : Finset (T × T), K ⊆ J ×ˢ J
       ∧ #K ≤ a * #J
       ∧ (∀ s t, (s, t) ∈ K → edist s t ≤ n * c)

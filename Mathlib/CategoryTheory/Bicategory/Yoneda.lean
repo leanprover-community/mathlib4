@@ -46,7 +46,6 @@ set_option backward.defeqAttrib.useBackward true in
 def leftUnitorNatIsoCat (a b : B) : (precomposingCat _ _ b).obj (𝟙 a) ≅ 𝟙 (Cat.of (a ⟶ b)) :=
   Cat.Hom.isoMk <| NatIso.ofComponents (λ_ ·)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Right component of the associator as a 2-isomorphism in `Cat`. -/
 @[simps!]
@@ -56,7 +55,6 @@ def associatorNatIsoRightCat {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (d : B) :
   Cat.Hom.isoMk <| NatIso.ofComponents (α_ f g ·)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Middle component of the associator as a 2-isomorphism in `Cat`. -/
 @[simps!]
 def associatorNatIsoMiddleCat {a b c d : B} (f : a ⟶ b) (h : c ⟶ d) :

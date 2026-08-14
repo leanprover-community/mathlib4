@@ -125,7 +125,6 @@ theorem isUnit_res_toΓSpecMapBasicOpen : IsUnit (X.toToΓSpecMapBasicOpen r r) 
   rw [← CommRingCat.comp_apply, ← Functor.map_comp]
   congr
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Define the sheaf hom on individual basic opens for the unit. -/
 def toΓSpecCApp :
     (structureSheaf <| Γ.obj <| op X).obj.obj (op <| basicOpen r) ⟶
