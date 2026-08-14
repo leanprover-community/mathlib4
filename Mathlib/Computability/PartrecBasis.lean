@@ -83,7 +83,7 @@ protected theorem map {n f} {g : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
   vector-valued functions. -/
 def Vec {n m} (f : List.Vector ℕ n → List.Vector ℕ m) :=
-  ∀ i, @Partrec' n fun v ↦. (f v).get i
+  ∀ i, Partrec' fun v ↦. (f v).get i
 
 nonrec theorem Vec.prim {n m f} (hf : @Nat.Primrec'.Vec n m f) : Vec f := fun i => prim <| hf i
 

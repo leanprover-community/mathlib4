@@ -221,7 +221,7 @@ theorem prec' {f g h} (hf : Nat.Partrec f) (hg : Nat.Partrec g) (hh : Nat.Partre
     by simp [Seq.seq, Nat.unpaired, PFun.coe_mk]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem ppred : Nat.Partrec fun n ↦. Part.ofOption (Nat.ppred n) :=
+theorem ppred : Nat.Partrec fun n ↦. Nat.ppred n :=
   have : Primrec₂ fun n m => if n = Nat.succ m then 0 else 1 :=
     (Primrec.ite
       (@PrimrecRel.comp _ _ _ _ _ _ _ _ _

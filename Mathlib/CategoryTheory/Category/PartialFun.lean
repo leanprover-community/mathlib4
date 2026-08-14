@@ -120,8 +120,8 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
 `Part.equivOption` made functorial. -/
--- Specifying the projections prevents `simps` from generating non-normal-form lemmas for the
--- `Part` fields of the unit isomorphism.
+-- Since `PFun` is now a structure, `simps` recurses into `Part`. The explicit list preserves the
+-- existing `unitIso_{hom,inv}_app` lemmas and avoids four non-normal-form `Part`-field lemmas.
 @[simps! functor_obj_X functor_obj_point functor_map_toFun inverse_obj inverse_map_apply_Dom
   inverse_map_apply_get_coe unitIso_hom_app unitIso_inv_app counitIso_hom_app_toFun
   counitIso_inv_app_toFun]
