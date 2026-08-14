@@ -147,14 +147,14 @@ theorem isIntegral_appTop_of_universallyClosed (f : X ⟶ Y) [UniversallyClosed 
   exact ⟨.of_comp_surjective X.toSpecΓ _, inferInstance⟩
 
 /-- A reduced commutative Artinian ring with connected prime spectrum is a field. -/
-theorem IsArtinianRing.isField_of_isReduced_of_connectedSpace (R : Type*) [CommRing R]
+theorem _root_.IsArtinianRing.isField_of_isReduced_of_connectedSpace (R : Type*) [CommRing R]
     [IsArtinianRing R] [_root_.IsReduced R] [ConnectedSpace (PrimeSpectrum R)] : IsField R := by
   let _ : Nontrivial R := PrimeSpectrum.nonempty_iff_nontrivial.mp inferInstance
   let _ : Subsingleton (PrimeSpectrum R) := PreconnectedSpace.trivial_of_discrete
   exact PrimeSpectrum.subsingleton_iff_isField_of_isReduced.mp inferInstance
 
 /-- A reduced integral algebra over a field with connected prime spectrum is a field. -/
-theorem isField_of_isIntegral_of_isField_of_isReduced_of_connectedSpace
+theorem _root_.isField_of_isIntegral_of_isField_of_isReduced_of_connectedSpace
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.IsIntegral R S]
     [_root_.IsReduced S] [ConnectedSpace (PrimeSpectrum S)] (hR : IsField R) : IsField S where
   exists_pair_ne := (PrimeSpectrum.nonempty_iff_nontrivial.mp inferInstance).exists_pair_ne
