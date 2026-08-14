@@ -825,7 +825,7 @@ section sdiff
 variable {α : Type*} {s t : Set α}
 
 @[simp]
-lemma mk_sdiff_eq_left' (hs : s.Infinite) (hst : #↑(s ∩ t) < #s) : #↑(s \ t) = #s := by
+lemma mk_sdiff_eq_left' (hs : s.Infinite) (hst : #(s ∩ t : Set α) < #s) : #(s \ t : Set α) = #s := by
   refine (mk_le_mk_of_subset Set.sdiff_subset).eq_of_not_lt
     fun h ↦ (add_lt_of_lt (by simpa) hst h).not_ge ?_
   grw [← mk_union_le .., Set.inter_union_sdiff]
