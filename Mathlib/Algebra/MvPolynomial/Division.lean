@@ -66,7 +66,6 @@ theorem zero_divMonomial (s : σ →₀ ℕ) : (0 : MvPolynomial σ R) /ᵐᵒ�
 theorem divMonomial_zero (x : MvPolynomial σ R) : x /ᵐᵒⁿᵒᵐⁱᵃˡ 0 = x :=
   x.divOf_zero
 
-set_option backward.isDefEq.respectTransparency false in
 theorem add_divMonomial (x y : MvPolynomial σ R) (s : σ →₀ ℕ) :
     (x + y) /ᵐᵒⁿᵒᵐⁱᵃˡ s = x /ᵐᵒⁿᵒᵐⁱᵃˡ s + y /ᵐᵒⁿᵒᵐⁱᵃˡ s := by
   simp [divMonomial, MvPolynomial, AddMonoidAlgebra.add_divOf]
@@ -200,7 +199,7 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
   · rintro ⟨h | hij, d, rfl⟩
     · simp_rw [h, monomial_zero, dvd_zero]
     · refine ⟨monomial (j - i) d, ?_⟩
-      rw [monomial_mul, add_tsub_cancel_of_le hij]
+      rw [monomial_mul_monomial, add_tsub_cancel_of_le hij]
 
 @[simp]
 theorem monomial_one_dvd_monomial_one [Nontrivial R] {i j : σ →₀ ℕ} :
@@ -369,7 +368,7 @@ theorem dvd_monomial_mul_iff_exists [IsCancelMulZero R] {n : σ →₀ ℕ} :
         use m + Finsupp.single i 1, r, ?_, hr
         · simp [monomial_add_single, pow_one, mul_comm _ (X i), mul_assoc, ← hp]
         · simpa [← hn'] using hm
-    · rw [hp, ← add_tsub_cancel_of_le hmn, ← mul_one 1, ← monomial_mul, mul_one, mul_assoc]
+    · rw [hp, ← add_tsub_cancel_of_le hmn, ← mul_one 1, ← monomial_mul_monomial, mul_one, mul_assoc]
       apply mul_dvd_mul dvd_rfl
       apply dvd_mul_of_dvd_right hrq
 
