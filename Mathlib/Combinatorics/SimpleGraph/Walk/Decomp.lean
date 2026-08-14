@@ -339,9 +339,9 @@ def rotate (c : G.Walk v v) (u : V) : G.Walk u u :=
   if hu : u ∈ c.support then (c.dropUntil u hu).append (c.takeUntil u hu) else nil
 
 lemma rotate_of_mem_support (hu : u ∈ c.support) :
-    c.rotate u = (c.dropUntil u hu).append (c.takeUntil u hu) := dif_pos hu
+    c.rotate u = (c.dropUntil u hu).append (c.takeUntil u hu) := dite_eq_left hu
 
-@[simp] lemma rotate_of_not_mem_support (hu : u ∉ c.support) : c.rotate u = nil := dif_neg hu
+@[simp] lemma rotate_of_not_mem_support (hu : u ∉ c.support) : c.rotate u = nil := dite_eq_right hu
 
 @[simp]
 theorem support_rotate (hu : u ∈ c.support) : (c.rotate u).support.tail ~r c.support.tail := by
