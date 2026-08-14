@@ -41,7 +41,7 @@ adapted, progressively measurable
 
 @[expose] public section
 
-open Filter Order TopologicalSpace
+open Filter TopologicalSpace
 
 open scoped MeasureTheory NNReal ENNReal Topology
 
