@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Presentable.SharplyLT.Lemmas
 # The uniformization theorem
 
 The main result in this file is `IsCardinalAccessibleCategory.uniformization`
-whih says that if `F : C ⥤ D` is an accessible functor between accessible
+which says that if `F : C ⥤ D` is an accessible functor between accessible
 categories, there exists a regular cardinal `κ` such that `C` and `D`
 are `κ`-accessible categories, and `F` is a `κ`-accessible functor
 which preserves `κ`-presentable objects.
