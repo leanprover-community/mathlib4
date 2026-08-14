@@ -46,6 +46,15 @@ set_option backward.privateInPublic.warn false in
 set_option backward.privateInPublic true in
 private def chainOuter (_ : FEq chainInner) : Bool := true
 
+-- A single command declaring several candidates: `S` is used in the public type of `usesS`, while
+-- its projection `S.k` is not. The `set_option` exports both, so it must be kept.
+set_option backward.privateInPublic true in
+private structure S where
+  k : Nat
+
+set_option backward.privateInPublic true in
+def usesS (_ : S) : Bool := true
+
 -- Not exported at all, so not a candidate.
 private theorem plain : (0 : Nat) = 0 := rfl
 

@@ -149,16 +149,23 @@ private def run (cmds : Array Syntax) : CommandElabM Unit := do
   let fileMap ← getFileMap
   -- The `set_option`s to delete, with the declarations which motivated deleting each of them.
   let mut deletions : Array (Lean.Syntax.Range × Array Name) := #[]
+  -- A single command can declare several candidates: a `mutual` block, or a structure and its
+  -- projections. If any one of them is used, its `set_option` is what exports it, and must be kept
+  -- even though the others are unused.
+  let mut safeguarded : Array Lean.Syntax.Range := #[]
   for n in candidates do
-    if used.contains n then continue
     let some declRanges ← findDeclarationRanges? n | continue
     let some cmd := commandAt? cmds (fileMap.ofPosition declRanges.range.pos) | continue
     for range in redundantOptionRanges cmd do
-      if let some i := deletions.findIdx? (·.1 == range) then
+      if used.contains n then
+        unless safeguarded.contains range do
+          safeguarded := safeguarded.push range
+      else if let some i := deletions.findIdx? (·.1 == range) then
         deletions := deletions.modify i fun (r, names) => (r, names.push n)
       else
         deletions := deletions.push (range, #[n])
   for (range, names) in deletions do
+    if safeguarded.contains range then continue
     let names := String.intercalate ", " <| names.toList.map fun n => s!"`{privateToUserName n}`"
     liftCoreM <| addSuggestion (Syntax.ofRange range)
       { suggestion := .string "", messageData? := m!"(delete)" }
