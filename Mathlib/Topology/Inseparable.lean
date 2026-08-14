@@ -81,7 +81,7 @@ theorem Specializes.not_disjoint (h : x ⤳ y) : ¬Disjoint (𝓝 x) (𝓝 y) :=
   absurd (hd.mono_right h) <| by simp [NeBot.ne']
 
 theorem specializes_iff_pure : x ⤳ y ↔ pure x ≤ 𝓝 y :=
-  (specializes_TFAE x y).out 0 1
+  (specializes_TFAE x y).out 1 2
 
 alias ⟨Specializes.nhds_le_nhds, _⟩ := specializes_iff_nhds
 
@@ -91,7 +91,7 @@ theorem ker_nhds_eq_specializes : (𝓝 x).ker = {y | y ⤳ x} := by
   ext; simp [specializes_iff_pure, le_def]
 
 theorem specializes_iff_forall_open : x ⤳ y ↔ ∀ s : Set X, IsOpen s → y ∈ s → x ∈ s :=
-  (specializes_TFAE x y).out 0 2
+  (specializes_TFAE x y).out 1 3
 
 omit [TopologicalSpace X] in
 theorem Tendsto.specializes {l : Filter X} {y : Y} (h : Tendsto g l (𝓝 y)) (hl : ∀ x, f x ⤳ g x) :
@@ -107,7 +107,7 @@ theorem IsOpen.not_specializes (hs : IsOpen s) (hx : x ∉ s) (hy : y ∈ s) : �
   hx <| h.mem_open hs hy
 
 theorem specializes_iff_forall_closed : x ⤳ y ↔ ∀ s : Set X, IsClosed s → x ∈ s → y ∈ s :=
-  (specializes_TFAE x y).out 0 3
+  (specializes_TFAE x y).out 1 4
 
 theorem Specializes.mem_closed (h : x ⤳ y) (hs : IsClosed s) (hx : x ∈ s) : y ∈ s :=
   specializes_iff_forall_closed.1 h s hs hx
@@ -116,17 +116,17 @@ theorem IsClosed.not_specializes (hs : IsClosed s) (hx : x ∈ s) (hy : y ∉ s)
   hy <| h.mem_closed hs hx
 
 theorem specializes_iff_mem_closure : x ⤳ y ↔ y ∈ closure ({x} : Set X) :=
-  (specializes_TFAE x y).out 0 4
+  (specializes_TFAE x y).out 1 5
 
 alias ⟨Specializes.mem_closure, _⟩ := specializes_iff_mem_closure
 
 theorem specializes_iff_closure_subset : x ⤳ y ↔ closure ({y} : Set X) ⊆ closure {x} :=
-  (specializes_TFAE x y).out 0 5
+  (specializes_TFAE x y).out 1 6
 
 alias ⟨Specializes.closure_subset, _⟩ := specializes_iff_closure_subset
 
 theorem specializes_iff_clusterPt : x ⤳ y ↔ ClusterPt y (pure x) :=
-  (specializes_TFAE x y).out 0 6
+  (specializes_TFAE x y).out 1 7
 
 theorem Filter.HasBasis.specializes_iff {ι} {p : ι → Prop} {s : ι → Set X}
     (h : (𝓝 y).HasBasis p s) : x ⤳ y ↔ ∀ i, p i → x ∈ s i :=

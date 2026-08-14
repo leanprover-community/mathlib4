@@ -274,7 +274,7 @@ theorem pi_univ_Ioc_update_union (x y : ∀ i, α i) (i₀ : ι) (m : α i₀) (
         pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) =
       pi univ fun i ↦ Ioc (x i) (y i) := by
   simp_rw [pi_univ_Ioc_update_left hm.1, pi_univ_Ioc_update_right hm.2, ← union_inter_distrib_right,
-    ← setOf_or, le_or_gt, setOf_true, univ_inter]
+    ← ofPred_or, le_or_gt, ofPred_true, univ_inter]
 
 /-- If `x`, `y`, `x'`, and `y'` are functions `Π i : ι, α i`, then
 the set difference between the box `[x, y]` and the product of the open intervals `(x' i, y' i)`

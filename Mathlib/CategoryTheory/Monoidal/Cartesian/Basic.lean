@@ -474,7 +474,7 @@ instance (priority := low) toSymmetricCategory : SymmetricCategory C where
 
 /-- `CartesianMonoidalCategory` implies `BraidedCategory`.
 This is not an instance to prevent diamonds. -/
-@[implicit_reducible]
+@[instance_reducible]
 def _root_.CategoryTheory.BraidedCategory.ofCartesianMonoidalCategory : BraidedCategory C where
   braiding X Y := { hom := lift (snd _ _) (fst _ _), inv := lift (snd _ _) (fst _ _) }
 
@@ -494,6 +494,19 @@ instance : Subsingleton (SymmetricCategory C) where
   allEq := by rintro ⟨_⟩ ⟨_⟩; congr; exact Subsingleton.elim _ _
 
 end BraidedCategory
+
+instance preservesMonomorphisms_tensorLeft (X : C) :
+    Functor.PreservesMonomorphisms (tensorLeft X) where
+  preserves f hf := {
+    right_cancellation _ _ w := by
+      apply hom_ext
+      · simpa using w =≫ fst _ _
+      · simpa [cancel_mono_assoc_iff] using w =≫ snd _ _ }
+
+instance preservesMonomorphisms_tensorRight (X : C) :
+    Functor.PreservesMonomorphisms (tensorRight X) :=
+  letI := BraidedCategory.ofCartesianMonoidalCategory (C := C)
+  Functor.PreservesMonomorphisms.of_iso (BraidedCategory.tensorLeftIsoTensorRight _)
 
 instance (priority := 100) : Limits.HasFiniteProducts C :=
   letI : ∀ (X Y : C), Limits.HasLimit (Limits.pair X Y) := fun _ _ =>
@@ -688,12 +701,12 @@ theorem prodComparisonBifunctorNatTrans_comp : prodComparisonBifunctorNatTrans (
   ext; simp [prodComparison_comp]
 
 instance (A : C) [∀ B, IsIso (prodComparison F A B)] : IsIso (prodComparisonNatTrans F A) := by
-  letI : ∀ X, IsIso ((prodComparisonNatTrans F A).app X) := by assumption
+  let : ∀ X, IsIso ((prodComparisonNatTrans F A).app X) := by assumption
   apply NatIso.isIso_of_isIso_app
 
 set_option backward.defeqAttrib.useBackward true in
 instance [∀ A B, IsIso (prodComparison F A B)] : IsIso (prodComparisonBifunctorNatTrans F) := by
-  letI : ∀ X, IsIso ((prodComparisonBifunctorNatTrans F).app X) :=
+  let : ∀ X, IsIso ((prodComparisonBifunctorNatTrans F).app X) :=
     fun _ ↦ by dsimp; apply NatIso.isIso_of_isIso_app
   apply NatIso.isIso_of_isIso_app
 
@@ -757,7 +770,6 @@ end PreservesLimitPairs
 
 section ProdComparisonIso
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `prodComparison F A B` is an isomorphism, then `F` preserves the limit of `pair A B`. -/
 lemma preservesLimit_pair_of_isIso_prodComparison (A B : C)
     [IsIso (prodComparison F A B)] :
@@ -919,7 +931,6 @@ lemma μ_snd (X Y : C) : μ F X Y ≫ F.map (snd X Y) = snd (F.obj X) (F.obj Y) 
   (cancel_epi (μIso _ _ _).inv).1 (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 @[reassoc]
 lemma μ_comp [(F ⋙ G).Monoidal] (X Y : C) : μ (F ⋙ G) X Y = μ G _ _ ≫ G.map (μ F X Y) := by

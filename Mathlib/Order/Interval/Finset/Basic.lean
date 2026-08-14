@@ -264,7 +264,7 @@ theorem Ioo_self : Ioo a a = ∅ :=
 variable {a}
 
 /-- A set with upper and lower bounds in a locally finite order is a fintype -/
-@[implicit_reducible]
+@[instance_reducible]
 def _root_.Set.fintypeOfMemBounds {s : Set α} [DecidablePred (· ∈ s)] (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds s) : Fintype s :=
   Set.fintypeSubset (Set.Icc a b) fun _ hx => ⟨ha hx, hb hx⟩
@@ -547,16 +547,6 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
 theorem Ico_disjoint_Ico_consecutive (a b c : α) : Disjoint (Ico a b) (Ico b c) :=
   disjoint_left.2 fun _ hab hbc => (mem_Ico.mp hab).2.not_ge (mem_Ico.mp hbc).1
 
-@[simp]
-theorem Ici_top [OrderTop α] : Ici (⊤ : α) = {⊤} := Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
-
-@[simp]
-theorem Iic_bot [OrderBot α] : Iic (⊥ : α) = {⊥} := Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
-
-instance [OrderBot α] : Unique (Iic (⊥ : α)) := by
-  rw [Iic_bot]
-  infer_instance
-
 section DecidableEq
 
 variable [DecidableEq α]
@@ -648,21 +638,19 @@ theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
   grind
 
 theorem card_Ico_eq_card_Icc_sub_one (a b : α) : #(Ico a b) = #(Icc a b) - 1 := by
-  classical
-    by_cases h : a ≤ b
-    · rw [Icc_eq_cons_Ico h, card_cons]
-      exact (Nat.add_sub_cancel _ _).symm
-    · rw [Ico_eq_empty fun h' => h h'.le, Icc_eq_empty h, card_empty, Nat.zero_sub]
+  by_cases h : a ≤ b
+  · rw [Icc_eq_cons_Ico h, card_cons]
+    exact (Nat.add_sub_cancel _ _).symm
+  · rw [Ico_eq_empty fun h' => h h'.le, Icc_eq_empty h, card_empty, Nat.zero_sub]
 
 theorem card_Ioc_eq_card_Icc_sub_one (a b : α) : #(Ioc a b) = #(Icc a b) - 1 :=
   @card_Ico_eq_card_Icc_sub_one αᵒᵈ _ _ _ _
 
 theorem card_Ioo_eq_card_Ico_sub_one (a b : α) : #(Ioo a b) = #(Ico a b) - 1 := by
-  classical
-    by_cases h : a < b
-    · rw [Ico_eq_cons_Ioo h, card_cons]
-      exact (Nat.add_sub_cancel _ _).symm
-    · rw [Ioo_eq_empty h, Ico_eq_empty h, card_empty, Nat.zero_sub]
+  by_cases h : a < b
+  · rw [Ico_eq_cons_Ioo h, card_cons]
+    exact (Nat.add_sub_cancel _ _).symm
+  · rw [Ioo_eq_empty h, Ico_eq_empty h, card_empty, Nat.zero_sub]
 
 theorem card_Ioo_eq_card_Ioc_sub_one (a b : α) : #(Ioo a b) = #(Ioc a b) - 1 :=
   @card_Ioo_eq_card_Ico_sub_one αᵒᵈ _ _ _ _
@@ -755,6 +743,9 @@ theorem Ici_eq_cons_Ioi (a : α) : Ici a = (Ioi a).cons a notMem_Ioi_self := by
 theorem card_Ioi_eq_card_Ici_sub_one (a : α) : #(Ioi a) = #(Ici a) - 1 := by
   rw [Ici_eq_cons_Ioi, card_cons, Nat.add_sub_cancel_right]
 
+@[simp]
+theorem Ici_top [OrderTop α] : Ici (⊤ : α) = {⊤} := by ext; simp
+
 end OrderTop
 
 section OrderBot
@@ -780,6 +771,13 @@ theorem Iic_eq_cons_Iio (b : α) : Iic b = (Iio b).cons b notMem_Iio_self := by
 
 theorem card_Iio_eq_card_Iic_sub_one (a : α) : #(Iio a) = #(Iic a) - 1 := by
   rw [Iic_eq_cons_Iio, card_cons, Nat.add_sub_cancel_right]
+
+@[simp]
+theorem Iic_bot [OrderBot α] : Iic (⊥ : α) = {⊥} := by ext; simp
+
+instance [OrderBot α] : Unique (Iic (⊥ : α)) where
+  default := ⟨⊥, by simp⟩
+  uniq := by simp
 
 end OrderBot
 

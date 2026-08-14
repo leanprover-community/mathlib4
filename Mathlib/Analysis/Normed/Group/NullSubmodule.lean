@@ -42,7 +42,7 @@ def nullSubgroup : Subgroup M where
     refine (norm_mul_le' x y).trans_eq ?_
     rw [hx, hy, add_zero]
   one_mem' := norm_one'
-  inv_mem' {x} (hx : ‖x‖ = 0) := by simpa only [Set.mem_setOf_eq, norm_inv'] using hx
+  inv_mem' {x} (hx : ‖x‖ = 0) := by simpa only [Set.mem_ofPred_eq, norm_inv'] using hx
 
 @[to_additive]
 lemma isClosed_nullSubgroup : IsClosed (nullSubgroup M : Set M) := by
