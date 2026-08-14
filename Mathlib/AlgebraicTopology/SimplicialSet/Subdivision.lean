@@ -63,7 +63,6 @@ instance : ex.{u}.IsRightAdjoint := sdExAdjunction.isRightAdjoint
 
 namespace stdSimplex
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural isomorphism `stdSimplex ⋙ sd ≅ SimplexCategory.sd`. -/
 noncomputable def sdIso : stdSimplex.{u} ⋙ sd ≅ SimplexCategory.sd :=
   Presheaf.isExtensionAlongULiftYoneda _

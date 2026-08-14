@@ -39,12 +39,11 @@ universe u₁ u₂ w
 
 namespace CategoryTheory
 
-open Limits CategoryTheory.Functor
+open Limits CategoryTheory.Functor GaloisCategory
 
 variable {C : Type u₁} [Category.{u₂} C]
 
 namespace PreGaloisCategory
-
 
 section Decomposition
 
@@ -58,7 +57,6 @@ non-trivial subobjects which have strictly smaller fiber and conclude by the ind
 
 -/
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The trivial case if `X` is connected. -/
 private lemma has_decomp_connected_components_aux_conn (X : C) [IsConnected X] :
@@ -119,7 +117,7 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
 theorem has_decomp_connected_components (X : C) :
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → f i ⟶ X) (_ : IsColimit (Cofan.mk X g)),
       (∀ i, IsConnected (f i)) ∧ Finite ι := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   exact has_decomp_connected_components_aux F (Nat.card <| F.obj X) X rfl
 
 /-- In a Galois category, every object is the sum of connected objects. -/
