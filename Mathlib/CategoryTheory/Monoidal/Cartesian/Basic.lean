@@ -495,6 +495,19 @@ instance : Subsingleton (SymmetricCategory C) where
 
 end BraidedCategory
 
+instance preservesMonomorphisms_tensorLeft (X : C) :
+    Functor.PreservesMonomorphisms (tensorLeft X) where
+  preserves f hf := {
+    right_cancellation _ _ w := by
+      apply hom_ext
+      · simpa using w =≫ fst _ _
+      · simpa [cancel_mono_assoc_iff] using w =≫ snd _ _ }
+
+instance preservesMonomorphisms_tensorRight (X : C) :
+    Functor.PreservesMonomorphisms (tensorRight X) :=
+  letI := BraidedCategory.ofCartesianMonoidalCategory (C := C)
+  Functor.PreservesMonomorphisms.of_iso (BraidedCategory.tensorLeftIsoTensorRight _)
+
 instance (priority := 100) : Limits.HasFiniteProducts C :=
   letI : ∀ (X Y : C), Limits.HasLimit (Limits.pair X Y) := fun _ _ =>
     .mk ⟨_, tensorProductIsBinaryProduct _ _⟩
