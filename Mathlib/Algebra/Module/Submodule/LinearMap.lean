@@ -148,7 +148,7 @@ theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (
   rfl
 
 lemma coe_domRestrict (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
-    ⇑(f.domRestrict p) = Set.restrict p f := rfl
+    ⇑(f.domRestrict p) = Set.domRestrict p f := rfl
 
 /-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
 linear map M₂ → p.
@@ -185,7 +185,6 @@ section
 variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂']
   (p : M₂' →ₗ[R₂] M₂) (hp : Injective p) (h : ∀ c, f c ∈ range p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear map `f : M → M₂` whose values lie in the image of an injective linear map
 `p : M₂' → M₂` admits a unique lift to a linear map `M → M₂'`. -/
 noncomputable def codLift :
