@@ -88,7 +88,7 @@ lemma anodyneExtensions.horn_ι {n : ℕ} [NeZero n] (i : Fin (n + 1)) :
   exact le_llp_rlp _ _ (modelCategoryQuillen.horn_ι_mem_J n i)
 
 attribute [local instance] Cardinal.fact_isRegular_aleph0
-  Cardinal.orderBotShrinkIioAleph0Ord
+  Cardinal.orderBotAleph0OrdToType
 
 instance (n : ℕ) : MorphismProperty.IsSmall.{u}
     (MorphismProperty.ofHoms.{u} (fun (i : Fin (n + 2)) ↦ Λ[n + 1, i].ι)) :=

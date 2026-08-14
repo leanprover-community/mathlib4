@@ -529,12 +529,12 @@ lemma exists_cardinal_directed (J : Type w) [SmallCategory J] (κ : Cardinal.{w}
     [Fact κ.IsRegular] [IsCardinalFiltered J κ] :
     ∃ (α : Type w) (_ : PartialOrder α) (_ : IsCardinalFiltered α κ)
       (F : α ⥤ J), F.Final := by
-  have := isFiltered_of_isCardinalFiltered (Shrink (Set.Iio κ.ord)) κ
+  have := isFiltered_of_isCardinalFiltered κ.ord.ToType κ
   obtain ⟨α, _, _, F, _⟩ :=
-    exists_cardinal_directed.aux (J × Shrink (Set.Iio κ.ord)) κ (fun ⟨j, x⟩ ↦
+    exists_cardinal_directed.aux (J × κ.ord.ToType) κ (fun ⟨j, x⟩ ↦
       ⟨⟨j, Order.succ x⟩, (𝟙 _, homOfLE (Order.le_succ x)), ⟨fun ⟨_, f⟩ ↦ by
-        have : NoMaxOrder (Shrink (Set.Iio κ.ord)) := by
-          rw [← Ordinal.isSuccPrelimit_type_lt_iff, Ordinal.type_lt_shrink_Iio]
+        have : NoMaxOrder κ.ord.ToType := by
+          rw [← Ordinal.isSuccPrelimit_type_lt_iff, Ordinal.type_toType]
           exact (Cardinal.isSuccLimit_ord
             (Cardinal.IsRegular.aleph0_le Fact.out)).isSuccPrelimit
         exact not_isMax _ (Order.max_of_succ_le (leOfHom f))⟩⟩)

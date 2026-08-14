@@ -27,14 +27,13 @@ namespace Cardinal
 lemma mk_biUnion_le_of_le_lift {β : Type v} {o : Ordinal.{u}} {c : Cardinal.{v}}
     (ho : lift.{v} o.card ≤ lift.{u} c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
     (hA : ∀ j < o, #(A j) ≤ c) : #(⋃ j < o, A j) ≤ c := by
-  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup,
-    ← (orderIsoShrink (Iio o)).symm.surjective.range_comp]
+  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← ToType.mk.symm.surjective.range_comp]
   rw [← lift_le.{u}]
   apply ((mk_iUnion_le_lift _).trans _).trans_eq (mul_eq_self (aleph0_le_lift.2 hc))
-  rw [mk_shrink_Iio]
+  rw [mk_toType]
   refine mul_le_mul' ho (ciSup_le' ?_)
   intro i
-  simpa using hA _ ((equivShrink (Iio o)).symm i).prop
+  simpa using hA _ i.toOrd.prop
 
 lemma mk_biUnion_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
     (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
@@ -52,15 +51,14 @@ theorem lift_card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{v}) :
     Cardinal.lift.{u} (⨆ i, f i).card ≤ Cardinal.sum fun i ↦ (f i).card := by
   by_cases! hf : ¬ BddAbove (range f)
   · simp [ciSup_of_not_bddAbove hf]
-  simp_rw [← mk_shrink_Iio]
+  simp_rw [← mk_toType]
   rw [← mk_sigma, ← Cardinal.lift_id'.{v} #(Σ _, _), ← Cardinal.lift_umax.{v, u}]
-  apply lift_mk_le_lift_mk_of_surjective
-    (f := equivShrink (Iio (⨆ i, f i)) ∘ fun x => ⟨(equivShrink (Iio (f x.1))).symm x.2,
-      mem_Iio.mpr (((equivShrink (Iio (f x.1))).symm x.2).2.trans_le (le_ciSup hf _))⟩)
+  apply lift_mk_le_lift_mk_of_surjective (f := .mk ∘ (⟨·.2.toOrd,
+    (mem_Iio.mp (ToType.toOrd _).2).trans_le (le_ciSup hf _)⟩))
   rw [EquivLike.comp_surjective]
   rintro ⟨x, hx⟩
   obtain ⟨i, hi⟩ := (lt_ciSup_iff' hf).mp hx
-  exact ⟨⟨i, equivShrink _ ⟨x, hi⟩⟩, by simp⟩
+  exact ⟨⟨i, .mk ⟨x, hi⟩⟩, by simp⟩
 
 theorem card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :
     (⨆ i, f i).card ≤ Cardinal.sum fun i ↦ (f i).card := by
@@ -68,17 +66,16 @@ theorem card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :
   rwa [Cardinal.lift_id'] at this
 
 theorem card_iSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Iio o → Ordinal.{max u v}) :
-    (⨆ a : Iio o, f a).card ≤
-      Cardinal.sum fun i : Shrink (Iio o) ↦ (f ((equivShrink (Iio o)).symm i)).card := by
+    (⨆ a : Iio o, f a).card ≤ Cardinal.sum fun i : o.ToType ↦ (f i.toOrd).card := by
   apply le_of_eq_of_le (congr_arg _ _).symm (card_iSup_le_sum_card _)
-  simpa using (orderIsoShrink (Iio o)).symm.iSup_comp (g := fun x ↦ f x)
+  simpa using ToType.mk.symm.iSup_comp (g := fun x ↦ f x)
 
 theorem card_iSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Iio o → Ordinal.{max u v}) :
     (⨆ a : Iio o, f a).card ≤ Cardinal.lift.{v} o.card * ⨆ a : Iio o, (f a).card := by
   apply (card_iSup_Iio_le_sum_card f).trans
   convert! ← sum_le_lift_mk_mul_iSup _
-  · exact mk_shrink_Iio o
-  · exact (orderIsoShrink (Iio o)).symm.iSup_comp (g := fun x ↦ (f x).card)
+  · exact mk_toType o
+  · exact ToType.mk.symm.iSup_comp (g := fun x ↦ (f x).card)
 
 theorem card_iSup_le_lift {ι : Type u} {c : Cardinal} {f : ι → Ordinal.{v}}
     (hι : Cardinal.lift.{v} #ι ≤ Cardinal.lift.{u} c) (hf : ∀ i, (f i).card ≤ c) :

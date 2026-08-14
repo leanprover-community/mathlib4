@@ -179,13 +179,11 @@ theorem limitRecOn_limit {motive} (o H₁ H₂ H₃ h) :
     @limitRecOn motive o H₁ H₂ H₃ = H₃ o h fun x _h => @limitRecOn motive x H₁ H₂ H₃ :=
   SuccOrder.limitRecOn_of_isSuccLimit ..
 
-instance orderTopShrinkIioSucc (o : Ordinal) : OrderTop (Shrink (Iio (succ o))) :=
+instance orderTopToTypeSucc (o : Ordinal) : OrderTop (succ o).ToType :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
 
-@[deprecated (since := "2026-08-14")] alias orderTopToTypeSucc := orderTopShrinkIioSucc
-
 theorem enum_succ_eq_top {o : Ordinal} :
-    enum (α := Shrink (Iio (succ o))) (· < ·) ⟨o, type_lt_shrink_Iio _ ▸ lt_succ o⟩ = ⊤ :=
+    enum (α := (succ o).ToType) (· < ·) ⟨o, type_toType _ ▸ lt_succ o⟩ = ⊤ :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -198,9 +196,8 @@ theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder
   · rw [Subtype.mk_lt_mk, lt_succ_iff]
 
 @[deprecated isSuccPrelimit_type_lt_iff (since := "2026-04-12")]
-theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) :
-    NoMaxOrder (Shrink (Iio o)) :=
-  ⟨has_succ_of_type_succ_lt (type_lt_shrink_Iio _ ▸ ho)⟩
+theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.ToType :=
+  ⟨has_succ_of_type_succ_lt (type_toType _ ▸ ho)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSuccLimit (type r)) (x) :
@@ -1024,19 +1021,17 @@ theorem isSuccLimit_ord {c} (hc : ℵ₀ ≤ c) : IsSuccLimit (ord c) := by
     · exact hc.trans ha
     · simp
 
-@[deprecated "Inline the proof if you already have a `NoMaxOrder (Shrink (Iio ord))` goal."
-(since := "2026-06-18")]
-theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder (Shrink (Iio c.ord)) := by
-  rw [← Ordinal.isSuccPrelimit_type_lt_iff, Ordinal.type_lt_shrink_Iio]
+@[deprecated "This theorem exposes `Ordinal.ToType`; inline the proof if you already have an \
+`ord.ToType` goal." (since := "2026-06-18")]
+theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.ToType := by
+  rw [← Ordinal.isSuccPrelimit_type_lt_iff, Ordinal.type_toType]
   exact (isSuccLimit_ord h).isSuccPrelimit
 
-instance : Nonempty (Shrink (Iio (ℵ₀ : Cardinal.{u}).ord)) := by simp
+instance : Nonempty (ℵ₀ : Cardinal.{u}).ord.ToType := by simp
 
 /-- This can be made a local instance in order to get `⊥`
-in `Shrink (Iio Cardinal.aleph0.ord)`. -/
-abbrev orderBotShrinkIioAleph0Ord : OrderBot (Shrink (Iio Cardinal.aleph0.{u}.ord)) :=
+in `Cardinal.aleph0.ord.ToType`. -/
+abbrev orderBotAleph0OrdToType : OrderBot Cardinal.aleph0.{u}.ord.ToType :=
   WellFoundedLT.toOrderBot _
-
-@[deprecated (since := "2026-08-14")] alias orderBotAleph0OrdToType := orderBotShrinkIioAleph0Ord
 
 end Cardinal

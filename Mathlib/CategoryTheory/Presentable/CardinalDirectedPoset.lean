@@ -197,7 +197,7 @@ def hasCardinalLTWithTerminal : ObjectProperty (CardinalDirectedPoset κ) :=
 
 instance : ObjectProperty.EssentiallySmall.{u} (hasCardinalLTWithTerminal κ) where
   exists_small_le' := by
-    obtain ⟨X, hX⟩ : ∃ (X : Type u), Cardinal.mk X = κ := ⟨Shrink (Set.Iio κ.ord), by simp⟩
+    obtain ⟨X, hX⟩ : ∃ (X : Type u), Cardinal.mk X = κ := ⟨κ.ord.ToType, by simp⟩
     let α : Type u := Σ (S : Set X) (_ : PartialOrder S),
       ULift.{u} (PLift (IsCardinalFiltered S κ))
     let (a : α) : PartialOrder a.1 := a.2.1

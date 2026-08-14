@@ -81,14 +81,14 @@ noncomputable section
 set_option quotPrecheck false
 
 /-- Index a basis of E/F using the initial ordinal of the cardinal `Module.rank F E`. -/
-local notation "ι" => Shrink (Set.Iio (Module.rank F E).ord)
+local notation "ι" => (Module.rank F E).ord.ToType
 
 local notation i "⁺" => succ i -- Note: conflicts with `PosPart` notation
 
 /-- A basis of E/F indexed by the initial ordinal. -/
 def wellOrderedBasis : Basis ι F E :=
   (chooseBasis F E).reindex
-    (Cardinal.eq.mp <| (mk_shrink_Iio_ord _).trans <| rank_eq_card_chooseBasisIndex F E).some.symm
+    (Cardinal.eq.mp <| (mk_ord_toType _).trans <| rank_eq_card_chooseBasisIndex F E).some.symm
 
 local notation "b" => wellOrderedBasis F E
 local notation "Ē" => AlgebraicClosure E
@@ -104,7 +104,7 @@ section Algebraic
 variable [rank_inf : Fact (ℵ₀ ≤ Module.rank F E)]
 
 lemma noMaxOrder_rank_toType : NoMaxOrder ι := by
-  rw [← Ordinal.isSuccPrelimit_type_lt_iff, Ordinal.type_lt_shrink_Iio]
+  rw [← Ordinal.isSuccPrelimit_type_lt_iff, Ordinal.type_toType]
   exact (Cardinal.isSuccLimit_ord Fact.out).isSuccPrelimit
 attribute [local instance] noMaxOrder_rank_toType
 
@@ -127,7 +127,7 @@ def leastExt : ι → ι :=
       refine ne_of_lt ?_ this
       conv_rhs => rw [topEquiv.toLinearEquiv.rank_eq]
       have := mk_Iio_lt i (by simp)
-      rw [mk_shrink_Iio, card_ord] at this
+      rw [mk_toType, card_ord] at this
       obtain eq | lt := rank_inf.out.eq_or_lt
       · simp_rw [← eq, mk_lt_aleph0_iff] at this
         have : FiniteDimensional F (adjoin F s) :=
@@ -246,7 +246,7 @@ theorem equivSucc_coherence (i f) : (equivSucc i f).1 = embFunctor F E (le_succ 
 
 section Lim
 
-variable {i : WithTop (Shrink (Set.Iio (Module.rank F E).ord))} -- WithTop ι doesn't work
+variable {i : WithTop (Module.rank F E).ord.ToType} -- WithTop ι doesn't work
 
 theorem directed_filtration : Directed (· ≤ ·) fun j : Iio i ↦ filtration j.1 :=
   (filtration.monotone.comp <| Subtype.mono_coe _).directed_le
@@ -267,7 +267,7 @@ open WithTop
 
 lemma eq_bot_of_not_nonempty (hi : ¬ Nonempty (Iio i)) : filtration i = ⊥ := by
   cases i
-  · have := mk_ne_zero_iff.mp (rank_pos.trans_eq (mk_shrink_Iio_ord <| Module.rank F E).symm).ne'
+  · have := mk_ne_zero_iff.mp (rank_pos.trans_eq (mk_ord_toType <| Module.rank F E).symm).ne'
     rw [← range_coe] at hi; exact (hi inferInstance).elim
   · exact bot_unique <| adjoin_le_iff.mpr fun _ ⟨j, hj, _⟩ ↦ (hi ⟨j, coe_lt_coe.mpr hj⟩).elim
 
@@ -322,9 +322,9 @@ theorem cardinal_eq_two_pow_rank [Algebra.IsSeparable F E]
   rw [Emb.Cardinal.embEquivPi.cardinal_eq, mk_pi]
   apply le_antisymm
   · rw [← power_eq_two_power rank_inf natCast_le_aleph0 rank_inf]
-    conv_rhs => rw [← mk_shrink_Iio_ord (Module.rank F E), ← prod_const']
+    conv_rhs => rw [← mk_ord_toType (Module.rank F E), ← prod_const']
     exact prod_le_prod _ _ fun i ↦ (Emb.Cardinal.deg_lt_aleph0 _).le
-  · conv_lhs => rw [← mk_shrink_Iio_ord (Module.rank F E), ← prod_const']
+  · conv_lhs => rw [← mk_ord_toType (Module.rank F E), ← prod_const']
     exact prod_le_prod _ _ Emb.Cardinal.two_le_deg
 
 theorem cardinal_eq_of_isSeparable [Algebra.IsSeparable F E] :

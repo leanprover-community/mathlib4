@@ -274,24 +274,24 @@ open ZFSet
 
 The elements of `o.toPSet` are all `a.toPSet` with `a < o`. -/
 noncomputable def toPSet (o : Ordinal.{u}) : PSet.{u} :=
-  ⟨Shrink (Iio o), fun a ↦ toPSet ((equivShrink (Iio o)).symm a)⟩
+  ⟨o.ToType, fun a ↦ toPSet a⟩
 termination_by o
-decreasing_by exact ((equivShrink (Iio o)).symm a).prop
+decreasing_by exact a.toOrd.prop
 
 @[simp]
-theorem type_toPSet (o : Ordinal) : o.toPSet.Type = Shrink (Iio o) := by
+theorem type_toPSet (o : Ordinal) : o.toPSet.Type = o.ToType := by
   rw [toPSet]
   rfl
 
 theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, x.Equiv a.toPSet := by
   rw [toPSet, PSet.mem_def]
-  simpa using ((orderIsoShrink (Iio o)).exists_congr_left (p := fun y ↦ x.Equiv y.1.toPSet)).symm
+  simpa using ((@ToType.mk o).exists_congr_left (p := fun y ↦ x.Equiv y.1.toPSet)).symm
 
 @[simp]
 theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
   rw [toPSet, PSet.rank]
   conv_rhs => rw [← _root_.iSup_succ o]
-  convert! (orderIsoShrink (Iio o)).symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
+  convert! ToType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
   rw [rank_toPSet]
 termination_by o
 decreasing_by rename_i x; exact x.2

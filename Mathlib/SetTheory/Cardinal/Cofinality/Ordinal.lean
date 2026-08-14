@@ -58,11 +58,10 @@ theorem cof_type (α : Type*) [LinearOrder α] [WellFoundedLT α] :
 @[deprecated (since := "2026-02-18")] alias cof_type_lt := cof_type
 
 @[simp]
-theorem cof_shrink_Iio (o : Ordinal) : Order.cof (Shrink (Iio o)) = o.cof := by
-  conv_rhs => rw [← type_lt_shrink_Iio o, cof_type]
+theorem cof_toType (o : Ordinal) : Order.cof o.ToType = o.cof := by
+  conv_rhs => rw [← type_toType o, cof_type]
 
-@[deprecated (since := "2026-08-14")] alias cof_toType := cof_shrink_Iio
-@[deprecated (since := "2026-02-18")] alias cof_eq_cof_toType := cof_shrink_Iio
+@[deprecated (since := "2026-02-18")] alias cof_eq_cof_toType := cof_toType
 @[deprecated (since := "2026-02-18")] alias le_cof_type := le_cof_iff
 @[deprecated (since := "2026-02-18")] alias cof_type_le := cof_le
 @[deprecated (since := "2026-02-18")] alias lt_cof_type := cof_le
@@ -83,7 +82,7 @@ theorem cof_Iio (o : Ordinal.{u}) : Order.cof (Iio o) = cof (lift.{u + 1} o) := 
   rw [Order.cof_Iio, typein_ordinal]
 
 theorem cof_le_card (o : Ordinal) : cof o ≤ card o := by
-  simpa using cof_le_cardinalMk (Shrink (Iio o))
+  simpa using cof_le_cardinalMk o.ToType
 
 theorem cof_ord_le (c : Cardinal) : c.ord.cof ≤ c := by
   simpa using cof_le_card c.ord
@@ -93,7 +92,7 @@ theorem ord_cof_le (o : Ordinal) : o.cof.ord ≤ o :=
 
 @[simp]
 theorem cof_eq_zero {o} : cof o = 0 ↔ o = 0 := by
-  rw [← cof_shrink_Iio, cof_eq_zero_iff, isEmpty_shrink_Iio_iff]
+  rw [← cof_toType, cof_eq_zero_iff, isEmpty_toType_iff]
 
 @[deprecated cof_eq_zero (since := "2026-02-18")]
 theorem cof_ne_zero {o} : cof o ≠ 0 ↔ o ≠ 0 :=
@@ -129,7 +128,7 @@ theorem one_lt_cof_iff {o : Ordinal} : 1 < cof o ↔ IsSuccLimit o := by
 
 @[simp]
 theorem cof_lt_aleph0_iff {o : Ordinal} : cof o < ℵ₀ ↔ cof o ≤ 1 := by
-  simpa using Order.cof_lt_aleph0_iff (α := Shrink (Iio o))
+  simpa using Order.cof_lt_aleph0_iff (α := o.ToType)
 
 @[simp]
 theorem aleph0_le_cof_iff {o : Ordinal} : ℵ₀ ≤ cof o ↔ 1 < cof o := by
@@ -189,7 +188,7 @@ theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α
 
 @[simp]
 theorem cof_ord_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
-  simpa using Order.cof_ord_cof (Shrink (Iio o))
+  simpa using Order.cof_ord_cof o.ToType
 
 @[deprecated (since := "2026-03-21")] alias cof_cof := cof_ord_cof
 
