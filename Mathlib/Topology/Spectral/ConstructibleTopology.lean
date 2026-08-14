@@ -1,10 +1,12 @@
 /-
 Copyright (c) 2025 Jiedong Jiang, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Jiedong Jiang, Christian Merten
+Authors: Johan Commelin, Jiedong Jiang, Fangming Li, Christian Merten
 -/
 module
 
+public import Mathlib.Topology.Constructible
+public import Mathlib.Topology.Order.GenerateFromLattice
 public import Mathlib.Topology.Spectral.Basic
 public import Mathlib.Topology.WithTopology
 public import Mathlib.Topology.JacobsonSpace
@@ -47,7 +49,12 @@ def constructibleTopology (X : Type*) [TopologicalSpace X] : TopologicalSpace X 
 abbrev WithConstructibleTopology (X : Type*) [TopologicalSpace X] : Type _ :=
   WithTopology X (constructibleTopology X)
 
-open Topology
+open TopologicalSpace Topology
+
+variable (X) in
+@[simp]
+lemma empty_mem_constructibleTopologySubbasis : ∅ ∈ constructibleTopologySubbasis X :=
+  Or.intro_left _ ⟨isOpen_empty, isCompact_empty⟩
 
 lemma WithConstructibleTopology.isOpen_iff {s : Set (WithConstructibleTopology X)} :
     IsOpen s ↔ IsOpen[constructibleTopology X] (WithTopology.toTopology _ ⁻¹' s) :=
@@ -71,6 +78,38 @@ lemma IsCompact.isOpen_constructibleTopology_of_isClosed {s : Set X}
 lemma compl_mem_constructibleTopologySubbasis_iff {s : Set X} :
     sᶜ ∈ constructibleTopologySubbasis X ↔ s ∈ constructibleTopologySubbasis X := by
   grind [constructibleTopologySubbasis, isClosed_compl_iff, compl_compl]
+
+lemma compl_image_constructibleTopologySubbasis :
+    compl '' constructibleTopologySubbasis X = constructibleTopologySubbasis X := by
+  grind [constructibleTopologySubbasis, isClosed_compl_iff, compl_compl]
+
+lemma latticeClosure_constructibleTopologySubbasis [CompactSpace X] [QuasiSeparatedSpace X] :
+    latticeClosure (constructibleTopologySubbasis X) = { s | IsConstructible s } := by
+  rw [← BooleanSubalgebra.closure_eq_latticeClosure (empty_mem_constructibleTopologySubbasis X)
+      compl_image_constructibleTopologySubbasis]
+  dsimp only [IsConstructible, SetLike.setOfPred_mem_eq]
+  congr 1
+  refine le_antisymm ?_ (BooleanSubalgebra.closure_mono ?_)
+  · rw [BooleanSubalgebra.closure_le]
+    rintro s (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩)
+    · apply BooleanSubalgebra.subset_closure
+      grind [QuasiSeparatedSpace.isRetrocompact_iff_isCompact]
+    · rw [← compl_compl s]
+      refine BooleanSubalgebra.compl_mem (BooleanSubalgebra.subset_closure ?_)
+      grind [QuasiSeparatedSpace.isRetrocompact_iff_isCompact, IsClosed.isOpen_compl]
+  · grind [QuasiSeparatedSpace.isRetrocompact_iff_isCompact, constructibleTopologySubbasis]
+
+lemma constructibleTopologySubbasis_subset_isConstructible
+    [CompactSpace X] [QuasiSeparatedSpace X] :
+    constructibleTopologySubbasis X ⊆ { s | IsConstructible s } := by
+  simp [← latticeClosure_constructibleTopologySubbasis]
+
+variable (X) in
+lemma constructibleTopology_eq_generateFrom_isConstructible
+    [CompactSpace X] [QuasiSeparatedSpace X] :
+    constructibleTopology X = generateFrom { s | IsConstructible s } := by
+  rw [constructibleTopology, ← generateFrom_latticeClosure (constructibleTopologySubbasis X),
+    latticeClosure_constructibleTopologySubbasis]
 
 lemma isCompact_of_mem_constructibleTopologySubbasis [CompactSpace X] {s : Set X}
     (hs : s ∈ constructibleTopologySubbasis X) : IsCompact s := by
