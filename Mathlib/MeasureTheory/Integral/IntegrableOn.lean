@@ -483,6 +483,33 @@ theorem IntegrableOn.setLIntegral_lt_top {f : α → ℝ} {s : Set α} (hf : Int
     (∫⁻ x in s, ENNReal.ofReal (f x) ∂μ) < ∞ :=
   Integrable.lintegral_lt_top hf
 
+section RCLike
+
+variable {𝕜 : Type*} [RCLike 𝕜]
+
+theorem IntegrableOn.iff_ofReal {f : α → ℝ} :
+    IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : 𝕜)) s μ :=
+  Integrable.iff_ofReal
+
+theorem IntegrableOn.ofReal {f : α → ℝ} (hf : IntegrableOn f s μ) :
+    IntegrableOn (fun x ↦ (f x : 𝕜)) s μ :=
+  Integrable.ofReal hf
+
+theorem IntegrableOn.re_im_iff {f : α → 𝕜} :
+    IntegrableOn (fun x ↦ RCLike.re (f x)) s μ ∧
+      IntegrableOn (fun x ↦ RCLike.im (f x)) s μ ↔ IntegrableOn f s μ :=
+  Integrable.re_im_iff
+
+theorem IntegrableOn.re {f : α → 𝕜} (hf : IntegrableOn f s μ) :
+    IntegrableOn (fun x ↦ RCLike.re (f x)) s μ :=
+  Integrable.re hf
+
+theorem IntegrableOn.im {f : α → 𝕜} (hf : IntegrableOn f s μ) :
+    IntegrableOn (fun x ↦ RCLike.im (f x)) s μ :=
+  Integrable.im hf
+
+end RCLike
+
 theorem _root_.ContinuousLinearMap.integrableOn_comp {E H 𝕜 𝕜' : Type*}
     [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
     [NormedAddCommGroup E] [NormedSpace 𝕜' E] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
