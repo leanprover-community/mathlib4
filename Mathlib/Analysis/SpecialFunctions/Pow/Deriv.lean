@@ -11,8 +11,10 @@ public import Mathlib.Analysis.Calculus.FDeriv.Extend
 public import Mathlib.Analysis.Calculus.Deriv.Prod
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+import Mathlib.Topology.GDelta.MetrizableSpace
 
 /-!
 # Derivatives of power function on `ℂ`, `ℝ`, `ℝ≥0`, and `ℝ≥0∞`

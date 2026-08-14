@@ -30,7 +30,7 @@ for `𝒮ℒ` (= `SL(2, ℤ)`) of even weight.
 
 @[expose] public noncomputable section
 
-open UpperHalfPlane ModularForm SlashInvariantForm SlashInvariantFormClass ModularFormClass
+open UpperHalfPlane ModularForm SlashInvariantForm SlashInvariantFormClass
   CuspFormClass MatrixGroups OnePoint Filter EisensteinSeries Asymptotics
 
 open scoped Topology
