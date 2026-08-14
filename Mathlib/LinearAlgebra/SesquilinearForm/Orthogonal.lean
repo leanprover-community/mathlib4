@@ -65,20 +65,36 @@ theorem mem_orthogonalBilin_iff_le_ker_flip {y : M₂} :
     y ∈ orthogonalBilin B (span R₁ s) ↔ ∀ ⦃x⦄, x ∈ s → B x y = 0 := by
   simpa using! span_le (p := LinearMap.ker (B.flip y))
 
-@[simp] theorem orthogonalBilin_bot : orthogonalBilin B ⊥ = ⊤ := by ext; simp
+variable (B) in
+lemma orthogonalBilin_gc :
+    @GaloisConnection (Submodule R₁ M₁) (Submodule R₂ M₂)ᵒᵈ _ _
+      (orthogonalBilin B) (orthogonalBilin B.flip) :=
+  fun _ _ ↦ ⟨fun h _ hx _ hy ↦ h hy _ hx, fun h _ hy _ hx ↦ h hx _ hy⟩
 
-@[simp] theorem orthogonalBilin_ker : orthogonalBilin B (ker B) = ⊤ := by ext; simp +contextual
+theorem le_orthogonalBilin_of_le_orthogonalBilin {T : Submodule R₂ M₂}
+    (hST : T ≤ orthogonalBilin B S) : S ≤ orthogonalBilin B.flip T :=
+  ((orthogonalBilin_gc B) S T).mp hST
+
+theorem le_orthogonalBilin_iff_le_orthogonalBilin {T : Submodule R₂ M₂} :
+    S ≤ orthogonalBilin B.flip T ↔ T ≤ orthogonalBilin B S :=
+  ((orthogonalBilin_gc B) S T).symm
+
+@[simp] theorem orthogonalBilin_bot : orthogonalBilin B ⊥ = ⊤ :=
+  (orthogonalBilin_gc B).l_bot
+
+@[simp] theorem orthogonalBilin_ker : orthogonalBilin B (ker B) = ⊤ := by
+  ext; simp +contextual
 
 theorem orthogonalBilin_top_eq_ker : orthogonalBilin B ⊤ = ker B.flip := by
   ext x; simp [LinearMap.ext_iff]
 
 @[gcongr] theorem orthogonalBilin_le (h : S ≤ T) :
-    orthogonalBilin B T ≤ orthogonalBilin B S := fun _ hy _ hx ↦ hy _ (h hx)
+    orthogonalBilin B T ≤ orthogonalBilin B S := (orthogonalBilin_gc B).monotone_l h
 
 alias orthogonalBilin_anti := orthogonalBilin_le
 
 theorem orthogonalBilin_antitone : Antitone (orthogonalBilin B) :=
-  fun _ _ h => orthogonalBilin_le h
+  (orthogonalBilin_gc B).monotone_l
 
 theorem ker_flip_le_orthogonalBilin (S) : ker B.flip ≤ orthogonalBilin B S := by
   simp [← orthogonalBilin_top_eq_ker, orthogonalBilin_anti]
@@ -91,12 +107,6 @@ theorem orthogonalBilin_span_singleton (x : M₁) : orthogonalBilin B (R₁ ∙ 
 
 @[deprecated (since := "2026-06-19")]
 alias _root_.LinearMap.orthogonal_span_singleton_eq_to_lin_ker := orthogonalBilin_span_singleton
-
-variable (B) in
-lemma orthogonalBilin_gc :
-    @GaloisConnection (Submodule R₁ M₁) (Submodule R₂ M₂)ᵒᵈ _ _
-      (orthogonalBilin B) (orthogonalBilin B.flip) :=
-  fun _ _ ↦ ⟨fun h _ hx _ hy ↦ h hy _ hx, fun h _ hy _ hx ↦ h hx _ hy⟩
 
 theorem orthogonalBilin_sSup (s : Set (Submodule R₁ M₁)) :
     orthogonalBilin B (sSup s) = ⨅ S ∈ s, orthogonalBilin B S :=
@@ -117,7 +127,7 @@ variable (B) in
 
 /-- Every submodule is contained in the orthogonal complement of its orthogonal complement. -/
 theorem le_orthogonalBilin_orthogonalBilin :
-    S ≤ orthogonalBilin B.flip (orthogonalBilin B S) := fun _x hx _y hy ↦ hy _ hx
+    S ≤ orthogonalBilin B.flip (orthogonalBilin B S) := (orthogonalBilin_gc B).le_u_l S
 
 section IsRefl
 
@@ -128,23 +138,14 @@ theorem _root_.LinearMap.IsRefl.le_orthogonalBilin_orthogonalBilin (b : B.IsRefl
 
 end IsRefl
 
-theorem le_orthogonalBilin_of_le_orthogonalBilin {T : Submodule R₂ M₂}
-    (hST : T ≤ orthogonalBilin B S) : S ≤ orthogonalBilin B.flip T :=
-  le_trans le_orthogonalBilin_orthogonalBilin (orthogonalBilin_antitone hST)
-
-theorem le_orthogonalBilin_iff_le_orthogonalBilin {T : Submodule R₂ M₂} :
-    S ≤ orthogonalBilin B.flip T ↔ T ≤ orthogonalBilin B S :=
-  ⟨le_orthogonalBilin_of_le_orthogonalBilin, le_orthogonalBilin_of_le_orthogonalBilin⟩
-
 @[simp] theorem orthogonalBilin_orthogonalBilin_flip_orthogonalBilin (S) :
     orthogonalBilin B (orthogonalBilin B.flip (orthogonalBilin B S)) = orthogonalBilin B S :=
-  le_antisymm (orthogonalBilin_le le_orthogonalBilin_orthogonalBilin)
-    le_orthogonalBilin_orthogonalBilin
+  (orthogonalBilin_gc B).l_u_l_eq_l S
 
 @[simp] theorem orthogonalBilin_flip_orthogonalBilin_orthogonalBilin_flip (S : Submodule R₂ M₂) :
     orthogonalBilin B.flip (orthogonalBilin B (orthogonalBilin B.flip S)) =
       orthogonalBilin B.flip S :=
-  orthogonalBilin_orthogonalBilin_flip_orthogonalBilin S
+  (orthogonalBilin_gc B).u_l_u_eq_u S
 
 theorem orthogonalBilin_sup_orthogonalBilin_le_orthogonalBilin_inf (S T) :
     orthogonalBilin B S ⊔ orthogonalBilin B T ≤ orthogonalBilin B (S ⊓ T) :=
