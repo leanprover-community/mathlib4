@@ -53,7 +53,7 @@ structure IsSkewPrimitiveElem (g h a : A) : Prop where
 
 namespace IsSkewPrimitiveElem
 
-lemma zero : IsSkewPrimitiveElem R g h (0 : A) := by simp [isSkewPrimitiveElem_iff]
+@[simp] lemma zero : IsSkewPrimitiveElem R g h (0 : A) := by simp [isSkewPrimitiveElem_iff]
 
 lemma add (ha : IsSkewPrimitiveElem R g h a) (hb : IsSkewPrimitiveElem R g h b) :
     IsSkewPrimitiveElem R g h (a + b) where
@@ -113,6 +113,10 @@ lemma sub (ha : IsSkewPrimitiveElem R g h a) (hb : IsSkewPrimitiveElem R g h b) 
   sub_eq_add_neg a b ▸ ha.add hb.neg
 
 end IsSkewPrimitiveElem
+
+@[simp] lemma isSkewPrimitiveElem_neg :
+    IsSkewPrimitiveElem R g h (-a) ↔ IsSkewPrimitiveElem R g h a :=
+  ⟨fun ha ↦ neg_neg a ▸ ha.neg, .neg⟩
 
 end AddCommGroup
 
