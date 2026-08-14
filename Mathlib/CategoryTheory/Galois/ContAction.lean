@@ -16,7 +16,7 @@ public import Mathlib.Topology.Category.FinTopCat
 
 Let `G` be a topological group. In this file, we show
 that the category `ContAction FintypeCat G` is a Galois category.
-In order to do this, we show that the correspponding property
+In order to do this, we show that the corresponding property
 `isContinuous FintypeCat G` of objects in `Action FintypeCat G`
 consists of the union over all open subgroups `H` of `G` of the properties
 `trivialOnSet FintypeCat H` (which are satisfied by the representations
