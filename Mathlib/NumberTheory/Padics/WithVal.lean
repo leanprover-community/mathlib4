@@ -33,7 +33,7 @@ namespace Padic
 
 variable {p : ℕ} [Fact p.Prime]
 
-open NNReal WithZero UniformSpace
+open WithZero UniformSpace
 
 set_option backward.isDefEq.respectTransparency.types false in
 open MonoidWithZeroHom.ValueGroup₀ in

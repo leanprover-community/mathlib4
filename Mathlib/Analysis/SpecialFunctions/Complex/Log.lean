@@ -121,7 +121,7 @@ theorem log_conj_eq_ite (x : ℂ) : log (conj x) = if x.arg = π then log x else
   simp_rw [ofReal_neg, conj_I, mul_neg, neg_mul]
 
 theorem log_conj (x : ℂ) (h : x.arg ≠ π) : log (conj x) = conj (log x) := by
-  rw [log_conj_eq_ite, if_neg h]
+  rw [log_conj_eq_ite, ite_eq_right h]
 
 theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x) else -log x := by
   by_cases hx : x = 0
@@ -134,7 +134,8 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
   · rwa [inv_pos, Complex.normSq_pos]
   · rwa [map_ne_zero]
 
-theorem log_inv (x : ℂ) (hx : x.arg ≠ π) : log x⁻¹ = -log x := by rw [log_inv_eq_ite, if_neg hx]
+theorem log_inv (x : ℂ) (hx : x.arg ≠ π) : log x⁻¹ = -log x := by
+  rw [log_inv_eq_ite, ite_eq_right hx]
 
 theorem two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by simp [Real.pi_ne_zero, I_ne_zero]
 
@@ -311,8 +312,5 @@ noncomputable def expOpenPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ where
   open_target := isOpen_slitPlane
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := continuousOn_id.clog fun _ ↦ id
-
-@[deprecated (since := "2026-01-13")]
-alias expPartialHomeomorph := expOpenPartialHomeomorph
 
 end Complex

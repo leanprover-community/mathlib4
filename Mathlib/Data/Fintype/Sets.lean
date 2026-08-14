@@ -51,7 +51,6 @@ theorem toFinset_congr {s t : Set α} [Fintype s] [Fintype t] (h : s = t) :
 theorem mem_toFinset {s : Set α} [Fintype s] {a : α} : a ∈ s.toFinset ↔ a ∈ s := by
   simp [toFinset]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Many `Fintype` instances for sets are defined using an extensionally equal `Finset`.
 Rewriting `s.toFinset` with `Set.toFinset_ofFinset` replaces the term with such a `Finset`. -/
 theorem toFinset_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) :
@@ -252,7 +251,6 @@ instance FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
 theorem Finset.attach_eq_univ {s : Finset α} : s.attach = Finset.univ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance Prop.fintype : Fintype Prop :=
   ⟨⟨{True, False}, by simp⟩, by simpa using em⟩
 
@@ -283,7 +281,6 @@ noncomputable def finsetEquivSet : Finset α ≃ Set α where
 
 @[simp] lemma finsetEquivSet_apply (s : Finset α) : finsetEquivSet s = s := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma finsetEquivSet_symm_apply (s : Set α) [Fintype s] :
     finsetEquivSet.symm s = s.toFinset := by simp [finsetEquivSet]
 

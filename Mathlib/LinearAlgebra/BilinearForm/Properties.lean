@@ -157,7 +157,6 @@ lemma ext_iff_of_isSymm (hB : IsSymm B) (hC : IsSymm C) :
 
 end polarization
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
     IsSymm B ↔ ∀ i j, B (b i) (b j) = B (b j) (b i) where
   mp := fun ⟨h⟩ i j ↦ h _ _
@@ -361,8 +360,6 @@ lemma apply_toDual_symm_apply {B : BilinForm K V} {hB : B.Nondegenerate}
     B ((B.toDual hB).symm f) v = f v := by
   change B.toDual hB ((B.toDual hB).symm f) v = f v
   simp only [LinearEquiv.apply_symm_apply]
-
-@[deprecated (since := "2026-01-17")] alias nonDegenerateFlip_iff := nondegenerate_flip_iff
 
 end FiniteDimensional
 

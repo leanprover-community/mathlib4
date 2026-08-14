@@ -957,7 +957,7 @@ noncomputable def invFunOn [Nonempty α] (f : α → β) (s : Set α) (b : β) :
 variable [Nonempty α]
 
 theorem invFunOn_pos (h : ∃ a ∈ s, f a = b) : invFunOn f s b ∈ s ∧ f (invFunOn f s b) = b := by
-  rw [invFunOn, dif_pos h]
+  rw [invFunOn, dite_eq_left h]
   exact Classical.choose_spec h
 
 theorem invFunOn_mem (h : ∃ a ∈ s, f a = b) : invFunOn f s b ∈ s :=
@@ -967,7 +967,7 @@ theorem invFunOn_eq (h : ∃ a ∈ s, f a = b) : f (invFunOn f s b) = b :=
   (invFunOn_pos h).right
 
 theorem invFunOn_neg (h : ¬∃ a ∈ s, f a = b) : invFunOn f s b = Classical.choice ‹Nonempty α› := by
-  rw [invFunOn, dif_neg h]
+  rw [invFunOn, dite_eq_right h]
 
 @[simp]
 theorem invFunOn_apply_mem (h : a ∈ s) : invFunOn f s (f a) ∈ s :=

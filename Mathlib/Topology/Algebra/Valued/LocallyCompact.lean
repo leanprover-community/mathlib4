@@ -280,7 +280,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     · simp only [Set.mem_ofPred_eq, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
       simp [hcj, le_antisymm hj' hzi]
     · simp only [Set.mem_ofPred_eq] at hj'
-      rw [dif_neg hcj]
+      rw [dite_eq_right hcj]
       simp [← hj', hc]
 
 lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :

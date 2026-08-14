@@ -26,7 +26,7 @@ finite sets, finset
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
-open Multiset Subtype Function
+open Multiset Function
 
 universe u
 
@@ -123,6 +123,10 @@ theorem mem_toFinset : a ∈ l.toFinset ↔ a ∈ l :=
 @[simp, norm_cast]
 theorem coe_toFinset (l : List α) : (l.toFinset : Set α) = { a | a ∈ l } :=
   Set.ext fun _ => List.mem_toFinset
+
+@[simp]
+theorem toFinset_dedup : l.dedup.toFinset = l.toFinset :=
+  Finset.eq_of_veq <| by simp
 
 theorem toFinset_surj_on : Set.SurjOn toFinset { l : List α | l.Nodup } Set.univ := by
   rintro ⟨⟨l⟩, hl⟩ _

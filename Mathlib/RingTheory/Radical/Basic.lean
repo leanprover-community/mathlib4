@@ -371,7 +371,6 @@ theorem radical_neg_one : radical (-1 : R) = 1 := by simp
 
 end UniqueFactorizationDomain
 
-open UniqueFactorizationDomain
 namespace EuclideanDomain
 
 variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactorizationMonoid E]

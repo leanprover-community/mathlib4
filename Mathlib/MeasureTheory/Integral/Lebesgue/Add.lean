@@ -102,7 +102,7 @@ theorem lintegral_iSup' {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, AEMeasurabl
     intro n m hnm x
     by_cases hx : x ∈ aeSeqSet hf p
     · exact aeSeq.prop_of_mem_aeSeqSet hf hx hnm
-    · simp only [aeSeq, hx, if_false, le_rfl]
+    · simp only [aeSeq, hx, ite_false, le_rfl]
   rw [lintegral_congr_ae (aeSeq.iSup hf hp).symm]
   simp_rw [iSup_apply]
   rw [lintegral_iSup (aeSeq.measurable hf p) h_ae_seq_mono]
@@ -131,7 +131,7 @@ theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurabl
   let ⟨s, hs⟩ := exists_measurable_superset_of_null (ae_iff.1 (ae_all_iff.2 h_mono))
   let g n a := if a ∈ s then 0 else f n a
   have g_eq_f : ∀ᵐ a ∂μ, ∀ n, g n a = f n a :=
-    (measure_eq_zero_iff_ae_notMem.1 hs.2.2).mono fun a ha n => if_neg ha
+    (measure_eq_zero_iff_ae_notMem.1 hs.2.2).mono fun a ha n => ite_eq_right ha
   calc
     ∫⁻ a, ⨆ n, f n a ∂μ = ∫⁻ a, ⨆ n, g n a ∂μ :=
       lintegral_congr_ae <| g_eq_f.mono fun a ha => by simp only [ha]
@@ -187,7 +187,7 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
         by_cases hx : x ∈ aeSeqSet hf p
         · repeat rw [aeSeq.aeSeq_eq_fun_of_mem_aeSeqSet hf hx]
           apply_rules [hz₁, hz₂]
-        · simp only [aeSeq, hx, if_false]
+        · simp only [aeSeq, hx, ite_false]
           exact le_rfl
   convert! lintegral_iSup_directed_of_measurable (aeSeq.measurable hf p) h_ae_seq_directed using 1
   · simp_rw [← iSup_apply]

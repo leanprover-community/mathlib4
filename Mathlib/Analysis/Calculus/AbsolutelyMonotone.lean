@@ -45,7 +45,7 @@ iterated derivative within `s` nonnegative.
 
 public section
 
-open Set Filter
+open Set
 open scoped ContDiff
 
 /-- A function `f : ℝ → ℝ` is **absolutely monotone on a set `s`** if, heuristically, all

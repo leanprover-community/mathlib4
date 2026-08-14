@@ -72,7 +72,7 @@ on:
         # Default: the full `Mathlib` library — the representative master shadow.
         # For a cheaper experiment, pass a smaller set, e.g.
         #   Mathlib.Topology.Basic Mathlib.Combinatorics.SimpleGraph.Basic Mathlib.RingTheory.Ideal.Basic
-        # or add `Archive Counterexamples` to also shadow those libraries.
+        # or add `Archive Counterexamples Wanted` to also shadow those libraries.
         default: Mathlib
       toolchain_override:
         description: >-
@@ -131,13 +131,13 @@ jobs:
         uses: dcarbone/install-jq-action@4fcb5062d7ce9bc4382d1a352d19ba3ba2c317c1 # v4.0.1
 
       - name: Checkout tools branch
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: master
           path: tools-branch
 
       - name: Checkout mathlib (pr-branch)
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.mathlib_ref || 'master' }}
           fetch-depth: 2
@@ -359,7 +359,7 @@ jobs:
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
     steps:
       - name: Checkout mathlib (workspace for put-staged)
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.build_and_stage.outputs.sha }}
           path: pr-branch
@@ -503,7 +503,7 @@ jobs:
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
     steps:
       - name: Checkout mathlib
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.build_and_stage.outputs.sha }}
           path: pr-branch
@@ -582,12 +582,12 @@ jobs:
           # (no rebuild). Deps building is expected and excluded from the grep.
           # Emit an explicit health line (consumed by the Zulip report) and fail
           # the run if it's not a full hit.
-          BUILT_ROOT=$(grep -cE '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' "$log" || true)
+          BUILT_ROOT=$(grep -cE '^✔.*Built (Mathlib|Archive|Counterexamples|Wanted)([. ]|$)' "$log" || true)
           if [ "$BUILT_ROOT" -ne 0 ]; then
             health="❌ NOT full cache hits — ${BUILT_ROOT} root-package module(s) rebuilt"
             echo "health=${health}" >> "$GITHUB_OUTPUT"
             echo "::error::${health}"
-            grep -E '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' "$log" || true
+            grep -E '^✔.*Built (Mathlib|Archive|Counterexamples|Wanted)([. ]|$)' "$log" || true
             exit 1
           fi
           health="✅ full cache hits — 0 root-package modules rebuilt (${FETCHED_ARTIFACTS} served from cache)"

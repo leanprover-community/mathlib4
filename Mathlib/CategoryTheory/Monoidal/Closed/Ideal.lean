@@ -116,7 +116,6 @@ theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
 
 open MonoidalClosed MonoidalCategory CartesianMonoidalCategory
 
-set_option backward.isDefEq.respectTransparency false in
 open Limits in
 /-- Given a reflective subcategory `D` of a category with chosen finite products `C`, `D` admits
 finite chosen products. -/
@@ -163,7 +162,6 @@ variable [CartesianMonoidalCategory C] [Reflective i] [MonoidalClosed C]
   [CartesianMonoidalCategory D]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If the reflector preserves binary products, the subcategory is an exponential ideal.
 This is the converse of `preservesBinaryProductsOfExponentialIdeal`.
 -/

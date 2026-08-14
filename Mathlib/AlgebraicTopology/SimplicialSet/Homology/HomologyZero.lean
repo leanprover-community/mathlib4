@@ -37,7 +37,6 @@ noncomputable def π₀.fromChainComplexXZero :
     (X.chainComplex R).X 0 ⟶ ∐ (fun (_ : π₀ X) ↦ R) :=
   (sigmaConst.obj _).map (↾π₀.mk)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π₀.comp_fromChainComplexXZero (x : X _⦋0⦌) :
     X.ιChainComplex x ≫ π₀.fromChainComplexXZero X R =
@@ -54,7 +53,6 @@ lemma π₀.d_fromChainComplexXZero (n : ℕ) :
     simp [π₀.sound (Edge.mk' x)]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a simplicial set `X`, the cokernel of the differential `d 1 0`
 of the chain complex of `X` with coefficients in `R` identifies
 to the coproduct of copies of `R` indexed by `π₀ X`. -/
@@ -118,14 +116,12 @@ lemma liftCycles_ιChainComplex_homologyπ_homology₀Iso_hom (x : X _⦋0⦌) :
 noncomputable def homology₀ε : X.homology R 0 ⟶ R :=
   (X.homology₀Iso R).hom ≫ Sigma.desc (fun _ ↦ 𝟙 R)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma liftCycles_ιChainComplex_homologyπ_homology₀ε (x : X _⦋0⦌) :
     (X.chainComplex R).liftCycles (X.ιChainComplex x) 0 (by simp) (by simp) ≫
       (X.chainComplex R).homologyπ 0 ≫ X.homology₀ε R = 𝟙 R := by
   simp [homology₀ε]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [X.IsConnected] : IsIso (X.homology₀ε R) := by
   dsimp [homology₀ε]
   simp only [isIso_comp_left_iff]

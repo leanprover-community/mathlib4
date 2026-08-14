@@ -21,7 +21,6 @@ interpreted as linear maps `E → F → G` as usual (and similarly for semilinea
 
 suppress_compilation
 
-open Bornology
 open Filter hiding map_smul
 open scoped NNReal Topology Uniformity
 
@@ -30,7 +29,7 @@ variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
 
 section SemiNormed
 
-open Metric ContinuousLinearMap
+open ContinuousLinearMap
 
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup Eₗ] [SeminormedAddCommGroup F]
   [SeminormedAddCommGroup Fₗ] [SeminormedAddCommGroup G] [SeminormedAddCommGroup Gₗ]
@@ -46,7 +45,7 @@ namespace ContinuousLinearMap
 
 section OpNorm
 
-open Set Real
+open Real
 
 theorem opNorm_ext [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) (g : E →SL[σ₁₃] G)
     (h : ∀ x, ‖f x‖ = ‖g x‖) : ‖f‖ = ‖g‖ :=

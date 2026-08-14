@@ -479,7 +479,7 @@ def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
 
 theorem fundSystem_mk (i : Fin (rank K)) :
     Additive.ofMul (QuotientGroup.mk (fundSystem K i)) = (basisModTorsion K i) := by
-  simp_rw [fundSystem, Equiv.apply_eq_iff_eq_symm_apply, Additive.ofMul_symm_eq, Quotient.out_eq']
+  simp_rw [fundSystem, ← Equiv.eq_symm_apply, Additive.ofMul_symm_eq, Quotient.out_eq']
 
 theorem logEmbedding_fundSystem (i : Fin (rank K)) :
     logEmbedding K (Additive.ofMul (fundSystem K i)) = basisUnitLattice K i := by

@@ -228,11 +228,11 @@ theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
   ext i
   trans (n.choose (i + 1) : R); swap
   · simp only [finsetSum_coeff, ← C_eq_natCast, coeff_C_mul_X_pow]
-    rw [Finset.sum_eq_single i, if_pos rfl]
-    · simp +contextual only [@eq_comm _ i, if_false,
+    rw [Finset.sum_eq_single i, ite_eq_left rfl]
+    · simp +contextual only [@eq_comm _ i, ite_false,
         imp_true_iff]
     · simp +contextual only [Nat.lt_add_one_iff, Nat.choose_eq_zero_of_lt,
-        Nat.cast_zero, Finset.mem_range, not_lt, if_true, imp_true_iff]
+        Nat.cast_zero, Finset.mem_range, not_lt, ite_true, imp_true_iff]
   induction n generalizing i with
   | zero => dsimp; simp only [zero_comp, coeff_zero, Nat.cast_zero]
   | succ n ih =>
@@ -540,8 +540,9 @@ section Ring
 
 variable [Ring R]
 
+variable (R) in
 /-- `R[X]` is never a field for any ring `R`. -/
-theorem polynomial_not_isField : ¬IsField R[X] := by
+theorem _root_.Polynomial.not_isField : ¬IsField R[X] := by
   nontriviality R
   intro hR
   obtain ⟨p, hp⟩ := hR.mul_inv_cancel X_ne_zero
@@ -549,6 +550,9 @@ theorem polynomial_not_isField : ¬IsField R[X] := by
   have := degree_lt_degree_mul_X hp0
   rw [← X_mul, congr_arg degree hp, degree_one, Nat.WithBot.lt_zero_iff, degree_eq_bot] at this
   exact hp0 this
+
+@[deprecated (since := "2026-08-01")]
+alias polynomial_not_isField := Polynomial.not_isField
 
 /-- The only constant in a maximal ideal over a field is `0`. -/
 theorem eq_zero_of_constant_mem_of_maximal (hR : IsField R) (I : Ideal R[X]) [hI : I.IsMaximal]
@@ -813,7 +817,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
             exact mt Polynomial.leadingCoeff_eq_zero.1 hq0
           have h2 : p.leadingCoeff = (q * Polynomial.X ^ (k - q.natDegree)).leadingCoeff := by
             rw [← hlqp, Polynomial.leadingCoeff_mul_X_pow]
-          have := Polynomial.degree_sub_lt h1 hp0 h2
+          have := Polynomial.degree_sub_lt_left h1 hp0 h2
           rw [Polynomial.degree_eq_natDegree hp0] at this
           rw [← sub_add_cancel p (q * Polynomial.X ^ (k - q.natDegree))]
           convert! (Ideal.span ↑s).add_mem _ ((Ideal.span (s : Set R[X])).mul_mem_right _ _)

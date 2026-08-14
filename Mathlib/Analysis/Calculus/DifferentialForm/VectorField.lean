@@ -36,7 +36,7 @@ For this reason, we have `-` before the sum in our formal statement.
 
 public section
 
-open Filter ContinuousAlternatingMap Finset VectorField
+open ContinuousAlternatingMap Finset VectorField
 open scoped Topology
 
 variable {𝕜 E F : Type*}

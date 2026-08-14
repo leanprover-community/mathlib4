@@ -256,7 +256,7 @@ theorem preimage_cast_uIoc (p q : ℚ≥0) : (↑) ⁻¹' uIoc (p : K) q = uIoc 
 end NNRat
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for Rat.cast. -/
 @[positivity Rat.cast _]

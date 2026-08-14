@@ -9,7 +9,7 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 public import Mathlib.Data.Finset.Sym
-public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Pi.Torsion
 
 /-!
 # Antidiagonal of functions as finsets
@@ -141,12 +141,15 @@ variable {s : Finset ι} {n : μ} {f : ι → μ}
 lemma piAntidiag_empty (n : μ) : piAntidiag (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by
   split_ifs with hn <;> simp [*]
 
-lemma finsetCongr_piAntidiag_eq_antidiag (n : μ) :
-    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiag univ n) = antidiagonal n := by
+lemma finset_congr_piAntidiag_eq_antidiag (n : μ) :
+    Equiv.Finset.congr (Equiv.boolArrowEquivProd _) (piAntidiag univ n) = antidiagonal n := by
   ext ⟨x₁, x₂⟩
-  simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk,
+  simp_rw [Equiv.Finset.congr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk,
     ← Equiv.eq_symm_apply]
   simp [add_comm]
+
+@[deprecated (since := "2026-08-11")]
+alias finsetCongr_piAntidiag_eq_antidiag := finset_congr_piAntidiag_eq_antidiag
 
 end AddCommMonoid
 

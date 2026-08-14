@@ -466,8 +466,6 @@ protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞
   | (n : ℕ) => mod_cast ENNReal.continuous_pow n
   | .negSucc n => by simpa using (ENNReal.continuous_pow _).fun_inv
 
-@[deprecated (since := "2026-01-15")] protected alias tendsto_inv_iff := tendsto_inv_iff
-
 protected theorem Tendsto.div {f : Filter α} {ma : α → ℝ≥0∞} {mb : α → ℝ≥0∞} {a b : ℝ≥0∞}
     (hma : Tendsto ma f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ 0) (hmb : Tendsto mb f (𝓝 b))
     (hb : b ≠ ∞ ∨ a ≠ ∞) : Tendsto (fun a => ma a / mb a) f (𝓝 (a / b)) := by
@@ -645,17 +643,12 @@ theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : 
 theorem Metric.isClosed_closedEBall {a : α} {r : ℝ≥0∞} : IsClosed (closedEBall a r) :=
   isClosed_le (by fun_prop) continuous_const
 
-@[deprecated (since := "2026-01-24")]
-alias EMetric.isClosed_closedBall := Metric.isClosed_closedEBall
-
 @[simp]
 theorem Metric.ediam_closure (s : Set α) : ediam (closure s) = ediam s := by
   refine le_antisymm (ediam_le fun x hx y hy => ?_) (ediam_mono subset_closure)
   have : edist x y ∈ closure (Iic (ediam s)) :=
     map_mem_closure₂ continuous_edist hx hy fun x hx y hy => edist_le_ediam_of_mem hx hy
   rwa [closure_Iic] at this
-
-@[deprecated (since := "2026-01-04")] alias EMetric.diam_closure := Metric.ediam_closure
 
 @[simp]
 theorem Metric.diam_closure {α : Type*} [PseudoMetricSpace α] (s : Set α) :

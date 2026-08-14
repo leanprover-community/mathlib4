@@ -364,7 +364,7 @@ variable {solution' : relations.Solution N} (h' : solution'.IsPresentation)
 
 /-- Uniqueness (up to a unique linear equivalence) of the module defined
 by generators and relations. -/
-def uniq : M ≃ₗ[A] N := LinearEquiv.ofLinear
+def uniq : M ≃ₗ[A] N := LinearEquiv.ofLinearMap
   (h.desc solution') (h'.desc solution)
     (h'.postcomp_injective (by simp))
     (h.postcomp_injective (by simp))
@@ -459,7 +459,7 @@ lemma isPresentation {solution : relations.Solution M}
     solution.IsPresentation where
   bijective := by
     let e : relations.Quotient ≃ₗ[A] M :=
-      LinearEquiv.ofLinear solution.fromQuotient
+      LinearEquiv.ofLinearMap solution.fromQuotient
       ((down.{v} h).desc (ofQuotient relations))
       ((down.{max u w₀} h).postcomp_injective (by aesop)) (by aesop)
     exact e.bijective

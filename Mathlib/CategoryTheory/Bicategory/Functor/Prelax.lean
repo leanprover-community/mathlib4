@@ -43,8 +43,6 @@ corresponding hom types.
 
 namespace CategoryTheory
 
-open Category Bicategory
-
 universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
 section

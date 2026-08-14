@@ -29,7 +29,7 @@ This is applied in the study of group schemes.
   [Görtz, Wedhorn, Algebraic Geometry II, Definition 27.3][goertz-wedhorn-2]
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

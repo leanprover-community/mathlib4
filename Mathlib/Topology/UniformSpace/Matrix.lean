@@ -17,7 +17,7 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public section
 
 
-open Uniformity Topology
+open Uniformity
 
 variable (m n 𝕜 : Type*) [UniformSpace 𝕜]
 

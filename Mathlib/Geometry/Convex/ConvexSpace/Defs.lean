@@ -81,6 +81,26 @@ lemma nonempty [Nontrivial R] (w : StdSimplex R M) : Nonempty M :=
 
 @[ext] alias ⟨ext, _⟩ := weights_inj
 
+@[simp]
+lemma total_of_fintype [Fintype M] (w : StdSimplex R M) :
+    ∑ i, w.weights i = 1 := by
+  have := w.total
+  rwa [Finsupp.sum_fintype _ _ (by simp)] at this
+
+lemma range_toFun_comp_weights [Fintype M] :
+    Set.range (fun t ↦ t.weights : StdSimplex R M → (M → R)) =
+    (⋂ (i : M), { s | 0 ≤ s i }) ∩ { s | ∑ i, s i = 1 } := by
+  ext s
+  simp only [Set.mem_range, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred_eq]
+  refine ⟨?_, ?_⟩
+  · rintro ⟨s, rfl⟩
+    exact ⟨s.weights_nonneg, by simp⟩
+  · rintro ⟨h₁, h₂⟩
+    exact ⟨{
+      weights := equivFunOnFinite.symm s
+      nonneg m := by simpa using h₁ m
+      total := by simpa [Finsupp.sum_fintype] }, by simp⟩
+
 variable [IsStrictOrderedRing R]
 
 /-- The point mass distribution concentrated at `x`. -/
@@ -136,13 +156,66 @@ lemma map_duple {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : M
 lemma map_id (f : StdSimplex R M) : f.map id = f := by
   ext; simp
 
+lemma map_id' : map (R := R) (id : M → M) = id := by aesop
+
 lemma map_comp (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     f.map (g₂ ∘ g₁) = (f.map g₁).map g₂ := by
   ext; simp [mapDomain_comp]
 
+lemma map_comp' (g₁ : M → N) (g₂ : N → P) :
+    map (R := R) (g₂ ∘ g₁) = map g₂ ∘ map g₁ := by
+  ext : 1
+  simp [map_comp]
+
 lemma map_map (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     (f.map g₁).map g₂ = f.map (fun x ↦ g₂ (g₁ x)) :=
   (map_comp ..).symm
+
+lemma mem_range_map_iff
+    (f : M → N) (s : StdSimplex R N) :
+    s ∈ Set.range (map f) ↔ ∀ (x : N), x ∉ Set.range f → s.weights x = 0 := by
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨s, rfl⟩
+    intro x hx
+    simpa using Finsupp.mapDomain_of_notMem_range s.weights x hx
+  · have (i : s.weights.support) : ∃ (m : M), f m = i := by grind
+    choose m hm using this
+    refine ⟨{
+      weights := ∑ (y : s.weights.support), .single (m y) (s.weights y)
+      nonneg x := by
+        simp only [Finsupp.coe_finsetSum, Finset.sum_apply,
+          Finsupp.coe_zero, Pi.zero_apply]
+        refine Finset.sum_nonneg' (fun y ↦ ?_)
+        by_cases hy : m y = x
+        · subst hy
+          simp
+        · rw [Finsupp.single_eq_of_ne' hy]
+      total := by
+        rw [Finsupp.sum_finsetSum _ _ _ (by simp) (by simp), ← s.total]
+        conv_rhs => dsimp [Finsupp.sum]; rw [← Finset.sum_attach]
+        congr
+        ext
+        simp }, ?_⟩
+    ext y
+    by_cases hy : y ∈ s.weights.support
+    · simp only [Finset.univ_eq_attach, weights_map, Finsupp.mapDomain, Finsupp.sum_apply]
+      rw [Finsupp.sum_finsetSum _ _ _ (by simp) (by simp),
+        Finset.sum_eq_single ⟨y, hy⟩ ?_ (by simp)]
+      · simp [hm]
+      · intro z hz hz'
+        simp only [hm, Finsupp.single_zero, Finsupp.coe_zero, Pi.zero_apply,
+          Finsupp.sum_single_index]
+        aesop
+    · rw [Finsupp.notMem_support_iff] at hy
+      rw [hy]
+      refine Finsupp.mapDomain_of_not_mem_image_support ?_
+      simp only [Finset.univ_eq_attach, Set.mem_image, SetLike.mem_coe, Finsupp.mem_support_iff,
+        Finsupp.coe_finsetSum, Finset.sum_apply, ne_eq, not_exists, not_and]
+      intro x hx rfl
+      refine hx (Finset.sum_eq_zero (fun z hz ↦ Finsupp.single_eq_of_ne ?_))
+      intro rfl
+      simp only [hm, ← Finsupp.notMem_support_iff] at hy
+      exact hy z.prop
 
 /--
 Join operation for standard simplices (monadic join).

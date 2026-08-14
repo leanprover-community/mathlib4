@@ -267,7 +267,7 @@ theorem cancel_coe {a : ℝ≥0} : AddLECancellable (a : ℝ≥0∞) :=
   cancel_of_ne coe_ne_top
 
 theorem add_right_inj (h : a ≠ ∞) : a + b = a + c ↔ b = c :=
-  (cancel_of_ne h).inj
+  (cancel_of_ne h).inj_right
 
 theorem add_left_inj (h : a ≠ ∞) : b + a = c + a ↔ b = c :=
   (cancel_of_ne h).inj_left

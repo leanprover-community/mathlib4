@@ -24,7 +24,7 @@ Most proofs just invoke the corresponding fact about continuous multilinear maps
 noncomputable section
 
 open scoped NNReal
-open Finset Metric
+open Finset
 
 /-!
 ### Type variables

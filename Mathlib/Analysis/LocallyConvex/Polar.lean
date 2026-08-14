@@ -40,8 +40,6 @@ polar
 
 variable {𝕜 E F : Type*}
 
-open Topology
-
 namespace LinearMap
 
 section NormedRing

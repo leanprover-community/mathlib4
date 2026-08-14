@@ -52,7 +52,7 @@ theorem isEquivalent_atTop_lead :
   · simp only [Polynomial.eval_eq_sum_range, sum_range_succ]
     exact
       IsLittleO.add_isEquivalent
-        (IsLittleO.sum fun i hi =>
+        (IsLittleO.fun_sum fun i hi =>
           IsLittleO.const_mul_left
             ((IsLittleO.const_mul_right fun hz => h <| leadingCoeff_eq_zero.mp hz) <|
               isLittleO_pow_pow_atTop_of_lt (mem_range.mp hi))
@@ -345,7 +345,7 @@ lemma isEquivalent_cobounded_leading_monomial :
   by_cases h : P = 0
   · simp [h, IsEquivalent.refl]
   · simp only [eval_eq_sum_range, sum_range_succ]
-    exact (IsLittleO.sum fun i hi ↦
+    exact (IsLittleO.fun_sum fun i hi ↦
       ((isLittleO_pow_pow_cobounded_of_lt (mem_range.mp hi)).const_mul_right
         (leadingCoeff_ne_zero.mpr h)).const_mul_left _).add_isEquivalent .refl
 

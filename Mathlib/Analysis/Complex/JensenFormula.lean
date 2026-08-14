@@ -265,7 +265,8 @@ circle average `circleAverage (log ‖g ·‖) c R` equals `log ‖g c‖`.
 lemma AnalyticOnNhd.circleAverage_log_norm_of_ne_zero {R : ℝ} {c : ℂ} {g : ℂ → ℂ}
     (h₁g : AnalyticOnNhd ℂ g (closedBall c |R|)) (h₂g : ∀ u ∈ closedBall c |R|, g u ≠ 0) :
     circleAverage (Real.log ‖g ·‖) c R = Real.log ‖g c‖ :=
-  HarmonicOnNhd.circleAverage_eq (fun x hx ↦ (h₁g x hx).harmonicAt_log_norm (h₂g x hx))
+  InnerProductSpace.HarmonicOnNhd.circleAverage_eq
+    (fun x hx ↦ (h₁g x hx).harmonicAt_log_norm (h₂g x hx))
 
 set_option backward.isDefEq.respectTransparency.types false in
 /--

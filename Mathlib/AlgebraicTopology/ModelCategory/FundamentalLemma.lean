@@ -24,7 +24,7 @@ the left and right homotopy relations coincide).
 
 @[expose] public section
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace HomotopicalAlgebra
 

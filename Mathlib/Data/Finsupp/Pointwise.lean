@@ -18,7 +18,7 @@ see the type synonyms `AddMonoidAlgebra`
 and `MonoidAlgebra`.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

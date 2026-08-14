@@ -48,9 +48,9 @@ noncomputable section
 
 namespace MvPolynomial
 
-open DirectSum TensorProduct
+open TensorProduct
 
-open Set LinearMap Submodule
+open LinearMap
 
 variable {R : Type u} {N : Type v} [CommSemiring R]
 

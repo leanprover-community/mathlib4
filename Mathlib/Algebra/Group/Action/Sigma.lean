@@ -21,7 +21,7 @@ This file defines instances for arbitrary sum of additive and multiplicative act
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

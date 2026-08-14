@@ -9,7 +9,7 @@ public import Mathlib.Topology.Order.Bornology
 public import Mathlib.Topology.Order.Compact
 public import Mathlib.Topology.MetricSpace.ProperSpace
 public import Mathlib.Topology.MetricSpace.Cauchy
-public import Mathlib.Topology.MetricSpace.Defs
+public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
@@ -329,11 +329,10 @@ theorem _root_.Bornology.IsBounded.isCompact_closure [ProperSpace α] (h : IsBou
     IsCompact (closure s) :=
   isCompact_of_isClosed_isBounded isClosed_closure h.closure
 
--- TODO: assume `[MetricSpace α]` instead of `[PseudoMetricSpace α] [T2Space α]`
 /-- The **Heine–Borel theorem**:
-In a proper Hausdorff space, a set is compact if and only if it is closed and bounded. -/
+In a proper metric space, a set is compact if and only if it is closed and bounded. -/
 @[wikidata Q253214]
-theorem isCompact_iff_isClosed_bounded [T2Space α] [ProperSpace α] :
+theorem isCompact_iff_isClosed_bounded {α : Type*} {s : Set α} [MetricSpace α] [ProperSpace α] :
     IsCompact s ↔ IsClosed s ∧ IsBounded s :=
   ⟨fun h => ⟨h.isClosed, h.isBounded⟩, fun h => isCompact_of_isClosed_isBounded h.1 h.2⟩
 
@@ -585,7 +584,7 @@ end Metric
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
 @[positivity Metric.diam _]

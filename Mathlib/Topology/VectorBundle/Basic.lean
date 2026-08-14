@@ -131,7 +131,7 @@ theorem coe_linearMapAt (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B
 @[simp]
 theorem coe_linearMapAt_of_mem (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) : ⇑(e.linearMapAt R b) = fun y => (e ⟨b, y⟩).2 := by
-  simp_rw [coe_linearMapAt, if_pos hb]
+  simp_rw [coe_linearMapAt, ite_eq_left hb]
 
 open scoped Classical in
 theorem linearMapAt_apply (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B} (y : E b) :
@@ -140,15 +140,15 @@ theorem linearMapAt_apply (e : Pretrivialization F (π F E)) [e.IsLinear R] {b :
 
 theorem linearMapAt_def_of_mem (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) : e.linearMapAt R b = e.linearEquivAt R b hb :=
-  dif_pos hb
+  dite_eq_left hb
 
 theorem linearMapAt_def_of_notMem (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
-  dif_neg hb
+  dite_eq_right hb
 
 theorem linearMapAt_eq_zero (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
-  dif_neg hb
+  dite_eq_right hb
 
 theorem symmₗ_linearMapAt (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) (y : E b) : e.symmₗ R b (e.linearMapAt R b y) = y := by simp [hb]
@@ -231,7 +231,7 @@ theorem coe_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) :
 @[simp]
 theorem coe_linearMapAt_of_mem (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) : ⇑(e.linearMapAt R b) = fun y => (e ⟨b, y⟩).2 := by
-  simp_rw [coe_linearMapAt, if_pos hb]
+  simp_rw [coe_linearMapAt, ite_eq_left hb]
 
 open scoped Classical in
 theorem linearMapAt_apply (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (y : E b) :
@@ -240,11 +240,11 @@ theorem linearMapAt_apply (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
 
 theorem linearMapAt_def_of_mem (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) : e.linearMapAt R b = e.linearEquivAt R b hb :=
-  dif_pos hb
+  dite_eq_left hb
 
 theorem linearMapAt_def_of_notMem (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
-  dif_neg hb
+  dite_eq_right hb
 
 theorem symm_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet)
     (y : E b) : e.symm b (e.linearMapAt R b y) = y := by
@@ -274,27 +274,27 @@ def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear 
       else LinearEquiv.refl R F
     continuous_toFun := by
       by_cases hb : b ∈ e.baseSet ∩ e'.baseSet
-      · rw [dif_pos hb]
+      · rw [dite_eq_left hb]
         refine (e'.continuousOn.comp_continuous ?_ ?_).snd
         · exact e.continuousOn_symm.comp_continuous (Continuous.prodMk_right b) fun y =>
             mk_mem_prod hb.1 (mem_univ y)
         · exact fun y => e'.mem_source.mpr hb.2
-      · rw [dif_neg hb]
+      · rw [dite_eq_right hb]
         exact continuous_id
     continuous_invFun := by
       by_cases hb : b ∈ e.baseSet ∩ e'.baseSet
-      · rw [dif_pos hb]
+      · rw [dite_eq_left hb]
         refine (e.continuousOn.comp_continuous ?_ ?_).snd
         · exact e'.continuousOn_symm.comp_continuous (Continuous.prodMk_right b) fun y =>
             mk_mem_prod hb.2 (mem_univ y)
         exact fun y => e.mem_source.mpr hb.1
-      · rw [dif_neg hb]
+      · rw [dite_eq_right hb]
         exact continuous_id }
 
 theorem coe_coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet ∩ e'.baseSet) :
     ⇑(coordChangeL R e e' b) = (e.linearEquivAt R b hb.1).symm.trans (e'.linearEquivAt R b hb.2) :=
-  congr_arg (fun f : F ≃ₗ[R] F ↦ ⇑f) (dif_pos hb)
+  congr_arg (fun f : F ≃ₗ[R] F ↦ ⇑f) (dite_eq_left hb)
 
 theorem coe_coordChangeL' (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet ∩ e'.baseSet) :
@@ -339,7 +339,7 @@ theorem coordChangeL_symm_apply (e e' : Trivialization F (π F E)) [e.IsLinear R
     {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) :
     ⇑(coordChangeL R e e' b).symm =
       (e'.linearEquivAt R b hb.2).symm.trans (e.linearEquivAt R b hb.1) :=
-  congr_arg LinearEquiv.invFun (dif_pos hb)
+  congr_arg LinearEquiv.invFun (dite_eq_left hb)
 
 end Bundle.Trivialization
 

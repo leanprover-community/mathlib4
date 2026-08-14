@@ -226,27 +226,4 @@ def continuousLinearMapOfTendsto
 
 end PolynormableSpace
 
-section Deprecated
-
-variable [UniformSpace E] [UniformSpace F] [IsUniformAddGroup E] [IsUniformAddGroup F]
-    [ContinuousSMul 𝕜₁ E] [BarrelledSpace 𝕜₁ E] [ContinuousSMul 𝕜₂ F] {𝓕 : ι → E →SL[σ₁₂] F}
-    {q : SeminormFamily 𝕜₂ F κ} (hq : WithSeminorms q)
-include hq
-
-/-- Given a sequence of continuous linear maps which converges pointwise and for which the
-domain is barrelled, the Banach-Steinhaus theorem is used to guarantee that the limit map
-is a *continuous* linear map as well.
-
-This actually works for any *countably generated* filter instead of `atTop : Filter ℕ`,
-but the proof ultimately goes back to sequences. -/
-@[deprecated continuousLinearMapOfTendsto (since := "2026-01-16")]
-protected abbrev WithSeminorms.continuousLinearMapOfTendsto [T2Space F] {l : Filter α}
-    [l.IsCountablyGenerated] [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F}
-    (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
-    E →SL[σ₁₂] F :=
-  haveI : PolynormableSpace 𝕜₂ F := hq.toPolynormableSpace
-  continuousLinearMapOfTendsto g h
-
-end Deprecated
-
 end TVS_anyField

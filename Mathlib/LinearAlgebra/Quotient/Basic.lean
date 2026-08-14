@@ -188,7 +188,6 @@ theorem mapQ_zero (h : p ≤ q.comap (0 : M →ₛₗ[τ₁₂] M₂) := (by sim
   ext
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given submodules `p ⊆ M`, `p₂ ⊆ M₂`, `p₃ ⊆ M₃` and maps `f : M → M₂`, `g : M₂ → M₃` inducing
 `mapQ f : M ⧸ p → M₂ ⧸ p₂` and `mapQ g : M₂ ⧸ p₂ → M₃ ⧸ p₃` then
 `mapQ (g ∘ f) = (mapQ g) ∘ (mapQ f)`. -/
@@ -267,7 +266,6 @@ theorem factor_comp_mk (H : p ≤ p') : (factor H).comp (mkQ p) = mkQ p' := by
   ext x
   rw [LinearMap.comp_apply, factor_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem factor_comp (H1 : p ≤ p') (H2 : p' ≤ p'') :
     (factor H2).comp (factor H1) = factor (H1.trans H2) := by
@@ -404,7 +402,7 @@ variable (p p' : Submodule R M)
 
 /-- If `p = ⊥`, then `M / p ≃ₗ[R] M`. -/
 def quotEquivOfEqBot (hp : p = ⊥) : (M ⧸ p) ≃ₗ[R] M :=
-  LinearEquiv.ofLinear (p.liftQ id <| hp.symm ▸ bot_le) p.mkQ (liftQ_mkQ _ _ _) <|
+  LinearEquiv.ofLinearMap (p.liftQ id <| hp.symm ▸ bot_le) p.mkQ (liftQ_mkQ _ _ _) <|
     p.quot_hom_ext _ LinearMap.id fun _ => rfl
 
 @[simp]

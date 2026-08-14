@@ -21,7 +21,7 @@ the image of the homomorphism `i`.
 @[expose] public section
 
 
-open Polynomial Finset
+open Polynomial
 
 open Polynomial
 

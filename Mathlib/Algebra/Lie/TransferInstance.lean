@@ -15,9 +15,6 @@ public import Mathlib.Algebra.Module.TransferInstance
 Main definitions:
 * `AddEquiv.lieRing` transferring a LieRing structure along an additive equivalence.
 * `LinearEquiv.lieAlgebra` transferring a Lie algebra structure along a linear equivalence.
-* `Equiv.lieRing` transferring a LieRing structure along an equivalence (transfers the additive
-  structure using `Equiv.addCommGroup` and then the bracket using `AddEquiv.lieRing`)
-* `Equiv.lieAlgebra` transferring a Lie algebra structure along an equivalence
 
 -/
 
@@ -74,39 +71,19 @@ namespace Equiv
 variable {R L' L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (e : L' ≃ L)
 
 /-- Transfer `LieRing` across an `Equiv` -/
+@[deprecated AddEquiv.lieRing (since := "2026-07-30")]
 protected abbrev lieRing : LieRing L' :=
   letI := e.addCommGroup
   e.addEquiv.lieRing
 
+@[deprecated AddEquiv.bracket_def (since := "2026-07-30")]
 lemma bracket_def (x y : L') :
     letI := e.lieRing
     ⁅x, y⁆ = e.symm ⁅e x, e y⁆ := rfl
 
-variable (R) in
-/-- Transfer `LieAlgebra` across an `Equiv` -/
-protected abbrev lieAlgebra :
-    letI := e.lieRing
-    LieAlgebra R L' :=
-  letI := e.lieRing
-  letI := e.module R
-  { lie_smul _ _ _ := by simp [Equiv.smul_def, AddEquiv.bracket_def] }
-
-variable (R) in
-/-- An equivalence `e : L' ≃ L` gives a Lie algebra equivalence `L' ≃ₗ⁅R⁆ L` where the algebraic
-structures on `L'` are obtained by transporting the structures on `L` back along `e`. -/
-def lieEquiv :
-    letI := e.lieRing
-    letI := e.lieAlgebra R
-    L' ≃ₗ⁅R⁆ L :=
-  letI := e.lieRing
-  letI := e.lieAlgebra R
-  { e.linearEquiv R with map_lie' {x y} := by simp [AddEquiv.bracket_def] }
-
-@[simp] lemma lieEquiv_apply (a : L') : e.lieEquiv R a = e a := rfl
-
-@[simp] lemma lieEquiv_symm_apply (b : L) :
-    letI := e.lieRing
-    letI := e.lieAlgebra R
-    (e.lieEquiv R).symm b = e.symm b := rfl
+@[deprecated (since := "2026-07-30")] alias lieAlgebra := LinearEquiv.lieAlgebra
+@[deprecated (since := "2026-07-30")] alias lieEquiv := LinearEquiv.lieEquiv
+@[deprecated (since := "2026-07-30")] alias lieEquiv_apply := LinearEquiv.lieEquiv_apply
+@[deprecated (since := "2026-07-30")] alias lieEquiv_symm_apply := LinearEquiv.lieEquiv_symm_apply
 
 end Equiv

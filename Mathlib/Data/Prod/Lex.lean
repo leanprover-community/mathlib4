@@ -41,7 +41,7 @@ See [https://github.com/leanprover-community/mathlib4/pull/37939#discussion_r336
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}

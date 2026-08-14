@@ -58,12 +58,10 @@ def prod.lift {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F�
     F ⟶ prod F₁ F₂ where
   app x := ↾fun y ↦ ⟨τ₁.app x y, τ₂.app x y⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma prod.lift_fst {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     prod.lift τ₁ τ₂ ≫ prod.fst = τ₁ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma prod.lift_snd {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     prod.lift τ₁ τ₂ ≫ prod.snd = τ₂ := rfl
@@ -75,7 +73,6 @@ variable (F G)
 def binaryProductCone : BinaryFan F G :=
   BinaryFan.mk prod.fst prod.snd
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `prod F G` is a limit cone. -/
 @[simps]
 def binaryProductLimit : IsLimit (binaryProductCone F G) where
@@ -85,7 +82,6 @@ def binaryProductLimit : IsLimit (binaryProductCone F G) where
     simp only [← h ⟨WalkingPair.right⟩, ← h ⟨WalkingPair.left⟩]
     congr
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `prod F G` is a binary product for `F` and `G`. -/
 def binaryProductLimitCone : Limits.LimitCone (pair F G) :=
   ⟨_, binaryProductLimit F G⟩
@@ -94,12 +90,10 @@ def binaryProductLimitCone : Limits.LimitCone (pair F G) :=
 noncomputable def binaryProductIso : F ⨯ G ≅ prod F G :=
   limit.isoLimitCone (binaryProductLimitCone F G)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma binaryProductIso_hom_comp_fst :
     (binaryProductIso F G).hom ≫ prod.fst = Limits.prod.fst := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma binaryProductIso_hom_comp_snd :
     (binaryProductIso F G).hom ≫ prod.snd = Limits.prod.snd := rfl
@@ -162,7 +156,6 @@ def binaryProductEquiv (a : C) : (F ⨯ G).obj a ≃ (F.obj a) × (G.obj a) wher
   left_inv _ := by simp [-prod_obj, prodMk]
   right_inv _ := by simp [-prod_obj, prodMk]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[ext]
 lemma prod_ext' (a : C) (z w : (F ⨯ G).obj a)
     (h1 : (Limits.prod.fst (X := F)).app a z = (Limits.prod.fst (X := F)).app a w)

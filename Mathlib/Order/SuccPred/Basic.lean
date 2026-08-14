@@ -117,9 +117,9 @@ noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder
   ofCore (fun a ↦ if h : (Ioi a).Nonempty then wellFounded_lt.min _ h else a)
     (fun ha _ ↦ by
       rw [not_isMax_iff] at ha
-      simp_rw [Set.Nonempty, mem_Ioi, dif_pos ha]
+      simp_rw [Set.Nonempty, mem_Ioi, dite_eq_left ha]
       exact ⟨wellFounded_lt.min_le (s := Ioi _), lt_of_lt_of_le (wellFounded_lt.prop_min ha)⟩)
-    fun _ ha ↦ dif_neg (not_not_intro ha <| not_isMax_iff.mpr ·)
+    fun _ ha ↦ dite_eq_right (not_not_intro ha <| not_isMax_iff.mpr ·)
 
 end LinearOrder
 
@@ -752,11 +752,11 @@ instance : SuccOrder (WithTop α) where
 
 @[to_dual (attr := simp)]
 theorem succ_coe_of_isMax {a : α} (h : IsMax a) : succ ↑a = (⊤ : WithTop α) :=
-  dif_pos (succ_eq_iff_isMax.2 h)
+  dite_eq_left (succ_eq_iff_isMax.2 h)
 
 @[to_dual]
 theorem succ_coe_of_not_isMax {a : α} (h : ¬ IsMax a) : succ (↑a : WithTop α) = ↑(succ a) :=
-  dif_neg (succ_eq_iff_isMax.not.2 h)
+  dite_eq_right (succ_eq_iff_isMax.not.2 h)
 
 @[to_dual (attr := simp)]
 theorem succ_coe [NoMaxOrder α] {a : α} : succ (↑a : WithTop α) = ↑(succ a) :=

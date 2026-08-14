@@ -126,7 +126,6 @@ lemma toPresheafFiber_presheafFiberMapObjIso_inv (P : Dᵒᵖ ⥤ A) (X : C) (x 
     (Φ.toPresheafFiberMap_presheafFiberMapObjIso_hom F K ..).symm =≫
       (Φ.presheafFiberMapObjIso F K P).inv
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- Relation between the fiber functors on presheaves for the points `Φ.map F K`
 and `Φ` when `F : C ⥤ D` is a cocontinuous functor between sites `(C, J)` and `(D, K)`. -/

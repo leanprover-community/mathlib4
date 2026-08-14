@@ -388,6 +388,12 @@ theorem isPreconnected_sUnion {s : Set (Set α)} (hs : IsPreconnected s)
     grw [← hts'] at hUV ⊢
     exact ht U V hU hV hUV htU htV
 
+theorem isPreconnected_biUnion {s : Set α} {f : α → Set β} (hs : IsPreconnected s)
+    (hf : ContinuousOn f s) (h : ∃ x ∈ s, IsPreconnected (f x)) :
+    IsPreconnected (⋃ x ∈ s, f x) := by
+  rw [← sUnion_image]
+  exact isPreconnected_sUnion (hs.image _ hf) (by grind)
+
 end vietoris
 
 namespace Compacts
@@ -773,6 +779,36 @@ theorem isPreconnected_Ioc {K L : Compacts α} (hL : IsPreconnected (L : Set α)
   isPreconnected_of_forall L fun M hM => ⟨Icc M L, Icc_subset_Ioc_left hM.1, right_mem_Icc.mpr hM.2,
     left_mem_Icc.mpr hM.2, isPreconnected_Icc (ne_bot_of_gt hM.1) hL⟩
 
+instance [LocallyConnectedSpace α] : LocallyConnectedSpace (Compacts α) := by
+  rw [locallyConnectedSpace_iff_isTopologicalBasis_isOpen_isPreconnected]
+  have basis := IsTopologicalBasis.isOpen_isPreconnected.compacts (α := α)
+  -- We show that the basic open sets induced by a connected basis are connected.
+  refine basis.of_isOpen_of_subset (by grind) (fun U hU => ⟨basis.isOpen hU, ?_⟩)
+  -- By density, it is enough to show connectedness for finite sets in the basic open set.
+  suffices IsPreconnected (U ∩ {K | (K : Set α).Finite}) by
+    refine this.subset_closure inter_subset_left ?_
+    grw [← (basis.isOpen hU).inter_closure, dense_setOfPred_finite.closure_eq, inter_univ]
+  obtain ⟨u, ⟨hu', hu⟩, rfl⟩ := hU
+  simp_rw [← ofPred_and, and_assoc]
+  let := hu'.fintype
+  /- The finite sets in the basic open set are can be written as the unions of finite sets from
+  each connected neighborhood. By the continuity of union, these form a connected set. -/
+  suffices {K : Compacts α | ↑K ⊆ ⋃₀ u ∧ (∀ U ∈ u, (↑K ∩ U).Nonempty) ∧ (K : Set α).Finite} =
+    Finset.univ.sup '' Set.pi univ fun U : u =>
+      {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ (K : Set α) ⊆ U} by
+    rw [this]
+    exact .image
+      (isPreconnected_univ_pi fun U => isPreconnected_nonempty_finite_subsets (hu U.2).2)
+      _ (by fun_prop)
+  apply subset_antisymm
+  · exact fun K ⟨hK₁, hK₂, hK₃⟩ => ⟨fun U => ⟨K ∩ U, (hK₃.inter_of_left _).isCompact⟩,
+      fun U _ => ⟨hK₂ U U.2, hK₃.inter_of_left _, inter_subset_right⟩, by aesop⟩
+  · simp_rw [image_subset_iff, preimage_ofPred_eq, coe_finset_sup, Finset.sup_eq_iSup,
+      iSup_eq_iUnion, Finset.mem_univ, iUnion_true, iUnion_subset_iff]
+    refine fun f hf => ⟨by grind, fun U hU => ?_, finite_iUnion (by grind)⟩
+    obtain ⟨h₁, -, h₂⟩ := hf ⟨U, hU⟩ trivial
+    exact h₁.mono (subset_inter (subset_iUnion _ _) h₂)
+
 end Compacts
 
 namespace NonemptyCompacts
@@ -1083,6 +1119,30 @@ instance [ConnectedSpace α] : ConnectedSpace (NonemptyCompacts α) where
 @[simp]
 protected theorem connectedSpace_iff : ConnectedSpace (NonemptyCompacts α) ↔ ConnectedSpace α := by
   simp [connectedSpace_iff]
+
+instance [LocallyConnectedSpace α] : LocallyConnectedSpace (NonemptyCompacts α) :=
+  isOpenEmbedding_toCompacts.locallyConnectedSpace
+
+@[simp]
+theorem locallyConnectedSpace_iff :
+    LocallyConnectedSpace (NonemptyCompacts α) ↔ LocallyConnectedSpace α := by
+  refine ⟨fun h => locallyConnectedSpace_iff_connected_basis.2 fun x ↦ ?_, fun _ => inferInstance⟩
+  refine (nhds_basis_opens x).to_hasBasis' (fun U ⟨hx, hU⟩ => ?_) (by grind)
+  obtain ⟨V, ⟨hV₁, hV₂⟩, hxV, hKV⟩ :=
+    IsTopologicalBasis.isOpen_isPreconnected.exists_subset_of_mem_open
+      (show {x} ∈ {K : NonemptyCompacts α | ↑K ⊆ U} by simpa)
+      (isOpen_subsets_of_isOpen hU)
+  refine ⟨⋃ L ∈ V, ↑L, ⟨?_, ?_⟩, ?_⟩
+  · filter_upwards [continuous_singleton.tendsto x (hV₁.mem_nhds hxV)] with y hy
+    exact mem_iUnion₂_of_mem hy rfl
+  · exact vietoris.isPreconnected_biUnion hV₂ (by fun_prop) ⟨{x}, hxV, isPreconnected_singleton⟩
+  · rwa [id, iUnion₂_subset_iff]
+
+@[simp]
+theorem _root_.TopologicalSpace.Compacts.locallyConnectedSpace_iff :
+    LocallyConnectedSpace (Compacts α) ↔ LocallyConnectedSpace α :=
+  ⟨fun _ => NonemptyCompacts.locallyConnectedSpace_iff.mp
+    isOpenEmbedding_toCompacts.locallyConnectedSpace, fun _ => inferInstance⟩
 
 end NonemptyCompacts
 

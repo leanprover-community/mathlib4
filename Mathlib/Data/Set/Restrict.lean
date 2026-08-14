@@ -20,7 +20,7 @@ public import Mathlib.Data.Set.Image
 
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 
-open Equiv Equiv.Perm Function
+open Equiv.Perm Function
 
 namespace Set
 
@@ -62,14 +62,14 @@ theorem image_domRestrict (f : α → β) (s t : Set α) :
 theorem domRestrict_dite {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ a ∉ s, β) :
     (s.domRestrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : s => f a a.2) :=
-  funext fun a => dif_pos a.2
+  funext fun a => dite_eq_left a.2
 
 @[simp]
 theorem domRestrict_dite_compl {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ a ∉ s, β) :
     (sᶜ.domRestrict fun a => if h : a ∈ s then f a h else g a h) =
       (fun a : (sᶜ : Set α) => g a a.2) :=
-  funext fun a => dif_neg a.2
+  funext fun a => dite_eq_right a.2
 
 @[simp]
 theorem domRestrict_ite (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :

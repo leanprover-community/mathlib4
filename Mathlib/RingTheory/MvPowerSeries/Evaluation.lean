@@ -113,7 +113,6 @@ def hasEvalIdeal : Ideal (σ → S) where
   zero_mem' := HasEval.zero
   smul_mem' := HasEval.mul_left
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_hasEvalIdeal_iff {a : σ → S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
   simp [hasEvalIdeal]
@@ -208,7 +207,7 @@ noncomputable def eval₂ (f : MvPowerSeries σ R) : S :=
 theorem eval₂_coe (f : MvPolynomial σ R) :
     MvPowerSeries.eval₂ φ a f = MvPolynomial.eval₂ φ a f := by
   have : ∃ p : MvPolynomial σ R, (p : MvPowerSeries σ R) = f := ⟨f, rfl⟩
-  rw [eval₂, dif_pos this]
+  rw [eval₂, dite_eq_left this]
   congr
   rw [← MvPolynomial.coe_inj, this.choose_spec]
 

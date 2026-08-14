@@ -25,7 +25,6 @@ public section
 
 assert_not_exists IsOrderedMonoid Field
 
-open Function
 open scoped Pointwise
 
 variable {α β : Type*}

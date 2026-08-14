@@ -167,14 +167,12 @@ def conePost (F : J ⥤ C) (i : J) : Cone F ⥤ Cone (Over.post (X := i) F) wher
   obj c := { pt := Over.mk (c.π.app i), π := { app X := Over.homMk (c.π.app X.left) } }
   map f := { hom := Over.homMk f.hom }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `conePost` is compatible with the forgetful functors on over categories. -/
 @[simps!]
 def conePostIso (F : J ⥤ C) (i : J) :
     conePost F i ⋙ Cone.functoriality _ (Over.forget (F.obj i)) ≅
       Cone.whiskering (Over.forget _) := .refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] IsCofiltered.isConnected in
 /-- The functor taking a cone over `F` to a cone over `Over.post F : Over i ⥤ Over (F.obj i)`
 preserves limit cones -/

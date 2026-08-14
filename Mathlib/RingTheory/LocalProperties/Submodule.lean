@@ -132,7 +132,7 @@ end maximal
 
 section span
 
-open IsLocalizedModule LocalizedModule Ideal
+open IsLocalizedModule Ideal
 
 variable (s : Set R) (span_eq : Ideal.span s = ⊤)
 include span_eq

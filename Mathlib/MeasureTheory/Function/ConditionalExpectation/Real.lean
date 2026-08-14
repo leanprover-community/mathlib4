@@ -32,7 +32,7 @@ public section
 
 noncomputable section
 
-open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
+open TopologicalSpace MeasureTheory.Lp Filter
 
 open scoped NNReal ENNReal Topology MeasureTheory
 

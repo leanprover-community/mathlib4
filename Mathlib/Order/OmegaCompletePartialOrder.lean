@@ -342,11 +342,11 @@ theorem ωSup_eq_some {c : Chain (Part α)} {a : α} (h : some a ∈ c) : Part.�
   have : ∃ a, some a ∈ c := ⟨a, h⟩
   have a' : some (Classical.choose this) ∈ c := Classical.choose_spec this
   calc
-    Part.ωSup c = some (Classical.choose this) := dif_pos this
+    Part.ωSup c = some (Classical.choose this) := dite_eq_left this
     _ = some a := congr_arg _ (eq_of_chain a' h)
 
 theorem ωSup_eq_none {c : Chain (Part α)} (h : ¬∃ a, some a ∈ c) : Part.ωSup c = none :=
-  dif_neg h
+  dite_eq_right h
 
 theorem mem_chain_of_mem_ωSup {c : Chain (Part α)} {a : α} (h : a ∈ Part.ωSup c) : some a ∈ c := by
   simp only [Part.ωSup] at h; split_ifs at h with h_1
@@ -381,7 +381,7 @@ theorem mem_ωSup (x : α) (c : Chain (Part α)) : x ∈ ωSup c ↔ some x ∈ 
   · exact fun a ↦ mem_chain_of_mem_ωSup a
   · intro h
     have h' : ∃ a : α, some a ∈ c := ⟨_, h⟩
-    rw [dif_pos h']
+    rw [dite_eq_left h']
     have hh := Classical.choose_spec h'
     rw [eq_of_chain hh h]
     simp

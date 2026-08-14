@@ -85,7 +85,6 @@ theorem equalizerSubobject_arrow_comp :
 theorem equalizerSubobject_of_self : equalizerSubobject f f = ⊤ := by
   apply mk_eq_top_of_isIso
 
-set_option backward.isDefEq.respectTransparency false in
 theorem equalizerSubobject_factors {W : C} (h : W ⟶ X) (w : h ≫ f = h ≫ g) :
     (equalizerSubobject f g).Factors h :=
   ⟨equalizer.lift h w, by simp⟩
@@ -171,7 +170,6 @@ section
 
 variable {f} {X' Y' : C} {f' : X' ⟶ Y'} [HasKernel f']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A commuting square induces a morphism between the kernel subobjects. -/
 def kernelSubobjectMap (sq : Arrow.mk f ⟶ Arrow.mk f') :
     (kernelSubobject f : C) ⟶ (kernelSubobject f' : C) :=
@@ -366,8 +364,6 @@ theorem imageSubobject_comp_le {X' : C} (h : X' ⟶ X) (f : X ⟶ Y) [HasImage f
   Subobject.mk_le_mk_of_comm (image.preComp h f) (by simp)
 
 section
-
-open ZeroObject
 
 variable [HasZeroMorphisms C] [HasZeroObject C]
 

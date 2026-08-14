@@ -175,10 +175,7 @@ variable [I.Boundaryless]
 /-- Boundaryless `ModelWithCorners` implies boundaryless manifold. -/
 instance : BoundarylessManifold I M where
   isInteriorPoint' x := by
-    let r := ((chartAt H x).isOpen_extend_target (I := I)).interior_eq
-    have : extChartAt I x = (chartAt H x).extend I := rfl
-    rw [← this] at r
-    rw [isInteriorPoint_iff, r]
+    rw [isInteriorPoint_iff, extChartAt, (chartAt H x).isOpen_extend_target.interior_eq]
     exact PartialEquiv.map_source _ (mem_extChartAt_source _)
 
 end Boundaryless

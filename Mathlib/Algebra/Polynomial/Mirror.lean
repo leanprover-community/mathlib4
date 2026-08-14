@@ -46,7 +46,7 @@ theorem mirror_monomial (n : ℕ) (a : R) : (monomial n a).mirror = monomial n a
   classical
     by_cases ha : a = 0
     · rw [ha, monomial_zero_right, mirror_zero]
-    · rw [mirror, reverse, natDegree_monomial n a, if_neg ha, natTrailingDegree_monomial ha, ←
+    · rw [mirror, reverse, natDegree_monomial n a, ite_eq_right ha, natTrailingDegree_monomial ha, ←
         C_mul_X_pow_eq_monomial, reflect_C_mul_X_pow, revAt_le (le_refl n), tsub_self, pow_zero,
         mul_one]
 
@@ -77,12 +77,12 @@ theorem coeff_mirror (n : ℕ) :
     by_cases h1 : n ≤ p.natDegree + p.natTrailingDegree
     · rw [revAt_le h1, coeff_eq_zero_of_lt_natTrailingDegree]
       grw [h2, add_tsub_cancel_left]
-    · rw [← revAtFun_eq, revAtFun, if_neg h1, coeff_eq_zero_of_natDegree_lt h2]
+    · rw [← revAtFun_eq, revAtFun, ite_eq_right h1, coeff_eq_zero_of_natDegree_lt h2]
   rw [not_lt] at h2
   rw [revAt_le (h2.trans (Nat.le_add_right _ _))]
   by_cases h3 : p.natTrailingDegree ≤ n
-  · rw [← tsub_add_eq_add_tsub h2, ← tsub_tsub_assoc h2 h3, mirror, coeff_mul_X_pow', if_pos h3,
-      coeff_reverse, revAt_le (tsub_le_self.trans h2)]
+  · rw [← tsub_add_eq_add_tsub h2, ← tsub_tsub_assoc h2 h3, mirror, coeff_mul_X_pow',
+      ite_eq_left h3, coeff_reverse, revAt_le (tsub_le_self.trans h2)]
   rw [not_le] at h3
   rw [coeff_eq_zero_of_natDegree_lt (lt_tsub_iff_right.mpr (Nat.add_lt_add_left h3 _))]
   exact coeff_eq_zero_of_lt_natTrailingDegree (by rwa [mirror_natTrailingDegree])

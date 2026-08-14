@@ -179,8 +179,6 @@ namespace Over
 section BinaryProduct
 variable {X : C} {Y Z : Over X}
 
-open Limits
-
 set_option backward.isDefEq.respectTransparency.types false in
 lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
     IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
@@ -292,7 +290,6 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps!]
 def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
@@ -356,7 +353,6 @@ theorem over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B
 
 end ConstructProducts
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Construct terminal object in the over category. This isn't an instance as it's not typically the
 way we want to define terminal objects.

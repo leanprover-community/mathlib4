@@ -40,7 +40,7 @@ jobs:
       # Build under `tools-branch/`, the same directory `build_template.yml` unpacks
       # the tools into, in case the build bakes its own location into the binary.
       - name: Checkout master
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: master
           path: tools-branch
@@ -77,8 +77,8 @@ jobs:
           #                                     We ship the whole build dir, not just the
           #                                     binary, in case it needs other files there
           #                                     to run.
-          #   - scripts/lake-build-with-retry.sh: builds Mathlib/Archive/Counterexamples
-          #                                     with retries.
+          #   - scripts/lake-build-with-retry.sh: builds Mathlib/Archive/Counterexamples/
+          #                                     Wanted with retries.
           #   - scripts/lake-build-wrapper.py:  wraps the `lake test` step.
           #   - lean-toolchain:                 the toolchain this binary was built with;
           #                                     the consumer installs it (via elan) so the

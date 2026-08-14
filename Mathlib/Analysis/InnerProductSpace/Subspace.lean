@@ -18,7 +18,7 @@ some theorems about orthogonal families of subspaces.
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp Module
+open RCLike Real Module
 
 open LinearMap (BilinForm)
 
@@ -99,7 +99,6 @@ theorem OrthogonalFamily.eq_ite [DecidableEq ι] {i j : ι} (v : G i) (w : G j) 
   · rfl
   · exact hV h v w
 
-set_option backward.isDefEq.respectTransparency false in
 theorem OrthogonalFamily.inner_right_dfinsupp
     [∀ (i) (x : G i), Decidable (x ≠ 0)] [DecidableEq ι] (l : ⨁ i, G i) (i : ι) (v : G i) :
     ⟪V i v, l.sum fun j => V j⟫ = ⟪v, l i⟫ :=
@@ -123,7 +122,7 @@ theorem OrthogonalFamily.inner_right_fintype [Fintype ι] (l : ∀ i, G i) (i : 
     _ = ∑ j, ite (i = j) ⟪V i v, V j (l j)⟫ 0 :=
       (congr_arg (Finset.sum Finset.univ) <| funext fun j => hV.eq_ite v (l j))
     _ = ⟪v, l i⟫ := by
-      simp only [Finset.sum_ite_eq, Finset.mem_univ, (V i).inner_map_map, if_true]
+      simp only [Finset.sum_ite_eq, Finset.mem_univ, (V i).inner_map_map, ite_true]
 
 nonrec theorem OrthogonalFamily.inner_sum (l₁ l₂ : ∀ i, G i) (s : Finset ι) :
     ⟪∑ i ∈ s, V i (l₁ i), ∑ j ∈ s, V j (l₂ j)⟫ = ∑ i ∈ s, ⟪l₁ i, l₂ i⟫ := by
@@ -171,8 +170,8 @@ theorem OrthogonalFamily.norm_sq_sdiff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
       (∑ i ∈ s₁ \ s₂, ‖f i‖ ^ 2) + ∑ i ∈ s₂ \ s₁, ‖f i‖ ^ 2 := by
   rw [← Finset.sum_sdiff_sub_sum_sdiff, sub_eq_add_neg, ← Finset.sum_neg_distrib]
   let F : ∀ i, G i := fun i => if i ∈ s₁ then f i else -f i
-  have hF₁ : ∀ i ∈ s₁ \ s₂, F i = f i := fun i hi => if_pos (Finset.sdiff_subset hi)
-  have hF₂ : ∀ i ∈ s₂ \ s₁, F i = -f i := fun i hi => if_neg (Finset.mem_sdiff.mp hi).2
+  have hF₁ : ∀ i ∈ s₁ \ s₂, F i = f i := fun i hi => ite_eq_left (Finset.sdiff_subset hi)
+  have hF₂ : ∀ i ∈ s₂ \ s₁, F i = -f i := fun i hi => ite_eq_right (Finset.mem_sdiff.mp hi).2
   have hF : ∀ i, ‖F i‖ = ‖f i‖ := by
     intro i
     dsimp only [F]

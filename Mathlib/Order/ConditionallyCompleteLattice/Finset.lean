@@ -21,6 +21,24 @@ open Set
 
 variable {ι α β γ : Type*}
 
+section ConditionallyCompleteLattice
+
+variable [ConditionallyCompleteLattice α]
+
+/-- Supremum of `a i`, `i : ι`, is equal to the supremum over finite suprema of `a`. -/
+theorem ciSup_eq_ciSup_finset [OrderBot α] [Nonempty ι] {a : ι → α} (ha : BddAbove (range a)) :
+    ⨆ i, a i = ⨆ F : Finset ι, F.sup a := by
+  refine le_antisymm ?_ ?_
+  · exact ciSup_le fun i => (Finset.le_sup (by simp)).trans (le_ciSup ha.range_finsetSup {i})
+  · exact ciSup_le fun F => Finset.sup_le fun i _ => le_ciSup ha i
+
+/-- Infimum of `a i`, `i : ι`, is equal to the infimum over finite infima of `a`. -/
+theorem ciInf_eq_ciInf_finset [OrderTop α] [Nonempty ι] {a : ι → α} (ha : BddBelow (range a)) :
+    ⨅ i, a i = ⨅ F : Finset ι, F.inf a :=
+  ciSup_eq_ciSup_finset (α := αᵒᵈ) ha
+
+end ConditionallyCompleteLattice
+
 section ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] {s t : Set α} {a b : α}
@@ -272,18 +290,17 @@ end ConditionallyCompleteLattice
 section ConditionallyCompleteLinearOrderBot
 variable [ConditionallyCompleteLinearOrderBot α]
 
-lemma sup_univ_eq_ciSup [Fintype ι] (f : ι → α) : univ.sup f = ⨆ i, f i :=
-  le_antisymm
-    (Finset.sup_le fun _ _ => le_ciSup (finite_range _).bddAbove _)
-    (ciSup_le' fun _ => Finset.le_sup (mem_univ _))
+theorem sup_eq_ciSup (s : Finset ι) (f : ι → α) : s.sup f = ⨆ x ∈ s, f x := by
+  apply (ciSup_le' fun _ ↦ ciSup_le' s.le_sup).antisymm'
+  refine s.sup_le fun a ha ↦ le_ciSup_of_le ?_ a <| by simp [ha]
+  exact ⟨s.sup f, fun _ ⟨_, hx⟩ ↦ hx ▸ ciSup_le' s.le_sup⟩
+
+lemma sup_univ_eq_ciSup [Fintype ι] (f : ι → α) : univ.sup f = ⨆ i, f i := by
+  simp [sup_eq_ciSup]
 
 theorem ciSup_union [DecidableEq ι] {f : ι → α} {s t : Finset ι} :
     (⨆ x ∈ s ∪ t, f x) = (⨆ x ∈ s, f x) ⊔ (⨆ x ∈ t, f x) := by
-  suffices ∀ st : Finset ι, BddAbove <| .range fun x ↦ ⨆ (_ : x ∈ st), f x by
-    simp [ciSup_or', ciSup_sup_eq, this]
-  refine fun st ↦ ⟨st.sup f, fun a ⟨i, ha⟩ ↦ ha ▸ ?_⟩
-  by_cases h : i ∈ st <;>
-    simp [h, le_sup]
+  simp_rw [← sup_eq_ciSup, sup_union]
 
 end ConditionallyCompleteLinearOrderBot
 

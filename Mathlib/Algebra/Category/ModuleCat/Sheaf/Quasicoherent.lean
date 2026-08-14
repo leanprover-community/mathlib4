@@ -446,7 +446,6 @@ lemma IsQuasicoherent.of_coversTop {R : Sheaf J RingCat.{u}}
   (QuasicoherentData.bind M X hX fun _ ↦
     IsQuasicoherent.nonempty_quasicoherentData.some).isQuasicoherent
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isQuasicoherent_over
     [HasPullbacks C] [HasBinaryProducts C] (M : SheafOfModules.{u} R) (X : C) [IsQuasicoherent M] :
     IsQuasicoherent (M.over X) :=

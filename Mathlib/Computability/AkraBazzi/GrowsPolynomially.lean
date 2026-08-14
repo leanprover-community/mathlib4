@@ -29,7 +29,7 @@ arise in practice.
 
 @[expose] public section
 
-open Finset Real Filter Asymptotics
+open Real Filter Asymptotics
 open scoped Topology
 
 namespace AkraBazziRecurrence

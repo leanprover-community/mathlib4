@@ -153,26 +153,22 @@ namespace Candidate
 in `Arrow V` whose image in `RightFreyd V` will be a cokernel of the image of `f`. -/
 abbrev cokernel := Arrow.mk (biprod.desc v.hom f.right)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For `f : u ⟶ v` a morphism in `Arrow V`, this is the morphism `v ⟶ cokernel f` from `v` to
 the "candidate cokernel" of `f`, whose image in `RightFreyd V` will be the projection to
 the cokernel of the image of `f`. -/
 def π : v ⟶ cokernel f := Arrow.homMk biprod.inl (𝟙 v.right)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The right homotopy expressing that `f ≫ π f` is sent to `0` in `RightFreyd V`. -/
 def condition : RightHomotopy (f ≫ π f) 0 where
   hom := biprod.inr
   comm := by simp [π]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Epi ((quotient V).map (π f)) :=
   have : IsIso ((π f).right) := by simp only [π, homMk_right]; infer_instance
   epi_of_isIso_right _
 
 variable {w : Arrow V} (g : v ⟶ w) (h : RightHomotopy (f ≫ g) 0)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : u ⟶ v` and `g : v ⟶ w` are morphisms in `Arrow V` such that `f ≫ g` is right
 homotopic to `0`, this is the morphism from the "candidate cokernel" of `f` to `w` defined
 from the right homotopy. -/
@@ -180,7 +176,6 @@ def desc : cokernel f ⟶ w :=
   Arrow.homMk (biprod.desc g.left h.hom) g.right (biprod.hom_ext' _ _ (by simp)
     (by simp [← h.comm]))
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_desc : π f ≫ desc f g h = g := by ext <;> simp [π, desc]
 

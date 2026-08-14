@@ -93,7 +93,6 @@ instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] : (Over.map f).IsLeftAdjo
 instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] : (Over.pullback f).IsRightAdjoint :=
   (Over.mapPullbackAdj f).isRightAdjoint
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pullback along an epi that's preserved under pullbacks is faithful.
 
 This "preserved under pullbacks" condition is automatically satisfied in abelian categories:
@@ -122,7 +121,6 @@ instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
   ⟨_, ⟨mapPullbackAdj f⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open pullback in
 /-- If `F` is a left adjoint and its source category has pullbacks, then so is
 `post F : Over Y ⥤ Over (G Y)`.
@@ -236,7 +234,6 @@ def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
   }
 
 set_option backward.isDefEq.respectTransparency false in
-set_option linter.flexible false in -- simp followed by infer_instance
 /-- The pushout along a mono that's preserved under pushouts is faithful.
 
 This "preserved under pushouts" condition is automatically satisfied in abelian categories:
@@ -246,7 +243,8 @@ example [Abelian C] [Mono f] : (pushout f).Faithful := inferInstance
 -/
 instance faithful_pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f]
     [∀ Z (g : X ⟶ Z), Mono (pushout.inl g f)] : (pushout f).Faithful := by
-  have (Z : Under X) : Mono ((mapPushoutAdj f).unit.app Z) := by simp; infer_instance
+  have (Z : Under X) : Mono ((mapPushoutAdj f).unit.app Z) := by
+    rw [mapPushoutAdj_unit_app]; infer_instance
   exact (mapPushoutAdj f).faithful_L_of_mono_unit_app
 
 /-- pushout (𝟙 X) : Under X ⥤ Under X is the identity functor. -/

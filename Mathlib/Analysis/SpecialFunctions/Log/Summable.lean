@@ -20,7 +20,7 @@ public section
 
 variable {ι : Type*}
 
-open Filter Topology NNReal SummationFilter
+open Filter Topology SummationFilter
 
 namespace Complex
 variable {f : ι → ℂ} {a : ℂ}

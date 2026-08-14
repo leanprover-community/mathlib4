@@ -38,7 +38,7 @@ computes group homology.
 
 universe v u
 
-open CategoryTheory Representation Finsupp Limits
+open CategoryTheory Representation Finsupp
 
 namespace Rep.FiniteCyclicGroup
 

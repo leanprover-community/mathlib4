@@ -87,8 +87,8 @@ theorem isConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
 
 theorem image_connectedComponentIn {s : Set X} (h : X ≃ₜ Y) {x : X} (hx : x ∈ s) :
     h '' connectedComponentIn s x = connectedComponentIn (h '' s) (h x) := by
-  refine (h.continuous.image_connectedComponentIn_subset hx).antisymm ?_
-  have := h.symm.continuous.image_connectedComponentIn_subset (mem_image_of_mem h hx)
+  refine (h.continuous.continuousOn.image_connectedComponentIn_subset hx).antisymm ?_
+  have := h.symm.continuous.continuousOn.image_connectedComponentIn_subset (mem_image_of_mem h hx)
   rwa [image_subset_iff, h.preimage_symm, h.image_symm, h.preimage_image, h.symm_apply_apply]
     at this
 
@@ -274,7 +274,6 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
 def ulift.{u, v} {X : Type v} [TopologicalSpace X] : ULift.{u, v} X ≃ₜ X where
   toEquiv := Equiv.ulift
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural homeomorphism `(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)`.
 `Equiv.sumArrowEquivProdArrow` as a homeomorphism. -/
 @[simps!]

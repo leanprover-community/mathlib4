@@ -24,7 +24,7 @@ We also develop basic API about these equivalences.
 @[expose] public section
 
 open scoped NNReal ENNReal
-open Function Set Filter Bornology
+open Function Filter Bornology
 open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
 
 section Class

@@ -37,7 +37,7 @@ graded algebra, homogeneous
 
 @[expose] public section
 
-open SetLike DirectSum Pointwise Set
+open SetLike DirectSum Set
 
 variable {ιA ιM σA σM A M : Type*}
 

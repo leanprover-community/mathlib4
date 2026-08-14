@@ -619,17 +619,17 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
   isPWO_iUnion_support' := by
     refine s.isPWO_iUnion_support.mono (Set.iUnion_subset fun b g h => ?_)
     by_cases hb : b ∈ Set.range f
-    · rw [dif_pos hb] at h
+    · rw [dite_eq_left hb] at h
       exact Set.mem_iUnion.2 ⟨Classical.choose hb, h⟩
-    · simp [-Set.mem_range, dif_neg hb] at h
+    · simp [-Set.mem_range, dite_eq_right hb] at h
   finite_co_support' g :=
     ((s.finite_co_support g).image f).subset
       (by
         intro b h
         by_cases hb : b ∈ Set.range f
-        · simp only [Ne, Set.mem_ofPred_eq, dif_pos hb] at h
+        · simp only [Ne, Set.mem_ofPred_eq, dite_eq_left hb] at h
           exact ⟨Classical.choose hb, h, Classical.choose_spec hb⟩
-        · simp only [Ne, Set.mem_ofPred_eq, dif_neg hb, coeff_zero, not_true_eq_false] at h)
+        · simp only [Ne, Set.mem_ofPred_eq, dite_eq_right hb, coeff_zero, not_true_eq_false] at h)
 
 variable (s : SummableFamily Γ R α) (f : α ↪ β) {a : α} {b : β}
 
@@ -640,12 +640,12 @@ theorem embDomain_apply :
 
 @[simp]
 theorem embDomain_image : s.embDomain f (f a) = s a := by
-  rw [embDomain_apply, dif_pos (Set.mem_range_self a)]
+  rw [embDomain_apply, dite_eq_left (Set.mem_range_self a)]
   exact congr rfl (f.injective (Classical.choose_spec (Set.mem_range_self a)))
 
 @[simp]
 theorem embDomain_of_notMem_range (h : b ∉ Set.range f) : s.embDomain f b = 0 := by
-  rw [embDomain_apply, dif_neg h]
+  rw [embDomain_apply, dite_eq_right h]
 
 @[deprecated (since := "2026-07-15")] alias embDomain_notin_range := embDomain_of_notMem_range
 
@@ -848,7 +848,7 @@ theorem isUnit_iff {x : R⟦Γ⟧} : IsUnit x ↔ IsUnit (x.leadingCoeff) := by
     refine
       .of_mul_eq_one (i.leadingCoeff)
         ((coeff_mul_order_add_order u i).symm.trans ?_)
-    rw [ui, coeff_one, if_pos]
+    rw [ui, coeff_one, ite_eq_left]
     rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
   · rintro ⟨⟨u, i, ui, iu⟩, hx⟩
     rw [Units.val_mk] at hx

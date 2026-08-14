@@ -293,7 +293,6 @@ lemma Hom.congr {a b : ∫ᶜ F} {f g : a ⟶ b} (h : f = g) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] PrelaxFunctor.map₂_eqToHom in
 /-- The category structure on `∫ᶜ F`. -/
 instance category : Category (∫ᶜ F) where

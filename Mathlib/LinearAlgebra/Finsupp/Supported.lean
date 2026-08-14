@@ -156,7 +156,7 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
 
 theorem supported_union (s t : Set α) :
     supported M R (s ∪ t) = supported M R s ⊔ supported M R t := by
-  rw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq, cond_true, cond_false]
+  rw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq, Bool.cond_true, Bool.cond_false]
 
 theorem supported_iInter {ι : Type*} (s : ι → Set α) :
     supported M R (⋂ i, s i) = ⨅ i, supported M R (s i) :=

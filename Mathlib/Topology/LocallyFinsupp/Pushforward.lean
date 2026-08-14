@@ -30,7 +30,7 @@ specialized to the degree of the residue field extension
 
 @[expose] public section
 
-open Set Order Topology TopologicalSpace
+open Set TopologicalSpace
 
 variable {X Y R : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   {f : X → Y} (hf : IsSpectralMap f) (w : X → R)

@@ -10,21 +10,23 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
-## Moore complex
+# Moore complex
 
 We construct the normalized Moore complex, as a functor
 `SimplicialObject C ⥤ ChainComplex C ℕ`,
 for any abelian category `C`.
 
-The `n`-th object is intersection of
+The `n`-th object is the intersection of
 the kernels of `X.δ i : X.obj n ⟶ X.obj (n-1)`, for `i = 1, ..., n`.
 
 The differentials are induced from `X.δ 0`,
 which maps each of these intersections of kernels to the next.
 
-This functor is one direction of the Dold-Kan equivalence, which we're still working towards.
+This functor is one direction of the Dold-Kan equivalence
+`CategoryTheory.Abelian.DoldKan.equivalence`, the other being `CategoryTheory.Abelian.DoldKan.Γ`.
+See `Mathlib/AlgebraicTopology/DoldKan/Equivalence.lean`.
 
-### References
+## References
 
 * https://stacks.math.columbia.edu/tag/0194
 * https://ncatlab.org/nlab/show/Moore+complex
@@ -146,7 +148,7 @@ set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The (normalized) Moore complex of a simplicial object `X` in an abelian category `C`.
 
-The `n`-th object is intersection of
+The `n`-th object is the intersection of
 the kernels of `X.δ i : X.obj n ⟶ X.obj (n-1)`, for `i = 1, ..., n`.
 
 The differentials are induced from `X.δ 0`,

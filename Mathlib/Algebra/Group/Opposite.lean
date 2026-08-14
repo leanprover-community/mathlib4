@@ -241,6 +241,14 @@ attribute [nolint simpComm] AddOpposite.addCommute_unop
 @[to_additive] instance [MulOne α] [IsDedekindFiniteMonoid α] : IsDedekindFiniteMonoid αᵐᵒᵖ :=
   MulOpposite.isDedekindFiniteMonoid_iff.mpr ‹_›
 
+@[to_additive (attr := simp)]
+theorem isMulCommutative_op_iff [Mul α] : IsMulCommutative αᵐᵒᵖ ↔ IsMulCommutative α := by
+  simp [isMulCommutative_iff, ← commute_iff_eq]
+
+@[to_additive]
+instance [Mul α] [IsMulCommutative α] : IsMulCommutative αᵐᵒᵖ :=
+  isMulCommutative_op_iff.mpr ‹_›
+
 end MulOpposite
 
 /-!

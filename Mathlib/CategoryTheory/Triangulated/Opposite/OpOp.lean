@@ -33,7 +33,6 @@ namespace Opposite
 namespace OpOpCommShift
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism expressing the commutation of the functor `opOp C : C ⥤ Cᵒᵖᵒᵖ`
 with the shift by `n : ℤ`. -/
 def iso (n : ℤ) :
@@ -67,7 +66,6 @@ end OpOpCommShift
 namespace UnopUnopCommShift
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism expressing the commutation of the functor `unopUnop C : Cᵒᵖᵒᵖ ⥤ C`
 with the shift by `n : ℤ`. -/
 def iso (n : ℤ) :
@@ -99,7 +97,6 @@ lemma iso_inv_app (X : Cᵒᵖᵒᵖ) (n m : ℤ) (hnm : n + m = 0 := by lia) :
 end UnopUnopCommShift
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open OpOpCommShift in
 instance : (opOp C).CommShift ℤ where
   commShiftIso := iso _
@@ -120,7 +117,6 @@ instance : (opOp C).CommShift ℤ where
         (neg_add_cancel p) (neg_add_cancel q) (neg_add_cancel (p + q))]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open UnopUnopCommShift in
 instance : (unopUnop C).CommShift ℤ where
   commShiftIso := iso _
@@ -193,7 +189,6 @@ variable [Preadditive C] [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Ad
   [Pretriangulated C]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : (opOp C).IsTriangulated where
   map_distinguished T hT := by
     refine isomorphic_distinguished _ (op_distinguished _ (op_distinguished _ hT)) _

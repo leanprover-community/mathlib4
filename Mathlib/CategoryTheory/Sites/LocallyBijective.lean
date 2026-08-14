@@ -167,7 +167,6 @@ namespace Presheaf
 variable {A}
 variable [HasWeakSheafify J A] [J.WEqualsLocallyBijective A] {P Q : Cᵒᵖ ⥤ A} (φ : P ⟶ Q)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLocallyInjective_presheafToSheaf_map_iff :
     Sheaf.IsLocallyInjective ((presheafToSheaf J A).map φ) ↔ IsLocallyInjective J φ := by
   rw [← Sheaf.isLocallyInjective_sheafToPresheaf_map_iff,
@@ -175,7 +174,6 @@ lemma isLocallyInjective_presheafToSheaf_map_iff :
     ← comp_isLocallyInjective_iff J (toSheafify J P),
     toSheafify_naturality, ObjectProperty.ι_map]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLocallySurjective_presheafToSheaf_map_iff :
     Sheaf.IsLocallySurjective ((presheafToSheaf J A).map φ) ↔ IsLocallySurjective J φ := by
   rw [← Sheaf.isLocallySurjective_sheafToPresheaf_map_iff,

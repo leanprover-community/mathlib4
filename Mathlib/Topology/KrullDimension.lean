@@ -30,7 +30,7 @@ dimension inequalities.
 
 @[expose] public section
 
-open Set Function Order TopologicalSpace Topology TopologicalSpace.IrreducibleCloseds
+open Set Order TopologicalSpace Topology TopologicalSpace.IrreducibleCloseds
 
 /--
 The Krull dimension of a topological space is the supremum of lengths of chains of

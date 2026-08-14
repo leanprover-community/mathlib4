@@ -306,7 +306,7 @@ def single (a : α) (b : β) :
     · simp
 
 theorem mem_single (a : α) (b : β) : b ∈ single a b a :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem mem_single_iff (a₁ a₂ : α) (b₁ b₂ : β) : b₁ ∈ single a₂ b₂ a₁ ↔ a₁ = a₂ ∧ b₁ = b₂ := by
   dsimp [single]; split_ifs <;> simp [*, eq_comm]
@@ -317,10 +317,10 @@ theorem symm_single (a : α) (b : β) : (single a b).symm = single b a :=
 
 @[simp]
 theorem single_apply (a : α) (b : β) : single a b a = some b :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem single_apply_of_ne {a₁ a₂ : α} (h : a₁ ≠ a₂) (b : β) : single a₁ b a₂ = none :=
-  if_neg h.symm
+  ite_eq_right h.symm
 
 theorem single_trans_of_mem (a : α) {b : β} {c : γ} {f : β ≃. γ} (h : c ∈ f b) :
     (single a b).trans f = single a c := by
@@ -341,7 +341,7 @@ theorem single_trans_single (a : α) (b : β) (c : γ) :
 theorem single_subsingleton_eq_refl [Subsingleton α] (a b : α) : single a b = PEquiv.refl α := by
   ext i j
   dsimp [single]
-  rw [if_pos (Subsingleton.elim i a), Subsingleton.elim i j, Subsingleton.elim b j]
+  rw [ite_eq_left (Subsingleton.elim i a), Subsingleton.elim i j, Subsingleton.elim b j]
 
 theorem trans_single_of_eq_none {b : β} (c : γ) {f : δ ≃. β} (h : f.symm b = none) :
     f.trans (single b c) = ⊥ := by
@@ -399,7 +399,7 @@ instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
       have hf := fg a b H
       have hg := gh a b H
       simp only [Option.mem_def, PEquiv.coe_mk_apply] at *
-      rw [hf, hg, if_pos rfl] }
+      rw [hf, hg, ite_eq_left rfl] }
 
 end Order
 

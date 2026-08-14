@@ -20,7 +20,7 @@ This file contains the results concerning the interaction of list big operators 
 
 public section
 
-open MulOpposite List
+open List
 
 variable {ι κ M M₀ R : Type*}
 

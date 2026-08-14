@@ -55,7 +55,7 @@ in the set), but we have the following inequality:
 
 @[expose] public section
 
-open EMetric Set
+open Set
 open scoped ENNReal NNReal
 
 namespace Metric

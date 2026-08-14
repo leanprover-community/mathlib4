@@ -93,7 +93,6 @@ to equality. -/
 def freeMapIdIso (V : Type*) [Quiver V] : freeMap (𝟭q V) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem freeMap_id (V : Type*) [Quiver V] :
     freeMap (𝟭q V) = 𝟭 _ :=
   Functor.ext_of_iso (freeMapIdIso V) (fun _ ↦ rfl)
@@ -110,7 +109,6 @@ def freeMapCompIso {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
     dsimp
     simp only [Category.comp_id, Category.id_comp, Prefunctor.mapPath_comp_apply])
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem freeMap_comp {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
     [Quiver.{v₁} V₁] [Quiver.{v₂} V₂] [Quiver.{v₃} V₃]
     (F : V₁ ⥤q V₂) (G : V₂ ⥤q V₃) :

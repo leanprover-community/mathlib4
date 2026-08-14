@@ -131,10 +131,10 @@ implies the textbook approach.
 noncomputable def rootableByOfPowLeftSurj
     (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α where
   root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose
-  root_zero _ := by exact dif_pos rfl
+  root_zero _ := by exact dite_eq_left rfl
   root_cancel a hn := by
     dsimp only
-    rw [dif_neg hn]
+    rw [dite_eq_right hn]
     exact (H hn a).choose_spec
 
 section Pi
@@ -190,9 +190,9 @@ noncomputable def divisibleByIntOfSMulTopEqTop
     (H : ∀ {n : ℤ} (_hn : n ≠ 0), n • (⊤ : AddSubgroup A) = ⊤) : DivisibleBy A ℤ where
   div a n :=
     if hn : n = 0 then 0 else (show a ∈ n • (⊤ : AddSubgroup A) by rw [H hn]; trivial).choose
-  div_zero _ := dif_pos rfl
+  div_zero _ := dite_eq_left rfl
   div_cancel a hn := by
-    simp_rw [dif_neg hn]
+    simp_rw [dite_eq_right hn]
     generalize_proofs h1
     exact h1.choose_spec.2
 

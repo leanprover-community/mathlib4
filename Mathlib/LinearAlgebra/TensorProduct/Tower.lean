@@ -161,7 +161,7 @@ A linear equivalence constructing a linear map `M ⊗[R] N →[A] P` given a
 bilinear map `M →[A] N →[R] P` with the property that its composition with the
 canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is the given bilinear map `M →[A] N →[R] P`. -/
 def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
-  LinearEquiv.ofLinear (uncurry R A B M N P) (lcurry R A B M N P)
+  LinearEquiv.ofLinearMap (uncurry R A B M N P) (lcurry R A B M N P)
     (LinearMap.ext fun _ => ext fun x y => lift_tmul _ x y)
     (LinearMap.ext fun f => LinearMap.ext fun x => LinearMap.ext fun y => lift_tmul f x y)
 
@@ -320,7 +320,7 @@ variable {R A B M N P Q}
 
 /-- Heterobasic version of `TensorProduct.congr` -/
 def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P ⊗[R] Q) :=
-  LinearEquiv.ofLinear (map f g) (map f.symm g.symm)
+  LinearEquiv.ofLinearMap (map f g) (map f.symm g.symm)
     (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.apply_symm_apply _) (g.apply_symm_apply _))
     (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.symm_apply_apply _) (g.symm_apply_apply _))
 
@@ -355,7 +355,7 @@ variable (R A M)
 
 /-- Heterobasic version of `TensorProduct.rid`. -/
 protected def rid : M ⊗[R] R ≃ₗ[A] M :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift <| Algebra.lsmul _ _ _ |>.toLinearMap |>.flip)
     (mk R A M R |>.flip 1)
     (LinearMap.ext <| one_smul _)
@@ -400,7 +400,7 @@ variable [Algebra A B] [IsScalarTower A B M]
 Note this is especially useful with `A = R` (where it is a "more linear" version of
 `TensorProduct.assoc`), or with `B = A`. -/
 def assoc : (M ⊗[A] P) ⊗[R] Q ≃ₗ[B] M ⊗[A] (P ⊗[R] Q) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift <| lift <| lcurry R A B P Q _ ∘ₗ mk A B M (P ⊗[R] Q))
     (lift <| uncurry R A B P Q _ ∘ₗ curry (mk R B _ Q))
     (by ext; rfl)
@@ -467,7 +467,7 @@ theorem distribBaseChange_tmul (n : N) (q : Q) (a : A) :
 theorem distribBaseChange_symm_tmul
     (n : N) (q : Q) (a b : A) :
     (distribBaseChange R A N Q).symm ((a ⊗ₜ n) ⊗ₜ (b ⊗ₜ q)) = (a * b) ⊗ₜ (n ⊗ₜ q) := by
-  apply ((distribBaseChange R A N Q).apply_eq_iff_symm_apply.mp ?_).symm
+  apply ((distribBaseChange R A N Q).eq_symm_apply.mpr ?_).symm
   rw [tmul_eq_smul_one_tmul b, ← smul_tmul, smul_tmul', mul_comm]
   simp
 
@@ -519,7 +519,6 @@ section rightComm
 variable [CommSemiring S] [Module S M] [Module S P] [Algebra S B]
   [IsScalarTower S B M] [SMulCommClass R S M] [SMulCommClass S R M]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (S) in
 /-- A tensor product analogue of `mul_right_comm`.
 
@@ -532,7 +531,7 @@ and a `B`-module `M`, `S`-module `P`, `R`-module `Q`, then
 ```
 -/
 def rightComm : (M ⊗[S] P) ⊗[R] Q ≃ₗ[B] (M ⊗[R] Q) ⊗[S] P :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ
       (AlgebraTensorModule.mk _ _ _ _).compr₂ (AlgebraTensorModule.mk _ _ _ _))))
     (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ

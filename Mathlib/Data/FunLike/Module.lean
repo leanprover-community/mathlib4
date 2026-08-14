@@ -6,7 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Data.FunLike.Group
-public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Module.Torsion.Pi
 
 /-! # Module instances for `FunLike` types
 In this file we define various instances related to modules for `FunLike` types.
@@ -70,12 +70,16 @@ protected abbrev distribMulAction [Monoid M] [AddMonoid β] [AddMonoid F] [Distr
     DistribMulAction M F :=
   DFunLike.coe_injective.distribMulAction (coeAddMonoidHom F α β) FunLike.coe_smul
 
-variable [Semiring M] [AddCommMonoid β] [Module M β] [AddCommMonoid F] [SMul M F]
-  [IsZeroApply F α β] [IsAddApply F α β] [IsSMulApply ℕ F α β] [IsSMulApply M F α β]
+variable [Semiring M] [AddCommMonoid β] [Module M β] [AddCommMonoid F]
 
 /-- A `FunLike` type is a `Module` if `β` is a `Module`. -/
-protected abbrev module : Module M F :=
+protected abbrev module [IsZeroApply F α β] [IsAddApply F α β] [SMul M F] [IsSMulApply M F α β] :
+    Module M F :=
   coeAddHom_injective.module M (coeAddMonoidHom F α β) coe_smul
+
+protected theorem moduleIsTorsionFree [Module M F] [IsSMulApply M F α β]
+    [Module.IsTorsionFree M β] : Module.IsTorsionFree M F :=
+  DFunLike.coe_injective.moduleIsTorsionFree _ FunLike.coe_smul
 
 end ModuleInstance
 

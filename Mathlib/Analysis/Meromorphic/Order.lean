@@ -55,7 +55,7 @@ noncomputable def meromorphicOrderAt (f : 𝕜 → E) (x : 𝕜) : WithTop ℤ :
 @[simp]
 lemma meromorphicOrderAt_of_not_meromorphicAt (hf : ¬ MeromorphicAt f x) :
     meromorphicOrderAt f x = 0 :=
-  dif_neg hf
+  dite_eq_right hf
 
 lemma meromorphicAt_of_meromorphicOrderAt_ne_zero (hf : meromorphicOrderAt f x ≠ 0) :
     MeromorphicAt f x := by
@@ -146,6 +146,19 @@ theorem meromorphicOrderAt_ne_top_iff_eventually_ne_zero {f : 𝕜 → E} (hf : 
       ((h₁g.continuousAt.ne_iff_eventually_ne continuousAt_const).mp h₂g)]
     simp_all [zpow_ne_zero, sub_ne_zero]
   · simp_all [meromorphicOrderAt_eq_top_iff, Eventually.frequently]
+
+/--
+A function meromorphic on `U`, with meromorphic order nowhere `⊤`, is nonvanishing away from a
+codiscrete subset of `U`.
+-/
+theorem MeromorphicOn.eventually_codiscreteWithin_apply_ne_zero {U : Set 𝕜} {f : 𝕜 → E}
+    (hf : MeromorphicOn f U) (h'f : ∀ x ∈ U, meromorphicOrderAt f x ≠ ⊤) :
+    ∀ᶠ x in codiscreteWithin U, f x ≠ 0 := by
+  simp_rw [eventually_iff, mem_codiscreteWithin, disjoint_principal_right]
+  intro x hx
+  filter_upwards [(meromorphicOrderAt_ne_top_iff_eventually_ne_zero (hf x hx)).1 (h'f x hx)]
+    with y hy
+  simp [hy]
 
 /-- If the order of a meromorphic function is negative, then this function converges to infinity
 at this point. See also the iff version `tendsto_cobounded_iff_meromorphicOrderAt_neg`. -/
@@ -900,6 +913,23 @@ lemma meromorphicOrderAt_comp_of_deriv_ne_zero (hg : AnalyticAt 𝕜 g x) (hg' :
   · rw [meromorphicOrderAt_of_not_meromorphicAt hf, meromorphicOrderAt_of_not_meromorphicAt]
     rwa [meromorphicAt_comp_iff_of_deriv_ne_zero hg hg']
 
+/-- `meromorphicOrderAt` is invariant under translation. -/
+@[to_fun meromorphicOrderAt_fun_comp_add_const_eq_meromorphicOrderAt]
+theorem meromorphicOrderAt_comp_add_const_eq_meromorphicOrderAt {c : 𝕜} {f : 𝕜 → E} :
+    meromorphicOrderAt (f ∘ (· + c)) x = meromorphicOrderAt f (x + c) := by
+  classical
+  by_cases h : ¬ MeromorphicAt f (x + c)
+  · simp_all [meromorphicAt_comp_add_const_iff_meromorphicAt.not.2 h]
+  rw [MeromorphicAt.meromorphicOrderAt_comp (by simp_all) (by fun_prop)
+    (by simp [eventuallyConst_iff_analyticOrderAt_sub_eq_top])]
+  simp
+
+/-- `meromorphicOrderAt` is invariant under translation. -/
+@[to_fun meromorphicOrderAt_fun_comp_sub_const_eq_meromorphicOrderAt]
+theorem meromorphicOrderAt_comp_sub_const_eq_meromorphicOrderAt {c : 𝕜} {f : 𝕜 → E} :
+    meromorphicOrderAt (f ∘ (· - c)) x = meromorphicOrderAt f (x - c) := by
+  simp_rw [sub_eq_add_neg, ← meromorphicOrderAt_comp_add_const_eq_meromorphicOrderAt]
+
 end comp
 
 section smul
@@ -957,5 +987,34 @@ lemma meromorphicOrderAt_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n 
     (hn : (↑(n + 1) : 𝕜) ≠ 0) (hf : meromorphicOrderAt f x = ↑(n + 1)) :
     meromorphicOrderAt (deriv f) x = ↑n := by
   simpa using meromorphicOrderAt_deriv_eq_sub_one hn hf
+variable [CompleteSpace 𝕜] {f : 𝕜 → 𝕜}
+
+/--
+At zeros and poles of a meromorphic function `f`, the logarithmic derivative has a simple pole: its
+meromorphic order equals `-1`.
+-/
+theorem meromorphicOrderAt_logDeriv_eq_neg_one [CharZero 𝕜] (hf : MeromorphicAt f x)
+    (h₁ : meromorphicOrderAt f x ≠ 0) (h₂ : meromorphicOrderAt f x ≠ ⊤) :
+    meromorphicOrderAt (logDeriv f) x = -1 := by
+  lift meromorphicOrderAt f x to ℤ using h₂ with n hn
+  rw [logDeriv, meromorphicOrderAt_div hf.deriv hf,
+    meromorphicOrderAt_deriv_eq_sub_one (Int.cast_ne_zero.mpr (by exact_mod_cast h₁)) hn.symm,
+    ← hn]
+  norm_cast
+  simp
+
+/--
+At points where a meromorphic function has order zero, the meromorphic order of the logarithmic
+derivative is nonnegative.
+-/
+theorem meromorphicOrderAt_logDeriv_nonneg (hf : MeromorphicAt f x)
+    (h : meromorphicOrderAt f x = 0) :
+    0 ≤ meromorphicOrderAt (logDeriv f) x := by
+  obtain ⟨g, h₁g, h₂g, h₃g⟩ :=
+    (meromorphicOrderAt_eq_int_iff (n := 0) hf).1 (by exact_mod_cast h)
+  have h₄ : f =ᶠ[𝓝[≠] x] g := by
+    filter_upwards [h₃g] with z hz using by simpa using hz
+  rw [meromorphicOrderAt_congr (logDeriv_congr_nhdsNE h₄)]
+  exact (h₁g.deriv.div h₁g h₂g).meromorphicOrderAt_nonneg
 
 end deriv

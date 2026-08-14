@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 module
 
 public import Mathlib.Algebra.BigOperators.Associated
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.Monoid
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 /-!
@@ -39,7 +39,7 @@ namespace WfDvdMonoid
 
 variable [CommMonoidWithZero α]
 
-open Associates Nat
+open Associates
 
 theorem of_wfDvdMonoid_associates (_ : WfDvdMonoid (Associates α)) : WfDvdMonoid α :=
   ⟨(mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).2 wellFounded_dvdNotUnit⟩
@@ -323,10 +323,10 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
       · exact ⊤
       exact ↑(Multiset.card (Classical.choose (pf a h)))
     rintro a b ⟨ane0, ⟨c, hc, b_eq⟩⟩
-    rw [dif_neg ane0]
+    rw [dite_eq_right ane0]
     by_cases h : b = 0
     · simp [h, lt_top_iff_ne_top]
-    · rw [dif_neg h, Nat.cast_lt]
+    · rw [dite_eq_right h, ENat.natCast_lt_natCast]
       have cne0 : c ≠ 0 := by
         refine mt (fun con => ?_) h
         rw [b_eq, con, mul_zero]

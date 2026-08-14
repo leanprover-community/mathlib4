@@ -39,7 +39,7 @@ artanh, arctanh, argtanh, atanh
 
 noncomputable section
 
-open Function Filter Set
+open Function Set
 
 open scoped Topology
 

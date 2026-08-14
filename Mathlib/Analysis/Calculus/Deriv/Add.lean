@@ -28,7 +28,7 @@ universe u v w
 
 open scoped Topology Filter ENNReal
 
-open Asymptotics Set
+open Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]

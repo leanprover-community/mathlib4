@@ -21,7 +21,7 @@ In the natural number case, non-negativity hypotheses are required when the `Nat
 is involved.  In the `IsStrictOrderedRing` case, one of these hypotheses can be omitted.
 -/
 
-@[expose] public section
+public section
 
 namespace Int
 

@@ -187,7 +187,7 @@ theorem optionElim_ne_zero_iff (y : M) (f : α →₀ M) :
 
 theorem eq_option_embedding_update_none_iff {n : Option α →₀ M} {m : α →₀ M} {i : M} :
     n = (embDomain Embedding.some m).update none i ↔ n none = i ∧ n.some = m :=
-  (optionEquiv.apply_eq_iff_eq_symm_apply (y := (_, _))).symm.trans Prod.ext_iff
+  (optionEquiv.eq_symm_apply (x := (_, _))).trans Prod.ext_iff
 
 end Zero
 

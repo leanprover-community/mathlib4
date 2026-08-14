@@ -77,7 +77,6 @@ lemma mem_degenerate_iff (x : X _⦋n⦌) :
     exact ⟨m, hm, f, hx⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma opObjEquiv_mem_degenerate_iff (x : X.op _⦋n⦌) :
     opObjEquiv x ∈ X.degenerate n ↔ x ∈ X.op.degenerate n := by
   simp only [mem_degenerate_iff]

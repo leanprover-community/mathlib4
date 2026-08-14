@@ -167,7 +167,6 @@ instance (K : CochainComplex C ℕ) [∀ n, Injective (K.X n)] :
   isKInjective_of_injective _ 0
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma IsKInjective.eq_δ_of_cocycle {K L : CochainComplex C ℤ} {n : ℤ}
     (z : Cocycle K L n) [L.IsKInjective] (hK : K.Acyclic) (m : ℤ) (hm : m + 1 = n) :
     ∃ (α : Cochain K L m), δ m n α = z.1 := by

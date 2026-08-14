@@ -43,7 +43,7 @@ Prove lemmas relating exposed sets and points to the intrinsic frontier.
 
 @[expose] public section
 
-open Affine Set
+open Set
 
 section PreorderSemiring
 

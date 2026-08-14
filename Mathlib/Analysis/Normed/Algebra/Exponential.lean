@@ -134,7 +134,7 @@ noncomputable irreducible_def exp (x : 𝔸) : 𝔸 :=
 /-- The junk value when `𝔸` can't be equipped with a `ℚ`-algebra structure. -/
 @[simp]
 theorem exp_of_isEmpty_algebra_rat [IsEmpty (Algebra ℚ 𝔸)] (x : 𝔸) : exp x = 1 := by
-  rw [exp, dif_neg (not_nonempty_iff.mpr ‹_›)]
+  rw [exp, dite_eq_right (not_nonempty_iff.mpr ‹_›)]
 
 theorem expSeries_apply_eq (x : 𝔸) (n : ℕ) :
     (expSeries 𝕂 𝔸 n fun _ => x) = (n !⁻¹ : 𝕂) • x ^ n := by simp [expSeries]
@@ -157,7 +157,7 @@ theorem expSeries_eq_expSeries_rat [Algebra ℚ 𝔸] (n : ℕ) :
 variable (𝕂) in
 theorem exp_eq_expSeries_sum [CharZero 𝕂] : exp = (expSeries 𝕂 𝔸).sum := by
   ext x
-  rw [exp, dif_pos ⟨RestrictScalars.algebra ℚ 𝕂 𝔸⟩, ← @expSeries_sum_eq_rat (𝕂 := 𝕂)]
+  rw [exp, dite_eq_left ⟨RestrictScalars.algebra ℚ 𝕂 𝔸⟩, ← @expSeries_sum_eq_rat (𝕂 := 𝕂)]
 
 variable (𝕂) in
 theorem exp_eq_tsum [CharZero 𝕂] : exp = fun x : 𝔸 => ∑' n : ℕ, (n !⁻¹ : 𝕂) • x ^ n := by

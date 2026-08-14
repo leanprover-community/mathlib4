@@ -22,7 +22,6 @@ is again finitely generated.
 public section
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 

@@ -63,7 +63,7 @@ theorem cycleOf_pow_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α)
   induction n with
   | zero => rfl
   | succ n hn =>
-    rw [pow_succ', mul_apply, cycleOf_apply, hn, if_pos, pow_succ', mul_apply]
+    rw [pow_succ', mul_apply, cycleOf_apply, hn, ite_eq_left, pow_succ', mul_apply]
     exact ⟨n, rfl⟩
 
 @[simp]
@@ -123,10 +123,10 @@ theorem IsCycle.cycleOf_eq [DecidableRel f.SameCycle]
 @[simp]
 theorem cycleOf_eq_one_iff (f : Perm α) [DecidableRel f.SameCycle] : cycleOf f x = 1 ↔ f x = x := by
   simp_rw [Perm.ext_iff, cycleOf_apply, one_apply]
-  refine ⟨fun h => (if_pos (SameCycle.refl f x)).symm.trans (h x), fun h y => ?_⟩
+  refine ⟨fun h => (ite_eq_left (SameCycle.refl f x)).symm.trans (h x), fun h y => ?_⟩
   by_cases hy : f y = y
   · rw [hy, ite_self]
-  · exact if_neg (mt SameCycle.apply_eq_self_iff (by tauto))
+  · exact ite_eq_right (mt SameCycle.apply_eq_self_iff (by tauto))
 
 @[simp]
 theorem cycleOf_self_apply (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
@@ -146,8 +146,8 @@ theorem cycleOf_self_apply_zpow (f : Perm α) [DecidableRel f.SameCycle] (n : �
 protected theorem IsCycle.cycleOf [DecidableRel f.SameCycle] [DecidableEq α]
     (hf : IsCycle f) : cycleOf f x = if f x = x then 1 else f := by
   by_cases hx : f x = x
-  · rwa [if_pos hx, cycleOf_eq_one_iff]
-  · rwa [if_neg hx, hf.cycleOf_eq]
+  · rwa [ite_eq_left hx, cycleOf_eq_one_iff]
+  · rwa [ite_eq_right hx, hf.cycleOf_eq]
 
 theorem cycleOf_one [DecidableRel (1 : Perm α).SameCycle] (x : α) :
     cycleOf 1 x = 1 := (cycleOf_eq_one_iff 1).mpr rfl

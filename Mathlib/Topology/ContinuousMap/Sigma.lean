@@ -38,7 +38,7 @@ continuous map, sigma type, disjoint union
 
 noncomputable section
 
-open Filter Topology
+open Topology
 
 variable {X ι : Type*} {Y : ι → Type*} [TopologicalSpace X] [∀ i, TopologicalSpace (Y i)]
 

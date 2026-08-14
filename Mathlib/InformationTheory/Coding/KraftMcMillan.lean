@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.List.Basic
 public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Real.Basic
+public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.Fintype.BigOperators

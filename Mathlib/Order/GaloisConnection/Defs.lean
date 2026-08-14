@@ -27,7 +27,7 @@ such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 
 assert_not_exists CompleteLattice RelIso
 
-open Function OrderDual Set
+open Function OrderDual
 
 universe u v w x
 

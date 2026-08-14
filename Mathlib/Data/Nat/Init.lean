@@ -54,8 +54,6 @@ The relevant files are:
 /- We don't want to import the algebraic hierarchy in this file. -/
 assert_not_exists Monoid
 
-open Function
-
 namespace Nat
 variable {a b c d e m n k : ℕ} {p : ℕ → Prop}
 
@@ -157,7 +155,7 @@ lemma leRec_self {n} {motive : (m : ℕ) → n ≤ m → Sort*}
     (le_succ_of_le : ∀ ⦃k⦄ (h : n ≤ k), motive k h → motive (k + 1) (le_succ_of_le h)) :
     (leRec (motive := motive) refl le_succ_of_le (Nat.le_refl _) :
     motive n (Nat.le_refl _)) = refl := by
-  cases n <;> simp [leRec, Or.by_cases, dif_neg]
+  cases n <;> simp [leRec, Or.by_cases, dite_eq_right]
 
 @[simp]
 lemma leRec_succ {n} {motive : (m : ℕ) → n ≤ m → Sort*}
@@ -168,7 +166,7 @@ lemma leRec_succ {n} {motive : (m : ℕ) → n ≤ m → Sort*}
       le_succ_of_le h1 (leRec (motive := motive) refl le_succ_of_le h1) := by
   conv =>
     lhs
-    rw [leRec, Or.by_cases, dif_pos h1]
+    rw [leRec, Or.by_cases, dite_eq_left h1]
 
 lemma leRec_succ' {n} {motive : (m : ℕ) → n ≤ m → Sort*} (refl le_succ_of_le) :
     (leRec (motive := motive) refl le_succ_of_le (le_succ _)) = le_succ_of_le _ refl := by

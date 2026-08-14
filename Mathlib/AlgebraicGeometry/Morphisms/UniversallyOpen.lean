@@ -42,9 +42,6 @@ along any morphism `Y' ⟶ Y` is (topologically) an open map.
 class UniversallyOpen (f : X ⟶ Y) : Prop where
   universally_isOpenMap : universally (topologically @IsOpenMap) f
 
-@[deprecated (since := "2026-01-20")]
-alias UniversallyOpen.out := UniversallyOpen.universally_isOpenMap
-
 lemma Scheme.Hom.isOpenMap {X Y : Scheme} (f : X ⟶ Y) [UniversallyOpen f] :
     IsOpenMap f := UniversallyOpen.universally_isOpenMap _ _ _ IsPullback.of_id_snd
 

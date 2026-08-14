@@ -21,7 +21,7 @@ public section
 
 assert_not_exists Field
 
-open Finset MulOpposite
+open Finset
 
 variable {R : Type*}
 
@@ -109,16 +109,16 @@ lemma Odd.geom_sum_pos (h : Odd n) : 0 < ∑ i ∈ range n, x ^ i := by
   rw [← Nat.not_even_iff_odd] at h
   rcases lt_trichotomy (x + 1) 0 with (hx | hx | hx)
   · have := geom_sum_alternating_of_lt_neg_one hx k.one_lt_succ_succ
-    simp only [h, if_false] at this
+    simp only [h, ite_false] at this
     exact zero_lt_one.trans this
-  · simp only [eq_neg_of_add_eq_zero_left hx, h, neg_one_geom_sum, if_false, zero_lt_one]
+  · simp only [eq_neg_of_add_eq_zero_left hx, h, neg_one_geom_sum, ite_false, zero_lt_one]
   · exact geom_sum_pos' hx k.succ.succ_ne_zero
 
 lemma geom_sum_pos_iff (hn : n ≠ 0) : 0 < ∑ i ∈ range n, x ^ i ↔ Odd n ∨ 0 < x + 1 := by
   refine ⟨fun h => ?_, ?_⟩
   · rw [or_iff_not_imp_left, ← not_le, Nat.not_odd_iff_even]
     refine fun hn hx => h.not_ge ?_
-    simpa [if_pos hn] using geom_sum_alternating_of_le_neg_one hx n
+    simpa [ite_eq_left hn] using geom_sum_alternating_of_le_neg_one hx n
   · rintro (hn | hx')
     · exact hn.geom_sum_pos
     · exact geom_sum_pos' hx' hn
@@ -136,7 +136,7 @@ lemma geom_sum_ne_zero (hx : x ≠ -1) (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i
   · exact (geom_sum_pos' h n.succ.succ_ne_zero).ne'
 
 lemma geom_sum_eq_zero_iff_neg_one (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i = 0 ↔ x = -1 ∧ Even n := by
-  refine ⟨fun h => ?_, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, if_true]⟩
+  refine ⟨fun h => ?_, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, ite_true]⟩
   contrapose! h
   have hx := eq_or_ne x (-1)
   rcases hx with hx | hx

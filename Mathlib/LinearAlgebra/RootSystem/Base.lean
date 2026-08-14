@@ -97,6 +97,69 @@ lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
   root_mem_or_neg_mem := b.coroot_mem_or_neg_mem
   coroot_mem_or_neg_mem := b.root_mem_or_neg_mem
 
+section Map
+
+variable {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+  {P₂ : RootPairing ι₂ R M₂ N₂} (e : P.Equiv P₂)
+
+private lemma map_aux_pos [DecidableEq ι₂] (s : Finset ι) {f : ι → M} {f₂ : ι₂ → M₂}
+    (e₁ : ι ≃ ι₂) (e₂ : M ≃ₗ[R] M₂) (he : f₂ ∘ e₁ = e₂ ∘ f) {i : ι₂}
+    (hi : f (e₁.symm i) ∈ AddSubmonoid.closure (f '' s)) :
+    f₂ i ∈ AddSubmonoid.closure (f₂ '' (s.image e₁)) := by
+  have aux₁ : f (e₁.symm i) = e₂.symm (f₂ i) := by have := congr_fun he (e₁.symm i); simp_all
+  have aux₂ : AddSubmonoid.closure (f₂ '' e₁ '' s) = (AddSubmonoid.closure (f '' s)).map e₂ := by
+    rw [AddMonoidHom.map_mclosure, ← image_comp, ← image_comp, he]
+  aesop
+
+private lemma map_aux_neg [DecidableEq ι₂] (s : Finset ι) {f : ι → M} {f₂ : ι₂ → M₂}
+    (e₁ : ι ≃ ι₂) (e₂ : M ≃ₗ[R] M₂) (he : f₂ ∘ e₁ = e₂ ∘ f) {i : ι₂}
+    (hi : -f (e₁.symm i) ∈ AddSubmonoid.closure (f '' s)) :
+    -f₂ i ∈ AddSubmonoid.closure (f₂ '' (s.image e₁)) := by
+  have aux₁ : f (e₁.symm i) = e₂.symm (f₂ i) := by have := congr_fun he (e₁.symm i); simp_all
+  have aux₂ : AddSubmonoid.closure (f₂ '' e₁ '' s) = (AddSubmonoid.closure (f '' s)).map e₂ := by
+    rw [AddMonoidHom.map_mclosure, ← image_comp, ← image_comp, he]
+  aesop
+
+/-- The push forward of a base along an equivalence. -/
+protected def map :
+    P₂.Base where
+  support := open scoped Classical in b.support.image e.indexEquiv
+  linearIndepOn_root := by
+    have aux : P₂.root ∘ e.indexEquiv = e.weightEquiv ∘ P.root := e.root_weightMap.symm
+    simp only [Finset.coe_image, ← linearIndepOn_equiv, aux]
+    exact b.linearIndepOn_root.map_injOn _ e.weightEquiv.injective.injOn
+  linearIndepOn_coroot := by
+    have aux : P₂.coroot ∘ e.indexEquiv = e.symm.coweightEquiv ∘ P.coroot :=
+      e.symm.coroot_coweightMap.symm
+    simp only [Finset.coe_image, ← linearIndepOn_equiv, aux]
+    exact b.linearIndepOn_coroot.map_injOn _ e.coweightEquiv.symm.injective.injOn
+  root_mem_or_neg_mem i := by
+    classical
+    rcases b.root_mem_or_neg_mem (e.indexEquiv.symm i) with h | h
+    · left
+      exact map_aux_pos b.support e.indexEquiv e.weightEquiv e.root_weightMap.symm h
+    · right
+      exact map_aux_neg b.support e.indexEquiv e.weightEquiv e.root_weightMap.symm h
+  coroot_mem_or_neg_mem i := by
+    classical
+    rcases b.coroot_mem_or_neg_mem (e.indexEquiv.symm i) with h | h
+    · left
+      exact map_aux_pos b.support e.indexEquiv e.coweightEquiv.symm e.symm.coroot_coweightMap.symm h
+    · right
+      exact map_aux_neg b.support e.indexEquiv e.coweightEquiv.symm e.symm.coroot_coweightMap.symm h
+
+@[simp] lemma support_map_eq [DecidableEq ι₂] :
+    (b.map e).support = b.support.image e.indexEquiv := by
+  unfold Base.map
+  convert rfl
+
+/-- The natural bijection between support of a base and that of its push forward. -/
+@[simps!] def supportMapEquiv [DecidableEq ι₂] :
+    b.support ≃ (b.map e).support :=
+  (e.indexEquiv.imageFinset b.support).trans <| Equiv.finsetCongr (b.support_map_eq e).symm
+
+end Map
+
 include b in
 lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
     (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j) :
@@ -149,7 +212,6 @@ lemma span_coroot_support :
     span R (P.coroot '' b.support) = P.corootSpan R :=
   b.flip.span_root_support
 
-set_option backward.isDefEq.respectTransparency.types false in
 open Finsupp in
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
     [IsAddTorsionFree M] [IsAddTorsionFree N]

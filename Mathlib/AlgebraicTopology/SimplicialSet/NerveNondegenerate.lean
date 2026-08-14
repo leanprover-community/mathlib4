@@ -21,11 +21,11 @@ public section
 
 universe u
 
-open CategoryTheory Simplicial
+open CategoryTheory Simplicial SSet
 
 namespace PartialOrder
 
-variable {X : Type*} [PartialOrder X] {n : ℕ}
+variable {X : Type*} [PartialOrder X] {n m : ℕ}
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_range_nerve_σ_iff (s : (nerve X) _⦋n + 1⦌) (i : Fin (n + 1)) :
@@ -72,5 +72,32 @@ lemma mem_nerve_nonDegenerate_iff_injective (s : (nerve X) _⦋n⦌) :
   obtain h' | h' := (s.monotone hij.le).lt_or_eq
   · exact h'
   · exact ((h h').not_lt hij).elim
+
+lemma nerve_ofSimplex_le_ofSimplex_iff
+    (s : (nerve X) _⦋n⦌) (t : (nerve X) _⦋m⦌) :
+    Subcomplex.ofSimplex s ≤ Subcomplex.ofSimplex t ↔
+      Set.range s.obj ⊆ Set.range t.obj := by
+  refine ⟨?_, ?_⟩
+  · rintro hst _ ⟨i, rfl⟩
+    rw [Subcomplex.ofSimplex_le_iff] at hst
+    obtain ⟨⟨f⟩, rfl⟩ := hst
+    exact ⟨_, rfl⟩
+  · wlog ht : t ∈ (nerve X).nonDegenerate m generalizing m t
+    · intro hst
+      obtain ⟨m', f, _, ⟨t', h₁⟩, rfl⟩ := exists_nonDegenerate _ t
+      rw [Subcomplex.ofSimplex_map_of_epi]
+      refine this _ h₁ ?_
+      rintro _ ⟨i, rfl⟩
+      obtain ⟨j, hj⟩ := hst (Set.mem_range_self i)
+      aesop
+    rw [mem_nerve_nonDegenerate_iff_strictMono] at ht
+    intro hst
+    rw [Subcomplex.ofSimplex_le_iff]
+    have (i : Fin (n + 1)) : ∃ (j : Fin (m + 1)), t.obj j = s.obj i := by aesop
+    choose f hf using this
+    have hf' : Monotone f := fun i₁ i₂ hi ↦ by
+      rw [← ht.le_iff_le, hf, hf]
+      exact s.monotone hi
+    exact ⟨Quiver.Hom.op (SimplexCategory.Hom.mk ⟨f, hf'⟩), by aesop⟩
 
 end PartialOrder

@@ -156,8 +156,6 @@ end DecidableEq
 
 section Equiv
 
-open Finset
-
 variable {κ : Type*}
 
 @[simp]

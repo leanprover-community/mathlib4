@@ -55,7 +55,7 @@ lemma exponentialPDF_of_neg {r x : ℝ} (hx : x < 0) : exponentialPDF r x = 0 :=
 
 lemma exponentialPDF_of_nonneg {r x : ℝ} (hx : 0 ≤ x) :
     exponentialPDF r x = ENNReal.ofReal (r * rexp (-(r * x))) := by
-  simp only [exponentialPDF_eq, if_pos hx]
+  simp only [exponentialPDF_eq, ite_eq_left hx]
 
 /-- The Lebesgue integral of the exponential pdf over nonpositive reals equals 0 -/
 lemma lintegral_exponentialPDF_of_nonpos {x r : ℝ} (hx : x ≤ 0) :
@@ -129,7 +129,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
   case neg =>
     simp only [exponentialPDF_eq]
     rw [setLIntegral_congr_fun measurableSet_Iic, lintegral_zero, ENNReal.ofReal_zero]
-    exact fun a (_ : a ≤ _) ↦ by rw [if_neg (by linarith), ENNReal.ofReal_eq_zero]
+    exact fun a (_ : a ≤ _) ↦ by rw [ite_eq_right (by linarith), ENNReal.ofReal_eq_zero]
   case pos =>
     rw [lintegral_Iic_eq_lintegral_Iio_add_Icc _ h, lintegral_exponentialPDF_of_nonpos (le_refl 0),
       zero_add]
@@ -140,7 +140,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
         ← integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall fun _ ↦ le_of_lt
         (mul_pos hr (exp_pos _)))]
     · have : ∫ a in uIoc 0 x, r * rexp (-(r * a)) = ∫ a in 0..x, r * rexp (-(r * a)) := by
-        rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, if_pos h, one_mul]
+        rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, ite_eq_left h, one_mul]
       rw [integral_Icc_eq_integral_Ioc, ← uIoc_of_le h, this]
       rw [intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le h
         (f := fun a ↦ -1 * rexp (-(r * a))) _ _]

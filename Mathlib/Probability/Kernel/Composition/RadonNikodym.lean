@@ -6,8 +6,9 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+public import Mathlib.Probability.Kernel.RadonNikodym
 
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+import Mathlib.Probability.Kernel.CompProdEqIff
 
 /-!
 # Radon-Nikodym derivative of a composition product
@@ -16,17 +17,19 @@ We compute the Radon-Nikodym derivative of a composition product `μ ⊗ₘ κ` 
 composition product `ν ⊗ₘ η` in terms of the Radon-Nikodym derivatives `∂μ/∂ν` and
 `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`.
 
+If `α` is countable or `β` is countably generated, the kernels have a Radon-Nikodym derivative
+`∂κ/∂η` and we give statements in terms of `∂κ/∂η`.
+
 ## Main statements
 
 * `rnDeriv_compProd`: the Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η)` equals the product of
   `∂μ/∂ν` and `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`.
 * `rnDeriv_measure_compProd_left`: the Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ κ)`
   (with the same kernel) equals `∂μ/∂ν`.
-
-## TODO
-
-Under suitable assumptions to have Radon-Nikodym derivatives defined for kernels, we should give
-equivalent statements with `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)` replaced by `∂κ/∂η`.
+* `rnDeriv_measure_compProd`: the Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η)` equals the
+  product of `∂μ/∂ν` and `∂κ/∂η`.
+* `rnDeriv_measure_compProd_right`: the Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`
+  (with the same measure) equals `∂κ/∂η`.
 
 -/
 
@@ -103,7 +106,11 @@ lemma rnDeriv_measure_compProd_left (μ ν : Measure α) (κ : Kernel α β)
       (Measure.rnDeriv_withDensity ν (by fun_prop))
 
 /-- The Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η)` equals the product of `∂μ/∂ν` and
-`∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`. -/
+`∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`.
+
+See `rnDeriv_measure_compProd` for a version that replaces `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)` by `∂κ/∂η`
+and does not require the absolute continuity hypothesis, assuming that `α` is countable or `β` is
+countably generated. -/
 lemma rnDeriv_compProd [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKernel η]
     (h_ac : μ ⊗ₘ κ ≪ μ ⊗ₘ η) (ν : Measure α) [IsFiniteMeasure ν] :
     (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η]
@@ -111,5 +118,47 @@ lemma rnDeriv_compProd [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKernel 
   refine Filter.EventuallyEq.trans (Measure.rnDeriv_mul_rnDeriv h_ac).symm ?_
   filter_upwards [rnDeriv_measure_compProd_left μ ν η] with p hp
   rw [Pi.mul_apply, hp, mul_comm]
+
+section CountableOrCountablyGenerated
+
+variable [MeasurableSpace.CountableOrCountablyGenerated α β]
+
+/-- The Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η)` equals the product of `∂μ/∂ν` and
+`∂κ/∂η`. -/
+lemma rnDeriv_measure_compProd (μ ν : Measure α) (κ η : Kernel α β)
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel κ] [IsFiniteKernel η] :
+    (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η] fun p ↦ μ.rnDeriv ν p.1 * κ.rnDeriv η p.1 p.2 := by
+  have h_add : μ ⊗ₘ κ = μ ⊗ₘ κ.singularPart η + μ ⊗ₘ η.withDensity (κ.rnDeriv η) := by
+    conv_lhs => rw [← Kernel.rnDeriv_add_singularPart κ η]
+    rw [Measure.compProd_add_right, add_comm]
+  have h_sing : (μ ⊗ₘ κ.singularPart η).rnDeriv (ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η] 0 :=
+    Measure.rnDeriv_eq_zero_of_mutuallySingular
+      (Measure.MutuallySingular.compProd_of_right μ ν
+        (.of_forall <| Kernel.mutuallySingular_singularPart κ η)) .rfl
+  have h_ne_top : ∀ᵐ p ∂(μ ⊗ₘ η), κ.rnDeriv η p.1 p.2 ≠ ∞ := by
+    refine Measure.ae_compProd_of_ae_ae (p := fun p ↦ κ.rnDeriv η p.1 p.2 ≠ ∞)
+      (Kernel.measurable_rnDeriv κ η (measurableSet_singleton ∞)).compl ?_
+    exact ae_of_all _ fun _ ↦ Kernel.rnDeriv_ne_top κ η
+  have h_wd : (μ ⊗ₘ η.withDensity (κ.rnDeriv η)).rnDeriv (ν ⊗ₘ η)
+      =ᵐ[ν ⊗ₘ η] fun p ↦ κ.rnDeriv η p.1 p.2 * (μ ⊗ₘ η).rnDeriv (ν ⊗ₘ η) p := by
+    rw [Measure.compProd_withDensity (Kernel.measurable_rnDeriv κ η)]
+    exact Measure.rnDeriv_withDensity_left (Kernel.measurable_rnDeriv κ η).aemeasurable h_ne_top
+  rw [h_add]
+  have h_add' := Measure.rnDeriv_add' (μ ⊗ₘ κ.singularPart η)
+    (μ ⊗ₘ η.withDensity (κ.rnDeriv η)) (ν ⊗ₘ η)
+  filter_upwards [h_add', h_sing, h_wd, rnDeriv_measure_compProd_left μ ν η]
+    with p h1 h2 h3 h4
+  rw [h1, Pi.add_apply, h2, Pi.zero_apply, zero_add, h3, h4, mul_comm]
+
+/-- The Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)` (with the same measure)
+equals `∂κ/∂η`. -/
+lemma rnDeriv_measure_compProd_right (μ : Measure α) (κ η : Kernel α β)
+    [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKernel η] :
+    (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) =ᵐ[μ ⊗ₘ η] fun p ↦ κ.rnDeriv η p.1 p.2 := by
+  filter_upwards [Measure.ae_compProd_of_ae_fst η (by measurability) μ.rnDeriv_self,
+    rnDeriv_measure_compProd μ μ κ η]
+  simp_all
+
+end CountableOrCountablyGenerated
 
 end ProbabilityTheory

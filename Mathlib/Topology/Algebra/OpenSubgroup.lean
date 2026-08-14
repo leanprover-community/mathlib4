@@ -329,8 +329,6 @@ end OpenSubgroup
 
 namespace Submodule
 
-open OpenAddSubgroup
-
 variable {R : Type*} {M : Type*} [CommRing R]
 variable [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M] [Module R M]
 

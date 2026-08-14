@@ -108,8 +108,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem mfderivWithin_eq_fderivWithin :
     mfderiv[s] f x = fderivWithin 𝕜 f s x := by
   by_cases h : MDiffAt[s] f x
-  · simp only [mfderivWithin, h, if_pos, mfld_simps]
-  · simp only [mfderivWithin, h, if_neg, not_false_iff]
+  · simp only [mfderivWithin, h, ite_eq_left, mfld_simps]
+  · simp only [mfderivWithin, h, ite_eq_right, not_false_iff]
     rw [mdifferentiableWithinAt_iff_differentiableWithinAt] at h
     exact (fderivWithin_zero_of_not_differentiableWithinAt h).symm
 

@@ -104,7 +104,6 @@ lemma surjective_π_app_zero_of_surjective_map_aux :
       comp_apply, (hF p _).choose_spec]
     rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given surjections `⋯ ⟶ Xₙ₊₁ ⟶ Xₙ ⟶ ⋯ ⟶ X₀`, the projection map `lim Xₙ ⟶ X₀` is surjective.
 -/

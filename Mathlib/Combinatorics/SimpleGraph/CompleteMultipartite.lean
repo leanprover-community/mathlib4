@@ -81,7 +81,6 @@ lemma completeMultipartiteGraph.isCompleteMultipartite {ι : Type*} (V : ι → 
     (completeMultipartiteGraph V).IsCompleteMultipartite :=
   ⟨by simp_all⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The graph isomorphism from a graph `G` that `IsCompleteMultipartite` to the corresponding
 `completeMultipartiteGraph` (see also `isCompleteMultipartite_iff`) -/
 def IsCompleteMultipartite.iso (h : G.IsCompleteMultipartite) :
@@ -227,7 +226,6 @@ def completeEquipartiteGraph.completeMultipartiteGraph :
     completeEquipartiteGraph r t ≃g completeMultipartiteGraph (const (Fin r) (Fin t)) :=
   { (Equiv.sigmaEquivProd (Fin r) (Fin t)).symm with map_rel_iff' := by simp }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A `completeEquipartiteGraph` is isomorphic to a corresponding `turanGraph`.
 
 The difference is that the former vertices are a product type whereas the latter vertices are

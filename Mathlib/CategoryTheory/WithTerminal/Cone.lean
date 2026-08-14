@@ -55,7 +55,6 @@ def commaFromOver : (J ⥤ Over X) ⥤ Comma (𝟭 (J ⥤ C)) (Functor.const J) 
 @[simps!]
 def liftFromOver : (J ⥤ Over X) ⥤ WithTerminal J ⥤ C := commaFromOver ⋙ equivComma.inverse
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The extension of a functor to over categories behaves well with compositions. -/
 @[simps]
 def liftFromOverComp : liftFromOver.obj (K ⋙ Over.post F) ≅ liftFromOver.obj K ⋙ F where
@@ -173,7 +172,6 @@ def commaFromUnder : (J ⥤ Under X) ⥤ Comma (Functor.const J) (𝟭 (J ⥤ C)
 @[simps!]
 def liftFromUnder : (J ⥤ Under X) ⥤ WithInitial J ⥤ C := commaFromUnder ⋙ equivComma.inverse
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The extension of a functor to under categories behaves well with compositions. -/
 @[simps]
 def liftFromUnderComp : liftFromUnder.obj (K ⋙ Under.post F) ≅ liftFromUnder.obj K ⋙ F where

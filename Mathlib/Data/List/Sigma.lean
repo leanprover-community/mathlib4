@@ -162,11 +162,11 @@ theorem dlookup_nil (a : α) : dlookup a [] = @none (β a) :=
 
 @[simp, grind =]
 theorem dlookup_cons_eq (l) (a : α) (b : β a) : dlookup a (⟨a, b⟩ :: l) = some b :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 @[simp, grind =]
 theorem dlookup_cons_ne (l) {a} : ∀ s : Sigma β, a ≠ s.1 → dlookup a (s :: l) = dlookup a l
-  | ⟨_, _⟩, h => dif_neg h.symm
+  | ⟨_, _⟩, h => dite_eq_right h.symm
 
 @[grind =]
 theorem dlookup_isSome {a : α} {l : List (Sigma β)} : (dlookup a l).isSome ↔ a ∈ l.keys := by
@@ -288,11 +288,11 @@ theorem lookupAll_nil (a : α) : lookupAll a [] = @nil (β a) :=
 
 @[simp]
 theorem lookupAll_cons_eq (l) (a : α) (b : β a) : lookupAll a (⟨a, b⟩ :: l) = b :: lookupAll a l :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 @[simp]
 theorem lookupAll_cons_ne (l) {a} : ∀ s : Sigma β, a ≠ s.1 → lookupAll a (s :: l) = lookupAll a l
-  | ⟨_, _⟩, h => dif_neg h.symm
+  | ⟨_, _⟩, h => dite_eq_right h.symm
 
 theorem lookupAll_eq_nil {a : α} :
     ∀ {l : List (Sigma β)}, lookupAll a l = [] ↔ ∀ b : β a, Sigma.mk a b ∉ l

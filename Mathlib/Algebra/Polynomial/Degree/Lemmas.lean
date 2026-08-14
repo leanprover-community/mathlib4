@@ -23,7 +23,7 @@ noncomputable section
 
 open Polynomial
 
-open Finsupp Finset
+open Finset
 
 namespace Polynomial
 

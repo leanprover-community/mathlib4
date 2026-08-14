@@ -673,10 +673,6 @@ theorem Metric.exists_contMDiffMap_forall_closedEBall_subset
       Metric.exists_forall_closedEBall_subset_aux₂
       (Metric.exists_forall_closedEBall_subset_aux₁ hK hU hKU hfin)
 
-@[deprecated (since := "2026-01-24")]
-alias Emetric.exists_contMDiffMap_forall_closedBall_subset :=
-  Metric.exists_contMDiffMap_forall_closedEBall_subset
-
 /-- Let `M` be a smooth σ-compact manifold with a metric. Let `K : ι → Set M` be a locally finite
 family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for all
 `i`. Then there exists a positive smooth function `δ : M → ℝ≥0` such that for any `i` and `x ∈ K i`,

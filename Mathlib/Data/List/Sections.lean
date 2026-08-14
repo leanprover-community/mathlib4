@@ -16,7 +16,7 @@ list of lists `[l₁, ..., lₙ]` is a list whose `i`-th element comes from the 
 public section
 
 
-open Nat Function
+open Nat
 
 namespace List
 

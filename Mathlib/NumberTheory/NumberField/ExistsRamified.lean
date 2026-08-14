@@ -20,7 +20,7 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 `NumberField.abs_discr_gt_two` but is placed in a separate file to avoid large imports.
 
 -/
-@[expose] public section
+public section
 
 open scoped NumberField nonZeroDivisors
 
@@ -58,7 +58,7 @@ lemma NumberField.finrank_eq_one_of_unramified [Algebra.Unramified ℤ 𝒪] :
 lemma bijective_algebraMap_int_of_finite_of_unramified
     [Module.Finite ℤ 𝒪] [Algebra.Unramified ℤ 𝒪] [IsDomain 𝒪] [FaithfulSMul ℤ 𝒪] :
     Function.Bijective (algebraMap ℤ 𝒪) := by
-  have := isDedekindDomain.of_formallyUnramified ℤ 𝒪
+  have := IsDedekindDomain.of_formallyUnramified ℤ 𝒪
   let K := FractionRing 𝒪
   let : Algebra ℤ K := Ring.toIntAlgebra K
   have : CharZero 𝒪 := Algebra.charZero_of_charZero ℤ _

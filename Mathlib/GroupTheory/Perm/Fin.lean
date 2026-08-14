@@ -88,7 +88,7 @@ theorem finRotate_succ_eq_decomposeFin {n : ℕ} :
   split_ifs with h
   · simp [h]
   · rw [Fin.val_succ, Function.Injective.map_swap Fin.val_injective, Fin.val_succ, coe_finRotate,
-      if_neg h, Fin.val_zero, Fin.val_one,
+      ite_eq_right h, Fin.val_zero, Fin.val_one,
       swap_apply_of_ne_of_ne (Nat.succ_ne_zero _) (Nat.succ_succ_ne_one _)]
 
 @[simp]
@@ -182,13 +182,13 @@ theorem coe_cycleRange_of_le (h : i ≤ j) :
         _ ≤ n := Nat.lt_succ_iff.mp j.2)
 
 theorem cycleRange_of_lt [NeZero n] (h : i < j) : cycleRange j i = i + 1 := by
-  rw [cycleRange_of_le h.le, if_neg h.ne]
+  rw [cycleRange_of_le h.le, ite_eq_right h.ne]
 
 theorem coe_cycleRange_of_lt (h : i < j) : (cycleRange j i : ℕ) = i + 1 := by
-  rw [coe_cycleRange_of_le h.le, if_neg h.ne]
+  rw [coe_cycleRange_of_le h.le, ite_eq_right h.ne]
 
 theorem cycleRange_of_eq [NeZero n] (h : i = j) : cycleRange j i = 0 := by
-  rw [cycleRange_of_le h.le, if_pos h]
+  rw [cycleRange_of_le h.le, ite_eq_left h]
 
 @[simp]
 theorem cycleRange_self [NeZero n] (i : Fin n) : cycleRange i i = 0 :=

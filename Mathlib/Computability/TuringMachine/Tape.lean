@@ -264,11 +264,11 @@ theorem ListBlank.nth_modifyNth {Γ} [Inhabited Γ] (f : Γ → Γ) (n i) (L : L
     (L.modifyNth f n).nth i = if i = n then f (L.nth i) else L.nth i := by
   induction n generalizing i L with
   | zero =>
-    cases i <;> simp only [ListBlank.nth_zero, if_true, ListBlank.head_cons, ListBlank.modifyNth,
-      ListBlank.nth_succ, if_false, ListBlank.tail_cons, reduceCtorEq]
+    cases i <;> simp only [ListBlank.nth_zero, ite_true, ListBlank.head_cons, ListBlank.modifyNth,
+      ListBlank.nth_succ, ite_false, ListBlank.tail_cons, reduceCtorEq]
   | succ n IH =>
     cases i
-    · rw [if_neg (Nat.succ_ne_zero _).symm]
+    · rw [ite_eq_right (Nat.succ_ne_zero _).symm]
       simp only [ListBlank.nth_zero, ListBlank.head_cons, ListBlank.modifyNth]
     · simp only [IH, ListBlank.modifyNth, ListBlank.nth_succ, ListBlank.tail_cons, Nat.succ.injEq]
 

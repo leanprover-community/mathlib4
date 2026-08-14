@@ -522,7 +522,6 @@ variable {K J}
 theorem idealSetEquiv_apply (a : idealSet K J) :
     (idealSetEquiv K J a : mixedSpace K) = a := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem idealSetEquiv_symm_apply
     (a : {a : integerSet K // (preimageOfMemIntegerSet a : 𝓞 K) ∈ (J : Set (𝓞 K)) }) :
     ((idealSetEquiv K J).symm a : mixedSpace K) = a := by
@@ -534,7 +533,6 @@ theorem intNorm_idealSetEquiv_apply (a : idealSet K J) :
 
 variable (K J)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For an integer `n`, The equivalence between the elements of `idealSet K` of norm `n` and
 the product of the set of nonzero principal ideals of `K` divisible by `J` of norm `n` and the
 torsion of `K`. -/

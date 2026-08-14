@@ -21,7 +21,7 @@ underlying types are just the limits in the category of types.
 @[expose] public section
 
 
-open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
+open TopologicalSpace CategoryTheory CategoryTheory.Limits
 
 universe v u u' w
 
@@ -141,7 +141,6 @@ theorem induced_of_isLimit :
 
 end IsLimit
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma nonempty_isLimit_iff_eq_induced {F : J ⥤ TopCat.{u}} (c : Cone F)
     (hc : IsLimit ((forget).mapCone c)) :
     Nonempty (IsLimit c) ↔ c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
@@ -159,7 +158,6 @@ theorem limit_topology [HasLimit F] :
     (limit F).str = ⨅ j, (F.obj j).str.induced (limit.π F j) :=
   induced_of_isLimit _ (limit.isLimit _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma hasLimit_iff_small_sections :
     HasLimit F ↔ Small.{u} ((F ⋙ forget).sections) := by
   rw [← Types.hasLimit_iff_small_sections]
@@ -243,7 +241,6 @@ variable (c : Cocone F) (hc : IsColimit c)
 
 include hc
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem coinduced_of_isColimit :
     c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
@@ -278,7 +275,6 @@ lemma continuous_iff_of_isColimit {X : Type u'} [TopologicalSpace X] (f : c.pt �
 
 end IsColimit
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma nonempty_isColimit_iff_eq_coinduced (c : Cocone F) (hc : IsColimit ((forget).mapCocone c)) :
     Nonempty (IsColimit c) ↔ c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   refine ⟨fun ⟨hc⟩ ↦ coinduced_of_isColimit _ hc, fun h ↦ ⟨?_⟩⟩
@@ -300,7 +296,6 @@ theorem colimit_isOpen_iff (F : J ⥤ TopCat.{u}) [HasColimit F]
     IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
   apply isOpen_iff_of_isColimit _ (colimit.isColimit _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma hasColimit_iff_small_colimitType :
     HasColimit F ↔ Small.{u} (F ⋙ forget).ColimitType := by
   rw [← Types.hasColimit_iff_small_colimitType]

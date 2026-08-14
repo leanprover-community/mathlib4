@@ -234,10 +234,11 @@ protected theorem leftMulMatrix (pb : PowerBasis A S) : Algebra.leftMulMatrix pb
     convert! pb.aeval_minpolyGen
     rw [add_comm, aeval_eq_sum_range, Finset.sum_range_succ, ← leadingCoeff,
       pb.minpolyGen_monic.leadingCoeff, one_smul, natDegree_minpolyGen, Finset.sum_range]
-  · rw [Fintype.sum_eq_single (⟨(k : ℕ) + 1, lt_of_le_of_ne k.2 h⟩ : Fin pb.dim), if_pos, one_smul]
+  · rw [Fintype.sum_eq_single (⟨(k : ℕ) + 1, lt_of_le_of_ne k.2 h⟩ : Fin pb.dim), ite_eq_left,
+      one_smul]
     · rfl
     intro x hx
-    rw [if_neg, zero_smul]
+    rw [ite_eq_right, zero_smul]
     apply mt Fin.ext hx
 
 end minpoly
@@ -423,7 +424,7 @@ theorem linearIndependent_pow [Algebra K S] (x : S) :
     exact (degree_eq_natDegree <| minpoly.ne_zero h).symm ▸ degree_sum_fin_lt _
   · apply_fun lcoeff K i at h0
     simp_rw [map_sum, lcoeff_apply, coeff_monomial, Fin.val_eq_val, Finset.sum_ite_eq'] at h0
-    exact (if_pos <| Finset.mem_univ _).symm.trans h0
+    exact (ite_eq_left <| Finset.mem_univ _).symm.trans h0
 
 theorem IsIntegral.mem_span_pow [Nontrivial R] {x y : S} (hx : IsIntegral R x)
     (hy : ∃ f : R[X], y = aeval x f) :

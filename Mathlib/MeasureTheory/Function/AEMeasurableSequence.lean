@@ -55,7 +55,7 @@ theorem mk_eq_fun_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (
 
 theorem aeSeq_eq_mk_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α}
     (hx : x ∈ aeSeqSet hf p) (i : ι) : aeSeq hf p i x = (hf i).mk (f i) x := by
-  simp only [aeSeq, hx, if_true]
+  simp only [aeSeq, hx, ite_true]
 
 theorem aeSeq_eq_fun_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α}
     (hx : x ∈ aeSeqSet hf p) (i : ι) : aeSeq hf p i x = f i x := by
@@ -63,7 +63,7 @@ theorem aeSeq_eq_fun_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α
 
 theorem prop_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (hx : x ∈ aeSeqSet hf p) :
     p x fun n => aeSeq hf p n x := by
-  simp only [aeSeq, hx, if_true]
+  simp only [aeSeq, hx, ite_true]
   rw [funext fun n => mk_eq_fun_of_mem_aeSeqSet hf hx n]
   have h_ss : aeSeqSet hf p ⊆ { x | p x fun n => f n x } := by
     rw [← compl_compl { x | p x fun n => f n x }, aeSeqSet, Set.compl_subset_compl]
@@ -98,7 +98,7 @@ theorem measure_compl_aeSeqSet_eq_zero [Countable ι] (hf : ∀ i, AEMeasurable 
 theorem aeSeq_eq_mk_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n => f n x) : ∀ᵐ a : α ∂μ, ∀ i : ι, aeSeq hf p i a = (hf i).mk (f i) a :=
   have h_ss : aeSeqSet hf p ⊆ { a : α | ∀ i, aeSeq hf p i a = (hf i).mk (f i) a } := fun x hx i =>
-    by simp only [aeSeq, hx, if_true]
+    by simp only [aeSeq, hx, ite_true]
   (ae_iff.2 (measure_compl_aeSeqSet_eq_zero hf hp)).mono h_ss
 
 theorem aeSeq_eq_fun_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)

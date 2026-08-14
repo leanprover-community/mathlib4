@@ -49,7 +49,8 @@ section DistribMulAction
 variable [Monoid S] [Semiring R] [DistribMulAction S R]
 
 @[to_additive (dont_translate := S) distribMulAction]
-instance distribMulAction : DistribMulAction S R[M] := fast_instance% coeffEquiv.distribMulAction _
+instance distribMulAction : DistribMulAction S R[M] :=
+  fast_instance% coeffAddEquiv.distribMulAction _
 
 @[to_additive (dont_translate := S) (attr := simp)]
 lemma mapDomain_smul (f : M → N) (s : S) (x : R[M]) : mapDomain f (s • x) = s • mapDomain f x := by
@@ -61,17 +62,17 @@ section Module
 variable [Semiring R] [Semiring S] [Module R S] {s t : Set M} {x : S[M]}
 
 @[to_additive (dont_translate := R)]
-instance : Module R S[M] := fast_instance% coeffEquiv.module _
+instance : Module R S[M] := fast_instance% coeffAddEquiv.module _
 
 @[to_additive]
 instance instIsTorsionFree [IsTorsionFree R S] : IsTorsionFree R S[M] :=
-  coeffEquiv.moduleIsTorsionFree _
+  coeffAddEquiv.moduleIsTorsionFree _
 
 variable (R) in
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/
 @[to_additive (attr := simps! apply symm_apply)
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/]
-def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S := coeffEquiv.linearEquiv _
+def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S := coeffAddEquiv.linearEquiv _
 
 variable (R S) in
 /-- `MonoidAlgebra.mapDomain` as a linear map. -/
@@ -203,7 +204,7 @@ TODO: Generalise to a group acting on another, instead of just the left multipli
 @[implicit_reducible]
 def comapDistribMulActionSelf [Group G] [Semiring S] : DistribMulAction G S[G] :=
   have := Finsupp.comapDistribMulAction (G := G) (α := G) (M := S)
-  fast_instance% coeffEquiv.distribMulAction _
+  fast_instance% coeffAddEquiv.distribMulAction _
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive (dont_translate := R)]

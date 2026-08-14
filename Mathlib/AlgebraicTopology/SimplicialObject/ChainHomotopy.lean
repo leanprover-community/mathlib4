@@ -49,7 +49,7 @@ lemma hom_eq (p : ℕ) :
 @[simp]
 lemma hom_eq_zero (p q : ℕ) (hpq : p + 1 ≠ q) :
     hom H p q = 0 :=
-  dif_neg hpq
+  dite_eq_right hpq
 
 private lemma comm_zero :
     letI d : Y _⦋1⦌ ⟶ Y _⦋0⦌ := ((alternatingFaceMapComplex C).obj Y).d 1 0
@@ -150,7 +150,6 @@ private lemma comm_succ (n : ℕ) :
 
 end ToChainHomotopy
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A simplicial homotopy between `f` and `g` induces a chain homotopy
 between the induced morphisms on the alternating face map complexes. -/
 noncomputable def toChainHomotopy (H : Homotopy f g) :

@@ -321,7 +321,6 @@ theorem stalkToFiber_surjective (P : LocalPredicate T) (x : X)
   · exact stalkToFiber_germ P U.1 x U.2 ⟨f, h⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The `stalkToFiber` map is injective at `x` if any two allowed sections which agree at `x`
 agree on some neighborhood of `x`.
 -/

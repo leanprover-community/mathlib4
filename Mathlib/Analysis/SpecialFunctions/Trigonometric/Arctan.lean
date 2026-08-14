@@ -395,7 +395,7 @@ theorem coe_tanPartialHomeomorph_symm : ⇑tanPartialHomeomorph.symm = arctan :=
 end Real
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for `Real.arctan`. -/
 @[positivity Real.arctan _]

@@ -17,7 +17,7 @@ public section
 
 noncomputable section
 
-open Finsupp Finset Polynomial
+open Finset Polynomial
 
 namespace Polynomial
 

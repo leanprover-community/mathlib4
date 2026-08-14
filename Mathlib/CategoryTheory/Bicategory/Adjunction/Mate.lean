@@ -52,8 +52,6 @@ namespace CategoryTheory
 
 namespace Bicategory
 
-open Bicategory
-
 variable {B : Type u} [Bicategory.{w, v} B]
 
 namespace Adjunction

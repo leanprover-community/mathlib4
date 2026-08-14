@@ -51,8 +51,8 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
     x ∈ kIdeal ↔ ∀ m : Fin 3 →₀ ℕ, m ∈ x.support → ∃ i, 2 ≤ m i := by
   have :
       kIdeal = Ideal.span ((monomial · (1 : ZMod 2)) '' Set.range (Finsupp.single · 2)) := by
-    simp_rw [kIdeal, MvPolynomial.X, monomial_mul, one_mul, ← Finsupp.single_add, ← Set.range_comp,
-      Function.comp_def]
+    simp_rw [kIdeal, MvPolynomial.X, monomial_mul_monomial, one_mul, ← Finsupp.single_add,
+      ← Set.range_comp, Function.comp_def]
   rw [this, mem_ideal_span_monomial_image]
   simp
 
@@ -80,7 +80,7 @@ theorem mul_self_mem_kIdeal_of_X_Y_Z_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
     norm_num at hi
   rw [as_sum x, CharTwo.sum_mul_self]
   refine sum_mem fun m hm => ?_
-  rw [mem_kIdeal_iff, monomial_mul]
+  rw [mem_kIdeal_iff, monomial_mul_monomial]
   intro m' hm'
   obtain rfl := Finset.mem_singleton.1 (support_monomial_subset hm')
   rw [mem_ideal_span_X_image] at this
@@ -177,7 +177,7 @@ theorem Q'_apply_single (i : Fin 3) (x : K) : Q' (Pi.single i x) = x * x :=
   calc
     Q' (Pi.single i x) = ∑ j : Fin 3, (Pi.single i x * Pi.single i x : Fin 3 → K) j := by
       simp [Q', sq]
-    _ = _ := by simp_rw [← Pi.single_mul, Finset.sum_pi_single', Finset.mem_univ, if_pos]
+    _ = _ := by simp_rw [← Pi.single_mul, Finset.sum_pi_single', Finset.mem_univ, ite_eq_left]
 
 theorem Q'_zero_under_ideal (v : Fin 3 → K) (hv : v ∈ LinearMap.ker lFunc) : Q' v = 0 := by
   rw [LinearMap.mem_ker, lFunc_apply] at hv

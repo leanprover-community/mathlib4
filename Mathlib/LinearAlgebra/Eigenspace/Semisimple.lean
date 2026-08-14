@@ -30,7 +30,7 @@ endomorphisms.
 
 public section
 
-open Function Set
+open Set
 
 namespace Module.End
 

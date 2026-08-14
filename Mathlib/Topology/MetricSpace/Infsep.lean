@@ -383,7 +383,7 @@ theorem infsep_eq_iInf [Decidable s.Nontrivial] :
 
 theorem Nontrivial.infsep_eq_iInf (hs : s.Nontrivial) :
     s.infsep = ⨅ d : s.offDiag, (uncurry dist) (d : α × α) := by
-  classical rw [Set.infsep_eq_iInf, if_pos hs]
+  classical rw [Set.infsep_eq_iInf, ite_eq_left hs]
 
 theorem infsep_of_fintype [Decidable s.Nontrivial] [Fintype s] : s.infsep =
     if hs : s.Nontrivial then s.offDiag.toFinset.inf' (by simpa) (uncurry dist) else 0 := by
@@ -396,7 +396,7 @@ theorem infsep_of_fintype [Decidable s.Nontrivial] [Fintype s] : s.infsep =
 
 theorem Nontrivial.infsep_of_fintype [Fintype s] (hs : s.Nontrivial) :
     s.infsep = s.offDiag.toFinset.inf' (by simpa) (uncurry dist) := by
-  classical rw [Set.infsep_of_fintype, dif_pos hs]
+  classical rw [Set.infsep_of_fintype, dite_eq_left hs]
 
 theorem Finite.infsep [Decidable s.Nontrivial] (hsf : s.Finite) :
     s.infsep =
@@ -410,7 +410,7 @@ theorem Finite.infsep [Decidable s.Nontrivial] (hsf : s.Finite) :
 
 theorem Finite.infsep_of_nontrivial (hsf : s.Finite) (hs : s.Nontrivial) :
     s.infsep = hsf.offDiag.toFinset.inf' (by simpa) (uncurry dist) := by
-  classical simp_rw [hsf.infsep, dif_pos hs]
+  classical simp_rw [hsf.infsep, dite_eq_left hs]
 
 theorem _root_.Finset.coe_infsep (s : Finset α) : (s : Set α).infsep =
     if hs : s.offDiag.Nonempty then s.offDiag.inf' hs (uncurry dist) else 0 := by
@@ -422,12 +422,12 @@ theorem _root_.Finset.coe_infsep (s : Finset α) : (s : Set α).infsep =
 
 theorem _root_.Finset.coe_infsep_of_offDiag_nonempty {s : Finset α}
     (hs : s.offDiag.Nonempty) : (s : Set α).infsep = s.offDiag.inf' hs (uncurry dist) := by
-  rw [Finset.coe_infsep, dif_pos hs]
+  rw [Finset.coe_infsep, dite_eq_left hs]
 
 theorem _root_.Finset.coe_infsep_of_offDiag_empty
     {s : Finset α} (hs : s.offDiag = ∅) : (s : Set α).infsep = 0 := by
   rw [← Finset.not_nonempty_iff_eq_empty] at hs
-  rw [Finset.coe_infsep, dif_neg hs]
+  rw [Finset.coe_infsep, dite_eq_right hs]
 
 theorem Nontrivial.infsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ s.infsep = dist x y := by

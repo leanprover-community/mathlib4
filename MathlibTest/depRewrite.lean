@@ -227,7 +227,6 @@ example (f : B n → Nat) (b : B n) :
   rewrite! [eq]
   exact test_sorry
 
-set_option backward.isDefEq.respectTransparency false in
 -- Test casting twice (from the LHS to `x` and back).
 theorem bool_dep_test
     (b : Bool)

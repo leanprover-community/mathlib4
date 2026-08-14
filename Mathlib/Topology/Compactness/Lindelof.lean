@@ -67,7 +67,6 @@ theorem IsLindelof.compl_mem_sets_of_nhdsWithin (hs : IsLindelof s) {f : Filter 
   rw [← disjoint_principal_right, disjoint_right_comm, (basis_sets _).disjoint_iff_left]
   exact hf x hx
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `p : Set X → Prop` is stable under restriction and union, and each point `x`
   of a Lindelöf set `s` has a neighborhood `t` within `s` such that `p t`, then `p s` holds. -/
 @[elab_as_elim]
@@ -644,9 +643,6 @@ theorem isLindelof_iff_isLindelof_univ : IsLindelof s ↔ IsLindelof (univ : Set
 theorem isLindelof_iff_lindelofSpace : IsLindelof s ↔ LindelofSpace s :=
   isLindelof_iff_isLindelof_univ.trans isLindelof_univ_iff
 
-@[deprecated (since := "2026-01-12")]
-alias isLindelof_iff_LindelofSpace := isLindelof_iff_lindelofSpace
-
 lemma IsLindelof.of_coe [LindelofSpace s] : IsLindelof s := isLindelof_iff_lindelofSpace.mpr ‹_›
 
 theorem IsLindelof.countable (hs : IsLindelof s) (hs' : DiscreteTopology s) : s.Countable :=
@@ -685,14 +681,8 @@ instance Quot.lindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofS
     rw [← range_quot_mk]
     exact isLindelof_range continuous_quot_mk
 
-@[deprecated (since := "2026-01-12")]
-alias Quot.LindelofSpace := Quot.lindelofSpace
-
 instance Quotient.lindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
   Quot.lindelofSpace
-
-@[deprecated (since := "2026-01-12")]
-alias Quotient.LindelofSpace := Quotient.lindelofSpace
 
 /-- A continuous image of a Lindelöf set is a Lindelöf set within the codomain. -/
 theorem LindelofSpace.of_continuous_surjective {f : X → Y} [LindelofSpace X] (hf : Continuous f)
@@ -725,9 +715,6 @@ theorem HereditarilyLindelofSpace.isLindelof [HereditarilyLindelofSpace X] (s : 
     IsLindelof s := by
   apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
   exact subset_univ s
-
-@[deprecated (since := "2026-01-12")]
-alias HereditarilyLindelof_LindelofSets := HereditarilyLindelofSpace.isLindelof
 
 theorem HereditarilyLindelofSpace.of_forall_isOpen (H : ∀ s : Set X, IsOpen s → IsLindelof s) :
     HereditarilyLindelofSpace X := by

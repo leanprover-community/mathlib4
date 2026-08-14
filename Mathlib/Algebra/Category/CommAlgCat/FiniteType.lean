@@ -20,7 +20,7 @@ We define the category of finitely generated `R`-algebras and show it is essenti
 
 universe w v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable (R : Type u) [CommRing R]
 

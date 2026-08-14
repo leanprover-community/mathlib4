@@ -515,7 +515,7 @@ instance lattice : Lattice (Interval α) :=
         lift c to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hc
         change _ ≤ dite _ _ _
         simp only [Interval.coe_le_coe] at hb hc ⊢
-        rw [dif_pos, Interval.coe_le_coe]
+        rw [dite_eq_left, Interval.coe_le_coe]
         · exact ⟨sup_le hb.1 hc.1, le_inf hb.2 hc.2⟩
         -- Porting note: had to add the next 6 lines including the changes because
         -- it seems that lean cannot automatically turn `NonemptyInterval.toDualProd s`

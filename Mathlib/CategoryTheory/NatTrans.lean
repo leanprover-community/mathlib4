@@ -88,8 +88,6 @@ theorem id_app' (F : C ⥤ D) (X : C) : (NatTrans.id F).app X = 𝟙 (F.obj X) :
 
 instance (F : C ⥤ D) : Inhabited (NatTrans F F) := ⟨NatTrans.id F⟩
 
-open Category
-
 open CategoryTheory.Functor
 
 section
@@ -97,7 +95,7 @@ section
 variable {F G H : C ⥤ D}
 
 /-- `vcomp α β` is the vertical compositions of natural transformations. -/
-@[to_dual self (reorder := F H, α β)]
+@[implicit_reducible, to_dual self (reorder := F H, α β)]
 def vcomp (α : NatTrans F G) (β : NatTrans G H) : NatTrans F H where
   app X := α.app X ≫ β.app X
 

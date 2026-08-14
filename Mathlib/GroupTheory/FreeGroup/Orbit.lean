@@ -9,6 +9,8 @@ public import Mathlib.GroupTheory.FreeGroup.Reduce
 public import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
+# Orbits of `FreeGroup.startsWith`
+
 For any `w : α × Bool`, `FreeGroup.startsWith w` is the set of all elements of `FreeGroup α` that
 start with `w`.
 

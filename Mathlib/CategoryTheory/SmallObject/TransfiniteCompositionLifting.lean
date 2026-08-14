@@ -103,7 +103,6 @@ attribute [reassoc (attr := simp)] w₁ w₂
 
 variable {c p f g} {j : J} (sq' : SqStruct c p f g j)
 
-set_option backward.isDefEq.respectTransparency false in
 include sq' in
 @[reassoc]
 lemma w : f ≫ p = c.ι.app ⊥ ≫ g := by
@@ -186,7 +185,6 @@ noncomputable def lift : (sqFunctor c p f g).obj (Opposite.op j) where
     dsimp at this ⊢
     rw [liftHom_fac_assoc _ _ _ hij, this, Cocone.w_assoc])
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma map_lift {i : J} (hij : i < j) :
     (lift hj s).map (homOfLE hij.le) = s.1 ⟨⟨i, hij⟩⟩ := by
   ext
@@ -261,7 +259,6 @@ namespace MorphismProperty
 variable (W : MorphismProperty C)
   (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
 
-set_option backward.isDefEq.respectTransparency false in
 instance isStableUnderTransfiniteCompositionOfShape_llp :
     W.llp.IsStableUnderTransfiniteCompositionOfShape J := by
   rw [isStableUnderTransfiniteCompositionOfShape_iff]

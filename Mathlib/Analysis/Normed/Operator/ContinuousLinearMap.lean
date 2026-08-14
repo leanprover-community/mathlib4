@@ -32,9 +32,9 @@ before adding imports!
 
 @[expose] public section
 
-open Metric ContinuousLinearMap
+open ContinuousLinearMap
 
-open Set Real
+open Real
 
 open NNReal
 

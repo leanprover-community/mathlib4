@@ -297,11 +297,11 @@ noncomputable def ιTotalOrZero (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) 
 
 lemma ιTotalOrZero_eq (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂)
     (h : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂) :
-    K.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ = K.ιTotal c₁₂ i₁ i₂ i₁₂ h := dif_pos h
+    K.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ = K.ιTotal c₁₂ i₁ i₂ i₁₂ h := dite_eq_left h
 
 lemma ιTotalOrZero_eq_zero (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂)
     (h : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) ≠ i₁₂) :
-    K.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ = 0 := dif_neg h
+    K.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ = 0 := dite_eq_right h
 
 @[reassoc (attr := simp)]
 lemma ι_D₁ (i₁₂ i₁₂' : I₁₂) (i₁ : I₁) (i₂ : I₂) (h : ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = i₁₂) :

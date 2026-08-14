@@ -122,7 +122,4 @@ theorem le_range_of_union_finset_eq_univ {α β : Type*} [Infinite β] (f : α �
   obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h
   exact (@Infinite.of_injective _ _ p (inclusion (v' a)) (inclusion_injective _)).false
 
-@[deprecated (since := "2026-01-17")] alias le_range_of_union_finset_eq_top :=
-  le_range_of_union_finset_eq_univ
-
 end Cardinal

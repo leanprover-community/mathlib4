@@ -25,7 +25,7 @@ and `OrderTopology ℕ` become available.
 public section
 
 
-open Order Set TopologicalSpace Filter
+open Set TopologicalSpace Filter
 
 variable {α : Type*} [TopologicalSpace α]
 

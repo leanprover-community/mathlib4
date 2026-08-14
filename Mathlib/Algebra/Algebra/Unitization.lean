@@ -265,20 +265,20 @@ instance instIsCentralScalar [SMul S R] [SMul S A] [SMul Sᵐᵒᵖ R] [SMul S�
 instance instMulAction [Monoid S] [MulAction S R] [MulAction S A] : MulAction S (Unitization R A) :=
   fast_instance% equiv.mulAction S
 
-instance instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMulAction S R]
-    [DistribMulAction S A] : DistribMulAction S (Unitization R A) :=
-  fast_instance% equiv.distribMulAction S
-
-instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
-    Module S (Unitization R A) :=
-  fast_instance% equiv.module S
-
 variable (R A) in
 /-- The identity map between `Unitization R A` and `R × A` as an `AddEquiv`. -/
 @[simps! apply symm_apply]
 def addEquiv [Add R] [Add A] : Unitization R A ≃+ R × A where
   toEquiv := equiv
   map_add' _ _ := rfl
+
+instance instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMulAction S R]
+    [DistribMulAction S A] : DistribMulAction S (Unitization R A) :=
+  fast_instance% (addEquiv _ _).distribMulAction S
+
+instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
+    Module S (Unitization R A) :=
+  fast_instance% (addEquiv _ _).module S
 
 -- not marked `simp` because the LHS would not be in simp normal form.
 lemma toEquiv_addEquiv [Add R] [Add A] : (addEquiv R A).toEquiv = equiv :=

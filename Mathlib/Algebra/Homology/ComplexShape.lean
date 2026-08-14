@@ -148,13 +148,13 @@ def next (c : ComplexShape ι) (i : ι) : ι :=
 theorem next_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.next i = j := by
   apply c.next_eq _ h
   rw [next]
-  rw [dif_pos]
+  rw [dite_eq_left]
   exact Exists.choose_spec ⟨j, h⟩
 
 @[to_dual]
 lemma next_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ k, ¬c.Rel j k) :
     c.next j = j :=
-  dif_neg (by simpa using hj)
+  dite_eq_right (by simpa using hj)
 
 @[to_dual]
 lemma next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel j (c.next j)) :

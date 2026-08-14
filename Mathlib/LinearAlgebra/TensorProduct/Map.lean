@@ -26,21 +26,17 @@ bilinear, tensor, tensor product
 
 section Semiring
 
-variable {R R₂ R₃ R' R'' : Type*}
-variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃] [Monoid R'] [Semiring R'']
+variable {R R₂ R₃ : Type*}
+variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃]
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-variable {A M N P Q S : Type*}
-variable {M₂ M₃ N₂ N₃ P' P₂ P₃ Q' Q₂ Q₃ : Type*}
+variable {M N P Q S : Type*}
+variable {M₂ M₃ N₂ N₃ P₃ : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [AddCommMonoid S]
-variable [AddCommMonoid P'] [AddCommMonoid Q']
-variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Q₂]
-variable [AddCommMonoid M₃] [AddCommMonoid N₃] [AddCommMonoid P₃] [AddCommMonoid Q₃]
-variable [DistribMulAction R' M]
-variable [Module R'' M]
+variable [AddCommMonoid M₂] [AddCommMonoid N₂]
+variable [AddCommMonoid M₃] [AddCommMonoid N₃] [AddCommMonoid P₃]
 variable [Module R M] [Module R N] [Module R S]
-variable [Module R P'] [Module R Q']
-variable [Module R₂ M₂] [Module R₂ N₂] [Module R₂ P₂] [Module R₂ Q₂]
-variable [Module R₃ M₃] [Module R₃ N₃] [Module R₃ P₃] [Module R₃ Q₃]
+variable [Module R₂ M₂] [Module R₂ N₂]
+variable [Module R₃ M₃] [Module R₃ N₃] [Module R₃ P₃]
 
 variable (M N)
 
@@ -102,9 +98,6 @@ theorem map₂_eq_range_lift_comp_mapIncl (f : P →ₗ[R] Q →ₗ[R] M)
 
 section
 
-variable {P' Q' : Type*}
-variable [AddCommMonoid P'] [Module R P']
-variable [AddCommMonoid Q'] [Module R Q']
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 theorem map_comp (f₂ : M₂ →ₛₗ[σ₂₃] M₃) (g₂ : N₂ →ₛₗ[σ₂₃] N₃)
@@ -246,7 +239,7 @@ variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomIn
 /-- If `M` and `P` are semilinearly equivalent and `N` and `Q` are semilinearly equivalent
 then `M ⊗ N` and `P ⊗ Q` are semilinearly equivalent. -/
 def congr (f : M ≃ₛₗ[σ₁₂] M₂) (g : N ≃ₛₗ[σ₁₂] N₂) : M ⊗[R] N ≃ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
-  LinearEquiv.ofLinear (map f g) (map f.symm g.symm)
+  LinearEquiv.ofLinearMap (map f g) (map f.symm g.symm)
     (ext' fun m n => by simp)
     (ext' fun m n => by simp)
 
@@ -732,20 +725,19 @@ end LinearMap
 
 end Ring
 
-namespace Equiv
+namespace LinearEquiv
 variable {R A A' B B' : Type*} [CommSemiring R]
-  [AddCommMonoid A'] [AddCommMonoid B'] [Module R A'] [Module R B']
+  [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid A'] [AddCommMonoid B']
+  [Module R A] [Module R B] [Module R A'] [Module R B']
 
 variable (R) in
 open TensorProduct in
-lemma tensorProductComm_def (eA : A ≃ A') (eB : B ≃ B') :
-    letI := eA.addCommMonoid
-    letI := eB.addCommMonoid
-    letI := eA.module R
-    letI := eB.module R
-    TensorProduct.comm R A B = .trans
-      (congr (eA.linearEquiv R) (eB.linearEquiv R)) (.trans
-      (TensorProduct.comm R A' B') <| congr (eB.linearEquiv R).symm (eA.linearEquiv R).symm) := by
+lemma tensorProductComm_def (eA : A ≃ₗ[R] A') (eB : B ≃ₗ[R] B') :
+    TensorProduct.comm R A B = .trans (congr eA eB) (.trans
+      (TensorProduct.comm R A' B') <| congr eB.symm eA.symm) := by
   ext x; induction x <;> simp [*]
 
-end Equiv
+end LinearEquiv
+
+@[deprecated (since := "2026-07-30")]
+alias Equiv.tensorProductComm_def := LinearEquiv.tensorProductComm_def

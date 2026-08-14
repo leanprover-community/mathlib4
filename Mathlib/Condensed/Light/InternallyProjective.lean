@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.Projective.Internal
 public import Mathlib.Condensed.Light.Epi
-public import Mathlib.Condensed.Light.Functors
 public import Mathlib.Condensed.Light.Monoidal
 /-!
 

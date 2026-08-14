@@ -73,7 +73,7 @@ improve performance.
 
 public meta section
 
-open Lean Meta Qq
+open Lean Qq
 open Mathlib.Tactic.Ring
 
 variable {u : Level} {α : Q(Type u)} {rα : Q(CommRing $α)}

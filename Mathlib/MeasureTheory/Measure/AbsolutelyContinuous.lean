@@ -184,20 +184,24 @@ protected theorem AEDisjoint.of_absolutelyContinuous
     (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≪ μ) :
     AEDisjoint ν s t := h' h
 
-protected theorem AEDisjoint.of_le
-    (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≤ μ) :
-    AEDisjoint ν s t :=
-  h.of_absolutelyContinuous (Measure.absolutelyContinuous_of_le h')
+theorem NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
+    NullMeasurableSet s ν := by
+  obtain ⟨t, ht, hst⟩ := h
+  exact ⟨t, ht, hst.filter_mono (ν.ae_le_iff_absolutelyContinuous.2 hle)⟩
 
-@[gcongr, mono]
-theorem ae_mono (h : μ ≤ ν) : ae μ ≤ ae ν :=
-  h.absolutelyContinuous.ae_le
+theorem ae_eq_comp' {ν : Measure β} {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ)
+    (h : g =ᵐ[ν] g') (h2 : μ.map f ≪ ν) : g ∘ f =ᵐ[μ] g' ∘ f :=
+  (μ.tendsto_ae_map hf).mono_right h2.ae_le h
+
+theorem ae_eq_comp {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ) (h : g =ᵐ[μ.map f] g') :
+    g ∘ f =ᵐ[μ] g' ∘ f :=
+  ae_eq_comp' hf h .rfl
 
 end MeasureTheory
 
 namespace MeasurableEmbedding
 
-open MeasureTheory Measure
+open MeasureTheory
 
 variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} {μ ν : Measure α}
 

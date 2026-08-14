@@ -65,7 +65,7 @@ private lemma coeff_linearCombination_X_pow_of_ne (a : σ →₀ R) {n : ℕ}
     ← C_eq_coe_nat, coeff_C_mul, smul_eq_C_mul, mul_pow, Finset.prod_mul_distrib, ← map_prod,
     coeff_prod_X_pow, mul_ite, mul_one, mul_zero]
   apply Finset.sum_eq_zero (fun x hx ↦ ?_)
-  rw [if_neg]
+  rw [ite_eq_right]
   rintro ⟨rfl⟩
   apply hs
   simp only [Finset.mem_piAntidiag] at hx

@@ -49,13 +49,13 @@ theorem nextOr_singleton (x y d : α) : nextOr [y] x d = d :=
 
 @[simp]
 theorem nextOr_self_cons_cons (xs : List α) (x y d : α) : nextOr (x :: y :: xs) x d = y :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem nextOr_cons_of_ne (xs : List α) (y x d : α) (h : x ≠ y) :
     nextOr (y :: xs) x d = nextOr xs x d := by
   rcases xs with - | ⟨z, zs⟩
   · rfl
-  · exact if_neg h
+  · exact ite_eq_right h
 
 /-- `nextOr` does not depend on the default value, if the next value appears. -/
 theorem nextOr_eq_nextOr_of_mem_dropLast (xs : List α) (x d d' : α) (x_mem : x ∈ xs.dropLast) :
@@ -145,7 +145,7 @@ theorem prev_singleton (x y : α) (h : x ∈ [y]) : prev [y] x h = y :=
   rfl
 
 theorem next_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
-    next (y :: z :: l) x h = z := by rw [next, nextOr, if_pos hx]
+    next (y :: z :: l) x h = z := by rw [next, nextOr, ite_eq_left hx]
 
 @[simp]
 theorem next_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) : next (x :: z :: l) x h = z :=
@@ -192,7 +192,7 @@ theorem prev_head_eq_getLast (hl : l ≠ []) : l.prev (l.head hl) (head_mem hl) 
   | cons head tail => apply prev_getLast_cons
 
 theorem prev_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
-    prev (y :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) := by rw [prev, dif_pos hx]
+    prev (y :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) := by rw [prev, dite_eq_left hx]
 
 theorem prev_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) :
     prev (x :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) :=
@@ -202,7 +202,7 @@ theorem prev_cons_cons_of_ne' (y z : α) (h : x ∈ y :: z :: l) (hy : x ≠ y) 
     prev (y :: z :: l) x h = y := by
   cases l
   · simp [prev, hz]
-  · rw [prev, dif_neg hy, if_pos hz]
+  · rw [prev, dite_eq_right hy, ite_eq_left hz]
 
 theorem prev_cons_cons_of_ne (y : α) (h : x ∈ y :: x :: l) (hy : x ≠ y) :
     prev (y :: x :: l) x h = y :=
@@ -212,7 +212,7 @@ theorem prev_ne_cons_cons (y z : α) (h : x ∈ y :: z :: l) (hy : x ≠ y) (hz 
     prev (y :: z :: l) x h = prev (z :: l) x (by simpa [hy] using h) := by
   cases l
   · simp [hy, hz] at h
-  · rw [prev, dif_neg hy, if_neg hz]
+  · rw [prev, dite_eq_right hy, ite_eq_right hz]
 
 theorem next_mem (h : x ∈ l) : l.next x h ∈ l :=
   nextOr_mem (get_mem _ _)
@@ -226,7 +226,7 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
     by_cases hx : x = hd
     · simp only [hx, prev_cons_cons_eq]
       exact mem_cons_of_mem _ (getLast_mem _)
-    · rw [prev, dif_neg hx]
+    · rw [prev, dite_eq_right hx]
       split_ifs with hm
       · exact mem_cons_self
       · exact mem_cons_of_mem _ (hl _ _)

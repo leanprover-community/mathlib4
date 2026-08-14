@@ -184,22 +184,13 @@ theorem prodFun_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.prodFun (φ.implicitFunction p.1 p.2) = p :=
   φ.hasStrictFDerivAt.eventually_right_inverse.mono fun ⟨_, _⟩ h => h
 
-@[deprecated (since := "2026-01-27")]
-alias prod_map_implicitFunction := prodFun_implicitFunction
-
 theorem leftFun_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.leftFun (φ.implicitFunction p.1 p.2) = p.1 :=
   φ.prodFun_implicitFunction.mono fun _ => congr_arg Prod.fst
 
-@[deprecated (since := "2026-01-27")]
-alias left_map_implicitFunction := leftFun_implicitFunction
-
 theorem rightFun_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.rightFun (φ.implicitFunction p.1 p.2) = p.2 :=
   φ.prodFun_implicitFunction.mono fun _ => congr_arg Prod.snd
-
-@[deprecated (since := "2026-01-27")]
-alias right_map_implicitFunction := rightFun_implicitFunction
 
 theorem implicitFunction_apply_image :
     ∀ᶠ x in 𝓝 φ.pt, φ.implicitFunction (φ.leftFun x) (φ.rightFun x) = x :=
@@ -265,9 +256,6 @@ theorem hasStrictFDerivAt_implicitFunction (g'inv : G →L[𝕜] E)
   ext1 x
   rw [eq_comm, fderiv_implicitFunction_apply_eq_iff]
   simp_all [DFunLike.ext_iff]
-
-@[deprecated (since := "2026-01-27")]
-alias implicitFunction_hasStrictFDerivAt := hasStrictFDerivAt_implicitFunction
 
 theorem map_implicitFunction_nhdsWithin_preimage (φ : ImplicitFunctionData 𝕜 E F G)
     (s : Set E) :

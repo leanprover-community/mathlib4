@@ -49,7 +49,7 @@ theorem catalanSeries_sq_mul_X_add_one : catalanSeries ^ 2 * X + 1 = catalanSeri
   cases n with
   | zero => simp
   | succ n =>
-    simp_rw [add_comm, map_add, coeff_one, if_neg n.succ_ne_zero, zero_add, coeff_succ_mul_X, sq,
-      coeff_mul, catalanSeries_coeff, catalan_succ']
+    simp_rw [add_comm, map_add, coeff_one, ite_eq_right n.succ_ne_zero, zero_add, coeff_succ_mul_X,
+      sq, coeff_mul, catalanSeries_coeff, catalan_succ']
 
 end PowerSeries

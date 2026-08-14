@@ -61,7 +61,6 @@ namespace AdicCompletion
 
 open LinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transitionMap_comp_reduceModIdeal (f : M →ₗ[R] N) {m n : ℕ}
     (hmn : m ≤ n) : transitionMap I N hmn ∘ₗ f.reduceModIdeal (I ^ n) =
       (f.reduceModIdeal (I ^ m) : _ →ₗ[R] _) ∘ₗ transitionMap I M hmn := by
@@ -178,7 +177,7 @@ theorem map_of (f : M →ₗ[R] N) (x : M) : map I f (of I M x) = of I N (f x) :
 /-- A linear equiv induces a linear equiv on adic completions. -/
 def congr (f : M ≃ₗ[R] N) :
     AdicCompletion I M ≃ₗ[AdicCompletion I R] AdicCompletion I N :=
-  LinearEquiv.ofLinear (map I f)
+  LinearEquiv.ofLinearMap (map I f)
     (map I f.symm) (by simp [map_comp]) (by simp [map_comp])
 
 @[simp]
@@ -292,7 +291,7 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
 /-- If `ι` is finite, `sum` has `sumInv` as inverse. -/
 def sumEquivOfFintype :
     (⨁ j, (AdicCompletion I (M j))) ≃ₗ[AdicCompletion I R] AdicCompletion I (⨁ j, M j) :=
-  LinearEquiv.ofLinear (sum I M) (sumInv I M) (sum_comp_sumInv I M) (sumInv_comp_sum I M)
+  LinearEquiv.ofLinearMap (sum I M) (sumInv I M) (sum_comp_sumInv I M) (sumInv_comp_sum I M)
 
 @[simp]
 theorem sumEquivOfFintype_apply (x : ⨁ j, (AdicCompletion I (M j))) :
@@ -359,7 +358,6 @@ open Submodule
 
 variable {I}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_smodEq_pow_add_one_smul {f : M →ₗ[R] N}
     (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) {y : N} {n : ℕ}
     (hy : y ∈ (I ^ n • ⊤ : Submodule R N)) :

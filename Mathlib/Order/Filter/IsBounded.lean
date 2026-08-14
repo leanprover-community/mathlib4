@@ -60,14 +60,11 @@ theorem IsBounded.mono (h : f ≤ g) : IsBounded r g → IsBounded r f
 theorem IsBoundedUnder.mono {f g : Filter β} {u : β → α} (h : f ≤ g) :
     g.IsBoundedUnder r u → f.IsBoundedUnder r u := fun hg => IsBounded.mono (map_mono h) hg
 
+@[to_dual mono_ge]
 theorem IsBoundedUnder.mono_le [Preorder β] {l : Filter α} {u v : α → β}
     (hu : IsBoundedUnder (· ≤ ·) l u) (hv : v ≤ᶠ[l] u) : IsBoundedUnder (· ≤ ·) l v := by
   apply hu.imp
   exact fun b hb => (eventually_map.1 hb).mp <| hv.mono fun x => le_trans
-
-theorem IsBoundedUnder.mono_ge [Preorder β] {l : Filter α} {u v : α → β}
-    (hu : IsBoundedUnder (· ≥ ·) l u) (hv : u ≤ᶠ[l] v) : IsBoundedUnder (· ≥ ·) l v :=
-  IsBoundedUnder.mono_le (β := βᵒᵈ) hu hv
 
 theorem isBoundedUnder_const [Std.Refl r] {l : Filter β} {a : α} : IsBoundedUnder r l fun _ => a :=
   ⟨a, eventually_map.2 <| Eventually.of_forall fun _ => refl _⟩
@@ -93,20 +90,16 @@ lemma Tendsto.isBoundedUnder_comp {ι κ X : Type*} {r : X → X → Prop} {f : 
 section Preorder
 variable [Preorder α] {f : Filter β} {u : β → α} {s : Set β}
 
+@[to_dual eventually_ge]
 lemma IsBoundedUnder.eventually_le (h : IsBoundedUnder (· ≤ ·) f u) :
     ∃ a, ∀ᶠ x in f, u x ≤ a := by
   tauto
 
-lemma IsBoundedUnder.eventually_ge (h : IsBoundedUnder (· ≥ ·) f u) :
-    ∃ a, ∀ᶠ x in f, a ≤ u x :=
-  IsBoundedUnder.eventually_le (α := αᵒᵈ) h
-
+@[to_dual isBoundedUnder_of_eventually_ge]
 lemma isBoundedUnder_of_eventually_le {a : α} (h : ∀ᶠ x in f, u x ≤ a) :
     IsBoundedUnder (· ≤ ·) f u := ⟨a, h⟩
 
-lemma isBoundedUnder_of_eventually_ge {a : α} (h : ∀ᶠ x in f, a ≤ u x) :
-    IsBoundedUnder (· ≥ ·) f u := ⟨a, h⟩
-
+@[to_dual]
 lemma isBoundedUnder_iff_eventually_bddAbove :
     f.IsBoundedUnder (· ≤ ·) u ↔ ∃ s, BddAbove (u '' s) ∧ ∀ᶠ x in f, x ∈ s := by
   constructor
@@ -115,54 +108,35 @@ lemma isBoundedUnder_iff_eventually_bddAbove :
   · rintro ⟨s, ⟨b, hb⟩, hs⟩
     exact ⟨b, hs.mono <| by simpa [upperBounds] using hb⟩
 
-lemma isBoundedUnder_iff_eventually_bddBelow :
-    f.IsBoundedUnder (· ≥ ·) u ↔ ∃ s, BddBelow (u '' s) ∧ ∀ᶠ x in f, x ∈ s :=
-  isBoundedUnder_iff_eventually_bddAbove (α := αᵒᵈ)
-
+@[to_dual]
 lemma _root_.BddAbove.isBoundedUnder (hs : s ∈ f) (hu : BddAbove (u '' s)) :
     f.IsBoundedUnder (· ≤ ·) u := isBoundedUnder_iff_eventually_bddAbove.2 ⟨_, hu, hs⟩
 
 /-- A bounded above function `u` is in particular eventually bounded above. -/
+@[to_dual /-- A bounded below function `u` is in particular eventually bounded below. -/]
 lemma _root_.BddAbove.isBoundedUnder_of_range (hu : BddAbove (Set.range u)) :
     f.IsBoundedUnder (· ≤ ·) u := BddAbove.isBoundedUnder (s := univ) f.univ_mem (by simpa)
 
-lemma _root_.BddBelow.isBoundedUnder (hs : s ∈ f) (hu : BddBelow (u '' s)) :
-    f.IsBoundedUnder (· ≥ ·) u := isBoundedUnder_iff_eventually_bddBelow.2 ⟨_, hu, hs⟩
-
-/-- A bounded below function `u` is in particular eventually bounded below. -/
-lemma _root_.BddBelow.isBoundedUnder_of_range (hu : BddBelow (Set.range u)) :
-    f.IsBoundedUnder (· ≥ ·) u := BddBelow.isBoundedUnder (s := univ) f.univ_mem (by simpa)
-
+@[to_dual ge_of_finite]
 lemma IsBoundedUnder.le_of_finite [Nonempty α] [IsDirectedOrder α] [Finite β]
     {f : Filter β} {u : β → α} : IsBoundedUnder (· ≤ ·) f u :=
   (Set.toFinite _).bddAbove.isBoundedUnder_of_range
 
-lemma IsBoundedUnder.ge_of_finite [Nonempty α] [IsCodirectedOrder α] [Finite β]
-    {f : Filter β} {u : β → α} : IsBoundedUnder (· ≥ ·) f u :=
-  (Set.toFinite _).bddBelow.isBoundedUnder_of_range
-
 end Preorder
 
+@[to_dual isBoundedUnder_ge_comp]
 theorem _root_.Monotone.isBoundedUnder_le_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
     {v : α → β} (hv : Monotone v) (hl : l.IsBoundedUnder (· ≤ ·) u) :
     l.IsBoundedUnder (· ≤ ·) (v ∘ u) :=
   hl.comp hv
 
-theorem _root_.Monotone.isBoundedUnder_ge_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
-    {v : α → β} (hv : Monotone v) (hl : l.IsBoundedUnder (· ≥ ·) u) :
-    l.IsBoundedUnder (· ≥ ·) (v ∘ u) :=
-  hl.comp (swap hv)
-
+@[to_dual isBoundedUnder_ge_comp]
 theorem _root_.Antitone.isBoundedUnder_le_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
-    {v : α → β} (hv : Antitone v) (hl : l.IsBoundedUnder (· ≥ ·) u) :
+    {v : α → β} (hv : Antitone v) (hl : l.IsBoundedUnder (fun x1 x2 ↦ x2 ≤ x1) u) :
     l.IsBoundedUnder (· ≤ ·) (v ∘ u) :=
   hl.comp (swap hv)
 
-theorem _root_.Antitone.isBoundedUnder_ge_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
-    {v : α → β} (hv : Antitone v) (hl : l.IsBoundedUnder (· ≤ ·) u) :
-    l.IsBoundedUnder (· ≥ ·) (v ∘ u) :=
-  hl.comp hv
-
+@[to_dual]
 theorem not_isBoundedUnder_of_tendsto_atTop [Preorder β] [NoMaxOrder β] {f : α → β} {l : Filter α}
     [l.NeBot] (hf : Tendsto f l atTop) : ¬IsBoundedUnder (· ≤ ·) l f := by
   rintro ⟨b, hb⟩
@@ -173,10 +147,7 @@ theorem not_isBoundedUnder_of_tendsto_atTop [Preorder β] [NoMaxOrder β] {f : �
     eq_empty_of_subset_empty fun x hx => (not_le_of_gt h) (le_trans hx.2 hx.1)
   exact (nonempty_of_mem (hb.and hb')).ne_empty this
 
-theorem not_isBoundedUnder_of_tendsto_atBot [Preorder β] [NoMinOrder β] {f : α → β} {l : Filter α}
-    [l.NeBot] (hf : Tendsto f l atBot) : ¬IsBoundedUnder (· ≥ ·) l f :=
-  not_isBoundedUnder_of_tendsto_atTop (β := βᵒᵈ) hf
-
+@[to_dual]
 theorem IsBoundedUnder.bddAbove_range_of_cofinite [Preorder β] [IsDirectedOrder β] {f : α → β}
     (hf : IsBoundedUnder (· ≤ ·) cofinite f) : BddAbove (range f) := by
   rcases hf with ⟨b, hb⟩
@@ -184,18 +155,11 @@ theorem IsBoundedUnder.bddAbove_range_of_cofinite [Preorder β] [IsDirectedOrder
   rw [← image_univ, ← union_compl_self { x | f x ≤ b }, image_union, bddAbove_union]
   exact ⟨⟨b, forall_mem_image.2 fun x => id⟩, (hb.image f).bddAbove⟩
 
-theorem IsBoundedUnder.bddBelow_range_of_cofinite [Preorder β] [IsCodirectedOrder β] {f : α → β}
-    (hf : IsBoundedUnder (· ≥ ·) cofinite f) : BddBelow (range f) :=
-  IsBoundedUnder.bddAbove_range_of_cofinite (β := βᵒᵈ) hf
-
+@[to_dual]
 theorem IsBoundedUnder.bddAbove_range [Preorder β] [IsDirectedOrder β] {f : ℕ → β}
     (hf : IsBoundedUnder (· ≤ ·) atTop f) : BddAbove (range f) := by
   rw [← Nat.cofinite_eq_atTop] at hf
   exact hf.bddAbove_range_of_cofinite
-
-theorem IsBoundedUnder.bddBelow_range [Preorder β] [IsCodirectedOrder β] {f : ℕ → β}
-    (hf : IsBoundedUnder (· ≥ ·) atTop f) : BddBelow (range f) :=
-  IsBoundedUnder.bddAbove_range (β := βᵒᵈ) hf
 
 /-- To check that a filter is frequently bounded, it suffices to have a witness
 which bounds `f` at some point for every admissible set.
@@ -214,11 +178,8 @@ theorem IsBounded.isCobounded_flip [IsTrans α r] [NeBot f] : f.IsBounded r → 
       let ⟨_, rxa, rbx⟩ := (ha.and hb).exists
       show r b a from _root_.trans rbx rxa⟩
 
-theorem IsBounded.isCobounded_ge [Preorder α] [NeBot f] (h : f.IsBounded (· ≤ ·)) :
-    f.IsCobounded (· ≥ ·) :=
-  h.isCobounded_flip
-
-theorem IsBounded.isCobounded_le [Preorder α] [NeBot f] (h : f.IsBounded (· ≥ ·)) :
+@[to_dual isCobounded_ge]
+theorem IsBounded.isCobounded_le [Preorder α] [NeBot f] (h : f.IsBounded (fun x1 x2 ↦ x2 ≤ x1)) :
     f.IsCobounded (· ≤ ·) :=
   h.isCobounded_flip
 
@@ -226,33 +187,23 @@ theorem IsBoundedUnder.isCoboundedUnder_flip {u : γ → α} {l : Filter γ} [Is
     (h : l.IsBoundedUnder r u) : l.IsCoboundedUnder (flip r) u :=
   h.isCobounded_flip
 
+@[to_dual isCoboundedUnder_ge]
 theorem IsBoundedUnder.isCoboundedUnder_le {u : γ → α} {l : Filter γ} [Preorder α] [NeBot l]
-    (h : l.IsBoundedUnder (· ≥ ·) u) : l.IsCoboundedUnder (· ≤ ·) u :=
+    (h : l.IsBoundedUnder (fun x1 x2 ↦ x2 ≤ x1) u) : l.IsCoboundedUnder (· ≤ ·) u :=
   h.isCoboundedUnder_flip
 
-theorem IsBoundedUnder.isCoboundedUnder_ge {u : γ → α} {l : Filter γ} [Preorder α] [NeBot l]
-    (h : l.IsBoundedUnder (· ≤ ·) u) : l.IsCoboundedUnder (· ≥ ·) u :=
-  h.isCoboundedUnder_flip
-
+@[to_dual isCoboundedUnder_ge_of_eventually_le]
 lemma isCoboundedUnder_le_of_eventually_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι → α} {x : α}
     (hf : ∀ᶠ i in l, x ≤ f i) :
     IsCoboundedUnder (· ≤ ·) l f :=
   IsBoundedUnder.isCoboundedUnder_le ⟨x, hf⟩
 
-lemma isCoboundedUnder_ge_of_eventually_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι → α} {x : α}
-    (hf : ∀ᶠ i in l, f i ≤ x) :
-    IsCoboundedUnder (· ≥ ·) l f :=
-  IsBoundedUnder.isCoboundedUnder_ge ⟨x, hf⟩
-
+@[to_dual isCoboundedUnder_ge_of_le]
 lemma isCoboundedUnder_le_of_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι → α} {x : α}
     (hf : ∀ i, x ≤ f i) :
     IsCoboundedUnder (· ≤ ·) l f :=
   isCoboundedUnder_le_of_eventually_le l (Eventually.of_forall hf)
 
-lemma isCoboundedUnder_ge_of_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι → α} {x : α}
-    (hf : ∀ i, f i ≤ x) :
-    IsCoboundedUnder (· ≥ ·) l f :=
-  isCoboundedUnder_ge_of_eventually_le l (Eventually.of_forall hf)
 
 theorem isCobounded_bot : IsCobounded r ⊥ ↔ ∃ b, ∀ x, r b x := by simp [IsCobounded]
 
@@ -268,6 +219,9 @@ theorem IsCobounded.mono (h : f ≤ g) : f.IsCobounded r → g.IsCobounded r
 
 /-- For nontrivial filters in linear orders, coboundedness for `≤` implies frequent boundedness
 from below. -/
+@[to_dual frequently_le
+/-- For nontrivial filters in linear orders, coboundedness for `≥` implies frequent boundedness
+from above. -/]
 lemma IsCobounded.frequently_ge [LinearOrder α] [NeBot f] (cobdd : IsCobounded (· ≤ ·) f) :
     ∃ l, ∃ᶠ x in f, l ≤ x := by
   obtain ⟨t, ht⟩ := cobdd
@@ -277,14 +231,9 @@ lemma IsCobounded.frequently_ge [LinearOrder α] [NeBot f] (cobdd : IsCobounded 
   specialize ht t' (by filter_upwards [ev] with _ h using (not_le.mp h).le)
   exact not_lt_of_ge ht ht'
 
-set_option backward.isDefEq.respectTransparency false in
-/-- For nontrivial filters in linear orders, coboundedness for `≥` implies frequent boundedness
-from above. -/
-lemma IsCobounded.frequently_le [LinearOrder α] [NeBot f] (cobdd : IsCobounded (· ≥ ·) f) :
-    ∃ u, ∃ᶠ x in f, x ≤ u :=
-  cobdd.frequently_ge (α := αᵒᵈ)
-
 /-- In linear orders, frequent boundedness from below implies coboundedness for `≤`. -/
+@[to_dual of_frequently_le
+/-- In linear orders, frequent boundedness from above implies coboundedness for `≥`. -/]
 lemma IsCobounded.of_frequently_ge [LinearOrder α] {l : α} (freq_ge : ∃ᶠ x in f, l ≤ x) :
     IsCobounded (· ≤ ·) f := by
   rcases isBot_or_exists_lt l with lbot | ⟨l', hl'⟩
@@ -293,30 +242,17 @@ lemma IsCobounded.of_frequently_ge [LinearOrder α] {l : α} (freq_ge : ∃ᶠ x
   obtain ⟨w, l_le_w, w_le_u⟩ := (freq_ge.and_eventually hu).exists
   exact hl'.le.trans (l_le_w.trans w_le_u)
 
-/-- In linear orders, frequent boundedness from above implies coboundedness for `≥`. -/
-lemma IsCobounded.of_frequently_le [LinearOrder α] {u : α} (freq_le : ∃ᶠ r in f, r ≤ u) :
-    IsCobounded (· ≥ ·) f :=
-  IsCobounded.of_frequently_ge (α := αᵒᵈ) freq_le
-
+@[to_dual frequently_le]
 lemma IsCoboundedUnder.frequently_ge [LinearOrder α] {f : Filter ι} [NeBot f] {u : ι → α}
     (h : IsCoboundedUnder (· ≤ ·) f u) :
     ∃ a, ∃ᶠ x in f, a ≤ u x :=
   IsCobounded.frequently_ge h
 
-lemma IsCoboundedUnder.frequently_le [LinearOrder α] {f : Filter ι} [NeBot f] {u : ι → α}
-    (h : IsCoboundedUnder (· ≥ ·) f u) :
-    ∃ a, ∃ᶠ x in f, u x ≤ a :=
-  IsCobounded.frequently_le h
-
+@[to_dual of_frequently_le]
 lemma IsCoboundedUnder.of_frequently_ge [LinearOrder α] {f : Filter ι} {u : ι → α}
     {a : α} (freq_ge : ∃ᶠ x in f, a ≤ u x) :
     IsCoboundedUnder (· ≤ ·) f u :=
   IsCobounded.of_frequently_ge freq_ge
-
-lemma IsCoboundedUnder.of_frequently_le [LinearOrder α] {f : Filter ι} {u : ι → α}
-    {a : α} (freq_le : ∃ᶠ x in f, u x ≤ a) :
-    IsCoboundedUnder (· ≥ ·) f u :=
-  IsCobounded.of_frequently_le freq_le
 
 end Relation
 
@@ -342,15 +278,7 @@ lemma isBoundedUnder_sum {κ : Type*} [AddCommMonoid R] {r : R → R → Prop}
 
 variable [Preorder R]
 
-lemma isBoundedUnder_ge_add [Add R] [AddLeftMono R] [AddRightMono R]
-    {u v : α → R} (u_bdd_ge : f.IsBoundedUnder (· ≥ ·) u) (v_bdd_ge : f.IsBoundedUnder (· ≥ ·) v) :
-    f.IsBoundedUnder (· ≥ ·) (u + v) := by
-  obtain ⟨U, hU⟩ := u_bdd_ge
-  obtain ⟨V, hV⟩ := v_bdd_ge
-  use U + V
-  simp only [eventually_map, Pi.add_apply] at hU hV ⊢
-  filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
-
+@[to_dual isBoundedUnder_ge_add]
 lemma isBoundedUnder_le_add [Add R] [AddLeftMono R] [AddRightMono R]
     {u v : α → R} (u_bdd_le : f.IsBoundedUnder (· ≤ ·) u) (v_bdd_le : f.IsBoundedUnder (· ≤ ·) v) :
     f.IsBoundedUnder (· ≤ ·) (u + v) := by
@@ -360,34 +288,22 @@ lemma isBoundedUnder_le_add [Add R] [AddLeftMono R] [AddRightMono R]
   simp only [eventually_map, Pi.add_apply] at hU hV ⊢
   filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
 
+@[to_dual isBoundedUnder_ge_sum]
 lemma isBoundedUnder_le_sum {κ : Type*} [AddCommMonoid R] [AddLeftMono R] [AddRightMono R]
     {u : κ → α → R} (s : Finset κ) :
     (∀ k ∈ s, f.IsBoundedUnder (· ≤ ·) (u k)) → f.IsBoundedUnder (· ≤ ·) (∑ k ∈ s, u k) :=
   fun h ↦ isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_le_add) le_rfl s h
 
-lemma isBoundedUnder_ge_sum {κ : Type*} [AddCommMonoid R] [AddLeftMono R] [AddRightMono R]
-    {u : κ → α → R} (s : Finset κ) :
-    (∀ k ∈ s, f.IsBoundedUnder (· ≥ ·) (u k)) →
-      f.IsBoundedUnder (· ≥ ·) (∑ k ∈ s, u k) :=
-  fun h ↦ isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_ge_add) le_rfl s h
-
 end add_and_sum
 
 section add_and_sum
 
-variable {α : Type*} {R : Type*} [LinearOrder R] [Add R] {f : Filter α} [f.NeBot]
+variable {α R : Type*} [LinearOrder R] [Add R] {f : Filter α} [f.NeBot]
   [AddLeftMono R] [AddRightMono R]
   {u v : α → R}
 
-lemma isCoboundedUnder_ge_add (hu : f.IsBoundedUnder (· ≤ ·) u)
-    (hv : f.IsCoboundedUnder (· ≥ ·) v) :
-    f.IsCoboundedUnder (· ≥ ·) (u + v) := by
-  obtain ⟨U, hU⟩ := hu.eventually_le
-  obtain ⟨V, hV⟩ := hv.frequently_le
-  apply IsCoboundedUnder.of_frequently_le (a := U + V)
-  exact (hV.and_eventually hU).mono fun x hx ↦ add_le_add hx.2 hx.1
-
-lemma isCoboundedUnder_le_add (hu : f.IsBoundedUnder (· ≥ ·) u)
+@[to_dual isCoboundedUnder_ge_add]
+lemma isCoboundedUnder_le_add (hu : f.IsBoundedUnder (fun x1 x2 ↦ x2 ≤ x1) u)
     (hv : f.IsCoboundedUnder (· ≤ ·) v) :
     f.IsCoboundedUnder (· ≤ ·) (u + v) := by
   obtain ⟨U, hU⟩ := hu.eventually_ge
@@ -401,9 +317,9 @@ section mul
 
 lemma isBoundedUnder_le_mul_of_nonneg [Preorder α] [Mul α] [Zero α] [PosMulMono α]
     [MulPosMono α] {f : Filter ι} {u v : ι → α} (h₁ : ∃ᶠ x in f, 0 ≤ u x)
-    (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u) (h₃ : 0 ≤ᶠ[f] v)
-    (h₄ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f v) :
-    IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f (u * v) := by
+    (h₂ : IsBoundedUnder (· ≤ ·) f u) (h₃ : 0 ≤ᶠ[f] v)
+    (h₄ : IsBoundedUnder (· ≤ ·) f v) :
+    IsBoundedUnder (· ≤ ·) f (u * v) := by
   obtain ⟨U, hU⟩ := h₂.eventually_le
   obtain ⟨V, hV⟩ := h₄.eventually_le
   refine isBoundedUnder_of_eventually_le (a := U * V) ?_
@@ -415,10 +331,10 @@ lemma isBoundedUnder_le_mul_of_nonneg [Preorder α] [Mul α] [Zero α] [PosMulMo
 
 lemma isCoboundedUnder_ge_mul_of_nonneg [LinearOrder α] [Mul α] [Zero α] [PosMulMono α]
     [MulPosMono α] {f : Filter ι} [f.NeBot] {u v : ι → α} (h₁ : 0 ≤ᶠ[f] u)
-    (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
+    (h₂ : IsBoundedUnder (· ≤ ·) f u)
     (h₃ : 0 ≤ᶠ[f] v)
-    (h₄ : IsCoboundedUnder (fun x1 x2 ↦ x1 ≥ x2) f v) :
-    IsCoboundedUnder (fun x1 x2 ↦ x1 ≥ x2) f (u * v) := by
+    (h₄ : IsCoboundedUnder (fun x1 x2 ↦ x2 ≤ x1) f v) :
+    IsCoboundedUnder (fun x1 x2 ↦ x2 ≤ x1) f (u * v) := by
   obtain ⟨U, hU⟩ := h₂.eventually_le
   obtain ⟨V, hV⟩ := h₄.frequently_le
   refine IsCoboundedUnder.of_frequently_le (a := U * V) ?_
@@ -431,18 +347,15 @@ end mul
 section Nonempty
 variable [Preorder α] [Nonempty α] {f : Filter β} {u : β → α}
 
+@[to_dual isBounded_ge_atTop]
 theorem isBounded_le_atBot : (atBot : Filter α).IsBounded (· ≤ ·) :=
   ‹Nonempty α›.elim fun a => ⟨a, eventually_le_atBot _⟩
 
-theorem isBounded_ge_atTop : (atTop : Filter α).IsBounded (· ≥ ·) :=
-  ‹Nonempty α›.elim fun a => ⟨a, eventually_ge_atTop _⟩
-
+@[to_dual isBoundedUnder_ge_atTop]
 theorem Tendsto.isBoundedUnder_le_atBot (h : Tendsto u f atBot) : f.IsBoundedUnder (· ≤ ·) u :=
   isBounded_le_atBot.mono h
 
-theorem Tendsto.isBoundedUnder_ge_atTop (h : Tendsto u f atTop) : f.IsBoundedUnder (· ≥ ·) u :=
-  isBounded_ge_atTop.mono h
-
+@[to_dual]
 theorem bddAbove_range_of_tendsto_atTop_atBot [IsDirectedOrder α] {u : ℕ → α}
     (hx : Tendsto u atTop atBot) : BddAbove (Set.range u) :=
   hx.isBoundedUnder_le_atBot.bddAbove_range
@@ -453,29 +366,21 @@ theorem bddBelow_range_of_tendsto_atTop_atTop [IsCodirectedOrder α] {u : ℕ �
 
 end Nonempty
 
+@[to_dual isCobounded_ge_of_top]
 theorem isCobounded_le_of_bot [LE α] [OrderBot α] {f : Filter α} : f.IsCobounded (· ≤ ·) :=
   ⟨⊥, fun _ _ => bot_le⟩
 
-theorem isCobounded_ge_of_top [LE α] [OrderTop α] {f : Filter α} : f.IsCobounded (· ≥ ·) :=
-  ⟨⊤, fun _ _ => le_top⟩
-
+@[to_dual isBounded_ge_of_bot]
 theorem isBounded_le_of_top [LE α] [OrderTop α] {f : Filter α} : f.IsBounded (· ≤ ·) :=
   ⟨⊤, Eventually.of_forall fun _ => le_top⟩
 
-theorem isBounded_ge_of_bot [LE α] [OrderBot α] {f : Filter α} : f.IsBounded (· ≥ ·) :=
-  ⟨⊥, Eventually.of_forall fun _ => bot_le⟩
-
-@[simp]
+@[to_dual (attr := simp) isBoundedUnder_ge_comp]
 theorem _root_.OrderIso.isBoundedUnder_le_comp [LE α] [LE β] (e : α ≃o β) {l : Filter γ}
     {u : γ → α} : (IsBoundedUnder (· ≤ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (Function.Surjective.exists e.surjective).trans <|
     exists_congr fun a => by simp only [eventually_map, e.le_iff_le]
 
-@[simp]
-theorem _root_.OrderIso.isBoundedUnder_ge_comp [LE α] [LE β] (e : α ≃o β) {l : Filter γ}
-    {u : γ → α} : (IsBoundedUnder (· ≥ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≥ ·) l u :=
-  OrderIso.isBoundedUnder_le_comp e.dual
-
+-- TODO: use `to_dual` in combination with `to_additive`
 @[to_additive (attr := simp)]
 theorem isBoundedUnder_le_inv [CommGroup α] [Preorder α] [IsOrderedMonoid α]
     {l : Filter β} {u : β → α} :
@@ -488,6 +393,7 @@ theorem isBoundedUnder_ge_inv [CommGroup α] [Preorder α] [IsOrderedMonoid α]
     (IsBoundedUnder (· ≥ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (OrderIso.inv α).isBoundedUnder_le_comp
 
+@[to_dual]
 theorem IsBoundedUnder.sup [SemilatticeSup α] {f : Filter β} {u v : β → α} :
     f.IsBoundedUnder (· ≤ ·) u →
       f.IsBoundedUnder (· ≤ ·) v → f.IsBoundedUnder (· ≤ ·) fun a => u a ⊔ v a
@@ -495,7 +401,7 @@ theorem IsBoundedUnder.sup [SemilatticeSup α] {f : Filter β} {u v : β → α}
     ⟨bu ⊔ bv, show ∀ᶠ x in f, u x ⊔ v x ≤ bu ⊔ bv
       by filter_upwards [hu, hv] with _ using sup_le_sup⟩
 
-@[simp]
+@[to_dual (attr := simp) isBoundedUnder_ge_inf]
 theorem isBoundedUnder_le_sup [SemilatticeSup α] {f : Filter β} {u v : β → α} :
     (f.IsBoundedUnder (· ≤ ·) fun a => u a ⊔ v a) ↔
       f.IsBoundedUnder (· ≤ ·) u ∧ f.IsBoundedUnder (· ≤ ·) v :=
@@ -504,21 +410,10 @@ theorem isBoundedUnder_le_sup [SemilatticeSup α] {f : Filter β} {u v : β → 
       h.mono_le <| Eventually.of_forall fun _ => le_sup_right⟩,
     fun h => h.1.sup h.2⟩
 
-theorem IsBoundedUnder.inf [SemilatticeInf α] {f : Filter β} {u v : β → α} :
-    f.IsBoundedUnder (· ≥ ·) u →
-      f.IsBoundedUnder (· ≥ ·) v → f.IsBoundedUnder (· ≥ ·) fun a => u a ⊓ v a :=
-  IsBoundedUnder.sup (α := αᵒᵈ)
-
-@[simp]
-theorem isBoundedUnder_ge_inf [SemilatticeInf α] {f : Filter β} {u v : β → α} :
-    (f.IsBoundedUnder (· ≥ ·) fun a => u a ⊓ v a) ↔
-      f.IsBoundedUnder (· ≥ ·) u ∧ f.IsBoundedUnder (· ≥ ·) v :=
-  isBoundedUnder_le_sup (α := αᵒᵈ)
-
 theorem isBoundedUnder_le_abs [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
     {f : Filter β} {u : β → α} :
     (f.IsBoundedUnder (· ≤ ·) fun a => |u a|) ↔
-      f.IsBoundedUnder (· ≤ ·) u ∧ f.IsBoundedUnder (· ≥ ·) u :=
+      f.IsBoundedUnder (· ≤ ·) u ∧ f.IsBoundedUnder (fun x1 x2 ↦ x2 ≤ x1) u :=
   isBoundedUnder_le_sup.trans <| and_congr Iff.rfl isBoundedUnder_le_neg
 
 /-- Filters are automatically bounded or cobounded in complete lattices. To use the same statements
@@ -539,6 +434,7 @@ open Filter
 
 section Order
 
+@[to_dual isBoundedUnder_ge_comp_iff]
 theorem Monotone.isBoundedUnder_le_comp_iff [Nonempty β] [LinearOrder β] [Preorder γ] [NoMaxOrder γ]
     {g : β → γ} {f : α → β} {l : Filter α} (hg : Monotone g) (hg' : Tendsto g atTop atTop) :
     IsBoundedUnder (· ≤ ·) l (g ∘ f) ↔ IsBoundedUnder (· ≤ ·) l f := by
@@ -547,20 +443,11 @@ theorem Monotone.isBoundedUnder_le_comp_iff [Nonempty β] [LinearOrder β] [Preo
   obtain ⟨b, hb⟩ : ∃ b, ∀ a ≥ b, c < g a := eventually_atTop.1 (hg'.eventually_gt_atTop c)
   exact ⟨b, hc.mono fun x hx => not_lt.1 fun h => (hb _ h.le).not_ge hx⟩
 
-theorem Monotone.isBoundedUnder_ge_comp_iff [Nonempty β] [LinearOrder β] [Preorder γ] [NoMinOrder γ]
-    {g : β → γ} {f : α → β} {l : Filter α} (hg : Monotone g) (hg' : Tendsto g atBot atBot) :
-    IsBoundedUnder (· ≥ ·) l (g ∘ f) ↔ IsBoundedUnder (· ≥ ·) l f :=
-  hg.dual.isBoundedUnder_le_comp_iff hg'
-
+@[to_dual isBoundedUnder_ge_comp_iff]
 theorem Antitone.isBoundedUnder_le_comp_iff [Nonempty β] [LinearOrder β] [Preorder γ] [NoMaxOrder γ]
     {g : β → γ} {f : α → β} {l : Filter α} (hg : Antitone g) (hg' : Tendsto g atBot atTop) :
-    IsBoundedUnder (· ≤ ·) l (g ∘ f) ↔ IsBoundedUnder (· ≥ ·) l f :=
+    IsBoundedUnder (· ≤ ·) l (g ∘ f) ↔ IsBoundedUnder (fun x1 x2 ↦ x2 ≤ x1) l f :=
   hg.dual_right.isBoundedUnder_ge_comp_iff hg'
-
-theorem Antitone.isBoundedUnder_ge_comp_iff [Nonempty β] [LinearOrder β] [Preorder γ] [NoMinOrder γ]
-    {g : β → γ} {f : α → β} {l : Filter α} (hg : Antitone g) (hg' : Tendsto g atTop atBot) :
-    IsBoundedUnder (· ≥ ·) l (g ∘ f) ↔ IsBoundedUnder (· ≤ ·) l f :=
-  hg.dual_right.isBoundedUnder_le_comp_iff hg'
 
 end Order
 
@@ -580,6 +467,7 @@ theorem isCoboundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → �
 
 open Finset
 
+@[to_dual isBoundedUnder_ge_finset_inf']
 theorem isBoundedUnder_le_finset_sup' [LinearOrder β] [Nonempty β] {f : Filter α} {F : ι → α → β}
     {s : Finset ι} (hs : s.Nonempty) (h : ∀ i ∈ s, f.IsBoundedUnder (· ≤ ·) (F i)) :
     f.IsBoundedUnder (· ≤ ·) (fun a ↦ sup' s hs (fun i ↦ F i a)) := by
@@ -591,6 +479,7 @@ theorem isBoundedUnder_le_finset_sup' [LinearOrder β] [Nonempty β] {f : Filter
   simp only [sup'_le_iff]
   exact fun i i_s ↦ le_trans (h i i_s) (le_sup' m i_s)
 
+@[to_dual isCoboundedUnder_ge_finset_inf']
 theorem isCoboundedUnder_le_finset_sup' [LinearOrder β] {f : Filter α} {F : ι → α → β}
     {s : Finset ι} (hs : s.Nonempty) (h : ∃ i ∈ s, f.IsCoboundedUnder (· ≤ ·) (F i)) :
     f.IsCoboundedUnder (· ≤ ·) (fun a ↦ sup' s hs (fun i ↦ F i a)) := by
@@ -602,6 +491,7 @@ theorem isCoboundedUnder_le_finset_sup' [LinearOrder β] {f : Filter α} {F : ι
   simp only [sup'_le_iff] at h ⊢
   exact h i i_s
 
+@[to_dual isBoundedUnder_ge_finset_inf]
 theorem isBoundedUnder_le_finset_sup [LinearOrder β] [OrderBot β] {f : Filter α} {F : ι → α → β}
     {s : Finset ι} (h : ∀ i ∈ s, f.IsBoundedUnder (· ≤ ·) (F i)) :
     f.IsBoundedUnder (· ≤ ·) (fun a ↦ sup s (fun i ↦ F i a)) := by
@@ -611,27 +501,13 @@ theorem isBoundedUnder_le_finset_sup [LinearOrder β] [OrderBot β] {f : Filter 
   rw [← eventually_all_finset s] at hm
   exact hm.mono fun _ h ↦ sup_mono_fun h
 
-theorem isBoundedUnder_ge_finset_inf' [LinearOrder β] [Nonempty β] {f : Filter α} {F : ι → α → β}
-    {s : Finset ι} (hs : s.Nonempty) (h : ∀ i ∈ s, f.IsBoundedUnder (· ≥ ·) (F i)) :
-    f.IsBoundedUnder (· ≥ ·) (fun a ↦ inf' s hs (fun i ↦ F i a)) :=
-  isBoundedUnder_le_finset_sup' (β := βᵒᵈ) hs h
-
-theorem isCoboundedUnder_ge_finset_inf' [LinearOrder β] {f : Filter α} {F : ι → α → β}
-    {s : Finset ι} (hs : s.Nonempty) (h : ∃ i ∈ s, f.IsCoboundedUnder (· ≥ ·) (F i)) :
-    f.IsCoboundedUnder (· ≥ ·) (fun a ↦ inf' s hs (fun i ↦ F i a)) :=
-  isCoboundedUnder_le_finset_sup' (β := βᵒᵈ) hs h
-
-theorem isBoundedUnder_ge_finset_inf [LinearOrder β] [OrderTop β] {f : Filter α} {F : ι → α → β}
-    {s : Finset ι} (h : ∀ i ∈ s, f.IsBoundedUnder (· ≥ ·) (F i)) :
-    f.IsBoundedUnder (· ≥ ·) (fun a ↦ inf s (fun i ↦ F i a)) :=
-  isBoundedUnder_le_finset_sup (β := βᵒᵈ) h
-
 end MinMax
 
 section FrequentlyBounded
 
 variable {R S : Type*} {F : Filter R} [LinearOrder R] [LinearOrder S]
 
+@[to_dual frequently_le_map_of_frequently_le]
 lemma Monotone.frequently_ge_map_of_frequently_ge {f : R → S} (f_incr : Monotone f)
     {l : R} (freq_ge : ∃ᶠ x in F, l ≤ x) :
     ∃ᶠ x' in F.map f, f l ≤ x' := by
@@ -641,46 +517,24 @@ lemma Monotone.frequently_ge_map_of_frequently_ge {f : R → S} (f_incr : Monoto
   by_contra con
   exact lt_irrefl (f l) <| lt_of_le_of_lt (f_incr <| not_lt.mp con) hz
 
-lemma Monotone.frequently_le_map_of_frequently_le {f : R → S} (f_incr : Monotone f)
-    {u : R} (freq_le : ∃ᶠ x in F, x ≤ u) :
-    ∃ᶠ y in F.map f, y ≤ f u := by
-  refine fun ev ↦ freq_le ?_
-  simp only [not_le] at ev freq_le ⊢
-  filter_upwards [ev] with z hz
-  by_contra con
-  apply lt_irrefl (f u) <| lt_of_lt_of_le hz <| f_incr (not_lt.mp con)
-
+@[to_dual frequently_ge_map_of_frequently_le]
 lemma Antitone.frequently_le_map_of_frequently_ge {f : R → S} (f_decr : Antitone f)
     {l : R} (frbdd : ∃ᶠ x in F, l ≤ x) :
     ∃ᶠ y in F.map f, y ≤ f l :=
   Monotone.frequently_ge_map_of_frequently_ge (S := Sᵒᵈ) f_decr frbdd
 
-lemma Antitone.frequently_ge_map_of_frequently_le {f : R → S} (f_decr : Antitone f)
-    {u : R} (frbdd : ∃ᶠ x in F, x ≤ u) :
-    ∃ᶠ y in F.map f, f u ≤ y :=
-  Monotone.frequently_le_map_of_frequently_le (S := Sᵒᵈ) f_decr frbdd
-
+@[to_dual isCoboundedUnder_ge_of_isCobounded]
 lemma Monotone.isCoboundedUnder_le_of_isCobounded {f : R → S} (f_incr : Monotone f)
     [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
     F.IsCoboundedUnder (· ≤ ·) f := by
   obtain ⟨l, hl⟩ := IsCobounded.frequently_ge cobdd
   exact IsCobounded.of_frequently_ge <| f_incr.frequently_ge_map_of_frequently_ge hl
 
-set_option backward.isDefEq.respectTransparency false in
-lemma Monotone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_incr : Monotone f)
-    [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
-    F.IsCoboundedUnder (· ≥ ·) f :=
-  Monotone.isCoboundedUnder_le_of_isCobounded (R := Rᵒᵈ) (S := Sᵒᵈ) f_incr.dual cobdd
-
-set_option backward.isDefEq.respectTransparency false in
+@[to_dual isCoboundedUnder_ge_of_isCobounded]
 lemma Antitone.isCoboundedUnder_le_of_isCobounded {f : R → S} (f_decr : Antitone f)
-    [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
-    F.IsCoboundedUnder (· ≤ ·) f :=
-  Monotone.isCoboundedUnder_le_of_isCobounded (R := Rᵒᵈ) f_decr.dual cobdd
-
-lemma Antitone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_decr : Antitone f)
-    [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
-    F.IsCoboundedUnder (· ≥ ·) f :=
-  Monotone.isCoboundedUnder_le_of_isCobounded (S := Sᵒᵈ) f_decr cobdd
+    [NeBot F] (cobdd : IsCobounded (fun x1 x2 ↦ x2 ≤ x1) F) :
+    F.IsCoboundedUnder (· ≤ ·) f := by
+  obtain ⟨l, hl⟩ := IsCobounded.frequently_le cobdd
+  exact IsCobounded.of_frequently_ge <| f_decr.frequently_ge_map_of_frequently_le hl
 
 end FrequentlyBounded

@@ -33,7 +33,11 @@ attribute [to_dual lt_of_lt_of_eq''] lt_of_lt_of_eq
 
 attribute [to_dual] Max
 
-attribute [to_dual existing] Std.LawfulOrderSup
+attribute [to_dual existing] Std.MaxEqOr Std.LawfulOrderSup Std.LawfulOrderMax
+  Std.LawfulOrderLeftLeaningMax
+  Std.instLawfulOrderMaxOfIsLinearPreorderOfLawfulOrderLeftLeaningMax
+  Std.instLawfulOrderLeftLeaningMaxOfIsLinearOrderOfLawfulOrderSup
+  List.max? List.max?_eq_none_iff List.max?_eq_some_iff
 
 -- We need to tag the lemmas used by `grind` in order to translate `grind` proofs.
 namespace Lean.Grind.Order

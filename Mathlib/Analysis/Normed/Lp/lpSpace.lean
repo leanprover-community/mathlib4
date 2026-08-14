@@ -82,7 +82,7 @@ def Memℓp (f : ∀ i, E i) (p : ℝ≥0∞) : Prop :=
 
 theorem memℓp_zero_iff {f : ∀ i, E i} : Memℓp f 0 ↔ Set.Finite { i | f i ≠ 0 } := by
   dsimp [Memℓp]
-  rw [if_pos rfl]
+  rw [ite_eq_left rfl]
 
 theorem memℓp_zero {f : ∀ i, E i} (hf : Set.Finite { i | f i ≠ 0 }) : Memℓp f 0 :=
   memℓp_zero_iff.2 hf
@@ -97,7 +97,7 @@ theorem memℓp_gen_iff (hp : 0 < p.toReal) {f : ∀ i, E i} :
     Memℓp f p ↔ Summable fun i => ‖f i‖ ^ p.toReal := by
   rw [ENNReal.toReal_pos_iff] at hp
   dsimp [Memℓp]
-  rw [if_neg hp.1.ne', if_neg hp.2.ne]
+  rw [ite_eq_right hp.1.ne', ite_eq_right hp.2.ne]
 
 theorem memℓp_gen {f : ∀ i, E i} (hf : Summable fun i => ‖f i‖ ^ p.toReal) : Memℓp f p := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -447,7 +447,7 @@ instance : Norm (lp E p) where
     else if p = ∞ then ⨆ i, ‖f i‖ else (∑' i, ‖f i‖ ^ p.toReal) ^ (1 / p.toReal)
 
 theorem norm_eq_card_dsupport (f : lp E 0) : ‖f‖ = (lp.memℓp f).finite_dsupport.toFinset.card :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem norm_eq_ciSup (f : lp E ∞) : ‖f‖ = ⨆ i, ‖f i‖ := rfl
 
@@ -459,7 +459,7 @@ theorem norm_eq_tsum_rpow (hp : 0 < p.toReal) (f : lp E p) :
     ‖f‖ = (∑' i, ‖f i‖ ^ p.toReal) ^ (1 / p.toReal) := by
   dsimp [norm]
   rw [ENNReal.toReal_pos_iff] at hp
-  rw [dif_neg hp.1.ne', if_neg hp.2.ne]
+  rw [dite_eq_right hp.1.ne', ite_eq_right hp.2.ne]
 
 theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
     ‖f‖ ^ p.toReal = ∑' i, ‖f i‖ ^ p.toReal := by
@@ -1092,10 +1092,10 @@ protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Fins
   refine (hasSum_norm hp (∑ i ∈ s, lp.single p i (f i))).unique ?_
   simp only [lp.coeFn_single, coeFn_sum, Finset.sum_apply, Finset.sum_pi_single]
   have h : ∀ i ∉ s, ‖ite (i ∈ s) (f i) 0‖ ^ p.toReal = 0 := fun i hi ↦ by
-    simp [if_neg hi, Real.zero_rpow hp.ne']
+    simp [ite_eq_right hi, Real.zero_rpow hp.ne']
   have h' : ∀ i ∈ s, ‖f i‖ ^ p.toReal = ‖ite (i ∈ s) (f i) 0‖ ^ p.toReal := by
     intro i hi
-    rw [if_pos hi]
+    rw [ite_eq_left hi]
   simpa [Finset.sum_congr rfl h'] using hasSum_sum_of_ne_finset_zero h
 
 @[simp]
@@ -1156,10 +1156,10 @@ protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p
     suffices ‖f i‖ ^ p.toReal - ‖f i - ite (i ∈ s) (f i) 0‖ ^ p.toReal = 0 by
       simpa only [coeFn_sub, coeFn_sum, lp.coeFn_single, Pi.sub_apply, Finset.sum_apply,
         Finset.sum_pi_single, F] using this
-    simp only [if_neg hi, sub_zero, sub_self]
+    simp only [ite_eq_right hi, sub_zero, sub_self]
   have hF' : ∀ i ∈ s, F i = ‖f i‖ ^ p.toReal := by
     intro i hi
-    simp only [F, coeFn_sum, lp.single_apply, if_pos hi, sub_self, coeFn_sub,
+    simp only [F, coeFn_sum, lp.single_apply, ite_eq_left hi, sub_self, coeFn_sub,
       Pi.sub_apply, Finset.sum_apply, Finset.sum_pi_single, sub_eq_self]
     simp [Real.zero_rpow hp.ne']
   have : HasSum F (∑ i ∈ s, F i) := hasSum_sum_of_ne_finset_zero hF
@@ -1279,7 +1279,6 @@ open Filter
 
 open scoped Topology uniformity
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The coercion from `lp E p` to `∀ i, E i` is uniformly continuous. -/
 theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
     UniformContinuous (α := lp E p) ((↑) : lp E p → ∀ i, E i) :=

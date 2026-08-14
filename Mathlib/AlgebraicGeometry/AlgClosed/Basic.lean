@@ -86,7 +86,6 @@ def pointEquivClosedPoint :
     rw [reassoc_of% Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField, p.2]
   right_inv x := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ext_of_apply_closedPoint_eq
     {f g : Spec (.of K) ⟶ X} (h : X ⟶ Spec (.of K))
     [LocallyOfFiniteType h]

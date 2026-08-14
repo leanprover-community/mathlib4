@@ -29,7 +29,7 @@ Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib/Topology/S
 @[expose] public section
 
 
-open Function OrderDual
+open Function
 
 variable {F α β γ δ : Type*}
 

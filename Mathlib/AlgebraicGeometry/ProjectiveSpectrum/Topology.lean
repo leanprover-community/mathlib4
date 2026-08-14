@@ -42,7 +42,7 @@ It is naturally endowed with a topology: the Zariski topology.
 
 noncomputable section
 
-open DirectSum Pointwise SetLike TopCat TopologicalSpace CategoryTheory Opposite
+open DirectSum SetLike TopCat TopologicalSpace
 
 variable {A σ : Type*}
 variable [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]

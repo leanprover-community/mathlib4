@@ -69,8 +69,9 @@ lemma isProjectiveMeasureFamily_pi :
   simp_rw [Measure.map_apply (measurable_restrict₂ hJI) (.univ_pi ms), restrict₂_preimage hJI,
     Measure.pi_pi, prod_eq_prod_extend]
   refine (prod_subset_one_on_sdiff hJI (fun x hx ↦ ?_) (fun x hx ↦ ?_)).symm
-  · rw [Function.extend_val_apply (mem_sdiff.1 hx).1, dif_neg (mem_sdiff.1 hx).2, measure_univ]
-  · rw [Function.extend_val_apply hx, Function.extend_val_apply (hJI hx), dif_pos hx]
+  · rw [Function.extend_val_apply (mem_sdiff.1 hx).1, dite_eq_right (mem_sdiff.1 hx).2,
+      measure_univ]
+  · rw [Function.extend_val_apply hx, Function.extend_val_apply (hJI hx), dite_eq_left hx]
 
 /-- Consider a family of probability measures. You can take their products for any finite
 subfamily. This gives an additive content on the measurable cylinders. -/
@@ -81,7 +82,6 @@ lemma piContent_cylinder {I : Finset ι} {S : Set (Π i : I, X i)} (hS : Measura
     piContent μ (cylinder I S) = Measure.pi (fun i : I ↦ μ i) S :=
   projectiveFamilyContent_cylinder _ hS
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem piContent_eq_measure_pi [Fintype ι] {s : Set (Π i, X i)} (hs : MeasurableSet s) :
     piContent μ s = Measure.pi μ s := by
   let e : @Finset.univ ι _ ≃ ι :=
@@ -258,7 +258,6 @@ lemma Measure.infinitePiNat_map_piCongrLeft (e : ℕ ≃ ι) {s : Set (Π i, X i
   any_goals fun_prop
   exact hS.preimage (by fun_prop)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- This is the key theorem to build the product of an arbitrary family of probability measures:
 the `piContent` of a decreasing sequence of cylinders with empty intersection converges to `0`.
 
@@ -296,7 +295,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
     ext x i
     simp only [Function.comp_apply, Finset.restrict,
       Equiv.piCongrLeft_apply, Equiv.coe_fn_symm_mk, f, aux, g, t]
-    rw [dif_pos (Set.mem_iUnion.2 ⟨n, i.2⟩)]
+    rw [dite_eq_left (Set.mem_iUnion.2 ⟨n, i.2⟩)]
   -- `Bₙ` is the same as `Aₙ` but in the product indexed by `u`
   let B n := f ⁻¹' (A n)
   -- `Tₙ` is the same as `Sₙ` but in the product indexed by `u`
@@ -367,7 +366,7 @@ theorem isProjectiveLimit_infinitePi :
     IsProjectiveLimit (infinitePi μ) (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ μ i))) := by
   intro I
   ext s hs
-  rw [map_apply (measurable_restrict I) hs, infinitePi, dif_pos hμ, AddContent.measure_eq,
+  rw [map_apply (measurable_restrict I) hs, infinitePi, dite_eq_left hμ, AddContent.measure_eq,
     ← cylinder, piContent_cylinder μ hs]
   · exact generateFrom_measurableCylinders.symm
   · exact cylinder_mem_measurableCylinders _ _ hs
@@ -394,7 +393,7 @@ theorem eq_infinitePi {ν : Measure (Π i, X i)}
   classical
   rw [Measure.map_apply, restrict_preimage_univ, hν, ← prod_attach, univ_eq_attach]
   · congr with i
-    rw [dif_pos i.2]
+    rw [dite_eq_left i.2]
   any_goals fun_prop
   · rintro i
     split_ifs with hi

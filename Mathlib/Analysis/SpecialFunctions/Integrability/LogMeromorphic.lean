@@ -184,6 +184,7 @@ alias circleIntegrable_log_norm_meromorphicOn_of_nonneg :=
 /--
 Variant of `MeromorphicOn.circleIntegrable_log_norm` for factorized rational functions.
 -/
+@[fun_prop]
 theorem circleIntegrable_log_norm_factorizedRational {R : ℝ} {c : ℂ} (D : ℂ → ℤ) :
     CircleIntegrable (∑ᶠ u, ((D u) * log ‖· - u‖)) c R :=
   CircleIntegrable.finsum (fun _ ↦

@@ -44,7 +44,7 @@ independence, convex position
 @[expose] public section
 
 
-open Affine Finset Function
+open Finset Function
 
 variable {𝕜 E ι : Type*}
 

@@ -273,13 +273,13 @@ instance [AddCommMonoid S] [Module R S] [Module.Finite R S] :
     Module.Finite (WithVal v) S := .of_restrictScalars_finite R (WithVal v) S
 
 instance [Semiring S] [Module S R] : Module S (WithVal v) :=
-  fast_instance% (equiv v).module S
+  fast_instance% (equiv v).toAddEquiv.module S
 
 variable [Ring S] [Module R S] (v : Valuation S Γ₀)
 
 variable (R) in
 /-- The canonical `R`-linear isomorphism between `WithVal v` and `S`, when `v : Valuation S Γ₀`. -/
-def linearEquiv : WithVal v ≃ₗ[R] S := (equiv v).linearEquiv R
+def linearEquiv : WithVal v ≃ₗ[R] S := (equiv v).toAddEquiv.linearEquiv R
 
 @[simp] theorem linearEquiv_apply (x : WithVal v) : linearEquiv R v x = x.ofVal := rfl
 
@@ -393,31 +393,6 @@ instance [NumberField R] : NumberField (WithVal v) where
 
 end Field
 
-section Ring
-
-variable [Ring R] (v : Valuation R Γ₀)
-
-variable {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
-
-/-- Canonical ring equivalence between `WithVal v` and `WithVal w`. -/
-@[deprecated "Use `WithVal.congr v w (.refl R)` instead" (since := "2026-01-27")]
-def equivWithVal (v : Valuation R Γ₀) (w : Valuation R Γ'₀) :
-    WithVal v ≃+* WithVal w :=
-  (equiv v).trans (equiv w).symm
-
-@[deprecated WithVal.congr_symm (since := "2026-01-27")]
-theorem equivWithVal_symm (v : Valuation R Γ₀) (w : Valuation R Γ'₀) :
-    (congr v w (.refl R)).symm = congr w v (.refl R) := rfl
-
-@[deprecated "Use `WithVal.congr_apply` instead" (since := "2026-01-27")]
-theorem equivWithVal_apply (v : Valuation R Γ₀) (w : Valuation R Γ'₀) {x : WithVal v} :
-    congr v w (.refl R) x = (equiv w).symm (equiv v x) := by simp
-
-@[deprecated "Use `WithVal.congr_symm_apply` instead" (since := "2026-01-27")]
-theorem equivWithVal_symm_apply (v : Valuation R Γ₀) (w : Valuation R Γ'₀) {x : WithVal w} :
-    (congr v w (.refl R)).symm x = (equiv v).symm (equiv w x) := by simp
-
-end Ring
 section ValueGroup₀
 
 variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
@@ -613,9 +588,6 @@ theorem IsEquiv.uniformContinuous_congr (h : v.IsEquiv w) :
   exact @UniformContinuous.comp R R (WithVal w) (Valued.mk' w).toUniformSpace
        (Valued.mk' v).toUniformSpace _ (WithVal.equiv w).symm (RingEquiv.refl R) h2 hR
 
-@[deprecated (since := "2026-01-27")]
-  alias IsEquiv.uniformContinuous_equivWithVal := IsEquiv.uniformContinuous_congr
-
 /-- If two valuations `v` and `w` are equivalent then `WithVal v` and `WithVal w` are
 isomorphic as uniform spaces. -/
 def IsEquiv.uniformEquiv (h : v.IsEquiv w) : WithVal v ≃ᵤ WithVal w where
@@ -638,7 +610,6 @@ theorem exists_div_eq_of_surjective {K : Type*} [DivisionRing K] {Γ₀ : Type*}
   obtain ⟨r, hr⟩ := hv γ
   exact ⟨r, 1, by simp [hr]⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
     (γ : (ValueGroup₀ (.ofClass v))ˣ) :

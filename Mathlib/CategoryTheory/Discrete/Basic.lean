@@ -195,7 +195,6 @@ lemma functor_ext {I : Type u₁} {G F : Discrete I ⥤ C} (h : (i : I) → G.ob
   · intro I; rw [h]
   · intro ⟨X⟩ ⟨Y⟩ ⟨⟨p⟩⟩; simp only at p; induction p; simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The discrete functor induced by a composition of maps can be written as a
 composition of two discrete functors.
@@ -301,21 +300,18 @@ theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
 
 end Discrete
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Discrete.forall {α : Type*} {p : Discrete α → Prop} :
     (∀ (a : Discrete α), p a) ↔ ∀ (a' : α), p ⟨a'⟩ := by
   rw [iff_iff_eq, discreteEquiv.forall_congr_left]
   simp only [discreteEquiv, Equiv.symm_mk, Equiv.coe_fn_mk]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Discrete.exists {α : Type*} {p : Discrete α → Prop} :
     (∃ (a : Discrete α), p a) ↔ ∃ (a' : α), p ⟨a'⟩ := by
   rw [iff_iff_eq, discreteEquiv.exists_congr_left]
   simp [discreteEquiv]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `(J → C) ≌ (Discrete J ⥤ C)`. -/
 @[simps]
@@ -335,7 +331,6 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
       obtain rfl : f = 𝟙 _ := rfl
       simp))) (by cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `piEquivalenceFunctorDiscrete` is compatible with `evaluation`. -/
 @[simps!]
@@ -353,6 +348,9 @@ attribute [instance] IsDiscrete.subsingleton
 
 instance Discrete.isDiscrete (C : Type*) : IsDiscrete (Discrete C) where
   eq_of_hom := by rintro ⟨_⟩ ⟨_⟩ ⟨⟨rfl⟩⟩; rfl
+
+instance {C : Type*} [Category C] [Subsingleton C] [Quiver.IsThin C] : IsDiscrete C where
+  eq_of_hom _ := by subsingleton
 
 section
 

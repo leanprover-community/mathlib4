@@ -124,7 +124,7 @@ theorem HasAntitoneBasis.subbasis_with_rel {f : Filter α} {s : ℕ → Set α}
 
 end Filter
 
-open Filter Finset
+open Filter
 
 namespace Nat
 

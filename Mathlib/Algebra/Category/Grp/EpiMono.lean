@@ -172,7 +172,6 @@ theorem τ_symm_apply_infinity :
     Equiv.symm τ ∞ = fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩ := by
   rw [tau, Equiv.symm_swap, Equiv.swap_apply_right]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `g : B ⟶ S(X')` be defined as such that, for any `β : B`, `g(β)` is the function sending
 point at infinity to point at infinity and sending coset `y` to `β • y`.
 -/

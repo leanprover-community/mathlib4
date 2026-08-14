@@ -488,7 +488,7 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
       intro e; rwa [← isUnramifiedIn_comap, ← e]
     · rw [Nat.card_eq_fintype_card,
         ← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
-        ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, if_pos,
+        ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, ite_eq_left,
         mul_one, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
   · simp [Set.MapsTo, isUnramifiedIn_comap]
@@ -511,7 +511,7 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
       intro e; rwa [← isUnramifiedIn_comap, ← e]
     · rw [Nat.card_eq_fintype_card,
         ← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
-        ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, if_neg,
+        ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, ite_eq_right,
         Nat.mul_div_cancel _ zero_lt_two, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
   · simp [Set.MapsTo, isUnramifiedIn_comap]

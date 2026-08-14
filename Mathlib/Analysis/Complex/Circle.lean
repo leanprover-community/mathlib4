@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.Normed.Field.UnitBall
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # The circle
@@ -47,6 +48,7 @@ noncomputable section
 open Complex Function Metric ComplexConjugate
 
 /-- The unit circle in `ℂ`. -/
+@[wikidata Q203425]
 def Circle : Type := Submonoid.unitSphere ℂ
 deriving TopologicalSpace
 

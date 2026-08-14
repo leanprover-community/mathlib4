@@ -31,7 +31,6 @@ universe u v
 open FundamentalGroupoid CategoryTheory FundamentalGroupoidFunctor
 open scoped FundamentalGroupoid unitInterval
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `F` be a homotopy between two continuous maps `f g : C(X, Y)`.
 Given a path `p : Path x₁ x₂` in the domain, consider the following two paths in the codomain.
 One path goes along the image of `p` under `f`, then along the trajectory of `x₂` under `F`.

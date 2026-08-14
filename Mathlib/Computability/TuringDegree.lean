@@ -39,8 +39,6 @@ Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 
 public section
 
-open Primrec
-
 variable {f g h : ℕ →. ℕ}
 
 /--

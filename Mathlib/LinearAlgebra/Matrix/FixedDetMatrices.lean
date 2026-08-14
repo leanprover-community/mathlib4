@@ -113,19 +113,19 @@ lemma reduce_of_pos {A : Δ m} (hc : (A.1 1 0) = 0) (ha : 0 < A.1 0 0) :
     reduce A = (T ^ (-(A.1 0 1 / A.1 1 1))) • A := by
   rw [reduce]
   simp only [zpow_neg, Int.ediv_neg, neg_neg] at *
-  simp_rw [if_pos hc, if_pos ha]
+  simp_rw [ite_eq_left hc, ite_eq_left ha]
 
 lemma reduce_of_not_pos {A : Δ m} (hc : (A.1 1 0) = 0) (ha : ¬ 0 < A.1 0 0) :
     reduce A = (T ^ (-(-A.1 0 1 / -A.1 1 1))) • (S • (S • A)) := by
   rw [reduce]
   simp only [zpow_neg, Int.ediv_neg, neg_neg] at *
-  simp_rw [if_pos hc, if_neg ha]
+  simp_rw [ite_eq_left hc, ite_eq_right ha]
 
 @[simp]
 lemma reduce_reduceStep {A : Δ m} (hc : (A.1 1 0) ≠ 0) :
     reduce (reduceStep A) = reduce A := by
   symm
-  rw [reduce, if_neg hc]
+  rw [reduce, ite_eq_right hc]
 
 private lemma A_c_eq_zero {A : Δ m} (ha : A.1 1 0 = 0) : A.1 0 0 * A.1 1 1 = m := by
   simpa only [det_fin_two, ha, mul_zero, sub_zero] using A.2

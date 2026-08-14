@@ -61,7 +61,7 @@ kummer, dedekind, kummer dedekind, dedekind-kummer, dedekind kummer
 
 variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S} {I : Ideal R}
 
-open Ideal Polynomial DoubleQuot UniqueFactorizationMonoid Algebra RingHom
+open Ideal Polynomial UniqueFactorizationMonoid Algebra RingHom
 
 namespace KummerDedekind
 
@@ -129,7 +129,6 @@ theorem emultiplicity_factors_map_eq_emultiplicity
     Ideal.emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity,
     IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- The **Kummer-Dedekind Theorem**. -/
 theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : IsMaximal I)
@@ -175,7 +174,6 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
   · rwa [← bot_eq_zero, Ne,
       map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I ≠ ⊥)
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x)
     (hf : Irreducible (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))) :

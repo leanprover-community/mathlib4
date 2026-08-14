@@ -247,23 +247,8 @@ theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
     rw [Nat.succ_eq_add_one]
     ring
 
-theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
-  intro hx
-  unfold Odd at hx
-  rcases hx with ⟨_, rfl⟩
-  ring_nf
-  rw [add_assoc, ← add_mul, Int.add_mul_emod_self_right]
-  decide
-
-lemma Int.eight_dvd_sq_sub_one_of_odd {k : ℤ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
-  rcases hk with ⟨m, rfl⟩
-  have eq : (2 * m + 1) ^ 2 - 1 = 4 * (m * (m + 1)) := by ring
-  simpa [eq] using (mul_dvd_mul_iff_left four_ne_zero).mpr (two_dvd_mul_add_one m)
-
-lemma Nat.eight_dvd_sq_sub_one_of_odd {k : ℕ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
-  rcases hk with ⟨m, rfl⟩
-  have eq : (2 * m + 1) ^ 2 - 1 = 4 * (m * (m + 1)) := by grind
-  simpa [eq] using (mul_dvd_mul_iff_left four_ne_zero).mpr (two_dvd_mul_add_one m)
+@[deprecated (since := "2026-08-12")]
+alias Int.sq_mod_four_eq_one_of_odd := Int.sq_emod_four_eq_one_of_odd
 
 theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hxy : 4 ∣ x - y) (i : ℕ) :
     emultiplicity 2 (x ^ 2 ^ i + y ^ 2 ^ i) = ↑(1 : ℕ) := by
@@ -280,7 +265,7 @@ theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hx
       this _ hx_odd, this _ hy_odd]
     decide
   intro x hx
-  rw [pow_succ', mul_comm, pow_mul, Int.sq_mod_four_eq_one_of_odd hx.pow]
+  rw [pow_succ', mul_comm, pow_mul, Int.sq_emod_four_eq_one_of_odd hx.pow]
 
 theorem Int.two_pow_two_pow_sub_pow_two_pow {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2 ∣ x) :
     emultiplicity 2 (x ^ 2 ^ n - y ^ 2 ^ n) = emultiplicity 2 (x - y) + n := by
@@ -323,8 +308,8 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
   obtain ⟨d, rfl⟩ := hn
   simp only [← two_mul, pow_mul]
   have hxy4 : 4 ∣ x ^ 2 - y ^ 2 := by
-    rw [Int.dvd_iff_emod_eq_zero, Int.sub_emod, Int.sq_mod_four_eq_one_of_odd _,
-      Int.sq_mod_four_eq_one_of_odd hy]
+    rw [Int.dvd_iff_emod_eq_zero, Int.sub_emod, Int.sq_emod_four_eq_one_of_odd _,
+      Int.sq_emod_four_eq_one_of_odd hy]
     · simp
     · simp only [← Int.not_even_iff_odd, even_iff_two_dvd, hx, not_false_iff]
   rw [Int.two_pow_sub_pow' d hxy4 _, sq_sub_sq, ← Int.ofNat_mul_ofNat,

@@ -131,6 +131,7 @@ initialize_simps_projections StieltjesFunction (toFun → apply)
 
 variable (f : StieltjesFunction R)
 
+@[gcongr]
 theorem mono : Monotone f :=
   f.mono'
 
@@ -274,7 +275,7 @@ lemma length_eq [Nonempty R] (s : Set R) :
   simp [length]
 
 lemma length_eq_of_isEmpty [IsEmpty R] (s : Set R) : f.length s = 0 := by
-  simp only [length, if_pos]
+  simp only [length, ite_eq_left]
 
 @[simp]
 theorem length_empty : f.length ∅ = 0 := by
@@ -296,13 +297,14 @@ theorem length_Ioc (a b : R) : f.length (Ioc a b) = ofReal (f b - f a) := by
     apply zero_le
   simp only [Ioc_sdiff_botSet] at h
   obtain ⟨h₁, h₂⟩ := (Ioc_subset_Ioc_iff ab).1 h
-  exact Real.toNNReal_le_toNNReal (sub_le_sub (f.mono h₁) (f.mono h₂))
+  grw [h₁, h₂]
 
+@[gcongr]
 theorem length_mono {s₁ s₂ : Set R} (h : s₁ ⊆ s₂) : f.length s₁ ≤ f.length s₂ := by
   rcases isEmpty_or_nonempty R with hR | hR
   · simp [length_eq_of_isEmpty]
   simp only [length_eq]
-  exact iInf_mono fun a => biInf_mono fun b h' => (sdiff_subset_sdiff_left h).trans h'
+  exact iInf_mono fun a => biInf_mono fun b => by gcongr
 
 theorem length_sdiff_botSet {s : Set R} : f.length (s \ botSet) = f.length s := by
   rcases isEmpty_or_nonempty R with hR | hR
@@ -355,9 +357,8 @@ theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆
   rw [Finset.sum_insert (Finset.notMem_erase _ _)]
   replace bcd : b ∈ Ioc (c i) (d i) := Iotop_subset_Ioc bcd
   grw [← IH _ (Finset.erase_ssubset is) (c i), ← ENNReal.ofReal_add_le]
-  · gcongr
-    rw [sub_add_sub_cancel]
-    exact sub_le_sub_right (f.mono bcd.2) _
+  · rw [sub_add_sub_cancel]
+    grw [bcd.2]
   · rintro x ⟨h₁, h₂⟩
     apply (cv ⟨h₁, le_trans h₂ (le_of_lt bcd.1)⟩).resolve_left (fun h ↦ ?_)
     order [(Iotop_subset_Ioc h).1]
@@ -450,10 +451,7 @@ theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) 
   simp only [← length_eq]
   rw [← length_sdiff_botSet, inter_sdiff_right_comm, ← length_sdiff_botSet (s := t \ Ioi c),
     sdiff_sdiff_comm]
-  refine
-    le_trans
-      (add_le_add (f.length_mono <| inter_subset_inter_left _ h)
-        (f.length_mono <| sdiff_subset_sdiff_left h)) ?_
+  grw [h]
   rcases le_total a c with hac | hac <;> rcases le_total b c with hbc | hbc
   · simp only [Ioc_inter_Ioi, f.length_Ioc, hac, hbc, le_refl, Ioc_eq_empty,
       max_eq_right, min_eq_left, Ioc_sdiff_Ioi, f.length_empty, zero_add, not_lt]

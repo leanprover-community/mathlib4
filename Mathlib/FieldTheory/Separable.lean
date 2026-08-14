@@ -271,7 +271,7 @@ theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : S
   classical
   by_cases hp : p = 0
   · simp [hp]
-  rw [rootMultiplicity_eq_multiplicity, if_neg hp, ← Nat.cast_le (α := ℕ∞),
+  rw [rootMultiplicity_eq_multiplicity, ite_eq_right hp, ← Nat.cast_le (α := ℕ∞),
     Nat.cast_one, ← (finiteMultiplicity_X_sub_C x hp).emultiplicity_eq_multiplicity]
   apply emultiplicity_le_one_of_separable (not_isUnit_X_sub_C _) hsep
 
@@ -666,10 +666,16 @@ protected instance (priority := 100) Algebra.IsSeparable.of_integral : Algebra.I
 
 end IsIntegral
 
-section IsScalarTower
+section
 
-variable [Field K] [Ring E] [Algebra F K] [Algebra F E] [Algebra K E]
-  [Nontrivial E] [IsScalarTower F K E]
+variable [Field K] [Ring E] [Algebra F K] [Algebra F E] [Nontrivial E] {x : K}
+
+lemma IsSeparable.of_algHom (f : K →ₐ[F] E) (h : IsSeparable F (f x)) : IsSeparable F x := by
+  have ⟨q, hq⟩ := minpoly.dvd F x (p := minpoly F (f x)) <| f.injective <| by
+    simp [← aeval_algHom_apply]
+  exact .of_mul_left <| by rwa [← hq]
+
+variable [Algebra K E] [IsScalarTower F K E]
 
 variable {F} in
 /-- If `E / K / F` is a scalar tower and `algebraMap K E x` is separable over `F`, then `x` is
@@ -685,26 +691,13 @@ theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F 
     Algebra.IsSeparable F K :=
   ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _ _)⟩
 
-end IsScalarTower
-
-section
-
-variable [Field E] [Field E'] [Algebra F E] [Algebra F E']
-    (f : E →ₐ[F] E')
-include f
-
-variable {F} in
-theorem IsSeparable.of_algHom {x : E} (h : IsSeparable F (f x)) : IsSeparable F x := by
-  let _ : Algebra E E' := RingHom.toAlgebra f.toRingHom
-  have : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
-  exact h.tower_bot
-
+end
 
 variable (E') in
-theorem Algebra.IsSeparable.of_algHom [Algebra.IsSeparable F E'] : Algebra.IsSeparable F E :=
+theorem Algebra.IsSeparable.of_algHom [Field E] [Field E'] [Algebra F E] [Algebra F E']
+    [Algebra.IsSeparable F E'] (f : E →ₐ[F] E') : Algebra.IsSeparable F E :=
   ⟨fun x => (Algebra.IsSeparable.isSeparable F (f x)).of_algHom⟩
 
-end
 
 namespace IntermediateField
 

@@ -77,12 +77,8 @@ variable {F : Type*} [FunLike F α β]
 protected theorem irrefl [RelHomClass F r s] (f : F) : ∀ [Std.Irrefl s], Std.Irrefl r
   | ⟨H⟩ => ⟨fun _ h => H _ (map_rel f h)⟩
 
-@[deprecated (since := "2026-01-07")] protected alias isIrrefl := RelHomClass.irrefl
-
 protected theorem asymm [RelHomClass F r s] (f : F) : ∀ [Std.Asymm s], Std.Asymm r
   | ⟨H⟩ => ⟨fun _ _ h₁ h₂ => H _ _ (map_rel f h₁) (map_rel f h₂)⟩
-
-@[deprecated (since := "2026-01-07")] protected alias isAsymm := RelHomClass.asymm
 
 protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
@@ -317,35 +313,23 @@ theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
 protected theorem irrefl (f : r ↪r s) [Std.Irrefl s] : Std.Irrefl r :=
   ⟨fun a => mt f.map_rel_iff.2 (irrefl (f a))⟩
 
-@[deprecated (since := "2026-01-07")] protected alias isIrrefl := RelEmbedding.irrefl
-
 protected theorem stdRefl (f : r ↪r s) [Std.Refl s] : Std.Refl r :=
   ⟨fun _ => f.map_rel_iff.1 <| refl _⟩
-
-@[deprecated (since := "2026-01-08")] protected alias isRefl := RelEmbedding.stdRefl
 
 protected theorem symm (f : r ↪r s) [Std.Symm s] : Std.Symm r :=
   ⟨fun _ _ => imp_imp_imp f.map_rel_iff.2 f.map_rel_iff.1 symm⟩
 
-@[deprecated (since := "2026-01-06")] protected alias isSymm := RelEmbedding.symm
-
 protected theorem asymm (f : r ↪r s) [Std.Asymm s] : Std.Asymm r :=
   ⟨fun _ _ h₁ h₂ => asymm (f.map_rel_iff.2 h₁) (f.map_rel_iff.2 h₂)⟩
 
-@[deprecated (since := "2026-01-07")] protected alias isAsymm := RelEmbedding.asymm
-
 protected theorem antisymm : ∀ (_ : r ↪r s) [Std.Antisymm s], Std.Antisymm r
   | ⟨f, o⟩, ⟨H⟩ => ⟨fun _ _ h₁ h₂ => f.inj' (H _ _ (o.2 h₁) (o.2 h₂))⟩
-
-@[deprecated (since := "2026-01-06")] protected alias isAntisymm := RelEmbedding.antisymm
 
 protected theorem isTrans : ∀ (_ : r ↪r s) [IsTrans β s], IsTrans α r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ _ h₁ h₂ => o.1 (H _ _ _ (o.2 h₁) (o.2 h₂))⟩
 
 protected theorem total : ∀ (_ : r ↪r s) [Std.Total s], Std.Total r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ => (or_congr o o).1 (H _ _)⟩
-
-@[deprecated (since := "2026-01-09")] protected alias isTotal := RelEmbedding.total
 
 protected theorem isPreorder : ∀ (_ : r ↪r s) [IsPreorder β s], IsPreorder α r
   | f, _ => { f.stdRefl, f.isTrans with }
@@ -361,8 +345,6 @@ protected theorem isStrictOrder : ∀ (_ : r ↪r s) [IsStrictOrder β s], IsStr
 
 protected theorem trichotomous : ∀ (_ : r ↪r s) [Std.Trichotomous s], Std.Trichotomous r
   | ⟨f, o⟩, ⟨H⟩ => ⟨fun _ _ hab hba ↦ f.injective <| H _ _ (o.not.mpr hab) (o.not.mpr hba)⟩
-
-@[deprecated (since := "2026-01-24")] protected alias isTrichotomous := RelEmbedding.trichotomous
 
 protected theorem isStrictTotalOrder : ∀ (_ : r ↪r s) [IsStrictTotalOrder β s],
     IsStrictTotalOrder α r
@@ -662,12 +644,12 @@ lemma symm_symm_apply (f : r ≃r s) (b : α) : f.symm.symm b = f b := rfl
 
 lemma apply_eq_iff_eq (f : r ≃r s) {x y : α} : f x = f y ↔ x = y := EquivLike.apply_eq_iff_eq f
 
-lemma apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : r ≃r s) : f x = y ↔ x = f.symm y := by
-  conv_lhs => rw [← apply_symm_apply f y]
-  rw [apply_eq_iff_eq]
-
 lemma symm_apply_eq (e : r ≃r s) {x y} : e.symm x = y ↔ x = e y := e.toEquiv.symm_apply_eq
 lemma eq_symm_apply (e : r ≃r s) {x y} : y = e.symm x ↔ e y = x := e.toEquiv.eq_symm_apply
+
+@[deprecated eq_symm_apply (since := "2026-07-26")]
+lemma apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : r ≃r s) : f x = y ↔ x = f.symm y :=
+  f.eq_symm_apply.symm
 
 @[simp] lemma symm_symm (e : r ≃r s) : e.symm.symm = e := rfl
 

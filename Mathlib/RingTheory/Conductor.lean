@@ -23,7 +23,7 @@ This file defines the conductor ideal of an element `x` of `R`-algebra `S`. This
 
 variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-open Ideal Polynomial DoubleQuot Module UniqueFactorizationMonoid Algebra RingHom
+open Ideal Module Algebra RingHom
 
 local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
 

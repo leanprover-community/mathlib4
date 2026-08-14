@@ -18,8 +18,6 @@ public section
 
 assert_not_exists IsOrderedMonoid MonoidWithZero
 
-open Function Multiset OrderDual
-
 variable {F α β γ ι κ : Type*}
 
 namespace Finset

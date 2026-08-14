@@ -19,7 +19,7 @@ averages over suitable weighted functions.
 
 public section
 
-open Complex Filter Function Metric Real Set Topology
+open Complex Metric Real Set
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]

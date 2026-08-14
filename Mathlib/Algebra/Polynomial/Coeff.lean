@@ -64,7 +64,6 @@ theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
       grw [AddMonoidAlgebra.support_coeff_mul_subset]
     _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
 def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A] [Module R M]
@@ -200,17 +199,18 @@ theorem support_binomial {k m : ℕ} (hkm : k ≠ m) {x y : R} (hx : x ≠ 0) (h
     support (C x * X ^ k + C y * X ^ m) = {k, m} := by
   apply subset_antisymm (support_binomial_subset k m x y)
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
-    coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm, if_neg hkm.symm, mul_zero, zero_add,
-    add_zero, Ne, hx, hy, not_false_eq_true, and_true]
+    coeff_X_pow_self, mul_one, coeff_X_pow, ite_eq_right hkm, ite_eq_right hkm.symm, mul_zero,
+    zero_add, add_zero, Ne, hx, hy, not_false_eq_true, and_true]
 
 theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
     (hy : y ≠ 0) (hz : z ≠ 0) :
     support (C x * X ^ k + C y * X ^ m + C z * X ^ n) = {k, m, n} := by
   apply subset_antisymm (support_trinomial_subset k m n x y z)
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
-    coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm.ne, if_neg hkm.ne', if_neg hmn.ne,
-    if_neg hmn.ne', if_neg (hkm.trans hmn).ne, if_neg (hkm.trans hmn).ne', mul_zero, add_zero,
-    zero_add, Ne, hx, hy, hz, not_false_eq_true, and_true]
+    coeff_X_pow_self, mul_one, coeff_X_pow, ite_eq_right hkm.ne, ite_eq_right hkm.ne',
+    ite_eq_right hmn.ne, ite_eq_right hmn.ne', ite_eq_right (hkm.trans hmn).ne,
+    ite_eq_right (hkm.trans hmn).ne', mul_zero, add_zero, zero_add, Ne, hx, hy, hz,
+    not_false_eq_true, and_true]
 
 theorem card_support_binomial {k m : ℕ} (h : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
     #(support (C x * X ^ k + C y * X ^ m)) = 2 := by
@@ -228,9 +228,9 @@ end Fewnomials
 @[simp]
 theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
-  rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
+  rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, ite_eq_left rfl, mul_one]
   · rintro ⟨i, j⟩ h1 h2
-    rw [coeff_X_pow, if_neg, mul_zero]
+    rw [coeff_X_pow, ite_eq_right, mul_zero]
     grind [mem_antidiagonal]
   · grind [mem_antidiagonal]
 
@@ -244,7 +244,7 @@ theorem coeff_mul_X_pow' (p : R[X]) (n d : ℕ) :
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
   · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
-    rw [coeff_X_pow, if_neg, mul_zero]
+    rw [coeff_X_pow, ite_eq_right, mul_zero]
     exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 
 theorem coeff_X_pow_mul' (p : R[X]) (n d : ℕ) :

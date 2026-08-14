@@ -22,7 +22,7 @@ is holomorphic.
 @[expose] public section
 
 
-open Set MeasureTheory Metric Filter Function
+open Set MeasureTheory Metric Function
 
 open scoped Interval Real
 

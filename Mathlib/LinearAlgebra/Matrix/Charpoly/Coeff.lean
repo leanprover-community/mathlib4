@@ -260,7 +260,6 @@ theorem pow_eq_aeval_mod_charpoly (M : Matrix n n R) (k : ℕ) :
 
 section Ideal
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k : ℕ) :
     M.charpoly.coeff k ∈ I ^ (Fintype.card n - k) := by
   delta charpoly
@@ -386,11 +385,11 @@ lemma det_piecewise_one_eq_submatrix_det
         (M.submatrix Subtype.val Subtype.val)
         (M.submatrix Subtype.val Subtype.val) 0 1 := by
     ext (i | i) (j | j) <;> dsimp [A, e]
-    · simp only [Finset.piecewise, if_pos i.prop]
-    · simp only [Finset.piecewise, if_pos i.prop]
-    · simp only [Finset.piecewise, if_neg i.prop]
+    · simp only [Finset.piecewise, ite_eq_left i.prop]
+    · simp only [Finset.piecewise, ite_eq_left i.prop]
+    · simp only [Finset.piecewise, ite_eq_right i.prop]
       exact Matrix.one_apply_ne (fun h => i.prop (h ▸ j.prop))
-    · simp only [Finset.piecewise, if_neg i.prop, Matrix.one_apply, Subtype.ext_iff]
+    · simp only [Finset.piecewise, ite_eq_right i.prop, Matrix.one_apply, Subtype.ext_iff]
   rw [h_blocks, Matrix.det_fromBlocks_zero₂₁, Matrix.det_one, mul_one]
 
 set_option backward.isDefEq.respectTransparency.types false in

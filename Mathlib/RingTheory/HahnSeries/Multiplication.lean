@@ -530,9 +530,6 @@ theorem orderTop_mul_of_ne_zero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadin
     ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset
 
-@[deprecated (since := "2026-01-02")]
-alias orderTop_mul_of_nonzero := orderTop_mul_of_ne_zero
-
 @[simp]
 theorem orderTop_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
     (x * y).orderTop = x.orderTop + y.orderTop := by
@@ -557,15 +554,9 @@ theorem order_mul_of_ne_zero {x y : R⟦Γ⟧}
     order_of_ne <| ne_zero_of_coeff_ne_zero hxy, ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset
 
-@[deprecated (since := "2026-01-02")]
-alias order_mul_of_nonzero := order_mul_of_ne_zero
-
 theorem leadingCoeff_mul_of_ne_zero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
     (x * y).leadingCoeff = x.leadingCoeff * y.leadingCoeff := by
   simp only [leadingCoeff_eq, order_mul_of_ne_zero h, coeff_mul_order_add_order]
-
-@[deprecated (since := "2026-01-02")]
-alias leadingCoeff_mul_of_nonzero := leadingCoeff_mul_of_ne_zero
 
 @[simp]
 theorem leadingCoeff_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :

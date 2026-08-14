@@ -42,7 +42,7 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
 
 @[expose] public section
 
-open HurwitzZeta Complex Finset ZMod Filter
+open Complex Finset ZMod Filter
 
 open scoped Real Topology
 

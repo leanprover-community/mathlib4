@@ -34,7 +34,7 @@ protected instance CategoryTheory.Bundled.structure {L : FirstOrder.Language.{u,
     (M : CategoryTheory.Bundled.{w} L.Structure) : L.Structure M :=
   M.str
 
-open FirstOrder Cardinal
+open FirstOrder
 
 namespace Equiv
 

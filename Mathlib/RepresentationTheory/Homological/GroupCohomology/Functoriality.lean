@@ -255,7 +255,6 @@ theorem map_id_comp_H0Iso_hom {A B : Rep k G} (f : A ⟶ B) :
   simp only [← cancel_mono (shortComplexH0 B).f, Category.assoc, map_H0Iso_hom_f]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance mono_map_0_of_mono {A B : Rep k G} (f : A ⟶ B) [Mono f] :
     Mono (map (MonoidHom.id G) f 0) where
   right_cancellation g h hgh := by

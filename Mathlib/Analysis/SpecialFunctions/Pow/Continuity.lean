@@ -19,7 +19,7 @@ public section
 
 noncomputable section
 
-open Real Topology NNReal ENNReal Filter ComplexConjugate Finset Set
+open Real Topology NNReal ENNReal Filter Set
 
 section CpowLimits
 

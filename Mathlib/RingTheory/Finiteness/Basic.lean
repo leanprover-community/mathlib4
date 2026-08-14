@@ -163,9 +163,6 @@ theorem FG.restrictScalars_of_surjective [CommSemiring R] [Algebra R A] [Module 
   obtain ⟨s, rfl⟩ := hS
   exact ⟨s, .symm <| restrictScalars_span R A h _⟩
 
-@[deprecated (since := "2026-01-24")]
-alias fg_restrictScalars := FG.restrictScalars_of_surjective
-
 theorem FG.of_restrictScalars (R) [Semiring R] [Module R M] [SMul R A] [IsScalarTower R A M]
     (hS : (S.restrictScalars R).FG) : S.FG := by
   obtain ⟨s, e⟩ := hS

@@ -29,7 +29,7 @@ Among the basic results, we show that
   homomorphism is perfect.
 -/
 
-@[expose] public section
+public section
 
 namespace Group
 open Subgroup

@@ -911,9 +911,12 @@ theorem lift_restrict : lift (restrict h) = F := by
 /--
 `F` is equivalent to `F` as an intermediate field of `E / K`.
 -/
-noncomputable def restrict_algEquiv :
+noncomputable def restrictAlgEquiv :
     F ≃ₐ[K] ↥(IntermediateField.restrict h) :=
   AlgEquiv.ofInjectiveField _
+
+@[deprecated (since := "2026-07-25")]
+alias restrict_algEquiv := restrictAlgEquiv
 
 end Restrict
 

@@ -44,7 +44,7 @@ This file defines the space of complete types over a first-order theory.
 
 universe u v w w'
 
-open Cardinal Set FirstOrder
+open Set FirstOrder
 
 namespace FirstOrder
 

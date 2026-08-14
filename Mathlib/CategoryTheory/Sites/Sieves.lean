@@ -129,6 +129,11 @@ theorem singleton_eq_iff_domain (f g : Y ⟶ X) : singleton f g ↔ f = g := by
 theorem singleton_self : singleton f f :=
   singleton.mk
 
+@[simp]
+lemma singleton_le_iff {R : Presieve X} :
+    singleton f ≤ R ↔ R f :=
+  ⟨fun hf ↦ hf _ _ ⟨⟩, by rintro hf _ _ ⟨⟩; exact hf⟩
+
 /-- A presieve `R` has pullbacks along `f` if for every `h` in `R`, the pullback
 with `f` exists. -/
 protected class HasPullbacks (R : Presieve X) {Y : C} (f : Y ⟶ X) : Prop where
@@ -1453,7 +1458,6 @@ def shrinkFunctorUliftFunctorIso [LocallySmall.{w} C] [LocallySmall.{max w' w} C
       rw [shrinkYonedaObjObjEquiv_obj_map, shrinkYonedaObjObjEquiv_symm_comp]
       simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma shrinkFunctorUliftFunctorIso_inv_ι [LocallySmall.{w} C] [LocallySmall.{max w' w} C] :
     (shrinkFunctorUliftFunctorIso.{w, w'} S).inv ≫

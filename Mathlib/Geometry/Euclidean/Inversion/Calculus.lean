@@ -27,7 +27,7 @@ inversion, derivative
 
 public section
 
-open Metric Function AffineMap Set AffineSubspace
+open Function Set
 open scoped Topology RealInnerProductSpace
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]

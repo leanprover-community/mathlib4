@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu, Aristotle AI
+Authors: Junyan Xu
 -/
 module
 

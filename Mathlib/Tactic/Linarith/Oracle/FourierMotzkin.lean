@@ -34,7 +34,6 @@ we conclude that the original system was unsatisfiable.
 
 public meta section
 
-open Batteries
 open Std (format ToFormat TreeSet)
 
 namespace Mathlib.Tactic.Linarith

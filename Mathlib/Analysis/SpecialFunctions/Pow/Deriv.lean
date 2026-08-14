@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Extend
 public import Mathlib.Analysis.Calculus.Deriv.Prod
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 

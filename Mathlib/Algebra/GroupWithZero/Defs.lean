@@ -137,11 +137,6 @@ theorem pow_mul_apply_eq_pow_mul {M : Type*} [Monoid M] (f : M₀ → M) {x : M�
 
 end MonoidWithZero
 
-/-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
-and right absorbing, and left/right multiplication by a non-zero element is injective. -/
-@[deprecated "Use `[MonoidWithZero M₀] [IsCancelMulZero M₀].`" (since := "2026-01-11")]
-structure CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelMulZero M₀
-
 /-- A type `M` is a commutative “monoid with zero” if it is a commutative monoid with zero
 element, and `0` is left and right absorbing. -/
 class CommMonoidWithZero (M₀ : Type*) extends CommMonoid M₀, MonoidWithZero M₀
@@ -187,13 +182,6 @@ lemma IsRightCancelMulZero.to_isCancelMulZero [IsRightCancelMulZero M₀] :
 { IsRightCancelMulZero.to_isLeftCancelMulZero with }
 
 end CommMagma
-
-/-- A type `M` is a `CancelCommMonoidWithZero` if it is a commutative monoid with zero element,
-`0` is left and right absorbing,
-and left/right multiplication by a non-zero element is injective. -/
-@[deprecated "Use `[CommMonoidWithZero M₀] [IsCancelMulZero M₀].`" (since := "2026-01-11")]
-structure CancelCommMonoidWithZero (M₀ : Type*)
-    extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
 
 /-- Prop-valued mixin for a monoid with zero to be equipped with a cancelling division.
 

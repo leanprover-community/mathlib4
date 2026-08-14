@@ -19,8 +19,6 @@ public section
 
 open Submodule
 
-open Polynomial
-
 variable {R : Type*} [Ring R] {I : Ideal R}
 variable {M : Type*} [AddCommGroup M] [Module R M] {U : Submodule R M}
 variable {x y : M}

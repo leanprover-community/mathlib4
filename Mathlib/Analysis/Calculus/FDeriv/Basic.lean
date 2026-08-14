@@ -109,7 +109,7 @@ derivative, differentiable, Fréchet, calculus
 
 public section
 
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
+open Filter Asymptotics ContinuousLinearMap Set Topology NNReal
 
 noncomputable section
 
@@ -378,7 +378,7 @@ theorem HasFDerivWithinAt.of_notMem_closure (h : x ∉ closure s) : HasFDerivWit
 
 theorem fderivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) :
     fderivWithin 𝕜 f s x = 0 := by
-  rw [fderivWithin, if_pos (.of_not_accPt h)]
+  rw [fderivWithin, ite_eq_left (.of_not_accPt h)]
 
 theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) :
     fderivWithin 𝕜 f s x = 0 :=
@@ -390,7 +390,7 @@ theorem fderivWithin_zero_of_not_uniqueDiffWithinAt {f : 𝕜 → F} {x : 𝕜} 
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
-  simp only [fderivWithin, dif_pos h]
+  simp only [fderivWithin, dite_eq_left h]
   split_ifs with h₀
   exacts [h₀, Classical.choose_spec h]
 

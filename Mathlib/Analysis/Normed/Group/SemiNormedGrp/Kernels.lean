@@ -49,7 +49,6 @@ def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
         f.hom.1.mem_range]
       use x)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
 def cokernelLift {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) (s : CokernelCofork f) :
     (cokernelCocone f).pt ⟶ s.pt := by
@@ -62,7 +61,6 @@ def cokernelLift {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) (s : CokernelCofork 
   -- The lift has norm at most one:
   exact NormedAddGroupHom.lift_normNoninc _ _ _ s.π.2
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : HasCokernels SemiNormedGrp₁.{u} where
   has_colimit f :=
     HasColimit.mk

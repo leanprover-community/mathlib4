@@ -62,8 +62,6 @@ generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
 
 assert_not_exists RelIso
 
-open Function OrderDual
-
 universe u v
 
 variable {α : Type u} {β : Type*} {x y z : α}

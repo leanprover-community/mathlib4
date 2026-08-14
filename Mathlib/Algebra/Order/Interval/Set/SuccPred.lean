@@ -28,7 +28,7 @@ Copy over `insert` lemmas from `Mathlib/Order/Interval/Finset/Nat.lean`.
 
 public section
 
-open Function Order OrderDual
+open Order
 
 variable {ι α : Type*}
 

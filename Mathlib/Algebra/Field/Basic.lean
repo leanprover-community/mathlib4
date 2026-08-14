@@ -21,9 +21,9 @@ import Mathlib.Tactic.Tauto
 
 -/
 
-@[expose] public section
+public section
 
-open Function OrderDual Set
+open Function OrderDual
 
 universe u
 

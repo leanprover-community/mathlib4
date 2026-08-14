@@ -49,11 +49,10 @@ theorem effectiveEpi_tfae
   tfae_finish
 
 instance : Preregular CompHaus :=
-  preregular fun _ _ _ ↦ ((effectiveEpi_tfae _).out 0 2).mp
+  preregular fun _ _ _ ↦ ((effectiveEpi_tfae _).out 1 3).mp
 
 example : Precoherent CompHaus.{u} := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: prove this for `Type*`
 open List in
 theorem effectiveEpiFamily_tfae
@@ -66,7 +65,7 @@ theorem effectiveEpiFamily_tfae
     ] := by
   tfae_have 2 → 1
   | _ => by
-    simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
+    simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 1 2]
   tfae_have 1 → 2
   | _ => inferInstance
   tfae_have 3 → 2
@@ -104,6 +103,6 @@ theorem effectiveEpiFamily_of_jointly_surjective
     (X : α → CompHaus.{u}) (π : (a : α) → (X a ⟶ B))
     (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b) :
     EffectiveEpiFamily X π :=
-  ((effectiveEpiFamily_tfae X π).out 2 0).mp surj
+  ((effectiveEpiFamily_tfae X π).out 3 1).mp surj
 
 end CompHaus

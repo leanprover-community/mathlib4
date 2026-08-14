@@ -58,7 +58,7 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 
 -/
 
-@[expose] public section
+public section
 
 open Finset Real Filter Asymptotics
 open scoped Topology

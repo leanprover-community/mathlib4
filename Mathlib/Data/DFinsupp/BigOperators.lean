@@ -386,7 +386,7 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
 /-- The `DFinsupp` version of `Finsupp.liftAddHom_singleAddHom` -/
 theorem liftAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
     liftAddHom (singleAddHom β) = AddMonoidHom.id (Π₀ i, β i) :=
-  liftAddHom.toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
+  liftAddHom.toEquiv.eq_symm_apply.1 rfl
 
 /-- The `DFinsupp` version of `Finsupp.liftAddHom_apply_single` -/
 theorem liftAddHom_apply_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f : ∀ i, β i →+ γ)

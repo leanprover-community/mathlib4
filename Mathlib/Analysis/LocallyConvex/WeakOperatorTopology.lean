@@ -133,6 +133,12 @@ instance instAddCommGroup [IsTopologicalAddGroup F] :
     AddCommGroup (E →SWOT[σ] F) :=
   equiv.addCommGroup
 
+/-- The additive group equivalence between `ContinuousLinearMapWOT` and `ContinuousLinearMap`. -/
+@[implicit_reducible, simps!]
+def addEquiv [IsTopologicalAddGroup F] : (E →SWOT[σ] F) ≃+ (E →SL[σ] F) where
+  __ := equiv
+  map_add' _ _ := rfl
+
 instance instSMul {S : Type*} [DistribSMul S F] [SMulCommClass 𝕜₂ S F] [ContinuousConstSMul S F] :
     SMul S (E →SWOT[σ] F) :=
   equiv.smul S
@@ -140,7 +146,7 @@ instance instSMul {S : Type*} [DistribSMul S F] [SMulCommClass 𝕜₂ S F] [Con
 instance instModule {S : Type*} [Semiring S] [Module S F] [SMulCommClass 𝕜₂ S F]
     [ContinuousConstSMul S F] [IsTopologicalAddGroup F] :
     Module S (E →SWOT[σ] F) :=
-  equiv.module S
+  addEquiv.module S
 
 instance instIsScalarTower {S T : Type*} [DistribSMul S F] [SMulCommClass 𝕜₂ S F]
     [ContinuousConstSMul S F] [DistribSMul T F] [SMulCommClass 𝕜₂ T F]
@@ -167,17 +173,12 @@ instance instAlgebra {S : Type*} [CommSemiring S] [Module S E] [SMulCommClass �
     Algebra S (E →WOT[𝕜₁] E) :=
   equiv.algebra S
 
-/-- The additive group equivalence between `ContinuousLinearMapWOT` and `ContinuousLinearMap`. -/
-@[simps!]
-def addEquiv [IsTopologicalAddGroup F] : (E →SWOT[σ] F) ≃+ (E →SL[σ] F) :=
-  equiv.addEquiv
-
 /-- The linear equivalence between `ContinuousLinearMapWOT` and `ContinuousLinearMap`. -/
 @[simps!]
 def linearEquiv (S : Type*) [Semiring S] [Module S F] [SMulCommClass 𝕜₂ S F]
     [ContinuousConstSMul S F] [IsTopologicalAddGroup F] :
     (E →SWOT[σ] F) ≃ₗ[S] (E →SL[σ] F) :=
-  equiv.linearEquiv S
+  (addEquiv (F := F)).linearEquiv S
 
 /-- The ring equivalence between `ContinuousLinearMapWOT` and `ContinuousLinearMap`. -/
 @[simps!]

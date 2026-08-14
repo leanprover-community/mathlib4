@@ -910,3 +910,17 @@ theorem subsingleton_floorRing {R} [Ring R] [LinearOrder R] : Subsingleton (Floo
     funext fun a => (H₁.gc_coe_floor.u_unique H₂.gc_coe_floor) fun _ => rfl
   have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil_coe.l_unique H₂.gc_ceil_coe) fun _ => rfl
   cases H₁; cases H₂; congr
+
+namespace Mathlib.Meta.Positivity
+
+open Lean.Meta Qq
+
+/-- Extension for the `positivity` tactic: `Int.fract` is always nonnegative. -/
+@[positivity Int.fract _]
+meta def evalIntFract : PositivityExt where eval {_u} (_α _zα pα?) e :=
+  match pα? with | none => pure .none | some pα' => do
+  let ~q(@Int.fract _ (_) (_) (_) $a) := e | throwError "not Int.fract"
+  let pa' ← mkAppM ``Int.fract_nonneg #[a]
+  pure (.nonnegative (pα := pα') pa')
+
+end Mathlib.Meta.Positivity

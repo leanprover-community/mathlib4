@@ -283,18 +283,18 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   let p : Fin (n + 1) → ℝ := fun j' => if j' = j then c.b j + (cs i).w else c.b j'
   have hp : p ∈ c.bottom := by
     constructor
-    · simp only [p, if_neg hj]
+    · simp only [p, ite_eq_right hj]
     intro j'; simp only [tail, side_tail]
     by_cases hj' : j'.succ = j
-    · simp [p, if_pos, side, hj', hw', w_lt_w h v h2i]
-    · simp [p, if_neg hj']
+    · simp [p, ite_eq_left, side, hj', hw', w_lt_w h v h2i]
+    · simp [p, ite_eq_right hj']
   rcases v.1 hp with ⟨_, ⟨i', rfl⟩, hi'⟩
   have h2i' : i' ∈ bcubes cs c := ⟨hi'.1.symm, v.2.1 i' hi'.1.symm ⟨tail p, hi'.2, hp.2⟩⟩
   refine ⟨i, h2i, i', h2i', ?_⟩
   rintro rfl
   apply not_le_of_gt (hi'.2 ⟨1, Nat.le_of_succ_le_succ h.three_le⟩).2
   simp only [tail, Cube.tail, p]
-  rw [if_pos]
+  rw [ite_eq_left]
   · gcongr
     exact (hi.2 _).1
   simp [j]
@@ -389,7 +389,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     intro j₂
     by_cases hj₂ : j₂ = j
     · simp [hj₂, hx]
-    simp only [hj₂, if_false]; apply tail_sub hi; apply b_mem_side
+    simp only [hj₂, ite_false]; apply tail_sub hi; apply b_mem_side
   rcases v.1 hp with ⟨_, ⟨i', rfl⟩, hi'⟩
   have h2i' : i' ∈ bcubes cs c := ⟨hi'.1.symm, v.2.1 i' hi'.1.symm ⟨tail p, hi'.2, hp.2⟩⟩
   have i_i' : i ≠ i' := by rintro rfl; simpa [i, p, side_tail, h2x] using hi'.2 j
@@ -404,7 +404,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
       simpa [p', bottom, toSet, tail, side_tail]
     intro j₂
     by_cases hj₂ : j₂ = j'; · simpa [hj₂] using! tail_sub h2i' _ hx'.1
-    simp only [if_false, hj₂]; apply tail_sub hi; apply b_mem_side
+    simp only [ite_false, hj₂]; apply tail_sub hi; apply b_mem_side
   rcases v.1 hp' with ⟨_, ⟨i'', rfl⟩, hi''⟩
   have h2i'' : i'' ∈ bcubes cs c := ⟨hi''.1.symm, v.2.1 i'' hi''.1.symm ⟨tail p', hi''.2, hp'.2⟩⟩
   have i'_i'' : i' ≠ i'' := by
@@ -463,12 +463,12 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
         ⟨w, hw, h2w, h3w⟩
       refine ⟨fun j' => if j' = j then w else p2 j', ?_, ?_, ?_⟩
       · intro j'; by_cases h : j' = j
-        · simp only [if_pos h]; exact h ▸ h3w
-        · simp only [if_neg h]; exact hp2 j'
-      · simp only [toSet, not_forall, mem_ofPred_eq]; use j; rw [if_pos rfl]; convert! h2w
+        · simp only [ite_eq_left h]; exact h ▸ h3w
+        · simp only [ite_eq_right h]; exact hp2 j'
+      · simp only [toSet, not_forall, mem_ofPred_eq]; use j; rw [ite_eq_left rfl]; convert! h2w
       · intro j'; by_cases h : j' = j
-        · simp only [if_pos h, side_tail]; exact h ▸ hw
-        · simp only [if_neg h]; apply hi.2; apply h2p2
+        · simp only [ite_eq_left h, side_tail]; exact h ▸ hw
+        · simp only [ite_eq_right h]; apply hi.2; apply h2p2
     rcases this with ⟨p3, h1p3, h2p3, h3p3⟩
     let p := @cons n (fun _ => ℝ) (c.b 0) p3
     have hp : p ∈ c.bottom := by refine ⟨rfl, ?_⟩; rwa [tail_cons]

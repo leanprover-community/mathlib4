@@ -448,7 +448,6 @@ instance faithful : compactumToCompHaus.Faithful where
     ext
     simpa using! ConcreteCategory.congr_hom h _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 noncomputable def isoOfTopologicalSpace {D : CompHaus} :
     compactumToCompHaus.obj (Compactum.ofTopologicalSpace D) ≅ D where

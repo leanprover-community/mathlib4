@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
+# Whiskering sheaves by a functor
 
 In this file we construct the functor `Sheaf J A ⥤ Sheaf J B` between sheaf categories
 obtained by composition with a functor `F : A ⥤ B`.
@@ -87,7 +88,6 @@ instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms wher
 
 variable {F G}
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 If `η : F ⟶ G` is a natural transformation then we obtain a morphism of functors
@@ -108,7 +108,6 @@ namespace GrothendieckTopology.Cover
 variable (F G) {J}
 variable (P : Cᵒᵖ ⥤ A) {X : C} (S : J.Cover X)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The multicospan associated to a cover `S : J.Cover X` and a presheaf of the form `P ⋙ F`
 is isomorphic to the composition of the multicospan associated to `S` and `P`,
@@ -176,5 +175,14 @@ lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} {FA : A → A → Type*} 
     [J.HasSheafCompose (forget A)] (hF : Presheaf.IsSheaf J F) :
     Presheaf.IsSeparated J F :=
   Sheaf.isSeparated ⟨F, hF⟩
+
+variable {FA : A → A → Type*} {CA : A → Type v₂} [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)]
+  [ConcreteCategory A FA]
+
+instance [(forget A).IsCorepresentable] : J.HasSheafCompose (forget A) where
+  isSheaf P hP := by
+    rw [isSheaf_iff_isSheaf_of_type]
+    exact Presieve.isSheaf_iso J (Functor.isoWhiskerLeft P (forget A).coreprW)
+      (hP (forget A).coreprX)
 
 end CategoryTheory

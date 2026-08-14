@@ -43,7 +43,6 @@ private abbrev AlgCat.algebraOfIsFiltered (hc : IsColimit c) (j : J) : Algebra R
     simp [← dsimp% c.w hjk, ← dsimp% (c.ι.app k).hom.map_mul, Algebra.commutes']
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cocone of the underlying diagram of rings lifted to `AlgCat R`. The algebra instance
 on the cocone point is induced from the `j`-th inclusion map. -/
 private def AlgCat.coconeOfIsFiltered (hc : IsColimit c) (j : J) : Cocone F where
@@ -60,7 +59,6 @@ private def AlgCat.coconeOfIsFiltered (hc : IsColimit c) (j : J) : Cocone F wher
     exact c.ι.naturality_apply _ _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The lifted cocone is colimiting. -/
 private def AlgCat.isColimitCoconeOfIsFiltered (hc : IsColimit c) (j : J) :
     IsColimit (AlgCat.coconeOfIsFiltered hc j) where

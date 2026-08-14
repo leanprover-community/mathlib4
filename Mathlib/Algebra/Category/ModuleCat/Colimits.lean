@@ -41,7 +41,6 @@ namespace HasColimit
 variable [HasColimit (F ⋙ forget₂ _ AddCommGrpCat)]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The induced scalar multiplication on
 `colimit (F ⋙ forget₂ _ AddCommGrpCat)`. -/
 @[simps]

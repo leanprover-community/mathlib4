@@ -541,7 +541,6 @@ open Notation in
 lemma encard_preimage_val_le_encard_left (P Q : Set α) : (P ↓∩ Q).encard ≤ P.encard :=
   (Function.Embedding.subtype _).encard_le
 
-set_option backward.isDefEq.respectTransparency false in
 open Notation in
 lemma encard_preimage_val_le_encard_right (P Q : Set α) : (P ↓∩ Q).encard ≤ Q.encard :=
   Function.Embedding.encard_le ⟨fun ⟨⟨x, _⟩, hx⟩ ↦ ⟨x, hx⟩, fun _ _ h ↦ by
@@ -733,8 +732,8 @@ theorem one_le_ncard_insert (a : α) (s : Set α) (hs : s.Finite := by toFinite_
 theorem ncard_insert_eq_ite {a : α} [Decidable (a ∈ s)] (hs : s.Finite := by toFinite_tac) :
     ncard (insert a s) = if a ∈ s then s.ncard else s.ncard + 1 := by
   by_cases h : a ∈ s
-  · rw [ncard_insert_of_mem h, if_pos h]
-  · rw [ncard_insert_of_notMem h hs, if_neg h]
+  · rw [ncard_insert_of_mem h, ite_eq_left h]
+  · rw [ncard_insert_of_notMem h hs, ite_eq_right h]
 
 theorem ncard_le_ncard_insert (a : α) (s : Set α) : s.ncard ≤ (insert a s).ncard := by
   classical
@@ -814,8 +813,6 @@ theorem ncard_image_le (hs : s.Finite := by toFinite_tac) : (f '' s).ncard ≤ s
 
 theorem InjOn.ncard_image (H : Set.InjOn f s) : (f '' s).ncard = s.ncard :=
   congr_arg ENat.toNat <| H.encard_image
-
-@[deprecated (since := "2026-01-30")] alias ncard_image_of_injOn := InjOn.ncard_image
 
 theorem injOn_of_ncard_image_eq (h : (f '' s).ncard = s.ncard) (hs : s.Finite := by toFinite_tac) :
     Set.InjOn f s := by
