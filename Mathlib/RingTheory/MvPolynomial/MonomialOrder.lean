@@ -579,6 +579,27 @@ protected theorem Monic.pow {f : MvPolynomial σ R} {n : ℕ} (hf : m.Monic f) :
   rw [hf.leadingCoeff_eq_one, one_pow]
   exact one_ne_zero
 
+/-- Monomial degree of powers (when the leading term is not nilpotent) -/
+theorem degree_pow_of_not_isNilpotent {f : MvPolynomial σ R} (n : ℕ)
+    (h : ¬IsNilpotent (m.leadingCoeff f)) :
+    m.degree (f ^ n) = n • m.degree f := by
+  apply degree_pow_of_pow_leadingCoeff_ne_zero
+  contrapose! h
+  exact IsNilpotent.mk _ n h
+
+/-- Leading coefficient of powers (when the leading term is not nilpotent) -/
+theorem leadingCoeff_pow_of_not_isNilpotent {f : MvPolynomial σ R} (n : ℕ)
+    (h : ¬IsNilpotent (m.leadingCoeff f)) :
+    m.leadingCoeff (f ^ n) = m.leadingCoeff f ^ n := by
+  rw [leadingCoeff, degree_pow_of_not_isNilpotent n h, coeff_pow_nsmul_degree]
+
+/-- Leading term of powers (when the leading term is not nilpotent) -/
+theorem leadingTerm_pow_of_not_isNilpotent {f : MvPolynomial σ R} (n : ℕ)
+    (h : ¬IsNilpotent (m.leadingCoeff f)) :
+    m.leadingTerm (f ^ n) = m.leadingTerm f ^ n := by
+  simp [leadingTerm, degree_pow_of_not_isNilpotent n h, leadingCoeff_pow_of_not_isNilpotent n h,
+    monomial_pow]
+
 /-- Monomial degree of powers (in a reduced ring) -/
 theorem degree_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
     m.degree (f ^ n) = n • m.degree f := by
@@ -587,10 +608,8 @@ theorem degree_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
     by_cases hn : n = 0
     · rw [hn, pow_zero, degree_one]
     · rw [zero_pow hn, degree_zero]
-  apply degree_pow_of_pow_leadingCoeff_ne_zero
-  apply pow_ne_zero
-  rw [leadingCoeff_ne_zero_iff]
-  exact hf
+  refine degree_pow_of_not_isNilpotent n ?_
+  rwa [isNilpotent_iff_eq_zero, leadingCoeff_eq_zero_iff]
 
 /-- Leading coefficient of powers (in a reduced ring) -/
 theorem leadingCoeff_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
