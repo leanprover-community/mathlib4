@@ -68,6 +68,7 @@ private theorem choose_choose_eq_of_mapsTo :
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
+set_option linter.privateProof.warnIfUnnecessary false in
 /-- The bijection on the indexing set induced by reflection. -/
 @[simps]
 protected def equiv_of_mapsTo :
