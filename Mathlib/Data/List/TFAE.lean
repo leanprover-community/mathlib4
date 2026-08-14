@@ -39,13 +39,13 @@ theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 theorem TFAE.subset (h : TFAE l₂) (hl : l₁ ⊆ l₂) : TFAE l₁ :=
   fun p hp q hq ↦ h p (hl hp) q (hl hq)
 
-theorem TFAE.dedcup (h : TFAE l₁) : TFAE (List.dedup l₁) := by sorry
+theorem tfae_congr (h₁₂ : l₁ ⊆ l₂) (h₂₁ : l₂ ⊆ l₁) : TFAE l₁ ↔ TFAE l₂ :=
+  ⟨fun h ↦ h.subset h₂₁, fun h ↦ h.subset h₁₂⟩
 
-theorem tfae_congr (hp : l₁ ~ l₂) : TFAE l₁ ↔ TFAE l₂ :=
-  ⟨fun h ↦ h.subset hp.symm.subset, fun h ↦ h.subset hp.subset⟩
+theorem Perm.tfae_iff (h : l₁ ~ l₂) : TFAE l₁ ↔ TFAE l₂ := tfae_congr h.subset h.symm.subset
 
 @[simp]
-theorem tfae_reverse : TFAE l.reverse ↔ TFAE l := tfae_congr (reverse_perm l)
+theorem tfae_reverse : TFAE l.reverse ↔ TFAE l := (reverse_perm l).tfae_iff
 
 theorem tfae_of_forall (h : ∀ a ∈ l, a ↔ b) : TFAE l :=
   fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
