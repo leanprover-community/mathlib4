@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -13,9 +13,33 @@ public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 /-!
 # Comma categories are accessible
 
+Let `F₁ : C₁ ⥤ D` and `F₂ : C₂ ⥤ D` be `κ`-accessible functors between
+`κ`-accessible categories. If we also assume that `F₁` preserves `κ`-presentable
+objects (a property which hold for a well chosen regular cardinal according to
+the uniformization theorem (TODO @joelriou)), we show that the comma category
+`Comma F₁ F₂` is also `κ`-accessible.
+
+The key point in the technical proof is that if `f : Comma F₁ F₂`, then `f`
+is the `κ`-filtered colimit (indexed by a category denoted `J κ f` here) of the
+`g : Comma F₁ F₂` equipped with a morphism `g ⟶ f` such that both `g.left`
+and `g.right` are `κ`-presentable. In order to do this, we basically need
+to show that the first and second functors `π₁ : J κ f ⥤ J₁ κ f` and
+`π₂ : J κ f ⥤ J₂ κ f` are final (where `J₁ κ f` is the category of morphisms
+`X ⟶ f.left` where `X` is `κ`-presentable, and similarly `J₂ κ f` is the
+category of morphisms `Y ⟶ f.right` where `Y` is `κ`-presentable).
+Then, the colimit of those `g.left` for `g ⟶ f` in `J κ f` identify to the
+colimit of such `X` indexed by `J₁ κ f` which is `f.left` because
+`κ`-presentable objects in `C₁` form a dense full subcategory
+(see the file `Mathlib/CategoryTheory/Presentable/Dense.lean`),
+and similarly the colimit of those `g.right` for `g ⟶ f` in `J κ f`
+identify to `f.right`.
+
+## References
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
+
 -/
 
-universe w v₁ v₂ v₃ u₁ u₂ u₃
+universe w
 
 @[expose] public section
 
@@ -25,9 +49,8 @@ open Limits
 
 namespace Comma
 
-variable {C₁ : Type u₁} [Category.{v₁} C₁] {C₂ : Type u₂} [Category.{v₂} C₂]
-  {D : Type u₃} [Category.{v₃} D] (F₁ : C₁ ⥤ D) (F₂ : C₂ ⥤ D)
-  (κ : Cardinal.{w}) [Fact κ.IsRegular]
+variable {C₁ C₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
+  (F₁ : C₁ ⥤ D) (F₂ : C₂ ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 section
 
@@ -57,8 +80,6 @@ instance : (Comma.snd F₁ F₂).IsCardinalAccessible κ where
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 open IsFiltered in
 variable {F₁ F₂ κ} in
 lemma isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
@@ -81,6 +102,8 @@ lemma isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
           (isColimitOfPreserves (fst _ _) hc) g.left
         obtain ⟨j₂, f₂, hf₂⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
           (isColimitOfPreserves (snd _ _) hc) g.right
+        dsimp only [Functor.mapCocone_pt, snd_obj, Functor.const_obj_obj, Functor.comp_obj,
+          Functor.mapCocone_ι_app, snd_map] at f₁ f₂ hf₁ hf₂
         dsimp at f₁ f₂ hf₁ hf₂
         refine ⟨max j₁ j₂, f₁ ≫ (G.map (leftToMax j₁ j₂)).left,
           f₂ ≫ (G.map (rightToMax j₁ j₂)).right, ?_, ?_⟩
@@ -144,8 +167,16 @@ variable {F₁ F₂}
 
 variable (f : Comma F₁ F₂)
 
+/-- Given `f : Comma F₁ F₂`, this is the category of morphisms `g ⟶ f`
+where both the first and second objects of `g` are `κ`-presentable. -/
 private abbrev J := CostructuredArrow (Comma.isCardinalPresentable F₁ F₂ κ).ι f
+
+/-- Given `f : Comma F₁ F₂`, this is the category of morpshims `X ⟶ f.left`
+where `X` is `κ`-presentable. -/
 private abbrev J₁ := CostructuredArrow (isCardinalPresentable C₁ κ).ι f.left
+
+/-- Given `f : Comma F₁ F₂`, this is the category of morpshims `Y ⟶ f.right`
+where `Y` is `κ`-presentable. -/
 private abbrev J₂ := CostructuredArrow (isCardinalPresentable C₂ κ).ι f.right
 
 private instance [IsCardinalAccessibleCategory C₁ κ] : IsFiltered (J₁ κ f) :=
@@ -156,19 +187,27 @@ private instance [IsCardinalAccessibleCategory C₂ κ] : IsFiltered (J₂ κ f)
 
 attribute [local instance] IsFiltered.nonempty
 
+/-- The map `J κ f → J₁ κ f` which extracts the first part. -/
 private abbrev J.fst (g : J κ f) : J₁ κ f :=
   CostructuredArrow.mk (Y := ⟨_, g.left.property.1⟩) (by exact g.hom.left)
 
+/-- The map `J κ f → J₂ κ f` which extracts the second part. -/
 private abbrev J.snd (g : J κ f) : J₂ κ f :=
   CostructuredArrow.mk (Y := ⟨_, g.left.property.2⟩) (by exact g.hom.right)
--- there must be some better way to define these functors
-@[simps]
+
+/-- The first projection `J κ f ⥤ J₁ κ f`. (Note: this functor could be
+defined using `CostructuredArrow.map₂`, but it would not have the same
+definitional properties.) -/
+@[implicit_reducible, simps]
 private def π₁ : J κ f ⥤ J₁ κ f where
   obj g := g.fst
   map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.left))
     (by exact congr_arg CommaMorphism.left (CostructuredArrow.w φ))
 
-@[simps]
+/-- The second projection `J κ f ⥤ J₂ κ f`. (Note: this functor could be
+defined using `CostructuredArrow.map₂`, but it would not have the same
+definitional properties.) -/
+@[implicit_reducible, simps]
 private def π₂ : J κ f ⥤ J₂ κ f where
   obj g := g.snd
   map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.right))
@@ -176,6 +215,7 @@ private def π₂ : J κ f ⥤ J₂ κ f where
 
 variable {κ f}
 
+/-- Constructor for objects in `J κ f`. -/
 private abbrev J.mk (j₁ : J₁ κ f) (j₂ : J₂ κ f) (g : F₁.obj j₁.left.obj ⟶ F₂.obj j₂.left.obj)
     (w : F₁.map j₁.hom ≫ f.hom = g ≫ F₂.map j₂.hom := by cat_disch) :
     J κ f :=
@@ -183,6 +223,7 @@ private abbrev J.mk (j₁ : J₁ κ f) (j₂ : J₂ κ f) (g : F₁.obj j₁.lef
     { left := by exact j₁.hom
       right := by exact j₂.hom }
 
+/-- Constructor for morphisms in `J κ f`. -/
 private abbrev J.homMk {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.snd ⟶ j'.snd)
     (h : F₁.map g₁.left.hom ≫ j'.left.obj.hom =
       j.left.obj.hom ≫ F₂.map g₂.left.hom := by cat_disch) :
@@ -199,7 +240,6 @@ section
 variable [IsCardinalAccessibleCategory C₂ κ] [F₂.IsCardinalAccessible κ]
   [F₁.PreservesCardinalPresentable κ]
 
-set_option backward.defeqAttrib.useBackward true in
 private lemma J.exists_hom'
     {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.snd ⟶ j'.snd) :
     ∃ (j₂ : J₂ κ f) (a : j'.snd ⟶ j₂),
@@ -217,7 +257,7 @@ private lemma J.exists_hom'
         dsimp% j.hom.w, dsimp% CostructuredArrow.w g₂])
   exact ⟨j₂, a, by cat_disch⟩
 
-set_option backward.defeqAttrib.useBackward true in
+
 private lemma J.exists_hom {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.snd ⟶ j'.snd) :
     ∃ (j'' : J κ f) (a : j ⟶ j'') (b : j' ⟶ j''),
       g₁.left.hom ≫ b.left.hom.left = a.left.hom.left ∧
@@ -227,8 +267,6 @@ private lemma J.exists_hom {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.s
     (by simp [← dsimp% (CostructuredArrow.w a)]), J.homMk g₁ (g₂ ≫ a) (by simpa),
     J.homMk (𝟙 _) a (by simp), by simp⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 private lemma exists_of_j₁_of_j₂' (j₁ : J₁ κ f) (j₂ : J₂ κ f) :
     ∃ (j₂' : J₂ κ f) (_ : j₂ ⟶ j₂') (b : F₁.obj j₁.left.obj ⟶ F₂.obj j₂'.left.obj),
     F₁.map j₁.hom ≫ f.hom = b ≫ F₂.map j₂'.hom := by
@@ -243,7 +281,6 @@ private lemma exists_of_j₁_of_j₂' (j₁ : J₁ κ f) (j₂ : J₂ κ f) :
   refine ⟨j₂', b, a ≫ F₂.map c.left.hom, ?_⟩
   simp [← ha, ← Functor.map_comp, dsimp% CostructuredArrow.w c]
 
-set_option backward.defeqAttrib.useBackward true in
 private lemma exists_of_j₁_of_j₂ (j₁ : J₁ κ f) (j₂ : J₂ κ f) :
     ∃ (j : J κ f) (_ : j₁ ⟶ j.fst), Nonempty (j₂ ⟶ j.snd) := by
   obtain ⟨j₂', a, b, h⟩ := exists_of_j₁_of_j₂' j₁ j₂
@@ -272,8 +309,6 @@ private instance : PreservesColimitsOfShape (J₂ κ f) F₂ :=
   F₂.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
 
 open IsCardinalFiltered in
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 private instance : IsCardinalFiltered (J κ f) κ := by
   rw [isCardinalFiltered_iff']
   refine ⟨fun ι j hι ↦ ?_, fun ι j k g hι hι' ↦ ?_⟩
@@ -324,8 +359,6 @@ private instance : PreservesColimitsOfShape (J κ f) F₁ :=
 private instance : IsFiltered (J κ f) :=
   isFiltered_of_isCardinalFiltered _ κ
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 private instance : (π₁ κ f).Final := by
   rw [Functor.final_iff_of_isFiltered]
   refine ⟨exists_of_j₁, fun {d e} g₁ g₂ ↦ ?_⟩
@@ -337,8 +370,6 @@ private instance : (π₁ κ f).Final := by
   simp [← h₁, reassoc_of% dsimp% (CostructuredArrow.proj _ _ ⋙
     ObjectProperty.ι _).congr_map ha]
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 private instance : (π₂ κ f).Final := by
   rw [Functor.final_iff_of_isFiltered]
   refine ⟨exists_of_j₂, fun {d e} g₁ g₂ ↦ ?_⟩
@@ -350,26 +381,13 @@ private instance : (π₂ κ f).Final := by
   simp [← h₂, reassoc_of% dsimp% (CostructuredArrow.proj _ _ ⋙
     ObjectProperty.ι _).congr_map ha]
 
-variable (κ f) in
-private abbrev functor : J κ f ⥤ Comma F₁ F₂ :=
-  CostructuredArrow.proj (Comma.isCardinalPresentable F₁ F₂ κ).ι f ⋙
-    (Comma.isCardinalPresentable F₁ F₂ κ).ι
-
-variable (κ f) in
-private abbrev cocone : Cocone (functor κ f) :=
-  (Functor.LeftExtension.mk (𝟭 (Comma F₁ F₂))
-    (Comma.isCardinalPresentable F₁ F₂ κ).ι.rightUnitor.inv).coconeAt f
-
-variable (κ f) in
-private noncomputable def isColimitCocone : IsColimit (cocone κ f) := by
-  refine Comma.fstSndJointlyReflectColimit ?_ ?_
-  · exact (Functor.Final.isColimitWhiskerEquiv (π₁ κ f) _).2
-      ((isCardinalPresentable C₁ κ).ι.denseAt f.left)
-  · exact (Functor.Final.isColimitWhiskerEquiv (π₂ κ f) _).2
-      ((isCardinalPresentable C₂ κ).ι.denseAt f.right)
-
 instance : (Comma.isCardinalPresentable F₁ F₂ κ).ι.IsDense where
-  isDenseAt f := ⟨isColimitCocone κ f⟩
+  isDenseAt f :=
+    ⟨Comma.fstSndJointlyReflectColimit
+      ((Functor.Final.isColimitWhiskerEquiv (π₁ κ f) _).2
+        ((isCardinalPresentable C₁ κ).ι.denseAt f.left))
+      ((Functor.Final.isColimitWhiskerEquiv (π₂ κ f) _).2
+        ((isCardinalPresentable C₂ κ).ι.denseAt f.right))⟩
 
 end isCardinalAccessibleCategory
 
