@@ -472,8 +472,8 @@ theorem preimage_asSubtype (f : α →. β) (s : Set β) :
       Part.mem_unique fxy this ▸ ys
 
 /-- Turns a function into a partial function to a subtype. -/
-def toSubtype (p : β → Prop) (f : α → β) : α →. Subtype p :=
-  fun a ↦. ⟨p (f a), Subtype.mk _⟩
+def toSubtype (p : β → Prop) (f : α → β) : α →. Subtype p where
+  toFun a := ⟨p (f a), Subtype.mk _⟩
 
 @[simp]
 theorem dom_toSubtype (p : β → Prop) (f : α → β) : (toSubtype p f).Dom = { a | p (f a) } :=
@@ -549,8 +549,8 @@ theorem coe_comp (g : β → γ) (f : α → β) : ((g ∘ f : α → γ) : α �
   ext fun _ _ => by simp only [coe_val, comp_apply, Function.comp, Part.bind_some]
 
 /-- Product of partial functions. -/
-def prodLift (f : α →. β) (g : α →. γ) : α →. β × γ := fun x ↦.
-  ⟨(f x).Dom ∧ (g x).Dom, fun h => ((f x).get h.1, (g x).get h.2)⟩
+def prodLift (f : α →. β) (g : α →. γ) : α →. β × γ where
+  toFun x := ⟨(f x).Dom ∧ (g x).Dom, fun h => ((f x).get h.1, (g x).get h.2)⟩
 
 @[simp]
 theorem dom_prodLift (f : α →. β) (g : α →. γ) :
@@ -573,8 +573,8 @@ theorem mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
   · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
 /-- Product of partial functions. -/
-def prodMap (f : α →. γ) (g : β →. δ) : α × β →. γ × δ := fun x ↦.
-  ⟨(f x.1).Dom ∧ (g x.2).Dom, fun h => ((f x.1).get h.1, (g x.2).get h.2)⟩
+def prodMap (f : α →. γ) (g : β →. δ) : α × β →. γ × δ where
+  toFun x := ⟨(f x.1).Dom ∧ (g x.2).Dom, fun h => ((f x.1).get h.1, (g x.2).get h.2)⟩
 
 @[simp]
 theorem dom_prodMap (f : α →. γ) (g : β →. δ) :
