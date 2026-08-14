@@ -129,7 +129,7 @@ lemma cexp_mul (c x : ℂ) : deriv (fun x ↦ cexp (c * x)) x = c * cexp (c * x)
   rw [deriv_cexp (by fun_prop), deriv_fun_mul (by fun_prop) (by fun_prop)]
   simp [deriv_const', deriv_id'', mul_comm]
 
-def iteratedDeriv_R (k' : ℕ) :
+theorem iteratedDeriv_R (k' : ℕ) :
     deriv^[k'] (fun x ↦ (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) x) =
     fun x ↦ ∑ t, (σ ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) t)) *
       exp (ρ α β q t * x) * (ρ α β q t)^k' := by
@@ -141,7 +141,7 @@ def iteratedDeriv_R (k' : ℕ) :
     conv => enter [1]; rw [hk]
     ext x
     rw [_root_.deriv, fderiv_fun_sum]
-    · simp only [ContinuousLinearMap.coe_sum', Finset.sum_apply, fderiv_eq_smul_deriv,
+    · simp only [FunLike.coe_sum, Finset.sum_apply, fderiv_eq_smul_deriv,
       deriv_mul_const_field', deriv_const_mul_field', smul_eq_mul, one_mul]
       rw [Finset.sum_congr rfl]
       intros t ht
@@ -193,6 +193,7 @@ lemma R_ne_zero : R α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≠ 0 := by
   ext t
   simpa [η, FaithfulSMul.algebraMap_eq_zero_iff] using congr_fun HC t
 
+omit [DecidableEq (K →+* ℂ)] in
 include htriv habc in
 lemma systemCoeffs_map_eq_exp_mul :
   Complex.exp (ρ α β q t * l q u) * ((ρ α β q t) ^ (k q u : ℕ) *
@@ -253,7 +254,6 @@ lemma coeffs_mulVec_A_eq : σ (cCoeffs α' β' γ' q) * ((Complex.log α)^ (-(k 
   apply Finset.sum_congr rfl
   intros x hx
   rw [algebraMap_A_apply]
-  push_cast
   ring
 
 include htriv habc in

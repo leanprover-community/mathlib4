@@ -9,6 +9,24 @@ module
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAnalytic
 public import Mathlib.Analysis.Analytic.Order
 
+/-!
+# Gelfond-Schneider Theorem: the algebraic lower bound
+
+Having isolated the first non-vanishing derivative `R⁽ʳ⁾(ℓ₀)` of the auxiliary function, this
+file scales it to a non-zero algebraic integer and bounds its norm from below. Since a non-zero
+algebraic integer has norm at least one, this yields the lower bound
+`|N(ρ)| > c₅ ^ (-r)`, which will contradict the analytic upper bound.
+
+## Main results
+
+* `order_geq_n`: the order of vanishing of `R` at each point is at least `n`.
+* `n_le_r`: hence `n ≤ r` for the minimal non-vanishing order `r`.
+* `eq5`: the lower bound `c₅ ^ (-r) < ‖N(ρ)‖`.
+
+## References
+* Loo-Keng Hua, Introduction to Number Theory, Springer, 1982. Chapter 17.9.
+-/
+
 @[expose] public section
 
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional
@@ -38,7 +56,8 @@ variable [DecidableEq (K →+* ℂ)]
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma exists_nonzero_iteratedFDeriv : deriv^[r α β σ α' β' γ' hirr htriv habc q hq0 h2mq]
- (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1) ≠ 0 := by
+ (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq +
+     1) ≠ 0 := by
   have Hrprop := (r_prop α β σ α' β' γ' hirr htriv habc q hq0 h2mq).1
   have hA1 : AnalyticAt ℂ (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
       (↑↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1) := by fun_prop
@@ -92,7 +111,8 @@ lemma c1rho_neq_0 : c1ρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≠ 0 :
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma house_geq_1 : 1 ≤ house (c1ρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq : K) := by
-  apply one_le_house_of_isIntegral (RingOfIntegers.isIntegral_coe (c1ρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq))
+  apply one_le_house_of_isIntegral (RingOfIntegers.isIntegral_coe (c1ρ α β σ α' β' γ' hirr htriv
+      habc q hq0 h2mq))
   simp only [ne_eq, FaithfulSMul.algebraMap_eq_zero_iff]
   rw [← ne_eq]
   exact c1rho_neq_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
@@ -123,7 +143,6 @@ lemma eq5zero : 1 ≤ norm
 def c₅ : ℝ := ((abs (c₁ α' β' γ') + 1) ^ (((↑(h K) * (1+4 * m K^2)))))
 
 omit [DecidableEq (K →+* ℂ)] in
-include α β σ α' β' γ' hirr htriv habc in
 lemma c5nonneg : 0 < c₅ α' β' γ' := by
     unfold c₅
     apply pow_pos
@@ -156,8 +175,10 @@ include α β σ α' β' γ' hirr htriv habc in
 lemma n_le_r : n K q ≤ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq := by
   have := r_prop α β σ α' β' γ' hirr htriv habc q hq0 h2mq
   obtain ⟨hr,hprop⟩ := this
-  have := order_geq_n α β σ α' β' γ' hirr htriv habc q hq0 h2mq (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
-  have H : n K q ≤ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℕ∞) → n K q ≤ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq := by
+  have := order_geq_n α β σ α' β' γ' hirr htriv habc q hq0 h2mq (l₀' α β σ α' β' γ' hirr htriv habc
+      q hq0 h2mq)
+  have H : n K q ≤ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq :
+      ℕ∞) → n K q ≤ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq := by
     simp only [Nat.cast_le, imp_self]
   apply H
   rw [← hr]
@@ -179,7 +200,8 @@ $$
 $$-/
 
 include α β σ α' β' γ' hirr htriv habc in
-lemma eq5 : c₅ α' β' γ' ^ (-(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) : ℝ) < norm (Algebra.norm ℚ (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) := by
+lemma eq5 : c₅ α' β' γ' ^ (-(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) : ℝ) < norm (Algebra.norm
+    ℚ (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) := by
   simp only [Real.rpow_neg_natCast, zpow_neg, zpow_natCast]
   have h1 : 1 ≤ ‖(cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ^ Module.finrank ℚ K‖ *
       ‖(Algebra.norm ℚ) (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq)‖ := by
@@ -224,7 +246,8 @@ lemma eq5 : c₅ α' β' γ' ^ (-(r α β σ α' β' γ' hirr htriv habc q hq0 h
           simp_all only [pow_zero, one_mul, zero_lt_one, lt_self_iff_false]
   calc _ = _ := ?_
        c₅ α' β' γ' ^ ((-r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℤ)) <
-        abs (c₁ α' β' γ')^ ((- h K : ℤ) * (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 2 * m K * q) ) := ?_
+        abs (c₁ α' β' γ')^ ((- h K : ℤ) * (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 2 * m K *
+            q) ) := ?_
        _ ≤ ‖(cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ^ Module.finrank ℚ K‖⁻¹ := ?_
        _ ≤ norm (Algebra.norm ℚ (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) := ?_
   · simp only [zpow_neg, zpow_natCast]
@@ -232,7 +255,8 @@ lemma eq5 : c₅ α' β' γ' ^ (-(r α β σ α' β' γ' hirr htriv habc q hq0 h
     rw [inv_lt_inv₀]
     · rw [mul_add]
       have : (h K : ℤ) * r α β σ α' β' γ' hirr htriv habc q hq0 h2mq + h K
-      * (2 * m K * ↑q) = h K * r α β σ α' β' γ' hirr htriv habc q hq0 h2mq + h K * 2 * m K * ↑q := by
+        * (2 * m K * ↑q)
+          = h K * r α β σ α' β' γ' hirr htriv habc q hq0 h2mq + h K * 2 * m K * ↑q := by
         rw [mul_assoc, mul_assoc, mul_assoc]
       rw [this]
       have : ((h K : ℤ) * r α β σ α' β' γ' hirr htriv habc q hq0 h2mq + ↑(h K) * 2 * ↑(m K) * ↑q)  =
@@ -242,15 +266,21 @@ lemma eq5 : c₅ α' β' γ' ^ (-(r α β σ α' β' γ' hirr htriv habc q hq0 h
       dsimp [c₅]
       norm_cast
       nth_rw 2 [pow_mul]
-      have :  (((abs (c₁ α' β' γ') + 1) ^ h K) ^ (1 + 4 * m K ^ 2)) ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq=
-        ((abs (c₁ α' β' γ') + 1) ^ (h K * (1 + 4 * m K ^ 2) * r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) := by
+      have :  (((abs (c₁ α' β' γ') + 1) ^ h K) ^ (1 + 4 * m K ^
+          2)) ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq=
+        ((abs (c₁ α' β' γ') + 1) ^ (h K * (1 + 4 * m K ^ 2) * r α β σ α' β' γ' hirr htriv habc q hq0
+            h2mq)) := by
           rw [pow_mul]
           rw [pow_mul]
       rw [this]; clear this
-      calc _ ≤ abs (c₁ α' β' γ') ^ (h K * (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 2 * m K * q^2)):= ?_
-           _ ≤ abs (c₁ α' β' γ') ^ (h K * (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 4 * m K ^ 2 * n K q)) := ?_
-           _ ≤ abs (c₁ α' β' γ') ^( h K * (1 + 4 * m K ^ 2) * r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) := ?_
-           _ < (abs (c₁ α' β' γ') + 1) ^ (h K * (1 + 4 * m K ^ 2) * r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) := ?_
+      calc _ ≤ abs (c₁ α' β' γ') ^ (h K * (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 2 * m K *
+          q^2)):= ?_
+           _ ≤ abs (c₁ α' β' γ') ^ (h K * (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 4 * m K ^ 2
+               * n K q)) := ?_
+           _ ≤ abs (c₁ α' β' γ') ^( h K * (1 + 4 * m K ^ 2) * r α β σ α' β' γ' hirr htriv habc q hq0
+               h2mq) := ?_
+           _ < (abs (c₁ α' β' γ') + 1) ^ (h K * (1 + 4 * m K ^ 2) * r α β σ α' β' γ' hirr htriv habc
+               q hq0 h2mq) := ?_
       · refine pow_le_pow_right₀ ?_ ?_
         · exact one_le_abs_c₁ α' β' γ'
         · simp only [mul_assoc]
@@ -357,24 +387,29 @@ lemma eq5 : c₅ α' β' γ' ^ (-(r α β σ α' β' γ' hirr htriv habc q hq0 h
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma c_coeffspow_r :
-  ((c₁ α' β' γ') ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) * (c₁ α' β' γ') ^ (m K * q) * (c₁ α' β' γ') ^ (m K * q)) =
+  ((c₁ α' β' γ') ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) * (c₁ α' β' γ') ^ (m K * q) * (c₁
+      α' β' γ') ^ (m K * q)) =
   ((c₁ α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) *
   (c₁ α' β' γ') ^ (m K * q - (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1))) *
   (c₁ α' β' γ') ^ (m K * q - ((b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1))))) •
   (c₁ α' β' γ') ^ (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)) *
   (c₁ α' β' γ') ^ (b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)) := by
-    rw [← one_mul (c₁ α' β' γ' ^ (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℕ) + 1)))]
+    rw [← one_mul (c₁ α' β' γ' ^ (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℕ) +
+        1)))]
     have triple_comm_int (a b c : ℤ) (x y z : ℤ) :
       ((a*b)*c) • ((x*y)*z) = a•x * b•y * c•z := by
      simp only [zsmul_eq_mul, Int.cast_mul]; ring
     simp only [mul_assoc]
     rw [ smul_mul_assoc
           (c₁ α' β' γ' ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq *
-            (c₁ α' β' γ' ^ (m K * q - a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)) *
-              c₁ α' β' γ' ^ (m K * q - b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1))))
+            (c₁ α' β' γ' ^ (m K * q - a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) +
+                1)) *
+              c₁ α' β' γ' ^ (m K * q - b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) +
+                  1))))
           (1 * c₁ α' β' γ' ^ (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)))
           (c₁ α' β' γ' ^ (b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)))]
-    rw [Int.mul_assoc 1 (c₁ α' β' γ' ^ (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)))
+    rw [Int.mul_assoc 1 (c₁ α' β' γ' ^ (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) +
+        1)))
           (c₁ α' β' γ' ^ (b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)))]
     simp only [← mul_assoc]
     rw [triple_comm_int]
@@ -387,7 +422,8 @@ lemma c_coeffspow_r :
         rw [add_comm]
         refine add_tsub_cancel_of_le ?_
         rw [mul_comm (m K)]
-        apply mul_le_mul (((finProdFinEquiv.symm.toFun t).1).isLt) ?_ (Nat.zero_le _) (Nat.zero_le _)
+        apply mul_le_mul (((finProdFinEquiv.symm.toFun t).1).isLt) ?_ (Nat.zero_le _) (Nat.zero_le
+            _)
         · exact (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq).isLt
       rw [this]
     · simp only [smul_eq_mul]
@@ -397,7 +433,8 @@ lemma c_coeffspow_r :
         rw [add_comm]
         refine add_tsub_cancel_of_le ?_
         rw [mul_comm (m K)]
-        apply mul_le_mul (((finProdFinEquiv.symm.toFun t).2).isLt) ?_ (Nat.zero_le _) (Nat.zero_le _)
+        apply mul_le_mul (((finProdFinEquiv.symm.toFun t).2).isLt) ?_ (Nat.zero_le _) (Nat.zero_le
+            _)
         · exact (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq).isLt
       rw [this]
 
