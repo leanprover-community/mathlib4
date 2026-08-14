@@ -93,7 +93,10 @@ See also `Nat.coprime_of_dvd` and `Nat.coprime_of_dvd'` to prove `Nat.Coprime m 
 theorem Coprime.lcm_eq_mul {m n : ℕ} (h : Coprime m n) : lcm m n = m * n := by
   rw [← one_mul (lcm m n), ← h.gcd_eq_one, gcd_mul_lcm]
 
-theorem Coprime.symmetric : Symmetric Coprime := fun _ _ => Coprime.symm
+instance Coprime.stdSymm : Std.Symm Coprime where
+  symm _ _ := Coprime.symm
+
+@[deprecated (since := "2026-06-10")] alias Coprime.symmetric := Coprime.stdSymm
 
 theorem Coprime.dvd_mul_right {m n k : ℕ} (H : Coprime k n) : k ∣ m * n ↔ k ∣ m :=
   ⟨H.dvd_of_dvd_mul_right, fun h => dvd_mul_of_dvd_left h n⟩
@@ -258,6 +261,17 @@ lemma div_mul_div (hkm : m ∣ k) (hkn : n ∣ m) : (k / m) * (m / n) = k / n :=
 
 lemma div_dvd_div_left (hkm : m ∣ k) (hkn : n ∣ m) : k / m ∣ k / n :=
   ⟨_, (div_mul_div hkm hkn).symm⟩
+
+/-- `k / m ∣ k / n` iff `n ∣ m`, when both `m` and `n` divide `k`. -/
+lemma div_dvd_div_iff_left (hk : 0 < k) (hmk : m ∣ k) (hnk : n ∣ k) :
+    k / m ∣ k / n ↔ n ∣ m := by
+  grind [Nat.div_div_self, div_dvd_div_left, div_dvd_of_dvd]
+
+/-- `m / k ∣ n / k` iff `m ∣ n`, when `k` divides both `m` and `n`. -/
+lemma div_dvd_div_iff_right (hkm : k ∣ m) (hkn : k ∣ n) : m / k ∣ n / k ↔ m ∣ n := by
+  rcases k.eq_zero_or_pos with rfl | hk
+  · simp_all
+  · rw [← Nat.mul_dvd_mul_iff_left hk, Nat.mul_div_cancel' hkm, Nat.mul_div_cancel' hkn]
 
 lemma div_lcm_eq_div_gcd (hkm : m ∣ k) (hkn : n ∣ k) : (k / m).lcm (k / n) = k / (m.gcd n) := by
   rw [Nat.lcm_eq_iff]

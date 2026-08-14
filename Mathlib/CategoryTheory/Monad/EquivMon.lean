@@ -39,7 +39,6 @@ namespace Monad
 
 attribute [local instance] endofunctorMonoidalCategory
 
-set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance (M : Monad C) : MonObj (M : C ⥤ C) where
   one := M.η

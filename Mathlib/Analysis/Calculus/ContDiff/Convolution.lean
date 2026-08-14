@@ -115,7 +115,7 @@ variable [IsAddLeftInvariant μ] [SFinite μ]
 theorem _root_.HasCompactSupport.hasDerivAt_convolution_right (hf : LocallyIntegrable f₀ μ)
     (hcg : HasCompactSupport g₀) (hg : ContDiff 𝕜 1 g₀) (x₀ : 𝕜) :
     HasDerivAt (f₀ ⋆[L, μ] g₀) ((f₀ ⋆[L, μ] deriv g₀) x₀) x₀ := by
-  convert! (hcg.hasFDerivAt_convolution_right L hf hg x₀).hasDerivAt using 1
+  convert (hcg.hasFDerivAt_convolution_right L hf hg x₀).hasDerivAt
   rw [convolution_precompR_apply L hf (hcg.fderiv 𝕜) (hg.continuous_fderiv one_ne_zero)]
   rfl
 
@@ -228,7 +228,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     rcases Metric.mem_nhds_iff.1 V_mem with ⟨δ, δpos, hδ⟩
     refine ⟨min δ ε, lt_min δpos εpos, min_le_right δ ε, ?_⟩
     exact (add_subset_add_left ((ball_subset_ball (min_le_left _ _)).trans hδ)).trans hV
-  letI := ContinuousLinearMap.hasOpNorm (𝕜 := 𝕜) (𝕜₂ := 𝕜) (E := E)
+  let := ContinuousLinearMap.hasOpNorm (𝕜 := 𝕜) (𝕜₂ := 𝕜) (E := E)
     (F := (P × G →L[𝕜] E') →L[𝕜] P × G →L[𝕜] F) (σ₁₂ := RingHom.id 𝕜)
   let bound : G → ℝ := indicator U fun t => ‖(L.precompR (P × G))‖ * ‖f t‖ * C
   have I4 : ∀ᵐ a : G ∂μ, ∀ x : P × G, dist x q₀ < δ →

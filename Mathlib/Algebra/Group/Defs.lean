@@ -14,9 +14,10 @@ public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -44,6 +45,8 @@ We register the following instances:
   `Add.add`, `Neg.neg`/`Sub.sub`, `Mul.mul`, `Div.div`, and `HPow.hPow`.
 
 -/
+
+set_option linter.style.longFile 1700
 
 @[expose] public section
 
@@ -418,6 +421,44 @@ theorem mul_one : ∀ a : M, a * 1 = a :=
 
 end MulOneClass
 
+section IsUnital
+
+/-- A multiplicative magma is **unital** if there exists a unit.
+
+**Note**: Do not use this unless it is the only reasonable way to phrase or prove a statement.
+In general you should use `NonUnitalRing`, `Ring`, etc. -/
+@[mk_iff] class IsUnital (A : Type*) [Mul A] : Prop where
+  isUnital : ∃ u : A, ∀ x : A, u * x = x ∧ x * u = x
+
+/-- A multiplicative magma is **not-unital** if there does not exist a unit.
+
+**Note**: Do not use this unless it is the only reasonable way to phrase or prove a statement.
+In general you should use `NonUnitalRing`, `Ring`, etc. -/
+@[mk_iff] class IsNotUnital (A : Type*) [Mul A] : Prop where
+  isNotUnital : ∀ u : A, ∃ x : A, u * x ≠ x ∨ x * u ≠ x
+
+variable {A : Type*}
+
+@[simp, push] lemma not_isUnital_iff_isNotUnital [Mul A] : ¬IsUnital A ↔ IsNotUnital A := by
+  simp [isUnital_iff, isNotUnital_iff, -not_and, Classical.not_and_iff_not_or_not]
+
+@[simp, push] lemma not_isNotUnital_iff_isUnital [Mul A] : ¬IsNotUnital A ↔ IsUnital A := by
+  grind [not_isUnital_iff_isNotUnital]
+
+/-- A unital magma is `MulOneClass`.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toMulOneClass [Mul A] [IsUnital A] : MulOneClass A where
+  one := isUnital.choose
+  one_mul a := (isUnital.choose_spec a).1
+  mul_one a := (isUnital.choose_spec a).2
+
+lemma MulOneClass.isUnital [MulOneClass A] : IsUnital A where
+  isUnital := ⟨1, fun x ↦ ⟨one_mul x, mul_one x⟩⟩
+
+end IsUnital
+
 section
 
 variable {M : Type u}
@@ -594,7 +635,7 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   | one => simp [npowRec']
   | bit b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
-    cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
+    cases b <;> simp only [Nat.bit, Bool.cond_false, Bool.cond_true, npowRec'_two_mul]
     rw [npowRec'_succ (by lia), npowRec'_two_mul, ← npowRec'_two_mul,
       ← npowRec'_mul_comm (by lia), mul_assoc]
 
@@ -637,38 +678,51 @@ theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   iterate 2 rw [← npowBinRecAuto, ← npowRec_eq_npowBinRec]
   rfl
 
-/-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
+/-- `NSMul` is an implementation detail of `AddMonoid`. It is needed because it is
+impossible to extend `SMul ℕ M` and `SMul ℤ M` at the same time. -/
+class NSMul (M : Type u) where
   /-- Multiplication by a natural number.
   Set this to `nsmulRec` unless `Module` diamonds are possible. -/
   protected nsmul : ℕ → M → M
+
+/-- `NPow` is an implementation detail of `Monoid`. It is needed because it is
+impossible to extend `Pow M ℕ` and `Pow M ℤ` at the same time. -/
+@[to_additive]
+class NPow (M : Type u) where
+  /-- Raising to the power of a natural number. -/
+  protected npow : ℕ → M → M
+
+@[default_instance high, to_additive toSMul]
+instance NPow.toPow {M : Type*} [NPow M] : Pow M ℕ :=
+  ⟨fun x n ↦ NPow.npow n x⟩
+
+@[to_additive ofSMul]
+instance NPow.ofPow {M : Type*} [Pow M ℕ] : NPow M := ⟨fun n x ↦ Pow.pow x n⟩
+
+/-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
+class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M, NSMul M where
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
-  protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
+  protected nsmul_zero (x : M) : 0 • x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
-  protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
+  protected nsmul_succ (n : ℕ) (x : M) : (n + 1) • x = n • x + x := by intros; rfl
 
 attribute [instance 150] AddSemigroup.toAdd
 attribute [instance 50] AddZero.toAdd
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
-class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
-  /-- Raising to the power of a natural number. -/
-  protected npow : ℕ → M → M := npowRecAuto
+class Monoid (M : Type u) extends Semigroup M, MulOneClass M, NPow M where
+  npow := npowRecAuto
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
-  protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
+  protected npow_zero (x : M) : x ^ 0 = 1 := by intros; rfl
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
-  protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
-
-@[default_instance high, to_additive]
-instance Monoid.toPow {M : Type*} [Monoid M] : Pow M ℕ :=
-  ⟨fun x n ↦ Monoid.npow n x⟩
+  protected npow_succ (n : ℕ) (x : M) : x ^ (n + 1) = x ^ n * x := by intros; rfl
 
 section Monoid
 variable {M : Type*} [Monoid M] {a b c : M}
 
 @[to_additive (attr := simp) nsmul_eq_smul]
-theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
+theorem npow_eq_pow (n : ℕ) (x : M) : NPow.npow n x = x ^ n :=
   rfl
 
 @[to_additive] lemma left_inv_eq_right_inv (hba : b * a = 1) (hac : a * c = 1) : b = c := by
@@ -770,6 +824,13 @@ namespace IsDedekindFiniteMonoid
 end IsDedekindFiniteMonoid
 
 end Monoid
+
+attribute [local instance] IsUnital.toMulOneClass in
+/-- A unital semigroup is a monoid.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toMonoid {A : Type*} [Semigroup A] [IsUnital A] : Monoid A where
 
 /-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
 injective. -/
@@ -941,6 +1002,27 @@ field of individual `DivInvMonoid`s constructed using that default value will no
 `.instance` transparency. -/
 def DivInvMonoid.div' {G : Type u} [Monoid G] [Inv G] (a b : G) : G := a * b⁻¹
 
+/-- `ZSMul` is an implementation detail of `SubNegMonoid`. It is needed because it is
+impossible to extend `SMUl ℕ M` and `SMul ℤ M` at the same time. -/
+class ZSMul (G : Type u) where
+  /-- Multiplication by an integer.
+  Set this to `zsmulRec` unless `Module` diamonds are possible. -/
+  protected zsmul : ℤ → G → G
+
+/-- `ZPow` is an implementation detail of `DivInvMonoid`. It is needed because it is
+impossible to extend `Pow M ℕ` and `Pow M ℤ` at the same time. -/
+@[to_additive]
+class ZPow (G : Type u) where
+  /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
+  protected zpow : ℤ → G → G
+
+@[to_additive toSMul]
+instance ZPow.toPow {M : Type*} [ZPow M] : Pow M ℤ :=
+  ⟨fun x n ↦ ZPow.zpow n x⟩
+
+@[to_additive ofSMul]
+instance ZPow.ofPow {M : Type*} [Pow M ℤ] : ZPow M := ⟨fun n x ↦ Pow.pow x n⟩
+
 /-- A `DivInvMonoid` is a `Monoid` with operations `/` and `⁻¹` satisfying
 `div_eq_mul_inv : ∀ a b, a / b = a * b⁻¹`.
 
@@ -959,19 +1041,18 @@ In the same way, adding a `zpow` field makes it possible to avoid definitional f
 in diamonds. See the definition of `Monoid` and Note [forgetful inheritance] for more
 explanations on this.
 -/
-class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
+class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G, ZPow G where
   protected div := DivInvMonoid.div'
   /-- `a / b := a * b⁻¹` -/
   protected div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
-  /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
-  protected zpow : ℤ → G → G := zpowRec npowRec
+  zpow := zpowRec npowRec
   /-- `a ^ 0 = 1` -/
-  protected zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
+  protected zpow_zero' (a : G) : a ^ (0 : ℤ) = 1 := by intros; rfl
   /-- `a ^ (n + 1) = a ^ n * a` -/
-  protected zpow_succ' (n : ℕ) (a : G) : zpow n.succ a = zpow n a * a := by
+  protected zpow_succ' (n : ℕ) (a : G) : a ^ (n.succ : ℤ) = a ^ (n : ℤ) * a := by
     intros; rfl
   /-- `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` -/
-  protected zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
+  protected zpow_neg' (n : ℕ) (a : G) : a ^ Int.negSucc n = (a ^ (n.succ : ℤ))⁻¹ := by intros; rfl
 
 /-- In a class equipped with instances of both `AddMonoid` and `Neg`, this definition records what
 the default definition for `Sub` would be: `a + -b`.  This is later provided as the default value
@@ -1001,28 +1082,17 @@ In the same way, adding a `zsmul` field makes it possible to avoid definitional 
 in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] for more
 explanations on this.
 -/
-class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
+class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G, ZSMul G where
   protected sub := SubNegMonoid.sub'
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
-  /-- Multiplication by an integer.
-  Set this to `zsmulRec` unless `Module` diamonds are possible. -/
-  protected zsmul : ℤ → G → G
-  protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
+  protected zsmul_zero' (a : G) : (0 : ℤ) • a = 0 := by intros; rfl
   protected zsmul_succ' (n : ℕ) (a : G) :
-      zsmul n.succ a = zsmul n a + a := by
+      (n.succ : ℤ) • a = (n : ℤ) • a + a := by
     intros; rfl
-  protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by
+  protected zsmul_neg' (n : ℕ) (a : G) : (Int.negSucc n) • a = -((n.succ : ℤ) • a) := by
     intros; rfl
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
-
-instance DivInvMonoid.toZPow {M} [DivInvMonoid M] : Pow M ℤ :=
-  ⟨fun x n ↦ DivInvMonoid.zpow n x⟩
-
-instance SubNegMonoid.toZSMul {M} [SubNegMonoid M] : SMul ℤ M :=
-  ⟨SubNegMonoid.zsmul⟩
-
-attribute [to_additive existing] DivInvMonoid.toZPow
 
 /-- A group is called *cyclic* if it is generated by a single element. -/
 class IsAddCyclic (G : Type u) [SMul ℤ G] : Prop where
@@ -1043,11 +1113,15 @@ section DivInvMonoid
 variable [DivInvMonoid G]
 
 @[to_additive (attr := simp) zsmul_eq_smul] theorem zpow_eq_pow (n : ℤ) (x : G) :
-    DivInvMonoid.zpow n x = x ^ n :=
+    ZPow.zpow n x = x ^ n :=
   rfl
 
-@[to_additive (attr := simp) zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
+@[to_additive zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
   DivInvMonoid.zpow_zero' a
+
+-- `zpow_zero` is provable by `simp` (via `zpow_ofNat`), so the `simpNF` linter rejects tagging it.
+-- We still want the additive `zero_zsmul` to be `simp`, so we tag that one manually.
+attribute [simp] zero_zsmul
 
 @[to_additive (attr := simp, norm_cast) natCast_zsmul]
 theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
@@ -1058,7 +1132,9 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 
 
-@[to_additive ofNat_zsmul]
+-- TODO: consider also making `ofNat_zsmul` a `simp` lemma; it is currently not, because it breaks
+-- `simp`-normal forms involving `(2 : ℤ) • ·` used in the theory of oriented angles.
+@[to_additive ofNat_zsmul, simp]
 lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
   zpow_natCast ..
 
@@ -1089,14 +1165,18 @@ theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mu
 
 @[to_additive]
 theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc]
 
 @[to_additive (attr := simp)]
 theorem one_div (a : G) : 1 / a = a⁻¹ :=
   (inv_eq_one_div a).symm
 
-@[to_additive (attr := simp) one_zsmul]
+@[to_additive one_zsmul]
 lemma zpow_one (a : G) : a ^ (1 : ℤ) = a := by rw [zpow_ofNat, pow_one]
+
+-- `zpow_one` is provable by `simp` (via `zpow_ofNat`), so the `simpNF` linter rejects tagging it.
+-- We still want the additive `one_zsmul` to be `simp`, so we tag that one manually.
+attribute [simp] one_zsmul
 
 @[to_additive two_zsmul] lemma zpow_two (a : G) : a ^ (2 : ℤ) = a * a := by rw [zpow_ofNat, pow_two]
 
@@ -1276,7 +1356,7 @@ class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
 /-- A commutative group is a group with commutative `(*)`. -/
 -- There is intentionally no `IsMulCommutative` for `CommGroup` instance for performance reasons.
-@[to_additive]
+@[to_additive (attr := wikidata Q181296)]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 
 section CommGroup

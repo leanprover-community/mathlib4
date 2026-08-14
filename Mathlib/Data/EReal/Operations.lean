@@ -6,7 +6,6 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.EReal.Basic
-public import Batteries.Util.ProofWanted
 
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers
@@ -323,10 +322,6 @@ theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0
   obtain rfl : y.toENNReal = x := by simp [← hy]
   simp [recENNReal, H₁]
 
-proof_wanted recENNReal_neg_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
-    (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) {x : ℝ≥0∞} (hx : 0 < x) :
-    recENNReal coe neg_coe (-x) = neg_coe x hx
-
 /-!
 ### Subtraction
 
@@ -419,6 +414,11 @@ lemma toENNReal_sub {x y : EReal} (hy : 0 ≤ y) :
       ofReal_sub x (EReal.coe_nonneg.mp hy)]
     simp
 
+lemma add_sub_add_comm {a b c d : EReal} (h1 : c ≠ ⊥ ∨ d ≠ ⊤) (h2 : c ≠ ⊤ ∨ d ≠ ⊥) :
+    a + b - (c + d) = (a - c) + (b - d) := by
+  rw [sub_eq_add_neg, sub_eq_add_neg, sub_eq_add_neg, EReal.neg_add h1 h2, sub_eq_add_neg]
+  grind
+
 lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
   cases a <;> norm_cast
   exact _root_.add_sub_cancel_right _ _
@@ -488,13 +488,36 @@ lemma sub_lt_of_lt_add {a b c : EReal} (h : a < b + c) : a - c < b :=
 lemma sub_lt_of_lt_add' {a b c : EReal} (h : a < b + c) : a - b < c :=
   sub_lt_of_lt_add <| by rwa [add_comm]
 
+lemma sub_lt_sub_of_le_of_gt {x y z t : EReal} (h : x ≤ y) (h' : z < t)
+    (hx_top : x ≠ ⊤) (hy_bot : y ≠ ⊥) :
+    x - t < y - z := by
+  refine sub_lt_of_lt_add' ?_
+  rw [add_sub_assoc', add_comm, add_sub_assoc]
+  by_cases hy_top : y = ⊤
+  · rw [hy_top, top_add_of_ne_bot]
+    · exact hx_top.lt_top
+    · exact ne_bot_of_le_ne_bot (by simp) (sub_pos.mpr h').le
+  by_cases hxy : x = y
+  · rw [hxy]
+    lift y to ℝ using ⟨hy_top, hy_bot⟩
+    by_cases htz_top : t - z = ⊤
+    · simp_all
+    rw [← coe_toReal htz_top <| ne_bot_of_le_ne_bot (by simp) (sub_pos.mpr h').le]
+    norm_cast
+    refine lt_add_of_pos_right y ?_
+    exact EReal.toReal_pos (sub_pos.mpr h') htz_top
+  · rw [← add_zero x]
+    exact add_lt_add (by grind) (sub_pos.mpr h')
+
 /-! ### Addition and order -/
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_of_forall_lt_iff_le {x y : EReal} : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
   refine ⟨fun h ↦ WithBot.le_of_forall_lt_iff_le.1 ?_, fun h _ x_z ↦ h.trans x_z.le⟩
   rw [WithTop.forall]
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ge_of_forall_gt_iff_ge {x y : EReal} : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
   refine ⟨fun h ↦ WithBot.ge_of_forall_gt_iff_ge.1 ?_, fun h _ x_z ↦ x_z.le.trans h⟩
   rw [WithTop.forall]
@@ -541,16 +564,16 @@ lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le :
 @[simp] lemma bot_mul_bot : (⊥ : EReal) * ⊥ = ⊤ := rfl
 
 lemma coe_mul_top_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊤ = ⊤ :=
-  if_pos h
+  ite_eq_left h
 
 lemma coe_mul_top_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊤ = ⊥ :=
-  (if_neg h.not_gt).trans (if_neg h.ne)
+  (ite_eq_right h.not_gt).trans (ite_eq_right h.ne)
 
 lemma top_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊤ : EReal) * x = ⊤ :=
-  if_pos h
+  ite_eq_left h
 
 lemma top_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊤ : EReal) * x = ⊥ :=
-  (if_neg h.not_gt).trans (if_neg h.ne)
+  (ite_eq_right h.not_gt).trans (ite_eq_right h.ne)
 
 lemma mul_top_of_pos : ∀ {x : EReal}, 0 < x → x * ⊤ = ⊤
   | ⊥, h => absurd h not_lt_bot
@@ -577,16 +600,16 @@ lemma coe_ennreal_mul_top {x : ℝ≥0∞} (hx : x ≠ 0) : (x : EReal) * ⊤ = 
   rw [EReal.mul_comm, top_mul_coe_ennreal hx]
 
 lemma coe_mul_bot_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊥ = ⊥ :=
-  if_pos h
+  ite_eq_left h
 
 lemma coe_mul_bot_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊥ = ⊤ :=
-  (if_neg h.not_gt).trans (if_neg h.ne)
+  (ite_eq_right h.not_gt).trans (ite_eq_right h.ne)
 
 lemma bot_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊥ : EReal) * x = ⊥ :=
-  if_pos h
+  ite_eq_left h
 
 lemma bot_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊥ : EReal) * x = ⊤ :=
-  (if_neg h.not_gt).trans (if_neg h.ne)
+  (ite_eq_right h.not_gt).trans (ite_eq_right h.ne)
 
 lemma mul_bot_of_pos : ∀ {x : EReal}, 0 < x → x * ⊥ = ⊥
   | ⊥, h => absurd h not_lt_bot
@@ -790,6 +813,11 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
   nth_rewrite 1 [EReal.mul_comm]; nth_rewrite 2 [EReal.mul_comm]; nth_rewrite 3 [EReal.mul_comm]
   exact right_distrib_of_nonneg ha hb
 
+lemma mul_sub_of_nonneg_of_nonpos {a b c : EReal} (hb : 0 ≤ b) (hc : c ≤ 0) :
+    a * (b - c) = a * b - a * c := by
+  rw [sub_eq_add_neg, left_distrib_of_nonneg hb (by simpa)]
+  simp [← neg_mul, sub_eq_add_neg]
+
 lemma left_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
     (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     x * (y + z) = x * y + x * z := by
@@ -804,6 +832,16 @@ lemma right_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
     (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     (y + z) * x = y * x + z * x := by
   simpa only [EReal.mul_comm] using left_distrib_of_nonneg_of_ne_top hx_nonneg hx_ne_top y z
+
+lemma mul_sub_of_nonneg_of_ne_top {a b c : EReal} (ha : 0 ≤ a) (ha' : a ≠ ⊤) :
+    a * (b - c) = a * b - a * c := by
+  rw [sub_eq_add_neg, left_distrib_of_nonneg_of_ne_top ha ha']
+  simp [← neg_mul, sub_eq_add_neg]
+
+lemma sub_mul_of_nonneg_of_ne_top {a b c : EReal} (ha : 0 ≤ a) (ha' : a ≠ ⊤) :
+    (b - c) * a = b * a - c * a := by
+  rw [sub_eq_add_neg, right_distrib_of_nonneg_of_ne_top ha ha']
+  simp [← neg_mul, sub_eq_add_neg]
 
 @[simp]
 lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
@@ -821,7 +859,8 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: sum of two `EReal`s. -/
 @[positivity (_ + _ : EReal)]
-meta def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealAdd : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a + $b) =>
     assertInstancesCommute
@@ -840,7 +879,8 @@ meta def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
 
 /-- Extension for the `positivity` tactic: product of two `EReal`s. -/
 @[positivity (_ * _ : EReal)]
-meta def evalERealMul : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealMul : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a * $b) =>
     assertInstancesCommute

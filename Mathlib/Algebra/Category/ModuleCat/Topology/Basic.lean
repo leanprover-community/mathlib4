@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Lean.Meta.Tactic.Rfl
 
 /-!
 # The category `TopModuleCat R` of topological modules
@@ -59,7 +60,6 @@ abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [Conti
 lemma coe_of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : (of R M) = M := rfl
 
-set_option backward.privateInPublic true in
 variable {R} in
 /-- Homs in `TopModuleCat` as one field structures over `ContinuousLinearMap`. -/
 structure Hom (X Y : TopModuleCat.{v} R) where
@@ -143,7 +143,7 @@ section
 variable {M₁ M₂ : TopModuleCat R}
 
 @[simp] lemma hom_zero : (0 : M₁ ⟶ M₂).hom = 0 := rfl
-@[simp] lemma hom_zero_apply (m : M₁) : (0 : M₁ ⟶ M₂).hom m = 0 := rfl
+lemma hom_zero_apply (m : M₁) : (0 : M₁ ⟶ M₂).hom m = 0 := rfl
 @[simp] lemma hom_add (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ + φ₂).hom = φ₁.hom + φ₂.hom := rfl
 @[simp] lemma hom_neg (φ : M₁ ⟶ M₂) : (-φ).hom = -φ.hom := rfl
 @[simp] lemma hom_sub (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ - φ₂).hom = φ₁.hom - φ₂.hom := rfl
@@ -156,9 +156,11 @@ section CommRing
 
 variable {S : Type*} [CommRing S] [TopologicalSpace S]
 
-instance {X Y : TopModuleCat S} : Module S (X ⟶ Y) where
+instance {X Y : TopModuleCat S} : SMul S (X ⟶ Y) where
   smul r f := ofHom (r • f.hom)
-  __ := Equiv.module _ CategoryTheory.ConcreteCategory.homEquiv
+
+instance {X Y : TopModuleCat S} : Module S (X ⟶ Y) := fast_instance%
+  { homEquiv (Y := Y) with map_add' _ _ := rfl : (X ⟶ Y) ≃+ (X →L[S] Y) }.module S
 
 instance : Linear S (TopModuleCat S) where
   smul_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_smul _ _ _)
@@ -470,5 +472,16 @@ instance : (forget₂ (TopModuleCat.{max v u} R) TopCat).IsRightAdjoint := ⟨_,
 instance : (free.{max v u} R).IsLeftAdjoint := ⟨_, ⟨freeAdj R⟩⟩
 
 end Adjunction
+
+variable {R} in
+/-- The ring isomorphism between the endomorphisms of an object `M` in `TopModuleCat R` and the
+continuous `R`-linear endomorphisms of `M`. -/
+@[simps]
+def endRingEquiv (M : TopModuleCat R) :
+    End M ≃+* (M →L[R] M) where
+  toFun := TopModuleCat.Hom.hom
+  invFun := TopModuleCat.ofHom
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
 
 end TopModuleCat

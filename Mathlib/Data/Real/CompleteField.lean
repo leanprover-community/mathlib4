@@ -5,6 +5,6 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.Order.Archimedean.Real.Hom
+public import Mathlib.Analysis.Real.Sqrt
 
 deprecated_module (since := "2026-03-05")

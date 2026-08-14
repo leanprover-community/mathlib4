@@ -81,6 +81,7 @@ def _root_.lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u} where
   obj X := X.toTopCat
   map f := toTopCatMap f
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
 noncomputable def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toTopCat ⟶ X :=
   TopCat.ofHom
@@ -100,6 +101,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u}) :
     Function.Bijective (topCatAdjunctionCounit X) :=
   (topCatAdjunctionCounitEquiv X).bijective
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The unit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
 @[simps hom_app]
 noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSet where

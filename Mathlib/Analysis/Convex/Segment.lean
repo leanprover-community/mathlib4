@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Ray
 
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 
 /-!
 # Segments in vector spaces
@@ -61,12 +60,12 @@ def openSegment (x y : E) : Set E :=
 theorem segment_eq_image₂ (x y : E) :
     [x -[𝕜] y] =
       (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 ≤ p.1 ∧ 0 ≤ p.2 ∧ p.1 + p.2 = 1 } := by
-  simp only [segment, image, Prod.exists, mem_setOf_eq, and_assoc]
+  simp only [segment, image, Prod.exists, mem_ofPred_eq, and_assoc]
 
 theorem openSegment_eq_image₂ (x y : E) :
     openSegment 𝕜 x y =
       (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 < p.1 ∧ 0 < p.2 ∧ p.1 + p.2 = 1 } := by
-  simp only [openSegment, image, Prod.exists, mem_setOf_eq, and_assoc]
+  simp only [openSegment, image, Prod.exists, mem_ofPred_eq, and_assoc]
 
 theorem segment_symm (x y : E) : [x -[𝕜] y] = [y -[𝕜] x] :=
   Set.ext fun _ =>
@@ -94,8 +93,6 @@ theorem openSegment_subset_iff :
     hz ▸ H a b ha hb hab⟩
 
 end SMul
-
-open Convex
 
 section MulActionWithZero
 
@@ -218,12 +215,12 @@ theorem openSegment_eq_image' (x y : E) :
 
 theorem segment_eq_image_lineMap (x y : E) : [x -[𝕜] y] =
     AffineMap.lineMap x y '' Icc (0 : 𝕜) 1 := by
-  convert! segment_eq_image 𝕜 x y using 2
+  convert segment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
 theorem openSegment_eq_image_lineMap (x y : E) :
     openSegment 𝕜 x y = AffineMap.lineMap x y '' Ioo (0 : 𝕜) 1 := by
-  convert! openSegment_eq_image 𝕜 x y using 2
+  convert openSegment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
 theorem lineMap_mem_openSegment (a b : E) {t : 𝕜} (ht : t ∈ Ioo 0 1) :
@@ -251,7 +248,7 @@ theorem vadd_segment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
     a +ᵥ [b -[𝕜] c] = [a +ᵥ b -[𝕜] a +ᵥ c] :=
   #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12286/
   we didn't need this `let` statement. -/
-  let : AddTorsor E E := addGroupIsAddTorsor E
+  let : AddTorsor E E := AddGroup.instAddTorsor E
   image_segment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 
 @[simp]
@@ -259,7 +256,7 @@ theorem vadd_openSegment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E)
     a +ᵥ openSegment 𝕜 b c = openSegment 𝕜 (a +ᵥ b) (a +ᵥ c) :=
   #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12286/
   we didn't need this `let` statement. -/
-  let : AddTorsor E E := addGroupIsAddTorsor E
+  let : AddTorsor E E := AddGroup.instAddTorsor E
   image_openSegment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 
 @[simp]
@@ -557,13 +554,13 @@ theorem segment_eq_uIcc (x y : 𝕜) : [x -[𝕜] y] = uIcc x y :=
 /-- A point is in an `Icc` iff it can be expressed as a convex combination of the endpoints. -/
 theorem Convex.mem_Icc (h : x ≤ y) :
     z ∈ Icc x y ↔ ∃ a b, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  simp only [← segment_eq_Icc h, segment, mem_setOf_eq, smul_eq_mul, exists_and_left]
+  simp only [← segment_eq_Icc h, segment, mem_ofPred_eq, smul_eq_mul, exists_and_left]
 
 /-- A point is in an `Ioo` iff it can be expressed as a strict convex combination of the endpoints.
 -/
 theorem Convex.mem_Ioo (h : x < y) :
     z ∈ Ioo x y ↔ ∃ a b, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  simp only [← openSegment_eq_Ioo h, openSegment, smul_eq_mul, exists_and_left, mem_setOf_eq]
+  simp only [← openSegment_eq_Ioo h, openSegment, smul_eq_mul, exists_and_left, mem_ofPred_eq]
 
 /-- A point is in an `Ioc` iff it can be expressed as a semistrict convex combination of the
 endpoints. -/

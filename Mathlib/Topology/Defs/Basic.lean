@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Order.SetNotation
 public import Mathlib.Tactic.Continuity
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Data.Nat.Notation
 
-public meta import Mathlib.Util.DelabNonCanonical
+public import Mathlib.Util.DelabNonCanonical
 
 /-!
 # Basic definitions about topological spaces
@@ -68,6 +69,7 @@ universe u v
 open Set
 
 /-- A topology on `X`. -/
+@[to_dual_dont_translate]
 class TopologicalSpace (X : Type u) where
   /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
   protected IsOpen : Set X → Prop
@@ -89,6 +91,7 @@ section Defs
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 /-- `IsOpen s` means that `s` is open in the ambient topological space on `X` -/
+@[wikidata Q213363]
 def IsOpen : Set X → Prop := TopologicalSpace.IsOpen
 
 @[simp] theorem isOpen_univ : IsOpen (univ : Set X) := TopologicalSpace.isOpen_univ
@@ -100,6 +103,7 @@ theorem isOpen_sUnion {s : Set (Set X)} (h : ∀ t ∈ s, IsOpen t) : IsOpen (�
   TopologicalSpace.isOpen_sUnion s h
 
 /-- A set is closed if its complement is open -/
+@[wikidata Q320357]
 class IsClosed (s : Set X) : Prop where
   /-- The complement of a closed set is an open set. -/
   isOpen_compl : IsOpen sᶜ
@@ -147,7 +151,7 @@ def DenseRange {α : Type*} (f : α → X) := Dense (range f)
 
 /-- A function between topological spaces is continuous if the preimage
   of every open set is open. Registered as a structure to make sure it is not unfolded by Lean. -/
-@[fun_prop]
+@[fun_prop, wikidata Q170058]
 structure Continuous (f : X → Y) : Prop where
   /-- The preimage of an open set under a continuous function is an open set. Use `IsOpen.preimage`
   instead. -/
@@ -202,7 +206,7 @@ scoped notation (name := closure_of) "closure[" t "]" => @closure _ t
 scoped notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
 
-open Topology Lean.PrettyPrinter.Delaborator Delab.Noncanonical
+open Lean.PrettyPrinter.Delaborator Delab.Noncanonical
 
 /-- Delaborator for `IsOpen[_]`. -/
 @[scoped app_delab IsOpen] meta def delabIsOpen : Delab := delabUnary 2 1 fun x ↦ `(IsOpen[$x])
