@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.IsoCat
 
 In this file, we define the fundamental groupoid
 `SSet.Truncated.FundamentalGroupoid X` of a `2`-truncated simplicial set `X`.
-We also define the fundamental groupoid `SSet..FundamentalGroupoid X` of
+We also define the fundamental groupoid `SSet.FundamentalGroupoid X` of
 a simplicial set `X`.
 
 ## Implementation notes
@@ -90,6 +90,11 @@ lemma homMk_id (x : X _⦋0⦌₂) : homMk (Edge.id x) = 𝟙 (mk x) :=
     (((FreeGroupoid.of X.HomotopyCategory).congr_map (by simp)).trans
     ((FreeGroupoid.of X.HomotopyCategory).map_id _))
 
+/-- Induction principle for morphisms in the fundamental groupoid
+of a `2`-truncated simplicial set: in order to prove a property
+of all morphisms, it suffices to do it for morphisms induced
+by edges and show that the property is stable by inverses and
+by composition; -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 lemma hom_rec {motive : ∀ ⦃x y : FundamentalGroupoid X⦄, (x ⟶ y) → Prop}
     (homMk : ∀ ⦃x y : X _⦋0⦌₂⦄ (e : Edge x y), motive (homMk e))
@@ -249,6 +254,10 @@ def homMk {x y : X _⦋0⦌} (e : Edge x y) : mk x ⟶ mk y :=
 lemma homMk_id (x : X _⦋0⦌) : homMk (Edge.id x) = 𝟙 (mk x) :=
   Truncated.FundamentalGroupoid.homMk_id _
 
+/-- Induction principle for morphisms in the fundamental groupoid
+of a simplicial set: in order to prove a property of all morphisms,
+it suffices to do it for morphisms induced by edges and show that
+the property is stable by inverses and by composition; -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 lemma hom_rec {motive : ∀ ⦃x y : FundamentalGroupoid X⦄, (x ⟶ y) → Prop}
     (homMk : ∀ ⦃x y : X _⦋0⦌⦄ (e : Edge x y), motive (homMk e))
@@ -299,7 +308,7 @@ open FundamentalGroupoid
 lemma Edge.CompStruct.homMk_comp {x₀ x₁ x₂ : X _⦋0⦌} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂}
     {e₀₂ : Edge x₀ x₂} (h : Edge.CompStruct e₀₁ e₁₂ e₀₂) :
     homMk e₀₁ ≫ homMk e₁₂ = homMk e₀₂ :=
-  Truncated.Edge.CompStruct.homMk_comp h
+  h.toTruncated.homMk_comp
 
 /-- The functor `FundamentalGroupoid X ⥤ FundamentalGroupoid Y` that is induced
 by a morphism of simplicial sets. -/
