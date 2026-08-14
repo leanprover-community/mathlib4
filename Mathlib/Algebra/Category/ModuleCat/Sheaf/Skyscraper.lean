@@ -33,8 +33,6 @@ open Limits
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C} (Φ : Point.{w} J)
 section Presheaf
 
-set_option backward.isDefEq.respectTransparency false
-
 variable (R : Cᵒᵖ ⥤ RingCat.{w}) (M : ModuleCat.{w} ↑(Φ.presheafFiber.obj R))
 
 /--
@@ -101,10 +99,12 @@ noncomputable def skyscraperSMul (X : Cᵒᵖ) (r : ↑(R.obj X)) :
       (Φ.skyscraperPresheaf (AddCommGrpCat.of (↑M : Type w))).obj X :=
   Limits.Pi.map fun x => skyscraperSMulComponent Φ R M X r x
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 lemma skyscraperSMul_π (X : Cᵒᵖ) (r : ↑(R.obj X)) (x : Φ.fiber.obj X.unop) :
-    skyscraperSMul Φ R M X r ≫ Limits.Pi.π _ x =
-      Limits.Pi.π _ x ≫ skyscraperSMulComponent Φ R M X r x :=
+    skyscraperSMul Φ R M X r ≫
+        Limits.Pi.π (fun (_ : Φ.fiber.obj X.unop) => AddCommGrpCat.of (↑M : Type w)) x =
+      Limits.Pi.π (fun (_ : Φ.fiber.obj X.unop) => AddCommGrpCat.of (↑M : Type w)) x ≫
+        skyscraperSMulComponent Φ R M X r x :=
   Limits.Pi.map_π _ x
 
 lemma skyscraperSMul_one (X : Cᵒᵖ) :
@@ -113,6 +113,7 @@ lemma skyscraperSMul_one (X : Cᵒᵖ) :
   simp only [skyscraperSMulComponent_one]
   exact Limits.Pi.map_id
 
+set_option backward.isDefEq.respectTransparency false in
 lemma skyscraperSMul_mul (X : Cᵒᵖ) (r s : ↑(R.obj X)) :
     skyscraperSMul Φ R M X (r * s) =
       skyscraperSMul Φ R M X s ≫ skyscraperSMul Φ R M X r := by
@@ -120,6 +121,7 @@ lemma skyscraperSMul_mul (X : Cᵒᵖ) (r s : ↑(R.obj X)) :
   rw [Limits.Pi.map_comp_map]
   simp only [skyscraperSMulComponent_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma skyscraperSMul_add (X : Cᵒᵖ) (r s : ↑(R.obj X)) :
     skyscraperSMul Φ R M X (r + s) =
       skyscraperSMul Φ R M X r + skyscraperSMul Φ R M X s := by
@@ -127,6 +129,7 @@ lemma skyscraperSMul_add (X : Cᵒᵖ) (r s : ↑(R.obj X)) :
   simp only [skyscraperSMul, Limits.Pi.map_π, skyscraperSMulComponent_add,
     Preadditive.add_comp, Preadditive.comp_add]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma skyscraperSMul_zero (X : Cᵒᵖ) :
     skyscraperSMul Φ R M X (0 : ↑(R.obj X)) = 0 := by
   refine Limits.Pi.hom_ext _ _ fun x => ?_
@@ -179,6 +182,7 @@ lemma π_smul (X : Cᵒᵖ) (r : ↑(R.obj X)) (x : Φ.fiber.obj X.unop)
   exact (ConcreteCategory.congr_hom (skyscraperSMul_π Φ R M X r x) m).trans
     (skyscraperSMulComponent_apply Φ R M X r x _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The scalar action on the skyscraper presheaf is semilinear with respect to restriction. -/
 lemma skyscraperSMul_naturality {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : ↑(R.obj X)) :
     skyscraperSMul Φ R M X r ≫
@@ -217,6 +221,7 @@ lemma skyscraperSMulComponent_comm {N : ModuleCat.{w} ↑(Φ.presheafFiber.obj R
     (map_smul φ.hom _ m)).trans (skyscraperSMulComponent_apply Φ R N X r x _).symm
 
 variable {M} in
+set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms of modules over the fiber induce componentwise `R`-linear morphisms of
 skyscraper presheaves. -/
 lemma skyscraperSMul_naturality₂ {N : ModuleCat.{w} ↑(Φ.presheafFiber.obj R)} (φ : M ⟶ N)
@@ -238,6 +243,7 @@ lemma _root_.PresheafOfModules.toPresheaf_map_homMk {M₁ M₂ : PresheafOfModul
     (hφ : ∀ (X : Cᵒᵖ) (r : R.obj X) (m : M₁.obj X), φ.app X (r • m) = r • φ.app X m) :
     (PresheafOfModules.toPresheaf R).map (PresheafOfModules.homMk φ hφ) = φ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The skyscraper presheaf-of-modules functor at a point `Φ` of a site: it sends a module over
 the fiber of `R` to the associated skyscraper presheaf of modules.
@@ -338,8 +344,6 @@ variable (R : TopCat.Sheaf RingCat.{u} Y)
 /--
 Canonical map from the topos theoretic fiber
 `CategoryTheory.GrothendieckTopology.Point.presheafFiber` to `TopCat.Presheaf.stalk`.
-
-TODO: This should be upgraded to an isomorphism
 -/
 noncomputable def pointPresheafFiberToStalk :
     (Opens.pointGrothendieckTopology p).presheafFiber.obj R.presheaf ⟶ R.presheaf.stalk p :=
