@@ -305,7 +305,6 @@ lemma LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int {A : Type*}
     map_add' := add_zsmul g
     map_le_map_iff' := zsmul_le_zsmul_iff_left hg' }⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linearly-ordered abelian group is cyclic iff it is isomorphic to `Multiplicative ℤ` as an
 ordered monoid. -/
 lemma LinearOrderedCommGroup.isCyclic_iff_nonempty_equiv_int {G : Type*}
@@ -351,7 +350,8 @@ protected theorem ZMod.exponent (n : ℕ) : AddMonoid.exponent (ZMod n) = n := b
   rw [IsAddCyclic.exponent_eq_card, Nat.card_zmod]
 
 /-- A group of order `p ^ 2` is not cyclic if and only if its exponent is `p`. -/
-@[to_additive]
+@[to_additive /-- An additive group of order `p ^ 2` is not cyclic if and only if its exponent is
+`p`. -/]
 lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
     (hα : Nat.card α = p ^ 2) : ¬ IsCyclic α ↔ Monoid.exponent α = p := by
   -- G is a nontrivial fintype of cardinality `p ^ 2`
