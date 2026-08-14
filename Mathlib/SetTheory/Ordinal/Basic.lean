@@ -1256,6 +1256,14 @@ lemma nonempty_ord_toType {c : Cardinal} (h : c ≠ 0) :
     Nonempty c.ord.ToType := by
   rwa [Ordinal.nonempty_toType_iff, ne_eq, ord_eq_zero]
 
+lemma exists_le_of_small {ι : Type*} [Small.{u} ι] (κ : ι → Cardinal.{u}) :
+    ∃ (κ' : Cardinal.{u}), ∀ (i : ι), κ i ≤ κ' := by
+  let T (i : Shrink.{u} ι) : Type u := (κ ((equivShrink _).symm i)).ord.ToType
+  refine ⟨Cardinal.mk (Sigma T), fun i ↦ ?_⟩
+  obtain ⟨i, rfl⟩ := (equivShrink.{u} _).symm.surjective i
+  simpa [T] using Cardinal.mk_le_of_injective
+    (sigma_mk_injective (β := fun i ↦ (κ ((equivShrink _).symm i)).ord.ToType))
+
 end Cardinal
 
 namespace Ordinal
