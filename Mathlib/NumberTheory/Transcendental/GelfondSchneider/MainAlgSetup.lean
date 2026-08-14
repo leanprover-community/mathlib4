@@ -7,7 +7,6 @@ Authors: Michail Karatarakis
 module
 
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAlg
-public import Mathlib.Tactic
 
 /-!
 # Gelfond-Schneider Theorem: arithmetic of the parameters `m`, `n` and `q`
