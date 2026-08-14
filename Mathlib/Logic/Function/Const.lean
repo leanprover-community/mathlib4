@@ -17,8 +17,8 @@ import Mathlib.Logic.Nonempty
 This file defines `Function.IsConst`, the predicate that a function takes the same value
 at every pair of inputs.
 
-Note that a function with empty domain and codomain is considered constant.
-If a constant function has non-empty domain, then it can be represented by `Function.const`,
+Note that a function with empty domain is considered constant.
+If a constant function has non-empty codomain, then it can be represented by `Function.const`,
 see `isConst_iff_exists_eq_const`.
 -/
 
@@ -26,19 +26,17 @@ public section
 
 namespace Function
 
-universe u v w
-
-variable {α : Sort u} {β : Sort v} {γ : Sort w}
+variable {α β γ : Sort*}
 
 /-- A function is constant if it takes equal values at any two inputs.
 
-Note that a function with empty domain and codomain is considered constant.
-If a constant function has non-empty domain, then it can be represented by `Function.const`,
+Note that a function with empty domain is considered constant.
+If a constant function has non-empty co domain, then it can be represented by `Function.const`,
 see `isConst_iff_exists_eq_const`.
 
 The intended use is for expressing that a function is constant when the exact constant value is
-not known, unqiue or easily expressible. If the constant value can be stated explicitly, one
-shoud use `Function.const`. -/
+not known, no unique or not easy to express. To state the constant value explicitly,
+use `Function.const`. -/
 def IsConst (f : α → β) : Prop :=
   ∀ x y, f x = f y
 
@@ -75,9 +73,7 @@ theorem isConst_iff_exists_forall_eq [Nonempty β] {f : α → β} :
     cases isEmpty_or_nonempty α
     · exact ⟨Classical.arbitrary β, isEmptyElim⟩
     · exact ⟨f (Classical.arbitrary α), fun x => hf x _⟩
-  mpr := by
-    rintro ⟨b, hb⟩ x y
-    exact (hb x).trans (hb y).symm
+  mpr := fun ⟨b, hb⟩ => .of_forall_eq b hb
 
 /-- A function `f : α → β` is constant on a non-empty domain if and only if there is `b : β` so
 that `f a = b` for all `a : α`. -/
@@ -98,12 +94,12 @@ theorem isConst_iff_exists_eq_const_of_nonempty_domain [Nonempty α] {f : α →
   haveI := Nonempty.map f inferInstance; isConst_iff_exists_eq_const
 
 /-- Postcomposition preserves being constant. -/
-theorem IsConst.comp {f : α → β} (hf : IsConst f) (g : β → γ) :
+theorem IsConst.comp_left {f : α → β} (hf : IsConst f) (g : β → γ) :
     IsConst (g ∘ f) :=
   fun x y => congrArg g (hf x y)
 
 /-- Precomposing a constant function gives a constant function. -/
-theorem IsConst.comp_left {g : β → γ} (hg : IsConst g) (f : α → β) :
+theorem IsConst.comp_right {g : β → γ} (hg : IsConst g) (f : α → β) :
     IsConst (g ∘ f) :=
   fun x y => hg (f x) (f y)
 
@@ -114,7 +110,7 @@ theorem not_isConst_iff_exists_apply_ne {f : α → β} :
     ¬ IsConst f ↔ ∃ x y, f x ≠ f y := by
   simp [isConst_iff]
 
-/-- The identity function on a type is constant if and only if the type is a singleton. -/
+/-- The identity function on a type is constant if and only if the type is a subsingleton. -/
 @[simp]
 theorem isConst_id_iff : IsConst (id : α → α) ↔ Subsingleton α :=
   ⟨fun h => ⟨fun x y => h x y⟩, fun _ => .of_subsingleton_domain _⟩
