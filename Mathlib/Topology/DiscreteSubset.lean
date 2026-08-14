@@ -44,7 +44,7 @@ This is the filter of all open codiscrete sets within S. We also define `Filter.
 
 open Set Filter Function Topology
 
-variable {X Y Z : Type*} [TopologicalSpace X] {s : Set X} [TopologicalSpace Y] {f g₁ g₂ : X → Y}
+variable {X Y Z : Type*} [TopologicalSpace X] {s : Set X} [TopologicalSpace Y] {f : X → Y}
   {g₁ g₂ : X → Z}
 
 theorem discreteTopology_subtype_iff {S : Set Y} :
@@ -286,14 +286,14 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
 /-- Any set is codiscrete within itself. -/
-@[simp] theorem Filter.self_mem_codiscreteWithin :
+@[simp] theorem Filter.self_mem_codiscreteWithin (s : Set X) :
     s ∈ Filter.codiscreteWithin s := by simp [mem_codiscreteWithin]
 
 /-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
 @[gcongr]
-lemma Filter.codiscreteWithin_mono {s₁ : Set X} (hU : s₁ ⊆ s) :
+lemma Filter.codiscreteWithin_mono {s₁ : Set X} (hs : s₁ ⊆ s) :
     codiscreteWithin s₁ ≤ codiscreteWithin s := by
-  refine (biSup_mono hU).trans <| iSup₂_mono fun _ _ ↦ ?_
+  refine (biSup_mono hs).trans <| iSup₂_mono fun _ _ ↦ ?_
   gcongr
 
 @[deprecated (since := "2026-05-13")]
