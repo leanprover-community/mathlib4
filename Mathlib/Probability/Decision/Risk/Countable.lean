@@ -8,6 +8,7 @@ module
 public import Mathlib.Probability.Decision.Risk.Defs
 
 import Mathlib.Probability.Decision.Risk.Basic
+import Mathlib.Probability.Decision.AuxLemmas
 
 /-!
 # Risk in countable spaces
@@ -79,6 +80,27 @@ lemma avgRisk_const_of_fintype [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
     (hℓ : Measurable ℓ) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
     avgRisk ℓ (Kernel.const Θ μ) κ π = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
   simp [avgRisk_fintype' hℓ]
+
+lemma bayesRisk_const_of_finite [Nonempty 𝓨] [Finite 𝓨] [MeasurableSingletonClass 𝓨]
+    (hℓ : Measurable (uncurry ℓ)) (μ : Measure 𝓧) (π : Measure Θ) :
+    bayesRisk ℓ (Kernel.const Θ μ) π = ⨅ y, ∫⁻ θ, ℓ θ y * μ .univ ∂π := by
+  have hℓ' : Measurable ℓ := by fun_prop
+  have := Fintype.ofFinite 𝓨
+  refine le_antisymm ((bayesRisk_le_iInf' hℓ _ _).trans_eq (by simp)) ?_
+  simp only [bayesRisk, avgRisk_const_of_fintype hℓ', le_iInf_iff]
+  intro κ hκ
+  calc ⨅ y, ∫⁻ θ, ℓ θ y * μ Set.univ ∂π
+  _ = (⨅ y, ∫⁻ θ, ℓ θ y ∂π) * (κ ∘ₘ μ) Set.univ := by
+    simp only [Measure.comp_apply_univ]
+    rw [ENNReal.iInf_mul' (fun _ h ↦ ?_) (fun _ ↦ inferInstance)]
+    · congr with y
+      rw [lintegral_mul_const _ (by fun_prop)]
+    · rwa [← bot_eq_zero, iInf_eq_bot_iff_of_finite, bot_eq_zero] at h
+  _ ≤ ∫⁻ y, ∫⁻ θ, ℓ θ y ∂π ∂(κ ∘ₘ μ) := iInf_mul_le_lintegral _
+  _ = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
+    simp only [lintegral_fintype]
+    congr with y
+    rw [lintegral_mul_const _ (by fun_prop)]
 
 end Const
 
