@@ -525,10 +525,6 @@ theorem natCast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^ 
   | 0 => by simp
   | n + 1 => by simp [pow_succ, natCast_pow m n]
 
-@[deprecated natCast_pow (since := "2026-01-31")]
-theorem natCast_opow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^ (n : Ordinal) := by
-  simp
-
 theorem iSup_pow_natCast {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ ω := by
   rcases (one_le_iff_pos.2 ho).lt_or_eq with ho₁ | rfl
   · simpa using apply_omega0_of_isNormal (isNormal_opow ho₁)

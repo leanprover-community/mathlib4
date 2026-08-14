@@ -592,20 +592,12 @@ theorem one_lt_finprod_cond {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrder
     · aesop
   · simp +contextual
 
-@[deprecated (since := "2026-01-06")] alias finprod_cond_pos := finsum_cond_pos
-
 @[to_additive finsum_pos]
 theorem one_lt_finprod {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
     {f : ι → M}
     (h : ∀ i, 1 ≤ f i) (h' : ∃ i, 1 < f i) (hf : HasFiniteMulSupport f) : 1 < ∏ᶠ i, f i := by
   rw [← finprod_mem_univ]
   apply one_lt_finprod_cond <;> simpa
-
-@[deprecated (since := "2026-01-03")]
-alias finsum_pos' := finsum_pos
-
-@[to_additive existing finsum_pos', deprecated (since := "2026-01-03")]
-alias one_lt_finprod' := one_lt_finprod
 
 /-- Monotonicity of `finprod`. See `finprod_le_finprod` for a variant where
 `M` is a `CommMonoidWithZero`. -/
@@ -917,7 +909,6 @@ theorem finprod_mem_pair (h : a ≠ b) : (∏ᶠ i ∈ ({a, b} : Set α), f i) =
   rw [finprod_mem_insert, finprod_mem_singleton]
   exacts [h, finite_singleton b]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product of `f y` over `y ∈ g '' s` equals the product of `f (g i)` over `s`
 provided that `g` is injective on `s ∩ mulSupport (f ∘ g)`. -/
 @[to_additive
