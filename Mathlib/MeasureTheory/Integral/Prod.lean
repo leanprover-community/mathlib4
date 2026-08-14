@@ -61,7 +61,6 @@ section
 
 variable [NormedSpace ℝ E]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The Bochner integral is measurable. This shows that the integrand of (the right-hand-side of)
   Fubini's theorem is measurable.
   This version has `f` in curried form. -/
@@ -443,7 +442,7 @@ theorem continuous_integral_integral :
   of the right-hand side is integrable. -/
 theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
     ∫ z, f z ∂μ.prod ν = ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
-  by_cases hE : CompleteSpace E; swap; · simp only [integral, dif_neg hE]
+  by_cases hE : CompleteSpace E; swap; · simp only [integral, dite_eq_right hE]
   revert f
   apply Integrable.induction
   · intro c s hs h2s

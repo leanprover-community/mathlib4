@@ -568,7 +568,7 @@ noncomputable def isSuccPrelimitRecOn : motive b :=
 @[to_dual]
 theorem isSuccPrelimitRecOn_of_isSuccPrelimit (hb : IsSuccPrelimit b) :
     isSuccPrelimitRecOn b succ isSuccPrelimit = isSuccPrelimit b hb :=
-  dif_pos hb
+  dite_eq_left hb
 
 end PartialOrder
 
@@ -582,7 +582,7 @@ theorem isSuccPrelimitRecOn_succ_of_not_isMax (hb : ¬IsMax b) :
     isSuccPrelimitRecOn (Order.succ b) succ isSuccPrelimit = succ b hb := by
   have hb' := mt IsSuccPrelimit.isMax hb
   have H := Classical.choose_spec (not_isSuccPrelimit_iff_succ_eq.1 hb')
-  rw [isSuccPrelimitRecOn, dif_neg hb', cast_eq_iff_heq]
+  rw [isSuccPrelimitRecOn, dite_eq_right hb', cast_eq_iff_heq]
   congr!
   exact (succ_eq_succ_iff_of_not_isMax H.1 hb).1 H.2
 
@@ -618,7 +618,7 @@ noncomputable def isSuccLimitRecOn : motive b :=
 theorem isSuccLimitRecOn_of_isSuccLimit (hb : IsSuccLimit b) :
     isSuccLimitRecOn b isMin succ isSuccLimit = isSuccLimit b hb := by
   rw [isSuccLimitRecOn, isSuccPrelimitRecOn_of_isSuccPrelimit _ _ hb.isSuccPrelimit,
-    dif_neg hb.not_isMin]
+    dite_eq_right hb.not_isMin]
 
 end PartialOrder
 
@@ -641,7 +641,8 @@ theorem isSuccLimitRecOn_succ [NoMaxOrder α] (b : α) :
 @[to_dual]
 theorem isSuccLimitRecOn_of_isMin (hb : IsMin b) :
     isSuccLimitRecOn b isMin succ isSuccLimit = isMin b hb := by
-  rw [isSuccLimitRecOn, isSuccPrelimitRecOn_of_isSuccPrelimit _ _ hb.isSuccPrelimit, dif_pos hb]
+  rw [isSuccLimitRecOn, isSuccPrelimitRecOn_of_isSuccPrelimit _ _ hb.isSuccPrelimit,
+    dite_eq_left hb]
 
 end LinearOrder
 
@@ -677,7 +678,7 @@ noncomputable def prelimitRecOn : motive b :=
 theorem prelimitRecOn_of_isSuccPrelimit (hb : IsSuccPrelimit b) :
     prelimitRecOn b succ isSuccPrelimit =
       isSuccPrelimit b hb fun x _ ↦ SuccOrder.prelimitRecOn x succ isSuccPrelimit := by
-  rw [prelimitRecOn, WellFounded.fix_eq, dif_pos hb]; rfl
+  rw [prelimitRecOn, WellFounded.fix_eq, dite_eq_left hb]; rfl
 
 end PartialOrder
 
@@ -693,7 +694,7 @@ theorem prelimitRecOn_succ_of_not_isMax (hb : ¬IsMax b) :
       succ b hb (prelimitRecOn b succ isSuccPrelimit) := by
   have h := mt IsSuccPrelimit.isMax hb
   have H := Classical.choose_spec (not_isSuccPrelimit_iff_succ_eq.1 h)
-  rw [prelimitRecOn, WellFounded.fix_eq, dif_neg h]
+  rw [prelimitRecOn, WellFounded.fix_eq, dite_eq_right h]
   have {a c : α} {ha hc} {x : ∀ a, motive a} (h : a = c) :
     cast (congr_arg (motive ∘ Order.succ) h) (succ a ha (x a)) = succ c hc (x c) := by subst h; rfl
   exact this <| (succ_eq_succ_iff_of_not_isMax H.1 hb).1 H.2
@@ -729,13 +730,14 @@ noncomputable def limitRecOn : motive b :=
 
 @[to_dual (attr := simp)]
 theorem limitRecOn_isMin (hb : IsMin b) : limitRecOn b isMin succ isSuccLimit = isMin b hb := by
-  rw [limitRecOn, prelimitRecOn_of_isSuccPrelimit _ _ hb.isSuccPrelimit, dif_pos hb]
+  rw [limitRecOn, prelimitRecOn_of_isSuccPrelimit _ _ hb.isSuccPrelimit, dite_eq_left hb]
 
 @[to_dual (attr := simp)]
 theorem limitRecOn_of_isSuccLimit (hb : IsSuccLimit b) :
     limitRecOn b isMin succ isSuccLimit =
       isSuccLimit b hb fun x _ ↦ limitRecOn x isMin succ isSuccLimit := by
-  rw [limitRecOn, prelimitRecOn_of_isSuccPrelimit _ _ hb.isSuccPrelimit, dif_neg hb.not_isMin]; rfl
+  rw [limitRecOn, prelimitRecOn_of_isSuccPrelimit _ _ hb.isSuccPrelimit,
+    dite_eq_right hb.not_isMin]; rfl
 
 end PartialOrder
 
