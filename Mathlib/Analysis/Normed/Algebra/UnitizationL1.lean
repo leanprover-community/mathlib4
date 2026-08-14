@@ -109,13 +109,15 @@ lemma unitization_algebraMap (r : 𝕜) :
     ofLp (algebraMap 𝕜 (WithLp 1 (Unitization 𝕜 A)) r) = algebraMap 𝕜 (Unitization 𝕜 A) r := rfl
 
 /-- `equiv` bundled as an algebra isomorphism with `Unitization 𝕜 A`. -/
-@[simps!]
+@[simps! -isSimp apply symm_apply symm_apply_ofLp]
 def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A]
     [IsScalarTower R 𝕜 A] : WithLp 1 (Unitization 𝕜 A) ≃ₐ[R] Unitization 𝕜 A where
   __ := WithLp.linearEquiv _ R _
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
   commutes' _ := rfl
+
+attribute [simp] unitizationAlgEquiv_apply unitizationAlgEquiv_symm_apply
 
 noncomputable instance instUnitizationNormedRing : NormedRing (WithLp 1 (Unitization 𝕜 A)) where
   dist_eq := dist_eq_norm_neg_add
