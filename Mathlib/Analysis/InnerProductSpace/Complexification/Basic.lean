@@ -412,31 +412,6 @@ lemma isometry_toComplexification : Isometry (toComplexification (𝕜 := 𝕜) 
   simp only [and_imp, forall_exists_index]
   exact fun y hy z hz ↦ ⟨.mk 𝕜 y z, by simp [hy, hz]⟩
 
-@[simp] lemma _root_.Submodule.orthogonal_complexification (K : Submodule 𝕜 E) :
-    K.complexificationᗮ = Kᗮ.complexification := by
-  ext v
-  simp only [Submodule.mem_complexification, Submodule.mem_orthogonal_iff_re_inner_eq_zero, and_imp]
-  refine ⟨fun h ↦ ⟨fun u hu ↦ ?_, fun u hu ↦ ?_⟩, by aesop (add simp [Complex.ext_iff])⟩
-  · simpa using h (.mk 𝕜 u 0) (by simpa)
-  · simpa using h (.mk 𝕜 0 u) (by simp) (by simpa)
-
-instance (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] :
-    K.complexification.HasOrthogonalProjection where
-  exists_orthogonal v :=
-    have ⟨a, ha, hva⟩ := ‹K.HasOrthogonalProjection›.exists_orthogonal v.re
-    have ⟨b, hb, hvb⟩ := ‹K.HasOrthogonalProjection›.exists_orthogonal v.im
-    ⟨.mk 𝕜 a b, by simp [ha, hb], by simp [hva, hvb]⟩
-
--- or the other way around?
-@[simp] lemma _root_.Submodule.toComplexification_starProjection (K : Submodule 𝕜 E)
-    [K.HasOrthogonalProjection] :
-    K.starProjection.toComplexification = K.complexification.starProjection := by
-  ext1 v
-  refine (K.complexification.eq_starProjection_of_mem_of_inner_eq_zero (by simp) ?_).symm
-  intro w hw
-  have : v - K.starProjection.toComplexification v ∈ K.complexificationᗮ := by simp
-  simp [-toComplexification_apply_apply, inner_eq_zero_symm (y := w), this _ hw]
-
 /-- Conjugation of a complexified operator given by `T ↦ conj ∘ T ∘ conj`.
 
 An opeartor is equal to its conjugate iff it is a complexified operator
