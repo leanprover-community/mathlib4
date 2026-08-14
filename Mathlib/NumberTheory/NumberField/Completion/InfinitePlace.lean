@@ -224,22 +224,22 @@ instance locallyCompactSpace : LocallyCompactSpace (v.Completion) :=
 
 /-- The embedding associated to an infinite place extended to an embedding `v.Completion →+* ℂ`. -/
 def extensionEmbedding : v.Completion →+* ℂ :=
-  UniformSpace.Completion.extensionHom _ v.isometry_embedding.continuous |>.comp (equiv v).toRingHom
+  extensionHom _ v.isometry_embedding.continuous |>.comp (equiv v).toRingHom
 
 /-- The embedding `K →+* ℝ` associated to a real infinite place extended to `v.Completion →+* ℝ`. -/
 def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion →+* ℝ :=
-  UniformSpace.Completion.extensionHom _ (v.isometry_embedding_of_isReal hv).continuous |>.comp <|
+  extensionHom _ (v.isometry_embedding_of_isReal hv).continuous |>.comp <|
     (equiv v).toRingHom
 
 @[simp]
 theorem extensionEmbedding_coe (x : WithAbs v.1) :
     extensionEmbedding v x = v.embedding (WithAbs.equiv v.1 x) :=
-  UniformSpace.Completion.extensionHom_coe _ v.isometry_embedding.continuous _
+  extensionHom_coe _ v.isometry_embedding.continuous _
 
 @[simp]
 theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : WithAbs v.1) :
     extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.1 x) :=
-  UniformSpace.Completion.extensionHom_coe _ (v.isometry_embedding_of_isReal hv).continuous _
+  extensionHom_coe _ (v.isometry_embedding_of_isReal hv).continuous _
 
 /-- The embedding `v.Completion →+* ℂ` is an isometry. -/
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
