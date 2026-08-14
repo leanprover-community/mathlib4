@@ -113,7 +113,7 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
     if r == rows then break
     -- find the first row at or below `r` with a nonzero entry in column `c`
     let mut p? : Option Nat := none
-    for q in [r:rows] do
+    for q in r...rows do
       if !ops.isZero (getEntry W q c) then
         p? := some q
         break
