@@ -185,8 +185,7 @@ theorem tfae_cons_cons : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
   tfae_cons (Mem.head _)
 
 @[deprecated tfae_cons_of_mem +typeChanged (since := "2026-08-14")]
-theorem tfae_cons_self : TFAE (a :: a :: l) ↔ TFAE (a :: l) :=
-  tfae_cons_of_mem (l := a :: l) (by simp)
+theorem tfae_cons_self : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by simp
 
 theorem tfae_of_cycle (h_chain : List.IsChain (· → ·) (a :: b :: l))
     (h_last : getLastD l b → a) : TFAE (a :: b :: l) := by
