@@ -373,6 +373,7 @@ private theorem isCompact_candidatesB : IsCompact (candidatesB X Y) := by
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
+set_option linter.privateProof.warnIfUnnecessary false in
 /-- candidates give rise to elements of `BoundedContinuousFunction`s -/
 def candidatesBOfCandidates (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) : Cb X Y :=
   BoundedContinuousFunction.mkOfCompact ⟨f, private (candidates_lipschitz fA).continuous⟩
