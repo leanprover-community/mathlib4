@@ -969,7 +969,7 @@ theorem Quot.eqvGen_sound (H : EqvGen r a b) : Quot.mk r a = Quot.mk r b :=
   H.rec (fun _ _ ↦ Quot.sound) (fun _ ↦ rfl) (fun _ _ _ ↦ .symm) (fun _ _ _ _ _ ↦ .trans)
 
 theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
-  ⟨by intro h; induction h <;> grind [Equivalence], .rel a b⟩
+  ⟨fun h ↦ by induction h <;> grind [Equivalence], .rel a b⟩
 
 theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
   funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
