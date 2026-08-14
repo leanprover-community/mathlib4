@@ -108,37 +108,11 @@ instance monoidalCategoryStruct : MonoidalCategoryStruct (Quotient r) where
 
 /-- The monoidal category structure on `Quotient r` induced by a monoidal category structure
 on `C`. -/
-instance monoidalCategory : MonoidalCategory (Quotient r) :=
-  MonoidalCategory.ofTensorHom
-    (id_tensorHom_id := fun ⟨_⟩ ⟨_⟩ ↦ congr_arg (functor r).map (id_tensorHom_id _ _))
-    (id_tensorHom := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩; exact congr_arg (functor r).map (id_tensorHom _ _))
-    (tensorHom_id := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩; exact congr_arg (functor r).map (tensorHom_id _ _))
-    (tensorHom_comp_tensorHom := by
-      rintro ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩
-      exact congr_arg (functor r).map (tensorHom_comp_tensorHom _ _ _ _))
-    (associator_naturality := by
-      rintro ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩
-      exact congr_arg (functor r).map (associator_naturality _ _ _))
-    (leftUnitor_naturality := by
-      rintro ⟨_⟩ ⟨_⟩ ⟨_⟩
-      exact congr_arg (functor r).map (by
-        rw [MonoidalCategory.id_tensorHom]
-        exact leftUnitor_naturality _))
-    (rightUnitor_naturality := by
-      rintro ⟨_⟩ ⟨_⟩ ⟨_⟩
-      exact congr_arg (functor r).map (by
-        rw [MonoidalCategory.tensorHom_id]
-        exact rightUnitor_naturality _))
-    (pentagon := by
-      rintro ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩
-      exact congr_arg (functor r).map (by
-        rw [MonoidalCategory.tensorHom_id, MonoidalCategory.id_tensorHom]
-        exact pentagon _ _ _ _))
-    (triangle := by
-      rintro ⟨_⟩ ⟨_⟩
-      exact congr_arg (functor r).map (by
-        rw [MonoidalCategory.id_tensorHom, MonoidalCategory.tensorHom_id]
-        exact triangle _ _))
+instance monoidalCategory : MonoidalCategory (Quotient r) := by
+  apply ofTensorHom
+  all_goals
+    repeat rintro ⟨_⟩
+    exact (functor r).congr_map (by simp +instances [monoidalCategoryStruct])
 
 @[simp]
 lemma functor_map_whiskerLeft (W : C) {X Y : C} (f : X ⟶ Y) :
