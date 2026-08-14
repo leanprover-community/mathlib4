@@ -167,6 +167,13 @@ theorem hasseDeriv_comp (k l : ℕ) (f : LaurentSeries V) :
   ext n
   simp [hasseDeriv_comp_coeff k l f n]
 
+@[simp]
+theorem hasseDeriv_map {W : Type*} [AddCommGroup W] [Module R W]
+    (g : V →ₗ[R] W) (k : ℕ) (f : LaurentSeries V) :
+    hasseDeriv R k (f.map g) = (hasseDeriv R k f).map g := by
+  ext
+  simp
+
 /-- The derivative of a Laurent series. -/
 def derivative (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] :
     LaurentSeries V →ₗ[R] LaurentSeries V :=
@@ -176,6 +183,11 @@ def derivative (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
 theorem derivative_apply (f : LaurentSeries V) : derivative R f = hasseDeriv R 1 f := by
   exact rfl
 
+theorem derivative_map {W : Type*} [AddCommGroup W] [Module R W]
+    (g : V →ₗ[R] W) (f : LaurentSeries V) :
+    derivative R (f.map g) = (derivative R f).map g :=
+  hasseDeriv_map g 1 f
+
 theorem derivative_iterate (k : ℕ) (f : LaurentSeries V) :
     (derivative R)^[k] f = k.factorial • (hasseDeriv R k f) := by
   ext n
@@ -184,6 +196,15 @@ theorem derivative_iterate (k : ℕ) (f : LaurentSeries V) :
   | succ k ih =>
     rw [Function.iterate_succ, Function.comp_apply, ih, derivative_apply, hasseDeriv_comp,
       Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]
+
+@[simp]
+theorem iterate_derivative_map {W : Type*} [AddCommGroup W] [Module R W]
+    (g : V →ₗ[R] W) (k : ℕ) (f : LaurentSeries V) :
+    (derivative R)^[k] (f.map g) = ((derivative R)^[k] f).map g := by
+  induction k generalizing f with
+  | zero => simp
+  | succ k ih =>
+    simp only [Function.iterate_succ, Function.comp_apply, ih, derivative_map]
 
 @[simp]
 theorem derivative_iterate_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
@@ -905,7 +926,6 @@ lemma exists_ratFunc_eq_v (x : K⸨X⸩) : ∃ f : K⟮X⟯, Valued.v f = Valued
 
 open MonoidWithZeroHom.ValueGroup₀
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [isUniformInducing_iff, Filter.comap]
   ext S
@@ -1145,7 +1165,6 @@ lemma powerSeriesEquivSubring_coe_apply (f : K⟦X⟧) :
     (powerSeriesEquivSubring K f : K⸨X⸩) = ofPowerSeries ℤ K f :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Through the isomorphism `LaurentSeriesRingEquiv`, power series land in the unit ball inside the
 completion of `K⟮X⟯`. -/
 theorem mem_integers_of_powerSeries (F : K⟦X⟧) :
