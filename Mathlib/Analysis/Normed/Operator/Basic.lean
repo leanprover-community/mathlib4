@@ -373,7 +373,8 @@ private lemma uniformity_eq_seminorm :
     exact le_trans (le_of_opNorm_le_of_le _ hf.le (hε _ hx)) hδ.le
 
 instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .replaceUniformity
-  ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace (private uniformity_eq_seminorm)
+  ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace
+    (private uniformity_eq_seminorm)
 
 /-- Continuous linear maps themselves form a seminormed space with respect to the operator norm. -/
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
