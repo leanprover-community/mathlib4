@@ -303,9 +303,7 @@ lemma map_onFun_le {r : β → β → Prop} (f : α → β) : Relation.Map (r on
 lemma map_onFun_eq_of_surjective {r : β → β → Prop} {f : α → β} (hsurj : f.Surjective) :
     Relation.Map (r on f) f f = r := by
   ext x y
-  have _ := hsurj x
-  have _ := hsurj y
-  grind
+  grind [hsurj x, hsurj y]
 
 lemma map_onFun_map_eq_map {r : α → α → Prop} (f : α → β) :
     Relation.Map (Relation.Map r f f on f) f f = Relation.Map r f f := by
