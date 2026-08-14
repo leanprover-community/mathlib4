@@ -3237,6 +3237,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
+public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
