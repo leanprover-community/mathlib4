@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Group.Measure
 
 /-!
 # Measure theory in the product of groups
+
 In this file we show properties about measure theory in products of measurable groups
 and properties of iterated integrals in measurable groups.
 
@@ -190,7 +191,7 @@ theorem lintegral_lintegral_mul_inv [IsMulLeftInvariant ν] (f : G → G → ℝ
   conv_rhs => rw [← (measurePreserving_mul_prod_inv μ ν).map_eq]
   symm
   exact
-    lintegral_map' (hf.mono' (measurePreserving_mul_prod_inv μ ν).map_eq.absolutelyContinuous)
+    lintegral_map' (hf.mono_ac (measurePreserving_mul_prod_inv μ ν).map_eq.absolutelyContinuous)
       h.aemeasurable
 
 @[to_additive]

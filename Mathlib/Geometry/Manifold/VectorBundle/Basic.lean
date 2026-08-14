@@ -63,13 +63,9 @@ fields, etc.
 
 assert_not_exists mfderiv
 
-open Bundle Set OpenPartialHomeomorph
-
+open Bundle Filter Set OpenPartialHomeomorph
 open Function (id_def)
-
-open Filter
-
-open scoped Manifold Bundle Topology ContDiff
+open scoped Manifold Topology ContDiff
 
 variable {n : ℕ∞ω} {𝕜 B B' F M : Type*} {E : B → Type*}
 
@@ -106,7 +102,6 @@ fiber `F` is naturally a charted space modelled on `HB.prod F`. -/
 instance FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace F E) :=
   ChartedSpace.comp _ (B × F) _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem FiberBundle.chartedSpace_chartAt (x : TotalSpace F E) :
     chartAt (ModelProd HB F) x =
       (trivializationAt F E x.proj).toOpenPartialHomeomorph ≫ₕ
@@ -134,7 +129,6 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜
 
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
     extChartAt (IB.prod 𝓘(𝕜, F)) x =
       (trivializationAt F E x.proj).toPartialEquiv ≫
@@ -230,6 +224,8 @@ theorem contMDiffWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
     ContMDiffWithinAt (IB.prod 𝓘(𝕜, F)) IB n (π F E) s p :=
   (contMDiffAt_proj E).contMDiffWithinAt
 
+section
+
 variable (𝕜) [∀ x, AddCommMonoid (E x)]
 variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
 
@@ -252,6 +248,35 @@ theorem contMDiffAt_zeroSection {x : B} : ContMDiffAt IB (IB.prod 𝓘(𝕜, F))
 theorem contMDiffWithinAt_zeroSection {t : Set B} {x : B} :
     ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) t x :=
   (contMDiff_zeroSection _ _ x).contMDiffWithinAt
+
+end
+
+variable {s : ∀ x, E x} {u : Set B} {x : B}
+
+@[nontriviality]
+lemma contMDiffWithinAt_section_of_subsingleton [Subsingleton F] :
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x := by
+  rw [contMDiffWithinAt_section]
+  apply contMDiffWithinAt_const |>.congr
+  · intro y _
+    apply Subsingleton.elim
+  rfl
+
+@[nontriviality]
+lemma contMDiffAt_section_of_subsingleton [Subsingleton F] :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x := by
+  rw [← contMDiffWithinAt_univ]
+  apply contMDiffWithinAt_section_of_subsingleton
+
+@[nontriviality]
+lemma contMDiffOn_section_of_subsingleton [Subsingleton F] :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u :=
+  fun _x _hx ↦ contMDiffWithinAt_section_of_subsingleton ..
+
+@[nontriviality]
+lemma contMDiff_section_of_subsingleton [Subsingleton F] :
+    ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) :=
+  fun _x ↦ contMDiffAt_section_of_subsingleton ..
 
 end Bundle
 
@@ -426,8 +451,8 @@ instance ContMDiffFiberwiseLinear.hasGroupoid :
     HasGroupoid (TotalSpace F E) (contMDiffFiberwiseLinear B F IB n) where
   compatible := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
-    haveI : MemTrivializationAtlas e := ⟨he⟩
-    haveI : MemTrivializationAtlas e' := ⟨he'⟩
+    have : MemTrivializationAtlas e := ⟨he⟩
+    have : MemTrivializationAtlas e' := ⟨he'⟩
     rw [mem_contMDiffFiberwiseLinear_iff]
     refine ⟨_, _, e.open_baseSet.inter e'.open_baseSet, contMDiffOn_coordChangeL e e',
       contMDiffOn_symm_coordChangeL e e', ?_⟩
