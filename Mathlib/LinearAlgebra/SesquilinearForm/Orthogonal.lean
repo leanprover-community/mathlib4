@@ -71,13 +71,12 @@ lemma orthogonalBilin_gc :
       (orthogonalBilin B) (orthogonalBilin B.flip) :=
   fun _ _ ↦ ⟨fun h _ hx _ hy ↦ h hy _ hx, fun h _ hy _ hx ↦ h hx _ hy⟩
 
-theorem le_orthogonalBilin_of_le_orthogonalBilin {T : Submodule R₂ M₂}
-    (hST : T ≤ orthogonalBilin B S) : S ≤ orthogonalBilin B.flip T :=
-  ((orthogonalBilin_gc B) S T).mp hST
-
-theorem le_orthogonalBilin_iff_le_orthogonalBilin {T : Submodule R₂ M₂} :
+theorem le_orthogonalBilin_flip_iff_le_orthogonalBilin {T : Submodule R₂ M₂} :
     S ≤ orthogonalBilin B.flip T ↔ T ≤ orthogonalBilin B S :=
   ((orthogonalBilin_gc B) S T).symm
+
+alias ⟨le_orthogonalBilin_flip_of_le_orthogonBilin, _⟩ :=
+  le_orthogonalBilin_flip_iff_le_orthogonalBilin
 
 @[simp] theorem orthogonalBilin_bot : orthogonalBilin B ⊥ = ⊤ :=
   (orthogonalBilin_gc B).l_bot
