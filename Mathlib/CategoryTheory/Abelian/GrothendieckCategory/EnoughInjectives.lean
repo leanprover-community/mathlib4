@@ -207,7 +207,7 @@ lemma exists_ordinal (A₀ : Subobject X) :
     ∃ (o : Ordinal.{w}) (j : Shrink (Set.Iio o)),
       transfiniteIterate (largerSubobject hG) j A₀ = ⊤ := by
   let κ := Order.succ (Cardinal.mk (Shrink.{w} (Subobject X)))
-  have : Nonempty (Shrink (Set.Iio κ.ord)) := by simp [κ]
+  have : Nonempty (Set.Iio κ.ord) := by simp [κ]
   have := WellFoundedLT.toOrderBot (Shrink (Set.Iio κ.ord))
   exact ⟨κ.ord, top_mem_range hG A₀ (lt_of_lt_of_le (Order.lt_succ _) (by simp [κ]))⟩
 
