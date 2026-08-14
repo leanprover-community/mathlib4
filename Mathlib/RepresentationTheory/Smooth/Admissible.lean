@@ -12,7 +12,7 @@ public import Mathlib.RepresentationTheory.Smooth.Res
 /-!
 # Induction
 
-This file introduces admissible representations over a field and prove basic properties on them.
+This file introduces admissible representations over a field and prove basic properties.
 We also prove **Schur's Lemma** for irreducible admissible smooth representations over an
 algeraically closed field.
 
@@ -44,7 +44,7 @@ lemma finiteDimensional_invariants_of_le_subgroup {H₁ H₂ : Subgroup G} (h : 
 
 instance {H : Subgroup G} [FiniteDimensional k (invariants (ρ.comp H.subtype))] :
     FiniteDimensional k (HeckeModule₁ H ρ) :=
-  LinearEquiv.finiteDimensional (invariantsHeckeModule₁Equiv ρ H)
+  LinearEquiv.finiteDimensional (invariantsHeckeModule₁Equiv H ρ)
 
 namespace Smooth
 
@@ -62,7 +62,7 @@ lemma isAdmissible_iff' : IsAdmissible ρ ↔
     ∀ (H : OpenSubgroup G), FiniteDimensional k (HeckeModule₁ H ρ) := by
   rw [isAdmissible_iff]
   exact ⟨fun h H => inferInstance,
-    fun h H => LinearEquiv.finiteDimensional (invariantsHeckeModule₁Equiv ρ H).symm⟩
+    fun h H => LinearEquiv.finiteDimensional (invariantsHeckeModule₁Equiv H ρ).symm⟩
 
 variable [IsAdmissible ρ]
 
@@ -177,7 +177,7 @@ lemma IsIrreducible.finiteDimensional_intertwiningMap_self :
     IsAdmissible.finiteDimensional_HeckeModule₁ ρ ⟨H, IsSmooth.smooth v⟩
   let f := HeckeModule₁.invariantsMk H (ρ := ρ) ⟨v, (fun h ↦ by simp [mem_stabilizer.mp h.2])⟩
   have hf : f ≠ 0 := by
-    have hfeq : f (cosetVectorMk k H 1) = v := by
+    have hfeq : f (cosetVectorMk k 1 H) = v := by
       simp [f]
     by_contra
     have : v = 0 := by
