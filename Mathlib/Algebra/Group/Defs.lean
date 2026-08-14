@@ -17,6 +17,7 @@ public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -44,6 +45,8 @@ We register the following instances:
   `Add.add`, `Neg.neg`/`Sub.sub`, `Mul.mul`, `Div.div`, and `HPow.hPow`.
 
 -/
+
+set_option linter.style.longFile 1700
 
 @[expose] public section
 
@@ -418,6 +421,44 @@ theorem mul_one : ∀ a : M, a * 1 = a :=
 
 end MulOneClass
 
+section IsUnital
+
+/-- A multiplicative magma is **unital** if there exists a unit.
+
+**Note**: Do not use this unless it is the only reasonable way to phrase or prove a statement.
+In general you should use `NonUnitalRing`, `Ring`, etc. -/
+@[mk_iff] class IsUnital (A : Type*) [Mul A] : Prop where
+  isUnital : ∃ u : A, ∀ x : A, u * x = x ∧ x * u = x
+
+/-- A multiplicative magma is **not-unital** if there does not exist a unit.
+
+**Note**: Do not use this unless it is the only reasonable way to phrase or prove a statement.
+In general you should use `NonUnitalRing`, `Ring`, etc. -/
+@[mk_iff] class IsNotUnital (A : Type*) [Mul A] : Prop where
+  isNotUnital : ∀ u : A, ∃ x : A, u * x ≠ x ∨ x * u ≠ x
+
+variable {A : Type*}
+
+@[simp, push] lemma not_isUnital_iff_isNotUnital [Mul A] : ¬IsUnital A ↔ IsNotUnital A := by
+  simp [isUnital_iff, isNotUnital_iff, -not_and, Classical.not_and_iff_not_or_not]
+
+@[simp, push] lemma not_isNotUnital_iff_isUnital [Mul A] : ¬IsNotUnital A ↔ IsUnital A := by
+  grind [not_isUnital_iff_isNotUnital]
+
+/-- A unital magma is `MulOneClass`.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toMulOneClass [Mul A] [IsUnital A] : MulOneClass A where
+  one := isUnital.choose
+  one_mul a := (isUnital.choose_spec a).1
+  mul_one a := (isUnital.choose_spec a).2
+
+lemma MulOneClass.isUnital [MulOneClass A] : IsUnital A where
+  isUnital := ⟨1, fun x ↦ ⟨one_mul x, mul_one x⟩⟩
+
+end IsUnital
+
 section
 
 variable {M : Type u}
@@ -783,6 +824,13 @@ namespace IsDedekindFiniteMonoid
 end IsDedekindFiniteMonoid
 
 end Monoid
+
+attribute [local instance] IsUnital.toMulOneClass in
+/-- A unital semigroup is a monoid.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toMonoid {A : Type*} [Semigroup A] [IsUnital A] : Monoid A where
 
 /-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
 injective. -/

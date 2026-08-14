@@ -553,8 +553,7 @@ theorem Algebra.dvd_algebraMap_intNorm_self (x : B) : x ∣ algebraMap A B (intN
     · refine IsIntegral.mul (IsIntegral.pow ?_ _)
         (IsIntegral.pow (IsIntegral.multiset_prod (fun a ha ↦ ⟨minpoly A x, minpoly.monic
           (IsIntegral.isIntegral x), ?_⟩)) _)
-      · exact (isIntegral_algebraMap_iff (isTorsionFree_iff_algebraMap_injective.1 this)).mpr
-          (IsIntegral.isIntegral x)
+      · exact isIntegral_algebraMap_iff.mpr (IsIntegral.isIntegral x)
       · replace ha := Multiset.erase_subset _ _ ha
         suffices (aeval a) ((minpoly A x).map (algebraMap A K)) = 0 by simpa
         rw [← minpoly.isIntegrallyClosed_eq_field_fractions K L (IsIntegral.isIntegral x)]
