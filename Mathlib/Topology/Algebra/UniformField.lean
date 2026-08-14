@@ -115,7 +115,7 @@ theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
     norm_cast
     simp
   · conv_lhs => dsimp [Inv.inv]
-    rw [if_neg]
+    rw [ite_eq_right]
     · exact hatInv_extends h
     · exact fun H => h (isDenseEmbedding_coe.injective H)
 
@@ -147,7 +147,7 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   rwa [closure_singleton, mem_singleton_iff] at fxclo
 
 instance instField : Field (hat K) where
-  mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
+  mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, ite_eq_right x_ne, mul_hatInv_cancel x_ne]
   inv_zero := by simp only [Inv.inv, ite_true]
   -- TODO: use a better defeq
   nnqsmul := _
@@ -164,7 +164,7 @@ instance : IsTopologicalDivisionRing (hat K) :=
           intro y y_ne
           rw [mem_compl_singleton_iff] at y_ne
           dsimp [Inv.inv]
-          rw [if_neg y_ne]
+          rw [ite_eq_right y_ne]
         mem_of_superset (compl_singleton_mem_nhds x_ne) this
       exact ContinuousAt.congr (continuous_hatInv x_ne) this }
 
