@@ -28,13 +28,14 @@ lemma eq_iff {g : Rˣ} (hg : ∀ x, x ∈ Subgroup.zpowers g) (χ₁ χ₂ : Mul
   rw [← Equiv.apply_eq_iff_eq equivToUnitHom, MonoidHom.eq_iff_eq_on_generator hg,
     ← coe_equivToUnitHom, ← coe_equivToUnitHom, Units.ext_iff]
 
-theorem restrict_ofUnitHom (f : Rˣ →* R'ˣ) (S : Submonoid R) :
-    restrict S (ofUnitHom f) =
-      ofUnitHom ((f.restrict S.units).comp S.unitsEquivUnitsType.symm) := by
+theorem domRestrict_ofUnitHom (f : Rˣ →* R'ˣ) (S : Submonoid R) : domRestrict S (ofUnitHom f) =
+      ofUnitHom ((f.domRestrict S.units).comp S.unitsEquivUnitsType.symm) := by
   ext x
-  simp only [ofUnitHom_eq, restrict_apply, Units.isUnit, reduceIte, equivToUnitHom_symm_coe,
-    MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, MonoidHom.restrict_apply]
+  simp only [ofUnitHom_eq, domRestrict_apply, Units.isUnit, reduceIte, equivToUnitHom_symm_coe,
+    MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, MonoidHom.domRestrict_apply]
   rw [← Submonoid.val_unitsEquivUnitsType_symm_apply_coe S x, equivToUnitHom_symm_coe]
+
+@[deprecated (since := "2026-07-19")] alias restrict_ofUnitHom := domRestrict_ofUnitHom
 
 end CommMonoid
 

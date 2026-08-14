@@ -287,7 +287,6 @@ theorem submodule_span_single :
   rw [← Submodule.span_closure, submodule_closure_single, Submodule.coe_toAddSubmonoid]
   exact Submodule.span_eq (Filtration.submodule F)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     F.submodule = Submodule.span _ (⋃ i ≤ n₀, single R i '' (F.N i : Set M)) ↔
       ∀ n ≥ n₀, I • F.N n = F.N (n + 1) := by
@@ -300,12 +299,12 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     intro x hx
     obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp (H _ ⟨x, hx, rfl⟩)
     replace hl := congr_arg (fun f : PolynomialModule R M => f.coeff (n + 1)) hl
-    rw [PolynomialModule.coeff_single, Finsupp.single_apply, if_pos rfl] at hl
+    rw [PolynomialModule.coeff_single, Finsupp.single_apply, ite_eq_left rfl] at hl
     rw [← hl, Finsupp.linearCombination_apply, PolynomialModule.coeff_finsuppSum, Finsupp.sum_apply]
     apply Submodule.sum_mem _ _
     rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
     dsimp only [Subtype.coe_mk]
-    rw [Subalgebra.smul_def, smul_single_apply, if_pos (show n' ≤ n + 1 by lia)]
+    rw [Subalgebra.smul_def, smul_single_apply, ite_eq_left (show n' ≤ n + 1 by lia)]
     have e : n' ≤ n := by lia
     have := F.pow_smul_le_pow_smul (n - n') n' 1
     rw [tsub_add_cancel_of_le e, pow_one, add_comm _ 1, ← add_tsub_assoc_of_le e, add_comm] at this
@@ -459,10 +458,6 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree [IsDomain R]
   obtain ⟨r, hr⟩ := this.mp hx
   have := smul_left_injective _ hx' (hr.trans (one_smul _ x).symm)
   exact I.eq_top_iff_one.not.mp h (this ▸ r.prop)
-
-@[deprecated (since := "2026-01-17")]
-alias Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors :=
-  Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree
 
 /-- **Krull's intersection theorem** for Noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :

@@ -39,13 +39,19 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 ]
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
-`Archive` and `Counterexamples`. (`tests` omits the first two options.) -/
+`Archive` and `Counterexamples`. -/
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩,
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
+
+/-- These options are passed as `leanOptions` when building `MathlibTest`. We don't use the typical
+mathlib options in order to simulate the default downstream environment. -/
+abbrev mathlibTestOptions : Array LeanOption := #[
+    ⟨`pp.mvars.anonymous, false⟩ -- test stability: pretty-print `?m.37` as `?_`
+  ]
 
 package mathlib where
   testDriver := "MathlibTest"
@@ -79,12 +85,26 @@ lean_lib Cache where
 
 lean_lib MathlibTest where
   globs := #[`MathlibTest.+]
+  leanOptions := mathlibTestOptions
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
 
 lean_lib Counterexamples where
   leanOptions := mathlibLeanOptions
+
+/-- Wanted statements: `Wanted/X/Y/Z.lean` contains the `proof_wanted` statements
+corresponding to `Mathlib/X/Y/Z.lean`. Each file carries a copyright header naming the
+author of the original statements, but beyond that contains only imports, context setup
+(`open`/`namespace`/`variable`) and `proof_wanted` statements; in particular there are no
+module docstrings, so the header style linter is disabled.
+`proof_wanted` elaborates to a `private` placeholder declaration, so every module here
+consists solely of private declarations; the `privateModule` linter is disabled accordingly
+(neither `@[expose] public section` nor a `public` modifier suppresses it, since the
+placeholder is unconditionally `private`). -/
+lean_lib Wanted where
+  leanOptions := mathlibLeanOptions.push ⟨`weak.linter.style.header, false⟩
+    |>.push ⟨`weak.linter.privateModule, false⟩
 
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where
