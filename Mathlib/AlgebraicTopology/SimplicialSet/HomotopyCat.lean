@@ -148,6 +148,7 @@ def OneTruncation₂.ofNerve₂.natIso :
       simp only [comp_id, id_comp]
       rfl))
 
+set_option backward.privateInPublic true in
 private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
     α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by

@@ -276,6 +276,7 @@ theorem domain_mono : StrictMono (domain (σ := σ) (E := E) (F := F)) :=
   fun _f _g hlt =>
     lt_of_le_of_ne hlt.1.1 fun heq => ne_of_lt hlt <| eq_of_le_of_domain_eq (le_of_lt hlt) heq
 
+set_option backward.privateInPublic true in
 private theorem sup_aux (f g : E →ₛₗ.[σ] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) :
     ∃ fg : ↥(f.domain ⊔ g.domain) →ₛₗ[σ] F,
@@ -576,6 +577,7 @@ theorem supSpanSingleton_apply_mk_of_mem (f : E →ₛₗ.[σ] F) {x : E} (y : F
 
 end
 
+set_option backward.privateInPublic true in
 private theorem sSup_aux (c : Set (E →ₛₗ.[σ] F)) (hc : DirectedOn (· ≤ ·) c) :
     ∃ f : ↥(sSup (domain '' c)) →ₛₗ[σ] F, (⟨_, f⟩ : E →ₛₗ.[σ] F) ∈ upperBounds c := by
   rcases c.eq_empty_or_nonempty with rfl | cne

@@ -637,6 +637,7 @@ variable {J : Ideal A} (hIJ : IsSubDPIdeal hI (J ⊓ I))
 noncomputable def dpow (J : Ideal A) : ℕ → A ⧸ J → A ⧸ J :=
   DividedPowers.Quotient.OfSurjective.dpow hI (Ideal.Quotient.mk J)
 
+set_option backward.privateInPublic true in
 private theorem isSubDPIdeal_aux (hIJ : IsSubDPIdeal hI (J ⊓ I)) :
     IsSubDPIdeal hI (RingHom.ker (Ideal.Quotient.mk J) ⊓ I) := by
   simpa [Ideal.mk_ker] using hIJ
