@@ -105,7 +105,8 @@ taking supremums completes the proof (see `iSup_edist_pairSet`).
 
 open scoped ENNReal NNReal Finset
 
-variable {T : Type*} [PseudoEMetricSpace T] {a c : ℝ≥0∞} {n : ℕ} {V J : Finset T} {t : T}
+variable {T : Type*} [TopologicalSpace T] [WeakPseudoEMetricSpace T]
+  {a c : ℝ≥0∞} {n : ℕ} {V J : Finset T} {t : T}
 
 namespace PairReduction
 
@@ -113,25 +114,25 @@ lemma exists_radius_le (t : T) (V : Finset T) (ha : 1 < a) (c : ℝ≥0∞) :
     ∃ r : ℕ, 1 ≤ r ∧ #(V.filter fun x ↦ edist t x ≤ r * c) ≤ a ^ r := by
   have := ENNReal.tendsto_nhds_top_iff_nat.1
     ((ENNReal.tendsto_rpow_atTop_of_one_lt_base ha).comp tendsto_natCast_atTop_atTop) #V
-  simp only [Function.comp_apply, ENNReal.rpow_natCast, Filter.eventually_atTop, ge_iff_le] at this
+  simp only [Function.comp_apply, ENNReal.rpow_natCast, Filter.eventually_atTop] at this
   obtain ⟨r, hr⟩ := this
   exact ⟨max r 1, le_max_right r 1,
     le_trans (mod_cast Finset.card_filter_le V _) (hr (max r 1) (le_max_left r 1)).le⟩
 
 /-- The log-size radius of `t` in `V` is the smallest natural number n greater than zero such that
- `|{x ∈ V | d(t, x) ≤ nc}| ≤ aⁿ`. -/
+`|{x ∈ V | d(t, x) ≤ nc}| ≤ aⁿ`. -/
 noncomputable
 def logSizeRadius (t : T) (V : Finset T) (a c : ℝ≥0∞) : ℕ :=
   if h : 1 < a then Nat.find (exists_radius_le t V h c) else 0
 
 lemma one_le_logSizeRadius (ha : 1 < a) :
     1 ≤ logSizeRadius t V a c := by
-  rw [logSizeRadius, dif_pos ha]
+  rw [logSizeRadius, dite_eq_left ha]
   exact (Nat.find_spec (exists_radius_le t V ha c)).1
 
 lemma card_le_logSizeRadius_le_pow_logSizeRadius (ha : 1 < a) :
     #(V.filter fun x ↦ edist t x ≤ logSizeRadius t V a c * c) ≤ a ^ (logSizeRadius t V a c) := by
-  rw [logSizeRadius, dif_pos ha]
+  rw [logSizeRadius, dite_eq_left ha]
   exact (Nat.find_spec (exists_radius_le t V ha c)).2
 
 lemma pow_logSizeRadius_le_card_le_logSizeRadius (ha : 1 < a) (ht : t ∈ V) :
@@ -141,7 +142,7 @@ lemma pow_logSizeRadius_le_card_le_logSizeRadius (ha : 1 < a) (ht : t ∈ V) :
   · simp only [h_one, tsub_self, pow_zero, Nat.cast_one, zero_mul, nonpos_iff_eq_zero,
       Nat.one_le_cast, Finset.one_le_card]
     exact ⟨t, by simpa⟩
-  rw [logSizeRadius, dif_pos ha] at h_one ⊢
+  rw [logSizeRadius, dite_eq_left ha] at h_one ⊢
   have : Nat.find (exists_radius_le t V ha c) - 1 < Nat.find (exists_radius_le t V ha c) := by
     simp
   have h := Nat.find_min (exists_radius_le t V ha c) this
@@ -222,7 +223,7 @@ lemma antitone_logSizeBallSeq_add_one_subset (hJ : J.Nonempty) :
 
 lemma finset_logSizeBallSeq_subset_logSizeBallSeq_init (hJ : J.Nonempty) (i : ℕ) :
     (logSizeBallSeq J hJ a c i).finset ⊆ J := by
-  apply subset_trans <| antitone_logSizeBallSeq_add_one_subset hJ (zero_le i)
+  apply subset_trans <| antitone_logSizeBallSeq_add_one_subset hJ zero_le
   simp [finset_logSizeBallSeq_zero]
 
 lemma radius_logSizeBallSeq_le (hJ : J.Nonempty) (ha : 1 < a) (hn : 1 ≤ n) (hJ_card : #J ≤ a ^ n)
@@ -243,6 +244,7 @@ lemma one_le_radius_logSizeBallSeq (hJ : J.Nonempty) (ha : 1 < a) (i : ℕ) :
   | 0 => exact one_le_logSizeRadius ha
   | i + 1 => exact one_le_logSizeRadius ha
 
+set_option backward.isDefEq.respectTransparency false in
 lemma point_mem_finset_logSizeBallSeq (hJ : J.Nonempty) (i : ℕ)
     (h : (logSizeBallSeq J hJ a c i).finset.Nonempty) :
     (logSizeBallSeq J hJ a c i).point ∈ (logSizeBallSeq J hJ a c i).finset := by
@@ -336,11 +338,11 @@ lemma card_pairSetSeq_le_logSizeRadius_mul (hJ : J.Nonempty) (i : ℕ) (ha : 1 <
   induction i with
   | zero =>
     simpa [pairSetSeq, hJ, finset_logSizeBallSeq_zero, logSizeBallStruct.ball,
-      radius_logSizeBallSeq_zero] using card_le_logSizeRadius_le_pow_logSizeRadius ha
+      radius_logSizeBallSeq_zero] using! card_le_logSizeRadius_le_pow_logSizeRadius ha
   | succ i ih =>
     by_cases! h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
     · simpa [pairSetSeq, logSizeBallStruct.ball, h, hJ]
-        using card_le_logSizeRadius_le_pow_logSizeRadius ha
+        using! card_le_logSizeRadius_le_pow_logSizeRadius ha
     simp [pairSetSeq, logSizeBallStruct.ball, h, hJ]
 
 lemma logSizeRadius_le_card_smallBall (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
@@ -349,13 +351,15 @@ lemma logSizeRadius_le_card_smallBall (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
   match i with
   | 0 =>
     simpa [finset_logSizeBallSeq_zero, hJ, logSizeBallStruct.smallBall, radius_logSizeBallSeq_zero]
-      using pow_logSizeRadius_le_card_le_logSizeRadius ha (Exists.choose_spec hJ)
+      using! pow_logSizeRadius_le_card_le_logSizeRadius ha (Exists.choose_spec hJ)
   | i + 1 =>
     by_cases! h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
-    · simpa [h, logSizeBallStruct.smallBall, radius_logSizeBallSeq_add_one]
-        using pow_logSizeRadius_le_card_le_logSizeRadius ha (point_mem_finset_logSizeBallSeq hJ _ h)
+    · simpa [h, logSizeBallStruct.smallBall, radius_logSizeBallSeq_add_one] using!
+        pow_logSizeRadius_le_card_le_logSizeRadius ha
+          (point_mem_finset_logSizeBallSeq hJ _ h)
     simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma card_pairSet_le (ha : 1 < a) : #(pairSet J a c) ≤ a * #J := by
   wlog hJ : J.Nonempty
   · simp [Finset.not_nonempty_iff_eq_empty.mp hJ]
@@ -379,18 +383,18 @@ lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
   obtain ⟨i, hiJ, h'⟩ : ∃ i < #J, (s, t) ∈ pairSetSeq J a c i := by simpa [pairSet] using h
   have hJ : J.Nonempty := Finset.card_pos.mp (Nat.zero_lt_of_lt hiJ)
   wlog! hn : 1 ≤ n
-  · convert zero_le (n * c)
-    convert edist_self _
+  · suffices s = t by simp [this]
     simp only [Nat.lt_one_iff.mp hn, pow_zero, Nat.cast_le_one] at hJ_card
     have ⟨hs, ht⟩ := Finset.mem_product.mp (pairSet_subset h)
-    exact Finset.card_le_one_iff.mp hJ_card ht hs
+    exact Finset.card_le_one_iff.mp hJ_card hs ht
   simp only [pairSetSeq, hJ, ↓reduceDIte, logSizeBallStruct.ball, Finset.product_eq_sprod,
-    Finset.singleton_product, Finset.mem_map, Finset.mem_filter, Function.Embedding.coeFn_mk,
+    Finset.singleton_product, Finset.mem_map, Finset.mem_filter, Function.Embedding.sectR_apply,
     Prod.mk.injEq, exists_eq_right_right] at h'
   obtain ⟨⟨ht, hdist⟩, rfl⟩ := h'
   grw [hdist, radius_logSizeBallSeq_le hJ ha hn hJ_card i]
 
-lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T → E) :
+lemma iSup_edist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpace E] (ha : 1 < a)
+    (f : T → E) :
     ⨆ (s : J) (t : { t : J // edist s t ≤ c}), edist (f s) (f t)
         ≤ 2 * ⨆ p : pairSet J a c, edist (f p.1.1) (f p.1.2) := by
   rw [iSup_le_iff]; rintro ⟨s, hs⟩
@@ -399,7 +403,7 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
   let P (l : ℕ) := s ∈ (logSizeBallSeq J hJ a c l).finset ∧ t ∈ (logSizeBallSeq J hJ a c l).finset
   let l := Nat.findGreatest P (#J - 1)
   obtain ⟨hsV, htV⟩ : P l := by
-    apply Nat.findGreatest_spec (zero_le _)
+    apply Nat.findGreatest_spec zero_le
     simpa [P, finset_logSizeBallSeq_zero] using ⟨hs, ht⟩
   wlog h : s ∉ (logSizeBallSeq J hJ a c (l + 1)).finset generalizing s t
   · have h' : t ∉ (logSizeBallSeq J hJ a c (l + 1)).finset := by
@@ -471,8 +475,8 @@ set `K ⊆ J²` such that for any function `f : T → E`:
 2. `∀ (s, t) ∈ K, d(s, t) ≤ cn`
 3. `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t)) ≤ 2 sup_{(s, t) ∈ K} d(f(s), f(t))`
 -/
-theorem EMetric.pair_reduction
-    (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [PseudoEMetricSpace E] :
+theorem EMetric.pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [TopologicalSpace E]
+      [WeakPseudoEMetricSpace E] :
     ∃ K : Finset (T × T), K ⊆ J ×ˢ J
       ∧ #K ≤ a * #J
       ∧ (∀ s t, (s, t) ∈ K → edist s t ≤ n * c)

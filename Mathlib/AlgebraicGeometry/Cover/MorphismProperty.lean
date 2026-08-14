@@ -30,7 +30,7 @@ immersions can be used to deduce these assumptions in the general case.
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 universe v v₁ v₂ u
 
@@ -151,8 +151,12 @@ def Cover.copy [P.RespectsIso] {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P))
       intro i
       exact 𝒰.map_prop _
 
+-- `respectTransparency false` is needed for `simps!`.
+-- Consider making implicit-reducible:
+-- `Precoverage.ZeroHypercover.bind`, `Cover.mkOfCovers`, `coverOfIso`
+set_option backward.isDefEq.respectTransparency false in
 /-- The pushforward of a cover along an isomorphism. -/
-@[simps! I₀ X f]
+@[simps! I₀ X f, implicit_reducible]
 def Cover.pushforwardIso [P.RespectsIso] [P.ContainsIdentities] [P.IsStableUnderComposition]
     {X Y : Scheme.{u}} (𝒰 : Cover.{v} (precoverage P) X) (f : X ⟶ Y) [IsIso f] :
     Cover.{v} (precoverage P) Y :=
@@ -170,9 +174,6 @@ nonrec def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : Y 
     refine ⟨fun x ↦ ⟨some <| 𝒰.idx x, 𝒰.covers x⟩, ?_⟩
     rintro (i | i) <;> simp [hf, 𝒰.map_prop]
 
-@[deprecated (since := "2025-10-02")]
-alias Cover.pullbackCover := Precoverage.ZeroHypercover.pullback₁
-
 /-- The family of morphisms from the pullback cover to the original cover. -/
 def Cover.pullbackHom [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
     {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X) (i) [∀ x, HasPullback f (𝒰.f x)] :
@@ -184,9 +185,6 @@ lemma Cover.pullbackHom_map [P.IsStableUnderBaseChange] [IsJointlySurjectivePres
     {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X)
     [∀ (x : 𝒰.I₀), HasPullback f (𝒰.f x)] (i) :
     𝒰.pullbackHom f i ≫ 𝒰.f i = (𝒰.pullback₁ f).f i ≫ f := pullback.condition.symm
-
-@[deprecated (since := "2025-10-02")]
-alias Cover.pullbackCover' := Precoverage.ZeroHypercover.pullback₂
 
 /--
 An affine cover of `X` consists of a jointly surjective family of maps into `X` from
@@ -208,15 +206,6 @@ structure AffineCover (P : MorphismProperty Scheme.{u}) (S : Scheme.{u}) where
   covers (x : S) : x ∈ Set.range (f (idx x))
   /-- the component maps satisfy `P` -/
   map_prop (j : I₀) : P (f j) := by infer_instance
-
-@[deprecated (since := "2025-09-19")]
-alias AffineCover.J := AffineCover.I₀
-
-@[deprecated (since := "2025-09-19")]
-alias AffineCover.obj := AffineCover.X
-
-@[deprecated (since := "2025-09-19")]
-alias AffineCover.map := AffineCover.f
 
 /-- The cover associated to an affine cover. -/
 @[simps]
@@ -255,24 +244,6 @@ This is implemented as an `abbrev` for `CategoryTheory.Precoverage.ZeroHypercove
 -/
 abbrev Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} K X) :=
   Precoverage.ZeroHypercover.Hom K 𝒰 𝒱
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.idx := PreZeroHypercover.Hom.s₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.app := PreZeroHypercover.Hom.h₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.w := PreZeroHypercover.Hom.w₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.id := PreZeroHypercover.Hom.id
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.comp := PreZeroHypercover.Hom.comp
-
-@[deprecated (since := "2026-01-13")] alias Cover.id_idx_apply := PreZeroHypercover.id_s₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.id_app := PreZeroHypercover.id_h₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.comp_idx_apply := PreZeroHypercover.comp_s₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.comp_app := PreZeroHypercover.comp_h₀
 
 end category
 

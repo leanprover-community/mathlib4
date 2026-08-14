@@ -6,7 +6,7 @@ Authors: Jeremy Tan
 module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # The arithmetic-geometric mean
@@ -65,9 +65,7 @@ lemma agmSequences_succ' :
     agmSequences x y (n + 1) =
     (sqrt ((agmSequences x y n).1 * (agmSequences x y n).2),
       ((agmSequences x y n).1 + (agmSequences x y n).2) / 2) := by
-  nth_rw 1 [agmSequences]
-  rw [iterate_succ', comp_apply]
-  rfl
+  rw [agmSequences, agmSequences, iterate_succ', comp_apply]
 
 lemma agmSequences_comm : agmSequences x y = agmSequences y x := by
   funext n
@@ -245,7 +243,7 @@ lemma agm_eq_agm_agmSequences_fst_agmSequences_snd (n : ℕ) :
   refine tendsto_nhds_unique ?_ tendsto_agmSequences_snd_agm
   have key := @tendsto_agmSequences_snd_agm x y
   rw [← tendsto_add_atTop_iff_nat (n + 1)] at key
-  convert key using 2 with m
+  convert! key using 2 with m
   simp_rw [agmSequences, Prod.mk.eta, ← iterate_add_apply, add_right_comm]
 
 lemma agm_eq_agm_gm_am : agm x y = agm (sqrt (x * y)) ((x + y) / 2) := by
@@ -258,7 +256,7 @@ lemma agmSequences_fst_lt_agm_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (hn : x ≠
   set q := (agmSequences x y n).2
   apply (?_ : p < sqrt (p * q)).trans_le (agmSequences_fst_le_agm 0)
   have ppos : 0 < p :=
-    (show 0 < sqrt (x * y) by positivity).trans_le (agmSequences_fst_monotone (zero_le n))
+    (show 0 < sqrt (x * y) by positivity).trans_le (agmSequences_fst_monotone zero_le)
   have plq : p < q := agmSequences_fst_lt_snd_of_ne hn ..
   nth_rw 1 [← mul_self_sqrt p, sqrt_mul]
   gcongr

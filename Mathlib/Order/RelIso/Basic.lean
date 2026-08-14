@@ -77,12 +77,8 @@ variable {F : Type*} [FunLike F α β]
 protected theorem irrefl [RelHomClass F r s] (f : F) : ∀ [Std.Irrefl s], Std.Irrefl r
   | ⟨H⟩ => ⟨fun _ h => H _ (map_rel f h)⟩
 
-@[deprecated (since := "2026-01-07")] protected alias isIrrefl := RelHomClass.irrefl
-
 protected theorem asymm [RelHomClass F r s] (f : F) : ∀ [Std.Asymm s], Std.Asymm r
   | ⟨H⟩ => ⟨fun _ _ h₁ h₂ => H _ _ (map_rel f h₁) (map_rel f h₂)⟩
-
-@[deprecated (since := "2026-01-07")] protected alias isAsymm := RelHomClass.asymm
 
 protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
@@ -104,7 +100,7 @@ namespace RelHom
 
 instance : FunLike (r →r s) α β where
   coe o := o.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
@@ -143,6 +139,15 @@ protected def id (r : α → α → Prop) : r →r r :=
 @[simps]
 protected def comp (g : s →r t) (f : r →r s) : r →r t :=
   ⟨fun x => g (f x), fun h => g.2 (f.2 h)⟩
+
+theorem comp_assoc (h : r →r s) (g : s →r t) (f : t →r u) :
+  (f.comp g).comp h = f.comp (g.comp h) := rfl
+
+@[simp]
+theorem comp_id (f : r →r s) : f.comp (RelHom.id r) = f := rfl
+
+@[simp]
+theorem id_comp (f : r →r s) : (RelHom.id s).comp f = f := rfl
 
 /-- A relation homomorphism is also a relation homomorphism between dual relations. -/
 @[simps]
@@ -201,6 +206,7 @@ theorem preimage_equivalence {α β} (f : α → β) {s : β → β → Prop} (h
 namespace RelEmbedding
 
 /-- A relation embedding is also a relation homomorphism -/
+@[reducible]
 def toRelHom (f : r ↪r s) : r →r s where
   toFun := f.toEmbedding.toFun
   map_rel' := (map_rel_iff' f).mpr
@@ -210,7 +216,7 @@ instance : Coe (r ↪r s) (r →r s) :=
 
 instance : FunLike (r ↪r s) α β where
   coe x := x.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨⟩⟩
     rcases g with ⟨⟨⟩⟩
     congr
@@ -227,7 +233,6 @@ instance : EmbeddingLike (r ↪r s) α β where
 theorem coe_toEmbedding {f : r ↪r s} : ((f : r ↪r s).toEmbedding : α → β) = f :=
   rfl
 
-@[simp]
 theorem coe_toRelHom {f : r ↪r s} : ((f : r ↪r s).toRelHom : α → β) = f :=
   rfl
 
@@ -277,6 +282,15 @@ theorem trans_apply (f : r ↪r s) (g : s ↪r t) (a : α) : (f.trans g) a = g (
 theorem coe_trans (f : r ↪r s) (g : s ↪r t) : (f.trans g) = g ∘ f :=
   rfl
 
+theorem trans_assoc (f : r ↪r s) (g : s ↪r t) (h : t ↪r u) :
+  (f.trans g).trans h = f.trans (g.trans h) := rfl
+
+@[simp]
+theorem trans_refl (f : r ↪r s) : f.trans (.refl s) = f := rfl
+
+@[simp]
+theorem refl_trans (f : r ↪r s) : .trans (.refl r) f = f := rfl
+
 /-- A relation embedding is also a relation embedding between dual relations. -/
 protected def swap (f : r ↪r s) : swap r ↪r swap s :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
@@ -299,35 +313,23 @@ theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
 protected theorem irrefl (f : r ↪r s) [Std.Irrefl s] : Std.Irrefl r :=
   ⟨fun a => mt f.map_rel_iff.2 (irrefl (f a))⟩
 
-@[deprecated (since := "2026-01-07")] protected alias isIrrefl := RelEmbedding.irrefl
-
 protected theorem stdRefl (f : r ↪r s) [Std.Refl s] : Std.Refl r :=
   ⟨fun _ => f.map_rel_iff.1 <| refl _⟩
-
-@[deprecated (since := "2026-01-08")] protected alias isRefl := RelEmbedding.stdRefl
 
 protected theorem symm (f : r ↪r s) [Std.Symm s] : Std.Symm r :=
   ⟨fun _ _ => imp_imp_imp f.map_rel_iff.2 f.map_rel_iff.1 symm⟩
 
-@[deprecated (since := "2026-01-06")] protected alias isSymm := RelEmbedding.symm
-
 protected theorem asymm (f : r ↪r s) [Std.Asymm s] : Std.Asymm r :=
   ⟨fun _ _ h₁ h₂ => asymm (f.map_rel_iff.2 h₁) (f.map_rel_iff.2 h₂)⟩
 
-@[deprecated (since := "2026-01-07")] protected alias isAsymm := RelEmbedding.asymm
-
 protected theorem antisymm : ∀ (_ : r ↪r s) [Std.Antisymm s], Std.Antisymm r
   | ⟨f, o⟩, ⟨H⟩ => ⟨fun _ _ h₁ h₂ => f.inj' (H _ _ (o.2 h₁) (o.2 h₂))⟩
-
-@[deprecated (since := "2026-01-06")] protected alias isAntisymm := RelEmbedding.antisymm
 
 protected theorem isTrans : ∀ (_ : r ↪r s) [IsTrans β s], IsTrans α r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ _ h₁ h₂ => o.1 (H _ _ _ (o.2 h₁) (o.2 h₂))⟩
 
 protected theorem total : ∀ (_ : r ↪r s) [Std.Total s], Std.Total r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ => (or_congr o o).1 (H _ _)⟩
-
-@[deprecated (since := "2026-01-09")] protected alias isTotal := RelEmbedding.total
 
 protected theorem isPreorder : ∀ (_ : r ↪r s) [IsPreorder β s], IsPreorder α r
   | f, _ => { f.stdRefl, f.isTrans with }
@@ -343,8 +345,6 @@ protected theorem isStrictOrder : ∀ (_ : r ↪r s) [IsStrictOrder β s], IsStr
 
 protected theorem trichotomous : ∀ (_ : r ↪r s) [Std.Trichotomous s], Std.Trichotomous r
   | ⟨f, o⟩, ⟨H⟩ => ⟨fun _ _ hab hba ↦ f.injective <| H _ _ (o.not.mpr hab) (o.not.mpr hba)⟩
-
-@[deprecated (since := "2026-01-24")] protected alias isTrichotomous := RelEmbedding.trichotomous
 
 protected theorem isStrictTotalOrder : ∀ (_ : r ↪r s) [IsStrictTotalOrder β s],
     IsStrictTotalOrder α r
@@ -392,8 +392,8 @@ def Quotient.mkRelHom {_ : Setoid α} {r : α → α → Prop}
 @[simps!]
 noncomputable def Quotient.outRelEmbedding {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
-  ⟨Embedding.quotientOut α, by
-    refine @fun x y => Quotient.inductionOn₂ x y fun a b => ?_
+  ⟨Embedding.quotientOut α, fun {x y} ↦ by
+    induction x, y using Quotient.inductionOn₂
     apply iff_iff_eq.2 (H _ _ _ _ _ _) <;> apply Quotient.mk_out⟩
 
 @[simp]
@@ -549,6 +549,7 @@ namespace RelIso
 /-- Convert a `RelIso` to a `RelEmbedding`. This function is also available as a coercion
 but often it is easier to write `f.toRelEmbedding` than to write explicitly `r` and `s`
 in the target type. -/
+@[reducible]
 def toRelEmbedding (f : r ≃r s) : r ↪r s :=
   ⟨f.toEquiv.toEmbedding, f.map_rel_iff'⟩
 
@@ -560,7 +561,7 @@ instance : CoeOut (r ≃r s) (r ↪r s) :=
 
 instance : FunLike (r ≃r s) α β where
   coe x := x
-  coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
+  coe_injective := Equiv.coe_fn_injective.comp toEquiv_injective
 
 instance : RelHomClass (r ≃r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
@@ -572,11 +573,9 @@ instance : EquivLike (r ≃r s) α β where
   right_inv f := f.right_inv
   coe_injective' _ _ hf _ := DFunLike.ext' hf
 
-@[simp]
 theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=
   rfl
 
-@[simp]
 theorem coe_toEmbedding (f : r ≃r s) : (f.toEmbedding : α → β) = f :=
   rfl
 
@@ -645,12 +644,12 @@ lemma symm_symm_apply (f : r ≃r s) (b : α) : f.symm.symm b = f b := rfl
 
 lemma apply_eq_iff_eq (f : r ≃r s) {x y : α} : f x = f y ↔ x = y := EquivLike.apply_eq_iff_eq f
 
-lemma apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : r ≃r s) : f x = y ↔ x = f.symm y := by
-  conv_lhs => rw [← apply_symm_apply f y]
-  rw [apply_eq_iff_eq]
-
 lemma symm_apply_eq (e : r ≃r s) {x y} : e.symm x = y ↔ x = e y := e.toEquiv.symm_apply_eq
 lemma eq_symm_apply (e : r ≃r s) {x y} : y = e.symm x ↔ e y = x := e.toEquiv.eq_symm_apply
+
+@[deprecated eq_symm_apply (since := "2026-07-26")]
+lemma apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : r ≃r s) : f x = y ↔ x = f.symm y :=
+  f.eq_symm_apply.symm
 
 @[simp] lemma symm_symm (e : r ≃r s) : e.symm.symm = e := rfl
 
@@ -758,12 +757,21 @@ instance IsWellOrder.ulift {α : Type u} (r : α → α → Prop) [IsWellOrder �
 /-- A surjective relation embedding is a relation isomorphism. -/
 @[simps! apply]
 noncomputable def ofSurjective (f : r ↪r s) (H : Surjective f) : r ≃r s :=
-  ⟨Equiv.ofBijective f ⟨f.injective, H⟩, f.map_rel_iff⟩
+  ⟨f.toEmbedding.equivOfSurjective H, f.map_rel_iff⟩
+
+/-- Surjective relation embeddings are equivalent to relation isomorphisms. -/
+@[simps]
+noncomputable def embeddingSurjectiveEquivIso :
+    { f : r ↪r s // Function.Surjective f } ≃ (r ≃r s) where
+  toFun f := ofSurjective f f.prop
+  invFun f := ⟨f, f.surjective⟩
+  left_inv _ := rfl
+  right_inv _ := by ext; rfl
 
 /-- Transport a `RelHom` across a pair of `RelIso`s, by pre- and post-composition.
 
 This is `Equiv.arrowCongr` for `RelHom`. -/
-@[simps]
+@[simps apply symm_apply]
 def relHomCongr {α₁ β₁ α₂ β₂}
     {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
     (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) :
@@ -772,6 +780,38 @@ def relHomCongr {α₁ β₁ α₂ β₂}
   invFun f₂ := e₂.symm.toRelEmbedding.toRelHom.comp <| f₂.comp e₁.toRelEmbedding.toRelHom
   left_inv f₁ := by ext; simp
   right_inv f₂ := by ext; simp
+
+attribute [simps! -isSimp apply_apply symm_apply_apply] relHomCongr
+
+/-- Transport a `RelEmbedding` across a pair of `RelIso`s, by pre- and post-composition.
+
+This is `Equiv.embeddingCongr` for `RelEmbedding`. -/
+@[simps apply symm_apply]
+def relEmbeddingCongr {α₁ β₁ α₂ β₂}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) :
+    (r₁ ↪r s₁) ≃ (r₂ ↪r s₂) where
+  toFun f₁ := (e₁.symm.toRelEmbedding.trans f₁).trans e₂.toRelEmbedding
+  invFun f₂ := (e₁.toRelEmbedding.trans f₂).trans e₂.symm.toRelEmbedding
+  left_inv f₁ := by ext; simp
+  right_inv f₂ := by ext; simp
+
+attribute [simps! -isSimp apply_apply symm_apply_apply] relEmbeddingCongr
+
+/-- Transport a `RelIso` across a pair of `RelIso`s, by pre- and post-composition.
+
+This is `Equiv.equivCongr` for `RelIso`. -/
+@[simps apply symm_apply]
+def relIsoCongr {α₁ β₁ α₂ β₂}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) :
+    (r₁ ≃r s₁) ≃ (r₂ ≃r s₂) where
+  toFun f₁ := (e₁.symm.trans f₁).trans e₂
+  invFun f₂ := (e₁.trans f₂).trans e₂.symm
+  left_inv f₁ := by ext; simp
+  right_inv f₂ := by ext; simp
+
+attribute [simps! -isSimp apply_apply symm_apply_apply] relIsoCongr
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the
 lexicographic orders on the sum.
@@ -815,3 +855,90 @@ def ofUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [Std.Refl r
   ⟨Equiv.ofUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
 
 end RelIso
+
+/-- A function `f : α → β` induces a relation homomorphism from an `α`-relation `r` to
+`Relation.Map r f f`. -/
+def RelHom.toMap (r : α → α → Prop) (f : α → β) : r →r Relation.Map r f f where
+  toFun := f
+  map_rel' {a b} hr := ⟨a, b, hr, rfl, rfl⟩
+
+@[simp]
+theorem RelHom.coe_toMap (r : α → α → Prop) (f : α → β) : ⇑(RelHom.toMap r f) = f :=
+  rfl
+
+/-- An embedding `f : α ↪ β` induces a relation embedding from an `α`-relation `r` to
+`Relation.Map r f f`. -/
+def RelEmbedding.toMap (r : α → α → Prop) (f : α ↪ β) : r ↪r Relation.Map r f f where
+  __ := f
+  map_rel_iff' {a b} := by grind [Relation.onFun_map_eq_of_injective (r := r) f.injective]
+
+@[simp]
+theorem RelEmbedding.coe_toMap (r : α → α → Prop) (f : α ↪ β) : ⇑(RelEmbedding.toMap r f) = f :=
+  rfl
+
+/-- An equivalence `f : α ≃ β` induces a relation isomorphism from an `α`-relation `r` to
+`Relation.Map r f f`. -/
+def RelIso.toMap (r : α → α → Prop) (f : α ≃ β) : r ≃r Relation.Map r f f where
+  __ := f
+  __ := RelEmbedding.toMap r f.toEmbedding
+
+@[simp]
+theorem RelIso.coe_toMap (r : α → α → Prop) (f : α ≃ β) : ⇑(RelIso.toMap r f) = f :=
+  rfl
+
+@[simp]
+theorem RelIso.toEquiv_toMap (r : α → α → Prop) (f : α ≃ β) : RelIso.toMap r f = f :=
+  rfl
+
+@[simp]
+theorem RelIso.coe_symm_toMap (r : α → α → Prop) (f : α ≃ β) : ⇑(RelIso.toMap r f).symm = f.symm :=
+  rfl
+
+@[simp]
+theorem RelIso.toEquiv_symm_toMap (r : α → α → Prop) (f : α ≃ β) :
+    (RelIso.toMap r f).symm = f.symm :=
+  rfl
+
+/-- For a `β`-relation `r`, a function `f : α → β` induces a relation homomorphism from `r.onFun f`
+to `r`. -/
+def RelHom.ofOnFun (r : β → β → Prop) (f : α → β) : r.onFun f →r r where
+  toFun := f
+  map_rel' := id
+
+@[simp]
+theorem RelHom.coe_ofOnFun (r : β → β → Prop) (f : α → β) : ⇑(RelHom.ofOnFun r f) = f :=
+  rfl
+
+/-- For a `β`-relation `r`, an embedding `f : α ↪ β` induces a relation embedding from `r.onFun f`
+to `r`. -/
+def RelEmbedding.ofOnFun (r : β → β → Prop) (f : α ↪ β) : r.onFun f ↪r r where
+  __ := f
+  map_rel_iff' := by rfl
+
+@[simp]
+theorem RelEmbedding.coe_ofOnFun (r : β → β → Prop) (f : α ↪ β) : ⇑(RelEmbedding.ofOnFun r f) = f :=
+  rfl
+
+/-- For a `β`-relation `r`, an equivalence `f : α ≃ β` induces a relation isomorphism from
+`r.onFun f` to `r`. -/
+def RelIso.ofOnFun (r : β → β → Prop) (f : α ≃ β) : r.onFun f ≃r r where
+  __ := f
+  __ := RelEmbedding.ofOnFun r f.toEmbedding
+
+@[simp]
+theorem RelIso.coe_ofOnFun (r : β → β → Prop) (f : α ≃ β) : ⇑(RelIso.ofOnFun r f) = f :=
+  rfl
+
+@[simp]
+theorem RelIso.toEquiv_ofOnFun (r : β → β → Prop) (f : α ≃ β) : RelIso.ofOnFun r f = f :=
+  rfl
+
+@[simp]
+theorem RelIso.coe_symm_ofOnFun (r : β → β → Prop) (f : α ≃ β) :
+    ⇑(RelIso.ofOnFun r f).symm = f.symm :=
+  rfl
+
+@[simp]
+theorem RelIso.toEquiv_symm_ofOnFun (r : β → β → Prop) (f : α ≃ β) :
+    (RelIso.ofOnFun r f).symm = f.symm :=
+  rfl

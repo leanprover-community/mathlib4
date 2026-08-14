@@ -20,7 +20,7 @@ public section
 
 open Finset hiding card
 open Fintype (card)
-open Function RCLike
+open RCLike
 open scoped BigOperators ComplexConjugate DirectSum
 
 variable {G H R : Type*}
@@ -30,7 +30,7 @@ section AddGroup
 variable [AddGroup G]
 
 section Semifield
-variable [Fintype G] [Semifield R] [IsDomain R] [CharZero R] {ψ : AddChar G R}
+variable [Fintype G] [Semifield R] [CharZero R] {ψ : AddChar G R}
 
 lemma expect_eq_ite (ψ : AddChar G R) : 𝔼 a, ψ a = if ψ = 0 then 1 else 0 := by
   simp [Fintype.expect_eq_sum_div_card, sum_eq_ite, ite_div]

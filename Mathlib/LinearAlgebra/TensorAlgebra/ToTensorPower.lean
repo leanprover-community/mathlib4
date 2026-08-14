@@ -113,6 +113,7 @@ theorem mk_reindex_fin_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
     (PiTensorProduct.reindex R (fun _ ↦ M) (finCongr h) x) = GradedMonoid.mk n x := by
   rw [finCongr_eq_equivCast, mk_reindex_cast h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of tensor products made of a single vector is the same as a single product of
 all the vectors. -/
 theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n → M) :

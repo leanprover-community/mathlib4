@@ -11,24 +11,23 @@ public import Mathlib.Algebra.Ring.Action.Invariant
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Normal.Defs
 public import Mathlib.FieldTheory.Separable
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.RingTheory.Polynomial.Subring
 
 /-!
 # Fixed field under a group action.
 
 This is the basis of the Fundamental Theorem of Galois Theory.
 Given a (finite) group `G` that acts on a field `F`, we define `FixedPoints.subfield G F`,
-the subfield consisting of elements of `F` fixed_points by every element of `G`.
+the subfield consisting of elements of `F` fixed by every element of `G`.
 
 This subfield is then normal and separable, and in addition if `G` acts faithfully on `F`
 then `finrank (FixedPoints.subfield G F) F = Fintype.card G`.
 
 ## Main Definitions
 
-- `FixedPoints.subfield G F`, the subfield consisting of elements of `F` fixed_points by every
-element of `G`, where `G` is a group that acts on `F`.
-
+- `FixedPoints.subfield G F`, the subfield consisting of elements of `F` fixed by every
+  element of `G`, where `G` is a group that acts on `F`.
 -/
 
 @[expose] public section
@@ -98,6 +97,7 @@ namespace FixedPoints
 
 variable (M)
 
+set_option backward.isDefEq.respectTransparency.types false in
 -- we use `Subfield.copy` so that the underlying set is `fixedPoints M F`
 /-- The subfield of fixed points by a monoid action. -/
 def subfield : Subfield F :=
@@ -154,9 +154,9 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
           (mem_attach _ _) :
         _)
   refine (sum_attach s fun i ↦ (g • l i - l i) • MulAction.toFun G F i).trans ?_
-  ext g'; dsimp only
+  ext g'
   conv_lhs =>
-    rw [sum_apply]
+    rw [Finset.sum_apply]
     congr
     · skip
     · ext
@@ -186,11 +186,13 @@ def minpoly : Polynomial (FixedPoints.subfield G F) :=
 
 namespace minpoly
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem monic : (minpoly G F x).Monic := by
   simp only [minpoly]
   rw [Polynomial.monic_toSubring]
   exact prodXSubSMul.monic G F x
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem eval₂ :
     Polynomial.eval₂ (Subring.subtype <| (FixedPoints.subfield G F).toSubring) x (minpoly G F x) =
       0 := by
@@ -205,6 +207,7 @@ theorem ne_one : minpoly G F x ≠ (1 : Polynomial (FixedPoints.subfield G F)) :
   have := eval₂ G F x
   (one_ne_zero : (1 : F) ≠ 0) <| by rwa [H, Polynomial.eval₂_one] at this
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (hf : Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x f = 0) :
     minpoly G F x ∣ f := by
@@ -271,6 +274,7 @@ section Finite
 
 variable [Finite G]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance normal : Normal (FixedPoints.subfield G F) F where
   isAlgebraic x := (isIntegral G F x).isAlgebraic
   splits' x := by
@@ -279,6 +283,7 @@ instance normal : Normal (FixedPoints.subfield G F) F where
       Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSMul]
     exact Polynomial.Splits.prod fun _ _ => Polynomial.Splits.X_sub_C _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
   classical
   exact ⟨fun x => by
@@ -381,10 +386,10 @@ theorem toAlgAut_surjective [Finite G] :
     MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F
   let Q := G ⧸ f.ker
   let _ : MulSemiringAction Q F := MulSemiringAction.compHom _ (QuotientGroup.kerLift f)
-  have : FaithfulSMul Q F := ⟨by
-    intro q₁ q₂
-    refine Quotient.inductionOn₂' q₁ q₂ (fun g₁ g₂ h ↦ QuotientGroup.eq.mpr ?_)
-    rwa [MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
+  have : FaithfulSMul Q F := ⟨fun {q₁ q₂} ↦ by
+    induction q₁, q₂ using Quotient.inductionOn₂ with | _ g₁ g₂
+    intro h
+    rwa [QuotientGroup.eq, MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
   intro f
   obtain ⟨q, hq⟩ := (toAlgAut_bijective Q F).surjective
     (AlgEquiv.ofRingEquiv (f := f) (fun ⟨x, hx⟩ ↦ f.commutes' ⟨x, fun g ↦ hx g⟩))

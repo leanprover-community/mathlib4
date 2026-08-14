@@ -6,11 +6,8 @@ Authors: Yan Yablonovskiy
 module
 
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Order.CompleteBooleanAlgebra
-public import Mathlib.Order.Fin.Basic
-public import Mathlib.Order.Hom.Lex
-public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.Types.Defs
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 
@@ -30,9 +27,10 @@ The following are notations in the `OrderType` namespace:
 ## References
 
 * <https://en.wikipedia.org/wiki/Order_type>
-* Dauben, J. W. Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
-  NJ: Princeton University Press, 1990.
-* Enderton, Herbert B. Elements of Set Theory. United Kingdom: Academic Press, 1977.
+* [Dauben, J. W., Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
+  NJ: Princeton University Press, 1990.][dauben_1990]
+* [Enderton, Herbert B., Elements of Set Theory. United Kingdom: Academic Press,
+  1977.][enderton_1977]
 
 ## Tags
 
@@ -48,15 +46,13 @@ universe u v
 instance : ZeroLEOneClass OrderType :=
   ⟨OrderType.zero_le _⟩
 
-instance : Add OrderType.{u} where
-  add o₁ o₂ := OrderType.liftOn₂ o₁ o₂ (fun r _ s _ ↦ type (r ⊕ₗ s))
-    fun _ _ _ _ _ _ _ _ ha hb ↦ OrderIso.sumLexCongr (Classical.choice <| type_eq_type.mp ha)
-      (Classical.choice <| type_eq_type.mp hb) |> type_congr
-
-instance : HAdd OrderType.{u} OrderType.{v} OrderType.{max u v} where
+instance (priority := low) : HAdd OrderType.{u} OrderType.{v} OrderType.{max u v} where
   hAdd o₁ o₂ := OrderType.liftOn₂ o₁ o₂ (fun r _ s _ ↦ type (r ⊕ₗ s))
     fun _ _ _ _ _ _ _ _ ha hb ↦ OrderIso.sumLexCongr (Classical.choice <| type_eq_type.mp ha)
       (Classical.choice <| type_eq_type.mp hb) |> type_congr
+
+instance : Add OrderType.{u} where
+  add o₁ o₂ := o₁ + o₂
 
 @[simp]
 lemma type_lex_sum (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :
@@ -76,15 +72,13 @@ instance : AddMonoid OrderType.{u} where
       exact (OrderIso.sumLexEmpty (β := PEmpty) (α := α)).type_congr)
   nsmul := nsmulRec
 
-instance : Mul OrderType.{u} where
-  mul o₁ o₂ := OrderType.liftOn₂ o₁ o₂ (fun r _ s _ ↦ type (s ×ₗ r))
+instance (priority := low) : HMul OrderType.{u} OrderType.{v} OrderType.{max u v} where
+  hMul o₁ o₂ := OrderType.liftOn₂ o₁ o₂ (fun r _ s _ ↦ type (s ×ₗ r))
     fun _ _ _ _ _ _ _ _ ha hb ↦ Prod.Lex.prodLexCongr (Classical.choice <| type_eq_type.mp hb)
       (Classical.choice <| type_eq_type.mp ha) |> type_congr
 
-instance : HMul OrderType.{u} OrderType.{v} OrderType.{max u v} where
-  hMul o₁ o₂ :=  OrderType.liftOn₂ o₁ o₂ (fun r _ s _ ↦ type (s ×ₗ r))
-    fun _ _ _ _ _ _ _ _ ha hb ↦ Prod.Lex.prodLexCongr (Classical.choice <| type_eq_type.mp hb)
-      (Classical.choice <| type_eq_type.mp ha) |> type_congr
+instance : Mul OrderType.{u} where
+  mul o₁ o₂ := o₁ * o₂
 
 @[simp]
 lemma type_lex_prod (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :
@@ -104,13 +98,40 @@ instance : Monoid OrderType.{u} where
       simp only [show 1 = type PUnit by rfl, ← type_lex_prod]
       exact (Prod.Lex.uniqueProd PUnit α).type_congr)
 
+section Cardinal
+
+open Cardinal
+
+/-- The cardinal of an `OrderType` is the cardinality of any type on which a relation
+with that order type is defined. -/
+def card (o : OrderType) : Cardinal :=
+  o.liftOn (fun α _ ↦ #α)
+    fun _ _ _ _ hab ↦ mk_congr (type_eq_type.mp hab).some.toEquiv
+
+@[simp]
+theorem card_type {α : Type u} [LinearOrder α] : card (type α) = #α := by
+  rw [card, liftOn_type]
+
+@[gcongr]
+theorem card_mono {o₁ o₂ : OrderType} : o₁ ≤ o₂ → card o₁ ≤ card o₂ :=
+  inductionOn₂ o₁ o₂ fun _ _ _ _ hle ↦ by
+    simp [card, (type_le_type_iff.mp hle).some.cardinal_le]
+
+theorem card_monotone : Monotone card := @card_mono
+
+@[simp] theorem card_zero : card 0 = 0 := by simpa using card_type (α := PEmpty)
+
+@[simp] theorem card_one : card 1 = 1 := by simpa using card_type (α := PUnit)
+
+end Cardinal
+
 instance (n : Nat) : OfNat OrderType n where
   ofNat := Fin n |> type
 
 instance : LeftDistribClass OrderType where
   left_distrib a b c := by
     refine inductionOn₃ a b c (fun _ _ _ _ _ _ ↦ ?_)
-    simp only [← type_lex_prod,← type_lex_sum]
+    simp only [← type_lex_prod, ← type_lex_sum]
     exact (Prod.Lex.sumLexProdLexDistrib _ _ _).type_congr
 
 /-- The order type of the rational numbers. -/

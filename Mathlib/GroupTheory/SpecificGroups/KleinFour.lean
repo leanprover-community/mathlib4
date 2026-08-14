@@ -73,9 +73,15 @@ instance {G : Type*} [AddGroup G] [IsAddKleinFour G] : IsKleinFour (Multiplicati
 
 namespace IsKleinFour
 
+@[to_additive]
+theorem isMulCommutative {G : Type*} [Group G] [IsKleinFour G] :
+    IsMulCommutative G where
+  is_comm.comm := mul_comm_of_exponent_two exponent_two
+
 /-- This instance is scoped, because it always applies (which makes linting and typeclass inference
 potentially *a lot* slower). -/
-@[to_additive]
+@[to_additive /-- This instance is scoped, because it always applies (which makes linting and
+typeclass inference potentially *a lot* slower). -/]
 scoped instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
   Nat.finite_of_card_ne_zero <| by simp [IsKleinFour.card_four]
 

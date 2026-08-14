@@ -137,7 +137,7 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : 
 theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
     ⁅of L i x, of L j y⁆ = if hij : i = j then of L i ⁅x, hij.symm.recOn y⁆ else 0 := by
   obtain rfl | hij := Decidable.eq_or_ne i j
-  · simp only [lie_of_same L x y, dif_pos]
+  · simp only [lie_of_same L x y, dite_eq_left]
   · simp only [lie_of_of_ne L hij x y, hij, dite_false]
 
 instance lieAlgebra : LieAlgebra R (⨁ i, L i) :=
@@ -215,8 +215,7 @@ section Ideals
 variable {L : Type w} [LieRing L] [LieAlgebra R L] (I : ι → LieIdeal R L)
 
 /-- The fact that this instance is necessary seems to be a bug in typeclass inference. See
-[this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/
-Typeclass.20resolution.20under.20binders/near/245151099). -/
+[this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/245151099). -/
 instance lieRingOfIdeals : LieRing (⨁ i, I i) :=
   DirectSum.lieRing fun i => ↥(I i)
 

@@ -24,7 +24,7 @@ public section
 
 noncomputable section
 
-open Set LinearMap Submodule
+open Submodule
 
 universe u v
 
@@ -48,6 +48,9 @@ theorem rank_eq_lift : Module.rank K (MvPolynomial σ K) = lift.{v} #(σ →₀ 
 
 theorem rank_eq {σ : Type v} : Module.rank K (MvPolynomial σ K) = #(σ →₀ ℕ) := by
   rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank]
+
+instance : Module K (MvPolynomial σ K) :=
+  inferInstanceAs <| Module K (AddMonoidAlgebra K (σ →₀ ℕ))
 
 theorem finrank_eq_zero [Nonempty σ] : Module.finrank K (MvPolynomial σ K) = 0 :=
   (basisMonomials σ K).linearIndependent.finrank_eq_zero_of_infinite

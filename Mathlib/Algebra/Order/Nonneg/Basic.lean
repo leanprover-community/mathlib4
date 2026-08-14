@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Algebra.Ring.Defs
@@ -38,8 +38,6 @@ assert_not_exists GeneralizedHeytingAlgebra
 assert_not_exists IsOrderedMonoid
 -- TODO -- assert_not_exists PosMulMono
 assert_not_exists mem_upperBounds
-
-open Set
 
 variable {α : Type*}
 
@@ -140,7 +138,7 @@ section AddMonoid
 variable [AddMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addMonoid : AddMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance% Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Coercion `{x : α // 0 ≤ x} → α` as an `AddMonoidHom`. -/
 @[simps]
@@ -161,7 +159,8 @@ section AddCommMonoid
 variable [AddCommMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addCommMonoid : AddCommMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance%
+    Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
 
 end AddCommMonoid
 
@@ -169,7 +168,8 @@ section AddCancelCommMonoid
 variable [AddCancelCommMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addCancelCommMonoid : AddCancelCommMonoid {x : α // 0 ≤ x} :=
-  Subtype.coe_injective.addCancelCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance%
+    Subtype.coe_injective.addCancelCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
 
 end AddCancelCommMonoid
 
@@ -221,7 +221,7 @@ variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α]
   [AddLeftMono α] [PosMulMono α]
 
 instance semiring : Semiring { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
+  fast_instance% Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
@@ -243,7 +243,7 @@ variable [CommSemiring α] [PartialOrder α] [ZeroLEOneClass α]
   [AddLeftMono α] [PosMulMono α]
 
 instance commSemiring : CommSemiring { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
+  fast_instance% Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 

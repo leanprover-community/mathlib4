@@ -25,18 +25,15 @@ public section
 
 assert_not_exists MulAction MonoidWithZero
 
-open Function MulOpposite
-
 variable {F α β γ : Type*}
 
 namespace Set
 
 /-! ### Set negation/inversion -/
 
+open scoped Pointwise
 
 section Inv
-
-open Pointwise
 
 variable {ι : Sort*} [Inv α]
 
@@ -58,11 +55,7 @@ theorem sUnion_inv (S : Set (Set α)) : (⋃₀ S)⁻¹ = ⋃ s ∈ S, s⁻¹ :=
 
 end Inv
 
-open Pointwise
-
 /-! ### Set addition/multiplication -/
-
-
 section Mul
 
 variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}

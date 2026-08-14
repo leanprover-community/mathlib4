@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
 public import Mathlib.CategoryTheory.Sites.Spaces
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # Mayer-Vietoris squares

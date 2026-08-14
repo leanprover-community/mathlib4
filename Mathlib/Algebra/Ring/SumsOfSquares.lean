@@ -73,7 +73,7 @@ In an additive monoid with multiplication `R`, `AddSubmonoid.sumSq R` is the sub
 squares in `R`.
 -/
 @[simps]
-def sumSq [AddMonoid T] : AddSubmonoid T where
+def sumSq : AddSubmonoid T where
   carrier   := {s : T | IsSumSq s}
   zero_mem' := .zero
   add_mem'  := .add

@@ -92,7 +92,7 @@ variable [NonUnitalNonAssocSemiring D] [Star D]
 
 instance : FunLike (A →⋆ₙ+* B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+  coe_injective := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
 instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
   map_mul f := f.map_mul'
@@ -260,27 +260,26 @@ namespace StarRingEquivClass
 -- See note [lower instance priority]
 instance (priority := 50) {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
     [EquivLike F A B] [hF : StarRingEquivClass F A B] :
-    StarHomClass F A B :=
-  { hF with }
+    StarHomClass F A B where
+  __ := hF
 
 -- See note [lower instance priority]
 instance (priority := 100) {F A B : Type*} [NonUnitalNonAssocSemiring A] [Star A]
-    [NonUnitalNonAssocSemiring B] [Star B] [EquivLike F A B] [RingEquivClass F A B]
-    [StarRingEquivClass F A B] : NonUnitalStarRingHomClass F A B :=
-  { }
+    [NonUnitalNonAssocSemiring B] [Star B] [EquivLike F A B] [StarRingEquivClass F A B] :
+    NonUnitalStarRingHomClass F A B where
 
 /-- Turn an element of a type `F` satisfying `StarRingEquivClass F A B` into an actual
 `StarRingEquiv`. This is declared as the default coercion from `F` to `A ≃⋆+* B`. -/
 @[coe]
 def toStarRingEquiv {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
-    [EquivLike F A B] [RingEquivClass F A B] [StarRingEquivClass F A B] (f : F) : A ≃⋆+* B :=
-  { (f : A ≃+* B) with
+    [EquivLike F A B] [StarRingEquivClass F A B] (f : F) : A ≃⋆+* B :=
+  { (RingEquivClass.toRingEquiv f : A ≃+* B) with
     map_star' := map_star f }
 
 /-- Any type satisfying `StarRingEquivClass` can be cast into `StarRingEquiv` via
 `StarRingEquivClass.toStarRingEquiv`. -/
 instance instCoeHead {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
-    [EquivLike F A B] [RingEquivClass F A B] [StarRingEquivClass F A B] : CoeHead F (A ≃⋆+* B) :=
+    [EquivLike F A B] [StarRingEquivClass F A B] : CoeHead F (A ≃⋆+* B) :=
   ⟨toStarRingEquiv⟩
 
 end StarRingEquivClass
@@ -311,9 +310,11 @@ instance : StarRingEquivClass (A ≃⋆+* B) A B where
 /-- Helper instance for cases where the inference via `EquivLike` is too hard. -/
 instance : FunLike (A ≃⋆+* B) A B where
   coe f := f.toFun
-  coe_injective' := DFunLike.coe_injective
+  coe_injective := DFunLike.coe_injective
 
-@[simp]
+instance : CoeOut (A ≃⋆+* B) (A ≃+* B) where coe := toRingEquiv
+
+@[deprecated "Now a syntactic equality" (since := "2026-04-09"), nolint synTaut]
 theorem toRingEquiv_eq_coe (e : A ≃⋆+* B) : e.toRingEquiv = e :=
   rfl
 
@@ -339,7 +340,7 @@ theorem coe_refl : ⇑(refl : A ≃⋆+* A) = id :=
 nonrec def symm (e : A ≃⋆+* B) : B ≃⋆+* A :=
   { e.symm with
     map_star' := fun b => by
-      simpa only [apply_inv_apply, inv_apply_apply] using
+      simpa only [apply_inv_apply, inv_apply_apply] using!
         congr_arg (inv e) (map_star e (inv e b)).symm }
 
 /-- See Note [custom simps projection] -/
@@ -367,16 +368,11 @@ theorem symm_bijective : Function.Bijective (symm : (A ≃⋆+* B) → B ≃⋆+
 theorem mk_coe (e : A ≃⋆+* B) (e' h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B) = e := ext fun _ => rfl
 
-/-- Auxiliary definition to avoid looping in `dsimp` with `StarRingEquiv.symm_mk`. -/
-protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅) :=
-  (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B).symm
-
 @[simp]
-theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅) :
-    (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B).symm =
-      { symm_mk.aux f f' h₁ h₂ h₃ h₄ h₅ with
-        toFun := f'
-        invFun := f } :=
+theorem symm_mk (e : A ≃+* B) (h₁) : dsimp%
+    (⟨e, h₁⟩ : A ≃⋆+* B).symm =
+      { (⟨e, h₁⟩ : A ≃⋆+* B).symm with
+        toRingEquiv := e.symm } :=
   rfl
 
 @[simp]

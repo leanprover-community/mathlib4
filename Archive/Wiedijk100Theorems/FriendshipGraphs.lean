@@ -70,6 +70,7 @@ namespace Friendship
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 include hG in
 /-- One characterization of a friendship graph is that there is exactly one walk of length 2
@@ -109,7 +110,7 @@ include hG in
 theorem degree_eq_of_not_adj {v w : V} (hvw : ¬G.Adj v w) : degree G v = degree G w := by
   rw [← Nat.cast_id (G.degree v), ← Nat.cast_id (G.degree w),
     ← adjMatrix_pow_three_of_not_adj ℕ hG hvw,
-    ← adjMatrix_pow_three_of_not_adj ℕ hG fun h => hvw (G.symm h)]
+    ← adjMatrix_pow_three_of_not_adj ℕ hG fun h ↦ hvw h.symm]
   conv_lhs => rw [← transpose_adjMatrix]
   simp only [pow_succ _ 2, sq, ← transpose_mul, transpose_apply]
   simp only [mul_assoc]
@@ -124,7 +125,7 @@ theorem adjMatrix_sq_of_regular (hd : G.IsRegularOfDegree d) :
     G.adjMatrix R ^ 2 = of fun v w => if v = w then (d : R) else (1 : R) := by
   ext (v w); by_cases h : v = w
   · rw [h, sq, adjMatrix_mul_self_apply_self, hd]; simp
-  · rw [adjMatrix_sq_of_ne R hG h, of_apply, if_neg h]
+  · rw [adjMatrix_sq_of_ne R hG h, of_apply, ite_eq_right h]
 
 open scoped Classical in
 include hG in
@@ -149,7 +150,7 @@ theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
   intro x
   by_cases hvx : G.Adj v x; swap; · exact (degree_eq_of_not_adj hG hvx).symm
   dsimp only [Theorems100.ExistsPolitician] at hG'
-  push_neg at hG'
+  push Not at hG'
   rcases hG' v with ⟨w, hvw', hvw⟩
   rcases hG' x with ⟨y, hxy', hxy⟩
   by_cases hxw : G.Adj x w
@@ -167,11 +168,12 @@ theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
     rw [h, mem_singleton] at h'
     injection h'
   apply hxy'
-  rw [key ((mem_commonNeighbors G).mpr ⟨hvx, G.symm hxw⟩),
-    key ((mem_commonNeighbors G).mpr ⟨hvy, G.symm hcontra⟩)]
+  rw [key ((mem_commonNeighbors G).mpr ⟨hvx, hxw.symm⟩),
+    key ((mem_commonNeighbors G).mpr ⟨hvy, hcontra.symm⟩)]
 
 open scoped Classical in
 include hG in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `A` be the adjacency matrix of a `d`-regular friendship graph, and let `v` be a vector
   all of whose components are `1`. Then `v` is an eigenvector of `A ^ 2`, and we can compute
   the eigenvalue to be `d * d`, or as `d + (Fintype.card V - 1)`, so those quantities must be equal.
@@ -181,7 +183,7 @@ theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) 
   have v := Classical.arbitrary V
   trans ((G.adjMatrix ℕ ^ 2) *ᵥ (fun _ => 1)) v
   · rw [adjMatrix_sq_of_regular hG hd, mulVec, dotProduct, ← insert_erase (mem_univ v)]
-    simp only [sum_insert, mul_one, if_true, Nat.cast_id, mem_erase, not_true,
+    simp only [sum_insert, mul_one, ite_true, Nat.cast_id, mem_erase, not_true,
       Ne, not_false_iff, add_right_inj, false_and, of_apply]
     rw [Finset.sum_const_nat, card_erase_of_mem (mem_univ v), mul_one]; · rfl
     intro x hx; simp [(ne_of_mem_erase hx).symm]
@@ -248,7 +250,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   have p_dvd_d_pred := (ZMod.natCast_eq_zero_iff _ _).mpr (d - 1).minFac_dvd
   have dpos : 1 ≤ d := by lia
   have d_cast : ↑(d - 1) = (d : ℤ) - 1 := by norm_cast
-  haveI : Fact p.Prime := ⟨Nat.minFac_prime (by lia)⟩
+  have : Fact p.Prime := ⟨Nat.minFac_prime (by lia)⟩
   have hp2 : 2 ≤ p := (Fact.out (p := p.Prime)).two_le
   have dmod : (d : ZMod p) = 1 := by
     rw [← Nat.succ_pred_eq_of_pos dpos, Nat.succ_eq_add_one, Nat.pred_eq_sub_one]
@@ -275,17 +277,9 @@ include hG in
   trivially a politician. -/
 theorem existsPolitician_of_degree_le_one (hd : G.IsRegularOfDegree d) (hd1 : d ≤ 1) :
     ExistsPolitician G := by
-  have sq : d * d = d := by interval_cases d <;> norm_num
   have h := card_of_regular hG hd
-  rw [sq] at h
-  have : Fintype.card V ≤ 1 := by
-    cases hn : Fintype.card V with
-    | zero => exact zero_le _
-    | succ n => lia
-  use Classical.arbitrary V
-  intro w h; exfalso
-  apply h
-  apply Fintype.card_le_one_iff.mp this
+  have : Fintype.card V ≤ 1 := by interval_cases d <;> lia
+  exact ⟨Classical.arbitrary V, fun w h ↦ (h <| Fintype.card_le_one_iff.mp this ..).elim⟩
 
 open scoped Classical in
 include hG in

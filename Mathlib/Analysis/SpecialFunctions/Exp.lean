@@ -76,12 +76,12 @@ theorem continuousOn_exp {s : Set ℂ} : ContinuousOn exp s :=
 
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
-  rcases (zero_le n).eq_or_lt with rfl | hn
+  rcases eq_zero_or_pos n with rfl | hn
   · simpa using continuous_exp.continuousAt.norm.isBoundedUnder_le
   · refine .of_bound (n.succ / (n ! * n)) ?_
-    rw [NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff]
+    rw [NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff]
     refine ⟨1, one_pos, fun x hx ↦ ?_⟩
-    convert exp_bound hx.out.le hn using 1
+    convert! exp_bound hx.out.le hn using 1
     simp [field]
 
 lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
@@ -133,14 +133,14 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
   obtain ⟨δ, hδ⟩ := H
   refine ⟨δ, hδ.1, ?_⟩
   intro x _ y hy hxy
-  have h3 := hδ.2 (y := x - y) (by simpa only [dist_zero_right] using hxy)
+  have h3 := hδ.2 (y := x - y) (by simpa only [dist_eq_norm, sub_zero] using hxy)
   rw [dist_eq_norm, exp_zero] at *
   have : cexp x - cexp y = cexp y * (cexp (x - y) - 1) := by
     rw [mul_sub_one, ← exp_add]
     ring_nf
   rw [this, mul_comm]
   have hya : ‖cexp y‖ ≤ Real.exp a := by simpa only [norm_exp, Real.exp_le_exp]
-  simp only [gt_iff_lt, dist_zero_right, Set.mem_setOf_eq, norm_mul, Complex.norm_exp] at *
+  simp only [gt_iff_lt, dist_zero_right, Set.mem_ofPred_eq, norm_mul, Complex.norm_exp] at *
   apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) ha.le)
   simp [field]
 
@@ -224,7 +224,7 @@ theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x => exp (-x)) atTop (�
 
 /-- The real exponential function tends to `1` at `0`. -/
 theorem tendsto_exp_nhds_zero_nhds_one : Tendsto exp (𝓝 0) (𝓝 1) := by
-  convert continuous_exp.tendsto 0
+  convert! continuous_exp.tendsto 0
   simp
 
 theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
@@ -288,12 +288,12 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
     Tendsto (fun x => x ^ n / (b * exp x + c)) atTop (𝓝 0) := by
   have H : ∀ d e, 0 < d → Tendsto (fun x : ℝ => x ^ n / (d * exp x + e)) atTop (𝓝 0) := by
     intro b' c' h
-    convert (tendsto_mul_exp_add_div_pow_atTop b' c' n h).inv_tendsto_atTop using 1
+    convert! (tendsto_mul_exp_add_div_pow_atTop b' c' n h).inv_tendsto_atTop using 1
     ext x
     simp
   rcases lt_or_gt_of_ne hb with h | h
   · exact H b c h
-  · convert (H (-b) (-c) (neg_pos.mpr h)).neg using 1
+  · convert! (H (-b) (-c) (neg_pos.mpr h)).neg using 1
     · ext x
       field_simp
       rw [← neg_add (b * exp x) c, div_neg, neg_neg]
@@ -318,6 +318,46 @@ theorem coe_comp_expOrderIso : (↑) ∘ expOrderIso = exp :=
 @[simp]
 theorem range_exp : range exp = Set.Ioi 0 := by
   rw [← coe_comp_expOrderIso, range_comp, expOrderIso.range_eq, image_univ, Subtype.range_coe]
+
+@[simp]
+theorem image_exp_Ioi (a : ℝ) : exp '' Ioi a = Ioi (exp a) :=
+  continuous_exp.continuousOn.image_Ioi_of_strictMonoOn (exp_strictMono.strictMonoOn _)
+    tendsto_exp_atTop
+
+@[simp]
+theorem image_exp_Ici (a : ℝ) : exp '' Ici a = Ici (exp a) :=
+  continuous_exp.continuousOn.image_Ici_of_monotoneOn (exp_strictMono.monotone.monotoneOn _)
+    tendsto_exp_atTop
+
+@[simp]
+theorem image_exp_Icc (a b : ℝ) : exp '' Icc a b = Icc (exp a) (exp b) :=
+  continuous_exp.image_Icc_of_strictMono exp_strictMono
+
+@[simp]
+theorem image_exp_Ico (a b : ℝ) : exp '' Ico a b = Ico (exp a) (exp b) :=
+  continuous_exp.image_Ico_of_strictMono exp_strictMono
+
+@[simp]
+theorem image_exp_Ioc (a b : ℝ) : exp '' Ioc a b = Ioc (exp a) (exp b) :=
+  continuous_exp.image_Ioc_of_strictMono exp_strictMono
+
+@[simp]
+theorem image_exp_Ioo (a b : ℝ) : exp '' Ioo a b = Ioo (exp a) (exp b) :=
+  continuous_exp.image_Ioo_of_strictMono exp_strictMono
+
+@[simp]
+theorem image_exp_uIcc (a b : ℝ) : exp '' uIcc a b = uIcc (exp a) (exp b) :=
+  continuous_exp.continuousOn.image_uIcc_of_monotoneOn (exp_strictMono.monotone.monotoneOn _)
+
+@[simp]
+theorem image_exp_Iio (a : ℝ) : exp '' Iio a = Ioo 0 (exp a) := by
+  rw [← coe_comp_expOrderIso, image_comp, expOrderIso.image_Iio, image_subtype_val_Ioi_Iio,
+    Function.comp_apply]
+
+@[simp]
+theorem image_exp_Iic (a : ℝ) : exp '' Iic a = Ioc 0 (exp a) := by
+  rw [← coe_comp_expOrderIso, image_comp, expOrderIso.image_Iic, image_subtype_val_Ioi_Iic,
+    Function.comp_apply]
 
 @[simp]
 theorem map_exp_atTop : map exp atTop = atTop := by

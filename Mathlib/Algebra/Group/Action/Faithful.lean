@@ -27,7 +27,7 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 group action
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -50,6 +50,9 @@ class FaithfulSMul (M : Type*) (α : Type*) [SMul M α] : Prop where
 
 export FaithfulSMul (eq_of_smul_eq_smul)
 export FaithfulVAdd (eq_of_vadd_eq_vadd)
+
+@[to_additive] instance (priority := low) [SMul M α] [Subsingleton M] : FaithfulSMul M α :=
+  ⟨fun _ ↦ Subsingleton.elim ..⟩
 
 @[to_additive]
 lemma smul_left_injective' [SMul M α] [FaithfulSMul M α] : Injective ((· • ·) : M → α → α) :=
@@ -91,10 +94,6 @@ lemma RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α
   /-- `AddMonoid.toOppositeAddAction` is faithful on additive cancellative monoids. -/]
 lemma LeftCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
   inferInstance
-
-@[deprecated (since := "2025-09-15")]
-alias LefttCancelMonoid.to_faithfulSMul_mulOpposite := LeftCancelMonoid.to_faithfulSMul_mulOpposite
-
 
 @[to_additive]
 lemma faithfulSMul_iff_injective_smul_one (R A : Type*)
