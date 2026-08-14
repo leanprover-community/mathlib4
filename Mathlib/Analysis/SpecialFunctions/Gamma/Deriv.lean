@@ -80,7 +80,7 @@ theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : Differen
     specialize IH (s + 1) (by grind [add_re, one_re]) (fun m ↦ by grind [hs (m + 1)])
     have := IH.comp s (show DifferentiableAt ℂ (fun s ↦ s + 1) s by fun_prop)
     apply (this.fun_div differentiableAt_id hsne).congr_of_eventuallyEq
-    filter_upwards [isOpen_ne.mem_nhds hsne] using by grind [Gamma_add_one]
+    filter_upwards [isOpen_ne.mem_nhds hsne] using by grind
 
 theorem differentiableAt_Gamma_one : DifferentiableAt ℂ Gamma 1 :=
   differentiableAt_Gamma 1 (by norm_cast; simp)

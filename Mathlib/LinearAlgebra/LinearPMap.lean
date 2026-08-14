@@ -957,7 +957,7 @@ theorem toLinearPMap_apply_aux {g : Submodule R (E × F)}
     g.toLinearPMap x = valFromGraph hg x.2 := by
   classical
   change (if hg : _ then g.toLinearPMapAux hg else 0) x = _
-  rw [dif_pos]
+  rw [dite_eq_left]
   · rfl
   · exact hg
 
