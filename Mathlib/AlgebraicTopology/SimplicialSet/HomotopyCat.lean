@@ -350,7 +350,7 @@ lemma morphismProperty_eq_top {W : MorphismProperty V.HomotopyCategory}
 
 /-- Induction principle for proving a property for all the morphisms
 in the homotopy category of a `2`-truncated simplicial set: it suffices
-to show that the property hold for morphisms induced by edges and that
+to show that the property holds for morphisms induced by edges and that
 the property is stable under composition. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 lemma hom_rec {motive : ∀ {x y : V.HomotopyCategory}, (x ⟶ y) → Prop}
