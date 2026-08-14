@@ -698,8 +698,7 @@ theorem padicValRat_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
 Bernoulli number `B₂ₖ`. -/
 theorem dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) : p ∣ (bernoulli (2 * k)).den := by
   by_contra hcon
-  have := padicValuation_bernoulli hk hpk ▸ Rat.padicValuation_le_one_iff.mpr hcon
-  simp at this
+  simp [← Rat.padicValuation_le_one_iff, padicValuation_bernoulli hk hpk] at hcon
 
 /-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p` does not divide the numerator of the
 Bernoulli number `B₂ₖ`. -/
