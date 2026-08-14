@@ -428,7 +428,7 @@ protected lemma smul (h : IsEllipticSequence W) (x : R) : IsEllipticSequence <| 
   fun p q r ↦ by grind [rel, h p q r, Pi.smul_apply, smul_eq_mul]
 
 protected lemma comp (h : IsEllipticSequence W) (f : F) : IsEllipticSequence <| f ∘ W :=
-  fun _ _ _ ↦ by rw [← map_rel, h, map_zero]
+  fun _ _ _ ↦ by rw [← IsEllipticNet.map_rel, h, map_zero]
 
 /-- If a sequence satisfies the even and odd elliptic relations, then it is an elliptic sequence. -/
 theorem of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
