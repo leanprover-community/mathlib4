@@ -165,17 +165,15 @@ theorem card_nfp_le_of_forall_le {o : Ordinal} {f : Ordinal → Ordinal}
 
 theorem card_deriv_le_of_forall_le {o : Ordinal} {f : Ordinal → Ordinal}
     (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) : (deriv f o).card ≤ max ℵ₀ o.card :=
-  card_derivFamily_le (le_refl ℵ₀) (by simp) (fun () => hf) o
+  card_derivFamily_le le_rfl (by simp) (fun _ => hf) o
 
 theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordinal) :
     (a ^ b).card ≤ max a.card b.card := by
   induction b using limitRecOn with
   | zero => simpa using one_lt_omega0.le.trans ha
   | add_one b IH =>
-    rw [opow_add_one, card_mul, card_add_one, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
-    · grw [IH]
-      rw [← max_assoc, max_self]
-      grw [← le_self_add]
+    rw [opow_add_one, card_mul, card_add_one, Cardinal.mul_eq_max_of_aleph0_le_right]
+    · grw [IH, max_comm, ← max_assoc, max_self, ← le_self_add]
     · rw [ne_eq, card_eq_zero, opow_eq_zero]
       rintro ⟨rfl, -⟩
       cases omega0_pos.not_ge ha

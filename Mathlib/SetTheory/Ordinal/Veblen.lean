@@ -747,22 +747,22 @@ theorem card_veblen_le (a b : Ordinal) : (veblen a b).card ≤ max (max a.card b
 private theorem le_card_veblen_aux (a b : Ordinal) : max a.card b.card ≤ (veblen a b).card :=
   max_le (card_le_card (left_le_veblen a b)) (card_le_card (right_le_veblen a b))
 
-theorem card_veblen_eq_of_left_ne_zero {a : Ordinal} (b : Ordinal) (ha : a ≠ 0) :
+theorem card_veblen_of_left_ne_zero {a : Ordinal} (b : Ordinal) (ha : a ≠ 0) :
     (veblen a b).card = max (max a.card b.card) ℵ₀ := by
-  apply le_antisymm (card_veblen_le a b)
-  exact max_le (le_card_veblen_aux a b) <|
-    aleph0_le_card.mpr <| omega0_le_veblen_of_left_ne_zero b ha
+  apply le_antisymm (card_veblen_le a b) <| max_le (le_card_veblen_aux a b) ?_
+  exact aleph0_le_card.mpr <| omega0_le_veblen_of_left_ne_zero b ha
 
-theorem card_veblen_eq_of_right_ne_zero (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) :
+theorem card_veblen_of_right_ne_zero (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) :
     (veblen a b).card = max (max a.card b.card) ℵ₀ := by
-  apply le_antisymm (card_veblen_le a b)
-  exact max_le (le_card_veblen_aux a b) <|
-    aleph0_le_card.mpr <| omega0_le_veblen_of_right_ne_zero a hb
+  apply le_antisymm (card_veblen_le a b) <| max_le (le_card_veblen_aux a b) ?_
+  exact aleph0_le_card.mpr <| omega0_le_veblen_of_right_ne_zero a hb
 
+@[simp]
 theorem card_epsilon (o : Ordinal) : (ε_ o).card = max ℵ₀ o.card := by
-  rw [card_veblen_eq_of_left_ne_zero o one_ne_zero,
+  rw [card_veblen_of_left_ne_zero o one_ne_zero,
     card_one, max_right_comm, max_eq_right one_le_aleph0]
 
+@[simp]
 theorem card_gamma (o : Ordinal) : (Γ_ o).card = max ℵ₀ o.card := by
   apply le_antisymm (card_deriv_le_of_forall_le (by simpa [Or.comm] using card_veblen_le · 0))
     (max_le ?_ ?_)
