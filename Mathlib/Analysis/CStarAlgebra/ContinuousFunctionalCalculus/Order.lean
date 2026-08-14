@@ -489,7 +489,10 @@ theorem norm_posPart_mono {a b : A} (hab : a ≤ b) : ‖a⁺‖ ≤ ‖b⁺‖ 
   · simp [ha']
   suffices ‖a⁺‖ ^ 3 ≤ ‖a⁺‖ * ‖b⁺‖ * ‖a⁺‖ by simpa [pow_succ, ha']
   calc
-    ‖a⁺‖ ^ 3 = ‖a⁺ * a⁺ * a⁺‖ := by rw [CFC.norm_mul_mul_self ℝ a⁺]
+    ‖a⁺‖ ^ 3 = ‖a⁺ * a⁺ * a⁺‖ := by
+      convert norm_cfcₙ_pow ℝ a⁺ 3 (by simp) |>.symm
+      simp only [pow_succ, pow_zero, one_mul]
+      rw [cfcₙ_mul .., cfcₙ_mul .., cfcₙ_id' ℝ a⁺]
     _ ≤ ‖a⁺ * b⁺ * a⁺‖ := norm_le_norm_of_nonneg_of_le (by cfc_tac) key
     _ ≤ ‖a⁺‖ * ‖b⁺‖ * ‖a⁺‖ := norm_mul₃_le ..
 

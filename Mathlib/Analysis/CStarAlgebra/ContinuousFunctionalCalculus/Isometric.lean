@@ -383,19 +383,7 @@ variable (𝕜) in
 lemma _root_.CFC.norm_mul_self (a : A) (ha : p a := by cfc_tac) :
     ‖a * a‖ = ‖a‖ ^ 2 := by
   conv_lhs => rw [← cfcₙ_id' 𝕜 a, ← cfcₙ_mul ..]
-  simp [← sq, CFC.norm_cfcₙ_pow 𝕜 a 2]
-
-/- Replace this with a version of `CFC.norm_pow` for `PNat` powers when we have those
-for general semigroups.
-
-Currently, this lemma is used in the proof of `CStarAlgebra.norm_posPart_mono`. -/
-include 𝕜 in
-variable (𝕜) in
-lemma _root_.CFC.norm_mul_mul_self (a : A) (ha : p a := by cfc_tac) :
-    ‖a * a * a‖ = ‖a‖ ^ 3 := by
-  convert CFC.norm_cfcₙ_pow 𝕜 a 3 (by simp)
-  simp only [pow_succ, pow_zero, one_mul]
-  rw [cfcₙ_mul .., cfcₙ_mul .., cfcₙ_id' 𝕜 a]
+  simp [← sq, norm_cfcₙ_pow 𝕜 a 2]
 
 end NonUnitalIsometricContinuousFunctionalCalculus
 
