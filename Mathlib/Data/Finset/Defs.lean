@@ -127,8 +127,10 @@ theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Fin
   Iff.rfl
 
 @[simp]
-theorem setOf_mem {α} {s : Finset α} : { a | a ∈ s } = s :=
+theorem setOfPred_mem {α} {s : Finset α} : { a | a ∈ s } = s :=
   rfl
+
+@[deprecated (since := "2026-07-09")] alias setOf_mem := setOfPred_mem
 
 theorem coe_mem {s : Finset α} (x : (s : Set α)) : ↑x ∈ s :=
   x.2
@@ -315,7 +317,6 @@ section DecidablePiExists
 
 variable {s : Finset α}
 
-set_option backward.isDefEq.respectTransparency false in
 instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
     Decidable (∀ (a) (h : a ∈ s), p a h) :=
   Multiset.decidableDforallMultiset
@@ -332,7 +333,6 @@ instance instDecidableLE [DecidableEq α] : DecidableLE (Finset α) :=
 instance instDecidableLT [DecidableEq α] : DecidableLT (Finset α) :=
   instDecidableRelSSubset
 
-set_option backward.isDefEq.respectTransparency false in
 instance decidableDExistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
     Decidable (∃ (a : _) (h : a ∈ s), p a h) :=
   Multiset.decidableDexistsMultiset

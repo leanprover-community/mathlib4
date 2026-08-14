@@ -66,6 +66,12 @@ variable {𝕜 E F : Type*}
   [AddCommGroup E] [TopologicalSpace E]
   [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
 
+-- Note: ideally this would be in `Mathlib.Topology.Algebra.Module.Basic`, but `CoFG` imports
+-- too much at the moment for this to be allowed.
+instance Submodule.CoFG.topologicalClosure [Ring 𝕜] [Module 𝕜 E] [ContinuousAdd E]
+    [ContinuousConstSMul 𝕜 E] (s : Submodule 𝕜 E) [s.CoFG] : s.topologicalClosure.CoFG :=
+  ‹s.CoFG›.of_le s.le_topologicalClosure
+
 /-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional. -/
 instance ContinuousLinearMap.instModuleFinite [CommRing 𝕜] [Module 𝕜 E] [Module.Finite 𝕜 E]
     [Module 𝕜 F] [IsNoetherian 𝕜 F] [ContinuousConstSMul 𝕜 F] :
