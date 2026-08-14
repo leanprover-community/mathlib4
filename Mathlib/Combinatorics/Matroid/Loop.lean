@@ -100,7 +100,7 @@ lemma isLoop_tfae (M : Matroid α) (e : α) : List.TFAE [
 
 @[simp]
 lemma singleton_dep : M.Dep {e} ↔ M.IsLoop e :=
-  (M.isLoop_tfae e).out 3 0
+  (M.isLoop_tfae e).out 4 1
 
 alias ⟨_, IsLoop.dep⟩ := singleton_dep
 
@@ -109,12 +109,12 @@ lemma singleton_not_indep (he : e ∈ M.E := by aesop_mat) : ¬ M.Indep {e} ↔ 
 
 @[simp]
 lemma singleton_isCircuit : M.IsCircuit {e} ↔ M.IsLoop e :=
-  (M.isLoop_tfae e).out 2 0
+  (M.isLoop_tfae e).out 3 1
 
 alias ⟨_, IsLoop.isCircuit⟩ := singleton_isCircuit
 
 lemma isLoop_iff_forall_mem_compl_isBase : M.IsLoop e ↔ ∀ B, M.IsBase B → e ∈ M.E \ B :=
-  (M.isLoop_tfae e).out 0 4
+  (M.isLoop_tfae e).out 1 5
 
 lemma isLoop_iff_forall_notMem_isBase (he : e ∈ M.E := by aesop_mat) :
     M.IsLoop e ↔ ∀ B, M.IsBase B → e ∉ B := by
@@ -541,7 +541,7 @@ lemma isColoop_tfae (M : Matroid α) (e : α) : List.TFAE [
   tfae_finish
 
 lemma isColoop_iff_forall_mem_isBase : M.IsColoop e ↔ ∀ ⦃B⦄, M.IsBase B → e ∈ B :=
-  (M.isColoop_tfae e).out 0 3
+  (M.isColoop_tfae e).out 1 4
 
 lemma IsBase.mem_of_isColoop (hB : M.IsBase B) (he : M.IsColoop e) : e ∈ B :=
   isColoop_iff_forall_mem_isBase.mp he hB
@@ -568,7 +568,7 @@ lemma IsCircuit.disjoint_coloops (hC : M.IsCircuit C) : Disjoint C M.coloops :=
 
 lemma isColoop_iff_forall_notMem_isCircuit (he : e ∈ M.E := by aesop_mat) :
     M.IsColoop e ↔ ∀ ⦃C⦄, M.IsCircuit C → e ∉ C := by
-  simp_rw [(M.isColoop_tfae e).out 0 4, and_iff_left he]
+  simp_rw [(M.isColoop_tfae e).out 1 5, and_iff_left he]
 
 lemma isColoop_iff_forall_mem_compl_isCircuit [RankPos M✶] :
     M.IsColoop e ↔ ∀ C, M.IsCircuit C → e ∈ M.E \ C := by
@@ -581,7 +581,7 @@ lemma IsCircuit.not_isColoop_of_mem (hC : M.IsCircuit C) (heC : e ∈ C) : ¬ M.
   fun h ↦ h.notMem_isCircuit hC heC
 
 lemma isColoop_iff_forall_mem_closure_iff_mem : M.IsColoop e ↔ (∀ X, e ∈ M.closure X ↔ e ∈ X) :=
-  (M.isColoop_tfae e).out 0 5
+  (M.isColoop_tfae e).out 1 6
 
 /-- A version of `Matroid.isColoop_iff_forall_mem_closure_iff_mem` where we only quantify
 over subsets of the ground set. -/
@@ -598,7 +598,7 @@ lemma IsColoop.mem_of_mem_closure (he : M.IsColoop e) (heX : e ∈ M.closure X) 
   he.mem_closure_iff_mem.1 heX
 
 lemma isColoop_iff_sdiff_not_spanning : M.IsColoop e ↔ ¬ M.Spanning (M.E \ {e}) :=
-  (M.isColoop_tfae e).out 0 6
+  (M.isColoop_tfae e).out 1 7
 
 @[deprecated (since := "2026-06-03")]
 alias isColoop_iff_diff_not_spanning := isColoop_iff_sdiff_not_spanning
