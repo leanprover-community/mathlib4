@@ -285,8 +285,22 @@ derivatives. -/
 theorem Filter.EventuallyEq.codiscreteWithin_fderiv
     (h : f₁ =ᶠ[codiscreteWithin s] f) (hs : IsOpen s) :
     fderiv 𝕜 f₁ =ᶠ[codiscreteWithin s] fderiv 𝕜 f := by
-  filter_upwards [h.codiscreteWithin_fderivWithin (𝕜 := 𝕜), self_mem_codiscreteWithin s] with
-    _ _ _ using by simp_all [fderivWithin_of_isOpen]
+  filter_upwards [h.codiscreteWithin_fderivWithin (𝕜 := 𝕜), self_mem_codiscreteWithin s]
+  intro x hx hxs
+  simp_all [fderivWithin_of_isOpen]
+
+/-- If two functions agree on a codiscrete subset of `E`, then so do their derivatives within
+any subset `s` of `E`. -/
+theorem Filter.EventuallyEq.codiscrete_fderivWithin
+    (h : f₁ =ᶠ[codiscrete E] f) :
+    fderivWithin 𝕜 f₁ s =ᶠ[codiscrete E] fderivWithin 𝕜 f s :=
+  h.codiscreteWithin_fderivWithin' <| subset_univ _
+
+/-- If two functions agree on a codiscrete subset of `E`, then so do their derivatives. -/
+theorem Filter.EventuallyEq.codiscrete_fderiv
+    (h : f₁ =ᶠ[codiscrete E] f) :
+    fderiv 𝕜 f₁ =ᶠ[codiscrete E] fderiv 𝕜 f :=
+  h.codiscreteWithin_fderiv isOpen_univ
 
 end congr
 
