@@ -39,7 +39,7 @@ variable (i : m) (j : n) (c : α) (i' : m) (j' : n)
 
 @[simp]
 theorem single_apply_same : single i j c i j = c :=
-  if_pos (And.intro rfl rfl)
+  ite_eq_left (And.intro rfl rfl)
 
 @[simp]
 theorem single_apply_of_ne (h : ¬(i = i' ∧ j = j')) : single i j c i' j' = 0 := by
@@ -267,6 +267,7 @@ theorem liftLinear_apply (f : m → n → α →ₗ[R] β) (M : Matrix m n α) :
   simp [liftLinear, map_sum, LinearEquiv.congrLeft]
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem liftLinear_single (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
     liftLinear S f (Matrix.single i j a) = f i j a := by
@@ -293,7 +294,7 @@ variable [Zero α] (i j : n) (c : α)
 -- This simp lemma should take priority over `diag_apply`
 @[simp 1050]
 theorem diag_single_of_ne (h : i ≠ j) : diag (single i j c) = 0 :=
-  funext fun _ => if_neg fun ⟨e₁, e₂⟩ => h (e₁.trans e₂.symm)
+  funext fun _ => ite_eq_right fun ⟨e₁, e₂⟩ => h (e₁.trans e₂.symm)
 
 -- This simp lemma should take priority over `diag_apply`
 @[simp 1050]
