@@ -150,13 +150,34 @@ warning: `private` is unnecessary, since the resulting expression is just a free
 #guard_msgs (positions := true) in
 def fLocal (h : 1 = 1) : FEq (private h) := true
 
+set_option linter.privateProof.warnIfUnnecessary false in
+def fLocalSilenced (h : 1 = 1) : FEq (private h) := true
+
 set_option backward.privateInPublic true in
 /--
 @ +1:18...25
 warning: `private` is unnecessary, since `backward.privateInPublic` is `true`.
 -/
 #guard_msgs (positions := true) in
-def aPriv (_ : F (private fooPub)) : Bool := true
+def aPriv (_ : F (private fooThm)) : Bool := true
+
+set_option backward.privateInPublic true in
+/--
+@ +1:28...35
+warning: `private` is unnecessary, since `backward.privateInPublic` is `true`.
+---
+@ +1:36...42
+error: `private` can only wrap proofs, but the expected type of `fooPub` is not a `Prop`.
+  ℕ : Type
+
+Use `private_decl%` to wrap a non-proof term in an auxiliary definition.
+-/
+#guard_msgs (positions := true) in
+def aPrivBothErrors (_ : F (private fooPub)) : Bool := true
+
+set_option backward.privateInPublic true in
+set_option linter.privateProof.warnIfUnnecessary false in
+def aPrivSilenced (_ : F (private fooThm)) : Bool := true
 
 end
 
@@ -165,4 +186,7 @@ end
 warning: `private` is unnecessary, since private declarations are already usable.
 -/
 #guard_msgs (positions := true) in
-def bPriv (_ : F (private foo)) : Bool := true
+def bPriv (_ : F (private fooThm)) : Bool := true
+
+set_option linter.privateProof.warnIfUnnecessary false in
+def bPrivSilenced (_ : F (private fooThm)) : Bool := true
