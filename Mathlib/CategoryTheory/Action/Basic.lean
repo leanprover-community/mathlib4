@@ -247,7 +247,7 @@ variable (V G)
 Use the `CategoryTheory.forget` API provided by the `ConcreteCategory` instance below,
 rather than using this directly.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def forget : Action V G ⥤ V where
   obj M := M.V
   map f := f.hom

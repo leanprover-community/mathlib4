@@ -50,7 +50,6 @@ variable (G) in
 lemma trivialOnSet_antitone : Antitone (trivialOnSet V (G := G)) :=
   fun _ _ h _ h' g hg ↦ h' g (h hg)
 
-set_option backward.isDefEq.respectTransparency false in
 instance (J : Type*) [Category* J] [HasLimitsOfShape J V] (S : Set G) :
     (trivialOnSet V S).IsClosedUnderLimitsOfShape J where
   limitsOfShape_le := by
@@ -59,8 +58,6 @@ instance (J : Type*) [Category* J] [HasLimitsOfShape J V] (S : Set G) :
     exact (isLimitOfPreserves (Action.forget _ _) p.isLimit).hom_ext
       (fun j ↦ by simp [dsimp% (p.π.app j).comm g, dsimp% p.prop_diag_obj j g hg])
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance (J : Type*) [Category* J] [HasColimitsOfShape J V] (S : Set G) :
     (trivialOnSet V S).IsClosedUnderColimitsOfShape J where
   colimitsOfShape_le := by
@@ -90,7 +87,6 @@ section Group
 variable {G : Type*} [Group G] [HasForget₂ V TopCat] [TopologicalSpace G]
   [IsTopologicalGroup G]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma trivialOnSet_le_isContinuous (H : OpenSubgroup G) :
     trivialOnSet FintypeCat.{w} H ≤ isContinuous FintypeCat.{w} G := by
   intro R h
