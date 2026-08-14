@@ -48,7 +48,6 @@ variable [HasShift C ℤ]
 
 namespace Opposite
 
-set_option backward.privateInPublic true in
 /-- As it is unclear whether the opposite category `Cᵒᵖ` should always be equipped
 with the shift by `ℤ` such that shifting by `n` on `Cᵒᵖ` corresponds to shifting
 by `-n` on `C`, the user shall have to do `open CategoryTheory.Pretriangulated.Opposite`

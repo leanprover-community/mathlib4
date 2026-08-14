@@ -93,7 +93,6 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
   refine ⟨d, hdu, fun hds ↦ not_lt_iff_le_imp_ge.2 (hbmax hds hdt had) ?_, had⟩
   exact hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
 
-set_option backward.privateInPublic true in
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
   intro a has
   by_contra hat
@@ -278,7 +277,6 @@ instance instLinearOrder : LinearOrder (Colex (Finset α)) where
 
 open scoped symmDiff
 
-set_option backward.privateInPublic true in
 private lemma max_mem_aux {s t : Colex (Finset α)} (hst : s ≠ t) :
     (ofColex s ∆ ofColex t).Nonempty := by
   simpa

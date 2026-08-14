@@ -222,7 +222,6 @@ abbrev supExtensionOfMaxSingleton (y : N) : Submodule R N :=
 
 variable {f}
 
-set_option backward.privateInPublic true in
 private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSingleton i f y) :
     ∃ (a : (extensionOfMax i f).domain) (b : R), x.1 = a.1 + b • y := by
   have mem1 : x.1 ∈ (_ : Set _) := x.2
