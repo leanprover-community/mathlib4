@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Analysis.InnerProductSpace.Positive
+public import Mathlib.Analysis.Normed.Operator.Extend
 public import Mathlib.Topology.Algebra.LinearMapCompletion
 
 /-!
@@ -360,14 +361,8 @@ private def toH' (h : kernel H = kernel H') : H₀ (kernel H) →ₗᵢ[𝕜] H'
     simp
 
 private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[𝕜] H' :=
-  let h_lin := (toH' H h).toContinuousLinearMap.fromCompletion
-  let ofOfKernel : OfKernel (kernel H) →ₗᵢ[𝕜] H' := {
-    h_lin with
-    norm_map' x := by
-      apply (toH' H h).isometry.completion_extension.norm_map_of_map_zero h_lin.map_zero
-  }
-  have h_surj : Function.Surjective ofOfKernel := by
-    have h_sub : Set.range (toH' H h) ⊆ Set.range ⇑ofOfKernel := by
+  .ofSurjective (toH' H h).fromCompletion <| by
+    have h_sub : Set.range (toH' H h) ⊆ Set.range ⇑(toH' H h).fromCompletion := by
       rintro _ ⟨f, rfl⟩
       exact ⟨f, UniformSpace.Completion.extension_coe (toH' H h).isometry.uniformContinuous f⟩
     have h_dense : Dense (Set.range (toH' H h)) := by
@@ -376,9 +371,9 @@ private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[
         Finsupp.range_linearCombination, SetLike.coe_set_eq]
       congr! 1
       aesop
-    rw [← Set.range_eq_univ, ← ofOfKernel.isometry.isClosedEmbedding.isClosed_range.closure_eq,
+    rw [← Set.range_eq_univ,
+      ← (toH' H h).fromCompletion.isometry.isClosedEmbedding.isClosed_range.closure_eq,
       (h_dense.mono h_sub).closure_eq]
-  LinearIsometryEquiv.ofSurjective ofOfKernel h_surj
 
 end Equiv
 
@@ -395,12 +390,14 @@ def equiv (h : kernel H = kernel H') : H ≃ₗᵢ[𝕜] H' :=
 
 theorem equiv_kerFun_eq_kerFun (h : kernel H = kernel H') (x : X) (v : V) :
     equiv h (kerFun H x v) = kerFun H' x v := by
-  have h1 : (OfKernel.equivAux rfl).symm (kerFun H x v) = .coe' (.single (x, v) 1) := by
-    apply (OfKernel.equivAux rfl).symm.eq_symm_apply.mp
-    simp [OfKernel.equivAux, OfKernel.toH']
-  have h2 : OfKernel.equivAux h (.coe' (.single (x, v) 1)) = kerFun H' x v := by
-    simp [OfKernel.equivAux, OfKernel.toH']
-  simp only [equiv, LinearIsometryEquiv.trans_apply, h1, h2]
+  have h1 := UniformSpace.Completion.extension_coe
+    (OfKernel.toH' H h).isometry.uniformContinuous (Finsupp.single (x, v) 1)
+  have h1' := UniformSpace.Completion.extension_coe
+    (OfKernel.toH' H rfl).isometry.uniformContinuous (Finsupp.single (x, v) 1)
+  simp [OfKernel.toH'] at h1 h1'
+  simp [equiv, OfKernel.equivAux, OfKernel.toH', ← h1', ← h1]
+  congr
+  simp [LinearIsometryEquiv.symm_apply_eq]
 
 /-- If the two RKHS have the same kernel, then the functions in the RKHSs agree as functions on
 `X → V`. -/
