@@ -56,6 +56,20 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Expr := do
     acc := q($acc * Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b))
   return acc
 
+/-- Check that equality with zero in `R` reduces to a verdict in the kernel, as the
+certificate conditions will be decided by kernel reduction. This needs to be changed when
+the cert-checking tactic is updated. -/
+def checkKernelDecide {u : Level} (R : Q(Type u)) : MetaM Unit := do
+  have _cr : Q(CommRing $R) := ← synthInstanceQ q(CommRing $R)
+  -- `Decidable` of the single equality rather than `DecidableEq`: a ring where equality
+  -- is only decidable against zero should pass
+  let some inst ← synthInstance? q(Decidable (((1 : ℤ) : $R) = 0))
+    | throwError "equality with zero in the element type is not decidable{indentExpr R}"
+  -- check if the equality reduced to a concrete false
+  unless (Kernel.whnf (← getEnv) (← getLCtx) inst).toOption.any
+      (·.isAppOf ``Decidable.isFalse) do
+    throwError "equality in the element type does not reduce in the kernel{indentExpr R}"
+
 /-- The applicability check of the Bareiss method, which requires a commutative domain
 with kernel-decidable equality. -/
 def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do
@@ -65,9 +79,8 @@ def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do
     | return .error m!"expected the element type to be a commutative ring"
   let .some _ ← trySynthInstanceQ q(IsDomain $R)
     | return .error m!"expected the element type to be a domain"
-  -- the certificate conditions are decided by kernel reduction: probe one zero test
   try
-    discard <| isZeroInRing R 1
+    checkKernelDecide R
   catch e =>
     return .error e.toMessageData
   return .ok ()

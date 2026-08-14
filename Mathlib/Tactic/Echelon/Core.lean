@@ -59,7 +59,7 @@ structure RingOps (V : Type) where
   /-- Exact division: total on the quotients of the elimination -/
   divExact : V → V → V
   /-- The pivot zero test. -/
-  isZero : V → MetaM Bool
+  isZero : V → Bool
 
 /-- Decomposition data with entries in `V`: the values of the elimination, or the
 rendered ring expressions (`V := Expr`). -/
@@ -114,7 +114,7 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
     -- find the first row at or below `r` with a nonzero entry in column `c`
     let mut p? : Option Nat := none
     for q in [r:rows] do
-      if !(← ops.isZero (getEntry W q c)) then
+      if !ops.isZero (getEntry W q c) then
         p? := some q
         break
     if let some p := p? then

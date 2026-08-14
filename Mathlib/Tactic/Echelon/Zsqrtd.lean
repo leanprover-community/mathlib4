@@ -50,7 +50,7 @@ def zsqrtdProducer (dQ : Q(ℤ)) (d : Int) : Producer :=
       -- multiply by the conjugate `x' - y'√d` and divide by the norm, exactly
       let norm := x' * x' - d * y' * y'
       ((x * x' - d * y * y') / norm, (y * x' - x * y') / norm)
-    isZero := fun (x, y) => pure (x == 0 && y == 0) }
+    isZero := fun (x, y) => x == 0 && y == 0 }
   let prepare (entries : Array (Array Expr)) :
       MetaM (Array (Array (Int × Int)) ×
         (BareissData (Int × Int) → BareissData (Int × Int))) := do

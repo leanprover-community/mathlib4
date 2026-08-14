@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Tactic.Echelon.Core
 
+public meta import Mathlib.Algebra.CharP.Defs
+
 public meta import Mathlib.Util.Qq
 
 public meta import Mathlib.Tactic.NormNum.Basic
@@ -70,47 +72,32 @@ def mkIntNumeral {u : Level} (R : Q(Type u)) (i : Int) : MetaM Q($R) := do
   else
     return n
 
-/-- Whether the integer value `v` is zero in `R`, by reducing the `Decidable` instance of
-`(v : R) = 0` in the kernel, matching the semantics of the final certificate check. -/
-def isZeroInRing {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
-  if v == 0 then return true
-  -- MetaM caches the synthesised instances (including failures), so these are fine.
-  let _instCast ← synthInstanceQ q(IntCast $R)
-  let _instZero ← synthInstanceQ q(Zero $R)
-  have vE : Q(Int) := mkIntLitQ v
-  let eq : Q(Prop) := q((Int.cast $vE : $R) = 0)
-  /- this instance is synthesised for every value which is repeated.
-    technically it's possible to synthesise a DecidableEq instance once and then use it
-    for all checks, but there can be rings where eq is only partially decidable (for 0 only).
-    The cost here is also negligible (~1%) compared to the kernel check itself.
-  -/
-  let some inst ← synthInstance? q(Decidable $eq)
-    | throwError "equality with zero in the element type is not decidable{indentExpr R}"
-  if let .ok r := Kernel.whnf (← getEnv) (← getLCtx) inst then
-    if r.isAppOf ``Decidable.isTrue then return true
-    if r.isAppOf ``Decidable.isFalse then return false
-  throwError "equality in the element type does not reduce in the kernel{indentExpr R}"
-
 /-- The rational model of a ring: entries evaluate to rational numerals, denominators
 are cleared by row scaling, and the elimination runs on integer values. It applies to
 every ring, as the fallback model. -/
 def ratProducer (R : Expr) : MetaM Producer := do
   let u ← getDecLevel R
   have R : Q(Type u) := R
-  let charZero ← do
-    match ← trySynthInstanceQ q(AddMonoidWithOne $R) with
-    | .some _amo => pure (← trySynthInstanceQ q(CharZero $R)).toOption.isSome
-    | _ => pure false
+  -- the characteristic determines the zero test
+  have _cr : Q(CommRing $R) := ← synthInstanceQ q(CommRing $R)
+  let pE : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
+  let .some _ ← trySynthInstanceQ q(CharP $R $pE)
+    | throwError "the rational model could not determine the characteristic of the element \
+        type{indentExpr R}"
+  -- `whnfD`: the ambient transparency inside `simp` is `reducible`, which does not reduce
+  -- the numeral to a literal
+  let some p := (← whnfD (← instantiateMVars pE)).rawNatLit?
+    | throwError "the characteristic of the element type is not a literal{indentExpr R}"
   let ops : RingOps Int := {
     zero := 0
     one := 1
     mul := (· * ·)
     sub := (· - ·)
     divExact := (· / ·)
-    isZero := if charZero then fun v => pure (v == 0) else isZeroInRing R }
+    isZero := if p == 0 then (· == 0) else fun v => v % (p : Int) == 0 }
   let prepare (entries : Array (Array Expr)) :
       MetaM (Array (Array Int) × (BareissData Int → BareissData Int)) := do
-    let ratRows ← entries.mapM (·.mapM (evalEntry charZero))
+    let ratRows ← entries.mapM (·.mapM (evalEntry (p == 0)))
     let (values, scales) := scaleRowsIntegral ratRows
     return (values, restoreScaling ops (scales.map Int.ofNat))
   return mkProducer ops prepare (mkIntNumeral R)
