@@ -35,7 +35,7 @@ variable {F : Cᵒᵖ ⥤ Type w} {X : Cᵒᵖ} (x : F.obj X)
 by a section `x : F.obj X`. -/
 @[simps -isSimp]
 def ofSection : Subfunctor F where
-  obj U := setOf (fun u ↦ ∃ (f : X ⟶ U), F.map f x = u)
+  obj U := Set.ofPred (fun u ↦ ∃ (f : X ⟶ U), F.map f x = u)
   map {U V} g := by
     rintro _ ⟨f, rfl⟩
     exact ⟨f ≫ g, by simp⟩
@@ -69,7 +69,7 @@ variable {F : Cᵒᵖ ⥤ Type v}
 lemma ofSection_eq_range {X : Cᵒᵖ} (x : F.obj X) :
     ofSection x = range (yonedaEquiv.symm x) := by
   ext U y
-  simp only [ofSection_obj, Set.mem_setOf_eq, Opposite.op_unop, range_obj,
+  simp only [ofSection_obj, Set.mem_ofPred_eq, Opposite.op_unop, range_obj,
     Set.mem_range]
   constructor
   · rintro ⟨f, rfl⟩
@@ -105,15 +105,6 @@ lemma range_eq_ofSection' {X : C} (f : yoneda.obj X ⋙ uliftFunctor.{w} ⟶ F) 
   rw [ofSection_eq_range', Equiv.symm_apply_apply]
 
 end
-
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.ofSection := ofSection
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.mem_ofSection_obj := mem_ofSection_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.ofSection_le_iff := ofSection_le_iff
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.ofSection_image := ofSection_image
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.ofSection_eq_range := ofSection_eq_range
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_eq_ofSection := range_eq_ofSection
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.ofSection_eq_range' := ofSection_eq_range'
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_eq_ofSection' := range_eq_ofSection'
 
 end Subfunctor
 

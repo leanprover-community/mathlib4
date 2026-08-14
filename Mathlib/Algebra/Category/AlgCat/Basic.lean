@@ -21,13 +21,12 @@ associating to a type the free `R`-algebra on that type is left adjoint to the f
 
 @[expose] public section
 
-open CategoryTheory Limits
+open CategoryTheory
 
 universe v u
 
 variable (R : Type u) [CommRing R]
 
-set_option backward.privateInPublic true in
 /-- The category of R-algebras and their morphisms. -/
 structure AlgCat where
   private mk ::
@@ -58,7 +57,6 @@ lemma coe_of (X : Type v) [Ring X] [Algebra R X] : (of R X : Type v) = X :=
   rfl
 
 variable {R} in
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `AlgCat R`. -/
 @[ext]
 structure Hom (A B : AlgCat.{v} R) where

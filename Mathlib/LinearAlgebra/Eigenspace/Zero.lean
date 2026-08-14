@@ -83,7 +83,7 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
 
 lemma charpoly_eq_X_pow_iff [IsNoetherian R M] (φ : Module.End R M) :
     φ.charpoly = X ^ finrank R M ↔ ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0 :=
-  (charpoly_nilpotent_tfae φ).out 1 2
+  (charpoly_nilpotent_tfae φ).out 2 3
 
 open Module.Free in
 lemma hasEigenvalue_zero_tfae (φ : Module.End K M) :
@@ -119,7 +119,7 @@ lemma hasEigenvalue_zero_tfae (φ : Module.End K M) :
 
 lemma charpoly_constantCoeff_eq_zero_iff (φ : Module.End K M) :
     constantCoeff φ.charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ φ m = 0 :=
-  (hasEigenvalue_zero_tfae φ).out 2 5
+  (hasEigenvalue_zero_tfae φ).out 3 6
 
 open Module.Free in
 lemma not_hasEigenvalue_zero_tfae (φ : Module.End K M) :
@@ -178,7 +178,7 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
     natTrailingDegree_mul (charpoly_monic _).ne_zero (charpoly_monic _).ne_zero]
   have hG : natTrailingDegree (charpoly G) = 0 := by
     apply Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero
-    apply ((not_hasEigenvalue_zero_tfae G).out 2 5).mpr
+    apply ((not_hasEigenvalue_zero_tfae G).out 3 6).mpr
     intro x hx
     apply Subtype.ext
     suffices x.1 ∈ V ⊓ W by rwa [hVW.inf_eq_bot, Submodule.mem_bot] at this
@@ -188,7 +188,7 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
     rw [pow_one]
     rwa [Subtype.ext_iff] at hx
   rw [hG, add_zero, eq_comm]
-  apply ((charpoly_nilpotent_tfae F).out 2 3).mp
+  apply ((charpoly_nilpotent_tfae F).out 3 4).mp
   simp only [Subtype.forall, Module.End.mem_maxGenEigenspace, zero_smul, sub_zero, V, F]
   rintro x ⟨n, hx⟩
   use n

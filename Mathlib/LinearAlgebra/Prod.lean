@@ -640,6 +640,13 @@ theorem prod_eq_top_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} :
     p₁.prod p₂ = ⊤ ↔ p₁ = ⊤ ∧ p₂ = ⊤ := by
   simp only [eq_top_iff, le_prod_iff, map_top, range_fst, range_snd]
 
+variable {M M₂} in
+theorem span_prod_eq {s : Set M} {t : Set M₂} (hs : 0 ∈ s) (ht : 0 ∈ t) :
+    span R (s ×ˢ t) = (span R s).prod (span R t) := by
+  refine le_antisymm (span_prod_le s t) ?_
+  simp [Submodule.prod_le_iff, map_span]
+  grind [span_mono]
+
 end Submodule
 
 namespace LinearEquiv
@@ -815,6 +822,7 @@ variable [Semiring R]
 variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂] [Unique M₂]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying by the trivial module from the left does not change the structure.
 This is the `LinearEquiv` version of `AddEquiv.uniqueProd`. -/
 @[simps!]
@@ -824,6 +832,7 @@ def uniqueProd : (M₂ × M) ≃ₗ[R] M :=
 lemma coe_uniqueProd :
     (uniqueProd (R := R) (M := M) (M₂ := M₂) : (M₂ × M) ≃ M) = Equiv.uniqueProd M M₂ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying by the trivial module from the right does not change the structure.
 This is the `LinearEquiv` version of `AddEquiv.prodUnique`. -/
 @[simps!]

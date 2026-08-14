@@ -55,7 +55,7 @@ noncomputable section
 
 universe u v w
 
-open Function Set Uniformity Topology
+open Function Set Uniformity
 
 namespace Metric
 
@@ -183,7 +183,7 @@ set_option backward.privateInPublic.warn false in
 `Φ p` and `Φ q`, and between `Ψ p` and `Ψ q`, coincide up to `2 ε` where `ε > 0`, one can almost
 glue the two spaces `X` and `Y` along the images of `Φ` and `Ψ`, so that `Φ p` and `Ψ p` are
 at distance `ε`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def glueMetricApprox [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
     (H : ∀ p q, |dist (Φ p) (Φ q) - dist (Ψ p) (Ψ q)| ≤ 2 * ε) : MetricSpace (X ⊕ Y) where
   dist := glueDist Φ Ψ ε
@@ -308,7 +308,7 @@ namespace Sigma
 of two spaces. I.e., work with sigma types instead of sum types. -/
 variable {ι : Type*} {E : ι → Type*} [∀ i, MetricSpace (E i)]
 
-open Classical in
+open scoped Classical in
 /-- Distance on a disjoint union. There are many (noncanonical) ways to put a distance compatible
 with each factor.
 We choose a construction that works for unbounded spaces, but requires basepoints,
@@ -342,7 +342,7 @@ theorem dist_same (i : ι) (x y : E i) : dist (Sigma.mk i x) ⟨i, y⟩ = dist x
 @[simp]
 theorem dist_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
     dist (⟨i, x⟩ : Σ k, E k) ⟨j, y⟩ = dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨y⟩) y :=
-  dif_neg h
+  dite_eq_right h
 
 theorem one_le_dist_of_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
     1 ≤ dist (⟨i, x⟩ : Σ k, E k) ⟨j, y⟩ := by
@@ -421,7 +421,7 @@ protected def metricSpace : MetricSpace (Σ i, E i) := by
   · rintro ⟨i, x⟩ ⟨j, y⟩
     rcases eq_or_ne i j with (rfl | h)
     · simp [Sigma.dist, dist_comm]
-    · simp only [Sigma.dist, dist_comm, h, h.symm, not_false_iff, dif_neg]
+    · simp only [Sigma.dist, dist_comm, h, h.symm, not_false_iff, dite_eq_right]
       abel
   · rintro ⟨i, x⟩ ⟨j, y⟩
     rcases eq_or_ne i j with (rfl | hij)
@@ -433,10 +433,6 @@ protected def metricSpace : MetricSpace (Σ i, E i) := by
         _ < 1 := by rw [h]; exact zero_lt_one
 
 attribute [local instance] Sigma.metricSpace
-
-open Topology
-
-open Filter
 
 /-- The injection of a space in a disjoint union is an isometry -/
 theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σ k, E k) :=
@@ -468,7 +464,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a pseudometric space
 structure on `X ⊕ Y` by declaring that `Φ x` and `Ψ x` are at distance `0`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X ⊕ Y) where
   dist := glueDist Φ Ψ 0
   dist_self := glueDist_self Φ Ψ 0
