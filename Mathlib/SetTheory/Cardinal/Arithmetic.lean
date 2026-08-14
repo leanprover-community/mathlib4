@@ -831,15 +831,16 @@ lemma mk_sdiff_eq_left' (hs : s.Infinite) (hst : #(s ∩ t : Set α) < #s) : #(s
   grw [← mk_union_le .., Set.inter_union_sdiff]
 
 @[simp]
-lemma mk_sdiff_eq_left (hs : s.Infinite) (hts : #t < #s) : #↑(s \ t) = #s :=
+lemma mk_sdiff_eq_left (hs : s.Infinite) (hts : #t < #s) : #(s \ t : Set α) = #s :=
   mk_sdiff_eq_left' hs <| hts.trans_le' <| mk_subtype_mono Set.inter_subset_right
 
 @[simp]
-lemma mk_sdiff_eq_left_of_finite' (hs : s.Infinite) (hst : (s ∩ t).Finite) : #↑(s \ t) = #s :=
+lemma mk_sdiff_eq_left_of_finite' (hs : s.Infinite) (hst : (s ∩ t : Set α).Finite) :
+    #(s \ t : Set α) = #s :=
   mk_sdiff_eq_left' hs <| (aleph0_le_mk_set.2 hs).trans_lt' <| by simpa
 
 @[simp]
-lemma mk_sdiff_eq_left_of_finite (hs : s.Infinite) (ht : t.Finite) : #↑(s \ t) = #s :=
+lemma mk_sdiff_eq_left_of_finite (hs : s.Infinite) (ht : t.Finite) : #(s \ t : Set α) = #s :=
   mk_sdiff_eq_left hs <| (aleph0_le_mk_set.2 hs).trans_lt' <| by simpa
 
 end sdiff
