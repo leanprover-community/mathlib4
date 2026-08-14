@@ -185,7 +185,7 @@ def finsupport : Finset ι := (ρ.locallyFinite.point_finite x₀).toFinset
 @[simp]
 theorem mem_finsupport (x₀ : X) {i} :
     i ∈ ρ.finsupport x₀ ↔ i ∈ support fun i ↦ ρ i x₀ := by
-  simp only [finsupport, mem_support, Finite.mem_toFinset, mem_setOf_eq]
+  simp only [finsupport, mem_support, Finite.mem_toFinset, mem_ofPred_eq]
 
 @[simp]
 theorem coe_finsupport (x₀ : X) :
