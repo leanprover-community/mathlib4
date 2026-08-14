@@ -34,8 +34,6 @@ In this file, `f` stands for the inertia degree of `P` over `p`, leaving `p` and
 
 -/
 
-deprecated_module "Use RingTheory.RamificationInertia.Inertia" (since := "2026-08-14")
-
 @[expose] public section
 
 
