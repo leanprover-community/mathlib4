@@ -44,7 +44,8 @@ This is the filter of all open codiscrete sets within S. We also define `Filter.
 
 open Set Filter Function Topology
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f f₁ f₂ : X → Y} {s : Set X}
+variable {X Y Z : Type*} [TopologicalSpace X] {s : Set X} [TopologicalSpace Y] {f g₁ g₂ : X → Y}
+  {g₁ g₂ : X → Z}
 
 theorem discreteTopology_subtype_iff {S : Set Y} :
     DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
@@ -257,29 +258,27 @@ theorem nhdsWithin_le_codiscreteWithin {T : Set X} {x : X} (hx : x ∈ T) :
 
 /-- A property holds along `codiscreteWithin U` iff, for every point `x` of `U`, it holds along
 the punctured neighborhood of `x`, at every point of `U`. -/
-theorem eventually_codiscreteWithin_iff_forall_eventually_nhdsNE {U : Set X} {p : X → Prop} :
-    (∀ᶠ x in codiscreteWithin U, p x) ↔ ∀ x ∈ U, ∀ᶠ y in 𝓝[≠] x, y ∈ U → p y := by
+theorem eventually_codiscreteWithin_iff_forall_eventually_nhdsNE {p : X → Prop} :
+    (∀ᶠ x in codiscreteWithin s, p x) ↔ ∀ x ∈ s, ∀ᶠ y in 𝓝[≠] x, y ∈ s → p y := by
   simp [mem_codiscreteWithin_iff_forall_mem_nhdsNE, Filter.eventually_iff, Set.union_def,
     imp_iff_not_or, or_comm]
 
 /-- Two functions agree along `codiscreteWithin U` iff, for every point `x` of `U`, they agree
 along the punctured neighborhood of `x`, at every point of `U`. -/
-theorem eventuallyEq_codiscreteWithin_iff_forall_eventually_nhdsNE {U : Set X} {Z : Type*}
-  {g₁ g₂ : X → Z} :
-    g₁ =ᶠ[codiscreteWithin U] g₂ ↔ ∀ x ∈ U, ∀ᶠ y in 𝓝[≠] x, y ∈ U → g₁ y = g₂ y :=
+theorem eventuallyEq_codiscreteWithin_iff_forall_eventually_nhdsNE :
+    g₁ =ᶠ[codiscreteWithin s] g₂ ↔ ∀ x ∈ s, ∀ᶠ y in 𝓝[≠] x, y ∈ s → g₁ y = g₂ y :=
   eventually_codiscreteWithin_iff_forall_eventually_nhdsNE
 
 /-- A property holds along `codiscreteWithin U` iff, for every point `x` of `U`, it holds along
 the punctured neighborhood within `U` of `x`. -/
-theorem eventually_codiscreteWithin_iff_forall_eventually_nhdsWithin {U : Set X} {p : X → Prop} :
-    (∀ᶠ x in codiscreteWithin U, p x) ↔ ∀ x ∈ U, ∀ᶠ y in 𝓝[U \ {x}] x, p y :=
+theorem eventually_codiscreteWithin_iff_forall_eventually_nhdsWithin {p : X → Prop} :
+    (∀ᶠ x in codiscreteWithin s, p x) ↔ ∀ x ∈ s, ∀ᶠ y in 𝓝[s \ {x}] x, p y :=
   mem_codiscreteWithin_iff_forall_mem_nhdsWithin
 
-omit [TopologicalSpace Y] in
 /-- Two functions agree along `codiscreteWithin U` iff, for every point `x` of `U`, they agree
 along the punctured neighborhood within `U` of `x`. -/
-theorem eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsWithin {U : Set X} :
-    f₁ =ᶠ[codiscreteWithin U] f₂ ↔ ∀ x ∈ U, f₁ =ᶠ[𝓝[U \ {x}] x] f₂ :=
+theorem eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsWithin :
+    g₁ =ᶠ[codiscreteWithin s] g₂ ↔ ∀ x ∈ s, g₁ =ᶠ[𝓝[s \ {x}] x] g₂ :=
   eventually_codiscreteWithin_iff_forall_eventually_nhdsWithin
 
 lemma mem_codiscreteWithin_accPt {S T : Set X} :
@@ -287,14 +286,13 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
 /-- Any set is codiscrete within itself. -/
-@[simp]
-theorem Filter.self_mem_codiscreteWithin (U : Set X) :
-    U ∈ Filter.codiscreteWithin U := by simp [mem_codiscreteWithin]
+@[simp] theorem Filter.self_mem_codiscreteWithin :
+    s ∈ Filter.codiscreteWithin s := by simp [mem_codiscreteWithin]
 
 /-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
 @[gcongr]
-lemma Filter.codiscreteWithin_mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
-    codiscreteWithin U₁ ≤ codiscreteWithin U := by
+lemma Filter.codiscreteWithin_mono {s₁ : Set X} (hU : s₁ ⊆ s) :
+    codiscreteWithin s₁ ≤ codiscreteWithin s := by
   refine (biSup_mono hU).trans <| iSup₂_mono fun _ _ ↦ ?_
   gcongr
 
@@ -311,21 +309,21 @@ theorem isDiscrete_of_codiscreteWithin {U s : Set X} (h : sᶜ ∈ Filter.codisc
 /-- Helper lemma for `codiscreteWithin_iff_locallyFiniteComplementWithin`: A set `s` is
 `codiscreteWithin U` iff every point `z ∈ U` has a punctured neighborhood that does not intersect
 `U \ s`. -/
-lemma codiscreteWithin_iff_locallyEmptyComplementWithin {s U : Set X} :
-    s ∈ codiscreteWithin U ↔ ∀ z ∈ U, ∃ t ∈ 𝓝[≠] z, t ∩ (U \ s) = ∅ := by
+lemma codiscreteWithin_iff_locallyEmptyComplementWithin {t : Set X} :
+    t ∈ codiscreteWithin s ↔ ∀ z ∈ s, ∃ τ ∈ 𝓝[≠] z, τ ∩ (s \ t) = ∅ := by
   simp only [mem_codiscreteWithin, disjoint_principal_right]
-  refine ⟨fun h z hz ↦ ⟨(U \ s)ᶜ, h z hz, by simp⟩, fun h z hz ↦ ?_⟩
+  refine ⟨fun h z hz ↦ ⟨(s \ t)ᶜ, h z hz, by simp⟩, fun h z hz ↦ ?_⟩
   rw [← exists_mem_subset_iff]
-  obtain ⟨t, h₁t, h₂t⟩ := h z hz
-  use t, h₁t, (disjoint_iff_inter_eq_empty.mpr h₂t).subset_compl_right
+  obtain ⟨τ, h₁τ, h₂τ⟩ := h z hz
+  use τ, h₁τ, (disjoint_iff_inter_eq_empty.mpr h₂τ).subset_compl_right
 
 /-- If `U` is closed and `s` is codiscrete within `U`, then `U \ s` is closed. -/
-theorem isClosed_sdiff_of_codiscreteWithin {s U : Set X} (hs : s ∈ codiscreteWithin U)
-    (hU : IsClosed U) :
-    IsClosed (U \ s) := by
+theorem isClosed_sdiff_of_codiscreteWithin {t : Set X} (hs : t ∈ codiscreteWithin s)
+    (hU : IsClosed s) :
+    IsClosed (s \ t) := by
   rw [← isOpen_compl_iff, isOpen_iff_eventually]
   intro x hx
-  by_cases h₁x : x ∈ U
+  by_cases h₁x : x ∈ s
   · rw [mem_codiscreteWithin] at hs
     filter_upwards [eventually_nhdsWithin_iff.1 (disjoint_principal_right.1 (hs x h₁x))]
     intro a ha
@@ -334,7 +332,7 @@ theorem isClosed_sdiff_of_codiscreteWithin {s U : Set X} (hs : s ∈ codiscreteW
     · specialize ha h₂a
       tauto_set
   · rw [eventually_iff_exists_mem]
-    use Uᶜ, hU.compl_mem_nhds h₁x
+    use sᶜ, hU.compl_mem_nhds h₁x
     intro y hy
     tauto_set
 
@@ -353,21 +351,21 @@ theorem nhdsNE_of_nhdsNE_sdiff_finite {X : Type*} [TopologicalSpace X] [T1Space 
 /-- In a T1Space, a set `s` is codiscreteWithin `U` iff it has locally finite complement within `U`.
 More precisely: `s` is codiscreteWithin `U` iff every point `z ∈ U` has a punctured neighborhood
 intersect `U \ s` in only finitely many points. -/
-theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Set X} :
-    s ∈ codiscreteWithin U ↔ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ (U \ s)) := by
+theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {t : Set X} :
+    t ∈ codiscreteWithin s ↔ ∀ z ∈ s, ∃ τ ∈ 𝓝 z, Set.Finite (τ ∩ (s \ t)) := by
   rw [codiscreteWithin_iff_locallyEmptyComplementWithin]
   constructor
   · intro h z h₁z
-    obtain ⟨t, h₁t, h₂t⟩ := h z h₁z
-    use insert z t, insert_mem_nhds_iff.mpr h₁t
-    by_cases hz : z ∈ U \ s
-    · rw [inter_comm, inter_insert_of_mem hz, inter_comm, h₂t]
+    obtain ⟨τ, h₁τ, h₂τ⟩ := h z h₁z
+    use insert z τ, insert_mem_nhds_iff.mpr h₁τ
+    by_cases hz : z ∈ s \ t
+    · rw [inter_comm, inter_insert_of_mem hz, inter_comm, h₂τ]
       simp
-    · rw [inter_comm, inter_insert_of_notMem hz, inter_comm, h₂t]
+    · rw [inter_comm, inter_insert_of_notMem hz, inter_comm, h₂τ]
       simp
   · intro h z h₁z
-    obtain ⟨t, h₁t, h₂t⟩ := h z h₁z
-    use t \ (t ∩ (U \ s)), nhdsNE_of_nhdsNE_sdiff_finite (mem_nhdsWithin_of_mem_nhds h₁t) h₂t
+    obtain ⟨τ, h₁τ, h₂τ⟩ := h z h₁z
+    use τ \ (τ ∩ (s \ t)), nhdsNE_of_nhdsNE_sdiff_finite (mem_nhdsWithin_of_mem_nhds h₁τ) h₂τ
     simp
 
 /--
@@ -455,12 +453,11 @@ lemma eventually_codiscrete_iff_forall_eventually_nhdsNE {p : X → Prop} :
     (∀ᶠ x in Filter.codiscrete X, p x) ↔ ∀ x, ∀ᶠ y in 𝓝[≠] x, p y :=
   mem_codiscrete_iff_forall_mem_nhdsNE
 
-omit [TopologicalSpace Y] in
 /--
 Two functions agree along the codiscrete filter iff they agree along the punctured neighborhood of
 every point. -/
 lemma eventuallyEq_codiscrete_iff_forall_eventuallyEq_nhdsNE :
-    f₁ =ᶠ[Filter.codiscrete X] f₂ ↔ ∀ x, f₁ =ᶠ[𝓝[≠] x] f₂ :=
+    g₁ =ᶠ[Filter.codiscrete X] g₂ ↔ ∀ x, g₁ =ᶠ[𝓝[≠] x] g₂ :=
   eventually_codiscrete_iff_forall_eventually_nhdsNE
 
 lemma mem_codiscrete_accPt {S : Set X} :
