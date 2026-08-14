@@ -116,6 +116,7 @@ theorem inertiaDeg_eq_of_isMaximal [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
 @[deprecated (since := "2026-07-03")] alias inertiaDeg'_eq_of_isMaximal :=
   inertiaDeg_eq_of_isMaximal
 
+@[deprecated "Use `inertiaDeg_eq_of_isMaximal` instead." (since := "2026-08-14")]
 theorem inertiaDeg'_eq_inertiaDeg [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
     p.inertiaDeg' q = q.inertiaDeg R := by
   rw [inertiaDeg'_algebraMap, inertiaDeg_eq_of_isMaximal p q]
@@ -182,7 +183,7 @@ theorem inertiaDeg_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommC
 theorem cardQuot_pow_inertiaDeg [Module.Finite R S] [p.IsMaximal] [q.IsMaximal] [q.LiesOver p] :
     p.cardQuot ^ q.inertiaDeg R = q.cardQuot := by
   let _ : Field (R ⧸ p) := Quotient.field p
-  rw [← inertiaDeg'_eq_inertiaDeg p q, inertiaDeg'_algebraMap p q]
+  rw [inertiaDeg_eq_of_isMaximal p q]
   exact Module.natCard_eq_pow_finrank.symm
 
 @[deprecated (since := "2026-07-03")] alias cardQuot_pow_inertiaDeg' := cardQuot_pow_inertiaDeg
