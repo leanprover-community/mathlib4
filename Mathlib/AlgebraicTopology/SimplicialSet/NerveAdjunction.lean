@@ -452,7 +452,6 @@ lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
   exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans hoFunctor _) _
     (Presheaf.isColimitTautologicalCocone' X)
 
-set_option backward.isDefEq.respectTransparency false in
 instance isIso_prodComparison (X Y : SSet) :
     IsIso (prodComparison hoFunctor.{u} X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
   convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫

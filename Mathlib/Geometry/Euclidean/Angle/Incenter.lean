@@ -293,14 +293,14 @@ lemma angle_incenter_eq_angle_div_two {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ �
     (t'.sSameSide_affineSpan_pair_incenter_point h₂₃.symm h₁₃.symm h₁₂.symm)
 
 /-- The incenter of a triangle bisects the angle at a vertex. -/
-lemma two_mul_angle_incenter_eq {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
+lemma two_mul_angle_incenter {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) :
     2 * ∠ (t.points i₂) (t.points i₁) t.incenter = ∠ (t.points i₂) (t.points i₁) (t.points i₃) := by
   rw [t.angle_incenter_eq_angle_div_two h₁₂ h₁₃ h₂₃]
   field
 
 /-- The incenter of a triangle bisects the angle at a vertex. -/
-lemma angle_incenter_eq {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
+lemma angle_incenter {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) :
     ∠ (t.points i₂) (t.points i₁) t.incenter = ∠ t.incenter (t.points i₁) (t.points i₃) := by
   rw [t.angle_incenter_eq_angle_div_two h₁₂ h₁₃ h₂₃, angle_comm,
@@ -322,7 +322,7 @@ lemma angle_excenter_singleton_eq_angle_div_two {i₁ i₂ i₃ : Fin 3} (h₁�
   exact t'.sSameSide_affineSpan_pair_excenter_singleton_point h₁₃.symm h₂₃.symm h₁₂
 
 /-- The excenter of a triangle opposite a vertex bisects the angle at that vertex. -/
-lemma two_mul_angle_excenter_singleton_eq {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
+lemma two_mul_angle_excenter_singleton {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) :
     2 * ∠ (t.points i₂) (t.points i₁) (t.excenter {i₁}) =
       ∠ (t.points i₂) (t.points i₁) (t.points i₃) := by
@@ -330,7 +330,7 @@ lemma two_mul_angle_excenter_singleton_eq {i₁ i₂ i₃ : Fin 3} (h₁₂ : i�
   field
 
 /-- The excenter of a triangle opposite a vertex bisects the angle at that vertex. -/
-lemma angle_excenter_singleton_eq {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
+lemma angle_excenter_singleton {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) :
     ∠ (t.points i₂) (t.points i₁) (t.excenter {i₁}) =
       ∠ (t.excenter {i₁}) (t.points i₁) (t.points i₃) := by
@@ -384,7 +384,7 @@ lemma two_mul_angle_excenter_singleton_eq_pi_sub_angle {i₁ i₂ i₃ : Fin 3} 
   field
 
 /-- The excenter of a triangle opposite a vertex bisects the angle at another vertex. -/
-lemma angle_excenter_singleton_sub_eq {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
+lemma angle_excenter_singleton_sub {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) :
     ∠ (t.points i₁) (t.points i₂) (t.excenter {i₁}) -
       ∠ (t.points i₃) (t.points i₂) (t.excenter {i₁}) =
