@@ -56,12 +56,15 @@ def omega : QuadraticAlgebra R a b :=
 scoped notation "ω" => omega
 
 @[simp]
-theorem omega_re : (ω : QuadraticAlgebra R a b).re = 0 :=
+theorem re_omega : (ω : QuadraticAlgebra R a b).re = 0 :=
   rfl
 
 @[simp]
-theorem omega_im : (ω : QuadraticAlgebra R a b).im = 1 :=
+theorem im_omega : (ω : QuadraticAlgebra R a b).im = 1 :=
   rfl
+
+@[deprecated (since := "2026-08-13")] alias omega_re := re_omega
+@[deprecated (since := "2026-08-13")] alias omega_im := im_omega
 
 end
 
@@ -93,14 +96,12 @@ theorem mk_eq_add_smul_omega (x y : R) :
 
 variable {A : Type*} [Ring A] [Algebra R A]
 
-set_option backward.isDefEq.respectTransparency false in
 @[ext]
 theorem algHom_ext {f g : QuadraticAlgebra R a b →ₐ[R] A}
     (h : f ω = g ω) : f = g := by
   ext ⟨x, y⟩
   simp [mk_eq_add_smul_omega, h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The unique `AlgHom` from `QuadraticAlgebra R a b` to an `R`-algebra `A`,
 constructed by replacing `ω` with the provided root.
 Conversely, this associates to every algebra morphism `QuadraticAlgebra R a b →ₐ[R] A`
@@ -468,6 +469,14 @@ instance : Field (QuadraticAlgebra K a b) where
   qsmul := (· • ·)
   nnqsmul_def q x := by ext <;> simp [NNRat.smul_def]
   qsmul_def q x := by ext <;> simp [Rat.smul_def]
+
+/-- When `b = 0`, the `Field` instance is inferable from `¬ IsSquare a` alone: it provides the
+no-root condition `∀ r, r ^ 2 ≠ a + 0 * r`. -/
+instance {a : K} [Fact (¬ IsSquare a)] : Fact (∀ r : K, r ^ 2 ≠ a + 0 * r) :=
+  ⟨fun r hr ↦ Fact.out (p := ¬ IsSquare a) ⟨r, by simpa [sq] using hr.symm⟩⟩
+
+-- The `b = 0` bridge makes the `Field` instance inferable from `¬ IsSquare a` alone.
+example {a : K} [Fact (¬ IsSquare a)] : Field (QuadraticAlgebra K a 0) := inferInstance
 
 end field
 
