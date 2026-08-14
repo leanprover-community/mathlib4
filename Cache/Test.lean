@@ -159,6 +159,17 @@ def test_Container_azureURL : IO Unit := do
     "https://lakecache.blob.core.windows.net/mathlib4"
     Container.legacy.azureURL
 
+/-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set
+and falls back to the Azure account when it is not. `getBaseURLFrom` is pure,
+so this test covers both branches; the environment-reading wrapper
+(`getBaseURL`) adds no logic of its own. -/
+def test_getBaseURLFrom : IO Unit := do
+  IO.println "getBaseURLFrom:"
+  assertEq "no override → the Azure account"
+    defaultGetBaseURL (getBaseURLFrom none)
+  assertEq "override → the given base"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org"))
+
 /-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
 `azureURL`, under whichever base `MATHLIB_CACHE_BASE_URL` selects. With no
 override, reads address Azure directly and the two URL families coincide. -/
@@ -235,6 +246,28 @@ def test_defaultContainersForRepo : IO Unit := do
     ((defaultContainersForRepo MATHLIBREPO).getLast? == some .legacy)
   assert "nightly-testing chain ends with legacy"
     ((defaultContainersForRepo NIGHTLY_TESTING_REPO).getLast? == some .legacy)
+
+/-- `effectiveGetURLs` pairs the lookup chain with read URLs in trust order.
+This test covers the default chain and the `--cache-from` override. The
+`MATHLIB_CACHE_GET_URL` and `MATHLIB_CACHE_FROM` branches need process state,
+so the CI integration tests exercise them instead. -/
+def test_effectiveGetURLs : IO Unit := do
+  IO.println "effectiveGetURLs:"
+  if (← IO.getEnv "MATHLIB_CACHE_GET_URL").isSome ||
+      (← IO.getEnv "MATHLIB_CACHE_FROM").isSome then
+    IO.println "  skipped: MATHLIB_CACHE_GET_URL or MATHLIB_CACHE_FROM is set"
+    return
+  let base ← getBaseURL
+  assert "default chain pairs each container with its read URL"
+    ((← effectiveGetURLs MATHLIBREPO) ==
+      [(some .master, s!"{base}/mathlib4-master"),
+       (some .legacy, s!"{base}/mathlib4")])
+  cacheFromOverride.set (some [.forks, .master])
+  assert "--cache-from override keeps its order"
+    ((← effectiveGetURLs MATHLIBREPO) ==
+      [(some .forks, s!"{base}/mathlib4-forks"),
+       (some .master, s!"{base}/mathlib4-master")])
+  cacheFromOverride.set none
 
 end PerRepoAllowlist
 
@@ -508,6 +541,22 @@ def test_markerURL : IO Unit := do
   assertEq "marker repo is lowercased in the path"
     "https://lakecache.blob.core.windows.net/mathlib4-forks/m/alice/mathlib4/abc123"
     (markerURL .forks "Alice/Mathlib4" "abc123")
+
+/-- Marker probes read through the base URL; marker writes address Azure
+directly (`markerURL`). The two URLs agree only under the default base. -/
+def test_markerReadURL : IO Unit := do
+  IO.println "markerReadURL:"
+  let base ← getBaseURL
+  assertEq "probe URL follows the read base"
+    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
+    (← markerReadURL .forks "alice/mathlib4" "abc123")
+  assertEq "probe repo is lowercased in the path"
+    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
+    (← markerReadURL .forks "Alice/Mathlib4" "abc123")
+  if (← IO.getEnv "MATHLIB_CACHE_BASE_URL").isNone then
+    assertEq "default probe URL matches the write URL"
+      (markerURL .forks "alice/mathlib4" "abc123")
+      (← markerReadURL .forks "alice/mathlib4" "abc123")
 
 end Marker
 
@@ -1070,8 +1119,10 @@ def runAll : IO Unit := do
   test_Container_parse
   test_Container_azureURL
   test_Container_getURL
+  test_getBaseURLFrom
   test_Container_flatPath
   test_defaultContainersForRepo
+  test_effectiveGetURLs
   test_mkFileURL
   test_parseCacheFromList
   test_extractRepoFromUrl
@@ -1081,6 +1132,7 @@ def runAll : IO Unit := do
   test_UInt64_asLTar
   test_hash_roundtrip
   test_markerURL
+  test_markerReadURL
   test_getRepoScope
   test_shouldWarnNonDefaultScope
   test_getNonDefaultScopeReason

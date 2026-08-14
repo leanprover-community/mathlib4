@@ -146,8 +146,17 @@ URL.
 Only reads follow this base. Uploads, marker writes, and the blob-listing
 query authenticate against Azure and use `Container.azureURL` directly.
 -/
+def getBaseURLFrom (envValue? : Option String) : String :=
+  envValue?.getD defaultGetBaseURL
+
+/--
+Base URL for cache reads, from the live environment: `getBaseURLFrom` applied
+to `MATHLIB_CACHE_BASE_URL`. The pure function carries the semantics and the
+docstring; tests cover both of its branches without a change to the process
+environment.
+-/
 def getBaseURL : IO String := do
-  return (← IO.getEnv "MATHLIB_CACHE_BASE_URL").getD defaultGetBaseURL
+  return getBaseURLFrom (← IO.getEnv "MATHLIB_CACHE_BASE_URL")
 
 /-- Read URL for a container: `{getBaseURL}/{azureContainerName}`. -/
 def Container.getURL (c : Container) : IO String := do

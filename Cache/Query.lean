@@ -85,7 +85,7 @@ billed as a Read op.
 -/
 def probeContainerForSHA (container : Container) (repo sha : String) :
     IO Bool := do
-  let url := s!"{← container.getURL}/{markerPath repo sha}"
+  let url ← markerReadURL container repo sha
   -- Discard the response body to the platform null device (`NUL` on Windows),
   -- so curl reports a write error only on a genuine failure, not on every probe.
   -- `--location`: the read base may answer with a redirect; `%{http_code}` then

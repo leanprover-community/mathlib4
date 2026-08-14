@@ -42,6 +42,14 @@ def markerURL (container : Container) (repo sha : String) : String :=
   s!"{container.azureURL}/{markerPath repo sha}"
 
 /--
+Read-side URL for the per-SHA marker blob: probes follow the read base
+(`Container.getURL`), unlike `markerURL`, which addresses Azure directly for
+writes.
+-/
+def markerReadURL (container : Container) (repo sha : String) : IO String := do
+  return s!"{← container.getURL}/{markerPath repo sha}"
+
+/--
 Upload a tiny marker blob to `/m/{repo}/{sha}` in the given container. The
 blob content is the SHA itself, as a debugging aid; existence is the
 signal.
