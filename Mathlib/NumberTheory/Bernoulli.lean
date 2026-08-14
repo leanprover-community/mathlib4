@@ -691,7 +691,7 @@ theorem padicValuation_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
 number `B₂ₖ` is `-1`. -/
 theorem padicValRat_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
     padicValRat p (bernoulli (2 * k)) = -1 := by
-  grind [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, 
+  grind [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
     WithZero.exp_inj, WithZero.exp_ne_zero, padicValuation_bernoulli hk hpk]
 
 /-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p` divides the denominator of the
