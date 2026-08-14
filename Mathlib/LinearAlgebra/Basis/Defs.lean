@@ -199,7 +199,7 @@ theorem repr_reindex_apply (i' : ι') : (b.reindex e).repr x i' = b.repr x (e.sy
   show (Finsupp.domLCongr e : _ ≃ₗ[R] _) (b.repr x) i' = _ by simp
 
 @[simp]
-theorem repr_reindex : (b.reindex e).repr x = (b.repr x).mapDomain e :=
+theorem repr_reindex : (b.reindex e).repr x = (b.repr x).equivMapDomain e :=
   DFunLike.ext _ _ <| by simp [repr_reindex_apply]
 
 @[simp]
@@ -216,8 +216,6 @@ end Basis
 
 section Fintype
 
-open Basis
-
 open Fintype
 
 /-- A module over `R` with a finite basis is linearly equivalent to functions from its basis to `R`.
@@ -231,11 +229,12 @@ def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
       (ι →₀ R) ≃ₗ[R] ι → R)
 
 /-- A module over a finite ring that admits a finite basis is finite. -/
-@[implicit_reducible]
+@[instance_reducible]
 def fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
   haveI := Classical.decEq ι
   Fintype.ofEquiv _ b.equivFun.toEquiv.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a basis `v` indexed by `ι`, the canonical linear equivalence between `ι → R` and `M` maps
 a function `x : ι → R` to the linear combination `∑_i x i • v i`. -/
 @[simp]
@@ -377,7 +376,6 @@ variable {R' : Type*} [Semiring R'] [Module R' M] (f : R ≃+* R')
 
 attribute [local instance] SMul.comp.isScalarTower
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `R` and `R'` are isomorphic rings that act identically on a module `M`,
 then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module.
 
@@ -479,8 +477,7 @@ theorem reindexFinsetRange_repr_self (i : ι) :
     b.reindexFinsetRange.repr (b i) =
       Finsupp.single ⟨b i, Finset.mem_image_of_mem b (Finset.mem_univ i)⟩ 1 := by
   ext ⟨bi, hbi⟩
-  rw [reindexFinsetRange, repr_reindex, Finsupp.mapDomain_equiv_apply, reindexRange_repr_self]
-  simp [Finsupp.single_apply]
+  simp [reindexFinsetRange, reindexRange_repr_self]
 
 @[simp]
 theorem reindexFinsetRange_repr (x : M) (i : ι)
@@ -710,8 +707,7 @@ variable (e : ι ≃ ι')
 @[simp]
 theorem sumCoords_reindex : (b.reindex e).sumCoords = b.sumCoords := by
   ext x
-  simp only [coe_sumCoords, repr_reindex]
-  exact Finsupp.sum_mapDomain_index (fun _ => rfl) fun _ _ _ => rfl
+  simp [Function.id_def]
 
 variable (S : Type*) [Semiring S] [Module S M']
 variable [SMulCommClass R S M']

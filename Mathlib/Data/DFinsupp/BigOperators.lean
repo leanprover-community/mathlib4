@@ -285,6 +285,7 @@ theorem sumZeroHom_single [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, Z
   dsimp [sumZeroHom, single, Trunc.lift_mk]
   rw [Multiset.toFinset_singleton, Finset.sum_singleton, Pi.single_eq_same]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumZeroHom_piSingle [∀ i, Zero (β i)] [AddCommMonoid γ] (i) (φ : ZeroHom (β i) γ) :
     sumZeroHom (Pi.single i φ) = φ.comp { toFun := (· i), map_zero' := rfl } := by
@@ -308,6 +309,7 @@ theorem sumZeroHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decid
   · rfl
   · rw [not_not.mp h, map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 When summing over an `AddMonoidHom`, the decidability assumption is not needed, and the result is
 also an `AddMonoidHom`.
@@ -384,7 +386,7 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
 /-- The `DFinsupp` version of `Finsupp.liftAddHom_singleAddHom` -/
 theorem liftAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
     liftAddHom (singleAddHom β) = AddMonoidHom.id (Π₀ i, β i) :=
-  liftAddHom.toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
+  liftAddHom.toEquiv.eq_symm_apply.1 rfl
 
 /-- The `DFinsupp` version of `Finsupp.liftAddHom_apply_single` -/
 theorem liftAddHom_apply_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f : ∀ i, β i →+ γ)
