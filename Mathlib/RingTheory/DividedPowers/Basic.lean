@@ -97,7 +97,7 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
   dpow n a := open scoped Classical in ite (a = 0 ∧ n = 0) 1 0
   dpow_null {n a} ha := by
     simp only [mem_bot] at ha
-    rw [if_neg]
+    rw [ite_eq_right]
     exact not_and_of_not_left (n = 0) ha
   dpow_zero ha := by
     rw [mem_bot.mp ha]
@@ -119,21 +119,21 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
     rw [mem_bot.mp hx]
     simp only [mul_zero, true_and, mul_ite, mul_one]
     by_cases hn : n = 0
-    · rw [if_pos hn, hn, if_pos rfl, _root_.pow_zero]
-    · simp only [if_neg hn]
+    · rw [ite_eq_left hn, hn, ite_eq_left rfl, _root_.pow_zero]
+    · simp only [ite_eq_right hn]
   mul_dpow {m n x} hx := by
     rw [mem_bot.mp hx]
     simp only [true_and, mul_ite, mul_one, mul_zero, add_eq_zero]
     by_cases hn : n = 0
     · simp only [hn, ite_true, and_true, add_zero, choose_self, cast_one]
-    · rw [if_neg hn, if_neg]
+    · rw [ite_eq_right hn, ite_eq_right]
       exact not_and_of_not_right (m = 0) hn
   dpow_comp m {n a} hn ha := by
     rw [mem_bot.mp ha]
     simp only [true_and, ite_eq_right_iff, _root_.mul_eq_zero, mul_ite, mul_one, mul_zero]
     by_cases hm : m = 0
     · simp [hm, uniformBell_zero_left, hn]
-    · simp only [hm, and_false, ite_false, false_or, if_neg hn]
+    · simp only [hm, and_false, ite_false, false_or, ite_eq_right hn]
 
 lemma dividedPowersBot_dpow_eq [DecidableEq A] (n : ℕ) (a : A) :
     (dividedPowersBot A).dpow n a =
@@ -247,8 +247,8 @@ theorem coincide_on_smul {J : Ideal A} (hJ : DividedPowers J) {n : ℕ} (ha : a 
       ← hJ.factorial_mul_dpow_eq_pow hb, ← hI.factorial_mul_dpow_eq_pow ha]
     ring
   | add x hx y hy hx' hy' =>
-    rw [hI.dpow_add (mul_le_right hx) (mul_le_right hy),
-      hJ.dpow_add (mul_le_left hx) (mul_le_left hy)]
+    rw [hI.dpow_add (mul_le_left hx) (mul_le_left hy),
+      hJ.dpow_add (mul_le_right hx) (mul_le_right hy)]
     apply sum_congr rfl
     intro k _
     rw [hx', hy']
