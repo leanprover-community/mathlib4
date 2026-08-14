@@ -123,7 +123,7 @@ lemma basis_apply (n : Fin 2) :
     CoordinateRing.basis W' n = (AdjoinRoot.powerBasis' monic_polynomial).gen ^ (n : ℕ) := by
   classical
   nontriviality R
-  rw [CoordinateRing.basis, Or.by_cases, dif_neg <| not_subsingleton R, Basis.reindex_apply,
+  rw [CoordinateRing.basis, Or.by_cases, dite_eq_right <| not_subsingleton R, Basis.reindex_apply,
     PowerBasis.basis_eq_pow, finCongr_symm_apply, Fin.val_cast]
 
 @[simp]
@@ -282,8 +282,6 @@ lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W' x (C y) = XYIdeal W' x (linePolyn
   C_simp
   ring1
 
--- Non-terminal simp, used to be field_simp
-set_option linter.flexible false in
 lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
@@ -412,7 +410,7 @@ lemma norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • (1 : W'.Coordinate
   simp_rw [Algebra.norm_eq_matrix_det <| CoordinateRing.basis W', Matrix.det_fin_two,
     Algebra.leftMulMatrix_eq_repr_mul, basis_zero, mul_one, basis_one, smul_basis_mul_Y, map_add,
     Finsupp.add_apply, map_smul, Finsupp.smul_apply, ← basis_zero, ← basis_one,
-    Basis.repr_self_apply, if_pos, one_ne_zero, if_false, smul_eq_mul]
+    Basis.repr_self_apply, ite_eq_left, one_ne_zero, ite_false, smul_eq_mul]
   ring1
 
 lemma coe_norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • 1 + q • mk W' Y) =
@@ -677,12 +675,12 @@ lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
 lemma add_some {x₁ x₂ y₁ y₂ : F} (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) {h₁ : W.Nonsingular x₁ y₁}
     {h₂ : W.Nonsingular x₂ y₂} :
     some _ _ h₁ + some _ _ h₂ = some _ _ (nonsingular_add h₁ h₂ hxy) := by
-  simp only [add_def, add, dif_neg hxy]
+  simp only [add_def, add, dite_eq_right hxy]
 
 @[simp]
 lemma add_of_Y_eq {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) : some _ _ h₁ + some _ _ h₂ = 0 := by
-  simpa only [add_def, add] using dif_pos ⟨hx, hy⟩
+  simpa only [add_def, add] using dite_eq_left ⟨hx, hy⟩
 
 -- Removing `@[simp]`, because `hy` causes a maximum recursion depth error in the simpNF linter.
 lemma add_self_of_Y_eq {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ = W.negY x₁ y₁) :

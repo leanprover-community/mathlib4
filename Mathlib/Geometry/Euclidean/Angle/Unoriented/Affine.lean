@@ -26,7 +26,7 @@ This file defines unoriented angles in Euclidean affine spaces.
 
 noncomputable section
 
-open Real RealInnerProductSpace
+open Real
 
 namespace EuclideanGeometry
 
@@ -491,6 +491,7 @@ nonrec theorem cos_eq_neg_one_iff_angle_eq_pi {p₁ p₂ p₃ : P} :
     Real.cos (∠ p₁ p₂ p₃) = -1 ↔ ∠ p₁ p₂ p₃ = π :=
   cos_eq_neg_one_iff_angle_eq_pi
 
+open scoped RealInnerProductSpace in
 /-- The cosine of the angle between three points, times the product of the distances from the
 middle point to the other two, is the inner product `⟪p₁ -ᵥ p₂, p₃ -ᵥ p₂⟫`. -/
 theorem cos_angle_mul_dist_mul_dist (p₁ p₂ p₃ : P) :
