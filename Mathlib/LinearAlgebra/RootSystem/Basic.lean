@@ -72,8 +72,8 @@ set_option backward.privateInPublic.warn false in
 @[simps]
 protected def equiv_of_mapsTo :
     ι ≃ ι where
-  toFun j := (private exist_eq_reflection_of_mapsTo p root coroot i j h).choose
-  invFun j := (private exist_eq_reflection_of_mapsTo p root coroot i j h).choose
+  toFun j := (private exist_eq_reflection_of_mapsTo p root coroot i j h :).choose
+  invFun j := (private exist_eq_reflection_of_mapsTo p root coroot i j h :).choose
   left_inv j := choose_choose_eq_of_mapsTo p root coroot i j h hp
   right_inv j := choose_choose_eq_of_mapsTo p root coroot i j h hp
 
