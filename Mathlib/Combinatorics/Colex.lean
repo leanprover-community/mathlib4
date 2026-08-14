@@ -102,7 +102,7 @@ private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ 
 
 instance instPartialOrder : PartialOrder (Colex (Finset α)) where
   le_refl _ _ ha ha' := (ha' ha).elim
-  le_antisymm _ _ hst hts := (private antisymm_aux hst hts).antisymm (private antisymm_aux hts hst)
+  le_antisymm _ _ hst hts := private (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
   le_trans s t u hst htu a has hau := by
     by_cases hat : a ∈ ofColex t
     · have ⟨b, hbu, hbt, hab⟩ := htu hat hau
