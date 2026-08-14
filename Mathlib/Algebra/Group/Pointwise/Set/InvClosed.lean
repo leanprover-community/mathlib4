@@ -25,11 +25,11 @@ open scoped Pointwise
 
 namespace Set
 
-variable {α : Type*}
+variable {α β : Type*}
 
 section Inv
 
-variable [Inv α] {s t : Set α}
+variable [Inv α] [Inv β] {s t : Set α}
 
 /-- A set `s` is *inverse-closed* if `x⁻¹ ∈ s` whenever `x ∈ s`.
 This is equivalent to `s⁻¹ = s`, see `Set.isInvClosed_iff_inv_eq_self`. -/
@@ -88,6 +88,9 @@ lemma isInvClosed_sInter {S : Set (Set α)} (h : ∀ s ∈ S, s.IsInvClosed) :
   rw [sInter_eq_iInter]
   exact isInvClosed_iInter fun s ↦ h s s.2
 
+lemma IsInvClosed.prod (hs : s.IsInvClosed) {t : Set β} (ht : t.IsInvClosed) :
+    (s ×ˢ t).IsInvClosed := fun _ h ↦ ⟨hs h.1, ht h.2⟩
+
 end Inv
 
 section InvolutiveInv
@@ -119,5 +122,16 @@ lemma IsInvClosed.diff (hs : s.IsInvClosed) (ht : t.IsInvClosed) :
   rw [sdiff_eq]; exact hs.inter (isInvClosed_compl.mpr ht)
 
 end InvolutiveInv
+
+section DivisionCommMonoid
+
+variable [DivisionCommMonoid α] {s t : Set α}
+
+lemma IsInvClosed.mul (hs : s.IsInvClosed) (ht : t.IsInvClosed) :
+    (s * t).IsInvClosed := by
+  rintro x ⟨_, h₁, _, h₂, rfl⟩
+  exact ⟨_, hs h₁, _, ht h₂, by simp only [mul_inv]⟩
+
+end DivisionCommMonoid
 
 end Set
