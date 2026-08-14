@@ -320,20 +320,17 @@ instance : SMulCommClass T T' (LocalizedModule S M) where
 
 variable {T}
 
-set_option backward.privateInPublic true in
 private theorem one_smul_aux (p : LocalizedModule S M) : (1 : T) • p = p := by
   induction p with | _ m s
   rw [show (1 : T) = IsLocalization.mk' T (1 : R) (1 : S) by rw [IsLocalization.mk'_one, map_one]]
   rw [mk'_smul_mk, one_smul, one_mul]
 
-set_option backward.privateInPublic true in
 private theorem mul_smul_aux (x y : T) (p : LocalizedModule S M) :
     (x * y) • p = x • y • p := by
   induction p with | _ m s
   rw [← IsLocalization.mk'_sec (M := S) T x, ← IsLocalization.mk'_sec (M := S) T y]
   simp_rw [← IsLocalization.mk'_mul, mk'_smul_mk, ← mul_smul, mul_assoc]
 
-set_option backward.privateInPublic true in
 private theorem smul_add_aux (x : T) (p q : LocalizedModule S M) :
     x • (p + q) = x • p + x • q := by
   induction p with | _ m s
@@ -345,11 +342,9 @@ private theorem smul_add_aux (x : T) (p q : LocalizedModule S M) :
   · simp only [Submonoid.smul_def, smul_add, ← mul_smul, Submonoid.coe_mul]; ring_nf
   · rw [mul_mul_mul_comm] -- ring does not work here
 
-set_option backward.privateInPublic true in
 private theorem smul_zero_aux (x : T) : x • (0 : LocalizedModule S M) = 0 := by
   conv => lhs; rw [← zero_mk 1, smul_def, smul_zero, zero_mk]
 
-set_option backward.privateInPublic true in
 private theorem add_smul_aux (x y : T) (p : LocalizedModule S M) :
     (x + y) • p = x • p + y • p := by
   induction p with | _ m s
@@ -361,7 +356,6 @@ private theorem add_smul_aux (x y : T) (p : LocalizedModule S M) :
   · simp only [Submonoid.smul_def, Submonoid.coe_mul, smul_eq_mul]; ring_nf
   · rw [mul_mul_mul_comm, mul_assoc] -- ring does not work here
 
-set_option backward.privateInPublic true in
 private theorem zero_smul_aux (p : LocalizedModule S M) : (0 : T) • p = 0 := by
   induction p with | _ m s
   rw [show (0 : T) = IsLocalization.mk' T (0 : R) (1 : S) by rw [IsLocalization.mk'_zero],

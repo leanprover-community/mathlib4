@@ -26,7 +26,6 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
-set_option backward.privateInPublic true in
 /-- The category of `R`-Hopf algebras. -/
 structure HopfAlgCat where
   private mk ::

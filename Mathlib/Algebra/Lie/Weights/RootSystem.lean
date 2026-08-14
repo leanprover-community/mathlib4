@@ -50,7 +50,6 @@ variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 
 variable (α β : Weight K H L)
 
-set_option backward.privateInPublic true in
 private lemma chainLength_aux (hα : α.IsNonZero) {x} (hx : x ∈ rootSpace H (chainTop α β)) :
     ∃ n : ℕ, n • x = ⁅coroot α, x⁆ := by
   by_cases hx' : x = 0

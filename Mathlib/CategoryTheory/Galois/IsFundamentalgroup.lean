@@ -69,7 +69,6 @@ on `F.obj X` and `F.obj Y` are compatible with `F.map f`. -/
 class IsNaturalSMul : Prop where
   naturality (g : G) {X Y : C} (f : X ⟶ Y) (x : F.obj X) : F.map f (g • x) = g • F.map f x
 
-set_option backward.privateInPublic true in
 variable {G} in
 @[simps! -isSimp]
 private def isoOnObj (g : G) (X : C) : F.obj X ≅ F.obj X :=
