@@ -31,7 +31,7 @@ noncomputable section
 
 open scoped Topology Filter ENNReal
 
-open Filter Asymptotics Set
+open Filter Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -211,17 +211,11 @@ lemma derivWithin_fun_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
   · simp [← fderivWithin_derivWithin, ← Pi.smul_def, fderivWithin_const_smul_field c hsx]
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
-@[deprecated (since := "2026-01-11")] alias derivWithin_fun_const_smul' :=
-  derivWithin_fun_const_smul_field
-
 /-- A variant of `derivWithin_const_smul` without differentiability assumption when the scalar
 multiplication is by division ring elements. -/
 lemma derivWithin_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
     derivWithin (c • f) s x = c • derivWithin f s x :=
   derivWithin_fun_const_smul_field c f
-
-@[deprecated (since := "2026-01-11")] alias derivWithin_const_smul' :=
-  derivWithin_const_smul_field
 
 theorem deriv_fun_const_smul (c : R) (hf : DifferentiableAt 𝕜 f x) :
     deriv (fun y => c • f y) x = c • deriv f x :=
@@ -237,15 +231,11 @@ lemma deriv_fun_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
     deriv (fun y ↦ c • f y) x = c • deriv f x := by
   simp only [← derivWithin_univ, derivWithin_fun_const_smul_field]
 
-@[deprecated (since := "2026-01-11")] alias deriv_fun_const_smul' := deriv_fun_const_smul_field
-
 /-- A variant of `deriv_const_smul` without differentiability assumption when the scalar
 multiplication is by division ring elements. -/
 lemma deriv_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
     deriv (c • f) x = c • deriv f x := by
   simp only [← derivWithin_univ, derivWithin_const_smul_field]
-
-@[deprecated (since := "2026-01-11")] alias deriv_const_smul' := deriv_const_smul_field
 
 end ConstSMul
 

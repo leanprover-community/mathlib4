@@ -42,7 +42,7 @@ public section
 
 open scoped Manifold Topology ContDiff
 
-open Function Set
+open Set
 
 variable {𝕜 E E' F F' H H' G G' : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']

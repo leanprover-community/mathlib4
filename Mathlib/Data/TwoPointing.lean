@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Basic.Nonempty
 public import Mathlib.Basic.Nontrivial.Defs
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
 public import Batteries.Logic
 
 /-!
