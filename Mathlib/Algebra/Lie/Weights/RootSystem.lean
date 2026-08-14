@@ -68,7 +68,7 @@ private lemma chainLength_aux (hα : α.IsNonZero) {x} (hx : x ∈ rootSpace H (
 def chainLength (α β : Weight K H L) : ℕ :=
   letI := Classical.propDecidable
   if hα : α.IsZero then 0 else
-    (private chainLength_aux α β hα (chainTop α β).exists_ne_zero.choose_spec.1).choose
+    (private chainLength_aux α β hα (chainTop α β).exists_ne_zero.choose_spec.1 :).choose
 
 lemma chainLength_of_isZero (hα : α.IsZero) : chainLength α β = 0 := dite_eq_left hα
 
