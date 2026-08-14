@@ -66,6 +66,7 @@ class H1904Algebra (α) extends Neg α, Add α, Mul α, Zero α, One α where
   mul_neg_self (a : α) : a * -a = 0
 
 /-- Derive a `H1904Algebra` from a Boolean algebra. -/
+@[instance_reducible]
 def BooleanAlgebra.h1904Algebra [BooleanAlgebra α] : H1904Algebra α where
   neg := (·ᶜ)
   add := (· ⊔ ·)
@@ -166,6 +167,7 @@ lemma neg_mul : -(a * b) = -a + -b := by
       zero_mul, mul_assoc, mul_neg_self, mul_zero, add_self]
 
 /-- Derive a distributive lattice from a `H1904Algebra`. -/
+@[instance_reducible]
 def distribLattice : DistribLattice α where
   le a b := a + b = b
   le_refl := add_self
@@ -184,6 +186,7 @@ def distribLattice : DistribLattice α where
     rw [add_mul_left, add_self]
 
 /-- Derive a Boolean algebra from a `H1904Algebra`. -/
+@[instance_reducible]
 def booleanAlgebra : BooleanAlgebra α where
   __ := distribLattice
   compl := (-·)
@@ -210,6 +213,7 @@ class HuntingtonAlgebra (α) extends Inhabited α, AddCommSemigroup α, Neg α w
   huntington (a b : α) : -(-a + -b) + -(-a + b) = a
 
 /-- Derive a `HuntingtonAlgebra` from a `H1904Algebra`. -/
+@[instance_reducible]
 def H1904Algebra.huntingtonAlgebra [H1904Algebra α] : HuntingtonAlgebra α where
   default := 0
   add_comm := add_comm
@@ -311,6 +315,7 @@ lemma add_mul_left : a + b * c = (a + b) * (a + c) := by
   rw [mul_def (a + b), neg_add a, neg_add a, ← mul_add_left, neg_mul, neg_neg, mul_def]
 
 /-- Derive a `H1904Algebra` from a Huntington algebra. -/
+@[instance_reducible]
 def h1904Algebra : H1904Algebra α where
   add_comm := add_comm
   mul_comm := mul_comm
@@ -329,6 +334,7 @@ class RobbinsAlgebra (α) extends Inhabited α, AddCommSemigroup α, Neg α wher
   robbins (a b : α) : -(-(a + b) + -(a + -b)) = a
 
 /-- Derive a Robbins algebra from a `H1904Algebra`. -/
+@[instance_reducible]
 def H1904Algebra.robbinsAlgebra [H1904Algebra α] : RobbinsAlgebra α where
   default := 0
   add_comm := add_comm
@@ -423,7 +429,7 @@ lemma mann_51 : -(q a + 5 • a) = -(3 • a) := by
   have k₁ := robbins (-(q a + 5 • a)) (q a + -(3 • a))
   have k₂ : -(-(q a + -(3 • a)) + -(q a + 5 • a)) = q a := mann_50 a
   have k₃ : -(-(-(q a + 3 • a + a + a) + q a + -(3 • a)) + q a) = -(3 • a) := by
-    convert mann_47 (3 • a) a (-(3 • a)) using 3
+    convert! mann_47 (3 • a) a (-(3 • a)) using 3
     rw [q, add_comm]
   rw [← k₃, ← k₁, ← add_comm (-(q a + _)), k₂]
   simp_rw [smul3, smul5, ← add_assoc]
@@ -595,12 +601,14 @@ theorem neg_neg : - -a = a := by
   simpa only [robbins] using k₃ (-(a + z) + -(a + -z))
 
 /-- Derive a Huntington algebra from a Robbins algebra. -/
+@[instance_reducible]
 def huntingtonAlgebra : HuntingtonAlgebra α where
   huntington a b := by
     conv_rhs => rw [← neg_neg a, ← robbins (-a) b, neg_neg]
     ac_rfl
 
 /-- Derive a Boolean algebra from a Robbins algebra. -/
+@[instance_reducible]
 def booleanAlgebra : BooleanAlgebra α :=
   let _ : HuntingtonAlgebra α := huntingtonAlgebra
   let _ : H1904Algebra α := HuntingtonAlgebra.h1904Algebra
