@@ -6,6 +6,8 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Tactic.Abel
 
 /-!
 # Universal property of the tensor product

@@ -9,6 +9,7 @@ module
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Tactic.Common
 public import Batteries.Tactic.SeqFocus
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Divisibility

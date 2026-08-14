@@ -5,8 +5,11 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Tannery's theorem

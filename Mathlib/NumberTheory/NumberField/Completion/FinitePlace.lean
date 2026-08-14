@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 
 import Mathlib.Algebra.FiniteSupport.Basic
+public import Mathlib.RingTheory.RamificationInertia.Inertia
 
 /-!
 # Finite places of number fields

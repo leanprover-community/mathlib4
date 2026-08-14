@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
+public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Signed variation

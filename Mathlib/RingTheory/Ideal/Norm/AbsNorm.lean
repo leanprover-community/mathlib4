@@ -9,11 +9,13 @@ public import Mathlib.Algebra.CharP.Quotient
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Determinant
 public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
-public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Ideal.Basis
 public import Mathlib.RingTheory.Norm.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Data.Rat.Floor
+public import Mathlib.Tactic.Continuity
 
 /-!
 

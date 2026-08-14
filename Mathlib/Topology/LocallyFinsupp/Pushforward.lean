@@ -6,7 +6,7 @@ Authors: Raphael Douglas Giles
 module
 
 public import Mathlib.Topology.LocallyFinsupp
-public import Mathlib.Topology.Spectral.Basic
+public import Mathlib.Topology.Spectral.Prespectral
 
 /-!
 # Pushforward of functions with locally finite support
