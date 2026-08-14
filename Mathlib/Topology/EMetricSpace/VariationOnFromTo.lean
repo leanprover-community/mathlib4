@@ -22,7 +22,8 @@ functions.
 open scoped ENNReal Topology
 open Set Filter
 
-variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
+variable {α : Type*} [LinearOrder α] {E M : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpace E]
+  [PseudoEMetricSpace M]
 
 /-- The **signed** variation of `f` on the interval `Icc a b` intersected with the set `s`,
 squashed to a real (therefore only really meaningful if the variation is finite)
@@ -32,7 +33,7 @@ noncomputable def variationOnFromTo (f : α → E) (s : Set α) (a b : α) : ℝ
 
 namespace variationOnFromTo
 
-variable (f : α → E) (s : Set α)
+variable (f : α → E) (s : Set α) {g : α → M}
 
 protected theorem self (a : α) : variationOnFromTo f s a a = 0 := by
   dsimp only [variationOnFromTo]
@@ -298,10 +299,10 @@ theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_Ici
     (hx.mono inter_subset_right)
 
 theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_rightLim_Ici
-    [TopologicalSpace α] [OrderTopology α] [T3Space E] [CompleteSpace E]
-    (hf : BoundedVariationOn f univ) {a x : α} :
-    ContinuousWithinAt (variationOnFromTo f.rightLim univ a) (Ici x) x :=
-  hf.rightLim.continuousWithinAt_variationOnFromTo_Ici hf.continuousWithinAt_rightLim
+    [TopologicalSpace α] [OrderTopology α] [T3Space M] [CompleteSpace M]
+    (hg : BoundedVariationOn g univ) {a x : α} :
+    ContinuousWithinAt (variationOnFromTo g.rightLim univ a) (Ici x) x :=
+  hg.rightLim.continuousWithinAt_variationOnFromTo_Ici hg.continuousWithinAt_rightLim
 
 theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_inter_Iic
     [TopologicalSpace α] [OrderTopology α] (hf : BoundedVariationOn f s)
