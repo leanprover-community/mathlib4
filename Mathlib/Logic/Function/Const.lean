@@ -72,7 +72,7 @@ theorem isConst_iff_exists_forall_eq [Nonempty β] {f : α → β} :
   mp hf := (isEmpty_or_nonempty α).elim
     fun _ ↦ by simp
     fun _ ↦ ⟨f (Classical.arbitrary α), fun _ ↦ hf ..⟩
-  mpr := fun ⟨b, hb⟩ ↦ .of_forall_eq b hb
+  mpr _ _ := by grind
 
 /-- A function `f : α → β` is constant on a non-empty domain if and only if there is `b : β` so
 that `f a = b` for all `a : α`. -/
