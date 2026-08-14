@@ -120,35 +120,6 @@ instance instCFC [NormedSpace ℝ E] [IsScalarTower ℝ 𝕜 E] :
     · rw [← isSelfAdjoint_toComplexification_iff, toComplexification_cfcHomAux]
       exact cfcHom_predicate ..
 
-/-- An idempotent operator is self-adjoint iff it is normal. -/
-lemma IsIdempotentElem.isSelfAdjoint_iff_isStarNormal {T : E →L[𝕜] E}
-    (hT : IsIdempotentElem T) : IsSelfAdjoint T ↔ IsStarNormal T := by
-  rw [← isSelfAdjoint_toComplexification_iff, ← isStarNormal_toComplexification_iff,
-    hT.toComplexification.isSelfAdjoint_iff_isStarNormal]
-
-/-- A continuous linear map is a star projection iff it is idempotent and normal. -/
-theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal {T : E →L[𝕜] E} :
-    IsStarProjection T ↔ IsIdempotentElem T ∧ IsStarNormal T := by
-  rw [isStarProjection_iff, and_congr_right_iff]
-  exact fun h => IsIdempotentElem.isSelfAdjoint_iff_isStarNormal h
-
-open ContinuousLinearMap in
-/-- For an idempotent operator `p`, TFAE:
-* `(range p)ᗮ = ker p`
-* `p` is normal
-* `p` is self-adjoint
-* `p` is positive -/
-theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
-    [p.rangeᗮ = p.ker,
-      IsStarNormal p,
-      IsSelfAdjoint p,
-      p.IsPositive].TFAE := by
-  tfae_have 2 ↔ 3 := (isSelfAdjoint_iff_isStarNormal hp).symm
-  tfae_have 3 ↔ 4 := hp.isPositive_iff_isSelfAdjoint.symm
-  tfae_have 3 ↔ 1 := p.isSelfAdjoint_iff_isSymmetric.eq ▸
-    (LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp.toLinearMap)
-  tfae_finish
-
 lemma spectralRadius_toComplexification {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) :
     spectralRadius ℂ T.toComplexification = spectralRadius 𝕜 T := by
   simp [hT.toComplexification.spectralRadius_eq_nnnorm, spectralRadius_eq_nnnorm _ hT]
