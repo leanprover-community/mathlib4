@@ -246,8 +246,7 @@ def ImportRef.getIdent (i : ImportRef) : Ident :=
       $[public]? $[meta]? import $[all]? $n:ident) => n
   | _ => ⟨.missing⟩
 
-/-- Destructures header syntax (`(module)? (prelude)? $imports*`) into an array of `ImportRef`s
-together with the import syntax that gave rise to them. See also `headerToImports`. -/
+/-- Destructures header syntax (`(module)? (prelude)? $imports*`) into an array of `ImportRef`s. -/
 def headerToImportRefs (header : TSyntax ``Parser.Module.header) : Array ImportRef :=
   match header with
   | `(Parser.Module.header| $[module%$moduleTk]? $[prelude]? $imports*) =>
