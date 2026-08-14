@@ -167,6 +167,16 @@ lemma prod_eq_of_forall_apply_prod {ρ : VectorMeasure (X × Y) G} (hρ : ∀ (s
   · rintro - ⟨s, hs, t, ht, rfl⟩
     rw [prod_apply, hρ _ _ hs ht]
 
+@[simp] lemma map_prod_swap :
+    (μ.prod ν B).map Prod.swap = ν.prod μ B.flip := by
+  by_cases h : HasProd μ ν B; swap
+  · simp [prod_eq_zero_of_not_hasProd, h, hasProd_flip_iff]
+  have : HasProd ν μ B.flip := h.flip
+  apply (prod_eq_of_forall_apply_prod (fun s t hs ht ↦ ?_)).symm
+  have : Prod.swap (α := X) (β := Y) = MeasurableEquiv.prodComm := rfl
+  rw [this, map_apply _ MeasurableEquiv.prodComm.measurable (hs.prod ht)]
+  simp [MeasurableEquiv.prodComm]
+
 lemma prod_apply_eq_integral [CompleteSpace G] [IsFiniteMeasure μ.variation]
     {s : Set (X × Y)} (hs : MeasurableSet s) :
     μ.prod ν B s = ∫ᵛ x, ν (Prod.mk x ⁻¹' s) ∂[B.flip; μ] := by
@@ -210,12 +220,7 @@ theorem integral_prod_swap (f : X × Y → H) {A : E →L[ℝ] F →L[ℝ] G} {B
   have I (z : Y × X) : z.swap = MeasurableEquiv.prodComm z := rfl
   simp_rw [I, ← integral_map_equiv]
   congr
-  by_cases h : HasProd μ ν A; swap
-  · simp [prod_eq_zero_of_not_hasProd, h, hasProd_flip_iff]
-  have : HasProd ν μ A.flip := h.flip
-  apply (prod_eq_of_forall_apply_prod (fun s t hs ht ↦ ?_)).symm
-  rw [map_apply _ MeasurableEquiv.prodComm.measurable (hs.prod ht)]
-  simp [MeasurableEquiv.prodComm]
+  exact map_prod_swap
 
 /-- The vector measure integral is measurable. This shows that the integrand of (the right-hand-side
 of) Fubini's theorem is measurable. This version has `f` in curried form. -/
