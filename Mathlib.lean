@@ -7450,6 +7450,7 @@ public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.OverlappingInstances
 public import Mathlib.Tactic.Linter.PPRoundtrip
+public import Mathlib.Tactic.Linter.PrivateInPublic
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.PrivateProof
 public import Mathlib.Tactic.Linter.Style
