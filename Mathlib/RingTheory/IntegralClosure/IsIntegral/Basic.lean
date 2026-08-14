@@ -198,14 +198,13 @@ protected theorem IsIntegral.algebraMap [Algebra A B] [IsScalarTower R A B] {x :
   use f, hf
   rw [IsScalarTower.algebraMap_eq R A B, ← hom_eval₂, hx, map_zero]
 
-theorem isIntegral_algebraMap_iff [Algebra A B] [IsScalarTower R A B] {x : A}
-    (hAB : Function.Injective (algebraMap A B)) :
+theorem isIntegral_algebraMap_iff [Algebra A B] [IsScalarTower R A B] {x : A} [FaithfulSMul A B] :
     IsIntegral R (algebraMap A B x) ↔ IsIntegral R x :=
-  isIntegral_algHom_iff (IsScalarTower.toAlgHom R A B) hAB
+  isIntegral_algHom_iff (IsScalarTower.toAlgHom R A B) (FaithfulSMul.algebraMap_injective A B)
 
 theorem isIntegral_ratCast_iff {K : Type*} [DivisionRing K] [CharZero K] [Algebra R ℚ] [Algebra R K]
     [IsScalarTower R ℚ K] {q : ℚ} : IsIntegral R (q : K) ↔ IsIntegral R q :=
-  isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective ℚ K)
+  isIntegral_algebraMap_iff (A := ℚ)
 
 @[deprecated (since := "2026-07-14")] alias IsIntegral.ratCast_iff := isIntegral_ratCast_iff
 

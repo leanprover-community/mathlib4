@@ -120,6 +120,11 @@ theorem tail_cons : tail (cons x p) = p := by
 theorem cons_succ : cons x p i.succ = p i := by simp [cons]
 
 @[simp]
+theorem cons_comp_succ {α : Sort*} (x : α) (p : Fin n → α) :
+    cons x p ∘ Fin.succ = p :=
+  funext fun _ ↦ Fin.cons_succ ..
+
+@[simp]
 theorem cons_zero : cons x p 0 = x := by simp [cons]
 
 @[simp]
@@ -165,6 +170,10 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
 theorem cons_self_tail : cons (q 0) (tail q) = q := by
   ext j
   cases j using Fin.cases <;> simp [tail]
+
+@[simp]
+theorem cons_zero_succ : (cons 0 Fin.succ : Fin (n + 1) → Fin (n + 1)) = id :=
+  cons_self_tail id
 
 /-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
 given by separating out the first element of the tuple.
@@ -408,7 +417,6 @@ theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
     Fin.append xs ys ∘ Sum.elim (Fin.castAdd _) (Fin.natAdd _) = Sum.elim xs ys := by
   ext (i | j) <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
     Function.Injective (Fin.append xs ys) ↔
       Function.Injective xs ∧ Function.Injective ys ∧ ∀ i j, xs i ≠ ys j := by
@@ -546,7 +554,7 @@ theorem snoc_comp_natAdd {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : 
 @[simp]
 theorem snoc_castAdd {α : Fin (n + m + 1) → Sort*} (f : ∀ i : Fin (n + m), α i.castSucc)
     (a : α (last (n + m))) (i : Fin n) : (snoc f a) (castAdd (m + 1) i) = f (castAdd m i) :=
-  dif_pos _
+  dite_eq_left _
 
 @[simp]
 theorem snoc_comp_castAdd {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a : α) :
@@ -665,7 +673,6 @@ theorem append_right_cons {n m} {α : Sort*} (xs : Fin n → α) (y : α) (ys : 
       Fin.append (Fin.snoc xs y) ys ∘ Fin.cast (Nat.succ_add_eq_add_succ ..).symm := by
   rw [append_left_snoc]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α) :
     Fin.append (cons a as) bs
     = cons a (Fin.append as bs) ∘ (Fin.cast <| Nat.add_right_comm n 1 m) := by
@@ -680,7 +687,6 @@ theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α
     · have : ¬i < n := Nat.not_le_of_gt <| Nat.le_of_lt_succ <| Nat.gt_of_not_le h
       simp [addCases, this]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem append_snoc {α : Sort*} (as : Fin n → α) (bs : Fin m → α) (b : α) :
     Fin.append as (snoc bs b) = snoc (Fin.append as bs) b := by
   funext i
@@ -851,7 +857,8 @@ theorem insertNth_apply_same (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succ
 @[simp]
 theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j))
     (j : Fin n) : insertNth i x p (i.succAbove j) = p j := by
-  simp only [insertNth, succAboveCases, dif_neg (succAbove_ne _ _), succAbove_lt_iff_castSucc_lt]
+  simp only [insertNth, succAboveCases, dite_eq_right (succAbove_ne _ _),
+    succAbove_lt_iff_castSucc_lt]
   split_ifs with hlt
   · generalize_proofs H₁ H₂; revert H₂
     generalize hk : castPred ((succAbove i) j) H₁ = k
@@ -869,6 +876,11 @@ theorem succAbove_cases_eq_insertNth : @succAboveCases = @insertNth :=
 lemma removeNth_apply (p : Fin (n + 1)) (f : ∀ i, α i) (i : Fin n) :
     p.removeNth f i = f (p.succAbove i) :=
   rfl
+
+@[simp]
+theorem cons_comp_succ_succAbove (x : β) (p : Fin (n + 1) → β) (i : Fin (n + 1)) :
+    cons x p ∘ i.succ.succAbove = cons x (i.removeNth p) :=
+  funext (Fin.cases rfl fun _ ↦ by simp [removeNth])
 
 lemma removeNth_fun_const {α : Type*} {n : ℕ} (i : Fin (n + 1)) (a : α) :
     i.removeNth (fun _ ↦ a) = (fun _ ↦ a) :=
@@ -917,12 +929,12 @@ theorem insertNth_right_injective {p : Fin (n + 1)} (x : α p) :
 theorem insertNth_apply_below {i j : Fin (n + 1)} (h : j < i) (x : α i)
     (p : ∀ k, α (i.succAbove k)) :
     i.insertNth x p j = succAbove_castPred_of_lt _ _ h ▸ (p <| j.castPred _) := by
-  rw [insertNth, succAboveCases, dif_neg (Fin.ne_of_lt h), dif_pos h]
+  rw [insertNth, succAboveCases, dite_eq_right (Fin.ne_of_lt h), dite_eq_left h]
 
 theorem insertNth_apply_above {i j : Fin (n + 1)} (h : i < j) (x : α i)
     (p : ∀ k, α (i.succAbove k)) :
     i.insertNth x p j = succAbove_pred_of_lt _ _ h ▸ (p <| j.pred _) := by
-  rw [insertNth, succAboveCases, dif_neg (Fin.ne_of_gt h), dif_neg (Fin.lt_asymm h)]
+  rw [insertNth, succAboveCases, dite_eq_right (Fin.ne_of_gt h), dite_eq_right (Fin.lt_asymm h)]
 
 theorem insertNth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
     insertNth 0 x p =
@@ -1026,6 +1038,12 @@ lemma removeNth_update_succAbove (p : Fin (n + 1)) (i : Fin n) (x : α (p.succAb
 
 lemma insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
     insertNth p (f p) (removeNth p f) = f := by simp
+
+@[simp]
+lemma range_insertNth {α : Type*} (p : Fin (n + 1)) (x : α) (f : Fin n → α) :
+    Set.range (p.insertNth x f) = Set.insert x (Set.range f) := by
+  ext y
+  simp [Fin.exists_iff_succAbove p, Set.insert, eq_comm]
 
 @[simp]
 theorem update_insertNth (p : Fin (n + 1)) (x y : α p) (f : ∀ i, α (p.succAbove i)) :
@@ -1256,16 +1274,16 @@ def contractNth (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → �
 
 theorem contractNth_apply_of_lt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
     (h : (k : ℕ) < j) : contractNth j op g k = g (Fin.castSucc k) :=
-  if_pos h
+  ite_eq_left h
 
 theorem contractNth_apply_of_eq (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
     (h : (k : ℕ) = j) : contractNth j op g k = op (g (Fin.castSucc k)) (g k.succ) := by
   have : ¬(k : ℕ) < j := not_lt.2 (le_of_eq h.symm)
-  rw [contractNth, if_neg this, if_pos h]
+  rw [contractNth, ite_eq_right this, ite_eq_left h]
 
 theorem contractNth_apply_of_gt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
     (h : (j : ℕ) < k) : contractNth j op g k = g k.succ := by
-  rw [contractNth, if_neg (not_lt_of_gt h), if_neg (Ne.symm <| ne_of_lt h)]
+  rw [contractNth, ite_eq_right (not_lt_of_gt h), ite_eq_right (Ne.symm <| ne_of_lt h)]
 
 theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
     (hjk : (j : ℕ) ≠ k) : contractNth j op g k = g (j.succAbove k) := by
