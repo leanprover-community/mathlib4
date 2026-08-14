@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.ClickSuggestions.SectionState
 public import Mathlib.Tactic.ApplyAt
+public meta import Mathlib.Tactic.ClickSuggestions.Util
 
 /-!
 # Support for `apply at` suggestions in `#click_suggestions`

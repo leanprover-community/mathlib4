@@ -36,7 +36,7 @@ uniform convergence, bounded convergence
 
 @[expose] public section
 
-open Bornology Filter Function Set Topology ContinuousLinearMap
+open Filter Function Set Topology ContinuousLinearMap
 open scoped UniformConvergence Uniformity
 
 section CompactSets
@@ -111,12 +111,6 @@ def ContinuousLinearMap.precompCompactConvergenceCLM [IsTopologicalAddGroup G]
     [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) : (F →SL_c[τ] G) →L[𝕜₃] E →SL_c[ρ] G :=
   L.precompUniformConvergenceCLM G _ _ (fun _ hs ↦ hs.image L.continuous)
 
-@[deprecated (since := "2026-01-27")]
-alias precomp_compactConvergenceCLM := precompCompactConvergenceCLM
-
-@[deprecated (since := "2026-01-27")]
-alias precomp_compactConvergenceCLM_apply := precompCompactConvergenceCLM_apply
-
 variable (E) in
 /-- Specialization of `ContinuousLinearMap.postcomp_uniformConvergenceCLM` to compact
 convergence. -/
@@ -125,12 +119,6 @@ def ContinuousLinearMap.postcompCompactConvergenceCLM [IsTopologicalAddGroup F]
     [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [ContinuousConstSMul 𝕜₂ F]
     (L : F →SL[τ] G) : (E →SL_c[σ] F) →SL[τ] E →SL_c[ρ] G :=
   L.postcompUniformConvergenceCLM _
-
-@[deprecated (since := "2026-01-27")]
-alias postcomp_compactConvergenceCLM := postcompCompactConvergenceCLM
-
-@[deprecated (since := "2026-01-27")]
-alias postcomp_compactConvergenceCLM_apply := postcompCompactConvergenceCLM_apply
 
 end comp
 
