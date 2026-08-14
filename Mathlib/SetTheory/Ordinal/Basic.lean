@@ -649,7 +649,7 @@ isomorphism `orderIsoShrink (Iio o)`.
 abbrev ToType (o : Ordinal.{u}) : Type u :=
   Shrink (Iio o)
 
-instance hasWellFounded_shrink_Iio (o : Ordinal) : WellFoundedRelation (Shrink (Iio o)) :=
+instance hasWellFoundedShrinkIio (o : Ordinal) : WellFoundedRelation (Shrink (Iio o)) :=
   WellFoundedLT.toWellFoundedRelation
 
 noncomputable instance (o : Ordinal) : SuccOrder (Shrink (Iio o)) :=
