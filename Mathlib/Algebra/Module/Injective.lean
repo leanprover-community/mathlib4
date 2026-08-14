@@ -235,11 +235,11 @@ private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSinglet
 /-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `fst` pick an arbitrary such `m`. -/
 def ExtensionOfMaxAdjoin.fst {y : N} (x : supExtensionOfMaxSingleton i f y) :
     (extensionOfMax i f).domain :=
-  (private extensionOfMax_adjoin.aux1 i x).choose
+  (private extensionOfMax_adjoin.aux1 i x :).choose
 
 /-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `snd` pick an arbitrary such `r`. -/
 def ExtensionOfMaxAdjoin.snd {y : N} (x : supExtensionOfMaxSingleton i f y) : R :=
-  (private extensionOfMax_adjoin.aux1 i x).choose_spec.choose
+  (private extensionOfMax_adjoin.aux1 i x :).choose_spec.choose
 
 theorem ExtensionOfMaxAdjoin.eqn {y : N} (x : supExtensionOfMaxSingleton i f y) :
     ↑x = ↑(ExtensionOfMaxAdjoin.fst i x) + ExtensionOfMaxAdjoin.snd i x • y :=
