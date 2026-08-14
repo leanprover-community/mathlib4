@@ -169,6 +169,14 @@ def test_getBaseURLFrom : IO Unit := do
     defaultGetBaseURL (getBaseURLFrom none)
   assertEq "override → the given base"
     "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org"))
+  -- A GitHub Actions `${{ vars.… }}` lookup yields "" while the variable is
+  -- undefined, so an empty value must keep the default.
+  assertEq "empty value counts as unset"
+    defaultGetBaseURL (getBaseURLFrom (some ""))
+  assertEq "whitespace-only value counts as unset"
+    defaultGetBaseURL (getBaseURLFrom (some " \n"))
+  assertEq "override is trimmed"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org\n"))
 
 /-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
 `azureURL`, under whichever base `MATHLIB_CACHE_BASE_URL` selects. With no

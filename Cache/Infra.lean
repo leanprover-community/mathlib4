@@ -137,6 +137,11 @@ def defaultGetBaseURL : String := "https://lakecache.blob.core.windows.net"
 Base URL for cache reads: `MATHLIB_CACHE_BASE_URL` if set, otherwise
 `defaultGetBaseURL`.
 
+The value is trimmed, and an empty or whitespace-only value counts as unset:
+CI wires the variable from a GitHub Actions `vars` lookup, which yields the
+empty string while the variable is undefined, and that state must keep the
+default.
+
 Read URLs are `{base}/{azureContainerName}/{key}` — the same namespace the
 Azure account serves — so any host that mirrors that namespace is a valid
 base. The override swaps the host and keeps the whole container chain
@@ -147,7 +152,8 @@ Only reads follow this base. Uploads, marker writes, and the blob-listing
 query authenticate against Azure and use `Container.azureURL` directly.
 -/
 def getBaseURLFrom (envValue? : Option String) : String :=
-  envValue?.getD defaultGetBaseURL
+  let v := (envValue?.getD "").trimAscii.copy
+  if v.isEmpty then defaultGetBaseURL else v
 
 /--
 Base URL for cache reads, from the live environment: `getBaseURLFrom` applied
