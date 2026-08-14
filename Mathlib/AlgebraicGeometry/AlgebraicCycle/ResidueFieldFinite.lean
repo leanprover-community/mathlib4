@@ -13,11 +13,13 @@ import Mathlib.RingTheory.Jacobson.Ring
 /-!
 # Residue fields at closed points are finite over the base field
 
-In this file we show the following form of Zariski's lemma: For a scheme `X` locally of finite type
-over a field `k`, the residue field at a closed point is a finite extension of `k`. This is used
-to provide one of the simplified versions of Riemann-Roch in RiemannRoch.lean, though note that the
-work in this is quite drafty, i.e. this result is too close to what we have in mathlib for this
-file to be this long.
+In this file we show the following form of Zariski's lemma: for a scheme `X` locally of finite type
+over a field `k`, the residue field at a closed point is a finite extension of `k`. This is used to
+provide one of the simplified versions of Riemann-Roch in `RiemannRoch.lean`.
+
+The two ingredients are both in mathlib: `Ideal.algebraMap_residueField_surjective` gives that
+sections of an affine chart surject onto the residue field at a closed point of it, and
+`finite_of_finite_type_of_isJacobsonRing` is the algebraic form of Zariski's lemma.
 -/
 
 namespace AlgebraicGeometry.AlgebraicCycle.SheafViaSubmodule
@@ -28,46 +30,54 @@ universe u
 
 variable {X : Scheme.{u}} (k : Type u) [Field k] [X.Over (Spec (CommRingCat.of k))]
 
-/-- At a closed point `q` of an affine chart `U`, evaluation of sections is surjective onto
-the residue field: the attached prime is maximal, so every element of the residue field of the
-localization is the residue of an actual section (clear denominators using maximality). -/
+/-- For `x` in an affine open `U`, the residue field of `X` at `x` is the residue field of the
+prime of `Γ(X, U)` corresponding to `x`.
+
+This is the analogue for an affine open of `AlgebraicGeometry.Spec.residueFieldIso`, and belongs
+next to it in `Mathlib/AlgebraicGeometry/ResidueField.lean`. -/
+noncomputable def _root_.AlgebraicGeometry.IsAffineOpen.residueFieldIso {X : Scheme.{u}}
+    {U : X.Opens} (hU : IsAffineOpen U) (x : U) :
+    X.residueField x.1 ≅ CommRingCat.of (hU.primeIdealOf x).asIdeal.ResidueField :=
+  letI := TopCat.Presheaf.algebra_section_stalk X.presheaf x
+  haveI := hU.isLocalization_stalk x
+  (IsLocalRing.ResidueField.mapEquiv
+    (IsLocalization.algEquiv (hU.primeIdealOf x).asIdeal.primeCompl (X.presheaf.stalk x.1)
+      (Localization.AtPrime (hU.primeIdealOf x).asIdeal)).toRingEquiv).toCommRingCatIso
+
+/-- Under `IsAffineOpen.residueFieldIso`, evaluation of sections corresponds to the structure map
+of `Ideal.ResidueField`. -/
+@[reassoc]
+lemma _root_.AlgebraicGeometry.IsAffineOpen.evaluation_residueFieldIso_hom {X : Scheme.{u}}
+    {U : X.Opens} (hU : IsAffineOpen U) (x : U) :
+    X.evaluation U x.1 x.2 ≫ (hU.residueFieldIso x).hom =
+      CommRingCat.ofHom (algebraMap Γ(X, U) (hU.primeIdealOf x).asIdeal.ResidueField) := by
+  letI := TopCat.Presheaf.algebra_section_stalk X.presheaf x
+  haveI := hU.isLocalization_stalk x
+  ext a
+  show (hU.residueFieldIso x).hom.hom
+    (IsLocalRing.residue _ (algebraMap Γ(X, U) (X.presheaf.stalk x.1) a)) = _
+  rw [IsAffineOpen.residueFieldIso]
+  show IsLocalRing.ResidueField.mapEquiv _ _ = _
+  rw [IsLocalRing.ResidueField.mapEquiv_apply, IsLocalRing.ResidueField.map_residue]
+  exact congrArg (IsLocalRing.residue _) ((IsLocalization.algEquiv _ _ _).commutes a)
+
+/-- At a closed point `q` of an affine chart `U`, evaluation of sections is surjective onto the
+residue field. The prime corresponding to `q` is maximal, so under
+`IsAffineOpen.residueFieldIso` this is `Ideal.algebraMap_residueField_surjective`. -/
 lemma evaluation_surjective_of_isClosed {U : X.Opens} (hU : IsAffineOpen U)
     {q : X} (hqU : q ∈ U) (hq : IsClosed ({q} : Set X)) :
     Function.Surjective (X.evaluation U q hqU).hom := by
-  letI := TopCat.Presheaf.algebra_section_stalk X.presheaf (⟨q, hqU⟩ : U)
-  haveI := hU.isLocalization_stalk ⟨q, hqU⟩
-  have hmax : (hU.primeIdealOf ⟨q, hqU⟩).asIdeal.IsMaximal :=
+  haveI : (hU.primeIdealOf ⟨q, hqU⟩).asIdeal.IsMaximal :=
     hU.primeIdealOf_isMaximal_of_isClosed ⟨q, hqU⟩ hq
-  intro ζ
-  obtain ⟨z, rfl⟩ := X.residue_surjective q ζ
-  obtain ⟨⟨a, s⟩, hz⟩ :=
-    IsLocalization.mk'_surjective (hU.primeIdealOf ⟨q, hqU⟩).asIdeal.primeCompl z
-  obtain ⟨t, m, hm, hst⟩ := hmax.exists_inv s.2
-  refine ⟨a * t, ?_⟩
-  -- Evaluation is the residue of the germ, and the germ is the localization map.
-  rw [← X.germ_residue q hqU]
-  have halg : ∀ b : Γ(X, U), (X.presheaf.germ U q hqU).hom b =
-      algebraMap Γ(X, U) (X.presheaf.stalk q) b := fun _ => rfl
-  -- `z * s = a` in the stalk.
-  have h1 : z * algebraMap Γ(X, U) (X.presheaf.stalk q) (s : Γ(X, U)) =
-      algebraMap Γ(X, U) (X.presheaf.stalk q) a := by
-    rw [← hz]
-    exact IsLocalization.mk'_spec _ a s
-  -- The correction term `m ∈ 𝔪` dies in the residue field.
-  have hres_m : (X.residue q).hom (algebraMap Γ(X, U) (X.presheaf.stalk q) m) = 0 :=
-    (IsLocalRing.residue_eq_zero_iff _).mpr
-      ((IsLocalization.AtPrime.to_map_mem_maximal_iff _ _ m).mpr hm)
-  have hts : t * (s : Γ(X, U)) = 1 - m := eq_sub_of_add_eq hst
-  have hcalc : (X.residue q).hom ((X.presheaf.germ U q hqU).hom (a * t)) =
-      (X.residue q).hom z *
-        (X.residue q).hom (algebraMap Γ(X, U) (X.presheaf.stalk q) (t * (s : Γ(X, U)))) := by
-    rw [halg]
-    simp only [map_mul]
-    rw [← h1]
-    simp only [map_mul]
-    ring
-  rw [ConcreteCategory.comp_apply, hcalc, hts, map_sub, map_one, map_sub, hres_m, sub_zero,
-    map_one, mul_one]
+  intro y
+  obtain ⟨a, ha⟩ := Ideal.algebraMap_residueField_surjective
+    (hU.primeIdealOf ⟨q, hqU⟩).asIdeal ((hU.residueFieldIso ⟨q, hqU⟩).hom.hom y)
+  refine ⟨a, (hU.residueFieldIso ⟨q, hqU⟩).commRingCatIsoToRingEquiv.injective ?_⟩
+  show (hU.residueFieldIso ⟨q, hqU⟩).hom.hom ((X.evaluation U q hqU).hom a)
+    = (hU.residueFieldIso ⟨q, hqU⟩).hom.hom y
+  rw [← ha]
+  exact DFunLike.congr_fun
+    (congrArg CommRingCat.Hom.hom (hU.evaluation_residueFieldIso_hom ⟨q, hqU⟩)) a
 
 /-- The structure ring map `k → Γ(X, U)` into an affine chart of a scheme locally of finite
 type over `k` is of finite type. -/
