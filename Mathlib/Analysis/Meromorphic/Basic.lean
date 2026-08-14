@@ -539,7 +539,7 @@ theorem _root_.meromorphicOn_congr_codiscreteWithin {f g : 𝕜 → E} (h₁ : f
   ⟨(·.congr_codiscreteWithin h₁ h₂), (·.congr_codiscreteWithin h₁.symm h₂)⟩
 
 @[fun_prop]
-lemma id {U : Set 𝕜} : MeromorphicOn id U := fun x _ ↦ .id x
+protected lemma id {U : Set 𝕜} : MeromorphicOn id U := fun x _ ↦ .id x
 
 @[fun_prop]
 lemma const (e : E) {U : Set 𝕜} : MeromorphicOn (fun _ ↦ e) U :=
@@ -777,7 +777,7 @@ lemma comp_analyticOnNhd {f : 𝕜' → F} {g : 𝕜 → 𝕜'} {U : Set 𝕜} (
 end composition
 
 @[fun_prop]
-lemma id : Meromorphic (id : 𝕜 → 𝕜) := fun x ↦ .id x
+protected lemma id : Meromorphic (id : 𝕜 → 𝕜) := fun x ↦ .id x
 
 @[fun_prop]
 lemma const (x : E) : Meromorphic fun _ : 𝕜 ↦ x := fun _ ↦ .const _ _
