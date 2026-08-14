@@ -21,7 +21,7 @@ open System (FilePath)
 
 /--
 Blob path of the per-SHA marker under a container base: `m/{repo}/{sha}`,
-where `repo` is lowercased via `normalizeRepo` so the path is case-insensitive
+where `normalizeRepo` lowercases `repo` so the path is case-insensitive
 in the GitHub owner/repo name.
 
 The marker is uploaded by `put-staged` as the last step when an upload is

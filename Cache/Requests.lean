@@ -284,8 +284,8 @@ all repos use `cs` instead.
 -/
 initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
 
-/-- Pair each container in a lookup chain with its read URL, keeping the
-chain's trust order. -/
+/-- Pair each container in a lookup chain with its read URL. The result keeps
+the chain's trust order. -/
 private def chainWithGetURLs (containers : List Container) :
     IO (List (Option Container × String)) :=
   containers.mapM fun c => do return (some c, ← c.getURL)

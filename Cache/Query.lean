@@ -89,7 +89,7 @@ def probeContainerForSHA (container : Container) (repo sha : String) :
   -- Discard the response body to the platform null device (`NUL` on Windows),
   -- so curl reports a write error only on a genuine failure, not on every probe.
   -- `--location`: the read base may answer with a redirect; `%{http_code}` then
-  -- reports the final response, so the 200/404 distinction is unaffected.
+  -- reports the final response, so the 200/404 distinction does not change.
   let out ← IO.Process.output
     {cmd := (← IO.getCurl),
      args := #["-s", "-o", IO.nullDevice, "-w", "%{http_code}", "-I", "--location", url],
