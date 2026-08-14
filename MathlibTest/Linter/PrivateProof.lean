@@ -153,7 +153,11 @@ set_option backward.privateInPublic.warn false in
 -/
 
 -- `by` blocks with a `Prop` goal leave the exporting scope and are abstracted into auxiliary
--- theorems, so they need no `private`.
+-- theorems, so they need no `private` — and hence the `set_option` is not needed at all here.
+/--
+info: With the proof terms of this command wrapped in `private`, this `set_option` should be unnecessary; delete it:
+  [apply] (delete)
+-/
 #guard_msgs in
 set_option backward.privateInPublic true in
 @[expose] def val4 : Foo := ⟨0, by exact eq0' 0 eq0⟩
