@@ -474,11 +474,10 @@ foot of the altitude from `p₂` in the triangle `p₁ p₂ p₃`), then the squ
 equals the product of `dist p₁ p₄` and `dist p₃ p₄` if and only if the angle at `p₂` is a right
 angle. -/
 theorem dist_sq_eq_dist_mul_dist_iff_angle_eq_pi_div_two {p₁ p₂ p₃ p₄ : P}
-    (hf : ∠ p₁ p₄ p₃ = π) (hc : ∠ p₁ p₄ p₂ = π / 2) :
+    (hf : Sbtw ℝ p₁ p₄ p₃) (hc : ∠ p₁ p₄ p₂ = π / 2) :
     dist p₂ p₄ ^ 2 = dist p₁ p₄ * dist p₃ p₄ ↔ ∠ p₁ p₂ p₃ = π / 2 := by
   rw [angle, ← inner_eq_zero_iff_angle_eq_pi_div_two] at hc ⊢
-  rw [angle] at hf
-  obtain ⟨-, r, hr, hw⟩ := angle_eq_pi_iff.mp hf
+  obtain ⟨-, r, hr, hw⟩ := angle_eq_pi_iff.mp hf.angle₁₂₃_eq_pi
   rw [dist_eq_norm_vsub V p₂ p₄, dist_eq_norm_vsub V p₁ p₄, dist_eq_norm_vsub V p₃ p₄,
     ← vsub_sub_vsub_cancel_right p₁ p₂ p₄, ← vsub_sub_vsub_cancel_right p₃ p₂ p₄, hw]
   set u := p₁ -ᵥ p₄
@@ -494,7 +493,7 @@ theorem dist_sq_eq_dist_mul_dist_iff_angle_eq_pi_div_two {p₁ p₂ p₃ p₄ : 
 `p₁ p₂ p₃` with the right angle at `p₂`, the square of the altitude `dist p₂ p₄` to the
 hypotenuse is the product of the two segments `dist p₁ p₄` and `dist p₃ p₄` into which its foot
 `p₄` divides the hypotenuse. -/
-theorem dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two {p₁ p₂ p₃ p₄ : P} (hf : ∠ p₁ p₄ p₃ = π)
+theorem dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two {p₁ p₂ p₃ p₄ : P} (hf : Sbtw ℝ p₁ p₄ p₃)
     (hc : ∠ p₁ p₄ p₂ = π / 2) (h : ∠ p₁ p₂ p₃ = π / 2) :
     dist p₂ p₄ ^ 2 = dist p₁ p₄ * dist p₃ p₄ :=
   (dist_sq_eq_dist_mul_dist_iff_angle_eq_pi_div_two hf hc).mpr h
@@ -502,12 +501,12 @@ theorem dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two {p₁ p₂ p₃ p₄ : P
 /-- Geometric mean relation for a leg of a right-angled triangle: under the hypotheses of the
 geometric mean theorem, the square of the leg `dist p₁ p₂` is the product of the hypotenuse
 `dist p₁ p₃` and its segment `dist p₁ p₄` adjacent to that leg. -/
-theorem dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two' {p₁ p₂ p₃ p₄ : P} (hf : ∠ p₁ p₄ p₃ = π)
+theorem dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two' {p₁ p₂ p₃ p₄ : P} (hf : Sbtw ℝ p₁ p₄ p₃)
     (hc : ∠ p₁ p₄ p₂ = π / 2) (h : ∠ p₁ p₂ p₃ = π / 2) :
     dist p₁ p₂ ^ 2 = dist p₁ p₃ * dist p₁ p₄ := by
   rw [pow_two, (dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two p₁ p₄ p₂).mpr hc,
     ← pow_two (dist p₂ p₄), dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two hf hc h,
-    dist_eq_add_dist_of_angle_eq_pi hf]
+    dist_eq_add_dist_of_angle_eq_pi hf.angle₁₂₃_eq_pi]
   ring
 
 end EuclideanGeometry
