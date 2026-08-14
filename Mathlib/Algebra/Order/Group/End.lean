@@ -23,7 +23,7 @@ is an abbreviation for `RelIso`, there is no need for an additional instance.
 + Use the `IsMulApplyEqComp` and `IsOneApplyEqSelf` classes for `RelHom` and `RelIso`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MulAction MonoidWithZero
 

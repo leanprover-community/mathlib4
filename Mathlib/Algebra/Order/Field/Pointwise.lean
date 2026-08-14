@@ -20,7 +20,7 @@ This file contains lemmas about the effect of pointwise operations on sets with 
 
 public section
 
-open Function Set
+open Set
 open scoped Pointwise
 
 namespace LinearOrderedField

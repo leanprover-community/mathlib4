@@ -242,7 +242,6 @@ instance : NullSingletonClass (volume : Measure (mixedSpace K)) := by
       pi_nullSingletonClass ⟨w, not_isReal_iff_isComplex.mp hw⟩
     exact prod.instNullSingletonClass_snd
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {K} in
 open scoped Classical in
 /-- The set of points in the mixedSpace that are equal to `0` at a fixed (real) place has
@@ -351,12 +350,12 @@ theorem normAtPlace_real (w : InfinitePlace K) (c : ℝ) :
 
 theorem normAtPlace_apply_of_isReal {w : InfinitePlace K} (hw : IsReal w) (x : mixedSpace K) :
     normAtPlace w x = ‖x.1 ⟨w, hw⟩‖ := by
-  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dif_pos]
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_eq_left]
 
 theorem normAtPlace_apply_of_isComplex {w : InfinitePlace K} (hw : IsComplex w) (x : mixedSpace K) :
     normAtPlace w x = ‖x.2 ⟨w, hw⟩‖ := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
-    dif_neg (not_isReal_iff_isComplex.mpr hw)]
+    dite_eq_right (not_isReal_iff_isComplex.mpr hw)]
 
 @[simp]
 theorem normAtPlace_apply (w : InfinitePlace K) (x : K) :
@@ -900,13 +899,13 @@ variable {s}
 @[simp]
 theorem negAt_apply_isReal_and_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∈ s) :
     (negAt s x).1 w = -x.1 w := by
-  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_pos hw,
+  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, ite_eq_left hw,
     ContinuousLinearEquiv.neg_apply]
 
 @[simp]
 theorem negAt_apply_isReal_and_notMem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∉ s) :
     (negAt s x).1 w = x.1 w := by
-  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_neg hw,
+  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, ite_eq_right hw,
     ContinuousLinearEquiv.refl_apply]
 
 @[simp]
@@ -927,9 +926,9 @@ theorem volume_preserving_negAt [NumberField K] :
     MeasurePreserving (negAt s) := by
   refine MeasurePreserving.prod (volume_preserving_pi fun w ↦ ?_) (MeasurePreserving.id _)
   by_cases hw : w ∈ s
-  · simp_rw [if_pos hw]
+  · simp_rw [ite_eq_left hw]
     exact Measure.measurePreserving_neg _
-  · simp_rw [if_neg hw]
+  · simp_rw [ite_eq_right hw]
     exact MeasurePreserving.id _
 
 variable (s) in
@@ -954,10 +953,10 @@ theorem negAt_symm :
   ext x w
   · by_cases hw : w ∈ s
     · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prodCongr_symm,
-        prodCongr_apply, piCongrRight_symm_apply, if_pos hw, symm_neg,
+        prodCongr_apply, piCongrRight_symm_apply, ite_eq_left hw, symm_neg,
         ContinuousLinearEquiv.neg_apply]
     · simp_rw [negAt_apply_isReal_and_notMem _ hw, negAt, prodCongr_symm,
-        prodCongr_apply, piCongrRight_symm_apply, if_neg hw, refl_symm,
+        prodCongr_apply, piCongrRight_symm_apply, ite_eq_right hw, refl_symm,
         refl_apply]
   · rfl
 
@@ -1106,7 +1105,6 @@ abbrev realSpace := InfinitePlace K → ℝ
 
 variable {K}
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The set of points in the `realSpace` that are equal to `0` at a fixed place has volume zero. -/
 theorem realSpace.volume_eq_zero [NumberField K] (w : InfinitePlace K) :
     volume ({x : realSpace K | x w = 0}) = 0 := by
@@ -1153,12 +1151,12 @@ abbrev normAtComplexPlaces (x : mixedSpace K) : realSpace K :=
 @[simp]
 theorem normAtComplexPlaces_apply_isReal {x : mixedSpace K} (w : {w // IsReal w}) :
     normAtComplexPlaces x w = x.1 w := by
-  rw [normAtComplexPlaces, dif_pos]
+  rw [normAtComplexPlaces, dite_eq_left]
 
 @[simp]
 theorem normAtComplexPlaces_apply_isComplex {x : mixedSpace K} (w : {w // IsComplex w}) :
     normAtComplexPlaces x w = ‖x.2 w‖ := by
-  rw [normAtComplexPlaces, dif_neg (not_isReal_iff_isComplex.mpr w.prop),
+  rw [normAtComplexPlaces, dite_eq_right (not_isReal_iff_isComplex.mpr w.prop),
     normAtPlace_apply_of_isComplex]
 
 theorem normAtComplexPlaces_mixedSpaceOfRealSpace {x : realSpace K}
