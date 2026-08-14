@@ -209,7 +209,7 @@ The residual degree of the ideal corresponding to the class of `Q ∈ ℤ[X]` mo
 -/
 theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ)
     {Q : ℤ[X]} (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
-    inertiaDeg' ((primesOverSpanEquivMonicFactorsMod hp).symm
+    inertiaDeg ((primesOverSpanEquivMonicFactorsMod hp).symm
       ⟨Q.map (Int.castRingHom (ZMod p)), hQ⟩ : Ideal (𝓞 K)) ℤ =
         natDegree (Q.map (Int.castRingHom (ZMod p))) := by
   -- This is needed for `inertiaDeg_algebraMap` below to work
@@ -218,14 +218,14 @@ theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ 
     apply Ideal.primesOver.isMaximal
   have := liesOver_primesOverSpanEquivMonicFactorsMod_symm hp hQ
   rw [primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span,
-    inertiaDeg'_eq_of_isMaximal (span {(p : ℤ)}),
+    inertiaDeg_eq_of_isMaximal (span {(p : ℤ)}),
     ← finrank_quotient_span_eq_natDegree]
   refine Algebra.finrank_eq_of_equiv_equiv (Int.quotientSpanNatEquivZMod p) ?_ (by ext; simp)
   exact (ZModXQuotSpanEquivQuotSpanPair hp hQ).symm
 
 theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ p ∣ exponent θ)
     {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
-    inertiaDeg'
+    inertiaDeg
       ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) ℤ = natDegree Q := by
   obtain ⟨S, rfl⟩ := (map_surjective _ (ZMod.ringHom_surjective (Int.castRingHom (ZMod p)))) Q
   rw [inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply]

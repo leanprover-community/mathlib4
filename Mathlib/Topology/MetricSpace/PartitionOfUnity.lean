@@ -29,7 +29,7 @@ metric space, partition of unity, locally finite
 
 public section
 
-open Topology ENNReal NNReal Filter Set Function TopologicalSpace Metric
+open Topology ENNReal NNReal Filter Set TopologicalSpace Metric
 
 variable {ι X : Type*}
 
@@ -81,7 +81,7 @@ theorem exists_forall_closedEBall_subset_aux₂ (y : X) :
       (Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_ : y ∈ K i), { r | closedEBall y r ⊆ U i }) :=
   (convex_Ioi _).inter <| OrdConnected.convex <| OrdConnected.preimage_ennreal_ofReal <|
     ordConnected_iInter fun i => ordConnected_iInter fun (_ : y ∈ K i) =>
-      ordConnected_setOf_closedEBall_subset y (U i)
+      ordConnected_setOfPred_closedEBall_subset y (U i)
 
 /-- Let `X` be an extended metric space. Let `K : ι → Set X` be a locally finite family of closed
 sets, let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there
@@ -118,33 +118,6 @@ theorem exists_continuous_ennreal_forall_closedEBall_subset (hK : ∀ i, IsClose
   ⟨ContinuousMap.comp ⟨Coe.coe, ENNReal.continuous_coe⟩ δ, fun x => ENNReal.coe_pos.2 (hδ₀ x), hδ⟩
 
 end Metric
-
-namespace EMetric
-open Metric
-
-@[deprecated (since := "2026-01-24")]
-alias eventually_nhds_zero_forall_closedBall_subset :=
-  eventually_nhds_zero_forall_closedEBall_subset
-
-@[deprecated (since := "2026-01-24")]
-alias exists_forall_closedBall_subset_aux₁ := exists_forall_closedEBall_subset_aux₁
-
-@[deprecated (since := "2026-01-24")]
-alias exists_forall_closedBall_subset_aux₂ := exists_forall_closedEBall_subset_aux₂
-
-@[deprecated (since := "2026-01-24")]
-alias exists_continuous_real_forall_closedBall_subset :=
-  exists_continuous_real_forall_closedEBall_subset
-
-@[deprecated (since := "2026-01-24")]
-alias exists_continuous_nnreal_forall_closedBall_subset :=
-  exists_continuous_nnreal_forall_closedEBall_subset
-
-@[deprecated (since := "2026-01-24")]
-alias exists_continuous_eNNReal_forall_closedBall_subset :=
-  exists_continuous_ennreal_forall_closedEBall_subset
-
-end EMetric
 
 namespace Metric
 

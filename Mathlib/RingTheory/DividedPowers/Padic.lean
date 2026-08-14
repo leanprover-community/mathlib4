@@ -41,38 +41,36 @@ noncomputable def DividedPowers.ofInjective (f : A →+* B) (hf : Injective f)
     (hJ : DividedPowers J) (hIJ : I.map f = J)
     (hmem : ∀ (n : ℕ) {x : A} (_ : x ∈ I), ∃ (y : A) (_ : n ≠ 0 → y ∈ I), f y = hJ.dpow n (f x)) :
     DividedPowers I where
-  dpow n x := open Classical in if hx : x ∈ I then Exists.choose (hmem n hx) else 0
-  dpow_null hx := by simp [dif_neg hx]
+  dpow n x := open scoped Classical in if hx : x ∈ I then Exists.choose (hmem n hx) else 0
+  dpow_null hx := by simp [dite_eq_right hx]
   dpow_zero {x} hx := by
-    simp only [dif_pos hx, ← hf.eq_iff, (Exists.choose_spec (hmem 0 hx)).2, map_one]
+    simp only [dite_eq_left hx, ← hf.eq_iff, (Exists.choose_spec (hmem 0 hx)).2, map_one]
     rw [hJ.dpow_zero (hIJ ▸ Ideal.mem_map_of_mem f hx)]
   dpow_one hx := by
-    simpa only [dif_pos hx, ← hf.eq_iff, (Exists.choose_spec (_ : ∃ a, ∃ _, f a = _)).2]
+    simpa only [dite_eq_left hx, ← hf.eq_iff, (Exists.choose_spec (_ : ∃ a, ∃ _, f a = _)).2]
       using hJ.dpow_one (hIJ ▸ Ideal.mem_map_of_mem f hx)
-  dpow_mem {n x} hn hx := by simpa only [dif_pos hx] using (Exists.choose_spec (hmem n hx)).1 hn
+  dpow_mem {n x} hn hx := by
+    simpa only [dite_eq_left hx] using (Exists.choose_spec (hmem n hx)).1 hn
   dpow_add {n x y} hx hy := by
     have hxy : x + y ∈ I := Ideal.add_mem _ hx hy
-    simpa only [dif_pos hxy, dif_pos hx, dif_pos hy, ← hf.eq_iff, map_sum, map_mul,
+    simpa only [dite_eq_left hxy, dite_eq_left hx, dite_eq_left hy, ← hf.eq_iff, map_sum, map_mul,
       (Exists.choose_spec (_ : ∃ a, ∃ _, f a = _)).2, map_add]
       using hJ.dpow_add (hIJ ▸ I.mem_map_of_mem f hx) (hIJ ▸ I.mem_map_of_mem f hy)
   dpow_mul {n a x} hx := by
     have hax : a * x ∈ I := Ideal.mul_mem_left _ _ hx
-    simpa only [(Exists.choose_spec (_ : ∃ a, ∃ _, f a = _)).2, dif_pos hax, dif_pos hx,
+    simpa only [(Exists.choose_spec (_ : ∃ a, ∃ _, f a = _)).2, dite_eq_left hax, dite_eq_left hx,
     ← hf.eq_iff, map_mul, map_pow] using hJ.dpow_mul (hIJ ▸ I.mem_map_of_mem f hx)
-  mul_dpow hx := by simpa only [dif_pos hx, ← hf.eq_iff, (Exists.choose_spec (hmem _ hx)).2,
+  mul_dpow hx := by simpa only [dite_eq_left hx, ← hf.eq_iff, (Exists.choose_spec (hmem _ hx)).2,
     map_mul, map_natCast] using hJ.mul_dpow (hIJ ▸ I.mem_map_of_mem f hx)
   dpow_comp {n m x} hm hx := by
-    simp only [dif_pos hx, ← hf.eq_iff, map_mul, map_natCast]
-    -- the condition for the other `dif_pos` is a bit messy so we use `rw` to
+    simp only [dite_eq_left hx, ← hf.eq_iff, map_mul, map_natCast]
+    -- the condition for the other `dite_eq_left` is a bit messy so we use `rw` to
     -- spin it off into a separate branch
-    rw [dif_pos]
+    rw [dite_eq_left]
     · simp only [(Exists.choose_spec (_ : ∃ a, ∃ _, f a = _)).2]
       exact hJ.dpow_comp hm (hIJ ▸ I.mem_map_of_mem f hx)
-    · rw [dif_pos hx]
+    · rw [dite_eq_left hx]
       exact (Exists.choose_spec (hmem m hx)).1 hm
-
-@[deprecated (since := "2025-12-09")]
-alias PadicInt.dividedPowers_of_injective := DividedPowers.ofInjective
 
 end Injective
 
@@ -133,6 +131,7 @@ private theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ide
   simp only [cast_one, zpow_neg_one]
   exact dpow'_norm_le_of_ne_zero p hm hx
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The family `ℕ → Ideal.span {(p : ℤ_[p])} → ℤ_[p]` given by `dpow n x = x ^ n / n!` is a
@@ -152,8 +151,9 @@ noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := 
 
 open Function
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
-    (dividedPowers p).dpow n x = open Classical in
+    (dividedPowers p).dpow n x = open scoped Classical in
       if hx : x ∈ Ideal.span {(p : ℤ_[p])} then ⟨dpow' p n x, dpow'_int p n hx⟩ else 0 := by
   simp only [dividedPowers, ofInjective]
   split_ifs with hx
@@ -166,8 +166,9 @@ private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
       RatAlgebra.dpow_apply, Submodule.mem_top] using! heq.symm
   · rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_dpow_eq (n : ℕ) (x : ℤ_[p]) :
-    ((dividedPowers p).dpow n x : ℚ_[p]) = open Classical in
+    ((dividedPowers p).dpow n x : ℚ_[p]) = open scoped Classical in
       if _ : x ∈ Ideal.span {(p : ℤ_[p])} then inverse (n ! : ℚ_[p]) * x ^ n else 0 := by
   simp only [dividedPowers_eq, dpow', inverse_eq_inv', dite_eq_ite]
   split_ifs <;> simp
