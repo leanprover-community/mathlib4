@@ -166,7 +166,7 @@ end SmallCategoryOfSet
 /-- Index set of a representative set of all categories `C` which satisfy
 `HasCardinalLT C κ`, see `SmallCategoryCardinalLT.categoryFamily`. -/
 def SmallCategoryCardinalLT (κ : Cardinal.{w}) : Type w :=
-  { S : SmallCategoryOfSet κ.ord.ToType // HasCardinalLT (Arrow S.obj) κ}
+  { S : SmallCategoryOfSet (Shrink (Set.Iio κ.ord)) // HasCardinalLT (Arrow S.obj) κ}
 
 namespace SmallCategoryCardinalLT
 
@@ -182,7 +182,7 @@ lemma hasCardinalLT (S : SmallCategoryCardinalLT κ) :
 lemma exists_equivalence (C : Type u) [Category.{v} C] (hC : HasCardinalLT (Arrow C) κ) :
     ∃ (S : SmallCategoryCardinalLT κ),
       Nonempty (categoryFamily κ S ≌ C) := by
-  let Ω := κ.ord.ToType
+  let Ω := Shrink (Set.Iio κ.ord)
   have ι : Arrow C ↪ Ω := Nonempty.some (by
     rw [← Cardinal.lift_mk_le']
     simpa [Ω] using hC.le)

@@ -86,7 +86,8 @@ variable {C : Type u} [Category.{v} C] (I : MorphismProperty C)
 i.e. there exists a regular cardinal `κ : Cardinal.{w}` such that
 `IsCardinalForSmallObjectArgument I κ` holds. -/
 class HasSmallObjectArgument : Prop where
-  exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular) (_ : OrderBot κ.ord.ToType),
+  exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular)
+    (_ : OrderBot (Shrink (Set.Iio κ.ord))),
     IsCardinalForSmallObjectArgument I κ
 
 variable [HasSmallObjectArgument.{w} I]
@@ -99,7 +100,7 @@ noncomputable def smallObjectκ : Cardinal.{w} :=
 local instance smallObjectκ_isRegular : Fact I.smallObjectκ.IsRegular :=
   HasSmallObjectArgument.exists_cardinal.choose_spec.choose
 
-noncomputable instance : OrderBot I.smallObjectκ.ord.ToType :=
+noncomputable instance : OrderBot (Shrink (Set.Iio I.smallObjectκ.ord)) :=
   HasSmallObjectArgument.exists_cardinal.choose_spec.choose_spec.choose
 
 instance isCardinalForSmallObjectArgument_smallObjectκ :
@@ -112,11 +113,11 @@ instance : HasFunctorialFactorization I.rlp.llp I.rlp :=
 /-- If `I : MorphismProperty C` permits the small object argument,
 then the class of morphisms that have the left lifting property with respect to
 the maps that have the right lifting property with respect to `I` are
-exactly the retracts of transfinite compositions (indexed by `I.smallObjectκ.ord.ToType`)
+exactly the retracts of transfinite compositions (indexed by `Shrink (Set.Iio I.smallObjectκ.ord)`)
 of pushouts of coproducts of morphisms in `C`. -/
 lemma llp_rlp_of_hasSmallObjectArgument' :
     I.rlp.llp = (transfiniteCompositionsOfShape (coproducts.{w} I).pushouts
-        I.smallObjectκ.ord.ToType).retracts :=
+        (Shrink (Set.Iio I.smallObjectκ.ord))).retracts :=
   llp_rlp_of_isCardinalForSmallObjectArgument' I I.smallObjectκ
 
 /-- If `I : MorphismProperty C` permits the small object argument,

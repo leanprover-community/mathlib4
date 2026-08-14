@@ -170,14 +170,14 @@ lemma le_φ (B : Set X) : B ≤ φ Y m B := by
 
 include h₀ hA hY in
 omit [PartialOrder X] in
-/-- By iterating `φ` to the power `j : κ₁.ord.ToType` and evaluating
+/-- By iterating `φ` to the power `j : Shrink (Set.Iio κ₁.ord)` and evaluating
 on `A`, we get a subset that is of cardinality `< κ₂`. -/
-lemma hasCardinalLT_transfiniteIterate_φ (j : κ₁.ord.ToType) :
+lemma hasCardinalLT_transfiniteIterate_φ (j : Shrink (Set.Iio κ₁.ord)) :
     HasCardinalLT (transfiniteIterate (φ Y m) j A :) κ₂ := by
   induction j using SuccOrder.limitRecOn with
   | isMin j hj =>
-    have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
-    let := WellFoundedLT.toOrderBot κ₁.ord.ToType
+    have := Cardinal.nonempty_shrink_Iio_ord (c := κ₁) (IsRegular.ne_zero Fact.out)
+    let := WellFoundedLT.toOrderBot (Shrink (Set.Iio κ₁.ord))
     simpa [hj.eq_bot]
   | succ j hj hj' =>
     have hκ₂ : κ₂.IsRegular := Fact.out
@@ -199,27 +199,27 @@ lemma hasCardinalLT_transfiniteIterate_φ (j : κ₁.ord.ToType) :
 include hY' in
 omit [Fact κ₂.IsRegular] [PartialOrder X] in
 lemma monotone_transfiniteIterate_φ :
-    Monotone (fun (j : κ₁.ord.ToType) ↦ transfiniteIterate (φ Y m) j A) :=
-  have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
-  letI := WellFoundedLT.toOrderBot κ₁.ord.ToType
+    Monotone (fun (j : Shrink (Set.Iio κ₁.ord)) ↦ transfiniteIterate (φ Y m) j A) :=
+  have := Cardinal.nonempty_shrink_Iio_ord (c := κ₁) (IsRegular.ne_zero Fact.out)
+  letI := WellFoundedLT.toOrderBot (Shrink (Set.Iio κ₁.ord))
   monotone_transfiniteIterate _ _ (le_φ _ hY' _)
 
 omit [PartialOrder X] [Fact κ₂.IsRegular] in
-lemma subset_iUnion : A ⊆ ⋃ (j : κ₁.ord.ToType), transfiniteIterate (φ Y m) j A := by
-  have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
-  let := WellFoundedLT.toOrderBot κ₁.ord.ToType
+lemma subset_iUnion : A ⊆ ⋃ (j : Shrink (Set.Iio κ₁.ord)), transfiniteIterate (φ Y m) j A := by
+  have := Cardinal.nonempty_shrink_Iio_ord (c := κ₁) (IsRegular.ne_zero Fact.out)
+  let := WellFoundedLT.toOrderBot (Shrink (Set.Iio κ₁.ord))
   exact subset_trans (by simp) (Set.subset_iUnion _ ⊥)
 
 include h₀ hY hY' hm hA in
 lemma isCardinalFiltered_iUnion :
-    IsCardinalFiltered (⋃ (j : κ₁.ord.ToType), transfiniteIterate (φ Y m) j A) κ₁ := by
-  suffices ∀ ⦃K : Type w⦄ (j : κ₁.ord.ToType) (f : K → (transfiniteIterate (φ Y m) j A : Set _))
-      (hK : HasCardinalLT K κ₁),
+    IsCardinalFiltered (⋃ (j : Shrink (Set.Iio κ₁.ord)), transfiniteIterate (φ Y m) j A) κ₁ := by
+  suffices ∀ ⦃K : Type w⦄ (j : Shrink (Set.Iio κ₁.ord))
+      (f : K → (transfiniteIterate (φ Y m) j A : Set _)) (hK : HasCardinalLT K κ₁),
       ∃ (x : (transfiniteIterate (φ Y m) (Order.succ j) A : Set _)),
           ∀ (k : K), (f k).val ≤ x.val by
     refine isCardinalFiltered_preorder _ _ (fun K f hK ↦ ?_)
     rw [← hasCardinalLT_iff_cardinal_mk_lt] at hK
-    have (k : K) : ∃ (j : κ₁.ord.ToType), (f k).val ∈ transfiniteIterate (φ Y m) j A := by
+    have (k : K) : ∃ (j : Shrink (Set.Iio κ₁.ord)), (f k).val ∈ transfiniteIterate (φ Y m) j A := by
       simpa only [Set.mem_iUnion] using (f k).prop
     choose a ha using this
     obtain ⟨⟨z, hz⟩, hz'⟩ := this (IsCardinalFiltered.max a hK) (fun k ↦
@@ -230,8 +230,8 @@ lemma isCardinalFiltered_iUnion :
   obtain ⟨⟨x, hx⟩, hx'⟩ := hφ₀ Y hY' m hm _
     (hasCardinalLT_transfiniteIterate_φ h₀ Y hY m A hA _) f hK
   refine ⟨⟨x, ?_⟩, hx'⟩
-  have : NoMaxOrder κ₁.ord.ToType := by
-    rw [← Ordinal.isSuccPrelimit_type_lt_iff, Ordinal.type_toType]
+  have : NoMaxOrder (Shrink (Set.Iio κ₁.ord)) := by
+    rw [← Ordinal.isSuccPrelimit_type_lt_iff, Ordinal.type_lt_shrink_Iio]
     exact (isSuccLimit_ord (IsRegular.aleph0_le Fact.out)).isSuccPrelimit
   rwa [transfiniteIterate_succ _ _ _ (not_isMax j),
     φ_eq _ _ _ (hasCardinalLT_transfiniteIterate_φ h₀ Y hY m A hA _)]
@@ -256,7 +256,7 @@ public lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ�
           (fun (c : C.val) ↦ c.val.val) C.prop ⟨_, hb⟩)⟩
   choose m hm using hY''
   -- The expected subset `B` is obtained as the union over
-  -- all `j : κ₁.ord.ToType` of the transfinite iterations
+  -- all `j : Shrink (Set.Iio κ₁.ord)` of the transfinite iterations
   -- of the map `φ`
   exact ⟨⋃ j, transfiniteIterate (φ Y m) j A, subset_iUnion Y m A,
     isCardinalFiltered_iUnion h₀ Y hY hY' m hm A hA,
