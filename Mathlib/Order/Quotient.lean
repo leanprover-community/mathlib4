@@ -8,7 +8,7 @@ module
 public import Mathlib.Order.Interval.Set.OrdConnected
 
 /-!
-### Order instances on quotients
+# Order instances on quotients
 
 We define a `Preorder` instance on a general `Quotient`, as the transitive closure of the
 `x ≤ y ∨ x ≈ y` relation. This is the quotient object in the category of preorders.
