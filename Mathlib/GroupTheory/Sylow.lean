@@ -751,29 +751,27 @@ theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
       exact (Finset.univ : Finset s).le_max' ⟨g, hg⟩ (Finset.mem_univ _)
     have hcard' (g : Subgroup G) (hg : g ∈ s \ {t}) : Nat.card g ∣ p ^ n := by
       obtain ⟨m, hmn, hm⟩ := (Nat.dvd_prime_pow hp).mp (hcard g hg.1)
-      have hlt : Nat.card g < Nat.card t :=
-        card_lt_of_lt <| (hst g hg.1).lt_of_ne (by simpa using hg.2)
+      have hlt : Nat.card g < Nat.card t := card_lt_of_lt <| (hst g hg.1).lt_of_ne hg.2
       rw [hm, htcard, pow_lt_pow_iff_right₀ hp.one_lt, Nat.lt_add_one_iff] at hlt
       exact hm ▸ pow_dvd_pow p hlt
     obtain ⟨f', hsf', hf'⟩ := ih t (by simp [htcard, pow_add]) (s \ {t})
       (hchain.mono Set.sdiff_subset) hcard' fun g hg ↦ hst g hg.1
-    let f := fun x ↦ if hx : x = Fin.last (n + 1) then t else f' (x.castPred hx)
-    have hf : StrictMono f := fun x y h ↦ by
-      by_cases hy : y = Fin.last (n + 1)
-      · simp only [f, Fin.ne_last_of_lt h, hy, ↓reduceDIte]
+    have hf : StrictMono (Fin.snoc f' t) := fun x y h ↦ by
+      obtain ⟨x, rfl⟩ := Fin.exists_castSucc_eq.mpr (Fin.ne_last_of_lt h)
+      rcases y.eq_castSucc_or_eq_last with ⟨y, rfl⟩ | rfl
+      · simpa using h
+      · simp only [Fin.snoc_castSucc, Fin.snoc_last, ]
         apply lt_of_le_of_ne (hf' _).2
         grind [Nat.pow_right_inj hp.one_lt]
-      · simpa [f, Fin.ne_last_of_lt h, hy] using h
-    refine ⟨.ofStrictMono f hf, fun g hg ↦ ?_, fun x ↦ ?_⟩
+    refine ⟨.ofStrictMono (Fin.snoc f' t) hf, fun g hg ↦ ?_, fun x ↦ ?_⟩
     · rw [OrderEmbedding.coe_ofStrictMono, Set.mem_range]
       by_cases hgt : g = t
-      · exact ⟨Fin.last (n + 1), by simp [f, hgt]⟩
+      · exact ⟨Fin.last (n + 1), by simp [hgt]⟩
       obtain ⟨x, hx⟩ := hsf' ⟨hg, hgt⟩
-      exact ⟨x.castSucc, by simp [f, hx]⟩
-    · simp only [OrderEmbedding.coe_ofStrictMono, f]
-      split_ifs with hx
-      · simp [hx, htcard, htH]
-      · simp [(hf' _).1, (hf' _).2.trans htH]
+      exact ⟨x.castSucc, by simp [hx]⟩
+    · rcases x.eq_castSucc_or_eq_last with ⟨x, rfl⟩ | rfl
+      · simp [(hf' x).1, (hf' x).2.trans htH]
+      · simp [htcard, htH]
 
 /-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the order of the group, then
 there is a tower of subgroups of orders `p ^ 0, …, p ^ n`. -/
