@@ -579,7 +579,7 @@ variable [hp : Fact (1 ≤ p)]
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
 instance instProdPseudoEMetricSpace [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     PseudoEMetricSpace (WithLp p (α × β)) :=
-  (prodPseudoEMetricAux p α β).replaceUniformity (.symm <| private prod_uniformity_aux p α β)
+  (prodPseudoEMetricAux p α β).replaceUniformity <| private (prod_uniformity_aux p α β).symm
 
 /-- `EMetricSpace` instance on the product of two emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/

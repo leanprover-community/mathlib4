@@ -161,7 +161,8 @@ private theorem end_path : f x₁ = g x₃ := by convert! hfg 1 <;> simp only [P
 set_option backward.isDefEq.respectTransparency false in
 theorem eq_path_of_eq_image :
     (πₘ (TopCat.ofHom f)).map ⟦p⟧ =
-        hcast (private start_path hfg) ≫ (πₘ (TopCat.ofHom g)).map ⟦q⟧ ≫ hcast (private end_path hfg).symm := by
+        hcast (private start_path hfg) ≫ (πₘ (TopCat.ofHom g)).map ⟦q⟧ ≫
+          hcast (private (end_path hfg).symm) := by
   rw [conj_eqToHom_iff_heq
     ((πₘ (TopCat.ofHom f)).map ⟦p⟧) ((πₘ (TopCat.ofHom g)).map ⟦q⟧)
     (FundamentalGroupoid.ext <| start_path hfg)
