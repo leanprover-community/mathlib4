@@ -112,6 +112,7 @@ theorem induction_on (x : PerfectClosure K p) {q : PerfectClosure K p → Prop}
 
 variable (K p)
 
+set_option backward.privateInPublic true in
 private theorem mul_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
     mk K p (x1.1 + y.1, (frobenius K p)^[y.1] x1.2 * (frobenius K p)^[x1.1] y.2) =
       mk K p (x2.1 + y.1, (frobenius K p)^[y.1] x2.2 * (frobenius K p)^[x2.1] y.2) :=
@@ -122,6 +123,7 @@ private theorem mul_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
         Nat.succ_add]
       apply R.intro
 
+set_option backward.privateInPublic true in
 private theorem mul_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
     mk K p (x.1 + y1.1, (frobenius K p)^[y1.1] x.2 * (frobenius K p)^[x.1] y1.2) =
       mk K p (x.1 + y2.1, (frobenius K p)^[y2.1] x.2 * (frobenius K p)^[x.1] y2.2) :=
@@ -176,6 +178,7 @@ theorem one_def : (1 : PerfectClosure K p) = mk K p (0, 1) :=
 instance instInhabited : Inhabited (PerfectClosure K p) :=
   ⟨1⟩
 
+set_option backward.privateInPublic true in
 private theorem add_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
     mk K p (x1.1 + y.1, (frobenius K p)^[y.1] x1.2 + (frobenius K p)^[x1.1] y.2) =
       mk K p (x2.1 + y.1, (frobenius K p)^[y.1] x2.2 + (frobenius K p)^[x2.1] y.2) :=
@@ -186,6 +189,7 @@ private theorem add_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
         Nat.succ_add]
       apply R.intro
 
+set_option backward.privateInPublic true in
 private theorem add_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
     mk K p (x.1 + y1.1, (frobenius K p)^[y1.1] x.2 + (frobenius K p)^[x.1] y1.2) =
       mk K p (x.1 + y2.1, (frobenius K p)^[y2.1] x.2 + (frobenius K p)^[x.1] y2.2) :=

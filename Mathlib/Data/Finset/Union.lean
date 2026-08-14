@@ -96,6 +96,7 @@ section DecidableEq
 
 variable [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
 
+set_option backward.privateInPublic true in
 private lemma pairwiseDisjoint_fibers : Set.PairwiseDisjoint ↑t fun a ↦ s.filter (f · = a) :=
   fun x' hx y' hy hne ↦ by
     simp_rw [disjoint_left, mem_filter]; rintro i ⟨_, rfl⟩ ⟨_, rfl⟩; exact hne rfl
