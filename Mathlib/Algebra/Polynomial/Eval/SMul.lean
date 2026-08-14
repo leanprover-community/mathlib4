@@ -21,7 +21,7 @@ public import Mathlib.Algebra.Polynomial.Eval.Defs
 
 noncomputable section
 
-open Finset AddMonoidAlgebra
+open Finset
 
 open Polynomial
 
