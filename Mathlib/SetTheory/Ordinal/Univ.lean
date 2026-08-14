@@ -191,9 +191,13 @@ theorem small_iff_lift_mk_lt_univ {α : Type u} :
   · rintro ⟨c, hc⟩
     exact ⟨⟨c.out, lift_mk_eq.{u, _, v + 1}.1 (hc.trans (congr rfl c.mk_out.symm))⟩⟩
 
-theorem small_of_lift_mk_le_lift {c : Cardinal.{v}} {α : Type u}
+theorem small_of_lift_mk_le_lift {α : Type u} {c : Cardinal.{v}}
     (hα : lift.{v} #α ≤ lift.{u} c) : Small.{v} α := by
   induction c using inductionOn with | mk α
   exact small_of_injective (lift_mk_le'.1 hα).some.injective
+
+theorem small_iff_exists_lift_mk_le_lift {α : Type u} :
+    Small.{v} α ↔ ∃ c : Cardinal.{v}, lift.{v} #α ≤ lift.{u} c :=
+  ⟨fun ⟨c, ⟨e⟩⟩ => ⟨#c, lift_mk_le'.2 ⟨e⟩⟩, fun ⟨_, hc⟩ => small_of_lift_mk_le_lift hc⟩
 
 end Cardinal
