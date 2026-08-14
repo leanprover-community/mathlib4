@@ -167,7 +167,11 @@ theorem tfae_append_of_mem (ha : a ∈ l₁) (hb : b ∈ l₂) :
     TFAE (l₁ ++ l₂) ↔ (a ↔ b) ∧ TFAE l₁ ∧ TFAE l₂ := by
   simp [tfae_iff_pairwise, pairwise_append_of_mem ha hb]
 
-theorem tfae_cons_of_mem (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
+theorem tfae_cons (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
+  simp [tfae_iff_pairwise, pairwise_cons_of_mem h]
+
+@[simp]
+theorem tfae_cons_of_mem (h : a ∈ l) : TFAE (a :: l) ↔ TFAE l := by
   simp [tfae_iff_pairwise, pairwise_cons_of_mem h]
 
 theorem tfae_concat_of_mem (h : b ∈ l) :
@@ -175,15 +179,15 @@ theorem tfae_concat_of_mem (h : b ∈ l) :
   simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (b := a) h, iff_comm]
 
 theorem tfae_cons_cons : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
-  tfae_cons_of_mem (Mem.head _)
+  tfae_cons (Mem.head _)
 
 @[simp]
-theorem tfae_cons_self : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by simp [tfae_cons_cons]
+theorem tfae_cons_self : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by simp
 
 theorem tfae_of_cycle (h_chain : List.IsChain (· → ·) (a :: b :: l))
     (h_last : getLastD l b → a) : TFAE (a :: b :: l) := by
   induction l generalizing a b with
-  | nil => simp_all [tfae_cons_cons, iff_def]
+  | nil => simp_all [iff_def]
   | cons c l IH =>
     simp only [tfae_cons_cons, getLastD_cons, isChain_cons_cons] at *
     rcases h_chain with ⟨ab, ⟨bc, ch⟩⟩

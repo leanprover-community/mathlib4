@@ -39,6 +39,8 @@ theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 theorem TFAE.subset (h : TFAE l₂) (hl : l₁ ⊆ l₂) : TFAE l₁ :=
   fun p hp q hq ↦ h p (hl hp) q (hl hq)
 
+theorem TFAE.dedcup (h : TFAE l₁) : TFAE (List.dedup l₁) := by sorry
+
 theorem tfae_congr (hp : l₁ ~ l₂) : TFAE l₁ ↔ TFAE l₂ :=
   ⟨fun h ↦ h.subset hp.symm.subset, fun h ↦ h.subset hp.subset⟩
 
