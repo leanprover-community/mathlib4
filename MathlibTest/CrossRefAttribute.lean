@@ -134,17 +134,17 @@ end LMFDB
 
 namespace Pibase
 
-@[pibase P000001 "A vacuous comment"]
+@[pibase topology P000001 "A vacuous comment"]
 theorem p : True := .intro
 
-@[pibase S000023]
+@[pibase topology S000023]
 theorem s : True := .intro
 
-@[pibase T000001]
+@[pibase topology T000001]
 theorem t : True := .intro
 
 /--
-info: some ([π-Base P000001](https://topology.pi-base.org/properties/P000001) (A vacuous comment))
+info: some ([π-Base (Topology) P000001](https://topology.pi-base.org/properties/P000001) (A vacuous comment))
 -/
 #guard_msgs in
 run_cmd
@@ -152,12 +152,12 @@ run_cmd
 
 /--
 info:
-[π-Base P000001](https://topology.pi-base.org/properties/P000001) corresponds to declaration 'p'. (A vacuous comment)
-[π-Base S000023](https://topology.pi-base.org/spaces/S000023) corresponds to declaration 's'.
-[π-Base T000001](https://topology.pi-base.org/theorems/T000001) corresponds to declaration 't'.
+[π-Base (Topology) P000001](https://topology.pi-base.org/properties/P000001) corresponds to declaration 'p'. (A vacuous comment)
+[π-Base (Topology) S000023](https://topology.pi-base.org/spaces/S000023) corresponds to declaration 's'.
+[π-Base (Topology) T000001](https://topology.pi-base.org/theorems/T000001) corresponds to declaration 't'.
 -/
 #guard_msgs in
-#pibase_tags
+#pibase_tags topology
 
 /-- error: <input>:1:3: π-Base ids must have exactly six digits after P/S/T. -/
 #guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "P42"

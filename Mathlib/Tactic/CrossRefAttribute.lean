@@ -18,7 +18,7 @@ to entries in external mathematical databases:
 * `@[kerodon TAG]` — [Kerodon](https://kerodon.net/tag/)
 * `@[wikidata QID]` — [Wikidata](https://www.wikidata.org)
 * `@[lmfdb ID]` — [LMFDB](https://www.lmfdb.org)
-* `@[pibase ID]` — [π-Base](https://topology.pi-base.org/)
+* `@[pibase <topic> ID]` — [π-Base](https://pi-base.org/) databases (by topic)
 
 Each attribute records the cross-reference in an environment extension and appends
 a link to the declaration's docstring.
@@ -34,11 +34,34 @@ open Lean Elab
 
 namespace Mathlib.CrossRef
 
+/-- A topic identifying a π-Base project. -/
+inductive PiBaseTopic where
+  | topology
+  deriving BEq, Hashable, Ord
+
+namespace PiBaseTopic
+
+/-- The string such that `https://{topic.urlHeader}.pi-base.org` is the base url of the π-Base
+project identfied by this topic. -/
+def urlHeader : PiBaseTopic → String
+  | topology => "topology"
+
+/-- The display label used in docstring links and trace output. Used in `Database.label`. -/
+def label : PiBaseTopic → String
+  | topology => "Topology"
+
+/-- A lowercase short name for the given database. Used in `Database.shortName`. Useful when
+exporting to JSON. -/
+def shortName : PiBaseTopic → String
+  | topology => "topology"
+
+end PiBaseTopic
+
 /-- The supported external databases -/
 inductive Database where
   | kerodon
   | lmfdb
-  | pibase
+  | pibase (topic : PiBaseTopic)
   | stacks
   | wikidata
   deriving BEq, Hashable, Ord
@@ -49,13 +72,13 @@ namespace Database
 def url : Database → String → String
   | .kerodon, id => s!"https://kerodon.net/tag/{id}"
   | .lmfdb, id => s!"https://www.lmfdb.org/knowledge/show/{id}"
-  | .pibase, id =>
+  | .pibase topic, id =>
       let path := match id.toList with
         | 'P' :: _ => "properties"
         | 'S' :: _ => "spaces"
         | 'T' :: _ => "theorems"
         | _ => ""
-      s!"https://topology.pi-base.org/{path}/{id}"
+      s!"https://{topic.urlHeader}.pi-base.org/{path}/{id}"
   | .stacks, id => s!"https://stacks.math.columbia.edu/tag/{id}"
   | .wikidata, id => s!"https://www.wikidata.org/wiki/{id}"
 
@@ -63,7 +86,7 @@ def url : Database → String → String
 def label : Database → String
   | .kerodon => "Kerodon Tag"
   | .lmfdb => "LMFDB"
-  | .pibase => "π-Base"
+  | .pibase topic => s!"π-Base ({topic.label})"
   | .stacks => "Stacks Tag"
   | .wikidata => "Wikidata"
 
@@ -71,7 +94,7 @@ def label : Database → String
 def shortName : Database → String
   | .kerodon  => "kerodon"
   | .lmfdb    => "lmfdb"
-  | .pibase   => "pibase"
+  | .pibase topic => s!"pibase-{topic.shortName}"
   | .stacks   => "stacks"
   | .wikidata => "wikidata"
 
@@ -403,22 +426,43 @@ initialize Lean.registerBuiltinAttribute {
 
 /-! ### π-Base attribute -/
 
+-- This parser should track the possible values of `PiBaseTopic`.
+/-- The topic identifying a π-Base database. Possible values:
+
+- `topology`
+
+This list will be expanded in the future. -/
+syntax pibaseTopic := "topology"
+
+/-- Get the `PiBaseTopic` from a syntax key. -/
+def getPiBaseTopic? : TSyntax ``pibaseTopic → Option PiBaseTopic
+  | `(pibaseTopic| topology) => some .topology
+  | _ => none
+
 /-- The `pibase` attribute.
-Use it as `@[pibase P000001 "Optional comment"]` to associate a Mathlib declaration with
-the corresponding [π-Base](https://topology.pi-base.org/) property, space, or theorem.
+Use it as `@[pibase <topic> P000001 "Optional comment"]` to associate a Mathlib declaration with
+the corresponding [π-Base](https://pi-base.org/) property, space, or theorem.
+
+Each `<topic>` identifies a different π-Base database. The possible values of `<topic>` are:
+
+- `topology`
+
+This list will be expanded in the future.
 
 The identifier must start with `P`, `S`, or `T`, followed by exactly six digits.
 -/
-syntax (name := pibaseTag) "pibase" pibaseIdParser (ppSpace str)? : attr
+syntax (name := pibaseTag) "pibase" pibaseTopic pibaseIdParser (ppSpace str)? : attr
 
 initialize Lean.registerBuiltinAttribute {
   name := `pibaseTag
   descr := "Apply a π-Base identifier to a declaration."
   add := fun decl stx _attrKind => do
-    let (id, comment) ← match stx with
-      | `(attr| pibase $id $[$comment]?) => pure (id, comment)
+    let (id, topic, comment) ← match stx with
+      | `(attr| pibase $topic $id $[$comment]?) =>
+        let some topic := getPiBaseTopic? topic | throwUnsupportedSyntax
+        pure (id, topic, comment)
       | _ => throwUnsupportedSyntax
-    addCrossRefDoc .pibase decl (← id.getPibaseId) ((comment.map (·.getString)).getD "")
+    addCrossRefDoc (.pibase topic) decl (← id.getPibaseId) ((comment.map (·.getString)).getD "")
   -- docstrings are immutable once an asynchronous elaboration task has been started
   applicationTime := .beforeElaboration
 }
@@ -506,7 +550,7 @@ or declaration type (for definitions, structures, instances, etc.) after each su
 elab (name := lmfdbTags) "#lmfdb_tags" tk:("!")? : command =>
   traceCrossRefs .lmfdb (tk.isSome)
 
-/-- The `#pibase_tags` command retrieves all declarations that have the `pibase` attribute.
+/-- The `#pibase_tags topic` command retrieves all declarations that have the `pibase` attribute.
 
 For each found declaration, it prints a line
 ```
@@ -515,7 +559,8 @@ For each found declaration, it prints a line
 The variant `#pibase_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
-elab (name := pibaseTags) "#pibase_tags" tk:("!")? : command =>
-  traceCrossRefs .pibase (tk.isSome)
+elab (name := pibaseTags) "#pibase_tags" tk:("!")? ppSpace topic:pibaseTopic : command => do
+  let some topic := getPiBaseTopic? topic | throwUnsupportedSyntax
+  traceCrossRefs (.pibase topic) (tk.isSome)
 
 end Mathlib.CrossRef
