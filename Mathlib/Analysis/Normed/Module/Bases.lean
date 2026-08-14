@@ -135,8 +135,7 @@ open SummationFilter
 
 variable [CompleteSpace 𝕜] [Finite β]
 
-/-- When there is a finite basis, it can be regarded as a generalized Schauder basis.
-The assumption `L.LeAtTop` is needed to ensure that a finite sum converges along `L`. -/
+/-- When there is a finite basis, it can be regarded as a generalized Schauder basis. -/
 def toGeneralSchauderBasis (b : Module.Basis β 𝕜 X) :
     GeneralSchauderBasis β 𝕜 X (unconditional β) :=
   letI : Fintype β := Fintype.ofFinite β
