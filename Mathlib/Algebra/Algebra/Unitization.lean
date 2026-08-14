@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Star.NonUnitalSubalgebra
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Tactic.Abel
 public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
-public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Module.TransferInstance
 
 /-!

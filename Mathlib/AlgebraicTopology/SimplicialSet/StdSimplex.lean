@@ -820,7 +820,6 @@ end Examples
 
 namespace Augmented
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor which sends `⦋n⦌` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/
