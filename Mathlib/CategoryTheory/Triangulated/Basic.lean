@@ -60,7 +60,7 @@ variable {C}
 /-- A triangle `(X,Y,Z,f,g,h)` in `C` is defined by the morphisms `f : X ⟶ Y`, `g : Y ⟶ Z`
 and `h : Z ⟶ X⟦1⟧`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def Triangle.mk {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧) : Triangle C where
   obj₁ := X
   obj₂ := Y
@@ -370,7 +370,6 @@ def productTriangle.π (j : J) :
 def productTriangle.fan : Fan T := Fan.mk (productTriangle T) (productTriangle.π T)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A family of morphisms `T' ⟶ T j` lifts to a morphism `T' ⟶ productTriangle T`. -/
 @[simps]
 def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
@@ -394,7 +393,6 @@ def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
       exact Pi.hom_ext _ _ (fun j => (by simp [← hm])))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
     (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
     (productTriangle T).mor₃ ≫ (productTriangle T).mor₁⟦1⟧' = 0 := by
@@ -475,7 +473,6 @@ open CategoryTheory.Functor
 
 variable {J : Type*} [Category* J]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for functors to the category of triangles. -/
 @[simps]
 def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
