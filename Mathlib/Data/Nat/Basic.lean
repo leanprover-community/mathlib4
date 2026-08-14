@@ -120,8 +120,8 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 /-! ### `mod`, `dvd` -/
 
 /-- Two natural numbers dividing each other are equal. -/
-protected lemma dvd_antisymm_iff : m ∣ n ∧ n ∣ m ↔ m = n :=
-  ⟨fun ⟨h₁, h₂⟩ ↦ Nat.dvd_antisymm h₁ h₂, by simp +contextual⟩
+protected lemma dvd_antisymm_iff : m = n ↔ m ∣ n ∧ n ∣ m :=
+  ⟨by simp +contextual, fun ⟨h₁, h₂⟩ ↦ Nat.dvd_antisymm h₁ h₂⟩
 
 /-- `dvd` is injective in the left argument -/
 lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>

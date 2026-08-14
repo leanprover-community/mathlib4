@@ -434,7 +434,7 @@ which characterizes equality of `zmultiples x` and `zmultiples y` when `x` has i
 theorem Subgroup.zpowers_eq_zpowers_iff' [Group G] (g : G) (i j : ℤ) :
     zpowers (g ^ i) = zpowers (g ^ j) ↔ i.gcd (orderOf g) = j.gcd (orderOf g) := by
   rw [le_antisymm_iff, zpowers_le_zpowers_iff, zpowers_le_zpowers_iff,
-    Nat.dvd_antisymm_iff, eq_comm]
+    ← Nat.dvd_antisymm_iff, eq_comm]
 
 @[to_additive]
 theorem Subgroup.zpowers_le_zpowers_of_dvd [Group G] (g : G) {m n : ℤ} (h : n ∣ m) :
