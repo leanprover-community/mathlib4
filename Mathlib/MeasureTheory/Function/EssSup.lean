@@ -302,6 +302,9 @@ theorem essInf_const_top : essInf (fun _ : α => (⊤ : β)) μ = (⊤ : β) :=
 lemma essSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essSup f μ = ⨆ i, f i := by
   rw [essSup, ae_eq_top.2 hμ, limsup_top_eq_iSup]
 
+lemma essSup_le_iSup {f : α → β} : essSup f μ ≤ ⨆ i, f i :=
+  essSup_le_of_ae_le _ (ae_of_all _ (le_iSup f))
+
 lemma essInf_eq_iInf (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essInf f μ = ⨅ i, f i := by
   rw [essInf, ae_eq_top.2 hμ, liminf_top_eq_iInf]
 
@@ -312,6 +315,21 @@ lemma essInf_eq_iInf (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essInf f μ =
   essInf_eq_iInf (by simp) _
 
 end CompleteLattice
+
+section CompleteLinearOrder
+
+variable [CompleteLinearOrder β]
+
+lemma iSup_eq_essSup {f : α → β} (h : ∀ ⦃x a⦄, a < f x → μ {y | a < f y} ≠ 0) :
+    ⨆ x, f x = essSup f μ := by
+  apply le_antisymm (iSup_le _) essSup_le_iSup
+  intro i
+  rw [essSup_eq_sInf]
+  apply le_sInf
+  intro b hb
+  exact not_lt.mp fun a ↦ h a hb
+
+end CompleteLinearOrder
 
 namespace ENNReal
 
