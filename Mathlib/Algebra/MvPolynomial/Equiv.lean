@@ -701,7 +701,7 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
         Finsupp.prod_pow] using! coeff_monomial m m (1 : R)
     · simp only [hjmi, ite_false]
       obtain hij | rfl := ne_or_eq i (j 0)
-      · simp only [hij, if_false, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply]
+      · simp only [hij, ite_false, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply]
       simp only [ite_true]
       have hmj : m ≠ j.tail := by
         rintro rfl
