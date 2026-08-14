@@ -173,9 +173,8 @@ lemma prod_eq_of_forall_apply_prod {ρ : VectorMeasure (X × Y) G} (hρ : ∀ (s
   · simp [prod_eq_zero_of_not_hasProd, h, hasProd_flip_iff]
   have : HasProd ν μ B.flip := h.flip
   apply (prod_eq_of_forall_apply_prod (fun s t hs ht ↦ ?_)).symm
-  have : Prod.swap (α := X) (β := Y) = MeasurableEquiv.prodComm := rfl
-  rw [this, map_apply _ MeasurableEquiv.prodComm.measurable (hs.prod ht)]
-  simp [MeasurableEquiv.prodComm]
+  rw [map_apply _ measurable_swap (hs.prod ht)]
+  simp
 
 lemma prod_apply_eq_integral [CompleteSpace G] [IsFiniteMeasure μ.variation]
     {s : Set (X × Y)} (hs : MeasurableSet s) :
