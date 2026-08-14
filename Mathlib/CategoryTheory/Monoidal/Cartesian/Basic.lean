@@ -506,7 +506,7 @@ instance preservesMonomorphisms_tensorLeft (X : C) :
 instance preservesMonomorphisms_tensorRight (X : C) :
     Functor.PreservesMonomorphisms (tensorRight X) :=
   letI := BraidedCategory.ofCartesianMonoidalCategory (C := C)
-  Functor.preservesMonomorphisms.of_iso (BraidedCategory.tensorLeftIsoTensorRight _)
+  Functor.PreservesMonomorphisms.of_iso (BraidedCategory.tensorLeftIsoTensorRight _)
 
 instance (priority := 100) : Limits.HasFiniteProducts C :=
   letI : ∀ (X Y : C), Limits.HasLimit (Limits.pair X Y) := fun _ _ =>
