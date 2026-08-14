@@ -369,7 +369,7 @@ lemma nnnorm_quasispectrum_le (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σₙ 𝕜 a) (
 /- Replace this with a version of `CFC.norm_pow` for `PNat` powers when we have those
 for general semigroups. -/
 variable (𝕜) in
-lemma _root_.CFC.norm_cfcₙ_pow (a : A) (n : ℕ) (hn : n ≠ 0) (ha : p a := by cfc_tac) :
+lemma _root_.norm_cfcₙ_pow (a : A) (n : ℕ) (hn : n ≠ 0) (ha : p a := by cfc_tac) :
     ‖cfcₙ (· ^ n : 𝕜 → 𝕜) a‖ = ‖a‖ ^ n := by
   refine le_antisymm (norm_cfcₙ_le fun x hx ↦ ?_) ?_
   · grw [norm_pow, norm_quasispectrum_le a hx]
@@ -382,9 +382,8 @@ include 𝕜 in
 variable (𝕜) in
 lemma _root_.CFC.norm_mul_self (a : A) (ha : p a := by cfc_tac) :
     ‖a * a‖ = ‖a‖ ^ 2 := by
-  convert CFC.norm_cfcₙ_pow 𝕜 a 2 (by simp)
-  simp_rw [sq]
-  rw [cfcₙ_mul .., cfcₙ_id' 𝕜 a]
+  conv_lhs => rw [← cfcₙ_id' 𝕜 a, ← cfcₙ_mul ..]
+  simp [← sq, CFC.norm_cfcₙ_pow 𝕜 a 2]
 
 /- Replace this with a version of `CFC.norm_pow` for `PNat` powers when we have those
 for general semigroups.
