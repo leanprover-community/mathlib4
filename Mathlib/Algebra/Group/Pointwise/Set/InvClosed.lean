@@ -43,11 +43,11 @@ lemma IsInvClosed.inv_mem (h : s.IsInvClosed) {a : α} (ha : a ∈ s) : a⁻¹ �
 @[to_additive]
 lemma isInvClosed_iff_subset_inv : s.IsInvClosed ↔ s ⊆ s⁻¹ := Iff.rfl
 
-@[to_additive]
-lemma isInvClosed_empty : (∅ : Set α).IsInvClosed := fun _ h ↦ False.elim h
+@[to_additive (attr := simp)]
+lemma IsInvClosed.empty : (∅ : Set α).IsInvClosed := fun _ h ↦ False.elim h
 
-@[to_additive]
-lemma isInvClosed_univ : (univ : Set α).IsInvClosed := fun _ _ ↦ mem_univ _
+@[to_additive (attr := simp)]
+lemma IsInvClosed.univ : (univ : Set α).IsInvClosed := fun _ _ ↦ mem_univ _
 
 @[to_additive (attr := simp)]
 lemma isInvClosed_singleton_iff {a : α} : ({a} : Set α).IsInvClosed ↔ a⁻¹ = a := by
