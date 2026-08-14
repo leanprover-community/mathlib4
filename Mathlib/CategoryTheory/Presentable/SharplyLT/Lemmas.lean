@@ -12,7 +12,7 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
 # Lemmas about sharply smaller regular cardinals
 
 We obtain two lemmas `Cardinal.SharplyLT.of_pow_lt` and `Cardinal.SharplyLT.of_le` which
-allow to obtain that certain regular cardinals are sharply smaller
+allow to show that certain regular cardinals are sharply smaller
 than others. We also obtain `Cardinal.SharplyLT.exists_of_small` (and
 variants `exists_of_pair` and `exists_of_triple`) which shows that for
 any small family of regular cardinals, there exists a regular cardinal
