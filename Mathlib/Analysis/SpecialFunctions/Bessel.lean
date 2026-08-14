@@ -82,7 +82,7 @@ theorem analyticAt_besselJ_right (a x : ℂ) : AnalyticAt ℂ (fun x ↦ F₀₁
 /-- $J_a(x)$ is analytic outside of the branch cut on the negative real axis. -/
 @[fun_prop]
 theorem analyticAt_besselJ (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) :
-    AnalyticAt ℂ (J a) x := 
+    AnalyticAt ℂ (J a) x :=
   have : x / 2 ∈ slitPlane := by simpa [slitPlane] using h
   AnalyticAt.mul (by fun_prop) (analyticAt_besselJ_right a x)
 
