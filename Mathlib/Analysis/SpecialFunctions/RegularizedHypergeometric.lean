@@ -238,6 +238,10 @@ theorem radius_regularizedHGFunSeries_eq_top (h : a.card ≤ b.card) :
     rw [← Complex.norm_div, regularizedHGFunCoeff_add_one_div_self hn₁,
       multiset_prod_div_multiset_prod_mul a b hn₂, mul_div]
 
+@[simp]
+theorem radius_regularizedHGFunSeries_zero_eq_top : (regularizedHGFunSeries 0 b).radius = ⊤ :=
+  radius_regularizedHGFunSeries_eq_top (by simp)
+
 /-- If `a.card = b.card + 1`, then the hypergeometric series has convergence radius `1`, unless it
 is a polynomial. -/
 @[grind =]
