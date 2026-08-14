@@ -705,7 +705,7 @@ variable (I J : (Submodule R A)ˣ)
 noncomputable def tensorEquivMul : I ⊗[R] J ≃ₗ[R] I * J := by
   refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, mulMap'_surjective _ _⟩
   convert!
-    (private projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
+    private (projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
       (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective)
   simp_rw [← LinearMap.coe_comp]
   congr 1; ext; rfl
