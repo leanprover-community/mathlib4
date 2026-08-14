@@ -529,7 +529,7 @@ lemma prod_lt_prod_of_subset_erase_union_singleton {ι M : Type*} [DecidableEq �
     (fun h ↦ hlt.ne' (congrArg f (Finset.mem_singleton.mp h)))
   by_cases hd'S : d' ∈ S
   · calc ∏ x ∈ S', f x
-        ≤ ∏ x ∈ S.erase d, f x := Finset.prod_le_prod_of_subset' (fun x hx ↦
+        ≤ ∏ x ∈ S.erase d, f x := Finset.prod_le_prod_of_subset (fun x hx ↦
           Finset.mem_erase.mpr ⟨fun h ↦ hd_not (h ▸ hx),
             match Finset.mem_union.mp (hS' hx) with
             | .inl h => Finset.mem_of_mem_erase h
@@ -538,7 +538,7 @@ lemma prod_lt_prod_of_subset_erase_union_singleton {ι M : Type*} [DecidableEq �
           lt_mul_of_one_lt_right' _ (one_le.trans_lt hlt)
       _ = ∏ x ∈ S, f x := Finset.prod_erase_mul S f hd_mem
   · calc ∏ x ∈ S', f x
-        ≤ ∏ x ∈ S.erase d ∪ {d'}, f x := Finset.prod_le_prod_of_subset' hS'
+        ≤ ∏ x ∈ S.erase d ∪ {d'}, f x := Finset.prod_le_prod_of_subset hS'
       _ = (∏ x ∈ S.erase d, f x) * f d' := by
           rw [Finset.prod_union (Finset.disjoint_singleton_right.mpr
             (fun h ↦ hd'S (Finset.mem_of_mem_erase h))), Finset.prod_singleton]
