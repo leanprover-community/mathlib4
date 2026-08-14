@@ -122,9 +122,8 @@ theorem card_eq_finrank' : Nat.card G = Module.finrank A B := by
   have := IsDomain.of_faithfulSMul A B
   let := FractionRing.liftAlgebra A (FractionRing B)
   let := IsFractionRing.mulSemiringAction G B (FractionRing B)
-  have : Algebra.IsIntegral A B := IsGaloisGroup.isInvariant.isIntegral A B G
   rw [IsGaloisGroup.card_eq_finrank G (FractionRing A) (FractionRing B),
-    Algebra.IsAlgebraic.finrank_of_isFractionRing A (FractionRing A) B (FractionRing B)]
+    IsFractionRing.finrank_eq A (FractionRing A) B (FractionRing B)]
 
 @[simp]
 theorem map_mulEquivAlgEquiv_fixingSubgroup [IsGaloisGroup G K L] (F : IntermediateField K L) :
@@ -336,20 +335,7 @@ theorem fixingSubgroup_range_algebraMap [Finite G] (A B C : Type*) (H : Subgroup
   let : MulSemiringAction G L := IsFractionRing.mulSemiringAction G C L
   have : IsGaloisGroup H (FractionRing B) L := IsGaloisGroup.toFractionRing H B C
   rw [← fixingSubgroup_range_algebraMap' G K L H (FractionRing B)]
-  ext g
-  simp only [mem_fixingSubgroup_iff, Set.mem_range]
-  refine ⟨?_, ?_⟩
-  · rintro h _ ⟨x, rfl⟩
-    have {x} : g • (algebraMap B L) x = (algebraMap B L) x := by
-      rw [IsScalarTower.algebraMap_apply B C L, ← algebraMap.smul', h _ ⟨x, rfl⟩]
-    obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective B x
-    simp only [map_div₀, ← IsScalarTower.algebraMap_apply, smul_div₀', this]
-  · rintro h _ ⟨x, rfl⟩
-    apply FaithfulSMul.algebraMap_injective C L
-    rw [algebraMap.smul']
-    apply h
-    use algebraMap B (FractionRing B) x
-    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+  exact IsFractionRing.fixingSubgroup_range_algebraMap G (FractionRing B) L
 
 open Pointwise in
 /-- If `G` is a finite Galois group for `L/K`, `H` is a Galois group for `L/E`, and `E/K` is
@@ -497,7 +483,6 @@ instance [Finite G] [IsGaloisGroup G K L] : IsGaloisGroup (G ⧸ N) K F :=
 
 variable (E : IntermediateField K L) [hE : IsGaloisGroup H E L]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `G` is a finite Galois group for `L/K`, `N` is a normal subgroup that is a Galois group for
 `L/F`, and `H` is a subgroup that is a Galois group for `L/E` with `E ≤ F`, then the image of `H`
 under the canonical quotient map `G → G ⧸ N` is a Galois group for `F/E`. -/
