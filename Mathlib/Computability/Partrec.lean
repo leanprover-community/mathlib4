@@ -176,7 +176,7 @@ protected inductive Partrec : (ℕ →. ℕ) → Prop
 namespace Partrec
 
 theorem of_eq {f g : ℕ →. ℕ} (hf : Nat.Partrec f) (H : ∀ n, f n = g n) : Nat.Partrec g :=
-  (DFunLike.ext _ _ H : f = g) ▸ hf
+  DFunLike.ext _ _ H ▸ hf
 
 theorem of_eq_tot {f : ℕ →. ℕ} {g : ℕ → ℕ} (hf : Nat.Partrec f) (H : ∀ n, g n ∈ f n) :
     Nat.Partrec g :=
@@ -217,7 +217,7 @@ theorem none : Nat.Partrec fun _ ↦. .none :=
 theorem prec' {f g h} (hf : Nat.Partrec f) (hg : Nat.Partrec g) (hh : Nat.Partrec h) :
     Nat.Partrec fun a ↦. (f a).bind fun n => Nat.rec (g a)
       (fun y IH => do let i ← IH; h (Nat.pair a (Nat.pair y i))) n :=
-  ((prec hg hh).comp (pair Nat.Partrec.id hf)).of_eq fun a =>
+  ((prec hg hh).comp (pair .id hf)).of_eq fun a =>
     by simp [Seq.seq, Nat.unpaired, PFun.coe_mk]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -391,7 +391,7 @@ variable {α : Type*} {β : Type*} {σ : Type*} [Primcodable α] [Primcodable β
 open Computable
 
 theorem of_eq {f g : α →. σ} (hf : Partrec f) (H : ∀ n, f n = g n) : Partrec g :=
-  (DFunLike.ext _ _ H : f = g) ▸ hf
+  DFunLike.ext _ _ H ▸ hf
 
 theorem of_eq_tot {f : α →. σ} {g : α → σ} (hf : Partrec f) (H : ∀ n, g n ∈ f n) : Computable g :=
   hf.of_eq fun a => eq_some_iff.2 (H a)

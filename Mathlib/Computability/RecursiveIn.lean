@@ -107,7 +107,7 @@ variable {f g : ℕ →. ℕ}
 
 theorem of_eq {O} (hf : Nat.RecursiveIn O f) (H : ∀ n, f n = g n) :
     Nat.RecursiveIn O g :=
-  (DFunLike.ext _ _ H : f = g) ▸ hf
+  DFunLike.ext _ _ H ▸ hf
 
 theorem of_eq_tot {g : ℕ → ℕ} {O} (hf : Nat.RecursiveIn O f)
     (H : ∀ n, g n ∈ f n) : Nat.RecursiveIn O g :=
@@ -185,7 +185,7 @@ namespace RecursiveIn
 
 lemma of_eq {f g : α →. σ} (hf : RecursiveIn O f)
     (H : ∀ x, f x = g x) : RecursiveIn O g :=
-  (DFunLike.ext _ _ H : f = g) ▸ hf
+  DFunLike.ext _ _ H ▸ hf
 
 lemma of_eq_tot {f : α →. σ} {g : α → σ}
     (hf : RecursiveIn O f) (H : ∀ n, g n ∈ f n) : RecursiveIn O (g : α →. σ) :=
@@ -235,7 +235,7 @@ lemma recursiveIn_empty_iff :
 every partial function `g`. -/
 theorem partrec_iff_forall_recursiveIn_singleton :
     Partrec f ↔ ∀ g, RecursiveIn {g} f :=
-  ⟨fun hf _ => hf.recursiveIn, fun hf => (hf (fun _ ↦. .none)).partrec_of_const⟩
+  ⟨fun hf _ => hf.recursiveIn, fun hf => (hf fun _ ↦. .none).partrec_of_const⟩
 
 namespace ComputableIn
 

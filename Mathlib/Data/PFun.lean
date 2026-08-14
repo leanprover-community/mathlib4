@@ -60,7 +60,10 @@ open Function
 /-- `PFun α β`, or `α →. β`, is the type of partial functions from `α` to `β`.
 It is defined as a structure wrapping `α → Part β`. -/
 structure PFun (α β : Type*) where
-  /-- The underlying partial function -/
+  /-- The underlying partial function.
+
+  Do NOT use directly. Instead use `DFunLike.coe`, the automatically-inserted coercion to
+  functions. -/
   toFun : α → Part β
 
 /-- `α →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`. -/

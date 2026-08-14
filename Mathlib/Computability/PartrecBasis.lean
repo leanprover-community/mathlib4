@@ -55,7 +55,7 @@ theorem to_part {n f} (pf : @Partrec' n f) : Partrec f := by
 
 theorem of_eq {n} {f g : List.Vector ℕ n →. ℕ} (hf : Partrec' f) (H : ∀ i, f i = g i) :
     Partrec' g :=
-  (DFunLike.ext _ _ H : f = g) ▸ hf
+  DFunLike.ext _ _ H ▸ hf
 
 theorem of_prim {n} {f : List.Vector ℕ n → ℕ} (hf : Primrec f) : @Partrec' n f :=
   prim (Nat.Primrec'.of_prim hf)
@@ -71,7 +71,7 @@ theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v ↦. f v.tail :
 
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     @Partrec' n fun v ↦. (f v).bind fun a => g (a ::ᵥ v) :=
-  (@comp n (n + 1) g (Fin.cases f (fun i => fun v ↦. .some (v.get i))) hg <|
+  (@comp n (n + 1) g (Fin.cases f fun i => fun v ↦. .some (v.get i)) hg <|
     Fin.cases (by simpa using hf) (fun i => by simpa using! prim (Nat.Primrec'.get i))).of_eq
     fun v => by simp [mOfFn, Part.bind_assoc, pure]
 
@@ -128,7 +128,7 @@ theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 
 open Nat.Partrec.Code
 
 theorem of_part : ∀ {n f}, Partrec f → @Partrec' n f :=
-  @(suffices ∀ f, Nat.Partrec f → @Partrec' 1 (fun v ↦. f v.head) from fun {n f} hf => by
+  @(suffices ∀ f, Nat.Partrec f → @Partrec' 1 fun v ↦. f v.head from fun {n f} hf => by
       let g : ℕ →. ℕ := fun n₁ ↦.
         (Part.ofOption (decode (α := List.Vector ℕ n) n₁)).bind (fun a => Part.map encode (f a))
       exact (comp₁ g (this g hf) (prim Nat.Primrec'.encode)).of_eq fun i => by

@@ -109,7 +109,8 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
   classical
   exact
     { obj X := ⟨Option X, none⟩
-      map f := ⟨Option.elim' none fun a => (f.toFun a).toOption, rfl⟩
+      map {X Y} f :=
+        ⟨Option.elim' none fun a => (DFunLike.coe (F := X →. Y) f a).toOption, rfl⟩
       map_id X := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
         simp [CategoryStruct.id, Part.some_toOption]
       map_comp f g := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
@@ -119,6 +120,8 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
 `Part.equivOption` made functorial. -/
+-- Specifying the projections prevents `simps` from generating non-normal-form lemmas for the
+-- `Part` fields of the unit isomorphism.
 @[simps! functor_obj_X functor_obj_point functor_map_toFun inverse_obj inverse_map_apply_Dom
   inverse_map_apply_get_coe unitIso_hom_app unitIso_inv_app counitIso_hom_app_toFun
   counitIso_inv_app_toFun]
@@ -135,9 +138,10 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
         dsimp [PartialFun.Iso.mk, CategoryStruct.comp, pointedToPartialFun,
           partialFunToPointed, PFun.lift, PartialFun.of, PFun.comp]
         simp only [Part.bind_some]
-        change b ∈ ((f.toFun a).bind fun c =>
+        change b ∈ ((DFunLike.coe (F := X →. Y) f a).bind fun c =>
             .some (⟨some c, some_ne_none c⟩ : {x : Option Y // x ≠ none})) ↔
-          b ∈ PFun.toSubtype (· ≠ none) (Option.elim' none fun y => (f.toFun y).toOption) (some a)
+          b ∈ PFun.toSubtype (· ≠ none) (Option.elim' none fun y =>
+            (DFunLike.coe (F := X →. Y) f y).toOption) (some a)
         refine (Part.mem_bind_iff.trans ?_).trans PFun.mem_toSubtype_iff.symm
         obtain ⟨b | b, hb⟩ := b
         · exact (hb rfl).elim
@@ -162,9 +166,9 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
       change Equiv.optionSubtypeNe (none : Option X) ((PFun.lift _ x).toOption) = some x
       simp
 
-@[backward_defeq]
+@[deprecated (since := "2026-07-31")]
 alias partialFunEquivPointed_inverse_map_Dom := partialFunEquivPointed_inverse_map_apply_Dom
-@[backward_defeq]
+@[deprecated (since := "2026-07-31")]
 alias partialFunEquivPointed_inverse_map_get_coe :=
   partialFunEquivPointed_inverse_map_apply_get_coe
 
