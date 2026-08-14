@@ -140,8 +140,7 @@ theorem analyticAt_besselJ_int (a : ℤ) (x : ℂ) : AnalyticAt ℂ (J a) x := b
 
 @[simp]
 theorem besselJ_zero (a : ℂ) : J a 0 = if a = 0 then 1 else 0 := by
-  unfold besselJ
-  rw [regularizedHGFun, regularizedHGFunSeries, ← ofScalarsSum]
+  rw [besselJ, regularizedHGFun, regularizedHGFunSeries, ← ofScalarsSum]
   split_ifs with ha <;> simp [regularizedHGFunCoeff, ha]
 
 end Complex
