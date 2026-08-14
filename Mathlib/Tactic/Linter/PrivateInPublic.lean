@@ -37,10 +37,18 @@ exported at all. So the candidates are the private declarations of the current m
 present in `Environment.setExporting true`.
 
 A candidate is *used* if it is reachable, through public positions, from a declaration of the
-current module which is not itself private. A declaration's type is always a public position; its
-value is one only when the public environment records a definition with a body, since non-exposed
-definitions are exported as axioms. Theorem values are deliberately not followed: they are not
-public, and once the option is gone the theorem is not exported at all.
+current module which is not itself private. A declaration's type is always a public position; for
+its value we read off whether the public environment carries one. Note that this is not the same as
+the body being recorded in the file: bodies are always recorded, but `Environment.setExporting true`
+selects the exported view of a declaration, in which the value of an unexposed definition has been
+replaced by an axiom, even in the current module. Declarations exported only because of
+`backward.privateInPublic` are the exception, being exported *as is* (see `Lean.addDecl`), so their
+bodies are public whether or not they are exposed — and rightly counted as such here, since a
+candidate which stays exported keeps its body, and hence its references, in the public environment.
+
+Theorem values are the one thing we do not follow, even for a private theorem exported as is. A
+reference from a proof does not oblige the referenced declaration to be exported: an exported
+theorem whose proof mentions an unexported private declaration is accepted.
 
 For each unused candidate we look up its declaration range, find the command of the module
 containing it, and suggest deleting the `set_option .. in`s in front of that command, exactly as
@@ -48,11 +56,19 @@ the `privateProof` linter does.
 
 ## Caveats
 
-This linter assumes the `privateProof` linter's suggestions have already been applied: it only
-asks whether anything *else* still needs the declaration to be exported, and does not check whether
-the command it strips still needs the option in order to elaborate. As a partial guard, a candidate
-whose own public form mentions a private declaration is skipped, since its signature plainly still
-needs the option.
+This linter assumes the `privateProof` linter's suggestions have already been applied: it asks only
+whether anything *else* still needs the declaration to be exported, and does not check whether the
+command it strips still needs the option in order to elaborate. That is almost never a concern: a
+command all of whose declared names are private is elaborated in a non-exporting environment
+throughout, signature and value alike (see the `withExporting` call in
+`Lean.Elab.MutualDef.elabMutualDef`), so neither `abbrev` nor `@[expose]` makes any difference —
+indeed `@[expose]` warns that it is meaningless on a private declaration. It can only arise for a
+command declaring a public name alongside a private one, and the `privateProof` linter reports the
+references responsible separately.
+
+Deletions expose further deletions: once the last public use of an exported private declaration is
+wrapped in `private`, that declaration becomes unused, and the linter suggests deleting its
+`set_option` on the next run. A sweep should be iterated to a fixed point.
 
 Note also that code actions produced by module linters are currently dropped (see the TODO in
 `Lean.Elab.Command.runLintersAsync`), so the suggestions here are informational: the replacement
