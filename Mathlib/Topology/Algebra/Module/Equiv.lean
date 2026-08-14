@@ -626,7 +626,7 @@ protected theorem _root_.LinearEquiv.isUniformEmbedding {E₁ E₂ : Type*} [Uni
 
 /-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
 inverse of each other. See also `equivOfInverse'`.
-*ToDo*: Improve the naming to make it match `LinearMap.ofLinear`. -/
+*ToDo*: Improve the naming to make it match `LinearEquiv.ofLinearMap`. -/
 def equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁) (h₁ : Function.LeftInverse f₂ f₁)
     (h₂ : Function.RightInverse f₂ f₁) : M₁ ≃SL[σ₁₂] M₂ :=
   { f₁ with
@@ -646,7 +646,7 @@ theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) 
 
 /-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
 inverse of each other, in the `ContinuousLinearMap.comp` sense. See also `equivOfInverse`.
-*ToDo*: Improve the naming to make it match `LinearMap.ofLinear` -/
+*ToDo*: Improve the naming to make it match `LinearEquiv.ofLinearMap` -/
 def equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
     (h₁ : f₁.comp f₂ = .id R₂ M₂) (h₂ : f₂.comp f₁ = .id R₁ M₁) : M₁ ≃SL[σ₁₂] M₂ :=
   equivOfInverse f₁ f₂
