@@ -65,6 +65,8 @@ def zsqrtdProducer (dQ : Q(ℤ)) (d : Int) : Producer :=
 /-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`. -/
 @[bareiss_ext] def zsqrtdExt : BareissExt where
   producer? R := do
+    -- unfold reducible aliases such as `GaussianInt` before matching
+    let R ← whnfR R
     let_expr Zsqrtd dE := R | return none
     let some d ← getIntValue? dE | return none
     have dQ : Q(ℤ) := dE

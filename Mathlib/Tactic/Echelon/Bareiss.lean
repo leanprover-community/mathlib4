@@ -111,7 +111,6 @@ def elabCertificate (A L σ pivotE : Expr) : TermElabM Expr := do
 /-- Select the computation model for the ring expression `R`: the first registered
 `bareiss_ext` extension that handles `R`, or the default rational model. -/
 def producerFor (R : Expr) : MetaM Producer := do
-  let R ← whnf R
   for ext in bareissExt.getState (← getEnv) do
     if let some p ← ext.producer? R then
       trace[Tactic.evalRank] "selected the model `{ext.name}` for{indentExpr R}"
