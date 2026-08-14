@@ -714,7 +714,7 @@ the Bernoulli number `B₂ₖ`: each prime occurs in the denominator with multip
 theorem not_sq_dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
     ¬ p ^ 2 ∣ (bernoulli (2 * k)).den := by
   have hp : p.Prime := Fact.out
-  have hpne : (p : ℚ) ≠ 0 := by exact_mod_cast hp.ne_zero
+  have hpne : (p : ℚ) ≠ 0 := mod_cast hp.ne_zero
   have h1 : ¬ p ∣ (p * bernoulli (2 * k)).den := by
     simp [← Rat.padicValuation_le_one_iff, padicValuation_bernoulli hk hpk, ← WithZero.exp_add]
   have h2 : (bernoulli (2 * k)).den ∣ p * ((p : ℚ) * bernoulli (2 * k)).den := by
