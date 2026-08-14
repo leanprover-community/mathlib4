@@ -109,7 +109,7 @@ theorem digamma_reflection {s : ℂ} (hs : ∀ m : ℤ, s ≠ m) :
       = -((Real.pi : ℂ) * Complex.cot ((Real.pi : ℂ) * s)) := by
     calc digamma s - digamma (1 - s)
         = logDeriv (fun z ↦ Gamma z * Gamma (1 - z)) s := by
-          rw [logDeriv_mul (f := Gamma) (g := fun z ↦ Gamma (1 - z)) s (Gamma_ne_zero hs₀)
+          rw [logDeriv_fun_mul (f := Gamma) (g := fun z ↦ Gamma (1 - z)) s (Gamma_ne_zero hs₀)
               (Gamma_ne_zero hs₁) (differentiableAt_Gamma s hs₀)
               ((differentiableAt_Gamma _ hs₁).comp s (by fun_prop)),
             ((hasDerivAt_id' (x := s)).const_sub 1).logDeriv_Gamma hs₁, ← digamma_def]
@@ -117,8 +117,9 @@ theorem digamma_reflection {s : ℂ} (hs : ∀ m : ℤ, s ≠ m) :
       _ = logDeriv (fun z ↦ (Real.pi : ℂ) / sin ((Real.pi : ℂ) * z)) s := by
           rw [funext Gamma_mul_Gamma_one_sub]
       _ = -((Real.pi : ℂ) * Complex.cot ((Real.pi : ℂ) * s)) := by
-          rw [logDeriv_div (f := fun _ ↦ (Real.pi : ℂ)) (g := fun z ↦ sin ((Real.pi : ℂ) * z)) s hπ
-                hsin (by fun_prop) (differentiableAt_sin.comp s (by fun_prop)),
+          rw [logDeriv_fun_div (f := fun _ ↦ (Real.pi : ℂ))
+                (g := fun z ↦ sin ((Real.pi : ℂ) * z)) s hπ hsin (by fun_prop)
+                (differentiableAt_sin.comp s (by fun_prop)),
               logDeriv_const, Pi.zero_apply,
               show (fun z : ℂ ↦ sin ((Real.pi : ℂ) * z)) = sin ∘ ((Real.pi : ℂ) * ·) from rfl,
               logDeriv_comp differentiableAt_sin (by fun_prop), logDeriv_sin, deriv_const_mul_id]
@@ -147,7 +148,7 @@ theorem digamma_two_mul {s : ℂ} (hs : ∀ m : ℕ, s ≠ -(m : ℂ))
   have key : digamma s + digamma (s + 1 / 2) = 2 * digamma (2 * s) - 2 * Complex.log 2 := by
     calc digamma s + digamma (s + 1 / 2)
         = logDeriv (fun z ↦ Gamma z * Gamma (z + 1 / 2)) s := by
-          rw [logDeriv_mul (f := Gamma) (g := fun z ↦ Gamma (z + 1 / 2)) s (Gamma_ne_zero hs)
+          rw [logDeriv_fun_mul (f := Gamma) (g := fun z ↦ Gamma (z + 1 / 2)) s (Gamma_ne_zero hs)
               (Gamma_ne_zero hsh) (differentiableAt_Gamma s hs)
               ((differentiableAt_Gamma _ hsh).comp s (by fun_prop)),
             ((hasDerivAt_id' (x := s)).add_const (1 / 2)).logDeriv_Gamma hsh, ← digamma_def]
@@ -157,7 +158,7 @@ theorem digamma_two_mul {s : ℂ} (hs : ∀ m : ℕ, s ≠ -(m : ℂ))
           rw [funext Gamma_mul_Gamma_add_half]
       _ = 2 * digamma (2 * s) - 2 * Complex.log 2 := by
           rw [logDeriv_mul_const s _ hsqrt,
-            logDeriv_mul (f := fun z ↦ Gamma (2 * z)) (g := fun z ↦ (2 : ℂ) ^ (1 - 2 * z)) s
+            logDeriv_fun_mul (f := fun z ↦ Gamma (2 * z)) (g := fun z ↦ (2 : ℂ) ^ (1 - 2 * z)) s
               (Gamma_ne_zero h2s) hpow ((differentiableAt_Gamma _ h2s).comp s (by fun_prop))
               hd2.differentiableAt,
             ((hasDerivAt_id' (x := s)).const_mul 2).logDeriv_Gamma h2s, hcpow]
