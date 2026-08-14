@@ -52,17 +52,18 @@ namespace Filtration
 
 variable {X : C} {I : Type*} [Category I]
 
-/-- The object at index `i` (domain of the mono into `X`). -/
-abbrev obj (F : Filtration X I) (i : I) : C :=
-  (F.toMonoOver.obj i).obj.left
-
 /-- The underlying diagram in `C` obtained by forgetting `MonoOver`. -/
 @[simps! -isSimp]
 abbrev diagram (F : Filtration X I) : I ⥤ C :=
   F.toMonoOver ⋙ MonoOver.forget _ ⋙ Over.forget _
 
+/-- The object at index `i` (domain of the mono into `X`). -/
+abbrev obj (F : Filtration X I) (i : I) : C :=
+  F.diagram.obj i
+
 /-- The natural transformation from the filtration diagram to the constant underlying object. -/
-abbrev ι (F : Filtration X I) : F.diagram ⟶ (Functor.const _).obj X where
+@[implicit_reducible, simps -isSimp]
+def ι (F : Filtration X I) : F.diagram ⟶ (Functor.const _).obj X where
   app i := (F.toMonoOver.obj i).obj.hom
 
 end Filtration
@@ -103,42 +104,9 @@ attribute [reassoc (attr := simp)] Hom.comm
 /-- The category structure on filtered objects. -/
 @[simps! id_hom id_natTrans comp_hom comp_natTrans]
 instance : Category (FilteredObject C I) where
-  Hom F G := Hom F G
-  id F :=
-    { hom := 𝟙 _
-      natTrans := 𝟙 _
-      comm := by
-        intro i
-        simp }
-  comp {X Y Z} f g :=
-    { hom := f.hom ≫ g.hom
-      natTrans := f.natTrans ≫ g.natTrans
-      comm := by
-        intro i
-        change
-          (f.natTrans.app i ≫ g.natTrans.app i) ≫ Z.filtration.ι.app i =
-            X.filtration.ι.app i ≫ (f.hom ≫ g.hom)
-        rw [Category.assoc, g.comm, ← Category.assoc, f.comm, Category.assoc] }
-  id_comp f := by
-    apply Hom.ext <;> simp
-  comp_id f := by
-    apply Hom.ext <;> simp
-  assoc f g h := by
-    apply Hom.ext <;> simp [Category.assoc]
-
-@[simp]
-lemma hom_id (F : FilteredObject C I) : (𝟙 F : F ⟶ F).hom = 𝟙 _ := rfl
-
-@[simp]
-lemma hom_comp {F G H : FilteredObject C I} (f : F ⟶ G) (g : G ⟶ H) :
-    (f ≫ g).hom = f.hom ≫ g.hom := rfl
-
-@[simp]
-lemma natTrans_id (F : FilteredObject C I) : (𝟙 F : F ⟶ F).natTrans = 𝟙 _ := rfl
-
-@[simp]
-lemma natTrans_comp {F G H : FilteredObject C I} (f : F ⟶ G) (g : G ⟶ H) :
-    (f ≫ g).natTrans = f.natTrans ≫ g.natTrans := rfl
+  Hom := Hom
+  id _ := .mk (𝟙 _) (𝟙 _)
+  comp f g := .mk (f.hom ≫ g.hom) (f.natTrans ≫ g.natTrans)
 
 /-- Strictness of a filtered morphism: each compatibility square is a pullback. -/
 class IsStrictHom {F G : FilteredObject C I} (f : F ⟶ G) : Prop where
@@ -239,7 +207,7 @@ noncomputable def succHom (F : DecFiltration (C := C) X) (n : ℤ) :
 lemma succHom_comp_ι_app (F : DecFiltration (C := C) X) (n : ℤ) :
     succHom (C := C) (X := X) F n ≫ F.ι.app (Opposite.op n) =
       F.ι.app (Opposite.op (n + 1)) := by
-  simp [succHom]
+  simp [succHom, ι]
 
 section GradedZ
 
