@@ -749,7 +749,8 @@ lemma leadingTerm_one : m.leadingTerm (1 : MvPolynomial σ R) = 1 := by
   simp [leadingTerm]
 
 @[simp]
-lemma leadingTerm_subsingleton [Subsingleton R] {f : MvPolynomial σ R} : m.leadingTerm f = f := by
+lemma leadingTerm_of_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
+    m.leadingTerm f = f := by
   simp [leadingTerm, (m.degree_eq_zero_iff.mp degree_subsingleton).symm]
 
 /--
