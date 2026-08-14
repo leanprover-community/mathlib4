@@ -96,8 +96,7 @@ theorem IsGaloisGroup.of_isFractionRing [hGKL : IsGaloisGroup G K L]
   · obtain ⟨b, hb⟩ := hGKL.isInvariant.isInvariant (algebraMap B L x)
       (by simpa [← algebraMap.coe_smul'])
     have hx : IsIntegral A (algebraMap B L x) := (Algebra.IsIntegral.isIntegral x).algebraMap
-    rw [← hb, isIntegral_algebraMap_iff (algebraMap K L).injective,
-      IsIntegrallyClosedIn.isIntegral_iff] at hx
+    rw [← hb, isIntegral_algebraMap_iff, IsIntegrallyClosedIn.isIntegral_iff] at hx
     obtain ⟨a, rfl⟩ := hx
     exact ⟨a, by rwa [hc, IsFractionRing.coe_inj] at hb⟩
 
@@ -232,10 +231,8 @@ instance isScalarTower_mulSemiringActionQuotient [MulSemiringAction G B] [SMulDi
   ⟨fun g q b ↦ Quotient.inductionOn' q fun h ↦ by
     simp [mul_smul, mulSemiringActionQuotient_smul_def]⟩
 
-set_option linter.defProp false in
 /-- If `G` acts on `C` commuting with `A`, then the action of `G ⧸ N` on `B` commutes with `A`. -/
-@[implicit_reducible]
-def smulCommClassQuotient [N.Normal] [Algebra A B] [IsScalarTower A B C] [SMulCommClass G A C]
+theorem smulCommClassQuotient [N.Normal] [Algebra A B] [IsScalarTower A B C] [SMulCommClass G A C]
     [MulSemiringAction G B] [MulAction (G ⧸ N) B] [SMulDistribClass G B C]
     [IsScalarTower G (G ⧸ N) B] :
     SMulCommClass (G ⧸ N) A B :=
