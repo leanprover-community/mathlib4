@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
@@ -77,6 +78,7 @@ algebras, see `spectrum.isBounded`/`quasispectrum.isBounded`, below). In this ca
 When `A` is unital, `spectrum` and `quasispectrum` differ only by the inclusion of `0` which does
 not affect the spectral radius, so in the unital case, one may take the spectral radius to be the
 supremum over the spectrum instead of the quasispectrum (see `spectralRadius_eq_of_unital`). -/
+@[wikidata Q249748]
 noncomputable def spectralRadius (𝕜 : Type*) {A : Type*}
     [NormedField 𝕜] [NonUnitalRing A] [Module 𝕜 A]
     (a : A) : ℝ≥0∞ :=
@@ -631,8 +633,7 @@ lemma Subalgebra.frontier_subset_frontier :
     (spectrum.isClosed (x : A)).closure_eq]
   apply subset_inter (frontier_spectrum S x)
   rw [frontier_eq_closure_inter_closure]
-  exact inter_subset_right |>.trans <|
-    closure_mono <| compl_subset_compl.mpr <| spectrum.subset_subalgebra x
+  grw [inter_subset_right, spectrum.subset_subalgebra]
 
 open Set Notation
 
@@ -654,12 +655,8 @@ lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
   suffices h_frontier : frontier (σ 𝕜 x \ σ 𝕜 (x : A)) ⊆ frontier (σ 𝕜 (x : A)) from
     disjoint_of_subset_left h_frontier <| disjoint_compl_right.frontier_left
       (spectrum.isClosed _).isOpen_compl
-  rw [sdiff_eq_compl_inter]
-  apply (frontier_inter_subset _ _).trans
-  rw [frontier_compl]
-  apply union_subset <| inter_subset_left
-  refine inter_subset_inter_right _ ?_ |>.trans <| inter_subset_right
-  exact frontier_subset_frontier S x
+  grw [sdiff_eq_compl_inter, frontier_inter_subset, inter_subset_left, inter_subset_right,
+    frontier_compl, frontier_subset_frontier, union_self]
 
 /-- Let `S` be a closed subalgebra of a Banach algebra `A`, and let `x : S`. If `z` is in the
 spectrum of `x`, then the connected component of `z` in the complement of the spectrum of `↑x : A`
