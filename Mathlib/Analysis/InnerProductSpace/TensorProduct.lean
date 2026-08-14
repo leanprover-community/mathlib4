@@ -128,8 +128,6 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   rw [inner_mapIncl_mapIncl, inner_self y e f, RCLike.ofReal_re]
   exact Finset.sum_nonneg fun _ _ ↦ sq_nonneg _
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] F) :=
   letI : InnerProductSpace.Core 𝕜 (E ⊗[𝕜] F) :=
   { conj_inner_symm x y :=
@@ -137,8 +135,8 @@ noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] 
         (by simp_all [inner])) (by simp_all [inner])
     add_left _ _ _ := LinearMap.map_add₂ _ _ _ _
     smul_left _ _ _ := LinearMap.map_smulₛₗ₂ _ _ _ _
-    definite := TensorProduct.inner_definite
-    re_inner_nonneg := TensorProduct.re_inner_self_nonneg }
+    definite := private TensorProduct.inner_definite
+    re_inner_nonneg := private TensorProduct.re_inner_self_nonneg }
   this.toNormedAddCommGroup
 
 instance instInnerProductSpace : InnerProductSpace 𝕜 (E ⊗[𝕜] F) := .ofCore _

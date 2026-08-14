@@ -599,25 +599,21 @@ section Fintype
 variable [hp : Fact (1 ≤ p)]
 variable [Fintype ι]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- pseudoemetric space instance on the product of finitely many pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
 instance [∀ i, PseudoEMetricSpace (β i)] : PseudoEMetricSpace (PiLp p β) :=
-  (pseudoEmetricAux p β).replaceUniformity (uniformity_aux p β).symm
+  (pseudoEmetricAux p β).replaceUniformity (private uniformity_aux p β).symm
 
 /-- emetric space instance on the product of finitely many emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/
 instance [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) :=
   EMetricSpace.ofT0PseudoEMetricSpace (PiLp p α)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- pseudometric space instance on the product of finitely many pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
 instance [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) :=
-  ((pseudoMetricAux p β).replaceUniformity (uniformity_aux p β).symm).replaceBornology fun s =>
-    Filter.ext_iff.1 (cobounded_aux p β).symm sᶜ
+  ((pseudoMetricAux p β).replaceUniformity (private uniformity_aux p β).symm).replaceBornology fun s =>
+    Filter.ext_iff.1 (private cobounded_aux p β).symm sᶜ
 
 /-- metric space instance on the product of finitely many metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/

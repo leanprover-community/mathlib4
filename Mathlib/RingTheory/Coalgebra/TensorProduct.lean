@@ -124,11 +124,9 @@ private lemma coassoc :
     rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 noncomputable
 instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
-  coassoc := coassoc (R := R)
+  coassoc := private coassoc (R := R)
   rTensor_counit_comp_comul := by
     ext x y
     convert!

@@ -702,14 +702,12 @@ theorem projective_of_isUnit {I : Submodule R A} (hI : IsUnit I) : Projective R 
 
 variable (I J : (Submodule R A)ˣ)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Given two invertible `R`-submodules in an `R`-algebra `A`, the `R`-linear map from
 `I ⊗[R] J` to `I * J` induced by multiplication is an isomorphism. -/
 noncomputable def tensorEquivMul : I ⊗[R] J ≃ₗ[R] I * J := by
   refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, mulMap'_surjective _ _⟩
   convert!
-    (projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
+    (private projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
       (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective)
   simp_rw [← LinearMap.coe_comp]
   congr 1; ext; rfl

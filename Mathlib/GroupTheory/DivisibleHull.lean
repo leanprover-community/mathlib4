@@ -261,10 +261,8 @@ private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
   · simp_rw [smul_smul, ← mul_rotate s'.val, ← smul_smul, ← h', smul_smul]
     ring_nf
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : LE (DivisibleHull M) where
-  le x y := liftOn₂ x y (fun m s n t ↦ t.val • m ≤ s.val • n) lift_aux
+  le x y := liftOn₂ x y (fun m s n t ↦ t.val • m ≤ s.val • n) (private lift_aux)
 
 @[simp]
 theorem mk_le_mk {m m' : M} {s s' : ℕ+} :

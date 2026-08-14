@@ -390,8 +390,6 @@ private abbrev twoCocycleAux (E : Extension R M L) {s : L →ₗ[R] E.L}
   map_add' x y := by ext; simp; abel
   map_smul' _ _ := by ext; simp [smul_sub]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The 2-cocycle attached to an extension with a linear section. -/
 @[simps]
 noncomputable def twoCocycleOf [IsLieAbelian M] (E : Extension R M L) {s : L →ₗ[R] E.L}

@@ -590,10 +590,8 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : R⟦Γ⟧) : x * y * z
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
     aesop (add safe Set.add_mem_add) (add simp [add_assoc, mul_assoc])
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance [NonUnitalSemiring R] : NonUnitalSemiring R⟦Γ⟧ where
-  mul_assoc := mul_assoc'
+  mul_assoc := private mul_assoc'
 
 instance [NonAssocSemiring R] : NonAssocSemiring R⟦Γ⟧ where
   one_mul x := by
@@ -715,12 +713,10 @@ private theorem mul_smul' [Semiring R] [Module R V] (x y : R⟦Γ⟧)
 instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ' R V) :=
   inferInstanceAs <| Module R V⟦Γ'⟧
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance instModule [Semiring R] [Module R V] : Module R⟦Γ⟧
     (HahnModule Γ' R V) := {
   (inferInstance : DistribSMul R⟦Γ⟧ (HahnModule Γ' R V)) with
-  mul_smul := mul_smul'
+  mul_smul := private mul_smul'
   one_smul := fun _ => one_smul'
   add_smul := fun _ _ _ => add_smul Module.add_smul
   zero_smul := fun _ => zero_smul' }

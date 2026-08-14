@@ -103,18 +103,16 @@ variable [Primcodable α] [Primcodable β]
 
 open Primrec
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 instance list : Primcodable (List α) :=
   ⟨letI H := Primcodable.prim (List ℕ)
     have : Primrec₂ fun (a : α) (o : Option (List ℕ)) => o.map (List.cons (encode a)) :=
-      option_map snd <| (list_cons' H).comp ((@Primrec.encode α _).comp (fst.comp fst)) snd
+      private option_map snd <| (list_cons' H).comp ((@Primrec.encode α _).comp (fst.comp fst)) snd
     have :
       Primrec fun n =>
         (ofNat (List ℕ) n).reverse.foldl
           (fun o m => (@decode α _ m).bind fun a => o.map (List.cons (encode a))) (some []) :=
-      list_foldl' H ((list_reverse' H).comp (.ofNat (List ℕ))) (const (some []))
+      private list_foldl' H ((list_reverse' H).comp (.ofNat (List ℕ))) (const (some []))
         (Primrec.comp₂ (bind_decode_iff.2 <| .swap this) Primrec₂.right)
     nat_iff.1 <|
       (encode_iff.2 this).of_eq fun n => by

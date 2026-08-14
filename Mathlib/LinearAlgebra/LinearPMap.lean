@@ -305,14 +305,12 @@ private theorem sup_aux (f g : E →ₛₗ.[σ] F)
     apply fg_eq
     simp only [coe_smul, ← smul_add, hxy]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Given two partial linear maps that agree on the intersection of their domains,
 `f.sup g h` is the unique partial linear map on `f.domain ⊔ g.domain` that agrees
 with `f` and `g`. -/
 protected noncomputable def sup (f g : E →ₛₗ.[σ] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) : E →ₛₗ.[σ] F :=
-  ⟨_, Classical.choose (sup_aux f g h)⟩
+  ⟨_, Classical.choose (private sup_aux f g h)⟩
 
 @[simp]
 theorem domain_sup (f g : E →ₛₗ.[σ] F)
@@ -610,14 +608,12 @@ private theorem sSup_aux (c : Set (E →ₛₗ.[σ] F)) (hc : DirectedOn (· ≤
     refine ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm ?_⟩
     exact f_eq ⟨p, hpc⟩ _ _ hxy.symm
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- For a family of (semi)linear maps with a directed domains such that the one defined on a larger
 domain restricts to the one defined on the smaller domain, this defines the (semi)linear map defined
 on the union of the domains extending all the (semi)linear maps in the family. -/
 protected noncomputable def sSup (c : Set (E →ₛₗ.[σ] F)) (hc : DirectedOn (· ≤ ·) c) :
     E →ₛₗ.[σ] F :=
-  ⟨_, Classical.choose <| sSup_aux c hc⟩
+  ⟨_, Classical.choose <| private sSup_aux c hc⟩
 
 theorem domain_sSup {c : Set (E →ₛₗ.[σ] F)} (hc : DirectedOn (· ≤ ·) c) :
     (LinearPMap.sSup c hc).domain = sSup (LinearPMap.domain '' c) := rfl
