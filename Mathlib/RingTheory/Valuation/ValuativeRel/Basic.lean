@@ -576,7 +576,7 @@ instance : LinearOrder (ValueGroupWithZero R) where
     induction b using ValueGroupWithZero.ind
     rw [ValueGroupWithZero.mk_le_mk, ValueGroupWithZero.mk_le_mk]
     apply vle_total
-  toDecidableLE := Classical.decRel _
+  toDecidableLE := Classical.decRel LE.le
   toDecidableEq := Classical.decRel _
   toDecidableLT := Classical.decRel _
 
