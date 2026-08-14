@@ -37,9 +37,6 @@ theorem toFinset_offDiag {s : Set α} [Fintype s] [Fintype s.offDiag] :
     s.offDiag.toFinset = s.toFinset.offDiag :=
   Finset.ext <| by simp
 
-@[deprecated (since := "2026-01-09")]
-alias toFinset_off_diag := toFinset_offDiag
-
 end Set
 
 instance instFintypeProd (α β : Type*) [Fintype α] [Fintype β] : Fintype (α × β) :=
