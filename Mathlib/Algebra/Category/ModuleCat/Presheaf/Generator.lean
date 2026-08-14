@@ -94,6 +94,10 @@ lemma isDetecting : ObjectProperty.IsDetecting (freeYoneda R) :=
 
 end freeYoneda
 
+instance hasSeparator {C₀ : Type u} [SmallCategory C₀] (R₀ : C₀ᵒᵖ ⥤ RingCat.{u}) :
+    HasSeparator (PresheafOfModules.{u} R₀) :=
+  ⟨_, (freeYoneda.isSeparating R₀).isSeparator_coproduct⟩
+
 instance wellPowered {C₀ : Type u} [SmallCategory C₀] (R₀ : C₀ᵒᵖ ⥤ RingCat.{u}) :
     WellPowered.{u} (PresheafOfModules.{u} R₀) :=
   wellPowered_of_isDetecting (freeYoneda.isDetecting R₀)
