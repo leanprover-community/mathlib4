@@ -360,7 +360,7 @@ theorem integral_prod_smul [CompleteSpace F] {B : E →L[ℝ] F →L[ℝ] H}
     {f : X × Y → ℝ} (hf : Integrable f (μ.variation.prod ν.variation)) :
     ∫ᵛ z, f z ∂•(μ.prod ν B) = ∫ᵛ x, (∫ᵛ y, f (x, y) ∂•ν) ∂[B.flip; μ] := by
   by_cases h : CompleteSpace H
-  · exact integral_prod hf (fun x y z ↦ by simp)
+  · exact integral_prod hf (by simp)
   · simp [integral_of_not_completeSpace, h]
 
 /-- Symmetric version of **Fubini's Theorem**: For integrable functions on `X × Y`,
