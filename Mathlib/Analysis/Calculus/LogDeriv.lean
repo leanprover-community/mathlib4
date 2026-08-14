@@ -81,14 +81,16 @@ theorem logDeriv_const (a : 𝕜') : logDeriv (fun _ : 𝕜 ↦ a) = 0 := by
   ext
   simp [logDeriv_apply]
 
+@[to_fun logDeriv_fun_mul]
 theorem logDeriv_mul {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
-      logDeriv (fun z => f z * g z) x = logDeriv f x + logDeriv g x := by
+      logDeriv (f * g) x = logDeriv f x + logDeriv g x := by
   simp [field, logDeriv_apply, *]
 
+@[to_fun logDeriv_fun_div]
 theorem logDeriv_div {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
-    logDeriv (fun z => f z / g z) x = logDeriv f x - logDeriv g x := by
+    logDeriv (f / g) x = logDeriv f x - logDeriv g x := by
   simp [field, logDeriv_apply, *]
 
 theorem logDeriv_mul_const {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0) :
@@ -100,19 +102,19 @@ theorem logDeriv_const_mul {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a �
   simp only [logDeriv_apply, deriv_const_mul_field, mul_div_mul_left _ _ ha]
 
 /-- The logarithmic derivative of a finite product is the sum of the logarithmic derivatives. -/
+@[to_fun logDeriv_fun_prod]
 theorem logDeriv_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜'} {x : 𝕜} (hf : ∀ i ∈ s, f i x ≠ 0)
     (hd : ∀ i ∈ s, DifferentiableAt 𝕜 (f i) x) :
-    logDeriv (∏ i ∈ s, f i ·) x = ∑ i ∈ s, logDeriv (f i) x := by
+    logDeriv (∏ i ∈ s, f i) x = ∑ i ∈ s, logDeriv (f i) x := by
   induction s using Finset.cons_induction with
-  | empty => simp
+  | empty => simp [Pi.one_def]
   | cons a s ha ih =>
     rw [Finset.forall_mem_cons] at hf hd
-    simp_rw [Finset.prod_cons, Finset.sum_cons]
-    rw [logDeriv_mul, ih hf.2 hd.2]
+    rw [Finset.prod_cons, Finset.sum_cons, logDeriv_mul, ih hf.2 hd.2]
     · exact hf.1
     · simpa [Finset.prod_eq_zero_iff] using hf.2
     · exact hd.1
-    · exact .fun_finsetProd hd.2
+    · exact .finsetProd hd.2
 
 lemma logDeriv_fun_zpow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 𝕜 f x) (n : ℤ) :
     logDeriv (f · ^ n) x = n * logDeriv f x := by
