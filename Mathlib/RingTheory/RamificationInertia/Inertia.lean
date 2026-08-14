@@ -5,7 +5,8 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.NumberTheory.RamificationInertia.Inertia
+public import Mathlib.RingTheory.Finiteness.Quotient
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.QuasiFinite.Basic
 
 /-!
@@ -115,13 +116,6 @@ theorem inertiaDeg_eq_of_isMaximal [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg'_eq_of_isMaximal :=
   inertiaDeg_eq_of_isMaximal
-
-@[deprecated "Use `inertiaDeg_eq_of_isMaximal` instead." (since := "2026-08-14")]
-theorem inertiaDeg'_eq_inertiaDeg [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
-    p.inertiaDeg' q = q.inertiaDeg R := by
-  rw [inertiaDeg'_algebraMap, inertiaDeg_eq_of_isMaximal p q]
-
-@[deprecated (since := "2026-07-03")] alias inertiaDeg_eq_inertiaDeg' := inertiaDeg'_eq_inertiaDeg
 
 theorem inertiaDeg_tower [r.LiesOver q] :
     r.inertiaDeg R = q.inertiaDeg R * r.inertiaDeg S := by
