@@ -697,7 +697,7 @@ theorem Filter.EventuallyEq.codiscrete_deriv
     (h : f₁ =ᶠ[codiscrete 𝕜] f) :
     deriv f₁ =ᶠ[codiscrete 𝕜] deriv f :=
   h.codiscreteWithin_deriv isOpen_univ
-  
+
 end congr
 
 section id
