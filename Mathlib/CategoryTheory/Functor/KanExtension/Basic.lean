@@ -56,13 +56,13 @@ abbrev LeftExtension (L : C ⥤ D) (F : C ⥤ H) :=
   StructuredArrow F ((whiskeringLeft C D H).obj L)
 
 /-- Constructor for objects of the category `Functor.RightExtension L F`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def RightExtension.mk (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : L ⋙ F' ⟶ F) :
     RightExtension L F :=
   CostructuredArrow.mk α
 
 /-- Constructor for objects of the category `Functor.LeftExtension L F`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def LeftExtension.mk (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') :
     LeftExtension L F :=
   StructuredArrow.mk α
