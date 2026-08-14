@@ -163,7 +163,7 @@ theorem basisSets_smul (U) (hU : U ∈ p.basisSets) :
   refine Set.Subset.trans (ball_smul_ball (s.sup p) √r √r) ?_
   rw [hU, Real.mul_self_sqrt (le_of_lt hr)]
 
-variable [NormedField 𝕜] [AddCommGroup F] [Module 𝕜 F] (p : SeminormFamily 𝕜 F ι)
+variable [NormedDivisionRing 𝕜] [AddCommGroup F] [Module 𝕜 F] (p : SeminormFamily 𝕜 F ι)
 
 theorem basisSets_smul_left (x : 𝕜) (U : Set F) (hU : U ∈ p.basisSets) :
     ∃ V ∈ p.addGroupFilterBasis.sets, V ⊆ (fun y : F => x • y) ⁻¹' U := by
@@ -251,9 +251,9 @@ theorem const_isBounded (ι : Type*) [Nonempty ι] {p : Seminorm 𝕜 E} {q : ι
     (f : E →ₛₗ[σ₁₂] F) : IsBounded (fun _ : ι => p) q f ↔ ∀ i, ∃ C : ℝ≥0, (q i).comp f ≤ C • p := by
   constructor <;> intro h i
   · rcases h i with ⟨s, C, h⟩
-    exact ⟨C, le_trans h (smul_le_smul (Finset.sup_le fun _ _ => le_rfl) le_rfl)⟩
-  use {Classical.arbitrary ι}
-  simp only [h, Finset.sup_singleton]
+    exact ⟨C, h.trans (IsOrderedSMul.smul_le_smul_left _ p (Finset.sup_le fun _ _ ↦ le_rfl) C)⟩
+  · use {Classical.arbitrary ι}
+    simp only [h, Finset.sup_singleton]
 
 theorem isBounded_sup {p : ι → Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂ F} {f : E →ₛₗ[σ₁₂] F}
     (hf : IsBounded p q f) (s' : Finset ι') :
@@ -265,7 +265,7 @@ theorem isBounded_sup {p : ι → Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂
   use s'.card • s'.sup fC, Finset.biUnion s' fₛ
   have hs : ∀ i : ι', i ∈ s' → (q i).comp f ≤ s'.sup fC • (Finset.biUnion s' fₛ).sup p := by
     intro i hi
-    refine (hf i).trans (smul_le_smul ?_ (Finset.le_sup hi))
+    refine (hf i).trans (IsOrderedSMul.smul_le_smul (Finset.le_sup hi) ?_)
     exact Finset.sup_mono (Finset.subset_biUnion_of_mem fₛ hi)
   refine (comp_mono f (finset_sup_le_sum q s')).trans ?_
   simp_rw [← pullback_apply, map_sum, pullback_apply]
@@ -366,7 +366,7 @@ theorem WithSeminorms.T1_of_separating (hp : WithSeminorms p)
 /-- A family of seminorms inducing a T₁ topology is separating. -/
 theorem WithSeminorms.separating_of_T1 [T1Space E] (hp : WithSeminorms p) (x : E) (hx : x ≠ 0) :
     ∃ i, p i x ≠ 0 := by
-  have := ((t1Space_TFAE E).out 0 9).mp (inferInstance : T1Space E)
+  have := ((t1Space_TFAE E).out 1 10).mp (inferInstance : T1Space E)
   by_contra! h
   refine hx (this ?_)
   rw [hp.hasBasis_zero_ball.specializes_iff]
@@ -772,7 +772,7 @@ theorem uniformEquicontinuous_iff_exists_continuous_seminorm {κ : Type*}
     (f : κ → E →ₛₗ[σ₁₂] F) :
     UniformEquicontinuous ((↑) ∘ f) ↔
     ∀ i, ∃ p : Seminorm 𝕜 E, Continuous p ∧ ∀ k, (q i).comp (f k) ≤ p :=
-  (hq.equicontinuous_TFAE f).out 2 3
+  (hq.equicontinuous_TFAE f).out 3 4
 
 theorem uniformEquicontinuous_iff_bddAbove_and_continuous_iSup {κ : Type*}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [IsUniformAddGroup E] [u : UniformSpace F]
@@ -781,7 +781,7 @@ theorem uniformEquicontinuous_iff_bddAbove_and_continuous_iSup {κ : Type*}
     UniformEquicontinuous ((↑) ∘ f) ↔ ∀ i,
     BddAbove (range fun k ↦ (q i).comp (f k)) ∧
       Continuous (⨆ k, (q i).comp (f k)) :=
-  (hq.equicontinuous_TFAE f).out 2 4
+  (hq.equicontinuous_TFAE f).out 3 5
 
 end WithSeminorms
 

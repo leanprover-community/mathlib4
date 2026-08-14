@@ -103,7 +103,6 @@ instance of_comp_left [HasLiftingProperty i p] [HasLiftingProperty i' p] :
           fac_left := by simp only [assoc, CommSq.fac_left]
           fac_right := by simp only [CommSq.fac_right] }⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_dual (reorder := i i' e p)]
 theorem of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
     (e : Arrow.mk i ≅ Arrow.mk i') (p : X ⟶ Y) [hip : HasLiftingProperty i p] :
@@ -120,7 +119,6 @@ theorem iff_of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
 
 end HasLiftingProperty
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_dual]
 lemma RetractArrow.rightLiftingProperty
     {X Y Z W X' Y' : C} {f : X ⟶ Y} {f' : X' ⟶ Y'}
@@ -138,7 +136,6 @@ the square corresponding to `φ`. -/
 @[to_dual self]
 abbrev LiftStruct {f g : Arrow C} (φ : f ⟶ g) := (CommSq.mk φ.w).LiftStruct
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_dual self]
 lemma hasLiftingProperty_iff {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) :
     HasLiftingProperty i p ↔

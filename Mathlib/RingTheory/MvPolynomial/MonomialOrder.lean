@@ -10,6 +10,7 @@ public import Mathlib.Data.Finsupp.MonomialOrder
 public import Mathlib.Data.Finsupp.WellFounded
 public import Mathlib.Data.List.TFAE
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-! # Degree, leading coefficient and leading term of polynomials with respect to a monomial order
 
@@ -193,7 +194,7 @@ theorem degree_X [Nontrivial R] {s : σ} :
     m.degree (X s : MvPolynomial σ R) = Finsupp.single s 1 := by
   classical
   change m.degree (monomial (Finsupp.single s 1) (1 : R)) = _
-  rw [degree_monomial, if_neg one_ne_zero]
+  rw [degree_monomial, ite_eq_right one_ne_zero]
 
 @[simp] theorem degree_one : m.degree (1 : MvPolynomial σ R) = 0 := by
   nontriviality R
@@ -320,7 +321,7 @@ theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
   classical
   by_cases hd : d = 0
   · simp [hd]
-  · rw [coeff_C, if_neg (Ne.symm hd)]
+  · rw [coeff_C, ite_eq_right (Ne.symm hd)]
     apply coeff_eq_zero_of_lt (m := m)
     rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, EmbeddingLike.map_eq_zero_iff]
     exact ⟨bot_le, hd⟩
@@ -1209,7 +1210,7 @@ lemma sPolynomial_monomial_mul [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R
   have hm1 := (monomial_eq_zero (s := d₁)).not.mpr hc1
   have hm2 := (monomial_eq_zero (s := d₂)).not.mpr hc2
   simp_rw [m.degree_mul hm1 hp1, m.degree_mul hm2 hp2,
-    mul_sub, ← mul_assoc _ _ p₁, ← mul_assoc _ _ p₂, monomial_mul,
+    mul_sub, ← mul_assoc _ _ p₁, ← mul_assoc _ _ p₂, monomial_mul_monomial,
     m.leadingCoeff_mul, m.leadingCoeff_monomial,
     degree_monomial, hc1, hc2, reduceIte, mul_right_comm, mul_comm c₂ c₁]
   rw [tsub_add_tsub_cancel (sup_le_sup (self_le_add_left _ _) (self_le_add_left _ _)) (by simp),
