@@ -85,6 +85,7 @@ lemma coe_of (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X :=
 example (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X := by with_reducible rfl
 example (M : ModuleCat.{v} R) : of R M = M := by with_reducible rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `ModuleCat R`. -/
 @[ext]

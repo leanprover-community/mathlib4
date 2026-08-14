@@ -68,10 +68,12 @@ local notation3 "a" => (card α / #P.parts - m * 4 ^ #P.parts : ℕ)
 
 namespace SzemerediRegularity.Positivity
 
+set_option backward.privateInPublic true in
 private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ (4 : ℝ) ^ n * ε ^ 5) : 0 < ε :=
   (Odd.pow_pos_iff (by decide)).mp
     (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by simp).trans_le h) (by positivity))
 
+set_option backward.privateInPublic true in
 private theorem m_pos [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α) : 0 < m :=
   Nat.div_pos (hPα.trans' <| by unfold stepBound; gcongr; simp) <|
     stepBound_pos (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos

@@ -17,6 +17,7 @@ public section
 namespace ZMod
 variable (p : ℕ) [hp : Fact p.Prime]
 
+set_option backward.privateInPublic true in
 private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 := by
   obtain ⟨k, rfl⟩ := natCast_zmod_surjective a
   apply coe_mul_inv_eq_one
