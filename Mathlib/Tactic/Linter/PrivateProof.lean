@@ -85,6 +85,12 @@ public register_option linter.privateProof : Bool := {
   descr := "enable the `privateProof` linter"
 }
 
+/-- Whether to warn when something does not appear in a proof. -/
+public register_option linter.privateProof.notInProof : Bool := {
+  defValue := false
+  descr := "enable warning when not in proof `privateProof` linter"
+}
+
 namespace PrivateProof
 
 /-- Debugging output for the `privateProof` linter. -/
@@ -265,20 +271,23 @@ private def isOptionValue (stx : Syntax) (val : String) : Bool :=
 
 /-- The ranges, in the chain of `set_option .. in`s wrapping the current command, of those which
 set `backward.privateInPublic` to `true` or `backward.privateInPublic.warn` to `false`, each
-running from the `set_option` keyword through the whitespace following the `in`. -/
-private partial def redundantOptionRanges (stx : Syntax) : Array Lean.Syntax.Range :=
-  if stx.isOfKind ``Parser.Command.in && stx[0].isOfKind ``Parser.Command.set_option then
-    -- `Command.in` is a trailing parser: the `set_option` command, the `in` token, the command it
-    -- applies to (which is the rest of the chain).
-    let rest := redundantOptionRanges stx[2]
-    let redundant :=
-      (stx[0][1].getId == `backward.privateInPublic && isOptionValue stx[0][3] "true") ||
-      (stx[0][1].getId == `backward.privateInPublic.warn && isOptionValue stx[0][3] "false")
-    match redundant, stx[0].getPos?, stx[1].getTrailingTailPos? with
-    | true, some start, some stop => rest.push ⟨start, stop⟩
-    | _, _, _ => rest
-  else
-    #[]
+running from the `set_option` keyword through the whitespace following the `in`, so that deleting
+one removes its whole line. -/
+public partial def redundantOptionRanges (stx : Syntax) : Array Lean.Syntax.Range := Id.run do
+  let mut deleteRefs := #[]
+  for stx in stx.topDown do
+    if stx.isOfKind ``Parser.Command.in && stx[0].isOfKind ``Parser.Command.set_option then
+      -- `Command.in` is a trailing parser: the `set_option` command, the `in` token, the command it
+      -- applies to (which is the rest of the chain).
+      let rest := redundantOptionRanges stx[2]
+      let redundant :=
+        (stx[0][1].getId == `backward.privateInPublic && isOptionValue stx[0][3] "true") ||
+        (stx[0][1].getId == `backward.privateInPublic.warn && isOptionValue stx[0][3] "false")
+      if redundant then
+        match stx[0].getPos?, stx[1].getTrailingTailPos? with
+        | some start, some stop => deleteRefs := deleteRefs.push ⟨start, stop⟩
+        | _, _ => continue
+  return deleteRefs
 
 /-- The private declarations of the current module which appear in public positions of the
 declarations added by the current command.
@@ -353,23 +362,23 @@ private def check (stx : Syntax) (newDecls : Array Name) (moduleNames : NameSet)
   if unfixable.isEmpty then
     -- Every reference in this command can be wrapped, so the `set_option`s enabling the option for
     -- it should no longer be needed. One suggestion per `set_option`, not per wrap.
-    unless outermostWraps.isEmpty do
-      for range in redundantOptionRanges stx do
-        liftCoreM <| addSuggestion (Syntax.ofRange range)
-          { suggestion := .string "", messageData? := m!"(delete)" }
-          (origSpan? := Syntax.ofRange range)
-          (header := "With the proof terms of this command wrapped in `private`, this \
-            `set_option` should be unnecessary; delete it:")
+    for range in redundantOptionRanges stx do
+      liftCoreM <| addSuggestion (Syntax.ofRange range)
+        { suggestion := .string "", messageData? := m!"(delete)" }
+        (origSpan? := Syntax.ofRange range)
+        (header := "With the proof terms of this command wrapped in `private`, this \
+          `set_option` should be unnecessary; delete it:")
   else
-    let stillPublic ← publicPrivateNames newDecls moduleNames
-    for (refStx, name) in unfixable do
-      let note := if stillPublic.contains name then
-          " (and it is still referenced publicly after elaboration)"
-        else
-          ""
-      logLint linter.privateProof refStx m!"The private declaration `{name}` is referenced in an \
-        exporting environment here{note}, but no enclosing proof term could be wrapped in \
-        `private`."
+    if ← linter.privateProof.notInProof.getM then
+      let stillPublic ← publicPrivateNames newDecls moduleNames
+      for (refStx, name) in unfixable do
+        let note := if stillPublic.contains name then
+            " (and it is still referenced publicly after elaboration)"
+          else
+            ""
+        logLint linter.privateProof refStx m!"The private declaration `{name}` is referenced in an \
+          exporting environment here{note}, but no enclosing proof term could be wrapped in \
+          `private`."
 
 /-- The `privateProof` linter proper: see the module docstring. -/
 public initialize privateProofLinter : StatefulLinter Unit Unit ←
