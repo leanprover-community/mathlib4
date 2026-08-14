@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 module
 
 public import Mathlib.Algebra.BigOperators.Associated
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.Monoid
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 /-!
@@ -39,7 +39,7 @@ namespace WfDvdMonoid
 
 variable [CommMonoidWithZero α]
 
-open Associates Nat
+open Associates
 
 theorem of_wfDvdMonoid_associates (_ : WfDvdMonoid (Associates α)) : WfDvdMonoid α :=
   ⟨(mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).2 wellFounded_dvdNotUnit⟩
@@ -80,7 +80,7 @@ theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
     exact Multiset.rel_zero_left.2 <|
       Multiset.eq_zero_of_forall_notMem fun x hx =>
         have : IsUnit g.prod := by simpa [associated_one_iff_isUnit] using h.symm
-        (hg x hx).not_unit <|
+        (hg x hx).not_isUnit <|
           isUnit_iff_dvd_one.2 <| (Multiset.dvd_prod hx).trans (isUnit_iff_dvd_one.1 this)
   | cons p f ih =>
     intro g hf hg hfg
@@ -323,10 +323,10 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
       · exact ⊤
       exact ↑(Multiset.card (Classical.choose (pf a h)))
     rintro a b ⟨ane0, ⟨c, hc, b_eq⟩⟩
-    rw [dif_neg ane0]
+    rw [dite_eq_right ane0]
     by_cases h : b = 0
     · simp [h, lt_top_iff_ne_top]
-    · rw [dif_neg h, Nat.cast_lt]
+    · rw [dite_eq_right h, ENat.natCast_lt_natCast]
       have cne0 : c ≠ 0 := by
         refine mt (fun con => ?_) h
         rw [b_eq, con, mul_zero]
@@ -420,8 +420,9 @@ variable {R : Type*} [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 theorem isRelPrime_iff_no_prime_factors {a b : R} (ha : a ≠ 0) :
     IsRelPrime a b ↔ ∀ ⦃d⦄, d ∣ a → d ∣ b → ¬Prime d :=
-  ⟨fun h _ ha hb ↦ (·.not_unit <| h ha hb), fun h ↦ WfDvdMonoid.isRelPrime_of_no_irreducible_factors
-    (ha ·.1) fun _ irr ha hb ↦ h ha hb (UniqueFactorizationMonoid.irreducible_iff_prime.mp irr)⟩
+  ⟨fun h _ ha hb ↦ (·.not_isUnit <| h ha hb),
+    fun h ↦ WfDvdMonoid.isRelPrime_of_no_irreducible_factors
+      (ha ·.1) fun _ irr ha hb ↦ h ha hb (UniqueFactorizationMonoid.irreducible_iff_prime.mp irr)⟩
 
 /-- Euclid's lemma: if `a ∣ b * c` and `a` and `c` have no common prime factors, `a ∣ b`.
 Compare `IsCoprime.dvd_of_dvd_mul_left`. -/

@@ -36,7 +36,7 @@ q-expansion coefficient (for `𝒮ℒ`).
 @[expose] public noncomputable section
 
 open UpperHalfPlane ModularForm Complex SlashInvariantForm SlashInvariantFormClass
-  ModularFormClass MatrixGroups OnePoint Filter Topology
+ ModularFormClass MatrixGroups OnePoint Filter
 
 variable {Γ : Subgroup (GL (Fin 2) ℝ)} {k : ℤ}
 
@@ -146,10 +146,9 @@ gives a cusp form. -/
 lemma sub_smul_isCuspForm (f g : ModularForm 𝒮ℒ k)
     (hg : (qExpansion 1 g).coeff 0 = 1) :
     ModularForm.IsCuspForm (f - (qExpansion 1 f).coeff 0 • g) := by
-  rw [isCuspForm_iff_coeffZero_eq_zero, ModularForm.coe_sub,
-    ModularForm.qExpansion_sub one_pos one_mem_strictPeriods_SL, IsGLPos.coe_smul,
-    ModularForm.qExpansion_smul one_pos one_mem_strictPeriods_SL,
-    map_sub, PowerSeries.coeff_smul]
+  rw [isCuspForm_iff_coeffZero_eq_zero, FunLike.coe_sub,
+    ModularForm.qExpansion_sub one_pos one_mem_strictPeriods_SL, FunLike.coe_smul,
+    ModularForm.qExpansion_smul one_pos one_mem_strictPeriods_SL, map_sub, PowerSeries.coeff_smul]
   simp [hg]
 
 end SL2Z

@@ -50,11 +50,11 @@ assert_not_exists Cauchy
 
 noncomputable section
 
-open Uniformity Topology Filter Pointwise
+open Uniformity Topology Filter
 
 section LeftRight
 
-open Filter Set
+open Filter
 
 variable {G Gₗ Gᵣ Hₗ Hᵣ X : Type*}
 
