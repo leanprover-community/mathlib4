@@ -39,7 +39,7 @@ ultrametric, nonarchimedean
 -/
 
 public section
-open Metric NNReal
+open NNReal
 
 namespace IsUltrametricDist
 
