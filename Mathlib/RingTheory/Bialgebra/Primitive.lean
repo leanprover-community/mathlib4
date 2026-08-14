@@ -16,7 +16,7 @@ the multiplication of `A`.
 
 ## Main declarations
 
-* `Bialgebra.IsPrimitiveElem a`: `a` is primitive, i.e. `ε a = 0` and `Δ a = 1 ⊗ₜ a + a ⊗ₜ 1`.
+* `Bialgebra.IsPrimitiveElem R a`: `a` is primitive, i.e. `ε a = 0` and `Δ a = 1 ⊗ₜ a + a ⊗ₜ 1`.
 
 ## TODO
 
