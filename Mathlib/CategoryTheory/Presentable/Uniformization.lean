@@ -17,6 +17,9 @@ categories, there exists a regular cardinal `κ` such that `C` and `D`
 are `κ`-accessible categories, and `F` is a `κ`-accessible functor
 which preserves `κ`-presentable objects.
 
+## References
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
+
 -/
 
 @[expose] public section
