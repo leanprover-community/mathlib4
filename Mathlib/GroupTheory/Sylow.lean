@@ -758,7 +758,7 @@ theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
       rcases y.eq_castSucc_or_eq_last with ⟨y, rfl⟩ | rfl
       · simpa
       · rw [Fin.snoc_castSucc, Fin.snoc_last]
-        apply lt_of_le_of_ne (hf' _).2
+        apply lt_of_le_of_ne (hf' x).2
         grind [Nat.pow_right_inj hp.one_lt]
     refine ⟨.ofStrictMono (Fin.snoc f' t) hf, fun g hg ↦ ?_, fun x ↦ ?_⟩
     · rw [Set.sdiff_subset_iff, Set.singleton_union] at hsf'
