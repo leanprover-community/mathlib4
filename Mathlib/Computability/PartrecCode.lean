@@ -171,13 +171,11 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
     cases n.bodd <;> cases n.div2.bodd <;>
       simp [m, encodeCode, IH, IH1, IH2, Nat.bit_val]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance instDenumerable : Denumerable Code :=
   mk'
     ⟨encodeCode, ofNatCode, fun c => by
         induction c <;> simp [encodeCode, ofNatCode, Nat.div2_val, *],
-      encode_ofNatCode⟩
+      private encode_ofNatCode⟩
 
 theorem encodeCode_eq : encode = encodeCode :=
   rfl

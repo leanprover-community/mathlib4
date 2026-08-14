@@ -73,16 +73,14 @@ private theorem evaluation_coevaluation_braided' [inst : ExactPairing X Y] :
       rw [braiding_naturality_left, ← braiding_inv_naturality_left]
       simp [monoidalComp]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `X` and `Y` forms an exact pairing in a braided category, then so does `Y` and `X`
 by composing the coevaluation and evaluation morphisms with associators. -/
 @[instance_reducible]
 def exactPairing_swap (X Y : C) [ExactPairing X Y] : ExactPairing Y X where
   coevaluation' := η_ X Y ≫ (β_ Y X).inv
   evaluation' := (β_ X Y).hom ≫ ε_ X Y
-  coevaluation_evaluation' := coevaluation_evaluation_braided'
-  evaluation_coevaluation' := evaluation_coevaluation_braided'
+  coevaluation_evaluation' := private coevaluation_evaluation_braided'
+  evaluation_coevaluation' := private evaluation_coevaluation_braided'
 
 /-- If `X` has a right dual in a braided category, then it has a left dual. -/
 @[instance_reducible]

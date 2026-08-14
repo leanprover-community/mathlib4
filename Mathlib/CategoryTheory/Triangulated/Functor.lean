@@ -113,12 +113,10 @@ private theorem mapTriangleCommShiftIso_add
         (F.mapTriangleCommShiftIso n) (F.mapTriangleCommShiftIso m) := by
   ext <;> simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   commShiftIso := F.mapTriangleCommShiftIso
-  commShiftIso_add _ _ := mapTriangleCommShiftIso_add ..
+  commShiftIso_add _ _ := private mapTriangleCommShiftIso_add ..
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

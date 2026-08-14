@@ -132,8 +132,6 @@ private theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ide
   exact dpow'_norm_le_of_ne_zero p hm hx
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The family `ℕ → Ideal.span {(p : ℤ_[p])} → ℤ_[p]` given by `dpow n x = x ^ n / n!` is a
   divided power structure on the `ℤ_[p]`-ideal `(p)`. -/
 noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := by
@@ -145,7 +143,7 @@ noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := 
     simp only [Ideal.span_singleton_eq_top, isUnit_iff_ne_zero, ne_eq, cast_eq_zero]
     exact Nat.Prime.ne_zero hp.elim
   · intro n x hx
-    exact ⟨⟨dpow' p n x, dpow'_int p n hx⟩, fun hn ↦ dpow'_mem p hn hx, by
+    exact private ⟨⟨dpow' p n x, dpow'_int p n hx⟩, fun hn ↦ dpow'_mem p hn hx, by
       simp [dpow', inverse_eq_inv', Coe.ringHom_apply, RatAlgebra.dpow_apply,
         Submodule.mem_top, ↓reduceIte]⟩
 

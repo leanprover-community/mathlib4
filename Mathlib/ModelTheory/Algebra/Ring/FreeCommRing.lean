@@ -46,11 +46,9 @@ private theorem exists_term_realize_eq_freeCommRing (p : FreeCommRing α) :
 
 end
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Make a `Language.ring.Term α` from an element of `FreeCommRing α` -/
 noncomputable def termOfFreeCommRing (p : FreeCommRing α) : Language.ring.Term α :=
-  Classical.choose (exists_term_realize_eq_freeCommRing p)
+  Classical.choose (private exists_term_realize_eq_freeCommRing p)
 
 variable {R : Type*} [CommRing R] [CompatibleRing R]
 

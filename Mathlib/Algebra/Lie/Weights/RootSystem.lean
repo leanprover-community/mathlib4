@@ -64,13 +64,11 @@ private lemma chainLength_aux (hα : α.IsNonZero) {x} (hx : x ∈ rootSpace H (
   obtain ⟨μ, hμ⟩ := this.exists_nat
   exact ⟨μ, by rw [← Nat.cast_smul_eq_nsmul K, ← hμ, lie_eq_smul_of_mem_rootSpace hx]⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The length of the `α`-chain through `β`. See `chainBotCoeff_add_chainTopCoeff`. -/
 def chainLength (α β : Weight K H L) : ℕ :=
   letI := Classical.propDecidable
   if hα : α.IsZero then 0 else
-    (chainLength_aux α β hα (chainTop α β).exists_ne_zero.choose_spec.1).choose
+    (private chainLength_aux α β hα (chainTop α β).exists_ne_zero.choose_spec.1).choose
 
 lemma chainLength_of_isZero (hα : α.IsZero) : chainLength α β = 0 := dite_eq_left hα
 

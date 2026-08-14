@@ -177,8 +177,6 @@ theorem Sum.mem_uniformity_iff_glueDist (hε : 0 < ε) (s : Set ((X ⊕ Y) × (X
   · rintro ⟨ε, ε0, H⟩
     constructor <;> exact ⟨ε, ε0, fun _ _ h => H _ _ h⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Given two maps `Φ` and `Ψ` intro metric spaces `X` and `Y` such that the distances between
 `Φ p` and `Φ q`, and between `Ψ p` and `Ψ q`, coincide up to `2 ε` where `ε > 0`, one can almost
 glue the two spaces `X` and `Y` along the images of `Φ` and `Ψ`, so that `Φ p` and `Ψ p` are
@@ -187,10 +185,10 @@ at distance `ε`. -/
 def glueMetricApprox [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
     (H : ∀ p q, |dist (Φ p) (Φ q) - dist (Ψ p) (Ψ q)| ≤ 2 * ε) : MetricSpace (X ⊕ Y) where
   dist := glueDist Φ Ψ ε
-  dist_self := glueDist_self Φ Ψ ε
-  dist_comm := glueDist_comm Φ Ψ ε
-  dist_triangle := glueDist_triangle Φ Ψ ε H
-  eq_of_dist_eq_zero := eq_of_glueDist_eq_zero Φ Ψ ε ε0 _ _
+  dist_self := private glueDist_self Φ Ψ ε
+  dist_comm := private glueDist_comm Φ Ψ ε
+  dist_triangle := private glueDist_triangle Φ Ψ ε H
+  eq_of_dist_eq_zero := private eq_of_glueDist_eq_zero Φ Ψ ε ε0 _ _
   toUniformSpace := Sum.instUniformSpace
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ <| Sum.mem_uniformity_iff_glueDist ε0
 
@@ -257,8 +255,6 @@ private theorem Sum.mem_uniformity (s : Set ((X ⊕ Y) × (X ⊕ Y))) :
   · rintro ⟨ε, ε0, H⟩
     constructor <;> rw [Filter.mem_map, mem_uniformity_dist] <;> exact ⟨ε, ε0, fun _ _ h => H _ _ h⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The distance on the disjoint union indeed defines a metric space. All the distance properties
 follow from our choice of the distance. The harder work is to show that the uniform structure
 defined by the distance coincides with the disjoint union uniform structure. -/
@@ -266,7 +262,7 @@ defined by the distance coincides with the disjoint union uniform structure. -/
 def metricSpaceSum : MetricSpace (X ⊕ Y) where
   dist := Sum.dist
   dist_self x := by cases x <;> simp only [Sum.dist, dist_self]
-  dist_comm := Sum.dist_comm
+  dist_comm := private Sum.dist_comm
   dist_triangle
     | .inl p, .inl q, .inl r => dist_triangle p q r
     | .inl p, .inr q, _ => by
@@ -286,7 +282,7 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
     · exact eq_of_glueDist_eq_zero _ _ _ one_pos _ _ ((Sum.dist_eq_glueDist q p).symm.trans h)
     · rw [eq_of_dist_eq_zero h]
   toUniformSpace := Sum.instUniformSpace
-  uniformity_dist := uniformity_dist_of_mem_uniformity _ _ Sum.mem_uniformity
+  uniformity_dist := uniformity_dist_of_mem_uniformity _ _ (private Sum.mem_uniformity)
 
 attribute [local instance] metricSpaceSum
 
@@ -460,16 +456,14 @@ variable {X : Type u} {Y : Type v} {Z : Type w}
 variable [Nonempty Z] [MetricSpace Z] [MetricSpace X] [MetricSpace Y] {Φ : Z → X} {Ψ : Z → Y}
   {ε : ℝ}
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a pseudometric space
 structure on `X ⊕ Y` by declaring that `Φ x` and `Ψ x` are at distance `0`. -/
 @[instance_reducible]
 def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X ⊕ Y) where
   dist := glueDist Φ Ψ 0
-  dist_self := glueDist_self Φ Ψ 0
-  dist_comm := glueDist_comm Φ Ψ 0
-  dist_triangle := glueDist_triangle Φ Ψ 0 fun p q => by rw [hΦ.dist_eq, hΨ.dist_eq]; simp
+  dist_self := private glueDist_self Φ Ψ 0
+  dist_comm := private glueDist_comm Φ Ψ 0
+  dist_triangle := private glueDist_triangle Φ Ψ 0 fun p q => by rw [hΦ.dist_eq, hΨ.dist_eq]; simp
 
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a
 space `GlueSpace hΦ hΨ` by identifying in `X ⊕ Y` the points `Φ x` and `Ψ x`. -/

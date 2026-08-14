@@ -101,24 +101,20 @@ private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
     · grind [LinearMap.add_apply]
   · grind [LinearMap.add_apply]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance instLieRing : LieRing (A ⊗[R] L) where
   add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, map_add]
   lie_add x y z := by simp only [bracket_def, map_add]
-  lie_self := bracket_lie_self R A L
-  leibniz_lie := bracket_leibniz_lie R A L L
+  lie_self := private bracket_lie_self R A L
+  leibniz_lie := private bracket_leibniz_lie R A L L
 
 instance instBaseLieAlgebra : LieAlgebra R (A ⊗[R] L) where lie_smul := by simp [bracket_def]
 
 instance instLieAlgebra : LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := map_smul _ _ _
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance instLieRingModule : LieRingModule (A ⊗[R] L) (A ⊗[R] M) where
   add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, map_add]
   lie_add x y z := by simp only [bracket_def, map_add]
-  leibniz_lie := bracket_leibniz_lie R A L M
+  leibniz_lie := private bracket_leibniz_lie R A L M
 
 instance instLieModule : LieModule A (A ⊗[R] L) (A ⊗[R] M) where
   smul_lie t x m := by simp only [bracket_def, map_smul, LinearMap.smul_apply]

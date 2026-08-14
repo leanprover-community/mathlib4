@@ -146,14 +146,12 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     rw [pow_zero, Module.End.one_apply]
   exact nontrivial_of_ne ⟨v, hvU⟩ 0 <| by simp [hv']
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 variable (R V) in
 /-- The weight space of `V` with respect to `χ : A → R`, a priori a Lie submodule for `A`, is also a
 Lie submodule for `L`. -/
 def weightSpaceOfIsLieTower (χ : A → R) : LieSubmodule R L V :=
   { toSubmodule := weightSpace V χ
-    lie_mem {z v} hv := weightSpaceOfIsLieTower_aux χ z v hv }
+    lie_mem {z v} hv := private weightSpaceOfIsLieTower_aux χ z v hv }
 
 end
 

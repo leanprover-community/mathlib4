@@ -367,17 +367,15 @@ private theorem zero_smul_aux (p : LocalizedModule S M) : (0 : T) • p = 0 := b
   rw [show (0 : T) = IsLocalization.mk' T (0 : R) (1 : S) by rw [IsLocalization.mk'_zero],
     mk'_smul_mk, zero_smul, zero_mk]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `IsLocalization S T`, then `M[S⁻¹]` is a `T`-module.
 This should eventually be replaced with `IsLocalizedModule f N` and `Module T N`. -/
 noncomputable abbrev moduleOfIsLocalization : Module T (LocalizedModule S M) where
-  one_smul := one_smul_aux
-  mul_smul := mul_smul_aux
-  smul_add := smul_add_aux
-  smul_zero := smul_zero_aux
-  add_smul := add_smul_aux
-  zero_smul := zero_smul_aux
+  one_smul := private one_smul_aux
+  mul_smul := private mul_smul_aux
+  smul_add := private smul_add_aux
+  smul_zero := private smul_zero_aux
+  add_smul := private add_smul_aux
+  zero_smul := private zero_smul_aux
 
 @[simp]
 theorem mk_cancel_common_left (s' s : S) (m : M) : mk (s' • m) (s' * s) = mk m s :=

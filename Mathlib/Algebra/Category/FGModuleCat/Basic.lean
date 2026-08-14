@@ -251,13 +251,11 @@ private theorem evaluation_coevaluation :
   ext : 1
   apply contractLeft_assoc_coevaluation' K V
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance exactPairing : ExactPairing V (FGModuleCatDual K V) where
   coevaluation' := FGModuleCatCoevaluation K V
   evaluation' := FGModuleCatEvaluation K V
-  coevaluation_evaluation' := coevaluation_evaluation K V
-  evaluation_coevaluation' := evaluation_coevaluation K V
+  coevaluation_evaluation' := private coevaluation_evaluation K V
+  evaluation_coevaluation' := private evaluation_coevaluation K V
 
 instance rightDual : HasRightDual V :=
   ⟨FGModuleCatDual K V⟩

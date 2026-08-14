@@ -213,8 +213,6 @@ private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := 
   rw [← mk_option]
   simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance commSemiring : CommSemiring Cardinal.{u} where
   zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum _ α
   add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
@@ -234,7 +232,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   npow_succ n c := by simp_rw [HPow.hPow, Pow.pow]; rw [cast_succ, power_add, power_one]
   natCast n := lift #(Fin n)
   natCast_zero := rfl
-  natCast_succ n := cast_succ n
+  natCast_succ n := private cast_succ n
 
 theorem mk_bool : #Bool = 2 := by simp
 

@@ -71,7 +71,7 @@ set_option backward.privateInPublic.warn false in
 @[instance_reducible]
 def functorCategoryClosed (F : I ⥤ C) : Closed F :=
   have := (ihom.adjunction (incl I ⋙ F)).isLeftAdjoint
-  have := isLeftAdjoint_square_lift_comonadic (tensorLeft F) ((whiskeringLeft _ _ C).obj (incl I))
+  have := private isLeftAdjoint_square_lift_comonadic (tensorLeft F) ((whiskeringLeft _ _ C).obj (incl I))
     ((whiskeringLeft _ _ C).obj (incl I)) (tensorLeft (incl I ⋙ F)) (Iso.refl _)
   { rightAdj := (tensorLeft F).rightAdjoint
     adj := Adjunction.ofIsLeftAdjoint (tensorLeft F) }
