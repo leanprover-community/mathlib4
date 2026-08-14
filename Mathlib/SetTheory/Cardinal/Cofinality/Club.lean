@@ -6,6 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
+public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
 /-!
 # Club sets and stationary sets
@@ -27,9 +28,11 @@ public section
 
 universe u v
 
-open Cardinal Order Set
+open Cardinal Order Ordinal Set
 
 variable {α : Type v} {s t : Set α} {x : α} [LinearOrder α]
+
+/-! ### Club sets -/
 
 /-- A club set is a set that is closed under suprema and that is cofinal. -/
 @[mk_iff]
@@ -66,6 +69,10 @@ theorem isLUB_mem (hs : IsClub s) (ht : t ⊆ s) (ht₀ : t.Nonempty) (hx : IsLU
 theorem csSup_mem {α} [ConditionallyCompleteLinearOrder α] {s t : Set α}
     (hs : IsClub s) (ht : t ⊆ s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) : sSup t ∈ s :=
   hs.isLUB_mem ht ht₀ (isLUB_csSup ht₀ ht₁)
+
+theorem ciSup_mem {α} [ConditionallyCompleteLinearOrder α] {ι} {f : ι → α} [Nonempty ι]
+    {s : Set α} (hs : IsClub s) (ht : .range f ⊆ s) (ht' : BddAbove (.range f)) : ⨆ i, f i ∈ s :=
+  hs.csSup_mem ht (Set.range_nonempty _) ht'
 
 theorem sInter_of_orderTop {s : Set (Set α)} [OrderTop α] (hs : ∀ x ∈ s, IsClub x) :
     IsClub (⋂₀ s) := by
@@ -128,7 +135,7 @@ theorem sInter_of_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα :
     (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
   obtain hα | hα := hα.lt_or_gt
   · apply IsClub.sInter_of_cof_le_one _ hs
-    rwa [← cof_lt_aleph0_iff]
+    rwa [← Order.cof_lt_aleph0_iff]
   · apply IsClub.sInter hα.ne' (hα.trans_le' _) hs
     rwa [le_aleph0_iff_set_countable]
 
@@ -140,6 +147,50 @@ theorem iInter_of_countable {ι : Sort*} {f : ι → Set α} [Countable ι] (hα
 
 protected theorem inter (hα : cof α ≠ ℵ₀) (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ t) := by
   simpa [hs, ht] using IsClub.sInter_of_countable (s := {s, t}) hα
+
+/-- Club sets are closed under diagonal intersections. -/
+protected theorem diag [IsRegularCardinalOrder α] {f : α → Set α} (hα : cof α ≠ ℵ₀)
+    (hf : ∀ a, IsClub (f a)) : IsClub {a | ∀ b < a, a ∈ f b} where
+  dirSupClosed t ht ht₀ _ a ha b hb := by
+    obtain ⟨c, hc, hbc, -⟩ := ha.exists_between hb
+    apply (hf b).isLUB_mem _ ⟨c, _⟩ (ha.inter_Ici_of_mem hc) <;> grind
+  isCofinal a := by
+    obtain hα | hα := hα.lt_or_gt
+    · rw [Order.cof_lt_aleph0_iff, cof_eq_cardinalMk, le_one_iff_subsingleton] at hα
+      use a
+      simp
+    have : Nonempty α := ⟨a⟩
+    have := (noTopOrder_iff_noMaxOrder α).1 <| one_lt_cof_iff.1 (one_lt_aleph0.trans hα)
+    have (b : α) : ∃ c ∈ ⋂₀ (f '' Set.Iio b), b < c := by
+      obtain ⟨b', hb'⟩ := exists_gt b
+      have ⟨c, hc, hbc⟩ :=
+        (IsClub.sInter (s := f '' Set.Iio b) hα.ne' (mk_image_le.trans_lt ?_) ?_).isCofinal b'
+      · exact ⟨c, hc, hb'.trans_le hbc⟩
+      · simp
+      · simp [hf]
+    choose g hg using this
+    have hgm : StrictMono fun n ↦ g^[n] a := by
+      apply strictMono_of_lt_add_one fun n _ ↦ ?_
+      rw [← n.succ_eq_add_one, g.iterate_succ_apply']
+      exact (hg _).2
+    have hg' : IsLUB (.range fun n ↦ g^[n] a) (⨆ n, g^[n] a) := by
+      refine isLUB_ciSup (.of_not_isCofinal fun h ↦ ?_)
+      apply (Order.cof_le h).not_gt (hα.trans_le' _)
+      simpa using mk_range_le_lift (f := fun n ↦ g^[n] a)
+    refine ⟨⨆ n, g^[n] a, fun b hb ↦ ?_, hg'.1 ⟨0, rfl⟩⟩
+    obtain ⟨_, ⟨n, rfl⟩, hb, hn⟩ := hg'.exists_between hb
+    apply (hf b).isLUB_mem _ _ (hg'.inter_Ici_of_mem ⟨n + 1, rfl⟩)
+    · rintro _ ⟨⟨m, rfl⟩, hm⟩
+      rw [Set.mem_Ici, hgm.le_iff_le, Nat.add_one_le_iff] at hm
+      cases m with
+      | zero => contradiction
+      | succ m =>
+        simp_rw [g.iterate_succ_apply']
+        rw [Nat.lt_add_one_iff] at hm
+        simp_rw [Set.sInter_image, Set.mem_iInter] at hg
+        exact (hg _).1 _ (hb.trans_le <| hgm.monotone hm)
+    · use g^[n + 1] a
+      simp [- Function.iterate_succ]
 
 theorem _root_.Order.IsNormal.isClub_range {f : α → α} (hf : IsNormal f) : IsClub (.range f) :=
   ⟨hf.dirSupClosed_range, fun x ↦ ⟨_, ⟨x, rfl⟩, hf.strictMono.le_apply⟩⟩
@@ -268,7 +319,7 @@ theorem isStationary_sUnion_iff_of_countable {s : Set (Set α)} (hα : cof α �
     (hsα : s.Countable) : IsStationary (⋃₀ s) ↔ ∃ x ∈ s, IsStationary x := by
   obtain hα | hα := hα.lt_or_gt
   · apply isStationary_sUnion_iff_of_cof_le_one
-    rwa [← cof_lt_aleph0_iff]
+    rwa [← Order.cof_lt_aleph0_iff]
   · apply isStationary_sUnion_iff hα.ne' (hα.trans_le' _)
     rwa [le_aleph0_iff_set_countable]
 
@@ -280,5 +331,20 @@ theorem isStationary_iUnion_iff_of_countable {ι : Sort*} {f : ι → Set α} [C
 theorem isStationary_union_iff (hα : cof α ≠ ℵ₀) :
     IsStationary (s ∪ t) ↔ IsStationary s ∨ IsStationary t := by
   simpa using isStationary_sUnion_iff_of_countable (s := {s, t}) hα
+
+/-- **Fodor's lemma**, or the **pressing down lemma**: if `α` has the order type of a regular
+cardinal, `s` is a stationary set, and `f : α → α` is a regressive function on `s`, there exists
+some stationary subset of `s` on which `f` is constant. -/
+@[wikidata Q1119050]
+theorem exists_isStationary_preimage_singleton [IsRegularCardinalOrder α] {f : α → α}
+    (hα : cof α ≠ ℵ₀) (hs : IsStationary s) (hf : ∀ x ∈ s, f x < x) :
+    ∃ a, IsStationary (s ∩ f ⁻¹' {a}) := by
+  unfold IsStationary
+  by_contra!
+  choose g hg using this
+  simp_rw [Set.eq_empty_iff_forall_notMem] at hg
+  obtain ⟨a, hs, ha⟩ := hs <| .diag hα fun a ↦ (hg a).1
+  apply (hg (f a)).2 a
+  grind
 
 end WellFoundedLT
