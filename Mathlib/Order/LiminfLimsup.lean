@@ -444,7 +444,6 @@ theorem bliminf_congr' {f : Filter β} {p q : β → Prop} {u : β → α}
     (h : ∀ᶠ x in f, u x ≠ ⊤ → (p x ↔ q x)) : bliminf u f p = bliminf u f q :=
   blimsup_congr' (α := αᵒᵈ) h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HasBasis.blimsup_eq_iInf_iSup {p : ι → Prop} {s : ι → Set β} {f : Filter β} {u : β → α}
     (hf : f.HasBasis p s) {q : β → Prop} :
     blimsup u f q = ⨅ (i) (_ : p i), ⨆ a ∈ s i, ⨆ (_ : q a), u a := by
@@ -1025,8 +1024,8 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
     apply (Iic_ciInf _).symm
     change liminfReparam f s p j ∈ m
     by_cases Hj : j ∈ m
-    · simpa only [m, liminfReparam, if_pos Hj] using Hj
-    · simp only [m, liminfReparam, if_neg Hj]
+    · simpa only [m, liminfReparam, ite_eq_left Hj] using Hj
+    · simp only [m, liminfReparam, ite_eq_right Hj]
       have Z : ∃ n, (exists_surjective_nat (Subtype p)).choose n ∈ m ∨ ∀ j, j ∉ m := by
         rcases (exists_surjective_nat (Subtype p)).choose_spec j0 with ⟨n, rfl⟩
         exact ⟨n, Or.inl hj0⟩
@@ -1045,16 +1044,16 @@ theorem HasBasis.liminf_eq_ite {v : Filter ι} {p : ι' → Prop} {s : ι' → S
       if ∀ (j : Subtype p), ¬BddBelow (range (fun (i : s j) ↦ f i)) then sSup ∅
       else ⨆ (j : Subtype p), ⨅ (i : s (liminfReparam f s p j)), f i := by
   by_cases H : ∃ (j : Subtype p), s j = ∅
-  · rw [if_pos H]
+  · rw [ite_eq_left H]
     rcases H with ⟨j, hj⟩
     simp [hv.liminf_eq_sSup_univ_of_empty j j.2 hj]
-  rw [if_neg H]
+  rw [ite_eq_right H]
   by_cases H' : ∀ (j : Subtype p), ¬BddBelow (range (fun (i : s j) ↦ f i))
   · have A : ∀ (j : Subtype p), ⋂ (i : s j), Iic (f i) = ∅ := by
       simp_rw [← not_nonempty_iff_eq_empty, nonempty_iInter_Iic_iff]
       exact H'
-    simp_rw [if_pos H', hv.liminf_eq_sSup_iUnion_iInter, A, iUnion_empty]
-  rw [if_neg H']
+    simp_rw [ite_eq_left H', hv.liminf_eq_sSup_iUnion_iInter, A, iUnion_empty]
+  rw [ite_eq_right H']
   apply hv.liminf_eq_ciSup_ciInf
   · push Not at H
     simpa only [nonempty_iff_ne_empty] using H
