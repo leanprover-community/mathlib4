@@ -123,7 +123,7 @@ theorem IsHausdorff.funext' {R S : Type*} [CommRing S] (I : Ideal S) [IsHausdorf
   ext r
   rw [IsHausdorff.eq_iff_smodEq (I := I)]
   intro n
-  simpa using h n r
+  simpa using! h n r
 
 /--
 A variant of `IsHausdorff.StrictMono.funext`, where the target is a ring instead of a module.
@@ -135,7 +135,7 @@ theorem IsHausdorff.StrictMono.funext' {R S : Type*} [CommRing S] (I : Ideal S) 
   rw [IsHausdorff.eq_iff_smodEq (I := I)]
   intro n
   apply SModEq.mono (Submodule.pow_smul_top_le I S ha.le_apply)
-  simpa using h n m
+  simpa using! h n m
 
 theorem IsPrecomplete.prec (_ : IsPrecomplete I M) {f : ℕ → M} :
     (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
@@ -550,6 +550,7 @@ theorem mk_zero_of (f : AdicCauchySequence I M)
     ← AdicCauchySequence.mk_eq_mk (show n ≤ m by lia)]
   simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by lia))) hl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by
   intro x
@@ -888,7 +889,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top] at hL ⊢
   rw [sub_zero]
   suffices (1 - x * y) * f n - 1 ∈ I ^ n by
-    convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
+    convert! Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
     ring
   cases n
   · simp only [Ideal.one_eq_top, pow_zero, mem_top]

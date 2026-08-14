@@ -34,6 +34,7 @@ variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [SeminormedAddCommGro
   [SeminormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V]
   [SeparatingDual 𝕜 W]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- This is the continuous version of `AlgEquiv.eq_linearEquivConjAlgEquiv`. -/
 public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
     (f : (V →L[𝕜] V) ≃A[𝕜] (W →L[𝕜] W)) :
@@ -68,7 +69,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
   set T := apply' _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightL 𝕜 _ _ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
-    simp only [hT, ← mul_apply, ← map_mul]
+    simp only [hT, ← mul_apply_eq_comp, ← map_mul]
     congr; ext; simp
   have ⟨d, hd⟩ := SeparatingDual.exists_eq_one (R := 𝕜) hz
   have surj : Function.Surjective T := fun w ↦ ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩
@@ -151,6 +152,7 @@ end auxiliaryDefs
 
 open ComplexOrder
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ⋆-algebra equivalence version of
 `ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`.
 
@@ -162,7 +164,8 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
   -- Assume nontriviality of `V`.
   by_cases! Subsingleton V
   · by_cases! Subsingleton W
-    · use { toLinearEquiv := 0, norm_map' _ := by simp [Subsingleton.eq_zero] }
+    · use { toLinearEquiv := 0,
+            norm_map' _ := by simp [Subsingleton.eq_zero (α := V), Subsingleton.eq_zero (α := W)] }
       exact ext fun _ ↦ Subsingleton.allEq _ _
     simpa using congr(f $(Subsingleton.allEq 0 1))
   /- By `ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`,
@@ -200,10 +203,10 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
   have hα_ne_zero : α ≠ 0 := fun h ↦ by simp [h, ← hα] at this
   -- As `adjoint y ∘ y` is positive, we then get `0 < α`.
   have hα_nonneg : 0 ≤ α := by
-    have := hα_re.symm ▸ (nonneg_iff_isPositive _ |>.mpr
+    have := hα_re.symm ▸ (nonneg_iff_isPositive |>.mpr
       (hα_re ▸ hα ▸ isPositive_adjoint_comp_self y.toContinuousLinearMap))
     rw [← LinearMap.isPositive_one.isPositive_smul_iff (E := V) (one_ne_zero' (V →ₗ[𝕜] V))]
-    exact (nonneg_iff_isPositive _).mp this
+    exact nonneg_iff_isPositive.mp this
   have hα_pos := RCLike.ofReal_pos.mp <| hα_re ▸ (lt_of_le_of_ne' hα_nonneg hα_ne_zero)
   -- We also get `y ∘ adjoint y = α • id`.
   have h_comp_adjoint : y.toContinuousLinearMap ∘L adjoint y.toContinuousLinearMap =
@@ -233,6 +236,6 @@ public instance (priority := 100) {F : Type*} [EquivLike F (V →L[𝕜] V) (W �
   map_le_map_iff f x y := by
     obtain ⟨U, hU⟩ := StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
       (StarAlgEquivClass.toStarAlgEquiv f : _ ≃⋆ₐ[𝕜] _) (map_continuous f)
-    have this a : f a = U.conjStarAlgEquiv a := by simpa using congr($hU a)
+    have this a : f a = U.conjStarAlgEquiv a := by simpa using! congr($hU a)
     simp_rw [le_def, ← _root_.map_sub, ← isPositive_toLinearMap_iff, this]
     exact LinearMap.isPositive_linearIsometryEquiv_conj_iff U

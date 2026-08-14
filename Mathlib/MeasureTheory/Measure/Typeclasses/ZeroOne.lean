@@ -25,7 +25,7 @@ We introduce the typeclass `IsZeroOneMeasure` for measures that only take the va
 
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -133,11 +133,11 @@ theorem exists_eq_dirac [StandardBorelSpace α] [NeZero μ] : ∃ x₀, μ = Mea
     constructor
     · intro h
       split_ifs at hy with hμAn
-      · simpa [hμAn] using hsome
+      · simpa [hμAn] using! hsome
       · contradiction
     · intro h
       split_ifs at hsome with hμAn
-      · simpa [hμAn] using hy
+      · simpa [hμAn] using! hy
       · contradiction
   use x₀
   ext s hs

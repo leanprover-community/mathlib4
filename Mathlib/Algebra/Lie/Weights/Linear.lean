@@ -43,8 +43,6 @@ or `R` has characteristic zero.
 
 @[expose] public section
 
-open Set
-
 variable (k R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
@@ -93,6 +91,8 @@ lemma coe_toLinear_ne_zero_iff : (χ : L →ₗ[R] R) ≠ 0 ↔ χ.IsNonZero := 
 abbrev ker := LinearMap.ker (χ : L →ₗ[R] R)
 
 end Weight
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- For an Abelian Lie algebra, the weights of any Lie module are linear. -/
 instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [IsDomain R] [Module.IsTorsionFree R M] :

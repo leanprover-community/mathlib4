@@ -81,6 +81,7 @@ noncomputable def iso (a : A) :
     Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ (lift.isLift r F hF) ≪≫ F.commShiftIso a ≪≫
     Functor.isoWhiskerRight (lift.isLift r F hF).symm _ ≪≫ Functor.associator _ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma iso_hom_app (a : A) (X : C) :
     (iso F r hF a).hom.app ((functor r).obj X) =
@@ -88,7 +89,7 @@ lemma iso_hom_app (a : A) (X : C) :
       (F.commShiftIso a).hom.app X := by
   simp [iso, lift_obj_functor_obj]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma iso_inv_app (a : A) (X : C) :
     (iso F r hF a).inv.app ((functor r).obj X) =
@@ -100,7 +101,7 @@ attribute [irreducible] iso
 
 end LiftCommShift
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- When `r : HomRel C` is compatible with the shift by an additive monoid, and
 `F : C ⥤ D` is a functor which commutes with the shift and is compatible with `r`, then
 the induced functor `Quotient.lift r F _ : Quotient r ⥤ D` also commutes with the shift. -/
@@ -137,7 +138,7 @@ noncomputable instance liftCommShift :
       Functor.comp_map, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
       Functor.map_id, id_comp, lift_obj_functor_obj]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance liftCommShift_compatibility :
     NatTrans.CommShift (Quotient.lift.isLift r F hF).hom A where
   shift_comm a := by

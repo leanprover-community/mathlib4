@@ -25,7 +25,7 @@ Move order lemmas about `Nat.cast`, `Rat.cast`, `NNRat.cast` here.
 
 public section
 
-open Function Nat
+open Nat
 
 variable {R : Type*}
 
@@ -106,17 +106,3 @@ lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n *
 
 end LinearOrderedRing
 end Int
-
-/-! ### Lexicographic order -/
-
-namespace Lex
-
-instance instIntCast [IntCast R] : IntCast (Lex R) := ‹_›
-instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne (Lex R) := ‹_›
-instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne (Lex R) := ‹_›
-
-end Lex
-
-@[simp] lemma toLex_intCast [IntCast R] (n : ℤ) : toLex (n : R) = n := rfl
-
-@[simp] lemma ofLex_intCast [IntCast R] (n : ℤ) : (ofLex n : R) = n := rfl

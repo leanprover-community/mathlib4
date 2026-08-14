@@ -45,7 +45,7 @@ theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C
     simp only [Option.mem_def, iUnion_of_empty, iUnion_empty, reduceCtorEq]
     apply H0
   | some b => by
-    convert H1 b
+    convert! H1 b
     simp
 
 open scoped Function in -- required for scoped `on` notation

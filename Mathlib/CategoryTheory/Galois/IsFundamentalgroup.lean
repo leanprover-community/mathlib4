@@ -56,7 +56,7 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Limits Functor
+open Limits
 
 variable {C : Type u₁} [Category.{u₂} C] (F : C ⥤ FintypeCat.{w})
 
@@ -82,6 +82,7 @@ private def isoOnObj (g : G) (X : C) : F.obj X ≅ F.obj X :=
 
 variable [IsNaturalSMul F G]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `G` acts naturally on `F.obj X` for each `X : C`, this is the canonical
@@ -131,6 +132,7 @@ lemma toAut_continuous [TopologicalSpace G] [IsTopologicalGroup G]
 
 variable {G}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma action_ext_of_isGalois {t : F ⟶ F} {X : C} [IsGalois X] {g : G} (x : F.obj X)
     (hg : g • x = t.app X x) (y : F.obj X) : g • y = t.app X y := by
   obtain ⟨φ, (rfl : F.map φ.hom y = x)⟩ := MulAction.exists_smul_eq (Aut X) y x

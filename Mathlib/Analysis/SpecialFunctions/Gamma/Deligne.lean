@@ -85,12 +85,19 @@ lemma Gammaℂ_one : Gammaℂ 1 = 1 / π := by
 
 section analyticity
 
+@[fun_prop]
 lemma differentiable_Gammaℝ_inv : Differentiable ℂ (fun s ↦ (Gammaℝ s)⁻¹) := by
   conv => enter [2, s]; rw [Gammaℝ, mul_inv]
-  refine Differentiable.mul (fun s ↦ .inv ?_ (by simp [pi_ne_zero])) ?_
+  refine Differentiable.mul (fun s ↦ .inv ?_ (by simp)) ?_
   · refine ((differentiableAt_id.neg.div_const (2 : ℂ)).const_cpow ?_)
     exact Or.inl (ofReal_ne_zero.mpr pi_ne_zero)
   · exact differentiable_one_div_Gamma.comp (differentiable_id.div_const _)
+
+@[fun_prop]
+lemma differentiable_Gammaℂ_inv : Differentiable ℂ (fun s ↦ (Gammaℂ s)⁻¹) := by
+  conv => enter [2, s]; rw [Gammaℂ, mul_inv]
+  refine (Differentiable.inv ?_ (by simp)).mul differentiable_one_div_Gamma
+  exact (differentiable_neg.const_cpow (by simp)).const_mul _
 
 lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (𝓝 2) := by
   have h : Tendsto (fun z : ℂ ↦ z / 2 * Gamma (z / 2)) (𝓝[≠] 0) (𝓝 1) := by
@@ -103,7 +110,7 @@ lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (
     refine Tendsto.mono_left (ContinuousAt.tendsto ?_) nhdsWithin_le_nhds
     exact continuousAt_const.mul ((continuousAt_const_cpow (ofReal_ne_zero.mpr pi_ne_zero)).comp
       (by fun_prop))
-  convert mul_one (2 : ℂ) ▸ (h'.mul h) using 2 with z
+  convert! mul_one (2 : ℂ) ▸ (h'.mul h) using 2 with z
   rw [Gammaℝ]
   ring_nf
 
@@ -187,7 +194,7 @@ lemma inv_Gammaℝ_two_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
     rcases n with - | m
     · rwa [Nat.cast_zero, neg_zero]
     · rw [Ne, sub_eq_iff_eq_add]
-      convert hs m using 2
+      convert! hs m using 2
       push_cast
       ring
   rw [(by ring : 2 - s = 1 - (s - 1)), inv_Gammaℝ_one_sub h',

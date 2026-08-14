@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.FunLike.IsApply
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Hom.Defs
-public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Pi.Torsion
 
 /-! # Group instances for `FunLike` types
 In this file we define various instances related to groups for `FunLike` types.
@@ -42,6 +42,9 @@ def coeMulHom : F →ₙ* α → β where
   toFun f := f
   map_mul' := coe_mul
 
+@[to_additive (attr := simp)]
+theorem coeMulHom_apply (f : F) : coeMulHom F α β f = f := rfl
+
 @[to_additive (attr := norm_cast)]
 theorem coe_coeMulHom : (coeMulHom F α β : F → α → β) = DFunLike.coe := rfl
 
@@ -64,6 +67,9 @@ def coeMonoidHom : F →* α → β where
   toFun f := f
   map_one' := coe_one
   map_mul' := coe_mul
+
+@[to_additive (attr := simp)]
+theorem coeMonoidHom_apply (f : F) : coeMonoidHom F α β f = f := rfl
 
 @[to_additive (attr := norm_cast)]
 theorem coe_coeMonoidHom : (coeMonoidHom F α β : F → α → β) = DFunLike.coe := rfl
@@ -269,5 +275,16 @@ protected abbrev commGroup [CommGroup β] [IsOneApply F α β] [IsMulApply F α 
     coe_pow coe_pow
 
 end GroupInstances
+
+section TorsionFree
+
+/-- A type `F` that satisfies `FunLike F α β` is torsion-free if `β` is torsion-free. -/
+@[to_additive /-- A type `F` that satisfies `FunLike F α β` is torsion-free if `β` is
+torsion-free. -/]
+protected theorem isMulTorsionFree [Monoid β] [Monoid F] [IsOneApply F α β] [IsMulApply F α β]
+    [IsMulTorsionFree β] : IsMulTorsionFree F :=
+  DFunLike.coe_injective.isMulTorsionFree (coeMonoidHom F α β)
+
+end TorsionFree
 
 end FunLike

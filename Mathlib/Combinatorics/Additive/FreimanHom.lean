@@ -62,7 +62,7 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 * Affine maps are Freiman homomorphisms.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field Ideal TwoSidedIdeal
 
@@ -138,7 +138,11 @@ lemma IsMulFreimanIso.congr (hf₁ : IsMulFreimanIso n A B f₁) (h : EqOn f₁ 
 Given a Freiman isomorphism `f` from `A` to `B`, if `g` maps `B` into `A`, and is a right inverse
 to `f` on `B`, then `g` is a Freiman isomorphism from `B` to `A`.
 -/
-@[to_additive]
+@[to_additive
+/--
+Given an additive Freiman isomorphism `f` from `A` to `B`, if `g` maps `B` into `A`, and is a
+right inverse to `f` on `B`, then `g` is an additive Freiman isomorphism from `B` to `A`.
+-/]
 lemma IsMulFreimanIso.symm {g : β → α} (hg₁ : MapsTo g B A) (hg₂ : RightInvOn g f B)
     (hf : IsMulFreimanIso n A B f) :
     IsMulFreimanIso n B A g where
@@ -152,7 +156,11 @@ lemma IsMulFreimanIso.symm {g : β → α} (hg₁ : MapsTo g B A) (hg₂ : Right
 If the inverse of a Freiman homomorphism is itself a Freiman homomorphism, then it is a Freiman
 isomorphism.
 -/
-@[to_additive]
+@[to_additive
+/--
+If the inverse of a Freiman homomorphism is itself a Freiman homomorphism, then it is a Freiman
+isomorphism.
+-/]
 lemma IsMulFreimanHom.to_isMulFreimanIso {g : β → α} (h : InvOn g f A B)
     (hf : IsMulFreimanHom n A B f) (hg : IsMulFreimanHom n B A g) :
     IsMulFreimanIso n A B f where
@@ -455,9 +463,9 @@ assuming there is no wrap-around. -/
 lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
     IsAddFreimanIso m (Iio (k : Fin (n + 1))) (Iio k) val := by
   obtain _ | k := k
-  · simp [← bot_eq_zero]
+  · simp
   have hkmn' : m * k ≤ n := (Nat.mul_le_mul_left _ k.le_succ).trans hkmn
-  convert isAddFreimanIso_Iic hm hkmn' using 1 <;> ext x
+  convert! isAddFreimanIso_Iic hm hkmn' using 1 <;> ext x
   · simp only [Nat.cast_add, Nat.cast_one, mem_Iio, lt_def, mem_Iic, le_iff_val_le_val,
       val_natCast, aux hm hkmn', Nat.mod_eq_of_lt]
     simp_rw [← Nat.cast_add_one]

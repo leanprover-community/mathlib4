@@ -59,8 +59,8 @@ def AcuteAngled (s : Simplex ℝ P n) : Prop :=
 @[simp] lemma acuteAngled_reindex_iff {s : Simplex ℝ P m} (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).AcuteAngled ↔ s.AcuteAngled := by
   refine ⟨fun h {i₁ i₂ i₃} h₁₂ h₁₃ h₂₃ ↦ ?_, fun h {i₁ i₂ i₃} h₁₂ h₁₃ h₂₃ ↦ ?_⟩
-  · convert h (i₁ := e i₁) (i₂ := e i₂) (i₃ := e i₃) ?_ ?_ ?_ using 1 <;> simp [*]
-  · convert h (i₁ := e.symm i₁) (i₂ := e.symm i₂) (i₃ := e.symm i₃) ?_ ?_ ?_ using 1 <;> simp [*]
+  · convert! h (i₁ := e i₁) (i₂ := e i₂) (i₃ := e i₃) ?_ ?_ ?_ using 1 <;> simp [*]
+  · convert! h (i₁ := e.symm i₁) (i₂ := e.symm i₂) (i₃ := e.symm i₃) ?_ ?_ ?_ using 1 <;> simp [*]
 
 lemma Equilateral.acuteAngled {s : Simplex ℝ P n} (he : s.Equilateral) : s.AcuteAngled := by
   intro i₁ i₂ i₃ h₁₂ h₁₃ h₂₃
@@ -110,8 +110,8 @@ theorem dist_point_centroid (t : Affine.Triangle ℝ P) (i : Fin 3) :
 /-- In a triangle, the distance from a vertex to the `faceOppositeCentroid` equals three times the
 distance from the `centroid` to the `faceOppositeCentroid`. -/
 theorem dist_point_faceOppositeCentroid (t : Affine.Triangle ℝ P) (i : Fin 3) :
-    dist (t.points i) (t.faceOppositeCentroid i) = 3 * dist t.centroid (t.faceOppositeCentroid i) :=
-    by
+    dist (t.points i) (t.faceOppositeCentroid i) =
+      3 * dist t.centroid (t.faceOppositeCentroid i) := by
   rw [Affine.Simplex.dist_point_faceOppositeCentroid]
   norm_cast
 

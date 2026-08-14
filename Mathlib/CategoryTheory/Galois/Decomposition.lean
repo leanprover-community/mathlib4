@@ -39,12 +39,11 @@ universe u₁ u₂ w
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor GaloisCategory
 
 variable {C : Type u₁} [Category.{u₂} C]
 
 namespace PreGaloisCategory
-
 
 section Decomposition
 
@@ -58,6 +57,7 @@ non-trivial subobjects which have strictly smaller fiber and conclude by the ind
 
 -/
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The trivial case if `X` is connected. -/
 private lemma has_decomp_connected_components_aux_conn (X : C) [IsConnected X] :
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
@@ -117,7 +117,7 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
 theorem has_decomp_connected_components (X : C) :
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → f i ⟶ X) (_ : IsColimit (Cofan.mk X g)),
       (∀ i, IsConnected (f i)) ∧ Finite ι := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   exact has_decomp_connected_components_aux F (Nat.card <| F.obj X) X rfl
 
 /-- In a Galois category, every object is the sum of connected objects. -/
@@ -200,7 +200,6 @@ which has at index `x : F.obj X` the element `g x`. -/
 private noncomputable def mkSelfProdFib : F.obj (selfProd F X) :=
   (PreservesProduct.iso F _).inv ((Concrete.productEquiv (fun _ : F.obj X ↦ F.obj X)).symm id)
 
-set_option backward.privateInPublic true in
 @[simp]
 private lemma mkSelfProdFib_map_π (t : F.obj X) : F.map (Pi.π _ t) (mkSelfProdFib F X) = t := by
   rw [← piComparison_comp_π]
@@ -242,9 +241,11 @@ set_option backward.privateInPublic true in
 private noncomputable def selfProdPermIncl (b : F.obj A) : A ⟶ selfProd F X :=
   u ≫ (Pi.whiskerEquiv (fiberPerm h b) (fun _ => Iso.refl X)).inv
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 private instance [Mono u] (b : F.obj A) : Mono (selfProdPermIncl h b) := mono_comp _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 /-- Key technical lemma: the twisted inclusion `selfProdPermIncl h b` maps `a` to `F.map u b`. -/
 private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
@@ -255,7 +256,7 @@ private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
   · simp only [selfProdProj, map_comp, FintypeCat.comp_apply]; rfl
   · dsimp only [selfProdPermIncl, Pi.whiskerEquiv]
     rw [map_comp, FintypeCat.comp_apply, h]
-    convert_to F.map (selfProdProj u t) b =
+    convert_to! F.map (selfProdProj u t) b =
       (F.map (Pi.map' (fiberPerm h b) fun _ ↦ 𝟙 X) ≫
       F.map (Pi.π (fun _ ↦ X) t)) (mkSelfProdFib F X)
     rw [← map_comp, Pi.map'_comp_π, Category.comp_id, mkSelfProdFib_map_π F X (fiberPerm h b t)]

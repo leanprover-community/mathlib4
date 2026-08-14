@@ -37,6 +37,7 @@ namespace MeasureTheory
 variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {𝒢 : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
   {τ π : Ω → ℕ∞}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a submartingale `f` and bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 expectation of `stoppedValue f τ` is less than or equal to the expectation of `stoppedValue f π`.
 This is the forward direction of the optional stopping theorem. -/
@@ -50,7 +51,7 @@ theorem Submartingale.expected_stoppedValue_mono {E : Type*} [NormedAddCommGroup
     have : ∀ i, MeasurableSet[𝒢 i] {ω : Ω | τ ω ≤ i ∧ i < π ω} := by
       intro i
       refine (hτ i).inter ?_
-      convert (hπ i).compl using 1
+      convert! (hπ i).compl using 1
       ext x
       simp; rfl
     rw [integral_finsetSum]
@@ -80,11 +81,11 @@ theorem submartingale_of_expected_stoppedValue_mono [SigmaFiniteFiltration μ �
     (isStoppingTime_const 𝒢 j) ?_
     ⟨j, fun _ => le_rfl⟩
   · intro ω
-    simp only [Set.piecewise, ENat.some_eq_coe]
+    simp only [Set.piecewise, ENat.some_eq_natCast]
     split_ifs with hω
     · exact mod_cast hij
     · norm_cast
-  · rwa [stoppedValue_const, ← ENat.some_eq_coe, stoppedValue_piecewise_const,
+  · rwa [stoppedValue_const, ← ENat.some_eq_natCast, stoppedValue_piecewise_const,
       integral_piecewise (𝒢.le _ _ hs) (hint _).integrableOn (hint _).integrableOn, ←
       integral_add_compl (𝒢.le _ _ hs) (hint j), add_le_add_iff_right] at hf
 
@@ -131,7 +132,7 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
     intro x hx
     simp_rw [le_sup'_iff, mem_range, Nat.lt_succ_iff] at hx
     refine stoppedValue_hittingBtwn_mem ?_
-    simp only [Set.mem_Icc, zero_le, true_and, Set.mem_setOf_eq]
+    simp only [Set.mem_Icc, zero_le, true_and, Set.mem_ofPred_eq]
     exact
       let ⟨j, hj₁, hj₂⟩ := hx
       ⟨j, hj₁, hj₂⟩
@@ -169,7 +170,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
           f n ω ∂μ) := by
       rw [← ENNReal.ofReal_add, ← setIntegral_union]
       · rw [← setIntegral_univ]
-        convert rfl
+        convert! rfl
         ext ω
         change (ε : ℝ) ≤ _ ∨ _ < (ε : ℝ) ↔ _
         simp only [le_or_gt, Set.mem_univ]
@@ -194,9 +195,9 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
         exact hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici
       · exact nullMeasurableSet_lt (measurable_range_sup'' fun n _ ↦
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)).aemeasurable aemeasurable_const
-      rw [Set.mem_setOf_eq] at hω
+      rw [Set.mem_ofPred_eq] at hω
       have : hittingBtwn f {y : ℝ | ε ≤ y} 0 n ω = n := by
-        simp only [hittingBtwn, Set.mem_setOf_eq, ite_eq_right_iff, forall_exists_index, and_imp]
+        simp only [hittingBtwn, Set.mem_ofPred_eq, ite_eq_right_iff, forall_exists_index, and_imp]
         intro m hm hεm
         exact False.elim
           ((not_le.2 hω) ((le_sup'_iff _).2 ⟨m, mem_range.2 (Nat.lt_succ_of_le hm.2), hεm⟩))
@@ -207,7 +208,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
         (∫ ω, stoppedValue f (fun ω ↦ (hittingBtwn f {y : ℝ | ε ≤ y} 0 n ω : ℕ)) ω ∂μ) := by
       rw [← ENNReal.ofReal_add, ← setIntegral_union]
       · rw [← setIntegral_univ (μ := μ)]
-        convert rfl
+        convert! rfl
         ext ω
         change _ ↔ (ε : ℝ) ≤ _ ∨ _ < (ε : ℝ)
         simp only [le_or_gt, Set.mem_univ]

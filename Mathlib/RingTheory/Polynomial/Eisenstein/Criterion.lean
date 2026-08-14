@@ -107,7 +107,7 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
     rwa [leadingCoeff_C] at hgP
   by_contra hg'
   apply hgP
-  rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, if_neg hg', zero_add,
+  rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, ite_eq_right hg', zero_add,
     mem_ker, ← coeff_map, hr, coeff_zero]
 
 /-- A generalized Eisenstein criterion
@@ -202,7 +202,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
         · simp [Nat.lt_iff_le_and_ne, ← Nat.not_lt, hn', Ne.symm hn]
   · rw [modByMonic_X, map_C, ne_eq, C_eq_zero, Ideal.Quotient.eq_zero_iff_mem,
       ← coeff_zero_eq_eval_zero]
-    convert h0
+    convert! h0
     · rw [IsScalarTower.algebraMap_eq R (R ⧸ P) (FractionRing (R ⧸ P))]
       rw [ker_comp_of_injective]
       · ext a; simp

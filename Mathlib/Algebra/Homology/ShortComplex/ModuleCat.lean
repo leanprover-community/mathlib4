@@ -25,8 +25,6 @@ variable {R : Type u} [Ring R]
 
 namespace CategoryTheory
 
-open Limits
-
 namespace ShortComplex
 
 noncomputable instance : (forget₂ (ModuleCat.{v} R) Ab).PreservesHomology where
@@ -90,13 +88,13 @@ def moduleCatMkOfKerLERange {X₁ X₂ X₃ : ModuleCat.{v} R} (f : X₁ ⟶ X�
 lemma Exact.moduleCat_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
     (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃) (hfg : LinearMap.range f.hom = LinearMap.ker g.hom) :
     (moduleCatMkOfKerLERange f g (by rw [hfg])).Exact := by
-  simpa only [moduleCat_exact_iff_range_eq_ker] using hfg
+  simpa only [moduleCat_exact_iff_range_eq_ker] using! hfg
 
 /-- The canonical linear map `S.X₁ →ₗ[R] LinearMap.ker S.g` induced by `S.f`. -/
 abbrev moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom :=
   S.f.hom.codRestrict _ <| S.moduleCat_zero_apply
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The explicit left homology data of a short complex of modules that is
 given by a kernel and a quotient given by the `LinearMap` API. The projections to `K` and `H` are
 not simp lemmas because the generic lemmas about `LeftHomologyData` are more useful here. -/
@@ -143,7 +141,6 @@ lemma moduleCatCyclesIso_inv_iCycles :
     S.moduleCatCyclesIso.inv ≫ S.iCycles = S.moduleCatLeftHomologyData.i :=
   S.moduleCatLeftHomologyData.cyclesIso_inv_comp_iCycles
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp, elementwise)]
 lemma toCycles_moduleCatCyclesIso_hom :
     S.toCycles ≫ S.moduleCatCyclesIso.hom = S.moduleCatLeftHomologyData.f' := by
@@ -190,6 +187,7 @@ lemma moduleCatCyclesIso_inv_π :
        S.moduleCatLeftHomologyData.π ≫ S.moduleCatHomologyIso.inv :=
   S.moduleCatLeftHomologyData.π_comp_homologyIso_inv
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exact_iff_surjective_moduleCatToCycles :
     S.Exact ↔ Function.Surjective S.moduleCatToCycles := by
