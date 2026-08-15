@@ -20,8 +20,6 @@ quotient `R ⧸ I` is finite.
 - `Ring.HasFiniteQuotients.instIsNoetherianRing` : A ring with finite quotients is noetherian.
 - `Ring.HasFiniteQuotients.of_module_finite`: Assume that `R` has finite quotients and that `S` is
   a domain and a finite `R`-module. Then `S` has finite quotients.
-- `Ring.HasFiniteQuotients.of_module_finite_int`: A domain that is a finite `ℤ`-module has finite
-  quotients.
 
 -/
 
@@ -99,10 +97,5 @@ instance : HasFiniteQuotients ℤ where
     obtain ⟨n, rfl⟩ := Submodule.IsPrincipal.principal I
     have : NeZero n := ⟨by simpa using hI⟩
     exact inferInstanceAs <| Finite (ℤ ⧸ Ideal.span {n})
-
-/-- A domain that is a finite `ℤ`-module has finite quotients.
-This cannot be an instance since it is very slow to fail. -/
-theorem of_module_finite_int [IsDomain R] [Module.Finite ℤ R] : HasFiniteQuotients R :=
-  .of_module_finite ℤ R
 
 end Ring.HasFiniteQuotients

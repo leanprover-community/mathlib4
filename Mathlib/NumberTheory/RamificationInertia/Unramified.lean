@@ -95,7 +95,7 @@ lemma isUnramifiedAt_iff_of_isDedekindDomain
     {p : Ideal S} [p.IsPrime] [EssFiniteType R S] [IsDomain R]
     [Module.Finite ℤ R] [CharZero R] [Algebra.IsIntegral R S] :
     Algebra.IsUnramifiedAt R p ↔ e(p|R) = 1 := by
-  have : Ring.HasFiniteQuotients R := .of_module_finite_int
+  have : Ring.HasFiniteQuotients R := .of_module_finite ℤ _
   exact Ideal.ramificationIdx'_eq_one_iff.symm
 
 /-- In characteristic zero the generic point is unramified: if `S` is a domain that is integral
@@ -153,7 +153,7 @@ theorem IsUnramifiedIn.ramificationIdx_eq_one [IsDomain R]
     [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
     [Algebra.IsIntegral R S] {𝔭 : Ideal R} (hunr : IsUnramifiedIn S 𝔭) {𝔓 : Ideal S}
     [𝔓.IsPrime] (hP : 𝔓.LiesOver 𝔭) : Ideal.ramificationIdx 𝔓 R = 1 := by
-  have : Ring.HasFiniteQuotients R := .of_module_finite_int
+  have : Ring.HasFiniteQuotients R := .of_module_finite ℤ _
   exact Ideal.ramificationIdx_eq_one_iff.mpr (hunr 𝔓 inferInstance hP)
 
 /-- A nonzero ideal of `R` is unramified in `S` if and only if every prime ideal of `S` lying
@@ -163,7 +163,7 @@ theorem isUnramifiedIn_iff_forall_ramificationIdx_eq_one [IsDomain R]
     [Algebra.IsIntegral R S] {𝔭 : Ideal R} :
     IsUnramifiedIn S 𝔭 ↔
       ∀ (𝔓 : Ideal S) [𝔓.IsPrime], 𝔓.LiesOver 𝔭 → Ideal.ramificationIdx 𝔓 R = 1 := by
-  have : Ring.HasFiniteQuotients R := .of_module_finite_int
+  have : Ring.HasFiniteQuotients R := .of_module_finite ℤ _
   refine ⟨fun hunr 𝔓 _ hP ↦ hunr.ramificationIdx_eq_one hP, fun h 𝔓 _ hP ↦ ?_⟩
   rw [← Ideal.ramificationIdx_eq_one_iff]
   exact h 𝔓 hP
