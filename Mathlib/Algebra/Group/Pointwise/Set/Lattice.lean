@@ -25,8 +25,6 @@ public section
 
 assert_not_exists MulAction MonoidWithZero
 
-open Function MulOpposite
-
 variable {F α β γ : Type*}
 
 namespace Set
