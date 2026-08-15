@@ -762,7 +762,7 @@ theorem isMulCommutative_adjoin {s : Set A} (hcomm : s.Pairwise Commute) :
 
 instance isMulCommutative_adjoin_singleton (x : A) :
     IsMulCommutative (adjoin R ({x} : Set A)) :=
-  isMulCommutative_adjoin R (Set.pairwise_singleton x Commute)
+  isMulCommutative_adjoin R (by simp)
 
 open scoped IsMulCommutative in
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative

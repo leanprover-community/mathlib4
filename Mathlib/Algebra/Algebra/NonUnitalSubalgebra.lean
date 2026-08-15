@@ -1204,7 +1204,7 @@ theorem isMulCommutative_adjoin {s : Set A} (hcomm : s.Pairwise Commute) :
 variable (R) in
 instance isMulCommutative_adjoin_singleton (x : A) :
     IsMulCommutative (adjoin R ({x} : Set A)) :=
-  isMulCommutative_adjoin R (Set.pairwise_singleton x Commute)
+  isMulCommutative_adjoin R (by simp)
 
 open scoped IsMulCommutative in
 variable (R) in
