@@ -20,7 +20,6 @@ cycles.
 
 @[expose] public section
 
-open Function
 open scoped NNRat
 
 namespace NNRat

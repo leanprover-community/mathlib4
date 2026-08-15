@@ -170,7 +170,6 @@ instance (X : SSet.{u}) (n : SimplexCategory) [DecidableEq (X.obj (op n))] :
     DecidableEq (stdSimplex.obj n ⟶ X) :=
   fun a b ↦ decidable_of_iff (yonedaEquiv a = yonedaEquiv b) (by simp)
 
-@[simp]
 lemma yonedaEquiv_symm_comp {X Y : SSet.{u}} {n : SimplexCategory} (x : X.obj (op n))
     (f : X ⟶ Y) :
     yonedaEquiv.symm x ≫ f = yonedaEquiv.symm (f.app _ x) :=
@@ -714,7 +713,6 @@ lemma face_nonDegenerateEquiv' {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate
   face_eq_ofSimplex.{u} _ _ (orderIsoOfNonDegenerate x)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma nonDegenerateEquiv'_symm_apply_mem {n d : ℕ}
     (S : { S : Finset (Fin (n + 1)) | S.card = d + 1 }) (i : Fin (d + 1)) :
       (nonDegenerateEquiv'.{u}.symm S).val i ∈ S.val := by
@@ -843,7 +841,6 @@ end Examples
 
 namespace Augmented
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor which sends `⦋n⦌` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/
@@ -953,5 +950,43 @@ lemma isoOfRepresentableBy_ofSimplexRepresentableBy_hom :
   yonedaEquiv.injective (by simp)
 
 end Subcomplex
+
+namespace Edge
+
+variable {X : SSet.{u}} {x₀ x₁ x₂ : X _⦋0⦌}
+
+@[reassoc (attr := simp)]
+lemma δ_zero_yonedaEquiv_symm (e : Edge x₀ x₁) :
+    stdSimplex.δ 0 ≫ yonedaEquiv.symm e.edge = yonedaEquiv.symm x₁ := by
+  simp [stdSimplex.δ_comp_yonedaEquiv_symm]
+
+@[reassoc (attr := simp)]
+lemma δ_one_yonedaEquiv_symm (e : Edge x₀ x₁) :
+    stdSimplex.δ 1 ≫ yonedaEquiv.symm e.edge = yonedaEquiv.symm x₀ := by
+  simp [stdSimplex.δ_comp_yonedaEquiv_symm]
+
+namespace CompStruct
+
+variable {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
+  (h : CompStruct e₀₁ e₁₂ e₀₂)
+
+@[reassoc (attr := simp)]
+lemma δ_zero_yonedaEquiv_symm :
+    stdSimplex.δ 0 ≫ yonedaEquiv.symm h.simplex = yonedaEquiv.symm e₁₂.edge := by
+  simp [stdSimplex.δ_comp_yonedaEquiv_symm]
+
+@[reassoc (attr := simp)]
+lemma δ_one_yonedaEquiv_symm :
+    stdSimplex.δ 1 ≫ yonedaEquiv.symm h.simplex = yonedaEquiv.symm e₀₂.edge := by
+  simp [stdSimplex.δ_comp_yonedaEquiv_symm]
+
+@[reassoc (attr := simp)]
+lemma δ_two_yonedaEquiv_symm :
+    stdSimplex.δ 2 ≫ yonedaEquiv.symm h.simplex = yonedaEquiv.symm e₀₁.edge := by
+  simp [stdSimplex.δ_comp_yonedaEquiv_symm]
+
+end CompStruct
+
+end Edge
 
 end SSet
