@@ -14,6 +14,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+import Mathlib.Topology.GDelta.MetrizableSpace
 
 /-!
 # Derivatives of power function on `ℂ`, `ℝ`, `ℝ≥0`, and `ℝ≥0∞`

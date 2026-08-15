@@ -10,7 +10,6 @@ public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Determinant
 public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
-public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Ideal.Basis
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
@@ -39,6 +38,8 @@ the quotient `R ⧸ I` (setting it to 0 if the cardinality is infinite).
   of the basis change matrix
 * `Ideal.absNorm_span_singleton`: the ideal norm of a principal ideal is the
   norm of its generator
+* `Ring.HasFiniteQuotients.finite_cardQuot_le`: a ring with finite quotients has only finitely
+  many ideals of bounded norm
 -/
 
 @[expose] public section
@@ -197,15 +198,6 @@ theorem cardQuot_mul [IsDedekindDomain S] [Infinite S] (I J : Ideal S) :
         (Ideal.isUnit_iff.mp
           (hIJ (Ideal.dvd_iff_le.mpr le_sup_left) (Ideal.dvd_iff_le.mpr le_sup_right)))
 
-/-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`.
-`Infinite R` is needed for multiplicativity to hold at `⊥` (`I * ⊥ = ⊥` forces `absNorm ⊥ = 0`). -/
-noncomputable def Ideal.absNorm [IsDedekindDomain S] [Infinite S] :
-    Ideal S →*₀ ℕ where
-  toFun := Submodule.cardQuot
-  map_mul' I J := by rw [cardQuot_mul]
-  map_one' := by rw [Ideal.one_eq_top, cardQuot_top]
-  map_zero' := by rw [Ideal.zero_eq_bot, cardQuot_bot]
-
 namespace Ring.HasFiniteQuotients
 
 variable [Ring.HasFiniteQuotients S]
@@ -253,16 +245,31 @@ theorem finite_cardQuot_le (B : ℕ) : {I : Ideal S | I.cardQuot ≤ B}.Finite :
   refine Finset.mem_sdiff.mpr ⟨Finset.mem_sub.mpr ⟨x, hx, y, hy, rfl⟩, ?_⟩
   rwa [Finset.notMem_singleton, sub_ne_zero]
 
-/-- A ring with finite quotients has only finitely many ideals of bounded norm. -/
-theorem finite_absNorm_le [IsDedekindDomain S] [Infinite S] (B : ℕ) :
-    {I : Ideal S | I.absNorm ≤ B}.Finite :=
-  finite_cardQuot_le B
-
 /-- A ring with finite quotients has only finitely many nonzero prime ideals of bounded norm. -/
 theorem finite_cardQuot_heightOneSpectrum_le (B : ℕ) :
     {p : IsDedekindDomain.HeightOneSpectrum S | p.asIdeal.cardQuot ≤ B}.Finite :=
   (finite_cardQuot_le B).of_injOn (by simp [Set.MapsTo])
     (Function.Injective.injOn fun _ _ ↦ IsDedekindDomain.HeightOneSpectrum.ext)
+
+end Ring.HasFiniteQuotients
+
+/-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`.
+`Infinite R` is needed for multiplicativity to hold at `⊥` (`I * ⊥ = ⊥` forces `absNorm ⊥ = 0`). -/
+noncomputable def Ideal.absNorm [IsDedekindDomain S] [Infinite S] :
+    Ideal S →*₀ ℕ where
+  toFun := Submodule.cardQuot
+  map_mul' I J := by rw [cardQuot_mul]
+  map_one' := by rw [Ideal.one_eq_top, cardQuot_top]
+  map_zero' := by rw [Ideal.zero_eq_bot, cardQuot_bot]
+
+namespace Ring.HasFiniteQuotients
+
+variable [Ring.HasFiniteQuotients S]
+
+/-- A ring with finite quotients has only finitely many ideals of bounded norm. -/
+theorem finite_absNorm_le [IsDedekindDomain S] [Infinite S] (B : ℕ) :
+    {I : Ideal S | I.absNorm ≤ B}.Finite :=
+  finite_cardQuot_le B
 
 /-- A ring with finite quotients has only finitely many nonzero prime ideals of bounded norm. -/
 theorem finite_absNorm_heightOneSpectrum_le [IsDedekindDomain S] [Infinite S] (B : ℕ) :
@@ -494,8 +501,7 @@ lemma exists_isMaximal_dvd_of_dvd_absNorm'
 
 theorem finite_setOfPred_absNorm_le (n : ℕ) :
     {I : Ideal S | Ideal.absNorm I ≤ n}.Finite := by
-  simp_rw [absNorm_apply]
-  exact Ring.HasFiniteQuotients.finite_cardQuot_le n
+  simpa [absNorm_apply] using Ring.HasFiniteQuotients.finite_cardQuot_le (S := S) n
 
 @[deprecated (since := "2026-07-09")] alias finite_setOf_absNorm_le := finite_setOfPred_absNorm_le
 
