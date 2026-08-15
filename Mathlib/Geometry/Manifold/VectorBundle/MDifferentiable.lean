@@ -8,7 +8,6 @@ module
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Differentiability of functions in vector bundles
@@ -17,7 +16,7 @@ import Mathlib.Geometry.Manifold.Notation
 
 public section
 
-open Bundle Set ContinuousLinearMap Pretrivialization Filter
+open Bundle Set ContinuousLinearMap Filter
 open scoped Manifold Topology
 
 section
