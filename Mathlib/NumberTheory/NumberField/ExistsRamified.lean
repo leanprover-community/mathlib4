@@ -108,7 +108,6 @@ theorem supr_inertia_primeSpectrum_eq_top (S G : Type*) [CommRing S] [Module.Fin
     rw [Subgroup.map_iSup]
     exact (MulAction.toPerm g).iSup_congr fun P ↦ P.1.inertia_smul g
   let R : Subalgebra ℤ S := FixedPoints.subalgebra ℤ S H
-  let := Ring.toIntAlgebra R
   let := mulSemiringActionQuotient G R S H
   let := mulSemiringActionOfNormal G R S H
   have := IsGaloisGroup.quotient G ℤ R S H
