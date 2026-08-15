@@ -14,10 +14,13 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
 # Bessel function
 
-We introduce Bessel functions in this file. Bessel functions commonly take two complex parameter
-`a` and `x`. It is analytic for `x ∈ Complex.slitPlane`.
+We introduce Bessel functions in this file. Bessel functions commonly take two complex parameters
+`a` and `x`. They are analytic for `x ∈ Complex.slitPlane`. We also provide scoped notation in
+the namespace `Complex` for these functions.
 
 ## `Complex.besselJ a x`: Bessel function of the first kind $J_a(x)$
+
+Notation: `J(a) x`
 
 An equation for $J_a(x)$ is
 $$
@@ -48,32 +51,33 @@ namespace Complex
 
 local notation "F₀₁(" a ")" => regularizedHGFun 0 {(a : ℂ) + 1}
 
-/-- Bessel function of the first kind $J_a(x)$ -/
+/-- Bessel function of the first kind $J_a(x)$. This has the notation `J(a) x` in the namespace
+`Complex`. -/
 noncomputable def besselJ (a x : ℂ) := (x / 2) ^ a * F₀₁(a) (- (x / 2) ^ 2)
 
-local notation "J" => besselJ
+@[inherit_doc besselJ] scoped notation3 "J(" a ")" => besselJ (a : ℂ)
 
-theorem besselJ_def : J = fun a x ↦ (x / 2) ^ a * F₀₁(a) (- (x / 2) ^ 2) := rfl
+theorem besselJ_def : besselJ = fun a x ↦ (x / 2) ^ a * F₀₁(a) (- (x / 2) ^ 2) := rfl
 
-/-- $J_a(x)$ is even or odd when $a$ is even or odd, respectively. -/
-theorem besselJ_int_neg (a : ℤ) (x : ℂ) : J a (-x) = (-1) ^ a * J a x := by
+/-- `J(a)` is even or odd when $a$ is even or odd, respectively. -/
+theorem besselJ_int_neg (a : ℤ) (x : ℂ) : J(a) (-x) = (-1) ^ a * J(a) x := by
   simp [besselJ_def, ← mul_assoc, neg_div, ← mul_zpow]
 
-theorem odd_besselJ {a : ℤ} (ha : Odd a) : Function.Odd (J a) := by
+theorem odd_besselJ {a : ℤ} (ha : Odd a) : Function.Odd J(a) := by
   intro x
   simp [besselJ_int_neg, ha.neg_zpow]
 
-theorem even_besselJ {a : ℤ} (ha : Even a) : Function.Even (J a) := by
+theorem even_besselJ {a : ℤ} (ha : Even a) : Function.Even J(a) := by
   intro x
   simp [besselJ_int_neg, ha.neg_zpow]
 
-/-- $J_a(x)$ is analytic outside of the branch cut on the negative real axis. -/
+/-- `J(a)` is analytic outside of the branch cut on the negative real axis. -/
 @[fun_prop]
-theorem analyticAt_besselJ (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) : AnalyticAt ℂ (J a) x := by
+theorem analyticAt_besselJ (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) : AnalyticAt ℂ (J(a)) x := by
   fun_prop (disch := simpa [slitPlane] using h) [besselJ]
 
-/-- For integer $a$, $J_a(x)$ and $J_{-a}(x)$ are related by a sign. -/
-theorem besselJ_neg_int (a : ℤ) (x : ℂ) : J (-a) x = (-1) ^ a * J a x := by
+/-- For integer `a`, `J(a)` and `J(-a)` are related by a sign. -/
+theorem besselJ_neg_int (a : ℤ) (x : ℂ) : J(-a) x = (-1) ^ a * J(a) x := by
   wlog! ha : 0 ≤ a
   · specialize this (-a) x (by simpa using ha.le)
     simp only [Int.cast_neg, neg_neg, zpow_neg] at this
@@ -89,22 +93,22 @@ theorem besselJ_neg_int (a : ℤ) (x : ℂ) : J (-a) x = (-1) ^ a * J a x := by
   rw [regularizedHGFun_zero_singleton_neg_nat_add_one, neg_pow, h, zpow_natCast]
   ring
 
-theorem besselJ_neg_comm (a : ℤ) (x : ℂ) : J (-a) x = J a (-x) := by
+theorem besselJ_neg_comm (a : ℤ) (x : ℂ) : J(-a) x = J(a) (-x) := by
   rw [besselJ_neg_int, ← besselJ_int_neg]
 
-/-- $J_a(x)$ is analytic for integer $a$. -/
+/-- `J(-a)` is analytic for integer `a`. -/
 @[fun_prop]
-theorem analyticAt_besselJ_int (a : ℤ) (x : ℂ) : AnalyticAt ℂ (J a) x := by
+theorem analyticAt_besselJ_int (a : ℤ) (x : ℂ) : AnalyticAt ℂ (J(a)) x := by
   wlog! ha : 0 ≤ a
   · specialize this (-a) x (by simpa using ha.le)
-    have : AnalyticAt ℂ (fun x ↦ ((-1) ^ a)⁻¹ * J ↑(-a) x) x := by fun_prop
+    have : AnalyticAt ℂ (fun x ↦ ((-1) ^ a)⁻¹ * J(↑(-a)) x) x := by fun_prop
     have ha' : (-1 : ℂ) ^ a ≠ 0 := by grind [zpow_ne_zero]
     simpa [besselJ_neg_int, ← mul_assoc, inv_mul_cancel₀ ha']
   obtain ⟨a, rfl⟩ := Int.eq_ofNat_of_zero_le ha
   have : AnalyticAt ℂ (fun x ↦ (x / 2) ^ a * F₀₁(a) (- (x / 2) ^ 2)) x := by fun_prop
   simpa [besselJ_def]
 
-theorem besselJ_zero (a : ℂ) : J a 0 = if a = 0 then 1 else 0 := by
+theorem besselJ_zero (a : ℂ) : J(a) 0 = if a = 0 then 1 else 0 := by
   split_ifs with h <;> simp [besselJ, h, regularizedHGFunCoeff]
 
 end Complex
