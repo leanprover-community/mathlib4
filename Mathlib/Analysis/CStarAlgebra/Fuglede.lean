@@ -126,13 +126,13 @@ public lemma IsStarNormal.commute_star_left {A : Type*} [NonUnitalCStarAlgebra A
 
 public lemma Set.Pairwise.commute_star_right {A : Type*} [NonUnitalCStarAlgebra A]
     {s : Set A} (hs : s.Pairwise Commute) (hs' : ∀ x ∈ s, IsStarNormal x) :
-    s.Pairwise (fun x y ↦ Commute x (star y)) :=
-  fun _x hx y hy hxy ↦ (hs' y hy).commute_star_right (hs hx hy hxy)
+    s.Pairwise (Commute · <| star ·) :=
+  hs.imp_on <| by grind [IsStarNormal.commute_star_right, Set.Pairwise]
 
 public lemma Set.Pairwise.commute_star_left {A : Type*} [NonUnitalCStarAlgebra A]
     {s : Set A} (hs : s.Pairwise Commute) (hs' : ∀ x ∈ s, IsStarNormal x) :
-    s.Pairwise (fun x y ↦ Commute x (star y)) := by
-  simpa [comm] using hs.commute_star_right hs'
+    s.Pairwise (fun x y ↦ Commute (star x) y) :=
+  hs.imp_on <| by grind [IsStarNormal.commute_star_left, Set.Pairwise]
 
 /-- A characterization of normal elements in a C⋆-algebra in terms of exponentials. -/
 public lemma isStarNormal_iff_forall_exp_mul_exp_mem_unitary {a : A} :
