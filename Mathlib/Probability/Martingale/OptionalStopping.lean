@@ -35,7 +35,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 namespace MeasureTheory
 
 variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {𝒢 : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
-  {τ π : Ω → ℕ∞}
+  {τ π : Ω → WithTop ℕ}
 
 /-- Given a submartingale `f` and bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 expectation of `stoppedValue f τ` is less than or equal to the expectation of `stoppedValue f π`.
@@ -66,12 +66,13 @@ process `f` is a submartingale if for all bounded stopping times `τ` and `π` s
 stopped value of `f` at `τ` has expectation smaller than its stopped value at `π`. -/
 theorem submartingale_of_expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
     (hadp : StronglyAdapted 𝒢 f)
-    (hint : ∀ i, Integrable (f i) μ) (hf : ∀ τ π : Ω → ℕ∞, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →
+    (hint : ∀ i, Integrable (f i) μ)
+    (hf : ∀ τ π : Ω → WithTop ℕ, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →
       τ ≤ π → (∃ N : ℕ, ∀ ω, π ω ≤ N) → μ[stoppedValue f τ] ≤ μ[stoppedValue f π]) :
     Submartingale f 𝒢 μ := by
   refine submartingale_of_setIntegral_le hadp hint fun i j hij s hs => ?_
   classical
-  specialize hf (s.piecewise (fun _ ↦ WithTop.some i) fun _ ↦ WithTop.some j : Ω → WithTop ℕ) _
+  specialize hf (s.piecewise (fun _ ↦ WithTop.some i) fun _ ↦ WithTop.some j) _
     (isStoppingTime_piecewise_const hij hs) (isStoppingTime_const 𝒢 j)
     (Set.piecewise_le (fun _ _ ↦ WithTop.coe_le_coe.mpr hij) fun _ _ ↦ le_rfl)
     ⟨j, fun _ => le_rfl⟩
@@ -84,7 +85,7 @@ is a submartingale if and only if for all bounded stopping times `τ` and `π` s
 stopped value of `f` at `τ` has expectation smaller than its stopped value at `π`. -/
 theorem submartingale_iff_expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
     (hadp : StronglyAdapted 𝒢 f) (hint : ∀ i, Integrable (f i) μ) :
-    Submartingale f 𝒢 μ ↔ ∀ τ π : Ω → ℕ∞, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →
+    Submartingale f 𝒢 μ ↔ ∀ τ π : Ω → WithTop ℕ, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →
       τ ≤ π → (∃ N : ℕ, ∀ x, π x ≤ N) → μ[stoppedValue f τ] ≤ μ[stoppedValue f π] :=
   ⟨fun hf _ _ hτ hπ hle ⟨_, hN⟩ => hf.expected_stoppedValue_mono hτ hπ hle hN,
     submartingale_of_expected_stoppedValue_mono hadp hint⟩
@@ -98,7 +99,7 @@ protected theorem Submartingale.stoppedProcess [SigmaFiniteFiltration μ 𝒢]
     obtain ⟨n, hπ_le_n⟩ := hπ_bdd
     have hπ_top ω : π ω ≠ ⊤ := ne_top_of_le_ne_top (by simp) (hπ_le_n ω)
     have hσ_top ω : σ ω ≠ ⊤ := ne_top_of_le_ne_top (hπ_top ω) (hσ_le_π ω)
-    have h_integral_min : ∀ ρ : Ω → ℕ∞, (∀ ω, ρ ω ≠ ⊤) →
+    have h_integral_min : ∀ ρ : Ω → WithTop ℕ, (∀ ω, ρ ω ≠ ⊤) →
         μ[stoppedValue (stoppedProcess f τ) ρ] = μ[stoppedValue f fun ω ↦ min (ρ ω) (τ ω)] :=
       fun ρ hρ ↦ congrArg (fun g : Ω → ℝ ↦ μ[g])
         (funext fun ω ↦ stoppedValue_stoppedProcess_apply (hρ ω))
@@ -220,7 +221,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       rw [← stoppedValue_const f n]
       refine hsub.expected_stoppedValue_mono
         (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
-        (isStoppingTime_const _ _) (fun ω ↦ ?_) (fun _ => mod_cast le_rfl)
+        (isStoppingTime_const _ _) (fun ω ↦ ?_) (fun _ ↦ le_rfl)
       exact WithTop.coe_le_coe.mpr (hittingBtwn_le ω)
 
 end Maximal
