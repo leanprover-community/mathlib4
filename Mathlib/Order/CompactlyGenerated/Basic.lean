@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.OrderIsoNat
-public import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
 public import Mathlib.Order.Zorn

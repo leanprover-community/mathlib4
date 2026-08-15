@@ -5,7 +5,6 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Data.ZMod.Coprime
 public import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
 public import Mathlib.NumberTheory.LSeries.Linearity
 public import Mathlib.NumberTheory.LSeries.Nonvanishing

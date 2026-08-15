@@ -103,7 +103,7 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
       rw [singleton_one ℚ K]
       exact mem_top
     obtain ⟨y, rfl⟩ := mem_bot.1 this
-    replace h := (isIntegral_algebraMap_iff (algebraMap ℚ K).injective).1 h
+    replace h := isIntegral_algebraMap_iff.1 h
     obtain ⟨z, hz⟩ := IsIntegrallyClosed.isIntegral_iff.1 h
     rw [← hz, ← IsScalarTower.algebraMap_apply]
     exact Subalgebra.algebraMap_mem _ _

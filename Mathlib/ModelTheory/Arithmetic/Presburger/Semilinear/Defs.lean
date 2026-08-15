@@ -7,7 +7,6 @@ module
 
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
-public import Mathlib.Algebra.Order.Group.Nat
 
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
