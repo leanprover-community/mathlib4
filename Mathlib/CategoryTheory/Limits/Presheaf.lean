@@ -565,7 +565,6 @@ noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
       simp only [id_comp] at eq₃
       simp [eq₁, eq₂, eq₃])
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
     dsimp% ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X).app (op (F.obj X))
@@ -641,7 +640,6 @@ lemma uliftYonedaEquiv_presheafHom_uliftYoneda_obj (X : C) :
   simpa using! uliftYonedaEquiv_ι_presheafHom.{w} φ (uliftYoneda.obj X) (𝟙 _)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type max w v₁ v₂} (f : P ⟶ Q) :
     presheafHom.{w} φ P ≫ Functor.whiskerLeft F.op (G.map f) = f ≫ presheafHom φ Q :=
@@ -878,7 +876,6 @@ lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
   simpa using ConcreteCategory.congr_hom this (shrinkYonedaObjObjEquiv.symm (𝟙 _))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The object of the category of elements `shrinkYoneda.{w}.flip.obj (op X)`
 corresponding to the identity of `X` is initial. -/
 noncomputable def isInitialElementsMkShrinkYonedaObjObjEquivId (X : C) :

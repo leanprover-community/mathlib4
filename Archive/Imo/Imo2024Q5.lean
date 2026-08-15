@@ -918,7 +918,6 @@ lemma path2OfEdge0_firstMonster_eq_none_of_path1OfEdge0_firstMonster_eq_some (hN
       simp only
       lia
 
-set_option linter.flexible false in
 lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 ≤ N)
     {m : MonsterData N} (hc₁0 : m (row1 hN) = 0) :
     (winningStrategy hN).play m 3 ⟨1, by simp⟩ = none ∨
@@ -941,7 +940,7 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 
       interval_cases i <;> rw [fn1OfEdge0] at hm <;> split_ifs at hm with h
       · simp at h
         lia
-      · simp at hm
+      · simp_rw [zero_add] at hm
         exact m.notMem_monsterCells_of_fst_eq_zero rfl hm
       · simp [eqComm] at h
       · dsimp only [Nat.reduceAdd, Nat.reduceDiv, Fin.mk_one] at hm

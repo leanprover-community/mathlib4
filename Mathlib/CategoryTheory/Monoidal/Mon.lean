@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # The category of monoids in a monoidal category.
@@ -1077,7 +1076,6 @@ end Adjunction
 
 namespace Equivalence
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories lifts to an equivalence of their monoid objects. -/
 @[to_additive (attr := simps)

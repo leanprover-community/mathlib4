@@ -11,8 +11,8 @@ public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Order.WellFounded
 public import Mathlib.Tactic.Nontriviality
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -708,7 +708,6 @@ lemma eq_setOfPred_le_sSup_and_isAtom {α} [CompleteAtomicBooleanAlgebra α] {S 
 @[deprecated (since := "2026-07-09")]
 alias eq_setOf_le_sSup_and_isAtom := eq_setOfPred_le_sSup_and_isAtom
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Representation theorem for complete atomic boolean algebras:
 For a complete atomic Boolean algebra `α`, `toSetOfIsAtom` is an order isomorphism
