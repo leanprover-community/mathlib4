@@ -191,7 +191,7 @@ variable (𝕜 E) in
   map_add' := by simp
   map_smul' := by simp
 
-noncomputable instance instInner : Inner ℂ (Complexification 𝕜 E) where
+instance instInner : Inner ℂ (Complexification 𝕜 E) where
   inner v w := .mk (RCLike.re (⟪v.re, w.re⟫_𝕜 + ⟪v.im, w.im⟫_𝕜))
     (RCLike.re (⟪v.re, w.im⟫_𝕜 - ⟪v.im, w.re⟫_𝕜))
 
@@ -204,7 +204,7 @@ lemma inner_def (v w : Complexification 𝕜 E) :
 @[simp] lemma im_inner (v w : Complexification 𝕜 E) :
     (⟪v, w⟫_ℂ).im = RCLike.re (⟪v.re, w.im⟫_𝕜 - ⟪v.im, w.re⟫_𝕜) := rfl
 
-noncomputable instance instInnerProductSpace : InnerProductSpace ℂ (Complexification 𝕜 E) where
+instance instInnerProductSpace : InnerProductSpace ℂ (Complexification 𝕜 E) where
   norm_sq_eq_re_inner v := by simp [norm_sq_eq, RCLike.re_to_complex]
   conj_inner_symm _ _ := by simp [Complex.ext_iff, inner_re_symm]
   add_left _ _ _ := by simp [Complex.ext_iff, inner_add_left]; grind
@@ -307,7 +307,7 @@ variable [RCLike 𝕜]
 open Complexification
 
 /-- Complexification of a continuous linear map between inner product spaces. -/
-@[expose, simps apply_apply] noncomputable def toComplexification :
+@[expose, simps apply_apply] def toComplexification :
     (E →L[𝕜] F) →+ Complexification 𝕜 E →L[ℂ] Complexification 𝕜 F where
   toFun T :=
     { toFun v := .mk 𝕜 (T v.re) (T v.im)
