@@ -110,7 +110,7 @@ lemma inr_le_inr_iff {a b : A} : (a : A⁺¹) ≤ (b : A⁺¹) ↔ a ≤ b := by
 
 @[deprecated (since := "2026-08-06")] alias inr_le_iff := inr_le_inr_iff
 
-alias ⟨le_of_inr, inr_le_inr⟩ := inr_le_inr_iff
+alias ⟨le_of_inr, inr_mono⟩ := inr_le_inr_iff
 
 
 lemma convexOn_of_convexOn_inr_comp {f : A → A} {s : Set A}

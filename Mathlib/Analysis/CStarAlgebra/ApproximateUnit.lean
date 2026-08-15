@@ -256,7 +256,7 @@ lemma norm_sub_mul_self_le_of_inr {x y : A} (z : A) (hx₀ : 0 ≤ x) (hxy : x �
   refine norm_sub_mul_self_le _ ?_ ?_ hc h
   · rwa [inr_nonneg_iff]
   · have hy := hx₀.trans hxy
-    rw [Set.mem_Icc, inr_le_inr_iff .., ← norm_le_one_iff_of_nonneg _, norm_inr]
+    rw [Set.mem_Icc, inr_le_inr_iff, ← norm_le_one_iff_of_nonneg _, norm_inr]
     exact ⟨hxy, hy₁⟩
 
 variable {A} in
@@ -275,7 +275,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
   simp only [mem_closedBall, dist_eq_norm', zero_sub, norm_neg] at hx₂ ⊢
   rw [← coe_nnnorm, coe_le_coe]
   have hx₀ : 0 ≤ x := cfcₙ_nonneg_of_predicate.trans hx₁
-  rw [← inr_le_inr_iff .., nnreal_cfcₙ_eq_cfc_inr _ _ (by simp [tsub_self]), inr_smul] at hx₁
+  rw [← inr_le_inr_iff, nnreal_cfcₙ_eq_cfc_inr _ _ (by simp [tsub_self]), inr_smul] at hx₁
   rw [← norm_inr (𝕜 := ℂ)] at hm₂ hx₂
   rw [← inr_nonneg_iff] at hx₀ hm₁
   rw [← nnnorm_inr (𝕜 := ℂ), inr_sub, inr_mul]
