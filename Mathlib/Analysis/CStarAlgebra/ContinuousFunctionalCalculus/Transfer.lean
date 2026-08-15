@@ -22,7 +22,7 @@ section UnitalTransfer
 variable {R A B : Type*} {p : A → Prop} {q : B → Prop}
   [CommSemiring R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
   [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A]
-  [Ring B] [StarRing B] [TopologicalSpace B] [Algebra R B]
+  [Ring B] [StarRing B] [Algebra R B]
   [instCFC : ContinuousFunctionalCalculus R A p]
 
 /-- Transfer `cfcHom` across a star algebra equivalence. -/
@@ -32,21 +32,22 @@ noncomputable def cfcHomTransfer (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q 
   (Homeomorph.setCongr (by simp)).compStarAlgEquiv' R R |>.arrowCongr
     e (cfcHom (hpq (e.symm b) |>.mpr <| by simpa))
 
-lemma continuous_cfcHomTransfer (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (e x))
-    (b : B) (hb : q b) (he : Continuous e) : Continuous (cfcHomTransfer e hpq b hb) :=
-  (he.comp <| cfcHom_continuous _).comp <| ContinuousMap.continuous_precomp _
-
-omit [TopologicalSpace B] in
 lemma cfcHomTransfer_injective (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (e x))
     (b : B) (hb : q b) : Function.Injective (cfcHomTransfer e hpq b hb) :=
   e.injective.comp (cfcHom_injective _) |>.comp <| Equiv.injective _
 
-omit [TopologicalSpace B] in
 lemma cfcHomTransfer_id (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (e x)) (b : B) (hb : q b) :
     cfcHomTransfer e hpq b hb (.restrict (spectrum R b) (.id R)) = b := by
   convert e.apply_symm_apply b
   congrm(e $(cfcHom_id _))
 
+variable [TopologicalSpace B]
+
+lemma continuous_cfcHomTransfer (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (e x))
+    (b : B) (hb : q b) (he : Continuous e) : Continuous (cfcHomTransfer e hpq b hb) := by
+  simpa [cfcHomTransfer, Function.comp_def] using by fun_prop
+
+omit [TopologicalSpace B] in
 open ContinuousFunctionalCalculus in
 /-- Transfer a continuous functional calculus instance to a type synonym with
 a weaker topology. -/
@@ -103,8 +104,7 @@ variable {R A B : Type*} {p : A → Prop} {q : B → Prop}
   [IsTopologicalSemiring R] [ContinuousStar R]
   [NonUnitalRing A] [StarRing A] [TopologicalSpace A]
   [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-  [NonUnitalRing B] [StarRing B] [TopologicalSpace B]
-  [Module R B] [IsScalarTower R B B] [SMulCommClass R B B]
+  [NonUnitalRing B] [StarRing B] [Module R B]
   [instCFC : NonUnitalContinuousFunctionalCalculus R A p]
 
 /-- Transfer `cfcₙHom` across a star algebra equivalence. -/
@@ -115,21 +115,22 @@ noncomputable def cfcₙHomTransfer (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔
     (Homeomorph.setCongr (by simp)) (by ext; simp [Homeomorph.setCongr]) |>.arrowCongr'
     e (cfcₙHom (hpq (e.symm b) |>.mpr <| by simpa))
 
-omit [IsScalarTower R B B] [SMulCommClass R B B] in
-lemma continuous_cfcₙHomTransfer (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (e x))
-    (b : B) (hb : q b) (he : Continuous e) : Continuous (cfcₙHomTransfer e hpq b hb) :=
-  (he.comp <| cfcₙHom_continuous _).comp <| ContinuousMapZero.continuous_precomp _
-
-omit [TopologicalSpace B] [IsScalarTower R B B] [SMulCommClass R B B] in
 lemma cfcₙHomTransfer_injective (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (e x))
     (b : B) (hb : q b) : Function.Injective (cfcₙHomTransfer e hpq b hb) :=
   e.injective.comp (cfcₙHom_injective _) |>.comp <| Equiv.injective _
 
-omit [TopologicalSpace B] [IsScalarTower R B B] [SMulCommClass R B B] in
 lemma cfcₙHomTransfer_id (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (e x)) (b : B) (hb : q b) :
     cfcₙHomTransfer e hpq b hb (.id (quasispectrum R b)) = b := by
   convert e.apply_symm_apply b
   congrm(e $(cfcₙHom_id _))
+
+variable [TopologicalSpace B]
+
+lemma continuous_cfcₙHomTransfer (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (e x))
+    (b : B) (hb : q b) (he : Continuous e) : Continuous (cfcₙHomTransfer e hpq b hb) :=
+  (he.comp <| cfcₙHom_continuous _).comp <| ContinuousMapZero.continuous_precomp _
+
+variable [IsScalarTower R B B] [SMulCommClass R B B]
 
 open NonUnitalContinuousFunctionalCalculus in
 /-- Transfer a continuous functional calculus instance to a type synonym with
