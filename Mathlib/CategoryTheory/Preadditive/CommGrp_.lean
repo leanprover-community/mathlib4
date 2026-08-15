@@ -51,6 +51,7 @@ def toCommGrp : C ⥤ CommGrp C where
 
 -- PROJECT: develop `ChosenFiniteCoproducts`, and construct `ChosenFiniteCoproducts` from
 -- `CartesianMonoidalCategory` in preadditive categories, to give this lemma a proper home.
+set_option backward.privateInPublic true in
 omit [BraidedCategory C] in
 private theorem monoidal_hom_ext {X Y Z : C} {f g : X ⊗ Y ⟶ Z}
     (h₁ : lift (𝟙 X) 0 ≫ f = lift (𝟙 X) 0 ≫ g) (h₂ : lift 0 (𝟙 Y) ≫ f = lift 0 (𝟙 Y) ≫ g) :

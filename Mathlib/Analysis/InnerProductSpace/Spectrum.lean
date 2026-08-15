@@ -272,6 +272,8 @@ private theorem hasEigenvector_eigenvectorBasis_helper (hT : T.IsSymmetric)
     exact hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector key)
   simpa [re_μ] using key
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The eigenvalues for a self-adjoint operator `T` on a
 finite-dimensional inner product space `E`, sorted in decreasing order -/
 noncomputable irreducible_def eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
@@ -290,6 +292,8 @@ theorem card_filter_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank �
   apply Finset.card_equiv (Fin.revPerm.trans (Tuple.sort (hT.unsortedEigenvalues hn)))
   simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
 finite-dimensional inner product space `E`.  Eigenvectors are sorted in decreasing
 order of their eigenvalues. -/

@@ -147,6 +147,7 @@ def ofNatCode : ℕ → Code
     | true, false => prec (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
     | true, true => rfind' (ofNatCode m)
 
+set_option backward.privateInPublic true in
 /-- Proof that `Nat.Partrec.Code.ofNatCode` is the inverse of `Nat.Partrec.Code.encodeCode` -/
 private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
   | 0 => by simp [ofNatCode, encodeCode]

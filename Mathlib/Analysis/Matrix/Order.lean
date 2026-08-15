@@ -325,6 +325,8 @@ noncomputable def toMatrixSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.P
     SeminormedAddCommGroup (Matrix n n 𝕜) :=
   @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
 @[instance_reducible]
