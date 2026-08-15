@@ -53,6 +53,7 @@ section Comm
 variable (A : Type*) [NonUnitalCommCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 open ContinuousMap WeakDual in
+/-- In a commutative C⋆-algebra, the positive part map `fun a ↦ a⁺` is monotone. -/
 protected lemma posPart_mono : Monotone (fun a : A ↦ a⁺) := by
   let φ : A →⋆ₙₐ[ℂ] C(characterSpace ℂ A⁺¹, ℂ) :=
     .comp (gelfandStarTransform A⁺¹) (Unitization.inrNonUnitalStarAlgHom ℂ A)
@@ -70,6 +71,7 @@ protected lemma posPart_mono : Monotone (fun a : A ↦ a⁺) := by
     simpa [← realToRCLike_posPart, IsSelfAdjoint.realToRCLike_rclikeToReal, ha.map φ, hb.map φ]
   · simp [CFC.posPart_def, cfcₙ_apply_of_not_predicate, ha, mt (IsSelfAdjoint.of_le hab) ha]
 
+/-- In a commutative C⋆-algebra, the negative part map `fun a ↦ a⁻` is antitone. -/
 protected lemma negPart_anti : Antitone (fun a : A ↦ a⁻) := by
   simpa [Function.comp_def] using
     CStarAlgebra.posPart_mono A |>.comp_antitone monotone_id.neg
@@ -82,6 +84,8 @@ variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 
 open NonUnitalStarAlgebra in
 open scoped IsMulCommutative in
+/-- The positive part map `fun a ↦ a⁺` is monotone on commuting selfadjoint elements in
+a C⋆-algebra -/
 protected lemma Commute.posPart_mono {a b : A} (hab : Commute a b) (hle : a ≤ b)
     (ha : IsSelfAdjoint a := by cfc_tac) (hb : IsSelfAdjoint b := by cfc_tac) :
     a⁺ ≤ b⁺ := by
@@ -100,6 +104,8 @@ protected lemma Commute.posPart_mono {a b : A} (hab : Commute a b) (hle : a ≤ 
   have hb' : IsSelfAdjoint b' := Subtype.ext hb.star_eq
   rwa [NonUnitalStarAlgHomClass.map_cfcₙ .., NonUnitalStarAlgHomClass.map_cfcₙ ..] at this
 
+/-- The negative part map `fun a ↦ a⁻` is antitone on commuting selfadjoint elements in
+a C⋆-algebra -/
 protected lemma Commute.negPart_anti {a b : A} (hab : Commute a b) (hle : a ≤ b)
     (ha : IsSelfAdjoint a := by cfc_tac) (hb : IsSelfAdjoint b := by cfc_tac) :
     b⁻ ≤ a⁻ := by
