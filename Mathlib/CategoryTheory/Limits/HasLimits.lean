@@ -508,23 +508,25 @@ theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ 
   have : HasLimit (E ⋙ F ⋙ G) := h
   ext; erw [assoc, limit.post_π, ← G.map_comp, limit.pre_π, assoc, limit.pre_π, limit.post_π]
 
-open CategoryTheory.Equivalence
-
+@[to_dual]
 instance hasLimit_equivalence_comp (e : K ≌ J) [HasLimit F] : HasLimit (e.functor ⋙ F) :=
   HasLimit.mk
     { cone := Cone.whisker e.functor (limit.cone F)
       isLimit := IsLimit.whiskerEquivalence (limit.isLimit F) e }
 
 -- not entirely sure why this is needed
-/-- If a `E ⋙ F` has a limit, and `E` is an equivalence, we can construct a limit of `F`.
--/
+/-- If a `E ⋙ F` has a limit, and `E` is an equivalence, we can construct a limit of `F`. -/
+@[to_dual
+/-- If a `E ⋙ F` has a colimit, and `E` is an equivalence, we can construct a colimit of `F`. -/]
 theorem hasLimit_of_equivalence_comp (e : K ≌ J) [HasLimit (e.functor ⋙ F)] : HasLimit F := by
   have : HasLimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasLimit_equivalence_comp e.symm
   apply hasLimit_of_iso (e.invFunIdAssoc F)
 
+@[to_dual]
 lemma hasLimit_equivalence_comp_iff (e : K ≌ J) : HasLimit (e.functor ⋙ F) ↔ HasLimit F :=
   ⟨fun _ ↦ hasLimit_of_equivalence_comp e, fun _ ↦ inferInstance⟩
 
+@[to_dual]
 lemma hasLimit_inverse_equivalence_comp_iff (e : J ≌ K) : HasLimit (e.inverse ⋙ F) ↔ HasLimit F :=
   hasLimit_equivalence_comp_iff e.symm
 
@@ -645,8 +647,9 @@ def isLimitConeOfAdj (F : J ⥤ C) :
 
 end Adjunction
 
-/-- We can transport limits of shape `J` along an equivalence `J ≌ J'`.
--/
+/-- We can transport limits of shape `J` along an equivalence `J ≌ J'`. -/
+@[to_dual
+/-- We can transport colimits of shape `J` along an equivalence `J ≌ J'`. -/]
 theorem hasLimitsOfShape_of_equivalence {J' : Type u₂} [Category.{v₂} J'] (e : J ≌ J')
     [HasLimitsOfShape J C] : HasLimitsOfShape J' C := by
   constructor
@@ -880,26 +883,6 @@ theorem colimit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J �
   have : HasColimit (E ⋙ F ⋙ G) := h
   erw [colimit.ι_pre (F ⋙ G) E j, colimit.ι_post]
 
-open CategoryTheory.Equivalence
-
-instance hasColimit_equivalence_comp (e : K ≌ J) [HasColimit F] : HasColimit (e.functor ⋙ F) :=
-  HasColimit.mk
-    { cocone := Cocone.whisker e.functor (colimit.cocone F)
-      isColimit := IsColimit.whiskerEquivalence (colimit.isColimit F) e }
-
-/-- If a `E ⋙ F` has a colimit, and `E` is an equivalence, we can construct a colimit of `F`.
--/
-theorem hasColimit_of_equivalence_comp (e : K ≌ J) [HasColimit (e.functor ⋙ F)] : HasColimit F := by
-  have : HasColimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasColimit_equivalence_comp e.symm
-  apply hasColimit_of_iso (e.invFunIdAssoc F).symm
-
-lemma hasColimit_equivalence_comp_iff (e : K ≌ J) : HasColimit (e.functor ⋙ F) ↔ HasColimit F :=
-  ⟨fun _ ↦ hasColimit_of_equivalence_comp e, fun _ ↦ inferInstance⟩
-
-lemma hasColimit_inverse_equivalence_comp_iff (e : J ≌ K) :
-    HasColimit (e.inverse ⋙ F) ↔ HasColimit F :=
-  hasColimit_equivalence_comp_iff e.symm
-
 section ColimFunctor
 
 variable [HasColimitsOfShape J C]
@@ -987,14 +970,6 @@ instance colimMap_epi {F G : J ⥤ C} [HasColimit F] [HasColimit G] (α : F ⟶ 
     Epi (colimMap α) :=
   ⟨fun {Z} u v h =>
     colimit.hom_ext fun j => (cancel_epi (α.app j)).1 <| by simpa using colimit.ι _ j ≫= h⟩
-
-/-- We can transport colimits of shape `J` along an equivalence `J ≌ J'`.
--/
-theorem hasColimitsOfShape_of_equivalence {J' : Type u₂} [Category.{v₂} J'] (e : J ≌ J')
-    [HasColimitsOfShape J C] : HasColimitsOfShape J' C := by
-  constructor
-  intro F
-  apply hasColimit_of_equivalence_comp e
 
 variable (C)
 
