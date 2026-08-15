@@ -232,7 +232,7 @@ lemma card_le_card_biUnion_of_card_le_card [DecidableEq β]
       congr 1
       grind
     _ = ∑ x ∈ s.biUnion B, #(s.bipartiteBelow (fun j x ↦ x ∈ B j) x) :=
-      Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow (fun j x ↦ x ∈ B j)
+      Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow _
     _ ≤ ∑ x ∈ s.biUnion B, n := Finset.sum_le_sum h_ub
     _ = #(s.biUnion B) * n := by simp
 
