@@ -10,7 +10,7 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnit
 /-! # Transfer instances of the continuous functional calculus
 
 One may transfer instances of the continuous functional calculus across a star algebra equivalence,
-so long as this equivalence is continuous. Crucially, it's inverse need not be continuous. This
+so long as this equivalence is continuous. Crucially, its inverse need not be continuous. This
 allows to, for example, equip type synonyms of a C⋆-algebra with weaker topologies with instances
 of the continuous functional calculus.
 -/
@@ -51,7 +51,7 @@ omit [TopologicalSpace B] in
 open ContinuousFunctionalCalculus in
 /-- Transfer a continuous functional calculus instance to a type synonym with
 a weaker topology. -/
-theorem ContinuousFunctionCalculus.transfer (e : A ≃⋆ₐ[R] B)
+theorem ContinuousFunctionalCalculus.transfer (e : A ≃⋆ₐ[R] B)
     (he : Continuous e) (hpq : ∀ x, p x ↔ q (e x)) :
     ContinuousFunctionalCalculus R B q where
   predicate_zero := map_zero e ▸ (hpq 0 |>.mp instCFC.predicate_zero)
