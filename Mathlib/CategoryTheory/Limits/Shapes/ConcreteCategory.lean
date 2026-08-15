@@ -237,7 +237,7 @@ section WidePullback
 variable {FC : C → C → Type*} {CC : C → Type (max v w)} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
 variable [ConcreteCategory.{max v w} C FC]
 
-open WidePullback
+open widePullback
 
 open WidePullbackShape
 
@@ -334,7 +334,7 @@ end Multiequalizer
 
 section WidePushout
 
-open WidePushout
+open widePushout
 
 open WidePushoutShape
 
