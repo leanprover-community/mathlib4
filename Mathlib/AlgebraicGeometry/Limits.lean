@@ -112,7 +112,7 @@ instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ 
 
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y] :
     IsIso f := by
-  haveI : IsEmpty X := f.base.hom.1.isEmpty
+  have : IsEmpty X := f.base.hom.1.isEmpty
   have : Epi f.base := by
     rw [TopCat.epi_iff_surjective]; rintro (x : Y)
     exact isEmptyElim x
@@ -187,7 +187,6 @@ instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetTo
 instance [Small.{u} σ] : HasColimitsOfShape (Discrete σ) Scheme.{u} :=
   ⟨fun _ ↦ hasColimit_of_created _ Scheme.forgetToLocallyRingedSpace⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sigmaι_eq_iff [Small.{u} σ] (i j : σ) (x y) :
     Sigma.ι g i x = Sigma.ι g j y ↔ (Sigma.mk i x : Σ i, g i) = Sigma.mk j y := by
   refine (Scheme.IsLocallyDirected.ι_eq_ι_iff _).trans ⟨?_, ?_⟩
@@ -197,7 +196,6 @@ lemma sigmaι_eq_iff [Small.{u} σ] (i j : σ) (x y) :
     obtain rfl := (heq_eq_eq x y).mp e
     exact ⟨⟨i⟩, 𝟙 _, 𝟙 _, x, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The images of each component in the coproduct is disjoint. -/
 lemma disjoint_opensRange_sigmaι [Small.{u} σ] (i j : σ) (h : i ≠ j) :
     Disjoint (Sigma.ι g i).opensRange (Sigma.ι g j).opensRange := by
@@ -220,7 +218,6 @@ lemma isEmpty_pullback_sigmaι_of_ne [Small.{u} σ] {i j : σ} (hij : i ≠ j) :
     IsEmpty ↑(pullback (Sigma.ι g i) (Sigma.ι g j)) :=
   isEmpty_of_commSq_sigmaι_of_ne ⟨pullback.condition⟩ hij
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance [Small.{u} σ] : CoproductsOfShapeDisjoint Scheme.{u} σ where
   coproductDisjoint g := by
     refine .of_hasCoproduct (fun _ ↦ pullback.cone _ _) (fun _ ↦ pullback.isLimit _ _) ?_
@@ -289,7 +286,6 @@ private lemma isOpenImmersion_sigmaDesc_aux
     · simp [← Scheme.Hom.comp_apply]
     · simp [← Scheme.Hom.stalkMap_comp, Scheme.Hom.stalkMap_congr_hom _ _ (colimit.ι_desc _ _)]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Function in
 lemma isOpenImmersion_sigmaDesc [Small.{u} σ]
     {X : Scheme.{u}} (α : ∀ i, g i ⟶ X) [∀ i, IsOpenImmersion (α i)]
@@ -305,7 +301,6 @@ lemma isOpenImmersion_sigmaDesc [Small.{u} σ]
     exact hα (fun h ↦ hij (e.symm.injective h))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open scoped Function in
 /-- `S` is the disjoint union of `Xᵢ` if the `Xᵢ` are covering, pairwise disjoint open subschemes
 of `S`. -/
@@ -339,11 +334,9 @@ lemma ι_left_coprodIsoSigma_inv : Sigma.ι _ ⟨.left⟩ ≫ (coprodIsoSigma X 
 lemma ι_right_coprodIsoSigma_inv : Sigma.ι _ ⟨.right⟩ ≫ (coprodIsoSigma X Y).inv = coprod.inr :=
   Sigma.ι_comp_map' _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsOpenImmersion (coprod.inl : X ⟶ X ⨿ Y) := by
   rw [← ι_left_coprodIsoSigma_inv]; infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsOpenImmersion (coprod.inr : Y ⟶ X ⨿ Y) := by
   rw [← ι_right_coprodIsoSigma_inv]; infer_instance
 
@@ -410,8 +403,6 @@ def coprodOpenCover.{w} : (X ⨿ Y).OpenCover where
     · simp only [Sum.elim_inl, coprodMk_inl, exists_apply_eq_apply]
     · simp only [Sum.elim_inr, coprodMk_inr, exists_apply_eq_apply]
 
--- TODO: should infer_instance be considered normalising?
-set_option linter.flexible false in
 /-- If `X` and `Y` are open disjoint and covering open subschemes of `S`,
 `S` is the disjoint union of `X` and `Y`. -/
 lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
@@ -425,7 +416,7 @@ lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
   let fi (j : WalkingPair) : WalkingPair.casesOn j X Y ⟶ S := WalkingPair.casesOn j f g
   convert! nonempty_isColimit_cofanMk_of fi _ _
   · intro i
-    cases i <;> (simp [fi]; infer_instance)
+    cases i <;> (simp only [fi]; infer_instance)
   · simpa [← WalkingPair.equivBool.symm.iSup_comp, iSup_bool_eq, ← codisjoint_iff] using hf.2
   · intro i j hij
     match i, j with
@@ -442,7 +433,7 @@ lemma isPullback_inl_inl_coprodMap {X Y X' Y' : Scheme.{u}}
     · simp only [coprodMk_inr, ← Scheme.Hom.comp_apply, coprod.inr_map] at hxy
       cases Set.disjoint_iff_forall_ne.mp (isCompl_range_inl_inr _ _).1 ⟨y, rfl⟩ ⟨_, rfl⟩ hxy
   · rintro _ ⟨x, rfl⟩
-    exact ⟨f x, by simp [← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base]⟩
+    exact ⟨f x, by simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_inr_inr_coprodMap {X Y X' Y' : Scheme.{u}}
@@ -546,7 +537,7 @@ lemma isIso_stalkMap_coprodSpec (x) :
     rw [← IsIso.comp_inv_eq,
       Scheme.Hom.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inl R S)] at this
     rw [coprodMk_inl, ← this]
-    letI := (RingHom.fst R S).toAlgebra
+    let := (RingHom.fst R S).toAlgebra
     have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.fst R S))) :=
       IsOpenImmersion.of_isLocalization (1, 0)
     infer_instance
@@ -554,7 +545,7 @@ lemma isIso_stalkMap_coprodSpec (x) :
     rw [← IsIso.comp_inv_eq,
       Scheme.Hom.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inr R S)] at this
     rw [coprodMk_inr, ← this]
-    letI := (RingHom.snd R S).toAlgebra
+    let := (RingHom.snd R S).toAlgebra
     have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.snd R S))) :=
       IsOpenImmersion.of_isLocalization (0, 1)
     infer_instance
@@ -614,7 +605,7 @@ lemma ι_sigmaSpec (R : ι → CommRingCat) (i) :
 instance (i) (R : ι → Type _) [∀ i, CommRing (R i)] :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i))) := by
   classical
-  letI := (Pi.evalRingHom R i).toAlgebra
+  let := (Pi.evalRingHom R i).toAlgebra
   have : IsLocalization.Away (Function.update (β := R) 0 i 1) (R i) := by
     apply IsLocalization.away_of_isIdempotentElem_of_mul
     · ext j; by_cases h : j = i <;> aesop
@@ -657,7 +648,6 @@ instance [Finite σ] [∀ i, IsAffine (g i)] : IsAffine (∐ g) := by
 instance [IsAffine X] [IsAffine Y] : IsAffine (X ⨿ Y) :=
   .of_isIso ((coprod.mapIso X.isoSpec Y.isoSpec).hom ≫ coprodSpec _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Function in
 /-- A version with more restrictive universes. See `IsAffineOpen.iSup_of_disjoint`. -/
 private lemma IsAffineOpen.iSup_of_disjoint_aux [Finite ι] {U : ι → X.Opens}

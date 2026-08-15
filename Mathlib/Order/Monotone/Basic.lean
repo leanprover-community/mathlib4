@@ -14,6 +14,7 @@ public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Order.RelClasses
 public import Mathlib.Tactic.Choose
 public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.ByCases
 
 /-!
 # Monotonicity
@@ -144,9 +145,11 @@ theorem monotone_dual_iff : Monotone (toDual ∘ f ∘ ofDual : αᵒᵈ → β�
 theorem antitone_dual_iff : Antitone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ Antitone f := by
   rw [antitone_toDual_comp_iff, monotone_comp_ofDual_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem monotoneOn_dual_iff : MonotoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ MonotoneOn f s := by
   rw [monotoneOn_toDual_comp_iff, antitoneOn_comp_ofDual_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem antitoneOn_dual_iff : AntitoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ AntitoneOn f s := by
   rw [antitoneOn_toDual_comp_iff, monotoneOn_comp_ofDual_iff]
 
@@ -156,10 +159,12 @@ theorem strictMono_dual_iff : StrictMono (toDual ∘ f ∘ ofDual : αᵒᵈ →
 theorem strictAnti_dual_iff : StrictAnti (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ StrictAnti f := by
   rw [strictAnti_toDual_comp_iff, strictMono_comp_ofDual_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem strictMonoOn_dual_iff :
     StrictMonoOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ StrictMonoOn f s := by
   rw [strictMonoOn_toDual_comp_iff, strictAntiOn_comp_ofDual_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem strictAntiOn_dual_iff :
     StrictAntiOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ StrictAntiOn f s := by
   rw [strictAntiOn_toDual_comp_iff, strictMonoOn_comp_ofDual_iff]

@@ -45,7 +45,7 @@ theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)
     refine .of_isLittleO <| this.congr' ?_ (Eventually.of_forall fun _ => mul_one _)
     refine Eventually.mono ((isOpen_ne.prod isOpen_ne).mem_nhds ⟨hx, hx⟩) ?_
     rintro ⟨y, z⟩ ⟨hy, hz⟩
-    simp only [mem_setOf_eq] at hy hz
+    simp only [mem_ofPred_eq] at hy hz
     simp [field]
     ring
   refine (isBigO_refl (fun p : 𝕜 × 𝕜 => p.1 - p.2) _).mul_isLittleO ((isLittleO_one_iff 𝕜).2 ?_)
@@ -98,7 +98,8 @@ theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s 
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv x_ne_zero) hxs]
   exact fderiv_inv
 
-variable {c : 𝕜 → 𝕜} {c' : 𝕜}
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
 @[to_fun]
 theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
@@ -183,32 +184,17 @@ theorem DifferentiableWithinAt.div (hc : DifferentiableWithinAt 𝕜 c s x)
     DifferentiableWithinAt 𝕜 (c / d) s x :=
   hc.fun_div hd hx
 
-@[simp, fun_prop]
-theorem DifferentiableAt.fun_div (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x)
-    (hx : d x ≠ 0) : DifferentiableAt 𝕜 (fun x => c x / d x) x :=
-  (hc.hasDerivAt.div hd.hasDerivAt hx).differentiableAt
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem DifferentiableAt.div (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x)
     (hx : d x ≠ 0) : DifferentiableAt 𝕜 (c / d) x :=
-  hc.fun_div hd hx
+  (hc.hasDerivAt.div hd.hasDerivAt hx).differentiableAt
 
-@[fun_prop]
-theorem DifferentiableOn.fun_div (hc : DifferentiableOn 𝕜 c s) (hd : DifferentiableOn 𝕜 d s)
-    (hx : ∀ x ∈ s, d x ≠ 0) : DifferentiableOn 𝕜 (fun x => c x / d x) s := fun x h =>
-  (hc x h).div (hd x h) (hx x h)
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableOn.div (hc : DifferentiableOn 𝕜 c s) (hd : DifferentiableOn 𝕜 d s)
     (hx : ∀ x ∈ s, d x ≠ 0) : DifferentiableOn 𝕜 (c / d) s := fun x h =>
   (hc x h).div (hd x h) (hx x h)
 
-@[simp, fun_prop]
-theorem Differentiable.fun_div (hc : Differentiable 𝕜 c) (hd : Differentiable 𝕜 d)
-    (hx : ∀ x, d x ≠ 0) :
-    Differentiable 𝕜 (fun x => c x / d x) := fun x => (hc x).div (hd x) (hx x)
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem Differentiable.div (hc : Differentiable 𝕜 c) (hd : Differentiable 𝕜 d) (hx : ∀ x, d x ≠ 0) :
     Differentiable 𝕜 (c / d) := fun x => (hc x).div (hd x) (hx x)
 
