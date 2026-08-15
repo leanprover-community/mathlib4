@@ -32,7 +32,7 @@ abbrev Entry := Array (Array DiscrTree.Key) × Name
 
 /-- The state of a discrimination-tree environment extension. -/
 structure State (α : Type) where
-  /-- The discrimintation-tree of the extension. -/
+  /-- The discrimination tree of the extension. -/
   tree : DiscrTree α := {}
   deriving Inhabited
 
@@ -41,7 +41,7 @@ abbrev EnvExt (α : Type) := ScopedEnvExtension Entry (Entry × α) (State α)
 
 variable {α : Type}
 
-/-- Return an the array of the declaration values whose `DiscrTree` key matches `e`. -/
+/-- Return the declaration values whose `DiscrTree` keys match `e`. -/
 def State.getMatch (state : State α) (e : Expr) : MetaM (Array α) := state.tree.getMatch e
 
 /-- Create a scoped environment extension whose declarations have type `typeName`. By default, the

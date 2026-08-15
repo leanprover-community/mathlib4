@@ -28,12 +28,16 @@ meta def binSplitParam : InclusionParamDecl where
   type := mkConst ``Nat
 
 private def mkRealCover (iExpr : IExpr) : InclusionM (Option Expr) := do
-  let some depth ← getParam? `binSplit | return none
+  let some depth ← InclusionM.getParam? `binSplit | return none
   return some (← mkAppOptM ``Splitter.cover
     #[iExpr.iType.setType, iExpr.iType.elemType, iExpr.iType.toSetInst, none, depth])
 
 @[inclusionExt real.dyadic | (_ : ℝ)]
 meta def mkRealIVar : InclusionExt :=
-  mkNDIVarExt (mkConst ``Real) (mkAppM ``Interval #[mkConst ``Dyadic]) mkRealCover
+  mkNDIVarExt
+    { elemType := mkConst ``Real
+      setType := mkApp (mkConst ``Interval [.zero]) (mkConst ``Dyadic)
+      toSetInst := mkConst ``instToSetIntervalDyadicReal }
+    mkRealCover
 
 end Inclusion

@@ -24,7 +24,7 @@ namespace Inclusion
 structure InclusionConfig where
   /-- If `kernel == true` then skip the compiled check. -/
   kernel : Bool := false
-  /-- If `native == true` then use compiled computation in the proof (warning: this adds the lean
+  /-- If `native == true` then use compiled computation in the proof (warning: this adds the Lean
   compiler to the trusted codebase). -/
   native : Bool := false
   /-- A map from inclusion parameter names to their user-supplied values. -/

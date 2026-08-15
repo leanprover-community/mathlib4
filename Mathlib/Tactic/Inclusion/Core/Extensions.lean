@@ -47,18 +47,19 @@ structure HypothesisExt where
 structure InclusionFamily where
   /-- The name of an inclusion family. -/
   name : Name
-  /-- The `DiscrTree` key indexed family of inclusion extensions. -/
+  /-- The `DiscrTree`-indexed collection of inclusion extensions. -/
   inclusionExt : EnvExt InclusionExt
-  /-- The `DiscrTree` key indexed family of hypothesis extensions. -/
+  /-- The `DiscrTree`-indexed collection of hypothesis extensions. -/
   hypothesisExt : EnvExt HypothesisExt
   deriving Nonempty
 
 /-- A map from family names to registered inclusion families. -/
 abbrev InclusionFamilies := Std.HashMap Name InclusionFamily
 
+/-- The registry of inclusion families. -/
 initialize inclusionFamiliesRef : IO.Ref InclusionFamilies ← IO.mkRef {}
 
-/-- Register an inclusion family containing a separate inclusion and hypothesis extension. -/
+/-- Register an inclusion family. -/
 def registerInclusionFamily (name : Name) (ref : Name := by exact decl_name%) :
     IO InclusionFamily := do
   if (← inclusionFamiliesRef.get).contains name then
@@ -109,14 +110,14 @@ def getHypothesisExtMatches (families : Array Name) (e : Expr) :
 
 section InclusionParam
 
-/-- A registered, named parameter, that can be set by the user and used across inclusion and
+/-- A registered named parameter that can be set by the user and used across inclusion and
 hypothesis extensions. -/
 structure InclusionParamDecl where
   /-- The name of the parameter. -/
   name : Name
   /-- The type of the parameter (as an expression). -/
   type : Expr
-  /-- The default value of the parameter (if `some`). -/
+  /-- The default value of the parameter, if present. -/
   defaultValue? : Option Expr := none
 
 /-- The collection of registered inclusion parameters, indexed by name. -/
@@ -127,8 +128,7 @@ structure InclusionParams where
 
 /-- If `name` is the name of an `InclusionParamDecl` `param` then return `some param`,
 otherwise return `none`. -/
-def InclusionParams.find? (params : InclusionParams) (name : Name) :
-    Option InclusionParamDecl :=
+def InclusionParams.find? (params : InclusionParams) (name : Name) : Option InclusionParamDecl :=
   params.decls.find? name
 
 /-- Evaluate the declaration `n` as an `InclusionParamDecl`. -/
@@ -136,6 +136,7 @@ def mkInclusionParamDecl (name : Name) : ImportM InclusionParamDecl := do
   let { env, opts, .. } ← read
   IO.ofExcept <| unsafe env.evalConstCheck InclusionParamDecl opts ``InclusionParamDecl name
 
+/-- Initialize the `InclusionParamExt` environment extension. -/
 initialize inclusionParamExt :
     ScopedEnvExtension Name (Name × InclusionParamDecl) InclusionParams ←
   registerScopedEnvExtension {

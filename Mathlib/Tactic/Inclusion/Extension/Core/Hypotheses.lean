@@ -32,7 +32,7 @@ meta def directMembershipHyp : HypothesisExt where
     if set.hasFVar || set.hasMVar then
       trace[Tactic.inclusion] "Ignoring non-closed direct hypothesis {type}"
       failure
-    let some iExpr ← requestedIVar? expr | return
-    addInclusionHyp iExpr ⟨set, h⟩
+    let some iVar ← findIVar? expr | return
+    addInclusionHyp iVar.iExpr ⟨set, h⟩
 
 end Inclusion

@@ -10,8 +10,8 @@ public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Basic
 /-!
 # Attributes for `inclusion` extensions
 
-This file defines the attributes used to register inclusion extensions, inclusion and hypothesis
-operations, hypothesis extensions, and inclusion parameters.
+This file defines the attributes used to register handwritten inclusion and hypothesis extensions,
+inclusion parameters, and theorem-generated inclusion and hypothesis operations.
 -/
 
 public meta section
@@ -19,6 +19,186 @@ public meta section
 open Lean Meta Elab Term DiscrTreeExt
 
 namespace Inclusion
+
+section Extension
+
+syntax (name := inclusionExtAttr) "inclusionExt " ident " | " term,+ : attr
+
+/-- Add the inclusion extension `declName` to `familyName` under `keys`. -/
+def addInclusionExt (familyName declName : Name) (keys : Array (Array DiscrTree.Key))
+    (kind : AttributeKind) : AttrM Unit := do
+  let family ← getInclusionFamily familyName
+  let ext ← evalDecl InclusionExt ``InclusionExt declName
+  family.inclusionExt.add ((keys, declName), ext) kind
+
+/-- The `inclusionExt` attribute registers a handwritten inclusion extension. -/
+initialize registerBuiltinAttribute {
+  name := `inclusionExtAttr
+  descr := "adds an inclusion-function extension"
+  applicationTime := .afterCompilation
+  add := fun declName stx kind => do
+    let env ← getEnv
+    if (IR.getSorryDep env declName).isSome then return
+    match stx with
+    | `(attr| inclusionExt $familyName:ident | $es,*) => do
+      unless (env.getModuleIdxFor? declName).isNone do
+        throwError "invalid attribute `inclusionExt`, declaration is in an imported module"
+      ensureAttrDeclIsMeta `inclusionExt declName kind
+      let keys ← elabExtKeys (es.getElems.map (·.raw))
+      addInclusionExt familyName.getId declName keys kind
+    | _ => throwUnsupportedSyntax
+  erase := fun _ => throwError "Inclusion extensions cannot be erased by declaration"
+}
+
+syntax (name := hypothesisExtAttr) "hypothesisExt " ident " | " term,+ : attr
+
+/-- Add the hypothesis extension `declName` to `familyName` under `keys`. -/
+def addHypothesisExt (familyName declName : Name) (keys : Array (Array DiscrTree.Key))
+    (kind : AttributeKind) : AttrM Unit := do
+  let family ← getInclusionFamily familyName
+  let ext ← evalDecl HypothesisExt ``HypothesisExt declName
+  family.hypothesisExt.add ((keys, declName), ext) kind
+
+/-- The `hypothesisExt` attribute registers a hypothesis extension. -/
+initialize registerBuiltinAttribute {
+  name := `hypothesisExtAttr
+  descr := "adds a hypothesis extension"
+  applicationTime := .afterCompilation
+  add := fun declName stx kind => do
+    let env ← getEnv
+    if (IR.getSorryDep env declName).isSome then return
+    match stx with
+    | `(attr| hypothesisExt $familyName:ident | $es,*) => do
+      unless (env.getModuleIdxFor? declName).isNone do
+        throwError "invalid attribute `hypothesisExt`, declaration is in an imported module"
+      ensureAttrDeclIsMeta `hypothesisExt declName kind
+      let keys ← elabExtKeys (es.getElems.map (·.raw))
+      addHypothesisExt familyName.getId declName keys kind
+    | _ => throwUnsupportedSyntax
+  erase := fun _ => throwError "Hypothesis extensions cannot be erased by declaration"
+}
+
+end Extension
+
+section Param
+
+syntax (name := inclusionParamAttr) "inclusionParam" : attr
+
+private def validateInclusionParamDecl (decl : InclusionParamDecl) : MetaM Unit := do
+  if decl.type.hasFVar || decl.type.hasMVar then
+    throwError "The type of inclusion parameter '{decl.name}' is not closed"
+  unless (← inferType decl.type).isSort do
+    throwError "The declared type {decl.type} of inclusion parameter '{decl.name}' is not a type"
+  if let some value := decl.defaultValue? then
+    if value.hasFVar || value.hasMVar then
+      throwError "The default value of inclusion parameter '{decl.name}' is not closed"
+    unless ← isDefEq (← inferType value) decl.type do
+      throwError "The default value {value} of inclusion parameter '{decl.name}' does not have \
+        type {decl.type}"
+
+/-- Add the inclusion parameter declared by `declName`. -/
+def addInclusionParam (declName : Name) (kind : AttributeKind) : AttrM Unit := do
+  let env ← getEnv
+  ensureAttrDeclIsMeta `inclusionParam declName kind
+  unless (env.getModuleIdxFor? declName).isNone do
+    throwError "invalid attribute `inclusionParam`, declaration is in an imported module"
+  if (IR.getSorryDep env declName).isSome then return
+  let decl ← mkInclusionParamDecl declName
+  MetaM.run' <| validateInclusionParamDecl decl
+  let params := inclusionParamExt.getState env
+  if params.decls.contains decl.name then
+    throwError "Inclusion parameter '{decl.name}' is already registered"
+  inclusionParamExt.add (declName, decl) kind
+
+/-- The `inclusionParam` attribute registers a typed inclusion-tactic parameter. -/
+initialize registerBuiltinAttribute {
+  name := `inclusionParamAttr
+  descr := "registers an inclusion-tactic parameter"
+  applicationTime := .afterCompilation
+  add := fun declName _ kind => addInclusionParam declName kind
+}
+
+end Param
+
+section Operation
+
+/-- The argument indices of an expression, its inclusion set, and its membership proof in an
+inclusion theorem. -/
+structure InclusionHypothesisArg where
+  /-- The index of the expression argument. -/
+  exprIdx : Nat
+  /-- The index of the inclusion-set argument. -/
+  setIdx : Nat
+  /-- The index of the membership-proof argument. -/
+  proofIdx : Nat
+  deriving Inhabited, ToExpr
+
+/-- A registered inclusion parameter and the index of its argument in an inclusion theorem. -/
+structure ParamArg where
+  /-- The name of the registered inclusion parameter. -/
+  name : Name
+  /-- The index of the corresponding theorem argument. -/
+  idx : Nat
+  deriving Inhabited, ToExpr
+
+/-- Apply the inclusion theorem `theoremName` to `e`, recursively constructing the inclusion bodies
+specified by `hypArgs` and filling the registered parameter arguments specified by `paramArgs`. -/
+def deriveInclusionOp (theoremName : Name) (hypArgs : Array InclusionHypothesisArg)
+    (paramArgs : Array ParamArg) (e : Expr) : InclusionM ExprInclusionBody := do
+  let theoremExpr ← mkConstWithFreshMVarLevels theoremName
+  let (args, binderInfos, conclusion) ← forallMetaTelescopeReducing (← inferType theoremExpr)
+  let some (expr, inclusionBody, _) := toSetMem? conclusion | failure
+  unless ← isDefEq expr e do failure
+  for ⟨name, idx⟩ in paramArgs do
+    unless ← isDefEq args[idx]! (← InclusionM.getParam name) do failure
+  for ⟨exprIdx, setIdx, proofIdx⟩ in hypArgs do
+    let arg ← instantiateMVars args[exprIdx]!
+    let body ← mkExprInclusionBody arg
+    unless ← isDefEq args[setIdx]! body.inclusionBody do failure
+    unless ← isDefEq args[proofIdx]! body.proofBody do failure
+  for h : i in [:args.size] do
+    let argId := args[i].mvarId!
+    unless ← argId.isAssigned do
+      if binderInfos[i]!.isInstImplicit then
+        argId.assign (← synthInstance (← argId.getType))
+      else
+        throwError "Could not infer theorem argument '{(← argId.getDecl).userName}' in inclusion \
+          extension generated from '{theoremName}'"
+  return ⟨← instantiateMVars inclusionBody, ← instantiateMVars (mkAppN theoremExpr args)⟩
+
+/-- Apply the hypothesis extension generated from `theoremName` to hypothesis `h`. -/
+def deriveHypothesisOp (theoremName : Name) (sourceIdx : Nat)
+    (hypArgs : Array InclusionHypothesisArg) (paramArgs : Array ParamArg)
+    (h : Expr) : HypothesisM Unit := do
+  let type ← instantiateMVars (← inferType h)
+  let theoremExpr ← mkConstWithFreshMVarLevels theoremName
+  let (args, binderInfos, conclusion) ← forallMetaTelescopeReducing (← inferType theoremExpr)
+  let sourceId := args[sourceIdx]!.mvarId!
+  unless ← isDefEq (← sourceId.getType) type do failure
+  sourceId.assign h
+  let some (outputExpr, outputSet, _) := toSetMem? conclusion | failure
+  let outputExpr ← instantiateMVars outputExpr
+  let some iVar ← findIVar? outputExpr | return
+  let iExpr := iVar.iExpr
+  for ⟨name, idx⟩ in paramArgs do
+    unless ← isDefEq args[idx]! (← HypothesisM.getParam name) do failure
+  for ⟨exprIdx, setIdx, proofIdx⟩ in hypArgs do
+    let inputExpr ← instantiateMVars args[exprIdx]!
+    let body ← mkHypExprInclusionBody inputExpr
+    unless ← isDefEq args[setIdx]! body.inclusionBody do failure
+    unless ← isDefEq args[proofIdx]! body.proofBody do failure
+  for h : i in [:args.size] do
+    let argId := args[i].mvarId!
+    unless ← argId.isAssigned do
+      if binderInfos[i]!.isInstImplicit then
+        argId.assign (← synthInstance (← argId.getType))
+      else
+        throwError "Could not infer theorem argument '{(← argId.getDecl).userName}' in hypothesis \
+          extension generated from '{theoremName}'"
+  let body :=
+    { inclusionBody := ← instantiateMVars outputSet
+      proofBody := ← instantiateMVars (mkAppN theoremExpr args) }
+  addInclusionHyp iExpr body
 
 private def analyzeTheoremArgs (declName : Name) (pattern outputSet : Expr)
     (args : Array Expr) (binderInfos : Array BinderInfo) (sourceIdx : Option Nat := none) :
@@ -83,18 +263,9 @@ private def analyzeTheoremArgs (declName : Name) (pattern outputSet : Expr)
           throwError "Unsupported premise '{argType}' in theorem '{declName}'"
   return (inputs, params)
 
-section InclusionExt
-
-syntax (name := inclusionExtAttr) "inclusionExt " ident " | " term,+ : attr
+section InclusionOp
 
 syntax (name := inclusionOpAttr) "inclusionOp " ident (prio)? : attr
-
-/-- Add the inclusion extension `declName` to `familyName` under `keys`. -/
-def addInclusionExt (familyName declName : Name) (keys : Array (Array DiscrTree.Key))
-    (kind : AttributeKind) : AttrM Unit := do
-  let family ← getInclusionFamily familyName
-  let ext ← evalDecl InclusionExt ``InclusionExt declName
-  family.inclusionExt.add ((keys, declName), ext) kind
 
 private def analyzeInclusionTheorem (declName : Name) :
     MetaM (Array DiscrTree.Key × Array InclusionHypothesisArg × Array ParamArg) := do
@@ -119,25 +290,6 @@ private def addInclusionOp (theoremName familyName : Name) (priority : Nat)
     addAndCompile (markMeta := true) (.defnDecl decl)
   addInclusionExt familyName declName #[path] kind
 
-/-- The `inclusionExt` attribute registers a handwritten inclusion extension. -/
-initialize registerBuiltinAttribute {
-  name := `inclusionExtAttr
-  descr := "adds an inclusion-function extension"
-  applicationTime := .afterCompilation
-  add := fun declName stx kind => do
-    let env ← getEnv
-    if (IR.getSorryDep env declName).isSome then return
-    match stx with
-    | `(attr| inclusionExt $familyName:ident | $es,*) => do
-      unless (env.getModuleIdxFor? declName).isNone do
-        throwError "invalid attribute `inclusionExt`, declaration is in an imported module"
-      ensureAttrDeclIsMeta `inclusionExt declName kind
-      let keys ← elabExtKeys (es.getElems.map (·.raw))
-      addInclusionExt familyName.getId declName keys kind
-    | _ => throwUnsupportedSyntax
-  erase := fun _ => throwError "Inclusion extensions cannot be erased by declaration"
-}
-
 /-- The `inclusionOp` attribute generates an inclusion extension from an inclusion theorem. -/
 initialize registerBuiltinAttribute {
   name := `inclusionOpAttr
@@ -152,20 +304,11 @@ initialize registerBuiltinAttribute {
   erase := fun _ => throwError "Inclusion operations cannot be erased by declaration"
 }
 
-end InclusionExt
+end InclusionOp
 
-section HypothesisExt
-
-syntax (name := hypothesisExtAttr) "hypothesisExt " ident " | " term,+ : attr
+section HypothesisOp
 
 syntax (name := hypothesisOpAttr) "hypothesisOp " ident (prio)? : attr
-
-/-- Add the hypothesis extension `declName` to `familyName` under `keys`. -/
-def addHypothesisExt (familyName declName : Name) (keys : Array (Array DiscrTree.Key))
-    (kind : AttributeKind) : AttrM Unit := do
-  let family ← getInclusionFamily familyName
-  let ext ← evalDecl HypothesisExt ``HypothesisExt declName
-  family.hypothesisExt.add ((keys, declName), ext) kind
 
 private def analyzeHypothesisTheorem (declName : Name) :
     MetaM (Array DiscrTree.Key × Nat × Array InclusionHypothesisArg × Array ParamArg) := do
@@ -209,25 +352,6 @@ private def addHypothesisOp (theoremName familyName : Name) (priority : Nat)
     addAndCompile (markMeta := true) (.defnDecl decl)
   addHypothesisExt familyName declName #[path] kind
 
-/-- The `hypothesisExt` attribute registers a hypothesis extension. -/
-initialize registerBuiltinAttribute {
-  name := `hypothesisExtAttr
-  descr := "adds a hypothesis extension"
-  applicationTime := .afterCompilation
-  add := fun declName stx kind => do
-    let env ← getEnv
-    if (IR.getSorryDep env declName).isSome then return
-    match stx with
-    | `(attr| hypothesisExt $familyName:ident | $es,*) => do
-      unless (env.getModuleIdxFor? declName).isNone do
-        throwError "invalid attribute `hypothesisExt`, declaration is in an imported module"
-      ensureAttrDeclIsMeta `hypothesisExt declName kind
-      let keys ← elabExtKeys (es.getElems.map (·.raw))
-      addHypothesisExt familyName.getId declName keys kind
-    | _ => throwUnsupportedSyntax
-  erase := fun _ => throwError "Hypothesis extensions cannot be erased by declaration"
-}
-
 /-- The `hypothesisOp` attribute generates a hypothesis extension from an inclusion theorem. -/
 initialize registerBuiltinAttribute {
   name := `hypothesisOpAttr
@@ -242,46 +366,8 @@ initialize registerBuiltinAttribute {
   erase := fun _ => throwError "Hypothesis operations cannot be erased by declaration"
 }
 
-end HypothesisExt
+end HypothesisOp
 
-section Param
-
-syntax (name := inclusionParamAttr) "inclusionParam" : attr
-
-private def validateInclusionParamDecl (decl : InclusionParamDecl) : MetaM Unit := do
-  if decl.type.hasFVar || decl.type.hasMVar then
-    throwError "The type of inclusion parameter '{decl.name}' is not closed"
-  unless (← inferType decl.type).isSort do
-    throwError "The declared type {decl.type} of inclusion parameter '{decl.name}' is not a type"
-  if let some value := decl.defaultValue? then
-    if value.hasFVar || value.hasMVar then
-      throwError "The default value of inclusion parameter '{decl.name}' is not closed"
-    unless ← isDefEq (← inferType value) decl.type do
-      throwError "The default value {value} of inclusion parameter '{decl.name}' does not have \
-        type {decl.type}"
-
-/-- Add the inclusion parameter declared by `declName`. -/
-def addInclusionParam (declName : Name) (kind : AttributeKind) : AttrM Unit := do
-  let env ← getEnv
-  ensureAttrDeclIsMeta `inclusionParam declName kind
-  unless (env.getModuleIdxFor? declName).isNone do
-    throwError "invalid attribute `inclusionParam`, declaration is in an imported module"
-  if (IR.getSorryDep env declName).isSome then return
-  let decl ← mkInclusionParamDecl declName
-  MetaM.run' <| validateInclusionParamDecl decl
-  let params := inclusionParamExt.getState env
-  if params.decls.contains decl.name then
-    throwError "Inclusion parameter '{decl.name}' is already registered"
-  inclusionParamExt.add (declName, decl) kind
-
-/-- The `inclusionParam` attribute registers a typed inclusion-tactic parameter. -/
-initialize registerBuiltinAttribute {
-  name := `inclusionParamAttr
-  descr := "registers an inclusion-tactic parameter"
-  applicationTime := .afterCompilation
-  add := fun declName _ kind => addInclusionParam declName kind
-}
-
-end Param
+end Operation
 
 end Inclusion

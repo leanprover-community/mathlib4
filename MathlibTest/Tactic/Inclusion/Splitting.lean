@@ -25,6 +25,7 @@ example {x : ℝ} (hx : x ∈ wideInterval) : x - x ≤ 1 := by
 
 /-- info: The inclusion check succeeded. -/
 #guard_msgs in
+set_option linter.unusedTactic false in
 example {x : ℝ} (hx : x ∈ wideInterval) : x - x ≤ 2 := by
   inclusion? [core, real.dyadic] (binSplit := 1)
   inclusion [core, real.dyadic] (binSplit := 1)

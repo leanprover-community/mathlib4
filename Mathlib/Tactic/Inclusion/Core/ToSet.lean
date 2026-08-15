@@ -117,7 +117,7 @@ theorem true_of_mem_intervalBool_eq_true {p : Prop} {b : IntervalBool} (hp : p �
     (hb : b = IntervalBool.true) : p :=
   true_of_mem_intervalBool_true (hb ▸ hp)
 
-/-- Return `true` when `IntervalBool = true` otherwise return `false`. -/
+/-- Return `true` exactly when the input is `IntervalBool.true`. -/
 def IntervalBool.isTrue : IntervalBool → Bool
   | .true => Bool.true
   | .false | .undetermined => Bool.false

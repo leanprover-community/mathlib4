@@ -14,6 +14,9 @@ def unitInterval : Interval Dyadic := ⟨1, 2⟩
 example : (1 : ℝ) + 2 ≤ 3 := by
   inclusion [core, real.dyadic]
 
+example : (1 : ℝ) + 2 ≤ 3 := by
+  inclusion [core, real.dyadic, core, real.dyadic]
+
 example : -(2 : ℝ) ≤ -1 := by
   inclusion [core, real.dyadic]
 
@@ -34,6 +37,7 @@ example : (1 : ℝ) ≤ 2 := by
 
 /-- info: The inclusion check succeeded. -/
 #guard_msgs in
+set_option linter.unusedTactic false in
 example : (1 : ℝ) ≤ 2 := by
   inclusion? [core, real.dyadic]
   inclusion [core, real.dyadic]
@@ -41,6 +45,7 @@ example : (1 : ℝ) ≤ 2 := by
 /-- info: The inclusion check failed:
 The proposition was not proven true or false. -/
 #guard_msgs in
+set_option linter.unusedTactic false in
 example (h : False) : (2 : ℝ) ≤ 1 := by
   inclusion? [core, real.dyadic]
   exact h.elim

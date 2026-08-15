@@ -12,18 +12,13 @@ public meta import Mathlib.Lean.Meta.Basic
 /-!
 # Constructing inclusions
 
-This file defines the two main drivers of the `inclusion` tactic.
+This file defines the main drivers of the `inclusion` tactic.
 
-Given an expression `e`
+Given an expression `e`, `mkExprInclusionBody` recursively applies `InclusionExt`s to construct an
+`ExprInclusionBody` for `e`. Then `toExprInclusion` applies `HypothesisExt`s to the local context to
+construct inclusion hypotheses for the body's inclusion variables and closes the body into an
+`ExprInclusion`.
 
-`mkExprInclusionBody` constructs an `ExprInclusionBody` for `e`, by
-(often recursively) matching and applying `InclusionExt`s to `e`.
-
-then
-
-`mkExprInclusion (e : Expr)` constructs an `ExprInclusion` for `e` from the
-body by constructing inclusion hypotheses for each of the `IVars` in the body
-by applying `HypothesisExt`s to local declarations, and then "closing" the body.
 -/
 
 public meta section
@@ -37,10 +32,10 @@ initialize registerTraceClass `Tactic.inclusion
 /-- Construct an `ExprInclusionBody` for `e`. -/
 def mkExprInclusionBody (e : Expr) : InclusionM ExprInclusionBody := do
   if let some iVar := (← get).iVars[e]? then
-    trace[Tactic.inclusion] "Reusing ivar for {e}"
+    trace[Tactic.inclusion] "Reusing inclusion variable for {e}"
     return iVar.toExprInclusionBody
-  let savedState ← saveState
   let matchedExts ← getInclusionExtMatches (← read).families e
+  let savedState ← saveState
   for (family, ext) in matchedExts do
     try
       let body ← ext.derive e
@@ -49,7 +44,7 @@ def mkExprInclusionBody (e : Expr) : InclusionM ExprInclusionBody := do
       return body
     catch err =>
       trace[Tactic.inclusion]
-        "Failed to apply [{family}] {ext.userName} to {e} : {err.toMessageData}"
+        "Failed to apply [{family}] {ext.userName} to {e}: {err.toMessageData}"
       restoreState savedState
   throwError "No inclusion extension applies to {e}"
 
@@ -74,7 +69,7 @@ def runHypothesisExts (h : Expr) : HypothesisM Unit := do
       trace[Tactic.inclusion] "[{family}] {ext.userName} processed {type}"
     catch err =>
       trace[Tactic.inclusion]
-        "Failed to apply [{family}] {ext.userName} to {type} : {err.toMessageData}"
+        "Failed to apply [{family}] {ext.userName} to {type}: {err.toMessageData}"
       restoreState saved
 
 /-- Run hypothesis extensions on all declarations in the local context. -/

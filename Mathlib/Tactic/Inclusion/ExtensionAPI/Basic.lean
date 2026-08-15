@@ -20,30 +20,35 @@ open Lean Meta
 
 namespace Inclusion
 
-private def getParamDecl (name : Name) : MetaM InclusionParamDecl := do
+/-- Return the value of parameter `name`, if it was supplied or has a default. -/
+def InclusionM.getParam? (name : Name) : InclusionM (Option Expr) := do
   let some decl := (inclusionParamExt.getState (← getEnv)).find? name
     | throwError "Unknown inclusion parameter '{name}'"
-  return decl
-
-private def InclusionM.Context.resolveParam? (context : InclusionM.Context) (name : Name) :
-    MetaM (Option Expr) := do
-  let decl ← getParamDecl name
-  if let some value := context.paramSettings.find? name then
+  if let some value := (← read).paramSettings.find? name then
     return some value
   return decl.defaultValue?
 
-section InclusionM
-
-/-- Return the value of parameter `name`, if it was supplied or has a default. -/
-def getParam? (name : Name) : InclusionM (Option Expr) := do
-  (← read).resolveParam? name
-
-/-- Return the value of parameter `name`, or report that it was not supplied. -/
-def getParam (name : Name) : InclusionM Expr := do
-  let some value ← getParam? name
+/-- Return the value of parameter `name`. -/
+def InclusionM.getParam (name : Name) : InclusionM Expr := do
+  let some value ← InclusionM.getParam? name
     | throwError "No value was supplied for inclusion parameter '{name}'"
   return value
 
+/-- Return the value of parameter `name`, if it was supplied or has a default. -/
+def HypothesisM.getParam? (name : Name) : HypothesisM (Option Expr) := do
+  let some decl := (inclusionParamExt.getState (← getEnv)).find? name
+    | throwError "Unknown inclusion parameter '{name}'"
+  if let some value := (← read).paramSettings.find? name then
+    return some value
+  return decl.defaultValue?
+
+/-- Return the value of parameter `name`, or report that it was not supplied. -/
+def HypothesisM.getParam (name : Name) : HypothesisM Expr := do
+  let some value ← HypothesisM.getParam? name
+    | throwError "No value was supplied for inclusion parameter '{name}'"
+  return value
+
+/-- Check that `iExpr` is well formed in `localContext`. -/
 private def checkIVarWellFormed (localContext : LocalContext) (iExpr : IExpr) : MetaM Unit := do
   let ⟨iType, e⟩ := iExpr
   unless ← MetavarContext.isWellFormed localContext e do
@@ -71,91 +76,22 @@ def mkIVar (iExpr : IExpr) (cover : Option Expr := none) : InclusionM IVar := do
   modify fun state => { state with iVars := state.iVars.insert iVar.expr iVar }
   return iVar
 
-/-- Construct an inclusion extension that treats matching expressions as inclusion variables.
-`mkSetType` chooses the computational set type from the inferred element type, and `mkCover` may
-attach a cover to the resulting inclusion variable. -/
-def mkIVarExt (mkSetType : Expr → InclusionM Expr)
+/-- Construct an inclusion extension for making non dependently typed inclusion variables. -/
+def mkNDIVarExt (iType : IType)
     (mkCover : IExpr → InclusionM (Option Expr) := fun _ ↦ pure none)
     (priority : Nat := eval_prio low) (name : Name := by exact decl_name%) : InclusionExt where
   declName := name
   userName := name
   priority := priority
   derive e := do
-    let elemType ← inferType e
-    let setType ← mkSetType elemType
-    let toSetInst ← synthInstance (← mkAppM ``ToSet #[setType, elemType])
-    let iExpr : IExpr := ⟨⟨elemType, setType, toSetInst⟩, e⟩
+    let eType ← inferType e
+    unless ← isDefEq eType iType.elemType do failure
+    let iExpr : IExpr := ⟨iType, e⟩
     return (← mkIVar iExpr (← mkCover iExpr)).toExprInclusionBody
 
-/-- Construct an inclusion extension for a nondependent inclusion variable with fixed element and
-represented-set types. -/
-def mkNDIVarExt (elemType : Expr) (setType : MetaM Expr)
-    (mkCover : IExpr → InclusionM (Option Expr) := fun _ ↦ pure none)
-    (priority : Nat := eval_prio low) (name : Name := by exact decl_name%) : InclusionExt :=
-  mkIVarExt
-    (fun actualType => do
-      unless ← isDefEq actualType elemType do failure
-      liftM setType)
-    mkCover (priority := priority) (name := name)
-
-structure InclusionHypothesisArg where
-  exprIdx : Nat
-  setIdx : Nat
-  proofIdx : Nat
-  deriving Inhabited, ToExpr
-
-structure ParamArg where
-  name : Name
-  idx : Nat
-  deriving Inhabited, ToExpr
-
-def deriveInclusionOp (theoremName : Name) (hypArgs : Array InclusionHypothesisArg)
-    (paramArgs : Array ParamArg) (e : Expr) : InclusionM ExprInclusionBody := do
-  let theoremExpr ← mkConstWithFreshMVarLevels theoremName
-  let (args, binderInfos, conclusion) ← forallMetaTelescopeReducing (← inferType theoremExpr)
-  let some (expr, inclusionBody, _) := toSetMem? conclusion | failure
-  unless ← isDefEq expr e do failure
-  for ⟨name, idx⟩ in paramArgs do
-    unless ← isDefEq args[idx]! (← getParam name) do failure
-  for ⟨exprIdx, setIdx, proofIdx⟩ in hypArgs do
-    let arg ← instantiateMVars args[exprIdx]!
-    let body ← mkExprInclusionBody arg
-    unless ← isDefEq args[setIdx]! body.inclusionBody do failure
-    unless ← isDefEq args[proofIdx]! body.proofBody do failure
-  for h : i in [:args.size] do
-    let argId := args[i].mvarId!
-    unless ← argId.isAssigned do
-      if binderInfos[i]!.isInstImplicit then
-        argId.assign (← synthInstance (← argId.getType))
-      else
-        throwError "Could not infer theorem argument '{(← argId.getDecl).userName}' in inclusion \
-          extension generated from '{theoremName}'"
-  return ⟨← instantiateMVars inclusionBody, ← instantiateMVars (mkAppN theoremExpr args)⟩
-
-end InclusionM
-
-section HypothesisM
-
-/-- Return the value of parameter `name`, or report that it was not supplied. -/
-def HypothesisM.getParam (name : Name) : HypothesisM Expr := do
-  let some value ← (← read).toContext.resolveParam? name
-    | throwError "No value was supplied for inclusion parameter '{name}'"
-  return value
-
-/-- Find the canonical goal inclusion variable definitionally equal to `e`. Exact expression
-matching is attempted first and does not invoke the elaborator. -/
-def requestedIVar? (e : Expr) : HypothesisM (Option IExpr) := do
-  -- Hypothesis processing uses the fixed collection of variables requested by the goal body.
-  let ctx ← read
-  -- Exact `ExprMap` lookup handles the overwhelmingly common case without unification.
-  if let some iVar := ctx.iVarsMap[e]? then
-    return some iVar.iExpr
-  -- Fall back to definitional equality when the hypothesis uses a reducibly different expression.
-  for iVar in ctx.iVars do
-    if ← pureIsDefEq e iVar.expr then
-      return some iVar.iExpr
-  -- Hypotheses about expressions not requested by the goal are irrelevant.
-  return none
+/-- Return the inclusion variable registered for `e`, if there is one. -/
+def findIVar? (e : Expr) : HypothesisM (Option IVar) := do
+  return (← read).iVarsMap[e]?
 
 /-- Check that two inclusion types are definitionally equal, including their chosen `ToSet`
 instances. -/
@@ -174,30 +110,20 @@ def ensureOutputType (actual expected : IType) : MetaM Unit := do
     -- Require the same interpretation so that the two membership propositions agree.
     throwError "Inclusion uses an unexpected `ToSet` instance"
 
-/-- Construct an inclusion body for a hypothesis endpoint using the same parameters as the goal
-computation. -/
-def mkHypInclusionBody (e : Expr) (expected : IType) : HypothesisM ExprInclusionBody := do
-  -- Read the fixed hypothesis context inherited from the enclosing goal computation.
+/-- Construct and validate an inclusion body for an expression argument of a hypothesis rule. -/
+def mkHypExprInclusionBody (e : Expr) : HypothesisM ExprInclusionBody := do
   let ctx ← read
-  -- Recursively construct the endpoint's inclusion body and retain the resulting inclusion state.
-  let (body, inclusionState) ←
-    (mkExprInclusionBody e).runWith ctx.toContext
-  -- Read the represented-set type and interpretation actually produced by the endpoint body.
-  let iType ← body.inferIType e
-  -- A hypothesis endpoint must close without introducing further unknown inclusion expressions.
+  let (body, inclusionState) ← (mkExprInclusionBody e).runWith ctx.toContext
   unless inclusionState.iVars.isEmpty do
     throwError "The inclusion for {e} depends on inclusion variables"
-  -- Ensure that its resulting set can be used as a hypothesis for the requested expression.
-  ensureOutputType iType expected
-  -- Any remaining free variable would escape from the eventual closed inclusion.
   if body.inclusionBody.hasFVar then
-    throwError "The computational inclusion for {e} contains a free variable"
-  -- Any remaining metavariable would leave the computational result under-specified.
+    throwError "The inclusion hypothesis generated from {e} contains a free variable"
   if body.inclusionBody.hasMVar then
-    throwError "The computational inclusion for {e} contains a metavariable"
+    throwError "The inclusion hypothesis generated from {e} contains a metavariable"
+  discard <| body.inferIType e
   return body
 
-/-- Validate and add an inclusion hypothesis body for a requested inclusion expression. -/
+/-- Add the inclusion hypothesis `body` for `iExpr`. -/
 def addInclusionHyp (iExpr : IExpr) (body : ExprInclusionBody) : HypothesisM Unit := do
   -- Reject candidates whose element type, represented-set type, or `ToSet` instance is unsuitable.
   ensureOutputType (← body.inferIType iExpr.expr) iExpr.iType
@@ -207,48 +133,5 @@ def addInclusionHyp (iExpr : IExpr) (body : ExprInclusionBody) : HypothesisM Uni
     | some hyps => hyps.push body
     -- Create the candidate array when this is the first useful hypothesis for the expression.
     | none => #[body] }
-
-/-- Apply the hypothesis extension generated from `theoremName` to hypothesis `h`. -/
-def deriveHypothesisOp (theoremName : Name) (sourceIdx : Nat)
-    (hypArgs : Array InclusionHypothesisArg) (paramArgs : Array ParamArg)
-    (h : Expr) : HypothesisM Unit := do
-  let type ← instantiateMVars (← inferType h)
-  let theoremExpr ← mkConstWithFreshMVarLevels theoremName
-  let (args, binderInfos, conclusion) ← forallMetaTelescopeReducing (← inferType theoremExpr)
-  let sourceId := args[sourceIdx]!.mvarId!
-  unless ← isDefEq (← sourceId.getType) type do failure
-  sourceId.assign h
-  let some (outputExpr, outputSet, outputToSetInst) := toSetMem? conclusion | failure
-  let outputExpr ← instantiateMVars outputExpr
-  let some iExpr ← requestedIVar? outputExpr | return
-  for ⟨name, idx⟩ in paramArgs do
-    unless ← isDefEq args[idx]! (← HypothesisM.getParam name) do failure
-  unless ← isDefEq (← inferType outputExpr) iExpr.iType.elemType do failure
-  unless ← isDefEq (← inferType outputSet) iExpr.iType.setType do failure
-  unless ← isDefEq outputToSetInst iExpr.iType.toSetInst do failure
-  for ⟨exprIdx, setIdx, proofIdx⟩ in hypArgs do
-    let inputExpr ← instantiateMVars args[exprIdx]!
-    let inputSet ← instantiateMVars args[setIdx]!
-    let proofType ← instantiateMVars (← args[proofIdx]!.mvarId!.getType)
-    let some (_, _, inputToSetInst) := toSetMem? proofType | failure
-    let expected : IType :=
-      ⟨← inferType inputExpr, ← inferType inputSet, inputToSetInst⟩
-    let body ← mkHypInclusionBody inputExpr expected
-    unless ← isDefEq args[setIdx]! body.inclusionBody do failure
-    unless ← isDefEq args[proofIdx]! body.proofBody do failure
-  for h : i in [:args.size] do
-    let argId := args[i].mvarId!
-    unless ← argId.isAssigned do
-      if binderInfos[i]!.isInstImplicit then
-        argId.assign (← synthInstance (← argId.getType))
-      else
-        throwError "Could not infer theorem argument '{(← argId.getDecl).userName}' in hypothesis \
-          extension generated from '{theoremName}'"
-  let body :=
-    { inclusionBody := ← instantiateMVars outputSet
-      proofBody := ← instantiateMVars (mkAppN theoremExpr args) }
-  addInclusionHyp iExpr body
-
-end HypothesisM
 
 end Inclusion
