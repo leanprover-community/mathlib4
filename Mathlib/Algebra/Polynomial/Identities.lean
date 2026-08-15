@@ -79,14 +79,14 @@ the evaluation of `f` at `x`, plus `y` times the (polynomial) derivative of `f` 
 plus some element `k : R` times `y^2`.
 -/
 def binomExpansion (f : R[X]) (x y : R) :
-    { k : R // f.eval (x + y) = f.eval x + f.derivative.eval x * y + k * y ^ 2 } := by
-  exists f.sum fun e a => a * (polyBinomAux1 x y e a).val
-  rw [poly_binom_aux3]
-  congr
-  · rw [← eval_eq_sum]
-  · rw [derivative_eval]
-    exact (Finset.sum_mul ..).symm
-  · exact (Finset.sum_mul ..).symm
+    { k : R // f.eval (x + y) = f.eval x + f.derivative.eval x * y + k * y ^ 2 } :=
+  ⟨f.sum fun e a => a * (polyBinomAux1 x y e a).val, by
+    rw [poly_binom_aux3]
+    congr
+    · rw [← eval_eq_sum]
+    · rw [derivative_eval]
+      exact (Finset.sum_mul ..).symm
+    · exact (Finset.sum_mul ..).symm⟩
 
 /-- `x^n - y^n` can be expressed as `z * (x - y)` for some `z` in the ring.
 -/
