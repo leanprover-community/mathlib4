@@ -722,10 +722,10 @@ of subgroups whose orders divide `p ^ n` can be completed to a tower of subgroup
 `p ^ 0, …, p ^ n`. -/
 theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
     (hdvd : p ^ n ∣ Nat.card G) {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s)
-    (hcard : ∀ g ∈ s, Nat.card g ∣ p ^ n) :
+    (hcard : ∀ H ∈ s, Nat.card H ∣ p ^ n) :
     ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧ ∀ k, Nat.card (f k) = p ^ k.val := by
   suffices ∀ (n : ℕ) (H : Subgroup G) (hdvd : p ^ n ∣ Nat.card H) (s : Set (Subgroup G))
-      (hchain : IsChain (· ≤ ·) s) (hcard : ∀ t ∈ s, Nat.card t ∣ p ^ n) (hle : ∀ t ∈ s, t ≤ H),
+      (hchain : IsChain (· ≤ ·) s) (hcard : ∀ K ∈ s, Nat.card K ∣ p ^ n) (hle : ∀ K ∈ s, K ≤ H),
       ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧
         ∀ k, Nat.card (f k) = p ^ k.val ∧ f k ≤ H by
     obtain ⟨f, hf⟩ := this n ⊤ (by simpa) s hchain hcard (by simp)
@@ -736,37 +736,37 @@ theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
   induction n generalizing H s with
   | zero => exact ⟨.ofStrictMono ![⊥] (by simp), by simpa using hcard⟩
   | succ n ih =>
-    have h : ∃ t ≤ H, Nat.card t ∣ p ^ (n + 1) ∧ ∀ g ∈ s, g ≤ t := by
+    have h : ∃ T ≤ H, Nat.card T ∣ p ^ (n + 1) ∧ ∀ K ∈ s, K ≤ T := by
       let : LinearOrder s := hchain.linearOrder
       by_cases! h : Nonempty s
       · obtain ⟨⟨t, hts⟩, ht⟩ := Finite.exists_max (fun x : s ↦ x)
         exact ⟨t, hle t hts, hcard t hts, fun g hg ↦ ht ⟨g, hg⟩⟩
       · exact ⟨⊥, by simp [s.eq_empty_of_isEmpty]⟩
-    obtain ⟨t, htH, htcard, hst⟩ : ∃ t ≤ H, Nat.card t = p ^ (n + 1) ∧ ∀ g ∈ s, g ≤ t := by
-      obtain ⟨t, htH, htcard, hst⟩ := h
-      obtain ⟨t, hcardt, hlet, htle⟩ := exists_subgroup_card_pow_prime_le_le hp htcard hdvd htH
-      exact ⟨t, htle, hcardt, fun g hg ↦ (hst g hg).trans hlet⟩
-    have hcard' (g : Subgroup G) (hg : g ∈ s \ {t}) : Nat.card g ∣ p ^ n := by
-      obtain ⟨m, hmn, hm⟩ := (Nat.dvd_prime_pow hp).mp (hcard g hg.1)
-      have hlt : Nat.card g < Nat.card t := card_lt_of_lt <| (hst g hg.1).lt_of_ne hg.2
-      rw [hm, htcard, pow_lt_pow_iff_right₀ hp.one_lt, Nat.lt_add_one_iff] at hlt
+    obtain ⟨T, hTH, hTcard, hsT⟩ : ∃ t ≤ H, Nat.card t = p ^ (n + 1) ∧ ∀ K ∈ s, K ≤ t := by
+      obtain ⟨T, hTH, hTcard, hsT⟩ := h
+      obtain ⟨T, hcardT, hleT, hTle⟩ := exists_subgroup_card_pow_prime_le_le hp hTcard hdvd hTH
+      exact ⟨T, hTle, hcardT, fun g hg ↦ (hsT g hg).trans hleT⟩
+    have hcard' (K : Subgroup G) (hg : K ∈ s \ {T}) : Nat.card K ∣ p ^ n := by
+      obtain ⟨m, hmn, hm⟩ := (Nat.dvd_prime_pow hp).mp (hcard K hg.1)
+      have hlt : Nat.card K < Nat.card T := card_lt_of_lt <| (hsT K hg.1).lt_of_ne hg.2
+      rw [hm, hTcard, pow_lt_pow_iff_right₀ hp.one_lt, Nat.lt_add_one_iff] at hlt
       exact hm ▸ pow_dvd_pow p hlt
-    obtain ⟨f', hsf', hf'⟩ := ih t (by simp [htcard, pow_add]) (s \ {t})
-      (hchain.mono Set.sdiff_subset) hcard' fun g hg ↦ hst g hg.1
-    have hf : StrictMono (Fin.snoc f' t) := fun x y h ↦ by
+    obtain ⟨f', hsf', hf'⟩ := ih T (by simp [hTcard, pow_add]) (s \ {T})
+      (hchain.mono Set.sdiff_subset) hcard' fun g hg ↦ hsT g hg.1
+    have hf : StrictMono (Fin.snoc f' T) := fun x y h ↦ by
       obtain ⟨x, rfl⟩ := Fin.exists_castSucc_eq.mpr (Fin.ne_last_of_lt h)
       rcases y.eq_castSucc_or_eq_last with ⟨y, rfl⟩ | rfl
       · simpa
       · rw [Fin.snoc_castSucc, Fin.snoc_last]
         apply lt_of_le_of_ne (hf' x).2
         grind [Nat.pow_right_inj hp.one_lt]
-    refine ⟨.ofStrictMono (Fin.snoc f' t) hf, fun g hg ↦ ?_, fun x ↦ ?_⟩
+    refine ⟨.ofStrictMono (Fin.snoc f' T) hf, fun K hK ↦ ?_, fun x ↦ ?_⟩
     · rw [Set.sdiff_subset_iff, Set.singleton_union] at hsf'
       rw [OrderEmbedding.coe_ofStrictMono, Fin.range_snoc]
-      exact hsf' hg
+      exact hsf' hK
     · rcases x.eq_castSucc_or_eq_last with ⟨x, rfl⟩ | rfl
-      · simp [(hf' x).1, (hf' x).2.trans htH]
-      · simp [htcard, htH]
+      · simp [(hf' x).1, (hf' x).2.trans hTH]
+      · simp [hTcard, hTH]
 
 /-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the order of the group, then
 there is a tower of subgroups of orders `p ^ 0, …, p ^ n`. -/
