@@ -20,7 +20,7 @@ quotient `R ⧸ I` is finite.
 - `Ring.HasFiniteQuotients.instIsNoetherianRing` : A ring with finite quotients is noetherian.
 - `Ring.HasFiniteQuotients.of_module_finite`: Assume that `R` has finite quotients and that `S` is
   a domain and a finite `R`-module. Then `S` has finite quotients.
-- `Ring.HasFiniteQuotients.of_moduleFinite_int`: A domain that is a finite `ℤ`-module has finite
+- `Ring.HasFiniteQuotients.of_module_finite_int`: A domain that is a finite `ℤ`-module has finite
   quotients.
 
 -/
@@ -102,7 +102,7 @@ instance : HasFiniteQuotients ℤ where
 
 /-- A domain that is a finite `ℤ`-module has finite quotients.
 This cannot be an instance since it is very slow to fail. -/
-theorem of_moduleFinite_int [IsDomain R] [Module.Finite ℤ R] : HasFiniteQuotients R :=
+theorem of_module_finite_int [IsDomain R] [Module.Finite ℤ R] : HasFiniteQuotients R :=
   .of_module_finite ℤ R
 
 end Ring.HasFiniteQuotients
