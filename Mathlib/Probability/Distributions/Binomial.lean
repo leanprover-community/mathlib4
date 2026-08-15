@@ -10,11 +10,6 @@ public import Mathlib.Probability.Distributions.SetBernoulli
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Order.Interval.Set.Nat
-public import Mathlib.Probability.Distributions.Bernoulli
-public import Mathlib.Probability.Distributions.SetBernoulli
-
-import Mathlib.MeasureTheory.MeasurableSpace.NCard
-import Mathlib.Order.Interval.Set.Nat
 import Mathlib.RingTheory.Polynomial.Bernstein
 
 /-!
