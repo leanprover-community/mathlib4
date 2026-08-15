@@ -16,7 +16,7 @@ hypergeometric function.
 The hypergeometric function is a function with parameters `a : Fin p → ℂ` and `b : Fin q → ℂ`.
 
 Note that in this file, we use the *regularized* version of the hypergeometric function, that is
-the coefficients are divides by `∏ i, Gamma (b i)`, giving in the case of the Gaussian
+the coefficients are divided by `∏ i, Gamma (b i)`, giving in the case of the Gaussian
 hypergeometric function the series representation
 $$\sum_j \frac{(a)^n (b)^n}{\Gamma(c + n) n!} z^ n,$$
 where `(a)^n` denotes the rising Pochhammer symbol.
