@@ -268,14 +268,14 @@ theorem helly_theorem_set_compact [TopologicalSpace E] [T2Space E] {F : Set (Set
     (⋂₀ (F : Set (Set E))).Nonempty := by
   apply helly_theorem_set_compact' h_convex h_compact
   intro I hI_ss hI_card
-  obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_superset_subset_encard_eq hI_ss (hkt := h_card)
-    (by simpa only [encard_coe_eq_coe_finsetCard, ← ENat.coe_one, ← ENat.coe_add, Nat.cast_le])
+  obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_superset_subset_encard_eq hI_ss (by norm_cast) h_card
   apply Set.Nonempty.mono <| sInter_mono (by simpa [hI_ss])
   have hJ_fin : Fintype J := Finite.fintype <| finite_of_encard_eq_coe hJ_card
   let J' := J.toFinset
   rw [← coe_toFinset J]
   apply h_inter J'
   · simpa [J']
-  · rwa [encard_eq_coe_toFinset_card J, ← ENat.coe_one, ← ENat.coe_add, Nat.cast_inj] at hJ_card
+  · rwa [encard_eq_coe_toFinset_card J, ← ENat.natCast_one, ← ENat.natCast_add, Nat.cast_inj]
+      at hJ_card
 
 end Convex

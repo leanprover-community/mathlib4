@@ -87,7 +87,7 @@ instance : CompactSpace (T.CompleteType α) := by
       have subset : (x : Set _) ⊆ T.toTheory := by rwa [Set.mem_iInter₂] at T_inter
       exact T.isMaximal.1.mono subset
     · intro φ
-      simp only [mem_setOf_eq, typesWith_not]
+      simp only [mem_ofPred_eq, typesWith_not]
       exact Ultrafilter.mem_or_compl_mem F (T.typesWith φ)
   · refine ⟨mem_univ _, ?_⟩
     · rw [nhds_generateFrom]

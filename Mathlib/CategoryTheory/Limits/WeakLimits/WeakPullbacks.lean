@@ -12,8 +12,8 @@ public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakEqualizers
 
 These are weak limits for diagrams of shape `WalkingCospan`.
 
-If a category has binary products and weak equalizers, then it has weak kernels
-(see `hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakKernels`).
+If a category has binary products and weak equalizers, then it has weak pullbacks
+(see `hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakEqualizers`).
 
 -/
 
@@ -23,7 +23,7 @@ universe u v w
 
 noncomputable section
 
-open CategoryTheory Category Limits
+open CategoryTheory
 
 variable {C : Type*} [Category* C]
 
@@ -211,7 +211,7 @@ def weakPullbackIsWeakPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakP
 
 variable (C)
 
-/-- A category `HasPullbacks` if it has all weak limits of shape `WalkingCospan`, i.e. if it
+/-- A category `HasWeakPullbacks` if it has all weak limits of shape `WalkingCospan`, i.e. if it
 has a weak pullback for every pair of morphisms with the same codomain. -/
 abbrev HasWeakPullbacks :=
   HasWeakLimitsOfShape WalkingCospan C
@@ -221,7 +221,6 @@ instance (priority := 100) HasWeakPullbacksOfHasPullbacks [HasPullbacks C] :
 
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the product `X ⨯ Y` and the weak equalizer of `π₁ ≫ f` and `π₂ ≫ g` exist, then the
 weak pullback of `f` and `g` exists: it is given by composing the equalizer with the projections. -/
 theorem hasWeakLimit_cospan_of_hasLimit_pair_of_hasWeakLimit_parallelPair [HasLimit (pair X Y)]
@@ -242,7 +241,7 @@ attribute [local instance] hasWeakLimit_cospan_of_hasLimit_pair_of_hasWeakLimit_
 /-- If a category has all binary products and all weak equalizers, then it also has all
 weak pullbacks. As usual, this is not an instance, since there may be a more direct way to
 construct weak pullbacks. -/
-theorem hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakKernels
+theorem hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakEqualizers
     [HasBinaryProducts C] [HasWeakEqualizers C] : HasWeakPullbacks C where
   hasWeakLimit F := hasWeakLimit_of_iso (diagramIsoCospan F).symm
 

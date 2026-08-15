@@ -100,6 +100,7 @@ abbrev diag : TopCat.{u} ⥤ TopPair.{u} where
   obj X := TopPair.of (𝟙 X) Topology.IsEmbedding.id
   map f := TopPair.ofHom f f
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The inclusion functor is left adjoint to the projection to the first component. -/
 @[simps]
@@ -130,6 +131,9 @@ structure Homotopy (f g : X ⟶ Y) where
   /-- The proof that the homotopies fit into a commutative square with the maps of the pairs. -/
   w : X.map ▷ _ ≫ fst.h = snd.h ≫ Y.map := by cat_disch
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [reassoc, elementwise] Homotopy.w
 attribute [local simp] Homotopy.w Homotopy.w_apply
 
@@ -152,6 +156,7 @@ def refl (f : X ⟶ Y) : Homotopy f f where
 instance : Inhabited (Homotopy (𝟙 X) (𝟙 X)) :=
   ⟨Homotopy.refl _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a `Homotopy f₀ f₁`, we can define a `Homotopy f₁ f₀` by `TopCat.Homotopy.symm` on
 the first and second components.
 -/
@@ -168,6 +173,7 @@ theorem symm_bijective {f₀ f₁ : X ⟶ Y} :
     Function.Bijective (Homotopy.symm : Homotopy f₀ f₁ → Homotopy f₁ f₀) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given `Homotopy f₀ f₁` and `Homotopy f₁ f₂`, we can define a `Homotopy f₀ f₂` by
 `TopCat.Homotopy.trans` on the first and second components.
