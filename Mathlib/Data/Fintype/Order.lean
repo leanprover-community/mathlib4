@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Finite.Basic  -- shake: keep (IsAtomic α), cf. lean#13417
-public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Atoms
 
 import Mathlib.Data.Finite.Prod
@@ -96,11 +95,11 @@ noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : Complete
   isLUB_sSup s := Set.coe_toFinset s ▸ Finset.isLUB_sup_id
   isGLB_sInf s := Set.coe_toFinset s ▸ Finset.isGLB_inf_id
 
+attribute [local instance] toCompleteLattice in
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
 noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice.MinimalAxioms α where
-  __ := toCompleteLattice α
   iInf_sup_le_sup_sInf := fun a s => by
     convert! (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
     rw [Finset.inf_eq_iInf]
@@ -112,6 +111,7 @@ noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [
     simp_rw [Set.mem_toFinset]
     rfl
 
+attribute [local instance] toCompleteLattice in
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
 noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :

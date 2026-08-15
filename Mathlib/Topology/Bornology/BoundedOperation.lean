@@ -162,7 +162,7 @@ lemma SeminormedAddCommGroup.lipschitzWith_sub :
 
 instance : BoundedSub R := boundedSub_of_lipschitzWith_sub SeminormedAddCommGroup.lipschitzWith_sub
 
-open Filter Pointwise Bornology
+open Filter Bornology
 
 /-
 TODO:
