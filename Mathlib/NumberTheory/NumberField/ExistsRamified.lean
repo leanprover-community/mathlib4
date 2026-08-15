@@ -21,37 +21,6 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 -/
 public section
 
-section
-
--- PRed
-open Pointwise in
-instance (G R : Type*) [Group G] [CommRing R] [MulSemiringAction G R] :
-    MulAction G (PrimeSpectrum R) where
-  smul g P := ⟨g • P, P.2.smul g⟩
-  mul_smul g h P := PrimeSpectrum.ext (mul_smul g h P.1)
-  one_smul P := PrimeSpectrum.ext (one_smul G P.1)
-
-end
-
-section
-
--- PRed
-theorem Ideal.mem_inertia {G R : Type*} [Group G] [CommRing R] [MulSemiringAction G R]
-    {g : G} {I : Ideal R} : g ∈ I.inertia G ↔ ∀ x, g • x - x ∈ I :=
-  AddSubgroup.mem_inertia
-
--- PRed
-open Pointwise
-theorem Ideal.inertia_smul {G R : Type*} [Group G] [CommRing R] [MulSemiringAction G R]
-    (g : G) (I : Ideal R) : (g • I).inertia G = (I.inertia G).map (MulAut.conj g) := by
-  ext x
-  simp_rw [Subgroup.map_equiv_eq_comap_symm, Subgroup.mem_comap, MonoidHom.coe_coe,
-    MulAut.conj_symm_apply, Ideal.mem_inertia, Ideal.mem_pointwise_smul_iff_inv_smul_mem]
-  rw [← (MulAction.toPerm g).forall_congr_right]
-  simp [mul_smul, smul_sub]
-
-end
-
 open scoped nonZeroDivisors
 
 variable {K 𝒪 : Type*} [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]
@@ -150,7 +119,7 @@ theorem supr_inertia_primeSpectrum_eq_top (S G : Type*) [CommRing S] [Module.Fin
       fixingSubgroup_range_algebraMap G ℤ R S H]
   refine Algebra.unramified_iff_forall.mpr fun ⟨mR, hmR⟩ ↦ ?_
   obtain ⟨mS, hmS, hmRS⟩ := (inferInstance : (Nonempty (mR.primesOver S)))
-  rw [← ramificationIdx'_eq_one_iff, ← ramificationIdxIn_eq_ramificationIdx (mR.under ℤ) mR (G ⧸ H),
+  rw [← ramificationIdx_eq_one_iff, ← ramificationIdxIn_eq_ramificationIdx (mR.under ℤ) mR (G ⧸ H),
     ← card_inertia_eq_ramificationIdxIn (mR.under ℤ) mR (G := G ⧸ H), Subgroup.card_eq_one,
     inertia_quotient H mR mS, Subgroup.map_eq_bot_iff, QuotientGroup.ker_mk']
   exact le_iSup f ⟨mS, hmS⟩
