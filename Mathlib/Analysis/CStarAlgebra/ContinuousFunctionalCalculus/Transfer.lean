@@ -47,7 +47,6 @@ lemma continuous_cfcHomTransfer (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (
     (b : B) (hb : q b) (he : Continuous e) : Continuous (cfcHomTransfer e hpq b hb) := by
   simpa [cfcHomTransfer, Function.comp_def] using by fun_prop
 
-omit [TopologicalSpace B] in
 open ContinuousFunctionalCalculus in
 /-- Transfer a continuous functional calculus instance to a type synonym with
 a weaker topology. -/
