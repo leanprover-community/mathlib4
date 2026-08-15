@@ -9,6 +9,8 @@ public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Data.Rat.NatSqrt.Defs
 
 /-!
+# Rational approximations to square roots of naturals
+
 Comparisons between rational approximations to the square root of a natural number
 and the real square root.
 -/

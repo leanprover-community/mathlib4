@@ -44,7 +44,7 @@ Plenty of the results hold for general finitely generated modules (see
 
 universe u v v' w
 
-open Cardinal Function IsNoetherian Module Submodule
+open Cardinal Function Module Submodule
 
 variable {K : Type u} {V : Type v}
 
@@ -124,7 +124,6 @@ theorem exists_relation_sum_zero_pos_coefficient_of_finrank_succ_lt_card [Finite
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a vector space with dimension 1, each set `{v}` is a basis for `v ≠ 0`. -/
 @[simps repr_apply]
 noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V)
@@ -148,7 +147,6 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
         exact mul_div_cancel_right₀ _ h }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basisSingleton_apply (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V) (hv : v ≠ 0)
     (i : ι) : basisSingleton ι h v hv i = v := by
@@ -186,7 +184,7 @@ end ZeroRank
 
 namespace Submodule
 
-open IsNoetherian Module
+open Module
 
 section DivisionRing
 
@@ -624,8 +622,6 @@ end finrank_eq_one
 end DivisionRing
 
 section SubalgebraRank
-
-open Module
 
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
 
