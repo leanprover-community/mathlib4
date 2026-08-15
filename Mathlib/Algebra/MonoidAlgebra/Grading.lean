@@ -197,16 +197,16 @@ variable [DecidableEq M]
 /-- Projection onto degree `a` extracts the corresponding term. -/
 @[simp] lemma proj_grade_apply
   (f : AddMonoidAlgebra R M) (a : M) :
-    GradedRing.proj (grade R) a f = single a (f a) := by
+    GradedRing.proj (grade R) a f = single a (f.coeff a) := by
   induction f using induction_linear with
   | zero =>
     rw [map_zero]
-    exact (Finsupp.single_zero a).symm
+    exact (single_zero a).symm
   | add x y hx hy =>
     rw [map_add, hx, hy]
-    exact (single_add a (x a) (y a)).symm
+    exact (single_add a (x.coeff a) (y.coeff a)).symm
   | single b r =>
-    rw [proj_grade_single, single_apply]
+    rw [proj_grade_single, coeff_single, Finsupp.single_apply]
     split_ifs
     · congr
     · rw [single_zero]
