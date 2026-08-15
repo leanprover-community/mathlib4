@@ -28,9 +28,6 @@ lemma Finite.sigma (hs : s.Finite) (ht : ∀ i ∈ s, (t i).Finite) :
   lift s to Finset ι using hs
   classical
   apply Finite.ofFinset <| s.sigma fun i ↦ if h : i ∈ s then (ht i h).toFinset else ∅
-  intro ⟨i, k⟩
-  simp only [mem_sigma, mem_sigma_iff, SetLike.mem_coe, and_congr_right_iff]
-  intro h
-  simp [dif_pos h]
+  simp +contextual
 
 end Set
