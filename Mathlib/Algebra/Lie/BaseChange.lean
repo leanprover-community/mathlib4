@@ -60,6 +60,7 @@ private theorem bracket_def (x : A ⊗[R] L) (m : A ⊗[R] M) : ⁅x, m⁆ = bra
 @[simp]
 theorem bracket_tmul (s t : A) (x : L) (y : M) : ⁅s ⊗ₜ[R] x, t ⊗ₜ[R] y⁆ = (s * t) ⊗ₜ ⁅x, y⁆ := rfl
 
+set_option backward.privateInPublic true in
 private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
   simp only [bracket_def]
   refine x.induction_on ?_ ?_ ?_
@@ -82,6 +83,7 @@ private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
     · intro y₁ y₂ hy₁ hy₂
       simp only [add_add_add_comm, hy₁, hy₂, add_zero, LinearMap.add_apply, map_add]
 
+set_option backward.privateInPublic true in
 private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
     ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆ := by
   simp only [bracket_def]

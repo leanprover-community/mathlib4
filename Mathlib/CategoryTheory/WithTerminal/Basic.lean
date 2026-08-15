@@ -469,6 +469,8 @@ private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
   | some x, none
   | none, none => rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- In the case of a discrete category, `WithTerminal` is the same category as `WidePullbackShape`
 
 TODO: Should we simply replace `WidePullbackShape J` with `WithTerminal (Discrete J)` everywhere? -/

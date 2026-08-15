@@ -213,6 +213,8 @@ private noncomputable def lift₂Aux (z : Σ i, F₁ i) (w : Σ i, F₂ i) :
   have ⟨i, hji, hki⟩ := exists_ge_ge j k
   simp_rw [compat _ _ hji, compat _ _ hki, map_map']
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- To define a binary function from the direct limit, it suffices to provide one binary function
 from each component subject to a compatibility condition. -/
 protected noncomputable def lift₂ (z : DirectLimit F₁ f₁) (w : DirectLimit F₂ f₂) : C :=

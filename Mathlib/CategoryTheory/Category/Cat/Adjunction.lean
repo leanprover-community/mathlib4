@@ -46,6 +46,8 @@ private def typeToCatObjectsAdjCounitApp : (Cat.objects ⋙ typeToCat).obj C ⥤
   map := eqToHom ∘ Discrete.eq_of_hom
 
 set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `typeToCat : Type ⥤ Cat` is left adjoint to `Cat.objects : Cat ⥤ Type` -/
 def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
   Adjunction.mk' {

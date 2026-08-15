@@ -112,6 +112,7 @@ variable {α β : Type*}
 section SemilatticeSup
 variable [SemilatticeSup α] [SemilatticeSup β] [BoundedOrder β] {s t : Finset α} {a : α}
 
+set_option backward.privateInPublic true in
 private lemma sup_aux [DecidableLE α] : a ∈ lowerClosure s → {b ∈ s | a ≤ b}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
@@ -182,6 +183,7 @@ section SemilatticeInf
 variable [SemilatticeInf α] [SemilatticeInf β]
   [BoundedOrder β] [DecidableLE β] {s t : Finset α} {a : α}
 
+set_option backward.privateInPublic true in
 private lemma inf_aux [DecidableLE α] : a ∈ upperClosure s → {b ∈ s | b ≤ a}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 

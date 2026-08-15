@@ -112,6 +112,8 @@ noncomputable abbrev toSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosS
     SeminormedAddCommGroup (n → 𝕜) :=
   @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.preInnerProductSpace
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
 noncomputable abbrev toNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :
     NormedAddCommGroup (n → 𝕜) :=

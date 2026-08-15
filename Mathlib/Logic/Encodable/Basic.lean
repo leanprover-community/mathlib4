@@ -493,6 +493,8 @@ open Encodable
 
 variable {p}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Constructive choice function for a decidable subtype of an encodable type. -/
 def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   have : ∃ n, good p (decode n) :=

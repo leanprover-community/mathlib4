@@ -85,6 +85,8 @@ private def inv : QuaternionGroup n → QuaternionGroup n
   | a i => a (-i)
   | xa i => xa (n + i)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The group structure on `QuaternionGroup n`.
 -/
 instance : Group (QuaternionGroup n) where
