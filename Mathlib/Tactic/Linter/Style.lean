@@ -6,13 +6,13 @@ Authors: Michael Rothgang
 module
 
 public meta import Lean.Elab.Command
-public meta import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Command
 public import Mathlib.Tactic.DeclarationNames
 public import Batteries.Tactic.Lint.Basic
+public import Lean.Parser.Module
 
 /-!
 ## Style linters
@@ -554,12 +554,15 @@ such names violate the naming convention. -/
   noErrorsFound := "no definitions with an underscore in their name found."
   errorsFound := "FOUND definitions with an underscore in their name."
   test declName := do
-    unless ((← getEnv).find? declName).get!.isDefinition && !(← isAutoDecl declName) do return none
+    unless ((← getEnv).find? declName).get!.isDefinition &&
+        -- TODO: lint private definitions with underscores for readability.
+        !(← isPrivateOrAutoDecl declName) do
+      return none
     -- We also exclude simprocs: these should be named like normal lemmas.
     -- check if their type is `Lean.Meta.Simp.Simproc`.
     if ((← getEnv).find? declName).get!.type.isConstOf `Lean.Meta.Simp.Simproc then return none
     if isBadNameWithUnderscore declName then
-      return m!"The definition `{declName}` contains an underscore. \
+      return m!"The definition `{.ofConstName declName true}` contains an underscore. \
         This almost surely violates mathlib's naming convention; \
         use lowerCamelCase or UpperCamelCase instead."
     else return none
