@@ -14,6 +14,8 @@ public import Mathlib.CategoryTheory.Limits.Weighted.HasWeightedLimit
 /-!
 # Weighted limits preserve limits
 
+In this file, we show that weighted limits commute with limits in both variables.
+
 -/
 
 @[expose] public section
@@ -38,8 +40,6 @@ variable [HasColimitsOfShape K (Type w)]
   {c : Cocone G} (hc : IsColimit ((hasWeightedLimit.{w} F).ι.mapCocone c))
   (s : Cone (G.op ⋙ weightedLimFlipObj'.{w} F))
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Functor.weightedLimFlipObj'.preservesLimit'` -/
 private noncomputable def π (j : J) : c.pt.obj.obj j → (s.pt ⟶ F.obj j) :=
   ((Types.isColimit_iff_coconeTypesIsColimit _).1
@@ -47,7 +47,6 @@ private noncomputable def π (j : J) : c.pt.obj.obj j → (s.pt ⟶ F.obj j) :=
       (CoconeTypes.mk _ (fun k x ↦ s.π.app (op k) ≫ weightedLimObjObjπ _ _ x)
     (fun {k₁ k₂} f ↦ by ext; simp [← s.w_assoc f.op]))
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 private lemma π_ι_app_hom_app_apply ⦃j : J⦄ ⦃k : K⦄ (x : (G.obj k).obj.obj j) :
     dsimp% π hc s j ((c.ι.app k).hom.app j x) =
@@ -58,8 +57,6 @@ private lemma π_ι_app_hom_app_apply ⦃j : J⦄ ⦃k : K⦄ (x : (G.obj k).obj
 end preservesLimit'
 
 open preservesLimit' in
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Let `F : J ⥤ C` and `K` be a category. We consider a cocone `c`
 for a functor `G` from `K` to the fullsubcategory of `J ⥤ Type w` defined
 by `hasWeightedLimit.{w} F`. Assuming the cocone `c` is a colimit as a cocone
@@ -88,7 +85,6 @@ noncomputable def preservesLimit'
       (isColimitOfPreserves ((evaluation _ _).obj j) hc) x
     simp [← hm]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma preservesLimit
     [HasColimitsOfShape Kᵒᵖ (Type w)]
     (F : J ⥤ C) (G : K ⥤ (hasWeightedLimit.{w} F).FullSubcategoryᵒᵖ)
@@ -113,7 +109,6 @@ namespace preservesLimit
 
 variable (s : Cone (G ⋙ W.weightedLimObj))
 
-set_option backward.defeqAttrib.useBackward true in
 noncomputable def coneEval ⦃j : J⦄ (x : W.obj j) :
     Cone (G ⋙ (evaluation J C).obj j) where
   pt := s.pt
@@ -129,8 +124,6 @@ lemma liftAux_π_app_app ⦃j : J⦄ (x : W.obj j) (k) :
       s.π.app k ≫ W.weightedLimObjObjπ (G.obj k) x :=
   (isLimitOfPreserves ((evaluation _ _).obj j) hc).fac (coneEval W s x) k
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 noncomputable def isLimitMapCone : IsLimit (W.weightedLimObj.mapCone c) where
   lift s :=
     (isLimitWeightedLimCone W c.pt).lift
@@ -167,11 +160,29 @@ instance [HasColimitsOfSize.{v'', u''} (Type w)]
     (F : J ⥤ C) [HasWeightedLimFlipObj.{w} F] :
     PreservesLimitsOfSize.{v'', u''} (weightedLimFlipObj.{w} F) where
 
-instance [HasLimitsOfShape K C] (W : J ⥤ Type w) [HasWeightedLimObj.{w} W (C := C)] :
-    PreservesLimitsOfShape K (weightedLimObj.{w} W (C := C)) where
+instance [HasLimitsOfShape K C] (W : J ⥤ Type w) [HasWeightedLimObj.{w} W C] :
+    PreservesLimitsOfShape K (W.weightedLimObj.{w} (C := C)) where
 
 instance [HasLimitsOfSize.{v'', u''} C] (W : J ⥤ Type w) [HasWeightedLimObj.{w} W C] :
     PreservesLimitsOfSize.{v'', u''} (W.weightedLimObj (C := C)) where
+
+instance [HasColimitsOfShape Kᵒᵖ (Type w)] [∀ (W : J ⥤ Type w), W.HasWeightedLimObj C] :
+    PreservesLimitsOfShape K (weightedLim.{w} (J := J) (C := C)) where
+  preservesLimit :=
+    ⟨fun hc ↦ ⟨evaluationJointlyReflectsLimits _
+      (fun F ↦ isLimitOfPreserves (weightedLimFlipObj.{w} F) hc)⟩⟩
+
+instance [HasLimitsOfShape K C] [∀ (W : J ⥤ Type w), W.HasWeightedLimObj C] :
+    PreservesLimitsOfShape K (weightedLim.{w} (J := J) (C := C)).flip where
+  preservesLimit :=
+    ⟨fun hc ↦ ⟨evaluationJointlyReflectsLimits _
+      (fun ⟨W⟩ ↦ isLimitOfPreserves W.weightedLimObj hc)⟩⟩
+
+instance [HasColimitsOfSize.{v'', u''} (Type w)] [∀ (W : J ⥤ Type w), W.HasWeightedLimObj C] :
+    PreservesLimitsOfSize.{v'', u''} (weightedLim.{w} (J := J) (C := C)) where
+
+instance [HasLimitsOfSize.{v'', u''} C] [∀ (W : J ⥤ Type w), W.HasWeightedLimObj C] :
+    PreservesLimitsOfSize.{v'', u''} (weightedLim.{w} (J := J) (C := C)).flip where
 
 end Functor
 
