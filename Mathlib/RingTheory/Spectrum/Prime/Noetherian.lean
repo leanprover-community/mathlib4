@@ -11,6 +11,8 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.Topology.NoetherianSpace
 
 /-!
+# The prime spectrum of a Noetherian ring
+
 This file proves additional properties of the prime spectrum a ring is Noetherian.
 -/
 

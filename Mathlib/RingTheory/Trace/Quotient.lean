@@ -11,11 +11,12 @@ public import Mathlib.RingTheory.LocalRing.Quotient
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
+# Traces on quotients and localizations
 
 We gather results about the relations between the trace map on `B → A` and the trace map on
 quotients and localizations.
 
-## Main Results
+## Main results
 
 * `Algebra.trace_quotient_eq_of_isDedekindDomain` : The trace map on `B → A` coincides with the
   trace map on `B⧸pB → A⧸p`.
