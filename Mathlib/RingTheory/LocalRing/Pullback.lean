@@ -37,7 +37,7 @@ suitable conditions.
 
 -/
 
-@[expose] public section
+public section
 
 namespace RingHom
 

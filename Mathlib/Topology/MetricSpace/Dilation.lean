@@ -136,11 +136,11 @@ def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=
 
 theorem ratio_of_trivial [DilationClass F α β] (f : F)
     (h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞) : ratio f = 1 :=
-  if_pos h
+  ite_eq_left h
 
 @[nontriviality]
 theorem ratio_of_subsingleton [Subsingleton α] [DilationClass F α β] (f : F) : ratio f = 1 :=
-  if_pos fun x y ↦ by simp [Subsingleton.elim x y]
+  ite_eq_left fun x y ↦ by simp [Subsingleton.elim x y]
 
 theorem ratio_ne_zero [DilationClass F α β] (f : F) : ratio f ≠ 0 := by
   rw [ratio]; split_ifs
@@ -279,7 +279,7 @@ protected theorem coe_id : ⇑(Dilation.id α) = id :=
 
 theorem ratio_id : ratio (Dilation.id α) = 1 := by
   by_cases! h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
-  · rw [ratio, if_pos h]
+  · rw [ratio, ite_eq_left h]
   · rcases h with ⟨x, y, hne⟩
     refine (ratio_unique hne.1 hne.2 ?_).symm
     simp
@@ -397,16 +397,10 @@ theorem mapsTo_eball (x : α) (r : ℝ≥0∞) :
     MapsTo (f : α → β) (Metric.eball x r) (Metric.eball (f x) (ratio f * r)) :=
   fun y (hy : _ < r) ↦ by rw [Metric.mem_eball, edist_eq f y x]; gcongr <;> simp [ratio_ne_zero, *]
 
-@[deprecated (since := "2026-01-24")]
-alias mapsTo_emetric_ball := mapsTo_eball
-
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
 theorem mapsTo_closedEBall (x : α) (r' : ℝ≥0∞) :
     MapsTo (f : α → β) (Metric.closedEBall x r') (Metric.closedEBall (f x) (ratio f * r')) :=
   fun y hy => (edist_eq f y x).trans_le <| by gcongr; exact hy
-
-@[deprecated (since := "2026-01-24")]
-alias mapsTo_emetric_closedBall := mapsTo_closedEBall
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
     ContinuousOn ((f : α → β) ∘ g) s ↔ ContinuousOn g s :=
