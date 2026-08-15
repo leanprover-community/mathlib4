@@ -6,6 +6,7 @@ Authors: Anne Baanen, Alex J. Best
 module
 
 public import Mathlib.Algebra.CharP.Quotient
+public import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Determinant
@@ -282,7 +283,7 @@ namespace Ideal
 
 variable [IsDedekindDomain S]
 
-section infinite
+section Infinite
 
 variable [Infinite S]
 
@@ -345,7 +346,7 @@ theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
   · rw [Ne, span_singleton_eq_bot]
     exact Int.ofNat_ne_zero.mpr hI.ne_zero
 
-end infinite
+end Infinite
 
 section Free
 
@@ -416,18 +417,15 @@ theorem norm_dvd_iff {x : S} (hx : Prime (Algebra.norm ℤ x)) {y : ℤ} :
 
 end Free
 
+section HasFiniteQuotients
+
 variable [Ring.HasFiniteQuotients S] [Infinite S]
 
 /-- The absolute norm of an ideal is zero iff the ideal is `⊥`, when the ring has finite
 quotients. -/
-theorem absNorm_eq_zero_iff {I : Ideal S} :
-    Ideal.absNorm I = 0 ↔ I = ⊥ := by
-  constructor
-  · intro hI
-    by_contra h
-    exact absurd hI (Ring.HasFiniteQuotients.cardQuot_pos I h).ne'
-  · rintro rfl
-    exact absNorm_bot
+theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ :=
+  ⟨fun hI ↦ not_not.mp fun h ↦ (Ring.HasFiniteQuotients.cardQuot_pos I h).ne' hI,
+    fun h ↦ h ▸ absNorm_bot⟩
 
 theorem absNorm_ne_zero_iff_mem_nonZeroDivisors {I : Ideal S} :
     absNorm I ≠ 0 ↔ I ∈ (Ideal S)⁰ := by
@@ -467,13 +465,24 @@ lemma exists_prime_and_absNorm_eq_pow' (P : Ideal S) [P.IsMaximal] (hP : P ≠ �
   rw [← Ideal.IsPrime.pow_mem_iff_mem (I := P) inferInstance _ n.pos, ← Nat.cast_pow, ← hP']
   exact P.absNorm_mem
 
--- omit [Infinite S] in -- Uncommenting that causes an error
+end HasFiniteQuotients
+
+section CharZero
+
+variable [Ring.HasFiniteQuotients S] [CharZero S] [Algebra.IsIntegral ℤ S]
+
 /-- The norm of a maximal ideal is a prime power.
 The prime is `(P.under ℤ).absNorm` and the exponent is `(P.under ℤ).inertialDeg P`.
 See `Ideal.absNorm_pow_inertiaDeg`. -/
-lemma exists_prime_and_absNorm_eq_pow [CharZero S] [Algebra.IsIntegral ℤ S] (P : Ideal S)
-    [P.IsMaximal] : ∃ p n, 0 < n ∧ ↑p ∈ P ∧ p.Prime ∧ P.absNorm = p ^ n :=
+lemma exists_prime_and_absNorm_eq_pow (P : Ideal S) [P.IsMaximal] :
+    ∃ p n, 0 < n ∧ ↑p ∈ P ∧ p.Prime ∧ P.absNorm = p ^ n :=
   exists_prime_and_absNorm_eq_pow' P (Ideal.IsMaximal.ne_bot_of_isIntegral_int P)
+
+end CharZero
+
+section HasFiniteQuotients
+
+variable [Ring.HasFiniteQuotients S] [Infinite S]
 
 /-- If a rational prime `p` divides the norm of an ideal `I`, then some maximal ideal `P` of `S`
 lying over `p` divides `I`. -/
@@ -484,9 +493,9 @@ lemma exists_isMaximal_dvd_of_dvd_absNorm [FaithfulSMul ℤ S] [Algebra.IsIntegr
     ((Ideal.span_singleton_prime hp.ne_zero).mpr hp).isMaximal (by simpa using hp.ne_zero)
   induction I using UniqueFactorizationMonoid.induction_on_prime with
   | h₁ =>
-    have h : Function.Injective (Int.castRingHom S) := FaithfulSMul.algebraMap_injective ℤ S
     obtain ⟨Q, hQ, e⟩ := Ideal.exists_ideal_over_maximal_of_isIntegral (S := S) (Ideal.span {p})
-      (by simp [(RingHom.injective_iff_ker_eq_bot _).mp h])
+      (by simp [(RingHom.injective_iff_ker_eq_bot (Int.castRingHom S)).mp
+        (FaithfulSMul.algebraMap_injective ℤ S)])
     exact ⟨Q, hQ, e, dvd_zero _⟩
   | h₂ I hI' =>
     obtain rfl : I = ⊤ := by simpa using hI'
@@ -557,6 +566,8 @@ theorem card_norm_le_eq_card_norm_le_add_one (n : ℕ) :
     rw [← absNorm_ne_zero_iff_mem_nonZeroDivisors, ne_eq, not_not, and_iff_left_iff_imp.mpr
       (fun h ↦ by rw [h]; exact Nat.zero_le n), absNorm_eq_zero_iff]
   rw [Nat.card_unique]
+
+end HasFiniteQuotients
 
 end Ideal
 
