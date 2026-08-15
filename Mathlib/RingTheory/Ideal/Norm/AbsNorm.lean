@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.FreeModule.Determinant
 public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Ideal.Basis
-public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Defs
 public import Mathlib.RingTheory.Norm.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
