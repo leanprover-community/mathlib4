@@ -100,7 +100,9 @@ theorem pairwise_iff_of_refl [Std.Refl r] :
     s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
   forall₄_congr fun _ _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp of_eq
 
-alias ⟨Pairwise.forall₂, Pairwise.of_refl⟩ := pairwise_iff_of_refl
+alias ⟨Pairwise.forall₂, Pairwise.of_forall₂⟩ := pairwise_iff_of_refl
+
+@[deprecated (since := "2026-08-14")] alias Pairwise.of_refl := Pairwise.forall₂
 
 @[deprecated (since := "2026-03-27")]
 alias _root_.Std.Refl.set_pairwise_iff := pairwise_iff_of_refl
