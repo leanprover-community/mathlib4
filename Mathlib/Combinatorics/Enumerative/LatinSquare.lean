@@ -366,7 +366,10 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
     LatinRectangle.card_symbols_not_in A j
   have exactly_n_minus_k_cols_without_x := LatinRectangle.card_symbolsNotIn_eq (n := n) (k := k)
     (α := α) A h
-  have pre_property_H := LatinRectangle.card_symbolsNotIn_le (n := n) (k := k) (α := α) A h
+  have pre_property_H : ∀ (x : α) (t : Finset n), 
+    {j ∈ t | x ∈ B j}.card ≤ Fintype.card n - Fintype.card k := by
+    convert LatinRectangle.card_symbolsNotIn_le (n := n) (k := k) (α := α) A h using 4
+    grind
   have _ : NeZero (Fintype.card n - Fintype.card k)  := ⟨by lia⟩
   let halls := hallMatchingsOn.nonempty (B)
     (Finset.card_le_card_biUnion_of_card_eq_of_card_filter_le (k := Fintype.card n - Fintype.card k)
