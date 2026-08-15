@@ -316,11 +316,13 @@ lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) :
     (p x).toNNReal / r ≤ egauge 𝕜 (p.closedBall 0 r) x := by
   rw [le_egauge_iff]
   rintro c ⟨y, hy, rfl⟩
-  rw [Seminorm.closedBall_zero_eq, mem_ofPred_eq, ← Real.toNNReal_le_iff_le_coe] at hy
-  rw [map_smul_eq_mul, Real.toNNReal_mul (by positivity), ENNReal.coe_mul, norm_toNNReal,
-    ← enorm_eq_nnnorm]
-  apply ENNReal.div_le_of_le_mul
-  gcongr
+  calc
+    _ = ‖c‖ₑ * (p y).toNNReal / r := by
+      simp [map_smul_eq_mul, Real.toNNReal_mul, enorm_eq_nnnorm]
+    _ ≤ _ := by
+      apply ENNReal.div_le_of_le_mul
+      gcongr
+      simpa [Real.toNNReal_le_iff_le_coe] using hy
 
 lemma le_egauge_closedBall_one (x : E) : (p x).toNNReal ≤ egauge 𝕜 (p.closedBall 0 1) x := by
   simpa using div_le_egauge_closedBall p 1 x
@@ -338,24 +340,26 @@ lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ p x �
   let : NontriviallyNormedField 𝕜 := ⟨c, hc⟩
   rcases (zero_le (a := r)).eq_or_lt with rfl | hr
   · rw [ENNReal.coe_zero, ENNReal.div_zero (mul_ne_zero _ _)]
-    · apply le_top
+    · exact le_top
     · simpa using one_pos.trans hc
-    · simpa [enorm, ← NNReal.coe_eq_zero] using h₀
+    · suffices p x ≠ 0 by positivity
+      simpa using h₀
   · rcases eq_or_ne (p x) 0 with hx | hx
-    · simp only [hx, Real.toNNReal_zero, ENNReal.coe_zero, mul_zero, ENNReal.zero_div,
-        nonpos_iff_eq_zero, egauge_eq_zero_iff]
+    · suffices ∃ᶠ (c : 𝕜) in 𝓝 0, x ∈ c • p.ball 0 r by simpa [hx, egauge_eq_zero_iff]
       refine (frequently_iff_neBot.2 (inferInstance : NeBot (𝓝[≠] (0 : 𝕜)))).mono fun c hc ↦ ?_
       simp [mem_smul_set_iff_inv_smul_mem₀ hc, map_smul_eq_mul, hx, hr]
-    · rcases p.rescale_to_shell hc hr hx with ⟨a, ha₀, har, -, hainv⟩
+    · rcases p.rescale_to_shell (ε := r) hc hr hx with ⟨a, ha₀, har, -, hainv⟩
+      -- Todo: `(ε := r)` is needed because otherwise `hainv` contains a wrong version of `↑r`
+      -- (`Subtype.val` instead of `NNReal.toReal`)
       calc
-        egauge 𝕜 (p.ball 0 r) x ≤ ↑(‖a‖₊⁻¹) :=
+        egauge 𝕜 (p.ball 0 r) x ≤ ‖a‖₊⁻¹ :=
           egauge_le_of_smul_mem_of_ne (by simpa) ha₀
         _ ≤ ↑(‖c‖₊ * (p x).toNNReal / r) := by
-          simpa (discharger := positivity) only [ENNReal.coe_le_coe, ← NNReal.coe_le_coe,
-            div_eq_inv_mul, NNReal.coe_inv, NNReal.coe_mul, coe_nnnorm, ← mul_assoc,
-            Real.coe_toNNReal]
-        _ ≤ ‖c‖ₑ * (p x).toNNReal / r :=
-          ENNReal.coe_div_le.trans <| by simp [ENNReal.coe_mul, enorm]
+          suffices ‖a‖⁻¹ ≤ ‖c‖ * (p x) / r by simpa [← NNReal.coe_le_coe]
+          convert hainv using 1; ring
+        _ ≤ ‖c‖ₑ * (p x).toNNReal / r := by
+          have hr' : r ≠ 0 := by positivity
+          simp [ENNReal.coe_div hr', enorm_eq_nnnorm]
 
 lemma egauge_ball_one_le_of_one_lt_norm (hc : 1 < ‖c‖) (x : E) :
     egauge 𝕜 (p.ball 0 1) x ≤ ‖c‖ₑ * (p x).toNNReal := by

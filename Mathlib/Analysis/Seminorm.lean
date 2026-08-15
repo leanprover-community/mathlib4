@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Data.Real.Pointwise
-public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Seminorms
