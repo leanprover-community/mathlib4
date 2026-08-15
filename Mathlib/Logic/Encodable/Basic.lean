@@ -493,14 +493,12 @@ open Encodable
 
 variable {p}
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Constructive choice function for a decidable subtype of an encodable type. -/
 def chooseX (h : ∃ x, p x) : { a : α // p a } :=
-  have : ∃ n, good p (decode n) :=
+  have := private show ∃ n, good p (decode n) from
     let ⟨w, pw⟩ := h
     ⟨encode w, by simp [good, encodek, pw]⟩
-  match (motive := ∀ o, good p o → { a // p a }) _, Nat.find_spec this with
+  match decode _, Nat.find_spec this with
   | some a, h => ⟨a, h⟩
 
 /-- Constructive choice function for a decidable predicate over an encodable type. -/
