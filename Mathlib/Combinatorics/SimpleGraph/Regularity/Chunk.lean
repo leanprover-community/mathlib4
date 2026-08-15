@@ -87,6 +87,7 @@ variable {hP G ε hU V} {𝒜 : Finset (Finset α)} {s : Finset α}
 theorem star_subset_chunk : star hP G ε hU V ⊆ (chunk hP G ε hU).parts :=
   filter_subset _ _
 
+
 private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (hUV : U ≠ V)
     (h₂ : ¬G.IsUniform ε U V) :
     #(G.nonuniformWitness ε U V \ (star hP G ε hU V).biUnion id) ≤ 2 ^ (#P.parts - 1) * m := by
