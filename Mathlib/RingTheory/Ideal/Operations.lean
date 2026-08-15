@@ -18,6 +18,8 @@ public import Mathlib.Tactic.Order
 # More operations on modules and ideals
 -/
 
+set_option linter.style.longFile 1700
+
 @[expose] public section
 
 assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
@@ -1298,9 +1300,8 @@ instance uniqueUnits : Unique (Ideal R)ˣ where
 /-- `span {a}` divides `span {b}` if and only if `a` divides `b`. -/
 theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
     span {a} ∣ span ({b} : Set R) ↔ a ∣ b :=
-  ⟨fun ⟨K, hK⟩ => mem_span_singleton.mp (mul_le_left
-    (show b ∈ K * span {a} from mul_comm (span {a}) K ▸ hK ▸ mem_span_singleton.mpr dvd_rfl)),
-   fun ⟨c, hc⟩ => ⟨span {c}, hc ▸ (span_singleton_mul_span_singleton a c).symm⟩⟩
+  ⟨fun h => span_singleton_le_span_singleton.mp (le_of_dvd h),
+   fun ⟨c, hc⟩ => ⟨span {c}, by rw [hc, span_singleton_mul_span_singleton]⟩⟩
 
 @[deprecated (since := "2026-04-16")]
 alias _root_.span_singleton_dvd_span_singleton_iff_dvd := span_singleton_dvd_span_singleton_iff_dvd
