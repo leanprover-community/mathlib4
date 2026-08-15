@@ -75,7 +75,8 @@ in `Rep`. -/
 abbrev rep : Rep.{v} (ULift.{v} ℤ) (Aut (Over.mk f)) := Rep.of (Φ.representation f)
 
 /-- The cohomology of a Galois cover for a formation. -/
-noncomputable abbrev H (n : ℕ) := groupCohomology (Φ.rep f) n
+noncomputable abbrev H (n : ℕ) : Ab.{v} :=
+  (forget₂ _ _).obj (groupCohomology (Φ.rep f) n)
 
 end
 
@@ -108,8 +109,7 @@ noncomputable def restriction {Y X' X : C}
     [IsGaloisCover fg] [IsGaloisCover f] (n : ℕ)
     (fac : f ≫ g = fg := by cat_disch) :
     Φ.H fg n ⟶ Φ.H f n :=
-  groupCohomology.map (Aut.overMap f g fg) (Φ.resRep f g fg) n
-
+  (forget₂ _ _).map (groupCohomology.map (Aut.overMap f g fg) (Φ.resRep f g fg) n)
 
 end
 
@@ -147,7 +147,7 @@ noncomputable abbrev infRep (fac : f ≫ g = fg := by cat_disch) :
 noncomputable def inflation (n : ℕ)
     (fac : f ≫ g = fg := by cat_disch) :
     Φ.H g n ⟶ Φ.H fg n :=
-  groupCohomology.map (autMapOfIsGaloisCover f g fg) (Φ.infRep f g fg) n
+  (forget₂ _ _).map (groupCohomology.map (autMapOfIsGaloisCover f g fg) (Φ.infRep f g fg) n)
 
 end
 

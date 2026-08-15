@@ -47,7 +47,6 @@ abbrev EtaleAlgCat.ofHom (S₁ S₂ : Type u)
     ext x
     exact (IsScalarTower.algebraMap_apply R S₁ S₂ x).symm))
 
-/-
 namespace EtaleAlgCat
 
 variable {R} in
@@ -180,5 +179,3 @@ def IsNonarchimedeanLocalField.classFormation
   zmultiples_u := sorry
   inflation_u := sorry
   restriction_u := sorry
-
--/

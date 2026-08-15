@@ -5748,6 +5748,7 @@ public import Mathlib.NumberTheory.Bernoulli
 public import Mathlib.NumberTheory.BernoulliPolynomials
 public import Mathlib.NumberTheory.Bertrand
 public import Mathlib.NumberTheory.CFT.ClassFormation.Basic
+public import Mathlib.NumberTheory.CFT.ClassFormation.FieldFormationAxiom
 public import Mathlib.NumberTheory.CFT.ClassFormation.FintypeCat
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryAut
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryConnected
