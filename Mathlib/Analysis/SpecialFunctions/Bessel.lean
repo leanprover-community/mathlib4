@@ -29,7 +29,7 @@ part which removes the singularity for negative integer $a$.
 
 This function is analytic for all `x` when `a` is an integer. (see `Complex.analyticAt_besselJ_int`)
 
-$J_a(0) = 0$ for all complex $a \ne 0$, For $a = 0$, we have $J_0(0) = 1$.
+$J_a(0) = 0$ for all complex $a \ne 0$. For $a = 0$, we have $J_0(0) = 1$.
 (See `Complex.besselJ_zero`)
 
 ## TODO

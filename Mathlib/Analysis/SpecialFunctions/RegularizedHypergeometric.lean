@@ -248,15 +248,15 @@ theorem radius_regularizedHGFunSeries_eq_top (h : a.card ≤ b.card) :
 theorem radius_regularizedHGFunSeries_zero_eq_top : (regularizedHGFunSeries 0 b).radius = ⊤ :=
   radius_regularizedHGFunSeries_eq_top (by simp)
 
-theorem analyticAt_regularizedHGFunSeries_of_card_le (h : a.card ≤ b.card) (x : ℂ) :
+theorem analyticAt_regularizedHGFun_of_card_le (h : a.card ≤ b.card) (x : ℂ) :
     AnalyticAt ℂ (regularizedHGFun a b) x :=
   ((regularizedHGFunSeries a b).hasFPowerSeriesOnBall
     (by simp [radius_regularizedHGFunSeries_eq_top h])).analyticAt_of_mem
     (by simp [radius_regularizedHGFunSeries_eq_top h])
 
 @[fun_prop]
-theorem analyticAt_regularizedHGFunSeries_zero (x : ℂ) : AnalyticAt ℂ (regularizedHGFun 0 b) x :=
-  analyticAt_regularizedHGFunSeries_of_card_le (by simp) x
+theorem analyticAt_regularizedHGFun_zero (x : ℂ) : AnalyticAt ℂ (regularizedHGFun 0 b) x :=
+  analyticAt_regularizedHGFun_of_card_le (by simp) x
 
 /-- If `a.card = b.card + 1`, then the hypergeometric series has convergence radius `1`, unless it
 is a polynomial. -/
