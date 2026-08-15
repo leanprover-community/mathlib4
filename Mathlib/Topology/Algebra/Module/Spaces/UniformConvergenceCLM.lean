@@ -7,13 +7,13 @@ module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Hom.ContinuousEvalConst
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Algebra.Module.UniformConvergence
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Topologies of uniform convergence on the space of continuous linear maps
@@ -164,6 +164,12 @@ theorem isEmbedding_coeFn [UniformSpace F] [IsUniformAddGroup F] (𝔖 : Set (Se
       (UniformOnFun.ofFun 𝔖 ∘ DFunLike.coe) :=
   IsUniformEmbedding.isEmbedding (isUniformEmbedding_coeFn _ _ _)
 
+-- This instance exists to avoid nsmul and zsmul diamonds.
+instance (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [TopologicalSpace F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
+    SMul M (E →SLᵤ[σ, 𝔖] F) where
+  smul c f := (ofFun σ F 𝔖) (c • (ofFun σ F 𝔖).symm f)
+
 instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     AddCommGroup (E →SLᵤ[σ, 𝔖] F) :=
   inferInstanceAs <| AddCommGroup (E →SL[σ] F)
@@ -224,12 +230,11 @@ theorem t2Space [TopologicalSpace F] [IsTopologicalAddGroup F] [T2Space F]
 
 instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
-    DistribMulAction M (E →SLᵤ[σ, 𝔖] F) where
-  smul c f := (ofFun σ F 𝔖) (c • (ofFun σ F 𝔖).symm f)
-  __ : DistribMulAction M (E →SLᵤ[σ, 𝔖] F) := inferInstanceAs <| DistribMulAction M (E →SL[σ] F)
+    DistribMulAction M (E →SLᵤ[σ, 𝔖] F) :=
+  inferInstanceAs <| DistribMulAction M (E →SL[σ] F)
 
 instance {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
-    [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
+    [TopologicalSpace F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     IsSMulApply M (E →SLᵤ[σ, 𝔖] F) E F where
   smul_apply _ _ _ := rfl
 
@@ -393,7 +398,7 @@ theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul �
   rw [completeSpace_iff_isComplete_range (isUniformInducing_coeFn _ _ _)]
   apply IsClosed.isComplete
   have H₁ : IsClosed {f : E →ᵤ[𝔖] F | Continuous ((UniformOnFun.toFun 𝔖) f)} :=
-    UniformOnFun.isClosed_setOf_continuous h𝔖
+    UniformOnFun.isClosed_setOfPred_continuous h𝔖
   convert!
     H₁.inter <|
       (LinearMap.isClosed_range_coe E F σ).preimage
@@ -500,12 +505,6 @@ def precompUniformConvergenceCLM [IsTopologicalAddGroup G] [ContinuousConstSMul 
     exact (UniformOnFun.precomp_uniformContinuous hL).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
 
-@[deprecated (since := "2026-01-27")]
-alias precomp_uniformConvergenceCLM := precompUniformConvergenceCLM
-
-@[deprecated (since := "2026-01-27")]
-alias precomp_uniformConvergenceCLM_apply := precompUniformConvergenceCLM_apply
-
 set_option backward.isDefEq.respectTransparency false in
 /-- Post-composition by a *fixed* continuous linear map as a continuous linear map for the uniform
 convergence topology. -/
@@ -525,12 +524,6 @@ def postcompUniformConvergenceCLM [IsTopologicalAddGroup F] [IsTopologicalAddGro
     exact
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
-
-@[deprecated (since := "2026-01-27")]
-alias postcomp_uniformConvergenceCLM := postcompUniformConvergenceCLM
-
-@[deprecated (since := "2026-01-27")]
-alias postcomp_uniformConvergenceCLM_apply := postcompUniformConvergenceCLM_apply
 
 end ContinuousLinearMap
 
