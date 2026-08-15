@@ -155,7 +155,6 @@ noncomputable def Subfunctor.sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve
     · dsimp [Presieve.FamilyOfElements.map] at hj ⊢
       rwa [Functor.map_comp, comp_apply]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem Subfunctor.to_sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve.IsSheaf J F') :
     Subfunctor.homOfLe (G.le_sheafify J) ≫ G.sheafifyLift f h = f := by
   ext U s
@@ -257,7 +256,6 @@ def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') :
   m := Sheaf.imageι f
   e := Sheaf.toImage f
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The mono factorization given by `image_sheaf` for a morphism is an image. -/
 noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F ⟶ F') :

@@ -94,7 +94,7 @@ theorem degrees_monomial (s : σ →₀ ℕ) (a : R) : degrees (monomial s a) �
 theorem degrees_monomial_eq (s : σ →₀ ℕ) (a : R) (ha : a ≠ 0) :
     degrees (monomial s a) = toMultiset s := by
   classical
-    exact (supDegree_single s a).trans (if_neg ha)
+    exact (supDegree_single s a).trans (ite_eq_right ha)
 
 theorem degrees_C (a : R) : degrees (C a : MvPolynomial σ R) = 0 :=
   Multiset.le_zero.1 <| degrees_monomial _ _
@@ -150,7 +150,6 @@ theorem degrees_eq_zero_iff_support_subset_zero : p.degrees = 0 ↔ p.support �
   have := Finsupp.support_eq_empty.mpr (h s <| mem_support_iff.mpr hs1) ▸ hs2
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_degrees_add_left (h : Disjoint p.degrees q.degrees) : p.degrees ≤ (p + q).degrees := by
   classical
   apply Finset.sup_le
@@ -192,7 +191,7 @@ theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
   intro j hj
   simp only [mem_degrees] at hi
   specialize hi j ⟨x, hx, hj⟩
-  rw [Finsupp.single_apply, if_neg hi]
+  rw [Finsupp.single_apply, ite_eq_right hi]
 
 theorem degrees_map_of_injective [CommSemiring S] (p : MvPolynomial σ R) {f : R →+* S}
     (hf : Injective f) : (map f p).degrees = p.degrees := by
@@ -252,7 +251,7 @@ theorem degreeOf_C (a : R) (x : σ) : degreeOf x (C a : MvPolynomial σ R) = 0 :
 theorem degreeOf_X [DecidableEq σ] (i j : σ) [Nontrivial R] :
     degreeOf i (X j : MvPolynomial σ R) = if i = j then 1 else 0 := by
   by_cases c : i = j
-  · simp only [c, if_true, degreeOf_def, degrees_X, Multiset.count_singleton]
+  · simp only [c, ite_true, degreeOf_def, degrees_X, Multiset.count_singleton]
   simp [c, degreeOf_def, degrees_X]
 
 @[simp] theorem degreeOf_X_self [Nontrivial R] (i : σ) :
@@ -517,7 +516,7 @@ theorem totalDegree_pow (a : MvPolynomial σ R) (n : ℕ) :
 @[simp]
 theorem totalDegree_monomial (s : σ →₀ ℕ) {c : R} (hc : c ≠ 0) :
     (monomial s c : MvPolynomial σ R).totalDegree = s.sum fun _ e => e := by
-  classical simp [totalDegree, support_monomial, if_neg hc]
+  classical simp [totalDegree, support_monomial, ite_eq_right hc]
 
 theorem totalDegree_monomial_le (s : σ →₀ ℕ) (c : R) :
     (monomial s c).totalDegree ≤ s.sum fun _ ↦ id := by
@@ -613,7 +612,6 @@ section degreesLE
 variable {s t : Multiset σ}
 
 variable (R σ s) in
-set_option backward.isDefEq.respectTransparency false in
 /-- The submodule of multivariate polynomials of degrees bounded by a monomial `s`. -/
 def degreesLE : Submodule R (MvPolynomial σ R) where
   carrier := {p | p.degrees ≤ s}
@@ -628,7 +626,6 @@ def degreesLE : Submodule R (MvPolynomial σ R) where
 @[simp] lemma mem_degreesLE : p ∈ degreesLE R σ s ↔ p.degrees ≤ s := Iff.rfl
 
 variable (s t) in
-set_option backward.isDefEq.respectTransparency false in
 lemma degreesLE_add : degreesLE R σ (s + t) = degreesLE R σ s * degreesLE R σ t := by
   classical
   rw [le_antisymm_iff, Submodule.mul_le]
@@ -643,7 +640,6 @@ lemma degreesLE_add : degreesLE R σ (s + t) = degreesLE R σ s * degreesLE R σ
   rw [show monomial i (x.coeff i) = monomial a (x.coeff i) * monomial b 1 by simp [this]]
   exact Submodule.mul_mem_mul ((degrees_monomial _ _).trans ha) ((degrees_monomial _ _).trans hb)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma degreesLE_zero : degreesLE R σ 0 = 1 := by
   refine le_antisymm (fun x hx ↦ ?_) (by simp)
   simp only [mem_degreesLE, nonpos_iff_eq_zero] at hx
