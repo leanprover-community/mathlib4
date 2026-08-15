@@ -39,8 +39,6 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C] [MonoidalClose
 variable [∀ (F : Discrete I ⥤ C), (Discrete.functor id).HasRightKanExtension F]
 -- is also implied by: `[HasLimitsOfSize.{u₂, max u₂ v₂} C]`
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ReflectsIsomorphisms <| (whiskeringLeft _ _ C).obj (incl I) where
   reflects f h := by
     simp only [NatTrans.isIso_iff_isIso_app] at *

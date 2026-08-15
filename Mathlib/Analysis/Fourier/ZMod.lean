@@ -79,8 +79,6 @@ end private_defs
 
 section defs
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /--
 The discrete Fourier transform on `ℤ / N ℤ` (with the counting measure), bundled as a linear
 equivalence. Denoted as `𝓕` within the `ZMod` namespace.
