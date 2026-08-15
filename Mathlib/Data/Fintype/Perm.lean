@@ -64,7 +64,8 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
     simpa only [permsOfList, exists_prop, List.mem_map, mem_append, List.mem_flatMap]
   refine or_iff_not_imp_left.2 fun _hfl => ⟨f a, ?_, Equiv.swap a (f a) * f, IH this, ?_⟩
   · exact mem_of_ne_of_mem hfa (h _ hfa')
-  · rw [← mul_assoc, mul_def (swap a (f a)) (swap a (f a)), swap_swap, ← Perm.one_def, one_mul]
+  · rw [← mul_assoc, mul_def (Equiv.swap a (f a)) (Equiv.swap a (f a)), Equiv.swap_swap,
+      ← Perm.one_def, one_mul]
 
 theorem mem_of_mem_permsOfList :
     ∀ {l : List α} {f : Perm α}, f ∈ permsOfList l → {x : α} → f x ≠ x → x ∈ l
