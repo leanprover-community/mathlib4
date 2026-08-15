@@ -62,9 +62,8 @@ lemma IsInvertible.of_inverse {f : M →L[R] M₂} {g : M₂ →L[R] M}
 lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M}
     (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
     f.inverse = g := by
-  have : f = ContinuousLinearEquiv.equivOfInverse' f g hf hg := rfl
-  rw [this, inverse_equiv]
-  rfl
+  rw [← ContinuousLinearEquiv.toContinuousLinearMap_equivOfInverse' f g hf hg, inverse_equiv]
+  simp
 
 @[simp]
 theorem isInvertible_zero_iff :
