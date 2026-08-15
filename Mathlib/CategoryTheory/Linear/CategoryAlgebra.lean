@@ -6,7 +6,7 @@ Authors: Bernhard Reinke, Ray Shang
 
 module
 
-
+public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Algebra.NonUnitalHom
@@ -113,15 +113,15 @@ theorem comp₀_assoc (X₁ Y₁ X₂ Y₂ X₃ Y₃ : C) (f : X₁ ⟶ Y₁) (g
     ((comp₀ X₁ Y₂ X₃ Y₃) (((comp₀ X₁ Y₁ X₂ Y₂) f) g)) h =
     ((comp₀ X₁ Y₁ X₂ Y₃) f) (((comp₀ X₂ Y₂ X₃ Y₃) g) h) := by
   by_cases h₁₂ : Y₁ = X₂ <;> by_cases h₂₃ : Y₂ = X₃
-  · simp only [comp₀, dif_pos h₁₂, dif_pos h₂₃, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
+  · simp only [comp₀, dite_eq_left h₁₂, dite_eq_left h₂₃, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
       compHom, Preadditive.leftComp, AddMonoidHom.mk'_apply, Category.assoc]
-  · simp only [comp₀, dif_pos h₁₂, dif_neg h₂₃, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
+  · simp only [comp₀, dite_eq_left h₁₂, dite_eq_right h₂₃, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
       compHom, Preadditive.leftComp, AddMonoidHom.mk'_apply, AddMonoidHom.zero_apply,
       map_zero]
-  · simp only [comp₀, dif_neg h₁₂, dif_pos h₂₃, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
+  · simp only [comp₀, dite_eq_right h₁₂, dite_eq_left h₂₃, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
       compHom, Preadditive.leftComp, AddMonoidHom.mk'_apply, AddMonoidHom.zero_apply,
       map_zero]
-  · simp only [comp₀, dif_neg h₁₂, dif_neg h₂₃, AddMonoidHom.zero_apply]
+  · simp only [comp₀, dite_eq_right h₁₂, dite_eq_right h₂₃, AddMonoidHom.zero_apply]
 
 /-- The multiplication on the category algebra, defined by linearly extending
 the composition of morphisms across the direct sum. -/
@@ -351,7 +351,7 @@ def liftEquiv : Hom R C A ≃ (CategoryAlgebra R C →ₙₐ[R] A) where
       rw [← map_mul]
       rw [CategoryAlgebra.mul_of]
       dsimp only [CategoryAlgebra.comp₀]
-      rw [dif_neg h_neq]
+      rw [dite_eq_right h_neq]
       change φ (CategoryAlgebra.of X W 0) = 0
       simp only [map_zero]
   }
@@ -388,12 +388,12 @@ instance : Semiring (CategoryAlgebra R C) where
         mul_of, AddMonoidHom.id_apply]
       rw [Finset.sum_eq_single_of_mem X₁ (Finset.mem_univ _)]
       · dsimp only [comp₀]
-        rw [dif_pos rfl]
+        rw [dite_eq_left rfl]
         simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, compHom, Preadditive.leftComp,
           AddMonoidHom.mk'_apply, eqToHom_refl, Category.id_comp, Category.comp_id]
       · intro b _ h
         dsimp only [comp₀]
-        rw [dif_neg h]
+        rw [dite_eq_right h]
         simp only [AddMonoidHom.zero_apply, map_zero]
     apply DFunLike.congr_fun (h₁ := H)
   mul_one := by
@@ -403,12 +403,12 @@ instance : Semiring (CategoryAlgebra R C) where
         ZeroHom.coe_mk, mul_of, AddMonoidHom.id_apply]
       rw [Finset.sum_eq_single_of_mem Y₁ (Finset.mem_univ _)]
       · dsimp only [comp₀]
-        rw [dif_pos rfl]
+        rw [dite_eq_left rfl]
         simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, compHom, Preadditive.leftComp,
           AddMonoidHom.mk'_apply, eqToHom_refl, Category.comp_id]
       · intro b _ h
         dsimp only [comp₀]
-        rw [dif_neg h.symm]
+        rw [dite_eq_right h.symm]
         simp only [AddMonoidHom.zero_apply, map_zero]
     apply DFunLike.congr_fun (h₁ := H)
 
