@@ -5,11 +5,7 @@ Authors: Martin Winter
 -/
 module
 
-public import Mathlib.Logic.IsEmpty.Defs
-public import Mathlib.Logic.Function.Basic
-
-import Mathlib.Logic.IsEmpty.Basic
-import Mathlib.Logic.Nonempty
+public import Mathlib.Data.Setoid.Basic
 
 /-!
 # Constant functions
@@ -78,7 +74,7 @@ theorem isConst_iff_exists_forall_eq [Nonempty β] {f : α → β} :
 that `f a = b` for all `a : α`. -/
 theorem isConst_iff_exists_forall_eq_of_nonempty_domain [Nonempty α] {f : α → β} :
     IsConst f ↔ ∃ b, ∀ x, f x = b :=
-  haveI := Nonempty.map f inferInstance; isConst_iff_exists_forall_eq
+  have := Nonempty.map f inferInstance; isConst_iff_exists_forall_eq
 
 /-- A function `α → β` is constant on a non-empty codomain if and only if there is `b : β` so that
 the function can be written as `Function.const α b`. -/
@@ -90,7 +86,7 @@ theorem isConst_iff_exists_eq_const [Nonempty β] {f : α → β} :
 the function can be written as `Function.const α b`. -/
 theorem isConst_iff_exists_eq_const_of_nonempty_domain [Nonempty α] {f : α → β} :
     IsConst f ↔ ∃ b, f = const α b :=
-  haveI := Nonempty.map f inferInstance; isConst_iff_exists_eq_const
+  have := Nonempty.map f inferInstance; isConst_iff_exists_eq_const
 
 /-- Postcomposition preserves being constant. -/
 theorem IsConst.comp_left {f : α → β} (hf : IsConst f) (g : β → γ) :
@@ -112,6 +108,11 @@ theorem not_isConst_iff_exists_apply_ne {f : α → β} :
 /-- The identity function on a type is constant if and only if the type is a subsingleton. -/
 @[simp]
 theorem isConst_id_iff : IsConst (id : α → α) ↔ Subsingleton α :=
-  ⟨fun h ↦ ⟨fun x y ↦ h x y⟩, fun _ ↦ .of_subsingleton_domain _⟩
+  ⟨(⟨·⟩), fun _ ↦ .of_subsingleton_domain _⟩
+
+@[simp]
+theorem _root_.Setoid.ker_eq_top {α β : Type*} {f : α → β} :
+    Setoid.ker f = ⊤ ↔ IsConst f :=
+  Setoid.ker f |>.eq_top_iff
 
 end Function
