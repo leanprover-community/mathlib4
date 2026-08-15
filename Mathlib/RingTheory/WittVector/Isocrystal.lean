@@ -3,7 +3,9 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.RingTheory.WittVector.FrobeniusFractionField
+module
+
+public import Mathlib.RingTheory.WittVector.FrobeniusFractionField
 
 /-!
 
@@ -33,7 +35,7 @@ The construction is described in Dupuis, Lewis, and Macbeth,
 
 ## Notation
 
-This file introduces notation in the locale `Isocrystal`.
+This file introduces notation in the scope `Isocrystal`.
 * `K(p, k)`: `FractionRing (WittVector p k)`
 * `φ(p, k)`: `WittVector.FractionRing.frobeniusRingHom p k`
 * `M →ᶠˡ[p, k] M₂`: `LinearMap (WittVector.FractionRing.frobeniusRingHom p k) M M₂`
@@ -49,6 +51,8 @@ This file introduces notation in the locale `Isocrystal`.
 * <https://www.math.ias.edu/~lurie/205notes/Lecture26-Isocrystals.pdf>
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -123,11 +127,13 @@ def Isocrystal.frobenius : V ≃ᶠˡ[p, k] V :=
 
 @[inherit_doc] scoped[Isocrystal] notation "Φ(" p ", " k ")" => WittVector.Isocrystal.frobenius p k
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A homomorphism between isocrystals respects the Frobenius map.
 Notation `M →ᶠⁱ [p, k]` in the `Isocrystal` namespace. -/
 structure IsocrystalHom extends V →ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearMap x) = toLinearMap (Φ(p, k) x)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An isomorphism between isocrystals respects the Frobenius map.
 
 Notation `M ≃ᶠⁱ [p, k]` in the `Isocrystal` namespace. -/
@@ -152,17 +158,7 @@ of slope `m : ℤ`.
 @[nolint unusedArguments]
 def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
--- The `AddCommGroup, Module K(p, k)` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-section Deriving
-
-instance {m : ℤ} : AddCommGroup (StandardOneDimIsocrystal p k m) :=
-  inferInstanceAs (AddCommGroup K(p, k))
-instance {m : ℤ} : Module K(p, k) (StandardOneDimIsocrystal p k m) :=
-  inferInstanceAs (Module K(p, k) K(p, k))
-
-end Deriving
+deriving AddCommGroup, Module K(p, k)
 
 section PerfectRing
 
@@ -174,18 +170,20 @@ instance (m : ℤ) : Isocrystal p k (StandardOneDimIsocrystal p k m) where
     (FractionRing.frobenius p k).toSemilinearEquiv.trans
       (LinearEquiv.smulOfNeZero _ _ _ (zpow_ne_zero m (WittVector.FractionRing.p_nonzero p k)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem StandardOneDimIsocrystal.frobenius_apply (m : ℤ) (x : StandardOneDimIsocrystal p k m) :
     Φ(p, k) x = (p : K(p, k)) ^ m • φ(p, k) x := rfl
 
 end PerfectRing
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A one-dimensional isocrystal over an algebraically closed field
 admits an isomorphism to one of the standard (indexed by `m : ℤ`) one-dimensional isocrystals. -/
 theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k p] (V : Type*)
     [AddCommGroup V] [Isocrystal p k V] (h_dim : finrank K(p, k) V = 1) :
     ∃ m : ℤ, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V) := by
-  haveI : Nontrivial V := Module.nontrivial_of_finrank_eq_succ h_dim
+  have : Nontrivial V := Module.nontrivial_of_finrank_eq_succ h_dim
   obtain ⟨x, hx⟩ : ∃ x : V, x ≠ 0 := exists_ne 0
   have : Φ(p, k) x ≠ 0 := by simpa only [map_zero] using Φ(p, k).injective.ne hx
   obtain ⟨a, ha, hax⟩ : ∃ a : K(p, k), a ≠ 0 ∧ Φ(p, k) x = a • x := by
@@ -196,13 +194,13 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     apply this
     simp only [← ha, ha', zero_smul]
   obtain ⟨b, hb, m, hmb⟩ := WittVector.exists_frobenius_solution_fractionRing p ha
-  replace hmb : φ(p, k) b * a = (p : K(p, k)) ^ m * b := by convert hmb
+  replace hmb : φ(p, k) b * a = (p : K(p, k)) ^ m * b := by convert! hmb
   use m
   let F₀ : StandardOneDimIsocrystal p k m →ₗ[K(p, k)] V := LinearMap.toSpanSingleton K(p, k) V x
   let F : StandardOneDimIsocrystal p k m ≃ₗ[K(p, k)] V := by
     refine LinearEquiv.ofBijective F₀ ⟨?_, ?_⟩
     · rw [← LinearMap.ker_eq_bot]
-      exact LinearMap.ker_toSpanSingleton K(p, k) V hx
+      exact LinearMap.ker_toSpanSingleton K(p, k) hx
     · rw [← LinearMap.range_eq_top]
       rw [← (finrank_eq_one_iff_of_nonzero x hx).mp h_dim]
       rw [LinearMap.span_singleton_eq_range]
@@ -213,8 +211,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     StandardOneDimIsocrystal.frobenius_apply]
   unfold StandardOneDimIsocrystal
   rw [LinearMap.toSpanSingleton_apply K(p, k) V x c, LinearMap.toSpanSingleton_apply K(p, k) V x]
-  simp only [hax, LinearEquiv.ofBijective_apply, LinearMap.toSpanSingleton_apply,
-    LinearEquiv.map_smulₛₗ, Algebra.id.smul_eq_mul]
+  simp only [hax, map_smulₛₗ, smul_eq_mul]
   simp only [← mul_smul]
   congr 1
   linear_combination φ(p, k) c * hmb

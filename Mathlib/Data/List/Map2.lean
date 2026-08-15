@@ -3,8 +3,11 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Defs
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Map₂ Lemmas
@@ -20,13 +23,13 @@ Lists together. In particular, we include lemmas about:
 
 -/
 
+public section
+
 assert_not_exists GroupWithZero
 assert_not_exists Lattice
 assert_not_exists Prod.swap_eq_iff_eq_swap
 assert_not_exists Ring
 assert_not_exists Set.range
-
-open Function
 
 open Nat hiding one_pos
 

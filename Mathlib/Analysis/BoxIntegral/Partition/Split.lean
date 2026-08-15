@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Basic
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Basic
 
 /-!
 # Split a box along one or more hyperplanes
@@ -26,7 +28,7 @@ We introduce the following definitions.
 
 ## Main results
 
-The main result `BoxIntegral.Prepartition.exists_iUnion_eq_diff` says that any prepartition `π` of
+The main result `BoxIntegral.Prepartition.exists_iUnion_eq_sdiff` says that any prepartition `π` of
 `I` admits a prepartition `π'` of `I` that covers exactly `I \ π.iUnion`. One of these prepartitions
 is available as `BoxIntegral.Prepartition.compl`.
 
@@ -34,6 +36,8 @@ is available as `BoxIntegral.Prepartition.compl`.
 
 rectangular box, partition, hyperplane
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -59,7 +63,7 @@ def splitLower (I : Box ι) (i : ι) (x : ℝ) : WithBot (Box ι) :=
 theorem coe_splitLower : (splitLower I i x : Set (ι → ℝ)) = ↑I ∩ { y | y i ≤ x } := by
   rw [splitLower, coe_mk']
   ext y
-  simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_setOf_eq, forall_and, ← Pi.le_def,
+  simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_ofPred_eq, forall_and, ← Pi.le_def,
     le_update_iff, le_min_iff, and_assoc, and_forall_ne (p := fun j => y j ≤ upper I j) i, mem_def]
   rw [and_comm (a := y i ≤ x)]
 
@@ -74,7 +78,7 @@ theorem splitLower_eq_bot {i x} : I.splitLower i x = ⊥ ↔ x ≤ I.lower i := 
 
 @[simp]
 theorem splitLower_eq_self : I.splitLower i x = I ↔ I.upper i ≤ x := by
-  simp [splitLower, update_eq_iff]
+  simp [splitLower]
 
 theorem splitLower_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.upper i))
     (h' : ∀ j, I.lower j < update I.upper i x j :=
@@ -97,7 +101,7 @@ theorem coe_splitUpper : (splitUpper I i x : Set (ι → ℝ)) = ↑I ∩ { y | 
   classical
   rw [splitUpper, coe_mk']
   ext y
-  simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_setOf_eq, forall_and,
+  simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_ofPred_eq, forall_and,
     forall_update_iff I.lower fun j z => z < y j, max_lt_iff, and_assoc (a := x < y i),
     and_forall_ne (p := fun j => lower I j < y j) i, mem_def]
   exact and_comm
@@ -113,7 +117,7 @@ theorem splitUpper_eq_bot {i x} : I.splitUpper i x = ⊥ ↔ I.upper i ≤ x := 
 
 @[simp]
 theorem splitUpper_eq_self : I.splitUpper i x = I ↔ x ≤ I.lower i := by
-  simp [splitUpper, update_eq_iff]
+  simp [splitUpper]
 
 theorem splitUpper_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.upper i))
     (h' : ∀ j, update I.lower i x j < I.upper j :=
@@ -155,7 +159,7 @@ def split (I : Box ι) (i : ι) (x : ℝ) : Prepartition I :=
       exacts [Box.splitLower_le, Box.splitUpper_le])
     (by
       simp only [Finset.coe_insert, Finset.coe_singleton, true_and, Set.mem_singleton_iff,
-        pairwise_insert_of_symmetric symmetric_disjoint, pairwise_singleton]
+        pairwise_insert_of_symm, pairwise_singleton]
       rintro J rfl -
       exact I.disjoint_splitLower_splitUpper i x)
 
@@ -169,11 +173,12 @@ theorem mem_split_iff' : J ∈ split I i x ↔
 
 @[simp]
 theorem iUnion_split (I : Box ι) (i : ι) (x : ℝ) : (split I i x).iUnion = I := by
-  simp [split, ← inter_union_distrib_left, ← setOf_or, le_or_gt]
+  simp [split, ← inter_union_distrib_left, ← ofPred_or, le_or_gt]
 
 theorem isPartitionSplit (I : Box ι) (i : ι) (x : ℝ) : IsPartition (split I i x) :=
   isPartition_iff_iUnion_eq.2 <| iUnion_split I i x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_split_boxes {M : Type*} [AddCommMonoid M] (I : Box ι) (i : ι) (x : ℝ) (f : Box ι → M) :
     (∑ J ∈ (split I i x).boxes, f J) =
       (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f := by
@@ -190,8 +195,6 @@ theorem split_of_notMem_Ioo (h : x ∉ Ioo (I.lower i) (I.upper i)) : split I i 
   · rwa [eq_comm, Box.splitUpper_eq_self]
   · rwa [eq_comm, Box.splitLower_eq_self]
 
-@[deprecated (since := "2025-05-23")] alias split_of_not_mem_Ioo := split_of_notMem_Ioo
-
 theorem coe_eq_of_mem_split_of_mem_le {y : ι → ℝ} (h₁ : J ∈ split I i x) (h₂ : y ∈ J)
     (h₃ : y i ≤ x) : (J : Set (ι → ℝ)) = ↑I ∩ { y | y i ≤ x } := by
   refine (mem_split_iff'.1 h₁).resolve_right fun H => ?_
@@ -207,7 +210,7 @@ theorem coe_eq_of_mem_split_of_lt_mem {y : ι → ℝ} (h₁ : J ∈ split I i x
 @[simp]
 theorem restrict_split (h : I ≤ J) (i : ι) (x : ℝ) : (split J i x).restrict I = split I i x := by
   refine ((isPartitionSplit J i x).restrict h).eq_of_boxes_subset ?_
-  simp only [Finset.subset_iff, mem_boxes, mem_restrict', exists_prop, mem_split_iff']
+  simp only [Finset.subset_iff, mem_boxes, mem_restrict', mem_split_iff']
   have : ∀ s, (I ∩ s : Set (ι → ℝ)) ⊆ J := fun s => inter_subset_left.trans h
   rintro J₁ ⟨J₂, H₂ | H₂, H₁⟩ <;> [left; right] <;>
     simp [H₁, H₂, inter_left_comm (I : Set (ι → ℝ)), this]
@@ -223,7 +226,7 @@ def splitMany (I : Box ι) (s : Finset (ι × ℝ)) : Prepartition I :=
 
 @[simp]
 theorem splitMany_empty (I : Box ι) : splitMany I ∅ = ⊤ :=
-  Finset.inf_empty
+  rfl
 
 open scoped Classical in
 @[simp]
@@ -247,9 +250,9 @@ theorem iUnion_splitMany (I : Box ι) (s : Finset (ι × ℝ)) : (splitMany I s)
 theorem inf_splitMany {I : Box ι} (π : Prepartition I) (s : Finset (ι × ℝ)) :
     π ⊓ splitMany I s = π.biUnion fun J => splitMany J s := by
   classical
-  induction' s using Finset.induction_on with p s _ ihp
-  · simp
-  · simp_rw [splitMany_insert, ← inf_assoc, ihp, inf_split, biUnion_assoc]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert p s _ ihp => simp_rw [splitMany_insert, ← inf_assoc, ihp, inf_split, biUnion_assoc]
 
 open scoped Classical in
 /-- Let `s : Finset (ι × ℝ)` be a set of hyperplanes `{x : ι → ℝ | x i = r}` in `ι → ℝ` encoded as
@@ -297,7 +300,7 @@ theorem eventually_splitMany_inf_eq_filter (π : Prepartition I) :
   refine (eventually_not_disjoint_imp_le_of_mem_splitMany π.boxes).mono fun t ht => ?_
   refine le_antisymm ((biUnion_le_iff _).2 fun J hJ => ?_) (le_inf (fun J hJ => ?_) (filter_le _ _))
   · refine ofWithBot_mono ?_
-    simp only [Finset.mem_image, exists_prop, mem_boxes, mem_filter]
+    simp only [Finset.mem_image, mem_boxes, mem_filter]
     rintro _ ⟨J₁, h₁, rfl⟩ hne
     refine ⟨_, ⟨J₁, ⟨h₁, Subset.trans ?_ (π.subset_iUnion hJ)⟩, rfl⟩, le_rfl⟩
     exact ht I J hJ J₁ h₁ (mt disjoint_iff.1 hne)
@@ -322,20 +325,22 @@ theorem IsPartition.exists_splitMany_le {I : Box ι} {π : Prepartition I} (h : 
 
 /-- For every prepartition `π` of `I` there exists a prepartition that covers exactly
 `I \ π.iUnion`. -/
-theorem exists_iUnion_eq_diff (π : Prepartition I) :
+theorem exists_iUnion_eq_sdiff (π : Prepartition I) :
     ∃ π' : Prepartition I, π'.iUnion = ↑I \ π.iUnion := by
   rcases π.eventually_splitMany_inf_eq_filter.exists with ⟨s, hs⟩
   use (splitMany I s).filter fun J => ¬(J : Set (ι → ℝ)) ⊆ π.iUnion
   simp [← hs]
 
+@[deprecated (since := "2026-06-03")] alias exists_iUnion_eq_diff := exists_iUnion_eq_sdiff
+
 /-- If `π` is a prepartition of `I`, then `π.compl` is a prepartition of `I`
 such that `π.compl.iUnion = I \ π.iUnion`. -/
 def compl (π : Prepartition I) : Prepartition I :=
-  π.exists_iUnion_eq_diff.choose
+  π.exists_iUnion_eq_sdiff.choose
 
 @[simp]
 theorem iUnion_compl (π : Prepartition I) : π.compl.iUnion = ↑I \ π.iUnion :=
-  π.exists_iUnion_eq_diff.choose_spec
+  π.exists_iUnion_eq_sdiff.choose_spec
 
 /-- Since the definition of `BoxIntegral.Prepartition.compl` uses `Exists.choose`,
 the result depends only on `π.iUnion`. -/
@@ -345,7 +350,7 @@ theorem compl_congr {π₁ π₂ : Prepartition I} (h : π₁.iUnion = π₂.iUn
   rw [h]
 
 theorem IsPartition.compl_eq_bot {π : Prepartition I} (h : IsPartition π) : π.compl = ⊥ := by
-  rw [← iUnion_eq_empty, iUnion_compl, h.iUnion_eq, diff_self]
+  rw [← iUnion_eq_empty, iUnion_compl, h.iUnion_eq, sdiff_self]
 
 @[simp]
 theorem compl_top : (⊤ : Prepartition I).compl = ⊥ :=

@@ -3,9 +3,11 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-!
 
@@ -36,6 +38,8 @@ There are also `Submodule.mulLeftMap` and `Submodule.mulRightMap`, defined in ea
 
 -/
 
+@[expose] public section
+
 open scoped TensorProduct
 
 noncomputable section
@@ -62,16 +66,21 @@ def mulMap : M ⊗[R] N →ₗ[R] S := TensorProduct.lift ((LinearMap.mul R S).d
 @[simp]
 theorem mulMap_tmul (m : M) (n : N) : mulMap M N (m ⊗ₜ[R] n) = m.1 * n.1 := rfl
 
-theorem mulMap_map_comp_eq {T : Type w} [Semiring T] [Algebra R T]
-    {F : Type*} [FunLike F S T] [AlgHomClass F R S T] (f : F) :
-    mulMap (M.map f) (N.map f) ∘ₗ
+theorem mulMap_map_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ[R] T) :
+    mulMap (M.map (f : S →ₗ[R] T)) (N.map (f : S →ₗ[R] T)) ∘ₗ
       TensorProduct.map ((f : S →ₗ[R] T).submoduleMap M) ((f : S →ₗ[R] T).submoduleMap N)
-        = f ∘ₗ mulMap M N := by
+        = (f : S →ₗ[R] T) ∘ₗ mulMap M N := by
   ext
-  simp only [TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp,
+  simp only [TensorProduct.AlgebraTensorModule.curry_apply,
     TensorProduct.curry_apply, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
     Function.comp_apply, TensorProduct.map_tmul, mulMap_tmul, LinearMap.coe_coe, map_mul]
   rfl
+
+theorem coe_mulMap_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ[R] T) :
+    mulMap (M.map (f : S →ₗ[R] T)) (N.map (f : S →ₗ[R] T)) ∘
+      TensorProduct.map ((f : S →ₗ[R] T).submoduleMap M) ((f : S →ₗ[R] T).submoduleMap N)
+        = f ∘ mulMap M N :=
+  congr(⇑($(mulMap_map_comp_eq M N f)))
 
 theorem mulMap_op :
     mulMap (equivOpposite.symm (MulOpposite.op M)) (equivOpposite.symm (MulOpposite.op N)) =
@@ -154,7 +163,7 @@ there is the natural isomorphism of `R`-modules between
 `i(R) ⊗[R] N` and `N` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
 def lTensorOne : (⊥ : Subalgebra R S) ⊗[R] N ≃ₗ[R] N :=
-  LinearEquiv.ofLinear N.lTensorOne' (TensorProduct.mk R (⊥ : Subalgebra R S) N 1)
+  LinearEquiv.ofLinearMap N.lTensorOne' (TensorProduct.mk R (⊥ : Subalgebra R S) N 1)
     (by ext; simp) <| TensorProduct.ext' fun r n ↦ by
   change 1 ⊗ₜ[R] lTensorOne' N _ = r ⊗ₜ[R] n
   obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
@@ -206,7 +215,7 @@ there is the natural isomorphism of `R`-modules between
 `M ⊗[R] i(R)` and `M` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`. -/
 def rTensorOne : M ⊗[R] (⊥ : Subalgebra R S) ≃ₗ[R] M :=
-  LinearEquiv.ofLinear M.rTensorOne' ((TensorProduct.comm R _ _).toLinearMap ∘ₗ
+  LinearEquiv.ofLinearMap M.rTensorOne' ((TensorProduct.comm R _ _).toLinearMap ∘ₗ
     TensorProduct.mk R (⊥ : Subalgebra R S) M 1) (by ext; simp) <| TensorProduct.ext' fun n r ↦ by
   change rTensorOne' M _ ⊗ₜ[R] 1 = n ⊗ₜ[R] r
   obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
@@ -256,7 +265,7 @@ theorem mulLeftMap_eq_mulMap_comp {ι : Type*} [DecidableEq ι] (m : ι → M) :
 variable {N} in
 theorem mulRightMap_eq_mulMap_comp {ι : Type*} [DecidableEq ι] (n : ι → N) :
     mulRightMap M n = mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.linearCombination R n) ∘ₗ
-      (TensorProduct.finsuppScalarRight R M ι).symm.toLinearMap := by
+      (TensorProduct.finsuppScalarRight R R M ι).symm.toLinearMap := by
   ext; simp
 
 end Semiring

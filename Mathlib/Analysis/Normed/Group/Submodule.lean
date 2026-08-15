@@ -3,11 +3,14 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
+module
 
-import Mathlib.Algebra.Module.Submodule.LinearMap
-import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Algebra.Module.Submodule.LinearMap
+public import Mathlib.Analysis.Normed.Group.Basic
 
 /-! # Submodules of normed groups -/
+
+public section
 
 variable {𝕜 E : Type*}
 
@@ -17,7 +20,7 @@ namespace Submodule
 -/
 instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E]
     (s : Submodule 𝕜 E) : SeminormedAddCommGroup s :=
-  SeminormedAddCommGroup.induced _ _ s.subtype.toAddMonoidHom
+  fast_instance% SeminormedAddCommGroup.induced _ _ s.subtype.toAddMonoidHom
 
 /-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `s` is equal to its
 norm in `E`. -/
@@ -42,3 +45,11 @@ instance normedAddCommGroup [Ring 𝕜] [NormedAddCommGroup E] [Module 𝕜 E]
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 end Submodule
+
+@[continuity, fun_prop]
+theorem LinearMap.continuous_domRestrict {R R' M M' : Type*} [Semiring R] [Semiring R']
+    [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R' M'] {σ₁₂ : R →+* R'}
+    (f : M →ₛₗ[σ₁₂] M') [TopologicalSpace M] [TopologicalSpace M'] (hf : Continuous f)
+    (p : Submodule R M) : Continuous (f.domRestrict p) := by
+  rw [coe_domRestrict]
+  fun_prop

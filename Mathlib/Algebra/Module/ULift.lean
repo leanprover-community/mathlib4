@@ -3,20 +3,24 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.GroupWithZero.ULift
-import Mathlib.Algebra.Ring.ULift
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Data.ULift
+module
+
+public import Mathlib.Algebra.GroupWithZero.ULift
+public import Mathlib.Algebra.Ring.ULift
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Data.ULift
 
 /-!
 # `ULift` instances for module and multiplicative actions
 
-This file defines instances for module, mul_action and related structures on `ULift` types.
+This file defines instances for `Module`, `MulAction` and related structures on `ULift` types.
 
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 
 We also provide `ULift.moduleEquiv : ULift M ≃ₗ[R] M`.
 -/
+
+@[expose] public section
 
 
 namespace ULift
@@ -50,13 +54,11 @@ instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar 
 
 @[to_additive]
 instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
-  smul := (· • ·)
   mul_smul _ _ := mul_smul _ _
   one_smul := one_smul _
 
 @[to_additive]
 instance mulAction' [Monoid R] [MulAction R M] : MulAction R (ULift M) where
-  smul := (· • ·)
   mul_smul := fun _ _ _ => congr_arg ULift.up <| mul_smul _ _ _
   one_smul := fun _ => congr_arg ULift.up <| one_smul _ _
 

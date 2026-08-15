@@ -3,11 +3,14 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Fintype.Sort
-import Mathlib.LinearAlgebra.Multilinear.Basic
+module
+
+public import Mathlib.Data.Fintype.Sort
+public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Currying of multilinear maps
+
 We register isomorphisms corresponding to currying or uncurrying variables, transforming a
 multilinear function `f` on `n+1` variables into a linear function taking values in multilinear
 functions in `n` variables, and into a multilinear function in `n` variables taking values in linear
@@ -20,7 +23,9 @@ in linear functions), called respectively `multilinearCurryLeftEquiv` and
 
 -/
 
-open Fin Function Finset Set
+@[expose] public section
+
+open Fin Function Finset
 
 universe uR uS uι uι' v v' v₁ v₂ v₃
 
@@ -84,9 +89,7 @@ theorem MultilinearMap.curryLeft_apply (f : MultilinearMap R M M₂) (x : M 0)
 @[simp]
 theorem LinearMap.curry_uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i :
     Fin n => M i.succ) M₂) : f.uncurryLeft.curryLeft = f := by
-  ext m x
-  simp only [tail_cons, LinearMap.uncurryLeft_apply, MultilinearMap.curryLeft_apply]
-  rw [cons_zero]
+  rfl
 
 @[simp]
 theorem MultilinearMap.uncurry_curryLeft (f : MultilinearMap R M M₂) :
@@ -237,12 +240,12 @@ def currySum (f : MultilinearMap R N M₂) :
     MultilinearMap R (fun i : ι ↦ N (.inl i)) (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂) where
   toFun u :=
     { toFun v := f (Sum.rec u v)
-      map_update_add' := by letI := Classical.decEq ι; aesop
-      map_update_smul' := by letI := Classical.decEq ι; aesop }
+      map_update_add' := by let := Classical.decEq ι; simp
+      map_update_smul' := by let := Classical.decEq ι; simp }
   map_update_add' u i x y :=
-    ext fun _ ↦ by letI := Classical.decEq ι'; simp
+    ext fun _ ↦ by let := Classical.decEq ι'; simp
   map_update_smul' u i c x :=
-    ext fun _ ↦ by letI := Classical.decEq ι'; simp
+    ext fun _ ↦ by let := Classical.decEq ι'; simp
 
 @[simp low]
 theorem currySum_apply (f : MultilinearMap R N M₂)
@@ -260,7 +263,7 @@ lemma currySum_add (f₁ f₂ : MultilinearMap R N M₂) :
     currySum (f₁ + f₂) = currySum f₁ + currySum f₂ := rfl
 
 @[simp]
-lemma currySum_smul (r : R) (f : MultilinearMap R N M₂):
+lemma currySum_smul (r : R) (f : MultilinearMap R N M₂) :
     currySum (r • f) = r • currySum f := rfl
 
 /-- Given a family of modules `N : (ι ⊕ ι') → Type*`, a multilinear map on
@@ -270,15 +273,15 @@ on `(fun _ : ι ⊕ ι' => M')` induces. -/
 def uncurrySum
     (g : MultilinearMap R (fun i : ι ↦ N (.inl i))
       (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂)) :
-    MultilinearMap R N M₂  where
+    MultilinearMap R N M₂ where
   toFun u := g (fun i ↦ u (.inl i)) (fun i' ↦ u (.inr i'))
   map_update_add' := by
-    letI := Classical.decEq ι
-    letI := Classical.decEq ι'
+    let := Classical.decEq ι
+    let := Classical.decEq ι'
     rintro _ _ (_ | _) _ _ <;> simp
   map_update_smul' := by
-    letI := Classical.decEq ι
-    letI := Classical.decEq ι'
+    let := Classical.decEq ι
+    let := Classical.decEq ι'
     rintro _ _ (_ | _) _ _ <;> simp
 
 @[simp]
@@ -300,8 +303,6 @@ lemma uncurrySum_smul
       (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂)) :
     uncurrySum (r • g) = r • uncurrySum g :=
   rfl
-
-@[deprecated (since := "2025-04-23")] alias uncurrySum_aux_apply := uncurrySum_apply
 
 @[simp]
 lemma uncurrySum_currySum (f : MultilinearMap R N M₂) :

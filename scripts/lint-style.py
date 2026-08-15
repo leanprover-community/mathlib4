@@ -41,7 +41,6 @@ ERR_IWH = 22 # isolated where
 ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
-ERR_NSP = 20 # non-terminal simp
 
 exceptions = []
 new_exceptions = False
@@ -140,36 +139,6 @@ def four_spaces_in_second_line(lines, path):
         newlines.append((next_line_nr, new_next_line))
     return errors, newlines
 
-flexible_tactics = ["rfl", "ring", "aesop", "norm_num", "positivity", "abel", "omega", "linarith", "nlinarith"]
-
-def nonterminal_simp_check(lines, path):
-    errors = []
-    newlines = []
-    annotated_lines = list(annotate_comments(lines))
-    for (line_nr, line, is_comment), (_, next_line, _) in zip(annotated_lines,
-                                                              annotated_lines[1:]):
-        # Check if the current line matches whitespace followed by "simp"
-        new_line = line
-        # TODO it would be better to use a regex like r"^\s*simp( \[.*\])?( at .*)?$" and thereby
-        # catch all possible simp invocations. Adding this will require more initial cleanup or
-        # nolint.
-        if (not is_comment) and re.search(r"^\s*simp$", line):
-            # Calculate the number of spaces before the first non-space character in the line
-            num_spaces = len(line) - len(line.lstrip())
-            # Calculate the number of spaces before the first non-space character in the next line
-            stripped_next_line = next_line.lstrip()
-
-            if not (next_line == '\n' or next_line.startswith("#") or stripped_next_line.startswith("--") or any(f in next_line for f in flexible_tactics)):
-                num_next_spaces = len(next_line) - len(stripped_next_line)
-                # Check if the number of leading spaces is the same
-                if num_spaces == num_next_spaces:
-                    # If so, the simp is nonterminal
-                    errors += [(ERR_NSP, line_nr, path)]
-                    new_line = line.replace("simp", "simp?")
-        newlines.append((line_nr, new_line))
-    newlines.append(lines[-1])
-    return errors, newlines
-
 
 def isolated_by_dot_semicolon_check(lines, path):
     errors = []
@@ -238,8 +207,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
         if errno == ERR_ARR:
             output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
-        if errno == ERR_NSP:
-            output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
 
 def lint(path, fix=False):
     global new_exceptions
@@ -258,7 +225,7 @@ def lint(path, fix=False):
 
     # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
     if fix and new_exceptions and enum_lines != newlines:
-        path.with_name(path.name + '.bak').write_text("".join(l for _,l in newlines), encoding = "utf8")
+        path.with_name(path.name + '.bak').write_text("".join(l for _, l in newlines), encoding = "utf8")
         shutil.move(path.with_name(path.name + '.bak'), path)
 
 fix = "--fix" in sys.argv

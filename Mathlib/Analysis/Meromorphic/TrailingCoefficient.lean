@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.Order
+module
+
+public import Mathlib.Analysis.Meromorphic.Order
 
 /-!
 # The Trailing Coefficient of a Meromorphic Function
@@ -12,8 +14,11 @@ This file defines the trailing coefficient of a meromorphic function. If `f` is 
 point `x`, the trailing coefficient is defined as the (unique!) value `g x` for a presentation of
 `f` in the form `(z - x) ^ order • g z` with `g` analytic at `x`.
 
-The lemma `meromorphicTrailingCoeffAt_eq_limit` expresses the trailing coefficient as a limit.
+The lemma `MeromorphicAt.tendsto_nhds_meromorphicTrailingCoeffAt` expresses the trailing coefficient
+as a limit.
 -/
+
+@[expose] public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -49,7 +54,7 @@ If `f` is meromorphic of infinite order at `x`, the trailing coefficient is zero
     meromorphicTrailingCoeffAt f x = 0 := by simp_all [meromorphicTrailingCoeffAt]
 
 /-!
-## Characterization of the Leading Coefficient
+## Characterization of the Trailing Coefficient
 -/
 
 /--
@@ -69,7 +74,7 @@ lemma AnalyticAt.meromorphicTrailingCoeffAt_of_eq_nhdsNE (h₁g : AnalyticAt �
     rw [← ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE (by fun_prop) (by fun_prop)]
     apply (h.symm.trans (meromorphicOrderAt_eq_top_iff.1 h₃)).symm
   · unfold meromorphicTrailingCoeffAt
-    simp only [h₁f, not_true_eq_false, reduceDIte, h₃, ne_eq]
+    simp only [h₁f, reduceDIte, h₃, ne_eq]
     obtain ⟨h'₁, h'₂, h'₃⟩ := ((meromorphicOrderAt_ne_top_iff h₁f).1 h₃).choose_spec
     apply Filter.EventuallyEq.eq_of_nhds
     rw [← h'₁.continuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE h₁g.continuousAt]
@@ -89,10 +94,10 @@ lemma AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE {n : ℤ} (h
     rw [MeromorphicAt.meromorphicAt_congr h]
     fun_prop
   have : meromorphicOrderAt f x = n := by
-    simp only [meromorphicOrderAt_eq_int_iff h₄, ne_eq, zpow_natCast]
+    simp only [meromorphicOrderAt_eq_int_iff h₄, ne_eq]
     use g, h₁g, h₂g
     exact h
-  simp_all [meromorphicTrailingCoeffAt_of_eq_nhdsNE h₁g, this]
+  simp_all [meromorphicTrailingCoeffAt_of_eq_nhdsNE h₁g]
 
 /--
 If `f` is analytic and does not vanish at `x`, then the trailing coefficient of `f` at `x` is `f x`.
@@ -141,6 +146,34 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_ne_zero (h₁ : MeromorphicAt f x
   obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h₁).1 h₂
   simpa [h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g h₃g] using h₂g
 
+/--
+The trailing coefficient of a constant function is the constant.
+-/
+@[simp]
+theorem meromorphicTrailingCoeffAt_const {x : 𝕜} {e : 𝕜} :
+    meromorphicTrailingCoeffAt (fun _ ↦ e) x = e := by
+  by_cases he : e = 0
+  · rw [he]
+    apply MeromorphicAt.meromorphicTrailingCoeffAt_of_order_eq_top
+    rw [meromorphicOrderAt_eq_top_iff]
+    simp
+  · exact analyticAt_const.meromorphicTrailingCoeffAt_of_ne_zero he
+
+/--
+The trailing coefficient of `fun z ↦ z - constant` at `z₀` equals one if `z₀ = constant`, or else
+`z₀ - constant`.
+-/
+theorem meromorphicTrailingCoeffAt_id_sub_const [DecidableEq 𝕜] {x y : 𝕜} :
+    meromorphicTrailingCoeffAt (· - y) x = if x = y then 1 else x - y := by
+  by_cases h : x = y
+  · simp_all only [sub_self, ite_true]
+    apply AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE (n := 1) (by fun_prop)
+      (by apply one_ne_zero)
+    simp
+  · simp_all only [ite_false]
+    apply AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero (by fun_prop)
+    simp_all [sub_ne_zero]
+
 /-!
 ## Congruence Lemma
 -/
@@ -154,7 +187,7 @@ lemma meromorphicTrailingCoeffAt_congr_nhdsNE {f₁ f₂ : 𝕜 → E} (h : f₁
   · simp [h₁, (MeromorphicAt.meromorphicAt_congr h).not.1 h₁]
   rw [not_not] at h₁
   by_cases h₂ : meromorphicOrderAt f₁ x = ⊤
-  · simp_all [h₁.congr h, meromorphicOrderAt_congr h]
+  · simp_all [meromorphicOrderAt_congr h]
   obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h₁).1 h₂
   rw [h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g h₃g,
     h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g (h.symm.trans h₃g)]
@@ -164,6 +197,167 @@ lemma meromorphicTrailingCoeffAt_congr_nhdsNE {f₁ f₂ : 𝕜 → E} (h : f₁
 -/
 
 /--
+Taking the negative commutes with taking `meromorphicTrailingCoeffAt`.
+-/
+theorem meromorphicTrailingCoeffAt_neg {f : 𝕜 → E} :
+    meromorphicTrailingCoeffAt (-f) x = -meromorphicTrailingCoeffAt f x := by
+  by_cases h₁ : ¬ MeromorphicAt f x
+  · aesop
+  rw [not_not] at h₁
+  by_cases h₂ : meromorphicOrderAt f x = ⊤
+  · simp_all [← meromorphicOrderAt_neg]
+  obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h₁).1 h₂
+  rw [h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g h₃g]
+  rw [AnalyticAt.meromorphicTrailingCoeffAt_of_eq_nhdsNE (g := -g)]
+  · simp
+  · fun_prop
+  · filter_upwards [h₃g] with a ha
+    simp [ha, ← meromorphicOrderAt_neg]
+
+/--
+Taking the negative commutes with taking `meromorphicTrailingCoeffAt`.
+-/
+theorem meromorphicTrailingCoeffAt_fun_neg {f : 𝕜 → E} :
+    meromorphicTrailingCoeffAt (fun z ↦ -f z) x = -meromorphicTrailingCoeffAt f x :=
+  meromorphicTrailingCoeffAt_neg
+
+/--
+If `f₁` and `f₂` have unequal order at `x`, then the trailing coefficient of `f₁ + f₂` at `x` is the
+trailing coefficient of the function with the lowest order.
+-/
+theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_left_of_lt {f₁ f₂ : 𝕜 → E}
+    (hf₂ : MeromorphicAt f₂ x) (h : meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x) :
+    meromorphicTrailingCoeffAt (f₁ + f₂) x = meromorphicTrailingCoeffAt f₁ x := by
+  -- Trivial case: f₁ not meromorphic at x
+  by_cases! hf₁ : ¬MeromorphicAt f₁ x
+  · have : ¬MeromorphicAt (f₁ + f₂) x := by
+      rwa [add_comm, hf₂.meromorphicAt_add_iff_meromorphicAt₁]
+    simp_all
+  -- Trivial case: f₂ vanishes locally around x
+  by_cases h₁f₂ : meromorphicOrderAt f₂ x = ⊤
+  · apply meromorphicTrailingCoeffAt_congr_nhdsNE
+    filter_upwards [meromorphicOrderAt_eq_top_iff.1 h₁f₂]
+    simp
+  -- General case
+  lift meromorphicOrderAt f₂ x to ℤ using h₁f₂ with n₂ hn₂
+  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (meromorphicOrderAt_eq_int_iff hf₂).1 hn₂.symm
+  lift meromorphicOrderAt f₁ x to ℤ using (by aesop) with n₁ hn₁
+  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (meromorphicOrderAt_eq_int_iff hf₁).1 hn₁.symm
+  rw [WithTop.coe_lt_coe] at h
+  have τ₀ : ∀ᶠ z in 𝓝[≠] x, (f₁ + f₂) z = (z - x) ^ n₁ • (g₁ + (z - x) ^ (n₂ - n₁) • g₂) z := by
+    filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin] with z h₁z h₂z h₃z
+    simp only [Pi.add_apply, h₁z, h₂z, Pi.smul_apply, smul_add, ← smul_assoc, smul_eq_mul,
+      add_right_inj]
+    rw [← zpow_add₀, add_sub_cancel]
+    simp_all [sub_ne_zero]
+  have τ₁ : AnalyticAt 𝕜 (fun z ↦ g₁ z + (z - x) ^ (n₂ - n₁) • g₂ z) x :=
+    h₁g₁.fun_add (AnalyticAt.fun_smul (AnalyticAt.fun_zpow_nonneg (by fun_prop)
+      (sub_nonneg_of_le h.le)) h₁g₂)
+  have τ₂ : g₁ x + (x - x) ^ (n₂ - n₁) • g₂ x ≠ 0 := by
+    simp_all [zero_zpow _ (sub_ne_zero.2 (ne_of_lt h).symm)]
+  rw [h₁g₁.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g₁ h₃g₁,
+    τ₁.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE τ₂ τ₀, sub_self, add_eq_left,
+    smul_eq_zero, zero_zpow _ (sub_ne_zero.2 (ne_of_lt h).symm)]
+  tauto
+
+/--
+If `f₁` and `f₂` have unequal order at `x`, then the trailing coefficient of `f₁ + f₂` at `x` is the
+trailing coefficient of the function with the lowest order.
+-/
+theorem MeromorphicAt.meromorphicTrailingCoeffAt_fun_add_eq_left_of_lt {f₁ f₂ : 𝕜 → E}
+    (hf₂ : MeromorphicAt f₂ x) (h : meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x) :
+    meromorphicTrailingCoeffAt (fun z ↦ f₁ z + f₂ z) x = meromorphicTrailingCoeffAt f₁ x :=
+  MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_left_of_lt hf₂ h
+
+/--
+If `f₁` and `f₂` have unequal order at `x`, then the trailing coefficient of `f₁ - f₂` at `x` is the
+trailing coefficient of the function with the lowest order.
+-/
+theorem MeromorphicAt.meromorphicTrailingCoeffAt_sub_eq_left_of_lt {f₁ f₂ : 𝕜 → E}
+    (hf₂ : MeromorphicAt f₂ x) (h : meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x) :
+    meromorphicTrailingCoeffAt (f₁ - f₂) x = meromorphicTrailingCoeffAt f₁ x := by
+  rw [sub_eq_add_neg]
+  apply MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_left_of_lt (by fun_prop)
+  rwa [← meromorphicOrderAt_neg]
+
+/--
+If `f₁` and `f₂` have unequal order at `x`, then the trailing coefficient of `f₁ - f₂` at `x` is the
+trailing coefficient of the function with the lowest order.
+-/
+theorem MeromorphicAt.meromorphicTrailingCoeffAt_fun_sub_eq_left_of_lt {f₁ f₂ : 𝕜 → E}
+    (hf₂ : MeromorphicAt f₂ x) (h : meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x) :
+    meromorphicTrailingCoeffAt (fun z ↦ f₁ z - f₂ z) x = meromorphicTrailingCoeffAt f₁ x :=
+  MeromorphicAt.meromorphicTrailingCoeffAt_sub_eq_left_of_lt hf₂ h
+
+/--
+If `f₁` and `f₂` have equal order at `x` and if their trailing coefficients do not cancel, then the
+trailing coefficient of `f₁ + f₂` at `x` is the sum of the trailing coefficients.
+-/
+theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_add {f₁ f₂ : 𝕜 → E}
+    (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x)
+    (h₁ : meromorphicOrderAt f₁ x = meromorphicOrderAt f₂ x)
+    (h₂ : meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x ≠ 0) :
+    meromorphicTrailingCoeffAt (f₁ + f₂) x
+      = meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x := by
+  -- Trivial case: f₁ vanishes locally around x
+  by_cases h₁f₁ : meromorphicOrderAt f₁ x = ⊤
+  · rw [meromorphicTrailingCoeffAt_of_order_eq_top h₁f₁, zero_add]
+    apply meromorphicTrailingCoeffAt_congr_nhdsNE
+    filter_upwards [meromorphicOrderAt_eq_top_iff.1 h₁f₁]
+    simp
+  -- General case
+  lift meromorphicOrderAt f₁ x to ℤ using (by lia) with n₁ hn₁
+  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (meromorphicOrderAt_eq_int_iff hf₁).1 hn₁.symm
+  lift meromorphicOrderAt f₂ x to ℤ using (by lia) with n₂ hn₂
+  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (meromorphicOrderAt_eq_int_iff hf₂).1 hn₂.symm
+  rw [WithTop.coe_eq_coe, h₁g₁.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g₁ h₃g₁,
+    h₁g₂.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g₂ h₃g₂] at *
+  have τ₀ : ∀ᶠ z in 𝓝[≠] x, (f₁ + f₂) z = (z - x) ^ n₁ • (g₁ + g₂) z := by
+    filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin] with z h₁z h₂z h₃z
+    simp_all
+  simp [AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE (by fun_prop)
+    (by simp_all) τ₀]
+
+/--
+If `f₁` and `f₂` have equal order at `x` and if their trailing coefficients do not cancel, then the
+trailing coefficient of `f₁ + f₂` at `x` is the sum of the trailing coefficients.
+-/
+theorem MeromorphicAt.meromorphicTrailingCoeffAt_fun_add_eq_add {f₁ f₂ : 𝕜 → E}
+    (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x)
+    (h₁ : meromorphicOrderAt f₁ x = meromorphicOrderAt f₂ x)
+    (h₂ : meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x ≠ 0) :
+    meromorphicTrailingCoeffAt (fun z ↦ f₁ z + f₂ z) x
+      = meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x :=
+  MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_add hf₁ hf₂ h₁ h₂
+
+/--
+If `f₁` and `f₂` have equal order at `x` and if their trailing coefficients do not cancel, then the
+trailing coefficient of `f₁ - f₂` at `x` is the sum of the trailing coefficients.
+-/
+theorem MeromorphicAt.meromorphicTrailingCoeffAt_sub_eq_sub {f₁ f₂ : 𝕜 → E}
+    (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x)
+    (h₁ : meromorphicOrderAt f₁ x = meromorphicOrderAt f₂ x)
+    (h₂ : meromorphicTrailingCoeffAt f₁ x - meromorphicTrailingCoeffAt f₂ x ≠ 0) :
+    meromorphicTrailingCoeffAt (f₁ - f₂) x
+      = meromorphicTrailingCoeffAt f₁ x - meromorphicTrailingCoeffAt f₂ x := by
+  rw [sub_eq_add_neg, hf₁.meromorphicTrailingCoeffAt_add_eq_add (by fun_prop)]
+  · rw [meromorphicTrailingCoeffAt_neg, sub_eq_add_neg]
+  · rwa [← meromorphicOrderAt_neg]
+  · rwa [meromorphicTrailingCoeffAt_neg, ← sub_eq_add_neg]
+
+/--
+If `f₁` and `f₂` have equal order at `x` and if their trailing coefficients do not cancel, then the
+trailing coefficient of `f₁ - f₂` at `x` is the sum of the trailing coefficients.
+-/
+theorem MeromorphicAt.meromorphicTrailingCoeffAt_fun_sub_eq_sub {f₁ f₂ : 𝕜 → E}
+    (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x)
+    (h₁ : meromorphicOrderAt f₁ x = meromorphicOrderAt f₂ x)
+    (h₂ : meromorphicTrailingCoeffAt f₁ x - meromorphicTrailingCoeffAt f₂ x ≠ 0) :
+    meromorphicTrailingCoeffAt (fun z ↦ f₁ z - f₂ z) x
+      = meromorphicTrailingCoeffAt f₁ x - meromorphicTrailingCoeffAt f₂ x :=
+  MeromorphicAt.meromorphicTrailingCoeffAt_sub_eq_sub hf₁ hf₂ h₁ h₂
+
+/--
 The trailing coefficient of a scalar product is the scalar product of the trailing coefficients.
 -/
 lemma MeromorphicAt.meromorphicTrailingCoeffAt_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E}
@@ -171,21 +365,29 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_smul {f₁ : 𝕜 → 𝕜} {f₂
     meromorphicTrailingCoeffAt (f₁ • f₂) x =
       (meromorphicTrailingCoeffAt f₁ x) • (meromorphicTrailingCoeffAt f₂ x) := by
   by_cases h₁f₁ : meromorphicOrderAt f₁ x = ⊤
-  · simp_all [hf₁, hf₁.smul hf₂, meromorphicOrderAt_smul hf₁ hf₂, h₁f₁]
+  · simp_all [meromorphicOrderAt_smul hf₁ hf₂]
   by_cases h₁f₂ : meromorphicOrderAt f₂ x = ⊤
-  · simp_all [hf₁, hf₁.smul hf₂, meromorphicOrderAt_smul hf₁ hf₂, h₁f₁]
+  · simp_all [meromorphicOrderAt_smul hf₁ hf₂]
   obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (meromorphicOrderAt_ne_top_iff hf₁).1 h₁f₁
   obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (meromorphicOrderAt_ne_top_iff hf₂).1 h₁f₂
   have : f₁ • f₂ =ᶠ[𝓝[≠] x]
       fun z ↦ (z - x) ^ (meromorphicOrderAt (f₁ • f₂) x).untop₀ • (g₁ • g₂) z := by
     filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin] with y h₁y h₂y h₃y
-    simp_all [meromorphicOrderAt_smul hf₁ hf₂]
-    rw [← smul_assoc, ← smul_assoc, smul_eq_mul, smul_eq_mul, zpow_add₀ (sub_ne_zero.2 h₃y)]
-    ring_nf
+    simp_all [meromorphicOrderAt_smul hf₁ hf₂, zpow_add₀ (sub_ne_zero.2 h₃y)]
+    module
   rw [h₁g₁.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g₁ h₃g₁,
     h₁g₂.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g₂ h₃g₂,
     (h₁g₁.smul h₁g₂).meromorphicTrailingCoeffAt_of_eq_nhdsNE this]
   simp
+
+/--
+The trailing coefficient of a scalar product is the scalar product of the trailing coefficients.
+-/
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_fun_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E}
+    (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) :
+    meromorphicTrailingCoeffAt (fun z ↦ f₁ z • f₂ z) x =
+      (meromorphicTrailingCoeffAt f₁ x) • (meromorphicTrailingCoeffAt f₂ x) :=
+  MeromorphicAt.meromorphicTrailingCoeffAt_smul hf₁ hf₂
 
 /--
 The trailing coefficient of a product is the product of the trailing coefficients.
@@ -195,6 +397,43 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_mul {f₁ f₂ : 𝕜 → 𝕜} (
     meromorphicTrailingCoeffAt (f₁ * f₂) x =
       (meromorphicTrailingCoeffAt f₁ x) * (meromorphicTrailingCoeffAt f₂ x) :=
   meromorphicTrailingCoeffAt_smul hf₁ hf₂
+
+/--
+The trailing coefficient of a product is the product of the trailing coefficients.
+-/
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_fun_mul {f₁ f₂ : 𝕜 → 𝕜}
+    (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) :
+    meromorphicTrailingCoeffAt (fun z ↦ f₁ z * f₂ z) x =
+      (meromorphicTrailingCoeffAt f₁ x) * (meromorphicTrailingCoeffAt f₂ x) :=
+  meromorphicTrailingCoeffAt_smul hf₁ hf₂
+
+/--
+The trailing coefficient of a product is the product of the trailing coefficients.
+-/
+theorem meromorphicTrailingCoeffAt_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+    {x : 𝕜} (h : ∀ σ ∈ s, MeromorphicAt (f σ) x) :
+    meromorphicTrailingCoeffAt (∏ n ∈ s, f n) x = ∏ n ∈ s, meromorphicTrailingCoeffAt (f n) x := by
+  classical
+  induction s using Finset.induction with
+  | empty =>
+    apply meromorphicTrailingCoeffAt_const
+  | insert σ s₁ hσ hind =>
+    have : ∀ σ₀ ∈ s₁, MeromorphicAt (f σ₀) x := by
+      intro τ hτ
+      apply h τ (Finset.mem_insert_of_mem hτ)
+    rw [Finset.prod_insert hσ, Finset.prod_insert hσ,
+      (h σ (Finset.mem_insert_self σ s₁)).meromorphicTrailingCoeffAt_mul
+      (MeromorphicAt.prod this), hind this]
+
+/--
+The trailing coefficient of a product is the product of the trailing coefficients.
+-/
+theorem meromorphicTrailingCoeffAt_fun_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+    {x : 𝕜} (h : ∀ σ ∈ s, MeromorphicAt (f σ) x) :
+    meromorphicTrailingCoeffAt (fun z ↦ ∏ n ∈ s, f n z) x
+      = ∏ n ∈ s, meromorphicTrailingCoeffAt (f n) x := by
+  convert! meromorphicTrailingCoeffAt_prod h
+  simp
 
 /--
 The trailing coefficient of the inverse function is the inverse of the trailing coefficient.
@@ -216,6 +455,13 @@ lemma meromorphicTrailingCoeffAt_inv {f : 𝕜 → 𝕜} :
   · simp_all
 
 /--
+The trailing coefficient of the inverse function is the inverse of the trailing coefficient.
+-/
+lemma meromorphicTrailingCoeffAt_fun_inv {f : 𝕜 → 𝕜} :
+    meromorphicTrailingCoeffAt (fun z ↦ (f z)⁻¹) x = (meromorphicTrailingCoeffAt f x)⁻¹ :=
+  meromorphicTrailingCoeffAt_inv
+
+/--
 The trailing coefficient of the power of a function is the power of the trailing coefficient.
 -/
 lemma MeromorphicAt.meromorphicTrailingCoeffAt_zpow {n : ℤ} {f : 𝕜 → 𝕜} (h₁ : MeromorphicAt f x) :
@@ -224,20 +470,85 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_zpow {n : ℤ} {f : 𝕜 → 𝕜
   · by_cases h₃ : n = 0
     · simp only [h₃, zpow_zero]
       apply analyticAt_const.meromorphicTrailingCoeffAt_of_ne_zero (ne_zero_of_eq_one rfl)
-    · simp_all [meromorphicOrderAt_zpow h₁, h₂, h₃, zero_zpow n h₃]
+    · simp_all [meromorphicOrderAt_zpow h₁, zero_zpow n h₃]
   · obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h₁).1 h₂
     rw [h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE
         (n := (meromorphicOrderAt f x).untop₀) h₂g h₃g,
       (h₁g.zpow h₂g (n := n)).meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE
         (n := (meromorphicOrderAt (f ^ n) x).untop₀)
-        (by simp_all [h₂g, zpow_ne_zero])]
+        (by simp_all [zpow_ne_zero])]
     · simp only [Pi.pow_apply]
     · filter_upwards [h₃g] with a ha
-      simp_all [ha, mul_zpow, ← zpow_mul, meromorphicOrderAt_zpow h₁, mul_comm]
+      simp_all [mul_zpow, ← zpow_mul, meromorphicOrderAt_zpow h₁, mul_comm]
 
 /--
 The trailing coefficient of the power of a function is the power of the trailing coefficient.
 -/
-lemma MeromorphicAt.meromorphicTrailingCoeffAt_pow {n : ℕ} {f : 𝕜 → 𝕜} (h₁ : MeromorphicAt f x) :
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_fun_zpow {n : ℤ} {f : 𝕜 → 𝕜}
+    (h₁ : MeromorphicAt f x) :
+    meromorphicTrailingCoeffAt (fun z ↦ f z ^ n) x = (meromorphicTrailingCoeffAt f x) ^ n :=
+  MeromorphicAt.meromorphicTrailingCoeffAt_zpow h₁
+
+/--
+The trailing coefficient of the power of a function is the power of the trailing coefficient.
+-/
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_pow {n : ℕ} {f : 𝕜 → 𝕜}
+    (h₁ : MeromorphicAt f x) :
     meromorphicTrailingCoeffAt (f ^ n) x = (meromorphicTrailingCoeffAt f x) ^ n := by
-  convert h₁.meromorphicTrailingCoeffAt_zpow (n := n) <;> simp
+  convert! h₁.meromorphicTrailingCoeffAt_zpow (n := n) <;> simp
+
+/--
+The trailing coefficient of the power of a function is the power of the trailing coefficient.
+-/
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_fun_pow {n : ℕ} {f : 𝕜 → 𝕜}
+    (h₁ : MeromorphicAt f x) :
+    meromorphicTrailingCoeffAt (fun z ↦ f z ^ n) x = (meromorphicTrailingCoeffAt f x) ^ n :=
+  MeromorphicAt.meromorphicTrailingCoeffAt_pow h₁
+
+/-!
+## Behavior under Composition
+-/
+
+/--
+If `g` is analytic at `x` and not locally constant, and `f` is meromorphic at `g x`, express the
+trailing coefficient of `f ∘ g` at `x` in terms of `g` and `f`.
+-/
+theorem MeromorphicAt.meromorphicTrailingCoeffAt_comp {g : 𝕜 → 𝕜} (hf : MeromorphicAt f (g x))
+    (hg : AnalyticAt 𝕜 g x) (hg_nc : ¬EventuallyConst g (𝓝 x)) :
+    meromorphicTrailingCoeffAt (f ∘ g) x =
+      (meromorphicTrailingCoeffAt (g · - g x) x) ^ (meromorphicOrderAt f (g x)).untop₀ •
+      meromorphicTrailingCoeffAt f (g x) := by
+  by_cases h : meromorphicOrderAt f (g x) = ⊤
+  · have : meromorphicTrailingCoeffAt (f ∘ g) x = 0 := by
+      apply MeromorphicAt.meromorphicTrailingCoeffAt_of_order_eq_top
+      rw [meromorphicOrderAt_eq_top_iff] at *
+      exact (hg.map_nhdsNE hg_nc) h
+    aesop
+  · set r := (meromorphicOrderAt f (g x)).untop₀
+    obtain ⟨F, h₁F, h₂F, h₃F⟩ := (meromorphicOrderAt_ne_top_iff hf).1 h
+    have h₁ : meromorphicTrailingCoeffAt (f ∘ g) x
+        = meromorphicTrailingCoeffAt ((g · - g x) ^ r • (F ∘ g)) x := by
+      apply meromorphicTrailingCoeffAt_congr_nhdsNE
+      apply Filter.Tendsto.eventually (hg.map_nhdsNE hg_nc) h₃F
+    rw [h₁, MeromorphicAt.meromorphicTrailingCoeffAt_smul (by fun_prop) (by fun_prop),
+      (h₁F.comp hg).meromorphicTrailingCoeffAt_of_ne_zero h₂F,
+      h₁F.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂F h₃F]
+    simp_all only [ne_eq, Function.comp_apply, not_false_eq_true, smul_left_inj]
+    apply MeromorphicAt.meromorphicTrailingCoeffAt_zpow (by fun_prop)
+
+/-- `meromorphicTrailingCoefficientAt` is invariant under translation. -/
+@[to_fun meromorphicTrailingCoeffAt_fun_comp_add_const_eq_meromorphicTrailingCoeffAt]
+theorem meromorphicTrailingCoeffAt_comp_add_const_eq_meromorphicTrailingCoeffAt {c : 𝕜} :
+    meromorphicTrailingCoeffAt (f ∘ (· + c)) x = meromorphicTrailingCoeffAt f (x + c) := by
+  classical
+  by_cases h : ¬ MeromorphicAt f (x + c)
+  · simp_all [meromorphicAt_comp_add_const_iff_meromorphicAt.not.2 h]
+  rw [MeromorphicAt.meromorphicTrailingCoeffAt_comp (by simp_all) (by fun_prop)
+    (by simp [eventuallyConst_iff_analyticOrderAt_sub_eq_top])]
+  simp [meromorphicTrailingCoeffAt_id_sub_const]
+
+/-- `meromorphicTrailingCoefficientAt` is invariant under translation. -/
+@[to_fun meromorphicTrailingCoeffAt_fun_comp_sub_const_eq_meromorphicTrailingCoeffAt]
+theorem meromorphicTrailingCoeffAt_comp_sub_const_eq_meromorphicTrailingCoeffAt {c : 𝕜} :
+    meromorphicTrailingCoeffAt (f ∘ (· - c)) x = meromorphicTrailingCoeffAt f (x - c) := by
+  simp [sub_eq_add_neg, ← meromorphicTrailingCoeffAt_comp_add_const_eq_meromorphicTrailingCoeffAt]

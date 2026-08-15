@@ -3,14 +3,19 @@ Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
-import Mathlib.Algebra.EuclideanDomain.Defs
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Basic
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Instances for Euclidean domains
+
 * `Field.toEuclideanDomain`: shows that any field is a Euclidean domain.
 -/
+
+public section
 
 namespace Field
 
@@ -40,10 +45,10 @@ protected theorem gcd_eq [DecidableEq K] (a b : K) :
 
 protected theorem gcd_zero_eq [DecidableEq K] (b : K) :
     EuclideanDomain.gcd 0 b = b := by
-  rw [Field.gcd_eq, if_pos rfl]
+  rw [Field.gcd_eq, ite_eq_left rfl]
 
 protected theorem gcd_eq_of_ne [DecidableEq K] {a : K} (ha : a ≠ 0) (b : K) :
     EuclideanDomain.gcd a b = a := by
-  rw [Field.gcd_eq, if_neg ha]
+  rw [Field.gcd_eq, ite_eq_right ha]
 
 end Field

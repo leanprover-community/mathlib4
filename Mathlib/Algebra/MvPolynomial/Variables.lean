@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Algebra.MvPolynomial.Degrees
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Algebra.MvPolynomial.Degrees
 
 /-!
 # Variables of polynomials
@@ -29,7 +31,7 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommSemiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
 
 + `r : R`
 
@@ -38,6 +40,8 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 + `p : MvPolynomial σ R`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -68,7 +72,7 @@ def vars (p : MvPolynomial σ R) : Finset σ :=
 
 theorem vars_def [DecidableEq σ] (p : MvPolynomial σ R) : p.vars = p.degrees.toFinset := by
   rw [vars]
-  convert rfl
+  convert! rfl
 
 @[simp]
 theorem vars_0 : (0 : MvPolynomial σ R).vars = ∅ := by
@@ -84,18 +88,32 @@ theorem vars_C : (C r : MvPolynomial σ R).vars = ∅ := by
 
 @[simp]
 theorem vars_X [Nontrivial R] : (X n : MvPolynomial σ R).vars = {n} := by
-  rw [X, vars_monomial (one_ne_zero' R), Finsupp.support_single_ne_zero _ (one_ne_zero' ℕ)]
+  rw [X, vars_monomial (one_ne_zero' R), Finsupp.support_single _ (one_ne_zero' ℕ)]
 
-theorem mem_vars (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support, i ∈ d.support := by
-  classical simp only [vars_def, Multiset.mem_toFinset, mem_degrees, mem_support_iff, exists_prop]
+theorem mem_vars_iff_mem_support (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support, i ∈ d.support := by
+  classical simp only [vars_def, Multiset.mem_toFinset, mem_degrees, mem_support_iff]
+
+@[deprecated (since := "2026-04-24")] alias mem_vars := mem_vars_iff_mem_support
+
+theorem mem_vars_iff_degreeOf_ne_zero {i : σ} : i ∈ p.vars ↔ p.degreeOf i ≠ 0 := by
+  classical simp [degreeOf, vars_def]
 
 theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ} (H : x ∈ f.support)
     {v : σ} (h : v ∉ vars f) : x v = 0 := by
   contrapose! h
-  exact (mem_vars v).mpr ⟨x, H, Finsupp.mem_support_iff.mpr h⟩
+  exact (mem_vars_iff_mem_support v).mpr ⟨x, H, Finsupp.mem_support_iff.mpr h⟩
 
-@[deprecated (since := "2025-05-23")]
-alias mem_support_not_mem_vars_zero := mem_support_notMem_vars_zero
+theorem support_subset_vars_of_mem_support {s : σ →₀ ℕ} (h : s ∈ p.support) :
+    s.support ⊆ p.vars := fun i hi ↦ by
+  contrapose! hi
+  simp [mem_support_notMem_vars_zero h hi]
+
+theorem vars_eq_empty_iff_eq_C : p.vars = ∅ ↔ p = C (p.coeff 0) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]; simp⟩
+  rw [← totalDegree_eq_zero_iff_eq_C]
+  suffices p.degrees.card = 0 by grind [totalDegree_le_degrees_card p]
+  classical rw [vars_def, Multiset.toFinset_eq_empty] at h
+  simp_all
 
 theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by
@@ -148,10 +166,9 @@ variable {A : Type*} [CommRing A] [NoZeroDivisors A]
 theorem vars_C_mul (a : A) (ha : a ≠ 0) (φ : MvPolynomial σ A) :
     (C a * φ : MvPolynomial σ A).vars = φ.vars := by
   ext1 i
-  simp only [mem_vars, exists_prop, mem_support_iff]
+  simp only [mem_vars_iff_mem_support, mem_support_iff]
   apply exists_congr
   intro d
-  apply and_congr _ Iff.rfl
   rw [coeff_C_mul, mul_ne_zero_iff, eq_true ha, true_and]
 
 end IsDomain
@@ -181,14 +198,8 @@ theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun 
   | insert _ _ has hsum =>
     rw [Finset.biUnion_insert, Finset.sum_insert has, vars_add_of_disjoint, hsum]
     unfold Pairwise onFun at h
-    rw [hsum]
     simp only [Finset.disjoint_iff_ne] at h ⊢
-    intro v hv v2 hv2
-    rw [Finset.mem_biUnion] at hv2
-    rcases hv2 with ⟨i, his, hi⟩
-    refine h ?_ _ hv _ hi
-    rintro rfl
-    contradiction
+    grind
 
 end Sum
 
@@ -207,12 +218,12 @@ theorem vars_map_of_injective (hf : Injective f) : (map f p).vars = p.vars := by
 
 theorem vars_monomial_single (i : σ) {e : ℕ} {r : R} (he : e ≠ 0) (hr : r ≠ 0) :
     (monomial (Finsupp.single i e) r).vars = {i} := by
-  rw [vars_monomial hr, Finsupp.support_single_ne_zero _ he]
+  rw [vars_monomial hr, Finsupp.support_single _ he]
 
 theorem vars_eq_support_biUnion_support [DecidableEq σ] :
     p.vars = p.support.biUnion Finsupp.support := by
   ext i
-  rw [mem_vars, Finset.mem_biUnion]
+  rw [mem_vars_iff_mem_support, Finset.mem_biUnion]
 
 end Map
 
@@ -250,7 +261,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
       contradiction
     rw [Finsupp.prod, Finset.prod_eq_zero hi, mul_zero]
     rw [hp, zero_pow (Finsupp.mem_support_iff.1 hi)]
-    rw [mem_vars]
+    rw [mem_vars_iff_mem_support]
     exact ⟨d, hd, hi⟩
 
 theorem aeval_eq_constantCoeff_of_vars [Algebra R S] {g : σ → S} {p : MvPolynomial σ R}
@@ -271,7 +282,7 @@ theorem eval₂Hom_congr' {f₁ f₂ : R →+* S} {g₁ g₂ : σ → S} {p₁ p
   apply Finset.prod_congr rfl
   intro i hi
   have : i ∈ p₁.vars := by
-    rw [mem_vars]
+    rw [mem_vars_iff_mem_support]
     exact ⟨d, hd, hi⟩
   rw [h i this this]
 
@@ -290,7 +301,7 @@ theorem exists_rename_eq_of_vars_subset_range (p : MvPolynomial σ R) (f : τ �
     (hf : ↑p.vars ⊆ Set.range f) : ∃ q : MvPolynomial τ R, rename f q = p :=
   ⟨aeval (fun i : σ => Option.elim' 0 X <| partialInv f i) p,
     by
-      show (rename f).toRingHom.comp _ p = RingHom.id _ p
+      change (rename f).toRingHom.comp _ p = RingHom.id _ p
       refine hom_congr_vars ?_ ?_ ?_
       · ext1
         simp [algebraMap_eq]
@@ -303,7 +314,7 @@ theorem vars_rename [DecidableEq τ] (f : σ → τ) (φ : MvPolynomial σ R) :
     (rename f φ).vars ⊆ φ.vars.image f := by
   classical
   intro i hi
-  simp only [vars_def, exists_prop, Multiset.mem_toFinset, Finset.mem_image] at hi ⊢
+  simp only [vars_def, Multiset.mem_toFinset, Finset.mem_image] at hi ⊢
   simpa only [Multiset.mem_map] using degrees_rename _ _ hi
 
 theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j ∈ (rename f φ).vars) :
@@ -311,14 +322,14 @@ theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j
   classical
   simpa only [exists_prop, Finset.mem_image] using vars_rename f φ h
 
-lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : q.vars.toSet ⊆ s)
+lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : (q.vars : Set σ) ⊆ s)
     [∀ i, Decidable (i ∈ s)] :
     MvPolynomial.aeval (fun i ↦ if i ∈ s then .X i else 0) q = q := by
   rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]
   refine Finset.sum_congr rfl fun u hu ↦ ?_
   rw [MvPolynomial.aeval_monomial, MvPolynomial.monomial_eq]
   congr 1
-  exact Finsupp.prod_congr (fun i hi ↦ by simp [hs ((MvPolynomial.mem_vars _).mpr ⟨u, hu, hi⟩)])
+  exact Finsupp.prod_congr (fun i hi ↦ by simp [hs ((mem_vars_iff_mem_support _).mpr ⟨u, hu, hi⟩)])
 
 end EvalVars
 

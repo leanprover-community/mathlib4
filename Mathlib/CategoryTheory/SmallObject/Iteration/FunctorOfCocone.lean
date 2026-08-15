@@ -3,8 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
 /-!
 # The functor from `Set.Iic j` deduced from a cocone
@@ -14,6 +15,8 @@ an extension of `F` as a functor `Set.Iic j ⥤ C` for which
 the top element is mapped to `c.pt`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -25,7 +28,7 @@ namespace SmallObject
 
 namespace SuccStruct
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
   {J : Type u} [LinearOrder J]
   {j : J} {F : Set.Iio j ⥤ C} (c : Cocone F)
 
@@ -40,12 +43,12 @@ def obj (i : J) : C :=
 /-- Auxiliary definition for `ofCocone`. -/
 def objIso (i : J) (hi : i < j) :
     obj c i ≅ F.obj ⟨i, hi⟩ :=
-  eqToIso (dif_pos hi)
+  eqToIso (dite_eq_left hi)
 
 /-- Auxiliary definition for `ofCocone`. -/
 def objIsoPt :
-    obj c j  ≅ c.pt :=
-  eqToIso (dif_neg (by simp))
+    obj c j ≅ c.pt :=
+  eqToIso (dite_eq_right (by simp))
 
 /-- Auxiliary definition for `ofCocone`. -/
 def map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
@@ -61,12 +64,11 @@ def map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
       eqToHom (by subst h₁' h₂'; rfl)
 
 lemma map_id (i : J) (hi : i ≤ j) :
-    map c i i (by rfl) hi = 𝟙 _:= by
+    map c i i (by rfl) hi = 𝟙 _ := by
   dsimp [map]
-  obtain hi' | rfl := hi.lt_or_eq
-  · rw [dif_pos hi', F.map_id, id_comp, Iso.hom_inv_id]
-  · rw [dif_neg (by simp), dif_neg (by simp)]
+  grind
 
+set_option backward.defeqAttrib.useBackward true in
 lemma map_comp (i₁ i₂ i₃ : J) (hi : i₁ ≤ i₂) (hi' : i₂ ≤ i₃) (hi₃ : i₃ ≤ j) :
     map c i₁ i₃ (hi.trans hi') hi₃ =
       map c i₁ i₂ hi (hi'.trans hi₃) ≫
@@ -75,11 +77,11 @@ lemma map_comp (i₁ i₂ i₃ : J) (hi : i₁ ≤ i₂) (hi' : i₂ ≤ i₃) (
   · obtain hi₂₃ | rfl := hi'.lt_or_eq
     · dsimp [map]
       obtain hi₃' | rfl := hi₃.lt_or_eq
-      · rw [dif_pos hi₃', dif_pos (hi₂₃.trans hi₃'), dif_pos hi₃', assoc, assoc,
+      · rw [dite_eq_left hi₃', dite_eq_left (hi₂₃.trans hi₃'), dite_eq_left hi₃', assoc, assoc,
           Iso.inv_hom_id_assoc, ← Functor.map_comp_assoc, homOfLE_comp]
-      · rw [dif_neg (by simp), dif_pos (hi₁₂.trans hi₂₃), dif_pos hi₂₃, dif_neg (by simp),
-          dif_pos hi₂₃, eqToHom_refl, comp_id, assoc, assoc, Iso.inv_hom_id_assoc,
-          Cocone.w_assoc]
+      · rw [dite_eq_right (by simp), dite_eq_left (hi₁₂.trans hi₂₃), dite_eq_left hi₂₃,
+          dite_eq_right (by simp), dite_eq_left hi₂₃, eqToHom_refl, comp_id, assoc, assoc,
+          Iso.inv_hom_id_assoc, Cocone.w_assoc]
     · rw [map_id, comp_id]
   · rw [map_id, id_comp]
 
@@ -96,7 +98,7 @@ def ofCocone : Set.Iic j ⥤ C where
 
 lemma ofCocone_obj_eq (i : J) (hi : i < j) :
     (ofCocone c).obj ⟨i, hi.le⟩ = F.obj ⟨i, hi⟩ :=
-  dif_pos hi
+  dite_eq_left hi
 
 /-- The isomorphism `(ofCocone c).obj ⟨i, _⟩ ≅ F.obj ⟨i, _⟩` when `i < j`. -/
 def ofCoconeObjIso (i : J) (hi : i < j) :
@@ -105,7 +107,7 @@ def ofCoconeObjIso (i : J) (hi : i < j) :
 
 lemma ofCocone_obj_eq_pt :
     (ofCocone c).obj ⟨j, by simp⟩ = c.pt :=
-  dif_neg (by simp)
+  dite_eq_right (by simp)
 
 /-- The isomorphism `(ofCocone c).obj ⟨j, _⟩ ≅ c.pt`. -/
 def ofCoconeObjIsoPt :
@@ -116,7 +118,7 @@ lemma ofCocone_map_to_top (i : J) (hi : i < j) :
     (ofCocone c).map (homOfLE hi.le) =
       (ofCoconeObjIso c i hi).hom ≫ c.ι.app ⟨i, hi⟩ ≫ (ofCoconeObjIsoPt c).inv := by
   dsimp [ofCocone, ofCocone.map, ofCoconeObjIso, ofCoconeObjIsoPt]
-  rw [dif_neg (by simp), dif_pos hi, comp_id]
+  rw [dite_eq_right (by simp), dite_eq_left hi, comp_id]
 
 @[reassoc]
 lemma ofCocone_map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ < j) :
@@ -124,7 +126,7 @@ lemma ofCocone_map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ < j) :
       (ofCoconeObjIso c i₁ (lt_of_le_of_lt hi hi₂)).hom ≫ F.map (homOfLE hi) ≫
         (ofCoconeObjIso c i₂ hi₂).inv := by
   dsimp [ofCocone, ofCoconeObjIso, ofCocone.map]
-  rw [dif_pos hi₂]
+  rw [dite_eq_left hi₂]
 
 @[reassoc]
 lemma ofCoconeObjIso_hom_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ < j) :
@@ -137,17 +139,19 @@ lemma ofCoconeObjIso_hom_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ 
 when `c : Cocone F`. -/
 @[simps!]
 def restrictionLTOfCoconeIso :
-    SmallObject.restrictionLT (ofCocone c) (Preorder.le_refl j) ≅ F :=
+    SmallObject.restrictionLT (ofCocone c) (le_refl j) ≅ F :=
   NatIso.ofComponents (fun ⟨i, hi⟩ ↦ ofCoconeObjIso c i hi)
     (by intros; apply ofCoconeObjIso_hom_naturality)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 variable {c} in
-/-- If `c` is a colimit cocone, then so is `coconeOfLE (ofCocone c) (Preorder.le_refl j)`. -/
+/-- If `c` is a colimit cocone, then so is `coconeOfLE (ofCocone c) (le_refl j)`. -/
 def isColimitCoconeOfLEOfCocone (hc : IsColimit c) :
-    IsColimit (coconeOfLE (ofCocone c) (Preorder.le_refl j)) :=
+    IsColimit (coconeOfLE (ofCocone c) (le_refl j)) :=
   (IsColimit.precomposeInvEquiv (restrictionLTOfCoconeIso c) _).1
     (IsColimit.ofIsoColimit hc
-      (Cocones.ext (ofCoconeObjIsoPt c).symm (fun ⟨i, hi⟩ ↦ by
+      (Cocone.ext (ofCoconeObjIsoPt c).symm (fun ⟨i, hi⟩ ↦ by
         dsimp
         rw [ofCocone_map_to_top _ _ hi, Iso.inv_hom_id_assoc])))
 

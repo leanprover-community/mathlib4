@@ -3,8 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.GroupTheory.Torsion
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.ZMod.QuotientGroup
 
 /-!
 # Minimum order of an element
@@ -15,12 +18,14 @@ This file defines the minimum order of an element of a monoid.
 
 * `Monoid.minOrder`: The minimum order of an element of a given monoid.
 * `Monoid.minOrder_eq_top`: The minimum order is infinite iff the monoid is torsion-free.
-* `ZMod.minOrder`: The minimum order of $$ℤ/nℤ$$ is the smallest factor of `n`, unless `n = 0, 1`.
+* `ZMod.minOrder`: The minimum order of $ℤ/nℤ$ is the smallest factor of `n`, unless `n = 0, 1`.
 -/
+
+@[expose] public section
 
 open Subgroup
 
-variable {α : Type*}
+variable {G α : Type*}
 
 namespace Monoid
 section Monoid
@@ -28,17 +33,12 @@ variable (α) [Monoid α]
 
 /-- The minimum order of a non-identity element. Also the minimum size of a nontrivial subgroup, see
 `Monoid.le_minOrder_iff_forall_subgroup`. Returns `∞` if the monoid is torsion-free. -/
-@[to_additive "The minimum order of a non-identity element. Also the minimum size of a nontrivial
+@[to_additive /-- The minimum order of a non-identity element. Also the minimum size of a nontrivial
 subgroup, see `AddMonoid.le_minOrder_iff_forall_addSubgroup`. Returns `∞` if the monoid is
-torsion-free."]
+torsion-free. -/]
 noncomputable def minOrder : ℕ∞ := ⨅ (a : α) (_ha : a ≠ 1) (_ha' : IsOfFinOrder a), orderOf a
 
 variable {α} {a : α}
-
-@[to_additive (attr := simp)]
-lemma minOrder_eq_top : minOrder α = ⊤ ↔ IsTorsionFree α := by simp [minOrder, IsTorsionFree]
-
-@[to_additive (attr := simp)] protected alias ⟨_, IsTorsionFree.minOrder⟩ := minOrder_eq_top
 
 @[to_additive (attr := simp)]
 lemma le_minOrder {n : ℕ∞} :
@@ -50,11 +50,12 @@ lemma minOrder_le_orderOf (ha : a ≠ 1) (ha' : IsOfFinOrder a) : minOrder α �
 
 end Monoid
 
-variable [Group α] {s : Subgroup α}
+section Group
+variable [Group G] {s : Subgroup G}
 
 @[to_additive]
 lemma le_minOrder_iff_forall_subgroup {n : ℕ∞} :
-    n ≤ minOrder α ↔ ∀ ⦃s : Subgroup α⦄, s ≠ ⊥ → (s : Set α).Finite → n ≤ Nat.card s := by
+    n ≤ minOrder G ↔ ∀ ⦃s : Subgroup G⦄, s ≠ ⊥ → (s : Set G).Finite → n ≤ Nat.card s := by
   rw [le_minOrder]
   refine ⟨fun h s hs hs' ↦ ?_, fun h a ha ha' ↦ ?_⟩
   · obtain ⟨a, has, ha⟩ := s.bot_or_exists_ne_one.resolve_left hs
@@ -64,9 +65,23 @@ lemma le_minOrder_iff_forall_subgroup {n : ℕ∞} :
   · simpa using h (zpowers_ne_bot.2 ha) ha'.finite_zpowers
 
 @[to_additive]
-lemma minOrder_le_natCard (hs : s ≠ ⊥) (hs' : (s : Set α).Finite) : minOrder α ≤ Nat.card s :=
+lemma minOrder_le_natCard (hs : s ≠ ⊥) (hs' : (s : Set G).Finite) : minOrder G ≤ Nat.card s :=
   le_minOrder_iff_forall_subgroup.1 le_rfl hs hs'
 
+@[to_additive (attr := simp)]
+lemma minOrder_eq_top [IsMulTorsionFree G] : minOrder G = ⊤ := by
+  simpa [minOrder] using fun _ ↦ not_isOfFinOrder_of_isMulTorsionFree
+
+end Group
+
+section CommGroup
+variable [CommGroup G] {s : Subgroup G}
+
+@[to_additive (attr := simp)]
+lemma minOrder_eq_top_iff : minOrder G = ⊤ ↔ IsMulTorsionFree G := by
+  simp [minOrder, isMulTorsionFree_iff_not_isOfFinOrder]
+
+end CommGroup
 end Monoid
 
 open AddMonoid AddSubgroup Nat Set
@@ -76,7 +91,6 @@ namespace ZMod
 @[simp]
 protected lemma minOrder {n : ℕ} (hn : n ≠ 0) (hn₁ : n ≠ 1) : minOrder (ZMod n) = n.minFac := by
   have : Fact (1 < n) := ⟨one_lt_iff_ne_zero_and_ne_one.mpr ⟨hn, hn₁⟩⟩
-  classical
   have : (↑(n / n.minFac) : ZMod n) ≠ 0 := by
     rw [Ne, ringChar.spec, ringChar.eq (ZMod n) n]
     exact
@@ -86,7 +100,7 @@ protected lemma minOrder {n : ℕ} (hn : n ≠ 0) (hn₁ : n ≠ 1) : minOrder (
     le_minOrder_iff_forall_addSubgroup.2 fun s hs _ ↦ ?_
   · rw [Nat.card_zmultiples, ZMod.addOrderOf_coe _ hn,
       gcd_eq_right (div_dvd_of_dvd n.minFac_dvd), Nat.div_div_self n.minFac_dvd hn]
-  · haveI : Nontrivial s := s.bot_or_nontrivial.resolve_left hs
+  · have : Nontrivial s := s.bot_or_nontrivial.resolve_left hs
     exact WithTop.coe_le_coe.2 <| minFac_le_of_dvd Finite.one_lt_card <|
       (card_addSubgroup_dvd_card _).trans n.card_zmod.dvd
 

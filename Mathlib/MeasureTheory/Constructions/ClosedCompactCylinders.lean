@@ -3,8 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Constructions.Cylinders
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Constructions.Cylinders
 
 /-! # Cylinders with closed compact bases
 
@@ -22,6 +24,8 @@ proof of Kolmogorov's extension theorem.
   cylinder.
 
 -/
+
+@[expose] public section
 
 open Set
 
@@ -51,7 +55,9 @@ noncomputable def closedCompactCylinders.finset (ht : t ∈ closedCompactCylinde
   ((mem_closedCompactCylinders t).mp ht).choose
 
 /-- A set `S` such that `t = cylinder s S`. `s` is given by `closedCompactCylinders.finset`. -/
-def closedCompactCylinders.set (ht : t ∈ closedCompactCylinders X) :
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def closedCompactCylinders.set (ht : t ∈ closedCompactCylinders X) :
     Set (Π i : closedCompactCylinders.finset ht, X i) :=
   ((mem_closedCompactCylinders t).mp ht).choose_spec.choose
 

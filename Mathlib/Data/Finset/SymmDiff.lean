@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Set.SymmDiff
+module
+
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Symmetric difference of finite sets
@@ -17,11 +19,13 @@ finite sets, finset
 
 -/
 
+public section
+
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice Monoid
 
-open Multiset Subtype Function
+open Function
 
 universe u
 
@@ -39,6 +43,8 @@ variable [DecidableEq α] {s t : Finset α} {a b : α}
 
 theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := by
   simp_rw [symmDiff, sup_eq_union, mem_union, mem_sdiff]
+
+protected theorem symmDiff_def (s t : Finset α) : s ∆ t = s \ t ∪ t \ s := rfl
 
 @[simp, norm_cast]
 theorem coe_symmDiff : (↑(s ∆ t) : Set α) = (s : Set α) ∆ t :=

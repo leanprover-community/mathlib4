@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.HomEquiv
-import Mathlib.CategoryTheory.Localization.Opposite
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+module
+
+public import Mathlib.CategoryTheory.Localization.HomEquiv
+public import Mathlib.CategoryTheory.Localization.Opposite
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
 /-!
 # Induction principles for structured and costructured arrows
@@ -22,11 +24,13 @@ costructured arrows.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Opposite
 
-variable {C D D' : Type*} [Category C] [Category D] [Category D']
+variable {C D D' : Type*} [Category* C] [Category* D] [Category* D']
 
 namespace Localization
 
@@ -76,9 +80,9 @@ private lemma induction_structuredArrow'
   induction f with
   | nil => exact hP₀
   | cons f g hf =>
-      obtain (g|⟨w, hw⟩) := g
+      obtain (g | ⟨w, hw⟩) := g
       · exact hP₁ g _ hf
-      · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using hP₂ w hw _ hf
+      · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using! hP₂ w hw _ hf
 
 end
 
@@ -100,13 +104,13 @@ lemma induction_structuredArrow
     fun g ↦ P (structuredArrowEquiv W W.Q L g)
   rw [← (structuredArrowEquiv W W.Q L).apply_symm_apply g]
   apply induction_structuredArrow' W P'
-  · convert hP₀
+  · convert! hP₀
     simp
-  · intros Y₁ Y₂ f φ hφ
-    convert hP₁ f (homEquiv W W.Q L φ) hφ
+  · intro Y₁ Y₂ f φ hφ
+    convert! hP₁ f (homEquiv W W.Q L φ) hφ
     simp [homEquiv_comp]
-  · intros Y₁ Y₂ w hw φ hφ
-    convert hP₂ w hw (homEquiv W W.Q L φ) hφ
+  · intro Y₁ Y₂ w hw φ hφ
+    convert! hP₂ w hw (homEquiv W W.Q L φ) hφ
     simp [homEquiv_comp, homEquiv_isoOfHom_inv]
 
 end
@@ -125,11 +129,11 @@ lemma induction_costructuredArrow
       P (CostructuredArrow.mk φ) → P (CostructuredArrow.mk ((isoOfHom L W w hw).inv ≫ φ)))
     (g : CostructuredArrow L (L.obj Y)) : P g := by
   let g' := StructuredArrow.mk (T := L.op) (Y := op g.left) g.hom.op
-  show P (CostructuredArrow.mk g'.hom.unop)
+  change P (CostructuredArrow.mk g'.hom.unop)
   induction g' using induction_structuredArrow L.op W.op with
   | hP₀ => exact hP₀
   | hP₁ f φ hφ => exact hP₁ f.unop φ.unop hφ
-  | hP₂ w hw φ hφ => simpa [isoOfHom_op_inv L W w hw] using hP₂ w.unop hw φ.unop hφ
+  | hP₂ w hw φ hφ => simpa [isoOfHom_op_inv L W w hw] using! hP₂ w.unop hw φ.unop hφ
 
 end
 

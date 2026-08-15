@@ -3,9 +3,11 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.Algebra.Lie.IdealOperations
-import Mathlib.Algebra.Lie.Quotient
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.Algebra.Lie.IdealOperations
+public import Mathlib.Algebra.Lie.Quotient
 
 /-!
 # The normalizer of Lie submodules and subalgebras.
@@ -31,6 +33,8 @@ consider the normalizer. This turns out to be a Lie subalgebra.
 
 lie algebra, normalizer
 -/
+
+@[expose] public section
 
 
 variable {R L M M' : Type*}
@@ -139,8 +143,8 @@ theorem coe_normalizer_eq_normalizer :
 
 variable {H}
 
-theorem lie_mem_sup_of_mem_normalizer {x y z : L} (hx : x ∈ H.normalizer) (hy : y ∈ (R ∙ x) ⊔ ↑H)
-    (hz : z ∈ (R ∙ x) ⊔ ↑H) : ⁅y, z⁆ ∈ (R ∙ x) ⊔ ↑H := by
+theorem lie_mem_sup_of_mem_normalizer {x y z : L} (hx : x ∈ H.normalizer) (hy : y ∈ R ∙ x ⊔ ↑H)
+    (hz : z ∈ R ∙ x ⊔ ↑H) : ⁅y, z⁆ ∈ R ∙ x ⊔ ↑H := by
   rw [Submodule.mem_sup] at hy hz
   obtain ⟨u₁, hu₁, v, hv : v ∈ H, rfl⟩ := hy
   obtain ⟨u₂, hu₂, w, hw : w ∈ H, rfl⟩ := hz

@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Function.Basic
+module
+
+public import Mathlib.Logic.Function.Basic
 
 /-!
 # Semiconjugate and commuting maps
@@ -16,6 +18,8 @@ We define the following predicates:
 * `Function.Commute`: `f : α → α` commutes with `g : α → α` if `f ∘ g = g ∘ f`,
   or equivalently `Semiconj f g g`.
 -/
+
+@[expose] public section
 
 namespace Function
 

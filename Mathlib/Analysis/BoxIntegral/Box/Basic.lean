@@ -3,13 +3,15 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Order.Fin.Tuple
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.MetricSpace.Pseudo.Real
-import Mathlib.Topology.Order.MonotoneConvergence
+module
+
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Order.Fin.Tuple
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.MetricSpace.Pseudo.Real
+public import Mathlib.Topology.Order.MonotoneConvergence
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -51,6 +53,8 @@ that returns the box `⟨l, u, _⟩` if it is nonempty and `⊥` otherwise.
 
 rectangular box
 -/
+
+@[expose] public section
 
 open Set Function Metric Filter
 
@@ -154,7 +158,7 @@ variable {I J}
 theorem coe_subset_coe : (I : Set (ι → ℝ)) ⊆ J ↔ I ≤ J := Iff.rfl
 
 theorem le_iff_bounds : I ≤ J ↔ J.lower ≤ I.lower ∧ I.upper ≤ J.upper :=
-  (le_TFAE I J).out 0 3
+  (le_TFAE I J).out 1 4
 
 theorem injective_coe : Injective ((↑) : Box ι → Set (ι → ℝ)) := by
   rintro ⟨l₁, u₁, h₁⟩ ⟨l₂, u₂, h₂⟩ h
@@ -178,7 +182,7 @@ instance : PartialOrder (Box ι) :=
 
 /-- Closed box corresponding to `I : BoxIntegral.Box ι`. -/
 protected def Icc : Box ι ↪o Set (ι → ℝ) :=
-  OrderEmbedding.ofMapLEIff (fun I : Box ι ↦ Icc I.lower I.upper) fun I J ↦ (le_TFAE I J).out 2 0
+  OrderEmbedding.ofMapLEIff (fun I : Box ι ↦ Icc I.lower I.upper) fun I J ↦ (le_TFAE I J).out 3 1
 
 theorem Icc_def : Box.Icc I = Icc I.lower I.upper := rfl
 
@@ -197,7 +201,7 @@ theorem Icc_eq_pi : Box.Icc I = pi univ fun i ↦ Icc (I.lower i) (I.upper i) :=
   (pi_univ_Icc _ _).symm
 
 theorem le_iff_Icc : I ≤ J ↔ Box.Icc I ⊆ Box.Icc J :=
-  (le_TFAE I J).out 0 2
+  (le_TFAE I J).out 1 3
 
 theorem antitone_lower : Antitone fun I : Box ι ↦ I.lower :=
   fun _ _ H ↦ (le_iff_bounds.1 H).1
@@ -260,7 +264,7 @@ theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → �
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
     ⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ)) = I := by
-  induction I <;> simp [WithBot.coe_eq_coe]
+  induction I <;> simp
 
 @[simp, norm_cast]
 theorem withBotCoe_subset_iff {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) ⊆ J ↔ I ≤ J := by
@@ -287,7 +291,7 @@ theorem mk'_eq_bot {l u : ι → ℝ} : mk' l u = ⊥ ↔ ∃ i, u i ≤ l i := 
 @[simp]
 theorem mk'_eq_coe {l u : ι → ℝ} : mk' l u = I ↔ l = I.lower ∧ u = I.upper := by
   obtain ⟨lI, uI, hI⟩ := I; rw [mk']; split_ifs with h
-  · simp [WithBot.coe_eq_coe]
+  · simp
   · suffices l = lI → u ≠ uI by simpa
     rintro rfl rfl
     exact h hI
@@ -459,8 +463,7 @@ theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
         nndist I.lower I.upper / nndist (I.lower i) (I.upper i) * nndist (I.lower i) (I.upper i) :=
       (div_mul_cancel₀ _ <| mt nndist_eq_zero.1 (I.lower_lt_upper i).ne).symm
     _ ≤ I.distortion * nndist (I.lower i) (I.upper i) := by
-      apply mul_le_mul_right'
-      apply Finset.le_sup (Finset.mem_univ i)
+      grw [distortion, ← Finset.le_sup (Finset.mem_univ i)]
 
 theorem dist_le_distortion_mul (I : Box ι) (i : ι) :
     dist I.lower I.upper ≤ I.distortion * (I.upper i - I.lower i) := by

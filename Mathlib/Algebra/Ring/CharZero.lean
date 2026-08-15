@@ -3,15 +3,19 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Support
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Ring.Units
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Logic.Embedding.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Algebra.Ring.Units
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Characteristic zero rings
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -73,11 +77,19 @@ variable [Semiring R] [CharZero R]
 @[simp] lemma Nat.cast_pow_eq_one {a : ℕ} (hn : n ≠ 0) : (a : R) ^ n = 1 ↔ a = 1 := by
   simp [← cast_pow, cast_eq_one, hn]
 
+variable [IsCancelMulZero R]
+
+/-- A characteristic zero domain is torsion-free. -/
+instance (priority := 100) IsAddTorsionFree.of_isCancelMulZero_charZero : IsAddTorsionFree R where
+  nsmul_right_injective n hn a b hab := by simpa [hn] using hab
+
 end Semiring
 
 section NonAssocRing
 variable [NonAssocRing R] [NoZeroDivisors R] [CharZero R]
 
+-- `scoped` attribute here and below because the `simp` keys are weak
+-- (see https://github.com/leanprover-community/mathlib4/pull/15631)
 @[scoped simp] theorem CharZero.neg_eq_self_iff {a : R} : -a = a ↔ a = 0 :=
   neg_eq_iff_add_eq_zero.trans add_self_eq_zero
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Order.LocalExtr
+module
+
+public import Mathlib.Topology.Order.OrderClosed
+public import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Maximum/minimum on the closure of a set
@@ -14,10 +16,10 @@ not) maximum (or minimum) on a set `s` at a point `a` and is continuous on the c
 `f` has an extremum of the same type on `Closure s` at `a`.
 -/
 
+public section
+
 
 open Filter Set
-
-open Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [Preorder Y]
   [OrderClosedTopology Y] {f : X → Y} {s : Set X} {a : X}

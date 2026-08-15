@@ -3,13 +3,17 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Normed.Module.FiniteDimension
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Higher differentiability in finite dimensions.
 
 -/
+
+public section
 
 
 noncomputable section
@@ -22,7 +26,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {n : WithTop ℕ∞} {f : D → E} {s : Set D}
 
-/-! ### Finite dimensional results -/
+/-! ### Finite-dimensional results -/
 
 section FiniteDimensional
 
@@ -32,17 +36,23 @@ open scoped ContDiff
 
 variable [CompleteSpace 𝕜]
 
-
-/-- A family of continuous linear maps is `C^n` on `s` if all its applications are. -/
-theorem contDiffOn_clm_apply {f : D → E →L[𝕜] F} {s : Set D} [FiniteDimensional 𝕜 E] :
-    ContDiffOn 𝕜 n f s ↔ ∀ y, ContDiffOn 𝕜 n (fun x => f x y) s := by
-  refine ⟨fun h y => h.clm_apply contDiffOn_const, fun h => ?_⟩
+/-- A family of continuous linear maps is `C^n` at `x` within `s` if and only if all its
+  applications are. -/
+theorem contDiffWithinAt_clm_apply {f : D → E →L[𝕜] F} {s : Set D} {x : D} [FiniteDimensional 𝕜 E] :
+    ContDiffWithinAt 𝕜 n f s x ↔ ∀ y, ContDiffWithinAt 𝕜 n (fun x ↦ f x y) s x := by
+  refine ⟨fun h y => h.clm_apply contDiffWithinAt_const, fun h => ?_⟩
   let d := finrank 𝕜 E
   have hd : d = finrank 𝕜 (Fin d → 𝕜) := (finrank_fin_fun 𝕜).symm
   let e₁ := ContinuousLinearEquiv.ofFinrankEq hd
   let e₂ := (e₁.arrowCongr (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing (Fin d))
   rw [← id_comp f, ← e₂.symm_comp_self]
-  exact e₂.symm.contDiff.comp_contDiffOn (contDiffOn_pi.mpr fun i => h _)
+  exact e₂.symm.contDiff.comp_contDiffWithinAt (contDiffWithinAt_pi.mpr fun i ↦ h _)
+
+/-- A family of continuous linear maps is `C^n` on `s` if and only if all its applications are. -/
+theorem contDiffOn_clm_apply {f : D → E →L[𝕜] F} {s : Set D} [FiniteDimensional 𝕜 E] :
+    ContDiffOn 𝕜 n f s ↔ ∀ y, ContDiffOn 𝕜 n (fun x => f x y) s := by
+  simp [ContDiffOn, contDiffWithinAt_clm_apply]
+  tauto
 
 theorem contDiff_clm_apply_iff {f : D → E →L[𝕜] F} [FiniteDimensional 𝕜 E] :
     ContDiff 𝕜 n f ↔ ∀ y, ContDiff 𝕜 n fun x => f x y := by
@@ -56,7 +66,7 @@ domain and codomain (`D` and `E`). This is not the case for `contDiff_succ_iff_f
 often requires an inconvenient need to generalize `F`, which results in universe issues
 (see the discussion in the section of `ContDiff.comp`).
 
-This lemma avoids these universe issues, but only applies for finite dimensional `D`. -/
+This lemma avoids these universe issues, but only applies for finite-dimensional `D`. -/
 theorem contDiff_succ_iff_fderiv_apply [FiniteDimensional 𝕜 D] :
     ContDiff 𝕜 (n + 1) f ↔ Differentiable 𝕜 f ∧
       (n = ω → AnalyticOnNhd 𝕜 f Set.univ) ∧ ∀ y, ContDiff 𝕜 n fun x => fderiv 𝕜 f x y := by

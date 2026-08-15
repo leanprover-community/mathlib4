@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Fin.Basic
-import Mathlib.Order.Interval.Set.UnorderedInterval
+module
+
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!
 # (Pre)images of set intervals under `Fin` operations
@@ -22,6 +24,8 @@ under the following operations:
 - `Fin.succ`,
 - `Fin.rev`.
 -/
+
+public section
 
 open Function Set
 
@@ -152,46 +156,46 @@ theorem preimage_castLE_uIoo_castLE (i j : Fin m) (h : m ≤ n) :
 
 @[simp]
 theorem image_castLE_Iic (i : Fin m) (h : m ≤ n) : castLE h '' Iic i = Iic (castLE h i) :=
-  val_injective.image_injective <| by simp [image_image, comp_def]
+  val_injective.image_injective <| by simp [image_image]
 
 @[simp]
 theorem image_castLE_Iio (i : Fin m) (h : m ≤ n) : castLE h '' Iio i = Iio (castLE h i) :=
-  val_injective.image_injective <| by simp [image_image, comp_def]
+  val_injective.image_injective <| by simp [image_image]
 
 @[simp]
 theorem image_castLE_Icc (i j : Fin m) (h : m ≤ n) :
     castLE h '' Icc i j = Icc (castLE h i) (castLE h j) :=
-  val_injective.image_injective <| by simp [image_image, comp_def]
+  val_injective.image_injective <| by simp [image_image]
 
 @[simp]
 theorem image_castLE_Ico (i j : Fin m) (h : m ≤ n) :
     castLE h '' Ico i j = Ico (castLE h i) (castLE h j) :=
-  val_injective.image_injective <| by simp [image_image, comp_def]
+  val_injective.image_injective <| by simp [image_image]
 
 @[simp]
 theorem image_castLE_Ioc (i j : Fin m) (h : m ≤ n) :
     castLE h '' Ioc i j = Ioc (castLE h i) (castLE h j) :=
-  val_injective.image_injective <| by simp [image_image, comp_def]
+  val_injective.image_injective <| by simp [image_image]
 
 @[simp]
 theorem image_castLE_Ioo (i j : Fin m) (h : m ≤ n) :
     castLE h '' Ioo i j = Ioo (castLE h i) (castLE h j) :=
-  val_injective.image_injective <| by simp [image_image, comp_def]
+  val_injective.image_injective <| by simp [image_image]
 
 @[simp]
 theorem image_castLE_uIcc (i j : Fin m) (h : m ≤ n) :
     castLE h '' uIcc i j = uIcc (castLE h i) (castLE h j) :=
-  val_injective.image_injective <| by simp [image_image, comp_def]
+  val_injective.image_injective <| by simp [image_image]
 
 @[simp]
 theorem image_castLE_uIoc (i j : Fin m) (h : m ≤ n) :
     castLE h '' uIoc i j = uIoc (castLE h i) (castLE h j) :=
-  val_injective.image_injective <| by simp [image_image, comp_def]
+  val_injective.image_injective <| by simp [image_image]
 
 @[simp]
 theorem image_castLE_uIoo (i j : Fin m) (h : m ≤ n) :
     castLE h '' uIoo i j = uIoo (castLE h i) (castLE h j) :=
-  val_injective.image_injective <| by simp [image_image, comp_def]
+  val_injective.image_injective <| by simp [image_image]
 
 /-!
 ### (Pre)images under `Fin.castAdd`
@@ -255,12 +259,12 @@ theorem preimage_castAdd_uIoo_castAdd (m) (i j : Fin n) :
 @[simp]
 theorem image_castAdd_Ici (m) [NeZero m] (i : Fin n) :
     castAdd m '' Ici i = Ico (castAdd m i) (natAdd n 0) :=
-  val_injective.image_injective <| by simp [← image_comp, comp_def]
+  val_injective.image_injective <| by simp [← image_comp]
 
 @[simp]
 theorem image_castAdd_Ioi (m) [NeZero m] (i : Fin n) :
     castAdd m '' Ioi i = Ioo (castAdd m i) (natAdd n 0) :=
-  val_injective.image_injective <| by simp [← image_comp, comp_def]
+  val_injective.image_injective <| by simp [← image_comp]
 
 @[simp]
 theorem image_castAdd_Iic (m) (i : Fin n) : castAdd m '' Iic i = Iic (castAdd m i) :=
@@ -310,7 +314,7 @@ theorem image_castAdd_uIoo (m) (i j : Fin n) :
 -/
 
 theorem image_cast (h : m = n) (s : Set (Fin m)) : Fin.cast h '' s = Fin.cast h.symm ⁻¹' s :=
-  (finCongr h).image_eq_preimage _
+  (finCongr h).image_eq_preimage_symm _
 
 @[simp]
 theorem image_cast_fun (h : m = n) : image (Fin.cast h) = preimage (Fin.cast h.symm) :=
@@ -467,7 +471,7 @@ theorem range_natAdd (m n : ℕ) : range (natAdd m : Fin n → Fin (m + n)) = {i
   constructor
   · rintro ⟨i, rfl⟩
     apply le_coe_natAdd
-  · refine fun (hi : m ≤ i) ↦ ⟨⟨i - m, by omega⟩, ?_⟩
+  · refine fun (hi : m ≤ i) ↦ ⟨⟨i - m, by lia⟩, ?_⟩
     ext
     simp [hi]
 
@@ -641,8 +645,8 @@ theorem image_addNat_Ici (m) (i : Fin n) : (addNat · m) '' Ici i = Ici (i.addNa
   rw [← preimage_addNat_Ici_addNat, image_preimage_eq_of_subset]
   intro j hj
   have : (i : ℕ) + m ≤ j := hj
-  refine ⟨⟨j - m, by omega⟩, ?_⟩
-  simp (disch := omega)
+  refine ⟨⟨j - m, by lia⟩, ?_⟩
+  simp (disch := lia)
 
 @[simp]
 theorem image_addNat_Ioi (m) (i : Fin n) : (addNat · m) '' Ioi i = Ioi (i.addNat m) := by
@@ -784,7 +788,7 @@ theorem image_succ_uIoo (i j : Fin n) : succ '' uIoo i j = uIoo i.succ j.succ :=
 @[simp]
 theorem range_rev : range (rev : Fin n → Fin n) = univ := rev_surjective.range_eq
 
-theorem image_rev (s : Set (Fin n)) : rev '' s = rev ⁻¹' s := revPerm.image_eq_preimage s
+theorem image_rev (s : Set (Fin n)) : rev '' s = rev ⁻¹' s := revPerm.image_eq_preimage_symm s
 
 @[simp]
 theorem image_rev_fun : image (@rev n) = preimage rev := funext image_rev
@@ -811,7 +815,7 @@ theorem preimage_rev_Ico (i j : Fin n) : rev ⁻¹' Ico i j = Ioc j.rev i.rev :=
 
 @[simp]
 theorem preimage_rev_Ioc (i j : Fin n) : rev ⁻¹' Ioc i j = Ico j.rev i.rev := by
-  ext; simp [le_rev_iff, lt_rev_iff, rev_le_iff, rev_lt_iff, and_comm]
+  ext; simp [lt_rev_iff, rev_le_iff, and_comm]
 
 @[simp]
 theorem preimage_rev_Ioo (i j : Fin n) : rev ⁻¹' Ioo i j = Ioo j.rev i.rev := by

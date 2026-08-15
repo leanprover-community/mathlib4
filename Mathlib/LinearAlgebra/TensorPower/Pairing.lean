@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.GroupTheory.MonoidLocalization.Basic
-import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.LinearAlgebra.TensorPower.Basic
+module
+
+public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.LinearAlgebra.TensorPower.Basic
 
 /-!
 # The pairing between the tensor power of the dual and the tensor power
@@ -15,6 +16,8 @@ We construct the pairing
 
 -/
 
+@[expose] public section
+
 open TensorProduct PiTensorProduct
 
 namespace TensorPower
@@ -22,7 +25,6 @@ namespace TensorPower
 variable (R : Type*) (M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
   (n : ℕ)
 
-open BigOperators
 
 /-- The canonical multilinear map from `n` copies of the dual of the module `M`
 to the dual of `⨂[R]^n M`. -/
@@ -41,15 +43,10 @@ noncomputable def multilinearMapToDual :
       (MultilinearMap.compLinearMap (MultilinearMap.mkPiRing R (Fin n) 1) f)
     map_update_add' := fun f i φ₁ φ₂ ↦ by
       ext v
-      dsimp
-      simp only [lift.tprod, MultilinearMap.compLinearMap_apply, this,
-        LinearMap.add_apply, MultilinearMap.map_update_add]
-    map_update_smul' := fun f i a φ ↦  by
+      simp [this]
+    map_update_smul' := fun f i a φ ↦ by
       ext v
-      dsimp
-      simp only [lift.tprod, MultilinearMap.compLinearMap_apply, this,
-         LinearMap.smul_apply, MultilinearMap.map_update_smul]
-      dsimp }
+      simp [this, Finset.prod_update_of_mem, Semigroup.mul_assoc] }
 
 variable {R M n} in
 @[simp]

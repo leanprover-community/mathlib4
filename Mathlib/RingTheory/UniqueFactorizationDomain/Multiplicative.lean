@@ -3,7 +3,9 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Multiplicative maps on unique factorization domains
@@ -15,18 +17,20 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   primes `p`, and `f` is multiplicative on coprime elements, then `f` is multiplicative everywhere.
 -/
 
+public section
+
 assert_not_exists Field
 
 variable {α : Type*}
 
 namespace UniqueFactorizationMonoid
 
-variable {R : Type*} [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
+variable {R : Type*} [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 section Multiplicative
 
-variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
-variable {β : Type*} [CancelCommMonoidWithZero β]
+variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
+variable {β : Type*} [CommMonoidWithZero β]
 
 theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α} (i : α → ℕ) (p : α)
     (hps : p ∉ s) (is_prime : ∀ q ∈ insert p s, Prime q)
@@ -41,7 +45,7 @@ theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α
   obtain ⟨q, q_mem, rfl⟩ := Multiset.mem_map.mp q_mem'
   replace hdq := hd.dvd_of_dvd_pow hdq
   have : p ∣ q := dvd_trans (hd.irreducible.dvd_symm hp.irreducible hdp) hdq
-  convert q_mem using 0
+  convert! q_mem using 0
   rw [Finset.mem_val,
     is_coprime _ (Finset.mem_insert_self p s) _ (Finset.mem_insert_of_mem q_mem) this]
 
@@ -54,15 +58,16 @@ theorem induction_on_prime_power {P : α → Prop} (s : Finset α) (i : α → �
     (h1 : ∀ {x}, IsUnit x → P x) (hpr : ∀ {p} (i : ℕ), Prime p → P (p ^ i))
     (hcp : ∀ {x y}, IsRelPrime x y → P x → P y → P (x * y)) :
     P (∏ p ∈ s, p ^ i p) := by
-  letI := Classical.decEq α
-  induction' s using Finset.induction_on with p f' hpf' ih
-  · simpa using h1 isUnit_one
-  rw [Finset.prod_insert hpf']
-  exact
-    hcp (prime_pow_coprime_prod_of_coprime_insert i p hpf' is_prime is_coprime)
-      (hpr (i p) (is_prime _ (Finset.mem_insert_self _ _)))
-      (ih (fun q hq => is_prime _ (Finset.mem_insert_of_mem hq)) fun q hq q' hq' =>
-        is_coprime _ (Finset.mem_insert_of_mem hq) _ (Finset.mem_insert_of_mem hq'))
+  let := Classical.decEq α
+  induction s using Finset.induction_on with
+  | empty => simpa using h1 isUnit_one
+  | insert p f' hpf' ih =>
+    rw [Finset.prod_insert hpf']
+    exact
+      hcp (prime_pow_coprime_prod_of_coprime_insert i p hpf' is_prime is_coprime)
+        (hpr (i p) (is_prime _ (Finset.mem_insert_self _ _)))
+        (ih (fun q hq => is_prime _ (Finset.mem_insert_of_mem hq)) fun q hq q' hq' =>
+          is_coprime _ (Finset.mem_insert_of_mem hq) _ (Finset.mem_insert_of_mem hq'))
 
 /-- If `P` holds for `0`, units and powers of primes,
 and `P x ∧ P y` for coprime `x, y` implies `P (x * y)`,
@@ -71,14 +76,14 @@ then `P` holds on all `a : α`. -/
 theorem induction_on_coprime {P : α → Prop} (a : α) (h0 : P 0) (h1 : ∀ {x}, IsUnit x → P x)
     (hpr : ∀ {p} (i : ℕ), Prime p → P (p ^ i))
     (hcp : ∀ {x y}, IsRelPrime x y → P x → P y → P (x * y)) : P a := by
-  letI := Classical.decEq α
+  let := Classical.decEq α
   have P_of_associated : ∀ {x y}, Associated x y → P x → P y := by
     rintro x y ⟨u, rfl⟩ hx
     exact hcp (fun p _ hpx => isUnit_of_dvd_unit hpx u.isUnit) hx (h1 u.isUnit)
   by_cases ha0 : a = 0
   · rwa [ha0]
-  haveI : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
-  letI : NormalizationMonoid α := UniqueFactorizationMonoid.normalizationMonoid
+  have : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
+  let : StrongNormalizationMonoid α := UniqueFactorizationMonoid.strongNormalizationMonoid
   refine P_of_associated (prod_normalizedFactors ha0) ?_
   rw [← (normalizedFactors a).map_id, Finset.prod_multiset_map_count]
   refine induction_on_prime_power _ _ ?_ ?_ @h1 @hpr @hcp <;> simp only [Multiset.mem_toFinset]
@@ -93,17 +98,18 @@ theorem multiplicative_prime_power {f : α → β} (s : Finset α) (i j : α →
     (hpr : ∀ {p} (i : ℕ), Prime p → f (p ^ i) = f p ^ i)
     (hcp : ∀ {x y}, IsRelPrime x y → f (x * y) = f x * f y) :
     f (∏ p ∈ s, p ^ (i p + j p)) = f (∏ p ∈ s, p ^ i p) * f (∏ p ∈ s, p ^ j p) := by
-  letI := Classical.decEq α
-  induction' s using Finset.induction_on with p s hps ih
-  · simpa using h1 isUnit_one
-  have hpr_p := is_prime _ (Finset.mem_insert_self _ _)
-  have hpr_s : ∀ p ∈ s, Prime p := fun p hp => is_prime _ (Finset.mem_insert_of_mem hp)
-  have hcp_p := fun i => prime_pow_coprime_prod_of_coprime_insert i p hps is_prime is_coprime
-  have hcp_s : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q := fun p hp q hq =>
-    is_coprime p (Finset.mem_insert_of_mem hp) q (Finset.mem_insert_of_mem hq)
-  rw [Finset.prod_insert hps, Finset.prod_insert hps, Finset.prod_insert hps, hcp (hcp_p _),
-    hpr _ hpr_p, hcp (hcp_p _), hpr _ hpr_p, hcp (hcp_p (fun p => i p + j p)), hpr _ hpr_p,
-    ih hpr_s hcp_s, pow_add, mul_assoc, mul_left_comm (f p ^ j p), mul_assoc]
+  let := Classical.decEq α
+  induction s using Finset.induction_on with
+  | empty => simpa using h1 isUnit_one
+  | insert p s hps ih =>
+    have hpr_p := is_prime _ (Finset.mem_insert_self _ _)
+    have hpr_s : ∀ p ∈ s, Prime p := fun p hp => is_prime _ (Finset.mem_insert_of_mem hp)
+    have hcp_p := fun i => prime_pow_coprime_prod_of_coprime_insert i p hps is_prime is_coprime
+    have hcp_s : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q := fun p hp q hq =>
+      is_coprime p (Finset.mem_insert_of_mem hp) q (Finset.mem_insert_of_mem hq)
+    rw [Finset.prod_insert hps, Finset.prod_insert hps, Finset.prod_insert hps, hcp (hcp_p _),
+      hpr _ hpr_p, hcp (hcp_p _), hpr _ hpr_p, hcp (hcp_p (fun p => i p + j p)), hpr _ hpr_p,
+      ih hpr_s hcp_s, pow_add, mul_assoc, mul_left_comm (f p ^ j p), mul_assoc]
 
 /-- If `f` maps `p ^ i` to `(f p) ^ i` for primes `p`, and `f`
 is multiplicative on coprime elements, then `f` is multiplicative everywhere. -/
@@ -112,7 +118,7 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
     (hpr : ∀ {p} (i : ℕ), Prime p → f (p ^ i) = f p ^ i)
     (hcp : ∀ {x y}, IsRelPrime x y → f (x * y) = f x * f y) :
     f (a * b) = f a * f b := by
-  letI := Classical.decEq α
+  let := Classical.decEq α
   by_cases ha0 : a = 0
   · rw [ha0, zero_mul, h0, zero_mul]
   by_cases hb0 : b = 0
@@ -123,8 +129,8 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
       _ = 0 := by simp only [h1 isUnit_one, hf1, mul_zero]
       _ = f a * f (b * 1) := by simp only [h1 isUnit_one, hf1, mul_zero]
       _ = f a * f b := by rw [mul_one]
-  haveI : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
-  letI : NormalizationMonoid α := UniqueFactorizationMonoid.normalizationMonoid
+  have : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
+  let : StrongNormalizationMonoid α := UniqueFactorizationMonoid.strongNormalizationMonoid
   suffices
       f (∏ p ∈ (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
         p ^ ((normalizedFactors a).count p + (normalizedFactors b).count p)) =

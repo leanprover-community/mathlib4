@@ -12,6 +12,14 @@ on:
     # triggers on a review comment
     types: [created, edited]
 
+# `lint-style-action` in `fix` mode pushes a style-fix commit and reacts/comments
+# on the PR. Grant exactly those scopes rather than inheriting the default token
+# permissions; all other scopes are implicitly 'none'.
+permissions:
+  contents: write       # push the style-fix commit to the PR branch
+  pull-requests: write  # add the bot's reaction/comment
+  issues: write         # PR comment reactions go through the issues API
+
 jobs:
   fix_style:
     # we set some variables. The ones of the form `${{ X }}${{ Y }}` are typically not
@@ -27,7 +35,7 @@ jobs:
     # && (startsWith(github.event.comment.body, 'bot fix style') || contains(toJSON(github.event.comment.body), '\nbot fix style'))
     runs-on: ubuntu-latest
     steps:
-      - uses: leanprover-community/lint-style-action@f2e7272aad56233a642b08fe974cf09dd664b0c8 # 2025-05-22
+      - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
         with:
           mode: fix
           lint-bib-file: true

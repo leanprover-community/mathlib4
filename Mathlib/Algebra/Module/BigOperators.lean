@@ -3,13 +3,19 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Data.Fintype.BigOperators
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Data.Fintype.BigOperators
+
+import Mathlib.Algebra.Module.End
 
 /-!
 # Finite sums over modules over a ring
 -/
+
+public section
 
 variable {ι κ α β R M : Type*}
 
@@ -25,9 +31,9 @@ theorem Multiset.sum_smul {l : Multiset R} {x : M} : l.sum • x = (l.map fun r 
 
 theorem Multiset.sum_smul_sum {s : Multiset R} {t : Multiset M} :
     s.sum • t.sum = ((s ×ˢ t).map fun p : R × M ↦ p.fst • p.snd).sum := by
-  induction' s using Multiset.induction with a s ih
-  · simp
-  · simp [add_smul, ih, ← Multiset.smul_sum]
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a s ih => simp [add_smul, ih, ← Multiset.smul_sum]
 
 theorem Finset.sum_smul {f : ι → R} {s : Finset ι} {x : M} :
     (∑ i ∈ s, f i) • x = ∑ i ∈ s, f i • x := map_sum ((smulAddHom R M).flip x) f s
@@ -55,5 +61,11 @@ lemma sum_piFinset_apply (f : κ → α) (s : Finset κ) (i : ι) :
   rw [Finset.sum_comp]
   simp only [eval_image_piFinset_const, card_filter_piFinset_const s, ite_smul, zero_smul, smul_sum,
     Finset.sum_ite_mem, inter_self]
+
+@[simp]
+lemma sum_single_smul
+    {R : Type*} [Semiring R] [Module R α] (f : ι → α) (r : R) (i₀ : ι) :
+    ∑ i, (Pi.single (M := fun _ ↦ R) i₀ r i) • f i = r • f i₀ := by
+  rw [Finset.sum_eq_single i₀, Pi.single_eq_same] <;> aesop
 
 end Fintype

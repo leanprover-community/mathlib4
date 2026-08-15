@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.Order.Category.PartOrd
+module
+
+public import Mathlib.CategoryTheory.FintypeCat
+public import Mathlib.Order.Category.PartOrd
 
 /-!
 # The category of finite partial orders
@@ -18,6 +20,8 @@ bounded.
 
 `FinPartOrd` is equivalent to a small category.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -47,17 +51,17 @@ instance : Inhabited FinPartOrd :=
   ⟨of PUnit⟩
 
 instance largeCategory : LargeCategory FinPartOrd :=
-  InducedCategory.category FinPartOrd.toPartOrd
+  inferInstanceAs <| Category (InducedCategory _ toPartOrd)
 
 instance concreteCategory : ConcreteCategory FinPartOrd (· →o ·) :=
-  InducedCategory.concreteCategory FinPartOrd.toPartOrd
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toPartOrd) _
 
 instance hasForgetToPartOrd : HasForget₂ FinPartOrd PartOrd :=
-  InducedCategory.hasForget₂ FinPartOrd.toPartOrd
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toPartOrd) _
 
 instance hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat where
   forget₂.obj X := .of X
-  forget₂.map f := f.hom
+  forget₂.map f := FintypeCat.homMk f.hom
 
 /-- Typecheck a `OrderHom` as a morphism in `FinPartOrd`. -/
 abbrev ofHom {X Y : Type u} [PartialOrder X] [Fintype X] [PartialOrder Y] [Fintype Y] (f : X →o Y) :
@@ -65,32 +69,32 @@ abbrev ofHom {X Y : Type u} [PartialOrder X] [Fintype X] [PartialOrder Y] [Finty
   ConcreteCategory.ofHom (C := FinPartOrd) f
 
 @[simp]
-lemma hom_id {X : FinPartOrd} : (𝟙 X : X ⟶ X).hom = OrderHom.id := rfl
+lemma hom_hom_id {X : FinPartOrd} : (𝟙 X : X ⟶ X).hom.hom = OrderHom.id := rfl
 
 /- Provided for rewriting. -/
 lemma id_apply (X : FinPartOrd) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
 
 @[simp]
-lemma hom_comp {X Y Z : FinPartOrd} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
+lemma hom_hom_comp {X Y Z : FinPartOrd} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom.hom = g.hom.hom.comp f.hom.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {X Y Z : FinPartOrd} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g) x = g (f x) := by simp
 
 @[ext]
-lemma hom_ext {X Y : FinPartOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
-  ConcreteCategory.ext hf
+lemma hom_ext {X Y : FinPartOrd} {f g : X ⟶ Y} (hf : f.hom.hom = g.hom.hom) : f = g :=
+  InducedCategory.hom_ext (ConcreteCategory.ext hf)
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [PartialOrder X] [Fintype X] [PartialOrder Y] [Fintype Y]
+lemma hom_hom_ofHom {X Y : Type u} [PartialOrder X] [Fintype X] [PartialOrder Y] [Fintype Y]
     (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+  (ofHom f).hom.hom = f := rfl
 
 @[simp]
-lemma ofHom_hom {X Y : FinPartOrd} (f : X ⟶ Y) :
-    ofHom f.hom = f := rfl
+lemma ofHom_hom_hom {X Y : FinPartOrd} (f : X ⟶ Y) :
+    ofHom f.hom.hom = f := rfl
 
 /-- Constructs an isomorphism of finite partial orders from an order isomorphism between them. -/
 @[simps]
@@ -102,7 +106,7 @@ def Iso.mk {α β : FinPartOrd.{u}} (e : α ≃o β) : α ≅ β where
 @[simps map]
 def dual : FinPartOrd ⥤ FinPartOrd where
   obj X := of Xᵒᵈ
-  map f := ofHom f.hom.dual
+  map f := ofHom f.hom.hom.dual
 
 /-- The equivalence between `FinPartOrd` and itself induced by `OrderDual` both ways. -/
 @[simps]

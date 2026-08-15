@@ -3,11 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.MvPolynomial.Basic
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 # Multivariate polynomials over fields
@@ -17,10 +18,12 @@ dimension of the space of multivariate polynomials over a field is equal to the 
 finitely supported functions from the indexing set to `ℕ`.
 -/
 
+public section
+
 
 noncomputable section
 
-open Set LinearMap Submodule
+open Submodule
 
 universe u v
 
@@ -40,12 +43,13 @@ variable {σ K} [CommRing K] [Nontrivial K]
 open Cardinal
 
 theorem rank_eq_lift : Module.rank K (MvPolynomial σ K) = lift.{v} #(σ →₀ ℕ) := by
-  rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank, lift_lift, lift_umax.{u,v}]
+  rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank, lift_lift, lift_umax.{u, v}]
 
 theorem rank_eq {σ : Type v} : Module.rank K (MvPolynomial σ K) = #(σ →₀ ℕ) := by
   rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank]
 
-@[deprecated (since := "2024-11-07")] alias rank_mvPolynomial := rank_eq
+instance : Module K (MvPolynomial σ K) :=
+  inferInstanceAs <| Module K (AddMonoidAlgebra K (σ →₀ ℕ))
 
 theorem finrank_eq_zero [Nonempty σ] : Module.finrank K (MvPolynomial σ K) = 0 :=
   (basisMonomials σ K).linearIndependent.finrank_eq_zero_of_infinite

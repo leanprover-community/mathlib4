@@ -3,19 +3,23 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Fintype.Sum
+module
+
+public import Mathlib.Data.Fintype.Sum
 
 /-!
 # Finiteness of sum types
 -/
+
+public section
 
 variable {α β : Type*}
 
 namespace Finite
 
 instance [Finite α] [Finite β] : Finite (α ⊕ β) := by
-  haveI := Fintype.ofFinite α
-  haveI := Fintype.ofFinite β
+  have := Fintype.ofFinite α
+  have := Fintype.ofFinite β
   infer_instance
 
 theorem sum_left (β) [Finite (α ⊕ β)] : Finite α :=

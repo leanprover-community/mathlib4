@@ -3,11 +3,15 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Dedup
+module
+
+public import Mathlib.Data.Multiset.Dedup
 
 /-!
 # The fold operation for a commutative associative operation over a multiset.
 -/
+
+@[expose] public section
 
 namespace Multiset
 
@@ -89,7 +93,8 @@ theorem fold_union_inter [DecidableEq α] (s₁ s₂ : Multiset α) (b₁ b₂ :
 theorem fold_dedup_idem [DecidableEq α] [hi : Std.IdempotentOp op] (s : Multiset α) (b : α) :
     (dedup s).fold op b = s.fold op b :=
   Multiset.induction_on s (by simp) fun a s IH => by
-    by_cases h : a ∈ s <;> simp [IH, h]
+    by_cases h : a ∈ s; swap; · simp [IH, h]
+    simp only [h, dedup_cons_of_mem, IH, fold_cons_left]
     show fold op b s = op a (fold op b s)
     rw [← cons_erase h, fold_cons_left, ← ha.assoc, hi.idempotent]
 
