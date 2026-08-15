@@ -7,8 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.IsoCat
 public import Mathlib.CategoryTheory.IsomorphismClasses
 public import Mathlib.CategoryTheory.Thin
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Skeleton of a category
@@ -23,6 +25,32 @@ show it is a skeleton of the original category. The advantage of this special ca
 separately is that lemmas and definitions about orderings can be used directly, for example for the
 subobject lattice. In addition, some of the commutative diagrams about the functors commute
 definitionally on the nose which is convenient in practice.
+
+## Main declarations
+
+* `Skeleton C`: the skeleton of a category `C`, defined as the quotient of objects by isomorphism.
+* `skeletonEquivalence C : Skeleton C ≌ C`: the canonical equivalence between a category and its
+  skeleton.
+* `Functor.mapSkeleton (F : C ⥤ D) : Skeleton C ⥤ Skeleton D`: the functor induced by `F` on
+  skeletons.
+* `Functor.isEquivalence_iff_exists_isoCat_mapSkeleton`: `F` is an equivalence if and only if
+  the induced functor on skeletons is the functor of some `IsoCat (Skeleton C) (Skeleton D)`.
+* `Functor.tfae_isEquivalence_bundledEquivalence_mapSkeletonIsoCat`: a three-way `TFAE` relating
+  `F.IsEquivalence`, bundled equivalences `C ≌ D` with functor `F`, and `IsoCat` data on
+  skeletons induced by `F`.
+* `ThinSkeleton C`: the thin skeleton of a category, defined by quotienting objects by
+  isomorphism and equipped with a preorder structure.
+* `toThinSkeleton : C ⥤ ThinSkeleton C`: the canonical functor to the thin skeleton.
+* `ThinSkeleton.map (F : C ⥤ D) : ThinSkeleton C ⥤ ThinSkeleton D`: the functor induced by `F`
+  on thin skeletons.
+* `ThinSkeleton.fromThinSkeleton : ThinSkeleton C ⥤ C`: the functor from the thin skeleton of a
+  thin category back to the original category.
+* `ThinSkeleton.equivalence : ThinSkeleton C ≌ C`: the canonical equivalence between the thin
+  skeleton of a thin category and the original category.
+* `ThinSkeleton.thinSkeleton_isSkeleton`: the thin skeleton of a thin category is a skeleton of
+  that category.
+* `Equivalence.thinSkeletonOrderIso`: an equivalence from a thin category to a partial order
+  induces an order isomorphism from its thin skeleton.
 -/
 
 @[expose] public section
@@ -137,6 +165,9 @@ set_option backward.defeqAttrib.useBackward true in
   counitIso := NatIso.ofComponents fromSkeletonToSkeletonIso
   functor_unitIso_comp _ := Iso.inv_hom_id _
 
+noncomputable instance toSkeletonFunctor.isEquivalence : (toSkeletonFunctor C).IsEquivalence :=
+  inferInstanceAs <| Functor.IsEquivalence (skeletonEquivalence C).inverse
+
 set_option backward.isDefEq.respectTransparency.types false in
 theorem skeleton_skeletal : Skeletal (Skeleton C) := by
   rintro X Y ⟨h⟩
@@ -202,6 +233,32 @@ lemma mapSkeleton_injective [F.Full] [F.Faithful] : Function.Injective F.mapSkel
 
 lemma mapSkeleton_surjective [F.EssSurj] : Function.Surjective F.mapSkeleton.obj :=
   fun Y ↦ let ⟨X, h⟩ := EssSurj.mem_essImage F.mapSkeleton Y; ⟨X, skeleton_skeletal D h⟩
+
+instance mapSkeleton_isIso_of_isEquivalence [F.IsEquivalence] : F.mapSkeleton.IsIso where
+  bijective_obj := ⟨F.mapSkeleton_injective, F.mapSkeleton_surjective⟩
+
+theorem isEquivalence_iff_exists_isoCat_mapSkeleton :
+    F.IsEquivalence ↔ ∃ e : IsoCat (Skeleton C) (Skeleton D), e.functor = F.mapSkeleton := by
+  constructor
+  · intro _
+    exact ⟨F.mapSkeleton.asIsomorphism, rfl⟩
+  · rintro ⟨e, h⟩
+    have h₀ : F.mapSkeleton.IsEquivalence := h ▸ e.toEquivalence.isEquivalence_functor
+    exact
+      @Functor.isEquivalence_of_comp_right _ _ _ _ _ _ F (toSkeletonFunctor D)
+        inferInstance
+        (@Functor.isEquivalence_of_iso _ _ _ _ (toSkeletonFunctor C ⋙ F.mapSkeleton)
+          (F ⋙ toSkeletonFunctor D) F.toSkeletonFunctorCompMapSkeletonIso inferInstance)
+
+theorem tfae_isEquivalence_bundledEquivalence_mapSkeletonIsoCat :
+    List.TFAE
+      [ F.IsEquivalence
+      , ∃ e : C ≌ D, e.functor = F
+      , ∃ e : IsoCat (Skeleton C) (Skeleton D), e.functor = F.mapSkeleton
+      ] := by
+  tfae_have 1 ↔ 2 := isEquivalence_iff_exists_equivalence F
+  tfae_have 1 ↔ 3 := isEquivalence_iff_exists_isoCat_mapSkeleton F
+  tfae_finish
 
 end Functor
 
