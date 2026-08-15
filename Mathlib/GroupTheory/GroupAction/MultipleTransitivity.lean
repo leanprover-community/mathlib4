@@ -9,7 +9,6 @@ public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.GroupTheory.SpecificGroups.Alternating
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 public import Mathlib.SetTheory.Cardinal.Embedding
-public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # Multiple transitivity
 
@@ -33,7 +32,7 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
   If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`,
   provided `α` has at least `n` elements.
 
-## Results for `SubMulAction`.
+## Results for `SubMulAction`
 
 * `SubMulAction.ofStabilizer.isPretransitive_iff_conj` shows
   that for `a`, `b` and `g` such that `g • a = b`, the actions
