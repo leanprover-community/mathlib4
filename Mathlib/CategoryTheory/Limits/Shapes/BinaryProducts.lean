@@ -1237,6 +1237,13 @@ theorem prodComparison_comp :
   unfold prodComparison
   ext <;> simp [← G.map_comp]
 
+@[reassoc]
+lemma map_braiding_hom_comp_prodComparison
+    [HasBinaryProduct B A] [HasBinaryProduct (F.obj B) (F.obj A)] :
+    F.map (prod.braiding _ _).hom ≫ prodComparison F A B  =
+    prodComparison F B A ≫ (prod.braiding _ _).hom := by
+  ext <;> simp [← Functor.map_comp]
+
 end ProdComparison
 
 noncomputable section CoprodComparison
