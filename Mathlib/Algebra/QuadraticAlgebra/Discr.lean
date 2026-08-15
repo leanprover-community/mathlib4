@@ -20,8 +20,8 @@ over a field, a criterion for `QuadraticAlgebra K a b` to be a field.
 
 ## Main results
 
-* `QuadraticAlgebra.discr_map`: the discriminant scales by `u ^ 2` under the change of
-  generator `ω ↦ u • ω + k`.
+* `QuadraticAlgebra.discr_changeGenerator`: the discriminant scales by `u ^ 2` under the change
+  of generator `ω ↦ u • ω + k`.
 * `QuadraticAlgebra.exists_sq_eq_iff_isSquare_discr`: over a ring with `2` invertible,
   `X ^ 2 - b * X - a` has a root iff `discr a b` is a square.
 * `QuadraticAlgebra.isField_iff_not_isSquare_discr`: over a field with `2 ≠ 0`,
@@ -48,11 +48,13 @@ theorem discr_algebraMap {S : Type*} [CommSemiring R] [CommSemiring S] [Algebra 
     discr (algebraMap R S a) (algebraMap R S b) = algebraMap R S (discr a b) := by
   simp [discr_def, map_ofNat]
 
-/-- Under the change of generator `ω ↦ u • ω + k` (see `QuadraticAlgebra.map`), the
+/-- Under the change of generator `ω ↦ u • ω + k` (see `QuadraticAlgebra.changeGenerator`), the
 discriminant is multiplied by `u ^ 2`. -/
-theorem discr_map [CommRing R] (a b u k : R) :
+theorem discr_changeGenerator [CommRing R] (a b u k : R) :
     discr (u ^ 2 * a - u * b * k - k ^ 2) (u * b + 2 * k) = u ^ 2 * discr a b := by
   rw [discr_def, discr_def]; ring
+
+@[deprecated (since := "2026-08-14")] alias discr_map := discr_changeGenerator
 
 /-- The discriminant is the square of the different `ω - star ω`. -/
 theorem algebraMap_discr [CommRing R] (a b : R) :
