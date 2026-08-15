@@ -247,8 +247,7 @@ This effectively verifies the Hall marriage condition for the family
 `B` using a double-counting argument.
 -/
 lemma card_le_card_biUnion_of_card_eq_of_card_filter_le [DecidableEq α]
-    {n : Type*} {B : n → Finset α} (k : ℕ) [h₁ : NeZero k]
-    (h₂ : ∀ j, #(B j) = k)
+    {n : Type*} {B : n → Finset α} (k : ℕ) [h₁ : NeZero k] (h₂ : ∀ j, #(B j) = k)
     (h₃ : ∀ x, ∀ (t : Finset n), #{j ∈ t | x ∈ B j} ≤ k) (s : Finset n) :
     #s ≤ #(s.biUnion B) :=
   Finset.card_le_card_biUnion_of_card_le_card B s (by grind [h₁.out]) (fun j _ ↦ (h₂ j).ge)
