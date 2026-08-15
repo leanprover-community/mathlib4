@@ -205,4 +205,32 @@ theorem gradeBy.isInternal : DirectSum.IsInternal (gradeBy R f) :=
 theorem grade.isInternal : DirectSum.IsInternal (grade R : ι → Submodule R _) :=
   DirectSum.Decomposition.isInternal _
 
+variable [DecidableEq M]
+
+/-- Projection onto degree `a` kills terms of any other degree. -/
+@[simp] lemma proj_grade_single (a b : M) (r : R) :
+    GradedRing.proj (AddMonoidAlgebra.grade R) a (AddMonoidAlgebra.single b r) =
+      if b = a then AddMonoidAlgebra.single b r else 0 := by
+  rw [GradedRing.proj_apply, AddMonoidAlgebra.grade.decompose_single,
+    DirectSum.coe_of_apply]
+  split_ifs <;> rfl
+
+/-- Projection onto degree `a` in the `AddMonoidAlgebra` grading
+extracts the corresponding term. -/
+@[simp] lemma proj_grade_apply
+  (f : AddMonoidAlgebra R M) (a : M) :
+    GradedRing.proj (AddMonoidAlgebra.grade R) a f = AddMonoidAlgebra.single a (f a) := by
+  induction f using AddMonoidAlgebra.induction_linear with
+  | zero =>
+    rw [map_zero]
+    exact (Finsupp.single_zero a).symm
+  | add x y hx hy =>
+    rw [map_add, hx, hy]
+    exact (AddMonoidAlgebra.single_add a (x a) (y a)).symm
+  | single b r =>
+    rw [AddMonoidAlgebra.proj_grade_single, AddMonoidAlgebra.single_apply]
+    split_ifs
+    · congr
+    · rw [AddMonoidAlgebra.single_zero]
+
 end AddMonoidAlgebra
