@@ -86,15 +86,14 @@ theorem absNorm_eq_absNorm_span' {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ :
     absNorm I = (Ideal.absNorm I₀ : ℚ) / (Ideal.absNorm (Ideal.span {(a : R)}) : ℚ) := by
   rw [absNorm, ← absNorm_div_absNorm_span_eq a I₀ h, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
 
-theorem absNorm_nonneg (I : FractionalIdeal R⁰ K) : 0 ≤ absNorm I := by
-  dsimp [absNorm]; positivity
+theorem absNorm_nonneg (I : FractionalIdeal R⁰ K) : 0 ≤ absNorm I := by dsimp [absNorm]; positivity
 
 theorem absNorm_bot : absNorm (⊥ : FractionalIdeal R⁰ K) = 0 := absNorm.map_zero'
 
 theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert! absNorm.map_one'
 
-theorem absNorm_eq_zero_iff [IsDomain K] {I : FractionalIdeal R⁰ K} :
-    absNorm I = 0 ↔ I = 0 := by
+theorem absNorm_eq_zero_iff {I : FractionalIdeal R⁰ K} : absNorm I = 0 ↔ I = 0 := by
+  have : IsDomain K := IsFractionRing.isDomain R
   refine ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq_absNorm_span, div_eq_zero_iff] at h
   refine Ideal.absNorm_eq_zero_iff.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
@@ -133,10 +132,10 @@ section IsLocalization
 
 variable [IsLocalization (Algebra.algebraMapSubmonoid R ℤ⁰) K] [Algebra ℚ K]
 
-theorem abs_det_basis_change [IsDomain K] {ι : Type*} [Fintype ι]
-    [DecidableEq ι] (b : Basis ι ℤ R) (I : FractionalIdeal R⁰ K) (bI : Basis ι ℤ I) :
+theorem abs_det_basis_change {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ R)
+    (I : FractionalIdeal R⁰ K) (bI : Basis ι ℤ I) :
     |(b.localizationLocalization ℚ ℤ⁰ K).det ((↑) ∘ bI)| = absNorm I := by
-  have := IsFractionRing.nontrivial R K
+  have : IsDomain K := IsFractionRing.isDomain R
   let b₀ : Basis ι ℚ K := b.localizationLocalization ℚ ℤ⁰ K
   let bI.num : Basis ι ℤ I.num := bI.map
       ((equivNum (nonZeroDivisors.coe_ne_zero _)).restrictScalars ℤ)
