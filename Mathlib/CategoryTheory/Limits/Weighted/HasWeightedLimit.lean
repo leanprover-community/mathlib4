@@ -255,7 +255,8 @@ variable {J : Type u} [Category.{v} J] (W : J ⥤ Type w) {C : Type u'} [Categor
 
 variable (C) in
 /-- Given a weight `W : J ⥤ Type w`, this is the property that all `W`-weighted limits
-exist for functors `F : J ⥤ C`. (See also `HasWeightedLimFlipObj` for the "flipped"
+exist for functors `F : J ⥤ C`. Under this condition, we define a weighted limit functor
+`W.weightedLimObj : (J ⥤ C) ⥤ C`. (See also `HasWeightedLimFlipObj` for the "flipped"
 property for `F : J ⥤ C`.) -/
 abbrev HasWeightedLimObj : Prop :=
   ∀ (F : J ⥤ C), HasWeightedLimit W F
@@ -295,7 +296,9 @@ noncomputable def weightedLimFlipObj' : (hasWeightedLimit.{w} F).FullSubcategory
   map g := weightedLimFlipObjMap g.unop.hom F
 
 /-- Given `F : J ⥤ C`, this is the property that weighted limits of `F` exist for all
-weights `W : J ⥤ Type w`. -/
+weights `W : J ⥤ Type w`. Under this condition, we define a weighted limit functor
+`F.weightedLimFlipObj : (J ⥤ Type w)ᵒᵖ ⥤ C`. (See also `HasWeightedLimObj` for
+the "flipped" property for `W : J ⥤ Type w`.) -/
 abbrev HasWeightedLimFlipObj : Prop :=
   ∀ (W : J ⥤ Type w), HasWeightedLimit W F
 
@@ -308,8 +311,7 @@ lemma hasWeightedLimit_eq_top :
 
 /-- Given a functor `F : J ⥤ C`, this is the functor `(J ⥤ Type w)ᵒᵖ ⥤ C` which sends
 a weight `W : J ⥤ Type w` to the `W`-weighted limit of `F`. Here, we assume that
-all such weighted limits exist. (See also `HasWeightedLimObj` for the "flipped"
-property for `W : J ⥤ Type w`.) -/
+all such weighted limits exist. -/
 @[implicit_reducible, simps]
 noncomputable def weightedLimFlipObj : (J ⥤ Type w)ᵒᵖ ⥤ C where
   obj W := W.unop.weightedLimObjObj F
