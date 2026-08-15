@@ -369,7 +369,7 @@ theorem subset_image_compl {f : α → β} {s : Set α} (H : Surjective f) : (f 
 theorem image_compl_eq {f : α → β} {s : Set α} (H : Bijective f) : f '' sᶜ = (f '' s)ᶜ :=
   Subset.antisymm (image_compl_subset H.1) (subset_image_compl H.2)
 
-private theorem subset_image_sdiff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
+theorem subset_image_sdiff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
   rw [sdiff_subset_iff, ← image_union, union_sdiff_self]
   exact image_mono subset_union_right
 
