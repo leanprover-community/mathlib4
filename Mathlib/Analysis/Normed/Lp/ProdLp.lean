@@ -447,7 +447,6 @@ private lemma isUniformInducing_ofLp_aux [PseudoEMetricSpace α] [PseudoEMetricS
   (prod_antilipschitzWith_ofLp_aux p α β).isUniformInducing
     (prod_lipschitzWith_ofLp_aux p α β).uniformContinuous
 
-set_option backward.privateInPublic true in
 private lemma prod_uniformity_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     𝓤 (WithLp p (α × β)) = 𝓤[UniformSpace.comap ofLp inferInstance] := by
   rw [← (isUniformInducing_ofLp_aux p α β).comap_uniformity]
@@ -456,7 +455,6 @@ private lemma prod_uniformity_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β
 instance instProdBornology (p : ℝ≥0∞) (α β : Type*) [Bornology α] [Bornology β] :
     Bornology (WithLp p (α × β)) := Bornology.induced ofLp
 
-set_option backward.privateInPublic true in
 private lemma prod_cobounded_aux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     @cobounded _ PseudoMetricSpace.toBornology = cobounded (WithLp p (α × β)) :=
   le_antisymm (prod_antilipschitzWith_ofLp_aux p α β).tendsto_cobounded.le_comap

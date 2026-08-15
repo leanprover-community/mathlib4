@@ -565,7 +565,6 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   else
     fastJacobiSymAux (a % b).natAbs b false (Int.natAbs_pos.mpr hab)
 
-set_option backward.privateInPublic.warn false in
 @[csimp] private theorem fastJacobiSym.eq : jacobiSym = fastJacobiSym := by
   ext a b
   induction b using Nat.strongRecOn with | ind b IH =>

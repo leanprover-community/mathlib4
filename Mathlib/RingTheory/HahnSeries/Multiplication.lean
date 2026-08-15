@@ -580,7 +580,6 @@ section Ring
 
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 
-set_option backward.privateInPublic true in
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : R⟦Γ⟧) : x * y * z = x * (y * z) := by
   ext b
   rw [coeff_mul_left' (x.isPWO_support.add y.isPWO_support) support_mul_subset,
@@ -698,7 +697,6 @@ namespace HahnModule
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 variable [PartialOrder Γ'] [AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [AddCommMonoid V]
 
-set_option backward.privateInPublic true in
 private theorem mul_smul' [Semiring R] [Module R V] (x y : R⟦Γ⟧)
     (z : HahnModule Γ' R V) : (x * y) • z = x • (y • z) := by
   ext b
