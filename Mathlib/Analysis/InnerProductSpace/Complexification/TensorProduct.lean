@@ -59,6 +59,14 @@ space over `ℝ`. -/
     Module.finrank ℂ (Complexification 𝕜 E) = Module.finrank ℝ E := by
   simp [toTensor.finrank_eq]
 
+open scoped RingTheory.LinearMap in
+/-- The tensor version of `T.toComplexification` is `id ⊗ₘ T`. -/
+lemma ContinuousLinearMap.arrowCongr_toTensor_toComplexification {F : Type*} [NormedAddCommGroup F]
+    [InnerProductSpace 𝕜 F] [Module ℝ F] [IsScalarTower ℝ 𝕜 F] (T : E →L[𝕜] F) :
+    toTensor.arrowCongr toTensor T.toComplexification.toLinearMap =
+      (.id : ℂ →ₗ[ℝ] ℂ) ⊗ₘ (T.toLinearMap.restrictScalars ℝ) := by
+  ext; simp [smul_tmul', ← add_tmul]
+
 variable (𝕜) in
 /-- The complexication of a basis, given by `b.complexification i = (b i, 0)`. -/
 @[expose] noncomputable def Module.Basis.complexification {ι} (b : Module.Basis ι ℝ E) :

@@ -30,6 +30,9 @@ and the `ℂ`-inner product is given by
   `ℝ` is equivalent to `ℂ`.
 * `ContinuousLinearMap.toComplexification`: The complexification of an operator `T`, which is
   defined as `x ↦ (T x.re, T x.im)`.
+* `ContinuousLinearMap.ofComplexification`: Decomplexifying an operator on complexifications given
+  that it commutes with the complexification of `algebraMapCLM 𝕜 _ RCLike.I`,
+  and is defined as `x ↦ (T (x, 0)).re`.
 
 ## References
 
