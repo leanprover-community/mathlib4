@@ -221,15 +221,15 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
 
 lemma isLocallyClosedAt_iff_exists_isClosed_preimage_val {x : X} : IsLocallyClosedAt s x ↔
     ∃ U ∈ 𝓝 x, IsClosed (U ↓∩ s) :=
-  (isLocallyClosedAt_tfae s x).out 0 1
+  (isLocallyClosedAt_tfae s x).out 1 2
 
 lemma isLocallyClosedAt_iff_exists_inter_closure_subset {x : X} : IsLocallyClosedAt s x ↔
     ∃ U ∈ 𝓝 x, U ∩ closure s ⊆ s :=
-  (isLocallyClosedAt_tfae s x).out 0 2
+  (isLocallyClosedAt_tfae s x).out 1 3
 
 lemma isLocallyClosedAt_iff_exists_eq_inter_closure {x : X} : IsLocallyClosedAt s x ↔
     ∃ U ∈ 𝓝 x, U ∩ s = U ∩ closure s :=
-  (isLocallyClosedAt_tfae s x).out 0 3
+  (isLocallyClosedAt_tfae s x).out 1 4
 
 lemma isLocallyClosedAt_iff_exists_isClosed_inter_eq_of_hasBasis {ι : Type*} {p : ι → Prop}
     {U : ι → Set X} {x : X} (H : (𝓝 x).HasBasis p U) : IsLocallyClosedAt s x ↔
@@ -253,14 +253,14 @@ lemma isLocallyClosedAt_iff_exists_eq_inter_closure_of_hasBasis {ι : Type*} {p 
 
 lemma isLocallyClosedAt_iff_eventuallyEq_closure {x : X} : IsLocallyClosedAt s x ↔
     s =ᶠ[𝓝 x] closure s :=
-  (isLocallyClosedAt_tfae s x).out 0 4
+  (isLocallyClosedAt_tfae s x).out 1 5
 
 lemma isLocallyClosedAt_iff_closure_eventuallyLE {x : X} : IsLocallyClosedAt s x ↔
     closure s ≤ᶠ[𝓝 x] s :=
-  (isLocallyClosedAt_tfae s x).out 0 5
+  (isLocallyClosedAt_tfae s x).out 1 6
 
 lemma isLocallyClosedAt_iff_coborder_mem_nhds {x : X} : IsLocallyClosedAt s x ↔ coborder s ∈ 𝓝 x :=
-  (isLocallyClosedAt_tfae s x).out 0 7
+  (isLocallyClosedAt_tfae s x).out 1 8
 
 end IsLocallyClosedAt
 
@@ -336,8 +336,12 @@ lemma isLocallyClosed_tfae (s : Set X) :
       inter_eq_right.mpr subset_closure, inter_comm, eq_comm]
   tfae_finish
 
+lemma isLocallyClosed_iff_isLocallyClosedAt :
+    IsLocallyClosed s ↔ ∀ x ∈ s, IsLocallyClosedAt s x :=
+  (isLocallyClosed_tfae s).out 1 2
+
 lemma isLocallyClosed_iff_isOpen_coborder : IsLocallyClosed s ↔ IsOpen (coborder s) :=
-  (isLocallyClosed_tfae s).out 0 3
+  (isLocallyClosed_tfae s).out 1 4
 
 alias ⟨IsLocallyClosed.isOpen_coborder, _⟩ := isLocallyClosed_iff_isOpen_coborder
 
@@ -346,7 +350,7 @@ lemma isLocallyClosed_iff_isLocallyClosedAt : IsLocallyClosed s ↔ ∀ x ∈ s,
 
 lemma isLocallyClosed_iff_isOpen_preimage_val_closure :
     IsLocallyClosed s ↔ IsOpen (closure s ↓∩ s) :=
-  (isLocallyClosed_tfae s).out 0 5
+  (isLocallyClosed_tfae s).out 1 6
 
 alias ⟨IsLocallyClosed.isOpen_preimage_val_closure, _⟩ :=
   isLocallyClosed_iff_isOpen_preimage_val_closure

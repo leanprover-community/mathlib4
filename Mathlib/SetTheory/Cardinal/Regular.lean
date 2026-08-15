@@ -25,7 +25,7 @@ This file defines regular, singular, and inaccessible cardinals.
   `ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c`.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

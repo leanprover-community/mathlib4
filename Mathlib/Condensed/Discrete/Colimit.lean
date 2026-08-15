@@ -40,7 +40,7 @@ abbrev locallyConstantPresheaf : Profinite.{u}ᵒᵖ ⥤ Type (u + 1) :=
 #adaptation_note
 /--
 In this declaration and `isColimitLocallyConstantPresheaf`, `coe_comp` interferes with rewriting via
-`Cone.w`, so we needed to manualy exclude it.
+`Cone.w`, so we needed to manually exclude it.
 -/
 set_option backward.defeqAttrib.useBackward true in
 /--
@@ -67,7 +67,6 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     dsimp [- CompHausLike.coe_comp] -- `coe_comp` prevents rewriting with `c.w`
     rwa [dsimp% c.w, dsimp% c.w]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
     (s : Cocone ((F ⋙ toProfinite).op ⋙ locallyConstantPresheaf X))
@@ -175,7 +174,7 @@ def lanSheafProfinite (X : Type (u + 1)) :
     rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
       fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _)]
     exact ((CompHausLike.LocallyConstant.functor.{u, u + 1}
-      (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 0 2).mp)).obj X).property
+      (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 1 3).mp)).obj X).property
 
 /-- `lanPresheaf (locallyConstantPresheaf X)` as a condensed set. -/
 def lanCondensedSet (X : Type (u + 1)) : CondensedSet.{u} :=
@@ -357,7 +356,6 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     dsimp [- CompHausLike.coe_comp] -- `coe_comp` prevents rewriting with `c.w`
     rwa [dsimp% c.w, dsimp% c.w]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
     (s : Cocone ((F ⋙ toLightProfinite).op ⋙ locallyConstantPresheaf X))
@@ -374,7 +372,6 @@ noncomputable def isColimitLocallyConstantPresheafDiagram (S : LightProfinite) :
   (Functor.Final.isColimitWhiskerEquiv (opOpEquivalence ℕ).inverse _).symm
     (isColimitLocallyConstantPresheaf _ _ S.asLimit)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma isColimitLocallyConstantPresheafDiagram_desc_apply (S : LightProfinite)
     (s : Cocone (S.diagram.rightOp ⋙ locallyConstantPresheaf X))

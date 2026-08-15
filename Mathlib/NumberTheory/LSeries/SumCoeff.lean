@@ -77,10 +77,10 @@ theorem LSeriesSummable_of_sum_norm_bigO
     (hr : 0 ≤ r) (hs : r < s.re) :
     LSeriesSummable f s := by
   have h₁ : (fun n ↦ if n = 0 then 0 else f n) =ᶠ[atTop] f := by
-    filter_upwards [eventually_ne_atTop 0] with n hn using by simp_rw [if_neg hn]
-  refine (LSeriesSummable_of_sum_norm_bigO_aux (if_pos rfl) ?_ hr hs).congr' _ h₁
+    filter_upwards [eventually_ne_atTop 0] with n hn using by simp_rw [ite_eq_right hn]
+  refine (LSeriesSummable_of_sum_norm_bigO_aux (ite_eq_left rfl) ?_ hr hs).congr' _ h₁
   refine hO.congr' (Eventually.of_forall fun _ ↦ Finset.sum_congr rfl fun _ h ↦ ?_) EventuallyEq.rfl
-  rw [if_neg (zero_lt_one.trans_le (mem_Icc.mp h).1).ne']
+  rw [ite_eq_right (zero_lt_one.trans_le (mem_Icc.mp h).1).ne']
 
 /-- If `f` takes nonnegative real values and the partial sums `∑ k ∈ Icc 1 n, f k` are `O(n ^ r)`
 for some real `0 ≤ r`, then the L-series `LSeries f` converges at `s : ℂ` for all `s`
@@ -139,10 +139,12 @@ theorem LSeries_eq_mul_integral (f : ℕ → ℂ) {r : ℝ} (hr : 0 ≤ r) {s : 
     (hO : (fun n ↦ ∑ k ∈ Icc 1 n, f k) =O[atTop] fun n ↦ (n : ℝ) ^ r) :
     LSeries f s = s * ∫ t in Set.Ioi (1 : ℝ), (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (-(s + 1)) := by
   rw [← LSeriesSummable_congr' s (f := fun n ↦ if n = 0 then 0 else f n)
-    (by filter_upwards [eventually_ne_atTop 0] with n h using if_neg h)] at hS
+    (by filter_upwards [eventually_ne_atTop 0] with n h using ite_eq_right h)] at hS
   have (n : _) : ∑ k ∈ Icc 1 n, (if k = 0 then 0 else f k) = ∑ k ∈ Icc 1 n, f k :=
-    Finset.sum_congr rfl fun k hk ↦ by rw [if_neg (zero_lt_one.trans_le (mem_Icc.mp hk).1).ne']
-  rw [← LSeries_congr fun _ ↦ if_neg _, LSeries_eq_mul_integral_aux (if_pos rfl) hr hs hS] <;>
+    Finset.sum_congr rfl fun k hk ↦ by
+      rw [ite_eq_right (zero_lt_one.trans_le (mem_Icc.mp hk).1).ne']
+  rw [← LSeries_congr fun _ ↦ ite_eq_right _,
+    LSeries_eq_mul_integral_aux (ite_eq_left rfl) hr hs hS] <;>
   simp_all
 
 /-- A version of `LSeries_eq_mul_integral` where we use the stronger condition that the partial sums
