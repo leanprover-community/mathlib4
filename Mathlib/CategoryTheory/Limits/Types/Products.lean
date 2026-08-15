@@ -22,7 +22,7 @@ and the terminal object.
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace CategoryTheory.Limits.Types
 
@@ -217,7 +217,6 @@ namespace Small
 
 variable {J : Type v} (F : J → Type u) [Small.{u} J]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 A variant of `productLimitCone` using a `Small` hypothesis rather than a function to `Type`.
@@ -229,26 +228,22 @@ noncomputable def productLimitCone :
       π := Discrete.natTrans (fun ⟨j⟩ =>
         ↾fun f => (equivShrink (∀ j, F j)).symm f j) }
   isLimit :=
-    have : Small.{u} (∀ j, F j) := inferInstance
     { lift := fun s => ↾fun x => (equivShrink _) (fun j => s.π.app ⟨j⟩ x)
       uniq := fun s m w => ConcreteCategory.hom_ext _ _ fun x => Shrink.ext (funext fun j => by
         simpa using! ConcreteCategory.congr_hom (w ⟨j⟩) x) }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The categorical product in `Type u` indexed in `Type v`
 is the type-theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
 noncomputable def productIso :
     (∏ᶜ F : Type u) ≅ Shrink (∀ j, F j) :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[elementwise (attr := simp)]
 theorem productIso_hom_comp_eval (j : J) :
     (productIso.{v, u} F).hom ≫ (↾fun f => (equivShrink (∀ j, F j)).symm f j) =
       Pi.π F j :=
   limit.isoLimitCone_hom_π (productLimitCone.{v, u} F) ⟨j⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[elementwise (attr := simp)]
 theorem productIso_inv_comp_π (j : J) :
     (productIso.{v, u} F).inv ≫ Pi.π F j =

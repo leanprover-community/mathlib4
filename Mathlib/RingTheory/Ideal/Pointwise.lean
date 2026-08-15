@@ -182,6 +182,14 @@ theorem inertia_bot {R : Type*} [Ring R] [MulSemiringAction M R] [FaithfulSMul M
   have := (AddSubgroup.mem_inertia).mp hσ x
   rwa [Submodule.mem_toAddSubgroup, Ideal.mem_bot, sub_eq_zero] at this
 
+theorem inertia_smul {R : Type*} [Ring R] [MulSemiringAction M R]
+    (g : M) (I : Ideal R) : (g • I).inertia M = (I.inertia M).map (MulAut.conj g) := by
+  ext x
+  simp_rw [Subgroup.map_equiv_eq_comap_symm, Subgroup.mem_comap, MonoidHom.coe_coe,
+    MulAut.conj_symm_apply, mem_inertia, mem_pointwise_smul_iff_inv_smul_mem]
+  rw [← (MulAction.toPerm g).forall_congr_right]
+  simp [mul_smul, smul_sub]
+
 theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
     inertia M P ≤ MulAction.stabilizer M P := by
   refine fun σ hσ ↦ SetLike.ext fun x ↦ ?_
@@ -189,11 +197,9 @@ theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAct
     ← P.add_mem_iff_left (a := x) ((inv_mem hσ) x), add_sub_cancel]
 
 instance {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
-  (P.inertia (MulAction.stabilizer M P)).Normal := by
-  refine (Subgroup.normal_subgroupOf_iff (inertia_le_stabilizer P)).mpr fun g s hg hs x ↦ ?_
-  rw [Submodule.mem_toAddSubgroup, ← Ideal.smul_mem_pointwise_smul_iff (a := s⁻¹), smul_sub,
-    smul_smul, ← mul_assoc, inv_mul_cancel_left, mul_smul, Subgroup.inv_mem _ hs]
-  exact hg (s⁻¹ • x)
+    (P.inertia (MulAction.stabilizer M P)).Normal := by
+  simp_rw [Subgroup.normal_iff_map_conj_eq, ← inertia_smul]
+  exact fun g ↦ congrArg (inertia _) g.2
 
 variable {N : Type*} [Group N] [MulSemiringAction N R]
 
