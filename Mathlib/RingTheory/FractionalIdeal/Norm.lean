@@ -107,7 +107,9 @@ end
 
 variable [Module.Free ℤ R] [Module.Finite ℤ R]
 
--- `Infinite R` for the basis/determinant lemmas below (a nontrivial free `ℤ`-module is infinite).
+-- `Module.Free.infinite` cannot be an instance: its conclusion does not mention the base ring, and
+-- even a `ℤ`-specific version would be tried on every `Infinite` goal. Declaring it one locally is
+-- safe: the cost is confined to this file, and `Infinite` is a `Prop`, so any two instances agree.
 local instance : Infinite R := Module.Free.infinite ℤ R
 
 theorem absNorm_eq (I : FractionalIdeal R⁰ K) :
