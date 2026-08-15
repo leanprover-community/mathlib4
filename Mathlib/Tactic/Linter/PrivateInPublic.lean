@@ -162,12 +162,22 @@ private def analyze (attributions : Array Attribution) : CommandElabM Unit := do
   -- projections. If any one of them is used, its `set_option` is what exports it, and must be kept
   -- even though the others are unused.
   for (range, decls) in attributions do
+    -- A command is elaborated in an exporting environment iff it declares a name which is not
+    -- private (see the `withExporting` call in `Lean.Elab.MutualDef.elabMutualDef`). In such a
+    -- command, the `set_option` may also be what allowed a public position to *refer* to an
+    -- exported private declaration, quite apart from what the command exports itself: it can
+    -- declare a public name whose signature mentions one, alongside a private name nobody uses.
+    let mut exporting := false
     let mut unused : Array Name := #[]
     let mut anyUsed := false
+    let mut referencesCandidate := false
     for n in decls do
+      unless isPrivateName n do exporting := true
       if candidates.contains n then
         if used.contains n then anyUsed := true else unused := unused.push n
-    if anyUsed || unused.isEmpty then continue
+      if (publicUses publicEnv n).any candidates.contains then
+        referencesCandidate := true
+    if anyUsed || (exporting && referencesCandidate) || unused.isEmpty then continue
     -- A structure command adds a dozen or so declarations; naming them all is unreadable, and the
     -- shortest names are the ones the reader recognises.
     let sorted := unused.qsort fun m n => m.toString.length < n.toString.length
