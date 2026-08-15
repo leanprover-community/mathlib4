@@ -249,13 +249,10 @@ This effectively verifies the Hall marriage condition for the family
 lemma card_le_card_biUnion_of_card_eq_of_card_filter_le {α : Type*} [DecidableEq α]
     {n : Type*} [Fintype n] [DecidableEq n] {B : n → Finset α} (k : ℕ) [h₁ : NeZero k]
     (h₂ : ∀ j, Finset.card (B j) = k)
-    (h₃ : ∀ x, ∀ (t : Finset n), Finset.card {j | j ∈ t ∧ x ∈ B j} ≤ k) :
-    ∀ (s : Finset n), (Finset.card s) ≤ (Finset.card (s.biUnion B)) := by
-  intro s
-  have : 0 < k := by grind [h₁.out]
-  apply Finset.card_le_card_biUnion_of_card_le_card (n := k) B s (by lia)
-  · intro j _
-    exact (h₂ j).ge
+    (h₃ : ∀ x, ∀ (t : Finset n), Finset.card {j | j ∈ t ∧ x ∈ B j} ≤ k) (s : Finset n) :
+    Finset.card s ≤ Finset.card (s.biUnion B) := by
+  apply Finset.card_le_card_biUnion_of_card_le_card (n := k) B s (by grind [h₁.out])
+  · exact fun j _ ↦ (h₂ j).ge
   · intro x _
     have ht : Finset.card {j | j ∈ s ∧ x ∈ B j} = Finset.card {j ∈ s | x ∈ B j} := by
       congr 1
