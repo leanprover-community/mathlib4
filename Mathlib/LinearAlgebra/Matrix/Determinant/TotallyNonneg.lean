@@ -60,8 +60,9 @@ variable [IsStrictOrderedRing R]
   intro n rows cols hrows hcols
   by_cases h_range : Set.range rows = Set.range cols
   · simp [hrows.eq_of_range_eq hcols h_range, submatrix_one cols hcols.injective]
-  · obtain ⟨i, hi⟩ : ∃ i : Fin n, rows i ∉ Set.range cols :=
-      hrows.injective.exists_not_mem_range_of_range_ne h_range
+  · have : ¬(Set.range rows ⊆ Set.range cols) := by
+      grind [hrows.injective.range_eq_range_iff_subset]
+    obtain ⟨_, ⟨i, _⟩, _⟩ := Set.not_subset.mp this
     have : ∀ j, rows i ≠ cols j := by grind
     simp [det_eq_zero_of_row_eq_zero i, this]
 
