@@ -127,9 +127,9 @@ example (A : Matrix (Fin 1) (Fin 3) ℤ) (hA : A = !![1, 2, 3]) :
   rw [hA]
   eval_rank
 
--- rank of an existing definition, after unfolding it to a literal
-example : Matrix.rank (R := ℤ) CartanMatrix.E₇ = 7 := by
-  unfold CartanMatrix.E₇
+-- rank of an existing definition, after rewriting it to a literal
+example : Matrix.rank (R := ℤ) (CartanMatrix.E 7) = 7 := by
+  rw [CartanMatrix.E_seven_eq]
   eval_rank
 
 section Binet
