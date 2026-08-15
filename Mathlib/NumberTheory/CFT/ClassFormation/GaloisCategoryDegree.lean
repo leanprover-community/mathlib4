@@ -139,6 +139,19 @@ lemma degMap_right_dvd {Z Y X : C} [PreGaloisCategory.IsConnected Y]
   rw [degMap_comp' f g fg]
   apply Nat.dvd_mul_left
 
+@[simp]
+lemma natCard_aut_eq_deg {X : C} [IsGalois X] :
+    Nat.card (Aut X) = deg X := by
+  let F := getFiberFunctor C
+  rw [deg_eq_card_fiber F]
+  exact Nat.card_congr (evaluationEquivOfIsGalois F X (Classical.arbitrary _))
+
+@[simp high]
+lemma natCard_aut_overMk {Y X : C} [PreGaloisCategory.IsConnected X]
+    (f : Y ⟶ X) [IsGaloisCover f] :
+    Nat.card (Aut (Over.mk f)) = degMap f := by
+  simp
+
 end GaloisCategory
 
 end CategoryTheory
