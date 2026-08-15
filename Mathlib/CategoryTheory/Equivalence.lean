@@ -700,13 +700,16 @@ lemma isEquivalence_of_comp_left {E : Type*} [Category* E] (F : C ⥤ D) (G : D 
     isoWhiskerRight F.asEquivalence.counitIso.symm G)]
   exact (F.asEquivalence.symm.trans (F ⋙ G).asEquivalence).isEquivalence_functor
 
+/-- A functor is an equivalence (i.e. fully faithful and essentially surjective) iff it is the
+functor of a bundled equivalence. -/
 theorem isEquivalence_iff_exists_equivalence (F : C ⥤ D) :
     F.IsEquivalence ↔ ∃ e : C ≌ D, e.functor = F := by
   constructor
   · intro _
-    exact ⟨F.asEquivalence, rfl⟩
-  · rintro ⟨e, rfl⟩
-    infer_instance
+    use F.asEquivalence
+    rfl
+  · rintro ⟨e,e_functor_eq_F⟩
+    exact e_functor_eq_F ▸ inferInstance
 
 end Functor
 
