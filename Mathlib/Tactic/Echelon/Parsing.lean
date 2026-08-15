@@ -33,6 +33,9 @@ namespace Mathlib.Tactic.Echelon
 /-- Match a closed `Fin`-indexed matrix literal: its dimensions, element type, and rows of
 entries. -/
 def matchMatrixLit? (A : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Array Expr))) := do
+  -- closedness: a literal with free variables (hypothesis- or let-bound) or metavariables
+  -- is not evaluable here; unfold or substitute such variables before calling the tactic
+  if A.hasFVar || A.hasMVar then return none
   let_expr Matrix finM finN R := ← inferType A | return none
   let_expr Fin mE := finM | return none
   let_expr Fin nE := finN | return none
@@ -46,9 +49,6 @@ def matchMatrixLit? (A : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Arr
     let (es, _, _) ← Matrix.matchVecConsPrefix nE row
     return es.toArray
   unless entries.all (·.size == n) do return none
-  -- closedness: an entry with free variables (hypothesis- or let-bound) is not evaluable
-  -- here; unfold or substitute such variables before calling the tactic
-  unless entries.all (·.all fun e => !e.hasFVar && !e.hasExprMVar) do return none
   return some (m, n, R, entries)
 
 end Mathlib.Tactic.Echelon
