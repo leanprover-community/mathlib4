@@ -37,6 +37,8 @@ groups.
 topological space, group, topological group
 -/
 
+set_option linter.style.longFile 1600
+
 @[expose] public section
 
 open Set Filter TopologicalSpace Function Topology MulOpposite Pointwise
@@ -434,6 +436,16 @@ instance ConjAct.units_continuousConstSMul {M} [Monoid M] [TopologicalSpace M]
     [ContinuousMul M] : ContinuousConstSMul (ConjAct Mˣ) M :=
   ⟨fun _ => (continuous_const.mul continuous_id).mul continuous_const⟩
 
+open scoped Pointwise in
+instance [Group G] [Group H] [TopologicalSpace G] [MulDistribMulAction H G]
+    [ContinuousConstSMul H G] {𝒢 : Subgroup G} (h : H) [DiscreteTopology 𝒢] :
+    DiscreteTopology ↑(h • 𝒢) := by
+  simp only [← SetLike.coe_sort_coe, ← isDiscrete_iff_discreteTopology] at *
+  refine IsDiscrete.image_of_isOpenMap ‹_› ?_ fun x y ↦ by simp
+  apply IsOpenMap.of_inverse (f' := fun x ↦ h⁻¹ • x) (continuous_const_smul _) <;>
+  · intro x
+    simp
+
 variable [TopologicalSpace G] [Inv G] [Mul G]
 
 /-- Conjugation is jointly continuous on `G × G` when both `mul` and `inv` are continuous. -/
@@ -449,6 +461,10 @@ theorem IsTopologicalGroup.continuous_conj_prod [ContinuousMul G] [ContinuousInv
 theorem IsTopologicalGroup.continuous_conj [SeparatelyContinuousMul G] (g : G) :
     Continuous fun h : G => g * h * g⁻¹ :=
   (continuous_mul_const g⁻¹).comp (continuous_const_mul g)
+
+instance {G : Type*} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G] :
+    ContinuousConstSMul (ConjAct G) G where
+  continuous_const_smul h := IsTopologicalGroup.continuous_conj (ConjAct.ofConjAct h)
 
 /-- Conjugation acting on fixed element of the group is continuous when both `mul` and
 `inv` are continuous. -/
@@ -751,17 +767,28 @@ def Subgroup.connectedComponentOfOne (G : Type*) [TopologicalSpace G] [Group G]
   mul_mem' hg hh := mul_mem_connectedComponent_one hg hh
   inv_mem' hg := inv_mem_connectedComponent_one hg
 
+/-- If a subgroup of a topological group is commutative, then so is its topological closure. -/
+@[to_additive
+/-- If a subgroup of an additive topological group is commutative, then so is its
+topological closure. -/]
+instance Subgroup.isMulCommutative_topologicalClosure [T2Space G] (s : Subgroup G)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubmonoid.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
 /-- If a subgroup of a topological group is commutative, then so is its topological closure.
 
 See note [reducible non-instances]. -/
-@[to_additive
+@[to_additive (attr := deprecated Subgroup.isMulCommutative_topologicalClosure
+(since := "2026-07-29"))
   /-- If a subgroup of an additive topological group is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances]. -/]
 abbrev Subgroup.commGroupTopologicalClosure [T2Space G] (s : Subgroup G)
     (hs : ∀ x y : s, x * y = y * x) : CommGroup s.topologicalClosure :=
-  { s.topologicalClosure.toGroup, s.toSubmonoid.commMonoidTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 variable (G) in
 @[to_additive]
@@ -1062,7 +1089,6 @@ lemma Filter.tendsto_const_div_iff' (b : G) {c : G} {f : α → G} {l : Filter �
 
 @[deprecated (since := "2026-02-03")]
 alias Filter.tendsto_const_div_iff := Filter.tendsto_const_div_iff'
-
 
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive (attr := simps! +simpRhs)

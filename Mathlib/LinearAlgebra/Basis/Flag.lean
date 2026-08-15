@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Fin.FlagRange
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Dual.Basis
-public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Flag of submodules defined by a basis
@@ -19,7 +19,10 @@ to be the subspace spanned by the first `k` vectors of the basis `b`.
 We also prove some lemmas about this definition.
 -/
 
-@[expose] public section
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- This is why this section is `noncomputable`.
+-- See https://github.com/leanprover/lean4/issues/14084.
+@[expose] public noncomputable section
 
 open Set Submodule
 

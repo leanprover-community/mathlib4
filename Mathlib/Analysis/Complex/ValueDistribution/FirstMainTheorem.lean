@@ -30,7 +30,7 @@ Approximation*][MR3156076] for a detailed discussion.
 public section
 namespace ValueDistribution
 
-open Asymptotics Filter Function.locallyFinsuppWithin MeromorphicAt MeromorphicOn Metric Real
+open Asymptotics Filter Function.locallyFinsuppWithin MeromorphicOn Metric Real
 
 section FirstPart
 
@@ -135,7 +135,7 @@ theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : Meromorphi
     h.meromorphicOn.circleIntegrable_posLog_norm
   have h₂f : CircleIntegrable (fun x ↦ log⁺ ‖f x - a₀‖) 0 r := by
     apply MeromorphicOn.circleIntegrable_posLog_norm
-    apply h.meromorphicOn.sub (MeromorphicOn.const a₀)
+    fun_prop
   rw [← Pi.sub_apply, characteristic_sub_characteristic_eq_proximity_sub_proximity h]
   simp only [proximity, reduceDIte, Pi.sub_apply, ← circleAverage_sub h₁f h₂f]
   apply le_trans abs_circleAverage_le_circleAverage_abs
