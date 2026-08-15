@@ -281,13 +281,13 @@ theorem ofPermHomFun_apply_of_cycleOf_mem {x : α} {c : g.cycleFactorsFinset}
     rw [← IsCycleOn.zpow_apply_eq_zpow_apply
       (isCycleOn_support_of_mem_cycleFactorsFinset c.prop) (mem_support_self a c)]
     rw [hn, hm]
-  simp only [ofPermHomFun, dif_pos hx'']
+  simp only [ofPermHomFun, dite_eq_left hx'']
   congr
   exact hx'.symm
 
 theorem ofPermHomFun_apply_of_mem_fixedPoints {x : α} (hx : x ∈ Function.fixedPoints g) :
     ofPermHomFun a τ x = x := by
-  rw [ofPermHomFun, dif_neg]
+  rw [ofPermHomFun, dite_eq_right]
   rw [cycleOf_mem_cycleFactorsFinset_iff, notMem_support]
   exact hx
 
@@ -345,7 +345,6 @@ theorem ofPermHomFun_one (x : α) : (ofPermHomFun a 1) x = x := by
   · rw [ofPermHomFun_apply_of_mem_fixedPoints a _ hx]
   · rw [ofPermHomFun_apply_of_cycleOf_mem a _ hc hm, OneMemClass.coe_one, coe_one, id_eq, hm]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `a : g.Basis` and a permutation of `g.cycleFactorsFinset` that
   preserve the lengths of the cycles, a permutation of `α` that
   moves the `Basis` and commutes with `g` -/
@@ -459,7 +458,6 @@ theorem range_toPermHom_eq_range_toPermHom' :
   ext τ
   rw [mem_range_toPermHom_iff, mem_range_toPermHom'_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nat_card_range_toPermHom :
     Nat.card (toPermHom g).range =
       ∏ n ∈ g.cycleType.toFinset, (g.cycleType.count n)! := by
@@ -704,7 +702,7 @@ theorem card_of_cycleType (m : Multiset ℕ) :
     apply Nat.div_eq_of_eq_mul_left
     · have : 0 < m.prod := Multiset.prod_pos <| fun a ha => zero_lt_two.trans_le (hm.2 a ha)
       positivity
-    rw [card_of_cycleType_mul_eq, if_pos hm]
+    rw [card_of_cycleType_mul_eq, ite_eq_left hm]
   · -- empty case
     exact (card_of_cycleType_eq_zero_iff α).mpr hm
 
@@ -717,7 +715,7 @@ lemma card_of_cycleType_singleton {n : ℕ} (hn' : 2 ≤ n) (hα : n ≤ card α
   have aux : n ! = (n - 1)! * n := by rw [mul_comm, mul_factorial_pred hn₀]
   rw [mul_comm, ← Nat.mul_left_inj hn₀, mul_assoc, ← aux, ← Nat.mul_left_inj (factorial_ne_zero _),
     Nat.choose_mul_factorial_mul_factorial hα, mul_assoc]
-  simpa [ite_and, if_pos hα, if_pos hn', mul_comm _ n, mul_assoc]
+  simpa [ite_and, ite_eq_left hα, ite_eq_left hn', mul_comm _ n, mul_assoc]
     using card_of_cycleType_mul_eq α {n}
 
 end Equiv.Perm

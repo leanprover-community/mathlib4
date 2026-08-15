@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
 public import Mathlib.Analysis.Calculus.LogDeriv
-public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Tactic.Measurability
 
 /-!
 # Differentiability of the complex `log` function
@@ -20,7 +20,7 @@ public section
 
 assert_not_exists IsConformalMap Conformal
 
-open Set Filter
+open Set
 
 open scoped Real Topology
 
@@ -57,7 +57,7 @@ end Complex
 
 section LogDeriv
 
-open Complex Filter
+open Complex
 
 open scoped Topology
 

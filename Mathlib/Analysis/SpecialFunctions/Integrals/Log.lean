@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Log
 
-import Mathlib.Analysis.Analytic.Order
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
