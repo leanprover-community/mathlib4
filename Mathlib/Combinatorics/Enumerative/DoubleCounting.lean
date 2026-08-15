@@ -221,7 +221,7 @@ lemma card_le_card_biUnion_of_card_le_card [DecidableEq β]
     (B : α → Finset β) (s : Finset α) (hn : 0 < n)
     (h_card : ∀ j ∈ s, n ≤ #(B j))
     (h_ub : ∀ x ∈ s.biUnion B, #{j ∈ s | x ∈ B j} ≤ n) :
-    #s ≤ Finset.card (s.biUnion B) := by
+    #s ≤ #(s.biUnion B) := by
   refine Nat.le_of_mul_le_mul_right ?_ hn
   calc
     #s * n = ∑ j ∈ s, n := by simp
@@ -250,7 +250,7 @@ lemma card_le_card_biUnion_of_card_eq_of_card_filter_le {α : Type*} [DecidableE
     {n : Type*} {B : n → Finset α} (k : ℕ) [h₁ : NeZero k]
     (h₂ : ∀ j, #(B j) = k)
     (h₃ : ∀ x, ∀ (t : Finset n), #{j ∈ t | x ∈ B j} ≤ k) (s : Finset n) :
-    #s ≤ Finset.card (s.biUnion B) :=
+    #s ≤ #(s.biUnion B) :=
   Finset.card_le_card_biUnion_of_card_le_card B s (by grind [h₁.out]) (fun j _ ↦ (h₂ j).ge)
     (fun x _ ↦ h₃ x s)
 
