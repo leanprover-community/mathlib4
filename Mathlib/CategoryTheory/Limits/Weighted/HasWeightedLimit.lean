@@ -64,8 +64,9 @@ variable (pt : C) (π : ∀ ⦃j : J⦄ (_ : W.obj j), pt ⟶ F.obj j)
 
 /-- Constructor for weighted cones. -/
 @[implicit_reducible, simps pt]
-def mk (hπ : ∀ ⦃j₁ j₂ : J⦄ (x : W.obj j₁) (f : j₁ ⟶ j₂),
-    π x ≫ F.map f = π (W.map f x) := by cat_disch) :
+def mk
+    (hπ : ∀ ⦃j₁ j₂ : J⦄ (x : W.obj j₁) (f : j₁ ⟶ j₂),
+      π x ≫ F.map f = π (W.map f x) := by cat_disch) :
     WeightedCone W F where
   pt := pt
   π.app x := π x.snd
