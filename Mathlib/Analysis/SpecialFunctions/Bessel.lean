@@ -15,8 +15,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 # Bessel function
 
 We introduce Bessel functions in this file. Bessel functions commonly take two complex parameter
-`a` and `x`. It is analytic for `x ∈ Complex.slitPlane`. For integer `a`, this branch cut vanishes
-and it is analytic for all `x`, except for possibly a pole at `x = 0` for some Bessel functions.
+`a` and `x`. It is analytic for `x ∈ Complex.slitPlane`.
 
 ## `Complex.besselJ a x`: Bessel function of the first kind $J_a(x)$
 
