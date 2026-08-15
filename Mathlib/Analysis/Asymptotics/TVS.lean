@@ -443,31 +443,6 @@ lemma _root_.ContinuousLinearMap.isThetaTVS_comp (g : E →L[𝕜] F) (hg : Topo
     (g ∘ f) =Θ[𝕜; l] f :=
   ⟨g.isBigOTVS_comp, g.isBigOTVS_rev_comp <| by simp [hg.nhds_eq_comap]⟩
 
-private lemma _root_.Topology.IsInducing.comap_nhds_zero_le {φ : E →ₗ[𝕜] G} (hφ : IsInducing φ) :
-    comap φ (𝓝 0) ≤ 𝓝 0 := by rw [hφ.nhds_eq_comap, map_zero]
-
-lemma _root_.Topology.IsInducing.isBigOTVS_iff_left (φ : E →ₗ[𝕜] G) (hφ : IsInducing φ) :
-    ((φ ∘ f) =O[𝕜; l] g) ↔ (f =O[𝕜; l] g) := by
-  let Φ : E →L[𝕜] G := ⟨φ, hφ.continuous⟩
-  exact ⟨(φ.isBigOTVS_rev_comp hφ.comap_nhds_zero_le).trans, Φ.isBigOTVS_comp.trans⟩
-
-lemma _root_.Topology.IsInducing.isBigOTVS_iff_right (φ : F →ₗ[𝕜] G) (hφ : IsInducing φ) :
-    (f =O[𝕜; l] (φ ∘ g)) ↔ (f =O[𝕜; l] g) := by
-  let Φ : F →L[𝕜] G := ⟨φ, hφ.continuous⟩
-  exact ⟨(·.trans Φ.isBigOTVS_comp), (·.trans (φ.isBigOTVS_rev_comp hφ.comap_nhds_zero_le))⟩
-
-lemma _root_.Topology.IsInducing.isLittleOTVS_iff_left (φ : E →ₗ[𝕜] G) (hφ : IsInducing φ) :
-    ((φ ∘ f) =o[𝕜; l] g) ↔ (f =o[𝕜; l] g) := by
-  let Φ : E →L[𝕜] G := ⟨φ, hφ.continuous⟩
-  exact ⟨(φ.isBigOTVS_rev_comp hφ.comap_nhds_zero_le).trans_isLittleOTVS,
-    Φ.isBigOTVS_comp.trans_isLittleOTVS⟩
-
-lemma _root_.Topology.IsInducing.isLittleOTVS_iff_right (φ : F →ₗ[𝕜] G) (hφ : IsInducing φ) :
-    (f =o[𝕜; l] (φ ∘ g)) ↔ (f =o[𝕜; l] g) := by
-  let Φ : F →L[𝕜] G := ⟨φ, hφ.continuous⟩
-  exact ⟨(·.trans_isBigOTVS Φ.isBigOTVS_comp),
-    (·.trans_isBigOTVS (φ.isBigOTVS_rev_comp hφ.comap_nhds_zero_le))⟩
-
 @[simp]
 lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜; l] g := by
   refine ⟨fun U hU ↦ ?_⟩

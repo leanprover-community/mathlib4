@@ -116,12 +116,12 @@ theorem isBigOTVS_iff_le_continuous (hp : WithSeminorms p) [PolynormableSpace �
     refine Seminorm.induction_add_of_continuous hp ?_ ?_ ?_ ?_ ?_ r_cont
     · assumption
     · exact ⟨0, continuous_zero, .rfl⟩
-    · rintro r₁ r₂ ⟨q₁, q₁_cont, hq₁⟩ ⟨q₂, q₂_cont, hq₂⟩
+    · intro r₁ r₂ ⟨q₁, q₁_cont, hq₁⟩ ⟨q₂, q₂_cont, hq₂⟩
       use q₁ + q₂, q₁_cont.add q₂_cont
       filter_upwards [hq₁, hq₂] with x using add_le_add
-    · rintro r₁ r₂ h ⟨q, q_cont, hq⟩
+    · intro r₁ r₂ h ⟨q, q_cont, hq⟩
       exact ⟨q, q_cont, hq.mono fun x hx ↦ (h _).trans hx⟩
-    · rintro r C ⟨q, q_cont, hq⟩
+    · intro r C ⟨q, q_cont, hq⟩
       exact ⟨C • q, q_cont.const_smul _, hq.mono fun x hx ↦ (smul_le_smul_of_nonneg_left hx C.2)⟩
 
 theorem isBigOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
@@ -139,7 +139,7 @@ theorem isBigOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
     use (Seminorm.continuous_finsetSup fun i _ ↦ hq.continuous_seminorm i).const_smul _
 
 theorem isBigOTVS_iff (hp : WithSeminorms p) (hq : WithSeminorms q) :
-    f =O[𝕜; l] g ↔ ∀ i : ι, ∃ s : Finset κ, (p i ∘ f) =O[l] ((s.sup q : Seminorm 𝕜 F) ∘ g) := by
+    f =O[𝕜; l] g ↔ ∀ i : ι, ∃ s : Finset κ, (p i ∘ f) =O[l] (↑(s.sup q) ∘ g) := by
   simp_rw [hp.isBigOTVS_iff_le hq, Filter.EventuallyLE]
   congrm ∀ i, ∃ s, ?_
   constructor
@@ -167,7 +167,7 @@ theorem isLittleOTVS_iff_le_continuous (hp : WithSeminorms p) [PolynormableSpace
       refine ⟨q₁ + q₂, q₁_cont.add q₂_cont, fun ε ε_ne ↦ ?_⟩
       filter_upwards [hq₁ ε ε_ne, hq₂ ε ε_ne] with x hx₁ hx₂
       simpa using add_le_add hx₁ hx₂
-    · rintro r₁ r₂ h ⟨q, q_cont, hq⟩
+    · intro r₁ r₂ h ⟨q, q_cont, hq⟩
       exact ⟨q, q_cont, fun ε ε_ne ↦ (hq ε ε_ne).mono fun x hx ↦ (h _).trans hx⟩
     · intro r C ⟨q, q_cont, hq⟩
       refine ⟨C • q, q_cont.const_smul _, fun ε ε_ne ↦ (hq ε ε_ne).mono fun x hx ↦ ?_⟩
@@ -186,7 +186,7 @@ theorem isLittleOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
     refine ⟨s, fun ε ε_ne ↦ (hr (ε/C) (by positivity)).mono fun x hx ↦ ?_⟩
     simp only [Function.comp_apply, Seminorm.le_def, smul_apply] at hx hC ⊢
     grw [hx, hC _, ← mul_smul, div_mul_cancel₀ _ C_ne]
-  · rintro ⟨s, hs⟩
+  · intro ⟨s, hs⟩
     have := hq.topologicalAddGroup
     use s.sup q, Seminorm.continuous_finsetSup fun i _ ↦ hq.continuous_seminorm i
 

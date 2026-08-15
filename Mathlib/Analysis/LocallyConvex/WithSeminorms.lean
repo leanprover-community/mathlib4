@@ -344,7 +344,7 @@ theorem PolynormableSpace.hasBasis_zero_ball [PolynormableSpace 𝕜 E] :
     use r⁻¹.toNNReal • (s.sup fun p ↦ (p : Seminorm 𝕜 E))
     constructor
     · have := PolynormableSpace.topologicalAddGroup
-      exact .const_smul (Seminorm.continuous_finsetSup fun t ht ↦ t.2) _
+      exact (Seminorm.continuous_finsetSup fun t ht ↦ t.2).const_smul _
     · rw [ball_smul, Real.coe_toNNReal, one_div, inv_inv] <;>
       positivity
   · intro p p_cont
