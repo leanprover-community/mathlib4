@@ -169,6 +169,36 @@ lemma not_isIrreducible_of_subsingleton [Subsingleton M] :
     ¬ P.IsIrreducible :=
   fun contra ↦ not_nontrivial _ contra.nontrivial
 
+variable {P} in
+lemma Equiv.isIrreducible {ι₂ M₂ N₂ : Type*}
+    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    {P₂ : RootPairing ι₂ R M₂ N₂} (e : P.Equiv P₂) [P.IsIrreducible] :
+    P₂.IsIrreducible where
+  nontrivial := by
+    have := IsIrreducible.nontrivial P
+    exact e.weightEquiv.symm.nontrivial
+  nontrivial' := by
+    have := IsIrreducible.nontrivial' P
+    exact e.coweightEquiv.nontrivial
+  eq_top_of_invtSubmodule_reflection q h₁ h₂ := by
+    set q' := q.map e.weightEquiv.symm.toLinearMap with hq'
+    replace h₂ : q' ≠ ⊥ := by simpa [hq'] using h₂
+    suffices q' = ⊤ by rwa [eq_comm, this, Submodule.map_eq_top_iff] at hq'
+    suffices ∀ i, q' ∈ invtSubmodule (P.reflection i) from
+      IsIrreducible.eq_top_of_invtSubmodule_reflection q' this h₂
+    intro i
+    rw [hq', ← e.weightEquiv_symm_conj_reflection, LinearEquiv.map_mem_invtSubmodule_conj_iff]
+    exact h₁ (e.indexEquiv i)
+  eq_top_of_invtSubmodule_coreflection q h₁ h₂ := by
+    set q' := q.map e.coweightEquiv.toLinearMap with hq'
+    replace h₂ : q' ≠ ⊥ := by simpa [hq'] using h₂
+    suffices q' = ⊤ by rwa [eq_comm, this, Submodule.map_eq_top_iff] at hq'
+    suffices ∀ i, q' ∈ invtSubmodule (P.coreflection i) from
+      IsIrreducible.eq_top_of_invtSubmodule_coreflection q' this h₂
+    intro i
+    rw [hq', ← e.coweightEquiv_conj_coreflection, LinearEquiv.map_mem_invtSubmodule_conj_iff]
+    exact h₁ (e.indexEquiv i)
+
 /-- A nonempty irreducible root pairing is a root system. -/
 instance [Nonempty ι] [NeZero (2 : R)] [P.IsIrreducible] : P.IsRootSystem where
   span_root_eq_top := IsIrreducible.eq_top_of_invtSubmodule_reflection
