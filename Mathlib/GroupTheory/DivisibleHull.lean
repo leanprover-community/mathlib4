@@ -402,17 +402,19 @@ set_option backward.privateInPublic.warn false in
 variable (M) in
 /-- The Archimedean classes of `DivisibleHull M` are the same as those of `M`. -/
 noncomputable
-def archimedeanClassOrderIso : ArchimedeanClass M ≃o ArchimedeanClass (DivisibleHull M) := by
-  apply OrderIso.ofHomInv (archimedeanClassOrderHom M) (archimedeanClassOrderHomInv M)
-  · ext a
+def archimedeanClassOrderIso : ArchimedeanClass M ≃o ArchimedeanClass (DivisibleHull M) :=
+  have h₁ := by
+    ext a
     induction a with | mk a
     induction a with | mk m s
     suffices ArchimedeanClass.mk (mk m 1) = ArchimedeanClass.mk (mk m s) by
       simpa [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
     simp_rw [aux_archimedeanClassMk_mk]
-  · ext a
+  have h₂ := by
+    ext a
     induction a with | mk _
     simp [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
+  OrderIso.ofHomInv (archimedeanClassOrderHom M) (archimedeanClassOrderHomInv M) h₁ h₂
 
 @[simp]
 theorem archimedeanClassOrderIso_apply (a : ArchimedeanClass M) :
