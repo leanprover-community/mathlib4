@@ -567,7 +567,7 @@ lemma IsStarProjection.mul_right_and_mul_left_of_nonneg_of_le {a e : A}
   suffices a * e = a from
     ⟨this, by simpa [ha.star_eq, he.isSelfAdjoint.star_eq] using congr(star $this)⟩
   suffices ∀ a e : A⁺¹, IsStarProjection e → 0 ≤ a → a ≤ e → a * e = a from
-    mod_cast this a e he.inr ha.inr (inr_le_inr hae)
+    mod_cast this a e he.inr ha.inr (inr_mono hae)
   intro a e he ha hae
   suffices sqrt a * (1 - e : A⁺¹) = 0 by
     simpa [← mul_assoc, sqrt_mul_sqrt_self a, mul_sub, sub_eq_zero, eq_comm (a := a)]
