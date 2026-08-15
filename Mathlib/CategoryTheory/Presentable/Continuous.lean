@@ -301,7 +301,7 @@ lemma exists_presentation_of_isCardinalContinuous
   refine ⟨SmallModel.{w} (CostructuredArrow shrinkYoneda.{w} F), inferInstance,
     ?_, e.inverse ⋙ CostructuredArrow.proj shrinkYoneda.{w} F,
     Functor.whiskerLeft e.inverse (CostructuredArrow.ι shrinkYoneda.{w} F),
-    ⟨IsColimit.whiskerEquivalence (Presheaf.isColimitTautologicalCoconeShrink F ) e.symm⟩⟩
+    ⟨IsColimit.whiskerEquivalence (Presheaf.isColimitTautologicalCoconeShrink F) e.symm⟩⟩
   have := isCardinalFiltered_costructuredArrow_shrinkYoneda hF hC
   exact IsCardinalFiltered.of_equivalence κ e
 
