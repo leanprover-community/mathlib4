@@ -173,7 +173,7 @@ unit direction `v` is `2 * |⟪v, s₁.center -ᵥ s₂.center⟫|`. -/
 theorem Sphere.dist_secondInter_secondInter_of_norm_eq_one (s₁ s₂ : Sphere P) (p : P) {v : V}
     (hv : ‖v‖ = 1) :
     dist (s₁.secondInter p v) (s₂.secondInter p v) = 2 * |⟪v, s₁.center -ᵥ s₂.center⟫| := by
-  rw [dist_secondInter_secondInter, hv]
+  rw [dist_secondInter_secondInter, hv, div_one]
 
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in
 `secondInter`, the result of `secondInter` may be expressed using `lineMap`. -/
