@@ -164,7 +164,7 @@ lemma homMk'_mk_comp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') (g' : Y' ⟶ Y'') :
   homMk'_comp _ _ _
 
 /-- Variant of `homMk'` where both objects are applications of `mk`. -/
-@[simps]
+@[implicit_reducible, simps]
 def mkPostcomp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') : mk f ⟶ mk (f ≫ T.map g) where
   left := 𝟙 _
   right := g
