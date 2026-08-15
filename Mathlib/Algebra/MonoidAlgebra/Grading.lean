@@ -176,6 +176,17 @@ theorem grade.decompose_single (i : ι) (r : R) :
       .of (fun i ↦ grade R i) i ⟨single i r, single_mem_grade _ _⟩ :=
   decomposeAux_single _ _ _
 
+/-- The component of degree `a` in the decomposition of `f` is its `a`-term. -/
+@[simp] lemma grade.decompose_apply [DecidableEq M]
+  (f : AddMonoidAlgebra R M) (a : M) :
+    ↑((DirectSum.decompose (grade R) f) a) = single a (f.coeff a) := by
+  induction f using induction_linear with
+  | zero => simp
+  | add x y hx hy => simp [decompose_add, hx, hy]
+  | single b r =>
+    rw [grade.decompose_single, DirectSum.coe_of_apply, coeff_single]
+    split_ifs with h <;> simp [h]
+
 /-- `AddMonoidAlgebra.gradeBy` describe an internally graded algebra. -/
 theorem gradeBy.isInternal : DirectSum.IsInternal (gradeBy R f) :=
   DirectSum.Decomposition.isInternal _
@@ -183,32 +194,5 @@ theorem gradeBy.isInternal : DirectSum.IsInternal (gradeBy R f) :=
 /-- `AddMonoidAlgebra.grade` describe an internally graded algebra. -/
 theorem grade.isInternal : DirectSum.IsInternal (grade R : ι → Submodule R _) :=
   DirectSum.Decomposition.isInternal _
-
-variable [DecidableEq M]
-
-/-- Projection onto degree `a` kills terms of any other degree. -/
-@[simp] lemma proj_grade_single (a b : M) (r : R) :
-    GradedRing.proj (grade R) a (single b r) =
-      if b = a then single b r else 0 := by
-  rw [GradedRing.proj_apply, grade.decompose_single,
-    DirectSum.coe_of_apply]
-  split_ifs <;> rfl
-
-/-- Projection onto degree `a` extracts the corresponding term. -/
-@[simp] lemma proj_grade_apply
-  (f : AddMonoidAlgebra R M) (a : M) :
-    GradedRing.proj (grade R) a f = single a (f.coeff a) := by
-  induction f using induction_linear with
-  | zero =>
-    rw [map_zero]
-    exact (single_zero a).symm
-  | add x y hx hy =>
-    rw [map_add, hx, hy]
-    exact (single_add a (x.coeff a) (y.coeff a)).symm
-  | single b r =>
-    rw [proj_grade_single, coeff_single, Finsupp.single_apply]
-    split_ifs
-    · congr
-    · rw [single_zero]
 
 end AddMonoidAlgebra
