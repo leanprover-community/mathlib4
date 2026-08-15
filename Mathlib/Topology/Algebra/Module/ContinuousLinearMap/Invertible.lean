@@ -1,8 +1,7 @@
 /-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
+Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
-  Heather Macbeth
+Authors: Sébastien Gouëzel
 -/
 module
 
@@ -63,9 +62,8 @@ lemma IsInvertible.of_inverse {f : M →L[R] M₂} {g : M₂ →L[R] M}
 lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M}
     (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
     f.inverse = g := by
-  have : f = ContinuousLinearEquiv.equivOfInverse' f g hf hg := rfl
-  rw [this, inverse_equiv]
-  rfl
+  rw [← ContinuousLinearEquiv.toContinuousLinearMap_equivOfInverse' f g hf hg, inverse_equiv]
+  simp
 
 @[simp]
 theorem isInvertible_zero_iff :

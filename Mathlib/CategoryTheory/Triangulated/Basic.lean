@@ -60,7 +60,7 @@ variable {C}
 /-- A triangle `(X,Y,Z,f,g,h)` in `C` is defined by the morphisms `f : X ⟶ Y`, `g : Y ⟶ Z`
 and `h : Z ⟶ X⟦1⟧`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def Triangle.mk {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧) : Triangle C where
   obj₁ := X
   obj₂ := Y
@@ -473,7 +473,6 @@ open CategoryTheory.Functor
 
 variable {J : Type*} [Category* J]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for functors to the category of triangles. -/
 @[simps]
 def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}

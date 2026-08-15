@@ -137,7 +137,6 @@ theorem aeconst_of_dense_aestabilizer_smul (hsm : NullMeasurableSet s μ)
     (hd.preimage (isOpenMap_inv _)).mono fun g hg ↦ by
     simpa only [preimage_smul] using! hg
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If a monoid `M` continuously acts on an R₁ topological space `X`,
 `g` is an element of `M` such that its integer powers are dense in `M`,
 and `μ` is a finite inner regular measure on `X` which is ergodic with respect to the action of `M`,
@@ -153,7 +152,8 @@ theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ �
   refine ⟨measurePreserving_smul _ _, ⟨fun s hsm hs ↦ ?_⟩⟩
   refine aeconst_of_dense_aestabilizer_smul hsm.nullMeasurableSet (hg.mono ?_)
   rw [← Subgroup.coe_zpowers, SetLike.coe_subset_coe, ← Subgroup.zpowers_inv, Subgroup.zpowers_le,
-    MulAction.mem_aestabilizer, ← preimage_smul, hs]
+    MulAction.mem_aestabilizer, ← preimage_smul]
+  exact hs.eventuallyEq
 
 end MulActionGroup
 
