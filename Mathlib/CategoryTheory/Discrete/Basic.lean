@@ -25,7 +25,8 @@ one might define `X ⟶ Y` as `ULift (PLift (X = Y))`.
 But another technical difficulty is that `to_dual` wants the definition of `X ⟶ Y` to be dual to
 the definition of `Y ⟶ X`, so we use define `X ⟶ Y` using a strcture: `Discrete.Hom X.as Y.as`.
 One could also change `Discrete.Hom` so that the definition is `Discrete.Hom X Y`,
-but it turns out that having the `.as` around helps with unification.
+but it turns out that having the `.as` around helps with subsibleton elimination in unification,
+e.g. when dealing with `Discrete PUnit`.
 
 `Discrete.functor` promotes a function `f : I → C` (for any category `C`) to a functor
 `Discrete.functor f : Discrete I ⥤ C`.
