@@ -218,8 +218,7 @@ each $B_i$ has at least $n$ elements. For every $x \in \bigcup_i B_i$, let $C_x$
 be the set of indices of the $B_i$’s that contain $x$. Then, if every $C_x$ contains
 at most $n$ elements, then $\bigcup_i B_i$ has at least $k$ elements. -/
 lemma card_le_card_biUnion_of_card_le_card [DecidableEq β]
-    (B : α → Finset β) (s : Finset α) (hn : 0 < n)
-    (h_card : ∀ j ∈ s, n ≤ #(B j))
+    (B : α → Finset β) (s : Finset α) (hn : 0 < n) (h_card : ∀ j ∈ s, n ≤ #(B j))
     (h_ub : ∀ x ∈ s.biUnion B, #{j ∈ s | x ∈ B j} ≤ n) :
     #s ≤ #(s.biUnion B) := by
   refine Nat.le_of_mul_le_mul_right ?_ hn
