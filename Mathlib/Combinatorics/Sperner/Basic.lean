@@ -32,16 +32,19 @@ structure FacetIncidence (Facet Ridge : Type*) [DecidableEq Facet] [DecidableEq 
   ridges : Finset Ridge
   /-- Facet-ridge incidence. -/
   incident : Facet → Ridge → Prop
-  incident_decidable : DecidableRel incident
-  ridge_nonempty : ∀ ridge ∈ ridges, (facets.bipartiteBelow incident ridge).Nonempty
-  ridge_card_le_two : ∀ ridge ∈ ridges, (facets.bipartiteBelow incident ridge).card ≤ 2
+  /-- A decision procedure for facet-ridge incidence. -/
+  incidentDecidable : DecidableRel incident
+  /-- Every ridge is incident to at least one facet. -/
+  ridgeNonempty : ∀ ridge ∈ ridges, (facets.bipartiteBelow incident ridge).Nonempty
+  /-- Every ridge is incident to at most two facets. -/
+  ridgeCardLeTwo : ∀ ridge ∈ ridges, (facets.bipartiteBelow incident ridge).card ≤ 2
 
 namespace FacetIncidence
 
 variable {Facet Ridge : Type*} [DecidableEq Facet] [DecidableEq Ridge]
   (I : FacetIncidence Facet Ridge)
 
-instance : DecidableRel I.incident := I.incident_decidable
+instance : DecidableRel I.incident := I.incidentDecidable
 
 /-- The facets incident to a ridge. -/
 def cofacets (I : FacetIncidence Facet Ridge) (ridge : Ridge) : Finset Facet :=
@@ -64,8 +67,8 @@ def IsInteriorRidge (I : FacetIncidence Facet Ridge) (ridge : Ridge) : Prop :=
 /-- Every ridge is either a boundary ridge or an interior ridge. -/
 theorem isBoundaryRidge_or_isInteriorRidge {ridge : Ridge} (hridge : ridge ∈ I.ridges) :
     I.IsBoundaryRidge ridge ∨ I.IsInteriorRidge ridge := by
-  have hpos : 0 < (I.cofacets ridge).card := Finset.card_pos.mpr (I.ridge_nonempty ridge hridge)
-  have hle : (I.cofacets ridge).card ≤ 2 := I.ridge_card_le_two ridge hridge
+  have hpos : 0 < (I.cofacets ridge).card := Finset.card_pos.mpr (I.ridgeNonempty ridge hridge)
+  have hle : (I.cofacets ridge).card ≤ 2 := I.ridgeCardLeTwo ridge hridge
   simp only [IsBoundaryRidge, IsInteriorRidge]
   omega
 
