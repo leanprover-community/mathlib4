@@ -55,8 +55,10 @@ set_option backward.privateInPublic true in
 def usesS (_ : S) : Bool := true
 
 -- A command which declares a public name whose signature refers to the exported `used`, alongside
--- a private name nobody uses. The `set_option` is doing two jobs: exporting `mixedPriv`, which is
--- expendable, and permitting the reference to `used` from `mixedPub`'s signature, which is not.
+-- a private name nobody uses. The `set_option` is doing two jobs: exporting `mixedPriv`, and
+-- permitting the reference to `used` from `mixedPub`'s signature. We delete it for the sake of the
+-- former, breaking the latter on purpose: `used` in a public signature is a reference for the
+-- `privateProof` linter to wrap.
 set_option backward.privateInPublic true in
 mutual
   def mixedPub (_ : FEq used) : Nat := 0
@@ -64,10 +66,8 @@ mutual
 end
 
 -- The same, except that it is the *private* declaration whose signature refers to `used`, while
--- the public one refers to nothing private. The reference still needs the option: whether a
--- position is exporting is not decided by the visibility of the declaration it belongs to, only by
--- whether some declared name in the command is public. Keying the safeguard on the referring
--- declaration being public would delete this one.
+-- the public one refers to nothing private. Deleted just the same: no property of the command or
+-- of the visibility of its declarations enters into the decision.
 set_option backward.privateInPublic true in
 mutual
   def mixedPubPlain : Nat := 0
@@ -99,6 +99,12 @@ info: `chainOuter` exported only because of this `set_option`, but nothing publi
   [apply] (delete)
 ---
 info: `chainOuter` exported only because of this `set_option`, but nothing public uses it; delete it:
+  [apply] (delete)
+---
+info: `mixedPriv` exported only because of this `set_option`, but nothing public uses it; delete it:
+  [apply] (delete)
+---
+info: `mixedPrivRef` exported only because of this `set_option`, but nothing public uses it; delete it:
   [apply] (delete)
 ---
 info: `T`, `T.j`, `T.mk` and 13 more exported only because of this `set_option`, but nothing public uses it; delete it:

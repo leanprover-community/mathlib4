@@ -65,17 +65,22 @@ On the terminal command we take stock: for each recorded `set_option`, if any ca
 is used it is safeguarded, and otherwise, if it exports at least one unused candidate, its deletion
 is suggested.
 
-## Caveats
+Note that nothing here reasons about the shape of the command, its visibility, or which of its
+declarations is public: a `set_option` is judged solely by the declarations generated while it was
+in force, whatever mixture of private and public those turn out to be. The one assumption is that
+these `set_option`s are set at the top level, so that `redundantOptionRanges` sees them.
 
-This linter assumes the `privateProof` linter's suggestions have already been applied: it asks only
-whether anything *else* still needs the declaration to be exported, and does not check whether the
-command it strips still needs the option in order to elaborate. That is almost never a concern: a
-command all of whose declared names are private is elaborated in a non-exporting environment
-throughout, signature and value alike (see the `withExporting` call in
-`Lean.Elab.MutualDef.elabMutualDef`), so neither `abbrev` nor `@[expose]` makes any difference —
-indeed `@[expose]` warns that it is meaningless on a private declaration. It can only arise for a
-command declaring a public name alongside a private one, and the `privateProof` linter reports the
-references responsible separately.
+## Deleting a `set_option` may break the build, deliberately
+
+We do not ask whether the command still needs the option in order to *elaborate*, only whether the
+declarations it exports are used publicly. A `set_option` can be doing both jobs at once — exporting
+a private declaration, and permitting a public position elsewhere in the same command to refer to an
+already-exported one — and we delete it regardless.
+
+That is intended. If a private declaration never reaches a public position of the resulting
+constants, elaboration can almost always be reconfigured so that the option is unnecessary, and
+breaking the build is a useful pointer to the place that needs reconfiguring: typically a reference
+that the `privateProof` linter suggests wrapping in `private`.
 
 Deletions expose further deletions: once the last public use of an exported private declaration is
 wrapped in `private`, that declaration becomes unused, and the linter suggests deleting its
@@ -162,22 +167,12 @@ private def analyze (attributions : Array Attribution) : CommandElabM Unit := do
   -- projections. If any one of them is used, its `set_option` is what exports it, and must be kept
   -- even though the others are unused.
   for (range, decls) in attributions do
-    -- A command is elaborated in an exporting environment iff it declares a name which is not
-    -- private (see the `withExporting` call in `Lean.Elab.MutualDef.elabMutualDef`). In such a
-    -- command, the `set_option` may also be what allowed a public position to *refer* to an
-    -- exported private declaration, quite apart from what the command exports itself: it can
-    -- declare a public name whose signature mentions one, alongside a private name nobody uses.
-    let mut exporting := false
     let mut unused : Array Name := #[]
     let mut anyUsed := false
-    let mut referencesCandidate := false
     for n in decls do
-      unless isPrivateName n do exporting := true
       if candidates.contains n then
         if used.contains n then anyUsed := true else unused := unused.push n
-      if (publicUses publicEnv n).any candidates.contains then
-        referencesCandidate := true
-    if anyUsed || (exporting && referencesCandidate) || unused.isEmpty then continue
+    if anyUsed || unused.isEmpty then continue
     -- A structure command adds a dozen or so declarations; naming them all is unreadable, and the
     -- shortest names are the ones the reader recognises.
     let sorted := unused.qsort fun m n => m.toString.length < n.toString.length
