@@ -219,23 +219,23 @@ be the set of indices of the $B_i$’s that contain $x$. Then, if every $C_x$ co
 at most $n$ elements, then $\bigcup_i B_i$ has at least $k$ elements. -/
 lemma card_le_card_biUnion_of_card_le_card [DecidableEq β]
     (B : α → Finset β) (s : Finset α) (hn : 0 < n)
-    (h_card : ∀ j ∈ s, n ≤ Finset.card (B j))
-    (h_ub : ∀ x ∈ s.biUnion B, Finset.card {j ∈ s | x ∈ B j} ≤ n) :
-    Finset.card s ≤ Finset.card (s.biUnion B) := by
+    (h_card : ∀ j ∈ s, n ≤ #(B j))
+    (h_ub : ∀ x ∈ s.biUnion B, #{j ∈ s | x ∈ B j} ≤ n) :
+    #s ≤ Finset.card (s.biUnion B) := by
   refine Nat.le_of_mul_le_mul_right ?_ hn
   calc
-    Finset.card s * n = ∑ j ∈ s, n := by simp
-    _ ≤ ∑ j ∈ s, Finset.card (B j) := Finset.sum_le_sum h_card
-    _ = ∑ j ∈ s, Finset.card ((s.biUnion B).bipartiteAbove (fun j x ↦ x ∈ B j) j) := by
+    #s * n = ∑ j ∈ s, n := by simp
+    _ ≤ ∑ j ∈ s, #(B j) := Finset.sum_le_sum h_card
+    _ = ∑ j ∈ s, #((s.biUnion B).bipartiteAbove (fun j x ↦ x ∈ B j) j) := by
       apply Finset.sum_congr rfl
       intro j hj
       rw [Finset.bipartiteAbove]
       congr 1
       grind
-    _ = ∑ x ∈ s.biUnion B, Finset.card (s.bipartiteBelow (fun j x ↦ x ∈ B j) x) :=
+    _ = ∑ x ∈ s.biUnion B, #(s.bipartiteBelow (fun j x ↦ x ∈ B j) x) :=
       Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow (fun j x ↦ x ∈ B j)
     _ ≤ ∑ x ∈ s.biUnion B, n := Finset.sum_le_sum h_ub
-    _ = Finset.card (s.biUnion B) * n := by simp
+    _ = #(s.biUnion B) * n := by simp
 
 /-- For a family of finsets `B` indexed by `n`, if every set `B j` is
 nonempty with size `k` and every element `x` belongs
@@ -248,9 +248,9 @@ This effectively verifies the Hall marriage condition for the family
 -/
 lemma card_le_card_biUnion_of_card_eq_of_card_filter_le {α : Type*} [DecidableEq α]
     {n : Type*} {B : n → Finset α} (k : ℕ) [h₁ : NeZero k]
-    (h₂ : ∀ j, Finset.card (B j) = k)
-    (h₃ : ∀ x, ∀ (t : Finset n), Finset.card {j ∈ t | x ∈ B j} ≤ k) (s : Finset n) :
-    Finset.card s ≤ Finset.card (s.biUnion B) :=
+    (h₂ : ∀ j, #(B j) = k)
+    (h₃ : ∀ x, ∀ (t : Finset n), #{j ∈ t | x ∈ B j} ≤ k) (s : Finset n) :
+    #s ≤ Finset.card (s.biUnion B) :=
   Finset.card_le_card_biUnion_of_card_le_card B s (by grind [h₁.out]) (fun j _ ↦ (h₂ j).ge)
     (fun x _ ↦ h₃ x s)
 
