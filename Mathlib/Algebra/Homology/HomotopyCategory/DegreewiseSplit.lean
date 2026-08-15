@@ -244,6 +244,28 @@ noncomputable def trianglehRotateIsoTrianglehOfDegreewiseSplit :
 
 end mappingCone
 
+lemma trianglehOfDegreewiseSplit_distinguished [HasZeroObject C]
+    (σ : ∀ n, (S.map (eval _ _ n)).Splitting) :
+    trianglehOfDegreewiseSplit S σ ∈ distTriang _ := by
+  rw [rotate_distinguished_triangle, rotate_distinguished_triangle]
+  refine isomorphic_distinguished _ ?_ _
+    (CochainComplex.trianglehOfDegreewiseSplitRotateRotateIso S σ)
+  exact ⟨_, _, _, ⟨Iso.refl _⟩⟩
+
+lemma homotopyEquivalences_shortComplexF_iff_of_splitting [HasZeroObject C]
+    (σ : ∀ n, (S.map (eval _ _ n)).Splitting) :
+    homotopyEquivalences _ _ S.f ↔ Nonempty (Homotopy (𝟙 S.X₃) 0) := by
+  rw [← HomotopyCategory.isZero_quotient_obj_iff,
+    ← isIso_quotient_map_iff_homotopyEquivalences]
+  exact (Triangle.isZero₃_iff_isIso₁ _ (trianglehOfDegreewiseSplit_distinguished S σ)).symm
+
+lemma homotopyEquivalences_shortComplexG_iff_of_splitting [HasZeroObject C]
+    (σ : ∀ n, (S.map (eval _ _ n)).Splitting) :
+    homotopyEquivalences _ _ S.g ↔ Nonempty (Homotopy (𝟙 S.X₁) 0) := by
+  rw [← HomotopyCategory.isZero_quotient_obj_iff,
+    ← isIso_quotient_map_iff_homotopyEquivalences]
+  exact (Triangle.isZero₁_iff_isIso₂ _ (trianglehOfDegreewiseSplit_distinguished S σ)).symm
+
 end CochainComplex
 
 namespace HomotopyCategory
@@ -261,10 +283,7 @@ lemma distinguished_iff_iso_trianglehOfDegreewiseSplit
     exact ⟨_, _, ⟨(triangleRotation _).counitIso.symm.app _ ≪≫ (rotate _).mapIso e ≪≫
       CochainComplex.mappingCone.trianglehRotateIsoTrianglehOfDegreewiseSplit φ⟩⟩
   · rintro ⟨S, σ, ⟨e⟩⟩
-    rw [rotate_distinguished_triangle, rotate_distinguished_triangle]
-    refine isomorphic_distinguished _ ?_ _
-      ((rotate _ ⋙ rotate _).mapIso e ≪≫
-        CochainComplex.trianglehOfDegreewiseSplitRotateRotateIso S σ)
-    exact ⟨_, _, _, ⟨Iso.refl _⟩⟩
+    exact isomorphic_distinguished _
+      (CochainComplex.trianglehOfDegreewiseSplit_distinguished S σ) _ e
 
 end HomotopyCategory

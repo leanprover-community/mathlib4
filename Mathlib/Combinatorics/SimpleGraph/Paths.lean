@@ -373,7 +373,7 @@ theorem IsCycle.isPath_drop {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : 0 < n) 
     (p.drop n).IsPath := by
   replace h : (p.drop 1).IsPath := h.isPath_tail
   rw [← Nat.add_sub_of_le hn, drop_add_eq]
-  simp [h.drop (n - 1)]
+  simp [h.drop (n - 1), -drop_drop]
 
 theorem IsCycle.isPath_take {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : n < p.length) :
     (p.take n).IsPath := by
@@ -778,7 +778,7 @@ lemma IsPath.isCycle_append {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (h
   rw [isCycle_def, isTrail_append]
   refine ⟨⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
   · grind [IsPath.disjoint_edges_of_disjoint_support, List.Disjoint.symm]
-  · grind [nil_append_iff, length_eq_zero_iff]
+  · grind [nil_append_iff]
   · rw [tail_support_append, List.nodup_append']
     exact ⟨hp.support_nodup.tail, hq.support_nodup.tail, h⟩
 
@@ -983,6 +983,30 @@ lemma IsCircuit.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w.IsCircuit → w.cy
 lemma IsTrail.isCycle_cycleBypass {w : G.Walk v v} (hw : w ≠ .nil) (hw' : w.IsTrail) :
     w.cycleBypass.IsCycle :=
   (w.isCircuit_def.mpr ⟨hw', hw⟩).isCycle_cycleBypass
+
+omit [DecidableEq V] in
+theorem exists_minimalFor_isCircuit_length {v : V} (h : ∃ p : G.Walk v v, p.IsCircuit) :
+    ∃ p : G.Walk v v, MinimalFor IsCircuit length p :=
+  exists_minimalFor_of_wellFoundedLT IsCircuit length h
+
+omit [DecidableEq V] in
+theorem exists_minimalFor_isCycle_length {v : V} (h : ∃ p : G.Walk v v, p.IsCircuit) :
+    ∃ p : G.Walk v v, MinimalFor IsCycle length p := by
+  classical
+  exact exists_minimalFor_of_wellFoundedLT _ _ <| h.imp' _ fun _ ↦ (·.isCycle_cycleBypass)
+
+omit [DecidableEq V] in
+/-- For every vertex that lies on some circuit there exists a shortest cycle among circuits
+containing that vertex.
+
+For circuits not fixed to a specific vertex use `exists_girth_eq_length` and
+`IsCircuit.girth_le_length`. -/
+theorem exists_isCycle_forall_isCircuit_length_le_length {v : V}
+    (h : ∃ p : G.Walk v v, p.IsCircuit) :
+    ∃ p : G.Walk v v, p.IsCycle ∧ ∀ p' : G.Walk v v, p'.IsCircuit → p.length ≤ p'.length := by
+  refine exists_minimalFor_isCycle_length h |>.imp fun p hmin ↦ ⟨hmin.prop, fun p' hp' ↦ ?_⟩
+  classical
+  grw [hmin.le hp'.isCycle_cycleBypass, length_cycleBypass_le_length]
 
 end Walk
 
