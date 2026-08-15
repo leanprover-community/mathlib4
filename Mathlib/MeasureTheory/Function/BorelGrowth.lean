@@ -73,8 +73,7 @@ private theorem MonotoneOn.eventually_le_two_mul' {S : ℝ → ℝ} {a : ℝ}
       rw [show Nat.find h₄ - 1 + 1 = Nat.find h₄ by omega] at h₆
       exact not_lt.1 h₆
   -- Two points of a slice are at distance at most `(2 ^ n * S a)⁻¹`
-  have hkey : ∀ n, ∀ x ∈ En n, ∀ y ∈ En n, y - x ≤ (2 ^ n * S a)⁻¹ := by
-    intro n x hx y hy
+  have hkey {n : ℕ} {x y : ℝ} (hx : x ∈ En n) (hy : y ∈ En n) : y - x ≤ (2 ^ n * S a)⁻¹ := by
     obtain ⟨⟨h₁x, h₂x⟩, h₃x, -⟩ := hx
     obtain ⟨⟨h₁y, -⟩, -, h₄y⟩ := hy
     -- `y` lies strictly below `x + (S x)⁻¹`…
@@ -89,16 +88,15 @@ private theorem MonotoneOn.eventually_le_two_mul' {S : ℝ → ℝ} {a : ℝ}
     have h₇ : (S x)⁻¹ ≤ ((2 : ℝ) ^ n * S a)⁻¹ := inv_anti₀ (by positivity) h₃x
     linarith
   -- Hence each slice has diameter at most `(2 ^ n * S a)⁻¹`…
-  have hdiam : ∀ n : ℕ, Metric.ediam (En n) ≤ ENNReal.ofReal ((2 ^ n * S a)⁻¹) := by
-    intro n
+  have hdiam (n : ℕ) : Metric.ediam (En n) ≤ ENNReal.ofReal ((2 ^ n * S a)⁻¹) := by
     apply Metric.ediam_le
     intro x hx y hy
     rw [edist_le_ofReal (by positivity)]
     rcases le_total x y with h | h
     · rw [Real.dist_eq, abs_of_nonpos (by linarith), neg_sub]
-      exact hkey n x hx y hy
+      exact hkey hx hy
     · rw [Real.dist_eq, abs_of_nonneg (by linarith)]
-      exact hkey n y hy x hx
+      exact hkey hy hx
   -- …and `E` has finite volume
   have hvol : volume E < ⊤ := by
     have hsum : Summable fun n ↦ ((2 : ℝ) ^ n * S a)⁻¹ := by
