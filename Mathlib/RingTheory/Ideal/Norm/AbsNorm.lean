@@ -282,7 +282,7 @@ namespace Ideal
 
 variable [IsDedekindDomain S]
 
-section infinite
+section Infinite
 
 variable [Infinite S]
 
@@ -345,7 +345,7 @@ theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
   · rw [Ne, span_singleton_eq_bot]
     exact Int.ofNat_ne_zero.mpr hI.ne_zero
 
-end infinite
+end Infinite
 
 section Free
 
