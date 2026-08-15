@@ -13,6 +13,16 @@ One may transfer instances of the continuous functional calculus across a star a
 so long as this equivalence is continuous. Crucially, its inverse need not be continuous. This
 allows to, for example, equip type synonyms of a C⋆-algebra with weaker topologies with instances
 of the continuous functional calculus.
+
+## Main declarations
+
++ `ContinuousFunctionalCalculus.transfer`: transfer a continuous functional calculus instance
+  through a continuous (in only one direction) `StarAlgEquiv`.
++ `NonUnitalContinuousFunctionalCalculus.transfer`: transfer a non-unital continuous functional
+  calculus instance through a continuous (in only one direction) `StarAlgEquiv`.
++ `cfc_eq_cfc_transfer`: the equality between a functional calculus and its transferred instance.
++ `cfcₙ_eq_cfcₙ_transfer`: the equality between a functional calculus and its transferred instance.
+
 -/
 
 @[expose] public section
