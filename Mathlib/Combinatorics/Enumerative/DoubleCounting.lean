@@ -250,11 +250,9 @@ lemma card_le_card_biUnion_of_card_eq_of_card_filter_le {α : Type*} [DecidableE
     {n : Type*} {B : n → Finset α} (k : ℕ) [h₁ : NeZero k]
     (h₂ : ∀ j, Finset.card (B j) = k)
     (h₃ : ∀ x, ∀ (t : Finset n), Finset.card {j ∈ t | x ∈ B j} ≤ k) (s : Finset n) :
-    Finset.card s ≤ Finset.card (s.biUnion B) := by
-  apply Finset.card_le_card_biUnion_of_card_le_card (n := k) B s (by grind [h₁.out])
-  · exact fun j _ ↦ (h₂ j).ge
-  · intro x _
-    exact h₃ x s
+    Finset.card s ≤ Finset.card (s.biUnion B) :=
+  Finset.card_le_card_biUnion_of_card_le_card B s (by grind [h₁.out]) (fun j _ ↦ (h₂ j).ge)
+    (fun x _ ↦ h₃ x s)
 
 end Bipartite
 
