@@ -131,10 +131,10 @@ theorem lift.tmul (x y) : lift f' (x ⊗ₜ y) = f' x y :=
 theorem lift.tmul' (x y) : (lift f').1 (x ⊗ₜ y) = f' x y :=
   rfl
 
-theorem ext' {g h : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
-  LinearMap.ext fun z =>
-    TensorProduct.induction_on z (by simp_rw [map_zero]) H fun x y ihx ihy => by
-      rw [g.map_add, h.map_add, ihx, ihy]
+theorem ext' {F} [FunLike F (M ⊗[R] N) P₂] [AddMonoidHomClass F (M ⊗[R] N) P₂]
+    {g h : F} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
+  DFunLike.ext _ _ fun z ↦ z.induction_on (by simp_rw [map_zero]) H fun x y ihx ihy ↦ by
+    rw [map_add, map_add, ihx, ihy]
 
 theorem lift.unique {g : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = f' x y) : g = lift f' :=
   ext' fun m n => by rw [H, lift.tmul]

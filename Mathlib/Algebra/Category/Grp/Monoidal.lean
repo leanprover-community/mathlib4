@@ -49,23 +49,23 @@ noncomputable instance monoidalCategoryStruct : MonoidalCategoryStruct Ab.{u} wh
 
 /-- The functor sending an abelian group to the corresponding module over `ULift.{u} ℤ`,
 which is an equivalence of categories. -/
-noncomputable abbrev toModuleCatULiftInt : Ab.{u} ⥤ ModuleCat.{u} (ULift.{u} ℤ) :=
-  ModuleCat.intEquivalence.inverse ⋙
-    (ModuleCat.restrictScalarsEquivalenceOfRingEquiv ULift.ringEquiv).functor
+@[implicit_reducible, simps!]
+noncomputable def toModuleCatULiftInt : Ab.{u} ≌ ModuleCat.{u} (ULift.{u} ℤ) :=
+  ModuleCat.intEquivalence.symm.trans
+    (ModuleCat.restrictScalarsEquivalenceOfRingEquiv ULift.ringEquiv)
 
 /-- Extensionality for morphisms out of the image of a tensor product of abelian groups. -/
 lemma toModuleCatULiftInt_tensor_ext {X Y : Ab.{u}} {W : ModuleCat.{u} (ULift.{u} ℤ)}
-    {f g : toModuleCatULiftInt.obj (X ⊗ Y) ⟶ W}
-    (h : ∀ (x : X) (y : Y), f.hom (x ⊗ₜ[ℤ] y) = g.hom (x ⊗ₜ[ℤ] y)) : f = g := by
+    {f g : toModuleCatULiftInt.functor.obj (X ⊗ Y) ⟶ W}
+    (h : ∀ (x : X) (y : Y), f.hom (x ⊗ₜ y) = g.hom (x ⊗ₜ y)) : f = g := by
   ext t
   exact t.induction_on ((map_zero _).trans (map_zero _).symm) h
     fun _ _ h₁ h₂ ↦ (map_add ..).trans <| congr($h₁ + $h₂).trans (map_add ..).symm
 
 /-- The data needed to induce the monoidal structure on `Ab` from the one on
 `ModuleCat (ULift ℤ)`. -/
-noncomputable def inducingFunctorData : Monoidal.InducingFunctorData
-    (ModuleCat.intEquivalence.{u}.inverse ⋙
-      (ModuleCat.restrictScalarsEquivalenceOfRingEquiv ULift.ringEquiv).functor) where
+noncomputable def inducingFunctorData :
+    Monoidal.InducingFunctorData toModuleCatULiftInt.functor where
   μIso X Y := (TensorProduct.equivOfCompatibleSMul ℤ (ULift ℤ) (ULift ℤ) X Y).toModuleIso
   εIso := .refl _
   whiskerLeft_eq _ _ _ _ := toModuleCatULiftInt_tensor_ext fun _ _ ↦ rfl
@@ -79,23 +79,49 @@ noncomputable def inducingFunctorData : Monoidal.InducingFunctorData
 
 /-- The monoidal structure on the category of abelian groups, given by the tensor product
 over `ℤ`. -/
-noncomputable instance monoidalCategory : MonoidalCategory Ab.{u} :=
-  Monoidal.induced toModuleCatULiftInt inducingFunctorData
+noncomputable instance : MonoidalCategory Ab.{u} :=
+  Monoidal.induced toModuleCatULiftInt.functor inducingFunctorData
 
-noncomputable instance : toModuleCatULiftInt.{u}.Monoidal :=
+noncomputable instance : toModuleCatULiftInt.{u}.functor.Monoidal :=
   Monoidal.fromInducedMonoidal _ inducingFunctorData
 
-/-- The braiding on abelian groups, obtained from the braiding on `ULift ℤ`-modules. -/
-noncomputable instance braidedCategory : BraidedCategory Ab.{u} :=
-  .ofFullyFaithful toModuleCatULiftInt
+noncomputable instance : BraidedCategory Ab.{u} :=
+  .ofFaithful toModuleCatULiftInt.functor
+    (fun M N ↦ (TensorProduct.comm ℤ M N).toAddEquiv.toAddCommGrpIso)
+    fun _ _ ↦ by ext1; exact TensorProduct.ext' fun _ _ ↦ rfl
 
-/-- The symmetry of the monoidal structure on abelian groups. -/
-noncomputable instance symmetricCategory : SymmetricCategory Ab.{u} :=
-  .ofFullyFaithful toModuleCatULiftInt
+noncomputable instance : SymmetricCategory Ab.{u} where
+  symmetry _ _ := by ext1; exact TensorProduct.ext' fun _ _ ↦ rfl
 
-/-- The category of abelian groups is monoidal closed. -/
-noncomputable instance monoidalClosed : MonoidalClosed Ab.{u} :=
-  MonoidalClosed.ofEquiv toModuleCatULiftInt
-    toModuleCatULiftInt.asEquivalence.toAdjunction
+lemma tensorObj_def (M N : Ab.{u}) : (M ⊗ N : Ab.{u}) = of (M ⊗[ℤ] N) :=
+  rfl
+
+lemma tensorUnit_def : (𝟙_ Ab.{u}) = of (ULift.{u} ℤ) := rfl
+
+variable {M₁ M₂ M₃ M₄ : Ab.{u}}
+
+@[simp] lemma whiskerLeft_apply (M : Ab.{u}) (f : M₁ ⟶ M₂) (m : M) (x : M₁) :
+    (M ◁ f).hom (m ⊗ₜ x) = m ⊗ₜ f.hom x := rfl
+
+@[simp] lemma whiskerRight_apply (f : M₁ ⟶ M₂) (M : Ab.{u}) (x : M₁) (m : M) :
+    (f ▷ M).hom (x ⊗ₜ m) = f.hom x ⊗ₜ m := rfl
+
+@[simp] lemma tensorHom_apply (f : M₁ ⟶ M₂) (g : M₃ ⟶ M₄) (x : M₁) (y : M₃) :
+    (f ⊗ₘ g).hom (x ⊗ₜ y) = f.hom x ⊗ₜ g.hom y := rfl
+
+@[simp] lemma associator_hom_apply (x : M₁) (y : M₂) (z : M₃) :
+    (α_ M₁ M₂ M₃).hom.hom ((x ⊗ₜ y) ⊗ₜ z) = x ⊗ₜ (y ⊗ₜ z) := rfl
+
+@[simp] lemma leftUnitor_hom_apply (a : ULift.{u} ℤ) (x : M₁) :
+    (λ_ M₁).hom.hom (a ⊗ₜ x) = a.down • x := rfl
+
+@[simp] lemma rightUnitor_hom_apply (x : M₁) (a : ULift.{u} ℤ) :
+    (ρ_ M₁).hom.hom (x ⊗ₜ a) = a.down • x := rfl
+
+@[simp] lemma brading_hom_apply (x : M₁) (y : M₂) :
+    (β_ M₁ M₂).hom.hom (x ⊗ₜ y) = y ⊗ₜ x := rfl
+
+@[simp] lemma braiding_inv_apply (x : M₁) (y : M₂) :
+    (β_ M₁ M₂).inv.hom (y ⊗ₜ x) = x ⊗ₜ y := rfl
 
 end AddCommGrpCat

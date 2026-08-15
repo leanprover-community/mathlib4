@@ -21,11 +21,10 @@ universe u
 namespace ModuleCat
 
 /-- The forgetful functor from `ℤ` modules to `Ab` admits an inverse. -/
-@[expose] def intEquivalence : ModuleCat.{u} ℤ ≌ Ab.{u} where
+@[implicit_reducible, expose, simps!] def intEquivalence : ModuleCat.{u} ℤ ≌ Ab.{u} where
   functor := forget₂ ..
-  inverse :=
-  { obj G := .of ℤ G
-    map f := ModuleCat.ofHom f.hom.toIntLinearMap }
+  inverse.obj G := of ℤ G
+  inverse.map f := ofHom f.hom.toIntLinearMap
   unitIso := NatIso.ofComponents
     (fun G ↦ (AddEquiv.toIntLinearEquiv { __ := Equiv.refl G, map_add' _ _ := rfl }).toModuleIso)
     fun _ ↦ rfl
@@ -35,11 +34,9 @@ instance forget₂AddCommGroupIsEquivalence : (forget₂ (ModuleCat ℤ) Ab.{u})
   intEquivalence.isEquivalence_functor
 
 /-- The forgetful functor from `ℤ` modules to `Ab` is full. -/
-instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) Ab.{u}).Full :=
-  inferInstance
+instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) Ab.{u}).Full := inferInstance
 
 /-- The forgetful functor from `ℤ` modules to `Ab` is essentially surjective. -/
-instance forget₂_addCommGrp_essSurj : (forget₂ (ModuleCat ℤ) Ab.{u}).EssSurj :=
-  inferInstance
+instance forget₂_addCommGrp_essSurj : (forget₂ (ModuleCat ℤ) Ab.{u}).EssSurj := inferInstance
 
 end ModuleCat
