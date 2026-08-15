@@ -93,8 +93,11 @@ theorem subset_insert_iff_of_notMem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆ 
 
 theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ a ∉ s, insert a s ⊆ t := by grind
 
-theorem _root_.HasSubset.Subset.ssubset_of_mem_notMem (hst : s ⊆ t) (hat : a ∈ t) (has : a ∉ s) :
+theorem _root_.LE.le.ssubset_of_mem_notMem (hst : s ⊆ t) (hat : a ∈ t) (has : a ∉ s) :
     s ⊂ t := by grind
+
+@[deprecated (since := "2026-06-05")]
+alias _root_.HasSubset.Subset.ssubset_of_mem_notMem := LE.le.ssubset_of_mem_notMem
 
 theorem ssubset_insert {s : Set α} {a : α} (h : a ∉ s) : s ⊂ insert a s := by grind
 
@@ -161,12 +164,16 @@ theorem notMem_singleton_iff {a b : α} : a ∉ ({b} : Set α) ↔ a ≠ b :=
   Iff.rfl
 
 @[simp]
-theorem setOf_eq_eq_singleton {a : α} : { n | n = a } = {a} :=
+theorem ofPred_eq_eq_singleton {a : α} : { n | n = a } = {a} :=
   rfl
 
+@[deprecated (since := "2026-07-09")] alias setOf_eq_eq_singleton := ofPred_eq_eq_singleton
+
 @[simp]
-theorem setOf_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
+theorem ofPred_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
   ext fun _ => eq_comm
+
+@[deprecated (since := "2026-07-09")] alias setOf_eq_eq_singleton' := ofPred_eq_eq_singleton'
 
 -- TODO: again, annotation needed
 -- Not `@[simp]` since `mem_singleton_iff` proves it.
@@ -260,20 +267,26 @@ theorem eq_singleton_iff_nonempty_unique_mem : s = {a} ↔ s.Nonempty ∧ ∀ x 
 theorem singleton_iff_unique_mem : (∃ a, s = {a}) ↔ ∃! a, a ∈ s :=
   ⟨fun ⟨a, h⟩ ↦ ⟨a, by grind⟩, fun ⟨a, h⟩ ↦ ⟨a, by grind⟩⟩
 
-theorem setOf_mem_list_eq_replicate {l : List α} {a : α} :
+theorem ofPred_mem_list_eq_replicate {l : List α} {a : α} :
     { x | x ∈ l } = {a} ↔ ∃ n > 0, l = List.replicate n a := by
   simpa +contextual [Set.ext_iff, iff_iff_implies_and_implies, forall_and, List.eq_replicate_iff,
     List.length_pos_iff_exists_mem] using ⟨fun _ _ ↦ ⟨_, ‹_›⟩, fun x hx h ↦ h _ hx ▸ hx⟩
 
-theorem setOf_mem_list_eq_singleton_of_nodup {l : List α} (H : l.Nodup) {a : α} :
+@[deprecated (since := "2026-07-09")]
+alias setOf_mem_list_eq_replicate := ofPred_mem_list_eq_replicate
+
+theorem ofPred_mem_list_eq_singleton_of_nodup {l : List α} (H : l.Nodup) {a : α} :
     { x | x ∈ l } = {a} ↔ l = [a] := by
   constructor
-  · rw [setOf_mem_list_eq_replicate]
+  · rw [ofPred_mem_list_eq_replicate]
     rintro ⟨n, hn, rfl⟩
     simp only [List.nodup_replicate] at H
     simp [show n = 1 by lia]
   · rintro rfl
     simp
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_mem_list_eq_singleton_of_nodup := ofPred_mem_list_eq_singleton_of_nodup
 
 -- while `simp` is capable of proving this, it is not capable of turning the LHS into the RHS.
 @[simp]

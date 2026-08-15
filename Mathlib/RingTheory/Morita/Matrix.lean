@@ -149,8 +149,8 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     simp [← mul_smul]⟩
   map_add' _ _ := by ext; simp
   map_smul' x m := funext fun i ↦ Subtype.ext <| by
-    letI := Module.compHom M (Matrix.scalar (α := R) ι)
-    haveI := MatrixModCat.isScalarTower_toModuleCat R M
+    let := Module.compHom M (Matrix.scalar (α := R) ι)
+    have := MatrixModCat.isScalarTower_toModuleCat R M
     simp only [← mul_smul, RingHom.id_apply, Module.smul_apply,
       AddSubmonoidClass.coe_finsetSum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
     congr

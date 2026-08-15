@@ -88,7 +88,7 @@ def refl (ι : Type*) : ComplexShape ι where
 
 /-- The reverse of a `ComplexShape`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def symm (c : ComplexShape ι) : ComplexShape ι where
   Rel i j := c.Rel j i
   next_eq w w' := c.prev_eq w w'
@@ -96,7 +96,7 @@ def symm (c : ComplexShape ι) : ComplexShape ι where
 
 /-- If `c : ComplexShape α` is such that `c.Rel` is decidable, it is also the
 case of `c.symm.Rel`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def decidableRelSymm {α : Type*} (c : ComplexShape α) [DecidableRel c.Rel] :
     DecidableRel c.symm.Rel :=
   fun a b ↦ decidable_of_iff (c.Rel b a) Iff.rfl
@@ -133,7 +133,7 @@ instance subsingleton_next (c : ComplexShape ι) (i : ι) : Subsingleton { j // 
   congr
   exact c.next_eq rij rik
 
-open Classical in
+open scoped Classical in
 /-- An arbitrary choice of index `j` such that `Rel i j`, if such exists.
 Returns `i` otherwise.
 -/
@@ -148,13 +148,13 @@ def next (c : ComplexShape ι) (i : ι) : ι :=
 theorem next_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.next i = j := by
   apply c.next_eq _ h
   rw [next]
-  rw [dif_pos]
+  rw [dite_eq_left]
   exact Exists.choose_spec ⟨j, h⟩
 
 @[to_dual]
 lemma next_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ k, ¬c.Rel j k) :
     c.next j = j :=
-  dif_neg (by simpa using hj)
+  dite_eq_right (by simpa using hj)
 
 @[to_dual]
 lemma next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel j (c.next j)) :

@@ -770,7 +770,7 @@ section AlgebraInverse
 variable (𝕜)
 variable {R : Type*} [NormedRing R] [NormedAlgebra 𝕜 R]
 
-open NormedRing ContinuousLinearMap Ring
+open NormedRing Ring
 
 /-- In a complete normed algebra, the operation of inversion is `C^n`, for all `n`, at each
 invertible element, as it is analytic. -/
@@ -793,50 +793,46 @@ theorem contDiffOn_inv {n} : ContDiffOn 𝕜 n (Inv.inv : 𝕜' → 𝕜') {0}�
 
 variable {𝕜}
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem ContDiffWithinAt.inv {f : E → 𝕜'} {n} (hf : ContDiffWithinAt 𝕜 n f s x) (hx : f x ≠ 0) :
-    ContDiffWithinAt 𝕜 n (fun x => (f x)⁻¹) s x :=
+    ContDiffWithinAt 𝕜 n f⁻¹ s x :=
   (contDiffAt_inv 𝕜 hx).comp_contDiffWithinAt x hf
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem ContDiffOn.inv {f : E → 𝕜'} (hf : ContDiffOn 𝕜 n f s) (h : ∀ x ∈ s, f x ≠ 0) :
-    ContDiffOn 𝕜 n (fun x => (f x)⁻¹) s := fun x hx => (hf.contDiffWithinAt hx).inv (h x hx)
+    ContDiffOn 𝕜 n f⁻¹ s := fun x hx => (hf.contDiffWithinAt hx).inv (h x hx)
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 nonrec theorem ContDiffAt.inv {f : E → 𝕜'} (hf : ContDiffAt 𝕜 n f x) (hx : f x ≠ 0) :
-    ContDiffAt 𝕜 n (fun x => (f x)⁻¹) x :=
+    ContDiffAt 𝕜 n f⁻¹ x :=
   hf.inv hx
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem ContDiff.inv {f : E → 𝕜'} (hf : ContDiff 𝕜 n f) (h : ∀ x, f x ≠ 0) :
-    ContDiff 𝕜 n fun x => (f x)⁻¹ := by
+    ContDiff 𝕜 n f⁻¹ := by
   rw [contDiff_iff_contDiffAt]; exact fun x => hf.contDiffAt.inv (h x)
 
 -- TODO: generalize to `f g : E → 𝕜'`
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem ContDiffWithinAt.div {f g : E → 𝕜} {n} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) (hx : g x ≠ 0) :
-    ContDiffWithinAt 𝕜 n (fun x => f x / g x) s x := by
-  simpa only [div_eq_mul_inv] using hf.mul (hg.inv hx)
+    ContDiffWithinAt 𝕜 n (f / g) s x := by
+  change ContDiffWithinAt 𝕜 n (fun x => f x / g x) s x
+  simpa only [div_eq_mul_inv] using hf.mul (hg.fun_inv hx)
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem ContDiffOn.div {f g : E → 𝕜} {n} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) (h₀ : ∀ x ∈ s, g x ≠ 0) : ContDiffOn 𝕜 n (f / g) s := fun x hx =>
   (hf x hx).div (hg x hx) (h₀ x hx)
 
-@[fun_prop]
-theorem ContDiffOn.fun_div {f g : E → 𝕜} {n} (hf : ContDiffOn 𝕜 n f s)
-    (hg : ContDiffOn 𝕜 n g s) (h₀ : ∀ x ∈ s, g x ≠ 0) : ContDiffOn 𝕜 n (fun x => f x / g x) s :=
-  ContDiffOn.div hf hg h₀
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 nonrec theorem ContDiffAt.div {f g : E → 𝕜} {n} (hf : ContDiffAt 𝕜 n f x)
-    (hg : ContDiffAt 𝕜 n g x) (hx : g x ≠ 0) : ContDiffAt 𝕜 n (fun x => f x / g x) x :=
+    (hg : ContDiffAt 𝕜 n g x) (hx : g x ≠ 0) : ContDiffAt 𝕜 n (f / g) x :=
   hf.div hg hx
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem ContDiff.div {f g : E → 𝕜} {n} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g)
-    (h0 : ∀ x, g x ≠ 0) : ContDiff 𝕜 n fun x => f x / g x := by
+    (h0 : ∀ x, g x ≠ 0) : ContDiff 𝕜 n (f / g) := by
   simp only [contDiff_iff_contDiffAt] at *
   exact fun x => (hf x).div (hg x) (h0 x)
 
