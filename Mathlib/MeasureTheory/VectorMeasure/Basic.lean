@@ -695,7 +695,6 @@ theorem mapRange_smul {v : VectorMeasure α M} {f : M →ₗ[R] N} (hf : Continu
 
 variable [ContinuousAdd M] [ContinuousAdd N]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a continuous linear map `f : M → N`, `mapRangeₗ` is the linear map mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
 def mapRangeₗ {α : Type*} [MeasurableSpace α] (f : M →ₗ[R] N) (hf : Continuous f) :

@@ -15,7 +15,7 @@ This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 
 variable {R S : Type*}
 
-@[expose] public section
+public section
 
 namespace Equiv
 
