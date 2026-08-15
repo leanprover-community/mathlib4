@@ -33,7 +33,7 @@ Currently, the period ring `BDeRhamPlus` takes the ring of integers `R` as the i
 After the perfectoid theory is developed, we can modify it to
 take a perfectoid field as the input.
 
-## Reference
+## References
 
 * [Fontaine, *Sur Certains Types de Représentations p-Adiques du Groupe de Galois d'un Corps Local;
   Construction d'un Anneau de Barsotti-Tate*][fontaine1982certains]
