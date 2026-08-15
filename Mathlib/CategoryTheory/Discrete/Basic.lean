@@ -76,7 +76,8 @@ instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
   discreteEquiv.decidableEq
 
 set_option linter.translate.warnInvalid false in
-@[to_dual self (reorder := a b)]
+/-- The only morphisms in `Discrete α` are the identity morphisms -/
+@[nolint structureInType, to_dual self (reorder := a b)]
 structure Discrete.Hom {α : Type u₁} (a b : α) : Type u₁ where
   eq : a = b
 
@@ -86,6 +87,8 @@ attribute [aesop (rule_sets := [builtin]) norm 0 destruct] Discrete.Hom.eq
 @[to_dual existing eq]
 theorem Discrete.Hom.eq' {α : Type u₁} {a b : α} (self : Discrete.Hom a b) : b = a := self.eq.symm
 
+/-- `Discrete.Hom.mk'` is the dual of `Discrete.Hom.mk`, which is needed for `to_dual`.
+Please avoid using this directly. -/
 @[to_dual existing mk]
 abbrev Discrete.Hom.mk' {α : Type u₁} {a b : α} (eq : b = a) : Discrete.Hom a b := ⟨eq.symm⟩
 
@@ -397,3 +400,5 @@ instance : IsDiscrete Cᵒᵖ where
 end
 
 end CategoryTheory
+
+#lint
