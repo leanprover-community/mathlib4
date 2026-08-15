@@ -10,7 +10,7 @@ public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
-## Continuous representations
+# Continuous representations
 
 This file defines continuous representations of a monoid `G` on a `R`-module `V` and
 related basic results.
