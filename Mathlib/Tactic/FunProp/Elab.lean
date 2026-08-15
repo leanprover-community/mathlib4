@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Tactic.FunProp.Core
 
+import Lean.Elab.InfoTree.Main
+public import Lean.Elab.ConfigEval
+public meta import Lean.Elab.ConfigEval
+
 /-!
 ## `funProp` tactic syntax
 -/
@@ -92,10 +96,10 @@ def funPropTac : Tactic
             pure <| tacticToDischarge (← `(tactic| first | with_reducible assumption | ($tac)))
           | _ => pure assumptionDischarge
 
-      let namesToUnfold : Array Name :=
+      let namesToUnfold ← show CoreM (Array Name) from
         match names with
-        | none => #[]
-        | some ns => ns.getElems.map (fun n => n.getId)
+        | none => pure #[]
+        | some ns => ns.getElems.mapM Elab.realizeGlobalConstNoOverloadWithInfo
 
       let namesToUnfold := namesToUnfold.append defaultNamesToUnfold
 

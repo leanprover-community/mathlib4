@@ -42,6 +42,7 @@ variable (C : Type u) [Category.{v} C]
 namespace TopCat
 
 /-- The category of `C`-valued presheaves on a (bundled) topological space `X`. -/
+@[implicit_reducible]
 def Presheaf (X : TopCat.{w}) : Type max u v w :=
   (Opens X)ᵒᵖ ⥤ C
 
@@ -153,7 +154,7 @@ open CategoryTheory.Limits
 variable (C)
 
 /-- The pushforward functor. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def pushforward {X Y : TopCat.{w}} (f : X ⟶ Y) : X.Presheaf C ⥤ Y.Presheaf C :=
   (whiskeringLeft _ _ _).obj (Opens.map f).op
 
@@ -216,6 +217,7 @@ def pushforwardEq {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Preshe
 theorem pushforward_eq' {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C) :
     f _* ℱ = g _* ℱ := by rw [h]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
     (h : f = g) (ℱ : X.Presheaf C) (U) :
@@ -226,6 +228,9 @@ variable (C)
 
 section Iso
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A homeomorphism of spaces gives an equivalence of categories of presheaves. -/
 @[simps!]
 def presheafEquivOfIso {X Y : TopCat.{w}} (H : X ≅ Y) : X.Presheaf C ≌ Y.Presheaf C :=
@@ -240,11 +245,13 @@ def toPushforwardOfIso {X Y : TopCat.{w}} (H : X ≅ Y) {ℱ : X.Presheaf C} {�
     (α : H.hom _* ℱ ⟶ 𝒢) : ℱ ⟶ H.inv _* 𝒢 :=
   (presheafEquivOfIso _ H).toAdjunction.homEquiv ℱ 𝒢 α
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem toPushforwardOfIso_app {X Y : TopCat.{w}} (H₁ : X ≅ Y) {ℱ : X.Presheaf C} {𝒢 : Y.Presheaf C}
     (H₂ : H₁.hom _* ℱ ⟶ 𝒢) (U : (Opens X)ᵒᵖ) :
     (toPushforwardOfIso H₁ H₂).app U =
-      ℱ.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) ≫
+      ℱ.map (eqToHom (by simp [Opens.map_def, Set.preimage_preimage])) ≫
         H₂.app (op ((Opens.map H₁.inv).obj (unop U))) := by
   simp [toPushforwardOfIso, Adjunction.homEquiv_unit]
 
@@ -255,12 +262,14 @@ def pushforwardToOfIso {X Y : TopCat.{w}} (H₁ : X ≅ Y) {ℱ : Y.Presheaf C} 
     (H₂ : ℱ ⟶ H₁.hom _* 𝒢) : H₁.inv _* ℱ ⟶ 𝒢 :=
   ((presheafEquivOfIso _ H₁.symm).toAdjunction.homEquiv ℱ 𝒢).symm H₂
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem pushforwardToOfIso_app {X Y : TopCat.{w}} (H₁ : X ≅ Y) {ℱ : Y.Presheaf C} {𝒢 : X.Presheaf C}
     (H₂ : ℱ ⟶ H₁.hom _* 𝒢) (U : (Opens X)ᵒᵖ) :
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
-        𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) := by
+        𝒢.map (eqToHom (by simp [Opens.map_def, Set.preimage_preimage])) := by
   simp [pushforwardToOfIso, Equivalence.toAdjunction, Adjunction.homEquiv_counit]
 
 end Iso
@@ -361,6 +370,7 @@ def pullbackObjIso {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) (ℱ : Y.
     (fun {U V} i ↦ (pullbackObjObjOfImageOpen_hom_naturality f ℱ (hf (unop V).1 (unop V).2)
       (hf (unop U).1 (unop U).2) (leOfHom i.unop)))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : X ⟶ Y` is an open map, this expresses the naturality of the isomorphism

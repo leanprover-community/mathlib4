@@ -35,7 +35,7 @@ add_decl_doc StarSubsemiring.toSubsemiring
 instance setLike {R : Type v} [NonAssocSemiring R] [Star R] :
     SetLike (StarSubsemiring R) R where
   coe {s} := s.carrier
-  coe_injective' p q h := by obtain ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
+  coe_injective p q h := by obtain ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
 
 instance {R : Type v} [NonAssocSemiring R] [Star R] : PartialOrder (StarSubsemiring R) :=
   .ofSetLike (StarSubsemiring R) R

@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
@@ -38,7 +37,7 @@ variable {J : Type u₁} {K : Type u₂} [Category.{v₁} J] [Category.{v₂} K]
 variable {C : Type u} [Category.{v} C]
 variable (F : J × K ⥤ C)
 
-open CategoryTheory.prod Prod
+open CategoryTheory.prod CategoryTheory.Prod
 
 theorem map_id_left_eq_curry_map {j : J} {k k' : K} {f : k ⟶ k'} :
     F.map (𝟙 j ×ₘ f) = ((curry.obj F).obj j).map f :=
@@ -51,7 +50,7 @@ theorem map_id_right_eq_curry_swap_map {j j' : J} {f : j ⟶ j'} {k : K} :
 variable [HasLimitsOfShape J C]
 variable [HasColimitsOfShape K C]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The universal morphism
 $\colim_k \lim_j F(j,k) → \lim_j \colim_k F(j, k)$.
 -/
@@ -83,7 +82,6 @@ noncomputable def colimitLimitToLimitColimit :
               curry_obj_obj_obj, curry_obj_map_app]
             rw [map_id_right_eq_curry_swap_map, limit.w_assoc] } }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Since `colimit_limit_to_limit_colimit` is a morphism from a colimit to a limit,
 this lemma characterises it.
 -/
@@ -94,7 +92,7 @@ theorem ι_colimitLimitToLimitColimit_π (j) (k) :
   dsimp [colimitLimitToLimitColimit]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The map `colimit_limit_to_limit_colimit` realized as a map of cones. -/
 @[simps]
 noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G] :

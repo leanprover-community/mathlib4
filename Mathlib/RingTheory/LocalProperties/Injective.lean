@@ -91,7 +91,7 @@ theorem Module.injective_of_localization_maximal [Small.{v} R] [IsNoetherianRing
   rw [eq] at surj
   rw [← LinearMap.coe_restrictScalars (R := R),
     LocalizedModule.restrictScalars_map_eq m.primeCompl hM gM]
-  simpa using surj
+  simpa using! surj
 
 section
 
@@ -111,6 +111,7 @@ variable
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [inst : ∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 include f in
 /--

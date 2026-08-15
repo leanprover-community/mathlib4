@@ -62,6 +62,7 @@ grind_pattern StdSimplex.total => self.weights
 initialize_simps_projections StdSimplex (as_prefix weights)
 
 namespace StdSimplex
+section Semiring
 variable {R : Type u} [PartialOrder R] [Semiring R] {M N P : Type*} {w : StdSimplex R M} {x : M}
 
 @[simp] lemma weights_nonneg {w : StdSimplex R M} (i : M) : 0 ≤ w.weights i := w.nonneg i
@@ -80,6 +81,26 @@ lemma nonempty [Nontrivial R] (w : StdSimplex R M) : Nonempty M :=
 
 @[ext] alias ⟨ext, _⟩ := weights_inj
 
+@[simp]
+lemma total_of_fintype [Fintype M] (w : StdSimplex R M) :
+    ∑ i, w.weights i = 1 := by
+  have := w.total
+  rwa [Finsupp.sum_fintype _ _ (by simp)] at this
+
+lemma range_toFun_comp_weights [Fintype M] :
+    Set.range (fun t ↦ t.weights : StdSimplex R M → (M → R)) =
+    (⋂ (i : M), { s | 0 ≤ s i }) ∩ { s | ∑ i, s i = 1 } := by
+  ext s
+  simp only [Set.mem_range, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred_eq]
+  refine ⟨?_, ?_⟩
+  · rintro ⟨s, rfl⟩
+    exact ⟨s.weights_nonneg, by simp⟩
+  · rintro ⟨h₁, h₂⟩
+    exact ⟨{
+      weights := equivFunOnFinite.symm s
+      nonneg m := by simpa using h₁ m
+      total := by simpa [Finsupp.sum_fintype] }, by simp⟩
+
 variable [IsStrictOrderedRing R]
 
 /-- The point mass distribution concentrated at `x`. -/
@@ -93,7 +114,6 @@ theorem mk_single (x : M) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
 
 @[simp] lemma support_weights_eq_singleton : w.weights.support = {x} ↔ w = single x where
   mp := by
-    classical
     rw [support_eq_singleton']
     rintro ⟨a, ha, hwa⟩
     ext : 1
@@ -136,13 +156,66 @@ lemma map_duple {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : M
 lemma map_id (f : StdSimplex R M) : f.map id = f := by
   ext; simp
 
+lemma map_id' : map (R := R) (id : M → M) = id := by aesop
+
 lemma map_comp (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     f.map (g₂ ∘ g₁) = (f.map g₁).map g₂ := by
-  ext; simp [mapDomain_comp]
+  ext; simp [← mapDomain_comp]
+
+lemma map_comp' (g₁ : M → N) (g₂ : N → P) :
+    map (R := R) (g₂ ∘ g₁) = map g₂ ∘ map g₁ := by
+  ext : 1
+  simp [map_comp]
 
 lemma map_map (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     (f.map g₁).map g₂ = f.map (fun x ↦ g₂ (g₁ x)) :=
   (map_comp ..).symm
+
+lemma mem_range_map_iff
+    (f : M → N) (s : StdSimplex R N) :
+    s ∈ Set.range (map f) ↔ ∀ (x : N), x ∉ Set.range f → s.weights x = 0 := by
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨s, rfl⟩
+    intro x hx
+    simpa using Finsupp.mapDomain_of_notMem_range s.weights x hx
+  · have (i : s.weights.support) : ∃ (m : M), f m = i := by grind
+    choose m hm using this
+    refine ⟨{
+      weights := ∑ (y : s.weights.support), .single (m y) (s.weights y)
+      nonneg x := by
+        simp only [Finsupp.coe_finsetSum, Finset.sum_apply,
+          Finsupp.coe_zero, Pi.zero_apply]
+        refine Finset.sum_nonneg' (fun y ↦ ?_)
+        by_cases hy : m y = x
+        · subst hy
+          simp
+        · rw [Finsupp.single_eq_of_ne' hy]
+      total := by
+        rw [Finsupp.sum_finsetSum _ _ _ (by simp) (by simp), ← s.total]
+        conv_rhs => dsimp [Finsupp.sum]; rw [← Finset.sum_attach]
+        congr
+        ext
+        simp }, ?_⟩
+    ext y
+    by_cases hy : y ∈ s.weights.support
+    · simp only [Finset.univ_eq_attach, weights_map, Finsupp.mapDomain, Finsupp.sum_apply]
+      rw [Finsupp.sum_finsetSum _ _ _ (by simp) (by simp),
+        Finset.sum_eq_single ⟨y, hy⟩ ?_ (by simp)]
+      · simp [hm]
+      · intro z hz hz'
+        simp only [hm, Finsupp.single_zero, Finsupp.coe_zero, Pi.zero_apply,
+          Finsupp.sum_single_index]
+        aesop
+    · rw [Finsupp.notMem_support_iff] at hy
+      rw [hy]
+      refine Finsupp.mapDomain_of_not_mem_image_support ?_
+      simp only [Finset.univ_eq_attach, Set.mem_image, SetLike.mem_coe, Finsupp.mem_support_iff,
+        Finsupp.coe_finsetSum, Finset.sum_apply, ne_eq, not_exists, not_and]
+      intro x hx rfl
+      refine hx (Finset.sum_eq_zero (fun z hz ↦ Finsupp.single_eq_of_ne ?_))
+      intro rfl
+      simp only [hm, ← Finsupp.notMem_support_iff] at hy
+      exact hy z.prop
 
 /--
 Join operation for standard simplices (monadic join).
@@ -167,6 +240,56 @@ private lemma map_join (f : StdSimplex R (StdSimplex R M)) (g : M → N) :
 @[simp] private lemma join_single (x : StdSimplex R M) : join (.single x) = x := by
   ext; simp [join, ← mk_single]
 
+end Semiring
+
+section Semifield
+variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
+
+private lemma restrict_nonneg_aux {w : StdSimplex K X} {p : X → Prop} [DecidablePred p] :
+    0 ≤ (filter p w.weights).sum fun _x k ↦ k :=
+  sum_nonneg <| by simp [filter_apply, apply_ite]
+
+private lemma restrict_ne_zero_aux {w : StdSimplex K X} {p : X → Prop} [DecidablePred p]
+    (hp : ∃ a, p a ∧ w.weights a ≠ 0) :
+    (filter p w.weights).sum (fun _x k ↦ k) ≠ 0 :=
+  (sum_pos (by simp +contextual [lt_iff_le_and_ne, eq_comm]) <| by simpa [ne_iff, filter_apply]).ne'
+
+/-- Project an element of the standard simplex to a lower-dimensional standard simplex,
+assuming at least one non-zero weight subsists. -/
+def restrict (w : StdSimplex K X) (s : Set X) (hs : ∃ x ∈ s, w.weights x ≠ 0) : StdSimplex K X where
+  weights := open scoped Classical in
+    ((w.weights.filter (· ∈ s)).sum fun x k ↦ k)⁻¹ • w.weights.filter (· ∈ s)
+  nonneg := by
+    classical
+    exact smul_nonneg (inv_nonneg.2 restrict_nonneg_aux) fun _ ↦ by simp [filter_apply, apply_ite]
+  total := by classical simp [sum_smul_index, ← mul_sum, restrict_ne_zero_aux hs]
+
+lemma weights_restrict (w : StdSimplex K X) (s : Set X) (hs) [DecidablePred (· ∈ s)] :
+    (w.restrict s hs).weights =
+      ((w.weights.filter (· ∈ s)).sum fun _x k ↦ k)⁻¹ • w.weights.filter (· ∈ s) := by
+  simp [restrict]; congr
+
+variable [IsDomain K]
+
+@[simp]
+lemma support_weights_restrict (w : StdSimplex K X) (s : Set X) (hs) [DecidablePred (· ∈ s)] :
+    (w.restrict s hs).weights.support = w.weights.support.filter (· ∈ s) := by
+  have : (w.weights.filter (· ∈ s)).sum (fun x k ↦ k) ≠ 0 :=
+    (sum_pos (by simp +contextual [lt_iff_le_and_ne, eq_comm]) <| by
+      simpa [ne_iff, filter_apply]).ne'
+  rw [weights_restrict, support_smul_eq (by convert inv_ne_zero this)]
+  simp
+
+@[simp] lemma restrict_singleton (w : StdSimplex K X) (x : X) (hx) :
+    w.restrict {x} hx = single x := by
+  classical
+  simp only [← support_weights_eq_singleton, support_weights_restrict, Set.mem_singleton_iff]
+  ext
+  simp only [Finset.mem_filter, mem_support_iff, ne_eq, Finset.mem_singleton, and_iff_right_iff_imp]
+  rintro rfl
+  simpa using hx
+
+end Semifield
 end StdSimplex
 
 /--
@@ -240,6 +363,19 @@ lemma map_sConvexComb (s : StdSimplex R (StdSimplex R I)) (f : I → J) :
     s.sConvexComb.map f = (s.map (map f)).sConvexComb :=
   StdSimplex.map_join s f
 
+variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
+
+lemma convexCombPair_restrict_restrict_compl (w : StdSimplex K I) (s : Set I) (hs hs')
+    [DecidablePred (· ∈ s)] :
+    convexCombPair
+      ((w.weights.filter (· ∈ s)).sum fun _x k ↦ k)
+      ((w.weights.filter (· ∉ s)).sum fun _x k ↦ k)
+      (by exact restrict_nonneg_aux) (by exact restrict_nonneg_aux) (by simp)
+      (w.restrict s hs) (w.restrict sᶜ hs') = w := by
+  ext : 1
+  simp only [Set.mem_compl_iff] at hs'
+  simp [weights_restrict, smul_inv_smul₀, restrict_ne_zero_aux, hs, hs']
+
 end StdSimplex
 
 lemma sConvexComb_sConvexComb (f : StdSimplex R (StdSimplex R M)) :
@@ -276,6 +412,11 @@ lemma IsAffineMap.comp {g : N → P} (hg : IsAffineMap R g) {f : M → N} (hf : 
   map_sConvexComb s := by
     simp [StdSimplex.map_comp, hf.map_sConvexComb, hg.map_sConvexComb]
 
+@[fun_prop]
+lemma IsAffineMap.const (x : N) :
+    IsAffineMap R (fun (_ : M) ↦ x) where
+  map_sConvexComb _ := by simp
+
 variable (R) in
 @[fun_prop]
 lemma StdSimplex.isAffineMap_map (f : I → J) : IsAffineMap R (StdSimplex.map (R := R) f) :=
@@ -292,19 +433,30 @@ lemma sConvexComb_map (w : StdSimplex R I) (f : I → M) :
 @[simp] lemma iConvexComb_single (i : I) (f : I → M) :
     (single (R := R) i).iConvexComb f = f i := by simp [iConvexComb]
 
-@[simp] lemma iConvexComb_id (s : StdSimplex R M) :
-    s.iConvexComb id = s.sConvexComb := by simp [iConvexComb]
+lemma iConvexComb_id (w : StdSimplex R M) : w.iConvexComb id = w.sConvexComb := by
+  simp [iConvexComb]
 
-@[simp] lemma iConvexComb_id' (s : StdSimplex R M) :
-    s.iConvexComb (fun x ↦ x) = s.sConvexComb := iConvexComb_id s
+@[simp] lemma iConvexComb_id' (w : StdSimplex R M) :
+    w.iConvexComb (fun x ↦ x) = w.sConvexComb := iConvexComb_id _
 
 @[simp] lemma iConvexComb_map (s : StdSimplex R I) (f : I → J) (g : J → M) :
-    (s.map f).iConvexComb g = s.iConvexComb (g ∘ f) := by
-  simp only [iConvexComb, map_comp]
+    (s.map f).iConvexComb g = s.iConvexComb (fun i ↦ g (f i)) := by
+  simp only [iConvexComb, map_map]
 
-lemma iConvexComb_congr (s : StdSimplex R I) (f : I ≃ J) (g : I → M) :
+@[congr] lemma iConvexComb_congr {w : StdSimplex R I} {f g : I → M}
+    (hfg : ∀ i, w.weights i ≠ 0 → f i = g i) :
+    w.iConvexComb f = w.iConvexComb g := by
+  refine congr(sConvexComb $(?_))
+  ext i
+  simp only [weights_map]
+  -- TODO: This should just be `congr! 2 with i hi`.
+  congr 1
+  refine Finsupp.mapDomain_congr fun i hi ↦ ?_
+  exact hfg i (by simpa using hi)
+
+lemma iConvexComb_reindex (s : StdSimplex R I) (f : I ≃ J) (g : I → M) :
     s.iConvexComb g = (s.map f).iConvexComb (g ∘ f.symm) := by
-  simp [iConvexComb_map, Function.comp_def]
+  simp [iConvexComb_map]
 
 /-- Flattening nested `iConvexComb`s.
 
@@ -347,7 +499,7 @@ lemma iConvexComb_comm (f : StdSimplex R I) (g : StdSimplex R J)
     (e : I → J → M) :
     f.iConvexComb (fun i ↦ g.iConvexComb (e i)) =
       g.iConvexComb fun j ↦ f.iConvexComb fun i ↦ e i j := by
-  rw [iConvexComb_assoc', iConvexComb_assoc', iConvexComb_congr _ (.prodComm ..)]
+  rw [iConvexComb_assoc', iConvexComb_assoc', iConvexComb_reindex _ (.prodComm ..)]
   congr
   suffices (f.map fun x ↦ g.map (Prod.mk · x)).sConvexComb =
       (g.map (f.map ∘ Prod.mk)).sConvexComb by
@@ -412,6 +564,7 @@ lemma IsAffineMap.map_convexCombPair {f : M → N} (hf : IsAffineMap R f)
     f (convexCombPair s t hs ht h x y) = convexCombPair s t hs ht h (f x) (f y) := by
   simp [hf.map_sConvexComb, convexCombPair]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Flattening with the outer combination specialized to `convexCombPair`. -/
 lemma convexCombPair_iConvexComb_iConvexComb {J₁ : Type u₁} {J₂ : Type u₂}
     (g₁ : StdSimplex R J₁) (g₂ : StdSimplex R J₂)
@@ -452,13 +605,13 @@ lemma convexCombPair_iConvexComb_right (m : M) (g : StdSimplex R J) (e : J → M
 lemma convexCombPair_convexCombPair_left_eq_sConvexComb (m₁ m₂ m₃ : M) :
     convexCombPair s t hs ht h (convexCombPair s' t' hs' ht' h' m₁ m₂) m₃ =
       (convexCombPair s t hs ht h (duple m₁ m₂ hs' ht' h') (single m₃)).sConvexComb := by
-  simpa using convexCombPair_iConvexComb_left hs ht h (.duple m₁ m₂ hs' ht' h') id m₃
+  simpa using! convexCombPair_iConvexComb_left hs ht h (.duple m₁ m₂ hs' ht' h') id m₃
 
 /-- Flattening nested binary convex combination into a single convex combination. -/
 lemma convexCombPair_convexCombPair_right_eq_sConvexComb (m₁ m₂ m₃ : M) :
     convexCombPair s t hs ht h m₁ (convexCombPair s' t' hs' ht' h' m₂ m₃) =
       (convexCombPair s t hs ht h (.single m₁) (duple m₂ m₃ hs' ht' h')).sConvexComb := by
-  simpa using convexCombPair_iConvexComb_right hs ht h m₁ (.duple m₂ m₃ hs' ht' h') id
+  simpa using! convexCombPair_iConvexComb_right hs ht h m₁ (.duple m₂ m₃ hs' ht' h') id
 
 lemma convexCombPair_convexCombPair_assoc_left (H : t * s'' = s * t' * t'') (m₁ m₂ m₃ : M) :
     convexCombPair s t hs ht h (convexCombPair s' t' hs' ht' h' m₁ m₂) m₃ =
@@ -494,7 +647,7 @@ lemma iConvexComb_convexCombPair_comm (f : StdSimplex R I) (e₁ e₂ : I → M)
     f.iConvexComb (fun x ↦ convexCombPair s t hs ht h (e₁ x) (e₂ x)) =
       convexCombPair s t hs ht h (f.iConvexComb e₁) (f.iConvexComb e₂) := by
   simp only [convexCombPair_def]
-  convert (iConvexComb_comm (.duple 0 1 hs ht h) f ![e₁, e₂]).symm with i j j
+  convert (iConvexComb_comm (.duple 0 1 hs ht h) f ![e₁, e₂]).symm with i _ j _ j
   · fin_cases j <;> simp
   · fin_cases j <;> simp
 
@@ -510,7 +663,7 @@ lemma iConvexComb_convexCombPair_comm_right (f : StdSimplex R I) (m : M) (e : I 
 
 lemma isAffineMap_convexCombPair (m : M) :
     IsAffineMap R (convexCombPair s t hs ht h m) :=
-  ⟨fun f ↦ by simpa using (iConvexComb_convexCombPair_comm_right hs ht h f m id).symm⟩
+  ⟨fun f ↦ by simpa using! (iConvexComb_convexCombPair_comm_right hs ht h f m id).symm⟩
 
 end CommSemiring
 

@@ -5,10 +5,10 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Data.Rat.Cardinal
 public import Mathlib.SetTheory.Cardinal.Continuum
+public import Mathlib.SetTheory.Cardinal.Rat
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # The cardinality of the reals
@@ -136,10 +136,10 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
     refine lt_of_lt_of_le ?_ (cantorFunction_le (le_of_lt h1) h3 hg_min)
     have : c / (1 - c) < 1 := by
       rw [div_lt_one, lt_sub_iff_add_lt]
-      · convert _root_.add_lt_add h2 h2
+      · convert! _root_.add_lt_add h2 h2
         norm_num
       rwa [sub_pos]
-    convert this
+    convert! this
     · rw [cantorFunction_succ _ (le_of_lt h1) h3, div_eq_mul_inv, ←
         tsum_geometric_of_lt_one (le_of_lt h1) h3]
       apply zero_add
@@ -188,7 +188,7 @@ theorem mk_real : #ℝ = 𝔠 := by
     apply mk_quotient_le.trans
     apply (mk_subtype_le _).trans_eq
     rw [← power_def, mk_nat, mkRat, aleph0_power_aleph0]
-  · convert mk_le_of_injective (cantorFunction_injective _ _)
+  · convert! mk_le_of_injective (cantorFunction_injective _ _)
     · rw [← power_def, mk_bool, mk_nat, two_power_aleph0]
     · exact 1 / 3
     · simp
@@ -212,12 +212,12 @@ theorem mk_Ioi_real (a : ℝ) : #(Ioi a) = 𝔠 := by
   intro h
   refine _root_.ne_of_lt ?_ mk_univ_real
   have hu : Iio a ∪ {a} ∪ Ioi a = Set.univ := by
-    convert @Iic_union_Ioi ℝ _ _
+    convert! @Iic_union_Ioi ℝ _ _
     exact Iio_union_right
   rw [← hu]
   grw [mk_union_le, mk_union_le]
   have h2 : (fun x => a + a - x) '' Ioi a = Iio a := by
-    convert @image_const_sub_Ioi ℝ _ _ _
+    convert! @image_const_sub_Ioi ℝ _ _ _
     simp
   rw [← h2]
   refine add_lt_of_lt (cantor _).le ?_ h
@@ -262,6 +262,10 @@ theorem mk_Icc_real {a b : ℝ} (h : a < b) : #(Icc a b) = 𝔠 :=
 /-- The cardinality of the interval $(a, b]$. -/
 theorem mk_Ioc_real {a b : ℝ} (h : a < b) : #(Ioc a b) = 𝔠 :=
   le_antisymm (mk_real ▸ mk_set_le _) (mk_Ioo_real h ▸ mk_le_mk_of_subset Ioo_subset_Ioc_self)
+
+@[simp]
+theorem mk_unitInterval : #unitInterval = 𝔠 := by
+  rw [unitInterval, mk_Icc_real zero_lt_one]
 
 @[simp]
 lemma Real.Ioo_countable_iff {x y : ℝ} :

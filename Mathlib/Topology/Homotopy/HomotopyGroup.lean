@@ -73,8 +73,8 @@ abbrev insertAt (i : N) : (I × I^{ j // j ≠ i }) ≃ₜ I^N :=
 theorem insertAt_boundary (i : N) {t₀ : I} {t}
     (H : (t₀ = 0 ∨ t₀ = 1) ∨ t ∈ boundary { j // j ≠ i }) : insertAt i ⟨t₀, t⟩ ∈ boundary N := by
   obtain H | ⟨j, H⟩ := H
-  · use i; rwa [funSplitAt_symm_apply, dif_pos rfl]
-  · use j; rwa [funSplitAt_symm_apply, dif_neg j.prop, Subtype.coe_eta]
+  · use i; rwa [funSplitAt_symm_apply, dite_eq_left rfl]
+  · use j; rwa [funSplitAt_symm_apply, dite_eq_right j.prop, Subtype.coe_eta]
 
 end Cube
 
@@ -106,14 +106,14 @@ namespace GenLoop
 
 instance instFunLike : FunLike (Ω^ N X x) (I^N) X where
   coe f := f.1
-  coe_injective' := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ ↦ by congr
+  coe_injective := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ ↦ by congr
 
 @[simp]
 theorem coe_coe (f : Ω^ N X x) : ⇑(f : C(I^N, X)) = f := rfl
 
 @[ext]
 theorem ext (f g : Ω^ N X x) (H : ∀ y, f y = g y) : f = g :=
-  DFunLike.coe_injective' (funext H)
+  DFunLike.coe_injective (funext H)
 
 @[simp]
 theorem mk_apply (f : C(I^N, X)) (H y) : (⟨f, H⟩ : Ω^ N X x) y = f y :=
@@ -127,7 +127,7 @@ instance instContinuousEvalConst : ContinuousEvalConst (Ω^ N X x) (I^N) X := in
 /-- Copy of a `GenLoop` with a new map from the unit cube equal to the old one.
   Useful to fix definitional equalities. -/
 def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
-  ⟨⟨g, h.symm ▸ f.1.2⟩, by convert f.2⟩
+  ⟨⟨g, h.symm ▸ f.1.2⟩, by convert! f.2⟩
 
 theorem coe_copy (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : ⇑(copy f g h) = g :=
   rfl
@@ -211,6 +211,7 @@ protected def uncurry (p : Ω^ M (Ω^ N X x) const) : C((I^M) × (I^N), X) :=
 lemma uncurry_apply (p : Ω^ M (Ω^ N X x) const) (y : (I^M) × (I^N)) :
     GenLoop.uncurry x p y = p y.1 y.2 := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `Ω^M (Ω^N X) ≃ₜ Ω^(M ⊕ N) X`. -/
 @[simps]
 def genLoopGenLoopEquiv : Ω^ M (Ω^ N X x) GenLoop.const ≃ₜ Ω^ (M ⊕ N) X x where
@@ -285,7 +286,7 @@ def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
     (Cube.splitAt i),
     by
     rintro y ⟨j, Hj⟩
-    simp only [ContinuousMap.comp_apply, ContinuousMap.coe_coe,
+    simp only [ContinuousMap.comp_apply,
       funSplitAt_apply, ContinuousMap.uncurry_apply, ContinuousMap.coe_mk,
       Function.uncurry_apply_pair]
     obtain rfl | Hne := eq_or_ne j i
@@ -341,6 +342,7 @@ theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| C
     homotopyTo i H t tₙ = H (t.fst, Cube.insertAt i (t.snd, tₙ)) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem homotopicTo (i : N) {p q : Ω^ N X x} :
     Homotopic p q → (toLoop i p).Homotopic (toLoop i q) := by
   refine Nonempty.map fun H ↦ ⟨⟨⟨fun t ↦ ⟨homotopyTo i H t, ?_⟩, ?_⟩, ?_, ?_⟩, ?_⟩
@@ -361,7 +363,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
   dsimp
   rw [homotopyTo_apply]
   apply H.eq_fst; use i
-  rw [funSplitAt_symm_apply, dif_pos rfl]; exact yH
+  rw [funSplitAt_symm_apply, dite_eq_left rfl]; exact yH
 
 /-- The converse to `GenLoop.homotopyTo`: a homotopy between two loops in the space of
   `n`-dimensional loops can be seen as a homotopy between two `n+1`-dimensional paths. -/
@@ -393,6 +395,7 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     | apply congr_arg q
     apply (Cube.splitAt i).left_inv
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Concatenation of two `GenLoop`s along the `i`th coordinate. -/
 def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
   copy (fromLoop i <| (toLoop i f).trans <| toLoop i g)
@@ -415,7 +418,7 @@ def symmAt (i : N) (f : Ω^ N X x) : Ω^ N X x :=
 
 theorem transAt_distrib {i j : N} (h : i ≠ j) (a b c d : Ω^ N X x) :
     transAt i (transAt j a b) (transAt j c d) = transAt j (transAt i a c) (transAt i b d) := by
-  ext; simp_rw [transAt, coe_copy, Function.update_apply, if_neg h, if_neg h.symm]
+  ext; simp_rw [transAt, coe_copy, Function.update_apply, ite_eq_right h, ite_eq_right h.symm]
   split_ifs <;>
     · congr 1; ext1; simp only [Function.update, eq_rec_constant, dite_eq_ite]
       apply ite_ite_comm; rintro rfl; exact h.symm
@@ -530,7 +533,7 @@ lemma HomotopyGroup.genLoopEquivOfUnique_transAt (N) [DecidableEq N] [Unique N] 
       (genLoopEquivOfUnique _ q).trans (genLoopEquivOfUnique _ p) := by
   ext t
   simp only [genLoopEquivOfUnique, GenLoop.transAt, GenLoop.copy,
-    one_div, Equiv.coe_fn_mk, GenLoop.mk_apply, ContinuousMap.coe_mk, Path.coe_mk', Path.trans,
+    one_div, ContinuousMap.coe_mk, Path.coe_mk', Path.trans,
     Function.comp_apply]
   refine ite_congr rfl (fun _ ↦ congrArg q ?_)
     fun _ ↦ congrArg p ?_

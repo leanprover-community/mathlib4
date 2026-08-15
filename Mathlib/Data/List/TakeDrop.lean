@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Common
 public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # `Take` and `Drop` lemmas for lists
@@ -22,8 +23,6 @@ assert_not_exists Lattice
 assert_not_exists Prod.swap_eq_iff_eq_swap
 assert_not_exists Ring
 assert_not_exists Set.range
-
-open Function
 
 open Nat hiding one_pos
 
@@ -176,7 +175,7 @@ private theorem span.loop_eq_take_drop :
 
 @[simp]
 theorem span_eq_takeWhile_dropWhile (l : List α) : span p l = (takeWhile p l, dropWhile p l) := by
-  simpa using span.loop_eq_take_drop p l []
+  simpa using! span.loop_eq_take_drop p l []
 
 end Filter
 

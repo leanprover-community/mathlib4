@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.FastInstance
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Subgroups
@@ -302,7 +303,7 @@ structure AddSubgroup (G : Type*) [AddGroup G] extends AddSubmonoid G where
   /-- `G` is closed under negation -/
   neg_mem' {x} : x ∈ carrier → -x ∈ carrier
 
-attribute [to_additive] Subgroup
+attribute [to_additive (attr := wikidata Q466109)] Subgroup
 
 /-- Reinterpret a `Subgroup` as a `Submonoid`. -/
 add_decl_doc Subgroup.toSubmonoid
@@ -315,7 +316,7 @@ namespace Subgroup
 @[to_additive]
 instance : SetLike (Subgroup G) G where
   coe s := s.carrier
-  coe_injective' p q h := by
+  coe_injective p q h := by
     obtain ⟨⟨⟨hp, _⟩, _⟩, _⟩ := p
     obtain ⟨⟨⟨hq, _⟩, _⟩, _⟩ := q
     congr
@@ -599,8 +600,6 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
     K.subtype.comp (inclusion hH) = H.subtype :=
   rfl
 
-open Set
-
 /-- A subgroup `H` is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
 structure Normal : Prop where
   /-- `H` is closed under conjugation -/
@@ -617,7 +616,7 @@ structure Normal (H : AddSubgroup A) : Prop where
   /-- `H` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
 
-attribute [to_additive] Subgroup.Normal
+attribute [to_additive (attr := wikidata Q743179)] Subgroup.Normal
 
 attribute [class] Normal
 
@@ -638,7 +637,7 @@ namespace Normal
 @[to_additive]
 theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
     g⁻¹ * n * g ∈ H := by
-  convert nH.conj_mem n hn g⁻¹
+  convert! nH.conj_mem n hn g⁻¹
   rw [inv_inv]
 
 @[to_additive]

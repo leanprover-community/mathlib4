@@ -21,11 +21,11 @@ eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
 public section
 
-section SpectrumDiagonal
+open Matrix Module End
 
 variable {R n M : Type*} [DecidableEq n] [Fintype n]
 
-open Matrix Module End
+section SpectrumDiagonal
 
 section NontrivialCommRing
 
@@ -40,6 +40,8 @@ lemma hasEigenvector_toLin_diagonal (d : n → R) (i : n) (b : Basis n R M) :
 lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
     HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i) :=
   hasEigenvector_toLin_diagonal _ _ (Pi.basisFun R n)
+
+set_option linter.overlappingInstances false
 
 /-- Eigenvalues of a diagonal linear operator are the diagonal entries. -/
 lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [IsDomain R] [IsTorsionFree R M]
@@ -75,6 +77,13 @@ end NontrivialCommRing
 namespace Matrix
 
 variable [CommRing R] [AddCommGroup M] [Module R M] (d : n → R) {μ : R} (b : Basis n R M)
+
+lemma _root_.Module.End.HasEigenvalue.nonempty
+    {A : Matrix n n R} {μ : R} (hμ : HasEigenvalue A.toLin' μ) :
+    Nonempty n := by
+  rw [hasEigenvalue_iff] at hμ
+  contrapose! hμ
+  exact Submodule.eq_bot_of_subsingleton
 
 @[simp]
 lemma iSup_eigenspace_toLin_diagonal_eq_top :

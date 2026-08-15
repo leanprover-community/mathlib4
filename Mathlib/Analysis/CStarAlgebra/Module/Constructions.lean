@@ -180,7 +180,7 @@ private lemma antilipschitzWith_two_equiv_prod_aux : AntilipschitzWith 2 (equiv 
 
 private lemma lipschitzWith_one_equiv_prod_aux : LipschitzWith 1 (equiv A (E × F)) :=
   AddMonoidHomClass.lipschitz_of_bound_nnnorm (linearEquiv ℂ A (E × F)) 1 <| by
-    simpa using norm_equiv_le_norm_prod
+    simpa using! norm_equiv_le_norm_prod
 
 private lemma uniformity_prod_eq_aux :
     𝓤[(inferInstance : UniformSpace (E × F)).comap <| equiv _ _] = 𝓤 C⋆ᵐᵒᵈ(A, E × F) :=
@@ -308,7 +308,7 @@ private lemma antilipschitzWith_card_equiv_pi_aux :
 
 private lemma lipschitzWith_one_equiv_pi_aux : LipschitzWith 1 (equiv A (Π i, E i)) :=
   AddMonoidHomClass.lipschitz_of_bound_nnnorm (linearEquiv ℂ A (Π i, E i)) 1 <| by
-    simpa using norm_equiv_le_norm_pi
+    simpa using! norm_equiv_le_norm_pi
 
 private lemma uniformity_pi_eq_aux :
     𝓤[(inferInstance : UniformSpace (Π i, E i)).comap <| equiv A _] = 𝓤 C⋆ᵐᵒᵈ(A, Π i, E i) :=
@@ -361,7 +361,7 @@ noncomputable instance instCStarModuleComplex : CStarModule ℂ E where
 -- Ensures that the two ways to obtain `CStarModule ℂᵐᵒᵖ ℂ` are definitionally equal.
 example : instCStarModule (A := ℂ) = instCStarModuleComplex := by with_reducible_and_instances rfl
 
-/- Ensures that the two `Inner ℂ ℂ` instances are definitionally equal. Note that this cannot be at
+/-- Ensures that the two `Inner ℂ ℂ` instances are definitionally equal. Note that this cannot be at
 reducible and instances transparency because the one from `InnerProductSpace` uses `StarRingEnd`
 whereas `WithCStarModule.instCStarModule.toInner` uses `star` since `A` may not be commutative. -/
 example : (toInner : Inner ℂ ℂ) = WithCStarModule.instCStarModule.toInner := rfl

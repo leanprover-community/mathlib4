@@ -56,6 +56,7 @@ noncomputable def singleTriangle : Triangle (DerivedCategory C) :=
   Triangle.mk ((singleFunctor C 0).map S.f)
     ((singleFunctor C 0).map S.g) hS.singleδ
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a short exact complex `S` in `C` that is short exact (`hS`), this is the
 canonical isomorphism between the triangle `hS.singleTriangle` in the derived category
@@ -80,6 +81,7 @@ lemma singleTriangle_distinguished :
 
 variable {S₁ S₂ : ShortComplex C} (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact) (f : S₁ ⟶ S₂)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `h₁.singleTriangle h₁ ⟶ h₂.singleTriangle` that is induced by a
 map of short exact sequences of objects of `C`.

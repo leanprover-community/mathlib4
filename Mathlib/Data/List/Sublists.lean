@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.Data.List.Perm.Basic
-public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.List.Lex
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.Nodup
@@ -301,7 +300,7 @@ theorem sublistsLen_length : ∀ l : List α, sublistsLen l.length l = [l]
 open Function
 
 theorem Pairwise.sublists' {R} :
-    ∀ {l : List α}, Pairwise R l → Pairwise (Lex (swap R)) (sublists' l)
+    ∀ {l : List α}, Pairwise R l → Pairwise (Lex (Function.swap R)) (sublists' l)
   | _, Pairwise.nil => pairwise_singleton _ _
   | _, @Pairwise.cons _ _ a l H₁ H₂ => by
     simp only [sublists'_cons, pairwise_append, pairwise_map, mem_sublists', mem_map, exists_imp,
@@ -331,7 +330,7 @@ protected alias ⟨Nodup.of_sublists', _⟩ := nodup_sublists'
 
 theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n l).Nodup := by
   have : Pairwise (· ≠ ·) l.sublists' := Pairwise.imp
-    (fun h => Lex.to_ne (by convert h using 3; simp [eq_comm])) h.sublists'
+    (fun h => Lex.to_ne (by convert! h using 3; simp [eq_comm])) h.sublists'
   exact this.sublist (sublistsLen_sublist_sublists' _ _)
 
 theorem sublists_map (f : α → β) : ∀ (l : List α),

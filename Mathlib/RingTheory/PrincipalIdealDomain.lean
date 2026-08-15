@@ -33,7 +33,7 @@ Theorems about PID's are in the `PrincipalIdealRing` namespace.
 ## Main results
 
 - `Ideal.IsPrime.to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
-- `EuclideanDomain.to_principal_ideal_domain` : a Euclidean domain is a PID.
+- `EuclideanDomain.instIsPrincipalIdealRing`: a Euclidean domain is a PID.
 - `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
 
 -/
@@ -94,7 +94,7 @@ theorem _root_.Ideal.span_singleton_generator (I : Ideal R) [I.IsPrincipal] :
 @[simp]
 theorem generator_mem (S : Submodule R M) [S.IsPrincipal] : generator S ∈ S := by
   have : generator S ∈ span R {generator S} := subset_span (mem_singleton _)
-  convert this
+  convert! this
   exact span_singleton_generator S |>.symm
 
 theorem mem_iff_eq_smul_generator (S : Submodule R M) [S.IsPrincipal] {x : M} :
@@ -217,11 +217,11 @@ variable (R)
 
 /-- Any Bézout domain is a GCD domain. This is not an instance since `GCDMonoid` contains data,
 and this might not be how we would like to construct it. -/
-@[implicit_reducible]
-noncomputable def toGCDDomain [IsBezout R] [IsDomain R] [DecidableEq R] : GCDMonoid R :=
+@[instance_reducible]
+noncomputable def toGCDDomain [IsBezout R] [IsCancelMulZero R] [DecidableEq R] : GCDMonoid R :=
   gcdMonoidOfGCD (gcd · ·) (gcd_dvd_left · ·) (gcd_dvd_right · ·) dvd_gcd
 
-instance nonemptyGCDMonoid [IsBezout R] [IsDomain R] : Nonempty (GCDMonoid R) := by
+instance [IsBezout R] [IsCancelMulZero R] : IsGCDMonoid R := by
   classical exact ⟨toGCDDomain R⟩
 
 theorem associated_gcd_gcd [GCDMonoid R] : Associated (IsBezout.gcd x y) (GCDMonoid.gcd x y) :=
@@ -284,37 +284,29 @@ theorem mod_mem_iff {S : Ideal R} {x y : R} (hy : y ∈ S) : x % y ∈ S ↔ x �
     (mod_eq_sub_mul_div x y).symm ▸ S.sub_mem hx (S.mul_mem_right _ hy)⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincipalIdealRing R where
-  principal S := by classical exact
-    ⟨if h : { x : R | x ∈ S ∧ x ≠ 0 }.Nonempty then
-        have wf : WellFounded (EuclideanDomain.r : R → R → Prop) := EuclideanDomain.r_wellFounded
-        have hmin : WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∈ S ∧
-            WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ≠ 0 :=
-          WellFounded.min_mem wf { x : R | x ∈ S ∧ x ≠ 0 } h
-        ⟨WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h,
-          Submodule.ext fun x => ⟨fun hx =>
-            div_add_mod x (WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h) ▸
-              (Ideal.mem_span_singleton.2 <| dvd_add (dvd_mul_right _ _) <| by
-                have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∉
-                    { x : R | x ∈ S ∧ x ≠ 0 } :=
-                  fun h₁ => WellFounded.not_lt_min wf _ h₁ (mod_lt x hmin.2)
-                have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h = 0 := by
-                  simp only [not_and_or, Set.mem_setOf_eq, not_ne_iff] at this
-                  exact this.neg_resolve_left <| (mod_mem_iff hmin.1).2 hx
-                simp [*]),
-              fun hx =>
-                let ⟨y, hy⟩ := Ideal.mem_span_singleton.1 hx
-                hy.symm ▸ S.mul_mem_right _ hmin.1⟩⟩
-      else ⟨0, Submodule.ext fun a => by
-            rw [← @Submodule.bot_coe R R _ _ _, span_eq, Submodule.mem_bot]
-            exact ⟨fun haS => by_contra fun ha0 => h ⟨a, ⟨haS, ha0⟩⟩,
-              fun h₁ => h₁.symm ▸ S.zero_mem⟩⟩⟩
+instance (priority := 100) EuclideanDomain.instIsPrincipalIdealRing : IsPrincipalIdealRing R where
+  principal S := by
+    by_cases h : { x : R | x ∈ S ∧ x ≠ 0 }.Nonempty
+    · let ⟨m, ⟨hms, hm0⟩, hl⟩ := EuclideanDomain.r_wellFounded.has_min _ h
+      use m
+      ext x
+      refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+      · rw [← Ideal.span, Ideal.mem_span_singleton, ← mod_eq_zero]
+        have : x % m ∉ { x : R | x ∈ S ∧ x ≠ 0 } := (hl _ · (mod_lt x hm0))
+        rw [Set.mem_ofPred_eq, not_and_or, not_not] at this
+        exact this.neg_resolve_left <| (mod_mem_iff hms).2 hx
+      · obtain ⟨y, rfl⟩ := Ideal.mem_span_singleton.1 hx
+        exact S.mul_mem_right _ hms
+    · use 0
+      rw [span_zero_singleton, Submodule.eq_bot_iff]
+      exact fun a haS ↦ by_contra (h ⟨a, ⟨haS, ·⟩⟩)
 
 end
 
 theorem IsField.isPrincipalIdealRing {R : Type*} [Ring R] (h : IsField R) :
     IsPrincipalIdealRing R :=
-  @EuclideanDomain.to_principal_ideal_domain R (@Field.toEuclideanDomain R h.toField)
+  let := h.toField
+  inferInstance
 
 namespace PrincipalIdealRing
 
@@ -330,6 +322,18 @@ theorem isMaximal_of_irreducible [CommSemiring R] [IsPrincipalIdealRing R] {p : 
       rw [Ideal.submodule_span_eq, Ideal.submodule_span_eq,
         Ideal.span_singleton_le_span_singleton, IsUnit.mul_right_dvd hb]⟩⟩
 
+theorem _root_.Ideal.irreducible_iff_isMaximal_span_singleton
+    [CommSemiring R] [IsPrincipalIdealRing R] [IsDomain R] {p : R} (hp : p ≠ 0) :
+    Irreducible p ↔ Ideal.IsMaximal (span R ({p} : Set R)) :=
+  ⟨isMaximal_of_irreducible, Ideal.irreducible_of_isMaximal_span_singleton hp⟩
+
+theorem _root_.Ideal.irreducible_iff_isMaximal_span_singleton_of_not_isField
+    [CommSemiring R] [IsPrincipalIdealRing R] [IsDomain R] (h : ¬IsField R) {p : R} :
+    Irreducible p ↔ Ideal.IsMaximal (span R ({p} : Set R)) := by
+  by_cases hp : p = 0
+  · simp [hp, ← Ring.isField_iff_maximal_bot, h]
+  · exact Ideal.irreducible_iff_isMaximal_span_singleton hp
+
 variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 
 section
@@ -341,7 +345,7 @@ noncomputable def factors (a : R) : Multiset R :=
 
 theorem factors_spec (a : R) (h : a ≠ 0) :
     (∀ b ∈ factors a, Irreducible b) ∧ Associated (factors a).prod a := by
-  unfold factors; rw [dif_neg h]
+  unfold factors; rw [dite_eq_right h]
   exact Classical.choose_spec (WfDvdMonoid.exists_factors a h)
 
 theorem ne_zero_of_mem_factors {R : Type v} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
@@ -482,7 +486,7 @@ theorem Prime.coprime_iff_not_dvd {p n : R} (hp : Prime p) : IsCoprime p n ↔ �
 theorem exists_associated_pow_of_mul_eq_pow' {a b c : R} (hab : IsCoprime a b) {k : ℕ}
     (h : a * b = c ^ k) : ∃ d : R, Associated (d ^ k) a := by
   classical
-  letI := IsBezout.toGCDDomain R
+  let := IsBezout.toGCDDomain R
   exact exists_associated_pow_of_mul_eq_pow ((gcd_isUnit_iff _ _).mpr hab) h
 
 theorem exists_associated_pow_of_associated_pow_mul {a b c : R} (hab : IsCoprime a b) {k : ℕ}
@@ -552,3 +556,10 @@ lemma span_singleton_inf_span_singleton [EuclideanDomain R] [GCDMonoid R] (n m :
   rw [Ideal.mem_inf]
   simp only [Ideal.mem_span_singleton]
   exact lcm_dvd_iff.symm
+
+lemma Ideal.exists_normalized_span_of_isPrincipal {R : Type*} [CommSemiring R]
+    [NormalizationMonoid R] (I : Ideal R) [I.IsPrincipal] :
+    ∃ x, normalize x = x ∧ I = Ideal.span {x} := by
+  obtain ⟨x, rfl⟩ := ‹I.IsPrincipal›
+  refine ⟨normalize x, normalize_idem x, le_antisymm ?_ ?_⟩ <;>
+  simp [Ideal.mem_span_singleton]
