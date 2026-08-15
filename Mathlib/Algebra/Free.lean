@@ -13,7 +13,6 @@ public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Util.CompileInductive
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Free constructions

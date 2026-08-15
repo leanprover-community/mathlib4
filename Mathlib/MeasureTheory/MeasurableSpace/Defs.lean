@@ -41,7 +41,7 @@ measurable space, σ-algebra, measurable function
 
 assert_not_exists Covariant MonoidWithZero
 
-open Set Encodable Function Equiv
+open Set Function
 
 variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
 
