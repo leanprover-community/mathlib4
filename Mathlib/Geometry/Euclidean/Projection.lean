@@ -6,7 +6,6 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
-public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
