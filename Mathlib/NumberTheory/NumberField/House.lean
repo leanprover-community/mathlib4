@@ -209,6 +209,7 @@ variable {p q : ℕ} (h0p : 0 < p) (hpq : p < q) (x : β × (K →+* ℂ) → �
 /-- `ξ` is the product of `x (l, r)` and the `r`-th basis element of the newBasis of `K`. -/
 private def ξ : β → 𝓞 K := fun l => ∑ r : K →+* ℂ, x (l, r) * (newBasis K r)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 include hxl in
 private theorem ξ_ne_0 : ξ K x ≠ 0 := by
