@@ -22,7 +22,7 @@ This file proves that eigenvalues of positive (semi)definite matrices are (nonne
 
 @[expose] public section
 
-open WithLp Matrix Unitary
+open Matrix Unitary
 open scoped ComplexOrder
 
 namespace Matrix
