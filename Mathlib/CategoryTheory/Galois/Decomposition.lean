@@ -33,8 +33,6 @@ is represented by a Galois object.
 
 -/
 
-public section
-
 universe u₁ u₂ w
 
 namespace CategoryTheory
@@ -45,7 +43,7 @@ variable {C : Type u₁} [Category.{u₂} C]
 
 namespace PreGaloisCategory
 
-section Decomposition
+public section Decomposition
 
 /-! ### Decomposition in connected components
 
@@ -265,6 +263,8 @@ private lemma subobj_selfProd_trans [Mono u] (b : F.obj A) : ∃ (f : A ≅ A), 
 
 end GaloisRepAux
 
+public section
+
 /-- The fiber of any object in a Galois category is represented by a Galois object. -/
 lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
     IsGalois A ∧ Function.Bijective (fun (f : A ⟶ X) ↦ F.map f a) := by
@@ -315,6 +315,8 @@ lemma natTrans_ext_of_isGalois {G : C ⥤ FintypeCat.{w}} {t s : F ⟶ G}
   ext X x
   obtain ⟨A, f, a, _, rfl⟩ := exists_hom_from_galois_of_fiber F X x
   rw [NatTrans.naturality_apply, NatTrans.naturality_apply, h A]
+
+end
 
 end GaloisRep
 
