@@ -295,15 +295,8 @@ def A : Matrix (Fin (m K * n K q)) (Fin (q * q)) (𝓞 K) :=
   fun i j ↦ RingOfIntegers.restrict _
   (fun _ ↦ isIntegral_cCoeffs_smul_systemCoeffs α' β' γ' q i j) ℤ
 
-/-- The value of an entry of `A` in `K`. Stated as a lemma so that proofs never have to unfold
-`RingOfIntegers.restrict`, whose anonymous constructor is not type-correct at reducible
-transparency now that `integralClosure` is not exposed. -/
-lemma algebraMap_A_apply (i : Fin (m K * n K q)) (j : Fin (q * q)) :
-    algebraMap (𝓞 K) K (A α' β' γ' q i j) = cCoeffs α' β' γ' q • systemCoeffs α' β' γ' q i j :=
-  rfl
-
-lemma val_A_apply (i : Fin (m K * n K q)) (j : Fin (q * q)) :
-    (A α' β' γ' q i j).val = cCoeffs α' β' γ' q • systemCoeffs α' β' γ' q i j :=
+lemma map_A : algebraMap (𝓞 K) K (A α' β' γ' q u t) =
+    cCoeffs α' β' γ' q • systemCoeffs α' β' γ' q u t :=
   rfl
 
 include α β σ hirr htriv habc in
@@ -611,7 +604,7 @@ include α β K σ α' β' γ' hirr htriv habc hq0 h2mq u t q in
 lemma house_matrixA_le :
     house ((algebraMap (𝓞 K) K) ((A α' β' γ' q) u t)) ≤
       (c₃ α' β' γ' ^ (n K q : ℝ) * (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2)) := by
-  rw [algebraMap_A_apply, house_cCoeffs_smul_eq_factorized]
+  rw [map_A, house_cCoeffs_smul_eq_factorized]
   have h₁ := @house_factorized_le_prod K _ α' β' γ' _ q u t
   have h₂ := @house_prod_le_smul_pow K _ α' β' γ' _ q u t
   have h₃ := @house_smul_pow_le_abs K _ α β σ α' β' γ' hirr htriv habc _ q hq0 u t h2mq
@@ -628,8 +621,7 @@ lemma A_ne_zero : A α' β' γ' q ≠ 0 := by
   let u : Fin _ := ⟨0, Nat.mul_pos (one_le_m K) (n_one_le q hq0 h2mq)⟩
   let t : Fin _ := ⟨0, mul_pos hq0 hq0⟩
   have H_eval : (A α' β' γ' q u t).val = 0 := by rw [H]; rfl
-  rw [val_A_apply] at H_eval
-  simp only [systemCoeffs, cCoeffs, zsmul_eq_mul, Int.cast_mul, Int.cast_pow] at H_eval
+  simp only [A, RingOfIntegers.restrict, zsmul_eq_mul, Int.cast_mul, Int.cast_pow] at H_eval
   obtain ⟨hα, _, hγ⟩ := alpha'_beta'_gamma'_ne_zero α β σ α' β' γ' hirr htriv habc
   have := β'_ne_zero α β σ α' β' γ' hirr habc q t
   revert H_eval; simp [c₁_ne_zero, hα, hγ]; grind
