@@ -46,4 +46,65 @@ example {L : Language.{u, v}} {α : Type u'} (φs : ℕ → L.BoundedFormulaω �
     L.BoundedFormulaω α 0 :=
   .iInf φs
 
+/-! ### The `L_{ω₁ω}` abbreviation chain stays extensible
+
+`Formulaω` and `Sentenceω` are routed through `BoundedFormulaω`, not stated directly as
+`FormulaInf ℕ` / `SentenceInf ℕ`. All four spellings denote the same types, but dot-notation
+resolution walks the chain one unfolding at a time and tries each head constant's namespace as
+it goes. Were the chain to bypass `BoundedFormulaω`, a downstream file could add operations to
+the `BoundedFormulaω` namespace and find them unreachable as `φ.op` on any formula or sentence —
+the errors read `The environment does not contain BoundedFormulaInf.op`, naming only the last
+namespace tried. These probes fail to elaborate if that regresses. -/
+
+section AbbrevChain
+
+variable {L : Language.{u, v}} {α : Type u'} {M : Type w} [L.Structure M] {n : ℕ}
+
+/-- Stands in for a downstream extension of the `L_{ω₁ω}` namespace. -/
+private def BoundedFormulaω.selfImp (φ : L.BoundedFormulaω α n) : L.BoundedFormulaω α n :=
+  φ.imp φ
+
+/-- Reachable by dot-notation on a bounded formula … -/
+example (φ : L.BoundedFormulaω α n) : L.BoundedFormulaω α n := φ.selfImp
+
+/-- … on a formula … -/
+example (φ : L.Formulaω α) : L.Formulaω α := φ.selfImp
+
+/-- … and on a sentence. -/
+example (φ : L.Sentenceω) : L.Sentenceω := φ.selfImp
+
+/-- The generic `BoundedFormulaInf` namespace remains reachable at the end of the chain, from
+every ω spelling: these are `BoundedFormulaInf.not`, not an ω-specific copy. -/
+example (φ : L.BoundedFormulaω α n) : L.BoundedFormulaω α n := φ.not
+
+example (φ : L.Formulaω α) : L.Formulaω α := φ.not
+
+example (φ : L.Sentenceω) : L.Sentenceω := φ.not
+
+/-- Realization still elaborates for a formula, and is the one generic recursion. -/
+example (φ : L.Formulaω α) (v : α → M) : Prop := φ.Realize v default
+
+example (φ : L.Formulaω α) (v : α → M) :
+    φ.Realize v default ↔ FormulaInf.Realize φ v := Iff.rfl
+
+/-- Realization still elaborates for a sentence. -/
+example (φ : L.Sentenceω) : Prop := SentenceInf.Realize φ M
+
+example (φ : L.Sentenceω) :
+    SentenceInf.Realize φ M ↔ φ.Realize (Empty.elim : Empty → M) default := Iff.rfl
+
+/-- `not` and `ex` carry `@[match_pattern]`, matching the finitary `BoundedFormula` API, so they
+are usable in pattern position rather than only as constructors' derived forms. -/
+example (φ : L.BoundedFormulaω α n) : Bool :=
+  match φ with
+  | BoundedFormulaInf.not _ => true
+  | _ => false
+
+example (φ : L.BoundedFormulaω α n) : Bool :=
+  match φ with
+  | BoundedFormulaInf.ex _ => true
+  | _ => false
+
+end AbbrevChain
+
 end FirstOrder.Language

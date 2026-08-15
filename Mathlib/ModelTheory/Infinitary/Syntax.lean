@@ -78,17 +78,24 @@ abbrev FormulaInf (ι : Type uι) (α : Type u') := L.BoundedFormulaInf ι α 0
 /-- An `L_{∞ω}` sentence: a formula with no free variables at all. -/
 abbrev SentenceInf (ι : Type uι) := L.FormulaInf ι Empty
 
-/-- An `L_{ω₁ω}` formula. -/
-abbrev Formulaω (α : Type u') := L.FormulaInf ℕ α
+/-- An `L_{ω₁ω}` formula.
 
-/-- An `L_{ω₁ω}` sentence. -/
-abbrev Sentenceω := L.SentenceInf ℕ
+Routed through `BoundedFormulaω` rather than stated as `FormulaInf ℕ α`, though the two are the
+same type. Dot-notation resolution walks an abbreviation chain one unfolding at a time, trying
+each head constant's namespace in turn, so this routing keeps declarations in a downstream
+`BoundedFormulaω` namespace reachable as `φ.op` on an `L_{ω₁ω}` formula while the generic
+`BoundedFormulaInf` namespace stays reachable at the end of the chain. -/
+abbrev Formulaω (α : Type u') := L.BoundedFormulaω α 0
+
+/-- An `L_{ω₁ω}` sentence. Routed through `Formulaω` for the reason given there. -/
+abbrev Sentenceω := L.Formulaω Empty
 
 variable {L} {ι : Type uι} {α : Type u'} {n : ℕ}
 
 namespace BoundedFormulaInf
 
 /-- The negation of an infinitary formula. -/
+@[match_pattern]
 protected def not (φ : L.BoundedFormulaInf ι α n) : L.BoundedFormulaInf ι α n :=
   φ.imp .falsum
 
@@ -106,6 +113,7 @@ instance : Inhabited (L.BoundedFormulaInf ι α n) :=
   ⟨⊥⟩
 
 /-- Existential quantification over the last bound variable. -/
+@[match_pattern]
 protected def ex (φ : L.BoundedFormulaInf ι α (n + 1)) : L.BoundedFormulaInf ι α n :=
   φ.not.all.not
 
