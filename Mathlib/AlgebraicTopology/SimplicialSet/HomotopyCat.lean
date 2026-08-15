@@ -547,6 +547,7 @@ namespace HomotopyCategory
 variable {X Y : SSet.{u}}
 
 /-- Constructor for objects of the homotopy category of a simplicial set. -/
+@[implicit_reducible]
 def mk (x : X _⦋0⦌) : X.HomotopyCategory := Truncated.HomotopyCategory.mk x
 
 /-- The bijection `X.HomotopyCategory ≃ X _⦋0⦌` when `X` is a simplicial set. -/
@@ -560,6 +561,11 @@ def objEquiv {X : SSet.{u}} : X.HomotopyCategory ≃ X _⦋0⦌ where
 def rec {motive : X.HomotopyCategory → Sort*}
     (mk : ∀ (x : X _⦋0⦌), motive (mk x)) (x : X.HomotopyCategory) : motive x :=
   mk _
+
+@[simp]
+lemma rec_mk {motive : X.HomotopyCategory → Sort*}
+    (mk : ∀ (x : X _⦋0⦌), motive (mk x)) (x : X _⦋0⦌) :
+    rec mk (.mk x) = mk x := rfl
 
 /-- Constructor for morphisms in the homotopy category of a simplicial set. -/
 def homMk {x y : X _⦋0⦌} (e : Edge x y) : mk x ⟶ mk y :=
