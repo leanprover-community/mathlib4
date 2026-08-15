@@ -563,6 +563,9 @@ theorem epsilon_zero_le_of_omega0_opow_le (h : ω ^ o ≤ o) : ε₀ ≤ o := by
 @[deprecated (since := "2026-02-02")]
 alias epsilon0_le_of_omega0_opow_le := epsilon_zero_le_of_omega0_opow_le
 
+theorem epsilon_le_veblen_of_ne_zero (ha : a ≠ 0) : ε_ b ≤ veblen a b :=
+  veblen_left_monotone b <| Order.one_le_iff_ne_zero.mpr ha
+
 @[simp]
 theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
   rw [epsilon_eq_deriv, deriv_fp (isNormal_opow one_lt_omega0)]
@@ -594,16 +597,13 @@ theorem epsilon_pos (o : Ordinal) : 0 < ε_ o :=
   veblen_pos
 
 theorem omega0_le_veblen_of_left_ne_zero
-    {a : Ordinal} (b : Ordinal) (ha : a ≠ 0) : ω ≤ veblen a b :=
-  calc ω ≤ veblen 1 b := omega0_lt_epsilon b |>.le
-    _ ≤ veblen a b := veblen_left_monotone b <| Order.one_le_iff_ne_zero.mpr ha
+    {a : Ordinal} (b : Ordinal) (ha : a ≠ 0) : ω ≤ veblen a b := by
+  grw [omega0_lt_epsilon b |>.le, epsilon_le_veblen_of_ne_zero ha]
 
 theorem omega0_le_veblen_of_right_ne_zero
-    (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) : ω ≤ veblen a b :=
-  calc ω = ω ^ 1 := opow_one _ |>.symm
-    _ ≤ ω ^ b := opow_le_opow_right omega0_pos <| Order.one_le_iff_ne_zero.mpr hb
-    _ = veblen 0 b := veblen_zero_apply b |>.symm
-    _ ≤ veblen a b := veblen_left_monotone b zero_le
+    (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) : ω ≤ veblen a b := by
+  grw [← opow_one ω, opow_le_opow_right omega0_pos <| Order.one_le_iff_ne_zero.mpr hb,
+    ← veblen_zero_apply b, show veblen .. ≤ _ from veblen_left_monotone b zero_le]
 
 theorem invVeblen₁_epsilon (h : o < ε_ o) : invVeblen₁ (ε_ o) = 1 :=
   invVeblen₁_veblen h
