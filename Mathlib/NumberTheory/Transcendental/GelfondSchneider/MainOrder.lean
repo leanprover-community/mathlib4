@@ -253,7 +253,7 @@ lemma coeffs_mulVec_A_eq : σ (cCoeffs α' β' γ' q) * ((Complex.log α)^ (-(k 
   simp only [Int.cast_mul, Int.cast_pow, map_sum, map_mul]
   apply Finset.sum_congr rfl
   intros x hx
-  rw [algebraMap_A_apply]
+  rw [map_A]
   ring
 
 include htriv habc in
