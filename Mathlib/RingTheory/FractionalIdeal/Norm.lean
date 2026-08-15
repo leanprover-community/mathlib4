@@ -15,14 +15,16 @@ public import Mathlib.RingTheory.Localization.NormTrace
 
 This file defines the absolute ideal norm of a fractional ideal `I : FractionalIdeal R⁰ K` where
 `K` is a fraction field of `R`. The norm is defined by
-`FractionalIdeal.absNorm I = Ideal.absNorm I.num / |Algebra.norm ℤ I.den|` where `I.num` is an
-ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
+`FractionalIdeal.absNorm I = Ideal.absNorm I.num / Ideal.absNorm (span {I.den})` where `I.num` is
+an ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
 
 ## Main definitions and results
 
 * `FractionalIdeal.absNorm`: the norm as a zero-preserving morphism with values in `ℚ`.
-* `FractionalIdeal.absNorm_eq'`: the value of the norm does not depend on the choice of
-  `I.num` and `I.den`.
+* `FractionalIdeal.absNorm_eq_absNorm_span'`: the value of the norm does not depend on the choice
+  of `I.num` and `I.den`.
+* `FractionalIdeal.absNorm_eq`: for `R` a finite free `ℤ`-module, the norm is given by
+  `Ideal.absNorm I.num / |Algebra.norm ℤ I.den|`.
 * `FractionalIdeal.abs_det_basis_change`: the norm is given by the determinant
   of the basis change matrix.
 * `FractionalIdeal.absNorm_span_singleton`: the norm of a principal fractional ideal is the
@@ -58,8 +60,8 @@ theorem absNorm_div_absNorm_span_eq {I : FractionalIdeal R⁰ K} (a : R⁰) (I�
     · exact LinearMap.ker_eq_bot.mpr (IsFractionRing.injective R K)
   all_goals simp [Ideal.absNorm_eq_zero_iff, nonZeroDivisors.coe_ne_zero]
 
-/-- The absolute norm of the fractional ideal `I`, defined via the absolute norm of ideals only
-(so without requiring `R` to be a free `ℤ`-module). -/
+/-- The absolute norm of the fractional ideal `I` extending by multiplicativity the absolute norm
+on (integral) ideals. -/
 noncomputable def absNorm : FractionalIdeal R⁰ K →*₀ ℚ where
   toFun I := (Ideal.absNorm I.num : ℚ) / (Ideal.absNorm (Ideal.span {(I.den : R)}) : ℚ)
   map_zero' := by
