@@ -404,7 +404,6 @@ instance StructuredArrow.final_post [IsFiltered C] {E : Type u₃} [Category.{v�
     (T : C ⥤ D) [T.Final] (S : D ⥤ E) [S.Final] : Final (post X T S) := by
   apply final_of_natIso (postIsoMap₂ X T S).symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `CostructuredArrow T d ⥤ CostructuredArrow (T ⋙ S) e` that `u : S.obj d ⟶ e`
 induces via `CostructuredArrow.map₂` is initial, if `T` and `S` are initial and the domain of `T` is
 filtered. -/
