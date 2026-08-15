@@ -40,7 +40,7 @@ variable {X : Type*} {mX : MeasurableSpace X} {V : Type*} [NormedAddCommGroup V]
 is finite. -/
 instance [NormedSpace ℝ V] [FiniteDimensional ℝ V] (μ : VectorMeasure X V) :
     IsFiniteMeasure μ.variation := by
-  let b := (Module.finBasis ℝ V).toGeneralSchauderBasis
+  let b := (Module.finBasis ℝ V).toUnconditionalSchauderBasis
   apply isFiniteMeasure_of_le (∑ i, ‖b i‖₊ • (μ.coord b i).variation)
   nth_rw 1 [sum_toSpanSingleton_coord_eq b μ]
   apply le_trans (variation_finsetSum_le _ _)

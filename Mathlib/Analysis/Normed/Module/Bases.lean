@@ -136,8 +136,8 @@ open SummationFilter
 variable [CompleteSpace 𝕜] [Finite β]
 
 /-- When there is a finite basis, it can be regarded as a generalized Schauder basis. -/
-def toGeneralSchauderBasis (b : Module.Basis β 𝕜 X) :
-    GeneralSchauderBasis β 𝕜 X (unconditional β) :=
+def toUnconditionalSchauderBasis (b : Module.Basis β 𝕜 X) :
+    UnconditionalSchauderBasis β 𝕜 X :=
   letI : Fintype β := Fintype.ofFinite β
   letI : FiniteDimensional 𝕜 X := b.finiteDimensional_of_finite
   { basis := b
@@ -146,12 +146,12 @@ def toGeneralSchauderBasis (b : Module.Basis β 𝕜 X) :
     expansion x := by simpa using hasSum_fintype (fun i ↦ b.coord i x • b i) }
 
 @[simp]
-lemma basis_toGeneralSchauderBasis (b : Module.Basis β 𝕜 X) :
-    b.toGeneralSchauderBasis.basis = b := rfl
+lemma basis_toUnconditionalSchauderBasis (b : Module.Basis β 𝕜 X) :
+    b.toUnconditionalSchauderBasis.basis = b := rfl
 
 @[simp]
-lemma coord_toGeneralSchauderBasis_eq_coord (b : Module.Basis β 𝕜 X) (i : β) (x : X) :
-    b.toGeneralSchauderBasis.coord i x = b.coord i x := rfl
+lemma coord_toUnconditionalSchauderBasis_eq_coord (b : Module.Basis β 𝕜 X) (i : β) (x : X) :
+    b.toUnconditionalSchauderBasis.coord i x = b.coord i x := rfl
 
 end Module.Basis
 
