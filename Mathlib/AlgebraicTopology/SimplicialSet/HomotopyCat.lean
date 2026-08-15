@@ -626,7 +626,7 @@ instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) 
     ext
     exact this.allEq _ _
 
-instance : Unique (Δ[0]).HomotopyCategory :=
+instance : Unique Δ[0].HomotopyCategory :=
   inferInstanceAs (Unique <| CategoryTheory.Quotient _)
 
 set_option backward.isDefEq.respectTransparency.types false in
