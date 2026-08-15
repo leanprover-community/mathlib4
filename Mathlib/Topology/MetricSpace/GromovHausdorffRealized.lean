@@ -32,9 +32,6 @@ it is compact, and one can find such a distance which is minimal. This distance 
 space structure on `X ⊕ Y`. The corresponding metric quotient is `OptimalGHCoupling X Y`.
 -/
 
-@[expose] public section
-
-
 noncomputable section
 
 universe u v w
@@ -80,7 +77,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The set of functions on `X ⊕ Y` that are candidates distances to realize the
 minimum of the Hausdorff distances between `X` and `Y` in a coupling. -/
-def candidates : Set (ProdSpaceFun X Y) :=
+@[expose] public def candidates : Set (ProdSpaceFun X Y) :=
   { f | (((((∀ x y : X, f (Sum.inl x, Sum.inl y) = dist x y) ∧
       ∀ x y : Y, f (Sum.inr x, Sum.inr y) = dist x y) ∧
       ∀ x y, f (x, y) = f (y, x)) ∧
@@ -238,7 +235,7 @@ set_option backward.privateInPublic.warn false in
 /-- We will then choose the candidate minimizing the Hausdorff distance. Except that we are not
 in a metric space setting, so we need to define our custom version of Hausdorff distance,
 called `HD`, and prove its basic properties. -/
-def HD (f : Cb X Y) :=
+@[expose] public def HD (f : Cb X Y) :=
   max (⨆ x, ⨅ y, f (inl x, inr y)) (⨆ y, ⨅ x, f (inl x, inr y))
 
 set_option backward.privateInPublic true in
@@ -248,7 +245,7 @@ minimum on the compact set `candidatesB` is attained. Since it is defined in ter
 infimum and supremum on `ℝ`, which is only conditionally complete, we will need all the time
 to check that the defining sets are bounded below or above. This is done in the next few
 technical lemmas. -/
-theorem HD_below_aux1 {f : Cb X Y} (C : ℝ) {x : X} :
+public theorem HD_below_aux1 {f : Cb X Y} (C : ℝ) {x : X} :
     BddBelow (range fun y : Y => f (inl x, inr y) + C) :=
   let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
   ⟨cf + C, forall_mem_range.2 fun _ => by grw [hcf (mem_range_self _)]⟩
@@ -263,7 +260,7 @@ private theorem HD_bound_aux1 [Nonempty Y] (f : Cb X Y) (C : ℝ) :
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
+public theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
     BddBelow (range fun x : X => f (inl x, inr y) + C) :=
   let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
   ⟨cf + C, forall_mem_range.2 fun _ => by grw [hcf (mem_range_self _)]⟩
@@ -368,12 +365,13 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 set_option linter.privateProof.warnIfUnnecessary false in
 /-- candidates give rise to elements of `BoundedContinuousFunction`s -/
-def candidatesBOfCandidates (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) : Cb X Y :=
+@[expose]
+public def candidatesBOfCandidates (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) : Cb X Y :=
   BoundedContinuousFunction.mkOfCompact ⟨f, private (candidates_lipschitz fA).continuous⟩
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-theorem candidatesBOfCandidates_mem (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) :
+public theorem candidatesBOfCandidates_mem (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) :
     candidatesBOfCandidates f fA ∈ candidatesB X Y :=
   fA
 
@@ -390,13 +388,14 @@ private theorem dist_mem_candidates :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The distance on `X ⊕ Y` as a candidate -/
-def candidatesBDist (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X]
+@[expose]
+public def candidatesBDist (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X]
     [MetricSpace Y] [CompactSpace Y] [Nonempty Y] : Cb X Y :=
   candidatesBOfCandidates _ dist_mem_candidates
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-theorem candidatesBDist_mem_candidatesB :
+public theorem candidatesBDist_mem_candidatesB :
     candidatesBDist X Y ∈ candidatesB X Y :=
   candidatesBOfCandidates_mem _ _
 
@@ -453,6 +452,8 @@ private theorem HD_optimalGHDist_le (g : Cb X Y) (hg : g ∈ candidatesB X Y) :
     HD (optimalGHDist X Y) ≤ HD g :=
   let ⟨_, Z2⟩ := Classical.choose_spec (exists_minimizer X Y)
   Z2 g hg
+
+@[expose] public section
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -529,6 +530,8 @@ theorem hausdorffDist_optimal_le_HD {f} (h : f ∈ candidatesB X Y) :
     rcases exists_lt_of_csInf_lt (range_nonempty _) I with ⟨r', ⟨z', rfl⟩, hr'⟩
     refine ⟨optimalGHInjl X Y z', mem_range_self _, le_of_lt ?_⟩
     rwa [dist_comm]
+
+end
 
 end Consequences
 
