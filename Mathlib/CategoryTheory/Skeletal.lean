@@ -35,11 +35,11 @@ definitionally on the nose which is convenient in practice.
   skeleton.
 * `Functor.mapSkeleton (F : C ⥤ D) : Skeleton C ⥤ Skeleton D`: the functor induced by `F` on
   skeletons.
-* `Functor.isEquivalence_iff_exists_isoCat_mapSkeleton`: `F` is an equivalence if and only if
-  the induced functor on skeletons is the functor of some `IsoCat (Skeleton C) (Skeleton D)`.
-* `Functor.tfae_isEquivalence_bundledEquivalence_mapSkeletonIsoCat`: a three-way `TFAE` relating
-  `F.IsEquivalence`, bundled equivalences `C ≌ D` with functor `F`, and `IsoCat` data on
-  skeletons induced by `F`.
+* `Functor.isEquivalence_iff_mapSkeletonIsIso`: `F` is an equivalence if and only if the induced
+  functor on skeletons is an isomorphism.
+* `Functor.tfae_isEquivalence_bundledEquivalence_mapSkeletonIsIso`: a three-way `TFAE` relating
+  `F.IsEquivalence`, the statement that `F` is the functor of a bundled equivalence `C ≌ D`, and
+  the statement that the induced functor on skeletons is an isomorphism.
 * `Equivalence.skeletonIsoCat (e : C ≌ D) : IsoCat (Skeleton C) (Skeleton D)`: the isomorphism
   between skeletons induced by an equivalence.
 * `ThinSkeleton C`: the thin skeleton of a category, defined by quotienting objects by
@@ -261,32 +261,31 @@ instance mapSkeleton_isIso_of_isEquivalence [F.IsEquivalence] : F.mapSkeleton.Is
   full := inferInstance
   bijective_obj := ⟨F.mapSkeleton_injective, F.mapSkeleton_surjective⟩
 
-/-- A functor is an equivalence if and only if its induced functor on skeletons is a categorical
-isomorphism. -/
-theorem isEquivalence_iff_exists_isoCat_mapSkeleton :
-    F.IsEquivalence ↔ ∃ e : IsoCat (Skeleton C) (Skeleton D), e.functor = F.mapSkeleton := by
+/-- A functor is an equivalence if and only if its induced functor on skeletons is an isomorphism.
+-/
+theorem isEquivalence_iff_mapSkeletonIsIso :
+    F.IsEquivalence ↔ F.mapSkeleton.IsIso := by
   constructor
-  · intro F_isEquiv
-    use F.mapSkeleton.asIsomorphism
-    rfl
-  · rintro ⟨e,e_functor_eq_mapSkeleton⟩
-    refine @Functor.isEquivalence_of_comp_right _ _ _ _ _ _ F (toSkeletonFunctor D)
-      (inferInstance) ?_
-    refine @isEquivalence_of_iso _ _ _ _ _ _ (toSkeletonFunctorCompMapSkeletonIso F) ?_
-    exact @Functor.isEquivalence_trans _ _ _ _ _ _ (toSkeletonFunctor C) (F.mapSkeleton)
-      inferInstance (e_functor_eq_mapSkeleton ▸ e.toEquivalence.isEquivalence_functor)
+  · intro _
+    infer_instance
+  · intro h_mapSkeleton_isIso
+    have h₀ : F.mapSkeleton.IsEquivalence := inferInstance
+    have h₁ : (toSkeletonFunctor C ⋙ F.mapSkeleton).IsEquivalence := inferInstance
+    have h₂ : (F ⋙ toSkeletonFunctor D).IsEquivalence :=
+      isEquivalence_of_iso (toSkeletonFunctorCompMapSkeletonIso F)
+    exact isEquivalence_of_comp_right F (toSkeletonFunctor D)
 
 /-- The following are equivalent for a functor `F : C ⥤ D`: `F` is an equivalence; `F` is the
-functor of a bundled equivalence `C ≌ D`; and the induced functor on skeletons is a categorical
-isomorphism. -/
-theorem tfae_isEquivalence_bundledEquivalence_mapSkeletonIsoCat :
+functor of a bundled equivalence `C ≌ D`; and the induced functor on skeletons is an isomorphism.
+-/
+theorem tfae_isEquivalence_bundledEquivalence_mapSkeletonIsIso :
     List.TFAE
       [ F.IsEquivalence
       , ∃ e : C ≌ D, e.functor = F
-      , ∃ e : IsoCat (Skeleton C) (Skeleton D), e.functor = F.mapSkeleton
+      , F.mapSkeleton.IsIso
       ] := by
   tfae_have 1 ↔ 2 := isEquivalence_iff_exists_equivalence F
-  tfae_have 1 ↔ 3 := isEquivalence_iff_exists_isoCat_mapSkeleton F
+  tfae_have 1 ↔ 3 := isEquivalence_iff_mapSkeletonIsIso F
   tfae_finish
 
 end Functor
