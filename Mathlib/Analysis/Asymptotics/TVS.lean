@@ -67,7 +67,7 @@ and `Asymptotics.IsBigOTVS` was defined in a similar manner.
 
 @[expose] public section
 
-open Set Filter Asymptotics Metric Topology
+open Set Filter Asymptotics Metric
 open scoped Topology Pointwise ENNReal NNReal
 
 namespace Asymptotics
