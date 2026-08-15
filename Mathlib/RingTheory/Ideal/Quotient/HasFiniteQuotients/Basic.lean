@@ -21,7 +21,7 @@ quotient `R ⧸ I` is finite.
 - `Ring.HasFiniteQuotients.of_module_finite`: Assume that `R` has finite quotients and that `S` is
   a domain and a finite `R`-module. Then `S` has finite quotients.
 - `Ring.HasFiniteQuotients.of_moduleFinite_int`: A domain that is a finite `ℤ`-module has finite
-  quotients (a lemma, not an instance: see its docstring).
+  quotients.
 
 -/
 
@@ -101,10 +101,7 @@ instance : HasFiniteQuotients ℤ where
     exact inferInstanceAs <| Finite (ℤ ⧸ Ideal.span {n})
 
 /-- A domain that is a finite `ℤ`-module has finite quotients.
-
-Not an instance: `Module.Finite ℤ R` is expensive to *refute*, so a global instance keyed on it
-makes every failing `HasFiniteQuotients R` search slow. Provide it explicitly (as an instance or a
-`have`/`letI`) for the rings that need it. -/
+This cannot be an instance since it is very slow to fail. -/
 theorem of_moduleFinite_int [IsDomain R] [Module.Finite ℤ R] : HasFiniteQuotients R :=
   .of_module_finite ℤ R
 
