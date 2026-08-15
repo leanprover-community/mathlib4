@@ -291,23 +291,23 @@ theorem radius_regularizedHGFunSeries_ge_one (h : a.card = b.card + 1) :
     rw [radius_regularizedHGFunSeries_eq_top_of_finite hj h']
     simp
 
-theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (x : ℂ) :
-    regularizedHGFun 0 {-(n : ℂ) + 1} x = x ^ n * regularizedHGFun 0 {(n : ℂ) + 1} x := by
+theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (z : ℂ) :
+    regularizedHGFun 0 {-(n : ℂ) + 1} z = z ^ n * regularizedHGFun 0 {(n : ℂ) + 1} z := by
   unfold regularizedHGFun FormalMultilinearSeries.sum
   conv_lhs =>
     rw [← ((regularizedHGFunSeries 0 {-(n : ℂ) + 1}).summable (by simp)).sum_add_tsum_nat_add n]
-  suffices ∑ i ∈ Finset.range n, x ^ i * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} i +
-      ∑' i, x ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) =
-      x ^ n * ∑' i, x ^ i * regularizedHGFunCoeff 0 {(n : ℂ) + 1} i by
+  suffices ∑ i ∈ Finset.range n, z ^ i * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} i +
+      ∑' i, z ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) =
+      z ^ n * ∑' i, z ^ i * regularizedHGFunCoeff 0 {(n : ℂ) + 1} i by
     simpa
   calc
-    _ = 0 + ∑' i, x ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
+    _ = 0 + ∑' i, z ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
       congrm $(Finset.sum_eq_zero fun i hi ↦ mul_eq_zero_of_right _ ?_) + _
       refine regularizedHGFunCoeff_eq_zero_right _ _ _ (n - i - 1) ?_
       rw [Multiset.mem_singleton]
       norm_cast
       grind
-    _ = x ^ n * ∑' i, x ^ i * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
+    _ = z ^ n * ∑' i, z ^ i * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
       simp_rw [zero_add, ← tsum_mul_left]
       congr with i
       ring
