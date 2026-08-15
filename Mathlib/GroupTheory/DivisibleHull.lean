@@ -301,8 +301,8 @@ instance : LinearOrder (DivisibleHull M) where
     induction b with | mk mb sb
     simp_rw [mk_le_mk]
     exact le_total _ _
-  toDecidableEq := @decidableEqOfDecidableLE _ _ inferInstance
-  toDecidableLT := @decidableLTOfDecidableLE _ _ inferInstance
+  toDecidableEq := decidableEqOfDecidableLE
+  toDecidableLT := decidableLTOfDecidableLE
 
 @[simp]
 theorem mk_lt_mk {m m' : M} {s s' : ℕ+} : mk m s < mk m' s' ↔ s'.val • m < s.val • m' := by

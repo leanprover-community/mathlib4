@@ -551,7 +551,7 @@ instance : LE (ValueGroupWithZero R) where
 theorem ValueGroupWithZero.mk_le_mk (x y : R) (t s : posSubmonoid R) :
     ValueGroupWithZero.mk x t ≤ ValueGroupWithZero.mk y s ↔ x * s ≤ᵥ y * t := Iff.rfl
 
-instance : PartialOrder (ValueGroupWithZero R) where
+instance : LinearOrder (ValueGroupWithZero R) where
   le_refl := ValueGroupWithZero.ind fun _ _ => .rfl
   le_trans a b c hab hbc := by
     induction a using ValueGroupWithZero.ind with | mk a₁ a₂
@@ -569,8 +569,6 @@ instance : PartialOrder (ValueGroupWithZero R) where
     induction a using ValueGroupWithZero.ind
     induction b using ValueGroupWithZero.ind
     exact ValueGroupWithZero.sound hab hba
-
-instance : LinearOrder (ValueGroupWithZero R) where
   le_total a b := by
     induction a using ValueGroupWithZero.ind
     induction b using ValueGroupWithZero.ind
