@@ -326,7 +326,7 @@ abbrev _root_.CategoryTheory.GradedObject.HasLeftTensor₃ObjExt (j : I) := Pres
   (Discrete.functor fun (i : { i : (I × I × I) | i.1 + i.2.1 + i.2.2 = j }) ↦
     (((mapTrifunctor (bifunctorComp₂₃ (curriedTensor C)
       (curriedTensor C)) I I I).obj X₁).obj X₂).obj X₃ i)
-   ((curriedTensor C).obj Z)
+    ((curriedTensor C).obj Z)
 
 variable {X₁ X₂ X₃}
 variable [HasTensor X₂ X₃] [HasTensor X₁ (tensorObj X₂ X₃)]
@@ -610,8 +610,8 @@ instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n
   refine Finite.of_injective (fun ⟨⟨i₁, i₂, i₃⟩, (hi : i₁ + i₂ + i₃ = n)⟩ =>
     (⟨⟨i₁, by lia⟩, ⟨i₂, by lia⟩, ⟨i₃, by lia⟩⟩ :
       Fin (n + 1) × Fin (n + 1) × Fin (n + 1))) ?_
-  rintro ⟨⟨_, _, _⟩, _⟩ ⟨⟨_, _, _⟩, _⟩ h
-  simpa using h
+  intro _ _ h
+  exact Subtype.ext (congrArg (fun x => (x.1.1, x.2.1.1, x.2.2.1)) h)
 
 /-!
 The monoidal category structure on `GradedObject ℕ C` can be inferred

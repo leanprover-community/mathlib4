@@ -161,13 +161,13 @@ theorem dp_smul {r : R} {n : ℕ} {m : M} : dp R n (r • m) = r ^ n • dp R n 
 theorem dp_null {n : ℕ} : dp R n (0 : M) = if n = 0 then 1 else 0 := by
   cases Nat.eq_zero_or_pos n with
   | inl hn =>
-    rw [if_pos hn, hn, dp_zero]
+    rw [ite_eq_left hn, hn, dp_zero]
   | inr hn =>
-    rw [if_neg (ne_of_gt hn), ← zero_smul R (0 : M), dp_smul]
+    rw [ite_eq_right (ne_of_gt hn), ← zero_smul R (0 : M), dp_smul]
     rw [zero_pow (Nat.pos_iff_ne_zero.mp hn), zero_smul]
 
 theorem dp_null_of_ne_zero {n : ℕ} (hn : n ≠ 0) : dp R n (0 : M) = 0 := by
-  rw [dp_null, if_neg hn]
+  rw [dp_null, ite_eq_right hn]
 
 theorem dp_mul {n p : ℕ} {m : M} :
     dp R n m * dp R p m = (n + p).choose n • dp R (n + p) m := by
@@ -495,11 +495,11 @@ theorem LinearEquiv.coe_lift_symm (g : M ≃ₗ[R] N) :
     (mapEquiv g).symm = map R g.symm.toLinearMap := rfl
 
 theorem mapEquiv_refl : mapEquiv (LinearEquiv.refl R M) = AlgEquiv.refl :=
-  AlgEquiv.coe_algHom_injective map_id
+  AlgEquiv.coe_toAlgHom_injective map_id
 
 theorem mapEquiv_trans (g : M ≃ₗ[R] N) (h : N ≃ₗ[R] P) :
     (mapEquiv g).trans (mapEquiv h) = mapEquiv (g.trans h) :=
-  AlgEquiv.coe_algHom_injective (map_comp _ _).symm
+  AlgEquiv.coe_toAlgHom_injective (map_comp _ _).symm
 
 end IsScalarTower
 

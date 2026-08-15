@@ -122,24 +122,8 @@ theorem card_eq_finrank' : Nat.card G = Module.finrank A B := by
   have := IsDomain.of_faithfulSMul A B
   let := FractionRing.liftAlgebra A (FractionRing B)
   let := IsFractionRing.mulSemiringAction G B (FractionRing B)
-  have : Algebra.IsIntegral A B := IsGaloisGroup.isInvariant.isIntegral A B G
   rw [IsGaloisGroup.card_eq_finrank G (FractionRing A) (FractionRing B),
-    Algebra.IsAlgebraic.finrank_of_isFractionRing A (FractionRing A) B (FractionRing B)]
-
-attribute [local instance] FractionRing.liftAlgebra in
-/-- If `G` is a finite Galois group for `B/A`, then `G` is isomorphic to `Gal(B/A)`. -/
-@[simps!] noncomputable def mulEquivAlgEquiv : G ≃* Gal(B/A) :=
-  MulEquiv.ofBijective (MulSemiringAction.toAlgAut G A B) (by
-    have := IsDomain.of_faithfulSMul A B
-    letI K := FractionRing A
-    letI L := FractionRing B
-    letI := IsFractionRing.mulSemiringAction G B L
-    have := isGalois G K L
-    have := finiteDimensional G K L
-    refine .of_comp_left ?_ (IsFractionRing.fieldEquivOfAlgEquivHom_injective A B K L)
-    rw [Nat.bijective_iff_injective_and_card, card_eq_finrank G K L,
-      IsGalois.card_aut_eq_finrank K L]
-    exact ⟨fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, rfl⟩)
+    IsFractionRing.finrank_eq A (FractionRing A) B (FractionRing B)]
 
 @[simp]
 theorem map_mulEquivAlgEquiv_fixingSubgroup [IsGaloisGroup G K L] (F : IntermediateField K L) :
@@ -292,6 +276,7 @@ noncomputable def intermediateFieldEquivSubgroup [Finite G] :
 theorem ofDual_intermediateFieldEquivSubgroup_apply [Finite G] {F} :
     (intermediateFieldEquivSubgroup G K L F).ofDual = fixingSubgroup G (F : Set L) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem intermediateFieldEquivSubgroup_symm_apply [Finite G] {H} :
     (intermediateFieldEquivSubgroup G K L).symm H = FixedPoints.intermediateField H.ofDual := by
   obtain ⟨H, rfl⟩ := OrderDual.toDual.surjective H
@@ -317,7 +302,7 @@ theorem fixedPoints_fixingSubgroup [Finite G] :
 
 /-- If `G` acts as a Galois group on `L/K` and the subgroup `H` acts as a Galois group on `L/B`,
 then the fixed points of `H` equals the range of `algebraMap B L`. -/
-theorem fixedPoints_eq_range_algebraMap [Finite G] (B : Type*)
+theorem fixedPoints_eq_range_algebraMap (B : Type*)
     [CommSemiring B] [Algebra B L] [IsGaloisGroup H B L] :
     (FixedPoints.intermediateField H : IntermediateField K L) = Set.range (algebraMap B L) := by
   ext
@@ -350,20 +335,7 @@ theorem fixingSubgroup_range_algebraMap [Finite G] (A B C : Type*) (H : Subgroup
   let : MulSemiringAction G L := IsFractionRing.mulSemiringAction G C L
   have : IsGaloisGroup H (FractionRing B) L := IsGaloisGroup.toFractionRing H B C
   rw [← fixingSubgroup_range_algebraMap' G K L H (FractionRing B)]
-  ext g
-  simp only [mem_fixingSubgroup_iff, Set.mem_range]
-  refine ⟨?_, ?_⟩
-  · rintro h _ ⟨x, rfl⟩
-    have {x} : g • (algebraMap B L) x = (algebraMap B L) x := by
-      rw [IsScalarTower.algebraMap_apply B C L, ← algebraMap.smul', h _ ⟨x, rfl⟩]
-    obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective B x
-    simp only [map_div₀, ← IsScalarTower.algebraMap_apply, smul_div₀', this]
-  · rintro h _ ⟨x, rfl⟩
-    apply FaithfulSMul.algebraMap_injective C L
-    rw [algebraMap.smul']
-    apply h
-    use algebraMap B (FractionRing B) x
-    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+  exact IsFractionRing.fixingSubgroup_range_algebraMap G (FractionRing B) L
 
 open Pointwise in
 /-- If `G` is a finite Galois group for `L/K`, `H` is a Galois group for `L/E`, and `E/K` is
@@ -433,11 +405,11 @@ theorem algebraMap_quotientMulEquiv_smul [Finite G] [Finite G'] (N : Subgroup G)
     [MulSemiringAction G C] [IsGaloisGroup G A C] [IsGaloisGroup N B C] [MulSemiringAction G' B]
     [IsGaloisGroup G' A B] (g : G) (x : B) :
     algebraMap B C (quotientMulEquiv G G' A B C N g • x) = g • algebraMap B C x := by
-  haveI : IsDomain B := (FaithfulSMul.algebraMap_injective B C).isDomain
-  letI := mulSemiringActionOfNormal G B C N
-  letI := mulSemiringActionQuotient G B C N
-  haveI := smulCommClassQuotient G A B C N
-  haveI := quotient G A B C N
+  have : IsDomain B := (FaithfulSMul.algebraMap_injective B C).isDomain
+  let := mulSemiringActionOfNormal G B C N
+  let := mulSemiringActionQuotient G B C N
+  have := smulCommClassQuotient G A B C N
+  have := quotient G A B C N
   rw [← algebraMap_smulOfNormal G B C N g x]
   congr
   apply mulEquivCongr_apply_smul
@@ -488,6 +460,12 @@ theorem restrictHom_surjective [Finite G] [Finite G'] [MulSemiringAction G C]
     [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] :
     Function.Surjective (restrictHom G G' A B C) := by
   simpa [restrictHom] using QuotientGroup.mk_surjective
+
+open Pointwise in
+theorem restrictHom_smul_under [Finite G] [Finite G'] [MulSemiringAction G C]
+    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] (g : G) (I : Ideal C) :
+    restrictHom G G' A B C g • I.under B = (g • I).under B := by
+  simp [Ideal.ext_iff, Ideal.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv]
 
 end Domain
 

@@ -61,7 +61,7 @@ namespace MeasureTheory
 
 variable {Ω : Type*} {mΩ₀ mΩ : MeasurableSpace Ω} {P : Measure[mΩ₀] Ω} {X Y : Ω → ℝ≥0∞}
 
-open Classical in
+open scoped Classical in
 /-- Conditional (Lebesgue) expectation of a function, with notation `P⁻[X|mΩ]`.
 
 It is defined as `0` if either `¬ mΩ ≤ mΩ₀` or `hm : mΩ ≤ mΩ₀` but `¬ SigmaFinite (P.trim hm)`.
@@ -95,10 +95,10 @@ meta def condLExpUnexpander : Lean.PrettyPrinter.Unexpander
 #check P⁻[X|mΩ] (sorry : Ω)
 
 theorem condLExp_of_not_le (hm_not : ¬mΩ ≤ mΩ₀) : P⁻[X|mΩ] = 0 := by
-  rw [condLExp, dif_neg hm_not]
+  rw [condLExp, dite_eq_right hm_not]
 
 theorem condLExp_of_not_sigmaFinite (hm : mΩ ≤ mΩ₀) (hμm_not : ¬SigmaFinite (P.trim hm)) :
-    P⁻[X|mΩ] = 0 := by simp [condLExp, dif_pos hm, hμm_not]
+    P⁻[X|mΩ] = 0 := by simp [condLExp, dite_eq_left hm, hμm_not]
 
 theorem condLExp_eq_self (hm : mΩ ≤ mΩ₀) (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
     (hX : Measurable[mΩ] X) : P⁻[X|mΩ] = X := by
