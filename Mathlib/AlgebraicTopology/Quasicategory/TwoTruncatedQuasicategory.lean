@@ -12,7 +12,7 @@ public import Mathlib.AlgebraicTopology.Quasicategory.TwoTruncated
 # The truncation of a quasicategory
 
 In this file, we show that if `X : SSet` is a quasicategory, then
-`((truncation 2).obj X)` satisfy the property `SSet.Truncated.Quasicategory₂`.
+`((truncation 2).obj X)` satisfies the property `SSet.Truncated.Quasicategory₂`.
 
 -/
 

@@ -139,6 +139,11 @@ theorem of_eq :
     of V = (Quiver.Symmetrify.of ⋙q (Paths.of (Quiver.Symmetrify V))).comp
       (Quotient.functor <| @redStep V _).toPrefunctor := rfl
 
+/-- Induction principle for proving a property for all the morphisms
+in the free groupoid of a quiver `V`: it suffices to prove the property
+for morphisms `(of V).map f` coming for the quiver `V` and their
+inverses, and that the property is multiplicative (i.e. stable under
+composition and satisfied by identities). -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 lemma hom_rec {motive : ∀ {x y : Quiver.FreeGroupoid V}, (x ⟶ y) → Prop}
     (of_map : ∀ {x y : V} (f : x ⟶ y), motive ((of V).map f))
