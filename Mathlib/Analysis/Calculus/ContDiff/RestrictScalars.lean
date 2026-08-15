@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 /-!
-### Restricting Scalars in Iterated Fréchet Derivatives
+# Restricting Scalars in Iterated Fréchet Derivatives
 
 This file establishes standard theorems on restriction of scalars for iterated Fréchet derivatives,
 comparing iterated derivatives with respect to a field `𝕜'` to iterated derivatives with respect to

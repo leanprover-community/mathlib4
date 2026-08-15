@@ -50,7 +50,7 @@ Instances for `AddOpposite`, `MulOpposite`, `ULift`, `Subsemiring`, `Subring`, `
 kleene algebra, idempotent semiring
 -/
 
-@[expose] public section
+public section
 
 open Function
 
