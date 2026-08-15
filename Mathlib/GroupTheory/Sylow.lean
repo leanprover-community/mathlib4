@@ -761,9 +761,8 @@ theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
         apply lt_of_le_of_ne (hf' x).2
         grind [Nat.pow_right_inj hp.one_lt]
     refine ⟨.ofStrictMono (Fin.snoc f' T) hf, fun K hK ↦ ?_, fun x ↦ ?_⟩
-    · rw [Set.sdiff_subset_iff, Set.singleton_union] at hsf'
-      rw [OrderEmbedding.coe_ofStrictMono, Fin.range_snoc]
-      exact hsf' hK
+    · rw [OrderEmbedding.coe_ofStrictMono, Fin.range_snoc]
+      exact Set.sdiff_singleton_subset_iff.mp hsf' hK
     · rcases x.eq_castSucc_or_eq_last with ⟨x, rfl⟩ | rfl
       · simp [(hf' x).1, (hf' x).2.trans hTH]
       · simp [hTcard, hTH]
