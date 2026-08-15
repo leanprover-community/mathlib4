@@ -128,22 +128,44 @@ theorem primeCompl_bot [Nontrivial α] [NoZeroDivisors α] :
   ext
   simp
 
-/-- The elements lying outside every prime ideal in an indexed family form a submonoid. -/
-def iInfPrimeCompl {ι : Type*} (P : ι → Ideal α) [∀ i, (P i).IsPrime] : Submonoid α :=
-  ⨅ i, (P i).primeCompl
+/-- The elements lying outside every ideal in a set of prime ideals form a submonoid. -/
+def iInfPrimeCompl {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.IsPrime) : Submonoid α :=
+  ⨅ P : S, P.val.primeCompl (hp := hS P.val P.prop)
 
-lemma iInfPrimeCompl_def {ι : Type*} (P : ι → Ideal α) [∀ i, (P i).IsPrime] :
-    iInfPrimeCompl P = ⨅ i, (P i).primeCompl := rfl
-
-@[simp]
-theorem mem_iInfPrimeCompl_iff {ι : Type*} (P : ι → Ideal α) [∀ i, (P i).IsPrime] {x : α} :
-    x ∈ iInfPrimeCompl P ↔ ∀ i, x ∉ P i := by
-  simp [iInfPrimeCompl]
+lemma iInfPrimeCompl_def {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.IsPrime) :
+    iInfPrimeCompl hS = ⨅ P : S, P.val.primeCompl (hp := hS P.val P.prop) := rfl
 
 @[simp]
-theorem iInfPrimeCompl_eq_PrimeCompl {ι : Type*} [Nonempty ι] (P : Ideal α) [P.IsPrime] :
-    iInfPrimeCompl (fun _ : ι ↦ P) = P.primeCompl := by
-  rw [iInfPrimeCompl_def, iInf_const]
+theorem mem_iInfPrimeCompl_iff {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.IsPrime) {x : α} :
+    x ∈ iInfPrimeCompl hS ↔ ∀ P ∈ S, x ∉ P := by simp [iInfPrimeCompl_def]
+
+@[simp]
+theorem iInfPrimeCompl_empty :
+    iInfPrimeCompl (by simp : ∀ P ∈ (∅ : Set (Ideal α)), P.IsPrime) = ⊤ := by
+  ext
+  simp
+
+@[simp]
+theorem iInfPrimeCompl_singleton (P : Ideal α) [P.IsPrime] :
+    iInfPrimeCompl (S := {P}) (by simp_all) = P.primeCompl := by
+  ext
+  simp
+
+theorem iInfPrimeCompl_union {S T : Set (Ideal α)} (hST : ∀ P ∈ S ∪ T, P.IsPrime) :
+    iInfPrimeCompl hST = iInfPrimeCompl (fun P hP ↦ hST P (Or.inl hP)) ⊓
+    iInfPrimeCompl (fun P hP ↦ hST P (Or.inr hP)) := by
+  aesop
+
+theorem iInfPrimeCompl_le_primeCompl {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.IsPrime)
+    {P : Ideal α} (hP : P ∈ S) : iInfPrimeCompl hS ≤ P.primeCompl (hp := hS P hP) :=
+  fun _ hx ↦ (mem_iInfPrimeCompl_iff hS).mp hx P hP
+
+theorem iInfPrimeCompl_antitone {S T : Set (Ideal α)} (hP : ∀ P ∈ S ∪ T, P.IsPrime) (hST : S ⊆ T) :
+    iInfPrimeCompl (by simp_all : ∀ P ∈ T, P.IsPrime) ≤
+    iInfPrimeCompl (by simp_all  : ∀ P ∈ S, P.IsPrime) := by
+  intro x hx
+  rw [mem_iInfPrimeCompl_iff] at hx ⊢
+  exact fun P hp ↦ hx P (hST hp)
 
 end Ideal
 

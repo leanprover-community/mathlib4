@@ -23,8 +23,8 @@ This file defines the subalgebra of `S`-integers of `K` and the subgroup of `S`-
 
 * `Set.integer`: `S`-integers.
 * `Set.unit`: `S`-units.
-* `Set.submonoid`: the submonoid of non-zero elements of `R` that are not contained in any prime
-    ideal away from `S`.
+* `Localization.submonoid`: the submonoid of non-zero elements of `R` that are not contained in any
+    prime ideal away from `S`.
 
 ## Main statements
 
@@ -59,12 +59,14 @@ open scoped nonZeroDivisors
 
 universe u v
 
-variable {R : Type u} [CommRing R] [IsDedekindDomain R]
+variable {R : Type u} [CommRing R]
   (S : Set <| HeightOneSpectrum R) (K : Type v) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-! ## `S`-integers -/
 
 namespace Set
+
+variable [IsDedekindDomain R]
 
 /-- The `R`-subalgebra of `S`-integers of `K`. -/
 @[simps!]
@@ -84,23 +86,23 @@ theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv
     v.valuation K x ≤ 1 :=
   x.property v hv
 
-/-- The submonoid of non-zero elements of `R` that are not contained in any prime ideal away from
-    `S`. -/
-def submonoid : Submonoid R :=
-  Ideal.iInfPrimeCompl (fun v : {v : HeightOneSpectrum R | v ∉ S} ↦ v.1.asIdeal) ⊓
-    nonZeroDivisors R
-
-omit [IsDedekindDomain R] in
-theorem submonoid_eq_primeCompl (P : HeightOneSpectrum R) :
-    ({v | v ≠ P}).submonoid = Ideal.primeCompl P ⊓ nonZeroDivisors R := by
-  ext
-  simp [Set.submonoid]
-
 end Set
+
+/-- The submonoid of non-zero elements of `R` that are not contained in any non-zero prime ideal
+    away from `S`. -/
+def Localization.submonoid : Submonoid R := Ideal.iInfPrimeCompl
+  (S := (fun v : HeightOneSpectrum R ↦ v.asIdeal) '' Sᶜ)
+  (by rintro _ ⟨v, _, rfl⟩; exact v.isPrime) ⊓ nonZeroDivisors R
+
+@[simp]
+lemma Localization.submonoid_eq_primeCompl (P : HeightOneSpectrum R) :
+    submonoid {v | v ≠ P} = Ideal.primeCompl P ⊓ nonZeroDivisors R := by
+  ext
+  simp [Localization.submonoid]
 
 namespace IsDedekindDomain
 
-variable (R)
+variable (R) [IsDedekindDomain R]
 
 /-- If `S` is the whole set of places of `K`, then the `S`-integers are the whole of `K`. -/
 @[simp] lemma integer_univ : (Set.univ : Set (HeightOneSpectrum R)).integer K = ⊤ := by
@@ -118,7 +120,7 @@ just `R` itself, via `Algebra.botEquivOfInjective` and `IsFractionRing.injective
 
 open Ideal IsDedekindDomain.HeightOneSpectrum Set in
 lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))] :
-    ∀ z : S.integer K, ∃ x : R × S.submonoid,
+    ∀ z : S.integer K, ∃ x : R × Localization.submonoid S,
     z * algebraMap R (S.integer K) x.2 = algebraMap R (S.integer K) x.1 := by
   intro z
   simp only [Prod.exists, Subtype.exists]
@@ -164,12 +166,12 @@ lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))] :
       mem_range.mp <| mem_integers_of_valuation_le_one (K := K) (algebraMap R K α * z)
         hαz_valuation_le_one
   refine ⟨β, α, ?_, SetLike.coe_eq_coe.mp hβ⟩
-  -- we are left to prove that `α ∈ S.submonoid`, i.e. that `α` is non-zero and not contained in any
-  -- prime ideal not in `S`.
-  simp only [submonoid, Submonoid.mem_inf, mem_iInfPrimeCompl_iff, Subtype.forall,
+  -- we are left to prove that `α ∈ Localization.submonoid S`, i.e. that `α` is non-zero and not
+  -- contained in any prime ideal not in `S`.
+  simp only [Localization.submonoid, Submonoid.mem_inf, mem_iInfPrimeCompl_iff,
     mem_nonZeroDivisors_iff_ne_zero]
   refine ⟨?_, fun hα0 ↦ hI_ne_zero <| eq_zero_of_pow_eq_zero (by simpa [hα0] using hα)⟩
-  intro v hvS _
+  rintro _ ⟨v, hvS, rfl⟩ _
   -- `α ∈ v.asIdeal` and `I ^ n = R ∙ α` imply that `v` is in `T`.
   have hvT : v ∈ T := by
     obtain ⟨w, hwT, hwle⟩ := v.isPrime.prod_le.1 <|
@@ -182,15 +184,14 @@ lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))] :
 
 /-- The ring of `S`-integers is a localization of `R` at the multiplicative set `S`. -/
 instance IsLocalizationSInteger [Fact (IsMulTorsion (ClassGroup R))] :
-    IsLocalization S.submonoid <| S.integer K where
+    IsLocalization (Localization.submonoid S) <| S.integer K where
   map_units := by
     rintro ⟨r, hr⟩
     have h₀ : algebraMap R K r ≠ 0 :=
       IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hr.2
-    refine ⟨⟨⟨_, fun v _ ↦ v.valuation_le_one r⟩,
-              ⟨(algebraMap R K r)⁻¹,
-              fun _ _ ↦ by simp_all [Set.submonoid, HeightOneSpectrum.valuation_of_algebraMap,
-                HeightOneSpectrum.intValuation_eq_one_iff.2 ]⟩,
+    refine ⟨⟨⟨_, fun v _ ↦ v.valuation_le_one r⟩, ⟨(algebraMap R K r)⁻¹,
+        fun _ _ ↦ by simp_all [Localization.submonoid, HeightOneSpectrum.valuation_of_algebraMap,
+          HeightOneSpectrum.intValuation_eq_one_iff.2]⟩,
       by simp [Subtype.ext_iff, h₀], by simp [Subtype.ext_iff, h₀]⟩, rfl⟩
   surj := exists_mul_algebraMap_eq_algebraMap R S K
   exists_of_eq := fun h ↦
@@ -199,13 +200,16 @@ instance IsLocalizationSInteger [Fact (IsMulTorsion (ClassGroup R))] :
 /-- The ring of `S`-integers is a Dedekind domain. -/
 instance isDedekindDomainSInteger [Fact (IsMulTorsion (ClassGroup R))] :
     IsDedekindDomain (S.integer K) :=
-  IsLocalization.isDedekindDomain _ (fun _ h ↦ h.2 : S.submonoid ≤ nonZeroDivisors R) _
+  IsLocalization.isDedekindDomain _
+    (fun _ h ↦ h.2 : Localization.submonoid S ≤ nonZeroDivisors R) _
 
 end IsDedekindDomain
 
 /-! ## `S`-units -/
 
 namespace Set
+
+variable [IsDedekindDomain R]
 
 /-- The subgroup of `S`-units of `Kˣ`. -/
 @[simps!]
