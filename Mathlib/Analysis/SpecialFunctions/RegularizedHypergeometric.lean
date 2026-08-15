@@ -170,6 +170,11 @@ variable (a b) in
 /-- The regularized hypergeometric function. -/
 def regularizedHGFun (z : ℂ) : ℂ := (regularizedHGFunSeries a b).sum z
 
+@[simp]
+theorem regularizedHGFun_zero : regularizedHGFun a b 0 = regularizedHGFunCoeff a b 0 := by
+  rw [regularizedHGFun, regularizedHGFunSeries, ← FormalMultilinearSeries.ofScalarsSum]
+  simp
+
 /-- If there exists `j` and `k : ℕ`, such that `a j = -k`, then the hypergeometric series is finite
 and has convergence radius `∞`. -/
 theorem radius_regularizedHGFunSeries_eq_top_of_finite (ha : j ∈ a) (hj : j = -n) :
@@ -248,15 +253,15 @@ theorem radius_regularizedHGFunSeries_eq_top (h : a.card ≤ b.card) :
 theorem radius_regularizedHGFunSeries_zero_eq_top : (regularizedHGFunSeries 0 b).radius = ⊤ :=
   radius_regularizedHGFunSeries_eq_top (by simp)
 
-theorem analyticAt_regularizedHGFun_of_card_le (h : a.card ≤ b.card) (x : ℂ) :
-    AnalyticAt ℂ (regularizedHGFun a b) x :=
+theorem analyticAt_regularizedHGFun_of_card_le (h : a.card ≤ b.card) (z : ℂ) :
+    AnalyticAt ℂ (regularizedHGFun a b) z :=
   ((regularizedHGFunSeries a b).hasFPowerSeriesOnBall
     (by simp [radius_regularizedHGFunSeries_eq_top h])).analyticAt_of_mem
     (by simp [radius_regularizedHGFunSeries_eq_top h])
 
 @[fun_prop]
-theorem analyticAt_regularizedHGFun_zero (x : ℂ) : AnalyticAt ℂ (regularizedHGFun 0 b) x :=
-  analyticAt_regularizedHGFun_of_card_le (by simp) x
+theorem analyticAt_regularizedHGFun_zero (z : ℂ) : AnalyticAt ℂ (regularizedHGFun 0 b) z :=
+  analyticAt_regularizedHGFun_of_card_le (by simp) z
 
 /-- If `a.card = b.card + 1`, then the hypergeometric series has convergence radius `1`, unless it
 is a polynomial. -/
