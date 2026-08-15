@@ -184,12 +184,12 @@ private def analyze (attributions : Array Attribution) : CommandElabM Unit := do
     -- constant survives the deletion, i.e. when it is not itself one of the candidates we are
     -- about to unexport: the public form of such a candidate ceases to exist along with it.
     --
-    -- Any private name in a public position counts, not just a candidate of this module. In
-    -- practice the two coincide, since a private name from another module cannot be resolved from
-    -- an exporting position at all — `resolvePrivateName` looks its `import all` candidates up in
-    -- the exporting environment, which does not carry them — but what makes the option necessary
-    -- is that the name is private and the position is exporting, so this is both cheaper and
-    -- robust to names put there by metaprograms rather than by resolution.
+    -- Any private name in a public position counts, not just a candidate of this module. This is
+    -- deliberately over-conservative. A private name from another module cannot be *resolved* from
+    -- an exporting position — `resolvePrivateName` looks its `import all` candidates up in the
+    -- exporting environment, which does not carry them — but it can still arrive in a public
+    -- position without being named, by unifying an implicit argument, and needs no option here
+    -- when it does. Keeping such a `set_option` costs a deletion and breaks nothing.
     let mut mentionsPrivate := false
     for n in decls do
       if candidates.contains n then
