@@ -823,8 +823,8 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
 uniformly small `eLpNorm` along `(atTop : Filter ℝ≥0).smallSets`. -/
 theorem uniformIntegrable_of_smallSets [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ i, AEStronglyMeasurable (f i) μ)
-    (h : ∀ ε : ℝ, 0 < ε → ∀ᶠ s in (atTop : Filter ℝ≥0).smallSets,
-      ∀ i, eLpNorm (((‖f i ·‖₊) ⁻¹' s).indicator (f i)) p μ ≤ ENNReal.ofReal ε) :
+    (h : ∀ ε > 0, ∀ᶠ s in (atTop : Filter ℝ≥0).smallSets,
+      ∀ i, eLpNorm (((‖f i ·‖₊) ⁻¹' s).indicator (f i)) p μ ≤ ε) :
     UniformIntegrable f p μ :=
   uniformIntegrable_of hp hp' hf fun ε hε ↦
     ((h ε hε).exists_mem_basis_of_smallSets atTop_basis).imp fun _ h' ↦ h'.2
@@ -832,8 +832,8 @@ theorem uniformIntegrable_of_smallSets [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' 
 /-- A version of `uniformIntegrable_of'` with a strict inequality in the tail condition. -/
 theorem uniformIntegrable_of_lt' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ i, StronglyMeasurable (f i))
-    (h : ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0,
-      ∀ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ ≤ ENNReal.ofReal ε) :
+    (h : ∀ ε > 0, ∃ C : ℝ≥0,
+      ∀ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ ≤ ε) :
     UniformIntegrable f p μ := by
   refine uniformIntegrable_of_smallSets hp hp' (fun i ↦ (hf i).aestronglyMeasurable) fun ε hε ↦ ?_
   obtain ⟨C, hC⟩ := h ε hε
@@ -842,8 +842,8 @@ theorem uniformIntegrable_of_lt' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p �
 /-- A version of `uniformIntegrable_of` with a strict inequality in the tail condition. -/
 theorem uniformIntegrable_of_lt [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ i, AEStronglyMeasurable (f i) μ)
-    (h : ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0,
-      ∀ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ ≤ ENNReal.ofReal ε) :
+    (h : ∀ ε > 0, ∃ C : ℝ≥0,
+      ∀ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ ≤ ε) :
     UniformIntegrable f p μ := by
   refine uniformIntegrable_of_smallSets hp hp' hf fun ε hε ↦ ?_
   obtain ⟨C, hC⟩ := h ε hε
@@ -851,8 +851,8 @@ theorem uniformIntegrable_of_lt [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠
 
 /-- This lemma is superseded by `UniformIntegrable.spec` which does not require measurability. -/
 theorem UniformIntegrable.spec' (hp' : p ≠ ∞) (hf : ∀ i, StronglyMeasurable (f i))
-    (hfu : UniformIntegrable f p μ) {ε : ℝ} (hε : 0 < ε) :
-    ∃ C : ℝ≥0, ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ENNReal.ofReal ε := by
+    (hfu : UniformIntegrable f p μ) {ε : ℝ≥0∞} (hε : 0 < ε) :
+    ∃ C : ℝ≥0, ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ε := by
   rcases eq_or_ne p 0 with rfl | hp
   · exact ⟨0, fun i => by simp [eLpNorm_exponent_zero]⟩
   obtain ⟨-, hfu, M, hM⟩ := hfu
@@ -887,7 +887,7 @@ theorem UniformIntegrable.spec' (hp' : p ≠ ∞) (hf : ∀ i, StronglyMeasurabl
   apply (eLpNorm_indicator_eq_eLpNorm_restrict _).symm
   exact (measurableSet_le measurable_const (hf i).nnnorm.measurable)
 
-theorem UniformIntegrable.spec (hp' : p ≠ ∞) (hfu : UniformIntegrable f p μ) {ε : ℝ}
+theorem UniformIntegrable.spec (hp' : p ≠ ∞) (hfu : UniformIntegrable f p μ) {ε : ℝ≥0∞}
     (hε : 0 < ε) :
     ∃ C : ℝ≥0, ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ε := by
   set g : ι → α → β := fun i => (hfu.1 i).choose
@@ -908,17 +908,15 @@ theorem UniformIntegrable.eventually_smallSets_indicator (hp' : p ≠ ∞)
     (hfu : UniformIntegrable f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∀ᶠ s in (atTop : Filter ℝ≥0).smallSets,
       ∀ i, eLpNorm (((‖f i ·‖₊) ⁻¹' s).indicator (f i)) p μ ≤ ε := by
-  rcases eq_or_ne ε ∞ with rfl | hε_top
-  · simp
-  obtain ⟨C, hC⟩ := hfu.spec hp' (ENNReal.toReal_pos hε hε_top)
+  obtain ⟨C, hC⟩ := hfu.spec hp' hε.bot_lt
   exact (eventually_smallSets' eLpNorm_indicator_norm_preimage_mono).2
-    ⟨Ici C, Ici_mem_atTop C, fun i ↦ (hC i).trans_eq (ENNReal.ofReal_toReal hε_top)⟩
+    ⟨Ici C, Ici_mem_atTop C, hC⟩
 
 /-- A version of `UniformIntegrable.spec` with a strict inequality in the tail condition. -/
-theorem UniformIntegrable.spec_lt (hp' : p ≠ ∞) (hfu : UniformIntegrable f p μ) {ε : ℝ}
+theorem UniformIntegrable.spec_lt (hp' : p ≠ ∞) (hfu : UniformIntegrable f p μ) {ε : ℝ≥0∞}
     (hε : 0 < ε) :
-    ∃ C : ℝ≥0, ∀ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ ≤ ENNReal.ofReal ε := by
-  have h := hfu.eventually_smallSets_indicator hp' (ENNReal.ofReal_pos.2 hε).ne'
+    ∃ C : ℝ≥0, ∀ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ ≤ ε := by
+  have h := hfu.eventually_smallSets_indicator hp' hε.ne'
   exact (h.exists_mem_basis_of_smallSets atTop_basis_Ioi).imp fun _ h' ↦ h'.2
 
 /-- For a uniformly integrable family, the `eLpNorm` of the tails tends to `0` uniformly
@@ -960,8 +958,8 @@ found in literature. -/
 theorem uniformIntegrable_iff [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞) :
     UniformIntegrable f p μ ↔
       (∀ i, AEStronglyMeasurable (f i) μ) ∧
-        ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0,
-          ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ENNReal.ofReal ε :=
+        ∀ ε > 0, ∃ C : ℝ≥0,
+          ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ε :=
   ⟨fun h => ⟨h.1, fun _ => h.spec hp'⟩, fun h => uniformIntegrable_of hp hp' h.1 h.2⟩
 
 /-- A family `f` is uniformly integrable iff it is `AEStronglyMeasurable` and the `eLpNorm` of its
@@ -974,7 +972,7 @@ theorem uniformIntegrable_iff_tendsto_iSup_eLpNorm_indicator_atTop [IsFiniteMeas
           atTop (𝓝 0) := by
   refine ⟨fun h ↦ ⟨h.1, h.tendsto_iSup_eLpNorm_indicator_atTop hp'⟩, fun ⟨hf, htail⟩ ↦ ?_⟩
   refine (uniformIntegrable_iff hp hp').mpr ⟨hf, fun ε hε ↦ ?_⟩
-  obtain ⟨C, hC⟩ := ENNReal.tendsto_atTop_zero.1 htail (ENNReal.ofReal ε) (ENNReal.ofReal_pos.2 hε)
+  obtain ⟨C, hC⟩ := ENNReal.tendsto_atTop_zero.1 htail ε hε
   exact ⟨C, fun i ↦ (le_iSup _ i).trans (hC C le_rfl)⟩
 
 /-- The strict-inequality analogue of
@@ -987,7 +985,7 @@ theorem uniformIntegrable_iff_tendsto_iSup_eLpNorm_indicator_atTop' [IsFiniteMea
           atTop (𝓝 0) := by
   refine ⟨fun h ↦ ⟨h.1, h.tendsto_iSup_eLpNorm_indicator_atTop' hp'⟩, fun ⟨hf, htail⟩ ↦ ?_⟩
   refine uniformIntegrable_of_lt hp hp' hf fun ε hε ↦ ?_
-  obtain ⟨C, hC⟩ := ENNReal.tendsto_atTop_zero.1 htail (ENNReal.ofReal ε) (ENNReal.ofReal_pos.2 hε)
+  obtain ⟨C, hC⟩ := ENNReal.tendsto_atTop_zero.1 htail ε hε
   exact ⟨C, fun i ↦ (le_iSup _ i).trans (hC C le_rfl)⟩
 
 /-- The averaging of a uniformly integrable sequence is also uniformly integrable. -/
