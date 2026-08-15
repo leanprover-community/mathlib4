@@ -550,7 +550,7 @@ end Sylow
 
 end InfiniteSylow
 
-open Equiv Equiv.Perm Finset Function List QuotientGroup
+open Equiv Equiv.Perm Finset Function QuotientGroup
 
 universe u
 
