@@ -25,7 +25,7 @@ Let `R` be a commutative ring. We define:
   map, respectively isomorphism (when `u` is a unit), induced by the change of generator
   `ω ↦ u • ω + k`
 
-* `QuadraticAlgebra.algHom`: the `R`-algebra map induced by a base change `R → S`
+* `QuadraticAlgebra.baseChange`: the `R`-algebra map induced by a base change `R → S`
 
 We prove:
 
@@ -440,7 +440,7 @@ def changeGeneratorEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
 
 end changeGenerator
 
-section algHom
+section baseChange
 
 variable {R S : Type*} (S)
 
@@ -451,19 +451,19 @@ variable [CommSemiring R] [CommRing S] [Algebra R S] (a b : R)
 /-- The `R`-algebra map between quadratic algebras induced by the base change `R → S`,
 sending `ω` to `ω`. -/
 @[simps!]
-def algHom :
+def baseChange :
     QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b) :=
   lift ⟨omega, by ext <;> simp [Algebra.algebraMap_eq_smul_one]⟩
 
-theorem algHom_omega :
-    algHom S a b ω = ω := by
+theorem baseChange_omega :
+    baseChange S a b ω = ω := by
   ext <;> simp
 
-theorem algHom_injective [FaithfulSMul R S] :
-    Function.Injective (algHom S a b) := by
+theorem baseChange_injective [FaithfulSMul R S] :
+    Function.Injective (baseChange S a b) := by
   intro _ _ h
-  simp only [QuadraticAlgebra.ext_iff, re_algHom_apply, ← Algebra.algebraMap_eq_smul_one,
-    algebraMap.coe_inj, im_algHom_apply] at h
+  simp only [QuadraticAlgebra.ext_iff, re_baseChange_apply, ← Algebra.algebraMap_eq_smul_one,
+    algebraMap.coe_inj, im_baseChange_apply] at h
   exact QuadraticAlgebra.ext_iff.mpr h
 
 end CommSemiring
@@ -472,17 +472,17 @@ section CommRing
 
 variable [CommRing R] [CommRing S] [Algebra R S] (a b : R)
 
-theorem norm_algHom (x : QuadraticAlgebra R a b) :
-    norm (algHom S a b x) = algebraMap R S (norm x) := by
+theorem norm_baseChange (x : QuadraticAlgebra R a b) :
+    norm (baseChange S a b x) = algebraMap R S (norm x) := by
   simp [norm_def, Algebra.smul_def]
 
-theorem trace_algHom (x : QuadraticAlgebra R a b) :
-    trace (algHom S a b x) = algebraMap R S (trace x) := by
+theorem trace_baseChange (x : QuadraticAlgebra R a b) :
+    trace (baseChange S a b x) = algebraMap R S (trace x) := by
   simp [trace_def, Algebra.smul_def, map_ofNat]
 
 end CommRing
 
-end algHom
+end baseChange
 
 section field
 
