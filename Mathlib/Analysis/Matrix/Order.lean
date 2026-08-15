@@ -88,6 +88,21 @@ lemma instIsOrderedAddMonoid : IsOrderedAddMonoid (Matrix n n 𝕜) where
 
 scoped[MatrixOrder] attribute [instance] Matrix.instIsOrderedAddMonoid
 
+lemma posSemidef_is_closed : IsClosed {A : Matrix n n 𝕜 | A.PosSemidef} := by
+  rw [show {A | A.PosSemidef} = {A : Matrix n n 𝕜 | A.IsHermitian} ∩
+    ⋂ x : n →₀ 𝕜, {A | 0 ≤ x.sum fun i xi ↦ x.sum fun j xj ↦ star xi * A i j * xj} by aesop]
+  refine IsClosed.inter ?_ ?_
+  · exact isClosed_eq (by fun_prop) (by fun_prop)
+  · refine isClosed_iInter <| fun _ ↦ isClosed_le continuous_const ?_
+    simp only [Finsupp.sum]
+    fun_prop
+
+lemma instOrderClosedTopology : OrderClosedTopology (Matrix n n 𝕜) where
+  isClosed_le' := isClosed_le_of_isClosed_nonneg <| by
+    simpa [nonneg_iff_posSemidef] using posSemidef_is_closed
+
+scoped[MatrixOrder] attribute [instance] Matrix.instOrderClosedTopology
+
 variable [Fintype n]
 
 lemma instNonnegSpectrumClass : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
@@ -169,7 +184,7 @@ theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matr
     A.PosSemidef ↔ A.IsHermitian ∧ spectrum 𝕜 A ⊆ {a : 𝕜 | 0 ≤ a} := by
   refine ⟨fun h => ⟨h.isHermitian, fun a => ?_⟩, fun ⟨h1, h2⟩ => ?_⟩
   · simp only [h.isHermitian.spectrum_eq_image_range, Set.mem_image, Set.mem_range,
-      exists_exists_eq_and, Set.mem_setOf_eq, forall_exists_index]
+      exists_exists_eq_and, Set.mem_ofPred_eq, forall_exists_index]
     rintro i rfl
     exact_mod_cast h.eigenvalues_nonneg _
   · rw [h1.posSemidef_iff_eigenvalues_nonneg]
@@ -305,7 +320,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def toMatrixSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     SeminormedAddCommGroup (Matrix n n 𝕜) :=
   @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
@@ -314,7 +329,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :
     NormedAddCommGroup (Matrix n n 𝕜) :=
   letI : InnerProductSpace.Core 𝕜 (Matrix n n 𝕜) :=
@@ -332,17 +347,13 @@ noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDe
 
 /-- A positive semi-definite matrix `M` induces an inner product on `Matrix n n 𝕜`:
 `⟪x, y⟫ = (y * M * xᴴ).trace`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     letI : SeminormedAddCommGroup (Matrix n n 𝕜) := M.toMatrixSeminormedAddCommGroup hM
     InnerProductSpace 𝕜 (Matrix n n 𝕜) :=
   InnerProductSpace.ofCore _
 
-@[deprecated (since := "2025-11-18")] alias PosDef.matrixNormedAddCommGroup :=
-  toMatrixNormedAddCommGroup
-
 open scoped Norms.L2Operator in
-set_option backward.isDefEq.respectTransparency false in
 /-- The isometric continuous functional calculus on `Matrix n n 𝕜` arising from the operator norm
 given by the identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
 instance instIsometricContinuousFunctionalCalculus [DecidableEq n] :

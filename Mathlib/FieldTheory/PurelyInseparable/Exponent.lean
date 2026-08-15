@@ -114,10 +114,10 @@ is the smallest natural number `e` such that `a ^ ringExpChar K ^ e ∈ K`. -/
 noncomputable def elemExponent (a : L) : ℕ :=
   Nat.find <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
-open scoped Classical in
 variable {K} in
 theorem elemExponent_eq_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).range) :
     elemExponent K a = 0 := by
+  classical
   apply (Nat.find_eq_zero _).mpr
   rw [pow_zero, pow_one]
   obtain ⟨y, hy⟩ := h

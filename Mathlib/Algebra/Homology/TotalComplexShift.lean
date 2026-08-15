@@ -182,7 +182,6 @@ lemma D₂_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x 
   · rw [D₂_shape _ _ _ _ h, zero_comp, D₂_shape, comp_zero, smul_zero]
     grind [up_Rel]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `((shiftFunctor₁ C x).obj K).total (up ℤ) ≅ (K.total (up ℤ))⟦x⟧`
 expressing the compatibility of the total complex with the shift on the first indices.
 This isomorphism does not involve signs. -/
@@ -207,6 +206,7 @@ lemma ι_totalShift₁Iso_hom_f (a b n : ℤ) (h : a + b = n) (a' : ℤ) (ha' : 
   dsimp [totalShift₁Iso, totalShift₁XIso]
   simp only [ι_totalDesc, comp_id, id_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
@@ -304,7 +304,6 @@ lemma D₂_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
     simp_all only [up_Rel]
     grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `((shiftFunctor₂ C y).obj K).total (up ℤ) ≅ (K.total (up ℤ))⟦y⟧`
 expressing the compatibility of the total complex with the shift on the second indices.
 This isomorphism involves signs: on the summand in degree `(p, q)` of `K`, it is given by the
@@ -331,6 +330,7 @@ lemma ι_totalShift₂Iso_hom_f (a b n : ℤ) (h : a + b = n) (b' : ℤ) (hb' : 
   dsimp [totalShift₂Iso, totalShift₂XIso]
   simp only [ι_totalDesc, comp_id, id_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ι_totalShift₂Iso_inv_f (a b n : ℤ) (h : a + b = n) (b' n' : ℤ)
