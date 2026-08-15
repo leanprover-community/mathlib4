@@ -5,12 +5,12 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.MeasureTheory.Function.ConditionalLExpectation
-public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.LebesgueBochner
+import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 
 /-!
 # Radon-Nikodym derivatives and conditional expectations

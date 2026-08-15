@@ -91,15 +91,14 @@ instance instAddCommGroup [AddCommGroup V] : AddCommGroup (WithLp p V) :=
   (WithLp.equiv p V).smul K
 @[to_additive] instance instMulAction [Monoid K] [MulAction K V] : MulAction K (WithLp p V) :=
   fast_instance% (WithLp.equiv p V).mulAction K
-instance instDistribMulAction [Monoid K] [AddCommGroup V] [DistribMulAction K V] :
-    DistribMulAction K (WithLp p V) := fast_instance% (WithLp.equiv p V).distribMulAction K
-instance instModule [Semiring K] [AddCommGroup V] [Module K V] : Module K (WithLp p V) :=
-  fast_instance% (WithLp.equiv p V).module K
 
 variable {K V}
 
 lemma ofLp_toLp (x : V) : ofLp (toLp p x) = x := rfl
 @[simp] lemma toLp_ofLp (x : WithLp p V) : toLp p (ofLp x) = x := rfl
+
+lemma ext_iff {x y : WithLp p V} : x = y ↔ x.ofLp = y.ofLp :=
+  (WithLp.equiv p V).injective.eq_iff.symm
 
 lemma ofLp_surjective : Function.Surjective (@ofLp p V) :=
   Function.RightInverse.surjective <| ofLp_toLp _
@@ -227,6 +226,11 @@ lemma ofLp_multisetSum [AddCommGroup V] (s : Multiset (WithLp p V)) :
 lemma toLp_multisetSum [AddCommGroup V] (s : Multiset V) :
     toLp p s.sum = (s.map (toLp p)).sum :=
   map_multiset_sum (WithLp.addEquiv _ _).symm _
+
+instance instDistribMulAction [Monoid K] [AddCommGroup V] [DistribMulAction K V] :
+    DistribMulAction K (WithLp p V) := fast_instance% (WithLp.addEquiv p V).distribMulAction K
+instance instModule [Semiring K] [AddCommGroup V] [Module K V] : Module K (WithLp p V) :=
+  fast_instance% (WithLp.addEquiv p V).module K
 
 /-- `WithLp.equiv` as a linear equivalence. -/
 @[simps apply symm_apply]

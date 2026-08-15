@@ -36,7 +36,7 @@ end TopologicalSpace
 
 section UniformSpace
 
-open Topology Uniformity
+open Uniformity
 
 variable {R : Type*} [CommRing R] [UniformSpace R] [IsUniformAddGroup R]
   {I : Ideal R} (hI : IsAdic I)
