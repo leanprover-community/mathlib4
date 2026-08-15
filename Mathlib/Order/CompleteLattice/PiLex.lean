@@ -16,7 +16,7 @@ We show that for `α` a family of complete linear orders, the lexicographically 
 dependent functions `Πₗ i, α i` is itself a complete linear order.
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Type*} {α : ι → Type*} [LinearOrder ι] [∀ i, CompleteLinearOrder (α i)]
 

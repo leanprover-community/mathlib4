@@ -175,10 +175,7 @@ variable [I.Boundaryless]
 /-- Boundaryless `ModelWithCorners` implies boundaryless manifold. -/
 instance : BoundarylessManifold I M where
   isInteriorPoint' x := by
-    let r := ((chartAt H x).isOpen_extend_target (I := I)).interior_eq
-    have : extChartAt I x = (chartAt H x).extend I := rfl
-    rw [← this] at r
-    rw [isInteriorPoint_iff, r]
+    rw [isInteriorPoint_iff, extChartAt, (chartAt H x).isOpen_extend_target.interior_eq]
     exact PartialEquiv.map_source _ (mem_extChartAt_source _)
 
 end Boundaryless
@@ -491,7 +488,6 @@ variable
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma interior_prod :
     (I.prod J).interior (M × N) = (I.interior M) ×ˢ (J.interior N) := by
