@@ -400,5 +400,3 @@ instance : IsDiscrete Cᵒᵖ where
 end
 
 end CategoryTheory
-
-#lint
