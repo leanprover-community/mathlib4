@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-! # Range of the continuous functional calculus
 
@@ -281,3 +282,27 @@ theorem cfcₙ_nnreal_mem {𝕜 : Type*} [RCLike 𝕜]
   · simp [cfcₙ_apply_of_not_predicate _ ha]
 
 end NonUnital
+
+section StarOrderedSubtype
+
+variable {𝕜 S A : Type*} [NonUnitalRing A] [StarRing A] [TopologicalSpace A]
+    [ContinuousStar A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
+    [IsTopologicalRing A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+    [RCLike 𝕜] [Module 𝕜 A] [IsScalarTower ℝ 𝕜 A] [ContinuousConstSMul ℝ A]
+    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [StarModule ℝ A]
+    [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S 𝕜 A] [StarMemClass S A]
+
+instance Subtype.starOrderedRing (s : S) [hs : IsClosed (s : Set A)] : StarOrderedRing s :=
+  .of_nonneg_iff' add_le_add_right fun x ↦ by
+    refine ⟨?_, ?_⟩
+    · intro (hx : 0 ≤ (x : A))
+      use ⟨cfcₙ Real.sqrt (x : A), cfcₙ_mem _ x.2⟩
+      ext
+      simp only [MulMemClass.coe_mul, StarMemClass.coe_star]
+      rw [IsSelfAdjoint.star_eq (by cfc_tac), ← cfcₙ_mul ..]
+      convert (cfcₙ_id' ℝ (x : A)).symm using 1
+      exact cfcₙ_congr fun r hr ↦ by rw [Real.mul_self_sqrt (by grind)]
+    · rintro ⟨s, hs⟩
+      simp [← Subtype.coe_le_coe, hs]
+
+end StarOrderedSubtype

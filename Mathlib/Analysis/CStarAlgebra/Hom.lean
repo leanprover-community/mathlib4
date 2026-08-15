@@ -63,6 +63,8 @@ lemma IsSelfAdjoint.map_quasispectrum_real {F A B : Type*}
   simpa [Unitization.starMap_inr, ← Unitization.quasispectrum_eq_spectrum_inr']
     using (ha.inr ℂ).map_spectrum_real _ (Unitization.starMap_injective hφ)
 
+section OrderEmbedding
+
 variable {F A B : Type*}
     [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
     [NonUnitalCStarAlgebra B] [PartialOrder B] [StarOrderedRing B]
