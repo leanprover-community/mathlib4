@@ -99,15 +99,12 @@ private noncomputable def toDualBaseChangeAux :
     | tmul b f => simp [TensorProduct.smul_tmul', mul_smul]
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
 private theorem toDualBaseChangeAux_tmul (a : A) (f : Dual R V) (v : V) :
     (ibc.toDualBaseChangeAux (a ⊗ₜ[R] f)) (j v) = a * algebraMap R A (f v) := by
   simp [toDualBaseChangeAux, toDual_comp_apply]
 
 variable [Free R V] [Module.Finite R V]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The linear equivalence underlying `IsBaseChange.dual`. -/
 noncomputable def toDualBaseChange :
     A ⊗[R] Dual R V ≃ₗ[A] Dual A W := by

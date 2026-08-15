@@ -249,7 +249,6 @@ end Group
 section LinearOrder
 variable {M : Type*} [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMonoid M]
 
-set_option backward.privateInPublic true in
 private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
     (h : mk m s = mk m' s') (h' : mk n t = mk n' t') :
     (t.val • m ≤ s.val • n) = (t'.val • m' ≤ s'.val • n') := by
@@ -370,7 +369,6 @@ private noncomputable
 def archimedeanClassOrderHom : ArchimedeanClass M →o ArchimedeanClass (DivisibleHull M) :=
   ArchimedeanClass.orderHom (coeOrderAddMonoidHom M)
 
-set_option backward.privateInPublic true in
 /-- See `archimedeanClassOrderIso_symm_apply` for public API. -/
 private theorem aux_archimedeanClassMk_mk (m : M) (s : ℕ+) :
     ArchimedeanClass.mk (mk m s) = archimedeanClassOrderHom M (ArchimedeanClass.mk m) := by
@@ -399,8 +397,6 @@ def archimedeanClassOrderHomInv : ArchimedeanClass (DivisibleHull M) →o Archim
       simpa using ((archimedeanClassOrderHom M).monotone.strictMono_of_injective
         aux_archimedeanClassOrderHom_injective).le_iff_le.mp h)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 variable (M) in
 /-- The Archimedean classes of `DivisibleHull M` are the same as those of `M`. -/
 noncomputable

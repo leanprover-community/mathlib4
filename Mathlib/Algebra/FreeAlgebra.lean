@@ -362,8 +362,6 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
     rfl
   commutes' := by tauto
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Given a function `f : X → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`. -/
 @[irreducible]

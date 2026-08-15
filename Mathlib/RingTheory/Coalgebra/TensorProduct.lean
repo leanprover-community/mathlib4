@@ -90,7 +90,6 @@ scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂
       | tmul $var₁ $var₂ => ?_))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.privateInPublic true in
 private lemma coassoc :
     TensorProduct.assoc S (A ⊗[R] B) (A ⊗[R] B) (A ⊗[R] B) ∘ₗ
       (comul (R := S) (A := (A ⊗[R] B))).rTensor (A ⊗[R] B) ∘ₗ

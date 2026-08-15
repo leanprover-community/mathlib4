@@ -101,8 +101,6 @@ private def coneBack : Cone (liftFromOver.obj K) ⥤ Cone K where
       w j := by ext; simp [dsimp% f.w (of j)] }
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Given a functor `K : J ⥤ Over X` and its extension `liftFromOver K : WithTerminal J ⥤ C`,
 there is an obvious equivalence between cones of these two functors.
 A cone of `K` is an object of `Over X`, so it has the form `t ⟶ X`.
@@ -218,8 +216,6 @@ private def coconeBack : Cocone (liftFromUnder.obj K) ⥤ Cocone K where
       w j := by ext; simp [dsimp% f.w (of j)] }
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Given a functor `K : J ⥤ Under X` and its extension `liftFromUnder K : WithInitial J ⥤ C`,
 there is an obvious equivalence between cocones of these two functors.
 A cocone of `K` is an object of `Under X`, so it has the form `X ⟶ t`.
