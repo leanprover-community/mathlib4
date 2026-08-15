@@ -27,7 +27,7 @@ itself is the model-parameterized `bareissDecomp` in `Mathlib.Tactic.Echelon.Cor
 
 public meta section
 
-open Lean Meta Elab Qq
+open Lean Meta Qq
 
 initialize registerTraceClass `Tactic.evalRank
 
@@ -39,7 +39,7 @@ def mkFinNumeral (n : ℕ) (i : ℕ) : MetaM Q(Fin $n) :=
 
 /-- Build the pivot literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
 first rows to their pivot columns and the remaining rows to `⊤`. -/
-def mkPivotLit (m n : Nat) (pivots : Array Nat) : MetaM Expr := do
+def mkPivotLit (m n : Nat) (pivots : Array Nat) : MetaM Q(Fin $m → WithTop (Fin $n)) := do
   let entries : Array Q(WithTop (Fin $n)) ← Array.ofFnM (n := m) fun i => do
     if hi : i < pivots.size then
       return q(WithTop.some $(← mkFinNumeral n pivots[i]))
@@ -48,7 +48,7 @@ def mkPivotLit (m n : Nat) (pivots : Array Nat) : MetaM Expr := do
   return PiFin.mkLiteralQ (α := q(WithTop (Fin $n))) (n := m) fun i => entries[i]!
 
 /-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
-def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Expr := do
+def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m)) := do
   let mut acc : Q(Equiv.Perm (Fin $m)) := q(Equiv.refl (Fin $m))
   for (a, b) in swaps do
     acc := q((Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b)).trans $acc)
@@ -83,30 +83,30 @@ def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do
     return .error e.toMessageData
   return .ok ()
 
-/-- A wrapper for the `decide` decision of a certificate condition with a named error. -/
-scoped elab "bareiss_certify " s:str : tactic => do
-  try
-    Tactic.evalTactic (← `(tactic| decide +kernel))
-  catch e =>
-    throwError "cannot verify the rank certificate: {s.getString} failed:\n{e.toMessageData}"
+/-- Prove the certificate condition `c` by a kernel-checked `decide`, with `name` naming
+the condition in errors. -/
+def certifyCondition (name : String) (c : Q(Prop)) : MetaM Q($c) := do
+  let d ← mkDecide c
+  let .ok r := Kernel.whnf (← getEnv) (← getLCtx) d
+    | throwError "cannot verify the rank certificate: {name} does not reduce in the kernel"
+  unless r.isConstOf ``Bool.true do
+    throwError "cannot verify the rank certificate: {name} failed"
+  mkDecideProofQ c
 
-/-- Elaborate the `Echelon.Decomposition` certificate of `A` from its rendered
-components, with the kernel checking the certificate conditions. -/
-def elabCertificate (A L σ pivotE : Expr) : TermElabM Expr := do
-  let stx ← `((⟨$(← Term.exprToSyntax L), $(← Term.exprToSyntax σ),
-                $(← Term.exprToSyntax pivotE),
-                -- TODO: switch to a better decision of matrix mult once implemented
-                by bareiss_certify "the echelon-pivot condition",
-                by bareiss_certify "lower triangularity of the transform",
-                by bareiss_certify "the nonzero diagonal of the transform"⟩ :
-              Echelon.Decomposition $(← Term.exprToSyntax A)))
-  -- without the recovery barrier a failing obligation would be logged and patched with
-  -- `sorryAx` instead of thrown
-  let e ← Term.withoutErrToSorry do
-    let e ← Term.elabTermEnsuringType stx none
-    Term.synthesizeSyntheticMVarsNoPostponing
-    pure e
-  instantiateMVars e
+/-- Build the `Echelon.Decomposition` certificate of `A` from its rendered components,
+with the certificate conditions proven by kernel-checked `decide`. -/
+def mkCertificate {u : Level} {m n : ℕ} {R : Q(Type u)} (_cr : Q(CommRing $R))
+    (A : Q(Matrix (Fin $m) (Fin $n) $R)) (L : Q(Matrix (Fin $m) (Fin $m) $R))
+    (σ : Q(Equiv.Perm (Fin $m))) (pivot : Q(Fin $m → WithTop (Fin $n))) :
+    MetaM Q(Echelon.Decomposition $A) := do
+  let pf₁ ← certifyCondition "the echelon-pivot condition"
+    -- TODO: switch to a better decision of matrix mult once implemented
+    q(($L * ($A).submatrix $σ id).IsPivotedBy $pivot)
+  let pf₂ ← certifyCondition "lower triangularity of the transform"
+    q(($L).IsLowerTriangular)
+  let pf₃ ← certifyCondition "the nonzero diagonal of the transform"
+    q(∀ i, ($L).diag i ≠ 0)
+  return q(⟨$L, $σ, $pivot, $pf₁, $pf₂, $pf₃⟩)
 
 /-- Select the computation model for the ring expression `R`: the first registered
 `bareiss_ext` extension that handles `R`, or the default rational model. -/
@@ -127,12 +127,14 @@ structure BareissResult where
 /-- Produce and elaborate the `Echelon.Decomposition` certificate of the matrix literal
 `A`. -/
 def mkBareissDecomposition (A : Expr) (m n : Nat) (R : Expr)
-    (entries : Array (Array Expr)) : TermElabM BareissResult := do
+    (entries : Array (Array Expr)) : MetaM BareissResult := do
   let d ← (← producerFor R) entries
   let u ← getDecLevel R
   have R : Q(Type u) := R
+  have _cr : Q(CommRing $R) := ← synthInstanceQ q(CommRing $R)
+  have A : Q(Matrix (Fin $m) (Fin $n) $R) := A
   let L := Matrix.mkLiteralQ (α := R) (m := m) (n := m) (.of fun i j => (d.L[i]!)[j]!)
-  return { cert := ← elabCertificate A L (← mkPerm m d.swaps) (← mkPivotLit m n d.pivot)
+  return { cert := ← mkCertificate _cr A L (← mkPerm m d.swaps) (← mkPivotLit m n d.pivot)
            data := d }
 
 end Mathlib.Tactic.Echelon

@@ -26,7 +26,7 @@ namespace Mathlib.Tactic.Echelon
 literal `A`. -/
 def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Expr)) :
     MetaM Simp.Result := do
-  let res ← (mkBareissDecomposition A m n R entries).run'
+  let res ← mkBareissDecomposition A m n R entries
   let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[res.cert]
   let k := mkNatLit res.data.pivot.size
   return { expr := k, proof? := some (← mkExpectedTypeHint pf (← mkEq e k)) }
