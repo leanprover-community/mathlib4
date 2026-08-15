@@ -87,7 +87,8 @@ include hcovers
 
 /-- If `H` is a subgroup of `G` and `G` is the union of a finite family of left cosets of `H`
 then `H` has finite index. -/
-@[to_additive]
+@[to_additive /-- If `H` is an additive subgroup of `G` and `G` is the union of a finite family
+of left cosets of `H` then `H` has finite index. -/]
 theorem finiteIndex_of_leftCoset_cover_const : H.FiniteIndex := by
   simp_rw [leftCoset_cover_const_iff_surjOn] at hcovers
   have := Set.finite_univ_iff.mp <| Set.Finite.of_surjOn _ hcovers s.finite_toSet
@@ -195,7 +196,8 @@ theorem exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgroup G)]
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then at least one subgroup `H i` has finite index in `G`. -/
-@[to_additive]
+@[to_additive /-- Let the additive group `G` be the union of finitely many left cosets `g i +ᵥ H i`.
+Then at least one additive subgroup `H i` has finite index in `G`. -/]
 theorem exists_finiteIndex_of_leftCoset_cover : ∃ k ∈ s, (H k).FiniteIndex := by
   classical
   have ⟨j, hj⟩ : s.Nonempty := by
@@ -246,7 +248,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
     have ⟨j, hj, hjfi⟩ := exists_finiteIndex_of_leftCoset_cover hcovers
     have ⟨x, hx⟩ : (t j hj hjfi).Nonempty := Finset.nonempty_coe_sort.mp
       (ht j hj hjfi).1.leftQuotientEquiv.symm.nonempty
-    ⟨⟨⟨j, hj⟩, ⟨x, dif_pos hjfi ▸ hx⟩⟩, hjfi, if_pos hjfi⟩
+    ⟨⟨⟨j, hj⟩, ⟨x, dite_eq_left hjfi ▸ hx⟩⟩, hjfi, ite_eq_left hjfi⟩
   -- Since `D` is the unique subgroup of finite index whose cosets occur in the new covering,
   -- the cosets of the other subgroups can be omitted.
   replace hcovers' : ⋃ i ∈ Finset.univ.filter (K · = D), f i • (D : Set G) = Set.univ := by
@@ -294,8 +296,8 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
       rw [← (ht i hi.1 hi.2).2] at hi'
       suffices ∃ r : H i, r ∈ t i hi.1 hi.2 ∧ x ∈ (g i * r) • (D : Set G) by
         have ⟨r, hr, hxr⟩ := this
-        refine ⟨⟨⟨i, hi.1⟩, ⟨r, dif_pos hi.2 ▸ hr⟩⟩, rfl, ?_⟩
-        simpa [K, f, if_pos hi.2] using! hxr
+        refine ⟨⟨⟨i, hi.1⟩, ⟨r, dite_eq_left hi.2 ▸ hr⟩⟩, rfl, ?_⟩
+        simpa [K, f, ite_eq_left hi.2] using! hxr
       simpa [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul, mul_assoc] using! hi' hx
     have ⟨k₁, hik₁, hk₁, hxk₁⟩ := hk' i hi hi'
     have ⟨k₂, hjk₂, hk₂, hxk₂⟩ := hk' j hj hj'
@@ -308,7 +310,8 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then the cosets of subgroups of infinite index may be omitted from the covering. -/
-@[to_additive]
+@[to_additive /-- Let the additive group `G` be the union of finitely many left cosets `g i +ᵥ H i`.
+Then the cosets of additive subgroups of infinite index may be omitted from the covering. -/]
 theorem leftCoset_cover_filter_FiniteIndex
     [DecidablePred (FiniteIndex : Subgroup G → Prop)] :
     ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ :=
@@ -316,7 +319,9 @@ theorem leftCoset_cover_filter_FiniteIndex
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`. Then the
 sum of the inverses of the indexes of the subgroups `H i` is greater than or equal to 1. -/
-@[to_additive one_le_sum_inv_index_of_leftCoset_cover]
+@[to_additive one_le_sum_inv_index_of_leftCoset_cover /-- Let the additive group `G` be the union
+of finitely many left cosets `g i +ᵥ H i`. Then the sum of the inverses of the indexes of the
+additive subgroups `H i` is greater than or equal to 1. -/]
 theorem one_le_sum_inv_index_of_leftCoset_cover :
     1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ :=
   have := Classical.decPred (FiniteIndex : Subgroup G → Prop)
@@ -325,7 +330,9 @@ theorem one_le_sum_inv_index_of_leftCoset_cover :
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 If the sum of the inverses of the indexes of the subgroups `H i` is equal to 1,
 then the cosets of the subgroups of finite index are pairwise disjoint. -/
-@[to_additive]
+@[to_additive /-- Let the additive group `G` be the union of finitely many left cosets `g i +ᵥ H i`.
+If the sum of the inverses of the indexes of the additive subgroups `H i` is equal to 1,
+then the cosets of the additive subgroups of finite index are pairwise disjoint. -/]
 theorem pairwiseDisjoint_leftCoset_cover_of_sum_inv_index_eq_one
     [DecidablePred (FiniteIndex : Subgroup G → Prop)] :
     ∑ i ∈ s, ((H i).index : ℚ)⁻¹ = 1 →
@@ -336,7 +343,9 @@ theorem pairwiseDisjoint_leftCoset_cover_of_sum_inv_index_eq_one
 /-- B. H. Neumann Lemma :
 If a finite family of cosets of subgroups covers the group, then at least one
 of these subgroups has index not exceeding the number of cosets. -/
-@[to_additive]
+@[to_additive /-- B. H. Neumann Lemma :
+If a finite family of cosets of additive subgroups covers the additive group, then at least one
+of these additive subgroups has index not exceeding the number of cosets. -/]
 theorem exists_index_le_card_of_leftCoset_cover :
     ∃ i ∈ s, (H i).FiniteIndex ∧ (H i).index ≤ s.card := by
   by_contra! h

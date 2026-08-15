@@ -26,8 +26,6 @@ public section
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice Monoid
 
-open Multiset Subtype Function
-
 universe u
 
 variable {α : Type*} {β : Type*} {γ : Type*}
