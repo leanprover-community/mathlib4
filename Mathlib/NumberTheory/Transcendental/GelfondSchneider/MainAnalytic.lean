@@ -115,7 +115,10 @@ include α β σ α' β' γ' hirr htriv habc in
 def R_order (z : ℂ) : ℕ := (Rorder_exists α β σ α' β' γ' hirr htriv habc q hq0 h2mq z).choose
 
 include α β σ α' β' γ' hirr htriv habc in
-def R_order_prop {z : ℂ} := (Rorder_exists α β σ α' β' γ' hirr htriv habc q hq0 h2mq z).choose_spec
+theorem R_order_prop {z : ℂ} :
+    analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) z =
+      some (R_order α β σ α' β' γ' hirr htriv habc q hq0 h2mq z) :=
+  (Rorder_exists α β σ α' β' γ' hirr htriv habc q hq0 h2mq z).choose_spec
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma R_order_eq (z) : (analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
