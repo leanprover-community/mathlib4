@@ -215,8 +215,7 @@ variable [DecidableEq M]
     DirectSum.coe_of_apply]
   split_ifs <;> rfl
 
-/-- Projection onto degree `a` in the `AddMonoidAlgebra` grading
-extracts the corresponding term. -/
+/-- Projection onto degree `a` extracts the corresponding term. -/
 @[simp] lemma proj_grade_apply
   (f : AddMonoidAlgebra R M) (a : M) :
     GradedRing.proj (AddMonoidAlgebra.grade R) a f = AddMonoidAlgebra.single a (f a) := by
