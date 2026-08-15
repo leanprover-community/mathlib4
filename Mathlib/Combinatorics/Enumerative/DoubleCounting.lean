@@ -261,7 +261,6 @@ lemma card_le_card_biUnion_of_card_eq_of_card_filter_le {α : Type*} [DecidableE
     rw [← ht]
     exact h₃ x s
 
-
 end Bipartite
 
 end Finset
