@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Lean.Elab.Tactic.ElabTerm
 public import Mathlib.Init
 
 /-!
