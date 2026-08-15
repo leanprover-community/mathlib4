@@ -61,9 +61,16 @@ all, so looking one up and searching for the command containing it silently drop
 Dropping a candidate is not merely a missed suggestion: a *used* candidate that is dropped fails to
 safeguard its `set_option`, and an unused sibling from the same command would then have it deleted.
 
-On the terminal command we take stock: for each recorded `set_option`, if any candidate it exports
-is used it is safeguarded, and otherwise, if it exports at least one unused candidate, its deletion
-is suggested.
+On the terminal command we take stock. A recorded `set_option` is kept if either of the two jobs it
+can be doing is genuine:
+
+* it exports a candidate which something public uses; or
+* a public position of one of the declarations generated under it mentions a candidate, and that
+  declaration is not itself a candidate we are about to unexport. The public form of such a
+  candidate ceases to exist along with it, so a mention there is not work worth keeping, whereas a
+  mention from a constant which survives is.
+
+Otherwise, if it exports at least one unused candidate, its deletion is suggested.
 
 Note that nothing here reasons about the shape of the command, its visibility, or which of its
 declarations is public: a `set_option` is judged solely by the declarations generated while it was
@@ -72,12 +79,13 @@ these `set_option`s are set at the top level, so that `redundantOptionRanges` se
 
 ## Deleting a `set_option` may break the build, deliberately
 
-We do not ask whether the command still needs the option in order to *elaborate*, only whether the
-declarations it exports are used publicly. A `set_option` can be doing both jobs at once — exporting
-a private declaration, and permitting a public position elsewhere in the same command to refer to an
-already-exported one — and we delete it regardless.
+We never ask whether the command still *elaborates* without the option, only what the resulting
+constants say. Elaboration can need the option for a reference which then does not survive into the
+public form of any constant that outlives the deletion — because the reference was abstracted into
+an auxiliary declaration, or because the only constant carrying it is itself being unexported — and
+we delete the `set_option` regardless.
 
-That is intended. If a private declaration never reaches a public position of the resulting
+That is intended. When a private declaration does not reach a public position of the surviving
 constants, elaboration can almost always be reconfigured so that the option is unnecessary, and
 breaking the build is a useful pointer to the place that needs reconfiguring: typically a reference
 that the `privateProof` linter suggests wrapping in `private`.
@@ -169,10 +177,17 @@ private def analyze (attributions : Array Attribution) : CommandElabM Unit := do
   for (range, decls) in attributions do
     let mut unused : Array Name := #[]
     let mut anyUsed := false
+    -- The `set_option` is also what permits a public position of one of these declarations to
+    -- mention an exported private declaration. That work is genuine exactly when the mentioning
+    -- constant survives the deletion, i.e. when it is not itself one of the candidates we are
+    -- about to unexport: the public form of such a candidate ceases to exist along with it.
+    let mut mentionsCandidate := false
     for n in decls do
       if candidates.contains n then
         if used.contains n then anyUsed := true else unused := unused.push n
-    if anyUsed || unused.isEmpty then continue
+      else if (publicUses publicEnv n).any candidates.contains then
+        mentionsCandidate := true
+    if anyUsed || mentionsCandidate || unused.isEmpty then continue
     -- A structure command adds a dozen or so declarations; naming them all is unreadable, and the
     -- shortest names are the ones the reader recognises.
     let sorted := unused.qsort fun m n => m.toString.length < n.toString.length

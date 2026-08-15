@@ -54,11 +54,11 @@ private structure S where
 set_option backward.privateInPublic true in
 def usesS (_ : S) : Bool := true
 
--- A command which declares a public name whose signature refers to the exported `used`, alongside
--- a private name nobody uses. The `set_option` is doing two jobs: exporting `mixedPriv`, and
--- permitting the reference to `used` from `mixedPub`'s signature. We delete it for the sake of the
--- former, breaking the latter on purpose: `used` in a public signature is a reference for the
--- `privateProof` linter to wrap.
+-- The `set_option` is doing two jobs: exporting `mixedPriv`, which nothing uses, and permitting
+-- `mixedPub`'s exported signature to mention `used`. The latter is genuine work — `mixedPub` is
+-- public whatever we do, so `used` stays in a public position — and so the `set_option` is kept.
+-- (Wrapping that reference in `private` is the `privateProof` linter's business; once it is
+-- wrapped, this `set_option` becomes deletable.)
 set_option backward.privateInPublic true in
 mutual
   def mixedPub (_ : FEq used) : Nat := 0
@@ -66,8 +66,10 @@ mutual
 end
 
 -- The same, except that it is the *private* declaration whose signature refers to `used`, while
--- the public one refers to nothing private. Deleted just the same: no property of the command or
--- of the visibility of its declarations enters into the decision.
+-- the public one refers to nothing private. Deleted, in contrast to the case above: `mixedPrivRef`
+-- has a public form only because this very `set_option` exports it, so deleting the `set_option`
+-- takes the reference with it. Elaboration of the signature does break, which is the point — it
+-- marks the reference that needs reconfiguring.
 set_option backward.privateInPublic true in
 mutual
   def mixedPubPlain : Nat := 0
@@ -99,9 +101,6 @@ info: `chainOuter` exported only because of this `set_option`, but nothing publi
   [apply] (delete)
 ---
 info: `chainOuter` exported only because of this `set_option`, but nothing public uses it; delete it:
-  [apply] (delete)
----
-info: `mixedPriv` exported only because of this `set_option`, but nothing public uses it; delete it:
   [apply] (delete)
 ---
 info: `mixedPrivRef` exported only because of this `set_option`, but nothing public uses it; delete it:
