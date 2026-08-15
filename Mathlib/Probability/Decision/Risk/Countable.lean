@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Probability.Decision.Risk.Defs
 
-import Mathlib.Probability.Decision.Risk.Basic
+public import Mathlib.Probability.Kernel.Composition.CompNotation
 
 /-!
 # Risk in countable spaces
