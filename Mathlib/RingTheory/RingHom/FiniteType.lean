@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
 public import Mathlib.RingTheory.Localization.InvSubmonoid
-public import Mathlib.RingTheory.RingHom.Finite
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 
