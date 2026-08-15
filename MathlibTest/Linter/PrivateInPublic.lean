@@ -83,6 +83,11 @@ set_option backward.privateInPublic true in
 private structure T where
   j : Nat
 
+-- A `set_option` doing nothing at all: it exports nothing and permits no public reference. We
+-- report it even though there is no candidate to name, so that no `set_option` is left behind.
+set_option backward.privateInPublic true in
+def stray : Nat := 0
+
 -- Not exported at all, so not a candidate.
 private theorem plain : (0 : Nat) = 0 := rfl
 
@@ -107,6 +112,9 @@ info: `mixedPrivRef` exported only because of this `set_option`, but nothing pub
   [apply] (delete)
 ---
 info: `T`, `T.j`, `T.mk` and 13 more exported only because of this `set_option`, but nothing public uses it; delete it:
+  [apply] (delete)
+---
+info: This `set_option` exports nothing and permits no public reference; delete it:
   [apply] (delete)
 -/
 #guard_msgs in

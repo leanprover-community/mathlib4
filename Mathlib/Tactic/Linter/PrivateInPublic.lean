@@ -65,12 +65,14 @@ On the terminal command we take stock. A recorded `set_option` is kept if either
 can be doing is genuine:
 
 * it exports a candidate which something public uses; or
-* a public position of one of the declarations generated under it mentions a candidate, and that
-  declaration is not itself a candidate we are about to unexport. The public form of such a
-  candidate ceases to exist along with it, so a mention there is not work worth keeping, whereas a
-  mention from a constant which survives is.
+* a public position of one of the declarations generated under it mentions a private declaration,
+  and that declaration is not itself a candidate we are about to unexport. The public form of such
+  a candidate ceases to exist along with it, so a mention there is not work worth keeping, whereas
+  a mention from a constant which survives is.
 
-Otherwise, if it exports at least one unused candidate, its deletion is suggested.
+Otherwise its deletion is suggested, whether or not it exports anything at all: a `set_option`
+doing neither job is dead weight, and we would rather report one the `privateProof` linter also
+reports than leave one behind.
 
 Note that nothing here reasons about the shape of the command, its visibility, or which of its
 declarations is public: a `set_option` is judged solely by the declarations generated while it was
@@ -181,24 +183,35 @@ private def analyze (attributions : Array Attribution) : CommandElabM Unit := do
     -- mention an exported private declaration. That work is genuine exactly when the mentioning
     -- constant survives the deletion, i.e. when it is not itself one of the candidates we are
     -- about to unexport: the public form of such a candidate ceases to exist along with it.
-    let mut mentionsCandidate := false
+    --
+    -- Any private name in a public position counts, not just a candidate of this module. In
+    -- practice the two coincide, since a private name from another module cannot be resolved from
+    -- an exporting position at all — `resolvePrivateName` looks its `import all` candidates up in
+    -- the exporting environment, which does not carry them — but what makes the option necessary
+    -- is that the name is private and the position is exporting, so this is both cheaper and
+    -- robust to names put there by metaprograms rather than by resolution.
+    let mut mentionsPrivate := false
     for n in decls do
       if candidates.contains n then
         if used.contains n then anyUsed := true else unused := unused.push n
-      else if (publicUses publicEnv n).any candidates.contains then
-        mentionsCandidate := true
-    if anyUsed || mentionsCandidate || unused.isEmpty then continue
+      else if (publicUses publicEnv n).any isPrivateName then
+        mentionsPrivate := true
+    if anyUsed || mentionsPrivate then continue
     -- A structure command adds a dozen or so declarations; naming them all is unreadable, and the
     -- shortest names are the ones the reader recognises.
     let sorted := unused.qsort fun m n => m.toString.length < n.toString.length
     let names := String.intercalate ", " <|
       sorted.toList.take 3 |>.map fun n => s!"`{privateToUserName n}`"
     let names := if sorted.size > 3 then s!"{names} and {sorted.size - 3} more" else names
+    let header := if sorted.isEmpty then
+        "This `set_option` exports nothing and permits no public reference; delete it:"
+      else
+        s!"{names} exported only because of this `set_option`, but nothing public uses it; \
+          delete it:"
     liftCoreM <| addSuggestion (Syntax.ofRange range)
       { suggestion := .string "", messageData? := m!"(delete)" }
       (origSpan? := Syntax.ofRange range)
-      (header := s!"{names} exported only because of this `set_option`, but nothing public uses \
-        it; delete it:")
+      (header := header)
 
 /-- The `privateInPublic` linter proper: see the module docstring.
 
