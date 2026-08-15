@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.Order.Partition.Finpartition
 public import Mathlib.Order.SupClosed
+public import Mathlib.Order.SetAccumulate
 
 /-! # Semirings and rings of sets
 
