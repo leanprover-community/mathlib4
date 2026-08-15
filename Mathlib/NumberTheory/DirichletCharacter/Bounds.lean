@@ -6,8 +6,12 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Bounds for values of Dirichlet characters

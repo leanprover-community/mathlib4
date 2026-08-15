@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Regular.Pow
 public import Mathlib.Data.Finsupp.Antidiagonal
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Order.SymmDiff
-public meta import Mathlib.Tactic.Polynomial.Core
+public import Mathlib.Tactic.Polynomial.Core
 
 /-!
 # Multivariate polynomials

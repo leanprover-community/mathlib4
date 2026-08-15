@@ -7,7 +7,7 @@ Authors: Leonid Ryvkin
 module
 
 public import Mathlib.Algebra.Lie.Basic
-public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Algebra.Group.TransferInstance
 
 /-!
 # Transfer Lie brackets along AddEquiv, LinearEquiv and Equiv
