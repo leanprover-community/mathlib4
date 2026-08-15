@@ -121,6 +121,12 @@ theorem regularizedHGFunCoeff_add_one_div_self (h : regularizedHGFunCoeff a b n 
       grind [Multiset.prod_eq_zero, Multiset.mem_map]
     simp [regularizedHGFunCoeff_eq_zero_right a b n 0, h₁]
 
+@[simp]
+theorem regularizedHGFunCoeff_zero_neg_nat_add_one (n i : ℕ) :
+    regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) = regularizedHGFunCoeff 0 {(n : ℂ) + 1} i := by
+  simp [regularizedHGFunCoeff, ← Gamma_nat_eq_factorial]
+  ring_nf
+
 private theorem multiset_prod_eq_pow_mul_multiset_prod (a : Multiset ℂ) (hn : n ≠ 0) :
     (a.map (· + (n : ℂ))).prod = n ^ a.card * (a.map (· / (n : ℂ) + 1)).prod := calc
   _ = (a.map (fun j ↦ n * (j / (n : ℂ) + 1))).prod := by
@@ -242,6 +248,16 @@ theorem radius_regularizedHGFunSeries_eq_top (h : a.card ≤ b.card) :
 theorem radius_regularizedHGFunSeries_zero_eq_top : (regularizedHGFunSeries 0 b).radius = ⊤ :=
   radius_regularizedHGFunSeries_eq_top (by simp)
 
+theorem analyticAt_regularizedHGFunSeries_of_card_le (h : a.card ≤ b.card) (x : ℂ) :
+    AnalyticAt ℂ (regularizedHGFun a b) x :=
+  ((regularizedHGFunSeries a b).hasFPowerSeriesOnBall
+    (by simp [radius_regularizedHGFunSeries_eq_top h])).analyticAt_of_mem
+    (by simp [radius_regularizedHGFunSeries_eq_top h])
+
+@[fun_prop]
+theorem analyticAt_regularizedHGFunSeries_zero (x : ℂ) : AnalyticAt ℂ (regularizedHGFun 0 b) x :=
+  analyticAt_regularizedHGFunSeries_of_card_le (by simp) x
+
 /-- If `a.card = b.card + 1`, then the hypergeometric series has convergence radius `1`, unless it
 is a polynomial. -/
 @[grind =]
@@ -269,6 +285,28 @@ theorem radius_regularizedHGFunSeries_ge_one (h : a.card = b.card + 1) :
   · obtain ⟨j, hj, k, h'⟩ := h'
     rw [radius_regularizedHGFunSeries_eq_top_of_finite hj h']
     simp
+
+theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (x : ℂ) :
+    regularizedHGFun 0 {-(n : ℂ) + 1} x = x ^ n * regularizedHGFun 0 {(n : ℂ) + 1} x := by
+  unfold regularizedHGFun FormalMultilinearSeries.sum
+  conv_lhs =>
+    rw [← ((regularizedHGFunSeries 0 {-(n : ℂ) + 1}).summable (by simp)).sum_add_tsum_nat_add n]
+  suffices ∑ i ∈ Finset.range n, x ^ i * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} i +
+      ∑' i, x ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) =
+      x ^ n * ∑' i, x ^ i * regularizedHGFunCoeff 0 {(n : ℂ) + 1} i by
+    simpa
+  calc
+    _ = 0 + ∑' i, x ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
+      congrm $(Finset.sum_eq_zero fun i hi ↦ mul_eq_zero_of_right _ ?_) + _
+      refine regularizedHGFunCoeff_eq_zero_right _ _ _ (n - i - 1) ?_
+      rw [Multiset.mem_singleton]
+      norm_cast
+      grind
+    _ = x ^ n * ∑' i, x ^ i * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
+      simp_rw [zero_add, ← tsum_mul_left]
+      congr with i
+      ring
+    _ = _ := by simp
 
 section ZeroZero
 
