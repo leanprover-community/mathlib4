@@ -456,8 +456,7 @@ instance isIso_prodComparison (X Y : SSet.{u}) :
     IsIso (prodComparison hoFunctor X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
   convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
     prodComparison hoFunctor Δ[m] X ≫ (prod.braiding _ _).hom)
-  · rw [map_braiding_hom_comp_prodComparison_assoc]
-    simp
+  · simp [↓map_braiding_hom_comp_prodComparison_assoc]
   suffices IsIso (prodComparison hoFunctor Δ[m] X) by infer_instance
   exact isIso_prodComparison_of_stdSimplex _ (isIso_prodComparison_stdSimplex _)
 
