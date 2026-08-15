@@ -27,10 +27,6 @@ functors `Cᵒᵖ ⥤ Type w` are exactly the objects that are local with
 respect to a suitable `w`-small family of morphisms, see the lemma
 `Presheaf.isCardinalContinuous_eq_isLocal`.
 
-## TODO (@joelriou)
-* Show that any locally `κ`-presentable category is equivalent to
-a category of `κ`-continuous presheaves.
-
 -/
 
 @[expose] public section
@@ -84,6 +80,9 @@ lemma isCardinalContinuous_precomp_iff {C' : Type u''} [Category.{v''} C']
       Functor.isoWhiskerRight G.asEquivalence.counitIso _ ≪≫ F.leftUnitor
   exact preservesLimitsOfShape_of_natIso e
 
+/-- If two categories `C` and `C'` are equivalent, then the categories
+of `κ`-continuous functors in `C ⥤ D` and `C' ⥤ D` are also equivalent. -/
+@[implicit_reducible, simps!]
 def isCardinalContinuousCongrLeft {C' : Type u'} [Category.{v'} C']
     (e : C ≌ C') (D : Type u'') [Category.{v''} D] (κ : Cardinal.{w}) :
     (isCardinalContinuous C D κ).FullSubcategory ≌
@@ -225,8 +224,7 @@ section EssentiallySmall
 variable {C : Type u} [Category.{v} C] [EssentiallySmall.{w} C]
   {κ : Cardinal.{w}} [Fact κ.IsRegular]
 
-instance : IsCardinalLocallyPresentable
-      (isCardinalContinuous C (Type w) κ).FullSubcategory κ :=
+instance : IsCardinalLocallyPresentable (isCardinalContinuous C (Type w) κ).FullSubcategory κ :=
   (isCardinalContinuousCongrLeft ((equivSmallModel.{w} Cᵒᵖ).op.symm.trans
     (opOpEquivalence C)) (Type w) κ).isCardinalLocallyPresentable κ
 
@@ -252,7 +250,6 @@ instance :
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] shrinkYoneda in
-@[simps!]
 noncomputable def _root_.CategoryTheory.Equivalence.shrinkYonedaIsoConjugateYoneda
     {D : Type*} [Category.{w} D] (e : C ≌ D) :
     shrinkYoneda.{w} ≅ e.functor ⋙ yoneda ⋙

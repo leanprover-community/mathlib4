@@ -63,12 +63,17 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 namespace Presheaf
 
-noncomputable abbrev tautologicalCoconeShrink [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type max w) :
+/-- When a category `C` is locally `w`-small, this is colimit cocone
+(indexed by a category of costructured arrows) which expresses
+any presheaf `P : Cᵒᵖ ⥤ Type w` as a colimit of representable presheaves
+(using `shrinkYoneda`). -/
+noncomputable abbrev tautologicalCoconeShrink [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) :
     Cocone (CostructuredArrow.proj shrinkYoneda.{w} P ⋙ shrinkYoneda.{w}) :=
   Cocone.mk _ (CostructuredArrow.ι shrinkYoneda.{w} P)
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
+/-- Auxiliary definition for `isColimitTautologicalCoconeShrink`. -/
 noncomputable def isColimitTautologicalCoconeShrinkEvaluation
     [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) (X : Cᵒᵖ) :
     IsColimit (((evaluation _ _).obj X).mapCocone (tautologicalCoconeShrink.{w} P)) :=
@@ -96,6 +101,8 @@ noncomputable def isColimitTautologicalCoconeShrinkEvaluation
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
+/-- When a category `C` is locally `w`-small, any presheaf `P : Cᵒᵖ ⥤ Type w` is
+a colimit of representable presheaves (using `shrinkYoneda`). -/
 noncomputable def isColimitTautologicalCoconeShrink
     [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) :
     IsColimit (tautologicalCoconeShrink.{w} P) :=
@@ -103,17 +110,18 @@ noncomputable def isColimitTautologicalCoconeShrink
     (isColimitTautologicalCoconeShrinkEvaluation _)
 
 set_option backward.defeqAttrib.useBackward true in
-/-- For a presheaf `P`, consider the forgetful functor from the category of representable
-    presheaves over `P` to the category of presheaves. There is a tautological cocone over this
-    functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
-    natural transformation. (In this version, we allow the presheaf `P` to have values in
-    a larger universe.) -/
+/-- When the types of morphisms in a category `C` are in `Type v₁`, this is the colimit cocone
+which expresses any presheaf `P : Cᵒᵖ ⥤ Type max w v₁` as a colimit of representable
+presheaves (using `uliftYoneda`). -/
 @[simps]
 def tautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
     Cocone (CostructuredArrow.proj uliftYoneda.{w} P ⋙ uliftYoneda.{w}) where
   pt := P
   ι := { app X := X.hom }
 
+/-- Let `C` be a category where types of morphisms are in `Type v₁`.
+Let `P : Cᵒᵖ ⥤ Type max w v₁`. This is the equivalence of categories between
+`CostructuredArrow uliftYoneda.{w} P` and `CostructuredArrow shrinkYoneda.{max w v₁} P`. -/
 noncomputable abbrev costructuredArrowUliftYonedaEquiv (P : Cᵒᵖ ⥤ Type max w v₁) :
     CostructuredArrow uliftYoneda.{w} P ≌ CostructuredArrow shrinkYoneda.{max w v₁} P :=
   CostructuredArrow.congr .refl .refl
@@ -122,11 +130,9 @@ noncomputable abbrev costructuredArrowUliftYonedaEquiv (P : Cᵒᵖ ⥤ Type max
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
-/-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
-    representables. (In this version, we allow the presheaf `P` to have values in
-    a larger universe.)
-
-    Proposition 2.6.3(i) in [Kashiwara2006] -/
+/-- When the types of morphisms in a category `C` are in `Type v₁`,
+any presheaf `P : Cᵒᵖ ⥤ Type max w v₁` identifies to a colimit of representable
+presheaves (using `uliftYoneda`). -/
 @[no_expose]
 noncomputable def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
     IsColimit (tautologicalCocone'.{w} P) :=
@@ -141,8 +147,11 @@ noncomputable def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁)
       (costructuredArrowUliftYonedaEquiv.{w} P))
     exact Iso.refl _)
 
-noncomputable abbrev costructuredArrowYonedaEquiv (P : Cᵒᵖ ⥤ Type max v₁) :
-    CostructuredArrow yoneda P ≌ CostructuredArrow shrinkYoneda.{max v₁} P :=
+/-- Let `C` be a category where types of morphisms are in `Type v₁`.
+Let `P : Cᵒᵖ ⥤ Type v₁`. This is the equivalence of categories between
+`CostructuredArrow yoneda P` and `CostructuredArrow shrinkYoneda.{v₁} P`. -/
+noncomputable abbrev costructuredArrowYonedaEquiv (P : Cᵒᵖ ⥤ Type v₁) :
+    CostructuredArrow yoneda P ≌ CostructuredArrow shrinkYoneda.{v₁} P :=
   CostructuredArrow.congr .refl .refl
     (Functor.rightUnitor _ ≪≫ shrinkYonedaIsoYoneda.symm ≪≫ (Functor.leftUnitor _).symm)
     (Iso.refl _)
@@ -167,14 +176,13 @@ set_option backward.defeqAttrib.useBackward true in
 @[no_expose]
 noncomputable def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
     IsColimit (tautologicalCocone P) :=
-  evaluationJointlyReflectsColimits _ (fun X ↦ by
-    refine (IsColimit.equivOfNatIsoOfIso
+  evaluationJointlyReflectsColimits _ (fun X ↦
+    (IsColimit.equivOfNatIsoOfIso
       (NatIso.ofComponents (fun Y ↦ shrinkYonedaObjObjEquiv.symm.toIso) (fun _ ↦ by
         ext
-        simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm])) _ _ ?_).2
+        simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm])) _ _ (by exact Iso.refl _)).2
       ((isColimitTautologicalCoconeShrinkEvaluation.{v₁} P X).whiskerEquivalence
-      (costructuredArrowYonedaEquiv P))
-    exact Iso.refl _)
+        (costructuredArrowYonedaEquiv P)))
 
 /-- Given `P : Cᵒᵖ ⥤ Type max w v₁`, this is the functor from the opposite category
 of the category of elements of `X` which sends an element in `P.obj (op X)` to the
