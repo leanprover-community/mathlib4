@@ -24,8 +24,8 @@ An equation for $J_a(x)$ is
 $$
 J_a(x) = (x / 2)^a \frac{₀F₁(-; a + 1; -(x/2)^2)} {Γ(a + 1)}
 $$
-Based on this, we define `Complex.besselJ a x` using `regularizedHGFun` for the fraction part and
-eliminates the singularity for negative integer $a$.
+Based on this, we define `Complex.besselJ a x` using `Complex.regularizedHGFun` for the fraction
+part which removes the singularity for negative integer $a$.
 
 This function is analytic for all `x` when `a` is an integer. (see `Complex.analyticAt_besselJ_int`)
 
