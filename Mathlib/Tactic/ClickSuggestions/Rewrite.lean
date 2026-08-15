@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.ClickSuggestions.SectionState
 public meta import Mathlib.Control.Basic
+public meta import Mathlib.Tactic.ClickSuggestions.Util
 
 /-!
 # Support for `rw` suggestions in `#click_suggestions`
