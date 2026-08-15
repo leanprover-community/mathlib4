@@ -6,7 +6,12 @@ Authors: Fernando Chu, Andrew Yang, Felix Pernegger
 module
 
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Clopen
 public import Mathlib.Topology.LocalAtTarget
+
+import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Small inductive dimension
@@ -30,7 +35,7 @@ In this file we formalize this notion, and characterize the cases `n = 0` and `n
 * https://en.wikipedia.org/wiki/Inductive_dimension
 -/
 
-@[expose] public section
+public section
 
 open Set Topology TopologicalSpace
 
