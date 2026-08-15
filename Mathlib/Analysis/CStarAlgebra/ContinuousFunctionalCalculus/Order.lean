@@ -491,7 +491,7 @@ theorem norm_posPart_mono {a b : A} (hab : a ≤ b) : ‖a⁺‖ ≤ ‖b⁺‖ 
   calc
     ‖a⁺‖ ^ 3 = ‖a⁺ * a⁺ * a⁺‖ := by
       conv_rhs => rw [← cfcₙ_id' ℝ a⁺, ← cfcₙ_mul .., ← cfcₙ_mul ..]
-      simp [← pow_three', norm_cfcₙ_pow _ a⁺ 3]
+      simp [← pow_three', norm_cfcₙ_pow ℝ a⁺ 3]
     _ ≤ ‖a⁺ * b⁺ * a⁺‖ := norm_le_norm_of_nonneg_of_le (by cfc_tac) key
     _ ≤ ‖a⁺‖ * ‖b⁺‖ * ‖a⁺‖ := norm_mul₃_le ..
 
