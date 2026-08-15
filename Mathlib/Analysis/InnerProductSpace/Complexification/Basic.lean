@@ -268,7 +268,7 @@ def _root_.Submodule.complexification (K : Submodule 𝕜 E) : Submodule ℂ (Co
     x ∈ K.complexification ↔ x.re ∈ K ∧ x.im ∈ K := by simp [Submodule.complexification]
 
 variable (𝕜 E) in
-/-- The inclusion map of a real space into its complexification as a linear isometry, given by
+/-- The inclusion map of a space into its complexification as a linear isometry, given by
 `x ↦ (x, 0)`. -/
 @[expose, simps] def inclusion [Module ℝ E] [IsScalarTower ℝ 𝕜 E] :
     E →ₗᵢ[ℝ] Complexification 𝕜 E where
@@ -306,7 +306,6 @@ variable [RCLike 𝕜]
 
 open Complexification
 
--- do we want this for `LinearMap` as well?
 /-- Complexification of a continuous linear map between inner product spaces. -/
 @[expose, simps apply_apply] noncomputable def toComplexification :
     (E →L[𝕜] F) →+ Complexification 𝕜 E →L[ℂ] Complexification 𝕜 F where
@@ -440,7 +439,7 @@ An opeartor is equal to its conjugate iff it is a complexified operator
     S.toComplexification.conjugate = S.toComplexification := by ext1; simp [conj_apply]
 
 /-- Decomplexifying an operator on complexifications given that it commutes with
-`(RCLike.I • 1).toComplexification`. -/
+the complexification of `algebraMapCLM 𝕜 _ RCLike.I`. -/
 @[expose, simps!]
 noncomputable def ofComplexification [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
     [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
@@ -485,10 +484,7 @@ noncomputable def ofComplexification [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 
 lemma toComplexification_ofComplexification
     [Module ℝ E] [IsScalarTower ℝ 𝕜 E] [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
-    {T : Complexification 𝕜 E →L[ℂ] Complexification 𝕜 F}
-    (h : T ∘SL (algebraMapCLM 𝕜 (E →L[𝕜] E) RCLike.I).toComplexification =
-      (algebraMapCLM 𝕜 (F →L[𝕜] F) RCLike.I).toComplexification ∘SL T)
-    (hT : T.conjugate = T) :
+    {T : Complexification 𝕜 E →L[ℂ] Complexification 𝕜 F} (h) (hT : T.conjugate = T) :
     (T.ofComplexification h).toComplexification = T := by
   ext1 v
   conv_rhs => rw [← mk_re_im v, mk_eq_add_I_smul]
@@ -502,7 +498,8 @@ lemma toComplexification_ofComplexification
   ext <;> simp
 
 /-- An operator `T` on a complexification space of a real space is a complexified operator
-(i.e., there exists a real operator `S` such that `S.toComplexification = T`) iff `T.conjugate = T`.
+(i.e., there exists an operator `S` such that `S.toComplexification = T`) iff `T.conjugate = T`
+and it commutes with the complexification of `algebraMapCLM 𝕜 _ RCLike.I`.
 
 This is Chapter 2, Exercise 32 in [roman_advanced_linear_algebra]. -/
 lemma exists_toComplexification_eq_iff
