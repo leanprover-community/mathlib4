@@ -89,7 +89,7 @@ We close numerical goals with `norm_num` and `linarith`.
 
 public meta section
 
-open Lean Elab Meta Term Mathlib.Tactic Syntax
+open Lean Mathlib.Tactic
 open Lean.Elab.Tactic (liftMetaTactic liftMetaTactic' TacticM getMainGoal)
 
 namespace Mathlib.Tactic.Bound

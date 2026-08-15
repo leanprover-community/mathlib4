@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Data.Set.Card
 
 /-!
 
@@ -49,12 +49,12 @@ open scoped Classical in
 theorem Nat.card_eq (α : Type*) :
     Nat.card α = if _ : Finite α then @Fintype.card α (Fintype.ofFinite α) else 0 := by
   cases finite_or_infinite α
-  · letI := Fintype.ofFinite α
-    simp only [this, *, Nat.card_eq_fintype_card, dif_pos]
+  · let := Fintype.ofFinite α
+    simp only [this, *, Nat.card_eq_fintype_card, dite_eq_left]
   · simp only [*, card_eq_zero_of_infinite, not_finite_iff_infinite.mpr, dite_false]
 
 theorem Finite.card_pos_iff [Finite α] : 0 < Nat.card α ↔ Nonempty α := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   rw [Nat.card_eq_fintype_card, Fintype.card_pos_iff]
 
 theorem Finite.card_pos [Finite α] [h : Nonempty α] : 0 < Nat.card α :=
@@ -63,16 +63,16 @@ theorem Finite.card_pos [Finite α] [h : Nonempty α] : 0 < Nat.card α :=
 namespace Finite
 
 theorem card_eq [Finite α] [Finite β] : Nat.card α = Nat.card β ↔ Nonempty (α ≃ β) := by
-  haveI := Fintype.ofFinite α
-  haveI := Fintype.ofFinite β
+  have := Fintype.ofFinite α
+  have := Fintype.ofFinite β
   simp only [Nat.card_eq_fintype_card, Fintype.card_eq]
 
 theorem card_le_one_iff_subsingleton [Finite α] : Nat.card α ≤ 1 ↔ Subsingleton α := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.card_le_one_iff_subsingleton]
 
 theorem one_lt_card_iff_nontrivial [Finite α] : 1 < Nat.card α ↔ Nontrivial α := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.one_lt_card_iff_nontrivial]
 
 theorem one_lt_card [Finite α] [h : Nontrivial α] : 1 < Nat.card α :=
@@ -80,14 +80,14 @@ theorem one_lt_card [Finite α] [h : Nontrivial α] : 1 < Nat.card α :=
 
 @[simp]
 theorem card_option [Finite α] : Nat.card (Option α) = Nat.card α + 1 := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.card_option]
 
 theorem card_le_of_embedding [Finite β] (f : α ↪ β) : Nat.card α ≤ Nat.card β :=
   Nat.card_le_card_of_injective _ f.injective
 
 theorem card_eq_zero_iff [Finite α] : Nat.card α = 0 ↔ IsEmpty α := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.card_eq_zero_iff]
 
 /-- If `f` is injective, then `Nat.card α ≤ Nat.card β`. We must also assume
@@ -114,10 +114,10 @@ theorem card_le_of_surjective' {f : α → β} (hf : Function.Surjective f)
 theorem card_eq_zero_of_surjective {f : α → β} (hf : Function.Surjective f) (h : Nat.card β = 0) :
     Nat.card α = 0 := by
   cases finite_or_infinite β
-  · haveI := card_eq_zero_iff.mp h
-    haveI := Function.isEmpty f
+  · have := card_eq_zero_iff.mp h
+    have := Function.isEmpty f
     exact Nat.card_of_isEmpty
-  · haveI := Infinite.of_surjective f hf
+  · have := Infinite.of_surjective f hf
     exact Nat.card_eq_zero_of_infinite
 
 /-- NB: `Nat.card` is defined to be `0` for infinite types. -/
@@ -137,14 +137,32 @@ theorem card_range_le [Finite α] (f : α → β) : Nat.card (Set.range f) ≤ N
 
 theorem card_subtype_le [Finite α] (p : α → Prop) : Nat.card { x // p x } ≤ Nat.card α := by
   classical
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   simpa only [Nat.card_eq_fintype_card] using Fintype.card_subtype_le p
 
 theorem card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :
     Nat.card { x // p x } < Nat.card α := by
   classical
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   simpa only [Nat.card_eq_fintype_card, gt_iff_lt] using Fintype.card_subtype_lt hx
+
+/-- A custom induction principle for finite types, by strong induction on `Nat.card`:
+the base case is a subsingleton type, and the induction step is for nontrivial types,
+where one can assume the hypothesis for all types of smaller cardinality. -/
+@[elab_as_elim]
+theorem induction_subsingleton_or_nontrivial {P : Type* → Prop} (α) [Finite α]
+    (hbase : ∀ (α) [Finite α] [Subsingleton α], P α)
+    (hstep : ∀ (α) [Finite α] [Nontrivial α],
+      (∀ (β) [Finite β], Nat.card β < Nat.card α → P β) → P α) :
+    P α := by
+  obtain ⟨n, hn⟩ : ∃ n, Nat.card α = n := ⟨Nat.card α, rfl⟩
+  induction n using Nat.strong_induction_on generalizing α with | _ n ih
+  rcases subsingleton_or_nontrivial α with hsing | hnontriv
+  · apply hbase
+  · apply hstep
+    intro β _ hlt
+    rw [hn] at hlt
+    exact ih (Nat.card β) hlt _ rfl
 
 end Finite
 
@@ -196,10 +214,10 @@ theorem ecard_lt_ecard (hs : s.Finite) (hsub : s ⊂ t) : ENat.card s < ENat.car
       sdiff_union_of_subset hsub.subset]
   exact le_add_of_le_right hle
 
-theorem card_strictMonoOn : StrictMonoOn (α := Set α) (Nat.card ∘ (↑)) (setOf Set.Finite) :=
+theorem card_strictMonoOn : StrictMonoOn (α := Set α) (Nat.card ∘ (↑)) (Set.ofPred Set.Finite) :=
   fun _ _ _ ↦ card_lt_card
 
-theorem ecard_strictMonoOn : StrictMonoOn (α := Set α) (ENat.card ∘ (↑)) (setOf Set.Finite) :=
+theorem ecard_strictMonoOn : StrictMonoOn (α := Set α) (ENat.card ∘ (↑)) (Set.ofPred Set.Finite) :=
   fun _ hs _ _ ↦ hs.ecard_lt_ecard
 
 theorem eq_of_subset_of_card_le (ht : t.Finite) (hsub : s ⊆ t) (hcard : Nat.card t ≤ Nat.card s) :
@@ -224,19 +242,85 @@ theorem eq_top_of_card_le_of_finite [Finite α] {s : Set α} (h : Nat.card α �
 
 end Set
 
-namespace List.Nodup
+namespace Finset
 
-variable {l : List α} (h : l.Nodup)
-include h
+variable {s : Finset α} {s' : Set α}
 
-theorem length_le_natCard [Finite α] : l.length ≤ Nat.card α := by
-  have := Fintype.ofFinite α
-  grw [h.length_le_card, Fintype.card_eq_nat_card]
+theorem card_le_encard (h : ∀ a ∈ s, a ∈ s') : s.card ≤ s'.encard := by
+  grw [← Set.encard_coe_eq_coe_finsetCard, Set.encard_le_encard (h · <| by simpa using ·)]
+
+theorem card_le_ncard (hs : s'.Finite) (h : ∀ a ∈ s, a ∈ s') : s.card ≤ s'.ncard := by
+  grw [← ENat.natCast_le_natCast, hs.cast_ncard_eq, s.card_le_encard h]
+
+variable (s) in
+theorem card_le_enatCard : s.card ≤ ENat.card α := by
+  simp [← Set.encard_univ, card_le_encard]
+
+variable (s) in
+theorem card_le_natCard [Finite α] : s.card ≤ Nat.card α := by
+  simp [← Set.ncard_univ, card_le_ncard]
+
+end Finset
+
+namespace Multiset
+
+variable {m : Multiset α} {s : Set α}
+
+theorem ncard_ofPred_mem [DecidableEq α] : {a | a ∈ m}.ncard = m.dedup.card := by
+  rw [← coe_toFinset, Set.ncard_coe_finset, card_toFinset]
+
+theorem encard_ofPred_mem [DecidableEq α] : {a | a ∈ m}.encard = m.dedup.card := by
+  rw [← m.finite_toSet.cast_ncard_eq, ncard_ofPred_mem]
+
+namespace Nodup
+
+variable (hm : m.Nodup)
+include hm
+
+theorem card_le_encard (h : ∀ a ∈ m, a ∈ s) : m.card ≤ s.encard := by
+  classical
+  grw [← toFinset_card_of_nodup hm, Finset.card_le_encard (h · <| by simpa using ·)]
+
+theorem card_le_ncard (hs : s.Finite) (h : ∀ a ∈ m, a ∈ s) : m.card ≤ s.ncard := by
+  grw [← ENat.natCast_le_natCast, hs.cast_ncard_eq, hm.card_le_encard h]
+
+theorem card_le_enatCard : m.card ≤ ENat.card α := by
+  simp [← Set.encard_univ, hm.card_le_encard]
+
+theorem card_le_natCard [Finite α] : m.card ≤ Nat.card α := by
+  simp [← Set.ncard_univ, hm.card_le_ncard]
+
+end Nodup
+
+end Multiset
+
+namespace List
+
+variable {l : List α} {s : Set α}
+
+theorem ncard_ofPred_mem [DecidableEq α] : {a | a ∈ l}.ncard = l.dedup.length := by
+  rw [← coe_toFinset, Set.ncard_coe_finset, card_toFinset]
+
+theorem encard_ofPred_mem [DecidableEq α] : {a | a ∈ l}.encard = l.dedup.length := by
+  rw [← l.finite_toSet.cast_ncard_eq, ncard_ofPred_mem]
+
+namespace Nodup
+
+variable (hl : l.Nodup)
+include hl
+
+theorem length_le_encard (h : ∀ a ∈ l, a ∈ s) : l.length ≤ s.encard := by
+  grw [← Multiset.coe_card, Multiset.coe_nodup.mpr hl |>.card_le_encard h]
+
+theorem length_le_ncard (hs : s.Finite) (h : ∀ a ∈ l, a ∈ s) : l.length ≤ s.ncard := by
+  grw [← ENat.natCast_le_natCast, hs.cast_ncard_eq, hl.length_le_encard h]
 
 theorem length_le_enatCard : l.length ≤ ENat.card α := by
-  cases finite_or_infinite α
-  · grw [h.length_le_natCard, ENat.card_eq_coe_natCard]
-  · grw [ENat.card_eq_top_of_infinite]
-    exact le_top
+  simp [← Set.encard_univ, hl.length_le_encard]
 
-end List.Nodup
+theorem length_le_natCard [Finite α] : l.length ≤ Nat.card α := by
+  simp [← Set.ncard_univ, hl.length_le_ncard]
+
+end Nodup
+
+end List

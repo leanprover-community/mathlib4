@@ -177,7 +177,7 @@ noncomputable def isLimitWeightedLimCone :
     (W.weightedLimCone F).IsLimit :=
   limit.isLimit _
 
-@[reassoc (attr := simp)]
+@[reassoc, simp] -- `simp` can prove the `reassoc` version
 lemma isLimitWeightedLimCone_fac {Z} (π) (hπ) ⦃j : J⦄ (x : W.obj j) :
     (W.isLimitWeightedLimCone F).lift (Z := Z) π hπ ≫ W.weightedLimObjObjπ F x = π x :=
   (W.isLimitWeightedLimCone F).fac ..
@@ -255,7 +255,9 @@ variable {J : Type u} [Category.{v} J] (W : J ⥤ Type w) {C : Type u'} [Categor
 
 variable (C) in
 /-- Given a weight `W : J ⥤ Type w`, this is the property that all `W`-weighted limits
-exist for functors `F : J ⥤ C`. -/
+exist for functors `F : J ⥤ C`. Under this condition, we define a weighted limit functor
+`W.weightedLimObj : (J ⥤ C) ⥤ C`. (See also `HasWeightedLimFlipObj` for the "flipped"
+property for `F : J ⥤ C`.) -/
 abbrev HasWeightedLimObj : Prop :=
   ∀ (F : J ⥤ C), HasWeightedLimit W F
 
@@ -294,7 +296,9 @@ noncomputable def weightedLimFlipObj' : (hasWeightedLimit.{w} F).FullSubcategory
   map g := weightedLimFlipObjMap g.unop.hom F
 
 /-- Given `F : J ⥤ C`, this is the property that weighted limits of `F` exist for all
-weights `W : J ⥤ Type w`. -/
+weights `W : J ⥤ Type w`. Under this condition, we define a weighted limit functor
+`F.weightedLimFlipObj : (J ⥤ Type w)ᵒᵖ ⥤ C`. (See also `HasWeightedLimObj` for
+the "flipped" property for `W : J ⥤ Type w`.) -/
 abbrev HasWeightedLimFlipObj : Prop :=
   ∀ (W : J ⥤ Type w), HasWeightedLimit W F
 
