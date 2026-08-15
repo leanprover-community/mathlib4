@@ -216,28 +216,34 @@ end Ring
 
 end Commute
 
-section CommSemiring
+section Semiring
 
-variable [CommSemiring R] {x y : R}
+variable [Semiring R] {x y : R}
 
-/-- In a commutative semiring, two elements whose sum is zero have equal squares. -/
+/-- In a semiring, two elements whose sum is zero have equal squares. -/
 theorem sq_eq_sq_of_add_eq_zero (h : x + y = 0) : x ^ 2 = y ^ 2 := by
   transitivity x * x + x * y + y * y
   · rw [pow_two, add_assoc, ← add_mul, h, zero_mul, add_zero]
   · rw [← mul_add, h, mul_zero, zero_add, pow_two]
 
-/-- If two elements of a commutative semiring sum to zero and the right one is nilpotent,
+/-- If two elements of a semiring sum to zero and the right one is nilpotent,
 then so is the left one. -/
 theorem IsNilpotent.of_add_eq_zero_left (hy : IsNilpotent y) (h : x + y = 0) :
     IsNilpotent x := by
   obtain ⟨n, hn⟩ := hy
   refine ⟨2 * n, ?_⟩
-  rw [pow_mul, sq_eq_sq_of_add_eq_zero h, ← pow_mul, mul_comm, pow_mul, hn, pow_two, mul_zero]
+  rw [pow_mul, sq_eq_sq_of_add_eq_zero h, ← pow_mul, Nat.mul_comm, pow_mul, hn, pow_two, mul_zero]
 
 theorem isNilpotent_iff_of_add_eq_zero (h : x + y = 0) :
     IsNilpotent x ↔ IsNilpotent y :=
   ⟨fun hx ↦ hx.of_add_eq_zero_left (by simpa [add_comm] using h),
     fun hy ↦ hy.of_add_eq_zero_left h⟩
+
+end Semiring
+
+section CommSemiring
+
+variable [CommSemiring R] {x y : R}
 
 lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) :
