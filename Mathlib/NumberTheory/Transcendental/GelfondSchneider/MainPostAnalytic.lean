@@ -58,7 +58,7 @@ include α β σ α' β' γ' hirr htriv habc in
 lemma exists_nonzero_iteratedFDeriv : deriv^[r α β σ α' β' γ' hirr htriv habc q hq0 h2mq]
  (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq +
      1) ≠ 0 := by
-  have Hrprop := (r_prop α β σ α' β' γ' hirr htriv habc q hq0 h2mq).1
+  have Hrprop := (rProp α β σ α' β' γ' hirr htriv habc q hq0 h2mq).1
   have hA1 : AnalyticAt ℂ (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
       (↑↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1) := by fun_prop
   rw [← iteratedDeriv_eq_iterate]
@@ -140,6 +140,7 @@ lemma eq5zero : 1 ≤ norm
   simp only [Real.norm_eq_abs] at *
   norm_cast at *
 
+/-- The constant `c₅ = (|c₁| + 1) ^ (h * (1 + 4 * m ^ 2))` used for the lower bound on `ρ`. -/
 def c₅ : ℝ := ((abs (c₁ α' β' γ') + 1) ^ (((↑(h K) * (1+4 * m K^2)))))
 
 omit [DecidableEq (K →+* ℂ)] in
@@ -173,7 +174,7 @@ lemma order_geq_n : ∀ l' : Fin (m K),
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma n_le_r : n K q ≤ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq := by
-  have := r_prop α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+  have := rProp α β σ α' β' γ' hirr htriv habc q hq0 h2mq
   obtain ⟨hr,hprop⟩ := this
   have := order_geq_n α β σ α' β' γ' hirr htriv habc q hq0 h2mq (l₀' α β σ α' β' γ' hirr htriv habc
       q hq0 h2mq)

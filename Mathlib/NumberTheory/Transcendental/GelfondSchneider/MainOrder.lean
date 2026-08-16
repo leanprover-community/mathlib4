@@ -95,6 +95,7 @@ lemma rho_injective (i j : Fin (q * q)) (hij : i ≠ j) : ρ α β q i ≠ ρ α
   · exact mt
       (fun h ↦ by simpa [exp_log htriv.1, exp_zero] using congrArg exp h) htriv.2
 
+/-- The Vandermonde matrix of the exponents `ρ t` appearing in the auxiliary function `R`. -/
 abbrev V := vandermonde (fun t ↦ ρ α β q t)
 
 include hirr htriv in
@@ -106,6 +107,7 @@ lemma vandermonde_det_ne_zero : det (V α β q) ≠ 0 := by
 
 open Differentiable Complex
 
+/-- The auxiliary exponential function `R x = ∑ t, σ (η t) * exp (ρ t * x)`. -/
 abbrev R : ℂ → ℂ := fun x ↦ ∑ t, (canonicalEmbedding K)
   ((algebraMap (𝓞 K) K) ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) t)) σ *
     exp (ρ α β q t * x)
@@ -290,13 +292,17 @@ lemma exists_min_analyticOrderAt :
    ⟨⟨0, one_le_m K⟩, Finset.mem_univ _⟩
   exact ⟨x, hx, _, rfl, hmin⟩
 
+/-- A point of `Fin m` at which `R` vanishes to minimal order. -/
 abbrev l₀' : Fin (m K) :=
   (exists_min_analyticOrderAt α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose
 
-abbrev l₀_prop :=
+/-- The defining property of `l₀'`: the order of `R` at `l₀' + 1` is minimal among
+`1, …, m`. -/
+abbrev l₀Prop :=
   (exists_min_analyticOrderAt α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose_spec.2
 
-abbrev r' := (l₀_prop α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose
+/-- The order of vanishing of `R` at `l₀' + 1`, as an element of `ℕ∞`. -/
+abbrev r' := (l₀Prop α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose
 
 lemma r'_spec :
     let s : Finset (Fin (m K)) := Finset.univ
@@ -305,6 +311,6 @@ lemma r'_spec :
       r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq ∧
     ∀ l' ∈ s, r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≤
       analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (↑↑l' + 1) :=
-  (l₀_prop α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose_spec
+  (l₀Prop α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose_spec
 
 end GelfondSchneider
