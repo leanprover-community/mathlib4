@@ -5,7 +5,8 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.NumberTheory.RamificationInertia.Inertia
+public import Mathlib.RingTheory.Finiteness.Quotient
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.QuasiFinite.Basic
 
 /-!
@@ -49,13 +50,13 @@ theorem inertiaDeg_def [hq : q.IsPrime]
     [Algebra (Localization.AtPrime (q.under R)) (Localization.AtPrime q)]
     [Localization.AtPrime.IsLiesOverAlgebra (q.under R) q] :
     q.inertiaDeg R = Module.finrank (q.under R).ResidueField q.ResidueField := by
-  convert! dif_pos hq
+  convert! dite_eq_left hq
   simp [Algebra.algebra_ext_iff, Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq]
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg'_def := inertiaDeg_def
 
 theorem inertiaDeg_of_not_isPrime (hq : ¬ q.IsPrime) : q.inertiaDeg R = 0 :=
-  dif_neg hq
+  dite_eq_right hq
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg'_of_not_isPrime :=
   inertiaDeg_of_not_isPrime
@@ -115,12 +116,6 @@ theorem inertiaDeg_eq_of_isMaximal [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg'_eq_of_isMaximal :=
   inertiaDeg_eq_of_isMaximal
-
-theorem inertiaDeg'_eq_inertiaDeg [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
-    p.inertiaDeg' q = q.inertiaDeg R := by
-  rw [inertiaDeg'_algebraMap, inertiaDeg_eq_of_isMaximal p q]
-
-@[deprecated (since := "2026-07-03")] alias inertiaDeg_eq_inertiaDeg' := inertiaDeg'_eq_inertiaDeg
 
 theorem inertiaDeg_tower [r.LiesOver q] :
     r.inertiaDeg R = q.inertiaDeg R * r.inertiaDeg S := by
@@ -182,7 +177,7 @@ theorem inertiaDeg_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommC
 theorem cardQuot_pow_inertiaDeg [Module.Finite R S] [p.IsMaximal] [q.IsMaximal] [q.LiesOver p] :
     p.cardQuot ^ q.inertiaDeg R = q.cardQuot := by
   let _ : Field (R ⧸ p) := Quotient.field p
-  rw [← inertiaDeg'_eq_inertiaDeg p q, inertiaDeg'_algebraMap p q]
+  rw [inertiaDeg_eq_of_isMaximal p q]
   exact Module.natCard_eq_pow_finrank.symm
 
 @[deprecated (since := "2026-07-03")] alias cardQuot_pow_inertiaDeg' := cardQuot_pow_inertiaDeg

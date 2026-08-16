@@ -21,7 +21,7 @@ public section
 -- Guard against import creep
 assert_not_exists Multiset
 
-open Function OrderDual Set
+open Function Set
 
 variable {α β γ : Type*} {ι : Sort*}
 
