@@ -385,7 +385,7 @@ instance : Semiring (CategoryAlgebra R C) where
       · rw [comp₀, dite_eq_left rfl]
         simp only [AddMonoidHom.coe_mk]
         rw [ZeroHom.coe_mk, compHom]
-        simp only[Preadditive.leftComp, AddMonoidHom.mk'_apply]
+        simp only [Preadditive.leftComp, AddMonoidHom.mk'_apply]
         rw [eqToHom_refl]
         simp
       · intro y₂ _ h
