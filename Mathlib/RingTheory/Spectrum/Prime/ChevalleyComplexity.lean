@@ -60,8 +60,6 @@ not give an explicit bound on the complexity.
 
 -/
 
-@[expose] public section
-
 variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
 variable [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A] {n : ℕ}
 
@@ -545,7 +543,7 @@ end PolynomialC
 
 open PolynomialC InductionObj in
 /-- The `C : R → R[X]` case of **Chevalley's theorem** with complexity bound. -/
-lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM : 1 ∈ M)
+public lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM : 1 ∈ M)
     (S : ConstructibleSetData R[X]) (hS : ∀ C ∈ S, ∀ j k, (C.g j).coeff k ∈ M) :
     ∃ T : ConstructibleSetData R,
       comap Polynomial.C '' S.toSet = T.toSet ∧ ∀ C ∈ T, C.n ≤ S.degBound ∧
@@ -571,6 +569,8 @@ lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM :
       rwa [Nat.one_le_iff_ne_zero]
 
 /-! ### The `C : R → R[X₁, ..., Xₘ]` case -/
+
+@[expose] public section
 
 namespace MvPolynomialC
 
@@ -778,6 +778,8 @@ Chevalley's theorem with complexity bound. -/
 def degBound (k m n : ℕ) (d : Multiset (Fin m)) : ℕ :=
   MvPolynomialC.degBound (k + n) (1 + (d.map Fin.val).count ·) m
 
+end
+
 end ChevalleyThm
 
 open ChevalleyThm
@@ -790,7 +792,7 @@ A constructible set of complexity at most `M` in `Spec R[X₁, ..., Xₘ]` gets 
 
 See the module doc of `Mathlib/RingTheory/Spectrum/Prime/ChevalleyComplexity.lean` for an
 explanation of this notion of complexity. -/
-lemma chevalley_mvPolynomial_mvPolynomial
+public lemma chevalley_mvPolynomial_mvPolynomial
     {m n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] MvPolynomial (Fin m) R)
     (k : ℕ) (d : Multiset (Fin m))
     (S : ConstructibleSetData (MvPolynomial (Fin m) R))
