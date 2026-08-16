@@ -66,7 +66,7 @@ lemma memLp_prod_iff :
       ext; all_goals simp
     rw [this]
     exact MemLp.add (Isometry.inl.lipschitzWith.comp_memLp (by simp) h.1)
-      (Isometry.inr.lipschitWith.comp_memLp (by simp) h.2)
+      (Isometry.inr.lipschit.comp_memLp (by simp) h.2)
 
 lemma MemLp.fst (h : MemLp f p μ) : MemLp (fun x ↦ (f x).fst) p μ :=
   memLp_prod_iff.1 h |>.1

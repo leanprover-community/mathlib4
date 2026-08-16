@@ -39,7 +39,8 @@ theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounde
 @[to_additive]
 theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t := by
   symm
-  exact AntilipschitzWith.isBounded_of_image2_left _ (fun x => (isometry_mul_left x).antilipschitz)
+  exact AntilipschitzWith.isBounded_of_image2_left _
+    (fun x => (isometry_mul_left x).antilipschitzWith)
     (by rwa [image2_swap])
 
 @[to_additive]

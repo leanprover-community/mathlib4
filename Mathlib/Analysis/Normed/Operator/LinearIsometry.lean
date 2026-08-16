@@ -907,10 +907,10 @@ theorem map_ne {x y : E} (h : x ≠ y) : e x ≠ e y :=
   e.injective.ne h
 
 protected theorem lipschitz : LipschitzWith 1 e :=
-  e.isometry.lipschitz
+  e.isometry.lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 e :=
-  e.isometry.antilipschitz
+  e.isometry.antilipschitzWith
 
 theorem image_eq_preimage_symm (s : Set E) : e '' s = e.symm ⁻¹' s :=
   e.toLinearEquiv.image_eq_preimage_symm s
