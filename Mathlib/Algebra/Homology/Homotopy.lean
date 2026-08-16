@@ -732,7 +732,6 @@ lemma nullHomotopicMap_f_succ (n : ℕ) :
 
 end ChainComplex
 
-
 /-- A homotopy equivalence between two chain complexes consists of a chain map each way,
 and homotopies from the compositions to the identity chain maps.
 
