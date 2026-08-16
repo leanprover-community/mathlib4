@@ -65,11 +65,6 @@ namespace StarAlgebra.elemental
 
 variable [CStarAlgebra A]
 
-instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [StarRing A]
-    [ContinuousStar A] [StarModule R A] (a : A) [IsStarNormal a] :
-    NormedCommRing (elemental R a) where
-  mul_comm := mul_comm
-
 noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elemental ℂ a) where
 
 variable (a : A) [IsStarNormal a]
