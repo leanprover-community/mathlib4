@@ -643,7 +643,7 @@ theorem mk_surjective_eq_zero_iff_lift :
   contrapose! +distrib
   rw [lift_mk_le', and_comm]
   simp_rw [mk_ne_zero_iff, mk_eq_zero_iff, nonempty_coe_sort,
-    Set.Nonempty, mem_setOf, exists_surjective_iff, nonempty_fun]
+    Set.Nonempty, mem_ofPred, exists_surjective_iff, nonempty_fun]
 
 theorem mk_surjective_eq_zero_iff :
     #{f : α → β | Surjective f} = 0 ↔ #α < #β ∨ (#α ≠ 0 ∧ #β = 0) := by
@@ -780,16 +780,16 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
   · rintro ⟨y, h⟩
     dsimp only at h
     by_cases h' : ∃ z : s, g z = y
-    · rw [dif_pos h'] at h
+    · rw [dite_eq_left h'] at h
       cases Sum.inl.inj h
       exact (Classical.choose h').2
-    · rw [dif_neg h'] at h
+    · rw [dite_eq_right h'] at h
       cases h
   · intro h
     have : ∃ z : s, g z = g ⟨x, h⟩ := ⟨⟨x, h⟩, rfl⟩
     use g ⟨x, h⟩
     dsimp only
-    rw [dif_pos this]
+    rw [dite_eq_left this]
     congr
     suffices Classical.choose this = ⟨x, h⟩ from congr_arg Subtype.val this
     apply g.2

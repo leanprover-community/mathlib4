@@ -175,26 +175,29 @@ variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
 
 variable (X Y f) in
 /-- The set of parameters `z` in the segment `[y, y']` such that `f b z ≤ f b' y`. -/
-def setOf_sublevelLeft_subset (b b' : β) (y y' : Y) : Set (segment ℝ y.val y'.val) :=
+def setOfPred_sublevelLeft_subset (b b' : β) (y y' : Y) : Set (segment ℝ y.val y'.val) :=
     {z | sublevelLeft X f b z ⊆ sublevelLeft X f b' y}
 
+@[deprecated (since := "2026-07-09")]
+alias setOf_sublevelLeft_subset := setOfPred_sublevelLeft_subset
+
 include ne_X kX hfx hfx' cY hfy hfy' in
-/-- Under suitable inequalities, `setOf_sublevelLeft_subset` is closed -/
-theorem isClosed_setOf_sublevelLeft_subset
+/-- Under suitable inequalities, `setOfPred_sublevelLeft_subset` is closed -/
+theorem isClosed_setOfPred_sublevelLeft_subset
     (a : E) (b b' : β) (y y' : Y)
     (ha : ∀ x ∈ X, f a y ⊔ f a y' ≤ f x y ⊔ f x y')
     (hb : ∀ y ∈ Y, ∃ x ∈ X, f x y ≤ b)
     (hb' : b' < f a y ⊔ f a y')
     (hbb' : b < b') :
-    IsClosed (setOf_sublevelLeft_subset X Y f b b' y y') := by
-  set J := setOf_sublevelLeft_subset X Y f b b' y y'
-  -- Write `J` for `setOf_sublevelLeft_subset X Y f b b' y y'`.
+    IsClosed (setOfPred_sublevelLeft_subset X Y f b b' y y') := by
+  set J := setOfPred_sublevelLeft_subset X Y f b b' y y'
+  -- Write `J` for `setOfPred_sublevelLeft_subset X Y f b b' y y'`.
   rw [isClosed_iff_clusterPt]
   /- Let `z in segment ℝ y y'` be a cluster point of `J`;
      we have to show that `z ∈ J`, i.e `sublevelLeft t z ⊆ sublevelLeft t' y1`.
      Let `x ∈ sublevelLeft t z` and let us prove that `x ∈ sublevelLeft X f b' y`. -/
   intro z hz x hx
-  suffices ∃ z' ∈ setOf_sublevelLeft_subset X Y f b b' y y', x ∈ sublevelLeft X f b' (z' : F) by
+  suffices ∃ z' ∈ setOfPred_sublevelLeft_subset X Y f b b' y y', x ∈ sublevelLeft X f b' (z' : F) by
     obtain ⟨z', hz', hxz'⟩ := this
     /- We need to prove `x ∈ sublevelLeft X f b' y`.
        Assume that there is `z' ∈ J` such that `x ∈ sublevelLeft b' z'`.
@@ -221,12 +224,15 @@ theorem isClosed_setOf_sublevelLeft_subset
   rw [clusterPt_principal_subtype_iff_frequently (cY.segment_subset y.prop y'.prop)] at hz
   suffices ∀ᶠ z' : F in nhdsWithin z Y,
     (∃ hz' : z' ∈ segment ℝ y.val y'.val,
-      (⟨z', hz'⟩ : segment ℝ y.val y'.val) ∈ setOf_sublevelLeft_subset X Y f b b' y y') →
+      (⟨z', hz'⟩ : segment ℝ y.val y'.val) ∈ setOfPred_sublevelLeft_subset X Y f b b' y y') →
       ∃ hz' : z' ∈ segment ℝ y.val y'.val, x ∈ sublevelLeft X f b' z'
-        ∧ (⟨z', hz'⟩ : segment ℝ y.val y'.val) ∈ setOf_sublevelLeft_subset X Y f b b' y y' by
+        ∧ (⟨z', hz'⟩ : segment ℝ y.val y'.val) ∈ setOfPred_sublevelLeft_subset X Y f b b' y y' by
     obtain ⟨z', hz', hxz'1, hxz'2⟩ := hz.mp this |>.exists
     exact ⟨⟨z', hz'⟩, ⟨hxz'2, hxz'1⟩⟩
   exact hfx.mp <| .of_forall fun z hzt' ⟨hz, hz'⟩ ↦ ⟨hz, ⟨hzt'.le, hz'⟩⟩
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_sublevelLeft_subset := isClosed_setOfPred_sublevelLeft_subset
 
 variable [DenselyOrdered β]
 variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
@@ -241,15 +247,15 @@ public theorem exists_lt_iInf_of_lt_iInf_of_sup
   obtain ⟨t', htt', ht'⟩ := exists_between (ht a ha)
   lift y1 to Y using hy1
   lift y2 to Y using hy2
-  let J1 := setOf_sublevelLeft_subset X Y f t t' y1 y2
+  let J1 := setOfPred_sublevelLeft_subset X Y f t t' y1 y2
   have mem_J1_iff (z : segment ℝ (y1 : F) y2) :
       z ∈ J1 ↔ sublevelLeft X f t z ⊆ sublevelLeft X f t' y1 := by
-    simp [J1, setOf_sublevelLeft_subset]
+    simp [J1, setOfPred_sublevelLeft_subset]
   let φ : segment ℝ (y1 : F) y2 ≃ₜ segment ℝ (y2 : F) y1 := .setCongr (segment_symm ℝ (y1 : F) y2)
-  let J2 := φ ⁻¹' (setOf_sublevelLeft_subset X Y f t t' y2 y1)
+  let J2 := φ ⁻¹' (setOfPred_sublevelLeft_subset X Y f t t' y2 y1)
   have mem_J2_iff (z : segment ℝ (y1 : F) y2) :
       z ∈ J2 ↔ sublevelLeft X f t z ⊆ sublevelLeft X f t' y2 := by
-    simp [J2, setOf_sublevelLeft_subset, φ, Homeomorph.setCongr]
+    simp [J2, setOfPred_sublevelLeft_subset, φ, Homeomorph.setCongr]
   have h_mem_Y (z : segment ℝ (y1 : F) y2) : (z : F) ∈ Y := cY.segment_subset y1.2 y2.2 z.prop
   have hJ1J2 : J1 ∩ J2 = ∅ := by
     rw [Set.eq_empty_iff_forall_notMem]
@@ -268,11 +274,11 @@ public theorem exists_lt_iInf_of_lt_iInf_of_sup
   have : IsPreconnected (Set.univ : Set (segment ℝ (y1 : F) y2)) := by
     simpa [← Topology.IsInducing.subtypeVal.isPreconnected_image] using
       (convex_segment (y1 : F) y2).isPreconnected
-  have hJ1 : IsClosed J1 := isClosed_setOf_sublevelLeft_subset ne_X kX hfy hfy'
+  have hJ1 : IsClosed J1 := isClosed_setOfPred_sublevelLeft_subset ne_X kX hfy hfy'
     cY hfx hfx' a t t' y1 y2 ha' hinfi_le ht' htt'
   have hJ2 : IsClosed J2 := by
     simp only [sup_comm (f _ y1)] at ha' ht'
-    simpa [J2, sup_comm] using isClosed_setOf_sublevelLeft_subset ne_X kX hfy hfy'
+    simpa [J2, sup_comm] using isClosed_setOfPred_sublevelLeft_subset ne_X kX hfy hfy'
       cY hfx hfx' a t t' y2 y1 ha' hinfi_le ht' htt'
   have h_univ : univ ⊆ J1 ∪ J2 :=
     image_subset_image_iff Subtype.val_injective |>.mp <| by simp [hJ1_union_J2]
@@ -353,12 +359,12 @@ public theorem minimax
   rcases eq_empty_or_nonempty Y with ⟨rfl⟩ | ne_Y
   · -- the case when `Y` is empty is trivial
     simp only [mem_empty_iff_false, IsEmpty.forall_iff, implies_true, false_and, exists_const,
-      setOf_false, isLUB_empty_iff] at *
+      ofPred_false, isLUB_empty_iff] at *
     replace hsup_y : ∀ x ∈ X, sup_y x = sup_inf :=
       fun x hx ↦ le_antisymm (hsup_y x hx sup_inf) (hsup_inf (sup_y x))
     suffices {t | ∃ x ∈ X, sup_y x = t} = {sup_inf} from (this ▸ hinf_sup).unique (by simp) |>.le
     ext t
-    simp only [mem_setOf_eq, mem_singleton_iff]
+    simp only [mem_ofPred_eq, mem_singleton_iff]
     constructor
     · rintro ⟨x, hx, rfl⟩
       exact hsup_y x hx
@@ -374,7 +380,7 @@ public theorem minimax
     simp only [mem_iInter, mem_preimage, mem_Iic] at hx'
     rw [lt_isGLB_iff hinf_sup] at ht
     obtain ⟨c, hc, htc⟩ := ht
-    simp only [mem_lowerBounds, mem_setOf_eq, forall_exists_index, and_imp,
+    simp only [mem_lowerBounds, mem_ofPred_eq, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂] at hc
     apply not_le.mpr htc (le_trans (hc x hx) _)
     rw [isLUB_le_iff (hsup_y x hx), mem_upperBounds]
@@ -388,7 +394,7 @@ public theorem minimax
         ne_X kX hfy hfy' cY hfx hfx' cX
         (t := t)
         (toFinite _) (Subtype.coe_image_subset Y ↑s)
-  simp only [lt_isLUB_iff hsup_inf, mem_setOf_eq, exists_exists_and_eq_and]
+  simp only [lt_isLUB_iff hsup_inf, mem_ofPred_eq, exists_exists_and_eq_and]
   use y0 hs', hy0 hs'
   specialize ht0 hs'
   obtain ⟨a, ha, h⟩ := LowerSemicontinuousOn.exists_isMinOn ne_X kX (hfy (y0 hs') (hy0 hs'))

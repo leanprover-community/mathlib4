@@ -104,7 +104,9 @@ theorem SigmaFinite.out (h : SigmaFinite μ) : Nonempty (μ.FiniteSpanningSetsIn
   h.1
 
 /-- If `μ` is σ-finite it has finite spanning sets in the collection of all measurable sets. -/
-def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
     μ.FiniteSpanningSetsIn { s | MeasurableSet s } where
   set n := toMeasurable μ (h.out.some.set n)
   set_mem _ := measurableSet_toMeasurable _ _
@@ -116,7 +118,9 @@ def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
 /-- A noncomputable way to get a monotone collection of sets that span `univ` and have finite
   measure using `Classical.choose`. This definition satisfies monotonicity in addition to all other
   properties in `SigmaFinite`. -/
-def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
   accumulate μ.toFiniteSpanningSetsIn.set i
 
 theorem monotone_spanningSets (μ : Measure α) [SigmaFinite μ] : Monotone (spanningSets μ) :=
@@ -284,7 +288,7 @@ theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} {_ : MeasurableSpa
       ⊆ ⋃ n, { i : ι | 0 < sfiniteSeq μ n (As i) } := by
     intro i hi
     by_contra con
-    simp only [mem_iUnion, mem_setOf_eq, not_exists, not_lt, nonpos_iff_eq_zero] at *
+    simp only [mem_iUnion, mem_ofPred_eq, not_exists, not_lt, nonpos_iff_eq_zero] at *
     rw [sum_apply₀] at hi
     · simp_rw [con] at hi
       simp at hi

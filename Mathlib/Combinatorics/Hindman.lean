@@ -57,7 +57,8 @@ attribute [local instance] Ultrafilter.mul Ultrafilter.add
 
 /-- We could have taken this as the definition of `U * V`, but then we would have to prove that it
 defines an ultrafilter. -/
-@[to_additive]
+@[to_additive /-- We could have taken this as the definition of `U + V`, but then we would have to
+prove that it defines an ultrafilter. -/]
 theorem Ultrafilter.eventually_mul {M} [Mul M] (U V : Ultrafilter M) (p : M → Prop) :
     (∀ᶠ m in ↑(U * V), p m) ↔ ∀ᶠ m in U, ∀ᶠ m' in V, p (m * m') :=
   Iff.rfl
@@ -103,23 +104,20 @@ section Aliases
 /-! Since the constructors for `FS` and `FP` cheat using the `Set M = M → Prop` defeq,
 we provide match patterns that preserve the defeq correctly in their type. -/
 
-variable {M} [Semigroup M] (a : Stream' M) (m : M) (h : FP a.tail m)
+variable {M} [Semigroup M] (a : Stream' M) (m : M)
 
-set_option linter.defProp false in
 /-- Constructor for `FP`. This is the preferred spelling over `FP.head'`. -/
-@[to_additive (attr := match_pattern)
-  /-- Constructor for `FS`. This is the preferred spelling over `FS.head'`. -/]
-abbrev FP.head : a.head ∈ FP a := FP.head' a
-set_option linter.defProp false in
+@[to_additive
+/-- Constructor for `FS`. This is the preferred spelling over `FS.head'`. -/]
+theorem FP.head : a.head ∈ FP a := FP.head' a
 /-- Constructor for `FP`. This is the preferred spelling over `FP.tail'`. -/
-@[to_additive (attr := match_pattern)
-  /-- Constructor for `FS`. This is the preferred spelling over `FS.tail'`. -/]
-abbrev FP.tail : m ∈ FP a := FP.tail' a m h
-set_option linter.defProp false in
+@[to_additive
+/-- Constructor for `FS`. This is the preferred spelling over `FS.tail'`. -/]
+theorem FP.tail (h : FP a.tail m) : m ∈ FP a := FP.tail' a m h
 /-- Constructor for `FP`. This is the preferred spelling over `FP.cons'`. -/
-@[to_additive (attr := match_pattern)
-  /-- Constructor for `FS`. This is the preferred spelling over `FS.cons'`. -/]
-abbrev FP.cons : a.head * m ∈ FP a := FP.cons' a m h
+@[to_additive
+/-- Constructor for `FS`. This is the preferred spelling over `FS.cons'`. -/]
+theorem FP.cons (h : FP a.tail m) : a.head * m ∈ FP a := FP.cons' a m h
 
 end Aliases
 
@@ -166,7 +164,7 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
   · intro U hU V hV
     rw [Set.mem_iInter] at *
     intro n
-    rw [Set.mem_setOf_eq, Ultrafilter.eventually_mul]
+    rw [Set.mem_ofPred_eq, Ultrafilter.eventually_mul]
     filter_upwards [hU n] with m hm
     obtain ⟨n', hn⟩ := FP.mul hm
     filter_upwards [hV (n' + n)] with m' hm'
