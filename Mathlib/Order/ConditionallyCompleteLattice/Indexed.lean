@@ -503,6 +503,13 @@ variable [WellFoundedLT α]
 theorem ciInf_mem [Nonempty ι] (f : ι → α) : iInf f ∈ range f :=
   csInf_mem (range_nonempty f)
 
+theorem exists_eq_iInf [Nonempty ι] (f : ι → α) : ∃ i, f i = ⨅ i, f i :=
+  ciInf_mem f
+
+theorem exists_eq_iInf₂ {κ : ι → Sort*} [Nonempty ι] [∀ i, Nonempty (κ i)] (f : (i : ι) → κ i → α) :
+    ∃ i j, f i j = ⨅ (i) (j), f i j :=
+  exists_eq_iInf _ |>.imp fun _ hi ↦ exists_eq_iInf _ |>.imp fun _ hj ↦ hj.trans hi
+
 lemma ciInf_eq_iff [Nonempty ι] (f : ι → α) (n : α) :
     ⨅ i, (f i) = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
   have : OrderBot α := WellFoundedLT.toOrderBot α
