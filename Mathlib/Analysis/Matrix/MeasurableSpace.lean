@@ -23,6 +23,15 @@ namespace Matrix
 
 instance : MeasurableSpace (Matrix m n α) := inferInstanceAs <| MeasurableSpace (m → n → α)
 
+lemma measurable_iff [MeasurableSpace m] [MeasurableSpace n] {M : Matrix m n α} :
+    Measurable M ↔ ∀ j, Measurable fun i ↦ M i j := measurable_pi_iff
+
+lemma measurable_eval [MeasurableSpace m] [MeasurableSpace n] {j : n} {M : Matrix m n α}
+    (hM : Measurable M) : Measurable fun i ↦ M i j := hM.eval
+
+lemma measurable_lambda [MeasurableSpace m] [MeasurableSpace n] (M : Matrix m n α)
+    (hM : ∀ j, Measurable fun i ↦ M i j) : Measurable M := measurable_pi_lambda M hM
+
 @[fun_prop]
 lemma measurable_of : Measurable <| Matrix.of (m := m) (n := n) (α := α) :=
   measurable_id
