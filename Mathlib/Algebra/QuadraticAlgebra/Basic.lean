@@ -13,7 +13,7 @@ public import Mathlib.Tactic.FieldSimp.Lemmas
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Quadratic algebras: involution, norm, and trace.
+# Quadratic algebras: involution, norm, trace, and change of generator.
 
 Let `R` be a commutative ring. We define:
 
@@ -22,6 +22,9 @@ Let `R` be a commutative ring. We define:
 * `QuadraticAlgebra.norm`: the norm
 
 * `QuadraticAlgebra.trace`: the trace, as an `R`-linear map
+
+* `QuadraticAlgebra.map` and `QuadraticAlgebra.mapEquiv`: the `R`-algebra map, respectively
+  isomorphism (when `u` is a unit), induced by the change of generator `ω ↦ u • ω + k`
 
 We prove:
 
@@ -55,12 +58,15 @@ def omega : QuadraticAlgebra R a b :=
 scoped notation "ω" => omega
 
 @[simp]
-theorem omega_re : (ω : QuadraticAlgebra R a b).re = 0 :=
+theorem re_omega : (ω : QuadraticAlgebra R a b).re = 0 :=
   rfl
 
 @[simp]
-theorem omega_im : (ω : QuadraticAlgebra R a b).im = 1 :=
+theorem im_omega : (ω : QuadraticAlgebra R a b).im = 1 :=
   rfl
+
+@[deprecated (since := "2026-08-13")] alias omega_re := re_omega
+@[deprecated (since := "2026-08-13")] alias omega_im := im_omega
 
 end
 
@@ -103,7 +109,6 @@ theorem algHom_ext {f g : QuadraticAlgebra R a b →ₐ[R] A}
   rw [← re_smul_add_im_smul z]
   simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The unique `AlgHom` from `QuadraticAlgebra R a b` to an `R`-algebra `A`,
 constructed by replacing `ω` with the provided root.
 Conversely, this associates to every algebra morphism `QuadraticAlgebra R a b →ₐ[R] A`
@@ -412,6 +417,55 @@ theorem sq_eq_trace_smul_sub_norm :
 
 end trace
 
+section map
+
+variable [CommRing R]
+
+-- The quadratic relation satisfied by the new generator `u • ω + k`; this is what makes
+-- `map` well defined. Stated with `x * x` rather than `x ^ 2` to match the shape of the
+-- subtype condition of `lift` (`{ u // u * u = a • 1 + b • u }`), so it feeds `map` verbatim.
+private theorem map_relation (a b u k : R) :
+    (u • ω + algebraMap R (QuadraticAlgebra R a b) k) *
+        (u • ω + algebraMap R (QuadraticAlgebra R a b) k) =
+      (u ^ 2 * a - u * b * k - k ^ 2) • 1 +
+        (u * b + 2 * k) • (u • ω + algebraMap R (QuadraticAlgebra R a b) k) := by
+  ext <;> simp <;> ring
+
+/-- The `R`-algebra map induced by the change of generator `ω ↦ u • ω + k`, see `map_omega`. -/
+@[simps!]
+def map (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
+    (hb : b' = u * b + 2 * k) :
+    QuadraticAlgebra R a' b' →ₐ[R] QuadraticAlgebra R a b :=
+  lift ⟨u • ω + algebraMap R _ k, by rw [ha, hb]; exact map_relation a b u k⟩
+
+@[simp]
+theorem map_omega (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
+    (hb : b' = u * b + 2 * k) :
+    map a b u k ha hb ω = u • ω + algebraMap R (QuadraticAlgebra R a b) k := by
+  ext <;> simp
+
+theorem map_injective (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
+    (hb : b' = u * b + 2 * k) (hu : IsRegular u) :
+    Function.Injective (map a b u k ha hb) := by
+  intro z w h
+  have hy : z.im = w.im := hu.right <| by simpa using congr_arg im h
+  exact QuadraticAlgebra.ext (by simpa [hy] using congr_arg re h) hy
+
+/-- `map` along a unit `u`, as an isomorphism. -/
+@[simps! apply symm_apply]
+def mapEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
+    (ha : a' = (u : R) ^ 2 * a - (u : R) * b * k - k ^ 2)
+    (hb : b' = (u : R) * b + 2 * k) :
+    QuadraticAlgebra R a' b' ≃ₐ[R] QuadraticAlgebra R a b where
+  __ := map a b u k ha hb
+  invFun := map a' b' (u⁻¹ : Rˣ) (-(u⁻¹ : Rˣ) * k)
+    (by grind [sq, mul_assoc, Units.inv_mul_cancel_left])
+    (by grind [Units.inv_mul_cancel_left])
+  left_inv _ := by ext <;> simp [mul_assoc]
+  right_inv _ := by ext <;> simp [mul_assoc]
+
+end map
+
 section field
 
 variable [Field K] {a b : K} [Hab : Fact (∀ r, r ^ 2 ≠ a + b * r)]
@@ -452,6 +506,14 @@ instance : Field (QuadraticAlgebra K a b) where
   qsmul := (· • ·)
   nnqsmul_def q x := by ext <;> simp [NNRat.smul_def]
   qsmul_def q x := by ext <;> simp [Rat.smul_def]
+
+/-- When `b = 0`, the `Field` instance is inferable from `¬ IsSquare a` alone: it provides the
+no-root condition `∀ r, r ^ 2 ≠ a + 0 * r`. -/
+instance {a : K} [Fact (¬ IsSquare a)] : Fact (∀ r : K, r ^ 2 ≠ a + 0 * r) :=
+  ⟨fun r hr ↦ Fact.out (p := ¬ IsSquare a) ⟨r, by simpa [sq] using hr.symm⟩⟩
+
+-- The `b = 0` bridge makes the `Field` instance inferable from `¬ IsSquare a` alone.
+example {a : K} [Fact (¬ IsSquare a)] : Field (QuadraticAlgebra K a 0) := inferInstance
 
 end field
 
