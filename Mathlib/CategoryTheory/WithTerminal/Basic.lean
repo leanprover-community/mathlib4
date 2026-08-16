@@ -427,7 +427,7 @@ instance subsingleton_hom {J : Type*} : Quiver.IsThin (WithTerminal (Discrete J)
   constructor
   intro a b
   casesm* WithTerminal _, (_ : WithTerminal _) ⟶ (_ : WithTerminal _)
-  · exact congr_arg (ULift.up ∘ PLift.up) rfl
+  · exact Discrete.hom_eq
   · rfl
   · rfl
 
@@ -455,7 +455,7 @@ private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
   invFun f := match x, y with
   | some x, some y =>
     cast (by
-        have eq : x = y := PLift.down (ULift.down (down f))
+        have eq : x = y := f.eq
         rw [eq]
         rfl) (Hom.id (some y))
   | none, some y => by cases f
