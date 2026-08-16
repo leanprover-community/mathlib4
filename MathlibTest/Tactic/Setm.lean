@@ -16,12 +16,38 @@ example : 1 + 2 = 3 := by
   guard_hyp b :=ₛ 2
   trivial
 
+-- Docstring examples:
+/--
+trace: a : Nat := 2 ^ 10 - 1
+⊢ ∃ x, x = a
+-/
+#guard_msgs in
 example : ∃ n, n = 2 ^ 10 - 1 := by
   setm ∃ _, _ = ?a
+  trace_state
   exact .intro a rfl
 
+/--
+trace: a : Nat := 2
+h : 1 + a = 3
+⊢ ∃ n, n = 2
+-/
+#guard_msgs in
 example (h : 1 + 2 = 3) : ∃ n, n = 2 := by
   setm _ + ?a = _ using h
+  trace_state
+  exact .intro a rfl
+
+/--
+trace: a : Nat := 2
+h₁ : 1 + a = 3
+h₂ : a + a = 4
+⊢ ∃ n, n = 2
+-/
+#guard_msgs in
+example (h₁ : 1 + 2 = 3) (h₂ : 2 + 2 = 4) : ∃ n, n = 2 := by
+  setm _ + ?a = _ using h₁ at h₂
+  trace_state
   exact .intro a rfl
 
 /- We don't replace identical expressions unless the pattern requires it. -/
@@ -121,11 +147,16 @@ example : @id Nat = fun n ↦ n := by
   setm (fun n ↦ ?a) = _
 
 /- Variables introduced by binders with the same identifiers as holes don't confuse the tactic. -/
+/--
+trace: n : Prop := True
+⊢ ∃ n_1, n
+-/
+#guard_msgs in
 example : ∃ _n : Nat, True := by
   setm ∃ n, ?n
   guard_hyp n :=ₛ True
-  -- guard_target =ₛ ∃ n_1, n
-  guard_target =~ ∃ n_1, n
+  guard_target =ₛ ∃ n_1 : Nat, n
+  trace_state
   exact .intro 0 .intro
 
 variable {a b c : Nat}
@@ -223,7 +254,7 @@ example {i : Nat} {l : List Nat} (h) (heq : i = 2) : l[i] = l[i] := by
 
 /- A pattern with no holes fails. -/
 /--
-warning: No holes (`?n`, `?_`) were present in the`setm` pattern. This means `setm` has no effect.
+warning: No holes (`?n`, `?_`) were present in the `setm` pattern. This means `setm` has no effect.
 ---
 error: unsolved goals
 a b c : Nat

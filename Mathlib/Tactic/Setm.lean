@@ -80,27 +80,16 @@ The `setm` tactic matches a pattern containing named holes to the goal or a hypo
 named local declarations for the matched holes with their assigned expressions as values. It can be
 used to give a name to a complicated subexpression appearing in the goal or a hypothesis.
 
-* `setm expr`, where `expr` is a term containing named holes (like `?a`) will match `expr` to the
+* `setm patt`, where `patt` is a term containing named holes (like `?a`) will match `patt` to the
   current goal and create local declarations assigning the hole names to their inferred value.
   Moreover, it will replace the matches with their new names.
-* `setm expr using h` is like `setm expr`, except that `expr` is matched with the local hypothesis
+* `setm patt using h` is like `setm patt`, except that `patt` is matched with the local hypothesis
   `h` instead.
-* `setm expr (using h)? at loc` is like the above, except that it also rewrites the newly-introduced
-  local declarations at the locations `loc`.
+* `setm patt (using h)? at loc` is like the above, except that it also rewrites by the
+  newly-introduced local declarations at the locations `loc`.
 
 Examples:
 
-```lean
-example : ∃ n, n = 2 ^ 10 - 1 := by
-  setm ∃ _, _ = ?a
-  exact .intro a rfl
-```
-
-```lean
-example (h : 1 + 2 = 3) : ∃ n, n = 2 := by
-  setm _ + ?a = _ using h
-  exact .intro a rfl
-```
 -/
 syntax (name := setM) "setm " term (" using " ident)? (Parser.Tactic.location)? : tactic
 
@@ -156,7 +145,7 @@ elab_rules : tactic
       if ← logUnassignedUsingErrorInfos unassignedMVars then
         throwAbortTactic
       if newMVars.isEmpty then
-        logWarningAt origPat m!"No holes (`?n`, `?_`) were present in the`setm` pattern. \
+        logWarningAt origPat m!"No holes (`?n`, `?_`) were present in the `setm` pattern. \
           This means `setm` has no effect."
 
 end Mathlib.Tactic.SetM
