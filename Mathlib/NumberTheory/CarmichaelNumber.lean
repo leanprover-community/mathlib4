@@ -144,7 +144,7 @@ theorem IsCarmichael.squarefree (h : n.IsCarmichael) : Squarefree n := by
     p_dvd_sub (dvd_trans (p.dvd_mul_right p) p_dvd)
 
 theorem IsCarmichael.carmichael_dvd_pred (h : n.IsCarmichael) : carmichael n ∣ n - 1 := by
-  let _ : NeZero n := ⟨by grind [h.two_lt]⟩
+  have : NeZero n := ⟨by grind [h.two_lt]⟩
   rw [carmichael_eq_exponent']
   apply Monoid.exponent_dvd_of_forall_pow_eq_one
   intro s
@@ -163,7 +163,7 @@ theorem isCarmichael_iff_korselt :
     n.IsCarmichael ↔ 2 < n ∧ ¬n.Prime ∧ Squarefree n ∧ ∀ p, p.Prime → p ∣ n → p - 1 ∣ n - 1 := by
   refine ⟨fun h ↦ ⟨h.two_lt, h.not_prime, h.squarefree, fun _ ↦ h.prime_sub_one_dvd⟩, ?_⟩
   intro ⟨hn, hn_prime, hn_squarefree, h_dvd⟩
-  let _ : NeZero n := ⟨by lia⟩
+  have : NeZero n := ⟨by lia⟩
   refine ⟨hn, hn_prime, fun b hb ↦ ?_⟩
   rw [probablePrime_iff_modEq n (show 1 ≤ b by grind)]
   have carmichael_dvd : carmichael n ∣ n - 1 := by
