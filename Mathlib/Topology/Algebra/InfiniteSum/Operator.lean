@@ -5,8 +5,8 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Analysis.Normed.Operator.Bilinear
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-! # Infinite sums with operator norm  -/
 
