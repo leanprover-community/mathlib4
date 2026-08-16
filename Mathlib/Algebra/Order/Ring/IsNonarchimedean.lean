@@ -30,12 +30,13 @@ theorem add_le [Semiring R] [IsStrictOrderedRing R] [Add α] (f_nonneg : ∀ x :
 
 section AddMonoid
 
-variable [AddMonoid α] (f_zero_le : f 0 ≤ f a) (hna : IsNonarchimedean f)
+variable [AddMonoid α] (hna : IsNonarchimedean f)
 
-include f_zero_le hna in
+include hna
+
 /-- If `f : α → R` is nonarchimedean and `f 0 ≤ f a`, then `f (n • a) ≤ f a` for every
   `n : ℕ`. -/
-theorem nsmul_le : f (n • a) ≤ f a := by
+theorem nsmul_le (f_zero_le : f 0 ≤ f a) : f (n • a) ≤ f a := by
   induction n with
   | zero => simpa using f_zero_le
   | succ n _ =>
@@ -43,7 +44,6 @@ theorem nsmul_le : f (n • a) ≤ f a := by
     apply le_trans <| hna (n • a) (1 • a)
     simpa
 
-include hna in
 /-- If `f : α → R` is nonarchimedean, then `f (n • a) ≤ f a` for every positive `n : ℕ`. -/
 theorem nsmul_le_of_pos (hn : 0 < n) :
     f (n • a) ≤ f a := by
@@ -57,29 +57,30 @@ end AddMonoid
 
 section NonAssocSemiring
 
-variable [NonAssocSemiring α] (f_zero_le : f 0 ≤ f a) (hna : IsNonarchimedean f)
+variable [NonAssocSemiring α] (hna : IsNonarchimedean f)
 
-include f_zero_le hna in
+include hna
+
 /-- If `f : α → R` is nonarchimedean and `f 0 ≤ f a`, then `f (n * a) ≤ f a` for every
   `n : ℕ`. -/
-theorem nmul_le : f (n * a) ≤ f a := by
+theorem nmul_le (f_zero_le : f 0 ≤ f a) : f (n * a) ≤ f a := by
   rw [← nsmul_eq_mul]
   exact hna.nsmul_le f_zero_le
 
-variable (a) in
-include hna in
 /-- If `f : α → R` is nonarchimedean, then `f (n * a) ≤ f a` for every positive `n : ℕ`. -/
-theorem nmul_le_of_pos (hn : 0 < n) : f (n * a) ≤ f a := by
+theorem nmul_le_of_pos (a : α) (hn : 0 < n) : f (n * a) ≤ f a := by
   rw [← nsmul_eq_mul]
   exact hna.nsmul_le_of_pos hn
 
 end NonAssocSemiring
+
 section AddGroup
 
-variable [AddGroup α] (f_neg : ∀ a, f (-a) = f a) (h_lt : f a < f b) (hne : f a ≠ f b)
-variable (hna : IsNonarchimedean f)
+variable [AddGroup α] (f_neg : ∀ a, f (-a) = f a) (h_lt : f a < f b) (hna : IsNonarchimedean f)
 
-include f_neg h_lt hna in
+include f_neg hna
+
+include h_lt in
 lemma add_eq_right_of_lt : f (a + b) = f b := by
   by_contra! h
   have h1 : f (a + b) ≤ f b := (hna a b).trans_eq (max_eq_right_of_lt h_lt)
@@ -92,7 +93,7 @@ lemma add_eq_right_of_lt : f (a + b) = f b := by
       exact max_lt h_lt <| lt_of_le_of_ne h1 h
     _   = f b := max_self (f b)
 
-include f_neg h_lt hna in
+include h_lt in
 lemma add_eq_left_of_lt : f (b + a) = f b := by
   by_contra! h
   have h1 : f (b + a) ≤ f b := (hna b a).trans_eq (max_eq_left_of_lt h_lt)
@@ -105,15 +106,17 @@ lemma add_eq_left_of_lt : f (b + a) = f b := by
       exact max_lt (lt_of_le_of_ne h1 h) h_lt
     _   = f b := max_self (f b)
 
-include f_neg hna hne in
 /-- If `f : α → R` is nonarchimedean and invariant under negation, and `f a ≠ f b`, then
   `f (a + b) = max (f a) (f b)`. -/
-theorem add_eq_max_of_ne : f (a + b) = max (f a) (f b) := by
+theorem add_eq_max_of_ne (hne : f a ≠ f b) : f (a + b) = max (f a) (f b) := by
   rcases hne.lt_or_gt with h_lt | h_lt
   · rw [hna.add_eq_right_of_lt f_neg h_lt]
     exact (max_eq_right_of_lt h_lt).symm
   · rw [hna.add_eq_left_of_lt f_neg h_lt]
     exact (max_eq_left_of_lt h_lt).symm
+
+@[deprecated (since := "2026-08-16")]
+alias add_eq_max_of_ne' := add_eq_max_of_ne
 
 end AddGroup
 
@@ -147,7 +150,8 @@ open Multiset
 
 variable {s : Multiset β}
 
-include hna in
+include hna
+
 /-- Given a nonarchimedean function `α → R`, a function `g : β → α` and a nonempty multiset
   `s : Multiset β`, we can always find `b : β` belonging to `s` such that
   `f (t.sum g) ≤ f (g b)`. -/
@@ -163,25 +167,20 @@ theorem multiset_image_add_of_nonempty (hs : s ≠ 0) : ∃ b ∈ s, f (s.map g)
       · exact .inl h4
       · exact .inr ⟨w, h2, le_trans h4 h3⟩
 
-include hna in
-variable (s) in
 /-- Given a nonarchimedean function `f : α → R` such that `f 0` is a minimum of `f`, a
   function `g : β → α`, and a multiset `s : Multiset β`, we can always find `b : β`, belonging
   to `s` if `s` is nonempty, such that `f (s.map g).sum ≤ f (g b)`. -/
-theorem multiset_image_add [Nonempty β] (f_zero_le : ∀ x, f 0 ≤ f x) :
+theorem multiset_image_add [Nonempty β] (s : Multiset β) (f_zero_le : ∀ x, f 0 ≤ f x) :
     ∃ b : β, (s ≠ 0 → b ∈ s) ∧ f (s.map g).sum ≤ f (g b) := by
   induction s using Multiset.induction_on with
   | empty =>
-    let b := Classical.choice (inferInstance : Nonempty β)
-    exact ⟨b, by simp, by simpa using f_zero_le (g b)⟩
+    exact ⟨Classical.arbitrary β, by simp, by simpa using f_zero_le _⟩
   | cons a s h =>
     obtain ⟨b, hb1, hb2⟩ := hna.multiset_image_add_of_nonempty (s := a ::ₘ s) g
       Multiset.cons_ne_zero
     exact ⟨b, fun _ ↦ hb1, hb2⟩
 
-include hna in
-variable (n) in
-theorem multiset_powerset_image_add [CommMonoid α] (s : Multiset α) :
+theorem multiset_powerset_image_add (n : ℕ) [CommMonoid α] (s : Multiset α) :
     ∃ t : Multiset α, card t = card s - n ∧ (∀ x : α, x ∈ t → x ∈ s) ∧
     f (map prod (powersetCard (card s - n) s)).sum ≤ f t.prod := by
   set g := fun t : Multiset α ↦ t.prod
@@ -201,7 +200,8 @@ open Finset
 
 variable {s : Finset β}
 
-include hna in
+include hna
+
 variable {g} in
 /-- Ultrametric inequality with `Finset.sum`. -/
 lemma apply_sum_le_sup (hne : s.Nonempty) : f (∑ i ∈ s, g i) ≤ s.sup' hne fun i => f (g i) := by
@@ -217,14 +217,13 @@ lemma apply_sum_le_sup (hne : s.Nonempty) : f (∑ i ∈ s, g i) ≤ s.sup' hne 
 @[deprecated (since := "2026-04-27")]
 alias apply_sum_le_sup_of_isNonarchimedean := apply_sum_le_sup
 
-include hna in
 /-- Given a nonarchimedean function `α → R`, a function `g : β → α` and a nonempty finset
   `s : Finset β`, we can always find `b : β` belonging to `s` such that `f (s.sum g) ≤ f (g b)`. -/
 theorem finset_image_add_of_nonempty (hs : s.Nonempty) : ∃ b ∈ s, f (s.sum g) ≤ f (g b) := by
   simpa [Finset.le_sup'_iff] using hna.apply_sum_le_sup hs
 
-include hna in
-variable (s) in
+variable (s)
+
 /-- Given a nonarchimedean function `f : α → R` such that `f 0` is a minimum of `f`, a
   function `g : β → α`, and a finset `s : Finset β`, we can always find `b : β`, belonging to
   `s` if `s` is nonempty, such that `f (s.sum g) ≤ f (g b)`. -/
@@ -235,14 +234,10 @@ lemma finset_image_add [Nonempty β] (f_zero_le : ∀ x, f 0 ≤ f x) :
     exact ⟨b, by simp, by simpa using f_zero_le (g b)⟩
   · exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <| hna.finset_image_add_of_nonempty g hs
 
-include hna in
-variable (s) in
-theorem finset_powerset_image_add [CommMonoid α] [Neg α] :
-    ∃ u : powersetCard (s.card - n) s, f ((powersetCard (s.card - n) s).sum fun t : Finset β ↦
-    t.prod fun i : β ↦ -g i) ≤ f (u.val.prod fun i : β ↦ -g i) := by
-  set g := fun t : Finset β ↦ t.prod fun i : β ↦ - g i
-  have hne := powersetCard_nonempty.mpr (Nat.sub_le s.card n)
-  obtain ⟨b, hb_in, hb⟩ := hna.finset_image_add_of_nonempty g hne
+theorem finset_powerset_image_add [CommMonoid α] : ∃ u : s.powersetCard (s.card - n),
+    f ((s.powersetCard (s.card - n)).sum fun t ↦ ∏ i ∈ t, g i) ≤ f (∏ i ∈ u.val, g i) := by
+  obtain ⟨b, hb_in, hb⟩ := hna.finset_image_add_of_nonempty (fun t ↦ ∏ i ∈ t, g i)
+    (powersetCard_nonempty.mpr (s.card.sub_le n))
   exact ⟨⟨b, hb_in⟩, hb⟩
 
 end Finset
@@ -260,7 +255,7 @@ lemma apply_sum_eq_of_lt [AddCommGroup α] (hna : IsNonarchimedean f)
       Finset.Nontrivial.erase_nonempty (Finset.one_lt_card_iff_nontrivial.mp (by grind))
     have hrest_le := hna.apply_sum_le_sup hNonempty (g := g)
     simp only [Finset.le_sup'_iff, Finset.mem_erase, ne_eq] at hrest_le
-    rw [add_eq_max_of_ne f_neg (by grind) hna, max_eq_left (le_of_lt (by grind))]
+    rw [hna.add_eq_max_of_ne f_neg (by grind), max_eq_left (le_of_lt (by grind))]
 
 variable (a b n) in
 /-- If `f` is a submultiplicative, nonarchimedean function on a commutative semiring `α`, then for
