@@ -261,12 +261,8 @@ theorem notEdgeReachable_degree_add_one [Fintype <| G.neighborSet u]
   }
 
 theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u]
-    (huv : u ≠ v) : G.edgeReachability u v ≤ G.degree u := by
-  simp only [edgeReachability, iSup_le_iff, Nat.cast_le]
-  intro i h
-  by_contra! hcont
-  apply G.notEdgeReachable_degree_add_one huv
-  exact IsEdgeReachable.anti hcont h
+    (huv : u ≠ v) : G.edgeReachability u v ≤ G.degree u :=
+  iSup₂_le fun _ hk ↦ mod_cast hk.le_degree huv
 
 theorem edgeReachability_le_degree_right [Fintype <| G.neighborSet v]
     (huv : u ≠ v) : G.edgeReachability u v ≤ G.degree v := by
