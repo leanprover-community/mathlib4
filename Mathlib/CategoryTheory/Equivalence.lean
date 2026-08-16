@@ -703,13 +703,8 @@ lemma isEquivalence_of_comp_left {E : Type*} [Category* E] (F : C ⥤ D) (G : D 
 /-- A functor is an equivalence (i.e. fully faithful and essentially surjective) iff it is the
 functor of a bundled equivalence. -/
 theorem isEquivalence_iff_exists_equivalence (F : C ⥤ D) :
-    F.IsEquivalence ↔ ∃ e : C ≌ D, e.functor = F := by
-  constructor
-  · intro _
-    use F.asEquivalence
-    rfl
-  · rintro ⟨e,e_functor_eq_F⟩
-    exact e_functor_eq_F ▸ inferInstance
+    F.IsEquivalence ↔ ∃ e : C ≌ D, e.functor = F :=
+  ⟨fun _ ↦ ⟨F.asEquivalence, rfl⟩, by rintro ⟨_, rfl⟩; infer_instance⟩
 
 end Functor
 
