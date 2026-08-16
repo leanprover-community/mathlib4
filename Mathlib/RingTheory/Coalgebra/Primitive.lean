@@ -16,11 +16,11 @@ This file defines `(g, h)`-skew-primitive elements in a coalgebra, i.e. elements
 ## Main declarations
 
 * `Coalgebra.IsSkewPrimitiveElem R g h a`: `a` is `(g, h)`-skew-primitive.
-* `Coalgebra.skewPrimitiveSubmodule R g h`: the `(g, h)`-skew-primitive elements as a submodule.
+* `Coalgebra.skewPrimitive R g h`: the `(g, h)`-skew-primitive elements as a submodule.
 
 ## TODO
 
-* `g - h` is `(g, h)`-skew-primitive, and the quotient of `skewPrimitiveSubmodule R g h` by
+* `g - h` is `(g, h)`-skew-primitive, and the quotient of `skewPrimitive R g h` by
   `R ∙ (g - h)` is `Ext¹(h, g)`, where `g` and `h` are regarded as one-dimensional right
   comodules.
 
@@ -86,14 +86,14 @@ end IsSkewPrimitiveElem
 
 variable (R g h) in
 /-- The `(g, h)`-skew-primitive elements form a submodule. -/
-def skewPrimitiveSubmodule : Submodule R A where
+def skewPrimitive : Submodule R A where
   carrier := {a | IsSkewPrimitiveElem R g h a}
   add_mem' := .add
   zero_mem' := .zero
   smul_mem' r _ ha := ha.smul r
 
-@[simp] lemma mem_skewPrimitiveSubmodule :
-    a ∈ skewPrimitiveSubmodule R g h ↔ IsSkewPrimitiveElem R g h a := Iff.rfl
+@[simp] lemma mem_skewPrimitive :
+    a ∈ skewPrimitive R g h ↔ IsSkewPrimitiveElem R g h a := Iff.rfl
 
 variable [IsCancelAdd A]
 
