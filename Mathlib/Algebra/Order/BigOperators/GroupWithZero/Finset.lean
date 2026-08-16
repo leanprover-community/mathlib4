@@ -127,6 +127,14 @@ theorem prod_anti_set_of_le_one (hf0 : ∀ (x : ι), 0 ≤ f x) (hf : ∀ (x : �
     Antitone fun (s : Finset ι) => ∏ x ∈ s, f x :=
   fun _ _ hst ↦ prod_le_prod_of_subset_of_le_one hst (by grind) (by simp [hf])
 
+theorem prod_le_prod_of_injOn {α : Type*} [DecidableEq α]
+    {g : α → R} {s : Finset ι} {t : Finset α} (e : ι → α) (he : Set.InjOn e s)
+    (ht : image e s ⊆ t) (h : ∀ i ∈ s, f i ≤ g (e i))
+    (hf0 : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ a ∈ t, a ∉ image e s → 1 ≤ g a) :
+    ∏ i ∈ s, f i ≤ ∏ a ∈ t, g a := by
+  refine le_trans ?_ (prod_le_prod_of_subset_of_one_le ht (by grind) hg)
+  grw [prod_image he, prod_le_prod hf0 h]
+
 end PosMulMono
 
 section PosMulStrictMono
