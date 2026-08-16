@@ -95,10 +95,14 @@ def skewPrimitiveSubmodule : Submodule R A where
 @[simp] lemma mem_skewPrimitiveSubmodule :
     a ∈ skewPrimitiveSubmodule R g h ↔ IsSkewPrimitiveElem R g h a := Iff.rfl
 
+/-! ### Redundancy of the counit condition
+
+When `g` and `h` have counit `1` (e.g. when they are group-like) and addition on `A` is
+cancellative, the counit condition in `IsSkewPrimitiveElem` follows from the comultiplication
+condition. -/
+
 variable [IsCancelAdd A]
 
-/-- If `Δ a = g ⊗ₜ a + a ⊗ₜ h` where `g` and `h` have counit `1` (e.g. if they are group-like),
-then `ε a = 0` holds automatically. -/
 lemma counit_eq_zero_of_comul_eq_tmul_add_tmul (hg : counit (R := R) g = 1)
     (hh : counit (R := R) h = 1) (ha : comul a = g ⊗ₜ[R] a + a ⊗ₜ[R] h) :
     counit (R := R) a = 0 := by
@@ -106,15 +110,11 @@ lemma counit_eq_zero_of_comul_eq_tmul_add_tmul (hg : counit (R := R) g = 1)
     simpa [ha, hg] using congr(TensorProduct.lid R A $(rTensor_counit_comul (R := R) a))
   simpa [hh] using congr(counit (R := R) $key)
 
-/-- An element `a` with `Δ a = g ⊗ₜ a + a ⊗ₜ h` is `(g, h)`-skew-primitive when `g` and `h` have
-counit `1` (e.g. when they are group-like). -/
 lemma IsSkewPrimitiveElem.of_comul_eq_tmul_add_tmul (hg : counit (R := R) g = 1)
     (hh : counit (R := R) h = 1) (ha : comul a = g ⊗ₜ[R] a + a ⊗ₜ[R] h) :
     IsSkewPrimitiveElem R g h a :=
   ⟨counit_eq_zero_of_comul_eq_tmul_add_tmul hg hh ha, ha⟩
 
-/-- When `g` and `h` have counit `1` (e.g. when they are group-like), skew-primitivity is
-equivalent to the comultiplication condition alone. -/
 lemma isSkewPrimitiveElem_iff_comul_eq_tmul_add_tmul (hg : counit (R := R) g = 1)
     (hh : counit (R := R) h = 1) :
     IsSkewPrimitiveElem R g h a ↔ comul a = g ⊗ₜ[R] a + a ⊗ₜ[R] h :=

@@ -50,8 +50,7 @@ lemma IsPrimitiveElem.ne_one [Nontrivial R] (ha : IsPrimitiveElem R a) : a ≠ 1
 
 variable [IsCancelAdd A]
 
-/-- An element `a` of a bialgebra with `Δ a = 1 ⊗ₜ a + a ⊗ₜ 1` is primitive.
-See Proposition 1.4.17 in [GrinbergReiner2020]. -/
+/-- See Proposition 1.4.17 in [GrinbergReiner2020]. -/
 lemma IsPrimitiveElem.of_comul_eq_tmul_add_tmul (ha : comul a = 1 ⊗ₜ[R] a + a ⊗ₜ[R] 1) :
     IsPrimitiveElem R a :=
   IsSkewPrimitiveElem.of_comul_eq_tmul_add_tmul counit_one counit_one ha
