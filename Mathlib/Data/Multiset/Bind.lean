@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Rudy Peterson
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Data.Multiset.Fold
 
 /-!
 # Bind operation for multisets
@@ -343,7 +344,6 @@ variable {s t}
 protected theorem Nodup.product : Nodup s → Nodup t → Nodup (s ×ˢ t) :=
   Quotient.inductionOn₂ s t fun l₁ l₂ d₁ d₂ => by simp [List.Nodup.product d₁ d₂]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma map_swap_product (s : Multiset α) (t : Multiset β) :
     (s ×ˢ t).map Prod.swap = t ×ˢ s := by
   induction s using Multiset.induction <;> simp_all

@@ -409,7 +409,14 @@ theorem liftAddHom_symm_apply_apply [AddZeroClass M] [AddCommMonoid N] (F : (α 
 theorem liftAddHom_singleAddHom [AddCommMonoid M] :
     (liftAddHom (α := α) (M := M) (N := α →₀ M)) (singleAddHom : α → M →+ α →₀ M) =
       AddMonoidHom.id _ :=
-  liftAddHom.toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
+  liftAddHom.toEquiv.eq_symm_apply.1 rfl
+
+lemma sum_finsetSum
+    (f : ι → (α →₀ A)) (s : Finset ι) (g : α → A → B)
+    (h₁ : ∀ a, g a 0 = 0)
+    (h₂ : ∀ a m₁ m₂, g a (m₁ + m₂) = g a m₁ + g a m₂) :
+    (∑ i ∈ s, f i).sum g = ∑ i ∈ s, (f i).sum g :=
+  map_sum (liftAddHom (fun a ↦ { toFun := g a, map_zero' := h₁ a, map_add' := h₂ a })) f s
 
 @[simp]
 theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
