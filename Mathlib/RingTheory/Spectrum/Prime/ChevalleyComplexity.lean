@@ -541,9 +541,11 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
 
 end PolynomialC
 
+@[expose] public section
+
 open PolynomialC InductionObj in
 /-- The `C : R → R[X]` case of **Chevalley's theorem** with complexity bound. -/
-public lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM : 1 ∈ M)
+lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM : 1 ∈ M)
     (S : ConstructibleSetData R[X]) (hS : ∀ C ∈ S, ∀ j k, (C.g j).coeff k ∈ M) :
     ∃ T : ConstructibleSetData R,
       comap Polynomial.C '' S.toSet = T.toSet ∧ ∀ C ∈ T, C.n ≤ S.degBound ∧
@@ -569,8 +571,6 @@ public lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R
       rwa [Nat.one_le_iff_ne_zero]
 
 /-! ### The `C : R → R[X₁, ..., Xₘ]` case -/
-
-@[expose] public section
 
 namespace MvPolynomialC
 
