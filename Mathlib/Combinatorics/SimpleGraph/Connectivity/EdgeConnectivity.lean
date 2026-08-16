@@ -107,6 +107,10 @@ lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
   obtain ⟨v, hv⟩ := exists_ne u
   exact (h u v).le_degree hv.symm
 
+theorem IsEdgeConnected.le_minDegree [Fintype V] [Nontrivial V]
+    [DecidableRel G.Adj] (h : G.IsEdgeConnected k) :
+    k ≤ G.minDegree := le_minDegree_of_forall_le_degree G k fun _ ↦ le_degree h
+
 lemma isEdgeReachable_add_one (hk : k ≠ 0) :
     G.IsEdgeReachable (k + 1) u v ↔ ∀ e, (G.deleteEdges {e}).IsEdgeReachable k u v := by
   refine ⟨fun h e s hk ↦ ?_, fun h s hs ↦ ?_⟩
@@ -251,14 +255,8 @@ theorem edgeReachability_le_degree_right [Fintype <| G.neighborSet v]
   rw [edgeReachability_comm]
   exact edgeReachability_le_degree_left huv.symm
 
-theorem edgeConnectivity_le_minDegree [Fintype V] [Nontrivial V]
-    [DecidableRel G.Adj] : G.edgeConnectivity ≤ G.minDegree := by
-  apply iSup₂_le
-  intro i h
-  simp only [Nat.cast_le]
-  apply le_minDegree_of_forall_le_degree
-  intro v
-  apply IsEdgeConnected.le_degree h
+theorem edgeConnectivity_le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj] :
+    G.edgeConnectivity ≤ G.minDegree := iSup₂_le fun _ h ↦ mod_cast (IsEdgeConnected.le_minDegree h)
 
 /-!
 ### 2-reachability
