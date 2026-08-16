@@ -50,6 +50,7 @@ def prod.fst : prod F G ⟶ F where
 def prod.snd : prod F G ⟶ G where
   app _ := ↾fun a ↦ a.2
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given natural transformations `F ⟶ F₁` and `F ⟶ F₂`, construct
 a natural transformation `F ⟶ prod F₁ F₂`. -/
 @[simps]
@@ -127,11 +128,13 @@ noncomputable
 def prodMk {a : C} (x : F.obj a) (y : G.obj a) : (F ⨯ G).obj a :=
   ((binaryProductIso F G).inv).app a ⟨x, y⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma prodMk_fst {a : C} (x : F.obj a) (y : G.obj a) :
     (Limits.prod.fst (X := F)).app a (prodMk x y) = x := by
   simp [prodMk]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma prodMk_snd {a : C} (x : F.obj a) (y : G.obj a) :
     (Limits.prod.snd (X := F)).app a (prodMk x y) = y := by
@@ -143,6 +146,7 @@ lemma prod_ext {a : C} (z w : (prod F G).obj a) (h1 : z.1 = w.1) (h2 : z.2 = w.2
 
 variable (F G)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `(F ⨯ G).obj a` is in bijection with the product of `F.obj a` and `G.obj a`. -/
 @[simps]
 noncomputable
@@ -208,6 +212,7 @@ variable (F G)
 def binaryCoproductCocone : BinaryCofan F G :=
   BinaryCofan.mk coprod.inl coprod.inr
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `coprod F G` is a colimit cocone. -/
 @[simps]
@@ -280,6 +285,7 @@ abbrev coprodInr {a : C} (x : G.obj a) : (F ⨿ G).obj a :=
 
 variable (F G)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `(F ⨿ G).obj a` is in bijection with disjoint union of `F.obj a` and `G.obj a`. -/
 @[simps]
 noncomputable

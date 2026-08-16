@@ -68,6 +68,7 @@ lemma analyticWithinAt_sin {x : ℂ} {s : Set ℂ} : AnalyticWithinAt ℂ sin s 
   contDiff_sin.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Complex.sin` is complex analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_sin {s : Set ℂ} : AnalyticOnNhd ℂ sin s :=
   fun _ _ ↦ analyticAt_sin
 
@@ -115,6 +116,7 @@ lemma analyticWithinAt_cos {x : ℂ} {s : Set ℂ} : AnalyticWithinAt ℂ cos s 
   contDiff_cos.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Complex.cos` is complex analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_cos {s : Set ℂ} : AnalyticOnNhd ℂ cos s :=
   fun _ _ ↦ analyticAt_cos
 
@@ -341,6 +343,7 @@ lemma analyticWithinAt_sin {s : Set ℝ} : AnalyticWithinAt ℝ sin s x :=
   contDiff_sin.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Real.sin` is real analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_sin {s : Set ℝ} : AnalyticOnNhd ℝ sin s :=
   fun _ _ ↦ analyticAt_sin
 
@@ -379,6 +382,7 @@ lemma analyticWithinAt_cos {s : Set ℝ} : AnalyticWithinAt ℝ cos s x :=
   contDiff_cos.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Real.cos` is real analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_cos {s : Set ℝ} : AnalyticOnNhd ℝ cos s :=
   fun _ _ ↦ analyticAt_cos
 

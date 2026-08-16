@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Polynomial.Degree.SmallDegree
 
 public section
 
-open Finsupp Finset Polynomial
+open Polynomial
 
 namespace Polynomial
 

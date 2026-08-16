@@ -15,7 +15,7 @@ public import Mathlib.Data.Nat.SuccPred
 
 public section
 
-open Finsupp Finset Polynomial
+open Finset Polynomial
 
 namespace Polynomial
 

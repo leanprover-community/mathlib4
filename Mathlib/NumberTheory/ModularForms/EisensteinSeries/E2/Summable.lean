@@ -45,7 +45,7 @@ open Filter Complex Finset SummationFilter
 
 open scoped Interval Real Topology Nat ArithmeticFunction.sigma
 
-@[expose] public section
+public section
 
 namespace EisensteinSeries
 

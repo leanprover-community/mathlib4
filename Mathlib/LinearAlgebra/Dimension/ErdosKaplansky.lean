@@ -46,11 +46,11 @@ theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ �
     refine (Subfield.cardinalMk_closure_le_max _).trans_lt
       (max_lt_iff.mpr ⟨mk_range_le.trans_lt ?_, card_K⟩)
     rwa [mk_prod, ← aleph0, lift_uzero, bK.mk_eq_rank'', mul_aleph0_eq aleph0_le]
-  letI := Module.compHom K (RingHom.op L.subtype)
+  let := Module.compHom K (RingHom.op L.subtype)
   obtain ⟨⟨ιL, bL⟩⟩ := Module.Free.exists_basis (R := Lᵐᵒᵖ) (M := K)
   have card_ιL : ℵ₀ ≤ #ιL := by
     contrapose! hLK
-    haveI := @Fintype.ofFinite _ (lt_aleph0_iff_finite.mp hLK)
+    have := @Fintype.ofFinite _ (lt_aleph0_iff_finite.mp hLK)
     rw [bL.repr.toEquiv.cardinal_eq, mk_finsupp_of_fintype,
         ← MulOpposite.opEquiv.cardinal_eq] at card_K ⊢
     apply power_nat_le
@@ -90,7 +90,7 @@ theorem rank_fun_infinite {ι : Type v} [hι : Infinite ι] : Module.rank K (ι 
   rw [lift_umax.{u, v}, lift_id'.{u, v}] at this
   have key := (lift_le.{v}.mpr <| max_aleph0_card_le_rank_fun_nat K).trans this
   rw [lift_max, lift_aleph0, max_le_iff] at key
-  haveI : Infinite ιK := by
+  have : Infinite ιK := by
     rw [← aleph0_le_mk_iff, bK.mk_eq_rank'']; exact key.1
   rw [bK.repr.toEquiv.cardinal_eq, mk_finsupp_lift_of_infinite,
       lift_umax.{u, v}, lift_id'.{u, v}, bK.mk_eq_rank'', eq_comm, max_eq_left]

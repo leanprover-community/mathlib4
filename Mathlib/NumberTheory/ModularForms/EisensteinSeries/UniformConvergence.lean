@@ -43,7 +43,7 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) {N : �
       (eisensteinSeries a k ·) Filter.atTop := by
   have hk' : (2 : ℝ) < k := by norm_cast
   have p_sum : Summable fun x : gammaSet N 1 a ↦ ‖x.val‖ ^ (-k) :=
-    mod_cast (summable_one_div_norm_rpow hk').subtype (gammaSet N 1 a)
+    mod_cast (summable_one_div_norm_rpow hk').subtype (· ∈ gammaSet N 1 a)
   simp only [tendstoLocallyUniformly_iff_forall_isCompact, eisensteinSeries]
   intro K hK
   obtain ⟨A, B, hB, HABK⟩ := subset_verticalStrip_of_isCompact hK

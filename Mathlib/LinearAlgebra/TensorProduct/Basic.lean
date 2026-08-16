@@ -6,6 +6,8 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Tactic.Abel
 
 /-!
 # Universal property of the tensor product
@@ -263,7 +265,7 @@ variable (R M N)
 
 /-- The tensor product of modules is commutative, up to linear equivalence. -/
 protected def comm : M ⊗[R] N ≃ₗ[R] N ⊗[R] M :=
-  LinearEquiv.ofLinear (lift (mk R N M).flip) (lift (mk R M N).flip) (ext' fun _ _ => rfl)
+  LinearEquiv.ofLinearMap (lift (mk R N M).flip) (lift (mk R M N).flip) (ext' fun _ _ => rfl)
     (ext' fun _ _ => rfl)
 
 @[simp]
@@ -308,6 +310,7 @@ variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M]
   [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMulCommClass A S M]
   [CompatibleSMul R A M N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If M and N are both R- and A-modules and their actions on them commute,
 and if the A-action on `M ⊗[R] N` can switch between the two factors, then there is a
 canonical S-linear map from `M ⊗[A] N` to `M ⊗[R] N`,
