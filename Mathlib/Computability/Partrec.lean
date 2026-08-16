@@ -549,7 +549,7 @@ theorem bind_decode₂_iff {f : α →. σ} :
   ⟨fun hf =>
     nat_iff.1 <|
       (Computable.ofOption Primrec.decode₂.to_comp).bind <|
-        (Partrec.map hf (Computable.encode.comp snd).to₂).comp snd,
+        (hf.map (Computable.encode.comp snd).to₂).comp snd,
     fun h =>
     map_encode_iff.1 <| by simpa [encodek₂] using (nat_iff.2 h).comp (@Computable.encode α _)⟩
 
