@@ -407,7 +407,7 @@ theorem compLinearMap_inj (f : ∀ i, M₁ i →ₛₗ[σ₁₂] M₂ i) (hf : �
 if and only if the multilinear map is the zero map. -/
 @[simp]
 theorem comp_linearEquiv_eq_zero_iff {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁]
-  [RingHomInvPair σ₂₁ σ₁₂] (g : MultilinearMap σ₂₃ M₂ N₃) (f : ∀ i, M₁ i ≃ₛₗ[σ₁₂] M₂ i) :
+    [RingHomInvPair σ₂₁ σ₁₂] (g : MultilinearMap σ₂₃ M₂ N₃) (f : ∀ i, M₁ i ≃ₛₗ[σ₁₂] M₂ i) :
     (g.compLinearMap fun i => (f i : M₁ i →ₛₗ[σ₁₂] M₂ i)) = 0 ↔ g = 0 := by
   set f' := fun i => (f i : M₁ i →ₛₗ[σ₁₂] M₂ i)
   rw [← zero_compLinearMap (σ₂₃ := σ₂₃) f', compLinearMap_inj f' fun i => (f i).surjective]
