@@ -271,7 +271,6 @@ def lift : CategoryAlgebra R C →ₙₐ[R] A :=
 { DirectSum.toModule R (C × C) A (fun p ↦ F p.1 p.2) with
     map_zero' := map_zero _
     map_mul' := fun a b => by
-      -- Define L locally so we can use its coercions cleanly
       let L := DirectSum.toModule R (C × C) A (fun p ↦ F p.1 p.2)
       change L (a * b) = L a * L b
       refine DirectSum.induction_on a ?_ ?_ ?_
