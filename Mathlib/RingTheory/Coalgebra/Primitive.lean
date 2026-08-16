@@ -59,8 +59,8 @@ lemma add (ha : IsSkewPrimitiveElem R g h a) (hb : IsSkewPrimitiveElem R g h b) 
     IsSkewPrimitiveElem R g h (a + b) where
   counit_eq_zero := by simp [ha.counit_eq_zero, hb.counit_eq_zero]
   comul_eq_tmul_add_tmul := by
-    simp [ha.comul_eq_tmul_add_tmul, hb.comul_eq_tmul_add_tmul, add_tmul, tmul_add]
-    abel
+    simp [ha.comul_eq_tmul_add_tmul, hb.comul_eq_tmul_add_tmul, add_tmul, tmul_add,
+      add_add_add_comm]
 
 lemma smul (ha : IsSkewPrimitiveElem R g h a) (r : R) : IsSkewPrimitiveElem R g h (r • a) where
   counit_eq_zero := by simp [ha.counit_eq_zero]
@@ -126,8 +126,7 @@ namespace IsSkewPrimitiveElem
 lemma neg (ha : IsSkewPrimitiveElem R g h a) : IsSkewPrimitiveElem R g h (-a) where
   counit_eq_zero := by simpa [ha.counit_eq_zero] using (map_add (counit (R := R)) (-a) a).symm
   comul_eq_tmul_add_tmul := by
-    simp [ha.comul_eq_tmul_add_tmul, neg_tmul, tmul_neg]
-    abel
+    simp [ha.comul_eq_tmul_add_tmul, neg_tmul, tmul_neg, add_comm]
 
 lemma sub (ha : IsSkewPrimitiveElem R g h a) (hb : IsSkewPrimitiveElem R g h b) :
     IsSkewPrimitiveElem R g h (a - b) :=
