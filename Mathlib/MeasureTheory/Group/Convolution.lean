@@ -158,7 +158,7 @@ theorem mconv_assoc [MeasurableMul₂ M] (μ ν ρ : Measure M)
 
 @[to_additive]
 instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : Measure M)
-    [MeasurableMul₂ M] [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     IsProbabilityMeasure (μ ∗ₘ ν) := by
   rw [mconv]
   infer_instance
