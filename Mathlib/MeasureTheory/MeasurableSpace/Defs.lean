@@ -41,7 +41,7 @@ measurable space, σ-algebra, measurable function
 
 assert_not_exists Covariant MonoidWithZero
 
-open Set Encodable Function Equiv
+open Set Function
 
 variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
 
@@ -202,7 +202,7 @@ theorem MeasurableSet.ite' {s t : Set α} {p : Prop} (hs : p → MeasurableSet s
 
 @[simp, measurability]
 protected theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
-    (h₂ : MeasurableSet s₂) {i : Bool} : MeasurableSet (cond i s₁ s₂) := by
+    (h₂ : MeasurableSet s₂) {i : Bool} : MeasurableSet (if i = true then s₁ else s₂) := by
   cases i
   exacts [h₂, h₁]
 
@@ -526,8 +526,6 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
   fun _ h => hf (hg h)
 
 attribute [fun_prop] Measurable.fun_comp
-
-@[deprecated (since := "2026-01-23")] alias Measurable.comp' := Measurable.fun_comp
 
 @[simp, fun_prop]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :

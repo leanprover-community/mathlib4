@@ -201,8 +201,8 @@ def id : IntertwiningMap ρ ρ where
 @[simp]
 lemma toLinearMap_id : (id ρ).toLinearMap = LinearMap.id := rfl
 
-@[simp]
-lemma id_apply (v : V) : id ρ v = v := rfl
+@[simp] lemma coe_id : ⇑(id ρ) = _root_.id := rfl
+@[simp high] lemma id_apply (v : V) : id ρ v = v := rfl
 
 variable {ρ σ τ} in
 /-- Composition of intertwining maps.
@@ -507,7 +507,6 @@ def equivLinearMapAsModule :
   left_inv f := rfl
   right_inv f := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Composition of intertwining maps. -/
 def llcomp : IntertwiningMap σ τ →ₗ[A] IntertwiningMap ρ σ →ₗ[A] IntertwiningMap ρ τ where
   toFun f :=
