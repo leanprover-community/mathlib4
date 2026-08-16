@@ -26,7 +26,6 @@ universe w w' u u' v v'
 open CategoryTheory
 open scoped MonoidAlgebra
 
-set_option backward.privateInPublic true in
 /-- The category of representations of monoid `G` and their morphisms. -/
 structure Rep (k : Type u) (G : Type v) [Semiring k] [Monoid G] where
   private mk ::
@@ -68,7 +67,6 @@ lemma of_V : (of ρ).V = X := by with_reducible rfl
 variable (X ρ) in
 lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Rep.{w} k G`. -/
 @[ext]
 structure Hom where
@@ -572,6 +570,8 @@ instance : Limits.ReflectsLimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCa
 instance : Limits.ReflectsColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
   Limits.reflectsColimits_of_reflectsIsomorphisms
 
+instance : Abelian (Rep.{w} k G) := abelianOfEquivalence (RepToAction k G)
+
 variable {k G} in
 theorem epi_iff_surjective (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
   ⟨fun _ => (ModuleCat.epi_iff_surjective ((forget₂ _ _).map f)).1 inferInstance,
@@ -821,7 +821,6 @@ theorem ihom_ev_app_hom (A B : Rep k G) :
       LinearMap.id.flip) := by
   ext; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem ihom_coev_app_hom (A B : Rep k G) :
     ((ihom.coev A).app B).hom.toLinearMap = (TensorProduct.mk k _ _).flip :=
   LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
@@ -1043,7 +1042,6 @@ representation morphisms `Hom(k[G], A)` and `A`. -/
 abbrev leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A :=
   homLinearEquiv _ _ ≪≫ₗ Representation.leftRegularMapEquiv A.ρ
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (.single g 1) = A.ρ g x := by
   simp [homEquiv]

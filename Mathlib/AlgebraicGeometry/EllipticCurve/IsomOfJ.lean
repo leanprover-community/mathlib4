@@ -22,8 +22,6 @@ public import Mathlib.FieldTheory.IsSepClosed
 
 public section
 
-open Polynomial
-
 variable {F : Type*} [Field F] [IsSepClosed F]
 
 namespace WeierstrassCurve

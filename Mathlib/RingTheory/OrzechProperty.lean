@@ -81,7 +81,7 @@ theorem injective_of_surjective_of_injective
     (i f : N →ₗ[R] M) (hi : Injective i) (hf : Surjective f) : Injective f := by
   obtain ⟨n, g, hg⟩ := Module.Finite.exists_fin' R M
   have := small_of_surjective hg
-  let j : Shrink.{u} M ≃ₗ[R] M := Equiv.linearEquiv R (equivShrink M).symm
+  let j : Shrink.{u} M ≃ₗ[R] M := (Shrink.addEquiv (α := M)).linearEquiv R
   let i' := j.symm.toLinearMap ∘ₗ i
   replace hi : Injective i' := by simpa [i'] using hi
   let f' := j.symm.toLinearMap ∘ₗ f ∘ₗ (LinearEquiv.ofInjective i' hi).symm.toLinearMap

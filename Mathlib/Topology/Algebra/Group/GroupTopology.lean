@@ -23,7 +23,7 @@ The additive version `AddGroupTopology α` and corresponding results are provide
 
 @[expose] public section
 
-open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
+open Set TopologicalSpace Function Topology
 
 universe u v w x
 

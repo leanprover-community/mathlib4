@@ -325,7 +325,6 @@ def glueData : Scheme.GlueData where
   f_open i j := inferInstance
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.privateInPublic true in
 /-- (Implementation) The map from `Spec(𝒪ₓ/I)` to `X`. See `IdealSheafData.subschemeι` instead. -/
 noncomputable
 def gluedTo : I.glueData.glued ⟶ X :=
@@ -642,7 +641,6 @@ lemma inclusion_comp {I J K : IdealSheafData X} (h₁ : I ≤ J) (h₂ : J ≤ K
     inclusion h₂ ≫ inclusion h₁ = inclusion (h₁.trans h₂) :=
   K.subschemeCover.openCover.hom_ext _ _ fun _ ↦ by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor taking an ideal sheaf to its associated subscheme. -/
 @[simps]

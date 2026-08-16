@@ -78,31 +78,24 @@ def uniqueGalOfSplits (h : p.Splits) : Unique p.Gal where
           ((SetLike.ext_iff.mp ((IsSplittingField.splits_iff _ p).mp h) x).mp Algebra.mem_top)
       rw [AlgEquiv.commutes, AlgEquiv.commutes]
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance [h : Fact p.Splits] : Unique p.Gal :=
   uniqueGalOfSplits _ h.1
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalZero : Unique (0 : F[X]).Gal :=
   uniqueGalOfSplits _ (by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalOne : Unique (1 : F[X]).Gal :=
   uniqueGalOfSplits _ Splits.one
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalC (x : F) : Unique (C x).Gal :=
   uniqueGalOfSplits _ (by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalX : Unique (X : F[X]).Gal :=
   uniqueGalOfSplits _ Splits.X
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalXSubC (x : F) : Unique (X - C x).Gal :=
   uniqueGalOfSplits _ (Splits.X_sub_C _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalXPow (n : ℕ) : Unique (X ^ n : F[X]).Gal :=
   uniqueGalOfSplits _ (Splits.X_pow _)
 
@@ -177,7 +170,7 @@ lemma galAction_isPretransitive [Fact ((p.map (algebraMap F E)).Splits)] (hp : I
   have hx := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRoots p E).symm x).2).2
   have hy := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRoots p E).symm y).2).2
   obtain ⟨g, hg⟩ := (Normal.minpoly_eq_iff_mem_orbit p.SplittingField).mp (hy.symm.trans hx)
-  exact ⟨g, (rootsEquivRoots p E).apply_eq_iff_eq_symm_apply.mpr (Subtype.ext hg)⟩
+  exact ⟨g, (rootsEquivRoots p E).eq_symm_apply.mp (Subtype.ext hg)⟩
 
 variable {p E}
 
@@ -240,7 +233,7 @@ theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) :
   classical
   have := Fact.mk <|
     (SplittingField.splits q).of_dvd (map_ne_zero hq) ((map_dvd_map' _).mpr hpq)
-  simpa only [restrictDvd_def, dif_neg hq] using! restrict_surjective _ _
+  simpa only [restrictDvd_def, dite_eq_right hq] using! restrict_surjective _ _
 
 variable (p q)
 
@@ -257,7 +250,7 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   intro f g hfg
   classical
   simp only [restrictProd, restrictDvd_def] at hfg
-  simp only [dif_neg hpq, MonoidHom.prod_apply, Prod.mk_inj] at hfg
+  simp only [dite_eq_right hpq, MonoidHom.prod_apply, Prod.mk_inj] at hfg
   ext (x hx)
   rw [rootSet_def, aroots_mul hpq] at hx
   rcases Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h | h

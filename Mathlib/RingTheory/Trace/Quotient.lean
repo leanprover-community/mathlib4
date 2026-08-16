@@ -26,7 +26,7 @@ public section
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-open IsLocalRing FiniteDimensional Module Submodule IsLocalization.AtPrime
+open IsLocalRing Module Submodule IsLocalization.AtPrime
 
 section IsLocalRing
 
@@ -97,19 +97,12 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
         (FaithfulSMul.algebraMap_injective _ _))
   have : IsIntegrallyClosed Sₚ := isIntegrallyClosed_of_isLocalization _ _ e
-  have : IsPrincipalIdealRing Rₚ := by
-    by_cases hp : p = ⊥
-    · infer_instance
-    · have := (IsDedekindDomain.isDedekindDomainDvr R).2 p hp inferInstance
-      infer_instance
   apply (equivQuotMaximalIdeal p Rₚ).injective
   rw [trace_quotient_eq_trace_localization_quotient S p Rₚ Sₚ, IsScalarTower.algebraMap_eq S Sₚ,
     RingHom.comp_apply, Ideal.Quotient.algebraMap_eq, Algebra.trace_quotient_mk,
     RingEquiv.apply_symm_apply, ← Algebra.intTrace_eq_trace,
     ← Algebra.intTrace_eq_of_isLocalization R S p.primeCompl (Aₘ := Rₚ) (Bₘ := Sₚ) x,
     ← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply]
-  simp only [equivQuotMaximalIdeal, RingHom.quotientKerEquivOfSurjective, RingEquiv.coe_trans,
-    Function.comp_apply, Ideal.quotEquivOfEq_mk, RingHom.quotientKerEquivOfRightInverse.apply,
-    RingHom.kerLift_mk]
+  simp
 
 end IsDedekindDomain
