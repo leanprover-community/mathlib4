@@ -156,7 +156,7 @@ lemma isEdgeConnected_two_iff_Preconnected :
 @[deprecated (since := "2026-08-13")]
 alias isEdgeConnected_two := isEdgeConnected_two_iff_Preconnected
 
-lemma all_notBridge_Preconnected : (∀ e , ¬G.IsBridge e) → G.Preconnected  := by
+lemma all_notBridge_Preconnected : (∀ e, ¬G.IsBridge e) → G.Preconnected  := by
   intro h u v
   by_contra huv
   exact h s(u,v) (IsBridge.of_not_reachable huv)
