@@ -1180,7 +1180,7 @@ theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]
 /-- The sum over a finite set of continuous seminorms is continuous. -/
 theorem continuous_finsetSum [TopologicalSpace E]
     {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hp : ∀ i ∈ s, Continuous (p i)) :
-    Continuous ((∑ i ∈ s, p i : Seminorm 𝕝 E) : E → ℝ) := by
+    Continuous (∑ i ∈ s, p i : Seminorm 𝕝 E) := by
   change Continuous (fun x ↦ FunLike.coeAddMonoidHom _ _ _ (∑ i ∈ s, p i) x)
   simp_rw [map_sum, Finset.sum_apply]
   exact _root_.continuous_finsetSum s hp
@@ -1188,7 +1188,7 @@ theorem continuous_finsetSum [TopologicalSpace E]
 /-- The supremum over a finite set of continuous seminorms is continuous. -/
 theorem continuous_finsetSup [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hp : ∀ i ∈ s, Continuous (p i)) :
-    Continuous ((s.sup p : Seminorm 𝕝 E) : E → ℝ) := by
+    Continuous (s.sup p : Seminorm 𝕝 E) := by
   exact continuous_of_le (continuous_finsetSum hp) (finset_sup_le_sum p s)
 
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
