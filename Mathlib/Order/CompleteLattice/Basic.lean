@@ -701,7 +701,9 @@ end le
 ### `iSup` and `iInf` under `Type`
 -/
 
-@[to_dual iInf_of_isEmpty]
+/-- This `simp` lemma goes well with `sSup_empty` in a complete lattice. -/
+@[to_dual (attr := simp) iInf_of_isEmpty
+/-- This `simp` lemma goes well with `sInf_empty` in a complete lattice. -/]
 theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f = sSup (∅ : Set α) :=
   congr_arg sSup (range_eq_empty f)
 
