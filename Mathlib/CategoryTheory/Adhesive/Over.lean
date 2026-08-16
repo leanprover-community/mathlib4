@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Adhesive.Basic
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.CategoryTheory.Limits.Over
 
 /-! # Adhesive structure on slice categories
 

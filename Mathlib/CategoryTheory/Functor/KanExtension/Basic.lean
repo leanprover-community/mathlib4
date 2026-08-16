@@ -225,6 +225,12 @@ lemma isLeftKanExtension_iff_of_iso {F' F'' : D ⥤ H} (e : F' ≅ F'')
     refine isLeftKanExtension_of_iso e.symm α' α ?_
     rw [← comm, assoc, ← whiskerLeft_comp, Iso.symm_hom, e.hom_inv_id, whiskerLeft_id', comp_id]
 
+-- dual version
+instance {F'' : D ⥤ H} {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') (f : F' ⟶ F'') [IsIso f]
+    [F'.IsLeftKanExtension α] :
+    F''.IsLeftKanExtension (α ≫ Functor.whiskerLeft _ f) := by
+  rwa [← isLeftKanExtension_iff_of_iso (asIso f) α (α ≫ Functor.whiskerLeft _ f) (by simp)]
+
 /-- Left Kan extensions of isomorphic functors are isomorphic. -/
 @[simps]
 noncomputable def leftKanExtensionUniqueOfIso {G : C ⥤ H} (i : F ≅ G) (G' : D ⥤ H)
@@ -398,6 +404,16 @@ lemma isRightKanExtension_iff_postcomp₁ (α : L' ⋙ F' ⟶ F) :
   constructor
   · exact fun _ => ⟨⟨eq (isUniversalOfIsRightKanExtension _ _)⟩⟩
   · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsRightKanExtension _ _)⟩⟩
+
+-- add dual statement
+instance {L L' : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') (f : L ⟶ L') [IsIso f]
+    [F'.IsLeftKanExtension α] :
+    F'.IsLeftKanExtension (α ≫ Functor.whiskerRight f _) := by
+  let α' := α ≫ whiskerRight f F' ≫ whiskerRight L'.rightUnitor.inv F' ≫ (associator _ _ _).hom
+  have : (𝟭 D ⋙ F').IsLeftKanExtension  α' := by
+    simpa using (isLeftKanExtension_iff_postcomp₁ (𝟭 D) (L'.rightUnitor.trans
+      (asIso f).symm) α).mp inferInstance
+  exact isLeftKanExtension_of_iso  F'.leftUnitor α' _ (by cat_disch)
 
 end
 

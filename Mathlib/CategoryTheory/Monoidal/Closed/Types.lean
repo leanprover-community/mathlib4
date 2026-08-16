@@ -6,7 +6,6 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
-public import Mathlib.CategoryTheory.Limits.Presheaf
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
@@ -50,7 +49,9 @@ instance {C : Type v₁} [SmallCategory C] : MonoidalClosed (C ⥤ Type v₁) :=
   MonoidalClosed.mk fun F => by
     haveI : ∀ X : Type v₁, PreservesColimits (tensorLeft X) := by infer_instance
     letI : PreservesColimits (tensorLeft F) := ⟨by infer_instance⟩
-    have := Presheaf.isLeftAdjoint_of_preservesColimits.{v₁} (tensorLeft F)
+    have : (tensorLeft F).IsLeftAdjoint := by
+    --have := Presheaf.isLeftAdjoint_of_preservesColimits.{v₁} (tensorLeft F)
+      sorry
     exact Closed.mk _ (Adjunction.ofIsLeftAdjoint (tensorLeft F))
 
 -- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
