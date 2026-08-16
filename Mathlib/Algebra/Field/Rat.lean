@@ -111,8 +111,8 @@ theorem NNRatCast.ofScientific_eq_ite {K} [NNRatCast K] (m : ℕ) (b : Bool) (d 
   rw [NNRatCast.toOfScientific_def]
   split_ifs
   · congr 2
-    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, if_pos ‹_›]
+    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, ite_eq_left ‹_›]
     congr
   · congr 2
-    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, if_neg ‹_›]
+    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, ite_eq_right ‹_›]
     congr
