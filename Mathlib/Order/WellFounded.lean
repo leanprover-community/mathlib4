@@ -329,7 +329,7 @@ noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
 theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f s hs ∈ s :=
   WellFounded.min_mem _ _ _
 
-@[to_dual (attr := simp) not_argmaxOn_lt]
+@[to_dual not_argmaxOn_lt]
 theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s) : ¬f a < f (argminOn f s ⟨a, ha⟩) :=
   WellFounded.not_lt_min (InvImage.wf f wellFounded_lt) s ha
 
