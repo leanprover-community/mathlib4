@@ -71,7 +71,7 @@ lemma exists_egirth_eq_length :
     exact hG _ hw
   · simp_rw [← egirth_eq_top, ← Ne.eq_def, egirth, iInf_subtype', iInf_sigma',
       ENat.iInf_natCast_ne_top, ← exists_prop, Subtype.exists', Sigma.exists', eq_comm] at h ⊢
-    exact ciInf_mem _
+    exact exists_eq_iInf _
 
 lemma three_le_egirth : 3 ≤ G.egirth := by
   simpa using fun _ _ h ↦ h.three_le_length

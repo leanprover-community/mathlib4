@@ -51,7 +51,7 @@ theorem le_cof_iff {c : Cardinal} : c ≤ cof α ↔ ∀ s : Set α, IsCofinal s
 variable (α) in
 /-- Every well-order has a cofinal subset of cardinal `cof α`. -/
 theorem exists_cof_eq : ∃ s : Set α, IsCofinal s ∧ #s = cof α := by
-  obtain ⟨s, hs⟩ := ciInf_mem fun s : {s : Set α // IsCofinal s} ↦ #s
+  obtain ⟨s, hs⟩ := exists_eq_iInf fun s : {s : Set α // IsCofinal s} ↦ #s
   exact ⟨s.1, s.2, hs⟩
 
 @[deprecated (since := "2026-05-25")] alias cof_eq := exists_cof_eq
