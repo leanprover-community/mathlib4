@@ -21,7 +21,12 @@ so instead of defining `X ⟶ Y` in `Discrete α` as `X = Y`,
 one might define it as `PLift (X = Y)`.
 In fact, to allow `Discrete α` to be a `SmallCategory`
 (i.e. with morphisms in the same universe as the objects),
-we actually define the hom type `X ⟶ Y` as `ULift (PLift (X = Y))`.
+one might define `X ⟶ Y` as `ULift (PLift (X = Y))`.
+But another technical difficulty is that `to_dual` wants the definition of `X ⟶ Y` to be dual to
+the definition of `Y ⟶ X`, so we define `X ⟶ Y` using a structure: `Discrete.Hom X.as Y.as`.
+One could also change `Discrete.Hom` so that the definition is `Discrete.Hom X Y`,
+but it turns out that having the `.as` around helps with subsingleton elimination in unification,
+e.g. when dealing with `Discrete PUnit`.
 
 `Discrete.functor` promotes a function `f : I → C` (for any category `C`) to a functor
 `Discrete.functor f : Discrete I ⥤ C`.
@@ -70,19 +75,36 @@ lemma Discrete.as_bijective {α : Type*} : (Discrete.as (α := α)).Bijective :=
 instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
   discreteEquiv.decidableEq
 
+set_option linter.translate.warnInvalid false in
+/-- The only morphisms in `Discrete α` are the identity morphisms. -/
+@[nolint structureInType, to_dual self (reorder := a b)]
+structure Discrete.Hom {α : Type u₁} (a b : α) : Type u₁ where
+  eq : a = b
+
+attribute [aesop (rule_sets := [builtin]) norm constructors] Discrete.Hom
+attribute [aesop (rule_sets := [builtin]) norm 0 destruct] Discrete.Hom.eq
+
+@[to_dual existing eq]
+theorem Discrete.Hom.eq' {α : Type u₁} {a b : α} (self : Discrete.Hom a b) : b = a := self.eq.symm
+
+/-- `Discrete.Hom.mk'` is the dual of `Discrete.Hom.mk`, which is needed for `to_dual`.
+Please avoid using this directly. -/
+@[to_dual existing mk]
+abbrev Discrete.Hom.mk' {α : Type u₁} {a b : α} (eq : b = a) : Discrete.Hom a b := ⟨eq.symm⟩
+
 /-- The "Discrete" category on a type, whose morphisms are equalities.
 
 Because we do not allow morphisms in `Prop` (only in `Type`),
 somewhat annoyingly we have to define `X ⟶ Y` as `ULift (PLift (X = Y))`. -/
 @[stacks 001A]
 instance discreteCategory (α : Type u₁) : SmallCategory (Discrete α) where
-  Hom X Y := ULift (PLift (X.as = Y.as))
-  id _ := ULift.up (PLift.up rfl)
+  Hom X Y := Discrete.Hom X.as Y.as
+  id _ := ⟨rfl⟩
   comp {X Y Z} g f := by
     cases X
     cases Y
     cases Z
-    rcases f with ⟨⟨⟨⟩⟩⟩
+    rcases f with ⟨⟨⟩⟩
     exact g
 
 namespace Discrete
@@ -95,8 +117,10 @@ instance [Inhabited α] : Inhabited (Discrete α) :=
 instance [Subsingleton α] : Subsingleton (Discrete α) :=
   ⟨by cat_disch⟩
 
-instance instSubsingletonDiscreteHom (X Y : Discrete α) : Subsingleton (X ⟶ Y) :=
-  show Subsingleton (ULift (PLift _)) from inferInstance
+theorem hom_eq {X Y : Discrete α} {f g : X ⟶ Y} : f = g := congrArg Discrete.Hom.mk rfl
+
+instance instSubsingletonDiscreteHom (X Y : Discrete α) : Subsingleton (X ⟶ Y) where
+  allEq _ _ := hom_eq
 
 /-- A simple tactic to run `cases` on any `Discrete α` hypotheses. -/
 macro "discrete_cases" : tactic =>
@@ -125,11 +149,13 @@ instance [Unique α] : Unique (Discrete α) :=
   Unique.mk' (Discrete α)
 
 /-- Extract the equation from a morphism in a discrete category. -/
+@[to_dual none]
 theorem eq_of_hom {X Y : Discrete α} (i : X ⟶ Y) : X.as = Y.as :=
-  i.down.down
+  i.eq
 
 /-- Promote an equation between the wrapped terms in `X Y : Discrete α` to a morphism `X ⟶ Y`
 in the discrete category. -/
+@[to_dual none]
 protected abbrev eqToHom {X Y : Discrete α} (h : X.as = Y.as) : X ⟶ Y :=
   eqToHom (by cat_disch)
 
@@ -139,23 +165,26 @@ protected abbrev eqToIso {X Y : Discrete α} (h : X.as = Y.as) : X ≅ Y :=
   eqToIso (by cat_disch)
 
 /-- A variant of `eqToHom` that lifts terms to the discrete category. -/
+@[to_dual none]
 abbrev eqToHom' {a b : α} (h : a = b) : Discrete.mk a ⟶ Discrete.mk b :=
   Discrete.eqToHom h
 
 /-- A variant of `eqToIso` that lifts terms to the discrete category. -/
+@[to_dual none]
 abbrev eqToIso' {a b : α} (h : a = b) : Discrete.mk a ≅ Discrete.mk b :=
   Discrete.eqToIso h
 
 @[simp]
-theorem id_def (X : Discrete α) : ULift.up (PLift.up (Eq.refl X.as)) = 𝟙 X :=
+theorem id_def (X : Discrete α) : Discrete.Hom.mk (Eq.refl X.as) = 𝟙 X :=
   rfl
 
 @[simp]
-theorem id_def' (X : α) : ULift.up (PLift.up (Eq.refl X)) = 𝟙 (⟨X⟩ : Discrete α) :=
+theorem id_def' (X : α) : Discrete.Hom.mk (Eq.refl X) = 𝟙 (⟨X⟩ : Discrete α) :=
   rfl
 
 variable {C : Type u₂} [Category.{v₂} C]
 
+@[to_dual self]
 instance {I : Type u₁} {i j : Discrete I} (f : i ⟶ j) : IsIso f :=
   ⟨⟨Discrete.eqToHom (eq_of_hom f).symm, by cat_disch⟩⟩
 
@@ -168,7 +197,7 @@ def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
   obj := F ∘ Discrete.as
   map {X Y} f := by
     dsimp
-    rcases f with ⟨⟨h⟩⟩
+    rcases f with ⟨h⟩
     exact eqToHom (congrArg _ h)
 
 @[simp]
@@ -193,9 +222,8 @@ lemma functor_ext {I : Type u₁} {G F : Discrete I ⥤ C} (h : (i : I) → G.ob
     G = F := by
   fapply Functor.ext
   · intro I; rw [h]
-  · intro ⟨X⟩ ⟨Y⟩ ⟨⟨p⟩⟩; simp only at p; induction p; simp
+  · intro ⟨X⟩ ⟨Y⟩ ⟨p⟩; simp only at p; induction p; simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The discrete functor induced by a composition of maps can be written as a
 composition of two discrete functors.
@@ -209,11 +237,11 @@ def functorComp {I : Type u₁} {J : Type u₁'} (f : J → C) (g : I → J) :
 a natural transformation is just a collection of maps,
 as the naturality squares are trivial.
 -/
-@[simps, implicit_reducible]
+@[simps, implicit_reducible, to_dual self]
 def natTrans {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ⟶ G.obj i) :
     F ⟶ G where
   app := f
-  naturality := fun {X Y} ⟨⟨g⟩⟩ => by
+  naturality := fun {X Y} ⟨g⟩ => by
     discrete_cases
     rcases g
     change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
@@ -226,12 +254,13 @@ as the naturality squares are trivial.
 @[simps!]
 def natIso {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i) :
     F ≅ G :=
-  NatIso.ofComponents f fun ⟨⟨g⟩⟩ => by
+  NatIso.ofComponents f fun ⟨g⟩ => by
     discrete_cases
     rcases g
     change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
     simp
 
+@[to_dual self]
 instance {I : Type*} {F G : Discrete I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i) [∀ i, IsIso (f i)] :
     IsIso (Discrete.natTrans f) := by
   change IsIso (Discrete.natIso (fun i => asIso (f i))).hom
@@ -301,21 +330,18 @@ theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
 
 end Discrete
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Discrete.forall {α : Type*} {p : Discrete α → Prop} :
     (∀ (a : Discrete α), p a) ↔ ∀ (a' : α), p ⟨a'⟩ := by
   rw [iff_iff_eq, discreteEquiv.forall_congr_left]
   simp only [discreteEquiv, Equiv.symm_mk, Equiv.coe_fn_mk]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Discrete.exists {α : Type*} {p : Discrete α → Prop} :
     (∃ (a : Discrete α), p a) ↔ ∃ (a' : α), p ⟨a'⟩ := by
   rw [iff_iff_eq, discreteEquiv.exists_congr_left]
   simp [discreteEquiv]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `(J → C) ≌ (Discrete J ⥤ C)`. -/
 @[simps]
@@ -335,7 +361,6 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
       obtain rfl : f = 𝟙 _ := rfl
       simp))) (by cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `piEquivalenceFunctorDiscrete` is compatible with `evaluation`. -/
 @[simps!]
@@ -353,6 +378,9 @@ attribute [instance] IsDiscrete.subsingleton
 
 instance Discrete.isDiscrete (C : Type*) : IsDiscrete (Discrete C) where
   eq_of_hom := by rintro ⟨_⟩ ⟨_⟩ ⟨⟨rfl⟩⟩; rfl
+
+instance {C : Type*} [Category C] [Subsingleton C] [Quiver.IsThin C] : IsDiscrete C where
+  eq_of_hom _ := by subsingleton
 
 section
 
