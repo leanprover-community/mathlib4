@@ -39,11 +39,9 @@ Proposition 1.4.17 in [GrinbergReiner2020]. -/
     simpa [ha.comul_eq_tmul_add_tmul, ha.counit_eq_zero]
       using mul_antipode_rTensor_comul_apply (R := R) a
 
-/-- The antipode preserves primitivity. -/
 protected lemma antipode (ha : IsPrimitiveElem R a) : IsPrimitiveElem R (antipode R a) :=
   ha.antipode_eq_neg ▸ ha.neg
 
-/-- The antipode is involutive on primitive elements. -/
 lemma antipode_antipode (ha : IsPrimitiveElem R a) : antipode R (antipode R a) = a := by
   simp [ha]
 
