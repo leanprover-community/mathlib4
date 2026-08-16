@@ -24,7 +24,7 @@ namespace Matrix
 instance : MeasurableSpace (Matrix m n α) := inferInstanceAs <| MeasurableSpace (m → n → α)
 
 @[fun_prop]
-lemma measurable_matrix_of : Measurable <| Matrix.of (m := m) (n := n) (α := α) :=
+lemma measurable_of : Measurable <| Matrix.of (m := m) (n := n) (α := α) :=
   measurable_id
 
 variable [Countable m] [Countable n] [TopologicalSpace α] [SecondCountableTopology α]
