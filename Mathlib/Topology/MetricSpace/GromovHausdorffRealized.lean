@@ -404,7 +404,7 @@ private theorem candidatesB_nonempty : (candidatesB X Y).Nonempty :=
 
 /-- Explicit bound on `HD (dist)`. This means that when looking for minimizers it will
 be sufficient to look for functions with `HD(f)` bounded by this bound. -/
-theorem HD_candidatesBDist_le :
+public theorem HD_candidatesBDist_le :
     HD (candidatesBDist X Y) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
   refine max_le (ciSup_le fun x => ?_) (ciSup_le fun y => ?_)
   · have A : ⨅ y, candidatesBDist X Y (inl x, inr y) ≤ candidatesBDist X Y (inl x, inr default) :=
