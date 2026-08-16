@@ -66,7 +66,6 @@ variable {F} {E}
 then `F = E`. -/
 theorem eq_of_le_of_finrank_le [hfin : FiniteDimensional K E] (h_le : F ≤ E)
     (h_finrank : finrank K E ≤ finrank K F) : F = E :=
-  haveI : Module.Finite K E.toSubalgebra := hfin
   toSubalgebra_injective <| Subalgebra.eq_of_le_of_finrank_le h_le h_finrank
 
 /-- If `F ≤ E` are two intermediate fields of `L / K` such that `[F : K] = [E : K]` are finite,

@@ -48,8 +48,6 @@ lemma of_span_eq_top_target_aux {A : Type*} [CommRing A] [Algebra R A]
   let f' : Localization.Away g.val →ₐ[R] Localization.Away (f g) :=
     Localization.awayMapₐ f g.val
   have (g : t) : Algebra.FinitePresentation R (Localization.Away g.val) :=
-    haveI : Algebra.FinitePresentation A (Localization.Away g.val) :=
-      IsLocalization.Away.finitePresentation g.val
     Algebra.FinitePresentation.trans R A (Localization.Away g.val)
   apply Algebra.FinitePresentation.ker_fG_of_surjective f'
   exact IsLocalization.Away.mapₐ_surjective_of_surjective _ hf

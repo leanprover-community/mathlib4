@@ -200,9 +200,6 @@ lemma isNormalMonoCategory : IsNormalMonoCategory C where
       g := cokernel.π f
       w := by simp
       isLimit := by
-        haveI : Limits.HasImages C := hasImages
-        haveI : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
-        haveI : HasZeroObject C := Limits.hasZeroObject_of_hasFiniteBiproducts _
         have aux (s : KernelFork (cokernel.π f)) :
             (limit.lift (parallelPair (cokernel.π f) 0) s ≫ inv (imageMonoFactorisation f).e) ≫
             Fork.ι (KernelFork.ofι _ (cokernel.condition f)) = Fork.ι s := ?_
@@ -225,9 +222,6 @@ lemma isNormalEpiCategory : IsNormalEpiCategory C where
       g := kernel.ι _
       w := kernel.condition _
       isColimit := by
-        haveI : Limits.HasImages C := hasImages
-        haveI : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
-        haveI : HasZeroObject C := Limits.hasZeroObject_of_hasFiniteBiproducts _
         have aux (s : CokernelCofork (kernel.ι f)) :
             Cofork.π (CokernelCofork.ofπ _ (kernel.condition f)) ≫
               inv (imageMonoFactorisation f).m ≫ inv (Abelian.coimageImageComparison f) ≫

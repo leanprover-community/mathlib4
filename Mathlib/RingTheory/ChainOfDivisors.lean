@@ -222,7 +222,6 @@ theorem factor_orderIso_map_one_eq_bot [IsCancelMulZero N] {m : Associates M} {n
   let : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
   let : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
   simp only [← Associates.bot_eq_one, Subtype.mk_bot, bot_le, Subtype.coe_eq_bot_iff]
-  let : BotHomClass ({ l // l ≤ m } ≃o { l // l ≤ n }) _ _ := OrderIsoClass.toBotHomClass
   exact map_bot d
 
 set_option backward.isDefEq.respectTransparency false in
@@ -293,8 +292,6 @@ theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn
   · have : b ≤ n := le_trans (le_of_lt hb) (d ⟨p, dvd_of_mem_normalizedFactors hp⟩).prop
     obtain ⟨x, hx⟩ := d.surjective ⟨b, this⟩
     rw [← Subtype.coe_mk (p := (· ≤ n)) b this, ← hx] at hb
-    let : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
-    let : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
     suffices x = ⊥ by
       rw [this, OrderIso.map_bot d] at hx
       refine (Subtype.mk_eq_bot_iff ?_ _).mp hx.symm
@@ -335,7 +332,6 @@ theorem emultiplicity_prime_eq_emultiplicity_image_by_factor_orderIso {m p : Ass
       emultiplicity (↑(d.symm (d ⟨p, dvd_of_mem_normalizedFactors hp⟩))) m by
     rw [d.symm_apply_apply ⟨p, dvd_of_mem_normalizedFactors hp⟩, Subtype.coe_mk] at this
     exact this
-  let := Classical.decEq (Associates N)
   simpa only [Subtype.coe_eta] using
     emultiplicity_prime_le_emultiplicity_image_by_factor_orderIso
       (mem_normalizedFactors_factor_orderIso_of_mem_normalizedFactors hn hp d) d.symm
@@ -406,7 +402,6 @@ theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} 
             exact mk_dvd_mk.mpr (dvd_of_mem_normalizedFactors hp)⟩) := by
     rw [mkFactorOrderIsoOfFactorDvdEquiv_apply_coe]
   rw [← Associates.prime_mk, this]
-  let := Classical.decEq (Associates M)
   refine map_prime_of_factor_orderIso (mk_ne_zero.mpr hn) ?_ _
   obtain ⟨q, hq, hq'⟩ :=
     exists_mem_normalizedFactors_of_dvd (mk_ne_zero.mpr hm)

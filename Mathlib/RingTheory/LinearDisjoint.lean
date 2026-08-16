@@ -594,8 +594,6 @@ theorem of_isField (H : IsField (A ⊗[R] B)) : A.LinearDisjoint B := by
   nontriviality S
   rw [linearDisjoint_iff_injective]
   let : Field (A ⊗[R] B) := H.toField
-  -- need this otherwise `RingHom.injective` does not work
-  let : NonAssocRing (A ⊗[R] B) := Ring.toNonAssocRing
   exact RingHom.injective _
 
 /-- If `A ⊗[R] B` is a field, then for any `R`-algebra `S`

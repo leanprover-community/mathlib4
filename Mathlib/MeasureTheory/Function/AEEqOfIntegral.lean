@@ -183,7 +183,6 @@ theorem AEFinStronglyMeasurable.ae_nonneg_of_forall_setIntegral_nonneg {f : α �
   let t := hf.sigmaFiniteSet
   suffices 0 ≤ᵐ[μ.restrict t] f from
     ae_of_ae_restrict_of_ae_restrict_compl _ this hf.ae_eq_zero_compl.symm.le
-  have : SigmaFinite (μ.restrict t) := hf.sigmaFinite_restrict
   refine
     ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite (fun s hs hμts => ?_) fun s hs hμts => ?_
   · rw [IntegrableOn, Measure.restrict_restrict hs]
@@ -288,7 +287,6 @@ theorem AEFinStronglyMeasurable.ae_eq_zero_of_forall_setIntegral_eq_zero {f : α
   let t := hf.sigmaFiniteSet
   suffices f =ᵐ[μ.restrict t] 0 from
     ae_of_ae_restrict_of_ae_restrict_compl _ this hf.ae_eq_zero_compl
-  have : SigmaFinite (μ.restrict t) := hf.sigmaFinite_restrict
   refine ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite ?_ ?_
   · intro s hs hμs
     rw [IntegrableOn, Measure.restrict_restrict hs]

@@ -336,7 +336,6 @@ theorem BlockTriangular.det_fintype [DecidableEq α] [Fintype α] [LinearOrder �
 
 theorem det_of_isUpperTriangular [LinearOrder m] (h : M.IsUpperTriangular) :
     M.det = ∏ i : m, M i i := by
-  have : DecidableEq R := Classical.decEq _
   simp_rw [h.det, image_id, det_toSquareBlock_id]
 
 @[deprecated (since := "2026-07-30")] alias det_of_upperTriangular := det_of_isUpperTriangular

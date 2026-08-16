@@ -112,7 +112,6 @@ noncomputable instance : (restrictScalars f).LaxMonoidal :=
 @[simp]
 lemma restrictScalars_η (r : R) :
     ε (restrictScalars f) r = f r := by
-  let := f.toAlgebra
   dsimp [Adjunction.rightAdjointLaxMonoidal_ε]
   rw [extendRestrictScalarsAdj_homEquiv_apply, extendScalars_η]
   erw [AlgebraTensorModule.rid_tmul]

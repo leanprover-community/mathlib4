@@ -152,7 +152,6 @@ theorem iff_quotient_freeAlgebra' : FiniteType R A ↔
     rintro ⟨s, f, hsur⟩
     use { x : A // x ∈ s }, inferInstance, f
   · rintro ⟨ι, hfintype, f, hsur⟩
-    let : Fintype ι := hfintype
     exact .of_surjective f hsur
 
 /-- A commutative algebra is finitely generated if and only if it is a quotient
@@ -164,7 +163,6 @@ theorem iff_quotient_mvPolynomial' : FiniteType R S ↔
     rintro ⟨s, f, hsur⟩
     use { x : S // x ∈ s }, inferInstance, f
   · rintro ⟨ι, hfintype, f, hsur⟩
-    let : Fintype ι := hfintype
     exact .of_surjective f hsur
 
 /-- A commutative algebra is finitely generated if and only if it is a quotient of a polynomial ring

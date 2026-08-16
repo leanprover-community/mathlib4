@@ -220,8 +220,6 @@ lemma norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
   classical
   by_cases h : ∃ s : Finset C, Nonempty (Basis s B C)
   · obtain ⟨s, ⟨b⟩⟩ := h
-    let : Algebra A B := RingHom.toAlgebra e
-    let : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
     rw [Algebra.norm_eq_matrix_det b,
       Algebra.norm_eq_matrix_det (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he])),
       e.map_det]

@@ -74,7 +74,6 @@ theorem comp_injective [FormallyUnramified R A] (hI : I ^ 2 = ⊥) :
     Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
   intro f₁ f₂ e
   let := f₁.toRingHom.toAlgebra
-  have := IsScalarTower.of_algebraMap_eq' f₁.comp_algebraMap.symm
   have :=
     ((KaehlerDifferential.linearMapEquivDerivation R A).toEquiv.trans
           (derivationToSquareZeroEquivLift I hI)).surjective.subsingleton

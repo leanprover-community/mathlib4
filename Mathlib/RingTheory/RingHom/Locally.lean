@@ -313,9 +313,6 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
   rw [locally_iff_exists hPl.respectsIso]
   let rₐ (a : s) : Localization.Away a.val := algebraMap _ _ (f r)
   let Sₐ (a : s) := Localization.Away (rₐ a)
-  have (a : s) :
-      IsLocalization.Away (((algebraMap S (Localization.Away a.val)).comp f) r) (Sₐ a) :=
-    inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
   have (a : s) : IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val)
     (Submonoid.map f (Submonoid.powers r))) (Sₐ a) := by
     convert! (inferInstance : IsLocalization.Away (rₐ a) (Sₐ a))

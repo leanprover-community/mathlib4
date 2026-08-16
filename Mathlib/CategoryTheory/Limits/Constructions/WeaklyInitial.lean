@@ -51,7 +51,6 @@ theorem hasInitial_of_weakly_initial_and_hasWideEqualizers [HasWideEqualizers.{w
     hasLimitsOfShape_of_equivalence
       (WalkingParallelFamily.equivalenceOfEquiv (equivShrink.{w} endos).symm)
   let i := wideEqualizer.ι (id : endos → endos)
-  have : Nonempty endos := ⟨𝟙 _⟩
   have : ∀ X : C, Unique (wideEqualizer (id : endos → endos) ⟶ X) := by
     intro X
     refine ⟨⟨i ≫ Classical.choice (hT X)⟩, fun a => ?_⟩
