@@ -163,9 +163,6 @@ theorem FG.restrictScalars_of_surjective [CommSemiring R] [Algebra R A] [Module 
   obtain ⟨s, rfl⟩ := hS
   exact ⟨s, .symm <| restrictScalars_span R A h _⟩
 
-@[deprecated (since := "2026-01-24")]
-alias fg_restrictScalars := FG.restrictScalars_of_surjective
-
 theorem FG.of_restrictScalars (R) [Semiring R] [Module R M] [SMul R A] [IsScalarTower R A M]
     (hS : (S.restrictScalars R).FG) : S.FG := by
   obtain ⟨s, e⟩ := hS
@@ -244,19 +241,18 @@ instance (priority := 100) of_finite [Finite M] : Module.Finite R M := by
 
 section
 
-variable {S} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P]
-  {σ : R →+* S} [RingHomSurjective σ]
+variable {S} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P] {σ : R →+* S}
 
--- TODO: remove RingHomSurjective
 @[stacks 0519 "(3)"]
 theorem of_surjective [hM : Module.Finite R M] (f : M →ₛₗ[σ] P) (hf : Surjective f) :
-    Module.Finite S P :=
-  ⟨by
-    rw [← LinearMap.range_eq_top.mpr hf, ← Submodule.map_top]
-    exact hM.fg_top.map f⟩
+    Module.Finite S P := by
+  rw [Module.finite_def, Submodule.fg_def] at hM ⊢
+  obtain ⟨s, hsfin, hs⟩ := hM
+  refine ⟨f '' s, hsfin.image f, eq_top_iff.mpr fun p _ ↦ ?_⟩
+  exact image_span_subset_span f s (by simpa [hs] using hf p)
 
-theorem _root_.LinearMap.finite_iff_of_bijective (f : M →ₛₗ[σ] P) (hf : Function.Bijective f) :
-    Module.Finite R M ↔ Module.Finite S P :=
+theorem _root_.LinearMap.finite_iff_of_bijective [RingHomSurjective σ]
+    (f : M →ₛₗ[σ] P) (hf : Function.Bijective f) : Module.Finite R M ↔ Module.Finite S P :=
   ⟨fun _ ↦ of_surjective f hf.surjective, fun _ ↦ ⟨fg_of_fg_map_injective f hf.injective <| by
     rwa [Submodule.map_top, LinearMap.range_eq_top.mpr hf.surjective, ← Module.finite_def]⟩⟩
 

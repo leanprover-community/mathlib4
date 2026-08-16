@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Order.Compare
 public import Mathlib.Data.Nat.PSub
-public import Batteries.Data.List.Lemmas
 public import Mathlib.Data.Tree.Basic
+public import Batteries.Data.List.Basic
 
 /-!
 # Ordered sets
