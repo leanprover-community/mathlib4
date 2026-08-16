@@ -155,7 +155,7 @@ theorem push_log_last {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     simpa [List.getLast_of_getLast?_eq_some hg] using Real.isLittleO_log_id_atTop.comp_tendsto <|
       Real.tendsto_log_atTop.comp <| h_basis.tendsto_atTop <| List.mem_of_getLast? hg
 
-/-- Auxillary lemma. If function `f` is eventually positive, `g` tends to `atTop`, and
+/-- Auxiliary lemma. If function `f` is eventually positive, `g` tends to `atTop`, and
 `log f =o[atTop] log g` then for any `a` and `b > 0`, then `f^a =o[atTop] g^b`. -/
 theorem pow_isLittleO_pow_of_log {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop, 0 < f x)
     (hg : Tendsto g atTop atTop) (h : (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) (hb : 0 < b) :

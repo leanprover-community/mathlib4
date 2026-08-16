@@ -745,7 +745,7 @@ theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
   rw [Finset.sum_eq_single n _ _]
   · simp [mul_comm, ← monomial_eq]
   · intro b hb hbn
-    rw [← monomial_eq, coeff_monomial, if_neg (Ne.symm hbn), mul_zero]
+    rw [← monomial_eq, coeff_monomial, ite_eq_right (Ne.symm hbn), mul_zero]
   · intro hn
     simpa using hn
 

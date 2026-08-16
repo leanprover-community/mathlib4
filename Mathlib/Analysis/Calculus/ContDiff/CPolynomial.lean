@@ -17,7 +17,7 @@ of continuous multilinear maps.
 
 public section
 
-open Filter Asymptotics
+open Filter
 
 open scoped ENNReal ContDiff
 
@@ -54,8 +54,6 @@ namespace ContinuousMultilinearMap
 
 variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F) {n : ℕ∞ω} {x : Π i, E i}
-
-open FormalMultilinearSeries
 
 lemma contDiffAt : ContDiffAt 𝕜 n f x := f.cpolynomialAt.contDiffAt
 

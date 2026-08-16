@@ -272,12 +272,12 @@ theorem homeoRealMixedSpacePolarSpace_apply (x : realMixedSpace K) :
 theorem homeoRealMixedSpacePolarSpace_apply_fst_ofIsReal (x : realMixedSpace K)
     (w : {w // IsReal w}) :
     (homeoRealMixedSpacePolarSpace K x).1 w.1 = x.1 w := by
-  simp_rw [homeoRealMixedSpacePolarSpace_apply, dif_pos w.prop]
+  simp_rw [homeoRealMixedSpacePolarSpace_apply, dite_eq_left w.prop]
 
 theorem homeoRealMixedSpacePolarSpace_apply_fst_ofIsComplex (x : realMixedSpace K)
     (w : {w // IsComplex w}) :
     (homeoRealMixedSpacePolarSpace K x).1 w.1 = (x.2 w).1 := by
-  simp_rw [homeoRealMixedSpacePolarSpace_apply, dif_neg (not_isReal_iff_isComplex.mpr w.prop)]
+  simp_rw [homeoRealMixedSpacePolarSpace_apply, dite_eq_right (not_isReal_iff_isComplex.mpr w.prop)]
 
 theorem homeoRealMixedSpacePolarSpace_apply_snd (x : realMixedSpace K) (w : {w // IsComplex w}) :
     (homeoRealMixedSpacePolarSpace K x).2 w = (x.2 w).2 := rfl
@@ -379,7 +379,7 @@ private theorem volume_eq_two_pi_pow_mul_integral_aux
     exact Set.mem_image_of_mem _ ha
   · rwa [Set.mem_preimage, ← hA, Set.mem_preimage, normAtComplexPlaces_mixedSpaceOfRealSpace] at hx₁
     intro w hw
-    simpa [if_neg (not_isReal_iff_isComplex.mpr hw)] using hx₂ w (Set.mem_univ w)
+    simpa [ite_eq_right (not_isReal_iff_isComplex.mpr hw)] using hx₂ w (Set.mem_univ w)
 
 open scoped Classical in
 /--

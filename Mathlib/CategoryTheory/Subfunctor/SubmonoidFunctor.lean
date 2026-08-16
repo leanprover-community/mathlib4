@@ -28,7 +28,7 @@ We provide the complete lattice structure and the basic functoriality properties
 
 universe w v u
 
-open Opposite CategoryTheory ConcreteCategory
+open CategoryTheory
 
 namespace CategoryTheory
 
