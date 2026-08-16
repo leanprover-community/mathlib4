@@ -20,10 +20,10 @@ the multiplication of `A`.
 
 ## TODO
 
-* Show that the primitive elements form a `LieSubalgebra` with bracket `[a, b] = a * b - b * a`.
+* Primitive elements form a `LieSubalgebra` with bracket `[a, b] = a * b - b * a`.
   (`IsPrimitiveElem.commutator` avoids `⁅a, b⁆` so as not to import Lie theory here.)
-* Prove the Milnor–Moore theorem: in characteristic 0 over a field, the primitive elements of a
-  cocommutative connected bialgebra generate it as the universal enveloping of a Lie algebra.
+* In characteristic 0 over a field, the primitive elements of a cocommutative connected bialgebra
+  generate it as the universal enveloping of a Lie algebra. (Milnor–Moore)
 
 ## References
 
@@ -57,8 +57,6 @@ lemma IsPrimitiveElem.of_comul_eq_tmul_add_tmul (ha : comul a = 1 ⊗ₜ[R] a + 
     IsPrimitiveElem R a :=
   IsSkewPrimitiveElem.of_comul_eq_tmul_add_tmul counit_one counit_one ha
 
-/-- Primitivity is equivalent to the comultiplication condition alone, so `IsPrimitiveElem` agrees
-with the definition of primitive elements in [GrinbergReiner2020]. -/
 lemma isPrimitiveElem_iff_comul_eq_tmul_add_tmul :
     IsPrimitiveElem R a ↔ comul a = 1 ⊗ₜ[R] a + a ⊗ₜ[R] 1 :=
   isSkewPrimitiveElem_iff_comul_eq_tmul_add_tmul counit_one counit_one
