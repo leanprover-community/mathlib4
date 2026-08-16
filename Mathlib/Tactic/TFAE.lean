@@ -81,7 +81,7 @@ attribute [nolint docBlame] binder
 
 end Parser
 
-open _root_.Mathlib.Tactic.TFAE.Parser
+open TFAE.Parser
 
 /--
 `tfae_have i → j := t`, where the goal is `TFAE [P₁, P₂, ...]` introduces a hypothesis
