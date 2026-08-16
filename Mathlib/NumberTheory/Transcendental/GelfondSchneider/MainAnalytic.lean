@@ -112,17 +112,18 @@ lemma Rorder_exists (z : ℂ) :
   | coe => aesop
 
 include α β σ α' β' γ' hirr htriv habc in
-def R_order (z : ℂ) : ℕ := (Rorder_exists α β σ α' β' γ' hirr htriv habc q hq0 h2mq z).choose
+/-- The order of vanishing of `R` at `z`, as a natural number. -/
+def rOrder (z : ℂ) : ℕ := (Rorder_exists α β σ α' β' γ' hirr htriv habc q hq0 h2mq z).choose
 
 include α β σ α' β' γ' hirr htriv habc in
 theorem R_order_prop {z : ℂ} :
     analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) z =
-      some (R_order α β σ α' β' γ' hirr htriv habc q hq0 h2mq z) :=
+      some (rOrder α β σ α' β' γ' hirr htriv habc q hq0 h2mq z) :=
   (Rorder_exists α β σ α' β' γ' hirr htriv habc q hq0 h2mq z).choose_spec
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma R_order_eq (z) : (analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
-    z) = R_order α β σ α' β' γ' hirr htriv habc q hq0 h2mq z :=
+    z) = rOrder α β σ α' β' γ' hirr htriv habc q hq0 h2mq z :=
   (Rorder_exists α β σ α' β' γ' hirr htriv habc q hq0 h2mq z).choose_spec
 
 include α β σ α' β' γ' hirr htriv habc in
@@ -137,22 +138,25 @@ lemma r_exists : ∃ r, r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq = som
   | coe => aesop
 
 include α β σ α' β' γ' hirr htriv habc in
+/-- The minimal order of vanishing `r` of `R` among the points `1, …, m`. -/
 def r := (r_exists α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose
 
 include α β σ α' β' γ' hirr htriv habc in
-abbrev r_spec : r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq = ↑(r α β σ α' β' γ' hirr htriv habc q
+/-- `r'` is the natural number `r`. -/
+abbrev rSpec : r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq = ↑(r α β σ α' β' γ' hirr htriv habc q
     hq0 h2mq) :=
   (r_exists α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose_spec
 
 include α β σ α' β' γ' hirr htriv habc in
-abbrev r_prop :
+/-- The defining properties of `r`: it is the order of `R` at `l₀' + 1`, and it is minimal. -/
+abbrev rProp :
   let s : Finset (Fin (m K)) := Finset.univ
   analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (l₀' α β σ α' β' γ' hirr htriv habc
       q hq0 h2mq + 1) = r α β σ α' β' γ' hirr htriv habc q hq0 h2mq ∧
   ∀ l' ∈ s, r α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≤ analyticOrderAt (R α β σ α' β' γ' hirr
       htriv habc q hq0 h2mq) (↑↑l' + 1) := by
   intros s
-  rw [← r_spec α β σ α' β' γ' hirr htriv habc q hq0 h2mq]
+  rw [← rSpec α β σ α' β' γ' hirr htriv habc q hq0 h2mq]
   apply r'_spec α β σ α' β' γ' hirr htriv habc q hq0 h2mq
 
 include α β σ α' β' γ' hirr htriv habc in
@@ -161,17 +165,19 @@ lemma r_div_q_geq_0 : 0 ≤ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) 
 
 
 include α β σ α' β' γ' hirr htriv habc in
+/-- The integer factor `|c₁ ^ r * c₁ ^ (2 * m * q)|` that clears the denominators of `ρ`. -/
 def cρ : ℤ := abs (c₁ α' β' γ' ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) * c₁ α' β' γ'^(2*m K
     * q))
 
 include α β σ α' β' γ' hirr htriv habc in
-abbrev systemCoeffs_r : K := (a q t + b q t • β')^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) *
+/-- The system coefficient at the minimal order `r` and the point `l₀' + 1`. -/
+abbrev systemCoeffsR : K := (a q t + b q t • β')^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) *
  α' ^(a q t * (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1)) * γ' ^(b q t * (l₀' α β σ α' β'
      γ' hirr htriv habc q hq0 h2mq + 1))
 
 include α β σ α' β' γ' hirr htriv habc in
-lemma systemCoeffs_ne_zero_r : systemCoeffs_r α β σ α' β' γ' hirr htriv habc q hq0 t h2mq ≠ 0 := by
-  unfold systemCoeffs_r
+lemma systemCoeffs_ne_zero_r : systemCoeffsR α β σ α' β' γ' hirr htriv habc q hq0 t h2mq ≠ 0 := by
+  unfold systemCoeffsR
   intros H
   simp only [mul_eq_zero, pow_eq_zero_iff'] at H
   cases H with
@@ -186,6 +192,7 @@ lemma systemCoeffs_ne_zero_r : systemCoeffs_r α β σ α' β' γ' hirr htriv ha
     exact (alpha'_beta'_gamma'_ne_zero α β σ α' β' γ' hirr htriv habc).2.2 H2.1
 
 include α β σ α' β' γ' hirr htriv habc in
+/-- The normalised evaluation `(log α) ^ (-r) * R⁽ʳ⁾(l₀' + 1)`. -/
 def ρᵣ : ℂ := (Complex.log α)^(-(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) : ℤ) *
  deriv^[r α β σ α' β' γ' hirr htriv habc q hq0 h2mq] (R α β σ α' β' γ' hirr htriv habc q hq0
      h2mq) (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1)
@@ -194,7 +201,7 @@ include α β σ α' β' γ' hirr htriv habc in
 lemma systemCoeffs_map_eq_exp_mul_r :
   exp (ρ α β q t * (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1)) *
   ρ α β q t ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℕ) *
-  Complex.log α ^ (-(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) : ℤ) = σ (systemCoeffs_r α β σ α'
+  Complex.log α ^ (-(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) : ℤ) = σ (systemCoeffsR α β σ α'
       β' γ' hirr htriv habc q hq0 t h2mq) := by
     nth_rw 2 [ρ]
     rw [mul_pow, mul_assoc, mul_assoc]
@@ -210,7 +217,7 @@ lemma systemCoeffs_map_eq_exp_mul_r :
       apply H.1
     rw [this]; clear this
     rw [mul_one]
-    unfold systemCoeffs_r
+    unfold systemCoeffsR
     rw [mul_comm]
     change _ = σ ((↑(a q t) + b q t • β') ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℕ)
         * (α' ^ (a q t * (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1)))
@@ -311,7 +318,7 @@ lemma systemCoeffs_deriv_r :
  (Complex.log α)^(-r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℤ) * deriv^[r α β σ α' β' γ' hirr
      htriv habc q hq0 h2mq]
  (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1) =
- ∑ t, σ ↑((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) t) * σ (systemCoeffs_r α β σ α' β'
+ ∑ t, σ ↑((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) t) * σ (systemCoeffsR α β σ α' β'
      γ' hirr htriv habc q hq0 t h2mq) := by
   rw [deriv_R_k_eval_at_l0' α β σ α' β' γ' hirr htriv habc q hq0 h2mq, mul_sum, Finset.sum_congr
       rfl]
@@ -325,8 +332,9 @@ lemma systemCoeffs_deriv_r :
   rw [← this]
 
 include α β σ α' β' γ' hirr htriv habc in
+/-- The algebraic number `ρ`, the `η`-weighted sum of the system coefficients at order `r`. -/
 def rho := ∑ t : Fin (q * q), (η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq
-    t) * (systemCoeffs_r α β σ α' β' γ' hirr htriv habc q hq0 t h2mq)
+    t) * (systemCoeffsR α β σ α' β' γ' hirr htriv habc q hq0 t h2mq)
 
 include α β σ α' β' γ' hirr htriv habc in
 theorem rho_eq_ρᵣ : σ (rho α β σ α' β' γ' hirr htriv habc q hq0
@@ -348,7 +356,7 @@ include α β σ α' β' γ' hirr htriv habc in
 lemma ρ_is_int :
   IsIntegral ℤ (cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq • rho α β σ α' β' γ' hirr htriv habc q
       hq0 h2mq) := by
-  unfold rho cρ systemCoeffs_r
+  unfold rho cρ systemCoeffsR
   have : c₁ α' β' γ' ^ (2 * m K * q) = c₁ α' β' γ' ^ (m K * q)
   * c₁ α' β' γ' ^ (m K * q) := by
       rw [← pow_add]; ring
@@ -508,6 +516,7 @@ lemma ρ_is_int :
           · rw [← zsmul_eq_mul]; exact isIntegral_c₁γ α' β' γ'
 
 include α β σ α' β' γ' hirr htriv habc in
+/-- The algebraic integer `cρ • ρ` of `𝓞 K`. -/
 def c1ρ : 𝓞 K := RingOfIntegers.restrict _
   (fun _ => (ρ_is_int α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) ℤ
 
