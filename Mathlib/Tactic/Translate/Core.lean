@@ -21,6 +21,7 @@ public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
+meta import Mathlib.Tactic.Translate.Reorder
 
 /-!
 # The translation attribute.
@@ -1002,7 +1003,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
       type{indentExpr tgtType}"
-  -- Process any remaining universe contraints, to assign all universe metavariables.
+  -- Process any remaining universe constraints, to assign all universe metavariables.
   discard <| processPostponed (mayPostpone := false) (exceptionOnFailure := true)
   let tgtParams := tgtDecl.levelParams.toArray
   let params ← levels.mapIdxM fun i level ↦ do
