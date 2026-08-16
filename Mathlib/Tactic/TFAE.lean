@@ -355,7 +355,7 @@ register_option Mathlib.Tactic.TFAE.useDeprecated : Bool := {
 
 namespace Mathlib.Tactic.TFAE
 
-open Lean _root_.Mathlib.Tactic.TFAE.Parser Meta Elab Tactic
+open Lean TFAE.Parser Meta Elab Tactic
 
 @[tactic_alt tfaeHave]
 syntax (name := tfaeHave') "tfae_have " tfaeHaveIdLhs : tactic
