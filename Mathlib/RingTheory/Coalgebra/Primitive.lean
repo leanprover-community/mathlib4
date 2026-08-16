@@ -20,9 +20,9 @@ This file defines `(g, h)`-skew-primitive elements in a coalgebra, i.e. elements
 
 ## TODO
 
-* Show that `g - h` is `(g, h)`-skew-primitive, and that the quotient of
-  `skewPrimitiveSubmodule R g h` by `R ∙ (g - h)` is `Ext¹(h, g)`, where `g` and `h` are
-  regarded as one-dimensional right comodules.
+* `g - h` is `(g, h)`-skew-primitive, and the quotient of `skewPrimitiveSubmodule R g h` by
+  `R ∙ (g - h)` is `Ext¹(h, g)`, where `g` and `h` are regarded as one-dimensional right
+  comodules.
 
 ## References
 
