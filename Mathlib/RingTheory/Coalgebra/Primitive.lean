@@ -57,7 +57,7 @@ namespace IsSkewPrimitiveElem
 
 lemma add (ha : IsSkewPrimitiveElem R g h a) (hb : IsSkewPrimitiveElem R g h b) :
     IsSkewPrimitiveElem R g h (a + b) where
-  counit_eq_zero := by simp [ha.counit_eq_zero, hb.counit_eq_zero]
+  counit_eq_zero := by simp [ha.1, hb.1]
   comul_eq_tmul_add_tmul := by simp [ha.2, hb.2, add_tmul, tmul_add, add_add_add_comm]
 
 lemma smul (ha : IsSkewPrimitiveElem R g h a) (r : R) : IsSkewPrimitiveElem R g h (r • a) where
