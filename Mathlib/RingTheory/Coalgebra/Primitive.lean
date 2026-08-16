@@ -102,9 +102,9 @@ variable [IsCancelAdd A]
 lemma counit_eq_zero_of_comul_eq_tmul_add_tmul (hg : counit (R := R) g = 1)
     (hh : counit (R := R) h = 1) (ha : comul a = g ⊗ₜ[R] a + a ⊗ₜ[R] h) :
     counit (R := R) a = 0 := by
-  have key : counit (R := R) a • h = 0 := by
+  have : counit (R := R) a • h = 0 := by
     simpa [ha, hg] using congr(TensorProduct.lid R A $(rTensor_counit_comul (R := R) a))
-  simpa [hh] using congr(counit (R := R) $key)
+  simpa [hh] using congr(counit (R := R) $this)
 
 lemma IsSkewPrimitiveElem.of_comul_eq_tmul_add_tmul (hg : counit (R := R) g = 1)
     (hh : counit (R := R) h = 1) (ha : comul a = g ⊗ₜ[R] a + a ⊗ₜ[R] h) :
