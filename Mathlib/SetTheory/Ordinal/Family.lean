@@ -203,6 +203,36 @@ theorem lt_iSup_add_one_iff {ι} {f : ι → Ordinal.{u}} {a} [Small.{u} ι] :
     a < ⨆ i, f i + 1 ↔ ∃ i, a ≤ f i := by
   simp
 
+/-- `Ordinal.lift` commutes with suprema over small index types.
+
+The `Cardinal` analogue is `Cardinal.lift_iSup`, which assumes `BddAbove (range f)`. The
+ordinal `iSup` API is instead formulated for small index types, so this theorem follows that
+convention. -/
+theorem lift_iSup {ι : Type*} [Small.{u} ι] (f : ι → Ordinal.{u}) :
+    lift.{v} (⨆ i, f i) = ⨆ i, lift.{v} (f i) := by
+  have : Small.{max u v} ι := small_lift.{_, v, u} ι
+  refine le_antisymm ?_ (Ordinal.iSup_le fun i ↦ lift_le.mpr (Ordinal.le_iSup f i))
+  have hub : (⨆ i, lift.{v} (f i)) ≤ lift.{v} (⨆ i, f i) :=
+    Ordinal.iSup_le fun i ↦ lift_le.mpr (Ordinal.le_iSup f i)
+  obtain ⟨t, ht⟩ := mem_range_lift_of_le hub
+  rw [← ht]
+  refine lift_le.mpr (Ordinal.iSup_le fun i ↦ lift_le.mp ?_)
+  rw [ht]
+  exact Ordinal.le_iSup (fun i ↦ lift.{v} (f i)) i
+
+theorem lift_iSup_le {ι : Type*} [Small.{u} ι] {f : ι → Ordinal.{u}} {a : Ordinal.{max u v}}
+    (h : ∀ i, lift.{v} (f i) ≤ a) : lift.{v} (⨆ i, f i) ≤ a := by
+  have : Small.{max u v} ι := small_lift.{_, v, u} ι
+  rw [lift_iSup]
+  exact Ordinal.iSup_le h
+
+@[simp]
+theorem lift_iSup_le_iff {ι : Type*} [Small.{u} ι] {f : ι → Ordinal.{u}}
+    {a : Ordinal.{max u v}} : lift.{v} (⨆ i, f i) ≤ a ↔ ∀ i, lift.{v} (f i) ≤ a := by
+  have : Small.{max u v} ι := small_lift.{_, v, u} ι
+  rw [lift_iSup]
+  exact Ordinal.iSup_le_iff
+
 -- TODO: state in terms of `IsSuccLimit`.
 theorem succ_lt_iSup_of_ne_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι]
     (hf : ∀ i, f i ≠ iSup f) {a} (hao : a < iSup f) : succ a < iSup f := by
