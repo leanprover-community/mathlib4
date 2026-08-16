@@ -57,28 +57,28 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
 /-- Check that equality with zero in `R` reduces to a verdict in the kernel, as the
 certificate conditions will be decided by kernel reduction. This needs to be changed when
 the cert-checking tactic is updated. -/
-def checkKernelDecide {u : Level} (R : Q(Type u)) : MetaM Unit := do
-  have _cr : Q(CommRing $R) := ← synthInstanceQ q(CommRing $R)
+def checkKernelDecide {u : Level} (α : Q(Type u)) : MetaM Unit := do
+  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
   -- `Decidable` of the single equality rather than `DecidableEq`: a ring where equality
   -- is only decidable against zero should pass
-  let some inst ← synthInstance? q(Decidable (((1 : ℤ) : $R) = 0))
-    | throwError "equality with zero in the element type is not decidable{indentExpr R}"
+  let some inst ← synthInstance? q(Decidable (((1 : ℤ) : $α) = 0))
+    | throwError "equality with zero in the element type is not decidable{indentExpr α}"
   -- check if the equality reduced to a concrete false
   unless (Kernel.whnf (← getEnv) (← getLCtx) inst).toOption.any
       (·.isAppOf ``Decidable.isFalse) do
-    throwError "equality in the element type does not reduce in the kernel{indentExpr R}"
+    throwError "equality in the element type does not reduce in the kernel{indentExpr α}"
 
 /-- The applicability check of the Bareiss method, which requires a commutative domain
 with kernel-decidable equality. -/
 def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do
   let u ← getDecLevel R
-  have R : Q(Type u) := R
-  let .some _cr ← trySynthInstanceQ q(CommRing $R)
+  have α : Q(Type u) := R
+  let .some _cr ← trySynthInstanceQ q(CommRing $α)
     | return .error m!"expected the element type to be a commutative ring"
-  let .some _ ← trySynthInstanceQ q(IsDomain $R)
+  let .some _ ← trySynthInstanceQ q(IsDomain $α)
     | return .error m!"expected the element type to be a domain"
   try
-    checkKernelDecide R
+    checkKernelDecide α
   catch e =>
     return .error e.toMessageData
   return .ok ()
@@ -95,8 +95,8 @@ def certifyCondition (name : String) (c : Q(Prop)) : MetaM Q($c) := do
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from its rendered components,
 with the certificate conditions proven by kernel-checked `decide`. -/
-def mkCertificate {u : Level} {m n : ℕ} {R : Q(Type u)} (_cr : Q(CommRing $R))
-    (A : Q(Matrix (Fin $m) (Fin $n) $R)) (L : Q(Matrix (Fin $m) (Fin $m) $R))
+def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+    (A : Q(Matrix (Fin $m) (Fin $n) $α)) (L : Q(Matrix (Fin $m) (Fin $m) $α))
     (σ : Q(Equiv.Perm (Fin $m))) (pivot : Q(Fin $m → WithTop (Fin $n))) :
     MetaM Q(Echelon.Decomposition $A) := do
   let pf₁ ← certifyCondition "the echelon-pivot condition"
@@ -126,14 +126,12 @@ structure BareissResult where
 
 /-- Produce and elaborate the `Echelon.Decomposition` certificate of the matrix literal
 `A`. -/
-def mkBareissDecomposition (A : Expr) (m n : Nat) (R : Expr)
+def mkBareissDecomposition {u : Level} (A : Expr) (m n : Nat) (α : Q(Type u))
     (entries : Array (Array Expr)) : MetaM BareissResult := do
-  let d ← (← producerFor R) entries
-  let u ← getDecLevel R
-  have R : Q(Type u) := R
-  have _cr : Q(CommRing $R) := ← synthInstanceQ q(CommRing $R)
-  have A : Q(Matrix (Fin $m) (Fin $n) $R) := A
-  let L := Matrix.mkLiteralQ (α := R) (m := m) (n := m) (.of fun i j => (d.L[i]!)[j]!)
+  let d ← (← producerFor α) entries
+  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
+  have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
+  let L := Matrix.mkLiteralQ (α := α) (m := m) (n := m) (.of fun i j => (d.L[i]!)[j]!)
   return { cert := ← mkCertificate _cr A L (← mkPerm m d.swaps) (← mkPivotLit m n d.pivot)
            data := d }
 

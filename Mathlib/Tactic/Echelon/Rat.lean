@@ -49,11 +49,11 @@ def restoreScaling (scales : Array Nat) (d : BareissData Int) : BareissData Int 
 
 /-- Build the numeral of an integer in `R`: `mkNumeral` on the absolute value, negated if
 `i` is negative. -/
-def mkIntNumeral {u : Level} (R : Q(Type u)) (i : Int) : MetaM Q($R) := do
-  let n ← mkNumeral R i.natAbs
-  have n : Q($R) := n
+def mkIntNumeral {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
+  let n ← mkNumeral α i.natAbs
+  have n : Q($α) := n
   if i < 0 then
-    let _ ← synthInstanceQ q(Neg $R)
+    let _ ← synthInstanceQ q(Neg $α)
     return q(-$n)
   else
     return n
@@ -63,16 +63,16 @@ are cleared by row scaling, and the elimination runs on integer values. It appli
 every ring, as the fallback model. -/
 def ratProducer (R : Expr) : MetaM Producer := do
   let u ← getDecLevel R
-  have R : Q(Type u) := R
+  have α : Q(Type u) := R
   -- the characteristic determines the zero test
-  have _cr : Q(CommRing $R) := ← synthInstanceQ q(CommRing $R)
+  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
   let pE : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
-  let .some _ ← trySynthInstanceQ q(CharP $R $pE)
-    | throwError "could not determine the characteristic of the element type{indentExpr R}"
+  let .some _ ← trySynthInstanceQ q(CharP $α $pE)
+    | throwError "could not determine the characteristic of the element type{indentExpr α}"
   -- `whnfD`: the ambient transparency inside `simp` is `reducible`, which does not reduce
   -- the numeral to a literal
   let some p := (← whnfD (← instantiateMVars pE)).rawNatLit?
-    | throwError "the characteristic of the element type is not a literal{indentExpr R}"
+    | throwError "the characteristic of the element type is not a literal{indentExpr α}"
   let ops : RingOps Int := {
     zero := 0
     one := 1
@@ -85,6 +85,6 @@ def ratProducer (R : Expr) : MetaM Producer := do
     let ratRows ← entries.mapM (·.mapM (evalRatEntry (p == 0)))
     let (values, scales) := scaleRowsIntegral ratRows
     return (values, restoreScaling scales)
-  return mkProducer ops prepare (mkIntNumeral R)
+  return mkProducer ops prepare (mkIntNumeral α)
 
 end Mathlib.Tactic.Echelon
