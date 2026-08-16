@@ -31,7 +31,7 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {F : Type w}
 
-open Set Function
+open Set
 
 open scoped Pointwise
 
@@ -152,6 +152,10 @@ variable (G : Type*) [Group G] [MulAction G α] (I : Ideal α)
 
 /-- The subgroup of elements `g` of `G` such that `∀ x, g • x - x ∈ I`. -/
 abbrev inertia : Subgroup G := I.toAddSubgroup.inertia G
+
+variable {I G} in
+theorem mem_inertia {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I :=
+  I.toAddSubgroup.mem_inertia
 
 variable {I G} in
 theorem coe_mem_inertia {H : Subgroup G} {σ : H} : ↑σ ∈ I.inertia G ↔ σ ∈ I.inertia H :=

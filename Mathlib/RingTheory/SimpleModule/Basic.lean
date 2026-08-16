@@ -331,14 +331,6 @@ theorem _root_.LinearMap.isSemisimpleModule_iff_of_bijective
   simp_rw [isSemisimpleModule_iff,
     (Submodule.orderIsoMapComapOfBijective l hl).complementedLattice_iff]
 
--- TODO: generalize Submodule.equivMapOfInjective from InvPair to RingHomSurjective
-proof_wanted _root_.LinearMap.isSemisimpleModule_of_injective (_ : Function.Injective l)
-    [IsSemisimpleModule S N'] : IsSemisimpleModule R M'
-
---TODO: generalize LinearMap.quotKerEquivOfSurjective to SemilinearMaps + RingHomSurjective
-proof_wanted _root_.LinearMap.isSemisimpleModule_of_surjective (_ : Function.Surjective l)
-    [IsSemisimpleModule R M'] : IsSemisimpleModule S N'
-
 end
 
 end IsSemisimpleModule
@@ -576,7 +568,6 @@ theorem jacobson_density (f : End (End R M) M) (s : Finset M) :
   have ⟨r, hr⟩ := mem_span_singleton.mp this
   ⟨r, fun m hm ↦ by simpa [x] using! congr($hr ⟨m, hm⟩).symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Jacobson density theorem for a module finite over its endomorphism ring. -/
 protected theorem Module.Finite.toModuleEnd_moduleEnd_surjective [Module.Finite (End R M) M] :
     Function.Surjective (Module.toModuleEnd (End R M) (S := R) M) := by

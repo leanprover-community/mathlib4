@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.RepresentationTheory.Coinvariants
+public import Mathlib.RepresentationTheory.Rep.Iso
 
 /-!
 # Projective resolution of `k` as a trivial `k`-linear representation of a finite cyclic group
@@ -96,7 +97,7 @@ variable (k : Type u) {G : Type u} [CommRing k] [CommGroup G] [Fintype G] (A : R
 
 namespace leftRegular
 
-open Finsupp IsCyclic Representation
+open Finsupp Representation
 
 lemma range_norm_eq_ker_applyAsHom_sub (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     LinearMap.range (leftRegular k G).norm.hom.toLinearMap =

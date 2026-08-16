@@ -490,8 +490,7 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · simp [lp.norm_eq_card_dsupport f]
   · rcases isEmpty_or_nonempty α with _i | _i
-    · rw [lp.norm_eq_ciSup]
-      simp [Real.iSup_of_isEmpty]
+    · simp [lp.norm_eq_ciSup]
     inhabit α
     exact (norm_nonneg (f default)).trans ((lp.isLUB_norm f).1 ⟨default, rfl⟩)
   · rw [lp.norm_eq_tsum_rpow hp f]
@@ -1279,7 +1278,6 @@ open Filter
 
 open scoped Topology uniformity
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The coercion from `lp E p` to `∀ i, E i` is uniformly continuous. -/
 theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
     UniformContinuous (α := lp E p) ((↑) : lp E p → ∀ i, E i) :=

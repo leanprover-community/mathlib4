@@ -52,10 +52,6 @@ theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i,
         (eq_of_le_of_forall_lt_imp_le_of_dense (abs_nonneg _)) fun _ε ε0 =>
           mk_near_of_forall_near <| (h _ ε0).imp fun _i h j ij => le_of_lt (h j ij)⟩
 
-@[deprecated _root_.exists_floor (since := "2026-01-29")]
-theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ, (z : ℝ) ≤ x → z ≤ ub :=
-  ⟨⌊x⌋, Int.floor_le x, fun _ ↦ Int.le_floor.mpr⟩
-
 theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x := by
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩
   have : ∀ d : ℕ, BddAbove { m : ℤ | ∃ y ∈ s, (m : ℝ) ≤ y * d } := by
@@ -174,11 +170,8 @@ theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
 theorem sInf_univ : sInf (@Set.univ ℝ) = 0 := by
   simp [sInf_def]
 
-@[simp] lemma iSup_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨆ i, f i = 0 := by
-  dsimp [iSup]
-  convert! Real.sSup_empty
-  rw [Set.range_eq_empty_iff]
-  infer_instance
+lemma iSup_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨆ i, f i = 0 := by
+  simp
 
 @[simp]
 theorem iSup_const_zero : ⨆ _ : ι, (0 : ℝ) = 0 := by
@@ -194,8 +187,8 @@ theorem sSup_univ : sSup (@Set.univ ℝ) = 0 := Real.sSup_of_not_bddAbove not_bd
 @[simp]
 theorem sInf_empty : sInf (∅ : Set ℝ) = 0 := by simp [sInf_def, sSup_empty]
 
-@[simp] nonrec lemma iInf_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨅ i, f i = 0 := by
-  rw [iInf_of_isEmpty, sInf_empty]
+lemma iInf_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨅ i, f i = 0 := by
+  simp
 
 @[simp]
 theorem iInf_const_zero : ⨅ _ : ι, (0 : ℝ) = 0 := by
