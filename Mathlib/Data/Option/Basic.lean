@@ -13,7 +13,7 @@ public import Mathlib.Util.CompileInductive
 public import Aesop
 public import Batteries.Tactic.Lint.Simp
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Logic.IsEmpty.Defs
+public import Mathlib.Basic.IsEmpty.Defs
 
 /-!
 # Option of a type
