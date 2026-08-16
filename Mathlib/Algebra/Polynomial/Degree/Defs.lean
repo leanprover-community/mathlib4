@@ -229,7 +229,7 @@ theorem natDegree_monomial_le (a : R) {m : ℕ} : (monomial m a).natDegree ≤ m
 
 theorem natDegree_monomial_eq (i : ℕ) {r : R} (r0 : r ≠ 0) : (monomial i r).natDegree = i :=
   letI := Classical.decEq R
-  Eq.trans (natDegree_monomial _ _) (if_neg r0)
+  Eq.trans (natDegree_monomial _ _) (ite_eq_right r0)
 
 theorem coeff_ne_zero_of_eq_degree (hn : degree p = n) : coeff p n ≠ 0 := fun h =>
   mem_support_iff.mp (mem_of_max hn) h
@@ -317,7 +317,7 @@ theorem nextCoeff_C_eq_zero (c : R) : nextCoeff (C c) = 0 := by
 
 theorem nextCoeff_of_natDegree_pos (hp : 0 < p.natDegree) :
     nextCoeff p = p.coeff (p.natDegree - 1) := by
-  rw [nextCoeff, if_neg]
+  rw [nextCoeff, ite_eq_right]
   contrapose! hp
   simpa
 
@@ -365,7 +365,6 @@ theorem leadingCoeff_eq_zero_iff_deg_eq_bot : leadingCoeff p = 0 ↔ degree p = 
 theorem natDegree_C_mul_X_pow_le (a : R) (n : ℕ) : natDegree (C a * X ^ n) ≤ n :=
   natDegree_le_iff_degree_le.2 <| degree_C_mul_X_pow_le _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
   apply sup_mono
   simpa using Finset.erase_subset ..
@@ -415,7 +414,7 @@ theorem leadingCoeff_monomial (a : R) (n : ℕ) : leadingCoeff (monomial n a) = 
   classical
   by_cases ha : a = 0
   · simp only [ha, (monomial n).map_zero, leadingCoeff_zero]
-  · rw [leadingCoeff, natDegree_monomial, if_neg ha, coeff_monomial]
+  · rw [leadingCoeff, natDegree_monomial, ite_eq_right ha, coeff_monomial]
     simp
 
 theorem leadingCoeff_C_mul_X_pow (a : R) (n : ℕ) : leadingCoeff (C a * X ^ n) = a := by
@@ -537,7 +536,7 @@ theorem natDegree_sub_le_of_le (hp : natDegree p ≤ m) (hq : natDegree q ≤ n)
     natDegree (p - q) ≤ max m n :=
   (p.natDegree_sub_le q).trans <| max_le_max ‹_› ‹_›
 
-theorem degree_sub_lt (hd : degree p = degree q) (hp0 : p ≠ 0)
+theorem degree_sub_lt_left (hd : degree p = degree q) (hp0 : p ≠ 0)
     (hlc : leadingCoeff p = leadingCoeff q) : degree (p - q) < degree p :=
   have hp : monomial (natDegree p) (leadingCoeff p) + p.erase (natDegree p) = p :=
     monomial_add_erase _ _
@@ -553,6 +552,13 @@ theorem degree_sub_lt (hd : degree p = degree q) (hp0 : p ≠ 0)
     _ ≤ max (degree (erase (natDegree q) p)) (degree (erase (natDegree q) q)) :=
       (degree_neg (erase (natDegree q) q) ▸ degree_add_le _ _)
     _ < degree p := max_lt_iff.2 ⟨hd' ▸ degree_erase_lt hp0, hd.symm ▸ degree_erase_lt hq0⟩
+
+@[deprecated (since := "2026-06-30")] alias degree_sub_lt := degree_sub_lt_left
+
+theorem degree_sub_lt_right (hd : degree p = degree q) (hq0 : q ≠ 0)
+    (hlc : p.leadingCoeff = q.leadingCoeff) : degree (p - q) < degree q := by
+  rw [← degree_neg, neg_sub]
+  exact degree_sub_lt_left hd.symm hq0 hlc.symm
 
 theorem degree_X_sub_C_le (r : R) : (X - C r).degree ≤ 1 :=
   (degree_sub_le _ _).trans (max_le degree_X_le (degree_C_le.trans zero_le_one))

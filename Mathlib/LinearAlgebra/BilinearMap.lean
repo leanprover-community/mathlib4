@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Basics on bilinear maps
@@ -512,9 +513,6 @@ variable {R}
 lemma lsmul_eq_distribSMultoLinearMap (r : R) :
     lsmul R M r = DistribSMul.toLinearMap R M r := rfl
 
-@[deprecated (since := "2026-01-07")]
-alias lsmul_eq_DistribMulAction_toLinearMap := lsmul_eq_distribSMultoLinearMap
-
 variable {M}
 
 @[simp]
@@ -526,6 +524,7 @@ protected abbrev BilinMap : Type _ := M →ₗ[R] M →ₗ[R] Nₗ
 
 variable (R M) in
 /-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
+@[wikidata Q837924]
 protected abbrev BilinForm : Type _ := LinearMap.BilinMap R M R
 
 end CommSemiring

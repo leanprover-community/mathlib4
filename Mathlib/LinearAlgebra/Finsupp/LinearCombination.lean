@@ -250,7 +250,6 @@ theorem linearCombinationOn_range (s : Set α) :
     range_subtype]
   exact (span_image_eq_map_linearCombination _ _).le
 
-set_option backward.isDefEq.respectTransparency false in
 theorem linearCombination_restrict (s : Set α) :
     linearCombination R (s.domRestrict v) = Submodule.subtype _ ∘ₗ
       linearCombinationOn α M R v s ∘ₗ (supportedEquivFinsupp s).symm.toLinearMap := by
@@ -323,7 +322,7 @@ theorem Fintype.linearCombination_apply (f) : Fintype.linearCombination R v f = 
 theorem Fintype.linearCombination_apply_single [DecidableEq α] (i : α) (r : R) :
     Fintype.linearCombination R v (Pi.single i r) = r • v i := by
   simp_rw [Fintype.linearCombination_apply, Pi.single_apply, ite_smul, zero_smul]
-  rw [Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
+  rw [Finset.sum_ite_eq', ite_eq_left (Finset.mem_univ _)]
 
 theorem Finsupp.linearCombination_eq_fintype_linearCombination_apply (x : α → R) :
     linearCombination R v ((Finsupp.linearEquivFunOnFinite R R α).symm x) =
@@ -530,7 +529,7 @@ variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M] (i : ι) (c : �
 the `j`-th standard basis vector to itself plus `c j` multiplied with the `i`-th standard basis
 vector (in particular, the `i`-th standard basis vector is kept invariant). -/
 def Finsupp.addSingleEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
-  refine .ofLinear (linearCombination _ fun j ↦ single j 1 + single i (c j))
+  refine .ofLinearMap (linearCombination _ fun j ↦ single j 1 + single i (c j))
     (linearCombination _ fun j ↦ single j 1 - single i (c j)) ?_ ?_ <;>
   ext j k <;> obtain rfl | hk := eq_or_ne i k
   · simp [h₀]

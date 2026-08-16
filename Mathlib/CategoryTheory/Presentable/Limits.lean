@@ -108,7 +108,6 @@ lemma surjective (x : c.pt.obj cX.pt) :
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma injective (j : J) (x₁ x₂ : c.pt.obj (X.obj j))
     (h : c.pt.map (cX.ι.app j) x₁ = c.pt.map (cX.ι.app j) x₂) :
     ∃ (j' : J) (α : j ⟶ j'),
