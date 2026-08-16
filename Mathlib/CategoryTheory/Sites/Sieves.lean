@@ -129,6 +129,11 @@ theorem singleton_eq_iff_domain (f g : Y ⟶ X) : singleton f g ↔ f = g := by
 theorem singleton_self : singleton f f :=
   singleton.mk
 
+@[simp]
+lemma singleton_le_iff {R : Presieve X} :
+    singleton f ≤ R ↔ R f :=
+  ⟨fun hf ↦ hf _ _ ⟨⟩, by rintro hf _ _ ⟨⟩; exact hf⟩
+
 /-- A presieve `R` has pullbacks along `f` if for every `h` in `R`, the pullback
 with `f` exists. -/
 protected class HasPullbacks (R : Presieve X) {Y : C} (f : Y ⟶ X) : Prop where
@@ -320,7 +325,7 @@ lemma pushforward_singleton {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
   rw [← ofArrows_pUnit.{0}, pushforward_ofArrows, ofArrows_pUnit.{0}]
 
 /-- The pullback of a presieve `R` on `Y` along a morphism `f : X ⟶ Y` is the presieve on `X`
-given by all morphisms `g : Z ⟶ X` such that `f ≫ g` is in `R`. -/
+given by all morphisms `g : Z ⟶ X` such that `g ≫ f` is in `R`. -/
 def pullback {X Y : C} (f : X ⟶ Y) (R : Presieve Y) : Presieve X :=
   fun _ g ↦ R (g ≫ f)
 
@@ -1453,7 +1458,6 @@ def shrinkFunctorUliftFunctorIso [LocallySmall.{w} C] [LocallySmall.{max w' w} C
       rw [shrinkYonedaObjObjEquiv_obj_map, shrinkYonedaObjObjEquiv_symm_comp]
       simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma shrinkFunctorUliftFunctorIso_inv_ι [LocallySmall.{w} C] [LocallySmall.{max w' w} C] :
     (shrinkFunctorUliftFunctorIso.{w, w'} S).inv ≫
