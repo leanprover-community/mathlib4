@@ -24,6 +24,10 @@ the multiplication of `A`.
   (`IsPrimitiveElem.commutator` avoids `⁅a, b⁆` so as not to import Lie theory here.)
 * Prove the Milnor–Moore theorem: in characteristic 0 over a field, the primitive elements of a
   cocommutative connected bialgebra generate it as the universal enveloping of a Lie algebra.
+
+## References
+
+* [D. Grinberg, V. Reiner, *Hopf algebras in combinatorics*][GrinbergReiner2020]
 -/
 
 public section
@@ -44,6 +48,20 @@ abbrev IsPrimitiveElem (a : A) : Prop := IsSkewPrimitiveElem R 1 1 a
 
 lemma IsPrimitiveElem.ne_one [Nontrivial R] (ha : IsPrimitiveElem R a) : a ≠ 1 :=
   ne_of_apply_ne (counit (R := R)) (by simp [ha.counit_eq_zero])
+
+variable [IsCancelAdd A]
+
+/-- An element `a` of a bialgebra with `Δ a = 1 ⊗ₜ a + a ⊗ₜ 1` is primitive: `ε a = 0` needn't be
+checked. See Proposition 1.4.17 in [GrinbergReiner2020]. -/
+lemma IsPrimitiveElem.of_comul_eq_tmul_add_tmul (ha : comul a = 1 ⊗ₜ[R] a + a ⊗ₜ[R] 1) :
+    IsPrimitiveElem R a :=
+  IsSkewPrimitiveElem.of_comul_eq_tmul_add_tmul counit_one counit_one ha
+
+/-- Primitivity is equivalent to the comultiplication condition alone, so `IsPrimitiveElem` agrees
+with the definition of primitive elements in [GrinbergReiner2020]. -/
+lemma isPrimitiveElem_iff_comul_eq_tmul_add_tmul :
+    IsPrimitiveElem R a ↔ comul a = 1 ⊗ₜ[R] a + a ⊗ₜ[R] 1 :=
+  isSkewPrimitiveElem_iff_comul_eq_tmul_add_tmul counit_one counit_one
 
 end Semiring
 

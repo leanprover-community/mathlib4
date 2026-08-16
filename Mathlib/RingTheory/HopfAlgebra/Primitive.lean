@@ -22,7 +22,6 @@ Facts about primitive elements in a Hopf algebra.
 ## References
 
 * [D. Grinberg, V. Reiner, *Hopf algebras in combinatorics*][GrinbergReiner2020]
-  (Proposition 1.4.17)
 -/
 
 public section
@@ -33,7 +32,8 @@ variable {R A : Type*} [CommSemiring R] [Ring A] [HopfAlgebra R A] {a : A}
 
 namespace Bialgebra.IsPrimitiveElem
 
-/-- The antipode of a Hopf algebra sends primitive elements to their negation. -/
+/-- The antipode of a Hopf algebra sends primitive elements to their negation. See
+Proposition 1.4.17 in [GrinbergReiner2020]. -/
 @[simp] theorem antipode_eq_neg (ha : IsPrimitiveElem R a) : antipode R a = -a :=
   eq_neg_of_add_eq_zero_right <| by
     simpa [ha.comul_eq_tmul_add_tmul, ha.counit_eq_zero]
