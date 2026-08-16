@@ -29,24 +29,20 @@ variable {R : Type*} [NormedCommRing R] [Algebra ℤ_[p] R] [IsUltrametricDist R
 
 theorem dense_span_mahler : Dense (Submodule.span R
       (Set.range fun n ↦ (mahler n : C(ℤ_[p], ℤ_[p])) • (1 : C(ℤ_[p], R))) : Set C(ℤ_[p], R)) := by
-  intro f
-  apply mem_closure_of_tendsto (PadicInt.hasSum_mahler _)
-  filter_upwards with s
-  apply Submodule.sum_mem
-  intro c _
-  simp only [PadicInt.mahlerTerm, Submodule.span_range_eq_iSup]
+  refine fun f ↦ mem_closure_of_tendsto (PadicInt.hasSum_mahler _) ?_
+  refine .of_forall fun s ↦ Submodule.sum_mem _ fun c _ ↦ ?_
+  simp only [Submodule.span_range_eq_iSup]
   apply Submodule.mem_iSup_of_mem (i := c)
   rw [Submodule.mem_span_singleton]
   use (fwdDiff 1)^[c] f 0
   ext x
-  simp
+  simp [PadicInt.mahlerTerm]
 
 lemma ext_mahler (μ : D(ℤ_[p], R)) (hμ : ∀ n, μ ((mahler n : C(ℤ_[p], ℤ_[p])) • 1) = 0) :
     μ = 0 := by
   revert μ
-  simp only [AbstractMeasure.toCLMEquiv.toEquiv.forall_congr_left,
-    LinearEquiv.coe_symm_toEquiv, AbstractMeasure.coe_symm_toCLMEquiv,
-    EmbeddingLike.map_eq_zero_iff]
+  simp only [AbstractMeasure.toCLMEquiv.toEquiv.forall_congr_left, LinearEquiv.coe_symm_toEquiv,
+    AbstractMeasure.coe_symm_toCLMEquiv, EmbeddingLike.map_eq_zero_iff]
   intro ψ hψ
   apply ContinuousLinearMap.ext_on dense_span_mahler
   rintro _ ⟨n, rfl⟩
