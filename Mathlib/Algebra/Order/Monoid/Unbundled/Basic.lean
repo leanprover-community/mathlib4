@@ -382,6 +382,24 @@ theorem MulLeftStrictMono.toIsLeftCancelMul [MulLeftStrictMono α] : IsLeftCance
 theorem MulRightStrictMono.toIsRightCancelMul [MulRightStrictMono α] : IsRightCancelMul α where
   mul_right_cancel _ _ _ h := mul_left_strictMono.injective h
 
+/-- Left multiplication is strictly monotone if and only if it is monotone and
+left-cancellative. -/
+@[to_additive /-- Left addition is strictly monotone if and only if it is monotone and
+left-cancellative. -/]
+theorem mulLeftStrictMono_iff_mulLeftMono_and_isLeftCancelMul :
+    MulLeftStrictMono α ↔ MulLeftMono α ∧ IsLeftCancelMul α :=
+  ⟨fun _ ↦ ⟨mulLeftMono_of_mulLeftStrictMono α, MulLeftStrictMono.toIsLeftCancelMul⟩,
+    fun ⟨_, _⟩ ↦ inferInstance⟩
+
+/-- Right multiplication is strictly monotone if and only if it is monotone and
+right-cancellative. -/
+@[to_additive /-- Right addition is strictly monotone if and only if it is monotone and
+right-cancellative. -/]
+theorem mulRightStrictMono_iff_mulRightMono_and_isRightCancelMul :
+    MulRightStrictMono α ↔ MulRightMono α ∧ IsRightCancelMul α :=
+  ⟨fun _ ↦ ⟨mulRightMono_of_mulRightStrictMono α, MulRightStrictMono.toIsRightCancelMul⟩,
+    fun ⟨_, _⟩ ↦ inferInstance⟩
+
 end LinearOrder
 
 section LinearOrder
