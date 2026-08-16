@@ -97,7 +97,7 @@ noncomputable def denseAtUliftYoneda (P : Cᵒᵖ ⥤ Type max w v) : uliftYoned
 namespace Functor.Elements
 
 /-- The (colimit) cocone which expresses a presheaf `P : Cᵒᵖ ⥤ Type w` as
-as colimit (indexed by `P.Elementsᵒᵖ`) of representable presheaves
+as a colimit (indexed by `P.Elementsᵒᵖ`) of representable presheaves
 (defined using `shrinkYoneda`). -/
 @[implicit_reducible, simps]
 noncomputable def shrinkYonedaCocone [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) :
@@ -108,6 +108,7 @@ noncomputable def shrinkYonedaCocone [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type 
 
 /-- Any presheaf `P` is a colimit of representable presheaves
 (defined using `shrinkYoneda`) indexed by the opposite category of elements in `P`. -/
+@[no_expose]
 noncomputable def isColimitShrinkYonedaCocone [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) :
     IsColimit (shrinkYonedaCocone.{w} P) :=
   (IsColimit.whiskerEquivalenceEquiv
@@ -115,7 +116,7 @@ noncomputable def isColimitShrinkYonedaCocone [LocallySmall.{w} C] (P : Cᵒᵖ 
       (IsColimit.ofIsoColimit (denseAtShrinkYoneda.{w} P) (Cocone.ext (Iso.refl _)))
 
 /-- The (colimit) cocone which expresses a presheaf `P : Cᵒᵖ ⥤ Type v` as
-as colimit (indexed by `P.Elementsᵒᵖ`) of representable presheaves
+as a colimit (indexed by `P.Elementsᵒᵖ`) of representable presheaves
 (defined using `yoneda`). -/
 @[implicit_reducible, simps]
 def yonedaCocone (P : Cᵒᵖ ⥤ Type v) :
@@ -126,6 +127,7 @@ def yonedaCocone (P : Cᵒᵖ ⥤ Type v) :
 
 /-- Any presheaf `P` is a colimit of representable presheaves
 (defined using `yoneda`) indexed by the opposite category of elements in `P`. -/
+@[no_expose]
 noncomputable def isColimitYonedaCocone (P : Cᵒᵖ ⥤ Type v) :
     IsColimit (yonedaCocone P) :=
   (IsColimit.whiskerEquivalenceEquiv
@@ -133,7 +135,7 @@ noncomputable def isColimitYonedaCocone (P : Cᵒᵖ ⥤ Type v) :
       (IsColimit.ofIsoColimit (denseAtYoneda P) (Cocone.ext (Iso.refl _)))
 
 /-- The (colimit) cocone which expresses a presheaf `P : Cᵒᵖ ⥤ Type max w v` as
-as colimit (indexed by `P.Elementsᵒᵖ`) of representable presheaves
+as a colimit (indexed by `P.Elementsᵒᵖ`) of representable presheaves
 (defined using `uliftYoneda`). -/
 @[implicit_reducible, simps]
 def uliftYonedaCocone (P : Cᵒᵖ ⥤ Type max w v) :
@@ -144,6 +146,7 @@ def uliftYonedaCocone (P : Cᵒᵖ ⥤ Type max w v) :
 
 /-- Any presheaf `P` is a colimit of representable presheaves
 (defined using `uliftYoneda`) indexed by the opposite category of elements in `P`. -/
+@[no_expose]
 noncomputable def isColimitUliftYonedaCocone (P : Cᵒᵖ ⥤ Type max w v) :
     IsColimit (uliftYonedaCocone.{w} P) :=
   (IsColimit.whiskerEquivalenceEquiv
