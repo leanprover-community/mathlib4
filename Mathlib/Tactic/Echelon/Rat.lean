@@ -47,7 +47,7 @@ def restoreScaling (scales : Array Nat) (d : BareissData Int) : BareissData Int 
   { d with L := d.L.map fun row =>
       row.mapIdx fun j a => a * scales.getD (order.getD j 0) 1 }
 
-/-- Build the numeral of an integer in `R`: `mkNumeral` on the absolute value, negated if
+/-- Build the numeral of an integer in `α`: `mkNumeral` on the absolute value, negated if
 `i` is negative. -/
 def mkIntNumeral {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
   let n ← mkNumeral α i.natAbs

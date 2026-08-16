@@ -27,7 +27,7 @@ literal `A`. -/
 def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Expr)) :
     MetaM Simp.Result := do
   let u ← getDecLevel R
-  let α : Q(Type u) := R
+  have α : Q(Type u) := R
   let res ← mkBareissDecomposition A m n α entries
   let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[res.cert]
   let k := mkNatLit res.data.pivot.size

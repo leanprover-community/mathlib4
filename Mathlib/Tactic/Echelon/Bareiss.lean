@@ -54,7 +54,7 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
     acc := q((Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b)).trans $acc)
   return acc
 
-/-- Check that equality with zero in `R` reduces to a verdict in the kernel, as the
+/-- Check that equality with zero in `α` reduces to a verdict in the kernel, as the
 certificate conditions will be decided by kernel reduction. This needs to be changed when
 the cert-checking tactic is updated. -/
 def checkKernelDecide {u : Level} (α : Q(Type u)) : MetaM Unit := do
