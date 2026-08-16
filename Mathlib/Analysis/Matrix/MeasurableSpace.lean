@@ -5,10 +5,8 @@ Authors: Gaëtan Serré
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-public import Mathlib.LinearAlgebra.Matrix.Defs
-
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Topology.Instances.Matrix
 
 /-!
 # Measurable space structure on Matrices
@@ -29,30 +27,23 @@ instance : MeasurableSpace (Matrix m n α) := inferInstanceAs <| MeasurableSpace
 lemma measurable_of : Measurable <| Matrix.of (m := m) (n := n) (α := α) :=
   measurable_id
 
-variable [Countable m] [Countable n] [TopologicalSpace α] [SecondCountableTopology α]
-  [BorelSpace α]
+instance [Countable m] [Countable n] [TopologicalSpace α] [SecondCountableTopology α]
+  [BorelSpace α] : BorelSpace (Matrix m n α) := inferInstanceAs <| BorelSpace (m → n → α)
 
-instance : BorelSpace (Matrix m n α) := inferInstanceAs <| BorelSpace (m → n → α)
-
-end Matrix
-
-namespace MeasurableEquiv
-
-/-- The map from `m → n → α` to `Matrix m n α` as a measurable equivalence. -/
-protected def toMatrix : (m → n → α) ≃ᵐ (Matrix m n α) where
-  toEquiv := Matrix.of.symm
+protected def ofMeasurableEquiv : (m → n → α) ≃ᵐ (Matrix m n α) where
+  toEquiv := Matrix.of
   measurable_toFun := measurable_id
-  measurable_invFun := Matrix.measurable_matrix_of m n α
+  measurable_invFun := measurable_of m n α
 
-lemma coe_toMatrix : ⇑(MeasurableEquiv.toMatrix m n α) = Matrix.of.symm := rfl
+lemma coe_toMatrix : ⇑(Matrix.ofMeasurableEquiv m n α) = Matrix.of := rfl
 
-lemma coe_toMatrix_symm : ⇑(MeasurableEquiv.toMatrix m n α).symm = Matrix.of := rfl
+lemma coe_toMatrix_symm : ⇑(Matrix.ofMeasurableEquiv m n α).symm = Matrix.of.symm := rfl
 
 @[simp]
-lemma toMatrix_apply (f : m → n → α) : MeasurableEquiv.toMatrix m n α f = Matrix.of.symm f := rfl
+lemma toMatrix_apply (f : m → n → α) : Matrix.ofMeasurableEquiv m n α f = Matrix.of f := rfl
 
 @[simp]
 lemma toMatrix_symm_apply (M : Matrix m n α) :
-    (MeasurableEquiv.toMatrix m n α).symm M = Matrix.of M := rfl
+    (Matrix.ofMeasurableEquiv m n α).symm M = Matrix.of.symm M := rfl
 
-end MeasurableEquiv
+end Matrix
