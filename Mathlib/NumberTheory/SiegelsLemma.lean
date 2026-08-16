@@ -138,7 +138,7 @@ private lemma card_S_lt_card_T [DecidableEq α] [DecidableEq β]
   _ ≤ (n * max 1 ‖A‖) ^ m * (B + 1) ^ m := by
         rw [← mul_pow, mul_add, mul_one]
         gcongr
-        exact one_le_mul_of_one_le_of_one_le (by exact_mod_cast hm.trans hn) <| le_max_left ..
+        exact one_le_mul_of_one_le_of_one_le (mod_cast hm.trans hn) <| le_max_left ..
   _ = ((n * max 1 ‖A‖) ^ (m / ((n : ℝ) - m))) ^ ((n : ℝ) - m) * (B + 1) ^ m := by
         congr 1
         rw [← rpow_mul (by positivity), ← Real.rpow_natCast, div_mul_cancel₀]
@@ -171,9 +171,8 @@ theorem exists_ne_zero_int_vec_norm_le
       rw [Int.cast_le, abs_le]
       rw [Finset.mem_Icc] at hxT hyT
       have : 0 ≤ x i ∧ x i ≤ B ∧ 0 ≤ y i ∧ y i ≤ B := ⟨hxT.1 i, hxT.2 i, hyT.1 i, hyT.2 i⟩
-      omega
+      lia
     _ ≤ _ := by simpa only [Int.cast_natCast] using Nat.floor_le n_mul_norm_A_pow_e_nonneg
-
 
 theorem exists_ne_zero_int_vec_norm_le'
     (hn : Fintype.card α < Fintype.card β) (hm : 0 < Fintype.card α) (hA : A ≠ 0) :
