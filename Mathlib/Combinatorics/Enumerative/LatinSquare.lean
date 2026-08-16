@@ -372,8 +372,8 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
     grind
   have _ : NeZero (Fintype.card n - Fintype.card k)  := ⟨by lia⟩
   let halls := hallMatchingsOn.nonempty (B)
-    (Finset.card_le_card_biUnion_of_card_eq_of_card_filter_le (k := Fintype.card n - Fintype.card k)
-    Bj_size pre_property_H) (Finset.univ)
+    (Finset.card_le_card_biUnion_of_card_eq_of_card_filter_le (by lia) Bj_size pre_property_H) 
+    (Finset.univ)
   set f := Classical.choice halls with hx
   simp only [hallMatchingsOn] at f
   obtain ⟨ f', hf⟩ := f
