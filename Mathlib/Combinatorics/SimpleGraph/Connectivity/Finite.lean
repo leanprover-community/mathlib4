@@ -36,13 +36,17 @@ theorem ConnectedComponent.card_le_card_of_le [Finite V] {G G' : SimpleGraph V} 
 /-!
 ### Deciding reachability by breadth-first search
 
-The instances below instead grow the set of visited vertices one round of breadth-first search at
-a time, stopping as soon as a round adds no new vertex: a search costs
-`O((diam G + 1) * (card V) ^ 2)` adjacency tests. Since reachability is symmetric and transitive,
-a single search, from any one vertex, settles `G.Preconnected` and `G.Connected` in both
-directions: `G` is preconnected iff that search visits every vertex.
--/
+This section provides efficient decidability instances for reachability and (pre)connectedness of
+finite graphs through a breadth-first search (BFS) algorithm.
 
+The algorithm is as follows: we maintain a finset of visited vertices which we grow with all its
+neighbors at each round of breadth-first search at, stopping as soon as a round adds no new vertex:
+a search costs `O((diam G + 1) * (card V) ^ 2)` adjacency tests.
+
+Vertices `u` and `v` are then reachable if `v` lies in the BFS-constructed finset of vertices
+reachable from `u`, and a graph is (pre)connected iff it's non-empty and (/empty or) every vertex is
+lies in the reachability finset of an arbitrarily-chosen vertex.
+-/
 
 section BFS
 variable [Fintype V] [DecidableEq V] [DecidableRel G.Adj] {m n : ℕ} {s t : Finset V} {u v w : V}
