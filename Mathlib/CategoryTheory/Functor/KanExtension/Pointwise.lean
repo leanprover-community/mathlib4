@@ -222,7 +222,7 @@ variable (E : LeftExtension L F)
 set_option backward.defeqAttrib.useBackward true in
 /-- The cocone for `CostructuredArrow.proj L Y ⋙ F` attached to `E : LeftExtension L F`.
 The point of this cocone is `E.right.obj Y` -/
-@[simps]
+@[implicit_reducible, simps]
 def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
   pt := E.right.obj Y
   ι :=
@@ -236,7 +236,7 @@ def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
 set_option backward.defeqAttrib.useBackward true in
 variable (L F) in
 /-- The cocones for `CostructuredArrow.proj L Y ⋙ F`, as a functor from `LeftExtension L F`. -/
-@[simps]
+@[implicit_reducible, simps]
 def coconeAtFunctor (Y : D) :
     LeftExtension L F ⥤ Cocone (CostructuredArrow.proj L Y ⋙ F) where
   obj E := E.coconeAt Y
@@ -412,7 +412,7 @@ variable (E E' : RightExtension L F)
 set_option backward.defeqAttrib.useBackward true in
 /-- The cone for `StructuredArrow.proj Y L ⋙ F` attached to `E : RightExtension L F`.
 The point of this cone is `E.left.obj Y` -/
-@[simps]
+@[implicit_reducible, simps]
 def coneAt (Y : D) : Cone (StructuredArrow.proj Y L ⋙ F) where
   pt := E.left.obj Y
   π :=
@@ -426,7 +426,7 @@ def coneAt (Y : D) : Cone (StructuredArrow.proj Y L ⋙ F) where
 set_option backward.defeqAttrib.useBackward true in
 variable (L F) in
 /-- The cones for `StructuredArrow.proj Y L ⋙ F`, as a functor from `RightExtension L F`. -/
-@[simps]
+@[implicit_reducible, simps]
 def coneAtFunctor (Y : D) :
     RightExtension L F ⥤ Cone (StructuredArrow.proj Y L ⋙ F) where
   obj E := E.coneAt Y
