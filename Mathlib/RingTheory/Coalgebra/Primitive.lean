@@ -107,7 +107,7 @@ lemma counit_eq_zero_of_comul_eq_tmul_add_tmul (hg : counit (R := R) g = 1)
   simpa [hh] using congr(counit (R := R) $key)
 
 /-- An element `a` with `Δ a = g ⊗ₜ a + a ⊗ₜ h` is `(g, h)`-skew-primitive when `g` and `h` have
-counit `1` (e.g. when they are group-like): `ε a = 0` needn't be checked. -/
+counit `1` (e.g. when they are group-like). -/
 lemma IsSkewPrimitiveElem.of_comul_eq_tmul_add_tmul (hg : counit (R := R) g = 1)
     (hh : counit (R := R) h = 1) (ha : comul a = g ⊗ₜ[R] a + a ⊗ₜ[R] h) :
     IsSkewPrimitiveElem R g h a :=
