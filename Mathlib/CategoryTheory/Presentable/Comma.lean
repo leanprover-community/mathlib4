@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 
 Let `F₁ : C₁ ⥤ D` and `F₂ : C₂ ⥤ D` be `κ`-accessible functors between
 `κ`-accessible categories. If we also assume that `F₁` preserves `κ`-presentable
-objects (a property which hold for a well chosen regular cardinal according to
+objects (a property which hold for a well chosen regular cardinal `κ` according to
 the uniformization theorem (TODO @joelriou)), we show that the comma category
 `Comma F₁ F₂` is also `κ`-accessible.
 
@@ -163,9 +163,7 @@ instance [ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C₁ κ)]
 
 namespace isCardinalAccessibleCategory
 
-variable {F₁ F₂}
-
-variable (f : Comma F₁ F₂)
+variable {F₁ F₂} (f : Comma F₁ F₂)
 
 /-- Given `f : Comma F₁ F₂`, this is the category of morphisms `g ⟶ f`
 where both the first and second objects of `g` are `κ`-presentable. -/
@@ -334,8 +332,7 @@ private instance : IsCardinalFiltered (J κ f) κ := by
     · refine J.homMk (a₁ i) (a₂ i ≫ b ≫ g) (by simp [← fac i, reassoc_of% h₂])
   · let g₁ (i : ι) := (π₁ κ f).map (g i)
     let g₂ (i : ι) := (π₂ κ f).map (g i)
-    obtain ⟨l, a, ⟨b⟩⟩ :=
-      exists_of_j₁_of_j₂ (coeq g₁ hι) (coeq g₂ hι)
+    obtain ⟨l, a, ⟨b⟩⟩ := exists_of_j₁_of_j₂ (coeq g₁ hι) (coeq g₂ hι)
     obtain ⟨l', c, d, h₁, h₂⟩ := J.exists_hom (coeqHom g₁ hι ≫ a) (coeqHom g₂ hι ≫ b)
     refine ⟨l', c, J.homMk (toCoeq g₁ hι ≫ a ≫ (π₁ κ f).map d)
       (toCoeq g₂ hι ≫ b ≫ (π₂ κ f).map d) ?_, fun i ↦ ?_⟩
