@@ -72,6 +72,13 @@ lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
 lemma IsUpperSet.supClosed (hs : IsUpperSet s) : SupClosed s := fun _a _ _b ↦ hs le_sup_right
 
 @[to_dual]
+theorem IsLowerSet.supClosed_of_directedOn (hl : IsLowerSet s) (hd : DirectedOn (· ≤ ·) s) :
+    SupClosed s := by
+  intro a ha b hb
+  have ⟨c, hcs, hac, hbc⟩ := hd a ha b hb
+  exact hl (sup_le hac hbc) hcs
+
+@[to_dual]
 lemma SupClosed.preimage [FunLike F β α] [SupHomClass F β α] (hs : SupClosed s) (f : F) :
     SupClosed (f ⁻¹' s) :=
   fun a ha b hb ↦ by simpa [map_sup] using hs ha hb
