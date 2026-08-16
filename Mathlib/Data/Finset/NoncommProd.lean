@@ -47,7 +47,7 @@ def noncommFoldr (s : Multiset α)
   letI : LeftCommutative (α := { x // x ∈ s }) (f ∘ Subtype.val) :=
     ⟨fun ⟨_, hx⟩ ⟨_, hy⟩ =>
       haveI : Std.Refl fun x y => ∀ b, f x (f y b) = f y (f x b) := ⟨fun _ _ => rfl⟩
-      comm.of_refl hx hy⟩
+      comm.forall₂ hx hy⟩
   s.attach.foldr (f ∘ Subtype.val) b
 
 set_option backward.isDefEq.respectTransparency false in
@@ -145,7 +145,7 @@ theorem noncommProd_cons' (s : Multiset α) (a : α) (comm) :
   | cons hd tl IH =>
     rw [List.prod_cons, mul_assoc, ← IH, ← mul_assoc, ← mul_assoc]
     · congr 1
-      apply comm.of_refl <;> simp
+      apply comm.forall₂ <;> simp
     · intro x hx y hy
       simp only [quot_mk_to_coe, List.mem_cons, mem_coe, cons_coe] at hx hy
       apply comm
@@ -176,7 +176,7 @@ protected theorem map_noncommProd_aux [MulHomClass F α β] (s : Multiset α)
     (comm : { x | x ∈ s }.Pairwise Commute) (f : F) : { x | x ∈ s.map f }.Pairwise Commute := by
   simp only [Multiset.mem_map]
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ _
-  exact (comm.of_refl hx hy).map f
+  exact (comm.forall₂ hx hy).map f
 
 @[to_additive]
 theorem map_noncommProd [MonoidHomClass F α β] (s : Multiset α) (comm) (f : F) :
@@ -320,7 +320,7 @@ variable [FunLike F β γ]
 @[to_additive]
 theorem map_noncommProd [MonoidHomClass F β γ] (s : Finset α) (f : α → β) (comm) (g : F) :
     g (s.noncommProd f comm) =
-      s.noncommProd (fun i => g (f i)) fun _ hx _ hy _ => (comm.of_refl hx hy).map g := by
+      s.noncommProd (fun i => g (f i)) fun _ hx _ hy _ => (comm.forall₂ hx hy).map g := by
   simp [noncommProd, Multiset.map_noncommProd]
 
 @[to_additive noncommSum_eq_card_nsmul]
@@ -381,10 +381,10 @@ theorem noncommProd_mul_distrib_aux {s : Finset α} {f : α → β} {g : α → 
     (s : Set α).Pairwise fun x y => Commute ((f * g) x) ((f * g) y) := by
   intro x hx y hy h
   apply Commute.mul_left <;> apply Commute.mul_right
-  · exact comm_ff.of_refl hx hy
+  · exact comm_ff.forall₂ hx hy
   · exact (comm_gf hy hx h.symm).symm
   · exact comm_gf hx hy h
-  · exact comm_gg.of_refl hx hy
+  · exact comm_gg.forall₂ hx hy
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The non-commutative version of `Finset.prod_mul_distrib` -/
