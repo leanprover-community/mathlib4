@@ -604,28 +604,20 @@ variable {Ω Ω' : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
 
 namespace ProbabilityMeasure
 
-open scoped Classical in
 /-- The push-forward of a probability measure by a measurable function. -/
 noncomputable def map (ν : ProbabilityMeasure Ω) (f : Ω → Ω') :
     ProbabilityMeasure Ω' :=
-  if f_aemble : AEMeasurable f ν
-    then ⟨(ν : Measure Ω).map f, (ν : Measure Ω).isProbabilityMeasure_map f_aemble⟩
-    else
-      haveI h : Nonempty Ω' := by
-        obtain ⟨ω⟩ := ν.nonempty
-        exact ⟨f ω⟩
-      ⟨Measure.dirac Classical.ofNonempty, inferInstance⟩
+  ⟨(ν : Measure Ω).map f, inferInstance⟩
 
-@[simp] lemma toMeasure_map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (hf : AEMeasurable f ν) :
-    (ν.map f).toMeasure = ν.toMeasure.map f := by simp_all [map]
+@[simp] lemma toMeasure_map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} :
+    (ν.map f).toMeasure = ν.toMeasure.map f := rfl
 
 /-- Note that this is an equality of elements of `ℝ≥0∞`. See also
 `MeasureTheory.ProbabilityMeasure.map_apply` for the corresponding equality as elements of `ℝ≥0`. -/
 lemma map_apply' (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ν.map f : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) := by
-  rw [toMeasure_map ν f_aemble]
-  exact Measure.map_apply_of_aemeasurable f_aemble A_mble
+    (ν.map f : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) :=
+  Measure.map_apply_of_aemeasurable f_aemble A_mble
 
 lemma map_apply_of_aemeasurable (ν : ProbabilityMeasure Ω) {f : Ω → Ω'}
     (f_aemble : AEMeasurable f ν) {A : Set Ω'} (A_mble : MeasurableSet A) :
@@ -651,8 +643,7 @@ lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
   rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
   intro g
   convert! lim (g.compContinuous ⟨f, f_cont⟩) <;>
-  · simp only [map, f_cont.aemeasurable, ↓reduceDIte, coe_mk, compContinuous_apply,
-    ContinuousMap.coe_mk]
+  · simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
     refine lintegral_map ?_ f_cont.measurable
     exact (ENNReal.continuous_coe.comp g.continuous).measurable
 

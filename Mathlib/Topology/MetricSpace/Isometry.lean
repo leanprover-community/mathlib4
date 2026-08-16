@@ -138,6 +138,7 @@ theorem tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filte
   hf.isUniformInducing.isInducing.tendsto_nhds_iff
 
 /-- An isometry is continuous. -/
+@[fun_prop]
 protected theorem continuous (hf : Isometry f) : Continuous f :=
   hf.lipschitz.continuous
 

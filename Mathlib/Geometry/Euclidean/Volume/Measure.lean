@@ -138,7 +138,8 @@ theorem Isometry.euclideanHausdorffMeasure_preimage {f : X → Y} {d : ℕ} (hf 
 theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Isometry f) :
     μHE[d].map f = μHE[d].restrict (Set.range f) := by
   simp_rw [euclideanHausdorffMeasure_def]
-  rw [Measure.map_smul, map_hausdorffMeasure hf (by simp), Measure.restrict_smul]
+  rw [Measure.map_smul _ (by fun_prop),
+    map_hausdorffMeasure hf (by simp), Measure.restrict_smul]
 
 /-!
 ### Applying scalers to `μHE[d]`
