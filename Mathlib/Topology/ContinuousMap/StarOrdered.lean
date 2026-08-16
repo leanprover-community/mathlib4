@@ -61,7 +61,7 @@ instance {R : Type*} [PartialOrder R] [NonUnitalSemiring R] [StarRing R]
   constructor
   · rw [ContinuousMap.le_def]
     intro h
-    use (mk _ ContinuousSqrt.continuousOn_sqrt.restrict).comp
+    use (mk _ ContinuousSqrt.continuousOn_sqrt.domRestrict).comp
       ⟨_, map_continuous (f.prodMk g) |>.codRestrict (s := {x | x.1 ≤ x.2}) (by exact h)⟩
     ext x
     simpa [IsSelfAdjoint.star_eq <| .of_nonneg (ContinuousSqrt.sqrt_nonneg (f x, g x) (h x))]

@@ -86,6 +86,7 @@ instance {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [LocallyQuasiFinite f] [LocallyQuasiFinite g] : LocallyQuasiFinite (f ≫ g) :=
   MorphismProperty.comp_mem _ f g ‹_› ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := low) [IsFinite f] : LocallyQuasiFinite f := by
   rw [HasAffineProperty.eq_targetAffineLocally @IsFinite] at ‹IsFinite f›
   rw [HasRingHomProperty.eq_affineLocally @LocallyQuasiFinite]
@@ -114,14 +115,17 @@ instance : MorphismProperty.IsMultiplicative @LocallyQuasiFinite where
 instance : MorphismProperty.IsStableUnderBaseChange @LocallyQuasiFinite :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.QuasiFinite.isStableUnderBaseChange
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyQuasiFinite g] :
     LocallyQuasiFinite (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyQuasiFinite f] :
     LocallyQuasiFinite (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (V : Y.Opens) [LocallyQuasiFinite f] : LocallyQuasiFinite (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -182,6 +186,7 @@ lemma Scheme.Hom.tendsto_cofinite_cofinite [LocallyQuasiFinite f] [QuasiCompact 
     Filter.Tendsto f .cofinite .cofinite :=
   .cofinite_of_finite_preimage_singleton f.finite_preimage_singleton
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec lemma IsFinite.of_locallyQuasiFinite (f : X ⟶ Y) [LocallyQuasiFinite f]
     [QuasiCompact f] [IsLocallyArtinian Y] : IsFinite f := by
   change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
@@ -267,6 +272,7 @@ instance (priority := low) [IsPreimmersion f] : LocallyQuasiFinite f := by
     .of_isPreimmersion (pullback.snd _ _) (isClosed_discrete _)
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec lemma locallyQuasiFinite_iff_isDiscrete_preimage_singleton
     {f : X ⟶ Y} [LocallyOfFiniteType f] :
     LocallyQuasiFinite f ↔ ∀ x, IsDiscrete (f ⁻¹' {x}) := by
@@ -293,6 +299,7 @@ nonrec lemma locallyQuasiFinite_iff_isDiscrete_preimage_singleton
   exact (Algebra.QuasiFinite.iff_finite_comap_preimage_singleton).mpr fun x ↦
     ((Spec.map φ).isCompact_preimage_singleton _).finite (H _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec lemma LocallyQuasiFinite.of_finite_preimage_singleton
     [LocallyOfFiniteType f] (hf : ∀ x, (f ⁻¹' {x}).Finite) : LocallyQuasiFinite f := by
   change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
@@ -332,6 +339,7 @@ if the stalk map `𝒪_{X, x} ⟶ 𝒪_{Y, f x}` is quasi-finite. -/
 def Scheme.Hom.QuasiFiniteAt (x : X) : Prop := (f.stalkMap x).hom.QuasiFinite
 
 variable {f} in
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.QuasiFiniteAt.quasiFiniteAt
     {x : X} (hx : f.QuasiFiniteAt x) {V : X.Opens} (hV : IsAffineOpen V) {U : Y.Opens}
     (hU : IsAffineOpen U) (hVU : V ≤ f ⁻¹ᵁ U) (hxV : x ∈ V.1) :

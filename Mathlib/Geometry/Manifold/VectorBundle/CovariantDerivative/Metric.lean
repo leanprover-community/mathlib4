@@ -33,10 +33,10 @@ metric `g` if and only if the differentiated metric tensor `∇ g` (defined by
 ## TODO
 
 * When Mathlib has a notion of parallel transport, prove the equivalence of
- `CovariantDerivative.IsMetricCompatible` with the characterisation that parallel transport be an
+  `CovariantDerivative.IsMetricCompatible` with the characterisation that parallel transport be an
   isometry.
 
-* Given connections on bundles `V` and `W`, there is an induced connnection on the bundle
+* Given connections on bundles `V` and `W`, there is an induced connection on the bundle
   `Hom(V, W)`. When this induced connection has been defined in Mathlib, rephrase the definition of
   `CovariantDerivative.derivMetricTensor`, to be simply the covariant derivative of the
   metric tensor (considered as a section of `Hom(V, Hom(V, ℝ))`).
