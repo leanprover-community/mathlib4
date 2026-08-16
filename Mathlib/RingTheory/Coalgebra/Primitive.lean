@@ -95,14 +95,10 @@ def skewPrimitiveSubmodule : Submodule R A where
 @[simp] lemma mem_skewPrimitiveSubmodule :
     a ∈ skewPrimitiveSubmodule R g h ↔ IsSkewPrimitiveElem R g h a := Iff.rfl
 
-/-! ### Redundancy of the counit condition
-
-When `g` and `h` have counit `1` (e.g. when they are group-like) and addition on `A` is
-cancellative, the counit condition in `IsSkewPrimitiveElem` follows from the comultiplication
-condition. -/
-
 variable [IsCancelAdd A]
 
+/-- When `g` and `h` have counit `1` (e.g. when they are group-like), the counit condition in
+`IsSkewPrimitiveElem` follows from the comultiplication condition. -/
 lemma counit_eq_zero_of_comul_eq_tmul_add_tmul (hg : counit (R := R) g = 1)
     (hh : counit (R := R) h = 1) (ha : comul a = g ⊗ₜ[R] a + a ⊗ₜ[R] h) :
     counit (R := R) a = 0 := by
