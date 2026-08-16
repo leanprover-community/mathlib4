@@ -107,10 +107,8 @@ theorem ramificationIdx_bot_eq_one [IsDomain S] : (⊥ : Ideal S).ramificationId
   let Sq := Localization.AtPrime (⊥ : Ideal S)
   rw [ramificationIdx_def, IsScalarTower.algebraMap_eq R S Sq, ← Ideal.map_map, Ideal.under,
     map_comap_bot, map_bot, ENat.toNat_eq_iff_eq_natCast, Nat.cast_one, Module.length_eq_one_iff,
-    isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def,
-    show (⊥ : Ideal Sq) = IsLocalRing.maximalIdeal Sq by
-      rw [← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_bot]]
-  exact IsLocalRing.maximalIdeal.isMaximal Sq
+    isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def, IsLocalRing.isMaximal_iff,
+    ← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_bot]
 
 variable {q R} in
 theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]

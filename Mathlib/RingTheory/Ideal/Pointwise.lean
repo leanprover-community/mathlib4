@@ -172,15 +172,12 @@ theorem stabilizer_top : MulAction.stabilizer M (⊤ : Ideal R) = ⊤ :=
 @[simp]
 theorem inertia_top {R : Type*} [Ring R] [MulSemiringAction M R] :
     inertia M (⊤ : Ideal R) = ⊤ :=
-  eq_top_iff.mpr fun _ _ ↦ (AddSubgroup.mem_inertia).mpr fun _ ↦ trivial
+  AddSubgroup.inertia_top M
 
 @[simp]
 theorem inertia_bot {R : Type*} [Ring R] [MulSemiringAction M R] [FaithfulSMul M R] :
-    inertia M (⊥ : Ideal R) = ⊥ := by
-  refine eq_bot_iff.mpr fun σ hσ ↦ Subgroup.mem_bot.mpr <| eq_of_smul_eq_smul (α := R) fun x ↦ ?_
-  rw [one_smul]
-  have := (AddSubgroup.mem_inertia).mp hσ x
-  rwa [Submodule.mem_toAddSubgroup, Ideal.mem_bot, sub_eq_zero] at this
+    inertia M (⊥ : Ideal R) = ⊥ :=
+  AddSubgroup.inertia_bot M
 
 theorem inertia_smul {R : Type*} [Ring R] [MulSemiringAction M R]
     (g : M) (I : Ideal R) : (g • I).inertia M = (I.inertia M).map (MulAut.conj g) := by
