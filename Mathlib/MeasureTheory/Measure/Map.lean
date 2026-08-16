@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+public import Mathlib.MeasureTheory.Measure.Dirac.Def
 public import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 /-!
@@ -26,7 +27,7 @@ If `f` is not a.e. measurable, then we define `map f μ` to be zero.
 
 -/
 
-@[expose] public section
+public section
 
 variable {α β γ : Type*}
 
@@ -84,13 +85,23 @@ theorem mapₗ_congr {f g : α → β} (hf : Measurable f) (hg : Measurable g) (
   simpa only [mapₗ, hf, hg, hs, dif_pos, liftLinear_apply, OuterMeasure.map_apply]
     using! measure_congr (h.preimage s)
 
+private lemma nonempty_of_not_aemeasurable {f : α → β} (hf : ¬AEMeasurable f μ) :
+    Nonempty β := by
+  contrapose! hf
+  exact (measurable_of_empty_codomain f).aemeasurable
+
 open scoped Classical in
 /-- The pushforward of a measure. It is defined to be `0` if `f` is not an almost everywhere
 measurable function. -/
 noncomputable
 irreducible_def map [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure α) :
     Measure β :=
-  if hf : AEMeasurable f μ then mapₗ (hf.mk f) μ else 0
+  if hf : AEMeasurable f μ
+    then mapₗ (hf.mk f) μ
+    else if μ = 0 then 0
+    else
+      haveI : Nonempty β := nonempty_of_not_aemeasurable hf
+      dirac Classical.ofNonempty
 
 theorem mapₗ_mk_apply_of_aemeasurable {f : α → β} (hf : AEMeasurable f μ) :
     mapₗ (hf.mk f) μ = map f μ := by simp [map, hf]
@@ -109,8 +120,10 @@ protected theorem map_zero (f : α → β) : (0 : Measure α).map f = 0 := by
   by_cases hf : AEMeasurable f (0 : Measure α) <;> simp [map, hf]
 
 @[simp]
-theorem map_of_not_aemeasurable {f : α → β} {μ : Measure α} (hf : ¬AEMeasurable f μ) :
-    μ.map f = 0 := by simp [map, hf]
+theorem map_of_not_aemeasurable_of_ne_zero {f : α → β} {μ : Measure α} (hf : ¬AEMeasurable f μ)
+    (hμ : μ ≠ 0) :
+    haveI := private nonempty_of_not_aemeasurable hf
+    μ.map f = dirac Classical.ofNonempty := by simp [map, hf]
 
 theorem _root_.AEMeasurable.of_map_ne_zero {f : α → β} {μ : Measure α} (hf : μ.map f ≠ 0) :
     AEMeasurable f μ := not_imp_comm.1 map_of_not_aemeasurable hf
