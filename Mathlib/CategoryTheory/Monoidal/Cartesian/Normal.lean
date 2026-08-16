@@ -6,7 +6,7 @@ Authors: Thomas Browning, Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 /-!
 # Normal subgroup objects
@@ -29,7 +29,7 @@ This is applied in the study of group schemes.
   [Görtz, Wedhorn, Algebraic Geometry II, Definition 27.3][goertz-wedhorn-2]
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
