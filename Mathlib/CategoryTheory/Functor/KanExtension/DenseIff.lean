@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
-public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.RestrictedYoneda
 
 /-!
 # Characterization of dense functors
@@ -28,62 +28,101 @@ namespace CategoryTheory.Functor
 
 open Opposite Limits Presheaf
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}
 
-instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Faithful where
+instance [F.IsDense] [LocallySmall.{w} D] : (restrictedShrinkYoneda.{w} F).Faithful where
   map_injective h :=
     (F.denseAt _).hom_ext' (fun X p ↦ by
-      simpa using! ULift.up_injective (ConcreteCategory.congr_hom (CC := fun X ↦ X)
-        (NatTrans.congr_app h (op X)) (ULift.up p)))
+      simpa [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}] using
+        ConcreteCategory.congr_hom (NatTrans.congr_app h (op X))
+          (shrinkYonedaObjObjEquiv.symm p))
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Full where
+instance [F.IsDense] [LocallySmall.{w} D] : (restrictedShrinkYoneda.{w} F).Full where
   map_surjective {Y Z} f := by
     let c : Cocone (CostructuredArrow.proj F Y ⋙ F) :=
       { pt := Z
-        ι :=
-          { app g := ((f.app (op g.left)) (ULift.up g.hom)).down
-            naturality g₁ g₂ φ := by
-              simpa [uliftFunctor, uliftYoneda,
-                restrictedULiftYoneda, ← ULift.down_inj] using
-                ((f.naturality_apply φ.left.op) (ULift.up g₂.hom)).symm } }
+        ι.app g := shrinkYonedaObjObjEquiv (f.app (op g.left)
+            (shrinkYonedaObjObjEquiv.symm g.hom))
+        ι.naturality g₁ g₂ φ :=
+          shrinkYonedaObjObjEquiv.{w}.symm.injective (by
+            simpa [shrinkYonedaObjObjEquiv_symm_comp.{w},
+              shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}] using
+              (f.naturality_apply φ.left.op (shrinkYonedaObjObjEquiv.symm g₂.hom)).symm) }
     refine ⟨(F.denseAt Y).desc c, ?_⟩
-    ext ⟨X⟩ ⟨x⟩
-    have := (F.denseAt Y).fac c (.mk x)
-    dsimp [c] at this
-    simpa using ULift.down_injective this
+    ext ⟨X⟩ x
+    obtain ⟨x, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective x
+    apply shrinkYonedaObjObjEquiv.{w}.injective
+    simpa [c, shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}] using
+      (F.denseAt Y).fac c (.mk x)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-variable {F} in
-lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
-    (h : (restrictedULiftYoneda.{w} F).FullyFaithful) :
+instance [F.IsDense] : (restrictedYoneda F).Faithful :=
+  Functor.Faithful.of_iso (restrictedYonedaIso F).symm
+
+instance [F.IsDense] : (restrictedYoneda F).Full :=
+  Functor.Full.of_iso (restrictedYonedaIso F).symm
+
+instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Faithful :=
+  Functor.Faithful.of_iso (restrictedULiftYonedaIso F).symm
+
+instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Full :=
+  Functor.Full.of_iso (restrictedULiftYonedaIso F).symm
+
+lemma IsDense.of_fullyFaithful_restrictedShrinkYoneda [LocallySmall.{w} D] [F.Full]
+    (h : (restrictedShrinkYoneda.{w} F).FullyFaithful) :
     F.IsDense where
   isDenseAt Y := by
     let φ (s : Cocone (CostructuredArrow.proj F Y ⋙ F)) :
-        (restrictedULiftYoneda.{w} F).obj Y ⟶ (restrictedULiftYoneda F).obj s.pt :=
-      { app := fun ⟨X⟩ ↦ ↾fun ⟨x⟩ ↦ ULift.up (s.ι.app (.mk x))
-        naturality := by
-          rintro ⟨X₁⟩ ⟨X₂⟩ ⟨f⟩
-          ext ⟨x⟩
-          let α : CostructuredArrow.mk (F.map f ≫ x) ⟶ CostructuredArrow.mk x :=
-            CostructuredArrow.homMk f
-          exact ULift.down_injective (s.w α).symm }
-    have hφ (s) (j) : (restrictedULiftYoneda F).map j.hom ≫ φ s =
-        (restrictedULiftYoneda F).map (s.ι.app j) := by
-      ext ⟨X⟩ ⟨x⟩
-      let α : .mk (x ≫ j.hom) ⟶ j := CostructuredArrow.homMk (F.preimage x)
-      have := s.w α
-      dsimp [uliftYoneda, φ, α] at this ⊢
-      apply ULift.down_injective
-      simpa using this.symm
+        (restrictedShrinkYoneda.{w} F).obj Y ⟶ (restrictedShrinkYoneda F).obj s.pt :=
+      { app X := ↾(fun x ↦ shrinkYonedaObjObjEquiv.symm
+          (s.ι.app (.mk (shrinkYonedaObjObjEquiv x))))
+        naturality X₁ X₂ f := by
+          ext x
+          let α : CostructuredArrow.mk (shrinkYonedaObjObjEquiv
+            ((shrinkYoneda.{w}.obj Y).map (F.map f.unop).op x)) ⟶
+              CostructuredArrow.mk (shrinkYonedaObjObjEquiv x) :=
+            CostructuredArrow.homMk f.unop (by simp [shrinkYoneda_obj_map])
+          simp [dsimp% [α] (s.w α).symm,
+            shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}] }
+    have hφ (s) (j) : (restrictedShrinkYoneda F).map j.hom ≫ φ s =
+        (restrictedShrinkYoneda F).map (s.ι.app j) := by
+      ext X x
+      let α : CostructuredArrow.mk (shrinkYonedaObjObjEquiv
+          ((shrinkYoneda.{w}.map j.hom).app (op (F.obj (unop X))) x)) ⟶ j :=
+        CostructuredArrow.homMk (F.preimage (shrinkYonedaObjObjEquiv x)) (by
+          obtain ⟨x, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective x
+          simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}])
+      apply shrinkYonedaObjObjEquiv.{w}.injective
+      simp [φ, ← dsimp% [α] s.w α, shrinkYonedaObjObjEquiv_map_app.{w}]
+    dsimp at hφ
     exact
       ⟨{desc s := (h.preimage (φ s))
         fac s j := h.map_injective (by simp [hφ])
         uniq s m hm := h.map_injective (by
-          ext ⟨_⟩ ⟨_⟩
-          simp [φ, ← hm]) }⟩
+          ext X x
+          obtain ⟨x, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective x
+          apply shrinkYonedaObjObjEquiv.{w}.injective
+          simp [φ, ← hm, shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}]) }⟩
+
+lemma IsDense.of_fullyFaithful_restrictedYoneda [F.Full]
+    (h : (restrictedYoneda F).FullyFaithful) :
+    F.IsDense :=
+  IsDense.of_fullyFaithful_restrictedShrinkYoneda.{v₂} (h.ofIso (restrictedYonedaIso F))
+
+lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
+    (h : (restrictedULiftYoneda.{w} F).FullyFaithful) :
+    F.IsDense :=
+  IsDense.of_fullyFaithful_restrictedShrinkYoneda.{max w v₂}
+    (h.ofIso (restrictedULiftYonedaIso F))
+
+lemma isDense_iff_fullyFaithful_restrictedShrinkYoneda [LocallySmall.{w} D] [F.Full] :
+    F.IsDense ↔ Nonempty (restrictedShrinkYoneda.{w} F).FullyFaithful :=
+  ⟨fun _ ↦ ⟨FullyFaithful.ofFullyFaithful _⟩,
+    fun ⟨h⟩ ↦ IsDense.of_fullyFaithful_restrictedShrinkYoneda h⟩
+
+lemma isDense_iff_fullyFaithful_restrictedYoneda [F.Full] :
+    F.IsDense ↔ Nonempty (restrictedYoneda F).FullyFaithful :=
+  ⟨fun _ ↦ ⟨FullyFaithful.ofFullyFaithful _⟩,
+    fun ⟨h⟩ ↦ IsDense.of_fullyFaithful_restrictedYoneda h⟩
 
 lemma isDense_iff_fullyFaithful_restrictedULiftYoneda [F.Full] :
     F.IsDense ↔ Nonempty (restrictedULiftYoneda.{w} F).FullyFaithful :=
