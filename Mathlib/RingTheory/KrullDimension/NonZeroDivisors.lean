@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
-public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 
@@ -33,6 +32,7 @@ lemma ringKrullDim_quotient (I : Ideal R) :
     ringKrullDim (R ⧸ I) = Order.krullDim (PrimeSpectrum.zeroLocus (R := R) I) := by
   rw [ringKrullDim, Order.krullDim_eq_of_orderIso I.primeSpectrumQuotientOrderIsoZeroLocus]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
     {r : R} (hr : r ∈ R⁰) :
     ringKrullDim (R ⧸ Ideal.span {r}) + 1 ≤ ringKrullDim R := by

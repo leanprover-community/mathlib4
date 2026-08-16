@@ -822,6 +822,7 @@ variable [Semiring R]
 variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂] [Unique M₂]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying by the trivial module from the left does not change the structure.
 This is the `LinearEquiv` version of `AddEquiv.uniqueProd`. -/
 @[simps!]
@@ -831,6 +832,7 @@ def uniqueProd : (M₂ × M) ≃ₗ[R] M :=
 lemma coe_uniqueProd :
     (uniqueProd (R := R) (M := M) (M₂ := M₂) : (M₂ × M) ≃ M) = Equiv.uniqueProd M M₂ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying by the trivial module from the right does not change the structure.
 This is the `LinearEquiv` version of `AddEquiv.prodUnique`. -/
 @[simps!]
