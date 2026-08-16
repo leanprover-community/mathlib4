@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.IsoCat
 public import Mathlib.CategoryTheory.IsomorphismClasses
 public import Mathlib.CategoryTheory.Thin
-public import Mathlib.Tactic.TFAE
 
 /-!
 # Skeleton of a category
@@ -37,9 +36,6 @@ definitionally on the nose which is convenient in practice.
   skeletons.
 * `Functor.isEquivalence_iff_mapSkeletonIsIso`: `F` is an equivalence if and only if the induced
   functor on skeletons is an isomorphism.
-* `Functor.tfae_isEquivalence_bundledEquivalence_mapSkeletonIsIso`: a three-way `TFAE` relating
-  `F.IsEquivalence`, the statement that `F` is the functor of a bundled equivalence `C ≌ D`, and
-  the statement that the induced functor on skeletons is an isomorphism.
 * `Equivalence.skeletonIsoCat (e : C ≌ D) : IsoCat (Skeleton C) (Skeleton D)`: the isomorphism
   between skeletons induced by an equivalence.
 * `ThinSkeleton C`: the thin skeleton of a category, defined by quotienting objects by
@@ -75,19 +71,13 @@ def Skeletal : Prop :=
 /-- A functor between skeletal categories is an equivalence if and only if it is an isomorphism.
 -/
 theorem Functor.isEquivalence_iff_isIso_between_skeletal
-    (F : C ⥤ D) (hC : Skeletal C) (hD : Skeletal D) : F.IsEquivalence ↔ F.IsIso := by
-  constructor
-  · intro F_isEquiv
-    let e : (C ≌ D) := F.asEquivalence
-    refine Functor.IsIso.mk inferInstance inferInstance ?_
-    refine Function.bijective_iff_has_inverse.mpr ?_
-    use e.inverse.obj
-    constructor
-    · intro X
-      exact (hC ⟨e.unitIso.app X⟩).symm
-    · intro Y
-      exact hD ⟨e.counitIso.app Y⟩
-  · exact fun _ => F.asIsomorphism.toEquivalence.isEquivalence_functor
+    (F : C ⥤ D) (hC : Skeletal C) (hD : Skeletal D) : F.IsEquivalence ↔ F.IsIso :=
+  ⟨fun _ ↦
+    { bijective_obj :=
+        Function.bijective_iff_has_inverse.mpr ⟨F.inv.obj,
+          fun _ ↦ hC ⟨F.asEquivalence.unitIso.symm.app _⟩,
+          fun _ ↦ hD ⟨F.asEquivalence.counitIso.app _⟩⟩ },
+    fun _ ↦ inferInstance⟩
 
 /-- `IsSkeletonOf C D F` says that `F : D ⥤ C` exhibits `D` as a skeletal full subcategory of `C`,
 in particular `F` is a (strong) equivalence and `D` is skeletal.
@@ -264,29 +254,11 @@ instance mapSkeleton_isIso_of_isEquivalence [F.IsEquivalence] : F.mapSkeleton.Is
 /-- A functor is an equivalence if and only if its induced functor on skeletons is an isomorphism.
 -/
 theorem isEquivalence_iff_mapSkeletonIsIso :
-    F.IsEquivalence ↔ F.mapSkeleton.IsIso := by
-  constructor
-  · intro _
-    infer_instance
-  · intro h_mapSkeleton_isIso
-    have h₀ : F.mapSkeleton.IsEquivalence := inferInstance
-    have h₁ : (toSkeletonFunctor C ⋙ F.mapSkeleton).IsEquivalence := inferInstance
-    have h₂ : (F ⋙ toSkeletonFunctor D).IsEquivalence :=
+    F.IsEquivalence ↔ F.mapSkeleton.IsIso :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦
+    have : (F ⋙ toSkeletonFunctor D).IsEquivalence :=
       isEquivalence_of_iso (toSkeletonFunctorCompMapSkeletonIso F)
-    exact isEquivalence_of_comp_right F (toSkeletonFunctor D)
-
-/-- The following are equivalent for a functor `F : C ⥤ D`: `F` is an equivalence; `F` is the
-functor of a bundled equivalence `C ≌ D`; and the induced functor on skeletons is an isomorphism.
--/
-theorem tfae_isEquivalence_bundledEquivalence_mapSkeletonIsIso :
-    List.TFAE
-      [ F.IsEquivalence
-      , ∃ e : C ≌ D, e.functor = F
-      , F.mapSkeleton.IsIso
-      ] := by
-  tfae_have 1 ↔ 2 := isEquivalence_iff_exists_equivalence F
-  tfae_have 1 ↔ 3 := isEquivalence_iff_mapSkeletonIsIso F
-  tfae_finish
+    isEquivalence_of_comp_right F (toSkeletonFunctor D)⟩
 
 end Functor
 
@@ -294,15 +266,12 @@ end Functor
 noncomputable def Equivalence.skeletonIsoCat (e : C ≌ D) : IsoCat (Skeleton C) (Skeleton D) :=
   e.functor.mapSkeleton.asIsomorphism
 
--- TODO(Zeta-Wu): define `Equivalence.skeletonEquiv` via `Equivalence.skeletonIsoCat`.
 /-- Two categories which are categorically equivalent have skeletons with equivalent objects.
 -/
-noncomputable def Equivalence.skeletonEquiv (e : C ≌ D) : Skeleton C ≃ Skeleton D :=
-  let f := ((skeletonEquivalence C).trans e).trans (skeletonEquivalence D).symm
-  { toFun := f.functor.obj
-    invFun := f.inverse.obj
-    left_inv := fun X => skeleton_skeletal C ⟨(f.unitIso.app X).symm⟩
-    right_inv := fun Y => skeleton_skeletal D ⟨f.counitIso.app Y⟩ }
+@[deprecated "use `Equivalence.skeletonIsoCat` together with `.functor.objEquiv`"
+  (since := "2026-08-16")]
+noncomputable abbrev Equivalence.skeletonEquiv (e : C ≌ D) : Skeleton C ≃ Skeleton D :=
+  e.skeletonIsoCat.functor.objEquiv
 
 variable (C D)
 
