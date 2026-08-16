@@ -212,7 +212,6 @@ private noncomputable def selfProdProj (x : F.obj X) : A ⟶ X := u ≫ Pi.π _ 
 variable {u a}
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
 private lemma selfProdProj_fiber (x : F.obj X) :
     F.map (selfProdProj u x) a = x := by
   simp_all
