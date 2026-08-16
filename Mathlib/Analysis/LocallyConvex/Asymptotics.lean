@@ -9,7 +9,10 @@ public import Mathlib.Analysis.Asymptotics.TVS
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 
 /-!
-# TODO
+# Asymptotics for locally convex topological vector spaces
+
+We provide a characterization of the Landau symbols,
+
 -/
 
 @[expose] public section
@@ -147,9 +150,9 @@ theorem isBigOTVS_iff (hp : WithSeminorms p) (hq : WithSeminorms q) :
     exact .of_bound C <| by simpa (discharger := positivity) [abs_of_nonneg]
   · rw [Asymptotics.isBigO_iff']
     intro ⟨C, C_pos, hC⟩
-    simp (discharger := positivity) only [Function.comp_apply, Real.norm_of_nonneg] at hC
     refine ⟨C.toNNReal, ?_⟩
-    simpa [NNReal.smul_def, C_pos.le]
+    convert hC using 2
+    simp (discharger := positivity) [abs_of_nonneg, NNReal.smul_def]
 
 theorem isLittleOTVS_iff_le_continuous (hp : WithSeminorms p) [PolynormableSpace 𝕜 F] :
     f =o[𝕜; l] g ↔
@@ -168,9 +171,9 @@ theorem isLittleOTVS_iff_le_continuous (hp : WithSeminorms p) [PolynormableSpace
       filter_upwards [hq₁ ε ε_ne, hq₂ ε ε_ne] with x hx₁ hx₂
       simpa using add_le_add hx₁ hx₂
     · intro r₁ r₂ h ⟨q, q_cont, hq⟩
-      exact ⟨q, q_cont, fun ε ε_ne ↦ (hq ε ε_ne).mono fun x hx ↦ (h _).trans hx⟩
+      exact ⟨q, q_cont, (hq · · |>.mono fun x hx ↦ h _ |>.trans hx)⟩
     · intro r C ⟨q, q_cont, hq⟩
-      refine ⟨C • q, q_cont.const_smul _, fun ε ε_ne ↦ (hq ε ε_ne).mono fun x hx ↦ ?_⟩
+      refine ⟨C • q, q_cont.const_smul _, fun ε ε_ne ↦ hq ε ε_ne |>.mono fun x hx ↦ ?_⟩
       rw [smul_comm]
       exact smul_le_smul_of_nonneg_left hx C.2
 
@@ -196,8 +199,7 @@ theorem isLittleOTVS_iff (hp : WithSeminorms p) (hq : WithSeminorms q) :
   congrm ∀ i, ∃ s, ?_
   constructor <;> intro H ε hε
   · have : NNReal.mk ε hε.le ≠ 0 := by simpa [← NNReal.coe_ne_zero] using hε.ne'
-    simpa (discharger := positivity) [abs_of_nonneg, NNReal.smul_def] using
-      H (NNReal.mk ε hε.le) this
+    simpa [abs_of_nonneg, NNReal.smul_def] using H _ this
   · simp (discharger := positivity) only [Function.comp_apply, Real.norm_of_nonneg] at H
     exact H (by positivity)
 
