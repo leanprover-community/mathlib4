@@ -72,8 +72,8 @@ theorem infEDist_inv (x : E) (s : Set E) : infEDist x⁻¹ s = infEDist x s⁻¹
 @[to_additive]
 theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
   (LipschitzOnWith.ediam_image2_le (· * ·) _ _
-        (fun _ _ => (isometry_mul_right _).lipschitz.lipschitzOnWith) fun _ _ =>
-        (isometry_mul_left _).lipschitz.lipschitzOnWith).trans_eq <|
+        (fun _ _ => (isometry_mul_right _).lipschitzWith.lipschitzOnWith) fun _ _ =>
+        (isometry_mul_left _).lipschitzWith.lipschitzOnWith).trans_eq <|
     by simp only [ENNReal.coe_one, one_mul]
 
 end EMetric

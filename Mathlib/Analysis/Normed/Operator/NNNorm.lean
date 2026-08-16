@@ -119,12 +119,21 @@ theorem nndist_le_opNNNorm (f : E →SL[σ₁₂] F) (x y : E) : nndist (f x) (f
   dist_le_opNorm f x y
 
 /-- continuous linear maps are Lipschitz continuous. -/
-theorem lipschitz (f : E →SL[σ₁₂] F) : LipschitzWith ‖f‖₊ f :=
+theorem lipschitzWith (f : E →SL[σ₁₂] F) : LipschitzWith ‖f‖₊ f :=
   AddMonoidHomClass.lipschitz_of_bound_nnnorm f _ f.le_opNNNorm
 
+/-- continuous linear maps are Lipschitz continuous. -/
+@[deprecated lipschitzWith (since := "2026-08-16")]
+theorem lipschitz (f : E →SL[σ₁₂] F) : LipschitzWith ‖f‖₊ f := lipschitzWith f
+
 /-- Evaluation of a continuous linear map `f` at a point is Lipschitz continuous in `f`. -/
-theorem lipschitz_apply (x : E) : LipschitzWith ‖x‖₊ fun f : E →SL[σ₁₂] F => f x :=
+theorem lipschitzWith_apply (x : E) : LipschitzWith ‖x‖₊ fun f : E →SL[σ₁₂] F => f x :=
   lipschitzWith_iff_norm_sub_le.2 fun f g => ((f - g).le_opNorm x).trans_eq (mul_comm _ _)
+
+/-- Evaluation of a continuous linear map `f` at a point is Lipschitz continuous in `f`. -/
+@[deprecated lipschitzWith_apply (since := "2026-08-16")]
+theorem lipschitz_apply (x : E) : LipschitzWith ‖x‖₊ fun f : E →SL[σ₁₂] F => f x :=
+  lipschitzWith_apply x
 
 theorem exists_mul_lt_apply_of_lt_opNNNorm (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖₊) :
     ∃ x, r * ‖x‖₊ < ‖f x‖₊ := by
@@ -142,8 +151,12 @@ end ContinuousLinearMap
 namespace ContinuousLinearEquiv
 variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 
+protected theorem lipschitzWith (e : E ≃SL[σ₁₂] F) : LipschitzWith ‖(e : E →SL[σ₁₂] F)‖₊ e :=
+  (e : E →SL[σ₁₂] F).lipschitzWith
+
+@[deprecated LipschitzWith (since := "2026-08-16")]
 protected theorem lipschitz (e : E ≃SL[σ₁₂] F) : LipschitzWith ‖(e : E →SL[σ₁₂] F)‖₊ e :=
-  (e : E →SL[σ₁₂] F).lipschitz
+  (e : E →SL[σ₁₂] F).lipschitzWith
 
 end ContinuousLinearEquiv
 
