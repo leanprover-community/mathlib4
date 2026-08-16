@@ -32,10 +32,10 @@ def collectInclusionFamilies (config : InclusionConfig) (familyStxs : Array Synt
     throwError "At least one inclusion family must be specified"
   let mut families := #[]
   for familyStx in familyStxs do
-    let family := familyStx.getId
+    let family := familyStx.getId.eraseMacroScopes
     unless families.contains family do
       unless (← getInclusionFamily? family).isSome do
-        throwError "Unknown inclusion family '{family}'"
+        throwError "Unknown inclusion family `{family}`"
       families := families.push family
   return { config with families }
 
@@ -56,20 +56,20 @@ def collectInclusionParams (config : InclusionConfig) (paramStxs : Array Syntax)
       | `(inclusionParam| $name:ident := $value:term) => pure (name.getId, value)
       | _ => throwUnsupportedSyntax
     let some decl := params.find? name
-      | throwError "Unknown inclusion parameter '{name}'"
+      | throwError "Unknown inclusion parameter `{name}`"
     if config.paramSettings.contains name then
-      throwError "Inclusion parameter '{name}' was specified more than once"
+      throwError "Inclusion parameter `{name}` was specified more than once"
     let value ← elabTerm valueStx decl.type
     Term.synthesizeSyntheticMVarsNoPostponing
     let value ← instantiateMVars value
     config := { config with paramSettings := config.paramSettings.insert name value }
   return config
 
-/-- Syntax for the `inclusion` tactic. -/
+/-- `inclusion` tactic for proving "inclusion" propositions. -/
 syntax (name := inclusionTacStx) "inclusion" optConfig " [" ident,* "]"
   (" (" inclusionParam,* ")")? : tactic
 
-/-- `inclusion` tactic for proving "inclusion" propositions. -/
+/-- Elaborator for the `inclusion` tactic. -/
 @[tactic inclusionTacStx]
 def inclusionTac : Tactic
   | `(tactic| inclusion $cfg:optConfig [$families,*] $[($paramStxs,*)]?) => do
@@ -80,11 +80,11 @@ def inclusionTac : Tactic
       closeMainGoalUsing `inclusion fun goal _ => inclusionCore goal config
   | _ => throwUnsupportedSyntax
 
-/-- Syntax for the `inclusion?` tactic. -/
+/-- Tactic for quickly checking if the `inclusion` tactic will succeed. -/
 syntax (name := inclusion?TacStx) "inclusion?" " [" ident,* "]"
   (" (" inclusionParam,* ")")? : tactic
 
-/-- Tactic for quickly checking if the `inclusion` tactic will succeed. -/
+/-- Elaborator for the `inclusion?` tactic. -/
 @[tactic inclusion?TacStx]
 def inclusion?Tac : Tactic
   | `(tactic| inclusion? [$families,*] $[($paramStxs,*)]?) => do

@@ -3,8 +3,7 @@ Copyright (c) 2026 David Ledvinka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Ledvinka
 -/
-import Mathlib.Tactic.Inclusion.Extension.Core.Core
-import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Extensions
+import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 
 open Inclusion
 
@@ -15,7 +14,7 @@ def unitInterval : Interval Dyadic := ⟨1, 2⟩
 section Constants
 
 example : (0 : ℝ) ≤ 0 := by
-  inclusion [core, interval_dyadic_real]
+  dyadic_interval
 
 example : (1 : ℝ) ≤ 1 := by
   inclusion [core, interval_dyadic_real]
@@ -28,6 +27,25 @@ example : ((3 : ℕ) : ℝ) ≤ 3 := by
 
 example : ((-3 : ℤ) : ℝ) = -3 := by
   inclusion [core, interval_dyadic_real]
+
+example : (((1 : ℚ) / 3 : ℚ) : ℝ) < (((334 : ℚ) / 1000 : ℚ) : ℝ) := by
+  dyadic_interval [prec := 12]
+
+example : (((1 : ℚ) / 2 : ℚ) : ℝ) = 0.5 := by
+  inclusion [core, interval_dyadic_real] (prec := 1)
+
+example : (((-1 : ℚ) / 3 : ℚ) : ℝ) < -0.3 := by
+  inclusion [core, interval_dyadic_real] (prec := 12)
+
+example : (0.1 : ℝ) < 0.2 := by
+  fail_if_success inclusion [core, interval_dyadic_real] (prec := 2)
+  inclusion [core, interval_dyadic_real] (prec := 4)
+
+example : (123e4 : ℝ) = 1230000 := by
+  inclusion [core, interval_dyadic_real] (prec := 0)
+
+example : (0.12345678901234567890123456789 : ℝ) < 0.1234567890123456789012345679 := by
+  inclusion [core, interval_dyadic_real] (prec := 100)
 
 end Constants
 
@@ -172,16 +190,19 @@ end Hypotheses
 section Evaluation
 
 example : (1 : ℝ) ≤ 2 := by
-  inclusion +kernel [core, interval_dyadic_real]
+  dyadic_interval +kernel
 
 example : ¬(2 : ℝ) ≤ 1 := by
   inclusion +kernel [core, interval_dyadic_real]
+
+example : (0.12345678901234567890123456789 : ℝ) < 0.1234567890123456789012345679 := by
+  dyadic_interval +kernel [prec := 100]
 
 /-- info: The inclusion check succeeded. -/
 #guard_msgs in
 set_option linter.unusedTactic false in
 example : (1 : ℝ) ≤ 2 := by
-  inclusion? [core, interval_dyadic_real]
+  dyadic_interval?
   inclusion [core, interval_dyadic_real]
 
 /-- info: The inclusion check failed:
@@ -189,7 +210,7 @@ The proposition is provably false -/
 #guard_msgs in
 set_option linter.unusedTactic false in
 example (h : False) : (2 : ℝ) ≤ 1 := by
-  inclusion? [core, interval_dyadic_real]
+  dyadic_interval?
   exact h.elim
 
 end Evaluation

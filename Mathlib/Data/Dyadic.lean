@@ -37,38 +37,45 @@ instance : AddCommGroup Dyadic where
 
 namespace Dyadic
 
+section Division
+
+/-- Round a quotient of natural numbers downward to a dyadic number with precision `prec`. -/
+def divNatDown (prec m d : ℕ) : Dyadic :=
+  Dyadic.ofIntWithPrec (((m <<< prec) / d : ℕ) : ℤ) prec
+
+/-- Round a quotient of natural numbers upward to a dyadic number with precision `prec`. -/
+def divNatUp (prec m d : ℕ) : Dyadic :=
+  let scaled := m <<< prec
+  let quotient := scaled / d
+  Dyadic.ofIntWithPrec (if quotient * d = scaled then quotient else quotient + 1) prec
+
+end Division
+
 section toReal
 
 /-- Interpret a dyadic rational as a real number. -/
 def toReal (d : Dyadic) : ℝ := d.toRat
 
 @[simp]
-lemma toReal_add (a b : Dyadic) : toReal (a + b) = toReal a + toReal b := by
-  simp [toReal]
+lemma toReal_add (a b : Dyadic) : toReal (a + b) = toReal a + toReal b := by simp [toReal]
 
 @[simp]
-lemma toReal_neg (a : Dyadic) : toReal (-a) = -toReal a := by
-  simp [toReal]
+lemma toReal_neg (a : Dyadic) : toReal (-a) = -toReal a := by simp [toReal]
 
 @[simp]
-lemma toReal_sub (a b : Dyadic) : toReal (a - b) = toReal a - toReal b := by
-  simp [toReal]
+lemma toReal_sub (a b : Dyadic) : toReal (a - b) = toReal a - toReal b := by simp [toReal]
 
 @[simp]
-lemma toReal_natCast (n : ℕ) : toReal (n : Dyadic) = (n : ℝ) := by
-  simp [toReal]
+lemma toReal_natCast (n : ℕ) : toReal (n : Dyadic) = (n : ℝ) := by simp [toReal]
 
 @[simp]
-lemma toReal_intCast (z : ℤ) : toReal (z : Dyadic) = (z : ℝ) := by
-  simp [toReal]
+lemma toReal_intCast (z : ℤ) : toReal (z : Dyadic) = (z : ℝ) := by simp [toReal]
 
 @[simp]
-lemma toReal_le_toReal {a b : Dyadic} : toReal a ≤ toReal b ↔ a ≤ b := by
-  simp [toReal]
+lemma toReal_le_toReal {a b : Dyadic} : toReal a ≤ toReal b ↔ a ≤ b := by simp [toReal]
 
 @[simp]
-lemma toReal_lt_toReal {a b : Dyadic} : toReal a < toReal b ↔ a < b := by
-  simp [toReal]
+lemma toReal_lt_toReal {a b : Dyadic} : toReal a < toReal b ↔ a < b := by simp [toReal]
 
 /-- `Dyadic.toReal` as an additive monoid homomorphism. -/
 def toRealAddMonoidHom : Dyadic →+ ℝ where

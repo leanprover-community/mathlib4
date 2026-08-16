@@ -23,7 +23,7 @@ namespace Inclusion
 /-- Return the value of parameter `name`, if it was supplied or has a default. -/
 def InclusionM.getParam? (name : Name) : InclusionM (Option Expr) := do
   let some decl := (inclusionParamExt.getState (← getEnv)).find? name
-    | throwError "Unknown inclusion parameter '{name}'"
+    | throwError "Unknown inclusion parameter `{name}`"
   if let some value := (← read).paramSettings.find? name then
     return some value
   return decl.defaultValue?
@@ -31,13 +31,13 @@ def InclusionM.getParam? (name : Name) : InclusionM (Option Expr) := do
 /-- Return the value of parameter `name`. -/
 def InclusionM.getParam (name : Name) : InclusionM Expr := do
   let some value ← InclusionM.getParam? name
-    | throwError "No value was supplied for inclusion parameter '{name}'"
+    | throwError "No value was supplied for inclusion parameter `{name}`"
   return value
 
 /-- Return the value of parameter `name`, if it was supplied or has a default. -/
 def HypothesisM.getParam? (name : Name) : HypothesisM (Option Expr) := do
   let some decl := (inclusionParamExt.getState (← getEnv)).find? name
-    | throwError "Unknown inclusion parameter '{name}'"
+    | throwError "Unknown inclusion parameter `{name}`"
   if let some value := (← read).paramSettings.find? name then
     return some value
   return decl.defaultValue?
@@ -45,7 +45,7 @@ def HypothesisM.getParam? (name : Name) : HypothesisM (Option Expr) := do
 /-- Return the value of parameter `name`, or report that it was not supplied. -/
 def HypothesisM.getParam (name : Name) : HypothesisM Expr := do
   let some value ← HypothesisM.getParam? name
-    | throwError "No value was supplied for inclusion parameter '{name}'"
+    | throwError "No value was supplied for inclusion parameter `{name}`"
   return value
 
 /-- Check that `iExpr` is well formed in `localContext`. -/

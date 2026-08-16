@@ -63,7 +63,7 @@ initialize inclusionFamiliesRef : IO.Ref InclusionFamilies ← IO.mkRef {}
 def registerInclusionFamily (name : Name) (ref : Name := by exact decl_name%) :
     IO InclusionFamily := do
   if (← inclusionFamiliesRef.get).contains name then
-    throw <| IO.userError s!"Inclusion family '{name}' is already registered"
+    throw <| IO.userError s!"Inclusion family `{name}` is already registered"
   let inclusionExt ← initializeEnvExt ``InclusionExt (ref.str "inclusionExt")
   let hypothesisExt ← initializeEnvExt ``HypothesisExt (ref.str "hypothesisExt")
   let family := { name, inclusionExt, hypothesisExt }
@@ -81,7 +81,7 @@ def getInclusionFamily? (name : Name) : CoreM (Option InclusionFamily) := do
 /-- Return the registered inclusion family named `name`, or fail if it is not registered. -/
 def getInclusionFamily (name : Name) : CoreM InclusionFamily := do
   let some family ← getInclusionFamily? name
-    | throwError "Unknown inclusion family '{name}'"
+    | throwError "Unknown inclusion family `{name}`"
   return family
 
 /-- Return an array of the inclusion extensions in `families` whose `DiscrTree` key matches `e`,
