@@ -117,9 +117,9 @@ lemma isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
       refine ⟨j', { left := f₁ ≫ (G.map a).left, right := f₂ ≫ (G.map a).right }, ?_⟩
       ext
       · dsimp
-        rw [Category.assoc, ← hf₁, ← Comma.comp_left, Cocone.w]
+        simp[← hf₁, ← Comma.comp_left]
       · dsimp
-        rw [Category.assoc, ← hf₂, ← Comma.comp_right, Cocone.w]
+        simp [← hf₂, ← Comma.comp_right]
     · obtain ⟨j₁, a, ha⟩ := IsCardinalPresentable.exists_eq_of_isColimit'
         κ (isColimitOfPreserves (fst _ _) hc) f₁.left f₂.left
           ((fst _ _).congr_map hf)
