@@ -288,7 +288,8 @@ lemma eq_top_iff_forall_ge : n = ⊤ ↔ ∀ m : ℕ, m ≤ n := WithTop.eq_top_
 
 lemma range_natCast_eq_top_compl : Set.range ((↑) : ℕ → ℕ∞) = {⊤}ᶜ := by
   ext
-  simp [lt_top_iff_ne_top]
+  simp [← ne_top_iff_exists]
+  rfl
 
 /-- Version of `WithTop.forall_natCast_le_iff_le` using `Nat.cast` rather than `WithTop.some`. -/
 lemma forall_natCast_le_iff_le : (∀ a : ℕ, a ≤ m → a ≤ n) ↔ m ≤ n := WithTop.forall_coe_le_iff_le
