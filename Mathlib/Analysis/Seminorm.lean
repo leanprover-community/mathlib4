@@ -497,7 +497,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
         add_le' := fun x y => by
           rcases h with ⟨q, hq⟩
           obtain rfl | h := s.eq_empty_or_nonempty
-          · simp [Real.iSup_of_isEmpty]
+          · simp
           have : Nonempty ↑s := h.coe_sort
           simp only [iSup_apply]
           refine ciSup_le fun i =>
@@ -524,7 +524,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
 
 protected theorem coe_sSup_eq' {s : Set <| Seminorm 𝕜 E}
     (hs : BddAbove ((↑) '' s : Set (E → ℝ))) : ↑(sSup s) = ⨆ p : s, ((p : Seminorm 𝕜 E) : E → ℝ) :=
-  congr_arg _ (dif_pos hs)
+  congr_arg _ (dite_eq_left hs)
 
 protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
     BddAbove s ↔ BddAbove ((↑) '' s : Set (E → ℝ)) :=

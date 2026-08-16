@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
 
@@ -21,7 +20,7 @@ The API is modelled on the one for the product of positive measures.
 
 public section
 
-open Filter Function MeasureTheory RCLike Set TopologicalSpace Topology
+open Filter Function MeasureTheory Set TopologicalSpace
 open scoped ENNReal NNReal Finset
 
 variable {ι X Y E F G H I J : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y}

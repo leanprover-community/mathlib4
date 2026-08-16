@@ -369,7 +369,7 @@ theorem subset_image_compl {f : α → β} {s : Set α} (H : Surjective f) : (f 
 theorem image_compl_eq {f : α → β} {s : Set α} (H : Bijective f) : f '' sᶜ = (f '' s)ᶜ :=
   Subset.antisymm (image_compl_subset H.1) (subset_image_compl H.2)
 
-private theorem subset_image_sdiff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
+theorem subset_image_sdiff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
   rw [sdiff_subset_iff, ← image_union, union_sdiff_self]
   exact image_mono subset_union_right
 
@@ -378,7 +378,7 @@ theorem image_sdiff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s 
     (Subset.trans (image_sdiff_subset f s t) <| inter_subset_inter_right _ <| image_compl_subset hf)
     (subset_image_sdiff f s t)
 
-@[deprecated image_sdiff (since := "2026-06-03")] alias subset_image_diff := subset_image_sdiff
+@[deprecated (since := "2026-06-03")] alias subset_image_diff := subset_image_sdiff
 @[deprecated (since := "2026-06-03")] alias image_diff := image_sdiff
 
 open scoped symmDiff in
