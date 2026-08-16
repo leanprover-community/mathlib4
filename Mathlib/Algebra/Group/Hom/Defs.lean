@@ -937,9 +937,9 @@ theorem Function.Surjective.isMulCommutative [Mul M] [Mul N] [FunLike F M N] [Mu
     simp [← ha', ← hb', ← map_mul, mul_comm']
 
 @[deprecated (since := "2026-08-11")]
-alias Function.Surjective.mul_comm := Function.Surjective.isMulCommutative
-@[deprecated (since := "2026-08-11")]
 alias Function.Surjective.add_comm := Function.Surjective.isAddCommutative
+@[to_additive existing, deprecated (since := "2026-08-11")]
+alias Function.Surjective.mul_comm := Function.Surjective.isMulCommutative
 
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
 @[to_additive (attr := simps)
