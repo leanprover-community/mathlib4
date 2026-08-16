@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Sites.Whiskering
 public import Mathlib.CategoryTheory.Sites.Plus
 
 /-!
+# Compatibility of the plus construction with functors
 
 In this file, we prove that the plus functor is compatible with functors which
 preserve the correct limits and colimits.
@@ -24,7 +25,7 @@ noncomputable section
 
 namespace CategoryTheory.GrothendieckTopology
 
-open CategoryTheory Limits Opposite Functor
+open CategoryTheory Limits Opposite CategoryTheory.Functor
 
 universe v u
 

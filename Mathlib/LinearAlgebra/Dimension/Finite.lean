@@ -30,7 +30,7 @@ variable [Module R M]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
 
-open Basis Cardinal Function Module Set Submodule
+open Cardinal Function Module Set Submodule
 
 /-- If every finite set of linearly independent vectors has cardinality at most `n`,
 then the same is true for arbitrary sets of linearly independent vectors.
@@ -138,7 +138,7 @@ theorem Module.Basis.nonempty_fintype_index_of_rank_lt_aleph0 {ι : Type*} (b : 
     Cardinal.lt_aleph0_iff_fintype] at h
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def Module.Basis.fintypeIndexOfRankLtAleph0 {ι : Type*} (b : Basis ι R M)
     (h : Module.rank R M < ℵ₀) : Fintype ι :=
   Classical.choice (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
@@ -266,7 +266,7 @@ theorem iSupIndep.subtype_ne_bot_le_finrank_aux
 
 /-- If `p` is an independent family of submodules of an `R`-finite module `M`, then the
 number of nontrivial subspaces in the family `p` is finite. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def iSupIndep.fintypeNeBotOfFiniteDimensional
     {p : ι → Submodule R M} (hp : iSupIndep p) :
     Fintype { i : ι // p i ≠ ⊥ } := by
@@ -327,16 +327,16 @@ theorem Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
   -- After this, it's a matter of verifying the properties,
   -- based on the corresponding properties for `g`.
   · rw [sum_map, Embedding.coeFn_mk] at gsum
-    simp_rw [f, ← t.sum_erase_add _ x₀_mem, if_pos, neg_smul, sum_smul,
+    simp_rw [f, ← t.sum_erase_add _ x₀_mem, ite_eq_left, neg_smul, sum_smul,
              ← sub_eq_add_neg, ← sum_sub_distrib, ← gsum, smul_sub]
     refine sum_congr rfl fun x x_mem ↦ ?_
-    rw [if_neg (mem_erase.mp x_mem).1]
-  · simp_rw [f, ← t.sum_erase_add _ x₀_mem, if_pos, add_neg_eq_zero]
-    exact sum_congr rfl fun x x_mem ↦ if_neg (mem_erase.mp x_mem).1
+    rw [ite_eq_right (mem_erase.mp x_mem).1]
+  · simp_rw [f, ← t.sum_erase_add _ x₀_mem, ite_eq_left, add_neg_eq_zero]
+    exact sum_congr rfl fun x x_mem ↦ ite_eq_right (mem_erase.mp x_mem).1
   · obtain ⟨x₁, x₁_mem', rfl⟩ := Finset.mem_map.mp x₁_mem
     have := mem_erase.mp x₁_mem'
     exact ⟨x₁, by
-      simpa only [f, Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, if_neg this.1]⟩
+      simpa only [f, Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, ite_eq_right this.1]⟩
 
 end
 

@@ -93,11 +93,11 @@ noncomputable abbrev NormalizationMonoid.ofRightInverse {α : Type*} [MonoidWith
   have assoc a := (Associates.mk_eq_mk_iff_associated.mp <| mk_out (.mk a)).symm
   let := Classical.dec
   { normUnit a := if a = 0 then 1 else (assoc a).choose
-    normUnit_zero := if_pos rfl
+    normUnit_zero := ite_eq_left rfl
     normUnit_one := by
       nontriviality α; rw [← Units.val_inj]; convert ← (assoc 1).choose_spec <;> simp [out_one]
     normUnit_mul_units {a} u ha := by
-      simp_rw [Units.mul_left_eq_zero, if_neg ha, eq_inv_mul_iff_mul_eq, ← Units.val_inj]
+      simp_rw [Units.mul_left_eq_zero, ite_eq_right ha, eq_inv_mul_iff_mul_eq, ← Units.val_inj]
       rw [Units.val_mul, ← (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha).eq_iff,
         (assoc a).choose_spec, ← mul_assoc, (assoc _).choose_spec,
         Associates.mk_eq_mk_iff_associated.mpr (associated_mul_unit_right a u u.isUnit)] }
@@ -1057,16 +1057,17 @@ private theorem map_mk_unit_aux {f : Associates α →* α}
 variable [IsCancelMulZero α]
 
 /-- Define `NormalizationMonoid` on a structure from a `MonoidHom` inverse to `Associates.mk`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def strongNormalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates α →* α)
     (hinv : Function.RightInverse f Associates.mk) :
     StrongNormalizationMonoid α where
   normUnit a :=
     if a = 0 then 1
     else Classical.choose (Associates.mk_eq_mk_iff_associated.1 (hinv (Associates.mk a)).symm)
-  normUnit_zero := if_pos rfl
+  normUnit_zero := ite_eq_left rfl
   normUnit_mul {a b} ha hb := by
-    simp_rw [if_neg (mul_ne_zero ha hb), if_neg ha, if_neg hb, Units.ext_iff, Units.val_mul]
+    simp_rw [ite_eq_right (mul_ne_zero ha hb), ite_eq_right ha, ite_eq_right hb, Units.ext_iff,
+      Units.val_mul]
     suffices a * b * ↑(Classical.choose (associated_map_mk hinv (a * b))) =
         a * ↑(Classical.choose (associated_map_mk hinv a)) *
         (b * ↑(Classical.choose (associated_map_mk hinv b))) by
@@ -1076,7 +1077,7 @@ def strongNormalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Assoc
       map_mul, Associates.mk_mul_mk]
   normUnit_coe_units u := by
     nontriviality α
-    simp_rw [if_neg (Units.ne_zero u), Units.ext_iff]
+    simp_rw [ite_eq_right (Units.ne_zero u), Units.ext_iff]
     apply mul_left_cancel₀ (Units.ne_zero u)
     rw [Units.mul_inv, map_mk_unit_aux hinv u,
       Associates.mk_eq_mk_iff_associated.2 (associated_one_iff_isUnit.2 ⟨u, rfl⟩),
@@ -1087,7 +1088,7 @@ noncomputable alias normalizationMonoidOfMonoidHomRightInverse :=
   strongNormalizationMonoidOfMonoidHomRightInverse
 
 /-- Define `GCDMonoid` on a structure just from the `gcd` and its properties. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)
     (gcd_dvd_left : ∀ a b, gcd a b ∣ a) (gcd_dvd_right : ∀ a b, gcd a b ∣ b)
     (dvd_gcd : ∀ {a b c}, a ∣ c → a ∣ b → a ∣ gcd c b) : GCDMonoid α :=
@@ -1101,7 +1102,7 @@ noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)
       split_ifs with a0
       · rw [mul_zero, a0, zero_mul]
       · rw [← Classical.choose_spec ((gcd_dvd_left a b).trans (Dvd.intro b rfl))]
-    lcm_zero_left := fun _ => if_pos rfl
+    lcm_zero_left := fun _ => ite_eq_left rfl
     lcm_zero_right := fun a => by
       split_ifs with a0
       · rfl
@@ -1113,9 +1114,8 @@ noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)
       apply Or.resolve_left (mul_eq_zero.1 _) a0'
       rw [h, mul_zero] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define `NormalizedGCDMonoid` on a structure just from the `gcd` and its properties. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq α] (gcd : α → α → α)
     (gcd_dvd_left : ∀ a b, gcd a b ∣ a) (gcd_dvd_right : ∀ a b, gcd a b ∣ b)
     (dvd_gcd : ∀ {a b c}, a ∣ c → a ∣ b → a ∣ gcd c b)
@@ -1135,7 +1135,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
       · rw [mul_zero, a0, zero_mul]
       · exact .trans ((normalize_associated _).mul_left _)
           (.of_eq (Classical.choose_spec (_ : _ ∣ a * b)).symm)
-    lcm_zero_left _ := if_pos rfl
+    lcm_zero_left _ := ite_eq_left rfl
     lcm_zero_right a := by
       split_ifs with a0
       · rfl
@@ -1144,7 +1144,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
         from (Classical.choose_spec ((gcd_dvd_left a 0).trans (.intro 0 rfl))).symm }
 
 /-- Define `GCDMonoid` on a structure just from the `lcm` and its properties. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
     (dvd_lcm_left : ∀ a b, a ∣ lcm a b) (dvd_lcm_right : ∀ a b, b ∣ lcm a b)
     (lcm_dvd : ∀ {a b c}, c ∣ a → b ∣ a → lcm c b ∣ a) : GCDMonoid α :=
@@ -1208,9 +1208,8 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
       rw [mul_comm, mul_dvd_mul_iff_right h_1.2]
       apply ac }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define `NormalizedGCDMonoid` on a structure just from the `lcm` and its properties. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq α] (lcm : α → α → α)
     (dvd_lcm_left : ∀ a b, a ∣ lcm a b) (dvd_lcm_right : ∀ a b, b ∣ lcm a b)
     (lcm_dvd : ∀ {a b c}, c ∣ a → b ∣ a → lcm c b ∣ a)
@@ -1266,7 +1265,7 @@ noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq
       apply ac }
 
 /-- Define a `GCDMonoid` structure on a monoid just from the existence of a `gcd`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def gcdMonoidOfExistsGCD [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c) : GCDMonoid α :=
   gcdMonoidOfGCD (fun a b => Classical.choose (h a b))
@@ -1275,7 +1274,7 @@ noncomputable def gcdMonoidOfExistsGCD [DecidableEq α]
     fun {a b c} ac ab => (Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩
 
 /-- Define a `NormalizedGCDMonoid` structure on a monoid just from the existence of a `gcd`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def normalizedGCDMonoidOfExistsGCD [NormalizationMonoid α] [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c) : NormalizedGCDMonoid α :=
   normalizedGCDMonoidOfGCD (fun a b => normalize (Classical.choose (h a b)))
@@ -1310,7 +1309,7 @@ theorem nonempty_strongNormalizedGCDMonoid_iff {α} [CommMonoidWithZero α] :
     ⟨strongNormalizedGCDMonoidOfExistsGCD fun _ _ ↦ ⟨_, fun _ ↦ (dvd_gcd_iff ..).symm⟩⟩⟩
 
 /-- Define a `GCDMonoid` structure on a monoid just from the existence of an `lcm`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def gcdMonoidOfExistsLCM [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, a ∣ d ∧ b ∣ d ↔ c ∣ d) : GCDMonoid α :=
   gcdMonoidOfLCM (fun a b => Classical.choose (h a b))
@@ -1319,7 +1318,7 @@ noncomputable def gcdMonoidOfExistsLCM [DecidableEq α]
     fun {a b c} ac ab => (Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩
 
 /-- Define a `NormalizedGCDMonoid` structure on a monoid just from the existence of an `lcm`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def normalizedGCDMonoidOfExistsLCM [NormalizationMonoid α] [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, a ∣ d ∧ b ∣ d ↔ c ∣ d) : NormalizedGCDMonoid α :=
   normalizedGCDMonoidOfLCM (fun a b => normalize (Classical.choose (h a b)))
@@ -1356,7 +1355,7 @@ variable (G₀ : Type*) [CommGroupWithZero G₀] [DecidableEq G₀]
 -- see Note [lower instance priority]
 instance (priority := 100) : StrongNormalizedGCDMonoid G₀ where
   normUnit x := if h : x = 0 then 1 else (Units.mk0 x h)⁻¹
-  normUnit_zero := dif_pos rfl
+  normUnit_zero := dite_eq_left rfl
   normUnit_mul {x y} x0 y0 := Units.ext <| by simp [x0, y0, mul_comm]
   normUnit_coe_units u := by simp
   gcd a b := if a = 0 ∧ b = 0 then 0 else 1
@@ -1366,11 +1365,13 @@ instance (priority := 100) : StrongNormalizedGCDMonoid G₀ where
   dvd_gcd {a b c} hac hab := by simp_all
   gcd_mul_lcm a b := by
     split_ifs <;> simp_all [Associated.comm]
-  lcm_zero_left _ := if_pos (Or.inl rfl)
-  lcm_zero_right _ := if_pos (Or.inr rfl)
+  lcm_zero_left _ := ite_eq_left (Or.inl rfl)
+  lcm_zero_right _ := ite_eq_left (Or.inr rfl)
   -- `split_ifs` wants to split `normalize`, so handle the cases manually
-  normalize_gcd a b := if h : a = 0 ∧ b = 0 then by simp [if_pos h] else by simp [if_neg h]
-  normalize_lcm a b := if h : a = 0 ∨ b = 0 then by simp [if_pos h] else by simp [if_neg h]
+  normalize_gcd a b :=
+    if h : a = 0 ∧ b = 0 then by simp [ite_eq_left h] else by simp [ite_eq_right h]
+  normalize_lcm a b :=
+    if h : a = 0 ∨ b = 0 then by simp [ite_eq_left h] else by simp [ite_eq_right h]
 
 @[simp]
 theorem coe_normUnit {a : G₀} (h0 : a ≠ 0) : (↑(normUnit a) : G₀) = a⁻¹ := by

@@ -90,7 +90,6 @@ theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 theorem RepresentablyCoflat.id : RepresentablyCoflat (𝟭 C) := inferInstance
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
   refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
@@ -379,7 +378,6 @@ instance (X : E) [RepresentablyFlat F] : (StructuredArrow.pre X F G).Final :=
 instance (X : E) [RepresentablyCoflat F] : (CostructuredArrow.pre F G X).Initial :=
   ⟨fun _ ↦ isConnected_of_equivalent (CostructuredArrow.preEquivalence _ _).symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance (X : E) [RepresentablyFlat F] [IsCofiltered (StructuredArrow X G)] :
     IsCofiltered (StructuredArrow X (F ⋙ G)) := by
   let T := StructuredArrow.pre X F G

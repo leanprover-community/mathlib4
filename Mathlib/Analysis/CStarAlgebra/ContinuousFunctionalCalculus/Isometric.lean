@@ -180,6 +180,7 @@ variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [Con
 variable [MetricSpace A] [IsometricContinuousFunctionalCalculus S A q]
 variable [CompleteSpace R] [ContinuousMap.UniqueHom R A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped ContinuousFunctionalCalculus in
 protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S)) (h0 : p 0)
     (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f) :
@@ -257,6 +258,7 @@ lemma nnnorm_cfcₙHom (a : A) (f : C(σₙ 𝕜 a, 𝕜)₀) (ha : p a := by cf
     ‖cfcₙHom (show p a from ha) f‖₊ = ‖f‖₊ :=
   Subtype.ext <| norm_cfcₙHom a f ha
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma IsGreatest.norm_cfcₙ (f : 𝕜 → 𝕜) (a : A)
     (hf : ContinuousOn f (σₙ 𝕜 a) := by cfc_cont_tac) (hf₀ : f 0 = 0 := by cfc_zero_tac)
     (ha : p a := by cfc_tac) : IsGreatest ((fun x ↦ ‖f x‖) '' σₙ 𝕜 a) ‖cfcₙ f a‖ := by
@@ -370,6 +372,7 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 variable [MetricSpace A] [NonUnitalIsometricContinuousFunctionalCalculus S A q]
 variable [CompleteSpace R] [ContinuousMapZero.UniqueHom R A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped NonUnitalContinuousFunctionalCalculus in
 protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S)) (h0 : p 0)
     (h : ∀ a, p a ↔ q a ∧ QuasispectrumRestricts a f) :

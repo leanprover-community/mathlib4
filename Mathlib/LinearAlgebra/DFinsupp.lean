@@ -147,6 +147,7 @@ def linearEquivFunOnFintype [Fintype ι] : (Π₀ i, M i) ≃ₗ[R] (Π i, M i) 
   map_add' _ _ := by ext; rfl
   map_smul' _ _ := by ext; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `DFinsupp` version of `Finsupp.lsum`.
 
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used. -/
@@ -210,6 +211,7 @@ section AddCommMonoid
 variable [∀ i, AddCommMonoid (β i)] [∀ i, AddCommMonoid (β₁ i)] [∀ i, AddCommMonoid (β₂ i)]
 variable [∀ i, Module R (β i)] [∀ i, Module R (β₁ i)] [∀ i, Module R (β₂ i)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mker_mapRangeAddMonoidHom (f : ∀ i, β₁ i →+ β₂ i) :
     AddMonoidHom.mker (mapRange.addMonoidHom f) =
       (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mker (f i))).comap coeFnAddMonoidHom := by
@@ -630,6 +632,7 @@ theorem iSupIndep_iff_dfinsuppSumAddHom_injective (p : ι → AddSubgroup N) :
   .ofBijective _ ⟨ind.dfinsupp_lsum_injective, by
     rwa [← LinearMap.range_eq_top, ← Submodule.iSup_eq_range_dfinsupp_lsum]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iSupIndep.linearEquiv_symm_apply {p : ι → Submodule R N} (ind : iSupIndep p)
     (iSup_top : ⨆ i, p i = ⊤) {i : ι} {x : N} (h : x ∈ p i) :
     (ind.linearEquiv iSup_top).symm x = .single i ⟨x, h⟩ := by
@@ -676,8 +679,6 @@ variable [Semiring R] [Semiring R₂]
 variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable {σ₁₂ : R →+* R₂}
 variable [Module R M] [Module R₂ M₂]
-
-open Submodule
 
 section DFinsupp
 

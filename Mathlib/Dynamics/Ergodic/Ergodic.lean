@@ -83,7 +83,7 @@ theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞
   aeconst_set _s hs hfs := (hf.aeconst_set hs hfs).anti <| ae_smul_measure_le _
 
 theorem zero_measure (f : α → α) : @PreErgodic α m f 0 where
-  aeconst_set _ _ _ := by simp
+  aeconst_set _ _ _ := EventuallyConst.bot.anti ae_zero.le
 
 end PreErgodic
 

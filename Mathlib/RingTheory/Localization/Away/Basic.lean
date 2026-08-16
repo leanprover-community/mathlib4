@@ -246,6 +246,7 @@ instance (x : R) [IsLocalization.Away (algebraMap R A x) Aₚ] :
     IsLocalization (Algebra.algebraMapSubmonoid A (.powers x)) Aₚ := by
   simpa
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
 `Aₐ →ₐ[R] Bₐ`. -/
 noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ :=
@@ -622,8 +623,6 @@ end Localization
 
 end CommSemiring
 
-open Localization
-
 variable {R : Type*} [CommSemiring R]
 
 section NumDen
@@ -638,7 +637,7 @@ noncomputable def selfZPow (m : ℤ) : B :=
   if _ : 0 ≤ m then algebraMap _ _ x ^ m.natAbs else mk' _ (1 : R) (Submonoid.pow x m.natAbs)
 
 theorem selfZPow_of_nonneg {n : ℤ} (hn : 0 ≤ n) : selfZPow x B n = algebraMap R B x ^ n.natAbs :=
-  dif_pos hn
+  dite_eq_left hn
 
 @[simp]
 theorem selfZPow_natCast (d : ℕ) : selfZPow x B d = algebraMap R B x ^ d :=
@@ -650,7 +649,7 @@ theorem selfZPow_zero : selfZPow x B 0 = 1 := by
 
 theorem selfZPow_of_neg {n : ℤ} (hn : n < 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) :=
-  dif_neg hn.not_ge
+  dite_eq_right hn.not_ge
 
 theorem selfZPow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) := by
@@ -662,6 +661,7 @@ theorem selfZPow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
 theorem selfZPow_neg_natCast (d : ℕ) : selfZPow x B (-d) = mk' _ (1 : R) (Submonoid.pow x d) := by
   simp [selfZPow_of_nonpos _ _ (neg_nonpos.mpr (Int.natCast_nonneg d))]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem selfZPow_sub_natCast {n m : ℕ} :
     selfZPow x B (n - m) = mk' _ (x ^ n) (Submonoid.pow x m) := by
@@ -690,6 +690,7 @@ theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZ
     ext
     simp [pow_add]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem selfZPow_mul_neg (d : ℤ) : selfZPow x B d * selfZPow x B (-d) = 1 := by
   by_cases! hd : d ≤ 0
   · rw [selfZPow_of_nonpos x B hd, selfZPow_of_nonneg, ← map_pow, Int.natAbs_neg,

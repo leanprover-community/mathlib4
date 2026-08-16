@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.Analysis.Normed.Operator.Completeness
-public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Topology.MetricSpace.PiNat
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
@@ -169,6 +168,7 @@ map. -/
 def continuousLinearMapToWeakDual : StrongDual 𝕜 E →L[𝕜] WeakDual 𝕜 E :=
   { StrongDual.toWeakDual with }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The weak-star topology is coarser than the dual-norm topology. -/
 theorem dual_norm_topology_le_weak_dual_topology :
     (UniformSpace.toTopologicalSpace : TopologicalSpace (StrongDual 𝕜 E)) ≤
@@ -287,7 +287,7 @@ theorem polar_def (s : Set M) : polar 𝕜 s = { f : WeakDual 𝕜 M | ∀ x ∈
 /-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak star topology
 is used. -/
 theorem isClosed_polar (s : Set M) : IsClosed (polar 𝕜 s) := by
-  simp only [polar_def, setOf_forall]
+  simp only [polar_def, ofPred_forall]
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
 /-- Polar sets of neighborhoods of the origin are bounded in the weak dual. -/

@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 
-import Mathlib.Data.Fintype.Order
+public import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Convex sets
@@ -125,7 +126,7 @@ protected lemma IsConvexSet.image (hf : IsAffineMap R f) (hs : IsConvexSet R s) 
   · rw [← huw, Finset.mem_image] at hy
     obtain ⟨x, hx, rfl⟩ := hy
     convert mapDomain_apply' _ _ support_onFinset_subset hfu hx
-    exact (if_pos hx).symm
+    exact (ite_eq_left hx).symm
   · rw [mapDomain_of_not_mem_image_support (by simp [← huw] at ⊢ hy; tauto)]
     simp_all
 
@@ -181,6 +182,7 @@ section Field
 variable [Field K] [LinearOrder K] [IsStrictOrderedRing K] [ConvexSpace K X] {w : StdSimplex K X}
   {s t : Set X} {x y : X}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Convexity of a set can be checked via binary combinations if the scalars form a field. -/
 lemma IsConvexSet.of_convexCombPair_mem
     (hs : ∀ a b : K, ∀ ha hb hab, ∀ x ∈ s, ∀ y ∈ s, convexCombPair a b ha hb hab x y ∈ s) :

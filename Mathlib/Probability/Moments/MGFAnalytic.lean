@@ -29,7 +29,7 @@ is analytic on the interior of `integrableExpSet X μ`, the interval on which it
 public section
 
 
-open MeasureTheory Filter Finset Real
+open MeasureTheory Filter Real
 
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology Nat
 

@@ -125,6 +125,7 @@ def uniqueAlgEquiv [Subsingleton M] : A[M] ≃ₐ[R] A where
   toRingEquiv := uniqueRingEquiv _
   commutes' r := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R M) in
 @[to_additive (dont_translate := A) (attr := simp)]
 lemma uniqueAlgEquiv_symm_apply [Subsingleton M] (a : A) :
@@ -147,7 +148,6 @@ lemma toRingEquiv_symm_uniqueAlgEquiv [Unique M] :
     RingEquivClass.toRingEquiv (uniqueAlgEquiv R (A := A) M).symm =
       (uniqueRingEquiv (R := A) M).symm := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R A)
@@ -163,6 +163,7 @@ def curryAlgEquiv : A[M × N] ≃ₐ[R] A[N][M] where
 lemma curryAlgEquiv_single (m : M) (n : N) (a : A) :
     curryAlgEquiv R (single (m, n) a) = single m (single n a) := by simp [curryAlgEquiv]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive (attr := simp)]
 lemma curryAlgEquiv_symm_single (m : M) (n : N) (a : A) :
     (curryAlgEquiv R).symm (single m <| single n a) = (single (m, n) a) := by
@@ -210,7 +211,7 @@ values on the functions `single m 1` and `single 1 a`.
 See note [partially-applied ext lemmas]. Note that the first assumption isn't written as an
 equality of `MonoidHom`s because `of` doesn't additivise. -/
 @[to_additive (dont_translate := R A B) (attr := ext high) /--
-A `R`-algebra homomorphism from `R[M]` is uniquely defined by its
+A `R`-algebra homomorphism from `A[M]` is uniquely defined by its
 values on the functions `single m 1` and `single 1 a`.
 
 See note [partially-applied ext lemmas]. Note that the first assumption isn't written as an
@@ -230,6 +231,7 @@ lemma algHom_ext' ⦃φ₁ φ₂ : A[M] →ₐ[R] B⦄
     (single_one_left : φ₁.comp singleOneAlgHom = φ₂.comp singleOneAlgHom) : φ₁ = φ₂ :=
   algHom_ext (congr($single_one_right ·)) single_one_left
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R A M) in
 /-- Any monoid homomorphism `M →* A` can be lifted to an algebra homomorphism `R[M] →ₐ[R] A`. -/
 def lift : (M →* A) ≃ (R[M] →ₐ[R] A) where
@@ -593,6 +595,7 @@ lemma algHom_ext' ⦃φ₁ φ₂ : A[M] →ₐ[R] B⦄
     (single_one_left : φ₁.comp singleZeroAlgHom = φ₂.comp singleZeroAlgHom) : φ₁ = φ₂ :=
   algHom_ext (congr($single_one_right ·)) single_one_left
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R M A) in
 /-- Any monoid homomorphism `M →* A` can be lifted to an algebra homomorphism
 `R[M] →ₐ[R] A`. -/
@@ -676,18 +679,36 @@ end AddMonoidAlgebra
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
-variable (A M) in
+namespace AddMonoidAlgebra
+variable [AddMonoid M]
+
+variable (R A M) in
 /-- The algebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative`. -/
-def AddMonoidAlgebra.toMultiplicativeAlgEquiv [AddMonoid M] :
-    AddMonoidAlgebra A M ≃ₐ[R] MonoidAlgebra A (Multiplicative M) where
-  toRingEquiv := AddMonoidAlgebra.toMultiplicative A M
-  commutes' r := by simp [AddMonoidAlgebra.toMultiplicative]
+@[simps!]
+def toMultiplicativeAlgEquiv : AddMonoidAlgebra A M ≃ₐ[R] MonoidAlgebra A (Multiplicative M) where
+  toRingEquiv := toMultiplicative A M
+  commutes' r := by ext; simp
 
-variable (A M) in
+@[simp]
+lemma toMultiplicativeAlgEquiv_single (m : M) (a : A) :
+    toMultiplicativeAlgEquiv R A M (single m a) = .single (.ofAdd m) a := by ext; simp
+
+end AddMonoidAlgebra
+
+namespace MonoidAlgebra
+variable [Monoid M]
+
+variable (R A M) in
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/
-def MonoidAlgebra.toAdditiveAlgEquiv [Monoid M] :
-    MonoidAlgebra A M ≃ₐ[R] AddMonoidAlgebra A (Additive M) where
-  toRingEquiv := MonoidAlgebra.toAdditive A M
-  commutes' r := by simp [MonoidAlgebra.toAdditive]
+@[simps!]
+def toAdditiveAlgEquiv : MonoidAlgebra A M ≃ₐ[R] AddMonoidAlgebra A (Additive M) where
+  toRingEquiv := toAdditive A M
+  commutes' r := by simp [toAdditive]
+
+@[simp]
+lemma toAdditiveAlgEquiv_single (m : M) (a : A) :
+    toAdditiveAlgEquiv R A M (single m a) = .single (.ofMul m) a := by ext; simp
+
+end MonoidAlgebra

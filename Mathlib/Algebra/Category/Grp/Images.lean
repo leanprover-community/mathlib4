@@ -55,6 +55,7 @@ attribute [local simp] image.fac
 
 variable {f}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- the universal property for the image factorisation -/
 noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
   ofHom

@@ -146,7 +146,7 @@ instance instDecidableComapAdj (f : V → W) (G : SimpleGraph W) [DecidableRel G
 
 lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
     G.comap e.symm.toEmbedding = G.map e.toEmbedding := by
-  ext; simp only [Equiv.apply_eq_iff_eq_symm_apply, comap_adj, map_adj, Equiv.toEmbedding_apply,
+  ext; simp only [← Equiv.eq_symm_apply, comap_adj, map_adj, Equiv.toEmbedding_apply,
     exists_eq_right_right, exists_eq_right]
 
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
@@ -377,6 +377,7 @@ theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2
   rfl
 
 /-- The graph homomorphism from a smaller graph to a bigger one. -/
+@[implicit_reducible]
 def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
 
 @[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
@@ -608,6 +609,7 @@ def induceHomOfLE (h : s ≤ s') : G.induce s ↪g G.induce s' where
 
 @[simp] lemma induceHomOfLE_apply (v : s) : (G.induceHomOfLE h) v = Set.inclusion h v := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma induceHomOfLE_toHom :
     (G.induceHomOfLE h).toHom = induceHom (.id : G →g G) ((Set.mapsTo_id s).mono_right h) := by
   ext; simp

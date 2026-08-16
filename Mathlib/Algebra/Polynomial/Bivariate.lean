@@ -234,6 +234,7 @@ abbrev aevalAeval (x y : A) : R[X][Y] →ₐ[R] A :=
 lemma aevalAevalEquiv_apply (xy : A × A) : aevalAevalEquiv R A xy = aevalAeval xy.1 xy.2 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem coe_aevalAeval_eq_evalEval (x y : A) : ⇑(aevalAeval x y) = evalEval x y := by
   ext
   simp [aeval, aevalEquiv]

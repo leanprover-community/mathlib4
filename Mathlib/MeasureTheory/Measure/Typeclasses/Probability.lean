@@ -199,14 +199,12 @@ end IsProbabilityMeasure
 
 section IsZeroOrProbabilityMeasure
 
--- TODO: should infer_instance be considered normalising?
-set_option linter.flexible false in
 instance isZeroOrProbabilityMeasureSMul :
     IsZeroOrProbabilityMeasure ((μ univ)⁻¹ • μ) := by
   rcases eq_zero_or_neZero μ with rfl | h
-  · simp; infer_instance
+  · rw [Measure.coe_zero, Pi.zero_apply, inv_zero, smul_zero]; infer_instance
   rcases eq_top_or_lt_top (μ univ) with h | h
-  · simp [h]; infer_instance
+  · rw [h, inv_top, zero_smul]; infer_instance
   have : IsFiniteMeasure μ := ⟨h⟩
   infer_instance
 

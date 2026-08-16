@@ -85,16 +85,16 @@ section ByDefinition
 theorem haveLebesgueDecomposition_spec (μ ν : Measure α) [h : HaveLebesgueDecomposition μ ν] :
     Measurable (μ.rnDeriv ν) ∧
       μ.singularPart ν ⟂ₘ ν ∧ μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) := by
-  rw [singularPart, rnDeriv, dif_pos h, dif_pos h]
+  rw [singularPart, rnDeriv, dite_eq_left h, dite_eq_left h]
   exact Classical.choose_spec h.lebesgue_decomposition
 
 lemma rnDeriv_of_not_haveLebesgueDecomposition (h : ¬ HaveLebesgueDecomposition μ ν) :
     μ.rnDeriv ν = 0 := by
-  rw [rnDeriv, dif_neg h]
+  rw [rnDeriv, dite_eq_right h]
 
 lemma singularPart_of_not_haveLebesgueDecomposition (h : ¬ HaveLebesgueDecomposition μ ν) :
     μ.singularPart ν = 0 := by
-  rw [singularPart, dif_neg h]
+  rw [singularPart, dite_eq_right h]
 
 @[fun_prop]
 theorem measurable_rnDeriv (μ ν : Measure α) : Measurable <| μ.rnDeriv ν := by
@@ -197,14 +197,14 @@ theorem singularPart_le (μ ν : Measure α) : μ.singularPart ν ≤ μ := by
   by_cases hl : HaveLebesgueDecomposition μ ν
   · conv_rhs => rw [haveLebesgueDecomposition_add μ ν]
     exact Measure.le_add_right le_rfl
-  · rw [singularPart, dif_neg hl]
+  · rw [singularPart, dite_eq_right hl]
     exact Measure.zero_le μ
 
 theorem withDensity_rnDeriv_le (μ ν : Measure α) : ν.withDensity (μ.rnDeriv ν) ≤ μ := by
   by_cases hl : HaveLebesgueDecomposition μ ν
   · conv_rhs => rw [haveLebesgueDecomposition_add μ ν]
     exact Measure.le_add_left le_rfl
-  · rw [rnDeriv, dif_neg hl, withDensity_zero]
+  · rw [rnDeriv, dite_eq_right hl, withDensity_zero]
     exact Measure.zero_le μ
 
 lemma _root_.AEMeasurable.singularPart {β : Type*} {_ : MeasurableSpace β} {f : α → β}
@@ -371,7 +371,8 @@ theorem lintegral_rnDeriv_lt_top_of_measure_ne_top (ν : Measure α) {s : Set α
       _ ≤ (singularPart μ ν) (toMeasurable μ s) + _ := le_add_self
       _ = μ s := by rw [← Measure.add_apply, ← haveLebesgueDecomposition_add, measure_toMeasurable]
       _ < ⊤ := hs.lt_top
-  · simp only [Measure.rnDeriv, dif_neg hl, Pi.zero_apply, lintegral_zero, ENNReal.zero_lt_top]
+  · simp only [Measure.rnDeriv, dite_eq_right hl, Pi.zero_apply, lintegral_zero,
+      ENNReal.zero_lt_top]
 
 theorem lintegral_rnDeriv_lt_top (μ ν : Measure α) [IsFiniteMeasure μ] :
     ∫⁻ x, μ.rnDeriv ν x ∂ν < ∞ := by
@@ -443,7 +444,7 @@ theorem singularPart_smul (μ ν : Measure α) (r : ℝ≥0) :
           (MutuallySingular.smul r (mutuallySingular_singularPart _ _)) ?_).symm
     rw [withDensity_smul _ (measurable_rnDeriv _ _), ← smul_add,
       ← haveLebesgueDecomposition_add μ ν, ENNReal.smul_def]
-  · rw [singularPart, singularPart, dif_neg hl, dif_neg, smul_zero]
+  · rw [singularPart, singularPart, dite_eq_right hl, dite_eq_right, smul_zero]
     refine fun hl' ↦ hl ?_
     rw [← inv_smul_smul₀ hr μ]
     infer_instance
@@ -460,7 +461,7 @@ theorem singularPart_smul_right (μ ν : Measure α) (r : ℝ≥0) (hr : r ≠ 0
       ext x
       simp only [Pi.smul_apply]
       rw [← ENNReal.smul_def, smul_inv_smul₀ hr]
-  · rw [singularPart, singularPart, dif_neg hl, dif_neg]
+  · rw [singularPart, singularPart, dite_eq_right hl, dite_eq_right]
     refine fun hl' ↦ hl ?_
     rw [← inv_smul_smul₀ hr ν]
     infer_instance
@@ -779,7 +780,7 @@ theorem sup_mem_measurableLE {f g : α → ℝ≥0∞} (hf : f ∈ measurableLE 
   have h₂ := hA.inter (measurableSet_lt hg.1 hf.1)
   rw [setLIntegral_max hf.1 hg.1]
   refine (add_le_add (hg.2 _ h₁) (hf.2 _ h₂)).trans_eq ?_
-  simp only [← not_le, ← compl_setOf, ← sdiff_eq]
+  simp only [← not_le, ← compl_ofPred, ← sdiff_eq]
   exact measure_inter_add_sdiff _ (measurableSet_le hf.1 hg.1)
 
 theorem iSup_succ_eq_sup {α} (f : ℕ → α → ℝ≥0∞) (m : ℕ) (a : α) :
@@ -833,7 +834,9 @@ theorem iSup_le_le {α : Type*} (f : ℕ → α → ℝ≥0∞) (n k : ℕ) (hk 
 end SuprLemmas
 
 /-- `measurableLEEval μ ν` is the set of `∫⁻ x, f x ∂μ` for all `f ∈ measurableLE μ ν`. -/
-def measurableLEEval (μ ν : Measure α) : Set ℝ≥0∞ :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def measurableLEEval (μ ν : Measure α) : Set ℝ≥0∞ :=
   (fun f : α → ℝ≥0∞ ↦ ∫⁻ x, f x ∂μ) '' measurableLE μ ν
 
 end LebesgueDecomposition

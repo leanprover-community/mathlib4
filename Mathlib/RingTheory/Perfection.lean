@@ -149,6 +149,7 @@ theorem coeffMonoidHom_iterate_powMonoidHom' (f : Perfection M p) (n m : ℕ) (h
     coeffMonoidHom M p n ((powMonoidHom p)^[m] f) = coeffMonoidHom M p (n - m) f := by
   rw [← coeffMonoidHom_iterate_powMonoidHom f (n - m) m, Nat.sub_add_cancel hmn]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given monoids `M` and `N`, with `M` being perfect,
 any homomorphism `M →+* N` can be lifted uniquely to a homomorphism `M →* Perfection N p`. -/
 @[simps! symm_apply]
@@ -169,10 +170,12 @@ noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRin
     rw [← coeffMonoidHom_pow_p_pow _ 0 n, ← map_pow, powMulEquiv_symm_pow_p, zero_add]
   map_mul' _ _ := by ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma coeffMonoidHom_zero_liftMonoidHom
     (p : ℕ) {M N : Type*} [CommMonoid M] [PerfectRing M p] [CommMonoid N] (e : M →* N) (x : M) :
     coeffMonoidHom N p 0 (liftMonoidHom p M N e x) = e x := by simp [liftMonoidHom]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A monoid homomorphism `M →* N` induces `Perfection M p →* Perfection N p`. -/
 def mapMonoidHom (p : ℕ) {M N : Type*} [CommMonoid M] [CommMonoid N] (φ : M →* N) :
     Perfection M p →* Perfection N p where
@@ -420,7 +423,7 @@ variable (p R P)
 
 /-- The canonical perfection map from the perfection of a ring. -/
 theorem of : PerfectionMap p (Perfection.coeff R p 0) :=
-  mk' (RingEquiv.refl _) <| (Equiv.apply_eq_iff_eq_symm_apply _).2 rfl
+  mk' (RingEquiv.refl _) <| (Equiv.eq_symm_apply _).1 rfl
 
 /-- For a perfect ring, it itself is the perfection. -/
 theorem id [PerfectRing R p] : PerfectionMap p (RingHom.id R) :=
@@ -475,7 +478,7 @@ noncomputable def lift [PerfectRing R p] (S : Type u₂) [CommSemiring S] [CharP
   right_inv f := by
     exact RingHom.ext fun x => m.equiv.injective <| (m.equiv.apply_symm_apply _).trans
       <| show Perfection.lift p R S (π.comp f) x = RingHom.comp (↑m.equiv) f x from
-        RingHom.ext_iff.1 (by rw [Equiv.apply_eq_iff_eq_symm_apply]; rfl) _
+        RingHom.ext_iff.1 (by rw [← Equiv.eq_symm_apply]; rfl) _
 
 variable {R p}
 
@@ -548,7 +551,7 @@ variable {K v O p}
 
 @[simp]
 theorem preVal_zero : preVal K v O p 0 = 0 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 include hv
 
@@ -556,7 +559,7 @@ theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0) :
     preVal K v O p (Ideal.Quotient.mk _ x) = v (algebraMap O K x) := by
   obtain ⟨r, hr⟩ : ∃ (a : O), a * (p : O) = (Ideal.Quotient.mk _ x).out - x :=
     Ideal.mem_span_singleton'.1 <| Ideal.Quotient.eq.1 <| Quotient.sound' <| Quotient.mk_out' _
-  refine (if_neg hx).trans (v.map_eq_of_sub_lt <| lt_of_not_ge ?_)
+  refine (ite_eq_right hx).trans (v.map_eq_of_sub_lt <| lt_of_not_ge ?_)
   rw [← map_sub, ← hr, hv.le_iff_dvd]
   exact fun hprx =>
     hx (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| dvd_of_mul_left_dvd hprx)
@@ -711,14 +714,14 @@ theorem coeff_nat_find_add_ne_zero {f : PreTilt O p} {h : ∃ n, coeff n f ≠ 0
 
 @[simp]
 theorem valAux_zero : valAux K v O p 0 = 0 :=
-  dif_neg fun ⟨_, hn⟩ => hn rfl
+  dite_eq_right fun ⟨_, hn⟩ => hn rfl
 
 include hv
 
 theorem valAux_eq {f : PreTilt O p} {n : ℕ} (hfn : coeff n f ≠ 0) :
     valAux K v O p f = ModP.preVal K v O p (coeff n f) ^ p ^ n := by
   have h : ∃ n, coeff n f ≠ 0 := ⟨n, hfn⟩
-  rw [valAux, dif_pos h]
+  rw [valAux, dite_eq_left h]
   classical
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le (Nat.find_min' h hfn)
   induction k with

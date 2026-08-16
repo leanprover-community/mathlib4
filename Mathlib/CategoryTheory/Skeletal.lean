@@ -32,8 +32,6 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Category
-
 variable (C : Type u₁) [Category.{v₁} C]
 variable (D : Type u₂) [Category.{v₂} D]
 variable {E : Type u₃} [Category.{v₃} E]
@@ -118,6 +116,7 @@ lemma Skeleton.comp_hom {X Y Z : Skeleton C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An inverse to `fromSkeleton C` that forms an equivalence with it. -/
 @[simps] noncomputable def toSkeletonFunctor : C ⥤ Skeleton C where
   obj := toSkeleton
@@ -126,6 +125,7 @@ variable (C)
   map_id _ := by aesop
   map_comp _ _ := InducedCategory.hom_ext (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between the skeleton and the category itself. -/
 @[simps] noncomputable def skeletonEquivalence : Skeleton C ≌ C where
@@ -137,6 +137,7 @@ set_option backward.defeqAttrib.useBackward true in
   counitIso := NatIso.ofComponents fromSkeletonToSkeletonIso
   functor_unitIso_comp _ := Iso.inv_hom_id _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem skeleton_skeletal : Skeletal (Skeleton C) := by
   rintro X Y ⟨h⟩
   have : X.out ≈ Y.out := ⟨(fromSkeleton C).mapIso h⟩
@@ -219,6 +220,7 @@ variable (C D)
 preorder with nice definitional properties, but is only really appropriate for thin categories.
 If your original category is not thin, you probably want to be using `Skeleton` instead of this.
 -/
+@[implicit_reducible]
 def ThinSkeleton : Type u₁ :=
   Quotient (isIsomorphicSetoid C)
 
@@ -245,7 +247,7 @@ instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
   le_trans a b c := Quotient.inductionOn₃ a b c fun _ _ _ => Nonempty.map2 (· ≫ ·)
 
 /-- The functor from a category to its thin skeleton. -/
-@[simps]
+@[simps, implicit_reducible]
 def toThinSkeleton : C ⥤ ThinSkeleton C where
   obj := ThinSkeleton.mk
   map f := homOfLE (Nonempty.intro f)
@@ -424,8 +426,6 @@ def lowerAdjunction (R : D ⥤ C) (L : C ⥤ D) (h : L ⊣ R) :
         exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.counit.app x⟩ }
 
 end ThinSkeleton
-
-open ThinSkeleton
 
 section
 

@@ -162,14 +162,14 @@ theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinit
   | nil => simp
   | cons a l ih =>
     rw [tprod_cons, Set.tprod]
-    dsimp only [foldr_cons, map_cons, prod_cons]
+    simp only [foldr_cons, prod_cons, map_cons]
     rw [prod_prod, ih]
 
 end Tprod
 
 section Encodable
 
-open List MeasurableEquiv
+open List
 
 variable [Encodable ι]
 

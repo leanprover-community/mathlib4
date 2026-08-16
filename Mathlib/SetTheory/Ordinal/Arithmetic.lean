@@ -186,6 +186,7 @@ theorem enum_succ_eq_top {o : Ordinal} :
     enum (α := (succ o).ToType) (· < ·) ⟨o, type_toType _ ▸ lt_succ o⟩ = ⊤ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated isSuccPrelimit_type_lt_iff (since := "2026-04-12")]
 theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
     (h : ∀ a < type r, succ a < type r) (x : α) : ∃ y, r x y := by
@@ -198,6 +199,7 @@ theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder
 theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.ToType :=
   ⟨has_succ_of_type_succ_lt (type_toType _ ▸ ho)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSuccLimit (type r)) (x) :
     Bounded r {x} := by
   refine ⟨enum r ⟨succ (typein r x), hr.succ_lt (typein_lt_type r x)⟩, ?_⟩
@@ -281,11 +283,11 @@ instance sub : Sub Ordinal where
   sub a b := if h : b ≤ a then Classical.choose (exists_add_of_le h) else 0
 
 private theorem sub_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a - b = 0 :=
-  dif_neg h.not_ge
+  dite_eq_right h.not_ge
 
 protected theorem add_sub_cancel_of_le {a b : Ordinal} (h : b ≤ a) : b + (a - b) = a := by
   change b + dite _ _ _ = a
-  rw [dif_pos h]
+  rw [dite_eq_left h]
   exact (Classical.choose_spec (exists_add_of_le h)).symm
 
 @[simp]
@@ -458,6 +460,7 @@ theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := b
   convert! mul_le_mul_left (one_le_iff_pos.2 hb) a
   rw [one_mul a]
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder β s] {c}
     (h : IsSuccLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) :
     False := by
@@ -888,6 +891,7 @@ theorem typein_lt_fin {n : ℕ} (x : Fin n) : typein LT.lt x = x := by
   rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
   exact Fintype.card_fin_lt_of_le x.is_le'
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem enum_lt_fin {n : ℕ} (x : Fin n) : enum LT.lt ⟨x, by simp⟩ = x := by
   simp [← typein_inj LT.lt]
@@ -903,6 +907,7 @@ theorem natCast_lt_omega0 (n : ℕ) : ↑n < ω :=
 
 @[deprecated (since := "2026-03-08")] alias nat_lt_omega0 := natCast_lt_omega0
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem enum_lt_nat (x : ℕ) : enum LT.lt ⟨x, by simp⟩ = x := by
   simp [← typein_inj LT.lt]

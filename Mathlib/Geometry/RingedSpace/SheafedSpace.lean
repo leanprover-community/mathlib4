@@ -237,6 +237,7 @@ variable [PreservesLimits (CategoryTheory.forget C)]
 variable [PreservesFilteredColimits (CategoryTheory.forget C)]
 variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local ext] DFunLike.ext in
 include instCC in
 lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.hom.base = g.hom.base)

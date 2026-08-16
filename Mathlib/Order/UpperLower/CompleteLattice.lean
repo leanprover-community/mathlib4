@@ -98,7 +98,7 @@ instance completeLattice : CompleteLattice (UpperSet α) :=
 instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
   .ofMinimalAxioms <|
     (toDual.injective.comp SetLike.coe_injective).completelyDistribLatticeMinimalAxioms .of _
-      .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
+      (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 @[to_dual existing]
 instance _root_.LowerSet.instPartialOrder : PartialOrder (LowerSet α) :=
@@ -112,7 +112,7 @@ instance _root_.LowerSet.completeLattice : CompleteLattice (LowerSet α) :=
 @[to_dual existing]
 instance _root_.LowerSet.completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
   .ofMinimalAxioms <| SetLike.coe_injective.completelyDistribLatticeMinimalAxioms .of _
-    .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
+    (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 @[to_dual]
 instance : Inhabited (UpperSet α) :=
@@ -341,6 +341,7 @@ theorem coe_map_apply (f : α ≃o β) (s : UpperSet α) : map f s = f '' s := r
 @[to_dual (attr := simp)]
 theorem coe_map_symm_apply (f : α ≃o β) (s : UpperSet β) : (map f).symm s = f ⁻¹' s := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_dual (attr := simp)]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by
   ext; simp [map, OrderIso.symm_apply_eq]

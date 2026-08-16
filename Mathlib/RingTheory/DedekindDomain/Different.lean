@@ -9,6 +9,8 @@ public import Mathlib.NumberTheory.RamificationInertia.Unramified
 public import Mathlib.RingTheory.Conductor
 public import Mathlib.RingTheory.FractionalIdeal.Extended
 public import Mathlib.RingTheory.Trace.Quotient
+public import Mathlib.RingTheory.Finiteness.Quotient
+public import Mathlib.RingTheory.Flat.TorsionFree
 
 /-!
 # The different ideal
@@ -149,8 +151,7 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
     traceDual A K (I.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap)
   rw [Submodule.map_equiv_eq_comap_symm, Submodule.map_equiv_eq_comap_symm]
   ext x
-  simp only [traceDual, Submodule.mem_comap,
-    Submodule.mem_mk]
+  simp only [traceDual, Submodule.mem_comap]
   apply (FractionRing.algEquiv B L).forall_congr
   simp only [restrictScalars_mem, LinearEquiv.coe_coe, AlgEquiv.coe_symm_toLinearEquiv,
     traceForm_apply, mem_one, AlgEquiv.toEquiv_eq_coe, EquivLike.coe_coe, mem_comap,
@@ -260,8 +261,9 @@ local notation:max I:max "ᵛ" => Submodule.traceDual A K I
 
 variable [IsDedekindDomain B] {I J : FractionalIdeal B⁰ L}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma coe_dual (hI : I ≠ 0) :
-    (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dif_neg hI, coe_mk]
+    (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dite_eq_right hI, coe_mk]
 
 variable (B L)
 
@@ -271,15 +273,17 @@ lemma coe_dual_one :
   rw [← coe_one, coe_dual]
   exact one_ne_zero
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma dual_zero :
-    dual A K (0 : FractionalIdeal B⁰ L) = 0 := by rw [dual, dif_pos rfl]
+    dual A K (0 : FractionalIdeal B⁰ L) = 0 := by rw [dual, dite_eq_left rfl]
 
 variable {A K L B}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_dual (hI : I ≠ 0) {x} :
     x ∈ dual A K I ↔ ∀ a ∈ I, traceForm K L x a ∈ (algebraMap A K).range := by
-  rw [dual, dif_neg hI]; exact forall₂_congr fun _ _ ↦ mem_one
+  rw [dual, dite_eq_right hI]; exact forall₂_congr fun _ _ ↦ mem_one
 
 variable (A K)
 
@@ -313,9 +317,10 @@ lemma dual_ne_zero_iff :
 
 variable (A K)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma le_dual_inv_aux (hI : I ≠ 0) (hIJ : I * J ≤ 1) :
     J ≤ dual A K I := by
-  rw [dual, dif_neg hI]
+  rw [dual, dite_eq_right hI]
   intro x hx y hy
   rw [mem_one]
   apply IsIntegrallyClosed.isIntegral_iff.mp
@@ -673,7 +678,7 @@ lemma aeval_derivative_mem_differentIdeal
     aeval x (derivative (minpoly A x)) ∈ differentIdeal A B := by
   refine SetLike.le_def.mp ?_ (Ideal.mem_span_singleton_self _)
   rw [← conductor_mul_differentIdeal A K L x hx]
-  exact Ideal.mul_le_left
+  exact Ideal.mul_le_right
 
 end IsIntegrallyClosed
 section
@@ -759,7 +764,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
       simp at hx
   let : Algebra (A ⧸ p) (B ⧸ Q) := Ideal.Quotient.algebraQuotientOfLEComap (by
       rw [← Ideal.map_le_iff_le_comap, ← hP]
-      exact Ideal.mul_le_left)
+      exact Ideal.mul_le_right)
   let K := FractionRing A
   let L := FractionRing B
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
@@ -812,7 +817,7 @@ theorem not_dvd_differentIdeal_of_isCoprime_of_isSeparable
     ¬ P ∣ differentIdeal A B := by
   let : Algebra (A ⧸ p) (B ⧸ Q) := Ideal.Quotient.algebraQuotientOfLEComap (by
       rw [← Ideal.map_le_iff_le_comap, ← hP]
-      exact Ideal.mul_le_left)
+      exact Ideal.mul_le_right)
   have : IsScalarTower A (A ⧸ p) (B ⧸ Q) := .of_algebraMap_eq' rfl
   have : Module.Finite (A ⧸ p) (B ⧸ Q) :=
     Module.Finite.of_restrictScalars_finite A (A ⧸ p) (B ⧸ Q)
@@ -840,7 +845,7 @@ theorem not_dvd_differentIdeal_of_isCoprime
     refine ‹p.IsMaximal›.eq_of_le ?_ ?_
     · simpa using ‹P.IsMaximal›.ne_top
     · rw [← Ideal.map_le_iff_le_comap, ← hP]
-      exact Ideal.mul_le_right
+      exact Ideal.mul_le_left
   exact not_dvd_differentIdeal_of_isCoprime_of_isSeparable A P Q hPQ hP
 
 lemma dvd_differentIdeal_of_not_isSeparable

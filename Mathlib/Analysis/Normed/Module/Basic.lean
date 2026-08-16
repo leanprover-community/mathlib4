@@ -469,7 +469,7 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   { Module.restrictScalars 𝕜 𝕜' E with
     norm_smul_le := fun c x =>
@@ -491,7 +491,7 @@ instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 �
 /-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
     [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
@@ -513,7 +513,7 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
   { NormedSpace.restrictScalars 𝕜 𝕜' E, Algebra.restrictScalars 𝕜 𝕜' E with }
 
@@ -527,7 +527,7 @@ instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars �
 /-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
     [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
@@ -781,3 +781,14 @@ lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 
     _ = (n : ℝ)⁻¹ * C := by simp
     _ < (C / ε : ℝ)⁻¹ * C := by gcongr
     _ = ε := by simp [hC₀.ne']
+
+attribute [local instance] IsUnital.toSeminormedRing in
+/-- A unital non-unital normed algebra is a normed algebra.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜]
+    [NonUnitalSeminormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
+    [IsUnital A] : NormedAlgebra 𝕜 A where
+  __ := toAlgebra
+  __ := ‹NormedSpace 𝕜 A›

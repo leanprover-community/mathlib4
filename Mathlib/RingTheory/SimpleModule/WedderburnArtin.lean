@@ -61,7 +61,7 @@ theorem IsSimpleRing.tfae [IsSimpleRing R] : List.TFAE
   tfae_finish
 
 theorem IsSimpleRing.isSemisimpleRing_iff_isArtinianRing [IsSimpleRing R] :
-    IsSemisimpleRing R ↔ IsArtinianRing R := tfae.out 0 1
+    IsSemisimpleRing R ↔ IsArtinianRing R := tfae.out 1 2
 
 theorem isSimpleRing_isArtinianRing_iff :
     IsSimpleRing R ∧ IsArtinianRing R ↔ IsSemisimpleRing R ∧ IsIsotypic R R ∧ Nontrivial R := by
@@ -195,6 +195,7 @@ theorem exists_algEquiv_pi_matrix_divisionRing :
   have ⟨n, S, d, _, hd, ⟨e⟩⟩ := exists_algEquiv_pi_matrix_end_mulOpposite R₀ R
   classical exact ⟨n, _, d, inferInstance, inferInstance, hd, ⟨e⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Wedderburn–Artin Theorem**, algebra form, finite case: a finite semisimple algebra is
 isomorphic to a product of matrix algebras over finite division algebras. -/
 theorem exists_algEquiv_pi_matrix_divisionRing_finite [Module.Finite R₀ R] :
@@ -247,12 +248,3 @@ theorem isSemisimpleRing_iff_pi_matrix_divisionRing : IsSemisimpleRing R ↔
   mp _ := have ⟨n, D, d, _, _, e⟩ := IsSemisimpleRing.exists_ringEquiv_pi_matrix_divisionRing R
     ⟨n, D, d, _, e⟩
   mpr := fun ⟨_, _, _, _, ⟨e⟩⟩ ↦ e.symm.isSemisimpleRing
-
--- Need left-right symmetry of Jacobson radical
-proof_wanted IsSemiprimaryRing.mulOpposite [IsSemiprimaryRing R] : IsSemiprimaryRing Rᵐᵒᵖ
-
-proof_wanted isSemiprimaryRing_mulOpposite_iff : IsSemiprimaryRing Rᵐᵒᵖ ↔ IsSemiprimaryRing R
-
--- A left Artinian ring is right Noetherian iff it is right Artinian. To be left as an `example`.
-proof_wanted IsArtinianRing.isNoetherianRing_iff_isArtinianRing_mulOpposite
-    [IsArtinianRing R] : IsNoetherianRing Rᵐᵒᵖ ↔ IsArtinianRing Rᵐᵒᵖ
