@@ -37,6 +37,8 @@ def IsUniquelyDecodable (S : Set (List α)) : Prop :=
     (∀ w ∈ L₁, w ∈ S) → (∀ w ∈ L₂, w ∈ S) →
     L₁.flatten = L₂.flatten → L₁ = L₂
 
+@[deprecated (since := "2026-08-16")] alias UniquelyDecodable := IsUniquelyDecodable
+
 variable {S : Set (List α)}
 
 /-- If a code is uniquely decodable, it does not contain the empty string.
@@ -48,10 +50,16 @@ lemma IsUniquelyDecodable.epsilon_not_mem
     [] ∉ S := by
   simpa using h [[]] [[], []]
 
+@[deprecated (since := "2026-08-16")]
+alias UniquelyDecodable.epsilon_not_mem := IsUniquelyDecodable.epsilon_not_mem
+
 lemma IsUniquelyDecodable.flatten_injective (h : IsUniquelyDecodable S) :
     Function.Injective (fun (L : {L : List (List α) // ∀ x ∈ L, x ∈ S}) => L.val.flatten) := by
   intro L₁ L₂ hflat
   apply Subtype.ext
   exact h L₁.val L₂.val L₁.prop L₂.prop hflat
+
+@[deprecated (since := "2026-08-16")]
+alias UniquelyDecodable.flatten_injective := IsUniquelyDecodable.flatten_injective
 
 end InformationTheory

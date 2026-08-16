@@ -23,9 +23,10 @@ codewords follows by bounding every finite partial sum.
 
 * `IsPrefixFree.finsetSum_one_div_card_pow_length_le_one`: the Kraft sum of a finite prefix-free
   code is at most one.
-* `summable_one_div_card_pow_length`: the Kraft sum of an arbitrary prefix-free code is summable.
-* `tsum_one_div_card_pow_length_le_one`: the Kraft sum of an arbitrary prefix-free code is at most
-  one.
+* `IsPrefixFree.summable_one_div_card_pow_length`: the Kraft sum of an arbitrary prefix-free code
+  is summable.
+* `IsPrefixFree.tsum_one_div_card_pow_length_le_one`: the Kraft sum of an arbitrary prefix-free
+  code is at most one.
 
 ## References
 
@@ -48,7 +49,7 @@ theorem IsPrefixFree.finsetSum_one_div_card_pow_length_le_one
     simp [hS']
   · exact (hS.isUniquelyDecodable hε).finsetSum_one_div_card_pow_length_le_one
 
-private lemma finsetSum_one_div_card_pow_length_of_subtype
+private lemma IsPrefixFree.finsetSum_one_div_card_pow_length_of_subtype
     {S : Set (List α)} (hS : IsPrefixFree S) (F : Finset S) :
     ∑ w ∈ F, (1 / (Fintype.card α : ℝ)) ^ (w : List α).length ≤ 1 := by
   classical
@@ -60,15 +61,17 @@ private lemma finsetSum_one_div_card_pow_length_of_subtype
     _ ≤ 1 := (hS.anti hTS).finsetSum_one_div_card_pow_length_le_one
 
 /-- The Kraft sum of an arbitrary prefix-free code is summable. -/
-theorem summable_one_div_card_pow_length {S : Set (List α)} (hS : IsPrefixFree S) :
+theorem IsPrefixFree.summable_one_div_card_pow_length
+    {S : Set (List α)} (hS : IsPrefixFree S) :
     Summable (fun w : S ↦ (1 / (Fintype.card α : ℝ)) ^ (w : List α).length) :=
-  summable_of_sum_le (fun _ ↦ by positivity) (finsetSum_one_div_card_pow_length_of_subtype hS)
+  summable_of_sum_le (fun _ ↦ by positivity) hS.finsetSum_one_div_card_pow_length_of_subtype
 
 /-- **Kraft's inequality for arbitrary codes.** The Kraft sum of an arbitrary prefix-free code is
 at most one. -/
-theorem tsum_one_div_card_pow_length_le_one {S : Set (List α)} (hS : IsPrefixFree S) :
+theorem IsPrefixFree.tsum_one_div_card_pow_length_le_one
+    {S : Set (List α)} (hS : IsPrefixFree S) :
     ∑' w : S, (1 / (Fintype.card α : ℝ)) ^ (w : List α).length ≤ 1 :=
-  (summable_one_div_card_pow_length hS).tsum_le_of_sum_le
-    (finsetSum_one_div_card_pow_length_of_subtype hS)
+  hS.summable_one_div_card_pow_length.tsum_le_of_sum_le
+    hS.finsetSum_one_div_card_pow_length_of_subtype
 
 end InformationTheory

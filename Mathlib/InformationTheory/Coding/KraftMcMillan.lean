@@ -161,4 +161,8 @@ public theorem IsUniquelyDecodable.finsetSum_one_div_card_pow_length_le_one
   rw [div_lt_iff₀ (by positivity)] at this
   linarith
 
+@[deprecated (since := "2026-08-16")]
+public alias kraft_mcmillan_inequality :=
+  IsUniquelyDecodable.finsetSum_one_div_card_pow_length_le_one
+
 end InformationTheory
