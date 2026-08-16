@@ -421,7 +421,7 @@ protected theorem bind {f : α →. β} {g : α → β →. σ} (hf : Partrec f)
 
 theorem map {f : α →. β} {g : α → β → σ} (hf : Partrec f) (hg : Computable₂ g) :
     Partrec fun a ↦. (f a).map (g a) :=
-  (Partrec.bind hf hg.partrec₂).of_eq fun a => Part.bind_some_eq_map (g a) (f a)
+  (hf.bind hg.partrec₂).of_eq fun a => Part.bind_some_eq_map (g a) (f a)
 
 theorem to₂ {f : α × β →. σ} (hf : Partrec f) :
     Partrec₂ fun a => fun b ↦. f (a, b) :=
