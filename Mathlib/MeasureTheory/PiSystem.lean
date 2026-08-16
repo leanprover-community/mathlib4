@@ -242,7 +242,7 @@ inductive GeneratePiSystem (S : Set (Set α)) : Set α → Prop
 def generatePiSystem (S : Set (Set α)) : Set (Set α) := {s | GeneratePiSystem S s}
 
 theorem isPiSystem_generatePiSystem (S : Set (Set α)) : IsPiSystem (generatePiSystem S) :=
-  fun _ h_s _ h_t h_nonempty => GeneratePiSystem.inter h_s h_t h_nonempty
+  fun _ h_s _ h_t h_nonempty => .inter h_s h_t h_nonempty
 
 theorem subset_generatePiSystem_self (S : Set (Set α)) : S ⊆ generatePiSystem S := fun _ =>
   .base
