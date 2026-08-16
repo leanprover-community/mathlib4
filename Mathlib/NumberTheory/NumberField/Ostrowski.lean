@@ -60,7 +60,7 @@ lemma exists_num_denom_adicAbv_eq_one {α : K} {v : HeightOneSpectrum (𝓞 K)}
   let S : Set (HeightOneSpectrum (𝓞 K)) := {v}ᶜ
   let γ : S.integer K := ⟨α, fun _ _ ↦ by simp_all [S, (toNNReal_le_one_iff hb).mp h_abs]⟩
   let : Fact (IsMulTorsion (ClassGroup (𝓞 K))) := fact_iff.mpr isMulTorsion_of_finite
-  obtain ⟨⟨x, ⟨y, hy_away, hy_nzd⟩⟩, h⟩ := IsLocalization.surj S.submonoid γ
+  obtain ⟨⟨x, ⟨y, hy_away, hy_nzd⟩⟩, h⟩ := IsLocalization.surj (Localization.submonoid S) γ
   refine ⟨x, y, ?_, by simpa [adicAbv_coe_eq_one_iff, S] using hy_away⟩
   rw [eq_div_iff <| IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hy_nzd]
   exact Subtype.ext_iff.mp h
