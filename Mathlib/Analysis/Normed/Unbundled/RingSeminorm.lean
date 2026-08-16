@@ -43,9 +43,6 @@ ring_seminorm, ring_norm
 
 @[expose] public section
 
-
-open NNReal
-
 variable {R : Type*}
 
 /-- A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes nonnegative
@@ -168,7 +165,7 @@ variable [CommRing R] (p : RingSeminorm R)
 theorem exists_index_pow_le (hna : IsNonarchimedean p) (x y : R) (n : ℕ) :
     ∃ (m : ℕ), m < n + 1 ∧ p ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
       (p (x ^ m) * p (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) := by
-  obtain ⟨m, hm_lt, hm⟩ := IsNonarchimedean.add_pow_le hna n x y
+  obtain ⟨m, hm_lt, hm⟩ := hna.add_pow_le x y n (map_mul_le_mul p)
   exact ⟨m, hm_lt, by gcongr⟩
 
 end CommRing
@@ -423,8 +420,6 @@ def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f 
 @[simps!]
 def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
   { normAddGroupNorm R, normRingSeminorm R with }
-
-open Int
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The seminorm on a `SeminormedRing`, as a `RingSeminorm`. -/
