@@ -51,9 +51,9 @@ lemma IsPrimitiveElem.ne_one [Nontrivial R] (ha : IsPrimitiveElem R a) : a ≠ 1
 variable [IsCancelAdd A]
 
 /-- See Proposition 1.4.17 in [GrinbergReiner2020]. -/
-lemma IsPrimitiveElem.of_comul_eq_tmul_add_tmul (ha : comul a = 1 ⊗ₜ[R] a + a ⊗ₜ[R] 1) :
-    IsPrimitiveElem R a :=
-  IsSkewPrimitiveElem.of_comul_eq_tmul_add_tmul counit_one counit_one ha
+lemma counit_eq_zero_of_comul_eq_tmul_add_tmul (ha : comul a = 1 ⊗ₜ[R] a + a ⊗ₜ[R] 1) :
+    counit (R := R) a = 0 :=
+  Coalgebra.counit_eq_zero_of_comul_eq_tmul_add_tmul counit_one counit_one ha
 
 lemma isPrimitiveElem_iff_comul_eq_tmul_add_tmul :
     IsPrimitiveElem R a ↔ comul a = 1 ⊗ₜ[R] a + a ⊗ₜ[R] 1 :=
