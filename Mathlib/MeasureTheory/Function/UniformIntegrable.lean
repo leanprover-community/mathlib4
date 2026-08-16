@@ -311,7 +311,7 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) (hmeas : Strongly
   by_cases hx : x ∈ { x : α | M ^ (1 / p.toReal) ≤ ‖f x‖₊ }
   · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.enorm_of_nonneg (by positivity),
       ← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm]
-    rw [Set.mem_ofPred_eq]
+    rw [Set.mem_ofPred]
     rwa [← hiff]
   · rw [Set.indicator_of_notMem hx, Set.indicator_of_notMem]
     · simp [toReal_pos hp_ne_zero hp_ne_top]
