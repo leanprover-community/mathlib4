@@ -859,7 +859,7 @@ theorem compMultilinearMap_smul [DistribSMul S N₂] [DistribSMul S N₂']
 @[simp]
 theorem compMultilinearMap_smulₛₗ [SMulCommClass R₂ R₂ N₂] [SMulCommClass R₃ R₃ N₃]
     (g : N₂ →ₛₗ[σ₂₃] N₃) (r : R₂) (f : MultilinearMap σ₁₂ M₁ N₂) :
-    g.compMultilinearMap (r • f) = σ₂₃ r • (g.compMultilinearMap f) :=
+    g.compMultilinearMap (r • f) = σ₂₃ r • g.compMultilinearMap f :=
   MultilinearMap.ext fun _ => g.map_smulₛₗ _ _
 
 @[simp]
