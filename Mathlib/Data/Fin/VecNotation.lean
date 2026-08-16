@@ -197,7 +197,6 @@ dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
     if let Expr.lit (.natVal length) := etailn_whnf then
       pure (length, false, q(OfNat.ofNat $etailn_whnf))
     else if let some ((base : Q(ℕ)), offset) ← (Meta.isOffset? etailn_whnf).run then
-      let offset_e : Q(ℕ) := mkNatLit offset
       pure (offset, true, q($base + $offset))
     else
       pure (0, true, etailn)
@@ -259,7 +258,6 @@ theorem vecCons_const (a : α) : (vecCons a fun _ : Fin n => a) = fun _ => a :=
   funext <| Fin.forall_iff_succ.2 ⟨rfl, cons_val_succ _ _⟩
 
 theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
-  let _ : Unique (Fin 1) := inferInstance
   funext <| Unique.forall_iff.2 rfl
 
 /-- `![a, b, ...] 1` is equal to `b`.

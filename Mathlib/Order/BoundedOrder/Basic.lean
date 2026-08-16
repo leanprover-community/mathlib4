@@ -246,16 +246,6 @@ instance [LE α] [h : OrderBot α] : OrderTop αᵒᵈ where
 
 end OrderDual
 
-section OrderBot
-
-variable [PartialOrder α] [OrderBot α] [Preorder β] {a b : α}
-
-@[deprecated not_bot_lt_iff (since := "2025-12-03")]
-theorem eq_bot_of_minimal (h : ∀ b, ¬b < a) : a = ⊥ :=
-  (eq_bot_or_bot_lt a).resolve_right (h ⊥)
-
-end OrderBot
-
 
 /-! ### Bounded order -/
 

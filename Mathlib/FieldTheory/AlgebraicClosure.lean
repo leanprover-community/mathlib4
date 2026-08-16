@@ -7,7 +7,6 @@ module
 
 public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.FieldTheory.IntermediateField.Algebraic
 
 /-!
 # Relative Algebraic Closure
@@ -24,7 +23,7 @@ In this file we construct the relative algebraic closure of a field extension.
 @[expose] public section
 noncomputable section
 
-open Polynomial FiniteDimensional IntermediateField Field
+open Polynomial IntermediateField Field
 
 variable (F E : Type*) [Field F] [Field E] [Algebra F E]
 variable {K : Type*} [Field K] [Algebra F K]

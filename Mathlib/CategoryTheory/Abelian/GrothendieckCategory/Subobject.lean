@@ -65,7 +65,7 @@ the objects in the image of the functor `F`. -/
 lemma subobjectMk_of_isColimit_eq_iSup :
     haveI := mono_of_isColimit_monoOver F hc f hf
     Subobject.mk f = ⨆ j, Subobject.mk (F.obj j).obj.hom := by
-  haveI := mono_of_isColimit_monoOver F hc f hf
+  have := mono_of_isColimit_monoOver F hc f hf
   apply le_antisymm
   · rw [le_iSup_iff]
     intro s H

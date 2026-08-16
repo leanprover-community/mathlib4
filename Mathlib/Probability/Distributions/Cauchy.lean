@@ -174,13 +174,13 @@ noncomputable def cauchyMeasure (x₀ : ℝ) (γ : ℝ≥0) : Measure ℝ :=
 alias _root_Probability.cauchyMeasure := cauchyMeasure
 
 lemma cauchyMeasure_of_scale_ne_zero (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) :
-    cauchyMeasure x₀ γ = volume.withDensity (cauchyPDF x₀ γ) := if_neg hγ
+    cauchyMeasure x₀ γ = volume.withDensity (cauchyPDF x₀ γ) := ite_eq_right hγ
 
 @[deprecated (since := "2026-03-06")]
 alias _root_Probability.cauchyMeasure_of_scale_ne_zero := cauchyMeasure_of_scale_ne_zero
 
 @[simp]
-lemma cauchyMeasure_zero_scale (x₀ : ℝ) : cauchyMeasure x₀ 0 = dirac x₀ := if_pos rfl
+lemma cauchyMeasure_zero_scale (x₀ : ℝ) : cauchyMeasure x₀ 0 = dirac x₀ := ite_eq_left rfl
 
 @[deprecated (since := "2026-03-06")]
 alias _root_Probability.cauchyMeasure_zero_scale := cauchyMeasure_zero_scale
