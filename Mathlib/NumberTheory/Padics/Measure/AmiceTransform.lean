@@ -186,15 +186,6 @@ variable [IsTopologicalRing R]
 
 section MultiplicativeEquivs
 
-@[expose, simps apply symm_apply] def Homeomorph.ofAdd {G : Type*} [Add G] [TopologicalSpace G] :
-      G ≃ₜ Multiplicative G where
-    toFun := Multiplicative.ofAdd
-    invFun := Multiplicative.toAdd
-    left_inv _ := by simp
-    right_inv _ := by simp
-    continuous_toFun := continuous_ofAdd
-    continuous_invFun := continuous_toAdd
-
 @[simps]
 private def ofAddFunEquiv : C(Multiplicative ℤ_[p], R) ≃L[R] C(ℤ_[p], R) where
   toFun f := f.comp ⟨_, continuous_ofAdd⟩
