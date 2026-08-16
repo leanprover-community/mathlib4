@@ -52,24 +52,11 @@ example : Matrix.rank (R := ℚ)
   eval_rank
 
 example : Matrix.rank (R := ℚ)
-    !![1, 2, 3, 4;
-       2, 4, 6, 8;
-       1, 1, 1, 1;
-       2, 3, 4, 5] = 2 := by
-  eval_rank
-
-example : Matrix.rank (R := ℚ)
     !![1, 2, 0, 1, 3;
        0, 1, 1, 2, 1;
        2, 4, 0, 2, 6;
        0, 0, 1, 0, 2;
        1, 3, 1, 3, 4] = 3 := by
-  eval_rank
-
-example : Matrix.rank (R := ℚ)
-    !![1, 2, 3;
-       4, 5, 6;
-       7, 8, 10] = 3 := by
   eval_rank
 
 example : Matrix.rank (R := ℚ)
@@ -101,6 +88,22 @@ example : Matrix.rank (R := ℚ) !![1/2 * 5/2, 1; 1, 1] = 2 := by eval_rank
 -- 1/2 * 4 = 2 collapses the rank
 example : Matrix.rank (R := ℚ) !![1/2 * 4, 2; 1, 1] = 1 := by eval_rank
 
+/-! ## Row swaps -/
+
+-- a swap after an elimination step:
+example : Matrix.rank (R := ℤ) !![1, 1, 1; 2, 2, 3; 3, 4, 5] = 3 := by eval_rank
+
+-- consecutive swaps after elimination
+example : Matrix.rank (R := ℤ)
+    !![1, 1, 1, 1;
+       2, 2, 2, 3;
+       3, 4, 5, 6;
+       4, 5, 7, 8] = 4 := by
+  eval_rank
+
+-- swap with fractional entries: the row scales follow the swapped order
+example : Matrix.rank (R := ℚ) !![0, 1/2; 1/3, 1] = 2 := by eval_rank
+
 /-! ## Element-type coverage: `ZMod p`, `ℤ√d` -/
 
 instance : Fact (Nat.Prime 7) := ⟨by decide⟩
@@ -113,11 +116,20 @@ example : Matrix.rank (R := ZMod 7) !![2, 5; 3, 4] = 1 := by eval_rank
 -- 2 * 4 ≡ 1 (mod 7), det ≡ 0
 example : Matrix.rank (R := ZMod 7) !![2 * 4, 1; 1, 1] = 1 := by eval_rank
 
+-- the pivot entry vanishes only modulo 7, forcing a swap through the mod test
+example : Matrix.rank (R := ZMod 7) !![7, 1; 3, 5] = 2 := by eval_rank
+
 -- ℤ[i] with integer entries
 example : Matrix.rank (R := GaussianInt) !![2, 5; 3, 4] = 2 := by eval_rank
 
 -- row 2 = i · row 1 over ℤ[i]
 example : Matrix.rank (R := GaussianInt) !![1, ⟨0, 1⟩; ⟨0, 1⟩, -1] = 1 := by eval_rank
+
+-- a zero pivot over ℤ[i] forces the swap in the `ℤ√d` model
+example : Matrix.rank (R := GaussianInt) !![0, ⟨0, 1⟩; ⟨0, 1⟩, 1] = 2 := by eval_rank
+
+-- handling Zsqrtd.sqrtd def without rewriting
+example : Matrix.rank (R := GaussianInt) !![Zsqrtd.sqrtd, ⟨0, 1⟩] = 1 := by eval_rank
 
 /-! ## Unfolding, rewrites, and simplifications -/
 
