@@ -853,7 +853,7 @@ theorem add_compMultilinearMap (g₁ g₂ : N₂ →ₛₗ[σ₂₃] N₃) (f : 
 theorem compMultilinearMap_smul [DistribSMul S N₂] [DistribSMul S N₂']
     [SMulCommClass R₂ S N₂] [SMulCommClass R₂ S N₂'] [CompatibleSMul N₂ N₂' S R₂]
     (g : N₂ →ₗ[R₂] N₂') (s : S) (f : MultilinearMap σ₁₂ M₁ N₂) :
-    g.compMultilinearMap (s • f) = s • (g.compMultilinearMap f) :=
+    g.compMultilinearMap (s • f) = s • g.compMultilinearMap f :=
   MultilinearMap.ext fun _ => g.map_smul_of_tower _ _
 
 @[simp]
