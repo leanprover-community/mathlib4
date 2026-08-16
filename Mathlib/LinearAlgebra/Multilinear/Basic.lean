@@ -679,36 +679,36 @@ variable {ι₁ ι₂ ι₃ : Type*} [AddCommMonoid N₁] [AddCommMonoid N₂] [
 The naming is derived from `Finsupp.domCongr`, noting that here the permutation applies to the
 domain of the domain. -/
 @[simps apply]
-def domDomCongr (σι : ι₁ ≃ ι₂) (m : MultilinearMap σ (fun _ : ι₁ => N₁) N₂) :
+def domDomCongr (e : ι₁ ≃ ι₂) (m : MultilinearMap σ (fun _ : ι₁ => N₁) N₂) :
     MultilinearMap σ (fun _ : ι₂ => N₁) N₂ where
-  toFun v := m fun i => v (σι i)
+  toFun v := m fun i => v (e i)
   map_update_add' v i a b := by
-    let := σι.injective.decidableEq
+    let := e.injective.decidableEq
     simp_rw [Function.update_apply_equiv_apply v]
     rw [m.map_update_add]
   map_update_smul' v i a b := by
-    let := σι.injective.decidableEq
+    let := e.injective.decidableEq
     simp_rw [Function.update_apply_equiv_apply v]
     rw [m.map_update_smul]
 
-theorem domDomCongr_trans (σ₁ : ι₁ ≃ ι₂) (σ₂ : ι₂ ≃ ι₃)
+theorem domDomCongr_trans (e : ι₁ ≃ ι₂) (e' : ι₂ ≃ ι₃)
     (m : MultilinearMap σ (fun _ : ι₁ => N₁) N₂) :
-    m.domDomCongr (σ₁.trans σ₂) = (m.domDomCongr σ₁).domDomCongr σ₂ :=
+    m.domDomCongr (e.trans e') = (m.domDomCongr e).domDomCongr e' :=
   rfl
 
-theorem domDomCongr_mul (σ₁ : Equiv.Perm ι₁) (σ₂ : Equiv.Perm ι₁)
+theorem domDomCongr_mul (e : Equiv.Perm ι₁) (e' : Equiv.Perm ι₁)
     (m : MultilinearMap σ (fun _ : ι₁ => N₁) N₂) :
-    m.domDomCongr (σ₂ * σ₁) = (m.domDomCongr σ₁).domDomCongr σ₂ :=
+    m.domDomCongr (e' * e) = (m.domDomCongr e).domDomCongr e' :=
   rfl
 
 /-- `MultilinearMap.domDomCongr` as an equivalence.
 
 This is declared separately because it does not work with dot notation. -/
 @[simps apply symm_apply]
-def domDomCongrEquiv (σι : ι₁ ≃ ι₂) :
+def domDomCongrEquiv (e : ι₁ ≃ ι₂) :
     MultilinearMap σ (fun _ : ι₁ => N₁) N₂ ≃+ MultilinearMap σ (fun _ : ι₂ => N₁) N₂ where
-  toFun := domDomCongr σι
-  invFun := domDomCongr σι.symm
+  toFun := domDomCongr e
+  invFun := domDomCongr e.symm
   left_inv m := by
     ext
     simp [domDomCongr]
@@ -721,9 +721,9 @@ def domDomCongrEquiv (σι : ι₁ ≃ ι₂) :
 
 /-- The results of applying `domDomCongr` to two maps are equal if and only if those maps are. -/
 @[simp]
-theorem domDomCongr_eq_iff (σι : ι₁ ≃ ι₂) (f g : MultilinearMap σ (fun _ : ι₁ => N₁) N₂) :
-    f.domDomCongr σι = g.domDomCongr σι ↔ f = g :=
-  (domDomCongrEquiv σι : _ ≃+ MultilinearMap σ (fun _ => N₁) N₂).apply_eq_iff_eq
+theorem domDomCongr_eq_iff (e : ι₁ ≃ ι₂) (f g : MultilinearMap σ (fun _ : ι₁ => N₁) N₂) :
+    f.domDomCongr e = g.domDomCongr e ↔ f = g :=
+  (domDomCongrEquiv e : _ ≃+ MultilinearMap σ (fun _ => N₁) N₂).apply_eq_iff_eq
 
 end domDomCongr
 
@@ -884,9 +884,9 @@ theorem compMultilinearMap_codRestrict (g : N₂ →ₛₗ[σ₂₃] N₃) (f : 
 variable {ι₁ ι₂ : Type*}
 
 @[simp]
-theorem compMultilinearMap_domDomCongr (σι : ι₁ ≃ ι₂) (g : N₃ →ₛₗ[σ₃₄] N₄)
+theorem compMultilinearMap_domDomCongr (e : ι₁ ≃ ι₂) (g : N₃ →ₛₗ[σ₃₄] N₄)
     (f : MultilinearMap σ₂₃ (fun _ : ι₁ => N₂) N₃) :
-    (g.compMultilinearMap f).domDomCongr σι = g.compMultilinearMap (f.domDomCongr σι) := by
+    (g.compMultilinearMap f).domDomCongr e = g.compMultilinearMap (f.domDomCongr e) := by
   ext
   simp [MultilinearMap.domDomCongr]
 
@@ -957,30 +957,30 @@ end OfSubsingleton
 
 /-- The dependent version of `MultilinearMap.domDomCongrLinearEquiv`. -/
 @[simps apply symm_apply]
-def domDomCongrLinearEquiv' {ι' : Type*} (σι : ι ≃ ι') :
-    MultilinearMap σ₁₂ M₁ N₂ ≃ₗ[S] MultilinearMap σ₁₂ (fun i => M₁ (σι.symm i)) N₂ where
+def domDomCongrLinearEquiv' {ι' : Type*} (e : ι ≃ ι') :
+    MultilinearMap σ₁₂ M₁ N₂ ≃ₗ[S] MultilinearMap σ₁₂ (fun i => M₁ (e.symm i)) N₂ where
   toFun f :=
-    { toFun := f ∘ (σι.piCongrLeft' M₁).symm
+    { toFun := f ∘ (e.piCongrLeft' M₁).symm
       map_update_add' := fun m i => by
-        let := σι.decidableEq
-        rw [← σι.apply_symm_apply i]
+        let := e.decidableEq
+        rw [← e.apply_symm_apply i]
         intro x y
         simp only [comp_apply, piCongrLeft'_symm_update, f.map_update_add]
       map_update_smul' := fun m i c => by
-        let := σι.decidableEq
-        rw [← σι.apply_symm_apply i]
+        let := e.decidableEq
+        rw [← e.apply_symm_apply i]
         intro x
         simp only [Function.comp, piCongrLeft'_symm_update, f.map_update_smul] }
   invFun f :=
-    { toFun := f ∘ σι.piCongrLeft' M₁
+    { toFun := f ∘ e.piCongrLeft' M₁
       map_update_add' := fun m i => by
-        let := σι.symm.decidableEq
-        rw [← σι.symm_apply_apply i]
+        let := e.symm.decidableEq
+        rw [← e.symm_apply_apply i]
         intro x y
         simp only [comp_apply, piCongrLeft'_update, f.map_update_add]
       map_update_smul' := fun m i c => by
-        let := σι.symm.decidableEq
-        rw [← σι.symm_apply_apply i]
+        let := e.symm.decidableEq
+        rw [← e.symm_apply_apply i]
         intro x
         simp only [Function.comp, piCongrLeft'_update, f.map_update_smul] }
   map_add' f₁ f₂ := by
@@ -1008,9 +1008,9 @@ def constLinearEquivOfIsEmpty [IsEmpty ι] : N₂ ≃ₗ[S] MultilinearMap σ₁
 
 /-- `MultilinearMap.domDomCongr` as a `LinearEquiv`. -/
 @[simps apply symm_apply]
-def domDomCongrLinearEquiv {ι₁ ι₂} (σ₁ : ι₁ ≃ ι₂) :
+def domDomCongrLinearEquiv {ι₁ ι₂} (e : ι₁ ≃ ι₂) :
     MultilinearMap σ₁₂ (fun _ : ι₁ => N₁) N₂ ≃ₗ[S] MultilinearMap σ₁₂ (fun _ : ι₂ => N₁) N₂ :=
-  { (domDomCongrEquiv σ₁ :
+  { (domDomCongrEquiv e :
       MultilinearMap σ₁₂ (fun _ : ι₁ => N₁) N₂ ≃+ MultilinearMap σ₁₂ (fun _ : ι₂ => N₁) N₂) with
     map_smul' := fun c f => by
       ext
