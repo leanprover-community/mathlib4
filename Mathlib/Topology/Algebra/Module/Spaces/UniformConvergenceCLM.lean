@@ -13,7 +13,7 @@ public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Algebra.Module.UniformConvergence
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
 # Topologies of uniform convergence on the space of continuous linear maps
