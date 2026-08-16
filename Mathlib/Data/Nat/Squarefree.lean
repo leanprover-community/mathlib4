@@ -303,7 +303,9 @@ theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type*} [Ad
     Finset.sum_eq_multiset_sum]
   rfl
 
-theorem sq_mul_squarefree (n : ℕ) : ∃ a b : ℕ, b ^ 2 * a = n ∧ Squarefree a := by
+@[deprecated "Use `exists_sq_mul_squarefree` instead, which binds the witnesses in the order in \
+which they appear." (since := "2026-08-17")]
+protected theorem sq_mul_squarefree (n : ℕ) : ∃ a b : ℕ, b ^ 2 * a = n ∧ Squarefree a := by
   obtain ⟨b, a, h, hs⟩ := exists_sq_mul_squarefree n
   exact ⟨a, b, h, hs⟩
 
