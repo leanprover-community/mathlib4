@@ -92,22 +92,23 @@ class IsMulRightInvariant [Mul G] (μ : Measure G) : Prop where
 variable {μ : Measure G}
 
 @[to_additive]
-instance IsMulLeftInvariant.smulInvariantMeasure [Mul G] [IsMulLeftInvariant μ] [MeasurableMul G] :
+instance IsMulLeftInvariant.smulInvariantMeasure [Mul G] [IsMulLeftInvariant μ]
+    [MeasurableConstSMul G G] :
     SMulInvariantMeasure G G μ :=
   ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_left_eq_self _)
-    (by fun_prop) hs.nullMeasurableSet⟩
+    (measurable_const_smul (_x)).aemeasurable hs.nullMeasurableSet⟩
 
 @[to_additive]
-instance [Monoid G] [MeasurableMul G] (s : Submonoid G) [IsMulLeftInvariant μ] :
+instance [Monoid G] [MeasurableConstSMul G G] (s : Submonoid G) [IsMulLeftInvariant μ] :
     SMulInvariantMeasure {x // x ∈ s} G μ :=
   ⟨fun ⟨x, _⟩ _ h ↦ IsMulLeftInvariant.smulInvariantMeasure.1 x h⟩
 
 @[to_additive]
-instance IsMulRightInvariant.toSMulInvariantMeasure_op [Mul G] [MeasurableMul G]
+instance IsMulRightInvariant.toSMulInvariantMeasure_op [Mul G] [MeasurableConstSMul Gᵐᵒᵖ G]
     [μ.IsMulRightInvariant] :
     SMulInvariantMeasure Gᵐᵒᵖ G μ :=
   ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_right_eq_self _)
-    (by fun_prop) hs.nullMeasurableSet⟩
+    (measurable_const_smul _x).aemeasurable hs.nullMeasurableSet⟩
 
 end Measure
 
