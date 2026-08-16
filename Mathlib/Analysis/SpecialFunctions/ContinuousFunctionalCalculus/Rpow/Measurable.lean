@@ -25,7 +25,7 @@ variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A]
 namespace CFC
 
 @[fun_prop]
-lemma measurable_cfcSqrt : Measurable (sqrt : A → A) := by
+lemma measurable_sqrt : Measurable (sqrt : A → A) := by
   have h_measurable : MeasurableSet {S : A | 0 ≤ S} :=
     (isClosed_le continuous_const continuous_id).measurableSet
   classical
