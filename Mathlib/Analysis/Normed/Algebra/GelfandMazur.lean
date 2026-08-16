@@ -153,7 +153,7 @@ lemma exists_isMinOn_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜]
   simp only [isMinOn_univ_iff]
   refine (show Continuous fun z : 𝕜 ↦ ‖x - algebraMap 𝕜 F z‖ by fun_prop)
     |>.exists_forall_le_of_isBounded 0 ?_
-  simpa [isBounded_def, compl_setOf, Ioi] using this (Ioi_mem_atTop ‖x - (0 : 𝕜) • 1‖)
+  simpa [isBounded_def, compl_ofPred, Ioi] using this (Ioi_mem_atTop ‖x - (0 : 𝕜) • 1‖)
 
 /-!
 ### The complex case
@@ -374,7 +374,7 @@ private lemma exists_isMinOn_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖�
   -- otherwise, use `tendsto_φ_cobounded`.
   simp only [isMinOn_univ_iff] at hu ⊢
   refine (continuous_φ x).norm.exists_forall_le_of_isBounded (0, 0) ?_
-  simpa [isBounded_def, compl_setOf, Ioi]
+  simpa [isBounded_def, compl_ofPred, Ioi]
     using tendsto_norm_cobounded_atTop.comp (tendsto_φ_cobounded hc₀ hu) (Ioi_mem_atTop _)
 
 open Algebra in

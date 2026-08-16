@@ -190,8 +190,8 @@ lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
     (proj L g x).val = (proj L' g ⟨x, h x.2⟩).val := by
   induction L with | _ L => ?_
   induction L' with | _ L' => ?_
-  letI : Algebra L L' := RingHom.toAlgebra (Subsemiring.inclusion h)
-  letI : IsScalarTower k L L' := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  let : Algebra L L' := RingHom.toAlgebra (Subsemiring.inclusion h)
+  let : IsScalarTower k L L' := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← finGaloisGroupFunctor_map_proj_eq_proj g h.hom]
   change (algebraMap L' K (algebraMap L L' (AlgEquiv.restrictNormal (proj (mk L') g) L x))) = _
   rw [AlgEquiv.restrictNormal_commutes (proj (mk L') g) L]

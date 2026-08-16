@@ -159,10 +159,11 @@ instance instIsMarkovKernelCondKernelUnitReal (κ : Kernel Unit (α × ℝ)) [Is
   rw [condKernelUnitReal]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance condKernelUnitReal.instIsCondKernel (κ : Kernel Unit (α × ℝ)) [IsFiniteKernel κ] :
     κ.IsCondKernel κ.condKernelUnitReal where
-  disintegrate := by rw [condKernelUnitReal, compProd_toKernel]; ext; simp
+  disintegrate := by
+    rw [condKernelUnitReal]
+    exact compProd_toKernel (isCondKernelCDF_condCDF (κ ()))
 
 end Real
 
@@ -281,7 +282,7 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
   · exact measurable_prodMk_left ht
   · exact measurable_prodMk_left ht
   classical
-  rw [piecewise_apply, if_pos]
+  rw [piecewise_apply, ite_eq_left]
   exact ha
 
 /-- For `κ' := map κ (Prod.map (id : β → β) e)`, the hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`.

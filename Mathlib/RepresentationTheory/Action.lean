@@ -123,7 +123,6 @@ lemma μ_apply_single_single (x : X.V) (y : Y.V) (r s : k) :
     μ (k := k) X Y (.single x r ⊗ₜ .single y s) = .single (x, y) (r * s) := by
   ext; simp [← toLinearMap_apply]
 
-open TensorProduct in
 lemma coeff_μ_tmul (l1 : k[X.V]) (l2 : k[Y.V]) (xy : (X ⊗ Y).V) :
     (μ X Y (l1 ⊗ₜ l2)).coeff xy = l1.coeff xy.1 * l2.coeff xy.2 := by
   simp [← toLinearMap_apply, types_tensorObj_def, finsuppTensorFinsupp'_apply_apply _]
@@ -226,6 +225,7 @@ end comm
 
 end LinearizeMonoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma linearizeTrivial_def (X : Type w) (g : G) :
     linearize k G (Action.trivial _ X) g = LinearMap.id := by
   ext (x : X) : 2

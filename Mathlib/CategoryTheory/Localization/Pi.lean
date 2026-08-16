@@ -39,7 +39,7 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
     let L₁ := fun j => (L₂ (e j))
     let E := Pi.equivalenceOfEquiv C₂ e
     let E' := Pi.equivalenceOfEquiv D₂ e
-    haveI : CatCommSq E.functor (Functor.pi L₁) (Functor.pi L₂) E'.functor :=
+    have : CatCommSq E.functor (Functor.pi L₁) (Functor.pi L₂) E'.functor :=
       (CatCommSq.hInvEquiv E (Functor.pi L₁) (Functor.pi L₂) E').symm ⟨Iso.refl _⟩
     refine IsLocalization.of_equivalences (Functor.pi L₁)
       (MorphismProperty.pi (fun j => (W₂ (e j)))) (Functor.pi L₂)
@@ -53,13 +53,13 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
       exact hg
     exact H (e.apply_symm_apply i) _ (hf (e.symm i))
   · intro C D _ _ L W _ _
-    haveI : ∀ j, IsEquivalence (L j) := by rintro ⟨⟩
+    have : ∀ j, IsEquivalence (L j) := by rintro ⟨⟩
     refine IsLocalization.of_isEquivalence _ _ (fun _ _ _ _ => ?_)
     rw [MorphismProperty.isomorphisms.iff, isIso_pi_iff]
     rintro ⟨⟩
   · intro J _ hJ C D _ _ L W _ _
     let L₁ := (L none).prod (Functor.pi (fun j => L (some j)))
-    haveI : CatCommSq (Pi.optionEquivalence C).symm.functor L₁ (Functor.pi L)
+    have : CatCommSq (Pi.optionEquivalence C).symm.functor L₁ (Functor.pi L)
       (Pi.optionEquivalence D).symm.functor :=
         ⟨NatIso.pi' (by rintro (_ | i) <;> apply Iso.refl)⟩
     refine IsLocalization.of_equivalences L₁
