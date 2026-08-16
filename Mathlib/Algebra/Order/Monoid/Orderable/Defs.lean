@@ -108,45 +108,30 @@ instance [IsBiOrderable G] : IsRightOrderable G := by
   obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftMono_mulRightMono G
   infer_instance
 
-/-- On a left-ordered monoid, strict monotonicity of left multiplication is equivalent to
-left-cancellativity. This is the precise sense in which the non-strict left-order used by
-left-orderable monoids agrees with the strict left-order on cancellative structures such as
-groups. -/
-@[to_additive /-- On a left-ordered additive monoid, strict monotonicity of left addition is
-equivalent to left-cancellativity. -/]
-theorem mulLeftStrictMono_iff_isLeftCancelMul [LinearOrder G] [MulLeftMono G] :
-    MulLeftStrictMono G ↔ IsLeftCancelMul G :=
-  ⟨fun _ ↦ MulLeftStrictMono.toIsLeftCancelMul, fun _ ↦ inferInstance⟩
-
-/-- On a right-ordered monoid, strict monotonicity of right multiplication is equivalent to
-right-cancellativity. -/
-@[to_additive /-- On a right-ordered additive monoid, strict monotonicity of right addition is
-equivalent to right-cancellativity. -/]
-theorem mulRightStrictMono_iff_isRightCancelMul [LinearOrder G] [MulRightMono G] :
-    MulRightStrictMono G ↔ IsRightCancelMul G :=
-  ⟨fun _ ↦ MulRightStrictMono.toIsRightCancelMul, fun _ ↦ inferInstance⟩
-
-/-- Over a left-cancellative monoid the defining left-order may be taken as strict. -/
-@[to_additive /-- Over a left-cancellative additive monoid the defining left-order may be taken as
-strict. -/]
+/-- A left-cancellative monoid is left-orderable if and only if it admits a strictly
+left-invariant linear order. -/
+@[to_additive /-- A left-cancellative additive monoid is left-orderable if and only if it admits a
+strictly left-invariant linear order. -/]
 theorem isLeftOrderable_iff_exists_linearOrder_mulLeftStrictMono [IsLeftCancelMul G] :
     IsLeftOrderable G ↔ ∃ _ : LinearOrder G, MulLeftStrictMono G := by
   refine ⟨fun _ ↦ ?_, fun ⟨_, _⟩ ↦ ⟨‹LinearOrder G›, mulLeftMono_of_mulLeftStrictMono G⟩⟩
   obtain ⟨_, _⟩ := exists_linearOrder_mulLeftMono G
   exact ⟨‹LinearOrder G›, inferInstance⟩
 
-/-- Over a right-cancellative monoid the defining right-order may be taken as strict. -/
-@[to_additive /-- Over a right-cancellative additive monoid the defining right-order may be taken
-as strict. -/]
+/-- A right-cancellative monoid is right-orderable if and only if it admits a strictly
+right-invariant linear order. -/
+@[to_additive /-- A right-cancellative additive monoid is right-orderable if and only if it admits
+a strictly right-invariant linear order. -/]
 theorem isRightOrderable_iff_exists_linearOrder_mulRightStrictMono [IsRightCancelMul G] :
     IsRightOrderable G ↔ ∃ _ : LinearOrder G, MulRightStrictMono G := by
   refine ⟨fun _ ↦ ?_, fun ⟨_, _⟩ ↦ ⟨‹LinearOrder G›, mulRightMono_of_mulRightStrictMono G⟩⟩
   obtain ⟨_, _⟩ := exists_linearOrder_mulRightMono G
   exact ⟨‹LinearOrder G›, inferInstance⟩
 
-/-- Over a cancellative monoid the defining order may be taken as strict on both sides. -/
-@[to_additive /-- Over a cancellative additive monoid the defining order may be taken as strict on
-both sides. -/]
+/-- A cancellative monoid is bi-orderable if and only if it admits a linear order that is
+strictly left- and right-invariant. -/
+@[to_additive /-- A cancellative additive monoid is bi-orderable if and only if it admits a linear
+order that is strictly left- and right-invariant. -/]
 theorem isBiOrderable_iff_exists_linearOrder_mulLeftStrictMono_mulRightStrictMono [IsCancelMul G] :
     IsBiOrderable G ↔ ∃ _ : LinearOrder G, MulLeftStrictMono G ∧ MulRightStrictMono G := by
   refine ⟨fun _ ↦ ?_, fun ⟨_, _, _⟩ ↦

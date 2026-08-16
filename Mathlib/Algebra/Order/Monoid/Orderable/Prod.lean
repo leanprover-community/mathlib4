@@ -14,10 +14,7 @@ public import Mathlib.Algebra.Order.Monoid.Prod
 
 The direct product `G × H` of two orderable monoids is orderable, provided the *first* factor is
 cancellative. Ordering `G × H` lexicographically, left multiplication is monotone as soon as it is
-*strictly* monotone on the first factor and monotone on the second (see
-`Mathlib/Algebra/Order/Monoid/Prod.lean`); by `mulLeftStrictMono_iff_isLeftCancelMul` strictness on
-the first factor is exactly cancellativity, so `IsLeftCancelMul` on the first factor is the only
-hypothesis beyond orderability — the second factor needs no cancellation.
+*strictly* monotone on the first factor and monotone on the second.
 -/
 
 @[expose] public section

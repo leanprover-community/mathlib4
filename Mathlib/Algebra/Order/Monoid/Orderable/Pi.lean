@@ -16,7 +16,7 @@ public import Mathlib.SetTheory.Cardinal.Order
 An arbitrary indexed product `∀ i, G i` of orderable monoids is orderable when *every* factor is
 cancellative. Well-order the index (by Zermelo, `exists_wellFoundedLT`) and order the product
 lexicographically: left multiplication is monotone as soon as it is *strictly* monotone on every
-factor; strictness per factor is exactly cancellativity, `mulLeftStrictMono_iff_isLeftCancelMul`.
+factor.
 
 Unlike the binary product (`Mathlib/Algebra/Order/Monoid/Orderable/Prod.lean`), where only the first
 factor need be strict, a well-order has no greatest index, so strictness is required everywhere.
