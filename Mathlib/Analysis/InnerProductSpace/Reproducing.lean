@@ -356,7 +356,7 @@ end OfKernel
 section outerKernel
 
 variable (𝕜) in
-/-- The kernel generated from a function `f : X → V` with the rank-one operators `⟪f x, •⟫ f y` as
+/-- The kernel generated from a function `f : X → V` with the rank-one operators `⟪f y, •⟫ f x` as
 its entries. -/
 def outerKernel (f : X → V) : Matrix X X (V →L[𝕜] V) :=
   Matrix.of fun x y ↦ InnerProductSpace.rankOne 𝕜 (f x) (f y)
