@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Lemmas about ideals of `MvPolynomial`
@@ -85,7 +84,6 @@ lemma idealOfVars_eq_restrictSupportIdeal :
     simpa [monomial_add_single] using Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
 
 open scoped Pointwise in
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_idealOfVars (n : ℕ) :
     idealOfVars σ R ^ n = restrictSupportIdeal _ _ ((isUpperSet_Ici n).preimage degree_mono) := by
   rw [idealOfVars_eq_restrictSupportIdeal]

@@ -8,6 +8,7 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Sym.Card
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Definitions for finite and locally finite graphs
@@ -362,6 +363,7 @@ abbrev LocallyFinite :=
 variable [LocallyFinite G]
 
 /-- A locally finite simple graph is regular of degree `d` if every vertex has degree `d`. -/
+@[wikidata Q826467]
 def IsRegularOfDegree (d : ℕ) : Prop :=
   ∀ v : V, G.degree v = d
 
@@ -714,6 +716,20 @@ theorem le_minDegree_induce_of_support_subset (h : G.support ⊆ s) :
   refine le_minDegree_of_forall_le_degree _ _ fun v ↦ ?_
   grw [G.minDegree_le_degree v, degree_induce_of_neighborSet_subset]
   grw [neighborSet_subset_support, h]
+
+theorem filter_edgeFinset_toFinset_subset [DecidableEq V] (s : Finset V) :
+    {e ∈ G.edgeFinset | e.toFinset ⊆ s} = G.edgeFinset ∩ s.sym2 := by
+  simp [subset_iff, ← mem_sym2_iff, filter_mem_eq_inter]
+
+/-- The edges whose vertices lie in `s` are in bijection with the edges of the induced
+subgraph `G.induce s`. -/
+theorem card_filter_edgeFinset_toFinset_subset [DecidableEq V] (s : Finset V) :
+    #{e ∈ G.edgeFinset | e.toFinset ⊆ s} = #(G.induce ↑s).edgeFinset := by
+  have h := congrArg Finset.card (map_edgeFinset_induce (s := (↑s : Set V)) (G := G))
+  rw [card_map, toFinset_coe] at h
+  rw [filter_edgeFinset_toFinset_subset]
+  convert h.symm using 1
+  congr!
 
 end Support
 
