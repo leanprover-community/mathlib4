@@ -123,6 +123,8 @@ lemma map_id (μ : AbstractMeasure X R E) :
 
 end Map
 
+/-- A homeomorphism between topological spaces gives an isomorphism between their modules of
+measures. -/
 def arrowCongrLeft (φ : X ≃ₜ Y) : AbstractMeasure X R E ≃ₗ[R] AbstractMeasure Y R E :=
   { map φ with
     invFun := map φ.symm
@@ -135,7 +137,7 @@ lemma arrowCongrLeft_symm (φ : X ≃ₜ Y) :
       arrowCongrLeft φ.symm :=
   (rfl)
 
-@[simp] lemma coe_arrowCongrLeft (φ : X ≃ₜ Y) :
+lemma coe_arrowCongrLeft (φ : X ≃ₜ Y) :
     (arrowCongrLeft φ : AbstractMeasure X R E → _) = map ⟨φ, φ.continuous⟩ :=
   (rfl)
 
