@@ -135,7 +135,7 @@ open SummationFilter
 
 variable [CompleteSpace 𝕜] [Finite β]
 
-/-- When there is a finite basis, it can be regarded as a generalized Schauder basis. -/
+/-- When there is a finite basis, it can be regarded as an unconditional Schauder basis. -/
 def toUnconditionalSchauderBasis (b : Module.Basis β 𝕜 X) :
     UnconditionalSchauderBasis β 𝕜 X :=
   letI : Fintype β := Fintype.ofFinite β

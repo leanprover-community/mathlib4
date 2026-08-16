@@ -13,7 +13,7 @@ public import Mathlib.MeasureTheory.VectorMeasure.Basic
 
 ## Main results
 
-* `coord` : for a `𝕜`-Schauder basis `b` in an `𝕜`-vector space `V` and a `V`-valued vector measure
+* `coord` : for a `𝕜`-Schauder basis `b` in a `𝕜`-vector space `V` and a `V`-valued vector measure
   `μ`, one has the equality `μ E = ∑ i, a i E • b i` for each `E : Set X`. Then the coordinate
   `a i E` is a `𝕜`-valued vector measure, which we call `μ.coord b i`.
 * `sum_toSpanSingleton_coord_eq` : `μ` as a linear combination of vector measures.
@@ -23,7 +23,6 @@ public import Mathlib.MeasureTheory.VectorMeasure.Basic
 public section
 
 open Module LinearMap
-open scoped ENNReal NNReal
 
 namespace MeasureTheory.VectorMeasure
 
@@ -42,7 +41,7 @@ protected noncomputable def coord (b : GeneralSchauderBasis ι 𝕜 V L) (μ : V
 lemma coord_apply (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) (i : ι) (E : Set X) :
     μ.coord b i E = b.coord i (μ E) := by simp [VectorMeasure.coord]
 
-theorem sum_toSpanSingleton_coord_eq [CompleteSpace 𝕜] [Fintype ι] [L.LeAtTop] [L.NeBot]
+theorem eq_sum_toSpanSingleton_coord [CompleteSpace 𝕜] [Fintype ι] [L.LeAtTop] [L.NeBot]
     (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) :
     μ = ∑ i, mapRangeₗ (toSpanSingleton 𝕜 V (b i))
       ((toSpanSingleton 𝕜 V (b i)).continuous_of_finiteDimensional) (μ.coord b i) := by ext; simp

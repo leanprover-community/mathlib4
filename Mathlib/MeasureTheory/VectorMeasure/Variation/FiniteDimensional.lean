@@ -30,8 +30,6 @@ The finite-dimensionality of `ℂ` over `ℝ` is given in
 
 public section
 
-open scoped ENNReal NNReal
-
 namespace MeasureTheory.VectorMeasure
 
 variable {X : Type*} {mX : MeasurableSpace X} {V : Type*} [NormedAddCommGroup V]
