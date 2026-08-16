@@ -242,24 +242,6 @@ theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u 
 theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v :=
   iSup₂_le fun _ hi ↦ IsEdgeReachable.le_edgeReachability (hi u v)
 
-theorem notEdgeReachable_degree_add_one [Fintype <| G.neighborSet u]
-    (huv : u ≠ v) : ¬G.IsEdgeReachable (G.degree u + 1) u v := by
-  classical
-  intro h
-  unfold IsEdgeReachable at h
-  have this2 := @h (G.incidenceSet u)
-  have : (G.incidenceSet u).encard = G.degree u := by
-    grind [card_incidenceSet_eq_degree, Set.coe_fintypeCard, Set.coe_ncard_eq_encard]
-  rw [this] at this2
-  have ⟨p⟩ := this2 (by simp only [Nat.cast_add, Nat.cast_one, ENat.natCast_lt_succ])
-  cases p with
-  | nil =>
-      exact huv rfl
-  | cons h p => {
-      have h' := deleteEdges_adj.mp h
-      exact h'.2 (by grind [mem_incidenceSet])
-  }
-
 theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u]
     (huv : u ≠ v) : G.edgeReachability u v ≤ G.degree u :=
   iSup₂_le fun _ hk ↦ mod_cast hk.le_degree huv
