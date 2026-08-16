@@ -6,6 +6,7 @@ Authors: Lua Viana Reis, Gareth Ma
 module
 
 import Mathlib.Tactic.Setm
+import Mathlib.Tactic.FailIfNoProgress
 
 /- Basic usage. -/
 example : 1 + 2 = 3 := by
@@ -14,6 +15,14 @@ example : 1 + 2 = 3 := by
   guard_hyp a :=ₛ 1
   guard_hyp b :=ₛ 2
   trivial
+
+example : ∃ n, n = 2 ^ 10 - 1 := by
+  setm ∃ _, _ = ?a
+  exact .intro a rfl
+
+example (h : 1 + 2 = 3) : ∃ n, n = 2 := by
+  setm _ + ?a = _ using h
+  exact .intro a rfl
 
 /- We don't replace identical expressions unless the pattern requires it. -/
 example : 1 + 1 = 2 := by
@@ -76,7 +85,7 @@ example : 1 + 2 = 3 := by
 
 /--
 error: Tactic `setm` failed: Pattern
-  ?m.3 = ?m.5
+  ?_ = ?_
 is not definitionally equal to the target
   True
 
@@ -101,7 +110,7 @@ example : 1 + 2 = 3 := by
 /- Expressions containing bound variables cannot be matched against. -/
 /--
 error: Tactic `setm` failed: Pattern
-  (fun n => a) = ?m.12
+  (fun n => a) = ?_
 is not definitionally equal to the target
   id = fun n => n
 
@@ -111,11 +120,13 @@ is not definitionally equal to the target
 example : @id Nat = fun n ↦ n := by
   setm (fun n ↦ ?a) = _
 
--- TODO:
--- -- set_option pp.raw true
--- example : ∃ n : ℕ, True := by
---   let a := "foo"
---   setm ∃ n, ?n
+/- Variables introduced by binders with the same identifiers as holes don't confuse the tactic. -/
+example : ∃ _n : Nat, True := by
+  setm ∃ n, ?n
+  guard_hyp n :=ₛ True
+  -- guard_target =ₛ ∃ n_1, n
+  guard_target =~ ∃ n_1, n
+  exact .intro 0 .intro
 
 variable {a b c : Nat}
 
@@ -137,10 +148,6 @@ example (h : b + a = c) : a + b = c := by
   guard_hyp B :=ₛ a
   exact h
 
--- TODO:
--- example (a : Array Nat) (i i' : Nat) (h') (h) (h₀ : a[i] = 2) : a[i] + a[i'] = 4 := by
---   setm a[?j] + a[i'] = 4 at h₀
-
 /- Test reducible + instances transparency -/
 
 def NotQuiteNat : Type := Nat
@@ -156,25 +163,23 @@ example {a b c : NotQuiteNat} (h : a + b = c) : True := by
   guard_hyp B := b
   trivial
 
--- TODO:
--- abbrev f : Nat → Nat → Nat := fun _ x => x
-
--- example (h : 4 = 3) : () = () := by
---   setm (true : Unit) = (true : Unit)
-
--- example (h : (4, fun x : Nat => x) = (5, fun _ => 5)) :
---   ((4, fun x : Nat => x) : Nat × (Nat → Nat)) = (5, fun _ : Nat => 5) := by
---   /- setm 1-/
---   have A : True := trivial
---   setm (?l, fun _ => ?l) = (_ + _, _) at h
---   guard_hyp h :ₛ A + B = c
---   guard_hyp A := a
---   guard_hyp B := b
---   trivial
+/- It does not skip type-checking the inside of a subsingleton in the pattern. -/
+/--
+error: Type mismatch
+  true
+has type
+  Bool
+but is expected to have type
+  Unit
+-/
+#guard_msgs in
+example (h : 4 = 3) : () = () := by
+  setm (?_ : Unit) = (true : Unit)
+  rfl
 
 /--
 error: Tactic `setm` failed: Pattern
-  @Eq Nat (A + B) ?m.20
+  @Eq Nat (A + B) ?_
 is not definitionally equal to the target
   @Eq NotQuiteNat (a + b) c
 
@@ -216,16 +221,17 @@ example {i : Nat} {l : List Nat} (h) (heq : i = 2) : l[i] = l[i] := by
   guard_target =ₛ l[j] = l[j]
   trivial
 
-/- A pattern with no holes triggers the `unusedTactic` linter. -/
+/- A pattern with no holes fails. -/
 /--
-warning: 'setm _' tactic does nothing
-
-Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: No holes (`?n`, `?_`) were present in the`setm` pattern. This means `setm` has no effect.
+---
+error: unsolved goals
+a b c : Nat
+⊢ True
 -/
 #guard_msgs in
 example : True := by
   setm _
-  trivial
 
 /- If different holes resolve to identical expressions, occurrences of the expression will be
 replaced by the first hole in alphabetical order. -/
@@ -237,18 +243,28 @@ example (h : 1 + 1 = 2) : 1 + 1 = 2 := by
   guard_target =ₛ b + a = 2
   exact h
 
-/- The setm tactic should unify as much as possible with the target expression even if some
-arguments elaborate as `.opaque` metavariables. -/
-/--
-warning: 'setm l[i] = l[i]' tactic does nothing
+/- The setm tactic should unify as much as possible with the target expression, even if some
+arguments elaborate as `.syntheticOpaque` metavariables.
 
-Note: This linter can be disabled with `set_option linter.unusedTactic false`
--/
+Below we test that the implicit `h` is assigned instead of failing with a defeq error. -/
 #guard_msgs in
 example {i : Nat} {l : List Nat} (h) : l[i] = l[i] := by
-  setm l[i] = l[i]
-  rfl
+  setm l[i] = ?_
+  trivial
 
-/- This test fails, and may be considered a bug. -/
+/- This test fails due to the current interaction of metavariable assigment and proof irrelevance,
+and perhaps is due to a bug.
+
+See https://github.com/leanprover/lean4/issues/9612 -/
+/--
+error: `?a` could not be assigned
+---
+error: unsolved goals
+a b c : Nat
+x : True
+k : True → Type
+⊢ k x
+-/
+#guard_msgs in
 example (x : True) (k : True → Type) : k x := by
   setm k ?a

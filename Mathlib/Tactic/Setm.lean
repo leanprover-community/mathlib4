@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.Tactic.Core
 public meta import Lean.Elab.Tactic.Rewrite
+public meta import Mathlib.Lean.Elab.Tactic.Basic
 
 /-!
 # The `setm` tactic
@@ -74,8 +75,11 @@ def replaceWithLDecls (stx : Syntax) : SetMReplaceM Syntax :=
         newMVars := s.newMVars.push mvar.mvarId! }
       return fvar
 
--- TODO: show example! Also check style guide for tactic docstrings
 /--
+The `setm` tactic matches a pattern containing named holes to the goal or a hypothesis, and creates
+named local declarations for the matched holes with their assigned expressions as values. It can be
+used to give a name to a complicated subexpression appearing in the goal or a hypothesis.
+
 * `setm expr`, where `expr` is a term containing named holes (like `?a`) will match `expr` to the
   current goal and create local declarations assigning the hole names to their inferred value.
   Moreover, it will replace the matches with their new names.
@@ -83,44 +87,52 @@ def replaceWithLDecls (stx : Syntax) : SetMReplaceM Syntax :=
   `h` instead.
 * `setm expr (using h)? at loc` is like the above, except that it also rewrites the newly-introduced
   local declarations at the locations `loc`.
+
+Examples:
+
+```lean
+example : ∃ n, n = 2 ^ 10 - 1 := by
+  setm ∃ _, _ = ?a
+  exact .intro a rfl
+```
+
+```lean
+example (h : 1 + 2 = 3) : ∃ n, n = 2 := by
+  setm _ + ?a = _ using h
+  exact .intro a rfl
+```
 -/
 syntax (name := setM) "setm " term (" using " ident)? (Parser.Tactic.location)? : tactic
 
 def defeqOrError (goal : MVarId) (p e : Expr) : MetaM Unit :=
-  unless ← withReducible <| withAssignableSyntheticOpaque <| isDefEq p e do
+  -- We use `withAssinableSyntheticOpaque` here as elaboration of the pattern can create
+  -- metavariables of `.syntheticOpaque` kind that could be assigned by the `isDefEq`. See the
+  -- test file for a concrete example.
+  unless ← withReducible <| withoutProofIrrelevance <| withAssignableSyntheticOpaque
+      <| isDefEq p e do
     throwTacticEx `setm goal <| MessageData.ofLazyM (es := #[p, e]) do
       let (p, tgt) ← addPPExplicitToExposeDiff p e
       return m!"Pattern{indentExpr p}\nis not definitionally equal \
         to the target{indentExpr tgt}"
 
-/-- Runs `x`, and if `x` throws an exception, rewinds the tactic state *except* for the `InfoState`
-and `Messages`. This means that hovers and error messages created within `x` are preserved.
-
-Note: `x` is run under `withSaveInfoContext` in order to propagate hovers and messages correctly.
-This means that pre-existing infotrees are not accessible from within `x`. -/
-def commitIfNoExPreservingInfoAndMessages {α} (x : TacticM α) : TacticM α := do
-  let saved ← saveState
-  Tactic.tryCatch (withSaveInfoContext x) fun ex => do
-    let saved := { saved with
-      term.meta.core.infoState := ← getInfoState
-      term.meta.core.messages := (← getThe Core.State).messages }
-    restoreState saved
-    throw ex
-
 elab_rules : tactic
-| `(tactic| setm $pat:term $[using $usingArg]? $[$loc:location]?) =>
-  withMainContext do commitIfNoExPreservingInfoAndMessages do
+| `(tactic| setm $origPat:term $[using $usingArg]? $[$loc:location]?) =>
+  /- We don't use `withNewMCtxDepth` because it also resets the whole metavariable context and this
+  tactic creates new metavariables. -/
+  withMainContext <| commitIfNoExPreservingInfoAndMessages do
     let origGoal ← getMainGoal
-    let (pat, { goal, holes, newMVars }) ← (replaceWithLDecls pat).run { goal := origGoal }
+    let (pat, { goal, holes, newMVars }) ← (replaceWithLDecls origPat).run { goal := origGoal }
     goal.withContext do
       let (pat, newPatMVars) ← collectFreshMVars <| Tactic.elabTerm pat none (mayPostpone := true)
-      if let some place := usingArg.map getId then
-        let loc := (← getLocalDeclFromUserName place).fvarId
-        defeqOrError origGoal pat (← loc.getType)
-        replaceMainGoal [← goal.changeLocalDecl loc pat (checkDefEq := false)]
+      if let some usingArg := usingArg then
+        withRef (mkNullNode #[origPat, usingArg]) do
+          let loc := (← getLocalDeclFromUserName usingArg.getId).fvarId
+          defeqOrError origGoal pat (← loc.getType)
+          replaceMainGoal [← goal.changeLocalDecl loc pat (checkDefEq := false)]
       else
-        defeqOrError origGoal pat (← goal.getType)
-        replaceMainGoal [← goal.replaceTargetDefEq pat]
+        withRef origPat do
+          defeqOrError origGoal pat (← goal.getType)
+          replaceMainGoal [← goal.replaceTargetDefEq pat]
       if let some loc := loc then
         -- TODO: more robust implementation with `kabstract` and `withReverted`
         -- Write as reusable API
@@ -129,7 +141,7 @@ elab_rules : tactic
           let rewrite (loc : Option FVarId) :=
             liftMetaTactic fun goal ↦ do
               let tgt ← loc.elim goal.getType (·.getType)
-              let tgt ← kabstract (← instantiateMVars tgt) (← instantiateMVars expr)
+              let tgt ← withReducible (kabstract (← instantiateMVars tgt) (← instantiateMVars expr))
               if tgt.hasLooseBVars then
                 let tgt := tgt.instantiate1 (.fvar fvar)
                 if let some loc := loc then
@@ -138,10 +150,13 @@ elab_rules : tactic
                   return [← goal.replaceTargetDefEq tgt]
               else
                 return [goal]
-          withLocation (expandLocation loc) (rewrite ∘ .some) (rewrite none)
+          withRef loc <| withLocation (expandLocation loc) (rewrite ∘ some) (rewrite none)
             (fun goal ↦ throwTacticEx `setm goal "Rewriting failed")
       let unassignedMVars ← (newMVars ++ newPatMVars).filterM (notM ·.isAssigned)
       if ← logUnassignedUsingErrorInfos unassignedMVars then
         throwAbortTactic
+      if newMVars.isEmpty then
+        logWarningAt origPat m!"No holes (`?n`, `?_`) were present in the`setm` pattern. \
+          This means `setm` has no effect."
 
 end Mathlib.Tactic.SetM
