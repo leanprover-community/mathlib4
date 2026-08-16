@@ -8,7 +8,6 @@ module
 public import Mathlib.Basic.Unique
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.List.Monad
-public import Mathlib.Logic.OpClass
 public import Mathlib.Tactic.Common
 public import Batteries.Data.List.Lemmas
 public import Batteries.Tactic.Lint.Simp

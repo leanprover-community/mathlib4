@@ -10,9 +10,7 @@ public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Subtype
 public import Mathlib.Tactic.Simps
-public import Mathlib.Tactic.Substs
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Equivalence between types

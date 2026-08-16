@@ -8,8 +8,8 @@ module
 public import Batteries.Data.Fin.Lemmas
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Basic.Nontrivial.Basic
-public import Mathlib.Data.Fin.Basic
 public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Matrices

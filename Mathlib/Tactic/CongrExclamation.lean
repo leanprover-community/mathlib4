@@ -10,9 +10,9 @@ public meta import Lean.Elab.Tactic.RCases
 public meta import Lean.Meta.Tactic.Assumption
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Mathlib.Basic.Logic.Basic
-public meta import Mathlib.Lean.Meta.CongrTheorems
 
 public import Mathlib.Lean.Meta.CongrTheorems
+public import Lean.Elab.ConfigEval
 
 /-!
 # The `congr!` tactic

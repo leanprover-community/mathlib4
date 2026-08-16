@@ -192,7 +192,6 @@ noncomputable def toStalk (x : PrimeSpectrum.Top R) :
     ModuleCat.of R M ⟶ ModuleCat.of R ((tilde M).presheaf.stalk x) :=
   ModuleCat.ofHom (StructureSheaf.toStalkₗ ..)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (x : PrimeSpectrum.Top R) :
     IsLocalizedModule x.asIdeal.primeCompl (toStalk M x).hom :=
   inferInstanceAs (IsLocalizedModule x.asIdeal.primeCompl (StructureSheaf.toStalkₗ ..))
@@ -209,7 +208,6 @@ protected lemma map_id {M : ModuleCat R} : tilde.map (𝟙 M) = 𝟙 _ := by
   ext p x
   exact Subtype.ext (funext fun y ↦ DFunLike.congr_fun (LocalizedModule.map_id _) _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp, reassoc]
 protected lemma map_comp {M N P : ModuleCat R} (f : M ⟶ N) (g : N ⟶ P) :
     tilde.map (f ≫ g) = tilde.map f ≫ tilde.map g := by
@@ -220,7 +218,6 @@ protected lemma map_comp {M N P : ModuleCat R} (f : M ⟶ N) (g : N ⟶ P) :
       (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl N)
       (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl P) _ _) _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma toOpen_map_app {M N : ModuleCat R} (f : M ⟶ N)
     (U : TopologicalSpace.Opens (PrimeSpectrum R)) :

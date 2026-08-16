@@ -5,7 +5,6 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.MulChar.Duality
 
