@@ -11,8 +11,7 @@ public import Mathlib.RingTheory.Coalgebra.Primitive
 /-!
 # Primitive elements in a bialgebra
 
-This file defines primitive elements in a bialgebra and collects the facts about them that need
-the multiplication of `A`.
+This file collects facts about primitive elements in a bialgebra.
 
 ## Main declarations
 
