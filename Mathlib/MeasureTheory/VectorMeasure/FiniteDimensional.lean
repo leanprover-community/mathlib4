@@ -6,7 +6,7 @@ Authors: Oliver Butterley, Yoh Tanimoto
 module
 
 public import Mathlib.Analysis.Normed.Module.Bases
-public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 /-!
 # Decomposition of a vector measure in a finite-dimensional `ℝ`-vector space with respect to a basis
@@ -22,7 +22,7 @@ public import Mathlib.MeasureTheory.VectorMeasure.Basic
 
 public section
 
-open Module LinearMap
+open Module ContinuousLinearMap
 
 namespace MeasureTheory.VectorMeasure
 
@@ -34,16 +34,22 @@ variable {X : Type*} {mX : MeasurableSpace X}
 /-- For a Schauder basis `b` in `V` indexed by `ι`, `i : ι` and a vector measure `μ`, `μ.coord b i`
 gives the `i`-th component of `μ` as a `𝕜`-valued vector measure. -/
 protected noncomputable def coord (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V)
-    (i : ι) : VectorMeasure X 𝕜 :=
-  mapRangeₗ (b.coord i).toLinearMap (b.coord i).continuous μ
+    (i : ι) : VectorMeasure X 𝕜 := μ.mapRangeL (b.coord i)
 
 @[simp]
 lemma coord_apply (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) (i : ι) (E : Set X) :
     μ.coord b i E = b.coord i (μ E) := by simp [VectorMeasure.coord]
 
+lemma hasSum_coord (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) (E : Set X) :
+    HasSum (fun i ↦ μ.coord b i E • b i)  (μ E) L := by simpa using b.expansion _
+
+lemma sum_coord_toUnconditionalSchauderBasis [Finite ι] [CompleteSpace 𝕜] (b : Basis ι 𝕜 V)
+    (μ : VectorMeasure X V) (E : Set X) :
+    letI : Fintype ι := Fintype.ofFinite ι
+    ∑ i, μ.coord b.toUnconditionalSchauderBasis i E • b i = μ E := by simp
+
 theorem eq_sum_toSpanSingleton_coord [CompleteSpace 𝕜] [Fintype ι] [L.LeAtTop] [L.NeBot]
     (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) :
-    μ = ∑ i, mapRangeₗ (toSpanSingleton 𝕜 V (b i))
-      ((toSpanSingleton 𝕜 V (b i)).continuous_of_finiteDimensional) (μ.coord b i) := by ext; simp
+    μ = ∑ i, (μ.coord b i).mapRangeL (toSpanSingleton 𝕜 (b i)) := by ext; simp
 
 end MeasureTheory.VectorMeasure

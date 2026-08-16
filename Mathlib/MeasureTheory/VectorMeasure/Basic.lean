@@ -683,6 +683,18 @@ end ContinuousAdd
 
 section Module
 
+variable {R : Type*} [Semiring R] [Module R M] [ContinuousAdd M] [ContinuousConstSMul R M]
+
+instance : Module R (VectorMeasure α M) where
+  add_smul r s x := by
+    ext E
+    exact add_smul r s (x E)
+  zero_smul x := by simp
+
+end Module
+
+section mapRange
+
 variable {R : Type*} [Semiring R] [Module R M] [Module R N]
 
 variable [ContinuousConstSMul R M] [ContinuousConstSMul R N]
@@ -707,7 +719,7 @@ def mapRangeₗ {α : Type*} [MeasurableSpace α] (f : M →ₗ[R] N) (hf : Cont
 lemma mapRangeₗ_apply {f : M →ₗ[R] N} (hf : Continuous f) {s : Set α} :
     v.mapRangeₗ f hf s = f (v s) := rfl
 
-end Module
+end mapRange
 
 end
 
