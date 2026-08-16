@@ -179,10 +179,9 @@ def uliftEquivalence :
   (ULiftHomULiftCategory.equiv.{w', w', w, w} (WidePullbackShape J)).symm.trans
     (equivalenceOfEquiv _ (Equiv.ulift.{w', w}.symm : J ≃ ULift.{w'} J))
 
-set_option linter.translate.warnInvalid false in
 /-- Show two functors out of a wide pullback shape are isomorphic by showing their components are
 isomorphic. -/
-@[to_dual (attr := simps!)]
+@[simps!]
 def functorExt {ι : Type*} {F G : WidePullbackShape ι ⥤ C}
     (base : F.obj none ≅ G.obj none) (comp : ∀ i, F.obj (some i) ≅ G.obj (some i))
     (w : ∀ i, F.map (.term i) ≫ base.hom = (comp i).hom ≫ G.map (.term i) := by cat_disch) :
@@ -192,9 +191,6 @@ def functorExt {ι : Type*} {F G : WidePullbackShape ι ⥤ C}
       | none => base
       | some i => comp i)
     (fun f ↦ by rcases f <;> simp [w])
-
-attribute [to_dual existing functorExt_inv_app] functorExt_hom_app
-attribute [to_dual existing functorExt_hom_app] functorExt_inv_app
 
 end WidePullbackShape
 
@@ -308,7 +304,6 @@ alias WidePullback.hom_eq_lift := widePullback.hom_eq_lift
 alias WidePullback.hom_ext := widePullback.hom_ext
 
 /-- A wide pullback cone is a cone on the wide cospan formed by a family of morphisms. -/
-@[to_dual]
 abbrev WidePullbackCone {ι : Type*} {X : C} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :=
   Cone (WidePullbackShape.wideCospan X Y f)
 
