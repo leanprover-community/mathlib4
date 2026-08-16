@@ -11,6 +11,15 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 # The Yoneda embedding is dense
 
 Any presheaf of types is a colimit of representable presheaves.
+This is stated in two ways, for each of the variants of the
+Yoneda embedding (`yoneda`, `yonedaULift` and `shrinkYoneda`):
+* as the density of the Yoneda emebedding `C ⥤ Cᵒᵖ ⥤ Type _`,
+which corresponds to the fact that for each presheaf `P : Cᵒᵖ ⥤ Type _`,
+the corresponding canonical cocones indexed by categories of structured
+arrows for the Yoneda embedding are colimit.
+* as the fact that for any `P : Cᵒᵖ ⥤ Type _`, there is a colimit
+cocone involving representable presheaves that is indexed by
+the opposite category of the category of elements of `P`.
 
 ## References
 
@@ -24,9 +33,10 @@ universe w v u
 
 namespace CategoryTheory
 
+open Opposite Limits
+
 variable {C : Type u} [Category.{v} C]
 
-open Limits in
 instance [LocallySmall.{w} C] : (shrinkYoneda.{w} (C := C)).IsDense where
   isDenseAt P :=
     ⟨evaluationJointlyReflectsColimits _ (fun X ↦ Nonempty.some (by
@@ -57,21 +67,89 @@ instance : (uliftYoneda.{w} (C := C)).IsDense :=
 instance : (yoneda (C := C)).IsDense :=
   .of_iso uliftYonedaIsoYoneda
 
+/-- When `C` is a locally `w`-small category, the functor `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ Type w`
+is dense at any `P : Cᵒᵖ ⥤ Type w`: the presheaf `P` identifies to the colimit
+of the canonical cocone of representable presheaves indexed by the
+category `CostructuredArrow shrinkYoneda P`. -/
 @[no_expose]
 noncomputable def denseAtShrinkYoneda [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) :
     shrinkYoneda.DenseAt P :=
   Functor.denseAt _ _
 
-/-- `yoneda` is dense: Every `P : Cᵒᵖ ⥤ Type v` is the colimit over
-`CostructuredArrow.proj yoneda X ⋙ yoneda`. -/
+/-- When `C` is a category where morphisms are in `Type v`,
+the functor `yoneda : C ⥤ Cᵒᵖ ⥤ Type v` is dense at any `P : Cᵒᵖ ⥤ Type v`:
+the presheaf `P` identifies to the colimit
+of the canonical cocone of representable presheaves indexed by the
+category `CostructuredArrow yoneda P`. -/
 @[no_expose]
 noncomputable def denseAtYoneda (P : Cᵒᵖ ⥤ Type v) : yoneda.DenseAt P :=
   Functor.denseAt _ _
 
-/-- `uliftYoneda` is dense: Every `P : Cᵒᵖ ⥤ Type max w v` is the colimit over
-`CostructuredArrow.proj uliftYoneda X ⋙ uliftYoneda`. -/
+/-- When `C` is a category where morphisms are in `Type v`,
+the functor `uliftYoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type max w v` is dense at
+any `P : Cᵒᵖ ⥤ Type max w v`: the presheaf `P` identifies to the colimit
+of the canonical cocone of representable presheaves indexed by the
+category `CostructuredArrow uliftYoneda P`. -/
 @[no_expose]
 noncomputable def denseAtUliftYoneda (P : Cᵒᵖ ⥤ Type max w v) : uliftYoneda.DenseAt P :=
   Functor.denseAt _ _
+
+namespace Functor.Elements
+
+/-- The (colimit) cocone which expresses a presheaf `P : Cᵒᵖ ⥤ Type w` as
+as colimit (indexed by `P.Elementsᵒᵖ`) of representable presheaves
+(defined using `shrinkYoneda`). -/
+@[implicit_reducible, simps]
+noncomputable def shrinkYonedaCocone [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) :
+    Cocone ((CategoryOfElements.π P).leftOp ⋙ shrinkYoneda.{w}) where
+  pt := P
+  ι.app x := shrinkYonedaEquiv.symm x.unop.snd
+  ι.naturality x y f := by simp [← shrinkYonedaEquiv_symm_map.{w}]
+
+/-- Any presheaf `P` is a colimit of representable presheaves
+(defined using `shrinkYoneda`) indexed by the opposite category of elements in `P`. -/
+noncomputable def isColimitShrinkYonedaCocone [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) :
+    IsColimit (shrinkYonedaCocone.{w} P) :=
+  (IsColimit.whiskerEquivalenceEquiv
+    (CategoryOfElements.costructuredArrowShrinkYonedaEquivalence P).symm).2
+      (IsColimit.ofIsoColimit (denseAtShrinkYoneda.{w} P) (Cocone.ext (Iso.refl _)))
+
+/-- The (colimit) cocone which expresses a presheaf `P : Cᵒᵖ ⥤ Type v` as
+as colimit (indexed by `P.Elementsᵒᵖ`) of representable presheaves
+(defined using `yoneda`). -/
+@[implicit_reducible, simps]
+def yonedaCocone (P : Cᵒᵖ ⥤ Type v) :
+    Cocone ((CategoryOfElements.π P).leftOp ⋙ yoneda) where
+  pt := P
+  ι.app x := yonedaEquiv.symm x.unop.snd
+  ι.naturality x y f := by simp [yonedaEquiv_symm_naturality_left f.unop.1.unop]
+
+/-- Any presheaf `P` is a colimit of representable presheaves
+(defined using `yoneda`) indexed by the opposite category of elements in `P`. -/
+noncomputable def isColimitYonedaCocone (P : Cᵒᵖ ⥤ Type v) :
+    IsColimit (yonedaCocone P) :=
+  (IsColimit.whiskerEquivalenceEquiv
+    (CategoryOfElements.costructuredArrowYonedaEquivalence P).symm).2
+      (IsColimit.ofIsoColimit (denseAtYoneda P) (Cocone.ext (Iso.refl _)))
+
+/-- The (colimit) cocone which expresses a presheaf `P : Cᵒᵖ ⥤ Type max w v` as
+as colimit (indexed by `P.Elementsᵒᵖ`) of representable presheaves
+(defined using `uliftYoneda`). -/
+@[implicit_reducible, simps]
+def uliftYonedaCocone (P : Cᵒᵖ ⥤ Type max w v) :
+    Cocone ((CategoryOfElements.π P).leftOp ⋙ uliftYoneda.{w}) where
+  pt := P
+  ι.app x := uliftYonedaEquiv.symm x.unop.snd
+  ι.naturality x y f := by simp [uliftYonedaEquiv_symm_naturality_left f.unop.1.unop]
+
+/-- Any presheaf `P` is a colimit of representable presheaves
+(defined using `uliftYoneda`) indexed by the opposite category of elements in `P`. -/
+noncomputable def isColimitUliftYonedaCocone (P : Cᵒᵖ ⥤ Type max w v) :
+    IsColimit (uliftYonedaCocone.{w} P) :=
+  (IsColimit.whiskerEquivalenceEquiv
+    (CategoryOfElements.costructuredArrowULiftYonedaEquivalence P).symm).2
+      (IsColimit.ofIsoColimit (denseAtUliftYoneda P) (Cocone.ext (Iso.refl _)))
+
+end Functor.Elements
 
 end CategoryTheory
