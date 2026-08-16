@@ -332,8 +332,6 @@ theorem trans_toLinearEquiv (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃S
   ext
   rfl
 
--- variable {R₁ M₁ M₂}
-
 protected theorem bijective (e : M₁ ≃SL[σ₁₂] M₂) : Function.Bijective e :=
   e.toLinearEquiv.toEquiv.bijective
 
