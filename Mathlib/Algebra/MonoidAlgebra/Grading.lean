@@ -177,9 +177,8 @@ theorem grade.decompose_single (i : ι) (r : R) :
   decomposeAux_single _ _ _
 
 /-- The component of degree `a` in the decomposition of `f` is its `a`-term. -/
-@[simp] lemma grade.decompose_apply [DecidableEq M]
-  (f : AddMonoidAlgebra R M) (a : M) :
-    ((DirectSum.decompose (grade R) f) a) = single a (f.coeff a) := by
+@[simp] lemma grade.decompose_apply [DecidableEq M] (f : AddMonoidAlgebra R M) (a : M) :
+    DirectSum.decompose (grade R) f a = single a (f.coeff a) := by
   induction f using induction_linear with
   | zero => simp
   | add x y hx hy => simp [decompose_add, hx, hy]
