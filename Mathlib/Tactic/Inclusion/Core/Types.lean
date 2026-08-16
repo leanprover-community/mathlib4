@@ -100,6 +100,8 @@ structure InclusionM.Context where
   paramSettings : NameMap Expr
   /-- The names of the inclusion extension families to use. -/
   families : Array Name
+  /-- If `noIVars` is `true` then inclusion extensions should not register `IVar`s. -/
+  noIVars : Bool := false
 
 /-- The mutable state of the `InclusionM` monad. -/
 structure InclusionM.State where

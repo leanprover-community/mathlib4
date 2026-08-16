@@ -67,6 +67,8 @@ private def checkIVarWellFormed (localContext : LocalContext) (iExpr : IExpr) : 
 /-- Create and register an inclusion variable for `iExpr`. -/
 def mkIVar (iExpr : IExpr) (cover : Option Expr := none) : InclusionM IVar := do
   let ctx ← read
+  if ctx.noIVars then
+    throwError "Cannot create an inclusion variable for {iExpr.expr} since `noIVars` is set to true"
   checkIVarWellFormed ctx.localContext iExpr
   let setVar ←
     mkFreshExprMVarAt ctx.localContext ctx.localInstances iExpr.iType.setType .syntheticOpaque
@@ -78,7 +80,7 @@ def mkIVar (iExpr : IExpr) (cover : Option Expr := none) : InclusionM IVar := do
 
 /-- Construct an inclusion extension for making non dependently typed inclusion variables. -/
 def mkNDIVarExt (iType : IType)
-    (mkCover : IExpr → InclusionM (Option Expr) := fun _ ↦ pure none)
+    (mkCover : InclusionM (Option Expr) := pure none)
     (priority : Nat := eval_prio low) (name : Name := by exact decl_name%) : InclusionExt where
   declName := name
   userName := name
@@ -87,7 +89,7 @@ def mkNDIVarExt (iType : IType)
     let eType ← inferType e
     unless ← isDefEq eType iType.elemType do failure
     let iExpr : IExpr := ⟨iType, e⟩
-    return (← mkIVar iExpr (← mkCover iExpr)).toExprInclusionBody
+    return (← mkIVar iExpr (← mkCover)).toExprInclusionBody
 
 /-- Return the inclusion variable registered for `e`, if there is one. -/
 def findIVar? (e : Expr) : HypothesisM (Option IVar) := do
@@ -95,43 +97,32 @@ def findIVar? (e : Expr) : HypothesisM (Option IVar) := do
 
 /-- Check that two inclusion types are definitionally equal, including their chosen `ToSet`
 instances. -/
-def ensureOutputType (actual expected : IType) : MetaM Unit := do
-  -- The represented element types must agree, for example both must be `Real`.
-  unless ← pureIsDefEq actual.elemType expected.elemType do
-    -- Report the component that differs instead of a generic type mismatch.
-    throwError "Inclusion has expression type {actual.elemType}, expected \
-      {expected.elemType}"
-  -- The computational set types must agree, for example both must be `Interval Dyadic`.
-  unless ← pureIsDefEq actual.setType expected.setType do
-    -- A hypothesis using a different backend cannot be substituted into the main function.
-    throwError "Inclusion has set type {actual.setType}, expected {expected.setType}"
-  -- Even equal element and set types may be interpreted by definitionally different `ToSet`s.
-  unless ← pureIsDefEq actual.toSetInst expected.toSetInst do
-    -- Require the same interpretation so that the two membership propositions agree.
+def ensureOutputType (type expectedType : IType) : MetaM Unit := do
+  unless ← pureIsDefEq type.elemType expectedType.elemType do
+    throwError "Inclusion has expression type {type.elemType}, expected {expectedType.elemType}"
+  unless ← pureIsDefEq type.setType expectedType.setType do
+    throwError "Inclusion has set type {type.setType}, expected {expectedType.setType}"
+  unless ← pureIsDefEq type.toSetInst expectedType.toSetInst do
     throwError "Inclusion uses an unexpected `ToSet` instance"
 
-/-- Construct and validate an inclusion body for an expression argument of a hypothesis rule. -/
+/-- Construct a closed inclusion body for an expression argument of a hypothesis rule. -/
 def mkHypExprInclusionBody (e : Expr) : HypothesisM ExprInclusionBody := do
   let ctx ← read
-  let (body, inclusionState) ← (mkExprInclusionBody e).runWith ctx.toContext
+  let inclusionContext := { ctx.toContext with noIVars := true }
+  let (body, inclusionState) ← (mkExprInclusionBody e).runWith inclusionContext
   unless inclusionState.iVars.isEmpty do
     throwError "The inclusion for {e} depends on inclusion variables"
   if body.inclusionBody.hasFVar then
     throwError "The inclusion hypothesis generated from {e} contains a free variable"
   if body.inclusionBody.hasMVar then
     throwError "The inclusion hypothesis generated from {e} contains a metavariable"
-  discard <| body.inferIType e
   return body
 
 /-- Add the inclusion hypothesis `body` for `iExpr`. -/
 def addInclusionHyp (iExpr : IExpr) (body : ExprInclusionBody) : HypothesisM Unit := do
-  -- Reject candidates whose element type, represented-set type, or `ToSet` instance is unsuitable.
   ensureOutputType (← body.inferIType iExpr.expr) iExpr.iType
-  -- Append the candidate to the array associated with the canonical requested expression.
   modify fun state => { state with inclusions := state.inclusions.alter iExpr.expr fun
-    -- Preserve earlier candidates because they will later be combined with `Refine`.
     | some hyps => hyps.push body
-    -- Create the candidate array when this is the first useful hypothesis for the expression.
     | none => #[body] }
 
 end Inclusion
