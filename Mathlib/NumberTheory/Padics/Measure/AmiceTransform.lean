@@ -6,7 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.NumberTheory.Padics.AddChar
-public import Mathlib.NumberTheory.Padics.Measure.Basic
+public import Mathlib.NumberTheory.Padics.Measure.Group
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
@@ -260,20 +260,17 @@ def amiceTransformEquivₐ : D(Multiplicative ℤ_[p], ℤ_[p]) ≃ₐ[ℤ_[p]] 
   { amiceTransformₐ with
     invFun := (ofAddDistEquiv.trans amiceTransformEquiv).invFun
     left_inv μ := by
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom,
-        OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe, LinearEquiv.invFun_eq_symm,
-        LinearEquiv.trans_symm, LinearEquiv.trans_apply, LinearEquiv.symm_apply_eq]
-      ext n
+      suffices amiceTransformₐ μ = amiceTransformEquiv (ofAddDistEquiv μ) by
+        simpa [LinearEquiv.symm_apply_eq]
+      ext
       simp only [coeff_amiceTransformₐ, ofAddDistEquiv, AbstractMeasure.coe_arrowCongrLeft,
         amiceTransformEquiv_apply, coeff_amiceTransform, smul_eq_mul, mul_one,
         AbstractMeasure.map_apply]
       congr 1 with x
       simp [mulMahler_apply]
     right_inv F := by
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom,
-        LinearEquiv.invFun_eq_symm, LinearEquiv.trans_symm, LinearEquiv.trans_apply,
-        OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe]
-      ext n
+      suffices amiceTransformₐ (ofAddDistEquiv.symm (amiceTransformEquiv.symm F)) = F by simpa
+      ext
       simp only [ofAddDistEquiv, AbstractMeasure.arrowCongrLeft_symm, Homeomorph.symm_symm,
         AbstractMeasure.coe_arrowCongrLeft, coeff_amiceTransformₐ, AbstractMeasure.map_apply]
       rw [show F = amiceTransformEquiv (amiceTransformEquiv.symm F) by simp]
