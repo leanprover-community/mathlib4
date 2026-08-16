@@ -205,17 +205,15 @@ section LinearOrder
 
 variable [LinearOrder β] [Preorder γ]
 
--- TODO: the name `WellFounded.min` is incorrect when the assumption is that `>` is well-founded,
---       so deprecate in favor of `WellFoundedLT.min_le`
-@[to_dual none]
-theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop))
-    {x : β} {s : Set β} (hx : x ∈ s) : h.min s ⟨x, hx⟩ ≤ x :=
-  not_lt.1 <| h.not_lt_min _ hx
-
 @[to_dual le_max]
 theorem WellFoundedLT.min_le [WellFoundedLT β] {x : β} {s : Set β} (hx : x ∈ s) :
     WellFoundedLT.min s ⟨x, hx⟩ ≤ x :=
-  wellFounded_lt.min_le hx
+  not_lt.mp <| WellFounded.not_lt_min _ s hx
+
+@[deprecated WellFoundedLT.min_le (since := "2026-08-16")]
+theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop)) {x : β} {s : Set β}
+    (hx : x ∈ s) : h.min s ⟨x, hx⟩ ≤ x :=
+  (show WellFoundedLT β from ⟨h⟩).min_le hx
 
 @[to_dual]
 theorem Set.range_injOn_strictMono_of_wellFoundedLT [WellFoundedLT β] :
