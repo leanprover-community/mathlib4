@@ -155,11 +155,11 @@ theorem map_bernoulliMeasure [MeasurableSingletonClass X] [MeasurableSingletonCl
   have hf (x : X) : AEMeasurable f (dirac x) := by fun_prop
   simp only [bernoulliMeasure_def]
   rw [AEMeasurable.map_add₀ (by fun_prop) (by fun_prop)]
-  simp
+  simp [hf]
 
 theorem map_bernoulliMeasure' (x y : X) {f : X → Y} (hf : Measurable f) (p : I) :
     Ber(x, y, p).map f = bernoulliMeasure (f x) (f y) p := by
-  simp [bernoulliMeasure_def, Measure.map_add _ _ hf, Measure.map_smul, map_dirac' hf]
+  simp [bernoulliMeasure_def, Measure.map_add _ _ hf, hf.aemeasurable, map_dirac' hf]
 
 section Integral
 

@@ -54,21 +54,22 @@ theorem map_mul_right_eq_self (μ : Measure G) [IsMulRightInvariant μ] (g : G) 
   IsMulRightInvariant.map_mul_right_eq_self g
 
 @[to_additive MeasureTheory.isAddLeftInvariant_smul]
-instance isMulLeftInvariant_smul [IsMulLeftInvariant μ] (c : ℝ≥0∞) : IsMulLeftInvariant (c • μ) :=
-  ⟨fun g => by rw [Measure.map_smul, map_mul_left_eq_self]⟩
+instance isMulLeftInvariant_smul [MeasurableMul G] [IsMulLeftInvariant μ] (c : ℝ≥0∞) :
+    IsMulLeftInvariant (c • μ) :=
+  ⟨fun g => by rw [Measure.map_smul _ (by fun_prop), map_mul_left_eq_self]⟩
 
 @[to_additive MeasureTheory.isAddRightInvariant_smul]
-instance isMulRightInvariant_smul [IsMulRightInvariant μ] (c : ℝ≥0∞) :
+instance isMulRightInvariant_smul [MeasurableMul G] [IsMulRightInvariant μ] (c : ℝ≥0∞) :
     IsMulRightInvariant (c • μ) :=
-  ⟨fun g => by rw [Measure.map_smul, map_mul_right_eq_self]⟩
+  ⟨fun g => by rw [Measure.map_smul _ (by fun_prop), map_mul_right_eq_self]⟩
 
 @[to_additive MeasureTheory.isAddLeftInvariant_smul_nnreal]
-instance isMulLeftInvariant_smul_nnreal [IsMulLeftInvariant μ] (c : ℝ≥0) :
+instance isMulLeftInvariant_smul_nnreal [MeasurableMul G] [IsMulLeftInvariant μ] (c : ℝ≥0) :
     IsMulLeftInvariant (c • μ) :=
   MeasureTheory.isMulLeftInvariant_smul (c : ℝ≥0∞)
 
 @[to_additive MeasureTheory.isAddRightInvariant_smul_nnreal]
-instance isMulRightInvariant_smul_nnreal [IsMulRightInvariant μ] (c : ℝ≥0) :
+instance isMulRightInvariant_smul_nnreal [MeasurableMul G] [IsMulRightInvariant μ] (c : ℝ≥0) :
     IsMulRightInvariant (c • μ) :=
   MeasureTheory.isMulRightInvariant_smul (c : ℝ≥0∞)
 
@@ -788,12 +789,13 @@ theorem haar_singleton [ContinuousMul G] [BorelSpace G] (g : G) : μ {g} = μ {(
   simp only [mul_one, preimage_mul_left_singleton, inv_inv]
 
 @[to_additive IsAddHaarMeasure.smul]
-theorem IsHaarMeasure.smul {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) : IsHaarMeasure (c • μ) :=
+theorem IsHaarMeasure.smul [MeasurableMul G] {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) :
+    IsHaarMeasure (c • μ) :=
   { lt_top_of_isCompact := fun _K hK => ENNReal.mul_lt_top ctop.lt_top hK.measure_lt_top
     toIsOpenPosMeasure := isOpenPosMeasure_smul μ cpos }
 
 @[to_additive IsAddHaarMeasure.nnreal_smul]
-lemma IsHaarMeasure.nnreal_smul {c : ℝ≥0} (hc : c ≠ 0) : IsHaarMeasure (c • μ) :=
+lemma IsHaarMeasure.nnreal_smul [MeasurableMul G] {c : ℝ≥0} (hc : c ≠ 0) : IsHaarMeasure (c • μ) :=
   .smul _ (by simp [hc]) (Option.some_ne_none _)
 
 /-- If a left-invariant measure gives positive mass to some compact set with nonempty interior, then

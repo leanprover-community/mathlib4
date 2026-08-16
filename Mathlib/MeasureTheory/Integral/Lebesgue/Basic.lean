@@ -28,7 +28,7 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 
 @[expose] public section
 
-assert_not_exists Module.Basis Norm MeasureTheory.MeasurePreserving MeasureTheory.Measure.dirac
+assert_not_exists Module.Basis Norm MeasureTheory.MeasurePreserving
 
 open Set hiding restrict restrict_apply
 
