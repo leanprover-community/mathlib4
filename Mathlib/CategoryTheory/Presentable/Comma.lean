@@ -102,8 +102,6 @@ lemma isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
           (isColimitOfPreserves (fst _ _) hc) g.left
         obtain ⟨j₂, f₂, hf₂⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
           (isColimitOfPreserves (snd _ _) hc) g.right
-        dsimp only [Functor.mapCocone_pt, snd_obj, Functor.const_obj_obj, Functor.comp_obj,
-          Functor.mapCocone_ι_app, snd_map] at f₁ f₂ hf₁ hf₂
         dsimp at f₁ f₂ hf₁ hf₂
         refine ⟨max j₁ j₂, f₁ ≫ (G.map (leftToMax j₁ j₂)).left,
           f₂ ≫ (G.map (rightToMax j₁ j₂)).right, ?_, ?_⟩
