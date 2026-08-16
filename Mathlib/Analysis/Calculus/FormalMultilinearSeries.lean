@@ -29,7 +29,7 @@ multilinear, formal series
 
 noncomputable section
 
-open Set Fin Topology
+open Set Fin
 
 universe u u' v w x y
 variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x} {H : Type y}
@@ -52,14 +52,18 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring �
   ∀ n : ℕ, E [×n]→L[𝕜] F
 deriving Inhabited
 
+-- This instance exists to avoid an nsmul diamond.
+instance (𝕜') [Semiring 𝕜'] [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [SMulCommClass 𝕜 𝕜' F] :
+    SMul 𝕜' (FormalMultilinearSeries 𝕜 E F) where
+  smul k x n := k • x n
+
 section AddCommMonoid
 
 /-- Copy `Pi.addCommMonoid`, ensuring the pointwise operations hold by defeq. -/
-instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) where
+instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) := fast_instance% {
   __ := Pi.addCommMonoid
   zero _ := 0
-  add x y n := x n + y n
-  nsmul k x n := k • x n
+  add x y n := x n + y n }
 
 end AddCommMonoid
 
@@ -388,17 +392,12 @@ theorem constFormalMultilinearSeries_apply_of_nonzero [NontriviallyNormedField �
     {n : ℕ} (hn : n ≠ 0) : constFormalMultilinearSeries 𝕜 E c n = 0 :=
   Nat.casesOn n (fun hn => (hn rfl).elim) (fun _ _ => rfl) hn
 
-set_option linter.auxLemma false in
 @[simp]
 lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] :
     constFormalMultilinearSeries 𝕜 E (0 : F) = 0 := by
-  ext n x
-  simp only [FormalMultilinearSeries.zero_apply, ContinuousMultilinearMap.zero_apply,
-    constFormalMultilinearSeries]
-  induction n
-  · simp only [ContinuousMultilinearMap.uncurry0_apply]
-  · simp only [constFormalMultilinearSeries.match_1.eq_2, ContinuousMultilinearMap.zero_apply]
+  ext n
+  induction n <;> simp
 
 @[simp]
 lemma compContinuousLinearMap_zero [NontriviallyNormedField 𝕜]

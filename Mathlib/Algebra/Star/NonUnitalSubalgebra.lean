@@ -343,6 +343,7 @@ def map (f : F) (S : NonUnitalStarSubalgebra R A) : NonUnitalStarSubalgebra R B 
   toNonUnitalSubalgebra := S.toNonUnitalSubalgebra.map (f : A →ₙₐ[R] B)
   star_mem' := by rintro _ ⟨a, ha, rfl⟩; exact ⟨star a, star_mem (s := S) ha, map_star f a⟩
 
+@[gcongr]
 theorem map_mono {S₁ S₂ : NonUnitalStarSubalgebra R A} {f : F} :
     S₁ ≤ S₂ → (map f S₁ : NonUnitalStarSubalgebra R B) ≤ map f S₂ :=
   Set.image_mono
@@ -597,7 +598,7 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 /-- The star operation on `NonUnitalSubalgebra` commutes with `NonUnitalAlgebra.adjoin`. -/
 theorem star_adjoin_comm (s : Set A) :
     star (NonUnitalAlgebra.adjoin R s) = NonUnitalAlgebra.adjoin R (star s) :=
-  have this :
+  have :
     ∀ t : Set A, NonUnitalAlgebra.adjoin R (star t) ≤ star (NonUnitalAlgebra.adjoin R t) := fun _ =>
     NonUnitalAlgebra.adjoin_le fun _ hx => NonUnitalAlgebra.subset_adjoin R hx
   le_antisymm (by simpa only [star_star] using NonUnitalSubalgebra.star_mono (this (star s)))
@@ -1101,7 +1102,6 @@ variable [Nonempty ι] {K : ι → NonUnitalStarSubalgebra R A} {dir : Directed 
   {f : ∀ i, K i →⋆ₙₐ[R] B} {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
   {T : NonUnitalStarSubalgebra R A} {hT : T = iSup K}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
@@ -1114,7 +1114,6 @@ theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
 theorem iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
     (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
     iSupLift K dir f hf T hT ⟨x, hx⟩ = f i x := by
@@ -1122,7 +1121,6 @@ theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
   dsimp [iSupLift]
   apply Set.iUnionLift_mk
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iSupLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
     iSupLift K dir f hf T hT x = f i ⟨x, hx⟩ := by
   subst hT

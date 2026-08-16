@@ -175,13 +175,14 @@ theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f :
   filter_upwards [g.coeFn_toLp (1 - p⁻¹)⁻¹ μ] with x hg
   rw [hg]
 
-instance instCoeDep {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
-    CoeDep (Lp F p μ) f 𝓢'(E, F) where
-  coe := toTemperedDistribution f
+/-- This coercion has to be a `CoeHead`, because `𝓢'(E, F)` can't infer the value of `p` or `μ`. -/
+instance instCoeToTemperedDistribution {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] :
+    CoeHead (Lp F p μ) 𝓢'(E, F) where
+  coe := toTemperedDistribution
 
 @[simp]
 theorem toTemperedDistribution_toLp_eq [SecondCountableTopology E] {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
-    (f : 𝓢(E, F)) : ((f.toLp p μ) : 𝓢'(E, F)) = f.toTemperedDistributionCLM E F μ := by
+    (f : 𝓢(E, F)) : ((f : Lp F p μ) : 𝓢'(E, F)) = f.toTemperedDistributionCLM E F μ := by
   ext g
   simp only [Lp.toTemperedDistribution_apply, toTemperedDistributionCLM_apply_apply]
   apply integral_congr_ae
@@ -200,7 +201,7 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperate
   cont := by
     apply PointwiseConvergenceCLM.continuous_of_continuous_eval
     intro g
-    haveI : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
+    have : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
     have hpq : ENNReal.HolderConjugate p (1 - p⁻¹)⁻¹ :=
       ENNReal.HolderConjugate.inv_one_sub_inv' hp.out
     exact (((lsmul ℂ ℂ (E := F)).flip.lpPairing μ p (1 - p⁻¹)⁻¹).flip (g.toLp (1 - p⁻¹)⁻¹ μ)).cont
@@ -480,15 +481,6 @@ instance instContinuousFourier : ContinuousFourier 𝓢'(E, F) 𝓢'(E, F) where
 @[simp]
 theorem fourier_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕 f g = f (𝓕 g) := rfl
 
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformCLM := FourierTransform.fourierCLM
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformCLM_apply := FourierTransform.fourierCLM_apply
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransform_apply := fourier_apply
-
 instance instFourierTransformInv : FourierTransformInv 𝓢'(E, F) 𝓢'(E, F) where
   fourierInv := PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ))
 
@@ -503,15 +495,6 @@ instance instContinuousFourierInv : ContinuousFourierInv 𝓢'(E, F) 𝓢'(E, F)
 
 @[simp]
 theorem fourierInv_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformInvCLM := FourierTransform.fourierInvCLM
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformInvCLM_apply := FourierTransform.fourierInvCLM_apply
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformInv_apply := fourierInv_apply
 
 instance instFourierPair : FourierPair 𝓢'(E, F) 𝓢'(E, F) where
   fourierInv_fourier_eq f := by ext; simp
@@ -532,9 +515,6 @@ theorem fourier_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
   ext g
   simpa using integral_fourier_smul_eq g f
 
-@[deprecated (since := "2026-01-14")]
-alias fourierTransform_toTemperedDistributionCLM_eq := fourier_toTemperedDistributionCLM_eq
-
 /-- The distributional inverse Fourier transform and the classical inverse Fourier transform
 coincide on `𝓢(E, F)`. -/
 theorem fourierInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
@@ -544,9 +524,6 @@ theorem fourierInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
   _ = 𝓕⁻ (𝓕 (toTemperedDistributionCLM E F volume (𝓕⁻ f))) := by
     rw [fourier_toTemperedDistributionCLM_eq]
   _ = _ := fourierInv_fourier_eq _
-
-@[deprecated (since := "2026-01-14")]
-alias fourierTransformInv_toTemperedDistributionCLM_eq := fourierInv_toTemperedDistributionCLM_eq
 
 end embedding
 
@@ -601,15 +578,9 @@ def delta (x : E) : 𝓢'(E, ℂ) :=
   toPointwiseConvergenceCLM _ _ _ _ <|
     (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
 
-@[deprecated (since := "2025-12-23")]
-noncomputable alias _root_.SchwartzMap.delta := delta
-
 @[simp]
 theorem delta_apply (x : E) (f : 𝓢(E, ℂ)) : delta x f = f x :=
   rfl
-
-@[deprecated (since := "2025-12-23")]
-alias _root_.SchwartzMap.delta_apply := delta_apply
 
 open MeasureTheory MeasureTheory.Measure
 
@@ -619,9 +590,6 @@ variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 @[simp]
 theorem toTemperedDistribution_dirac_eq_delta (x : E) :
   (dirac x).toTemperedDistribution = delta x := by aesop
-
-@[deprecated (since := "2025-12-23")]
-alias _root_.SchwartzMap.integralCLM_dirac_eq_delta := toTemperedDistribution_dirac_eq_delta
 
 end definition
 

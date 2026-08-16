@@ -162,6 +162,12 @@ much faster.
 instance decidablePrime (p : ℕ) : Decidable (Prime p) :=
   decidable_of_iff' _ prime_def_lt'
 
+/-!
+### Specific small primes
+
+It is recommended not to add further lemmas to this list; instead, import
+`Mathlib.Tactic.NormNum.Prime` in downstream files and use `norm_num` for primality proofs.
+-/
 theorem prime_two : Prime 2 := by decide
 
 theorem prime_three : Prime 3 := by decide

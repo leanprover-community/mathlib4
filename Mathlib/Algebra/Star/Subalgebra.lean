@@ -273,6 +273,7 @@ theorem map_le_iff_le_comap {S : StarSubalgebra R A} {f : A →⋆ₐ[R] B} {U :
 theorem gc_map_comap (f : A →⋆ₐ[R] B) : GaloisConnection (map f) (comap f) := fun _S _U =>
   map_le_iff_le_comap
 
+@[gcongr]
 theorem comap_mono {S₁ S₂ : StarSubalgebra R B} {f : A →⋆ₐ[R] B} :
     S₁ ≤ S₂ → S₁.comap f ≤ S₂.comap f :=
   Set.preimage_mono
@@ -281,7 +282,7 @@ theorem comap_injective {f : A →⋆ₐ[R] B} (hf : Function.Surjective f) :
     Function.Injective (comap f) := fun _S₁ _S₂ h =>
   ext fun b =>
     let ⟨x, hx⟩ := hf b
-    let this := SetLike.ext_iff.1 h x
+    let := SetLike.ext_iff.1 h x
     hx ▸ this
 
 @[simp]
@@ -380,7 +381,7 @@ theorem star_mono : Monotone (star : Subalgebra R A → Subalgebra R A) := fun _
 variable (R) in
 /-- The star operation on `Subalgebra` commutes with `Algebra.adjoin`. -/
 theorem star_adjoin_comm (s : Set A) : star (Algebra.adjoin R s) = Algebra.adjoin R (star s) :=
-  have this : ∀ t : Set A, Algebra.adjoin R (star t) ≤ star (Algebra.adjoin R t) := fun _ =>
+  have : ∀ t : Set A, Algebra.adjoin R (star t) ≤ star (Algebra.adjoin R t) := fun _ =>
     Algebra.adjoin_le fun _ hx => Algebra.subset_adjoin hx
   le_antisymm (by simpa only [star_star] using Subalgebra.star_mono (this (star s))) (this s)
 
@@ -869,6 +870,32 @@ end StarAlgHom
 
 section RestrictScalars
 
+section Equiv
+
+variable (R : Type*) {S A B : Type*} [CommSemiring R] [CommSemiring S]
+  [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MulAction R S] [Module S A]
+  [Module S B] [Module R A] [Module R B] [IsScalarTower R S A] [IsScalarTower R S B]
+  [Star A] [Star B]
+
+/-- Restrict the scalar ring of a star algebra equivalence. -/
+@[simps]
+def StarAlgEquiv.restrictScalars (f : A ≃⋆ₐ[S] B) : A ≃⋆ₐ[R] B :=
+  { (f : A →ₗ[S] B).restrictScalars R, f with
+    toFun := f }
+
+theorem StarAlgEquiv.restrictScalars_injective :
+    Function.Injective (StarAlgEquiv.restrictScalars R : (A ≃⋆ₐ[S] B) → A ≃⋆ₐ[R] B) :=
+  fun _ _ h => ext (DFunLike.congr_fun h ·)
+
+@[simp]
+theorem StarAlgEquiv.toNonUnitalStarAlgHom_restrictScalars (e : A ≃⋆ₐ[S] B) :
+    (e.restrictScalars R).toNonUnitalStarAlgHom = e.toNonUnitalStarAlgHom.restrictScalars R :=
+  rfl
+
+end Equiv
+
+section Unital
+
 variable (R : Type*) {S A B : Type*} [CommSemiring R]
   [CommSemiring S] [Semiring A] [Semiring B] [Algebra R S] [Algebra S A] [Algebra S B]
   [Algebra R A] [Algebra R B] [IsScalarTower R S A] [IsScalarTower R S B] [Star A] [Star B]
@@ -883,16 +910,12 @@ theorem StarAlgHom.restrictScalars_injective :
   fun f g h => StarAlgHom.ext fun x =>
     show f.restrictScalars R x = g.restrictScalars R x from DFunLike.congr_fun h x
 
-@[simps]
-def StarAlgEquiv.restrictScalars (f : A ≃⋆ₐ[S] B) : A ≃⋆ₐ[R] B :=
-  { (f : A →⋆ₐ[S] B).restrictScalars R, f with
-    toFun := f
-    map_smul' := map_smul ((f : A →⋆ₐ[S] B).restrictScalars R) }
+@[simp]
+theorem StarAlgEquiv.toStarAlgHom_restrictScalars (e : A ≃⋆ₐ[S] B) :
+    (e.restrictScalars R).toStarAlgHom = e.toStarAlgHom.restrictScalars R :=
+  rfl
 
-theorem StarAlgEquiv.restrictScalars_injective :
-    Function.Injective (StarAlgEquiv.restrictScalars R : (A ≃⋆ₐ[S] B) → A ≃⋆ₐ[R] B) :=
-  fun f g h => StarAlgEquiv.ext fun x =>
-    show f.restrictScalars R x = g.restrictScalars R x from DFunLike.congr_fun h x
+end Unital
 
 end RestrictScalars
 

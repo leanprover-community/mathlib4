@@ -6,7 +6,7 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Subspace
-public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 
 /-!
@@ -221,9 +221,6 @@ theorem orthogonalBilin_innerₗ {E} [NormedAddCommGroup E] [InnerProductSpace �
     (K : Submodule ℝ E) : K.orthogonalBilin (innerₗ E) = Kᗮ :=
   rfl
 
-@[deprecated (since := "2025-12-26")]
-alias bilinFormOfRealInner_orthogonal := orthogonalBilin_innerₗ
-
 /-!
 ### Orthogonality of submodules
 
@@ -372,7 +369,7 @@ theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} :
 @[simp]
 theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} :
     U.comap (f : E →ₗ[𝕜] F) ⟂ V.comap (f : E →ₗ[𝕜] F) ↔ U ⟂ V := by
-  convert! IsOrtho.map_iff f.symm using 2 <;>
+  convert IsOrtho.map_iff f.symm <;>
     exact Submodule.comap_equiv_eq_map_symm (f : E ≃ₗ[𝕜] F) _
 
 end Submodule
@@ -414,12 +411,8 @@ notation:1200 K "ᗮ" => orthogonal K
 @[simp]
 lemma toSubmodule_orthogonal_eq : K.orthogonal.toSubmodule = K.toSubmodule.orthogonal := rfl
 
-@[deprecated (since := "2026-01-18")] alias orthogonal_toSubmodule_eq := toSubmodule_orthogonal_eq
-
 @[simp]
 lemma mem_orthogonal_toSubmodule_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
-
-@[deprecated (since := "2026-01-18")] alias mem_orthogonal_iff := mem_orthogonal_toSubmodule_iff
 
 /-- When a vector is in `Kᗮ`. -/
 @[simp]

@@ -279,8 +279,8 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
   have : Commute (t • x) (h • x) := ((Commute.refl x).smul_left t).smul_right h
   rw [add_smul t h, exp_add_of_commute_of_mem_ball this htx hh, zero_add, zero_smul, exp_zero,
     ContinuousLinearMap.smulRight_apply, one_apply_eq_self,
-    _root_.smul_apply, ContinuousLinearMap.smulRight_apply,
-    one_apply_eq_self, smul_eq_mul, mul_sub_left_distrib, mul_sub_left_distrib, mul_one]
+    smul_apply, ContinuousLinearMap.smulRight_apply, one_apply_eq_self, smul_eq_mul,
+    mul_sub_left_distrib, mul_sub_left_distrib, mul_one]
 
 theorem hasFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
     (htx : t • x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :

@@ -7,13 +7,11 @@ module
 
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Algebra.GCDMonoid.FinsetLemmas
-public import Mathlib.Algebra.Field.GeomSum
 public import Mathlib.Data.Nat.Choose.Bounds
 public import Mathlib.RingTheory.PowerSeries.Exp
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.RingTheory.ZMod.UnitsCyclic
 public import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Algebra.Order.Star.Basic
 
 /-!
 # Bernoulli numbers
@@ -193,9 +191,6 @@ theorem bernoulli'_eq_zero_of_odd {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bern
     simpa [mul_assoc, sub_mul, mul_comm (evalNegHom (exp ℚ)), exp_mul_exp_neg_eq_one]
   congr
 
-@[deprecated (since := "2025-12-09")]
-alias bernoulli'_odd_eq_zero := bernoulli'_eq_zero_of_odd
-
 /-- The Bernoulli numbers are defined to be `bernoulli'` with a parity sign. -/
 def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
@@ -234,7 +229,7 @@ theorem sum_bernoulli (n : ℕ) :
   | succ n =>
   suffices (∑ i ∈ range n, ↑((n + 2).choose (i + 2)) * bernoulli (i + 2)) = n / 2 by
     simp only [this, sum_range_succ', cast_succ, bernoulli_one, bernoulli_zero, choose_one_right,
-      mul_one, choose_zero_right, cast_zero, if_false, zero_add, succ_succ_ne_one]
+      mul_one, choose_zero_right, cast_zero, ite_false, zero_add, succ_succ_ne_one]
     ring
   have f := sum_bernoulli' n.succ.succ
   simp_rw [sum_range_succ', cast_succ, ← eq_sub_iff_add_eq] at f
@@ -250,7 +245,7 @@ theorem bernoulli_spec' (n : ℕ) :
     (∑ k ∈ antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli k.1) =
       if n = 0 then 1 else 0 := by
   cases n with | zero => simp | succ n =>
-  rw [if_neg (succ_ne_zero _)]
+  rw [ite_eq_right (succ_ne_zero _)]
   -- algebra facts
   have h₁ : (1, n) ∈ antidiagonal n.succ := by simp [mem_antidiagonal, add_comm]
   have h₃ : (1 + n).choose n = n + 1 := by simp [add_comm]
@@ -262,7 +257,8 @@ theorem bernoulli_spec' (n : ℕ) :
   convert! eq_sub_of_add_eq' H using 1
   · refine sum_congr rfl fun p h => ?_
     obtain ⟨h', h''⟩ : p ∈ _ ∧ p ≠ _ := by rwa [mem_sdiff, mem_singleton] at h
-    simp [bernoulli_eq_bernoulli'_of_ne_one ((not_congr (antidiagonal_congr h' h₁)).mp h'')]
+    simp [bernoulli_eq_bernoulli'_of_ne_one
+      ((not_congr (HasAntidiagonal.antidiagonal_congr h' h₁)).mp h'')]
   · simp [field, h₃]
     norm_num
 
@@ -275,12 +271,12 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   -- constant coefficient is a special case
   cases n with | zero => simp | succ n =>
   simp only [bernoulliPowerSeries, coeff_mul, coeff_X, sum_antidiagonal_succ', one_div, coeff_mk,
-    coeff_one, coeff_exp, map_sub, factorial, if_pos, cast_succ, cast_mul,
-    sub_zero, add_eq_zero, if_false, one_ne_zero, and_false, ← map_mul, ← map_sum]
+    coeff_one, coeff_exp, map_sub, factorial, ite_eq_left, cast_succ, cast_mul,
+    sub_zero, add_eq_zero, ite_false, one_ne_zero, and_false, ← map_mul, ← map_sum]
   cases n with | zero => simp | succ n =>
-  rw [if_neg n.succ_succ_ne_one]
+  rw [ite_eq_right n.succ_succ_ne_one]
   have hfact : ∀ m, (m ! : ℚ) ≠ 0 := fun m => mod_cast factorial_ne_zero m
-  have hite2 : ite (n.succ = 0) 1 0 = (0 : ℚ) := if_neg n.succ_ne_zero
+  have hite2 : ite (n.succ = 0) 1 0 = (0 : ℚ) := ite_eq_right n.succ_ne_zero
   simp only [CharP.cast_eq_zero, zero_add, inv_one, map_one, sub_self, mul_zero]
   rw [← map_zero (algebraMap ℚ A), ← zero_div (n.succ ! : ℚ), ← hite2, ← bernoulli_spec', sum_div]
   refine congr_arg (algebraMap ℚ A) (sum_congr rfl fun x h => eq_div_of_mul_eq (hfact n.succ) ?_)

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.FieldTheory.KummerPolynomial
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.RingTheory.Norm.Basic
 
@@ -72,7 +71,8 @@ theorem X_pow_sub_C_splits_of_isPrimitiveRoot
   | inl hn =>
     simp only [hn, pow_zero, ← C.map_one, ← map_sub, Splits.C]
   | inr hn =>
-    rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
+    rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C,
+      ite_eq_left ⟨α, e⟩]
 
 -- make this private, as we only use it to prove a strictly more general version
 private
@@ -124,7 +124,7 @@ theorem X_pow_sub_C_irreducible_of_odd
     intro E _ _ x hx
     have : IsIntegral K x := not_not.mp fun h ↦ by
       simpa only [degree_zero, degree_X_pow_sub_C hp.pos,
-        WithBot.natCast_ne_bot] using congr_arg degree (hx.symm.trans (dif_neg h))
+        WithBot.natCast_ne_bot] using congr_arg degree (hx.symm.trans (dite_eq_right h))
     apply IH (Nat.odd_mul.mp hn).2
     intro q hq hqn b hb
     apply ha q hq (dvd_mul_of_dvd_right hqn p) (Algebra.norm _ b)
@@ -179,8 +179,8 @@ section AdjoinRoot
 include hζ H in
 /-- Also see `Polynomial.separable_X_pow_sub_C_unit` -/
 theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separable := by
-  letI := Fact.mk H
-  letI : Algebra K K[n√a] := inferInstance
+  let := Fact.mk H
+  let : Algebra K K[n√a] := inferInstance
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   by_cases hn' : n = 1
   · rw [hn', pow_one]; exact separable_X_sub_C
@@ -218,6 +218,7 @@ def autAdjoinRootXPowSubC :
 
 variable {n}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma autAdjoinRootXPowSubC_root (η) :
     autAdjoinRootXPowSubC n a η (root _) = ((η : Kˣ) : K) • root _ := by
   dsimp [autAdjoinRootXPowSubC, autAdjoinRootXPowSubCHom, AlgEquiv.algHomUnitsEquiv]
@@ -253,7 +254,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     intro η
     have := Fact.mk H
     have : IsDomain K[n√a] := inferInstance
-    letI : Algebra K K[n√a] := inferInstance
+    let : Algebra K K[n√a] := inferInstance
     apply (rootsOfUnityEquivOfPrimitiveRoots (algebraMap K K[n√a]).injective hζ).injective
     ext
     simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
@@ -268,11 +269,11 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
   right_inv := by
     intro e
     have := Fact.mk H
-    letI : Algebra K K[n√a] := inferInstance
-    apply AlgEquiv.coe_algHom_injective
+    let : Algebra K K[n√a] := inferInstance
+    apply AlgEquiv.coe_toAlgHom_injective
     apply AdjoinRoot.algHom_ext
     simp only [AdjoinRootXPowSubCEquivToRootsOfUnity, AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe,
-      MonoidHom.toOneHom_coe, AlgEquiv.coe_algHom, autAdjoinRootXPowSubC_root, Algebra.smul_def]
+      MonoidHom.toOneHom_coe, AlgEquiv.coe_toAlgHom, autAdjoinRootXPowSubC_root, Algebra.smul_def]
     rw [rootsOfUnityEquivOfPrimitiveRoots_symm_apply, rootsOfUnity.val_mkOfPowEq_coe]
     split_ifs with h
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
@@ -311,7 +312,7 @@ lemma isSplittingField_AdjoinRoot_X_pow_sub_C :
     letI : Algebra K K[n√a] := inferInstance
     IsSplittingField K K[n√a] (X ^ n - C a) := by
   have := Fact.mk H
-  letI : Algebra K K[n√a] := inferInstance
+  let : Algebra K K[n√a] := inferInstance
   constructor
   · rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
       Polynomial.map_X]
@@ -333,8 +334,8 @@ noncomputable
 def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducible (X ^ n - C a))
     (hα : α ^ n = algebraMap K L a) : K[n√a] ≃ₐ[K] L :=
   .ofBijective (AdjoinRoot.liftAlgHom (X ^ n - C a) (Algebra.ofId _ _) α (by simp [hα])) <| by
-    haveI := Fact.mk H
-    letI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
+    have := Fact.mk H
+    let := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
     refine ⟨(liftAlgHom (X ^ n - C a) _ α _).injective, ?_⟩
     rw [← AlgHom.range_eq_top, ← IsSplittingField.adjoin_rootSet _ (X ^ n - C a),
       eq_comm, Splits.adjoin_rootSet_eq_range, IsSplittingField.adjoin_rootSet]
@@ -356,7 +357,7 @@ lemma Algebra.adjoin_root_eq_top_of_isSplittingField :
     (adjoinRootXPowSubCEquiv hζ H hα).symm.injective
   rw [Algebra.map_top, (AlgHom.range_eq_top _).mpr
     (adjoinRootXPowSubCEquiv hζ H hα).symm.surjective, AlgHom.map_adjoin,
-    Set.image_singleton, AlgEquiv.coe_algHom, adjoinRootXPowSubCEquiv_symm_eq_root,
+    Set.image_singleton, AlgEquiv.coe_toAlgHom, adjoinRootXPowSubCEquiv_symm_eq_root,
       adjoinRoot_eq_top]
 
 include hζ H hα in

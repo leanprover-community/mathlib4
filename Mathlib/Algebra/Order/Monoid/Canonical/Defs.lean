@@ -8,9 +8,7 @@ module
 public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Algebra.NeZero
 public import Mathlib.Order.BoundedOrder.Basic
-public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Canonically ordered monoids
@@ -23,14 +21,14 @@ universe u
 variable {α : Type u}
 
 /-- An ordered additive monoid is `CanonicallyOrderedAdd`
-  if the ordering coincides with the subtractibility relation,
-  which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
-  This is satisfied by the natural numbers, for example, but not
-  the integers or other nontrivial `OrderedAddCommGroup`s.
+if the ordering coincides with the subtractibility relation,
+which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
+This is satisfied by the natural numbers, for example, but not
+the integers or other nontrivial ordered groups.
 
-  We have `a ≤ b + a` and `a ≤ a + b` as separate fields. In the commutative case the second field
-  is redundant, but in the noncommutative case (satisfied most relevantly by the ordinals), this
-  extra field allows us to prove more things without the extra commutativity assumption. -/
+We have `a ≤ b + a` and `a ≤ a + b` as separate fields. In the commutative case the second field
+is redundant, but in the noncommutative case (satisfied most relevantly by the ordinals), this
+extra field allows us to prove more things without the extra commutativity assumption. -/
 class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] : Prop
     extends ExistsAddOfLE α where
   /-- For any `a` and `b`, `a ≤ a + b` -/
