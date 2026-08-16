@@ -5,8 +5,10 @@ Authors: Gaëtan Serré
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+public import Mathlib.LinearAlgebra.Matrix.Defs
+
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Measurable space structure on Matrices
