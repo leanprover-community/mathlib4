@@ -67,8 +67,7 @@ structure TendstoInDistribution [OpensMeasurableSpace E] (X : (i : ι) → Ω i 
   forall_aemeasurable : ∀ i, AEMeasurable (X i) (μ i)
   aemeasurable_limit : AEMeasurable Z μ' := by fun_prop
   tendsto : Tendsto (β := ProbabilityMeasure E)
-      (fun n ↦ ⟨(μ n).map (X n), Measure.isProbabilityMeasure_map (forall_aemeasurable n)⟩) l
-      (𝓝 ⟨μ'.map Z, Measure.isProbabilityMeasure_map aemeasurable_limit⟩)
+      (fun n ↦ ⟨(μ n).map (X n), inferInstance⟩) l (𝓝 ⟨μ'.map Z, inferInstance⟩)
 
 lemma tendstoInDistribution_const [OpensMeasurableSpace E] (hZ : AEMeasurable Z μ') :
     TendstoInDistribution (fun _ ↦ Z) l Z (fun _ ↦ μ') μ' where
@@ -126,10 +125,9 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
   aemeasurable_limit := hg.measurable.comp_aemeasurable h.aemeasurable_limit
   tendsto := by
     convert! ProbabilityMeasure.tendsto_map_of_tendsto_of_continuous _ _ h.tendsto hg
-    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk, hg.aemeasurable, ↓reduceDIte,
-        Subtype.mk.injEq]
+    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk, Subtype.mk.injEq]
       rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable (h.forall_aemeasurable _)]
-    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk, hg.aemeasurable, ↓reduceDIte]
+    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk]
       congr
       rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable h.aemeasurable_limit]
 
@@ -199,8 +197,6 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
   · simp only [LipschitzWith.zero_iff] at hF_lip
     specialize hF_lip x₀
     simp only [← hF_lip, integral_const, smul_eq_mul]
-    have h_prob n : IsProbabilityMeasure (μ''.map (Y n)) := Measure.isProbabilityMeasure_map (hY n)
-    have : IsProbabilityMeasure (μ'.map Z) := Measure.isProbabilityMeasure_map hZ
     simpa using! tendsto_const_nhds
   -- now `F` is `L`-Lipschitz with `L > 0`
   simp_rw [Metric.tendsto_nhds, Real.dist_eq]

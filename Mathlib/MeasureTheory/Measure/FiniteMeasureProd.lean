@@ -119,26 +119,23 @@ lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
 /-- The first marginal of a product probability measure is the first probability measure. -/
 @[simp] lemma map_fst_prod : (μ.prod ν).map Prod.fst = μ := by
   apply Subtype.ext
-  simp only [map, toMeasure_prod, measurable_fst.aemeasurable, ↓reduceDIte, Measure.map_fst_prod,
-    measure_univ, one_smul, val_eq_to_measure]
+  simp
 
 /-- The second marginal of a product probability measure is the second probability measure. -/
 @[simp] lemma map_snd_prod : (μ.prod ν).map Prod.snd = ν := by
   apply Subtype.ext
-  simp only [map, toMeasure_prod, measurable_snd.aemeasurable, ↓reduceDIte, Measure.map_snd_prod,
-    measure_univ, one_smul, val_eq_to_measure]
+  simp
 
 lemma map_prod_map {α' : Type*} [MeasurableSpace α'] {β' : Type*} [MeasurableSpace β']
     {f : α → α'} {g : β → β'} (f_mble : Measurable f) (g_mble : Measurable g) :
     (μ.map f).prod (ν.map g) = (μ.prod ν).map (Prod.map f g) := by
   apply Subtype.ext
-  simp only [val_eq_to_measure, toMeasure_prod, f_mble.aemeasurable, toMeasure_map,
-    g_mble.aemeasurable, toMeasure_map _ (f_mble.prodMap g_mble).aemeasurable]
+  simp only [val_eq_to_measure, toMeasure_prod, toMeasure_map]
   rw [Measure.map_prod_map _ _ f_mble g_mble]
 
 lemma prod_swap : (μ.prod ν).map Prod.swap = ν.prod μ := by
   apply Subtype.ext
-  simp [Measure.prod_swap, toMeasure_map _ measurable_swap.aemeasurable]
+  simp [Measure.prod_swap]
 
 open TopologicalSpace
 
