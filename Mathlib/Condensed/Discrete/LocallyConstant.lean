@@ -81,7 +81,7 @@ namespace CompHausLike.LocallyConstant
 The functor from the category of sets to presheaves on `CompHausLike P` given by locally constant
 maps.
 -/
-@[simps obj_obj obj_map map_app]
+@[implicit_reducible, simps obj_obj obj_map map_app]
 def functorToPresheaves : Type (max u w) ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w)) where
   obj X := {
     obj := fun ⟨S⟩ ↦ (LocallyConstant S X)
@@ -199,7 +199,6 @@ lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
           (sigmaIncl f _).op ≫ (componentHom f g.unop a).op :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The counit is natural in `S : CompHausLike P` -/
 @[simps! app]
@@ -231,7 +230,7 @@ noncomputable def functorToPresheavesIso (X : Type (max u w)) :
   NatIso.ofComponents (fun S ↦ locallyConstantIsoContinuousMap _ _)
 
 /-- `CompHausLike.LocallyConstant.functorToPresheaves` lands in sheaves. -/
-@[simps! obj_obj_obj obj_obj_map map_hom_app]
+@[implicit_reducible, simps! obj_obj_obj obj_obj_map map_hom_app]
 def functor :
     haveI := CompHausLike.preregular hs
     Type (max u w) ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) :=
@@ -310,8 +309,6 @@ noncomputable def unitIso : 𝟭 (Type (max u w)) ≅ functor.{u, w} P hs ⋙
   hom := unit P hs
   inv := { app _ := ↾fun f ↦ f.toFun PUnit.unit }
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
     (X : Type (max u w)) : functorToPresheaves.{u, w}.map ((unit P hs).app X) ≫
       ((counit P hs).app ((functor P hs).obj X)).hom = 𝟙 (functorToPresheaves.obj X) := by
@@ -328,13 +325,12 @@ lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
   intro a
   erw [incl_of_counitAppApp]
   simp only [functor_obj_obj_obj, Functor.id_obj, Functor.comp_obj, Functor.flip_obj_obj,
-    ObjectProperty.ι_obj, unit_app, counitAppAppImage, functor_obj_obj_map,
+    ObjectProperty.ι_obj, counitAppAppImage, functor_obj_obj_map,
     Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom]
   ext x
-  erw [← map_eq_image _ a x]
+  rw [← map_eq_image _ a x]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 `CompHausLike.LocallyConstant.functor` is left adjoint to the forgetful functor.
 -/
@@ -376,7 +372,7 @@ namespace CondensedSet.LocallyConstant
 /-- The functor from sets to condensed sets given by locally constant maps into the set. -/
 abbrev functor : Type (u + 1) ⥤ CondensedSet.{u} :=
   CompHausLike.LocallyConstant.functor.{u, u + 1} (P := fun _ ↦ True)
-    (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+    (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 1 3).mp)
 
 /--
 `CondensedSet.LocallyConstant.functor` is isomorphic to `Condensed.discrete`
