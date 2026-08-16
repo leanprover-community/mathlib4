@@ -133,7 +133,7 @@ lemma isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
       refine ⟨j', a ≫ a', ?_⟩
       ext
       · simp [reassoc_of% ha]
-      · simp only [h, Functor.map_comp, comp_right, reassoc_of% hb])
+      · simp [h, reassoc_of% hb])
 
 /-- The property of objects in `Comma F₁ F₂` which consists of
 morphisms `F₁.obj X₁ ⟶ F₂.obj X₂` where both `X₁` abd `X₂` are `κ`-presentable.
