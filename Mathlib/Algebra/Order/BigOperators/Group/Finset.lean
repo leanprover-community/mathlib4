@@ -212,14 +212,17 @@ theorem prod_le_univ_prod_of_one_le [MulLeftMono N] [Fintype ι] {s : Finset ι}
 @[deprecated (since := "2026-07-23")]
 alias prod_le_univ_prod_of_one_le' := prod_le_univ_prod_of_one_le
 
-@[to_additive sum_le_sum_of_injOn]
-theorem prod_le_prod_of_injOn' [DecidableEq α] [MulLeftMono N]
+@[to_additive]
+theorem prod_le_prod_of_injOn [DecidableEq α] [MulLeftMono N]
     {g : α → N} {s : Finset ι} {t : Finset α} (e : ι → α) (he : Set.InjOn e s)
     (ht : image e s ⊆ t) (h : ∀ i ∈ s, f i ≤ g (e i))
     (hg : ∀ a ∈ t, a ∉ image e s → 1 ≤ g a) :
     ∏ i ∈ s, f i ≤ ∏ a ∈ t, g a := by
-  refine le_trans ?_ <| prod_le_prod_of_subset_of_one_le' ht hg
-  grw [prod_image he, prod_le_prod' h]
+  refine le_trans ?_ <| prod_le_prod_of_subset_of_one_le ht hg
+  grw [prod_image he, prod_le_prod h]
+
+@[deprecated (since := "2026-07-23")]
+alias prod_le_prod_of_injOn' := prod_le_prod_of_injOn
 
 @[to_additive]
 theorem prod_eq_one_iff_of_one_le {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
