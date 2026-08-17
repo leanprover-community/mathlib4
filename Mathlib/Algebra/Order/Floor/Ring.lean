@@ -288,7 +288,7 @@ theorem mul_fract_eq_one_iff_exists_int
 end LinearOrderedRing
 
 section LinearOrderedField
-variable {k : Type*} [Field k] [LinearOrder k] [IsOrderedRing k] [FloorRing k] {a b : k}
+variable {k : Type*} [Field k] [LinearOrder k] [IsOrderedRing k] [FloorRing k] {a : k}
 
 theorem floor_div_cast_of_nonneg {n : ℤ} (hn : 0 ≤ n) (a : k) : ⌊a / n⌋ = ⌊a⌋ / n := by
   obtain rfl | hn := hn.eq_or_lt

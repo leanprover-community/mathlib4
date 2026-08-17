@@ -50,7 +50,7 @@ rounding, floor, ceil
 
 assert_not_exists Finset
 
-variable {F α β : Type*}
+variable {α β : Type*}
 
 /-! ### Floor semiring -/
 
@@ -161,7 +161,7 @@ end OrderedSemiring
 
 section LinearOrderedSemiring
 
-variable [Semiring α] [LinearOrder α] [FloorSemiring α] {a b : α} {n : ℕ}
+variable [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} {n : ℕ}
 
 theorem lt_ceil : n < ⌈a⌉₊ ↔ (n : α) < a :=
   lt_iff_lt_of_le_iff_le ceil_le
@@ -251,7 +251,7 @@ noncomputable def FloorRing.ofBounded
 
 namespace Int
 
-variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a b : α}
+variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a : α}
 
 /-- `Int.floor a` is the greatest integer `z` such that `z ≤ a`. It is denoted with `⌊a⌋`. -/
 def floor : α → ℤ :=
@@ -399,7 +399,7 @@ end FloorRing
 
 namespace Int
 
-variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a b : α}
+variable [Ring α] [LinearOrder α] [FloorRing α] {a : α}
 
 @[bound]
 theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by

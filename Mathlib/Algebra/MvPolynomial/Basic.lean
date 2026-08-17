@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Regular.Pow
 public import Mathlib.Data.Finsupp.Antidiagonal
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Order.SymmDiff
-public meta import Mathlib.Tactic.Polynomial.Core
+public import Mathlib.Tactic.Polynomial.Core
 
 /-!
 # Multivariate polynomials
@@ -75,7 +75,7 @@ open scoped Pointwise
 
 universe u v w x
 
-variable {R : Type u} {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
+variable {R : Type u} {S₁ : Type v} {S₂ : Type w}
 
 /-- Multivariate polynomial, where `σ` is the index set of the variables and
   `R` is the coefficient ring -/

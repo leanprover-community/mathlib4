@@ -9,7 +9,6 @@ public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 public import Mathlib.Tactic.Positivity.Core
 
 import Mathlib.Algebra.FiniteSupport.Basic
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Data.Fintype.Order
 import Mathlib.RingTheory.Nilpotent.Defs
@@ -546,7 +545,7 @@ namespace Height
 
 open AdmissibleAbsValues Real Function
 
-variable {K : Type*} [Field K] [AdmissibleAbsValues K] {ι : Type*} {α : Type*} [Finite ι]
+variable {K : Type*} [Field K] [AdmissibleAbsValues K] {ι : Type*} [Finite ι]
 
 /-- The logarithmic height of a tuple does not change under scaling. -/
 lemma logHeight_smul_eq_logHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
