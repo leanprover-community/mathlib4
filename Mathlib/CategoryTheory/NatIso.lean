@@ -176,7 +176,7 @@ set_option linter.translate.warnInvalid false in
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
 and checking naturality only in the forward direction.
 -/
-@[to_dual (attr := simps (attr := grind =)) ofComponents'
+@[implicit_reducible, to_dual (attr := simps (attr := grind =)) ofComponents'
 /-- The dual of `ofComponents` -/]
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y),

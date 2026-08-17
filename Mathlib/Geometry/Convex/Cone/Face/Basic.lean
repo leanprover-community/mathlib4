@@ -61,8 +61,8 @@ theorem mem_of_smul_add_smul_mem_left {x y : M} {a b : R} (hF : F.IsFaceOf C) (h
   hF.2 hx (smul_mem _ hb.le hy) ha h
 
 theorem mem_of_smul_add_smul_mem_right {x y : M} {a b : R} (hF : F.IsFaceOf C) (hx : x ∈ C)
-    (hy : y ∈ C) (ha : 0 < a) (hb : 0 < b) (h : a • x + b • y ∈ F) : y ∈ F :=
-  by apply hF.2 hy (smul_mem _ ha.le hx) hb; rwa [add_comm]
+    (hy : y ∈ C) (ha : 0 < a) (hb : 0 < b) (h : a • x + b • y ∈ F) : y ∈ F := by
+  apply hF.2 hy (smul_mem _ ha.le hx) hb; rwa [add_comm]
 
 /-- A pointed cone `C` is a face of itself. -/
 @[refl, simp]

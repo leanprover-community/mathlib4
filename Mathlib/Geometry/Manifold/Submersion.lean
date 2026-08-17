@@ -368,16 +368,7 @@ theorem contMDiffOn (h : IsSubmersionAtOfComplement F I J n f x) :
   rw [← contMDiffOn_writtenInExtend_iff h.domChart_mem_maximalAtlas
     h.codChart_mem_maximalAtlas le_rfl h.mapsto_domChart_source_codChart_source,
     ← h.domChart.extend_target_eq_image_source]
-  have : CMDiff n (Prod.fst ∘ h.equiv) := by
-  -- Note that we cannot use `h₁.comp contMDiff_fst` since `h₁` and `contMDiff_fst` require
-  -- different models with corners on `E'' × F`. The former uses `𝓘(𝕜, E'' × F)` while the latter
-  -- uses `(𝓘(𝕜, E'')).prod (𝓘(𝕜, F)`.
-    have h₁ : ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E'' × F) n h.equiv := by
-      rw [contMDiff_iff_contDiff]
-      exact h.equiv.contDiff
-    apply ContMDiff.comp ?_ h₁
-    rw [contMDiff_iff_contDiff]
-    exact contDiff_fst
+  have : CMDiff n (Prod.fst ∘ h.equiv) := by rw [contMDiff_iff_contDiff]; fun_prop
   exact this.contMDiffOn.congr h.writtenInCharts
 
 /-- A `C^n` submersion at `x` is `C^n` at `x`. -/

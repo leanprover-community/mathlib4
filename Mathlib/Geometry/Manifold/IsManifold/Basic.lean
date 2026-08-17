@@ -912,14 +912,14 @@ instance empty [IsEmpty M] : IsManifold I n M := by
     _ = ∅ := empty_inter (range I)
   apply (this ▸ hx).elim
 
-attribute [local instance] ChartedSpace.of_discreteTopology in
+attribute [local instance] ChartedSpace.ofDiscreteTopology in
 variable (n) in
 /-- A discrete space `M` is a smooth manifold over the trivial model on a trivial normed space. -/
 theorem of_discreteTopology [DiscreteTopology M] [Unique E] :
     IsManifold (modelWithCornersSelf 𝕜 E) n M := by
   apply isManifold_of_contDiffOn _ _ _ (fun _ _ _ _ ↦ contDiff_of_subsingleton.contDiffOn)
 
-attribute [local instance] ChartedSpace.of_discreteTopology in
+attribute [local instance] ChartedSpace.ofDiscreteTopology in
 example [Unique E] : IsManifold (𝓘(𝕜, E)) n (Fin 2) := of_discreteTopology _
 
 set_option backward.isDefEq.respectTransparency false in

@@ -135,7 +135,8 @@ theorem ne_zero_iff_exists_coeff_ne_zero_and_weight :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff d f ≠ 0 ∧ weight w d = n) := by
   simpa using ne_zero_iff_exists_coeff_ne_zero f
 
-/-- The weighted order of a mv_power_series -/
+/-- The weighted order with respect to `w : σ → ℕ`. This is the minimum value
+of `weight w d` over all exponents `d` with nonzero coefficient `coeff d f`. -/
 def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by
   classical
   exact dite (f = 0) (fun _ => ⊤) fun h =>
@@ -384,7 +385,8 @@ theorem ne_zero_iff_exists_coeff_ne_zero_and_degree :
   simp_rw [degree_eq_weight_one]
   exact ne_zero_iff_exists_coeff_ne_zero_and_weight (fun _ => 1)
 
-/-- The order of an `MvPowerSeries`. -/
+/-- The order of a multivariate power series is the the minimum total degree over all
+exponents `d` with nonzero coefficient `coeff d f`. -/
 def order (f : MvPowerSeries σ R) : ℕ∞ := weightedOrder (fun _ => 1) f
 
 @[simp]

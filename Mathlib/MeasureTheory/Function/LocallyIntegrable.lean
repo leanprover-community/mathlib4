@@ -811,4 +811,31 @@ theorem smul_continuousOn [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [No
 
 end LocallyIntegrableOn
 
+namespace LocallyIntegrable
+
+variable [LocallyCompactSpace X] [T2Space X] [NormedRing R] [SecondCountableTopologyEither X R]
+  {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+
+theorem continuous_mul {f g : X → R} (hg : Continuous g)
+    (hf : LocallyIntegrable f μ) : LocallyIntegrable (fun x => g x * f x) μ :=
+  locallyIntegrableOn_univ.1 ((hf.locallyIntegrableOn univ).continuousOn_mul
+    hg.continuousOn isOpen_univ.isLocallyClosed)
+
+theorem mul_continuous {f g : X → R} (hg : Continuous g)
+    (hf : LocallyIntegrable f μ) : LocallyIntegrable (fun x => f x * g x) μ :=
+  locallyIntegrableOn_univ.1 ((hf.locallyIntegrableOn univ).mul_continuousOn
+    hg.continuousOn isOpen_univ.isLocallyClosed)
+
+theorem continuous_smul [SecondCountableTopologyEither X 𝕜] {f : X → E} {g : X → 𝕜}
+    (hg : Continuous g) (hf : LocallyIntegrable f μ) : LocallyIntegrable (fun x => g x • f x) μ :=
+  locallyIntegrableOn_univ.1 ((hf.locallyIntegrableOn univ).continuousOn_smul
+    isOpen_univ.isLocallyClosed hg.continuousOn)
+
+theorem smul_continuous [SecondCountableTopologyEither X E] {f : X → 𝕜} {g : X → E}
+    (hg : Continuous g) (hf : LocallyIntegrable f μ) : LocallyIntegrable (fun x => f x • g x) μ :=
+  locallyIntegrableOn_univ.1 ((hf.locallyIntegrableOn univ).smul_continuousOn
+    isOpen_univ.isLocallyClosed hg.continuousOn)
+
+end LocallyIntegrable
+
 end MeasureTheory

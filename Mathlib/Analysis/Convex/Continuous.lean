@@ -233,3 +233,96 @@ protected lemma ConcaveOn.locallyLipschitz (hf : ConcaveOn ℝ univ f) : Locally
 
 -- proof_wanted ConcaveOn.continuousOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
 --     ContinuousOn f (intrinsicInterior ℝ C)
+
+section Intervals
+
+lemma ConvexOn.continuousOn_Ici {f : ℝ → ℝ} {y : ℝ} (hf_cvx : ConvexOn ℝ (Ici y) f)
+    (hf_cont : ContinuousWithinAt f (Ici y) y) :
+    ContinuousOn f (Ici y) := by
+  intro x hx
+  rcases eq_or_lt_of_le (α := ℝ) hx with rfl | hxy
+  · exact hf_cont
+  · have h := hf_cvx.continuousOn_interior x
+    simp only [nonempty_Iio, interior_Ici', mem_Ioi] at h
+    rw [continuousWithinAt_iff_continuousAt (Ioi_mem_nhds hxy)] at h
+    exact (h hxy).continuousWithinAt
+
+lemma ConcaveOn.continuousOn_Ici {f : ℝ → ℝ} {y : ℝ} (hf_cnv : ConcaveOn ℝ (Ici y) f)
+    (hf_cont : ContinuousWithinAt f (Ici y) y) :
+    ContinuousOn f (Ici y) := by
+  simpa using hf_cnv.neg.continuousOn_Ici hf_cont.neg
+
+lemma ConvexOn.continuousOn_Iic {f : ℝ → ℝ} {y : ℝ} (hf_cvx : ConvexOn ℝ (Iic y) f)
+    (hf_cont : ContinuousWithinAt f (Iic y) y) :
+    ContinuousOn f (Iic y) := by
+  intro x hx
+  rcases eq_or_lt_of_le (α := ℝ) hx with rfl | hxy
+  · exact hf_cont
+  · have h := hf_cvx.continuousOn_interior x
+    simp only [nonempty_Ioi, interior_Iic', mem_Iio] at h
+    rw [continuousWithinAt_iff_continuousAt (Iio_mem_nhds hxy)] at h
+    exact (h hxy).continuousWithinAt
+
+lemma ConcaveOn.continuousOn_Iic {f : ℝ → ℝ} {y : ℝ} (hf_cnv : ConcaveOn ℝ (Iic y) f)
+    (hf_cont : ContinuousWithinAt f (Iic y) y) :
+    ContinuousOn f (Iic y) := by
+  simpa using hf_cnv.neg.continuousOn_Iic hf_cont.neg
+
+lemma ConvexOn.continuousOn_Ioc {f : ℝ → ℝ} {y z : ℝ} (hf_cvx : ConvexOn ℝ (Ioc y z) f)
+    (hf_cont : ContinuousWithinAt f (Iic z) z) :
+    ContinuousOn f (Ioc y z) := by
+  intro x hx
+  rcases eq_or_lt_of_le (α := ℝ) hx.2 with rfl | hxz
+  · rw [continuousWithinAt_Ioc_iff_Iic hx.1]
+    exact hf_cont
+  · have h := hf_cvx.continuousOn_interior x
+    simp only [interior_Ioc, mem_Ioo, hx.1, hxz, and_self, forall_const] at h
+    rw [continuousWithinAt_iff_continuousAt (Ioo_mem_nhds hx.1 hxz)] at h
+    exact h.continuousWithinAt
+
+lemma ConcaveOn.continuousOn_Ioc {f : ℝ → ℝ} {y z : ℝ} (hf_cnv : ConcaveOn ℝ (Ioc y z) f)
+    (hf_cont : ContinuousWithinAt f (Iic z) z) :
+    ContinuousOn f (Ioc y z) := by
+  simpa using hf_cnv.neg.continuousOn_Ioc hf_cont.neg
+
+lemma ConvexOn.continuousOn_Ico {f : ℝ → ℝ} {y z : ℝ} (hf_cvx : ConvexOn ℝ (Ico y z) f)
+    (hf_cont : ContinuousWithinAt f (Ici y) y) :
+    ContinuousOn f (Ico y z) := by
+  intro x hx
+  rcases eq_or_lt_of_le (α := ℝ) hx.1 with rfl | hyx
+  · rw [continuousWithinAt_Ico_iff_Ici hx.2]
+    exact hf_cont
+  · have h := hf_cvx.continuousOn_interior x
+    simp only [interior_Ico, mem_Ioo, hyx, hx.2, and_self, forall_const] at h
+    rw [continuousWithinAt_iff_continuousAt (Ioo_mem_nhds hyx hx.2)] at h
+    exact h.continuousWithinAt
+
+lemma ConcaveOn.continuousOn_Ico {f : ℝ → ℝ} {y z : ℝ} (hf_cnv : ConcaveOn ℝ (Ico y z) f)
+    (hf_cont : ContinuousWithinAt f (Ici y) y) :
+    ContinuousOn f (Ico y z) := by
+  simpa using hf_cnv.neg.continuousOn_Ico hf_cont.neg
+
+lemma ConvexOn.continuousOn_Icc {f : ℝ → ℝ} {y z : ℝ} (hf_cvx : ConvexOn ℝ (Icc y z) f)
+    (hyz : y < z)
+    (hfy : ContinuousWithinAt f (Ici y) y) (hfz : ContinuousWithinAt f (Iic z) z) :
+    ContinuousOn f (Icc y z) := by
+  suffices ContinuousOn f (Ico y z) ∧ ContinuousOn f (Ioc y z) by
+    intro x hx
+    rcases eq_or_lt_of_le (α := ℝ) hx.1 with rfl | hyx
+    · exact hfy.mono (by grind)
+    rcases eq_or_lt_of_le (α := ℝ) hx.2 with rfl | hxz
+    · exact hfz.mono (by grind)
+    have hx := this.1 x (by grind)
+    rw [continuousWithinAt_iff_continuousAt (Ico_mem_nhds hyx hxz)] at hx
+    exact hx.continuousWithinAt
+  refine ⟨ConvexOn.continuousOn_Ico ?_ hfy, ConvexOn.continuousOn_Ioc ?_ hfz⟩
+  · exact hf_cvx.subset Ico_subset_Icc_self (convex_Ico y z)
+  · exact hf_cvx.subset Ioc_subset_Icc_self (convex_Ioc y z)
+
+lemma ConcaveOn.continuousOn_Icc {f : ℝ → ℝ} {y z : ℝ} (hf_cnv : ConcaveOn ℝ (Icc y z) f)
+    (hyz : y < z)
+    (hfy : ContinuousWithinAt f (Ici y) y) (hfz : ContinuousWithinAt f (Iic z) z) :
+    ContinuousOn f (Icc y z) := by
+  simpa using hf_cnv.neg.continuousOn_Icc hyz hfy.neg hfz.neg
+
+end Intervals
