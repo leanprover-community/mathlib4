@@ -314,15 +314,9 @@ theorem AlgEquiv.isComplete_fixingSubgroup (E : IntermediateField K L) [FinTrdeg
         ((Filter.eventually_mem_principal _).filter_mono hfE)).exists
     let Eu : IntermediateField E L := adjoin E (u : Set L)
     let suE : Gal(L/E) := E.fixingSubgroupEquiv ⟨su, hsuE⟩
-    have algm : Algebra.IsIntegral (Eu.map (suE : L →ₐ[E] L)) L := sorry
-    let mp : Polynomial (Eu.map (suE : L →ₐ[E] L)) := minpoly _ x
-    let p : Polynomial Eu := mp.map
-      ((IntermediateField.equivMap Eu (suE : L →ₐ[E] L)).symm : Eu.map (suE : L →ₐ[E] L) →+* Eu)
+    let p : Polynomial Eu := minpoly _ (suE.symm x)
     have hp0 : p ≠ 0 := by
       unfold p
-      refine (Polynomial.map_ne_zero_iff ?_).mpr ?_
-      · apply AlgEquiv.injective
-      unfold mp
       apply minpoly.ne_zero
       apply Algebra.IsIntegral.isIntegral
     let S : Set L := p.rootSet L
@@ -336,15 +330,23 @@ theorem AlgEquiv.isComplete_fixingSubgroup (E : IntermediateField K L) [FinTrdeg
     unfold S
     rw [Polynomial.mem_rootSet_of_ne hp0]
     unfold p
-    apply (τE : L →+* L).injective
-    rw [hττE, map_zero, Polynomial.aeval_def, Polynomial.hom_eval₂,
-      RingHom.coe_coe, τE.apply_symm_apply, Polynomial.eval₂_eq_eval_map, Polynomial.map_map]
-    stop
-    conv =>
-      enter [1, 2, 1]
-      equals τE.symm.toRingHom.comp (algebraMap _ _) => ext; simp [AlgEquiv.]
-    stop
-    sorry
+    apply ((suE.symm : L →+* L).comp (τE : L →+* L)).injective
+    have h : (algebraMap Eu L).comp (RingHom.id Eu) =
+        ((suE.symm : L →+* L).comp (τE : L →+* L)).comp (algebraMap Eu L) := by
+      refine RingHom.ext fun c => ?_
+      obtain ⟨c, hc⟩ := c
+      induction hc using IntermediateField.adjoin_induction with
+      | mem c hc =>
+        simp [AlgEquiv.eq_symm_apply, suE, τE,
+          (hsu c hc).symm.trans (hτ c (Set.mem_union_left _ hc))]
+      | algebraMap c =>
+        rw [RingHom.comp_id, RingHom.comp_apply, algebraMap_apply,
+          ← AlgEquiv.toRingHom_trans, RingHom.coe_coe, AlgEquiv.commutes]
+      | add _ _ _ _ ihl ihr => simpa using congrArg₂ (· + ·) ihl ihr
+      | inv _ _ ih => simpa using congrArg (·⁻¹) ih
+      | mul _ _ _ _ ihl ihr => simpa using congrArg₂ (· * ·) ihl ihr
+    rw [hττE, map_zero, Polynomial.map_aeval_eq_aeval_map h]
+    simp
   refine ⟨E.fixingSubgroupEquiv.symm σ, (E.fixingSubgroupEquiv.symm σ).2, fun U hU => ?_⟩
   rw [← map_mul_left_nhds_one, Filter.mem_map, krullTopology_mem_nhds_one_iff'] at hU
   obtain ⟨F, fg, hF⟩ := hU
@@ -385,7 +387,20 @@ theorem AlgEquiv.totallyBounded_univ [Algebra.IsAlgebraic K L] :
   exact AlgEquiv.totallyBounded_fixingSubgroup ⊥
 
 variable (K L) in
-instance [FinTrdeg K L] : LocallyCompactSpace Gal(L/K) := sorry
+instance [FinTrdeg K L] : LocallyCompactSpace Gal(L/K) := by
+  suffices _ : WeaklyLocallyCompactSpace Gal(L/K) from inferInstance
+  constructor
+  intro σ
+  obtain ⟨F, fg, alg⟩ := FinTrdeg.exists_fg_isAlgebraic K L
+  refine ⟨Homeomorph.mulLeft σ '' F.fixingSubgroup, ?_, ?_⟩
+  · refine IsCompact.image ?_ (Homeomorph.mulLeft σ).continuous
+    exact (AlgEquiv.totallyBounded_fixingSubgroup F).isCompact_of_isComplete
+      (AlgEquiv.isComplete_fixingSubgroup F)
+  · rw [Homeomorph.image_eq_preimage_symm]
+    apply (Homeomorph.mulLeft σ).symm.continuous.continuousAt.preimage_mem_nhds
+    simp_rw [Homeomorph.mulLeft_symm, Homeomorph.coe_mulLeft, inv_mul_cancel]
+    rw [krullTopology_mem_nhds_one_iff']
+    exact ⟨F, fg, subset_rfl⟩
 
 variable (K L) in
 instance [FinTrdeg K L] : CompleteSpace Gal(L/K) :=
