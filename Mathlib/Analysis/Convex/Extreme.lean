@@ -5,6 +5,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Algebra.Star.Pointwise
 public import Mathlib.Analysis.Convex.Hull
 
 /-!
@@ -43,7 +45,7 @@ Prove lemmas relating extreme sets and points to the intrinsic frontier.
 @[expose] public section
 
 
-open Function Module Set Affine
+open Function Module Set
 
 variable {𝕜 E F ι : Type*} {M : ι → Type*}
 
@@ -296,3 +298,27 @@ theorem extremePoints_convexHull_subset : (convexHull 𝕜 A).extremePoints 𝕜
     hx.1).2 rfl
 
 end LinearOrderedRing
+
+section star
+variable {𝕜 E : Type*} [Semiring 𝕜] [StarRing 𝕜] [PartialOrder 𝕜] [StarOrderedRing 𝕜]
+  [AddCommMonoid E] [StarAddMonoid E] [SMul 𝕜 E] [StarModule 𝕜 E]
+
+@[simp] lemma star_segment (x y : E) : star (segment 𝕜 x y) = segment 𝕜 (star x) (star y) := by
+  suffices ∀ x y : E, segment 𝕜 x y ⊆ star (segment 𝕜 (star x) (star y)) from
+    le_antisymm (by simpa [star_subset] using this x y) (by simpa using this (star x) (star y))
+  exact fun x y a ⟨b, c, hb, hc, hbc, ha⟩ ↦ ⟨star b, star c, by grind [star_one]⟩
+
+@[simp] lemma star_openSegment (x y : E) :
+    star (openSegment 𝕜 x y) = openSegment 𝕜 (star x) (star y) := by
+  suffices ∀ x y : E, openSegment 𝕜 x y ⊆ star (openSegment 𝕜 (star x) (star y)) from
+    le_antisymm (by simpa [star_subset] using this x y) (by simpa using this (star x) (star y))
+  exact fun x y a ⟨b, c, hb, hc, hbc, ha⟩ ↦ ⟨star b, star c, by grind [star_one]⟩
+
+@[simp] lemma star_extremePoints (s : Set E) :
+    star (extremePoints 𝕜 s) = extremePoints 𝕜 (star s) := by
+  ext
+  simp only [mem_star, mem_extremePoints_iff_left]
+  conv_lhs => simp +singlePass only [star_involutive.surjective.forall]
+  simp [← star_openSegment]
+
+end star

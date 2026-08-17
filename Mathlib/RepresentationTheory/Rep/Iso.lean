@@ -168,8 +168,6 @@ instance : (toModuleMonoidAlgebra.{w} (k := k) (G := G)).IsEquivalence :=
 instance : (ofModuleMonoidAlgebra (k := k) (G := G)).IsEquivalence :=
   (equivalenceModuleMonoidAlgebra (k := k) (G := G)).isEquivalence_inverse
 
-instance : Abelian (Rep.{w} k G) := abelianOfEquivalence toModuleMonoidAlgebra
-
 -- TODO Verify that the equivalence with `ModuleCat k[G]` is a monoidal functor.
 
 variable {k G : Type u} [CommRing k] [Monoid G] in
@@ -189,7 +187,6 @@ variable {G : Type u} [Group G] {n : ℕ}
 
 instance diagonal_succ_projective :
     Projective (diagonal k G (n + 1)) := by
-  classical
   exact Projective.of_iso (diagonalSuccIsoFree k G n).symm inferInstance
 
 instance leftRegular_projective :

@@ -103,6 +103,7 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace [IsAffine Y] (f : X 
 theorem quasiSeparated_eq_diagonal_is_quasiCompact :
     @QuasiSeparated = MorphismProperty.diagonal @QuasiCompact := by ext; exact quasiSeparated_iff _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : HasAffineProperty @QuasiSeparated (fun X _ _ _ ↦ QuasiSeparatedSpace X) where
   __ := HasAffineProperty.copy
     quasiSeparated_eq_diagonal_is_quasiCompact.symm
@@ -111,6 +112,7 @@ instance : HasAffineProperty @QuasiSeparated (fun X _ _ _ ↦ QuasiSeparatedSpac
 instance (priority := 900) (f : X ⟶ Y) [Mono f] :
     QuasiSeparated f where
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance quasiSeparated_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ inferInstance
@@ -118,6 +120,7 @@ instance quasiSeparated_isStableUnderComposition :
 instance : MorphismProperty.IsMultiplicative @QuasiSeparated where
   id_mem _ := inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance quasiSeparated_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ inferInstance
@@ -126,18 +129,22 @@ instance quasiSeparated_comp (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f]
     [QuasiSeparated g] : QuasiSeparated (f ≫ g) :=
   MorphismProperty.comp_mem _ f g inferInstance inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem quasiSeparatedSpace_iff_quasiSeparated (X : Scheme) :
     QuasiSeparatedSpace X ↔ QuasiSeparated (terminal.from X) :=
   (HasAffineProperty.iff_of_isAffine (P := @QuasiSeparated)).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated g] :
     QuasiSeparated (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated f] :
     QuasiSeparated (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [QuasiSeparated f] : QuasiSeparated (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -165,6 +172,7 @@ theorem IsAffineOpen.isQuasiSeparated {U : X.Opens} (hU : IsAffineOpen U) :
   rw [isQuasiSeparated_iff_quasiSeparatedSpace]
   exacts [@AlgebraicGeometry.quasiSeparatedSpace_of_isAffine _ hU, U.isOpen]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [QuasiSeparatedSpace X] : QuasiSeparated X.toSpecΓ :=
   HasAffineProperty.iff_of_isAffine.mpr ‹_›
 
@@ -221,6 +229,7 @@ theorem QuasiSeparated.of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated (f �
       (pullbackRightPullbackFstIso g (Z.affineCover.f i) f).hom
   · exact inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := low) QuasiSeparated.of_quasiSeparatedSpace
     (f : X ⟶ Y) [QuasiSeparatedSpace X] : QuasiSeparated f :=
   have : QuasiSeparated (f ≫ Y.toSpecΓ) :=
@@ -242,6 +251,7 @@ lemma QuasiCompact.of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCompact (f ≫ g)] 
     QuasiCompact f :=
   MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := low) quasiCompact_of_compactSpace {X Y : Scheme} (f : X ⟶ Y)
     [CompactSpace X] [QuasiSeparatedSpace Y] : QuasiCompact f :=
   have : QuasiCompact (f ≫ Y.toSpecΓ) := HasAffineProperty.iff_of_isAffine.mpr ‹_›

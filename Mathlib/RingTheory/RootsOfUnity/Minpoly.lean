@@ -109,7 +109,6 @@ then the minimal polynomials of a primitive `n`-th root of unity `μ`
 and of `μ ^ p` are the same. -/
 theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
     minpoly ℤ μ = minpoly ℤ (μ ^ p) := by
-  classical
   by_cases hn : n = 0
   · simp_all
   have hpos := Nat.pos_of_ne_zero hn

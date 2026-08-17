@@ -47,7 +47,6 @@ theorem surjective_respectsIso : RespectsIso surjective := by
 
 theorem surjective_isStableUnderBaseChange : IsStableUnderBaseChange surjective := by
   refine IsStableUnderBaseChange.mk surjective_respectsIso ?_
-  classical
   introv h x
   induction x with
   | zero => exact ⟨0, map_zero _⟩

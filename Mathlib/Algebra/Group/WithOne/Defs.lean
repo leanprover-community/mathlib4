@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Data.Option.Basic
 public import Mathlib.Logic.Nontrivial.Basic
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
@@ -21,10 +22,6 @@ this provides an example of an adjunction is proved in
 Another result says that adjoining to a group an element `zero` gives a `GroupWithZero`. For more
 information about these structures (which are not that standard in informal mathematics, see
 `Mathlib/Algebra/GroupWithZero/Basic.lean`)
-
-## TODO
-
-`WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
 -/
 
 @[expose] public section
@@ -84,6 +81,10 @@ instance inhabited : Inhabited (WithOne α) :=
 @[to_additive]
 instance instNontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
+
+@[to_additive]
+instance [IsEmpty α] : Subsingleton (WithOne α) :=
+  inferInstanceAs <| Subsingleton (Option α)
 
 /-- The canonical map from `α` into `WithOne α` -/
 @[to_additive (attr := coe, match_pattern) /-- The canonical map from `α` into `WithZero α` -/]

@@ -51,7 +51,7 @@ universe u₁ u₂ v₁ v₂ w t
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 /-!
 A category `C` is a PreGalois category if it satisfies all properties
@@ -249,7 +249,7 @@ noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
 lemma fiberEqualizerEquiv_symm_ι_apply {X Y : C} {f g : X ⟶ Y} (x : F.obj X)
     (h : F.map f x = F.map g x) :
     F.map (equalizer.ι f g) ((fiberEqualizerEquiv F f g).symm ⟨x, h⟩) = x := by
-  simp only [fiberEqualizerEquiv, Functor.comp_map, Iso.toEquiv_comp]
+  simp only [fiberEqualizerEquiv, Functor.comp_map]
   change ((Types.equalizerIso _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map (equalizer.ι f g)) _ = _
   erw [PreservesEqualizer.iso_inv_ι, Types.equalizerIso_inv_comp_ι]
   rfl
@@ -264,8 +264,7 @@ noncomputable def fiberPullbackEquiv {X A B : C} (f : A ⟶ X) (g : B ⟶ X) :
 lemma fiberPullbackEquiv_symm_fst_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
     (a : F.obj A) (b : F.obj B) (h : F.map f a = F.map g b) :
     F.map (pullback.fst f g) ((fiberPullbackEquiv F f g).symm ⟨(a, b), h⟩) = a := by
-  simp only [fiberPullbackEquiv, Functor.comp_map, Iso.toEquiv_comp,
-    Equiv.symm_trans_apply, Iso.toEquiv_symm_fun]
+  simp only [fiberPullbackEquiv, Functor.comp_map, Iso.toEquiv_symm_fun]
   change ((Types.pullbackIsoPullback _ _).inv ≫ _ ≫
     (F ⋙ FintypeCat.incl).map (pullback.fst f g)) _ = _
   erw [PreservesPullback.iso_inv_fst, Types.pullbackIsoPullback_inv_fst]
@@ -275,8 +274,7 @@ lemma fiberPullbackEquiv_symm_fst_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
 lemma fiberPullbackEquiv_symm_snd_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
     (a : F.obj A) (b : F.obj B) (h : F.map f a = F.map g b) :
     F.map (pullback.snd f g) ((fiberPullbackEquiv F f g).symm ⟨(a, b), h⟩) = b := by
-  simp only [fiberPullbackEquiv, Functor.comp_map, Iso.toEquiv_comp,
-    Equiv.symm_trans_apply, Iso.toEquiv_symm_fun]
+  simp only [fiberPullbackEquiv, Functor.comp_map, Iso.toEquiv_symm_fun]
   change ((Types.pullbackIsoPullback _ _).inv ≫ _ ≫
     (F ⋙ FintypeCat.incl).map (pullback.snd f g)) _ = _
   erw [PreservesPullback.iso_inv_snd, Types.pullbackIsoPullback_inv_snd]
@@ -291,7 +289,7 @@ noncomputable def fiberBinaryProductEquiv (X Y : C) :
 @[simp]
 lemma fiberBinaryProductEquiv_symm_fst_apply {X Y : C} (x : F.obj X) (y : F.obj Y) :
     F.map prod.fst ((fiberBinaryProductEquiv F X Y).symm (x, y)) = x := by
-  simp only [fiberBinaryProductEquiv, Iso.toEquiv_comp]
+  simp only [fiberBinaryProductEquiv]
   change ((Types.binaryProductIso _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map prod.fst) _ = _
   erw [PreservesLimitPair.iso_inv_fst, Types.binaryProductIso_inv_comp_fst]
   rfl
@@ -299,7 +297,7 @@ lemma fiberBinaryProductEquiv_symm_fst_apply {X Y : C} (x : F.obj X) (y : F.obj 
 @[simp]
 lemma fiberBinaryProductEquiv_symm_snd_apply {X Y : C} (x : F.obj X) (y : F.obj Y) :
     F.map prod.snd ((fiberBinaryProductEquiv F X Y).symm (x, y)) = y := by
-  simp only [fiberBinaryProductEquiv, Iso.toEquiv_comp]
+  simp only [fiberBinaryProductEquiv]
   change ((Types.binaryProductIso _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map prod.snd) _ = _
   erw [PreservesLimitPair.iso_inv_snd, Types.binaryProductIso_inv_comp_snd]
   rfl
@@ -332,7 +330,7 @@ lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.
 lemma surjective_on_fiber_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : Function.Surjective (F.map f) :=
   surjective_of_epi (FintypeCat.incl.map (F.map f))
 
-/- A morphism from an object with non-empty fiber to a connected object is surjective on fibers. -/
+/-- A morphism from an object with non-empty fiber to a connected object is surjective on fibers. -/
 lemma surjective_of_nonempty_fiber_of_isConnected {X A : C} [Nonempty (F.obj X)]
     [IsConnected A] (f : X ⟶ A) :
     Function.Surjective (F.map f) := by
@@ -413,39 +411,45 @@ end PreGaloisCategory
 /-- A `PreGaloisCategory` is a `GaloisCategory` if it admits a fiber functor. -/
 class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop
     extends PreGaloisCategory C where
-  hasFiberFunctor : ∃ F : C ⥤ FintypeCat.{u₂}, Nonempty (PreGaloisCategory.FiberFunctor F)
+  hasFiberFunctor (C) : ∃ F : C ⥤ FintypeCat.{u₂}, PreGaloisCategory.FiberFunctor F
+
+/-- Arbitrarily choose a fiber functor for a Galois category using choice. -/
+noncomputable def GaloisCategory.getFiberFunctor
+    (C : Type u₁) [Category.{u₂, u₁} C] [GaloisCategory C] : C ⥤ FintypeCat.{u₂} :=
+  Classical.choose <| hasFiberFunctor C
+
+open GaloisCategory
+
+@[deprecated (since := "2026-08-10")]
+alias PreGaloisCategory.GaloisCategory.getFiberFunctor := getFiberFunctor
 
 namespace PreGaloisCategory
 
 variable (C : Type u₁) [Category.{u₂, u₁} C] [GaloisCategory C]
 
-/-- Arbitrarily choose a fiber functor for a Galois category using choice. -/
-noncomputable def GaloisCategory.getFiberFunctor : C ⥤ FintypeCat.{u₂} :=
-  Classical.choose <| @GaloisCategory.hasFiberFunctor C _ _
-
 /-- The arbitrarily chosen fiber functor `GaloisCategory.getFiberFunctor` is a fiber functor. -/
-noncomputable instance : FiberFunctor (GaloisCategory.getFiberFunctor C) :=
-  Classical.choice <| Classical.choose_spec (@GaloisCategory.hasFiberFunctor C _ _)
+noncomputable instance : FiberFunctor (getFiberFunctor C) :=
+  Classical.choose_spec (hasFiberFunctor C)
 
 variable {C}
 
 /-- In a `GaloisCategory` the set of morphisms out of a connected object is finite. -/
 instance (A X : C) [IsConnected A] : Finite (A ⟶ X) := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f a)
   exact evaluation_injective_of_isConnected F A X a
 
 /-- In a `GaloisCategory` the set of automorphism of a connected object is finite. -/
 instance (A : C) [IsConnected A] : Finite (Aut A) := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f.hom a)
   exact evaluation_aut_injective_of_isConnected F A a
 
 /-- Coproduct inclusions are monic in Galois categories. -/
 instance : MonoCoprod C := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   exact MonoCoprod.monoCoprod_of_preservesCoprod_of_reflectsMono F
 
 end PreGaloisCategory

@@ -28,7 +28,7 @@ variable (D : J ⥤ P.Comma L R ⊤ ⊤)
 
 /-- If `P` is closed under limits of shape `J` in `Comma L R`, then when `D` has
 a limit in `Comma L R`, the forgetful functor creates this limit. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def forgetCreatesLimitOfClosed
     [(P.commaObj L R).IsClosedUnderLimitsOfShape J]
     [HasLimit (D ⋙ forget L R P ⊤ ⊤)] :
@@ -40,7 +40,7 @@ noncomputable def forgetCreatesLimitOfClosed
 
 /-- If `Comma L R` has limits of shape `J` and `Comma L R` is closed under limits of shape
 `J`, then `forget L R P ⊤ ⊤` creates limits of shape `J`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def forgetCreatesLimitsOfShapeOfClosed [HasLimitsOfShape J (Comma L R)]
     [ObjectProperty.IsClosedUnderLimitsOfShape (P.commaObj L R) J] :
     CreatesLimitsOfShape J (forget L R P ⊤ ⊤) where
@@ -60,7 +60,7 @@ instance hasLimitsOfShape_of_closedUnderLimitsOfShape [HasLimitsOfShape J (Comma
 
 /-- If `P` is closed under colimits of shape `J` in `Comma L R`, then when `D` has
 a colimit in `Comma L R`, the forgetful functor creates this colimit. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def forgetCreatesColimitOfClosed
     [(P.commaObj L R).IsClosedUnderColimitsOfShape J]
     [HasColimit (D ⋙ forget L R P ⊤ ⊤)] :
@@ -72,7 +72,7 @@ noncomputable def forgetCreatesColimitOfClosed
 variable (J) in
 /-- If `Comma L R` has colimits of shape `J` and `Comma L R` is closed under colimits of shape
 `J`, then `forget L R P ⊤ ⊤` creates colimits of shape `J`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def forgetCreatesColimitsOfShapeOfClosed [HasColimitsOfShape J (Comma L R)]
     [(P.commaObj L R).IsClosedUnderColimitsOfShape J] :
     CreatesColimitsOfShape J (forget L R P ⊤ ⊤) where
@@ -107,7 +107,6 @@ instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] 
       P.costructuredArrow_iso_iff e] using P.id_mem (L.obj Y)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
     {P : MorphismProperty T} [P.RespectsIso] [PreservesColimitsOfShape J L] [HasColimitsOfShape J A]
     (c : ∀ (D : J ⥤ T) [HasColimit D], Cocone D)
@@ -189,7 +188,6 @@ instance StructuredArrow.closedUnderColimitsOfShape_discrete_empty [L.Faithful] 
       P.structuredArrow_iso_iff e] using P.id_mem (L.obj Y)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma StructuredArrow.isClosedUnderLimitsOfShape {J : Type*} [Category* J]
     {P : MorphismProperty T} [P.RespectsIso] [PreservesLimitsOfShape J L] [HasLimitsOfShape J A]
     (c : ∀ (D : J ⥤ T) [HasLimit D], Cone D)
@@ -263,6 +261,7 @@ noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
   · exact inferInstanceAs (HasLimitsOfShape _ (Over X))
   · apply Over.closedUnderLimitsOfShape_discrete_empty _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {X} in
 instance [P.ContainsIdentities] (Y : P.Over ⊤ X) :

@@ -98,17 +98,6 @@ def powZero [BraidedCategory C] {I : C} (t : IsInitial I) [MonoidalClosed C] : I
     rw [← curry_natural_left, curry_eq_iff, ← cancel_epi (mulZero t).inv]
     apply t.hom_ext
 
-set_option linter.overlappingInstances false in
-set_option backward.isDefEq.respectTransparency false in
--- TODO: Generalise the below to its commuted variants.
--- TODO: Define a distributive category, so that zero_mul and friends can be derived from this.
-/-- In a CCC with binary coproducts, the distribution morphism is an isomorphism. -/
-@[deprecated "No replacement: use `asIso (coprodComparison (tensorLeft Z) _ _)` instead."
-(since := "2025-12-22")]
-noncomputable def prodCoprodDistrib [MonoidalCategory C] [HasBinaryCoproducts C]
-    [MonoidalClosed C] (X Y Z : C) : (Z ⊗ X) ⨿ Z ⊗ Y ≅ Z ⊗ (X ⨿ Y) :=
-  asIso (coprodComparison (tensorLeft Z) _ _)
-
 /-- If an initial object `I` exists in a CCC then it is a strict initial object,
 i.e. any morphism to `I` is an iso.
 This actually shows a slightly stronger version: any morphism to an initial object from an
@@ -145,83 +134,11 @@ variable [CartesianMonoidalCategory D]
 Note we didn't require any coherence between the choice of finite products here, since we transport
 along the `prodComparison` isomorphism.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def cartesianClosedOfEquiv (e : C ≌ D) [MonoidalClosed C] : MonoidalClosed D :=
   letI : e.inverse.Monoidal := .ofChosenFiniteProducts _
   MonoidalClosed.ofEquiv e.inverse e.symm.toAdjunction
 
 end Functor
-
-@[deprecated (since := "2025-12-22")] alias Exponentiable := Closed
-@[deprecated (since := "2025-12-22")] alias Exponentiable.mk := Closed.mk
-@[deprecated (since := "2025-12-22")] alias binaryProductExponentiable := tensorClosed
-@[deprecated (since := "2025-12-22")] alias terminalExponentiable := unitClosed
-@[deprecated (since := "2025-12-22")] alias CartesianClosed := MonoidalClosed
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.mk := MonoidalClosed.mk
-@[deprecated (since := "2025-12-22")] alias exp := ihom
-@[deprecated (since := "2025-12-22")] alias exp.adjunction := ihom.adjunction
-@[deprecated (since := "2025-12-22")] alias exp.ev := ihom.ev
-@[deprecated (since := "2025-12-22")] alias exp.coev := ihom.coev
-@[deprecated (since := "2025-12-22")] alias exp.ev_coev := ihom.ev_coev
-@[deprecated (since := "2025-12-22")] alias exp.coev_ev := ihom.coev_ev
-@[deprecated (since := "2025-12-22")] alias exp.ev_coev_assoc := ihom.ev_coev_assoc
-@[deprecated (since := "2025-12-22")] alias exp.coev_ev_assoc := ihom.coev_ev_assoc
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry := MonoidalClosed.curry
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry := MonoidalClosed.uncurry
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.homEquiv_apply_eq :=
-  MonoidalClosed.homEquiv_apply_eq
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.homEquiv_symm_apply_eq :=
-  MonoidalClosed.homEquiv_symm_apply_eq
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_natural_left :=
-  MonoidalClosed.curry_natural_left
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_natural_left_assoc :=
-  MonoidalClosed.curry_natural_left_assoc
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_natural_right :=
-  MonoidalClosed.curry_natural_right
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_natural_right_assoc :=
-  MonoidalClosed.curry_natural_right_assoc
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_natural_right :=
-  MonoidalClosed.uncurry_natural_right
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_natural_right_assoc :=
-  MonoidalClosed.uncurry_natural_right_assoc
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_natural_left :=
-  MonoidalClosed.uncurry_natural_left
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_natural_left_assoc :=
-  MonoidalClosed.uncurry_natural_left_assoc
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_curry :=
-  MonoidalClosed.uncurry_curry
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_uncurry :=
-  MonoidalClosed.curry_uncurry
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_eq_iff :=
-  MonoidalClosed.curry_eq_iff
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.eq_curry_iff :=
-  MonoidalClosed.eq_curry_iff
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_eq :=
-  MonoidalClosed.uncurry_eq
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_eq :=
-  MonoidalClosed.curry_eq
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_id_eq_ev :=
-  MonoidalClosed.uncurry_id_eq_ev
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_id_eq_coev :=
-  MonoidalClosed.curry_id_eq_coev
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_injective :=
-  MonoidalClosed.curry_injective
-@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_injective :=
-  MonoidalClosed.uncurry_injective
-@[deprecated (since := "2025-12-22")] alias expUnitNatIso := MonoidalClosed.unitNatIso
-@[deprecated (since := "2025-12-22")] alias expUnitIsoSelf := MonoidalClosed.unitIsoSelf
-@[deprecated (since := "2025-12-22")] alias pre := MonoidalClosed.pre
-@[deprecated (since := "2025-12-22")] alias prod_map_pre_app_comp_ev :=
-  MonoidalClosed.id_tensor_pre_app_comp_ev
-@[deprecated (since := "2025-12-22")] alias uncurry_pre :=
-  MonoidalClosed.uncurry_pre
-@[deprecated (since := "2025-12-22")] alias coev_app_comp_pre_app :=
-  MonoidalClosed.coev_app_comp_pre_app
-@[deprecated (since := "2025-12-22")] alias pre_id :=
-  MonoidalClosed.pre_id
-@[deprecated (since := "2025-12-22")] alias pre_map :=
-  MonoidalClosed.pre_map
-@[deprecated (since := "2025-12-22")] alias internalHom :=
-  MonoidalClosed.internalHom
 
 end CategoryTheory

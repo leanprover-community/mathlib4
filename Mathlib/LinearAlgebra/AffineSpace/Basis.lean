@@ -184,7 +184,7 @@ theorem linear_eq_sumCoords (i : ι) : (b.coord i).linear = -(b.basisOf i).sumCo
 @[simp]
 theorem coord_reindex (i : ι') : (b.reindex e).coord i = b.coord (e.symm i) := by
   ext
-  classical simp [AffineBasis.coord]
+  simp [AffineBasis.coord]
 
 @[simp]
 theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
@@ -202,14 +202,14 @@ theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j the
 @[simp]
 theorem coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = w i := by
-  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_true,
+  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, ite_true,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
 
 @[simp]
 theorem coord_apply_combination_of_notMem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = 0 := by
-  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_false,
+  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, ite_false,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
 

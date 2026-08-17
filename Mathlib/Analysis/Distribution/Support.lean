@@ -99,7 +99,7 @@ theorem mem_dsupport_iff (x : α) :
 
 /-- The complement of the support is the largest open set on which `f` vanishes. -/
 theorem dsupport_compl_eq : (dsupport f)ᶜ = ⋃₀ { a | IsVanishingOn f a ∧ IsOpen a } := by
-  simp [dsupport, Set.compl_sInter, Set.compl_image_set_of]
+  simp [dsupport, Set.compl_sInter, Set.compl_image_ofPred]
 
 @[simp high]
 theorem notMem_dsupport_iff (x : α) :

@@ -65,7 +65,7 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
     simp only [q, map_sum, map_mul, aeval_C, map_pow, aeval_X]
     refine (Finset.sum_congr rfl fun i hi ↦ ?_).trans e
     simp only [Finset.mem_range, Nat.lt_succ_iff] at hi
-    rw [mul_pow, mul_left_comm, ← map_pow, coeff_C_mul, coeff_mul_X_pow', if_pos hi, mul_comm]
+    rw [mul_pow, mul_left_comm, ← map_pow, coeff_C_mul, coeff_mul_X_pow', ite_eq_left hi, mul_comm]
     simp [Subalgebra.algebraMap_def]
   · rw [hq]
     simp [q, apply_ite, coeff_mem_pow_of_mem_adjoin_C_mul_X (p.coeff _).2]
@@ -73,7 +73,6 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
 lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_mem_map [Algebra.IsIntegral R S]
     {I : Ideal R} {x : S} (hx : x ∈ I.map (algebraMap R S)) :
     ∃ p : R[X], p.Monic ∧ aeval x p = 0 ∧ ∀ i, p.coeff i ∈ I ^ (p.natDegree - i) := by
-  classical
   let A : Subalgebra R R[X] := Algebra.adjoin R { C r * X | r ∈ I }
   let := Polynomial.algebra R S
   refine exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral ?_

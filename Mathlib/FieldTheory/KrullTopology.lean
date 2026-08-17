@@ -44,10 +44,6 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `stabilizer_isOpen_of_isIntegral`: For an integral field extension `L/K`, the stabilizer
   in `Gal(L/K)` of any element in `L` is open for the Krull topology.
 
-- `IntermediateField.finrank_eq_fixingSubgroup_index`: given a Galois extension `K/k` and an
-  intermediate field `L`, the `[L : k]` as a natural number is equal to the index of the
-  fixing subgroup of `L`.
-
 ## Notation
 
 - In docstrings, we will write `Gal(L/E)` to denote the fixing subgroup of an intermediate field
@@ -100,7 +96,7 @@ theorem mem_galBasis_iff (K L : Type*) [Field K] [Field L] [Algebra K L] (U : Se
 
 /-- For a field extension `L/K`, `galGroupBasis K L` is the group filter basis on `Gal(L/K)`
 whose sets are `Gal(L/E)` for finite subextensions `E/K`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     GroupFilterBasis Gal(L/K) where
   toFilterBasis := galBasis K L
@@ -271,66 +267,3 @@ theorem stabilizer_isOpen_of_isIntegral [Algebra.IsIntegral K L] (x : L) :
   simpa using (forall_mem_adjoin_smul_eq_self_iff K (S := {x}) g).symm
 
 end MulAction
-
-namespace IntermediateField
-
-variable {k E : Type*} (K : Type*) [Field k] [Field E] [Field K]
-  [Algebra k E] [Algebra k K] [Algebra E K] [IsScalarTower k E K] (L : IntermediateField k E)
-
-/-- If `K / E / k` is a field extension tower with `E / k` normal,
-`L` is an intermediate field of `E / k`, then the fixing subgroup of `L` viewed as an
-intermediate field of `K / k` is equal to the preimage of the fixing subgroup of `L` viewed as an
-intermediate field of `E / k` under the natural map `Aut(K / k) → Aut(E / k)`
-(`AlgEquiv.restrictNormalHom`). -/
-theorem map_fixingSubgroup [Normal k E] :
-    (L.map (IsScalarTower.toAlgHom k E K)).fixingSubgroup =
-      L.fixingSubgroup.comap (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) E) := by
-  ext f
-  simp only [Subgroup.mem_comap, mem_fixingSubgroup_iff]
-  constructor
-  · rintro h x hx
-    change f.restrictNormal E x = x
-    apply_fun _ using (algebraMap E K).injective
-    rw [AlgEquiv.restrictNormal_commutes]
-    exact h _ ⟨x, hx, rfl⟩
-  · rintro h _ ⟨x, hx, rfl⟩
-    replace h := congr(algebraMap E K $(show f.restrictNormal E x = x from h x hx))
-    rwa [AlgEquiv.restrictNormal_commutes] at h
-
-/-- If `K / E / k` is a field extension tower with `E / k` and `K / k` normal,
-`L` is an intermediate field of `E / k`, then the index of the fixing subgroup of `L` viewed as an
-intermediate field of `K / k` is equal to the index of the fixing subgroup of `L` viewed as an
-intermediate field of `E / k`. -/
-theorem map_fixingSubgroup_index [Normal k E] [Normal k K] :
-    (L.map (IsScalarTower.toAlgHom k E K)).fixingSubgroup.index = L.fixingSubgroup.index := by
-  rw [L.map_fixingSubgroup K, L.fixingSubgroup.index_comap_of_surjective
-    (AlgEquiv.restrictNormalHom_surjective _)]
-
-variable {K} in
-/-- If `K / k` is a Galois extension, `L` is an intermediate field of `K / k`, then `[L : k]`
-as a natural number is equal to the index of the fixing subgroup of `L`. -/
-theorem finrank_eq_fixingSubgroup_index (L : IntermediateField k K) [IsGalois k K] :
-    Module.finrank k L = L.fixingSubgroup.index := by
-  wlog hnfd : FiniteDimensional k L generalizing L
-  · rw [Module.finrank_of_infinite_dimensional hnfd]
-    by_contra! h
-    replace h : L.fixingSubgroup.FiniteIndex := ⟨h.symm⟩
-    obtain ⟨L', hfd, hL'⟩ :=
-      exists_lt_finrank_of_infinite_dimensional hnfd L.fixingSubgroup.index
-    let i := (liftAlgEquiv L').toLinearEquiv
-    replace hfd := i.finiteDimensional
-    rw [i.finrank_eq, this _ hfd] at hL'
-    exact (Subgroup.index_antitone <| fixingSubgroup_le <|
-      IntermediateField.lift_le L').not_gt hL'
-  let E := normalClosure k L K
-  have hle : L ≤ E := by simpa only [fieldRange_val] using L.val.fieldRange_le_normalClosure
-  let L' := restrict hle
-  have h := Module.finrank_mul_finrank k ↥L' ↥E
-  classical
-  rw [← IsGalois.card_fixingSubgroup_eq_finrank L', ← IsGalois.card_aut_eq_finrank k E] at h
-  rw [← L'.fixingSubgroup.index_mul_card, Nat.mul_left_inj Finite.card_pos.ne'] at h
-  rw [(restrict_algEquiv hle).toLinearEquiv.finrank_eq, h, ← L'.map_fixingSubgroup_index K]
-  congr 2
-  exact lift_restrict hle
-
-end IntermediateField
