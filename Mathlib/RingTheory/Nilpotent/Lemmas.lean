@@ -113,6 +113,7 @@ section
 
 variable {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent_restrict_of_le {f : End R M} {p q : Submodule R M}
     {hp : MapsTo f p p} {hq : MapsTo f q q} (h : p ≤ q) (hf : IsNilpotent (f.restrict hq)) :
     IsNilpotent (f.restrict hp) := by
@@ -125,6 +126,7 @@ lemma isNilpotent_restrict_of_le {f : End R M} {p q : Submodule R M}
   ext
   exact (congr_arg Subtype.val hn :)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent.restrict
     {f : M →ₗ[R] M} {p : Submodule R M} (hf : MapsTo f p p) (hnil : IsNilpotent f) :
     IsNilpotent (f.restrict hf) := by

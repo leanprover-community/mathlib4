@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.RootsOfUnity.Basic
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Topology.LocalAtTarget
+public import Mathlib.Topology.GDelta.MetrizableSpace
 
 /-!
 # Covering maps involving the complex plane

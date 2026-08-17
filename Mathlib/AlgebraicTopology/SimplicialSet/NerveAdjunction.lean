@@ -213,12 +213,14 @@ lemma descOfTruncation_map_homMk (φ : X ⟶ (truncation 2).obj (nerve C))
     (descOfTruncation φ).map (homMk e) = nerve.homEquiv (e.map φ) :=
   Category.id_comp _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma descOfTruncation_comp {X' : Truncated.{u} 2} (ψ : X ⟶ X')
     (φ : X' ⟶ (truncation 2).obj (nerve C)) :
     descOfTruncation (ψ ≫ φ) = mapHomotopyCategory ψ ⋙ descOfTruncation φ :=
   functor_ext (fun _ ↦ by simp) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a `2`-truncated simplicial set `X` and a category `C`,
 this is the morphism `X ⟶ (truncation 2).obj (nerve C)` corresponding
@@ -334,6 +336,7 @@ namespace nerve
 
 variable {C D : Type u} [SmallCategory C] [SmallCategory D]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `C ⥤ D` that is reconstructed for a morphism
 between the `2`-truncated nerves. -/
 @[simps]
@@ -449,7 +452,6 @@ lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
   exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans hoFunctor _) _
     (Presheaf.isColimitTautologicalCocone' X)
 
-set_option backward.isDefEq.respectTransparency false in
 instance isIso_prodComparison (X Y : SSet) :
     IsIso (prodComparison hoFunctor.{u} X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
   convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫

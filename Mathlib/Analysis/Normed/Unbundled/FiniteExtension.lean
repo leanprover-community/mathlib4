@@ -120,9 +120,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     obtain ⟨k, -, (hk : ‖∑ i : ι, (B.repr x i • ∑ i_1 : ι,
       B.repr y i_1 • B.repr (B i * B i_1)) ixy‖ ≤
       ‖(B.repr x k • ∑ j : ι, B.repr y j • B.repr (B k * B j)) ixy‖)⟩ :=
-      IsNonarchimedean.finset_image_add (map_zero _) (apply_nonneg _) hna'
-        (fun i ↦ (B.repr x i • ∑ i_1 : ι, B.repr y i_1 • B.repr (B i * B i_1)) ixy)
-        (univ : Finset ι)
+      hna'.finset_image_add _ (univ : Finset ι) <| map_zero_le (NormedField.toMulRingNorm K)
     simp only [Finsupp.coe_smul, Finsupp.coe_finsetSum, Pi.smul_apply, Finset.sum_apply,
       smul_eq_mul, norm_mul] at hk ⊢
     apply le_trans hk
@@ -130,8 +128,8 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     obtain ⟨k', hk'⟩ : ∃ (k' : ι),
         ‖∑ j : ι, B.repr y j • B.repr (B k * B j) ixy‖ ≤
           ‖B.repr y k' • B.repr (B k * B k') ixy‖ := by
-      obtain ⟨k, hk0, hk⟩ := IsNonarchimedean.finset_image_add (map_zero _) (apply_nonneg _) hna'
-        (fun i ↦ B.repr y i • B.repr (B k * B i) ixy) (univ : Finset ι)
+      obtain ⟨k, hk0, hk⟩ := hna'.finset_image_add _ (univ : Finset ι)
+        (map_zero_le (NormedField.toMulRingNorm K))
       exact ⟨k, hk⟩
     apply le_trans (mul_le_mul_of_nonneg_left hk' (norm_nonneg _))
     -- Now an easy computation leads to the desired conclusion.
@@ -176,8 +174,8 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
   have h1 : LinearIndepOn K id ({1} : Set L) := .singleton one_ne_zero
   set ι := { x // x ∈ LinearIndepOn.extend h1 (Set.subset_univ ({1} : Set L)) }
   set B : Basis ι K L := Basis.extend h1
-  letI hfin : Fintype ι := FiniteDimensional.fintypeBasisIndex B
-  haveI hem : Nonempty ι := B.index_nonempty
+  let hfin : Fintype ι := FiniteDimensional.fintypeBasisIndex B
+  have hem : Nonempty ι := B.index_nonempty
   have h1L : (1 : L) ∈ LinearIndepOn.extend h1 _ :=
     Basis.subset_extend _ (Set.mem_singleton (1 : L))
   have hB1 : B ⟨1, h1L⟩ = (1 : L) := by rw [Basis.coe_extend, Subtype.coe_mk]

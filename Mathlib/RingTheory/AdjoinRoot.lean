@@ -359,6 +359,7 @@ theorem aeval_algHom_eq_zero (ϕ : AdjoinRoot f →ₐ[R] S) : aeval (ϕ (root f
   rw [aeval_def, ← h, ← map_zero ϕ.toRingHom, ← eval₂_root f, hom_eval₂]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem liftAlgHom_eq_algHom (ϕ : AdjoinRoot f →ₐ[R] S) :
     liftAlgHom f (Algebra.ofId R S) (ϕ (root f)) (aeval_algHom_eq_zero f ϕ) = ϕ := by
@@ -390,10 +391,13 @@ theorem isDomain_of_prime (hf : Prime f) : IsDomain (AdjoinRoot f) :=
   (Ideal.Quotient.isDomain_iff_prime (span {f} : Ideal R[X])).mpr <|
     (Ideal.span_singleton_prime hf.ne_zero).mpr hf
 
-theorem noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f)
+theorem isTorsionFree_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f)
     (hf' : f.degree ≠ 0) : IsTorsionFree R (AdjoinRoot f) :=
   haveI := isDomain_of_prime hf
   isTorsionFree_iff_algebraMap_injective.mpr (of.injective_of_degree_ne_zero hf')
+
+@[deprecated (since := "2026-07-27")]
+alias noZeroSMulDivisors_of_prime_of_degree_ne_zero := isTorsionFree_of_prime_of_degree_ne_zero
 
 end Prime
 
@@ -462,6 +466,7 @@ lemma mapAlgHom_comp_mapAlghom (f : S →ₐ[R] T) (g : T →ₐ[R] U) (p : S[X]
         (hg.trans <| by simpa [Polynomial.map_map] using! Polynomial.map_dvd g.toRingHom hf) := by
   aesop
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `AdjoinRoot.map` as an `AlgEquiv`. -/
 def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map f) q) :
     AdjoinRoot p ≃ₐ[R] AdjoinRoot q :=
@@ -545,6 +550,10 @@ section Irreducible
 
 variable [Field K] {f : K[X]}
 
+theorem isField_iff_irreducible : IsField (AdjoinRoot f) ↔ Irreducible f :=
+  (Ideal.Quotient.maximal_ideal_iff_isField_quotient _).symm.trans
+    (Ideal.irreducible_iff_isMaximal_span_singleton_of_not_isField (Polynomial.not_isField K)).symm
+
 instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaximal :=
   PrincipalIdealRing.isMaximal_of_irreducible <| Fact.out
 
@@ -607,7 +616,7 @@ lemma isIntegral_of_monic (monic : g.Monic) : Algebra.IsIntegral R (AdjoinRoot g
 
 lemma isLocalHom_of_monic_of_degree_pos (monic : g.Monic) (deg : 0 < g.degree) :
     IsLocalHom (algebraMap R (AdjoinRoot g)) :=
-  haveI := faithfulSMul_of_monic_of_degree_pos monic deg
+  have := faithfulSMul_of_monic_of_degree_pos monic deg
   (isIntegral_of_monic monic).isLocalHom
 
 /-- `AdjoinRoot.modByMonicHom` sends the equivalence class of `f` mod `g` to `f %ₘ g`.
@@ -649,7 +658,8 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
           nontriviality R
           simp only [modByMonicHom_mk]
           rw [(modByMonic_eq_self_iff hg).mpr, finsetSum_coeff]
-          · simp_rw [coeff_monomial, Fin.val_eq_val, Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
+          · simp_rw [coeff_monomial, Fin.val_eq_val, Finset.sum_ite_eq',
+              ite_eq_left (Finset.mem_univ _)]
           · simp_rw [← C_mul_X_pow_eq_monomial]
             exact (degree_eq_natDegree <| hg.ne_zero).symm ▸ degree_sum_fin_lt _ }
 
@@ -706,6 +716,7 @@ variable [Field K] {f : K[X]}
 theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
   (isAlgebraic_root hf).isIntegral
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
   refine (minpoly.unique K _ f'_monic ?_ ?_).symm
@@ -812,6 +823,7 @@ section Equiv'
 variable [CommRing R] [CommRing S] [Algebra R S]
 variable (g : R[X]) (pb : PowerBasis R S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `S` is an extension of `R` with power basis `pb` and `g` is a monic polynomial over `R`
 such that `pb.gen` has a minimal polynomial `g`, then `S` is isomorphic to `AdjoinRoot g`.
 
@@ -832,11 +844,13 @@ def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g
     rw [pb.lift_aeval, aeval_eq, liftAlgHom_mk, Polynomial.aeval_def, Algebra.toRingHom_ofId]
 
 -- This lemma should have the simp tag but this causes a lint issue.
+set_option backward.isDefEq.respectTransparency.types false in
 theorem equiv'_toAlgHom (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     (equiv' g pb h₁ h₂).toAlgHom = AdjoinRoot.liftAlgHom g _ pb.gen h₂ :=
   rfl
 
 -- This lemma should have the simp tag but this causes a lint issue.
+set_option backward.isDefEq.respectTransparency.types false in
 theorem equiv'_symm_toAlgHom (h₁ : aeval (root g) (minpoly R pb.gen) = 0)
     (h₂ : aeval pb.gen g = 0) : (equiv' g pb h₁ h₂).symm.toAlgHom = pb.lift (root g) h₁ :=
   rfl
@@ -871,6 +885,7 @@ open Ideal DoubleQuot Polynomial
 
 variable [CommRing R] (I : Ideal R) (f : R[X])
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural isomorphism `R[α]/(I[α]) ≅ R[α]/((I[x] ⊔ (f)) / (f))` for `α` a root of
 `f : R[X]` and `I : Ideal R`.
 
@@ -893,6 +908,7 @@ theorem quotMapOfEquivQuotMapCMapMk_mk (x : AdjoinRoot f) :
 alias quotMapOfEquivQuotMapCMapSpanMk_mk := quotMapOfEquivQuotMapCMapMk_mk
 
 --this lemma should have the simp tag but this causes a lint issue
+set_option backward.isDefEq.respectTransparency.types false in
 theorem quotMapOfEquivQuotMapCMapMk_symm_mk (x : AdjoinRoot f) :
     (quotMapOfEquivQuotMapCMapMk I f).symm
         (Ideal.Quotient.mk ((I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span {f}))) x) =
@@ -1097,6 +1113,7 @@ theorem quotientEquivQuotientMinpolyMap_apply_mk (pb : PowerBasis R S) (I : Idea
     AdjoinRoot.aeval_eq, AdjoinRoot.quotEquivQuotMap_apply_mk]
 
 -- This lemma should have the simp tag but this causes a lint issue.
+set_option backward.isDefEq.respectTransparency.types false in
 theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I : Ideal R)
     (g : R[X]) :
     (pb.quotientEquivQuotientMinpolyMap I).symm (Ideal.Quotient.mk (Ideal.span
@@ -1112,7 +1129,7 @@ polynomial over `L` divides some monic irreducible polynomial over `K`. -/
 theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
     [CommRing K] [IsDomain K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] {f : L[X]}
     (hf : Irreducible f) : ∃ g : K[X], g.Monic ∧ Irreducible g ∧ f ∣ g.map (algebraMap K L) := by
-  haveI := Fact.mk hf
+  have := Fact.mk hf
   have h := hf.ne_zero
   have h2 := isIntegral_trans (R := K) _ (AdjoinRoot.isIntegral_root h)
   have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
