@@ -79,7 +79,7 @@ where
       .tagged linterOption.name <|
       .tagged Linter.linterMessageTag m!"{msg}{disable}"
 
-
+/-- Lints against using constructors with internal during elaboration. -/
 def internalConstructor : Linter where
   run := withSetOptionIn fun _ => do
     if Linter.getLinterValue linter.allowInternalConstructors (← Linter.getLinterOptions) then
