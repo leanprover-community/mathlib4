@@ -309,10 +309,10 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
     simp only [mem_iInf, mem_ker, proj_apply, pi_apply]
     intro j hjJ
     have : j ∉ I := fun hjI => hd.le_bot ⟨hjI, hjJ⟩
-    rw [dif_neg this, zero_apply]
+    rw [dite_eq_right this, zero_apply]
   · simp only [pi_comp, comp_assoc, subtype_comp_codRestrict, proj_pi, Subtype.coe_prop]
     ext b ⟨j, hj⟩
-    simp only [dif_pos,
+    simp only [dite_eq_left,
       LinearMap.coe_proj, LinearMap.pi_apply]
     rfl
   · ext1 ⟨b, hb⟩
@@ -461,7 +461,6 @@ variable [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
 variable [(i : ι) → AddCommMonoid (ψ i)] [(i : ι) → Module R (ψ i)]
 variable [(i : ι) → AddCommMonoid (χ i)] [(i : ι) → Module R (χ i)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Combine a family of linear equivalences into a linear equivalence of `pi`-types.
 
 This is `Equiv.piCongrRight` as a `LinearEquiv` -/

@@ -5,7 +5,9 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.RingTheory.RamificationInertia.Basic
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.RingTheory.RamificationInertia.Inertia
+public import Mathlib.RingTheory.RamificationInertia.Ramification
 
 /-!
 # Primes in an extension of localization at prime
@@ -168,8 +170,9 @@ theorem equivQuotientMapMaximalIdeal_apply_mk [p.IsMaximal] (x : S) :
 
 theorem inertiaDeg_map_eq_inertiaDeg [p.IsMaximal] [P.IsMaximal]
     [(Ideal.map (algebraMap S Sₚ) P).LiesOver (maximalIdeal Rₚ)] :
-    (maximalIdeal Rₚ).inertiaDeg' (P.map (algebraMap S Sₚ)) = p.inertiaDeg' P := by
-  rw [inertiaDeg'_algebraMap, inertiaDeg'_algebraMap]
+    (P.map (algebraMap S Sₚ)).inertiaDeg Rₚ = P.inertiaDeg R := by
+  have := isMaximal_of_isMaximal_disjoint _ Sₚ P (disjoint_primeCompl_of_liesOver P p)
+  rw [inertiaDeg_eq_of_isMaximal p, inertiaDeg_eq_of_isMaximal (maximalIdeal Rₚ)]
   refine Algebra.finrank_eq_of_equiv_equiv (equivQuotMaximalIdeal p Rₚ).symm
     (equivQuotientMapOfIsMaximal p Sₚ P).symm ?_
   ext x
@@ -207,7 +210,6 @@ open IsLocalization AtPrime
 variable [IsDomain R] [IsDedekindDomain S] [IsTorsionFree R S] [Algebra R Sₚ] [IsScalarTower R S Sₚ]
   [IsScalarTower R Rₚ Sₚ]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 For `R ⊆ S` an extension of Dedekind domains and `p` a prime ideal of `R`, the bijection
 between the primes of `S` over `p` and the primes over the maximal ideal of `Rₚ` in `Sₚ` where
@@ -239,8 +241,8 @@ theorem primesOverEquivPrimesOver_symm_apply (hp : p ≠ ⊥) (Q : (maximalIdeal
     ((primesOverEquivPrimesOver p Rₚ Sₚ hp).symm Q).1 = Ideal.comap (algebraMap S Sₚ) Q := rfl
 
 theorem primesOverEquivPrimesOver_inertiagDeg_eq [p.IsMaximal] (hp : p ≠ ⊥) (P : p.primesOver S) :
-    (maximalIdeal Rₚ).inertiaDeg' (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ) =
-      p.inertiaDeg' P.val := by
+    (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ).inertiaDeg Rₚ =
+      P.val.inertiaDeg R := by
   have : NeZero p := ⟨hp⟩
   have : P.val.IsMaximal := Ring.DimensionLEOne.maximalOfPrime
     (ne_bot_of_mem_primesOver (NeZero.ne _) P.prop) inferInstance

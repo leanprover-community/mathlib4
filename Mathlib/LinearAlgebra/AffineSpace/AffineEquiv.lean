@@ -136,7 +136,6 @@ theorem toEquiv_inj {e e' : P₁ ≃ᵃ[k] P₂} : e.toEquiv = e'.toEquiv ↔ e 
 theorem coe_mk (e : P₁ ≃ P₂) (e' : V₁ ≃ₗ[k] V₂) (h) : ((⟨e, e', h⟩ : P₁ ≃ᵃ[k] P₂) : P₁ → P₂) = e :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct an affine equivalence by verifying the relation between the map and its linear part at
 one base point. Namely, this function takes a map `e : P₁ → P₂`, a linear equivalence
 `e' : V₁ ≃ₗ[k] V₂`, and a point `p` such that for any other point `p'` we have
@@ -164,7 +163,7 @@ def symm (e : P₁ ≃ᵃ[k] P₂) : P₂ ≃ᵃ[k] P₁ where
   toEquiv := e.toEquiv.symm
   linear := e.linear.symm
   map_vadd' p v :=
-    e.toEquiv.symm.apply_eq_iff_eq_symm_apply.2 <| by
+    e.toEquiv.symm.eq_symm_apply.1 <| by
       rw [Equiv.symm_symm, e.map_vadd' ((Equiv.symm e.toEquiv) p) ((LinearEquiv.symm e.linear) v),
         LinearEquiv.apply_symm_apply, Equiv.apply_symm_apply]
 
@@ -221,8 +220,15 @@ theorem apply_symm_apply (e : P₁ ≃ᵃ[k] P₂) (p : P₂) : e (e.symm p) = p
 theorem symm_apply_apply (e : P₁ ≃ᵃ[k] P₂) (p : P₁) : e.symm (e p) = p :=
   e.toEquiv.symm_apply_apply p
 
+theorem symm_apply_eq (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : e.symm p₁ = p₂ ↔ p₁ = e p₂ :=
+  e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : p₂ = e.symm p₁ ↔ e p₂ = p₁ :=
+  e.toEquiv.eq_symm_apply
+
+@[deprecated eq_symm_apply (since := "2026-07-26")]
 theorem apply_eq_iff_eq_symm_apply (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : e p₁ = p₂ ↔ p₁ = e.symm p₂ :=
-  e.toEquiv.apply_eq_iff_eq_symm_apply
+  e.eq_symm_apply.symm
 
 theorem apply_eq_iff_eq (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂ : P₁} : e p₁ = e p₂ ↔ p₁ = p₂ := by simp
 
@@ -310,7 +316,6 @@ theorem self_trans_symm (e : P₁ ≃ᵃ[k] P₂) : e.trans e.symm = refl k P₁
 theorem symm_trans_self (e : P₁ ≃ᵃ[k] P₂) : e.symm.trans e = refl k P₂ :=
   ext e.apply_symm_apply
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem apply_lineMap (e : P₁ ≃ᵃ[k] P₂) (a b : P₁) (c : k) :
     e (AffineMap.lineMap a b c) = AffineMap.lineMap (e a) (e b) c :=
@@ -655,7 +660,6 @@ section arrowCongrₗ
 
 variable (e₁ : P₁ ≃ᵃ[R] P₂) (e₂ : V₃ ≃ₗ[R] V₄)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An affine isomorphism between the domains and a linear isomorphism between the codomains of two
 spaces of affine maps give a linear isomorphism between the two function spaces.
 
@@ -750,22 +754,18 @@ namespace AffineMap
 
 open AffineEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_vadd (v v' : V₁) (p : P₁) (c : k) :
     lineMap v v' c +ᵥ p = lineMap (v +ᵥ p) (v' +ᵥ p) c :=
   (vaddConst k p).apply_lineMap v v' c
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_vsub (p₁ p₂ p₃ : P₁) (c : k) :
     lineMap p₁ p₂ c -ᵥ p₃ = lineMap (p₁ -ᵥ p₃) (p₂ -ᵥ p₃) c :=
   (vaddConst k p₃).symm.apply_lineMap p₁ p₂ c
 
-set_option backward.isDefEq.respectTransparency false in
 theorem vsub_lineMap (p₁ p₂ p₃ : P₁) (c : k) :
     p₁ -ᵥ lineMap p₂ p₃ c = lineMap (p₁ -ᵥ p₂) (p₁ -ᵥ p₃) c :=
   (constVSub k p₁).apply_lineMap p₂ p₃ c
 
-set_option backward.isDefEq.respectTransparency false in
 theorem vadd_lineMap (v : V₁) (p₁ p₂ : P₁) (c : k) :
     v +ᵥ lineMap p₁ p₂ c = lineMap (v +ᵥ p₁) (v +ᵥ p₂) c :=
   (constVAdd k P₁ v).apply_lineMap p₁ p₂ c
