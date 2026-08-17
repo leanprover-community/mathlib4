@@ -39,7 +39,7 @@ a few of which rely on the fact that subtraction is continuous.
 
 noncomputable section
 
-open Filter Metric Set TopologicalSpace Topology
+open Filter Set TopologicalSpace Topology
 
 variable {ι : Sort*} {n : ℕ}
 
@@ -225,29 +225,6 @@ def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
       pow_left_strictMonoOn₀ hn (zero_le (a := x)) (zero_le (a := y)) h) <|
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
       simpa [OrderBot.atBot_eq, pos_iff_ne_zero]
-
-section Monotone
-
-/-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
-@[deprecated tendsto_atTop_ciSup (since := "2026-01-14")]
-theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
-    (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) :=
-  ⟨iSup f, tendsto_atTop_ciSup h_mon h_bdd⟩
-
-/-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/
-@[deprecated tendsto_atTop_ciInf (since := "2026-01-14")]
-theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddBelow (Set.range f))
-    (h_ant : Antitone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) :=
-  ⟨iInf f, tendsto_atTop_ciInf h_ant h_bdd⟩
-
-variable {ι : Type*} [Preorder ι]
-
-/-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
-@[deprecated tendsto_atTop_ciInf (since := "2026-01-14")]
-theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
-    ∃ r : ℝ≥0, Tendsto f atTop (𝓝 r) := ⟨iInf f, tendsto_atTop_ciInf h_ant (by simp)⟩
-
-end Monotone
 
 lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n :=
   (NNReal.powOrderIso n hn).map_ciSup' _

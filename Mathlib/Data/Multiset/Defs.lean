@@ -61,7 +61,7 @@ assert_not_exists Monoid OrderHom
 
 universe v
 
-open List Subtype Nat Function
+open List Subtype Nat
 
 variable {α : Type*} {β : Type v} {γ : Type*}
 

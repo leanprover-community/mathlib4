@@ -65,6 +65,7 @@ public lemma index_of_surjective (hf : Surjective f) :
   rw [index_eq_finrank_sub, range_eq_top.mpr hf]
   simp [finrank_eq_zero_of_subsingleton]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] public lemma index_id :
     (id : M →ₗ[R] M).index = 0 := by
   nontriviality R
@@ -97,6 +98,7 @@ public lemma index_eq_of_finiteDimensional [FiniteDimensional k M] [FiniteDimens
   have h₃ := f.ker.finrank_quotient_add_finrank
   lia
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Submodule in
 @[simp] public lemma index_comp {P : Type*} [AddCommGroup P] [Module k P] (g : N →ₗ[k] P)
     [FiniteDimensional k f.ker] [FiniteDimensional k g.ker]

@@ -233,7 +233,7 @@ instance of_free [Free R M] : Flat R M := inferInstance
 instance {S} [CommSemiring S] [Algebra R S] [Module S M] [IsScalarTower R S M]
     [Flat S M] [Flat R N] : Flat S (M ⊗[R] N) :=
   iff_rTensor_injectiveₛ.mpr fun P _ _ I ↦ by
-    letI := RestrictScalars.moduleOrig R S P
+    let := RestrictScalars.moduleOrig R S P
     change Submodule S (RestrictScalars R S P) at I
     change Function.Injective (rTensor _ I.subtype)
     simpa [AlgebraTensorModule.rTensor_tensor] using!
@@ -290,8 +290,8 @@ lemma iff_rTensor_preserves_injective_linearMap' [Small.{v'} R] : Flat R M ↔
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.rTensor M) :=
   ⟨by introv _; apply rTensor_preserves_injective_linearMap, fun h ↦
     iff_rTensor_preserves_injective_linearMapₛ.mpr fun P N _ _ _ _ ↦ by
-      letI := Module.addCommMonoidToAddCommGroup R (M := P)
-      letI := Module.addCommMonoidToAddCommGroup R (M := N)
+      let := Module.addCommMonoidToAddCommGroup R (M := P)
+      let := Module.addCommMonoidToAddCommGroup R (M := N)
       apply h⟩
 
 /-- `M` is flat if and only if `f ⊗ 𝟙 M` is injective whenever `f` is an injective linear map.

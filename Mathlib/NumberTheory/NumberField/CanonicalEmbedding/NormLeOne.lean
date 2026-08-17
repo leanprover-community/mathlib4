@@ -150,7 +150,7 @@ theorem norm_normAtAllPlaces (x : mixedSpace K) :
 theorem normAtAllPlaces_mem_fundamentalCone_iff {x : mixedSpace K} :
     mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
   simp_rw [fundamentalCone, Set.mem_sdiff, Set.mem_preimage, logMap_normAtAllPlaces,
-    Set.mem_setOf_eq, norm_normAtAllPlaces]
+    Set.mem_ofPred_eq, norm_normAtAllPlaces]
 
 end normAtAllPlaces
 
@@ -161,7 +161,10 @@ variable [NumberField K]
 /--
 The set of elements of the `fundamentalCone` of `norm ≤ 1`.
 -/
-abbrev normLeOne : Set (mixedSpace K) := fundamentalCone K ∩ {x | mixedEmbedding.norm x ≤ 1}
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable abbrev normLeOne : Set (mixedSpace K) :=
+  fundamentalCone K ∩ {x | mixedEmbedding.norm x ≤ 1}
 
 variable {K} in
 theorem mem_normLeOne {x : mixedSpace K} :
@@ -195,8 +198,8 @@ theorem normAtAllPlaces_normLeOne :
     refine ⟨⟨⟨?_, ?_⟩, ?_⟩, ?_⟩
     · rwa [Set.mem_preimage, ← logMap_normAtAllPlaces] at h₁
     · exact fun w ↦ normAtPlace_nonneg w y
-    · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₂
-    · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₃
+    · rwa [Set.mem_ofPred_eq, ← norm_normAtAllPlaces] at h₂
+    · rwa [Set.mem_ofPred_eq, ← norm_normAtAllPlaces] at h₃
   · exact ⟨mixedSpaceOfRealSpace x, ⟨⟨h₁, h₃⟩, h₄⟩, normAtAllPlaces_mixedSpaceOfRealSpace h₂⟩
 
 end normLeOne_def
@@ -366,13 +369,13 @@ theorem realSpaceToLogSpace_expMap_symm {x : K} (hx : x ≠ 0) :
 theorem realSpaceToLogSpace_completeFamily_of_eq :
     realSpaceToLogSpace (completeFamily K w₀) = 0 := by
   ext
-  rw [realSpaceToLogSpace_apply, completeFamily, dif_pos rfl, ← Nat.cast_sum, sum_mult_eq,
+  rw [realSpaceToLogSpace_apply, completeFamily, dite_eq_left rfl, ← Nat.cast_sum, sum_mult_eq,
     mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr Module.finrank_pos.ne'), sub_self, Pi.zero_apply]
 
 theorem realSpaceToLogSpace_completeFamily_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
     realSpaceToLogSpace (completeFamily K i) = basisUnitLattice K (equivFinRank.symm i) := by
   ext
-  rw [← logEmbedding_fundSystem, ← logMap_eq_logEmbedding, completeFamily, dif_neg,
+  rw [← logEmbedding_fundSystem, ← logMap_eq_logEmbedding, completeFamily, dite_eq_right,
     realSpaceToLogSpace_expMap_symm]
   exact coe_ne_zero _
 
@@ -382,7 +385,7 @@ theorem sum_eq_zero_of_mem_span_completeFamily {x : realSpace K}
   induction hx using Submodule.span_induction with
   | mem _ h =>
       obtain ⟨w, rfl⟩ := h
-      simp_rw [completeFamily, dif_neg w.prop, sum_expMap_symm_apply (coe_ne_zero _),
+      simp_rw [completeFamily, dite_eq_right w.prop, sum_expMap_symm_apply (coe_ne_zero _),
         Units.norm, Rat.cast_one, Real.log_one]
   | zero => simp
   | add _ _ _ _ hx hy => simp [sum_add_distrib, hx, hy]
@@ -402,7 +405,7 @@ theorem linearIndependent_completeFamily :
       (Set.range (fun w : {w // w ≠ w₀} ↦ completeFamily K w.1)) := by
     intro h
     have := sum_eq_zero_of_mem_span_completeFamily h
-    rw [completeFamily, dif_pos rfl, ← Nat.cast_sum, sum_mult_eq, Nat.cast_eq_zero] at this
+    rw [completeFamily, dite_eq_left rfl, ← Nat.cast_sum, sum_mult_eq, Nat.cast_eq_zero] at this
     exact Module.finrank_pos.ne' this
   rw [← linearIndependent_equiv (Equiv.optionSubtypeNe w₀), linearIndependent_option]
   exact ⟨h₁, h₂⟩
@@ -419,12 +422,12 @@ def completeBasis : Basis (InfinitePlace K) ℝ (realSpace K) :=
 
 theorem completeBasis_apply_of_eq :
     completeBasis K w₀ = fun w ↦ (mult w : ℝ) := by
-  rw [completeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, completeFamily, dif_pos rfl]
+  rw [completeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, completeFamily, dite_eq_left rfl]
 
 theorem completeBasis_apply_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
     completeBasis K i =
       expMap.symm (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm i)))) := by
-  rw [completeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, completeFamily, dif_neg]
+  rw [completeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, completeFamily, dite_eq_right]
 
 theorem expMap_basis_of_eq :
     expMap (completeBasis K w₀) = fun _ ↦ Real.exp 1 := by
@@ -504,10 +507,10 @@ theorem expMapBasis_apply' (x : realSpace K) :
 open scoped Classical in
 theorem expMapBasis_apply'' (x : realSpace K) :
     expMapBasis x = Real.exp (x w₀) • expMapBasis (fun i ↦ if i = w₀ then 0 else x i) := by
-  rw [expMapBasis_apply', expMapBasis_apply', if_pos rfl, smul_smul, ← Real.exp_add, add_zero]
+  rw [expMapBasis_apply', expMapBasis_apply', ite_eq_left rfl, smul_smul, ← Real.exp_add, add_zero]
   conv_rhs =>
     enter [2, w, 2, i]
-    rw [if_neg i.prop]
+    rw [ite_eq_right i.prop]
 
 theorem prod_expMapBasis_pow (x : realSpace K) :
     ∏ w, (expMapBasis x w) ^ w.mult = Real.exp (x w₀) ^ Module.finrank ℚ K := by
@@ -537,11 +540,11 @@ theorem logMap_expMapBasis (x : realSpace K) :
   refine forall₂_congr fun w hw ↦ ?_
   rw [expMapBasis_apply'', map_smul, logMap_real_smul (norm_expMapBasis_ne_zero _)
     (Real.exp_ne_zero _), expMapBasis_apply, logMap_expMap (by rw [← expMapBasis_apply,
-    norm_expMapBasis, if_pos rfl, Real.exp_zero, one_pow]), Basis.equivFun_symm_apply,
-    Fintype.sum_eq_add_sum_subtype_ne _ w₀, if_pos rfl, zero_smul, zero_add]
+    norm_expMapBasis, ite_eq_left rfl, Real.exp_zero, one_pow]), Basis.equivFun_symm_apply,
+    Fintype.sum_eq_add_sum_subtype_ne _ w₀, ite_eq_left rfl, zero_smul, zero_add]
   conv_lhs =>
     enter [2, 1, 2, w, 2, i]
-    rw [if_neg i.prop]
+    rw [ite_eq_right i.prop]
   simp_rw [Finset.sum_apply, ← sum_fn, map_sum, Pi.smul_apply, ← Pi.smul_def, map_smul,
     completeBasis_apply_of_ne, expMap_symm_apply, normAtAllPlaces_mixedEmbedding,
     ← logEmbedding_component, logEmbedding_fundSystem, Finsupp.coe_finsetSum, Finsupp.coe_smul,
@@ -633,7 +636,9 @@ open scoped Classical in
 The set that parametrizes `normAtAllPlaces '' (normLeOne K)`, see
 `normAtAllPlaces_normLeOne_eq_image`.
 -/
-abbrev paramSet : Set (realSpace K) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable abbrev paramSet : Set (realSpace K) :=
   Set.univ.pi fun w ↦ if w = w₀ then Set.Iic 0 else Set.Ico 0 1
 
 theorem measurableSet_paramSet :
@@ -658,7 +663,7 @@ theorem normAtAllPlaces_normLeOne_eq_image :
   ext x
   by_cases hx : ∀ w, 0 < x w
   · rw [← expMapBasis.right_inv (Set.mem_univ_pi.mpr hx), (injective_expMapBasis K).mem_set_image]
-    simp only [normAtAllPlaces_normLeOne, Set.mem_inter_iff, Set.mem_setOf_eq, expMapBasis_nonneg,
+    simp only [normAtAllPlaces_normLeOne, Set.mem_inter_iff, Set.mem_ofPred_eq, expMapBasis_nonneg,
       Set.mem_preimage, logMap_expMapBasis, implies_true, and_true, norm_expMapBasis,
       pow_le_one_iff_of_nonneg (Real.exp_nonneg _) Module.finrank_pos.ne', Real.exp_le_one_iff,
       ne_eq, pow_eq_zero_iff', Real.exp_ne_zero, false_and, not_false_eq_true, Set.mem_univ_pi]
@@ -699,8 +704,8 @@ theorem setLIntegral_paramSet_exp {n : ℕ} (hn : 0 < n) :
   classical
   have hn : 0 < (n : ℝ) := Nat.cast_pos.mpr hn
   rw [volume_pi, paramSet, Measure.restrict_pi_pi, lintegral_eq_lmarginal_univ 0,
-    lmarginal_erase' _ (by fun_prop) (Finset.mem_univ w₀), if_pos rfl]
-  simp_rw [Function.update_self, lmarginal, lintegral_const, Measure.pi_univ, if_neg
+    lmarginal_erase' _ (by fun_prop) (Finset.mem_univ w₀), ite_eq_left rfl]
+  simp_rw [Function.update_self, lmarginal, lintegral_const, Measure.pi_univ, ite_eq_right
     (Finset.ne_of_mem_erase (Subtype.prop _)), Measure.restrict_apply_univ, Real.volume_Ico,
     sub_zero, ofReal_one, prod_const_one, mul_one, mul_comm _ (n : ℝ)]
   rw [← ofReal_integral_eq_lintegral_ofReal (integrableOn_exp_mul_Iic hn _), integral_exp_mul_Iic
@@ -720,7 +725,9 @@ open scoped Classical in
 A compact set that contains `expMapBasis '' closure (paramSet K)` and furthermore is almost
 equal to it, see `compactSet_ae`.
 -/
-abbrev compactSet : Set (realSpace K) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable abbrev compactSet : Set (realSpace K) :=
   (Set.Icc (0 : ℝ) 1) • (expMapBasis '' Set.univ.pi fun w ↦ if w = w₀ then {0} else Set.Icc 0 1)
 
 theorem isCompact_compactSet :
@@ -756,7 +763,7 @@ theorem compactSet_eq_union_aux₁ {x : realSpace K} (hx₀ : x ≠ 0)
   · have hc' : 0 < c := by
       contrapose! hx₀
       rw [le_antisymm hx₀ hc.1, zero_smul]
-    rw [expMapBasis_apply'', if_pos rfl, Real.exp_log hc']
+    rw [expMapBasis_apply'', ite_eq_left rfl, Real.exp_log hc']
     congr with w
     split_ifs with h
     · simpa [h, eq_comm] using hy w₀
@@ -779,7 +786,6 @@ theorem compactSet_eq_union_aux₂ {x : realSpace K} (hx₀ : x ≠ 0)
 
 theorem compactSet_eq_union :
     compactSet K = expMapBasis '' closure (paramSet K) ∪ {0} := by
-  classical
   ext x
   by_cases hx₀ : x = 0
   · simpa [hx₀] using zero_mem_compactSet K

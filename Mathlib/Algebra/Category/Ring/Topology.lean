@@ -99,7 +99,7 @@ lemma isClosedEmbedding_precomp_of_surjective
     isClosed_iInter fun x ↦ (isClosed_singleton (x := 0)).preimage (continuous_apply (R := R) x.1)
   convert! this
   ext x
-  simp only [Set.mem_range, Set.mem_iInter, Set.mem_setOf_eq, Subtype.forall, RingHom.mem_ker]
+  simp only [Set.mem_range, Set.mem_iInter, Set.mem_ofPred_eq, Subtype.forall, RingHom.mem_ker]
   constructor
   · rintro ⟨g, rfl⟩ a ha; simp [ha]
   · exact fun H ↦ ⟨CommRingCat.ofHom (RingHom.liftOfSurjective f.hom hf ⟨x.hom, H⟩),
@@ -147,7 +147,6 @@ instance [IsTopologicalRing R] [T1Space R] [CompactSpace R] :
 
 open Limits
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Hom(B ⊗[A] C, R)` has the subspace topology from `Hom(B, R) × Hom(C, R)`. -/
 lemma isEmbedding_pushout [IsTopologicalRing R] (φ : A ⟶ B) (ψ : A ⟶ C) :
     IsEmbedding fun f : pushout φ ψ ⟶ R ↦ (pushout.inl φ ψ ≫ f, pushout.inr φ ψ ≫ f) := by
