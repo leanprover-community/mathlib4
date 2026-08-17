@@ -279,15 +279,15 @@ theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_inter_Ici
 theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_inter_Ici_iff
     [TopologicalSpace α] [OrderTopology α] (hg : BoundedVariationOn g s)
     {a x : α} (as : a ∈ s) (xs : x ∈ s) :
-    ContinuousWithinAt (variationOnFromTo g s a) (s ∩ Ici x) x
-      ↔ ContinuousWithinAt g (s ∩ Ici x) x := by
+    ContinuousWithinAt (variationOnFromTo g s a) (s ∩ Ici x) x ↔
+      ContinuousWithinAt g (s ∩ Ici x) x := by
   refine ⟨fun h ↦ ?_, fun h ↦ hg.continuousWithinAt_variationOnFromTo_inter_Ici as xs h⟩
   simp only [ContinuousWithinAt, tendsto_iff_edist_tendsto_0] at h ⊢
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds h (by simp)
   filter_upwards [self_mem_nhdsWithin] with y hy
-  rw [edist_eq_enorm_sub, variationOnFromTo.sub_right hg.locallyBoundedVariationOn as hy.1 xs,
-    variationOnFromTo.eq_of_le _ _ hy.2]
-  grw [eVariationOn.edist_le (s := s ∩ Icc x y) _ (by grind) (by grind)]
+  grw [edist_eq_enorm_sub, variationOnFromTo.sub_right hg.locallyBoundedVariationOn as hy.1 xs,
+    variationOnFromTo.eq_of_le _ _ hy.2,
+    eVariationOn.edist_le (s := s ∩ Icc x y) _ (by grind) (by grind)]
   have : eVariationOn g (s ∩ Icc x y) ≠ ∞ := hg.mono inter_subset_left
   simp [this]
 
@@ -325,15 +325,15 @@ theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_inter_Iic
 theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_inter_Iic_iff
     [TopologicalSpace α] [OrderTopology α] (hg : BoundedVariationOn g s)
     {a x : α} (as : a ∈ s) (xs : x ∈ s) :
-    ContinuousWithinAt (variationOnFromTo g s a) (s ∩ Iic x) x
-      ↔ ContinuousWithinAt g (s ∩ Iic x) x := by
+    ContinuousWithinAt (variationOnFromTo g s a) (s ∩ Iic x) x ↔
+      ContinuousWithinAt g (s ∩ Iic x) x := by
   refine ⟨fun h ↦ ?_, fun h ↦ hg.continuousWithinAt_variationOnFromTo_inter_Iic as xs h⟩
   simp only [ContinuousWithinAt, tendsto_iff_edist_tendsto_0] at h ⊢
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds h (by simp)
   filter_upwards [self_mem_nhdsWithin] with y hy
-  rw [edist_eq_enorm_sub, variationOnFromTo.sub_right hg.locallyBoundedVariationOn as hy.1 xs,
-    variationOnFromTo.eq_of_ge _ _ hy.2, enorm_neg]
-  grw [eVariationOn.edist_le (s := s ∩ Icc y x) _ (by grind) (by grind)]
+  grw [edist_eq_enorm_sub, variationOnFromTo.sub_right hg.locallyBoundedVariationOn as hy.1 xs,
+    variationOnFromTo.eq_of_ge _ _ hy.2, enorm_neg,
+    eVariationOn.edist_le (s := s ∩ Icc y x) _ (by grind) (by grind)]
   have : eVariationOn g (s ∩ Icc y x) ≠ ∞ := hg.mono inter_subset_left
   simp [this]
 
@@ -362,7 +362,7 @@ theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_iff
 theorem _root_.BoundedVariationOn.continuousAt_variationOnFromTo_iff
     [TopologicalSpace α] [OrderTopology α] (hg : BoundedVariationOn g univ) (a x : α) :
     ContinuousAt (variationOnFromTo g univ a) x ↔ ContinuousAt g x := by
-  simpa [← continuousWithinAt_univ] using
+  simpa [continuousWithinAt_univ] using
     hg.continuousWithinAt_variationOnFromTo_iff (mem_univ a) (mem_univ x)
 
 theorem _root_.BoundedVariationOn.countable_not_continuousAt
