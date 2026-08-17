@@ -43,7 +43,7 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 
 @[expose] public section
 
-open Function Set Filter Topology
+open Function Set
 
 variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
   [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y] [TopologicalSpace Y']
@@ -86,9 +86,11 @@ def Simps.symm_apply (e : OpenPartialHomeomorph X Y) : Y → X := e.symm
 
 initialize_simps_projections OpenPartialHomeomorph (toFun → apply, invFun → symm_apply)
 
+@[fun_prop]
 protected theorem continuousOn : ContinuousOn e e.source :=
   e.continuousOn_toFun
 
+@[fun_prop]
 theorem continuousOn_symm : ContinuousOn e.symm e.target :=
   e.continuousOn_invFun
 

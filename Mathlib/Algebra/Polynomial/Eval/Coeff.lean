@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Evaluation of polynomials
@@ -95,10 +96,10 @@ def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
     (∀ i, R i)[X] ≃+* ∀ i, (R i)[X] :=
   .ofBijective (RingHom.pi fun i ↦ mapRingHom (Pi.evalRingHom R i))
     ⟨fun p q h ↦ by ext n i; simpa using congr_arg (fun p ↦ coeff (p i) n) h,
-      fun p ↦ ⟨.ofFinsupp (.ofSupportFinite (fun n i ↦ coeff (p i) n) <|
+      fun p ↦ ⟨.ofFinsupp <| .ofCoeff <| .ofSupportFinite (fun n i ↦ coeff (p i) n) <|
         (Set.finite_iUnion fun i ↦ (p i).support.finite_toSet).subset fun n hn ↦ by
           simp only [Set.mem_iUnion, Finset.mem_coe, mem_support_iff, Function.mem_support] at hn ⊢
-          contrapose! hn; exact funext hn), by ext i n; exact coeff_map _ _⟩⟩
+          contrapose! hn; exact funext hn, by ext i n; exact coeff_map _ _⟩⟩
 
 theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := fun p q h =>
   ext fun m => hf <| by rw [← coeff_map f, ← coeff_map f, h]

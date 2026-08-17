@@ -774,7 +774,7 @@ theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS
 
 theorem mem_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
     {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty)
@@ -841,6 +841,11 @@ theorem range_eq_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) 
 theorem domRestrict_comp_rangeRestrict (g : S →+* T) (f : R →+* S) :
     (g.domRestrict f.range).comp (f.rangeRestrict) = g.comp f :=
   rfl
+
+@[simp]
+theorem range_prodMap {R' S' : Type*} [Ring R'] [Ring S'] (f : R →+* S) (g : R' →+* S') :
+    (f.prodMap g).range = f.range.prod g.range :=
+  SetLike.coe_injective Set.range_prodMap
 
 section eqLocus
 
@@ -970,6 +975,7 @@ theorem ofLeftInverse_symm_apply {g : S → R} {f : R →+* S} (h : Function.Lef
 def subringMap (e : R ≃+* S) : s ≃+* s.map e.toRingHom :=
   e.subsemiringMap s.toSubsemiring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A ring isomorphism `e : R ≃+* S` descends to subrings `s' ≃+* s` provided
 `x ∈ s' ↔ e x ∈ s`. -/
 @[simps!]

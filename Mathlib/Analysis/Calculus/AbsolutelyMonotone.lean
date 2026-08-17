@@ -6,7 +6,7 @@ Authors: Michael R. Douglas
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
 # Absolutely monotone functions
@@ -45,7 +45,7 @@ iterated derivative within `s` nonnegative.
 
 public section
 
-open Set Filter
+open Set
 open scoped ContDiff
 
 /-- A function `f : ℝ → ℝ` is **absolutely monotone on a set `s`** if, heuristically, all
@@ -103,8 +103,7 @@ theorem add (hf : AbsolutelyMonotoneOn f s) (hg : AbsolutelyMonotoneOn g s) :
   obtain ⟨p, hp, hp_nn⟩ := hf
   obtain ⟨q, hq, hq_nn⟩ := hg
   refine ⟨p + q, hp.add hq, fun n x hx => ?_⟩
-  simp only [Pi.add_apply, FormalMultilinearSeries.add_apply,
-    ContinuousMultilinearMap.add_apply]
+  simp only [Pi.add_apply, FormalMultilinearSeries.add_apply, add_apply]
   exact add_nonneg (hp_nn n hx) (hq_nn n hx)
 
 /-- A nonnegative scalar multiple of an absolutely monotone function is absolutely monotone. -/

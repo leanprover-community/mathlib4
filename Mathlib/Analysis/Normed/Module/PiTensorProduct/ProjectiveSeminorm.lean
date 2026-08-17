@@ -120,7 +120,7 @@ theorem projectiveSeminorm_smul_le (a : 𝕜) (x : ⨂[𝕜] i, E i) : ‖a • 
 infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` ∈ `Π i, Eᵢ`)
 of `∑ j, Π i, ‖mⱼ i‖`. -/
 noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := .ofSMulLE
-    _ projectiveSeminorm_zero projectiveSeminorm_add_le projectiveSeminorm_smul_le
+    norm projectiveSeminorm_zero projectiveSeminorm_add_le projectiveSeminorm_smul_le
 
 noncomputable instance : SeminormedAddCommGroup (⨂[𝕜] i, E i) :=
   fast_instance% AddGroupSeminorm.toSeminormedAddCommGroup projectiveSeminorm.toAddGroupSeminorm
@@ -132,10 +132,11 @@ theorem projectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     projectiveSeminorm x = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.1) := rfl
 
 theorem projectiveSeminorm_tprod_le (m : Π i, E i) :
-    projectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ := by
-  convert! ciInf_le (bddBelow_projectiveSemiNormAux _) ⟨FreeAddMonoid.of ((1 : 𝕜), m), ?_⟩
-  · simp [projectiveSeminormAux]
-  · simp [mem_lifts_iff]
+    ‖(⨂ₜ[𝕜] i, m i)‖ ≤ ∏ i, ‖m i‖ := by
+   have hle := ciInf_le (bddBelow_projectiveSemiNormAux (⨂ₜ[𝕜] i, m i))
+    ⟨FreeAddMonoid.of (1, m), by simp [mem_lifts_iff]⟩
+   grw [norm_def, hle]
+   simp [projectiveSeminormAux]
 
 end NormedField
 
