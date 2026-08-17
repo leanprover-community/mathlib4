@@ -413,7 +413,7 @@ lemma lineOrOrthRadius_comm : s.lineOrOrthRadius p q = s.lineOrOrthRadius q p :=
 
 /-- A point of the sphere distinct from both `A` and `C` does not lie on
 `s.lineOrOrthRadius A C`. -/
-lemma not_mem_lineOrOrthRadius_of_mem_sphere {A B C : P}
+lemma notMem_lineOrOrthRadius_of_mem_sphere {A B C : P}
     (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s) (hBA : B ≠ A) (hBC : B ≠ C) :
     B ∉ s.lineOrOrthRadius A C := by
   by_cases hAC : A = C
@@ -443,7 +443,7 @@ lemma mem_lineOrOrthRadius_iff_of_mem_sphere {A B C : P}
   · intro h
     by_contra hne
     push Not at hne
-    exact not_mem_lineOrOrthRadius_of_mem_sphere hA hB hC hne.1 hne.2 h
+    exact notMem_lineOrOrthRadius_of_mem_sphere hA hB hC hne.1 hne.2 h
   · rintro (rfl | rfl)
     · exact left_mem_lineOrOrthRadius
     · exact right_mem_lineOrOrthRadius
