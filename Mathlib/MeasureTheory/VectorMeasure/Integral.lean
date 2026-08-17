@@ -73,11 +73,10 @@ public section
 open Set MeasureTheory VectorMeasure ContinuousLinearMap Filter Topology
 open scoped ENNReal NNReal
 
-variable {ι X Y E F G H : Type*} {mX : MeasurableSpace X} [MeasurableSpace Y]
+variable {ι X Y E F G : Type*} {mX : MeasurableSpace X} [MeasurableSpace Y]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  [NormedAddCommGroup H] [NormedSpace ℝ H]
 
 namespace MeasureTheory
 
@@ -367,7 +366,6 @@ theorem transpose_sub_cbm (μ : VectorMeasure X F) (B C : E →L[ℝ] F →L[ℝ
 
 section Function
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem integral_undef (h : ¬ μ.Integrable f) :
     ∫ᵛ x, f x ∂[B; μ] = 0 := by
   simp [integral, setToFun_undef _ h]
@@ -558,7 +556,6 @@ theorem integral_finsetSum_vectorMeasure {μ : ι → VectorMeasure X F}
       Finset.sum_insert] at hf ⊢
     rw [integral_add_vectorMeasure hf.1 (Integrable.finsetSum_vectorMeasure hf.2), ih hf.2]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[integral_simps]
 theorem integral_neg_vectorMeasure :
     ∫ᵛ x, f x ∂[B; -μ] = -∫ᵛ x, f x ∂[B; μ] := by
@@ -598,7 +595,6 @@ theorem integral_finsetSum_cbm {B : ι → E →L[ℝ] F →L[ℝ] G}
     simp only [ha, not_false_eq_true, Finset.sum_insert]
     rw [integral_add_cbm hf, ih]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[integral_simps]
 theorem integral_neg_cbm :
     ∫ᵛ x, f x ∂[-B; μ] = -∫ᵛ x, f x ∂[B; μ] := by
@@ -817,7 +813,7 @@ theorem nndist_integral_add_vectorMeasure_le_lintegral
   rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel_left]
   exact enorm_integral_le_lintegral_enorm
 
-variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X} {v : F}
+variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X}
 
 lemma variation_transpose_map_le :
     ((μ.map φ).transpose B).variation ≤ Measure.map φ (μ.transpose B).variation := by

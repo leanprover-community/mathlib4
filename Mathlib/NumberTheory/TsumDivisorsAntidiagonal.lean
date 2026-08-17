@@ -24,7 +24,7 @@ Lambert series.
 
 @[expose] public section
 
-open Filter Complex ArithmeticFunction Nat Topology
+open Filter ArithmeticFunction Nat Topology
 
 /-- The map from `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b`
 to `(a, b)`. -/

@@ -55,12 +55,12 @@ assert_not_exists IsOrderedMonoid Multiset Ring
 open Function
 open scoped Int
 
-variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
+variable {G G' : Type*} [Group G] [Group G']
 variable {A : Type*} [AddGroup A]
 
 section SubgroupClass
 
-variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
+variable {S : Type*} {H : S}
 
 variable [SetLike S G] [SubgroupClass S G]
 
@@ -78,11 +78,9 @@ variable (H K : Subgroup G)
 protected theorem div_mem_comm_iff {a b : G} : a / b ∈ H ↔ b / a ∈ H :=
   div_mem_comm_iff
 
-variable {k : Set G}
-
 open Set
 
-variable {N : Type*} [Group N] {P : Type*} [Group P]
+variable {N : Type*} [Group N]
 
 /-- Given `Subgroup`s `H`, `K` of groups `G`, `N` respectively, `H × K` as a subgroup of `G × N`. -/
 @[to_additive prod
@@ -227,7 +225,7 @@ end Subgroup
 
 namespace Subgroup
 
-variable {H K : Subgroup G}
+variable {H : Subgroup G}
 
 variable (H)
 
@@ -767,13 +765,11 @@ end Subgroup
 
 namespace MonoidHom
 
-variable {N : Type*} {P : Type*} [Group N] [Group P] (K : Subgroup G)
+variable {N : Type*} [Group N]
 
 open Subgroup
 
 section Ker
-
-variable {M : Type*} [MulOneClass M]
 
 @[to_additive prodMap_comap_prod]
 theorem prodMap_comap_prod {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : G →* N)

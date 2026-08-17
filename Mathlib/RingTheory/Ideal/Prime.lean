@@ -24,9 +24,9 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {α : Type u}
 
-open Set Function
+open Set
 
 open scoped Pointwise
 

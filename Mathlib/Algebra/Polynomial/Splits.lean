@@ -492,7 +492,6 @@ lemma map_sub_sprod_roots_eq_prod_map_eval
   congr! with x hx
   ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_sub_roots_sprod_eq_prod_map_eval
     (s : Multiset R) (g : R[X]) (hg : g.Monic) (hg' : g.Splits) :
     ((g.roots ×ˢ s).map fun ij ↦ ij.1 - ij.2).prod =
@@ -668,18 +667,11 @@ end Field
 
 noncomputable section
 
-open Polynomial
-
 universe u v w
-
-variable {F : Type u} {K : Type v} {L : Type w}
 
 section Splits
 
 section CommRing
-
-variable [CommRing K] [Field L] [Field F]
-variable (i : K →+* L)
 
 variable {i}
 
@@ -687,8 +679,7 @@ variable (i)
 
 end CommRing
 
-variable [CommRing R] [Field K] [Field L] [Field F]
-variable (i : K →+* L)
+variable [CommRing R]
 
 section UFD
 
@@ -696,11 +687,7 @@ attribute [local instance] PrincipalIdealRing.to_uniqueFactorizationMonoid
 
 local infixl:50 " ~ᵤ " => Associated
 
-open UniqueFactorizationMonoid Associates
-
 end UFD
-
-variable [Algebra R K] [Algebra R L]
 
 end Splits
 
