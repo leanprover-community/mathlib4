@@ -6697,6 +6697,7 @@ public import Mathlib.RingTheory.HahnSeries.Valuation
 public import Mathlib.RingTheory.Henselian
 public import Mathlib.RingTheory.HopfAlgebra.Basic
 public import Mathlib.RingTheory.HopfAlgebra.Convolution
+public import Mathlib.RingTheory.HopfAlgebra.FreeAlgebra
 public import Mathlib.RingTheory.HopfAlgebra.Generators
 public import Mathlib.RingTheory.HopfAlgebra.GroupLike
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra

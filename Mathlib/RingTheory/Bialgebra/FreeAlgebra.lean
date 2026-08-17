@@ -38,4 +38,8 @@ x` for all `x : M` -/
 lemma comul_ι (x : X) : Coalgebra.comul (ι R x) = ι R x ⊗ₜ[R] 1 + 1 ⊗ₜ[R] ι R x := by
   simp [CoalgebraStruct.comul]
 
+@[simp]
+lemma counit_ι (x : X) : Coalgebra.counit (R := R) (ι R x) = 0 := by
+  simp [CoalgebraStruct.counit]
+
 end FreeAlgebra
