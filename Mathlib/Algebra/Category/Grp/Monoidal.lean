@@ -134,6 +134,7 @@ variable {M₁ M₂ M₃ M₄ : Ab.{u}}
 @[simp] lemma braiding_inv_apply (x : M₁) (y : M₂) :
     (β_ M₁ M₂).inv (y ⊗ₜ x) = x ⊗ₜ y := rfl
 
-@[simp] lemma ihom_obj (M N : Ab.{u}) : (ihom M).obj N = of (M →+ N) := rfl
+@[simp] lemma ihom_obj (M N : Ab.{u}) : (ihom M).obj N = of (M →+ N) := by
+  with_implicit rfl
 
 end AddCommGrpCat
