@@ -37,26 +37,87 @@ noncomputable def restrictedShrinkYonedaHomEquivAux (P : Cᵒᵖ ⥤ Type w) (E 
       (Functor.const (CostructuredArrow shrinkYoneda.{w} P)).obj E) ≃
     (P ⟶ (restrictedShrinkYoneda A).obj E) where
   toFun f :=
-    { app X := ↾(fun x ↦
-        shrinkYonedaObjObjEquiv.symm
-          (f.app (CostructuredArrow.mk (shrinkYonedaEquiv.symm x))))
-      naturality := sorry }
+    { app X := ↾(fun x ↦ shrinkYonedaObjObjEquiv.symm
+        (f.app (CostructuredArrow.mk (shrinkYonedaEquiv.symm x))))
+      naturality X Y g := by
+        ext x
+        let φ : CostructuredArrow.mk (shrinkYonedaEquiv.{w}.symm (P.map g x)) ⟶
+            CostructuredArrow.mk (shrinkYonedaEquiv.symm x) :=
+          CostructuredArrow.homMk g.unop (by simp [shrinkYonedaEquiv_symm_map.{w}])
+        simp [← shrinkYonedaObjObjEquiv_symm_comp.{w},
+          dsimp% [φ] f.naturality φ] }
   invFun g :=
     { app y := shrinkYonedaObjObjEquiv.{w} (shrinkYonedaEquiv (y.hom ≫ g) :)
-      naturality := sorry }
-  left_inv := sorry
-  right_inv := sorry
+      naturality y y' f := by
+        dsimp
+        simp only [← CostructuredArrow.w f, Category.comp_id, Category.assoc,
+          ← dsimp% shrinkYonedaObjObjEquiv_obj_map (A.map f.left).op,
+          ← shrinkYonedaEquiv_naturality]
+        dsimp }
+  left_inv f := by
+    ext X
+    let e : (CostructuredArrow.mk (shrinkYonedaEquiv.symm ((X.hom.app (op X.left))
+        (shrinkYonedaObjObjEquiv.symm (𝟙 X.left))))) ≅ X :=
+      CostructuredArrow.isoMk (Iso.refl _)
+        (shrinkYonedaEquiv.injective (by simp [shrinkYonedaEquiv_apply]))
+    simpa [e, shrinkYonedaEquiv_apply] using f.naturality e.inv
+  right_inv g := by ext; simp [shrinkYonedaEquiv_symm_comp.{w}]
 
-noncomputable def restrictedShrinkYonedaHomEquiv (P : Cᵒᵖ ⥤ Type w) (E : D) :
+noncomputable def restrictedShrinkYonedaHomEquiv {P : Cᵒᵖ ⥤ Type w} {E : D} :
     (L.obj P ⟶ E) ≃ (P ⟶ (restrictedShrinkYoneda.{w} A).obj E) :=
   (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α P).homEquiv.trans
     (restrictedShrinkYonedaHomEquivAux A P E)
 
+@[reassoc (attr := simp)]
+lemma comp_restrictedShrinkYonedaHomEquiv_symm_apply
+    {P : Cᵒᵖ ⥤ Type w} {E : D} (f : P ⟶ (restrictedShrinkYoneda A).obj E)
+    (j : CostructuredArrow shrinkYoneda.{w} P) :
+    α.app j.left ≫ L.map j.hom ≫ (restrictedShrinkYonedaHomEquiv α).symm f =
+      shrinkYonedaObjObjEquiv (f.app (op j.left) (shrinkYonedaEquiv j.hom)) := by
+  simpa using! (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension L α P).fac
+    (Cocone.mk _ ((restrictedShrinkYonedaHomEquivAux A P E).symm f)) j
+
+@[reassoc]
+lemma restrictedShrinkYonedaHomEquiv_symm_naturality_left
+    {P P' : Cᵒᵖ ⥤ Type w} {E : D} (f : P ⟶ P') (g : P' ⟶ (restrictedShrinkYoneda.{w} A).obj E) :
+    (restrictedShrinkYonedaHomEquiv α).symm (f ≫ g) =
+      L.map f ≫ (restrictedShrinkYonedaHomEquiv α).symm g :=
+  (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension L α P).hom_ext (fun j ↦ by
+    let j' := CostructuredArrow.mk (j.hom ≫ f)
+    trans α.app j'.left ≫ L.map j'.hom ≫ (restrictedShrinkYonedaHomEquiv α).symm g
+    · simp
+      simp [j', shrinkYonedaEquiv_apply]
+    · simp [j'])
+
+@[reassoc]
+lemma restrictedShrinkYonedaHomEquiv_naturality_left
+    {P P' : Cᵒᵖ ⥤ Type w} {E : D} (f : P ⟶ P') (g : L.obj P' ⟶ E) :
+    (restrictedShrinkYonedaHomEquiv α) (L.map f ≫ g) =
+      f ≫ restrictedShrinkYonedaHomEquiv α g :=
+  (restrictedShrinkYonedaHomEquiv α).symm.injective
+    (by simp [restrictedShrinkYonedaHomEquiv_symm_naturality_left])
+
+@[reassoc]
+lemma restrictedShrinkYonedaHomEquiv_symm_naturality_right
+    {P : Cᵒᵖ ⥤ Type w} {E E' : D} (f : P ⟶ (restrictedShrinkYoneda.{w} A).obj E) (g : E ⟶ E') :
+    (restrictedShrinkYonedaHomEquiv α).symm (f ≫ (restrictedShrinkYoneda.{w} A).map g) =
+      (restrictedShrinkYonedaHomEquiv α).symm f ≫ g :=
+  (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension L α P).hom_ext
+    (by simp [shrinkYonedaObjObjEquiv_map_app.{w}])
+
+@[reassoc]
+lemma restrictedShrinkYonedaHomEquiv_naturality_right
+    {P : Cᵒᵖ ⥤ Type w} {E E' : D} (f : L.obj P ⟶ E) (g : E ⟶ E') :
+    restrictedShrinkYonedaHomEquiv α (f ≫ g) =
+    restrictedShrinkYonedaHomEquiv α f ≫ (restrictedShrinkYoneda A).map g :=
+  (restrictedShrinkYonedaHomEquiv α).symm.injective
+    (by simp [restrictedShrinkYonedaHomEquiv_symm_naturality_right])
+
+attribute [local simp] restrictedShrinkYonedaHomEquiv_naturality_right
+  restrictedShrinkYonedaHomEquiv_symm_naturality_left in
 noncomputable def restrictedShrinkYonedaAdjunction : L ⊣ restrictedShrinkYoneda.{w} A :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := restrictedShrinkYonedaHomEquiv α
-      homEquiv_naturality_left_symm := sorry
-      homEquiv_naturality_right := sorry }
+    { homEquiv _ _ := restrictedShrinkYonedaHomEquiv α }
 
 include α in
 /-- Any left Kan extension along the Yoneda embedding preserves colimits. -/
@@ -93,6 +154,12 @@ instance : IsIso α := by
   sorry
 
 end uliftYoneda
+
+lemma isLeftAdjoint_of_preservesColimits [LocallySmall.{w} C] (L : (C ⥤ Type w) ⥤ D)
+    [PreservesColimitsOfSize.{v₁, max w u₁} L]
+    [shrinkYoneda.{w}.HasPointwiseLeftKanExtension
+      (shrinkYoneda.{w} ⋙ (opOpEquivalence C).congrLeft.functor.comp L)] :
+    L.IsLeftAdjoint := sorry
 
 end Presheaf
 

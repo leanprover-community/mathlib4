@@ -139,7 +139,6 @@ noncomputable def iso [IsFiltered (CostructuredArrow yoneda A)] :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limit.post K A := by
-  /-
   -- We will have to use `ι_colimitLimitIso_limit_π` eventually, so let's start by
   -- transforming the goal into something from a colimit to a limit so that we can apply
   -- `limit.hom_ext` and `colimit.hom_ext`.
@@ -153,7 +152,7 @@ theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limi
   rw [HasLimit.isoOfNatIso_hom_π, HasLimit.isoOfNatIso_hom_π_assoc, limit.post_π,
     colimitObjIsoColimitCompEvaluation_ι_inv_assoc (CostructuredArrow.proj yoneda A ⋙ yoneda),
     Iso.app_inv, ← NatTrans.comp_app_assoc, colimit.comp_coconePointUniqueUpToIso_inv,
-    Presheaf.tautologicalCocone_ι_app, HasColimit.isoOfNatIso_ι_hom_assoc,
+    HasColimit.isoOfNatIso_ι_hom_assoc,
     HasLimit.isoOfNatIso_hom_π_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     ι_colimitLimitIso_limit_π_assoc, isoAux_hom_app, ← NatTrans.comp_app_assoc,
@@ -164,12 +163,9 @@ theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limi
     ι_colimitCompWhiskeringLeftIsoCompColimit_hom,
     NatTrans.comp_app, Category.assoc, isoWhiskerLeft_hom, NatTrans.comp_app, Category.assoc,
     ← NatTrans.comp_app, ← whiskerLeft_comp, colimit.comp_coconePointUniqueUpToIso_hom]
-  have := i.hom.naturality (limit.π K j)
-  dsimp only [yoneda_obj_obj, Functor.const_obj_obj] at this
-  rw [← this]
   ext
-  simp [flipFunctorToInterchange, functorToInterchangeIso, functorToInterchange]-/
-  sorry
+  simp [dsimp% i.hom.naturality (limit.π K j), flipFunctorToInterchange,
+    functorToInterchangeIso, functorToInterchange]
 
 theorem isIso_post [IsFiltered (CostructuredArrow yoneda A)] : IsIso (limit.post K A) :=
   iso_hom A K ▸ inferInstance

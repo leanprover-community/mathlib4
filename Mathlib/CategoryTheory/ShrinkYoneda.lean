@@ -143,6 +143,10 @@ noncomputable def shrinkYonedaEquiv {X : C} {P : Cᵒᵖ ⥤ Type w} :
     simpa [shrinkYoneda] using ((τ.naturality_apply f.op) (equivShrink _ (𝟙 X))).symm
   right_inv x := by simp
 
+lemma shrinkYonedaEquiv_apply {X : C} {P : Cᵒᵖ ⥤ Type w}
+    (τ : shrinkYoneda.{w}.obj X ⟶ P) :
+    shrinkYonedaEquiv τ = τ.app _ (shrinkYonedaObjObjEquiv.symm (𝟙 X)) := rfl
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma map_shrinkYonedaEquiv {X Y : C} {P : Cᵒᵖ ⥤ Type w} (f : shrinkYoneda.obj X ⟶ P)

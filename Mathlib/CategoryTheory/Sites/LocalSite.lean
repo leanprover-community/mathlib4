@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Triple
 public import Mathlib.CategoryTheory.Sites.GlobalSections
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
+public import Mathlib.CategoryTheory.Limits.Elements
 
 /-!
 # Local sites
