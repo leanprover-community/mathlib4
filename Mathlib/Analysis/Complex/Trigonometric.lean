@@ -195,7 +195,7 @@ theorem tanh_eq_sinh_div_cosh : tanh x = sinh x / cosh x :=
 theorem tanh_zero : tanh 0 = 0 := by simp [tanh]
 
 @[simp]
-theorem tanh_neg : tanh (-x) = -tanh x := by simp [tanh, neg_div]
+theorem tanh_neg : tanh (-x) = -tanh x := by simp [tanh]
 
 theorem tanh_conj : tanh (conj x) = conj (tanh x) := by
   rw [tanh, sinh_conj, cosh_conj, ← map_div₀, tanh]
