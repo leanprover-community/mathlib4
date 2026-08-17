@@ -11,8 +11,8 @@ public import Mathlib.RingTheory.HopfAlgebra.Primitive
 /-!
 # Constructing Hopf algebras from algebra generators
 
-This file provides an extension principle to upgrade a bialgebra to a Hopf algebra given
-antimultiplicative antipode data on generators.
+To upgrade a bialgebra to a Hopf algebra, an antipode candidate that is an anti-algebra hom
+only needs to satisfy the antipode identities on an algebra-generating set.
 
 ## Main declarations
 
