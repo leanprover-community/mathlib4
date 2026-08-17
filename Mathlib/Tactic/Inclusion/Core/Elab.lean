@@ -25,73 +25,65 @@ namespace Inclusion
 declare_config_elab elabInclusionConfig InclusionConfig where
   omit paramSettings, families
 
-/-- Collect the array of enabled inclusion families and pass them into `config`. -/
-def collectInclusionFamilies (config : InclusionConfig) (familyStxs : Array Syntax) :
-    TacticM InclusionConfig := do
-  if familyStxs.isEmpty then
-    throwError "At least one inclusion family must be specified"
-  let mut families := #[]
-  for familyStx in familyStxs do
-    let family := familyStx.getId.eraseMacroScopes
-    unless families.contains family do
-      unless (← getInclusionFamily? family).isSome do
-        throwError "Unknown inclusion family `{family}`"
-      families := families.push family
-  return { config with families }
-
-/-- Declare syntax category for specifying inclusion parameters. -/
-declare_syntax_cat inclusionParam
-
 /-- Syntax for specifying an inclusion parameter. -/
-syntax ident " := " term : inclusionParam
+syntax inclusionParam := ident " := " term
 
-/-- Collect the set of enabled inclusion parameters and their user set values and pass them into
+/-- Syntax for specifying an inclusion family. -/
+syntax inclusionFamily := ident
+
+/-- Parser for an inclusion family or parameter. -/
+def inclusionArg := (inclusionParam.unary `atomic).binary `orelse inclusionFamily
+
+/-- Collect the enabled inclusion families and user-set parameter values and pass them into
 `config`. -/
-def collectInclusionParams (config : InclusionConfig) (paramStxs : Array Syntax) :
+def collectInclusionArgs (config : InclusionConfig) (argStxs : Array Syntax) :
     TacticM InclusionConfig := do
   let mut config := config
   let params := inclusionParamExt.getState (← getEnv)
-  for paramStx in paramStxs do
-    let (name, valueStx) ← match paramStx with
-      | `(inclusionParam| $name:ident := $value:term) => pure (name.getId, value)
-      | _ => throwUnsupportedSyntax
-    let some decl := params.find? name
-      | throwError "Unknown inclusion parameter `{name}`"
-    if config.paramSettings.contains name then
-      throwError "Inclusion parameter `{name}` was specified more than once"
-    let value ← elabTerm valueStx decl.type
-    Term.synthesizeSyntheticMVarsNoPostponing
-    let value ← instantiateMVars value
-    config := { config with paramSettings := config.paramSettings.insert name value }
+  for argStx in argStxs do
+    match argStx with
+    | `(inclusionFamily| $familyStx:ident) =>
+      let family := familyStx.getId.eraseMacroScopes
+      unless config.families.contains family do
+        unless (← getInclusionFamily? family).isSome do
+          throwError "Unknown inclusion family `{family}`"
+        config := { config with families := config.families.push family }
+    | `(inclusionParam| $nameStx:ident := $valueStx:term) =>
+      let name := nameStx.getId
+      let some decl := params.find? name
+        | throwError "Unknown inclusion parameter `{name}`"
+      if config.paramSettings.contains name then
+        throwError "Inclusion parameter `{name}` was specified more than once"
+      let value ← elabTerm valueStx decl.type
+      Term.synthesizeSyntheticMVarsNoPostponing
+      let value ← instantiateMVars value
+      config := { config with paramSettings := config.paramSettings.insert name value }
+    | _ => throwUnsupportedSyntax
+  if config.families.isEmpty then
+    throwError "At least one inclusion family must be specified"
   return config
 
 /-- `inclusion` tactic for proving "inclusion" propositions. -/
-syntax (name := inclusionTacStx) "inclusion" optConfig " [" ident,* "]"
-  (" (" inclusionParam,* ")")? : tactic
+syntax (name := inclusionTacStx) "inclusion" optConfig " [" inclusionArg,* "]" : tactic
 
 /-- Elaborator for the `inclusion` tactic. -/
 @[tactic inclusionTacStx]
 def inclusionTac : Tactic
-  | `(tactic| inclusion $cfg:optConfig [$families,*] $[($paramStxs,*)]?) => do
+  | `(tactic| inclusion $cfg:optConfig [$args,*]) => do
       let config ← elabInclusionConfig cfg
-      let config ← collectInclusionFamilies config families.getElems
-      let params := paramStxs.map (·.getElems) |>.getD #[]
-      let config ← collectInclusionParams config params
+      let config ← collectInclusionArgs config args.getElems
       closeMainGoalUsing `inclusion fun goal _ => inclusionCore goal config
   | _ => throwUnsupportedSyntax
 
 /-- Tactic for quickly checking if the `inclusion` tactic will succeed. -/
-syntax (name := inclusion?TacStx) "inclusion?" " [" ident,* "]"
-  (" (" inclusionParam,* ")")? : tactic
+syntax (name := inclusion?TacStx) "inclusion?" " [" inclusionArg,* "]" : tactic
 
 /-- Elaborator for the `inclusion?` tactic. -/
 @[tactic inclusion?TacStx]
 def inclusion?Tac : Tactic
-  | `(tactic| inclusion? [$families,*] $[($paramStxs,*)]?) => do
+  | `(tactic| inclusion? [$args,*]) => do
       let config : InclusionConfig := {}
-      let config ← collectInclusionFamilies config families.getElems
-      let params := paramStxs.map (·.getElems) |>.getD #[]
-      let config ← collectInclusionParams config params
+      let config ← collectInclusionArgs config args.getElems
       withoutModifyingStateWithInfoAndMessages <| withMainContext do
         try
           discard <| inclusionCore (← getMainTarget) config

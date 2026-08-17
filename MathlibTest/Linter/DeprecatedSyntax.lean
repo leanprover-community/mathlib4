@@ -111,13 +111,13 @@ warning: declaration uses `sorry`
 #guard_msgs in
 example : False := by admit
 
-set_option linter.style.nativeDecide true
+set_option linter.style.native true
 
 /--
 warning: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler
 (not just the Lean kernel), it could quite possibly be used to prove false.
 
-Note: This linter can be disabled with `set_option linter.style.nativeDecide false`
+Note: This linter can be disabled with `set_option linter.style.native false`
 -/
 #guard_msgs in
 example : 1 + 1 = 2 := by native_decide
@@ -127,7 +127,7 @@ warning: Using `decide +native` is not allowed in mathlib:
 because it trusts the entire Lean compiler (not just the Lean kernel),
 it could quite possibly be used to prove false.
 
-Note: This linter can be disabled with `set_option linter.style.nativeDecide false`
+Note: This linter can be disabled with `set_option linter.style.native false`
 -/
 #guard_msgs in
 example : 1 + 1 = 2 := by decide +native
@@ -139,7 +139,7 @@ warning: Using `decide +native` is not allowed in mathlib:
 because it trusts the entire Lean compiler (not just the Lean kernel),
 it could quite possibly be used to prove false.
 
-Note: This linter can be disabled with `set_option linter.style.nativeDecide false`
+Note: This linter can be disabled with `set_option linter.style.native false`
 -/
 #guard_msgs in
 theorem foo : 1 + 1 = 2 := by decide -native +native
@@ -151,7 +151,7 @@ warning: Using `decide +native` is not allowed in mathlib:
 because it trusts the entire Lean compiler (not just the Lean kernel),
 it could quite possibly be used to prove false.
 
-Note: This linter can be disabled with `set_option linter.style.nativeDecide false`
+Note: This linter can be disabled with `set_option linter.style.native false`
 -/
 #guard_msgs in
 example : 1 + 1 = 2 := by decide +native -native +native +native
@@ -163,7 +163,7 @@ warning: Using `decide +native` is not allowed in mathlib:
 because it trusts the entire Lean compiler (not just the Lean kernel),
 it could quite possibly be used to prove false.
 
-Note: This linter can be disabled with `set_option linter.style.nativeDecide false`
+Note: This linter can be disabled with `set_option linter.style.native false`
 -/
 #guard_msgs in
 example : 1 + 1 = 2 := by decide (config := { native := true })
@@ -172,7 +172,7 @@ example : 1 + 1 = 2 := by decide (config := { native := false })
 -- for user information (and not hard guarantees), we deem this acceptable.
 example : 1 + 1 = 2 := by decide (config := { native := true, kernel := false })
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 set_option linter.style.maxHeartbeats true
 /--

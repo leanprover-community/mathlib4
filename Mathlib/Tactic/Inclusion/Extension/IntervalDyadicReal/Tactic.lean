@@ -22,19 +22,23 @@ open Lean.Parser.Tactic
 namespace Inclusion
 
 /-- `dyadic_interval` runs `inclusion` with the `core` and `interval_dyadic_real` extension
-families. Inclusion parameters may be supplied using `dyadic_interval [name := value, ...]`. -/
+families. Additional families and inclusion parameters may be supplied in brackets. -/
 syntax (name := dyadicInterval) "dyadic_interval" optConfig
-  (" [" inclusionParam,* "]")? : tactic
+  (" [" inclusionArg,* "]")? : tactic
 
 macro_rules
-  | `(tactic| dyadic_interval $cfg:optConfig $[[$params:inclusionParam,*]]?) =>
-      `(tactic| inclusion $cfg [core, interval_dyadic_real] $[($params,*)]?)
+  | `(tactic| dyadic_interval $cfg:optConfig) =>
+      `(tactic| inclusion $cfg [core, interval_dyadic_real])
+  | `(tactic| dyadic_interval $cfg:optConfig [$args,*]) =>
+      `(tactic| inclusion $cfg [core, interval_dyadic_real, $args,*])
 
 /-- `dyadic_interval?` checks whether `dyadic_interval` can prove the goal without closing it. -/
-syntax (name := dyadicInterval?) "dyadic_interval?" (" [" inclusionParam,* "]")? : tactic
+syntax (name := dyadicInterval?) "dyadic_interval?" (" [" inclusionArg,* "]")? : tactic
 
 macro_rules
-  | `(tactic| dyadic_interval? $[[$params:inclusionParam,*]]?) =>
-      `(tactic| inclusion? [core, interval_dyadic_real] $[($params,*)]?)
+  | `(tactic| dyadic_interval?) =>
+      `(tactic| inclusion? [core, interval_dyadic_real])
+  | `(tactic| dyadic_interval? [$args,*]) =>
+      `(tactic| inclusion? [core, interval_dyadic_real, $args,*])
 
 end Inclusion

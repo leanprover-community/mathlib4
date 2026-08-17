@@ -82,14 +82,14 @@ public register_option linter.style.admit : Bool := {
   descr := "enable the admit linter"
 }
 
-/-- The option `linter.style.nativeDecide` of the deprecated syntax linter flags proof tactics
+/-- The option `linter.style.native` of the deprecated syntax linter flags proof tactics
 that trust native evaluation, which are disallowed in mathlib. -/
 -- Note: this linter is purely for user information. Running `lean4checker` in CI catches *any*
 -- additional axioms that are introduced (not just `ofReduceBool`): the point of this check is to
 -- alert the user quickly, not to be airtight.
-public register_option linter.style.nativeDecide : Bool := {
+public register_option linter.style.native : Bool := {
   defValue := false
-  descr := "enable the nativeDecide linter"
+  descr := "enable the native-evaluation linter"
 }
 
 /-- The option `linter.style.maxHeartbeats` of the deprecated syntax linter flags usages of
@@ -141,10 +141,6 @@ def usesNativeConfig (stx : Syntax) : Bool :=
   else
     false
 
-/-- Whether `stx` is a `decide` tactic call with the `native` option enabled. -/
-def isDecideNative (stx : Syntax) : Bool :=
-  stx.isOfKind ``Lean.Parser.Tactic.decide && usesNativeConfig stx
-
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
 partial
 def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageData)
@@ -168,7 +164,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
         "The `admit` tactic is discouraged: \
          please strongly consider using the synonymous `sorry` instead.")
     | ``Lean.Parser.Tactic.decide =>
-      if isDecideNative stx then
+      if usesNativeConfig stx then
         rargs.push (kind, stx, "Using `decide +native` is not allowed in mathlib: \
         because it trusts the entire Lean compiler (not just the Lean kernel), \
         it could quite possibly be used to prove false.")
@@ -217,9 +213,9 @@ replacement syntax. For each individual case, linting can be turned on or off se
 * `induction'`, superseded by `induction` (controlled by `linter.style.induction`)
 * `admit`, superseded by `sorry` (controlled by `linter.style.admit`)
 * `native_decide` and `decide +native`, which trust the Lean compiler
-  (controlled by `linter.style.nativeDecide`)
+  (controlled by `linter.style.native`)
 * `inclusion +native` and `dyadic_interval +native`, which trust the Lean compiler
-  (controlled by `linter.style.nativeDecide`)
+  (controlled by `linter.style.native`)
 * `set_option maxHeartbeats`, should contain an explanatory comment
   (controlled by `linter.style.maxHeartbeats`)
 -/
@@ -229,7 +225,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       getLinterValue linter.style.induction (← getLinterOptions) ||
       getLinterValue linter.style.admit (← getLinterOptions) ||
       getLinterValue linter.style.maxHeartbeats (← getLinterOptions) ||
-      getLinterValue linter.style.nativeDecide (← getLinterOptions) do
+      getLinterValue linter.style.native (← getLinterOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
@@ -248,7 +244,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
       | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide |
           `Inclusion.inclusionTacStx | `Inclusion.dyadicInterval =>
-        Linter.logLintIf linter.style.nativeDecide stx' msg
+        Linter.logLintIf linter.style.native stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
       | _ => continue) stx
 

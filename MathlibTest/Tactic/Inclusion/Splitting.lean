@@ -21,19 +21,19 @@ example {x : ℝ} (hx : x ∈ wideInterval) : x - x ≤ 2 := by
   dyadic_interval [binSplit := 1]
 
 example {x : ℝ} (hx : x ∈ wideInterval) : x - x ≤ 1 := by
-  inclusion [core, interval_dyadic_real] (binSplit := 2)
+  inclusion [core, interval_dyadic_real, binSplit := 2]
 
 example {x : ℝ} (hx : x ≤ 2) : x ≤ 2 := by
-  inclusion [core, interval_dyadic_real] (binSplit := 100)
+  inclusion [core, interval_dyadic_real, binSplit := 100]
 
 example {x : ℝ} (hx : x ≥ 1) : x ≥ 1 := by
-  inclusion [core, interval_dyadic_real] (binSplit := 100)
+  inclusion [core, interval_dyadic_real, binSplit := 100]
 
 /-- info: The inclusion check succeeded. -/
 #guard_msgs in
 set_option linter.unusedTactic false in
 example {x : ℝ} (hx : x ∈ wideInterval) : x - x ≤ 2 := by
   dyadic_interval? [binSplit := 1]
-  inclusion [core, interval_dyadic_real] (binSplit := 1)
+  inclusion [core, interval_dyadic_real, binSplit := 1]
 
 end Inclusion.Tests

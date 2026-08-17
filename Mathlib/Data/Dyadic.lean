@@ -37,20 +37,6 @@ instance : AddCommGroup Dyadic where
 
 namespace Dyadic
 
-section Division
-
-/-- Round a quotient of natural numbers downward to a dyadic number with precision `prec`. -/
-def divNatDown (prec m d : ℕ) : Dyadic :=
-  Dyadic.ofIntWithPrec (((m <<< prec) / d : ℕ) : ℤ) prec
-
-/-- Round a quotient of natural numbers upward to a dyadic number with precision `prec`. -/
-def divNatUp (prec m d : ℕ) : Dyadic :=
-  let scaled := m <<< prec
-  let quotient := scaled / d
-  Dyadic.ofIntWithPrec (if quotient * d = scaled then quotient else quotient + 1) prec
-
-end Division
-
 section toReal
 
 /-- Interpret a dyadic rational as a real number. -/

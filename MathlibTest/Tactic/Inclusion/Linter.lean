@@ -7,13 +7,13 @@ import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 
 open Inclusion
 
-set_option linter.style.nativeDecide true
+set_option linter.style.native true
 
 /--
 warning: Using `inclusion +native` is not allowed in mathlib: because it trusts the entire Lean
 compiler (not just the Lean kernel), it could quite possibly be used to prove false.
 
-Note: This linter can be disabled with `set_option linter.style.nativeDecide false`
+Note: This linter can be disabled with `set_option linter.style.native false`
 -/
 #guard_msgs in
 example : (0 : ℝ) ≤ 1 := by
@@ -23,7 +23,7 @@ example : (0 : ℝ) ≤ 1 := by
 warning: Using `inclusion +native` is not allowed in mathlib: because it trusts the entire Lean
 compiler (not just the Lean kernel), it could quite possibly be used to prove false.
 
-Note: This linter can be disabled with `set_option linter.style.nativeDecide false`
+Note: This linter can be disabled with `set_option linter.style.native false`
 -/
 #guard_msgs in
 example : (0 : ℝ) ≤ 1 := by
@@ -33,7 +33,7 @@ example : (0 : ℝ) ≤ 1 := by
 warning: Using `dyadic_interval +native` is not allowed in mathlib: because it trusts the entire Lean
 compiler (not just the Lean kernel), it could quite possibly be used to prove false.
 
-Note: This linter can be disabled with `set_option linter.style.nativeDecide false`
+Note: This linter can be disabled with `set_option linter.style.native false`
 -/
 #guard_msgs in
 example : (0 : ℝ) ≤ 1 := by

@@ -29,23 +29,23 @@ example : ((-3 : ℤ) : ℝ) = -3 := by
   inclusion [core, interval_dyadic_real]
 
 example : (((1 : ℚ) / 3 : ℚ) : ℝ) < (((334 : ℚ) / 1000 : ℚ) : ℝ) := by
-  dyadic_interval [prec := 12]
+  dyadic_interval [core, prec := 12]
 
 example : (((1 : ℚ) / 2 : ℚ) : ℝ) = 0.5 := by
-  inclusion [core, interval_dyadic_real] (prec := 1)
+  inclusion [core, interval_dyadic_real, prec := 1]
 
 example : (((-1 : ℚ) / 3 : ℚ) : ℝ) < -0.3 := by
-  inclusion [core, interval_dyadic_real] (prec := 12)
+  inclusion [core, interval_dyadic_real, prec := 12]
 
 example : (0.1 : ℝ) < 0.2 := by
-  fail_if_success inclusion [core, interval_dyadic_real] (prec := 2)
-  inclusion [core, interval_dyadic_real] (prec := 4)
+  fail_if_success inclusion [core, interval_dyadic_real, prec := 2]
+  inclusion [core, interval_dyadic_real, prec := 4]
 
 example : (123e4 : ℝ) = 1230000 := by
-  inclusion [core, interval_dyadic_real] (prec := 0)
+  inclusion [core, interval_dyadic_real, prec := 0]
 
 example : (0.12345678901234567890123456789 : ℝ) < 0.1234567890123456789012345679 := by
-  inclusion [core, interval_dyadic_real] (prec := 100)
+  inclusion [core, interval_dyadic_real, prec := 100]
 
 end Constants
 
