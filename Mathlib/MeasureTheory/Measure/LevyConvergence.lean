@@ -234,6 +234,7 @@ lemma tendstoInDistribution_of_tendsto_charFun
     (h : ∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t))) :
     TendstoInDistribution X atTop X' P P' where
   forall_aemeasurable := hX
+  aemeasurable_limit := hX'
   tendsto := by
     apply ProbabilityMeasure.tendsto_of_tendsto_charFun
     simpa
