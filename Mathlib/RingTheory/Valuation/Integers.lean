@@ -32,10 +32,10 @@ variable (v : Valuation R Γ₀)
 def integer : Subring R where
   carrier := { x | v x ≤ 1 }
   one_mem' := le_of_eq v.map_one
-  mul_mem' {x y} hx hy := by simp only [Set.mem_setOf_eq, map_mul, mul_le_one' hx hy]
+  mul_mem' {x y} hx hy := by simp only [Set.mem_ofPred_eq, map_mul, mul_le_one' hx hy]
   zero_mem' := by simp
   add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
-  neg_mem' {x} hx := by simp only [Set.mem_setOf_eq] at hx; simpa only [Set.mem_setOf_eq, map_neg]
+  neg_mem' {x} hx := by simp only [Set.mem_ofPred_eq] at hx; simpa only [Set.mem_ofPred_eq, map_neg]
 
 lemma mem_integer_iff (r : R) : r ∈ v.integer ↔ v r ≤ 1 := by rfl
 
@@ -198,12 +198,15 @@ theorem eq_algebraMap_or_inv_eq_algebraMap (hv : Integers v O) (x : F) :
   obtain ⟨a, ha⟩ := exists_of_le_one hv h
   exacts [⟨a, Or.inl ha.symm⟩, ⟨a, Or.inr ha.symm⟩]
 
-lemma coe_span_singleton_eq_setOf_le_v_algebraMap (hv : Integers v O) (x : O) :
+lemma coe_span_singleton_eq_setOfPred_le_v_algebraMap (hv : Integers v O) (x : O) :
     (Ideal.span {x} : Set O) = {y : O | v (algebraMap O F y) ≤ v (algebraMap O F x)} := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp [Set.singleton_zero, map_eq_zero_iff _ hv.hom_inj]
   ext
   simp [SetLike.mem_coe, Ideal.mem_span_singleton, hv.dvd_iff_le]
+
+@[deprecated (since := "2026-07-09")]
+alias coe_span_singleton_eq_setOf_le_v_algebraMap := coe_span_singleton_eq_setOfPred_le_v_algebraMap
 
 lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
     [Subsingleton (MonoidHom.mrange v)ˣ] :
@@ -231,14 +234,14 @@ lemma isPrincipal_iff_exists_isGreatest (hv : Integers v O) {I : Ideal O} :
     simp only [Ideal.submodule_span_eq, Ideal.mem_span_singleton]
     exact ⟨fun hb ↦ dvd_of_le hv (hx.2 <| mem_image_of_mem _ hb), fun hb ↦ I.mem_of_dvd hb ha⟩
 
-lemma isPrincipal_iff_exists_eq_setOf_valuation_le (hv : Integers v O) {I : Ideal O} :
+lemma isPrincipal_iff_exists_eq_setOfPred_valuation_le (hv : Integers v O) {I : Ideal O} :
     I.IsPrincipal ↔ ∃ x, (I : Set O) = {y | v (algebraMap O F y) ≤ v (algebraMap O F x)} := by
   rw [isPrincipal_iff_exists_isGreatest hv]
   constructor <;> rintro ⟨x, hx⟩
   · obtain ⟨a, ha, rfl⟩ : ∃ a ∈ I, (v ∘ algebraMap O F) a = x := by simpa using hx.left
     refine ⟨a, ?_⟩
     ext b
-    simp only [SetLike.mem_coe, mem_setOf_eq]
+    simp only [SetLike.mem_coe, mem_ofPred_eq]
     constructor <;> intro h
     · exact hx.right (Set.mem_image_of_mem _ h)
     · rw [le_iff_dvd hv] at h
@@ -246,6 +249,10 @@ lemma isPrincipal_iff_exists_eq_setOf_valuation_le (hv : Integers v O) {I : Idea
   · refine ⟨v (algebraMap O F x), Set.mem_image_of_mem _ ?_, ?_⟩
     · simp [hx]
     · simp [hx, mem_upperBounds]
+
+@[deprecated (since := "2026-07-09")]
+alias isPrincipal_iff_exists_eq_setOf_valuation_le :=
+  isPrincipal_iff_exists_eq_setOfPred_valuation_le
 
 set_option backward.isDefEq.respectTransparency false in
 lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : Integers v O) :
@@ -290,9 +297,12 @@ lemma v_irreducible_lt_one {ϖ : v.integer} (h : Irreducible ϖ) :
 lemma v_irreducible_pos {ϖ : v.integer} (h : Irreducible ϖ) : 0 < v ϖ :=
   (Valuation.integer.integers v).valuation_irreducible_pos h
 
-lemma coe_span_singleton_eq_setOf_le_v_coe (x : v.integer) :
+lemma coe_span_singleton_eq_setOfPred_le_v_coe (x : v.integer) :
     (Ideal.span {x} : Set v.integer) = {y : v.integer | v y ≤ v x} :=
-  (Valuation.integer.integers v).coe_span_singleton_eq_setOf_le_v_algebraMap x
+  (Valuation.integer.integers v).coe_span_singleton_eq_setOfPred_le_v_algebraMap x
+
+@[deprecated (since := "2026-07-09")]
+alias coe_span_singleton_eq_setOf_le_v_coe := coe_span_singleton_eq_setOfPred_le_v_coe
 
 end integer
 
