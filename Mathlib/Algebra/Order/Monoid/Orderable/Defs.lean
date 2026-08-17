@@ -203,8 +203,6 @@ theorem IsRightOrderable.of_mulEquiv [IsRightOrderable M] (e : M ≃* N) : IsRig
 `e : M ≃+ N`. -/]
 theorem IsBiOrderable.of_mulEquiv [IsBiOrderable M] (e : M ≃* N) : IsBiOrderable N := by
   obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftMono_mulRightMono M
-  -- let : LinearOrder N := LinearOrder.lift' e.symm e.symm.injective
-  -- refine ⟨‹_›, ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩ <;>
   refine ⟨.lift' e.symm e.symm.injective, ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩ <;>
   · change e.symm _ ≤ e.symm _
     rw [map_mul, map_mul]
@@ -253,7 +251,7 @@ instance [IsLeftOrderable M] : IsRightOrderable Mᵐᵒᵖ := by
 monoid `Mᵃᵒᵖ`. -/]
 instance [IsBiOrderable M] : IsBiOrderable Mᵐᵒᵖ := by
   obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftMono_mulRightMono M
-  refine ⟨LinearOrder.lift' MulOpposite.unop MulOpposite.unop_injective,
+  refine ⟨.lift' MulOpposite.unop MulOpposite.unop_injective,
     ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩ <;>
   · change (_ : Mᵐᵒᵖ).unop ≤ (_ : Mᵐᵒᵖ).unop
     rw [MulOpposite.unop_mul, MulOpposite.unop_mul]
