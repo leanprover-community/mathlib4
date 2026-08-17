@@ -346,16 +346,16 @@ scoped notation:67 f:68 " ⋆ᵣ₊ " g:67 => addRingConvolution f g
 
 @[to_additive (dont_translate := R) (attr := simp) addRingConvolution_apply]
 lemma ringConvolution_apply (f g : M → R) (x : M) :
-    ringConvolution f g x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
+    (f ⋆ᵣ g) x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
 
 @[to_additive (dont_translate := R) (attr := simp) zero_addRingConvolution]
 lemma zero_ringConvolution (f : M → R) :
-    ringConvolution (0 : M → R) f = 0 := by
+    (0 : M → R) ⋆ᵣ f = 0 := by
   simpa only [ringConvolution] using zero_convolution mulLinearMap f
 
 @[to_additive (dont_translate := R) (attr := simp) addRingConvolution_zero]
 lemma ringConvolution_zero (f : M → R) :
-    ringConvolution f (0 : M → R) = 0 := by
+    f ⋆ᵣ (0 : M → R) = 0 := by
   simpa only [ringConvolution] using convolution_zero mulLinearMap f
 
 end RingConvolution
@@ -366,14 +366,14 @@ variable [Monoid M] [NonAssocSemiring R] [TopologicalSpace R]
 
 @[to_additive (dont_translate := R) (attr := simp) addDelta_addRingConvolution]
 lemma delta_ringConvolution (f : M → R) :
-    ringConvolution (delta 1) f = f := by
+    (delta 1) ⋆ᵣ f = f := by
   simpa only [ringConvolution, delta] using
     convolution_indicator_one_left mulLinearMap (1 : R) f
       (fun y => by simp only [mulLinearMap_apply, one_mul])
 
 @[to_additive (dont_translate := R) (attr := simp) addRingConvolution_addDelta]
 lemma ringConvolution_delta (f : M → R) :
-    ringConvolution f (delta 1) = f := by
+    f ⋆ᵣ (delta 1) = f := by
   simpa only [ringConvolution, delta] using
     convolution_indicator_one_right mulLinearMap f (1 : R)
       (fun y => by simp only [mulLinearMap_apply, mul_one])
@@ -388,13 +388,13 @@ variable [TopologicalSpace R] [T2Space R] [ContinuousAdd R]
 @[to_additive (dont_translate := R) addRingConvolution_add]
 lemma ringConvolution_add (f g h : M → R)
     (hfg : ConvolutionExists mulLinearMap f g) (hfh : ConvolutionExists mulLinearMap f h) :
-    ringConvolution f (g + h) = ringConvolution f g + ringConvolution f h := by
+    f ⋆ᵣ (g + h) = f ⋆ᵣ g + f ⋆ᵣ h := by
   simpa only [ringConvolution] using hfg.distrib_add mulLinearMap hfh
 
 @[to_additive (dont_translate := R) add_addRingConvolution]
 lemma add_ringConvolution (f g h : M → R)
     (hfh : ConvolutionExists mulLinearMap f h) (hgh : ConvolutionExists mulLinearMap g h) :
-    ringConvolution (f + g) h = ringConvolution f h + ringConvolution g h := by
+    (f + g) ⋆ᵣ h = f ⋆ᵣ h + g ⋆ᵣ h := by
   simpa only [ringConvolution] using hfh.add_distrib mulLinearMap hgh
 
 end RingConvolutionDistributivity
@@ -408,7 +408,7 @@ variable [TopologicalSpace R] [T2Space R] [ContinuousConstSMul S R]
 @[to_additive (dont_translate := S R) smul_addRingConvolution]
 lemma smul_ringConvolution [IsScalarTower S R R] (c : S) (f g : M → R)
     (hfg : ConvolutionExists mulLinearMap f g) :
-    ringConvolution (c • f) g = c • ringConvolution f g := by
+    (c • f) ⋆ᵣ g = c • (f ⋆ᵣ g) := by
   ext x
   simp only [ringConvolution_apply, Pi.smul_apply]
   simp_rw [smul_mul_assoc]
@@ -418,7 +418,7 @@ lemma smul_ringConvolution [IsScalarTower S R R] (c : S) (f g : M → R)
 @[to_additive (dont_translate := S R) addRingConvolution_smul]
 lemma ringConvolution_smul [SMulCommClass S R R] (c : S) (f g : M → R)
     (hfg : ConvolutionExists mulLinearMap f g) :
-    ringConvolution f (c • g) = c • ringConvolution f g := by
+    f ⋆ᵣ (c • g) = c • (f ⋆ᵣ g) := by
   ext x
   simp only [ringConvolution_apply, Pi.smul_apply]
   simp_rw [mul_smul_comm]
@@ -432,7 +432,7 @@ variable [CommMonoid M] [NonUnitalNonAssocCommSemiring R] [TopologicalSpace R]
 
 @[to_additive (dont_translate := R) addRingConvolution_comm]
 lemma ringConvolution_comm (f g : M → R) :
-    ringConvolution f g = ringConvolution g f := by
+    f ⋆ᵣ g = g ⋆ᵣ f := by
   simpa only [ringConvolution] using
     convolution_comm mulLinearMap f g
       (fun x y => by simp only [mulLinearMap_apply, mul_comm])
@@ -448,7 +448,7 @@ variable [Finset.HasMulAntidiagonal M]
 @[to_additive (dont_translate := R) addRingConvolution_eq_sum_antidiagonal
   /-- Additive-index multiplication convolution as a finite sum over the antidiagonal. -/]
 lemma ringConvolution_eq_sum_mulAntidiagonal (f g : M → R) (x : M) :
-    ringConvolution f g x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 := by
+    (f ⋆ᵣ g) x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 := by
   simpa only [ringConvolution, mulLinearMap_apply] using
     convolution_eq_sum_mulAntidiagonal mulLinearMap f g x
 
