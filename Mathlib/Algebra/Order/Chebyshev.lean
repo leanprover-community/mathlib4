@@ -140,7 +140,7 @@ theorem sq_sum_le_card_mul_sum_sq : (∑ i ∈ s, f i) ^ 2 ≤ #s * ∑ i ∈ s,
 
 /-- Special case of **Chebyshev's Sum Inequality** or the **Cauchy-Schwarz Inequality** for a
 multiset: the square of the sum is at most the cardinality times the sum of the squares. -/
-theorem _root_.Multiset.sq_sum_le_card_mul_sum_sq (m : Multiset α) :
+theorem Multiset.sq_sum_le_card_mul_sum_sq (m : Multiset α) :
     m.sum ^ 2 ≤ m.card * (m.map (· ^ 2)).sum := by
   have := m.sum_map_eq_sum_toEnumFinset id
   have := _root_.sq_sum_le_card_mul_sum_sq (s := toEnumFinset m) (f := Prod.fst)

@@ -69,11 +69,9 @@ private theorem exists_esymm_div_choose (hs : s.card = n + 1) : ∃ t : Multiset
   refine ⟨t, htc, fun k hk ↦ ?_⟩
   rw [div_eq_div_iff]
   · apply mul_left_cancel₀ (by positivity : (n + 1 : ℝ) ≠ 0)
-    grind [(Nat.cast_sub (by omega) : ((n + 1 - k : ℕ) : ℝ) = _),
-      (mod_cast n.choose_mul_succ_eq k : (n.choose k : ℝ) * (n + 1) =
+    grind [Nat.cast_sub, (mod_cast n.choose_mul_succ_eq k : (n.choose k : ℝ) * (n + 1) =
       ((n + 1).choose k : ℝ) * (n + 1 - k : ℕ) )]
-  · exact_mod_cast (Nat.choose_pos hk).ne'
-  · exact_mod_cast (Nat.choose_pos (by omega)).ne'
+  all_goals exact_mod_cast (Nat.choose_pos (by omega)).ne'
 
 /-- The normalized elementary symmetric functions: `s.nesymm k = s.esymm k / (s.card.choose k)`. -/
 noncomputable def nesymm (s : Multiset ℝ) (k : ℕ) : ℝ := s.esymm k / (s.card.choose k)
@@ -145,7 +143,8 @@ theorem esymm_mul_esymm_le_sq_esymm' (s : Multiset ℝ) (k : ℕ) :
     ((k : ℝ) + 2) * ((s.card : ℝ) - k) * (s.esymm k * s.esymm (k + 2))
     ≤ ((k : ℝ) + 1) * ((s.card : ℝ) - k - 1) * (s.esymm (k + 1)) ^ 2 := by
   rcases (by omega : k + 2 ≤ s.card ∨ k + 1 = s.card ∨ s.card < k + 1) with _ | h | _
-  · have : (0 : ℝ) < (s.card.choose (k + 1))^2 := sq_pos_of_pos (mod_cast Nat.choose_pos (by omega))
+  · have : (0 : ℝ) < (s.card.choose (k + 1)) ^ 2 :=
+      sq_pos_of_pos (mod_cast Nat.choose_pos (by omega))
     have : (0 : ℝ) ≤ (k + 2) * (s.card - k) :=
       mul_nonneg (by positivity) (by rw [sub_nonneg]; exact_mod_cast (by omega))
     have : (k + 2) * (s.card - k) * ((s.card.choose k : ℝ) * (s.card.choose (k + 2)))
