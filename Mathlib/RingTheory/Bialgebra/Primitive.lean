@@ -11,19 +11,22 @@ public import Mathlib.RingTheory.Coalgebra.Primitive
 /-!
 # Primitive elements in a bialgebra
 
-This file defines primitive elements in a bialgebra and collects the facts about them that need
-the multiplication of `A`.
+This file collects facts about primitive elements in a bialgebra.
 
 ## Main declarations
 
-* `Bialgebra.IsPrimitiveElem a`: `a` is primitive, i.e. `ε a = 0` and `Δ a = 1 ⊗ₜ a + a ⊗ₜ 1`.
+* `Bialgebra.IsPrimitiveElem R a`: `a` is primitive, i.e. `ε a = 0` and `Δ a = 1 ⊗ₜ a + a ⊗ₜ 1`.
 
 ## TODO
 
-* Show that the primitive elements form a `LieSubalgebra` with bracket `[a, b] = a * b - b * a`.
+* Primitive elements form a `LieSubalgebra` with bracket `[a, b] = a * b - b * a`.
   (`IsPrimitiveElem.commutator` avoids `⁅a, b⁆` so as not to import Lie theory here.)
-* Prove the Milnor–Moore theorem: in characteristic 0 over a field, the primitive elements of a
-  cocommutative connected bialgebra generate it as the universal enveloping of a Lie algebra.
+* In characteristic 0 over a field, the primitive elements of a cocommutative connected bialgebra
+  generate it as the universal enveloping of a Lie algebra. (Milnor–Moore)
+
+## References
+
+* [D. Grinberg, V. Reiner, *Hopf algebras in combinatorics*][GrinbergReiner2020]
 -/
 
 public section
@@ -44,6 +47,17 @@ abbrev IsPrimitiveElem (a : A) : Prop := IsSkewPrimitiveElem R 1 1 a
 
 lemma IsPrimitiveElem.ne_one [Nontrivial R] (ha : IsPrimitiveElem R a) : a ≠ 1 :=
   ne_of_apply_ne (counit (R := R)) (by simp [ha.counit_eq_zero])
+
+variable [IsCancelAdd A]
+
+/-- See Proposition 1.4.17 in [GrinbergReiner2020]. -/
+lemma counit_eq_zero_of_comul_eq_tmul_add_tmul (ha : comul a = 1 ⊗ₜ[R] a + a ⊗ₜ[R] 1) :
+    counit (R := R) a = 0 :=
+  Coalgebra.counit_eq_zero_of_comul_eq_tmul_add_tmul counit_one counit_one ha
+
+lemma isPrimitiveElem_iff_comul_eq_tmul_add_tmul :
+    IsPrimitiveElem R a ↔ comul a = 1 ⊗ₜ[R] a + a ⊗ₜ[R] 1 :=
+  isSkewPrimitiveElem_iff_comul_eq_tmul_add_tmul counit_one counit_one
 
 end Semiring
 

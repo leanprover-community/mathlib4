@@ -15,14 +15,14 @@ This file defines `(g, h)`-skew-primitive elements in a coalgebra, i.e. elements
 
 ## Main declarations
 
-* `Coalgebra.IsSkewPrimitiveElem g h a`: `a` is `(g, h)`-skew-primitive.
-* `Coalgebra.skewPrimitiveSubmodule R g h`: the `(g, h)`-skew-primitive elements as a submodule.
+* `Coalgebra.IsSkewPrimitiveElem R g h a`: `a` is `(g, h)`-skew-primitive.
+* `Coalgebra.skewPrimitive R g h`: the `(g, h)`-skew-primitive elements as a submodule.
 
 ## TODO
 
-* Show that `g - h` is `(g, h)`-skew-primitive, and that the quotient of
-  `skewPrimitiveSubmodule R g h` by `R ∙ (g - h)` is `Ext¹(h, g)`, where `g` and `h` are
-  regarded as one-dimensional right comodules.
+* `g - h` is `(g, h)`-skew-primitive, and the quotient of `skewPrimitive R g h` by
+  `R ∙ (g - h)` is `Ext¹(h, g)`, where `g` and `h` are regarded as one-dimensional right
+  comodules.
 
 ## References
 
@@ -38,8 +38,8 @@ variable {F R A B : Type*} [CommSemiring R]
 namespace Coalgebra
 
 section AddCommMonoid
-variable [AddCommMonoid A] [Module R A] [Coalgebra R A] [AddCommMonoid B] [Module R B]
-  [Coalgebra R B] {g h a b : A}
+variable [AddCommMonoid A] [Module R A] [Coalgebra R A]
+  [AddCommMonoid B] [Module R B] [Coalgebra R B] {g h a b : A}
 
 variable (R) in
 /-- An element `a` of a coalgebra is `(g, h)`-skew-primitive if `ε a = 0` and
@@ -59,8 +59,8 @@ lemma add (ha : IsSkewPrimitiveElem R g h a) (hb : IsSkewPrimitiveElem R g h b) 
     IsSkewPrimitiveElem R g h (a + b) where
   counit_eq_zero := by simp [ha.counit_eq_zero, hb.counit_eq_zero]
   comul_eq_tmul_add_tmul := by
-    simp [ha.comul_eq_tmul_add_tmul, hb.comul_eq_tmul_add_tmul, add_tmul, tmul_add]
-    abel
+    simp [ha.comul_eq_tmul_add_tmul, hb.comul_eq_tmul_add_tmul, add_tmul, tmul_add,
+      add_add_add_comm]
 
 lemma smul (ha : IsSkewPrimitiveElem R g h a) (r : R) : IsSkewPrimitiveElem R g h (r • a) where
   counit_eq_zero := by simp [ha.counit_eq_zero]
@@ -86,14 +86,35 @@ end IsSkewPrimitiveElem
 
 variable (R g h) in
 /-- The `(g, h)`-skew-primitive elements form a submodule. -/
-def skewPrimitiveSubmodule : Submodule R A where
+def skewPrimitive : Submodule R A where
   carrier := {a | IsSkewPrimitiveElem R g h a}
   add_mem' := .add
   zero_mem' := .zero
   smul_mem' r _ ha := ha.smul r
 
-@[simp] lemma mem_skewPrimitiveSubmodule :
-    a ∈ skewPrimitiveSubmodule R g h ↔ IsSkewPrimitiveElem R g h a := Iff.rfl
+@[simp] lemma mem_skewPrimitive :
+    a ∈ skewPrimitive R g h ↔ IsSkewPrimitiveElem R g h a := Iff.rfl
+
+variable [IsCancelAdd A]
+
+/-- When `g` and `h` have counit `1` (e.g. when they are group-like), the counit condition
+follows from the comultiplication condition. -/
+lemma counit_eq_zero_of_comul_eq_tmul_add_tmul (hg : counit (R := R) g = 1)
+    (hh : counit (R := R) h = 1) (ha : comul a = g ⊗ₜ[R] a + a ⊗ₜ[R] h) :
+    counit (R := R) a = 0 := by
+  have : counit (R := R) a • h = 0 := by
+    simpa [ha, hg] using congr(TensorProduct.lid R A $(rTensor_counit_comul (R := R) a))
+  simpa [hh] using congr(counit (R := R) $this)
+
+lemma IsSkewPrimitiveElem.of_comul_eq_tmul_add_tmul (hg : counit (R := R) g = 1)
+    (hh : counit (R := R) h = 1) (ha : comul a = g ⊗ₜ[R] a + a ⊗ₜ[R] h) :
+    IsSkewPrimitiveElem R g h a :=
+  ⟨counit_eq_zero_of_comul_eq_tmul_add_tmul hg hh ha, ha⟩
+
+lemma isSkewPrimitiveElem_iff_comul_eq_tmul_add_tmul (hg : counit (R := R) g = 1)
+    (hh : counit (R := R) h = 1) :
+    IsSkewPrimitiveElem R g h a ↔ comul a = g ⊗ₜ[R] a + a ⊗ₜ[R] h :=
+  ⟨IsSkewPrimitiveElem.comul_eq_tmul_add_tmul, .of_comul_eq_tmul_add_tmul hg hh⟩
 
 end AddCommMonoid
 
@@ -105,8 +126,7 @@ namespace IsSkewPrimitiveElem
 lemma neg (ha : IsSkewPrimitiveElem R g h a) : IsSkewPrimitiveElem R g h (-a) where
   counit_eq_zero := by simpa [ha.counit_eq_zero] using (map_add (counit (R := R)) (-a) a).symm
   comul_eq_tmul_add_tmul := by
-    simp [ha.comul_eq_tmul_add_tmul, neg_tmul, tmul_neg]
-    abel
+    simp [ha.comul_eq_tmul_add_tmul, neg_tmul, tmul_neg, add_comm]
 
 lemma sub (ha : IsSkewPrimitiveElem R g h a) (hb : IsSkewPrimitiveElem R g h b) :
     IsSkewPrimitiveElem R g h (a - b) :=
