@@ -56,13 +56,13 @@ abbrev LeftExtension (L : C ⥤ D) (F : C ⥤ H) :=
   StructuredArrow F ((whiskeringLeft C D H).obj L)
 
 /-- Constructor for objects of the category `Functor.RightExtension L F`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def RightExtension.mk (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : L ⋙ F' ⟶ F) :
     RightExtension L F :=
   CostructuredArrow.mk α
 
 /-- Constructor for objects of the category `Functor.LeftExtension L F`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def LeftExtension.mk (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') :
     LeftExtension L F :=
   StructuredArrow.mk α
@@ -371,7 +371,6 @@ noncomputable def RightExtension.isUniversalPostcomp₁Equiv (ex : RightExtensio
 
 variable {F F'}
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isLeftKanExtension_iff_postcomp₁ (α : F ⟶ L' ⋙ F') :
     F'.IsLeftKanExtension α ↔ (G ⋙ F').IsLeftKanExtension
@@ -385,7 +384,6 @@ lemma isLeftKanExtension_iff_postcomp₁ (α : F ⟶ L' ⋙ F') :
   · exact fun _ => ⟨⟨eq (isUniversalOfIsLeftKanExtension _ _)⟩⟩
   · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isRightKanExtension_iff_postcomp₁ (α : L' ⋙ F' ⟶ F) :
     F'.IsRightKanExtension α ↔ (G ⋙ F').IsRightKanExtension
@@ -440,7 +438,6 @@ instance [G.IsEquivalence] : (RightExtension.postcompose₂ L F G).IsEquivalence
   infer_instance
 
 variable {L F} {F' : D ⥤ H}
-set_option backward.isDefEq.respectTransparency.types false in
 /-- An isomorphism to describe the action of `LeftExtension.postcompose₂` on terms of the form
 `LeftExtension.mk _ α`. -/
 @[simps!]
@@ -449,7 +446,6 @@ def LeftExtension.postcompose₂ObjMkIso (α : F ⟶ L ⋙ F') :
     .mk (F' ⋙ G) <| whiskerRight α G ≫ (associator _ _ _).hom :=
   StructuredArrow.isoMk (.refl _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An isomorphism to describe the action of `RightExtension.postcompose₂` on terms of the form
 `RightExtension.mk _ α`. -/
@@ -499,7 +495,6 @@ noncomputable def RightExtension.isUniversalPrecompEquiv (e : RightExtension L F
 
 variable {F L}
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isLeftKanExtension_iff_precomp (α : F ⟶ L ⋙ F') :
     F'.IsLeftKanExtension α ↔ F'.IsLeftKanExtension
@@ -945,7 +940,6 @@ variable (F₀) in
 instance isRightKanExtensionId : F₀.IsRightKanExtension F₀.leftUnitor.hom where
   nonempty_isUniversal := ⟨CostructuredArrow.mkIdTerminal⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance isLeftKanExtensionAlongEquivalence (α : F₀ ≅ L.functor ⋙ F₁) :
     F₁.IsLeftKanExtension α.hom := by
   refine ⟨⟨?_⟩⟩
@@ -964,7 +958,6 @@ instance isLeftKanExtensionAlongEquivalence' (L : C ⥤ D) (α : F₀ ⟶ L ⋙ 
   inferInstanceAs <|
     F₁.IsLeftKanExtension (asIso α : F₀ ≅ (asEquivalence L).functor ⋙ F₁).hom
 
-set_option backward.isDefEq.respectTransparency false in
 instance isRightKanExtensionAlongEquivalence (α : L.functor ⋙ F₁ ≅ F₀) :
     F₁.IsRightKanExtension α.hom := by
   refine ⟨⟨?_⟩⟩
