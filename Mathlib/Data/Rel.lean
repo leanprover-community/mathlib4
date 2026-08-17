@@ -599,10 +599,10 @@ lemma SetRel.exists_graph_eq_iff (R : SetRel α β) :
     simp
   intro h
   choose f hf using fun x ↦ (h x).exists
-  refine ⟨f, ?_, by aesop⟩
+  refine ⟨f, ?_, by grind [Function.mem_graph]⟩
   ext ⟨a, b⟩
   constructor
-  · aesop
+  · grind [Function.mem_graph]
   · exact (h _).unique (hf _)
 
 namespace Set
