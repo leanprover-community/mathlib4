@@ -147,8 +147,8 @@ noncomputable def comp {c c' c'' : C}
       (.of_hasPullback S₁.r S₂.l) S₁.wr) S₂.wr
 
 variable (C) in
-/-- The bicategory of spans of `C` with left/right legs satisfying a given
-morphism property. This is a one-field structure wrapper around `C`. -/
+/-- The bicategory of spans of `C` with left/right legs satisfying given
+morphism properties. This is a one-field structure wrapper around `C`. -/
 structure SpanBicat (Wₗ Wᵣ : MorphismProperty C) : Type _ where
   /-- the underlying object of `C` of a term in `SpanBicat C _ _` -/
   of : C
@@ -223,11 +223,11 @@ section compAPI
 composition uses an arbitrary pullback, and provides some "proxy" for working
 with the fact that apices of compositions of spans are pullbacks.
 
-This way, if spans ever get refactored in a way that use chosen pullbacks instead
-of arbitrary ones, most of downstream applications will not be affected
+This way, if spans ever get refactored in a way that uses chosen pullbacks instead
+of arbitrary ones, most downstream applications will not be affected
 as long as they are careful to use the API provided here.
 
-The primitives of this API is the data of the two projections
+The primitives of this API are the data of the two projections
 `πₗ : (S₁ ≫ S₂).apex ⟶ S₁.apex` and `πᵣ : (S₁ ≫ S₂).apex ⟶ S₂.apex`, the
 equalities `(S₁ ≫ S₂).l = πₗ ≫ S₁.l` and `(S₁ ≫ S₂).r = πᵣ ≫ S₂.r`,
 the commutative square `πₗ ≫ S₁.r = πᵣ ≫ S₂.l` and the fact that this defines a pullback square. -/
@@ -283,7 +283,7 @@ lemma comp_hom_ext_apex {c : C} {f g : c ⟶ (S₁ ≫ S₂).apex}
     f = g := by
   apply Limits.PullbackCone.IsLimit.hom_ext (isLimitCompPullbackCone S₁ S₂) <;> grind
 
-/-- A restatement of the universal property of (S₁ ≫ S₂).apex as coming from a pullback.
+/-- A restatement of the universal property of `(S₁ ≫ S₂).apex` as coming from a pullback.
 This is the main intended way to produce morphisms towards the apex of a composition of spans. -/
 @[no_expose]
 noncomputable def compLiftApex {c : C} (fₗ : c ⟶ S₁.apex) (fᵣ : c ⟶ S₂.apex)
@@ -470,7 +470,7 @@ lemma hom_inv_id_hom {S S' : X ⟶ Y} (e : S ≅ S') :
 lemma inv_hom_id_hom {S S' : X ⟶ Y} (e : S ≅ S') :
     e.inv.hom ≫ e.hom.hom = 𝟙 _ := by simp [← hom₂_comp_hom]
 
-/-- Extract the isomorphisms between the apices from the data of an isomorphism of 1-morphisms
+/-- Extract the isomorphism between the apices from the data of an isomorphism of 1-morphisms
 in `SpanBicat C _ _`. -/
 @[simps]
 abbrev apexIso {S S' : X ⟶ Y} (e : S ≅ S') :
