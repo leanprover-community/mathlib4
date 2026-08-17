@@ -73,7 +73,7 @@ lemma of_pow_lt {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular] [Fact κ₂.
     · simpa [hasCardinalLT_iff_cardinal_mk_lt] using
         h _ _ hα (by rwa [hasCardinalLT_iff_cardinal_mk_lt] at hX))
 
-lemma of_le {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular]
+lemma succ_two_pow_of_le {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular]
     (h₀ : κ₁ ≤ κ₂) (hκ₂ : Cardinal.aleph0 ≤ κ₂) :
     letI : Fact (Cardinal.IsRegular (Order.succ (2 ^ κ₂))) :=
       ⟨isRegular_succ (hκ₂.trans (cantor _).le)⟩
@@ -99,7 +99,7 @@ lemma exists_of_small {ι : Type*} [Small.{u} ι] (κ : ι → Cardinal.{u})
     obtain ⟨κ', h⟩ := Cardinal.exists_le_of_small κ
     exact ⟨max κ' .aleph0, by simp, fun i ↦ (h i).trans (by simp)⟩
   exact ⟨Order.succ (2 ^ κ₀), ⟨isRegular_succ (hκ₀.trans (cantor _).le)⟩,
-    fun i ↦ of_le (h i) hκ₀⟩
+    fun i ↦ succ_two_pow_of_le (h i) hκ₀⟩
 
 lemma exists_of_pair (κ₁ κ₂ : Cardinal.{u})
     [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] :
