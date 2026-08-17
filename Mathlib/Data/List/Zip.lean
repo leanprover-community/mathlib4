@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.List.Basic
+public import Mathlib.Logic.OpClass
 
 /-!
 # zip & unzip
