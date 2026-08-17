@@ -151,9 +151,9 @@ private lemma sumToIterFun_monomial (x : σ ⊕ τ →₀ ℕ) (r : R) :
   simp only [coeff_sumToIterFun, coeff_monomial, Finsupp.ext_iff, coe_sumElim, Sum.forall,
     Sum.elim_inl, Sum.elim_inr, comapDomain_apply]
   split_ifs
-  · rw [coeff_monomial, if_pos (by ext; grind [comapDomain_apply])]
+  · rw [coeff_monomial, ite_eq_left (by ext; grind [comapDomain_apply])]
   · tauto
-  · rw [coeff_monomial, if_neg (by simp [Finsupp.ext_iff]; grind)]
+  · rw [coeff_monomial, ite_eq_right (by simp [Finsupp.ext_iff]; grind)]
   · rw [coeff_zero]
 
 private lemma sumToIterFun_mul (p q) : sumToIterFun σ τ R (p * q) =
@@ -269,7 +269,7 @@ theorem sumAlgEquiv_comp_rename_inl : (sumAlgEquiv σ τ R).toAlgHom.comp
   · have : x.sumElim y ∉ Set.range (mapDomain Embedding.inl) := by
       rw [mem_range_mapDomain_iff _ (Embedding.injective _)]
       revert h; simp [Finsupp.ext_iff]
-    rw [coeff_rename_eq_zero _ _ this, coeff_C, if_neg h]
+    rw [coeff_rename_eq_zero _ _ this, coeff_C, ite_eq_right h]
 
 /-- The algebra isomorphism between multivariable power series in variables `σ` of multivariable
 power series in variables `τ` and multivariable power series in variables `τ` of multivariable
@@ -561,7 +561,7 @@ lemma finSuccEquiv_renameEquiv_finSuccEquiv (e : σ ≃ Fin n) (p) :
     (_root_.finSuccEquiv n).symm.toEmbedding) ((x.mapDomain e.symm).optionElim k) := by
     rw [embDomain_eq_mapDomain, ← Equiv.trans_toEmbedding, Equiv.coe_toEmbedding,
       ← equivMapDomain_eq_mapDomain, ← equivCongrLeft_apply, eq_comm,
-      Equiv.apply_eq_iff_eq_symm_apply]
+      ← Equiv.eq_symm_apply]
     ext a; cases a <;> simp
   have aux' : x = embDomain e.toEmbedding (x.mapDomain e.symm) := by
     rw [embDomain_eq_mapDomain, Equiv.coe_toEmbedding, ← mapDomain_comp,
