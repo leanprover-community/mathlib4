@@ -245,7 +245,7 @@ private lemma relIndex_span_span_nat_mul (m : ℕ) {n : ℕ} (hn : n ≠ 0) (a :
   have H₁ : span {(n * m : 𝓞 K)} = Submodule.map f (span {↑m}) := by
     simp [LinearMap.map_span, f]
   have H₂ : span {↑(n * m), n * a} = Submodule.map f (span {↑m, a}) := by
-    simp [LinearMap.map_span, f, Set.image_pair]
+    simp [LinearMap.map_span, f]
   rw [H₁, H₂]
   exact AddSubgroup.relIndex_map_map_of_injective _ _ hf |>.symm
 
