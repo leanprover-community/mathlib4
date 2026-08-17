@@ -233,7 +233,7 @@ lemma tendstoInDistribution_of_tendsto_charFun
   forall_aemeasurable := hX
   tendsto := by
     apply ProbabilityMeasure.tendsto_of_tendsto_charFun
-    simpa only [ProbabilityMeasure.coe_mk] using h
+    simpa
 
 lemma tendstoInDistribution_iff_tendsto_charFun
     (hX : ∀ n, AEMeasurable (X n) (P n)) (hX' : AEMeasurable X' P') :
