@@ -22,6 +22,11 @@ two basic inequalities:
 * **Newton's inequality**: `s.nesymm k * s.nesymm (k + 2) ≤ (s.nesymm (k + 1)) ^ 2`.
 * **Maclaurin's inequality**: `(s.nesymm (k + 1)) ^ k ≤ (s.nesymm k) ^ (k + 1)` if `s` is
   nonnegative.
+
+Some variant forms of these two inequalities are also given.
+
+TODO: determine the equality cases of the two inequalities.
+
 -/
 
 @[expose] public section
@@ -31,18 +36,6 @@ namespace Multiset
 open Polynomial Real
 
 variable {s : Multiset ℝ} {n k : ℕ}
-
-/-- The elementary symmetric functions of a nonnegative multiset are nonnegative. -/
-theorem esymm_nonneg {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
-    {s : Multiset R} (hs : ∀ x ∈ s, 0 ≤ x) (k : ℕ) : 0 ≤ s.esymm k := by
-  grind [esymm, sum_nonneg, mem_map, prod_nonneg, mem_of_le, mem_powersetCard]
-
-private theorem newton_zero (hs : s.card = n) :
-    2 * (n : ℝ) ^ 2 * s.esymm 2 ≤ (n : ℝ) * ((n : ℝ) - 1) * (s.esymm 1) ^ 2 := by
-  subst hs
-  have := sq_sum_le_card_mul_sum_sq s
-  rw [esymm_one]
-  nlinarith [two_mul_esymm_two s, mul_nonneg (s.card.cast_nonneg (α := ℝ)) (sub_nonneg.mpr this)]
 
 private theorem exists_esymm_derivative (hs : s.card = n + 1) :
     ∃ t : Multiset ℝ, t.card = n ∧
@@ -74,17 +67,23 @@ private theorem exists_esymm_div_choose (hs : s.card = n + 1) : ∃ t : Multiset
     ∀ k ≤ n, t.esymm k / (n.choose k) = s.esymm k / ((n + 1).choose k) := by
   obtain ⟨t, htc, ht⟩ := exists_esymm_derivative hs
   refine ⟨t, htc, fun k hk ↦ ?_⟩
-  have : ((n + 1 - k : ℕ) : ℝ) = n + 1 - k := by rw [Nat.cast_sub (by omega)]; grind
-  have : (n.choose k : ℝ) * (n + 1) = ((n + 1).choose k : ℝ) * (n + 1 - k : ℕ) :=
-    mod_cast n.choose_mul_succ_eq k
   rw [div_eq_div_iff]
   · apply mul_left_cancel₀ (by positivity : (n + 1 : ℝ) ≠ 0)
-    grind
+    grind [(Nat.cast_sub (by omega) : ((n + 1 - k : ℕ) : ℝ) = _),
+      (mod_cast n.choose_mul_succ_eq k : (n.choose k : ℝ) * (n + 1) =
+      ((n + 1).choose k : ℝ) * (n + 1 - k : ℕ) )]
   · exact_mod_cast (Nat.choose_pos hk).ne'
   · exact_mod_cast (Nat.choose_pos (by omega)).ne'
 
 /-- The normalized elementary symmetric functions: `s.nesymm k = s.esymm k / (s.card.choose k)`. -/
 noncomputable def nesymm (s : Multiset ℝ) (k : ℕ) : ℝ := s.esymm k / (s.card.choose k)
+
+/-- The base case of the Newton identity. -/
+private theorem newton_base (s : Multiset ℝ) (n : ℕ) (hs : s.card = n) :
+    (n : ℝ) ^ 2 * (2 * s.esymm 2) ≤ (n : ℝ) * ((n : ℝ) - 1) * (s.esymm 1) ^ 2 := by
+  subst hs
+  rw [esymm_one, two_mul_esymm_two s]
+  nlinarith [mul_nonneg s.card.cast_nonneg (sub_nonneg.mpr (sq_sum_le_card_mul_sum_sq s))]
 
 private theorem newton_aux (n : ℕ) : ∀ s : Multiset ℝ, s.card = n → ∀ k, k + 2 ≤ n →
     s.nesymm k * s.nesymm (k + 2) ≤ (s.nesymm (k + 1)) ^ 2 := by
@@ -99,12 +98,12 @@ private theorem newton_aux (n : ℕ) : ∀ s : Multiset ℝ, s.card = n → ∀ 
       · have : 2 * (k + 2) * (s.esymm k * s.esymm (k + 2)) ≤ (k + 1) * (s.esymm (k + 1)) ^ 2 := by
           rw [(by rfl : k + 1 = k + 2 - 1), ← esymm_map_inv h0 hs (by omega),
             (by rfl : s.esymm k = s.esymm (k + 2 - 2)), ← esymm_map_inv h0 hs (by omega)]
-          have := newton_zero (s := s.map (·⁻¹)) (n := k + 2) (by grind [card_map])
-          push_cast at this ⊢
+          have := newton_base (s.map (·⁻¹)) (k + 2) (by grind [card_map])
+          push_cast at this
           nlinarith [sq_nonneg (s.esymm (k + 2))]
         have : ((k + 2).choose k : ℝ) * 2 = (k + 2) * (k + 1) := by
           norm_cast
-          rw [← (k + 2).choose_symm (k := k) (by omega), (by omega : k + 2 - k = 2)]
+          rw [← (k + 2).choose_symm (by omega), (by omega : k + 2 - k = 2)]
           rcases k.even_or_odd with ⟨m, rfl⟩ | ⟨m, rfl⟩ <;> grind [Nat.choose_two_right]
         have : ((k + 2).choose (k + 1) : ℝ) = k + 2 := by
           rw [(by rfl : k + 1 = k + 2 - 1), (k + 2).choose_symm (k := 1) (by omega)]
@@ -147,11 +146,11 @@ theorem esymm_mul_esymm_le_sq_esymm' (s : Multiset ℝ) (k : ℕ) :
     ≤ ((k : ℝ) + 1) * ((s.card : ℝ) - k - 1) * (s.esymm (k + 1)) ^ 2 := by
   rcases (by omega : k + 2 ≤ s.card ∨ k + 1 = s.card ∨ s.card < k + 1) with _ | h | _
   · have : (0 : ℝ) < (s.card.choose (k + 1))^2 := sq_pos_of_pos (mod_cast Nat.choose_pos (by omega))
-    have : (0 : ℝ) ≤ (k + 2) * (s.card - k) := by
-      apply mul_nonneg (by positivity); rw [sub_nonneg]; exact_mod_cast (by omega)
+    have : (0 : ℝ) ≤ (k + 2) * (s.card - k) :=
+      mul_nonneg (by positivity) (by rw [sub_nonneg]; exact_mod_cast (by omega))
     have : (k + 2) * (s.card - k) * ((s.card.choose k : ℝ) * (s.card.choose (k + 2)))
         = (k + 1) * (s.card - k - 1) * (s.card.choose (k + 1)) ^ 2 := by
-      rw [show (s.card : ℝ) - k - 1 = (s.card - (k + 1) : ℕ) by rw [Nat.cast_sub (by omega)]; grind,
+      rw [(by rw [Nat.cast_sub (by omega)]; grind : (s.card : ℝ) - k - 1 = (s.card - (k + 1) : ℕ)),
         ← Nat.cast_sub (by omega)]
       norm_cast
       grind [Nat.choose_succ_right_eq]
@@ -176,8 +175,14 @@ private theorem esymm_succ_eq_zero_of_esymm_eq_zero
     prod_nonneg fun z hz ↦ hs z (mem_of_le (mem_powersetCard.mp ht).1 hz)
   grind [prod_cons, le_antisymm, single_le_sum, mem_map, mem_map_of_mem, esymm]
 
-private theorem nesymm_nonneg {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 ≤ x) (j : ℕ) : 0 ≤ nesymm s j :=
-  div_nonneg (esymm_nonneg hs j) (by positivity)
+/-- The elementary symmetric functions of a nonnegative multiset are nonnegative. -/
+theorem esymm_nonneg {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
+    {s : Multiset R} (hs : ∀ x ∈ s, 0 ≤ x) (k : ℕ) : 0 ≤ s.esymm k := by
+  grind [esymm, sum_nonneg, mem_map, prod_nonneg, mem_of_le, mem_powersetCard]
+
+/-- The normalized elementary symmetric functions of a nonnegative multiset are nonnegative. -/
+theorem nesymm_nonneg {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 ≤ x) (k : ℕ) : 0 ≤ nesymm s k :=
+  div_nonneg (esymm_nonneg hs k) (by positivity)
 
 /-- **Maclaurin's inequality (successor form).** If `s` is nonnegative then
 `(s.nesymm (k + 1)) ^ k ≤ (s.nesymm k) ^ (k + 1)`. -/
@@ -194,8 +199,7 @@ theorem pow_nesymm_le (hs : ∀ x ∈ s, 0 ≤ x) : (s.nesymm (k + 1)) ^ k ≤ (
         grind
       · have : 0 < (s.nesymm (k + 1)) ^ k := by grind [nesymm_nonneg, pow_pos]
         have : (s.nesymm (k + 2)) ^ (k + 1) * (s.nesymm (k + 1)) ^ k
-            ≤ (s.nesymm (k + 1)) ^ (k + 2) * (s.nesymm (k + 1)) ^ k := by
-          calc
+            ≤ (s.nesymm (k + 1)) ^ (k + 2) * (s.nesymm (k + 1)) ^ k := calc
             _ ≤ _ := mul_le_mul_of_nonneg_left (ih (by omega)) (pow_nonneg (nesymm_nonneg hs _) _)
             _ = (s.nesymm k * s.nesymm (k + 2)) ^ (k + 1) := by rw [mul_pow, mul_comm]
             _ ≤ _ := pow_le_pow_left₀ (mul_nonneg (nesymm_nonneg hs _) (nesymm_nonneg hs _))
@@ -205,17 +209,15 @@ theorem pow_nesymm_le (hs : ∀ x ∈ s, 0 ≤ x) : (s.nesymm (k + 1)) ^ k ≤ (
   · rw [nesymm, esymm_eq_zero_of_card_lt (k := k + 1) (by omega)]
     by_cases hk : k = 0
     · simp_all [nesymm]
-    have := nesymm_nonneg hs k
     simp only [zero_div, ne_eq, hk, not_false_eq_true, zero_pow]
-    positivity
+    positivity [nesymm_nonneg hs k]
 
 /-- **Maclaurin's inequality (antitone form).** If `s` is nonnegative then
 `(s.nesymm k)^(k⁻¹)` is antitone for `k ≥ 1`. -/
 theorem rpow_nesymm_antitone (hs : ∀ x ∈ s, 0 ≤ x) :
     AntitoneOn (fun k ↦ (s.nesymm k) ^ (k : ℝ)⁻¹) {k | 1 ≤ k} := by
   rw [← antitone_add_nat_iff_antitoneOn_nat_Ici]
-  apply antitone_add_nat_of_succ_le (k := 1) (f := fun k ↦ (s.nesymm k) ^ ((k : ℝ)⁻¹))
-  intro k hk
+  refine antitone_add_nat_of_succ_le (f := fun k ↦ (s.nesymm k) ^ ((k : ℝ)⁻¹)) (fun k _ ↦ ?_)
   have : 0 ≤ s.nesymm (k + 1) := nesymm_nonneg hs _
   calc
     _ = ((s.nesymm (k + 1)) ^ k) ^ (((k : ℝ) * (k + 1 : ℕ))⁻¹) := by
