@@ -168,12 +168,13 @@ lemma exists_girth_eq_length :
 theorem girth_top (h : 3 ≤ ENat.card α) : girth (⊤ : SimpleGraph α) = 3 := by
   simp [girth, egirth_top h]
 
+lemma Walk.length_eq_girth_iff {a} {w : G.Walk a a} (hw : ¬w.Nil) :
+    w.length = G.girth ↔ w.length = G.egirth := by
+  simp [girth, Eq.comm, ENat.toNat_eq_iff (length_eq_zero_iff.not.mpr hw)]
+
 lemma Walk.IsCircuit.isCycle_of_length_eq_girth {a} {w : G.Walk a a} (hw : w.IsCircuit)
     (hwg : w.length = G.girth) : w.IsCycle :=
-  have hwg' : w.length = G.egirth := by
-    refine ((ENat.toNat_eq_iff (?_)).mp hwg.symm).symm
-    exact length_eq_zero_iff.not.mpr hw.not_nil
-  hw.isTrail.isCycle_of_length_eq_egirth hwg'
+  hw.isTrail.isCycle_of_length_eq_egirth ((length_eq_girth_iff hw.not_nil).mp hwg)
 
 lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
   ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
