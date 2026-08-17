@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAt
-public import Mathlib.CategoryTheory.Generator.StrongGenerator
 
 /-!
 # Dense functors
@@ -16,14 +15,13 @@ left Kan extension of `F` along itself, i.e. any `Y : D` is the
 colimit of all `F.obj X` for all morphisms `F.obj X ⟶ Y` (which
 is the condition `F.DenseAt Y`).
 
-We also show that the range of a dense functor is a strong
-generator (see `Functor.isStrongGenerator_of_isDense`).
-
-See the file `Mathlib/CategoryTheory/Functor/KanExtension/DenseAtYoneda`
-the density of the Yoneda embadding, and
-`Mathlib/CategoryTheory/Functor/KanExtension/DenseIff` for a characterization
-of density of a full functor `F : C ⥤ D` in terms of the
-fully faithfulness of the restricted Yoneda functor `D ⥤ Cᵒᵖ ⥤ Type _`.
+In the file `Mathlib/CategoryTheory/Functor/KanExtension/DenseAtYoneda`,
+we obtain the density of the Yoneda embedding.
+In `Mathlib/CategoryTheory/Functor/KanExtension/DenseIff`, we obtain
+a characterization of the density for a full functor `F : C ⥤ D` in terms
+of the fully faithfulness of the restricted Yoneda functor `D ⥤ Cᵒᵖ ⥤ Type _`.
+In `Mathlib/CategoryTheory/Functor/KanExtension/StrongGenerator`, we show
+that the range of a dense functor is a strong generator.
 
 ## References
 
@@ -101,17 +99,6 @@ lemma IsDense.comp_right_iff_of_isEquivalence (G : D ⥤ C') [G.IsEquivalence] :
   let e : (F ⋙ G) ⋙ G.inv ≅ F := associator .. ≪≫
     isoWhiskerLeft _ G.asEquivalence.unitIso.symm ≪≫ F.rightUnitor
   exact of_iso e
-
-open ObjectProperty in
-lemma isStrongGenerator_of_isDense [F.IsDense] :
-    IsStrongGenerator (.ofObj F.obj) :=
-  (IsStrongGenerator.mk_of_exists_colimitsOfShape.{max u₁ u₂ v₁ v₂,
-      max u₁ v₁ v₂} (fun Y ↦ ⟨_, _, ⟨{
-    ι := _
-    diag := _
-    isColimit := (IsColimit.whiskerEquivalence (F.denseAt Y)
-      ((ShrinkHoms.equivalence _).symm.trans ((Shrink.equivalence _)).symm))
-    prop_diag_obj := by simp }⟩⟩))
 
 /-- If `F` is dense, the left Kan extension of `F` along `F` is isomorphic to the identity. -/
 noncomputable def IsDense.leftKanExtensionIso (F : C ⥤ D) [F.IsDense] :

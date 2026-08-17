@@ -147,6 +147,11 @@ lemma shrinkYonedaEquiv_apply {X : C} {P : Cᵒᵖ ⥤ Type w}
     (τ : shrinkYoneda.{w}.obj X ⟶ P) :
     shrinkYonedaEquiv τ = τ.app _ (shrinkYonedaObjObjEquiv.symm (𝟙 X)) := rfl
 
+lemma shrinkYonedaEquiv_symm_app {X : C} {P : Cᵒᵖ ⥤ Type w}
+    (x : P.obj (op X)) {Y : Cᵒᵖ} (f : (shrinkYoneda.{w}.obj X).obj Y) :
+    (shrinkYonedaEquiv.{w}.symm x).app Y f =
+    P.map (shrinkYonedaObjObjEquiv f).op x := rfl
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma map_shrinkYonedaEquiv {X Y : C} {P : Cᵒᵖ ⥤ Type w} (f : shrinkYoneda.obj X ⟶ P)
@@ -241,6 +246,32 @@ noncomputable def uliftYonedaIsoShrinkYoneda :
       exact (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm _ _).symm)) (fun g ↦ by
       ext
       exact (shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm _ _).symm)
+
+omit [LocallySmall.{w} C] in
+lemma uliftYonedaIsoShrinkYoneda_inv_app_app
+    {X : C} {Y : Cᵒᵖ} (f : (shrinkYoneda.{max w' v}.obj X).obj Y) :
+    (uliftYonedaIsoShrinkYoneda.{w'}.inv.app X).app Y f =
+      ULift.up (shrinkYonedaObjObjEquiv f) := rfl
+
+omit [LocallySmall.{w} C] in
+@[reassoc (attr := simp)]
+lemma uliftYonedaIsoShrinkYoneda_inv_app_comp_uliftYonedaEquiv_symm
+    {X : Cᵒᵖ} {P : Cᵒᵖ ⥤ Type max w' v} (x : P.obj X) :
+    uliftYonedaIsoShrinkYoneda.{w'}.inv.app X.unop ≫ uliftYonedaEquiv.symm x =
+      shrinkYonedaEquiv.symm x :=
+  shrinkYonedaEquiv.injective (by
+    simp [shrinkYonedaEquiv_apply.{max w' v},
+      uliftYonedaIsoShrinkYoneda_inv_app_app.{w'},
+      uliftYonedaEquiv, shrinkYonedaEquiv_symm_app.{max w' v}])
+
+omit [LocallySmall.{w} C] in
+@[reassoc]
+lemma uliftYonedaIsoShrinkYoneda_hom_app_comp_shrinkYoneda_symm
+    {X : Cᵒᵖ} {P : Cᵒᵖ ⥤ Type max w' v} (x : P.obj X) :
+    uliftYonedaIsoShrinkYoneda.{w'}.hom.app X.unop ≫ shrinkYonedaEquiv.symm x =
+      uliftYonedaEquiv.symm x := by
+  simp [← cancel_epi (uliftYonedaIsoShrinkYoneda.{w'}.inv.app X.unop),
+    uliftYonedaIsoShrinkYoneda_inv_app_comp_uliftYonedaEquiv_symm.{w'}]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor `shrinkYoneda.{w}` followed by the evaluation

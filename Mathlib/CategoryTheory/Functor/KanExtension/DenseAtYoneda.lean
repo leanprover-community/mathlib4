@@ -6,6 +6,7 @@ Authors: Joël Riou, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
+public import Mathlib.CategoryTheory.Limits.ConeCategory
 
 /-!
 # The Yoneda embedding is dense
@@ -164,11 +165,6 @@ noncomputable def denseAtShrinkYoneda [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type
     shrinkYoneda.DenseAt P :=
   Functor.denseAt _ _
 
-/-- When `C` is a category where morphisms are in `Type v`,
-the functor `yoneda : C ⥤ Cᵒᵖ ⥤ Type v` is dense at any `P : Cᵒᵖ ⥤ Type v`:
-the presheaf `P` identifies to the colimit
-of the canonical cocone of representable presheaves indexed by the
-category `CostructuredArrow yoneda P`. -/
 @[no_expose]
 noncomputable def denseAtYoneda (P : Cᵒᵖ ⥤ Type v) : yoneda.DenseAt P :=
   Functor.denseAt _ _
@@ -181,5 +177,32 @@ category `CostructuredArrow uliftYoneda P`. -/
 @[no_expose]
 noncomputable def denseAtUliftYoneda (P : Cᵒᵖ ⥤ Type max w v) : uliftYoneda.DenseAt P :=
   Functor.denseAt _ _
+
+/-- Given a functor `F : I ⥤ C`, a cocone `c` on `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v₁` induces a
+    functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
+    `yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
+    final.
+
+    Proposition 2.6.3(ii) in [Kashiwara2006] -/
+theorem Presheaf.final_toCostructuredArrow_comp_pre
+    {I : Type v} [SmallCategory I] (F : I ⥤ C)
+    {c : Cocone (F ⋙ yoneda)} (hc : IsColimit c) :
+    Functor.Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) := by
+  sorry
+  /-apply Functor.final_of_isTerminal_colimit_comp_yoneda
+  suffices IsTerminal (colimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
+      CostructuredArrow.toOver yoneda c.pt)) by
+    apply IsTerminal.isTerminalOfObj (overEquivPresheafCostructuredArrow c.pt).inverse
+    apply IsTerminal.ofIso this
+    refine ?_ ≪≫ (preservesColimitIso (overEquivPresheafCostructuredArrow c.pt).inverse _).symm
+    apply HasColimit.isoOfNatIso
+    exact Functor.isoWhiskerLeft _
+      (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow c.pt).isoCompInverse
+  apply IsTerminal.ofIso Over.mkIdTerminal
+  let isc : IsColimit ((Over.forget _).mapCocone _) := isColimitOfPreserves _
+    (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
+      CostructuredArrow.toOver yoneda c.pt))
+  exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)-/
+
 
 end CategoryTheory
