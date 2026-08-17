@@ -728,8 +728,7 @@ namespace Field
 /-- The separable degree of any field extension `E / F` divides the degree of `E / F`. -/
 theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
   by_cases hfd : FiniteDimensional F E
-  · rw [← finSepDegree_top F, ← finrank_top F E]
-    change finSepDegree F (⊤ : IntermediateField F E) ∣ finrank F (⊤ : IntermediateField F E)
+  · rw [← finSepDegree_top F, ← finrank_top']
     induction (⊤ : IntermediateField F E) using induction_on_adjoin with
     | bot => simp_rw [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]
     | adjoin_simple L x h =>
@@ -758,8 +757,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
     by_cases hd' : finSepDegree L E = 0
     · rw [← hd, hd', mul_zero]
     linarith only [h', hd, Nat.le_mul_of_pos_right (finrank F L) (Nat.pos_of_ne_zero hd')]
-  rw [← finSepDegree_top F, ← finrank_top F E]
-  change finSepDegree F (⊤ : IntermediateField F E) = finrank F (⊤ : IntermediateField F E)
+  rw [← finSepDegree_top F, ← finrank_top']
   induction (⊤ : IntermediateField F E) using induction_on_adjoin with
   | bot => simp_rw [finSepDegree_bot, IntermediateField.finrank_bot]
   | adjoin_simple L x h =>
