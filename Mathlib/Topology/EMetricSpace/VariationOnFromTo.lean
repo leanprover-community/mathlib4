@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
+public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Signed variation
@@ -22,7 +22,8 @@ functions.
 open scoped ENNReal Topology
 open Set Filter
 
-variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
+variable {α : Type*} [LinearOrder α] {E M : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpace E]
+  [PseudoEMetricSpace M]
 
 /-- The **signed** variation of `f` on the interval `Icc a b` intersected with the set `s`,
 squashed to a real (therefore only really meaningful if the variation is finite)
@@ -32,22 +33,22 @@ noncomputable def variationOnFromTo (f : α → E) (s : Set α) (a b : α) : ℝ
 
 namespace variationOnFromTo
 
-variable (f : α → E) (s : Set α)
+variable (f : α → E) (s : Set α) {g : α → M}
 
 protected theorem self (a : α) : variationOnFromTo f s a a = 0 := by
   dsimp only [variationOnFromTo]
-  rw [if_pos le_rfl, Icc_self, eVariationOn.subsingleton, ENNReal.toReal_zero]
+  rw [ite_eq_left le_rfl, Icc_self, eVariationOn.subsingleton, ENNReal.toReal_zero]
   exact fun x hx y hy => hx.2.trans hy.2.symm
 
 protected theorem nonneg_of_le {a b : α} (h : a ≤ b) : 0 ≤ variationOnFromTo f s a b := by
-  simp only [variationOnFromTo, if_pos h, ENNReal.toReal_nonneg]
+  simp only [variationOnFromTo, ite_eq_left h, ENNReal.toReal_nonneg]
 
 protected theorem eq_neg_swap (a b : α) :
     variationOnFromTo f s a b = -variationOnFromTo f s b a := by
   rcases lt_trichotomy a b with (ab | rfl | ba)
-  · simp only [variationOnFromTo, if_pos ab.le, if_neg ab.not_ge, neg_neg]
+  · simp only [variationOnFromTo, ite_eq_left ab.le, ite_eq_right ab.not_ge, neg_neg]
   · simp only [variationOnFromTo.self, neg_zero]
-  · simp only [variationOnFromTo, if_pos ba.le, if_neg ba.not_ge]
+  · simp only [variationOnFromTo, ite_eq_left ba.le, ite_eq_right ba.not_ge]
 
 protected theorem nonpos_of_ge {a b : α} (h : b ≤ a) : variationOnFromTo f s a b ≤ 0 := by
   rw [variationOnFromTo.eq_neg_swap]
@@ -64,7 +65,7 @@ theorem abs_le_eVariationOn (hf : BoundedVariationOn f s) {a b : α} :
 
 protected theorem eq_of_le {a b : α} (h : a ≤ b) :
     variationOnFromTo f s a b = (eVariationOn f (s ∩ Icc a b)).toReal :=
-  if_pos h
+  ite_eq_left h
 
 protected theorem eq_of_ge {a b : α} (h : b ≤ a) :
     variationOnFromTo f s a b = -(eVariationOn f (s ∩ Icc b a)).toReal := by
@@ -259,28 +260,28 @@ theorem rightLim_eq {E : Type*} [PseudoMetricSpace E] [CompleteSpace E]
   exact this (hf.tendsto_rightLim _)
 
 theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_Ici
-    [TopologicalSpace α] [OrderTopology α] (hf : BoundedVariationOn f univ) {a x : α}
-    (hx : ContinuousWithinAt f (Ici x) x) :
-    ContinuousWithinAt (variationOnFromTo f univ a) (Ici x) x := by
-  have : variationOnFromTo f univ a =
-      fun y ↦ variationOnFromTo f univ a x + variationOnFromTo f univ x y := by
+    [TopologicalSpace α] [OrderTopology α] (hg : BoundedVariationOn g univ) {a x : α}
+    (hx : ContinuousWithinAt g (Ici x) x) :
+    ContinuousWithinAt (variationOnFromTo g univ a) (Ici x) x := by
+  have : variationOnFromTo g univ a =
+      fun y ↦ variationOnFromTo g univ a x + variationOnFromTo g univ x y := by
     ext y
-    rw [variationOnFromTo.add hf.locallyBoundedVariationOn (mem_univ _) (mem_univ _) (mem_univ _)]
+    rw [variationOnFromTo.add hg.locallyBoundedVariationOn (mem_univ _) (mem_univ _) (mem_univ _)]
   rw [this]
   apply continuousWithinAt_const.add
-  suffices H : ContinuousWithinAt (fun y ↦ (eVariationOn f (univ ∩ Icc x y)).toReal) (Ici x) x from
+  suffices H : ContinuousWithinAt (fun y ↦ (eVariationOn g (univ ∩ Icc x y)).toReal) (Ici x) x from
     H.congr_of_mem (fun y hy ↦ by grind [variationOnFromTo]) self_mem_Iic
   simp only [ContinuousWithinAt, Icc_self]
   rw [eVariationOn.subsingleton _ (by grind [Set.Subsingleton])]
   apply (ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp
   apply Tendsto.mono_left _ (nhdsWithin_mono _ (subset_univ _))
-  exact hf.tendsto_eVariationOn_Icc_zero_right _ (by simpa using hx)
+  exact hg.tendsto_eVariationOn_Icc_zero_right _ (by simpa using hx)
 
 theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_rightLim_Ici
-    [TopologicalSpace α] [OrderTopology α] [T3Space E] [CompleteSpace E]
-    (hf : BoundedVariationOn f univ) {a x : α} :
-    ContinuousWithinAt (variationOnFromTo f.rightLim univ a) (Ici x) x :=
-  hf.rightLim.continuousWithinAt_variationOnFromTo_Ici hf.continuousWithinAt_rightLim
+    [TopologicalSpace α] [OrderTopology α] [T3Space M] [CompleteSpace M]
+    (hg : BoundedVariationOn g univ) {a x : α} :
+    ContinuousWithinAt (variationOnFromTo g.rightLim univ a) (Ici x) x :=
+  hg.rightLim.continuousWithinAt_variationOnFromTo_Ici hg.continuousWithinAt_rightLim
 
 end variationOnFromTo
 

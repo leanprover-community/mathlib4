@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 public import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.Data.Finsupp.Notation
 public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 # The Fundamental Theorem of Symmetric Polynomials
@@ -107,14 +108,15 @@ lemma accumulate_invAccumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : A
   revert hi
   refine Nat.decreasingInduction' (fun i hi _ ih him ↦ ?_) this fun hm ↦ ?_
   · rw [← Nat.pred_eq_sub_one, Nat.lt_pred_iff, Nat.succ_eq_add_one] at hi
-    rw [accumulate_rec (him.trans_le hmn) hi, ih hi, invAccumulate, dif_pos him, dif_pos hi]
+    rw [accumulate_rec (him.trans_le hmn) hi, ih hi, invAccumulate, dite_eq_left him,
+      dite_eq_left hi]
     simp only
     exact Nat.sub_add_cancel (hs i.le_succ)
   · have := (Nat.sub_one_add_one <| Nat.ne_zero_of_lt hm).symm
-    rw [accumulate_last (hm.trans_le hmn) this, invAccumulate, dif_pos hm, dif_neg this.not_gt,
-      Nat.sub_zero]
+    rw [accumulate_last (hm.trans_le hmn) this, invAccumulate, dite_eq_left hm,
+      dite_eq_right this.not_gt, Nat.sub_zero]
     intro j hj
-    rw [invAccumulate, dif_neg hj.not_gt, Nat.zero_sub]
+    rw [invAccumulate, dite_eq_right hj.not_gt, Nat.zero_sub]
 
 end accumulate
 
@@ -167,7 +169,7 @@ lemma esymmAlgHomMonomial_single_one :
 
 lemma esymmAlgHomMonomial_add {t s : Fin n →₀ ℕ} :
     esymmAlgHomMonomial σ (t + s) r = esymmAlgHomMonomial σ t r * esymmAlgHomMonomial σ s 1 := by
-  simp_rw [esymmAlgHomMonomial, esymmAlgHom_apply, ← map_mul, monomial_mul, mul_one]
+  simp_rw [esymmAlgHomMonomial, esymmAlgHom_apply, ← map_mul, monomial_mul_monomial, mul_one]
 
 lemma esymmAlgHom_zero : esymmAlgHomMonomial σ (0 : Fin n →₀ ℕ) r = C r := by
   rw [esymmAlgHomMonomial, monomial_zero', esymmAlgHom_apply, aeval_C, algebraMap_eq]
@@ -192,10 +194,10 @@ private lemma supDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
   refine ⟨min' _ hne, fun k hk ↦ ?_, ?_⟩
   all_goals simp only [ofLex_toLex, Finsupp.indicator_apply]
   · have hki := mem_Iic.2 (hk.le.trans <| mem_Iic.1 hkm.1)
-    rw [dif_pos hki, dif_pos]
+    rw [dite_eq_left hki, dite_eq_left]
     by_contra h
     exact lt_irrefl k <| ((lt_min'_iff _ _).1 hk) _ <| mem_sdiff.2 ⟨hki, h⟩
-  · rw [dif_neg hkm.2, dif_pos hkm.1]; exact Nat.zero_lt_one
+  · rw [dite_eq_right hkm.2, dite_eq_left hkm.1]; exact Nat.zero_lt_one
 
 lemma supDegree_esymm [Nontrivial R] (him : i < m) :
     ofLex (supDegree toLex <| esymm (Fin m) R (i + 1)) = accumulate n m (Finsupp.single i 1) := by

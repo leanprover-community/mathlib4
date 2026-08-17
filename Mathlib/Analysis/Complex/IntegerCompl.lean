@@ -30,9 +30,6 @@ lemma integerComplement_eq : ℂ_ℤ = {z : ℂ | ¬ ∃ (n : ℤ), n = z} := rf
 
 lemma mem_integerComplement_iff {x : ℂ} : x ∈ ℂ_ℤ ↔ ¬ ∃ (n : ℤ), n = x := Iff.rfl
 
-@[deprecated (since := "2026-01-29")]
-alias integerComplement.mem_iff := mem_integerComplement_iff
-
 @[simp]
 lemma _root_.UpperHalfPlane.coe_mem_integerComplement (z : ℍ) : ↑z ∈ ℂ_ℤ :=
   not_exists.mpr fun x hx ↦ ne_intCast z x hx.symm
@@ -42,9 +39,6 @@ lemma add_intCast_mem_integerComplement {x : ℂ} (a : ℤ) : x + (a : ℂ) ∈ 
   simp only [mem_integerComplement_iff, not_iff_not]
   exact ⟨(Exists.elim · fun n hn ↦ ⟨n - a, by simp [hn]⟩),
     (Exists.elim · fun n hn ↦ ⟨n + a, by simp [hn]⟩)⟩
-
-@[deprecated (since := "2026-01-29")]
-alias integerComplement.add_coe_int_mem := add_intCast_mem_integerComplement
 
 lemma integerComplement.ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 0 :=
   fun hx' ↦ hx ⟨0, by exact_mod_cast hx'.symm⟩

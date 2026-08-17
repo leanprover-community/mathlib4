@@ -83,7 +83,6 @@ theorem mem_iInf_of_iInter {ι} {s : ι → Filter α} {U : Set α} {I : Set ι}
   refine mem_of_superset (iInter_mem.2 fun i => ?_) hU
   exact mem_iInf_of_mem (i : ι) (hV _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_iInf {ι} {s : ι → Filter α} {U : Set α} :
     (U ∈ ⨅ i, s i) ↔
       ∃ I : Set ι, I.Finite ∧ ∃ V : I → Set α, (∀ (i : I), V i ∈ s i) ∧ U = ⋂ i, V i := by
@@ -116,8 +115,8 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
   · dsimp only
     split_ifs
     exacts [hV ⟨i,_⟩, univ_mem]
-  · exact dif_neg hi
-  · simp only [iInter_dite, biInter_eq_iInter, dif_pos (Subtype.coe_prop _), Subtype.coe_eta,
+  · exact dite_eq_right hi
+  · simp only [iInter_dite, biInter_eq_iInter, dite_eq_left (Subtype.coe_prop _), Subtype.coe_eta,
       iInter_univ, inter_univ, true_and]
 
 theorem exists_iInter_of_mem_iInf {ι : Sort*} {α : Type*} {f : ι → Filter α} {s}
@@ -133,7 +132,6 @@ theorem mem_iInf_of_finite {ι : Sort*} [Finite ι] {α : Type*} {f : ι → Fil
   rintro ⟨t, ht, rfl⟩
   exact iInter_mem.2 fun i => mem_iInf_of_mem i (ht i)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_biInf_principal {ι : Type*} {p : ι → Prop} {s : ι → Set α} {t : Set α} :
     t ∈ ⨅ (i : ι) (_ : p i), 𝓟 (s i) ↔
       ∃ I : Set ι, I.Finite ∧ (∀ i ∈ I, p i) ∧ ⋂ i ∈ I, s i ⊆ t := by

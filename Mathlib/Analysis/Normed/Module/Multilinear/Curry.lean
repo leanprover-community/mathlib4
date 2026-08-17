@@ -37,7 +37,7 @@ suppress_compilation
 
 noncomputable section
 
-open NNReal Finset Metric ContinuousMultilinearMap Fin Function
+open Finset ContinuousMultilinearMap Fin Function
 
 /-!
 ### Type variables
@@ -580,7 +580,6 @@ theorem uncurrySum_apply (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)
 
 variable (𝕜 ι ι' G G')
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Linear isometric equivalence between the space of continuous multilinear maps with variables
 indexed by `ι ⊕ ι'` and the space of continuous multilinear maps with variables indexed by `ι`
 taking values in the space of continuous multilinear maps with variables indexed by `ι'`.

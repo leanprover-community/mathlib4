@@ -289,8 +289,6 @@ called `OrderedFinPartition.extendEquiv`.
 -/
 
 set_option backward.isDefEq.respectTransparency false in
--- TODO: should infer_instance be considered normalising?
-set_option linter.flexible false in
 /-- Extend an ordered partition of `n` entries, by adding a new singleton part to the left. -/
 @[simps -fullyApplied length partSize]
 def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
@@ -300,7 +298,7 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
   emb := Fin.cases (fun _ ↦ 0) (fun m ↦ Fin.succ ∘ c.emb m)
   emb_strictMono := by
     refine Fin.cases ?_ (fun i ↦ ?_)
-    · exact @Subsingleton.strictMono _ _ _ _ (by simp; infer_instance) _
+    · exact @Subsingleton.strictMono _ _ _ _ (by rw [cons_zero]; infer_instance) _
     · exact strictMono_succ.comp (c.emb_strictMono i)
   parts_strictMono i j hij := by
     induction j using Fin.induction with
@@ -339,12 +337,10 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
       exact ⟨Fin.succ (c.index i), Fin.cast (by simp) (c.invEmbedding i), by simp⟩
 
 set_option backward.isDefEq.respectTransparency false in
--- TODO: should infer_instance be considered normalising?
-set_option linter.flexible false in
 @[simp] lemma range_extendLeft_zero (c : OrderedFinpartition n) :
     range (c.extendLeft.emb 0) = {0} := by
   simp only [extendLeft, cases_zero]
-  apply @range_const _ _ (by simp; infer_instance)
+  apply @range_const _ _ (by rw [cons_zero]; infer_instance)
 
 /-- Extend an ordered partition of `n` entries, by adding to the `i`-th part a new point to the
 left. -/
@@ -674,7 +670,7 @@ def extendEquiv (n : ℕ) :
     by_cases h : range (c.emb 0) = {0}
     · have A : c.length - 1 + 1 = c.length := Nat.sub_add_cancel (c.length_pos (Nat.zero_lt_succ n))
       dsimp only
-      rw [dif_pos h]
+      rw [dite_eq_left h]
       simp only [extend, extendLeft, eraseLeft]
       ext
       · exact A
@@ -698,7 +694,7 @@ def extendEquiv (n : ℕ) :
             exact (apply_eq_of_range_eq_singleton h _).symm
           | succ i => simp
     · dsimp only
-      rw [dif_neg h]
+      rw [dite_eq_right h]
       have B : c.partSize (c.index 0) - 1 + 1 = c.partSize (c.index 0) :=
         Nat.sub_add_cancel (c.partSize_pos (c.index 0))
       simp only [extend, extendMiddle, eraseMiddle, ↓reduceDIte]
@@ -930,7 +926,7 @@ theorem taylorComp_sub_taylorComp_isBigO
     (hqf : ∀ k ≤ n, (fun a ↦ q₁ a k - q₂ a k) =O[l] f) :
     (fun a ↦ (p₁ a).taylorComp (q₁ a) n - (p₂ a).taylorComp (q₂ a) n) =O[l] f := by
   simp only [FormalMultilinearSeries.taylorComp, ← Finset.sum_sub_distrib]
-  refine .sum fun c _ ↦ ?_
+  refine .fun_sum fun c _ ↦ ?_
   refine .trans (.of_norm_le fun _ ↦
     c.norm_compAlongOrderedFinpartition_sub_compAlongOrderedFinpartition_le ..) ?_
   refine .add ?_ ?_
