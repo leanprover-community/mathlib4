@@ -71,7 +71,7 @@ noncomputable def affineSubspaceMap (e : P ≃ᴬ[R] Q) (s : AffineSubspace R P)
       (e.continuous.comp continuous_subtype_val).congr fun _ => rfl
     continuous_invFun := by simpa [Topology.IsEmbedding.subtypeVal.continuous_iff] using!
       (e.continuous_invFun.comp continuous_subtype_val).congr fun x ↦
-        (e.apply_eq_iff_eq_symm_apply.mp
+        (e.eq_symm_apply.mpr
           (AffineEquiv.affineSubspaceMap_apply_symm_apply e.toAffineEquiv s x)).symm }
 
 @[simp]
@@ -100,7 +100,6 @@ instance {s : AffineSubspace R P} [Nonempty s] : IsTopologicalAddTorsor s where
     rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
     fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isClosed_direction_iff [T1Space V] (s : AffineSubspace R P) :
     IsClosed (s.direction : Set V) ↔ IsClosed (s : Set P) := by
   rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp

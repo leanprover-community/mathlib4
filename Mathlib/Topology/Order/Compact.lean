@@ -54,6 +54,7 @@ class CompactIccSpace (α : Type*) [TopologicalSpace α] [Preorder α] : Prop wh
   isCompact_Icc : ∀ {a b : α}, IsCompact (Icc a b)
 
 export CompactIccSpace (isCompact_Icc)
+attribute [compactness .] isCompact_Icc
 
 variable {α : Type*}
 
@@ -91,6 +92,7 @@ instance {α β : Type*} [Preorder α] [TopologicalSpace α] [CompactIccSpace α
   ⟨fun {a b} => (Icc_prod_eq a b).symm ▸ isCompact_Icc.prod isCompact_Icc⟩
 
 /-- An unordered closed interval is compact. -/
+@[compactness .]
 theorem isCompact_uIcc {α : Type*} [LinearOrder α] [TopologicalSpace α] [CompactIccSpace α]
     {a b : α} : IsCompact (uIcc a b) :=
   isCompact_Icc
@@ -140,8 +142,7 @@ end openIntervals
 
 section LinearOrder
 
-variable {α β γ : Type*} [LinearOrder α] [TopologicalSpace α]
-  [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [TopologicalSpace β]
 
 theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : ∃ x, IsLeast s x := by
@@ -349,8 +350,8 @@ end LinearOrder
 
 section ConditionallyCompleteLinearOrder
 
-variable {α β γ : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
-  [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β : Type*} [ConditionallyCompleteLinearOrder α]
+  [TopologicalSpace α] [TopologicalSpace β]
 
 theorem IsCompact.sSup_lt_iff_of_continuous [ClosedIciTopology α] {f : β → α} {K : Set β}
     (hK : IsCompact K) (h0K : K.Nonempty) (hf : ContinuousOn f K) (y : α) :
