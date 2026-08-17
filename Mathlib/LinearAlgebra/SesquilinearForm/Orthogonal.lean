@@ -167,14 +167,14 @@ variable {M₃ : Type*} [AddCommMonoid M₃] [Module R₃ M₃]
 variable {J₃ : R₃ →+* R₁} {J : R₃ →+* R} [RingHomCompTriple J₃ I₁ J]
 
 variable [RingHomSurjective J₃] in
-@[simp] lemma orthogonalBilin_map (S : Submodule R₃ M₃) (q : M₃ →ₛₗ[J₃] M₁) :
+lemma orthogonalBilin_map (S : Submodule R₃ M₃) (q : M₃ →ₛₗ[J₃] M₁) :
     orthogonalBilin B (S.map q) = orthogonalBilin (B.comp q) S := by ext; simp
 
 variable [RingHomSurjective I₁] in
 /-- Orthogonality w.r.t. a general bilinear map can be expressed as orthogonality w.r.t
 the identity pairing. -/
-lemma orthogonalBilin_id_map (S) :
-    orthogonalBilin .id (map B S) = orthogonalBilin B S := by simp
+@[simp] lemma orthogonalBilin_id_map (S) :
+    orthogonalBilin .id (map B S) = orthogonalBilin B S := orthogonalBilin_map _ _
 
 section
 
