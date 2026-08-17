@@ -532,7 +532,7 @@ theorem iInf_neBot_of_directed {f : ι → Filter α} [hn : Nonempty α] (hd : D
     (hb : ∀ i, NeBot (f i)) : NeBot (iInf f) := by
   cases isEmpty_or_nonempty ι
   · constructor
-    simp [iInf_of_empty f, top_ne_bot]
+    simp [top_ne_bot]
   · exact iInf_neBot_of_directed' hd hb
 
 theorem sInf_neBot_of_directed' {s : Set (Filter α)} (hne : s.Nonempty) (hd : DirectedOn (· ≥ ·) s)
@@ -915,7 +915,7 @@ lemma skolem {ι : Type*} {α : ι → Type*} [∀ i, Nonempty (α i)]
   refine ⟨fun H ↦ ?_, fun ⟨b, hb⟩ ↦ hb.mp (.of_forall fun x a ↦ ⟨_, a⟩)⟩
   refine ⟨fun i ↦ if h : ∃ b, P i b then h.choose else Nonempty.some inferInstance, ?_⟩
   filter_upwards [H] with i hi
-  exact dif_pos hi ▸ hi.choose_spec
+  exact dite_eq_left hi ▸ hi.choose_spec
 
 /-!
 ### Relation “eventually equal”

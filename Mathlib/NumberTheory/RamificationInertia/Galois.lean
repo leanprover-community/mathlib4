@@ -155,7 +155,7 @@ theorem ramificationIdxIn_eq_ramificationIdx :
     ramificationIdxIn p B = P.ramificationIdx A := by
   have h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hPp, hp⟩
   obtain ⟨_, _⟩ := h.choose_spec
-  rw [ramificationIdxIn, dif_pos h]
+  rw [ramificationIdxIn, dite_eq_left h]
   exact ramificationIdx_eq_of_isGaloisGroup p h.choose P G
 
 include G in
@@ -171,7 +171,7 @@ theorem inertiaDegIn_eq_inertiaDeg :
     inertiaDegIn p B = P.inertiaDeg A := by
   have h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hPp, hp⟩
   obtain ⟨_, _⟩ := h.choose_spec
-  rw [inertiaDegIn, dif_pos h]
+  rw [inertiaDegIn, dite_eq_left h]
   exact inertiaDeg_eq_of_isGaloisGroup p h.choose P G
 
 include G in

@@ -266,7 +266,7 @@ theorem haveLebesgueDecomposition_mk (μ : Measure α) {f : α → ℝ} (hf : Me
     s.HaveLebesgueDecomposition μ := by
   by_cases hfi : Integrable f μ
   · exact haveLebesgueDecomposition_mk' μ hf hfi htμ hadd
-  · rw [withDensityᵥ, dif_neg hfi, add_zero] at hadd
+  · rw [withDensityᵥ, dite_eq_right hfi, add_zero] at hadd
     refine haveLebesgueDecomposition_mk' μ measurable_zero (integrable_zero _ _ μ) htμ ?_
     rwa [withDensityᵥ_zero, add_zero]
 
@@ -296,7 +296,7 @@ theorem eq_singularPart (t : SignedMeasure α) (f : α → ℝ) (htμ : t ⟂ᵥ
   · refine eq_singularPart' t hfi.1.measurable_mk (hfi.congr hfi.1.ae_eq_mk) htμ ?_
     convert! hadd using 2
     exact WithDensityᵥEq.congr_ae hfi.1.ae_eq_mk.symm
-  · rw [withDensityᵥ, dif_neg hfi, add_zero] at hadd
+  · rw [withDensityᵥ, dite_eq_right hfi, add_zero] at hadd
     refine eq_singularPart' t measurable_zero (integrable_zero _ _ μ) htμ ?_
     rwa [withDensityᵥ_zero, add_zero]
 
