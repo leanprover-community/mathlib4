@@ -761,7 +761,7 @@ theorem ωSup_iterate_mem_fixedPoint (h : x ≤ f x) :
   · apply ωSup_le
     intro n
     simp only [Chain.coe_map, OrderHomClass.coe_coe, comp_apply]
-    have : iterateChain f x h (n.succ) = f (iterateChain f x h n) :=
+    have : iterateChain f x h n.succ = f (iterateChain f x h n) :=
       Function.iterate_succ_apply' ..
     rw [← this]
     apply le_ωSup
@@ -770,7 +770,7 @@ theorem ωSup_iterate_mem_fixedPoint (h : x ≤ f x) :
     · apply le_trans h
       change ((iterateChain f x h).map f) 0 ≤ ωSup ((iterateChain f x h).map (f : α →o α))
       apply le_ωSup
-    · have : iterateChain f x h (n.succ) = (iterateChain f x h).map f n :=
+    · have : iterateChain f x h n.succ = (iterateChain f x h).map f n :=
         Function.iterate_succ_apply' ..
       rw [this]
       apply le_ωSup
@@ -786,7 +786,7 @@ theorem ωSup_iterate_le_prefixedPoint (h : x ≤ f x) {a : α}
   induction n with
   | zero => exact h_x_le_a
   | succ n h_ind =>
-    have : iterateChain f x h (n.succ) = f (iterateChain f x h n) :=
+    have : iterateChain f x h n.succ = f (iterateChain f x h n) :=
       Function.iterate_succ_apply' ..
     rw [this]
     exact le_trans (f.monotone h_ind) h_a

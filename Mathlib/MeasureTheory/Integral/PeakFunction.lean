@@ -198,7 +198,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
     · apply hmg.sub
       simp only [integrableOn_indicator_iff ht, integrableOn_const_iff (C := a)]
       right
-      exact lt_of_le_of_lt (measure_mono inter_subset_left) (h't.lt_top)
+      exact lt_of_le_of_lt (measure_mono inter_subset_left) h't.lt_top
     · rw [← sub_self a]
       apply Tendsto.sub hcg
       apply tendsto_const_nhds.congr'
@@ -333,7 +333,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     have C : ∀ᶠ (i : ℕ) in atTop, AEStronglyMeasurable (fun x ↦ φ i x) (μ.restrict s) := by
       apply Eventually.of_forall (fun n ↦ ((I n).const_mul _).aestronglyMeasurable)
     exact tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto hs.measurableSet
-      hs.measurableSet (Subset.rfl) (self_mem_nhdsWithin)
+      hs.measurableSet Subset.rfl self_mem_nhdsWithin
       hs.measure_lt_top.ne (Eventually.of_forall hnφ) A B C hmg hcg
   convert! this
   simp_rw [φ, ← smul_smul, integral_smul]

@@ -225,7 +225,7 @@ noncomputable def Ind.limCompInclusion {I : Type v} [SmallCategory I] [IsFiltere
   _ ≅ (whiskeringRight _ _ _).obj (Ind.yoneda ⋙ Ind.inclusion C) ⋙ colim :=
     isoWhiskerRight (whiskeringRightObjCompIso _ _) colim
   _ ≅ (whiskeringRight _ _ _).obj yoneda ⋙ colim :=
-    isoWhiskerRight ((whiskeringRight _ _ _).mapIso (Ind.yonedaCompInclusion)) colim
+    isoWhiskerRight ((whiskeringRight _ _ _).mapIso Ind.yonedaCompInclusion) colim
 
 instance {α : Type w} [SmallCategory α] [FinCategory α] [HasLimitsOfShape α C] {I : Type v}
     [SmallCategory I] [IsFiltered I] :

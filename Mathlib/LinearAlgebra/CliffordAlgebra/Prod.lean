@@ -139,7 +139,7 @@ def toProd : evenOdd Q₁ ᵍ⊗[R] evenOdd Q₂ →ₐ[R] CliffordAlgebra (Q₁
   GradedTensorProduct.lift _ _
     (CliffordAlgebra.map <| .inl _ _)
     (CliffordAlgebra.map <| .inr _ _)
-    fun _i₁ _i₂ x₁ x₂ => map_mul_map_of_isOrtho_of_mem_evenOdd _ _ (QuadraticMap.IsOrtho.inl_inr) _
+    fun _i₁ _i₂ x₁ x₂ => map_mul_map_of_isOrtho_of_mem_evenOdd _ _ QuadraticMap.IsOrtho.inl_inr _
       _ x₁.prop x₂.prop
 
 @[simp]

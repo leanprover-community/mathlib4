@@ -124,7 +124,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma ιNormalizedChainComplex_fromNormalizedChainComplex_f (x : X _⦋n⦌) :
     X.ιNormalizedChainComplex x ≫ (X.fromNormalizedChainComplex R).f n =
-      X.ιChainComplex x ≫ (PInfty).f n := by
+      X.ιChainComplex x ≫ PInfty.f n := by
   dsimp [ιNormalizedChainComplex]
   rw [Category.assoc, toNormalizedChainComplex_f_fromNormalizedChainComplex_f]
 

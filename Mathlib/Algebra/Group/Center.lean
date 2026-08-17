@@ -213,7 +213,7 @@ lemma centralizer_univ : centralizer univ = center M :=
 -- TODO Add `instance : Decidable (IsMulCentral a)` for `instance decidableMemCenter [Mul M]`
 @[to_additive decidableMemAddCenter]
 instance decidableMemCenter [∀ a : M, Decidable <| ∀ b : M, b * a = a * b] :
-    DecidablePred (· ∈ center M) := fun _ => decidable_of_iff' _ (Semigroup.mem_center_iff)
+    DecidablePred (· ∈ center M) := fun _ => decidable_of_iff' _ Semigroup.mem_center_iff
 
 end Semigroup
 

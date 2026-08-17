@@ -916,7 +916,7 @@ lemma ExcenterExists.affineSpan_faceOpposite_eq_orthRadius [hf : Fact (Module.fi
     {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
     affineSpan ℝ (Set.range (s.faceOpposite i).points) =
       (s.exsphere signs).orthRadius (s.touchpoint signs i) := by
-  refine (h.isTangentAt_touchpoint i).eq_orthRadius_of_finrank_add_one_eq (h.exradius_pos.ne') ?_
+  refine (h.isTangentAt_touchpoint i).eq_orthRadius_of_finrank_add_one_eq h.exradius_pos.ne' ?_
   rw [direction_affineSpan, (s.faceOpposite i).independent.finrank_vectorSpan_add_one,
     Fintype.card_fin, hf.out]
   have := NeZero.ne n

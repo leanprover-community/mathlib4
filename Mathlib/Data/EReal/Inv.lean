@@ -203,7 +203,7 @@ protected def inv : EReal → EReal
   | ⊤ => 0
   | (x : ℝ) => (x⁻¹ : ℝ)
 
-instance : Inv (EReal) := ⟨EReal.inv⟩
+instance : Inv EReal := ⟨EReal.inv⟩
 
 noncomputable instance : DivInvMonoid EReal where inv := EReal.inv
 

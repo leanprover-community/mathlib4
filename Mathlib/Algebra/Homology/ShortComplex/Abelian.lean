@@ -258,7 +258,7 @@ noncomputable def isoHomology : H ≅ S.homology :=
 lemma π_comp_isoHomology_hom :
     π ≫ (isoHomology S hkf hcc fac).hom = (S.isoCyclesOfIsLimit hkf).hom ≫ S.homologyπ := by
   dsimp [isoHomology]
-  simp [← cancel_mono (S.homologyIsoImageICyclesCompPOpcycles.hom),
+  simp [← cancel_mono S.homologyIsoImageICyclesCompPOpcycles.hom,
     ← cancel_mono (image.ι (S.iCycles ≫ S.pOpcycles)),
     ← reassoc_of% fac]
 

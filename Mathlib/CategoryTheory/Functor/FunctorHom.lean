@@ -140,9 +140,9 @@ variable {F G} in
 morphisms `F ⟶ G`. -/
 @[simps]
 def natTransEquiv : (𝟙_ (C ⥤ Type (max v' v u)) ⟶ F.functorHom G) ≃ (F ⟶ G) where
-  toFun f := ⟨fun X ↦ (f.app X (PUnit.unit)).app X (𝟙 _), by
+  toFun f := ⟨fun X ↦ (f.app X PUnit.unit).app X (𝟙 _), by
     intro X Y φ
-    rw [← (f.app X (PUnit.unit)).naturality φ]
+    rw [← (f.app X PUnit.unit).naturality φ]
     congr 1
     have := HomObj.congr_app (ConcreteCategory.congr_hom (f.naturality φ) PUnit.unit) Y (𝟙 Y)
     dsimp [functorHom, homObjFunctor] at this

@@ -160,7 +160,7 @@ def addEquivOp (S : Subsemiring R) : S ≃+ S.op where
 -- TODO: Add this for `[Add]Submonoid` and `[Add]Subgroup`
 /-- Bijection between a subsemiring `S` and `MulOpposite` of its opposite. -/
 @[simps!]
-def ringEquivOpMop (S : Subsemiring R) : S ≃+* (S.op)ᵐᵒᵖ where
+def ringEquivOpMop (S : Subsemiring R) : S ≃+* S.opᵐᵒᵖ where
   __ := S.addEquivOp.trans MulOpposite.opAddEquiv
   map_mul' _ _ := rfl
 

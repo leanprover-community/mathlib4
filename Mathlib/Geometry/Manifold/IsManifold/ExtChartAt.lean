@@ -177,7 +177,7 @@ lemma mem_interior_extend_target {y : H} (hy : y ∈ f.target)
     (hy' : I y ∈ interior (range I)) : I y ∈ interior (f.extend I).target := by
   rw [f.extend_target, interior_inter, (f.open_target.preimage I.continuous_symm).interior_eq,
     mem_inter_iff, mem_preimage]
-  exact ⟨mem_of_eq_of_mem (I.left_inv (y)) hy, hy'⟩
+  exact ⟨mem_of_eq_of_mem (I.left_inv y) hy, hy'⟩
 
 theorem nhdsWithin_extend_target_eq {y : M} (hy : y ∈ f.source) :
     𝓝[(f.extend I).target] f.extend I y = 𝓝[range I] f.extend I y :=

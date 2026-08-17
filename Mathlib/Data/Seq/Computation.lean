@@ -1084,7 +1084,7 @@ theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computat
 theorem liftRel_rec {R : α → β → Prop} (C : Computation α → Computation β → Prop)
     (H : ∀ {ca cb}, C ca cb → LiftRelAux R C (destruct ca) (destruct cb)) (ca cb) (Hc : C ca cb) :
     LiftRel R ca cb :=
-  liftRel_mem_cases (LiftRelRec.lem C (@H) ca cb Hc) fun b hb =>
+  liftRel_mem_cases (LiftRelRec.lem C @H ca cb Hc) fun b hb =>
     (LiftRel.swap _ _ _).2 <|
       LiftRelRec.lem (swap C) (fun {_ _} h => cast (LiftRelAux.swap _ _ _ _).symm <| H h) cb ca Hc b
         hb

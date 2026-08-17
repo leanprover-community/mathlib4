@@ -49,7 +49,7 @@ omit [DecidableRel G.Adj] in
 theorem between_verts_isBipartiteWith :
     (G.between K.verts K.vertsᶜ).IsBipartiteWith K.verts ↑K.vertsᶜ := by
   rw [coe_compl K.verts]
-  exact between_isBipartiteWith (disjoint_compl_right)
+  exact between_isBipartiteWith disjoint_compl_right
 
 lemma le_card_edgeFinset_between_verts :
     (#K.verts * (G.minDegree - #K.verts) : ℝ) ≤ #(G.between K.verts K.vertsᶜ).edgeFinset := by

@@ -412,7 +412,7 @@ theorem Topology.IsInducing.separatelyContinuousMul {M N F : Type*} [Mul M] [Mul
     (f : F) (hf : IsInducing f) : SeparatelyContinuousMul M where
   continuous_const_mul := (hf.continuousConstSMul f (map_mul f _ _)).1 _
   continuous_mul_const {m} :=
-    have := ((opHomeomorph.isInducing.comp hf).comp (opHomeomorph.symm.isInducing)
+    have := ((opHomeomorph.isInducing.comp hf).comp opHomeomorph.symm.isInducing
       |>.continuousConstSMul (fun x ↦ op (f (unop x))) (by simp)).1 (op m)
     continuous_unop.comp <| this.comp continuous_op
 

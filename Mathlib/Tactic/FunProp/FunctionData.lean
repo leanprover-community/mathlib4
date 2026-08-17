@@ -217,7 +217,7 @@ def FunctionData.peeloffArgDecomposition (fData : FunctionData) : MetaM Decompos
     let gBody' := Mor.mkAppN fData.fn fData.args[:n-1]
     let gBody' := if let some coe := yₙ.coe then coe.app gBody' else gBody'
     let g' ← mkLambdaFVars #[x] gBody'
-    let f' := Expr.lam `f (← inferType gBody') (.app (.bvar 0) (yₙ.expr)) default
+    let f' := Expr.lam `f (← inferType gBody') (.app (.bvar 0) yₙ.expr) default
     return .comp f' g'
 
 /-- Decompose function `f = (← fData.toExpr)` into composition of two functions. -/

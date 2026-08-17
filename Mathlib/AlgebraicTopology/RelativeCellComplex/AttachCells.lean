@@ -125,8 +125,8 @@ def reindex {ι' : Type w'} (e : ι' ≃ c.ι) :
   π i' := c.π (e i')
   cofan₁ := Cofan.mk c.cofan₁.pt (fun i' ↦ c.cofan₁.inj (e i'))
   cofan₂ := Cofan.mk c.cofan₂.pt (fun i' ↦ c.cofan₂.inj (e i'))
-  isColimit₁ := IsColimit.whiskerEquivalence (c.isColimit₁) (Discrete.equivalence e)
-  isColimit₂ := IsColimit.whiskerEquivalence (c.isColimit₂) (Discrete.equivalence e)
+  isColimit₁ := IsColimit.whiskerEquivalence c.isColimit₁ (Discrete.equivalence e)
+  isColimit₂ := IsColimit.whiskerEquivalence c.isColimit₂ (Discrete.equivalence e)
   m := c.m
   g₁ := c.g₁
   g₂ := c.g₂

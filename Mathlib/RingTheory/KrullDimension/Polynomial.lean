@@ -36,7 +36,7 @@ theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
   · exact fun {a b} h ↦ Ideal.comap_mono h
   · rw [show C = (algebraMap R (Polynomial R)) from rfl, Order.krullDim_eq_of_orderIso
       (PrimeSpectrum.preimageOrderIsoFiber R (Polynomial R) p), ← ringKrullDim,
-      ← ringKrullDim_eq_of_ringEquiv (polyEquivTensor R (p.asIdeal.ResidueField)).toRingEquiv,
+      ← ringKrullDim_eq_of_ringEquiv (polyEquivTensor R p.asIdeal.ResidueField).toRingEquiv,
       ← Ring.krullDimLE_iff]
     infer_instance
 

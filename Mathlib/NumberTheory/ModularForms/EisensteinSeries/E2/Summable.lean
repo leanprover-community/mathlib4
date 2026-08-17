@@ -107,7 +107,7 @@ lemma E2_eq_tsum_cexp : E2 z = 1 - 24 * ∑' n : ℕ+, σ 1 n * 𝕢 z ^ (n : �
 theorem hasSum_qExpansion_E2 :
     HasSum (fun m : ℕ ↦ (if m = 0 then 1 else -24 * σ 1 m : ℂ) • 𝕢 z ^ m) (E2 z) := by
   have hS : Summable fun n : ℕ ↦ σ 1 (n + 1) * 𝕢 z ^ (n + 1) :=
-    (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (k := 2) (one_le_two) z)
+    (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (k := 2) one_le_two z)
   rw [← hasSum_nat_add_iff' 1]
   convert! (hS.mul_left (-24)).hasSum using 1
   · ext : 1

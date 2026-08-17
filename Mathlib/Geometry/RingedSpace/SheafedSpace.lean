@@ -182,7 +182,7 @@ def ofRestrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)}
 -/
 @[simps! hom inv]
 def restrictTopIso (X : SheafedSpace C) : X.restrict (Opens.isOpenEmbedding ⊤) ≅ X :=
-  isoMk (X.toPresheafedSpace.restrictTopIso)
+  isoMk X.toPresheafedSpace.restrictTopIso
 
 /-- The global sections, notated Gamma.
 -/

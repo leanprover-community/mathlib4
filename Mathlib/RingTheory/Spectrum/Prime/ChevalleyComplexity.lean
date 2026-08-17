@@ -217,7 +217,7 @@ private lemma induction_structure (n : ℕ)
         replace i_min := i_min j hj'
         -- then we can replace `e j` with `e j %ₘ (C h.unit⁻¹ * e i) `
         -- with `h : IsUnit (e i).leadingCoeff`.
-        apply hP₃ R e i j hi i_min (hj.symm) (H_IH _ ?_ _ rfl)
+        apply hP₃ R e i j hi i_min hj.symm (H_IH _ ?_ _ rfl)
         refine .left _ _ (lt_of_le_of_ne (b := (ofLex v).1) ?_ ?_)
         · intro k
           simp only [comp_apply, update_apply, hv]

@@ -76,7 +76,7 @@ def spanFinBasis (x : π C (· ∈ s)) : LocallyConstant (π C (· ∈ s)) ℤ w
 theorem spanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (spanFinBasis C s)) := by
   intro f _
   rw [Finsupp.mem_span_range_iff_exists_finsupp]
-  use Finsupp.onFinset (Finset.univ) f.toFun (fun _ _ ↦ Finset.mem_univ _)
+  use Finsupp.onFinset Finset.univ f.toFun (fun _ _ ↦ Finset.mem_univ _)
   ext x
   change LocallyConstant.evalₗ ℤ x _ = _
   simp only [zsmul_eq_mul, map_finsuppSum, LocallyConstant.evalₗ_apply,

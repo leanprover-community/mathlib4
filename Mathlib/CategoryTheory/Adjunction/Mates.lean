@@ -175,7 +175,7 @@ theorem mateEquiv_vcomp (α : TwoSquare G₁ L₁ L₂ H₁) (β : TwoSquare G�
     whiskerLeft_comp, comp_app, id_obj, rightUnitor_inv_app, Functor.whiskerLeft_app,
     associator_hom_app, associator_inv_app, Functor.whiskerRight_app, map_id, Functor.comp_map,
     leftUnitor_hom_app, comp_id, id_comp, whiskerLeft_twice, Iso.hom_inv_id_assoc]
-  slice_rhs 1 4 => rw [← assoc, ← assoc, ← unit_naturality (adj₃)]
+  slice_rhs 1 4 => rw [← assoc, ← assoc, ← unit_naturality adj₃]
   rw [L₃.map_comp, R₃.map_comp]
   slice_rhs 2 4 =>
     rw [← R₃.map_comp, ← R₃.map_comp, ← assoc, ← L₃.map_comp, ← G₂.map_comp, ← G₂.map_comp]
@@ -217,7 +217,7 @@ theorem mateEquiv_hcomp (α : TwoSquare G L₁ L₂ H) (β : TwoSquare H L₃ L�
     associator_inv_app, associator_hom_app, Functor.comp_map, rightUnitor_hom_app,
     leftUnitor_hom_app, comp_id, id_comp, whiskerLeft_twice, Iso.hom_inv_id_assoc]
   slice_rhs 2 4 =>
-    rw [← R₂.map_comp, ← R₂.map_comp, ← assoc, ← unit_naturality (adj₄)]
+    rw [← R₂.map_comp, ← R₂.map_comp, ← assoc, ← unit_naturality adj₄]
   rw [R₂.map_comp, L₄.map_comp, R₄.map_comp, R₂.map_comp]
   slice_rhs 4 5 =>
     rw [← R₂.map_comp, ← R₄.map_comp, ← Functor.comp_map _ L₄, β.naturality]

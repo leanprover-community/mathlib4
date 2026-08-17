@@ -125,7 +125,7 @@ theorem HasProd.sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β
     refine tendsto_finsetProd _ fun b _ ↦ ?_
     change
       Tendsto (fun t ↦ (fun t ↦ ∏ s ∈ t, f ⟨b, s⟩) (preimage t (Sigma.mk b) _)) atTop (𝓝 (g b))
-    exact (hf b).comp (tendsto_finset_preimage_atTop_atTop (sigma_mk_injective))
+    exact (hf b).comp (tendsto_finset_preimage_atTop_atTop sigma_mk_injective)
   refine hsc.mem_of_tendsto this (eventually_atTop.2 ⟨u, fun t ht ↦ hu _ fun x hx ↦ ?_⟩)
   exact mem_filter.2 ⟨ht hx, hbs <| mem_image_of_mem _ hx⟩
 
@@ -206,7 +206,7 @@ theorem HasProd.of_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g :
     refine tendsto_finsetProd _ fun b _ ↦ ?_
     change
       Tendsto (fun t ↦ (fun t ↦ ∏ s ∈ t, f ⟨b, s⟩) (preimage t (Sigma.mk b) _)) atTop (𝓝 (g b))
-    exact (hf b).comp (tendsto_finset_preimage_atTop_atTop (sigma_mk_injective))
+    exact (hf b).comp (tendsto_finset_preimage_atTop_atTop sigma_mk_injective)
   have : ∃ t, ∏ p ∈ t with p.1 ∈ t0, f p ∈ v ∧ s ⊆ t :=
     ((Tendsto.eventually_mem L (v_open.mem_nhds st0)).and (Ici_mem_atTop _)).exists
   obtain ⟨t, tv, st⟩ := this

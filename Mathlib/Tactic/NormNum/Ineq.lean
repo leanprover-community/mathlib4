@@ -79,7 +79,7 @@ theorem isNat_lt_false [Semiring α] [PartialOrder α] [IsOrderedRing α] {a b :
 theorem isNNRat_le_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     {a b : α} → {na nb : ℕ} → {da db : ℕ} →
     IsNNRat a na da → IsNNRat b nb db →
-    decide (Nat.mul na (db) ≤ Nat.mul nb (da)) → a ≤ b
+    decide (Nat.mul na db ≤ Nat.mul nb da) → a ≤ b
   | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
     have h := (Nat.cast_le (α := α)).mpr <| of_decide_eq_true h
     have ha : 0 ≤ ⅟(da : α) := invOf_nonneg.mpr <| Nat.cast_nonneg da

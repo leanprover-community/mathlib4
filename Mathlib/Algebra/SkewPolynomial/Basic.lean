@@ -148,7 +148,7 @@ lemma sum_def' {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ →
 lemma sum_def {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) :
     p.sum f = ∑ n ∈ p.support, f n (p.coeff n) := by
   simp only [sum_def', SkewMonoidAlgebra.sum_def, Finsupp.sum]
-  apply Finset.sum_of_injOn (toAdd) (Injective.injOn fun ⦃a₁ a₂⦄ a ↦ a) (fun _ ↦ ?_) <;>
+  apply Finset.sum_of_injOn toAdd (Injective.injOn fun ⦃a₁ a₂⦄ a ↦ a) (fun _ ↦ ?_) <;>
   simp +contextual [coeff]
 
 lemma sum_sum_index {R' P : Type*} [AddCommMonoid P] [Semiring R']

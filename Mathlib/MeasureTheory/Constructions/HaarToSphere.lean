@@ -296,7 +296,7 @@ lemma integrableOn_fun_norm_addHaar {f : ℝ → F} {r : ℝ} :
 lemma integral_fun_norm_addHaar (f : ℝ → F) :
     ∫ x, f (‖x‖) ∂μ = dim E • μ.real (ball 0 1) • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y :=
   calc
-    ∫ x, f (‖x‖) ∂μ = ∫ x : ({(0)}ᶜ : Set E), f (‖x.1‖) ∂(μ.comap (↑)) := by
+    ∫ x, f (‖x‖) ∂μ = ∫ x : ({0}ᶜ : Set E), f (‖x.1‖) ∂(μ.comap (↑)) := by
       rw [integral_subtype_comap (measurableSet_singleton _).compl fun x ↦ f (‖x‖),
         restrict_compl_singleton]
     _ = ∫ x, f x.2 ∂μ.toSphere.prod (.volumeIoiPow (dim E - 1)) := by

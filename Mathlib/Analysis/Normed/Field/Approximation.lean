@@ -98,7 +98,7 @@ theorem exists_roots_norm_sub_lt_of_norm_coeff_sub_lt (hε : 0 < ε) {a : K} (ha
     rw [hdeg]
     convert!
       Finset.sum_lt_sum_of_nonempty (g := fun i ↦ ε * (‖a‖ ⊔ 1) ^ ↑f.natDegree)
-        (Finset.nonempty_range_add_one) ?_
+        Finset.nonempty_range_add_one ?_
     · simp [mul_assoc]
     · simp only [Finset.mem_range, norm_mul, norm_pow]
       intro i hi

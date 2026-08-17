@@ -899,7 +899,7 @@ lemma angle_eq_pi_sub_angle_div_two_of_oangle_eq_of_sOppSide {p₁ p₂ p₃ p�
     rw [oangle_pointReflection_left h₃₂ h₄₂, oangle_pointReflection_right h₁₂ h₃₂]
     simpa using ha
   have hs' : line[ℝ, p₁, p₂].SOppSide p₃ (AffineEquiv.pointReflection ℝ p₂ p₃) :=
-    AffineSubspace.sOppSide_pointReflection (right_mem_affineSpan_pair _ _ _) (hs.left_notMem)
+    AffineSubspace.sOppSide_pointReflection (right_mem_affineSpan_pair _ _ _) hs.left_notMem
   obtain h := angle_eq_angle_div_two_of_oangle_eq_of_sSameSide h₁₂ ha' (hs'.symm.trans hs)
   rw [angle_pointReflection_right] at h
   linear_combination -h
@@ -919,7 +919,7 @@ lemma angle_eq_angle_add_pi_div_two_of_oangle_eq_add_pi_of_sSameSide {p₁ p₂ 
     rw [oangle_pointReflection_right h₃₂ h₄₂]
     exact ha
   have hs' : line[ℝ, p₁, p₂].SOppSide p₄ (AffineEquiv.pointReflection ℝ p₂ p₄) :=
-    AffineSubspace.sOppSide_pointReflection (right_mem_affineSpan_pair _ _ _) (hs.right_notMem)
+    AffineSubspace.sOppSide_pointReflection (right_mem_affineSpan_pair _ _ _) hs.right_notMem
   obtain h := angle_eq_pi_sub_angle_div_two_of_oangle_eq_of_sOppSide h₁₂ ha' (hs.trans_sOppSide hs')
   rw [angle_pointReflection_right] at h
   linear_combination h
@@ -939,7 +939,7 @@ lemma angle_eq_pi_sub_angle_div_two_of_oangle_eq_add_pi_of_sOppSide {p₁ p₂ p
     rw [oangle_pointReflection_right h₃₂ h₄₂]
     exact ha
   have hs' : line[ℝ, p₁, p₂].SOppSide p₄ (AffineEquiv.pointReflection ℝ p₂ p₄) :=
-    AffineSubspace.sOppSide_pointReflection (right_mem_affineSpan_pair _ _ _) (hs.right_notMem)
+    AffineSubspace.sOppSide_pointReflection (right_mem_affineSpan_pair _ _ _) hs.right_notMem
   obtain h := angle_eq_angle_div_two_of_oangle_eq_of_sSameSide h₁₂ ha' (hs.trans hs')
   rw [angle_pointReflection_right] at h
   exact h

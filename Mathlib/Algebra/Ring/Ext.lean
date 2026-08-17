@@ -137,13 +137,13 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
     inst₁ = inst₂ := by
   have h : inst₁.toNonUnitalNonAssocSemiring = inst₂.toNonUnitalNonAssocSemiring := by
     ext : 1 <;> assumption
-  have h_zero : (inst₁.toMulZeroClass).toZero.zero = (inst₂.toMulZeroClass).toZero.zero :=
-    congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
-  have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
-                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne := by
+  have h_zero : inst₁.toMulZeroClass.toZero.zero = inst₂.toMulZeroClass.toZero.zero :=
+    congrArg (fun inst => inst.toMulZeroClass.toZero.zero) h
+  have h_one' : inst₁.toMulZeroOneClass.toMulOneClass.toOne
+                = inst₂.toMulZeroOneClass.toMulOneClass.toOne := by
     congr 2; ext : 1; exact h_mul
-  have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
-               = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
+  have h_one : inst₁.toMulZeroOneClass.toMulOneClass.toOne.one
+               = inst₂.toMulZeroOneClass.toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
   have : inst₁.toAddCommMonoidWithOne = inst₂.toAddCommMonoidWithOne := by
     ext : 1 <;> assumption
@@ -286,7 +286,7 @@ namespace Semiring
     ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
     ext : 1 <;> assumption
-  have h₃ : (inst₁.toMonoidWithZero).toMonoid = (inst₂.toMonoidWithZero).toMonoid := by
+  have h₃ : inst₁.toMonoidWithZero.toMonoid = inst₂.toMonoidWithZero.toMonoid := by
     ext : 1; exact h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
@@ -322,8 +322,8 @@ namespace Ring
     ext : 1 <;> assumption
   /- We prove that the `SubNegMonoid`s are equal because they are one
   field away from `Sub` and `Neg`, enabling use of `injection`. -/
-  have h₃ : (inst₁.toAddCommGroup).toAddGroup.toSubNegMonoid
-            = (inst₂.toAddCommGroup).toAddGroup.toSubNegMonoid :=
+  have h₃ : inst₁.toAddCommGroup.toAddGroup.toSubNegMonoid
+            = inst₂.toAddCommGroup.toAddGroup.toSubNegMonoid :=
     congrArg (@AddGroup.toSubNegMonoid R) <| by ext : 1; exact h_add
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂

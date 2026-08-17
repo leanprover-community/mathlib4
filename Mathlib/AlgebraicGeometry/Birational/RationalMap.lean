@@ -311,8 +311,8 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
   · obtain ⟨U, hxU, e⟩ := this
     refine ⟨(f.domain ⊓ g.domain).ι ''ᵁ U, ((f.domain ⊓ g.domain).ι ''ᵁ U).2.dense
       ⟨_, ⟨_, hxU, rfl⟩⟩,
-      ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_left,
-      ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_right, ?_⟩
+      ((Set.image_subset_range _ _).trans_eq Subtype.range_val).trans inf_le_left,
+      ((Set.image_subset_range _ _).trans_eq Subtype.range_val).trans inf_le_right, ?_⟩
     rw [← cancel_epi (Scheme.Hom.isoImage _ _).hom]
     simp only [restrict_hom, ← Category.assoc] at e ⊢
     convert! e using 2 <;> rw [← cancel_mono (Scheme.Opens.ι _)] <;> simp

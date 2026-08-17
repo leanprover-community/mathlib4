@@ -46,7 +46,7 @@ def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
     { app := fun j => ofHom
         { toFun := fun u => u.val j
           -- Porting note: `continuity` from the original mathlib3 proof failed here.
-          continuous_toFun := Continuous.comp (continuous_apply _) (continuous_subtype_val) }
+          continuous_toFun := Continuous.comp (continuous_apply _) continuous_subtype_val }
       naturality := fun X Y f => by
         ext a
         exact (a.2 f).symm }

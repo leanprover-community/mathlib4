@@ -58,7 +58,7 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
     intro ε N p εpos
     let s := {x | g x + ε ≤ f x ∧ g x ≤ N} ∩ spanningSets μ p
     have s_lt_top : μ s < ∞ :=
-      (measure_mono (Set.inter_subset_right)).trans_lt (measure_spanningSets_lt_top μ p)
+      (measure_mono Set.inter_subset_right).trans_lt (measure_spanningSets_lt_top μ p)
     have A : (∫⁻ x in s, g x ∂μ) + ε * μ s ≤ (∫⁻ x in s, g x ∂μ) + 0 :=
       calc
         (∫⁻ x in s, g x ∂μ) + ε * μ s = (∫⁻ x in s, g x ∂μ) + ∫⁻ _ in s, ε ∂μ := by

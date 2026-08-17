@@ -67,7 +67,7 @@ private lemma of_isAffine_target {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] 
     exact (Flat.flat_and_surjective_iff_faithfullyFlat_of_isAffine π).mp ⟨‹_›, ‹_›⟩
   obtain ⟨u, hu⟩ := IsRegularEpi.exists_of_isKernelPair
     (AffineScheme.ofHom π)
-    (IsPullback.of_map (f := AffineScheme.ofHom (pullback.fst π π)) (AffineScheme.forgetToScheme)
+    (IsPullback.of_map (f := AffineScheme.ofHom (pullback.fst π π)) AffineScheme.forgetToScheme
       (InducedCategory.Hom.ext pullback.condition) (.of_hasPullback _ _))
     (AffineScheme.ofHom f) (InducedCategory.Hom.ext hf)
   use u.hom, InducedCategory.Hom.ext_iff.mp hu

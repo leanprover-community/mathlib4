@@ -296,7 +296,7 @@ nonrec lemma locallyQuasiFinite_iff_isDiscrete_preimage_singleton
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   simp only [HasRingHomProperty.Spec_iff, id_eq] at *
   algebraize [φ.hom]
-  exact (Algebra.QuasiFinite.iff_finite_comap_preimage_singleton).mpr fun x ↦
+  exact Algebra.QuasiFinite.iff_finite_comap_preimage_singleton.mpr fun x ↦
     ((Spec.map φ).isCompact_preimage_singleton _).finite (H _)
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -320,7 +320,7 @@ nonrec lemma LocallyQuasiFinite.of_finite_preimage_singleton
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   simp only [HasRingHomProperty.Spec_iff, id_eq] at *
   algebraize [φ.hom]
-  exact (Algebra.QuasiFinite.iff_finite_comap_preimage_singleton).mpr hf
+  exact Algebra.QuasiFinite.iff_finite_comap_preimage_singleton.mpr hf
 
 lemma locallyQuasiFinite_iff_finite_preimage_singleton
     {f : X ⟶ Y} [LocallyOfFiniteType f] [QuasiCompact f] :

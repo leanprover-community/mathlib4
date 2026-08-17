@@ -392,7 +392,7 @@ initialize_simps_projections CommSemiRingCat (-commSemiring)
 
 namespace CommSemiRingCat
 
-instance : CoeSort (CommSemiRingCat) (Type u) :=
+instance : CoeSort CommSemiRingCat (Type u) :=
   ⟨CommSemiRingCat.carrier⟩
 
 attribute [coe] CommSemiRingCat.carrier

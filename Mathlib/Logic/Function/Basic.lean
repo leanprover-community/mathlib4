@@ -876,7 +876,7 @@ theorem Injective.extend_comp {α₁ α₂ α₃ : Sort*} {f₁₂ : α₁ → �
     · rw [extend_apply' _ _ _ h₂, extend_apply', comp_apply]
       exact fun h ↦ h₂ (Exists.casesOn h fun c hc ↦ Exists.intro c (h₂₃ hc))
   · rw [extend_apply' _ _ _ h₃, extend_apply']
-    exact fun h ↦ h₃ (Exists.casesOn h fun c hc ↦ Exists.intro (f₁₂ c) (hc))
+    exact fun h ↦ h₃ (Exists.casesOn h fun c hc ↦ Exists.intro (f₁₂ c) hc)
 
 lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
   ⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),

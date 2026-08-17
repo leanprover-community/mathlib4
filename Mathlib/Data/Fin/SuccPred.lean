@@ -766,7 +766,7 @@ lemma predAbove_of_succ_le (p : Fin n) (i : Fin (n + 1)) (h : succ p ≤ i) :
   predAbove_of_castSucc_lt _ _ (castSucc_lt_iff_succ_le.mpr h)
 
 lemma predAbove_succ_of_lt (p i : Fin n) (h : i < p) :
-    p.predAbove (succ i) = (i.succ).castPred (succ_ne_last_of_lt h) := by
+    p.predAbove (succ i) = i.succ.castPred (succ_ne_last_of_lt h) := by
   rw [predAbove_of_lt_succ _ _ (succ_lt_succ_iff.mpr h)]
 
 lemma predAbove_succ_of_le (p i : Fin n) (h : p ≤ i) : p.predAbove (succ i) = i := by
@@ -834,7 +834,7 @@ lemma predAbove_zero [NeZero n] {i : Fin (n + 1)} :
 @[simp] lemma predAbove_right_last {i : Fin (n + 1)} : predAbove i (last (n + 1)) = last n := by
   rw [predAbove_of_castSucc_lt _ _ (castSucc_lt_last _), pred_last]
 
-lemma predAbove_last_castSucc {i : Fin (n + 1)} : predAbove (last n) (i.castSucc) = i := by
+lemma predAbove_last_castSucc {i : Fin (n + 1)} : predAbove (last n) i.castSucc = i := by
   rw [predAbove_of_le_castSucc _ _ (castSucc_le_castSucc_iff.mpr (le_last _)), castPred_castSucc]
 
 @[simp] lemma predAbove_last_of_ne_last {i : Fin (n + 2)} (hi : i ≠ last (n + 1)) :
@@ -874,7 +874,7 @@ lemma succ_succAbove_predAbove {n : ℕ} {p : Fin n} {i : Fin (n + 1)} (h : i �
   obtain h | h := Fin.lt_or_lt_of_ne h
   · rw [predAbove_of_le_castSucc _ _ (le_castSucc_iff.2 h),
       succAbove_castPred_of_lt _ _ h]
-  · rw [predAbove_of_castSucc_lt _ _ (Fin.lt_of_le_of_lt (p.castSucc_le_succ) h),
+  · rw [predAbove_of_castSucc_lt _ _ (Fin.lt_of_le_of_lt p.castSucc_le_succ h),
       succAbove_pred_of_lt _ _ h]
 
 /-- Sending `Fin n` into `Fin (n + 1)` with a gap at `p`

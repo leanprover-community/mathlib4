@@ -42,7 +42,7 @@ variable (Γ R) in
 /-- The additive valuation on `R⟦Γ⟧` returning the smallest index at which
   a Hahn Series has a nonzero coefficient, or `⊤` for the 0 series. -/
 def addVal : AddValuation R⟦Γ⟧ (WithTop Γ) :=
-  AddValuation.of orderTop orderTop_zero (orderTop_one) (fun _ _ => min_orderTop_le_orderTop_add)
+  AddValuation.of orderTop orderTop_zero orderTop_one (fun _ _ => min_orderTop_le_orderTop_add)
   fun x y => by
     by_cases hx : x = 0; · simp [hx]
     by_cases hy : y = 0; · simp [hy]

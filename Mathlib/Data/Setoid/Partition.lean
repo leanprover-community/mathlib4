@@ -285,7 +285,7 @@ protected def Partition.orderIso : Setoid α ≃o Partitions α where
 equivalent complete lattice on equivalence relations. -/
 instance Partition.completeLattice : CompleteLattice (Partitions α) :=
   GaloisInsertion.liftCompleteLattice <|
-    @OrderIso.toGaloisInsertion _ (Partitions α) _ (PartialOrder.toPreorder) <|
+    @OrderIso.toGaloisInsertion _ (Partitions α) _ PartialOrder.toPreorder <|
       Partition.orderIso α
 
 end Partition

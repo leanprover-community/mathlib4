@@ -72,12 +72,12 @@ variable (sq)
 lemma isPullback_iff_map_coyoneda_isPullback :
     sq.IsPullback ↔ ∀ (X : Cᵒᵖ), (sq.map (coyoneda.obj X)).IsPullback :=
   ⟨fun h _ ↦ h.map _, fun h ↦ IsPullback.mk _
-    ((sq.pullbackCone.isLimitCoyonedaEquiv).symm (fun X ↦ (h X).isLimit))⟩
+    (sq.pullbackCone.isLimitCoyonedaEquiv.symm (fun X ↦ (h X).isLimit))⟩
 
 lemma isPushout_iff_op_map_yoneda_isPullback :
     sq.IsPushout ↔ ∀ (X : C), (sq.op.map (yoneda.obj X)).IsPullback :=
   ⟨fun h _ ↦ h.op.map _, fun h ↦ IsPushout.mk _
-    ((sq.pushoutCocone.isColimitYonedaEquiv).symm
+    (sq.pushoutCocone.isColimitYonedaEquiv.symm
       (fun X ↦ IsLimit.ofIsoLimit (h X).isLimit (PullbackCone.ext (Iso.refl _))))⟩
 
 section

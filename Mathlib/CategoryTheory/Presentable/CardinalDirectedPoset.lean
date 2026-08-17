@@ -143,7 +143,7 @@ instance (A : Type u) [SmallCategory A] [IsCardinalFiltered A κ] :
   infer_instance
 
 instance (J : CardinalDirectedPoset κ) (κ' : Cardinal.{u}) [Fact κ'.IsRegular] :
-    IsCardinalFiltered (WithTop (J.obj)) κ' :=
+    IsCardinalFiltered (WithTop J.obj) κ' :=
   isCardinalFiltered_of_hasTerminal _ _
 
 /-- The map `CardinalDirectedPoset κ → CardinalDirectedPoset κ` which sends

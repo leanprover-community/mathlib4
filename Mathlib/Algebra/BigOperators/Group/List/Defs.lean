@@ -54,7 +54,7 @@ lemma prod_induction
   | cons a l ih =>
     rw [List.prod_cons]
     simp only [mem_cons, forall_eq_or_imp] at base
-    exact hom _ _ (base.1) (ih base.2)
+    exact hom _ _ base.1 (ih base.2)
 
 end Mul
 
@@ -78,7 +78,7 @@ lemma prod_induction_nonempty
     · simp [*]
     rw [List.prod_cons]
     simp only [mem_cons, forall_eq_or_imp] at base
-    exact hom _ _ (base.1) (ih hl_empty base.2)
+    exact hom _ _ base.1 (ih hl_empty base.2)
 
 end MulOneClass
 

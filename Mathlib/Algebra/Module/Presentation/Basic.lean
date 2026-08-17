@@ -390,7 +390,7 @@ end
 lemma of_linearEquiv (e : M ≃ₗ[A] N) : (solution.postcomp e.toLinearMap).IsPresentation where
   bijective := by
     have : (solution.postcomp e.toLinearMap).fromQuotient =
-      e.toLinearMap.comp (solution.fromQuotient) := by aesop
+      e.toLinearMap.comp solution.fromQuotient := by aesop
     rw [this, LinearMap.coe_comp, LinearEquiv.coe_coe]
     exact Function.Bijective.comp e.bijective h.bijective
 

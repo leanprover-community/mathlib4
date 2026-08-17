@@ -278,7 +278,7 @@ attribute [local instance] Filter.monad Filter.lawfulMonad
 
 instance lawfulMonad : LawfulMonad Ultrafilter where
   id_map f := coe_injective (id_map f.toFilter)
-  pure_bind a f := coe_injective (Filter.pure_bind a ((Ultrafilter.toFilter) ∘ f))
+  pure_bind a f := coe_injective (Filter.pure_bind a (Ultrafilter.toFilter ∘ f))
   bind_assoc _ _ _ := coe_injective (filter_eq rfl)
   bind_pure_comp f x := coe_injective (bind_pure_comp f x.1)
   map_const := rfl

@@ -31,7 +31,7 @@ namespace CategoryTheory
 lemma extensiveTopology.mem_sieves_iff_contains_colimit_cofan {X : C} (S : Sieve X) :
     S ∈ (extensiveTopology C) X ↔
       (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
-        Nonempty (IsColimit (Cofan.mk X π)) ∧ (∀ a : α, (S.arrows) (π a))) := by
+        Nonempty (IsColimit (Cofan.mk X π)) ∧ (∀ a : α, S.arrows (π a))) := by
   constructor
   · intro h
     induction h with

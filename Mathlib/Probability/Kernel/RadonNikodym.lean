@@ -547,7 +547,7 @@ lemma measurable_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFini
   exact Kernel.measurable_coe _ hs
 
 lemma rnDeriv_self (κ : Kernel α γ) [IsFiniteKernel κ] (a : α) : rnDeriv κ κ a =ᵐ[κ a] 1 :=
-  (κ.rnDeriv_eq_rnDeriv_measure).trans (κ a).rnDeriv_self
+  κ.rnDeriv_eq_rnDeriv_measure.trans (κ a).rnDeriv_self
 
 lemma rnDeriv_singularPart (κ ν : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) :
     rnDeriv (singularPart κ ν) ν a =ᵐ[ν a] 0 := by
@@ -584,14 +584,14 @@ lemma rnDeriv_add (κ ν η : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel 
 lemma setLIntegral_rnDeriv_le {κ η : Kernel α γ} [IsFiniteKernel κ] [IsFiniteKernel η]
     {a : α} {s : Set γ} (hs : MeasurableSet s) :
     ∫⁻ c in s, κ.rnDeriv η a c ∂η a ≤ κ a s := by
-  rw [setLIntegral_congr_fun_ae hs ((κ.rnDeriv_eq_rnDeriv_measure).mono (fun x hx _ ↦ hx)),
+  rw [setLIntegral_congr_fun_ae hs (κ.rnDeriv_eq_rnDeriv_measure.mono (fun x hx _ ↦ hx)),
     ← withDensity_apply' _ s]
   exact (κ a).withDensity_rnDeriv_le _ _
 
 lemma setLIntegral_rnDeriv {κ η : Kernel α γ} [IsFiniteKernel κ] [IsFiniteKernel η]
     {a : α} (h : κ a ≪ η a) {s : Set γ} (hs : MeasurableSet s) :
     ∫⁻ c in s, κ.rnDeriv η a c ∂η a = κ a s := by
-  rw [setLIntegral_congr_fun_ae hs ((κ.rnDeriv_eq_rnDeriv_measure).mono (fun x hx _ ↦ hx)),
+  rw [setLIntegral_congr_fun_ae hs (κ.rnDeriv_eq_rnDeriv_measure.mono (fun x hx _ ↦ hx)),
     ← withDensity_apply _ hs, (κ a).withDensity_rnDeriv_eq _ h]
 
 lemma lintegral_rnDeriv {κ η : Kernel α γ} [IsFiniteKernel κ] [IsFiniteKernel η]

@@ -58,7 +58,7 @@ variable [CommRing R] [IsDomain R] (K : Type*) [Field K] [Algebra R K] [IsFracti
 /-- An integral domain is equal to the intersection of its localizations at all its prime ideals
 viewed as subalgebras of its field of fractions. -/
 theorem iInf_localization_eq_bot : ⨅ v : PrimeSpectrum R,
-    Localization.subalgebra.ofField K _ (v.asIdeal.primeCompl_le_nonZeroDivisors) = ⊥ := by
+    Localization.subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors = ⊥ := by
   refine bot_unique (.trans (fun _ ↦ ?_) (MaximalSpectrum.iInf_localization_eq_bot R K).le)
   simpa only [Algebra.mem_iInf] using fun hx ⟨v, hv⟩ ↦ hx ⟨v, hv.isPrime⟩
 

@@ -130,10 +130,10 @@ theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl 
   rw [hn']
   apply add_mem
   · rw [Finsupp.mem_span_range_iff_exists_finsupp]
-    use cn.mapDomain (Sum.inl)
+    use cn.mapDomain Sum.inl
     rw [Finsupp.sum_mapDomain_index_inj Sum.inl_injective]
   · rw [Finsupp.mem_span_range_iff_exists_finsupp]
-    use cm.mapDomain (Sum.inr)
+    use cm.mapDomain Sum.inr
     rw [Finsupp.sum_mapDomain_index_inj Sum.inr_injective]
 
 include hS in
@@ -158,7 +158,7 @@ noncomputable
 def Basis.ofShortExact
     (bN : Basis ι R S.X₁) (bP : Basis ι' R S.X₃) : Basis (ι ⊕ ι') R S.X₂ :=
   Basis.mk (linearIndependent_shortExact hS' bN.linearIndependent bP.linearIndependent)
-    (span_rightExact hS'.exact (le_of_eq (bN.span_eq.symm)) (le_of_eq (bP.span_eq.symm)) hS'.epi_g)
+    (span_rightExact hS'.exact (le_of_eq bN.span_eq.symm) (le_of_eq bP.span_eq.symm) hS'.epi_g)
 
 include hS'
 

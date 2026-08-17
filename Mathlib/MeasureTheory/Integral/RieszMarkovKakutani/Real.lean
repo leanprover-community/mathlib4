@@ -167,7 +167,7 @@ lemma exists_open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X)
     exact fun _ a ↦ a
   · calc
       _ ≤ μ.measure V₁ := by simp [measure_mono]
-      _ = μ.outerMeasure V₁ := Content.measure_apply μ (V₁.2.measurableSet)
+      _ = μ.outerMeasure V₁ := Content.measure_apply μ V₁.2.measurableSet
       _ ≤ μ.outerMeasure E + ε.toNNReal := hV₁.2
       _ = _ := by rw [Content.measure_apply μ hμ', ENNReal.ofNNReal_toNNReal]
 

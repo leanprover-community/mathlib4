@@ -869,75 +869,75 @@ variable {a b : α} {f : α → δ}
 
 theorem ContinuousOn.image_Icc_of_monotoneOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
     (hmono : MonotoneOn f (Icc a b)) : f '' Icc a b = Icc (f a) (f b) :=
-  subset_antisymm (hmono.image_Icc_subset) (intermediate_value_Icc hab hf)
+  subset_antisymm hmono.image_Icc_subset (intermediate_value_Icc hab hf)
 
 theorem ContinuousOn.image_Icc_of_antitoneOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
     (hmono : AntitoneOn f (Icc a b)) : f '' Icc a b = Icc (f b) (f a) :=
-  subset_antisymm (hmono.image_Icc_subset) (intermediate_value_Icc' hab hf)
+  subset_antisymm hmono.image_Icc_subset (intermediate_value_Icc' hab hf)
 
 theorem ContinuousOn.image_Ico_of_strictMonoOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
     (hmono : StrictMonoOn f (Icc a b)) : f '' Ico a b = Ico (f a) (f b) :=
-  subset_antisymm (hmono.image_Ico_subset) (intermediate_value_Ico hab hf)
+  subset_antisymm hmono.image_Ico_subset (intermediate_value_Ico hab hf)
 
 theorem ContinuousOn.image_Ico_of_strictAntiOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
     (hmono : StrictAntiOn f (Icc a b)) : f '' Ico a b = Ioc (f b) (f a) :=
-  subset_antisymm (hmono.image_Ico_subset) (intermediate_value_Ico' hab hf)
+  subset_antisymm hmono.image_Ico_subset (intermediate_value_Ico' hab hf)
 
 theorem ContinuousOn.image_Ioc_of_strictMonoOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
     (hmono : StrictMonoOn f (Icc a b)) : f '' Ioc a b = Ioc (f a) (f b) :=
-  subset_antisymm (hmono.image_Ioc_subset) (intermediate_value_Ioc hab hf)
+  subset_antisymm hmono.image_Ioc_subset (intermediate_value_Ioc hab hf)
 
 theorem ContinuousOn.image_Ioc_of_strictAntiOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
     (hmono : StrictAntiOn f (Icc a b)) : f '' Ioc a b = Ico (f b) (f a) :=
-  subset_antisymm (hmono.image_Ioc_subset) (intermediate_value_Ioc' hab hf)
+  subset_antisymm hmono.image_Ioc_subset (intermediate_value_Ioc' hab hf)
 
 theorem ContinuousOn.image_Ioo_of_strictMonoOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
     (hmono : StrictMonoOn f (Icc a b)) : f '' Ioo a b = Ioo (f a) (f b) :=
-  subset_antisymm (hmono.image_Ioo_subset) (intermediate_value_Ioo hab hf)
+  subset_antisymm hmono.image_Ioo_subset (intermediate_value_Ioo hab hf)
 
 theorem ContinuousOn.image_Ioo_of_strictAntiOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
     (hmono : StrictAntiOn f (Icc a b)) : f '' Ioo a b = Ioo (f b) (f a) :=
-  subset_antisymm (hmono.image_Ioo_subset) (intermediate_value_Ioo' hab hf)
+  subset_antisymm hmono.image_Ioo_subset (intermediate_value_Ioo' hab hf)
 
 theorem ContinuousOn.image_uIcc_of_monotoneOn (hf : ContinuousOn f [[a, b]])
     (hmono : MonotoneOn f [[a, b]]) : f '' [[a, b]] = [[f a, f b]] :=
-  subset_antisymm (hmono.image_uIcc_subset) (intermediate_value_uIcc hf)
+  subset_antisymm hmono.image_uIcc_subset (intermediate_value_uIcc hf)
 
 theorem ContinuousOn.image_uIcc_of_antitoneOn (hf : ContinuousOn f [[a, b]])
     (hmono : AntitoneOn f [[a, b]]) : f '' [[a, b]] = [[f a, f b]] :=
-  subset_antisymm (hmono.image_uIcc_subset) (intermediate_value_uIcc hf)
+  subset_antisymm hmono.image_uIcc_subset (intermediate_value_uIcc hf)
 
 theorem ContinuousOn.image_Ici_of_monotoneOn (hf : ContinuousOn f (Ici a))
     (hmono : MonotoneOn f (Ici a)) (htop : Tendsto f atTop atTop) : f '' Ici a = Ici (f a) :=
-  subset_antisymm (hmono.image_Ici_subset) (intermediate_value_Ici hf htop)
+  subset_antisymm hmono.image_Ici_subset (intermediate_value_Ici hf htop)
 
 theorem ContinuousOn.image_Ici_of_antitoneOn (hf : ContinuousOn f (Ici a))
     (hmono : AntitoneOn f (Ici a)) (htop : Tendsto f atTop atBot) : f '' Ici a = Iic (f a) :=
-  subset_antisymm (hmono.image_Ici_subset) (intermediate_value_Ici' hf htop)
+  subset_antisymm hmono.image_Ici_subset (intermediate_value_Ici' hf htop)
 
 theorem ContinuousOn.image_Iic_of_monotoneOn (hf : ContinuousOn f (Iic a))
     (hmono : MonotoneOn f (Iic a)) (hbot : Tendsto f atBot atBot) : f '' Iic a = Iic (f a) :=
-  subset_antisymm (hmono.image_Iic_subset) (intermediate_value_Iic hf hbot)
+  subset_antisymm hmono.image_Iic_subset (intermediate_value_Iic hf hbot)
 
 theorem ContinuousOn.image_Iic_of_antitoneOn (hf : ContinuousOn f (Iic a))
     (hmono : AntitoneOn f (Iic a)) (hbot : Tendsto f atBot atTop) : f '' Iic a = Ici (f a) :=
-  subset_antisymm (hmono.image_Iic_subset) (intermediate_value_Iic' hf hbot)
+  subset_antisymm hmono.image_Iic_subset (intermediate_value_Iic' hf hbot)
 
 theorem ContinuousOn.image_Ioi_of_strictMonoOn (hf : ContinuousOn f (Ici a))
     (hmono : StrictMonoOn f (Ici a)) (htop : Tendsto f atTop atTop) : f '' Ioi a = Ioi (f a) :=
-  subset_antisymm (hmono.image_Ioi_subset) (intermediate_value_Ioi hf htop)
+  subset_antisymm hmono.image_Ioi_subset (intermediate_value_Ioi hf htop)
 
 theorem ContinuousOn.image_Ioi_of_strictAntiOn (hf : ContinuousOn f (Ici a))
     (hmono : StrictAntiOn f (Ici a)) (htop : Tendsto f atTop atBot) : f '' Ioi a = Iio (f a) :=
-  subset_antisymm (hmono.image_Ioi_subset) (intermediate_value_Ioi' hf htop)
+  subset_antisymm hmono.image_Ioi_subset (intermediate_value_Ioi' hf htop)
 
 theorem ContinuousOn.image_Iio_of_strictMonoOn (hf : ContinuousOn f (Iic a))
     (hmono : StrictMonoOn f (Iic a)) (hbot : Tendsto f atBot atBot) : f '' Iio a = Iio (f a) :=
-  subset_antisymm (hmono.image_Iio_subset) (intermediate_value_Iio hf hbot)
+  subset_antisymm hmono.image_Iio_subset (intermediate_value_Iio hf hbot)
 
 theorem ContinuousOn.image_Iio_of_strictAntiOn (hf : ContinuousOn f (Iic a))
     (hmono : StrictAntiOn f (Iic a)) (hbot : Tendsto f atBot atTop) : f '' Iio a = Ioi (f a) :=
-  subset_antisymm (hmono.image_Iio_subset) (intermediate_value_Iio' hf hbot)
+  subset_antisymm hmono.image_Iio_subset (intermediate_value_Iio' hf hbot)
 
 /-!
 ### Order-agnostic images under continuous strictly monotone maps

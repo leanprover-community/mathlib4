@@ -317,7 +317,7 @@ lemma subtype_injective (s : Subfield K) :
   Subtype.coe_injective
 
 @[simp]
-theorem coe_subtype : ⇑(s.subtype) = ((↑) : s → K) :=
+theorem coe_subtype : ⇑s.subtype = ((↑) : s → K) :=
   rfl
 
 variable (K) in

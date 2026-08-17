@@ -124,7 +124,7 @@ theorem add (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive μ T') :
 
 theorem add_measure {ν : Measure α} (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive ν T') :
     FinMeasAdditive (μ + ν) (T + T') :=
-  hT.add_right_measure.add (hT'.add_left_measure)
+  hT.add_right_measure.add hT'.add_left_measure
 
 theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
     (h_add : FinMeasAdditive μ T) {ι} (S : ι → Set α) (sι : Finset ι)

@@ -72,7 +72,7 @@ theorem contDiffOn (hf : AbsolutelyMonotoneOn f s) : ContDiffOn ℝ ∞ f s := b
 monotone on `s`. The set `s` need *not* satisfy `UniqueDiffOn`. -/
 theorem of_contDiff (hf : ContDiff ℝ ∞ f) (h : ∀ n : ℕ, ∀ x ∈ s, 0 ≤ iteratedDeriv n f x) :
     AbsolutelyMonotoneOn f s := by
-  refine ⟨ftaylorSeries ℝ f, (hf.ftaylorSeries).hasFTaylorSeriesUpToOn s, fun n x hx => ?_⟩
+  refine ⟨ftaylorSeries ℝ f, hf.ftaylorSeries.hasFTaylorSeriesUpToOn s, fun n x hx => ?_⟩
   exact iteratedDeriv_eq_iteratedFDeriv (𝕜 := ℝ) (f := f) ▸ h n x hx
 
 /-- Under `UniqueDiffOn`, a Taylor witness for an absolutely monotone function agrees with

@@ -96,7 +96,7 @@ lemma le_Ici : s ≤ Ici a ↔ a ∈ s := ⟨fun h ↦ h le_rfl, fun ha ↦ s.up
 
 variable (α) in
 @[to_dual]
-theorem Ici_strictMono : StrictMono (Ici (α := α)) := fun _ _ h ↦ (Set.Ici_ssubset_Ici).mpr h
+theorem Ici_strictMono : StrictMono (Ici (α := α)) := fun _ _ h ↦ Set.Ici_ssubset_Ici.mpr h
 
 variable (α) in
 @[to_dual]

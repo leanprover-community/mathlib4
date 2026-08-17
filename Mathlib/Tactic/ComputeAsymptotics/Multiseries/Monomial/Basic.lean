@@ -141,7 +141,7 @@ theorem inv_toFun {m : UnitMonomial} {basis : Basis} (h_basis : WellFormedBasis 
     cases basis with
     | nil => simp
     | cons basis_hd basis_tl =>
-      apply ((h_basis.head_eventually_pos).and (ih (h_basis.tail))).mono
+      apply (h_basis.head_eventually_pos.and (ih h_basis.tail)).mono
       intro x ⟨h_pos, ih⟩
       simp only [List.map_cons, List.zipWith_cons_cons, List.prod_cons, mul_inv_rev]
       grind [Real.rpow_neg h_pos.le]

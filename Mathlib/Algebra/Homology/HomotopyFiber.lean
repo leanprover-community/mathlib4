@@ -183,7 +183,7 @@ variable (hc : ∀ (i : α), ∃ j, c.Rel i j)
 the path object of a homological complex and applying an additive functor. -/
 @[no_expose]
 noncomputable def mapHomologicalComplexObjIso :
-    (H.mapHomologicalComplex c).obj (K.pathObject) ≅
+    (H.mapHomologicalComplex c).obj K.pathObject ≅
       pathObject ((H.mapHomologicalComplex c).obj K) :=
   (unopFunctor _ _).mapIso (cylinder.mapHomologicalComplexObjIso K.op H.op hc).op.symm
 

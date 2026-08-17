@@ -32,7 +32,7 @@ instance {F : K ⥤ C} [∀ X : Sheaf J (Type v), PreservesLimit F.op X.obj] :
     apply evaluationJointlyReflectsLimits
     intro X
     suffices IsLimit ((X.obj ⋙ uliftFunctor).mapCone c.op) from IsLimit.mapConeEquiv
-      (isoWhiskerRight (J.yonedaOpCompCoyoneda) ((evaluation _ _ ).obj X)).symm this
+      (isoWhiskerRight J.yonedaOpCompCoyoneda ((evaluation _ _ ).obj X)).symm this
     exact isLimitOfPreserves _ hc.op⟩
 
 instance [∀ X : Sheaf J (Type v), PreservesLimitsOfShape Kᵒᵖ X.obj] :
@@ -47,7 +47,7 @@ instance {F : K ⥤ C} [∀ X : Sheaf J (Type max v v'), PreservesLimit F.op X.o
     apply evaluationJointlyReflectsLimits
     intro X
     suffices IsLimit ((X.obj ⋙ uliftFunctor).mapCone c.op) from IsLimit.mapConeEquiv
-      (isoWhiskerRight (J.uliftYonedaOpCompCoyoneda) ((evaluation _ _ ).obj X)).symm this
+      (isoWhiskerRight J.uliftYonedaOpCompCoyoneda ((evaluation _ _ ).obj X)).symm this
     exact isLimitOfPreserves _ hc.op⟩
 
 instance [∀ X : Sheaf J (Type max v v'), PreservesLimitsOfShape Kᵒᵖ X.obj] :

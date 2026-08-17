@@ -101,7 +101,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     · rw [stdSimplex.δ_objMk₁_of_lt, Fin.pred_succ]
       rw [Fin.castSucc_lt_succ_iff, ← Fin.castSucc_succ]
       simp only [Fin.castSucc_le_castSucc_iff]
-      exact hij.trans (j.castSucc_le_succ)
+      exact hij.trans j.castSucc_le_succ
   h_succ_comp_δ_castSucc_succ {n} i := by
     ext x
     simp only [TypeCat.Fun.toFun_apply, types_comp_apply, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk,

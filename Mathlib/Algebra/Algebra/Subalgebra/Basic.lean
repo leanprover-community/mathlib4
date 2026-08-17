@@ -590,7 +590,7 @@ abbrev rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
 theorem val_comp_rangeRestrict :
     (Subalgebra.val _).comp φ.rangeRestrict = φ := by simp
 
-theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.rangeRestrict) :=
+theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective f.rangeRestrict :=
   fun ⟨_y, hy⟩ =>
     let ⟨x, hx⟩ := hy
     ⟨x, SetCoe.ext hx⟩

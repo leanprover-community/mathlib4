@@ -65,7 +65,7 @@ lemma exists_measure_eq_one_iff_measure_univ_eq_one : (∃ s, μ s = 1) ↔ μ u
     exact ⟨univ, h⟩
 
 lemma measure_univ {s : Set α} (hμs : μ s = 1) : μ univ = 1 :=
-  (exists_measure_eq_one_iff_measure_univ_eq_one).mp ⟨s, hμs⟩
+  exists_measure_eq_one_iff_measure_univ_eq_one.mp ⟨s, hμs⟩
 
 lemma measure_inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s = 1) (hμt : μ t = 1) : μ (s ∩ t) = 1 := by

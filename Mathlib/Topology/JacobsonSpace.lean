@@ -110,7 +110,7 @@ lemma nonempty_inter_closedPoints [JacobsonSpace X] {Z : Set X}
 
 theorem JacobsonSpace.closure_inter_closedPoints_eq_closure [JacobsonSpace X]
     {S : Set X} (hS : IsLocallyClosed S) : closure (S ∩ closedPoints X) = closure S := by
-  refine (closure_mono (Set.inter_subset_left)).antisymm ?_
+  refine (closure_mono Set.inter_subset_left).antisymm ?_
   rw [IsClosed.closure_subset_iff isClosed_closure]
   intro x hx
   by_contra H

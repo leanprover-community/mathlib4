@@ -763,7 +763,7 @@ lemma mem_closure_insert (he : e ∉ M.closure X) (hef : e ∈ M.closure (insert
   rw [or_iff_not_imp_left, dep_iff, insert_comm,
     and_iff_left (insert_subset heE (insert_subset hfE hI.indep.subset_ground)), not_not]
   intro h
-  rw [(h.subset (subset_insert _ _)).mem_closure_iff, or_iff_right (h.not_dep), mem_insert_iff,
+  rw [(h.subset (subset_insert _ _)).mem_closure_iff, or_iff_right h.not_dep, mem_insert_iff,
     or_iff_left he.2] at hef
   subst hef; apply mem_insert
 

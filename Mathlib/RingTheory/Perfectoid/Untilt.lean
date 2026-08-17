@@ -55,7 +55,7 @@ with the untilt function equals taking the zeroth component of the perfection.
 -/
 @[simp]
 theorem mk_untilt_eq_coeff_zero (x : PreTilt O p) :
-    Ideal.Quotient.mk (Ideal.span {(p : O)}) (x.untilt) = coeff 0 x :=
+    Ideal.Quotient.mk (Ideal.span {(p : O)}) x.untilt = coeff 0 x :=
   mk_teichmuller x
 
 /--

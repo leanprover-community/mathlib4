@@ -75,7 +75,7 @@ protected lemma «exists» {p : Additive α → Prop} : (∃ a, p a) ↔ ∃ a, 
 /-- Recursion principle for `Additive`, supported by `cases` and `induction`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def rec {motive : Additive α → Sort*} (ofMul : ∀ a, motive (ofMul a)) : ∀ a, motive a :=
-  fun a => ofMul (a.toMul)
+  fun a => ofMul a.toMul
 
 end Additive
 
@@ -109,7 +109,7 @@ protected lemma «exists» {p : Multiplicative α → Prop} : (∃ a, p a) ↔ �
 /-- Recursion principle for `Multiplicative`, supported by `cases` and `induction`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def rec {motive : Multiplicative α → Sort*} (ofAdd : ∀ a, motive (ofAdd a)) : ∀ a, motive a :=
-  fun a => ofAdd (a.toAdd)
+  fun a => ofAdd a.toAdd
 
 end Multiplicative
 

@@ -780,7 +780,7 @@ instance : ContinuousAdd (FiniteMeasure Ω) := by
 instance : ContinuousSMul ℝ≥0 (FiniteMeasure Ω) := by
   refine ⟨continuous_iff_continuousAt.2 (fun p ↦ ?_)⟩
   apply tendsto_iff_forall_integral_tendsto.2 (fun g ↦ ?_)
-  have A : Tendsto (fun (i : ℝ≥0 × FiniteMeasure Ω) ↦ i.1) (𝓝 p) (𝓝 (p.1)) := by
+  have A : Tendsto (fun (i : ℝ≥0 × FiniteMeasure Ω) ↦ i.1) (𝓝 p) (𝓝 p.1) := by
     rw [nhds_prod_eq]
     exact tendsto_fst
   have B : Tendsto (fun (i : ℝ≥0 × FiniteMeasure Ω) ↦ ∫ x, g x ∂i.2) (𝓝 p)

@@ -176,7 +176,7 @@ instance [IsIntegral X] (x : X) :
     (Scheme.functionField X)
 
 instance [IsIntegral X] {x : X} : IsDomain (X.presheaf.stalk x) :=
-  Function.Injective.isDomain _ (IsFractionRing.injective (X.presheaf.stalk x) (X.functionField))
+  Function.Injective.isDomain _ (IsFractionRing.injective (X.presheaf.stalk x) X.functionField)
 
 /--
 For `f` an element of the function field of `X`, there exists some open set `U ⊆ X` such that

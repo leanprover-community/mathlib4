@@ -353,7 +353,7 @@ lemma volume_pi_eq_dirac {ι : Type*} [Fintype ι] [IsEmpty ι]
 @[simp]
 theorem pi_empty_univ {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
     {m : ∀ α, MeasurableSpace (β α)} (μ : ∀ a : α, Measure (β a)) :
-    Measure.pi μ (Set.univ) = 1 := by
+    Measure.pi μ Set.univ = 1 := by
   rw [pi_of_empty, measure_univ]
 
 theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :

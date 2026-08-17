@@ -144,7 +144,7 @@ lemma eTruncGEδLT_coe (n : ℤ) :
 
 /-- The natural transformation `t.eTruncLT.obj i ⟶ 𝟭 C` for all `i : EInt`. -/
 noncomputable abbrev eTruncLTι (i : EInt) : t.eTruncLT.obj i ⟶ 𝟭 _ :=
-  t.eTruncLT.map (homOfLE (le_top))
+  t.eTruncLT.map (homOfLE le_top)
 
 @[simp] lemma eTruncLT_ι_bot : t.eTruncLTι ⊥ = 0 := rfl
 @[simp] lemma eTruncLT_ι_coe (n : ℤ) : t.eTruncLTι n = t.truncLTι n := rfl
@@ -175,7 +175,7 @@ lemma eTruncLT_obj_map_eTruncLTι_app (i : EInt) (X : C) :
 
 /-- The natural transformation `𝟭 C ⟶ t.eTruncGE.obj i` for all `i : EInt`. -/
 noncomputable abbrev eTruncGEπ (i : EInt) : 𝟭 C ⟶ t.eTruncGE.obj i :=
-  t.eTruncGE.map (homOfLE (bot_le))
+  t.eTruncGE.map (homOfLE bot_le)
 
 @[simp] lemma eTruncGEπ_bot : t.eTruncGEπ ⊥ = 𝟙 _ := rfl
 @[simp] lemma eTruncGEπ_coe (n : ℤ) : t.eTruncGEπ n = t.truncGEπ n := rfl

@@ -117,7 +117,7 @@ lemma denseRange : DenseRange (etaFn G) := by
   rw [← hsv]
   apply hJ2
   intro a a_in_J
-  let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => (j.val.toSubgroup)) ⟨a, a_in_J⟩).hom
+  let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.val.toSubgroup) ⟨a, a_in_J⟩).hom
   rw [← (etaFn G origin).property M_to_Na]
   dsimp [etaFn] at ⊢ horigin
   rw [horigin]

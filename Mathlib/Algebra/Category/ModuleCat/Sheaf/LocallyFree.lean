@@ -74,7 +74,7 @@ variable [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCom
 @[expose, simps]
 def free.generatingSections (I : Type u) : (free (R := R) I).GeneratingSections where
   I := I
-  s (i) := freeSection i
+  s i := freeSection i
   epi := by
     simp only [Equiv.symm_apply_apply]
     infer_instance

@@ -230,13 +230,13 @@ theorem hom_ext {f g : N ⋊[φ] G →* H} (hl : f.comp inl = g.comp inl)
 /-- The homomorphism from a semidirect product of subgroups to the ambient group. -/
 @[simps!]
 def monoidHomSubgroup {H K : Subgroup G} (h : K ≤ normalizer H) :
-    H ⋊[(H.normalizerMonoidHom).comp (inclusion h)] K →* G :=
+    H ⋊[H.normalizerMonoidHom.comp (inclusion h)] K →* G :=
   lift H.subtype K.subtype (by simp [DFunLike.ext_iff])
 
 /-- The isomorphism from a semidirect product of complementary subgroups to the ambient group. -/
 @[simps!]
 noncomputable def mulEquivSubgroup {H K : Subgroup G} [H.Normal] (h : H.IsComplement' K) :
-    H ⋊[(H.normalizerMonoidHom).comp (inclusion (H.normalizer_eq_top ▸ le_top))] K ≃* G :=
+    H ⋊[H.normalizerMonoidHom.comp (inclusion (H.normalizer_eq_top ▸ le_top))] K ≃* G :=
   MulEquiv.ofBijective (monoidHomSubgroup _) ((equivProd.bijective_comp _).mpr h)
 
 end lift

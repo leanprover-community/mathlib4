@@ -96,7 +96,7 @@ def functor : HasCardinalLT.Set X κ ⥤ Type u :=
 @[simps]
 def cocone : Cocone (Set.functor X κ) where
   pt := X
-  ι.app _ := ↾(Subtype.val)
+  ι.app _ := ↾Subtype.val
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in

@@ -316,7 +316,7 @@ theorem free_of_lTensor_residueField_injective (hg : Surjective g) (h : Exact f 
     (hf : Function.Injective (f.lTensor k)) :
     Module.Free R P := by
   have := Module.finitePresentation_of_free_of_surjective g hg
-    (by rw [h.linearMap_ker_eq, LinearMap.range_eq_map]; exact (Module.Finite.fg_top).map f)
+    (by rw [h.linearMap_ker_eq, LinearMap.range_eq_map]; exact Module.Finite.fg_top.map f)
   apply free_of_maximalIdeal_rTensor_injective
   rw [← LinearMap.lTensor_inj_iff_rTensor_inj]
   apply lTensor_injective_of_exact_of_exact_of_rTensor_injective

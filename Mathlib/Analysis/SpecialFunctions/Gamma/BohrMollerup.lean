@@ -206,8 +206,8 @@ theorem logGammaSeq_add_one (x : ℝ) (n : ℕ) :
 theorem le_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hx' : x ≤ 1) (n : ℕ) :
     f x ≤ f 1 + x * log (n + 1) - x * log n + logGammaSeq x n := by
-  rw [logGammaSeq, ← add_sub_assoc, le_sub_iff_add_le, ← f_add_nat_eq (@hf_feq) hx, add_comm x]
-  refine (f_add_nat_le hf_conv (@hf_feq) (Nat.add_one_ne_zero n) hx hx').trans (le_of_eq ?_)
+  rw [logGammaSeq, ← add_sub_assoc, le_sub_iff_add_le, ← f_add_nat_eq @hf_feq hx, add_comm x]
+  refine (f_add_nat_le hf_conv @hf_feq (Nat.add_one_ne_zero n) hx hx').trans (le_of_eq ?_)
   rw [f_nat_eq @hf_feq (by lia : n + 1 ≠ 0), Nat.add_sub_cancel, Nat.cast_add_one]
   ring
 
@@ -215,7 +215,7 @@ theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hn : n ≠ 0) :
     f 1 + logGammaSeq x n ≤ f x := by
   dsimp [logGammaSeq]
-  rw [← add_sub_assoc, sub_le_iff_le_add, ← f_add_nat_eq (@hf_feq) hx, add_comm x _]
+  rw [← add_sub_assoc, sub_le_iff_le_add, ← f_add_nat_eq @hf_feq hx, add_comm x _]
   refine le_trans (le_of_eq ?_) (f_add_nat_ge hf_conv @hf_feq ?_ hx)
   · rw [f_nat_eq @hf_feq, Nat.add_sub_cancel, Nat.cast_add_one, add_sub_cancel_right]
     · ring
@@ -232,7 +232,7 @@ theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     exact Tendsto.sub tendsto_const_nhds (tendsto_log_nat_add_one_sub_log.const_mul _)
   · filter_upwards with n
     rw [sub_le_iff_le_add', sub_le_iff_le_add']
-    convert! le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
+    convert! le_logGammaSeq hf_conv @hf_feq hx hx' n using 1
     ring
   · change ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
     filter_upwards [eventually_ne_atTop 0] with n hn using
@@ -252,7 +252,7 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
   induction m generalizing x with
   | zero =>
     rw [Nat.cast_zero, zero_add]
-    exact fun _ hx' => tendsto_logGammaSeq_of_le_one hf_conv (@hf_feq) hx hx'
+    exact fun _ hx' => tendsto_logGammaSeq_of_le_one hf_conv @hf_feq hx hx'
   | succ m hm =>
     intro hy hy'
     rw [Nat.cast_succ, ← sub_le_iff_le_add] at hy'

@@ -91,7 +91,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     -- Let `g` be the pointwise inverse of `f` on `V`, which is smooth since `f` is nonzero there
     let g : C^∞⟮IM, V; 𝓘(𝕜), 𝕜⟯ := ⟨(f ∘ Set.inclusion hUV)⁻¹, ?_⟩
     -- The germ of `g` is inverse to the germ of `f`, so `f` is a unit
-    · refine ⟨⟨S.germ _ x (hxV) (ContMDiffMap.restrictRingHom IM 𝓘(𝕜) 𝕜 hUV f), S.germ _ x hxV g,
+    · refine ⟨⟨S.germ _ x hxV (ContMDiffMap.restrictRingHom IM 𝓘(𝕜) 𝕜 hUV f), S.germ _ x hxV g,
         ?_, ?_⟩, S.germ_res_apply hUV.hom x hxV f⟩
       · rw [← map_mul]
         -- Qualified the name to avoid Lean not finding a `OneHomClass` https://github.com/leanprover-community/mathlib4/pull/8386

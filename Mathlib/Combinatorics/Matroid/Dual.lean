@@ -56,11 +56,11 @@ section dual
     have hXE := hX_max.1.1
     have hB' := (isBase_compl_iff_maximal_disjoint_isBase hXE).mpr hX_max
     set B' := M.E \ X with hX
-    have hI := (not_iff_not.mpr (isBase_compl_iff_maximal_disjoint_isBase)).mpr hI_not_max
+    have hI := (not_iff_not.mpr isBase_compl_iff_maximal_disjoint_isBase).mpr hI_not_max
     obtain ⟨B'', hB'', hB''₁, hB''₂⟩ := (hB'.indep.sdiff I).exists_isBase_subset_union_isBase hB
     rw [← compl_subset_compl, ← hIB.sdiff_eq_right, ← union_sdiff_distrib, sdiff_eq, compl_inter,
       compl_compl, union_subset_iff, compl_subset_compl] at hB''₂
-    have hssu := (subset_inter (hB''₂.2) hIE).ssubset_of_ne
+    have hssu := (subset_inter hB''₂.2 hIE).ssubset_of_ne
       (by { rintro rfl; apply hI; convert! hB''; simp [hB''.subset_ground] })
     obtain ⟨e, ⟨(heB'' : e ∉ _), heE⟩, heI⟩ := exists_of_ssubset hssu
     use e

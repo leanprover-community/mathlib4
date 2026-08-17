@@ -121,12 +121,12 @@ protected def recOn {C : ∀ {n}, Vector3 α n → Sort u} {n} (v : Vector3 α n
   | _ + 1 => v.consElim fun a t => Hs a t (Vector3.recOn t H0 Hs)
 
 @[simp]
-theorem recOn_nil {C H0 Hs} : @Vector3.recOn α (@C) 0 [] H0 @Hs = H0 :=
+theorem recOn_nil {C H0 Hs} : @Vector3.recOn α @C 0 [] H0 @Hs = H0 :=
   rfl
 
 @[simp]
 theorem recOn_cons {C H0 Hs n a v} :
-    @Vector3.recOn α (@C) (n + 1) (a :: v) H0 @Hs = Hs a v (@Vector3.recOn α (@C) n v H0 @Hs) :=
+    @Vector3.recOn α @C (n + 1) (a :: v) H0 @Hs = Hs a v (@Vector3.recOn α @C n v H0 @Hs) :=
   rfl
 
 /-- Append two vectors -/

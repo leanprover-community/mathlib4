@@ -105,7 +105,7 @@ end BoolRing
 
 -- We have to add this instance since Lean doesn't see through `X.toBddDistLat`.
 instance {X : BoolAlg} :
-    BooleanAlgebra ↑(BddDistLat.toBddLat (X.toBddDistLat)).toLat :=
+    BooleanAlgebra ↑(BddDistLat.toBddLat X.toBddDistLat).toLat :=
   BoolAlg.str _
 
 -- We have to add this instance since Lean doesn't see through `R.toBddDistLat`.

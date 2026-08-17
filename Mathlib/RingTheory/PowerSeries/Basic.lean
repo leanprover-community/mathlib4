@@ -875,7 +875,7 @@ theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUni
   | add f g hf hg => simp [hf, hg]
 
 theorem pUnitAlgEquiv_symm_toPowerSeries {f : Polynomial R} :
-    ((f.toPowerSeries) : MvPowerSeries PUnit R)
+    (f.toPowerSeries : MvPowerSeries PUnit R)
       = ((MvPolynomial.uniqueAlgEquiv R PUnit).symm f).toMvPowerSeries := by
   set g := (MvPolynomial.uniqueAlgEquiv R PUnit).symm f
   have : f = MvPolynomial.uniqueAlgEquiv R PUnit g := by simp only [g, AlgEquiv.apply_symm_apply]

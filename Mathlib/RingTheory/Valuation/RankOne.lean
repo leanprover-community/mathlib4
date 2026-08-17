@@ -128,14 +128,14 @@ instance : IsNontrivial v where
 
 section Restrict
 
-instance isNontrivial_restrict : (v.restrict).IsNontrivial where
+instance isNontrivial_restrict : v.restrict.IsNontrivial where
   exists_val_nontrivial := by
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
     exact ⟨x, by simp [hx0], by simpa⟩
 
 variable (K : Type*) [DivisionRing K] (v : Valuation K Γ₀) [RankOne v]
 
-instance restrict_RankOne : RankOne (v.restrict) where
+instance restrict_RankOne : RankOne v.restrict where
   hom' := (RankOne.hom v).comp embedding
   strictMono' := (strictMono v).comp embedding_strictMono
 

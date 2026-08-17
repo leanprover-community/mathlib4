@@ -457,7 +457,7 @@ lemma isEquivalent_smoothingFn_sub_self (i : α) :
       rw [log_mul (by positivity) (by simp_all), sub_add_eq_sub_sub]
     _ = (fun (n : ℕ) => -log (b i) / ((log (b i) + log n) * log n)) := by ext; congr; ring
     _ ~[atTop] (fun (n : ℕ) => -log (b i) / (log n * log n)) := by
-      refine IsEquivalent.div (IsEquivalent.refl) <| IsEquivalent.mul ?_ (IsEquivalent.refl)
+      refine IsEquivalent.div IsEquivalent.refl <| IsEquivalent.mul ?_ (IsEquivalent.refl)
       have : (fun (n : ℕ) => log (b i) + log n) = fun (n : ℕ) => log n + log (b i) := by
         ext; simp [add_comm]
       rw [this]

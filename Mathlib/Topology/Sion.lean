@@ -332,8 +332,8 @@ public theorem exists_lt_iInf_of_lt_iInf_of_finite
     obtain ⟨y1, hy1, hty1⟩ := hrec (by grw [subset_insert b s, hsY]) ht_lt
     refine exists_lt_iInf_of_lt_iInf_of_sup ne_X kX hfy hfy' cY hfx hfx' hb hy1 fun x hx ↦ ?_
     by_cases hx' : x ∈ X'
-    · exact (hty1 x hx').trans_le (le_sup_right)
-    · apply lt_of_lt_of_le _ (le_sup_left)
+    · exact (hty1 x hx').trans_le le_sup_right
+    · apply lt_of_lt_of_le _ le_sup_left
       rw [← not_le]
       exact fun h ↦ hx' ⟨hx, h⟩
 

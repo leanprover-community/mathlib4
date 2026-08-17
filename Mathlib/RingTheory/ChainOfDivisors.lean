@@ -169,10 +169,10 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
       refine Set.injOn_of_injective (fun m m' h => Fin.ext ?_)
       refine
         pow_injective_of_not_isUnit (element_of_chain_not_isUnit_of_index_ne_zero (by simp) h₁) ?_ h
-      exact Irreducible.ne_zero (second_of_chain_is_irreducible hn h₁ (@h₂) hq)
+      exact Irreducible.ne_zero (second_of_chain_is_irreducible hn h₁ @h₂ hq)
     suffices H' : ∀ r ∈ Finset.univ.image fun m : Fin (i + 1) => c 1 ^ (m : ℕ), r ≤ q by
       simp only [← Nat.succ_le_iff, Nat.succ_eq_add_one, ← this]
-      apply card_subset_divisors_le_length_of_chain (@h₂) H'
+      apply card_subset_divisors_le_length_of_chain @h₂ H'
     simp only [Finset.mem_image]
     rintro r ⟨a, _, rfl⟩
     refine dvd_trans ?_ hr
@@ -204,13 +204,13 @@ theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n
       refine Finset.mem_image.mpr ⟨⟨u, Nat.lt_succ_of_le hu⟩, Finset.mem_univ _, ?_⟩
       rwa [associated_iff_eq, eq_comm] at hu'
     · rw [← irreducible_iff_prime]
-      exact second_of_chain_is_irreducible hn h₁ (@h₂) hq
+      exact second_of_chain_is_irreducible hn h₁ @h₂ hq
 
 theorem isPrimePow_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c)
     (h₂ : ∀ {r : Associates M}, r ≤ q ↔ ∃ i, r = c i) (hq : q ≠ 0) : IsPrimePow q :=
-  ⟨c 1, n, irreducible_iff_prime.mp (second_of_chain_is_irreducible hn h₁ (@h₂) hq),
-    zero_lt_iff.mpr hn, (eq_pow_second_of_chain_of_has_chain hn h₁ (@h₂) hq).symm⟩
+  ⟨c 1, n, irreducible_iff_prime.mp (second_of_chain_is_irreducible hn h₁ @h₂ hq),
+    zero_lt_iff.mpr hn, (eq_pow_second_of_chain_of_has_chain hn h₁ @h₂ hq).symm⟩
 
 end DivisorChain
 

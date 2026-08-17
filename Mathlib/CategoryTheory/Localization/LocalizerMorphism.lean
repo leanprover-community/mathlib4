@@ -154,7 +154,7 @@ private noncomputable def fullyFaithfulImp (hG : G.FullyFaithful) : G'.FullyFait
       _ ≅ L₁ ⋙ E₁.functor ⋙ G' :=
             isoWhiskerRight (compUniqFunctor L₁ L₁' W₁).symm G' ≪≫ associator _ _ _
   (E₁.fullyFaithfulInverse.comp (hG.comp E₂.fullyFaithfulFunctor)).ofIso
-    ((isoWhiskerLeft (E₁.inverse) (liftNatIso L₁ W₁ _ _ (G ⋙ E₂.functor) (E₁.functor ⋙ G') e) ≪≫
+    ((isoWhiskerLeft E₁.inverse (liftNatIso L₁ W₁ _ _ (G ⋙ E₂.functor) (E₁.functor ⋙ G') e) ≪≫
     (associator _ _ _).symm ≪≫ isoWhiskerRight E₁.counitIso G' ≪≫ G'.leftUnitor))
 
 lemma nonempty_fullyFaithful_iff : Nonempty G.FullyFaithful ↔ Nonempty G'.FullyFaithful :=

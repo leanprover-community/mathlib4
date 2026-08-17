@@ -409,7 +409,7 @@ lemma natTransTriangleLTGEOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ 
 @[simp]
 lemma natTransTruncLTOfLE_refl (a : ℤ) :
     t.natTransTruncLTOfLE a a (by rfl) = 𝟙 _ :=
-  congr_arg (fun x ↦ Functor.whiskerRight x (Triangle.π₁)) (t.natTransTriangleLTGEOfLE_refl a)
+  congr_arg (fun x ↦ Functor.whiskerRight x Triangle.π₁) (t.natTransTriangleLTGEOfLE_refl a)
 
 @[simp]
 lemma natTransTruncLTOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
@@ -421,7 +421,7 @@ lemma natTransTruncLTOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
 @[simp]
 lemma natTransTruncGEOfLE_refl (a : ℤ) :
     t.natTransTruncGEOfLE a a (by rfl) = 𝟙 _ :=
-  congr_arg (fun x ↦ Functor.whiskerRight x (Triangle.π₃)) (t.natTransTriangleLTGEOfLE_refl a)
+  congr_arg (fun x ↦ Functor.whiskerRight x Triangle.π₃) (t.natTransTriangleLTGEOfLE_refl a)
 
 @[simp]
 lemma natTransTruncGEOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :

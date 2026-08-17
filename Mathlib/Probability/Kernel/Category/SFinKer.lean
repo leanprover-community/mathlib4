@@ -249,7 +249,7 @@ instance deterministic_deterministic (X Y : SFinKer) (κ : Kernel X Y)
   hom_comul := by
     ext : 1; dsimp
     rw [Kernel.id_parallelComp_comp_parallelComp_id]
-    exact (Kernel.parallelComp_self_comp_copy).symm
+    exact Kernel.parallelComp_self_comp_copy.symm
 
 lemma deterministic_id_map (X Y : SFinKer) (f : X.carrier → Y.carrier) (hf : Measurable f) :
     Deterministic (X := X) (Y := Y) (⟨Kernel.id.map f, inferInstance⟩ : X ⟶ Y) where

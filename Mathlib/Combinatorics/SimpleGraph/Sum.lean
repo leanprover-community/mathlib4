@@ -229,10 +229,10 @@ theorem Colorable.sum_max {n m : ℕ} (hG : G.Colorable n) (hH : H.Colorable m) 
     (G ⊕g H).Colorable (max n m) := Nonempty.intro (hG.some.sumFin hH.some)
 
 theorem Colorable.of_sum_left {n : ℕ} (h : (G ⊕g H).Colorable n) : G.Colorable n :=
-  Nonempty.intro (h.some.sumLeft)
+  Nonempty.intro h.some.sumLeft
 
 theorem Colorable.of_sum_right {n : ℕ} (h : (G ⊕g H).Colorable n) : H.Colorable n :=
-  Nonempty.intro (h.some.sumRight)
+  Nonempty.intro h.some.sumRight
 
 @[simp]
 theorem colorable_sum {n : ℕ} : (G ⊕g H).Colorable n ↔ G.Colorable n ∧ H.Colorable n :=

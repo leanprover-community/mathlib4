@@ -166,7 +166,7 @@ namespace Memℓp
 theorem mono {f : (i : α) → E i} {g : α → ℝ}
     (hg : Memℓp g p) (hfg : ∀ i, ‖f i‖ ≤ g i) :
     Memℓp f p := by
-  replace hfg (i) : ‖f i‖ ≤ ‖g i‖ := (hfg i).trans (Real.le_norm_self _)
+  replace hfg i : ‖f i‖ ≤ ‖g i‖ := (hfg i).trans (Real.le_norm_self _)
   obtain (rfl | rfl | hp) := p.trichotomy
   · simp_rw [memℓp_zero_iff, ← norm_pos_iff] at hg ⊢
     refine hg.subset fun i hi ↦ hi.trans_le <| hfg i

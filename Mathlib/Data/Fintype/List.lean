@@ -42,11 +42,11 @@ theorem lists_coe (l : List α) : lists (l : Multiset α) = l.permutations :=
   rfl
 
 @[simp]
-theorem lists_nodup_finset (l : Finset α) : (lists (l.val)).Nodup := by
+theorem lists_nodup_finset (l : Finset α) : (lists l.val).Nodup := by
   have h_nodup : l.val.Nodup := l.nodup
   rw [← Finset.coe_toList l, Multiset.coe_nodup] at h_nodup
   rw [← Finset.coe_toList l]
-  exact nodup_permutations l.val.toList (h_nodup)
+  exact nodup_permutations l.val.toList h_nodup
 
 @[simp]
 theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = ⟦l⟧ := by

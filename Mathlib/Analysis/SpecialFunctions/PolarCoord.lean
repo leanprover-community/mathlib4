@@ -207,14 +207,14 @@ theorem norm_polarCoord_symm (p : ℝ × ℝ) :
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :
     (∫ p in polarCoord.target, p.1 • f (Complex.polarCoord.symm p)) = ∫ p, f p := by
-  rw [← (Complex.volume_preserving_equiv_real_prod.symm).integral_comp
+  rw [← Complex.volume_preserving_equiv_real_prod.symm.integral_comp
     measurableEquivRealProd.symm.measurableEmbedding, ← integral_comp_polarCoord_symm]
   simp_rw [measurableEquivRealProd_symm_polarCoord_symm_apply]
 
 protected theorem lintegral_comp_polarCoord_symm (f : ℂ → ℝ≥0∞) :
     (∫⁻ p in polarCoord.target, ENNReal.ofReal p.1 • f (Complex.polarCoord.symm p)) =
       ∫⁻ p, f p := by
-  rw [← (volume_preserving_equiv_real_prod.symm).lintegral_comp_emb
+  rw [← volume_preserving_equiv_real_prod.symm.lintegral_comp_emb
     measurableEquivRealProd.symm.measurableEmbedding, ← lintegral_comp_polarCoord_symm]
   simp_rw [measurableEquivRealProd_symm_polarCoord_symm_apply]
 

@@ -304,7 +304,7 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
     if ¬(yValue.hasLooseBVar 0) then
       let body := yBody.swapBVars 0 1
       let e' := mkLet yName yType yValue
-        (e.setArg (funPropDecl.funArgId) (.lam xName xType body xBi))
+        (e.setArg funPropDecl.funArgId (.lam xName xType body xBi))
       return ← funProp e'
 
     match (yBody.hasLooseBVar 0), (yBody.hasLooseBVar 1) with
@@ -321,7 +321,7 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
 
     | false, _ =>
       let f := Expr.lam xName xType (yBody.lowerLooseBVars 1 1) xBi
-      funProp (e.setArg (funPropDecl.funArgId) f)
+      funProp (e.setArg funPropDecl.funArgId f)
 
   | _ => throwError "expected expression of the form `fun x ↦ lam y := ..; ..`"
 

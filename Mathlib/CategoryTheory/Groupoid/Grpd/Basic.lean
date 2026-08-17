@@ -83,7 +83,7 @@ instance (X : Grpd) : Groupoid (Grpd.forgetToCat.obj X) := inferInstanceAs (Grou
 instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f.toFunctor, rfl⟩
 
 instance forgetToCat_faithful : forgetToCat.Faithful where
-  map_injective := congrArg (Cat.Hom.toFunctor)
+  map_injective := congrArg Cat.Hom.toFunctor
 
 /-- Convert arrows in the category of groupoids to functors,
 which sometimes helps in applying simp lemmas -/

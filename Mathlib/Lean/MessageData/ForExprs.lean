@@ -70,7 +70,7 @@ where
       goFmt ppCtx fwi.infos s fwi.fmt
     | .ofOriginatingSyntax _ m => go nctx ctx? s m
   /-- Iterate over the tags of a `Format` using `f`. -/
-  goFmt (ppCtx : PPContext) (infos) (s : σ) : Format → m (ForInStep σ)
+  goFmt (ppCtx : PPContext) infos (s : σ) : Format → m (ForInStep σ)
     | .tag n fmt => do
       match infos.get? n with
       | some (.ofTermInfo { expr, lctx .. })

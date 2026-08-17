@@ -70,7 +70,7 @@ noncomputable def ofHasPullbacksAlong {Y X : C} (f : Y ⟶ X) [HasPullbacksAlong
 @[instance_reducible]
 def id (X : C) : ChosenPullbacksAlong (𝟙 X) where
   pullback := 𝟭 _
-  mapPullbackAdj := (Adjunction.id).ofNatIsoLeft (Over.mapId _).symm
+  mapPullbackAdj := Adjunction.id.ofNatIsoLeft (Over.mapId _).symm
 
 /-- Any chosen pullback functor of the identity morphism is naturally isomorphic to the identity
 functor. -/
@@ -102,7 +102,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps, instance_reducible]
 def iso {Y X : C} (f : Y ≅ X) : ChosenPullbacksAlong f.hom where
   pullback.obj Z := Over.mk (Z.hom ≫ f.inv)
-  pullback.map {Y Z} g := Over.homMk (g.left)
+  pullback.map {Y Z} g := Over.homMk g.left
   mapPullbackAdj.unit.app T := Over.homMk (𝟙 T.left)
   mapPullbackAdj.counit.app U := Over.homMk (𝟙 _)
 
@@ -148,7 +148,7 @@ def cartesianMonoidalCategoryToUnit [CartesianMonoidalCategory C] {X : C} (f : X
     ChosenPullbacksAlong f where
   pullback.obj Y := Over.mk (snd Y.left X)
   pullback.map {Y Z} g := Over.homMk (g.left ▷ X)
-  mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom))
+  mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) T.hom)
   mapPullbackAdj.counit.app U := Over.homMk (fst _ _)
 
 set_option backward.defeqAttrib.useBackward true in

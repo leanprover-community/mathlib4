@@ -57,7 +57,7 @@ lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s)
   constructor
   let f : ULift.down ⁻¹' s → ULift s := fun x ↦ ULift.up (restrictPreimage s ULift.down x)
   have : Function.Bijective f :=
-    ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
+    ULift.up_bijective.comp (restrictPreimage_bijective _ ULift.down_bijective)
   exact Equiv.ofBijective f this
 
 -- `simp` can't figure out universe levels: normal form is `lift_mk_shrink'`.

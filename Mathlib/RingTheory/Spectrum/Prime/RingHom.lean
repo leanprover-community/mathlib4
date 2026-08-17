@@ -285,7 +285,7 @@ lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
   let k := p.asIdeal.ResidueField
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨m, hm⟩ := Ideal.exists_maximal (k ⊗[R] S)
-    use PrimeSpectrum.comap (Algebra.TensorProduct.includeRight).toRingHom ⟨m, hm.isPrime⟩
+    use PrimeSpectrum.comap Algebra.TensorProduct.includeRight.toRingHom ⟨m, hm.isPrime⟩
     ext : 1
     rw [← PrimeSpectrum.comap_comp_apply,
       ← Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap, comap_comp_apply]

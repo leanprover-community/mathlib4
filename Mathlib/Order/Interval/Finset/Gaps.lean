@@ -72,7 +72,7 @@ theorem intervalGapsWithin_zero_fst : (F.intervalGapsWithin h a b 0).1 = a := by
   simp [intervalGapsWithin, intervalGapsWithin.fst]
 
 theorem intervalGapsWithin_succ_fst_of_lt (hj : j < k) :
-    (F.intervalGapsWithin h a b (j.succ)).1 = (F.orderEmbOfFin (α := α ×ₗ α) h ⟨j, hj⟩).2 := by
+    (F.intervalGapsWithin h a b j.succ).1 = (F.orderEmbOfFin (α := α ×ₗ α) h ⟨j, hj⟩).2 := by
   have : (j.succ : Fin (k + 1)) = (⟨j, hj⟩ : Fin k).succ := by ext; simp [hj]
   grind [intervalGapsWithin, intervalGapsWithin.fst]
 
@@ -164,7 +164,7 @@ theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
   have hj₃ : (⟨j - 1, by omega⟩ : Fin k) ≠ ⟨j, by omega⟩ := by grind
   set G := F.orderEmbOfFin (α := α ×ₗ α) h
   have := hF (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)])
-    (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)]) (G.injective.ne (hj₃))
+    (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)]) (G.injective.ne hj₃)
   contrapose! this
   simp only [Set.not_disjoint_iff, Set.mem_Icc]
   use (G ⟨j, by omega⟩).1

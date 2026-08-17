@@ -452,7 +452,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf
     · rw [← Finset.sum_smul, hμ, one_smul]
 
 theorem sup_torsionBySet_ideal_eq_torsionBySet_inf (P Q : Ideal R) {hc : P ⊔ Q = ⊤} :
-    torsionBySet R M ↑(P) ⊔ torsionBySet R M ↑(Q) = torsionBySet R M ↑(P ⊓ Q) := by
+    torsionBySet R M ↑P ⊔ torsionBySet R M ↑Q = torsionBySet R M ↑(P ⊓ Q) := by
   let map : Fin 2 → Ideal R | 0 => P | 1 => Q
   have heq := Submodule.iSup_torsionBySet_ideal_eq_torsionBySet_iInf
     (p := map) (M := M) (S := ⊤) ?_
@@ -474,7 +474,7 @@ theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i �
   intro j hj; apply hp hi (hT hj); rintro rfl; exact hiT hj
 
 theorem disjoint_torsionBySet_ideal {P Q : Ideal R} (hc : P ⊔ Q = ⊤) :
-    Disjoint (torsionBySet R M ↑(P)) (torsionBySet R M ↑(Q)) := by
+    Disjoint (torsionBySet R M ↑P) (torsionBySet R M ↑Q) := by
   let map : Fin 2 → Ideal R | 0 => P | 1 => Q
   have heq := Submodule.supIndep_torsionBySet_ideal (p := map) (M := M) (S := ⊤) ?_
   · simpa [Finset.top_eq_univ, Fin.isValue, map] using heq

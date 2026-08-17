@@ -83,7 +83,7 @@ lemma toLimitFun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimitFun P) :
   ext x
   simp only [Set.mem_preimage, Set.mem_singleton_iff]
   nth_rw 1 [← QuotientGroup.out_eq' i, eq_comm, QuotientGroup.eq]
-  exact Iff.symm (Set.mem_smul_set_iff_inv_smul_mem)
+  exact Iff.symm Set.mem_smul_set_iff_inv_smul_mem
 
 /-- The morphism in the category of `ProfiniteGrp` from a profinite group `P` to
 the projective limit of its quotients by open normal subgroups ordered by inclusion -/
@@ -129,7 +129,7 @@ theorem toLimit_injective (P : ProfiniteGrp.{u}) : Function.Injective (toLimit P
   rw [← MonoidHom.ker_eq_bot_iff, Subgroup.eq_bot_iff_forall]
   intro x h
   by_contra xne1
-  rcases exist_openNormalSubgroup_sub_open_nhds_of_one (isOpen_compl_singleton)
+  rcases exist_openNormalSubgroup_sub_open_nhds_of_one isOpen_compl_singleton
     (Set.mem_compl_singleton_iff.mpr fun a => xne1 a.symm) with ⟨H, hH⟩
   exact hH ((QuotientGroup.eq_one_iff x).mp (congrFun (Subtype.val_inj.mpr h) H)) rfl
 

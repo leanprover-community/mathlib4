@@ -707,7 +707,7 @@ abbrev invertibleFstOfInvertible (x : tsze R M) [Invertible x] : Invertible x.fs
   invOf_mul_self := by rw [← fst_mul, invOf_mul_self, fst_one]
   mul_invOf_self := by rw [← fst_mul, mul_invOf_self, fst_one]
 
-theorem fst_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] : (⅟x).fst = ⅟(x.fst) := by
+theorem fst_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] : (⅟x).fst = ⅟x.fst := by
   let := invertibleFstOfInvertible x
   convert! (rfl : _ = ⅟x.fst)
 

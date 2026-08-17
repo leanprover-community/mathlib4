@@ -87,7 +87,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma complete_distinguished_essImageDistTriang_morphism
     (H : ∀ (T₁' T₂' : Triangle C) (_ : T₁' ∈ distTriang C) (_ : T₂' ∈ distTriang C)
-      (a : L.obj (T₁'.obj₁) ⟶ L.obj (T₂'.obj₁)) (b : L.obj (T₁'.obj₂) ⟶ L.obj (T₂'.obj₂))
+      (a : L.obj T₁'.obj₁ ⟶ L.obj T₂'.obj₁) (b : L.obj T₁'.obj₂ ⟶ L.obj T₂'.obj₂)
       (_ : L.map T₁'.mor₁ ≫ b = a ≫ L.map T₂'.mor₁),
       ∃ (φ : L.mapTriangle.obj T₁' ⟶ L.mapTriangle.obj T₂'), φ.hom₁ = a ∧ φ.hom₂ = b)
     (T₁ T₂ : Triangle D)

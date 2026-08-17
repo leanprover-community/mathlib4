@@ -97,7 +97,7 @@ def starCenterToCentroidCenter :
 
 /-- The canonical homomorphism from the center into the centroid -/
 def starCenterToCentroid : NonUnitalStarSubsemiring.center α →⋆ₙ+* CentroidHom α :=
-  NonUnitalStarRingHom.comp (centerStarEmbedding) (starCenterToCentroidCenter)
+  NonUnitalStarRingHom.comp centerStarEmbedding starCenterToCentroidCenter
 
 lemma starCenterToCentroid_apply (z : NonUnitalStarSubsemiring.center α) (a : α) :
     (starCenterToCentroid z) a = z * a := rfl

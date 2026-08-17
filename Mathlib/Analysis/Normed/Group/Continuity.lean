@@ -48,12 +48,12 @@ lemma ContinuousAt.enorm {a : X} (h : ContinuousAt f a) : ContinuousAt (‖f ·�
 @[fun_prop]
 lemma ContinuousWithinAt.enorm {s : Set X} {a : X} (h : ContinuousWithinAt f s a) :
     ContinuousWithinAt (‖f ·‖ₑ) s a :=
-  (ContinuousENorm.continuous_enorm.continuousWithinAt).comp (t := Set.univ) h
+  ContinuousENorm.continuous_enorm.continuousWithinAt.comp (t := Set.univ) h
     (fun _ _ ↦ by trivial)
 
 @[fun_prop]
 lemma ContinuousOn.enorm (h : ContinuousOn f s) : ContinuousOn (‖f ·‖ₑ) s :=
-  (ContinuousENorm.continuous_enorm.continuousOn).comp (t := Set.univ) h <| Set.mapsTo_univ _ _
+  ContinuousENorm.continuous_enorm.continuousOn.comp (t := Set.univ) h <| Set.mapsTo_univ _ _
 
 end ContinuousENorm
 

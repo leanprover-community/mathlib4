@@ -124,7 +124,7 @@ def adj : free ⊣ forget GrpCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv X Y :=
         ConcreteCategory.homEquiv.trans
-          (Equiv.trans (FreeGroup.lift.symm) TypeCat.homEquiv.symm)
+          (Equiv.trans FreeGroup.lift.symm TypeCat.homEquiv.symm)
       homEquiv_naturality_left_symm := by
         intros
         ext : 1

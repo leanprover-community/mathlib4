@@ -257,7 +257,7 @@ lemma InjectiveResolution.iso_inv_naturality {X Y : C} (f : X ⟶ Y)
     (φ : I.cocomplex ⟶ J.cocomplex) (comm : I.ι.f 0 ≫ φ.f 0 = f ≫ J.ι.f 0) :
     I.iso.inv ≫ (injectiveResolutions C).map f =
       (HomotopyCategory.quotient _ _).map φ ≫ J.iso.inv := by
-  rw [← cancel_mono (J.iso).hom, Category.assoc, iso_hom_naturality f I J φ comm,
+  rw [← cancel_mono J.iso.hom, Category.assoc, iso_hom_naturality f I J φ comm,
     Iso.inv_hom_id_assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id]
 
 end

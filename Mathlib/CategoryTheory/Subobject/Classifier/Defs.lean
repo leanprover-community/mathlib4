@@ -593,7 +593,7 @@ noncomputable def classifier : Subobject.Classifier C where
       (by simp) (Subsingleton.elim _ _) (by simp) (by simp)
   uniq {U X} m _ χ₀ χ' sq := by
     have : IsPullback m (h.χ₀ U) χ' h.Ω₀.arrow :=
-      sq.of_iso (Iso.refl _) (Iso.refl _) (h.isoΩ₀.symm) (Iso.refl _)
+      sq.of_iso (Iso.refl _) (Iso.refl _) h.isoΩ₀.symm (Iso.refl _)
         (by simp) (h.isTerminalΩ₀.hom_ext _ _) (by simp) (by simp)
     exact h.uniq this
 

@@ -67,7 +67,7 @@ lemma kernImage_mono : Monotone (kernImage f) :=
   Set.preimage_kernImage.monotone_u
 
 lemma kernImage_eq_compl {s : Set α} : kernImage f s = (f '' sᶜ)ᶜ :=
-  Set.preimage_kernImage.u_unique (Set.image_preimage.compl)
+  Set.preimage_kernImage.u_unique Set.image_preimage.compl
     (fun t ↦ compl_compl (f ⁻¹' t) ▸ Set.preimage_compl)
 
 lemma kernImage_compl {s : Set α} : kernImage f (sᶜ) = (f '' s)ᶜ := by

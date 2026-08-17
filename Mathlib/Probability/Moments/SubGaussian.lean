@@ -377,7 +377,7 @@ lemma measure_pos_eq_zero_of_hasSubGaussianMGF_zero (h : HasSubgaussianMGF X 0 �
 
 lemma ae_eq_zero_of_hasSubgaussianMGF_zero (h : HasSubgaussianMGF X 0 κ ν) :
     ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] 0 := by
-  filter_upwards [(h.neg).measure_pos_eq_zero_of_hasSubGaussianMGF_zero,
+  filter_upwards [h.neg.measure_pos_eq_zero_of_hasSubGaussianMGF_zero,
     h.measure_pos_eq_zero_of_hasSubGaussianMGF_zero]
   intro ω' h1 h2
   simp_rw [Pi.neg_apply, Left.neg_pos_iff] at h1
@@ -850,7 +850,7 @@ lemma hasSubgaussianMGF_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ]
     calc
     _ = mgf (-X) μ (-t) := by simp [mgf]
     _ ≤ exp ((‖-a - -b‖₊ / 2) ^ 2 * (-t) ^ 2 / 2) := by
-      apply ProbabilityTheory.mgf_le_of_mem_Icc_of_integral_eq_zero (hm.neg)
+      apply ProbabilityTheory.mgf_le_of_mem_Icc_of_integral_eq_zero hm.neg
       · filter_upwards [hb] with ω ⟨hl, hr⟩ using ⟨neg_le_neg_iff.2 hr, neg_le_neg_iff.2 hl⟩
       · simp only [Pi.neg_apply]; rw [integral_neg, hc, neg_zero]
       · rwa [Left.neg_pos_iff]

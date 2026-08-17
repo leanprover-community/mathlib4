@@ -119,7 +119,7 @@ lemma tendsto_volume_totalLengthFilter_nhds_zero :
     totalLengthFilter (𝓝 0) := by
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (h := fun E ↦ ENNReal.ofReal (∑ i ∈ Finset.range E.1, (dist (E.2 i).1 (E.2 i).2)))
-  · convert! ENNReal.tendsto_ofReal (Filter.tendsto_comap)
+  · convert! ENNReal.tendsto_ofReal Filter.tendsto_comap
     simp
   · intro; simp
   · intro E
@@ -204,7 +204,7 @@ theorem neg (hf : AbsolutelyContinuousOnInterval f a b) :
 theorem sub (hf : AbsolutelyContinuousOnInterval f a b)
     (hg : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (f - g) a b := by
-  simpa [sub_eq_add_neg] using hf.add (hg.neg)
+  simpa [sub_eq_add_neg] using hf.add hg.neg
 
 theorem const_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
     (α : M) (hf : AbsolutelyContinuousOnInterval f a b) :
@@ -249,7 +249,7 @@ theorem continuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` is bounded on `uIcc a b`. -/
 theorem exists_bound (hf : AbsolutelyContinuousOnInterval f a b) :
     ∃ (C : ℝ), ∀ x ∈ uIcc a b, ‖f x‖ ≤ C :=
-  isCompact_Icc.exists_bound_of_continuousOn (hf.continuousOn)
+  isCompact_Icc.exists_bound_of_continuousOn hf.continuousOn
 
 /-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f • g` is absolutely continuous
 on `uIcc a b`. -/
@@ -435,7 +435,7 @@ theorem _root_.IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegra
   filter_upwards [this] with (n, I) hnI
   obtain ⟨hnI1, hnI2⟩ := mem_ofPred_eq ▸ hnI
   simp only
-  rw [← integral_norm_eq_lintegral_enorm (h.aestronglyMeasurable_restrict_uIoc.restrict),
+  rw [← integral_norm_eq_lintegral_enorm h.aestronglyMeasurable_restrict_uIoc.restrict,
       integral_biUnion_finset _ (by simp +contextual [uIoc]) hnI2]
   · refine Finset.sum_le_sum (fun i hi ↦ ?_)
     rw [Real.dist_eq,

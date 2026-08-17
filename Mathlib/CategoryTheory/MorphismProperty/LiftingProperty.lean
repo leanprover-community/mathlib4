@@ -128,7 +128,7 @@ lemma antitone_llp : Antitone (llp : MorphismProperty C → _) :=
 
 lemma pushouts_le_llp_rlp : T.pushouts ≤ T.rlp.llp := by
   intro A B i hi
-  exact (T.rlp.llp.isStableUnderCobaseChange_iff_pushouts_le).1 inferInstance i
+  exact T.rlp.llp.isStableUnderCobaseChange_iff_pushouts_le.1 inferInstance i
     (pushouts_monotone T.le_llp_rlp _ hi)
 
 @[simp]

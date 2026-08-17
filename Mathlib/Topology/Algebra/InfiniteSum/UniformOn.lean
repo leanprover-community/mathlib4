@@ -256,7 +256,7 @@ lemma MultipliableLocallyUniformlyOn_congr
     {f f' : ι → β → α} (h : ∀ i, s.EqOn (f i) (f' i))
     (h2 : MultipliableLocallyUniformlyOn f s) : MultipliableLocallyUniformlyOn f' s := by
   apply HasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn
-  exact (h2.hasProdLocallyUniformlyOn).congr fun v ↦ eqOn_fun_finsetProd h v
+  exact h2.hasProdLocallyUniformlyOn.congr fun v ↦ eqOn_fun_finsetProd h v
 
 @[to_additive]
 theorem HasProdLocallyUniformlyOn.comp {γ : Type*} [TopologicalSpace γ] {t : Set γ}

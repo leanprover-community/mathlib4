@@ -165,7 +165,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
               { left := ⟨⟨⟩⟩
                 right := pair i i'
                 hom := ObjectProperty.homMk (homOfLE
-                  (le_inf ((a.hom.le).trans (by simp)) b.hom.le)) }, _],
+                  (le_inf (a.hom.le.trans (by simp)) b.hom.le)) }, _],
                 ?_, rfl⟩
         exact
           List.IsChain.cons_cons

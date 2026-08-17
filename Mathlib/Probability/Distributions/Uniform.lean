@@ -145,7 +145,7 @@ variable {X : Ω → ℝ} {s : Set ℝ}
 theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
     Integrable fun x : ℝ => x * (pdf X ℙ volume x).toReal := by
   by_cases hnt : volume s = 0 ∨ volume s = ∞
-  · have I : Integrable (fun x ↦ x * ENNReal.toReal (0)) := by simp
+  · have I : Integrable (fun x ↦ x * ENNReal.toReal 0) := by simp
     apply I.congr
     filter_upwards [pdf_eq_zero_of_measure_eq_zero_or_top huX hnt] with x hx
     simp [hx]

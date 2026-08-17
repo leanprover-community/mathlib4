@@ -176,7 +176,7 @@ lemma semivariation_apply_le_bound : μ.semivariation s ≤ μ.bound := by
   rw [ENNReal.coe_toNNReal semivariation_univ_lt_top.ne]
 
 lemma enorm_apply_le_bound : ‖μ s‖ₑ ≤ μ.bound :=
-  (enorm_apply_le_semivariation).trans semivariation_apply_le_bound
+  enorm_apply_le_semivariation.trans semivariation_apply_le_bound
 
 lemma nnnorm_apply_le_bound : ‖μ s‖₊ ≤ μ.bound := by
   rw [← ENNReal.coe_le_coe, ← enorm_eq_nnnorm]

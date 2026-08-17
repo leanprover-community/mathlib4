@@ -686,7 +686,7 @@ theorem inv_def (e₁ : MulAut M) : e₁⁻¹ = e₁.symm :=
 theorem inv_symm (e : MulAut M) : e⁻¹.symm = e := rfl
 
 @[to_additive (attr := simp)]
-theorem symm_inv (e : MulAut M) : (e.symm)⁻¹ = e := rfl
+theorem symm_inv (e : MulAut M) : e.symm⁻¹ = e := rfl
 
 @[to_additive (attr := simp)]
 theorem inv_apply (e : MulAut M) (m : M) : e⁻¹ m = e.symm m := by

@@ -132,7 +132,7 @@ lemma diffContOnCl_invInterpStrip {ε : ℝ} (hε : ε > 0) :
 /-- If `f` is bounded on the unit vertical strip, then `f` is bounded by `sSupNormIm` there. -/
 lemma norm_le_sSupNormIm (f : ℂ → E) (z : ℂ) (hD : z ∈ verticalClosedStrip 0 1)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) :
-    ‖f z‖ ≤ sSupNormIm f (z.re) := by
+    ‖f z‖ ≤ sSupNormIm f z.re := by
   refine le_csSup ?_ ?_
   · revert hB; gcongr
     exact preimage_mono (singleton_subset_iff.mpr hD)
@@ -142,7 +142,7 @@ lemma norm_le_sSupNormIm (f : ℂ → E) (z : ℂ) (hD : z ∈ verticalClosedStr
 /-- Alternative version of `norm_le_sSupNormIm` with a strict inequality and a positive `ε`. -/
 lemma norm_lt_sSupNormIm_eps (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hD : z ∈ verticalClosedStrip 0 1) (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) :
-    ‖f z‖ < ε + sSupNormIm f (z.re) :=
+    ‖f z‖ < ε + sSupNormIm f z.re :=
   lt_add_of_pos_of_le hε (norm_le_sSupNormIm f z hD hB)
 
 variable [NormedSpace ℂ E]

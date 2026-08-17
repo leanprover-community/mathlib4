@@ -698,7 +698,7 @@ theorem epic_of_localizationMap {P : Type*} [Monoid P] {j k : N →* P}
     (h : j.comp f.toMonoidHom = k.comp f.toMonoidHom) : j = k := by
   ext n
   obtain ⟨⟨m, s⟩, hn : n * f s = f m⟩ := f.surj n
-  replace h (a) : j (f a) = k (f a) := congr($h a)
+  replace h a : j (f a) = k (f a) := congr($h a)
   exact ((f.map_units s).map j).mul_left_inj.mp <| by rw [← j.map_mul, h, ← k.map_mul, hn, h m]
 
 end LocalizationMap

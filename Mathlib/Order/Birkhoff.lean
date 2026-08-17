@@ -228,7 +228,7 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
   classical
   -- TODO: This should be a single `simp` call but `simp` refuses to use
   -- `OrderIso.coe_toOrderEmbedding` and `Fintype.coe_finsetOrderIsoSet_symm`
-  simp [birkhoffFinset, (OrderIso.coe_toOrderEmbedding)]
+  simp [birkhoffFinset, OrderIso.coe_toOrderEmbedding]
 
 @[simp] lemma birkhoffSet_sup (a b : α) : birkhoffSet (a ⊔ b) = birkhoffSet a ∪ birkhoffSet b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]

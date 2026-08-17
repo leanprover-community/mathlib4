@@ -217,10 +217,10 @@ lemma IsRestriction.isLoop_iff (hNM : N ≤r M) : N.IsLoop e ↔ e ∈ N.E ∧ M
   exact fun heR heE ↦ (heE (hR heR)).elim
 
 lemma IsLoop.of_isRestriction (he : N.IsLoop e) (hNM : N ≤r M) : M.IsLoop e :=
-  ((hNM.isLoop_iff).1 he).2
+  (hNM.isLoop_iff.1 he).2
 
 lemma IsLoop.isLoop_isRestriction (he : M.IsLoop e) (hNM : N ≤r M) (heN : e ∈ N.E) : N.IsLoop e :=
-  (hNM.isLoop_iff).2 ⟨heN, he⟩
+  hNM.isLoop_iff.2 ⟨heN, he⟩
 
 @[simp]
 lemma map_loops {f : α → β} {hf : InjOn f M.E} : (M.map f hf).loops = f '' M.loops := by
@@ -698,7 +698,7 @@ lemma closure_disjoint_of_disjoint_of_subset_coloops (hXK : Disjoint X K) (hK : 
   rwa [disjoint_iff_inter_eq_empty, closure_inter_eq_of_subset_coloops X hK,
     ← disjoint_iff_inter_eq_empty]
 
-lemma closure_disjoint_coloops_of_disjoint_coloops (hX : Disjoint X (M.coloops)) :
+lemma closure_disjoint_coloops_of_disjoint_coloops (hX : Disjoint X M.coloops) :
     Disjoint (M.closure X) M.coloops :=
   closure_disjoint_of_disjoint_of_subset_coloops hX Subset.rfl
 
@@ -759,7 +759,7 @@ lemma ext_indep_disjoint_loops_coloops {M₁ M₂ : Matroid α} (hE : M₁.E = M
     M₁ = M₂ := by
   refine ext_indep hE fun I hI ↦ ?_
   rw [← sdiff_coloops_indep_iff, ← @sdiff_coloops_indep_iff _ M₂, ← hc]
-  obtain hdj | hndj := em (Disjoint I (M₁.loops))
+  obtain hdj | hndj := em (Disjoint I M₁.loops)
   · rw [h _ (sdiff_subset.trans hI)]
     rw [disjoint_union_right]
     exact ⟨disjoint_of_subset_left sdiff_subset hdj, disjoint_sdiff_left⟩

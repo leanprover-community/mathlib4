@@ -244,7 +244,7 @@ alias baseChange_map' := pullbackLift_fst_snd
 theorem overPullbackMap [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
     [HasPullbacksAlong f] {X Y : Over S} (g : X ⟶ Y) (H : P g.left) :
     P ((Over.pullback f).map g).left :=
-  pullbackLift_fst_snd f (g.w.symm) H
+  pullbackLift_fst_snd f g.w.symm H
 
 @[deprecated (since := "2026-03-20")]
 alias baseChange_map := overPullbackMap

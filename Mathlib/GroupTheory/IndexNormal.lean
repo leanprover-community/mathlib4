@@ -67,6 +67,6 @@ theorem normal_of_index_eq_minFac_card (hHp : H.index = (Nat.card G).minFac) :
   rw [Nat.coprime_factorial_iff hr1]
   exact lt_of_lt_of_le (Nat.sub_one_lt hp.ne_zero) <|
     hHp ▸ minFac_le_of_dvd (Nat.minFac_prime hr1).two_le
-      (dvd_trans (minFac_dvd H.normalCore.index) (H.normalCore.index_dvd_card))
+      (dvd_trans (minFac_dvd H.normalCore.index) H.normalCore.index_dvd_card)
 
 end Subgroup

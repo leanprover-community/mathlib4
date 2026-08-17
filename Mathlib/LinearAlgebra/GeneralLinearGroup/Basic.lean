@@ -52,7 +52,7 @@ theorem toLinearEquiv_mul (f g : GeneralLinearGroup R M) :
   rfl
 
 theorem toLinearEquiv_inv (f : GeneralLinearGroup R M) :
-    (f⁻¹).toLinearEquiv = (f.toLinearEquiv)⁻¹ := by
+    (f⁻¹).toLinearEquiv = f.toLinearEquiv⁻¹ := by
   rfl
 
 /-- An equivalence from `M` to itself determines an invertible linear map. -/

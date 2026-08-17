@@ -298,7 +298,7 @@ lemma sieve_mem : sieve data f ∈ J₀ X₀ := by
         Sieve.pullback hπ.some.lift
           (Sieve.functorPushforward F (F.imageSieve (hπ.some.map ≫ p))))
   refine J.superset_covering ?_
-    (J.bind_covering (J.pullback_stable f (data.toOneHypercover.mem₀)) (R := R)
+    (J.bind_covering (J.pullback_stable f data.toOneHypercover.mem₀) (R := R)
     (fun W p hp ↦ J.bind_covering (F.is_cover_of_isCoverDense J W) ?_))
   · rintro W' _ ⟨W, _, p, hp, ⟨Y₀, a, b, hb, ⟨U, c, d, ⟨x₁, w₁⟩, fac⟩, rfl⟩, rfl⟩
     have hp' := Sieve.ofArrows.fac hp

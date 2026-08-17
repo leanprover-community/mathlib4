@@ -184,7 +184,7 @@ abbrev diagram' : StructuredArrow S toLightProfinite ⥤ LightProfinite :=
   S.fintypeDiagram' ⋙ toLightProfinite
 
 /-- A cone over `S.diagram'` whose cone point is `S`. -/
-def asLimitCone' : Cone (S.diagram') := cone (𝟭 _) S
+def asLimitCone' : Cone S.diagram' := cone (𝟭 _) S
 
 instance (i : ℕᵒᵖ) : Epi (S.asLimitCone.π.app i) :=
   (epi_iff_surjective _).mpr (S.proj_surjective _)

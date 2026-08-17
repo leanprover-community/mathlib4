@@ -778,7 +778,7 @@ lemma isLeftAdjoint_comp_iff_right {E : Type u₃} [Category.{v₃} E] (F : C �
     (F ⋙ G).IsLeftAdjoint ↔ G.IsLeftAdjoint := by
   refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
   let iso : G ≅ F.asEquivalence.inverse ⋙ F ⋙ G :=
-    (Functor.leftUnitor _).symm ≪≫ Functor.isoWhiskerRight (F.asEquivalence.counitIso).symm _ ≪≫
+    (Functor.leftUnitor _).symm ≪≫ Functor.isoWhiskerRight F.asEquivalence.counitIso.symm _ ≪≫
       Functor.associator _ _ _
   exact isLeftAdjoint_of_iso iso.symm
 
@@ -787,7 +787,7 @@ lemma isRightAdjoint_comp_iff_right {E : Type u₃} [Category.{v₃} E] (F : C �
     (F ⋙ G).IsRightAdjoint ↔ G.IsRightAdjoint := by
   refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
   let iso : G ≅ F.asEquivalence.inverse ⋙ F ⋙ G :=
-    (Functor.leftUnitor _).symm ≪≫ Functor.isoWhiskerRight (F.asEquivalence.counitIso).symm _ ≪≫
+    (Functor.leftUnitor _).symm ≪≫ Functor.isoWhiskerRight F.asEquivalence.counitIso.symm _ ≪≫
       Functor.associator _ _ _
   exact isRightAdjoint_of_iso iso.symm
 

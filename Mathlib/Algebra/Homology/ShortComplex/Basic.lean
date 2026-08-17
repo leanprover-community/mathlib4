@@ -298,7 +298,7 @@ def opFunctor : (ShortComplex C)ᵒᵖ ⥤ ShortComplex Cᵒᵖ where
 /-- The obvious functor `ShortComplex Cᵒᵖ ⥤ (ShortComplex C)ᵒᵖ`. -/
 @[simps]
 def unopFunctor : ShortComplex Cᵒᵖ ⥤ (ShortComplex C)ᵒᵖ where
-  obj S := Opposite.op (S.unop)
+  obj S := Opposite.op S.unop
   map φ := (unopMap φ).op
 
 set_option backward.isDefEq.respectTransparency.types false in

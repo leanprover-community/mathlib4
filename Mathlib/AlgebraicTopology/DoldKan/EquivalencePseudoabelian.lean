@@ -129,7 +129,7 @@ theorem equivalence_counitIso :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem hε :
-    Compatibility.υ (isoN₁) =
+    Compatibility.υ isoN₁ =
       (Γ₂N₁ : (toKaroubiEquivalence _).functor ≅
           (N₁ : SimplicialObject C ⥤ _) ⋙ Preadditive.DoldKan.equivalence.inverse) := by
   dsimp only [isoN₁]

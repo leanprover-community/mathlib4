@@ -79,7 +79,7 @@ theorem dualDistribInvOfBasis_apply [Fintype ι] [∀ i, Fintype (κ i)] (b : Π
 
 theorem dualDistrib_dualDistribInvOfBasis_left_inverse [Finite ι] [∀ i, Finite (κ i)]
     (b : Π i, Basis (κ i) R (M i)) :
-    (dualDistrib) ∘ₗ (dualDistribInvOfBasis b) = LinearMap.id := by
+    dualDistrib ∘ₗ (dualDistribInvOfBasis b) = LinearMap.id := by
   have := Fintype.ofFinite ι
   have := fun i => Fintype.ofFinite (κ i)
   classical

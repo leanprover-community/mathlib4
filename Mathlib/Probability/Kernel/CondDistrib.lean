@@ -133,7 +133,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condDistrib (hX : AEM
 
 theorem stronglyMeasurable_integral_condDistrib (hf : StronglyMeasurable f) :
     StronglyMeasurable[mβ.comap X] (fun a ↦ ∫ y, f (X a, y) ∂condDistrib Y X μ (X a)) :=
-  (hf.integral_condDistrib).comp_measurable <| Measurable.of_comap_le le_rfl
+  hf.integral_condDistrib.comp_measurable <| Measurable.of_comap_le le_rfl
 
 theorem aestronglyMeasurable_integral_condDistrib (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a))) :

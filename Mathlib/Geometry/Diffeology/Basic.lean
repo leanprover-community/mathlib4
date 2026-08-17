@@ -331,7 +331,7 @@ def ofCorePlotsOn {X : Type*} (d : DiffeologicalSpace.CorePlotsOn X) :
         rw [OpenPartialHomeomorph.univBall_target x hε] at h
         aesop)
       OpenPartialHomeomorph.contDiff_univBall
-    have h' := d.isPlotOn_reparam (Metric.isOpen_ball) (Set.mapsTo_univ _ _)
+    have h' := d.isPlotOn_reparam Metric.isOpen_ball (Set.mapsTo_univ _ _)
       (d.isPlotOn_univ.mpr h) (OpenPartialHomeomorph.contDiffOn_univBall_symm (c := x) (r := ε))
     refine ⟨_, Metric.isOpen_ball, Metric.mem_ball_self hε, (d.isPlotOn_congr _ ?_).mp h'⟩
     rw [Function.comp_assoc, ← OpenPartialHomeomorph.coe_trans]
@@ -388,7 +388,7 @@ def _root_.NormedSpace.toDiffeology (X : Type*)
       exact ((hv' x hxv).contDiffAt (hv.mem_nhds hxv)).contDiffWithinAt
     dTopology := inferInstance
     isOpen_iff_preimages_plots := fun {u} ↦ by
-      refine ⟨fun hu _ _ hp ↦ IsOpen.preimage (hp.continuous) hu, fun h ↦ ?_⟩
+      refine ⟨fun hu _ _ hp ↦ IsOpen.preimage hp.continuous hu, fun h ↦ ?_⟩
       rw [← toEuclidean.preimage_symm_preimage u]
       exact toEuclidean.continuous.isOpen_preimage _ (h _ toEuclidean.symm.contDiff) }
 

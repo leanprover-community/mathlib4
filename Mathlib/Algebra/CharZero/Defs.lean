@@ -97,7 +97,7 @@ variable [AddMonoidWithOne R] [CharZero R]
   (ofNat_ne_zero n).symm
 
 @[simp] lemma ofNat_ne_one (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R) ≠ 1 :=
-  Nat.cast_ne_one.2 (Nat.AtLeastTwo.ne_one)
+  Nat.cast_ne_one.2 Nat.AtLeastTwo.ne_one
 
 @[simp] lemma one_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (1 : R) ≠ ofNat(n) :=
   (ofNat_ne_one n).symm

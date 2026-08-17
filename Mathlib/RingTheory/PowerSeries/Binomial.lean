@@ -70,7 +70,7 @@ lemma binomialSeries_add [Ring A] [Algebra R A] (r s : R) :
 lemma binomialSeries_nat [Ring A] [Algebra R A] (d : ℕ) :
     binomialSeries A (d : R) = (1 + X) ^ d := by
   ext n
-  have hright : (1 + X) ^ d = (((1 : Polynomial A) + (Polynomial.X)) ^ d).toPowerSeries := by
+  have hright : (1 + X) ^ d = (((1 : Polynomial A) + Polynomial.X) ^ d).toPowerSeries := by
     simp
   rw [hright, Polynomial.coeff_coe, binomialSeries_coeff, Polynomial.coeff_one_add_X_pow]
   simp [Ring.choose_natCast, Nat.cast_smul_eq_nsmul]

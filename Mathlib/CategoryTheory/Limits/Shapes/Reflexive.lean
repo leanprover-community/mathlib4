@@ -589,7 +589,7 @@ instance reflexivePair_hasColimit_of_hasCoequalizer
 
 /-- A reflexive cofork is a colimit cocone if and only if the underlying cofork is. -/
 def ReflexiveCofork.isColimitEquiv (G : ReflexiveCofork F) :
-    IsColimit (G.toCofork) ≃ IsColimit G :=
+    IsColimit G.toCofork ≃ IsColimit G :=
   IsColimit.equivIsoColimit (reflexiveCoforkEquivCoforkObjIso F G).symm |>.trans <|
     (IsColimit.precomposeHomEquiv (diagramIsoParallelPair _).symm (G.whisker _)).trans <|
       Functor.Final.isColimitWhiskerEquiv _ _

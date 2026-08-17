@@ -218,7 +218,7 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
 /-- Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving
 just two summands. -/
 theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
-    log⁺ (∑ t ∈ s, f t) ≤ log (s.card) + ∑ t ∈ s, log⁺ (f t) := by
+    log⁺ (∑ t ∈ s, f t) ≤ log s.card + ∑ t ∈ s, log⁺ (f t) := by
   -- Trivial case: empty sum
   by_cases! hs : s = ∅
   · simp [hs, posLog]

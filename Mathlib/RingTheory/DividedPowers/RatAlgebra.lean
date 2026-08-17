@@ -272,7 +272,7 @@ noncomputable def dividedPowers : DividedPowers I where
   dpow_one hx    := OfInvertibleFactorial.dpow_one hx
   dpow_mem hn hx := OfInvertibleFactorial.dpow_mem hn hx
   dpow_add {n} _ _ hx hy := OfInvertibleFactorial.dpow_add_of_lt
-    (IsUnit.natCast_factorial_of_algebra ℚ _) (n.lt_succ_self) hx hy
+    (IsUnit.natCast_factorial_of_algebra ℚ _) n.lt_succ_self hx hy
   dpow_mul hx := OfInvertibleFactorial.dpow_mul hx
   mul_dpow {m} k _ hx := OfInvertibleFactorial.dpow_mul_of_add_lt
     (IsUnit.natCast_factorial_of_algebra ℚ _) (m + k).lt_succ_self hx

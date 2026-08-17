@@ -134,7 +134,7 @@ noncomputable def IsStronglySheafFor.amalgamate (h : E.IsStronglySheafFor F)
     (x : ∀ i, F.obj (op <| E.X i))
     (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), F.map (E.p₁ k).op (x i) = F.map (E.p₂ k).op (x j)) :
     F.obj (op X) :=
-  (h.isSheafFor_presieve₀).amalgamate _
+  h.isSheafFor_presieve₀.amalgamate _
     ((h.isStronglySeparatedFor.arrowsCompatible x hc).familyOfElements_compatible)
 
 @[simp]

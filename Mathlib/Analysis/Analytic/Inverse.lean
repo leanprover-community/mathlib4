@@ -624,7 +624,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
     have B : Metric.eball 0 q.radius ∈ 𝓝 (f (x + 0) - f x) := by
       simpa using Metric.eball_mem_nhds _ hq
     exact A.preimage_mem_nhds B
-  filter_upwards [hgf.tendsto_partialSum_prod_of_comp hq (hf.radius_pos),
+  filter_upwards [hgf.tendsto_partialSum_prod_of_comp hq hf.radius_pos,
     hf.tendsto_partialSum, this] with y hy h'y h''y
   have L : Tendsto (fun n ↦ q.partialSum n (f (x + y) - f x)) atTop (𝓝 (g (f (x + y)))) := by
     apply (closed_nhds_basis (g (f (x + y)))).tendsto_right_iff.2

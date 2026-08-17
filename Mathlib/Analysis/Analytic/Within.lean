@@ -207,7 +207,7 @@ lemma AnalyticWithinAt.exists_mem_nhdsWithin_analyticOn
   · exact inter_mem_nhdsWithin _ ((isOpen_analyticAt 𝕜 g).mem_nhds hg)
   · intro y hy
     have : AnalyticWithinAt 𝕜 g u y := hy.2.analyticWithinAt
-    exact this.congr (h'g.mono (inter_subset_left)) (h'g (inter_subset_left hy))
+    exact this.congr (h'g.mono inter_subset_left) (h'g (inter_subset_left hy))
 
 theorem AnalyticWithinAt.eventually_analyticWithinAt
     [CompleteSpace F] {f : E → F} {s : Set E} {x : E}

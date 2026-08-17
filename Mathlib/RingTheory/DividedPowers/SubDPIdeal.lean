@@ -243,7 +243,7 @@ instance : PartialOrder (SubDPIdeal hI) := .ofSetLike (SubDPIdeal hI) A
 @[coe]
 def toIdeal (J : hI.SubDPIdeal) : Ideal A := J.carrier
 
-instance : CoeOut (hI.SubDPIdeal) (Ideal A) := ⟨fun J ↦ J.toIdeal⟩
+instance : CoeOut hI.SubDPIdeal (Ideal A) := ⟨fun J ↦ J.toIdeal⟩
 
 theorem coe_def (J : SubDPIdeal hI) : J.toIdeal = J.carrier := rfl
 
@@ -344,7 +344,7 @@ instance : SupSet (SubDPIdeal hI) :=
       obtain ⟨K, hKS, rfl⟩ := hJ'
       exact K.dpow_mem _ hn x h'⟩
 
-theorem sSup_carrier_def (S : Set (SubDPIdeal hI)) : (sSup S).carrier = sSup ((toIdeal) '' S) := rfl
+theorem sSup_carrier_def (S : Set (SubDPIdeal hI)) : (sSup S).carrier = sSup (toIdeal '' S) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 instance : CompleteLattice (SubDPIdeal hI) := by

@@ -228,7 +228,7 @@ lemma lpNorm_mono_real {g : α → ℝ} (hg : MemLp g p μ) (h : ∀ x, ‖f x�
     lpNorm f p μ ≤ lpNorm g p μ := by
   by_cases hf : AEStronglyMeasurable f μ
   · rw [← toReal_eLpNorm hf, ← toReal_eLpNorm hg.aestronglyMeasurable]
-    exact ENNReal.toNNReal_mono (hg.eLpNorm_ne_top) (eLpNorm_mono_real h)
+    exact ENNReal.toNNReal_mono hg.eLpNorm_ne_top (eLpNorm_mono_real h)
   · simp [hf]
 
 lemma lpNorm_smul_measure_of_ne_zero {f : α → E} {c : ℝ≥0} (hc : c ≠ 0) :

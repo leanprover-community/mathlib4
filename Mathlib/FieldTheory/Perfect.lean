@@ -258,7 +258,7 @@ theorem MonoidHom.map_iterate_frobeniusEquiv_symm (f : R →* S) (n : ℕ) (x : 
 
 theorem RingHom.map_iterate_frobeniusEquiv_symm (f : R →+* S) (n : ℕ) (x : R) :
     f (((frobeniusEquiv R p).symm^[n]) x) = ((frobeniusEquiv S p).symm^[n]) (f x) :=
-  MonoidHom.map_iterate_frobeniusEquiv_symm p (f.toMonoidHom) n x
+  MonoidHom.map_iterate_frobeniusEquiv_symm p f.toMonoidHom n x
 
 end commute
 

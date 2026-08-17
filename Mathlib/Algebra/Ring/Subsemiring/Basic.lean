@@ -809,7 +809,7 @@ theorem map_closureS (f : R →+* S) (s : Set R) : (closure s).map f = closure (
 
 @[simp]
 theorem domRestrict_comp_rangeSRestrict (g : S →+* T) (f : R →+* S) :
-    (g.domRestrict f.rangeS).comp (f.rangeSRestrict) = g.comp f :=
+    (g.domRestrict f.rangeS).comp f.rangeSRestrict = g.comp f :=
   rfl
 
 end RingHom

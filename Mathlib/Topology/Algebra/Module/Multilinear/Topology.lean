@@ -135,7 +135,7 @@ theorem completeSpace (h : IsCoherentWith {s : Set (Π i, E i) | IsVonNBounded �
       simp [DFunLike.ext_iff]
   have H : ∀ {m : Π i, E i},
       Continuous fun f : (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F ↦ toFun _ f m :=
-    (uniformContinuous_eval (sUnion_isVonNBounded_eq_univ) _).continuous
+    (uniformContinuous_eval sUnion_isVonNBounded_eq_univ _).continuous
   rw [completeSpace_iff_isComplete_range isUniformInducing_toUniformOnFun, range_toUniformOnFun]
   simp only [ofPred_and, ofPred_forall]
   apply_rules [IsClosed.isComplete, IsClosed.inter]

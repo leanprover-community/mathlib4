@@ -80,7 +80,7 @@ lemma support_comap (I : Y.IdealSheafData) (f : X ⟶ Y) :
 lemma ker_fst_of_isClosedImmersion (i : Z ⟶ Y) (f : X ⟶ Y) [IsClosedImmersion i] :
     (pullback.fst f i).ker = i.ker.comap f := by
   delta IdealSheafData.comap
-  rw [← Hom.ker_comp_of_isIso (pullback.map f i f i.imageι (𝟙 _) (i.toImage) (𝟙 _)
+  rw [← Hom.ker_comp_of_isIso (pullback.map f i f i.imageι (𝟙 _) i.toImage (𝟙 _)
     (by simp) (by simp)), pullback.lift_fst, Category.comp_id]
 
 set_option backward.isDefEq.respectTransparency false in

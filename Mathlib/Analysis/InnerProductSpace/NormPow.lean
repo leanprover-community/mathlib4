@@ -113,7 +113,7 @@ theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E �
   by_cases hx : x = 0
   · simp_rw [hx, ContinuousAt, fderiv_norm_rpow (0 : E) hp, norm_zero, map_zero, smul_zero]
     rw [tendsto_zero_iff_norm_tendsto_zero]
-    refine tendsto_of_tendsto_of_tendsto_of_le_of_le (tendsto_const_nhds) ?_
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_
       (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_fderiv_norm_id_rpow _ hp |>.le)
     suffices ContinuousAt (fun x : E ↦ p * ‖x‖ ^ (p - 1)) 0 by
       simpa [ContinuousAt, sub_ne_zero_of_ne hp.ne'] using this

@@ -64,7 +64,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
     · intro x hx
       apply Eventually.frequently
       have := hasDerivAt_iff_tendsto_slope.mp hx.right
-      obtain ⟨δ, hδ₁, hδ₂⟩ := (Metric.tendsto_nhdsWithin_nhds).mp
+      obtain ⟨δ, hδ₁, hδ₂⟩ := Metric.tendsto_nhdsWithin_nhds.mp
         (hasDerivAt_iff_tendsto_slope.mp hx.right) η hη
       have evn_bound {α : ℝ} (hα : 0 < α) : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, ε < α := by
         rw [eventually_nhdsWithin_iff, eventually_nhds_iff]
@@ -229,7 +229,7 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_eq_sub {f : ℝ → ℝ} {
     hf.intervalIntegrable_deriv.absolutelyContinuousOnInterval_intervalIntegral
     (c := a) (by simp)
   let g (x : ℝ) := f x - ∫ (t : ℝ) in a..x, deriv f t
-  have g_ac : AbsolutelyContinuousOnInterval g a b := hf.sub (f_deriv_integral_ac)
+  have g_ac : AbsolutelyContinuousOnInterval g a b := hf.sub f_deriv_integral_ac
   have g_ae_deriv_zero : ∀ᵐ x, x ∈ uIcc a b → HasDerivAt g 0 x := by
     filter_upwards [hf.ae_differentiableAt, hf.intervalIntegrable_deriv.ae_hasDerivAt_integral]
       with x hx₁ hx₂ hx₃

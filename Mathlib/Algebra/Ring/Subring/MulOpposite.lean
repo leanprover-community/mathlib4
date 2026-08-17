@@ -151,7 +151,7 @@ def addEquivOp (S : Subring R) : S ≃+ S.op := S.toSubsemiring.addEquivOp
 
 /-- Bijection between a subring `S` and `MulOpposite` of its opposite. -/
 @[simps!]
-def ringEquivOpMop (S : Subring R) : S ≃+* (S.op)ᵐᵒᵖ := S.toSubsemiring.ringEquivOpMop
+def ringEquivOpMop (S : Subring R) : S ≃+* S.opᵐᵒᵖ := S.toSubsemiring.ringEquivOpMop
 
 /-- Bijection between `MulOpposite` of a subring `S` and its opposite. -/
 @[simps!]

@@ -412,7 +412,7 @@ notation:1200 K "ᗮ" => orthogonal K
 lemma toSubmodule_orthogonal_eq : K.orthogonal.toSubmodule = K.toSubmodule.orthogonal := rfl
 
 @[simp]
-lemma mem_orthogonal_toSubmodule_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
+lemma mem_orthogonal_toSubmodule_iff (v : E) : v ∈ K.toSubmoduleᗮ ↔ v ∈ Kᗮ := Iff.rfl
 
 /-- When a vector is in `Kᗮ`. -/
 @[simp]

@@ -212,7 +212,7 @@ section CompleteSpace
 
 instance {R M : Type*} [Semiring R] [AddCommMonoid M] [UniformSpace M] [Module R M]
     [CompleteSpace M] (K : Submodule R M) [c : IsClosed (K : Set M)] : CompleteSpace K :=
-  IsComplete.completeSpace_coe (c.isComplete)
+  IsComplete.completeSpace_coe c.isComplete
 
 end CompleteSpace
 

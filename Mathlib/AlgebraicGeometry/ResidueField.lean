@@ -60,7 +60,7 @@ instance {X : Scheme.{u}} (x) : IsPreimmersion (Spec.map (X.residue x)) :=
   IsPreimmersion.mk_SpecMap
     (PrimeSpectrum.isClosedEmbedding_comap_of_surjective _ _
       Ideal.Quotient.mk_surjective).isEmbedding
-    (RingHom.surjectiveOnStalks_of_surjective (Ideal.Quotient.mk_surjective))
+    (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective)
 
 @[simp]
 lemma SpecMap_residue_apply {X : Scheme.{u}} (x : X) (s : Spec (X.residueField x)) :

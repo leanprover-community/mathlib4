@@ -387,7 +387,7 @@ theorem exists_relNorm_eq_pow_of_isPrime [p.IsPrime] : ∃ s, relNorm R P = p ^ 
   by_cases hp : p = ⊥
   · refine ⟨1, ?_⟩
     have : P.LiesOver ⊥ := hp ▸ hPp
-    rw [hp, eq_bot_of_liesOver_bot R P, relNorm_bot, bot_pow (one_ne_zero)]
+    rw [hp, eq_bot_of_liesOver_bot R P, relNorm_bot, bot_pow one_ne_zero]
   have h : relNorm R (map (algebraMap R S) p) ≤ relNorm R P :=
     relNorm_mono _ <| map_le_iff_le_comap.mpr <| le_of_eq <| (liesOver_iff _ _).mp hPp
   rw [relNorm_algebraMap S, ← dvd_iff_le, dvd_prime_pow (prime_of_isPrime hp inferInstance)] at h

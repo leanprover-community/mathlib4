@@ -45,10 +45,10 @@ lemma isomorphisms_eq_stalkwise :
 example : IsZariskiLocalAtTarget (isomorphisms Scheme) := inferInstance
 
 set_option backward.isDefEq.respectTransparency false in
-instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X ∧ IsIso (f.appTop) := by
+instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X ∧ IsIso f.appTop := by
   convert! HasAffineProperty.of_isZariskiLocalAtTarget (isomorphisms Scheme) with X Y f hY
   exact ⟨fun ⟨_, _⟩ ↦ (arrow_mk_iso_iff (isomorphisms _) (arrowIsoSpecΓOfIsAffine f)).mpr
-    (inferInstanceAs (IsIso (Spec.map (f.appTop)))),
+    (inferInstanceAs (IsIso (Spec.map f.appTop))),
     fun (_ : IsIso f) ↦ ⟨.of_isIso f, inferInstance⟩⟩
 
 instance : IsZariskiLocalAtTarget (monomorphisms Scheme) :=

@@ -47,7 +47,7 @@ theorem countP_apply (l : FreeMonoid α) : l.countP p = .ofAdd (l.toList.countP 
 
 lemma countP_of (x : α) : (of x).countP p =
     if p x then Multiplicative.ofAdd 1 else Multiplicative.ofAdd 0 := by
-  rw [countP_apply, toList_of, List.countP_singleton, apply_ite (Multiplicative.ofAdd)]
+  rw [countP_apply, toList_of, List.countP_singleton, apply_ite Multiplicative.ofAdd]
   simp only [decide_eq_true_eq]
 
 

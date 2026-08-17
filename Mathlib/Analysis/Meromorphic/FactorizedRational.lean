@@ -142,7 +142,7 @@ theorem meromorphicNFOn_univ (d : 𝕜 → ℤ) :
 Factorized rational functions are meromorphic in normal form on arbitrary subsets of `𝕜`.
 -/
 theorem meromorphicNFOn (d : 𝕜 → ℤ) (U : Set 𝕜) :
-    MeromorphicNFOn (∏ᶠ u, (· - u) ^ d u) U := fun _ _ ↦ meromorphicNFOn_univ d (trivial)
+    MeromorphicNFOn (∏ᶠ u, (· - u) ^ d u) U := fun _ _ ↦ meromorphicNFOn_univ d trivial
 
 /-!
 ## Orders and Divisors of Factorized Rational Functions

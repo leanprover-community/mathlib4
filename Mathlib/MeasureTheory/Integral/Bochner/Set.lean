@@ -744,7 +744,7 @@ theorem setIntegral_mono_set [OrderClosedTopology E] (hfi : IntegrableOn f t μ)
 
 theorem setIntegral_le_integral [OrderClosedTopology E] (hfi : Integrable f μ) (hf : 0 ≤ᵐ[μ] f) :
     ∫ x in s, f x ∂μ ≤ ∫ x, f x ∂μ :=
-  integral_mono_measure (Measure.restrict_le_self) hf hfi
+  integral_mono_measure Measure.restrict_le_self hf hfi
 
 variable [ClosedIciTopology E]
 

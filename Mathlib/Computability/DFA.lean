@@ -283,7 +283,7 @@ theorem acceptsFrom_compl (s : σ) : (Mᶜ).acceptsFrom s = (M.acceptsFrom s)ᶜ
   rfl
 
 @[simp]
-theorem accepts_compl : (Mᶜ).accepts = (M.accepts)ᶜ :=
+theorem accepts_compl : (Mᶜ).accepts = M.acceptsᶜ :=
   rfl
 
 end compl

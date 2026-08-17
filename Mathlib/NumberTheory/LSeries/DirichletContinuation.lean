@@ -310,7 +310,7 @@ theorem completedLFunction_one_sub {χ : DirichletCharacter ℂ N} (hχ : IsPrim
     rw [completedLFunction, completedLFunction_const_mul]
     ring
   _ = N ^ (s - 1) / ε * gaussSum χ stdAddChar * completedLFunction χ⁻¹ s := by
-    rw [← MulChar.mul_apply, mul_inv_cancel, MulChar.one_apply (isUnit_one.neg), mul_one]
+    rw [← MulChar.mul_apply, mul_inv_cancel, MulChar.one_apply isUnit_one.neg, mul_one]
 
 end IsPrimitive
 

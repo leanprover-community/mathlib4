@@ -454,7 +454,7 @@ theorem HasSubst.comp (ha : HasSubst a) (hb : HasSubst b) :
     let : UniformSpace S := ⊥
     let : UniformSpace T := ⊥
     rw [← coeff_zero_iff]
-    apply Filter.Tendsto.comp _ (ha.hasEval.tendsto_zero)
+    apply Filter.Tendsto.comp _ ha.hasEval.tendsto_zero
     simpa [← map_zero (substAlgHom (R := S) hb)] using! (continuous_subst hb).continuousAt
 
 theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :

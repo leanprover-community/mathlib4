@@ -719,7 +719,7 @@ lemma differentiableAt_cosZeta (a : UnitAddCircle) {s : ℂ} (hs' : s ≠ 1 ∨ 
   · exact differentiableAt_update_of_residue (fun _ ht ht' ↦
       differentiableAt_completedCosZeta a ht (Or.inl ht')) (completedCosZeta_residue_zero a) s hs'
   · apply ((differentiableAt_completedCosZeta a one_ne_zero hs').fun_mul
-      (differentiable_Gammaℝ_inv.differentiableAt)).congr_of_eventuallyEq
+      differentiable_Gammaℝ_inv.differentiableAt).congr_of_eventuallyEq
     filter_upwards [isOpen_compl_singleton.mem_nhds one_ne_zero] with x hx
     rw [cosZeta, Function.update_of_ne hx, div_eq_mul_inv]
 

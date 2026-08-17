@@ -128,9 +128,9 @@ contravariant sequence of `Ext`-groups. -/
 noncomputable def sequenceIso : S.sequence F n₀ n₁ h ≅
     Ext.contravariantSequence S.shortComplex_shortExact F n₀ n₁ (by omega) :=
   isoMk₅ (Iso.refl _)
-    ((AddCommGrpCat.biprodIsoProd _ _).trans (Ext.biprodAddEquiv.symm).toAddCommGrpIso)
+    ((AddCommGrpCat.biprodIsoProd _ _).trans Ext.biprodAddEquiv.symm.toAddCommGrpIso)
     (Iso.refl _) (Iso.refl _)
-    ((AddCommGrpCat.biprodIsoProd _ _).trans (Ext.biprodAddEquiv.symm).toAddCommGrpIso)
+    ((AddCommGrpCat.biprodIsoProd _ _).trans Ext.biprodAddEquiv.symm.toAddCommGrpIso)
     (Iso.refl _)
     (by ext; apply biprodAddEquiv_symm_biprodIsoProd_hom_toBiprod_apply)
     (by ext; symm; apply mk₀_f_comp_biprodAddEquiv_symm_biprodIsoProd_hom)

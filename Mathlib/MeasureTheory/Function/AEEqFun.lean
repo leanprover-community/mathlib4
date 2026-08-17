@@ -334,7 +334,7 @@ theorem comp_mk (g : β → γ) (hg : Continuous g) (f : α → β) (hf) :
   rfl
 
 @[simp]
-theorem comp_id (f : α →ₘ[μ] β) : comp id (continuous_id) f = f := by
+theorem comp_id (f : α →ₘ[μ] β) : comp id continuous_id f = f := by
   rcases f; rfl
 
 @[simp]
@@ -954,7 +954,7 @@ instance [Star R] [ContinuousStar R] : Star (α →ₘ[μ] R) where
   star f := (AEEqFun.comp _ continuous_star f)
 
 lemma coeFn_star [Star R] [ContinuousStar R] (f : α →ₘ[μ] R) : ↑(star f) =ᵐ[μ] (star f : α → R) :=
-  coeFn_comp _ (continuous_star) f
+  coeFn_comp _ continuous_star f
 
 instance [InvolutiveStar R] [ContinuousStar R] : InvolutiveStar (α →ₘ[μ] R) where
   star_involutive f := comp_comp _ _ _ _ f |>.trans <| by simp [star_involutive.comp_self]

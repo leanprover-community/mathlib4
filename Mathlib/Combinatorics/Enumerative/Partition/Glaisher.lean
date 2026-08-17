@@ -122,7 +122,7 @@ private theorem aux_mul_one_sub_X_pow [IsTopologicalRing R] {m : ℕ} (hm : 0 < 
     rw [tsum_pow_mul_one_sub_of_constantCoeff_eq_zero (by simp)]
   refine tprod_eq_tprod_of_ne_one_bij (fun i ↦ (i.val + 1) * m - 1) ?_ ?_ ?_
   · intro a b h
-    rw [tsub_left_inj (by nlinarith) (by nlinarith), mul_left_inj' (hm.ne.symm), add_left_inj] at h
+    rw [tsub_left_inj (by nlinarith) (by nlinarith), mul_left_inj' hm.ne.symm, add_left_inj] at h
     exact SetCoe.ext h
   · suffices ∀ (i : ℕ), m ∣ i + 1 → ∃ j ≠ 0, j * m - 1 = i by simpa
     intro i hi

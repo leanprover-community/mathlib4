@@ -55,7 +55,7 @@ hom objects in its `SSet`-enriched ordinary structure. -/
 instance QCat.catEnrichedOrdinaryCategory : EnrichedOrdinaryCategory Cat QCat :=
   TransportEnrichment.enrichedOrdinaryCategory QCat hoFunctor.{u}
     (hoFunctor.unitHomEquiv · |>.trans <| Functor.equivCatHom _ _)
-      (congrArg (Functor.toCatHom) <| hoFunctor.unitHomEquiv_eq · ·)
+      (congrArg Functor.toCatHom <| hoFunctor.unitHomEquiv_eq · ·)
 
 /-- The underlying category of the `Cat`-enriched ordinary category of quasicategories is
 equivalent to `QCat`. -/

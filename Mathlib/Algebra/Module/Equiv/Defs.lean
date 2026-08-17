@@ -203,7 +203,7 @@ theorem coe_coe : ⇑(e : M →ₛₗ[σ] M₂) = e :=
   rfl
 
 @[simp]
-theorem coe_toEquiv : ⇑(e.toEquiv) = e :=
+theorem coe_toEquiv : ⇑e.toEquiv = e :=
   rfl
 
 @[simp]

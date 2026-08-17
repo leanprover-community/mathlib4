@@ -46,7 +46,7 @@ lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   rw [continuous_iff_continuousAt]
   intro x
   obtain hx | rfl := ne_or_eq x 0
-  · exact (continuous_id'.continuousAt).mul (continuousAt_log hx)
+  · exact continuous_id'.continuousAt.mul (continuousAt_log hx)
   rw [ContinuousAt, zero_mul]
   simp_rw [mul_comm _ (log _)]
   nth_rewrite 1 [← nhdsWithin_univ]
@@ -135,7 +135,7 @@ lemma deriv2_mul_log (x : ℝ) : deriv^[2] (fun x ↦ x * log x) x = x⁻¹ := b
     filter_upwards [eventually_ne_nhds hx] with y hy using deriv_mul_log hy
 
 lemma strictConvexOn_mul_log : StrictConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) := by
-  refine strictConvexOn_of_deriv2_pos (convex_Ici 0) (continuous_mul_log.continuousOn) ?_
+  refine strictConvexOn_of_deriv2_pos (convex_Ici 0) continuous_mul_log.continuousOn ?_
   intro x hx
   simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi] at hx
   rw [deriv2_mul_log]

@@ -121,7 +121,7 @@ theorem sum (hΦ : TensorialAt I F Φ x) {ι : Type*} {s : Finset ι} (σ : ι �
   | insert a s ha h =>
       simp only [Finset.mem_insert, forall_eq_or_imp] at hσ
       simp only [Finset.sum_insert ha, ← h hσ.2]
-      exact hΦ.add (hσ.1) (.sum_section hσ.2)
+      exact hΦ.add hσ.1 (.sum_section hσ.2)
 
 variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 F']
   [ContMDiffVectorBundle 1 F V I] [ContMDiffVectorBundle 1 F' V' I]

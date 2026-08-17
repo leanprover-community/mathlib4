@@ -179,7 +179,7 @@ lemma sum_le_preVariationFun_iUnion {s : ℕ → Set X} (hs : ∀ i, MeasurableS
     (mono f (MeasurableSet.iUnion hs) (Set.subset_iUnion s i)).trans_lt hsnetop
   -- For each set `s i` we choose a Finpartition `P i` such that, for each `i`,
   -- `preVariationFun f (s i) ≤ ∑ p ∈ (P i), f p + ε`.
-  choose P hP using fun i ↦ exists_Finpartition_sum_ge f (hs i) (hε) (hs'' i)
+  choose P hP using fun i ↦ exists_Finpartition_sum_ge f (hs i) hε (hs'' i)
   calc ∑ i ∈ Finset.range n, preVariationFun f (s i)
     _ ≤ ∑ i ∈ Finset.range n, (∑ p ∈ (P i).parts, f p + ε) := Finset.sum_le_sum fun i _ => hP i
     _ = ∑ i ∈ Finset.range n, ∑ p ∈ (P i).parts, f p + ε' := by

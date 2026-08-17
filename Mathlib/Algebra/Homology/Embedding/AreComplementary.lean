@@ -90,7 +90,7 @@ lemma fromSum_bijective : Function.Bijective (fromSum e₁ e₂) := by
 `e₁ : Embedding c₁ c` and `e₂ : Embedding c₂ c`, this is
 the obvious bijection `ι₁ ⊕ ι₂ ≃ ι` from the sum of the index
 types of `c₁` and `c₂` to the index type of `c`. -/
-noncomputable def equiv : ι₁ ⊕ ι₂ ≃ ι := Equiv.ofBijective _ (ac.fromSum_bijective)
+noncomputable def equiv : ι₁ ⊕ ι₂ ≃ ι := Equiv.ofBijective _ ac.fromSum_bijective
 
 @[simp] lemma equiv_inl (i₁ : ι₁) : ac.equiv (Sum.inl i₁) = e₁.f i₁ := rfl
 @[simp] lemma equiv_inr (i₂ : ι₂) : ac.equiv (Sum.inr i₂) = e₂.f i₂ := rfl

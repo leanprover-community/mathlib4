@@ -119,7 +119,7 @@ noncomputable def IsNormalClosure.lift [h : IsNormalClosure F K L] {L'} [Field L
     (splits : ∀ x : K, ((minpoly F x).map (algebraMap F L')).Splits) : L →ₐ[F] L' := by
   have := h.adjoin_rootSet; rw [← gc.l_iSup] at this
   refine Nonempty.some <| nonempty_algHom_of_adjoin_splits
-    (fun x hx ↦ ⟨isAlgebraic_iff_isIntegral.mp ((h.normal).isAlgebraic x), ?_⟩) this
+    (fun x hx ↦ ⟨isAlgebraic_iff_isIntegral.mp (h.normal.isAlgebraic x), ?_⟩) this
   obtain ⟨y, hx⟩ := Set.mem_iUnion.mp hx
   by_cases iy : IsIntegral F y
   · exact (splits y).of_dvd (map_ne_zero (minpoly.ne_zero iy))

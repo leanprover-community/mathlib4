@@ -254,7 +254,7 @@ theorem leftInvSeq_reverse (ω : List B) :
 theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
     (ris ω).getD j 1 =
       (π (ω.drop (j + 1)))⁻¹
-        * (Option.map (cs.simple) ω[j]?).getD 1
+        * (Option.map cs.simple ω[j]?).getD 1
         * π (ω.drop (j + 1)) := by
   induction ω generalizing j with
   | nil => simp
@@ -268,14 +268,14 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
 lemma getElem_rightInvSeq (ω : List B) (j : ℕ) (h : j < ω.length) :
     (ris ω)[j]'(by simp [h]) =
     (π (ω.drop (j + 1)))⁻¹
-      * (Option.map (cs.simple) ω[j]?).getD 1
+      * (Option.map cs.simple ω[j]?).getD 1
       * π (ω.drop (j + 1)) := by
   rw [← List.getD_eq_getElem (ris ω) 1, getD_rightInvSeq]
 
 theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
     (lis ω).getD j 1 =
       π (ω.take j)
-        * (Option.map (cs.simple) ω[j]?).getD 1
+        * (Option.map cs.simple ω[j]?).getD 1
         * (π (ω.take j))⁻¹ := by
   induction ω generalizing j with
   | nil => simp

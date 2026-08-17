@@ -111,7 +111,7 @@ def toPolygon : Affine.Triangle R P ↪ Polygon P 3 where
     simp_all
 
 @[simp]
-lemma toPolygon_vertices (t : Affine.Triangle R P) : (t.toPolygon).vertices = t.points := rfl
+lemma toPolygon_vertices (t : Affine.Triangle R P) : t.toPolygon.vertices = t.points := rfl
 
 end Affine.Triangle
 

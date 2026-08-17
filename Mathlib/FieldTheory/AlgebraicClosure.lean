@@ -130,7 +130,7 @@ theorem le_algebraicClosure' {L : IntermediateField F E} (hs : ∀ x : L, IsAlge
 /-- An intermediate field of `E / F` is contained in the algebraic closure of `F` in `E`
 if it is algebraic over `F`. -/
 theorem le_algebraicClosure (L : IntermediateField F E) [Algebra.IsAlgebraic F L] :
-    L ≤ algebraicClosure F E := le_algebraicClosure' F E (Algebra.IsAlgebraic.isAlgebraic)
+    L ≤ algebraicClosure F E := le_algebraicClosure' F E Algebra.IsAlgebraic.isAlgebraic
 
 /-- An intermediate field of `E / F` is contained in the algebraic closure of `F` in `E`
 if and only if it is algebraic over `F`. -/

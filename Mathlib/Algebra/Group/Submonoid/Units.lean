@@ -77,12 +77,12 @@ the reduction from a submonoid to its unit group. -/
 @[to_additive /-- A Galois coinsertion exists between the coercion from an additive subgroup of
 additive units to an additive submonoid and the reduction from an additive submonoid to its unit
 group. -/]
-def ofUnits_units_gci : GaloisCoinsertion (Subgroup.ofUnits (M := M)) (Submonoid.units) :=
+def ofUnits_units_gci : GaloisCoinsertion (Subgroup.ofUnits (M := M)) Submonoid.units :=
   GaloisCoinsertion.monotoneIntro Submonoid.units_mono Subgroup.ofUnits_mono
   Submonoid.ofUnits_units_le Subgroup.units_ofUnits_eq
 
 @[to_additive]
-lemma ofUnits_units_gc : GaloisConnection (Subgroup.ofUnits (M := M)) (Submonoid.units) :=
+lemma ofUnits_units_gc : GaloisConnection (Subgroup.ofUnits (M := M)) Submonoid.units :=
 ofUnits_units_gci.gc
 
 @[to_additive]
@@ -243,7 +243,7 @@ lemma unit_eq_unit_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} (h₁ : IsUnit x)
 @[to_additive]
 lemma unit_mem_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} {h₁ : IsUnit x}
     (h₂ : x ∈ S.ofUnits) : h₁.unit ∈ S :=
-  S.unit_eq_unit_of_mem_ofUnits h₁ h₂ ▸ (S.unit_of_mem_ofUnits_spec_mem)
+  S.unit_eq_unit_of_mem_ofUnits h₁ h₂ ▸ S.unit_of_mem_ofUnits_spec_mem
 
 @[to_additive]
 lemma mem_ofUnits_of_isUnit_of_unit_mem (S : Subgroup Mˣ) {x : M} (h₁ : IsUnit x)

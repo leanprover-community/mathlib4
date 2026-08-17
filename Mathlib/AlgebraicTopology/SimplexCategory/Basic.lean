@@ -283,7 +283,7 @@ theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.ca
   rcases le_or_gt i k with (hik | hik)
   · rw [Fin.succAbove_of_le_castSucc _ _ (Fin.castSucc_le_castSucc_iff.mpr hik),
     Fin.succ_predAbove_succ, Fin.succAbove_of_le_castSucc]
-    rcases le_or_gt k (j.castSucc) with (hjk | hjk)
+    rcases le_or_gt k j.castSucc with (hjk | hjk)
     · rwa [Fin.predAbove_of_le_castSucc _ _ hjk, Fin.castSucc_castPred]
     · rw [Fin.le_castSucc_iff, Fin.predAbove_of_castSucc_lt _ _ hjk, Fin.succ_pred]
       exact H.trans_lt hjk
@@ -339,7 +339,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : j.castSucc
   dsimp [δ, σ]
   rcases le_or_gt k i with (hik | hik)
   · rw [Fin.succAbove_of_castSucc_lt _ _ (Fin.castSucc_lt_succ_iff.mpr hik)]
-    rcases le_or_gt k (j.castSucc) with (hjk | hjk)
+    rcases le_or_gt k j.castSucc with (hjk | hjk)
     · rw [Fin.predAbove_of_le_castSucc _ _
       (Fin.castSucc_le_castSucc_iff.mpr hjk), Fin.castPred_castSucc,
       Fin.predAbove_of_le_castSucc _ _ hjk, Fin.succAbove_of_castSucc_lt, Fin.castSucc_castPred]

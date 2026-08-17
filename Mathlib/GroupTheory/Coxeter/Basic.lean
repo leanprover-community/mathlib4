@@ -317,8 +317,8 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
   inv_val := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
 
 set_option backward.isDefEq.respectTransparency false in
-private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet)) :
-    (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (M.relationsSet))
+private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup M.relationsSet) :
+    (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup M.relationsSet)
     ((MulEquiv.symm cs.mulEquiv) a) = a := calc
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
   _ = _ := by rw [MulEquiv.apply_symm_apply]
