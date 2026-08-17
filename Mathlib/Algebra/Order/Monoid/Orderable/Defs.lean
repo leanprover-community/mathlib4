@@ -173,8 +173,7 @@ variable {H : Type*} [Monoid H]
 `e : G ≃+ H`. -/]
 theorem IsLeftOrderable.of_mulEquiv [IsLeftOrderable G] (e : G ≃* H) : IsLeftOrderable H := by
   obtain ⟨_, _⟩ := exists_linearOrder_mulLeftMono G
-  let : LinearOrder H := LinearOrder.lift' e.symm e.symm.injective
-  refine ⟨‹LinearOrder H›, ⟨fun c a b hab ↦ ?_⟩⟩
+  refine ⟨.lift' e.symm e.symm.injective, ⟨fun c a b hab ↦ ?_⟩⟩
   change e.symm (c * a) ≤ e.symm (c * b)
   rw [map_mul, map_mul]
   gcongr
@@ -185,8 +184,7 @@ theorem IsLeftOrderable.of_mulEquiv [IsLeftOrderable G] (e : G ≃* H) : IsLeftO
 `e : G ≃+ H`. -/]
 theorem IsRightOrderable.of_mulEquiv [IsRightOrderable G] (e : G ≃* H) : IsRightOrderable H := by
   obtain ⟨_, _⟩ := exists_linearOrder_mulRightMono G
-  let : LinearOrder H := LinearOrder.lift' e.symm e.symm.injective
-  refine ⟨‹LinearOrder H›, ⟨fun c a b hab ↦ ?_⟩⟩
+  refine ⟨.lift' e.symm e.symm.injective, ⟨fun c a b hab ↦ ?_⟩⟩
   change e.symm (a * c) ≤ e.symm (b * c)
   rw [map_mul, map_mul]
   gcongr
@@ -197,12 +195,13 @@ theorem IsRightOrderable.of_mulEquiv [IsRightOrderable G] (e : G ≃* H) : IsRig
 `e : G ≃+ H`. -/]
 theorem IsBiOrderable.of_mulEquiv [IsBiOrderable G] (e : G ≃* H) : IsBiOrderable H := by
   obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftMono_mulRightMono G
-  let : LinearOrder H := LinearOrder.lift' e.symm e.symm.injective
-  refine ⟨‹LinearOrder H›, ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩ <;>
-    · change e.symm _ ≤ e.symm _
-      rw [map_mul, map_mul]
-      gcongr
-      exact hab
+  -- let : LinearOrder H := LinearOrder.lift' e.symm e.symm.injective
+  -- refine ⟨‹_›, ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩ <;>
+  refine ⟨.lift' e.symm e.symm.injective, ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩ <;>
+  · change e.symm _ ≤ e.symm _
+    rw [map_mul, map_mul]
+    gcongr
+    exact hab
 
 /-- Left-orderability is invariant under monoid isomorphism. -/
 @[to_additive /-- Left-orderability is invariant under additive monoid isomorphism. -/]
