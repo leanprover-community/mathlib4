@@ -275,6 +275,12 @@ lemma IsPath.drop_of_drop {n k} {p : G.Walk u v} (h : (p.drop k).IsPath) (hle : 
     (p.drop n).IsPath :=
   isPath_of_isSubwalk (p.drop_isSubwalk_drop hle) h
 
+theorem IsTrail.take {p : G.Walk u v} (h : p.IsTrail) (n : ℕ) : (p.take n).IsTrail :=
+  isTrail_of_isSubwalk (p.isSubwalk_take n) h
+
+theorem IsTrail.drop {p : G.Walk u v} (h : p.IsTrail) (n : ℕ) : (p.drop n).IsTrail :=
+  isTrail_of_isSubwalk (p.isSubwalk_drop n) h
+
 lemma IsPath.take {p : G.Walk u v} (h : p.IsPath) (n : ℕ) :
     (p.take n).IsPath :=
   isPath_of_isSubwalk (p.isSubwalk_take n) h
@@ -376,20 +382,23 @@ lemma IsCycle.isPath_of_append_left {p : G.Walk u v} {q : G.Walk v u} (h : ¬ q.
 theorem IsCycle.isPath_tail {p : G.Walk u u} (h : p.IsCycle) : p.tail.IsPath :=
   IsPath.mk' <| p.support_tail_of_not_nil h.not_nil ▸ h.support_nodup
 
-lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
-  cases p with
-  | nil => simp
-  | cons hadj p =>
-    simp_all [Walk.isPath_def]
+theorem IsTrail.tail {p : G.Walk u v} (hp : p.IsTrail) : p.tail.IsTrail :=
+  hp.drop 1
+
+lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath :=
+  hp.drop 1
+
+theorem IsTrail.dropLast (hp : p.IsTrail) : p.dropLast.IsTrail :=
+  hp.take _
+
+theorem IsPath.dropLast (hp : p.IsPath) : p.dropLast.IsPath :=
+  hp.take _
 
 theorem isPath_dropLast_iff_isPath_tail {p : G.Walk v v} : p.dropLast.IsPath ↔ p.tail.IsPath := by
   simp_rw [isPath_def, p.support_tail_perm_support_dropLast.nodup_iff]
 
 theorem IsCycle.isPath_dropLast {p : G.Walk u u} (h : p.IsCycle) : p.dropLast.IsPath :=
   isPath_dropLast_iff_isPath_tail.mpr h.isPath_tail
-
-theorem IsPath.dropLast (hp : p.IsPath) : p.dropLast.IsPath :=
-  hp.take _
 
 theorem IsCycle.isPath_drop {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : 0 < n) :
     (p.drop n).IsPath := by
