@@ -96,11 +96,11 @@ theorem nnnorm_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (x 
   NNReal.eq <| norm_map f x
 
 protected theorem lipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : LipschitzWith 1 f :=
-  (SemilinearIsometryClass.isometry f).lipschitz
+  (SemilinearIsometryClass.isometry f).lipschitzWith
 
 protected theorem antilipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
     AntilipschitzWith 1 f :=
-  (SemilinearIsometryClass.isometry f).antilipschitz
+  (SemilinearIsometryClass.isometry f).antilipschitzWith
 
 theorem ediam_image [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (s : Set E) :
     Metric.ediam (f '' s) = Metric.ediam s :=
@@ -233,10 +233,10 @@ theorem map_ne {x y : F} (h : x ≠ y) : f₁ x ≠ f₁ y :=
   f₁.injective.ne h
 
 protected theorem lipschitz : LipschitzWith 1 f :=
-  f.isometry.lipschitz
+  f.isometry.lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 f :=
-  f.isometry.antilipschitz
+  f.isometry.antilipschitzWith
 
 @[continuity]
 protected theorem continuous : Continuous f :=
@@ -907,10 +907,10 @@ theorem map_ne {x y : E} (h : x ≠ y) : e x ≠ e y :=
   e.injective.ne h
 
 protected theorem lipschitz : LipschitzWith 1 e :=
-  e.isometry.lipschitz
+  e.isometry.lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 e :=
-  e.isometry.antilipschitz
+  e.isometry.antilipschitzWith
 
 theorem image_eq_preimage_symm (s : Set E) : e '' s = e.symm ⁻¹' s :=
   e.toLinearEquiv.image_eq_preimage_symm s
