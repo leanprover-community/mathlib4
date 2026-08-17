@@ -140,6 +140,20 @@ protected def trans (Ψ : PartialDiffeomorph J K N P n) : PartialDiffeomorph I K
   contMDiffOn_invFun :=
     Φ.contMDiffOn_invFun.comp (Ψ.contMDiffOn_invFun.mono inter_subset_left) inter_subset_right
 
+open IsManifold in
+/-- If `φ` is a chart of `M'` in the maximal atlas and `Φ : M → M'` is a partial diffeomorphism
+between manifolds over the same model, then `Φ` followed by `φ` is a chart of `M`
+in the maximal atlas. -/
+lemma trans_mem_maximalAtlas {M' : Type*} [TopologicalSpace M'] [ChartedSpace H₁ M']
+    [IsManifold I n M] (Φ : PartialDiffeomorph I I M M' n)
+    {φ : OpenPartialHomeomorph M' H₁} (hφ : φ ∈ maximalAtlas I n M') :
+    Φ.toOpenPartialHomeomorph.trans φ ∈ maximalAtlas I n M := by
+  apply OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn
+  · rw [OpenPartialHomeomorph.coe_trans]
+    exact (contMDiffOn_of_mem_maximalAtlas hφ).comp' Φ.contMDiffOn
+  · rw [OpenPartialHomeomorph.coe_trans_symm]
+    exact Φ.symm.contMDiffOn.comp' (contMDiffOn_symm_of_mem_maximalAtlas hφ)
+
 /- We could add lots of additional API (following `Diffeomorph` and `OpenPartialHomeomorph`),
 such as
 * further continuity and differentiability lemmas

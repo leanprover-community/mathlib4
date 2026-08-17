@@ -906,11 +906,10 @@ end IsImmersion
 
 section LocalDiffeomorph
 
-open IsManifold
-
 variable {P : Type*} [TopologicalSpace P] [ChartedSpace H P]
   [IsManifold I n M] [IsManifold I n P] {f : M → P} {x : M}
 
+open IsManifold in
 /-- A `C^n` local diffeomorphism at `x` between manifolds over the same model
 is an immersion at `x`, with the trivial complement `PUnit`. -/
 theorem _root_.IsLocalDiffeomorphAt.isImmersionAtOfComplement
@@ -922,18 +921,12 @@ theorem _root_.IsLocalDiffeomorphAt.isImmersionAtOfComplement
   have hφ_mem : φ ∈ maximalAtlas I n M :=
     restr_mem_maximalAtlas _ (chart_mem_maximalAtlas x) Φ.open_source
   set ψ : OpenPartialHomeomorph P H := Φ.symm.toOpenPartialHomeomorph.trans φ with hψ_def
-  have hψ_mem : ψ ∈ maximalAtlas I n P := by
-    apply ψ.mem_maximalAtlas_of_contMDiffOn
-    · rw [hψ_def, OpenPartialHomeomorph.coe_trans]
-      exact (contMDiffOn_of_mem_maximalAtlas hφ_mem).comp' Φ.symm.contMDiffOn
-    · rw [hψ_def, OpenPartialHomeomorph.coe_trans_symm]
-      exact Φ.contMDiffOn.comp' (contMDiffOn_symm_of_mem_maximalAtlas hφ_mem)
   have hmap : φ.source ⊆ f ⁻¹' ψ.source := fun y hy ↦ by
     have hyΦ : y ∈ Φ.source := (hφ_source ▸ hy).2
     simp [hψ_def, heq hyΦ, Φ.map_source hyΦ, Φ.left_inv hyΦ, hy]
   have hxφ : x ∈ φ.source := hφ_source ▸ ⟨mem_chart_source H x, hx⟩
   apply IsImmersionAtOfComplement.mk_of_charts (.prodUnique 𝕜 E PUnit) φ ψ hxφ (hmap hxφ) hφ_mem
-    hψ_mem hmap
+    (Φ.symm.trans_mem_maximalAtlas hφ_mem) hmap
   intro u hu
   rw [OpenPartialHomeomorph.extend_target] at hu
   have hyΦ : φ.symm (I.symm u) ∈ Φ.source := (hφ_source ▸ φ.map_target hu.1).2

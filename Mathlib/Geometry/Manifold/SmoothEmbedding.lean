@@ -126,8 +126,7 @@ variable {P : Type*} [TopologicalSpace P] [ChartedSpace H P]
 /-- An injective `C^n` local diffeomorphism between manifolds over the same model
 is a `C^n` embedding. -/
 theorem _root_.IsLocalDiffeomorph.isSmoothEmbedding {f : M → P} (hf : IsLocalDiffeomorph I I n f)
-  (hf' : Function.Injective f) :
-    IsSmoothEmbedding I I n f :=
+    (hf' : Function.Injective f) : IsSmoothEmbedding I I n f :=
   ⟨hf.isImmersion, (hf.isLocalHomeomorph.isOpenEmbedding_of_injective hf').isEmbedding⟩
 
 /-- A `C^n` diffeomorphism between manifolds over the same model is a `C^n` embedding. -/
