@@ -267,7 +267,8 @@ section SMul
 variable {A : Type*} [SMulZeroClass A R]
 
 @[to_additive (dont_translate := A) smulZeroClass]
-instance smulZeroClass : SMulZeroClass A R⟦M⟧ := fast_instance% coeffEquiv.smulZeroClass _
+instance smulZeroClass : SMulZeroClass A R⟦M⟧ :=
+  fast_instance% coeffEquiv.smulZeroClass _ coeff_zero
 
 section
 -- Ensure that the different smul instances do not create a diamond.
@@ -301,7 +302,7 @@ lemma smul_single' [DecidableEq M] (r' : R) (m : M) (r : R) :
 
 @[to_additive (dont_translate := N) distribSMul]
 instance distribSMul [DistribSMul N R] : DistribSMul N R⟦M⟧ :=
-  fast_instance% coeffEquiv.distribSMul _
+  fast_instance% coeffAddEquiv.distribSMul _
 
 @[to_additive (dont_translate := N) isScalarTower]
 instance isScalarTower [SMulZeroClass N R] [SMulZeroClass O R] [SMul N O] [IsScalarTower N O R] :
