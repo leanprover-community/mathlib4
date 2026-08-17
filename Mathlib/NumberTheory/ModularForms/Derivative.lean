@@ -316,6 +316,10 @@ noncomputable def serreDerivativeMF {Γ : Subgroup (GL (Fin 2) ℝ)} (k : ℤ)
     exact isBoundedAtImInfty_serreDerivative (k : ℂ) (f.holo'.slash k γ)
       ((OnePoint.isBoundedAt_iff_forall_SL2Z (hc.mono hΓ)).mp (f.bdd_at_cusps' hc) γ hγ)
 
+@[simp]
+lemma coe_serreDerivativeMF {Γ : Subgroup (GL (Fin 2) ℝ)} (k : ℤ) (f : ModularForm Γ k)
+    (hΓ : Γ ≤ 𝒮ℒ) : serreDerivativeMF k f hΓ = serreDerivative k f := rfl
+
 end
 
 end Derivative
