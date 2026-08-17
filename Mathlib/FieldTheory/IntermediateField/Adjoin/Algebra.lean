@@ -298,8 +298,8 @@ theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG
 theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :=
   S.fg_of_fg_toSubalgebra S.toSubalgebra.fg_of_noetherian
 
-theorem induction_on_adjoin [FiniteDimensional F E] (motive : IntermediateField F E → Prop)
-    (bot : motive ⊥)
+theorem induction_on_adjoin [FiniteDimensional F E]
+    {motive : IntermediateField F E → Prop} (bot : motive ⊥)
     (adjoin_simple : ∀ (K : IntermediateField F E) (x : E),
       motive K → motive (K⟮x⟯.restrictScalars F))
     (K : IntermediateField F E) : motive K :=
