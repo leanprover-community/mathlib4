@@ -259,17 +259,18 @@ Boundedness of the normalized derivative and Serre derivative at infinity.
 private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} (hF : MDiff F) {z : ℍ} {M : ℝ}
     (hM : ∀ w : ℍ, z.im / 2 ≤ w.im → ‖F w‖ ≤ M) : ‖D F z‖ ≤ M / (π * z.im) := by
   have h2 : 0 < z.im / 2 := half_pos z.im_pos
-  have him : ∀ w ∈ Metric.closedBall (z : ℂ) (z.im / 2), z.im / 2 ≤ w.im := fun w hw => by
+  have him : ∀ w ∈ Metric.closedBall (z : ℂ) (z.im / 2), z.im / 2 ≤ w.im := fun w hw ↦ by
     have h := (abs_im_le_norm (w - (z : ℂ))).trans (mem_closedBall_iff_norm.mp hw)
     rw [Complex.sub_im, UpperHalfPlane.coe_im, abs_le] at h
     linarith [h.1]
-  have hd : ‖deriv (F ∘ ofComplex) (z : ℂ)‖ ≤ M / (z.im / 2) := by
-    refine norm_deriv_le_of_forall_mem_sphere_norm_le h2
-      ((UpperHalfPlane.mdifferentiable_iff.mp hF).diffContOnCl_ball fun w hw ↦
-        h2.trans_le (him w hw)) fun w hw ↦ ?_
+  have hbd (w) (hw : w ∈ Metric.sphere (↑z) (z.im / 2)) : ‖(F ∘ ofComplex) w‖ ≤ M := by
     have hwim := him w (Metric.sphere_subset_closedBall hw)
     rw [Function.comp_apply, ofComplex_apply_of_im_pos (h2.trans_le hwim)]
     exact hM _ hwim
+  have hd : ‖deriv (F ∘ ofComplex) (z : ℂ)‖ ≤ M / (z.im / 2) :=
+    norm_deriv_le_of_forall_mem_sphere_norm_le h2
+      ((UpperHalfPlane.mdifferentiable_iff.mp hF).diffContOnCl_ball
+        fun w hw ↦ h2.trans_le (him w hw)) hbd
   calc ‖D F z‖ = (2 * π)⁻¹ * ‖deriv (F ∘ ofComplex) (z : ℂ)‖ := by
         simp [normalizedDerivOfComplex, Real.pi_pos.le]
     _ ≤ (2 * π)⁻¹ * (M / (z.im / 2)) := by gcongr
