@@ -785,15 +785,20 @@ def IsSimpleOrder.decidableLEOfDecidableEq [DecidableEq α] : DecidableLE α := 
   if hb : b = ⊤ then isTrue (le_top.trans hb.ge) else
   isFalse (hb <| top_unique <| ((eq_bot_or_eq_top a).resolve_left ha).ge.trans ·)
 
+variable (α) in
+/-- A simple partial ordered `BoundedOrder` with decidable equality has decidable `LT`. -/
+@[implicit_reducible]
+def IsSimpleOrder.decidableLTOfDecidableEq [DecidableEq α] : DecidableLT α :=
+  let := decidableLEOfDecidableEq α
+  decidableLTOfDecidableLE
+
 /-- A simple partial ordered `BoundedOrder` induces a linear order.
 This is not an instance to prevent loops. -/
 @[instance_reducible]
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α where
   le_total a b := by rcases eq_bot_or_eq_top a with rfl | rfl <;> simp
   toDecidableLE := decidableLEOfDecidableEq α
-  toDecidableLT :=
-    let := decidableLEOfDecidableEq α
-    decidableLTOfDecidableLE
+  toDecidableLT := decidableLTOfDecidableEq α
 
 theorem isAtom_top : IsAtom (⊤ : α) :=
   ⟨top_ne_bot, fun a ha => Or.resolve_right (eq_bot_or_eq_top a) (ne_of_lt ha)⟩
