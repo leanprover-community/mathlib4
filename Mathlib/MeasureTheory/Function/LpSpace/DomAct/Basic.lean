@@ -111,7 +111,7 @@ theorem nnnorm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖₊ = ‖
 theorem dist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : dist (c • f) (c • g) = dist f g := by
   simp only [dist, ← smul_Lp_neg, ← smul_Lp_add, norm_smul_Lp]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, nolint simpNF)]
 theorem edist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : edist (c • f) (c • g) = edist f g := by
   simp only [Lp.edist_dist, dist_smul_Lp]
 
