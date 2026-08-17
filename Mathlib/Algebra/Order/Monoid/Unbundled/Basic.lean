@@ -32,8 +32,9 @@ Almost no monoid is actually present in this file: most assumptions have been ge
 
 -/
 
-@[expose] public section
+set_option linter.style.longFile 1600
 
+@[expose] public section
 
 -- TODO: If possible, uniformize lemma names, taking special care of `'`,
 -- after the `ordered`-refactor is done.
