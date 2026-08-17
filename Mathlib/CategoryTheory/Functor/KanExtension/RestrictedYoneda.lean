@@ -132,6 +132,11 @@ noncomputable def restrictedShrinkYonedaAdjunction : L ⊣ restrictedShrinkYoned
   Adjunction.mkOfHomEquiv
     { homEquiv _ _ := restrictedShrinkYonedaHomEquiv α }
 
+lemma restrictedShrinkYonedaAdjunction_homEquiv (P : Cᵒᵖ ⥤ Type w) (E : D) :
+    (restrictedShrinkYonedaAdjunction.{w} α).homEquiv P E =
+      restrictedShrinkYonedaHomEquiv α := by
+  simp [restrictedShrinkYonedaAdjunction]
+
 lemma restrictedShrinkYonedaAdjunction_unit_app_app
     (P : Cᵒᵖ ⥤ Type w) {X : Cᵒᵖ} (x : P.obj X) :
     ((restrictedShrinkYonedaAdjunction.{w} α).unit.app P).app X x =
@@ -145,7 +150,7 @@ lemma preservesColimitsOfSize_of_isLeftKanExtension :
     PreservesColimitsOfSize.{v₃, u₃} L :=
   (restrictedShrinkYonedaAdjunction α).leftAdjoint_preservesColimits
 
-instance : IsIso α :=
+instance isIso_of_isLeftKanExtension : IsIso α :=
   (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α).isIso_hom
 
 end
@@ -179,10 +184,10 @@ noncomputable def restrictedULiftYonedaAdjunction : L ⊣ restrictedULiftYoneda.
   (restrictedShrinkYonedaAdjunction (α ≫ Functor.whiskerRight
     (uliftYonedaIsoShrinkYoneda).hom L)).ofNatIsoRight (restrictedULiftYonedaIso A).symm
 
-lemma restrictedULiftYonedaAdjunction_unit_app_app_down
-    (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) {X : Cᵒᵖ} (x : P.obj X) :
-    (((restrictedULiftYonedaAdjunction.{w} α).unit.app P).app X x).down =
-      α.app X.unop ≫ L.map (uliftYonedaEquiv.symm x) := by
+lemma restrictedULiftYonedaAdjunction_unit_app_app
+    (P : Cᵒᵖ ⥤ Type max w v₁ v₂) {X : Cᵒᵖ} (x : P.obj X) :
+    dsimp% ((restrictedULiftYonedaAdjunction.{w} α).unit.app P).app X x =
+      ULift.up (α.app X.unop ≫ L.map (uliftYonedaEquiv.symm x)) := by
   have : shrinkYoneda.{max w v₁ v₂}.HasPointwiseLeftKanExtension A := fun _ ↦ by
     rw [← Functor.hasPointwiseLeftKanExtensionAt_iff_of_natIso
       uliftYonedaIsoShrinkYoneda.{max w v₂} (Iso.refl A)]
@@ -191,6 +196,13 @@ lemma restrictedULiftYonedaAdjunction_unit_app_app_down
     (α ≫ Functor.whiskerRight uliftYonedaIsoShrinkYoneda.{max w v₂}.hom L),
     uliftYonedaIsoShrinkYoneda_inv_app_app.{max w v₁}, ← Functor.map_comp,
     uliftYonedaIsoShrinkYoneda_hom_app_comp_shrinkYoneda_symm.{max w v₂}]
+
+@[simp]
+lemma restrictedULiftYonedaAdjunction_homEquiv_app {P : Cᵒᵖ ⥤ Type max w v₁ v₂}
+    {Y : D} (f : L.obj P ⟶ Y) {Z : Cᵒᵖ} (z : P.obj Z) :
+    ((restrictedULiftYonedaAdjunction.{w} α).homEquiv P Y f).app Z z =
+      ULift.up (α.app Z.unop ≫ L.map (uliftYonedaEquiv.symm z) ≫ f) := by
+  simp [Adjunction.homEquiv_unit, restrictedULiftYonedaAdjunction_unit_app_app]
 
 instance : IsIso α :=
   (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α).isIso_hom

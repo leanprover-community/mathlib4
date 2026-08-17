@@ -50,7 +50,6 @@ noncomputable def sd : SSet.{u} ⥤ SSet.{u} :=
 noncomputable def ex : SSet.{u} ⥤ SSet.{u} :=
   Presheaf.restrictedULiftYoneda.{0} SimplexCategory.sd
 
---set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the subdivision functor `sd` and `ex`. -/
 @[no_expose]
 noncomputable def sdExAdjunction : sd.{u} ⊣ ex :=

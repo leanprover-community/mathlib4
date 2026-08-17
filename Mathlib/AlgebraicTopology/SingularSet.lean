@@ -99,7 +99,8 @@ lemma sSetTopAdj_unit_app_app_down (S : SSet.{u}) (m : SimplexCategoryᵒᵖ) (a
   have : SSet.toTop.IsLeftKanExtension (uliftYoneda.{u}.leftKanExtensionUnit
       SimplexCategory.toTop.{u}) :=
     inferInstanceAs (SSet.toTop.{u}.IsLeftKanExtension SSet.toTopSimplex.inv)
-  apply Presheaf.restrictedULiftYonedaAdjunction_unit_app_app_down
+  exact ULift.up_injective (Presheaf.restrictedULiftYonedaAdjunction_unit_app_app.{0}
+    ((uliftYoneda.{u}.leftKanExtensionUnit SimplexCategory.toTop.{u})) S a)
 
 /-- The singular simplicial set of a totally disconnected space is the constant simplicial set. -/
 noncomputable def TopCat.toSSetIsoConst (X : TopCat.{u}) [TotallyDisconnectedSpace X] :
