@@ -36,7 +36,7 @@ variable [(J.W (A := Ab.{u})).IsMonoidal]
 theorem W_toPresheaf_whiskerLeft (hf : J.W ((toPresheaf _).map f)) :
     J.W ((toPresheaf _).map (P ◁ f)) := by
   let pf := (toPresheaf _).map f
-  refine ObjectProperty.isLocal_of_colimitCocone _ (colimitCoconeAb ..) (colimitCoconeAb ..)
+  refine ObjectProperty.isLocal_of_isColimit _ (colimitCoconeAb ..).2 (colimitCoconeAb ..).2
     (Limits.parallelPairHomMk (_ ◁ pf) (_ ◁ pf) ?_ ?_) _ ?_ ?_
   · ext U : 3; exact TensorProduct.ext_threefold fun _ _ _ ↦ rfl
   · ext U : 3; exact TensorProduct.ext_threefold fun p (r : R.obj U) m ↦ by
