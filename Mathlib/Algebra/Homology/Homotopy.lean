@@ -294,8 +294,28 @@ theorem comp_nullHomotopicMap' (f : C ⟶ D) (hom : ∀ i j, c.Rel j i → (D.X 
   · rfl
   · rw [comp_zero]
 
+@[simp]
+lemma nullHomotopicMap_add (h₁ h₂ : ∀ i j, C.X i ⟶ D.X j) :
+    nullHomotopicMap (h₁ + h₂) = nullHomotopicMap h₁ + nullHomotopicMap h₂ := by
+  ext
+  simp [nullHomotopicMap]
+  abel
+
+@[simp]
+lemma nullHomotopicMap_neg (h₁ : ∀ i j, C.X i ⟶ D.X j) :
+    nullHomotopicMap (-h₁) = -nullHomotopicMap h₁ := by
+  ext
+  simp [nullHomotopicMap]
+  abel
+
+@[simp]
+lemma nullHomotopicMap_sub (h₁ h₂ : ∀ i j, C.X i ⟶ D.X j) :
+    nullHomotopicMap (h₁ - h₂) = nullHomotopicMap h₁ - nullHomotopicMap h₂ := by
+  ext
+  simp [nullHomotopicMap]
+  abel
+
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Compatibility of `nullHomotopicMap` with the application of additive functors -/
 theorem map_nullHomotopicMap {W : Type*} [Category* W] [Preadditive W] (G : V ⥤ W) [G.Additive]
     (hom : ∀ i j, C.X i ⟶ D.X j) :
@@ -305,7 +325,6 @@ theorem map_nullHomotopicMap {W : Type*} [Category* W] [Preadditive W] (G : V �
   dsimp [nullHomotopicMap, dNext, prevD]
   simp only [G.map_comp, Functor.map_add]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Compatibility of `nullHomotopicMap'` with the application of additive functors -/
 theorem map_nullHomotopicMap' {W : Type*} [Category* W] [Preadditive W] (G : V ⥤ W) [G.Additive]
     (hom : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
@@ -407,6 +426,19 @@ theorem nullHomotopicMap'_f_eq_zero {k₀ : ι} (hk₀ : ∀ l : ι, ¬c.Rel k�
   simp only [nullHomotopicMap']
   apply nullHomotopicMap_f_eq_zero hk₀ hk₀'
 
+lemma sub_eq_nullHomotopicMap (h : Homotopy f g) :
+    f - g = nullHomotopicMap h.hom := by
+  ext
+  simp [nullHomotopicMap, HomologicalComplex.sub_f_apply, h.comm]
+
+lemma eq_add_nullHomotopicMap (h : Homotopy f g) :
+    f = g + nullHomotopicMap h.hom := by
+  simp [← h.sub_eq_nullHomotopicMap]
+
+lemma eq_sub_nullHomotopicMap (h : Homotopy f g) :
+    g = f - nullHomotopicMap h.hom := by
+  simp [← h.sub_eq_nullHomotopicMap]
+
 /-!
 `Homotopy.mkInductive` allows us to build a homotopy of chain complexes inductively,
 so that as we construct each component, we have available the previous two components,
@@ -507,14 +539,12 @@ set_option backward.isDefEq.respectTransparency.types false in
       ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using! I.2.2⟩ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem mkInductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom =
       (P.xNextIso h).inv ≫ (mkInductiveAux₂ e zero comm_zero one comm_one succ j).1 := by
   subst j
   rcases i with (_ | _ | i) <;> simp [mkInductiveAux₂]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A constructor for a `Homotopy e 0`, for `e` a chain map between `ℕ`-indexed chain complexes,
 working by induction.
@@ -530,7 +560,7 @@ def mkInductive : Homotopy e 0 where
     if h : i + 1 = j then
       (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom
     else 0
-  zero i j w := by rw [dif_neg]; exact w
+  zero i j w := by rw [dite_eq_right]; exact w
   comm i := by
     dsimp
     simp only [add_zero]
@@ -544,7 +574,7 @@ def mkInductive : Homotopy e 0 where
         dsimp [xNextIso]
         rw [id_comp]
     · dsimp [toPrev]
-      rw [dif_pos (by simp only [ChainComplex.prev])]
+      rw [dite_eq_left (by simp only [ChainComplex.prev])]
       simp [xPrevIso, comp_id]
 
 end
@@ -641,14 +671,12 @@ set_option backward.isDefEq.respectTransparency.types false in
       ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using! I.2.2⟩ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem mkCoinductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.1 =
       (mkCoinductiveAux₂ e zero comm_zero one comm_one succ j).1 ≫ (Q.xPrevIso h).hom := by
   subst j
   rcases i with (_ | _ | i) <;> simp [mkCoinductiveAux₂]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A constructor for a `Homotopy e 0`, for `e` a chain map between `ℕ`-indexed cochain complexes,
 working by induction.
@@ -664,7 +692,7 @@ def mkCoinductive : Homotopy e 0 where
     if h : j + 1 = i then
       (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ j).2.1
     else 0
-  zero i j w := by rw [dif_neg]; exact w
+  zero i j w := by rw [dite_eq_right]; exact w
   comm i := by
     dsimp
     simp only [add_zero]
@@ -679,7 +707,7 @@ def mkCoinductive : Homotopy e 0 where
         dsimp [xPrevIso]
         rw [comp_id]
     · dsimp [fromNext]
-      rw [dif_pos (by simp only [CochainComplex.next])]
+      rw [dite_eq_left (by simp only [CochainComplex.next])]
       simp [xNextIso, id_comp]
 
 end
@@ -687,6 +715,22 @@ end
 end MkCoinductive
 
 end Homotopy
+
+namespace ChainComplex
+
+variable {K L : ChainComplex V ℕ} (h : ∀ i j, K.X i ⟶ L.X j)
+
+@[reassoc]
+lemma nullHomotopicMap_f_zero :
+    (Homotopy.nullHomotopicMap h).f 0 = h 0 1 ≫ L.d 1 0 :=
+  Homotopy.nullHomotopicMap_f_of_not_rel_left (by simp) (by simp) _
+
+lemma nullHomotopicMap_f_succ (n : ℕ) :
+    (Homotopy.nullHomotopicMap h).f (n + 1) =
+        K.d (n + 1) n ≫ h n (n + 1) + h (n + 1) (n + 2) ≫ L.d (n + 2) (n + 1) :=
+  Homotopy.nullHomotopicMap_f (by simp) (by simp) _
+
+end ChainComplex
 
 /-- A homotopy equivalence between two chain complexes consists of a chain map each way,
 and homotopies from the compositions to the identity chain maps.
@@ -812,7 +856,6 @@ namespace CategoryTheory
 variable {W : Type*} [Category* W] [Preadditive W]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- An additive functor takes homotopies to homotopies. -/
 @[simps]
 def Functor.mapHomotopy (F : V ⥤ W) [F.Additive] {f g : C ⟶ D} (h : Homotopy f g) :

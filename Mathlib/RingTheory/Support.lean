@@ -56,7 +56,6 @@ lemma Module.notMem_support_iff :
     p ∉ Module.support R M ↔ Subsingleton (LocalizedModule p.asIdeal.primeCompl M) :=
   not_nontrivial_iff_subsingleton
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma Module.notMem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
   simp only [notMem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
@@ -144,11 +143,14 @@ lemma Module.support_of_algebra {A : Type*} [Ring A] [Algebra R A] :
   · simpa [Algebra.smul_def, (show _ = _ from hx)] using hm _ hx'
   · exact hr (H ((Algebra.algebraMap_eq_smul_one _).trans e))
 
-lemma Module.support_of_noZeroSMulDivisors [IsDomain R] [IsTorsionFree R M] [Nontrivial M] :
+lemma Module.support_of_isTorsionFree [IsDomain R] [IsTorsionFree R M] [Nontrivial M] :
     Module.support R M = Set.univ := by
   simp only [Set.eq_univ_iff_forall, mem_support_iff', ne_eq, smul_eq_zero, not_or]
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   exact fun p ↦ ⟨x, fun r hr ↦ ⟨fun e ↦ hr (e ▸ p.asIdeal.zero_mem), hx⟩⟩
+
+@[deprecated (since := "2026-07-27")]
+alias Module.support_of_noZeroSMulDivisors := Module.support_of_isTorsionFree
 
 variable {N P : Type*} [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
 variable (f : M →ₗ[R] N) (g : N →ₗ[R] P)
