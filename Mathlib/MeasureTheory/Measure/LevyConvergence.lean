@@ -226,6 +226,9 @@ variable {Ω' : Type*} {Ω : ℕ → Type*} {m : ∀ n, MeasurableSpace (Ω n)}
   {m' : MeasurableSpace Ω'} {P' : Measure Ω'} [IsProbabilityMeasure P']
   {X : (n : ℕ) → Ω n → E} {X' : Ω' → E}
 
+/-- If the characteristic functions of a sequence of pushforward measures converge pointwise to the
+characteristic function of a pushforward measure, then the random variables converge in
+distribution. -/
 lemma tendstoInDistribution_of_tendsto_charFun
     (hX : ∀ n, AEMeasurable (X n) (P n)) (hX' : AEMeasurable X' P')
     (h : ∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t))) :
@@ -235,11 +238,17 @@ lemma tendstoInDistribution_of_tendsto_charFun
     apply ProbabilityMeasure.tendsto_of_tendsto_charFun
     simpa
 
+/-- If a sequence of random variables converges in distribution to a random variable, then the
+characteristic functions of the sequence of pushforward measures under the sequence of random
+variables converge pointwise to the characteristic function of the pushforward measure under the
+random variable. -/
 lemma tendsto_charFun_of_tendstoInDistribution (h : TendstoInDistribution X atTop X' P P') :
     ∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t)) := by
   simpa only [ProbabilityMeasure.coe_mk] using
       ProbabilityMeasure.tendsto_iff_tendsto_charFun.mp h.tendsto
 
+/-- The convergence in distribution of random variables is equivalent to the pointwise convergence
+of the characteristic functions of their pushforwards. -/
 lemma tendstoInDistribution_iff_tendsto_charFun
     (hX : ∀ n, AEMeasurable (X n) (P n)) (hX' : AEMeasurable X' P') :
     TendstoInDistribution X atTop X' P P' ↔
