@@ -304,7 +304,7 @@ theorem induction_on_adjoin [FiniteDimensional F E]
       motive K → motive (K⟮x⟯.restrictScalars F))
     (K : IntermediateField F E) : motive K :=
   letI : IsNoetherian F E := IsNoetherian.iff_fg.2 inferInstance
-  induction_on_adjoin_fg motive bot adjoin_simple K K.fg_of_noetherian
+  induction_on_adjoin_fg bot adjoin_simple K K.fg_of_noetherian
 
 end Induction
 
