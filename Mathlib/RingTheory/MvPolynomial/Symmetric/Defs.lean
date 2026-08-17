@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials
