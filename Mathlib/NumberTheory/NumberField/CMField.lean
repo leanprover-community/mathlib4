@@ -209,8 +209,7 @@ protected theorem RingOfIntegers.complexConj_eq_self_iff (x : 𝓞 K) :
     complexConj K x = x ↔ ∃ y : 𝓞 K⁺, algebraMap (𝓞 K⁺) K y = x := by
   rw [complexConj_eq_self_iff]
   refine ⟨fun h ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩
-  · have : IsIntegral ℤ (⟨x, h⟩ : K⁺) :=
-      (isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective K⁺ K)).mp x.isIntegral_coe
+  · have : IsIntegral ℤ (⟨x, h⟩ : K⁺) := isIntegral_algebraMap_iff.mp x.isIntegral_coe
     refine ⟨⟨⟨x, h⟩, this⟩, ?_⟩
     rw [IsScalarTower.algebraMap_apply (𝓞 K⁺) K⁺, RingOfIntegers.map_mk]
     rfl

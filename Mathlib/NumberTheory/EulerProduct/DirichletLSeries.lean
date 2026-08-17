@@ -209,7 +209,7 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
 section LogDirichlet
 
 open Real hiding log exp_nat_mul exp_add
-open ArithmeticFunction Primes Summable
+open ArithmeticFunction Summable
 
 variable {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
 
