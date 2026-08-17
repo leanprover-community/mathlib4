@@ -842,9 +842,10 @@ theorem norm_compAlongOrderedFinpartitionL_le :
   MultilinearMap.mkContinuousLinear_norm_le _ zero_le_one _
 
 theorem norm_compAlongOrderedFinpartitionL_apply_le (f : F [×c.length]→L[𝕜] G) :
-    ‖c.compAlongOrderedFinpartitionL 𝕜 E F G f‖ ≤ ‖f‖ :=
-  (ContinuousLinearMap.le_of_opNorm_le _ c.norm_compAlongOrderedFinpartitionL_le f).trans_eq
+    ‖c.compAlongOrderedFinpartitionL 𝕜 E F G f‖ ≤ ‖f‖ := by
+  refine (ContinuousLinearMap.le_of_opNorm_le _ ?_ f).trans_eq
     (one_mul _)
+  exact c.norm_compAlongOrderedFinpartitionL_le
 
 theorem norm_compAlongOrderedFinpartition_sub_compAlongOrderedFinpartition_le
     (f₁ f₂ : F [×c.length]→L[𝕜] G) (g₁ g₂ : ∀ i, E [×c.partSize i]→L[𝕜] F) :
