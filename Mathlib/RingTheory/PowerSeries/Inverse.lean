@@ -147,7 +147,7 @@ theorem coeff_inv (n) (φ : k⟦X⟧) :
 theorem constantCoeff_inv (φ : k⟦X⟧) : constantCoeff φ⁻¹ = (constantCoeff φ)⁻¹ :=
   MvPowerSeries.constantCoeff_inv φ
 
-theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff φ = 0 :=
+protected theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff φ = 0 :=
   MvPowerSeries.inv_eq_zero
 
 theorem zero_inv : (0 : k⟦X⟧)⁻¹ = 0 :=
