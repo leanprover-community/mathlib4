@@ -6,8 +6,12 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.GroupWithZero.Torsion
-public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Rat.Floor
+public import Mathlib.RingTheory.Nakayama
+public import Mathlib.Tactic.Continuity
 
 /-!
 # Ramification index
@@ -68,7 +72,6 @@ noncomputable def ramificationIdx' : ℕ := sSup {n | map f p ≤ P ^ n}
 
 variable {p P}
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem ramificationIdx'_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p ≤ P ^ k → k ≤ n]
     (h : ∃ n, ∀ k, map f p ≤ P ^ k → k ≤ n) :
     ramificationIdx' p P = Nat.find h := by
@@ -303,7 +306,6 @@ theorem ramificationIdx'_ne_zero_of_liesOver [IsDomain R] [IsTorsionFree R S]
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_ne_zero_of_liesOver :=
   ramificationIdx'_ne_zero_of_liesOver
 
-set_option backward.isDefEq.respectTransparency.types false in
 open IsLocalRing in
 lemma ramificationIdx'_eq_one_iff
     {p : Ideal R} {P : Ideal S} [P.IsPrime]

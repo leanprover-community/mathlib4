@@ -73,7 +73,6 @@ alias principalSegIioIicOfLE_toRelEmbedding := principalSegIioIicOfLE_apply
 
 end Set
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : α <i β` is a principal segment, this is the induced order
 isomorphism `α ≃o Iio f.top`. -/
 @[simps! apply_coe]

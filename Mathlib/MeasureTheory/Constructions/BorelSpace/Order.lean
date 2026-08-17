@@ -159,7 +159,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [OrderClosedTopology α] [SecondCountableTopology α] {a b : α}
+variable [PartialOrder α] [OrderClosedTopology α] [SecondCountableTopology α] {a : α}
 
 theorem measurableSet_le' : MeasurableSet { p : α × α | p.1 ≤ p.2 } :=
   OrderClosedTopology.isClosed_le'.measurableSet
@@ -908,7 +908,7 @@ variable [ConditionallyCompleteLinearOrder α] [OrderTopology α] [SecondCountab
 protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable (fun b ↦ ⨆ i, f i b) := by
   rcases isEmpty_or_nonempty ι with hι | hι
-  · simp [iSup_of_empty']
+  · simp
   have A : MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} :=
     measurableSet_bddAbove_range hf
   have : Measurable (fun (_b : δ) ↦ sSup (∅ : Set α)) := measurable_const

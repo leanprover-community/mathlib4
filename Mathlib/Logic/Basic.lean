@@ -111,6 +111,11 @@ instance (priority := 10) decidableEq_of_subsingleton [Subsingleton α] : Decida
 instance [Subsingleton α] (p : α → Prop) : Subsingleton (Subtype p) :=
   ⟨fun ⟨x, _⟩ ⟨y, _⟩ ↦ by cases Subsingleton.elim x y; rfl⟩
 
+theorem Subtype.subsingleton_iff {p : α → Prop} :
+    Subsingleton (Subtype p) ↔ ∀ a b, p a → p b → a = b :=
+  ⟨fun _ a b ha hb ↦ congr_arg val (Subsingleton.elim ⟨a, ha⟩ ⟨b, hb⟩),
+   fun h ↦ ⟨fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ Subtype.ext (h a b ha hb)⟩⟩
+
 theorem congr_heq {α β γ : Sort _} {f : α → γ} {g : β → γ} {x : α} {y : β}
     (h₁ : f ≍ g) (h₂ : x ≍ y) : f x = g y := by
   cases h₂; cases h₁; rfl
@@ -192,9 +197,6 @@ section Propositional
 /-! ### Declarations about `implies` -/
 
 alias Iff.imp := imp_congr
-
-@[deprecated (since := "2026-01-30")] alias imp_iff_right_iff := Classical.imp_iff_right_iff
-@[deprecated (since := "2026-01-30")] alias and_or_imp := Classical.and_or_imp
 
 /-- Provide modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mt {a b : Prop} : (a → b) → ¬b → ¬a := mt
@@ -358,10 +360,6 @@ theorem imp_iff_or_not {b a : Prop} : b → a ↔ a ∨ ¬b :=
 
 theorem not_imp_not : ¬a → ¬b ↔ b → a := open scoped Classical in Decidable.not_imp_not
 
-@[deprecated Classical.imp_and_neg_imp_iff (since := "2026-01-30")]
-theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q :=
-  Classical.imp_and_neg_imp_iff p
-
 /-- Provide the reverse of modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mtr : (¬a → ¬b) → b → a := not_imp_not.mp
 
@@ -385,8 +383,6 @@ theorem imp_or {a b c : Prop} : a → b ∨ c ↔ (a → b) ∨ (a → c) :=
 
 theorem imp_or' {a : Sort*} {b c : Prop} : a → b ∨ c ↔ (a → b) ∨ (a → c) :=
   open scoped Classical in Decidable.imp_or'
-
-@[deprecated (since := "2026-01-30")] alias not_imp := Classical.not_imp
 
 theorem peirce (a b : Prop) : ((a → b) → a) → a := open scoped Classical in Decidable.peirce _ _
 
