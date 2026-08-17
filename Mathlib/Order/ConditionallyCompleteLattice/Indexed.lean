@@ -204,7 +204,7 @@ theorem ciSup_mono_of_forall_exists {ι'} [Nonempty ι] {f : ι → α} {g : ι'
     (hg : BddAbove <| range g) (h : ∀ i, ∃ i', f i ≤ g i') : ⨆ i, f i ≤ ⨆ i', g i' :=
   ciSup_le fun i ↦ h i |>.elim <| le_ciSup_of_le hg
 
-theorem ciSup₂_eq_ciSup_diagonal (f : ι → ι → α) (hf : BddAbove (range fun k ↦ f k k))
+theorem ciSup₂_eq_ciSup_diag (f : ι → ι → α) (hf : BddAbove (range fun k ↦ f k k))
     (h : ∀ i j, ∃ k, f i j ≤ f k k) :
     ⨆ i, ⨆ j, f i j = ⨆ k, f k k := by
   cases isEmpty_or_nonempty ι
