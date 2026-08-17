@@ -81,16 +81,12 @@ theorem tendstoInDistribution_iff_forall_integral_rclike_tendsto
   have h_map' (f : E →ᵇ 𝕜) :
       ∫ x, f x ∂μ'.map Z = ∫ ω, f (Z ω) ∂μ' := by
     rw [integral_map hZ (by fun_prop)]
-  constructor
-  · intro h f
-    have hf :=
-      (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜).mp h.tendsto f
-    simpa only [ProbabilityMeasure.coe_mk, h_map, h_map'] using hf
-  · intro h
-    refine ⟨hX, hZ, ?_⟩
-    apply (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto (Ω := E) 𝕜).mpr
+  refine ⟨fun h f ↦ ?_, fun h ↦ ⟨hX, hZ, ?_⟩⟩
+  · have hf := (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜).mp h.tendsto f
+    simpa [h_map, h_map'] using hf
+  · apply (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto (Ω := E) 𝕜).mpr
     intro f
-    simpa only [ProbabilityMeasure.coe_mk, h_map, h_map'] using h f
+    simpa [h_map, h_map'] using h f
 
 lemma tendstoInDistribution_const [OpensMeasurableSpace E] (hZ : AEMeasurable Z μ') :
     TendstoInDistribution (fun _ ↦ Z) l Z (fun _ ↦ μ') μ' where
