@@ -250,6 +250,8 @@ theorem IsIso.mk' {f : Y ⟶ X} (out : ∃ inv : X ⟶ Y, inv ≫ f = 𝟙 X ∧
 noncomputable def inv (f : X ⟶ Y) [I : IsIso f] : Y ⟶ X :=
   Classical.choose I.1
 
+attribute [to_dual self] inv.congr_simp
+
 namespace IsIso
 
 theorem hom_inv_id (f : X ⟶ Y) [I : IsIso f] : f ≫ inv f = 𝟙 X :=

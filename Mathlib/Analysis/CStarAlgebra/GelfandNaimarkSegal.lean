@@ -156,7 +156,7 @@ noncomputable def leftMulMapPreGNS (a : A) : f.PreGNS →L[ℂ] f.PreGNS :=
         ‖a‖ ^ 2 • star (f.ofPreGNS x) * f.ofPreGNS x := by
       rw [← mul_assoc, mul_assoc _ (star a), sq, ← CStarRing.norm_star_mul_self (x := a),
         smul_mul_assoc]
-      exact CStarAlgebra.star_left_conjugate_le_norm_smul
+      exact CStarAlgebra.star_left_conjugate_le_norm_smul ..
     calc
       _ ≤ f (‖a‖ ^ 2 • star (f.ofPreGNS x) * f.ofPreGNS x) := by
         simpa using OrderHomClass.mono f this
