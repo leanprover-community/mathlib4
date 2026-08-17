@@ -328,14 +328,9 @@ theorem LowerSemicontinuousOn.disjoint_biInter_preimage_Iic_iff_exists_finset
     simp only [mem_iInter, mem_preimage, mem_Iic, not_forall, exists_prop, not_le]
     grind
 
-@[deprecated LowerSemicontinuousOn.disjoint_biInter_preimage_Iic_iff_exists_finset
-  (since := "2026-08-17")]
-theorem LowerSemicontinuousOn.inter_biInter_preimage_Iic_eq_empty_iff_exists_finset
-    {ι : Type*} {f : ι → α → γ}
-    (ks : IsCompact s) {I : Set ι} {c : γ} (hfi : ∀ i ∈ I, LowerSemicontinuousOn (f i) s) :
-    s ∩ ⋂ i ∈ I, (f i) ⁻¹' Iic c = ∅ ↔ ∃ u : Finset I, ∀ x ∈ s, ∃ i ∈ u, c < f i x :=
-  Set.disjoint_iff_inter_eq_empty.symm.trans
-    (LowerSemicontinuousOn.disjoint_biInter_preimage_Iic_iff_exists_finset ks hfi)
+@[deprecated (since := "2026-08-17")]
+alias LowerSemicontinuousOn.inter_biInter_preimage_Iic_eq_empty_iff_exists_finset :=
+  LowerSemicontinuousOn.disjoint_biInter_preimage_Iic_iff_exists_finset
 
 variable [TopologicalSpace γ] [ClosedIciTopology γ]
 
@@ -890,14 +885,9 @@ theorem UpperSemicontinuousOn.disjoint_biInter_preimage_Ici_iff_exists_finset
     Disjoint s (⋂ i ∈ I, (f i) ⁻¹' Ici c) ↔ ∃ u : Finset I, ∀ x ∈ s, ∃ i ∈ u, f i x < c :=
   LowerSemicontinuousOn.disjoint_biInter_preimage_Iic_iff_exists_finset ks hfi (γ := γᵒᵈ)
 
-@[deprecated UpperSemicontinuousOn.disjoint_biInter_preimage_Ici_iff_exists_finset
-  (since := "2026-08-17")]
-theorem UpperSemicontinuousOn.inter_biInter_preimage_Ici_eq_empty_iff_exists_finset
-    {ι : Type*} {f : ι → α → γ}
-    (ks : IsCompact s) {I : Set ι} {c : γ} (hfi : ∀ i ∈ I, UpperSemicontinuousOn (f i) s) :
-    s ∩ ⋂ i ∈ I, (f i) ⁻¹' Ici c = ∅ ↔ ∃ u : Finset I, ∀ x ∈ s, ∃ i ∈ u, f i x < c :=
-  Set.disjoint_iff_inter_eq_empty.symm.trans
-    (UpperSemicontinuousOn.disjoint_biInter_preimage_Ici_iff_exists_finset ks hfi)
+@[deprecated (since := "2026-08-17")]
+alias UpperSemicontinuousOn.inter_biInter_preimage_Ici_eq_empty_iff_exists_finset :=
+  UpperSemicontinuousOn.disjoint_biInter_preimage_Ici_iff_exists_finset
 
 variable [TopologicalSpace γ] [ClosedIicTopology γ]
 
