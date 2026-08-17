@@ -345,20 +345,19 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
   apply continuous_of_continuousAt_one
   rw [Metric.continuousAt_iff']
   intro ε hε
-  rw [Filter.eventually_iff, krullTopology_mem_nhds_one_iff]
+  rw [Filter.eventually_iff, krullTopology_mem_nhds_one_iff']
   obtain ⟨k, hk', hk⟩ : ∃ k : ℕ, k ≠ 0 ∧ p ^ (-k : ℤ) < ε := by
     obtain ⟨k, hk⟩ := PadicInt.exists_pow_neg_lt p hε
     exact ⟨k + 1, by simp, lt_of_le_of_lt (by gcongr <;> simp [‹Fact p.Prime›.1.one_le]) hk⟩
-  refine ⟨(K⟮ζ k⟯), adjoin.finiteDimensional ?_, ?_⟩
-  · exact ((hζ k).isIntegral (Nat.pos_of_neZero _)).tower_top
-  · intro σ hσ
-    refine lt_of_le_of_lt ?_ hk
-    dsimp
-    rw [dist_eq_norm, PadicInt.norm_le_pow_iff_mem_span_pow, ← PadicInt.ker_toZModPow,
-      RingHom.mem_ker, map_one, map_one, Units.val_one, map_sub, map_one,
-      cyclotomicCharacter.toZModPow, sub_eq_zero, eq_comm]
-    apply modularCyclotomicCharacter.unique
-    intro t ht
-    obtain ⟨i, hi, rfl⟩ := ((hζ k).isUnit_unit NeZero.out).eq_pow_of_mem_rootsOfUnity ht
-    rw [ZMod.val_one'' (one_lt_pow₀ (Nat.Prime.one_lt Fact.out) hk').ne', pow_one]
-    exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩
+  refine ⟨(K⟮ζ k⟯), IntermediateField.fg_adjoin_of_finite (Set.finite_singleton _), ?_⟩
+  intro σ hσ
+  refine lt_of_le_of_lt ?_ hk
+  dsimp
+  rw [dist_eq_norm, PadicInt.norm_le_pow_iff_mem_span_pow, ← PadicInt.ker_toZModPow,
+    RingHom.mem_ker, map_one, map_one, Units.val_one, map_sub, map_one,
+    cyclotomicCharacter.toZModPow, sub_eq_zero, eq_comm]
+  apply modularCyclotomicCharacter.unique
+  intro t ht
+  obtain ⟨i, hi, rfl⟩ := ((hζ k).isUnit_unit NeZero.out).eq_pow_of_mem_rootsOfUnity ht
+  rw [ZMod.val_one'' (one_lt_pow₀ (Nat.Prime.one_lt Fact.out) hk').ne', pow_one]
+  exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩
