@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Rearrangement
 public import Mathlib.GroupTheory.Perm.Cycle.Basic
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Positivity
+import Mathlib.Data.Multiset.Fintype
 
 /-!
 # Chebyshev's sum inequality
@@ -136,6 +137,17 @@ of the sum is less than the size of the set times the sum of the squares. -/
 theorem sq_sum_le_card_mul_sum_sq : (∑ i ∈ s, f i) ^ 2 ≤ #s * ∑ i ∈ s, f i ^ 2 := by
   simp_rw [sq]
   exact (monovaryOn_self _ _).sum_mul_sum_le_card_mul_sum
+
+/-- Special case of **Chebyshev's Sum Inequality** or the **Cauchy-Schwarz Inequality** for a
+multiset: the square of the sum is at most the cardinality times the sum of the squares. -/
+theorem _root_.Multiset.sq_sum_le_card_mul_sum_sq (m : Multiset α) :
+    m.sum ^ 2 ≤ m.card * (m.map (· ^ 2)).sum := by
+  have key (g : α → α) : (m.map g).sum = ∑ i ∈ m.toEnumFinset, g i.1 := by
+    grind [m.map_toEnumFinset_fst, Multiset.map_map, Finset.sum_map_val]
+  have := key id
+  have := key (· ^ 2)
+  have := _root_.sq_sum_le_card_mul_sum_sq (s := m.toEnumFinset) (f := Prod.fst)
+  simp_all [Multiset.card_toEnumFinset]
 
 variable [Fintype ι]
 
