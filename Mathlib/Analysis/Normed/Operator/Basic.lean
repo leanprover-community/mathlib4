@@ -20,6 +20,10 @@ Define the operator (semi)-norm on the space of continuous (semi)linear maps bet
 spaces, and prove its basic properties. In particular, show that this space is itself a semi-normed
 space.
 
+For the initial definition we only require `E` and `F` to be modules over `Semiring`s and `Ring`s.
+The later proofs use `NormedField` when rescaling vectors, however there are also theories
+where we do not assume fields e.g. operator norms on modules over Banach-Tate rings.
+
 Since a lot of elementary properties don't require `‖x‖ = 0 → x = 0` we start setting up the
 theory for `SeminormedAddCommGroup`. Later we will specialize to `NormedAddCommGroup` in the
 file `NormedSpace.lean`.
@@ -48,6 +52,88 @@ section SemiNormed
 
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup Fₗ]
   [SeminormedAddCommGroup G]
+
+section Semiring
+
+variable {R R₂ : Type*}
+
+variable [Semiring R] [Semiring R₂] [Module R E] [Module R₂ F] {σ₁₂ : R →+* R₂}
+
+/-- If `‖x‖ = 0` and `f` is continuous then `‖f x‖ = 0`. -/
+theorem norm_image_of_norm_eq_zero [FunLike 𝓕 E F] [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕)
+    (hf : Continuous f) {x : E} (hx : ‖x‖ = 0) : ‖f x‖ = 0 := by
+  rw [← mem_closure_zero_iff_norm, ← specializes_iff_mem_closure, ← map_zero f] at *
+  exact hx.map hf
+
+namespace ContinuousLinearMap
+
+/-- The operator norm of a continuous linear map is the inf of all its bounds. -/
+def opNorm (f : E →SL[σ₁₂] F) :=
+  sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ }
+
+instance hasOpNorm : Norm (E →SL[σ₁₂] F) :=
+  ⟨opNorm⟩
+
+theorem norm_def (f : E →SL[σ₁₂] F) : ‖f‖ = sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ } :=
+  rfl
+
+theorem bounds_bddBelow {f : E →SL[σ₁₂] F} : BddBelow { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ } :=
+  ⟨0, fun _ ⟨hn, _⟩ => hn⟩
+
+/-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
+theorem opNorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ x, ‖f x‖ ≤ M * ‖x‖) :
+    ‖f‖ ≤ M :=
+  csInf_le bounds_bddBelow ⟨hMp, hM⟩
+
+/-- If one controls the norm of every `A x`, `‖x‖ ≠ 0`, then one controls the norm of `A`. -/
+theorem opNorm_le_bound' (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M)
+    (hM : ∀ x, ‖x‖ ≠ 0 → ‖f x‖ ≤ M * ‖x‖) : ‖f‖ ≤ M :=
+  opNorm_le_bound f hMp fun x =>
+    (ne_or_eq ‖x‖ 0).elim (hM x) fun h => by
+      simp only [h, mul_zero, norm_image_of_norm_eq_zero f f.2 h, le_refl]
+
+theorem opNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} {M : ℝ} (M_nonneg : 0 ≤ M)
+    (h_above : ∀ x, ‖φ x‖ ≤ M * ‖x‖) (h_below : ∀ N ≥ 0, (∀ x, ‖φ x‖ ≤ N * ‖x‖) → M ≤ N) :
+    ‖φ‖ = M :=
+  le_antisymm (φ.opNorm_le_bound M_nonneg h_above)
+    ((le_csInf_iff ContinuousLinearMap.bounds_bddBelow ⟨M, M_nonneg, h_above⟩).mpr
+      fun N ⟨N_nonneg, hN⟩ => h_below N N_nonneg hN)
+
+theorem opNorm_nonneg (f : E →SL[σ₁₂] F) : 0 ≤ ‖f‖ :=
+  Real.sInf_nonneg fun _ ↦ And.left
+
+/-- The norm of the `0` operator is `0`. -/
+theorem opNorm_zero : ‖(0 : E →SL[σ₁₂] F)‖ = 0 :=
+  le_antisymm (opNorm_le_bound _ le_rfl fun _ ↦ by simp) (opNorm_nonneg _)
+
+/-- The norm of the identity is at most `1`. It is in fact `1`, except when the space is trivial
+where it is `0`. It means that one cannot do better than an inequality in general. -/
+theorem norm_id_le : ‖ContinuousLinearMap.id R E‖ ≤ 1 :=
+  opNorm_le_bound _ zero_le_one fun x => by simp
+
+end ContinuousLinearMap
+
+end Semiring
+
+section Ring
+
+variable {R R₂ : Type*}
+
+variable [Ring R] [Ring R₂] [Module R E] [Module R₂ F] {σ₁₂ : R →+* R₂}
+
+namespace ContinuousLinearMap
+
+theorem opNorm_neg (f : E →SL[σ₁₂] F) : ‖-f‖ = ‖f‖ := by simp only [norm_def, neg_apply, norm_neg]
+
+/-- The operator norm is symmetric in a difference. Over a nontrivially normed field this is a
+special case of `norm_sub_rev`, but the seminormed group structure on `E →SL[σ₁₂] F` is not
+available at this generality. -/
+theorem opNorm_sub_rev (f g : E →SL[σ₁₂] F) : ‖f - g‖ = ‖g - f‖ := by
+  rw [← opNorm_neg, neg_sub]
+
+end ContinuousLinearMap
+
+end Ring
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
@@ -89,12 +175,6 @@ theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] {f : 𝓕'} {x
   exact Submodule.Convex.semilinear_range (E := F') (F' := E) (σ := τ) f
 
 end
-
-/-- If `‖x‖ = 0` and `f` is continuous then `‖f x‖ = 0`. -/
-theorem norm_image_of_norm_eq_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕) (hf : Continuous f)
-    {x : E} (hx : ‖x‖ = 0) : ‖f x‖ = 0 := by
-  rw [← mem_closure_zero_iff_norm, ← specializes_iff_mem_closure, ← map_zero f] at *
-  exact hx.map hf
 
 section
 
@@ -167,16 +247,6 @@ section OpNorm
 
 open Set Real
 
-/-- The operator norm of a continuous linear map is the inf of all its bounds. -/
-def opNorm (f : E →SL[σ₁₂] F) :=
-  sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ }
-
-instance hasOpNorm : Norm (E →SL[σ₁₂] F) :=
-  ⟨opNorm⟩
-
-theorem norm_def (f : E →SL[σ₁₂] F) : ‖f‖ = sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ } :=
-  rfl
-
 -- So that invocations of `le_csInf` make sense: we show that the set of
 -- bounds is nonempty and bounded below.
 theorem bounds_nonempty [RingHomIsometric σ₁₂] {f : E →SL[σ₁₂] F} :
@@ -184,47 +254,11 @@ theorem bounds_nonempty [RingHomIsometric σ₁₂] {f : E →SL[σ₁₂] F} :
   let ⟨M, hMp, hMb⟩ := f.bound
   ⟨M, le_of_lt hMp, hMb⟩
 
-theorem bounds_bddBelow {f : E →SL[σ₁₂] F} : BddBelow { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ } :=
-  ⟨0, fun _ ⟨hn, _⟩ => hn⟩
-
 theorem isLeast_opNorm [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     IsLeast {c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖} ‖f‖ := by
   refine IsClosed.isLeast_csInf ?_ bounds_nonempty bounds_bddBelow
   simp only [ofPred_and, ofPred_forall]
   refine isClosed_Ici.inter <| isClosed_iInter fun _ ↦ isClosed_le ?_ ?_ <;> fun_prop
-
-/-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
-theorem opNorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ x, ‖f x‖ ≤ M * ‖x‖) :
-    ‖f‖ ≤ M :=
-  csInf_le bounds_bddBelow ⟨hMp, hM⟩
-
-/-- If one controls the norm of every `A x`, `‖x‖ ≠ 0`, then one controls the norm of `A`. -/
-theorem opNorm_le_bound' (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M)
-    (hM : ∀ x, ‖x‖ ≠ 0 → ‖f x‖ ≤ M * ‖x‖) : ‖f‖ ≤ M :=
-  opNorm_le_bound f hMp fun x =>
-    (ne_or_eq ‖x‖ 0).elim (hM x) fun h => by
-      simp only [h, mul_zero, norm_image_of_norm_eq_zero f f.2 h, le_refl]
-
-theorem opNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} {M : ℝ} (M_nonneg : 0 ≤ M)
-    (h_above : ∀ x, ‖φ x‖ ≤ M * ‖x‖) (h_below : ∀ N ≥ 0, (∀ x, ‖φ x‖ ≤ N * ‖x‖) → M ≤ N) :
-    ‖φ‖ = M :=
-  le_antisymm (φ.opNorm_le_bound M_nonneg h_above)
-    ((le_csInf_iff ContinuousLinearMap.bounds_bddBelow ⟨M, M_nonneg, h_above⟩).mpr
-      fun N ⟨N_nonneg, hN⟩ => h_below N N_nonneg hN)
-
-theorem opNorm_neg (f : E →SL[σ₁₂] F) : ‖-f‖ = ‖f‖ := by simp only [norm_def, neg_apply, norm_neg]
-
-theorem opNorm_nonneg (f : E →SL[σ₁₂] F) : 0 ≤ ‖f‖ :=
-  Real.sInf_nonneg fun _ ↦ And.left
-
-/-- The norm of the `0` operator is `0`. -/
-theorem opNorm_zero : ‖(0 : E →SL[σ₁₂] F)‖ = 0 :=
-  le_antisymm (opNorm_le_bound _ le_rfl fun _ ↦ by simp) (opNorm_nonneg _)
-
-/-- The norm of the identity is at most `1`. It is in fact `1`, except when the space is trivial
-where it is `0`. It means that one cannot do better than an inequality in general. -/
-theorem norm_id_le : ‖ContinuousLinearMap.id 𝕜 E‖ ≤ 1 :=
-  opNorm_le_bound _ zero_le_one fun x => by simp
 
 section
 
