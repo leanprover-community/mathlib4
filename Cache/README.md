@@ -103,9 +103,9 @@ Uploads target a single container via `--container=NAME`.
 
 ## Environment Variables
 
-| Variable            | Description                        | Default                                         |
-|---------------------|------------------------------------|-------------------------------------------------|
-| `MATHLIB_CACHE_DIR` | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
+| Variable                 | Description                        | Default                                         |
+|--------------------------|------------------------------------|-------------------------------------------------|
+| `MATHLIB_CACHE_DIR`      | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
 
 ## How It Works
 

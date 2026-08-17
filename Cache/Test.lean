@@ -159,6 +159,28 @@ def test_Container_azureURL : IO Unit := do
     "https://lakecache.blob.core.windows.net/mathlib4"
     Container.legacy.azureURL
 
+/-- A variable that names a read URL or a read chain arrives trimmed, and an
+empty or whitespace-only value means unset. `MATHLIB_CACHE_BASE_URL`,
+`MATHLIB_CACHE_GET_URL`, and `MATHLIB_CACHE_FROM` follow that rule. CI wires
+them from a GitHub Actions `vars` lookup, which yields `""` for an undefined
+variable, and such a value behaves as an absent one. The upload endpoint
+`MATHLIB_CACHE_PUT_URL` keeps the opposite rule: an empty value there fails the
+upload rather than divert it to the fallback container. -/
+def test_envValueNormalization : IO Unit := do
+  IO.println "nonEmptyEnvValue / normalizeBaseURL:"
+  -- `<unset>` stands in for `none`, so a failure shows both sides as strings.
+  let shown (value? : Option String) : String := value?.getD "<unset>"
+  assertEq "absent value reads as unset" "<unset>" (shown (nonEmptyEnvValue none))
+  assertEq "empty value reads as unset" "<unset>" (shown (nonEmptyEnvValue (some "")))
+  assertEq "whitespace-only value reads as unset" "<unset>"
+    (shown (nonEmptyEnvValue (some " \n")))
+  assertEq "value is trimmed" "master,forks" (shown (nonEmptyEnvValue (some " master,forks\n")))
+  assertEq "URL keeps its own path" "https://cache.example.org/mathlib4"
+    (shown (normalizeBaseURL (some "https://cache.example.org/mathlib4")))
+  assertEq "trailing slashes are stripped" "https://cache.example.org"
+    (shown (normalizeBaseURL (some "https://cache.example.org///")))
+  assertEq "a slash-only value reads as unset" "<unset>" (shown (normalizeBaseURL (some "/")))
+
 /-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set
 and falls back to the Azure account when it is not. `getBaseURLFrom` is pure,
 so this test covers both branches; the environment-reading wrapper
@@ -177,6 +199,10 @@ def test_getBaseURLFrom : IO Unit := do
     defaultGetBaseURL (getBaseURLFrom (some " \n"))
   assertEq "override is trimmed"
     "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org\n"))
+  -- A base written with a trailing slash must not double the separator in
+  -- `{base}/{container}/{key}`.
+  assertEq "trailing slash is stripped"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org/"))
 
 /-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
 `azureURL`, under whichever base `MATHLIB_CACHE_BASE_URL` selects. With no
@@ -187,8 +213,9 @@ def test_Container_getURL : IO Unit := do
   assertEq "master read URL" s!"{base}/mathlib4-master" (← Container.master.getURL)
   assertEq "forks read URL" s!"{base}/mathlib4-forks" (← Container.forks.getURL)
   assertEq "legacy read URL" s!"{base}/mathlib4" (← Container.legacy.getURL)
-  if (← IO.getEnv "MATHLIB_CACHE_BASE_URL").isNone then
-    assertEq "default base is the Azure host" defaultGetBaseURL base
+  -- The effective base drives this guard, so an empty variable reaches the
+  -- assertions below: it means unset, and the Azure host answers for it.
+  if base == defaultGetBaseURL then
     assertEq "default read URL matches azureURL"
       Container.master.azureURL (← Container.master.getURL)
 
@@ -261,8 +288,8 @@ This test covers the default chain and the `--cache-from` override. The
 so the CI integration tests exercise them instead. -/
 def test_effectiveGetURLs : IO Unit := do
   IO.println "effectiveGetURLs:"
-  if (← IO.getEnv "MATHLIB_CACHE_GET_URL").isSome ||
-      (← IO.getEnv "MATHLIB_CACHE_FROM").isSome then
+  if (← getEnvNonEmpty "MATHLIB_CACHE_GET_URL").isSome ||
+      (← getEnvNonEmpty "MATHLIB_CACHE_FROM").isSome then
     IO.println "  skipped: MATHLIB_CACHE_GET_URL or MATHLIB_CACHE_FROM is set"
     return
   let base ← getBaseURL
@@ -561,7 +588,9 @@ def test_markerReadURL : IO Unit := do
   assertEq "probe repo is lowercased in the path"
     s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
     (← markerReadURL .forks "Alice/Mathlib4" "abc123")
-  if (← IO.getEnv "MATHLIB_CACHE_BASE_URL").isNone then
+  -- The effective base drives this guard, so an empty variable reaches the
+  -- assertions below: it means unset, and the Azure host answers for it.
+  if base == defaultGetBaseURL then
     assertEq "default probe URL matches the write URL"
       (markerURL .forks "alice/mathlib4" "abc123")
       (← markerReadURL .forks "alice/mathlib4" "abc123")
@@ -959,6 +988,21 @@ def test_parseFlagOpt : IO Unit := do
 
 end CliOptions
 
+section ReadRedirects
+
+/-- Reads follow redirects, so a read base can answer with the blob's current
+location. This test pins the flag set, because each flag bounds what a redirect
+may do: `--proto-redir =https` holds a transfer on an encrypted protocol, and
+`--max-redirs` bounds the chain. The upload path builds its own `curl`
+arguments and carries none of these flags. -/
+def test_curlFollowRedirectArgs : IO Unit := do
+  IO.println "curlFollowRedirectArgs:"
+  assertEq "read redirect flags"
+    "--location --proto-redir =https --max-redirs 5"
+    (" ".intercalate curlFollowRedirectArgs.toList)
+
+end ReadRedirects
+
 section CacheMissStatus
 
 /-- `isCacheMissStatus` decides whether a read's HTTP status is a benign miss
@@ -979,6 +1023,10 @@ def test_isCacheMissStatus : IO Unit := do
   assertTrue "200 is not a miss"               (!isCacheMissStatus 200 true)
   assertTrue "500 is not a miss"               (!isCacheMissStatus 500 true)
   assertTrue "403-as-miss is scoped to 403"    (!isCacheMissStatus 401 true)
+  -- A refused redirect (`--proto-redir`, `--max-redirs`) leaves its status
+  -- here. A miss verdict would make it look like an empty cache and send the
+  -- read silently down the container chain, so it counts as a failure.
+  assertTrue "302 is not a miss"               (!isCacheMissStatus 302 true)
 
 end CacheMissStatus
 
@@ -1127,6 +1175,7 @@ def runAll : IO Unit := do
   test_Container_parse
   test_Container_azureURL
   test_Container_getURL
+  test_envValueNormalization
   test_getBaseURLFrom
   test_Container_flatPath
   test_defaultContainersForRepo
@@ -1151,6 +1200,7 @@ def runAll : IO Unit := do
   test_isKnownOpt
   test_parseNamedOpt
   test_parseFlagOpt
+  test_curlFollowRedirectArgs
   test_isCacheMissStatus
   test_isAlreadyPresentStatus
   test_expandDownloadRounds

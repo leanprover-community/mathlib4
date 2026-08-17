@@ -304,14 +304,17 @@ Precedence (most specific wins):
    not here.
 4. `defaultContainersForRepo repo`: the repo-level fallback when nothing
    overrides it.
+
+An empty value means unset for both variables here, as it does for
+`MATHLIB_CACHE_BASE_URL`. `nonEmptyEnvValue` holds that rule.
 -/
 def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) := do
-  if let some url ← IO.getEnv "MATHLIB_CACHE_GET_URL" then
+  if let some url := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_GET_URL") then
     return [(none, url)]
   if let some cliOverride ← cacheFromOverride.get then
     return ← chainWithGetURLs cliOverride
   let envOverride? ← do
-    match (← IO.getEnv "MATHLIB_CACHE_FROM") with
+    match (← getEnvNonEmpty "MATHLIB_CACHE_FROM") with
     | none => pure none
     | some s =>
       match parseCacheFromList s with
@@ -323,6 +326,19 @@ def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) :=
         pure none
   chainWithGetURLs (envOverride?.getD (defaultContainersForRepo repo))
 
+/--
+`curl` flags that let a cache read follow a redirect, so a read base may answer
+with the blob's current home. `%{http_code}` reports the final response, so a
+hit reads as a hit and a miss as a miss.
+
+A redirect may target only `https`, and the chain is short. These bounds limit
+the transport rather than the trust: the host that answers a read serves the
+artifact bytes in either case. They keep a redirect from moving a transfer to a
+plaintext protocol or through a long chain of hops.
+-/
+def curlFollowRedirectArgs : Array String :=
+  #["--location", "--proto-redir", "=https", "--max-redirs", "5"]
+
 /-- Authentication method used for cache upload operations. -/
 inductive UploadAuth where
   | azureSas (token : String)
@@ -330,14 +346,10 @@ inductive UploadAuth where
 
 /-- Retrieves upload credentials from the environment. -/
 def getUploadAuth : IO UploadAuth := do
-  if let some token ← IO.getEnv "MATHLIB_CACHE_AZURE_BEARER_TOKEN" then
-    let token := token.trimAscii.copy
-    if !token.isEmpty then
-      return .azureBearer token
-  if let some token ← IO.getEnv "MATHLIB_CACHE_SAS" then
-    let token := token.trimAscii.copy
-    if !token.isEmpty then
-      return .azureSas token
+  if let some token ← getEnvNonEmpty "MATHLIB_CACHE_AZURE_BEARER_TOKEN" then
+    return .azureBearer token
+  if let some token ← getEnvNonEmpty "MATHLIB_CACHE_SAS" then
+    return .azureSas token
   throw <| IO.userError
     "environment variable MATHLIB_CACHE_AZURE_BEARER_TOKEN or MATHLIB_CACHE_SAS must be set to upload caches"
 
@@ -383,12 +395,7 @@ SHA-scoped read"; the non-default-scope warning fires for either.
 def getRepoScope : IO (Option String) := do
   if let some s ← scopeOverride.get then
     return some s
-  let s? ← IO.getEnv "MATHLIB_CACHE_REPO_SCOPE"
-  match s? with
-  | some s =>
-    let trimmed := s.trimAscii.toString
-    pure (if trimmed.isEmpty then none else some trimmed)
-  | none => pure none
+  getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE"
 
 def getGitCommitHash : IO String :=
   return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimAsciiEnd.copy
@@ -457,10 +464,8 @@ def downloadFile (container : Option Container) (repo containerURL : String)
   let partPath := IO.CACHEDIR / partFileName
   let out ← IO.Process.output
     { cmd := (← IO.getCurl),
-      args := #[url, "--fail", "--silent",
-        -- The read base may answer with a redirect to the blob's current home.
-        "--location",
-        "--write-out", "%{http_code}", "-o", partPath.toString] }
+      args := #[url, "--fail", "--silent"] ++ curlFollowRedirectArgs ++
+        #["--write-out", "%{http_code}", "-o", partPath.toString] }
   if out.exitCode = 0 then
     IO.FS.rename partPath path
     return .served
@@ -719,10 +724,8 @@ private def downloadFilesFromContainer
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap scope?)
     let args := #["--request", "GET", "--parallel",
         -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
-        "--silent",
-        -- The read base may answer with a redirect to the blob's current home.
-        "--location",
-        "--retry", "5", -- there seem to be some intermittent failures
+        "--silent"] ++ curlFollowRedirectArgs ++
+      #["--retry", "5", -- there seem to be some intermittent failures
         "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
     -- `legacy` answers reads with 403 once its public access is revoked ahead
     -- of retirement; treat that as a miss so the chain stays quiet for clients
@@ -1042,7 +1045,10 @@ section Put
 Resolve the upload base URL.
 
 Precedence:
-1. `MATHLIB_CACHE_PUT_URL` env var, if set.
+1. `MATHLIB_CACHE_PUT_URL` env var, if set. Any value counts here, an empty one
+   included: a misconfigured endpoint fails the upload rather than divert it to
+   the fallback container below. The read variables take the opposite rule,
+   where an empty value means unset.
 2. The Azure URL for the explicitly chosen `container`.
 3. With neither set, fall back to `Container.legacy` (the bare `mathlib4`
    container) and warn. RBAC still scopes each identity to its own container,
