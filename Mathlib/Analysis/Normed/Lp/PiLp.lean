@@ -611,7 +611,7 @@ instance [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) :=
 `L^p` distance, and having as uniformity the product uniformity. -/
 instance [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) :=
   ((pseudoMetricAux p β).replaceUniformity <| private (uniformity_aux p β).symm).replaceBornology
-  fun s => Filter.ext_iff.1 (private (cobounded_aux p β).symm) sᶜ
+    fun s => Filter.ext_iff.1 (private (cobounded_aux p β).symm) sᶜ
 
 /-- metric space instance on the product of finitely many metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/
