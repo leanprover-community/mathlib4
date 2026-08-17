@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.LocalRing.Length
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.Unramified.LocalRing
+public import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 # Ramification index
@@ -57,12 +58,12 @@ noncomputable def ramificationIdx : ℕ :=
 theorem ramificationIdx_def [q.IsPrime] :
     letI Sq := Localization.AtPrime q
     q.ramificationIdx R = (Module.length Sq (Sq ⧸ (q.under R).map (algebraMap R Sq))).toNat :=
-  dif_pos _
+  dite_eq_left _
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_def := ramificationIdx_def
 
 theorem ramificationIdx_of_not_isPrime (hq : ¬ q.IsPrime) : q.ramificationIdx R = 0 :=
-  dif_neg hq
+  dite_eq_right hq
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_of_not_isPrime :=
   ramificationIdx_of_not_isPrime
