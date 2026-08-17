@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials
@@ -98,7 +97,8 @@ theorem esymm_one (s : Multiset R) : s.esymm 1 = s.sum := by
 
 -- TODO: `Multiset.insert_eq_cons` being simp means that `esymm {x, y}` is not simp normal form
 lemma esymm_pair_one (x y : R) :
-    esymm (x ::ₘ {y}) 1 = x + y := by simp
+    esymm (x ::ₘ {y}) 1 = x + y := by
+  simp
 
 @[simp] lemma esymm_pair_two (x y : R) :
     esymm (x ::ₘ {y}) 2 = x * y := by
