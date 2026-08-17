@@ -50,7 +50,7 @@ Every non-archimedean absolute value on `K` is equivalent to a `v`-adic absolute
 open IsDedekindDomain HeightOneSpectrum WithZeroMulInt NumberField NNReal
 
 variable {K : Type*} [Field K] [NumberField K] {f : AbsoluteValue K ℝ}
-variable (hf_nonarch : IsNonarchimedean f) (hf_nontriv : f.IsNontrivial)
+variable (hfna : IsNonarchimedean f) (hf_nontriv : f.IsNontrivial)
 
 /-- If the `v`-adic absolute value of `α` is at most one, then `α` can be written as a quotient of
 algebraic integers with denominator a `v`-adic unit. -/
@@ -65,7 +65,8 @@ lemma exists_num_denom_adicAbv_eq_one {α : K} {v : HeightOneSpectrum (𝓞 K)}
   rw [eq_div_iff <| IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hy_nzd]
   exact Subtype.ext_iff.mp h
 
-include hf_nonarch in
+include hfna
+
 /-- Algebraic integers are contained in the closed unit ball of a non-archimedean absolute value. -/
 lemma RingOfIntegers.absoluteValue_le_one (x : 𝓞 K) : f x ≤ 1 := by
   let B := basis K
@@ -80,8 +81,8 @@ lemma RingOfIntegers.absoluteValue_le_one (x : 𝓞 K) : f x ≤ 1 := by
         apply Finset.sum_le_sum
         intro _ _
         rw [zsmul_eq_mul, map_mul]
-        exact mul_le_of_le_one_left (apply_nonneg f _) <|
-          IsNonarchimedean.apply_intCast_le_one hf_nonarch
+        exact mul_le_of_le_one_left (apply_nonneg f _) <| hfna.apply_intCast_le_one
+          (map_zero_le f 1) (map_one f) (fun a ↦ AbsoluteValue.map_neg f a)
   have hx_root {k : ℕ} (hk : k ≠ 0) : f x ≤ C ^ (1 / (k : ℝ)) := by
     rw [one_div, ← Real.pow_rpow_inv_natCast (apply_nonneg f (x : K)) hk, ← map_pow]
     exact Real.rpow_le_rpow (apply_nonneg f _) (hC (x ^ k)) (by positivity)
@@ -90,17 +91,17 @@ lemma RingOfIntegers.absoluteValue_le_one (x : 𝓞 K) : f x ≤ 1 := by
       (Or.inl <| ne_of_gt <| lt_of_lt_of_le zero_lt_one (by simpa using hC 1))
   exact ge_of_tendsto ht <| Filter.eventually_atTop.2 ⟨1, fun _ hk ↦ hx_root (ne_of_gt hk)⟩
 
-include hf_nonarch hf_nontriv in
+include hf_nontriv in
 /-- The open unit ball in `𝓞 K` is a non-zero prime ideal of `𝓞 K`. -/
 def maximalIdeal : HeightOneSpectrum (𝓞 K) where
   asIdeal := {
     carrier := {a | f a < 1}
-    add_mem' := fun ha hb ↦ lt_of_le_of_lt (hf_nonarch _ _) (max_lt ha hb)
+    add_mem' := fun ha hb ↦ lt_of_le_of_lt (hfna _ _) (max_lt ha hb)
     zero_mem' := by simp
     smul_mem' := by
       simpa [Set.mem_ofPred_eq] using
         (fun (c x : 𝓞 K) hx ↦ mul_lt_one_of_nonneg_of_lt_one_right
-        (RingOfIntegers.absoluteValue_le_one hf_nonarch c) (apply_nonneg f ↑x) hx)
+        (RingOfIntegers.absoluteValue_le_one hfna c) (apply_nonneg f ↑x) hx)
   }
   isPrime := by
       rw [Ideal.isPrime_iff]
@@ -121,15 +122,14 @@ def maximalIdeal : HeightOneSpectrum (𝓞 K) where
     by_cases hfb : f b < 1
     · exact ⟨b, hfb, nonZeroDivisors.ne_zero h⟩
     rw [map_div₀,
-      le_antisymm (RingOfIntegers.absoluteValue_le_one hf_nonarch b) (le_of_not_gt hfb)] at hfa
+      le_antisymm (RingOfIntegers.absoluteValue_le_one hfna b) (le_of_not_gt hfb)] at hfa
     grind [RingOfIntegers.absoluteValue_le_one]
 
-include hf_nonarch in
 /-- A nontrivial non-archimedean absolute value on a number field is equal to a `v`-adic absolute
 value attached to some `v : HeightOneSpectrum (𝓞 K)` and for some base `b`. -/
 theorem exists_heightOneSpectrum_eq_adicAbv (hf_nontriv : f.IsNontrivial) :
     ∃! P : HeightOneSpectrum (𝓞 K), ∃ b, ∃ hb : 1 < b, f = adicAbv P hb := by
-  let P := maximalIdeal hf_nonarch hf_nontriv
+  let P := maximalIdeal hfna hf_nontriv
   use P
   rcases P.intValuation_exists_uniformizer with ⟨π, hπ⟩
   have hπv_ne : P.valuation K π ≠ 0 := by simp [valuation_of_algebraMap, hπ]
@@ -143,7 +143,7 @@ theorem exists_heightOneSpectrum_eq_adicAbv (hf_nontriv : f.IsNontrivial) :
     obtain ⟨y, z, rfl, hz⟩ := exists_num_denom_adicAbv_eq_one hb (le_of_eq hx)
     have h {x : 𝓞 K} (hx : P.adicAbv hb (x : K) = 1) : f x = 1 := by
       rw [adicAbv_coe_eq_one_iff] at hx
-      exact le_antisymm (RingOfIntegers.absoluteValue_le_one hf_nonarch x) (le_of_not_gt hx)
+      exact le_antisymm (RingOfIntegers.absoluteValue_le_one hfna x) (le_of_not_gt hx)
     have hy : P.adicAbv hb (y : K) = 1 := by simpa [map_div₀, hz] using hx
     simp [map_div₀, h hy, h hz]
   constructor
@@ -168,13 +168,12 @@ theorem exists_heightOneSpectrum_eq_adicAbv (hf_nontriv : f.IsNontrivial) :
     ext x
     exact (adicAbv_coe_lt_one_iff Q hc x).symm
 
-include hf_nonarch in
 /-- A nontrivial non-archimedean absolute value on a number field is equivalent to a `v`-adic
 absolute value attached to some `v : HeightOneSpectrum (𝓞 K)`. -/
 theorem exists_heightOneSpectrum_equiv_adicAbv (hf_nontriv : f.IsNontrivial) :
     ∃! P : HeightOneSpectrum (𝓞 K), f ≈ adicAbv K P := by
   obtain ⟨P, ⟨b, hb, hf⟩, -⟩ :=
-    exists_heightOneSpectrum_eq_adicAbv hf_nonarch hf_nontriv
+    exists_heightOneSpectrum_eq_adicAbv hfna hf_nontriv
   refine ⟨P, ?_, fun Q hQ ↦ ?_⟩
   · rw [hf]
     apply AbsoluteValue.isEquiv_iff_lt_one_iff.mpr
