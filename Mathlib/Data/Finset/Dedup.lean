@@ -65,6 +65,10 @@ theorem Nodup.toFinset_inj {l l' : Multiset α} (hl : Nodup l) (hl' : Nodup l')
 theorem mem_toFinset {a : α} {s : Multiset α} : a ∈ s.toFinset ↔ a ∈ s :=
   mem_dedup
 
+theorem coe_toFinset {s : Multiset α} : s.toFinset = {a | a ∈ s} := by
+  ext
+  simp
+
 @[simp]
 theorem toFinset_subset : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
   simp only [Finset.subset_iff, Multiset.subset_iff, Multiset.mem_toFinset]
@@ -123,6 +127,10 @@ theorem mem_toFinset : a ∈ l.toFinset ↔ a ∈ l :=
 @[simp, norm_cast]
 theorem coe_toFinset (l : List α) : (l.toFinset : Set α) = { a | a ∈ l } :=
   Set.ext fun _ => List.mem_toFinset
+
+@[simp]
+theorem toFinset_dedup : l.dedup.toFinset = l.toFinset :=
+  Finset.eq_of_veq <| by simp
 
 theorem toFinset_surj_on : Set.SurjOn toFinset { l : List α | l.Nodup } Set.univ := by
   rintro ⟨⟨l⟩, hl⟩ _

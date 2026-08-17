@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
+# Whiskering sheaves by a functor
 
 In this file we construct the functor `Sheaf J A ⥤ Sheaf J B` between sheaf categories
 obtained by composition with a functor `F : A ⥤ B`.
