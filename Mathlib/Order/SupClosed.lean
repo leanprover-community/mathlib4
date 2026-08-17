@@ -69,7 +69,7 @@ lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
   fun _a ha _b hb ↦ ⟨_, hs ha hb, le_sup_left, le_sup_right⟩
 
 @[to_dual]
-theorem IsLowerSet.supClosed_of_directedOn (hl : IsLowerSet s) (hd : DirectedOn (· ≤ ·) s) :
+theorem DirectedOn.supClosed_of_isLowerSet (hd : DirectedOn (· ≤ ·) s) (hl : IsLowerSet s) :
     SupClosed s := by
   intro a ha b hb
   have ⟨c, hcs, hac, hbc⟩ := hd a ha b hb
