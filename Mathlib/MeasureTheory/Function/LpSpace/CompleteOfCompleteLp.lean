@@ -5,16 +5,13 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.Mul
-public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
-public import Mathlib.MeasureTheory.Function.LpSpace.Complete
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
 /-!
 # If an `Lp` space is complete, so is the target space
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal Topology
 open Filter ContinuousLinearMap

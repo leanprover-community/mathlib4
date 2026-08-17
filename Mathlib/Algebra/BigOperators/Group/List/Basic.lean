@@ -16,6 +16,7 @@ public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Order.Basic
+public import Mathlib.Data.List.Basic
 
 /-!
 # Sums and products from lists
@@ -249,7 +250,6 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
 
 @[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldr_op_eq
 
-set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] prod_reverse
 
 @[to_additive]

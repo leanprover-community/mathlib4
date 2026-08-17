@@ -64,7 +64,6 @@ theorem PInfty_f_0 : (PInfty.f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 𝟙 _ := rfl
 theorem PInfty_f (n : ℕ) : (PInfty.f n : X _⦋n⦌ ⟶ X _⦋n⦌) = (P n).f n :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem QInfty_f_0 : (QInfty.f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 0 := by
   dsimp [QInfty]
@@ -73,11 +72,17 @@ theorem QInfty_f_0 : (QInfty.f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 0 := by
 theorem QInfty_f (n : ℕ) : (QInfty.f n : X _⦋n⦌ ⟶ X _⦋n⦌) = (Q n).f n :=
   rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem PInfty_f_naturality (n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op ⦋n⦌) ≫ PInfty.f n = PInfty.f n ≫ f.app (op ⦋n⦌) :=
   P_f_naturality n n f
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem QInfty_f_naturality (n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op ⦋n⦌) ≫ QInfty.f n = QInfty.f n ≫ f.app (op ⦋n⦌) :=
@@ -143,9 +148,12 @@ noncomputable def natTransPInfty : alternatingFaceMapComplex C ⟶ alternatingFa
     exact PInfty_f_naturality n f
 
 /-- The natural transformation in each degree that is induced by `natTransPInfty`. -/
-@[simps!]
 noncomputable def natTransPInfty_f (n : ℕ) :=
   natTransPInfty C ◫ 𝟙 (HomologicalComplex.eval _ _ n)
+
+@[simp]
+lemma natTransPInfty_f_app (n : ℕ) : (natTransPInfty_f C n).app X = PInfty.f n := by
+  simp [natTransPInfty_f]
 
 variable {C}
 
@@ -185,6 +193,8 @@ theorem karoubi_PInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
     ((𝟙 (karoubiFunctorCategoryEmbedding SimplexCategoryᵒᵖ C)) ◫
       (natTransPInfty_f (Karoubi C) n)) Y
   dsimp [natTransPInfty_f] at h₁₄
+  simp_rw [NatTrans.hcomp_app] at h₁₄
+  dsimp at h₁₄
   rw [id_comp, id_comp, comp_id, comp_id] at h₁₄
   -- We use the three equalities h₃₂, h₄₃, h₁₄.
   rw [← h₃₂, ← h₄₃, h₁₄]

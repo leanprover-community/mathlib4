@@ -87,9 +87,6 @@ noncomputable def DenseAt.precompOfFinal
     (G ⋙ F).DenseAt Y :=
   (DenseAt.precompEquivOfFinal G).symm hY
 
-@[deprecated (since := "2025-12-17")]
-alias DenseAt.precompEquivalence := DenseAt.precompOfFinal
-
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ D` is dense at `Y : D` and `G : D ⥤ D'` is an equivalence,
 then `F ⋙ G` is dense at `G.obj Y`. -/

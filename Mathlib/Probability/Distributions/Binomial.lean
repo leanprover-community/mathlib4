@@ -5,13 +5,11 @@ Authors: Yaël Dillies, Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.Distributions.SetBernoulli
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Order.Interval.Set.Nat
-import Mathlib.Probability.Notation
 
 /-!
 # Binomial random variables
@@ -36,7 +34,7 @@ Results should be proven for both `Bin(n, p)` and `Bin(R, n, p)` when possible, 
 one to prove the second. Note that results concerning `Bin(R, n, p)` may require
 `[MeasurableSingletonClass R]` and/or `[CharZero R]`.
 
-When refering to `Bin(n, p)` in names, use `binomial`. When refering to `Bin(R, n, p)`,
+When referring to `Bin(n, p)` in names, use `binomial`. When referring to `Bin(R, n, p)`,
 use `map_cast_binomial`.
 
 ## Notation
@@ -133,7 +131,7 @@ lemma binomial_one_eq_bernoulliMeasure (p : I) :
   refine ext_of_measureReal_singleton fun k ↦ ?_
   match k with
   | 0 | 1 => simp
-  | k + 2 => simp [binomial_real_singleton]
+  | k + 2 => simp [binomial_real_singleton, Nat.choose_eq_zero_of_lt]
 
 lemma binomial_eq_sum_dirac (n : ℕ) (p : I) :
     Bin(n, p) =
@@ -188,9 +186,7 @@ variable {X : Ω → ℝ}
 
 The expectation of a binomial random variable with parameters `n` and `p` is `pn`. -/
 theorem integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n := by
-  rw [hX.integral_eq, integral_map_cast_binomial,
-    show .Iic n = (Finset.Iio 0).disjUnion (Finset.range (n + 1)) (by simp) by grind,
-    Finset.sum_disjUnion, Finset.sum_range_succ']
+  rw [hX.integral_eq, integral_map_cast_binomial, ← n.range_succ_eq_Iic, Finset.sum_range_succ']
   cases n with norm_num | succ n
   calc
     _ = p * ∑ x ∈ Finset.range (n + 1), (n + 1).choose (x + 1) * (x + 1) *
