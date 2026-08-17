@@ -40,15 +40,17 @@ variable [NormedDivisionRing α]
 as a `DilationEquiv` of a normed division ring. -/
 @[simps!]
 def DilationEquiv.mulLeft (a : α) (ha : a ≠ 0) : α ≃ᵈ α where
-  __ := Dilation.mulLeft a ha
   toEquiv := Equiv.mulLeft₀ a ha
+  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
+    simp [edist_nndist, nndist_eq_nnnorm, ← mul_sub]⟩
 
 /-- Multiplication by a nonzero element `a` on the right
 as a `DilationEquiv` of a normed division ring. -/
 @[simps!]
 def DilationEquiv.mulRight (a : α) (ha : a ≠ 0) : α ≃ᵈ α where
-  __ := Dilation.mulRight a ha
   toEquiv := Equiv.mulRight₀ a ha
+  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
+    simp [edist_nndist, nndist_eq_nnnorm, ← sub_mul, ← mul_comm (‖a‖₊)]⟩
 
 namespace Filter
 

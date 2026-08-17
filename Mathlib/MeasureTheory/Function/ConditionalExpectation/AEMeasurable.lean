@@ -273,7 +273,7 @@ noncomputable def lpMeasSubgroupToLpTrimIso [Fact (1 ≤ p)] (hm : m ≤ m0) :
 variable (𝕜)
 
 /-- `lpMeasSubgroup` and `lpMeas` are isometric. -/
-noncomputable def lpMeasSubgroupToLpMeasIso [Fact (1 ≤ p)] :
+noncomputable def lpMeasSubgroupToLpMeasIso :
     lpMeasSubgroup F m p μ ≃ᵢ lpMeas F 𝕜 m p μ :=
   IsometryEquiv.refl (lpMeasSubgroup F m p μ)
 
