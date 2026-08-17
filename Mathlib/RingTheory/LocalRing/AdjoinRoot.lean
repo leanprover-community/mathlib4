@@ -76,7 +76,7 @@ theorem isLocalRing_iff_isPrimePow_normalize (ne : f ≠ 0) [DecidableEq k] :
       prime_iff_isPrime (by simp), ← radical_span_singleton_eq_span_radical ne,
       radical_eq_sInf, eq, sInf_singleton]
     exact comap_isPrime ..
-  · exact ((Ring.krullDimLE_zero_and_isLocalRing_tfae (AdjoinRoot f)).out 3 0 rfl rfl).mp
+  · exact ((Ring.krullDimLE_zero_and_isLocalRing_tfae (AdjoinRoot f)).out 4 1 rfl rfl).mp
       (isMaximal_nilradical_of_isPrimePow_normalize ne h) |>.2
 
 lemma isPrimePow_map_residue_of_monic_of_isLocalRing (monic : p.Monic) [IsLocalRing R]
