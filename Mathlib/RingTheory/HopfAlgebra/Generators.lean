@@ -14,17 +14,11 @@ public import Mathlib.RingTheory.HopfAlgebra.Primitive
 This file provides an extension principle to upgrade a bialgebra to a Hopf algebra given
 antimultiplicative antipode data on generators.
 
-## Main definitions
+## Main declarations
 
-* `HopfAlgebra.ofGenerators`: construct a Hopf algebra from data on a generating set.
+* `HopfAlgebra.ofGenerators`: construct a Hopf algebra from antipode data on an
+  algebra-generating set.
 * `HopfAlgebra.ofPrimitives`: construct a Hopf algebra from a primitive-element generating set.
-
-## Main results
-
-* `LinearMap.convMul_id_eq_one_of_adjoin_eq_top` and
-  `LinearMap.id_convMul_eq_one_of_adjoin_eq_top`: if a unital antimultiplicative map is a
-  one-sided convolution inverse of the identity pointwise on an algebra-generating set, then
-  it is one globally.
 * `HopfAlgebra.eq_antipodeAlgHomOp_of_primitives`: an anti-algebra hom that negates a
   primitive generating set is necessarily the antipode.
 
