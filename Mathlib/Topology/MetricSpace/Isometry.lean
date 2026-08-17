@@ -77,14 +77,12 @@ theorem edist_eq (hf : Isometry f) (x y : α) : edist (f x) (f y) = edist x y :=
 theorem lipschitzWith (h : Isometry f) : LipschitzWith 1 f :=
   LipschitzWith.of_edist_le fun x y => (h x y).le
 
-@[deprecated lipschitzWith (since := "2026-08-16")]
-theorem lipschitz (h : Isometry f) : LipschitzWith 1 f := h.lipschitzWith
+@[deprecated (since := "2026-08-16")] alias lipschitz := lipschitzWith
 
 theorem antilipschitzWith (h : Isometry f) : AntilipschitzWith 1 f := fun x y => by
   simp only [h x y, ENNReal.coe_one, one_mul, le_refl]
 
-@[deprecated antilipschitzWith (since := "2026-08-16")]
-theorem antilipschitz (h : Isometry f) : AntilipschitzWith 1 f := h.antilipschitzWith
+@[deprecated (since := "2026-08-16")] alias antilipschitz := antilipschitzWith
 
 /-- Any map on a subsingleton is an isometry -/
 @[nontriviality]
