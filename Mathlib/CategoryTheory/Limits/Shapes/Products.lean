@@ -470,7 +470,7 @@ lemma Sigma.map_comp_map {f g h : α → C} [HasCoproduct f] [HasCoproduct g] [H
 
 instance Sigma.map_epi {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b)
     [∀ i, Epi (p i)] : Epi <| Sigma.map p :=
-  @Limits.colimMap_epi _ _ _ _ (Discrete.functor f) (Discrete.functor g) _ _
+  @Limits.colimMap_epi _ _ _ _ (Discrete.functor g) (Discrete.functor f) _ _
     (Discrete.natTrans fun X => p X.as) (by dsimp; infer_instance)
 
 /-- Construct a morphism between categorical coproducts from a family of morphisms between the
@@ -884,16 +884,12 @@ def Pi.reindex : piObj (f ∘ ε) ≅ piObj f :=
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).hom ≫ Pi.π f (ε b) = Pi.π (f ∘ ε) b := by
-  dsimp [Pi.reindex]
-  simp only [HasLimit.isoOfEquivalence_hom_π, Discrete.equivalence_inverse, Discrete.functor_obj,
-    Function.comp_apply, Functor.id_obj, Discrete.equivalence_functor, Functor.comp_obj,
-    Discrete.natIso_inv_app, Iso.refl_inv, Category.id_comp]
-  exact limit.w (Discrete.functor (f ∘ ε)) (Discrete.eqToHom' (ε.symm_apply_apply b))
+theorem Pi.reindex_inv_π (b : β) : (Pi.reindex ε f).inv ≫ Pi.π (f ∘ ε) b = Pi.π f (ε b) := by
+  simp [reindex]
 
 @[reassoc (attr := simp)]
-theorem Pi.reindex_inv_π (b : β) : (Pi.reindex ε f).inv ≫ Pi.π (f ∘ ε) b = Pi.π f (ε b) := by
-  simp [Iso.inv_comp_eq]
+theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).hom ≫ Pi.π f (ε b) = Pi.π (f ∘ ε) b := by
+  simp [← Iso.eq_inv_comp]
 
 variable {f} in
 /-- Being a limiting fan is stable under equivalences in the index type. -/
@@ -916,14 +912,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem Sigma.ι_reindex_hom (b : β) :
     Sigma.ι (f ∘ ε) b ≫ (Sigma.reindex ε f).hom = Sigma.ι f (ε b) := by
-  dsimp [Sigma.reindex]
-  simp only [HasColimit.ι_isoOfEquivalence_hom, Functor.id_obj, Discrete.functor_obj,
-    Function.comp_apply, Discrete.equivalence_functor, Discrete.equivalence_inverse,
-    Functor.comp_obj, Discrete.natIso_inv_app, Iso.refl_inv, Category.id_comp]
-  have h := colimit.w (Discrete.functor f) (Discrete.eqToHom' (ε.apply_symm_apply (ε b)))
-  simp only [Discrete.functor_obj] at h
-  erw [← h, eqToHom_map, eqToHom_map, eqToHom_trans_assoc]
-  all_goals { simp }
+  simp [reindex]
 
 @[reassoc (attr := simp)]
 theorem Sigma.ι_reindex_inv (b : β) :
