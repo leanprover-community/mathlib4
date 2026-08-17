@@ -16,7 +16,7 @@ public import Mathlib.Algebra.MonoidAlgebra.PointwiseSMul
 
 open Finset Function
 
-variable {G P F R S U V : Type*}
+variable {G P R V : Type*}
 
 namespace Finsupp
 @[deprecated (since := "2026-02-13")] alias finite_vaddAntidiagonal :=
