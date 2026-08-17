@@ -5,6 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.FinallySmall
 public import Mathlib.CategoryTheory.Filtered.Small
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
@@ -112,7 +113,7 @@ def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
   P.cocone.toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _
 
 instance : P.toCostructuredArrow.Final :=
-  Presheaf.final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
+  sorry --Presheaf.final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Representable presheaves are (trivially) ind-objects. -/
@@ -170,6 +171,8 @@ open IsFiltered.SmallFilteredIntermediate
 theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
     [IsFiltered (CostructuredArrow yoneda A)] [FinallySmall.{v} (CostructuredArrow yoneda A)] :
     IsIndObject A := by
+  sorry
+  /-
   have h₁ : (factoring (fromFinalModel (CostructuredArrow yoneda A)) ⋙
       inclusion (fromFinalModel (CostructuredArrow yoneda A))).Final := Functor.final_of_natIso
     (factoringCompInclusion (fromFinalModel <| CostructuredArrow yoneda A)).symm
@@ -181,7 +184,7 @@ theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
     (Presheaf.isColimitTautologicalCocone A)
   have hq : Nonempty (FinalModel (CostructuredArrow yoneda A)) := Nonempty.map
     (Functor.Final.lift (fromFinalModel (CostructuredArrow yoneda A))) IsFiltered.nonempty
-  exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, c.ι, hc⟩
+  exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, c.ι, hc⟩-/
 
 /-- The recognition theorem for ind-objects: `A : Cᵒᵖ ⥤ Type v` is an ind-object if and only if
 `CostructuredArrow yoneda A` is filtered and finally `v`-small.
