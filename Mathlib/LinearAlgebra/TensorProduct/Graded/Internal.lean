@@ -141,9 +141,9 @@ theorem auxEquiv_symm_one : (auxEquiv R 𝒜 ℬ).symm 1 = 1 :=
 /-- The submodule of `𝒜 ᵍ⊗[R] ℬ` corresponding to each total degree. -/
 def grade (i : ι) : Submodule R (𝒜 ᵍ⊗[R] ℬ) := TensorProduct.grade 𝒜 ℬ i
 
-theorem tmul_mem_grade {p q r : ι} {a : A} {b : B} (ha : a ∈ 𝒜 p) (hb : b ∈ ℬ q) (hpqr : p + q = r) :
-    a ᵍ⊗ₜ[R] b ∈ grade 𝒜 ℬ r :=
-  TensorProduct.tmul_mem_grade ha hb
+theorem tmul_mem_grade {p q r : ι} {a : A} {b : B} (ha : a ∈ 𝒜 p) (hb : b ∈ ℬ q)
+    (hpqr : p + q = r) : a ᵍ⊗ₜ[R] b ∈ grade 𝒜 ℬ r :=
+  TensorProduct.tmul_mem_grade ha hb hpqr
 
 instance instDecomposition : Decomposition (grade 𝒜 ℬ) :=
   inferInstanceAs (Decomposition (TensorProduct.grade 𝒜 ℬ))
@@ -397,8 +397,8 @@ lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
     simp_rw [decompose_coe, lof_eq_of]
 
 instance instGradedMonoid : SetLike.GradedMonoid (grade 𝒜 ℬ) where
-  one_mem := zero_add (0 : ι) ▸
-    tmul_mem_grade 𝒜 ℬ (SetLike.one_mem_graded 𝒜) (SetLike.one_mem_graded ℬ)
+  one_mem :=
+    tmul_mem_grade 𝒜 ℬ (SetLike.one_mem_graded 𝒜) (SetLike.one_mem_graded ℬ) (zero_add 0)
   mul_mem {i j} x y hx hy := by
     refine (TensorProduct.mapsTo_gradeBy_iff _ (g := (mulHom 𝒜 ℬ).flip y)).2 ?_ hx
     rintro p q rfl a ha b hb
@@ -408,9 +408,9 @@ instance instGradedMonoid : SetLike.GradedMonoid (grade 𝒜 ℬ) where
     lift b to ℬ q using hb
     lift a' to 𝒜 p' using ha'
     rw [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, ← mul_def, tmul_coe_mul_coe_tmul,
-      add_add_add_comm, @Units.smul_def _ _ (_) (_)]
+      @Units.smul_def _ _ (_) (_)]
     exact zsmul_mem (tmul_mem_grade 𝒜 ℬ (SetLike.mul_mem_graded ha a'.2)
-      (SetLike.mul_mem_graded b.2 hb')) _
+      (SetLike.mul_mem_graded b.2 hb') (add_add_add_comm p p' q q')) _
 
 /-- The tensor product of graded algebras is itself a graded algebra, graded by total degree. -/
 instance instGradedAlgebra : GradedAlgebra (grade 𝒜 ℬ) :=
