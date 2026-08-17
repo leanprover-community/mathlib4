@@ -59,6 +59,10 @@ uniformly random neighbour of `v`. -/
 def walkMatrix : Matrix V V ℚ :=
   Matrix.of fun v w => if G.Adj v w then (G.degree v : ℚ)⁻¹ else 0
 
+/-- The degree distribution of `G`: the probability of a vertex `v` is proportional to
+`G.degree v`. This is the stationary distribution of the simple random walk. -/
+def degreeDist : V → ℚ := fun v => (G.degree v : ℚ) / (2 * #G.edgeFinset)
+
 variable {G}
 
 theorem walkMatrix_apply (v w : V) :
@@ -78,11 +82,6 @@ theorem walkMatrix_mem_rowStochastic [DecidableEq V] (hG : ∀ v, ¬ G.IsIsolate
     simp only [walkMatrix_apply]
     rw [← sum_filter, ← neighborFinset_eq_filter, sum_const,
         card_neighborFinset_eq_degree, nsmul_eq_mul, mul_inv_cancel₀ hne]
-
-variable (G) in
-/-- The degree distribution of `G`: the probability of a vertex `v` is proportional to
-`G.degree v`. This is the stationary distribution of the simple random walk. -/
-def degreeDist : V → ℚ := fun v => (G.degree v : ℚ) / (2 * #G.edgeFinset)
 
 /-- The degree distribution is stationary for the simple random walk. -/
 theorem degreeDist_vecMul_walkMatrix (hG : ∀ v, ¬ G.IsIsolated v) :
