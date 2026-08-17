@@ -157,6 +157,7 @@ instance {F G H : FilteredObject C I} (f : F ⟶ G) (g : G ⟶ H)
     (IsStrictHom.isPullback f i).paste_horiz (IsStrictHom.isPullback g i)
 
 variable (C I) in
+/-- The morphism property of strict morphisms of filtered objects. -/
 abbrev isStrictHom : MorphismProperty (FilteredObject C I) :=
   fun _ _ f ↦ IsStrictHom f
 
