@@ -303,7 +303,7 @@ The Serre derivative preserves modularity: if `f` is a modular form of weight `k
 `Γ` of `SL(2, ℤ)`, then `∂ₖ f` is a modular form of weight `k + 2` for `Γ`.
 -/
 noncomputable def serreDerivativeMF {Γ : Subgroup (GL (Fin 2) ℝ)} (k : ℤ)
-    (f : ModularForm Γ k) (hΓ : Γ ≤ 𝒮ℒ := by exact le_rfl) : ModularForm Γ (k + 2) where
+    (f : ModularForm Γ k) (hΓ : Γ ≤ 𝒮ℒ := by rfl) : ModularForm Γ (k + 2) where
   toFun := serreDerivative (k : ℂ) f
   slash_action_eq' g hg := by
     obtain ⟨γ, rfl⟩ := hΓ hg
