@@ -304,7 +304,7 @@ def limitOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
 
 
 /-- Any morphism between terminal objects is an isomorphism. -/
-@[to_dual (reorder := X Y) /-- Any morphism between initial objects is an isomorphism. -/]
+@[to_dual (reorder := hX hY) /-- Any morphism between initial objects is an isomorphism. -/]
 lemma isIso_of_isTerminal {X Y : C} (hX : IsTerminal X) (hY : IsTerminal Y) (f : X ⟶ Y) :
     IsIso f := by
   refine ⟨⟨IsTerminal.from hX Y, ?_⟩⟩
