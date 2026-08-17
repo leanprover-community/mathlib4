@@ -597,7 +597,7 @@ lemma isIntegral_of_monic (monic : g.Monic) : Algebra.IsIntegral R (AdjoinRoot g
 
 lemma isLocalHom_of_monic_of_degree_pos (monic : g.Monic) (deg : 0 < g.degree) :
     IsLocalHom (algebraMap R (AdjoinRoot g)) :=
-  haveI := faithfulSMul_of_monic_of_degree_pos monic deg
+  have := faithfulSMul_of_monic_of_degree_pos monic deg
   (isIntegral_of_monic monic).isLocalHom
 
 /-- `AdjoinRoot.modByMonicHom` sends the equivalence class of `f` mod `g` to `f %ₘ g`.
