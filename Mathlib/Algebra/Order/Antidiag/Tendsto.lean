@@ -20,6 +20,7 @@ public import Mathlib.Order.Filter.TendstoCofinite
 `Finset.HasMulAntidiagonal.tendstoCofinite_mul`:
   When a magma satisfies the `HasMulAntidiagonal` property, its multiplication map has
   finite fibers.
+public section
 
 -/
 

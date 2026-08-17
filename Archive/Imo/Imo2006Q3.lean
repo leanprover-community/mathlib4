@@ -55,7 +55,7 @@ theorem zero_lt_32 : (0 : ℝ) < 32 := by simp
 theorem subst_wlog {x y z s : ℝ} (hxy : 0 ≤ x * y) (hxyz : x + y + z = 0) :
     32 * |x * y * z * s| ≤ sqrt 2 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2 := by
   have hz : (x + y) ^ 2 = z ^ 2 := by linear_combination (x + y - z) * hxyz
-  have this :=
+  have :=
     calc
       2 * s ^ 2 * (16 * x ^ 2 * y ^ 2 * (x + y) ^ 2)
         ≤ _ * _ ^ 3 := by gcongr; exact lhs_ineq hxy
