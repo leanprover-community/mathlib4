@@ -175,7 +175,7 @@ theorem unop_iInf (S : ι → Submonoid Mᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S 
 
 @[to_additive]
 theorem op_closure (s : Set M) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, Submonoid.coe_unop]
+  simp_rw [closure, op_sInf, Set.preimage_ofPred_eq, Submonoid.coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 
@@ -192,14 +192,14 @@ def equivOp (H : Submonoid M) : H ≃ H.op :=
 /-- Bijection between a submonoid `S` and `MulOpposite` of its opposite. -/
 @[to_additive (attr := simps!)
   /-- Bijection between an additive submonoid and `AddOpposite` of its opposite. -/]
-def mulMonoidEquivOpMop (S : Submonoid M) : S ≃* (S.op)ᵐᵒᵖ where
+def mulEquivOpMop (S : Submonoid M) : S ≃* (S.op)ᵐᵒᵖ where
   toEquiv := S.equivOp.trans (MulOpposite.opEquiv : S.op ≃ (S.op)ᵐᵒᵖ)
   map_mul' _ _ := rfl
 
 /-- Bijection between `MulOpposite` of a submonoid `S` and its opposite. -/
 @[to_additive (attr := simps!)
   /-- Bijection between `AddOpposite` of an additive submonoid and its opposite. -/]
-def mopMulMonoidEquivOp (S : Submonoid M) : Sᵐᵒᵖ ≃* S.op where
+def mopMulEquivOp (S : Submonoid M) : Sᵐᵒᵖ ≃* S.op where
   toEquiv := (MulOpposite.opEquiv : S ≃ Sᵐᵒᵖ).symm.trans S.equivOp
   map_mul' _ _ := rfl
 
@@ -216,9 +216,9 @@ namespace Submonoid
 /-- Bijection between a submonoid `S` and its opposite as a monoid equivalence. -/
 @[to_additive (attr := simps!)
   /-- Bijection between an additive submonoid and its opposite as an additive equivalence. -/]
-def mulMonoidEquivOp (S : Submonoid M) : S ≃* S.op where
+def mulEquivOp (S : Submonoid M) : S ≃* S.op where
   toEquiv := S.equivOp
-  map_mul' x y := by ext; simp [equivOp, MulOpposite.op_mul, mul_comm]
+  map_mul' x y := by ext; simp [MulOpposite.op_mul, mul_comm]
 
 end Submonoid
 

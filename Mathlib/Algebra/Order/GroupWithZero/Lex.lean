@@ -77,6 +77,9 @@ variable (α β : Type*) [LinearOrderedCommGroupWithZero α] [LinearOrderedCommG
 
 open MonoidWithZeroHom
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given linearly ordered groups with zero M, N, the natural inclusion ordered homomorphism from
 M to `WithZero (Mˣ ×ₗ Nˣ)`, which is the linearly ordered group with zero that can be identified
 as their product. -/
@@ -85,6 +88,9 @@ nonrec def inl : α →*₀o WithZero (αˣ ×ₗ βˣ) where
   __ := (WithZero.map' (toLexMulEquiv ..).toMonoidHom).comp (inl α β)
   monotone' := by simpa using (WithZero.map'_mono (Prod.Lex.toLex_mono)).comp inl_mono
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given linearly ordered groups with zero M, N, the natural inclusion ordered homomorphism from
 N to `WithZero (Mˣ ×ₗ Nˣ)`, which is the linearly ordered group with zero that can be identified
 as their product. -/
@@ -109,6 +115,7 @@ nonrec def fst : WithZero (αˣ ×ₗ βˣ) →*₀o α where
     · simp
     · simpa using Prod.Lex.monotone_fst _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_comp_inl : (fst _ _).comp (inl α β) = .id α := by
   ext x
@@ -117,11 +124,13 @@ theorem fst_comp_inl : (fst _ _).comp (inl α β) = .id α := by
 
 variable {α β}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inl_eq_coe_inlₗ {m : α} (hm : m ≠ 0) :
     inl α β m = OrderMonoidHom.inlₗ αˣ βˣ (Units.mk0 _ hm) := by
   lift m to αˣ using isUnit_iff_ne_zero.mpr hm
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inr_eq_coe_inrₗ {n : β} (hn : n ≠ 0) :
     inr α β n = OrderMonoidHom.inrₗ αˣ βˣ (Units.mk0 _ hn) := by
   lift n to βˣ using isUnit_iff_ne_zero.mpr hn

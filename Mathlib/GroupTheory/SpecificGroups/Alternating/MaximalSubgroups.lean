@@ -28,7 +28,7 @@ Compare with `Equiv.Perm.isCoatom_stabilizer` for the case of the permutation gr
   * Formalize the other cases of the classification.
     The next one should be the *imprimitive case*.
 
-## Reference
+## References
 
 The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 *A classification of the maximal subgroups of the finite
@@ -268,6 +268,8 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
     hB.subsingleton_of_stabilizer_lt_of_subset hB_not_le_sc hG hBs
   -- Step 4 : sᶜ ⊆ B : A block which is not a subsingleton contains `sᶜ`.
   suffices IsMultiplyPretransitive (↥(alternatingGroup α)) α (s.ncard + 1) by
+    have : ¬ B ⊆ s := fun h ↦ hB' (hB_not_le_s B hB h)
+    have : ¬ B ⊆ sᶜ := fun h ↦ hB' (hB_not_le_sc B hB h)
     apply hB.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
       hG.le <;> grind
   have := isMultiplyPretransitive α

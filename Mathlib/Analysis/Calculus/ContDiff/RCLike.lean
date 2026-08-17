@@ -16,7 +16,7 @@ public section
 
 noncomputable section
 
-open Set Fin Filter Function
+open Set Fin Filter
 
 open scoped NNReal Topology
 
