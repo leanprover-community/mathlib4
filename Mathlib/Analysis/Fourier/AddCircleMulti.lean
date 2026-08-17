@@ -233,7 +233,7 @@ theorem orthonormal_mFourier : Orthonormal ℂ (mFourierLp (d := d) 2) := by
   rw [mFourier, ContinuousMap.coe_mk, MeasureTheory.integral_fintype_prod_volume_eq_prod]
   obtain ⟨i, hi⟩ := Function.ne_iff.mp h
   apply Finset.prod_eq_zero (Finset.mem_univ i)
-  simpa only [eq_false_intro hi, if_false, ContinuousMap.inner_toLp, ← fourier_neg,
+  simpa only [eq_false_intro hi, ite_false, ContinuousMap.inner_toLp, ← fourier_neg,
     ← fourier_add] using! (orthonormal_iff_ite.mp <| orthonormal_fourier) (m i) (n i)
 
 end Lp
