@@ -52,7 +52,7 @@ theorem tendstoInDistribution_of_inner (hX' : AEMeasurable X' P') (hX : ∀ n, A
       (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto ℂ).mp
         (h t).tendsto (innerProbChar (1 : ℝ)) using 1
     · ext n
-      exact charFun_map_eq_integral_map_inner P (hX n) t
-    · exact congr_arg 𝓝 (charFun_map_eq_integral_map_inner P' hX' t)
+      exact charFun_map_eq_charFun_map_inner_one (hX n) t
+    · exact congr_arg 𝓝 (charFun_map_eq_charFun_map_inner_one hX' t)
 
 end
