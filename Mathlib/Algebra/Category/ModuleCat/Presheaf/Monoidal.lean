@@ -303,7 +303,7 @@ noncomputable def act₂ : (M.presheaf ⊗ ringAb R) ⊗ N.presheaf ⟶ M.preshe
 
 lemma act_distrib : act₁ M N ≫ distrib M N = act₂ M N ≫ distrib M N := by
   ext U : 3
-  exact TensorProduct.extₗ fun m (r : R.obj U) n ↦ by exact smul_tmul (R := R.obj U) r m n
+  exact TensorProduct.ext_threefold fun m (r : R.obj U) n ↦ by exact smul_tmul (R := R.obj U) r m n
   /- erw to be diagnosed:
   exact TensorProduct.ext' fun mr n ↦ mr.induction_on (by erw [zero_tmul, map_zero])
     (fun m (r : R.obj U) ↦ smul_tmul (R := R.obj U) r m n) fun _ _ h₁ h₂ ↦ by
