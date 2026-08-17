@@ -47,7 +47,8 @@ open scoped InnerProductSpace
 set_option linter.unusedVariables false in
 /-- The complexification of an inner product space.
 This is a type synonym of `WithLp 2 (E × E)`, with the same norm. -/
-@[expose, nolint unusedArguments] def Complexification (𝕜 E : Type*) : Type _ := WithLp 2 (E × E)
+@[expose, nolint unusedArguments, implicit_reducible] def Complexification (𝕜 E : Type*) :
+    Type _ := WithLp 2 (E × E)
 
 variable {𝕜 E F G : Type*} {Eₗ Fₗ Gₗ : Type*}
   [NormedAddCommGroup Eₗ] [NormedAddCommGroup Fₗ] [NormedAddCommGroup Gₗ]
@@ -62,32 +63,32 @@ instance [NormedAddCommGroup E] [CompleteSpace E] : CompleteSpace (Complexificat
 namespace Complexification
 
 /-- The real part of the complexification (the first component of the complexification). -/
-@[expose] protected def re (v : Complexification 𝕜 E) : E := WithLp.fst v
+protected def re (v : Complexification 𝕜 E) : E := WithLp.fst v
 
 /-- The imaginary part of the complexification (the second component of the complexification). -/
-@[expose] protected def im (v : Complexification 𝕜 E) : E := WithLp.snd v
+protected def im (v : Complexification 𝕜 E) : E := WithLp.snd v
 
 /-- Converting real and imaginary parts to the complexification. -/
-@[expose] def mk (𝕜 : Type*) (x y : E) : Complexification 𝕜 E := WithLp.toLp 2 (x, y)
+def mk (𝕜 : Type*) (x y : E) : Complexification 𝕜 E := WithLp.toLp 2 (x, y)
 
-@[simp] lemma re_mk (x y : E) : (mk 𝕜 x y).re = x := rfl
-@[simp] lemma im_mk (x y : E) : (mk 𝕜 x y).im = y := rfl
-@[simp] lemma mk_re_im (v : Complexification 𝕜 E) : mk 𝕜 v.re v.im = v := rfl
+@[simp] lemma re_mk (x y : E) : (mk 𝕜 x y).re = x := by rfl
+@[simp] lemma im_mk (x y : E) : (mk 𝕜 x y).im = y := by rfl
+@[simp] lemma mk_re_im (v : Complexification 𝕜 E) : mk 𝕜 v.re v.im = v := by rfl
 
 @[ext] lemma ext {v w : Complexification 𝕜 E} (h₁ : v.re = w.re) (h₂ : v.im = w.im) : v = w := by
   rw [← mk_re_im v, ← mk_re_im w, h₁, h₂]
 
 variable [NormedAddCommGroup E]
 
-@[simp] lemma re_zero : (0 : Complexification 𝕜 E).re = 0 := rfl
-@[simp] lemma im_zero : (0 : Complexification 𝕜 E).im = 0 := rfl
-@[simp] lemma re_add (v w : Complexification 𝕜 E) : (v + w).re = v.re + w.re := rfl
-@[simp] lemma im_add (v w : Complexification 𝕜 E) : (v + w).im = v.im + w.im := rfl
-@[simp] lemma re_sub (v w : Complexification 𝕜 E) : (v - w).re = v.re - w.re := rfl
-@[simp] lemma im_sub (v w : Complexification 𝕜 E) : (v - w).im = v.im - w.im := rfl
-@[simp] lemma re_neg (v : Complexification 𝕜 E) : (-v).re = -v.re := rfl
-@[simp] lemma im_neg (v : Complexification 𝕜 E) : (-v).im = -v.im := rfl
-@[simp] lemma mk_zero_zero : mk 𝕜 (0 : E) 0 = 0 := rfl
+@[simp] lemma re_zero : (0 : Complexification 𝕜 E).re = 0 := by rfl
+@[simp] lemma im_zero : (0 : Complexification 𝕜 E).im = 0 := by rfl
+@[simp] lemma re_add (v w : Complexification 𝕜 E) : (v + w).re = v.re + w.re := by rfl
+@[simp] lemma im_add (v w : Complexification 𝕜 E) : (v + w).im = v.im + w.im := by rfl
+@[simp] lemma re_sub (v w : Complexification 𝕜 E) : (v - w).re = v.re - w.re := by rfl
+@[simp] lemma im_sub (v w : Complexification 𝕜 E) : (v - w).im = v.im - w.im := by rfl
+@[simp] lemma re_neg (v : Complexification 𝕜 E) : (-v).re = -v.re := by rfl
+@[simp] lemma im_neg (v : Complexification 𝕜 E) : (-v).im = -v.im := by rfl
+@[simp] lemma mk_zero_zero : mk 𝕜 (0 : E) 0 = 0 := by rfl
 @[simp] lemma neg_mk (x y : E) : -mk 𝕜 x y = mk 𝕜 (-x) (-y) := by ext <;> simp
 
 @[simp] lemma mk_add_mk (x y z w : E) : mk 𝕜 x y + mk 𝕜 z w = mk 𝕜 (x + z) (y + w) := by
@@ -131,7 +132,7 @@ lemma isometry_mk_zero_left : Isometry (mk 𝕜 (0 : E) ·) :=
 @[fun_prop] lemma continuous_mk_zero_left : Continuous (mk 𝕜 (0 : E) ·) :=
   isometry_mk_zero_left.continuous
 @[fun_prop] lemma continuous_mk : Continuous fun p : E × E ↦ mk 𝕜 p.1 p.2 := by
-  conv in mk 𝕜 _ _ => rw [show mk 𝕜 p.1 p.2 = mk 𝕜 p.1 0 + mk 𝕜 0 p.2 by simp]
+  suffices Continuous fun (p : E × E) ↦ mk 𝕜 p.1 0 + mk 𝕜 0 p.2 by simpa
   fun_prop
 
 variable [RCLike 𝕜] [InnerProductSpace 𝕜 E]
@@ -144,9 +145,9 @@ lemma smul_def (z : ℂ) (v : Complexification 𝕜 E) :
   rfl
 
 @[simp] lemma re_smul (z : ℂ) (v : Complexification 𝕜 E) :
-    (z • v).re = (z.re : 𝕜) • v.re - (z.im : 𝕜) • v.im := rfl
+    (z • v).re = (z.re : 𝕜) • v.re - (z.im : 𝕜) • v.im := by rfl
 @[simp] lemma im_smul (z : ℂ) (v : Complexification 𝕜 E) :
-    (z • v).im = (z.im : 𝕜) • v.re + (z.re : 𝕜) • v.im := rfl
+    (z • v).im = (z.im : 𝕜) • v.re + (z.re : 𝕜) • v.im := by rfl
 
 instance : Module ℂ (Complexification 𝕜 E) where
   one_smul _ := by ext <;> simp
@@ -227,7 +228,7 @@ variable (𝕜 E) in
 
 @[simp] lemma symm_conj : (conj 𝕜 E).symm = conj 𝕜 E := rfl
 @[simp] lemma conj_conj (x) : conj 𝕜 E (conj 𝕜 E x) = x := by simp [conj_apply]
-@[simp] lemma conj_mk (x y : E) : conj 𝕜 E (.mk 𝕜 x y) = .mk 𝕜 x (-y) := rfl
+@[simp] lemma conj_mk (x y : E) : conj 𝕜 E (.mk 𝕜 x y) = .mk 𝕜 x (-y) := by rfl
 
 lemma conj_I_smul (x) : conj 𝕜 E (Complex.I • x) = -Complex.I • conj 𝕜 E x := by
   simp [conj_apply]
