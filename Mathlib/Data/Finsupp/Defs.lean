@@ -81,7 +81,7 @@ noncomputable section
 
 open Finset Function
 
-variable {α β ι M N O G H : Type*}
+variable {α β ι M N O H : Type*}
 
 /-- `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that
   `f x = 0` for all but finitely many `x`. -/
