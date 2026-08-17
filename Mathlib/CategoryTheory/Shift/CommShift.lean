@@ -436,7 +436,7 @@ namespace Functor
 
 namespace CommShift
 
-variable {C D E : Type*} [Category* C] [Category* D]
+variable {C D : Type*} [Category* C] [Category* D]
   {F : C ⥤ D} {G : C ⥤ D} (e : F ≅ G)
   (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A]
   [F.CommShift A]

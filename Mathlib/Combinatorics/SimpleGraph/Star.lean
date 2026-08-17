@@ -30,7 +30,7 @@ star graph
 
 namespace SimpleGraph
 
-variable {V V' W : Type*} (G : SimpleGraph V) (G' : SimpleGraph V')
+variable {V W : Type*} (G : SimpleGraph V)
 
 /-- The star graph on `V` centered at `r`: every non-center vertex is adjacent to `r`. -/
 def starGraph (r : V) : SimpleGraph V :=
