@@ -171,13 +171,12 @@ theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
 theorem supp_eq {α : TypeVec n} {i} (x : F α) :
     supp x i = { u | ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ } := by ext; apply mem_supp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     (∀ p, LiftP p x ↔ ∀ (i), ∀ u ∈ supp x i, p i u) ↔
       ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ i a' f', abs ⟨a', f'⟩ = x → f i '' univ ⊆ f' i '' univ := by
   constructor
   · intro h
-    have : LiftP (supp x) x := by rw [h]; introv; exact id
+    have : LiftP (fun i u => u ∈ supp x i) x := by rw [h]; introv; exact id
     rw [liftP_iff] at this
     rcases this with ⟨a, f, xeq, h'⟩
     refine ⟨a, f, xeq.symm, ?_⟩
@@ -262,7 +261,7 @@ theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftPP
   · rintro α ⟨a, f⟩
     simp only [LiftPPreservation] at h
     ext
-    simp only [supp, h, mem_setOf_eq]
+    simp only [supp, h, mem_ofPred_eq]
 
 theorem liftpPreservation_iff_uniform : q.LiftPPreservation ↔ q.IsUniform := by
   rw [← suppPreservation_iff_liftpPreservation, suppPreservation_iff_isUniform]

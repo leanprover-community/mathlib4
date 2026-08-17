@@ -161,9 +161,11 @@ theorem image_eq_isOpen_inter_range (hf : IsInducing f) {s : Set X} (hs : IsOpen
   obtain ⟨c, hc, rfl⟩ := hf.isOpen_iff.1 hs
   exact ⟨c, hc, image_preimage_eq_inter_range⟩
 
-theorem setOf_isOpen (hf : IsInducing f) :
+theorem setOfPred_isOpen (hf : IsInducing f) :
     {s : Set X | IsOpen s} = preimage f '' {t | IsOpen t} :=
   Set.ext fun _ ↦ hf.isOpen_iff
+
+@[deprecated (since := "2026-07-09")] alias setOf_isOpen := setOfPred_isOpen
 
 theorem dense_iff (hf : IsInducing f) {s : Set X} :
     Dense s ↔ ∀ x, f x ∈ closure (f '' s) := by

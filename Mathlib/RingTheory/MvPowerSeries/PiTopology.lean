@@ -147,7 +147,7 @@ theorem tendsto_trunc_atTop [DecidableEq σ] [CommSemiring R] [Nonempty σ] (f :
   obtain ⟨s, _⟩ := (exists_const σ).mpr trivial
   apply tendsto_atTop_of_eventually_const (i₀ := d + Finsupp.single s 1)
   intro n hn
-  rw [MvPolynomial.coeff_coe, coeff_trunc, if_pos]
+  rw [MvPolynomial.coeff_coe, coeff_trunc, ite_eq_left]
   apply lt_of_lt_of_le _ hn
   simpa [Finsupp.lt_def] using ⟨s, by simp⟩
 
@@ -297,7 +297,7 @@ theorem summable_pow_of_constantCoeff_eq_zero {f : MvPowerSeries σ R}
   apply summable_of_tendsto_order_atTop_nhds_top
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop]
   refine fun n ↦ ⟨n + 1, fun m hm ↦ lt_of_lt_of_le ?_ (le_order_pow _)⟩
-  refine (ENat.coe_lt_coe.mpr (Nat.add_one_le_iff.mp hm)).trans_le ?_
+  refine (ENat.natCast_lt_natCast.mpr (Nat.add_one_le_iff.mp hm)).trans_le ?_
   simpa [nsmul_eq_mul] using ENat.self_le_mul_right m (order_ne_zero_iff_constCoeff_eq_zero.mpr h)
 
 section GeomSeries
