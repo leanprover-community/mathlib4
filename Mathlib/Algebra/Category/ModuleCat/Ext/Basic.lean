@@ -6,7 +6,6 @@ Authors: Nailin Guan
 
 module
 
-public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.RingTheory.Ideal.Maps
@@ -21,7 +20,7 @@ public section
 
 universe v u
 
-open LinearMap CategoryTheory Limits
+open LinearMap CategoryTheory
 
 variable {R : Type u} [CommRing R]
 

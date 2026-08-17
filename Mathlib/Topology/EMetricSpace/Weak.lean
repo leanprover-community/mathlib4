@@ -88,7 +88,7 @@ theorem some_eball (a : α) (r : ENNReal) :
 
 lemma edist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x : Option α, edist x x = 0
-  | (_ : α) => by simp [m.edist_self]
+  | (_ : α) => by simp
   | none => rfl
 
 lemma edist_comm' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
@@ -128,7 +128,7 @@ abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSp
   edist_comm := h_edist ▸ edist_comm' m
   edist_triangle := h_edist ▸ edist_triangle' m
   topology_le s so := by
-    apply (@EMetric.isOpen_iff (Option α) (PseudoEMetricSpace.ofEDist edist
+    apply (@EMetric.isOpen_iff (Option α) _ (PseudoEMetricSpace.ofEDist edist
       (h_edist ▸ edist_self' m) (h_edist ▸ edist_comm' m) (h_edist ▸ edist_triangle' m))).mpr
     intro x xs
     suffices ∃ ε > 0, @Metric.eball (Option α) Option.toEDist x ε ⊆ s by rwa [← h_edist] at this
@@ -136,7 +136,7 @@ abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSp
     | none =>
       exact ⟨1, by norm_num, by simpa [ball_infty_of_pos]⟩
     | (x : α) =>
-      obtain ⟨ε, εp, εt⟩ := (@EMetric.isOpen_iff α (PseudoEMetricSpace.ofEDist edist
+      obtain ⟨ε, εp, εt⟩ := (@EMetric.isOpen_iff α _ (PseudoEMetricSpace.ofEDist edist
         m.edist_self m.edist_comm m.edist_triangle)).mp
           (m.topology_le _ <| h.continuous.isOpen_preimage s so) x (mem_preimage.mpr xs)
       exact ⟨ε, εp, some_eball x ε ▸ image_subset_iff.mpr εt⟩

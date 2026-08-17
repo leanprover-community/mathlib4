@@ -31,26 +31,28 @@ section TotalSpace
 variable {σ : Π x : M, V x}
   {σ' : (x : E) → Trivial E E' x} {σ'' : (y : E) → Trivial E E' y} {s : E → E'}
 
-/-- info: fun x ↦ ⟨x, σ x⟩ : M → TotalSpace F V -/
+/-- info: (T% σ) : M → TotalSpace F V -/
 #guard_msgs in
 #check T% σ
 
--- Note how the name of the bound variable `x` resp. `y` is preserved.
-/-- info: fun x ↦ ⟨x, σ' x⟩ : E → TotalSpace E' (Trivial E E') -/
+-- Note how the name of the bound variable `x` resp. `y` would have been preserved,
+-- except for the delaborator collapsing this to `T%` again.
+-- TODO: parentheses here are not strictly necessary; find a way to remove them!
+/-- info: (T% σ') : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
 #check T% σ'
 
-/-- info: fun y ↦ ⟨y, σ'' y⟩ : E → TotalSpace E' (Trivial E E') -/
+/-- info: (T% σ'') : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
 #check T% σ''
 
-/-- info: fun a ↦ ⟨a, s a⟩ : E → TotalSpace E' (Trivial E E') -/
+/-- info: (T% s) : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
 #check T% s
 
 variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 
-/-- info: fun m ↦ ⟨m, X m⟩ : M → TotalSpace E (TangentSpace I) -/
+/-- info: (T% X) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check T% X
 
@@ -59,10 +61,10 @@ variable {x : M}
 -- Testing precedence.
 section precedence
 
-/-- info: (fun x ↦ ⟨x, σ x⟩) x : TotalSpace F V -/
+/-- info: (T% σ) x : TotalSpace F V -/
 #guard_msgs in
 #check (T% σ) x
-/-- info: (fun x ↦ ⟨x, σ x⟩) x : TotalSpace F V -/
+/-- info: (T% σ) x : TotalSpace F V -/
 #guard_msgs in
 #check T% σ x
 -- Nothing happening, as expected.
@@ -74,12 +76,13 @@ section precedence
 variable {ι j : Type*}
 
 -- Partially applied.
-/-- info: fun a ↦ ⟨a, s a⟩ : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x)) -/
+/-- info: (T% s) : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x)) -/
 #guard_msgs in
 variable {s : ι → (x : M) → V x} in
 #check T% s
 
-/-- info: (fun a ↦ ⟨a, s a⟩) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x)) -/
+-- Note: pre-existing bug in the delaborator, should be `T% (s i)`!
+/-- info: (T% s) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x)) -/
 #guard_msgs in
 variable {s : ι → ι → (x : M) → V x} {i : ι} in
 #check T% s i
@@ -100,66 +103,84 @@ end precedence
 example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m (X m)) := rfl
 
 -- Applying a section to an argument.
+section
+
+set_option pp.notation false
+
 -- This application is not beta-reduced, because of the parentheses around the T%.
-/-- info: (fun m ↦ ⟨m, X m⟩) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X) x
 
 -- We apply head-beta reduction of the applied form: there is nothing to do here.
-/-- info: (fun m ↦ ⟨m, X m⟩) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X x)
 
 -- This variant is beta-reduced.
-/-- info: (fun x ↦ ⟨x, X x⟩) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x) x)
 
-/-- info: fun m ↦ ⟨m, X m⟩ : M → TotalSpace E (TangentSpace I) -/
+/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X)
 
 -- As is this version.
-/-- info: fun x ↦ ⟨x, X x⟩ : M → TotalSpace E (TangentSpace I) -/
+/-- info: fun x ↦ TotalSpace.mk' E x (X x) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x))
 
 -- The term `x` is outside parentheses: the form `x ↦ X x` is still reduced because
 -- we apply head beta reduction to the application.
-/-- info: (fun x ↦ ⟨x, X x⟩) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x)) x
 
 -- Parentheses around the argument are not required right now.
-/-- info: (fun x ↦ ⟨x, X x⟩) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check T% (fun x ↦ X x) x
 
 -- Applying the same elaborator twice errors.
 /--
 error: could not find a `FiberBundle` instance on `TotalSpace E`:
-`fun m ↦ ⟨m, X m⟩` is a function into `TotalSpace E`
+`fun m ↦ TotalSpace.mk' E m (X m)` is a function into `TotalSpace E`
 
 hint: you may be missing suitable typeclass assumptions
 -/
 #guard_msgs in
 #check (T% (T% X))
 
+set_option pp.notation true
+
 /--
 error: could not find a `FiberBundle` instance on `TotalSpace E`:
-`fun m ↦ ⟨m, X m⟩` is a function into `TotalSpace E`
+`(T% X)` is a function into `TotalSpace E`
 
 hint: you may be missing suitable typeclass assumptions
 -/
 #guard_msgs in
 #check (T% (T% X)) x
 
+
+/--
+error: could not find a `FiberBundle` instance on `TotalSpace E`:
+`(T% X)` is a function into `TotalSpace E`
+
+hint: you may be missing suitable typeclass assumptions
+-/
+#guard_msgs in
+#check (T% (T% X)) x
+
+end
+
 section
 -- Check minimal assumptions to find a model fiber.
 
 variable {B F Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] (σ : (b : B) → E b)
-/-- info: fun b ↦ ⟨b, σ b⟩ : B → TotalSpace F E -/
+/-- info: (T% σ) : B → TotalSpace F E -/
 #guard_msgs in
 #check T% σ
 
@@ -179,7 +200,7 @@ hint: you may be missing suitable typeclass assumptions
 #guard_msgs in
 #check T% σ
 
-/-- info: fun b ↦ ⟨b, σ b⟩ : B → TotalSpace F E -/
+/-- info: (T% σ) : B → TotalSpace F E -/
 #guard_msgs in
 variable [TopologicalSpace (TotalSpace F E)] [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] in
 #check T% σ
@@ -565,7 +586,6 @@ error: Could not find a model with corners for `?_`.
 Hint: the expected type contains metavariables, maybe you need to provide an implicit argument
 -/
 #guard_msgs in
-set_option pp.mvars.anonymous false in
 #check UniqueMDiffAt[Set.univ] m
 
 variable {s : TopologicalSpace.Opens M}
@@ -589,7 +609,6 @@ in the application
   UniqueMDiffOn I s
 -/
 #guard_msgs in
-set_option pp.mvars.anonymous false in
 #check UniqueMDiffOn I s
 
 end UniqueMDiff
@@ -1004,32 +1023,32 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {f : M → M'} {s : Set M}
 
-/-- info: setOf fun x ↦ MDifferentiableAt I I' f x : Set M -/
+/-- info: Set.ofPred fun x ↦ MDifferentiableAt I I' f x : Set M -/
 #guard_msgs in
 #check {x | MDiffAt f x}
 
-/-- info: setOf fun x ↦ MDifferentiableWithinAt I I' f s x : Set M -/
+/-- info: Set.ofPred fun x ↦ MDifferentiableWithinAt I I' f s x : Set M -/
 #guard_msgs in
 #check {x | MDiffAt[s] f x}
 
-/-- info: setOf fun x ↦ ContMDiffAt I I' Top.top f x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffAt I I' Top.top f x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt ⊤ f x}
 
-/-- info: setOf fun x ↦ ContMDiffWithinAt I I' 2 f s x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffWithinAt I I' 2 f s x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt[s] 2 f x}
 
 open ContDiff in -- for the ∞ notation
-/-- info: setOf fun x ↦ ContMDiffAt I I' (↑Top.top) f x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffAt I I' (↑Top.top) f x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt ∞ f x}
 
-/-- info: setOf fun x ↦ Injective ⇑(mfderiv I I' f x) : Set M -/
+/-- info: Set.ofPred fun x ↦ Injective ⇑(mfderiv I I' f x) : Set M -/
 #guard_msgs in
 #check {x | Function.Injective (mfderiv% f x) }
 
-/-- info: setOf fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
+/-- info: Set.ofPred fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
 #guard_msgs in
 #check {x | Function.Surjective (mfderiv[s] f x) }
 
@@ -1483,7 +1502,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
 
 set_option pp.notation true in
 /--
-info: fun a ↦ ⟨a, f a⟩ : Unit → TotalSpace Unit (Trivial Unit Unit)
+info: (T% f) : Unit → TotalSpace Unit (Trivial Unit Unit)
 ---
 trace: [Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
 -/

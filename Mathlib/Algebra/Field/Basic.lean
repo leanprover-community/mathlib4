@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Ring.Invertible
 public import Mathlib.Order.OrderDual
 public import Mathlib.Order.Lex
 public import Mathlib.Algebra.Order.Ring.Synonym
-public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 
 import Mathlib.Tactic.Tauto
 
@@ -23,7 +22,7 @@ import Mathlib.Tactic.Tauto
 
 public section
 
-open Function OrderDual Set
+open Function OrderDual
 
 universe u
 

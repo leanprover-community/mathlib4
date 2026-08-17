@@ -84,6 +84,7 @@ lemma norm_embedding_le_house (α : K) (σ : K →+* ℂ) : ‖σ α‖ ≤ hous
   rw [house_eq_sup']
   exact Finset.le_sup' (f := (‖· α‖₊)) (Finset.mem_univ σ)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma one_le_house_of_isIntegral {α : K} (hα : IsIntegral ℤ α) (hα0 : α ≠ 0) :
     1 ≤ house α := by
   have ⟨σ, hσ⟩ : ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖ := by
@@ -283,9 +284,9 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
       _ ≤ c₂ K * A := ?_
     · simp only [Int.cast_abs, ← Real.norm_eq_abs (asiegel K a kr lu)]; rfl
     · have remark := basis_repr_norm_le_const_mul_house K
-      simp only [Basis.repr_reindex, Finsupp.mapDomain_equiv_apply,
-        integralBasis_repr_apply, eq_intCast, Rat.cast_intCast,
-          Complex.norm_intCast] at remark
+      simp only [Basis.repr_reindex, Finsupp.equivMapDomain_apply, Equiv.symm_symm,
+        integralBasis_repr_apply, algebraMap_int_eq, eq_intCast, Rat.cast_intCast,
+        Complex.norm_intCast] at remark
       exact mod_cast remark ((a kr.1 lu.1 * ((newBasis K) lu.2))) kr.2
     · simp only [house, map_mul, mul_assoc]
       gcongr
@@ -335,7 +336,6 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     · exact asiegel_remark K a habs Apos
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
 
-set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 include hpq h0p cardα cardβ ha habs in
 /-- There exists a "small" non-zero algebraic integral solution of an
@@ -343,7 +343,6 @@ non-trivial underdetermined system of linear equations with algebraic integer co
 theorem exists_ne_zero_int_vec_house_le :
     ∃ (ξ : β → 𝓞 K), ξ ≠ 0 ∧ a *ᵥ ξ = 0 ∧
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
-  classical
   let h := finrank ℚ K
   have hphqh : p * h < q * h := by gcongr; exact finrank_pos
   have h0ph : 0 < p * h := by rw [mul_pos_iff]; constructor; exact ⟨h0p, finrank_pos⟩
