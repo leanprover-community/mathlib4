@@ -303,11 +303,10 @@ The Serre derivative preserves modularity: if `f` is a modular form of weight `k
 -/
 noncomputable def serreDerivativeMF {Γ : Subgroup (GL (Fin 2) ℝ)} (k : ℤ)
     (f : ModularForm Γ k) (hΓ : Γ ≤ 𝒮ℒ := by exact le_rfl) : ModularForm Γ (k + 2) where
-  toSlashInvariantForm :=
-    { toFun := serreDerivative (k : ℂ) f
-      slash_action_eq' := fun g hg => by
-        obtain ⟨γ, rfl⟩ := hΓ hg
-        exact serreDerivative_slash_invariant f.holo' (f.slash_action_eq' _ hg) }
+  toFun := serreDerivative (k : ℂ) f
+  slash_action_eq' g hg := by
+    obtain ⟨γ, rfl⟩ := hΓ hg
+    exact serreDerivative_slash_invariant f.holo' (f.slash_action_eq' _ hg)
   holo' := serreDerivative_mdifferentiable (k : ℂ) f.holo'
   bdd_at_cusps' {c} hc := by
     rw [OnePoint.isBoundedAt_iff_forall_SL2Z (hc.mono hΓ)]
