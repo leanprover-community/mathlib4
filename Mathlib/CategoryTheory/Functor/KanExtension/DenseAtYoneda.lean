@@ -307,9 +307,8 @@ lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply (u : P.Eleme
   have := ConcreteCategory.congr_hom (NatTrans.congr_app
     ((colim.isColimitCoconeCompFlip _ _).comp_coconePointUniqueUpToIso_inv
       (isColimitShrinkCoyonedaCocone P) (op u)) u.1) (shrinkYonedaObjObjEquiv.symm (𝟙 _))
-  simp [shrinkYonedaCompWhiskeringLeftObjπCompColimIso,
-    dsimp% shrinkCoyonedaEquiv_symm_app_shrinkCoyonedaObjObjEquiv_symm.{w} u.2 (𝟙 (op u.1)),
-    ← dsimp% this]
+  simp [shrinkYonedaCompWhiskeringLeftObjπCompColimIso, ← dsimp% this,
+    dsimp% shrinkCoyonedaEquiv_symm_app_shrinkCoyonedaObjObjEquiv_symm.{w} u.2 (𝟙 (op u.1))]
 
 end Functor.Elements
 
