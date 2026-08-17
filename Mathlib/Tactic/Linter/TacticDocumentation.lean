@@ -68,8 +68,8 @@ attribute. -/
     let docs ← Tactic.Doc.allTacticDocs
     let some doc := docs.find? fun doc => doc.internalName == tac | return none
     let name := doc.userName
-    let tacs := docs.filter
-      (·.userName == name && (alternativeOfTactic env doc.internalName).isNone)
+    let tacs := docs.filter fun doc =>
+      (doc.userName == name && (alternativeOfTactic env doc.internalName).isNone)
     -- If we have duplicates, complain.
     if tacs.size <= 1 then return none
     let tacNames := tacs.map (·.internalName)
