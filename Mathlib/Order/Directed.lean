@@ -241,7 +241,7 @@ protected theorem DirectedOn.insert [Std.Refl r] (a : α) {s : Set α} (hd : Dir
     exact ⟨w, Set.mem_insert_of_mem _ hws, hwr⟩
 
 theorem directedOn_singleton [Std.Refl r] (a : α) : DirectedOn r ({a} : Set α) :=
-  fun x hx _ hy => ⟨x, hx, refl _, hx.symm ▸ hy.symm ▸ refl _⟩
+  Set.subsingleton_singleton.directedOn
 
 theorem directedOn_pair [Std.Refl r] {a b : α} (hab : a ≼ b) : DirectedOn r ({a, b} : Set α) :=
   (directedOn_singleton _).insert _ fun c hc => ⟨c, hc, hc.symm ▸ hab, refl _⟩
