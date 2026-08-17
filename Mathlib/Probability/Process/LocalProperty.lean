@@ -175,7 +175,7 @@ lemma IsStable.locally_and_iff (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
       hqX.isLocalizingSequence_localSeq.isStoppingTime n using 1
   ext i ω
   simp_rw [stoppedProcess_indicator_comm, Pi.inf_apply, lt_inf_iff, inf_comm (hpX.localSeq n)]
-  rw [← stoppedProcess_stoppedProcess, ← stoppedProcess_indicator_comm, Set.setOf_and,
+  rw [← stoppedProcess_stoppedProcess, ← stoppedProcess_indicator_comm, Set.ofPred_and,
     Set.inter_comm]
   simp_rw [← Set.indicator_indicator]
   rfl
@@ -239,7 +239,7 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
     rw [measure_eq_zero_iff_ae_notMem]
     filter_upwards [(hσ n).tendsto_top] with ω hTop hmem
     simp_rw [WithTop.tendsto_nhds_top_iff, eventually_atTop] at hTop
-    simp only [Set.mem_iInter, Set.mem_setOf_eq] at hmem
+    simp only [Set.mem_iInter, Set.mem_ofPred_eq] at hmem
     obtain ⟨N, hN⟩ := hTop (T n)
     specialize hN N le_rfl
     specialize hmem N
@@ -249,10 +249,10 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
   · filter_upwards [(hσ n).mono] with ω hω
     intros i j hij
     specialize hω hij
-    simp [setOf] at *
+    simp [Set.ofPred] at *
     grind
   · refine fun i ↦ .nullMeasurableSet ?_
-    simp_rw [lt_inf_iff, Set.setOf_and]
+    simp_rw [lt_inf_iff, Set.ofPred_and]
     exact MeasurableSet.inter
       (measurableSet_lt ((hσ n).isStoppingTime i).measurable' (hτ.isStoppingTime n).measurable')
         <| measurableSet_lt ((hσ n).isStoppingTime i).measurable' measurable_const
@@ -282,7 +282,7 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux
     fun n ↦ le_trans (EventuallyLE.measure_le ?_) (hnk n)⟩
   filter_upwards [(hσ n).mono] with ω hω
   specialize hω (le_mkStrictMonoAux nk n)
-  simp [setOf]
+  simp [Set.ofPred]
   grind
 
 lemma IsLocalizingSequence.isPrelocalizingSequence_inf_extraction

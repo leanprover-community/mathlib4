@@ -612,13 +612,12 @@ lemma ι_reflexiveCoequalizerIsoCoequalizer_hom :
   IsColimit.comp_coconePointUniqueUpToIso_hom
     ((ReflexiveCofork.isColimitEquiv F _).symm _) _ WalkingParallelPair.one
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_reflexiveCoequalizerIsoCoequalizer_inv :
     coequalizer.π _ _ ≫ (reflexiveCoequalizerIsoCoequalizer F).inv = colimit.ι F _ := by
   rw [reflexiveCoequalizerIsoCoequalizer]
   simp only [colimit.comp_coconePointUniqueUpToIso_inv,
-    Cofork.ofπ_ι_app, colimit.cocone_ι]
+    Cofork.ofπ_ι_app, ReflexiveCofork.π, colimit.cocone_ι]
 
 end
 

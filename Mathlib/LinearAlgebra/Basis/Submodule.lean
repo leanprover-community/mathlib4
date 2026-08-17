@@ -48,8 +48,6 @@ theorem mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {
 
 end Basis
 
-open LinearMap
-
 variable {v : ι → M}
 variable [Ring R] [CommRing R₂] [AddCommGroup M]
 variable [Module R M] [Module R₂ M]
@@ -131,7 +129,7 @@ lemma mem_center_iff {A}
     · intros
       exact ⟨h.2 _ _, h.3 _ _⟩
   · intro h
-    rw [center, mem_setOf_eq]
+    rw [center, mem_ofPred_eq]
     constructor
     case comm =>
       intro y
