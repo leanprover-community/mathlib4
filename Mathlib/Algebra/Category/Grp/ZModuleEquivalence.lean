@@ -21,7 +21,8 @@ universe u
 namespace ModuleCat
 
 /-- The forgetful functor from `ℤ` modules to `Ab` admits an inverse. -/
-@[implicit_reducible, expose, simps!] def intEquivalence : ModuleCat.{u} ℤ ≌ Ab.{u} where
+@[implicit_reducible, expose, simps functor inverse]
+def intEquivalence : ModuleCat.{u} ℤ ≌ Ab.{u} where
   functor := forget₂ ..
   inverse.obj G := of ℤ G
   inverse.map f := ofHom f.hom.toIntLinearMap
