@@ -111,9 +111,9 @@ def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α
 /-- Select the computation model for the ring expression `R`: the first registered
 `bareiss_ext` extension that handles `R`, or the default rational model. -/
 def producerFor (R : Expr) : MetaM Producer := do
-  for ext in bareissExt.getState (← getEnv) do
+  for (name, ext) in bareissExt.getState (← getEnv) do
     if let some p ← ext.producer? R then
-      trace[Tactic.evalRank] "selected the model `{ext.name}` for{indentExpr R}"
+      trace[Tactic.evalRank] "selected the model `{name}` for{indentExpr R}"
       return p
   ratProducer R
 

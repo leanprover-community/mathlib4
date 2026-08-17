@@ -156,8 +156,6 @@ structure BareissExt where
   /-- The computation model for the ring type `R`, or `none` if the extension does not
   handle `R`. -/
   producer? (R : Expr) : MetaM (Option Producer)
-  /-- The name of the extension. -/
-  name : Name := by exact decl_name%
 
 /-- Read a `bareiss_ext` extension from a declaration of the right type. -/
 def mkBareissExt (n : Name) : ImportM BareissExt := do
@@ -165,13 +163,13 @@ def mkBareissExt (n : Name) : ImportM BareissExt := do
   IO.ofExcept <| unsafe env.evalConstCheck BareissExt opts ``BareissExt n
 
 /-- Environment extension for the `bareiss_ext` computation models.
-Uses a simple array to store the registered extensions for now. -/
-initialize bareissExt : ScopedEnvExtension Name (Name × BareissExt) (Array BareissExt) ←
+Uses a simple array to store the name-extension pairs for now. -/
+initialize bareissExt : ScopedEnvExtension Name (Name × BareissExt) (Array (Name × BareissExt)) ←
   registerScopedEnvExtension {
     mkInitial := pure #[]
     ofOLeanEntry := fun _ n => return (n, ← mkBareissExt n)
     toOLeanEntry := (·.1)
-    addEntry := fun s (_, ext) => s.push ext
+    addEntry := fun s e => s.push e
   }
 
 initialize registerBuiltinAttribute {
