@@ -58,9 +58,9 @@ def zsqrtdProducer (dQ : Q(ℤ)) (d : Int) : Producer :=
       MetaM (Array (Array (ℤ√d)) × (BareissData (ℤ√d) → BareissData (ℤ√d))) := do
     let values ← entries.mapM (·.mapM (evalZsqrtdEntry d))
     return (values, id)
-  let render : ℤ√d → MetaM Expr := fun v =>
+  let mkEntry : ℤ√d → MetaM Expr := fun v =>
     return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ))
-  mkProducer ops prepare render
+  mkProducer ops prepare mkEntry
 
 /-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`. -/
 @[bareiss_ext] def zsqrtdExt : BareissExt where

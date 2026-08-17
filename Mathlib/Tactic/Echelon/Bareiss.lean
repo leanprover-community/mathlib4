@@ -93,7 +93,7 @@ def certifyCondition (name : String) (c : Q(Prop)) : MetaM Q($c) := do
     throwError "cannot verify the rank certificate: {name} failed"
   mkDecideProofQ c
 
-/-- Build the `Echelon.Decomposition` certificate of `A` from its rendered components,
+/-- Build the `Echelon.Decomposition` certificate of `A` from its constructed components,
 with the certificate conditions proven by kernel-checked `decide`. -/
 def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (L : Q(Matrix (Fin $m) (Fin $m) $α))

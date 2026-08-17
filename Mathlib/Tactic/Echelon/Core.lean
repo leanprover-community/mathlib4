@@ -62,7 +62,7 @@ structure RingOps (V : Type) where
   isZero : V → Bool
 
 /-- Decomposition data with entries in `V`: the values of the elimination, or the
-rendered ring expressions (`V := Expr`). -/
+ring expressions constructed (`V := Expr`). -/
 structure BareissData (V : Type) where
   /-- The lower-triangular transform. -/
   L : Array (Array V)
@@ -79,8 +79,8 @@ def BareissData.mapM {V W : Type} (f : V → MetaM W) (d : BareissData V) :
     MetaM (BareissData W) :=
   return { L := ← d.L.mapM (·.mapM f), swaps := d.swaps, pivot := d.pivot }
 
-/-- A producer: run the elimination on the parsed entries of a matrix literal, returning
-the rendered decomposition. -/
+/-- A producer: run the elimination on the entries of a matrix literal, returning
+the decomposition constructed. -/
 @[expose] def Producer := Array (Array Expr) → MetaM (BareissData Expr)
 
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
@@ -140,16 +140,16 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
 
 /-- Assemble a producer from a computation model's parts.
 `ops` describes the ring operation structure;
-`prepare` turns the parsed entries into the values the elimination runs on, plus a
+`prepare` reifies the entries into the values the elimination runs on, plus a
 function restoring the resulting decomposition to one of the original matrix;
-`render` prints a value back to a ring expression. -/
+`mkEntry` constructs the value back in the ring. -/
 def mkProducer {V : Type} (ops : RingOps V)
     (prepare : Array (Array Expr) →
       MetaM (Array (Array V) × (BareissData V → BareissData V)))
-    (render : V → MetaM Expr) : Producer := fun entries => do
+    (mkEntry : V → MetaM Expr) : Producer := fun entries => do
   let (values, restore) ← prepare entries
   let d ← bareissDecomp ops values
-  (restore d).mapM render
+  (restore d).mapM mkEntry
 
 /-- An extension of the Bareiss ring computation model. -/
 structure BareissExt where
