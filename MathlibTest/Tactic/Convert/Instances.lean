@@ -11,7 +11,6 @@ example {a b c : ℕ} (hab : instLTNat.lt a b) : Nat.instLinearOrder.toLT.lt a c
   · guard_target =ₛ c = b
     exact test_sorry
 
-#guard_msgs in
 example {a b c : ℕ} (hab : instLTNat.lt a b) : Nat.instLinearOrder.toLT.lt a c := by
   convert (preTransparency := .instances) hab
   guard_target =ₛ c = b
