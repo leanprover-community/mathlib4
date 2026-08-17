@@ -17,20 +17,36 @@ same as the one on `m → n → α`.
 
 @[expose] public section
 
-variable (m n α : Type*) [MeasurableSpace α]
-
 namespace Matrix
+
+section MeasurableSpace
+
+variable {m n α : Type*} [MeasurableSpace α]
 
 instance : MeasurableSpace (Matrix m n α) := inferInstanceAs <| MeasurableSpace (m → n → α)
 
-lemma measurable_iff [MeasurableSpace m] {M : Matrix m n α} :
-    Measurable M ↔ ∀ j, Measurable fun i ↦ M i j := measurable_pi_iff
+variable {β : Type*} [MeasurableSpace β]
 
-lemma measurable_eval [MeasurableSpace m] {j : n} {M : Matrix m n α} (hM : Measurable M) :
-    Measurable fun i ↦ M i j := hM.eval
+lemma _root_.Measurable.eval_matrix {i : m} {j : n} {M : β → Matrix m n α} (hM : Measurable M) :
+    Measurable (M · i j) := hM.eval.eval
 
-lemma measurable_lambda [MeasurableSpace m] (M : Matrix m n α)
-    (hM : ∀ j, Measurable fun i ↦ M i j) : Measurable M := measurable_pi_lambda M hM
+protected lemma measurable_lambda (M : β → Matrix m n α)
+    (hM : ∀ i j, Measurable (M · i j)) : Measurable M :=
+  measurable_pi_lambda _ (fun i ↦ measurable_pi_lambda _ fun j ↦ hM i j)
+
+protected lemma measurable_iff {M : β → Matrix m n α} :
+    Measurable M ↔ ∀ i j, Measurable (M · i j) where
+  mp h _ _ := h.eval_matrix
+  mpr h := Matrix.measurable_lambda M h
+
+protected lemma measurable_apply {i : m} {j : n} :
+    Measurable (fun M : Matrix m n α ↦ M i j) := measurable_id.eval_matrix
+
+end MeasurableSpace
+
+section MeasurableEquiv
+
+variable (m n α : Type*) [MeasurableSpace α]
 
 @[fun_prop]
 lemma measurable_of : Measurable <| Matrix.of (m := m) (n := n) (α := α) :=
@@ -55,5 +71,7 @@ lemma toMatrix_apply (f : m → n → α) : Matrix.ofMeasurableEquiv m n α f = 
 @[simp]
 lemma toMatrix_symm_apply (M : Matrix m n α) :
     (Matrix.ofMeasurableEquiv m n α).symm M = Matrix.of.symm M := rfl
+
+end MeasurableEquiv
 
 end Matrix
