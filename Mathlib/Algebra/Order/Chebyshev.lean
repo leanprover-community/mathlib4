@@ -147,7 +147,7 @@ theorem _root_.Multiset.sq_sum_le_card_mul_sum_sq (m : Multiset α) :
     grind [m.map_toEnumFinset_fst, Multiset.map_map, Finset.sum_map_val]
   have := key id
   have := _root_.sq_sum_le_card_mul_sum_sq (s := m.toEnumFinset) (f := Prod.fst)
-  simp_all [sum_eq_sum_toEnumFinset m, key (· ^ 2)]
+  simp_all [key (· ^ 2)]
 
 variable [Fintype ι]
 
