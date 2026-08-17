@@ -242,10 +242,10 @@ lemma tendsto_charFun_of_tendstoInDistribution (h : TendstoInDistribution X atTo
 
 lemma tendstoInDistribution_iff_tendsto_charFun
     (hX : ∀ n, AEMeasurable (X n) (P n)) (hX' : AEMeasurable X' P') :
-    (∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t))) ↔
-    TendstoInDistribution X atTop X' P P' := by
+    TendstoInDistribution X atTop X' P P' ↔
+    (∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t))) := by
   constructor
-  · exact tendstoInDistribution_of_tendsto_charFun hX hX'
   · exact tendsto_charFun_of_tendstoInDistribution
+  · exact tendstoInDistribution_of_tendsto_charFun hX hX'
 
 end MeasureTheory
