@@ -107,7 +107,7 @@ theorem isLocalRing_of_isPrimePow_map_residue (monic : p.Monic) [IsLocalRing R]
   suffices IsLocalHom (Ideal.Quotient.mk (𝓂[R].map (of p))) from
     RingHom.domain_isLocalRing (Ideal.Quotient.mk (𝓂[R].map (of p)))
   apply isLocalHom_of_le_jacobson_bot
-  simp_rw [jacobson_bot, Ring.jacobson_eq_sInf_isMaximal, le_sInf_iff, Set.mem_setOf]
+  simp_rw [jacobson_bot, Ring.jacobson_eq_sInf_isMaximal, le_sInf_iff, Set.mem_ofPred]
   intro I hI
   have comap : (I.comap (of p)).IsMaximal := isMaximal_comap_of_isIntegral_of_isMaximal'
     (of p) (fun _ ↦ (isIntegral_of_monic monic).isIntegral _) I
