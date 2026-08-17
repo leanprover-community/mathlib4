@@ -230,8 +230,7 @@ lemma E2_slash_action (γ : SL(2, ℤ)) : E2 ∣[(2 : ℤ)] γ = E2 - (1 / (2 * 
 
 /-- `E2` is invariant under the weight-2 slash action of `T`, since the defect `D2 T` vanishes. -/
 lemma E2_T_transform : E2 ∣[(2 : ℤ)] T = E2 := by
-  rw [E2_slash_action]
-  simp [D2_T]
+  simp [E2_slash_action, D2_T]
 
 /-- `E2` is invariant under `z ↦ z + 1` (the action of `T`). -/
 lemma E2_T_smul (z : ℍ) : E2 (T • z) = E2 z := by
@@ -244,13 +243,10 @@ lemma E2_periodic : Function.Periodic (E2 ∘ ofComplex) 1 := by
   intro w
   simp only [Function.comp_apply]
   by_cases hw : 0 < w.im
-  · rw [ofComplex_apply_of_im_pos hw,
-      ofComplex_apply_of_im_pos (show 0 < (w + 1).im by simpa using hw), ← E2_T_smul ⟨w, hw⟩]
-    congr 1
-    ext
-    simpa using (coe_T_zpow_smul_eq (n := 1) (z := ⟨w, hw⟩)).symm
-  · rw [ofComplex_apply_of_im_nonpos (by simpa using not_lt.mp hw),
-      ofComplex_apply_of_im_nonpos (not_lt.mp hw)]
+  · rw [ofComplex_apply_of_im_pos hw, ← E2_T_smul ⟨w, hw⟩, modular_T_smul,
+      ofComplex_apply_of_im_pos (by simpa using hw : 0 < (w + 1).im)]
+    exact congrArg E2 (coe_injective (by simp [add_comm]))
+  · simp [ofComplex_apply_of_im_nonpos, not_lt.mp hw]
 
 end transform
 
