@@ -522,6 +522,11 @@ def Fork.IsLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
         simp [← Category.assoc, fac]
     uniq := fun s m j => by aesop }
 
+/-- The `uniq` condition in `Fork.IsLimit.mk` can be replaced by `Fork.ι` being a monomorphism. -/
+def Fork.IsLimit.ofMono (t : Fork f g) [Mono t.ι] (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
+    (fac : ∀ s : Fork f g, lift s ≫ Fork.ι t = Fork.ι s) : IsLimit t :=
+  Fork.IsLimit.mk t lift fac fun _ _ eq ↦ (cancel_mono t.ι).mp <| by rw [eq, fac]
+
 /-- This is another convenient method to verify that a fork is a limit cone. It
 only asks for a proof of facts that carry any mathematical content, and allows access to the
 same `s` for all parts. -/
@@ -538,6 +543,12 @@ def Cofork.IsColimit.mk (t : Cofork f g) (desc : ∀ s : Cofork f g, t.pt ⟶ s.
     fac := fun s j =>
       WalkingParallelPair.casesOn j (by simp_all) (fac s)
     uniq := by aesop }
+
+/-- The `uniq` condition in `Cofork.IsColimit.mk` can be replaced by `Cofork.π` being an
+epimorphism. -/
+def Cofork.IsColimit.ofEpi (t : Cofork f g) [Epi t.π] (desc : ∀ s : Cofork f g, t.pt ⟶ s.pt)
+    (fac : ∀ s : Cofork f g, t.π ≫ desc s = Cofork.π s) : IsColimit t :=
+  Cofork.IsColimit.mk t desc fac fun _ _ eq ↦ (cancel_epi t.π).mp <| by rw [eq, fac]
 
 /-- This is another convenient method to verify that a fork is a limit cone. It
 only asks for a proof of facts that carry any mathematical content, and allows access to the

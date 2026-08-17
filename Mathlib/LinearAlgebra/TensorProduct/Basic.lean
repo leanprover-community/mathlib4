@@ -24,8 +24,8 @@ bilinear, tensor, tensor product
 
 section Semiring
 
-variable {R R₂ R₃ R' R'' : Type*}
-variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃] [Monoid R'] [Semiring R'']
+variable {R R₂ R₃ : Type*}
+variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃]
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
 variable {A M N P Q S : Type*}
 variable {M₂ M₃ N₂ N₃ P' P₂ P₃ Q' Q₂ Q₃ : Type*}
@@ -33,8 +33,6 @@ variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [AddCommMonoid P'] [AddCommMonoid Q']
 variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Q₂]
 variable [AddCommMonoid M₃] [AddCommMonoid N₃] [AddCommMonoid P₃] [AddCommMonoid Q₃]
-variable [DistribMulAction R' M]
-variable [Module R'' M]
 variable [Module R M] [Module R N] [Module R S]
 variable [Module R P'] [Module R Q']
 variable [Module R₂ M₂] [Module R₂ N₂] [Module R₂ P₂] [Module R₂ Q₂]
@@ -135,6 +133,18 @@ theorem ext' {F} [FunLike F (M ⊗[R] N) P₂] [AddMonoidHomClass F (M ⊗[R] N)
     {g h : F} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   DFunLike.ext _ _ fun z ↦ z.induction_on (by simp_rw [map_zero]) H fun x y ihx ihy ↦ by
     rw [map_add, map_add, ihx, ihy]
+
+theorem extₗ {F} [Module R₂ M] [SMulCommClass R R₂ M]
+    [FunLike F (M ⊗[R] N ⊗[R₂] M₂) P₃] [AddMonoidHomClass F (M ⊗[R] N ⊗[R₂] M₂) P₃]
+    {g h : F} (H : ∀ x y z, g (x ⊗ₜ y ⊗ₜ z) = h (x ⊗ₜ y ⊗ₜ z)) : g = h :=
+  ext' fun xy z ↦ xy.induction_on (by simp_rw [zero_tmul, map_zero]) (H · · z) fun x y ihx ihy ↦ by
+    simp_rw [add_tmul, map_add, ihx, ihy]
+
+theorem extᵣ {F} [Module R₂ N] [SMulCommClass R₂ R N]
+    [FunLike F (M ⊗[R] (N ⊗[R₂] M₂)) P₃] [AddMonoidHomClass F (M ⊗[R] (N ⊗[R₂] M₂)) P₃]
+    {g h : F} (H : ∀ x y z, g (x ⊗ₜ (y ⊗ₜ z)) = h (x ⊗ₜ (y ⊗ₜ z))) : g = h :=
+  ext' fun x yz ↦ yz.induction_on (by simp_rw [tmul_zero, map_zero]) (H x) fun y z ihy ihz ↦ by
+    simp_rw [tmul_add, map_add, ihy, ihz]
 
 theorem lift.unique {g : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = f' x y) : g = lift f' :=
   ext' fun m n => by rw [H, lift.tmul]

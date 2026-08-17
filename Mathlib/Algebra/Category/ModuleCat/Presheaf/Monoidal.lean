@@ -5,8 +5,10 @@ Authors: Dagur Asgeirsson, Jack McKoen, Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Category.Grp.Monoidal
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # The monoidal category structure on presheaves of modules
@@ -242,5 +244,82 @@ instance (F : PresheafOfModules.{u} (R ⋙ forget₂ _ _)) :
 instance (F : PresheafOfModules.{u} (R ⋙ forget₂ _ _)) :
     PreservesColimitsOfSize.{u, u} (tensorRight F) :=
   preservesColimits_of_natIso (tensorLeftIsoTensorRight F)
+
+/-!
+## The tensor product of presheaves of modules as a coequalizer
+
+Let `R : Cᵒᵖ ⥤ CommRingCat` be a presheaf of commutative rings.  Any presheaf of modules
+over `R` has an underlying presheaf of abelian groups (`PresheafOfModules.toPresheaf`).
+For presheaves of modules `M` and `N`, the canonical epimorphism
+
+`distrib : M ⊗ N ⟶ M ⊗[R] N` (of presheaves of abelian groups)
+
+(where the tensor product on the left is the pointwise tensor product over `ℤ`) exhibits
+the underlying presheaf of abelian groups of `M ⊗[R] N` as the coequalizer of the two maps
+`M ⊗ (R ⊗ N) ⇉ M ⊗ N` given by `m ⊗ (r ⊗ n) ↦ (r • m) ⊗ n` and `m ⊗ (r ⊗ n) ↦ m ⊗ (r • n)`.
+These are bundled into `colimitCoconeAb`.
+-/
+
+open TensorProduct
+
+instance (M : PresheafOfModules.{u} (R ⋙ forget₂ ..)) (U : Cᵒᵖ) :
+    Module (R.obj U) (M.presheaf.obj U) :=
+  inferInstanceAs (Module (R.obj U) (M.obj U))
+
+variable (M N : PresheafOfModules.{u} (R ⋙ forget₂ ..))
+
+/-- The canonical morphism from the pointwise tensor product over `ℤ` to the tensor
+product over `R`. -/
+noncomputable def distrib : M.presheaf ⊗ N.presheaf ⟶ (M ⊗ N).presheaf where
+  app U := AddCommGrpCat.ofHom
+    (mapOfCompatibleSMul (R.obj U) ℤ ℤ (M.obj U) (N.obj U)).toAddMonoidHom
+  naturality _ _ _ := by ext1; exact TensorProduct.ext' fun _ _ ↦ rfl
+
+instance epi_distrib : Epi (distrib M N) where
+  left_cancellation _ _ h := by
+    ext U x
+    obtain ⟨y, rfl⟩ := mapOfCompatibleSMul_surjective _ ℤ ℤ _ _ x
+    exact congr(($h).app U y)
+
+/-- The presheaf of rings, viewed as a presheaf of abelian groups. -/
+noncomputable abbrev ringAb (R : Cᵒᵖ ⥤ CommRingCat.{u}) : Cᵒᵖ ⥤ Ab.{u} :=
+  (unit (R ⋙ forget₂ ..)).presheaf
+
+/-- The action of the presheaf of rings on a presheaf of modules, written on the left. -/
+noncomputable def act : ringAb R ⊗ M.presheaf ⟶ M.presheaf where
+  app U := AddCommGrpCat.ofHom <| TensorProduct.liftAddHom (smulAddHom (R.obj U) _)
+    fun n (r : R.obj U) m ↦ show (n • r) • m = r • (n • m) by rw [smul_comm, smul_assoc]
+  naturality U V f := by ext1; exact TensorProduct.ext' fun r m ↦ (M.map_smul ..).symm
+
+/-- The first of the two maps whose coequalizer is the tensor product: it sends
+`m ⊗ (r ⊗ n)` to `(r • m) ⊗ n`. -/
+noncomputable def act₁ : (M.presheaf ⊗ ringAb R) ⊗ N.presheaf ⟶ M.presheaf ⊗ N.presheaf :=
+  ((β_ _ _).hom ≫ act M) ▷ N.presheaf
+
+/-- The second of the two maps whose coequalizer is the tensor product: it sends
+`m ⊗ (r ⊗ n)` to `m ⊗ (r • n)`. -/
+noncomputable def act₂ : (M.presheaf ⊗ ringAb R) ⊗ N.presheaf ⟶ M.presheaf ⊗ N.presheaf :=
+  (α_ _ _ _).hom ≫ (M.presheaf ◁ act N)
+
+lemma act_distrib : act₁ M N ≫ distrib M N = act₂ M N ≫ distrib M N := by
+  ext U : 3
+  exact TensorProduct.extₗ fun m (r : R.obj U) n ↦ by exact smul_tmul (R := R.obj U) r m n
+  /- erw to be diagnosed:
+  exact TensorProduct.ext' fun mr n ↦ mr.induction_on (by erw [zero_tmul, map_zero])
+    (fun m (r : R.obj U) ↦ smul_tmul (R := R.obj U) r m n) fun _ _ h₁ h₂ ↦ by
+    erw [add_tmul, map_add, map_add, h₁, h₂] -/
+
+/-- The colimit cocone realizing the tensor product as a coequalizer. -/
+noncomputable def colimitCoconeAb : ColimitCocone (parallelPair (act₁ M N) (act₂ M N)) where
+  cocone := Cofork.ofπ _ (act_distrib M N)
+  isColimit := have : Epi (Cofork.ofπ _ (act_distrib M N)).π := inferInstanceAs (Epi <| distrib M N)
+    Cofork.IsColimit.ofEpi _ (fun c ↦
+    { app U := AddCommGrpCat.ofHom <| TensorProduct.liftAddHom ((LinearMap.toAddMonoidHom'.comp
+        (TensorProduct.mk ℤ (M.obj U) (N.obj U)).toAddMonoidHom).compr₂ ((c.ι.app .one).app U).hom)
+        fun r m n ↦ congr($(Cofork.condition c).app U ((m ⊗ₜ r) ⊗ₜ n))
+      naturality U V f := by
+        ext1
+        exact TensorProduct.ext' fun m n ↦ congr_arg (· (m ⊗ₜ n)) ((c.ι.app .one).naturality f) })
+    (fun c ↦ by ext _ : 3; exact TensorProduct.ext' fun _ _ ↦ rfl)
 
 end PresheafOfModules
