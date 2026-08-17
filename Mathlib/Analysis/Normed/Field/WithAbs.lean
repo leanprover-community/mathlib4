@@ -112,6 +112,6 @@ variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {
 that is locally compact, then the completion of the first normed field is also locally compact. -/
 theorem locallyCompactSpace [LocallyCompactSpace L] (h : Isometry f) :
     LocallyCompactSpace v.Completion :=
-  h.completion_extension.isClosedEmbedding.locallyCompactSpace
+  h.fromCompletion.isClosedEmbedding.locallyCompactSpace
 
 end AbsoluteValue.Completion

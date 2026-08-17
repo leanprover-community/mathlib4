@@ -54,9 +54,9 @@ section UniformSpace.Completion
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-namespace UniformSpace.Completion
-
 open RCLike Function
+
+namespace UniformSpace.Completion
 
 instance toInner {𝕜' E' : Type*} [TopologicalSpace 𝕜'] [UniformSpace E'] [Inner 𝕜' E'] :
     Inner 𝕜' (Completion E') where

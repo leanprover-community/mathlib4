@@ -96,7 +96,7 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] {R : Type*} [CommRing R
 /-- The embedding of a field inside its `adicCompletion` with respect to `v`. -/
 noncomputable def FinitePlace.embedding : K →+* adicCompletion K v :=
   (adicCompletion.equiv K v).symm.toRingHom.comp
-    (UniformSpace.Completion.coeRingHom.comp (WithVal.equiv (v.valuation K)).symm)
+    (UniformSpace.RingHom.toCompletion.comp (WithVal.equiv (v.valuation K)).symm)
 
 theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
 
