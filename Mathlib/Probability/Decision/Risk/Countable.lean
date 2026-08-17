@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Probability.Decision.Risk.Defs
 
-import Mathlib.Probability.Decision.Risk.Basic
+public import Mathlib.Probability.Kernel.Composition.CompNotation
 
 /-!
 # Risk in countable spaces
@@ -19,7 +19,7 @@ with sums instead of integrals.
 
 public section
 
-open MeasureTheory Function
+open MeasureTheory
 open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
