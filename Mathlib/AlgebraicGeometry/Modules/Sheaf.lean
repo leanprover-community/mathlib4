@@ -5,6 +5,7 @@ Authors: Joël Riou, Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Monoidal
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
 public import Mathlib.AlgebraicGeometry.Modules.Presheaf
 public import Mathlib.AlgebraicGeometry.Restrict
@@ -51,6 +52,9 @@ instance : HasColimits X.Modules := inferInstanceAs (HasColimits (SheafOfModules
 
 instance : IsGrothendieckAbelian.{u} X.Modules :=
   inferInstanceAs (IsGrothendieckAbelian (SheafOfModules _))
+
+noncomputable instance : MonoidalCategory X.Modules := SheafOfModules.monoidalCategory X.sheaf
+noncomputable instance : SymmetricCategory X.Modules := SheafOfModules.symmetricCategory X.sheaf
 
 section Functor
 

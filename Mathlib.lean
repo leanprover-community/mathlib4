@@ -137,6 +137,7 @@ public import Mathlib.Algebra.Category.Grp.Kernels
 public import Mathlib.Algebra.Category.Grp.LargeColimits
 public import Mathlib.Algebra.Category.Grp.LeftExactFunctor
 public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.Algebra.Category.Grp.Monoidal
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.Algebra.Category.Grp.Shrink
 public import Mathlib.Algebra.Category.Grp.Subobject
@@ -209,6 +210,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.LocallyFree
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Monoidal
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackFree
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
