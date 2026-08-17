@@ -56,7 +56,7 @@ instance : Category BoolAlg.{u} where
 
 instance : ConcreteCategory BoolAlg (BoundedLatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BoolAlg` back into a `BoundedLatticeHom`. -/
 abbrev Hom.hom {X Y : BoolAlg.{u}} (f : Hom X Y) :=

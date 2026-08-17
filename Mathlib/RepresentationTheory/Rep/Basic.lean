@@ -79,7 +79,7 @@ instance : Category (Rep.{w} k G) where
 
 instance : ConcreteCategory (Rep.{w} k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 variable {A B} in
 /-- Turn a morphism in `Rep` back into an `IntertwiningMap`. -/

@@ -97,8 +97,8 @@ open TypeCat CategoryTheory
 @[to_additive_do_translate] -- Expressions involving this instance can still be additivized.
 instance CategoryTheory.types : Category.{u} (Type u) where
   Hom := Hom
-  id X := .mk <| .id X
-  comp f g := .mk <| g.hom'.comp f.hom'
+  id X := ⟨.id X⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
 
 /--
 The concrete category instance on `Type u`.
@@ -107,7 +107,7 @@ Note: sometimes one needs to specify explicitly `(CC := fun X ↦ X)` to help ty
 -/
 instance : ConcreteCategory.{u} (Type u) Fun where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 example (X Y : Type u) (f : X ⟶ Y) : (f : X → Y) = (ConcreteCategory.hom f : X → Y) := by
   with_reducible rfl

@@ -88,7 +88,7 @@ instance : Category MonCat.{u} where
 @[to_additive]
 instance : ConcreteCategory MonCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `MonCat` back into a `MonoidHom`. -/
 @[to_additive /-- Turn a morphism in `AddMonCat` back into an `AddMonoidHom`. -/]
@@ -270,7 +270,7 @@ instance : Category CommMonCat.{u} where
 @[to_additive]
 instance : ConcreteCategory CommMonCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommMonCat` back into a `MonoidHom`. -/
 @[to_additive /-- Turn a morphism in `AddCommMonCat` back into an `AddMonoidHom`. -/]

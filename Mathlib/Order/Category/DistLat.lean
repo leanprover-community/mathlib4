@@ -58,7 +58,7 @@ instance : Category DistLat.{u} where
 
 instance : ConcreteCategory DistLat (LatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `DistLat` back into a `LatticeHom`. -/
 abbrev Hom.hom {X Y : DistLat.{u}} (f : Hom X Y) :=

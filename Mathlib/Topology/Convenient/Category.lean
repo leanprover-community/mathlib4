@@ -119,7 +119,7 @@ instance : Category (ContinuousGeneratedByCat.{v} X) where
 instance : ConcreteCategory.{v} (ContinuousGeneratedByCat.{v} X)
     (fun Y Z ↦ ContinuousMapGeneratedBy X Y Z) where
   hom := Hom.hom
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Constructor for morphisms in `ContinuousGeneratedByCat X`. -/
 @[simps]

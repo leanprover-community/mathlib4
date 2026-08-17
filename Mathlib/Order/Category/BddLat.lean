@@ -65,7 +65,7 @@ instance : LargeCategory.{u} BddLat where
 
 instance : ConcreteCategory BddLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BddLat` back into a `BoundedLatticeHom`. -/
 abbrev Hom.hom {X Y : BddLat.{u}} (f : Hom X Y) :=

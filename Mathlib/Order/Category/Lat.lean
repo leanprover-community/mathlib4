@@ -62,7 +62,7 @@ instance : Category Lat.{u} where
 
 instance : ConcreteCategory Lat (LatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Lat` back into a `LatticeHom`. -/
 abbrev Hom.hom {X Y : Lat.{u}} (f : Hom X Y) :=

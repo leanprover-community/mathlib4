@@ -98,7 +98,7 @@ instance moduleCategory : Category.{v, max (v + 1) u} (ModuleCat.{v} R) where
 
 instance : ConcreteCategory (ModuleCat.{v} R) (· →ₗ[R] ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 section
 

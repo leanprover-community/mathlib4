@@ -95,7 +95,7 @@ instance moduleCategory : Category.{v, max (v + 1) u} (SemimoduleCat.{v} R) wher
 
 instance : ConcreteCategory (SemimoduleCat.{v} R) (· →ₗ[R] ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 section
 

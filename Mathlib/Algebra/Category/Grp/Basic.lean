@@ -85,7 +85,7 @@ instance : Category GrpCat.{u} where
 @[to_additive]
 instance : ConcreteCategory GrpCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `GrpCat` back into a `MonoidHom`. -/
 @[to_additive /-- Turn a morphism in `AddGrpCat` back into an `AddMonoidHom`. -/]
@@ -297,7 +297,7 @@ instance : Category CommGrpCat.{u} where
 @[to_additive]
 instance : ConcreteCategory CommGrpCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommGrpCat` back into a `MonoidHom`. -/
 @[to_additive /-- Turn a morphism in `AddCommGrpCat` back into an `AddMonoidHom`. -/]

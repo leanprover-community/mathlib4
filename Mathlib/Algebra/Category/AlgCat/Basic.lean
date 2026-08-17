@@ -68,7 +68,7 @@ instance : Category (AlgCat.{v} R) where
 
 instance : ConcreteCategory (AlgCat.{v} R) (· →ₐ[R] ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 variable {R} in
 /-- Turn a morphism in `AlgCat` back into an `AlgHom`. -/

@@ -85,7 +85,7 @@ instance : Category (TopRep.{w} k G) where
 
 instance : ConcreteCategory (TopRep.{w} k G) (fun A B ↦ A.ρ →ⁱL B.ρ) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 variable {A B} in
 /-- Turn a morphism in `TopRep` back into an `IntertwiningMap`. -/

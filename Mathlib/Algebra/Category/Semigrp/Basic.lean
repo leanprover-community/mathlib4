@@ -93,7 +93,7 @@ instance : Category MagmaCat.{u} where
 @[to_additive]
 instance : ConcreteCategory MagmaCat (· →ₙ* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `MagmaCat` back into a `MulHom`. -/
 @[to_additive /-- Turn a morphism in `AddMagmaCat` back into an `AddHom`. -/]
@@ -250,7 +250,7 @@ instance : Category Semigrp.{u} where
 @[to_additive]
 instance : ConcreteCategory Semigrp (· →ₙ* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Semigrp` back into a `MulHom`. -/
 @[to_additive /-- Turn a morphism in `AddSemigrp` back into an `AddHom`. -/]

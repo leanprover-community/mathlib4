@@ -55,7 +55,7 @@ instance : Category HeytAlg.{u} where
 
 instance : ConcreteCategory HeytAlg (HeytingHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `HeytAlg` back into a `HeytingHom`. -/
 abbrev Hom.hom {X Y : HeytAlg.{u}} (f : Hom X Y) :=

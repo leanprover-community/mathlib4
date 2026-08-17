@@ -62,7 +62,7 @@ instance : Category BddDistLat.{u} where
 
 instance : ConcreteCategory BddDistLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BddDistLat` back into a `BoundedLatticeHom`. -/
 abbrev Hom.hom {X Y : BddDistLat.{u}} (f : Hom X Y) :=

@@ -36,7 +36,7 @@ instance : Category LinOrd.{u} where
 
 instance : ConcreteCategory LinOrd (· →o ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `LinOrd` back into a `OrderHom`. -/
 abbrev Hom.hom {X Y : LinOrd.{u}} (f : Hom X Y) :=

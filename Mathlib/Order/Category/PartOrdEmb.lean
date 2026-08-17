@@ -57,7 +57,7 @@ instance : Category PartOrdEmb.{u} where
 
 instance : ConcreteCategory PartOrdEmb (· ↪o ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `PartOrdEmb` back into a `OrderEmbedding`. -/
 abbrev Hom.hom {X Y : PartOrdEmb.{u}} (f : Hom X Y) :=

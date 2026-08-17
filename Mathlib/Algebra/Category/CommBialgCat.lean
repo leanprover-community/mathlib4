@@ -70,7 +70,7 @@ instance : Category (CommBialgCat.{v} R) where
 
 instance : ConcreteCategory (CommBialgCat.{v} R) (· →ₐc[R] ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommBialgCat` back into a `BialgHom`. -/
 abbrev Hom.hom (f : Hom A B) : A →ₐc[R] B := ConcreteCategory.hom (C := CommBialgCat R) f

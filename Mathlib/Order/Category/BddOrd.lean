@@ -56,7 +56,7 @@ instance : Category BddOrd.{u} where
 
 instance : ConcreteCategory BddOrd (BoundedOrderHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BddOrd` back into a `BoundedOrderHom`. -/
 abbrev Hom.hom {X Y : BddOrd.{u}} (f : Hom X Y) :=

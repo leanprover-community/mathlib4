@@ -54,7 +54,7 @@ instance : Category PartOrd.{u} where
 
 instance : ConcreteCategory PartOrd (· →o ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `PartOrd` back into a `OrderHom`. -/
 abbrev Hom.hom {X Y : PartOrd.{u}} (f : Hom X Y) :=

@@ -57,7 +57,7 @@ instance : Category Preord.{u} where
 
 instance : ConcreteCategory Preord (· →o ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Preord` back into a `OrderHom`. -/
 abbrev Hom.hom {X Y : Preord.{u}} (f : Hom X Y) :=
