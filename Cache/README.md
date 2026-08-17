@@ -298,6 +298,11 @@ If your system curl is too old, a static binary is downloaded automatically on L
 |-----------------------------|------------------------------|
 | `~/.cache/mathlib/`         | Default cache directory      |
 | `~/.cache/mathlib/*.ltar`   | Cached build artifacts       |
-| `~/.cache/mathlib/curl.cfg` | Temporary curl configuration |
+| `~/.cache/mathlib/*.ltar.<pid>.part` | Downloads in flight, renamed on success |
+| `~/.cache/mathlib/curl-<pid>.cfg` | Temporary curl configuration |
+
+The cache directory is per user, not per checkout, so several `cache` runs can be
+in flight in it at once. Everything temporary is therefore named with the writing
+process's id, and one run only ever renames or removes its own files.
 | `.lake/build/lib/lean/`     | Unpacked `.olean` files      |
 | `.lake/build/ir/`           | Unpacked `.c` files          |

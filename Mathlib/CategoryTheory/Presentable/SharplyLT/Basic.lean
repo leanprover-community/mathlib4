@@ -372,7 +372,6 @@ lemma colimit.hom_ext
   ext
   apply h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- As `X` is the colimit of a diagram `p.diag`, this is the induced morphism
 `colimit κ₁ κ₂ p A ⟶ X` from the colimit of the restriction of this diagram to `A`. -/
 noncomputable def colimit.π

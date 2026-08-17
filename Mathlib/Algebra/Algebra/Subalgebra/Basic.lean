@@ -540,7 +540,7 @@ end Submodule
 
 namespace AlgHom
 
-variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
+variable {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
 variable [CommSemiring R]
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
 variable (φ : A →ₐ[R] B)

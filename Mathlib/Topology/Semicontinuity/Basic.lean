@@ -362,7 +362,6 @@ section
 variable [Preorder β]
 variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
-variable {ι : Type*} [TopologicalSpace ι]
 
 theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : LowerSemicontinuousWithinAt f s x) (gmon : Monotone g) :
@@ -903,7 +902,7 @@ section
 variable {α : Type*} [TopologicalSpace α]
 variable {β : Type*}
 variable {γ : Type*} [TopologicalSpace γ]
-variable {f : α → β} {g : γ → α} {s : Set α} {a : α} {c : γ} {t : Set γ}
+variable {f : α → β} {s : Set α} {a : α}
 
 theorem upperSemicontinuousOn_iff_preimage_Iio [Preorder β] :
     UpperSemicontinuousOn f s ↔ ∀ b, ∃ u : Set α, IsOpen u ∧ s ∩ f ⁻¹' Set.Iio b = s ∩ u :=
@@ -986,7 +985,6 @@ section
 
 variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
-variable {ι : Type*} [TopologicalSpace ι]
 
 theorem ContinuousAt.comp_upperSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : UpperSemicontinuousWithinAt f s x) (gmon : Monotone g) :

@@ -234,7 +234,6 @@ lemma isCardinalPresentable_iff_of_isEquivalence
     infer_instance
 
 variable {X κ} in
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 open IsFiltered in
 lemma IsCardinalPresentable.mk
