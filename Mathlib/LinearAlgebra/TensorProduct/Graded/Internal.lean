@@ -141,8 +141,8 @@ theorem auxEquiv_symm_one : (auxEquiv R 𝒜 ℬ).symm 1 = 1 :=
 /-- The submodule of `𝒜 ᵍ⊗[R] ℬ` corresponding to each total degree. -/
 def grade (i : ι) : Submodule R (𝒜 ᵍ⊗[R] ℬ) := TensorProduct.grade 𝒜 ℬ i
 
-theorem tmul_mem_grade {p q : ι} {a : A} {b : B} (ha : a ∈ 𝒜 p) (hb : b ∈ ℬ q) :
-    a ᵍ⊗ₜ[R] b ∈ grade 𝒜 ℬ (p + q) :=
+theorem tmul_mem_grade {p q r : ι} {a : A} {b : B} (ha : a ∈ 𝒜 p) (hb : b ∈ ℬ q) (hpqr : p + q = r) :
+    a ᵍ⊗ₜ[R] b ∈ grade 𝒜 ℬ r :=
   TensorProduct.tmul_mem_grade ha hb
 
 instance instDecomposition : Decomposition (grade 𝒜 ℬ) :=
