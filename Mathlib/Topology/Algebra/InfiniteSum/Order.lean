@@ -84,7 +84,7 @@ protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [CommGroup γ] [Pa
     (∏' (b : β), f b) ≤ (∏' (a : κ), f a) := by
   apply Multipliable.tprod_le_tprod_of_inj _
     (Subtype.coe_injective)
-    (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, h, implies_true])
+    (by simp only [Subtype.range_coe_subtype, Set.ofPred_mem_eq, h, implies_true])
     (by simp only [le_refl, implies_true])
     (by apply hf.subtype)
   apply hf
@@ -233,6 +233,25 @@ protected theorem Multipliable.one_lt_tprod [L.LeAtTop] [L.NeBot] (hsum : Multip
   exact multipliable_one.tprod_lt_tprod hg hi hsum
 
 end OrderedCommGroup
+
+section WithZero
+
+variable [CommMonoidWithZero α] [TopologicalSpace α] [Preorder α] [ZeroLEOneClass α]
+  [PosMulMono α] [ClosedIciTopology α]
+
+theorem HasProd.nonneg [L.NeBot] {f : ι → α} (hf : ∀ i, 0 ≤ f i) {a : α} (h : HasProd f a L) :
+    0 ≤ a :=
+  ge_of_tendsto' h fun s ↦ s.prod_nonneg fun i _ ↦ hf i
+
+theorem tprod_nonneg {f : ι → α} (hf : ∀ i, 0 ≤ f i) :
+    0 ≤ ∏'[L] x, f x := by
+  by_cases h : Multipliable f L
+  · by_cases hbot : L.NeBot
+    · exact h.hasProd.nonneg hf
+    · simpa [tprod_bot hbot] using finprod_nonneg hf
+  · simp [tprod_eq_one_of_not_multipliable h]
+
+end WithZero
 
 section CanonicallyOrderedMul
 

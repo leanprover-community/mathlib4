@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Util.Superscript
+public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
@@ -177,18 +178,18 @@ theorem EuclideanSpace.ball_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 �
     Metric.ball (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 < r ^ 2} := by
   ext x
   have : (0 : ℝ) ≤ ∑ i, x i ^ 2 := Finset.sum_nonneg fun _ _ => sq_nonneg _
-  simp_rw [mem_setOf, mem_ball_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_lt this hr]
+  simp_rw [mem_ofPred, mem_ball_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_lt this hr]
 
 theorem EuclideanSpace.closedBall_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 ≤ r) :
     Metric.closedBall (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 ≤ r ^ 2} := by
   ext
-  simp_rw [mem_setOf, mem_closedBall_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_le_left hr]
+  simp_rw [mem_ofPred, mem_closedBall_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_le_left hr]
 
 theorem EuclideanSpace.sphere_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 ≤ r) :
     Metric.sphere (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 = r ^ 2} := by
   ext x
   have : (0 : ℝ) ≤ ∑ i, x i ^ 2 := Finset.sum_nonneg fun _ _ => sq_nonneg _
-  simp_rw [mem_setOf, mem_sphere_zero_iff_norm, norm_eq, norm_eq_abs, sq_abs,
+  simp_rw [mem_ofPred, mem_sphere_zero_iff_norm, norm_eq, norm_eq_abs, sq_abs,
     Real.sqrt_eq_iff_eq_sq this hr]
 
 section
@@ -403,7 +404,6 @@ theorem repr_injective :
   cases g
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `b i` is the `i`th basis vector. -/
 instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
@@ -855,7 +855,6 @@ lemma equiv_self_rfl : b.equiv b (.refl ι) = .refl 𝕜 E := by
   apply b.toBasis.ext_linearIsometryEquiv
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma equiv_apply (x : E) : b.equiv b' e x = ∑ i, b.repr x i • b' (e i) := by
   nth_rw 1 [← b.sum_repr x, map_sum]
   simp_rw [map_smul, equiv_apply_basis]
@@ -1046,15 +1045,16 @@ theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((�
 
 theorem Orthonormal.exists_orthonormalBasis_extension_of_card_eq {ι : Type*} [Fintype ι]
     (card_ι : finrank 𝕜 E = Fintype.card ι) {v : ι → E} {s : Set ι}
-    (hv : Orthonormal 𝕜 (s.restrict v)) : ∃ b : OrthonormalBasis ι 𝕜 E, ∀ i ∈ s, b i = v i := by
-  have hsv : Injective (s.restrict v) := hv.linearIndependent.injective
-  have hX : Orthonormal 𝕜 ((↑) : Set.range (s.restrict v) → E) := by
+    (hv : Orthonormal 𝕜 (s.domRestrict v)) :
+    ∃ b : OrthonormalBasis ι 𝕜 E, ∀ i ∈ s, b i = v i := by
+  have hsv : Injective (s.domRestrict v) := hv.linearIndependent.injective
+  have hX : Orthonormal 𝕜 ((↑) : Set.range (s.domRestrict v) → E) := by
     rwa [orthonormal_subtype_range hsv]
   obtain ⟨Y, b₀, hX, hb₀⟩ := hX.exists_orthonormalBasis_extension
   have hιY : Fintype.card ι = Y.card := by
     refine card_ι.symm.trans ?_
     exact Module.finrank_eq_card_finset_basis b₀.toBasis
-  have hvsY : s.MapsTo v Y := (s.mapsTo_image v).mono_right (by rwa [← range_restrict])
+  have hvsY : s.MapsTo v Y := (s.mapsTo_image v).mono_right (by rwa [← range_domRestrict])
   have hsv' : Set.InjOn v s := by
     rw [Set.injOn_iff_injective]
     exact hsv
@@ -1242,36 +1242,6 @@ variable [Fintype n] [DecidableEq n]
 abbrev toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[𝕜] EuclideanSpace 𝕜 m :=
   toLpLin 2 2
 
-@[deprecated toLpLin_toLp (since := "2026-01-22")]
-lemma toEuclideanLin_toLp (A : Matrix m n 𝕜) (x : n → 𝕜) :
-    Matrix.toEuclideanLin A (toLp _ x) = toLp _ (Matrix.toLin' A x) := rfl
-
-@[deprecated ofLp_toLpLin (since := "2026-01-22")]
-theorem piLp_ofLp_toEuclideanLin (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    ofLp (Matrix.toEuclideanLin A x) = Matrix.toLin' A (ofLp x) :=
-  rfl
-
-@[deprecated toLpLin_apply (since := "2026-01-22")]
-theorem toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
-    toEuclideanLin M v = toLp _ (M *ᵥ ofLp v) := rfl
-
-@[deprecated ofLp_toLpLin (since := "2026-01-22")]
-theorem ofLp_toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
-    ofLp (toEuclideanLin M v) = M *ᵥ ofLp v :=
-  rfl
-
-@[deprecated toLpLin_toLp (since := "2026-01-22")]
-theorem toEuclideanLin_apply_piLp_toLp (M : Matrix m n 𝕜) (v : n → 𝕜) :
-    toEuclideanLin M (toLp _ v) = toLp _ (M *ᵥ v) :=
-  rfl
-
--- `Matrix.toEuclideanLin` is the same as `Matrix.toLin` applied to `PiLp.basisFun`,
-@[deprecated toLpLin_eq_toLin (since := "2026-01-22")]
-theorem toEuclideanLin_eq_toLin [Finite m] :
-    (toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] _) =
-      Matrix.toLin (PiLp.basisFun _ _ _) (PiLp.basisFun _ _ _) :=
-  rfl
-
 open EuclideanSpace in
 lemma toEuclideanLin_eq_toLin_orthonormal [Fintype m] :
     toEuclideanLin = toLin (basisFun n 𝕜).toBasis (basisFun m 𝕜).toBasis :=
@@ -1298,9 +1268,6 @@ theorem LinearMap.toMatrix_innerₛₗ_apply [Fintype n] [DecidableEq n] [Fintyp
     (innerₛₗ 𝕜 x).toMatrix b.toBasis b₂.toBasis = vecMulVec (star b₂) (star (b.repr x)) := by
   ext; simp [LinearMap.toMatrix_apply, vecMulVec_apply, OrthonormalBasis.repr_apply_apply, mul_comm]
 
-@[deprecated (since := "2026-01-03")] alias toMatrix_innerSL_apply :=
-  LinearMap.toMatrix_innerₛₗ_apply
-
 end Matrix
 
 open ContinuousLinearMap LinearMap in
@@ -1316,7 +1283,6 @@ theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike �
     Basis.coe_singleton, Matrix.vecMulVec_one, OrthonormalBasis.coe_singleton, star_one,
     Matrix.one_vecMulVec, Matrix.vecMulVec_eq Unit]
 
-set_option backward.isDefEq.respectTransparency false in
 open Matrix LinearMap EuclideanSpace in
 theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike 𝕜] [Fintype m]
     [Fintype n] [DecidableEq n] (x : EuclideanSpace 𝕜 m) (y : EuclideanSpace 𝕜 n) :
