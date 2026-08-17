@@ -296,6 +296,18 @@ def shrinkYonedaRepresentableBy (X : C) : (shrinkYoneda.{w}.obj X).Representable
 instance (X : C) : (shrinkYoneda.{w}.obj X).IsRepresentable :=
   (shrinkYonedaRepresentableBy X).isRepresentable
 
+/-- The natural transformation `shrinkYoneda.obj X ⟶ F.op ⋙ shrinkYoneda.obj (F.obj X)`
+when `F : C ⥤ D` and `X : C`. -/
+@[simps!]
+noncomputable def shrinkYonedaMap
+    {D : Type*} [Category* D] [LocallySmall.{w} D] (F : C ⥤ D) (X : C) :
+    shrinkYoneda.{w}.obj X ⟶ F.op ⋙ shrinkYoneda.{w}.obj (F.obj X) where
+  app Y := ↾(fun f ↦ shrinkYonedaObjObjEquiv.symm (F.map (shrinkYonedaObjObjEquiv f)))
+  naturality {Y Z} g := by
+    ext f
+    obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
+    simp [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
+
 end Yoneda
 
 section Coyoneda

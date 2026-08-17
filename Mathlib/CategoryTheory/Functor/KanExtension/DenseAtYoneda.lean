@@ -6,7 +6,8 @@ Authors: Joël Riou, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
-public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.Over
+public import Mathlib.CategoryTheory.Comma.Presheaf.Basic
 
 /-!
 # The Yoneda embedding is dense
@@ -178,6 +179,7 @@ category `CostructuredArrow uliftYoneda P`. -/
 noncomputable def denseAtUliftYoneda (P : Cᵒᵖ ⥤ Type max w v) : uliftYoneda.DenseAt P :=
   Functor.denseAt _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : I ⥤ C`, a cocone `c` on `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v₁` induces a
     functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
     `yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
@@ -188,8 +190,7 @@ theorem Presheaf.final_toCostructuredArrow_comp_pre
     {I : Type v} [SmallCategory I] (F : I ⥤ C)
     {c : Cocone (F ⋙ yoneda)} (hc : IsColimit c) :
     Functor.Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) := by
-  sorry
-  /-apply Functor.final_of_isTerminal_colimit_comp_yoneda
+  apply Functor.final_of_isTerminal_colimit_comp_yoneda
   suffices IsTerminal (colimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt)) by
     apply IsTerminal.isTerminalOfObj (overEquivPresheafCostructuredArrow c.pt).inverse
@@ -198,11 +199,10 @@ theorem Presheaf.final_toCostructuredArrow_comp_pre
     apply HasColimit.isoOfNatIso
     exact Functor.isoWhiskerLeft _
       (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow c.pt).isoCompInverse
-  apply IsTerminal.ofIso Over.mkIdTerminal
-  let isc : IsColimit ((Over.forget _).mapCocone _) := isColimitOfPreserves _
+  let isc := isColimitOfPreserves (Over.forget _)
     (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt))
-  exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)-/
-
+  exact IsTerminal.ofIso Over.mkIdTerminal
+    (Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext (fun i ↦ by simp)))
 
 end CategoryTheory

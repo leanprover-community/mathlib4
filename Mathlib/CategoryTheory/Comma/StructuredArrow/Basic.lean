@@ -315,9 +315,8 @@ instance isEquivalence_pre (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.IsEquivalence]
     (pre S F G).IsEquivalence :=
   Comma.isEquivalence_preRight _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `(S, F) ⥤ (G(S), F ⋙ G)`. -/
-@[simps]
+@[implicit_reducible, simps]
 def post (S : C) (F : B ⥤ C) (G : C ⥤ D) :
     StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G) where
   obj X := StructuredArrow.mk (G.map X.hom)
@@ -786,9 +785,8 @@ instance isEquivalence_pre (F : B ⥤ C) (G : C ⥤ D) (S : D) [F.IsEquivalence]
     (pre F G S).IsEquivalence :=
   Comma.isEquivalence_preLeft _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `(F, S) ⥤ (F ⋙ G, G(S))`. -/
-@[simps]
+@[implicit_reducible, simps]
 def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
     CostructuredArrow F S ⥤ CostructuredArrow (F ⋙ G) (G.obj S) where
   obj X := CostructuredArrow.mk (G.map X.hom)
