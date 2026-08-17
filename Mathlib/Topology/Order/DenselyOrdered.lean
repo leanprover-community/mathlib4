@@ -19,7 +19,7 @@ open scoped Topology
 
 open OrderDual (toDual ofDual)
 
-variable {α β : Type*}
+variable {α : Type*}
 
 section DenselyOrdered
 

@@ -33,7 +33,7 @@ assert_not_exists Field
 
 noncomputable section
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 /-- There is (noncomputably) an equivalence between a finite type `α` and `Fin (Nat.card α)`. -/
 def Finite.equivFin (α : Type*) [Finite α] : α ≃ Fin (Nat.card α) := by
