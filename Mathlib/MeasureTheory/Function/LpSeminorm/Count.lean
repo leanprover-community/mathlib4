@@ -22,7 +22,7 @@ namespace MeasureTheory
 @[simp]
 lemma eLpNorm_dirac (f : α → ε) (i : α) (hp : p ≠ 0) :
     eLpNorm f p (dirac i) = ‖f i‖ₑ := by
-  simp_rw [eLpNorm, if_neg hp]
+  simp_rw [eLpNorm, ite_eq_right hp]
   split_ifs
   · simp [eLpNormEssSup, essSup, limsup, limsSup, Set.Ici_def]
   · simp [eLpNorm', ENNReal.toReal_eq_zero_iff, *]
@@ -36,7 +36,7 @@ lemma enorm_le_eLpNorm_count (f : α → ε) (i : α) (hp : p ≠ 0) :
 
 omit [MeasurableSingletonClass α] in
 lemma eLpNorm_count_lt_top_of_lt [Finite α] (h : ∀ i, ‖f i‖ₑ < ∞) : eLpNorm f p .count < ∞ := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   refine (eLpNorm_mono_enorm (g := fun _ ↦ Finset.univ.sup (‖f ·‖ₑ)) ?_).trans_lt ?_
   · exact fun x ↦ Finset.le_sup (f := (‖f ·‖ₑ)) (Finset.mem_univ x)
   · exact (memLp_const_enorm <| by simp [h, LT.lt.ne]).eLpNorm_lt_top
