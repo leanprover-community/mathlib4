@@ -2720,10 +2720,12 @@ public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Functor.CurryingThree
 public import Mathlib.CategoryTheory.Functor.Derived.Adjunction
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTriangulated
 public import Mathlib.CategoryTheory.Functor.Derived.PointwiseLeftDerived
 public import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
+public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedTriangulated
 public import Mathlib.CategoryTheory.Functor.EpiMono
 public import Mathlib.CategoryTheory.Functor.Flat
 public import Mathlib.CategoryTheory.Functor.FullyFaithful
@@ -3025,6 +3027,7 @@ public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakEqualizers
 public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakKernels
 public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakPullbacks
 public import Mathlib.CategoryTheory.Limits.Weighted.HasWeightedLimit
+public import Mathlib.CategoryTheory.Limits.Weighted.PreservesLimit
 public import Mathlib.CategoryTheory.Limits.Yoneda
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Linear.FunctorCategory
@@ -3237,6 +3240,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
+public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
@@ -4001,6 +4005,7 @@ public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Data.Finsupp.PWO
 public import Mathlib.Data.Finsupp.Pointwise
 public import Mathlib.Data.Finsupp.PointwiseSMul
+public import Mathlib.Data.Finsupp.Quotient
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.Data.Finsupp.Sigma
@@ -5146,6 +5151,7 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Correctness
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
+public import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyNonneg
 public import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
@@ -5428,6 +5434,7 @@ public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 public import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
+public import Mathlib.MeasureTheory.Function.BorelGrowth
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.AEMeasurable
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
@@ -6527,6 +6534,7 @@ public import Mathlib.RingTheory.Bialgebra.Equiv
 public import Mathlib.RingTheory.Bialgebra.GroupLike
 public import Mathlib.RingTheory.Bialgebra.Hom
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
+public import Mathlib.RingTheory.Bialgebra.Primitive
 public import Mathlib.RingTheory.Bialgebra.Quotient
 public import Mathlib.RingTheory.Bialgebra.SymmetricAlgebra
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
@@ -6543,6 +6551,7 @@ public import Mathlib.RingTheory.Coalgebra.GroupLike
 public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Coalgebra.MulOpposite
+public import Mathlib.RingTheory.Coalgebra.Primitive
 public import Mathlib.RingTheory.Coalgebra.Quotient
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 public import Mathlib.RingTheory.Complex
@@ -6690,6 +6699,7 @@ public import Mathlib.RingTheory.HopfAlgebra.Basic
 public import Mathlib.RingTheory.HopfAlgebra.Convolution
 public import Mathlib.RingTheory.HopfAlgebra.GroupLike
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
+public import Mathlib.RingTheory.HopfAlgebra.Primitive
 public import Mathlib.RingTheory.HopfAlgebra.Quotient
 public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 public import Mathlib.RingTheory.HopkinsLevitzki
@@ -6738,6 +6748,8 @@ public import Mathlib.RingTheory.Ideal.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Norm
 public import Mathlib.RingTheory.Ideal.Quotient.Index
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
@@ -6880,6 +6892,7 @@ public import Mathlib.RingTheory.MvPowerSeries.Equiv
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.MvPowerSeries.Expand
 public import Mathlib.RingTheory.MvPowerSeries.GaussNorm
+public import Mathlib.RingTheory.MvPowerSeries.Ideal
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
 public import Mathlib.RingTheory.MvPowerSeries.LexOrder
 public import Mathlib.RingTheory.MvPowerSeries.LinearTopology
