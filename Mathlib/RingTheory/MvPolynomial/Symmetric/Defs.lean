@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials
@@ -92,6 +93,54 @@ lemma pow_smul_esymm {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTowe
 @[simp] lemma esymm_pair_two (x y : R) :
     esymm (x ::ₘ {y}) 2 = x * y := by
   simp [esymm, powersetCard_one]
+
+theorem esymm_cons (a : R) (s : Multiset R) (k : ℕ) :
+    (a ::ₘ s).esymm (k + 1) = s.esymm (k + 1) + a * s.esymm k := by
+  simp [esymm, sum_map_mul_left]
+
+@[simp]
+theorem esymm_zero (s : Multiset R) : s.esymm 0 = 1 := by
+  simp [esymm]
+
+@[simp]
+theorem esymm_one (s : Multiset R) : s.esymm 1 = s.sum := by
+  simp [esymm, powersetCard_one]
+
+theorem two_mul_esymm_two {R : Type*} [CommRing R] (s : Multiset R) : 2 * s.esymm 2 =
+  s.sum ^ 2 - (s.map (· ^ 2)).sum := by
+  induction s using Multiset.induction with
+  | empty => simp [esymm, powersetCard_zero_right]
+  | cons a t ih => grind [sum_cons, map_cons, esymm_cons, esymm_one]
+
+@[simp]
+theorem esymm_card (s : Multiset R) : s.esymm s.card = s.prod := by
+  simp [esymm]
+
+@[simp]
+theorem esymm_gt_card {s : Multiset R} {k : ℕ} (hk : s.card < k) : s.esymm k = 0 := by
+  simp [esymm, hk]
+
+theorem esymm_nonneg [PartialOrder R] [IsOrderedRing R] {s : Multiset R}
+  (hs : ∀ x ∈ s, 0 ≤ x) (k : ℕ) : 0 ≤ s.esymm k := by
+  grind [esymm, sum_nonneg, mem_map, prod_nonneg, mem_of_le, mem_powersetCard]
+
+private theorem esymm_map_inv_aux {R : Type*} [Field R] (s : Multiset R) : 0 ∉ s →
+    ∀ j k, s.card = j + k → (s.map (·⁻¹)).esymm k * s.prod = s.esymm j := by
+  induction s using Multiset.induction with
+  | empty => grind [map_zero, esymm_zero, card_zero]
+  | cons a t _ =>
+    intro _ j k _
+    obtain _ | k := k
+    · grind [esymm_zero, esymm_card, prod_cons]
+    obtain _ | j := j
+    · grind [esymm_zero, map_cons, card_cons, card_map, esymm_card, prod_map_inv', prod_cons,
+        prod_ne_zero]
+    · grind [map_cons, esymm_cons, prod_cons, card_cons]
+
+theorem esymm_map_inv {R : Type*} [Field R] {s : Multiset R} (h0 : 0 ∉ s) {n k : ℕ}
+    (hs : s.card = n) (hk : k ≤ n) : (s.map (·⁻¹)).esymm k * s.esymm n = s.esymm (n - k) := by
+  grind [esymm_map_inv_aux, esymm_card]
+
 
 end Multiset
 
