@@ -440,12 +440,20 @@ theorem mem_integers_of_valuation_le_one (x : K)
     Associates.factors_mk _ (ine hd0), Associates.count_some hv'] at h
   simpa using h
 
-variable {K}
-
+variable {K} in
 theorem eq_of_valuation_isEquiv_valuation {p q : HeightOneSpectrum R}
     (hpq : (valuation K p).IsEquiv (valuation K q)) : p = q := by
   simp_all [Valuation.isEquiv_iff_val_lt_one, HeightOneSpectrum.ext_iff, Ideal.ext_iff,
     ← valuation_lt_one_iff_mem (K := K)]
+
+theorem valuation_injective : Function.Injective (valuation (R := R) K) :=
+  fun _ _ h ↦ eq_of_valuation_isEquiv_valuation (by rw [h])
+
+theorem valuationSubring_valuation_injective :
+    Function.Injective fun p : HeightOneSpectrum R ↦ (p.valuation K).valuationSubring :=
+  fun _ _ h ↦ eq_of_valuation_isEquiv_valuation ((Valuation.isEquiv_iff_valuationSubring ..).mpr h)
+
+variable {K}
 
 section Localization
 
