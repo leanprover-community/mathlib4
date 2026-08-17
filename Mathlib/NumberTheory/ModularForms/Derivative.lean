@@ -265,8 +265,8 @@ private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} (hF : MDiff F) 
     linarith [h.1]
   have hd : ‖deriv (F ∘ ofComplex) (z : ℂ)‖ ≤ M / (z.im / 2) := by
     refine norm_deriv_le_of_forall_mem_sphere_norm_le h2
-      ((UpperHalfPlane.mdifferentiable_iff.mp hF).diffContOnCl_ball fun w hw =>
-        h2.trans_le (him w hw)) fun w hw => ?_
+      ((UpperHalfPlane.mdifferentiable_iff.mp hF).diffContOnCl_ball fun w hw ↦
+        h2.trans_le (him w hw)) fun w hw ↦ ?_
     have hwim := him w (Metric.sphere_subset_closedBall hw)
     rw [Function.comp_apply, ofComplex_apply_of_im_pos (h2.trans_le hwim)]
     exact hM _ hwim
@@ -278,7 +278,7 @@ private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} (hF : MDiff F) 
 /-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity is
 again bounded at infinity. This is a Cauchy estimate: differentiating loses at most a factor
 of `1 / z.im`. -/
-theorem normalizedDerivOfComplex_isBoundedAtImInfty {F : ℍ → ℂ} (hF : MDiff F)
+theorem isBoundedAtImInfty_normalizedDerivOfComplex {F : ℍ → ℂ} (hF : MDiff F)
     (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (D F) := by
   rw [isBoundedAtImInfty_iff] at hb ⊢
   obtain ⟨M, A, hMA⟩ := hb
@@ -291,9 +291,9 @@ theorem normalizedDerivOfComplex_isBoundedAtImInfty {F : ℍ → ℂ} (hF : MDif
 
 /-- The Serre derivative of a holomorphic function that is bounded at infinity is again bounded at
 infinity. -/
-theorem serreDerivative_isBoundedAtImInfty {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F)
+theorem isBoundedAtImInfty_serreDerivative {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F)
     (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (serreDerivative k F) :=
-  Asymptotics.IsBigO.sub (normalizedDerivOfComplex_isBoundedAtImInfty hF hb) <|
+  Asymptotics.IsBigO.sub (isBoundedAtImInfty_normalizedDerivOfComplex hF hb) <|
     ((Filter.const_boundedAtFilter atImInfty (k * 12⁻¹)).mul
       EisensteinSeries.isBoundedAtImInfty_E2).mul hb
 
@@ -312,7 +312,7 @@ noncomputable def serreDerivativeMF {Γ : Subgroup (GL (Fin 2) ℝ)} (k : ℤ)
     rw [OnePoint.isBoundedAt_iff_forall_SL2Z (hc.mono hΓ)]
     intro γ hγ
     rw [serreDerivative_slash_equivariant (F := (f : ℍ → ℂ)) f.holo']
-    exact serreDerivative_isBoundedAtImInfty (k : ℂ) (f.holo'.slash k γ)
+    exact isBoundedAtImInfty_serreDerivative (k : ℂ) (f.holo'.slash k γ)
       ((OnePoint.isBoundedAt_iff_forall_SL2Z (hc.mono hΓ)).mp (f.bdd_at_cusps' hc) γ hγ)
 
 end
