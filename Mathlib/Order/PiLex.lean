@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Lex
 public import Mathlib.Order.WellFounded
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Lexicographic order on Pi types
@@ -78,8 +79,6 @@ theorem trichotomous_lex [∀ i, Std.Trichotomous (α := β i) s] (wf : WellFoun
       have hri j (hr : r j i) : a j = b j := not_not.mp (fun h => wf.not_lt_min _ (by grind) hr)
       have := Std.Trichotomous.trichotomous (a i) (b i) (hab ⟨i, hri, ·⟩)
       exact hba ⟨i, (hri · · |>.symm), Not.imp_symm this <| wf.min_mem {i | a i ≠ b i} h⟩ }
-
-@[deprecated (since := "2026-01-24")] alias isTrichotomous_lex := trichotomous_lex
 
 /-
 These instances are leaky, because they define the relation on `∀ i, β i` instead of
@@ -248,7 +247,7 @@ end Colex
 end PartialOrder
 
 section LinearOrder
-variable [LinearOrder ι] {x y : ∀ i, β i} {i : ι} {a : β i} [∀ i, LinearOrder (β i)]
+variable [LinearOrder ι] {x y : ∀ i, β i} {i : ι} [∀ i, LinearOrder (β i)]
 
 section Lex
 

@@ -21,7 +21,7 @@ public import Mathlib.Algebra.Polynomial.Eval.Defs
 
 noncomputable section
 
-open Finset AddMonoidAlgebra
+open Finset
 
 open Polynomial
 
@@ -29,7 +29,7 @@ namespace Polynomial
 
 universe u v w y
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type u} {S : Type v}
 
 section Semiring
 
@@ -38,7 +38,7 @@ variable [Semiring R] {p q r : R[X]}
 section
 
 variable [Semiring S]
-variable (f : R →+* S) (x : S)
+variable (x : S)
 
 @[simp]
 theorem eval₂_smul (g : R →+* S) (p : R[X]) (x : S) {s : R} :

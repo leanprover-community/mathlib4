@@ -409,10 +409,11 @@ def mkGetConfigContent (container : Option Container) (repo containerURL : Strin
     -- ```
     -- If this becomes an issue we can implement the curl spec.
 
-    -- Note we append a '.part' to the filenames here,
-    -- which `downloadFiles` then removes when the download is successful.
+    -- Note we append `IO.PARTSUFFIX` to the filenames here, which `downloadFiles` then
+    -- removes when the download is successful. The suffix carries this process's tag, so a
+    -- concurrent `cache` run sharing this `CACHEDIR` writes its own in-flight files, not ours.
     pure <| acc ++ s!"url = {mkFileURL container repo containerURL fileName scope?}\n\
-      -o {(IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
+      -o {(IO.CACHEDIR / (fileName ++ IO.PARTSUFFIX)).toString.quote}\n"
 
 /--
 Whether an HTTP status returned for a single-file read should be treated as a
@@ -448,7 +449,7 @@ def downloadFile (container : Option Container) (repo containerURL : String)
   let fileName := hash.asLTar
   let url := mkFileURL container repo containerURL fileName scope?
   let path := IO.CACHEDIR / fileName
-  let partFileName := fileName ++ ".part"
+  let partFileName := fileName ++ IO.PARTSUFFIX
   let partPath := IO.CACHEDIR / partFileName
   let out ← IO.Process.output
     { cmd := (← IO.getCurl),
@@ -464,12 +465,14 @@ def downloadFile (container : Option Container) (repo containerURL : String)
   return if isCacheMissStatus httpCode treatForbiddenAsMiss then .miss else .failed
 
 /-- Extract hash from filename (e.g., "/path/to/.cache/00012345.ltar" → 0x12345).
-    Handles both `.ltar` and `.ltar.part` files using `FilePath.fileStem`. -/
-def hashFromFileName (path : FilePath) : Option UInt64 := do
-  let some stem := path.fileStem | .none
-  -- For .ltar.part files, fileStem gives "hash.ltar"; apply fileStem again to strip .ltar
-  let stem := (FilePath.mk (toString stem)).fileStem.getD stem
-  (toString stem).parseHexToUInt64?
+    Handles a finished `<hash>.ltar`, an in-flight `<hash>.ltar<PARTSUFFIX>`, and a
+    `<hash>.ltar.part` left in the cache by a version that wrote untagged temporaries. -/
+def hashFromFileName (path : FilePath) : Option UInt64 :=
+  let peel (name : String) := (FilePath.mk name).fileStem.getD name
+  let name := path.fileName.getD path.toString
+  -- Peel one extension at a time — `.part`, this process's tag, `.ltar` — and take the first stem
+  -- that parses as a hash, so all three shapes above resolve without knowing which one this is.
+  [name, peel name, peel (peel name), peel (peel (peel name))].findSome? String.parseHexToUInt64?
 
 /-- Decompress a batch of files using a single leantar invocation -/
 def decompressBatch (files : Array (FilePath × Lean.Name))
@@ -500,18 +503,30 @@ structure DecompConfig where
   isMathlibRoot : Bool
   mathlibDepPath : FilePath
 
-private structure TransferState where
-  last : Nat
-  success : Nat
-  failed : Nat
-  done : Nat
-  speed : Nat
-  -- Decompression state (only used when decompConfig is set)
-  pending : Array (FilePath × Lean.Name)           -- files waiting to be decompressed
-  currentTask : Option (Task (Except IO.Error Unit))  -- current leantar task
-  lastBatchSize : Nat                              -- size of the last dispatched batch
-  decompressed : Nat                               -- total files decompressed
-  decompFailed : Nat                               -- total decompression failures
+/-- Decompression pipeline state, carried from each download round into the
+next. A round can end with downloads queued (`pending`) or in a running
+leantar batch (`currentTask`); `downloadFiles` hands each round's final state
+to the next, and `finalizeDecomp` drains what remains after the last round. -/
+structure DecompState where
+  /-- Downloaded files waiting to be dispatched in a leantar batch. -/
+  pending : Array (FilePath × Lean.Name) := #[]
+  /-- The in-flight leantar batch, if any. -/
+  currentTask : Option (Task (Except IO.Error Unit)) := none
+  /-- Size of the batch `currentTask` is processing. -/
+  lastBatchSize : Nat := 0
+  /-- Files decompressed, cumulative across rounds. -/
+  decompressed : Nat := 0
+  /-- Decompression failures, cumulative across rounds. -/
+  decompFailed : Nat := 0
+
+structure TransferState where
+  last : Nat := 0
+  success : Nat := 0
+  failed : Nat := 0
+  done : Nat := 0
+  speed : Nat := 0
+  /-- Decompression pipeline state; used only when a `DecompConfig` is set. -/
+  decomp : DecompState := {}
 
 /-- Harvest the result of a completed decompression task, updating counters.
     Returns `(successful, failed, error?)`. -/
@@ -528,6 +543,26 @@ def dispatchDecompBatch (pending : Array (FilePath × Lean.Name)) (config : Deco
   let task ← IO.asTask (decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath)
   return some task
 
+/-- Drain the decompression pipeline after the last download round: harvest the
+in-flight leantar batch, then decompress the pending files. Returns the final
+`(decompressed, decompFailed)` counters. -/
+def finalizeDecomp (state : DecompState) (config : DecompConfig) : IO (Nat × Nat) := do
+  let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed} := state
+  if let some task := currentTask then
+    let (d, f, err?) := harvestDecompTask task lastBatchSize decompressed decompFailed
+    decompressed := d
+    decompFailed := f
+    if let some e := err? then
+      IO.eprintln s!"Decompression error: {e}"
+  if !pending.isEmpty then
+    try
+      decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath
+      decompressed := decompressed + pending.size
+    catch e =>
+      IO.eprintln s!"Decompression error: {e}"
+      decompFailed := decompFailed + pending.size
+  return (decompressed, decompFailed)
+
 /--
 Whether an HTTP status is the one Azure returns for a blob that already exists,
 which a non-overwrite `put` (`If-None-Match: *`) hits when it declines to
@@ -542,6 +577,7 @@ def isAlreadyPresentStatus (httpCode : Nat) : Bool :=
 def monitorCurl (args : Array String) (size : Nat)
     (caption : String) (speedVar : String) (removeOnError := false)
     (decompConfig : Option DecompConfig := none)
+    (decompState : DecompState := {})
     (treatForbiddenAsMiss : Bool := false)
     (treatExistsAsSkip : Bool := false) : IO (TransferState × Std.HashSet UInt64) := do
   let useAnsi := (← IO.getEnv "TERM").isSome
@@ -556,18 +592,19 @@ def monitorCurl (args : Array String) (size : Nat)
     let mut msg := s!"\r{caption}: {s.success} file(s) [attempted {s.done}/{size} = {100*s.done/size}%{speedStr}]"
     -- Add decompression progress if enabled
     if decompConfig.isSome then
-      msg := msg ++ s!", Decompressed: {s.decompressed}"
-      if s.decompFailed != 0 then
-        msg := msg ++ s!" ({s.decompFailed} failed)"
+      msg := msg ++ s!", Decompressed: {s.decomp.decompressed}"
+      if s.decomp.decompFailed != 0 then
+        msg := msg ++ s!" ({s.decomp.decompFailed} failed)"
     if s.failed != 0 then
       msg := msg ++ s!", {s.failed} download failed"
     -- Clear to end of line to avoid remnants from longer previous messages
     if useAnsi then
       msg := msg ++ "\x1b[K"
     return msg
-  let init : TransferState := ⟨← IO.monoMsNow, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+  let init : TransferState := { last := (← IO.monoMsNow), decomp := decompState }
   let s ← IO.runCurlStreaming args init fun a line => do
-    let mut {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed} := a
+    let mut {last, success, failed, done, speed, decomp} := a
+    let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed} := decomp
     -- output errors other than 404 and remove corresponding partial downloads
     let line := line.trimAscii
     if !line.isEmpty then
@@ -577,8 +614,10 @@ def monitorCurl (args : Array String) (size : Nat)
         | .ok 200
         | .ok 201 =>
           if let .ok fn := result.getObjValAs? String "filename_effective" then
-            if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
-              let finalPath := (fn.dropEnd 5).copy
+            -- Match this process's own suffix, not a bare `.part`: a concurrent run's
+            -- in-flight file is not ours to rename, and curl only reports our transfers.
+            if (← System.FilePath.pathExists fn) && fn.endsWith IO.PARTSUFFIX then
+              let finalPath := (fn.dropEnd IO.PARTSUFFIX.length).copy
               IO.FS.rename fn finalPath
               let hash? := hashFromFileName finalPath
               if let some hash := hash? then servedRef.modify (·.insert hash)
@@ -646,26 +685,32 @@ def monitorCurl (args : Array String) (size : Nat)
         if now - last ≥ 100 then -- max 10/s update rate
           speed := match result.getObjValAs? Nat speedVar with
             | .ok speed => speed | .error _ => speed
-          IO.eprint (mkStatus {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed})
+          let decompNow : DecompState :=
+            {pending, currentTask, lastBatchSize, decompressed, decompFailed}
+          IO.eprint (mkStatus {last, success, failed, done, speed, decomp := decompNow})
           last := now
        | .error e =>
         IO.println s!"Non-JSON output from curl:\n  {line}\n{e}"
-    pure {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed}
+    let decompNow : DecompState :=
+      {pending, currentTask, lastBatchSize, decompressed, decompFailed}
+    pure {last, success, failed, done, speed, decomp := decompNow}
   if s.done > 0 then
     -- to avoid confusingly moving on without finishing the count
     IO.eprintln (mkStatus s)
   return (s, ← servedRef.get)
 
 /-- Run one container's download pass for the given hash map. Returns the
-`TransferState` from `monitorCurl` (synthesized in serial mode, where it carries
-only the transfer-failure count) and the set of hashes it fetched, so the caller
-can carry the rest to the next container. Side effect: any files successfully
-fetched are written to `CACHEDIR` with their final names. -/
+`TransferState` from `monitorCurl` (synthesized in serial mode, where it
+carries only the transfer-failure count) and the set of hashes it fetched, so
+the caller can carry the rest to the next container. `decompState` is the
+previous round's decompression pipeline state; the returned state's `decomp`
+continues it. Serial mode never pipelines and passes it through untouched.
+Side effect: fetched files are written to `CACHEDIR` with their final names. -/
 private def downloadFilesFromContainer
     (container : Option Container) (repo containerURL : String)
     (hashMap : IO.ModuleHashMap)
     (parallel : Bool) (decompConfig : Option DecompConfig)
-    (scope? : Option String) :
+    (scope? : Option String) (decompState : DecompState) :
     IO (TransferState × Std.HashSet UInt64) := do
   let size := hashMap.size
   if parallel then
@@ -680,7 +725,7 @@ private def downloadFilesFromContainer
     -- whose chain still lists it.
     let treatForbiddenAsMiss := container == some Container.legacy
     let (s, served) ← monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
-      decompConfig (treatForbiddenAsMiss := treatForbiddenAsMiss)
+      decompConfig decompState (treatForbiddenAsMiss := treatForbiddenAsMiss)
     IO.FS.removeFile IO.CURLCFG
     return (s, served)
   else
@@ -699,7 +744,7 @@ private def downloadFilesFromContainer
         | .ok .served => (served.insert hash, failed)
         | .ok .miss => (served, failed)
         | _ => (served, failed + 1)
-    return (⟨0, 0, failed, 0, 0, #[], none, 0, 0, 0⟩, served)
+    return ({ failed, decomp := decompState }, served)
 
 /-- Expand the trust-ordered container list into the concrete download rounds to
 run, each carrying the SHA scope to read at. A round is
@@ -758,8 +803,8 @@ def downloadFiles
     IO.eprintln "No container URLs configured for download"
     return hashMap.size
 
-  -- Set up decompression config if enabled. We keep one config across all
-  -- container rounds so pipelined decompression continues across them.
+  -- Set up decompression config if enabled: one config shared by all container
+  -- rounds, with the pipeline state carried between them via `decompState`.
   let decompConfig ← if decompress then
     let hashToMod : Std.HashMap UInt64 Lean.Name := hashMap.fold (init := ∅) fun acc mod hash =>
       acc.insert hash mod
@@ -781,9 +826,13 @@ def downloadFiles
   let rounds := expandDownloadRounds containerURLs scope? unsafeScopes headScope?
   let unsafeMode := !unsafeScopes.isEmpty
   let mut remaining := hashMap
-  let mut finalState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+  -- Decompression pipeline state, carried from each round into the next (see
+  -- `DecompState`); `finalizeDecomp` below drains what the last round leaves.
+  let mut decompState : DecompState := {}
   -- Hard transfer failures (not 404 misses) drive the exit code; misses are
   -- normal and instead surface as the "not found" hint keyed on `remaining`.
+  -- Accumulated across rounds: a failure in an early container counts even
+  -- when a later round serves the file.
   let mut downloadFailed := 0
   -- For the `--unsafe` summary: how many files each scoped (forks) round supplied,
   -- attributed by the drop in `remaining` across that round.
@@ -793,13 +842,14 @@ def downloadFiles
     let scopeNote := match roundScope? with | some s => s!" (scope {s})" | none => ""
     IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at {url}{scopeNote}"
     let before := remaining.size
-    let (s, served) ← downloadFilesFromContainer container? repo url remaining parallel decompConfig roundScope?
-    -- Keep the latest round's pipeline state and transfer-failure count for the
-    -- finalization and exit-code logic below. Drop the files this round served so
-    -- the next container only retries genuine misses, regardless of what is
-    -- already on disk.
-    finalState := s
-    downloadFailed := s.failed
+    let (s, served) ← downloadFilesFromContainer container? repo url remaining parallel
+      decompConfig roundScope? decompState
+    -- Carry the decompression pipeline into the next round and the drain
+    -- below: files left behind here are never decompressed. Drop the files
+    -- this round served so the next container only retries genuine misses,
+    -- regardless of what is already on disk.
+    decompState := s.decomp
+    downloadFailed := downloadFailed + s.failed
     remaining := remaining.filter fun _ hash => !served.contains hash
     if unsafeMode then
       if let some sha := roundScope? then
@@ -828,27 +878,9 @@ def downloadFiles
     IO.eprintln "  * If you have already opened a PR, this may mean"
     IO.eprintln "    the CI build has failed part-way through building."
 
-  -- Finalize decompression: wait for current task and process any remaining files
+  -- Drain the decompression pipeline accumulated across all rounds.
   if let some config := decompConfig then
-    let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed, ..} := finalState
-
-    -- Wait for current task to complete if any
-    if let some task := currentTask then
-      let (d, f, err?) := harvestDecompTask task lastBatchSize decompressed decompFailed
-      decompressed := d
-      decompFailed := f
-      if let some e := err? then
-        IO.eprintln s!"Decompression error: {e}"
-
-    -- Process any remaining pending files
-    if !pending.isEmpty then
-      try
-        decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath
-        decompressed := decompressed + pending.size
-      catch e =>
-        IO.eprintln s!"Decompression error: {e}"
-        decompFailed := decompFailed + pending.size
-
+    let (decompressed, decompFailed) ← finalizeDecomp decompState config
     IO.println s!"Decompressed {decompressed} file(s)"
     if decompFailed > 0 then
       IO.println s!"{decompFailed} decompression(s) failed"
