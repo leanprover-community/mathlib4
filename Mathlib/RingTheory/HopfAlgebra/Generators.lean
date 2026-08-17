@@ -60,9 +60,10 @@ theorem convMul_id_eq_one_of_adjoin_eq_top
       _ = ∑ p ∈ 𝓡a.index, ∑ q ∈ 𝓡b.index,
             g (𝓡b.left q) * (g (𝓡a.left p) * 𝓡a.right p) * 𝓡b.right q := by
         simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum, g_mul, mul_assoc]
+      _ = ∑ q ∈ 𝓡b.index, g (𝓡b.left q) * algebraMap R A (counit a) * 𝓡b.right q := by
+        rw [Finset.sum_comm]; simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ha]
       _ = algebraMap R A (counit (a * b)) := by
-        rw [Finset.sum_comm]; simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ha, ← commutes]
-        simp_rw [mul_assoc, ← Finset.mul_sum, hb, ← map_mul, ← Bialgebra.counit_mul]
+        simp_rw [← commutes, mul_assoc, ← Finset.mul_sum, hb, ← map_mul, ← Bialgebra.counit_mul]
 
 /-- If a unital antimultiplicative map `g` is a right convolution inverse of the identity
 pointwise on an algebra-generating set, then `toConv id * toConv g = 1`. -/
@@ -83,9 +84,10 @@ theorem id_convMul_eq_one_of_adjoin_eq_top
       _ = ∑ p ∈ 𝓡a.index, ∑ q ∈ 𝓡b.index,
             𝓡a.left p * (𝓡b.left q * g (𝓡b.right q)) * g (𝓡a.right p) := by
         simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum, g_mul, mul_assoc]
+      _ = ∑ p ∈ 𝓡a.index, 𝓡a.left p * algebraMap R A (counit b) * g (𝓡a.right p) := by
+        simp_rw [← Finset.sum_mul, ← Finset.mul_sum, hb]
       _ = algebraMap R A (counit (a * b)) := by
-        simp_rw [← Finset.sum_mul, ← Finset.mul_sum, hb, ← commutes]
-        simp_rw [mul_assoc, ← Finset.mul_sum, ha, ← map_mul, mul_comm (counit b),
+        simp_rw [← commutes, mul_assoc, ← Finset.mul_sum, ha, ← map_mul, mul_comm (counit b),
           ← Bialgebra.counit_mul]
 
 end ExtensionPrinciple
