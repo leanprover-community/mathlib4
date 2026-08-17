@@ -172,8 +172,7 @@ then `l₁.prod ≤ l₂.prod`. -/
 lemma Sublist.prod_le_prod_of_mem_diff [BEq M] [LawfulBEq M] [CommMonoid M] [Preorder M]
     [MulLeftMono M] {l₁ l₂ : List M} (h : l₁ <+ l₂) (h₁ : ∀ a ∈ l₂.diff l₁, (1 : M) ≤ a) :
     l₁.prod ≤ l₂.prod := by
-  have hperm := (subperm_append_diff_self_of_count_le (subperm_ext_iff.mp h.subperm)).symm
-  rw [Perm.prod_eq hperm, prod_append]
+  rw [← (subperm_append_diff_self_of_count_le (subperm_ext_iff.mp h.subperm)).prod_eq, prod_append]
   exact le_mul_of_one_le_right' (one_le_prod_of_one_le h₁)
 
 section
