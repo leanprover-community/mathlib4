@@ -60,7 +60,7 @@ open Function
 
 namespace Finset
 
-/-- The class of additive magmas with an antidiagonal. -/
+/-- The class of additive types with an antidiagonal. -/
 class HasAntidiagonal (A : Type*) [Add A] where
   /-- The antidiagonal of an element `n` is the finset of pairs `(i, j)` such that
   `i + j = n`. -/
@@ -72,7 +72,7 @@ export HasAntidiagonal (antidiagonal mem_antidiagonal)
 
 attribute [simp] mem_antidiagonal
 
-/-- The class of (multiplicative) magmas with a mulAntidiagonal. -/
+/-- The class of multiplicative types with a mulAntidiagonal. -/
 class HasMulAntidiagonal (A : Type*) [Mul A] where
   /-- The mulAntidiagonal of an element `n` is the finset of pairs `(i, j)` such that
   `i * j = n`. -/
@@ -246,12 +246,12 @@ variable {A : Type*}
   [CommMagma A] [PartialOrder A] [CanonicallyOrderedMul A]
   [LocallyFiniteOrderBot A] [DecidableEq A]
 
-/-- In a canonically ordered multiplicative magma, the mulAntidiagonal can be constructed by
+/-- In a canonically ordered multiplicative type, the mulAntidiagonal can be constructed by
 filtering.
 
 Note that this is not an instance, as for sometimes a more efficient algorithm is available. -/
 @[to_additive
-/-- In a canonically ordered additive magma, the antidiagonal can be construct by filtering.
+/-- In a canonically ordered additive type, the antidiagonal can be construct by filtering.
 
 Note that this is not an instance, as for some times a more efficient algorithm is available. -/]
 abbrev mulAntidiagonalOfLocallyFinite : HasMulAntidiagonal A where
