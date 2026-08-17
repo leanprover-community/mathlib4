@@ -340,6 +340,11 @@ lemma two_dvd_mul_sub_one (k : ℕ) : 2 ∣ k * (k - 1) := by
   rcases k with rfl | k; · simp
   simpa [mul_comm (k + 1)] using k.two_dvd_mul_add_one
 
+lemma eight_dvd_sq_sub_one_of_odd {k : ℕ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
+  obtain ⟨m, rfl⟩ := hk
+  obtain ⟨c, hc⟩ := two_dvd_mul_add_one m
+  exact ⟨c, by grind⟩
+
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, parity_simps]

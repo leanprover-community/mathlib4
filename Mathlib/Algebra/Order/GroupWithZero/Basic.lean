@@ -212,6 +212,43 @@ theorem eq_and_eq_of_pos_of_le_of_mul_le_mul [PosMulReflectLE α] [MulPosReflect
     · exact le_of_mul_le_mul_of_pos_left h <| ha.trans_le hab
     · exact hc.le
 
+theorem PosMulMono.toPosMulStrictMono [IsLeftCancelMulZero α] [PosMulMono α] :
+    PosMulStrictMono α where
+  mul_lt_mul_of_pos_left _a ha _b _c hbc :=
+    (mul_le_mul_of_nonneg_left hbc.le ha.le).lt_of_ne (hbc.ne ∘ mul_left_cancel₀ ha.ne')
+
+theorem posMulMono_iff_posMulStrictMono [IsLeftCancelMulZero α] :
+    PosMulMono α ↔ PosMulStrictMono α :=
+  ⟨(·.toPosMulStrictMono), (·.toPosMulMono)⟩
+
+theorem MulPosMono.toMulPosStrictMono [IsRightCancelMulZero α] [MulPosMono α] :
+    MulPosStrictMono α where
+  mul_lt_mul_of_pos_right _a ha _b _c hbc :=
+    (mul_le_mul_of_nonneg_right hbc.le ha.le).lt_of_ne (hbc.ne ∘ mul_right_cancel₀ ha.ne')
+
+theorem mulPosMono_iff_mulPosStrictMono [IsRightCancelMulZero α] :
+    MulPosMono α ↔ MulPosStrictMono α :=
+  ⟨(·.toMulPosStrictMono), (·.toMulPosMono)⟩
+
+theorem PosMulReflectLT.toPosMulReflectLE [IsLeftCancelMulZero α] [PosMulReflectLT α] :
+    PosMulReflectLE α where
+  elim := fun x _ _ h =>
+    h.eq_or_lt.elim (le_of_eq ∘ mul_left_cancel₀ x.2.ne.symm) fun h' =>
+      (lt_of_mul_lt_mul_left h' x.2.le).le
+
+theorem posMulReflectLE_iff_posMulReflectLT [IsLeftCancelMulZero α] :
+    PosMulReflectLE α ↔ PosMulReflectLT α :=
+  ⟨(·.toPosMulReflectLT), (·.toPosMulReflectLE)⟩
+
+theorem MulPosReflectLT.toMulPosReflectLE [IsRightCancelMulZero α] [MulPosReflectLT α] :
+    MulPosReflectLE α where
+  elim := fun x _ _ h => h.eq_or_lt.elim (le_of_eq ∘ mul_right_cancel₀ x.2.ne.symm) fun h' =>
+    (lt_of_mul_lt_mul_right h' x.2.le).le
+
+theorem mulPosReflectLE_iff_mulPosReflectLT [IsRightCancelMulZero α] :
+    MulPosReflectLE α ↔ MulPosReflectLT α :=
+  ⟨(·.toMulPosReflectLT), (·.toMulPosReflectLE)⟩
+
 end PartialOrder
 
 section LinearOrder
@@ -716,55 +753,6 @@ lemma sq_le_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 ≤ b ^ 2 ↔ a ≤ b :=
   pow_le_pow_iff_left₀ ha hb two_ne_zero
 
 end MonoidWithZero.LinearOrder
-
-section CancelMonoidWithZero
-
-variable [MonoidWithZero α]
-
-section PartialOrder
-
-variable [PartialOrder α]
-
-theorem PosMulMono.toPosMulStrictMono [IsLeftCancelMulZero α] [PosMulMono α] :
-    PosMulStrictMono α where
-  mul_lt_mul_of_pos_left _a ha _b _c hbc :=
-    (mul_le_mul_of_nonneg_left hbc.le ha.le).lt_of_ne (hbc.ne ∘ mul_left_cancel₀ ha.ne')
-
-theorem posMulMono_iff_posMulStrictMono [IsLeftCancelMulZero α] :
-    PosMulMono α ↔ PosMulStrictMono α :=
-  ⟨(·.toPosMulStrictMono), (·.toPosMulMono)⟩
-
-theorem MulPosMono.toMulPosStrictMono [IsRightCancelMulZero α] [MulPosMono α] :
-    MulPosStrictMono α where
-  mul_lt_mul_of_pos_right _a ha _b _c hbc :=
-    (mul_le_mul_of_nonneg_right hbc.le ha.le).lt_of_ne (hbc.ne ∘ mul_right_cancel₀ ha.ne')
-
-theorem mulPosMono_iff_mulPosStrictMono [IsRightCancelMulZero α] :
-    MulPosMono α ↔ MulPosStrictMono α :=
-  ⟨(·.toMulPosStrictMono), (·.toMulPosMono)⟩
-
-theorem PosMulReflectLT.toPosMulReflectLE [IsLeftCancelMulZero α] [PosMulReflectLT α] :
-    PosMulReflectLE α where
-  elim := fun x _ _ h =>
-    h.eq_or_lt.elim (le_of_eq ∘ mul_left_cancel₀ x.2.ne.symm) fun h' =>
-      (lt_of_mul_lt_mul_left h' x.2.le).le
-
-theorem posMulReflectLE_iff_posMulReflectLT [IsLeftCancelMulZero α] :
-    PosMulReflectLE α ↔ PosMulReflectLT α :=
-  ⟨(·.toPosMulReflectLT), (·.toPosMulReflectLE)⟩
-
-theorem MulPosReflectLT.toMulPosReflectLE [IsRightCancelMulZero α] [MulPosReflectLT α] :
-    MulPosReflectLE α where
-  elim := fun x _ _ h => h.eq_or_lt.elim (le_of_eq ∘ mul_right_cancel₀ x.2.ne.symm) fun h' =>
-    (lt_of_mul_lt_mul_right h' x.2.le).le
-
-theorem mulPosReflectLE_iff_mulPosReflectLT [IsRightCancelMulZero α] :
-    MulPosReflectLE α ↔ MulPosReflectLT α :=
-  ⟨(·.toMulPosReflectLT), (·.toMulPosReflectLE)⟩
-
-end PartialOrder
-
-end CancelMonoidWithZero
 
 section GroupWithZero
 variable [GroupWithZero G₀]

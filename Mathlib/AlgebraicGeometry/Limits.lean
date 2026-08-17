@@ -229,7 +229,6 @@ noncomputable instance [Small.{u} σ] : CoproductsOfShapeDisjoint Scheme.{u} σ 
 instance : HasFiniteCoproducts Scheme.{u} where
   out := inferInstance
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : MonoCoprod Scheme.{u} :=
   .mk' fun X Y ↦ ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs <| Mono coprod.inl⟩
 
@@ -404,8 +403,6 @@ def coprodOpenCover.{w} : (X ⨿ Y).OpenCover where
     · simp only [Sum.elim_inl, coprodMk_inl, exists_apply_eq_apply]
     · simp only [Sum.elim_inr, coprodMk_inr, exists_apply_eq_apply]
 
--- TODO: should infer_instance be considered normalising?
-set_option linter.flexible false in
 /-- If `X` and `Y` are open disjoint and covering open subschemes of `S`,
 `S` is the disjoint union of `X` and `Y`. -/
 lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
@@ -419,7 +416,7 @@ lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
   let fi (j : WalkingPair) : WalkingPair.casesOn j X Y ⟶ S := WalkingPair.casesOn j f g
   convert! nonempty_isColimit_cofanMk_of fi _ _
   · intro i
-    cases i <;> (simp [fi]; infer_instance)
+    cases i <;> (simp only [fi]; infer_instance)
   · simpa [← WalkingPair.equivBool.symm.iSup_comp, iSup_bool_eq, ← codisjoint_iff] using hf.2
   · intro i j hij
     match i, j with

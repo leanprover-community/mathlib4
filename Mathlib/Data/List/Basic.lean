@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.List.Monad
-public import Mathlib.Logic.OpClass
 public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Common
 public import Batteries.Data.List.Lemmas

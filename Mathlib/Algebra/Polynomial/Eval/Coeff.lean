@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Evaluation of polynomials

@@ -522,6 +522,19 @@ variable {G : Type*} [Preorder G] {a b : G}
 
 @[simp] lemma exp_pos : 0 < exp a := by simp [exp]
 
+section AddMonoid
+variable [AddMonoid G]
+
+@[simp] lemma exp_le_one_iff : exp a ≤ 1 ↔ a ≤ 0 := by rw [← exp_zero (M := G), exp_le_exp]
+
+@[simp] lemma exp_lt_one_iff : exp a < 1 ↔ a < 0 := by rw [← exp_zero (M := G), exp_lt_exp]
+
+@[simp] lemma one_le_exp_iff : 1 ≤ exp a ↔ 0 ≤ a := by rw [← exp_zero (M := G), exp_le_exp]
+
+@[simp] lemma one_lt_exp_iff : 1 < exp a ↔ 0 < a := by rw [← exp_zero (M := G), exp_lt_exp]
+
+end AddMonoid
+
 variable [AddGroup G] {x y : Gᵐ⁰}
 
 lemma log_le_iff_le_exp (hx : x ≠ 0) : log x ≤ a ↔ x ≤ exp a := by
