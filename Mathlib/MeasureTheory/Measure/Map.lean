@@ -91,8 +91,10 @@ private lemma nonempty_of_not_aemeasurable {f : α → β} (hf : ¬AEMeasurable 
   exact (measurable_of_empty_codomain f).aemeasurable
 
 open scoped Classical in
-/-- The pushforward of a measure. It is defined to be `0` if `f` is not an almost everywhere
-measurable function. -/
+/-- The pushforward of a measure. If `f` is not an almost everywhere measurable function,
+we define it to be `0` if `μ = 0`, and to be an arbitrary Dirac mass otherwise. That way
+we always have `map f 0 = 0`, and the push-forward of a probability measure is always a
+probability measure. -/
 noncomputable
 irreducible_def map [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure α) :
     Measure β :=
