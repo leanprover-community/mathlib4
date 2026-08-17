@@ -384,14 +384,14 @@ theorem num_or_den_zero_padicVal (a : ℚ) {p : ℕ} (hp : p.Prime) :
   have h := a.reduced
   contrapose! h
   apply not_coprime_of_dvd_of_dvd hp.one_lt <;>
-  grind [padicValNat.dvd_of_ne_zero h.1, padicValNat.dvd_of_ne_zero h.2]
+    grind [padicValNat.dvd_of_ne_zero h.1, padicValNat.dvd_of_ne_zero h.2]
 
 /-- The numerator and denominator of a rational number with even `p`-adic valuation
 also have even `p`-adic valuation. -/
 theorem num_den_even_padicVal_of_even_padicVal {a : ℚ} {p : ℕ} (hp : p.Prime)
     (h : Even (padicValRat p a)) : Even (padicValInt p a.num) ∧ Even (padicValNat p a.den) := by
   rcases num_or_den_zero_padicVal a hp with (h0 | h0) <;>
-  simpa [h0, padicValRat_def] using h
+    simpa [h0, padicValRat_def] using h
 
 /-- A rational number is a square if and only if it is nonnegative,
 and has even `p`-adic valuation for all `p`. -/
@@ -399,7 +399,7 @@ theorem isSquare_iff_even_factorization {a : ℚ} :
     IsSquare a ↔ 0 ≤ a ∧ ∀ (p : ℕ), p.Prime → Even (padicValRat p a) := by
   constructor
   · refine fun ⟨r, hr⟩ ↦ ⟨by simpa [hr] using mul_self_nonneg r, fun p hp ↦ ?_⟩
-    let : Fact (p.Prime) := ⟨hp⟩
+    have : Fact (p.Prime) := ⟨hp⟩
     rw [hr]
     by_cases hr0 : r = 0
     · simp [hr0]
