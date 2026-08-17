@@ -38,6 +38,52 @@ universe w v u
 
 namespace CategoryTheory
 
+namespace Equivalence -- to be moved
+
+variable {C D : Type*} [Category* C] [Category* D] (e : C ≌ D) (P : D ⥤ Type w)
+
+@[implicit_reducible, simps]
+def congrElements : P.Elements ≌ (e.functor ⋙ P).Elements where
+  functor.obj x :=
+    Functor.elementsMk _ (e.inverse.obj x.1) (P.map (e.counitIso.inv.app x.1) x.2)
+  functor.map f :=
+    CategoryOfElements.homMk _ _ (e.inverse.map f.1) (by
+      simp only [← f.2, ← ConcreteCategory.comp_apply, ← Functor.map_comp,
+        fun_inv_map, Functor.comp_obj, Functor.id_obj, Iso.inv_hom_id_app_assoc,
+        Functor.comp_map])
+  inverse.obj x := Functor.elementsMk _ (e.functor.obj x.1) x.2
+  inverse.map f := CategoryOfElements.homMk _ _ (e.functor.map f.1) f.2
+  unitIso :=
+    NatIso.ofComponents
+      (fun x ↦ CategoryOfElements.isoMk _ _ (e.counitIso.symm.app x.1) (by cat_disch))
+  counitIso :=
+    NatIso.ofComponents
+      (fun x ↦ CategoryOfElements.isoMk _ _ (e.unitIso.symm.app x.1) (by
+        simp [← ConcreteCategory.comp_apply, ← Functor.map_comp]))
+
+end Equivalence
+
+namespace Limits -- to be moved
+
+variable {C J J' E : Type*} [Category* C] [Category* J] [Category* J'] [Category* E]
+  [HasColimitsOfShape J' E]
+  (F : J' ⥤ J) (G : C ⥤ J ⥤ E)
+
+@[implicit_reducible, simps]
+noncomputable def colim.coconeCompFlip : Cocone (F ⋙ G.flip) where
+  pt := G ⋙ (Functor.whiskeringLeft _ _ _).obj F ⋙ colim
+  ι.app j' := { app X := colimit.ι (F ⋙ G.obj X) j' }
+  ι.naturality j' j'' f := by
+    ext X
+    simpa using colimit.w (F ⋙ G.obj X) f
+
+@[no_expose]
+noncomputable def colim.isColimitCoconeCompFlip :
+    IsColimit (coconeCompFlip F G) :=
+  evaluationJointlyReflectsColimits _ (fun _ ↦ colimit.isColimit _)
+
+end Limits -- to be moved
+
 open Opposite Limits
 
 variable {C : Type u} [Category.{v} C]
@@ -204,5 +250,67 @@ theorem Presheaf.final_toCostructuredArrow_comp_pre
       CostructuredArrow.toOver yoneda c.pt))
   exact IsTerminal.ofIso Over.mkIdTerminal
     (Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext (fun i ↦ by simp)))
+
+namespace Functor.Elements
+
+variable [LocallySmall.{w} C] (P : C ⥤ Type w)
+
+@[implicit_reducible, simps]
+noncomputable def shrinkCoyonedaCocone :
+    Cocone ((CategoryOfElements.π P).op ⋙ shrinkCoyoneda.{w}) where
+  pt := P
+  ι.app x := shrinkCoyonedaEquiv.symm x.unop.2
+  ι.naturality x y f := by
+    dsimp
+    simp only [← f.unop.2, shrinkCoyonedaEquiv_symm_map.{w}, Category.comp_id]
+
+@[no_expose]
+noncomputable def isColimitShrinkCoyonedaCoconeObj (X : C) :
+    IsColimit (((evaluation _ _).obj X).mapCocone (shrinkCoyonedaCocone P)) := by
+  refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
+    (IsColimit.whiskerEquivalence
+      (isColimitShrinkYonedaCoconeObj ((opOpEquivalence C).functor ⋙ P) (op (op X)))
+      ((opOpEquivalence C).congrElements P).op)
+  · refine NatIso.ofComponents (fun x ↦
+      (shrinkYonedaObjObjEquiv.trans (.trans Quiver.Hom.opEquiv.symm
+        shrinkYonedaObjObjEquiv.symm)).toIso) (fun f ↦ ?_)
+    ext g
+    obtain ⟨g, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective g
+    simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w},
+      shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
+  · refine Cocone.ext (Iso.refl _) (fun ⟨j⟩ ↦ ?_)
+    ext f
+    obtain ⟨f : j.fst ⟶ X, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
+    simp [shrinkYonedaEquiv_symm_app_shrinkYonedaObjObjEquiv_symm.{w},
+      dsimp% shrinkCoyonedaEquiv_symm_app_shrinkCoyonedaObjObjEquiv_symm j.2 f.op]
+
+@[no_expose]
+noncomputable def isColimitShrinkCoyonedaCocone :
+    IsColimit (shrinkCoyonedaCocone P) :=
+  evaluationJointlyReflectsColimits _ (isColimitShrinkCoyonedaCoconeObj _)
+
+variable [HasColimitsOfShape P.Elementsᵒᵖ (Type w)]
+
+/-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then `F` identifies to the composition
+`shrinkYoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π F).op ⋙ colim`. -/
+@[no_expose]
+noncomputable def shrinkYonedaCompWhiskeringLeftObjπCompColimIso :
+    shrinkYoneda.{w} ⋙ (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π P).op ⋙
+      colim ≅ P :=
+  (colim.isColimitCoconeCompFlip _ _).coconePointUniqueUpToIso
+    (isColimitShrinkCoyonedaCocone P)
+
+lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply (u : P.Elements) :
+      (shrinkYonedaCompWhiskeringLeftObjπCompColimIso P).inv.app _ u.snd =
+      (colimit.ι ((CategoryOfElements.π P).op ⋙ shrinkYoneda.{w}.obj u.fst) (op u)
+        (shrinkYonedaObjObjEquiv.symm (𝟙 _))) := by
+  have := ConcreteCategory.congr_hom (NatTrans.congr_app
+    ((colim.isColimitCoconeCompFlip _ _).comp_coconePointUniqueUpToIso_inv
+      (isColimitShrinkCoyonedaCocone P) (op u)) u.1) (shrinkYonedaObjObjEquiv.symm (𝟙 _))
+  simp [shrinkYonedaCompWhiskeringLeftObjπCompColimIso,
+    dsimp% shrinkCoyonedaEquiv_symm_app_shrinkCoyonedaObjObjEquiv_symm.{w} u.2 (𝟙 (op u.1)),
+    ← dsimp% this]
+
+end Functor.Elements
 
 end CategoryTheory
