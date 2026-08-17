@@ -21,11 +21,6 @@ We prove Ramanujan's formulas for derivatives of the normalised Eisenstein serie
 - `Derivative.normalizedDerivOfComplex_E₂` : `D E₂ = (E₂² - E₄) / 12`
 - `Derivative.normalizedDerivOfComplex_E₄` : `D E₄ = (E₂ E₄ - E₆) / 3`
 - `Derivative.normalizedDerivOfComplex_E₆` : `D E₆ = (E₂ E₆ - E₄²) / 2`
-
-Each Serre derivative is a modular form in a one-dimensional space, so it is a scalar multiple of
-the generator, and the scalar is determined by the limit at `i∞`. Since `E₂` is only
-quasi-modular, we prove directly that `∂₁ E₂` is modular of weight `4`
-(`Derivative.serreDerivativeOneE2`).
 -/
 
 open UpperHalfPlane hiding I
@@ -51,7 +46,7 @@ private lemma serreDerivative_eq_smul {k' : ℤ} {κ l L : ℂ} {g F : ModularFo
     (Module.rank_eq_one_iff_finrank_eq_one.mp hrank) F
   have hfg : serreDerivative κ f = c • g' := hG ▸ hF ▸ congrArg DFunLike.coe hc.symm
   have hlim : Tendsto (c • g') atImInfty (𝓝 (-(κ * 12⁻¹ * l))) := hfg ▸ by
-    simpa using (normalizedDerivOfComplex_isZeroAtImInfty hf hb).sub
+    simpa using (isZeroAtImInfty_normalizedDerivOfComplex hf hb).sub
       ((tendsto_E2_atImInfty.const_mul (κ * 12⁻¹)).mul hl)
   rw [hfg, ← tendsto_nhds_unique (hg1.const_mul c) hlim, mul_one]
 
@@ -70,7 +65,7 @@ theorem serreDerivative_E₆ : serreDerivative 6 E₆ = (-2⁻¹ : ℂ) • E₄
     (by simpa [Nat.ModEq] using dimension_level_one 8 ⟨4, rfl⟩)
     (DFunLike.ne_iff.mpr <| (DFunLike.ne_iff.mp <| E_ne_zero (by norm_num) ⟨2, rfl⟩).imp fun z hz ↦
       by simpa only [ModularForm.coe_mcast, ModularForm.coe_pow, Pi.pow_apply,
-        ModularForm.zero_apply] using pow_ne_zero 2 hz)
+        zero_apply] using pow_ne_zero 2 hz)
     (by rw [ModularForm.coe_mcast, ModularForm.coe_pow]) E₆.holo'
     (ModularFormClass.bdd_at_infty E₆) tendsto_E₆_atImInfty
     ((one_pow 2 : (1 : ℂ) ^ 2 = 1) ▸ tendsto_E₄_atImInfty.pow 2) (by norm_num)
@@ -117,13 +112,12 @@ lemma serreDerivativeOne_E2_slash (γ : SL(2, ℤ)) :
 
 /-- The weight-1 Serre derivative of `E₂`, packaged as a modular form of weight `4`. -/
 def serreDerivativeOneE2 : ModularForm 𝒮ℒ 4 where
-  toSlashInvariantForm :=
-    { toFun := serreDerivative 1 E2
-      slash_action_eq' := fun _ ⟨γ, hγ⟩ ↦ hγ ▸ serreDerivativeOne_E2_slash γ }
+  toFun := serreDerivative 1 E2
+  slash_action_eq' := fun _ ⟨γ, hγ⟩ ↦ hγ ▸ serreDerivativeOne_E2_slash γ
   holo' := serreDerivative_mdifferentiable 1 E2_mdifferentiable
   bdd_at_cusps' {_} hc := (OnePoint.isBoundedAt_iff_forall_SL2Z hc).mpr fun γ _ ↦
     (serreDerivativeOne_E2_slash γ).symm ▸
-      serreDerivative_isBoundedAtImInfty 1 E2_mdifferentiable isBoundedAtImInfty_E2
+      isBoundedAtImInfty_serreDerivative 1 E2_mdifferentiable isBoundedAtImInfty_E2
 
 /-- **Ramanujan's formula for `E₂`**: `∂₁ E₂ = -E₄ / 12`. -/
 theorem serreDerivative_E₂ : serreDerivative 1 E2 = (-12⁻¹ : ℂ) • E₄ :=

@@ -77,7 +77,6 @@ variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P
 
 open AffineMap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a set `s` of affine-independent points belonging to an open set `u`, we may extend `s` to
 an affine basis, all of whose elements belong to `u`. -/
 theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : IsOpen u)
@@ -101,7 +100,7 @@ theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : 
   · intro p hp; use ⟨p, ht₁ hp⟩; simp [w, hp]
   · rintro y ⟨⟨p, hp⟩, rfl⟩
     by_cases hps : p ∈ s <;>
-    simp only [w, hps, lineMap_apply_one, Units.val_mk0, dif_neg, dif_pos, not_false_iff,
+    simp only [w, hps, lineMap_apply_one, Units.val_mk0, dite_eq_right, dite_eq_left, not_false_iff,
       Units.val_one] <;>
     [exact hsu hps; exact hf p]
   · exact (ht₂.units_lineMap ⟨q, ht₁ hq⟩ w).range

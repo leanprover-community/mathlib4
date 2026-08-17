@@ -255,17 +255,18 @@ Boundedness of the normalized derivative and Serre derivative at infinity.
 private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} (hF : MDiff F) {z : ℍ} {M : ℝ}
     (hM : ∀ w : ℍ, z.im / 2 ≤ w.im → ‖F w‖ ≤ M) : ‖D F z‖ ≤ M / (π * z.im) := by
   have h2 : 0 < z.im / 2 := half_pos z.im_pos
-  have him : ∀ w ∈ Metric.closedBall (z : ℂ) (z.im / 2), z.im / 2 ≤ w.im := fun w hw => by
+  have him : ∀ w ∈ Metric.closedBall (z : ℂ) (z.im / 2), z.im / 2 ≤ w.im := fun w hw ↦ by
     have h := (abs_im_le_norm (w - (z : ℂ))).trans (mem_closedBall_iff_norm.mp hw)
     rw [Complex.sub_im, UpperHalfPlane.coe_im, abs_le] at h
     linarith [h.1]
-  have hd : ‖deriv (F ∘ ofComplex) (z : ℂ)‖ ≤ M / (z.im / 2) := by
-    refine norm_deriv_le_of_forall_mem_sphere_norm_le h2
-      ((UpperHalfPlane.mdifferentiable_iff.mp hF).diffContOnCl_ball fun w hw =>
-        h2.trans_le (him w hw)) fun w hw => ?_
+  have hbd (w) (hw : w ∈ Metric.sphere (↑z) (z.im / 2)) : ‖(F ∘ ofComplex) w‖ ≤ M := by
     have hwim := him w (Metric.sphere_subset_closedBall hw)
     rw [Function.comp_apply, ofComplex_apply_of_im_pos (h2.trans_le hwim)]
     exact hM _ hwim
+  have hd : ‖deriv (F ∘ ofComplex) (z : ℂ)‖ ≤ M / (z.im / 2) :=
+    norm_deriv_le_of_forall_mem_sphere_norm_le h2
+      ((UpperHalfPlane.mdifferentiable_iff.mp hF).diffContOnCl_ball
+        fun w hw ↦ h2.trans_le (him w hw)) hbd
   calc ‖D F z‖ = (2 * π)⁻¹ * ‖deriv (F ∘ ofComplex) (z : ℂ)‖ := by
         simp [normalizedDerivOfComplex, Real.pi_pos.le]
     _ ≤ (2 * π)⁻¹ * (M / (z.im / 2)) := by gcongr
@@ -274,7 +275,7 @@ private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} (hF : MDiff F) 
 /-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity
 tends to `0` at infinity. This is a Cauchy estimate: differentiating loses a factor
 of `1 / z.im`. -/
-theorem normalizedDerivOfComplex_isZeroAtImInfty {F : ℍ → ℂ} (hF : MDiff F)
+theorem isZeroAtImInfty_normalizedDerivOfComplex {F : ℍ → ℂ} (hF : MDiff F)
     (hb : IsBoundedAtImInfty F) : IsZeroAtImInfty (D F) := by
   rw [isBoundedAtImInfty_iff] at hb
   obtain ⟨M, A, hMA⟩ := hb
@@ -283,21 +284,21 @@ theorem normalizedDerivOfComplex_isZeroAtImInfty {F : ℍ → ℂ} (hF : MDiff F
   refine ⟨max (2 * A) (M / (π * ε)), fun z hz => ?_⟩
   obtain ⟨hzA, hzε⟩ := max_le_iff.mp hz
   have hM : 0 ≤ M := (norm_nonneg _).trans (hMA z (by linarith [z.im_pos]))
-  refine (norm_normalizedDerivOfComplex_le hF fun w hw => hMA w (by linarith)).trans ?_
+  refine (norm_normalizedDerivOfComplex_le hF fun w hw ↦ hMA w (by linarith)).trans ?_
   rw [div_le_iff₀ (by positivity)]
   nlinarith [(div_le_iff₀ (show (0 : ℝ) < π * ε by positivity)).mp hzε]
 
 /-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity is
 again bounded at infinity. -/
-theorem normalizedDerivOfComplex_isBoundedAtImInfty {F : ℍ → ℂ} (hF : MDiff F)
+theorem isBoundedAtImInfty_normalizedDerivOfComplex {F : ℍ → ℂ} (hF : MDiff F)
     (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (D F) :=
-  (normalizedDerivOfComplex_isZeroAtImInfty hF hb).isBoundedAtImInfty
+  (isZeroAtImInfty_normalizedDerivOfComplex hF hb).isBoundedAtImInfty
 
 /-- The Serre derivative of a holomorphic function that is bounded at infinity is again bounded at
 infinity. -/
-theorem serreDerivative_isBoundedAtImInfty {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F)
+theorem isBoundedAtImInfty_serreDerivative {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F)
     (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (serreDerivative k F) :=
-  Asymptotics.IsBigO.sub (normalizedDerivOfComplex_isBoundedAtImInfty hF hb) <|
+  Asymptotics.IsBigO.sub (isBoundedAtImInfty_normalizedDerivOfComplex hF hb) <|
     ((Filter.const_boundedAtFilter atImInfty (k * 12⁻¹)).mul
       EisensteinSeries.isBoundedAtImInfty_E2).mul hb
 
@@ -306,23 +307,22 @@ The Serre derivative preserves modularity: if `f` is a modular form of weight `k
 `Γ` of `SL(2, ℤ)`, then `∂ₖ f` is a modular form of weight `k + 2` for `Γ`.
 -/
 noncomputable def serreDerivativeMF {Γ : Subgroup (GL (Fin 2) ℝ)} (k : ℤ)
-    (f : ModularForm Γ k) (hΓ : Γ ≤ 𝒮ℒ := by exact le_rfl) : ModularForm Γ (k + 2) where
-  toSlashInvariantForm :=
-    { toFun := serreDerivative (k : ℂ) f
-      slash_action_eq' := fun g hg => by
-        obtain ⟨γ, rfl⟩ := hΓ hg
-        exact serreDerivative_slash_invariant f.holo' (f.slash_action_eq' _ hg) }
-  holo' := serreDerivative_mdifferentiable (k : ℂ) f.holo'
+    (f : ModularForm Γ k) (hΓ : Γ ≤ 𝒮ℒ := by rfl) : ModularForm Γ (k + 2) where
+  toFun := serreDerivative k f
+  slash_action_eq' g hg := by
+    obtain ⟨γ, rfl⟩ := hΓ hg
+    exact serreDerivative_slash_invariant f.holo' (f.slash_action_eq' _ hg)
+  holo' := serreDerivative_mdifferentiable k f.holo'
   bdd_at_cusps' {c} hc := by
     rw [OnePoint.isBoundedAt_iff_forall_SL2Z (hc.mono hΓ)]
     intro γ hγ
     rw [serreDerivative_slash_equivariant (F := (f : ℍ → ℂ)) f.holo']
-    exact serreDerivative_isBoundedAtImInfty (k : ℂ) (f.holo'.slash k γ)
+    exact isBoundedAtImInfty_serreDerivative k (f.holo'.slash k γ)
       ((OnePoint.isBoundedAt_iff_forall_SL2Z (hc.mono hΓ)).mp (f.bdd_at_cusps' hc) γ hγ)
 
 @[simp]
 lemma coe_serreDerivativeMF {Γ : Subgroup (GL (Fin 2) ℝ)} (k : ℤ) (f : ModularForm Γ k)
-    (hΓ : Γ ≤ 𝒮ℒ) : ⇑(serreDerivativeMF k f hΓ) = serreDerivative (k : ℂ) f := rfl
+    (hΓ : Γ ≤ 𝒮ℒ) : serreDerivativeMF k f hΓ = serreDerivative k f := rfl
 
 end
 
