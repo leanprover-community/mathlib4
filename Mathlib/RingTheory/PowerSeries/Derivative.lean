@@ -61,6 +61,23 @@ theorem coeff_derivative (f : R⟦X⟧) (n : ℕ) :
     coeff n (d⁄dX R f) = coeff (n + 1) f * (n + 1) := by
   simp [coeff, derivative, MvPowerSeries.coeff_pderiv]
 
+/-- The `k`-th coefficient of the `n`-th formal derivative: differentiating `n` times multiplies the
+`(k + n)`-th coefficient by the ascending factorial `(k + 1)(k + 2) ⋯ (k + n)`. -/
+theorem coeff_iterate_derivative (f : R⟦X⟧) (n k : ℕ) :
+    coeff k ((d⁄dX R)^[n] f) = (k + 1).ascFactorial n * coeff (k + n) f := by
+  induction n generalizing k with
+  | zero => simp
+  | succ n ih =>
+    rw [Function.iterate_succ_apply', coeff_derivative, ih, Nat.ascFactorial_succ,
+      ← Nat.succ_ascFactorial]
+    grind
+
+/-- Specialisation of `coeff_iterate_derivative` at `k = 0`: the constant term of the `n`-th formal
+derivative recovers `n !` times the `n`-th coefficient, `constantCoeff (Dⁿ f) = n ! * coeff n f`. -/
+theorem constantCoeff_iterate_derivative (f : R⟦X⟧) (n : ℕ) :
+    constantCoeff ((d⁄dX R)^[n] f) = n ! * coeff n f := by
+  simpa using coeff_iterate_derivative f n 0
+
 theorem derivative_coe (f : R[X]) : d⁄dX R f = Polynomial.derivative f := by
   ext
   rw [coeff_derivative, coeff_coe, coeff_coe, Polynomial.coeff_derivative]
@@ -76,9 +93,9 @@ theorem trunc_derivative (f : R⟦X⟧) (n : ℕ) :
   rw [coeff_trunc]
   split_ifs with h
   · have : d + 1 < n + 1 := succ_lt_succ_iff.2 h
-    rw [coeff_derivative, Polynomial.coeff_derivative, coeff_trunc, if_pos this]
+    rw [coeff_derivative, Polynomial.coeff_derivative, coeff_trunc, ite_eq_left this]
   · have : ¬d + 1 < n + 1 := by rwa [succ_lt_succ_iff]
-    rw [Polynomial.coeff_derivative, coeff_trunc, if_neg this, zero_mul]
+    rw [Polynomial.coeff_derivative, coeff_trunc, ite_eq_right this, zero_mul]
 
 theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
     trunc (n - 1) (d⁄dX R f) = Polynomial.derivative (trunc n f) := by

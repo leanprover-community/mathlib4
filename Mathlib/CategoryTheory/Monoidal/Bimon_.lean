@@ -150,19 +150,16 @@ def ofMonComon : Mon (Comon C) ⥤ Bimon C where
   obj := ofMonComonObj
   map f := .mk' ((Comon.forget C).mapMon.map f)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem toMonComon_ofMonComon_obj_one (M : Bimon C) :
     η[((toMonComon C ⋙ ofMonComon C).obj M).X.X] = 𝟙 _ ≫ η[M.X.X] :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem toMonComon_ofMonComon_obj_mul (M : Bimon C) :
     μ[((toMonComon C ⋙ ofMonComon C).obj M).X.X] = 𝟙 _ ≫ μ[M.X.X] :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `equivMonComonUnitIsoApp`. -/
 @[simps!]
 def equivMonComonUnitIsoAppXAux (M : Bimon C) :
