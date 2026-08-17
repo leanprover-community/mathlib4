@@ -791,7 +791,6 @@ namespace WithSeminorms
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [SeminormedRing 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
-variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 /-- Two families of seminorms `p` and `q` on the same space generate the same topology
 if each `p i` is bounded by some `C • Finset.sup s q` and vice-versa.

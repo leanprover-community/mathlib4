@@ -159,7 +159,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [OrderClosedTopology α] [SecondCountableTopology α] {a b : α}
+variable [PartialOrder α] [OrderClosedTopology α] [SecondCountableTopology α] {a : α}
 
 theorem measurableSet_le' : MeasurableSet { p : α × α | p.1 ≤ p.2 } :=
   OrderClosedTopology.isClosed_le'.measurableSet

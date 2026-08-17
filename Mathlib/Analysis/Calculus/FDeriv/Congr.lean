@@ -29,7 +29,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
-variable {f f₀ f₁ g : E → F}
+variable {f f₀ f₁ : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable {x : E}
 variable {s t : Set E}

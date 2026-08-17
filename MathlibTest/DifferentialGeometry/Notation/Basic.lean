@@ -163,7 +163,6 @@ hint: you may be missing suitable typeclass assumptions
 #guard_msgs in
 #check (T% (T% X)) x
 
-
 /--
 error: could not find a `FiberBundle` instance on `TotalSpace E`:
 `(T% X)` is a function into `TotalSpace E`
