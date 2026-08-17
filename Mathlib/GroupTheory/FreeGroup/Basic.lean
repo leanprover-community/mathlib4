@@ -9,9 +9,9 @@ public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Data.List.Chain
 public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
 
 /-!
 # Free groups
@@ -946,6 +946,7 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
     exact List.recOn L
      rfl
      (fun ⟨⟨⟩, b⟩ tl ih => by
+        simp only [Bool.cond_eq_ite] at ih
         cases b <;> simp [zpow_add, ih] <;> rfl)
   right_inv x :=
     Int.induction_on x (by simp)
@@ -972,7 +973,6 @@ def equivIntOfUnique [Unique α] : FreeGroup α ≃ ℤ where
     | succ x hx => simpa [zpow_add_one] using hx
     | pred x hx => simpa [zpow_sub_one, ← sub_eq_add_neg] using hx
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between the free group on a unique type and the integers. -/
 def mulEquivIntOfUnique [Unique α] : FreeGroup α ≃* Multiplicative ℤ where
   toFun := Multiplicative.ofAdd ∘ equivIntOfUnique

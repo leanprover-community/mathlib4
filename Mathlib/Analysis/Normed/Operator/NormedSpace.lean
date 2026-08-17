@@ -149,7 +149,7 @@ end LinearMap
 
 namespace ContinuousLinearMap
 
-open Set Real
+open Real
 
 /-- An operator is zero iff its norm vanishes. -/
 theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
@@ -266,7 +266,7 @@ variable [RingHomIsometric σ₂₁]
 
 protected theorem antilipschitz (e : E ≃SL[σ₁₂] F) :
     AntilipschitzWith ‖(e.symm : F →SL[σ₂₁] E)‖₊ e :=
-  e.symm.lipschitz.to_rightInverse e.left_inv
+  e.symm.lipschitzWith.to_rightInverse e.left_inv
 
 theorem one_le_norm_mul_norm_symm [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ₁₂] F) :
     1 ≤ ‖(e : E →SL[σ₁₂] F)‖ * ‖(e.symm : F →SL[σ₂₁] E)‖ := by

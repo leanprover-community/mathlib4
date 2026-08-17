@@ -10,14 +10,13 @@ public import Mathlib.RingTheory.QuasiFinite.Weakly
 
 /-! # Quasi-finite primes in polynomial algebras -/
 
-@[expose] public section
+public section
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 namespace Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.WeaklyQuasiFiniteAt.finite_locoalization in
 lemma not_weaklyQuasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.WeaklyQuasiFiniteAt R P := by
   intro H
