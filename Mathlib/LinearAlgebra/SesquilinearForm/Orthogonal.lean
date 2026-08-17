@@ -125,7 +125,7 @@ variable (B) in
   simp [orthogonalBilin_sup]
 
 /-- Every submodule is contained in the orthogonal complement of its orthogonal complement. -/
-theorem le_orthogonalBilin_orthogonalBilin :
+theorem le_orthogonalBilin_flip_orthogonalBilin :
     S ≤ orthogonalBilin B.flip (orthogonalBilin B S) := (orthogonalBilin_gc B).le_u_l S
 
 section IsRefl
@@ -134,6 +134,10 @@ variable {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
 theorem _root_.LinearMap.IsRefl.le_orthogonalBilin_orthogonalBilin (b : B.IsRefl) :
     S ≤ (S.orthogonalBilin B).orthogonalBilin B := fun n hn _m hm ↦ b _ _ (hm n hn)
+
+@[deprecated (since := "2026-08-17")]
+alias le_orthogonalBilin_orthogonalBilin :=
+  _root_.LinearMap.IsRefl.le_orthogonalBilin_orthogonalBilin
 
 end IsRefl
 
