@@ -175,13 +175,13 @@ variable (f : ι → κ → μ) {ℳ : ι → Submodule R M} {𝒩 : κ → Subm
   {p : ι} {q : κ} {x : M} {y : N} {m : μ}
 
 variable (p q) in
-theorem map₂_le_gradeBy :
-    Submodule.map₂ (mk R M N) (ℳ p) (𝒩 q) ≤ gradeBy f ℳ 𝒩 (f p q) :=
-  le_iSup_of_le p <| le_iSup₂_of_le q rfl le_rfl
+theorem map₂_le_gradeBy (h : f p q = m) :
+    Submodule.map₂ (mk R M N) (ℳ p) (𝒩 q) ≤ gradeBy f ℳ 𝒩 m :=
+  le_iSup_of_le p <| le_iSup₂_of_le q h le_rfl
 
-theorem tmul_mem_gradeBy (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) :
-    x ⊗ₜ[R] y ∈ gradeBy f ℳ 𝒩 (f p q) :=
-  map₂_le_gradeBy f p q (Submodule.apply_mem_map₂ _ hx hy)
+theorem tmul_mem_gradeBy (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) (h : f p q = m) :
+    x ⊗ₜ[R] y ∈ gradeBy f ℳ 𝒩 m :=
+  map₂_le_gradeBy f p q h (Submodule.apply_mem_map₂ _ hx hy)
 
 theorem gradeBy_le {S : Submodule R (M ⊗[R] N)} :
     gradeBy f ℳ 𝒩 m ≤ S ↔ ∀ p q, f p q = m → ∀ x ∈ ℳ p, ∀ y ∈ 𝒩 q, x ⊗ₜ[R] y ∈ S := by
@@ -194,7 +194,7 @@ sends every pure tensor of degree `m` into `S`. -/
 theorem mapsTo_gradeBy_iff {S : Submodule R P} :
     Set.MapsTo g (gradeBy f ℳ 𝒩 m) S ↔
       ∀ p q, f p q = m → ∀ x ∈ ℳ p, ∀ y ∈ 𝒩 q, g (x ⊗ₜ[R] y) ∈ S :=
-  ⟨fun H _ _ hpq _ hx _ hy ↦ H (hpq ▸ tmul_mem_gradeBy f hx hy),
+  ⟨fun H _ _ hpq _ hx _ hy ↦ H (tmul_mem_gradeBy f hx hy hpq),
     fun h _ hz ↦ Submodule.mem_comap.1 <| (gradeBy_le f).2 h hz⟩
 
 /-- Two linear maps agree on the degree-`m` component `gradeBy f ℳ 𝒩 m` iff they agree on
@@ -211,13 +211,13 @@ variable (ℳ 𝒩) in
 provide `DirectSum.decompose`. -/
 def gradeBy.decomposeAux : M ⊗[R] N →ₗ[R] ⨁ m, gradeBy f ℳ 𝒩 m :=
   (toModule R (ι × κ) _ fun pq ↦
-      lof R μ (gradeBy f ℳ 𝒩 ·) (f pq.1 pq.2) ∘ₗ mapInclOfLE (map₂_le_gradeBy f pq.1 pq.2)) ∘ₗ
+      lof R μ (gradeBy f ℳ 𝒩 ·) (f pq.1 pq.2) ∘ₗ mapInclOfLE (map₂_le_gradeBy f pq.1 pq.2 rfl)) ∘ₗ
     ↑(congr (decomposeLinearEquiv ℳ) (decomposeLinearEquiv 𝒩) ≪≫ₗ
       TensorProduct.directSum R R (ℳ ·) (𝒩 ·))
 
 theorem gradeBy.decomposeAux_tmul (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) :
     decomposeAux f ℳ 𝒩 (x ⊗ₜ[R] y) =
-      lof R μ (gradeBy f ℳ 𝒩 ·) (f p q) ⟨x ⊗ₜ y, tmul_mem_gradeBy f hx hy⟩ := by
+      lof R μ (gradeBy f ℳ 𝒩 ·) (f p q) ⟨x ⊗ₜ y, tmul_mem_gradeBy f hx hy rfl⟩ := by
   lift x to ℳ p using hx
   lift y to 𝒩 q using hy
   simp [decomposeAux]
@@ -245,8 +245,9 @@ theorem gradeBy.decomposeAux_coe (z : gradeBy f ℳ 𝒩 m) :
       simp [coeLinearMap_lof, decomposeAux_coe])
 
 theorem gradeBy.decompose_tmul (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) :
-    decompose (gradeBy f ℳ 𝒩) (x ⊗ₜ[R] y) = .of _ (f p q) ⟨x ⊗ₜ y, tmul_mem_gradeBy f hx hy⟩ :=
-  decompose_of_mem _ (tmul_mem_gradeBy f hx hy)
+    decompose (gradeBy f ℳ 𝒩) (x ⊗ₜ[R] y) =
+      .of _ (f p q) ⟨x ⊗ₜ y, tmul_mem_gradeBy f hx hy rfl⟩ :=
+  decompose_of_mem _ (tmul_mem_gradeBy f hx hy rfl)
 
 variable (ℳ 𝒩) in
 /-- `M ⊗[R] N` is the internal direct sum of the graded pieces. -/
@@ -265,13 +266,13 @@ variable [Add ι] (ℳ : ι → Submodule R M) (𝒩 : ι → Submodule R N)
 
 theorem grade_eq_gradeBy : grade ℳ 𝒩 = gradeBy (· + ·) ℳ 𝒩 := rfl
 
-variable {ℳ 𝒩} {p q : ι} {x : M} {y : N}
+variable {ℳ 𝒩} {p q n : ι} {x : M} {y : N}
 
-theorem tmul_mem_grade (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) :
-    x ⊗ₜ[R] y ∈ grade ℳ 𝒩 (p + q) :=
-  tmul_mem_gradeBy _ hx hy
+theorem tmul_mem_grade (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) (h : p + q = n) :
+    x ⊗ₜ[R] y ∈ grade ℳ 𝒩 n :=
+  tmul_mem_gradeBy _ hx hy h
 
-theorem grade_le {n : ι} {S : Submodule R (M ⊗[R] N)} :
+theorem grade_le {S : Submodule R (M ⊗[R] N)} :
     grade ℳ 𝒩 n ≤ S ↔ ∀ i j, i + j = n → ∀ x ∈ ℳ i, ∀ y ∈ 𝒩 j, x ⊗ₜ[R] y ∈ S :=
   gradeBy_le _
 
@@ -283,8 +284,8 @@ factors. -/
   inferInstanceAs <| Decomposition (gradeBy (· + ·) ℳ 𝒩)
 
 theorem grade.decompose_tmul (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) :
-    decompose (grade ℳ 𝒩) (x ⊗ₜ[R] y) = .of _ (p + q) ⟨x ⊗ₜ y, tmul_mem_grade hx hy⟩ :=
-  decompose_of_mem _ (tmul_mem_grade hx hy)
+    decompose (grade ℳ 𝒩) (x ⊗ₜ[R] y) = .of _ (p + q) ⟨x ⊗ₜ y, tmul_mem_grade hx hy rfl⟩ :=
+  decompose_of_mem _ (tmul_mem_grade hx hy rfl)
 
 variable (ℳ 𝒩) in
 /-- `M ⊗[R] N` is the internal direct sum of the total-degree pieces. -/
