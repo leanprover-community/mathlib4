@@ -23,13 +23,10 @@ public section
 open Filter Function MeasureTheory Set TopologicalSpace
 open scoped ENNReal NNReal Finset
 
-variable {ι X Y E F G H I J : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y}
+variable {ι X Y E F G : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  [NormedAddCommGroup H] [NormedSpace ℝ H]
-  [NormedAddCommGroup I] [NormedSpace ℝ I]
-  [NormedAddCommGroup J] [NormedSpace ℝ J]
   {μ : VectorMeasure X E} {ν : VectorMeasure Y F} {B : E →L[ℝ] F →L[ℝ] G}
 
 namespace MeasureTheory.VectorMeasure

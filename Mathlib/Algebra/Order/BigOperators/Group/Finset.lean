@@ -27,7 +27,7 @@ assert_not_exists Ring
 
 open Function
 
-variable {ι α β M N G k R : Type*}
+variable {ι α β M N G k : Type*}
 
 namespace Finset
 
@@ -611,7 +611,7 @@ end OrderedCancelCommMonoid
 
 section LinearOrderedCancelCommMonoid
 
-variable [CommMonoid M] [LinearOrder M] {f g : ι → M} {s t : Finset ι}
+variable [CommMonoid M] [LinearOrder M] {f g : ι → M} {s : Finset ι}
 
 @[to_additive exists_lt_of_sum_lt]
 theorem exists_lt_of_prod_lt' [MulLeftMono M] (Hlt : ∏ i ∈ s, f i < ∏ i ∈ s, g i) :
