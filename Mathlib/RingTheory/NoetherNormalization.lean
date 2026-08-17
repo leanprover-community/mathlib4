@@ -279,11 +279,9 @@ theorem exists_integral_inj_algHom_of_fg : ∃ s : ℕ, s = ringKrullDim R ∧
   obtain ⟨n, f, fsurj⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp fin
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
   obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient (ker f) (ker_ne_top _)
-  use s
-  constructor
+  refine ⟨s, ?_, ϕ.toAlgHom.comp g, ?_⟩
   · simpa using (intg.ringKrullDim_eq_of_injective injg).trans ϕ.toRingEquiv.ringKrullDim
-  · use ϕ.toAlgHom.comp g
-    simp only [AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, EmbeddingLike.comp_injective,
+  · simp only [AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, EmbeddingLike.comp_injective,
       AlgHom.toRingHom_eq_coe]
     exact ⟨injg, intg.trans _ _ (isIntegral_of_surjective _ ϕ.surjective)⟩
 
