@@ -547,16 +547,6 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
 theorem Ico_disjoint_Ico_consecutive (a b c : α) : Disjoint (Ico a b) (Ico b c) :=
   disjoint_left.2 fun _ hab hbc => (mem_Ico.mp hab).2.not_ge (mem_Ico.mp hbc).1
 
-@[simp]
-theorem Ici_top [OrderTop α] : Ici (⊤ : α) = {⊤} := Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
-
-@[simp]
-theorem Iic_bot [OrderBot α] : Iic (⊥ : α) = {⊥} := Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
-
-instance [OrderBot α] : Unique (Iic (⊥ : α)) := by
-  rw [Iic_bot]
-  infer_instance
-
 section DecidableEq
 
 variable [DecidableEq α]
@@ -753,6 +743,9 @@ theorem Ici_eq_cons_Ioi (a : α) : Ici a = (Ioi a).cons a notMem_Ioi_self := by
 theorem card_Ioi_eq_card_Ici_sub_one (a : α) : #(Ioi a) = #(Ici a) - 1 := by
   rw [Ici_eq_cons_Ioi, card_cons, Nat.add_sub_cancel_right]
 
+@[simp]
+theorem Ici_top [OrderTop α] : Ici (⊤ : α) = {⊤} := by ext; simp
+
 end OrderTop
 
 section OrderBot
@@ -778,6 +771,13 @@ theorem Iic_eq_cons_Iio (b : α) : Iic b = (Iio b).cons b notMem_Iio_self := by
 
 theorem card_Iio_eq_card_Iic_sub_one (a : α) : #(Iio a) = #(Iic a) - 1 := by
   rw [Iic_eq_cons_Iio, card_cons, Nat.add_sub_cancel_right]
+
+@[simp]
+theorem Iic_bot [OrderBot α] : Iic (⊥ : α) = {⊥} := by ext; simp
+
+instance [OrderBot α] : Unique (Iic (⊥ : α)) where
+  default := ⟨⊥, by simp⟩
+  uniq := by simp
 
 end OrderBot
 

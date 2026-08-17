@@ -114,6 +114,11 @@ theorem l_iSup₂ {f : ∀ i, κ i → α} :
 theorem l_sSup {s : Set α} : l (sSup s) = ⨆ a ∈ s, l a := by
   simp only [sSup_eq_iSup, gc.l_iSup]
 
+@[to_dual]
+theorem l_sSup_eq_sSup_image {s : Set α} : l (sSup s) = sSup (l '' s) := by
+  rw [sSup_image]
+  exact gc.l_sSup
+
 end CompleteLattice
 
 -- Constructing Galois connections
@@ -418,14 +423,20 @@ theorem gc_Ici_sInf [CompleteSemilatticeInf α] :
   fun _ _ ↦ le_sInf_iff.symm
 
 /-- `sSup` and `Iic` form a Galois insertion. -/
-def gi_sSup_Iic [CompleteSemilatticeSup α] :
+def giSSupIic [CompleteSemilatticeSup α] :
     GaloisInsertion (sSup : Set α → α) (Iic : α → Set α) :=
   gc_sSup_Iic.toGaloisInsertion fun _ ↦ le_sSup le_rfl
 
+@[deprecated (since := "2026-07-18")]
+alias gi_sSup_Iic := giSSupIic
+
 /-- `toDual ∘ Ici` and `sInf ∘ ofDual` form a Galois coinsertion. -/
-def gci_Ici_sInf [CompleteSemilatticeInf α] :
+def gciIciSInf [CompleteSemilatticeInf α] :
     GaloisCoinsertion (toDual ∘ Ici : α → (Set α)ᵒᵈ) (sInf ∘ ofDual : (Set α)ᵒᵈ → α) :=
   gc_Ici_sInf.toGaloisCoinsertion fun _ ↦ sInf_le le_rfl
+
+@[deprecated (since := "2026-07-18")]
+alias gci_Ici_sInf := gciIciSInf
 
 /-- If `α` is a partial order with bottom element (e.g., `ℕ`, `ℝ≥0`), then `WithBot.unbot' ⊥` and
 coercion form a Galois insertion. -/
