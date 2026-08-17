@@ -56,13 +56,13 @@ theorem birkhoffSum_succ (f : α → α) (g : α → M) (n : ℕ) :
     birkhoffSum f g (n + 1) = birkhoffSum f g n + g ∘ f^[n] :=
   funext <| birkhoffSum_succ_apply f g n
 
-theorem birkhoffSum_succ'_apply (f : α → α) (g : α → M) (n : ℕ) (x : α) :
+theorem birkhoffSum_succ_apply' (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     birkhoffSum f g (n + 1) x = g x + birkhoffSum f g n (f x) :=
   (sum_range_succ' _ _).trans (add_comm _ _)
 
 theorem birkhoffSum_succ' (f : α → α) (g : α → M) (n : ℕ) :
     birkhoffSum f g (n + 1) = g + birkhoffSum f g n ∘ f :=
-  funext <| birkhoffSum_succ'_apply f g n
+  funext <| birkhoffSum_succ_apply' f g n
 
 theorem birkhoffSum_add_apply (f : α → α) (g g' : α → M) (n : ℕ) (x : α) :
     birkhoffSum f (g + g') n x = birkhoffSum f g n x + birkhoffSum f g' n x := by
@@ -72,13 +72,13 @@ theorem birkhoffSum_add (f : α → α) (g g' : α → M) :
     birkhoffSum f (g + g') = birkhoffSum f g + birkhoffSum f g' :=
   funext₂ <| birkhoffSum_add_apply f g g'
 
-theorem birkhoffSum_add'_apply (f : α → α) (g : α → M) (m n : ℕ) (x : α) :
+theorem birkhoffSum_add_right_apply (f : α → α) (g : α → M) (m n : ℕ) (x : α) :
     birkhoffSum f g (m + n) x = birkhoffSum f g m x + birkhoffSum f g n (f^[m] x) := by
   simp_rw [birkhoffSum, sum_range_add, add_comm m, iterate_add_apply]
 
-theorem birkhoffSum_add' (f : α → α) (g : α → M) (m n : ℕ) :
+theorem birkhoffSum_add_right (f : α → α) (g : α → M) (m n : ℕ) :
     birkhoffSum f g (m + n) = birkhoffSum f g m + birkhoffSum f g n ∘ f^[m] :=
-  funext <| birkhoffSum_add'_apply f g m n
+  funext <| birkhoffSum_add_right_apply f g m n
 
 theorem Function.IsFixedPt.birkhoffSum_eq {f : α → α} {x : α} (h : IsFixedPt f x) (g : α → M)
     (n : ℕ) : birkhoffSum f g n x = n • g x := by
@@ -136,7 +136,7 @@ is equal to `g (f^[n] x) - g x`. -/
 theorem birkhoffSum_apply_sub_birkhoffSum (f : α → α) (g : α → G) (n : ℕ) (x : α) :
     birkhoffSum f g n (f x) - birkhoffSum f g n x = g (f^[n] x) - g x := by
   rw [← sub_eq_iff_eq_add.2 (birkhoffSum_succ_apply f g n x),
-    ← sub_eq_iff_eq_add.2 (birkhoffSum_succ'_apply f g n x),
+    ← sub_eq_iff_eq_add.2 (birkhoffSum_succ_apply' f g n x),
     ← sub_add, ← sub_add, sub_add_comm]
 
 /-- Birkhoff sum is "almost invariant" under `f`:
