@@ -30,7 +30,7 @@ a reason, and lints against using them.
 
 open Lean Elab Command
 
-namespace Mathlib.Tactic
+namespace Mathlib.Tactic.Linter
 
 public meta section
 
