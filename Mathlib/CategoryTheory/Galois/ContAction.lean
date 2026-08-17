@@ -26,7 +26,7 @@ that are trivial on `H`).
 
 @[expose] public section
 
-universe w v u
+universe w
 
 open CategoryTheory Limits FintypeCatDiscrete
 
