@@ -73,7 +73,7 @@ Here are some additions to this file that could be made in the future:
 
 open Finset OrderDual
 
-variable {F 𝕜 𝕝 𝕞 α β : Type*}
+variable {𝕜 𝕝 𝕞 α β : Type*}
 
 /-- The `𝕜`-incidence algebra over `α`. -/
 structure IncidenceAlgebra (𝕜 α : Type*) [Zero 𝕜] [LE α] where

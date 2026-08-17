@@ -55,7 +55,7 @@ open Finset
 
 namespace Fintype
 
-variable {ι α : Type*} [Fintype ι] [Fintype α]
+variable {α : Type*} [Fintype α]
 
 section Nonempty
 

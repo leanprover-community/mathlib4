@@ -71,7 +71,7 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonAssocRing R]
 variable [NonAssocRing S] [NonAssocRing T]
 
 namespace Subring
-variable {s t : Subring R}
+variable {s : Subring R}
 
 @[gcongr, mono]
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=

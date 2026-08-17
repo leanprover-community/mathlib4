@@ -139,7 +139,7 @@ theorem nhds_mkOfNhds_filterBasis (B : α → FilterBasis α) (a : α) (h₀ : �
 
 section Lattice
 
-variable {α : Type u} {β : Type v}
+variable {α : Type u}
 
 /-- The ordering on topologies on the type `α`. `t ≤ s` if every set open in `s` is also open in `t`
 (`t` is finer than `s`). -/

@@ -110,7 +110,7 @@ section NormedField
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
   [NormedAddCommGroup E] [NormedAddCommGroup Eₗ] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 Eₗ] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₂ Fₗ] [CompleteSpace F]
-  (f g : E →SL[σ₁₂] F) {e : E →L[𝕜] Eₗ}
+  (f : E →SL[σ₁₂] F) {e : E →L[𝕜] Eₗ}
 
 variable (h_dense : DenseRange e) (h_e : IsUniformInducing e)
 
