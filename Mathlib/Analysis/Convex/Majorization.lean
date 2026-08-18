@@ -20,6 +20,12 @@ monoid `M` (`AddCommMonoid`, `LinearOrder`, `IsOrderedAddMonoid`; e.g. `ℝ`, `�
 say `a ≺ b` ("`a` is majorized by `b`") when the two tuples have equal total sum and, for every `k`,
 the maximal sum over `k`-element subsets of the coordinates of `a` is at most that of `b`.
 
+This is classical (Hardy–Littlewood–Pólya / Schur) majorization: the order lives on the *values* of
+`a` and `b` (needed to form `maxSubsetSum`), while the index `ι` need only be finite. Hence `≺` is
+permutation-invariant (`comp_perm_majorizes_iff`, `majorizes_comp_perm_iff`). In particular it is
+**not** first-order stochastic dominance — the pointwise comparison of the cumulative sums
+`∑_{i ≤ t} a i` along a linearly ordered index — which is a genuinely different order.
+
 The T-transform theory (`TTransform`, the decomposition theorem) additionally needs subtraction and
 division, so it stays over `ℝ`.
 
@@ -102,7 +108,10 @@ private structure MajorizesFin (a1 a2 : Fin n → M) : Prop where
   sums : ∀ i : Fin n, descPrefixSum i a1 ≤ descPrefixSum i a2
 
 /-- `a1` is majorized by `a2` (notation `a1 ≺ a2`): the two tuples have equal total sum, and for
-every `i` the maximal sum over `i`-element subsets of `a1` is at most that of `a2`. -/
+every `i` the maximal sum over `i`-element subsets of `a1` is at most that of `a2`.
+
+The order is on the values, not the index, so `≺` is permutation-invariant; it is *not* stochastic
+dominance (pointwise comparison of cumulative sums along an ordered index). -/
 structure Majorizes {ι} [Fintype ι] (a1 a2 : ι → M) : Prop where
   /-- The two tuples have equal total sum. -/
   sum : ∑ x : ι, a1 x = ∑ x : ι, a2 x
