@@ -37,22 +37,22 @@ variable {α β : Type*} {f : α → Set β} [TopologicalSpace α]
 
 section tvs
 
-lemma LowerHemicontinuous.hasOpenCGraph_of_add_isOpen [TopologicalSpace β] [AddGroup β]
-    [IsTopologicalAddGroup β] (hf : LowerHemicontinuous f) {V : Set β} (hV : IsOpen V) :
-    HasOpenCGraph (fun x ↦ f x + V) := by
+lemma LowerHemicontinuous.hasOpenCGraph_of_add_hasOpenCGraph [TopologicalSpace β] [AddGroup β]
+    [IsTopologicalAddGroup β] {g : α → Set β} (hf : LowerHemicontinuous f) (hg : HasOpenCGraph g) :
+    HasOpenCGraph (f + g) := by
   rw [HasOpenCGraph, isOpen_prod_iff]
-  intro a b hab
-  obtain ⟨y, hy, w, hw, rfl⟩ := Set.mem_add.mp hab
-  have hOpen_pre := hV.preimage <| continuous_fst.neg.add continuous_snd
-  obtain ⟨U_y, U_b, hU_y, hU_b, hy_Uy, hb_Ub, hU⟩ := isOpen_prod_iff.mp hOpen_pre y (y + w)
-    (by simpa using hw)
-  have hopen_a : IsOpen {a' | (f a' ∩ U_y).Nonempty} := by
-    rw [isOpen_iff_mem_nhds]
-    intro a ha
-    exact ((hf a) U_y ⟨hU_y, ha⟩).mono fun _ h ↦ h.2
-  refine ⟨{a' | (f a' ∩ U_y).Nonempty}, U_b, hopen_a, hU_b, ⟨y, hy, hy_Uy⟩, hb_Ub, ?_⟩
-  intro ⟨a', b'⟩ ⟨⟨y', hy'_fa, hy'_Uy⟩, hb'_Ub⟩
-  exact ⟨y', hy'_fa, -y' + b', hU (Set.mk_mem_prod hy'_Uy hb'_Ub), by simp⟩
+  rintro a b ⟨y, hy, z, hz, rfl⟩
+  obtain ⟨W, O_z, hW, hO_z, ha_W, hz_Oz, hWO_z⟩ := isOpen_prod_iff.mp hg a z hz
+  obtain ⟨U_y, U_b, hU_y, hU_b, hy_Uy, hb_Ub, hU⟩ :=
+    isOpen_prod_iff.mp (hO_z.preimage <| continuous_fst.neg.add continuous_snd) y (y + z)
+      (by simpa using hz_Oz)
+  have hopen_a : IsOpen {a' | (f a' ∩ U_y).Nonempty} :=
+    lowerHemicontinuous_iff_isOpen_inter_nonempty.mp hf U_y hU_y
+  refine ⟨{a' | (f a' ∩ U_y).Nonempty} ∩ W, U_b, hopen_a.inter hW, hU_b,
+    ⟨⟨y, hy, hy_Uy⟩, ha_W⟩, hb_Ub, ?_⟩
+  intro ⟨a', b'⟩ ⟨⟨⟨y', hy'_fa, hy'_Uy⟩, ha'_W⟩, hb'_Ub⟩
+  exact ⟨y', hy'_fa, -y' + b',
+    hWO_z (Set.mk_mem_prod ha'_W (hU (Set.mk_mem_prod hy'_Uy hb'_Ub))), by simp⟩
 
 end tvs
 
@@ -85,8 +85,9 @@ private lemma LowerHemicontinuous.exists_continuous_selection_refine [IsTopologi
     (hgV : ∀ x, g x ∈ f x + V) :
       ∃ h : α → β, Continuous h ∧ (∀ x, h x ∈ f x + W) ∧ (∀ x, h x ∈ {g x} + V) := by
   have h₁ : HasOpenLowerSections fun x ↦ (f x + W) ∩ ({g x} + V) := by
-    apply hf.hasOpenCGraph_of_add_isOpen hW_open |>.hasOpenLowerSections.inter
-    exact hg.lowerHemicontinuous.hasOpenCGraph_of_add_isOpen hV_open |>.hasOpenLowerSections
+    apply hf.hasOpenCGraph_of_add_hasOpenCGraph (.const hW_open) |>.hasOpenLowerSections.inter
+    exact hg.lowerHemicontinuous.hasOpenCGraph_of_add_hasOpenCGraph (.const hV_open)
+      |>.hasOpenLowerSections
   have h₂ (x : α) : ((f x + W) ∩ ({g x} + V)).Nonempty := by
     obtain ⟨a, ha, b, hb, hab⟩ := hgV x
     refine ⟨g x + (-b), ?_, ?_⟩
@@ -112,7 +113,7 @@ theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuou
     simpa only [forall_and] using exists_nhds_hasAntitoneBasis_absConvex_open_add_closure_subset ℝ β
   -- Produce a sequence of continuous approximations to a selection
   obtain ⟨g, hg_cont, hg_mem⟩ :=
-    hf.hasOpenCGraph_of_add_isOpen (hV_open 0)
+    hf.hasOpenCGraph_of_add_hasOpenCGraph (.const <| hV_open 0)
       |>.hasOpenLowerSections.exists_continuous_selection
       (fun x ↦ (hf_nonempty x).add ⟨0, mem_of_mem_nhds (hV_anti.mem 0)⟩)
       (fun x ↦ (hf_convex x).add (hV_conv 0).2)
@@ -128,7 +129,7 @@ theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuou
     rw [← forall_and, ← forall_and]
     intro n
     induction n with
-    | zero => simp [hg_cont, hg_mem, hF, P, -singleton_add]
+    | zero => exact ⟨by fun_prop, hg_mem, (hF 0 g ⟨hg_cont, hg_mem⟩).2.2⟩
     | succ n ih => simp [ih, P, hF, -singleton_add]
   -- Prove the sequence is uniformly cauchy. The (necessarily continuous) limit is a selection
   have hUnif : UniformCauchySeqOn h Filter.atTop univ := by

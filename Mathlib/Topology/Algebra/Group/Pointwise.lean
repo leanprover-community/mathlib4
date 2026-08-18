@@ -318,7 +318,7 @@ of `𝓝ˢ s` -/]
 theorem Filter.HasBasis.iInter_mul_right_eq_closure {ι : Type*} {s : Set G} {p : ι → Prop}
     {U : ι → Set G} (hU : (𝓝 1).HasBasis p U) : ⋂ (i) (_ : p i), s * U i = closure s := by
   ext x
-  simp only [Set.mem_iInter, mem_closure_iff_nhds_basis (hU.inv_one.nhds_of_one' x)]
+  simp only [Set.mem_iInter, mem_closure_iff_nhds_basis (hU.nhds_one_inv.nhds_of_one' x)]
   refine forall₂_congr fun i hi ↦ ⟨?_, ?_⟩
   · rintro ⟨a, ha, b, hb, rfl⟩
     exact ⟨a, ha, Set.mem_smul_set.2 ⟨b⁻¹, Set.inv_mem_inv.2 hb, by simp⟩⟩
@@ -332,7 +332,7 @@ ranges over any basis of `𝓝 1`. Note that `U * s` does _not_ constitute a bas
 of `𝓝ˢ s` -/]
 theorem Filter.HasBasis.iInter_mul_left_eq_closure {ι : Type*} {s : Set G} {p : ι → Prop}
     {U : ι → Set G} (hU : (𝓝 1).HasBasis p U) : ⋂ (i) (_ : p i), U i * s = closure s := by
-  simpa [inv_closure] using congr($(hU.inv_one.iInter_mul_right_eq_closure (s := s⁻¹))⁻¹)
+  simpa [inv_closure] using congr($(hU.nhds_one_inv.iInter_mul_right_eq_closure (s := s⁻¹))⁻¹)
 
 /-- In a topological group, the closure of a set `s` is the intersection of `closure (s * U)` where
 `U` ranges over any basis of `𝓝 1`. -/
@@ -356,7 +356,8 @@ theorem Filter.HasBasis.iInter_closure_mul_right_eq_closure {ι : Type*} {s : Se
 theorem Filter.HasBasis.iInter_closure_mul_left_eq_closure {ι : Type*} {s : Set G}
     {p : ι → Prop} {U : ι → Set G} (hU : (𝓝 1).HasBasis p U) :
     ⋂ (i) (_ : p i), closure (U i * s) = closure s := by
-  simpa [inv_closure] using congr($(hU.inv_one.iInter_closure_mul_right_eq_closure (s := s⁻¹))⁻¹)
+  simpa [inv_closure] using
+    congr($(hU.nhds_one_inv.iInter_closure_mul_right_eq_closure (s := s⁻¹))⁻¹)
 
 @[to_additive]
 theorem IsClosed.iInter_closure_mul_right_eq {ι : Type*} {s : Set G} (hs : IsClosed s)
