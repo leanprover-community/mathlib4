@@ -99,7 +99,7 @@ def starGraphIsoOfEquiv [DecidableEq W] (e : V ≃ W) (v : V) (w : W) :
 
 @[simp]
 theorem toEquiv_starGraphIsoOfEquiv [DecidableEq W] (e : V ≃ W) (v : V) (w : W) :
-    ↑(starGraphIsoOfEquiv e v w) = e.trans (.swap w (e v)) :=
+    starGraphIsoOfEquiv e v w = e.trans (.swap w (e v)) :=
   rfl
 
 @[simp]
@@ -116,6 +116,11 @@ def starGraphEmbeddingOfEmbedding [DecidableEq W] (f : V ↪ W) (v : V) (w : W) 
 @[simp]
 theorem coe_starGraphEmbeddingOfEmbedding [DecidableEq W] (f : V ↪ W) (v : V) (w : W) :
     ⇑(starGraphEmbeddingOfEmbedding f v w) = f.trans (Equiv.swap w (f v)) :=
+  rfl
+
+@[simp]
+theorem toEmbedding_starGraphIsoOfEquiv [DecidableEq W] (e : V ≃ W) (v : V) (w : W) :
+    (starGraphIsoOfEquiv e v w).toEmbedding = starGraphEmbeddingOfEmbedding e v w :=
   rfl
 
 theorem starGraph_isContained_starGraph {v : V} {w : W} :
