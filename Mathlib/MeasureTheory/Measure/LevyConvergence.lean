@@ -229,7 +229,7 @@ variable {Ω' : Type*} {Ω : ℕ → Type*} {m : ∀ n, MeasurableSpace (Ω n)}
 /-- If the characteristic functions of a sequence of pushforward measures converge pointwise to the
 characteristic function of a pushforward measure, then the random variables converge in
 distribution. -/
-lemma tendstoInDistribution_of_tendsto_charFun
+lemma TendstoInDistribution.of_tendsto_charFun
     (hX : ∀ n, AEMeasurable (X n) (P n)) (hX' : AEMeasurable X' P')
     (h : ∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t))) :
     TendstoInDistribution X atTop X' P P' where
