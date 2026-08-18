@@ -53,6 +53,11 @@ theorem dist_birkhoffSum_birkhoffSum_le (f : α → α) (g : α → E) (n : ℕ)
       ∑ k ∈ Finset.range n, dist (g (f^[k] x)) (g (f^[k] y)) :=
   dist_sum_sum_le _ _ _
 
+/-- The norm of a Birkhoff sum is bounded by the Birkhoff sum of the norm. -/
+theorem norm_birkhoffSum_le (f : α → α) (g : α → E) (n : ℕ) (x : α) :
+    ‖birkhoffSum f g n x‖ ≤ birkhoffSum f (‖g ·‖) n x :=
+  norm_sum_le _ _
+
 variable (𝕜 : Type*) [RCLike 𝕜] [NormedSpace 𝕜 E]
 
 theorem dist_birkhoffAverage_birkhoffAverage (f : α → α) (g : α → E) (n : ℕ) (x y : α) :
@@ -70,6 +75,13 @@ theorem dist_birkhoffAverage_apply_birkhoffAverage (f : α → α) (g : α → E
     dist (birkhoffAverage 𝕜 f g n (f x)) (birkhoffAverage 𝕜 f g n x) =
       dist (g (f^[n] x)) (g x) / n := by
   simp [dist_birkhoffAverage_birkhoffAverage, dist_birkhoffSum_apply_birkhoffSum]
+
+/-- The norm of a Birkhoff average is bounded by the Birkhoff average of the norm. -/
+theorem norm_birkhoffAverage_le (f : α → α) (g : α → E) (n : ℕ) (x : α) :
+    ‖birkhoffAverage 𝕜 f g n x‖ ≤ birkhoffAverage ℝ f (‖g ·‖) n x := by
+  rw [birkhoffAverage, birkhoffAverage, norm_smul, smul_eq_mul, norm_inv, RCLike.norm_natCast]
+  gcongr
+  exact norm_birkhoffSum_le f g n x
 
 /-- If a function `g` is bounded along the positive orbit of `x` under `f`,
 then the difference between Birkhoff averages of `g`
