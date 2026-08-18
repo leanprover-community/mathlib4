@@ -16,7 +16,7 @@ This file proves lemmas on the sum and product of piecewise functions, including
 
 public section
 
-variable {ι κ M β γ : Type*} {s : Finset ι}
+variable {ι M γ : Type*} {s : Finset ι}
 
 namespace Finset
 
