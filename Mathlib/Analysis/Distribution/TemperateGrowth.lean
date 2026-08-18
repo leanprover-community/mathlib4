@@ -423,7 +423,7 @@ section Complex
 
 @[fun_prop]
 theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=
-  (Complex.ofRealCLM).hasTemperateGrowth
+  Complex.ofRealCLM.hasTemperateGrowth
 
 @[deprecated (since := "2026-08-18")] alias Function.Complex.hasTemperateGrowth_ofReal :=
   Complex.hasTemperateGrowth_ofReal
