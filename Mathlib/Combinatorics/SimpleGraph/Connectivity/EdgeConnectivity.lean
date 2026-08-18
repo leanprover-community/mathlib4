@@ -227,7 +227,7 @@ theorem edgeReachability_le_degree_right [Fintype <| G.neighborSet v] (huv : u �
   exact edgeReachability_le_degree_left huv.symm
 
 theorem edgeConnectivity_le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj] :
-    G.edgeConnectivity ≤ G.minDegree := iSup₂_le fun _ h ↦ mod_cast (IsEdgeConnected.le_minDegree h)
+    G.edgeConnectivity ≤ G.minDegree := iSup₂_le fun _ h ↦ mod_cast h.le_minDegree
 
 /-!
 ### 2-reachability
