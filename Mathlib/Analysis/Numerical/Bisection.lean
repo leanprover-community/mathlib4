@@ -22,10 +22,10 @@ property, so one approximation sequence handles both endpoint-sign orientations 
 the function. Every `Bisection.State` includes a proof that its endpoints are ordered, so nesting
 and width results need no separate endpoint-order hypotheses.
 
-The core `Bisection.State` API accepts functions of type `Set.Icc a b → ℝ`. This both makes domain
+The core `Bisection.State` API accepts functions of type `Set.Icc a b → ℝ`. This makes domain
 safety explicit and supports functions that are defined only on the starting interval. For
-convenience, the real-facing API accepts functions of type `ℝ → ℝ` and delegates to the core API
-after restricting them with `Set.domRestrict`.
+convenience, the real-facing API accepts functions of type `ℝ → ℝ` and delegates to the core
+API after restricting them with `Set.domRestrict`.
 
 This is an exact, noncomputable real-number iteration rather than a floating-point implementation.
 Degenerate intervals with `a = b` are supported. If the midpoint is already a root,
@@ -87,7 +87,7 @@ example :
     Bisection.approximation (a := 0) (b := 2) (by norm_num) (fun x : ℝ ↦ 1 - x) =
       Bisection.approximation (a := 0) (b := 2) (by norm_num) (fun x : ℝ ↦ x - 1) := by
   funext n
-  simpa only [neg_sub] using
+  simpa [neg_sub] using
     Bisection.approximation_neg (a := 0) (b := 2) (by norm_num) (fun x : ℝ ↦ x - 1) n
 
 example :
@@ -287,7 +287,7 @@ theorem iterate_neg (s : State a b) (f : Icc a b → ℝ) (n : ℕ) :
     s.iterate (fun x ↦ -f x) n = s.iterate f n := by
   induction n with
   | zero => rfl
-  | succ n ih => simp only [iterate_succ, ih, step_neg]
+  | succ n ih => simp [iterate_succ, ih, step_neg]
 
 /-- The zero-step approximation is the state's midpoint. -/
 @[simp]
@@ -305,7 +305,7 @@ theorem approximation_succ (s : State a b) (f : Icc a b → ℝ) (n : ℕ) :
 @[simp]
 theorem approximation_neg (s : State a b) (f : Icc a b → ℝ) (n : ℕ) :
     s.approximation (fun x ↦ -f x) n = s.approximation f n := by
-  simp only [approximation, iterate_neg]
+  simp [approximation, iterate_neg]
 
 /-- The initial state's width is the width of the fixed interval. -/
 @[simp]
@@ -317,7 +317,7 @@ theorem Brackets.step {s : State a b} {f : Icc a b → ℝ} (h : s.Brackets f) :
     (s.step f).Brackets f := by
   unfold Brackets at h ⊢
   by_cases hmid : f s.left * f s.midpoint ≤ 0
-  · simpa only [State.step, ite_eq_left hmid, leftHalf] using hmid
+  · simp [State.step, hmid, leftHalf]
   · simp only [State.step, ite_eq_right hmid, rightHalf]
     rcases (mul_pos_iff.mp (lt_of_not_ge hmid)) with ⟨hleft, hmid⟩ | ⟨hleft, hmid⟩
     · exact mul_nonpos_of_nonneg_of_nonpos hmid.le (nonpos_of_mul_nonpos_right h hleft)
@@ -414,9 +414,9 @@ theorem width_iterate (s : State a b) (f : Icc a b → ℝ) (n : ℕ) :
 /-! ### Convergence -/
 
 /-- The widths of the iterated bisection intervals converge to zero. -/
-theorem width_iterate_tendsto_zero (s : State a b) (f : Icc a b → ℝ) :
+theorem tendsto_width_iterate_zero (s : State a b) (f : Icc a b → ℝ) :
     Tendsto (fun n => (s.iterate f n).width) atTop (𝓝 0) := by
-  simpa only [width_iterate] using
+  simpa [width_iterate] using
     tendsto_const_nhds.div_atTop
       (tendsto_pow_atTop_atTop_of_one_lt (by norm_num : (1 : ℝ) < 2))
 
@@ -474,7 +474,7 @@ private theorem tendsto_of_mem_Icc_iterate {s : State a b} {f : Icc a b → ℝ}
     (hx : ∀ n, x ∈ Icc (s.iterate f n).left (s.iterate f n).right) :
     Tendsto u atTop (𝓝 x) := by
   rw [tendsto_iff_dist_tendsto_zero]
-  refine squeeze_zero (fun _ ↦ dist_nonneg) (fun n ↦ ?_) (width_iterate_tendsto_zero s f)
+  refine squeeze_zero (fun _ ↦ dist_nonneg) (fun n ↦ ?_) (tendsto_width_iterate_zero s f)
   rw [Subtype.dist_eq]
   exact Real.dist_le_of_mem_Icc (hu n) (hx n)
 
@@ -644,7 +644,7 @@ theorem approximation_mem_Icc {a b : ℝ} (hab : a ≤ b) (f : ℝ → ℝ) (n :
 @[simp]
 theorem approximation_self (a : ℝ) (f : ℝ → ℝ) (n : ℕ) :
     approximation (a := a) (b := a) le_rfl f n = a := by
-  simpa only [Icc_self, mem_singleton_iff] using
+  simpa [Icc_self, mem_singleton_iff] using
     approximation_mem_Icc (a := a) (b := a) le_rfl f n
 
 /-- Bisection gives the same approximations for functions that agree on the starting interval. -/
@@ -686,7 +686,7 @@ theorem limit_mem_Icc {a b : ℝ} (hab : a ≤ b) (f : ℝ → ℝ) : limit hab 
 /-- The canonical limit on a degenerate interval equals its sole endpoint. -/
 @[simp]
 theorem limit_self (a : ℝ) (f : ℝ → ℝ) : limit (a := a) (b := a) le_rfl f = a := by
-  simpa only [Icc_self, mem_singleton_iff] using
+  simpa [Icc_self, mem_singleton_iff] using
     limit_mem_Icc (a := a) (b := a) le_rfl f
 
 /-- The real-valued bisection approximations converge to their canonical limit. -/
@@ -708,7 +708,7 @@ theorem cauchySeq_approximation {a b : ℝ} (hab : a ≤ b) (f : ℝ → ℝ) :
 limit. -/
 theorem dist_approximation_limit_le {a b : ℝ} (hab : a ≤ b) (f : ℝ → ℝ) (n : ℕ) :
     dist (approximation hab f n) (limit hab f) ≤ (b - a) / (2 : ℝ) ^ (n + 1) := by
-  simpa only [approximation, limit, State.width_initial, Subtype.dist_eq] using
+  simpa [approximation, limit, State.width_initial, Subtype.dist_eq] using
     State.dist_approximation_limit_le
       (State.initial hab) ((Icc a b).domRestrict f) n
 
