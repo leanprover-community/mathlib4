@@ -274,7 +274,7 @@ def Lean.TSyntax.getLmfdbId (stx : TSyntax lmfdbIdKind) : CoreM String := do
 
 /-- Extract the underlying identifier as a string from a `dlmfId` node. -/
 def Lean.TSyntax.getDlmfId (stx : TSyntax dlmfIdKind) : CoreM String := do
-  let some val := Syntax.isLit? dlmfIdKind stx | throwError "Malformed DLMF id"
+  let some val := Syntax.isLit? dlmfIdKind stx | throwError "Malformed DLMF ref."
   return val
 
 namespace Lean.PrettyPrinter
