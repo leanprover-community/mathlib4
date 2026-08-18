@@ -39,12 +39,13 @@ of order `n`.
 Criteria for `X ^ n - C a` to be irreducible is given:
 - `X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two`:
   For `n = p ^ k` an odd prime power, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power.
+- `X_pow_sub_C_irreducible_iff_forall_prime`:
+  For `n ≠ 0`, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power for all prime `p ∣ n`,
+  and if `n` is a multiple of `4` then `a` is not `-4` times a `4`-th power.
 - `X_pow_sub_C_irreducible_iff_forall_prime_of_odd`:
   For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power for all prime `p ∣ n`.
 - `X_pow_sub_C_irreducible_iff_of_odd`:
   For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `d`-th power for `d ∣ n` and `d ≠ 1`.
-
-TODO: criteria for even `n`. See [serge_lang_algebra] VI,§9.
 
 TODO: relate Kummer extensions of degree 2 with the class `Algebra.IsQuadraticExtension`.
 
