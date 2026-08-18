@@ -99,8 +99,7 @@ theorem char_linHom (g : G) :
   rw [← char_iso (Equiv.dualTensorHom ρ σ), char_tensor, Pi.mul_apply, char_dual]
 
 theorem isIntegral_character [Finite G] (g : G) : IsIntegral ℤ (ρ.character g) := by
-  refine (isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective k (AlgebraicClosure k))).1 ?_
-  rw [character, ← trace_baseChange,
+  rw [← isIntegral_algebraMap_iff (B := AlgebraicClosure k), character, ← trace_baseChange,
     End.trace_eq_sum_roots_charpoly_of_splits (IsAlgClosed.splits _)]
   refine IsIntegral.multiset_sum fun x hx ↦ ?_
   obtain ⟨v, hv⟩ := End.hasEigenvalue_iff_isRoot_charpoly .. |>.2
