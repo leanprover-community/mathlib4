@@ -16,7 +16,7 @@ subspace to the entire space.
   `Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map that is `IsUniformInducing`. -/
 
 namespace ContinuousLinearMap
-variable {𝕜 𝕜₂ E F Eₗ} [AddCommGroup E] [UniformSpace E] [IsUniformAddGroup E]
+variable {𝕜 𝕜₂ E F Eₗ : Type*} [AddCommGroup E] [UniformSpace E] [IsUniformAddGroup E]
   [AddCommGroup F] [UniformSpace F] [IsUniformAddGroup F] [T0Space F]
   [AddCommMonoid Eₗ] [UniformSpace Eₗ] [ContinuousAdd Eₗ]
   [Semiring 𝕜] [Semiring 𝕜₂] [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Eₗ]
@@ -24,8 +24,8 @@ variable {𝕜 𝕜₂ E F Eₗ} [AddCommGroup E] [UniformSpace E] [IsUniformAdd
   {σ₁₂ : 𝕜 →+* 𝕜₂} (f : E →SL[σ₁₂] F) [CompleteSpace F] (e : E →L[𝕜] Eₗ)
 
 open scoped Classical in
-/-- Extension of a continuous linear map `f : E →SL[σ₁₂] F`, with `E` a normed space and `F` a
-complete normed space, along a uniform and dense embedding `e : E →L[𝕜] Eₗ`. -/
+/-- Extension of a continuous linear map `f : E →SL[σ₁₂] F` along a uniform and dense
+embedding `e : E →L[𝕜] Eₗ`. -/
 @[expose] public noncomputable def extend : Eₗ →SL[σ₁₂] F :=
   if h : DenseRange e ∧ IsUniformInducing e then
   -- extension of `f` is continuous
