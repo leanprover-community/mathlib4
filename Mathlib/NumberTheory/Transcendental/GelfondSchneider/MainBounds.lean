@@ -752,6 +752,7 @@ lemma S_norm_bound : ∀ (hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ 
     · exact c11_nonneg α β σ α' β' γ' hirr htriv habc
 
 /-- `ρᵣ` as the `η`-weighted sum of the system coefficients. -/
+@[nolint unusedArguments]
 theorem systemCoeffsff_foo_S : ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 h2mq =
   Complex.log (α) ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ)) *
    ((S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) (↑↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) + 1) := by
