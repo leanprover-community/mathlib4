@@ -96,7 +96,7 @@ theorem eulerFunction_def (x : R) :
   rfl
 
 omit [NormOneClass R] in
-theorem eulerFunction_eq_tsum_pentagonal {x : R} :
+theorem eulerFunction_eq_tsum_pentagonal (x : R) :
     eulerFunction x = ∑' k, k.negOnePow * x ^ pentagonal k := by
   simp [eulerFunction, PowerSeries.coeff_pentagonalSeries_mul_eq_extend, pentagonal_injective]
 
