@@ -113,19 +113,10 @@ public protected def BilinForm : LinearMap.BilinForm R (⋀[R]^k M) :=
 
 lemma bijective_pairingDual [Module.Finite R M] [Module.Free R M] (k : ℕ) :
     Bijective (pairingDual R M k) := by
-  -- Split into the subsingleton and nontrivial cases for the coefficient ring.
   rcases subsingleton_or_nontrivial R with hR | hR
-  · -- If `R` is subsingleton, every `R`-module is subsingleton.
-    let : Subsingleton R := hR
-    -- The source of `pairingDual` is subsingleton.
-    have : Subsingleton (⋀[R]^k (Module.Dual R M)) := Module.subsingleton R _
-    -- Its target is subsingleton as well.
-    have : Subsingleton (Module.Dual R (⋀[R]^k M)) := Module.subsingleton R _
-    -- Hence every map between these modules is injective and surjective, which is bijectivity.
-    exact ⟨Function.injective_of_subsingleton _, Function.surjective_to_subsingleton _⟩
-  · -- In the nontrivial case, use the finite basis argument below.
-    let : Nontrivial R := hR
-    classical
+  · have : Subsingleton (⋀[R]^k (Dual R M)) := Module.subsingleton R _
+    exact bijective_of_subsingleton' _
+  · classical
     -- Choose a finite ordered basis of `M`.
     obtain ⟨I, b⟩ := Module.Free.exists_basis R M
     let : LinearOrder I := linearOrderOfSTO WellOrderingRel
