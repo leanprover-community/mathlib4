@@ -51,8 +51,6 @@ if it is full, faithful and essentially surjective.
 * `Functor.asEquivalenceFunctor`: construction of an equivalence of categories from
   a functor `F` which satisfies the property `F.IsEquivalence` (i.e. `F` is full, faithful
   and essentially surjective).
-* `isEquivalence_iff_exists_equivalence`: a functor is an equivalence if and only if it is
-  equal to the functor of some equivalence.
 
 ## Notation
 
@@ -699,12 +697,6 @@ lemma isEquivalence_of_comp_left {E : Type*} [Category* E] (F : C ⥤ D) (G : D 
   rw [isEquivalence_iff_of_iso (G.leftUnitor.symm ≪≫
     isoWhiskerRight F.asEquivalence.counitIso.symm G)]
   exact (F.asEquivalence.symm.trans (F ⋙ G).asEquivalence).isEquivalence_functor
-
-/-- A functor is an equivalence (i.e. fully faithful and essentially surjective) iff it is the
-functor of a bundled equivalence. -/
-theorem isEquivalence_iff_exists_equivalence (F : C ⥤ D) :
-    F.IsEquivalence ↔ ∃ e : C ≌ D, e.functor = F :=
-  ⟨fun _ ↦ ⟨F.asEquivalence, rfl⟩, by rintro ⟨_, rfl⟩; infer_instance⟩
 
 end Functor
 
