@@ -303,36 +303,31 @@ noncomputable def toDistribution (f : E → F) (μ : Measure E := by volume_tac)
     𝓓'^{n}(Ω, F) :=
   TestFunction.integralAgainstBilinCLM (ContinuousLinearMap.lsmul ℝ ℝ) μ f
 
-@[simp]
 theorem toDistribution_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ)
     {φ : 𝓓^{n}(Ω, ℝ)} :
-    toDistribution Ω  f μ n φ = ∫ x, φ x • f x ∂μ := by
-  exact TestFunction.integralAgainstBilinCLM_eq_integral hf
+    toDistribution Ω f μ n φ = ∫ x, φ x • f x ∂μ :=
+  TestFunction.integralAgainstBilinCLM_eq_integral hf
 
 theorem toDistribution_eq_zero {f : E → F} {μ : Measure E}
-    (hf : ¬ LocallyIntegrableOn f Ω μ) : toDistribution Ω f μ n = 0 := by
-  exact TestFunction.integralAgainstBilinCLM_eq_zero hf
+    (hf : ¬ LocallyIntegrableOn f Ω μ) : toDistribution Ω f μ n = 0 :=
+  TestFunction.integralAgainstBilinCLM_eq_zero hf
 
 @[simp]
 theorem toDistribution_zero {μ : Measure E} : toDistribution Ω (0 : E → F) μ n = 0 := by
-  by_cases h0 : LocallyIntegrableOn (0 : E → F) Ω μ
-  · ext φ
-    simp [toDistribution_apply h0]
-  · exact toDistribution_eq_zero h0
+  have h0 : LocallyIntegrableOn (0 : E → F) Ω μ := locallyIntegrableOn_zero
+  ext; simp [toDistribution_apply h0]
 
-theorem toDistribution_eq_of_aeEq {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict Ω] f') :
+theorem toDistribution_congr_ae {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict Ω] f') :
     toDistribution Ω f μ n = toDistribution Ω f' μ n := by
   by_cases hf : LocallyIntegrableOn f Ω μ
   · have hf' : LocallyIntegrableOn f' Ω μ := hf.congr h
     ext φ
     rw [toDistribution_apply hf, toDistribution_apply hf']
-    have h' : ∀ᵐ x ∂μ, x ∉ Ω → φ x • f x = 0 := by
-      filter_upwards with x hx; simp [φ.zero_on_compl hx]
-    have h'' :  ∀ᵐ x ∂μ, x ∉ Ω → φ x • f' x = 0 := by
-      filter_upwards with x hx; simp [φ.zero_on_compl hx]
-    rw [← setIntegral_eq_integral_of_ae_compl_eq_zero h',
-      ← setIntegral_eq_integral_of_ae_compl_eq_zero h'']
-    refine integral_congr_ae <| Filter.EventuallyEq.smul (ae_eq_rfl) h
+    have h' : ∀ x ∉ Ω, φ x • f x = 0 ∧ φ x • f' x = 0 := fun x hx ↦ by simp [φ.zero_on_compl hx]
+    obtain ⟨h₁, h₂⟩ := forall₂_and.mp h'
+    rw [← setIntegral_eq_integral_of_ae_compl_eq_zero (.of_forall h₁),
+      ← setIntegral_eq_integral_of_ae_compl_eq_zero (.of_forall h₂)]
+    refine integral_congr_ae <| ae_eq_rfl.smul h
   · have hf' : ¬ LocallyIntegrableOn f' Ω μ := fun c ↦ hf (c.congr h.symm)
     rw [toDistribution_eq_zero hf, toDistribution_eq_zero hf']
 
@@ -344,16 +339,14 @@ theorem toDistribution_add {f g : E → F} {μ : Measure E}
   rw [add_apply, toDistribution_apply hf, toDistribution_apply hg,
     toDistribution_apply (hf.add hg),
     ← integral_add (φ.integrable_smul hf) (φ.integrable_smul hg)]
-  simp [Pi.add_apply, smul_add]
+  simp
 
+@[simp]
 theorem toDistribution_neg {f : E → F} {μ : Measure E} :
     toDistribution Ω (-f) μ n = -toDistribution Ω f μ n := by
   by_cases hf : LocallyIntegrableOn f Ω μ
-  · ext φ
-    simp [toDistribution_apply hf, toDistribution_apply hf.neg, Pi.neg_apply, smul_neg,
-      integral_neg]
-  · have hnf : ¬ LocallyIntegrableOn (-f) Ω μ := by rwa [locallyIntegrableOn_neg_iff]
-    rw [toDistribution_eq_zero hf, toDistribution_eq_zero hnf, neg_zero]
+  · ext; simp [toDistribution_apply hf, toDistribution_apply hf.neg, integral_neg]
+  · rw [toDistribution_eq_zero hf, toDistribution_eq_zero (by simpa), neg_zero]
 
 @[simp]
 theorem toDistribution_smul {f : E → F} {μ : Measure E} (c : ℝ) :
@@ -362,8 +355,7 @@ theorem toDistribution_smul {f : E → F} {μ : Measure E} (c : ℝ) :
   · ext φ
     rw [toDistribution_apply (hf.smul c), smul_apply, toDistribution_apply hf, ← integral_smul]
     refine integral_congr_ae (ae_of_all _ fun x ↦ ?_)
-    simp only [Pi.smul_apply]
-    rw [smul_comm]
+    simp [smul_comm c]
   · rcases eq_or_ne c 0 with rfl | hc
     · simp
     · have hcf : ¬ LocallyIntegrableOn (c • f) Ω μ := by aesop
