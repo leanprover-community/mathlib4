@@ -211,9 +211,9 @@ convention. -/
 theorem lift_iSup {ι : Type*} [Small.{u} ι] (f : ι → Ordinal.{u}) :
     lift.{v} (⨆ i, f i) = ⨆ i, lift.{v} (f i) := by
   have : Small.{max u v} ι := small_lift.{_, v, u} ι
-  refine le_antisymm ?_ (Ordinal.iSup_le fun i ↦ lift_le.mpr (Ordinal.le_iSup f i))
   have hub : (⨆ i, lift.{v} (f i)) ≤ lift.{v} (⨆ i, f i) :=
     Ordinal.iSup_le fun i ↦ lift_le.mpr (Ordinal.le_iSup f i)
+  refine le_antisymm ?_ hub
   obtain ⟨t, ht⟩ := mem_range_lift_of_le hub
   rw [← ht]
   refine lift_le.mpr (Ordinal.iSup_le fun i ↦ lift_le.mp ?_)
