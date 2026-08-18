@@ -214,8 +214,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
     _ ≤ ∫⁻ a in s, g n a ∂μ := by
       have : ∫⁻ a in (toMeasurable μ s)ᶜ, min (f a) n ∂μ ≠ ∞ :=
         IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal _ ⟨n, fun _ ↦ min_le_right ..⟩ |>.ne
-      have hsm : NullMeasurableSet (toMeasurable μ s) μ :=
-        (measurableSet_toMeasurable ..).nullMeasurableSet
+      have hsm : MeasurableSet (toMeasurable μ s) := measurableSet_toMeasurable ..
       apply ENNReal.le_of_add_le_add_right this
       rw [← μ.restrict_toMeasurable_of_sFinite, lintegral_add_compl _ hsm, hgint,
         ← lintegral_add_compl _ hsm]

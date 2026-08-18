@@ -105,11 +105,11 @@ lemma eLpNorm_indicator_const (hs : MeasurableSet s) (hp : p ≠ 0) (hp_top : p 
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) :=
   eLpNorm_indicator_const₀ hs.nullMeasurableSet hp hp_top
 
-lemma eLpNorm_indicator_const' (hs : MeasurableSet s) (hμs : μ s ≠ 0) (hp : p ≠ 0) :
+lemma eLpNorm_indicator_const' (hs : NullMeasurableSet s μ) (hμs : μ s ≠ 0) (hp : p ≠ 0) :
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
   by_cases hp_top : p = ∞
   · simp [hp_top, eLpNormEssSup_indicator_const_eq s c hμs]
-  · exact eLpNorm_indicator_const hs hp hp_top
+  · exact eLpNorm_indicator_const₀ hs hp hp_top
 
 variable (c) in
 lemma eLpNorm_indicator_const_le (p : ℝ≥0∞) :
@@ -128,9 +128,9 @@ lemma eLpNorm_indicator_const_le (p : ℝ≥0∞) :
       eLpNorm_indicator_const (measurableSet_toMeasurable ..) hp h'p
     _ = ‖c‖ₑ * μ s ^ (1 / p.toReal) := by rw [measure_toMeasurable]
 
-lemma MemLp.indicator {f : α → ε} (hs : MeasurableSet s) (hf : MemLp f p μ) :
+lemma MemLp.indicator {f : α → ε} (hs : NullMeasurableSet s μ) (hf : MemLp f p μ) :
     MemLp (s.indicator f) p μ :=
-  ⟨hf.aestronglyMeasurable.indicator hs, lt_of_le_of_lt (eLpNorm_indicator_le f) (by finiteness)⟩
+  ⟨hf.aestronglyMeasurable.indicator₀ hs, lt_of_le_of_lt (eLpNorm_indicator_le f) (by finiteness)⟩
 
 lemma memLp_indicator_iff_restrict {f : α → ε} (hs : NullMeasurableSet s μ) :
     MemLp (s.indicator f) p μ ↔ MemLp f p (μ.restrict s) := by
@@ -167,21 +167,21 @@ protected lemma MemLp.piecewise {f g : α → ε} [DecidablePred (· ∈ s)] (hs
   obtain rfl | hp_top := eq_or_ne p ∞
   · rw [eLpNorm_top_piecewise f g hs]
     exact max_lt hf.2 hg.2
-  rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp_zero hp_top, ← lintegral_add_compl _ hs,
+  rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp_zero hp_top, ← lintegral_add_compl₀ _ hs,
     ENNReal.add_lt_top]
   constructor
   · have h (x) (hx : x ∈ s) : ‖Set.piecewise s f g x‖ₑ ^ p.toReal = ‖f x‖ₑ ^ p.toReal := by
       simp [hx]
-    rw [setLIntegral_congr_fun hs h]
+    rw [setLIntegral_congr_fun₀ hs h]
     exact lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_zero hp_top hf.2
   · have h (x) (hx : x ∈ sᶜ) : ‖Set.piecewise s f g x‖ₑ ^ p.toReal = ‖g x‖ₑ ^ p.toReal := by
       have hx' : x ∉ s := hx
       simp [hx']
-    rw [setLIntegral_congr_fun hs.compl h]
+    rw [setLIntegral_congr_fun₀ hs.compl h]
     exact lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_zero hp_top hg.2
 
 theorem eLpNorm_indicator_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β]
-    (μ : Measure α := by volume_tac) (hp' : p ≠ ∞) (hs : MeasurableSet s)
+    (μ : Measure α := by volume_tac) (hp' : p ≠ ∞) (hs : NullMeasurableSet s μ)
     {f g : α → β} {c : ℝ} (hc : 0 ≤ c) (hf : ∀ x ∈ s, dist (f x) (g x) ≤ c) :
     eLpNorm (s.indicator (f - g)) p μ ≤ ENNReal.ofReal c * μ s ^ (1 / p.toReal) := by
   by_cases hp : p = 0
@@ -193,11 +193,11 @@ theorem eLpNorm_indicator_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β
         Real.norm_eq_abs, abs_of_nonneg hc]
       exact hf x hx
     · simp [Set.indicator_of_notMem hx]
-  grw [eLpNorm_mono this, eLpNorm_indicator_const hs hp hp', ← ofReal_norm,
+  grw [eLpNorm_mono this, eLpNorm_indicator_const₀ hs hp hp', ← ofReal_norm,
     Real.norm_eq_abs, abs_of_nonneg hc]
 
 theorem eLpNorm_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β]
-    (μ : Measure α := by volume_tac) (hp : p ≠ ⊤) (hs : MeasurableSet s) {c : ℝ} (hc : 0 ≤ c)
+    (μ : Measure α := by volume_tac) (hp : p ≠ ⊤) (hs : NullMeasurableSet s μ) {c : ℝ} (hc : 0 ≤ c)
     {f g : α → β} (h : ∀ x, dist (f x) (g x) ≤ c) (hs₁ : f.support ⊆ s) (hs₂ : g.support ⊆ s) :
     eLpNorm (f - g) p μ ≤ ENNReal.ofReal c * μ s ^ (1 / p.toReal) := by
   have hs₃ : s.indicator (f - g) = f - g := by

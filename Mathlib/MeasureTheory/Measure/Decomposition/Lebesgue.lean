@@ -778,7 +778,7 @@ theorem sup_mem_measurableLE {f g : α → ℝ≥0∞} (hf : f ∈ measurableLE 
   refine ⟨Measurable.max hf.1 hg.1, fun A hA ↦ ?_⟩
   have h₁ := hA.inter (measurableSet_le hf.1 hg.1)
   have h₂ := hA.inter (measurableSet_lt hg.1 hf.1)
-  rw [setLIntegral_max hf.1 hg.1]
+  rw [setLIntegral_max hf.1.aemeasurable hg.1.aemeasurable]
   refine (add_le_add (hg.2 _ h₁) (hf.2 _ h₂)).trans_eq ?_
   simp only [← not_le, ← compl_ofPred, ← sdiff_eq]
   exact measure_inter_add_sdiff _ (measurableSet_le hf.1 hg.1)

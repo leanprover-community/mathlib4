@@ -63,7 +63,7 @@ theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac)
       Real.rpow_zero, mul_one]
   obtain ⟨g, hg₁, hg₂, hg₃⟩ := h₂.exists_contDiff_approx ⊤ (ε := fun _ ↦ ε') (by fun_prop)
     (by intro; positivity)
-  refine ⟨g, h₁.mono hg₃, hg₁, (eLpNorm_sub_le_of_dist_bdd μ hp h₁.measurableSet hε'.le ?_
+  refine ⟨g, h₁.mono hg₃, hg₁, (eLpNorm_sub_le_of_dist_bdd μ hp h₁.nullMeasurableSet hε'.le ?_
     (subset_tsupport f) (hg₃.trans (subset_tsupport f))).trans hε₂⟩
   intro x
   rw [dist_comm]

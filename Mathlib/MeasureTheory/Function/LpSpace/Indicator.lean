@@ -96,7 +96,7 @@ variable {s : Set α} {hs : MeasurableSet s} {hμs : μ s ≠ ∞} {c : E}
 
 /-- Indicator of a set as an element of `Lp`. -/
 def indicatorConstLp (p : ℝ≥0∞) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) : Lp E p μ :=
-  MemLp.toLp (s.indicator fun _ => c) (memLp_indicator_const p hs c (Or.inr hμs))
+  MemLp.toLp (s.indicator fun _ => c) (memLp_indicator_const p hs.nullMeasurableSet c (.inr hμs))
 
 /-- A version of `Set.indicator_add` for `MeasureTheory.indicatorConstLp` -/
 theorem indicatorConstLp_add {c' : E} :
@@ -113,7 +113,7 @@ theorem indicatorConstLp_sub {c' : E} :
   rfl
 
 theorem indicatorConstLp_coeFn : ⇑(indicatorConstLp p hs hμs c) =ᵐ[μ] s.indicator fun _ => c :=
-  MemLp.coeFn_toLp (memLp_indicator_const p hs c (Or.inr hμs))
+  MemLp.coeFn_toLp (memLp_indicator_const p hs.nullMeasurableSet c (.inr hμs))
 
 theorem indicatorConstLp_coeFn_mem : ∀ᵐ x : α ∂μ, x ∈ s → indicatorConstLp p hs hμs c x = c :=
   indicatorConstLp_coeFn.mono fun _x hx hxs => hx.trans (Set.indicator_of_mem hxs _)
@@ -130,8 +130,8 @@ theorem norm_indicatorConstLp (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
 theorem norm_indicatorConstLp_top (hμs_ne_zero : μ s ≠ 0) :
     ‖indicatorConstLp ∞ hs hμs c‖ = ‖c‖ := by
   rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
-    eLpNorm_indicator_const' hs hμs_ne_zero ENNReal.top_ne_zero, ENNReal.toReal_top,
-    _root_.div_zero, ENNReal.rpow_zero, mul_one, toReal_enorm]
+    eLpNorm_indicator_const' hs.nullMeasurableSet hμs_ne_zero ENNReal.top_ne_zero,
+      ENNReal.toReal_top, _root_.div_zero, ENNReal.rpow_zero, mul_one, toReal_enorm]
 
 theorem norm_indicatorConstLp' (hp_pos : p ≠ 0) (hμs_pos : μ s ≠ 0) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * μ.real s ^ (1 / p.toReal) := by
@@ -204,12 +204,12 @@ theorem indicatorConstLp_inj {s t : Set α} (hs : MeasurableSet s) (hsμ : μ s 
   simp_rw [← indicator_const_eventuallyEq hc, indicatorConstLp, MemLp.toLp_eq_toLp_iff]
 
 theorem memLp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
-    (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
+    (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     MemLp (f + g) p μ ↔ MemLp f p μ ∧ MemLp g p μ := by
   borelize E
   refine ⟨fun hfg => ⟨?_, ?_⟩, fun h => h.1.add h.2⟩
-  · rw [← Set.indicator_add_eq_left h]; exact hfg.indicator (measurableSet_support hf.measurable)
-  · rw [← Set.indicator_add_eq_right h]; exact hfg.indicator (measurableSet_support hg.measurable)
+  · rw [← Set.indicator_add_eq_left h]; exact hfg.indicator hf.nullMeasurableSet_support
+  · rw [← Set.indicator_add_eq_right h]; exact hfg.indicator hg.nullMeasurableSet_support
 
 /-- The indicator of a disjoint union of two sets is the sum of the indicators of the sets. -/
 theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
