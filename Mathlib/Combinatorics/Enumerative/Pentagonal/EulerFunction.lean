@@ -62,7 +62,7 @@ lemma summable_norm_pow_mul_prod (k : ℕ) {x : R} (hx : ‖x‖ < 1) :
 
 lemma tsum_pow_mul_prod_bound (k : ℕ) {x : R} (hx : ‖x‖ < 1) :
     ‖∑' n, x ^ ((k + 1) * n) * ∏ i ∈ range (n + 1), (1 - x ^ (k + i + 1))‖ ≤
-    (1 - ‖x‖)⁻¹ * ∏' i, (1 + ‖x‖ ^ i) := by
+      (1 - ‖x‖)⁻¹ * ∏' i, (1 + ‖x‖ ^ i) := by
   refine tsum_of_norm_bounded (g := fun n ↦ ‖x‖ ^ n * ∏' i, (1 + ‖x‖ ^ i)) ?_ fun n ↦ ?_
   · rw [← tsum_geometric_of_lt_one (by simp) hx]
     exact (summable_geometric_of_lt_one (by simp) hx).hasSum.mul_right _
@@ -73,9 +73,7 @@ lemma tsum_pow_mul_prod_bound (k : ℕ) {x : R} (hx : ‖x‖ < 1) :
 
 lemma multipliable_one_sub_pow_add [CompleteSpace R] (k : ℕ) {x : R} (hx : ‖x‖ < 1) :
     Multipliable (fun n ↦ 1 - x ^ (n + k + 1)) := by
-  simp_rw [sub_eq_add_neg]
-  apply multipliable_one_add_of_summable
-  simp_rw [norm_neg]
+  apply multipliable_one_sub_of_summable
   apply Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n ↦ norm_pow_le _ _)
   simp_rw [pow_add]
   exact ((summable_geometric_of_lt_one (by simp) hx).mul_right _).mul_right _
