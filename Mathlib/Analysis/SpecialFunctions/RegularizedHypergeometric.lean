@@ -253,11 +253,18 @@ theorem radius_regularizedHGFunSeries_eq_top (h : a.card ≤ b.card) :
 theorem radius_regularizedHGFunSeries_zero_eq_top : (regularizedHGFunSeries 0 b).radius = ⊤ :=
   radius_regularizedHGFunSeries_eq_top (by simp)
 
+theorem analyticOnNhd_regularizedHGFun_of_card_le (h : a.card ≤ b.card) :
+    AnalyticOnNhd ℂ (regularizedHGFun a b) .univ := by
+  convert! (regularizedHGFunSeries a b).analyticOnNhd
+  simp [radius_regularizedHGFunSeries_eq_top h]
+
 theorem analyticAt_regularizedHGFun_of_card_le (h : a.card ≤ b.card) (z : ℂ) :
     AnalyticAt ℂ (regularizedHGFun a b) z :=
-  ((regularizedHGFunSeries a b).hasFPowerSeriesOnBall
-    (by simp [radius_regularizedHGFunSeries_eq_top h])).analyticAt_of_mem
-    (by simp [radius_regularizedHGFunSeries_eq_top h])
+  analyticOnNhd_regularizedHGFun_of_card_le h z (by simp)
+
+@[fun_prop]
+theorem analyticOnNhd_regularizedHGFun_zero : AnalyticOnNhd ℂ (regularizedHGFun 0 b) .univ :=
+  analyticOnNhd_regularizedHGFun_of_card_le (by simp)
 
 @[fun_prop]
 theorem analyticAt_regularizedHGFun_zero (z : ℂ) : AnalyticAt ℂ (regularizedHGFun 0 b) z :=
@@ -291,6 +298,17 @@ theorem radius_regularizedHGFunSeries_ge_one (h : a.card = b.card + 1) :
     rw [radius_regularizedHGFunSeries_eq_top_of_finite hj h']
     simp
 
+theorem analyticOnNhd_regularizedHGFun_of_card_eq_add_one (h : a.card = b.card + 1) :
+    AnalyticOnNhd ℂ (regularizedHGFun a b) (Metric.eball 0 1) := by
+  apply (regularizedHGFunSeries a b).analyticOnNhd.mono
+  exact Metric.eball_subset_eball (radius_regularizedHGFunSeries_ge_one h)
+
+theorem analyticAt_regularizedHGFun_of_card_eq_add_one (h : a.card = b.card + 1) {z : ℂ}
+    (hz : ‖z‖ < 1) :
+    AnalyticAt ℂ (regularizedHGFun a b) z := by
+  apply (analyticOnNhd_regularizedHGFun_of_card_eq_add_one h)
+  rwa [Metric.mem_eball, edist_zero_right, ← ofReal_norm, ENNReal.ofReal_lt_one]
+
 theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (z : ℂ) :
     regularizedHGFun 0 {-(n : ℂ) + 1} z = z ^ n * regularizedHGFun 0 {(n : ℂ) + 1} z := by
   unfold regularizedHGFun FormalMultilinearSeries.sum
@@ -298,8 +316,7 @@ theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (z : ℂ) :
     rw [← ((regularizedHGFunSeries 0 {-(n : ℂ) + 1}).summable (by simp)).sum_add_tsum_nat_add n]
   suffices ∑ i ∈ Finset.range n, z ^ i * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} i +
       ∑' i, z ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) =
-      z ^ n * ∑' i, z ^ i * regularizedHGFunCoeff 0 {(n : ℂ) + 1} i by
-    simpa
+      z ^ n * ∑' i, z ^ i * regularizedHGFunCoeff 0 {(n : ℂ) + 1} i by simpa
   calc
     _ = 0 + ∑' i, z ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
       congrm $(Finset.sum_eq_zero fun i hi ↦ mul_eq_zero_of_right _ ?_) + _

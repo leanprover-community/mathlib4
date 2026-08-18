@@ -73,8 +73,12 @@ theorem even_besselJ {a : ℤ} (ha : Even a) : Function.Even J(a) := by
 
 /-- `J(a)` is analytic outside of the branch cut on the negative real axis. -/
 @[fun_prop]
-theorem analyticAt_besselJ (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) : AnalyticAt ℂ (J(a)) x := by
+theorem analyticAt_besselJ (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) : AnalyticAt ℂ J(a) x := by
   fun_prop (disch := simpa [slitPlane] using h) [besselJ]
+
+@[fun_prop]
+theorem analyticOnNhd_besselJ (a : ℂ) : AnalyticOnNhd ℂ J(a) slitPlane :=
+  fun _ hz ↦ analyticAt_besselJ a hz
 
 /-- For integer `a`, `J(a)` and `J(-a)` are related by a sign. -/
 theorem besselJ_neg_int (a : ℤ) (x : ℂ) : J(-a) x = (-1) ^ a * J(a) x := by
@@ -107,6 +111,10 @@ theorem analyticAt_besselJ_int (a : ℤ) (x : ℂ) : AnalyticAt ℂ (J(a)) x := 
   obtain ⟨a, rfl⟩ := Int.eq_ofNat_of_zero_le ha
   have : AnalyticAt ℂ (fun x ↦ (x / 2) ^ a * F₀₁(a) (- (x / 2) ^ 2)) x := by fun_prop
   simpa [besselJ_def]
+
+@[fun_prop]
+theorem analyticOnNhd_besselJ_int (a : ℤ) : AnalyticOnNhd ℂ J(a) .univ :=
+  fun z _ ↦ analyticAt_besselJ_int a z
 
 theorem besselJ_zero (a : ℂ) : J(a) 0 = if a = 0 then 1 else 0 := by
   split_ifs with h <;> simp [besselJ, h, regularizedHGFunCoeff]
