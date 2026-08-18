@@ -77,6 +77,10 @@ section IsUnramifiedIn
 namespace Algebra
 
 variable (R) in
+/--
+Up to technical conditions, If `T/S/R` is a tower of algebras, `P` is a prime of `T` unramified
+in `R`, then `P ∩ S` (as a prime of `S`) is also unramified in `R`.
+-/
 lemma IsUnramifiedAt.of_liesOver
     (p : Ideal S) (P : Ideal T) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
     [IsUnramifiedAt R P] [EssFiniteType R S] [EssFiniteType R T]
