@@ -254,6 +254,14 @@ lemma uliftYonedaIsoShrinkYoneda_inv_app_app
       ULift.up (shrinkYonedaObjObjEquiv f) := rfl
 
 omit [LocallySmall.{w} C] in
+lemma uliftYonedaIsoShrinkYoneda_hom_app_app
+    {X : C} {Y : Cᵒᵖ} (f : (uliftYoneda.{w'}.obj X).obj Y) :
+    (uliftYonedaIsoShrinkYoneda.{w'}.hom.app X).app Y f =
+    shrinkYonedaObjObjEquiv.{max w' v}.symm f.down := by
+  rfl
+
+
+omit [LocallySmall.{w} C] in
 @[reassoc (attr := simp)]
 lemma uliftYonedaIsoShrinkYoneda_inv_app_comp_uliftYonedaEquiv_symm
     {X : Cᵒᵖ} {P : Cᵒᵖ ⥤ Type max w' v} (x : P.obj X) :
@@ -296,17 +304,27 @@ def shrinkYonedaRepresentableBy (X : C) : (shrinkYoneda.{w}.obj X).Representable
 instance (X : C) : (shrinkYoneda.{w}.obj X).IsRepresentable :=
   (shrinkYonedaRepresentableBy X).isRepresentable
 
+section
+
+variable {D : Type*} [Category* D] [LocallySmall.{w} D]
+
 /-- The natural transformation `shrinkYoneda.obj X ⟶ F.op ⋙ shrinkYoneda.obj (F.obj X)`
 when `F : C ⥤ D` and `X : C`. -/
-@[simps!]
-noncomputable def shrinkYonedaMap
-    {D : Type*} [Category* D] [LocallySmall.{w} D] (F : C ⥤ D) (X : C) :
+@[simps! -isSimp]
+noncomputable def shrinkYonedaMap (F : C ⥤ D) (X : C) :
     shrinkYoneda.{w}.obj X ⟶ F.op ⋙ shrinkYoneda.{w}.obj (F.obj X) where
   app Y := ↾(fun f ↦ shrinkYonedaObjObjEquiv.symm (F.map (shrinkYonedaObjObjEquiv f)))
   naturality {Y Z} g := by
     ext f
     obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
     simp [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
+
+lemma shrinkYonedaMap_app_shrinkYonedaObjObjEquiv_symm (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
+    (shrinkYonedaMap.{w} F Y).app (op X) (shrinkYonedaObjObjEquiv.symm f) =
+      shrinkYonedaObjObjEquiv.symm (F.map f) := by
+  simp [shrinkYonedaMap]
+
+end
 
 end Yoneda
 

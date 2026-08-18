@@ -29,12 +29,48 @@ open Limits Opposite
 section shrinkYoneda
 
 variable [LocallySmall.{w} C] [LocallySmall.{w} D] {L : (Cᵒᵖ ⥤ Type w) ⥤ D}
-  {A : C ⥤ D} [shrinkYoneda.{w}.HasPointwiseLeftKanExtension A]
-  (α : A ⟶ shrinkYoneda.{w} ⋙ L)
+  {A : C ⥤ D} (α : A ⟶ shrinkYoneda.{w} ⋙ L)
+
+open Functor.Elements in
+@[no_expose]
+noncomputable def isPointwiseLeftKanExtensionAlongShrinkYoneda [IsIso α]
+    [∀ (P : Cᵒᵖ ⥤ Type w),
+      PreservesColimit ((CategoryOfElements.π P).leftOp ⋙ shrinkYoneda.{w}) L] :
+    (Functor.LeftExtension.mk _ α).IsPointwiseLeftKanExtension :=
+  fun P ↦ by
+    let c (s : Cocone (CostructuredArrow.proj shrinkYoneda.{w} P ⋙ A)) :
+      Cocone (((CategoryOfElements.π P).leftOp ⋙ shrinkYoneda.{w, v₁, u₁}) ⋙ L) :=
+      { pt := s.pt
+        ι.app x :=
+          inv (α.app x.unop.1.unop) ≫ s.ι.app (CostructuredArrow.mk
+            (shrinkYonedaEquiv.symm x.unop.2))
+        ι.naturality x y f := by
+          dsimp
+          let φ : CostructuredArrow.mk (shrinkYonedaEquiv.symm x.unop.2) ⟶
+              CostructuredArrow.mk (shrinkYonedaEquiv.symm y.unop.2) :=
+            CostructuredArrow.homMk f.unop.1.unop
+              (by simp [← shrinkYonedaEquiv_symm_map.{w}])
+          simp [dsimp% [φ] s.w φ, ← dsimp% α.naturality_assoc f.unop.1.unop]}
+    exact
+    { desc s := (isColimitOfPreserves L (isColimitShrinkYonedaCocone P)).desc (c s)
+      fac s j := by
+        obtain ⟨X, f, rfl⟩ := CostructuredArrow.mk_surjective j
+        obtain ⟨f, rfl⟩ := shrinkYonedaEquiv.symm.surjective f
+        simp [dsimp% (isColimitOfPreserves L (isColimitShrinkYonedaCocone P)).fac (c s)
+          (op (Functor.elementsMk _ _ f)), c]
+      uniq s m hm :=
+        (isColimitOfPreserves L (isColimitShrinkYonedaCocone P)).hom_ext (fun ⟨x⟩ ↦ by
+          rw [← cancel_epi (α.app _)]
+          have := hm (CostructuredArrow.mk (shrinkYonedaEquiv.symm x.2))
+          dsimp at this ⊢
+          simp only [Category.assoc] at this
+          simp [dsimp% (isColimitOfPreserves L (isColimitShrinkYonedaCocone P)).fac (c s) ⟨x⟩,
+            this, c]) }
 
 section
 
-variable [L.IsLeftKanExtension α]
+variable [shrinkYoneda.{w}.HasPointwiseLeftKanExtension A]
+  [L.IsLeftKanExtension α]
 
 variable (A) in
 private noncomputable def restrictedShrinkYonedaHomEquivAux (P : Cᵒᵖ ⥤ Type w) (E : D) :
@@ -150,12 +186,19 @@ lemma preservesColimitsOfSize_of_isLeftKanExtension :
     PreservesColimitsOfSize.{v₃, u₃} L :=
   (restrictedShrinkYonedaAdjunction α).leftAdjoint_preservesColimits
 
+/-- See Property 2 of https://ncatlab.org/nlab/show/Yoneda+extension#properties. -/
+instance :
+    PreservesColimitsOfSize.{v₃, u₃} (shrinkYoneda.{w}.leftKanExtension A) :=
+  (restrictedShrinkYonedaAdjunction
+    (shrinkYoneda.leftKanExtensionUnit A)).leftAdjoint_preservesColimits
+
 instance isIso_of_isLeftKanExtension : IsIso α :=
   (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α).isIso_hom
 
 end
 
-lemma isLeftKanExtension_along_shrinkYoneda_iff :
+lemma isLeftKanExtension_along_shrinkYoneda_iff
+    [shrinkYoneda.{w}.HasPointwiseLeftKanExtension A] :
     L.IsLeftKanExtension α ↔
       (IsIso α ∧ PreservesColimitsOfSize.{v₁, max w u₁} L) := by
   refine ⟨fun _ ↦ ⟨inferInstance, preservesColimitsOfSize_of_isLeftKanExtension α⟩,
@@ -167,20 +210,78 @@ lemma isLeftKanExtension_along_shrinkYoneda_iff :
     (isColimitOfPreserves L (denseAtShrinkYoneda.{w} P))
   exact Cocone.ext (Iso.refl _)
 
+lemma isLeftKanExtension_along_shrinkYoneda_of_preservesColimits
+    [shrinkYoneda.{w}.HasPointwiseLeftKanExtension A]
+    (e : shrinkYoneda.{w} ⋙ L ≅ A) [PreservesColimitsOfSize.{v₁, max w u₁} L] :
+    L.IsLeftKanExtension e.inv := by
+  rw [isLeftKanExtension_along_shrinkYoneda_iff]
+  constructor <;> infer_instance
+
+instance (L : (Cᵒᵖ ⥤ Type w) ⥤ D) [PreservesColimitsOfSize.{v₁, max w u₁} L]
+    [shrinkYoneda.{w}.HasPointwiseLeftKanExtension (shrinkYoneda.{w} ⋙ L)] :
+    L.IsLeftKanExtension (𝟙 _ : shrinkYoneda.{w} ⋙ L ⟶ _) :=
+  isLeftKanExtension_along_shrinkYoneda_of_preservesColimits (Iso.refl _)
+
+lemma isLeftAdjoint_of_preservesColimits (L : (C ⥤ Type w) ⥤ D)
+    [PreservesColimitsOfSize.{v₁, max w u₁} L]
+    [shrinkYoneda.{w}.HasPointwiseLeftKanExtension
+      (shrinkYoneda.{w} ⋙ (opOpEquivalence C).congrLeft.functor.comp L)] :
+    L.IsLeftAdjoint := by
+  let L' := (opOpEquivalence C).congrLeft.functor ⋙ L
+  have : L'.IsLeftKanExtension (𝟙 (shrinkYoneda.{w} ⋙ L')) := by
+    rw [isLeftKanExtension_along_shrinkYoneda_iff]
+    constructor <;> infer_instance
+  have := (restrictedShrinkYonedaAdjunction.{w} (𝟙 (shrinkYoneda.{w} ⋙ L'))).isLeftAdjoint
+  exact Functor.isLeftAdjoint_of_iso ((opOpEquivalence C).congrLeft.invFunIdAssoc L)
+
 end shrinkYoneda
 
 section uliftYoneda
 
 variable {L : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ D}
   {A : C ⥤ D} [uliftYoneda.{max w v₂}.HasPointwiseLeftKanExtension A]
-  (α : A ⟶ uliftYoneda.{max w v₂} ⋙ L) [L.IsLeftKanExtension α]
+  (α : A ⟶ uliftYoneda.{max w v₂} ⋙ L)
+
+variable (A) in
+lemma hasPointwiseLeftKanExtension_shrinkYoneda_of_uliftYoneda :
+    shrinkYoneda.{max w v₁ v₂}.HasPointwiseLeftKanExtension A := by
+  intro
+  rw [← Functor.hasPointwiseLeftKanExtensionAt_iff_of_natIso
+      uliftYonedaIsoShrinkYoneda.{max w v₂} (Iso.refl A)]
+  infer_instance
+
+lemma isLeftKanExtension_along_uliftYoneda_iff :
+    L.IsLeftKanExtension α ↔
+      (IsIso α ∧ PreservesColimitsOfSize.{v₁, max w u₁ v₁ v₂} L) := by
+  have := hasPointwiseLeftKanExtension_shrinkYoneda_of_uliftYoneda A
+  let α' := α ≫ Functor.whiskerRight uliftYonedaIsoShrinkYoneda.hom _
+  have h₁ : L.IsLeftKanExtension α ↔ L.IsLeftKanExtension α' :=
+    ⟨fun _ ↦ inferInstance, fun _ ↦ by
+      have : L.IsLeftKanExtension (α' ≫
+        Functor.whiskerRight uliftYonedaIsoShrinkYoneda.{max w v₂}.inv _) := inferInstance
+      simpa [α', ← Functor.whiskerRight_comp] using this⟩
+  have h₂ : IsIso α ↔ IsIso α' := by simp [α']
+  rw [h₁, isLeftKanExtension_along_shrinkYoneda_iff, h₂]
+
+lemma isLeftKanExtension_along_uliftYoneda_of_preservesColimits
+    {L : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ D} (e : uliftYoneda.{max w v₂} ⋙ L ≅ A)
+    [PreservesColimitsOfSize.{v₁, max w u₁ v₁ v₂} L] :
+    L.IsLeftKanExtension e.inv := by
+  rw [isLeftKanExtension_along_uliftYoneda_iff]
+  constructor <;> infer_instance
+
+instance (L : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ D) [PreservesColimitsOfSize.{v₁, max w u₁ v₁ v₂} L]
+    [uliftYoneda.{max w v₂}.HasPointwiseLeftKanExtension (uliftYoneda.{max w v₂} ⋙ L)] :
+    L.IsLeftKanExtension (𝟙 _ : uliftYoneda.{max w v₂} ⋙ L ⟶ _) :=
+  isLeftKanExtension_along_uliftYoneda_of_preservesColimits (Iso.refl _)
+
+section
+
+variable [L.IsLeftKanExtension α]
 
 @[no_expose]
 noncomputable def restrictedULiftYonedaAdjunction : L ⊣ restrictedULiftYoneda.{max w v₁} A :=
-  have : shrinkYoneda.{max w v₁ v₂}.HasPointwiseLeftKanExtension A := fun Y ↦ by
-    rw [← Functor.hasPointwiseLeftKanExtensionAt_iff_of_natIso
-      uliftYonedaIsoShrinkYoneda.{max w v₂} (Iso.refl A)]
-    infer_instance
+  have := hasPointwiseLeftKanExtension_shrinkYoneda_of_uliftYoneda A
   (restrictedShrinkYonedaAdjunction (α ≫ Functor.whiskerRight
     (uliftYonedaIsoShrinkYoneda).hom L)).ofNatIsoRight (restrictedULiftYonedaIso A).symm
 
@@ -188,10 +289,7 @@ lemma restrictedULiftYonedaAdjunction_unit_app_app
     (P : Cᵒᵖ ⥤ Type max w v₁ v₂) {X : Cᵒᵖ} (x : P.obj X) :
     dsimp% ((restrictedULiftYonedaAdjunction.{w} α).unit.app P).app X x =
       ULift.up (α.app X.unop ≫ L.map (uliftYonedaEquiv.symm x)) := by
-  have : shrinkYoneda.{max w v₁ v₂}.HasPointwiseLeftKanExtension A := fun _ ↦ by
-    rw [← Functor.hasPointwiseLeftKanExtensionAt_iff_of_natIso
-      uliftYonedaIsoShrinkYoneda.{max w v₂} (Iso.refl A)]
-    infer_instance
+  have := hasPointwiseLeftKanExtension_shrinkYoneda_of_uliftYoneda A
   simp [restrictedULiftYonedaAdjunction, restrictedShrinkYonedaAdjunction_unit_app_app
     (α ≫ Functor.whiskerRight uliftYonedaIsoShrinkYoneda.{max w v₂}.hom L),
     uliftYonedaIsoShrinkYoneda_inv_app_app.{max w v₁}, ← Functor.map_comp,
@@ -207,20 +305,15 @@ lemma restrictedULiftYonedaAdjunction_homEquiv_app {P : Cᵒᵖ ⥤ Type max w v
 instance : IsIso α :=
   (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α).isIso_hom
 
-end uliftYoneda
+/-- See Property 2 of https://ncatlab.org/nlab/show/Yoneda+extension#properties. -/
+instance preservesColimitsOfSize_leftKanExtension :
+    PreservesColimitsOfSize.{v₃, u₃} (uliftYoneda.{max w v₂}.leftKanExtension A) :=
+  (restrictedULiftYonedaAdjunction
+    (uliftYoneda.leftKanExtensionUnit A)).leftAdjoint_preservesColimits
 
-lemma isLeftAdjoint_of_preservesColimits [LocallySmall.{w} C] [LocallySmall.{w} D]
-    (L : (C ⥤ Type w) ⥤ D)
-    [PreservesColimitsOfSize.{v₁, max w u₁} L]
-    [shrinkYoneda.{w}.HasPointwiseLeftKanExtension
-      (shrinkYoneda.{w} ⋙ (opOpEquivalence C).congrLeft.functor.comp L)] :
-    L.IsLeftAdjoint := by
-  let L' := (opOpEquivalence C).congrLeft.functor ⋙ L
-  have : L'.IsLeftKanExtension (𝟙 (shrinkYoneda.{w} ⋙ L')) := by
-    rw [isLeftKanExtension_along_shrinkYoneda_iff]
-    constructor <;> infer_instance
-  have := (restrictedShrinkYonedaAdjunction.{w} (𝟙 (shrinkYoneda.{w} ⋙ L'))).isLeftAdjoint
-  exact Functor.isLeftAdjoint_of_iso ((opOpEquivalence C).congrLeft.invFunIdAssoc L)
+end
+
+end uliftYoneda
 
 end Presheaf
 
