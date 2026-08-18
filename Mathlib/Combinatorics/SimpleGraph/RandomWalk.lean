@@ -63,20 +63,23 @@ variable {G}
 theorem walkMatrix_apply (v w : V) :
     G.walkMatrix v w = if G.Adj v w then (G.degree v : ℚ)⁻¹ else 0 := rfl
 
+/-- If `G` has no isolated vertices then every degree is nonzero in `ℚ`. -/
+theorem degree_ne_zero (hG : ∀ v, ¬ G.IsIsolated v) (v : V) : (G.degree v : ℚ) ≠ 0 := by
+  have : G.degree v ≠ 0 := by
+    simpa [degree_eq_zero_iff_notMem_support,
+           ← mem_support_iff_not_isIsolated] using hG v
+  simpa using this
+
 theorem walkMatrix_mem_rowStochastic [DecidableEq V] (hG : ∀ v, ¬ G.IsIsolated v) :
     G.walkMatrix ∈ rowStochastic ℚ V := by
   rw [mem_rowStochastic_iff_sum]
   refine ⟨fun v w => ?_, fun v => ?_⟩
   · rw [walkMatrix_apply]
     split <;> positivity
-  · have hne : (G.degree v : ℚ) ≠ 0 := by
-      have : G.degree v ≠ 0 := by
-        simpa [degree_eq_zero_iff_notMem_support,
-               ← mem_support_iff_not_isIsolated] using hG v
-      simpa using this
-    simp only [walkMatrix_apply]
+  · simp only [walkMatrix_apply]
     rw [← sum_filter, ← neighborFinset_eq_filter, sum_const,
-        card_neighborFinset_eq_degree, nsmul_eq_mul, mul_inv_cancel₀ hne]
+        card_neighborFinset_eq_degree, nsmul_eq_mul,
+        mul_inv_cancel₀ (degree_ne_zero hG v)]
 
 /-- The degree distribution is stationary for the simple random walk. -/
 theorem degreeDist_vecMul_walkMatrix (hG : ∀ v, ¬ G.IsIsolated v) :
@@ -89,12 +92,7 @@ theorem degreeDist_vecMul_walkMatrix (hG : ∀ v, ¬ G.IsIsolated v) :
       = if G.Adj i w then (1 : ℚ) / (2 * #G.edgeFinset) else 0 := by
     intro i
     split
-    · have hne : (G.degree i : ℚ) ≠ 0 := by
-        have : G.degree i ≠ 0 := by
-          simpa [degree_eq_zero_iff_notMem_support,
-                 ← mem_support_iff_not_isIsolated] using hG i
-        simpa using this
-      field_simp
+    · field_simp [degree_ne_zero hG i]
     · ring
   rw [Finset.sum_congr rfl (fun i _ => key i), ← sum_filter, sum_const]
   have hcard : #{a | G.Adj a w} = G.degree w := by
