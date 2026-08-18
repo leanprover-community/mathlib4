@@ -193,10 +193,11 @@ variable {r t : ℝ}
 `exponentialPDF r`. -/
 private lemma integral_expMeasure_eq_integral_density (r : ℝ) (f : ℝ → ℝ) :
     ∫ x, f x ∂(expMeasure r) = ∫ x, (exponentialPDF r x).toReal * f x := by
-  have h_meas : Measurable (exponentialPDF r) := by
-    simpa [exponentialPDF] using (measurable_exponentialPDFReal r).ennreal_ofReal
-  simpa [expMeasure, gammaMeasure, exponentialPDF, exponentialPDFReal, smul_eq_mul] using
-    integral_withDensity_eq_integral_toReal_smul (μ := volume) (f := exponentialPDF r) (g := f)
+  have h_meas : Measurable (gammaPDF 1 r) :=
+    (measurable_gammaPDFReal 1 r).ennreal_ofReal
+  simpa [expMeasure, gammaMeasure, gammaPDF, exponentialPDF, exponentialPDFReal,
+    smul_eq_mul] using
+    integral_withDensity_eq_integral_toReal_smul (μ := volume) (f := gammaPDF 1 r) (g := f)
       h_meas (ae_of_all _ fun _ => ENNReal.ofReal_lt_top)
 
 /-- The integral of `exp (t * x)` against `expMeasure r` equals `r / (r - t)` when `t < r`. -/
@@ -238,7 +239,7 @@ lemma mgf_id_expMeasure (hr : 0 < r) (ht : t < r) :
 lemma Iio_subset_integrableExpSet_id_expMeasure (hr : 0 < r) :
     Iio r ⊆ integrableExpSet id (expMeasure r) := by
   intro t ht
-  simp only [integrableExpSet, mem_setOf_eq, id]
+  simp only [integrableExpSet, mem_ofPred_eq, id]
   exact integrable_exp_mul_expMeasure hr ht
 
 /-- `0` belongs to the interior of the integrable exponential set of `id` under
@@ -316,7 +317,7 @@ private lemma integral_sq_expMeasure (hr : 0 < r) :
 @[simp]
 lemma variance_id_expMeasure (hr : 0 < r) : Var[id; expMeasure r] = r⁻¹ ^ 2 := by
   let μ : Measure ℝ := expMeasure r
-  haveI : IsProbabilityMeasure μ := by simpa [μ] using isProbabilityMeasure_expMeasure hr
+  have : IsProbabilityMeasure μ := by simpa [μ] using isProbabilityMeasure_expMeasure hr
   rw [variance_eq_sub (memLp_id_expMeasure hr 2)]
   have hsq : ∫ x, (id ^ 2) x ∂μ = 2 * r⁻¹ ^ 2 := by
     simpa [id, μ] using integral_sq_expMeasure hr
@@ -343,7 +344,7 @@ variable {r : ℝ}
 when `x ≥ 0`. -/
 lemma measure_Ioi_expMeasure (hr : 0 < r) {x : ℝ} (hx : 0 ≤ x) :
     (expMeasure r) (Ioi x) = ENNReal.ofReal (exp (-(r * x))) := by
-  haveI : IsProbabilityMeasure (expMeasure r) := isProbabilityMeasure_expMeasure hr
+  have : IsProbabilityMeasure (expMeasure r) := isProbabilityMeasure_expMeasure hr
   calc (expMeasure r) (Ioi x)
       = (cdf (expMeasure r)).measure (Ioi x) := by simp [measure_cdf]
     _ = ENNReal.ofReal (1 - cdf (expMeasure r) x) := by
