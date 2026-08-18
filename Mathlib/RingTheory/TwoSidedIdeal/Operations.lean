@@ -419,7 +419,6 @@ instance : CanLift (Ideal R) (TwoSidedIdeal R) TwoSidedIdeal.asIdeal (·.IsTwoSi
 
 end Ideal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A two-sided ideal is simply a left ideal that is two-sided. -/
 @[simps] def TwoSidedIdeal.orderIsoIsTwoSided {R : Type*} [Ring R] :
     TwoSidedIdeal R ≃o {I : Ideal R // I.IsTwoSided} where

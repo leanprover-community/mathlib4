@@ -153,10 +153,10 @@ If the derivative exists (i.e., `∃ f', HasDerivAt f f' x`), then
 def deriv (f : 𝕜 → F) (x : 𝕜) :=
   fderiv 𝕜 f x 1
 
-variable {f f₀ f₁ : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
+variable {f : 𝕜 → F}
+variable {f' : F}
 variable {x : 𝕜}
-variable {s t : Set 𝕜}
+variable {s : Set 𝕜}
 variable {L : Filter (𝕜 × 𝕜)}
 
 section

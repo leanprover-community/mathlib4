@@ -189,7 +189,9 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 Given monoid morphisms `φᵢ : Nᵢ → M` and `f : M → P`, if we have sufficient commutativity, then
 `f ∘ (∐ᵢ φᵢ) = ∐ᵢ (f ∘ φᵢ)` -/
-@[to_additive]
+@[to_additive /--
+Given additive monoid morphisms `φᵢ : Nᵢ → M` and `f : M → P`, if we have sufficient commutativity,
+then `f ∘ (∐ᵢ φᵢ) = ∐ᵢ (f ∘ φᵢ)` -/]
 theorem comp_noncommPiCoprod {P : Type*} [Monoid P] {f : M →* P}
     (hcomm' : Pairwise fun i j => ∀ x y, Commute (f.comp (ϕ i) x) (f.comp (ϕ j) y) :=
       Pairwise.mono hcomm (fun i j ↦ forall_imp (fun x h y ↦ by

@@ -305,7 +305,7 @@ theorem coe_pow (r : ℝ≥0) (n : ℕ) : ((r ^ n : ℝ≥0) : ℝ) = (r : ℝ) 
 @[simp, norm_cast]
 theorem coe_zpow (r : ℝ≥0) (n : ℤ) : ((r ^ n : ℝ≥0) : ℝ) = (r : ℝ) ^ n := rfl
 
-variable {ι : Type*} {f : ι → ℝ}
+variable {ι : Type*}
 
 @[simp, norm_cast] lemma coe_nsmul (r : ℝ≥0) (n : ℕ) : ↑(n • r) = n • (r : ℝ) := rfl
 @[simp, norm_cast] lemma coe_nnqsmul (q : ℚ≥0) (x : ℝ≥0) : ↑(q • x) = (q • x : ℝ) := rfl
@@ -999,7 +999,7 @@ unsafe instance : Repr ℝ≥0 where
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 

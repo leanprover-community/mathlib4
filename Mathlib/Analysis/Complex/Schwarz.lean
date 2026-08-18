@@ -55,7 +55,7 @@ we state it for maps between any two normed spaces.
 Schwarz lemma
 -/
 
-open Metric Set Function Filter TopologicalSpace
+open Metric Set Function Filter
 
 open scoped Topology ComplexConjugate
 
@@ -133,7 +133,6 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedAddCommGroup F] [NormedSpace ℂ F]
   {R R₁ R₂ : ℝ} {f : E → F} {c z : E}
 
-set_option backward.isDefEq.respectTransparency.types false in
 open AffineMap in
 /-- Let `f : E → F` be a complex analytic map
 sending an open ball of radius `R₁` to a closed ball of radius `R₂`.
@@ -165,7 +164,7 @@ theorem dist_le_mul_div_pow_of_mapsTo_ball_of_isLittleO {f : E → F} {c z : E} 
     simpa [lt_div_iff₀, hne, dist_comm c] using hw
   have hmaps : MapsTo h (ball 0 (R₁ / dist z c)) (closedBall (h 0) R₂) := by
     refine MapsTo.comp ?_ (h_maps.comp hmaps_line)
-    simpa [hg, h] using g.lipschitz.mapsTo_closedBall (f c) R₂
+    simpa [hg, h] using g.lipschitzWith.mapsTo_closedBall (f c) R₂
   have hdiff : DifferentiableOn ℂ h (ball 0 (R₁ / dist z c)) :=
     g.differentiable.comp_differentiableOn <| hd.comp (lineMap c z).differentiableOn hmaps_line
   -- This map also satisfies `h(w) - h(0) = o(w ^ n)`, thus we can apply the auxiliary lemma above.
@@ -218,9 +217,6 @@ theorem dist_le_dist_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R))
     dist (f z) (f c) ≤ dist z c := by
   simpa [(nonempty_ball.1 ⟨z, hz⟩).ne'] using dist_le_div_mul_dist_of_mapsTo_ball hd h_maps hz
 
-@[deprecated (since := "2026-01-03")]
-alias dist_le_dist_of_mapsTo_ball_self := dist_le_dist_of_mapsTo_ball
-
 /-- The **Schwarz Lemma**. Let `f : E → F` be a complex analytic function
 on an open ball with center `c` and a positive radius.
 If `f` sends this ball to a closed ball with center `f c` and the same radius,
@@ -239,9 +235,6 @@ theorem norm_le_norm_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball 0 R))
     (h_maps : MapsTo f (ball 0 R) (closedBall 0 R)) (h₀ : f 0 = 0) (hz : ‖z‖ < R) :
     ‖f z‖ ≤ ‖z‖ := by
   simpa [h₀] using dist_le_dist_of_mapsTo_ball hd (by rwa [h₀]) (mem_ball_zero_iff.mpr hz)
-
-@[deprecated (since := "2026-01-03")]
-alias norm_le_norm_of_mapsTo_ball_self := norm_le_norm_of_mapsTo_ball
 
 end NormedSpace
 
@@ -328,10 +321,6 @@ theorem affine_of_mapsTo_ball_of_norm_dslope_eq_div [StrictConvexSpace ℝ E]
   have : dslope f c z = dslope f c z₀ := eq_of_norm_eq_of_norm_add_eq heq <| by
     simp only [heq, SameRay.rfl.norm_add, heq_add]
   simp [← this]
-
-@[deprecated (since := "2026-01-03")]
-alias affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div :=
-  affine_of_mapsTo_ball_of_norm_dslope_eq_div
 
 /-- Equality case in the **Schwarz Lemma**: in the setup of `norm_dslope_le_div_of_mapsTo_ball`,
 if there exists a point `z₀` in the ball such that `‖dslope f c z₀‖ = R₂ / R₁`,

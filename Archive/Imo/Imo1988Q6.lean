@@ -126,9 +126,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     rwa [exceptional_empty, Set.sdiff_empty]
   -- We are now set for an infinite descent argument.
   -- Let m be the smallest element of the nonempty set S.
-  let m : ℕ := WellFounded.min Nat.lt_wfRel.wf S S_nonempty
-  have m_mem : m ∈ S := WellFounded.min_mem Nat.lt_wfRel.wf S S_nonempty
-  have m_min : ∀ k ∈ S, ¬k < m := fun k hk => WellFounded.not_lt_min Nat.lt_wfRel.wf S hk
+  obtain ⟨m, m_mem, m_min⟩ := Nat.lt_wfRel.wf.has_min S S_nonempty
   -- It suffices to show that there is point (a,b) with b ∈ S and b < m.
   rsuffices ⟨p', p'_mem, p'_small⟩ : ∃ p' : ℕ × ℕ, p'.2 ∈ S ∧ p'.2 < m
   · solve_by_elim

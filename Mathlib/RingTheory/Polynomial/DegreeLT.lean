@@ -153,7 +153,7 @@ end degreeLT
 
 section taylor
 
-variable {R : Type*} [CommRing R] {r : R} {m n : ℕ} {s : R} {f g : R[X]}
+variable {R : Type*} [CommRing R] {r : R} {n : ℕ} {f : R[X]}
 
 @[simp]
 lemma taylor_mem_degreeLT : taylor r f ∈ R[X]_n ↔ f ∈ R[X]_n := by simp [mem_degreeLT]
@@ -179,7 +179,7 @@ noncomputable def taylorLinearEquiv (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n 
     (taylorLinearEquiv r n).toLinearMap.det = 1 := by
   nontriviality R
   rw [← LinearMap.det_toMatrix (degreeLT.basis R n),
-    Matrix.det_of_upperTriangular, Fintype.prod_eq_one]
+    Matrix.det_of_isUpperTriangular, Fintype.prod_eq_one]
   · intro i
     rw [LinearMap.toMatrix_apply, degreeLT.basis_repr, ← natDegree_X_pow (R := R) (i : ℕ)]
     change (taylor r (degreeLT.basis R n i)).coeff _ = 1
