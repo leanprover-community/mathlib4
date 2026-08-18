@@ -27,7 +27,8 @@ permutation-invariant (`comp_perm_majorizes_iff`, `majorizes_comp_perm_iff`). In
 `∑_{i ≤ t} a i` along a linearly ordered index — which is a genuinely different order.
 
 The T-transform theory (`TTransform`, the decomposition theorem) additionally needs subtraction and
-division, so it stays over `ℝ`.
+division, so it lives over an ordered field `K` (`Field`, `LinearOrder`, `IsStrictOrderedRing`;
+e.g. `ℝ`, `ℚ`).
 
 ## Main definitions
 
@@ -68,6 +69,7 @@ open OrderDual Tuple Finset
 
 variable {n : ℕ} {α : Type*} [LinearOrder α] (f : Fin n → α)
 variable {M : Type*} [AddCommMonoid M] [LinearOrder M] [IsOrderedAddMonoid M]
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
 
 /-! ### Sorting into decreasing order and partial sums -/
 
@@ -179,7 +181,7 @@ private instance :
 /-- `TTransform b a k l lambda`: `b` is a single T-transform (Robin Hood transfer) of `a` at
 coordinates `k`, `l` with parameter `lambda ∈ (0, 1)`, pulling `a k > a l` toward each other while
 fixing their sum and every other coordinate. -/
-structure TTransform {ι : Type*} (b a : ι → ℝ) (k l : ι) (lambda : ℝ) : Prop where
+structure TTransform {ι : Type*} (b a : ι → K) (k l : ι) (lambda : K) : Prop where
   /-- The transfer parameter lies strictly between `0` and `1`. -/
   lambda_0_1 : 0 < lambda ∧ lambda < 1
   /-- The coordinate `k` dominates the coordinate `l` in `a`. -/
@@ -192,26 +194,29 @@ structure TTransform {ι : Type*} (b a : ι → ℝ) (k l : ι) (lambda : ℝ) :
   bl : b l = a l - (a l - a k) * lambda
 
 /-- `b` is obtained from `a` by some single T-transform. -/
-def RelatedByTTransform {ι : Type*} (b a : ι → ℝ) : Prop :=
-  ∃ k l : ι, ∃ lambda : ℝ, TTransform b a k l lambda
+def RelatedByTTransform {ι : Type*} (b a : ι → K) : Prop :=
+  ∃ k l : ι, ∃ lambda : K, TTransform b a k l lambda
 
 /-- The number of coordinates at which `a` and `b` differ. -/
-noncomputable def discrepancy {ι : Type*} [Fintype ι] (a b : ι → ℝ) : Nat := #{i | a i ≠ b i}
+noncomputable def discrepancy {ι : Type*} [Fintype ι] (a b : ι → K) : Nat := #{i | a i ≠ b i}
 
-lemma exists_sub_ne_zero_of_discrepancy_ne_zero {a b : Fin n → ℝ} :
+omit [IsStrictOrderedRing K] in
+lemma exists_sub_ne_zero_of_discrepancy_ne_zero {a b : Fin n → K} :
   discrepancy a b ≠ 0 → ∃ k : Fin n, a k - b k ≠ 0 := by
   intro hd
   unfold discrepancy at hd
   obtain ⟨k, hk⟩ := Finset.card_ne_zero.mp hd
   exact ⟨k, sub_ne_zero.mpr (Finset.mem_filter.mp hk).2⟩
 
-lemma discrepancy_comm {a b : Fin n → ℝ} : discrepancy a b = discrepancy b a := by
+omit [Field K] [IsStrictOrderedRing K] in
+lemma discrepancy_comm {a b : Fin n → K} : discrepancy a b = discrepancy b a := by
   unfold discrepancy
   congr 1
   ext i
   simp [ne_comm]
 
-lemma discrepancy_zero_iff_eq {a b : Fin n → ℝ} : a = b ↔ discrepancy a b = 0 :=
+omit [Field K] [IsStrictOrderedRing K] in
+lemma discrepancy_zero_iff_eq {a b : Fin n → K} : a = b ↔ discrepancy a b = 0 :=
   ⟨ fun hab ↦ by unfold discrepancy; simp [hab]
   , fun disc_zero ↦ by
       unfold discrepancy at disc_zero
@@ -384,7 +389,7 @@ lemma majorizes_comp_perm_iff {ι} [Fintype ι] {a b : ι → M} {σ : Equiv.Per
     exact ⟨by simpa [Equiv.sum_comp] using hsum,
            fun i => by simpa [maxSubsetSum_comp_equiv] using hsums i⟩
 
-private lemma exists_subset_sum_le_of_relatedByTTransform {n} {a b : Fin n → ℝ}
+private lemma exists_subset_sum_le_of_relatedByTTransform {n} {a b : Fin n → K}
     {s : Finset (Fin n)} (t : RelatedByTTransform a b) :
     ∃ t : Finset (Fin n), #t = #s ∧ ∑ x ∈ s, a x ≤ ∑ x ∈ t, b x := by
   obtain ⟨k, l, lambda, ttransform⟩ := t
@@ -443,13 +448,14 @@ private lemma exists_subset_sum_le_of_relatedByTTransform {n} {a b : Fin n → �
     have hxl : x ≠ l := hx.ne_of_notMem hls
     exact (other_unchanged x ⟨hxk, hxl⟩).symm
 
-private lemma exists_subset_sum_eq_sortDesc_prefix {i : Fin n} {a : Fin n → ℝ} :
+omit [IsStrictOrderedRing K] in
+private lemma exists_subset_sum_eq_sortDesc_prefix {i : Fin n} {a : Fin n → K} :
     ∃ t : Finset (Fin n), #t = i ∧ (∑ x < i, (a ∘ sortDesc a) x) = ∑ x ∈ t, a x :=
   ⟨image (sortDesc a) (Iio i),
     (card_image_of_injective (Iio i) (sortDesc a).injective).trans (Fin.card_Iio i),
     (sum_image (sortDesc a).injective.injOn).symm⟩
 
-lemma partialSum_domination {n} i {a b : Fin n → ℝ}
+lemma partialSum_domination {n} i {a b : Fin n → K}
   (t : RelatedByTTransform a b) : partialSum i a (sortDesc a) ≤ partialSum i b (sortDesc b) := by
   unfold partialSum
   obtain ⟨t1, teqi, to_rewrite⟩ := exists_subset_sum_eq_sortDesc_prefix (a := a) (i := i)
@@ -459,7 +465,7 @@ lemma partialSum_domination {n} i {a b : Fin n → ℝ}
         _ ≤ ∑ x ∈ t2, b x := to_rewrite2
         _ ≤ ∑ x < i, (b ∘ (sortDesc b)) x := subset_sum_le_sum_greatest (a := b) (teqs.trans teqi)
 
-private lemma majorizesFin_of_relatedByTTransform {a b : Fin n → ℝ} :
+private lemma majorizesFin_of_relatedByTTransform {a b : Fin n → K} :
   RelatedByTTransform a b → MajorizesFin a b := by
   rintro ⟨k, l, lambda, tt⟩
   have l_ne_k : l ≠ k := fun h ↦ ne_of_gt tt.ak_gt_al (congrArg b h).symm
@@ -469,7 +475,7 @@ private lemma majorizesFin_of_relatedByTTransform {a b : Fin n → ℝ} :
   rw [sum_split_two l_ne_k a, sum_split_two l_ne_k b, hrest, tt.bk, tt.bl]
   ring
 
-private lemma majorizesFin_of_reflTransGen_relatedByTTransform {a b : Fin n → ℝ}
+private lemma majorizesFin_of_reflTransGen_relatedByTTransform {a b : Fin n → K}
   (r : Relation.ReflTransGen RelatedByTTransform a b) : MajorizesFin a b := by
   induction r
   case refl => exact MajorizesFin.refl a
@@ -480,14 +486,15 @@ private lemma majorizesFin_of_reflTransGen_relatedByTTransform {a b : Fin n → 
 
 /-! ### Majorization implies a chain of T-transforms -/
 
+omit [IsStrictOrderedRing K] in
 /-- For an antitone tuple, `partialSum` (defined via `sortDesc`) is just the prefix sum. -/
-lemma partialSum_eq_of_antitone {g : Fin n → ℝ} (hg : Antitone g) (j : Fin n) :
+lemma partialSum_eq_of_antitone {g : Fin n → K} (hg : Antitone g) (j : Fin n) :
     partialSum j g (sortDesc g) = ∑ x < j, g x := by
   rw [partialSum_congr_of_antitone (antitone_comp_sortDesc g) (p2 := 1) (by simpa using hg) j,
       partialSum]
   simp
 
-private lemma tTransform_candidates {n} {a b : Fin n → ℝ} (ha : Antitone a) (hb : Antitone b)
+private lemma tTransform_candidates {n} {a b : Fin n → K} (ha : Antitone a) (hb : Antitone b)
   (majorizes : MajorizesFin a b) (h : discrepancy a b ≠ 0) :
   ∃ k l : Fin n,
       k < l
@@ -560,9 +567,9 @@ private lemma tTransform_candidates {n} {a b : Fin n → ℝ} (ha : Antitone a) 
 build a single T-transform `c` of `b` that is still majorized by `a`, is antitone, and is
 strictly closer to `a` (measured by `discrepancy`). This is the non-recursive core; the
 well-founded recursion lives in `reflTransGen_relatedByTTransform_of_majorizesFin`. -/
-private lemma tTransform_step {a b : Fin n → ℝ} (ha : Antitone a) (hb : Antitone b)
+private lemma tTransform_step {a b : Fin n → K} (ha : Antitone a) (hb : Antitone b)
     (majorizes : MajorizesFin a b) (h : discrepancy a b ≠ 0) :
-    ∃ c : Fin n → ℝ, RelatedByTTransform c b ∧ MajorizesFin a c ∧ Antitone c ∧
+    ∃ c : Fin n → K, RelatedByTTransform c b ∧ MajorizesFin a c ∧ Antitone c ∧
       discrepancy a c < discrepancy a b := by
     obtain ⟨k, l, k_leq_l, a_k_leq_b_k, a_l_geq_b_k, equal_inbetween⟩ :=
       tTransform_candidates ha hb majorizes h
@@ -589,7 +596,7 @@ private lemma tTransform_step {a b : Fin n → ℝ} (ha : Antitone a) (hb : Anti
     have rho_add_tau : rho + tau = b k := by change (b k + b l) / 2 + (b k - b l) / 2 = b k; ring
     have rho_sub_tau : rho - tau = b l := by change (b k + b l) / 2 - (b k - b l) / 2 = b l; ring
     have tau_pos : 0 < tau := by linarith [rho_add_tau, rho_sub_tau, bl_lt_bk]
-    let c : Fin n → ℝ := fun i ↦
+    let c : Fin n → K := fun i ↦
       if i = k then rho + sigma else if i = l then rho - sigma else b i
     -- Values of `c` at `k`, `l`, and off `{k, l}`, plus the boundary estimates (shared by
     -- `hc : Antitone c` and `a ≺ c`).
@@ -753,7 +760,7 @@ private lemma tTransform_step {a b : Fin n → ℝ} (ha : Antitone a) (hb : Anti
 T-transforms. Decreasing recursion on `discrepancy a b`, one step supplied by
 `tTransform_step`. -/
 private lemma reflTransGen_relatedByTTransform_of_majorizesFin
-  {a b : Fin n → ℝ} (ha : Antitone a) (hb : Antitone b) (majorizes : MajorizesFin a b) :
+  {a b : Fin n → K} (ha : Antitone a) (hb : Antitone b) (majorizes : MajorizesFin a b) :
   Relation.ReflTransGen RelatedByTTransform a b := by
   if h : discrepancy a b = 0 then
     have := discrepancy_zero_iff_eq.mpr h
@@ -766,7 +773,7 @@ private lemma reflTransGen_relatedByTTransform_of_majorizesFin
 
 /-- Majorization characterised by T-transforms: `a ≺ b` iff the decreasing rearrangement of `a`
 is reachable from that of `b` by a finite chain of T-transforms. -/
-private lemma majorizesFin_iff_reflTransGen_relatedByTTransform {a b : Fin n → ℝ} :
+private lemma majorizesFin_iff_reflTransGen_relatedByTTransform {a b : Fin n → K} :
   MajorizesFin a b ↔ Relation.ReflTransGen RelatedByTTransform (a ∘ sortDesc a) (b ∘ sortDesc b) :=
     ⟨ by
         have hchain := reflTransGen_relatedByTTransform_of_majorizesFin
@@ -782,7 +789,7 @@ private lemma majorizesFin_iff_reflTransGen_relatedByTTransform {a b : Fin n →
 decreasing rearrangement of `a` (transported to `Fin (card ι)` along `e`) is reachable from that
 of `b` by a finite chain of T-transforms. Derived from the `Fin n` theorem via the bridge. -/
 lemma majorizes_iff_reflTransGen_relatedByTTransform {ι} [Fintype ι]
-    (e : ι ≃ Fin (Fintype.card ι)) (a b : ι → ℝ) :
+    (e : ι ≃ Fin (Fintype.card ι)) (a b : ι → K) :
     Majorizes a b ↔ Relation.ReflTransGen RelatedByTTransform
       ((a ∘ e.symm) ∘ sortDesc (a ∘ e.symm)) ((b ∘ e.symm) ∘ sortDesc (b ∘ e.symm)) :=
   (majorizes_iff_majorizesFin_comp_symm e a b).trans
