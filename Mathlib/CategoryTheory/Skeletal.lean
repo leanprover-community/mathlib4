@@ -268,10 +268,10 @@ noncomputable def Equivalence.skeletonIsoCat (e : C ≌ D) : IsoCat (Skeleton C)
 
 /-- Two categories which are categorically equivalent have skeletons with equivalent objects.
 -/
-@[deprecated "use `Equivalence.skeletonIsoCat` together with `.functor.objEquiv`"
+@[deprecated "use `Equivalence.skeletonIsoCat.objEquiv`"
   (since := "2026-08-16")]
 noncomputable abbrev Equivalence.skeletonEquiv (e : C ≌ D) : Skeleton C ≃ Skeleton D :=
-  e.skeletonIsoCat.functor.objEquiv
+  e.skeletonIsoCat.objEquiv
 
 variable (C D)
 
