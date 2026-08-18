@@ -30,14 +30,14 @@ variable {β : Type*} [MeasurableSpace β]
 lemma _root_.Measurable.eval_matrix {i : m} {j : n} {M : β → Matrix m n α} (hM : Measurable M) :
     Measurable (M · i j) := hM.eval.eval
 
-protected lemma measurable_lambda (M : β → Matrix m n α)
+lemma _root_.Measurable.of_eval_matrix (M : β → Matrix m n α)
     (hM : ∀ i j, Measurable (M · i j)) : Measurable M :=
   measurable_pi_lambda _ (fun i ↦ measurable_pi_lambda _ fun j ↦ hM i j)
 
 protected lemma measurable_iff {M : β → Matrix m n α} :
     Measurable M ↔ ∀ i j, Measurable (M · i j) where
   mp h _ _ := h.eval_matrix
-  mpr h := Matrix.measurable_lambda M h
+  mpr h := Measurable.of_eval_matrix M h
 
 protected lemma measurable_apply {i : m} {j : n} :
     Measurable (fun M : Matrix m n α ↦ M i j) := measurable_id.eval_matrix
@@ -61,15 +61,16 @@ protected def ofMeasurableEquiv : (m → n → α) ≃ᵐ (Matrix m n α) where
   measurable_toFun := measurable_id
   measurable_invFun := measurable_of m n α
 
-lemma coe_toMatrix : ⇑(Matrix.ofMeasurableEquiv m n α) = Matrix.of := rfl
+lemma coe_ofMeasurableEquiv : ⇑(Matrix.ofMeasurableEquiv m n α) = Matrix.of := rfl
 
-lemma coe_toMatrix_symm : ⇑(Matrix.ofMeasurableEquiv m n α).symm = Matrix.of.symm := rfl
-
-@[simp]
-lemma toMatrix_apply (f : m → n → α) : Matrix.ofMeasurableEquiv m n α f = Matrix.of f := rfl
+lemma coe_ofMeasurableEquiv_symm : ⇑(Matrix.ofMeasurableEquiv m n α).symm = Matrix.of.symm := rfl
 
 @[simp]
-lemma toMatrix_symm_apply (M : Matrix m n α) :
+lemma _root_.MeasurableEquiv.ofMatrix_apply (f : m → n → α) :
+    Matrix.ofMeasurableEquiv m n α f = Matrix.of f := rfl
+
+@[simp]
+lemma _root_.MeasurableEquiv.ofMatrix_symm_apply (M : Matrix m n α) :
     (Matrix.ofMeasurableEquiv m n α).symm M = Matrix.of.symm M := rfl
 
 end MeasurableEquiv
