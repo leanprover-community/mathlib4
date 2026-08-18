@@ -35,7 +35,7 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
+variable {ι : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
 namespace Module.Basis
 

@@ -52,7 +52,6 @@ variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift ℤ] [G.CommSh
   [adj.CommShift ℤ]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 include adj in
 /--
 The right adjoint of a triangulated functor is triangulated.
