@@ -50,7 +50,7 @@ lemma pow_mul_prod_bound (k n : ℕ) {x : R} (hx : ‖x‖ < 1) :
     refine prod_le_prod (by simp) fun _ _ ↦ (norm_sub_le _ _).trans ?_
     grind [norm_pow_le, norm_one]
   have : Multipliable (1 + ‖x‖ ^ ·) := multipliable_one_add_of_summable (by simpa using hx)
-  apply this.prod_le_tprod_of_nonneg (fun i _ ↦ by positivity) (by simp)
+  exact this.prod_le_tprod_of_nonneg (fun i _ ↦ by positivity) (by simp)
 
 lemma summable_norm_pow_mul_prod (k : ℕ) {x : R} (hx : ‖x‖ < 1) :
     Summable fun n ↦ ‖x ^ ((k + 1) * n) * ∏ i ∈ range (n + 1), (1 - x ^ (k + i + 1))‖ := by
