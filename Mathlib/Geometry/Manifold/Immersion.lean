@@ -496,16 +496,19 @@ lemma _root_.ContMDiffAt.iff_comp_isImmersionAtOfComplement
 -- Special case of "the composition of immersions is an immersion", for post-composing
 -- with a diffeomorphism: unlike the former (which requires Banach manifolds and some conditions
 -- on the boundary behaviour), this statement is always true.
+-- Note that generalizing this proof to diffeomorphisms w.r.t. different models with corners is
+-- slightly annoying: constructing a codomain chart from `h.codChart` requires a nice map between
+-- the topological spaces that `N` and `N'` are modelled on. `Φ` does not induce such a map.
+-- The current version may be good enough in practice.
 /-- Post-composing an immersion at `x` with a diffeomorphism still yields an immersion at `x`. -/
 lemma comp_diffeomorph
     {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N']
     (h : IsImmersionAtOfComplement F I J n f x) (Φ : Diffeomorph J J N N' n) :
     IsImmersionAtOfComplement F I J n (Φ ∘ f) x := by
   have := h.continuousAt -- help `fun_prop`
-  apply mk_of_continuousAt (by fun_prop)
-    h.equiv (h.domChart) (Φ.symm.toHomeomorph.transOpenPartialHomeomorph h.codChart)
-    h.mem_domChart_source (by simp [h.mem_codChart_source])
-    h.domChart_mem_maximalAtlas ?_
+  apply mk_of_continuousAt (by fun_prop) h.equiv
+    h.domChart (Φ.symm.toHomeomorph.transOpenPartialHomeomorph h.codChart)
+    h.mem_domChart_source (by simp [h.mem_codChart_source]) h.domChart_mem_maximalAtlas ?_
   · intro x hx
     simpa using h.writtenInCharts hx
   · apply OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn
