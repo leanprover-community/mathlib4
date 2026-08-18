@@ -27,6 +27,10 @@ variable {G α β : Type*} [Group G]
 section MulAction
 variable [MulAction G α] {S : Subgroup G}
 
+/-- This shortcut instance provides a speedup. -/
+@[to_additive /-- This shortcut instance provides a speedup. -/]
+instance : MulAction S α := inferInstance
+
 @[to_additive] lemma smul_def (g : S) (m : α) : g • m = (g : G) • m := rfl
 
 @[to_additive (attr := simp)]
