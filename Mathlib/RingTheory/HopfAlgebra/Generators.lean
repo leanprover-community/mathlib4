@@ -39,52 +39,52 @@ section ExtensionPrinciple
 
 /-! ### Extension principle from algebra generators -/
 
-variable [Semiring A] [Bialgebra R A] {g : A →ₗ[R] A} {s : Set A}
+variable [Semiring A] [Bialgebra R A] {f : A →ₗ[R] A} {s : Set A}
 
-/-- If a unital antimultiplicative map `g` is a left convolution inverse of the identity
-pointwise on an algebra-generating set, then `toConv g * toConv id = 1`. -/
+/-- If a unital antimultiplicative map `f` is a left convolution inverse of the identity
+pointwise on an algebra-generating set, then `toConv f * toConv id = 1`. -/
 theorem convMul_id_eq_one_of_adjoin_eq_top
-    (g_one : g 1 = 1) (g_mul : ∀ x y, g (x * y) = g y * g x)
+    (h_one : f 1 = 1) (h_mul : ∀ x y, f (x * y) = f y * f x)
     (adjoin_eq_top : adjoin R s = ⊤)
-    (g_convMul_id : ∀ p ∈ s,
-      (toConv g * toConv (.id : A →ₗ[R] A)) p = (1 : WithConv (A →ₗ[R] A)) p) :
-    toConv g * toConv id = 1 := by
+    (f_convMul_id : ∀ p ∈ s,
+      (toConv f * toConv (.id : A →ₗ[R] A)) p = (1 : WithConv (A →ₗ[R] A)) p) :
+    toConv f * toConv id = 1 := by
   ext x; refine adjoin_le
-    (S := (eqLocus (toConv g * toConv (.id : A →ₗ[R] A)).ofConv (ofConv 1)).toSubalgebra ?_
+    (S := (eqLocus (toConv f * toConv (.id : A →ₗ[R] A)).ofConv (ofConv 1)).toSubalgebra ?_
       fun a b ha hb ↦ ?_)
-    g_convMul_id (adjoin_eq_top.ge mem_top)
-  · simp [g_one, TensorProduct.one_def]
+    f_convMul_id (adjoin_eq_top.ge mem_top)
+  · simp [h_one, TensorProduct.one_def]
   let 𝓡a := ℛ R a; let 𝓡b := ℛ R b
   simp only [mem_eqLocus, 𝓡a.convMul_apply, 𝓡b.convMul_apply, convOne_apply, id_apply] at ha hb ⊢
-  calc (toConv g * toConv (.id : A →ₗ[R] A)) (a * b)
+  calc (toConv f * toConv (.id : A →ₗ[R] A)) (a * b)
       _ = ∑ p ∈ 𝓡a.index, ∑ q ∈ 𝓡b.index,
-            g (𝓡b.left q) * (g (𝓡a.left p) * 𝓡a.right p) * 𝓡b.right q := by
-        simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum, g_mul, mul_assoc]
-      _ = ∑ q ∈ 𝓡b.index, g (𝓡b.left q) * algebraMap R A (counit a) * 𝓡b.right q := by
+            f (𝓡b.left q) * (f (𝓡a.left p) * 𝓡a.right p) * 𝓡b.right q := by
+        simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum, h_mul, mul_assoc]
+      _ = ∑ q ∈ 𝓡b.index, f (𝓡b.left q) * algebraMap R A (counit a) * 𝓡b.right q := by
         rw [Finset.sum_comm]; simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ha]
       _ = algebraMap R A (counit (a * b)) := by
         simp_rw [← commutes, mul_assoc, ← Finset.mul_sum, hb, ← map_mul, ← Bialgebra.counit_mul]
 
-/-- If a unital antimultiplicative map `g` is a right convolution inverse of the identity
-pointwise on an algebra-generating set, then `toConv id * toConv g = 1`. -/
+/-- If a unital antimultiplicative map `f` is a right convolution inverse of the identity
+pointwise on an algebra-generating set, then `toConv id * toConv f = 1`. -/
 theorem id_convMul_eq_one_of_adjoin_eq_top
-    (g_one : g 1 = 1) (g_mul : ∀ x y, g (x * y) = g y * g x)
+    (h_one : f 1 = 1) (h_mul : ∀ x y, f (x * y) = f y * f x)
     (adjoin_eq_top : adjoin R s = ⊤)
-    (id_convMul_g : ∀ p ∈ s,
-      (toConv (.id : A →ₗ[R] A) * toConv g) p = (1 : WithConv (A →ₗ[R] A)) p) :
-    toConv id * toConv g = 1 := by
+    (id_convMul_f : ∀ p ∈ s,
+      (toConv (.id : A →ₗ[R] A) * toConv f) p = (1 : WithConv (A →ₗ[R] A)) p) :
+    toConv id * toConv f = 1 := by
   ext x; refine adjoin_le
-    (S := (eqLocus (toConv (.id : A →ₗ[R] A) * toConv g).ofConv (ofConv 1)).toSubalgebra ?_
+    (S := (eqLocus (toConv (.id : A →ₗ[R] A) * toConv f).ofConv (ofConv 1)).toSubalgebra ?_
       fun a b ha hb ↦ ?_)
-    id_convMul_g (adjoin_eq_top.ge mem_top)
-  · simp [g_one, TensorProduct.one_def]
+    id_convMul_f (adjoin_eq_top.ge mem_top)
+  · simp [h_one, TensorProduct.one_def]
   let 𝓡a := ℛ R a; let 𝓡b := ℛ R b
   simp only [mem_eqLocus, 𝓡a.convMul_apply, 𝓡b.convMul_apply, convOne_apply, id_apply] at ha hb ⊢
-  calc (toConv (.id : A →ₗ[R] A) * toConv g) (a * b)
+  calc (toConv (.id : A →ₗ[R] A) * toConv f) (a * b)
       _ = ∑ p ∈ 𝓡a.index, ∑ q ∈ 𝓡b.index,
-            𝓡a.left p * (𝓡b.left q * g (𝓡b.right q)) * g (𝓡a.right p) := by
-        simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum, g_mul, mul_assoc]
-      _ = ∑ p ∈ 𝓡a.index, 𝓡a.left p * algebraMap R A (counit b) * g (𝓡a.right p) := by
+            𝓡a.left p * (𝓡b.left q * f (𝓡b.right q)) * f (𝓡a.right p) := by
+        simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum, h_mul, mul_assoc]
+      _ = ∑ p ∈ 𝓡a.index, 𝓡a.left p * algebraMap R A (counit b) * f (𝓡a.right p) := by
         simp_rw [← Finset.sum_mul, ← Finset.mul_sum, hb]
       _ = algebraMap R A (counit (a * b)) := by
         simp_rw [← commutes, mul_assoc, ← Finset.mul_sum, ha, ← map_mul, mul_comm (counit b),
