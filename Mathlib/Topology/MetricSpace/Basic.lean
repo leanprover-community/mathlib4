@@ -183,7 +183,19 @@ end Metric
 
 section EqRel
 
--- TODO: add `dist_congr` similar to `edist_congr`?
+theorem dist_congr_right {α : Type u} [PseudoMetricSpace α] {x y z : α} (h : dist x y = 0) :
+    dist x z = dist y z := by
+  have : edist x y = 0 := by rw [edist_dist, h, ENNReal.ofReal_zero]
+  rw [dist_edist, dist_edist, edist_congr_right this]
+
+theorem dist_congr_left {α : Type u} [PseudoMetricSpace α] {x y z : α} (h : dist x y = 0) :
+    dist z x = dist z y := by
+  simp [dist_comm, dist_congr_right h]
+
+theorem dist_congr {α : Type u} [PseudoMetricSpace α] {w x y z : α}
+    (hl : dist w x = 0) (hr : dist y z = 0) : dist w y = dist x z :=
+  (dist_congr_right hl).trans (dist_congr_left hr)
+
 instance SeparationQuotient.instDist {α : Type u} [PseudoMetricSpace α] :
     Dist (SeparationQuotient α) where
   dist := lift₂ dist fun x y x' y' hx hy ↦ by rw [dist_edist, dist_edist, ← edist_mk x,
