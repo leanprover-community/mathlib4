@@ -1114,6 +1114,7 @@ variable {I G} in
 lemma coe_mem_inertia {H : Subgroup G} {σ : H} : ↑σ ∈ I.inertia G ↔ σ ∈ I.inertia H := .rfl
 
 variable {I J} in
+@[gcongr]
 lemma inertia_mono (h : I ≤ J) : I.inertia G ≤ J.inertia G :=
   fun _ hx x ↦ h (hx x)
 
