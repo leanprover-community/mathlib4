@@ -20,7 +20,7 @@ public section
 
 open Set Filter Topology
 
-variable {α β γ : Type*} [LinearOrder α] {a b c : α} {h : a ≤ b}
+variable {α β γ : Type*} [LinearOrder α] {a b : α} {h : a ≤ b}
 
 protected theorem Filter.Tendsto.IccExtend (f : γ → Icc a b → β) {la : Filter α} {lb : Filter β}
     {lc : Filter γ} (hf : Tendsto ↿f (lc ×ˢ la.map (projIcc a b h)) lb) :
