@@ -10,22 +10,19 @@ public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
 import Mathlib.MeasureTheory.Measure.LevyConvergence
 
 /-!
-# Cramèr-Wold Theorem
+# Cramér-Wold Theorem
 
-We prove one direction of the Cramér-Wold theorem.
+We prove the Cramér-Wold theorem.
 
 ## Main statement
 
-* `tendsto_map_of_tendsto_map_inner`: Given measurable `E`-valued random variables `X : ℕ → Ω → E`
-  and `X' : Ω' → E`, if for every `t : E` the pushforward distributions of the inner products
-  `⟪X n, t⟫` under `P` converge to the pushforward distribution of `⟪X', t⟫` under `Q`, then the
-  distributions of `X` under `P` converge to the distribution of `X'` under `Q`.
+* `tendstoInDistribution_iff_tendstoInDistribution_inner`: For `E`-valued random variables
+  `X : ℕ → Ω → E` and `X' : Ω' → E`, convergence in distribution of `X` under `P` to `X'` under
+  `P'` is equivalent to convergence in distribution of all their scalar projections.
 
 -/
 
-open MeasureTheory Filter BoundedContinuousFunction RealInnerProductSpace ProbabilityMeasure
-
-open scoped Topology
+open MeasureTheory Filter RealInnerProductSpace
 
 public section
 
@@ -36,17 +33,23 @@ variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsProbability
   {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {P' : Measure Ω'} [IsProbabilityMeasure P']
   {X' : Ω' → E} {X : ℕ → Ω → E}
 
-/-- **Cramér-Wold theorem (one direction only)**
-
-Convergence in distribution of all scalar projections of a sequence of
-random variables in a finite-dimensional real inner product space implies the
-convergence in distribution of the sequence itself. -/
-theorem tendstoInDistribution_of_inner (hX' : AEMeasurable X' P') (hX : ∀ n, AEMeasurable (X n) P)
-    (h : ∀ t, TendstoInDistribution (⟪X · ·, t⟫) atTop (⟪X' ·, t⟫) (fun _ ↦ P) P') :
-    TendstoInDistribution X atTop X' (fun _ ↦ P) P' := by
-  refine tendstoInDistribution_iff_tendsto_charFun hX hX' |>.2 fun t ↦ ?_
-  rw [charFun_map_eq_charFun_map_inner_one hX']
-  refine (h t).tendsto_charFun 1 |>.congr fun n ↦ ?_
-  rw [charFun_map_eq_charFun_map_inner_one (hX n)]
+/-- The **Cramér-Wold theorem**: convergence in distribution of a sequence of random variables
+taking values in a finite-dimensional real inner product space is equivalent to convergence in
+distribution of all its scalar projections. -/
+theorem tendstoInDistribution_iff_tendstoInDistribution_inner
+    (hX' : AEMeasurable X' P') (hX : ∀ n, AEMeasurable (X n) P) :
+    TendstoInDistribution X atTop X' (fun _ ↦ P) P' ↔
+    (∀ t, TendstoInDistribution (⟪X · ·, t⟫) atTop (⟪X' ·, t⟫) (fun _ ↦ P) P') where
+  mp := by
+    intro h t
+    simpa [Function.comp_def] using
+      h.continuous_comp (g := fun x : E ↦ ⟪x, t⟫)
+        (continuous_id.inner continuous_const)
+  mpr := by
+    intro h
+    refine tendstoInDistribution_iff_tendsto_charFun hX hX' |>.2 fun t ↦ ?_
+    rw [charFun_map_eq_charFun_map_inner_one hX']
+    refine (h t).tendsto_charFun 1 |>.congr fun n ↦ ?_
+    rw [charFun_map_eq_charFun_map_inner_one (hX n)]
 
 end
