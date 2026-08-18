@@ -67,6 +67,24 @@ end CoeFnInstance
 
 variable [CommRing R]
 
+section DistribMulAction
+
+variable {m : Type*}
+
+instance : SMul (GL n R) (Matrix n m R) where
+  smul g A := (g : Matrix n n R) * A
+
+@[simp] lemma smul_def (g : GL n R) (A : Matrix n m R) : g • A = (g : Matrix n n R) * A := rfl
+
+instance {m : Type*} : DistribMulAction (GL n R) (Matrix n m R) where
+  smul g A := (g : Matrix n n R) * A
+  mul_smul g g' A := by simp [Matrix.mul_assoc]
+  one_smul A := by simp
+  smul_zero g := by simp
+  smul_add := by simp [Matrix.mul_add]
+
+end DistribMulAction
+
 lemma scalar_commute (u : Rˣ) (A : GL n R) : scalar n u * A = A * scalar n u := by
   ext : 1
   rw [Units.val_mul, Units.val_mul, coe_scalar, Matrix.scalar_comm _ (Commute.all _)]

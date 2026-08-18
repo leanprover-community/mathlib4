@@ -23,13 +23,11 @@ This file defines row-scaling matrices and row-equivalence.
 
 namespace Matrix
 
-variable {R m n : Type*}
+variable {R m n : Type*} [DecidableEq m]
 
-section RowScale
+section ZeroOne
 
-section
-
-variable [Zero R] [One R] [DecidableEq m]
+variable [Zero R] [One R]
 
 /-- The elementary matrix scaling row `i` by `c`. -/
 def rowScale (i : m) (c : R) : Matrix m m R :=
@@ -55,11 +53,9 @@ lemma rowScale_apply_ne {i a b : m} (hab : a ≠ b) (c : R) :
     rowScale i c a b = 0 := by
   simp [rowScale, hab]
 
-end
+end ZeroOne
 
-section
-
-variable [CommRing R] [Fintype m] [DecidableEq m]
+variable [CommRing R] [Fintype m]
 
 lemma rowScale_mul (i : m) (c : R) (M : Matrix m n R) :
     rowScale i c * M = M.updateRow i (c • M.row i) := by
@@ -74,49 +70,28 @@ lemma rowScale_mul_rowScale (i : m) (c d : R) :
     rowScale i c * rowScale i d = rowScale i (c * d) := by
   rw [rowScale, rowScale, Matrix.diagonal_mul_diagonal]
   congr
-  exact (Pi.mulSingle_mul (f := fun _ : m ↦ R) i c d).symm
-
-end
+  ext
+  simp [Pi.mulSingle_mul]
 
 namespace GeneralLinearGroup
-
-variable [CommRing R] [Fintype m] [DecidableEq m]
 
 /-- `Matrix.rowScale` as an element of `GL m R`. -/
 @[simps val]
 def rowScale (i : m) (c : Rˣ) : GL m R where
   val := Matrix.rowScale i (c : R)
   inv := Matrix.rowScale i ↑c⁻¹
-  val_inv := by
-    rw [Matrix.rowScale_mul_rowScale]
-    simp
-  inv_val := by
-    rw [Matrix.rowScale_mul_rowScale]
-    simp [mul_comm]
-
-variable {S : Type*} [CommRing S] (f : R →+* S)
+  val_inv := by simp
+  inv_val := by simp
 
 @[simp]
-lemma map_rowScale (i : m) (c : Rˣ) :
+lemma map_rowScale {S : Type*} [CommRing S] (f : R →+* S) (i : m) (c : Rˣ) :
     (rowScale (R := R) i c).map f = rowScale (R := S) i (Units.map f c) := by
-  ext a b
-  by_cases hab : a = b
-  · subst hab
-    by_cases ha : a = i
-    · subst ha
-      simp [rowScale, Matrix.rowScale]
-    · simp [rowScale, Matrix.rowScale, ha]
-  · simp [rowScale, Matrix.rowScale, hab]
-
-end GeneralLinearGroup
-
-end RowScale
-
-section TransvectionGL
-
-variable [CommRing R] [Fintype m] [DecidableEq m]
-
-namespace GeneralLinearGroup
+  ext j k
+  rcases eq_or_ne j k with rfl | hjk
+  · rcases eq_or_ne j i with rfl | hji
+    · simp
+    · simp [hji]
+  · simp [hjk]
 
 /-- `Matrix.transvection` as an element of `GL`. -/
 @[simps val]
@@ -130,18 +105,11 @@ def transvection (i j : m) (h : i ≠ j) (c : R) : GL m R where
 
 end GeneralLinearGroup
 
-end TransvectionGL
-
 section RowEquivalent
 
-variable [CommRing R] [Fintype m] [DecidableEq m]
-
-/-- Row-equivalence via the left action of `GL m R` on `Matrix m n R`.
-
-For square matrices this is analogous to `Associated` in the opposite monoid, but this
-definition also applies to rectangular matrices, where `Associated` is not available. -/
-def RowEquivalent (A B : Matrix m n R) : Prop :=
-  ∃ g : GL m R, B = (g : Matrix m m R) * A
+/-- Row-equivalence via the left action of `GL m R` on `Matrix m n R`. -/
+abbrev RowEquivalent (A B : Matrix m n R) : Prop :=
+  B ∈ MulAction.orbit (GL m R) A
 
 lemma rowEquivalent_iff_associated_op_op {A B : Matrix m m R} :
     RowEquivalent A B ↔ Associated (MulOpposite.op A) (MulOpposite.op B) := by
@@ -150,23 +118,17 @@ lemma rowEquivalent_iff_associated_op_op {A B : Matrix m m R} :
     exact ⟨Units.opEquiv.symm (MulOpposite.op g), rfl⟩
   · rintro ⟨u, h⟩
     refine ⟨(Units.opEquiv u).unop, ?_⟩
-    simpa using (congrArg MulOpposite.unop h).symm
+    simpa using congrArg MulOpposite.unop h
 
-lemma RowEquivalent.refl (A : Matrix m n R) : RowEquivalent A A := by
-  refine ⟨1, ?_⟩
-  simp
+lemma RowEquivalent.refl (A : Matrix m n R) : RowEquivalent A A :=
+  MulAction.mem_orbit_self _
 
-lemma RowEquivalent.symm {A B : Matrix m n R} (h : RowEquivalent A B) : RowEquivalent B A := by
-  rcases h with ⟨g, rfl⟩
-  refine ⟨g⁻¹, ?_⟩
-  simp
+lemma RowEquivalent.symm {A B : Matrix m n R} (h : RowEquivalent A B) : RowEquivalent B A :=
+  MulAction.mem_orbit_symm.mp h
 
 lemma RowEquivalent.trans {A B C : Matrix m n R}
-    (hAB : RowEquivalent A B) (hBC : RowEquivalent B C) : RowEquivalent A C := by
-  rcases hAB with ⟨g, rfl⟩
-  rcases hBC with ⟨h, rfl⟩
-  refine ⟨h * g, ?_⟩
-  simp [Matrix.mul_assoc]
+    (hAB : RowEquivalent A B) (hBC : RowEquivalent B C) : RowEquivalent A C :=
+  MulAction.mem_orbit_trans hBC hAB
 
 namespace RowEquivalent
 
