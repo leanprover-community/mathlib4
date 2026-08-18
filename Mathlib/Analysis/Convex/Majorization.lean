@@ -15,13 +15,17 @@ public import Mathlib.Order.SuccPred.LinearLocallyFinite
 /-!
 # Majorization
 
-The majorization preorder on `ι → ℝ` for a finite type `ι`. We say `a ≺ b` ("`a` is majorized by
-`b`") when the two tuples have equal total sum and, for every `k`, the sum of the `k` largest
-coordinates of `a` is at most that of `b`.
+The majorization preorder on `ι → M` for a finite type `ι` and an ordered additive commutative
+monoid `M` (`AddCommMonoid`, `LinearOrder`, `IsOrderedAddMonoid`; e.g. `ℝ`, `ℚ`, `ℝ≥0`, `ℝ≥0∞`). We
+say `a ≺ b` ("`a` is majorized by `b`") when the two tuples have equal total sum and, for every `k`,
+the maximal sum over `k`-element subsets of the coordinates of `a` is at most that of `b`.
+
+The T-transform theory (`TTransform`, the decomposition theorem) additionally needs subtraction and
+division, so it stays over `ℝ`.
 
 ## Main definitions
 
-* `Majorizes a b` (notation `a ≺ b`): the majorization relation on `ι → ℝ`, via `maxSubsetSum`.
+* `Majorizes a b` (notation `a ≺ b`): the majorization relation on `ι → M`, via `maxSubsetSum`.
 * `TTransform b a k l lambda` and `RelatedByTTransform b a`: a single T-transform (Robin Hood
   transfer) pulling the coordinates `a k > a l` toward each other while fixing their sum and the
   other coordinates.
@@ -57,6 +61,7 @@ namespace Majorization
 open OrderDual Tuple Finset
 
 variable {n : ℕ} {α : Type*} [LinearOrder α] (f : Fin n → α)
+variable {M : Type*} [AddCommMonoid M] [LinearOrder M] [IsOrderedAddMonoid M]
 
 /-! ### Sorting into decreasing order and partial sums -/
 
@@ -70,17 +75,17 @@ lemma antitone_comp_sortDesc : Antitone (f ∘ sortDesc f) := by
   exact monotone_toDual_comp_iff.mp hmono
 
 /-- The prefix sum `∑_{x < i} (a ∘ σ) x` of `a` reindexed by the permutation `σ`. -/
-noncomputable def partialSum (i : Fin n) (a : Fin n → ℝ) (σ : Equiv.Perm (Fin n)) : ℝ :=
+noncomputable def partialSum (i : Fin n) (a : Fin n → M) (σ : Equiv.Perm (Fin n)) : M :=
   ∑ x < i, (a ∘ σ) x
 
 /-- The `i`-th descending prefix sum of `a`: the sum of its `i` largest coordinates, obtained as the
 prefix sum of `a` after sorting into decreasing order. -/
-noncomputable def descPrefixSum (i : Fin n) (a : Fin n → ℝ) : ℝ := partialSum i a (sortDesc a)
+noncomputable def descPrefixSum (i : Fin n) (a : Fin n → M) : M := partialSum i a (sortDesc a)
 
 /-- The maximal sum over `i`-element subsets of the coordinates of `a` (equivalently, the sum of its
 `i` largest coordinates). -/
 noncomputable def maxSubsetSum
-  {ι} [Fintype ι] (i : Fin (Fintype.card ι)) (a : ι → ℝ) : ℝ :=
+  {ι} [Fintype ι] (i : Fin (Fintype.card ι)) (a : ι → M) : M :=
   (Finset.univ.powersetCard i).sup'
     (Finset.powersetCard_nonempty.mpr (by rw [Finset.card_univ]; exact i.isLt.le))
     (fun s => ∑ idx ∈ s, a idx)
@@ -90,7 +95,7 @@ noncomputable def maxSubsetSum
 /-- `a1` is majorized by `a2` (notation `a1 ≺ a2`): the two tuples have equal total sum, and
 every prefix sum of the decreasing rearrangement of `a1` is at most the corresponding prefix sum
 of `a2`. -/
-private structure MajorizesFin (a1 a2 : Fin n → ℝ) : Prop where
+private structure MajorizesFin (a1 a2 : Fin n → M) : Prop where
   /-- The two tuples have equal total sum. -/
   sum : ∑ x : Fin n, a1 x = ∑ x : Fin n, a2 x
   /-- Every prefix sum of the decreasing rearrangement of `a1` is at most that of `a2`. -/
@@ -98,7 +103,7 @@ private structure MajorizesFin (a1 a2 : Fin n → ℝ) : Prop where
 
 /-- `a1` is majorized by `a2` (notation `a1 ≺ a2`): the two tuples have equal total sum, and for
 every `i` the maximal sum over `i`-element subsets of `a1` is at most that of `a2`. -/
-structure Majorizes {ι} [Fintype ι] (a1 a2 : ι → ℝ) : Prop where
+structure Majorizes {ι} [Fintype ι] (a1 a2 : ι → M) : Prop where
   /-- The two tuples have equal total sum. -/
   sum : ∑ x : ι, a1 x = ∑ x : ι, a2 x
   /-- For every `i`, the maximal sum over `i`-element subsets of `a1` is at most that of `a2`. -/
@@ -106,14 +111,16 @@ structure Majorizes {ι} [Fintype ι] (a1 a2 : ι → ℝ) : Prop where
 
 @[inherit_doc] scoped infix:50 " ≺ " => Majorizes
 
+omit [IsOrderedAddMonoid M] in
 private lemma partialSum_congr_of_antitone
-    {a : Fin n → ℝ} {p1 p2 : Equiv.Perm (Fin n)}
+    {a : Fin n → M} {p1 p2 : Equiv.Perm (Fin n)}
     (h1 : Antitone (a ∘ p1)) (h2 : Antitone (a ∘ p2)) (i : Fin n) :
     partialSum i a p1 = partialSum i a p2 := by
   unfold partialSum
   rw [Tuple.unique_antitone h1 h2]
 
-lemma sum_comp_perm {a : Fin n → ℝ} {σ : Equiv.Perm (Fin n)} :
+omit [LinearOrder M] [IsOrderedAddMonoid M] in
+lemma sum_comp_perm {a : Fin n → M} {σ : Equiv.Perm (Fin n)} :
     ∑ x, (a ∘ σ) x = ∑ x, a x := Equiv.sum_comp σ a
 
 private lemma comp_perm_comp_sortDesc {σ : Equiv.Perm (Fin n)} :
@@ -124,31 +131,38 @@ private lemma comp_perm_comp_sortDesc {σ : Equiv.Perm (Fin n)} :
       (antitone_comp_sortDesc f)
   rwa [Equiv.Perm.coe_mul, ← Function.comp_assoc] at hcomp
 
-lemma partialSum_comp_perm {a : Fin n → ℝ} {σ : Equiv.Perm (Fin n)} {i : Fin n} :
+omit [IsOrderedAddMonoid M] in
+lemma partialSum_comp_perm {a : Fin n → M} {σ : Equiv.Perm (Fin n)} {i : Fin n} :
     partialSum i (a ∘ σ) (sortDesc (a ∘ σ)) = partialSum i a (sortDesc a) := by
   unfold partialSum
   rw [comp_perm_comp_sortDesc]
 
-private lemma comp_perm_majorizesFin_iff {a b : Fin n → ℝ} {σ : Equiv.Perm (Fin n)} :
+omit [IsOrderedAddMonoid M] in
+private lemma comp_perm_majorizesFin_iff {a b : Fin n → M} {σ : Equiv.Perm (Fin n)} :
     MajorizesFin (a ∘ σ) b ↔ MajorizesFin a b := by
   constructor <;> rintro ⟨hsum, hsums⟩ <;>
     exact ⟨by simpa only [sum_comp_perm] using hsum,
            fun i ↦ by simpa only [descPrefixSum, partialSum_comp_perm] using hsums i⟩
 
-private lemma majorizesFin_comp_perm_iff {a b : Fin n → ℝ} {σ : Equiv.Perm (Fin n)} :
+omit [IsOrderedAddMonoid M] in
+private lemma majorizesFin_comp_perm_iff {a b : Fin n → M} {σ : Equiv.Perm (Fin n)} :
     MajorizesFin a (b ∘ σ) ↔ MajorizesFin a b := by
   constructor <;> rintro ⟨hsum, hsums⟩ <;>
     exact ⟨by simpa only [sum_comp_perm] using hsum,
            fun i ↦ by simpa only [descPrefixSum, partialSum_comp_perm] using hsums i⟩
 
-private lemma MajorizesFin.refl (a : Fin n → ℝ) : MajorizesFin a a :=
+omit [IsOrderedAddMonoid M] in
+private lemma MajorizesFin.refl (a : Fin n → M) : MajorizesFin a a :=
   ⟨rfl, fun _ ↦ le_rfl⟩
 
-private lemma MajorizesFin.trans {a b c : Fin n → ℝ}
+omit [IsOrderedAddMonoid M] in
+private lemma MajorizesFin.trans {a b c : Fin n → M}
     (h1 : MajorizesFin a b) (h2 : MajorizesFin b c) : MajorizesFin a c :=
   ⟨h1.sum.trans h2.sum, fun i ↦ (h1.sums i).trans (h2.sums i)⟩
 
-private instance : Trans (@MajorizesFin n) (@MajorizesFin n) (@MajorizesFin n) where
+private instance :
+    Trans (MajorizesFin (n := n) (M := M)) (MajorizesFin (n := n) (M := M))
+      (MajorizesFin (n := n) (M := M)) where
   trans := MajorizesFin.trans
 
 /-! ### T-transforms and discrepancy -/
@@ -209,21 +223,19 @@ lemma prod_split_two {ι M} [Fintype ι] [DecidableEq ι] [CommMonoid M]
       show (Finset.univ.erase k).erase l = Finset.univ.filter (fun x ↦ x ≠ k ∧ x ≠ l) from by
         ext x; simp [Finset.mem_erase, and_comm]]
 
-lemma sum_le_sum_Iio_of_antitone {a : Fin n → ℝ} {i : Fin n} {p : Finset (Fin n)}
+lemma sum_le_sum_Iio_of_antitone {a : Fin n → M} {i : Fin n} {p : Finset (Fin n)}
     (antitone : Antitone a) (peqi : #p = i) : (∑ x ∈ p, a x) ≤ (∑ x < i, a x) := by
   let ai := a i
   rw [← Finset.sum_inter_add_sum_sdiff p (Iio i) (a ·),
       ← Finset.sum_inter_add_sum_sdiff (Iio i) p (a ·),
       Finset.inter_comm (Iio i) p]
   apply add_le_add_right
-  have hextra_le : ∑ x ∈ p \ Iio i, a x ≤ #(p \ Iio i) * ai := by
-    rw [← nsmul_eq_mul]
+  have hextra_le : ∑ x ∈ p \ Iio i, a x ≤ #(p \ Iio i) • ai := by
     apply Finset.sum_le_card_nsmul
     intro x hx
     simp only [Finset.mem_sdiff, Finset.mem_Iio, not_lt] at hx
     exact antitone hx.2
-  have hmissing_ge : #(Iio i \ p) * ai ≤ ∑ x ∈ Iio i \ p, a x := by
-    rw [← nsmul_eq_mul]
+  have hmissing_ge : #(Iio i \ p) • ai ≤ ∑ x ∈ Iio i \ p, a x := by
     apply Finset.card_nsmul_le_sum
     intro x hx
     simp only [Finset.mem_sdiff, Finset.mem_Iio] at hx
@@ -233,7 +245,7 @@ lemma sum_le_sum_Iio_of_antitone {a : Fin n → ℝ} {i : Fin n} {p : Finset (Fi
   rw [hsame_count] at hmissing_ge
   exact hextra_le.trans hmissing_ge
 
-lemma subset_sum_le_sum_greatest {n} {a : Fin n → ℝ} {i : Fin n} {t : Finset (Fin n)}
+lemma subset_sum_le_sum_greatest {n} {a : Fin n → M} {i : Fin n} {t : Finset (Fin n)}
     (hs : #t = (i : Nat)) : (∑ x ∈ t, a x) ≤ (∑ x < i, (a ∘ sortDesc a) x) := by
     let preimg := image (sortDesc a).symm t
     have hcard : #preimg = #t := Finset.card_image_of_injective t (sortDesc a).symm.injective
@@ -244,7 +256,8 @@ lemma subset_sum_le_sum_greatest {n} {a : Fin n → ℝ} {i : Fin n} {t : Finset
     rw [ht_image, Finset.sum_image hinj]
     exact sum_le_sum_Iio_of_antitone (antitone_comp_sortDesc a) (hcard.trans hs)
 
-lemma sum_image_sortDesc_Iio {n} {a : Fin n → ℝ} {i : Fin n} {t : Finset (Fin n)}
+omit [IsOrderedAddMonoid M] in
+lemma sum_image_sortDesc_Iio {n} {a : Fin n → M} {i : Fin n} {t : Finset (Fin n)}
     (ht : t = (Finset.Iio i).image (sortDesc a)) :
     (∑ x ∈ t, a x) = ∑ x < i, (a ∘ sortDesc a) x := by
   rw [ht]
@@ -253,7 +266,7 @@ lemma sum_image_sortDesc_Iio {n} {a : Fin n → ℝ} {i : Fin n} {t : Finset (Fi
 
 /-- The maximal sum over `i`-element subsets is attained by the `i` greatest coordinates: it equals
 the sum over the image of `Iio i` under the decreasing sort. -/
-lemma sup'_powersetCard_eq_sum_image_sortDesc {n} (a : Fin n → ℝ) (i : Fin n) :
+lemma sup'_powersetCard_eq_sum_image_sortDesc {n} (a : Fin n → M) (i : Fin n) :
     (Finset.univ.powersetCard i).sup'
         (Finset.powersetCard_nonempty.mpr
           (by rw [Finset.card_univ, Fintype.card_fin]; exact i.isLt.le))
@@ -272,8 +285,9 @@ lemma sup'_powersetCard_eq_sum_image_sortDesc {n} (a : Fin n → ℝ) (i : Fin n
   · exact Finset.le_sup' (fun s => ∑ idx ∈ s, a idx)
       (Finset.mem_powersetCard.mpr ⟨Finset.subset_univ _, hcard⟩)
 
+omit [IsOrderedAddMonoid M] in
 private lemma sup'_powersetCard_comp {ι κ} [Fintype ι] [Fintype κ]
-    (f : ι → ℝ) (e : ι ≃ κ) (k : ℕ)
+    (f : ι → M) (e : ι ≃ κ) (k : ℕ)
     (hι : (Finset.univ.powersetCard k : Finset (Finset ι)).Nonempty)
     (hκ : (Finset.univ.powersetCard k : Finset (Finset κ)).Nonempty) :
     (Finset.univ.powersetCard k).sup' hι (fun s => ∑ x ∈ s, f x)
@@ -286,8 +300,9 @@ private lemma sup'_powersetCard_comp {ι κ} [Fintype ι] [Fintype κ]
   refine Finset.sup'_congr hι rfl fun s _ => ?_
   simp [Finset.mapEmbedding_apply, Finset.sum_map]
 
+omit [IsOrderedAddMonoid M] in
 private lemma maxSubsetSum_comp_symm {ι} [Fintype ι] (e : ι ≃ Fin (Fintype.card ι))
-    (a : ι → ℝ) (i : Fin (Fintype.card ι)) :
+    (a : ι → M) (i : Fin (Fintype.card ι)) :
     maxSubsetSum i a = (Finset.univ.powersetCard i).sup'
         (Finset.powersetCard_nonempty.mpr
           (by rw [Finset.card_univ, Fintype.card_fin]; exact i.isLt.le))
@@ -296,7 +311,7 @@ private lemma maxSubsetSum_comp_symm {ι} [Fintype ι] (e : ι ≃ Fin (Fintype.
   exact sup'_powersetCard_comp a e _ _ _
 
 lemma maxSubsetSum_eq_descPrefixSum_comp_symm {ι} [Fintype ι]
-    (i : Fin (Fintype.card ι)) (a : ι → ℝ) (equiv : ι ≃ Fin (Fintype.card ι)) :
+    (i : Fin (Fintype.card ι)) (a : ι → M) (equiv : ι ≃ Fin (Fintype.card ι)) :
     maxSubsetSum i a = descPrefixSum i (a ∘ equiv.symm) := by
   rw [maxSubsetSum_comp_symm equiv a i, sup'_powersetCard_eq_sum_image_sortDesc]
   exact sum_image_sortDesc_Iio rfl
@@ -306,7 +321,7 @@ lemma maxSubsetSum_eq_descPrefixSum_comp_symm {ι} [Fintype ι]
 satisfy the `Fin`-level majorization relation `MajorizesFin`.
 This reduces every `Majorizes` question to the `Fin n` T-transform theory. -/
 private lemma majorizes_iff_majorizesFin_comp_symm {ι} [Fintype ι] (e : ι ≃ Fin (Fintype.card ι))
-    (a b : ι → ℝ) : Majorizes a b ↔ MajorizesFin (a ∘ e.symm) (b ∘ e.symm) := by
+    (a b : ι → M) : Majorizes a b ↔ MajorizesFin (a ∘ e.symm) (b ∘ e.symm) := by
   constructor
   · rintro ⟨hsum, hsums⟩
     refine ⟨by simpa only [Function.comp_apply, Equiv.sum_comp] using hsum, fun i => ?_⟩
@@ -319,35 +334,42 @@ private lemma majorizes_iff_majorizesFin_comp_symm {ι} [Fintype ι] (e : ι ≃
         maxSubsetSum_eq_descPrefixSum_comp_symm i b e]
     exact hsums i
 
-lemma majorizes_iff_descPrefixSum {ι} [Fintype ι] (e : ι ≃ Fin (Fintype.card ι)) (a b : ι → ℝ) :
+lemma majorizes_iff_descPrefixSum {ι} [Fintype ι] (e : ι ≃ Fin (Fintype.card ι)) (a b : ι → M) :
     Majorizes a b ↔ (∑ x, a x = ∑ x, b x) ∧
       ∀ i, descPrefixSum i (a ∘ e.symm) ≤ descPrefixSum i (b ∘ e.symm) :=
   (majorizes_iff_majorizesFin_comp_symm e a b).trans
     ⟨fun h => ⟨by simpa only [Function.comp_apply, Equiv.sum_comp] using h.sum, h.sums⟩,
      fun h => ⟨by simpa only [Function.comp_apply, Equiv.sum_comp] using h.1, h.2⟩⟩
 
-lemma Majorizes.refl {ι} [Fintype ι] (a : ι → ℝ) : Majorizes a a :=
+omit [IsOrderedAddMonoid M] in
+lemma Majorizes.refl {ι} [Fintype ι] (a : ι → M) : Majorizes a a :=
   ⟨rfl, fun _ => le_rfl⟩
 
-lemma Majorizes.trans {ι} [Fintype ι] {a b c : ι → ℝ}
+omit [IsOrderedAddMonoid M] in
+lemma Majorizes.trans {ι} [Fintype ι] {a b c : ι → M}
     (h1 : Majorizes a b) (h2 : Majorizes b c) : Majorizes a c :=
   ⟨h1.sum.trans h2.sum, fun i => (h1.sums i).trans (h2.sums i)⟩
 
-instance {ι} [Fintype ι] : Trans (@Majorizes ι _) (@Majorizes ι _) (@Majorizes ι _) where
+instance {ι} [Fintype ι] :
+    Trans (Majorizes (ι := ι) (M := M)) (Majorizes (ι := ι) (M := M))
+      (Majorizes (ι := ι) (M := M)) where
   trans := Majorizes.trans
 
-lemma maxSubsetSum_comp_equiv {ι} [Fintype ι] (σ : ι ≃ ι) (a : ι → ℝ)
+omit [IsOrderedAddMonoid M] in
+lemma maxSubsetSum_comp_equiv {ι} [Fintype ι] (σ : ι ≃ ι) (a : ι → M)
     (i : Fin (Fintype.card ι)) : maxSubsetSum i (a ∘ σ) = maxSubsetSum i a := by
   unfold maxSubsetSum
   exact (sup'_powersetCard_comp a σ.symm _ _ _).symm
 
-lemma comp_perm_majorizes_iff {ι} [Fintype ι] {a b : ι → ℝ} {σ : Equiv.Perm ι} :
+omit [IsOrderedAddMonoid M] in
+lemma comp_perm_majorizes_iff {ι} [Fintype ι] {a b : ι → M} {σ : Equiv.Perm ι} :
     Majorizes (a ∘ σ) b ↔ Majorizes a b := by
   constructor <;> rintro ⟨hsum, hsums⟩ <;>
     exact ⟨by simpa [Equiv.sum_comp] using hsum,
            fun i => by simpa [maxSubsetSum_comp_equiv] using hsums i⟩
 
-lemma majorizes_comp_perm_iff {ι} [Fintype ι] {a b : ι → ℝ} {σ : Equiv.Perm ι} :
+omit [IsOrderedAddMonoid M] in
+lemma majorizes_comp_perm_iff {ι} [Fintype ι] {a b : ι → M} {σ : Equiv.Perm ι} :
     Majorizes a (b ∘ σ) ↔ Majorizes a b := by
   constructor <;> rintro ⟨hsum, hsums⟩ <;>
     exact ⟨by simpa [Equiv.sum_comp] using hsum,
