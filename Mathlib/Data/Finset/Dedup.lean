@@ -30,7 +30,7 @@ open Multiset Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type*}
 
 namespace Finset
 
@@ -65,6 +65,10 @@ theorem Nodup.toFinset_inj {l l' : Multiset α} (hl : Nodup l) (hl' : Nodup l')
 theorem mem_toFinset {a : α} {s : Multiset α} : a ∈ s.toFinset ↔ a ∈ s :=
   mem_dedup
 
+theorem coe_toFinset {s : Multiset α} : s.toFinset = {a | a ∈ s} := by
+  ext
+  simp
+
 @[simp]
 theorem toFinset_subset : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
   simp only [Finset.subset_iff, Multiset.subset_iff, Multiset.mem_toFinset]
@@ -98,8 +102,7 @@ end Finset
 
 namespace List
 
-variable [DecidableEq α] {l l' : List α} {a : α} {f : α → β}
-  {s : Finset α} {t : Set β} {t' : Finset β}
+variable [DecidableEq α] {l l' : List α} {a : α} {s : Finset α}
 
 /-- `toFinset l` removes duplicates from the list `l` to produce a finset. -/
 def toFinset (l : List α) : Finset α :=
