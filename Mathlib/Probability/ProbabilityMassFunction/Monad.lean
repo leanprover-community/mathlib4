@@ -196,6 +196,8 @@ instance : Monad PMF where
 
 section BindOnSupport
 
+/-- Generalized version of `bind` allowing `f` to only be defined on the support of `p`.
+  `p.bind f` is equivalent to `p.bindOnSupport (fun a _ ↦ f a)`, see `bindOnSupport_eq_bind`. -/
 @[deprecated Measure.bind (since := "2026-08-17")]
 def bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF β) : PMF β :=
   ⟨fun b => ∑' a, p a * if h : p a = 0 then 0 else f a h b, ENNReal.summable.hasSum_iff.2 (by

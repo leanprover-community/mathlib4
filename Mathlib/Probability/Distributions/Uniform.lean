@@ -253,7 +253,6 @@ section Measure
 variable (t : Set α)
 
 open scoped Classical in
-@[simp]
 theorem uniformOfFinset_apply :
     uniformOfFinset s t = #{x ∈ s | x ∈ t} / #s :=
   calc

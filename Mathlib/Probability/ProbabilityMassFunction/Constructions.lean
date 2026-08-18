@@ -139,7 +139,7 @@ theorem seq_apply (q : PMF (α → β)) (p : PMF α) (b : β) :
 @[deprecated Measure.bind_apply (since := "2026-08-18")]
 theorem support_seq (q : PMF (α → β)) (p : PMF α) :
     (seq q p).support = ⋃ f ∈ q.support, f '' p.support :=
-  Set.ext fun b => by simp [-mem_support_iff, seq, @eq_comm β b, support_bind, support_pure]
+  Set.ext fun b => by simp [seq, @eq_comm β b, support_bind, support_pure]
 
 @[deprecated Measure.bind_apply (since := "2026-08-18")]
 theorem mem_support_seq_iff (q : PMF (α → β)) (p : PMF α) (b : β) :
