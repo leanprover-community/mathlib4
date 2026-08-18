@@ -23,7 +23,7 @@ variable {M : Type*}
 
 section AddMonoidHomClass
 
-variable {A B F : Type*} [FunLike F ℕ A]
+variable {A F : Type*} [FunLike F ℕ A]
 
 lemma ext_nat' [AddZeroClass A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
   DFunLike.ext f g <| by
