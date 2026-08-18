@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.EMetricSpace.MulOpposite
 public import Mathlib.Topology.MetricSpace.Isometry
 public import Mathlib.Topology.MetricSpace.Lipschitz
 
@@ -314,7 +315,7 @@ normed spaces. -/
 `X` under translation by `c : G` is bounded. -/]
 theorem Bornology.IsBounded.smul [PseudoMetricSpace X] [SMul G X] [IsIsometricSMul G X] {s : Set X}
     (hs : IsBounded s) (c : G) : IsBounded (c • s) :=
-  (isometry_smul X c).lipschitz.isBounded_image hs
+  (isometry_smul X c).lipschitzWith.isBounded_image hs
 
 namespace Metric
 
