@@ -18,7 +18,7 @@ see `Mathlib/Topology/Metrizable/Uniformity.lean`.
 -/
 
 -- don't import the real numbers
-assert_not_exists Real
+assert_not_exists DivisionSemiring IsOrderedRing
 
 public section
 
