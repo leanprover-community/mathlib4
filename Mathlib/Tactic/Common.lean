@@ -94,7 +94,7 @@ public import Mathlib.Tactic.Set
 public import Mathlib.Tactic.SimpIntro
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.Simproc.ExistsAndEq
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Subsingleton
@@ -123,6 +123,7 @@ public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 public import Lean.Elab.Tactic.Try
+public meta import Lean.Meta.Tactic.Try.Collect
 
 /-!
 # Common tactics, linters, and utilities

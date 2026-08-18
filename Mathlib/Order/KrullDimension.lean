@@ -12,6 +12,8 @@ public import Mathlib.Order.Atoms
 public import Mathlib.Order.RelSeries
 public import Mathlib.Tactic.FinCases
 
+import Mathlib.Data.Nat.Cast.Order.Basic
+
 /-!
 # Krull dimension of a preordered set and height of an element
 
@@ -137,7 +139,6 @@ lemma coheight_le_iff {a : α} {n : ℕ∞} :
     coheight a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, a ≤ p.head → p.length ≤ n := by
   rw [coheight_eq, iSup₂_le_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a → p.length ≤ n) :
     height a ≤ n := by
   apply height_le_iff.mpr
@@ -193,7 +194,6 @@ lemma coheight_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.head = a �
     coheight a ≤ n :=
   coheight_le_iff'.mpr h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
     p.length ≤ height x := by
   by_cases hlen0 : p.length ≠ 0
@@ -952,18 +952,6 @@ lemma krullDim_eq_one_iff_of_boundedOrder {α : Type*} [PartialOrder α] [Bounde
   krullDim_eq_one_iff_of_boundedOrder.mpr ‹_›
 
 variable {α : Type*} [Preorder α]
-
-/-
-These two lemmas could possibly be used to simplify the subsequent calculations,
-especially once the `Set.encard` api is richer.
-
-(Commented out to avoid importing modules purely for `proof_wanted`.)
-proof_wanted height_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
-  height a = (Set.Iio a).encard
-
-proof_wanted coheight_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
-  coheight a = (Set.Ioi a).encard
--/
 
 @[simp] lemma height_nat (n : ℕ) : height n = n := by
   induction n using Nat.strongRecOn with | ind n ih =>

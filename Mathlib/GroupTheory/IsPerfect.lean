@@ -29,12 +29,12 @@ Among the basic results, we show that
   homomorphism is perfect.
 -/
 
-@[expose] public section
+public section
 
 namespace Group
 open Subgroup
 
-variable {G G' : Type*} [Group G] [Group G'] {H K : Subgroup G} (f : G →* G')
+variable {G G' : Type*} [Group G] [Group G'] {H : Subgroup G} (f : G →* G')
 
 variable (G) in
 /-- A group `G` is perfect if `G` equals its commutator subgroup `⁅G, G⁆`. -/
