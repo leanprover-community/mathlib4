@@ -13,6 +13,7 @@ building  = "bors-staging"     # PR is currently building on staging (such PRs w
 failed    = "awaiting-requeue" # PR's merge build failed terminally and was dropped; needs a re-queue
 delegated = "delegated"        # PR has at least one active (non-expired) delegation
 
+# test comment change: does this get auto-labelled as CI?
 [delegation]
 default_expiry_sec = 1209600 # 2 weeks
 # Entries below are Erlang `:glob` patterns (NOT gitignore): `*` matches across `/`,
