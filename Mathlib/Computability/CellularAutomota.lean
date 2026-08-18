@@ -756,6 +756,25 @@ private def ConwayLifeTypical := ConwayLife
   (fun alive_nbhrs => alive_nbhrs = 3)
   (fun alive_nbhrs => alive_nbhrs < 3 ∨ alive_nbhrs > 5)
 
+/--
+`ConwayLife` has `emptyWorldProperty`
+as long as the `become_alive` says
+that a dead cell with 0 living neighbors stays dead.
+`ConwayLifeTypical` satisfies this.
+-/
+public lemma ConwayLife_emptyWorldProperty
+  (become_alive become_dead : Fin 10 -> Bool)
+  (h : become_alive 0 = false) :
+  emptyWorldProperty (ConwayLife become_alive become_dead) false := by
+  unfold emptyWorldProperty ConwayLife
+  have count_true_all_false : count_true (α := ↥z2_nbhrs) (f := fun _ => false) = 0 := by
+    simp [count_true]
+  simp only [count_true_all_false]
+  rw [if_neg (show ¬ (false = true) by decide)]
+  rw [Fin.mk_zero, h]
+  rw [
+    if_neg (show ¬ (false = true) by decide)]
+
 end ConwayLife
 
 section Languages
