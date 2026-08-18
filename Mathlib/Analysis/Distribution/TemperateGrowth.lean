@@ -13,7 +13,6 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Tactic.MoveAdd
 
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
-import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
 import Mathlib.Analysis.Complex.OperatorNorm
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
@@ -313,40 +312,23 @@ variable (𝕜) in
 theorem RCLike.hasTemperateGrowth_ofReal [RCLike 𝕜] : (RCLike.ofReal (K := 𝕜)).HasTemperateGrowth :=
   (RCLike.ofRealCLM (K := 𝕜)).hasTemperateGrowth
 
-/-- The function `x ↦ e ^ {i x}` has temperate growth. -/
-@[fun_prop]
-theorem Complex.hasTemperateGrowth_exp_I_mul :
-    (fun x : ℝ ↦ Complex.exp (Complex.I * x)).HasTemperateGrowth := by
-  let f y := Complex.exp (Complex.I * y)
-  have : (fun x : ℝ ↦ Complex.exp (Complex.I * x)) = f ∘ Complex.ofRealCLM := by ext; simp [f]
-  rw [this]
-  refine ⟨by fun_prop, ?_⟩
-  intro n
-  use 0, 1
-  intro x
-  calc
-    _ = ‖(iteratedFDeriv ℝ n f x).compContinuousLinearMap fun _ ↦ Complex.ofRealCLM‖ := by
-      congr
-      apply Complex.ofRealCLM.iteratedFDeriv_comp_right (by fun_prop) _ le_top
-    _ ≤ ‖iteratedFDeriv ℝ n f x‖ * ∏ _ : Fin n, ‖Complex.ofRealCLM‖ := by
-      apply ContinuousMultilinearMap.norm_compContinuousLinearMap_le
-    _ ≤ ‖iteratedFDeriv ℝ n f x‖ := by simp
-    _ ≤ _ := by
-      rw [← ContDiffAt.restrictScalars_iteratedFDeriv (𝕜' := ℂ) (by fun_prop)]
-      simp [norm_iteratedFDeriv_eq_norm_iteratedDeriv, f]
-
 @[fun_prop]
 theorem Real.hasTemperateGrowth_sin :
     Real.sin.HasTemperateGrowth := by
-  suffices (fun x : ℝ ↦ Complex.imCLM (Complex.exp (Complex.I * x))).HasTemperateGrowth by
-    simpa [Complex.exp_im]
-  fun_prop
+  refine ⟨Real.contDiff_sin, fun n ↦ ⟨0, 1, fun x ↦ ?_⟩⟩
+  simpa [norm_iteratedFDeriv_eq_norm_iteratedDeriv] using Real.abs_iteratedDeriv_sin_le_one n x
 
 @[fun_prop]
 theorem Real.hasTemperateGrowth_cos :
     Real.cos.HasTemperateGrowth := by
-  suffices (fun x : ℝ ↦ Complex.reCLM (Complex.exp (Complex.I * x))).HasTemperateGrowth by
-    simpa [Complex.exp_re]
+  refine ⟨Real.contDiff_cos, fun n ↦ ⟨0, 1, fun x ↦ ?_⟩⟩
+  simpa [norm_iteratedFDeriv_eq_norm_iteratedDeriv] using Real.abs_iteratedDeriv_cos_le_one n x
+
+/-- The function `x ↦ exp (x * I)` has temperate growth. -/
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_exp_I_mul :
+    (fun x : ℝ ↦ Complex.exp (x * Complex.I)).HasTemperateGrowth := by
+  simp only [Complex.exp_ofReal_mul_I]
   fun_prop
 
 variable [NormedAddCommGroup H] [InnerProductSpace ℝ H]
