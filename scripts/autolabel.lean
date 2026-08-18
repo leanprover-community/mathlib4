@@ -28,6 +28,9 @@ needs to be updated here if necessary:
 files have been modified and then finds all labels which should be added based on these changes.
 These are printed for testing purposes.
 
+`lake exe autolabel --title="feat(Algebra): yada yada"` will not look at the `git diff` and
+instead extract the comma-separated list of paths from the provided PR title.
+
 See `lake exe autolabel --help` for all arguments available.
 
 The script can add up to `MAX_LABELS` labels (defined below).
