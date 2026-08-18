@@ -38,6 +38,7 @@ instance : InfSet (Πₗ i, α i) where
 
 theorem sInf_apply (s : Set (Πₗ i, α i)) (i : ι) :
     sInf s i = ⨅ e : {e ∈ s | ∀ j < i, e j = sInf s j}, e.1 i := by
+  -- This still works without excluding `iInf_of_isEmpty`, but very slowly
   simp [sInf, inf, -iInf_of_isEmpty]
 
 theorem sInf_apply_le {s : Set (Πₗ i, α i)} {i : ι} {e : Πₗ i, α i}
