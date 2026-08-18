@@ -438,7 +438,7 @@ variable (F)
 variable [HasLimit F] (E : K ⥤ J) [HasLimit (E ⋙ F)]
 
 /-- The canonical morphism from the limit of `F` to the limit of `E ⋙ F`. -/
-@[to_dual]
+@[to_dual /-- The canonical morphism from the colimit of `E ⋙ F` to the colimit of `F`. -/]
 def limit.pre : limit F ⟶ limit (E ⋙ F) :=
   limit.lift (E ⋙ F) ((limit.cone F).whisker E)
 

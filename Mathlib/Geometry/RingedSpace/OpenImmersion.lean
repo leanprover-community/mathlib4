@@ -881,7 +881,7 @@ theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).hom.base := 
   rw [← show _ = (colimit.ι F i).hom.base from
     ι_preservesColimitIso_inv (SheafedSpace.forget C) F i]
   have : _ = _ ≫ colimit.ι (Discrete.functor ((F ⋙ SheafedSpace.forget C).obj ∘ Discrete.mk)) i :=
-    HasColimit.isoOfNatIso_ι_hom Discrete.natIsoFunctor i
+    HasColimit.ι_isoOfNatIso_hom Discrete.natIsoFunctor i
   rw [← Iso.eq_comp_inv] at this
   rw [this]
   have : colimit.ι _ _ ≫ _ = _ :=
@@ -913,7 +913,7 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
             (TopCat.sigmaIsoSigma ((F ⋙ forget C).obj ∘ Discrete.mk)).hom) x at eq
   cases i; cases j
   rw [ι_preservesColimitIso_hom_assoc, ι_preservesColimitIso_hom_assoc,
-    HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
+    HasColimit.ι_isoOfNatIso_hom_assoc, HasColimit.ι_isoOfNatIso_hom_assoc,
     TopCat.sigmaIsoSigma_hom_ι, TopCat.sigmaIsoSigma_hom_ι] at eq
   convert! h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
 
