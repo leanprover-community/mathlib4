@@ -104,8 +104,8 @@ lemma esymm_pair_two (x y : R) :
     esymm (x ::ₘ {y}) 2 = x * y := by
   simp [esymm, powersetCard_one]
 
-theorem two_mul_esymm_two {R : Type*} [CommRing R] (s : Multiset R) : 2 * s.esymm 2 =
-  s.sum ^ 2 - (s.map (· ^ 2)).sum := by
+theorem two_mul_esymm_two {R : Type*} [CommRing R] (s : Multiset R) :
+    2 * s.esymm 2 = s.sum ^ 2 - (s.map (· ^ 2)).sum := by
   induction s using Multiset.induction with
   | empty => simp [esymm, powersetCard_zero_right]
   | cons a t ih => grind [sum_cons, map_cons, esymm_cons, esymm_one]
