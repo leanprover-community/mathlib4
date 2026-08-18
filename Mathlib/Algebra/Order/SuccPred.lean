@@ -6,7 +6,6 @@ Authors: Violeta Hernández Palacios, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Order.SuccPred.Limit
@@ -52,6 +51,9 @@ theorem add_one_le_of_lt (h : x < y) : x + 1 ≤ y := by
 
 theorem add_one_le_iff_of_not_isMax (hx : ¬ IsMax x) : x + 1 ≤ y ↔ x < y := by
   rw [← succ_eq_add_one, succ_le_iff_of_not_isMax hx]
+
+theorem add_one_le_iff_of_not_isMax' (hy : ¬ IsMax y) : x + 1 ≤ y ↔ x < y := by
+  rw [← succ_eq_add_one, succ_le_iff_of_not_isMax' hy]
 
 @[simp]
 theorem add_one_le_iff [NoMaxOrder α] : x + 1 ≤ y ↔ x < y :=
@@ -230,6 +232,9 @@ theorem le_of_lt_add_one (h : x < y + 1) : x ≤ y := by
 
 theorem lt_add_one_iff_of_not_isMax (hy : ¬ IsMax y) : x < y + 1 ↔ x ≤ y := by
   rw [← succ_eq_add_one, lt_succ_iff_of_not_isMax hy]
+
+theorem lt_add_one_iff_of_not_isMax' (hx : ¬ IsMax x) : x < y + 1 ↔ x ≤ y := by
+  rw [← succ_eq_add_one, lt_succ_iff_of_not_isMax' hx]
 
 @[simp]
 theorem lt_add_one_iff [NoMaxOrder α] : x < y + 1 ↔ x ≤ y :=
