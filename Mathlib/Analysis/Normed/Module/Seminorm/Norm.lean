@@ -17,7 +17,7 @@ In this file, we define the norm of a normed space as a bundled seminorm.
 
 public section
 
-variable {𝕜 E F : Type}
+variable {𝕜 E F : Type*}
 
 variable [NormedField 𝕜]
 
@@ -29,8 +29,10 @@ variable {r : ℝ} {x : E} {c : 𝕜} {ε : ℝ}
 variable (𝕜 E)
 
 /-- The norm of a seminormed space as a seminorm. -/
-def normSeminorm : Seminorm 𝕜 E :=
+@[expose] def normSeminorm : Seminorm 𝕜 E :=
   { normAddGroupSeminorm E with smul' := norm_smul }
+
+-- Todo: exposing this definition is questionable, but unexposing needs some work
 
 @[simp]
 theorem coe_normSeminorm : ⇑(normSeminorm 𝕜 E) = norm := by rfl

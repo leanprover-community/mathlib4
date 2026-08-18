@@ -38,7 +38,7 @@ seminorm, locally convex, LCTVS
 
 @[expose] public section
 
-assert_not_exists balancedCore
+assert_not_exists balancedCore NormedSpace
 
 open NormedField Set Filter
 
