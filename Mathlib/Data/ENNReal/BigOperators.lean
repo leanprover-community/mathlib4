@@ -23,7 +23,7 @@ open Set NNReal
 
 namespace ENNReal
 
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
+variable {a : ℝ≥0∞} {p q : ℝ≥0}
 
 section OperationsAndInfty
 
@@ -137,6 +137,12 @@ theorem exists_le_of_sum_le {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ�
     (Hle : ∑ i ∈ s, f i ≤ ∑ i ∈ s, g i) : ∃ i ∈ s, f i ≤ g i := by
   contrapose! Hle
   apply ENNReal.sum_lt_sum_of_nonempty hs Hle
+
+/-- `Finset.sum_div` does not apply since `ℝ≥0∞` is not a `DivisionSemiring`.  Although
+  the proof of `Finset.sum_div` only needs `DivInvMonoid` and `NonUnitalNonAssocSemiring`, the best
+  typeclass including these is `DivisionSemiring`. -/
+lemma sum_div (a : ℝ≥0∞) : (∑ i ∈ s, f i) / a = ∑ i ∈ s, f i / a := by
+  simp_rw [div_eq_mul_inv, Finset.sum_mul]
 
 end Sum
 
