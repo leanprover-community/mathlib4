@@ -5,7 +5,13 @@ Authors: Marcin Bugaj
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Tauto
 public import Mathlib.Data.Fin.Tuple.Sort
 public import Mathlib.Order.OrderDual
 public import Mathlib.Data.Fin.SuccPredOrder
