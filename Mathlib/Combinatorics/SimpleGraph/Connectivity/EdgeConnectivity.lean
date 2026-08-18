@@ -217,8 +217,8 @@ theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u 
 theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v :=
   iSup₂_le fun _ hi ↦ IsEdgeReachable.le_edgeReachability (hi u v)
 
-theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u]
-    (huv : u ≠ v) : G.edgeReachability u v ≤ G.degree u :=
+theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u] (huv : u ≠ v) :
+    G.edgeReachability u v ≤ G.degree u :=
   iSup₂_le fun _ hk ↦ mod_cast hk.le_degree huv
 
 theorem edgeReachability_le_degree_right [Fintype <| G.neighborSet v]
