@@ -183,16 +183,16 @@ lemma map_eq_zero (n : ℕ) [NeZero n] (hf : f = 1) : map f φ n = 0 := by
   let a : G →* PUnit.{u + 1} := 1
   let b : PUnit.{u + 1} →* H := 1
   let C := Rep.trivial k PUnit.{u + 1} B.ρ.invariants
-  let β : res a C ⟶ B :=
-    Rep.ofHom
-      { toLinearMap := B.ρ.invariants.subtype
-        isIntertwining' g := by ext x; exact (x.property g).symm }
   let α : res b A ⟶ Rep.trivial k PUnit.{u + 1} C :=
     Rep.ofHom
       { toLinearMap :=
           LinearMap.codRestrict B.ρ.invariants φ.hom.toLinearMap (fun a g ↦ by
             simpa [hf] using ((φ.hom.isIntertwining) g a).symm)
         isIntertwining' g := by aesop }
+  let β : res a C ⟶ B :=
+    Rep.ofHom
+      { toLinearMap := B.ρ.invariants.subtype
+        isIntertwining' g := by ext x; exact (x.property g).symm }
   obtain rfl : f = b.comp a := by aesop
   have : map a β (n + 1) = 0 :=
     (isZero_groupCohomology_succ_of_subsingleton _ _).eq_of_src ..
