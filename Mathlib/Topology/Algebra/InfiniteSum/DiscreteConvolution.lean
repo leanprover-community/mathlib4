@@ -398,12 +398,9 @@ variable [TopologicalSpace R] [T2Space R] [ContinuousConstSMul S R]
 /-- External scalar multiplication in the first factor commutes with convolution. -/
 @[to_additive (dont_translate := S R) smul_addRingConvolution]
 lemma smul_ringConvolution [IsScalarTower S R R] (c : S) (f g : M → R)
-    (hfg : ConvolutionExists mulLinearMap f g) :
+    (hfg : ConvolutionExists (.mul ℕ R) f g) :
     (c • f) ⋆ᵣ g = c • (f ⋆ᵣ g) := by
-  ext x
-  simp only [ringConvolution_apply, Pi.smul_apply]
-  simp_rw [smul_mul_assoc]
-  simpa only [mulLinearMap_apply] using (hfg x).tsum_const_smul c
+  ext; simpa [smul_mul_assoc] using (hfg _).tsum_const_smul c
 
 /-- External scalar multiplication in the second factor commutes with convolution. -/
 @[to_additive (dont_translate := S R) addRingConvolution_smul]
