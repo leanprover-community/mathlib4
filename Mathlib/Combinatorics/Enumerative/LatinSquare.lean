@@ -77,7 +77,7 @@ class LatinRectangle (m : Type*) (n : Type*) (α : Type*)
   /-- An `m × n` Latin rectangle contains `n` distinct entries. -/
   card_eq : Fintype.card α = Fintype.card n
   /-- Each row contains each symbol exactly once. -/
-  row_injective : ∀ i, Function.Bijective (M.row i)
+  row_bijective : ∀ i, Function.Bijective (M.row i)
   /-- Entries cannot repeat in a given column. -/
   col_injective : ∀ y, Function.Injective (M.col y)
   /-- The number of rows is less than or equal to the number of columns. -/
@@ -111,7 +111,7 @@ def LatinSquare.fromOncePerColumn (M : Matrix n n α) (card_eq : Fintype.card α
     LatinSquare n α := {
   M := M,
   card_eq := card_eq,
-  row_injective := row_bijective,
+  row_bijective := row_bijective,
   col_injective := (col_bijective · |>.injective)
   }
 
@@ -143,8 +143,8 @@ def LatinRectangle.relabel (A : LatinRectangle m n α) (f : m ≃ m') (g : n ≃
     have h' : Fintype.card α = Fintype.card β := Fintype.card_congr h
     have k' := A.card_eq
     lia,
-  row_injective i' :=
-    h.bijective.comp (A.row_injective (f.symm i') |>.comp g.symm.bijective)
+  row_bijective i' :=
+    h.bijective.comp (A.row_bijective (f.symm i') |>.comp g.symm.bijective)
   col_injective := by
     have h' := A.col_injective
     simp only [Function.Injective, Matrix.col_apply, Matrix.reindex_apply, Equiv.toFun_as_coe,
@@ -238,7 +238,7 @@ lemma LatinRectangle.card_symbols_not_in {k n : Type*} [Fintype k] [Fintype n]
 lemma LatinRectangle.row_entry_to_column_entry {k n : Type*} [Fintype k] [Fintype n]
     (A : LatinRectangle k n α) (x : α) :
     ∃ f : k → n, ∀ {a : k} {b : n}, LatinRectangle.M a b = x ↔ f a = b := by
-  have hrow := A.row_injective
+  have hrow := A.row_bijective
   conv at hrow =>
     ext
     rw [Function.bijective_iff_existsUnique]
@@ -295,7 +295,7 @@ noncomputable def LatinRectangle.extendRow {k n : Type*} [Fintype n]
   {
     M := M'
     card_eq := A.card_eq
-    row_injective := by
+    row_bijective := by
       simp only [Matrix.row, M']
       intro y
       split_ifs
@@ -307,7 +307,7 @@ noncomputable def LatinRectangle.extendRow {k n : Type*} [Fintype n]
         have h₁' := Function.leftInverse_invFun ι.inj'
         simp only [Function.Embedding.toFun_eq_coe] at h₁'
         rw [h₁']
-        have h := A.row_injective
+        have h := A.row_bijective
         simp only [Matrix.row] at h
         apply h
       · have h_card : Fintype.card n = Fintype.card α := A.card_eq.symm
