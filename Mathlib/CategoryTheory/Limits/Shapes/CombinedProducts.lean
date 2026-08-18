@@ -6,7 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.ProdComparison
 
 /-!
 # Constructors for combining (co)fans
