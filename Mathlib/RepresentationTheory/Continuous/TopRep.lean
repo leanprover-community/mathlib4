@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.RepresentationTheory.Continuous.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Topology.Basic
 
 /-!
 # Topological representations
@@ -70,7 +71,6 @@ lemma of_V : (of ρ).V = X := by with_reducible rfl
 variable (X ρ) in
 lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `TopRep k G`. -/
 @[ext]
 structure Hom (A B : TopRep k G) where
@@ -164,7 +164,9 @@ variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [CommRing
   [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
   {σ : ContRepresentation k G Y} {A B C : TopRep k G}
 
-instance : Module k (A ⟶ B) := fast_instance% ConcreteCategory.homEquiv.module k
+instance : Module k (A ⟶ B) := fast_instance%
+  { ConcreteCategory.homEquiv (X := A) with
+    map_add' := hom_add A B : (A ⟶ B) ≃+ (A.ρ →ⁱL B.ρ) }.module k
 
 lemma hom_smul (r : k) (f : A ⟶ B) : (r • f).hom = r • f.hom := rfl
 
@@ -187,6 +189,7 @@ end Linear
 
 section equivAction
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor sending a topological representation to the corresponding object in
 `Action (TopModuleCat k) G`. -/
 def toActionTopModFunc : TopRep k G ⥤ Action (TopModuleCat k) G where

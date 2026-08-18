@@ -296,6 +296,9 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
     AlgEquiv.ofBijective (Algebra.ofId R _)
       ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy :), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.ext hx⟩⟩
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bottom subalgebra is isomorphic to the field. -/
 @[simps! symm_apply]
 noncomputable def botEquiv (F R : Type*) [Field F] [Semiring R] [Nontrivial R] [Algebra F R] :
@@ -821,7 +824,7 @@ end CommSemiring
 section Ring
 
 variable [CommRing R] [Ring A]
-variable [Algebra R A] {s t : Set A}
+variable [Algebra R A] {s : Set A}
 
 @[simp]
 theorem adjoin_singleton_intCast (n : ℤ) : R[n : A] = ⊥ := by

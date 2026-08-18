@@ -14,7 +14,6 @@ public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
 import Mathlib.Algebra.GCDMonoid.FinsetLemmas
-import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 import Mathlib.Data.Nat.Prime.Int
@@ -639,7 +638,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
   simp only [primeCounting, primeCounting', count_eq_card_filter_range]
   rw [card_eq_sum_ones, range_succ_eq_Icc_zero, sum_filter]
   push_cast
-  let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n ↦ log n)
+  let a : ℕ → ℝ := Set.indicator (Set.ofPred Nat.Prime) (fun n ↦ log n)
   trans ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * a n
   · refine sum_congr rfl fun n hn ↦ ?_
     split_ifs with h
@@ -652,8 +651,9 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     have int_deriv (f : ℝ → ℝ) :
         ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
         ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ :=
-      intervalIntegral.integral_congr fun u _ ↦ by simp [deriv_inv_log, field]
-    simp [int_deriv, a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
+      intervalIntegral.integral_congr fun u _ ↦ by simp [field]
+    rw [int_deriv]
+    simp [a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
     grind
   · -- Differentiability
     intro z ⟨_, _⟩
@@ -662,7 +662,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     fun_prop
   · -- Integrability of the derivative
     refine ContinuousOn.integrableOn_Icc fun z ⟨_, _⟩ ↦ ContinuousWithinAt.congr ?_
-      (fun _ _ ↦ deriv_inv_log) deriv_inv_log
+      (fun _ _ ↦ deriv_inv_log_apply) deriv_inv_log_apply
     have : z ≠ 0 := by linarith
     have : log z ^ 2 ≠ 0 := by
       refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith
@@ -673,7 +673,7 @@ theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
     θ x = π ⌊x⌋₊ * log x - ∫ t in 2..x, π ⌊t⌋₊ / t := by
   -- Rewrite in a form to which Abel summation can be applied
   rw [theta_eq_sum_Icc, sum_filter]
-  let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n ↦ 1)
+  let a : ℕ → ℝ := Set.indicator (Set.ofPred Nat.Prime) (fun n ↦ 1)
   trans ∑ n ∈ Icc 0 ⌊x⌋₊, log n * a n
   · refine sum_congr rfl fun n _ ↦ ?_
     split_ifs with h <;> simp [a, h]
@@ -856,7 +856,7 @@ end Chebyshev
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: the first Chebyshev function is nonnegative. -/
 @[positivity Chebyshev.theta _]

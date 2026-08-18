@@ -195,6 +195,11 @@ theorem map_eval₂Hom [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₁) 
   rw [← comp_eval₂Hom]
   rfl
 
+theorem hom_eval₂ [CommSemiring S₂] (p : MvPolynomial σ R) (f : R →+* S₁)
+    (φ : S₁ →+* S₂) (g : σ → S₁) :
+    φ (p.eval₂ f g) = p.eval₂ (φ.comp f) (fun i => φ (g i)) :=
+  map_eval₂Hom f g φ p
+
 theorem eval₂Hom_monomial (f : R →+* S₁) (g : σ → S₁) (d : σ →₀ ℕ) (r : R) :
     eval₂Hom f g (monomial d r) = f r * d.prod fun i k => g i ^ k := by
   simp only [coe_eval₂Hom, eval₂_monomial]
@@ -523,28 +528,6 @@ lemma mem_range_map_iff_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S�
       obtain ⟨u, hu⟩ := hp hx.2
       exact ⟨q + u, by simp [hq, hu]⟩
 
-section Algebra
-
-variable [Algebra R S₁] (g : σ → S₁)
-
-variable (R) in
-/-- `MvPolynomial.eval₂ (algebraMap R S) g` as an `R`-algebra homomorphism. -/
-def eval₂AlgHom : MvPolynomial σ R →ₐ[R] S₁ :=
-  { eval₂Hom (algebraMap R S₁) g with
-    commutes' r := by simp }
-
-theorem eval₂AlgHom_apply (P : MvPolynomial σ R) :
-    eval₂AlgHom R g P = eval₂Hom (algebraMap R S₁) g P := rfl
-
-@[simp]
-theorem coe_eval₂AlgHom : ⇑(eval₂AlgHom R g) = eval₂ (algebraMap R S₁) g := rfl
-
-@[simp]
-theorem eval₂AlgHom_X (i : σ) :
-    eval₂AlgHom R g (X i : MvPolynomial σ R) = g i := eval₂_X (algebraMap R S₁) g i
-
-end Algebra
-
 /-- If `f : S₁ →ₐ[R] S₂` is a morphism of `R`-algebras, then so is `MvPolynomial.map f`. -/
 def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     MvPolynomial σ S₁ →ₐ[R] MvPolynomial σ S₂ := AddMonoidAlgebra.mapAlgHom _ f
@@ -733,10 +716,34 @@ theorem _root_.Algebra.adjoin_eq_range (s : Set S₁) :
 
 end Aeval
 
+section Algebra
+
+variable [Algebra R S₁] (g : σ → S₁)
+
+variable (R) in
+/-- `MvPolynomial.eval₂ (algebraMap R S) g` as an `R`-algebra homomorphism. -/
+@[deprecated aeval (since := "2026-07-22")]
+def eval₂AlgHom : MvPolynomial σ R →ₐ[R] S₁ :=
+  { eval₂Hom (algebraMap R S₁) g with
+    commutes' r := by simp }
+
+@[deprecated aeval_def (since := "2026-07-22")]
+theorem eval₂AlgHom_apply (P : MvPolynomial σ R) :
+    eval₂AlgHom R g P = eval₂Hom (algebraMap R S₁) g P := rfl
+
+@[simp, deprecated aeval_eq_eval₂Hom (since := "2026-07-22")]
+theorem coe_eval₂AlgHom : ⇑(eval₂AlgHom R g) = eval₂ (algebraMap R S₁) g := rfl
+
+@[simp, deprecated aeval_X (since := "2026-07-22")]
+theorem eval₂AlgHom_X (i : σ) :
+    eval₂AlgHom R g (X i : MvPolynomial σ R) = g i := eval₂_X (algebraMap R S₁) g i
+
+end Algebra
+
 section AevalTower
 
-variable {S A B : Type*} [CommSemiring S] [CommSemiring A] [CommSemiring B]
-variable [Algebra S R] [Algebra S A] [Algebra S B]
+variable {S A : Type*} [CommSemiring S] [CommSemiring A]
+variable [Algebra S R] [Algebra S A]
 
 /-- Version of `aeval` for defining algebra homs out of `MvPolynomial σ R` over a smaller base ring
   than `R`. -/
