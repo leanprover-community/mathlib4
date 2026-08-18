@@ -10,6 +10,7 @@ public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Diagonal matrices
@@ -47,6 +48,7 @@ Note that bundled versions exist as:
 * `Matrix.diagonalRingHom`
 * `Matrix.diagonalAlgHom`
 -/
+@[wikidata Q332791]
 def diagonal [Zero α] (d : n → α) : Matrix n n α :=
   of fun i j => if i = j then d i else 0
 
