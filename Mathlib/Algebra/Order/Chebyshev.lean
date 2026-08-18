@@ -97,7 +97,7 @@ Special cases of the above when scalar multiplication is actually multiplication
 
 section Mul
 variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
-  {s : Finset ι} {σ : Perm ι} {f g : ι → α}
+  {s : Finset ι} {f g : ι → α}
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (e.g. they are both
 monotone/antitone), the product of their sum is less than the size of the set times their scalar

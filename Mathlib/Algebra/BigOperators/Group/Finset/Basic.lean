@@ -22,7 +22,7 @@ assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 assert_not_exists Finset.preimage Finset.sigma Fintype.piFinset
 assert_not_exists Finset.piecewise Set.indicator MonoidHom.coeFn Function.support IsSquare
 
-open Fin Function
+open Function
 
 variable {ι κ G M : Type*} {s s₁ s₂ : Finset ι} {a : ι}
 
@@ -152,6 +152,14 @@ lemma prod_filter_not_mul_prod_filter (s : Finset ι) (p : ι → Prop) [Decidab
     [∀ x, Decidable (¬p x)] (f : ι → M) :
     (∏ x ∈ s with ¬p x, f x) * ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
+
+open Classical in
+@[to_additive]
+lemma prod_eq_of_subset
+    {s₁ s₂ : Finset ι} (h : s₁ ⊆ s₂) (f : ι → M) (hf : ∀ (i : ι), i ∈ s₂ → i ∉ s₁ → f i = 1) :
+    ∏ i ∈ s₁, f i = ∏ i ∈ s₂, f i := by
+  rw [show s₂ = s₁.disjUnion (s₂ \ s₁) disjoint_sdiff by simpa, Finset.prod_disjUnion,
+    Finset.prod_eq_one (s := s₂ \ s₁) (by aesop), mul_one]
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive]
