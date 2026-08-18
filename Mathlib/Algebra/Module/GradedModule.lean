@@ -80,7 +80,7 @@ def smulAddMonoidHom [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A 
 
 section
 
-open GradedMonoid DirectSum Gmodule
+open GradedMonoid DirectSum
 
 instance [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M] :
     SMul (⨁ i, A i) (⨁ i, M i) where
@@ -155,8 +155,8 @@ end
 
 open DirectSum
 
-variable {ιA ιM R A M σ σ' : Type*}
-variable [AddMonoid ιA] [AddAction ιA ιM] [CommSemiring R] [Semiring A] [Algebra R A]
+variable {ιA ιM A M σ σ' : Type*}
+variable [AddMonoid ιA] [AddAction ιA ιM] [Semiring A]
 variable (𝓐 : ιA → σ') [SetLike σ' A]
 variable (𝓜 : ιM → σ)
 

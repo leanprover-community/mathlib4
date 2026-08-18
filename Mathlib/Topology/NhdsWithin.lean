@@ -31,7 +31,7 @@ public section
 
 open Set Filter Function Topology
 
-variable {α β γ δ : Type*} [TopologicalSpace α]
+variable {α β : Type*} [TopologicalSpace α]
 
 /-!
 ## Properties of the neighborhood-within filter
@@ -516,7 +516,7 @@ theorem frequently_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
   eventually_nhds_subtype_iff s a (¬ P ·) |>.not
 
 theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : α → β) (l : Filter β) :
-    Tendsto f (𝓝[s] a) l ↔ Tendsto (s.restrict f) (𝓝 ⟨a, h⟩) l := by
+    Tendsto f (𝓝[s] a) l ↔ Tendsto (s.domRestrict f) (𝓝 ⟨a, h⟩) l := by
   rw [nhdsWithin_eq_map_subtype_coe h, tendsto_map'_iff]; rfl
 
 theorem clusterPt_principal_subtype_iff_frequently {s t : Set α} (hst : s ⊆ t) {J : Set s} {a : s} :

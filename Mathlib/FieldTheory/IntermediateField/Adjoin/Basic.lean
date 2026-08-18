@@ -264,7 +264,7 @@ section AdjoinRank
 
 open Module Module
 
-variable {K L : IntermediateField F E}
+variable {K : IntermediateField F E}
 
 @[simp]
 theorem rank_eq_one_iff : Module.rank F K = 1 ↔ K = ⊥ := by
@@ -553,6 +553,18 @@ theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irr
   rw [← minpoly.ne_zero_iff]
   contrapose hi
   rwa [hi, mul_zero] at key
+
+instance : Algebra.IsAlgebraic K (⊥ : IntermediateField K L) where
+  isAlgebraic := by
+    intro ⟨x, hx⟩
+    obtain ⟨c, rfl⟩ := hx
+    exact isAlgebraic_algebraMap c
+
+instance : Algebra.IsAlgebraic (⊤ : IntermediateField K L) L where
+  isAlgebraic := by
+    intro x
+    let xt : (⊤ : IntermediateField K L) := ⟨x, mem_top⟩
+    exact isAlgebraic_algebraMap xt
 
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/

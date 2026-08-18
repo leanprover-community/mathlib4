@@ -23,7 +23,6 @@ public section
 
 assert_not_exists MulAction IsOrderedMonoid Ring
 
-open Function
 open scoped Pointwise
 
 variable {α : Type*}
