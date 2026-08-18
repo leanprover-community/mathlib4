@@ -21,11 +21,12 @@ This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 assert_not_exists Algebra
 
 universe u v
-variable {R α β : Type*}
+variable {R α β : Type*} [Semiring R]
 
 namespace Equiv
-variable (R) [Zero R]
+variable (e : α ≃ β)
 
+variable (R : Type*) [Zero R] in
 /-- Transfer `NoZeroSMulDivisors` across an `Equiv` -/
 protected lemma noZeroSMulDivisors [Zero α] [Zero β] [SMul R β] [NoZeroSMulDivisors R β]
     (e : α ≃ β) (map_zero : e 0 = 0) :

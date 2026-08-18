@@ -18,10 +18,11 @@ public section
 
 assert_not_exists Ring
 
-variable (M M₀ : Type*) {A B : Type*}
+variable {M M₀ A B : Type*}
 
 namespace Equiv
 
+variable (M) in
 /-- Transfer `SMulZeroClass` across an `Equiv` -/
 protected abbrev smulZeroClass (e : A ≃ B) [Zero A] [Zero B] [SMulZeroClass M B]
     (map_zero : e 0 = 0) : SMulZeroClass M A where
