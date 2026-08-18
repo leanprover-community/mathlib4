@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Order.BoundedOrder.Basic
-public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Order.Monotone.Defs
 
 /-!
 # Galois connections, insertions and coinsertions
@@ -27,7 +27,7 @@ such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 
 assert_not_exists CompleteLattice RelIso
 
-open Function OrderDual Set
+open Function OrderDual
 
 universe u v w x
 

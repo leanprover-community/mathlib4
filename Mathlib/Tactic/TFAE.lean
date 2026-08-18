@@ -7,7 +7,7 @@ module
 
 public meta import Qq
 public meta import Mathlib.Util.AtomM
-public import Mathlib.Data.List.TFAE  -- shake: keep (dependency of Qq output)
+public import Mathlib.Data.List.Pairwise  -- shake: keep (dependency of Qq output)
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Util.AtomM
@@ -81,7 +81,7 @@ attribute [nolint docBlame] binder
 
 end Parser
 
-open Parser
+open TFAE.Parser
 
 /--
 `tfae_have i → j := t`, where the goal is `TFAE [P₁, P₂, ...]` introduces a hypothesis
@@ -355,7 +355,7 @@ register_option Mathlib.Tactic.TFAE.useDeprecated : Bool := {
 
 namespace Mathlib.Tactic.TFAE
 
-open Lean Parser Meta Elab Tactic
+open Lean TFAE.Parser Meta Elab Tactic
 
 @[tactic_alt tfaeHave]
 syntax (name := tfaeHave') "tfae_have " tfaeHaveIdLhs : tactic
