@@ -177,7 +177,7 @@ theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
 the induced morphism is zero in group cohomology in nonzero degrees. -/
 lemma map_eq_zero (n : ℕ) [NeZero n] (hf : f = 1) : map f φ n = 0 := by
   /- The proof proceeds by showing that `map f φ n` factors
-  through a cohomology of the trivial group with values in
+  through the cohomology of the trivial group with values in
   the invariants of `B` under `G`. -/
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (NeZero.ne n)
   let a : G →* PUnit.{u + 1} := 1
