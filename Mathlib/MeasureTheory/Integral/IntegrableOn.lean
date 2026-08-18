@@ -29,12 +29,12 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Topology Interval Filter ENNReal MeasureTheory
 
-variable {α β ε ε' E F : Type*} {mα : MeasurableSpace α}
+variable {α β ε ε' E : Type*} {mα : MeasurableSpace α}
 
 section
 
 variable [TopologicalSpace β] [ENorm ε] [TopologicalSpace ε]
-  {l l' : Filter α} {f g : α → β} {μ ν : Measure α}
+  {l l' : Filter α} {f : α → β} {μ : Measure α}
 
 /-- A function `f` is strongly measurable at a filter `l` w.r.t. a measure `μ` if it is
 ae strongly measurable w.r.t. `μ.restrict s` for some `s ∈ l`. -/

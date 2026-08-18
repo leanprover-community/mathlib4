@@ -25,7 +25,7 @@ public section
 
 namespace IsIntegral
 
-variable {α R : Type*} [DivisionRing α] [CharZero α] {q : ℚ} {x : α}
+variable {α : Type*} [DivisionRing α] [CharZero α] {q : ℚ} {x : α}
 
 @[simp]
 theorem ratCast_iff : IsIntegral ℤ (q : α) ↔ IsIntegral ℤ q :=

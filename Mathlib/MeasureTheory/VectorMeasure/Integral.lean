@@ -73,11 +73,10 @@ public section
 open Set MeasureTheory VectorMeasure ContinuousLinearMap Filter Topology
 open scoped ENNReal NNReal
 
-variable {ι X Y E F G H : Type*} {mX : MeasurableSpace X} [MeasurableSpace Y]
+variable {ι X Y E F G : Type*} {mX : MeasurableSpace X} [MeasurableSpace Y]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  [NormedAddCommGroup H] [NormedSpace ℝ H]
 
 namespace MeasureTheory
 
@@ -814,7 +813,7 @@ theorem nndist_integral_add_vectorMeasure_le_lintegral
   rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel_left]
   exact enorm_integral_le_lintegral_enorm
 
-variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X} {v : F}
+variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X}
 
 lemma variation_transpose_map_le :
     ((μ.map φ).transpose B).variation ≤ Measure.map φ (μ.transpose B).variation := by
