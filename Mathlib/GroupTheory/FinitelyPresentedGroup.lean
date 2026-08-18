@@ -37,7 +37,7 @@ finitely presented group, finitely generated normal closure
 
 @[expose] public section
 
-variable {G H α β : Type*} [Group G] [Group H]
+variable {G H α : Type*} [Group G] [Group H]
 
 /-- `N.IsFinitelyNormallyGenerated` says that the subgroup `N` is the normal closure
  of a finite set. -/
@@ -172,7 +172,7 @@ instance [IsFinitelyPresented G] [IsFinitelyPresented H] :
 variable (G)
 
 /-- Any finite group is finitely presented. -/
-@[to_additive]
+@[to_additive /-- Any finite additive group is finitely presented. -/]
 instance [Finite G] : IsFinitelyPresented G :=
   of_surjective FreeGroup.prod FreeGroup.prod_surjective (.of_FG FreeGroup.prod.ker)
 

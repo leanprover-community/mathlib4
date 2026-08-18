@@ -67,6 +67,10 @@ instance : CoeFun (E →ₛₗ.[σ] F) fun f : E →ₛₗ.[σ] F => f.domain �
   ⟨toFun'⟩
 
 @[simp]
+theorem coe_toFun_eq_coe (f : E →ₛₗ.[σ] F) : (f.toFun : f.domain → F) = f :=
+  rfl
+
+@[simp]
 theorem toFun_eq_coe (f : E →ₛₗ.[σ] F) (x : f.domain) : f.toFun x = f x :=
   rfl
 
@@ -127,6 +131,33 @@ theorem map_smulₛₗ (f : E →ₛₗ.[σ] F) (c : R) (x : f.domain) : f (c �
 
 @[simp]
 theorem mk_apply (p : Submodule R E) (f : p →ₛₗ[σ] F) (x : p) : mk p f x = f x := rfl
+
+section kernel
+
+/-- The kernel of a partially defined linear map `E →ₗ.[𝕜] F` as a submodule of `E`. -/
+def ker (f : E →ₛₗ.[σ] F) : Submodule R E := f.toFun.ker.map f.domain.subtype
+
+variable {f : E →ₛₗ.[σ] F}
+
+theorem ker_eq_bot' : f.ker = ⊥ ↔ ∀ x, f x = 0 → x = 0 := by
+  simp [ker, ← LinearMap.le_ker_iff_map, LinearMap.ker_eq_bot']
+
+theorem ker_eq_bot : f.ker = ⊥ ↔ Function.Injective f := by
+  simp [ker, ← LinearMap.le_ker_iff_map, LinearMap.ker_eq_bot]
+
+theorem mem_ker_iff {x : E} : x ∈ f.ker ↔ ∃ (y : f.domain), x = y ∧ f y = 0 := by
+  simp [ker]
+
+theorem coe_mem_ker_iff {x : f.domain} : ↑x ∈ f.ker ↔ f x = 0 := by
+  simp [mem_ker_iff]
+
+theorem sub_mem_ker_iff {x y : f.domain} : ↑(x - y) ∈ f.ker ↔ f x = f y := by
+  rw [coe_mem_ker_iff, map_sub, sub_eq_zero]
+
+theorem ker_le_domain : f.ker ≤ f.domain := by
+  simpa [ker, range_subtype] using f.domain.subtype.map_le_range
+
+end kernel
 
 /-- The unique `LinearPMap` on `R ∙ x` that sends `x` to `y`. This version works for modules
 over rings, and requires a proof of `∀ c, c • x = 0 → c • y = 0`. -/
@@ -362,11 +393,26 @@ section Zero
 
 instance instZero : Zero (E →ₛₗ.[σ] F) := ⟨⊤, 0⟩
 
-@[simp]
+@[simp, grind .]
 theorem zero_domain : (0 : E →ₛₗ.[σ] F).domain = ⊤ := rfl
 
-@[simp]
+@[simp, grind .]
 theorem zero_apply (x : (⊤ : Submodule R E)) : (0 : E →ₛₗ.[σ] F) x = 0 := rfl
+
+@[simp, grind .]
+theorem ker_zero : (0 : E →ₛₗ.[σ] F).ker = ⊤ := by
+  ext x
+  simp [mem_ker_iff]
+
+@[simp]
+theorem ker_eq_top {f : E →ₛₗ.[σ] F} : f.ker = ⊤ ↔ f = 0 := by
+  refine ⟨fun h ↦ ?_, by grind⟩
+  have : f.domain = ⊤ := eq_top_mono ker_le_domain h
+  ext x hf _ <;> grind [mem_ker_iff]
+
+theorem eqLocus_zero {f : E →ₛₗ.[σ] F} : f.eqLocus 0 = f.ker := by
+  ext
+  simp [eqLocus, mem_ker_iff]
 
 end Zero
 
@@ -412,6 +458,11 @@ theorem neg_domain (f : E →ₛₗ.[σ] F) : (-f).domain = f.domain := rfl
 @[simp]
 theorem neg_apply (f : E →ₛₗ.[σ] F) (x) : (-f) x = -f x :=
   rfl
+
+@[simp]
+theorem ker_neg (f : E →ₛₗ.[σ] F) : (-f).ker = f.ker := by
+  ext x
+  simp [mem_ker_iff]
 
 instance instInvolutiveNeg : InvolutiveNeg (E →ₛₗ.[σ] F) :=
   ⟨fun f => by
@@ -665,6 +716,11 @@ theorem toPMap_apply (f : E →ₛₗ[σ] F) (p : Submodule R E) (x : p) : f.toP
 theorem toPMap_domain (f : E →ₛₗ[σ] F) (p : Submodule R E) : (f.toPMap p).domain = p :=
   rfl
 
+@[simp]
+theorem toPMap_ker (f : E →ₛₗ[σ] F) (p : Submodule R E) : (f.toPMap p).ker = p ⊓ f.ker := by
+  ext x
+  simp [LinearPMap.mem_ker_iff]
+
 /-- Compose a linear map with a `LinearPMap` -/
 def compPMap {ρ : R →+* T} [RingHomCompTriple σ τ ρ] (g : F →ₛₗ[τ] G) (f : E →ₛₗ.[σ] F) :
     E →ₛₗ.[ρ] G where
@@ -857,16 +913,8 @@ theorem image_iff {f : E →ₗ.[R] F} {x : E} {y : F} (hx : x ∈ f.domain) :
     y = f ⟨x, hx⟩ ↔ (x, y) ∈ f.graph := by
   grind
 
-theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ f.toFun.range ↔
-    ∃ x : E, (x, y) ∈ f.graph := by
-  constructor <;> intro h
-  · rw [LinearMap.mem_range] at h
-    rcases h with ⟨⟨x, hx⟩, h⟩
-    use x
-    rw [← h]
-    exact f.mem_graph ⟨x, hx⟩
-  simp only [LinearMap.mem_range, toFun_eq_coe, Subtype.exists]
-  grind
+theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ f.toFun.range ↔ ∃ x : E, (x, y) ∈ f.graph := by
+  simp
 
 theorem mem_domain_iff_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) {x : E} :
     x ∈ f.domain ↔ x ∈ g.domain := by simp_rw [mem_domain_iff, h]
@@ -977,7 +1025,7 @@ theorem toLinearPMap_apply_aux {g : Submodule R (E × F)}
     g.toLinearPMap x = valFromGraph hg x.2 := by
   classical
   change (if hg : _ then g.toLinearPMapAux hg else 0) x = _
-  rw [dif_pos]
+  rw [dite_eq_left]
   · rfl
   · exact hg
 
@@ -1021,64 +1069,62 @@ section inverse
 
 variable [Module R F]
 
+section injective
+
 /-- The inverse of a `LinearPMap`. -/
 noncomputable def inverse (f : E →ₗ.[R] F) : F →ₗ.[R] E :=
   (f.graph.map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E))).toLinearPMap
 
 variable {f : E →ₗ.[R] F}
 
-theorem inverse_domain : (inverse f).domain = LinearMap.range f.toFun := by
+theorem inverse_domain : f.inverse.domain = f.toFun.range := by
   rw [inverse, Submodule.toLinearPMap_domain, ← graph_map_snd_eq_range,
     ← LinearEquiv.fst_comp_prodComm, Submodule.map_comp]
 
-section injective
+/-- The graph of the inverse generates a `LinearPMap`.
 
-/-- The graph of the inverse generates a `LinearPMap`. -/
-theorem mem_inverse_graph_snd_eq_zero (hf : f.toFun.ker = ⊥) (x : F × E)
-    (hv : x ∈ (graph f).map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E)))
+This should not be used directly, all properties about the inverse follow from `inverse_graph`. -/
+private theorem mem_inverse_graph_snd_eq_zero (hf : f.ker = ⊥) (x : F × E)
+    (hv : x ∈ f.graph.map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E)))
     (hv' : x.fst = 0) : x.snd = 0 := by
   rcases x with ⟨x, y⟩
   subst hv'
   simp only [Submodule.map_equiv_eq_comap_symm, Submodule.mem_comap, LinearEquiv.symm_prodComm,
     LinearEquiv.coe_coe, LinearEquiv.prodComm_apply, mem_graph_iff, Prod.swap] at hv
   rcases hv with ⟨z, rfl, hz⟩
-  rw [LinearMap.ker_eq_bot'] at hf
+  rw [LinearPMap.ker_eq_bot'] at hf
   simp [hf z hz]
 
-theorem inverse_graph (hf : f.toFun.ker = ⊥) :
-    (inverse f).graph = f.graph.map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E)) := by
+theorem inverse_graph (hf : f.ker = ⊥) :
+    f.inverse.graph = f.graph.map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E)) := by
   rw [inverse, Submodule.toLinearPMap_graph_eq _ (mem_inverse_graph_snd_eq_zero hf)]
 
-theorem graph_eq_inverse_graph_prodComm (hf : f.toFun.ker = ⊥) :
+theorem graph_eq_inverse_graph_prodComm (hf : f.ker = ⊥) :
     f.graph = f.inverse.graph.map (LinearEquiv.prodComm R F E : (F × E) →ₗ[R] (E × F)) := by
   rw [inverse_graph hf]
   ext x
   simp
 
-theorem inverse_range (hf : f.toFun.ker = ⊥) : LinearMap.range (inverse f).toFun = f.domain := by
-  rw [inverse, Submodule.toLinearPMap_range _ (mem_inverse_graph_snd_eq_zero hf),
-    ← graph_map_fst_eq_domain, ← LinearEquiv.snd_comp_prodComm, Submodule.map_comp]
+theorem inverse_range (hf : f.ker = ⊥) : f.inverse.toFun.range = f.domain := by
+  rw [← LinearPMap.graph_map_snd_eq_range, inverse_graph hf, ← Submodule.map_comp]
+  exact f.graph_map_fst_eq_domain
 
-theorem mem_inverse_graph (hf : f.toFun.ker = ⊥) (x : f.domain) :
-    (f x, (x : E)) ∈ (inverse f).graph := by
-  simp only [inverse_graph hf, Submodule.mem_map, mem_graph_iff, Subtype.exists, exists_and_left,
-    exists_eq_left, LinearEquiv.coe_coe, LinearEquiv.prodComm_apply, Prod.exists, Prod.swap_prod_mk,
-    Prod.mk.injEq]
-  exact ⟨(x : E), f x, ⟨x.2, Eq.refl _⟩, Eq.refl _, Eq.refl _⟩
+theorem mem_inverse_graph (hf : f.ker = ⊥) (x : f.domain) : (f x, (x : E)) ∈ f.inverse.graph := by
+  simp [inverse_graph hf]
 
-theorem mem_graph_of_inverse (hf : f.toFun.ker = ⊥) (y : f.inverse.domain) :
+theorem mem_graph_of_inverse (hf : f.ker = ⊥) (y : f.inverse.domain) :
     (f.inverse y, (y : F)) ∈ f.graph := by
   simp [graph_eq_inverse_graph_prodComm hf]
 
-theorem inverse_apply_eq (hf : f.toFun.ker = ⊥) {y : (inverse f).domain} {x : f.domain}
-    (hxy : f x = y) :
-    (inverse f) y = x := by
-  have := mem_inverse_graph hf x
-  grind
+theorem inverse_apply_eq (hf : f.ker = ⊥) {y : f.inverse.domain} {x : f.domain} (hxy : f x = y) :
+    f.inverse y = x := by
+  grind [mem_inverse_graph]
 
 end injective
 
 section bijective
+
+variable {f : E →ₗ.[R] F}
 
 theorem inverse_domain_eq_top_of_bijective (hf : Function.Bijective f) :
     f.inverse.domain = ⊤ := by
@@ -1108,7 +1154,7 @@ theorem inverse_asLinearMap_apply_eq_inverse_apply (hf : Function.Bijective f) {
 
 theorem inverse_asLinearMap_range (hf : Function.Bijective f) :
     (f.inverse_asLinearMap hf).range = f.domain := by
-  simp [inverse_asLinearMap_eq_if_range_eq_top hf, inverse_range (LinearMap.ker_eq_bot.mpr hf.1)]
+  simp [inverse_asLinearMap_eq_if_range_eq_top hf, inverse_range (LinearPMap.ker_eq_bot.mpr hf.1)]
 
 theorem inverse_asLinearMap_apply_mem_domain (hf : Function.Bijective f) (x : F) :
     f.inverse_asLinearMap hf x ∈ f.domain := by
@@ -1118,7 +1164,7 @@ theorem inverse_asLinearMap_apply_mem_domain (hf : Function.Bijective f) (x : F)
 theorem mem_graph_of_inverse_asLinearMap (hf : Function.Bijective f) (y : F) :
     (f.inverse_asLinearMap hf y, y) ∈ f.graph := by
   rw [inverse_asLinearMap_apply_eq_inverse_apply hf]
-  exact mem_graph_of_inverse (LinearMap.ker_eq_bot.mpr hf.1) _
+  exact mem_graph_of_inverse (LinearPMap.ker_eq_bot.mpr hf.1) _
 
 theorem inverse_apply_apply_cancel (hf : Function.Bijective f) (x : F) :
     f ⟨f.inverse_asLinearMap hf x, inverse_asLinearMap_apply_mem_domain hf x⟩ = x := by
@@ -1128,7 +1174,7 @@ theorem inverse_apply_apply_cancel (hf : Function.Bijective f) (x : F) :
 theorem apply_inverse_apply_cancel (hf : Function.Bijective f) (x' : f.domain) :
     f.inverse_asLinearMap hf (f x') = x' := by
   have : (f x', (x' : E)) ∈ f.inverse.graph := by
-    rw [inverse_graph (LinearMap.ker_eq_bot.mpr hf.1)]
+    rw [inverse_graph (LinearPMap.ker_eq_bot.mpr hf.1)]
     simp
   rw [← image_iff (mem_inverse_domain_of_bijective hf _)] at this
   rw [this]
