@@ -29,7 +29,7 @@ open Set Filter
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {X ι : Type*}
+variable {α : Type u} {β : Type v} {X : Type*}
 
 section ProperSpace
 

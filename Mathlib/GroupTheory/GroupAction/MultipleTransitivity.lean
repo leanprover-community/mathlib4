@@ -9,7 +9,6 @@ public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.GroupTheory.SpecificGroups.Alternating
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 public import Mathlib.SetTheory.Cardinal.Embedding
-public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # Multiple transitivity
 
@@ -95,8 +94,6 @@ theorem Function.Injective.mulActionHom_embedding_isInjective
   ext
   apply hf
   simp only [← hf.mulActionHom_embedding_apply, hxy]
-
-variable (hf' : Function.Bijective f)
 
 @[to_additive]
 theorem Function.Bijective.mulActionHom_embedding_isBijective (hf : Function.Bijective f) :

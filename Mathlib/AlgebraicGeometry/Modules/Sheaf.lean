@@ -5,13 +5,10 @@ Authors: Joël Riou, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
 public import Mathlib.AlgebraicGeometry.Modules.Presheaf
-public import Mathlib.AlgebraicGeometry.OpenImmersion
-public import Mathlib.AlgebraicGeometry.AffineScheme
-public import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
+public import Mathlib.AlgebraicGeometry.Restrict
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.SheafOfModules
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.Topology.Sheaves.Module
@@ -51,6 +48,9 @@ noncomputable instance : Abelian X.Modules :=
   inferInstanceAs <| Abelian (SheafOfModules.{u} X.ringCatSheaf)
 instance : HasLimits X.Modules := inferInstanceAs (HasLimits (SheafOfModules X.ringCatSheaf))
 instance : HasColimits X.Modules := inferInstanceAs (HasColimits (SheafOfModules X.ringCatSheaf))
+
+instance : IsGrothendieckAbelian.{u} X.Modules :=
+  inferInstanceAs (IsGrothendieckAbelian (SheafOfModules _))
 
 section Functor
 
@@ -306,7 +306,6 @@ lemma pseudofunctor_right_unitality :
   simp [← this]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] pseudofunctor_associativity pseudofunctor_left_unitality
   pseudofunctor_right_unitality Bicategory.toNatTrans_conjugateEquiv
   conjugateEquiv_pullbackId_hom Adjunction.ofCat_comp conjugateEquiv_pullbackComp_inv in

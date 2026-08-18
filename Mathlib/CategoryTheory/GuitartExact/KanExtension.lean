@@ -178,7 +178,6 @@ noncomputable def lanBaseChange :
     have := R.lanUnit.naturality_app (T.obj X) τ
     simp [reassoc_of% this]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isIso_lanBaseChange_app_iff (F : C₂ ⥤ D) :
     IsIso (w.lanBaseChange.app F) ↔

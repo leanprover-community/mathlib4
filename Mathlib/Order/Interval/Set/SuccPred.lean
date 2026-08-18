@@ -224,7 +224,7 @@ lemma Iio_succ_eq_Iic (b : α) : Iio (succ b) = Iic b := Iio_succ_eq_Iic_of_not_
 end SuccOrder
 
 section PredOrder
-variable [PredOrder α] {a b : α}
+variable [PredOrder α] {b : α}
 
 lemma Iic_pred_eq_Iio_of_not_isMin (hb : ¬ IsMin b) : Iic (pred b) = Iio b := by
   ext x; rw [mem_Iic, mem_Iio, le_pred_iff_of_not_isMin hb]

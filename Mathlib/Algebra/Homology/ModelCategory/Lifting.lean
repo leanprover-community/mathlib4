@@ -5,7 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 
 /-!
 # Lifting properties in cochain complexes
