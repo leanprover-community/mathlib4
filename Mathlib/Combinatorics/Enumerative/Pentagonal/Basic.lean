@@ -69,11 +69,3 @@ theorem pentagonal_strictMonoOn : StrictMonoOn pentagonal (Set.Ici 0) := by
 theorem pentagonal_strictAntiOn : StrictAntiOn pentagonal (Set.Iic 0) := by
   apply strictAntiOn_of_add_one_lt Set.ordConnected_Iic
   grind [natCast_pentagonal]
-
-theorem self_le_pentagonal (n : ℕ) : n ≤ pentagonal n := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    apply (add_le_add_left ih 1).trans
-    rw [Nat.add_one_le_iff]
-    apply pentagonal_strictMonoOn <;> grind

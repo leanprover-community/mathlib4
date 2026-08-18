@@ -14,7 +14,7 @@ import Mathlib.Combinatorics.Enumerative.Pentagonal.Ring
 /-!
 # Euler function and pentagonal number theorem
 
-This file proves the pentagonal number theorem for $‖x‖ ≤ 1$ in a complete normed ring (e.g. `ℂ`):
+This file proves the pentagonal number theorem for $‖x‖ < 1$ in a complete normed ring (e.g. `ℂ`):
 
 $$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = \sum_{k=-\infty}^{\infty} (-1)^k x^{a_k} $$
 
@@ -28,12 +28,14 @@ related to pentagonal numbers. We then show that this function is equal to both 
 * `eulerFunction_eq_tsum_pentagonal`: `eulerFunction` is equal to the infinite sum on the
   right-hand side.
 
-Reference: https://en.wikipedia.org/wiki/Euler_function
+## References
+
+* https://en.wikipedia.org/wiki/Euler_function
 -/
 
 open Filter Finset
 
-variable {R : Type*} [NormedCommRing R] [NormMulClass R] [NormOneClass R]
+variable {R : Type*} [NormedCommRing R] [NormOneClass R]
 
 namespace Pentagonal
 -- Private section to supply lemma for using `Pentagonal.tprod_one_sub_pow`
@@ -41,16 +43,14 @@ namespace Pentagonal
 lemma pow_mul_prod_bound (k n : ℕ) {x : R} (hx : ‖x‖ < 1) :
     ‖x ^ ((k + 1) * n) * ∏ i ∈ range (n + 1), (1 - x ^ (k + i + 1))‖ ≤
     ‖x‖ ^ ((k + 1) * n) * ∏' i, (1 + ‖x‖ ^ i) := by
-  rw [norm_mul, norm_prod, norm_pow]
+  grw [norm_mul_le, Finset.norm_prod_le, norm_pow_le]
   refine mul_le_mul_of_nonneg_left ?_ (by simp)
   trans ∏ i ∈ Ico (k + 1) (n + 1 + (k + 1)), (1 + ‖x‖ ^ i)
   · rw [prod_Ico_eq_prod_range, Nat.add_sub_cancel]
-    refine prod_le_prod (by simp) fun _ _ ↦ (norm_sub_le _ _).trans_eq ?_
-    grind [norm_pow, norm_one]
+    refine prod_le_prod (by simp) fun _ _ ↦ (norm_sub_le _ _).trans ?_
+    grind [norm_pow_le, norm_one]
   have : Multipliable (1 + ‖x‖ ^ ·) := multipliable_one_add_of_summable (by simpa using hx)
-  refine ge_of_tendsto (this.tendsto_prod_tprod_nat) <| eventually_atTop.mpr ?_
-  refine ⟨n + 1 + (k + 1), fun a ha ↦ ?_⟩
-  exact prod_le_prod_of_subset_of_one_le (by grind) (fun _ _ ↦ by positivity) (by simp)
+  apply this.prod_le_tprod_of_nonneg (fun i _ ↦ by positivity) (by simp)
 
 lemma summable_norm_pow_mul_prod (k : ℕ) {x : R} (hx : ‖x‖ < 1) :
     Summable fun n ↦ ‖x ^ ((k + 1) * n) * ∏ i ∈ range (n + 1), (1 - x ^ (k + i + 1))‖ := by
@@ -63,24 +63,21 @@ lemma summable_norm_pow_mul_prod (k : ℕ) {x : R} (hx : ‖x‖ < 1) :
 lemma tsum_pow_mul_prod_bound (k : ℕ) {x : R} (hx : ‖x‖ < 1) :
     ‖∑' n, x ^ ((k + 1) * n) * ∏ i ∈ range (n + 1), (1 - x ^ (k + i + 1))‖ ≤
     (1 - ‖x‖)⁻¹ * ∏' i, (1 + ‖x‖ ^ i) := by
-  have hsum := summable_norm_pow_mul_prod k hx
-  have hx' : ‖x‖ ^ (k + 1) < 1 := (pow_lt_one_iff_of_nonneg (by simp) (by simp)).mpr hx
-  apply (norm_tsum_le_tsum_norm hsum).trans
-  refine (hsum.tsum_le_tsum (pow_mul_prod_bound k · hx) ?_).trans ?_
-  · simp_rw [pow_mul]
-    exact (summable_geometric_of_lt_one (by simp) hx').mul_right _
-  rw [tsum_mul_right]
-  refine mul_le_mul_of_nonneg_right ?_ (tprod_nonneg fun i ↦ by positivity)
-  simp_rw [pow_mul]
-  rw [tsum_geometric_of_lt_one (by simp) hx']
-  rw [inv_le_inv₀ (by simpa using hx') (by simpa using hx), sub_le_sub_iff_left]
-  exact pow_le_of_le_one (by simp) hx.le (by simp)
+  refine tsum_of_norm_bounded (g := fun n ↦ ‖x‖ ^ n * ∏' i, (1 + ‖x‖ ^ i)) ?_ fun n ↦ ?_
+  · rw [← tsum_geometric_of_lt_one (by simp) hx]
+    exact (summable_geometric_of_lt_one (by simp) hx).hasSum.mul_right _
+  · apply (pow_mul_prod_bound k n hx).trans
+    gcongr ?_ * ?_
+    · exact tprod_nonneg fun _ ↦ by positivity
+    · grind [mul_comm, pow_mul, pow_le_of_le_one (by simp) (pow_le_one₀ (by simp) hx.le)]
 
 lemma multipliable_one_sub_pow_add [CompleteSpace R] (k : ℕ) {x : R} (hx : ‖x‖ < 1) :
     Multipliable (fun n ↦ 1 - x ^ (n + k + 1)) := by
   simp_rw [sub_eq_add_neg]
   apply multipliable_one_add_of_summable
-  simp_rw [norm_neg, norm_pow, pow_add]
+  simp_rw [norm_neg]
+  apply Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n ↦ norm_pow_le _ _)
+  simp_rw [pow_add]
   exact ((summable_geometric_of_lt_one (by simp) hx).mul_right _).mul_right _
 
 end Pentagonal
@@ -93,10 +90,15 @@ as power series with the same coefficients as `PowerSeries.pentagonalSeries`'s. 
 noncomputable def eulerFunction (x : R) : R :=
   ∑' n, (PowerSeries.pentagonalSeries R).coeff n * x ^ n
 
-omit [NormMulClass R] [NormOneClass R] in
+omit [NormOneClass R] in
 theorem eulerFunction_def (x : R) :
     eulerFunction x = ∑' n, (PowerSeries.pentagonalSeries R).coeff n * x ^ n := by
   rfl
+
+omit [NormOneClass R] in
+theorem eulerFunction_eq_tsum_pentagonal {x : R} :
+    eulerFunction x = ∑' k, k.negOnePow * x ^ pentagonal k := by
+  simp [eulerFunction, PowerSeries.coeff_pentagonalSeries_mul_eq_extend, pentagonal_injective]
 
 variable [CompleteSpace R]
 
@@ -106,22 +108,15 @@ theorem hasSum_eulerFunction_pentagonalSeries {x : R} (hx : ‖x‖ < 1) :
   refine (summable_geometric_of_lt_one (norm_nonneg x) hx).of_norm_bounded fun n ↦ ?_
   by_cases hn : n ∈ Set.range pentagonal
   · obtain ⟨k, rfl⟩ := hn
+    rw [PowerSeries.coeff_pentagonalSeries_pentagonal, Int.coe_negOnePow]
+    grw [norm_mul_le, norm_pow_le, norm_pow_le]
     simp
   · simp [PowerSeries.coeff_pentagonalSeries_eq_zero R hn]
 
 theorem hasSum_eulerFunction_pentagonal {x : R} (hx : ‖x‖ < 1) :
     HasSum (fun k ↦ k.negOnePow * x ^ pentagonal k) (eulerFunction x) := by
-  rw [← hasSum_extend_zero pentagonal_injective]
-  convert hasSum_eulerFunction_pentagonalSeries hx with n
-  by_cases hn : n ∈ Set.range pentagonal
-  · obtain ⟨k, rfl⟩ := hn
-    simp [pentagonal_injective.extend_apply, -Int.coe_negOnePow]
-  · rw [Function.extend_apply' _ _ _ (by simpa using hn)]
-    simp [PowerSeries.coeff_pentagonalSeries_eq_zero R hn]
-
-theorem eulerFunction_eq_tsum_pentagonal {x : R} (hx : ‖x‖ < 1) :
-    eulerFunction x = ∑' k, k.negOnePow * x ^ pentagonal k :=
-  (hasSum_eulerFunction_pentagonal hx).tsum_eq.symm
+  simpa [pentagonal_injective, PowerSeries.coeff_pentagonalSeries_mul_eq_extend] using
+    hasSum_eulerFunction_pentagonalSeries hx
 
 theorem hasSum_eulerFunction_pentagonal_pair {x : R} (hx : ‖x‖ < 1) :
     HasSum (fun k : ℕ ↦ (-1) ^ k * (x ^ pentagonal (-k) - x ^ pentagonal (k + 1)))
@@ -147,15 +142,15 @@ theorem eulerFunction_eq_tprod {x : R} (hx : ‖x‖ < 1) :
   · exact (Pentagonal.multipliable_one_sub_pow_add · hx)
   · exact (hasSum_eulerFunction_pentagonal_pair hx).summable
   · apply Tendsto.zero_mul_isBoundedUnder_le
-    · apply isBoundedUnder_le_mul_tendsto_zero ⟨1, by simp⟩
-      apply (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hx).comp
-      rw [tendsto_atTop_atTop]
-      refine fun k ↦ ⟨k, fun n hn ↦ hn.trans ?_⟩
-      rw [Nat.le_div_iff_mul_le (by simp)]
-      exact Nat.mul_le_mul (by simp) (by simp)
-    · use (1 - ‖x‖)⁻¹ * ∏' i, (1 + ‖x‖ ^ i)
-      simp_rw [eventually_map, Function.comp_apply, eventually_atTop]
-      exact ⟨0, fun k _ ↦ Pentagonal.tsum_pow_mul_prod_bound k hx⟩
+    · refine isBoundedUnder_le_mul_tendsto_zero ⟨1, ?_⟩ ?_
+      · suffices ∃ a, ∀ b, a ≤ b → ‖(-1 : R) ^ (b + 1)‖ ≤ 1 by simpa
+        refine ⟨0, fun b hb ↦ ?_⟩
+        grw [norm_pow_le]
+        simp
+      · apply (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hx).comp
+        rw [tendsto_atTop_atTop]
+        exact fun k ↦ ⟨k, fun n hn ↦ hn.trans (by grind)⟩
+    · exact isBoundedUnder_of ⟨_, fun k ↦ Pentagonal.tsum_pow_mul_prod_bound k hx⟩
 
 /-- **Pentagonal number theorem** for Euler function, expressed as an infinite product.
 See `hasSum_eulerFunction_pentagonal` that expresses `eulerFunction` as an infinite sum. -/

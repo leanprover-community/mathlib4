@@ -95,6 +95,15 @@ theorem coeff_pentagonalSeries_eq_zero_iff [Nontrivial R] {n : ℕ} :
     (pentagonalSeries R).coeff n = 0 ↔ n ∉ Set.range pentagonal := by
   grind [pentagonalSeries, coeff_mk, neg_one_pow_ne_zero, Int.coe_negOnePow]
 
+theorem coeff_pentagonalSeries_mul_eq_extend (n : ℕ) (f : ℕ → R) :
+    (PowerSeries.coeff n) (PowerSeries.pentagonalSeries R) * f n =
+    Function.extend pentagonal (fun k ↦ k.negOnePow * f (pentagonal k)) 0 n := by
+  by_cases hn : n ∈ Set.range pentagonal
+  · obtain ⟨k, rfl⟩ := hn
+    simp [pentagonal_injective.extend_apply, -Int.coe_negOnePow]
+  · rw [Function.extend_apply' _ _ _ (by simpa using hn)]
+    simp [PowerSeries.coeff_pentagonalSeries_eq_zero R hn]
+
 namespace WithPiTopology
 variable [TopologicalSpace R]
 
