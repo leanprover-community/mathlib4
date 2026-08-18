@@ -66,11 +66,11 @@ lemma coe_ofMeasurableEquiv : ⇑(Matrix.ofMeasurableEquiv m n α) = Matrix.of :
 lemma coe_ofMeasurableEquiv_symm : ⇑(Matrix.ofMeasurableEquiv m n α).symm = Matrix.of.symm := rfl
 
 @[simp]
-lemma _root_.MeasurableEquiv.ofMatrix_apply (f : m → n → α) :
+lemma ofMeasurableEquiv_apply (f : m → n → α) :
     Matrix.ofMeasurableEquiv m n α f = Matrix.of f := rfl
 
 @[simp]
-lemma _root_.MeasurableEquiv.ofMatrix_symm_apply (M : Matrix m n α) :
+lemma ofMeasurableEquiv_symm_apply (M : Matrix m n α) :
     (Matrix.ofMeasurableEquiv m n α).symm M = Matrix.of.symm M := rfl
 
 end MeasurableEquiv
