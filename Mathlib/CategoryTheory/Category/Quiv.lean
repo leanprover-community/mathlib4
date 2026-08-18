@@ -24,6 +24,7 @@ namespace CategoryTheory
 -- intended to be used with explicit universe parameters
 set_option linter.checkUnivs false in
 /-- Category of quivers. -/
+@[implicit_reducible]
 def Quiv :=
   Bundled Quiver.{v, u}
 
@@ -35,6 +36,7 @@ instance str' (C : Quiv.{v, u}) : Quiver.{v, u} C :=
   C.str
 
 /-- Construct a bundled `Quiv` from the underlying type and the typeclass. -/
+@[implicit_reducible]
 def of (C : Type u) [Quiver.{v} C] : Quiv.{v, u} :=
   Bundled.of C
 

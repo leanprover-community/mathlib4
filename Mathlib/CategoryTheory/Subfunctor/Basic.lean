@@ -43,7 +43,7 @@ structure Subfunctor (F : C ⥤ Type w) where
   `F i x` is in `F(V)`. -/
   map : ∀ {U V : C} (i : U ⟶ V), obj U ⊆ F.map i ⁻¹' obj V
 
-variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
+variable {F F' : C ⥤ Type w} (G G' : Subfunctor F)
 
 instance : PartialOrder (Subfunctor F) :=
   PartialOrder.lift Subfunctor.obj (fun _ _ => Subfunctor.ext)

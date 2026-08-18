@@ -141,10 +141,8 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
   ⟨{  pt := F.obj ⟨⟨⟩⟩
       π := { app := fun ⟨⟨⟩⟩ => 𝟙 _
              naturality := by
-              intro X Y f
-              match X, Y, f with
-              | .mk A, .mk B, .up g =>
-                simp
+              intro ⟨X⟩ ⟨Y⟩ f
+              simp
            }
   }⟩
 

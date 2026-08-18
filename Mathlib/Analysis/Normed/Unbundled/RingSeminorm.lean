@@ -165,7 +165,7 @@ variable [CommRing R] (p : RingSeminorm R)
 theorem exists_index_pow_le (hna : IsNonarchimedean p) (x y : R) (n : ℕ) :
     ∃ (m : ℕ), m < n + 1 ∧ p ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
       (p (x ^ m) * p (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) := by
-  obtain ⟨m, hm_lt, hm⟩ := IsNonarchimedean.add_pow_le hna n x y
+  obtain ⟨m, hm_lt, hm⟩ := hna.add_pow_le x y n (map_mul_le_mul p)
   exact ⟨m, hm_lt, by gcongr⟩
 
 end CommRing
