@@ -253,9 +253,8 @@ of the characteristic functions of their pushforwards. -/
 lemma tendstoInDistribution_iff_tendsto_charFun
     (hX : ∀ n, AEMeasurable (X n) (P n)) (hX' : AEMeasurable X' P') :
     TendstoInDistribution X atTop X' P P' ↔
-    (∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t))) := by
-  constructor
-  · exact tendsto_charFun_of_tendstoInDistribution
-  · exact tendstoInDistribution_of_tendsto_charFun hX hX'
+    (∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t))) where
+  mp := TendstoInDistribution.tendsto_charFun
+  mpr := TendstoInDistribution.of_tendsto_charFun hX hX'
 
 end MeasureTheory
