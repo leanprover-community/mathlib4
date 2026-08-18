@@ -28,7 +28,7 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open NNReal ENNReal
+open ENNReal
 
 open MeasureTheory
 
@@ -58,11 +58,11 @@ theorem mem_support_pure_iff : a' ∈ (pure a).support ↔ a' = a := by simp [su
 
 @[deprecated Measure.dirac_apply_of_mem (since := "2026-08-17")]
 theorem pure_apply_self : pure a a = 1 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 @[deprecated dirac_eq_zero_iff_not_mem (since := "2026-08-17")]
 theorem pure_apply_of_ne (h : a' ≠ a) : pure a a' = 0 :=
-  if_neg h
+  ite_eq_right h
 
 @[deprecated "" (since := "2026-08-17")]
 instance [Inhabited α] : Inhabited (PMF α) :=
@@ -238,8 +238,8 @@ theorem bindOnSupport_eq_bind (p : PMF α) (f : α → PMF β) :
 theorem bindOnSupport_eq_zero_iff {p : PMF α} (f : ∀ a ∈ p.support, PMF β) (b : β) :
     p.bindOnSupport f b = 0 ↔ ∀ (a) (ha : p a ≠ 0), f a ha b = 0 := by
   simp only [bindOnSupport_apply, ENNReal.tsum_eq_zero, mul_eq_zero, or_iff_not_imp_left]
-  exact ⟨fun h a ha => Trans.trans (dif_neg ha).symm (h a ha),
-    fun h a ha => Trans.trans (dif_neg ha) (h a ha)⟩
+  exact ⟨fun h a ha => Trans.trans (dite_eq_right ha).symm (h a ha),
+    fun h a ha => Trans.trans (dite_eq_right ha) (h a ha)⟩
 
 @[deprecated Measure.bind_dirac (since := "2026-08-17")]
 theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).support), PMF β) :

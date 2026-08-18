@@ -37,7 +37,7 @@ def binomial (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) : PMF (Fin (n + 1)) :=
       apply Finset.sum_congr rfl
       intro i hi
       rw [Finset.mem_range] at hi
-      rw [dif_pos hi]
+      rw [dite_eq_left hi]
     · rw [add_tsub_cancel_of_le (mod_cast h), one_pow])
 
 @[deprecated ProbabilityTheory.binomial_real_singleton (since := "2026-04-07")]

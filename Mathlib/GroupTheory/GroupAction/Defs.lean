@@ -244,10 +244,6 @@ theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) :
   simp only [orbit_smul, mem_orbit]
 
 @[to_additive]
-instance instMulAction (H : Subgroup G) : MulAction H α :=
-  inferInstanceAs (MulAction H.toSubmonoid α)
-
-@[to_additive]
 lemma subgroup_smul_def {H : Subgroup G} (a : H) (b : α) : a • b = (a : G) • b := rfl
 
 @[to_additive]
@@ -345,6 +341,10 @@ abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 
 variable {G α}
+
+@[to_additive (attr := simp)]
+lemma orbitRel.Quotient.quotient_smul_eq {g : G} {a : α} :
+    ⟦g • a⟧ = (⟦a⟧ : orbitRel.Quotient G α) := Quotient.eq.mpr ⟨g, rfl⟩
 
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
 @[to_additive /-- The orbit corresponding to an element of the quotient by `AddAction.orbitRel` -/]
