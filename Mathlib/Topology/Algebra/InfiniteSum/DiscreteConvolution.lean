@@ -430,8 +430,7 @@ variable [Finset.HasMulAntidiagonal M]
   /-- Additive-index multiplication convolution as a finite sum over the antidiagonal. -/]
 lemma ringConvolution_eq_sum_mulAntidiagonal (f g : M → R) (x : M) :
     (f ⋆ᵣ g) x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 := by
-  simpa only [ringConvolution, mulLinearMap_apply] using
-    convolution_eq_sum_mulAntidiagonal mulLinearMap f g x
+  simpa [ringConvolution] using convolution_eq_sum_mulAntidiagonal (.mul ℕ R) f g x
 
 end RingConvolutionFinite
 
