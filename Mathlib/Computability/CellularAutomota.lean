@@ -77,7 +77,7 @@ In particular, do this to make sure
 that the identity is in the neighborhood.
 This is part of product structure
 where the new state needs to be given
-at least the option of havind dependence on the
+at least the option of having dependence on the
 old state of the cell itself even if it does not actually does so.
 -/
 public def expandNbhd
