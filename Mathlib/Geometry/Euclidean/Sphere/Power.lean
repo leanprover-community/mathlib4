@@ -195,7 +195,7 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
     It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
     canonicalizer; a minimization would help. The original proof was:
     `grind [Set.image_insert_eq, Set.image_singleton]` -/
-    simpa [Set.image_insert_eq, Set.image_singleton] using Cospherical.subtype_val h_cospherical'
+    simpa using Cospherical.subtype_val h_cospherical'
   have hncol : ¬ Collinear ℝ {p₁', p', p₃'} := by
     rw [← affineIndependent_iff_not_collinear_set,
       ← s_isom.toAffineMap.affineIndependent_iff s_isom.injective]
