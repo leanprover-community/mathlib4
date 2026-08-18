@@ -1486,6 +1486,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
 [Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] 💥️ ComplexUnitDisc
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not the complex unit disc
 [Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a set of units, in particular not of a complete normed algebra
