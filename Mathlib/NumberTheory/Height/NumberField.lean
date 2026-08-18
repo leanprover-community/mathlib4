@@ -323,9 +323,8 @@ lemma exists_nat_le_mulHeight₁ (x : K) :
 multiplicative height. -/
 lemma natDenominator_le_mulHeight₁ (x : K) : Algebra.natDenominator x ≤ mulHeight₁ x := by
   obtain ⟨n, hn, hn_le, hn_int⟩ := exists_nat_le_mulHeight₁ x
-  have hdvd : Algebra.natDenominator x ∣ n := by
-    simpa [Algebra.natDenominator_dvd_iff, nsmul_eq_mul] using hn_int
-  exact (Nat.cast_le.mpr (Nat.le_of_dvd (by lia) hdvd)).trans hn_le
+  rw [← nsmul_eq_mul, ← Algebra.natDenominator_dvd_iff] at hn_int
+  grw [Nat.le_of_dvd hn.pos hn_int, hn_le]
 
 private lemma pow_totalWeight_sub_one_eq [DecidableEq (InfinitePlace K)] {n : ℕ} (hn : n ≠ 0)
     (v : InfinitePlace K) :
