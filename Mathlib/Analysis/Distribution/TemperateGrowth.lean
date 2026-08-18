@@ -467,7 +467,6 @@ variable (𝕜) in
 theorem RCLike.hasTemperateGrowth_im : (RCLike.im : 𝕜 → ℝ).HasTemperateGrowth :=
   (RCLike.imCLM (K := 𝕜)).hasTemperateGrowth
 
-
 end RCLike
 
 namespace MeasureTheory.Measure
