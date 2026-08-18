@@ -107,26 +107,38 @@ public protected def BilinForm : LinearMap.BilinForm R (⋀[R]^k M) :=
   exteriorPower.alternatingMapLinearEquiv (R := R) (M := M) (N := R) (n := k) ∘ₗ
     exteriorPower.alternatingMapLinearEquiv (BilinFormAux k B)
 
-lemma bijective_pairingDual [Nontrivial R] [Module.Finite R M] [Module.Free R M] (k : ℕ) :
+lemma bijective_pairingDual [Module.Finite R M] [Module.Free R M] (k : ℕ) :
     Bijective (pairingDual R M k) := by
-  classical
-  -- 1. Choose a finite ordered basis of `M`.
-  obtain ⟨I, b⟩ := Module.Free.exists_basis R M
-  let : LinearOrder I := linearOrderOfSTO WellOrderingRel
-  have : Finite I := Module.Finite.finite_basis b
-  let e := b.dualBasis.exteriorPower k
-  let d := (b.exteriorPower k).dualBasis
-  -- Express `pairingDual` as the map sending the basis `e` to the basis `d`.
-  have hpairingDual_eq_constr : pairingDual R M k = e.constr R d := by
-    -- It suffices to compare the two maps on the basis `e`.
-    apply e.ext
-    intro s
-    -- On the basis vector indexed by `s`, both maps give the corresponding vector `d s`.
-    simp only [Basis.constr_basis]
-    simpa [e, d] using pairingDual_apply_dualBasis_exteriorPower R b k s
-  rw [hpairingDual_eq_constr]
-  refine ⟨e.injective_constr_of_linearIndependent d.linearIndependent, ?_⟩
-  rw [← LinearMap.range_eq_top, Basis.constr_range, d.span_eq]
+  -- Split into the subsingleton and nontrivial cases for the coefficient ring.
+  rcases subsingleton_or_nontrivial R with hR | hR
+  · -- If `R` is subsingleton, every `R`-module is subsingleton.
+    let : Subsingleton R := hR
+    -- The source of `pairingDual` is subsingleton.
+    have : Subsingleton (⋀[R]^k (Module.Dual R M)) := Module.subsingleton R _
+    -- Its target is subsingleton as well.
+    have : Subsingleton (Module.Dual R (⋀[R]^k M)) := Module.subsingleton R _
+    -- Hence every map between these modules is injective and surjective, which is bijectivity.
+    exact ⟨Function.injective_of_subsingleton _, Function.surjective_to_subsingleton _⟩
+  · -- In the nontrivial case, use the finite basis argument below.
+    let : Nontrivial R := hR
+    classical
+    -- Choose a finite ordered basis of `M`.
+    obtain ⟨I, b⟩ := Module.Free.exists_basis R M
+    let : LinearOrder I := linearOrderOfSTO WellOrderingRel
+    have : Finite I := Module.Finite.finite_basis b
+    let e := b.dualBasis.exteriorPower k
+    let d := (b.exteriorPower k).dualBasis
+    -- Express `pairingDual` as the map sending the basis `e` to the basis `d`.
+    have hpairingDual_eq_constr : pairingDual R M k = e.constr R d := by
+      -- It suffices to compare the two maps on the basis `e`.
+      apply e.ext
+      intro s
+      -- On the basis vector indexed by `s`, both maps give the corresponding vector `d s`.
+      simp only [Basis.constr_basis]
+      simpa [e, d] using pairingDual_apply_dualBasis_exteriorPower R b k s
+    rw [hpairingDual_eq_constr]
+    refine ⟨e.injective_constr_of_linearIndependent d.linearIndependent, ?_⟩
+    rw [← LinearMap.range_eq_top, Basis.constr_range, d.span_eq]
 
 /-- On wedges of `k` vectors, `BilinForm` is the determinant of the matrix of pairings. -/
 @[simp] public lemma bilinForm_ιMulti_ιMulti {k : ℕ} (C : LinearMap.BilinForm R M)
@@ -179,7 +191,7 @@ section
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
-public lemma bilinForm_nondegenerate[Module.Free R M] [Module.Finite R M] (k : ℕ)
+public lemma bilinForm_nondegenerate [Module.Free R M] [Module.Finite R M] (k : ℕ)
     (B : LinearMap.BilinForm R M) (hB : Bijective B) :
     Bijective (exteriorPower.BilinForm k B) := by
   rw [bilinForm_eq_pairingDual_comp_map (k := k) B, LinearMap.coe_comp]
