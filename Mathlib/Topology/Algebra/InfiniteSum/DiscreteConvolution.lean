@@ -347,7 +347,7 @@ lemma zero_ringConvolution (f : M → R) :
 @[to_additive (dont_translate := R) (attr := simp) addRingConvolution_zero]
 lemma ringConvolution_zero (f : M → R) :
     f ⋆ᵣ (0 : M → R) = 0 := by
-  simpa only [ringConvolution] using convolution_zero mulLinearMap f
+  simpa only [ringConvolution] using convolution_zero (.mul ℕ R) f
 
 end RingConvolution
 
