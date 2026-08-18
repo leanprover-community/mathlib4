@@ -71,7 +71,7 @@ structure TendstoInDistribution [OpensMeasurableSpace E] (X : (i : ι) → Ω i 
       (𝓝 ⟨μ'.map Z, Measure.isProbabilityMeasure_map aemeasurable_limit⟩)
 
 theorem tendstoInDistribution_iff_forall_integral_rclike_tendsto
-    {𝕜 : Type*} [RCLike 𝕜] [OpensMeasurableSpace E]
+    (𝕜 : Type*) [RCLike 𝕜] [OpensMeasurableSpace E]
     (hX : ∀ i, AEMeasurable (X i) (μ i)) (hZ : AEMeasurable Z μ') :
     TendstoInDistribution X l Z μ μ' ↔
       ∀ f : E →ᵇ 𝕜, Tendsto (fun i ↦ ∫ ω, f (X i ω) ∂(μ i)) l (𝓝 (∫ ω, f (Z ω) ∂μ')) := by
