@@ -508,6 +508,10 @@ theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} 
     rw [commutator_eq_closure]
     exact Subgroup.subset_closure (commutator_mem_commutatorSet x y)
 
+open IsMulCommutative in
+instance : IsMulCommutative (G ⧸ _root_.commutator G) :=
+  Subgroup.Normal.quotient_commutative_iff_commutator_le.mpr le_rfl
+
 /-- If `N` is a normal subgroup of `G` and `H` a commutative subgroup such that `H ⊔ N = ⊤`,
   then `N` contains `commutator G`. -/
 @[to_additive /-- If `N` is a normal additive subgroup of `G` and `H` a commutative additive
