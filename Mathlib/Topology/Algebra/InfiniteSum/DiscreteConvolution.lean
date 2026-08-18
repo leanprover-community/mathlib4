@@ -358,9 +358,7 @@ variable [Monoid M] [NonAssocSemiring R] [TopologicalSpace R]
 @[to_additive (dont_translate := R) (attr := simp) addDelta_addRingConvolution]
 lemma delta_ringConvolution (f : M → R) :
     (delta 1) ⋆ᵣ f = f := by
-  simpa only [ringConvolution, delta] using
-    convolution_indicator_one_left mulLinearMap (1 : R) f
-      (fun y => by simp only [mulLinearMap_apply, one_mul])
+  simpa only [ringConvolution, delta] using convolution_indicator_one_left (.mul ℕ R) 1 f (by simp)
 
 @[to_additive (dont_translate := R) (attr := simp) addRingConvolution_addDelta]
 lemma ringConvolution_delta (f : M → R) :
