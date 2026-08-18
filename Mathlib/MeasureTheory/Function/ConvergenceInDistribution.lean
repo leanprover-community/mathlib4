@@ -76,11 +76,9 @@ theorem tendstoInDistribution_iff_forall_integral_rclike_tendsto
     TendstoInDistribution X l Z μ μ' ↔
       ∀ f : E →ᵇ 𝕜, Tendsto (fun i ↦ ∫ ω, f (X i ω) ∂(μ i)) l (𝓝 (∫ ω, f (Z ω) ∂μ')) := by
   have h_map (i) (f : E →ᵇ 𝕜) :
-      ∫ x, f x ∂(μ i).map (X i) = ∫ ω, f (X i ω) ∂(μ i) := by
-    rw [integral_map (hX i) (by fun_prop)]
+      ∫ x, f x ∂(μ i).map (X i) = ∫ ω, f (X i ω) ∂(μ i) := integral_map (hX i) (by fun_prop)
   have h_map' (f : E →ᵇ 𝕜) :
-      ∫ x, f x ∂μ'.map Z = ∫ ω, f (Z ω) ∂μ' := by
-    rw [integral_map hZ (by fun_prop)]
+      ∫ x, f x ∂μ'.map Z = ∫ ω, f (Z ω) ∂μ' := integral_map hZ (by fun_prop)
   refine ⟨fun h f ↦ ?_, fun h ↦ ⟨hX, hZ, ?_⟩⟩
   · have hf := (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜).mp h.tendsto f
     simpa [h_map, h_map'] using hf
