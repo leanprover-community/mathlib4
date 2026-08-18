@@ -325,7 +325,7 @@ variable [Monoid M] [TopologicalSpace R]
 @[to_additive (dont_translate := R) addRingConvolution
   /-- The additive-index convolution using multiplication to combine values. -/]
 def ringConvolution (f g : M → R) : M → R :=
-  convolution mulLinearMap f g
+  convolution (.mul ℕ R) f g
 
 /-- Notation for convolution using multiplication to combine values. -/
 scoped notation:67 f:68 " ⋆ᵣ " g:67 => ringConvolution f g
