@@ -757,19 +757,10 @@ theorem piecewise {s : Set α} [DecidablePred (· ∈ s)]
     · simp [hx, hxt.1 hx]
     · simp [hx, (not_iff_not.2 hxt).1 hx]
   refine ae_of_ae_restrict_of_ae_restrict_compl s ?_ ?_
-  · have h := hf.ae_eq_mk
-    rw [Filter.EventuallyEq, ae_restrict_iff'₀ hs] at h
-    rw [ae_restrict_iff'₀ hs]
-    filter_upwards [h] with x hx
-    intro hx_mem
-    simp only [hx_mem, Set.piecewise_eq_of_mem, hx hx_mem]
-  · have h := hg.ae_eq_mk
-    rw [Filter.EventuallyEq, ae_restrict_iff'₀ hs.compl] at h
-    rw [ae_restrict_iff'₀ hs.compl]
-    filter_upwards [h] with x hx
-    intro hx_mem
-    rw [Set.mem_compl_iff] at hx_mem
-    simp only [hx_mem, not_false_eq_true, Set.piecewise_eq_of_notMem, hx hx_mem]
+  · filter_upwards [hf.ae_eq_mk, ae_restrict_mem₀ hs] with x hxf hxs
+    simpa [hxs]
+  · filter_upwards [hg.ae_eq_mk, ae_restrict_mem₀ hs.compl] with x hxg hxs
+    simpa [notMem_of_mem_compl hxs]
 
 @[fun_prop]
 theorem sum_measure [PseudoMetrizableSpace β] {m : MeasurableSpace α} {μ : ι → Measure α}
