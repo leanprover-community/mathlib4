@@ -118,8 +118,8 @@ theorem esymm_card (s : Multiset R) : s.esymm s.card = s.prod := by
 theorem esymm_eq_zero_of_card_lt {s : Multiset R} {k : ℕ} (hk : s.card < k) : s.esymm k = 0 := by
   simp [esymm, hk]
 
-private theorem esymm_map_inv_aux {R : Type*} [Field R] (s : Multiset R) : 0 ∉ s →
-    ∀ j k, s.card = j + k → (s.map (·⁻¹)).esymm k * s.prod = s.esymm j := by
+private theorem esymm_map_inv_aux {R : Type*} [Field R] (s : Multiset R) :
+    0 ∉ s → ∀ j k, s.card = j + k → (s.map (·⁻¹)).esymm k * s.prod = s.esymm j := by
   induction s using Multiset.induction with
   | empty => grind [map_zero, card_zero]
   | cons a t _ =>
