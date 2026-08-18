@@ -91,7 +91,6 @@ lemma IsMulTorsionFree.zpow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 
 lemma zpow_right_injective (ha : a ≠ 1) :
     (a ^ · : ℤ → G).Injective := by
   intro m n h
-  dsimp at h
   apply Int.sub_eq_zero.mp
   apply (IsMulTorsionFree.zpow_eq_one_iff_right ha).mp
   simp [zpow_sub, h]
