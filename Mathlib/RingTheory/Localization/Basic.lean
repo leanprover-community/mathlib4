@@ -130,7 +130,6 @@ section CompatibleSMul
 
 variable (N₁ N₂ : Type*) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M S) in
 include M in
 theorem linearMap_compatibleSMul [Module S N₁] [Module S N₂]
@@ -304,7 +303,6 @@ instance : IsLocalization (Algebra.algebraMapSubmonoid S (IsUnit.submonoid R)) S
 
 variable (R M)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The localization at a module of units is isomorphic to the ring. -/
 noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
   refine AlgEquiv.ofBijective (Algebra.ofId R S) ⟨?_, ?_⟩

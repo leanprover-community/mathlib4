@@ -284,9 +284,9 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
       _ ≤ c₂ K * A := ?_
     · simp only [Int.cast_abs, ← Real.norm_eq_abs (asiegel K a kr lu)]; rfl
     · have remark := basis_repr_norm_le_const_mul_house K
-      simp only [Basis.repr_reindex, Finsupp.mapDomain_equiv_apply,
-        integralBasis_repr_apply, eq_intCast, Rat.cast_intCast,
-          Complex.norm_intCast] at remark
+      simp only [Basis.repr_reindex, Finsupp.equivMapDomain_apply, Equiv.symm_symm,
+        integralBasis_repr_apply, algebraMap_int_eq, eq_intCast, Rat.cast_intCast,
+        Complex.norm_intCast] at remark
       exact mod_cast remark ((a kr.1 lu.1 * ((newBasis K) lu.2))) kr.2
     · simp only [house, map_mul, mul_assoc]
       gcongr

@@ -99,7 +99,7 @@ end Submodule
 
 namespace Ideal
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} [Semiring R]
 
 /-- An ideal of `R` is finitely generated if it is the span of a finite subset of `R`.
 
@@ -111,7 +111,7 @@ end Ideal
 
 section ModuleAndAlgebra
 
-variable (R A B M N : Type*)
+variable (R A M : Type*)
 
 /-- A module over a semiring is `Module.Finite` if it is finitely generated as a module. -/
 protected class Module.Finite [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
@@ -122,7 +122,7 @@ attribute [inherit_doc Module.Finite] Module.Finite.fg_top
 
 namespace Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- See also `Module.Finite.iff_fg` for a version when `M` is itself a submodule. -/
 theorem finite_def {R M} [Semiring R] [AddCommMonoid M] [Module R M] :
@@ -163,7 +163,7 @@ end ModuleAndAlgebra
 
 namespace RingHom
 
-variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+variable {A B : Type*} [CommRing A] [CommRing B]
 
 /-- A ring morphism `A →+* B` is `RingHom.Finite` if `B` is finitely generated as `A`-module. -/
 @[algebraize Module.Finite, stacks 0563]
@@ -180,9 +180,9 @@ end RingHom
 
 namespace AlgHom
 
-variable {R A B C : Type*} [CommRing R]
-variable [CommRing A] [CommRing B] [CommRing C]
-variable [Algebra R A] [Algebra R B] [Algebra R C]
+variable {R A B : Type*} [CommRing R]
+variable [CommRing A] [CommRing B]
+variable [Algebra R A] [Algebra R B]
 
 /-- An algebra morphism `A →ₐ[R] B` is finite if it is finite as ring morphism.
 In other words, if `B` is finitely generated as `A`-module. -/

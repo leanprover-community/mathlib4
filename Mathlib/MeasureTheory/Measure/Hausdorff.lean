@@ -599,6 +599,18 @@ theorem hausdorffMeasure_mono {d₁ d₂ : ℝ} (h : d₁ ≤ d₂) (s : Set X) 
   rcases h.eq_or_lt with (rfl | h); · exact le_rfl
   rcases hausdorffMeasure_zero_or_top h s with hs | hs <;> simp [hs]
 
+/-- A set `s` with `μH[d] s ≠ ∞` for some `d` is separable. -/
+theorem isSeparable_of_hausdorffMeasure_ne_top {d : ℝ} {s : Set X} (h : μH[d] s ≠ ∞) :
+    IsSeparable s := by
+  rw [hausdorffMeasure_apply] at h
+  obtain ⟨c, -, hcc, hsc⟩ := EMetric.subset_countable_closure_of_almost_dense_set s fun ε hε ↦ by
+    obtain ⟨t, htd, hst, -⟩ := by simpa [iInf_lt_iff] using (le_iSup₂ ε hε).trans_lt h.lt_top
+    refine ⟨range fun m : {n // (t n).Nonempty} ↦ m.2.some, countable_range _, fun x hx ↦ ?_⟩
+    obtain ⟨n, hn⟩ := mem_iUnion.1 (hst hx)
+    exact mem_biUnion (mem_range_self ⟨n, x, hn⟩)
+      (mem_closedEBall.2 ((edist_le_ediam_of_mem hn (Nonempty.some_mem _)).trans (htd n)))
+  exact ⟨c, hcc, hsc⟩
+
 variable (X) in
 theorem nullSingletonClass_hausdorff {d : ℝ} (hd : 0 < d) :
     NullSingletonClass (hausdorffMeasure d : Measure X) := by
@@ -972,7 +984,7 @@ instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
     set e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ := ContinuousLinearEquiv.ofFinrankEq (by simp)
     suffices μH[finrank ℝ E] (e '' K) < ⊤ by
       rw [← e.symm_image_image K]
-      apply lt_of_le_of_lt <| e.symm.lipschitz.hausdorffMeasure_image_le (by simp) (e '' K)
+      apply lt_of_le_of_lt <| e.symm.lipschitzWith.hausdorffMeasure_image_le (by simp) (e '' K)
       rw [ENNReal.rpow_natCast]
       exact ENNReal.mul_lt_top (ENNReal.pow_lt_top ENNReal.coe_lt_top) this
     conv_lhs => congr; congr; rw [← Fintype.card_fin (finrank ℝ E)]
@@ -982,7 +994,7 @@ instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
     set e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ := ContinuousLinearEquiv.ofFinrankEq (by simp)
     suffices 0 < μH[finrank ℝ E] (e '' U) from
       (ENNReal.mul_pos_iff.mp (lt_of_lt_of_le this <|
-        e.lipschitz.hausdorffMeasure_image_le (by simp) _)).2.ne'
+        e.lipschitzWith.hausdorffMeasure_image_le (by simp) _)).2.ne'
     conv_rhs => congr; congr; rw [← Fintype.card_fin (finrank ℝ E)]
     rw [hausdorffMeasure_pi_real]
     apply (e.isOpenMap U hU).measure_pos (μ := volume)
@@ -1076,7 +1088,6 @@ section RealAffine
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace P]
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Mapping a set of reals along a line segment scales the measure by the length of a segment.
 
 This is an auxiliary result used to prove `hausdorffMeasure_affineSegment`. -/
@@ -1088,7 +1099,6 @@ theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
   rw [IsometryEquiv.hausdorffMeasure_image, hausdorffMeasure_smul_right_image,
     nndist_eq_nnnorm_vsub' E]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The measure of a segment is the distance between its endpoints. -/
 @[simp]
 theorem hausdorffMeasure_affineSegment (x y : P) : μH[1] (affineSegment ℝ x y) = edist x y := by

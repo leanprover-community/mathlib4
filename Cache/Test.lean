@@ -382,25 +382,56 @@ end ExtractPRNumber
 section HashFromFileName
 
 /-- Recovers the UInt64 cache hash from a cached file's path, the inverse of
-`UInt64.asLTar`. The subtle case is `.ltar.part` — the suffix curl writes during
-a download — where `.part` must be stripped before `.ltar`. A regression here
-corrupts cache lookups, so both suffixes and a non-hex stem are covered. -/
+`UInt64.asLTar`. The subtle cases are the in-flight suffixes curl writes during a
+download: today's process-tagged `.ltar.<pid>.part` (see `IO.PARTSUFFIX`) and the
+untagged `.ltar.part` a cache from before tagging may have left in the shared
+directory. A regression here corrupts cache lookups, so every suffix and a
+non-hex stem are covered. -/
 def test_hashFromFileName : IO Unit := do
   IO.println "hashFromFileName:"
   assertTrue "plain .ltar file"
     (hashFromFileName "abc123def.ltar" == String.parseHexToUInt64? "000000abc123def")
-  assertTrue "in-flight .ltar.part file strips both suffixes"
+  assertTrue "in-flight process-tagged .part file strips all three suffixes"
+    (hashFromFileName "abc123def.ltar.31415.part" == String.parseHexToUInt64? "000000abc123def")
+  assertTrue "legacy untagged .ltar.part file strips both suffixes"
     (hashFromFileName "abc123def.ltar.part" == String.parseHexToUInt64? "000000abc123def")
+  assertTrue "the tag this process actually writes round-trips"
+    (hashFromFileName ("abc123def.ltar" ++ IO.PARTSUFFIX) ==
+      String.parseHexToUInt64? "000000abc123def")
   assertTrue "full 16-digit hex stem"
     (hashFromFileName "deadbeef00112233.ltar" == String.parseHexToUInt64? "deadbeef00112233")
   -- A non-hex stem returns none rather than a garbage hash.
   assertTrue "non-hex stem returns none"
     (hashFromFileName "nothexa.ltar" == none)
+  assertTrue "non-hex stem returns none for a tagged part file too"
+    (hashFromFileName "nothexa.ltar.31415.part" == none)
   -- Directory components are ignored; only the basename's stem is parsed.
   assertTrue "leading path is ignored"
     (hashFromFileName "/path/to/abc123def.ltar" == String.parseHexToUInt64? "000000abc123def")
 
 end HashFromFileName
+
+section TempFileNames
+
+/-- Every temporary file `cache` writes into the shared `CACHEDIR` carries this process's
+tag, so two runs in flight in one cache directory cannot write each other's curl
+configuration or each other's partial downloads. The `.part` ending is load-bearing
+beyond uniqueness: the download monitor keys both its rename-on-success and its
+remove-on-error off it. -/
+def test_tempFileNames : IO Unit := do
+  IO.println "temporary file names:"
+  assertTrue "the process tag is non-empty" (!IO.PROCTAG.isEmpty)
+  assertTrue "the in-flight suffix still ends in .part" (IO.PARTSUFFIX.endsWith ".part")
+  assertTrue "the in-flight suffix is tagged, not a bare .part" (IO.PARTSUFFIX != ".part")
+  assertTrue "the in-flight suffix carries the tag" ((IO.PARTSUFFIX.splitOn IO.PROCTAG).length == 2)
+  assertTrue "the curl config carries the tag"
+    ((IO.CURLCFG.toString.splitOn IO.PROCTAG).length == 2)
+  assertTrue "the curl config sits in the cache directory"
+    (IO.CURLCFG.parent == some IO.CACHEDIR)
+  -- The tag must not reintroduce a path separator or a shell/curl-config hazard.
+  assertTrue "the tag is a bare identifier" (IO.PROCTAG.all fun c => c.isAlphanum)
+
+end TempFileNames
 
 section IsRemoteURL
 
@@ -1062,6 +1093,7 @@ def runAll : IO Unit := do
   test_extractRepoFromUrl
   test_extractPRNumber
   test_hashFromFileName
+  test_tempFileNames
   test_isRemoteURL
   test_UInt64_asLTar
   test_hash_roundtrip

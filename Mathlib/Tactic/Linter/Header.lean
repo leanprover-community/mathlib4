@@ -10,6 +10,8 @@ public meta import Lean.Elab.ParseImportsFast
 public meta import Std.Sync.Mutex
 public import Lean.Parser.Module
 public import Mathlib.Tactic.Linter.DirectoryDependency
+public meta import Lean.Linter.Basic
+public import Std.Sync.Mutex
 
 /-!
 # The "header" linter

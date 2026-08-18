@@ -139,7 +139,6 @@ section IsStronglyTranscendental
 
 variable (φ : R[X] →ₐ[R] S) (t : S) (p r : R[X])
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a map `φ : R[X] →ₐ[R] S`. Suppose `t = φ r / φ p` is integral over `R[X]` where
 `p` is monic with `deg p > deg r`, then `t` is also integral over `R`. -/
 lemma isIntegral_of_isIntegralElem_of_monic_of_natDegree_lt
@@ -610,8 +609,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
           simp +contextual only [Subalgebra.range_val, Algebra.adjoin_le_iff, Subalgebra.coe_map,
             Subalgebra.coe_val, Set.subset_def, SetLike.mem_coe, Algebra.mem_adjoin_of_mem,
             Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right, R']
-          simpa [R', mem_integralClosure_iff,
-            ← isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective R' S),
+          simpa [R', mem_integralClosure_iff, ← isIntegral_algebraMap_iff (A := R') (B := S),
             forall_and, hr, or_imp, Finset.mem_smul_finset]
         refine ⟨fun i ↦ ?_, fun a has ↦ ?_⟩
         · convert! isIntegral_algebraMap (x := MvPolynomial.X i)

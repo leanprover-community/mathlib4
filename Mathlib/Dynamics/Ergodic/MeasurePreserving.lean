@@ -33,12 +33,11 @@ public section
 open MeasureTheory.Measure Function Set
 open scoped ENNReal
 
-variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
-  [MeasurableSpace δ]
+variable {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 
 namespace MeasureTheory
 
-variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
+variable {μa : Measure α} {μb : Measure β} {μc : Measure γ}
 
 /-- `f` is a measure-preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
 and `map f μa = μb`. -/

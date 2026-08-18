@@ -71,7 +71,6 @@ lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofilte
       exact ⟨⟨i₀, IsCofiltered.eq u.right v.right, L.map (β ≫ va₁) ≫ Q.hom⟩,
         ⟨β ≫ va₂, IsCofiltered.eqHom u.right v.right, by cat_disch⟩, by cat_disch⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma initial_fst_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
     [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : (fst L R).Initial := by
   have := isCofiltered_of_isCofiltered_costructuredArrow L R
@@ -190,7 +189,6 @@ lemma isCofiltered_of_initial [IsCofiltered A] [IsCofiltered B] [L.Initial] :
   have := L.initial_iff_isCofiltered_costructuredArrow.mp inferInstance
   exact isCofiltered_of_isCofiltered_costructuredArrow L R
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `R : A ⥤ T`. Then, the
 projection `snd L R : Comma L R ⥤ B` is final. -/
 instance final_snd [IsFiltered A] [IsFiltered B] [R.Final] : (snd L R).Final := by

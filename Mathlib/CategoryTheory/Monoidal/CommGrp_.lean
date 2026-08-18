@@ -279,7 +279,6 @@ open CategoryTheory.Functor
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.Braided]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An adjunction of braided functors lifts to an adjunction of their lifts to commutative group
 objects. -/

@@ -167,12 +167,10 @@ instance {X : Scheme.{u}} {Z Y : X.Etale} (f : Z ⟶ Y) : Etale f.left := by
   have : Etale (f.left ≫ Y.hom) := by rw [CategoryTheory.Over.w]; infer_instance
   exact Etale.of_comp f.left Y.hom
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from schemes étale over `X` to schemes over `X`. -/
 def Etale.forget : X.Etale ⥤ Over X :=
   MorphismProperty.Over.forget @Etale ⊤ X
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from schemes étale over `X` to schemes over `X` is fully faithful. -/
 def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
   MorphismProperty.Comma.forgetFullyFaithful _ _ _

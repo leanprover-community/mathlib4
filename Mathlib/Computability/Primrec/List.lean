@@ -98,8 +98,8 @@ end
 
 namespace Primcodable
 
-variable {α : Type*} {β : Type*}
-variable [Primcodable α] [Primcodable β]
+variable {α : Type*}
+variable [Primcodable α]
 
 open Primrec
 
@@ -136,8 +136,8 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
+variable {α : Type*} {β : Type*} {σ : Type*}
+variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 theorem list_cons : Primrec₂ (@List.cons α) :=
   list_cons' (Primcodable.prim _)
@@ -428,9 +428,9 @@ namespace PrimrecPred
 
 open List Primrec
 
-variable {α β : Type*} {p : α → Prop} {L : List α} {b : β}
+variable {α : Type*} {p : α → Prop} {L : List α}
 
-variable [Primcodable α] [Primcodable β]
+variable [Primcodable α]
 
 /-- Checking if any element of a list satisfies a decidable predicate is primitive recursive. -/
 theorem exists_mem_list : (hf : PrimrecPred p) → PrimrecPred fun L : List α ↦ ∃ a ∈ L, p a
@@ -635,7 +635,6 @@ theorem const {n} : ∀ m, @Primrec' n fun _ => m
 theorem head {n : ℕ} : @Primrec' n.succ head :=
   (get 0).of_eq fun v => by simp [get_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tail {n f} (hf : @Primrec' n f) : @Primrec' n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @get _ i.succ).of_eq fun v => by
     rw [← ofFn_get v.tail]; congr; funext i; simp

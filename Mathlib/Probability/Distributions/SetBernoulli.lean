@@ -33,7 +33,7 @@ open MeasureTheory Measure unitInterval
 open scoped ENNReal Finset
 
 namespace ProbabilityTheory
-variable {ι Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → Set ι} {s u : Set ι} {i j : ι} {p q : I}
+variable {ι Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → Set ι} {s u : Set ι} {i : ι} {p : I}
   {P : Measure Ω}
 
 variable (u p) in

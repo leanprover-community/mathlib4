@@ -218,7 +218,7 @@ end Commute
 
 section CommSemiring
 
-variable [CommSemiring R] {x y : R}
+variable [CommSemiring R]
 
 lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) :

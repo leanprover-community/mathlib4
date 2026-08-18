@@ -89,7 +89,7 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     rw [IntermediateField.mem_fixedField_iff] at hx
     have mem : x ∈ (adjoin L {x}).1 := subset_adjoin _ _ rfl
     have : IntermediateField.fixedField (⊤ : Subgroup ((adjoin L {x}) ≃ₐ[L] (adjoin L {x}))) = ⊥ :=
-      (IsGalois.tfae.out 0 1).mp (by infer_instance)
+      (IsGalois.tfae.out 1 2).mp (by infer_instance)
     have : ⟨x, mem⟩ ∈ (⊥ : IntermediateField L (adjoin L {x})) := by
       rw [← this, IntermediateField.mem_fixedField_iff]
       intro f _

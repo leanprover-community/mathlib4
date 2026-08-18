@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
-public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Big operators on a finset in groups with zero involving order
@@ -18,7 +19,7 @@ zero, where order is involved.
 
 public section
 
-variable {ι R S : Type*}
+variable {ι R : Type*}
 
 namespace Finset
 
@@ -126,11 +127,19 @@ theorem prod_anti_set_of_le_one (hf0 : ∀ (x : ι), 0 ≤ f x) (hf : ∀ (x : �
     Antitone fun (s : Finset ι) => ∏ x ∈ s, f x :=
   fun _ _ hst ↦ prod_le_prod_of_subset_of_le_one hst (by grind) (by simp [hf])
 
+theorem prod_le_prod_of_injOn {α : Type*} [DecidableEq α]
+    {g : α → R} {s : Finset ι} {t : Finset α} (e : ι → α) (he : Set.InjOn e s)
+    (ht : image e s ⊆ t) (h : ∀ i ∈ s, f i ≤ g (e i))
+    (hf0 : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ a ∈ t, a ∉ image e s → 1 ≤ g a) :
+    ∏ i ∈ s, f i ≤ ∏ a ∈ t, g a := by
+  refine le_trans ?_ (prod_le_prod_of_subset_of_one_le ht (by grind) hg)
+  grw [prod_image he, prod_le_prod hf0 h]
+
 end PosMulMono
 
 section PosMulStrictMono
 variable [PartialOrder R] [ZeroLEOneClass R] [PosMulStrictMono R] [Nontrivial R] {f g : ι → R}
-  {s t : Finset ι}
+  {s : Finset ι}
 
 lemma prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i ∈ s, f i :=
   prod_induction f (fun x ↦ 0 < x) (fun _ _ ha hb ↦ mul_pos ha hb) zero_lt_one h0

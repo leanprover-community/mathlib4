@@ -15,7 +15,7 @@ public import Mathlib.Tactic.Positivity.Core
 
 @[expose] public section
 
-variable {F ι α β : Type*}
+variable {α : Type*}
 
 namespace Rat
 variable {p q : ℚ}

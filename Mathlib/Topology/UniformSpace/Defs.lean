@@ -116,7 +116,7 @@ universe u v ua ub uc ud
 ### Relations, seen as `SetRel α α`
 -/
 
-variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
+variable {α : Type ua} {β : Type ub} {γ : Type uc} {ι : Sort*}
 
 open scoped SetRel
 

@@ -20,14 +20,13 @@ the collection.
 
 open Set Filter
 
-variable {α β γ : Type*} {ι ι' : Sort*}
+variable {α : Type*} {ι ι' : Sort*}
 
 namespace Filter
 
 section SameType
 
-variable {l l' : Filter α} {p : ι → Prop} {s : ι → Set α} {t : Set α} {i : ι} {p' : ι' → Prop}
-  {s' : ι' → Set α} {i' : ι'}
+variable {l : Filter α} {p : ι → Prop} {s : ι → Set α} {t : Set α} {i : ι}
 
 theorem hasBasis_generate (s : Set (Set α)) :
     (generate s).HasBasis (fun t => Set.Finite t ∧ t ⊆ s) fun t => ⋂₀ t :=

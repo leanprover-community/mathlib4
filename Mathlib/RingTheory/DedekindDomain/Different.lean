@@ -9,6 +9,8 @@ public import Mathlib.NumberTheory.RamificationInertia.Unramified
 public import Mathlib.RingTheory.Conductor
 public import Mathlib.RingTheory.FractionalIdeal.Extended
 public import Mathlib.RingTheory.Trace.Quotient
+public import Mathlib.RingTheory.Finiteness.Quotient
+public import Mathlib.RingTheory.Flat.TorsionFree
 
 /-!
 # The different ideal

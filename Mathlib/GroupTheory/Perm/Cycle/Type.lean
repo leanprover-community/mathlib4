@@ -474,7 +474,7 @@ instance [Fintype G] : Fintype (vectorsProdEqOne G n) :=
 theorem card [Fintype G] : Fintype.card (vectorsProdEqOne G n) = Fintype.card G ^ (n - 1) :=
   (Fintype.card_congr (equivVector G n)).trans (card_vector (n - 1))
 
-variable {G n} {g : G}
+variable {G n}
 variable (v : vectorsProdEqOne G n) (j k : ℕ)
 
 /-- Rotate a vector whose product is 1. -/

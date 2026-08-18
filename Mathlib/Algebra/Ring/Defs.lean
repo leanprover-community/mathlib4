@@ -527,3 +527,62 @@ scoped instance (priority := 50) [Ring R] [IsMulCommutative R] :
     CommRing R where
 
 end IsMulCommutative
+
+noncomputable section
+namespace IsUnital
+variable {A : Type*}
+
+attribute [local instance] IsUnital.toMulOneClass
+
+/-- A unital non-associative semiring is a non-associative semiring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toNonAssocSemiring [NonUnitalNonAssocSemiring A] [IsUnital A] : NonAssocSemiring A where
+
+/-- A unital non-unital non-associative commutative semiring is a non-associative
+commutative semiring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toNonAssocCommSemiring [NonUnitalNonAssocCommSemiring A] [IsUnital A] :
+    NonAssocCommSemiring A where
+
+/-- A unital non-unital semiring is a semiring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toSemiring [NonUnitalSemiring A] [IsUnital A] : Semiring A where
+
+/-- A unital non-unital commutative semiring is a commutative semiring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toCommSemiring [NonUnitalCommSemiring A] [IsUnital A] : CommSemiring A where
+
+/-- A unital non-unital non-associative ring is a non-associative ring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toNonAssocRing [NonUnitalNonAssocRing A] [IsUnital A] : NonAssocRing A where
+
+/-- A unital non-unital non-associative commutative ring is a non-associative commutative ring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toNonAssocCommRing [NonUnitalNonAssocCommRing A] [IsUnital A] : NonAssocCommRing A where
+
+/-- A unital non-unital ring is a ring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toRing [NonUnitalRing A] [IsUnital A] : Ring A where
+
+/-- A unital non-unital commutative ring is a commutative ring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toCommRing [NonUnitalCommRing A] [IsUnital A] : CommRing A where
+
+end IsUnital
+end

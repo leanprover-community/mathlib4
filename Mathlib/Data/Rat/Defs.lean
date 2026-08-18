@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.Rat.Init
 public import Mathlib.Order.Basic
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Basics for the Rational Numbers

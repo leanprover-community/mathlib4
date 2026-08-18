@@ -199,7 +199,6 @@ lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
           (sigmaIncl f _).op ≫ (componentHom f g.unop a).op :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The counit is natural in `S : CompHausLike P` -/
 @[simps! app]
@@ -332,7 +331,6 @@ lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
   rw [← map_eq_image _ a x]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 `CompHausLike.LocallyConstant.functor` is left adjoint to the forgetful functor.
 -/
@@ -374,7 +372,7 @@ namespace CondensedSet.LocallyConstant
 /-- The functor from sets to condensed sets given by locally constant maps into the set. -/
 abbrev functor : Type (u + 1) ⥤ CondensedSet.{u} :=
   CompHausLike.LocallyConstant.functor.{u, u + 1} (P := fun _ ↦ True)
-    (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+    (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 1 3).mp)
 
 /--
 `CondensedSet.LocallyConstant.functor` is isomorphic to `Condensed.discrete`

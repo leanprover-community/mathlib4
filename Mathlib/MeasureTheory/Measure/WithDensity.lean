@@ -458,14 +458,14 @@ lemma setLIntegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α �
 theorem lintegral_withDensity_eq_lintegral_mul₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g μ) :
     ∫⁻ a, g a ∂μ.withDensity f = ∫⁻ a, (f * g) a ∂μ :=
-  lintegral_withDensity_eq_lintegral_mul₀' hf (hg.mono' (withDensity_absolutelyContinuous μ f))
+  lintegral_withDensity_eq_lintegral_mul₀' hf (hg.mono_ac (withDensity_absolutelyContinuous μ f))
 
 lemma setLIntegral_withDensity_eq_lintegral_mul₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g μ)
     {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ :=
   setLIntegral_withDensity_eq_lintegral_mul₀' hf
-    (hg.mono' (MeasureTheory.withDensity_absolutelyContinuous μ f)) hs
+    (hg.mono_ac (MeasureTheory.withDensity_absolutelyContinuous μ f)) hs
 
 theorem lintegral_withDensity_le_lintegral_mul (μ : Measure α) {f : α → ℝ≥0∞}
     (f_meas : Measurable f) (g : α → ℝ≥0∞) : (∫⁻ a, g a ∂μ.withDensity f) ≤ ∫⁻ a, (f * g) a ∂μ := by

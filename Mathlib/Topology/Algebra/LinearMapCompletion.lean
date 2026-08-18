@@ -24,14 +24,14 @@ lifted to a continuous semilinear map between the completions of those modules.
 
 @[expose] public section
 
+variable {α β : Type*} {R S : Type*} [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
+  [Semiring S] [Module S α] [UniformContinuousConstSMul S α] [Semiring R] [UniformSpace β]
+  [AddCommGroup β] [IsUniformAddGroup β] [Module R β] [UniformContinuousConstSMul R β]
+  {σ : S →+* R}
+
 namespace ContinuousLinearMap
 
 open UniformSpace Completion
-
-variable {α β : Type*} {R₁ R₂ : Type*} [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
-  [Semiring R₁] [Module R₁ α] [UniformContinuousConstSMul R₁ α] [Semiring R₂] [UniformSpace β]
-  [AddCommGroup β] [IsUniformAddGroup β] [Module R₂ β] [UniformContinuousConstSMul R₂ β]
-  {σ : R₁ →+* R₂}
 
 section completion
 
@@ -94,3 +94,16 @@ lemma fromCompletion_unique (f : α →SL[σ] β) (g : Completion α →SL[σ] �
 end fromCompletion
 
 end ContinuousLinearMap
+
+namespace UniformSpace.Completion
+
+/-- Embedding of a normed space to its completion as a continuous linear map. -/
+def toComplL : α →L[S] Completion α where
+  __ := toCompl
+  map_smul' := by simp
+  cont := continuous_toCompl
+
+@[simp] lemma coe_toComplL : ⇑(toComplL : α →L[S] Completion α) = ((↑) : α → Completion α) := rfl
+@[simp] lemma toAddMonoidHom_toComplL : ((toComplL : α →L[S] _) : α →+ _) = toCompl := rfl
+
+end UniformSpace.Completion

@@ -48,8 +48,8 @@ theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →
   obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := hf x, hf y
   use f (gcd x y)
   trans Ideal.map f (Ideal.span {gcd x y})
-  · rw [span_gcd, Ideal.map_span, Set.image_insert_eq, Set.image_singleton]
-  · rw [Ideal.map_span, Set.image_singleton]
+  · simp [span_gcd, Ideal.map_span]
+  · simp [Ideal.map_span]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem TFAE [IsBezout R] [IsDomain R] :

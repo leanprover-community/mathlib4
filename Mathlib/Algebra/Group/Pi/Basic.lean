@@ -39,7 +39,7 @@ variable {α β γ : Type*}
 
 -- The families of types already equipped with instances
 variable {f : I → Type v₁} {g : I → Type v₂} {h : I → Type v₃}
-variable (x y : ∀ i, f i) (i : I)
+variable (x : ∀ i, f i) (i : I)
 
 namespace Pi
 

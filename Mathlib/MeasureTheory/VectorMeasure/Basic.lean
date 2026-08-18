@@ -695,7 +695,6 @@ theorem mapRange_smul {v : VectorMeasure α M} {f : M →ₗ[R] N} (hf : Continu
 
 variable [ContinuousAdd M] [ContinuousAdd N]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a continuous linear map `f : M → N`, `mapRangeₗ` is the linear map mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
 def mapRangeₗ {α : Type*} [MeasurableSpace α] (f : M →ₗ[R] N) (hf : Continuous f) :
@@ -1081,7 +1080,7 @@ end
 section
 
 variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
-variable (v w : VectorMeasure α M) {i j : Set α}
+variable (v : VectorMeasure α M) {i j : Set α}
 
 theorem nonneg_of_zero_le_restrict (hi₂ : 0 ≤[i] v) : 0 ≤ v i := by
   by_cases hi₁ : MeasurableSet i
@@ -1118,7 +1117,7 @@ end
 section
 
 variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [LinearOrder M]
-variable (v w : VectorMeasure α M) {i j : Set α}
+variable (v : VectorMeasure α M) {i j : Set α}
 
 theorem exists_pos_measure_of_not_restrict_le_zero (hi : ¬v ≤[i] 0) :
     ∃ j : Set α, MeasurableSet j ∧ j ⊆ i ∧ 0 < v j := by

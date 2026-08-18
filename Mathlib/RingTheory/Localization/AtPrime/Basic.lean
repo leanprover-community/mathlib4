@@ -139,7 +139,6 @@ namespace AtPrime
 
 variable (I : Ideal R) [hI : I.IsPrime] [IsLocalization.AtPrime S I]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The prime ideals in the localization of a commutative ring at a prime ideal I are in
 order-preserving bijection with the prime ideals contained in I. -/
 @[simps!]
@@ -458,14 +457,12 @@ section
 variable (q : Ideal R) [q.IsPrime] (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S]
   [IsLocalization.AtPrime S q]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.isPrime_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : p ≤ q) :
     (p.map (algebraMap R S)).IsPrime := by
   have disj : Disjoint (q.primeCompl : Set R) p := by
     simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left, hpq]
   apply IsLocalization.isPrime_of_isPrime_disjoint q.primeCompl _ p (by simpa) disj
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.under_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : p ≤ q) :
     (p.map (algebraMap R S)).under R = p := by
   have disj : Disjoint (q.primeCompl : Set R) p := by
@@ -498,14 +495,8 @@ lemma IsLocalization.liesOver_of_isPrime_of_disjoint {R' S' : Type*}
   rw [under_under, ← under_under (B := S), under_map_of_isPrime_disjoint _ _ ‹_› disj,
     LiesOver.over (P := P) (p := p)]
 
-lemma Ideal.IsMaximal.of_isLocalization_of_disjoint [IsLocalization M S] {J : Ideal S}
-    [(J.under R).IsMaximal] : J.IsMaximal := by
-  obtain ⟨m, maxm, hm⟩ := exists_le_maximal J <| by
-    rintro rfl
-    exact Ideal.IsMaximal.ne_top ‹_› (by simp)
-  replace hm : under R J ≤ under R m := comap_mono hm
-  rwa [← IsLocalization.map_under M S J, IsMaximal.eq_of_le ‹_› (IsPrime.under R m).ne_top hm,
-    IsLocalization.map_under M S m]
+@[deprecated (since := "2026-07-04")] alias Ideal.IsMaximal.of_isLocalization_of_disjoint :=
+  IsLocalization.isMaximal_of_isMaximal_under
 
 end
 

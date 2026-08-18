@@ -43,7 +43,7 @@ mapping each prime factor of `n` to its multiplicity in `n`.  For example, since
 open Nat Finset List Finsupp
 
 namespace Nat
-variable {a b m n p : ℕ}
+variable {a b n p : ℕ}
 
 /-- `n.factorization` is the finitely supported function `ℕ →₀ ℕ`
 mapping each prime factor of `n` to its multiplicity in `n`. -/
@@ -190,8 +190,45 @@ theorem factorization_pow (n k : ℕ) : factorization (n ^ k) = k • n.factoriz
     rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,
       add_smul, one_smul, add_comm]
 
+/-! ## Criterion for a natural number or integer being a square through even factorization -/
+
+/-- `n` is a square if and only if for any prime `p`, the power of `p` in `n` is even. -/
+theorem isSquare_iff_even_factorization {n : ℕ} :
+    IsSquare n ↔ ∀ (p : ℕ), p.Prime → Even (n.factorization p) := by
+  by_cases h0 : n = 0
+  · simp [h0]
+  constructor
+  · intro ⟨m, hmn⟩ p hp
+    have hm : m ≠ 0 := mul_self_ne_zero.mp (hmn ▸ h0)
+    simp [hmn, factorization_mul hm hm]
+  · refine fun h ↦ ⟨n.factorization.prod fun a b ↦ a ^ (b / 2), ?_⟩
+    rw [← pow_two, ← powMonoidHom_apply, map_finsuppProd]
+    nth_rw 1 [← prod_factorization_pow_eq_self h0]
+    refine Finsupp.prod_congr fun p hp ↦ ?_
+    rw [powMonoidHom_apply, ← pow_mul, div_two_mul_two_of_even (h p (prime_of_mem_primeFactors hp))]
+
+end Nat
+
+namespace Int
+
+/-- The integer `n` is a square if and only if `n` is nonnegative,
+and for any `p`, the power of `p` in `|n|` is even. -/
+theorem isSquare_iff_nonneg_even_factorization {n : ℤ} :
+    IsSquare n ↔ 0 ≤ n ∧ ∀ (p : ℕ), p.Prime → Even (n.natAbs.factorization p) := by
+  constructor
+  · intro ⟨m, hmn⟩
+    exact ⟨by simpa [hmn] using Int.mul_nonneg_of_nonneg_or_nonpos (by omega),
+      fun p hp ↦ isSquare_iff_even_factorization.mp ⟨m.natAbs, by grind⟩ p hp⟩
+  · intro ⟨h0, h⟩
+    obtain ⟨r, hr⟩ := Nat.isSquare_iff_even_factorization.mpr h
+    exact ⟨r, (by rw [← natAbs_of_nonneg h0, hr, Nat.cast_mul])⟩
+
+end Int
+
 /-! ## Lemmas about factorizations of primes and prime powers -/
 
+namespace Nat
+variable {a b m n p : ℕ}
 
 /-- The only prime factor of prime `p` is `p` itself, with multiplicity `1` -/
 @[simp]

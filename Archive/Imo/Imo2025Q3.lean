@@ -157,7 +157,7 @@ lemma isBonza : IsBonza fExample := by
         Nat.two_dvd_ne_zero]
       push_cast
       split_ifs with hb1 hb2
-      · grind [sq_mod_four_eq_one_of_odd]
+      · grind [sq_emod_four_eq_one_of_odd]
       · simp [hb2]
       · refine dvd_sub ?_ ?_
         · have : 2 ∣ (b : ℤ) := by grind

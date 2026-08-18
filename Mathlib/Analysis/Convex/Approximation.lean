@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.LocallyConvex.Separation
 
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Topology.Semicontinuity.Lindelof
 
 /-!
@@ -36,7 +35,7 @@ open Function Set RCLike ContinuousLinearMap
 
 namespace ConvexOn
 
-variable {𝕜 E F : Type*} {s : Set E} {φ : E → ℝ} [RCLike 𝕜]
+variable {𝕜 E : Type*} {s : Set E} {φ : E → ℝ} [RCLike 𝕜]
 
 theorem convex_re_epigraph [AddCommMonoid E] [Module ℝ E] (hφcv : ConvexOn ℝ s φ) :
     Convex ℝ { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 } := by

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.MutuallySingular
-public import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Jordan decomposition

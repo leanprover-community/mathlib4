@@ -29,7 +29,7 @@ assert_not_exists RelIso IsOrderedMonoid Field
 
 open Additive Function Multiplicative Nat
 
-variable {F ι α β : Type*}
+variable {F α β : Type*}
 
 namespace Int
 

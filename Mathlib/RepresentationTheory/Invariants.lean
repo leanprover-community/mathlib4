@@ -38,7 +38,6 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 /-- The average of all elements of the group `G`, considered as an element of `k[G]`. -/
 noncomputable def average : k[G] := ⅟(Fintype.card G : k) • ∑ g : G, of k G g
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `average k G` is invariant under left multiplication by elements of `G`. -/
 @[simp]
 theorem mul_average_left (g : G) : .single g 1 * average k G = average k G := by
@@ -48,7 +47,6 @@ theorem mul_average_left (g : G) : .single g 1 * average k G = average k G := by
   change ⅟(Fintype.card G : k) • ∑ x : G, f (g * x) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulLeft_bijective g) _]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `average k G` is invariant under right multiplication by elements of `G`.
 -/
 @[simp]
@@ -269,7 +267,6 @@ noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
   map {X Y} f := Rep.ofHom ⟨((invariantsFunctor k S).map ((Rep.resFunctor S.subtype).map f)).hom,
     fun g ↦ QuotientGroup.induction_on g fun g ↦ by ext; simp [hom_comm_apply]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor equipping a module with the trivial representation, and
 the functor sending a representation to its submodule of invariants. -/
 @[simps]

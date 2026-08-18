@@ -23,7 +23,7 @@ namespace Polynomial
 
 universe u v y
 
-variable {R : Type u} {S : Type v} {a b : R} {m n : ℕ} {ι : Type y}
+variable {R : Type u} {S : Type v} {a : R} {m n : ℕ}
 
 section IntegralNormalization
 

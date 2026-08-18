@@ -31,13 +31,13 @@ namespace Algebra
 
 universe u v w z
 
-variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {A' B : Type*} {a b : R} {n : ℕ}
+variable {R : Type u} {S : Type v} {A : Type z} {B : Type*} {a b : R} {n : ℕ}
 
 section aeval
 
 open Algebra
 
-variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
+variable [CommSemiring R] [Semiring A] [Semiring B]
 variable [Algebra R A] [Algebra R B]
 variable {p q : R[X]} (x : A)
 

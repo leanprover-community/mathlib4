@@ -25,7 +25,6 @@ open Limits
 
 variable {C : Type*} [Category* C]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given an `EffectiveEpiFamily X π` and a corresponding coproduct cocone, the family descends to an
 `EffectiveEpi` from the coproduct.
@@ -41,7 +40,6 @@ def effectiveEpiStructIsColimitDescOfEffectiveEpiFamily {B : C} {α : Type*} (X 
   uniq e _ m hm := EffectiveEpiFamily.uniq X π (fun a ↦ c.ι.app ⟨a⟩ ≫ e)
       (fun _ _ _ _ hg ↦ (by simp [← hm, reassoc_of% hg])) m (fun _ ↦ (by simp [← hm]))
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
     [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) := by
@@ -53,7 +51,6 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
 example {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
     [HasCoproduct X] : Epi (Sigma.desc π) := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 This is an auxiliary lemma used twice in the definition of  `EffectiveEpiFamilyOfEffectiveEpiDesc`.
 It is the `h` hypothesis of `EffectiveEpi.desc` and `EffectiveEpi.fac`.
@@ -92,7 +89,6 @@ theorem effectiveEpiFamilyStructOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X :
   rw [(Category.assoc _ _ g₂), pullback.condition] at hg
   simpa using hg
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If a coproduct interacts well enough with pullbacks, then a family whose domains are the terms of
 the coproduct is effective epimorphic whenever `Sigma.desc` induces an effective epimorphism from

@@ -180,7 +180,7 @@ theorem ae_differentiableWithinAt_of_mem {f : ℝ → V} {s : Set ℝ}
     filter_upwards [H] with x hx xs
     exact (ContinuousLinearEquiv.comp_differentiableWithinAt_iff _).mp (hx xs)
   apply ae_differentiableWithinAt_of_mem_pi
-  exact A.lipschitz.comp_locallyBoundedVariationOn h
+  exact A.lipschitzWith.comp_locallyBoundedVariationOn h
 
 /-- A real function into a finite-dimensional real vector space with bounded variation on an
 interval is differentiable almost everywhere in this interval. This one differs from

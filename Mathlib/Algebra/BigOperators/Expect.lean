@@ -276,13 +276,10 @@ lemma expect_image [DecidableEq ι] {m : κ → ι} (hm : (t : Set κ).InjOn m) 
 
 end bij
 
-@[simp] lemma expect_inv_index [DecidableEq ι] [InvolutiveInv ι] (s : Finset ι) (f : ι → M) :
+@[to_additive (attr := simp)]
+lemma expect_inv_index [DecidableEq ι] [InvolutiveInv ι] (s : Finset ι) (f : ι → M) :
     𝔼 i ∈ s⁻¹, f i = 𝔼 i ∈ s, f i⁻¹ := expect_image inv_injective.injOn
 
-@[simp] lemma expect_neg_index [DecidableEq ι] [InvolutiveNeg ι] (s : Finset ι) (f : ι → M) :
-    𝔼 i ∈ -s, f i = 𝔼 i ∈ s, f (-i) := expect_image neg_injective.injOn
-
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.map_expect {F : Type*} [FunLike F M N] [LinearMapClass F ℚ≥0 M N]
     (g : F) (f : ι → M) (s : Finset ι) :
     g (𝔼 i ∈ s, f i) = 𝔼 i ∈ s, g (f i) := by simp only [expect, map_smul, map_sum]

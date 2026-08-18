@@ -100,7 +100,6 @@ noncomputable
 def pointsPi : (Spec (.of <| Π i, R i) ⟶ X) → Π i, Spec (R i) ⟶ X :=
   fun f i ↦ Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i)) ≫ f
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pointsPi_injective [QuasiSeparatedSpace X] : Function.Injective (pointsPi R X) := by
   rintro f g e
   have := isIso_of_comp_eq_sigmaSpec R (V := equalizer f g)

@@ -29,8 +29,8 @@ section Algebra
 open scoped Pointwise TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (M : Submonoid R)
-variable (R' S' : Type*) [CommRing R'] [CommRing S']
-variable [Algebra R R'] [Algebra S S']
+variable (S' : Type*) [CommRing S']
+variable [Algebra S S']
 
 variable {S'} in
 open scoped Classical in

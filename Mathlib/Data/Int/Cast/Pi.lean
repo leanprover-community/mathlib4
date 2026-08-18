@@ -18,7 +18,7 @@ This file provides a (pointwise) cast from `ℤ` to function types.
 * `Pi.instIntCast`: map `n : ℤ` to the constant function `n : ∀ i, π i`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedMonoid RingHom
 

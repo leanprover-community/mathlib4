@@ -96,7 +96,7 @@ def vecHead {n : ℕ} (v : Fin n.succ → α) : α :=
 def vecTail {n : ℕ} (v : Fin n.succ → α) : Fin n → α :=
   v ∘ Fin.succ
 
-variable {m n : ℕ}
+variable {n : ℕ}
 
 /-- Use `![...]` notation for displaying a vector `Fin n → α`, for example:
 

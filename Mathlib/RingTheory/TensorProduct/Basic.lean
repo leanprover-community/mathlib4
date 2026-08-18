@@ -95,8 +95,8 @@ namespace Algebra
 namespace TensorProduct
 
 universe uR uS uA uB uC uD uE uF
-variable {R : Type uR} {R' : Type*} {S : Type uS} {T : Type*}
-variable {A : Type uA} {B : Type uB} {C : Type uC} {D : Type uD} {E : Type uE} {F : Type uF}
+variable {R : Type uR} {S : Type uS} {T : Type*}
+variable {A : Type uA} {B : Type uB} {C : Type uC} {F : Type uF}
 
 /-!
 ### The `R`-algebra structure on `A ⊗[R] B`

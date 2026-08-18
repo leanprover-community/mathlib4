@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.Algebra.Ring.TransferInstance
 public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
@@ -170,7 +169,6 @@ theorem mapRingHom_comp {γ : Type*} [UniformSpace γ] [Ring γ] [IsUniformAddGr
     (uniformContinuous_addMonoidHom_of_continuous hg)
     (uniformContinuous_addMonoidHom_of_continuous hf)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapRingHom_id : mapRingHom (.id α) continuous_id = .id (Completion α) := by
   simp [RingHom.ext_iff, mapRingHom_apply]

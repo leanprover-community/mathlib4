@@ -367,7 +367,7 @@ theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧
 
 theorem coe_map (f : α → β) (z : Sym2 α) : z.map f = f '' z := by
   cases z
-  simp [Set.image_pair]
+  simp
 
 /-- Given an element of the unordered pair, give the other element using `Classical.choose`.
 See also `Mem.other'` for the computable version.
@@ -607,7 +607,6 @@ theorem mem_fromRel_comap {r : β → β → Prop} (sym : Std.Symm r) (f : α �
   cases z
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fromRel_bot : fromRel (α := α) (r := ⊥) inferInstance = ∅ :=
   Set.eq_empty_of_forall_notMem <| Sym2.ind <| by simp
 
@@ -617,7 +616,6 @@ theorem fromRel_bot_iff {sym : Std.Symm r} : fromRel sym = ∅ ↔ r = ⊥ := by
   ext x y
   simpa [h] using fromRel_prop (sym := sym)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fromRel_top : fromRel (α := α) (r := ⊤) inferInstance = .univ :=
   Set.eq_univ_of_forall <| Sym2.ind <| by simp
 
@@ -627,14 +625,12 @@ theorem fromRel_top_iff {sym : Std.Symm r} : fromRel sym = .univ ↔ r = ⊤ := 
   ext x y
   simpa [h] using fromRel_prop (sym := sym)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fromRel_ne : fromRel (α := α) (r := Ne) inferInstance = {z | ¬IsDiag z} := by
   ext z; exact z.ind (by simp)
 
 lemma diagSet_eq_fromRel_eq : diagSet = fromRel (α := α) eq_equivalence.stdSymm := by
   ext ⟨a, b⟩; simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) inferInstance := by
   ext ⟨a, b⟩; simp
 
@@ -746,7 +742,6 @@ variable (α) in
 def toRelOrderEmbedding : Set (Sym2 α) ↪o (α → α → Prop) :=
   .ofMapLEIff ToRel toRel_mono_iff
 
-set_option backward.isDefEq.respectTransparency false in
 variable (α) in
 /-- `fromRel`/`ToRel` induce an order isomorphism between symmetric relations and `Sym2` sets -/
 @[simps]

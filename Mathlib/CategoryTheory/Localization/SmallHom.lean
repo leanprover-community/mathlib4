@@ -38,7 +38,7 @@ variable {C : Type u₁} [Category.{v₁} C] (W : MorphismProperty C)
 
 section
 
-variable (L : C ⥤ D) [L.IsLocalization W] (X Y Z : C)
+variable (L : C ⥤ D) [L.IsLocalization W] (X Y : C)
 
 /-- This property holds if the type of morphisms between `X` and `Y`
 in the localized category with respect to `W : MorphismProperty C`

@@ -791,7 +791,7 @@ namespace PrimrecRel
 
 open PrimrecPred
 
-variable {α β : Type*} {R : α → β → Prop} {L : List α} {b : β}
+variable {α β : Type*} {R : α → β → Prop} {b : β}
 
 variable [Primcodable α] [Primcodable β]
 
@@ -847,8 +847,8 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type*} {β : Type*} {σ : Type*}
-variable [Primcodable α] [Primcodable β] [Primcodable σ]
+variable {α : Type*} {β : Type*}
+variable [Primcodable α] [Primcodable β]
 
 theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     haveI := Primcodable.subtype hp

@@ -302,15 +302,6 @@ lemma _root_.ContinuousLinearEquiv.hasTemperateGrowth (f : E ≃L[ℝ] F) :
     Function.HasTemperateGrowth f :=
   f.toContinuousLinearMap.hasTemperateGrowth
 
-@[fun_prop]
-theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=
-  (Complex.ofRealCLM).hasTemperateGrowth
-
-variable (𝕜) in
-@[fun_prop]
-theorem RCLike.hasTemperateGrowth_ofReal [RCLike 𝕜] : (RCLike.ofReal (K := 𝕜)).HasTemperateGrowth :=
-  (RCLike.ofRealCLM (K := 𝕜)).hasTemperateGrowth
-
 variable [NormedAddCommGroup H] [InnerProductSpace ℝ H]
 
 @[fun_prop]
@@ -411,6 +402,72 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
       grind
 
 end Function
+
+section Real
+
+@[fun_prop]
+theorem Real.hasTemperateGrowth_sin :
+    Real.sin.HasTemperateGrowth := by
+  refine ⟨Real.contDiff_sin, fun n ↦ ⟨0, 1, fun x ↦ ?_⟩⟩
+  simpa [norm_iteratedFDeriv_eq_norm_iteratedDeriv] using Real.abs_iteratedDeriv_sin_le_one n x
+
+@[fun_prop]
+theorem Real.hasTemperateGrowth_cos :
+    Real.cos.HasTemperateGrowth := by
+  refine ⟨Real.contDiff_cos, fun n ↦ ⟨0, 1, fun x ↦ ?_⟩⟩
+  simpa [norm_iteratedFDeriv_eq_norm_iteratedDeriv] using Real.abs_iteratedDeriv_cos_le_one n x
+
+end Real
+
+section Complex
+
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=
+  Complex.ofRealCLM.hasTemperateGrowth
+
+@[deprecated (since := "2026-08-18")] alias Function.Complex.hasTemperateGrowth_ofReal :=
+  Complex.hasTemperateGrowth_ofReal
+
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_re : Complex.re.HasTemperateGrowth :=
+  Complex.reCLM.hasTemperateGrowth
+
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_im : Complex.im.HasTemperateGrowth :=
+  Complex.imCLM.hasTemperateGrowth
+
+/-- The function `x ↦ exp (x * I)` has temperate growth. -/
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_exp_mul_I :
+    (fun x : ℝ ↦ Complex.exp (x * Complex.I)).HasTemperateGrowth := by
+  simp only [Complex.exp_ofReal_mul_I]
+  fun_prop
+
+end Complex
+
+section RCLike
+
+variable [RCLike 𝕜]
+
+variable (𝕜) in
+@[fun_prop]
+theorem RCLike.hasTemperateGrowth_ofReal : (RCLike.ofReal (K := 𝕜)).HasTemperateGrowth :=
+  (RCLike.ofRealCLM (K := 𝕜)).hasTemperateGrowth
+
+@[deprecated (since := "2026-08-18")] alias Function.RCLike.hasTemperateGrowth_ofReal :=
+  RCLike.hasTemperateGrowth_ofReal
+
+variable (𝕜) in
+@[fun_prop]
+theorem RCLike.hasTemperateGrowth_re : (RCLike.re : 𝕜 → ℝ).HasTemperateGrowth :=
+  (RCLike.reCLM (K := 𝕜)).hasTemperateGrowth
+
+variable (𝕜) in
+@[fun_prop]
+theorem RCLike.hasTemperateGrowth_im : (RCLike.im : 𝕜 → ℝ).HasTemperateGrowth :=
+  (RCLike.imCLM (K := 𝕜)).hasTemperateGrowth
+
+end RCLike
 
 namespace MeasureTheory.Measure
 

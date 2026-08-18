@@ -67,7 +67,7 @@ section SubmonoidPresheaf
 
 open scoped nonZeroDivisors
 
-variable {X : TopCat.{w}} {C : Type u} [Category.{v} C]
+variable {X : TopCat.{w}}
 
 -- note: this was specialized to `CommRingCat` in https://github.com/leanprover-community/mathlib4/issues/19757
 /-- A subpresheaf with a submonoid structure on each of the components. -/
@@ -270,7 +270,7 @@ section Stalks
 
 namespace TopCat.Presheaf
 
-variable {X Y Z : TopCat.{v}}
+variable {X : TopCat.{v}}
 
 instance algebra_section_stalk (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
     Algebra (F.obj <| op U) (F.stalk x) :=

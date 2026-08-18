@@ -142,8 +142,6 @@ theorem not_isDiag_mk_of_mem_offDiag {a b : α} (h : (a, b) ∈ s.offDiag) : ¬ 
 
 section Sym2
 
-variable {m : Sym2 α}
-
 @[simp]
 theorem diag_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diag a → b ∈ s) ↔ a ∈ s := by
   rw [← mem_sym2_iff]

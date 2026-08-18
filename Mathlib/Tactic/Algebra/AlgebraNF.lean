@@ -6,6 +6,7 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Tactic.Algebra.Basic
+public meta import Mathlib.Tactic.Algebra.Basic
 
 /-! # The `algebra_nf` tactic
 

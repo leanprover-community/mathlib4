@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.Pi
 public import Batteries.Data.Fin.Lemmas
-public import Mathlib.Data.Fin.Basic
 public import Mathlib.Logic.Nontrivial.Basic
 public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Matrices
@@ -57,7 +57,7 @@ and whose columns are indexed by `n`. -/
 def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
   m → n → α
 
-variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
+variable {l m n o : Type*}
 variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 namespace Matrix

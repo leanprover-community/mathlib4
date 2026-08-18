@@ -183,7 +183,7 @@ end associativity
 
 section CommSq
 
-variable {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : B}
+variable {X₁ X₂ Y₁ Y₂ : B}
 
 section
 

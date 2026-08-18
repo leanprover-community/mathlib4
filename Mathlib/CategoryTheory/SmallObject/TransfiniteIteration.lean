@@ -62,7 +62,6 @@ noncomputable def isColimitIterationCocone : IsColimit (Φ.iterationCocone J) :=
 
 variable {J}
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma iterationFunctor_obj (i : J) {j : J} (iter : Φ.Iteration j) (hi : i ≤ j) :
     (Φ.iterationFunctor J).obj i = iter.F.obj ⟨i, hi⟩ :=
   Iteration.congr_obj (Φ.iter i) iter i (by simp) hi
@@ -96,7 +95,6 @@ instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
     apply Arrow.mk_injective
     simp [Φ.arrowMk_iterationFunctor_map k i hk.le (Φ.iter i) (by simp), e]⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `(Φ.iterationFunctor J).obj ⊥ ≅ Φ.X₀`. -/
 noncomputable def iterationFunctorObjBotIso : (Φ.iterationFunctor J).obj ⊥ ≅ Φ.X₀ :=
   eqToIso (Φ.iter ⊥).obj_bot

@@ -124,7 +124,7 @@ lemma stabilizer_finite (hs₀ : s.Nonempty) (hs : s.Finite) : (stabilizer G s :
 end Group
 
 section CommGroup
-variable [CommGroup G] {s t : Set G} {a : G}
+variable [CommGroup G] {s : Set G} {a : G}
 
 @[to_additive]
 lemma smul_set_stabilizer_subset (ha : a ∈ s) : a • (stabilizer G s : Set G) ⊆ s := by

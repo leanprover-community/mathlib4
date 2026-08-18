@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
 /-!
 -/
 
-@[expose] public section
+public section
 
 variable {ι F : Type*} [Field F] [DecidableEq ι] [Fintype ι]
 

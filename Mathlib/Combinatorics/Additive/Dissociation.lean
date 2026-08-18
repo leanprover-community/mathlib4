@@ -31,7 +31,7 @@ independence and linear span of sets in a vector space but where the scalars are
 variable {α β : Type*} [CommGroup α] [CommGroup β]
 
 section dissociation
-variable {s : Set α} {t u : Finset α} {d : ℕ} {a : α}
+variable {s : Set α} {t u : Finset α} {a : α}
 open Set
 
 /-- A set is dissociated iff all its finite subsets have different products.

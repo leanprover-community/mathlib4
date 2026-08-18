@@ -411,39 +411,45 @@ end PreGaloisCategory
 /-- A `PreGaloisCategory` is a `GaloisCategory` if it admits a fiber functor. -/
 class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop
     extends PreGaloisCategory C where
-  hasFiberFunctor : ∃ F : C ⥤ FintypeCat.{u₂}, Nonempty (PreGaloisCategory.FiberFunctor F)
+  hasFiberFunctor (C) : ∃ F : C ⥤ FintypeCat.{u₂}, PreGaloisCategory.FiberFunctor F
+
+/-- Arbitrarily choose a fiber functor for a Galois category using choice. -/
+noncomputable def GaloisCategory.getFiberFunctor
+    (C : Type u₁) [Category.{u₂, u₁} C] [GaloisCategory C] : C ⥤ FintypeCat.{u₂} :=
+  Classical.choose <| hasFiberFunctor C
+
+open GaloisCategory
+
+@[deprecated (since := "2026-08-10")]
+alias PreGaloisCategory.GaloisCategory.getFiberFunctor := getFiberFunctor
 
 namespace PreGaloisCategory
 
 variable (C : Type u₁) [Category.{u₂, u₁} C] [GaloisCategory C]
 
-/-- Arbitrarily choose a fiber functor for a Galois category using choice. -/
-noncomputable def GaloisCategory.getFiberFunctor : C ⥤ FintypeCat.{u₂} :=
-  Classical.choose <| @GaloisCategory.hasFiberFunctor C _ _
-
 /-- The arbitrarily chosen fiber functor `GaloisCategory.getFiberFunctor` is a fiber functor. -/
-noncomputable instance : FiberFunctor (GaloisCategory.getFiberFunctor C) :=
-  Classical.choice <| Classical.choose_spec (@GaloisCategory.hasFiberFunctor C _ _)
+noncomputable instance : FiberFunctor (getFiberFunctor C) :=
+  Classical.choose_spec (hasFiberFunctor C)
 
 variable {C}
 
 /-- In a `GaloisCategory` the set of morphisms out of a connected object is finite. -/
 instance (A X : C) [IsConnected A] : Finite (A ⟶ X) := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f a)
   exact evaluation_injective_of_isConnected F A X a
 
 /-- In a `GaloisCategory` the set of automorphism of a connected object is finite. -/
 instance (A : C) [IsConnected A] : Finite (Aut A) := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f.hom a)
   exact evaluation_aut_injective_of_isConnected F A a
 
 /-- Coproduct inclusions are monic in Galois categories. -/
 instance : MonoCoprod C := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   exact MonoCoprod.monoCoprod_of_preservesCoprod_of_reflectsMono F
 
 end PreGaloisCategory

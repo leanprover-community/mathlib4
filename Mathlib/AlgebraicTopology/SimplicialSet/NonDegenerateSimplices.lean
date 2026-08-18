@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
-public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 
 /-!
 # The partially ordered type of non degenerate simplices of a simplicial set

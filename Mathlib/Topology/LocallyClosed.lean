@@ -187,10 +187,10 @@ lemma isLocallyClosed_tfae (s : Set X) :
   tfae_finish
 
 lemma isLocallyClosed_iff_isOpen_coborder : IsLocallyClosed s ↔ IsOpen (coborder s) :=
-  (isLocallyClosed_tfae s).out 0 1
+  (isLocallyClosed_tfae s).out 1 2
 
 alias ⟨IsLocallyClosed.isOpen_coborder, _⟩ := isLocallyClosed_iff_isOpen_coborder
 
 lemma IsLocallyClosed.isOpen_preimage_val_closure (hs : IsLocallyClosed s) :
     IsOpen (closure s ↓∩ s) :=
-  ((isLocallyClosed_tfae s).out 0 4).mp hs
+  ((isLocallyClosed_tfae s).out 1 5).mp hs

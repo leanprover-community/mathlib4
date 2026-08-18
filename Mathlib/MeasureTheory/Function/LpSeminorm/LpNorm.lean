@@ -23,7 +23,7 @@ open scoped BigOperators ComplexConjugate ENNReal NNReal
 public section
 
 namespace MeasureTheory
-variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
+variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
   [NormedAddCommGroup E] {f g h : α → E}
 
 lemma toReal_eLpNorm (hf : AEStronglyMeasurable f μ) : (eLpNorm f p μ).toReal = lpNorm f p μ := by

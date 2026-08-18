@@ -34,7 +34,7 @@ structure AddIrreducible [AddMonoid M] (p : M) : Prop where
   isAddUnit_or_isAddUnit ⦃a b⦄ : p = a + b → IsAddUnit a ∨ IsAddUnit b
 
 section Monoid
-variable [Monoid M] {p q a b : M}
+variable [Monoid M] {p a b : M}
 
 /-- `Irreducible p` states that `p` is non-unit and only factors into units.
 

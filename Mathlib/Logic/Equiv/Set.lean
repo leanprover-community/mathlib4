@@ -367,7 +367,6 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
       { rw [(_ : t \ s ∪ s ∩ t = t)]
         rw [union_comm, inter_comm, inter_union_sdiff] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an equivalence `e₀` between sets `s : Set α` and `t : Set β`, the set of equivalences
 `e : α ≃ β` such that `e ↑x = ↑(e₀ x)` for each `x : s` is equivalent to the set of equivalences
 between `sᶜ` and `tᶜ`. -/
@@ -435,11 +434,11 @@ protected theorem image_symm_apply {α β} (f : α → β) (s : Set α) (H : Inj
     (h : f x ∈ f '' s) : (Set.image f s H).symm ⟨f x, h⟩ = ⟨x, H.mem_set_image.1 h⟩ :=
   (Equiv.symm_apply_eq _).2 rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Set α) :
     (fun x => (Set.image f s hf).symm x : f '' s → α) ⁻¹' u = Subtype.val ⁻¹' f '' u := by
-  ext ⟨b, a, has, rfl⟩
-  simp [hf.eq_iff]
+  ext x
+  obtain ⟨y, rfl⟩ := (Set.image f s hf).surjective x
+  simp [hf.mem_set_image]
 
 /-- If `α` is equivalent to `β`, then `Set α` is equivalent to `Set β`.
 
@@ -590,9 +589,6 @@ def sigmaPreimageEquiv {α β} (f : α → β) : (Σ b, f ⁻¹' {b}) ≃ α :=
   sigmaFiberEquiv f
 
 -- See also `Equiv.ofFiberEquiv`.
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A family of equivalences between preimages of points gives an equivalence between domains. -/
 @[simps!]
 def ofPreimageEquiv {α β γ} {f : α → γ} {g : β → γ} (e : ∀ c, f ⁻¹' {c} ≃ g ⁻¹' {c}) : α ≃ β :=

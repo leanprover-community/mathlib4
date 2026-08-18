@@ -85,7 +85,7 @@ open MeasureTheory
 /-! ## Strongly measurable functions -/
 
 section StronglyMeasurable
-variable {_ : MeasurableSpace α} {μ : Measure α} {f : α → β} {g : ℕ → α} {m : ℕ}
+variable {_ : MeasurableSpace α} {f : α → β} {g : ℕ → α} {m : ℕ}
 
 variable [TopologicalSpace β]
 
@@ -442,7 +442,6 @@ theorem div₀ [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] (hf :
   ⟨fun n => hf.approx n / hg.approx n,
     fun x => (hf.tendsto_approx x).div (hg.tendsto_approx x) (h₀ x)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem div [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [MetrizableSpace β]
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :

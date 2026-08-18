@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.LocalRing.Length
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.Unramified.LocalRing
+public import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 # Ramification index

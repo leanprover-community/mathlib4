@@ -115,7 +115,6 @@ attribute [instance_reducible] commShiftObj commShiftFlipObj
 attribute [instance] commShiftObj commShiftFlipObj commShift_map commShift_flip_map
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₁' M]
     [HasShift C₂ M] [HasShift D M] (F : C₁' ⥤ C₁) [F.CommShift M]
     (G : C₁ ⥤ C₂ ⥤ D) (h : CommShift₂Setup D M) [G.CommShift₂ h] :
@@ -132,7 +131,6 @@ instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C�
     rw [NatTrans.shift_app (G.map ((F.commShiftIso m).hom.app X₁')) n X₂]
     simp [this]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance precomp₂ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂' M]
     [HasShift C₂ M] [HasShift D M] (F : C₂' ⥤ C₂) [F.CommShift M]
@@ -185,7 +183,6 @@ instance : CommShift₂ (𝟙 G₁) h where
     simp only [flipApp, flipFunctor_obj, Functor.map_id, id_app]
     infer_instance
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance [CommShift₂ τ h] [CommShift₂ τ' h] : CommShift₂ (τ ≫ τ') h where
   commShift_app _ := by dsimp; infer_instance

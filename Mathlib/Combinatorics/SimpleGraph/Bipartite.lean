@@ -432,7 +432,7 @@ lemma neighborSet_subset_between_union_compl (hw : w ∈ sᶜ) :
   · exact Or.inl ⟨hadj, Or.inr ⟨hw, hv⟩⟩
   · exact Or.inr hv
 
-variable [DecidableEq V] [Fintype V] {s t : Finset V} [DecidableRel G.Adj]
+variable [DecidableEq V] [Fintype V] {s : Finset V} [DecidableRel G.Adj]
 
 /-- The neighbor finset of `v ∈ s` in `G.between s sᶜ` excludes the vertices in `s` adjacent to `v`
 in `G`. -/

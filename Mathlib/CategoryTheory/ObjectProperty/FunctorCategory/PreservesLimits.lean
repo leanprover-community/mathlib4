@@ -24,8 +24,8 @@ namespace CategoryTheory
 
 open Limits
 
-variable {J J' C D : Type*} (K K' : Type*)
-  [Category* K] [Category* K'] [Category* J] [Category* J'] [Category* C] [Category* D]
+variable {J C : Type*} (K K' : Type*)
+  [Category* K] [Category* K'] [Category* J] [Category* C]
 
 namespace ObjectProperty
 
@@ -144,7 +144,6 @@ lemma preservesFiniteColimits_iff (F : J ⥤ C) :
     preservesFiniteColimits F ↔ PreservesFiniteColimits F := Iff.rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance [HasColimitsOfShape K' C]
     [PreservesLimitsOfShape K (colim (J := K') (C := C))] :
     (preservesLimitsOfShape K : ObjectProperty (J ⥤ C)).IsClosedUnderColimitsOfShape K' where

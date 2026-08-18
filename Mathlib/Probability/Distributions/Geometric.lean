@@ -13,18 +13,18 @@ import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 /-! # Geometric distributions
 
 We define the geometric distributions over natural numbers. For `0 < p ≤ 1`, `geometricMeasure p`
-is the measure which to `{n}` associates `(1 - p) ^ n * n`.
+is the measure which to `{n}` associates `(1 - p) ^ n * p`.
 
 As the parameter `p` needs to lie between `0` and `1`, we define `geometricMeasure p` with
 `p : unitInterval`.
 
-Imagine a certain experience which has success probability `p`. If you repeat this experience
+Imagine a certain experiment which has success probability `p`. If you repeat this experiment
 infinitely many times and independently, the number of failures before the first success
 follows a geometric distribution with parameter `p`.
 
 ## Main definition
 
-* `geometricMeasure p`: a geometric measure on a semiring `R`,
+* `geometricMeasure p`: a geometric measure on `ℕ`,
   parametrized by its success probability `p`.
 
 ## Implementation note
@@ -60,7 +60,7 @@ lemma geometricMeasure_eq (hp : p ≠ 0) :
       Measure.sum (fun n ↦ ENNReal.ofReal ((1 - p) ^ n * p) • .dirac n) :=
   ite_eq_left hp
 
-/-- The `positivty` tactic does not work for this goal. Use this lemma to rewrite
+/-- The `positivity` tactic does not work for this goal. Use this lemma to rewrite
 `(ENNReal.ofReal ((1 - p) ^ n * p)).toReal = (1 - p) ^ n * p`. -/
 lemma geometricMeasure_nonneg (p : unitInterval) n :
     0 ≤ (1 - p : ℝ) ^ n * p := mul_nonneg (pow_nonneg (by grind) n) p.2.1

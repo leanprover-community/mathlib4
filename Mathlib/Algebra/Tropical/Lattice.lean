@@ -29,7 +29,7 @@ constructions quicker to implement.
 public section
 
 
-variable {R S : Type*}
+variable {R : Type*}
 
 open Tropical
 

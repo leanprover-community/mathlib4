@@ -409,10 +409,11 @@ def mkGetConfigContent (container : Option Container) (repo containerURL : Strin
     -- ```
     -- If this becomes an issue we can implement the curl spec.
 
-    -- Note we append a '.part' to the filenames here,
-    -- which `downloadFiles` then removes when the download is successful.
+    -- Note we append `IO.PARTSUFFIX` to the filenames here, which `downloadFiles` then
+    -- removes when the download is successful. The suffix carries this process's tag, so a
+    -- concurrent `cache` run sharing this `CACHEDIR` writes its own in-flight files, not ours.
     pure <| acc ++ s!"url = {mkFileURL container repo containerURL fileName scope?}\n\
-      -o {(IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
+      -o {(IO.CACHEDIR / (fileName ++ IO.PARTSUFFIX)).toString.quote}\n"
 
 /--
 Whether an HTTP status returned for a single-file read should be treated as a
@@ -448,7 +449,7 @@ def downloadFile (container : Option Container) (repo containerURL : String)
   let fileName := hash.asLTar
   let url := mkFileURL container repo containerURL fileName scope?
   let path := IO.CACHEDIR / fileName
-  let partFileName := fileName ++ ".part"
+  let partFileName := fileName ++ IO.PARTSUFFIX
   let partPath := IO.CACHEDIR / partFileName
   let out ← IO.Process.output
     { cmd := (← IO.getCurl),
@@ -464,12 +465,14 @@ def downloadFile (container : Option Container) (repo containerURL : String)
   return if isCacheMissStatus httpCode treatForbiddenAsMiss then .miss else .failed
 
 /-- Extract hash from filename (e.g., "/path/to/.cache/00012345.ltar" → 0x12345).
-    Handles both `.ltar` and `.ltar.part` files using `FilePath.fileStem`. -/
-def hashFromFileName (path : FilePath) : Option UInt64 := do
-  let some stem := path.fileStem | .none
-  -- For .ltar.part files, fileStem gives "hash.ltar"; apply fileStem again to strip .ltar
-  let stem := (FilePath.mk (toString stem)).fileStem.getD stem
-  (toString stem).parseHexToUInt64?
+    Handles a finished `<hash>.ltar`, an in-flight `<hash>.ltar<PARTSUFFIX>`, and a
+    `<hash>.ltar.part` left in the cache by a version that wrote untagged temporaries. -/
+def hashFromFileName (path : FilePath) : Option UInt64 :=
+  let peel (name : String) := (FilePath.mk name).fileStem.getD name
+  let name := path.fileName.getD path.toString
+  -- Peel one extension at a time — `.part`, this process's tag, `.ltar` — and take the first stem
+  -- that parses as a hash, so all three shapes above resolve without knowing which one this is.
+  [name, peel name, peel (peel name), peel (peel (peel name))].findSome? String.parseHexToUInt64?
 
 /-- Decompress a batch of files using a single leantar invocation -/
 def decompressBatch (files : Array (FilePath × Lean.Name))
@@ -611,8 +614,10 @@ def monitorCurl (args : Array String) (size : Nat)
         | .ok 200
         | .ok 201 =>
           if let .ok fn := result.getObjValAs? String "filename_effective" then
-            if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
-              let finalPath := (fn.dropEnd 5).copy
+            -- Match this process's own suffix, not a bare `.part`: a concurrent run's
+            -- in-flight file is not ours to rename, and curl only reports our transfers.
+            if (← System.FilePath.pathExists fn) && fn.endsWith IO.PARTSUFFIX then
+              let finalPath := (fn.dropEnd IO.PARTSUFFIX.length).copy
               IO.FS.rename fn finalPath
               let hash? := hashFromFileName finalPath
               if let some hash := hash? then servedRef.modify (·.insert hash)

@@ -247,7 +247,6 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
   convert! this using 3
   exact (tsub_add_cancel_of_le h).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
     s = snoc (eraseLast s) s.last (isMaximal_eraseLast_last h) := by
   ext x
@@ -412,7 +411,6 @@ theorem eq_of_head_eq_head_of_last_eq_last_of_length_eq_zero {s₁ s₂ : Compos
   ext
   simp [*]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `CompositionSeries`, `s`, and an element `x`
 such that `x` is maximal inside `s.last` there is a series, `t`,
 such that `t.last = x`, `t.head = s.head`

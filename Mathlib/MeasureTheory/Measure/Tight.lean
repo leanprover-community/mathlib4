@@ -42,7 +42,7 @@ open scoped Topology
 namespace MeasureTheory
 
 variable {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧}
-  {μ ν : Measure 𝓧} {S T : Set (Measure 𝓧)}
+  {μ : Measure 𝓧} {S T : Set (Measure 𝓧)}
 
 section Basic
 

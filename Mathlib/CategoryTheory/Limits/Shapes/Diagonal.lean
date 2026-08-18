@@ -534,7 +534,6 @@ theorem inl_codiagonal : pushout.inl _ _ ≫ codiagonal f = 𝟙 _ :=
 theorem inr_codiagonal : pushout.inr _ _ ≫ codiagonal f = 𝟙 _ :=
   pushout.inr_desc _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma op_codiagonal :
     (pushout.codiagonal f).op = pullback.diagonal f.op ≫ (pullbackIsoOpPushout _ _).hom := by
   rw [← Iso.comp_inv_eq]
@@ -561,7 +560,6 @@ end pushout
 
 variable [HasPushouts C]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given `f : T ⟶ X`, `g : T ⟶ Y`, and `i : S ⟶ T`, the diagram
 ```

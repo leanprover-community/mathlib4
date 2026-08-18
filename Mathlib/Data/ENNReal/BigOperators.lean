@@ -23,7 +23,7 @@ open Set NNReal
 
 namespace ENNReal
 
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
+variable {a : ℝ≥0∞} {p q : ℝ≥0}
 
 section OperationsAndInfty
 

@@ -229,7 +229,6 @@ theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose 
 protected theorem transpose_mono {μ ν : YoungDiagram} (h_le : μ ≤ ν) : μ.transpose ≤ ν.transpose :=
   transpose_le_iff.mpr h_le
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transposing Young diagrams is an `OrderIso`. -/
 @[simps]
 def transposeOrderIso : YoungDiagram ≃o YoungDiagram :=

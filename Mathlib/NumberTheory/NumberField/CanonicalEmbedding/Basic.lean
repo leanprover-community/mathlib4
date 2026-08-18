@@ -242,7 +242,6 @@ instance : NullSingletonClass (volume : Measure (mixedSpace K)) := by
       pi_nullSingletonClass ⟨w, not_isReal_iff_isComplex.mp hw⟩
     exact prod.instNullSingletonClass_snd
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {K} in
 open scoped Classical in
 /-- The set of points in the mixedSpace that are equal to `0` at a fixed (real) place has
@@ -1106,7 +1105,6 @@ abbrev realSpace := InfinitePlace K → ℝ
 
 variable {K}
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The set of points in the `realSpace` that are equal to `0` at a fixed place has volume zero. -/
 theorem realSpace.volume_eq_zero [NumberField K] (w : InfinitePlace K) :
     volume ({x : realSpace K | x w = 0}) = 0 := by

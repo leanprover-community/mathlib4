@@ -247,7 +247,6 @@ def mapRange.linearMap (f : ∀ i, β₁ i →ₗ[R] β₂ i) : (Π₀ i, β₁ 
     toFun := mapRange (fun i x => f i x) fun i => (f i).map_zero
     map_smul' := fun r => mapRange_smul _ (fun i => (f i).map_zero) _ fun i => (f i).map_smul r }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapRange.linearMap_id :
     (mapRange.linearMap fun i => (LinearMap.id : β₂ i →ₗ[R] _)) = LinearMap.id := by

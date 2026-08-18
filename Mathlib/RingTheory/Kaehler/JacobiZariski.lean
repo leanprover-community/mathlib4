@@ -251,7 +251,7 @@ lemma δAux_mul (x y) :
   | monomial n r =>
     induction y using MvPolynomial.induction_on' with
     | monomial m s =>
-      simp only [monomial_mul, δAux_monomial, Derivation.leibniz, tmul_add, tmul_smul,
+      simp only [monomial_mul_monomial, δAux_monomial, Derivation.leibniz, tmul_add, tmul_smul,
         smul_tmul', Algebra.smul_def, algebraMap_apply, aeval_monomial, mul_assoc]
       rw [mul_comm (m.prod _) (n.prod _)]
       simp only [pow_zero, implies_true, pow_add, Finsupp.prod_add_index']

@@ -77,7 +77,7 @@ section LinearOrderedSemiring
 
 section IsOrderedRing
 
-variable [Semiring R] [LinearOrder R] [IsOrderedRing R] [ExistsAddOfLE R] {m n : ℕ}
+variable [Semiring R] [LinearOrder R] [IsOrderedRing R] [ExistsAddOfLE R] {n : ℕ}
 
 protected lemma Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
   obtain ⟨k, rfl⟩ := hn; rw [pow_add]; exact mul_self_nonneg _

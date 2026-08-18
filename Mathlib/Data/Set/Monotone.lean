@@ -13,7 +13,7 @@ public import Mathlib.Data.Set.Function
 
 public section
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 open Equiv Equiv.Perm Function
 

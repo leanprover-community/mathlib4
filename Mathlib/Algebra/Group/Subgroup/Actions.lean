@@ -18,7 +18,7 @@ subgroup, subgroups
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Subgroup
@@ -27,10 +27,9 @@ variable {G α β : Type*} [Group G]
 section MulAction
 variable [MulAction G α] {S : Subgroup G}
 
-/-- The action by a subgroup is the action by the underlying group. -/
-@[to_additive
-/-- The additive action by an `AddSubgroup` is the action by the underlying `AddGroup`. -/]
-instance instMulAction : MulAction S α := inferInstanceAs (MulAction S.toSubmonoid α)
+/-- This shortcut instance provides a speedup. -/
+@[to_additive /-- This shortcut instance provides a speedup. -/]
+instance : MulAction S α := inferInstance
 
 @[to_additive] lemma smul_def (g : S) (m : α) : g • m = (g : G) • m := rfl
 

@@ -5,11 +5,12 @@ Authors: Andrew Yang, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.Algebra
 
 /-!
 

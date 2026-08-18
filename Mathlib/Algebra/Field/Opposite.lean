@@ -13,7 +13,7 @@ public import Mathlib.Data.Int.Cast.Lemmas
 # Field structure on the multiplicative/additive opposite
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 

@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Normed.Ring.Ultra
 public import Mathlib.Data.Nat.Choose.Sum
 
 /-!
-## Conditions to have an ultrametric norm on a division ring
+# Conditions to have an ultrametric norm on a division ring
 
 This file provides ways of constructing an instance of `IsUltrametricDist` based on
 facts about the existing norm.

@@ -84,7 +84,6 @@ structure Octahedron
   comm₄ : w₁₃ ≫ u₁₂⟦1⟧' = m₃ ≫ w₂₃
   mem : Triangle.mk m₁ m₃ (w₂₃ ≫ v₁₂⟦1⟧') ∈ distTriang C
 
-set_option backward.defeqAttrib.useBackward true in
 instance (X : C) :
     Nonempty (Octahedron (comp_id (𝟙 X)) (contractible_distinguished X)
       (contractible_distinguished X) (contractible_distinguished X)) := by
@@ -108,7 +107,6 @@ variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
 def triangle : Triangle C :=
   Triangle.mk h.m₁ h.m₃ (w₂₃ ≫ v₁₂⟦1⟧')
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The first morphism of triangles given by an octahedron. -/
 @[simps]
 def triangleMorphism₁ : Triangle.mk u₁₂ v₁₂ w₁₂ ⟶ Triangle.mk u₁₃ v₁₃ w₁₃ where
@@ -123,7 +121,6 @@ def triangleMorphism₁ : Triangle.mk u₁₂ v₁₂ w₁₂ ⟶ Triangle.mk u�
     dsimp
     simpa only [Functor.map_id, comp_id] using h.comm₂.symm
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The second morphism of triangles given an octahedron. -/
 @[simps]
 def triangleMorphism₂ : Triangle.mk u₁₃ v₁₃ w₁₃ ⟶ Triangle.mk u₂₃ v₂₃ w₂₃ where
@@ -142,7 +139,6 @@ def triangleMorphism₂ : Triangle.mk u₁₃ v₁₃ w₁₃ ⟶ Triangle.mk u�
 variable (u₁₂ u₁₃ u₂₃ comm h₁₂ h₁₃ h₂₃)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- When two diagrams are isomorphic, an octahedron for one gives an octahedron for the other. -/
 def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' ⟶ X₂') (u₂₃' : X₂' ⟶ X₃') (u₁₃' : X₁' ⟶ X₃')
     (comm' : u₁₂' ≫ u₂₃' = u₁₃')
@@ -259,7 +255,6 @@ variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
 def triangle : Triangle C :=
   Triangle.mk h.m₁ h.m₃ (v₂₃ ≫ w₁₂)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The first morphism of triangles given by an `Octahedron'`. -/
 @[simps]
 def triangleMorphism₁ : Triangle.mk v₁₂ u₁₂ w₁₂ ⟶ Triangle.mk v₁₃ u₁₃ w₁₃ where
@@ -276,7 +271,6 @@ def triangleMorphism₁ : Triangle.mk v₁₂ u₁₂ w₁₂ ⟶ Triangle.mk v�
     dsimp
     rw [h.comm₂]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The second morphism of triangles given by an `Octahedron'`. -/
 @[simps]
 def triangleMorphism₂ : Triangle.mk v₁₃ u₁₃ w₁₃ ⟶ Triangle.mk v₂₃ u₂₃ w₂₃ where
@@ -325,7 +319,6 @@ variable {C}
   (IsTriangulated.octahedron_axiom comm h₁₂ h₂₃ h₁₃).some
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A choice of octahedron' given by the octahedron axiom. -/
 @[no_expose] def Triangulated.someOctahedron' [IsTriangulated C]
     {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}

@@ -202,7 +202,7 @@ def powersetCard (n : ℕ) (s : Finset α) : Finset (Finset α) :=
 @[simp, grind =] lemma mem_powersetCard : s ∈ powersetCard n t ↔ s ⊆ t ∧ card s = n := by
   cases s; simp [powersetCard, val_le_iff.symm]
 
-@[simp]
+@[simp, gcongr]
 theorem powersetCard_mono {n} {s t : Finset α} (h : s ⊆ t) : powersetCard n s ⊆ powersetCard n t :=
   fun _u h' => mem_powersetCard.2 <|
     And.imp (fun h₂ => Subset.trans h₂ h) id (mem_powersetCard.1 h')
@@ -268,6 +268,14 @@ lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
 
 @[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
     s.powersetCard (s.card + n) = ∅ := by simpa
+
+lemma powersetCard_inter [DecidableEq α] (s t : Finset α) (n : ℕ) :
+    powersetCard n (s ∩ t) = powersetCard n s ∩ powersetCard n t := by
+  ext; simpa [subset_inter_iff] using and_and_right
+
+@[simp] lemma disjoint_powersetCard_powersetCard [DecidableEq α] (s t : Finset α) (n : ℕ) :
+    Disjoint (powersetCard n s) (powersetCard n t) ↔ #(s ∩ t) < n := by
+  simp [disjoint_iff_inter_eq_empty, ← powersetCard_inter]
 
 theorem powersetCard_eq_filter {n} {s : Finset α} :
     powersetCard n s = (powerset s).filter fun x => x.card = n := by

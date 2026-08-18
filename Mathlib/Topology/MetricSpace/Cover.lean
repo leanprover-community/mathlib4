@@ -79,7 +79,7 @@ lemma IsCover.image_lipschitz_of_surjective {f : X → Y} {s : Set Y} {N : Set X
 
 lemma _root_.Isometry.isCover_image_iff {f : X → Y} (hf : Isometry f) (C : Set X) :
     IsCover ε (f '' s) (f '' C) ↔ IsCover ε s C := by
-  refine ⟨fun h x hx ↦ ?_, fun h ↦ by simpa using h.image_lipschitz hf.lipschitz⟩
+  refine ⟨fun h x hx ↦ ?_, fun h ↦ by simpa using h.image_lipschitz hf.lipschitzWith⟩
   obtain ⟨c, hc_mem, hc⟩ := h (Set.mem_image_of_mem _ hx)
   obtain ⟨c', hc', rfl⟩ := hc_mem
   exact ⟨c', hc', le_of_eq_of_le (hf.edist_eq _ _).symm hc⟩
@@ -155,7 +155,7 @@ protected alias ⟨_, IsCover.closure⟩ := isCover_closure
 end PseudoMetricSpace
 
 section EMetricSpace
-variable [EMetricSpace X] {ε : ℝ≥0} {s N : Set X} {x : X}
+variable [EMetricSpace X] {ε : ℝ≥0} {s N : Set X}
 
 @[simp] lemma isCover_zero : IsCover 0 s N ↔ s ⊆ N := by
   simp [isCover_iff_subset_iUnion_closedEBall]
@@ -163,7 +163,7 @@ variable [EMetricSpace X] {ε : ℝ≥0} {s N : Set X} {x : X}
 end EMetricSpace
 
 section MetricSpace
-variable [MetricSpace X] [ProperSpace X] {ε : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
+variable [MetricSpace X] [ProperSpace X] {ε : ℝ≥0} {s N : Set X} {x : X}
 
 /-- A closed set in a proper metric space which admits a compact cover is compact. -/
 lemma IsCover.isCompact (hsN : IsCover ε s N) (hs : IsClosed s) (hN : IsCompact N) :

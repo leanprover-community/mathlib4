@@ -6,6 +6,7 @@ Authors: Gaëtan Serré
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Widesubcategory
+public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
 
 /-!
 # Copy-discard structures on wide subcategories

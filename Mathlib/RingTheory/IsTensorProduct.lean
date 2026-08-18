@@ -209,7 +209,6 @@ private lemma assocAux_symm_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
     (IsTensorProduct.assocAux f hf g hg).symm (x₁ ⊗ₜ g x₂ x₃) = f x₁ x₂ ⊗ₜ x₃ := by
   simp [IsTensorProduct.assocAux]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 private lemma assocAux_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
     IsTensorProduct.assocAux f hf g hg (f x₁ x₂ ⊗ₜ x₃) = x₁ ⊗ₜ g x₂ x₃ := by
@@ -420,7 +419,6 @@ theorem IsBaseChange.equiv_tmul (s : S) (m : M) : h.equiv (s ⊗ₜ m) = s • f
 theorem IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m := by
   rw [h.equiv.symm_apply_eq, h.equiv_tmul, one_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsBaseChange.of_equiv (e : S ⊗[R] M ≃ₗ[S] N) (he : ∀ x, e (1 ⊗ₜ x) = f x) :
     IsBaseChange S f := by
   apply IsTensorProduct.of_equiv (e.restrictScalars R)
@@ -519,7 +517,6 @@ theorem IsBaseChange.iff_lift_unique :
     exact ⟨h.lift g, h.lift_comp g, fun g' e => h.algHom_ext' _ _ (e.trans (h.lift_comp g).symm)⟩,
     IsBaseChange.of_lift_unique f⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap := by
   apply IsBaseChange.of_lift_unique
   intro Q I₁ I₂ I₃ I₄ g

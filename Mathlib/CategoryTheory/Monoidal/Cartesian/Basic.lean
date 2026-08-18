@@ -123,11 +123,9 @@ abbrev tensorHom (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : tensorObj ℬ X₁ X�
   (BinaryFan.IsLimit.lift' (ℬ Y₁ Y₂).isLimit ((ℬ X₁ X₂).cone.π.app ⟨.left⟩ ≫ f)
       (((ℬ X₁ X₂).cone.π.app ⟨.right⟩ : (ℬ X₁ X₂).cone.pt ⟶ X₂) ≫ g)).val
 
-set_option backward.isDefEq.respectTransparency false in
 lemma id_tensorHom_id (X Y : C) : tensorHom ℬ (𝟙 X) (𝟙 Y) = 𝟙 (tensorObj ℬ X Y) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tensorHom_comp_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
     tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ = tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
@@ -156,13 +154,11 @@ lemma triangle (X Y : C) :
       tensorHom ℬ (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit).hom (𝟙 Y) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor_naturality (f : X₁ ⟶ X₂) :
     tensorHom ℬ (𝟙 𝒯.cone.pt) f ≫ (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X₂).isLimit).hom =
       (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X₁).isLimit).hom ≫ f := by
   simp [tensorHom]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor_naturality (f : X₁ ⟶ X₂) :
     tensorHom ℬ f (𝟙 𝒯.cone.pt) ≫ (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X₂ 𝒯.cone.pt).isLimit).hom =
       (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X₁ 𝒯.cone.pt).isLimit).hom ≫ f := by
@@ -183,7 +179,6 @@ end ofChosenFiniteProducts
 
 open ofChosenFiniteProducts
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct an instance of `CartesianMonoidalCategory C` given a terminal object and limit cones
 over arbitrary pairs of objects. -/
 abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
@@ -495,6 +490,19 @@ instance : Subsingleton (SymmetricCategory C) where
 
 end BraidedCategory
 
+instance preservesMonomorphisms_tensorLeft (X : C) :
+    Functor.PreservesMonomorphisms (tensorLeft X) where
+  preserves f hf := {
+    right_cancellation _ _ w := by
+      apply hom_ext
+      · simpa using w =≫ fst _ _
+      · simpa [cancel_mono_assoc_iff] using w =≫ snd _ _ }
+
+instance preservesMonomorphisms_tensorRight (X : C) :
+    Functor.PreservesMonomorphisms (tensorRight X) :=
+  letI := BraidedCategory.ofCartesianMonoidalCategory (C := C)
+  Functor.PreservesMonomorphisms.of_iso (BraidedCategory.tensorLeftIsoTensorRight _)
+
 instance (priority := 100) : Limits.HasFiniteProducts C :=
   letI : ∀ (X Y : C), Limits.HasLimit (Limits.pair X Y) := fun _ _ =>
     .mk ⟨_, tensorProductIsBinaryProduct _ _⟩
@@ -679,7 +687,6 @@ def prodComparisonBifunctorNatTrans :
 
 variable {E : Type u₂} [Category.{v₂} E] [CartesianMonoidalCategory E] (G : D ⥤ E)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem prodComparisonBifunctorNatTrans_comp : prodComparisonBifunctorNatTrans (F ⋙ G) =
     Functor.whiskerRight
@@ -758,7 +765,6 @@ end PreservesLimitPairs
 
 section ProdComparisonIso
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `prodComparison F A B` is an isomorphism, then `F` preserves the limit of `pair A B`. -/
 lemma preservesLimit_pair_of_isIso_prodComparison (A B : C)
     [IsIso (prodComparison F A B)] :
@@ -789,7 +795,6 @@ end prodComparison
 end CartesianMonoidalCategoryComparison
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- In a cartesian monoidal category, `tensorLeft X` is naturally isomorphic `prod.functor.obj X`.
 -/
 noncomputable def tensorLeftIsoProd [HasBinaryProducts C] (X : C) :
@@ -802,7 +807,6 @@ open Limits
 
 variable {P : ObjectProperty C}
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
 /-- The restriction of a Cartesian-monoidal category along an object property that's closed under
@@ -989,21 +993,16 @@ end Braided
 namespace EssImageSubcategory
 variable [F.Full] [F.Faithful] [PreservesFiniteProducts F] {T X Y Z : F.EssImageSubcategory}
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma tensor_obj (X Y : F.EssImageSubcategory) : (X ⊗ Y).obj = X.obj ⊗ Y.obj := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma lift_def (f : T ⟶ X) (g : T ⟶ Y) : lift f g = ObjectProperty.homMk (lift f.hom g.hom) := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma associator_hom_def (X Y Z : F.EssImageSubcategory) :
     (α_ X Y Z).hom = ObjectProperty.homMk (α_ X.obj Y.obj Z.obj).hom := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma associator_inv_def (X Y Z : F.EssImageSubcategory) :
     (α_ X Y Z).inv = ObjectProperty.homMk (α_ X.obj Y.obj Z.obj).inv := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma toUnit_def (X : F.EssImageSubcategory) :
     toUnit X = ObjectProperty.homMk (toUnit X.obj) := rfl
 

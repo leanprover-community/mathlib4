@@ -7,6 +7,7 @@ Filippo A. E. Nuccio
 -/
 module
 
+public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Analysis.Real.OfDigits
 public import Mathlib.Data.Stream.Init
 public import Mathlib.Topology.Algebra.GroupWithZero

@@ -133,14 +133,13 @@ end LieSubmodule
 
 section LieSubmoduleMapAndComap
 
-variable {R : Type u} {L : Type v} {L' : Type w₂} {M : Type w} {M' : Type w₁}
+variable {R : Type u} {L : Type v} {L' : Type w₂} {M : Type w}
 variable [CommRing R] [LieRing L] [LieRing L'] [LieAlgebra R L']
 variable [AddCommGroup M] [Module R M] [LieRingModule L M]
-variable [AddCommGroup M'] [Module R M'] [LieRingModule L M']
 
 namespace LieIdeal
 
-variable [LieAlgebra R L] [LieModule R L M] [LieModule R L M']
+variable [LieAlgebra R L] [LieModule R L M]
 variable (f : L →ₗ⁅R⁆ L') (I I₂ : LieIdeal R L) (J : LieIdeal R L')
 
 @[simp]
@@ -247,7 +246,7 @@ instance subsingleton_of_bot : Subsingleton (LieIdeal R (⊥ : LieIdeal R L)) :=
 end LieIdeal
 
 namespace LieHom
-variable [LieAlgebra R L] [LieModule R L M] [LieModule R L M']
+variable [LieAlgebra R L] [LieModule R L M]
 variable (f : L →ₗ⁅R⁆ L') (I : LieIdeal R L) (J : LieIdeal R L')
 
 /-- The kernel of a morphism of Lie algebras, as an ideal in the domain. -/
@@ -349,7 +348,7 @@ theorem isIdealMorphism_of_surjective (h : Function.Surjective f) : f.IsIdealMor
 end LieHom
 
 namespace LieIdeal
-variable [LieAlgebra R L] [LieModule R L M] [LieModule R L M']
+variable [LieAlgebra R L] [LieModule R L M]
 variable {f : L →ₗ⁅R⁆ L'} {I I₂ : LieIdeal R L} {J : LieIdeal R L'}
 
 @[simp]
@@ -493,9 +492,8 @@ section TopEquiv
 
 variable (R : Type u) (L : Type v)
 variable [CommRing R] [LieRing L]
-variable (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M]
 variable {R L}
-variable [LieAlgebra R L] [LieModule R L M]
+variable [LieAlgebra R L]
 
 /-- The natural equivalence between the 'top' Lie ideal and the enclosing Lie algebra.
 This is the Lie ideal version of `Submodule.topEquiv`. -/

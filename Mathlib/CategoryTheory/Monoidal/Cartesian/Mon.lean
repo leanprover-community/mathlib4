@@ -126,7 +126,6 @@ end MonObj
 namespace Mon
 variable [BraidedCategory C]
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] tensorObj.one_def tensorObj.mul_def in
 @[to_additive]
 instance : CartesianMonoidalCategory (Mon C) where

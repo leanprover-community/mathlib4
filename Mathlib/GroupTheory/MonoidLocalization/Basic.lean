@@ -349,7 +349,7 @@ lemma mkHom_surjective : Surjective (mkHom (S := S)) := by rintro ⟨x, y⟩; ex
 
 section Scalar
 
-variable {R R₁ R₂ : Type*}
+variable {R : Type*}
 
 theorem smul_mk [SMul R M] [IsScalarTower R M M] (c : R) (a b) :
     c • (mk a b : Localization S) = mk (c • a) b := by

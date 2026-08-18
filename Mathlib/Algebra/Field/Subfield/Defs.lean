@@ -50,8 +50,8 @@ subfield, subfields
 
 universe u v w
 
-variable {K : Type u} {L : Type v} {M : Type w}
-variable [DivisionRing K] [DivisionRing L] [DivisionRing M]
+variable {K : Type u}
+variable [DivisionRing K]
 
 /-- `SubfieldClass S K` states `S` is a type of subsets `s ⊆ K` closed under field operations. -/
 class SubfieldClass (S K : Type*) [DivisionRing K] [SetLike S K] : Prop
@@ -208,7 +208,7 @@ def Subring.toSubfield (s : Subring K) (hinv : ∀ x ∈ s, x⁻¹ ∈ s) : Subf
 
 namespace Subfield
 
-variable (s t : Subfield K)
+variable (s : Subfield K)
 
 section DerivedFromSubfieldClass
 

@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.MvPowerSeries.PiTopology
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
@@ -113,7 +112,6 @@ def hasEvalIdeal : Ideal (σ → S) where
   zero_mem' := HasEval.zero
   smul_mem' := HasEval.mul_left
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_hasEvalIdeal_iff {a : σ → S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
   simp [hasEvalIdeal]

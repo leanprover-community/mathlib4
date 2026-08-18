@@ -1106,8 +1106,6 @@ namespace ENNReal
 
 variable (f g : ι → ℝ≥0∞) {p q : ℝ}
 
--- TODO: fix the non-terminal simp on the last line
-set_option linter.flexible false in
 /-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. Version for sums over finite sets,
 with `ℝ≥0∞`-valued functions. -/
@@ -1126,10 +1124,12 @@ theorem inner_le_Lp_mul_Lq (hpq : p.HolderConjugate q) :
       ENNReal.sum_eq_top, not_or] using H'
   have := ENNReal.coe_le_coe.2 (@NNReal.inner_le_Lp_mul_Lq _ s (fun i => ENNReal.toNNReal (f i))
     (fun i => ENNReal.toNNReal (g i)) _ _ hpq)
-  simp [ENNReal.coe_rpow_of_nonneg, hpq.pos.le, hpq.symm.pos.le] at this
+  simp_rw [coe_mul, one_div, coe_rpow_of_nonneg _ (inv_nonneg.mpr hpq.pos.le),
+    coe_rpow_of_nonneg _ (inv_nonneg.mpr hpq.symm.pos.le), ofNNReal_finsetSum,
+    coe_rpow_of_nonneg _ hpq.pos.le, coe_rpow_of_nonneg _ hpq.symm.pos.le] at this
   convert! this using 1 <;> [skip; congr 2] <;> [skip; skip; simp; skip; simp] <;>
-    · refine Finset.sum_congr rfl fun i hi => ?_
-      simp [H'.1 i hi, H'.2 i hi, -WithZero.coe_mul]
+  · refine Finset.sum_congr rfl fun i hi ↦ ?_
+    simp [H'.1 i hi, H'.2 i hi, -WithZero.coe_mul]
 
 /-- **Weighted Hölder inequality**. -/
 lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι → ℝ≥0∞) :

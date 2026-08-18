@@ -444,7 +444,6 @@ def nonUnitalStarAlgHom_precomp (f : C(X, Y)₀) : C(Y, R)₀ →⋆ₙₐ[R] C(
   map_star' _ := rfl
   map_smul' _ _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- The functor `C(X, ·)₀` from non-unital topological star algebras (with non-unital continuous
 star homomorphisms) to non-unital star algebras. -/

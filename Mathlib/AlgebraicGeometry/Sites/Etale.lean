@@ -45,7 +45,6 @@ lemma zariskiTopology_le_etaleTopology : zariskiTopology ≤ etaleTopology := by
   intro X Y f hf
   infer_instance
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The small étale site of a scheme is the Grothendieck topology on the
 category of schemes étale over `X` induced from the étale topology on `Scheme.{u}`. -/
 def smallEtaleTopology (X : Scheme.{u}) : GrothendieckTopology X.Etale :=

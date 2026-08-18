@@ -43,7 +43,7 @@ reals, conditionally complete, ordered field, uniqueness
 
 @[expose] public section
 
-variable {F α β γ : Type*}
+variable {α β γ : Type*}
 
 noncomputable section
 
@@ -109,7 +109,7 @@ theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ →
 end DivisionRing
 
 variable (β) [IsStrictOrderedRing α] [Field β] [LinearOrder β] [IsStrictOrderedRing β]
-  {a a₁ a₂ : α} {b : β} {q : ℚ}
+  {a : α} {b : β} {q : ℚ}
 
 theorem cutMap_coe (q : ℚ) : cutMap β (q : α) = Rat.cast '' {r : ℚ | (r : β) < q} := by
   simp_rw [cutMap, Rat.cast_lt]

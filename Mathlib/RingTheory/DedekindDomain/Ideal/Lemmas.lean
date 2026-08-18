@@ -696,7 +696,6 @@ theorem idealFactorsEquivOfQuotEquiv_symm :
 @[deprecated (since := "2026-04-16")]
 alias _root_.idealFactorsEquivOfQuotEquiv_symm := idealFactorsEquivOfQuotEquiv_symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem idealFactorsEquivOfQuotEquiv_is_dvd_iso {L M : Ideal R} (hL : L ∣ I) (hM : M ∣ I) :
     (idealFactorsEquivOfQuotEquiv f ⟨L, hL⟩ : Ideal A) ∣ idealFactorsEquivOfQuotEquiv f ⟨M, hM⟩ ↔
       L ∣ M := by
@@ -729,7 +728,6 @@ theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFact
 alias _root_.idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors :=
   idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between the sets of normalized factors of I and J induced by a ring
 isomorphism `f : R/I ≅ A/J`. -/
 def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
@@ -757,7 +755,6 @@ theorem normalizedFactorsEquivOfQuotEquiv_symm (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
 @[deprecated (since := "2026-04-16")]
 alias _root_.normalizedFactorsEquivOfQuotEquiv_symm := normalizedFactorsEquivOfQuotEquiv_symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The map `normalizedFactorsEquivOfQuotEquiv` preserves multiplicities. -/
 theorem normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
     (L : Ideal R) (hL : L ∈ normalizedFactors I) :
@@ -1057,7 +1054,6 @@ alias _root_.emultiplicity_eq_emultiplicity_span := emultiplicity_eq_emultiplici
 section NormalizationMonoid
 variable [NormalizationMonoid R]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The bijection between the (normalized) prime factors of `r` and the (normalized) prime factors
 of `span {r}` -/
 noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r ≠ 0) :

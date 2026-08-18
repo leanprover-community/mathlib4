@@ -17,7 +17,7 @@ public import Mathlib.Order.Filter.Cofinite
   function assigning to `x : M` its supremum of its antidiagonal.
 -/
 
-@[expose] public section
+public section
 
 namespace Finset.HasAntidiagonal
 

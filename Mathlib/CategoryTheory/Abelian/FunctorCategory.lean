@@ -49,7 +49,6 @@ def coimageObjIso : (Abelian.coimage α).obj X ≅ Abelian.coimage (α.app X) :=
         exact (kernelComparison_comp_ι _ ((evaluation C D).obj X)).symm)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The abelian image in a functor category can be calculated componentwise. -/
 @[simps!]
 def imageObjIso : (Abelian.image α).obj X ≅ Abelian.image (α.app X) :=

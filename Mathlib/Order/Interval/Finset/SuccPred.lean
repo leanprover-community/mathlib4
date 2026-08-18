@@ -206,7 +206,7 @@ lemma Iio_succ_eq_Iic (b : α) : Iio (succ b) = Iic b := coe_injective <| by sim
 end SuccOrder
 
 section PredOrder
-variable [PredOrder α] {a b : α}
+variable [PredOrder α] {b : α}
 
 lemma Iic_pred_eq_Iio_of_not_isMin (hb : ¬ IsMin b) : Iic (pred b) = Iio b :=
   coe_injective <| by simpa using Set.Iic_pred_eq_Iio_of_not_isMin hb

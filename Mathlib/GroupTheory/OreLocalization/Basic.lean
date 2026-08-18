@@ -10,6 +10,7 @@ public import Mathlib.Tactic.Common
 public import Mathlib.Algebra.Group.Submonoid.MulAction
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 

@@ -61,7 +61,7 @@ proof for more details.
 
 -/
 
-@[expose] public section
+public section
 
 open Topology Filter Set
 open scoped Pointwise Set.Notation

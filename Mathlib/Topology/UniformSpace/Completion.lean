@@ -65,8 +65,8 @@ namespace CauchyFilter
 section
 
 variable {α : Type u} [UniformSpace α]
-variable {β : Type v} {γ : Type w}
-variable [UniformSpace β] [UniformSpace γ]
+variable {β : Type v}
+variable [UniformSpace β]
 
 instance (f : CauchyFilter α) : NeBot f.1 := f.2.1
 

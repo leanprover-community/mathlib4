@@ -38,9 +38,8 @@ namespace GradedObject
 
 section
 
-variable (F F' : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
+variable (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `mapTrifunctor`. -/
 @[simps]
 def mapTrifunctorObj {I₁ : Type*} (X₁ : GradedObject I₁ C₁) (I₂ I₃ : Type*) :
@@ -121,7 +120,6 @@ section
 variable (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
 variable {I₁ I₂ I₃ J : Type*} (p : I₁ × I₂ × I₃ → J)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₃`, graded objects `X₁ : GradedObject I₁ C₁`,
 `X₂ : GradedObject I₂ C₂`, `X₃ : GradedObject I₃ C₃`, and a map `p : I₁ × I₂ × I₃ → J`,
 this is the `J`-graded object sending `j` to the coproduct of
@@ -132,7 +130,6 @@ noncomputable def mapTrifunctorMapObj (X₁ : GradedObject I₁ C₁) (X₂ : Gr
     GradedObject J C₄ :=
   ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObj p
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The obvious inclusion
 `((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃) ⟶ mapTrifunctorMapObj F p X₁ X₂ X₃ j` when
 `p ⟨i₁, i₂, i₃⟩ = j`. -/
@@ -142,7 +139,6 @@ noncomputable def ιMapTrifunctorMapObj (X₁ : GradedObject I₁ C₁) (X₂ : 
     ((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃) ⟶ mapTrifunctorMapObj F p X₁ X₂ X₃ j :=
   ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).ιMapObj p ⟨i₁, i₂, i₃⟩ j h
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The maps `mapTrifunctorMapObj F p X₁ X₂ X₃ ⟶ mapTrifunctorMapObj F p Y₁ Y₂ Y₃` which
 express the functoriality of `mapTrifunctorMapObj`, see `mapTrifunctorMap` -/
 noncomputable def mapTrifunctorMapMap {X₁ Y₁ : GradedObject I₁ C₁} (f₁ : X₁ ⟶ Y₁)
@@ -190,7 +186,6 @@ instance (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ :
     [h : HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) p] :
     HasMap (((mapTrifunctorObj F X₁ I₂ I₃).obj X₂).obj X₃) p := h
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄`, a map `p : I₁ × I₂ × I₃ → J`, and
 graded objects `X₁ : GradedObject I₁ C₁`, `X₂ : GradedObject I₂ C₂` and `X₃ : GradedObject I₃ C₃`,
 this is the `J`-graded object sending `j` to the coproduct of
@@ -546,7 +541,7 @@ noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
   rw [comp_id, id_comp]
   rfl
 
-variable {F₁₂ G ρ₁₂ X₁ X₂ X₃}
+variable {X₁ X₂ X₃}
 
 include ρ₂₃ in
 lemma HasGoodTrifunctor₂₃Obj.hasMap :

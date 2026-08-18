@@ -682,7 +682,7 @@ theorem Ioc_inter_Iic (a b c : α) : Ioc a b ∩ Iic c = Ioc a (b ⊓ c) := by
 
 end Inf
 
-variable [Lattice α] {a b c a₁ a₂ b₁ b₂ : α}
+variable [Lattice α] {a₁ a₂ b₁ b₂ : α}
 
 @[to_dual self]
 theorem Icc_inter_Icc : Icc a₁ b₁ ∩ Icc a₂ b₂ = Icc (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by

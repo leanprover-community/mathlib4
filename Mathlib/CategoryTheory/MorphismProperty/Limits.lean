@@ -517,7 +517,6 @@ inductive colimitsOfShape : MorphismProperty C
     (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f) :
       colimitsOfShape (h₁.desc (Cocone.mk _ (f ≫ c₂.ι)))
 
-set_option backward.isDefEq.respectTransparency false in
 variable {W J} in
 lemma colimitsOfShape.mk' (X₁ X₂ : J ⥤ C) (c₁ : Cocone X₁) (c₂ : Cocone X₂)
     (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (f : X₁ ⟶ X₂) (hf : W.functorCategory J f)
@@ -533,7 +532,6 @@ lemma colimitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W�
   exact ⟨_, _, _, _, _, h₂, f, fun j ↦ h _ (hf j)⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable {J} in
 lemma colimitsOfShape_le_of_final {J' : Type*} [Category* J'] (F : J ⥤ J') [F.Final] :
     W.colimitsOfShape J' ≤ W.colimitsOfShape J := by
@@ -600,7 +598,6 @@ class IsStableUnderColimitsOfShape : Prop where
     (h₁ : IsColimit c₁) (h₁ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f)
     (φ : c₁.pt ⟶ c₂.pt) (hφ : ∀ j, c₁.ι.app j ≫ φ = f.app j ≫ c₂.ι.app j) : W φ
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isStableUnderColimitsOfShape_iff_colimitsOfShape_le :
     W.IsStableUnderColimitsOfShape J ↔ W.colimitsOfShape J ≤ W := by
   constructor
@@ -623,7 +620,6 @@ protected lemma colimMap [W.IsStableUnderColimitsOfShape J] {X Y : J ⥤ C}
   colimitsOfShape_le _ (colimitsOfShape_colimMap _ hf)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable (C J) in
 instance IsStableUnderColimitsOfShape.isomorphisms :
     (isomorphisms C).IsStableUnderColimitsOfShape J where
@@ -669,9 +665,7 @@ lemma coproducts_of_small {X Y : C} (f : X ⟶ Y) {J : Type w'}
   refine ⟨Shrink J, ?_⟩
   rwa [← W.colimitsOfShape_eq_of_equivalence (Discrete.equivalence (equivShrink.{w} J))]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma le_colimitsOfShape_punit : W ≤ W.colimitsOfShape (Discrete PUnit.{w + 1}) := by
   intro X₁ X₂ f hf
   have h := initialIsInitial (C := Discrete (PUnit.{w + 1}))
@@ -710,7 +704,6 @@ abbrev IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape 
 /-- The property that a morphism property `W` is stable under coproducts indexed by a type `J`. -/
 abbrev IsStableUnderCoproductsOfShape (J : Type*) := W.IsStableUnderColimitsOfShape (Discrete J)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
     (hW : ∀ (X₁ X₂ : J → C) [HasProduct X₁] [HasProduct X₂]
       (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
@@ -732,7 +725,6 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
     rintro ⟨j⟩
     simp [φ, hα]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
     (hW : ∀ (X₁ X₂ : J → C) [HasCoproduct X₁] [HasCoproduct X₂]
       (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
@@ -836,7 +828,6 @@ instance [P.ContainsIdentities] [P.RespectsIso] : P.diagonal.ContainsIdentities 
 
 instance [P.IsMultiplicative] [P.IsStableUnderBaseChange] : P.diagonal.IsMultiplicative where
 
-set_option backward.isDefEq.respectTransparency false in
 instance IsStableUnderBaseChange.diagonal [IsStableUnderBaseChange P] [P.RespectsIso] :
     P.diagonal.IsStableUnderBaseChange :=
   IsStableUnderBaseChange.mk'

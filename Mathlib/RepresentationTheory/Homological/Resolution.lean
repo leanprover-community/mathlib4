@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 public import Mathlib.CategoryTheory.Abelian.Ext
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.RepresentationTheory.Rep.Iso
 
 /-!

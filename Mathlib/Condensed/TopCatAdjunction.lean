@@ -100,7 +100,6 @@ set_option backward.isDefEq.respectTransparency.types false in
         (TopCat.Hom.hom (topCatAdjunctionCounit X)) x =
       x PUnit.unit := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is compactly generated).
 -/
@@ -143,7 +142,6 @@ noncomputable def topCatAdjunction : condensedSetToTopCat.{u} ⊣ topCatToConden
     change Y.obj.map (𝟙 _) _ = _
     simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (X : TopCat) : Epi (topCatAdjunction.counit.app X) := by
   rw [TopCat.epi_iff_surjective]
   exact (topCatAdjunctionCounit_bijective _).2

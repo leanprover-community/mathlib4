@@ -192,7 +192,6 @@ def currySum (q : Ω^ (M ⊕ N) X x) : C(I^M, Ω^ N X x) where
     ⟨sumArrowHomeomorphProdArrow.invFun,
       sumArrowHomeomorphProdArrow.continuous_invFun⟩).curry.continuous_toFun _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma currySum_apply_inl_inr (p : Ω^ (M ⊕ N) X x) (y : I^(M ⊕ N)) :
     currySum x p (y ∘ Sum.inl) (y ∘ Sum.inr) = p y := by

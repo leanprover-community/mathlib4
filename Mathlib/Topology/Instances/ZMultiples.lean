@@ -26,7 +26,7 @@ open scoped Topology Uniformity Interval
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u}
 
 namespace Int
 

@@ -156,7 +156,6 @@ instance {G : Type v'} [Group G] (S : Subgroup G) :
 end Coind
 section Coind'
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 If `φ : G →* H` and `A : Rep k G` then `coind' φ A`, the coinduction of `A` along `φ`,
 is defined as an `H`-action on `Hom_{k[G]}(k[H], A)`. If `f : k[H] → A` is `G`-equivariant

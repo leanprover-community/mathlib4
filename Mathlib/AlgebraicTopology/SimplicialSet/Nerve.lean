@@ -172,7 +172,6 @@ def homEquiv {x y : ComposableArrows C 0} :
   left_inv e := by cat_disch
   right_inv f := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mk₁_homEquiv_apply {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
     ComposableArrows.mk₁ (homEquiv e) = ComposableArrows.mk₁ e.edge.hom := by
   simp [homEquiv, ComposableArrows.mk₁_eqToHom_comp, ComposableArrows.mk₁_comp_eqToHom]

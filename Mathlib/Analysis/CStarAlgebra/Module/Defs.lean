@@ -217,7 +217,7 @@ lemma inner_mul_inner_swap_le {x y : E} : ⟪x, y⟫ * ⟪y, x⟫ ≤ ‖x‖ ^ 
                   - ‖x‖ ^ 2 • (⟪x, y⟫ * star a) + ‖x‖ ^ 2 • (‖x‖ ^ 2 • ⟪y, y⟫) := by
                       gcongr
                       calc _ ≤ ‖⟪x, x⟫_A‖ • (a * star a) :=
-                          CStarAlgebra.star_right_conjugate_le_norm_smul
+                          CStarAlgebra.star_right_conjugate_le_norm_smul ..
                         _ = (√‖⟪x, x⟫_A‖) ^ 2 • (a * star a) := by
                           rw [Real.sq_sqrt]
                           positivity
@@ -233,7 +233,7 @@ lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
   have := calc ‖⟪x, y⟫‖ ^ 2 = ‖⟪x, y⟫ * ⟪y, x⟫‖ := by
                 rw [← star_inner x, CStarRing.norm_self_mul_star, pow_two]
     _ ≤ ‖‖x‖ ^ 2 • ⟪y, y⟫‖ := by
-                refine CStarAlgebra.norm_le_norm_of_nonneg_of_le ?_ inner_mul_inner_swap_le
+                refine CStarAlgebra.norm_le_norm_of_le_of_nonneg inner_mul_inner_swap_le ?_
                 rw [← star_inner x]
                 exact mul_star_self_nonneg ⟪x, y⟫_A
     _ = ‖x‖ ^ 2 * ‖⟪y, y⟫‖ := by simp [norm_smul]

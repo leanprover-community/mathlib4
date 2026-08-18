@@ -12,7 +12,6 @@ public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.NumberTheory.PrimeCounting
 
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Squarefree
 

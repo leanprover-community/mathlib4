@@ -25,7 +25,7 @@ We introduce the typeclass `IsZeroOneMeasure` for measures that only take the va
 
 -/
 
-@[expose] public section
+public section
 
 open Set
 

@@ -5,8 +5,11 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.List.Basic
 public import Mathlib.Logic.Relator
+public import Batteries.Data.List.Basic
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Double universal quantification on a list

@@ -145,7 +145,7 @@ theorem iSup_succ [SuccOrder α] (x : α) : ⨆ a : Iio x, succ a.1 = x := by
 end ConditionallyCompleteLinearOrderBot
 
 section CompleteLinearOrder
-variable [CompleteLinearOrder α] {s : Set α} {f : ι → α} {x : α}
+variable [CompleteLinearOrder α] {s : Set α} {f : ι → α}
 
 lemma sSup_mem_of_not_isSuccPrelimit (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup s ∈ s := by
   obtain ⟨y, hy⟩ := not_forall_not.mp hlim

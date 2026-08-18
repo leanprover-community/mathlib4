@@ -30,7 +30,7 @@ open Nat
 
 namespace Finset
 
-variable {α R : Type*} {s t : Finset α} {a b : α}
+variable {α R : Type*} {s t : Finset α} {a : α}
 variable [DecidableEq α] [AddGroupWithOne R]
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$.

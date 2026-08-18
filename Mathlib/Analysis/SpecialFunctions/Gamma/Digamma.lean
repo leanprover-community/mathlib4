@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Meromorphic.Complex
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 
-import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
 /-!
 # The digamma function
@@ -58,6 +57,7 @@ theorem digamma_apply_add_one (s : ℂ) (hs : ∀ m : ℕ, s ≠ - m) :
   rw [digamma_def, logDeriv_apply, logDeriv_apply, deriv_Gamma_add_one s hs0, Gamma_add_one s hs0,
     add_div, div_mul_cancel_right₀ (Gamma_ne_zero hs), mul_div_mul_left _ _ hs0, add_comm]
 
+@[fun_prop]
 theorem meromorphic_digamma : Meromorphic digamma :=
   Meromorphic.Gamma.logDeriv
 

@@ -28,7 +28,7 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 
 @[expose] public section
 
-variable {ι α R S : Type*}
+variable {α R S : Type*}
 
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:
 the maps that preserve `*`, are nonnegative, positive definite and satisfy
@@ -262,8 +262,7 @@ end OrderedCommRing
 
 section LinearOrderedRing
 
-variable {R S : Type*} [Semiring R] [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
-  (abv : AbsoluteValue R S)
+variable {S : Type*} [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
 
 /-- `AbsoluteValue.abs` is `abs` as a bundled `AbsoluteValue`. -/
 @[simps]

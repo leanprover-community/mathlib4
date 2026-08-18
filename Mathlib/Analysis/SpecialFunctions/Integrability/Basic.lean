@@ -21,7 +21,7 @@ public section
 
 open Interval MeasureTheory Real Set
 
-variable {a b c d : ℝ} (n : ℕ) {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
+variable {a b c : ℝ} (n : ℕ) {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
 
 namespace intervalIntegral
 

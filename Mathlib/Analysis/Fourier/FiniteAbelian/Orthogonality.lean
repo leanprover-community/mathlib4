@@ -23,7 +23,7 @@ open Fintype (card)
 open RCLike
 open scoped BigOperators ComplexConjugate DirectSum
 
-variable {G H R : Type*}
+variable {G R : Type*}
 
 namespace AddChar
 section AddGroup

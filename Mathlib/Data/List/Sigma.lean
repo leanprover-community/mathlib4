@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Sean Leather
 -/
 module
 
-public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.List.Lookmap

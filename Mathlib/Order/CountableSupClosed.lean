@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Order.SupClosed
 
-import Mathlib.Data.Nat.Pairing
 import Mathlib.Order.Bounds.Lattice
 
 /-!

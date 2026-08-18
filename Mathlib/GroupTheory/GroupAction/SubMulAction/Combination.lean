@@ -46,7 +46,7 @@ open scoped Pointwise
 open MulAction Finset Set Equiv Equiv.Perm
 
 variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
-  {n : ℕ} {s t : powersetCard α n}
+  {n : ℕ} {s : powersetCard α n}
 
 section
 
@@ -135,7 +135,6 @@ attribute [to_additive existing] faithfulSMul
 
 variable (α G)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (n) in
 /-- The equivariant map from embeddings of `Fin n` (aka arrangement) to combinations. -/
 @[to_additive /-- The equivariant map from embeddings of `Fin n`

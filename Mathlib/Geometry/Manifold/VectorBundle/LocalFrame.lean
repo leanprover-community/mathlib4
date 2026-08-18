@@ -460,7 +460,6 @@ variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
   {ι : Type*} (b : Basis ι 𝕜 F) {s : Π x : M, V x} {t : Set M} {k : ℕ∞ω} {x x' : M}
   [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] [ContMDiffVectorBundle k F V I]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrameCoeff e i` in the local frame
 near `x` induced by `e` and `b` -/
 lemma contMDiffAt_localFrameCoeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% s) x) (i : ι) :
@@ -545,7 +544,6 @@ alias contMDiffOn_baseSet_iff_localFrame_coeff := contMDiffOn_baseSet_iff_localF
 -- Differentiability of a section can be checked in terms of its local frame coefficients
 section MDifferentiable
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is differentiable at `x`, so is its coefficient `b.localFrameCoeff e i` in the local
 frame near `x` induced by `e` and `b` -/
 lemma mdifferentiableAt_localFrameCoeff

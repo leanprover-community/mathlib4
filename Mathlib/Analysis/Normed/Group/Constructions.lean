@@ -16,7 +16,7 @@ This file constructs the infinity norm on finite products of normed groups and p
 for type synonyms.
 -/
 
-@[expose] public section
+public section
 
 open NNReal
 

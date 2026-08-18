@@ -101,7 +101,6 @@ instance : EnrichedOrdinaryCategory Cat (CatEnriched C) where
   homEquiv_id _ :=
     ((Cat.Hom.equivFunctor _ _).trans Cat.fromChosenTerminalEquiv).symm_apply_eq.mpr rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem id_hComp_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
     HEq (hComp (𝟙 (𝟙 a)) η) η := by
   rw [id_eq, ← Functor.map_id]
@@ -111,7 +110,6 @@ theorem id_hComp {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
     hComp (𝟙 (𝟙 a)) η = eqToHom (id_comp f) ≫ η ≫ eqToHom (id_comp f').symm := by
   simp [← heq_eq_eq, id_hComp_heq]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem hComp_id_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
     HEq (hComp η (𝟙 (𝟙 b))) η := by
   rw [id_eq, ← Functor.map_id]

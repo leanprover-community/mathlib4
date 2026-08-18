@@ -72,10 +72,10 @@ theorem isClopen_fiber {f : X → Y} (hf : IsLocallyConstant f) (y : Y) : IsClop
 
 theorem iff_exists_open (f : X → Y) :
     IsLocallyConstant f ↔ ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x :=
-  (IsLocallyConstant.tfae f).out 0 4
+  (IsLocallyConstant.tfae f).out 1 5
 
 theorem iff_eventually_eq (f : X → Y) : IsLocallyConstant f ↔ ∀ x, ∀ᶠ y in 𝓝 x, f y = f x :=
-  (IsLocallyConstant.tfae f).out 0 1
+  (IsLocallyConstant.tfae f).out 1 2
 
 theorem exists_open {f : X → Y} (hf : IsLocallyConstant f) (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x :=
@@ -86,10 +86,10 @@ protected theorem eventually_eq {f : X → Y} (hf : IsLocallyConstant f) (x : X)
   (iff_eventually_eq f).1 hf x
 
 theorem iff_isOpen_fiber_apply {f : X → Y} : IsLocallyConstant f ↔ ∀ x, IsOpen (f ⁻¹' {f x}) :=
-  (IsLocallyConstant.tfae f).out 0 2
+  (IsLocallyConstant.tfae f).out 1 3
 
 theorem iff_isOpen_fiber {f : X → Y} : IsLocallyConstant f ↔ ∀ y, IsOpen (f ⁻¹' {y}) :=
-  (IsLocallyConstant.tfae f).out 0 3
+  (IsLocallyConstant.tfae f).out 1 4
 
 protected theorem continuous [TopologicalSpace Y] {f : X → Y} (hf : IsLocallyConstant f) :
     Continuous f :=

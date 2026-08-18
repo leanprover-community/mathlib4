@@ -330,9 +330,7 @@ theorem _root_.MeromorphicOn.exists_canonicalDecomp
   -- `(something)⁻¹ • g`, converted to a meromorphic function in normal form. The next lines define
   -- `g` in this way and establish basic properties.
   let φ := (∏ᶠ c, canonicalFactor R c ^ (divisor f (ball 0 R)) c) • f
-  have hφ : MeromorphicOn φ (closedBall 0 R) := by
-    apply smul (MeromorphicOn.finprod _) h₁f
-    exact fun z ↦ zpow (fun z₁ hz₁ ↦ meromorphic_canonicalFactor _ _ _) _
+  have hφ : MeromorphicOn φ (closedBall 0 R) := by fun_prop
   let g := toMeromorphicNFOn φ (closedBall 0 R)
   have h₃g : divisor g (ball 0 R) = 0 := by
     rw [divisor_congr_codiscreteWithin

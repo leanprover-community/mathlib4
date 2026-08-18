@@ -85,10 +85,9 @@ theorem integralSum_congr {f₁ f₂ : ℝⁿ → E} {vol₁ vol₂ : ι →ᵇ�
     (hf : EqOn f₁ f₂ I.Icc) (hvol : EqOn vol₁ vol₂ π.boxes) :
     integralSum f₁ vol₁ π = integralSum f₂ vol₂ π := by
   unfold integralSum
-  refine Finset.sum_congr rfl (fun J hJ ↦ ?_)
-  congr 1
+  congr! 2 with J hJ
   · exact hvol hJ
-  exact hf (π.tag_mem_Icc J)
+  · exact hf (π.tag_mem_Icc J)
 
 theorem integralSum_biUnionTagged (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (π : Prepartition I)
     (πi : ∀ J, TaggedPrepartition J) :
@@ -180,11 +179,8 @@ def integral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι �
 theorem hasIntegral_congr (I : Box ι) (l : IntegrationParams) {f₁ f₂ : ℝⁿ → E}
     {vol₁ vol₂ : ι →ᵇᵃ E →L[ℝ] F}
     (hf : EqOn f₁ f₂ I.Icc) (hvol : EqOn vol₁ vol₂ (Set.Iic I)) (y : F) :
-    HasIntegral I l f₁ vol₁ y ↔ HasIntegral I l f₂ vol₂ y := by
-  unfold HasIntegral
-  refine Filter.tendsto_congr (fun π ↦ integralSum_congr hf (hvol.mono ?_))
-  intro J hJ
-  simp [π.le_of_mem' J hJ]
+    HasIntegral I l f₁ vol₁ y ↔ HasIntegral I l f₂ vol₂ y :=
+  tendsto_congr fun π ↦ integralSum_congr hf <| hvol.mono π.le_of_mem'
 
 -- Porting note: using the above notation ℝⁿ here causes the theorem below to be silently ignored
 -- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Lean.204.20doesn't.20add.20lemma.20to.20the.20environment/near/363764522

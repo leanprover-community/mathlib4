@@ -30,6 +30,7 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
   (A : Type w) [AddMonoid A] [HasShift C A]
+  (G : Type w) [AddGroup G] [HasShift C G]
 
 namespace MorphismProperty
 
@@ -41,7 +42,7 @@ class IsCompatibleWithShift : Prop where
   we take its inverse image by the shift functor by `a` -/
   condition : ∀ (a : A), W.inverseImage (shiftFunctor C a) = W
 
-variable [W.IsCompatibleWithShift A]
+variable [W.IsCompatibleWithShift A] [W.IsCompatibleWithShift G]
 
 namespace IsCompatibleWithShift
 
@@ -67,6 +68,11 @@ when `a : A` and `W` is compatible with the shift by `A`. -/
 abbrev shiftLocalizerMorphism (a : A) : LocalizerMorphism W W where
   functor := shiftFunctor C a
   map := by rw [MorphismProperty.IsCompatibleWithShift.condition]
+
+instance (g : G) : (W.shiftLocalizerMorphism g).IsLocalizedEquivalence :=
+  LocalizerMorphism.IsLocalizedEquivalence.of_equivalence _
+    (fun _ _ f hf ↦ ⟨_, _, f⟦-g⟧', (IsCompatibleWithShift.iff W f _).2 hf,
+      ⟨Arrow.isoOfNatIso (shiftEquiv C g).counitIso (Arrow.mk f)⟩⟩)
 
 end MorphismProperty
 

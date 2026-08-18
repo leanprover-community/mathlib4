@@ -200,7 +200,7 @@ end Def
 
 namespace FunLike
 
-variable {M M' F F' α β : Type*} [FunLike F α β] [FunLike F' α α]
+variable {M F F' α β : Type*} [FunLike F α β] [FunLike F' α α]
 
 section Coercion
 

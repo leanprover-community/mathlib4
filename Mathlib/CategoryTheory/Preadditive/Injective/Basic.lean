@@ -135,7 +135,6 @@ instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injectiv
     · simp only [prod.lift_fst]
     · simp only [prod.lift_snd]
 
-set_option backward.isDefEq.respectTransparency false in
 instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ᶜ c) where
   factors g f mono := by
     refine ⟨Pi.lift fun b => factorThru (g ≫ Pi.π c _) f, ?_⟩
