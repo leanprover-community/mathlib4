@@ -206,7 +206,7 @@ def mathlibLabelData : (l : Label) → LabelData l
   | .«t-data» => {
     dirs := #[
       "Mathlib" / "Control",
-      "Mathlib" / "Data"]
+      "Mathlib" / "Data"],
     dependencies := #[.«t-logic»] }
   | .«t-differential-geometry» => {
     dirs := #[
@@ -229,7 +229,8 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Tactic" / "Linter",
       "MathlibTest" / "Linter",
       "scripts" / "lint-style.lean",
-      "scripts" / "lint-style.py"] }
+      "scripts" / "lint-style.py",
+    ] }
   | .«t-logic» => {
     dirs := #[
       "Mathlib" / "Logic",
@@ -356,7 +357,7 @@ section Tests
   #[.«t-ring-theory», .«t-data», .«t-algebra»] == #[.«t-ring-theory»]
 #guard dropDependentLabels
   #[.«CI», .«t-algebraic-topology», .«t-algebra», .«t-order»] ==
-  #[.«CI», .«t-algebraic-topology», .«t-order»]
+  #[.«CI», .«t-algebraic-topology»]
 #guard dropDependentLabels
   #[.«t-ring-theory», .«t-data», .«t-algebra», .«t-category-theory», .«t-order»] ==
   #[.«t-ring-theory», .«t-category-theory», .«t-order»]
