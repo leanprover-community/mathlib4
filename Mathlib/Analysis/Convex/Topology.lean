@@ -30,7 +30,7 @@ assert_not_exists Cardinal Norm
 
 open Metric Bornology Set Pointwise Convex
 
-variable {ι 𝕜 E : Type*}
+variable {𝕜 E : Type*}
 
 namespace Real
 variable {s : Set ℝ} {r ε : ℝ}
