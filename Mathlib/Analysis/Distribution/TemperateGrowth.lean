@@ -13,7 +13,6 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Tactic.MoveAdd
 
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
-import Mathlib.Analysis.Complex.OperatorNorm
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
