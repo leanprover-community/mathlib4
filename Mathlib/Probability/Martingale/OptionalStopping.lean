@@ -97,19 +97,13 @@ protected theorem Submartingale.stoppedProcess [SigmaFiniteFiltration μ 𝒢]
     Submartingale (stoppedProcess f τ) 𝒢 μ := by
   rw [submartingale_iff_expected_stoppedValue_mono]
   · intro σ π hσ hπ hσ_le_π hπ_bdd
+    simp_rw [stoppedValue_stoppedProcess]
     obtain ⟨n, hπ_le_n⟩ := hπ_bdd
     have hπ_top ω : π ω ≠ ⊤ := ne_top_of_le_ne_top (by simp) (hπ_le_n ω)
     have hσ_top ω : σ ω ≠ ⊤ := ne_top_of_le_ne_top (hπ_top ω) (hσ_le_π ω)
-    have h_integral_min : ∀ ρ : Ω → WithTop ℕ, (∀ ω, ρ ω ≠ ⊤) →
-        μ[stoppedValue (stoppedProcess f τ) ρ] = μ[stoppedValue f fun ω ↦ min (ρ ω) (τ ω)] :=
-      fun ρ hρ ↦ congrArg (fun g : Ω → ℝ ↦ μ[g])
-        (funext fun ω ↦ stoppedValue_stoppedProcess_apply (hρ ω))
-    calc μ[stoppedValue (stoppedProcess f τ) σ]
-        = μ[stoppedValue f fun ω ↦ min (σ ω) (τ ω)] := h_integral_min σ hσ_top
-      _ ≤ μ[stoppedValue f fun ω ↦ min (π ω) (τ ω)] :=
-          h.expected_stoppedValue_mono (hσ.min hτ) (hπ.min hτ)
-            (fun ω ↦ min_le_min (hσ_le_π ω) le_rfl) fun ω ↦ (min_le_left _ _).trans (hπ_le_n ω)
-      _ = μ[stoppedValue (stoppedProcess f τ) π] := (h_integral_min π hπ_top).symm
+    simp only [ne_eq, hσ_top, not_false_eq_true, ↓reduceIte, hπ_top, ge_iff_le]
+    exact h.expected_stoppedValue_mono (hσ.min hτ) (hπ.min hτ)
+      (fun ω => min_le_min (hσ_le_π ω) le_rfl) fun ω => (min_le_left _ _).trans (hπ_le_n ω)
   · exact StronglyAdapted.stoppedProcess_of_discrete h.stronglyAdapted hτ
   · exact fun i =>
       h.integrable_stoppedValue ((isStoppingTime_const _ i).min hτ) fun ω => min_le_left _ _
@@ -136,7 +130,7 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
     (measurable_range_sup'' fun n _ => (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)))
       (measure_ne_top _ _) this (Integrable.integrableOn (hsub.integrable_stoppedValue
         (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
-        fun ω ↦ WithTop.coe_le_coe.mpr (hittingBtwn_le ω)))
+        (mod_cast hittingBtwn_le)))
   rw [ENNReal.le_ofReal_iff_toReal_le, ENNReal.toReal_smul]
   · exact h
   · exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
