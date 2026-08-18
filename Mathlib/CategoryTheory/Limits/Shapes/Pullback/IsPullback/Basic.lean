@@ -326,7 +326,6 @@ lemma id_horiz (f : X ⟶ Z) : IsPullback (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /--
 In a category, given a morphism `f : A ⟶ B` and an object `X`,
 this is the obvious pullback diagram:
@@ -352,7 +351,6 @@ lemma of_prod_fst_with_id {A B : C} (f : A ⟶ B) (X : C) [HasBinaryProduct A X]
       · simpa using h₁
       · simp [← h₂])⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_isLimit_binaryFan_of_isTerminal
     {X Y : C} {c : BinaryFan X Y} (hc : IsLimit c)
     {T : C} (hT : IsTerminal T) :
@@ -734,7 +732,6 @@ lemma of_coprod_inl_with_id {A B : C} (f : A ⟶ B) (X : C) [HasBinaryCoproduct 
       · simpa using h₂
       · simp [← h₁])⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_isColimit_binaryCofan_of_isInitial
     {X Y : C} {c : BinaryCofan X Y} (hc : IsColimit c)
     {I : C} (hI : IsInitial I) :
@@ -943,9 +940,55 @@ lemma IsPushout.iff_app [HasPushouts D] {F₁ F₂ F₃ F₄ : C ⥤ D}
 
 end Functor
 
-section IsPullbackOverPullback
+section Thin
 
-open Limits
+variable [Quiver.IsThin C]
+
+lemma isPullback_iff_isLimit_binaryFan_of_isThin {P X Y Z : C}
+    {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} :
+    IsPullback fst snd f g ↔ Nonempty (IsLimit (BinaryFan.mk fst snd)) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact ⟨BinaryFan.IsLimit.mk _ (fun u v ↦ h.lift u v (by subsingleton))
+      (by subsingleton) (by subsingleton) (by subsingleton)⟩
+  · exact ⟨⟨by subsingleton⟩,
+      ⟨PullbackCone.IsLimit.mk _ (fun s ↦ BinaryFan.IsLimit.lift h.some s.fst s.snd)
+      (by subsingleton) (by subsingleton) (by subsingleton)⟩⟩
+
+lemma isPushout_iff_isColimit_binaryCofan_of_isThin {P X Y Z : C}
+    {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P} :
+    IsPushout f g inl inr ↔ Nonempty (IsColimit (BinaryCofan.mk inl inr)) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact ⟨BinaryCofan.IsColimit.mk _ (fun u v ↦ h.desc u v (by subsingleton))
+      (by subsingleton) (by subsingleton) (by subsingleton)⟩
+  · exact ⟨⟨by subsingleton⟩,
+      ⟨PushoutCocone.IsColimit.mk _ (fun s ↦ BinaryCofan.IsColimit.desc h.some s.inl s.inr)
+      (by subsingleton) (by subsingleton) (by subsingleton)⟩⟩
+
+variable {D : Type*} [Category* D] [Quiver.IsThin D] (F : C ⥤ D)
+
+instance (priority := low) [PreservesLimitsOfShape (Discrete WalkingPair) F] :
+    PreservesLimitsOfShape WalkingCospan F := by
+  refine preservesLimitsOfShape_walkingCospan_of_forall_isPullback fun X Y Z f g hfg ↦ ?_
+  use pullback f g, pullback.fst f g, pullback.snd f g, .of_hasPullback f g
+  rw [isPullback_iff_isLimit_binaryFan_of_isThin]
+  refine ⟨(BinaryFan.mk (pullback.fst f g) (pullback.snd f g)).isLimitMapConeEquiv ?_⟩
+  apply isLimitOfPreserves _ (Nonempty.some ?_)
+  rw [← CategoryTheory.isPullback_iff_isLimit_binaryFan_of_isThin (f := f) (g := g)]
+  exact .of_hasPullback f g
+
+instance (priority := low) [PreservesColimitsOfShape (Discrete WalkingPair) F] :
+    PreservesColimitsOfShape WalkingSpan F := by
+  refine preservesColimitsOfShape_walkingCospan_of_forall_isPushout fun X Y Z f g hfg ↦ ?_
+  use pushout f g, pushout.inl f g, pushout.inr f g, .of_hasPushout f g
+  rw [isPushout_iff_isColimit_binaryCofan_of_isThin]
+  refine ⟨(BinaryCofan.mk (pushout.inl f g) (pushout.inr f g)).isColimitMapConeEquiv ?_⟩
+  apply isColimitOfPreserves _ (Nonempty.some ?_)
+  rw [← CategoryTheory.isPushout_iff_isColimit_binaryCofan_of_isThin (f := f) (g := g)]
+  exact .of_hasPushout f g
+
+end Thin
+
+section IsPullbackOverPullback
 
 variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullbacksAlong g]
 
