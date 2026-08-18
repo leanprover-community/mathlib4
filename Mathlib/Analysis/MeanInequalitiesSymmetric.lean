@@ -94,8 +94,9 @@ private theorem newton_aux (n : ℕ) : ∀ s : Multiset ℝ, s.card = n → ∀ 
         rw [← hs, esymm_card, prod_eq_zero h0]
         grind [sq_nonneg]
       · have : 2 * (k + 2) * (s.esymm k * s.esymm (k + 2)) ≤ (k + 1) * (s.esymm (k + 1)) ^ 2 := by
-          rw [(by grind : k + 1 = s.card - 1), esymm_map_inv h0 (by omega),
-            (by grind : s.esymm k = s.esymm (s.card - 2)), esymm_map_inv h0 (by omega), hs]
+          rw [esymm_map_inv h0 (by omega : k + 1 ≤ s.card),
+          esymm_map_inv h0 (by omega : k ≤ s.card),
+          hs, (by grind : (k + 2) - (k + 1) = 1), (by grind : (k + 2) - k = 2)]
           have := newton_base (s.map (·⁻¹)) (k + 2) (by grind [card_map])
           push_cast at this
           nlinarith [sq_nonneg (s.esymm (k + 2))]
