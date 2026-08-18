@@ -118,7 +118,7 @@ def LatinSquare.fromOncePerColumn (M : Matrix n n α) (card_eq : Fintype.card α
 /-- The Cayley table of a finite `Group` is an example of a Latin square. -/
 @[to_additive /-- The Cayley table of a finite `AddGroup` is an example of a Latin square. -/,
   reducible]
-def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
+def LatinSquare.ofGroup (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
     LatinSquare G G :=
   LatinSquare.fromOncePerColumn
     (M := fun i j ↦ i * j)
@@ -187,7 +187,7 @@ end Equivalence
 section Nonvacuous
 
 instance {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
-  addGroupToCayleyTable (ZMod n)
+  LatinSquare.ofAddGroup (ZMod n)
 
 /-- For any positive natural number n, there exists an n × n Latin square. -/
 noncomputable instance n_nonempty {n : Type*} [Fintype n]
@@ -195,7 +195,7 @@ noncomputable instance n_nonempty {n : Type*} [Fintype n]
     [h : Fact (Fintype.card n = Fintype.card α)] :
     Nonempty (LatinSquare n α) := by
   have := Fin.addCommGroup (Fintype.card n)
-  let a := addGroupToCayleyTable (Fin (Fintype.card n))
+  let a := LatinSquare.ofAddGroup (Fin (Fintype.card n))
   have f :=  Fintype.equivFin n
   have h' := Fintype.equivFinOfCardEq h.out.symm
   have h'' := Fintype.equivFin α
@@ -372,7 +372,7 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
     grind
   have _ : NeZero (Fintype.card n - Fintype.card k)  := ⟨by lia⟩
   let halls := hallMatchingsOn.nonempty (B)
-    (Finset.card_le_card_biUnion_of_card_eq_of_card_filter_le (by lia) Bj_size pre_property_H) 
+    (Finset.card_le_card_biUnion_of_card_eq_of_card_filter_le (by lia) Bj_size pre_property_H)
     (Finset.univ)
   set f := Classical.choice halls with hx
   simp only [hallMatchingsOn] at f
