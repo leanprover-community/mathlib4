@@ -20,6 +20,10 @@ namespace Prod
 
 variable {α β : Type*}
 
+/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
+for performance reasons. -/
+attribute [local instance] IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono
+
 @[to_additive]
 instance [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
     [CommMonoid β] [Preorder β] [IsOrderedMonoid β] : IsOrderedMonoid (α × β) where

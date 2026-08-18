@@ -44,6 +44,10 @@ any commutative monoid.
 
 open Set Pointwise AddSubmonoid Matrix
 
+/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
+for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+
 /-!
 ### Semilinearity from slice property
 

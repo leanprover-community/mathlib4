@@ -62,6 +62,11 @@ universe u
 
 variable {R : Type u}
 
+/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
+for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 -- TODO: assume weaker typeclasses
 
 /-- An ordered semiring is a semiring with a partial order such that addition is monotone and

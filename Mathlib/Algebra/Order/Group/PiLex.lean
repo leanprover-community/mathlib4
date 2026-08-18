@@ -22,6 +22,10 @@ public section
 namespace Pi.Lex
 variable {ι : Type*} {α : ι → Type*} [LinearOrder ι]
 
+/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
+for performance reasons. -/
+attribute [local instance] IsRightCancelMul.mulRightStrictMono_of_mulRightMono
+
 @[to_additive]
 instance isOrderedCancelMonoid [∀ i, CommMonoid (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedCancelMonoid (α i)] :

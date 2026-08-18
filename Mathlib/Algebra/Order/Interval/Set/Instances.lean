@@ -49,6 +49,11 @@ open Set
 
 variable {R : Type*}
 
+/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
+for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 section OrderedSemiring
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R]

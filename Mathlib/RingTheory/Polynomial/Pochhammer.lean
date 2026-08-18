@@ -41,6 +41,10 @@ universe u v
 
 open Polynomial
 
+/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
+for performance reasons. -/
+attribute [local instance] IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 section Semiring
 
 variable (S : Type u) [Semiring S]
