@@ -100,7 +100,7 @@ lemma esymm_pair_one (x y : R) :
     esymm (x ::ₘ {y}) 1 = x + y := by
   simp
 
-@[simp] lemma esymm_pair_two (x y : R) :
+lemma esymm_pair_two (x y : R) :
     esymm (x ::ₘ {y}) 2 = x * y := by
   simp [esymm, powersetCard_one]
 
