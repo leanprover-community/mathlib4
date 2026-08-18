@@ -416,9 +416,7 @@ variable [CommMonoid M] [NonUnitalNonAssocCommSemiring R] [TopologicalSpace R]
 @[to_additive (dont_translate := R) addRingConvolution_comm]
 lemma ringConvolution_comm (f g : M → R) :
     f ⋆ᵣ g = g ⋆ᵣ f := by
-  simpa only [ringConvolution] using
-    convolution_comm mulLinearMap f g
-      (fun x y => by simp only [mulLinearMap_apply, mul_comm])
+  simpa only [ringConvolution] using convolution_comm (.mul ℕ R) f g (by simp [mul_comm])
 
 end RingConvolutionCommutativity
 
