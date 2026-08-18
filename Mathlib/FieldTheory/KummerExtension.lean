@@ -209,73 +209,35 @@ theorem X_pow_sub_C_irreducible
           _ = _ := by ring
           _ = _ := congr($hu1 ^ 3 * a)
           _ = _ := by ring
-#exit
--- TODO: generalize to even `n`
+
 theorem X_pow_sub_C_irreducible_of_odd
     {n : ℕ} (hn : Odd n) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :
-    Irreducible (X ^ n - C a) := by
-  induction n using induction_on_primes generalizing K a with
-  | zero => simp [← Nat.not_even_iff_odd] at hn
-  | one => simpa using irreducible_X_sub_C a
-  | prime_mul p n hp IH =>
-    rw [mul_comm]
-    have irred := X_pow_sub_C_irreducible_of_prime hp (ha p hp (dvd_mul_right _ _))
-    apply X_pow_mul_sub_C_irreducible irred
-    have := Fact.mk irred
-    apply IH (Nat.odd_mul.mp hn).2
-    intro q hq hqn b hb
-    apply ha q hq (dvd_mul_of_dvd_right hqn p) (Algebra.norm _ b)
-    rw [← map_pow, hb, ← AdjoinRoot.powerBasis_gen irred.ne_zero,
-      Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly, AdjoinRoot.powerBasis_dim,
-      minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a hp.ne_zero),
-      natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow, ite_eq_right hp.ne_zero.symm,
-      zero_sub, (Nat.odd_mul.mp hn).1.neg_pow, one_pow, neg_one_mul, neg_neg]
+    Irreducible (X ^ n - C a) :=
+  X_pow_sub_C_irreducible (fun h => Nat.not_odd_zero (h ▸ hn)) ha
+    (fun h => hn.not_two_dvd_nat.elim (Nat.dvd_trans (by decide) h))
 
-theorem X_pow_sub_C_irreducible
-    {n : ℕ} (hn : n ≠ 0) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a)
-    (h4 : 4 ∣ n → ∀ b : K, -4 * b ^ 4 ≠ a) : Irreducible (X ^ n - C a) := by
-  apply Nat.exists_eq_two_pow_mul_odd at hn
-  obtain ⟨k, m, hm, rfl⟩ := hn
-  induction k using Nat.twoStepInduction generalizing K with
-  | zero =>
-    rw [pow_zero, one_mul] at ha ⊢
-    exact X_pow_sub_C_irreducible_of_odd hm ha
-  | one =>
-    rw [pow_one] at ha ⊢
-    have irred := X_pow_sub_C_irreducible_of_odd hm
-      (fun p hp hpn => ha p hp (dvd_mul_of_dvd_right hpn 2))
-    apply X_pow_mul_sub_C_irreducible irred
-    have := Fact.mk irred
-    apply X_pow_sub_C_irreducible_of_prime Nat.prime_two
-    intro b hb
-    apply ha 2 Nat.prime_two (dvd_mul_right _ _) (Algebra.norm _ b)
-    have hm0 : m ≠ 0 := fun hm0 => Nat.not_odd_zero (hm0 ▸ hm)
-    rw [← map_pow, hb, ← AdjoinRoot.powerBasis_gen irred.ne_zero,
-      Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly, AdjoinRoot.powerBasis_dim,
-      minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a hm0),
-      natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow, ite_eq_right hm0.symm,
-      zero_sub, hm.neg_pow, one_pow, neg_one_mul, neg_neg]
-  | more k ih1 ih2 =>
-    by_cases hi : ∃ i : K, i ^ 2 = -1
-    · obtain ⟨i, hi⟩ := hi
-      rw [show k + 2 = k + 1 + 1 from rfl, pow_succ', mul_assoc] at ha h4 ⊢
-      have irred := ih2 (fun p hp hpn => ha p hp (dvd_mul_of_dvd_right hpn _))
-        (fun h => h4 (dvd_mul_of_dvd_right h _))
-      apply X_pow_mul_sub_C_irreducible irred
-      have := Fact.mk irred
-      apply X_pow_sub_C_irreducible_of_prime Nat.prime_two
-      intro b hb
-      apply ha 2 Nat.prime_two (dvd_mul_right _ _) (i * Algebra.norm _ b)
-      have hm0 : m ≠ 0 := fun hm0 => Nat.not_odd_zero (hm0 ▸ hm)
-      have hk0 : 2 ^ (k + 1) * m ≠ 0 := Nat.mul_ne_zero (Nat.two_pow_pos _).ne' hm0
-      rw [mul_pow, hi, ← map_pow, hb, ← AdjoinRoot.powerBasis_gen irred.ne_zero,
-        Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly, AdjoinRoot.powerBasis_dim,
-        minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a hk0),
-        natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow, ite_eq_right hk0.symm,
-        zero_sub, neg_one_mul, mul_neg, neg_neg, pow_succ', mul_assoc, pow_mul,
-        neg_one_sq, one_pow, one_mul]
-    · sorry
-#exit
+theorem X_pow_sub_C_irreducible_iff_forall_prime {n : ℕ} (hn : n ≠ 0) {a : K} :
+    Irreducible (X ^ n - C a) ↔
+      (∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) ∧
+      (4 ∣ n → ∀ b : K, -4 * b ^ 4 ≠ a) := by
+  constructor
+  · contrapose! +distrib
+    rintro (⟨p, hp, hpn, b, hb⟩ | ⟨⟨n, rfl⟩, b, rfl⟩) irred
+    · exact pow_ne_of_irreducible_X_pow_sub_C irred hpn hp.ne_one b hb
+    · rw [neg_mul, map_neg, map_mul, map_pow, sub_neg_eq_add, map_ofNat, pow_mul'] at irred
+      obtain hu | hu := @irred.isUnit_or_isUnit
+        ((X ^ n) ^ 2 + 2 * C b * X ^ n + 2 * C b ^ 2)
+        ((X ^ n) ^ 2 - 2 * C b * X ^ n + 2 * C b ^ 2)
+        (by ring) <;>
+        · rw [← map_pow, ← map_ofNat C (nat_lit 2), ← map_mul,
+            ← map_mul, ← pow_mul, mul_two, isUnit_iff] at hu
+          obtain ⟨r, -, hr⟩ := hu
+          apply_fun (coeff · (n + n)) at hr
+          simp only [coeff_add, coeff_sub, coeff_X_pow_self, coeff_C_mul_X_pow, coeff_C] at hr
+          simp [(Nat.mul_ne_zero_iff.1 hn).2] at hr
+  · intro h
+    exact X_pow_sub_C_irreducible hn h.1 h.2
+
 theorem X_pow_sub_C_irreducible_iff_forall_prime_of_odd {n : ℕ} (hn : Odd n) {a : K} :
     Irreducible (X ^ n - C a) ↔ (∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :=
   ⟨fun e _ hp hpn ↦ pow_ne_of_irreducible_X_pow_sub_C e hpn hp.ne_one,
@@ -309,7 +271,7 @@ alias X_pow_sub_C_irreducible_iff_of_prime_pow :=
   X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two
 
 end Irreducible
-#exit
+
 /-!
 ### Galois Group of `K[n√a]`
 We first develop the theory for a specific `K[n√a] := AdjoinRoot (X ^ n - C a)`.
