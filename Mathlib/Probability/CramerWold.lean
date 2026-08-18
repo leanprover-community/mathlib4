@@ -43,16 +43,10 @@ random variables in a finite-dimensional real inner product space implies the
 convergence in distribution of the sequence itself. -/
 theorem tendstoInDistribution_of_inner (hX' : AEMeasurable X' P') (hX : ∀ n, AEMeasurable (X n) P)
     (h : ∀ t, TendstoInDistribution (⟪X · ·, t⟫) atTop (⟪X' ·, t⟫) (fun _ ↦ P) P') :
-    TendstoInDistribution X atTop X' (fun _ ↦ P) P' where
-  forall_aemeasurable n := (hX n)
-  tendsto := by
-    apply ProbabilityMeasure.tendsto_iff_tendsto_charFun.mpr
-    intro t
-    convert
-      (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto ℂ).mp
-        (h t).tendsto (innerProbChar (1 : ℝ)) using 1
-    · ext n
-      exact charFun_map_eq_charFun_map_inner_one (hX n) t
-    · exact congr_arg 𝓝 (charFun_map_eq_charFun_map_inner_one hX' t)
+    TendstoInDistribution X atTop X' (fun _ ↦ P) P' := by
+  refine tendstoInDistribution_iff_tendsto_charFun hX hX' |>.2 fun t ↦ ?_
+  rw [charFun_map_eq_charFun_map_inner_one hX']
+  refine (h t).tendsto_charFun 1 |>.congr fun n ↦ ?_
+  rw [charFun_map_eq_charFun_map_inner_one (hX n)]
 
 end
