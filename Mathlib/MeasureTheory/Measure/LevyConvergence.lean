@@ -243,10 +243,10 @@ lemma TendstoInDistribution.of_tendsto_charFun
 characteristic functions of the sequence of pushforward measures under the sequence of random
 variables converge pointwise to the characteristic function of the pushforward measure under the
 random variable. -/
-lemma tendsto_charFun_of_tendstoInDistribution (h : TendstoInDistribution X atTop X' P P') :
-    ∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t)) := by
+lemma TendstoInDistribution.tendsto_charFun (h : TendstoInDistribution X atTop X' P P') (t : E) :
+    Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t)) := by
   simpa only [ProbabilityMeasure.coe_mk] using
-      ProbabilityMeasure.tendsto_iff_tendsto_charFun.mp h.tendsto
+      ProbabilityMeasure.tendsto_iff_tendsto_charFun.mp h.tendsto t
 
 /-- The convergence in distribution of random variables is equivalent to the pointwise convergence
 of the characteristic functions of their pushforwards. -/
