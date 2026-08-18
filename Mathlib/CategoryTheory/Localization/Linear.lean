@@ -34,7 +34,7 @@ variable (R : Type w) [Ring R] {C : Type u₁} [Category.{v₁} C] {D : Type u�
 
 /-- If `L : C ⥤ D` is a localization functor and `C` is `R`-linear, then `D` is
 `R`-linear if we already know that `D` is preadditive and `L` is additive. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def linear : Linear R D := Linear.ofRingMorphism
   ((CatCenter.localizationRingHom L W).comp (Linear.toCatCenter R C))
 
@@ -75,7 +75,6 @@ variable {E : Type*} [Category* E]
   [Linear R C] [Linear R D] [Linear R E] [L.Linear R]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma functor_linear_iff (F : C ⥤ E) (G : D ⥤ E) [Lifting L W F G] :
     F.Linear R ↔ G.Linear R := by
   constructor

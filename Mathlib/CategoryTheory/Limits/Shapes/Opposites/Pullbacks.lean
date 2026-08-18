@@ -30,7 +30,6 @@ open Opposite
 namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-variable {J : Type u₂} [Category.{v₂} J]
 
 instance hasPullbacks_opposite [HasPushouts C] : HasPullbacks Cᵒᵖ := by
   have : HasColimitsOfShape WalkingCospanᵒᵖ C :=
@@ -119,9 +118,11 @@ def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
   Cocone.unop ((Cocone.precompose (opCospan f.unop g.unop).hom).obj
     (Cocone.whisker walkingCospanOpEquiv.functor c))
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem unop_fst {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.unop.fst = c.inl.unop := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem unop_snd {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.unop.snd = c.inr.unop := by simp
 
@@ -131,9 +132,11 @@ def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : Pullbac
   (Cone.postcompose (cospanOp f g).symm.hom).obj
     (Cone.whisker walkingSpanOpEquiv.inverse (Cocone.op c))
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem op_fst {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.op.fst = c.inl.op := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem op_snd {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.op.snd = c.inr.op := by simp
 
@@ -141,6 +144,9 @@ end PushoutCocone
 
 namespace PullbackCone
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The obvious map `PullbackCone f g → PushoutCocone f.unop g.unop` -/
 @[simps!]
 def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
@@ -149,9 +155,11 @@ def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     ((Cone.postcompose (opSpan f.unop g.unop).symm.hom).obj
       (Cone.whisker walkingSpanOpEquiv.functor c))
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem unop_inl {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.unop.inl = c.fst.unop := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem unop_inr {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.unop.inr = c.snd.unop := by simp
 
@@ -161,9 +169,11 @@ def op {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : PushoutC
   (Cocone.precompose (spanOp f g).hom).obj
     (Cocone.whisker walkingCospanOpEquiv.inverse (Cone.op c))
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem op_inl {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.op.inl = c.fst.op := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem op_inr {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.op.inr = c.snd.op := by simp
 
@@ -266,11 +276,13 @@ noncomputable def pullbackIsoUnopPushout {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
   IsLimit.conePointUniqueUpToIso (@limit.isLimit _ _ _ _ _ h)
     ((PushoutCocone.isColimitEquivIsLimitUnop _) (colimit.isColimit (span f.op g.op)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoUnopPushout_inv_fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     (pullbackIsoUnopPushout f g).inv ≫ pullback.fst f g = (pushout.inl f.op g.op).unop :=
   (IsLimit.conePointUniqueUpToIso_inv_comp _ _ _).trans (by simp [unop_id (X := { unop := X })])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoUnopPushout_inv_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     (pullbackIsoUnopPushout f g).inv ≫ pullback.snd f g = (pushout.inr f.op g.op).unop :=
@@ -293,11 +305,13 @@ noncomputable def pullbackIsoOpPushout {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y �
   IsLimit.conePointUniqueUpToIso (@limit.isLimit _ _ _ _ _ h)
     ((PushoutCocone.isColimitEquivIsLimitOp _) (colimit.isColimit (span f.unop g.unop)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoOpPushout_inv_fst {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     (pullbackIsoOpPushout f g).inv ≫ pullback.fst f g = (pushout.inl f.unop g.unop).op :=
   (IsLimit.conePointUniqueUpToIso_inv_comp _ _ _).trans (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoOpPushout_inv_snd {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     (pullbackIsoOpPushout f g).inv ≫ pullback.snd f g = (pushout.inr f.unop g.unop).op :=
@@ -342,11 +356,13 @@ noncomputable def pushoutIsoUnopPullback {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y)
   IsColimit.coconePointUniqueUpToIso (@colimit.isColimit _ _ _ _ _ h)
     ((PullbackCone.isLimitEquivIsColimitUnop _) (limit.isLimit (cospan f.op g.op)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pushoutIsoUnopPullback_inl_hom {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g] :
     pushout.inl _ _ ≫ (pushoutIsoUnopPullback f g).hom = (pullback.fst f.op g.op).unop :=
   (IsColimit.comp_coconePointUniqueUpToIso_hom _ _ _).trans (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pushoutIsoUnopPullback_inr_hom {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g] :
     pushout.inr _ _ ≫ (pushoutIsoUnopPullback f g).hom = (pullback.snd f.op g.op).unop :=
@@ -369,11 +385,13 @@ noncomputable def pushoutIsoOpPullback {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : X �
   IsColimit.coconePointUniqueUpToIso (@colimit.isColimit _ _ _ _ _ h)
     ((PullbackCone.isLimitEquivIsColimitOp _) (limit.isLimit (cospan f.unop g.unop)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pushoutIsoOpPullback_inl_hom {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g] :
     pushout.inl _ _ ≫ (pushoutIsoOpPullback f g).hom = (pullback.fst f.unop g.unop).op :=
   (IsColimit.comp_coconePointUniqueUpToIso_hom _ _ _).trans (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pushoutIsoOpPullback_inr_hom {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g] :
     pushout.inr _ _ ≫ (pushoutIsoOpPullback f g).hom = (pullback.snd f.unop g.unop).op :=

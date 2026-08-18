@@ -328,11 +328,11 @@ theorem right_mem_cIcc (a b : α) : b ∈ cIcc a b :=
 
 theorem compl_cIcc {a b : α} : (cIcc a b)ᶜ = cIoo b a := by
   ext
-  rw [Set.mem_cIoo, sbtw_iff_not_btw, cIcc, mem_compl_iff, mem_setOf]
+  rw [Set.mem_cIoo, sbtw_iff_not_btw, cIcc, mem_compl_iff, mem_ofPred]
 
 theorem compl_cIoo {a b : α} : (cIoo a b)ᶜ = cIcc b a := by
   ext
-  rw [Set.mem_cIcc, btw_iff_not_sbtw, cIoo, mem_compl_iff, mem_setOf]
+  rw [Set.mem_cIcc, btw_iff_not_sbtw, cIoo, mem_compl_iff, mem_ofPred]
 
 end CircularOrder
 

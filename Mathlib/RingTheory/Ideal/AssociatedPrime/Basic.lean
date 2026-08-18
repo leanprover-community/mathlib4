@@ -91,7 +91,7 @@ end Submodule
 
 section Semiring
 
-variable {R : Type*} [CommSemiring R] (I J : Ideal R) (M : Type*) [AddCommMonoid M] [Module R M]
+variable {R : Type*} [CommSemiring R] (I : Ideal R) (M : Type*) [AddCommMonoid M] [Module R M]
 
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the radical of the annihilator
 of some `x : M`. -/
@@ -106,9 +106,6 @@ def associatedPrimes : Set (Ideal R) :=
 variable {I J M} {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] M')
 
 theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
-
-@[deprecated (since := "2025-11-24")]
-alias AssociatePrimes.mem_iff := AssociatedPrimes.mem_iff
 
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 

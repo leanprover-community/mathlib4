@@ -41,7 +41,7 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C] (S : ShortComplex C)
-  {S₁ S₂ S₃ S₄ : ShortComplex C}
+  {S₁ S₂ S₃ : ShortComplex C}
 
 namespace ShortComplex
 
@@ -178,6 +178,9 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : HomologyData S�
   right := RightHomologyData.ofEpiOfIsIsoOfMono' φ h.right
   iso := h.iso
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `e : S₁ ≅ S₂` is an isomorphism of short complexes and `h₁ : HomologyData S₁`,
 this is the homology data for `S₂` deduced from the isomorphism. -/
 @[simps!]
@@ -413,6 +416,7 @@ lemma LeftHomologyData.homologyIso_leftHomologyData [S.HasHomology] :
   dsimp [homologyIso, leftHomologyIso, ShortComplex.leftHomologyIso]
   rw [← leftHomologyMap'_comp, comp_id]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma RightHomologyData.homologyIso_rightHomologyData [S.HasHomology] :
     S.rightHomologyData.homologyIso = S.rightHomologyIso.symm := by
@@ -1050,6 +1054,7 @@ noncomputable def homologyOpIso [S.HasHomology] :
     S.op.homology ≅ Opposite.op S.homology :=
   S.op.leftHomologyIso.symm ≪≫ S.leftHomologyOpIso ≪≫ S.rightHomologyIso.symm.op
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma homologyMap'_op : (homologyMap' φ h₁ h₂).op =
     h₂.iso.inv.op ≫ homologyMap' (opMap φ) h₂.op h₁.op ≫ h₁.iso.hom.op :=

@@ -38,7 +38,7 @@ variable {C : Type u₁} [Category.{v₁} C] (W : MorphismProperty C)
 
 section
 
-variable (L : C ⥤ D) [L.IsLocalization W] (X Y Z : C)
+variable (L : C ⥤ D) [L.IsLocalization W] (X Y : C)
 
 /-- This property holds if the type of morphisms between `X` and `Y`
 in the localized category with respect to `W : MorphismProperty C`
@@ -264,7 +264,6 @@ noncomputable def smallHomMap (f : SmallHom.{w} W₁ X Y) :
       ((Φ.localizedFunctor W₁.Q W₂.Q).map ((SmallHom.equiv W₁ W₁.Q) f)))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
     (f : SmallHom.{w} W₁ X Y) :
     (SmallHom.equiv W₂ L₂) (Φ.smallHomMap f) =
@@ -297,7 +296,6 @@ lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ �
     Functor.map_id, id_comp, Iso.hom_inv_id_app_assoc,
     Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma smallHomMap_mk (f : X ⟶ Y) :
     Φ.smallHomMap (SmallHom.mk _ f) =
@@ -317,7 +315,6 @@ variable [HasSmallLocalizedHom.{w} W₁ X Y] [HasSmallLocalizedHom.{w} W₁ Y Z]
   [HasSmallLocalizedHom.{w'} W₂ (Φ.functor.obj Y) (Φ.functor.obj Z)]
   [HasSmallLocalizedHom.{w'} W₂ (Φ.functor.obj X) (Φ.functor.obj Z)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma smallHomMap_comp (f : SmallHom.{w} W₁ X Y) (g : SmallHom.{w} W₁ Y Z) :
     Φ.smallHomMap (f.comp g) = (Φ.smallHomMap f).comp (Φ.smallHomMap g) := by
   apply (SmallHom.equiv W₂ W₂.Q).injective

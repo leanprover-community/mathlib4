@@ -33,10 +33,8 @@ open Set LinearMap Submodule
 
 namespace Finsupp
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P]
+variable {α : Type*} {M : Type*} {R : Type*}
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable (M R)
 
@@ -48,7 +46,7 @@ def supported (s : Set α) : Submodule R (α →₀ M) where
     refine Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) ?_) (union_subset hp hq)
     rw [Finset.coe_union]
   zero_mem' := by
-    simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
+    simp only [subset_def, Finset.mem_coe, Set.mem_ofPred_eq, mem_support_iff, zero_apply]
     intro h ha
     exact (ha rfl).elim
   smul_mem' _ _ hp := Subset.trans (Finset.coe_subset.2 support_smul) hp
@@ -156,7 +154,7 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
 
 theorem supported_union (s t : Set α) :
     supported M R (s ∪ t) = supported M R s ⊔ supported M R t := by
-  rw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq, cond_true, cond_false]
+  rw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq, Bool.cond_true, Bool.cond_false]
 
 theorem supported_iInter {ι : Type*} (s : ι → Set α) :
     supported M R (⋂ i, s i) = ⨅ i, supported M R (s i) :=
@@ -190,6 +188,9 @@ lemma codisjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
   rw [codisjoint_iff, ← supported_union, eq_top_iff'] at h
   simpa [Finsupp.mem_supported, Finsupp.support_single _ hx] using h (Finsupp.single a x)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
 @[simps!] def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
@@ -212,7 +213,7 @@ lemma codisjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
 
 section LMapDomain
 
-variable {α' : Type*} {α'' : Type*} (M R)
+variable {α' : Type*} (M R)
 
 theorem supported_comap_lmapDomain (f : α → α') (s : Set α') :
     supported M R (f ⁻¹' s) ≤ (supported M R s).comap (lmapDomain M R f) := by

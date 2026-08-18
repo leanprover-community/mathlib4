@@ -142,6 +142,7 @@ lemma of_isPullback {UX UY : Scheme.{u}} {iY : UY ⟶ Y} [IsOpenImmersion iY]
 theorem restrict (hf : P f) (U : Y.Opens) : P (f ∣_ U) :=
   of_isPullback (isPullback_morphismRestrict f U).flip hf
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma of_iSup_eq_top {ι} (U : ι → Y.Opens) (hU : iSup U = ⊤)
     (H : ∀ i, P (f ∣_ U i)) : P f := by
   refine (P.iff_of_zeroHypercover_target
@@ -287,6 +288,7 @@ variable (f) in
 lemma of_isOpenImmersion [P.ContainsIdentities] [IsOpenImmersion f] : P f :=
   Category.comp_id f ▸ comp (P.id_mem Y) f
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isZariskiLocalAtTarget [P.IsMultiplicative]
     (hP : ∀ {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion g], P (f ≫ g) → P f) :
     IsZariskiLocalAtTarget P := by
@@ -371,7 +373,6 @@ theorem cancel_right_of_respectsIso
     P (f ≫ g) ↔ P f := by rw [← P.toProperty_apply, ← P.toProperty_apply,
       P.toProperty.cancel_right_of_respectsIso]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem arrow_mk_iso_iff
     (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
     {X Y X' Y' : Scheme} {f : X ⟶ Y} {f' : X' ⟶ Y'}

@@ -127,11 +127,13 @@ def Isocrystal.frobenius : V ≃ᶠˡ[p, k] V :=
 
 @[inherit_doc] scoped[Isocrystal] notation "Φ(" p ", " k ")" => WittVector.Isocrystal.frobenius p k
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A homomorphism between isocrystals respects the Frobenius map.
 Notation `M →ᶠⁱ [p, k]` in the `Isocrystal` namespace. -/
 structure IsocrystalHom extends V →ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearMap x) = toLinearMap (Φ(p, k) x)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An isomorphism between isocrystals respects the Frobenius map.
 
 Notation `M ≃ᶠⁱ [p, k]` in the `Isocrystal` namespace. -/
@@ -168,6 +170,7 @@ instance (m : ℤ) : Isocrystal p k (StandardOneDimIsocrystal p k m) where
     (FractionRing.frobenius p k).toSemilinearEquiv.trans
       (LinearEquiv.smulOfNeZero _ _ _ (zpow_ne_zero m (WittVector.FractionRing.p_nonzero p k)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem StandardOneDimIsocrystal.frobenius_apply (m : ℤ) (x : StandardOneDimIsocrystal p k m) :
     Φ(p, k) x = (p : K(p, k)) ^ m • φ(p, k) x := rfl

@@ -58,10 +58,11 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
   congr
   exact ((chartAt H (TotalSpace.proj p)).right_inv h).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y).source) :
     mfderiv% (chartAt H y) x = tangentCoordChange I x y x := by
   have := mdifferentiableAt_atlas (I := I) (ChartedSpace.chart_mem_atlas _) hsrc
-  simp [mfderiv, if_pos this, Function.comp_assoc]
+  simp [mfderiv, ite_eq_left this, Function.comp_assoc]
 
 /-- The preimage under the projection from the tangent bundle of a set with unique differential in
 the basis also has unique differential. -/
@@ -69,6 +70,7 @@ theorem UniqueMDiffOn.tangentBundle_proj_preimage {s : Set M} (hs : UniqueMDiffO
     UniqueMDiffOn I.tangent (π E (TangentSpace I) ⁻¹' s) :=
   hs.bundle_preimage _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To write a linear map between tangent spaces in coordinates amounts to precomposing and
 postcomposing it with derivatives of extended charts.
 Concrete version of `inTangentCoordinates_eq`. -/
@@ -84,7 +86,7 @@ lemma inTangentCoordinates_eq_mfderiv_comp
   · have : MDiffAt (extChartAt I' (g x₀)) (g x) := mdifferentiableAt_extChartAt hy
     simp_all [mfderiv]
   · simp only [mfderivWithin, writtenInExtChartAt, modelWithCornersSelf_coe, range_id, inter_univ]
-    rw [if_pos]
+    rw [ite_eq_left]
     · simp [Function.comp_def, OpenPartialHomeomorph.left_inv (chartAt H (f x₀)) hx]
     · apply mdifferentiableWithinAt_extChartAt_symm
       apply (extChartAt I (f x₀)).map_source

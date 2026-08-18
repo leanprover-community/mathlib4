@@ -67,7 +67,6 @@ variable [HasBinaryCoproduct ((F.obj X₁).obj Y₂) ((F.obj Y₁).obj X₂)]
   [PreservesColimit (parallelPair f₁ 0) (F.flip.obj X₂)]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_desc (s : CokernelCofork (coprod.desc ((F.map f₁).app Y₂) ((F.obj Y₁).map f₂))) :
     ∃ (l : (F.obj c₁.pt).obj c₂.pt ⟶ s.pt),
       (F.map c₁.π).app Y₂ ≫ (F.obj c₁.pt).map c₂.π ≫ l = s.π := by

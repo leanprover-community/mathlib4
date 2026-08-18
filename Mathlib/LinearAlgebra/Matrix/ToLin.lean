@@ -82,7 +82,7 @@ The definitions in this section are stated with two extra rings, to allow for no
 -/
 
 section Bilinear
-variable {l m n R S A : Type*}
+variable {m n R S A : Type*}
 variable [Semiring R] [Semiring S] [NonUnitalNonAssocSemiring A]
 variable [Module R A] [Module S A]
 variable [SMulCommClass S R A] [SMulCommClass S A A] [IsScalarTower R A A]
@@ -171,6 +171,7 @@ theorem Matrix.coe_vecMulLinear [Fintype m] (M : Matrix m n R) :
 
 variable [Fintype m]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_vecMulLinear (M : Matrix m n R) :
     LinearMap.range M.vecMulLinear = span R (range M.row) := by
   let := Classical.decEq m
@@ -194,6 +195,7 @@ lemma Matrix.linearIndependent_rows_of_isUnit {A : Matrix m m R}
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Linear maps `(m → R) →ₗ[R] (n → R)` are linearly equivalent over `Rᵐᵒᵖ` to `Matrix m n R`,
 by having matrices act by right multiplication.
 -/
@@ -694,7 +696,7 @@ theorem LinearMap.toMatrix_smulBasis_right {G} [Group G] [DistribMulAction G M�
       LinearMap.toMatrix v₁ v₂ (DistribSMul.toLinearMap _ _ g⁻¹ ∘ₗ f) := by
   rfl
 
-variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (v₃ : Basis l R M₃)
+variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃]
 
 theorem LinearMap.toMatrix_map_left (f : M₃ →ₗ[R] M₂) (g : M₁ ≃ₗ[R] M₃) :
     f.toMatrix (v₁.map g) v₂ = (f ∘ₗ g.toLinearMap).toMatrix v₁ v₂ := by
@@ -1037,11 +1039,8 @@ end Algebra
 
 section
 
-variable {R S : Type*} [CommSemiring R] {n : Type*} [DecidableEq n]
-variable {M M₁ M₂ : Type*} [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
-variable [Semiring S] [Module S M₁] [Module S M₂] [SMulCommClass S R M₁] [SMulCommClass S R M₂]
-variable [SMul R S] [IsScalarTower R S M₁] [IsScalarTower R S M₂]
+variable {R : Type*} [CommSemiring R] {n : Type*} [DecidableEq n]
+variable {M : Type*} [AddCommMonoid M] [Module R M]
 
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the algebra structures. -/
@@ -1089,7 +1088,7 @@ lemma linearMap_apply_apply (ij : ι₂ × ι₁) (k : ι₁) :
   have := Classical.decEq ι₂
   rw [linearMap_apply, Matrix.stdBasis_eq_single, Matrix.toLin_self]
   dsimp only [Matrix.single, of_apply]
-  simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+  simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
 
 /-- The standard basis of the endomorphism algebra of a module
 induced by a basis of the module.
@@ -1129,6 +1128,7 @@ variable (R : Type*) [CommSemiring R]
 variable (A : Type*) [Semiring A] [Algebra R A]
 variable (M : Type*) [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `M` be an `A`-module. Every `A`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
 are `A`-linear maps `M → M`. In another word, we have `End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
@@ -1162,6 +1162,7 @@ def endVecRingEquivMatrixEnd :
     exact congr_arg₂ _ (by aesop) rfl
   map_add' f g := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `M` be an `A`-module. Every `A`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
 are `R`-linear maps `M → M`. In another word, we have `End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:

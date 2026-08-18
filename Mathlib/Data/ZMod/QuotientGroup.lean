@@ -31,7 +31,7 @@ assert_not_exists Ideal TwoSidedIdeal
 open QuotientAddGroup Set ZMod
 open scoped IsMulCommutative
 
-variable (n : ℕ) {A R : Type*} [AddGroup A] [Ring R]
+variable (n : ℕ) {A : Type*} [AddGroup A]
 
 namespace Int
 
@@ -194,7 +194,7 @@ lemma quotientEquivSigmaZMod_symm_apply (q : orbitRel.Quotient (zpowers g) (G �
 
 lemma quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H)) (k : ℤ) :
     quotientEquivSigmaZMod H g (g ^ k • q.out) = ⟨q, k⟩ := by
-  rw [apply_eq_iff_eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
+  rw [← eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
     zpow_smul_mod_minimalPeriod]
 
 set_option backward.isDefEq.respectTransparency false in

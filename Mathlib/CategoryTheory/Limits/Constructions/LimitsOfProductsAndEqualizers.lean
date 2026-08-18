@@ -51,7 +51,6 @@ variable {F : J ⥤ C} {c₁ : Fan F.obj} {c₂ : Fan fun f : Σ p : J × J, p.1
   (s t : c₁.pt ⟶ c₂.pt)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /--
 (Implementation) Given the appropriate product and equalizer cones, build the cone for `F` which is
 limiting if the given cones are also.
@@ -94,7 +93,6 @@ end HasLimitOfHasProductsOfHasEqualizers
 
 open HasLimitOfHasProductsOfHasEqualizers
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given the existence of the appropriate (possibly finite) products and equalizers,
 we can construct a limit cone for `F`.
 (This assumes the existence of all equalizers, which is technically stronger than needed.)
@@ -155,7 +153,6 @@ variable (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
   [PreservesLimitsOfShape (Discrete.{w} (Σ p : J × J, p.1 ⟶ p.2)) G]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If a functor preserves equalizers and the appropriate products, it preserves limits. -/
 lemma preservesLimit_of_preservesEqualizers_and_product :
     PreservesLimitsOfShape J G where
@@ -226,7 +223,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
 on the specific definition that is used. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def createsLimitsOfShapeOfCreatesEqualizersAndProducts :
     CreatesLimitsOfShape J G where
   CreatesLimit {K} :=
@@ -247,7 +244,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
 on the specific definition that is used. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def createsFiniteLimitsOfCreatesEqualizersAndFiniteProducts [HasEqualizers D]
     [HasFiniteProducts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesLimitsOfShape WalkingParallelPair G]
@@ -260,7 +257,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
 on the specific definition that is used. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def createsLimitsOfSizeOfCreatesEqualizersAndProducts [HasEqualizers D]
     [HasProducts.{w} D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesLimitsOfShape WalkingParallelPair G] [∀ J, CreatesLimitsOfShape (Discrete.{w} J) G] :
@@ -294,7 +291,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
 on the specific definition that is used. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def createsFiniteLimitsOfCreatesTerminalAndPullbacks [HasTerminal D]
     [HasPullbacks D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesLimitsOfShape (Discrete.{0} PEmpty) G] [CreatesLimitsOfShape WalkingCospan G] :
@@ -318,7 +315,6 @@ variable {F : J ⥤ C} {c₁ : Cofan fun f : Σ p : J × J, p.1 ⟶ p.2 => F.obj
   (s t : c₁.pt ⟶ c₂.pt)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Given the appropriate coproduct and coequalizer cocones,
 build the cocone for `F` which is colimiting if the given cocones are also.
 -/
@@ -371,7 +367,6 @@ end HasColimitOfHasCoproductsOfHasCoequalizers
 
 open HasColimitOfHasCoproductsOfHasCoequalizers
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given the existence of the appropriate (possibly finite) coproducts and coequalizers,
 we can construct a colimit cocone for `F`.
 (This assumes the existence of all coequalizers, which is technically stronger than needed.)
@@ -401,6 +396,7 @@ noncomputable def colimitQuotientCoproduct [HasColimitsOfSize.{w, w} C] (F : J �
   have := hasFiniteColimits_of_hasColimitsOfSize C
   coequalizer.π _ _ ≫ (colimit.isoColimitCocone (colimitCoconeOfCoequalizerAndCoproduct F)).inv
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance colimitQuotientCoproduct_epi [HasColimitsOfSize.{w, w} C] (F : J ⥤ C) :
     Epi (colimitQuotientCoproduct F) :=
   epi_comp _ _
@@ -428,7 +424,6 @@ variable (G : C ⥤ D) [PreservesColimitsOfShape WalkingParallelPair G]
   [PreservesColimitsOfShape (Discrete.{w} (Σ p : J × J, p.1 ⟶ p.2)) G]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If a functor preserves coequalizers and the appropriate coproducts, it preserves colimits. -/
 lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     PreservesColimitsOfShape J G where
@@ -502,7 +497,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
 depend on the specific definition that is used. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def createsColimitsOfShapeOfCreatesCoequalizersAndCoproducts :
     CreatesColimitsOfShape J G where
   CreatesColimit {K} :=
@@ -523,7 +518,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
 depend on the specific definition that is used. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def createsFiniteColimitsOfCreatesCoequalizersAndFiniteCoproducts [HasCoequalizers D]
     [HasFiniteCoproducts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesColimitsOfShape WalkingParallelPair G]
@@ -536,7 +531,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
 depend on the specific definition that is used. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def createsColimitsOfSizeOfCreatesCoequalizersAndCoproducts [HasCoequalizers D]
     [HasCoproducts.{w} D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesColimitsOfShape WalkingParallelPair G]
@@ -572,7 +567,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
 depend on the specific definition that is used. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def createsFiniteColimitsOfCreatesInitialAndPushouts [HasInitial D]
     [HasPushouts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesColimitsOfShape (Discrete.{0} PEmpty) G] [CreatesColimitsOfShape WalkingSpan G] :

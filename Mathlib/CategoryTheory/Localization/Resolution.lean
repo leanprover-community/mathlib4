@@ -42,8 +42,6 @@ universe v₁ v₂ v₂' u₁ u₂ u₂'
 
 namespace CategoryTheory
 
-open Category Localization
-
 variable {C₁ C₂ D₁ D₂ H : Type*}
   [Category* C₁] [Category* C₂] [Category* D₁] [Category* D₂] [Category* H]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
@@ -255,6 +253,7 @@ def RightResolution.unopFunctor (X₂ : C₂ᵒᵖ) :
     { f := φ.unop.f.unop
       comm := Quiver.Hom.op_inj φ.unop.comm }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories
 `(Φ.LeftResolution X₂)ᵒᵖ ≌ Φ.op.RightResolution (Opposite.op X₂)`. -/
@@ -326,7 +325,6 @@ lemma hasRightResolutions_of_iso_of_essSurj
     w := e.inv ≫ R.functor.map ρ.w ≫ iso.hom.app _
     hw := (W₂'.arrow_mk_iso_iff (Arrow.isoMk e (iso.app _))).1 (R.map _ ρ.hw) }⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasLeftResolutions_of_iso_of_essSurj
     [R.functor.EssSurj] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.HasLeftResolutions] :
@@ -339,7 +337,6 @@ lemma hasLeftResolutions_of_iso_of_essSurj
     w := iso.inv.app _ ≫ R.functor.map ρ.w ≫ e.hom
     hw := (W₂'.arrow_mk_iso_iff (Arrow.isoMk (iso.app _) e)).1 (R.map _ ρ.hw) }⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasRightResolutions_of_iso_of_essSurj_of_full
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [B.HasRightResolutions] :

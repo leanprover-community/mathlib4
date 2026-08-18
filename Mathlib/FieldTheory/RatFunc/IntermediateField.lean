@@ -85,7 +85,6 @@ theorem natDegree_denom_le_natDegree_minpolyX (hf : ¬∃ c, f = C c) :
     f.denom.natDegree ≤ (f.minpolyX K⟮f⟯).natDegree :=
   le_natDegree_of_ne_zero fun H ↦ hf (f.eq_C_of_minpolyX_coeff_eq_zero congr($(H).val))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem natDegree_num_le_natDegree_minpolyX (hf : ¬∃ c, f = C c) :
     f.num.natDegree ≤ (f.minpolyX K⟮f⟯).natDegree := by
   have f_ne_zero : f ≠ 0 := by

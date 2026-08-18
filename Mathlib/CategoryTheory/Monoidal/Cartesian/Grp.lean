@@ -30,7 +30,7 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- If `X` represents a presheaf of additive monoids, then `X` is an additive monoid object. -/]
 def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     GrpObj X where
@@ -91,6 +91,9 @@ lemma GrpObj.ofRepresentableBy_yonedaGrpObjRepresentableBy :
     ofRepresentableBy G _ (yonedaGrpObjRepresentableBy G) = ‹GrpObj G› := by
   ext; change lift (fst G G) (snd G G) ≫ μ = μ; rw [lift_fst_snd, Category.id_comp]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 variable (X) in
 /-- If `X` represents a presheaf of groups `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of groups. -/
@@ -116,6 +119,9 @@ def yonedaGrp : Grp C ⥤ Cᵒᵖ ⥤ GrpCat.{v} where
   obj G := yonedaGrpObj G.X
   map {G H} ψ := { app Y := GrpCat.ofHom ((yonedaMon.map ψ.hom).app Y).hom }
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive (attr := reassoc)]
 lemma yonedaGrp_naturality (α : yonedaGrpObj G ⟶ yonedaGrpObj H) (f : X ⟶ Y) (g : Y ⟶ G) :
     α.app _ (f ≫ g) = f ≫ α.app _ g := congr($(α.naturality f.op) g)
@@ -284,10 +290,6 @@ lemma hom_hom_div (f g : G ⟶ H) : (f / g).hom.hom = f.hom.hom / g.hom.hom := r
 @[to_additive (attr := simp)]
 lemma hom_hom_zpow (f : G ⟶ H) (n : ℤ) : (f ^ n).hom.hom = f.hom.hom ^ n := by
   cases n <;> simp
-
-@[deprecated (since := "2025-12-18")] alias hom_inv := hom_hom_inv
-@[deprecated (since := "2025-12-18")] alias hom_div := hom_hom_div
-@[deprecated (since := "2025-12-18")] alias hom_zpow := hom_hom_zpow
 
 end Hom
 

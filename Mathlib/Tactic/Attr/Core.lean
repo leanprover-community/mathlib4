@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 import Mathlib.Tactic.Attr.Register
+public import Std.Data.DTreeMap.Internal.Operations
 
 /-!
 # Simp tags for core lemmas
