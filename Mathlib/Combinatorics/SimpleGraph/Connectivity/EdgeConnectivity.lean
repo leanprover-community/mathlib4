@@ -202,6 +202,7 @@ theorem IsEdgeReachable.le_edgeReachability (h : G.IsEdgeReachable k u v) :
 theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
   le_iSup₂ (α := ℕ∞) k h
 
+@[simp]
 theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnectivity = ⊤ := by
   simpa [edgeConnectivity, IsEdgeConnected, IsEdgeReachable] using ENat.iSup_natCast
 
