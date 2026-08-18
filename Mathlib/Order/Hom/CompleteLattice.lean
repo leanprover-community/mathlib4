@@ -136,7 +136,7 @@ instance (priority := 100) sSupHomClass.toSupBotHomClass [CompleteLattice α]
   { ‹sSupHomClass F α β› with
     map_sup := fun f a b => by
       rw [← sSup_pair, map_sSup]
-      simp only [Set.image_pair, sSup_insert, sSup_singleton]
+      simp
     map_bot := fun f => by
       rw [← sSup_empty, map_sSup, Set.image_empty, sSup_empty] }
 
@@ -652,7 +652,6 @@ def sSupHom.setImage (f : α → β) : sSupHom (Set α) (Set β) where
   toFun := image f
   map_sSup' := Set.image_sSup
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of types yields an order isomorphism between their lattices of subsets. -/
 @[simps]
 def Equiv.toOrderIsoSet (e : α ≃ β) : Set α ≃o Set β where
