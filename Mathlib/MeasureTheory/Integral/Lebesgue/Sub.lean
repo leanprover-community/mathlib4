@@ -171,7 +171,7 @@ theorem exists_setLIntegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a
   calc
     ∫⁻ a in (support g)ᶜ, f a ∂μ
       = ∫⁻ a in (support g)ᶜ, f a - g a ∂μ := setLIntegral_congr_fun
-      (measurableSet_support hg_meas).compl <| by intro; simp_all
+      (measurableSet_support hg_meas).nullMeasurableSet.compl <| by intro; simp_all
     _ ≤ ∫⁻ a, f a - g a ∂μ := setLIntegral_le_lintegral _ _
     _ = ∫⁻ a, f a ∂μ - ∫⁻ a, g a ∂μ :=
       lintegral_sub hg_meas (ne_top_of_le_ne_top hf <| lintegral_mono hgf) (ae_of_all _ hgf)
@@ -181,7 +181,7 @@ theorem exists_setLIntegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a
 /-- For any function `f : α → ℝ≥0∞`, there exists a measurable function `g ≤ f` with the same
 integral over any measurable set. -/
 theorem exists_measurable_le_setLIntegral_eq_of_integrable {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞) :
-    ∃ (g : α → ℝ≥0∞), Measurable g ∧ g ≤ f ∧ ∀ s : Set α, MeasurableSet s →
+    ∃ (g : α → ℝ≥0∞), Measurable g ∧ g ≤ f ∧ ∀ s : Set α, NullMeasurableSet s μ →
       ∫⁻ a in s, f a ∂μ = ∫⁻ a in s, g a ∂μ := by
   obtain ⟨g, hmg, hgf, hifg⟩ := exists_measurable_le_lintegral_eq (μ := μ) f
   use g, hmg, hgf

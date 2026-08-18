@@ -199,21 +199,29 @@ theorem MemLp.of_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : Me
 
 end Monotonicity
 
-theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (C : ℝ≥0) {s : Set α}
-    (hs : MeasurableSet s) (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖₊) :
-    C • μ s ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
-  rw [ENNReal.smul_def, smul_eq_mul, eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp',
+theorem le_eLpNorm_of_bddBelow' (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (C : ℝ≥0∞) {s : Set α}
+    (hs : NullMeasurableSet s μ) (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖ₑ) :
+    C * μ s ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
+  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp',
     one_div, ENNReal.le_rpow_inv_iff (ENNReal.toReal_pos hp hp'),
     ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg, ← ENNReal.rpow_mul,
-    inv_mul_cancel₀ (ENNReal.toReal_pos hp hp').ne', ENNReal.rpow_one, ← setLIntegral_const,
-    ← lintegral_indicator hs]
-  refine lintegral_mono_ae ?_
+    inv_mul_cancel₀ (ENNReal.toReal_pos hp hp').ne', ENNReal.rpow_one, ← setLIntegral_const]
+  apply (lintegral_mono_ae _).trans (setLIntegral_le_lintegral s _)
+  rw [← ae_restrict_iff'₀ hs] at hf
   filter_upwards [hf] with x hx
-  by_cases hxs : x ∈ s
-  · simp only [Set.indicator_of_mem, hxs, true_implies] at hx ⊢
-    gcongr
-    rwa [coe_le_enorm]
-  · simp [Set.indicator_of_notMem hxs]
+  exact ENNReal.rpow_le_rpow hx ENNReal.toReal_nonneg
+
+theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (C : ℝ≥0) {s : Set α}
+    (hs : NullMeasurableSet s μ) (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖₊) :
+    C • μ s ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
+  rw [ENNReal.smul_def, smul_eq_mul]
+  apply le_eLpNorm_of_bddBelow' hp hp' C hs
+  filter_upwards [hf] with x hx hxs
+  rcases eq_top_or_lt_top ‖f x‖ₑ with hxf | hxf
+  · exact hxf ▸ le_top
+  specialize hx hxs
+  rwa [← toNNReal_enorm, ← ENNReal.toNNReal_coe C,
+    ENNReal.toNNReal_le_toNNReal ENNReal.coe_ne_top hxf.ne] at hx
 
 section Star
 

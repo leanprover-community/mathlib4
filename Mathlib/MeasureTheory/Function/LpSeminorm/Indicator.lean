@@ -35,7 +35,7 @@ variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
   {c : ε} {hf : AEStronglyMeasurable f μ} {s : Set α}
   {ε' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
 
-lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : MeasurableSet s) :
+lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : NullMeasurableSet s μ) :
     eLpNorm (s.indicator f) p μ = eLpNorm f p (μ.restrict s) := by
   by_cases hp_zero : p = 0
   · simp only [hp_zero, eLpNorm_exponent_zero]
@@ -43,14 +43,14 @@ lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : M
   · simp_rw [hp_top, eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm,
        enorm_indicator_eq_indicator_enorm, ENNReal.essSup_indicator_eq_essSup_restrict hs]
   simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_zero hp_top]
-  rw [← lintegral_indicator hs]
+  rw [← lintegral_indicator₀ hs]
   congr
   simp_rw [enorm_indicator_eq_indicator_enorm]
   rw [eq_comm, ← Function.comp_def (fun x : ℝ≥0∞ => x ^ p.toReal), Set.indicator_comp_of_zero,
     Function.comp_def]
   simp [ENNReal.toReal_pos hp_zero hp_top]
 
-lemma eLpNormEssSup_indicator_eq_eLpNormEssSup_restrict (hs : MeasurableSet s) :
+lemma eLpNormEssSup_indicator_eq_eLpNormEssSup_restrict (hs : NullMeasurableSet s μ) :
     eLpNormEssSup (s.indicator f) μ = eLpNormEssSup f (μ.restrict s) := by
   simp_rw [← eLpNorm_exponent_top, eLpNorm_indicator_eq_eLpNorm_restrict hs]
 
@@ -132,11 +132,12 @@ lemma MemLp.indicator {f : α → ε} (hs : MeasurableSet s) (hf : MemLp f p μ)
     MemLp (s.indicator f) p μ :=
   ⟨hf.aestronglyMeasurable.indicator hs, lt_of_le_of_lt (eLpNorm_indicator_le f) (by finiteness)⟩
 
-lemma memLp_indicator_iff_restrict {f : α → ε} (hs : MeasurableSet s) :
+lemma memLp_indicator_iff_restrict {f : α → ε} (hs : NullMeasurableSet s μ) :
     MemLp (s.indicator f) p μ ↔ MemLp f p (μ.restrict s) := by
-  simp [MemLp, aestronglyMeasurable_indicator_iff hs, eLpNorm_indicator_eq_eLpNorm_restrict hs]
+  simp [MemLp, aestronglyMeasurable_indicator_iff₀ hs, eLpNorm_indicator_eq_eLpNorm_restrict hs]
 
-lemma memLp_indicator_const (p : ℝ≥0∞) (hs : MeasurableSet s) (c : E) (hμsc : c = 0 ∨ μ s ≠ ∞) :
+lemma memLp_indicator_const (p : ℝ≥0∞) (hs : NullMeasurableSet s μ) (c : E)
+    (hμsc : c = 0 ∨ μ s ≠ ∞) :
     MemLp (s.indicator fun _ => c) p μ := by
   rw [memLp_indicator_iff_restrict hs]
   obtain rfl | hμ := hμsc
@@ -144,19 +145,19 @@ lemma memLp_indicator_const (p : ℝ≥0∞) (hs : MeasurableSet s) (c : E) (hμ
   · have := Fact.mk hμ.lt_top
     apply memLp_const
 
-lemma eLpNormEssSup_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
-    eLpNormEssSup (Set.piecewise s f g) μ
+lemma eLpNormEssSup_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : NullMeasurableSet s μ) :
+    eLpNormEssSup (s.piecewise f g) μ
       = max (eLpNormEssSup f (μ.restrict s)) (eLpNormEssSup g (μ.restrict sᶜ)) := by
   simp only [eLpNormEssSup, ← ENNReal.essSup_piecewise hs]
   congr with x
   by_cases hx : x ∈ s <;> simp [hx]
 
-lemma eLpNorm_top_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
-    eLpNorm (Set.piecewise s f g) ∞ μ
+lemma eLpNorm_top_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : NullMeasurableSet s μ) :
+    eLpNorm (s.piecewise f g) ∞ μ
       = max (eLpNorm f ∞ (μ.restrict s)) (eLpNorm g ∞ (μ.restrict sᶜ)) :=
   eLpNormEssSup_piecewise f g hs
 
-protected lemma MemLp.piecewise {f : α → ε} [DecidablePred (· ∈ s)] {g} (hs : MeasurableSet s)
+protected lemma MemLp.piecewise {f g : α → ε} [DecidablePred (· ∈ s)] (hs : NullMeasurableSet s μ)
     (hf : MemLp f p (μ.restrict s)) (hg : MemLp g p (μ.restrict sᶜ)) :
     MemLp (s.piecewise f g) p μ := by
   by_cases hp_zero : p = 0
@@ -221,7 +222,7 @@ theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup
       · exact ((eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp₀ hp_top).1 hf.2).ne
       · simp [*]
     refine ⟨s, hsm, hs, ?_⟩
-    rwa [eLpNorm_indicator_eq_eLpNorm_restrict hsm.compl,
+    rwa [eLpNorm_indicator_eq_eLpNorm_restrict hsm.nullMeasurableSet.compl,
       eLpNorm_eq_lintegral_rpow_enorm_toReal hp₀ hp_top, one_div, ENNReal.rpow_inv_lt_iff]
     simp [ENNReal.toReal_pos, *]
 
