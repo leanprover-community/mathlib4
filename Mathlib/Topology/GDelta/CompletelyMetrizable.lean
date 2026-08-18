@@ -84,3 +84,5 @@ theorem isGδ {s : Set X} (hs : IsCompletelyMetrizableSpace s) : IsGδ s := by
         (continuous_subtype_val.continuousAt.mono_left hy)
     rw [hxy]
     exact Subtype.coe_prop y
+
+end TopologicalSpace.IsCompletelyMetrizableSpace
