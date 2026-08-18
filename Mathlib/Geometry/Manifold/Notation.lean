@@ -524,9 +524,9 @@ where
           "Couldn't find a `ModelWithCorners` with model space `{H}` in the local context."
         -- As last alternatives, check if `H` is Euclidean half-space, a Euclidean quadrant,
         -- Euclidean space, a normed space or a normed field.
-        match (← tryFromEuclideanSpace H) with
-        | some m => return m
-        | none =>
+        if let some m ← tryFromEuclideanSpace H then
+          return m
+        else
           trace[Elab.DiffGeo.MDiff] "`{H}` is not a Euclidean space, half-space or quadrant"
           let a ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
             match_expr type with
@@ -554,9 +554,8 @@ where
     mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
   /-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant -/
   fromEuclideanSpace : TermElabM Expr := do
-    match (← tryFromEuclideanSpace e) with
-    | some m => return m
-    | _ => throwError "`{e}` is not a Euclidean space, half-space or quadrant"
+    if let some m ← tryFromEuclideanSpace e then return m else
+    throwError "`{e}` is not a Euclidean space, half-space or quadrant"
   /-- Attempt to find a model with corners on a closed interval of real numbers,
   or on the unit interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
