@@ -349,10 +349,10 @@ theorem Filter.HasBasis.iInter_closure_mul_right_eq_closure {ι : Type*} {s : Se
     have h1 := (mem_of_mem_nhds (hU.mem_of_mem hi))
     exact closure_mono fun a ha ↦ by simpa using Set.mul_mem_mul ha h1
 
-/-- In a topological group, the closure of a set `s` is the intersection of `closure (s * U)` where
+/-- In a topological group, the closure of a set `s` is the intersection of `closure (U * s)` where
 `U` ranges over any basis of `𝓝 1`. -/
 @[to_additive /-- In a topological additive group, the closure of a set `s` is the intersection of
-`closure (s + U)` where `U` ranges over any basis of `𝓝 0`. -/]
+`closure (U + s)` where `U` ranges over any basis of `𝓝 0`. -/]
 theorem Filter.HasBasis.iInter_closure_mul_left_eq_closure {ι : Type*} {s : Set G}
     {p : ι → Prop} {U : ι → Set G} (hU : (𝓝 1).HasBasis p U) :
     ⋂ (i) (_ : p i), closure (U i * s) = closure s := by

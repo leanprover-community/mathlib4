@@ -835,14 +835,14 @@ theorem Filter.HasBasis.nhds_of_one {ι : Sort*} {p : ι → Prop} {s : ι → S
 
 @[to_additive]
 theorem Filter.HasBasis.nhds_of_one' {ι : Sort*} {p : ι → Prop} {s : ι → Set G}
-    (hb : (nhds 1).HasBasis p s) (x : G) :
+    (hb : (𝓝 1).HasBasis p s) (x : G) :
     (𝓝 x).HasBasis p fun i ↦ x • (s i) := by
   rw [← map_mul_left_nhds_one x]
   exact hb.map (x * ·)
 
 @[to_additive]
 theorem Filter.HasBasis.nhds_one_inv {ι : Sort*} {p : ι → Prop} {U : ι → Set G}
-    (hU : (𝓝 (1 : G)).HasBasis p U) : (𝓝 1).HasBasis p fun i ↦ (U i)⁻¹ := by
+    (hU : (𝓝 1).HasBasis p U) : (𝓝 1).HasBasis p fun i ↦ (U i)⁻¹ := by
   simpa [← nhds_inv] using hU.inv
 
 @[to_additive]
