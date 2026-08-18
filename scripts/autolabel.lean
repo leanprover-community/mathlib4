@@ -446,7 +446,7 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
       println s!"::notice::used title to find labels"
       modifiedFiles := paths
   if modifiedFiles.isEmpty then
-      println s!"::notice::used diff to find labels"
+    println s!"::notice::used diff to find labels"
     let gitDiff ← IO.Process.run {
       cmd := "git",
       args := #["diff", "--name-only", "origin/master...HEAD"] }
@@ -512,8 +512,9 @@ def autolabel : Cli.Cmd := `[Cli|
     "curl" : String; "apply label(s) using `curl`. \
                       Usage: `lake exe autolabel --pr 20156 --curl <ACCESS_TOKEN>`. \
                       (currently, this implies `--force`)"
-    "title": String; "Provided a PR title following the mathlib convention, it will try to
-                      extract a folder name from it and use it instead of looking at the git diff"
+    "title": String; "Provided a PR title following the mathlib convention \
+                      (e.g. \"xxx(Folder/Or/File,Another/One): yada yada\"), it will try to \
+                      extract a folder name from it and use it instead of looking at the git diff."
     "force";         "apply labels even if there are already labels on the PR."
 ]
 
