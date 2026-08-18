@@ -2239,6 +2239,7 @@ public import Mathlib.Analysis.Normed.Module.RCLike.Extend
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Analysis.Normed.Module.Ray
 public import Mathlib.Analysis.Normed.Module.RieszLemma
+public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Analysis.Normed.Module.Span
 public import Mathlib.Analysis.Normed.Module.TransferInstance
@@ -4005,6 +4006,7 @@ public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Data.Finsupp.PWO
 public import Mathlib.Data.Finsupp.Pointwise
 public import Mathlib.Data.Finsupp.PointwiseSMul
+public import Mathlib.Data.Finsupp.Quotient
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.Data.Finsupp.Sigma
@@ -6533,6 +6535,7 @@ public import Mathlib.RingTheory.Bialgebra.Equiv
 public import Mathlib.RingTheory.Bialgebra.GroupLike
 public import Mathlib.RingTheory.Bialgebra.Hom
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
+public import Mathlib.RingTheory.Bialgebra.Primitive
 public import Mathlib.RingTheory.Bialgebra.Quotient
 public import Mathlib.RingTheory.Bialgebra.SymmetricAlgebra
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
@@ -6549,6 +6552,7 @@ public import Mathlib.RingTheory.Coalgebra.GroupLike
 public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Coalgebra.MulOpposite
+public import Mathlib.RingTheory.Coalgebra.Primitive
 public import Mathlib.RingTheory.Coalgebra.Quotient
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 public import Mathlib.RingTheory.Complex
@@ -6696,6 +6700,7 @@ public import Mathlib.RingTheory.HopfAlgebra.Basic
 public import Mathlib.RingTheory.HopfAlgebra.Convolution
 public import Mathlib.RingTheory.HopfAlgebra.GroupLike
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
+public import Mathlib.RingTheory.HopfAlgebra.Primitive
 public import Mathlib.RingTheory.HopfAlgebra.Quotient
 public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 public import Mathlib.RingTheory.HopkinsLevitzki
@@ -6888,6 +6893,7 @@ public import Mathlib.RingTheory.MvPowerSeries.Equiv
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.MvPowerSeries.Expand
 public import Mathlib.RingTheory.MvPowerSeries.GaussNorm
+public import Mathlib.RingTheory.MvPowerSeries.Ideal
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
 public import Mathlib.RingTheory.MvPowerSeries.LexOrder
 public import Mathlib.RingTheory.MvPowerSeries.LinearTopology
@@ -7365,6 +7371,11 @@ public import Mathlib.Tactic.Determinant.Bird.Cert
 public import Mathlib.Tactic.Determinant.Bird.Meta
 public import Mathlib.Tactic.DuplicateDecls
 public import Mathlib.Tactic.ENatToNat
+public import Mathlib.Tactic.Echelon.Bareiss
+public import Mathlib.Tactic.Echelon.Core
+public import Mathlib.Tactic.Echelon.Parsing
+public import Mathlib.Tactic.Echelon.Rat
+public import Mathlib.Tactic.Echelon.Zsqrtd
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ErwQuestion
 public import Mathlib.Tactic.Eval
@@ -7513,6 +7524,7 @@ public import Mathlib.Tactic.NormNum.PowMod
 public import Mathlib.Tactic.NormNum.Prime
 public import Mathlib.Tactic.NormNum.RealSqrt
 public import Mathlib.Tactic.NormNum.Result
+public import Mathlib.Tactic.NormRank
 public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.Observe
 public import Mathlib.Tactic.OfNat
