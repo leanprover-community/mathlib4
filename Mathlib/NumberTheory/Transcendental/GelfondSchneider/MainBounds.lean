@@ -10,6 +10,16 @@ module
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainHol
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Analytic
 
+/-!
+# Gelfond-Schneider: the analytic upper bound
+
+Cauchy's estimate bounds `‖N ρ‖` above by `c₁₅ ^ (-r)`; with the algebraic lower bound of
+`MainPostAnalytic` this is the contradiction proving the theorem.
+
+## References
+* Loo-Keng Hua, Introduction to Number Theory, Springer, 1982. Chapter 17.9.
+-/
+
 @[expose] public section
 
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional
@@ -35,7 +45,8 @@ variable (h2mq : 2 * m K ∣ q ^ 2)
 variable [DecidableEq (K →+* ℂ)]
 
 /-- The constant `exp (|1 + ‖β‖| * ‖log α‖ * m)`. -/
-def c₉ (K : Type) [Field K] [NumberField K] : ℝ := Real.exp (|1 + ‖β‖| *  ‖Complex.log α‖ * (↑(m K) : ℝ))
+def c₉ (K : Type) [Field K] [NumberField K] : ℝ := Real.exp (|1 + ‖β‖| *  ‖Complex.log α‖ * (↑(m K)
+    : ℝ))
 
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
@@ -67,12 +78,14 @@ lemma c11_nonneg : 0 ≤ (c₁₁ K) := le_trans zero_le_one (one_le_c11 α β �
 
 variable [DecidableEq (K →+* ℂ)]
 
-variable {z : ℂ} {l₀ : ℝ} (hz : (z : ℂ) ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq / q))))
+variable {z : ℂ} {l₀ : ℝ} (hz : (z : ℂ) ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ α' β' γ' hirr
+    htriv habc) q hq0 h2mq / q))))
   (hl0 : (l₀ : ℝ) < ((m K) : ℝ) * (1 + (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq / q))
 
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
-lemma norm_hz (hz : z ∈ Metric.sphere 0 (((m K) : ℝ) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)))) :
+lemma norm_hz (hz : z ∈ Metric.sphere 0 (((m K) : ℝ) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q
+    hq0 h2mq : ℝ) / (q : ℝ)))) :
     ‖z‖ ≤ ‖((m K) : ℝ)‖ * ‖1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q: ℝ)‖ := by
   simp only [mem_sphere_iff_norm, sub_zero] at hz
   rw [hz, ← norm_mul, Real.norm_eq_abs]
@@ -83,18 +96,25 @@ lemma norm_hz (hz : z ∈ Metric.sphere 0 (((m K) : ℝ) * (1 + ((r α β σ α'
 include hz in
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
-lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) ≤ (q * q) * (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
-    ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) ^ ((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ ) + 1) / 2)) *
+lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) ≤ (q * q) * (((c₄ α' β' γ')
+    ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
+    ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) ^ ((((r α β σ α' β' γ' hirr htriv habc) q hq0
+        h2mq : ℝ ) + 1) / 2)) *
     ((c₉ α β K)) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + q : ℝ)) := by
   calc _ ≤ ∑ t, ((house ((((algebraMap (𝓞 K) K)
-             (((η (K := K) α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) t))))) * ‖cexp ((ρ α β) q t * z)‖) := ?_
-       _ ≤ ∑ t : Fin (q*q), ((c₄ α' β' γ') ^ ((n K) q : ℝ)) * ((n K) q : ℝ) ^ ((((n K) q : ℝ) + 1) / 2)
+             (((η (K := K) α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)
+                 t))))) * ‖cexp ((ρ α β) q t * z)‖) := ?_
+       _ ≤ ∑ t : Fin (q*q), ((c₄ α' β' γ') ^ ((n K) q : ℝ)) * ((n K) q : ℝ) ^ ((((n K) q : ℝ) + 1) /
+           2)
            * Real.exp ‖((ρ α β) q t * z)‖ := ?_
-       _ ≤ ∑ t : Fin (q*q), ((c₄ α' β' γ') ^ ((n K) q : ℝ)) * ((n K) q : ℝ) ^ ((((n K) q : ℝ) + 1) / 2) *
+       _ ≤ ∑ t : Fin (q*q), ((c₄ α' β' γ') ^ ((n K) q : ℝ)) * ((n K) q : ℝ) ^ ((((n K) q : ℝ) + 1) /
+           2) *
            Real.exp (norm ((q : ℝ) * (1 + norm β) * ‖Complex.log α‖ * ((m K) : ℝ) *
            ((1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ))))) := ?_
-       _ ≤ (q * q) * (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) ^
-           ((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ ) + 1) / 2)) * ((c₉ α β K)) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + q : ℝ)) := ?_
+       _ ≤ (q * q) * (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * ((r α β
+           σ α' β' γ' hirr htriv habc) q hq0 h2mq) ^
+           ((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ ) + 1) / 2)) * ((c₉ α β K)) ^ ((r α
+               β σ α' β' γ' hirr htriv habc) q hq0 h2mq + q : ℝ)) := ?_
   · unfold R
     simp only [canonicalEmbedding.apply_at]
     trans
@@ -172,9 +192,12 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
         · simp only [Real.rpow_natCast]
           refine Bound.pow_le_pow_right_of_le_one_or_one_le ?_
           left
-          exact ⟨one_le_c₄ α β σ α' β' γ' hirr htriv habc, n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq⟩
-        · calc _ ≤ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ ((((n K) q : ℝ) + 1) / 2) := ?_
-               _ ≤ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ ((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :ℝ) + 1) / 2) := ?_
+          exact ⟨one_le_c₄ α β σ α' β' γ' hirr htriv habc, n_le_r α β σ α' β' γ' hirr htriv habc q
+              hq0 h2mq⟩
+        · calc _ ≤ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ ((((n K) q : ℝ) + 1) /
+            2) := ?_
+               _ ≤ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ ((((r α β σ α' β' γ' hirr
+                   htriv habc) q hq0 h2mq :ℝ) + 1) / 2) := ?_
           · apply Real.rpow_le_rpow
             · simp only [Nat.cast_nonneg]
             · simp only [Nat.cast_le]; exact n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
@@ -192,18 +215,21 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
               · simp only [add_le_add_iff_right, Nat.cast_le]
                 exact n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
         · apply Real.rpow_nonneg; simp only [Nat.cast_nonneg]
-        · apply Real.rpow_nonneg; exact le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc))
+        · apply Real.rpow_nonneg; exact le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv
+            habc))
       · rw [Real.rpow_def_of_pos (x:= (c₉ α β K))]
         · calc _ ≤ Real.exp ( |1 + ‖β‖| *  ‖Complex.log α‖ * (↑(m K)) *
                    |(q : ℝ) * (1 + ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) / ↑q)|) := ?_
-               _ ≤ Real.exp (Real.log (c₉ α β K) * (↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) + ↑q)) := ?_
+               _ ≤ Real.exp (Real.log (c₉ α β K) * (↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)
+                   + ↑q)) := ?_
 
           · simp only [Real.exp_le_exp]
             rw [norm_mul];rw [norm_mul];rw [norm_mul];rw [norm_mul]
             have : ‖(q : ℝ)‖ * ‖1 + ‖β‖‖ *  ‖‖Complex.log α‖‖ * ‖((m K) : ℝ)‖ *
                    ‖(1 + ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ))‖ =
                    ‖1 + ‖β‖‖ *  ‖‖Complex.log α‖‖ * ‖((m K) : ℝ)‖ *
-                   ‖(q : ℝ)‖ * ‖(1 + ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ))‖ := by
+                   ‖(q : ℝ)‖ * ‖(1 + ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q :
+                       ℝ))‖ := by
                 simp only [Real.norm_eq_abs, mul_eq_mul_right_iff, abs_eq_zero]
                 left
                 rw [mul_assoc, mul_assoc, mul_comm]
@@ -228,7 +254,8 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
             rw [this]
             simp
           · simp only [mul_assoc, Real.exp_le_exp]
-            have : |(((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) + q : ℝ)| = (↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) + ↑q) := by
+            have : |(((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) + q : ℝ)| = (↑((r α β σ α' β'
+                γ' hirr htriv habc) q hq0 h2mq) + ↑q) := by
               simp only [abs_eq_self]; positivity
             rw [← this]
             simp only [c₉, Real.log_exp, mul_assoc]
@@ -264,7 +291,8 @@ include α β σ α' β' γ' hirr htriv habc in
 lemma c10_nonneg : 0 ≤ (c₁₀ α β α' β' γ') := by
   unfold c₁₀
   apply mul_nonneg (mul_nonneg (mul_nonneg (by positivity)
-      (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc)))) (c9_nonneg α β σ α' β' γ' hirr htriv habc))
+      (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv
+          habc)))) (c9_nonneg α β σ α' β' γ' hirr htriv habc))
   · apply Real.rpow_nonneg; exact c9_nonneg α β σ α' β' γ' hirr htriv habc
 
 include α β σ α' β' γ' hirr htriv habc in
@@ -274,45 +302,60 @@ lemma one_le_c10 : 1 ≤ (c₁₀ α β α' β' γ') := by
   have hm : (1 : ℝ) ≤ (m K) := by exact_mod_cast (one_le_m K)
   have h1 : (1 : ℝ) ≤ (2 : ℝ) * (m K) := by nlinarith
   have h2 : 1 ≤ (2 : ℝ) * (m K) * (c₄ α' β' γ') := by
-    simpa [mul_assoc] using one_le_mul_of_one_le_of_one_le h1 (one_le_c₄ α β σ α' β' γ' hirr htriv habc)
+    simpa [mul_assoc] using one_le_mul_of_one_le_of_one_le h1 (one_le_c₄ α β σ α' β' γ' hirr htriv
+        habc)
   have h3 : 1 ≤ (2 : ℝ) * (m K) * (c₄ α' β' γ') * (c₉ α β K) := by
-    simpa [mul_assoc] using one_le_mul_of_one_le_of_one_le h2 (c9_gt_1 α β σ α' β' γ' hirr htriv habc)
+    simpa [mul_assoc] using one_le_mul_of_one_le_of_one_le h2 (c9_gt_1 α β σ α' β' γ' hirr htriv
+        habc)
   have h4 : 1 ≤ (c₉ α β K) ^ (2 * (m K) : ℝ) := by
     exact Real.one_le_rpow ((c9_gt_1 α β σ α' β' γ' hirr htriv habc)) (by positivity)
   simpa [mul_assoc] using one_le_mul_of_one_le_of_one_le h3 h4
 
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
-lemma abs_R : (q * q) * (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) ^
-      ((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ ) + 1) / 2)) * ((c₉ α β K)) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + q : ℝ)) ≤
-      ((c₁₀ α β α' β' γ'))^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^
+lemma abs_R : (q * q) * (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * ((r
+    α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) ^
+      ((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ ) + 1) / 2)) * ((c₉ α β K)) ^ ((r α β σ
+          α' β' γ' hirr htriv habc) q hq0 h2mq + q : ℝ)) ≤
+      ((c₁₀ α β α' β' γ'))^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * ((r α β σ α' β' γ'
+          hirr htriv habc) q hq0 h2mq : ℝ) ^
       (1/2 * (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) + 3 : ℝ)) := by
-    calc _ ≤ (2 * (m K) : ℝ )^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)*
-             (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^
-             ((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) + 1) / 2)) * ((c₉ α β K)) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + q : ℝ)) := ?_
-         _ ≤ ((c₁₀ α β α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^
+    calc _ ≤ (2 * (m K) : ℝ )^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *((r α β σ α' β'
+        γ' hirr htriv habc) q hq0 h2mq : ℝ)*
+             (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * ((r α β σ α' β'
+                 γ' hirr htriv habc) q hq0 h2mq : ℝ) ^
+             ((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) + 1) / 2)) * ((c₉ α β K)) ^ ((r α
+                 β σ α' β' γ' hirr htriv habc) q hq0 h2mq + q : ℝ)) := ?_
+         _ ≤ ((c₁₀ α β α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) * ((r α β σ
+             α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^
              (1/2 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 3) : ℝ) := ?_
     · apply mul_le_mul (eq6b.extracted_1_1 α β σ α' β' γ' hirr htriv habc q hq0 h2mq) le_rfl ?_ (by positivity)
-      (apply mul_nonneg (mul_nonneg (Real.rpow_nonneg (le_trans zero_le_one (one_le_c₄ α β σ α' β' γ' hirr htriv habc)) _)
+      (apply mul_nonneg (mul_nonneg (Real.rpow_nonneg (le_trans zero_le_one (one_le_c₄ α β σ α' β'
+          γ' hirr htriv habc)) _)
         (by positivity)) (Real.rpow_nonneg (c9_nonneg α β σ α' β' γ' hirr htriv habc) _))
     · unfold c₁₀
       nth_rw 2 [Real.mul_rpow _ (by apply Real.rpow_nonneg (c9_nonneg α β σ α' β' γ' hirr htriv habc) ((2 * ↑(m K) : ℝ)))]
       · nth_rw 2 [Real.mul_rpow _ (by grind [c9_nonneg α β σ α' β' γ' hirr htriv habc])]
         · nth_rw 2 [Real.mul_rpow (by positivity) (by apply le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc)))]
-          · simp only [← mul_assoc, mul_assoc ((2*(m K) : ℝ) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))
-                ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)),
-                mul_comm ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))]
+          · simp only [← mul_assoc, mul_assoc ((2*(m K) : ℝ) ^ ((r α β σ α' β' γ' hirr htriv habc) q
+              hq0 h2mq : ℝ))
+                ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ((c₄ α' β' γ') ^ ((r α β σ α' β'
+                    γ' hirr htriv habc) q hq0 h2mq : ℝ)),
+                mul_comm ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ((c₄ α' β' γ') ^ ((r α
+                    β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))]
             simp only [mul_assoc]; nth_rw 3 [← mul_assoc]
             apply mul_le_mul (by rfl) ?_ ?_ (by positivity)
             · apply mul_le_mul (by simp) ?_
                 (mul_nonneg (by positivity) (Real.rpow_nonneg (c9_nonneg α β σ α' β' γ' hirr htriv habc) _))
-                (Real.rpow_nonneg (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc))) _)
+                (Real.rpow_nonneg (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv
+                    habc))) _)
               · rw [Real.rpow_add (by grind [c9_pos α β σ α' β' γ' hirr htriv habc]), mul_comm, mul_assoc]
                 · apply mul_le_mul (by rfl) ?_ ?_ (Real.rpow_nonneg (c9_nonneg α β σ α' β' γ' hirr htriv habc) _)
                   · apply mul_le_mul ?_ ?_ (by positivity)
                       (by apply Real.rpow_nonneg (Real.rpow_nonneg (c9_nonneg α β σ α' β' γ' hirr htriv habc) _) _)
                     · rw [← Real.rpow_mul (c9_nonneg α β σ α' β' γ' hirr htriv habc)]
-                      · apply Real.rpow_le_rpow_of_exponent_le (c9_gt_1 α β σ α' β' γ' hirr htriv habc)
+                      · apply Real.rpow_le_rpow_of_exponent_le (c9_gt_1 α β σ α' β' γ' hirr htriv
+                          habc)
                         · exact mod_cast le_trans (q_le_two_mn q h2mq)
                            (mul_le_mul (by rfl) (n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (by positivity)
                            (by positivity))
@@ -323,7 +366,8 @@ lemma abs_R : (q * q) * (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htr
                       · simp; grind [r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq]
                   · apply mul_nonneg (Real.rpow_nonneg (c9_nonneg α β σ α' β' γ' hirr htriv habc) _) (mul_nonneg (by simp)
                       (by apply Real.rpow_nonneg (by simp)))
-            · apply mul_nonneg (Real.rpow_nonneg (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc))) _)
+            · apply mul_nonneg (Real.rpow_nonneg (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ'
+                hirr htriv habc))) _)
                (mul_nonneg (by positivity) (Real.rpow_nonneg (c9_nonneg α β σ α' β' γ' hirr htriv habc) _))
         · apply mul_nonneg (by positivity) (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc)))
       · apply mul_nonneg (mul_nonneg (by positivity) (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc))))
@@ -332,10 +376,13 @@ lemma abs_R : (q * q) * (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htr
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
 lemma norm_sub_l0_lower_bound_on_sphere
-    (hz : z ∈ Metric.sphere 0 (((m K) : ℝ) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)))) :
-    ((m K) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) / (q : ℝ) ≤ ‖z - (((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1)‖ := by
+    (hz : z ∈ Metric.sphere 0 (((m K) : ℝ) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :
+        ℝ) / (q : ℝ)))) :
+    ((m K) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) / (q : ℝ) ≤ ‖z - (((l₀' α β σ α'
+        β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1)‖ := by
   calc ((m K) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) / (q : ℝ)
-    _ = ((m K) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)) - (m K) : ℝ) := ?_
+    _ = ((m K) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)) - (m K) :
+        ℝ) := ?_
     _ ≤ ‖z‖ - ‖((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1‖ := ?_
     _ ≤ ‖z - (((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1)‖ := ?_
   · ring
@@ -379,23 +426,31 @@ lemma prod_bound {ι} (f : ι → ℝ) (s : Finset ι) (C : ℝ) (hC : ∀ x ∈
 include hz h2mq in
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
-lemma abs_denom : norm (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1 : ℂ)) ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ))) *
+lemma abs_denom : norm (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1 : ℂ)) ^ (-((r α β
+    σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ))) *
   ∏ km ∈ (Finset.range ((m K)) \ {((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ)}),
-    ((((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1 - ((km + 1 : ℂ))) / ((z - ((km + 1 : ℂ))))) ^
+    ((((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1 - ((km + 1 : ℂ))) / ((z - ((km + 1
+        : ℂ))))) ^
       ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq))))
     ≤ ((c₁₁ K)) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
-      (q / ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) ^ ((m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := by
-  let C : ℝ := ((m K) * (↑q / (↑(m K) * ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)))) ^ (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq
+      (q / ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) ^ ((m K) * (r α β σ α' β' γ' hirr htriv
+          habc) q hq0 h2mq : ℝ) := by
+  let C : ℝ := ((m K) * (↑q / (↑(m K) * ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)))) ^ (r α β
+      σ α' β' γ' hirr htriv habc) q hq0 h2mq
   calc
-    _ ≤ norm (z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1 : ℂ)) ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ)) *
+    _ ≤ norm (z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1 : ℂ)) ^ (-((r α β σ α' β' γ'
+        hirr htriv habc) q hq0 h2mq : ℤ)) *
         norm (∏ km ∈ Finset.range ((m K)) \ {((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ)},
-          ((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ) + 1 - ((km : ℕ) + 1)) / (z - ((km : ℕ) + 1))) ^
+          ((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ) + 1 - ((km : ℕ) + 1)) / (z - ((km
+              : ℕ) + 1))) ^
             ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) := by
           simp only [zpow_neg, zpow_natCast, Complex.norm_mul, norm_inv, norm_pow, norm_prod,
             Complex.norm_div, add_sub_add_right_eq_sub, le_refl]
-    _ ≤ ((m K) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)) ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ)) *
+    _ ≤ ((m K) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)) ^ (-((r α β σ α' β'
+        γ' hirr htriv habc) q hq0 h2mq : ℤ)) *
         norm (∏ km ∈ Finset.range ((m K)) \ {((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ)},
-          ((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ) + 1 - ((km : ℕ) + 1)) / (z - ((km : ℕ) + 1))) ^
+          ((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ) + 1 - ((km : ℕ) + 1)) / (z - ((km
+              : ℕ) + 1))) ^
             ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) := by
           apply mul_le_mul ?_ ?_ (by positivity) (by positivity)
           · simp only [zpow_neg, zpow_natCast]
@@ -414,12 +469,15 @@ lemma abs_denom : norm (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq
                 exact Ne.symm (ne_of_lt this)
             · refine (pow_le_pow_iff_left₀ (by positivity) (by positivity)
                 (r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)).mpr ?_
-              · grind [(norm_z_minus_km_lower_bound_on_sphere α β σ α' β' γ' hirr htriv habc) q hq0 h2mq hz]
+              · grind [(norm_z_minus_km_lower_bound_on_sphere α β σ α' β' γ' hirr htriv habc) q hq0
+                  h2mq hz]
           · rw [norm_prod]
-    _ ≤ (((m K) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ))⁻¹) ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ)) *
+    _ ≤ (((m K) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ))⁻¹) ^ (((r α β σ α'
+        β' γ' hirr htriv habc) q hq0 h2mq : ℤ)) *
          ∏ x ∈ Finset.range (m K) \ {↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)},
       (‖((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ) + 1 - ((x : ℕ) + 1)) : ℂ)‖ *
-       (↑q / (↑(m K) * ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)))) ^ (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq := by
+       (↑q / (↑(m K) * ↑((r α β σ α' β' γ' hirr htriv habc) q hq0
+           h2mq)))) ^ (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq := by
           apply mul_le_mul
           · simp only [zpow_neg, zpow_natCast]
             rw [le_iff_eq_or_lt]
@@ -433,7 +491,8 @@ lemma abs_denom : norm (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq
             · intro x hx
               simp only [norm_pow]
               rw [div_eq_mul_inv]
-              refine (pow_le_pow_iff_left₀ ?_ ?_ (r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)).mpr ?_
+              refine (pow_le_pow_iff_left₀ ?_ ?_ (r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0
+                  h2mq)).mpr ?_
               · positivity
               · positivity
               · simp only [Complex.norm_mul]
@@ -442,7 +501,8 @@ lemma abs_denom : norm (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq
                 · simp only [norm_inv]
                   simp only [Finset.mem_sdiff, Finset.mem_range, Finset.mem_singleton] at hx
                   let x' : Fin (m K) := ⟨x, hx.1⟩
-                  have hxnorm := norm_z_minus_km_lower_bound_on_sphere α β σ α' β' γ' hirr htriv habc q hq0 h2mq hz x'
+                  have hxnorm := norm_z_minus_km_lower_bound_on_sphere α β σ α' β' γ' hirr htriv
+                      habc q hq0 h2mq hz x'
                   unfold x' at hxnorm
                   simp only at hxnorm
                   rw [← one_div_le_one_div]
@@ -485,8 +545,10 @@ lemma abs_denom : norm (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq
             apply pow_nonneg
             simp only [inv_div]
             positivity
-    _ ≤ (((m K) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ))⁻¹) ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) *
-        C ^ Finset.card (Finset.range (m K) \ {↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)}) := by
+    _ ≤ (((m K) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ))⁻¹) ^ (((r α β σ α'
+        β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) *
+        C ^ Finset.card (Finset.range (m K) \ {↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0
+            h2mq)}) := by
           simp only [zpow_natCast, inv_div]
           apply mul_le_mul (by simp only [Real.rpow_natCast, le_refl]) ?_ (by positivity) (by positivity)
           apply prod_bound
@@ -497,7 +559,8 @@ lemma abs_denom : norm (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq
             refine (pow_le_pow_iff_left₀ (by positivity) (by positivity)
               (r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)).mpr ?_
             simp only [Finset.mem_sdiff, Finset.mem_range, Finset.mem_singleton] at hx
-            have : ‖((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1 - (↑x + 1)‖ ≤ ((m K) : ℝ) := by
+            have : ‖((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1 - (↑x + 1)‖ ≤ ((m K) :
+                ℝ) := by
               simp only [add_sub_add_right_eq_sub]
               rw [← Complex.norm_natCast]
               obtain ⟨y, hy⟩ := ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)
@@ -522,7 +585,8 @@ lemma abs_denom : norm (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq
                 linarith
             exact mul_le_mul this (le_refl _) (by positivity) (by positivity)
     _ ≤ ((c₁₁ K)) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
-        (q / ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) ^ ((m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := by
+        (q / ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) ^ ((m K) * (r α β σ α' β' γ' hirr
+            htriv habc) q hq0 h2mq : ℝ) := by
           simp only [inv_div, Real.rpow_natCast]
           have : #(Finset.range (m K) \ {↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)}) = ((m K) - 1) := by grind
           rw [this]
@@ -535,7 +599,8 @@ lemma abs_denom : norm (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq
           simp only [mul_assoc]
           rw [← pow_add]
           unfold c₁₁
-          have H1 : ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + ((((m K) : ℝ) - 1) : ℝ) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) =
+          have H1 : ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + ((((m K) : ℝ) - 1) : ℝ) * (r α
+              β σ α' β' γ' hirr htriv habc) q hq0 h2mq) =
               ((m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := by ring_nf
           apply mul_le_mul (le_refl _) ?_ (by positivity) (by positivity)
           simp only [← Real.rpow_natCast]
@@ -583,44 +648,58 @@ lemma c12_nonneg : 0 ≤ (c₁₂ α β α' β' γ') := by
 
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
-lemma S_norm_bound : ∀ (hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)))),
-  norm ((S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z) ≤ ((c₁₂ α β α' β' γ'))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)*
+lemma S_norm_bound : ∀ (hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q
+    hq0 h2mq : ℝ) / (q : ℝ)))),
+  norm ((S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z) ≤ ((c₁₂ α β α' β' γ'))^((r α β σ α' β' γ'
+      hirr htriv habc) q hq0 h2mq : ℝ)*
     ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^
-              (((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)* ( ( (3 : ℝ) - ((m K): ℝ))/2 : ℝ)) + (3 / 2 : ℝ))) := by
+              (((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)* ( ( (3 : ℝ) - ((m K): ℝ))/2 :
+                  ℝ)) + (3 / 2 : ℝ))) := by
   intros hz
   calc
-    _ = norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z) * (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial) *
-        (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1 : ℂ)) ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) : ℤ)) *
+    _ = norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z) * (((r α β σ α' β' γ' hirr htriv
+        habc) q hq0 h2mq).factorial) *
+        (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1 : ℂ)) ^ (-((r α β σ α' β' γ'
+            hirr htriv habc) q hq0 h2mq) : ℤ)) *
         ∏ k' ∈ Finset.range ((m K)) \ {↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)},
-         ((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1) - (k' + 1)) / (z - (k' + 1 : ℂ))) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) : ℂ) := ?_
+         ((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1) - (k' + 1)) / (z - (k' + 1 :
+             ℂ))) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) : ℂ) := ?_
 
     _ = ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial *
         (norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) *
-        norm ( (1/(z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1 : ℂ)) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq))) *
+        norm ( (1/(z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1 : ℂ)) ^ ((r α β σ α' β'
+            γ' hirr htriv habc) q hq0 h2mq))) *
         norm ( (∏ k' ∈ Finset.range ((m K)) \ {↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)},
-         ((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1)- (k' + 1)) / (z - (k' + 1 : ℂ))) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) : ℂ)) := ?_
+         ((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1)- (k' + 1)) / (z - (k' + 1 :
+             ℂ))) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) : ℂ)) := ?_
 
     _ ≤ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial *
         (((c₁₀ α β α' β' γ'))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
-        ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^(1/2*((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 3 : ℝ)) *
+        ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^(1/2*((r α β σ α' β' γ' hirr htriv habc)
+            q hq0 h2mq + 3 : ℝ)) *
         ((c₁₁ K))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
-        (q / (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^((m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) := ?_
+        (q / (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^((m K) * (r α β σ α' β' γ' hirr
+            htriv habc) q hq0 h2mq : ℝ)) := ?_
 
-    _ ≤ ((c₁₂ α β α' β' γ'))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)*((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^
-        (((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)* ( ( (3 : ℝ) - ((m K): ℝ))/2 : ℝ)) + (3 / 2 : ℝ))) := ?_
+    _ ≤ ((c₁₂ α β α' β' γ'))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)*((r α β σ α' β' γ'
+        hirr htriv habc) q hq0 h2mq : ℝ) ^
+        (((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)* ( ( (3 : ℝ) - ((m K): ℝ))/2 : ℝ)) +
+            (3 / 2 : ℝ))) := ?_
 
   · rw [(S_eq_SR_on_circle α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z hz]
     unfold SR
     simp only [mul_assoc]
   · nth_rewrite 2 [mul_assoc]
     nth_rewrite 2 [← mul_assoc]
-    rw [mul_comm  ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial  ‖(R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z‖]
+    rw [mul_comm  ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial  ‖(R α β σ α' β' γ'
+        hirr htriv habc) q hq0 h2mq z‖]
     simp only [mul_assoc, zpow_neg, zpow_natCast,
     Complex.norm_mul, norm_natCast, norm_inv, norm_pow,
       norm_prod, Complex.norm_div, one_div]
   · apply mul_le_mul (le_refl _) ?_ (by positivity) (by positivity)
     · rw [mul_assoc, mul_assoc]
-      · apply mul_le_mul (le_trans ((abs_Rb α β σ α' β' γ' hirr htriv habc) q hq0 h2mq hz) (abs_R α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) ?_
+      · apply mul_le_mul (le_trans ((abs_Rb α β σ α' β' γ' hirr htriv habc) q hq0 h2mq hz) (abs_R α
+          β σ α' β' γ' hirr htriv habc q hq0 h2mq)) ?_
             (by positivity) ?_
         · simp only [one_div, norm_inv, norm_pow, norm_prod, Complex.norm_div]
           have := abs_denom α β σ α' β' γ' hirr htriv habc q hq0 h2mq hz
@@ -645,21 +724,31 @@ lemma S_norm_bound : ∀ (hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ 
 
     · apply mul_le_mul
       · simp only [Real.rpow_natCast, le_refl]
-      · calc _ ≤ (Real.sqrt (2*(m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq * (m K) : ℝ) *
-                 ((↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))⁻¹ ^ ((m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
+      · calc _ ≤ (Real.sqrt (2*(m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))^((r α β σ
+          α' β' γ' hirr htriv habc) q hq0 h2mq * (m K) : ℝ) *
+                 ((↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))⁻¹ ^ ((m K) * (r α β σ α' β'
+                     γ' hirr htriv habc) q hq0 h2mq : ℝ) *
                 ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial *
-                ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^((1/2 : ℝ)*((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 3 : ℝ))) := ?_
+                ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^((1/2 : ℝ)*((r α β σ α' β' γ'
+                    hirr htriv habc) q hq0 h2mq + 3 : ℝ))) := ?_
 
-             _≤ (Real.sqrt (2*(m K) : ℝ)^(((m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) *
-                (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^(1/2 : ℝ))^(((m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)))*
-                (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
-                (↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))⁻¹ ^ ((m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
-                ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^((1/2 : ℝ)*((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 3 : ℝ))) :=?_
+             _≤ (Real.sqrt (2*(m K) : ℝ)^(((m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :
+                 ℝ)) *
+                (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^(1/2 : ℝ))^(((m K) * (r α β σ
+                    α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)))*
+                (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^((r α β σ α' β' γ' hirr htriv
+                    habc) q hq0 h2mq : ℝ) *
+                (↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))⁻¹ ^ ((m K) * (r α β σ α' β'
+                    γ' hirr htriv habc) q hq0 h2mq : ℝ) *
+                ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^((1/2 : ℝ)*((r α β σ α' β' γ'
+                    hirr htriv habc) q hq0 h2mq + 3 : ℝ))) :=?_
 
-             _= ((↑(m K) * 2 : ℝ) ^ (((m K) : ℝ) * (1 / 2: ℝ))) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)*
+             _= ((↑(m K) * 2 : ℝ) ^ (((m K) : ℝ) * (1 / 2: ℝ))) ^ ((r α β σ α' β' γ' hirr htriv
+                 habc) q hq0 h2mq : ℝ)*
 
               ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^
-              (((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)* ( ( (3 : ℝ) - ((m K): ℝ))/2 : ℝ)) + (3 / 2 : ℝ))) := ?_
+              (((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)* ( ( (3 : ℝ) - ((m K): ℝ))/2 :
+                  ℝ)) + (3 / 2 : ℝ))) := ?_
 
         · rw [Real.mul_rpow]
           simp only [mul_assoc]
@@ -755,30 +844,38 @@ lemma S_norm_bound : ∀ (hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ 
 @[nolint unusedArguments]
 theorem systemCoeffsff_foo_S : ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 h2mq =
   Complex.log (α) ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ)) *
-   ((S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) (↑↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) + 1) := by
+   ((S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) (↑↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0
+       h2mq) + 1) := by
   dsimp [ρᵣ]
   congr
   have HAE : ∀ (z : ℂ), AnalyticAt ℂ ((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z := by
     intros z
     fun_prop
-  let R₁ : ℂ → ℂ := R' α β σ α' β' γ' hirr htriv habc q hq0 h2mq (((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq))
+  let R₁ : ℂ → ℂ := R' α β σ α' β' γ' hirr htriv habc q hq0 h2mq (((l₀' α β σ α' β' γ' hirr htriv
+      habc) q hq0 h2mq))
   have HR1 : ∀ (z : ℂ), AnalyticAt ℂ R₁ z := by
     unfold R₁
     intros z
-    apply R'_analyticAt α β σ α' β' γ' hirr htriv habc q hq0 h2mq ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z
+    apply R'_analyticAt α β σ α' β' γ' hirr htriv habc q hq0 h2mq ((l₀' α β σ α' β' γ' hirr htriv
+        habc) q hq0 h2mq) z
   have hR₁ : ∀ (z : ℂ), ((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z =
-    ((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1)) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) * (R₁ z) := by
+    ((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1)) ^ ((r α β σ α' β' γ' hirr htriv
+        habc) q hq0 h2mq)) * (R₁ z) := by
     intros z
     rw [(R_eq_pow_mul_R' α β σ α' β' γ' hirr htriv habc)]
   have hr : (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq ≤ (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq := by rfl
   have :
    ∃ R₂ : ℂ → ℂ, (∀ z : ℂ, AnalyticAt ℂ R₂ z) ∧
-    (∀ z, deriv^[((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)] (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) z =
-   (z - ( l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1))^(((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) *
-    (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial/(((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)).factorial * R₁ z +
+    (∀ z, deriv^[((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)] (R α β σ α' β' γ' hirr htriv habc
+        q hq0 h2mq) z =
+   (z - ( l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1))^(((r α β σ α' β' γ' hirr htriv habc) q
+       hq0 h2mq)-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) *
+    (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial/(((r α β σ α' β' γ' hirr htriv habc)
+        q hq0 h2mq)-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)).factorial * R₁ z +
        (z - ( l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1))* R₂ z)) := by
     simp only [← iteratedDeriv_eq_iterate, tsub_self]
-    apply iteratedDeriv_mul_pow_sub_of_analytic (z₀ := ((l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℂ) + 1))
+    apply iteratedDeriv_mul_pow_sub_of_analytic (z₀ := ((l₀' α β σ α' β' γ' hirr htriv habc q hq0
+        h2mq : ℂ) + 1))
         --HAE
         HR1 hR₁ (t := 0) (k := r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
   simp only [tsub_self, pow_zero, Nat.factorial_zero,
@@ -796,16 +893,21 @@ theorem systemCoeffsff_foo_S : ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 
   · unfold SRl0
     simp only [add_sub_add_right_eq_sub]
     rw [mul_comm   ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial
-      ((R' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) (↑↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) + 1))]
+      ((R' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0
+          h2mq) (↑↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) + 1))]
     nth_rw 2 [← mul_one
-      (a := ((R' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) (↑↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) + 1)) *
+      (a := ((R' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq ((l₀' α β σ α' β' γ' hirr htriv habc) q
+          hq0 h2mq) (↑↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) + 1)) *
       ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial) ]
     congr
     simp only [mul_one, sub_self, zero_mul, add_zero]
-    nth_rw 2 [← mul_one (a:= (R' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)
-      (((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1) * ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial)]
+    nth_rw 2 [← mul_one (a:= (R' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq ((l₀' α β σ α' β' γ'
+        hirr htriv habc) q hq0 h2mq)
+      (((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1) * ↑((r α β σ α' β' γ' hirr htriv
+          habc) q hq0 h2mq).factorial)]
     congr
-    have H1 :  ∏ x ∈ Finset.range (m K) \ {↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)}, 1 = (1 : ℂ) := by
+    have H1 :  ∏ x ∈ Finset.range (m K) \ {↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0
+        h2mq)}, 1 = (1 : ℂ) := by
       simp only [prod_const_one]
     congr
     rw [← H1]
@@ -826,10 +928,13 @@ theorem systemCoeffsff_foo_S : ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
 lemma eq7 (l' : Fin ((m K))) :
-    ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 h2mq = Complex.log (α) ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) : ℤ) * ((2 * ↑Real.pi * I)⁻¹ *
-    (∮ z in C(0, (m K) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq / q))), (z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1))⁻¹ *
+    ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 h2mq = Complex.log (α) ^ (-((r α β σ α' β' γ' hirr htriv
+        habc) q hq0 h2mq) : ℤ) * ((2 * ↑Real.pi * I)⁻¹ *
+    (∮ z in C(0, (m K) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq / q))), (z - ((l₀' α β
+        σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1))⁻¹ *
     ((S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z)) :=
-  (hcauchy α β σ α' β' γ' hirr htriv habc) q hq0 h2mq ▸ systemCoeffsff_foo_S α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+  (hcauchy α β σ α' β' γ' hirr htriv
+      habc) q hq0 h2mq ▸ systemCoeffsff_foo_S α β σ α' β' γ' hirr htriv habc q hq0 h2mq
 
 /-- A constant bounding `‖ρ‖` via Cauchy's estimate. -/
 def c₁₃ : ℝ :=((‖Complex.log α‖⁻¹ + 1)*(m K)*(2 + 1/(m K))*(c₁₂ α β α' β' γ'))
@@ -854,17 +959,22 @@ lemma one_le_c13 : 1 ≤ (c₁₃ α β α' β' γ') := by
     refine le_add_of_le_of_nonneg (by aesop) (by positivity)
 
 /-- The numerator appearing in the Cauchy estimate for `S`. -/
-def Cnum : ℝ := (((m K) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) / (q : ℝ))⁻¹ * ((c₁₂ α β α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)*
-  ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ (((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)* (((3 : ℝ) - (m K)) / 2 : ℝ)) + (3 / 2 : ℝ))))
+def Cnum : ℝ := (((m K) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) / (q : ℝ))⁻¹ * ((c₁₂
+    α β α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)*
+  ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ (((((r α β σ α' β' γ' hirr htriv habc) q hq0
+      h2mq : ℝ)* (((3 : ℝ) - (m K)) / 2 : ℝ)) + (3 / 2 : ℝ))))
 
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
-lemma hf : ∀ z ∈ Metric.sphere 0 ((m K) * (1 + ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / ↑q)),
-    ‖(z - ((↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) : ℂ) + 1))⁻¹ * ((S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z)‖ ≤ (Cnum α β σ α' β' γ' hirr htriv habc) q hq0 h2mq := by
+lemma hf : ∀ z ∈ Metric.sphere 0 ((m K) * (1 + ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)
+    / ↑q)),
+    ‖(z - ((↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) : ℂ) + 1))⁻¹ * ((S α β σ α' β' γ'
+        hirr htriv habc) q hq0 h2mq z)‖ ≤ (Cnum α β σ α' β' γ' hirr htriv habc) q hq0 h2mq := by
   intros z hz
   simp only [Complex.norm_mul, norm_inv, Cnum]
   apply mul_le_mul ?_ (S_norm_bound α β σ α' β' γ' hirr htriv habc q hq0 h2mq hz) (by positivity) (by positivity)
-  · apply inv_anti₀ ?_ ((norm_sub_l0_lower_bound_on_sphere α β σ α' β' γ' hirr htriv habc) q hq0 h2mq hz)
+  · apply inv_anti₀ ?_ ((norm_sub_l0_lower_bound_on_sphere α β σ α' β' γ' hirr htriv habc) q hq0
+      h2mq hz)
     · refine Real.sqrt_ne_zero'.mp ?_
       · refine (Real.sqrt_ne_zero (by positivity)).mpr ?_
         refine div_ne_zero ?_ (Ne.symm (ne_of_lt (mod_cast hq0)))
@@ -874,8 +984,10 @@ lemma hf : ∀ z ∈ Metric.sphere 0 ((m K) * (1 + ↑((r α β σ α' β' γ' h
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
 lemma eq8 :
-    norm (ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤ ((c₁₃ α β α' β' γ')) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
-    (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * ((3 - ((m K) : ℝ))) / 2 + 3 / 2)) := by
+    norm (ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤ ((c₁₃ α β α' β' γ')) ^ ((r α β σ α' β' γ'
+        hirr htriv habc) q hq0 h2mq : ℝ) *
+    (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ (((r α β σ α' β' γ' hirr htriv habc) q
+        hq0 h2mq : ℝ) * ((3 - ((m K) : ℝ))) / 2 + 3 / 2)) := by
 
   have hR : 0 ≤ ((m K) * (1 + ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) / ↑q) : ℝ) := by
     apply mul_nonneg (Nat.cast_nonneg _)
@@ -885,21 +997,29 @@ lemma eq8 :
   have H := circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR
     ((hf α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)
 
-  calc _ = norm (Complex.log α ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ)) * ((2 * Real.pi) * I)⁻¹ * ∮ (z : ℂ) in
-           C(0, (m K) * (1 + ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) / ↑q)), (z - ↑(((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1))⁻¹ *
+  calc _ = norm (Complex.log α ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ)) * ((2 *
+      Real.pi) * I)⁻¹ * ∮ (z : ℂ) in
+           C(0, (m K) * (1 + ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) / ↑q)), (z - ↑(((l₀' α
+               β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1))⁻¹ *
            ((S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z)) := ?_
 
        _ = norm (Complex.log (α) ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ))) *
            norm ((2 * Real.pi * I)⁻¹) * norm (∮ (z : ℂ) in
            C(0, (m K) * (1 + ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) / ↑q)),
-           (z - ↑(((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1))⁻¹ * ((S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z)) := ?_
+           (z - ↑(((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1))⁻¹ * ((S α β σ α' β' γ'
+               hirr htriv habc) q hq0 h2mq z)) := ?_
 
-       _ ≤ ((norm ((Complex.log α))^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ)))) * ((m K) : ℝ) *
-           (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)) * ((c₁₂ α β α' β' γ')) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
-           (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * (3 - (m K) : ℝ) / 2 + 3 / 2) *
+       _ ≤ ((norm ((Complex.log α))^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ)))) * ((m
+           K) : ℝ) *
+           (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)) * ((c₁₂ α β α' β'
+               γ')) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
+           (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ (((r α β σ α' β' γ' hirr htriv
+               habc) q hq0 h2mq : ℝ) * (3 - (m K) : ℝ) / 2 + 3 / 2) *
            ((q : ℝ) / ((((m K) : ℝ) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))))) := ?_
 
-       _ ≤ ((c₁₃ α β α' β' γ')) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
+       _ ≤ ((c₁₃ α β α' β' γ')) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * (((r α β σ
+           α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ (((r α β σ α' β' γ' hirr htriv
+               habc) q hq0 h2mq : ℝ) *
            ((3 - ((m K) : ℝ))) / 2 + 3 / 2)) := ?_
 
   · rw [(eq7 α β σ α' β' γ' hirr htriv habc) q hq0 h2mq]
@@ -982,7 +1102,8 @@ lemma eq8 :
             nth_rw 1 [← mul_assoc]
             rw [inv_mul_cancel₀]
             simp only [one_mul]
-            calc _ ≤ ((m K) : ℝ)⁻¹ + (2*((m K) : ℝ)*((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))
+            calc _ ≤ ((m K) : ℝ)⁻¹ + (2*((m K) : ℝ)*((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :
+                ℝ))
                       * (((m K) : ℝ)⁻¹ * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)⁻¹) :=?_
                  _ ≤ (2 + ((m K) : ℝ)⁻¹) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := ?_
             · simp only [add_le_add_iff_left]
@@ -1002,10 +1123,12 @@ lemma eq8 :
                 · simp only [Nat.one_le_ofNat]
               · simp only [Nat.one_le_cast]
                 exact one_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
-              · simp only [ne_eq, Nat.cast_eq_zero]; exact r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+              · simp only [ne_eq,
+                  Nat.cast_eq_zero]; exact r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq
               · simp only [ne_eq, Nat.cast_eq_zero]
                 exact Nat.ne_zero_of_lt ((one_le_m K))
-            · simp only [ne_eq, Nat.cast_eq_zero];exact r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+            · simp only [ne_eq,
+                Nat.cast_eq_zero];exact r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq
             · simp only [ne_eq, Nat.cast_eq_zero]
               exact Nat.ne_zero_of_lt hq0
         · apply mul_nonneg
@@ -1048,30 +1171,40 @@ def c₁₄ : ℝ := ((c₈ α' β' γ')^(((h K)-1)) * (c₁₃ α β α' β' γ
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
 lemma c14_nonneg : 1 ≤ (c₁₄ α β α' β' γ') :=
-  one_le_mul_of_one_le_of_one_le (one_le_pow₀ (c8_geq_one α β σ α' β' γ' hirr htriv habc)) (one_le_c13 α β σ α' β' γ' hirr htriv habc)
+  one_le_mul_of_one_le_of_one_le (one_le_pow₀ (c8_geq_one α β σ α' β' γ' hirr htriv
+      habc)) (one_le_c13 α β σ α' β' γ' hirr htriv habc)
 
 include u t in
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
-lemma use6and8 : norm ((Algebra.norm ℚ (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq))) ≤ ((c₁₄ α β α' β' γ'))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
-    ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^((-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))/2 + 3 * ((h K))/2) := by
+lemma use6and8 : norm ((Algebra.norm ℚ (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq))) ≤ ((c₁₄ α β
+    α' β' γ'))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
+    ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^((-((r α β σ α' β' γ' hirr htriv habc) q hq0
+        h2mq : ℝ))/2 + 3 * ((h K))/2) := by
 
-  calc _ ≤  ‖ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 h2mq‖ * (house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) ^ ((((h K)) - 1 )) := ?_
+  calc _ ≤  ‖ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 h2mq‖ * (house (rho α β σ α' β' γ' hirr htriv
+      habc q hq0 h2mq)) ^ ((((h K)) - 1 )) := ?_
 
-       _ ≤ ((c₈ α' β' γ') ^ (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq * ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :ℝ) ^
+       _ ≤ ((c₈ α' β' γ') ^ (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq * ↑((r α β σ α' β' γ' hirr
+           htriv habc) q hq0 h2mq :ℝ) ^
           (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) + 3 / 2))^(((h K)) -1) *
           (((c₁₃ α β α' β' γ')) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
-           (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
+           (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ (((r α β σ α' β' γ' hirr htriv
+               habc) q hq0 h2mq : ℝ) *
            ((3 - ((m K) : ℝ))) / 2 + 3 / 2))) := ?_
 
-       _ ≤ (((c₁₄ α β α' β' γ'))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) * (↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq: ℝ))^(
+       _ ≤ (((c₁₄ α β α' β' γ'))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) * (↑((r α β σ
+           α' β' γ' hirr htriv habc) q hq0 h2mq: ℝ))^(
          ((((h K): ℝ) - 1)) * (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) + 3/2) +
-         (((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * (3 - ((m K) : ℝ))) / 2) + 3 / 2)) := ?_
+         (((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * (3 - ((m K) : ℝ))) / 2) + 3 /
+             2)) := ?_
 
-       _ = (((c₁₄ α β α' β' γ'))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq: ℝ)) * (↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq: ℝ))^(
+       _ = (((c₁₄ α β α' β' γ'))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq: ℝ)) * (↑((r α β σ
+           α' β' γ' hirr htriv habc) q hq0 h2mq: ℝ))^(
          ((-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))/2) + 3 * ((h K))/ 2) := ?_
 
-  · have := norm_norm_le_norm_mul_house_pow (K := K) (α := ((rho α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) σ
+  · have := norm_norm_le_norm_mul_house_pow (K := K) (α := ((rho α β σ α' β' γ' hirr htriv habc) q
+      hq0 h2mq)) σ
     rw [← rho_eq_ρᵣ]
     unfold h
     simp only [← Real.rpow_natCast] at *
@@ -1154,7 +1287,8 @@ def c₁₅ : ℝ := (c₁₄ α β α' β' γ') * (c₅ α' β' γ')
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
 lemma c15_nonneg : 0 ≤ (c₁₅ α β α' β' γ') := by
-  unfold c₁₅; exact mul_nonneg (zero_le_one.trans (c14_nonneg α β σ α' β' γ' hirr htriv habc)) (c5nonneg α' β' γ').le
+  unfold c₁₅; exact mul_nonneg (zero_le_one.trans (c14_nonneg α β σ α' β' γ' hirr htriv
+      habc)) (c5nonneg α' β' γ').le
 
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
@@ -1164,7 +1298,8 @@ lemma c15_geg_1 : 1 ≤ (c₁₅ α β α' β' γ') := by
 
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
-theorem norm_pos_rho : 0 < ‖(Algebra.norm ℚ) ((rho α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)‖ := by
+theorem norm_pos_rho : 0 < ‖(Algebra.norm ℚ) ((rho α β σ α' β' γ' hirr htriv habc) q hq0
+    h2mq)‖ := by
   rw [norm_pos_iff, ne_eq, Algebra.norm_eq_zero_iff]
   rintro H
   apply ρᵣ_nonzero α β σ α' β' γ' hirr htriv habc q hq0 h2mq
@@ -1173,7 +1308,8 @@ theorem norm_pos_rho : 0 < ‖(Algebra.norm ℚ) ((rho α β σ α' β' γ' hirr
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
 lemma norm_algebraNorm_rho_gtinv :
-    norm ((Algebra.norm ℚ) ((rho α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) ⁻¹ < (c₅ α' β' γ') ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) := by
+    norm ((Algebra.norm ℚ) ((rho α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) ⁻¹ < (c₅ α' β'
+        γ') ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) := by
   have h := eq5 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
   rw [← inv_lt_inv₀] at h
   · simpa [← Real.rpow_neg] using h
@@ -1184,7 +1320,8 @@ lemma norm_algebraNorm_rho_gtinv :
 include u t in
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
-lemma use5 : ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ ((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) - 3 * (h K)) / 2) <
+lemma use5 : ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ ((((r α β σ α' β' γ' hirr htriv
+    habc) q hq0 h2mq : ℝ) - 3 * (h K)) / 2) <
   ((c₁₅ α β α' β' γ')) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := by
   let r : ℝ := (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq
   let N : ℝ := ‖(Algebra.norm ℚ) ((rho α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)‖
@@ -1221,17 +1358,21 @@ lemma use5 : ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ ((((r
     simpa using (norm_algebraNorm_rho_gtinv α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
 
   have hApos : 0 < (c₁₄ α β α' β' γ') ^ r := by
-    exact Real.rpow_pos_of_pos (lt_of_lt_of_le zero_lt_one (c14_nonneg α β σ α' β' γ' hirr htriv habc)) _
+    exact Real.rpow_pos_of_pos (lt_of_lt_of_le zero_lt_one (c14_nonneg α β σ α' β' γ' hirr htriv
+        habc)) _
 
   have hmulrpow : ((c₁₅ α β α' β' γ')) ^ r = ((c₁₄ α β α' β' γ') ^ r) * ((c₅ α' β' γ') ^ r) := by
     unfold c₁₅
-    rw [Real.mul_rpow (le_trans zero_le_one (c14_nonneg α β σ α' β' γ' hirr htriv habc)) (c5nonneg α' β' γ').le]
+    rw [Real.mul_rpow (le_trans zero_le_one (c14_nonneg α β σ α' β' γ' hirr htriv habc)) (c5nonneg
+        α' β' γ').le]
 
   calc
-    ((GelfondSchneider.r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ ((((GelfondSchneider.r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) - 3 * (h K)) / 2)
+    ((GelfondSchneider.r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ ((((GelfondSchneider.r α
+        β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) - 3 * (h K)) / 2)
         = B⁻¹ := by
             dsimp [B, r]
-            rw [show ((((GelfondSchneider.r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) - 3 * (h K)) / 2) =
+            rw [show ((((GelfondSchneider.r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) - 3 * (h
+                K)) / 2) =
                 - (-((GelfondSchneider.r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / 2 + 3 * (h K) / 2) by ring]
             rw [Real.rpow_neg (le_of_lt (by
               exact_mod_cast r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq))]

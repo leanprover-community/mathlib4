@@ -9,6 +9,15 @@ module
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAnalytic
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainPostAnalytic
 
+/-!
+# Gelfond-Schneider: analytic bounds on the auxiliary function
+
+Upper bounds for `house ρ` and the constants `c₆`, `c₇`, `c₈` entering them.
+
+## References
+* Loo-Keng Hua, Introduction to Number Theory, Springer, 1982. Chapter 17.9.
+-/
+
 @[expose] public section
 
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional
@@ -102,10 +111,12 @@ lemma one_le_c₇ : 1 ≤ c₇ α' β' γ' := by
     simpa using house_nat_mul α c'
   have hα : 1 ≤ |(c₁ α' β' γ' : ℝ)| * house α' := by
     rw [← house_num_mul_int (α := α') (c' := c₁ α' β' γ') hc, ← smul_eq_mul]
-    exact one_le_house_of_isIntegral (mod_cast isIntegral_c₁α α' β' γ') (mod_cast c₁α_ne_zero α β σ α' β' γ' hirr htriv habc)
+    exact one_le_house_of_isIntegral (mod_cast isIntegral_c₁α α' β' γ') (mod_cast c₁α_ne_zero α β σ
+        α' β' γ' hirr htriv habc)
   have hγ : 1 ≤ |(c₁ α' β' γ' : ℝ)| * house γ' := by
     rw [← house_num_mul_int (α := γ') (c' := c₁ α' β' γ') hc, ← smul_eq_mul]
-    exact one_le_house_of_isIntegral (mod_cast isIntegral_c₁γ α' β' γ') (mod_cast c₁γ_ne_zero α β σ α' β' γ' hirr htriv habc)
+    exact one_le_house_of_isIntegral (mod_cast isIntegral_c₁γ α' β' γ') (mod_cast c₁γ_ne_zero α β σ
+        α' β' γ' hirr htriv habc)
   have hbase :
       1 ≤ |(c₁ α' β' γ' : ℝ)| * |(c₁ α' β' γ' : ℝ)| *
         (|(c₁ α' β' γ' : ℝ)| * (house α' * (|(c₁ α' β' γ' : ℝ)| * house γ'))) := by
@@ -139,7 +150,8 @@ lemma one_le_r : 1 ≤  r α β σ α' β' γ' hirr htriv habc q hq0 h2mq :=
   Nat.zero_lt_of_ne_zero (r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
 
 include α β σ α' β' γ' hirr htriv habc in
-lemma cρ_abs_eq : |c₁ α' β' γ' ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq * c₁ α' β' γ' ^ (2 * m K * q)| =
+lemma cρ_abs_eq : |c₁ α' β' γ' ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq * c₁ α' β' γ' ^ (2 * m
+    K * q)| =
   c₁ α' β' γ' ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq * c₁ α' β' γ' ^ (2 * m K * q) := by
     rw [abs_eq_self]
     apply mul_nonneg (pow_nonneg (le_trans Int.one_nonneg (one_le_c₁ α' β' γ')) _)
@@ -148,51 +160,68 @@ lemma cρ_abs_eq : |c₁ α' β' γ' ^ r α β σ α' β' γ' hirr htriv habc q 
 include α β σ α' β' γ' hirr htriv habc in
 lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
   (q*q) *(c₄ α' β' γ' ^ (n K q : ℝ) * ((n K q : ℝ) ^ (((n K q : ℝ)+ 1)/2)) *
-        (c₆ α' β' γ'* q) ^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) * (c₇ α' β' γ')^(q : ℤ)) := by
-  calc _ ≤ norm (cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) * house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) := ?_
+        (c₆ α' β' γ'* q) ^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) * (c₇ α' β' γ')^(q :
+            ℤ)) := by
+  calc _ ≤ norm (cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) * house (rho α β σ α' β' γ' hirr
+      htriv habc q hq0 h2mq) := ?_
        _ ≤ (norm (cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ))  *
-          house (∑ t, ( ((algebraMap (𝓞 K) K) ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) t)) *
+          house (∑ t, ( ((algebraMap (𝓞 K) K) ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0
+              h2mq) t)) *
         ((systemCoeffsR α β σ α' β' γ' hirr htriv habc q hq0 t h2mq)))) := ?_
        _ ≤ (norm (cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)) *
-         ∑ t, house ( ((algebraMap (𝓞 K) K) ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) t)) *
+         ∑ t, house ( ((algebraMap (𝓞 K) K) ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
+             t)) *
        ((systemCoeffsR α β σ α' β' γ' hirr htriv habc q hq0 t h2mq))) := ?_
        _ = (∑ t, house ((cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq) *
          (algebraMap (𝓞 K) K ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) t) *
           systemCoeffsR α β σ α' β' γ' hirr htriv habc q hq0 t h2mq))) := ?_
-       _ = ∑ t, house ((algebraMap (𝓞 K) K) (η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq t) *
-        (↑(c₁ α' β' γ') ^ (m K * q - a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)) *
-          (↑(c₁ α' β' γ') ^ (m K * q - b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)) *
-            (c₁ α' β' γ' ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq • (↑(a q t) + b q t • β') ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq *
+       _ = ∑ t, house ((algebraMap (𝓞 K) K) (η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq t)
+           *
+        (↑(c₁ α' β' γ') ^ (m K * q - a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1))
+            *
+          (↑(c₁ α' β' γ') ^ (m K * q - b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) +
+              1)) *
+            (c₁ α' β' γ' ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq • (↑(a q t) + b q t • β') ^ r
+                α β σ α' β' γ' hirr htriv habc q hq0 h2mq *
               (c₁ α' β' γ' ^ (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)) •
                   α' ^ (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)) *
                 c₁ α' β' γ' ^ (b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)) •
                   γ' ^ (b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1))))))) := ?_
-       _ ≤ ∑ t, house ((algebraMap (𝓞 K) K) (η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq t)) *
-        (house (((c₁ α' β' γ' : K) ^ (m K * q - a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)))) *
+       _ ≤ ∑ t, house ((algebraMap (𝓞 K) K) (η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+           t)) *
+        (house (((c₁ α' β' γ' : K) ^ (m K * q - a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0
+            h2mq) + 1)))) *
           (house (((c₁ α' β' γ' : K) ^
               (m K * q - b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)))) *
             (house (((c₁ α' β' γ' : K) ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq •
               (↑(a q t) + b q t • β') ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) *
-              (house (((c₁ α' β' γ' : K) ^ (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)) •
+              (house (((c₁ α' β' γ' : K) ^ (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0
+                  h2mq) + 1)) •
                   α' ^ (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)))) *
-                (house ((c₁ α' β' γ' : K) ^ (b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)) •
+                (house ((c₁ α' β' γ' : K) ^ (b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0
+                    h2mq) + 1)) •
                   γ' ^ (b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1)))
                   ))))) := ?_
        _ ≤ (∑ t, c₄ α' β' γ' ^ (n K q : ℝ) * ((n K q : ℝ) ^ (((n K q : ℝ)+ 1)/2)) *
-        (↑|c₁ α' β' γ' ^ (m K * q - a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1))| *
-        (↑|c₁ α' β' γ' ^ (m K * q - b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1))| *
-          (((|c₁ α' β' γ'| * (|(q : ℤ)| * (1 + house (β')))) ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) *
+        (↑|c₁ α' β' γ' ^ (m K * q - a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1))|
+            *
+        (↑|c₁ α' β' γ' ^ (m K * q - b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1))|
+            *
+          (((|c₁ α' β' γ'| * (|(q : ℤ)| * (1 + house (β')))) ^ (r α β σ α' β' γ' hirr htriv habc q
+              hq0 h2mq)) *
              house ((c₁ α' β' γ' • α')) ^ (m K * q) *
              house ((c₁ α' β' γ' • γ')) ^ (m K * q))))) := ?_
        _ ≤ ∑ (t : Fin (q * q)), c₄ α' β' γ' ^ (n K q : ℝ) * ((n K q : ℝ) ^ (((n K q : ℝ)+ 1)/2)) *
           (↑|c₁ α' β' γ'| ^ (m K * q) *
           (↑|c₁ α' β' γ'| ^ (m K * q) *
           ((|c₁ α' β' γ'|^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) *
-            (|(q : ℤ)|^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) * (1 + house (β')) ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) *
+            (|(q : ℤ)|^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) * (1 + house (β')) ^ (r α β σ
+                α' β' γ' hirr htriv habc q hq0 h2mq)) *
              ((|c₁ α' β' γ'|^ (m K * q) * house (α') ^ (m K * q)) *
              (|c₁ α' β' γ'|^ (m K * q)  * house γ' ^ (m K * q))))))) := ?_
        _ ≤  (q*q) *(c₄ α' β' γ' ^ (n K q : ℝ) * ((n K q : ℝ) ^ (((n K q : ℝ)+ 1)/2)) *
-        (c₆ α' β' γ'* q) ^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) * (c₇ α' β' γ')^(q : ℤ)) := ?_
+        (c₆ α' β' γ'* q) ^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) * (c₇ α' β' γ')^(q :
+            ℤ)) := ?_
   · rw [← one_mul (house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq))]
     apply mul_le_mul
     · exact one_le_norm_c1rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq
@@ -208,7 +237,8 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
         * systemCoeffsR α β σ α' β' γ' hirr htriv habc q hq0 i h2mq
     · exact
       house_nonneg (∑ t, (algebraMap (𝓞 K) K)
-        (η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq t) * systemCoeffsR α β σ α' β' γ' hirr htriv habc q hq0 t h2mq)
+        (η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+            t) * systemCoeffsR α β σ α' β' γ' hirr htriv habc q hq0 t h2mq)
     · exact norm_nonneg (cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
   · rw [mul_sum]
     apply Finset.sum_congr rfl
@@ -219,13 +249,15 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
         simpa using house_nat_mul α c'
     rw [house_num_mul_int
     (α := ((algebraMap (𝓞 K) K)
-    (η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq i) * systemCoeffsR α β σ α' β' γ' hirr htriv habc q hq0 i h2mq))]
+    (η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+        i) * systemCoeffsR α β σ α' β' γ' hirr htriv habc q hq0 i h2mq))]
     · simp only [Real.norm_eq_abs]
     · exact zero_le_c1rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq
   · apply Finset.sum_congr rfl
     intros t ht
     rw [Algebra.left_comm (↑(cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq))
-      (η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq t) (systemCoeffsR α β σ α' β' γ' hirr htriv habc q hq0 t h2mq)]
+      (η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq t) (systemCoeffsR α β σ α' β' γ' hirr
+          htriv habc q hq0 t h2mq)]
     simp only [← zsmul_eq_mul]
     unfold systemCoeffsR
     unfold cρ
@@ -286,7 +318,8 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
             rw [mul_add]
             calc _ ≤  house ((↑(c₁ α' β' γ') * ↑(a q t) + ↑(c₁ α' β' γ') *
                   (↑(b q t) * β'))) ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq :=?_
-                 _ ≤  (↑|c₁ α' β' γ'| * (↑|↑q| * (1 + house β'))) ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq := ?_
+                 _ ≤  (↑|c₁ α' β' γ'| * (↑|↑q| * (1 + house
+                     β'))) ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq := ?_
             · apply house_pow_le _ _
             · rw [← mul_add]
               rw [pow_le_pow_iff_left₀]
@@ -312,7 +345,8 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
               · rw [← smul_eq_mul]
                 exact mod_cast c₁α_ne_zero α β σ α' β' γ' hirr htriv habc
               · rw [mul_comm (m K) q]
-                apply mul_le_mul (((finProdFinEquiv.symm.toFun t).1).isLt) ?_ (Nat.zero_le _) (Nat.zero_le _)
+                apply mul_le_mul (((finProdFinEquiv.symm.toFun t).1).isLt) ?_ (Nat.zero_le
+                    _) (Nat.zero_le _)
                 · exact (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq).isLt
             · simp only [smul_eq_mul, zsmul_eq_mul]
               rw [← mul_pow]
@@ -325,7 +359,8 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
               · rw [← smul_eq_mul]
                 exact mod_cast c₁γ_ne_zero α β σ α' β' γ' hirr htriv habc
               · rw [mul_comm (m K) q]
-                apply mul_le_mul (((finProdFinEquiv.symm.toFun t).2).isLt) ?_ (Nat.zero_le _) (Nat.zero_le _)
+                apply mul_le_mul (((finProdFinEquiv.symm.toFun t).2).isLt) ?_ (Nat.zero_le
+                    _) (Nat.zero_le _)
                 · exact (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq).isLt
             · apply house_nonneg
             · unfold house; positivity
@@ -349,12 +384,14 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
       · simp only [abs_pow, Int.cast_pow, Int.cast_abs]
         refine pow_le_pow_right₀ ?_ ?_
         · norm_cast; exact one_le_abs_c₁ α' β' γ'
-        · exact Nat.sub_le (m K * q) (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1))
+        · exact Nat.sub_le (m K * q) (a q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) +
+            1))
       · apply mul_le_mul
         · simp only [abs_pow, Int.cast_pow, Int.cast_abs]
           refine pow_le_pow_right₀ ?_ ?_
           · norm_cast; exact one_le_abs_c₁ α' β' γ'
-          · exact Nat.sub_le (m K * q) (b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) + 1))
+          · exact Nat.sub_le (m K * q) (b q t * (↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq) +
+              1))
         · nth_rw 1 [mul_assoc]
           apply mul_le_mul
           · rw [← mul_pow]; rw [← mul_pow]
@@ -412,7 +449,8 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
           ((|(c₁ α' β' γ' : ℝ)| * (house α' * (|(c₁ α' β' γ' : ℝ)| *
            house γ'))) ^ (m K * q) * (q : ℝ) ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)]
         nth_rw 1 [← mul_assoc]
-        rw [mul_comm  ((c₆ α' β' γ' * ↑q) ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (c₇ α' β' γ' ^ q)]
+        rw [mul_comm  ((c₆ α' β' γ' * ↑q) ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (c₇ α' β'
+            γ' ^ q)]
         simp only [mul_assoc]
         rw [← mul_pow]
         rw [← mul_pow]
@@ -440,9 +478,11 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
 
 include α β σ α' β' γ' hirr htriv habc in
 theorem bound_n_le_r' : ((n K q : ℝ) ^ (((n K q : ℝ)+ 1)/2)) ≤
-     ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)^((1/2) * ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) + 1))) := by
+     ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)^((1/2) * ((r α β σ α' β' γ' hirr htriv habc
+         q hq0 h2mq : ℝ) + 1))) := by
       calc _ ≤ ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) ^ (((n K q : ℝ)+ 1)/2)) := ?_
-           _ ≤ ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)^((1/2)* ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) + 1))) := ?_
+           _ ≤ ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)^((1/2)* ((r α β σ α' β' γ' hirr
+               htriv habc q hq0 h2mq : ℝ) + 1))) := ?_
       · refine Real.rpow_le_rpow ?_ ?_ ?_
         · simp only [Nat.cast_nonneg]
         · simp only [Nat.cast_le]; exact n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
@@ -463,10 +503,12 @@ include α β σ α' β' γ' hirr htriv habc in
 lemma bound_n_le_r :
   (c₄ α' β' γ' ^ (n K q : ℝ) * ((n K q : ℝ) ^ (((n K q : ℝ)+ 1)/2)) ≤
   ((c₄ α' β' γ' ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)) *
-    ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)^((1/2)* ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) + 1))))) := by
+    ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)^((1/2)* ((r α β σ α' β' γ' hirr htriv habc q
+        hq0 h2mq : ℝ) + 1))))) := by
     apply mul_le_mul
     · simp only [Real.rpow_natCast]
-      refine pow_le_pow_right₀ (one_le_c₄ α β σ α' β' γ' hirr htriv habc) (n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
+      refine pow_le_pow_right₀ (one_le_c₄ α β σ α' β' γ' hirr htriv habc) (n_le_r α β σ α' β' γ'
+          hirr htriv habc q hq0 h2mq)
     · exact bound_n_le_r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq
     · apply Real.rpow_nonneg
       simp only [Nat.cast_nonneg]
@@ -552,12 +594,14 @@ theorem q_sq2_neq_1 (m q : ℕ) (_ : 0 < q)
 
 include α β σ α' β' γ' hirr htriv habc in
 theorem eq6b.extracted_1_1 :
-  q * q ≤ (2 * m K : ℝ) ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq: ℝ) * (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq: ℝ) := by
+  q * q ≤ (2 * m K : ℝ) ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq: ℝ) * (r α β σ α' β' γ' hirr
+      htriv habc q hq0 h2mq: ℝ) := by
     calc _ = (q^2: ℝ) := ?_
          _ ≤ (2 * ↑(m K): ℝ) * (n K q: ℝ) := ?_
          _ ≤ (2 * ↑(m K): ℝ) ^ (n K q: ℝ) := ?_
          _ ≤ ((2*m K: ℝ)^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq: ℝ)) := ?_
-         _ ≤ (2 * ↑(m K) : ℝ) ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq: ℝ) * (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq: ℝ) := ?_
+         _ ≤ (2 * ↑(m K) : ℝ) ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq: ℝ) * (r α β σ α' β' γ'
+             hirr htriv habc q hq0 h2mq: ℝ) := ?_
     · grind
     · norm_cast; exact q_sq_le_two_mn q h2mq
     · have : (2 * ↑(m K)) * n K q ≤ (2 * ↑(m K)) ^n K q := by
@@ -622,22 +666,28 @@ lemma eq6b : (q*q) * ((((c₄ α' β' γ' ^ (n K q : ℝ) *
   ((n K q : ℝ) ^ (((n K q : ℝ)+ 1)/2)))) *
   (c₆ α' β' γ'* q) ^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) * (c₇ α' β' γ')^q)) ≤
   c₈ α' β' γ'^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) *
-   (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) ^ ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) + 3/2) := by
+   (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) ^ ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+       : ℝ) + 3/2) := by
   calc
-       _ ≤ (((2*m K)^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ))* ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) *
+       _ ≤ (((2*m K)^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ))* ((r α β σ α' β' γ' hirr
+           htriv habc q hq0 h2mq)) *
            ((((c₄ α' β' γ' ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)) *
-           ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)^((1/2)* ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) + 1))))) *
+           ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)^((1/2)* ((r α β σ α' β' γ' hirr htriv
+               habc q hq0 h2mq : ℝ) + 1))))) *
            (((c₆ α' β' γ'* Real.sqrt (2*m K) *
-           (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq: ℝ)^(1/2 : ℝ)) ^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq: ℝ)) *
+           (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq: ℝ)^(1/2 :
+               ℝ)) ^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq: ℝ)) *
            ((c₇ α' β' γ')^(2*m K))^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq: ℝ)))) := ?_
        _ ≤ c₈ α' β' γ'^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) *
-         (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)^((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) + 3/2) := ?_
+         (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)^((r α β σ α' β' γ' hirr htriv habc q hq0
+             h2mq : ℝ) + 3/2) := ?_
   · -- keep your existing first block unchanged
     apply mul_le_mul (eq6b.extracted_1_1 α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
     · simp only [mul_assoc]
       apply mul_le_mul
       · simp only [Real.rpow_natCast]
-        refine pow_le_pow_right₀ (one_le_c₄ α β σ α' β' γ' hirr htriv habc) (n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
+        refine pow_le_pow_right₀ (one_le_c₄ α β σ α' β' γ' hirr htriv habc) (n_le_r α β σ α' β' γ'
+            hirr htriv habc q hq0 h2mq)
       · apply mul_le_mul
         · exact bound_n_le_r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq
         · apply mul_le_mul
@@ -647,7 +697,8 @@ lemma eq6b : (q*q) * ((((c₄ α' β' γ' ^ (n K q : ℝ) *
             · refine mul_le_mul_of_nonneg_left ?_ ?_
               · have := q_eq_sqrtmn α β σ α' β' γ' hirr htriv habc q h2mq
                 calc _ ≤ √(2 * ↑(m K)) * ↑(n K q) ^ (1 / 2 : ℝ) := ?_
-                     _ ≤ √(2 * ↑(m K)) * ↑(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ^ (1 / 2 : ℝ) := ?_
+                     _ ≤ √(2 * ↑(m K)) * ↑(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ^ (1 / 2 :
+                         ℝ) := ?_
                 · rw [this]
                   rw [Real.sqrt_mul]
                   refine mul_le_mul_of_nonneg_left ?_ ?_
@@ -701,7 +752,8 @@ lemma eq6b : (q*q) * ((((c₄ α' β' γ' ^ (n K q : ℝ) *
     simp only [← mul_assoc]
     nth_rw 3 [mul_assoc]
     nth_rw 1 [← mul_comm]
-    rw [mul_comm ((2 * (m K : ℝ)) ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)) (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)]
+    rw [mul_comm ((2 * (m K : ℝ)) ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)) (r α β σ α'
+        β' γ' hirr htriv habc q hq0 h2mq : ℝ)]
     nth_rw 3 [← Real.rpow_one ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq))]
     simp only [← mul_assoc]
     nth_rw 1  [← Real.rpow_add]
@@ -768,8 +820,10 @@ lemma eq6b : (q*q) * ((((c₄ α' β' γ' ^ (n K q : ℝ) *
     · positivity
 
 include α β σ α' β' γ' hirr htriv habc in
-lemma eq6 : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤ c₈ α' β' γ'^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) *
-(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)^((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ) + 3/2) := by
+lemma eq6 : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤ c₈ α' β' γ'^(r α β σ α' β' γ'
+    hirr htriv habc q hq0 h2mq : ℝ) *
+(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)^((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ)
+    + 3/2) := by
   trans
   · apply eq6a α β σ α' β' γ' hirr htriv habc q hq0 h2mq
   exact eq6b α β σ α' β' γ' hirr htriv habc q hq0 h2mq

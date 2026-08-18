@@ -7,6 +7,21 @@ Authors: Michail Karatarakis
 module
 
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainBounds
+public import Mathlib.NumberTheory.Real.Irrational
+
+/-!
+# The Gelfond-Schneider theorem (Hilbert's seventh problem)
+
+If `α` and `β` are algebraic, `α ≠ 0, 1` and `β` is irrational, then `α ^ β` is transcendental.
+
+## Main results
+
+* `GelfondSchneider.transcendental_cpow_of_isAlgebraic_of_irrational`
+* `sqrt2sqrt_is_transcendental`
+
+## References
+* Loo-Keng Hua, Introduction to Number Theory, Springer, 1982. Chapter 17.9.
+-/
 
 @[expose] public section
 
@@ -130,7 +145,8 @@ theorem transcendental_cpow_of_isAlgebraic_of_irrational (α β : ℂ)
             · exact Nat.ne_zero_of_lt this
         · rw [Nat.pow_two]; apply Nat.le_mul_self
 
-  have H5 : 6* (h K) ≤ (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq := H3.trans (n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
+  have H5 : 6* (h K) ≤ (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq := H3.trans (n_le_r α β σ α' β'
+      γ' hirr htriv habc q hq0 h2mq)
 
   have H6 : ((c₁₅ α β α' β' γ'))^4 ≤ (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq := by
     trans
@@ -140,11 +156,13 @@ theorem transcendental_cpow_of_isAlgebraic_of_irrational (α β : ℂ)
 
   apply absurd (use5 α β σ α' β' γ' hirr htriv habc q hq0 u t h2mq) ?_
   · simp only [Real.rpow_natCast, not_lt]
-    rw [← Real.rpow_le_rpow_iff (z:= ( ((↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) - 3 * ↑(h K)) / 2) : ℝ)⁻¹)]
+    rw [← Real.rpow_le_rpow_iff (z:= ( ((↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) - 3 * ↑(h
+        K)) / 2) : ℝ)⁻¹)]
     rw [← Real.rpow_mul, mul_inv_cancel₀]
     simp only [inv_div, Real.rpow_one]
     rw [← Real.rpow_natCast, ← Real.rpow_mul]
-    have : (c₁₅ α β α' β' γ') ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * (2 / (↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) - 3 * ↑(h K)))) ≤
+    have : (c₁₅ α β α' β' γ') ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * (2 / (↑((r α
+        β σ α' β' γ' hirr htriv habc) q hq0 h2mq) - 3 * ↑(h K)))) ≤
        (c₁₅ α β α' β' γ') ^ (4 : ℝ)  := by
         apply Real.rpow_le_rpow_of_exponent_le
         · exact c15_geg_1 α β σ α' β' γ' hirr htriv habc
@@ -168,8 +186,10 @@ theorem transcendental_cpow_of_isAlgebraic_of_irrational (α β : ℂ)
           · rw [sub_eq_neg_add]
             rw [mul_add]
             simp only [mul_neg, le_neg_add_iff_add_le]
-            calc _ ≤  2 *  (6 * (↑(h K))) + 2 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := ?_
-                 _ ≤  2 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) + 2 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := ?_
+            calc _ ≤  2 *  (6 * (↑(h K))) + 2 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :
+                ℝ) := ?_
+                 _ ≤  2 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) + 2 * ((r α β σ α' β'
+                     γ' hirr htriv habc) q hq0 h2mq : ℝ) := ?_
                  _ ≤  4 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := ?_
 
             · simp only [add_le_add_iff_right]; ring_nf; simp only [le_refl]
