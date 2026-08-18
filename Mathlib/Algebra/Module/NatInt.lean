@@ -5,7 +5,6 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.Int.Cast.Lemmas
 
