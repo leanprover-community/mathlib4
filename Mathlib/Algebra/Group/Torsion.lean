@@ -89,7 +89,7 @@ lemma IsMulTorsionFree.zpow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 
 
 @[to_additive zsmul_left_injective]
 lemma zpow_right_injective (ha : a ≠ 1) :
-    Injective fun n : ℤ ↦ a ^ n := by
+    (a ^ · : ℤ → G).Injective := by
   intro m n h
   dsimp at h
   apply Int.sub_eq_zero.mp
