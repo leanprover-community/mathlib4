@@ -38,22 +38,21 @@ The `mul/add` distinction refers to the index monoid `M`: multiplicative sums ov
 * `mulFiber x`: the fiber of multiplication at `x`, all pairs `(a, b)` with `a * b = x`.
 * `convolution L f g`: the discrete convolution
   `(f ⋆[L] g) x = ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)`.
-* `delta e`: the function taking the value `e` at the identity, and `0` elsewhere.
 * `ringConvolution f g`: convolution using multiplication to combine the values of `f` and `g`.
 * `ConvolutionExistsAt L f g x`: the family indexed by `mulFiber x` is summable.
 * `ConvolutionExists L f g`: `ConvolutionExistsAt L f g x` holds for every `x`.
 
 ## Main Results
 
-* `convolution_indicator_one_left`, `convolution_indicator_one_right`: identity element
-  (`Set.indicator {1} (fun _ => e)` where `L e` is the identity map)
+* `single_convolution`, `convolution_single`: identity element
+  (`Pi.single 1 e` where `L e` is the identity map)
 * `ConvolutionExists.distrib_add`, `ConvolutionExists.add_distrib`: distributivity over addition
 * `ConvolutionExistsAt.smul_convolution`, `ConvolutionExistsAt.convolution_smul`:
   scalar multiplication
 * `convolution_comm`: commutativity for symmetric bilinear maps over commutative monoids
 * `convolution_eq_sum_mulAntidiagonal`: finite-sum formula when the index monoid has
   `Finset.HasMulAntidiagonal`
-* `delta_ringConvolution`, `ringConvolution_delta`: identity laws for multiplication convolution
+* `single_ringConvolution`, `ringConvolution_single`: identity laws for multiplication convolution
 * `ringConvolution_add`, `add_ringConvolution`: distributivity over addition
 * `smul_ringConvolution`, `ringConvolution_smul`: external scalar multiplication
 * `ringConvolution_comm`: commutativity when both the indices and values are commutative
@@ -141,21 +140,19 @@ lemma convolution_zero (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) :
     f ⋆[L] (0 : M → E') = 0 := by
   ext; simp [convolution]
 
-@[to_additive (dont_translate := S E F) (attr := simp) addConvolution_indicator_zero_left]
-lemma convolution_indicator_one_left (L : E →ₗ[S] F →ₗ[S] F) (e : E) (f : M → F)
+@[to_additive (dont_translate := S E F) (attr := simp) single_addConvolution]
+lemma single_convolution [DecidableEq M] (L : E →ₗ[S] F →ₗ[S] F) (e : E) (f : M → F)
     (hL : ∀ y, L e y = y) :
-    Set.indicator {1} (fun _ => e) ⋆[L] f = f := by
-  classical
-  ext x; simp only [convolution, Set.indicator_apply]
+    Pi.single 1 e ⋆[L] f = f := by
+  ext x; simp only [convolution, Pi.single_apply]
   rw [tsum_eq_single (⟨(1, x), by grind⟩ : mulFiber x) (by grind [LinearMap.zero_apply])]
   simp [hL]
 
-@[to_additive (dont_translate := S E F) (attr := simp) addConvolution_indicator_zero_right]
-lemma convolution_indicator_one_right (L : F →ₗ[S] E →ₗ[S] F) (f : M → F) (e : E)
+@[to_additive (dont_translate := S E F) (attr := simp) addConvolution_single]
+lemma convolution_single [DecidableEq M] (L : F →ₗ[S] E →ₗ[S] F) (e : E) (f : M → F)
     (hL : ∀ y, L y e = y) :
-    f ⋆[L] Set.indicator {1} (fun _ => e) = f := by
-  classical
-  ext x; simp only [convolution, Set.indicator_apply]
+    f ⋆[L] Pi.single 1 e = f := by
+  ext x; simp only [convolution, Pi.single_apply]
   rw [tsum_eq_single (⟨(x, 1), by grind⟩ : mulFiber x) (by grind [LinearMap.zero_apply])]
   simp [hL]
 
@@ -300,20 +297,6 @@ theorem convolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E) (hL : �
 
 end CommMonoid
 
-/-! ### Delta Functions -/
-
-section Delta
-
-variable [One M] [Zero E]
-
-/-- The function taking the value `e` at the multiplicative identity, and `0` elsewhere. -/
-@[to_additive addDelta
-  /-- The function taking the value `e` at the additive identity, and `0` elsewhere. -/]
-def delta (e : E) : M → E :=
-  Set.indicator {1} fun _ => e
-
-end Delta
-
 /-! ### Convolution with Multiplication -/
 
 section RingConvolution
@@ -355,17 +338,15 @@ section RingConvolutionIdentity
 
 variable [Monoid M] [NonAssocSemiring R] [TopologicalSpace R]
 
-@[to_additive (dont_translate := R) (attr := simp) addDelta_addRingConvolution]
-lemma delta_ringConvolution (f : M → R) :
-    (delta 1) ⋆ᵣ f = f := by
-  simpa only [ringConvolution, delta] using convolution_indicator_one_left (.mul ℕ R) 1 f (by simp)
+@[to_additive (dont_translate := R) (attr := simp) single_addRingConvolution]
+lemma single_ringConvolution [DecidableEq M] (f : M → R) :
+    (Pi.single 1 1) ⋆ᵣ f = f := by
+  simpa only [ringConvolution] using single_convolution (.mul ℕ R) 1 f (by simp)
 
-@[to_additive (dont_translate := R) (attr := simp) addRingConvolution_addDelta]
-lemma ringConvolution_delta (f : M → R) :
-    f ⋆ᵣ (delta 1) = f := by
-  simpa only [ringConvolution, delta] using
-    convolution_indicator_one_right mulLinearMap f (1 : R)
-      (fun y => by simp only [mulLinearMap_apply, mul_one])
+@[to_additive (dont_translate := R) (attr := simp) addRingConvolution_single]
+lemma ringConvolution_single [DecidableEq M] (f : M → R) :
+    f ⋆ᵣ (Pi.single 1 1) = f := by
+  simpa only [ringConvolution] using convolution_single (.mul ℕ R) 1 f (by simp)
 
 end RingConvolutionIdentity
 
@@ -376,15 +357,15 @@ variable [TopologicalSpace R] [T2Space R] [ContinuousAdd R]
 
 @[to_additive (dont_translate := R) addRingConvolution_add]
 lemma ringConvolution_add (f g h : M → R)
-    (hfg : ConvolutionExists mulLinearMap f g) (hfh : ConvolutionExists mulLinearMap f h) :
+    (hfg : ConvolutionExists (.mul ℕ R) f g) (hfh : ConvolutionExists (.mul ℕ R) f h) :
     f ⋆ᵣ (g + h) = f ⋆ᵣ g + f ⋆ᵣ h := by
-  simpa only [ringConvolution] using hfg.distrib_add mulLinearMap hfh
+  simpa only [ringConvolution] using hfg.distrib_add (.mul ℕ R) hfh
 
 @[to_additive (dont_translate := R) add_addRingConvolution]
 lemma add_ringConvolution (f g h : M → R)
-    (hfh : ConvolutionExists mulLinearMap f h) (hgh : ConvolutionExists mulLinearMap g h) :
+    (hfh : ConvolutionExists (.mul ℕ R) f h) (hgh : ConvolutionExists (.mul ℕ R) g h) :
     (f + g) ⋆ᵣ h = f ⋆ᵣ h + g ⋆ᵣ h := by
-  simpa only [ringConvolution] using hfh.add_distrib mulLinearMap hgh
+  simpa only [ringConvolution] using hfh.add_distrib (.mul ℕ R) hgh
 
 end RingConvolutionDistributivity
 
