@@ -32,16 +32,20 @@ permutation-invariant (`comp_perm_majorizes_iff`, `majorizes_comp_perm_iff`). In
 **not** first-order stochastic dominance — the pointwise comparison of the cumulative sums
 `∑_{i ≤ t} a i` along a linearly ordered index — which is a genuinely different order.
 
-The T-transform theory (`TTransform`, the decomposition theorem) additionally needs subtraction and
-division, so it lives over an ordered field `K` (`Field`, `LinearOrder`, `IsStrictOrderedRing`;
-e.g. `ℝ`, `ℚ`).
+The T-transform theory (`RelatedByTTransform`, the decomposition theorem) additionally needs
+subtraction and division, so it lives over an ordered field `K` (`Field`, `LinearOrder`,
+`IsStrictOrderedRing`; e.g. `ℝ`, `ℚ`).
 
 ## Main definitions
 
 * `Majorizes a b` (notation `a ≺ b`): the majorization relation on `ι → M`, via `maxSubsetSum`.
-* `TTransform b a k l lambda` and `RelatedByTTransform b a`: a single T-transform (Robin Hood
-  transfer) pulling the coordinates `a k > a l` toward each other while fixing their sum and the
-  other coordinates.
+* `TStep ι K` and `tTransform a s`: the data of a single T-transform (`k`, `l`, `t`) and its action
+  on a vector — pull `s.k`, `s.l` toward each other by an `s.t`-fraction of their gap, fixing the
+  rest.
+* `RelatedByTTransform b a`: `b = tTransform a s` for some valid step `s` (a single Robin Hood
+  transfer); a `List (TStep ι K)` records an explicit sequence of them.
+* `majorizesTStepList`: from `a ≺ b`, the explicit `List (TStep …)` (as data) carrying sorted `b` to
+  sorted `a`, bundled with its correctness — the `(a, b, proof) ↦ (list, proof)` function.
 * `discrepancy a b`: the number of coordinates at which `a` and `b` differ; the measure driving the
   T-transform decomposition.
 
@@ -52,6 +56,8 @@ e.g. `ℝ`, `ℚ`).
   have equal total sum and every descending prefix sum of `a` is bounded by that of `b`.
 * `majorizes_iff_reflTransGen_relatedByTTransform`: `a ≺ b` iff the decreasing rearrangement of `a`
   is reachable from that of `b` by a finite chain of T-transforms.
+* `majorizes_exists_tStepList`: `a ≺ b` yields an explicit valid `List (TStep …)` taking the
+  sorted `b` to the sorted `a`, keeping each step's `k, l, t` as data.
 
 ## Notation
 
@@ -80,7 +86,7 @@ variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
 /-! ### Sorting into decreasing order and partial sums -/
 
 /-- A permutation that sorts `f` into decreasing (antitone) order. -/
-noncomputable def sortDesc : Equiv.Perm (Fin n) :=
+def sortDesc : Equiv.Perm (Fin n) :=
   Tuple.sort (toDual ∘ f)
 
 lemma antitone_comp_sortDesc : Antitone (f ∘ sortDesc f) := by
@@ -137,7 +143,7 @@ private lemma partialSum_congr_of_antitone
   rw [Tuple.unique_antitone h1 h2]
 
 omit [LinearOrder M] [IsOrderedAddMonoid M] in
-lemma sum_comp_perm {a : Fin n → M} {σ : Equiv.Perm (Fin n)} :
+private lemma sum_comp_perm {a : Fin n → M} {σ : Equiv.Perm (Fin n)} :
     ∑ x, (a ∘ σ) x = ∑ x, a x := Equiv.sum_comp σ a
 
 private lemma comp_perm_comp_sortDesc {σ : Equiv.Perm (Fin n)} :
@@ -149,7 +155,7 @@ private lemma comp_perm_comp_sortDesc {σ : Equiv.Perm (Fin n)} :
   rwa [Equiv.Perm.coe_mul, ← Function.comp_assoc] at hcomp
 
 omit [IsOrderedAddMonoid M] in
-lemma partialSum_comp_perm {a : Fin n → M} {σ : Equiv.Perm (Fin n)} {i : Fin n} :
+private lemma partialSum_comp_perm {a : Fin n → M} {σ : Equiv.Perm (Fin n)} {i : Fin n} :
     partialSum i (a ∘ σ) (sortDesc (a ∘ σ)) = partialSum i a (sortDesc a) := by
   unfold partialSum
   rw [comp_perm_comp_sortDesc]
@@ -184,30 +190,66 @@ private instance :
 
 /-! ### T-transforms and discrepancy -/
 
-/-- `TTransform b a k l lambda`: `b` is a single T-transform (Robin Hood transfer) of `a` at
-coordinates `k`, `l` with parameter `lambda ∈ (0, 1)`, pulling `a k > a l` toward each other while
-fixing their sum and every other coordinate. -/
-structure TTransform {ι : Type*} (b a : ι → K) (k l : ι) (lambda : K) : Prop where
-  /-- The transfer parameter lies strictly between `0` and `1`. -/
-  lambda_0_1 : 0 < lambda ∧ lambda < 1
-  /-- The coordinate `k` dominates the coordinate `l` in `a`. -/
-  ak_gt_al : a k > a l
-  /-- `b` agrees with `a` away from `k` and `l`. -/
-  other_unchanged : ∀ (i : ι), i ≠ k ∧ i ≠ l → a i = b i
-  /-- `b k` moves `a k` toward `a l` by a `lambda`-fraction of their gap. -/
-  bk : b k = a k + (a l - a k) * lambda
-  /-- `b l` moves `a l` toward `a k` by the same amount, keeping `b k + b l = a k + a l`. -/
-  bl : b l = a l - (a l - a k) * lambda
+/-- The data of a single T-transform: the two coordinates and the transfer parameter. This
+`Type`-level record is what we track in an explicit sequence, as opposed to the proof-irrelevant
+`RelatedByTTransform`. -/
+structure TStep (ι K : Type*) where
+  /-- The coordinate whose value decreases. -/
+  k : ι
+  /-- The coordinate whose value increases. -/
+  l : ι
+  /-- The transfer parameter (in `(0, 1)` when the step is valid). -/
+  t : K
 
-/-- `b` is obtained from `a` by some single T-transform. -/
-def RelatedByTTransform {ι : Type*} (b a : ι → K) : Prop :=
-  ∃ k l : ι, ∃ lambda : K, TTransform b a k l lambda
+/-- The vector obtained from `a` by the single T-transform `s`: pull `s.k`, `s.l` toward each other
+by an `s.t`-fraction of their gap, fixing the other coordinates. The argument order `(a, s)` matches
+`List.foldl`. -/
+def tTransform {ι : Type*} [DecidableEq ι] (a : ι → K) (s : TStep ι K) : ι → K :=
+  fun i => if i = s.k then a s.k + (a s.l - a s.k) * s.t
+           else if i = s.l then a s.l - (a s.l - a s.k) * s.t
+           else a i
+
+omit [LinearOrder K] [IsStrictOrderedRing K] in
+@[simp] lemma tTransform_apply_k {ι : Type*} [DecidableEq ι] (a : ι → K) (s : TStep ι K) :
+    tTransform a s s.k = a s.k + (a s.l - a s.k) * s.t := by
+  simp only [tTransform, ↓reduceIte]
+
+omit [LinearOrder K] [IsStrictOrderedRing K] in
+lemma tTransform_apply_l {ι : Type*} [DecidableEq ι] (a : ι → K) {s : TStep ι K}
+    (hkl : s.k ≠ s.l) : tTransform a s s.l = a s.l - (a s.l - a s.k) * s.t := by
+  simp only [tTransform]
+  rw [ite_eq_right (Ne.symm hkl)]
+  simp only [↓reduceIte]
+
+omit [LinearOrder K] [IsStrictOrderedRing K] in
+lemma tTransform_apply_of_ne {ι : Type*} [DecidableEq ι] (a : ι → K) {s : TStep ι K} {i : ι}
+    (hik : i ≠ s.k) (hil : i ≠ s.l) : tTransform a s i = a i := by
+  simp only [tTransform]
+  rw [ite_eq_right hik, ite_eq_right hil]
+
+/-- The step `s` is valid at `a`: the parameter lies in `(0, 1)` and `a s.l < a s.k`. -/
+def TStep.Valid {ι : Type*} (s : TStep ι K) (a : ι → K) : Prop :=
+  0 < s.t ∧ s.t < 1 ∧ a s.l < a s.k
+
+/-- `b` is obtained from `a` by a single T-transform (Robin Hood transfer): some valid step `s`
+carries `a` to `b`, i.e. `b = tTransform a s`. -/
+def RelatedByTTransform {ι : Type*} [DecidableEq ι] (b a : ι → K) : Prop :=
+  ∃ s : TStep ι K, s.Valid a ∧ b = tTransform a s
+
+/-- Apply a list of steps to `a`, left to right. -/
+def applyChain {ι : Type*} [DecidableEq ι] (a : ι → K) (steps : List (TStep ι K)) : ι → K :=
+  steps.foldl tTransform a
+
+/-- Every step of the list is valid at the vector reached just before it. -/
+def ValidChain {ι : Type*} [DecidableEq ι] (a : ι → K) : List (TStep ι K) → Prop
+  | []        => True
+  | s :: rest => s.Valid a ∧ ValidChain (tTransform a s) rest
 
 /-- The number of coordinates at which `a` and `b` differ. -/
-noncomputable def discrepancy {ι : Type*} [Fintype ι] (a b : ι → K) : Nat := #{i | a i ≠ b i}
+def discrepancy {ι : Type*} [Fintype ι] (a b : ι → K) : Nat := #{i | a i ≠ b i}
 
 omit [IsStrictOrderedRing K] in
-lemma exists_sub_ne_zero_of_discrepancy_ne_zero {a b : Fin n → K} :
+private lemma exists_sub_ne_zero_of_discrepancy_ne_zero {a b : Fin n → K} :
   discrepancy a b ≠ 0 → ∃ k : Fin n, a k - b k ≠ 0 := by
   intro hd
   unfold discrepancy at hd
@@ -215,14 +257,7 @@ lemma exists_sub_ne_zero_of_discrepancy_ne_zero {a b : Fin n → K} :
   exact ⟨k, sub_ne_zero.mpr (Finset.mem_filter.mp hk).2⟩
 
 omit [Field K] [IsStrictOrderedRing K] in
-lemma discrepancy_comm {a b : Fin n → K} : discrepancy a b = discrepancy b a := by
-  unfold discrepancy
-  congr 1
-  ext i
-  simp [ne_comm]
-
-omit [Field K] [IsStrictOrderedRing K] in
-lemma discrepancy_zero_iff_eq {a b : Fin n → K} : a = b ↔ discrepancy a b = 0 :=
+private lemma discrepancy_zero_iff_eq {a b : Fin n → K} : a = b ↔ discrepancy a b = 0 :=
   ⟨ fun hab ↦ by unfold discrepancy; simp [hab]
   , fun disc_zero ↦ by
       unfold discrepancy at disc_zero
@@ -234,7 +269,7 @@ lemma discrepancy_zero_iff_eq {a b : Fin n → K} : a = b ↔ discrepancy a b = 
 /-! ### A single T-transform implies majorization -/
 
 @[to_additive]
-lemma prod_split_two {ι M} [Fintype ι] [DecidableEq ι] [CommMonoid M]
+private lemma prod_split_two {ι M} [Fintype ι] [DecidableEq ι] [CommMonoid M]
     {k l : ι} (lnk : l ≠ k) (g : ι → M) :
     ∏ i, g i = (∏ i with i ≠ k ∧ i ≠ l, g i) * g l * g k := by
   rw [← Finset.prod_erase_mul Finset.univ g (Fintype.complete k),
@@ -243,7 +278,7 @@ lemma prod_split_two {ι M} [Fintype ι] [DecidableEq ι] [CommMonoid M]
       show (Finset.univ.erase k).erase l = Finset.univ.filter (fun x ↦ x ≠ k ∧ x ≠ l) from by
         ext x; simp [Finset.mem_erase, and_comm]]
 
-lemma sum_le_sum_Iio_of_antitone {a : Fin n → M} {i : Fin n} {p : Finset (Fin n)}
+private lemma sum_le_sum_Iio_of_antitone {a : Fin n → M} {i : Fin n} {p : Finset (Fin n)}
     (antitone : Antitone a) (peqi : #p = i) : (∑ x ∈ p, a x) ≤ (∑ x < i, a x) := by
   let ai := a i
   rw [← Finset.sum_inter_add_sum_sdiff p (Iio i) (a ·),
@@ -265,7 +300,7 @@ lemma sum_le_sum_Iio_of_antitone {a : Fin n → M} {i : Fin n} {p : Finset (Fin 
   rw [hsame_count] at hmissing_ge
   exact hextra_le.trans hmissing_ge
 
-lemma subset_sum_le_sum_greatest {n} {a : Fin n → M} {i : Fin n} {t : Finset (Fin n)}
+private lemma subset_sum_le_sum_greatest {n} {a : Fin n → M} {i : Fin n} {t : Finset (Fin n)}
     (hs : #t = (i : Nat)) : (∑ x ∈ t, a x) ≤ (∑ x < i, (a ∘ sortDesc a) x) := by
     let preimg := image (sortDesc a).symm t
     have hcard : #preimg = #t := Finset.card_image_of_injective t (sortDesc a).symm.injective
@@ -277,7 +312,7 @@ lemma subset_sum_le_sum_greatest {n} {a : Fin n → M} {i : Fin n} {t : Finset (
     exact sum_le_sum_Iio_of_antitone (antitone_comp_sortDesc a) (hcard.trans hs)
 
 omit [IsOrderedAddMonoid M] in
-lemma sum_image_sortDesc_Iio {n} {a : Fin n → M} {i : Fin n} {t : Finset (Fin n)}
+private lemma sum_image_sortDesc_Iio {n} {a : Fin n → M} {i : Fin n} {t : Finset (Fin n)}
     (ht : t = (Finset.Iio i).image (sortDesc a)) :
     (∑ x ∈ t, a x) = ∑ x < i, (a ∘ sortDesc a) x := by
   rw [ht]
@@ -286,7 +321,7 @@ lemma sum_image_sortDesc_Iio {n} {a : Fin n → M} {i : Fin n} {t : Finset (Fin 
 
 /-- The maximal sum over `i`-element subsets is attained by the `i` greatest coordinates: it equals
 the sum over the image of `Iio i` under the decreasing sort. -/
-lemma sup'_powersetCard_eq_sum_image_sortDesc {n} (a : Fin n → M) (i : Fin n) :
+private lemma sup'_powersetCard_eq_sum_image_sortDesc {n} (a : Fin n → M) (i : Fin n) :
     (Finset.univ.powersetCard i).sup'
         (Finset.powersetCard_nonempty.mpr
           (by rw [Finset.card_univ, Fintype.card_fin]; exact i.isLt.le))
@@ -330,7 +365,7 @@ private lemma maxSubsetSum_comp_symm {ι} [Fintype ι] (e : ι ≃ Fin (Fintype.
   unfold maxSubsetSum
   exact sup'_powersetCard_comp a e _ _ _
 
-lemma maxSubsetSum_eq_descPrefixSum_comp_symm {ι} [Fintype ι]
+private lemma maxSubsetSum_eq_descPrefixSum_comp_symm {ι} [Fintype ι]
     (i : Fin (Fintype.card ι)) (a : ι → M) (equiv : ι ≃ Fin (Fintype.card ι)) :
     maxSubsetSum i a = descPrefixSum i (a ∘ equiv.symm) := by
   rw [maxSubsetSum_comp_symm equiv a i, sup'_powersetCard_eq_sum_image_sortDesc]
@@ -398,8 +433,15 @@ lemma majorizes_comp_perm_iff {ι} [Fintype ι] {a b : ι → M} {σ : Equiv.Per
 private lemma exists_subset_sum_le_of_relatedByTTransform {n} {a b : Fin n → K}
     {s : Finset (Fin n)} (t : RelatedByTTransform a b) :
     ∃ t : Finset (Fin n), #t = #s ∧ ∑ x ∈ s, a x ≤ ∑ x ∈ t, b x := by
-  obtain ⟨k, l, lambda, ttransform⟩ := t
-  obtain ⟨lambda_0_1, ak_gt_al, other_unchanged, bk, bl⟩ := ttransform
+  obtain ⟨s', hvalid, heq⟩ := t
+  obtain ⟨k, l, lambda⟩ := s'
+  obtain ⟨ht0, ht1, ak_gt_al⟩ := hvalid
+  have hkl : k ≠ l := by rintro rfl; exact absurd ak_gt_al (lt_irrefl _)
+  have lambda_0_1 : 0 < lambda ∧ lambda < 1 := ⟨ht0, ht1⟩
+  have bk : a k = b k + (b l - b k) * lambda := by rw [heq, tTransform_apply_k]
+  have bl : a l = b l - (b l - b k) * lambda := by rw [heq, tTransform_apply_l b hkl]
+  have other_unchanged : ∀ i, i ≠ k ∧ i ≠ l → b i = a i := fun i hi => by
+    rw [heq, tTransform_apply_of_ne b hi.1 hi.2]
   by_cases hks : k ∈ s <;> by_cases hls : l ∈ s
   · refine ⟨s, by rfl, ?m⟩
     have l_ne_k : l ≠ k := fun h ↦ ne_of_gt ak_gt_al (congrArg b h).symm
@@ -461,7 +503,7 @@ private lemma exists_subset_sum_eq_sortDesc_prefix {i : Fin n} {a : Fin n → K}
     (card_image_of_injective (Iio i) (sortDesc a).injective).trans (Fin.card_Iio i),
     (sum_image (sortDesc a).injective.injOn).symm⟩
 
-lemma partialSum_domination {n} i {a b : Fin n → K}
+private lemma partialSum_domination {n} i {a b : Fin n → K}
   (t : RelatedByTTransform a b) : partialSum i a (sortDesc a) ≤ partialSum i b (sortDesc b) := by
   unfold partialSum
   obtain ⟨t1, teqi, to_rewrite⟩ := exists_subset_sum_eq_sortDesc_prefix (a := a) (i := i)
@@ -473,12 +515,18 @@ lemma partialSum_domination {n} i {a b : Fin n → K}
 
 private lemma majorizesFin_of_relatedByTTransform {a b : Fin n → K} :
   RelatedByTTransform a b → MajorizesFin a b := by
-  rintro ⟨k, l, lambda, tt⟩
-  have l_ne_k : l ≠ k := fun h ↦ ne_of_gt tt.ak_gt_al (congrArg b h).symm
-  refine ⟨?_, fun i ↦ partialSum_domination i ⟨k, l, lambda, tt⟩⟩
-  have hrest : (∑ i with i ≠ k ∧ i ≠ l, a i) = ∑ i with i ≠ k ∧ i ≠ l, b i :=
-    Finset.sum_congr rfl fun x hx ↦ (tt.other_unchanged x (Finset.mem_filter.mp hx).2).symm
-  rw [sum_split_two l_ne_k a, sum_split_two l_ne_k b, hrest, tt.bk, tt.bl]
+  rintro ⟨s, hvalid, heq⟩
+  obtain ⟨ht0, ht1, ak_gt_al⟩ := hvalid
+  have hkl : s.k ≠ s.l := by rintro h; rw [h] at ak_gt_al; exact absurd ak_gt_al (lt_irrefl _)
+  have l_ne_k : s.l ≠ s.k := hkl.symm
+  have bk : a s.k = b s.k + (b s.l - b s.k) * s.t := by rw [heq, tTransform_apply_k]
+  have bl : a s.l = b s.l - (b s.l - b s.k) * s.t := by rw [heq, tTransform_apply_l b hkl]
+  have other_unchanged : ∀ i, i ≠ s.k ∧ i ≠ s.l → b i = a i := fun i hi => by
+    rw [heq, tTransform_apply_of_ne b hi.1 hi.2]
+  refine ⟨?_, fun i ↦ partialSum_domination i ⟨s, ⟨ht0, ht1, ak_gt_al⟩, heq⟩⟩
+  have hrest : (∑ i with i ≠ s.k ∧ i ≠ s.l, a i) = ∑ i with i ≠ s.k ∧ i ≠ s.l, b i :=
+    Finset.sum_congr rfl fun x hx ↦ (other_unchanged x (Finset.mem_filter.mp hx).2).symm
+  rw [sum_split_two l_ne_k a, sum_split_two l_ne_k b, hrest, bk, bl]
   ring
 
 private lemma majorizesFin_of_reflTransGen_relatedByTTransform {a b : Fin n → K}
@@ -494,89 +542,111 @@ private lemma majorizesFin_of_reflTransGen_relatedByTTransform {a b : Fin n → 
 
 omit [IsStrictOrderedRing K] in
 /-- For an antitone tuple, `partialSum` (defined via `sortDesc`) is just the prefix sum. -/
-lemma partialSum_eq_of_antitone {g : Fin n → K} (hg : Antitone g) (j : Fin n) :
+private lemma partialSum_eq_of_antitone {g : Fin n → K} (hg : Antitone g) (j : Fin n) :
     partialSum j g (sortDesc g) = ∑ x < j, g x := by
   rw [partialSum_congr_of_antitone (antitone_comp_sortDesc g) (p2 := 1) (by simpa using hg) j,
       partialSum]
   simp
 
-private lemma tTransform_candidates {n} {a b : Fin n → K} (ha : Antitone a) (hb : Antitone b)
-  (majorizes : MajorizesFin a b) (h : discrepancy a b ≠ 0) :
-  ∃ k l : Fin n,
-      k < l
-    ∧ a k < b k
-    ∧ a l > b l
-    ∧ (∀ i : Fin n, i > k → i < l → a i = b i) := by
+/-- The two coordinates chosen by one decomposition step, returned as **data** (not `∃`) together
+with the properties that make them a valid T-transform site. Returning `k`, `l` in `Type` is what
+lets the step sequence be built as an explicit list. -/
+private structure TCandidate {n} (a b : Fin n → K) : Type _ where
+  /-- The larger-index endpoint of the transfer. -/
+  k : Fin n
+  /-- The smaller-index (in value: overtaking) endpoint. -/
+  l : Fin n
+  /-- `k` precedes `l`. -/
+  k_lt_l : k < l
+  /-- At `k`, `a` is strictly below `b`. -/
+  ak_lt_bk : a k < b k
+  /-- At `l`, `a` is strictly above `b`. -/
+  al_gt_bl : a l > b l
+  /-- Between `k` and `l`, `a` and `b` agree. -/
+  between : ∀ i : Fin n, k < i → i < l → a i = b i
+
+/-- The decomposition step's coordinate choice, as data: `k` is the greatest index below `l` where
+`a < b`, `l` the least index where `a > b`. All the existence reasoning stays in the `Prop`-valued
+subproofs (nonemptiness), so `k`, `l` come out in `Type`. -/
+private def tTransform_candidates {n} {a b : Fin n → K} (ha : Antitone a) (hb : Antitone b)
+    (majorizes : MajorizesFin a b) (h : discrepancy a b ≠ 0) : TCandidate a b := by
   -- The equal totals give `∑ (a - b) = 0`; with `a ≠ b` there is an index where `a` overtakes `b`.
   have a_b_diff_sum_eq_zero : ∑ i, (a i - b i) = 0 := by
     rw [Finset.sum_sub_distrib, sub_eq_zero]
     exact majorizes.sum
-  obtain ⟨some_l, pl⟩ := Finset.exists_pos_of_sum_zero_of_exists_nonzero _ a_b_diff_sum_eq_zero
-    (by simp only [mem_univ, ne_eq, true_and]; exact exists_sub_ne_zero_of_discrepancy_ne_zero h)
-  simp only [mem_univ, sub_pos, true_and] at pl
   -- Majorization prefix sums, rewritten via antitonicity into honest prefix sums.
   have hpref : ∀ j : Fin n, ∑ x < j, a x ≤ ∑ x < j, b x := fun j ↦ by
     have hsums_j := majorizes.sums j
     unfold descPrefixSum at hsums_j
     rwa [partialSum_eq_of_antitone ha, partialSum_eq_of_antitone hb] at hsums_j
-  -- `l` : the smallest index where `a` overtakes `b`; below it, minimality forces `a ≤ b`.
-  -- (Extracted as an opaque index; keeping `min'` behind a `let` triggers `isDefEq` timeouts.)
-  obtain ⟨l, hl_mem, hl_min⟩ :
-      ∃ l : Fin n, a l > b l ∧ ∀ i, i < l → a i ≤ b i := by
-    have hne : ({i | a i > b i} : Finset (Fin n)).Nonempty :=
-      ⟨some_l, Finset.mem_filter.mpr ⟨mem_univ _, pl⟩⟩
-    refine ⟨({i | a i > b i} : Finset (Fin n)).min' hne,
-      (Finset.mem_filter.mp (Finset.min'_mem _ hne)).2, fun i hil ↦ ?_⟩
+  -- Nonemptiness of the "overtake" set (this is where the classical existence lives, in `Prop`).
+  have hne_l : ({i | a i > b i} : Finset (Fin n)).Nonempty := by
+    obtain ⟨some_l, pl⟩ := Finset.exists_pos_of_sum_zero_of_exists_nonzero _ a_b_diff_sum_eq_zero
+      (by simp only [mem_univ, ne_eq, true_and]; exact exists_sub_ne_zero_of_discrepancy_ne_zero h)
+    simp only [mem_univ, sub_pos, true_and] at pl
+    exact ⟨some_l, Finset.mem_filter.mpr ⟨mem_univ _, pl⟩⟩
+  -- `l` : the smallest index where `a` overtakes `b` (DATA, via `set`).
+  set l := ({i | a i > b i} : Finset (Fin n)).min' hne_l with hl_def
+  have hl_mem : a l > b l := (Finset.mem_filter.mp (Finset.min'_mem _ hne_l)).2
+  have hl_min : ∀ i, i < l → a i ≤ b i := fun i hil ↦ by
     by_contra hgt
     exact absurd (Finset.min'_le ({i | a i > b i} : Finset (Fin n)) i
       (Finset.mem_filter.mpr ⟨mem_univ _, not_le.mp hgt⟩)) (not_le.mpr hil)
-  -- `k` : the largest index below `l` with `a < b`; strictly between `k` and `l`, `a = b`.
-  obtain ⟨k, hk_lt, hk_ab, hk_between⟩ :
-      ∃ k : Fin n, k < l ∧ a k < b k ∧ ∀ i, k < i → i < l → a i = b i := by
-    -- Nonemptiness: otherwise `a = b` below `l`, and the `l`-prefix sum contradicts `a l > b l`.
-    have k_nonempty : ({i | i < l ∧ a i < b i} : Finset (Fin n)).Nonempty := by
-      rw [Finset.nonempty_iff_ne_empty]
-      intro hempty
-      have hbelow : ∀ i, i < l → a i = b i := by
-        intro i hil
-        refine le_antisymm (hl_min i hil) (not_lt.mp fun hlt ↦ ?_)
-        have hmem : i ∈ ({i | i < l ∧ a i < b i} : Finset (Fin n)) :=
-          Finset.mem_filter.mpr ⟨mem_univ _, hil, hlt⟩
-        rw [hempty] at hmem
-        exact absurd hmem (Finset.notMem_empty i)
-      have hsum_below : ∑ x < l, a x = ∑ x < l, b x :=
-        Finset.sum_congr rfl fun i hi ↦ hbelow i (Finset.mem_Iio.mp hi)
-      have hIic : ∑ x ∈ Finset.Iic l, a x ≤ ∑ x ∈ Finset.Iic l, b x := by
-        by_cases hmax : IsMax l
-        · have huniv : Finset.Iic l = Finset.univ := by
-            ext x
-            simp only [Finset.mem_Iic, mem_univ, iff_true]
-            exact not_lt.mp fun hlt ↦ absurd (hmax hlt.le) (not_le.mpr hlt)
-          rw [huniv]; exact le_of_eq majorizes.sum
-        · have hset : Finset.Iio (Order.succ l) = Finset.Iic l := by
-            ext x; rw [Finset.mem_Iio, Finset.mem_Iic, Order.lt_succ_iff_of_not_isMax hmax]
-          have hpref_succ := hpref (Order.succ l)
-          rwa [hset] at hpref_succ
-      rw [show Finset.Iic l = insert l (Finset.Iio l) from (Finset.Iio_insert l).symm,
-          Finset.sum_insert (by simp), Finset.sum_insert (by simp), hsum_below] at hIic
-      exact absurd hl_mem (not_lt.mpr (by linarith))
-    refine ⟨({i | i < l ∧ a i < b i} : Finset (Fin n)).max' k_nonempty, ?_, ?_,
-      fun i hik hil ↦ ?_⟩
-    · exact ((Finset.mem_filter.mp (Finset.max'_mem _ k_nonempty)).2).1
-    · exact ((Finset.mem_filter.mp (Finset.max'_mem _ k_nonempty)).2).2
-    · refine le_antisymm (hl_min i hil) (not_lt.mp fun hlt ↦ ?_)
-      exact absurd (Finset.le_max' ({i | i < l ∧ a i < b i} : Finset (Fin n)) i
-        (Finset.mem_filter.mpr ⟨mem_univ _, hil, hlt⟩)) (not_le.mpr hik)
-  exact ⟨k, l, hk_lt, hk_ab, hl_mem, hk_between⟩
+  -- Nonemptiness of the `k`-set: otherwise `a = b` below `l`, contradicting the `l`-prefix sum.
+  have hne_k : ({i | i < l ∧ a i < b i} : Finset (Fin n)).Nonempty := by
+    rw [Finset.nonempty_iff_ne_empty]
+    intro hempty
+    have hbelow : ∀ i, i < l → a i = b i := by
+      intro i hil
+      refine le_antisymm (hl_min i hil) (not_lt.mp fun hlt ↦ ?_)
+      have hmem : i ∈ ({i | i < l ∧ a i < b i} : Finset (Fin n)) :=
+        Finset.mem_filter.mpr ⟨mem_univ _, hil, hlt⟩
+      rw [hempty] at hmem
+      exact absurd hmem (Finset.notMem_empty i)
+    have hsum_below : ∑ x < l, a x = ∑ x < l, b x :=
+      Finset.sum_congr rfl fun i hi ↦ hbelow i (Finset.mem_Iio.mp hi)
+    have hIic : ∑ x ∈ Finset.Iic l, a x ≤ ∑ x ∈ Finset.Iic l, b x := by
+      by_cases hmax : IsMax l
+      · have huniv : Finset.Iic l = Finset.univ := by
+          ext x
+          simp only [Finset.mem_Iic, mem_univ, iff_true]
+          exact not_lt.mp fun hlt ↦ absurd (hmax hlt.le) (not_le.mpr hlt)
+        rw [huniv]; exact le_of_eq majorizes.sum
+      · have hset : Finset.Iio (Order.succ l) = Finset.Iic l := by
+          ext x; rw [Finset.mem_Iio, Finset.mem_Iic, Order.lt_succ_iff_of_not_isMax hmax]
+        have hpref_succ := hpref (Order.succ l)
+        rwa [hset] at hpref_succ
+    rw [show Finset.Iic l = insert l (Finset.Iio l) from (Finset.Iio_insert l).symm,
+        Finset.sum_insert (by simp), Finset.sum_insert (by simp), hsum_below] at hIic
+    exact absurd hl_mem (not_lt.mpr (by linarith))
+  -- `k` : the largest index below `l` with `a < b` (DATA, via `set`).
+  set k := ({i | i < l ∧ a i < b i} : Finset (Fin n)).max' hne_k with hk_def
+  refine ⟨k, l, ?_, ?_, hl_mem, fun i hik hil ↦ ?_⟩
+  · exact ((Finset.mem_filter.mp (Finset.max'_mem _ hne_k)).2).1
+  · exact ((Finset.mem_filter.mp (Finset.max'_mem _ hne_k)).2).2
+  · refine le_antisymm (hl_min i hil) (not_lt.mp fun hlt ↦ ?_)
+    exact absurd (Finset.le_max' ({i | i < l ∧ a i < b i} : Finset (Fin n)) i
+      (Finset.mem_filter.mpr ⟨mem_univ _, hil, hlt⟩)) (not_le.mpr hik)
 
-/-- One step of the T-transform decomposition: from `a ≺ b` (both antitone) with `a ≠ b`,
-build a single T-transform `c` of `b` that is still majorized by `a`, is antitone, and is
-strictly closer to `a` (measured by `discrepancy`). This is the non-recursive core; the
-well-founded recursion lives in `reflTransGen_relatedByTTransform_of_majorizesFin`. -/
-private lemma tTransform_step {a b : Fin n → K} (ha : Antitone a) (hb : Antitone b)
-    (majorizes : MajorizesFin a b) (h : discrepancy a b ≠ 0) :
-    ∃ c : Fin n → K, RelatedByTTransform c b ∧ MajorizesFin a c ∧ Antitone c ∧
-      discrepancy a c < discrepancy a b := by
+/-- The data produced by one decomposition step: the `TStep` `s`, plus proofs that it is valid at
+`b`, keeps `a`-majorization, stays antitone, and strictly decreases `discrepancy`. -/
+private structure TStepResult {n} (a b : Fin n → K) : Type _ where
+  /-- The step. -/
+  s : TStep (Fin n) K
+  /-- The step is valid at `b`. -/
+  valid : s.Valid b
+  /-- The transformed vector is still majorized by `a`. -/
+  maj : MajorizesFin a (tTransform b s)
+  /-- The transformed vector is antitone. -/
+  anti : Antitone (tTransform b s)
+  /-- The transformed vector is strictly closer to `a`. -/
+  discr : discrepancy a (tTransform b s) < discrepancy a b
+
+/-- One step of the T-transform decomposition, returned as data: from `a ≺ b` (both antitone) with
+`a ≠ b`, produce the `TStep` carrying `b` one step toward `a` (still `a`-majorized, antitone, and
+strictly closer in `discrepancy`). Non-recursive core; the recursion lives in `tStepList`. -/
+private def tTransform_step {a b : Fin n → K} (ha : Antitone a) (hb : Antitone b)
+    (majorizes : MajorizesFin a b) (h : discrepancy a b ≠ 0) : TStepResult a b := by
     obtain ⟨k, l, k_leq_l, a_k_leq_b_k, a_l_geq_b_k, equal_inbetween⟩ :=
       tTransform_candidates ha hb majorizes h
     have a_l_neq_b_l : a l ≠ b l := ne_of_gt a_l_geq_b_k
@@ -647,26 +717,26 @@ private lemma tTransform_step {a b : Fin n → K} (ha : Antitone a) (hb : Antito
       · have c_l_eq_a_l : c l = a l := by unfold c; simp[knel.symm, sigma, h]
         simp [c_l_eq_a_l, a_l_neq_b_l, a_k_neq_b_k]
         by_cases h : a k = c k <;> simp[h]
-    -- `c` is a single T-transform of `b`. Choosing lambda = (c k - b k)/(b l - b k) keeps the proof
-    -- uniform across both `sigma` branches (we never unfold `sigma`; it stays an atom).
-    have c_b_related_by_ttransform : RelatedByTTransform c b := by
-      refine ⟨k, l, (rho + sigma - b k) / (b l - b k), ⟨?_, ?_⟩, bl_lt_bk, ?_, ?_, ?_⟩
-      · exact div_pos_of_neg_of_neg (by linarith [sigma_lt_tau, rho_add_tau])
-          (by linarith [bl_lt_bk])
-      · exact div_lt_one_iff.mpr (Or.inr (Or.inr
-          ⟨by linarith [bl_lt_bk], by linarith [sigma_nonneg, tau_pos, rho_sub_tau]⟩))
-      · rintro i ⟨hik, hil⟩
-        change b i = if i = k then rho + sigma else if i = l then rho - sigma else b i
-        rw [ite_eq_right hik, ite_eq_right hil]
-      · rw [mul_div_cancel₀ _ bl_bk_ne]
-        change (if k = k then rho + sigma else if k = l then rho - sigma else b k)
-              = b k + (rho + sigma - b k)
-        rw [ite_eq_left rfl]; ring
-      · rw [mul_div_cancel₀ _ bl_bk_ne]
-        change (if l = k then rho + sigma else if l = l then rho - sigma else b l)
-              = b l - (rho + sigma - b k)
-        rw [ite_eq_right knel.symm, ite_eq_left rfl]
-        linarith [rho_add_tau, rho_sub_tau]
+    -- The step data: `k`, `l`, and the transfer parameter `t = (rho + sigma - b k) / (b l - b k)`,
+    -- chosen so that `c = tTransform b s` uniformly across both `sigma` branches (we never unfold
+    -- `sigma`; it stays an atom).
+    let s : TStep (Fin n) K := ⟨k, l, (rho + sigma - b k) / (b l - b k)⟩
+    have hvalid : s.Valid b :=
+      ⟨div_pos_of_neg_of_neg (by linarith [sigma_lt_tau, rho_add_tau]) (by linarith [bl_lt_bk]),
+       div_lt_one_iff.mpr (Or.inr (Or.inr
+         ⟨by linarith [bl_lt_bk], by linarith [sigma_nonneg, tau_pos, rho_sub_tau]⟩)),
+       bl_lt_bk⟩
+    have hcs : c = tTransform b s := by
+      funext i
+      by_cases hik : i = k
+      · subst hik
+        rw [tTransform_apply_k, hck, mul_div_cancel₀ _ bl_bk_ne]; ring
+      · by_cases hil : i = l
+        · subst hil
+          rw [tTransform_apply_l b knel, hcl, mul_div_cancel₀ _ bl_bk_ne]
+          linarith [rho_add_tau, rho_sub_tau]
+        · rw [tTransform_apply_of_ne b hik hil]; exact hci i hik hil
+    have c_b_related_by_ttransform : RelatedByTTransform c b := ⟨s, hvalid, hcs⟩
     have hc : Antitone c := by
       -- Textbook approach: for antitonicity on `Fin n` it suffices to check neighbours,
       -- `c (succ i) ≤ c i`. `c` differs from `b` only at `k`, `l`, so the only nontrivial
@@ -760,22 +830,56 @@ private lemma tTransform_step {a b : Fin n → K} (ha : Antitone a) (hb : Antito
                 exact hci x hx.2.1 hx.1]
           linarith [hsum2]
         rw [hc_eq]; exact hab i
-    exact ⟨c, c_b_related_by_ttransform, a_majorized_by_c, hc, discrepancy_decreasing⟩
+    exact ⟨s, hvalid, hcs ▸ a_majorized_by_c, hcs ▸ hc, hcs ▸ discrepancy_decreasing⟩
+
+/-- The explicit list of T-transform steps carrying `b` to `a`, **as data**, bundled with its
+correctness: it is a valid chain, folding it over `b` yields `a`, and its length is at most
+`discrepancy a b`. Well-founded recursion on `discrepancy a b`, one step from `tTransform_step`. -/
+private def tStepList {a b : Fin n → K}
+    (ha : Antitone a) (hb : Antitone b) (majorizes : MajorizesFin a b) :
+    {steps : List (TStep (Fin n) K) //
+      ValidChain b steps ∧ applyChain b steps = a ∧ steps.length ≤ discrepancy a b} := by
+  if h : discrepancy a b = 0 then
+    refine ⟨[], trivial, ?_, Nat.zero_le _⟩
+    simp only [applyChain, List.foldl_nil]
+    exact (discrepancy_zero_iff_eq.mpr h).symm
+  else
+    let r := tTransform_step ha hb majorizes h
+    obtain ⟨steps, hvc, hac, hlen⟩ := tStepList ha r.anti r.maj
+    have hd := r.discr
+    refine ⟨r.s :: steps, ⟨r.valid, hvc⟩,
+      by simpa only [applyChain, List.foldl_cons] using hac, ?_⟩
+    simp only [List.length_cons]
+    omega
+  termination_by discrepancy a b
+  decreasing_by exact r.discr
+
+/-- `∃`-form of `tStepList`, forgetting the list back into a proposition. -/
+private lemma exists_tStepList_of_majorizesFin {a b : Fin n → K}
+    (ha : Antitone a) (hb : Antitone b) (majorizes : MajorizesFin a b) :
+    ∃ steps : List (TStep (Fin n) K), ValidChain b steps ∧ applyChain b steps = a ∧
+      steps.length ≤ discrepancy a b :=
+  ⟨(tStepList ha hb majorizes).1, (tStepList ha hb majorizes).2⟩
+
+omit [IsStrictOrderedRing K] in
+/-- A valid list of T-transform steps carrying `b` to `a` gives the `ReflTransGen` chain. -/
+private lemma reflTransGen_of_tStepList {ι : Type*} [DecidableEq ι] {a b : ι → K}
+    {steps : List (TStep ι K)} (hv : ValidChain b steps) (he : applyChain b steps = a) :
+    Relation.ReflTransGen RelatedByTTransform a b := by
+  induction steps generalizing b with
+  | nil => simp only [applyChain, List.foldl_nil] at he; subst he; exact .refl
+  | cons s rest ih =>
+      obtain ⟨hvs, hvrest⟩ := hv
+      exact (ih hvrest (by simpa only [applyChain, List.foldl_cons] using he)).tail
+        ⟨s, hvs, rfl⟩
 
 /-- `a ≺ b` (both antitone) implies `a` is reachable from `b` by a finite chain of
-T-transforms. Decreasing recursion on `discrepancy a b`, one step supplied by
-`tTransform_step`. -/
+T-transforms. Corollary of `exists_tStepList_of_majorizesFin` via `reflTransGen_of_tStepList`. -/
 private lemma reflTransGen_relatedByTTransform_of_majorizesFin
   {a b : Fin n → K} (ha : Antitone a) (hb : Antitone b) (majorizes : MajorizesFin a b) :
   Relation.ReflTransGen RelatedByTTransform a b := by
-  if h : discrepancy a b = 0 then
-    have := discrepancy_zero_iff_eq.mpr h
-    rw [this]
-  else
-    obtain ⟨c, hcb, hac, hcAnti, hlt⟩ := tTransform_step ha hb majorizes h
-    exact Relation.ReflTransGen.tail
-      (reflTransGen_relatedByTTransform_of_majorizesFin ha hcAnti hac) hcb
-  termination_by discrepancy a b
+  obtain ⟨steps, hv, he, _⟩ := exists_tStepList_of_majorizesFin ha hb majorizes
+  exact reflTransGen_of_tStepList hv he
 
 /-- Majorization characterised by T-transforms: `a ≺ b` iff the decreasing rearrangement of `a`
 is reachable from that of `b` by a finite chain of T-transforms. -/
@@ -800,5 +904,35 @@ lemma majorizes_iff_reflTransGen_relatedByTTransform {ι} [Fintype ι]
       ((a ∘ e.symm) ∘ sortDesc (a ∘ e.symm)) ((b ∘ e.symm) ∘ sortDesc (b ∘ e.symm)) :=
   (majorizes_iff_majorizesFin_comp_symm e a b).trans
     majorizesFin_iff_reflTransGen_relatedByTTransform
+
+/-- Explicit T-transform sequence (`Fintype` version), **as data**: `a ≺ b` yields the concrete
+`List (TStep …)` carrying the decreasing rearrangement of `b` to that of `a` (transported to
+`Fin (card ι)` along `e`), bundled with the proof that it is a valid chain whose fold sends `b↓` to
+`a↓`. This is the data-returning core — one function taking `a`, `b` and a majorization proof and
+returning the step list together with its correctness. Unlike
+`majorizes_iff_reflTransGen_relatedByTTransform`, it keeps the parameters `k, l, t` of every step as
+data. -/
+@[no_expose] def majorizesTStepList {ι} [Fintype ι] (e : ι ≃ Fin (Fintype.card ι))
+    (a b : ι → K) (h : Majorizes a b) :
+    {steps : List (TStep (Fin (Fintype.card ι)) K) //
+      ValidChain ((b ∘ e.symm) ∘ sortDesc (b ∘ e.symm)) steps ∧
+      applyChain ((b ∘ e.symm) ∘ sortDesc (b ∘ e.symm)) steps
+        = (a ∘ e.symm) ∘ sortDesc (a ∘ e.symm)} :=
+  let maj : MajorizesFin (a ∘ e.symm) (b ∘ e.symm) :=
+    (majorizes_iff_majorizesFin_comp_symm e a b).mp h
+  let maj' : MajorizesFin ((a ∘ e.symm) ∘ sortDesc (a ∘ e.symm))
+      ((b ∘ e.symm) ∘ sortDesc (b ∘ e.symm)) :=
+    (comp_perm_majorizesFin_iff.trans majorizesFin_comp_perm_iff).mpr maj
+  let r := tStepList (antitone_comp_sortDesc _) (antitone_comp_sortDesc _) maj'
+  ⟨r.1, r.2.1, r.2.2.1⟩
+
+/-- `∃`-form of `majorizesTStepList`. -/
+lemma majorizes_exists_tStepList {ι} [Fintype ι] (e : ι ≃ Fin (Fintype.card ι))
+    (a b : ι → K) (h : Majorizes a b) :
+    ∃ steps : List (TStep (Fin (Fintype.card ι)) K),
+      ValidChain ((b ∘ e.symm) ∘ sortDesc (b ∘ e.symm)) steps ∧
+      applyChain ((b ∘ e.symm) ∘ sortDesc (b ∘ e.symm)) steps
+        = (a ∘ e.symm) ∘ sortDesc (a ∘ e.symm) :=
+  ⟨(majorizesTStepList e a b h).1, (majorizesTStepList e a b h).2⟩
 
 end Majorization
