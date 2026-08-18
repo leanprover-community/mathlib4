@@ -32,7 +32,7 @@ with an additional assumption that `s` is bounded below.
 
 open Set
 
-variable {α β γ : Type*} {ι : Sort*}
+variable {α : Type*}
 
 /-- A conditionally complete lattice is a lattice in which
 every nonempty subset which is bounded above has a supremum, and
@@ -80,6 +80,8 @@ class ConditionallyCompleteLinearOrder (α : Type*)
   /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
   compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
     compareOfLessAndEq_rfl
+
+attribute [to_dual existing] ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove
 
 /-- A conditionally complete linear order with `Bot` is a linear order with least element, in which
 every nonempty subset which is bounded above has a supremum, and every nonempty subset (necessarily
@@ -169,7 +171,7 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
   __ :=
     letI : InfSet α := ⟨fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥⟩
     conditionallyCompleteLatticeOfLatticeOfsInf _ fun s _ hn ↦ by
-      simp only [dif_pos hn]
+      simp only [dite_eq_left hn]
       exact IsLeast.isGLB ⟨h.wf.min_mem s hn, fun _ hx ↦ h.wf.min_le hx⟩
   csSup_empty := by simp [sSup, bot_unique (WellFounded.min_le _ (mem_univ _))]
   csSup_of_not_bddAbove s H := by

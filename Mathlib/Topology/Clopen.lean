@@ -16,7 +16,7 @@ A clopen set is a set that is both closed and open.
 
 public section
 
-open Set Filter Topology TopologicalSpace
+open Set Topology TopologicalSpace
 
 universe u v
 

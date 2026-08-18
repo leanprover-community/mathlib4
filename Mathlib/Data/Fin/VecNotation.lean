@@ -96,7 +96,7 @@ def vecHead {n : ℕ} (v : Fin n.succ → α) : α :=
 def vecTail {n : ℕ} (v : Fin n.succ → α) : Fin n → α :=
   v ∘ Fin.succ
 
-variable {m n : ℕ}
+variable {n : ℕ}
 
 /-- Use `![...]` notation for displaying a vector `Fin n → α`, for example:
 
@@ -197,7 +197,6 @@ dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
     if let Expr.lit (.natVal length) := etailn_whnf then
       pure (length, false, q(OfNat.ofNat $etailn_whnf))
     else if let some ((base : Q(ℕ)), offset) ← (Meta.isOffset? etailn_whnf).run then
-      let offset_e : Q(ℕ) := mkNatLit offset
       pure (offset, true, q($base + $offset))
     else
       pure (0, true, etailn)
