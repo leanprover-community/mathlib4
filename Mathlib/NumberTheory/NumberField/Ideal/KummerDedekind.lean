@@ -7,8 +7,9 @@ module
 
 public import Mathlib.NumberTheory.KummerDedekind
 public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.RingTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.RamificationInertia.Inertia
+public import Mathlib.RingTheory.RamificationInertia.Ramification
 
 /-!
 # Kummer-Dedekind criterion for the splitting of prime numbers
@@ -183,7 +184,6 @@ theorem primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ
           rw [← primesOverSpanEquivMonicFactorsModAux_symm_apply]
           exact ((primesOverSpanEquivMonicFactorsModAux _).symm ⟨Q, hQ⟩).prop⟩ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 The ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
 `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is spanned by `p` and `Q(θ)`.

@@ -100,7 +100,6 @@ structure SimpleGraph (V : Type u) where
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for simple graphs using a symmetric irreflexive Boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
@@ -221,7 +220,7 @@ instance : Max (SimpleGraph V) where
     { Adj := x.Adj ⊔ y.Adj
       symm.symm v w h := by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }
 
-@[simp]
+@[simp, grind =]
 theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w :=
   Iff.rfl
 

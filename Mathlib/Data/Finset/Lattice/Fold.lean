@@ -27,7 +27,7 @@ lattice or set operations behave when indexed by a finset.
 
 open Function Multiset OrderDual
 
-variable {F α β γ ι κ : Type*}
+variable {F α β γ ι : Type*}
 
 namespace Finset
 
@@ -104,6 +104,14 @@ protected theorem sup_le_iff {a : α} : s.sup f ≤ a ↔ ∀ b ∈ s, f b ≤ a
 
 @[to_dual le_inf] protected alias ⟨_, sup_le⟩ := Finset.sup_le_iff
 
+@[to_dual]
+theorem _root_.BddAbove.range_finsetSup (hf : BddAbove (.range f)) :
+    BddAbove (.range fun s : Finset β => s.sup f) := by
+  obtain ⟨a, ha⟩ := hf
+  refine ⟨a, ?_⟩
+  rintro _ ⟨s, rfl⟩
+  exact Finset.sup_le fun b _ => ha ⟨b, rfl⟩
+
 @[to_dual le_inf_const]
 theorem sup_const_le : (s.sup fun _ => a) ≤ a :=
   Finset.sup_le fun _ _ => le_rfl
@@ -150,6 +158,11 @@ theorem sup_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.sup f �
 @[to_dual (attr := gcongr, grind ←)]
 theorem sup_mono (h : s₁ ⊆ s₂) : s₁.sup f ≤ s₂.sup f :=
   Finset.sup_le (fun _ hb => le_sup (h hb))
+
+theorem monotone_sup (f : β → α) : Monotone fun s : Finset β => s.sup f := fun _ _ h => sup_mono h
+
+theorem antitone_inf {α} [SemilatticeInf α] [OrderTop α] (f : β → α) :
+  Antitone fun s : Finset β => s.inf f := monotone_sup (α := αᵒᵈ) f
 
 @[to_dual]
 protected theorem sup_comm (s : Finset β) (t : Finset γ) (f : β → γ → α) :
@@ -346,7 +359,7 @@ variable [DistribLattice α]
 
 section OrderBot
 
-variable [OrderBot α] {s : Finset ι} {t : Finset κ} {f : ι → α} {g : κ → α} {a : α}
+variable [OrderBot α] {s : Finset ι} {f : ι → α} {a : α}
 
 @[to_dual]
 theorem sup_inf_distrib_left (s : Finset ι) (f : ι → α) (a : α) :
@@ -702,8 +715,8 @@ theorem ofDual_sup' [SemilatticeInf α] {s : Finset ι} (hs : s.Nonempty) (f : �
   rfl
 
 section DistribLattice
-variable [DistribLattice α] {s : Finset ι} {t : Finset κ} (hs : s.Nonempty) (ht : t.Nonempty)
-  {f : ι → α} {g : κ → α} {a : α}
+variable [DistribLattice α] {s : Finset ι} (hs : s.Nonempty)
+  {f : ι → α} {a : α}
 
 @[to_dual]
 theorem sup'_inf_distrib_left (f : ι → α) (a : α) :

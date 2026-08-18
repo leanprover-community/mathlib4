@@ -11,8 +11,10 @@ public import Mathlib.Analysis.Calculus.FDeriv.Extend
 public import Mathlib.Analysis.Calculus.Deriv.Prod
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+import Mathlib.Topology.GDelta.MetrizableSpace
 
 /-!
 # Derivatives of power function on `ℂ`, `ℝ`, `ℝ≥0`, and `ℝ≥0∞`
@@ -331,7 +333,7 @@ end deriv
 
 namespace Real
 
-variable {x y z : ℝ}
+variable {x y : ℝ}
 
 /-- `(x, y) ↦ x ^ y` is strictly differentiable at `p : ℝ × ℝ` such that `0 < p.fst`. -/
 theorem hasStrictFDerivAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.1) :
@@ -430,7 +432,7 @@ end Real
 
 namespace Real
 
-variable {z x y : ℝ}
+variable {x y : ℝ}
 
 theorem hasDerivAt_rpow_const {x p : ℝ} (h : x ≠ 0 ∨ 1 ≤ p) :
     HasDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x := by

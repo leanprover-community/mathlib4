@@ -17,7 +17,7 @@ In this file we prove theorems about products and sums over a `Finset.powerset`.
 
 public section
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 variable {s : Finset α} {a : α}
 

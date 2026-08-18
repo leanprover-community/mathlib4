@@ -34,7 +34,7 @@ namespace Finset
 
 variable [DecidableEq α'] [DecidableEq β'] [DecidableEq γ] [DecidableEq γ']
   [DecidableEq δ'] [DecidableEq ε] [DecidableEq ε'] {f f' : α → β → γ} {g g' : α → β → γ → δ}
-  {s s' : Finset α} {t t' : Finset β} {u u' : Finset γ} {a a' : α} {b b' : β} {c : γ}
+  {s s' : Finset α} {t t' : Finset β} {u : Finset γ} {a : α} {b : β} {c : γ}
 
 /-- The image of a binary function `f : α → β → γ` as a function `Finset α → Finset β → Finset γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
