@@ -607,9 +607,9 @@ private lemma tTransform_step {a b : Fin n → K} (ha : Antitone a) (hb : Antito
     -- Values of `c` at `k`, `l`, and off `{k, l}`, plus the boundary estimates (shared by
     -- `hc : Antitone c` and `a ≺ c`).
     have hck : c k = rho + sigma := by simp only [c, ↓reduceIte]
-    have hcl : c l = rho - sigma := by simp only [c, if_neg knel.symm, ↓reduceIte]
+    have hcl : c l = rho - sigma := by simp only [c, ite_eq_right knel.symm, ↓reduceIte]
     have hci : ∀ m, m ≠ k → m ≠ l → c m = b m := by
-      intro m hmk hml; simp only [c, if_neg hmk, if_neg hml]
+      intro m hmk hml; simp only [c, ite_eq_right hmk, ite_eq_right hml]
     have ck_le_bk : c k ≤ b k := by rw [hck, ← rho_add_tau]; linarith [sigma_lt_tau]
     have bl_le_cl : b l ≤ c l := by rw [hcl, ← rho_sub_tau]; linarith [sigma_lt_tau]
     have cl_le_ck : c l ≤ c k := by rw [hck, hcl]; linarith [sigma_nonneg]
@@ -657,15 +657,15 @@ private lemma tTransform_step {a b : Fin n → K} (ha : Antitone a) (hb : Antito
           ⟨by linarith [bl_lt_bk], by linarith [sigma_nonneg, tau_pos, rho_sub_tau]⟩))
       · rintro i ⟨hik, hil⟩
         change b i = if i = k then rho + sigma else if i = l then rho - sigma else b i
-        rw [if_neg hik, if_neg hil]
+        rw [ite_eq_right hik, ite_eq_right hil]
       · rw [mul_div_cancel₀ _ bl_bk_ne]
         change (if k = k then rho + sigma else if k = l then rho - sigma else b k)
               = b k + (rho + sigma - b k)
-        rw [if_pos rfl]; ring
+        rw [ite_eq_left rfl]; ring
       · rw [mul_div_cancel₀ _ bl_bk_ne]
         change (if l = k then rho + sigma else if l = l then rho - sigma else b l)
               = b l - (rho + sigma - b k)
-        rw [if_neg knel.symm, if_pos rfl]
+        rw [ite_eq_right knel.symm, ite_eq_left rfl]
         linarith [rho_add_tau, rho_sub_tau]
     have hc : Antitone c := by
       -- Textbook approach: for antitonicity on `Fin n` it suffices to check neighbours,
