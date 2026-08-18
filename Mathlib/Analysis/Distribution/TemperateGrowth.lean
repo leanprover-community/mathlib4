@@ -438,7 +438,7 @@ theorem Complex.hasTemperateGrowth_im : Complex.im.HasTemperateGrowth :=
 
 /-- The function `x ↦ exp (x * I)` has temperate growth. -/
 @[fun_prop]
-theorem Complex.hasTemperateGrowth_exp_I_mul :
+theorem Complex.hasTemperateGrowth_exp_mul_I :
     (fun x : ℝ ↦ Complex.exp (x * Complex.I)).HasTemperateGrowth := by
   simp only [Complex.exp_ofReal_mul_I]
   fun_prop
