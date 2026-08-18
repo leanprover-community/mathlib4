@@ -194,10 +194,9 @@ lemma map_eq_zero (n : ℕ) [NeZero n] (hf : f = 1) : map f φ n = 0 := by
             simpa [hf] using ((φ.hom.isIntertwining) g a).symm)
         isIntertwining' g := by aesop }
   obtain rfl : f = b.comp a := by aesop
-  rw [show φ = (resFunctor a).map α ≫ β from rfl]
   have : map a β (n + 1) = 0 :=
     (isZero_groupCohomology_succ_of_subsingleton _ _).eq_of_src ..
-  rw [map_comp, this, Limits.comp_zero]
+  rw [show φ = (resFunctor a).map α ≫ β from rfl, map_comp, this, Limits.comp_zero]
 
 
 /-- The isomorphism between cohomology groups induced by a group isomorphism `e : G ≃* H` and a
