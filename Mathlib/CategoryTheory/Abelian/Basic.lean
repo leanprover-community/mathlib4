@@ -108,6 +108,7 @@ and every epimorphism is the cokernel of some morphism.
 finite products give a terminal object, and in a preadditive category
 any terminal object is a zero object.)
 -/
+@[wikidata Q318737]
 class Abelian extends Preadditive C, IsNormalMonoCategory C, IsNormalEpiCategory C where
   [has_finite_products : HasFiniteProducts C]
   [has_kernels : HasKernels C]
@@ -145,6 +146,7 @@ def imageMonoFactorisation {X Y : C} (f : X ⟶ Y) : MonoFactorisation f where
   e := kernel.lift _ f (cokernel.condition _)
   fac := kernel.lift_ι _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   dsimp
@@ -152,6 +154,7 @@ theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
   simp only [Abelian.coimageImageComparison, Category.assoc,
     cokernel.π_desc_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the coimage-image comparison morphism for a morphism `f` is an isomorphism,
 we obtain an image factorisation of `f`. -/
 def imageFactorisation {X Y : C} (f : X ⟶ Y) [IsIso (Abelian.coimageImageComparison f)] :
@@ -166,11 +169,13 @@ def imageFactorisation {X Y : C} (f : X ⟶ Y) [IsIso (Abelian.coimageImageCompa
         ext
         simp }
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Mono f]
     [IsIso (Abelian.coimageImageComparison f)] : IsIso (imageMonoFactorisation f).e := by
   rw [imageMonoFactorisation_e']
   exact IsIso.comp_isIso
 
+set_option backward.defeqAttrib.useBackward true in
 instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Epi f] : IsIso (imageMonoFactorisation f).m := by
   dsimp
   infer_instance
@@ -185,6 +190,7 @@ variable [Limits.HasFiniteProducts C]
 
 attribute [local instance] Limits.HasFiniteBiproducts.of_hasFiniteProducts
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A category with finite products in which coimage-image comparisons are all isomorphisms
 is a normal mono category.
 -/
@@ -197,19 +203,19 @@ lemma isNormalMonoCategory : IsNormalMonoCategory C where
         haveI : Limits.HasImages C := hasImages
         haveI : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
         haveI : HasZeroObject C := Limits.hasZeroObject_of_hasFiniteBiproducts _
-        have aux : ∀ (s : KernelFork (cokernel.π f)), (limit.lift (parallelPair (cokernel.π f) 0) s
-          ≫ inv (imageMonoFactorisation f).e) ≫ Fork.ι (KernelFork.ofι f (by simp))
-            = Fork.ι s := ?_
+        have aux (s : KernelFork (cokernel.π f)) :
+            (limit.lift (parallelPair (cokernel.π f) 0) s ≫ inv (imageMonoFactorisation f).e) ≫
+            Fork.ι (KernelFork.ofι _ (cokernel.condition f)) = Fork.ι s := ?_
         · refine isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux ?_
           intro A g hg
           rw [KernelFork.ι_ofι] at hg
           rw [← cancel_mono f, hg, ← aux, KernelFork.ι_ofι]
-        · intro A
-          simp only [KernelFork.ι_ofι, Category.assoc]
-          convert limit.lift_π A WalkingParallelPair.zero using 2
+        · simp only [KernelFork.ι_ofι, Category.assoc]
+          convert! limit.lift_π s WalkingParallelPair.zero using 2
           rw [IsIso.inv_comp_eq, eq_comm]
           exact (imageMonoFactorisation f).fac }⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A category with finite products in which coimage-image comparisons are all isomorphisms
 is a normal epi category.
 -/
@@ -222,17 +228,17 @@ lemma isNormalEpiCategory : IsNormalEpiCategory C where
         haveI : Limits.HasImages C := hasImages
         haveI : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
         haveI : HasZeroObject C := Limits.hasZeroObject_of_hasFiniteBiproducts _
-        have aux : ∀ (s : CokernelCofork (kernel.ι f)), Cofork.π (CokernelCofork.ofπ f (by simp)) ≫
-          inv (imageMonoFactorisation f).m ≫ inv (Abelian.coimageImageComparison f) ≫
-          colimit.desc (parallelPair (kernel.ι f) 0) s = Cofork.π s := ?_
+        have aux (s : CokernelCofork (kernel.ι f)) :
+            Cofork.π (CokernelCofork.ofπ _ (kernel.condition f)) ≫
+              inv (imageMonoFactorisation f).m ≫ inv (Abelian.coimageImageComparison f) ≫
+                colimit.desc (parallelPair (kernel.ι f) 0) s = Cofork.π s := ?_
         · refine isColimitAux _ (fun A => inv (imageMonoFactorisation f).m ≫
                   inv (Abelian.coimageImageComparison f) ≫ colimit.desc _ _) aux ?_
           intro A g hg
           rw [CokernelCofork.π_ofπ] at hg
           rw [← cancel_epi f, hg, ← aux, CokernelCofork.π_ofπ]
-        · intro A
-          simp only [CokernelCofork.π_ofπ, ← Category.assoc]
-          convert colimit.ι_desc A WalkingParallelPair.one using 2
+        · simp only [CokernelCofork.π_ofπ, ← Category.assoc]
+          convert! colimit.ι_desc s WalkingParallelPair.one using 2
           rw [IsIso.comp_inv_eq, IsIso.comp_inv_eq, eq_comm, ← imageMonoFactorisation_e']
           exact (imageMonoFactorisation f).fac }⟩
 
@@ -249,7 +255,8 @@ attribute [local instance] OfCoimageImageComparisonIsIso.isNormalEpiCategory
 in which the coimage-image comparison morphism is always an isomorphism,
 is an abelian category. -/
 @[stacks 0109
-"The Stacks project uses this characterisation at the definition of an abelian category."]
+"The Stacks project uses this characterisation at the definition of an abelian category.",
+  instance_reducible]
 def ofCoimageImageComparisonIsIso : Abelian C where
 
 end CategoryTheory.Abelian
@@ -279,6 +286,7 @@ instance (priority := 100) hasZeroObject : HasZeroObject C :=
 section ToNonPreadditiveAbelian
 
 /-- Every abelian category is, in particular, `NonPreadditiveAbelian`. -/
+@[instance_reducible]
 def nonPreadditiveAbelian : NonPreadditiveAbelian C :=
   { ‹Abelian C› with }
 
@@ -370,11 +378,12 @@ section Images
 
 variable {X Y : C} (f : X ⟶ Y)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coimage-image comparison morphism is always an isomorphism in an abelian category.
 See `CategoryTheory.Abelian.ofCoimageImageComparisonIsIso` for the converse.
 -/
 instance : IsIso (coimageImageComparison f) := by
-  convert
+  convert!
     Iso.isIso_hom
       (IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage
         (imageStrongEpiMonoFactorisation f).toMonoIsImage)
@@ -392,6 +401,7 @@ abbrev coimageIsoImage : Abelian.coimage f ≅ Abelian.image f :=
 abbrev coimageIsoImage' : Abelian.coimage f ≅ image f :=
   IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage (Image.isImage f)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coimageIsoImage'_hom :
     (coimageIsoImage' f).hom =
       cokernel.desc _ (factorThruImage f) (by simp [← cancel_mono (Limits.image.ι f)]) := by
@@ -400,6 +410,7 @@ theorem coimageIsoImage'_hom :
     Category.assoc, IsImage.lift_ι, coimageStrongEpiMonoFactorisation_m,
     Limits.image.fac]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factorThruImage_comp_coimageIsoImage'_inv :
     factorThruImage f ≫ (coimageIsoImage' f).inv = cokernel.π _ := by
   simp only [IsImage.isoExt_inv, image.isImage_lift, image.fac_lift,
@@ -419,8 +430,6 @@ def im : Arrow C ⥤ C where
   obj f := Abelian.image f.hom
   map {f g} u := kernel.lift _ (Abelian.image.ι f.hom ≫ u.right) <| by simp [← Arrow.w_assoc u]
 
-@[deprecated (since := "2025-10-31")] noncomputable alias imageFunctor := im
-
 /-- `Abelian.coimage` as a functor from the arrow category. -/
 @[simps]
 def coim : Arrow C ⥤ C where
@@ -428,23 +437,22 @@ def coim : Arrow C ⥤ C where
   map {f g} u := cokernel.desc _ (u.left ≫ Abelian.coimage.π g.hom) <| by
     simp [← Category.assoc, coimage.comp_π_eq_zero]; simp
 
-@[deprecated (since := "2025-10-31")] noncomputable alias coimageFunctor := coim
-
+set_option backward.defeqAttrib.useBackward true in
 /-- The image and coimage of an arrow are naturally isomorphic. -/
 @[simps!]
 def coimIsoIm : coim (C := C) ≅ im :=
   NatIso.ofComponents fun _ ↦ Abelian.coimageIsoImage _
-
-@[deprecated (since := "2025-10-31")] noncomputable alias coimageFunctorIsoImageFunctor := coimIsoIm
 
 /-- There is a canonical isomorphism between the abelian image and the categorical image of a
     morphism. -/
 abbrev imageIsoImage : Abelian.image f ≅ image f :=
   IsImage.isoExt (imageStrongEpiMonoFactorisation f).toMonoIsImage (Image.isImage f)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem imageIsoImage_hom_comp_image_ι : (imageIsoImage f).hom ≫ Limits.image.ι _ = kernel.ι _ := by
   simp only [IsImage.isoExt_hom, IsImage.lift_ι, imageStrongEpiMonoFactorisation_m]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem imageIsoImage_inv :
     (imageIsoImage f).inv =
       kernel.lift _ (Limits.image.ι f) (by simp [← cancel_epi (factorThruImage f)]) := by
@@ -586,6 +594,7 @@ abbrev pullbackToBiproductFork : KernelFork (biprod.desc f (-g)) :=
   KernelFork.ofι (pullbackToBiproduct f g) <| by
     rw [biprod.lift_desc, comp_neg, pullback.condition, add_neg_cancel]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` is a kernel of the map induced by
     `(f, -g)`. -/
 def isLimitPullbackToBiproduct : IsLimit (pullbackToBiproductFork f g) :=
@@ -605,7 +614,7 @@ end PullbackToBiproductIsKernel
 
 namespace BiproductToPushoutIsCokernel
 
-variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
+variable [Limits.HasPushouts C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
 /-- The canonical map `Y ⊞ Z ⟶ pushout f g` -/
 abbrev biproductToPushout : Y ⊞ Z ⟶ pushout f g :=
@@ -617,6 +626,7 @@ abbrev biproductToPushoutCofork : CokernelCofork (biprod.lift f (-g)) :=
   CokernelCofork.ofπ (biproductToPushout f g) <| by
     rw [biprod.lift_desc, neg_comp, pushout.condition, add_neg_cancel]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofork induced by the canonical map `Y ⊞ Z ⟶ pushout f g` is in fact a colimit cokernel
     cofork. -/
 def isColimitBiproductToPushout : IsColimit (biproductToPushoutCofork f g) :=
@@ -701,12 +711,12 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst f g) :=
       _ = 0 := HasZeroMorphisms.comp_zero _ _
 
 theorem epi_snd_of_isLimit [Epi f] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.snd := by
-  haveI : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.right) :=
+  have : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.right) :=
     Abelian.epi_pullback_of_epi_f f g
   apply epi_of_epi_fac (IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) hs _)
 
 theorem epi_fst_of_isLimit [Epi g] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.fst := by
-  haveI : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.left) :=
+  have : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.left) :=
     Abelian.epi_pullback_of_epi_g f g
   apply epi_of_epi_fac (IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) hs _)
 
@@ -769,13 +779,13 @@ instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl f g) :=
       _ = 0 := zero_comp
 
 theorem mono_inr_of_isColimit [Mono f] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inr := by
-  haveI : Mono (NatTrans.app (colimit.cocone (span f g)).ι WalkingCospan.right) :=
+  have : Mono (NatTrans.app (colimit.cocone (span f g)).ι WalkingCospan.right) :=
     Abelian.mono_pushout_of_mono_f f g
   apply
     mono_of_mono_fac (IsColimit.comp_coconePointUniqueUpToIso_hom hs (colimit.isColimit _) _)
 
 theorem mono_inl_of_isColimit [Mono g] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inl := by
-  haveI : Mono (NatTrans.app (colimit.cocone (span f g)).ι WalkingCospan.left) :=
+  have : Mono (NatTrans.app (colimit.cocone (span f g)).ι WalkingCospan.left) :=
     Abelian.mono_pushout_of_mono_g f g
   apply
     mono_of_mono_fac (IsColimit.comp_coconePointUniqueUpToIso_hom hs (colimit.isColimit _) _)
@@ -797,9 +807,79 @@ namespace CategoryTheory.NonPreadditiveAbelian
 variable (C : Type u) [Category.{v} C] [NonPreadditiveAbelian C]
 
 /-- Every `NonPreadditiveAbelian` category can be promoted to an abelian category. -/
+@[instance_reducible]
 def abelian : Abelian C where
   toPreadditive := NonPreadditiveAbelian.preadditive
   normalMonoOfMono := fun f _ ↦ ⟨normalMonoOfMono f⟩
   normalEpiOfEpi := fun f _ ↦ ⟨normalEpiOfEpi f⟩
 
 end CategoryTheory.NonPreadditiveAbelian
+
+namespace CategoryTheory.Abelian
+
+variable {C : Type*} [Category C] [Preadditive C]
+
+/-- A preadditive category `C` with finite products is abelian when this
+structure is nonempty for any morphism `f` in `C`, see `Abelian.mk'`. -/
+structure AbelianStruct {X Y : C} (f : X ⟶ Y) where
+  /-- a limit kernel fork of `f` -/
+  kernelFork : KernelFork f
+  /-- the kernel fork is a limit -/
+  isLimitKernelFork : IsLimit kernelFork
+  /-- a colimit cokernel cofork of `f` -/
+  cokernelCofork : CokernelCofork f
+  /-- the cokernel cofork is a a limit -/
+  isColimitCokernelCofork : IsColimit cokernelCofork
+  /-- the image of `f` -/
+  image : C
+  /-- the projection to the image -/
+  imageπ : X ⟶ image
+  ι_imageπ : kernelFork.ι ≫ imageπ = 0 := by cat_disch
+  /-- the image is a cokernel -/
+  imageIsCokernel : IsColimit (CokernelCofork.ofπ _ ι_imageπ)
+  /-- the inclusion of the image -/
+  imageι : image ⟶ Y
+  imageι_π : imageι ≫ cokernelCofork.π = 0 := by cat_disch
+  /-- the image is a kernel -/
+  imageIsKernel : IsLimit (KernelFork.ofι _ imageι_π)
+  fac : imageπ ≫ imageι = f := by cat_disch
+
+namespace AbelianStruct
+
+attribute [reassoc (attr := simp)] ι_imageπ imageι_π fac
+
+end AbelianStruct
+
+/-- Constructor for abelian categories. We assume that the category `C` is
+preadditive, has finite products, and that any morphism `f : X ⟶ Y` has
+a kernel `i : K ⟶ X`, a cokernel `p : Y ⟶ Q` such that `f` factors as `f = π ≫ ι`
+where `π : X ⟶ I` is a cokernel of `i` and `ι : I ⟶ Y` is a kernel of `p`.
+This assumption is packaged in a structure `AbelianStruct f`. -/
+@[instance_reducible]
+noncomputable def mk' [HasFiniteProducts C]
+    (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Nonempty (AbelianStruct f)) :
+    Abelian C where
+  has_kernels := ⟨fun f ↦ ⟨_, (h f).some.isLimitKernelFork⟩⟩
+  has_cokernels := ⟨fun f ↦ ⟨_, (h f).some.isColimitCokernelCofork⟩⟩
+  normalMonoOfMono f _ := by
+    obtain ⟨hf⟩ := h f
+    exact ⟨{
+      Z := hf.cokernelCofork.pt
+      g := hf.cokernelCofork.π
+      w := by simp
+      isLimit :=
+        have : IsIso hf.imageπ :=
+          CokernelCofork.IsColimit.isIso_π _ hf.imageIsCokernel (by simp [← cancel_mono f])
+        IsLimit.ofIsoLimit hf.imageIsKernel (Fork.ext (asIso hf.imageπ)).symm }⟩
+  normalEpiOfEpi f _ := by
+    obtain ⟨hf⟩ := h f
+    exact ⟨{
+      W := hf.kernelFork.pt
+      g := hf.kernelFork.ι
+      w := by simp
+      isColimit :=
+        have : IsIso hf.imageι :=
+          KernelFork.IsLimit.isIso_ι _ hf.imageIsKernel (by simp [← cancel_epi f])
+        IsColimit.ofIsoColimit hf.imageIsCokernel (Cofork.ext (asIso hf.imageι)) }⟩
+
+end CategoryTheory.Abelian

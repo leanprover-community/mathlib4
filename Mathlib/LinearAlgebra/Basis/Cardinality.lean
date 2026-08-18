@@ -18,7 +18,7 @@ public section
 
 section Finite
 
-open Module Basis Cardinal Set Submodule Finsupp
+open Module Cardinal Set Submodule Finsupp
 
 universe u v w w'
 
@@ -103,7 +103,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     have l₁ : l.some = l'.some := ind <| b.repr.injective <| ext fun j ↦ by
       obtain rfl | ne := eq_or_ne i j
       · simp_rw [repr_eq_zero]
-      classical simpa [single_apply, ne] using congr(b.repr $z j)
+      simpa [single_apply, ne] using congr(b.repr $z j)
     exact DFunLike.congr_fun l₁ a
   exact r'' (m (range v') i' r)
 
@@ -116,7 +116,7 @@ theorem infinite_basis_le_maximal_linearIndependent' {ι : Type w} (b : Basis ι
     Cardinal.lift.{w'} #ι ≤ Cardinal.lift.{w} #κ := by
   let Φ := fun k : κ => (b.repr (v k)).support
   have w₁ : #ι ≤ #(Set.range Φ) := by
-    apply Cardinal.le_range_of_union_finset_eq_top
+    apply Cardinal.le_range_of_union_finset_eq_univ
     exact union_support_maximal_linearIndependent_eq_range_basis b v i m
   have w₂ : Cardinal.lift.{w'} #(Set.range Φ) ≤ Cardinal.lift.{w} #κ := Cardinal.mk_range_le_lift
   exact (Cardinal.lift_le.mpr w₁).trans w₂

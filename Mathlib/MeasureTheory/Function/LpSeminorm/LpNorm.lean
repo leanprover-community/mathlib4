@@ -23,18 +23,18 @@ open scoped BigOperators ComplexConjugate ENNReal NNReal
 public section
 
 namespace MeasureTheory
-variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
+variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
   [NormedAddCommGroup E] {f g h : α → E}
 
 lemma toReal_eLpNorm (hf : AEStronglyMeasurable f μ) : (eLpNorm f p μ).toReal = lpNorm f p μ := by
-  rw [lpNorm, if_pos hf]
+  rw [lpNorm, ite_eq_left hf]
 
 lemma ofReal_lpNorm (hf : MemLp f p μ) : .ofReal (lpNorm f p μ) = eLpNorm f p μ := by
   rw [← toReal_eLpNorm hf.aestronglyMeasurable, ENNReal.ofReal_toReal hf.eLpNorm_ne_top]
 
 @[simp]
 lemma lpNorm_of_not_aestronglyMeasurable (hf : ¬ AEStronglyMeasurable f μ) : lpNorm f p μ = 0 :=
-  if_neg hf
+  ite_eq_right hf
 
 @[simp]
 lemma lpNorm_of_not_memLp (hf' : ¬ MemLp f p μ) : lpNorm f p μ = 0 := by simp_all [MemLp, lpNorm]
@@ -65,12 +65,12 @@ lemma lpNorm_one_eq_integral_norm (hf : AEStronglyMeasurable f μ) :
 
 lemma ae_le_lpNorm_exponent_top (hf : MemLp f ∞ μ) : ∀ᵐ x ∂μ, ‖f x‖ ≤ lpNorm f ∞ μ := by
   simpa only [← toReal_eLpNorm hf.aestronglyMeasurable, ← ENNReal.ofReal_le_iff_le_toReal hf.2.ne,
-    ofReal_norm] using ae_le_eLpNormEssSup
+    ofReal_norm] using! ae_le_eLpNormEssSup
 
 lemma lpNorm_exponent_top_eq_essSup (hf : MemLp f ∞ μ) : lpNorm f ∞ μ = essSup (‖f ·‖) μ := by
   simp only [← toReal_eLpNorm hf.aestronglyMeasurable, eLpNorm_exponent_top, eLpNormEssSup]
   refine ENNReal.toReal_essSup (by simp) ⟨lpNorm f ∞ μ, ?_⟩
-  simpa [-toReal_enorm, lpNorm] using ae_le_lpNorm_exponent_top hf
+  simpa [-toReal_enorm, lpNorm] using! ae_le_lpNorm_exponent_top hf
 
 @[simp]
 lemma lpNorm_zero (p : ℝ≥0∞) (μ : Measure α) : lpNorm (0 : α → E) p μ = 0 := by simp [lpNorm]
@@ -217,7 +217,7 @@ lemma lpNorm_sum_le {ι : Type*} {s : Finset ι} {f : ι → α → E} (hf : ∀
 -- TODO: Golf using `eLpNorm_expect_le` once it exists
 lemma lpNorm_expect_le [Module ℚ≥0 E] [NormedSpace ℝ E] {ι : Type*} {s : Finset ι}
     {f : ι → α → E} (hf : ∀ i ∈ s, MemLp (f i) p μ) (hp : 1 ≤ p) :
-    lpNorm (𝔼 i ∈ s, f i) p μ ≤ 𝔼 i ∈ s, lpNorm (f i) p μ  :=  by
+    lpNorm (𝔼 i ∈ s, f i) p μ ≤ 𝔼 i ∈ s, lpNorm (f i) p μ := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
   refine (le_inv_smul_iff_of_pos <| by positivity).2 ?_

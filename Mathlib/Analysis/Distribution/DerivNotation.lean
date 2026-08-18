@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Data.Fin.Tuple.Basic
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
 /-! # Type classes for derivatives and the Laplacian
@@ -29,7 +29,7 @@ function spaces).
 
 universe u' u v w
 
-variable {ι ι' 𝕜 R V E F V₁ V₂ V₃ : Type*}
+variable {ι R V E F V₁ V₂ V₃ : Type*}
 
 /-! ## Line derivative -/
 
@@ -186,7 +186,6 @@ def lineDerivOpCLM (m : V) : E →L[R] F where
   toFun := ∂_{m}
   map_add' := lineDerivOp_add m
   map_smul' := lineDerivOp_smul m
-  cont := by fun_prop
 
 @[simp]
 theorem lineDerivOpCLM_apply (m : V) (x : E) :
@@ -254,7 +253,6 @@ def iteratedLineDerivOpCLM {n : ℕ} (m : Fin n → V) : E →L[R] E where
   toFun := ∂^{m}
   map_add' := iteratedLineDerivOp_add m
   map_smul' := iteratedLineDerivOp_smul m
-  cont := by fun_prop
 
 @[simp]
 theorem iteratedLineDerivOpCLM_apply {n : ℕ} (m : Fin n → V) (x : E) :
@@ -293,7 +291,7 @@ variable [CommRing R] [AddCommGroup E] [Module R E]
   [LineDerivAdd E V₂ V₃] [LineDerivAdd E V₁ V₂]
   [LineDerivSMul R E V₂ V₃] [LineDerivLeftSMul R E V₁ V₂] [LineDerivLeftSMul R E V₂ V₃]
 
-open InnerProductSpace TensorProduct
+open TensorProduct
 
 variable (R) in
 /-- The second derivative in terms `lineDerivOp` as a bilinear map.
@@ -340,7 +338,6 @@ section ContinuousLinearMap
 section definition
 
 variable [CommRing R]
-  [FiniteDimensional ℝ E]
   [Module R V₁] [Module R V₂] [Module R V₃]
   [TopologicalSpace V₁] [TopologicalSpace V₂] [TopologicalSpace V₃] [IsTopologicalAddGroup V₃]
   [LineDerivAdd E V₁ V₂] [LineDerivSMul R E V₁ V₂] [ContinuousLineDeriv E V₁ V₂]

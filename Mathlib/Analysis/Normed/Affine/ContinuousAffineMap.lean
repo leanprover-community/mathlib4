@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Topology.Algebra.ContinuousAffineMap
+public import Mathlib.Topology.Algebra.ContinuousAffineMap.Topology
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 
@@ -40,11 +40,13 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 
 namespace ContinuousAffineMap
 
-variable {𝕜 V W W₂ : Type*}
-variable [NormedAddCommGroup V] [NormedAddCommGroup W] [NormedAddCommGroup W₂]
-variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [NormedSpace 𝕜 W₂]
+variable {𝕜 R V W W₂ Q : Type*}
 
-section NormedSpaceStructure
+section Seminormed
+
+variable [SeminormedAddCommGroup V] [SeminormedAddCommGroup W] [SeminormedAddCommGroup W₂]
+variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [NormedSpace 𝕜 W₂]
+variable [PseudoMetricSpace Q] [NormedAddTorsor W Q]
 
 variable (f : V →ᴬ[𝕜] W)
 
@@ -69,34 +71,17 @@ theorem norm_eq (h : f 0 = 0) : ‖f‖ = ‖f.contLinear‖ :=
     _ = max 0 ‖f.contLinear‖ := by rw [h, norm_zero]
     _ = ‖f.contLinear‖ := max_eq_right (norm_nonneg _)
 
-noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
-  AddGroupNorm.toNormedAddCommGroup
-    { toFun := fun f => max ‖f 0‖ ‖f.contLinear‖
-      map_zero' := by simp [(ContinuousAffineMap.zero_apply)]
-      neg' := fun f => by
-        simp [(ContinuousAffineMap.neg_apply)]
-      add_le' := fun f g => by
-        simp only [coe_add, max_le_iff, Pi.add_apply, add_contLinear]
-        exact
-          ⟨(norm_add_le _ _).trans (add_le_add (le_max_left _ _) (le_max_left _ _)),
-            (norm_add_le _ _).trans (add_le_add (le_max_right _ _) (le_max_right _ _))⟩
-      eq_zero_of_map_eq_zero' := fun f h₀ => by
-        rcases max_eq_iff.mp h₀ with (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩) <;> rw [h₁] at h₂
-        · rw [norm_le_zero_iff, contLinear_eq_zero_iff_exists_const] at h₂
-          obtain ⟨q, rfl⟩ := h₂
-          simp only [norm_eq_zero, coe_const, Function.const_apply] at h₁
-          rw [h₁]
-          rfl
-        · rw [norm_eq_zero, contLinear_eq_zero_iff_exists_const] at h₁
-          obtain ⟨q, rfl⟩ := h₁
-          simp only [norm_le_zero_iff, coe_const, Function.const_apply] at h₂
-          rw [h₂]
-          rfl }
+noncomputable instance : PseudoMetricSpace (V →ᴬ[𝕜] Q) :=
+  (decompHomeomorph 𝕜 V Q).isEmbedding.comapPseudoMetricSpace
+
+noncomputable instance : SeminormedAddCommGroup (V →ᴬ[𝕜] W) where
+  dist_eq _ _ := dist_eq_norm_neg_add (E := W × (V →L[𝕜] W)) _ _
+
+noncomputable instance : NormedAddTorsor (V →ᴬ[𝕜] W) (V →ᴬ[𝕜] Q) where
+  dist_eq_norm' _ _ := dist_eq_norm_vsub (P := Q × (V →L[𝕜] W)) _ _ _
 
 noncomputable instance : NormedSpace 𝕜 (V →ᴬ[𝕜] W) where
-  norm_smul_le t f := by
-    simp only [norm_def, coe_smul, Pi.smul_apply, norm_smul, smul_contLinear,
-      ← mul_max_of_nonneg _ _ (norm_nonneg t), le_refl]
+  norm_smul_le t f := norm_smul_le t (f 0, f.contLinear)
 
 theorem norm_comp_le (g : W₂ →ᴬ[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by
   rw [norm_def, max_le_iff]
@@ -112,33 +97,65 @@ theorem norm_comp_le (g : W₂ →ᴬ[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * �
       _ ≤ ‖f‖ * ‖g‖ := by grw [f.norm_contLinear_le, g.norm_contLinear_le]
       _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by rw [le_add_iff_nonneg_right]; apply norm_nonneg
 
-variable (𝕜 V W)
+variable (𝕜 R V W) [Ring R] [Module R W] [ContinuousConstSMul R W] [SMulCommClass 𝕜 R W]
 
 /-- The space of affine maps between two normed spaces is linearly isometric to the product of the
 codomain with the space of linear maps, by taking the value of the affine map at `(0 : V)` and the
 linear part. -/
-noncomputable def toConstProdContinuousLinearMap : (V →ᴬ[𝕜] W) ≃ₗᵢ[𝕜] W × (V →L[𝕜] W) where
-  toFun f := ⟨f 0, f.contLinear⟩
-  invFun p := p.2.toContinuousAffineMap + const 𝕜 V p.1
-  left_inv f := by
-    ext
-    rw [f.decomp]
-    simp only [coe_add, ContinuousLinearMap.coe_toContinuousAffineMap, Pi.add_apply, coe_const]
-  right_inv := by rintro ⟨v, f⟩; ext <;> simp
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
+def decompLinearIsometryEquiv : (V →ᴬ[𝕜] W) ≃ₗᵢ[R] W × (V →L[𝕜] W) where
+  __ := decompLinearEquiv 𝕜 R V W
   norm_map' _ := rfl
 
 @[simp]
+theorem fst_decompLinearIsometryEquiv (f : V →ᴬ[𝕜] W) :
+    (decompLinearIsometryEquiv 𝕜 R V W f).1 = f 0 :=
+  rfl
+
+@[simp]
+theorem snd_decompLinearIsometryEquiv (f : V →ᴬ[𝕜] W) :
+    (decompLinearIsometryEquiv 𝕜 R V W f).2 = f.contLinear :=
+  rfl
+
+@[simp]
+theorem decompLinearIsometryEquiv_symm_apply (p : W × (V →L[𝕜] W)) (x : V) :
+    (decompLinearIsometryEquiv 𝕜 R V W).symm p x = p.2 x + p.1 :=
+  rfl
+
+@[simp]
+theorem decompLinearIsometryEquiv_symm_contLinear (p : W × (V →L[𝕜] W)) :
+    ((decompLinearIsometryEquiv 𝕜 R V W).symm p).contLinear = p.2 := by
+  rw [decompLinearIsometryEquiv, ← LinearIsometryEquiv.coe_symm_toLinearEquiv,
+    decompLinearEquiv_symm_contLinear]
+
+@[deprecated decompLinearIsometryEquiv (since := "2026-03-03"),
+  inherit_doc decompLinearIsometryEquiv]
+abbrev toConstProdContinuousLinearMap := decompLinearIsometryEquiv 𝕜 𝕜 V W
+
+@[deprecated fst_decompLinearIsometryEquiv (since := "2026-03-03")]
 theorem toConstProdContinuousLinearMap_fst (f : V →ᴬ[𝕜] W) :
     (toConstProdContinuousLinearMap 𝕜 V W f).fst = f 0 :=
   rfl
 
-@[simp]
+@[deprecated snd_decompLinearIsometryEquiv (since := "2026-03-03")]
 theorem toConstProdContinuousLinearMap_snd (f : V →ᴬ[𝕜] W) :
     (toConstProdContinuousLinearMap 𝕜 V W f).snd = f.contLinear :=
   rfl
 
-end NormedSpaceStructure
+end Seminormed
+
+section Normed
+
+variable [NormedAddCommGroup V] [NormedAddCommGroup W]
+variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
+variable [MetricSpace Q] [NormedAddTorsor W Q]
+
+noncomputable instance : MetricSpace (V →ᴬ[𝕜] Q) :=
+  (decompHomeomorph 𝕜 V Q).isEmbedding.comapMetricSpace
+
+noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) where
+  __ : SeminormedAddCommGroup (V →ᴬ[𝕜] W) := inferInstance
+  __ : MetricSpace (V →ᴬ[𝕜] W) := inferInstance
+
+end Normed
 
 end ContinuousAffineMap

@@ -47,7 +47,7 @@ multiplicative ring norms but outside of this use we only consider real-valued s
 Finitary versions of the current lemmas.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -60,6 +60,7 @@ Diamond inheritance cannot depend on `outParam`s in the following circumstances:
 * the instance `Bottom.toMiddle` takes a `[Left α]` parameter
 * the instance `Middle.toTop` takes a `[Right α]` parameter
 * there is a `Leaf` class that inherits from both `Left` and `Right`.
+
 In that case, given instances `Bottom α` and `Leaf α`, Lean cannot synthesize a `Top α` instance,
 even though the hypotheses of the instances `Bottom.toMiddle` and `Middle.toTop` are satisfied.
 
@@ -72,9 +73,7 @@ There are two workarounds:
   `Middle.toTop`'s parameter, in this example replacing `[Left α]` with `[Leaf α]`.
 -/
 
-open Function
-
-variable {ι F α β γ δ : Type*}
+variable {F α β : Type*}
 
 /-! ### Basics -/
 
@@ -122,6 +121,12 @@ export NonarchimedeanHomClass (map_add_le_max)
 attribute [simp] apply_nonneg
 
 variable [FunLike F α β]
+
+/-- The value at zero of a zero-preserving nonnegative homomorphism is a minimum. -/
+theorem map_zero_le [Zero α] [Zero β] [LE β] [ZeroHomClass F α β] [NonnegHomClass F α β] (f : F)
+    (a : α) : f 0 ≤ f a := by
+  rw [map_zero]
+  exact apply_nonneg f a
 
 @[to_additive]
 theorem le_map_mul_map_div [Group α] [CommMagma β] [LE β] [SubmultiplicativeHomClass F α β]
@@ -216,6 +221,11 @@ theorem map_div_le_add : f (x / y) ≤ f x + f y := by
 
 @[to_additive]
 theorem map_div_rev : f (x / y) = f (y / x) := by rw [← inv_div, map_inv_eq_map]
+
+@[to_additive]
+theorem map_inv_mul {α : Type*} [FunLike F α β] [CommGroup α] [GroupSeminormClass F α β] (x y : α) :
+    f (x⁻¹ * y) = f (x * y⁻¹) := by
+  rw [← map_inv_eq_map, inv_mul', inv_inv, div_eq_mul_inv]
 
 @[to_additive]
 theorem le_map_add_map_div' : f x ≤ f y + f (y / x) := by

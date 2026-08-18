@@ -44,6 +44,10 @@ lemma QuasiFinite.of_comp {f : S →+* T} {g : R →+* S} (h : (f.comp g).QuasiF
   algebraize [f, g, (f.comp g)]
   exact .of_restrictScalars R S T
 
+lemma QuasiFinite.comp_iff {f : S →+* T} {g : R →+* S} (hg : g.QuasiFinite) :
+    (f.comp g).QuasiFinite ↔ f.QuasiFinite :=
+  ⟨.of_comp, (.comp · hg)⟩
+
 lemma QuasiFinite.of_finite {f : S →+* T} (hf : f.Finite) : f.QuasiFinite := by
   algebraize [f]
   exact inferInstanceAs (Algebra.QuasiFinite _ _)
@@ -77,7 +81,7 @@ lemma QuasiFinite.ofLocalizationSpanTarget : OfLocalizationSpanTarget QuasiFinit
   let φ (r : s) : P.Fiber S →ₐ[P.ResidueField] P.Fiber (Localization.Away r.1) :=
     Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
   let f : P.Fiber S →ₐ[P.ResidueField] Π r : s, (P.Fiber (Localization.Away r.1)) :=
-    Pi.algHom _ _ φ
+    AlgHom.pi φ
   have : IsNoetherian P.ResidueField (Π r : s, (P.Fiber (Localization.Away r.1))) :=
     isNoetherian_of_isNoetherianRing_of_finite ..
   suffices Function.Injective f from .of_injective f.toLinearMap this
@@ -91,7 +95,7 @@ lemma QuasiFinite.ofLocalizationSpanTarget : OfLocalizationSpanTarget QuasiFinit
   let ψ : P.Fiber (Localization.Away r) →ₐ[P.ResidueField] Localization.AtPrime J :=
     Algebra.TensorProduct.lift (Algebra.ofId _ _) ⟨IsLocalization.map (M := .powers r)
       (T := J.primeCompl) _ Algebra.TensorProduct.includeRight.toRingHom (by
-      simpa [Submonoid.powers_le] using hrI), by
+      simpa [Submonoid.powers_le] using! hrI), by
       simp [IsScalarTower.algebraMap_apply R S (Localization.Away r),
         -Algebra.TensorProduct.algebraMap_apply,
         ← IsScalarTower.algebraMap_apply R _ (Localization.AtPrime J)]⟩ (fun _ _ ↦ .all _ _)

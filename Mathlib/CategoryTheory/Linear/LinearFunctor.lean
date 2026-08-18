@@ -120,10 +120,10 @@ section
 variable {R} [Additive F]
 
 instance natLinear : F.Linear ℕ where
-  map_smul := F.mapAddHom.map_nsmul
+  map_smul f r := F.mapAddHom.map_nsmul r f
 
 instance intLinear : F.Linear ℤ where
-  map_smul f r := F.mapAddHom.map_zsmul f r
+  map_smul f r := F.mapAddHom.map_zsmul r f
 
 variable [CategoryTheory.Linear ℚ C] [CategoryTheory.Linear ℚ D]
 
@@ -136,6 +136,7 @@ end Functor
 
 namespace Equivalence
 
+set_option backward.defeqAttrib.useBackward true in
 instance inverseLinear (e : C ≌ D) [e.functor.Linear R] : e.inverse.Linear R where
   map_smul r f := by
     apply e.functor.map_injective

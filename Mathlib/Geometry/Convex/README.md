@@ -7,4 +7,8 @@ See the `Mathlib.Analysis.Convex` folder for the results that need a norm or an 
 ## Topics
 
 The topics currently covered are:
+* Convex spaces
+* Convex sets
+* Star-convex sets
+* Convex hulls
 * Cones

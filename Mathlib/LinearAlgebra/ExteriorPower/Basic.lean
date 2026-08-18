@@ -95,7 +95,7 @@ lemma ιMulti_span_fixedDegree_of_span_eq_top {s : Set M} (hs : span R s = ⊤) 
     rintro x hx
     obtain ⟨f, rfl⟩ := Set.mem_pow.mp hx
     refine mem_span_of_mem ⟨ExteriorAlgebra.ιInv ∘ Subtype.val ∘ f, ?_, ?_⟩
-    · rw [Set.mem_setOf_eq, Set.range_comp, Set.image_subset_iff]
+    · rw [Set.mem_ofPred_eq, Set.range_comp, Set.image_subset_iff]
       apply Subset.trans ?_ (s.image_subset_preimage_of_inverse ExteriorAlgebra.ι_leftInverse)
       grind
     · rw [ExteriorAlgebra.ιMulti_apply]
@@ -114,7 +114,7 @@ lemma ιMulti_span :
   exact ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
 open Set Submodule in
-/-- A version of `ιMulti_span_fixedDegree_of_span` that works in the exterior power. -/
+/-- A version of `ιMulti_span_fixedDegree_of_span_eq_top` that works in the exterior power. -/
 lemma ιMulti_span_of_span {s : Set M} (hs : span R s = ⊤) :
     span R (ιMulti R n '' {a | range a ⊆ s}) = ⊤ := by
   apply LinearMap.map_injective (ker_subtype (⋀[R]^n M))
@@ -144,6 +144,8 @@ noncomputable def relations (ι : Type*) [DecidableEq ι] (M : Type*)
         r • Finsupp.single (update m i x) 1
     | .alt m _ _ _ _ => Finsupp.single m 1
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 variable {R} in
 /-- The solutions in a module `N` to the linear equations
 given by `exteriorPower.relations R ι M` identify to alternating maps to `N`. -/
@@ -159,14 +161,14 @@ noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type
         rw [map_sub, map_add, Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, one_smul, sub_eq_zero] at this
-        convert this.symm -- `convert` is necessary due to the implementation of `MultilinearMap`
+        convert! this.symm -- `convert` is necessary due to the implementation of `MultilinearMap`
       map_update_smul' := fun m i r x ↦ by
         have := s.linearCombination_var_relation (.smul m i r x)
         dsimp at this ⊢
         rw [Finsupp.smul_single, smul_eq_mul, mul_one, map_sub,
           Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, sub_eq_zero] at this
-        convert this
+        convert! this
       map_eq_zero_of_eq' := fun v i j hm hij ↦
         by simpa using s.linearCombination_var_relation (.alt v i j hm hij) }
   invFun f :=
@@ -177,6 +179,7 @@ noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type
         · simp
         · simpa using f.map_eq_zero_of_eq v hm hij }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The universal property of the exterior power. -/
 noncomputable def isPresentationCore :
     (relationsSolutionEquiv.symm (ιMulti R n (M := M))).IsPresentationCore where
@@ -370,7 +373,7 @@ lemma ιMulti_family_span_fixedDegree_of_span {I : Type*} [LinearOrder I] {v : I
     exact Submodule.coe_mem _
   · rw [← ιMulti_span_fixedDegree_of_span_eq_top R n M hv, Submodule.span_le]
     rintro - ⟨f, ⟨f_range, rfl⟩⟩
-    rw [Set.mem_setOf] at f_range
+    rw [Set.mem_ofPred] at f_range
     obtain ⟨α, rfl⟩ := Set.range_subset_range_iff_exists_comp.mp f_range
     exact ιMulti_family_span_fixedDegree_aux R v α
 
@@ -409,8 +412,7 @@ variable (R M) in
 /-- The linear equivalence ` ⋀[R]^0 M ≃ₗ[R] R`. -/
 @[simps! -isSimp symm_apply]
 noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
-  LinearEquiv.ofLinear
-    (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
+  .ofLinearMap (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
     { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
       map_add' := by intros; simp only [add_smul]
       map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply] }
@@ -428,22 +430,21 @@ variable (R M) in
 /-- The linear equivalence `M ≃ₗ[R] ⋀[R]^1 M`. -/
 @[simps! -isSimp symm_apply]
 noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
-  LinearEquiv.ofLinear
-    (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
-      have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
-        ext i
-        fin_cases i
-        rfl
-      exact
-        { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
-          map_add' := fun m₁ m₂ ↦ by
-            rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
-            simp only [Fin.isValue, AlternatingMap.map_update_add]
-          map_smul' := fun r m ↦ by
-            dsimp
-            rw [h]; nth_rw 2 [h]
-            simp only [Fin.isValue, AlternatingMap.map_update_smul] })
-    (by aesop) (by aesop)
+  .ofLinearMap (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
+    have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
+      ext i
+      fin_cases i
+      rfl
+    exact
+      { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
+        map_add' := fun m₁ m₂ ↦ by
+          rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
+          simp only [Fin.isValue, AlternatingMap.map_update_add]
+        map_smul' := fun r m ↦ by
+          dsimp
+          rw [h]; nth_rw 2 [h]
+          simp only [Fin.isValue, AlternatingMap.map_update_smul] })
+  (by aesop) (by aesop)
 
 @[simp]
 lemma oneEquiv_ιMulti (f : Fin 1 → M) :

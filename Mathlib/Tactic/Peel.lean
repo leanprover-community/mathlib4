@@ -9,6 +9,7 @@ public meta import Mathlib.Tactic.Basic
 public import Mathlib.Order.Filter.Basic
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Tactic.Basic
 
 /-!
 # The `peel` tactic
@@ -90,26 +91,21 @@ syntax (name := peel)
   "peel" (num)? (ppSpace colGt term)?
   (" with" (ppSpace colGt (ident <|> hole))+)? (usingArg)? : tactic
 
-set_option backward.privateInPublic true in
-private lemma and_imp_left_of_imp_imp {p q r : Prop} (h : r → p → q) : r ∧ p → r ∧ q := by tauto
+lemma and_imp_left_of_imp_imp {p q r : Prop} (h : r → p → q) : r ∧ p → r ∧ q := by tauto
 
-set_option backward.privateInPublic true in
-private theorem eventually_imp {α : Type*} {p q : α → Prop} {f : Filter α}
+theorem eventually_imp {α : Type*} {p q : α → Prop} {f : Filter α}
     (hq : ∀ (x : α), p x → q x) (hp : ∀ᶠ (x : α) in f, p x) : ∀ᶠ (x : α) in f, q x :=
   Filter.Eventually.mp hp (Filter.Eventually.of_forall hq)
 
-set_option backward.privateInPublic true in
-private theorem frequently_imp {α : Type*} {p q : α → Prop} {f : Filter α}
+theorem frequently_imp {α : Type*} {p q : α → Prop} {f : Filter α}
     (hq : ∀ (x : α), p x → q x) (hp : ∃ᶠ (x : α) in f, p x) : ∃ᶠ (x : α) in f, q x :=
   Filter.Frequently.mp hp (Filter.Eventually.of_forall hq)
 
-set_option backward.privateInPublic true in
-private theorem eventually_congr {α : Type*} {p q : α → Prop} {f : Filter α}
+theorem eventually_congr {α : Type*} {p q : α → Prop} {f : Filter α}
     (hq : ∀ (x : α), p x ↔ q x) : (∀ᶠ (x : α) in f, p x) ↔ ∀ᶠ (x : α) in f, q x := by
   congr! 2; exact hq _
 
-set_option backward.privateInPublic true in
-private theorem frequently_congr {α : Type*} {p q : α → Prop} {f : Filter α}
+theorem frequently_congr {α : Type*} {p q : α → Prop} {f : Filter α}
     (hq : ∀ (x : α), p x ↔ q x) : (∃ᶠ (x : α) in f, p x) ↔ ∃ᶠ (x : α) in f, q x := by
   congr! 2; exact hq _
 

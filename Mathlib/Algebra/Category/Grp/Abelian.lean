@@ -18,7 +18,7 @@ public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 @[expose] public section
 
-open CategoryTheory Limits
+open CategoryTheory
 
 universe u
 
@@ -26,14 +26,16 @@ noncomputable section
 
 namespace AddCommGrpCat
 
-variable {X Y Z : AddCommGrpCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
+variable {X Y : AddCommGrpCat.{u}} (f : X ⟶ Y)
 
 /-- In the category of abelian groups, every monomorphism is normal. -/
+@[instance_reducible]
 def normalMono (_ : Mono f) : NormalMono f :=
   equivalenceReflectsNormalMono (forget₂ (ModuleCat.{u} ℤ) AddCommGrpCat.{u}).inv <|
     ModuleCat.normalMono _ inferInstance
 
 /-- In the category of abelian groups, every epimorphism is normal. -/
+@[instance_reducible]
 def normalEpi (_ : Epi f) : NormalEpi f :=
   equivalenceReflectsNormalEpi (forget₂ (ModuleCat.{u} ℤ) AddCommGrpCat.{u}).inv <|
     ModuleCat.normalEpi _ inferInstance

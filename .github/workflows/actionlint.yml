@@ -3,17 +3,28 @@ on:
   pull_request:
     paths:
       - '.github/**'
-  merge_group:
 
 jobs:
   actionlint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: suggester / actionlint
-        uses: reviewdog/action-actionlint@e58ee9d111489c31395fbe4857b0be6e7635dbda # v1.70.0
+        uses: reviewdog/action-actionlint@50842263c20a7c46bd0065b9e624d3c569db061e # v1.73.0
         with:
           tool_name: actionlint
-          fail_level: error
+          fail_level: any
+
+  ensure-sha-pinned-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Using our fork's PR branch until upstream merges the improved error reporting:
+      # https://github.com/zgosalvez/github-actions-ensure-sha-pinned-actions/pull/288
+      # TODO: Update to upstream release once merged.
+      - name: Ensure all actions are pinned to SHA
+        uses: kim-em/github-actions-ensure-sha-pinned-actions@00f51cdb5bbc21f5bc873ef3a2dceef45df213af # improve-error-reporting

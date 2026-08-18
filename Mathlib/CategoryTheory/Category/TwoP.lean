@@ -26,8 +26,6 @@ open CategoryTheory Option
 
 universe u
 
-variable {α β : Type*}
-
 
 /-- The category of two-pointed types. -/
 structure TwoP : Type (u + 1) where
@@ -63,14 +61,14 @@ theorem coe_toBipointed (X : TwoP) : ↥X.toBipointed = ↥X :=
   rfl
 
 noncomputable instance largeCategory : LargeCategory TwoP :=
-  inferInstanceAs (Category (InducedCategory _ toBipointed))
+  inferInstanceAs <| Category (InducedCategory _ toBipointed)
 
 noncomputable instance concreteCategory : ConcreteCategory TwoP
     (fun X Y => Bipointed.HomSubtype X.toBipointed Y.toBipointed) :=
-  InducedCategory.concreteCategory toBipointed
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toBipointed) _
 
 noncomputable instance hasForgetToBipointed : HasForget₂ TwoP Bipointed :=
-  InducedCategory.hasForget₂ toBipointed
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toBipointed) _
 
 @[ext]
 lemma hom_ext {X Y : TwoP} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
@@ -86,6 +84,9 @@ noncomputable def swap : TwoP ⥤ TwoP where
         map_fst := f.hom.map_snd
         map_snd := f.hom.map_fst }
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence between `TwoP` and itself induced by `Prod.swap` both ways. -/
 @[simps!]
 noncomputable def swapEquiv : TwoP ≌ TwoP where

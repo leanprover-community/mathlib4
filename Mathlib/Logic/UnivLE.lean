@@ -19,7 +19,7 @@ directly due to https://github.com/leanprover/lean4/issues/2297.
 See the doc-string for the comparison with an alternative stronger definition.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
@@ -41,7 +41,11 @@ it could be bigger than both!
 See also `Mathlib/CategoryTheory/UnivLE.lean` for the statement that the stronger definition is
 equivalent to `EssSurj (uliftFunctor : Type v ⥤ Type max u v)`.
 -/
-@[pp_with_univ, mk_iff]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, both universe parameters would default to
+-- output (since there are no input parameters at all).
+-- See Note [universe output parameters and typeclass caching].
+@[univ_out_params, pp_with_univ, mk_iff]
 class UnivLE : Prop where
   small (α : Type u) : Small.{v} α
 
@@ -66,7 +70,7 @@ instance UnivLE.zero : UnivLE.{0, u} := ⟨inferInstance⟩
 /-- This is redundant as an instance given the below. -/
 theorem UnivLE.succ [UnivLE.{u, v}] : UnivLE.{u, v + 1} := @UnivLE.trans _ ⟨inferInstance⟩
 
-/- This is the crucial instance that subsumes `univLE_max`. -/
+/-- This is the crucial instance that subsumes `univLE_max`. -/
 instance univLE_of_max [UnivLE.{max u v, v}] : UnivLE.{u, v} := @UnivLE.trans univLE_max ‹_›
 
 -- order doesn't matter

@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.Noetherian.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

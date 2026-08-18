@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Valuation.Basic
 public import Mathlib.NumberTheory.Padics.PadicNorm
 public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Peel
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
@@ -64,8 +65,6 @@ p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 
 open WithZero
 
--- TODO: fix non-terminal simp; acts on 8 goals, leaving one
-set_option linter.flexible false in
 /-- The p-adic valuation on rationals, sending `p` to `(exp (-1) : ℤᵐ⁰)` -/
 def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
   toFun x := if x = 0 then 0 else exp (-padicValRat p x)
@@ -77,10 +76,7 @@ def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
     simp_all [padicValRat.mul, exp_add, mul_comm]
   map_add_le_max' := by
     intros
-    split_ifs
-    any_goals simp_all [-exp_neg]
-    rw [← min_le_iff]
-    exact padicValRat.min_le_padicValRat_add ‹_›
+    split_ifs <;> simp_all [← min_le_iff, padicValRat.min_le_padicValRat_add]
 
 /-- The p-adic valuation on integers, sending `p` to `(exp (-1) : ℤᵐ⁰)` -/
 def Int.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℤ ℤᵐ⁰ :=
@@ -203,7 +199,7 @@ theorem stationaryPoint_spec {f : PadicSeq p} (hf : ¬f ≈ 0) :
       stationaryPoint hf ≤ m → stationaryPoint hf ≤ n → padicNorm p (f n) = padicNorm p (f m) :=
   @(Classical.choose_spec <| stationary hf)
 
-open Classical in
+open scoped Classical in
 /-- Since the norm of the entries of a Cauchy sequence is eventually stationary,
 we can lift the norm to sequences. -/
 def norm (f : PadicSeq p) : ℚ :=
@@ -294,7 +290,7 @@ variable {p : ℕ} [Fact p.Prime]
 
 /-! ### Valuation on `PadicSeq` -/
 
-open Classical in
+open scoped Classical in
 /-- The `p`-adic valuation on `ℚ` lifts to `PadicSeq p`.
 `Valuation f` is defined to be the valuation of the (`ℚ`-valued) stationary point of `f`. -/
 def valuation (f : PadicSeq p) : ℤ :=
@@ -302,7 +298,7 @@ def valuation (f : PadicSeq p) : ℤ :=
 
 theorem norm_eq_zpow_neg_valuation {f : PadicSeq p} (hf : ¬f ≈ 0) :
     f.norm = (p : ℚ) ^ (-f.valuation : ℤ) := by
-  rw [norm, valuation, dif_neg hf, dif_neg hf, padicNorm, if_neg]
+  rw [norm, valuation, dite_eq_right hf, dite_eq_right hf, padicNorm, ite_eq_right]
   intro H
   apply CauSeq.not_limZero_of_not_congr_zero hf
   intro ε hε
@@ -361,11 +357,11 @@ theorem norm_mul (f g : PadicSeq p) : (f * g).norm = f.norm * g.norm := by
   classical
   exact if hf : f ≈ 0 then by
     have hg : f * g ≈ 0 := mul_equiv_zero' _ hf
-    simp only [hf, hg, norm, dif_pos, zero_mul]
+    simp only [hf, hg, norm, dite_eq_left, zero_mul]
   else
     if hg : g ≈ 0 then by
       have hf : f * g ≈ 0 := mul_equiv_zero _ hg
-      simp only [hf, hg, norm, dif_pos, mul_zero]
+      simp only [hf, hg, norm, dite_eq_left, mul_zero]
     else by
       unfold norm
       have hfg := mul_not_equiv_zero hf hg
@@ -471,11 +467,11 @@ theorem norm_eq {f g : PadicSeq p} (h : ∀ k, padicNorm p (f k) = padicNorm p (
   classical
   exact if hf : f ≈ 0 then by
     have hg : g ≈ 0 := equiv_zero_of_val_eq_of_equiv_zero h hf
-    simp only [hf, hg, norm, dif_pos]
+    simp only [hf, hg, norm, dite_eq_left]
   else by
     have hg : ¬g ≈ 0 := fun hg ↦
       hf <| equiv_zero_of_val_eq_of_equiv_zero (by simp only [h, forall_const]) hg
-    simp only [hg, hf, norm, dif_neg, not_false_iff]
+    simp only [hg, hf, norm, dite_eq_right, not_false_iff]
     let i := max (stationaryPoint hf) (stationaryPoint hg)
     have hpf : padicNorm p (f (stationaryPoint hf)) = padicNorm p (f i) := by
       apply stationaryPoint_spec
@@ -526,8 +522,10 @@ end PadicSeq
 
 /-- The `p`-adic numbers `ℚ_[p]` are the Cauchy completion of `ℚ` with respect to the `p`-adic norm.
 -/
+@[wikidata Q311627]
 def Padic (p : ℕ) [Fact p.Prime] :=
   CauSeq.Completion.Cauchy (padicNorm p)
+deriving Zero, One, Add, Neg, Sub, Mul, Div, AddCommGroup, Ring, CommRing, Field, Inhabited
 
 /-- notation for p-padic rationals -/
 notation "ℚ_[" p "]" => Padic p
@@ -537,35 +535,6 @@ namespace Padic
 section Completion
 
 variable {p : ℕ} [Fact p.Prime]
-
-instance field : Field ℚ_[p] :=
-  Cauchy.field
-
-instance : Inhabited ℚ_[p] :=
-  ⟨0⟩
-
--- short circuits
-instance : CommRing ℚ_[p] :=
-  Cauchy.commRing
-
-instance : Ring ℚ_[p] :=
-  Cauchy.ring
-
-instance : Zero ℚ_[p] := by infer_instance
-
-instance : One ℚ_[p] := by infer_instance
-
-instance : Add ℚ_[p] := by infer_instance
-
-instance : Mul ℚ_[p] := by infer_instance
-
-instance : Sub ℚ_[p] := by infer_instance
-
-instance : Neg ℚ_[p] := by infer_instance
-
-instance : Div ℚ_[p] := by infer_instance
-
-instance : AddCommGroup ℚ_[p] := by infer_instance
 
 /-- Builds the equivalence class of a Cauchy sequence of rationals. -/
 def mk : PadicSeq p → ℚ_[p] :=
@@ -629,15 +598,16 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
   map_mul' q r := Quotient.inductionOn₂ q r <| PadicSeq.norm_mul
   nonneg' q := Quotient.inductionOn q <| PadicSeq.norm_nonneg
   eq_zero' q := Quotient.inductionOn q fun r ↦ by
-    rw [Padic.zero_def, Quotient.eq]
-    exact PadicSeq.norm_zero_iff r
+    rw [Padic.zero_def, Quotient.lift_mk, PadicSeq.norm_zero_iff r]
+    exact Quotient.eq.symm
   add_le' q r := by
     trans
       max ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) q)
         ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) r)
-    · exact Quotient.inductionOn₂ q r <| PadicSeq.norm_nonarchimedean
-    refine max_le_add_of_nonneg (Quotient.inductionOn q <| PadicSeq.norm_nonneg) ?_
-    exact Quotient.inductionOn r <| PadicSeq.norm_nonneg
+    · induction q, r using Quotient.inductionOn₂; apply PadicSeq.norm_nonarchimedean
+    · apply max_le_add_of_nonneg
+      · induction q using Quotient.inductionOn; apply PadicSeq.norm_nonneg
+      · induction r using Quotient.inductionOn; apply PadicSeq.norm_nonneg
 
 namespace padicNormE
 
@@ -656,7 +626,7 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
   obtain ⟨N, hN⟩ := cauchy₂ f hε
   rcases h N with ⟨i, hi, hge⟩
   have hne : ¬f - const (padicNorm p) (f i) ≈ 0 := fun h ↦ by
-    rw [PadicSeq.norm, dif_pos h] at hge
+    rw [PadicSeq.norm, dite_eq_left h] at hge
     exact not_lt_of_ge hge hε
   unfold PadicSeq.norm at hge; split_ifs at hge
   apply not_le_of_gt _ hge
@@ -708,14 +678,14 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
     ⟨q' N, by
       classical
       dsimp [padicNormE]
-      convert_to PadicSeq.norm (q' - const _ (q' N)) < ε -- `change` times out here.
+      convert_to! PadicSeq.norm (q' - const _ (q' N)) < ε -- `change` times out here.
       rcases Decidable.em (q' - const (padicNorm p) (q' N) ≈ 0) with heq | hne'
-      · simpa only [heq, PadicSeq.norm, dif_pos]
-      · simp only [PadicSeq.norm, dif_neg hne']
+      · simpa only [heq, PadicSeq.norm, dite_eq_left]
+      · simp only [PadicSeq.norm, dite_eq_right hne']
         change padicNorm p (q' _ - q' _) < ε
         rcases Decidable.em (stationaryPoint hne' ≤ N) with hle | hle
         · have := (stationaryPoint_spec hne' le_rfl hle).symm
-          simp only [const_apply, sub_apply, padicNorm.zero, sub_self] at this
+          simp only [const_apply, CauSeq.sub_apply, padicNorm.zero, sub_self] at this
           simpa only [this]
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
 
@@ -822,12 +792,14 @@ instance metricSpace : MetricSpace ℚ_[p] where
 instance : Norm ℚ_[p] :=
   ⟨fun x ↦ padicNormE x⟩
 
-instance normedField : NormedField ℚ_[p] :=
-  { Padic.field,
-    Padic.metricSpace p with
-    dist_eq := fun _ _ ↦ rfl
-    norm_mul := by simp [Norm.norm, map_mul]
-    norm := norm }
+instance normedField : NormedField ℚ_[p] where
+  dist_eq x y := by
+    rw [add_comm, ← sub_eq_add_neg]
+    change ‖x - y‖ = ‖y - x‖
+    have : y - x = (-1) * (x - y) := by ring
+    simp only [this, Norm.norm, map_mul, map_neg_eq_map, AbsoluteValue.map_one, one_mul]
+  norm_mul := by simp [Norm.norm, map_mul]
+  norm := norm
 
 instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
   abv_nonneg' := norm_nonneg
@@ -963,8 +935,6 @@ theorem norm_intCast_lt_one_iff {k : ℤ} : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
         rw [mul_one, norm_p]
         exact inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
 
-@[deprecated (since := "2025-08-15")] alias norm_int_lt_one_iff_dvd := norm_intCast_lt_one_iff
-
 @[simp]
 lemma norm_natCast_lt_one_iff {n : ℕ} :
     ‖(n : ℚ_[p])‖ < 1 ↔ p ∣ n := by
@@ -994,13 +964,9 @@ theorem norm_eq_of_norm_add_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z
   _root_.by_contradiction fun hne ↦
     not_lt_of_ge (by rw [add_eq_max_of_ne hne]; apply le_max_right) h
 
-@[deprecated (since := "2025-09-17")] alias eq_of_norm_add_lt_right := norm_eq_of_norm_add_lt_right
-
 theorem norm_eq_of_norm_add_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ :=
   _root_.by_contradiction fun hne ↦
     not_lt_of_ge (by rw [add_eq_max_of_ne hne]; apply le_max_left) h
-
-@[deprecated (since := "2025-09-17")] alias eq_of_norm_add_lt_left := norm_eq_of_norm_add_lt_left
 
 theorem norm_eq_of_norm_sub_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 - z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ := by
   rw [← norm_neg z2]
@@ -1077,15 +1043,16 @@ def valuation : ℚ_[p] → ℤ :=
 
 @[simp]
 theorem valuation_zero : valuation (0 : ℚ_[p]) = 0 :=
-  dif_pos ((const_equiv p).2 rfl)
+  dite_eq_left ((const_equiv p).2 rfl)
 
 theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
-  refine Quotient.inductionOn' x fun f hf => ?_
+  induction x using Quotient.inductionOn with | _ f
+  intro hf
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
   rw [PadicSeq.norm_eq_zpow_neg_valuation]
   · rw [Rat.cast_zpow, Rat.cast_natCast]
   · apply CauSeq.not_limZero_of_not_congr_zero
-    contrapose! hf
+    contrapose hf
     apply Quotient.sound
     simpa using hf
 
@@ -1113,7 +1080,7 @@ lemma valuation_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 @[simp]
 lemma valuation_one : valuation (1 : ℚ_[p]) = 0 := by
-  rw [← Nat.cast_one, valuation_natCast, padicValNat.one, cast_zero]
+  rw [← Nat.cast_one, valuation_natCast, padicValNat_one_right, cast_zero]
 
 -- not @[simp], since simp can prove it
 lemma valuation_p : valuation (p : ℚ_[p]) = 1 := by
@@ -1163,47 +1130,48 @@ lemma valuation_zpow (x : ℚ_[p]) : ∀ n : ℤ, (x ^ n).valuation = n * x.valu
   | (n : ℕ) => by simp
   | .negSucc n => by simp [← neg_mul]; simp [Int.negSucc_eq]
 
-open Classical in
+open scoped Classical in
 /-- The additive `p`-adic valuation on `ℚ_[p]`, with values in `WithTop ℤ`. -/
 def addValuationDef : ℚ_[p] → WithTop ℤ :=
   fun x ↦ if x = 0 then ⊤ else x.valuation
 
 @[simp]
 theorem AddValuation.map_zero : addValuationDef (0 : ℚ_[p]) = ⊤ := by
-  rw [addValuationDef, if_pos rfl]
+  rw [addValuationDef, ite_eq_left rfl]
 
 @[simp]
 theorem AddValuation.map_one : addValuationDef (1 : ℚ_[p]) = 0 := by
-  rw [addValuationDef, if_neg one_ne_zero, valuation_one, WithTop.coe_zero]
+  rw [addValuationDef, ite_eq_right one_ne_zero, valuation_one, WithTop.coe_zero]
 
 theorem AddValuation.map_mul (x y : ℚ_[p]) :
     addValuationDef (x * y : ℚ_[p]) = addValuationDef x + addValuationDef y := by
   simp only [addValuationDef]
   by_cases hx : x = 0
-  · rw [hx, if_pos rfl, zero_mul, if_pos rfl, WithTop.top_add]
+  · rw [hx, ite_eq_left rfl, zero_mul, ite_eq_left rfl, WithTop.top_add]
   · by_cases hy : y = 0
-    · rw [hy, if_pos rfl, mul_zero, if_pos rfl, WithTop.add_top]
-    · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithTop.coe_add, WithTop.coe_eq_coe,
-        valuation_mul hx hy]
+    · rw [hy, ite_eq_left rfl, mul_zero, ite_eq_left rfl, WithTop.add_top]
+    · rw [ite_eq_right hx, ite_eq_right hy, ite_eq_right (mul_ne_zero hx hy), ← WithTop.coe_add,
+        WithTop.coe_eq_coe, valuation_mul hx hy]
 
 theorem AddValuation.map_add (x y : ℚ_[p]) :
     min (addValuationDef x) (addValuationDef y) ≤ addValuationDef (x + y : ℚ_[p]) := by
   simp only [addValuationDef]
   by_cases hxy : x + y = 0
-  · rw [hxy, if_pos rfl]
+  · rw [hxy, ite_eq_left rfl]
     exact le_top
   · by_cases hx : x = 0
-    · rw [hx, if_pos rfl, min_eq_right, zero_add]
+    · rw [hx, ite_eq_left rfl, min_eq_right, zero_add]
       exact le_top
     · by_cases hy : y = 0
-      · rw [hy, if_pos rfl, min_eq_left, add_zero]
+      · rw [hy, ite_eq_left rfl, min_eq_left, add_zero]
         exact le_top
-      · rw [if_neg hx, if_neg hy, if_neg hxy, ← WithTop.coe_min, WithTop.coe_le_coe]
+      · rw [ite_eq_right hx, ite_eq_right hy, ite_eq_right hxy, ← WithTop.coe_min,
+          WithTop.coe_le_coe]
         exact le_valuation_add hxy
 
 open WithZero
 
-open Classical in
+open scoped Classical in
 /-- The `p`-adic valuation on `ℚ_[p]`, as a `Valuation`, bundled `Padic.valuation`. -/
 @[simps]
 noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
@@ -1213,7 +1181,7 @@ noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
   map_mul' _ _ := by split_ifs <;> simp_all [add_comm]
   map_add_le_max' _ _ := by
     split_ifs
-    any_goals simp_all [inv_le_inv₀]
+    any_goals simp_all
     simpa using le_valuation_add ‹_›
 
 lemma comap_mulValuation_eq_padicValuation :
@@ -1238,7 +1206,7 @@ def addValuation : AddValuation ℚ_[p] (WithTop ℤ) :=
 @[simp]
 theorem addValuation.apply {x : ℚ_[p]} (hx : x ≠ 0) :
     Padic.addValuation x = (x.valuation : WithTop ℤ) := by
-  simp only [Padic.addValuation, AddValuation.of_apply, addValuationDef, if_neg hx]
+  simp only [Padic.addValuation, AddValuation.of_apply, addValuationDef, ite_eq_right hx]
 
 section NormLEIff
 

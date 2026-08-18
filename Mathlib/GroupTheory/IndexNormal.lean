@@ -25,7 +25,7 @@ assert_not_exists Field
 
 open MulAction MonoidHom Nat
 
-variable {G : Type*} [Group G] {H : Subgroup G} {p : ℕ}
+variable {G : Type*} [Group G] {H : Subgroup G}
 
 namespace Subgroup
 
@@ -51,7 +51,7 @@ theorem normal_of_index_eq_minFac_card (hHp : H.index = (Nat.card G).minFac) :
   · rw [hG1, minFac_one] at hHp
     exact normal_of_index_eq_one hHp
   suffices H.normalCore.relIndex H = 1 by
-    convert H.normalCore_normal
+    convert! H.normalCore_normal
     exact le_antisymm (relIndex_eq_one.mp this) (normalCore_le H)
   have : Finite G := finite_of_card_ne_zero hG0
   have index_ne_zero : H.index ≠ 0 := index_ne_zero_of_finite

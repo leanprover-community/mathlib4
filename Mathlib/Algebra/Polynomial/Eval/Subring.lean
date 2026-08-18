@@ -25,9 +25,9 @@ namespace Polynomial
 
 universe u v w y
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type u} {S : Type v} {n : ℕ}
 
-variable [Semiring R] {p q r : R[X]} [Semiring S]
+variable [Semiring R] {p : R[X]} [Semiring S]
 variable (f : R →+* S)
 
 theorem mem_map_rangeS {p : S[X]} : p ∈ (mapRingHom f).rangeS ↔ ∀ n, p.coeff n ∈ f.rangeS := by
@@ -43,8 +43,15 @@ theorem mem_map_rangeS {p : S[X]} : p ∈ (mapRingHom f).rangeS ↔ ∀ n, p.coe
     use C c * X ^ i
     rw [coe_mapRingHom, Polynomial.map_mul, map_C, hc, Polynomial.map_pow, map_X]
 
+theorem notMem_map_rangeS {p : S[X]} : p ∉ (mapRingHom f).rangeS ↔ ∃ n, p.coeff n ∉ f.rangeS :=
+  (mem_map_rangeS f (p := p)).not.trans not_forall
+
 theorem mem_map_range {R S : Type*} [Ring R] [Ring S] (f : R →+* S) {p : S[X]} :
     p ∈ (mapRingHom f).range ↔ ∀ n, p.coeff n ∈ f.range :=
   mem_map_rangeS f
+
+theorem notMem_map_range {R S : Type*} [Ring R] [Ring S] (f : R →+* S) {p : S[X]} :
+    p ∉ (mapRingHom f).range ↔ ∃ n, p.coeff n ∉ f.range :=
+  notMem_map_rangeS f
 
 end Polynomial

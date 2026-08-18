@@ -34,8 +34,10 @@ namespace CochainComplex
 
 open HomologicalComplex
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The collection of all single functors `C ⥤ CochainComplex C ℤ` along with
-their compatibilites with shifts. (This definition has purposely no `simps`
+their compatibilities with shifts. (This definition has purposely no `simps`
 attribute, as the generated lemmas would not be very useful.) -/
 noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ where
   functor n := single _ _ n
@@ -47,7 +49,7 @@ noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ w
         · subst h
           simp only [Functor.comp_obj, shiftFunctor_obj_X', single_obj_X_self]
         · dsimp [single]
-          rw [if_neg h, if_neg (fun h' => h (by lia))])))
+          rw [ite_eq_right h, ite_eq_right (fun h' => h (by lia))])))
     (fun {X Y} f => by
       obtain rfl : a' = a + n := by lia
       ext
@@ -67,6 +69,7 @@ instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by
   dsimp only [singleFunctors]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (R : Type*) [Ring R] (n : ℤ) [Linear R C] :
     Functor.Linear R ((singleFunctors C).functor n) where
   map_smul f r := by

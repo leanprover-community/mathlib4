@@ -19,13 +19,16 @@ This file proves that, given a monoidal localization functor `L : C ⥤ D`, and 
 then `F` is monoidal. See `CategoryTheory.Localization.Monoidal.functorMonoidalOfComp`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe u
 
 namespace CategoryTheory
 
-open CategoryTheory MonoidalCategory Functor Monoidal LaxMonoidal OplaxMonoidal
+open CategoryTheory MonoidalCategory CategoryTheory.Functor MonoidalCategory.Functor Monoidal
+open LaxMonoidal OplaxMonoidal
 
 namespace Localization.Monoidal
 
@@ -53,6 +56,7 @@ noncomputable def curriedTensorPreIsoPost : curriedTensorPre F ≅ curriedTensor
   lift₂NatIso L L W W (curriedTensorPre G) (curriedTensorPost G) _ _
     (Functor.curriedTensorPreIsoPost G)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma curriedTensorPreIsoPost_hom_app_app (X₁ X₂ : C) :
     letI e := Lifting.iso L W G F
@@ -61,6 +65,7 @@ lemma curriedTensorPreIsoPost_hom_app_app (X₁ X₂ : C) :
         F.map (OplaxMonoidal.δ L _ _) := by
   simp [curriedTensorPreIsoPost]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D}
     (e₁ : Y₁ ≅ L.obj X₁) (e₂ : Y₂ ≅ L.obj X₂) :
     letI e := Lifting.iso L W G F
@@ -124,6 +129,7 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
 Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
 where `L` is a monoidal localization functor.
 -/
+@[instance_reducible]
 noncomputable def functorMonoidalOfComp : F.Monoidal :=
   (functorCoreMonoidalOfComp L W F G).toMonoidal
 
@@ -148,7 +154,7 @@ transformation.
 instance lifting_isMonoidal :
     letI : F.Monoidal := functorMonoidalOfComp L W F G
     (Lifting.iso L W G F).hom.IsMonoidal := by
-  letI : F.Monoidal := functorMonoidalOfComp L W F G
+  let : F.Monoidal := functorMonoidalOfComp L W F G
   refine ⟨?_, fun _ _ ↦ ?_⟩
   · simp [functorMonoidalOfComp_ε]
   · simp [functorMonoidalOfComp_μ]

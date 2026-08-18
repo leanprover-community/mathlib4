@@ -6,8 +6,8 @@ Authors: Daniel Morrison, Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Set.Card
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-! # Combinations
 
@@ -40,7 +40,7 @@ open Finset Set Function
 @[simp]
 theorem mem_iff {s : Finset α} :
     s ∈ powersetCard α n ↔ s.card = n := by
-  rw [powersetCard, Set.mem_setOf_eq]
+  rw [powersetCard, Set.mem_ofPred_eq]
 
 instance : SetLike (powersetCard α n) α := SetLike.instSubtype
 
@@ -74,13 +74,18 @@ theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (ha
     ∃ s : powersetCard α n, a ∈ s ∧ b ∉ s := by
   have ha' : n ≤ Set.encard {b}ᶜ := by
     rwa [← (Set.encard_add_encard_compl {b}).trans (Set.encard_univ α), Set.encard_singleton,
-      add_comm, ENat.lt_add_one_iff' (ENat.coe_ne_top n)] at hα
+      add_comm, ENat.lt_add_one_iff' (ENat.natCast_ne_top n)] at hα
   obtain ⟨s, has, has', hs⟩ :=
     Set.exists_superset_subset_encard_eq (s := {a}) (by simp [Ne.symm hab]) (by simpa) ha'
   have : Set.Finite s := Set.finite_of_encard_eq_coe hs
   exact ⟨⟨Set.Finite.toFinset this, by
-    rwa [mem_iff, ← ENat.coe_inj, ← this.encard_eq_coe_toFinset_card]⟩,
+    rwa [mem_iff, ← ENat.natCast_inj, ← this.encard_eq_coe_toFinset_card]⟩,
       by simpa using has, by simpa using has'⟩
+
+theorem exists_mem_notMem_iff_ne (s t : Set.powersetCard α n) : s ≠ t ↔ ∃ a ∈ s, a ∉ t := by
+  contrapose!
+  rw [eq_iff_subset]
+  rfl
 
 section map
 
@@ -106,6 +111,15 @@ lemma val_map (f : α ↪ β) (s : powersetCard α n) : Subtype.val (map n f s) 
 end map
 
 section of
+
+/-- The coercion of a finite set to its corresponding element of `Set.powersetCard`. -/
+def ofCard {s : Finset α} (s_card : s.card = n) : powersetCard α n := ⟨s, mem_iff.mpr s_card⟩
+
+@[simp]
+lemma val_ofCard {s : Finset α} (s_card : s.card = n) : Subtype.val (ofCard s_card) = s := rfl
+
+@[simp]
+lemma ofCard_coe {s : powersetCard α n} (h) : ofCard (s := s.val) h = s := rfl
 
 /-- The equivalence sending `a : α` to the singleton `{a}`. -/
 noncomputable def ofSingleton : α ≃ powersetCard α 1 where
@@ -171,11 +185,34 @@ theorem compl_symm : (compl hm).symm = compl ((n.add_comm m).trans hm) := rfl
 
 end compl
 
+section disjUnion
+
+variable {m : ℕ} {s : powersetCard α m} {t : powersetCard α n} (hst : Disjoint s.val t.val)
+
+/-- The disjoint union of two `powersetCard`s. -/
+def disjUnion : powersetCard α (m + n) :=
+  ⟨s.val.disjUnion t hst, by rw [mem_iff, Finset.card_disjUnion, card_eq s, card_eq t]⟩
+
+variable {hst}
+
+@[simp]
+theorem coe_disjUnion : (disjUnion hst : Finset α) = s.val.disjUnion t hst := rfl
+
+@[simp]
+theorem mem_disjUnion {a : α} : a ∈ disjUnion hst ↔ a ∈ s ∨ a ∈ t :=
+  Finset.mem_disjUnion (h := hst)
+
+end disjUnion
+
 variable (α n)
 
 theorem coe_finset [Fintype α] :
     powersetCard α n = Finset.powersetCard n (Finset.univ : Finset α) := by
   ext; simp
+
+instance [Fintype α] : Fintype (powersetCard α n) := by
+  rw [coe_finset]
+  infer_instance
 
 instance [Finite α] : Finite (powersetCard α n) := by
   have : Fintype α := Fintype.ofFinite α
@@ -203,7 +240,6 @@ instance instInfinite [NeZero n] [Infinite α] : Infinite (powersetCard α n) :=
 
 protected theorem card :
     Nat.card (powersetCard α n) = (Nat.card α).choose n := by
-  classical
   cases fintypeOrInfinite α
   · simp [coe_finset]
   · rcases n with _ | n
@@ -248,5 +284,18 @@ theorem nontrivial_iff [Finite α] :
   rw [← Finite.one_lt_card_iff_nontrivial, powersetCard.card, Nat.one_lt_iff_ne_zero_and_ne_one,
     ne_eq, Nat.choose_eq_zero_iff, ne_eq, Nat.choose_eq_one_iff]
   grind
+
+/-- The bijection between the product of `(n : ℕ)` and the finsets of `α` of cardinality `n` and
+`Finset α`. -/
+def prodEquiv : (n : ℕ) × (powersetCard α n) ≃ Finset α where
+  toFun x := x.2
+  invFun x := ⟨x.card, ⟨x, rfl⟩⟩
+  left_inv x := by ext <;> simp
+
+@[simp]
+lemma prodEquiv_apply (x : (n : ℕ) × (powersetCard α n)) : prodEquiv x = x.2 := rfl
+
+@[simp]
+lemma prodEquiv_symm_apply (s : Finset α) : prodEquiv.symm s = ⟨s.card, ofCard rfl⟩ := rfl
 
 end Set.powersetCard

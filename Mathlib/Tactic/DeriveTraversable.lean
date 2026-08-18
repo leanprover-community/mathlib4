@@ -250,6 +250,9 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
             { isUnsafe
               attrs :=
                 #[{ kind := .global
+                    name := `instance_reducible
+                    stx := ← `(attr| instance_reducible) },
+                  { kind := .global
                     name := `instance
                     stx := ← `(attr| instance) }] }
           declName := instN

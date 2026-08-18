@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Reduced
 public import Mathlib.RingTheory.IntegralDomain
+
 -- TODO: remove Mathlib.Algebra.CharP.Reduced and move the last two lemmas to Lemmas
 
 /-!
@@ -55,8 +56,8 @@ variable {k l : ℕ}
 def rootsOfUnity (k : ℕ) (M : Type*) [CommMonoid M] : Subgroup Mˣ where
   carrier := {ζ | ζ ^ k = 1}
   one_mem' := one_pow _
-  mul_mem' _ _ := by simp_all only [Set.mem_setOf_eq, mul_pow, one_mul]
-  inv_mem' _ := by simp_all only [Set.mem_setOf_eq, inv_pow, inv_one]
+  mul_mem' _ _ := by simp_all only [Set.mem_ofPred_eq, mul_pow, one_mul]
+  inv_mem' _ := by simp_all only [Set.mem_ofPred_eq, inv_pow, inv_one]
 
 @[simp]
 theorem mem_rootsOfUnity (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ ζ ^ k = 1 :=
@@ -185,11 +186,21 @@ theorem Units.val_set_image_rootsOfUnity_one : ((↑) : Rˣ → R) '' (rootsOfUn
 
 end CommMonoid
 
+section CommRing
+
+variable [CommRing R]
+
 open Set in
-theorem Units.val_set_image_rootsOfUnity_two [CommRing R] [NoZeroDivisors R] :
+theorem Units.val_set_image_rootsOfUnity_two [NoZeroDivisors R] :
     ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
   ext x
   simp
+
+theorem mem_rootsOfUnity_iff_isRoot (k : ℕ) (ζ : Rˣ) :
+    ζ ∈ rootsOfUnity k R ↔ (X ^ k - 1 : R[X]).IsRoot ζ := by
+  simp [-mem_rootsOfUnity, mem_rootsOfUnity', sub_eq_zero]
+
+end CommRing
 
 section IsDomain
 
@@ -231,18 +242,19 @@ theorem rootsOfUnityEquivNthRoots_symm_apply (x : { x // x ∈ nthRoots k (1 : R
 
 variable (k R)
 
-instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) := by
+instance : Finite (rootsOfUnity k R) := by
   classical
-  exact Fintype.ofEquiv { x // x ∈ nthRoots k (1 : R) } (rootsOfUnityEquivNthRoots R k).symm
+  exact .of_equiv { x // x ∈ nthRoots k (1 : R) } (rootsOfUnityEquivNthRoots R k).symm
 
 instance rootsOfUnity.isCyclic : IsCyclic (rootsOfUnity k R) :=
-  isCyclic_of_subgroup_isDomain ((Units.coeHom R).comp (rootsOfUnity k R).subtype) coe_injective
+  isCyclic_of_injective_ringHom ((Units.coeHom R).comp (rootsOfUnity k R).subtype) coe_injective
 
-theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k := by
+theorem card_rootsOfUnity : Nat.card (rootsOfUnity k R) ≤ k := by
   classical
   calc
-    Fintype.card (rootsOfUnity k R) = Fintype.card { x // x ∈ nthRoots k (1 : R) } :=
-      Fintype.card_congr (rootsOfUnityEquivNthRoots R k)
+    Nat.card (rootsOfUnity k R) = Nat.card { x // x ∈ nthRoots k (1 : R) } :=
+      Nat.card_congr (rootsOfUnityEquivNthRoots R k)
+    _ = Fintype.card { x // x ∈ nthRoots k (1 : R) } := Nat.card_eq_fintype_card
     _ ≤ Multiset.card (nthRoots k (1 : R)).attach := Multiset.card_le_card (Multiset.dedup_le _)
     _ = Multiset.card (nthRoots k (1 : R)) := Multiset.card_attach
     _ ≤ k := card_nthRoots k 1
@@ -304,7 +316,7 @@ def monoidHomMulEquivRootsOfUnityOfGenerator {G : Type*} [CommGroup G] {g : G}
       ← map_pow, pow_card_eq_one', map_one, Units.val_one]⟩
   invFun ζ := monoidHomOfForallMemZpowers hg (g' := (ζ.val : G')) <| by
     simpa only [orderOf_eq_card_of_forall_mem_zpowers hg, orderOf_dvd_iff_pow_eq_one,
-      ← Units.val_pow_eq_pow_val, Units.val_eq_one] using ζ.prop
+      ← Units.val_pow_eq_pow_val, Units.val_eq_one] using! ζ.prop
   left_inv φ := (MonoidHom.eq_iff_eq_on_generator hg _ φ).mpr <| by
     simp only [IsUnit.unit_spec, monoidHomOfForallMemZpowers_apply_gen]
   right_inv φ := Subtype.ext <| by

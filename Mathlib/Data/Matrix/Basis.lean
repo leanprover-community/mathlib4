@@ -19,7 +19,7 @@ at position `(i, j)`, and zeroes elsewhere.
 assert_not_exists Matrix.trace
 
 variable {l m n o : Type*}
-variable {R S α β γ : Type*}
+variable {R S α β : Type*}
 
 namespace Matrix
 
@@ -39,7 +39,7 @@ variable (i : m) (j : n) (c : α) (i' : m) (j' : n)
 
 @[simp]
 theorem single_apply_same : single i j c i j = c :=
-  if_pos (And.intro rfl rfl)
+  ite_eq_left (And.intro rfl rfl)
 
 @[simp]
 theorem single_apply_of_ne (h : ¬(i = i' ∧ j = j')) : single i j c i' j' = 0 := by
@@ -127,6 +127,10 @@ theorem single_add [AddZeroClass α] (i : m) (j : n) (a b : α) :
   simp only [single, of_apply]
   split_ifs with h <;> simp [h]
 
+lemma single_neg [NegZeroClass α] (i j : n) (b : α) :
+    - single i j b = single i j (-b) :=
+  neg_of _ |>.trans <| ext fun x y ↦ by simp [single, neg_ite]
+
 theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
     (i : n) (j : m) (c : α) (x : m → α) :
     mulVec (single i j c) x = Function.update (0 : n → α) i (c * x j) := by
@@ -135,6 +139,11 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
   rcases eq_or_ne i i' with rfl | h
   · simp
   simp [h, h.symm]
+
+lemma single_mulVec_eq [Fintype n] [NonAssocSemiring α] (i j : n) (b : α) (w : n → α) :
+    single i j b *ᵥ w = (b * w j) • Pi.single i (1 : α) := by
+  ext
+  simp [Matrix.single_mulVec, Function.update_apply, Pi.single_apply]
 
 lemma sum_single_eq_diagonal [AddCommMonoid α] [Fintype m] (f : m → α) :
     ∑ i : m, single i i (f i) = Matrix.diagonal f := by
@@ -257,13 +266,13 @@ theorem liftLinear_apply (f : m → n → α →ₗ[R] β) (M : Matrix m n α) :
     liftLinear S f M = ∑ i, ∑ j, f i j (M i j) := by
   simp [liftLinear, map_sum, LinearEquiv.congrLeft]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem liftLinear_single (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
     liftLinear S f (Matrix.single i j a) = f i j a := by
   dsimp [liftLinear, -LinearMap.lsum_apply, LinearEquiv.congrLeft, LinearEquiv.piCongrRight]
   simp_rw [of_symm_single, LinearMap.lsum_piSingle]
-
-@[deprecated (since := "2025-08-13")] alias liftLinear_piSingle := liftLinear_single
 
 @[simp]
 theorem liftLinear_comp_singleLinearMap (f : m → n → α →ₗ[R] β) (i : m) (j : n) :
@@ -285,7 +294,7 @@ variable [Zero α] (i j : n) (c : α)
 -- This simp lemma should take priority over `diag_apply`
 @[simp 1050]
 theorem diag_single_of_ne (h : i ≠ j) : diag (single i j c) = 0 :=
-  funext fun _ => if_neg fun ⟨e₁, e₂⟩ => h (e₁.trans e₂.symm)
+  funext fun _ => ite_eq_right fun ⟨e₁, e₂⟩ => h (e₁.trans e₂.symm)
 
 -- This simp lemma should take priority over `diag_apply`
 @[simp 1050]

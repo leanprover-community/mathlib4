@@ -48,7 +48,7 @@ lemma _root_.Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo {μ : ι → R
     p ⊓ ⨅ i, (f i).maxGenEigenspace (μ i) =
       (⨅ i, maxGenEigenspace ((f i).restrict (hfp i)) (μ i)).map p.subtype := by
   cases isEmpty_or_nonempty ι
-  · simp [iInf_of_isEmpty]
+  · simp
   · simp_rw [inf_iInf, p.inf_genEigenspace _ (hfp _), Submodule.map_iInf _ p.injective_subtype]
 
 /-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
@@ -99,8 +99,8 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
   suffices ∀ χ (s : Finset (ι → R)) (_ : χ ∉ s),
       Disjoint (⨅ i, (f i).maxGenEigenspace (χ i))
         (s.sup fun (χ : ι → R) ↦ ⨅ i, (f i).maxGenEigenspace (χ i)) by
-    simpa only [iSupIndep_iff_supIndep_of_injOn (injOn_iInf_maxGenEigenspace f),
-      Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.notMem_erase χ)
+    simpa only [iSupIndep_iff_supIndep,
+      Finset.supIndep_iff_disjoint_erase] using! fun s χ _ ↦ this _ _ (s.notMem_erase χ)
   intro χ₁ s
   induction s using Finset.induction_on with
   | empty => simp
@@ -119,7 +119,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
       ((f l - algebraMap R (Module.End R M) (χ₂ l)) ^ k) (y + z) ∈
       (⨅ i, (f i).maxGenEigenspace (χ₁ i)) ⊓
         Finset.sup s fun χ ↦ ⨅ i, (f i).maxGenEigenspace (χ i) by
-    simpa [ih.eq_bot, Submodule.mem_bot] using this
+    simpa [ih.eq_bot, Submodule.mem_bot] using! this
   intro l
   let g : Module.End R M := f l - algebraMap R (Module.End R M) (χ₂ l)
   obtain ⟨k, hk : (g ^ k) y = 0⟩ := (mem_iInf_maxGenEigenspace_iff _ _ _).mp hy l

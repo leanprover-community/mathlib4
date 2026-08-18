@@ -5,8 +5,7 @@ Authors: Bhavik Mehta, Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 
@@ -133,6 +132,15 @@ noncomputable def ofCoproductDisjointOfCommSq [HasStrictInitialObjects C]
 
 end IsInitial
 
+lemma CoproductDisjoint.isPullback_of_isInitial {c : Cofan X} (hc : IsColimit c)
+    {Y : C} (hY : IsInitial Y) {i j : ι} [HasPullback (c.inj i) (c.inj j)] (hij : i ≠ j) :
+    IsPullback (hY.to _) (hY.to _) (c.inj i) (c.inj j) := by
+  refine .of_iso_pullback (by simp) ?_ ?_ ?_
+  · refine hY.uniqueUpToIso ?_
+    exact IsInitial.ofCoproductDisjointOfIsColimit hij hc
+  · simp
+  · simp
+
 end
 
 /-- The binary coproduct of `X` and `Y` is disjoint if the coproduct of the family `{X, Y}` is
@@ -232,7 +240,7 @@ attribute [instance 999] CoproductsOfShapeDisjoint.coproductDisjoint
 lemma BinaryCoproductsDisjoint.mk (H : ∀ (X Y : C), BinaryCoproductDisjoint X Y) :
     BinaryCoproductsDisjoint C where
   coproductDisjoint X := by
-    convert H (X .left) (X .right) using 2
+    convert! H (X .left) (X .right) using 2
     casesm WalkingPair <;> simp
 
 /-- If `C` has disjoint coproducts, any morphism out of initial is mono. Note it isn't true in

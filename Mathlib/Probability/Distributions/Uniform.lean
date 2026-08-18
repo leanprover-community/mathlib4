@@ -11,6 +11,7 @@ public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 
 /-!
 # Uniform distributions and probability mass functions
+
 This file defines two related notions of uniform distributions, which will be unified in the future.
 
 ## Uniform distributions
@@ -73,7 +74,7 @@ theorem aemeasurable {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s �
   apply zero_ne_one' ℝ≥0∞
   calc
     0 = (0 : Measure E) Set.univ := rfl
-    _ = _ := by rw [hu, smul_apply, restrict_apply MeasurableSet.univ,
+    _ = _ := by rw [hu, Measure.smul_apply, restrict_apply MeasurableSet.univ,
       Set.univ_inter, smul_eq_mul, ENNReal.inv_mul_cancel hns hnt]
 
 theorem absolutelyContinuous {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) : map X ℙ ≪ μ := by
@@ -98,9 +99,8 @@ theorem toMeasurable_iff {X : Ω → E} {s : Set E} :
   rw [ProbabilityTheory.cond_toMeasurable_eq]
 
 protected theorem toMeasurable {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) :
-    IsUniform X (toMeasurable μ s) ℙ μ := by
-  unfold IsUniform at *
-  rwa [ProbabilityTheory.cond_toMeasurable_eq]
+    IsUniform X (toMeasurable μ s) ℙ μ :=
+  toMeasurable_iff.mpr hu
 
 theorem hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) : HasPDF X ℙ μ := by
@@ -181,9 +181,8 @@ end IsUniform
 variable {X : Ω → E}
 
 lemma IsUniform.cond {s : Set E} :
-    IsUniform (id : E → E) s (ProbabilityTheory.cond μ s) μ := by
-  unfold IsUniform
-  rw [Measure.map_id]
+    IsUniform (id : E → E) s (ProbabilityTheory.cond μ s) μ :=
+  map_id
 
 /-- The density of the uniform measure on a set with respect to itself. This allows us to abstract
 away the choice of random variable and probability space. -/
@@ -192,17 +191,14 @@ def uniformPDF (s : Set E) (x : E) (μ : Measure E := by volume_tac) : ℝ≥0�
 
 /-- Check that indeed any uniform random variable has the uniformPDF. -/
 lemma uniformPDF_eq_pdf {s : Set E} (hs : MeasurableSet s) (hu : pdf.IsUniform X s ℙ μ) :
-    (fun x ↦ uniformPDF s x μ) =ᵐ[μ] pdf X ℙ μ := by
-  unfold uniformPDF
-  exact Filter.EventuallyEq.trans (pdf.IsUniform.pdf_eq hs hu).symm (ae_eq_refl _)
+    (fun x ↦ uniformPDF s x μ) =ᵐ[μ] pdf X ℙ μ :=
+  (hu.pdf_eq hs).symm.trans (ae_eq_refl _)
 
 open scoped Classical in
 /-- Alternative way of writing the uniformPDF. -/
 lemma uniformPDF_ite {s : Set E} {x : E} :
     uniformPDF s x μ = if x ∈ s then (μ s)⁻¹ else 0 := by
-  unfold uniformPDF
-  unfold Set.indicator
-  simp only [Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one]
+  norm_num [uniformPDF, Set.indicator]
 
 end pdf
 
@@ -225,7 +221,7 @@ def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
       simpa only [Ne, Nat.cast_eq_zero, Finset.card_eq_zero] using
         Finset.nonempty_iff_ne_empty.1 hs
     exact ENNReal.mul_inv_cancel this <| ENNReal.natCast_ne_top s.card
-  · exact fun x hx => by simp only [hx, if_false]
+  · exact fun x hx => by simp only [hx, ite_false]
 
 variable {s : Finset α} (hs : s.Nonempty) {a : α}
 
@@ -241,11 +237,9 @@ theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (
 theorem uniformOfFinset_apply_of_notMem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
 
 @[simp]
-theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
-  Set.ext
-    (by
-      let ⟨a, ha⟩ := hs
-      simp [mem_support_iff])
+theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s := by
+  ext a
+  simp [mem_support_iff]
 
 theorem mem_support_uniformOfFinset_iff (a : α) : a ∈ (uniformOfFinset s hs).support ↔ a ∈ s := by
   simp
@@ -264,11 +258,11 @@ theorem toOuterMeasure_uniformOfFinset_apply :
     _ = ∑' x, if x ∈ s ∧ x ∈ t then (#s : ℝ≥0∞)⁻¹ else 0 :=
       tsum_congr fun x => by simp_rw [uniformOfFinset_apply, ← ite_and, and_comm]
     _ = ∑ x ∈ s with x ∈ t, if x ∈ s ∧ x ∈ t then (#s : ℝ≥0∞)⁻¹ else 0 :=
-      tsum_eq_sum fun _ hx => if_neg fun h => hx (Finset.mem_filter.2 h)
+      tsum_eq_sum fun _ hx => ite_eq_right fun h => hx (Finset.mem_filter.2 h)
     _ = ∑ x ∈ s with x ∈ t, (#s : ℝ≥0∞)⁻¹ :=
       Finset.sum_congr rfl fun x hx => by
-        have this : x ∈ s ∧ x ∈ t := by simpa using hx
-        simp only [this, and_self_iff, if_true]
+        have : x ∈ s ∧ x ∈ t := by simpa using hx
+        simp only [this, and_self_iff, ite_true]
     _ = #{x ∈ s | x ∈ t} / #s := by
         simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]
 

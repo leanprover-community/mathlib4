@@ -35,7 +35,7 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
+variable {ι : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
 namespace Module.Basis
 
@@ -63,7 +63,7 @@ theorem mem_span_image {m : M} {s : Set ι} : m ∈ span R (b '' s) ↔ ↑(b.re
 @[simp]
 theorem self_mem_span_image [Nontrivial R] {i : ι} {s : Set ι} :
     b i ∈ span R (b '' s) ↔ i ∈ s := by
-  simp [mem_span_image, Finsupp.support_single_ne_zero]
+  simp [mem_span_image, Finsupp.support_single]
 
 protected theorem mem_span (x : M) : x ∈ span R (range b) :=
   span_mono (image_subset_range _ _) (mem_span_repr_support b x)
@@ -87,8 +87,17 @@ protected theorem linearIndependent : LinearIndependent R b :=
   fun x y hxy => by
     rw [← b.repr_linearCombination x, hxy, b.repr_linearCombination y]
 
+protected lemma linearIndepOn (s : Set ι) : LinearIndepOn R b s :=
+  b.linearIndependent.linearIndepOn s
+
 protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
   b.linearIndependent.ne_zero i
+
+theorem injective_constr_of_linearIndependent
+    [Semiring R₂] [Module R₂ M'] [SMulCommClass R R₂ M'] {v : ι → M'}
+    (hv : LinearIndependent R v) : Injective (b.constr R₂ v) :=
+  fun _ _ hab ↦ b.repr.injective <| hv.finsuppLinearCombination_injective <| by
+    simpa [constr_def] using hab
 
 end Properties
 
@@ -121,6 +130,13 @@ end Mk
 
 section Coord
 
+@[simp]
+theorem linearIndependent_coord {R : Type*} [CommSemiring R] [Module R M] (b : Basis ι R M) :
+    LinearIndependent R b.coord := by
+  classical
+  refine linearIndependent_iff'ₛ.mpr fun s l₁ l₂ h j hj ↦ ?_
+  simpa [hj, Finsupp.single_apply] using congr($h (b j))
+
 variable (hli : LinearIndependent R v) (hsp : ⊤ ≤ span R (range v))
 
 variable {hli hsp}
@@ -141,8 +157,8 @@ theorem mk_coord_apply_ne {i j : ι} (h : j ≠ i) : (Basis.mk hli hsp).coord i 
 theorem mk_coord_apply [DecidableEq ι] {i j : ι} :
     (Basis.mk hli hsp).coord i (v j) = if j = i then 1 else 0 := by
   rcases eq_or_ne j i with h | h
-  · simp only [h, if_true, mk_coord_apply_eq i]
-  · simp only [h, if_false, mk_coord_apply_ne h]
+  · simp only [h, ite_true, mk_coord_apply_eq i]
+  · simp only [h, ite_false, mk_coord_apply_ne h]
 
 end Coord
 
@@ -172,11 +188,29 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
     rwa [h_x_eq_y]
 
 @[simp]
-protected theorem span_apply (i : ι) : (Basis.span hli i : M) = v i :=
-  congr_arg ((↑) : span R (range v) → M) <| Basis.mk_apply _ _ _
+protected theorem span_apply (i : ι) :
+    Basis.span hli i = ⟨v i, Submodule.subset_span <| mem_range_self _⟩ := by
+  ext
+  exact congr_arg ((↑) : span R (range v) → M) <| Basis.mk_apply _ _ _
+
+protected theorem coe_span_apply (i : ι) : (Basis.span hli i : M) = v i := by simp
+
+@[simp]
+protected theorem span_repr_eq_single (i : ι)
+    (hi : v i ∈ span R (range v) := subset_span <| mem_range_self i) :
+    (Basis.span hli).repr ⟨v i, hi⟩ = single i 1 := by
+  rw [← LinearEquiv.eq_symm_apply]
+  simp [Basis.span]
+
+lemma span_neg {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {v : ι → M} (hli : LinearIndependent R v)
+    (h : span R (range v) = span R (range (-v)) := by simp [← neg_range']) :
+    Basis.span hli.neg = ((Basis.span hli).map <| (LinearEquiv.neg _).trans (.ofEq _ _ h)) := by
+  ext; simp
 
 end Span
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any basis is a maximal linear independent set.
 -/
 theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal := fun w hi h => by

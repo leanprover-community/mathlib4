@@ -100,10 +100,7 @@ theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableS
       · rw [neg_neg] at h'; exact h'.2
       · exact h'.2
     rw [h_inter_eq] at h_neg
-    have h_fun_eq : (fun r : ℚ ↦ ρ (s ×ˢ Iic (r : ℝ))) = fun r : ℚ ↦ ρ (s ×ˢ Iic ↑(- -r)) := by
-      simp_rw [neg_neg]
-    rw [h_fun_eq]
-    exact h_neg.comp tendsto_neg_atBot_atTop
+    exact tendsto_comp_neg_atTop_iff.mp h_neg
   refine tendsto_measure_iInter_atTop (fun q ↦ (hs.prod measurableSet_Iic).nullMeasurableSet)
     ?_ ⟨0, measure_ne_top ρ _⟩
   refine fun q r hqr ↦ Set.prod_mono subset_rfl fun x hx ↦ ?_
@@ -197,7 +194,7 @@ lemma integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ
     Integrable (fun a ↦ (preCDF ρ x a).toReal) ρ.fst := by
   refine integrable_of_forall_fin_meas_le _ (measure_lt_top ρ.fst univ) ?_ fun t _ _ ↦ ?_
   · exact measurable_preCDF.ennreal_toReal.aestronglyMeasurable
-  · simp_rw [← ofReal_norm_eq_enorm, Real.norm_of_nonneg ENNReal.toReal_nonneg]
+  · simp_rw [← ofReal_norm, Real.norm_of_nonneg ENNReal.toReal_nonneg]
     rw [← lintegral_one]
     refine (setLIntegral_le_lintegral _ _).trans (lintegral_mono_ae ?_)
     filter_upwards [preCDF_le_one ρ] with a ha using ENNReal.ofReal_toReal_le.trans (ha _)

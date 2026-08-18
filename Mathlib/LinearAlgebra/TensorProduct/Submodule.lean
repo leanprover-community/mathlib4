@@ -71,7 +71,7 @@ theorem mulMap_map_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ
       TensorProduct.map ((f : S →ₗ[R] T).submoduleMap M) ((f : S →ₗ[R] T).submoduleMap N)
         = (f : S →ₗ[R] T) ∘ₗ mulMap M N := by
   ext
-  simp only [TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp,
+  simp only [TensorProduct.AlgebraTensorModule.curry_apply,
     TensorProduct.curry_apply, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
     Function.comp_apply, TensorProduct.map_tmul, mulMap_tmul, LinearMap.coe_coe, map_mul]
   rfl
@@ -163,7 +163,7 @@ there is the natural isomorphism of `R`-modules between
 `i(R) ⊗[R] N` and `N` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
 def lTensorOne : (⊥ : Subalgebra R S) ⊗[R] N ≃ₗ[R] N :=
-  LinearEquiv.ofLinear N.lTensorOne' (TensorProduct.mk R (⊥ : Subalgebra R S) N 1)
+  LinearEquiv.ofLinearMap N.lTensorOne' (TensorProduct.mk R (⊥ : Subalgebra R S) N 1)
     (by ext; simp) <| TensorProduct.ext' fun r n ↦ by
   change 1 ⊗ₜ[R] lTensorOne' N _ = r ⊗ₜ[R] n
   obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
@@ -215,7 +215,7 @@ there is the natural isomorphism of `R`-modules between
 `M ⊗[R] i(R)` and `M` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`. -/
 def rTensorOne : M ⊗[R] (⊥ : Subalgebra R S) ≃ₗ[R] M :=
-  LinearEquiv.ofLinear M.rTensorOne' ((TensorProduct.comm R _ _).toLinearMap ∘ₗ
+  LinearEquiv.ofLinearMap M.rTensorOne' ((TensorProduct.comm R _ _).toLinearMap ∘ₗ
     TensorProduct.mk R (⊥ : Subalgebra R S) M 1) (by ext; simp) <| TensorProduct.ext' fun n r ↦ by
   change rTensorOne' M _ ⊗ₜ[R] 1 = n ⊗ₜ[R] r
   obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2

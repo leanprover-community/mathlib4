@@ -17,7 +17,7 @@ We prove that a functor between `FinitaryPreExtensive` categories preserves (res
 effective epi families if it preserves (resp. reflects) effective epis.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -39,15 +39,15 @@ instance [F.ReflectsEffectiveEpis] : F.ReflectsFiniteEffectiveEpiFamilies where
   reflects {α _ B} X π h := by
     simp only [← effectiveEpi_desc_iff_effectiveEpiFamily]
     apply F.effectiveEpi_of_map
-    convert (inferInstance :
-      EffectiveEpi (inv (sigmaComparison F X) ≫ (Sigma.desc (fun a ↦ F.map (π a)))))
+    convert!
+      (inferInstance :
+        EffectiveEpi (inv (sigmaComparison F X) ≫ (Sigma.desc (fun a ↦ F.map (π a)))))
     simp
 
 instance [F.PreservesEffectiveEpis] : F.PreservesFiniteEffectiveEpiFamilies where
   preserves {α _ B} X π h := by
     simp only [← effectiveEpi_desc_iff_effectiveEpiFamily]
-    convert (inferInstance :
-      EffectiveEpi ((sigmaComparison F X) ≫ (F.map (Sigma.desc π))))
+    convert! (inferInstance : EffectiveEpi ((sigmaComparison F X) ≫ (F.map (Sigma.desc π))))
     simp
 
 end CategoryTheory
