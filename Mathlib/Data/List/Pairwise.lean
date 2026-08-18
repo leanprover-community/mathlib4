@@ -5,10 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Batteries.Data.List.Lemmas
 public import Batteries.Data.List.Pairwise
+public import Mathlib.Data.List.TFAE
 public import Mathlib.Logic.Pairwise
 public import Mathlib.Logic.Relation
-public import Batteries.Data.List.Lemmas
 
 /-!
 # Pairwise relations on a list
@@ -30,11 +31,11 @@ sorted, nodup
 public section
 
 
-open Nat Function
+open Nat
 
 namespace List
 
-variable {α β : Type*} {R : α → α → Prop} {l : List α} {a : α}
+variable {α : Type*} {R : α → α → Prop} {l l₁ l₂ : List α} {a b : α}
 
 mk_iff_of_inductive_prop List.Pairwise List.pairwise_iff
 
@@ -70,6 +71,17 @@ theorem pairwise_of_reflexive_of_forall_ne [Std.Refl R] (h : ∀ a ∈ l, ∀ b 
   else
     apply h <;> try (apply hab.subset; simp)
     exact heq
+
+theorem pairwise_append_of_mem [Std.Symm R] [IsTrans α R] (ha : a ∈ l₁) (hb : b ∈ l₂) :
+    (l₁ ++ l₂).Pairwise R ↔ R a b ∧ l₁.Pairwise R ∧ l₂.Pairwise R := by
+  rw [pairwise_append, ← and_rotate, and_congr_left_iff, and_imp]
+  refine fun h₁ h₂ ↦ ⟨fun h ↦ h a ha b hb, fun hab x hx y hy ↦ ?_⟩
+  have : R a y := eq_or_ne b y |>.elim (· ▸ hab) (trans_of R hab <| h₂.forall hb hy ·)
+  exact eq_or_ne x a |>.elim (· ▸ this) fun hne ↦ trans_of R (h₁.forall hx ha hne) this
+
+theorem pairwise_cons_of_mem [Std.Symm R] [IsTrans α R] (h : b ∈ l) :
+    (a :: l).Pairwise R ↔ R a b ∧ l.Pairwise R := by
+  simpa using pairwise_append_of_mem (l₁ := [a]) (by simp) h
 
 theorem Pairwise.rel_head_tail (h₁ : l.Pairwise R) (ha : a ∈ l.tail) :
     R (l.head <| ne_nil_of_mem <| mem_of_mem_tail ha) a := by
@@ -137,5 +149,54 @@ theorem Pairwise.rel_get_of_le [Std.Refl R] {l : List α} (h : l.Pairwise R) {a 
 theorem Pairwise.decide [DecidableRel R] (l : List α) (h : Pairwise R l) :
     Pairwise (fun a b => decide (R a b) = true) l := by
   refine h.imp fun {a b} h => by simpa using h
+
+/-! ## TFAE -/
+
+section TFAE
+
+variable {a b : Prop} {l l₁ l₂ : List Prop}
+
+theorem tfae_iff_pairwise : TFAE l ↔ l.Pairwise (· ↔ ·) :=
+  ⟨pairwise_of_forall_mem_list, Pairwise.forall_of_forall fun _ _ ↦ .rfl⟩
+
+theorem tfae_append :
+    TFAE (l₁ ++ l₂) ↔ TFAE l₁ ∧ TFAE l₂ ∧ (∀ a ∈ l₁, ∀ b ∈ l₂, a ↔ b) := by
+  simp [tfae_iff_pairwise, pairwise_append]
+
+theorem tfae_append_of_mem (ha : a ∈ l₁) (hb : b ∈ l₂) :
+    TFAE (l₁ ++ l₂) ↔ (a ↔ b) ∧ TFAE l₁ ∧ TFAE l₂ := by
+  simp [tfae_iff_pairwise, pairwise_append_of_mem ha hb]
+
+theorem tfae_cons (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
+  simp [tfae_iff_pairwise, pairwise_cons_of_mem h]
+
+@[simp]
+theorem tfae_cons_of_mem (h : a ∈ l) : TFAE (a :: l) ↔ TFAE l := by
+  simp [tfae_iff_pairwise, pairwise_cons_of_mem h]
+
+theorem tfae_concat (h : b ∈ l) : TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := by
+  simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (b := a) h, iff_comm]
+
+@[simp]
+theorem tfae_concat_of_mem (h : a ∈ l) : TFAE (l ++ [a]) ↔ TFAE l := by
+  simp [tfae_concat h]
+
+theorem tfae_cons_cons : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
+  tfae_cons (Mem.head _)
+
+@[deprecated tfae_cons_of_mem +typeChanged (since := "2026-08-14")]
+theorem tfae_cons_self : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by simp
+
+theorem tfae_of_cycle (h_chain : List.IsChain (· → ·) (a :: b :: l))
+    (h_last : getLastD l b → a) : TFAE (a :: b :: l) := by
+  induction l generalizing a b with
+  | nil => simp_all [iff_def]
+  | cons c l IH =>
+    simp only [tfae_cons_cons, getLastD_cons, isChain_cons_cons] at *
+    rcases h_chain with ⟨ab, ⟨bc, ch⟩⟩
+    have := IH ⟨bc, ch⟩ (ab ∘ h_last)
+    exact ⟨⟨ab, h_last ∘ (this.2 c (.head _) _ getLastD_mem_cons).1 ∘ bc⟩, this⟩
+
+end TFAE
 
 end List

@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Fin.FlagRange
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Dual.Basis
-public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Flag of submodules defined by a basis
@@ -50,8 +50,7 @@ theorem flag_le_iff (b : Basis (Fin n) R M) {k p} :
 
 theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
     b.flag k.succ = R ∙ b k ⊔ b.flag k.castSucc := by
-  simp only [flag, Fin.castSucc_lt_castSucc_iff]
-  simp [Fin.castSucc_lt_iff_succ_le, le_iff_eq_or_lt, ofPred_or, image_insert_eq, span_insert]
+  simp [flag, Fin.castSucc_lt_castSucc_iff, le_iff_eq_or_lt, ofPred_or, span_insert]
 
 theorem self_mem_flag (b : Basis (Fin n) R M) {i : Fin n} {k : Fin (n + 1)} (h : i.castSucc < k) :
     b i ∈ b.flag k :=
