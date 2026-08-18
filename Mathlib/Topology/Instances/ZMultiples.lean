@@ -21,12 +21,12 @@ public section
 
 noncomputable section
 
-open Filter Int Metric Set TopologicalSpace Bornology
+open Filter Int Metric Set TopologicalSpace
 open scoped Topology Uniformity Interval
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u}
 
 namespace Int
 
