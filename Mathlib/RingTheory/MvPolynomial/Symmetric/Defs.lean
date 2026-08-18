@@ -131,7 +131,7 @@ private theorem esymm_map_inv_aux {R : Type*} [Field R] (s : Multiset R) : 0 ∉
     · grind [map_cons, esymm_cons, prod_cons, card_cons]
 
 theorem esymm_map_inv {R : Type*} [Field R] {s : Multiset R} (h0 : 0 ∉ s) {k : ℕ}
-    (hk : k ≤ s.card) : s.esymm (s.card - k) = (s.map (·⁻¹)).esymm k * s.esymm s.card := by
+    (hk : k ≤ s.card) : s.esymm k = (s.map (·⁻¹)).esymm (s.card - k) * s.esymm s.card := by
   grind [esymm_map_inv_aux, esymm_card]
 
 end Multiset
