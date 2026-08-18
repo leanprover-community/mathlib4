@@ -18,7 +18,7 @@ namespace Equiv
 
 open LawfulXor
 
-variable {α β : Type*} [XorOp α] [Zero α] [LawfulXor α] {a b c : α}
+variable {α : Type*} [XorOp α] [Zero α] [LawfulXor α] {a b : α}
 
 /-- `XorOp.xor` as a permutation. -/
 @[simps! apply] protected def xor (a : α) : Perm α where
