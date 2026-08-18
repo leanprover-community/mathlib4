@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 public import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.Data.Finsupp.Notation
 public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 # The Fundamental Theorem of Symmetric Polynomials
@@ -168,7 +169,7 @@ lemma esymmAlgHomMonomial_single_one :
 
 lemma esymmAlgHomMonomial_add {t s : Fin n →₀ ℕ} :
     esymmAlgHomMonomial σ (t + s) r = esymmAlgHomMonomial σ t r * esymmAlgHomMonomial σ s 1 := by
-  simp_rw [esymmAlgHomMonomial, esymmAlgHom_apply, ← map_mul, monomial_mul, mul_one]
+  simp_rw [esymmAlgHomMonomial, esymmAlgHom_apply, ← map_mul, monomial_mul_monomial, mul_one]
 
 lemma esymmAlgHom_zero : esymmAlgHomMonomial σ (0 : Fin n →₀ ℕ) r = C r := by
   rw [esymmAlgHomMonomial, monomial_zero', esymmAlgHom_apply, aeval_C, algebraMap_eq]

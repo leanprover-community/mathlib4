@@ -26,11 +26,11 @@ open Set Filter
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {X : Type*}
+variable {α γ : Type u} {β : Type v} {X : Type*}
 
 open scoped Uniformity Topology NNReal ENNReal Pointwise
 
-variable [PseudoEMetricSpace α]
+variable [TopologicalSpace α] [WeakPseudoEMetricSpace α] [PseudoEMetricSpace γ]
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.Ico` version. -/
 theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
@@ -66,36 +66,36 @@ theorem edist_le_range_sum_of_edist_le {f : ℕ → α} (n : ℕ) {d : ℕ → �
 
 namespace EMetric
 
-theorem isUniformInducing_iff [PseudoEMetricSpace β] {f : α → β} :
+theorem isUniformInducing_iff [PseudoEMetricSpace β] {f : γ → β} :
     IsUniformInducing f ↔ UniformContinuous f ∧
-      ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
+      ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ :=
   isUniformInducing_iff'.trans <| Iff.rfl.and <|
     ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).trans <| by
       simp only [subset_def, Prod.forall]; rfl
 
 /-- ε-δ characterization of uniform embeddings on pseudoemetric spaces -/
-nonrec theorem isUniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
+nonrec theorem isUniformEmbedding_iff [PseudoEMetricSpace β] {f : γ → β} :
     IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
-      ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
+      ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ :=
   (isUniformEmbedding_iff _).trans <| and_comm.trans <| Iff.rfl.and isUniformInducing_iff
 
 /-- If a map between pseudoemetric spaces is a uniform inducing map then the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y`. -/
-theorem controlled_of_isUniformInducing [PseudoEMetricSpace β] {f : α → β}
+theorem controlled_of_isUniformInducing [PseudoEMetricSpace β] {f : γ → β}
     (h : IsUniformInducing f) :
-    (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, edist a b < δ → edist (f a) (f b) < ε) ∧
-      ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
+    (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, edist a b < δ → edist (f a) (f b) < ε) ∧
+      ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ :=
   ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformInducing_iff.1 h).2⟩
 
 @[deprecated controlled_of_isUniformInducing (since := "2026-04-01")]
-theorem controlled_of_isUniformEmbedding [PseudoEMetricSpace β] {f : α → β}
+theorem controlled_of_isUniformEmbedding [PseudoEMetricSpace β] {f : γ → β}
     (h : IsUniformEmbedding f) :
-    (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, edist a b < δ → edist (f a) (f b) < ε) ∧
-      ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
+    (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, edist a b < δ → edist (f a) (f b) < ε) ∧
+      ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ :=
   controlled_of_isUniformInducing h.toIsUniformInducing
 
 /-- ε-δ characterization of Cauchy sequences on pseudoemetric spaces -/
-protected theorem cauchy_iff {f : Filter α} :
+protected theorem cauchy_iff {f : Filter γ} :
     Cauchy f ↔ f ≠ ⊥ ∧ ∀ ε > 0, ∃ t ∈ f, ∀ x, x ∈ t → ∀ y, y ∈ t → edist x y < ε := by
   rw [← neBot_iff]; exact uniformity_basis_edist.cauchy_iff
 
@@ -105,19 +105,19 @@ converging. This is often applied for `B N = 2^{-N}`, i.e., with a very fast con
 `0`, which makes it possible to use arguments of converging series, while this is impossible
 to do in general for arbitrary Cauchy sequences. -/
 theorem complete_of_convergent_controlled_sequences (B : ℕ → ℝ≥0∞) (hB : ∀ n, 0 < B n)
-    (H : ∀ u : ℕ → α, (∀ N n m : ℕ, N ≤ n → N ≤ m → edist (u n) (u m) < B N) →
+    (H : ∀ u : ℕ → γ, (∀ N n m : ℕ, N ≤ n → N ≤ m → edist (u n) (u m) < B N) →
       ∃ x, Tendsto u atTop (𝓝 x)) :
-    CompleteSpace α :=
+    CompleteSpace γ :=
   UniformSpace.complete_of_convergent_controlled_sequences
-    (fun n => { p : α × α | edist p.1 p.2 < B n }) (fun n => edist_mem_uniformity <| hB n) H
+    (fun n => { p : γ × γ | edist p.1 p.2 < B n }) (fun n => edist_mem_uniformity <| hB n) H
 
 /-- A sequentially complete pseudoemetric space is complete. -/
 theorem complete_of_cauchySeq_tendsto :
-    (∀ u : ℕ → α, CauchySeq u → ∃ a, Tendsto u atTop (𝓝 a)) → CompleteSpace α :=
+    (∀ u : ℕ → γ, CauchySeq u → ∃ a, Tendsto u atTop (𝓝 a)) → CompleteSpace γ :=
   UniformSpace.complete_of_cauchySeq_tendsto
 
 /-- Expressing locally uniform convergence on a set using `edist`. -/
-theorem tendstoLocallyUniformlyOn_iff {ι : Type*} [TopologicalSpace β] {F : ι → β → α} {f : β → α}
+theorem tendstoLocallyUniformlyOn_iff {ι : Type*} [TopologicalSpace β] {F : ι → β → γ} {f : β → γ}
     {p : Filter ι} {s : Set β} :
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ ε > 0, ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ n in p, ∀ y ∈ t, edist (f y) (F n y) < ε := by
@@ -127,14 +127,14 @@ theorem tendstoLocallyUniformlyOn_iff {ι : Type*} [TopologicalSpace β] {F : ι
   exact ⟨t, ht, Ht.mono fun n hs x hx => hε (hs x hx)⟩
 
 /-- Expressing uniform convergence on a set using `edist`. -/
-theorem tendstoUniformlyOn_iff {ι : Type*} {F : ι → β → α} {f : β → α} {p : Filter ι} {s : Set β} :
+theorem tendstoUniformlyOn_iff {ι : Type*} {F : ι → β → γ} {f : β → γ} {p : Filter ι} {s : Set β} :
     TendstoUniformlyOn F f p s ↔ ∀ ε > 0, ∀ᶠ n in p, ∀ x ∈ s, edist (f x) (F n x) < ε := by
   refine ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu => ?_⟩
   rcases mem_uniformity_edist.1 hu with ⟨ε, εpos, hε⟩
   exact (H ε εpos).mono fun n hs x hx => hε (hs x hx)
 
 /-- Expressing locally uniform convergence using `edist`. -/
-theorem tendstoLocallyUniformly_iff {ι : Type*} [TopologicalSpace β] {F : ι → β → α} {f : β → α}
+theorem tendstoLocallyUniformly_iff {ι : Type*} [TopologicalSpace β] {F : ι → β → γ} {f : β → γ}
     {p : Filter ι} :
     TendstoLocallyUniformly F f p ↔
       ∀ ε > 0, ∀ x : β, ∃ t ∈ 𝓝 x, ∀ᶠ n in p, ∀ y ∈ t, edist (f y) (F n y) < ε := by
@@ -142,7 +142,7 @@ theorem tendstoLocallyUniformly_iff {ι : Type*} [TopologicalSpace β] {F : ι �
     forall_const, nhdsWithin_univ]
 
 /-- Expressing uniform convergence using `edist`. -/
-theorem tendstoUniformly_iff {ι : Type*} {F : ι → β → α} {f : β → α} {p : Filter ι} :
+theorem tendstoUniformly_iff {ι : Type*} {F : ι → β → γ} {f : β → γ} {p : Filter ι} :
     TendstoUniformly F f p ↔ ∀ ε > 0, ∀ᶠ n in p, ∀ x, edist (f x) (F n x) < ε := by
   simp only [← tendstoUniformlyOn_univ, tendstoUniformlyOn_iff, mem_univ, forall_const]
 
@@ -152,9 +152,9 @@ open Metric
 
 namespace EMetric
 
-variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
+variable {x y : α} {ε : ℝ≥0∞} {s t : Set α}
 
-theorem inseparable_iff : Inseparable x y ↔ edist x y = 0 := by
+theorem inseparable_iff {x y : γ} : Inseparable x y ↔ edist x y = 0 := by
   simp [inseparable_iff_mem_closure, mem_closure_iff, edist_comm, forall_gt_iff_le]
 
 alias ⟨_root_.Inseparable.edist_eq_zero, _⟩ := EMetric.inseparable_iff
@@ -174,29 +174,29 @@ instance (priority := 100) {α} [EMetricSpace α] [Nontrivial α] : NontrivialTo
 
 /-- In a pseudoemetric space, Cauchy sequences are characterized by the fact that, eventually,
 the pseudoedistance between its elements is arbitrarily small -/
-theorem cauchySeq_iff [Nonempty β] [SemilatticeSup β] {u : β → α} :
+theorem cauchySeq_iff [Nonempty β] [SemilatticeSup β] {u : β → γ} :
     CauchySeq u ↔ ∀ ε > 0, ∃ N, ∀ m, N ≤ m → ∀ n, N ≤ n → edist (u m) (u n) < ε :=
   uniformity_basis_edist.cauchySeq_iff
 
 /-- A variation around the emetric characterization of Cauchy sequences -/
-theorem cauchySeq_iff' [Nonempty β] [SemilatticeSup β] {u : β → α} :
+theorem cauchySeq_iff' [Nonempty β] [SemilatticeSup β] {u : β → γ} :
     CauchySeq u ↔ ∀ ε > (0 : ℝ≥0∞), ∃ N, ∀ n ≥ N, edist (u n) (u N) < ε :=
   uniformity_basis_edist.cauchySeq_iff'
 
 /-- A variation of the emetric characterization of Cauchy sequences that deals with
 `ℝ≥0` upper bounds. -/
-theorem cauchySeq_iff_NNReal [Nonempty β] [SemilatticeSup β] {u : β → α} :
+theorem cauchySeq_iff_NNReal [Nonempty β] [SemilatticeSup β] {u : β → γ} :
     CauchySeq u ↔ ∀ ε : ℝ≥0, 0 < ε → ∃ N, ∀ n, N ≤ n → edist (u n) (u N) < ε :=
   uniformity_basis_edist_nnreal.cauchySeq_iff'
 
-theorem totallyBounded_iff {s : Set α} :
-    TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, eball y ε :=
+theorem totallyBounded_iff {s : Set γ} :
+    TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set γ, t.Finite ∧ s ⊆ ⋃ y ∈ t, eball y ε :=
   ⟨fun H _ε ε0 => H _ (edist_mem_uniformity ε0), fun H _r ru =>
     let ⟨ε, ε0, hε⟩ := mem_uniformity_edist.1 ru
     let ⟨t, ft, h⟩ := H ε ε0
     ⟨t, ft, h.trans <| iUnion₂_mono fun _ _ _ => hε⟩⟩
 
-theorem totallyBounded_iff' {s : Set α} :
+theorem totallyBounded_iff' {s : Set γ} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t, t ⊆ s ∧ Set.Finite t ∧ s ⊆ ⋃ y ∈ t, eball y ε :=
   ⟨fun H _ε ε0 => (totallyBounded_iff_subset.1 H) _ (edist_mem_uniformity ε0), fun H _r ru =>
     let ⟨ε, ε0, hε⟩ := mem_uniformity_edist.1 ru
@@ -205,22 +205,28 @@ theorem totallyBounded_iff' {s : Set α} :
 
 section Compact
 
-/-- For a set `s` in a pseudo emetric space, if for every `ε > 0` there exists a countable
+/-- For a set `s` in a weak pseudo emetric space, if for every `ε > 0` there exists a countable
 set that is `ε`-dense in `s`, then there exists a countable subset `t ⊆ s` that is dense in `s`. -/
 theorem subset_countable_closure_of_almost_dense_set (s : Set α)
     (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, Metric.closedEBall x ε) :
-    ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
-  apply UniformSpace.subset_countable_closure_of_almost_dense_set
-  intro U hU
-  obtain ⟨ε, hε, hεU⟩ := uniformity_basis_edist_le.mem_iff.1 hU
-  obtain ⟨t, tC, ht⟩ := hs ε hε
-  refine ⟨t, tC, ht.trans (iUnion₂_mono fun x hx y hy => UniformSpace.ball_mono hεU x ?_)⟩
-  rwa [mem_closedEBall, edist_comm] at hy
+    ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t :=
+  let m : PseudoEMetricSpace α :=
+    PseudoEMetricSpace.ofEDist edist edist_self edist_comm edist_triangle
+  have hmetric :
+      ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ @closure α m.toUniformSpace.toTopologicalSpace t := by
+    apply UniformSpace.subset_countable_closure_of_almost_dense_set
+    intro U hU
+    obtain ⟨ε, hε, hεU⟩ := uniformity_basis_edist_le.mem_iff.1 hU
+    obtain ⟨t, tC, ht⟩ := hs ε hε
+    refine ⟨t, tC, ht.trans (iUnion₂_mono fun x hx y hy => UniformSpace.ball_mono hεU x ?_)⟩
+    rwa [mem_closedEBall, edist_comm] at hy
+  let ⟨t, hts, htc, hst⟩ := hmetric
+  ⟨t, hts, htc, hst.trans <| closure.mono WeakPseudoEMetricSpace.topology_le⟩
 
 -- TODO: generalize to metrizable spaces
 /-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
 countable set. -/
-theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
+theorem subset_countable_closure_of_compact {s : Set γ} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
   refine subset_countable_closure_of_almost_dense_set s fun ε hε => ?_
   rcases totallyBounded_iff'.1 hs.totallyBounded ε hε with ⟨t, -, htf, hst⟩
@@ -232,24 +238,24 @@ section SecondCountable
 
 open TopologicalSpace
 
-variable (α) in
+variable (γ) in
 /-- A sigma compact pseudo emetric space has second countable topology. -/
-instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α] :
-    SecondCountableTopology α := by
-  suffices SeparableSpace α by exact UniformSpace.secondCountable_of_separable α
+instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace γ] :
+    SecondCountableTopology γ := by
+  suffices SeparableSpace γ by exact UniformSpace.secondCountable_of_separable γ
   choose T _ hTc hsubT using fun n =>
-    subset_countable_closure_of_compact (isCompact_compactCovering α n)
+    subset_countable_closure_of_compact (isCompact_compactCovering γ n)
   refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => ?_⟩⟩
-  rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering α) x with ⟨n, hn⟩
+  rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering γ) x with ⟨n, hn⟩
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
 
 theorem secondCountable_of_almost_dense_set
-    (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, closedEBall x ε = univ) :
-    SecondCountableTopology α := by
-  suffices SeparableSpace α from UniformSpace.secondCountable_of_separable α
-  have : ∀ ε > 0, ∃ t : Set α, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, closedEBall x ε := by
+    (hs : ∀ ε > 0, ∃ t : Set γ, t.Countable ∧ ⋃ x ∈ t, closedEBall x ε = univ) :
+    SecondCountableTopology γ := by
+  suffices SeparableSpace γ from UniformSpace.secondCountable_of_separable γ
+  have : ∀ ε > 0, ∃ t : Set γ, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, closedEBall x ε := by
     simpa only [univ_subset_iff] using hs
-  rcases subset_countable_closure_of_almost_dense_set (univ : Set α) this with ⟨t, -, htc, ht⟩
+  rcases subset_countable_closure_of_almost_dense_set (univ : Set γ) this with ⟨t, -, htc, ht⟩
   exact ⟨⟨t, htc, fun x => ht (mem_univ x)⟩⟩
 
 end SecondCountable
@@ -318,35 +324,35 @@ instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) :=
 
 section LebesgueNumberLemma
 
-variable {s : Set α}
+variable {s : Set γ}
 
-theorem lebesgue_number_lemma_of_emetric {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
+theorem lebesgue_number_lemma_of_emetric {ι : Sort*} {c : ι → Set γ} (hs : IsCompact s)
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, eball x δ ⊆ c i := by
   simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma hs hc₁ hc₂
 
-theorem lebesgue_number_lemma_of_emetric_nhds' {c : (x : α) → x ∈ s → Set α} (hs : IsCompact s)
+theorem lebesgue_number_lemma_of_emetric_nhds' {c : (x : γ) → x ∈ s → Set γ} (hs : IsCompact s)
     (hc : ∀ x hx, c x hx ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ⊆ c y y.2 := by
   simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhds' hs hc
 
-theorem lebesgue_number_lemma_of_emetric_nhds {c : α → Set α} (hs : IsCompact s)
+theorem lebesgue_number_lemma_of_emetric_nhds {c : γ → Set γ} (hs : IsCompact s)
     (hc : ∀ x ∈ s, c x ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, eball x δ ⊆ c y := by
   simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhds hs hc
 
-theorem lebesgue_number_lemma_of_emetric_nhdsWithin' {c : (x : α) → x ∈ s → Set α}
+theorem lebesgue_number_lemma_of_emetric_nhdsWithin' {c : (x : γ) → x ∈ s → Set γ}
     (hs : IsCompact s) (hc : ∀ x hx, c x hx ∈ 𝓝[s] x) :
     ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ∩ s ⊆ c y y.2 := by
   simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin' hs hc
 
-theorem lebesgue_number_lemma_of_emetric_nhdsWithin {c : α → Set α} (hs : IsCompact s)
+theorem lebesgue_number_lemma_of_emetric_nhdsWithin {c : γ → Set γ} (hs : IsCompact s)
     (hc : ∀ x ∈ s, c x ∈ 𝓝[s] x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, eball x δ ∩ s ⊆ c y := by
   simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin hs hc
 
-theorem lebesgue_number_lemma_of_emetric_sUnion {c : Set (Set α)} (hs : IsCompact s)
+theorem lebesgue_number_lemma_of_emetric_sUnion {c : Set (Set γ)} (hs : IsCompact s)
     (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, eball x δ ⊆ t := by
   rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_emetric hs (by simpa) hc₂
 

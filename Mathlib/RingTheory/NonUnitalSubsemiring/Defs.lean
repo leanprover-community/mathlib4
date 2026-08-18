@@ -230,7 +230,7 @@ end NonUnitalSubsemiring
 namespace NonUnitalSubsemiring
 
 variable [NonUnitalNonAssocSemiring S]
-variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S] (s : NonUnitalSubsemiring R)
+variable (s : NonUnitalSubsemiring R)
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : s) : R) = (0 : R) :=
