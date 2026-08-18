@@ -108,12 +108,6 @@ end MulOneClass
 
 variable [Monoid M']
 
-/-- The action by a submonoid is the action by the underlying monoid. -/
-@[to_additive
-      /-- The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. -/]
-instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
-  inferInstance
-
 instance smulDistribClass {β S : Type*} [SMul M' α] [SMul M' β] [SMul α β] [SetLike S M']
     [h : SMulDistribClass M' α β] (N' : S) :
     SMulDistribClass N' α β := ⟨fun g _ _ ↦ h.smul_distrib_smul g _ _⟩
