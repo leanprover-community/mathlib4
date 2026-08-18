@@ -57,8 +57,8 @@ assert_not_exists Algebra Field TrivialStar
 
 universe u u' v w
 
-variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
+variable {l m n o : Type*}
+variable {R : Type*} {S : Type*} {α : Type v} {β : Type w}
 
 open Matrix
 
@@ -158,7 +158,7 @@ end NonUnitalNonAssocSemiring
 
 section NonUnitalNonAssocSemiringDecidable
 
-variable [DecidableEq m] [NonUnitalNonAssocSemiring α] (u v w : m → α)
+variable [DecidableEq m] [NonUnitalNonAssocSemiring α] (v w : m → α)
 
 @[simp]
 theorem diagonal_dotProduct (i : m) : diagonal v i ⬝ᵥ w = v i * w i := by
