@@ -290,7 +290,7 @@ theorem iSup_const_mono (h : ι → ι') : ⨆ _ : ι, a ≤ ⨆ _ : ι', a :=
   iSup_le <| le_iSup _ ∘ h
 
 @[to_dual]
-theorem iSup₂_eq_iSup_diag (f : ι → ι → α) (h : ∀ i j, ∃ k, f i j ≤ f k k) :
+theorem iSup₂_eq_iSup_diagonal (f : ι → ι → α) (h : ∀ i j, ∃ k, f i j ≤ f k k) :
     ⨆ i, ⨆ j, f i j = ⨆ k, f k k :=
   le_antisymm (iSup_le fun i ↦ iSup_mono' (h i))
     (iSup_le fun k ↦ le_iSup_of_le k (le_iSup (f k) k))
