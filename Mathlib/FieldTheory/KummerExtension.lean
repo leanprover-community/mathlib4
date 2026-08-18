@@ -125,6 +125,33 @@ theorem X_pow_sub_C_irreducible_of_odd
       natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow, ite_eq_right hp.ne_zero.symm,
       zero_sub, (Nat.odd_mul.mp hn).1.neg_pow, one_pow, neg_one_mul, neg_neg]
 
+theorem X_pow_sub_C_irreducible
+    {n : ℕ} (hn : n ≠ 0) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a)
+    (h4 : 4 ∣ n → ∀ b : K, -4 * b ^ 4 ≠ a) : Irreducible (X ^ n - C a) := by
+  apply Nat.exists_eq_two_pow_mul_odd at hn
+  obtain ⟨k, m, hm, rfl⟩ := hn
+  induction k using Nat.twoStepInduction generalizing K with
+  | zero =>
+    rw [pow_zero, one_mul] at ha ⊢
+    exact X_pow_sub_C_irreducible_of_odd hm ha
+  | one =>
+    rw [pow_one] at ha ⊢
+    have irred := X_pow_sub_C_irreducible_of_odd hm
+      (fun p hp hpn => ha p hp (dvd_mul_of_dvd_right hpn 2))
+    apply X_pow_mul_sub_C_irreducible irred
+    have := Fact.mk irred
+    apply X_pow_sub_C_irreducible_of_prime Nat.prime_two
+    intro b hb
+    apply ha 2 Nat.prime_two (dvd_mul_right _ _) (Algebra.norm _ b)
+    have hm0 : m ≠ 0 := fun hm0 => Nat.not_odd_zero (hm0 ▸ hm)
+    rw [← map_pow, hb, ← AdjoinRoot.powerBasis_gen irred.ne_zero,
+      Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly, AdjoinRoot.powerBasis_dim,
+      minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a hm0),
+      natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow, ite_eq_right hm0.symm,
+      zero_sub, hm.neg_pow, one_pow, neg_one_mul, neg_neg]
+  | more k ih1 ih2 =>
+    sorry
+
 theorem X_pow_sub_C_irreducible_iff_forall_prime_of_odd {n : ℕ} (hn : Odd n) {a : K} :
     Irreducible (X ^ n - C a) ↔ (∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :=
   ⟨fun e _ hp hpn ↦ pow_ne_of_irreducible_X_pow_sub_C e hpn hp.ne_one,
@@ -158,7 +185,7 @@ alias X_pow_sub_C_irreducible_iff_of_prime_pow :=
   X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two
 
 end Irreducible
-
+#exit
 /-!
 ### Galois Group of `K[n√a]`
 We first develop the theory for a specific `K[n√a] := AdjoinRoot (X ^ n - C a)`.
