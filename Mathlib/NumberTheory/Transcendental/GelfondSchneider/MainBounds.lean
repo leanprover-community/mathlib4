@@ -34,25 +34,31 @@ variable (h2mq : 2 * m K ∣ q ^ 2)
 
 variable [DecidableEq (K →+* ℂ)]
 
+/-- The constant `exp (|1 + ‖β‖| * ‖log α‖ * m)`. -/
 def c₉ (K : Type) [Field K] [NumberField K] : ℝ := Real.exp (|1 + ‖β‖| *  ‖Complex.log α‖ * (↑(m K) : ℝ))
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma c9_pos : 0 < (c₉ α β K) := Real.exp_pos _
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma c9_nonneg : 0 ≤ (c₉ α β K) := by
   rw [le_iff_lt_or_eq]
   left
   exact Real.exp_pos _
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma c9_gt_1 : 1 ≤ (c₉ α β K) := by
   apply Real.one_le_exp
   positivity
 
+/-- The constant `m ^ (m - 1)`. -/
 def c₁₁ (K : Type) [Field K] [NumberField K] : ℝ := (↑(m K) ^ ((m K) - 1))
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma one_le_c11 : 1 ≤ (c₁₁ K) :=
   (one_le_pow_iff_of_nonneg (by simp) (by unfold m; grind)).mpr (mod_cast (one_le_m K))
 
@@ -65,6 +71,7 @@ variable {z : ℂ} {l₀ : ℝ} (hz : (z : ℂ) ∈ Metric.sphere 0 ((m K) * (1 
   (hl0 : (l₀ : ℝ) < ((m K) : ℝ) * (1 + (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq / q))
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma norm_hz (hz : z ∈ Metric.sphere 0 (((m K) : ℝ) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)))) :
     ‖z‖ ≤ ‖((m K) : ℝ)‖ * ‖1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q: ℝ)‖ := by
   simp only [mem_sphere_iff_norm, sub_zero] at hz
@@ -75,6 +82,7 @@ lemma norm_hz (hz : z ∈ Metric.sphere 0 (((m K) : ℝ) * (1 + ((r α β σ α'
 
 include hz in
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) ≤ (q * q) * (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
     ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) ^ ((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ ) + 1) / 2)) *
     ((c₉ α β K)) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + q : ℝ)) := by
@@ -248,9 +256,11 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
         (mul_nonneg (pow_nonneg (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc))) _) (by positivity))
         (Real.exp_nonneg _)
 
+/-- The constant `2 * m * c₄ * c₉ * c₉ ^ (2 * m)`. -/
 def c₁₀ : ℝ := (2*(m K)* (c₄ α' β' γ')* (c₉ α β K)* (c₉ α β K)^(2*(m K) : ℝ))
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma c10_nonneg : 0 ≤ (c₁₀ α β α' β' γ') := by
   unfold c₁₀
   apply mul_nonneg (mul_nonneg (mul_nonneg (by positivity)
@@ -258,6 +268,7 @@ lemma c10_nonneg : 0 ≤ (c₁₀ α β α' β' γ') := by
   · apply Real.rpow_nonneg; exact c9_nonneg α β σ α' β' γ' hirr htriv habc
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma one_le_c10 : 1 ≤ (c₁₀ α β α' β' γ') := by
   unfold c₁₀
   have hm : (1 : ℝ) ≤ (m K) := by exact_mod_cast (one_le_m K)
@@ -271,6 +282,7 @@ lemma one_le_c10 : 1 ≤ (c₁₀ α β α' β' γ') := by
   simpa [mul_assoc] using one_le_mul_of_one_le_of_one_le h3 h4
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma abs_R : (q * q) * (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) ^
       ((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ ) + 1) / 2)) * ((c₉ α β K)) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + q : ℝ)) ≤
       ((c₁₀ α β α' β' γ'))^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^
@@ -318,6 +330,7 @@ lemma abs_R : (q * q) * (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htr
           (c9_nonneg α β σ α' β' γ' hirr htriv habc)
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma norm_sub_l0_lower_bound_on_sphere
     (hz : z ∈ Metric.sphere 0 (((m K) : ℝ) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)))) :
     ((m K) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) / (q : ℝ) ≤ ‖z - (((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1)‖ := by
@@ -342,6 +355,7 @@ lemma norm_sub_l0_lower_bound_on_sphere
 
 include hz in
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma norm_z_minus_km_lower_bound_on_sphere (km : Fin ((m K))) :
   (m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq / q ≤ ‖z - ((km: ℂ) + 1)‖  := by
   have hz' : ‖z‖ = (m K) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)) := by
@@ -364,6 +378,7 @@ lemma prod_bound {ι} (f : ι → ℝ) (s : Finset ι) (C : ℝ) (hC : ∀ x ∈
 
 include hz h2mq in
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma abs_denom : norm (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1 : ℂ)) ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ))) *
   ∏ km ∈ (Finset.range ((m K)) \ {((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ)}),
     ((((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1 - ((km + 1 : ℂ))) / ((z - ((km + 1 : ℂ))))) ^
@@ -544,9 +559,11 @@ lemma abs_denom : norm (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq
 
 
 
+/-- A constant bounding the sup-norm of `S` on the circle of integration. -/
 def c₁₂ : ℝ := (2*(m K) : ℝ)^((m K)/2 : ℝ) * (c₁₀ α β α' β' γ') * (c₁₁ K)
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma one_le_c12 : 1 ≤ (c₁₂ α β α' β' γ') := by
   unfold c₁₂
   refine one_le_mul_of_one_le_of_one_le ?_ ((one_le_c11 α β σ α' β' γ' hirr htriv habc))
@@ -556,6 +573,7 @@ lemma one_le_c12 : 1 ≤ (c₁₂ α β α' β' γ') := by
       · simp only [Nat.one_le_cast]; exact (one_le_m K)
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma c12_nonneg : 0 ≤ (c₁₂ α β α' β' γ') := by
   simpa [c₁₂] using
     mul_nonneg (mul_nonneg (by positivity) (c10_nonneg α β σ α' β' γ' hirr htriv habc)) (c11_nonneg α β σ α' β' γ' hirr htriv habc)
@@ -564,6 +582,7 @@ lemma c12_nonneg : 0 ≤ (c₁₂ α β α' β' γ') := by
 
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma S_norm_bound : ∀ (hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)))),
   norm ((S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z) ≤ ((c₁₂ α β α' β' γ'))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)*
     ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^
@@ -732,7 +751,8 @@ lemma S_norm_bound : ∀ (hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ 
       · exact c10_nonneg α β σ α' β' γ' hirr htriv habc
     · exact c11_nonneg α β σ α' β' γ' hirr htriv habc
 
-def systemCoeffsff_foo_S : ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 h2mq =
+/-- `ρᵣ` as the `η`-weighted sum of the system coefficients. -/
+theorem systemCoeffsff_foo_S : ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 h2mq =
   Complex.log (α) ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ)) *
    ((S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) (↑↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) + 1) := by
   dsimp [ρᵣ]
@@ -803,20 +823,24 @@ def systemCoeffsff_foo_S : ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 h2mq
     norm_cast at HC
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma eq7 (l' : Fin ((m K))) :
     ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 h2mq = Complex.log (α) ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) : ℤ) * ((2 * ↑Real.pi * I)⁻¹ *
     (∮ z in C(0, (m K) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq / q))), (z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1))⁻¹ *
     ((S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z)) :=
   (hcauchy α β σ α' β' γ' hirr htriv habc) q hq0 h2mq ▸ systemCoeffsff_foo_S α β σ α' β' γ' hirr htriv habc q hq0 h2mq
 
+/-- A constant bounding `‖ρ‖` via Cauchy's estimate. -/
 def c₁₃ : ℝ :=((‖Complex.log α‖⁻¹ + 1)*(m K)*(2 + 1/(m K))*(c₁₂ α β α' β' γ'))
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma c13_nonneg : 0 ≤ (c₁₃ α β α' β' γ') := by
   unfold c₁₃
   apply mul_nonneg (by positivity) ((c12_nonneg α β σ α' β' γ' hirr htriv habc))
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma one_le_c13 : 1 ≤ (c₁₃ α β α' β' γ') := by
   unfold c₁₃
   refine one_le_mul_of_one_le_of_one_le ?_ ((one_le_c12 α β σ α' β' γ' hirr htriv habc))
@@ -828,10 +852,12 @@ lemma one_le_c13 : 1 ≤ (c₁₃ α β α' β' γ') := by
   · simp only [one_div]
     refine le_add_of_le_of_nonneg (by aesop) (by positivity)
 
+/-- The numerator appearing in the Cauchy estimate for `S`. -/
 def Cnum : ℝ := (((m K) * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) / (q : ℝ))⁻¹ * ((c₁₂ α β α' β' γ') ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)*
   ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ (((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)* (((3 : ℝ) - (m K)) / 2 : ℝ)) + (3 / 2 : ℝ))))
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma hf : ∀ z ∈ Metric.sphere 0 ((m K) * (1 + ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / ↑q)),
     ‖(z - ((↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) : ℂ) + 1))⁻¹ * ((S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z)‖ ≤ (Cnum α β σ α' β' γ' hirr htriv habc) q hq0 h2mq := by
   intros z hz
@@ -845,6 +871,7 @@ lemma hf : ∀ z ∈ Metric.sphere 0 ((m K) * (1 + ↑((r α β σ α' β' γ' h
           refine ⟨by simp [m], by simp_rw [(r_ne_zero α β σ α' β' γ' hirr htriv habc)]; simp only [not_false_eq_true]⟩
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma eq8 :
     norm (ρᵣ α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤ ((c₁₃ α β α' β' γ')) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
     (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * ((3 - ((m K) : ℝ))) / 2 + 3 / 2)) := by
@@ -1014,14 +1041,17 @@ lemma eq8 :
     · positivity
     · exact c12_nonneg α β σ α' β' γ' hirr htriv habc
 
+/-- The constant `c₈ ^ (h - 1) * c₁₃`, bounding the norm of `ρ` from above. -/
 def c₁₄ : ℝ := ((c₈ α' β' γ')^(((h K)-1)) * (c₁₃ α β α' β' γ'))
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma c14_nonneg : 1 ≤ (c₁₄ α β α' β' γ') :=
   one_le_mul_of_one_le_of_one_le (one_le_pow₀ (c8_geq_one α β σ α' β' γ' hirr htriv habc)) (one_le_c13 α β σ α' β' γ' hirr htriv habc)
 
 include u t in
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma use6and8 : norm ((Algebra.norm ℚ (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq))) ≤ ((c₁₄ α β α' β' γ'))^((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) *
     ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^((-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))/2 + 3 * ((h K))/2) := by
 
@@ -1117,18 +1147,22 @@ lemma use6and8 : norm ((Algebra.norm ℚ (rho α β σ α' β' γ' hirr htriv ha
     unfold m
     simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat]
 
+/-- The constant `c₁₄ * c₅`, giving the final upper bound on `‖N ρ‖`. -/
 def c₁₅ : ℝ := (c₁₄ α β α' β' γ') * (c₅ α' β' γ')
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma c15_nonneg : 0 ≤ (c₁₅ α β α' β' γ') := by
   unfold c₁₅; exact mul_nonneg (zero_le_one.trans (c14_nonneg α β σ α' β' γ' hirr htriv habc)) (c5nonneg α' β' γ').le
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma c15_geg_1 : 1 ≤ (c₁₅ α β α' β' γ') := by
   unfold c₁₅ c₅
   exact one_le_mul_of_one_le_of_one_le (c14_nonneg α β σ α' β' γ' hirr htriv habc) (one_le_pow₀ (by simp))
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 theorem norm_pos_rho : 0 < ‖(Algebra.norm ℚ) ((rho α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)‖ := by
   rw [norm_pos_iff, ne_eq, Algebra.norm_eq_zero_iff]
   rintro H
@@ -1136,6 +1170,7 @@ theorem norm_pos_rho : 0 < ‖(Algebra.norm ℚ) ((rho α β σ α' β' γ' hirr
   simpa [← rho_eq_ρᵣ]
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma norm_algebraNorm_rho_gtinv :
     norm ((Algebra.norm ℚ) ((rho α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) ⁻¹ < (c₅ α' β' γ') ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)) := by
   have h := eq5 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
@@ -1147,6 +1182,7 @@ lemma norm_algebraNorm_rho_gtinv :
 
 include u t in
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma use5 : ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ ((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) - 3 * (h K)) / 2) <
   ((c₁₅ α β α' β' γ')) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := by
   let r : ℝ := (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq

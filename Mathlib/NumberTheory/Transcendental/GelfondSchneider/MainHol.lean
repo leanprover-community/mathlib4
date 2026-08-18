@@ -73,9 +73,11 @@ lemma exists_analyticOn_factor_R_at_add_one (l' : Fin (m K)) :
       exact (AnalyticAt.sub analyticAt_id analyticAt_const).pow (o - (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)
     exact (hpow.mul (hU2prop z hz.2)).analyticWithinAt
 
+/-- An analytic function agreeing with the factored `R` near `l' + 1`. -/
 noncomputable def R'U (l' : Fin (m K)) : ℂ → ℂ :=
   (exists_analyticOn_factor_R_at_add_one α β σ α' β' γ' hirr htriv habc q hq0 h2mq l').choose
 
+/-- A neighbourhood of `l' + 1` on which `R` factors as `(z - (l' + 1)) ^ r * R'U`. -/
 noncomputable def U (l' : Fin (m K)) : Set ℂ :=
   (exists_analyticOn_factor_R_at_add_one α β σ α' β' γ' hirr htriv habc q hq0 h2mq l').choose_spec.choose
 
@@ -88,9 +90,11 @@ lemma R'_spec (l' : Fin (m K)) :
     AnalyticOn ℂ (R'U α β σ α' β' γ' hirr htriv habc q hq0 h2mq l') (U α β σ α' β' γ' hirr htriv habc q hq0 h2mq l') :=
   (exists_analyticOn_factor_R_at_add_one α β σ α' β' γ' hirr htriv habc q hq0 h2mq l').choose_spec.choose_spec
 
+/-- The everywhere-analytic representative of the factored `R`. -/
 noncomputable def R'R (l' : Fin (m K)) (z : ℂ) : ℂ :=
   (R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z * (z - (l' + 1)) ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℤ))
 
+/-- The analytic function with `R z = (z - (l' + 1)) ^ r * R' z` near `l' + 1`. -/
 def R' (l' : Fin ((m K))) : ℂ → ℂ :=
   let U := U α β σ α' β' γ' hirr htriv habc q hq0 h2mq l'
   letI : ∀ z, Decidable (z ∈ U) := by
@@ -182,33 +186,38 @@ lemma R_eq_pow_mul_R' (l' : Fin (m K)) (z : ℂ) :
     rw [mul_left_comm, ← zpow_natCast, ← zpow_add₀ (sub_ne_zero.mpr h),
         add_neg_cancel, zpow_zero, mul_one]
 
+/-- The evaluation points `1, …, m`, as a `Finset ℂ`. -/
 def evaluationPoints (K : Type) [Field K] [NumberField K] : Finset ℂ :=
    Finset.image (fun (k': ℕ) ↦ (k' + 1 : ℂ)) (Finset.range (m K))
 
+@[nolint unusedArguments]
 lemma mem_evaluationPoints_iff {z : ℂ} :
     z ∈ (evaluationPoints K) ↔ ∃ k : Fin (m K), z = k + 1 := by
   simp [evaluationPoints, Finset.mem_image, Fin.exists_iff]
   grind
 
-def evaluationPoints_compl (K : Type) [Field K] [NumberField K] : Set ℂ := ((evaluationPoints K))ᶜ
+/-- The complement of the evaluation points. -/
+def evaluationPointsCompl (K : Type) [Field K] [NumberField K] : Set ℂ := ((evaluationPoints K))ᶜ
 
 
-lemma S_U_isOpen : IsOpen (evaluationPoints_compl K) :=
+@[nolint unusedArguments]
+lemma S_U_isOpen : IsOpen (evaluationPointsCompl K) :=
   isOpen_compl_iff.mpr (Finset.isClosed _)
 
 
-include α β σ α' β' γ' hirr htriv habc in
 lemma S.U_nhds :
-  ∀ z, z ∈ evaluationPoints_compl K → (evaluationPoints_compl K) ∈ nhds z :=
+  ∀ z, z ∈ evaluationPointsCompl K → (evaluationPointsCompl K) ∈ nhds z :=
   fun z hz ↦ IsOpen.mem_nhds (S_U_isOpen) hz
 
 include α β σ α' β' γ' hirr htriv habc in
+@[nolint unusedArguments]
 lemma sub_ne_zero_of_mem_evaluationPoints_compl {z : ℂ}
-    (hz : z ∈ (evaluationPoints_compl K)) (k : Fin (m K)) :
+    (hz : z ∈ (evaluationPointsCompl K)) (k : Fin (m K)) :
     z - (k + 1 : ℂ) ≠ 0 := by
   rw [sub_ne_zero]
   exact fun h => hz ((mem_evaluationPoints_iff) |>.mpr ⟨k, h⟩)
 
+/-- The auxiliary function divided by its zeros. -/
 def SR : ℂ → ℂ := fun z ↦
   ((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial *
     ((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1 : ℂ)) ^ (-((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) : ℤ)) *
@@ -217,11 +226,11 @@ def SR : ℂ → ℂ := fun z ↦
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma SR_analyticOn_evaluationPoints_compl :
-    AnalyticOn ℂ ((SR α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) ((evaluationPoints_compl K)) := by
+    AnalyticOn ℂ ((SR α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) ((evaluationPointsCompl K)) := by
   unfold SR
   refine .mul (.mul (.mul ?_ analyticOn_const) ?_) ?_
   · have : ∀ (z : ℂ), AnalyticAt ℂ ((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z := by fun_prop
-    apply AnalyticOn.mono (f:=((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) (s:=(evaluationPoints_compl K))
+    apply AnalyticOn.mono (f:=((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) (s:=(evaluationPointsCompl K))
     · apply analyticOn_univ.mpr fun x a ↦ this x
     simp only [Set.subset_univ]
   · refine AnalyticOn.zpow (AnalyticOn.sub analyticOn_id analyticOn_const) fun z hz ↦ ?_
@@ -236,18 +245,20 @@ lemma SR_analyticOn_evaluationPoints_compl :
     · exact fun z hz ↦ sub_ne_zero_of_mem_evaluationPoints_compl α β σ α' β' γ' hirr htriv habc hz ⟨u, hu.1⟩
 
 include α β σ α' β' γ' hirr htriv habc in
-lemma SR_AnalyticAt (z : ℂ) (hz : z ∈ evaluationPoints_compl K) :
+lemma SR_AnalyticAt (z : ℂ) (hz : z ∈ evaluationPointsCompl K) :
     AnalyticAt ℂ ((SR α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z :=
   AnalyticOn.analyticAt (f:=((SR α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) (z := z)
-    (s := evaluationPoints_compl K)
+    (s := evaluationPointsCompl K)
     (SR_analyticOn_evaluationPoints_compl α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
-    (hU:= S.U_nhds α β σ α' β' γ' hirr htriv habc z hz)
+    (hU:= S.U_nhds z hz)
 
+/-- The restriction of `SR` used near the distinguished point `l₀' + 1`. -/
 def SRl0 : ℂ → ℂ := fun z ↦
   ((R' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) z * (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial)  *
     (∏ k' ∈ Finset.range ((m K)) \ {↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)},
     ((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq +1) - (k' + 1)) / (z - (k' + 1 : ℂ))) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq))
 
+/-- The restriction of `SR` used near a point `l' + 1` other than `l₀' + 1`. -/
 def SRl (l' : Fin ((m K))) : ℂ → ℂ := fun z ↦
   ((R' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq l') z *
     ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial *
@@ -256,6 +267,7 @@ def SRl (l' : Fin ((m K))) : ℂ → ℂ := fun z ↦
       ((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1) - (k' + 1)) / (z - (k' + 1 : ℂ))) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) *
     ((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1)- (l' + 1)) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq))
 
+/-- The entire function obtained from `R` by dividing out all of its zeros. -/
 def S : ℂ → ℂ :=
   fun z ↦
     if H : ∃ (k' : Fin ((m K))), z = (k' : ℂ) + 1 then
@@ -268,7 +280,7 @@ def S : ℂ → ℂ :=
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma SR_eq_SRl0 {z : ℂ} :
-  z ∈ (evaluationPoints_compl K) →
+  z ∈ (evaluationPointsCompl K) →
   ((SRl0 α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z = ((SR α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z := by
   intro hz
   let a : ℂ := ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1
@@ -313,10 +325,10 @@ lemma SR_eq_SRl0 {z : ℂ} :
 --fix l+1
 include α β σ α' β' γ' hirr htriv habc in
 lemma SR_eq_SRl {z : ℂ} (l' : Fin ((m K))) (hl : l' ≠ (l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) :
-    z ∈ (evaluationPoints_compl K) →
+    z ∈ (evaluationPointsCompl K) →
     ((SRl α β σ α' β' γ' hirr htriv habc) q hq0 h2mq l') z = ((SR α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z := by
   intros hz
-  unfold evaluationPoints_compl at *
+  unfold evaluationPointsCompl at *
   dsimp [SR, SRl]
   nth_rw 3 [mul_assoc]
   simp only [zpow_neg, zpow_natCast]
@@ -402,10 +414,10 @@ lemma SR_eq_SRl {z : ℂ} (l' : Fin ((m K))) (hl : l' ≠ (l₀' α β σ α' β
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma S_eq_restricted_of_mem_compl {z : ℂ} :
-  z ∈ (evaluationPoints_compl K) →
+  z ∈ (evaluationPointsCompl K) →
   (SR α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z = (S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z := by
   intros hz
-  unfold evaluationPoints_compl at *
+  unfold evaluationPointsCompl at *
   unfold S
   split
   · rename_i H1
@@ -550,7 +562,7 @@ lemma holS :
         · unfold S
           let Hw : ∃ k' : Fin (m K), w = (k' : ℂ) + 1 := ⟨(l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq, hw0⟩
           simp [Hw, hw0]
-        · have hwCompl : w ∈ evaluationPoints_compl K := by
+        · have hwCompl : w ∈ evaluationPointsCompl K := by
             intro hwEval
             rcases ((mem_evaluationPoints_iff)).1 hwEval with ⟨k, rfl⟩
             have hdist : dist (k : ℂ) ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) < 1 := by
@@ -604,7 +616,7 @@ lemma holS :
               simpa using this
             simpa using hNat
           simp [Hw, hw_ne_l0, hchoose]
-        · have hwCompl : w ∈ evaluationPoints_compl K := by
+        · have hwCompl : w ∈ evaluationPointsCompl K := by
             intro hwEval
             rcases ((mem_evaluationPoints_iff)).1 hwEval with ⟨k, rfl⟩
             have hdist : dist (k : ℂ) (l' : ℂ) < 1 := by
@@ -628,16 +640,16 @@ lemma holS :
           rw [hl']
           exact Metric.ball_mem_nhds _ zero_lt_one
         exact ((SRl_is_analytic_at_ball_of_radius_one α β σ α' β' γ' hirr htriv habc) q hq0 h2mq l' hl_ne).analyticAt hU
-  · have hzCompl : z ∈ evaluationPoints_compl K := by
+  · have hzCompl : z ∈ evaluationPointsCompl K := by
       intro hzEval
       exact H (((mem_evaluationPoints_iff)).1 hzEval)
     refine AnalyticAtEq
       (f := (SR α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)
       (g := (S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)
-      (U := evaluationPoints_compl K)
+      (U := evaluationPointsCompl K)
       (z := z)
       ?_ ?_ ?_ ?_
-    · exact S.U_nhds α β σ α' β' γ' hirr htriv habc z hzCompl
+    · exact S.U_nhds z hzCompl
     · exact hzCompl
     · intro w hw
       exact (S_eq_restricted_of_mem_compl α β σ α' β' γ' hirr htriv habc) q hq0 h2mq hw
