@@ -146,12 +146,12 @@ run_cmd
   Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `DLMF.test}"
 
 /--
-error: <input>:1:9: DLMF ids must consist only of letters, digits, periods, and underscores.
+error: <input>:1:6: DLMF ids must consist only of roman numerals, the letters E/T/F, digits, periods, and underscores.
 -/
-#guard_msgs in #parse Mathlib.CrossRef.dlmfIdFn => "dlmf.ta*g"
+#guard_msgs in #parse Mathlib.CrossRef.dlmfIdFn => "random*string"
 
-/-- info: dlmf.18.30.iv -/
-#guard_msgs in #parse Mathlib.CrossRef.dlmfIdFn => "dlmf.18.30.iv"
+/-- info: 18.30.iv -/
+#guard_msgs in #parse Mathlib.CrossRef.dlmfIdFn => "18.30.iv"
 
 /--
 info:
