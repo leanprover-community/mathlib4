@@ -153,6 +153,11 @@ example (h : a + b ≠ 0) (H : a • x = b • y) : x = (b / (a + b)) • (x + y
 
 end
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 example [CommSemiring K] [PartialOrder K] [IsOrderedRing K] [AddCommMonoid V] [PartialOrder V]
     [IsOrderedCancelAddMonoid V] [Module K V] [PosSMulStrictMono K V]
     {x y r : V} (hx : x < r) (hy : y < r) {a b : K} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) :
