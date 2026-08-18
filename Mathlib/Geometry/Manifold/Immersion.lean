@@ -10,7 +10,6 @@ public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 public import Mathlib.Geometry.Manifold.Diffeomorph
-public import Mathlib.Geometry.Manifold.LocalDiffeomorph
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Analysis.Normed.Module.Shrink  -- shake: keep (NormedAddCommGroup (Shrink ...)), cf. lean#13417
 public import Mathlib.Topology.Algebra.Module.TransferInstance
@@ -497,39 +496,23 @@ lemma _root_.ContMDiffAt.iff_comp_isImmersionAtOfComplement
 -- Special case of "the composition of immersions is an immersion", for post-composing
 -- with a diffeomorphism: unlike the former (which requires Banach manifolds and some conditions
 -- on the boundary behaviour), this statement is always true.
--- TODO: also prove this if `n=0`, using a slightly different argument
--- In this case, `Φ` is a homeomorphism (and the chosen model with corners doesn't matter),
--- and we can construct a codomain chart via pullback of the model.
 /-- Post-composing an immersion at `x` with a diffeomorphism still yields an immersion at `x`. -/
 lemma comp_diffeomorph
-    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N'] [IsManifold J' n N']
-    (h : IsImmersionAtOfComplement F I J n f x) (Φ : Diffeomorph J J' N N' n) (hn : n ≠ 0) :
-    IsImmersionAtOfComplement F I J' n (Φ ∘ f) x := by
-  -- We need the following to define a suitable codomain chart, with nice definitional properties.
-  -- This is not induced automatically from Φ: if N is a charted space on G, it is also a charted
-  -- space on `N ⊕ X` for any topological space.
-  let mapG : OpenPartialHomeomorph G G' := sorry
-  have : h.codChart (f x) ∈ mapG.source := sorry
-  -- TODO: right now, `fun_prop` does not prove continuity here (even with added tagging)
+    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N']
+    (h : IsImmersionAtOfComplement F I J n f x) (Φ : Diffeomorph J J N N' n) :
+    IsImmersionAtOfComplement F I J n (Φ ∘ f) x := by
+  -- XXX: right now, `fun_prop` does not prove this (even with added tagging): investigate!
   apply mk_of_continuousAt (Φ.continuous.continuousAt.comp h.continuousAt)
-    (h.equiv.trans <| Φ.isLocalDiffeomorph (f x) |>.continuousLinearEquiv hn)
-    h.domChart (Φ.symm.toHomeomorph.transOpenPartialHomeomorph h.codChart |>.trans mapG)
-    h.mem_domChart_source (by simpa [h.mem_codChart_source])
+    h.equiv (h.domChart) (Φ.symm.toHomeomorph.transOpenPartialHomeomorph h.codChart)
+    h.mem_domChart_source (by simp [h.mem_codChart_source])
     h.domChart_mem_maximalAtlas ?_
-  · intro φ hφ
-    -- needs further work, to understand what `mapG` actually does
-    --have := h.writtenInCharts hφ
-    simp
-    sorry
+  · intro x hx
+    simpa using h.writtenInCharts hx
   · apply OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn
     · have : Φ.symm.symm ⁻¹' Φ.symm ⁻¹' h.codChart.source = h.codChart.source := by ext; simp
-      simp [this]
-      -- apply ContMDiffOn.comp and use that mapG is in the maximal atlas (probably), so smooth
-      -- then simpa [this] using contMDiffOn_of_mem_maximalAtlas h.codChart_mem_maximalAtlas
-      sorry
-    · sorry -- simpa using contMDiffOn_symm_of_mem_maximalAtlas h.codChart_mem_maximalAtlas
+      simpa [this] using contMDiffOn_of_mem_maximalAtlas h.codChart_mem_maximalAtlas
+    · simpa using contMDiffOn_symm_of_mem_maximalAtlas h.codChart_mem_maximalAtlas
 
-#exit
 end IsImmersionAtOfComplement
 
 namespace IsImmersionAt

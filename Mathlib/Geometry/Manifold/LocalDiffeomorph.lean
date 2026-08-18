@@ -420,13 +420,6 @@ lemma IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv_coe
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) :
     hf.mfderivToContinuousLinearEquiv hn = mfderiv% f x := rfl
 
-/-- A local diffeomorphism at x induces a continuous linear equivalence between the underlying
-model normed spaces. This is mathematically true and meaningful; yet the current Lean proof
-abuses the identification between the tangent space and the underlying model space. -/
-def IsLocalDiffeomorphAt.continuousLinearEquiv {f : M → N} {x : M}
-    (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) : E ≃L[𝕜] F :=
-  hf.mfderivToContinuousLinearEquiv hn
-
 /-- Each differential of a `C^n` diffeomorphism of Banach manifolds (`n ≠ 0`)
 is a linear equivalence. -/
 def Diffeomorph.mfderivToContinuousLinearEquiv
