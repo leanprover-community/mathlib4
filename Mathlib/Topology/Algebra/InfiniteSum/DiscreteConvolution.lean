@@ -270,10 +270,8 @@ fiber is then finite. -/
   every fiber is then finite. -/]
 lemma convolutionExists_of_hasMulAntidiagonal
     (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') :
-    ConvolutionExists L f g := by
-  intro x
-  change Summable (fun ab : mulFiber x => L (f ab.1.1) (g ab.1.2))
-  simpa only [Function.comp_def] using
+    ConvolutionExists L f g := fun x ↦ by
+  simpa only [ConvolutionExistsAt, Function.comp_def] using
     (mulFiber_finite x).summable (fun ab : M × M => L (f ab.1) (g ab.2))
 
 end HasMulAntidiagonal
