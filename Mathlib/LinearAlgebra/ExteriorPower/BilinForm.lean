@@ -101,7 +101,6 @@ def BilinFormAux :
     AlternatingMap.ext fun w ↦ Matrix.det_zero_of_row_eq hl' <| funext fun i ↦
       by simp [pairingMatrix, hl]
 
--- `BilinFormAux` is an implementation detail and is intentionally hidden from the public API.
 /-- A bilinear form on `M` induces a bilinear form on each exterior power.
 
 TODO: `exteriorPower.alternatingMapLinearEquiv` should be renamed to
@@ -117,18 +116,14 @@ lemma bijective_pairingDual [Module.Finite R M] [Module.Free R M] (k : ℕ) :
   · have : Subsingleton (⋀[R]^k (Dual R M)) := Module.subsingleton R _
     exact bijective_of_subsingleton' _
   · classical
-    -- Choose a finite ordered basis of `M`.
     obtain ⟨I, b⟩ := Module.Free.exists_basis R M
     let : LinearOrder I := linearOrderOfSTO WellOrderingRel
     have : Finite I := Module.Finite.finite_basis b
     let e := b.dualBasis.exteriorPower k
     let d := (b.exteriorPower k).dualBasis
-    -- Express `pairingDual` as the map sending the basis `e` to the basis `d`.
     have hpairingDual_eq_constr : pairingDual R M k = e.constr R d := by
-      -- It suffices to compare the two maps on the basis `e`.
       apply e.ext
       intro s
-      -- On the basis vector indexed by `s`, both maps give the corresponding vector `d s`.
       simp only [Basis.constr_basis]
       simpa [e, d] using pairingDual_apply_dualBasis_exteriorPower R b k s
     rw [hpairingDual_eq_constr]
@@ -140,11 +135,8 @@ lemma bijective_pairingDual [Module.Finite R M] [Module.Free R M] (k : ℕ) :
     (v w : Fin k → M) :
     exteriorPower.BilinForm k C (ιMulti R k v) (ιMulti R k w) =
       (Matrix.of fun i j ↦ C (v i) (w j)).det := by
-  -- Unfold the composition defining `BilinForm`.
   simp only [exteriorPower.BilinForm, LinearMap.comp_apply]
-  -- Evaluate the inner alternating map on `ιMulti v`.
   rw [exteriorPower.alternatingMapLinearEquiv_apply_ιMulti (BilinFormAux k C) v]
-  -- Evaluate the outer alternating map on `ιMulti w`.
   calc
     (exteriorPower.alternatingMapLinearEquiv (BilinFormAux k C v)) (ιMulti R k w) =
         (BilinFormAux k C v) w :=
@@ -158,27 +150,11 @@ This auxiliary lemma is used in `bilinForm_nondegenerate`. -/
 lemma bilinForm_eq_pairingDual_comp_map {k : ℕ} (C : LinearMap.BilinForm R M) :
     exteriorPower.BilinForm k C =
       (pairingDual R M k).comp (exteriorPower.map k C) := by
-  -- It suffices to check the equality on wedges of `k` vectors.
   apply exteriorPower.linearMap_ext
   ext v w
   simp only [LinearMap.compAlternatingMap_apply, LinearMap.comp_apply]
   rw [bilinForm_ιMulti_ιMulti C v w]
   simp only [map_apply_ιMulti, pairingDual_ιMulti_ιMulti]
-  -- The second matrix is the transpose of the first one.
-  rw [← Matrix.det_transpose]
-  rfl
-
-/-- Swapping the arguments of `BilinForm` gives the form induced by `C.flip`.
-
-This auxiliary lemma is used in `bilinForm_nondegenerate`. -/
-lemma bilinForm_flip {k : ℕ} (C : LinearMap.BilinForm R M) :
-    (exteriorPower.BilinForm k C).flip = exteriorPower.BilinForm k C.flip := by
-  -- It suffices to check the equality on wedges of `k` vectors.
-  apply exteriorPower.linearMap_ext
-  ext v w
-  simp only [LinearMap.compAlternatingMap_apply, LinearMap.BilinForm.flip_apply]
-  rw [bilinForm_ιMulti_ιMulti C w v, bilinForm_ιMulti_ιMulti C.flip v w]
-  -- The second matrix is the transpose of the first one.
   rw [← Matrix.det_transpose]
   rfl
 
