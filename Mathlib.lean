@@ -5974,6 +5974,7 @@ public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAlg
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAlgSetup
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAnalytic
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAnalyticBounds
+public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainHol
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainOrder
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainPostAnalytic
 public import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
