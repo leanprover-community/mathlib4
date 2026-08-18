@@ -15,13 +15,12 @@ public import Mathlib.Algebra.Order.Ring.Rat
 
 This file produces a transition matrix from a graph. Row `v` of `SimpleGraph.walkMatrix` is the
 uniform distribution on the neighbours of `v`, so the matrix describes the Markov chain that
-steps from a vertex to a uniformly random neighbour.
+steps from a vertex to a uniformly random neighbour. It is the row-normalised form of
+`SimpleGraph.adjMatrix`: dividing row `v` by `G.degree v` turns adjacency counts into transition
+probabilities.
 
 A state of the chain is a row vector `V → ℚ`, and one step is `x ᵥ* G.walkMatrix`. Since
 `Matrix.rowStochastic` is a `Submonoid`, the `n`-step matrix is `G.walkMatrix ^ n`.
-
-Compare `SimpleGraph.adjMatrix`, of which this is the row-normalised form: dividing row `v` by
-`G.degree v` turns adjacency counts into transition probabilities.
 
 ## Main definitions
 
@@ -40,10 +39,6 @@ The walk is only well defined at vertices with at least one neighbour, so the re
 hypothesis `∀ v, ¬ G.IsIsolated v`.
 
 Every transition probability is of the form `(G.degree v)⁻¹`, so the matrix is valued in `ℚ`.
-This keeps entries computable; `#eval` evaluates `G.walkMatrix ^ n` on a concrete graph.
-
-This file imports no probability theory, only `Mathlib.LinearAlgebra.Matrix.Stochastic`, so it
-sits alongside `SimpleGraph.adjMatrix` and `SimpleGraph.lapMatrix`.
 -/
 
 @[expose] public section
