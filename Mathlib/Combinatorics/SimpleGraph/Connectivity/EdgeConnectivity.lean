@@ -107,9 +107,9 @@ lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
   obtain ⟨v, hv⟩ := exists_ne u
   exact (h u v).le_degree hv.symm
 
-theorem IsEdgeConnected.le_minDegree [Fintype V] [Nontrivial V]
-    [DecidableRel G.Adj] (h : G.IsEdgeConnected k) :
-    k ≤ G.minDegree := le_minDegree_of_forall_le_degree G k fun _ ↦ le_degree h
+theorem IsEdgeConnected.le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
+    (h : G.IsEdgeConnected k) : k ≤ G.minDegree :=
+  le_minDegree_of_forall_le_degree G k fun _ ↦ le_degree h
 
 lemma isEdgeReachable_add_one (hk : k ≠ 0) :
     G.IsEdgeReachable (k + 1) u v ↔ ∀ e, (G.deleteEdges {e}).IsEdgeReachable k u v := by
