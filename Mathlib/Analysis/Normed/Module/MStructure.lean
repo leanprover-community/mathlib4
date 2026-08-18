@@ -61,7 +61,7 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 
 -/
 
-@[expose] public section
+public section
 
 variable (X : Type*) [NormedAddCommGroup X]
 variable {M : Type*} [Ring M] [Module M X]

@@ -339,7 +339,7 @@ mathematically, this is just the identity map; however, this is technically usef
 us to always work with `hf.smallComplement`. -/
 def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement :=
   haveI := hf.small
-  ((equivShrink F).symm.continuousLinearEquiv 𝕜).symm
+  ((Shrink.addEquiv (α := F)).continuousLinearEquiv 𝕜).symm
 
 lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') :
     IsImmersionAtOfComplement F' I J n f x := by
@@ -360,7 +360,6 @@ lemma _root_.IsOpen.isImmersionAtOfComplement :
     IsOpen {x | IsImmersionAtOfComplement F I J n f x} :=
   IsOpen.liftSourceTargetPropertyAt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
@@ -631,7 +630,6 @@ lemma congr_iff (hfg : f =ᶠ[𝓝 x] g) :
     IsImmersionAt I J n f x ↔ IsImmersionAt I J n g x :=
   ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /- The set of points where `IsImmersionAt` holds is open. -/
 lemma _root_.IsOpen.isImmersionAt :
     IsOpen {x | IsImmersionAt I J n f x} := by

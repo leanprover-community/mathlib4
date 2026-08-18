@@ -122,8 +122,6 @@ theorem RingHom.isIntegralElem_one : f.IsIntegralElem 1 :=
 theorem isIntegral_one [Algebra R B] : IsIntegral R (1 : B) :=
   (algebraMap R B).isIntegralElem_one
 
-variable (f : R →+* S)
-
 theorem IsIntegral.of_pow [Algebra R B] {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
     IsIntegral R x :=
   have ⟨p, hmonic, heval⟩ := hx
@@ -196,10 +194,9 @@ protected theorem IsIntegral.algebraMap [Algebra A B] [IsScalarTower R A B] {x :
   use f, hf
   rw [IsScalarTower.algebraMap_eq R A B, ← hom_eval₂, hx, map_zero]
 
-theorem isIntegral_algebraMap_iff [Algebra A B] [IsScalarTower R A B] {x : A}
-    (hAB : Function.Injective (algebraMap A B)) :
+theorem isIntegral_algebraMap_iff [Algebra A B] [IsScalarTower R A B] {x : A} [FaithfulSMul A B] :
     IsIntegral R (algebraMap A B x) ↔ IsIntegral R x :=
-  isIntegral_algHom_iff (IsScalarTower.toAlgHom R A B) hAB
+  isIntegral_algHom_iff (IsScalarTower.toAlgHom R A B) (FaithfulSMul.algebraMap_injective A B)
 
 theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
     IsIntegral R r ↔ ∃ s : Set R, s.Finite ∧ IsIntegral (Subring.closure s) r := by

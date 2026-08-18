@@ -48,10 +48,10 @@ normed group
 public section
 
 
-variable {𝓕 α ι κ E F G : Type*}
+variable {α E G : Type*}
 
-open Filter Function Metric Bornology
-open ENNReal Filter NNReal Uniformity Pointwise Topology
+open Filter Bornology
+open ENNReal Filter NNReal
 
 /-- Auxiliary class, endowing a type `E` with a function `norm : E → ℝ` with notation `‖x‖`. This
 class is designed to be extended in more interesting classes specifying the properties of the norm.

@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2026 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mihai Iancu, Stefan Kebekus, Sebastian Schleissinger, Aristotle AI
+Authors: Mihai Iancu, Stefan Kebekus, Sebastian Schleissinger
 -/
 module
 
-public import Mathlib.Analysis.Complex.Harmonic.MeanValue
 public import Mathlib.Analysis.Complex.Poisson
+public import Mathlib.Analysis.Complex.Harmonic.Analytic
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
 
 /-!
 # Poisson Integral Formula
@@ -20,7 +21,7 @@ TODO: Extend this formula to vector-valued harmonic functions
 
 public section
 
-open Complex InnerProductSpace Metric Real Topology
+open Complex InnerProductSpace Metric Real
 
 variable
   {f : ℂ → ℝ} {c w : ℂ} {R : ℝ}

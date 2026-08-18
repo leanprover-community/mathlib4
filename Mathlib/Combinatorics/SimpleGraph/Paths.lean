@@ -373,7 +373,7 @@ theorem IsCycle.isPath_drop {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : 0 < n) 
     (p.drop n).IsPath := by
   replace h : (p.drop 1).IsPath := h.isPath_tail
   rw [← Nat.add_sub_of_le hn, drop_add_eq]
-  simp [h.drop (n - 1)]
+  simp [h.drop (n - 1), -drop_drop]
 
 theorem IsCycle.isPath_take {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : n < p.length) :
     (p.take n).IsPath := by
@@ -778,7 +778,7 @@ lemma IsPath.isCycle_append {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (h
   rw [isCycle_def, isTrail_append]
   refine ⟨⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
   · grind [IsPath.disjoint_edges_of_disjoint_support, List.Disjoint.symm]
-  · grind [nil_append_iff, length_eq_zero_iff]
+  · grind [nil_append_iff]
   · rw [tail_support_append, List.nodup_append']
     exact ⟨hp.support_nodup.tail, hq.support_nodup.tail, h⟩
 
@@ -916,16 +916,33 @@ theorem length_bypass_le_length (p : G.Walk u v) : p.bypass.length ≤ p.length 
 
 @[deprecated (since := "2026-05-25")] alias length_bypass_le := length_bypass_le_length
 
-lemma bypass_eq_self_of_length_le_length_bypass (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
-    p.bypass = p :=
-  ext_support <| p.support_bypass_sublist_support.eq_of_length_le <| by simpa using h
+@[simp]
+lemma length_le_bypass_length_iff (p : G.Walk u v) :
+    p.length ≤ p.bypass.length ↔ p.bypass = p :=
+  ⟨fun h ↦ ext_support <| p.support_bypass_sublist_support.eq_of_length_le <| by simpa using h,
+    fun hp ↦ (congrArg length hp).ge⟩
+
+@[deprecated (since := "2026-06-18")]
+alias bypass_eq_self_of_length_le_length_bypass := length_le_bypass_length_iff
 
 @[deprecated (since := "2026-05-25")]
 alias bypass_eq_self_of_length_le := bypass_eq_self_of_length_le_length_bypass
 
+@[simp]
+lemma bypass_cons_nil (hadj : G.Adj u v) : (cons hadj nil).bypass = cons hadj nil := by
+  grind [bypass, support_nil, SimpleGraph.irrefl]
+
+@[simp]
+lemma nil_bypass (p : G.Walk u u) : p.bypass.Nil := by
+  grind [p.bypass_isPath, isPath_iff_nil, Nil]
+
 @[grind →]
 lemma IsPath.bypass_eq_self {p : G.Walk u v} (hp : p.IsPath) : p.bypass = p := by
   induction p <;> simp_all [cons_isPath_iff, bypass]
+
+@[simp]
+theorem bypass_eq_self_iff_isPath {p : G.Walk u v} : p.bypass = p ↔ p.IsPath :=
+  ⟨fun hp ↦ hp ▸ p.bypass_isPath, IsPath.bypass_eq_self⟩
 
 theorem darts_toPath_subset_darts (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
   p.darts_bypass_subset_darts
@@ -983,6 +1000,59 @@ lemma IsCircuit.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w.IsCircuit → w.cy
 lemma IsTrail.isCycle_cycleBypass {w : G.Walk v v} (hw : w ≠ .nil) (hw' : w.IsTrail) :
     w.cycleBypass.IsCycle :=
   (w.isCircuit_def.mpr ⟨hw', hw⟩).isCycle_cycleBypass
+
+theorem cycleBypass_eq_self_iff_length_le (w : G.Walk v v) :
+    w.cycleBypass = w ↔ w.length ≤ w.cycleBypass.length := by
+  cases w <;> simp [cycleBypass]
+
+theorem IsCycle.cycleBypass_eq_self {w : G.Walk v v} (hw : w.IsCycle) : w.cycleBypass = w := by
+  cases w
+  · simp
+  · have hw' := (cons_isCycle_iff ..).mp hw
+    simp [cycleBypass, hw'.left.bypass_eq_self]
+
+theorem IsTrail.cycleBypass_eq_self_iff_isCycle_or_nil {w : G.Walk v v} (hw : w.IsTrail) :
+    w.cycleBypass = w ↔ w.IsCycle ∨ w.Nil := by
+  cases w
+  · simp
+  · simp [cycleBypass, bypass_eq_self_iff_isPath, cons_isCycle_iff, (isTrail_cons ..).mp hw]
+
+theorem IsCircuit.cycleBypass_eq_self_iff_isCycle {w : G.Walk v v} (hw : w.IsCircuit) :
+    w.cycleBypass = w ↔ w.IsCycle := by
+  simp [hw.cycleBypass_eq_self_iff_isCycle_or_nil, hw.not_nil]
+
+theorem IsTrail.length_cycleBypass_lt_iff_not_isCycle_and_not_nil {w : G.Walk v v}
+    (hw : w.IsTrail) :
+    w.cycleBypass.length < w.length ↔ ¬w.IsCycle ∧ ¬w.Nil := by
+  grind [hw.cycleBypass_eq_self_iff_isCycle_or_nil, cycleBypass_eq_self_iff_length_le]
+
+theorem IsCircuit.length_cycleBypass_lt_iff_not_isCycle {w : G.Walk v v} (hw : w.IsCircuit) :
+    w.cycleBypass.length < w.length ↔ ¬w.IsCycle := by
+  simp [hw.length_cycleBypass_lt_iff_not_isCycle_and_not_nil, hw.not_nil]
+
+omit [DecidableEq V] in
+theorem exists_minimalFor_isCircuit_length {v : V} (h : ∃ p : G.Walk v v, p.IsCircuit) :
+    ∃ p : G.Walk v v, MinimalFor IsCircuit length p :=
+  exists_minimalFor_of_wellFoundedLT IsCircuit length h
+
+omit [DecidableEq V] in
+theorem exists_minimalFor_isCycle_length {v : V} (h : ∃ p : G.Walk v v, p.IsCircuit) :
+    ∃ p : G.Walk v v, MinimalFor IsCycle length p := by
+  classical
+  exact exists_minimalFor_of_wellFoundedLT _ _ <| h.imp' _ fun _ ↦ (·.isCycle_cycleBypass)
+
+omit [DecidableEq V] in
+/-- For every vertex that lies on some circuit there exists a shortest cycle among circuits
+containing that vertex.
+
+For circuits not fixed to a specific vertex use `exists_girth_eq_length` and
+`IsCircuit.girth_le_length`. -/
+theorem exists_isCycle_forall_isCircuit_length_le_length {v : V}
+    (h : ∃ p : G.Walk v v, p.IsCircuit) :
+    ∃ p : G.Walk v v, p.IsCycle ∧ ∀ p' : G.Walk v v, p'.IsCircuit → p.length ≤ p'.length := by
+  refine exists_minimalFor_isCycle_length h |>.imp fun p hmin ↦ ⟨hmin.prop, fun p' hp' ↦ ?_⟩
+  classical
+  grw [hmin.le hp'.isCycle_cycleBypass, length_cycleBypass_le_length]
 
 end Walk
 

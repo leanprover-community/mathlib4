@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Module.Archimedean
 public import Mathlib.Algebra.Order.Monoid.PNat
 public import Mathlib.Data.Sign.Defs
 public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Divisible Hull of an abelian group

@@ -11,8 +11,7 @@ public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
 
 /-!
-
-## HNN Extensions of Groups
+# HNN Extensions of Groups
 
 This file defines the HNN extension of a group `G`, `HNNExtension G A B φ`. Given a group `G`,
 subgroups `A` and `B` and an isomorphism `φ` of `A` and `B`, we adjoin a letter `t` to `G`, such
@@ -118,7 +117,6 @@ theorem hom_ext {f g : HNNExtension G A B φ →* M}
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     Coprod.hom_ext hg (MonoidHom.ext_mint ht)
 
-set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 theorem induction_on {motive : HNNExtension G A B φ → Prop}
     (x : HNNExtension G A B φ) (of : ∀ g, motive (of g))
@@ -417,7 +415,7 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
       cases h.2
       simpa [Cancels, unitsSMulWithCancel,
         Subgroup.mul_mem_cancel_left] using hc
-  · simp only [unitsSMul, dif_neg h]
+  · simp only [unitsSMul, dite_eq_right h]
     simpa [Cancels] using h
 
 theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
@@ -427,12 +425,12 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
   · set_option backward.isDefEq.respectTransparency false in
     have hncan : ¬ Cancels u w := (unitsSMul_cancels_iff _ _ _).1 hcan
     unfold unitsSMul
-    simp only [dif_neg hncan]
+    simp only [dite_eq_right hncan]
     simp [unitsSMulWithCancel, unitsSMulGroup, (d.compl u).equiv_snd_eq_inv_mul,
       -SetLike.coe_sort_coe]
   · have hcan2 : Cancels u w := not_not.1 (mt (unitsSMul_cancels_iff _ _ _).2 hcan)
     unfold unitsSMul at hcan ⊢
-    simp only [dif_pos hcan2] at hcan ⊢
+    simp only [dite_eq_left hcan2] at hcan ⊢
     cases w using consRecOn with
     | ofGroup => simp [Cancels] at hcan2
     | cons g u' w h1 h2 ih =>
@@ -462,13 +460,13 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     simp [Cancels, Subgroup.mul_mem_cancel_left]
   by_cases hcan : Cancels 1 w
   · simp only [unitsSMulWithCancel, toSubgroup_one, id_eq, toSubgroup_neg_one, toSubgroupEquiv_one,
-      group_smul_head, mul_inv_rev, dif_pos (this.2 hcan), dif_pos hcan]
+      group_smul_head, mul_inv_rev, dite_eq_left (this.2 hcan), dite_eq_left hcan]
     cases w using consRecOn
     · simp [Cancels] at hcan
     · simp only [smul_cons, consRecOn_cons]
       rw [← mul_smul, ← Subgroup.coe_mul, ← map_mul φ]
       rfl
-  · rw [dif_neg (mt this.1 hcan), dif_neg hcan]
+  · rw [dite_eq_right (mt this.1 hcan), dite_eq_right hcan]
     -- Before https://github.com/leanprover/lean4/pull/2644, all this was just
     -- `simp [← mul_smul, mul_assoc, unitsSMulGroup]`
     simp +instances only [toSubgroup_neg_one, unitsSMulGroup, toSubgroup_one, toSubgroupEquiv_one,
@@ -571,7 +569,7 @@ theorem prod_smul_empty (w : NormalWord d) :
   | cons g u w h1 h2 ih =>
     rw [prod_cons, ← mul_assoc, mul_smul, ih, mul_smul, t_pow_smul_eq_unitsSMul,
       of_smul_eq_smul, unitsSMul]
-    rw [dif_neg (not_cancels_of_cons_hyp u w h2)]
+    rw [dite_eq_right (not_cancels_of_cons_hyp u w h2)]
     -- Before https://github.com/leanprover/lean4/pull/2644, this was just
     -- simp [unitsSMulGroup, (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1,
     --   -SetLike.coe_sort_coe]
@@ -657,7 +655,8 @@ theorem exists_normalWord_prod_eq
             (List.head?_eq_some_head _) hS
           rwa [List.head?_eq_some_head hl, Option.map_some, ← this, Option.some_inj] at hx'
         simp at this
-      simp [mul_smul, of_smul_eq_smul, t_pow_smul_eq_unitsSMul, unitsSMul, dif_neg this, ← hw'2]
+      simp [mul_smul, of_smul_eq_smul, t_pow_smul_eq_unitsSMul, unitsSMul, dite_eq_right this,
+        ← hw'2]
 
 /-- Two reduced words representing the same element of the `HNNExtension G A B φ` have the same
 length corresponding list, with the same pattern of occurrences of `t^1` and `t^(-1)`,

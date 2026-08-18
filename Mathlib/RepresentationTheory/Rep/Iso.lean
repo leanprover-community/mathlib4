@@ -28,7 +28,7 @@ suppress_compilation
 
 section Group
 
-variable (k G H : Type u) [Group G] [Monoid H] [MulAction G H] [CommRing k] (n : ℕ)
+variable (k G : Type u) [Group G] [CommRing k] (n : ℕ)
 
 open MonoidalCategory Finsupp Representation.IntertwiningMap
 
@@ -167,8 +167,6 @@ instance : (toModuleMonoidAlgebra.{w} (k := k) (G := G)).IsEquivalence :=
 
 instance : (ofModuleMonoidAlgebra (k := k) (G := G)).IsEquivalence :=
   (equivalenceModuleMonoidAlgebra (k := k) (G := G)).isEquivalence_inverse
-
-instance : Abelian (Rep.{w} k G) := abelianOfEquivalence toModuleMonoidAlgebra
 
 -- TODO Verify that the equivalence with `ModuleCat k[G]` is a monoidal functor.
 
