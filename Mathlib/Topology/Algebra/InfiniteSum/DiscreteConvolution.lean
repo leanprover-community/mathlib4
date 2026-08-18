@@ -405,12 +405,9 @@ lemma smul_ringConvolution [IsScalarTower S R R] (c : S) (f g : M → R)
 /-- External scalar multiplication in the second factor commutes with convolution. -/
 @[to_additive (dont_translate := S R) addRingConvolution_smul]
 lemma ringConvolution_smul [SMulCommClass S R R] (c : S) (f g : M → R)
-    (hfg : ConvolutionExists mulLinearMap f g) :
+    (hfg : ConvolutionExists (.mul ℕ R) f g) :
     f ⋆ᵣ (c • g) = c • (f ⋆ᵣ g) := by
-  ext x
-  simp only [ringConvolution_apply, Pi.smul_apply]
-  simp_rw [mul_smul_comm]
-  simpa only [mulLinearMap_apply] using (hfg x).tsum_const_smul c
+  ext; simpa [mul_smul_comm] using (hfg _).tsum_const_smul c
 
 end RingConvolutionScalar
 
