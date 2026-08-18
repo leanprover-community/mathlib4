@@ -50,8 +50,8 @@ the roots of the minimal polynomial of `s` over `R`.
 
 universe u v w z
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-variable [Algebra R S] [Algebra R T]
+variable {R S : Type*} [CommRing R] [CommRing S]
+variable [Algebra R S]
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 variable {ι κ : Type w}
 
@@ -162,7 +162,7 @@ attribute [-instance] Field.toEuclideanDomain
 theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegral R x) :
     IsIntegral R (Algebra.trace L F x) := by
   have hx' : IsIntegral L x := hx.tower_top
-  rw [← isIntegral_algebraMap_iff (algebraMap L (AlgebraicClosure F)).injective, trace_eq_sum_roots]
+  rw [← isIntegral_algebraMap_iff (B := AlgebraicClosure F), trace_eq_sum_roots]
   · refine (IsIntegral.multiset_sum ?_).nsmul _
     intro y hy
     rw [mem_roots_map (minpoly.ne_zero hx')] at hy
@@ -439,7 +439,7 @@ section Field
 variable (K) (E : Type z) [Field E]
 variable [Algebra K E]
 variable [Module.Finite K L] [Algebra.IsSeparable K L] [IsAlgClosed E]
-variable (b : κ → L) (pb : PowerBasis K L)
+variable (b : κ → L)
 
 theorem traceMatrix_eq_embeddingsMatrix_mul_trans : (traceMatrix K b).map (algebraMap K E) =
     embeddingsMatrix K E b * (embeddingsMatrix K E b)ᵀ := by
