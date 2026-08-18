@@ -127,10 +127,8 @@ lemma basis_coord {I : Type*} [LinearOrder I] (b : Basis I R M) (s : powersetCar
 to the dual basis of the exterior power of `b`. -/
 lemma pairingDual_apply_dualBasis_exteriorPower {I : Type*} [Finite I] [LinearOrder I]
     (b : Basis I R M) (k : ℕ) (s : powersetCard I k) :
-    pairingDual R M k (b.dualBasis.exteriorPower k s) =
-      (b.exteriorPower k).dualBasis s := by
-  rw [Basis.coe_dualBasis, basis_coord]
-  simp [basis_apply, ιMulti_family, ιMultiDual, Basis.coe_dualBasis]
+    pairingDual R M k (b.dualBasis.exteriorPower k s) = (b.exteriorPower k).dualBasis s := by
+  simp [basis_coord, ιMultiDual]
 
 lemma basis_repr_apply {I : Type*} [LinearOrder I] (b : Basis I R M) (x : ⋀[R]^n M)
     (s : powersetCard I n) :

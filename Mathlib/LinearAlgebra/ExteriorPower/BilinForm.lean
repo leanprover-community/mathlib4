@@ -107,13 +107,13 @@ public protected def BilinForm : LinearMap.BilinForm R (⋀[R]^k M) :=
   exteriorPower.alternatingMapLinearEquiv (R := R) (M := M) (N := R) (n := k) ∘ₗ
     exteriorPower.alternatingMapLinearEquiv (BilinFormAux k B)
 
-/-- If `b` is a finite ordered basis of `M`, then `pairingDual` on the `k`th exterior power is
-injective.
-
-This auxiliary lemma is used in `bilinForm_nondegenerate`. -/
-lemma pairingDual_injective_of_basis {I : Type*} [Finite I] [LinearOrder I]
-    (b : Basis I R M) (k : ℕ) :
-    Function.Injective (pairingDual R M k) := by
+lemma bijective_pairingDual [Nontrivial R] [Module.Finite R M] [Module.Free R M] (k : ℕ) :
+    Bijective (pairingDual R M k) := by
+  classical
+  -- 1. Choose a finite ordered basis of `M`.
+  obtain ⟨I, b⟩ := Module.Free.exists_basis R M
+  let : LinearOrder I := linearOrderOfSTO WellOrderingRel
+  have : Finite I := Module.Finite.finite_basis b
   let e := b.dualBasis.exteriorPower k
   let d := (b.exteriorPower k).dualBasis
   -- Express `pairingDual` as the map sending the basis `e` to the basis `d`.
@@ -124,9 +124,9 @@ lemma pairingDual_injective_of_basis {I : Type*} [Finite I] [LinearOrder I]
     -- On the basis vector indexed by `s`, both maps give the corresponding vector `d s`.
     simp only [Basis.constr_basis]
     simpa [e, d] using pairingDual_apply_dualBasis_exteriorPower R b k s
-  -- The basis map is injective because `d` is linearly independent.
   rw [hpairingDual_eq_constr]
-  exact e.injective_constr_of_linearIndependent d.linearIndependent
+  refine ⟨e.injective_constr_of_linearIndependent d.linearIndependent, ?_⟩
+  rw [← LinearMap.range_eq_top, Basis.constr_range, d.span_eq]
 
 /-- On wedges of `k` vectors, `BilinForm` is the determinant of the matrix of pairings. -/
 @[simp] public lemma bilinForm_ιMulti_ιMulti {k : ℕ} (C : LinearMap.BilinForm R M)
@@ -177,55 +177,15 @@ lemma bilinForm_flip {k : ℕ} (C : LinearMap.BilinForm R M) :
 
 section
 
-variable {R M : Type*} [Field R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
-/-- The determinant-induced form on every exterior power is nondegenerate over a field when `B` is.
-
-The assumptions `[Module.Free R M] [Module.Finite R M]` provide the finite basis used below. The
-field assumption is used to lift injectivity of `B` and `B.flip` to their exterior powers. -/
-public lemma bilinForm_nondegenerate (k : ℕ) (B : LinearMap.BilinForm R M)
-    [Module.Free R M] [Module.Finite R M]
-    (hB : B.Nondegenerate) :
-    (exteriorPower.BilinForm k B).Nondegenerate := by
-  classical
-  -- 1. Choose a finite ordered basis of `M`.
-  obtain ⟨I, b⟩ := Module.Free.exists_basis R M
-  let : LinearOrder I := linearOrderOfSTO WellOrderingRel
-  have : Finite I := Module.Finite.finite_basis b
-  -- 2. Obtain injectivity of `B`, `B.flip`, and their exterior-power maps.
-  -- The left-separating part of `hB` gives `LinearMap.ker B = ⊥`.
-  have hB_left : Function.Injective B := LinearMap.ker_eq_bot.mp hB.ker_eq_bot
-  -- The same kernel argument applies to `B.flip`.
-  have hB_flip : Function.Injective B.flip := LinearMap.ker_eq_bot.mp hB.flip.ker_eq_bot
-  have hB_exteriorPower : Function.Injective (exteriorPower.map k B) :=
-    exteriorPower.map_injective_field hB_left
-  have hB_flip_exteriorPower : Function.Injective (exteriorPower.map k B.flip) :=
-    exteriorPower.map_injective_field hB_flip
-  -- 3. Use the chosen basis to prove injectivity of `pairingDual`.
-  have hpairingDual : Function.Injective (pairingDual R M k) :=
-    pairingDual_injective_of_basis b k
-  -- 4. Use the auxiliary identities to express the induced form and its flip as compositions.
-  constructor
-  · -- 5. Check left-separation using the two injectivity results.
-    rw [LinearMap.separatingLeft_iff_linear_nontrivial]
-    intro x hx
-    apply hB_exteriorPower
-    apply hpairingDual
-    -- Rewrite the vanishing of the induced form using the composition identity.
-    simpa only [bilinForm_eq_pairingDual_comp_map (k := k) B, LinearMap.comp_apply, map_zero]
-      using hx
-  · -- 6. Check right-separation by applying the same argument to `B.flip`.
-    rw [LinearMap.separatingRight_iff_linear_flip_nontrivial]
-    intro x hx
-    have hBilinForm_flip_x : exteriorPower.BilinForm k B.flip x = 0 := by
-      -- Rewrite the flip of the induced form using the flip identity.
-      rw [← bilinForm_flip (k := k) B]
-      exact hx
-    apply hB_flip_exteriorPower
-    apply hpairingDual
-    -- Rewrite the vanishing condition using the composition lemma.
-    simpa only [bilinForm_eq_pairingDual_comp_map (k := k) B.flip, LinearMap.comp_apply, map_zero]
-      using hBilinForm_flip_x
+public lemma bilinForm_nondegenerate[Module.Free R M] [Module.Finite R M] (k : ℕ)
+    (B : LinearMap.BilinForm R M) (hB : Bijective B) :
+    Bijective (exteriorPower.BilinForm k B) := by
+  rw [bilinForm_eq_pairingDual_comp_map (k := k) B, LinearMap.coe_comp]
+  refine (bijective_pairingDual k).comp ⟨?_, ?_⟩
+  · exact exteriorPower.map_injective (LinearEquiv.ofBijective _ hB).symm (by ext; simp)
+  · exact exteriorPower.map_surjective hB.surjective
 
 end
 
