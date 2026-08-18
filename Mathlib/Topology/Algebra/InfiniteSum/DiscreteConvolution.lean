@@ -318,15 +318,6 @@ section RingConvolution
 
 variable [NonUnitalNonAssocSemiring R]
 
-/-- Multiplication as an `ℕ`-bilinear map. -/
-def mulLinearMap : R →ₗ[ℕ] R →ₗ[ℕ] R :=
-  LinearMap.mk₂ ℕ (· * ·) add_mul
-    (fun n a b => by simpa using (AddMonoidHom.mulRight b).map_nsmul n a)
-    mul_add
-    (fun n a b => by simpa using (AddMonoidHom.mulLeft a).map_nsmul n b)
-
-@[simp]
-lemma mulLinearMap_apply (a b : R) : mulLinearMap a b = a * b := rfl
 
 variable [Monoid M] [TopologicalSpace R]
 
