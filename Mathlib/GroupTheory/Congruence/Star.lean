@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.GroupTheory.Congruence.Basic
 public import Mathlib.Algebra.Star.Basic
+public import Mathlib.GroupTheory.Congruence.Defs
 
 /-!
 # Helpers for working with star operators on quotients.
@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Star.Basic
 TODO: consider defining `Star` versions of `Con` and `AddCon`.
 -/
 
-@[expose] public section
+public section
 
 section Mul
 variable {M : Type*} [Mul M] [StarMul M] {r : M → M → Prop}
