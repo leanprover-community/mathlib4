@@ -43,8 +43,8 @@ open MvPolynomial Finsupp
 
 variable {σ R : Type*}
 
-/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
-for performance reasons. -/
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
 attribute [local instance] IsRightCancelAdd.addRightStrictMono_of_addRightMono
 
 section Semiring

@@ -30,8 +30,8 @@ open Interval Pointwise
 
 variable {α : Type*}
 
-/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
-for performance reasons. -/
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
 attribute [local instance] IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono
   IsRightCancelMul.mulRightStrictMono_of_mulRightMono
 

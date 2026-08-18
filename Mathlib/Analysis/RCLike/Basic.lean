@@ -50,8 +50,8 @@ A few lemmas requiring heavier imports are in `Mathlib/Analysis/RCLike/Lemmas.le
 open Fintype
 open scoped BigOperators ComplexConjugate
 
-/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
-for performance reasons. -/
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
 attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
   IsRightCancelAdd.addRightStrictMono_of_addRightMono
 

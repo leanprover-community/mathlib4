@@ -26,8 +26,8 @@ namespace Mathlib.Tactic.LinearCombination
 variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}
 variable {K : Type*} {t s : K}
 
-/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
-for performance reasons. -/
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
 attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
   IsRightCancelAdd.addRightStrictMono_of_addRightMono
 

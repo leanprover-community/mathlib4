@@ -30,8 +30,8 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 
 variable {ι α R S : Type*}
 
-/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
-for performance reasons. -/
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
 attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
 
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:

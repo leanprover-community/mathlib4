@@ -35,8 +35,8 @@ assert_not_exists Finset
 
 open Function Set
 
-/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
-for performance reasons. -/
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
 attribute [local instance] IsRightCancelAdd.addRightStrictMono_of_addRightMono
 
 /-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`,

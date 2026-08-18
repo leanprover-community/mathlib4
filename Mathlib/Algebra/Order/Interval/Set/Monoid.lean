@@ -28,8 +28,8 @@ namespace Set
 variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedCancelAddMonoid M]
   [ExistsAddOfLE M] (a b c d : M)
 
-/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
-for performance reasons. -/
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
 attribute [local instance] IsRightCancelAdd.addRightStrictMono_of_addRightMono
   IsRightCancelAdd.addRightReflectLE_of_addRightReflectLT
 

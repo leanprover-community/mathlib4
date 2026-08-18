@@ -222,8 +222,8 @@ variable [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
   [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [i : FunLike F α β]
 variable (f : F)
 
-/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
-for performance reasons. -/
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
 attribute [local instance] IsRightCancelAdd.addRightStrictMono_of_addRightMono
 
 theorem monotone_iff_map_nonneg [iamhc : AddMonoidHomClass F α β] :

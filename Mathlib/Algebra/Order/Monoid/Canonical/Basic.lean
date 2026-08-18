@@ -31,8 +31,8 @@ end Set
 section LinearOrder
 variable {α : Type*} [LinearOrder α] {P : α → Prop} {a b c : α}
 
-/- The cancellation-to-monotonicity conversions have been changed from instances to theorems
-for performance reasons. -/
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
 attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
   IsLeftCancelAdd.addLeftReflectLE_of_addLeftReflectLT
 
