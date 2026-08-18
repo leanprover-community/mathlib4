@@ -744,7 +744,7 @@ end HeytingAlgebra
 
 section CoheytingAlgebra
 
-variable [CoheytingAlgebra α] {a b : α}
+variable [CoheytingAlgebra α] {a : α}
 
 @[to_dual existing]
 instance Prod.instCoheytingAlgebra [CoheytingAlgebra β] : CoheytingAlgebra (α × β) where
