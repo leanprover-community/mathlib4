@@ -128,18 +128,9 @@ variable (B) in
 theorem le_orthogonalBilin_flip_orthogonalBilin :
     S ≤ orthogonalBilin B.flip (orthogonalBilin B S) := (orthogonalBilin_gc B).le_u_l S
 
-section IsRefl
-
-variable {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
-
-theorem _root_.LinearMap.IsRefl.le_orthogonalBilin_orthogonalBilin (b : B.IsRefl) :
-    S ≤ (S.orthogonalBilin B).orthogonalBilin B := fun n hn _m hm ↦ b _ _ (hm n hn)
-
-@[deprecated (since := "2026-08-17")]
-alias le_orthogonalBilin_orthogonalBilin :=
-  _root_.LinearMap.IsRefl.le_orthogonalBilin_orthogonalBilin
-
-end IsRefl
+theorem le_orthogonalBilin_orthogonalBilin {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
+    (b : B.IsRefl) : S ≤ (S.orthogonalBilin B).orthogonalBilin B :=
+  fun n hn _m hm ↦ b _ _ (hm n hn)
 
 @[simp] theorem orthogonalBilin_orthogonalBilin_flip_orthogonalBilin (S) :
     orthogonalBilin B (orthogonalBilin B.flip (orthogonalBilin B S)) = orthogonalBilin B S :=
@@ -193,15 +184,10 @@ variable (B) in
 
 end
 
-section
-
-variable {I₁ : R₁ →+* R₂} {B : M₁ →ₛₗ[I₁] M₂ →ₗ[R₂] R₂}
-
-variable (B) [RingHomSurjective I₁] in
-theorem dualCoannihilator_map_eq_orthogonalBilin (S) :
-    (map B S).dualCoannihilator = orthogonalBilin B S := by ext x; simp
-
-end
+variable (B) in
+theorem dualCoannihilator_map_eq_orthogonalBilin {I₁ : R₁ →+* R₂} {B : M₁ →ₛₗ[I₁] M₂ →ₗ[R₂] R₂}
+    [RingHomSurjective I₁] (S) : (map B S).dualCoannihilator = orthogonalBilin B S := by
+  ext x; simp
 
 section Map
 
