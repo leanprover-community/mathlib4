@@ -20,7 +20,7 @@ also indirectly provides a `Nat.coprime` extension.
 
 public meta section
 
-namespace Tactic
+namespace Mathlib.Meta
 
 namespace NormNum
 
@@ -252,4 +252,4 @@ def evalRatDen : NormNumExt where eval {u α} e := do
 
 end NormNum
 
-end Tactic
+end Mathlib.Meta

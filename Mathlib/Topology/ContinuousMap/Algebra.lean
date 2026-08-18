@@ -38,7 +38,7 @@ assert_not_exists StoneCech
 namespace ContinuousFunctions
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-variable {f g : { f : α → β | Continuous f }}
+variable {f : { f : α → β | Continuous f }}
 
 instance : CoeFun { f : α → β | Continuous f } fun _ => α → β :=
   ⟨Subtype.val⟩
@@ -337,7 +337,7 @@ instance instCommGroupContinuousMap [CommGroup β] [IsTopologicalGroup β] :
 @[to_additive]
 instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
   continuous_mul := by
-    letI : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
+    let : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
     have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
@@ -347,7 +347,7 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
         ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prodMk
           (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
-    letI : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
+    let : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
     have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     intro f

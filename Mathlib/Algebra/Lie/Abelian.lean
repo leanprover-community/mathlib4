@@ -342,7 +342,7 @@ open LieSubmodule LieSubalgebra
 
 variable {R : Type u} {L : Type v} {M : Type w}
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-variable [LieRingModule L M] (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
+variable [LieRingModule L M] (N : LieSubmodule R L M) (I : LieIdeal R L)
 
 @[simp]
 theorem LieSubmodule.trivial_lie_oper_zero [LieModule.IsTrivial L M] : ⁅I, N⁆ = ⊥ := by
@@ -352,7 +352,7 @@ theorem LieSubmodule.trivial_lie_oper_zero [LieModule.IsTrivial L M] : ⁅I, N�
 
 theorem LieSubmodule.lie_abelian_iff_lie_self_eq_bot : IsLieAbelian I ↔ ⁅I, I⁆ = ⊥ := by
   simp only [_root_.eq_bot_iff, lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le,
-    LieSubmodule.bot_coe, Set.subset_singleton_iff, Set.mem_setOf_eq, exists_imp]
+    LieSubmodule.bot_coe, Set.subset_singleton_iff, Set.mem_ofPred_eq, exists_imp]
   refine
     ⟨fun h z x y hz =>
       hz.symm.trans

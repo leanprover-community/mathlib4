@@ -33,9 +33,8 @@ Extension of `iSup` and `iInf` from a preorder `α` to `WithTop α` and `WithBot
 
 variable [Preorder α]
 
-@[simp]
-theorem WithTop.iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
-    ⨅ i, f i = ⊤ := by rw [iInf, range_eq_empty, WithTop.sInf_empty]
+theorem WithTop.iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) : ⨅ i, f i = ⊤ := by
+  simp
 
 @[norm_cast]
 theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelow (range f)) :
@@ -47,9 +46,7 @@ theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)
     ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
   rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp, Function.comp_def]
 
-@[simp]
-theorem WithBot.ciSup_empty [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
-    ⨆ i, f i = ⊥ :=
+theorem WithBot.ciSup_empty [IsEmpty ι] [SupSet α] (f : ι → WithBot α) : ⨆ i, f i = ⊥ :=
   WithTop.iInf_empty (α := αᵒᵈ) _
 
 @[norm_cast]
@@ -88,22 +85,16 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {a b : α}
 
+@[to_dual]
 theorem isLUB_ciSup [Nonempty ι] {f : ι → α} (H : BddAbove (range f)) :
     IsLUB (range f) (⨆ i, f i) :=
   isLUB_csSup (range_nonempty f) H
 
+@[to_dual]
 theorem isLUB_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) (Hne : s.Nonempty) :
     IsLUB (f '' s) (⨆ i : s, f i) := by
   rw [← sSup_image']
   exact isLUB_csSup (Hne.image _) H
-
-theorem isGLB_ciInf [Nonempty ι] {f : ι → α} (H : BddBelow (range f)) :
-    IsGLB (range f) (⨅ i, f i) :=
-  isGLB_csInf (range_nonempty f) H
-
-theorem isGLB_ciInf_set {f : β → α} {s : Set β} (H : BddBelow (f '' s)) (Hne : s.Nonempty) :
-    IsGLB (f '' s) (⨅ i : s, f i) :=
-  isLUB_ciSup_set (α := αᵒᵈ) H Hne
 
 theorem ciSup_le_iff [Nonempty ι] {f : ι → α} {a : α} (hf : BddAbove (range f)) :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
@@ -380,6 +371,26 @@ lemma ciInf_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α
     ⨅ i ∈ (f '' s), g i = ⨅ x ∈ s, g (f x) :=
   ciSup_image (α := αᵒᵈ) hf hg'
 
+theorem le_ciSup_ciSup_eq_left {b : β} {f : ∀ x : β, x = b → α} :
+    f b rfl ≤ ⨆ x, ⨆ h : x = b, f x h := by
+  refine le_ciSup₂ (f := f) ⟨f b rfl, ?_⟩ b rfl
+  rintro a ⟨_, ⟨b, rfl⟩, ⟨rfl, rfl⟩⟩
+  rfl
+
+theorem ciInf_ciInf_eq_left_le {b : β} {f : ∀ x : β, x = b → α} :
+    ⨅ x, ⨅ h : x = b, f x h ≤ f b rfl :=
+  le_ciSup_ciSup_eq_left (α := αᵒᵈ)
+
+theorem le_ciSup_ciSup_eq_right {b : β} {f : ∀ x : β, b = x → α} :
+    f b rfl ≤ ⨆ x, ⨆ h : b = x, f x h := by
+  refine le_ciSup₂ ⟨f b rfl, ?_⟩ b rfl
+  rintro a ⟨_, ⟨b, rfl⟩, ⟨rfl, rfl⟩⟩
+  rfl
+
+theorem ciInf_ciInf_eq_right_le {b : β} {f : ∀ x : β, b = x → α} :
+    ⨅ x, ⨅ h : b = x, f x h ≤ f b rfl :=
+  le_ciSup_ciSup_eq_right (α := αᵒᵈ)
+
 /-- Note that equality need not hold: consider `ι := Bool, p := (·), α := ℤ, f := fun _ ↦ -1`,
 then the LHS is `-1` but the RHS is `-1 ⊔ sSup ∅ = -1 ⊔ 0 = 0`. -/
 theorem ciSup_exists_le {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih ≤ ⨆ (i) (h), f ⟨i, h⟩ := by
@@ -505,9 +516,8 @@ section ConditionallyCompleteLinearOrderBot
 
 variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {a : α}
 
-@[simp]
 theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
-  rw [iSup_of_empty', csSup_empty]
+  simp
 
 theorem ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
   ciSup_of_empty f
@@ -553,6 +563,16 @@ theorem ciSup_exists {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih = �
   refine le_antisymm ciSup_exists_le <| ciSup_le' fun i ↦ ciSup_le' fun hi ↦ ?_
   simp [show Exists p from ⟨i, hi⟩]
 
+@[simp]
+theorem ciSup_ciSup_eq_left {b : β} {f : ∀ x : β, x = b → α} :
+    ⨆ x, ⨆ h : x = b, f x h = f b rfl :=
+  le_antisymm (ciSup_le' fun _ ↦ ciSup_le' (· ▸ le_rfl)) le_ciSup_ciSup_eq_left
+
+@[simp]
+theorem ciSup_ciSup_eq_right {b : β} {f : ∀ x : β, b = x → α} :
+    ⨆ x, ⨆ h : b = x, f x h = f b rfl :=
+  le_antisymm (ciSup_le' fun _ ↦ ciSup_le' (· ▸ le_refl (f b rfl))) le_ciSup_ciSup_eq_right
+
 lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
     ⨆ (h : p ∨ q), f h = (⨆ h : p, f (.inl h)) ⊔ ⨆ h : q, f (.inr h) := by
   by_cases hp : p <;>
@@ -578,7 +598,7 @@ theorem l_ciSup (gc : GaloisConnection l u) {f : ι → α} (hf : BddAbove (rang
 
 theorem l_ciSup_set (gc : GaloisConnection l u) {s : Set γ} {f : γ → α} (hf : BddAbove (f '' s))
     (hne : s.Nonempty) : l (⨆ i : s, f i) = ⨆ i : s, l (f i) := by
-  haveI := hne.to_subtype
+  have := hne.to_subtype
   rw [image_eq_range] at hf
   exact gc.l_ciSup hf
 

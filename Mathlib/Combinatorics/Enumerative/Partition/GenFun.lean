@@ -69,7 +69,7 @@ theorem tendsto_order_genFun_term_atTop_nhds_top (f : ℕ → ℕ → R) (i : �
   intro m hm
   grw [PowerSeries.smul_eq_C_mul, ← le_order_mul]
   refine lt_add_of_nonneg_of_lt (by simp) ?_
-  nontriviality R using Subsingleton.eq_zero
+  nontriviality R using Subsingleton.eq_zero (α := R⟦X⟧)
   rw [order_X_pow]
   norm_cast
   grind

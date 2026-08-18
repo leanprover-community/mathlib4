@@ -204,7 +204,7 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf 
   f.isMulCommutative_of_isCyclic_of_ker_le_center hf |>.is_comm.comm a b
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- A group is commutative if the quotient by the center is cyclic. -/]
 def commGroupOfCyclicCenterQuotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G) :
     CommGroup G where
@@ -271,9 +271,6 @@ theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
 @[to_additive]
 theorem CommGroup.is_simple_iff_prime_card [CommGroup α] : IsSimpleGroup α ↔ (Nat.card α).Prime :=
   Group.is_simple_iff_prime_card
-
-@[deprecated (since := "2025-11-19")]
-alias CommGroup.is_simple_iff_isCyclic_and_prime_card := CommGroup.is_simple_iff_prime_card
 
 section SpecificInstances
 
@@ -353,7 +350,8 @@ protected theorem ZMod.exponent (n : ℕ) : AddMonoid.exponent (ZMod n) = n := b
   rw [IsAddCyclic.exponent_eq_card, Nat.card_zmod]
 
 /-- A group of order `p ^ 2` is not cyclic if and only if its exponent is `p`. -/
-@[to_additive]
+@[to_additive /-- An additive group of order `p ^ 2` is not cyclic if and only if its exponent is
+`p`. -/]
 lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
     (hα : Nat.card α = p ^ 2) : ¬ IsCyclic α ↔ Monoid.exponent α = p := by
   -- G is a nontrivial fintype of cardinality `p ^ 2`
@@ -582,6 +580,9 @@ abbrev intCyclicAddEquiv [AddGroup G] [IsAddCyclic G] : ℤ ≃+ G :=
 
 end Infinite
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 variable (G) in
 /-- The automorphism group of a cyclic group is isomorphic to the multiplicative group of ZMod. -/
 @[simps!]

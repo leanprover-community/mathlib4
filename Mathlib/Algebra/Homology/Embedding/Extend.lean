@@ -69,6 +69,7 @@ lemma d_none_eq_zero (i j : Option ι) (hi : i = none) :
 lemma d_none_eq_zero' (i j : Option ι) (hj : j = none) :
     d K i j = 0 := by subst hj; cases i <;> rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma d_eq {i j : Option ι} {a b : ι} (hi : i = some a) (hj : j = some b) :
     d K i j = (XIso K hi).hom ≫ K.d a b ≫ (XIso K hj).inv := by
   subst hi hj
@@ -97,6 +98,7 @@ noncomputable def mapX : ∀ (i : Option ι), X K i ⟶ X L i
   | some i => φ.f i
   | none => 0
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma mapX_some {i : Option ι} {a : ι} (hi : i = some a) :
     mapX φ i = (XIso K hi).hom ≫ φ.f a ≫ (XIso L hi).inv := by
@@ -354,6 +356,16 @@ noncomputable def extendFunctor [HasZeroMorphisms C] :
     HomologicalComplex C c ⥤ HomologicalComplex C c' where
   obj K := K.extend e
   map φ := HomologicalComplex.extendMap φ e
+
+set_option backward.defeqAttrib.useBackward true in
+/-- Given an embedding `e : c.Embedding c'` of complex shapes, this is the isomorphism
+`e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i' ≅ HomologicalComplex.eval _ _ i`
+when `e.f i = i'. -/
+noncomputable def extendFunctorCompEvalIso
+    [HasZeroMorphisms C] {i : ι} {i' : ι'} (h : e.f i = i') :
+    e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i' ≅ HomologicalComplex.eval _ _ i :=
+  NatIso.ofComponents (fun K ↦ K.extendXIso e h)
+    (by simp [HomologicalComplex.extendMap_f _ _ h])
 
 instance [HasZeroMorphisms C] : (e.extendFunctor C).PreservesZeroMorphisms where
 

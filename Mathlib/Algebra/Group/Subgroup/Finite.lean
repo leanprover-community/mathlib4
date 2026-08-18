@@ -25,7 +25,6 @@ public section
 assert_not_exists Field
 
 variable {G : Type*} [Group G]
-variable {A : Type*} [AddGroup A]
 
 namespace Subgroup
 
@@ -217,7 +216,7 @@ section Normalizer
 
 theorem mem_normalizer_fintype {S : Set G} [Finite S] {x : G} (h : ∀ n, n ∈ S → x * n * x⁻¹ ∈ S) :
     x ∈ Subgroup.normalizer S := by
-  haveI := Classical.propDecidable; cases nonempty_fintype S
+  have := Classical.propDecidable; cases nonempty_fintype S
   exact fun n =>
     ⟨h n, fun h₁ =>
       have heq : (fun n => x * n * x⁻¹) '' S = S :=

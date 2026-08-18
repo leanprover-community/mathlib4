@@ -16,7 +16,7 @@ public section
 
 assert_not_exists Finset
 
-variable {ι ι' α β γ : Type*}
+variable {α : Type*}
 
 open Set
 

@@ -18,7 +18,7 @@ invariants of the representation.
 
 namespace ContinuousCohomology
 
-open CategoryTheory Functor TopRep ContRepresentation
+open CategoryTheory TopRep ContRepresentation
 
 variable {k G : Type*} [Ring k] [Group G] [TopologicalSpace k]
   [TopologicalSpace G] [IsTopologicalGroup G]

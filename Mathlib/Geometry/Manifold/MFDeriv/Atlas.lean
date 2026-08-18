@@ -269,8 +269,8 @@ lemma mfderiv_extend_comp_mfderivWithin_extend_symm'
     {y : M} (he : e ∈ maximalAtlas I 1 M) (hy : y ∈ (e.extend I).source) :
     (mfderiv% (e.extend I) y) ∘L (mfderiv[range I] (e.extend I).symm (e.extend I y))
     = ContinuousLinearMap.id _ _ := by
-  have : y = (e.extend I).symm (e.extend I y) := ((e.extend I).left_inv hy).symm
   convert! mfderiv_extend_comp_mfderivWithin_extend_symm he ((e.extend I).map_source hy)
+  rw [(e.extend I).left_inv hy]
 
 /-- The composition of the derivative of the inverse of an extended chart `e.extend I` with the
 derivative of `e.extend I` gives the identity.
@@ -308,7 +308,6 @@ lemma mfderivWithin_extend_symm_comp_mfderiv_extend'
     {y : M} (he : e ∈ maximalAtlas I 1 M) (hy : y ∈ e.source) :
     (mfderiv[range I] (e.extend I).symm (e.extend I y)) ∘L (mfderiv% (e.extend I) y)
       = ContinuousLinearMap.id _ _ := by
-  have : y = (e.extend I).symm (e.extend I y) := ((e.extend I).left_inv (by simpa using hy)).symm
   convert! mfderivWithin_extend_symm_comp_mfderiv_extend he
     ((e.extend I).map_source (by simpa using hy))
   rw [(e.extend I).left_inv (by simpa using hy)]
@@ -326,8 +325,7 @@ lemma isInvertible_mfderiv_extend {y : M} (he : e ∈ maximalAtlas I 1 M) (hy : 
   have Z := ContinuousLinearMap.IsInvertible.of_inverse
     (mfderiv_extend_comp_mfderivWithin_extend_symm he h'y)
     (mfderivWithin_extend_symm_comp_mfderiv_extend he h'y)
-  have : (e.extend I).symm ((e.extend I) y) = y := (e.extend I).left_inv (by simpa using hy)
-  rwa [this] at Z
+  rwa [(e.extend I).left_inv (by simpa using hy)] at Z
 
 end
 
@@ -351,11 +349,11 @@ theorem mdifferentiableOn_extChartAt : MDiff[(chartAt H x).source] (extChartAt I
   fun _y hy ↦ (hasMFDerivWithinAt_extChartAt hy).mdifferentiableWithinAt
 
 theorem mdifferentiableWithinAt_extChartAt_symm (h : z ∈ (extChartAt I x).target) :
-    MDiffAt[range I] (extChartAt I x).symm z := by
-  apply mdifferentiableWithinAt_extend_symm ?_ h
-  exact IsManifold.chart_mem_maximalAtlas x
+    MDiffAt[range I] (extChartAt I x).symm z :=
+  mdifferentiableWithinAt_extend_symm (IsManifold.chart_mem_maximalAtlas x) h
 
-theorem mdifferentiableOn_extChartAt_symm : MDiff[(extChartAt I x).target] (extChartAt I x).symm :=
+theorem mdifferentiableOn_extChartAt_symm :
+    MDiff[(extChartAt I x).target] (extChartAt I x).symm :=
   mdifferentiableOn_extend_symm (IsManifold.chart_mem_maximalAtlas x)
 
 /-- The composition of the derivative of `extChartAt` with the derivative of the inverse of
@@ -445,7 +443,7 @@ lemma fderivWithin_extChartAt_comp_extChartAt_symm_range :
 
 /-- The manifold derivative of `extChartAt` at the basepoint is the identity. -/
 lemma mfderiv_extChartAt_self :
-    mfderiv I 𝓘(𝕜, E) (extChartAt I x) x = ContinuousLinearMap.id 𝕜 _ := by
+    mfderiv% (extChartAt I x) x = ContinuousLinearMap.id 𝕜 _ := by
   rw [← TangentBundle.continuousLinearMapAt_trivializationAt (by simp),
     TangentBundle.continuousLinearMapAt_trivializationAt_eq_core (by simp)]
   ext v
@@ -456,8 +454,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The manifold derivative within `range I` of `(extChartAt I x).symm` at the chart point is
 the identity. -/
 lemma mfderivWithin_range_extChartAt_symm :
-    mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) (extChartAt I x x) =
-      ContinuousLinearMap.id 𝕜 _ := by
+    mfderiv[range I] (extChartAt I x).symm (extChartAt I x x) = ContinuousLinearMap.id 𝕜 _ := by
   have hcomp := mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' (I := I)
     (mem_extChartAt_source x)
   rw [mfderiv_extChartAt_self, ContinuousLinearMap.comp_id] at hcomp
@@ -467,7 +464,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of the derivative of `(extChartAt I x).symm` at the chart point,
 applied to a tangent vector, gives back the tangent vector. -/
 lemma mfderivWithin_extChartAt_symm_inverse_apply (v : TangentSpace I x) :
-    (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) (extChartAt I x x)).inverse v = v := by
+    (mfderiv[range I] (extChartAt I x).symm (extChartAt I x x)).inverse v = v := by
   rw [mfderivWithin_range_extChartAt_symm, ContinuousLinearMap.inverse_id]
   exact ContinuousLinearMap.id_apply ..
 

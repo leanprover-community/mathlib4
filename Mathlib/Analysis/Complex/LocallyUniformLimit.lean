@@ -26,7 +26,7 @@ subset of the complex plane.
 @[expose] public section
 
 
-open Set Metric MeasureTheory Filter Complex intervalIntegral
+open Set Metric Filter Complex
 
 open scoped Real Topology
 
@@ -172,7 +172,6 @@ theorem differentiableOn_tsum_of_summable_norm {u : ι → ℝ} (hu : Summable u
     (hf : ∀ i : ι, DifferentiableOn ℂ (F i) U) (hU : IsOpen U)
     (hF_le : ∀ (i : ι) (w : ℂ), w ∈ U → ‖F i w‖ ≤ u i) :
     DifferentiableOn ℂ (fun w : ℂ => ∑' i : ι, F i w) U := by
-  classical
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
   refine hc.differentiableOn (Eventually.of_forall fun s => ?_) hU
   exact DifferentiableOn.fun_sum fun i _ => hf i
