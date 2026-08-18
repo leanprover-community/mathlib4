@@ -11,8 +11,10 @@ public import Mathlib.LinearAlgebra.BilinearForm.Properties
 /-!
 # Bilinear forms on exterior powers
 
-The main definition in this file is basis-independent: it constructs the bilinear form induced on
-an exterior power by a bilinear form.
+For a bilinear form `B` on a module `M`, this file defines the basis-independent bilinear form
+induced by `B` on each exterior power. On decomposable elements, its value is given by the
+determinant of the matrix of pairings. For finite free modules, we also prove that bijectivity of
+`B` implies bijectivity of the induced linear map.
 
 ## Definitions
 
@@ -20,7 +22,9 @@ an exterior power by a bilinear form.
 
 ## Theorems
 
-* `exteriorPower.bilinForm_nondegenerate`: nondegeneracy is preserved over a field.
+* `exteriorPower.bilinForm_ιMulti_ιMulti`: the determinant formula on decomposable elements.
+
+* `exteriorPower.bilinForm_nondegenerate`: bijectivity of `B` is preserved on exterior powers.
 -/
 
 noncomputable section
@@ -191,6 +195,8 @@ section
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
+/-- If `B` is bijective as a linear map from `M` to its dual, then the induced map on the
+`k`th exterior power is bijective as well. -/
 public lemma bilinForm_nondegenerate [Module.Free R M] [Module.Finite R M] (k : ℕ)
     (B : LinearMap.BilinForm R M) (hB : Bijective B) :
     Bijective (exteriorPower.BilinForm k B) := by
