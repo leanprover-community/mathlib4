@@ -595,13 +595,16 @@ def postprocessCtx : MetaM Simp.Context := do
   for thm in algebraMapThms do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
     thms ← thms.add (.stx (← mkFreshId) Syntax.missing) levelParams proof
+  -- clear the `* 1` tags that the parser marks as atoms
+  thms ← [``mul_one, ``one_mul].foldlM (·.addConst ·) thms
   Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
 
 /-- Postprocessing for the scalar goals constructed in the `match_scalars` and `module` tactics.
 These goals feature a proliferation of `algebraMap` operations (because the scalars start in `ℕ` and
 get successively bumped up by `algebraMap`s as new semirings are encountered), so we reinterpret the
 most commonly occurring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into their standard forms
-(`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas. -/
+(`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas.
+The `* 1` tags which the parser marks atoms are also cleared. -/
 def postprocess (mvarId : MVarId) : MetaM MVarId := do
   -- run `simp` with these lemmas, and (importantly) *no* simprocs
   let (some r, _) ← simpTarget mvarId (← postprocessCtx) (simprocs := #[]) |
@@ -673,19 +676,19 @@ Examples:
 example [AddCommMonoid M] [Semiring R] [Module R M] (a b : R) (x : M) :
     a • x + b • x = (b + a) • x := by
   match_scalars
-  -- one goal: `⊢ a * 1 + b * 1 = (b + a) * 1`
+  -- one goal: `⊢ a + b = b + a`
 
 example [AddCommGroup M] [Ring R] [Module R M] (a b : R) (x : M) :
     a • (a • x - b • y) + (b • a • y + b • b • x) = x := by
   match_scalars
   -- two goals:
-  -- `⊢ a * (a * 1) + b * (b * 1) = 1` (from the `x` atom)
-  -- `⊢ a * -(b * 1) + b * (a * 1) = 0` (from the `y` atom)
+  -- `⊢ a * a + b * b = 1` (from the `x` atom)
+  -- `⊢ a * -b + b * a = 0` (from the `y` atom)
 
 example [AddCommGroup M] [Ring R] [Module R M] (a : R) (x : M) :
     -(2:R) • a • x = a • (-2:ℤ) • x := by
   match_scalars
-  -- one goal: `⊢ -2 * (a * 1) = a * (-2 * 1)`
+  -- one goal: `⊢ -2 * a = a * -2`
 ```
 -/
 elab "match_scalars" : tactic => Tactic.liftMetaTactic matchScalars
