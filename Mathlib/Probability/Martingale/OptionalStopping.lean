@@ -47,8 +47,9 @@ theorem Submartingale.expected_stoppedValue_mono {E : Type*} [NormedAddCommGroup
     {N : ℕ} (hbdd : ∀ ω, π ω ≤ N) : μ[stoppedValue f τ] ≤ μ[stoppedValue f π] := by
   rw [← sub_nonneg, ← integral_sub', stoppedValue_sub_eq_sum' hle hbdd]
   · simp only [Finset.sum_apply]
-    have : ∀ i, MeasurableSet[𝒢 i] {ω : Ω | τ ω ≤ i ∧ i < π ω} := fun i ↦
-      (hτ i).inter ((hπ i).compl.congr <| Set.ext fun x ↦ not_le (a := π x) (b := i))
+    have this i : MeasurableSet[𝒢 i] {ω : Ω | τ ω ≤ i ∧ i < π ω} := by
+      simp_rw [Set.ofPred_and, ← not_le, ← Set.compl_ofPred]
+      exact (hτ i).inter (hπ i).compl
     rw [integral_finsetSum]
     · refine Finset.sum_nonneg fun i _ => ?_
       rw [integral_indicator (𝒢.le _ _ (this _)), integral_sub', sub_nonneg]
@@ -185,7 +186,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       · exact smul_le_stoppedValue_hittingBtwn hsub n
       · exact (hsub.integrable n).integrableOn
       · refine Integrable.integrableOn ?_
-        refine hsub.integrable_stoppedValue ?_ (fun ω ↦ WithTop.coe_le_coe.mpr (hittingBtwn_le ω))
+        refine hsub.integrable_stoppedValue ?_ (mod_cast hittingBtwn_le)
         exact hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici
       · exact nullMeasurableSet_lt (measurable_range_sup'' fun n _ ↦
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)).aemeasurable aemeasurable_const
@@ -211,10 +212,10 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)) measurable_const
       · exact Integrable.integrableOn (hsub.integrable_stoppedValue
           (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
-          (fun ω ↦ WithTop.coe_le_coe.mpr (hittingBtwn_le ω)))
+          (mod_cast hittingBtwn_le))
       · exact Integrable.integrableOn (hsub.integrable_stoppedValue
           (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
-          (fun ω ↦ WithTop.coe_le_coe.mpr (hittingBtwn_le ω)))
+          (mod_cast hittingBtwn_le))
       exacts [integral_nonneg fun x => hnonneg _ _, integral_nonneg fun x => hnonneg _ _]
     _ ≤ ENNReal.ofReal (μ[f n]) := by
       refine ENNReal.ofReal_le_ofReal ?_
@@ -222,7 +223,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       refine hsub.expected_stoppedValue_mono
         (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
         (isStoppingTime_const _ _) (fun ω ↦ ?_) (fun _ ↦ le_rfl)
-      exact WithTop.coe_le_coe.mpr (hittingBtwn_le ω)
+      simp [hittingBtwn_le]
 
 end Maximal
 

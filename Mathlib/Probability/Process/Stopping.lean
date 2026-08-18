@@ -1309,10 +1309,9 @@ theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (
   specialize hbdd ω
   lift τ ω to ℕ using hτ_top ω with t ht
   lift π ω to ℕ using hπ_top ω with b hb
-  simp only [Nat.cast_withTop, WithTop.coe_le_coe] at hbdd
-  simp only [untopD_coe, Finset.mem_filter, Finset.mem_range, Nat.cast_withTop, WithTop.coe_le_coe,
-    WithTop.coe_lt_coe]
-  exact ⟨fun h ↦ ⟨Nat.lt_succ_of_lt (h.2.trans_le hbdd), h⟩, fun h ↦ h.2⟩
+  simp at hbdd
+  simp [← ENat.some_eq_natCast]
+  grind
 
 section AddCommMonoid
 
@@ -1346,9 +1345,8 @@ theorem stoppedProcess_eq' (n : ℕ) : stoppedProcess u τ n = Set.indicator {a 
         cases τ ω with
         | top => simp
         | coe t =>
-          simp only [Nat.cast_withTop, ← WithTop.coe_one, ← WithTop.coe_add, WithTop.coe_le_coe,
-            WithTop.coe_lt_coe]
-          exact Nat.add_one_le_iff
+          simp
+          norm_cast
       rw [this, Set.ofPred_or]
     · rintro ⟨h₁, h₂⟩
       rw [Set.mem_ofPred] at h₁ h₂
