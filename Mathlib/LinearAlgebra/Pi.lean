@@ -39,8 +39,8 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
 
 universe u v w x y z u' v' w' x' y'
 
-variable {R : Type u} {K : Type u'} {M : Type v} {V : Type v'} {M₂ : Type w} {V₂ : Type w'}
-variable {M₃ : Type y} {V₃ : Type y'} {M₄ : Type z} {ι : Type x} {ι' : Type x'}
+variable {R : Type u} {M : Type v} {M₂ : Type w}
+variable {M₃ : Type y} {ι : Type x} {ι' : Type x'}
 
 open Function Submodule
 
@@ -461,7 +461,6 @@ variable [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
 variable [(i : ι) → AddCommMonoid (ψ i)] [(i : ι) → Module R (ψ i)]
 variable [(i : ι) → AddCommMonoid (χ i)] [(i : ι) → Module R (χ i)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Combine a family of linear equivalences into a linear equivalence of `pi`-types.
 
 This is `Equiv.piCongrRight` as a `LinearEquiv` -/

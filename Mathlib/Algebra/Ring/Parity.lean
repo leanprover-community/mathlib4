@@ -33,8 +33,6 @@ to `Mathlib/Algebra/Group/Even.lean`.
 
 assert_not_exists DenselyOrdered IsOrderedRing
 
-open MulOpposite
-
 variable {F α β : Type*}
 
 section Monoid
@@ -73,7 +71,7 @@ variable [Add α] [Mul α] {a : α}
 end Distrib
 
 section Semiring
-variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
+variable [Semiring α] [Semiring β] {a b : α} {n : ℕ}
 
 lemma even_iff_exists_two_mul : Even a ↔ ∃ b, a = 2 * b := by simp [even_iff_exists_two_nsmul]
 
@@ -195,7 +193,7 @@ lemma Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
 end Monoid
 
 section Ring
-variable [Ring α] {a b : α} {n : ℕ}
+variable [Ring α] {a b : α}
 
 lemma even_neg_two : Even (-2 : α) := by simp only [even_neg, even_two]
 
@@ -341,6 +339,11 @@ lemma two_dvd_mul_add_one (k : ℕ) : 2 ∣ k * (k + 1) :=
 lemma two_dvd_mul_sub_one (k : ℕ) : 2 ∣ k * (k - 1) := by
   rcases k with rfl | k; · simp
   simpa [mul_comm (k + 1)] using k.two_dvd_mul_add_one
+
+lemma eight_dvd_sq_sub_one_of_odd {k : ℕ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
+  obtain ⟨m, rfl⟩ := hk
+  obtain ⟨c, hc⟩ := two_dvd_mul_add_one m
+  exact ⟨c, by grind⟩
 
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
