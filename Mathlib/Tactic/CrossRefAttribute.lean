@@ -18,7 +18,7 @@ to entries in external mathematical databases:
 * `@[kerodon TAG]` — [Kerodon](https://kerodon.net/tag/)
 * `@[wikidata QID]` — [Wikidata](https://www.wikidata.org)
 * `@[lmfdb ID]` — [LMFDB](https://www.lmfdb.org)
-* `@[dlmf REF_NO]` — [DLMF](https://dlmf.nist.gov/)
+* `@[dlmf REF]` — [DLMF](https://dlmf.nist.gov/)
 
 Each attribute records the cross-reference in an environment extension and appends
 a link to the declaration's docstring.
@@ -214,14 +214,14 @@ def lmfdbIdParser : Parser :=
 
 /-! ### DLMF parser -/
 
-/-- `dlmfId` is the node kind of DLMF identifiers:
+/-- `dlmfId` is the node kind of DLMF references:
 generally <chapter_no>.<section_no>.E<equation_no> (e.g. `5.4.E1`).
 See https://dlmf.nist.gov/help/cite for more details on the permalink format.
 Note that while underscores are not mentioned in the DLMF permalink table, they are
 supported and present in some actual links for equations. -/
 abbrev dlmfIdKind : SyntaxNodeKind := `dlmfId
 
-/-- The main parser for DLMF identifiers:
+/-- The main parser for DLMF references:
 generally <chapter_no>.<section_no>.E<equation_no> (e.g. `5.4.E1`).
 See https://dlmf.nist.gov/help/cite for more details on the permalink format.
 Note that while underscores are not mentioned in the DLMF permalink table, they are
@@ -238,7 +238,7 @@ def dlmfIdFn : ParserFn := fun c s =>
       (fun c => c ∈ ['i', 'v', 'x', 'l', 'c', 'd', 'm'] || c ∈ ['E', 'F', 'T']
         || c.isDigit || c == '.' || c == '_') then
       ParserState.mkUnexpectedError s
-        "DLMF ids must consist only of roman numerals, the letters E/T/F, digits, \
+        "DLMF references must consist only of roman numerals, the letters E/T/F, digits, \
          periods, and underscores."
     else
       mkNodeToken dlmfIdKind i true c s
