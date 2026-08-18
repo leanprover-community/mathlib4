@@ -23,8 +23,6 @@ an exterior power by a bilinear form.
 * `exteriorPower.bilinForm_nondegenerate`: nondegeneracy is preserved over a field.
 -/
 
-@[expose] public section
-
 noncomputable section
 
 open Function
@@ -40,7 +38,7 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (k : ℕ)
 -- In `BilinFormAux` we use these identities when one of the two families is updated,
 -- so that the determinant update lemmas apply.
 /-- Updating `w` at `l` replaces column `l` by `fun i ↦ B (v i) z`. -/
-private lemma matrixOf_updateCol {ι : Type*} [DecidableEq ι] (v w : ι → M) (z : M) (l : ι) :
+lemma matrixOf_updateCol {ι : Type*} [DecidableEq ι] (v w : ι → M) (z : M) (l : ι) :
     (Matrix.of fun i j ↦ B (v i) (Function.update w l z j)) =
       (Matrix.of fun i j ↦ B (v i) (w j)).updateCol l (fun i ↦ B (v i) z) := by
   ext i j
@@ -48,7 +46,7 @@ private lemma matrixOf_updateCol {ι : Type*} [DecidableEq ι] (v w : ι → M) 
   aesop
 
 /-- Updating `v` at `l` replaces row `l` by `fun j ↦ B z (w j)`. -/
-private lemma matrixOf_updateRow {ι : Type*} [DecidableEq ι] (v w : ι → M) (z : M) (l : ι) :
+lemma matrixOf_updateRow {ι : Type*} [DecidableEq ι] (v w : ι → M) (z : M) (l : ι) :
     (Matrix.of fun i j ↦ B (Function.update v l z i) (w j)) =
       (Matrix.of fun i j ↦ B (v i) (w j)).updateRow l (fun j ↦ B z (w j)) := by
   ext i j
@@ -56,17 +54,16 @@ private lemma matrixOf_updateRow {ι : Type*} [DecidableEq ι] (v w : ι → M) 
   aesop
 
 /-- The matrix whose `(i, j)` entry is `B (v i) (w j)`. -/
-private def pairingMatrix (v w : Fin k → M) : Matrix (Fin k) (Fin k) R :=
+def pairingMatrix (v w : Fin k → M) : Matrix (Fin k) (Fin k) R :=
   Matrix.of fun i j ↦ B (v i) (w j)
 
-set_option backward.privateInPublic true in
 /-- The nested alternating map `(v, w) ↦ det (fun i j ↦ B (v i) (w j))` used to define `BilinForm`.
 
 TODO: Remove the explicit `DecidableEq` argument from `MultilinearMap`; then the
 `Subsingleton.elim` cases below should disappear. The current API requires them because
 the alternating-map laws carry an implicit decidability instance.
 -/
-private def BilinFormAux :
+def BilinFormAux :
     M [⋀^Fin k]→ₗ[R] M [⋀^Fin k]→ₗ[R] R where
   toFun v :=
     { toFun := fun w ↦ (pairingMatrix k B v w).det
@@ -101,14 +98,12 @@ private def BilinFormAux :
       by simp [pairingMatrix, hl]
 
 -- `BilinFormAux` is an implementation detail and is intentionally hidden from the public API.
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- A bilinear form on `M` induces a bilinear form on each exterior power.
 
 TODO: `exteriorPower.alternatingMapLinearEquiv` should be renamed to
 `exteriorPower.liftAlternatingEquiv` for consistency with `ExteriorAlgebra.liftAlternatingEquiv`
 (and to fit our naming scheme better). -/
-protected def BilinForm : LinearMap.BilinForm R (⋀[R]^k M) :=
+public protected def BilinForm : LinearMap.BilinForm R (⋀[R]^k M) :=
   exteriorPower.alternatingMapLinearEquiv (R := R) (M := M) (N := R) (n := k) ∘ₗ
     exteriorPower.alternatingMapLinearEquiv (BilinFormAux k B)
 
@@ -116,7 +111,7 @@ protected def BilinForm : LinearMap.BilinForm R (⋀[R]^k M) :=
 injective.
 
 This auxiliary lemma is used in `bilinForm_nondegenerate`. -/
-private lemma pairingDual_injective_of_basis {I : Type*} [Finite I] [LinearOrder I]
+lemma pairingDual_injective_of_basis {I : Type*} [Finite I] [LinearOrder I]
     (b : Basis I R M) (k : ℕ) :
     Function.Injective (pairingDual R M k) := by
   let e := b.dualBasis.exteriorPower k
@@ -133,10 +128,8 @@ private lemma pairingDual_injective_of_basis {I : Type*} [Finite I] [LinearOrder
   rw [hpairingDual_eq_constr]
   exact e.injective_constr_of_linearIndependent d.linearIndependent
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- On wedges of `k` vectors, `BilinForm` is the determinant of the matrix of pairings. -/
-@[simp] lemma bilinForm_ιMulti_ιMulti {k : ℕ} (C : LinearMap.BilinForm R M)
+@[simp] public lemma bilinForm_ιMulti_ιMulti {k : ℕ} (C : LinearMap.BilinForm R M)
     (v w : Fin k → M) :
     exteriorPower.BilinForm k C (ιMulti R k v) (ιMulti R k w) =
       (Matrix.of fun i j ↦ C (v i) (w j)).det := by
@@ -155,7 +148,7 @@ set_option backward.privateInPublic.warn false in
 /-- `BilinForm` is the composition of `exteriorPower.map` with `pairingDual`.
 
 This auxiliary lemma is used in `bilinForm_nondegenerate`. -/
-private lemma bilinForm_eq_pairingDual_comp_map {k : ℕ} (C : LinearMap.BilinForm R M) :
+lemma bilinForm_eq_pairingDual_comp_map {k : ℕ} (C : LinearMap.BilinForm R M) :
     exteriorPower.BilinForm k C =
       (pairingDual R M k).comp (exteriorPower.map k C) := by
   -- It suffices to check the equality on wedges of `k` vectors.
@@ -171,7 +164,7 @@ private lemma bilinForm_eq_pairingDual_comp_map {k : ℕ} (C : LinearMap.BilinFo
 /-- Swapping the arguments of `BilinForm` gives the form induced by `C.flip`.
 
 This auxiliary lemma is used in `bilinForm_nondegenerate`. -/
-private lemma bilinForm_flip {k : ℕ} (C : LinearMap.BilinForm R M) :
+lemma bilinForm_flip {k : ℕ} (C : LinearMap.BilinForm R M) :
     (exteriorPower.BilinForm k C).flip = exteriorPower.BilinForm k C.flip := by
   -- It suffices to check the equality on wedges of `k` vectors.
   apply exteriorPower.linearMap_ext
@@ -186,13 +179,11 @@ section
 
 variable {R M : Type*} [Field R] [AddCommGroup M] [Module R M]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The determinant-induced form on every exterior power is nondegenerate over a field when `B` is.
 
 The assumptions `[Module.Free R M] [Module.Finite R M]` provide the finite basis used below. The
 field assumption is used to lift injectivity of `B` and `B.flip` to their exterior powers. -/
-lemma bilinForm_nondegenerate (k : ℕ) (B : LinearMap.BilinForm R M)
+public lemma bilinForm_nondegenerate (k : ℕ) (B : LinearMap.BilinForm R M)
     [Module.Free R M] [Module.Finite R M]
     (hB : B.Nondegenerate) :
     (exteriorPower.BilinForm k B).Nondegenerate := by
