@@ -314,7 +314,9 @@ def powSubPowFactor (x y : R) (n : ℕ) : { z : R // x ^ n - y ^ n = z * (x - y)
 lemma sub_dvd_pow_sub_pow (x y : R) (n : ℕ) : x - y ∣ x ^ n - y ^ n :=
   (Commute.all x y).sub_dvd_pow_sub_pow n
 
-/-- `(x + y)^n` can be expressed as `x^n + n*x^(n-1)*y + k * y^2` for some `k` in the ring. -/
+/-- Modulo `y ^ 2`, the power `(x + y) ^ n` agrees with its linearisation
+`x ^ n + n * x ^ (n - 1) * y`; equivalently `y ^ 2` divides the second-order Taylor remainder
+`(x + y) ^ n - x ^ n - n * x ^ (n - 1) * y`. -/
 lemma sq_dvd_add_pow_sub_pow_sub (x y : R) :
     ∀ n : ℕ, y ^ 2 ∣ (x + y) ^ n - x ^ n - n * x ^ (n - 1) * y
   | 0 => ⟨0, by simp⟩

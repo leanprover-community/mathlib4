@@ -60,8 +60,15 @@ The proof of von Staudt-Clausen's theorem follows Rado's JLMS 1934 paper
 
 * `sum_bernoulli : ∑ k ∈ range n, (n.choose k : ℚ) * bernoulli k =
   if n = 1 then 1 else 0`
-* `Bernoulli.vonStaudt_clausen : bernoulli (2 * k) + ∑ p ∈ range (2 * k + 2)
-  with p.Prime ∧ (p - 1) ∣ 2 * k, (1 : ℚ) / p ∈ Set.range Int.cast`
+* `Bernoulli.vonStaudt_clausen`: for even `k`, `B_k + ∑_{p - 1 ∣ k} 1/p` is an integer.
+* `Bernoulli.dvd_den_bernoulli_iff`: for even `k > 0`, `p ∣ (bernoulli k).den ↔ p - 1 ∣ k`.
+* `Bernoulli.squarefree_den_bernoulli`: the denominator of `bernoulli k` is squarefree.
+* `Bernoulli.faulhaber_mod_sq`: for even `k ≥ 2` with `(p - 1) ∤ k`,
+  `∑_{a < p} aᵏ ≡ p · B_k (mod p²)`.
+* `Bernoulli.voronoi_congr`: Voronoi's congruence
+  `(cᵏ - 1) · B_k ≡ k · c^{k-1} · ∑_{j} ⌊cj/p⌋ · jᵏ⁻¹ (mod p)`.
+* `Bernoulli.kummer_congr`: Kummer's congruence `n · B_m ≡ m · B_n (mod p)`
+  for `m ≡ n (mod p - 1)`.
 
 ## References
 
@@ -669,8 +676,8 @@ lemma not_dvd_den_bernoulli_add_ite {p k : ℕ} (hp : p.Prime)
   rw [← pIntegral_iff_not_dvd_den]
   exact pIntegral_bernoulli_add_indicator hk₀.bot_lt hk
 
-/-- For even `m > 0`, a prime `p` divides the denominator of `bernoulli m` exactly when
-`(p - 1) ∣ m`. See `sub_one_dvd_of_dvd_den_bernoulli` -/
+/-- For even `k > 0`, a prime `p` divides the denominator of `bernoulli k` exactly when
+`(p - 1) ∣ k`. See `sub_one_dvd_of_dvd_den_bernoulli`. -/
 theorem dvd_den_bernoulli_iff {p k : ℕ} (hp : p.Prime) (hm : Even k) (hm0 : k ≠ 0) :
     p ∣ (bernoulli k).den ↔ p - 1 ∣ k := by
   have : Fact p.Prime := ⟨hp⟩
@@ -751,8 +758,8 @@ private lemma not_dvd_den_vonStaudt_sum {k p : ℕ} (hk : Even k) [Fact p.Prime]
   rw [pIntegral_iff_not_dvd_den, ← Nat.Prime.coprime_iff_not_dvd Fact.out]
   exact (prod_one_div_prime_den_coprime _).symm.of_dvd_right (Rat.den_sum_dvd_prod_den _ _)
 
-/-- **von Staudt-Clausen theorem:** For any natural number $k$, the sum
-$$B_{2k} + \sum_{p - 1 \mid 2k} \frac{1}{p}$$ is an integer.
+/-- **von Staudt-Clausen theorem:** For any even natural number $k$, the sum
+$$B_k + \sum_{p - 1 \mid k} \frac{1}{p}$$ is an integer.
 -/
 theorem vonStaudt_clausen {k : ℕ} (hk : Even k) :
     bernoulli k + ∑ p ∈ range (k + 2) with p.Prime ∧ p - 1 ∣ k, (1 / p : ℚ) ∈
