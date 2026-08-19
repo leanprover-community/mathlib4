@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Dynamics.BirkhoffSum.Basic
 public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Birkhoff average
@@ -45,18 +46,20 @@ However, the definition does not depend on the choice of `R`,
 see `birkhoffAverage_congr_ring`. -/
 def birkhoffAverage (f : α → α) (g : α → M) (n : ℕ) (x : α) : M := (n : R)⁻¹ • birkhoffSum f g n x
 
-theorem birkhoffAverage_zero (f : α → α) (g : α → M) (x : α) :
+theorem birkhoffAverage_apply_zero (f : α → α) (g : α → M) (x : α) :
     birkhoffAverage R f g 0 x = 0 := by simp [birkhoffAverage]
 
-@[simp] theorem birkhoffAverage_zero' (f : α → α) (g : α → M) : birkhoffAverage R f g 0 = 0 :=
-  funext <| birkhoffAverage_zero _ _ _
+@[simp]
+theorem birkhoffAverage_zero (f : α → α) (g : α → M) : birkhoffAverage R f g 0 = 0 :=
+  funext <| birkhoffAverage_apply_zero _ _ _
 
-theorem birkhoffAverage_one (f : α → α) (g : α → M) (x : α) :
-    birkhoffAverage R f g 1 x = g x := by simp [birkhoffAverage]
+theorem birkhoffAverage_apply_one (f : α → α) (g : α → M) (x : α) :
+    birkhoffAverage R f g 1 x = g x := by
+  simp [birkhoffAverage]
 
 @[simp]
-theorem birkhoffAverage_one' (f : α → α) (g : α → M) : birkhoffAverage R f g 1 = g :=
-  funext <| birkhoffAverage_one R f g
+theorem birkhoffAverage_one (f : α → α) (g : α → M) : birkhoffAverage R f g 1 = g :=
+  funext <| birkhoffAverage_apply_one R f g
 
 theorem map_birkhoffAverage (S : Type*) {F N : Type*}
     [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
@@ -64,31 +67,51 @@ theorem map_birkhoffAverage (S : Type*) {F N : Type*}
     g' (birkhoffAverage R f g n x) = birkhoffAverage S f (g' ∘ g) n x := by
   simp only [birkhoffAverage, map_inv_natCast_smul g' R S, map_birkhoffSum]
 
-theorem birkhoffAverage_congr_ring (S : Type*) [DivisionSemiring S] [Module S M]
+theorem map_comp_birkhoffAverage (S : Type*) {F N : Type*}
+    [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
+    [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) :
+    ⇑g' ∘ birkhoffAverage R f g n = birkhoffAverage S f (g' ∘ g) n :=
+  funext <| map_birkhoffAverage R S g' f g n
+
+theorem birkhoffAverage_apply_congr_ring (S : Type*) [DivisionSemiring S] [Module S M]
     (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     birkhoffAverage R f g n x = birkhoffAverage S f g n x :=
   map_birkhoffAverage R S (AddMonoidHom.id M) f g n x
 
-theorem birkhoffAverage_congr_ring' (S : Type*) [DivisionSemiring S] [Module S M] :
+theorem birkhoffAverage_congr_ring (S : Type*) [DivisionSemiring S] [Module S M] :
     birkhoffAverage (α := α) (M := M) R = birkhoffAverage S := by
-  ext; apply birkhoffAverage_congr_ring
+  ext; apply birkhoffAverage_apply_congr_ring
 
 theorem Function.IsFixedPt.birkhoffAverage_eq {f : α → α} {x : α} (h : IsFixedPt f x)
     (g : α → M) {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n x = g x := by
   rw [birkhoffAverage, h.birkhoffSum_eq, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀ hn]
 
-lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
-    birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' := by
-  funext _ x
+lemma birkhoffAverage_apply_add {f : α → α} {g g' : α → M} (n : ℕ) (x : α) :
+    birkhoffAverage R f (g + g') n x = birkhoffAverage R f g n x + birkhoffAverage R f g' n x := by
   simp [birkhoffAverage, birkhoffSum, sum_add_distrib, smul_add]
+
+lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
+    birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' :=
+  funext₂ <| birkhoffAverage_apply_add R
+
+/-- If a function `g` is invariant under a function `f` (i.e., `g ∘ f = g`), then the Birkhoff
+average of `g` over `f` for `n` iterations is equal to `g x` at every point `x`.
+Requires that `0 < n`. -/
+theorem birkhoffAverage_apply_of_comp_eq {f : α → α} {g : α → M} (h : g ∘ f = g)
+    {n : ℕ} (hn : (n : R) ≠ 0) (x : α) : birkhoffAverage R f g n x = g x := by
+  suffices (n : R)⁻¹ • n • g x = g x by simpa [birkhoffAverage, birkhoffSum_of_comp_eq h]
+  rw [← Nat.cast_smul_eq_nsmul (R := R), ← mul_smul, inv_mul_cancel₀ hn, one_smul]
 
 /-- If a function `g` is invariant under a function `f` (i.e., `g ∘ f = g`), then the Birkhoff
 average of `g` over `f` for `n` iterations is equal to `g`. Requires that `0 < n`. -/
 theorem birkhoffAverage_of_comp_eq {f : α → α} {g : α → M} (h : g ∘ f = g)
-    {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n = g := by
-  funext x
-  suffices (n : R)⁻¹ • n • g x = g x by simpa [birkhoffAverage, birkhoffSum_of_comp_eq h]
-  rw [← Nat.cast_smul_eq_nsmul (R := R), ← mul_smul, inv_mul_cancel₀ hn, one_smul]
+    {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n = g :=
+  funext <| birkhoffAverage_apply_of_comp_eq R h hn
+
+@[simp]
+theorem birkhoffAverage_const (f : α → α) (a : M) {n : ℕ} (hn : (n : R) ≠ 0 := by positivity) :
+    birkhoffAverage R f (fun _ ↦ a) n = fun _ ↦ a :=
+  birkhoffAverage_of_comp_eq _ rfl (mod_cast hn)
 
 end birkhoffAverage
 
@@ -96,15 +119,21 @@ section AddCommGroup
 
 variable {R : Type*} {α M : Type*} [DivisionSemiring R] [AddCommGroup M] [Module R M]
 
-lemma birkhoffAverage_neg {f : α → α} {g : α → M} :
-    birkhoffAverage R f (-g) = -birkhoffAverage R f g := by
-  funext _ x
+lemma birkhoffAverage_apply_neg {f : α → α} {g : α → M} (n : ℕ) (x : α) :
+    birkhoffAverage R f (-g) n x = -birkhoffAverage R f g n x := by
   simp [birkhoffAverage, birkhoffSum]
 
-lemma birkhoffAverage_sub {f : α → α} {g g' : α → M} :
-    birkhoffAverage R f (g - g') = birkhoffAverage R f g - birkhoffAverage R f g' := by
-  funext _ x
+lemma birkhoffAverage_neg {f : α → α} {g : α → M} :
+    birkhoffAverage R f (-g) = -birkhoffAverage R f g :=
+  funext₂ <| birkhoffAverage_apply_neg
+
+lemma birkhoffAverage_apply_sub {f : α → α} {g g' : α → M} (n : ℕ) (x : α) :
+    birkhoffAverage R f (g - g') n x = birkhoffAverage R f g n x - birkhoffAverage R f g' n x := by
   simp [birkhoffAverage, birkhoffSum, smul_sub]
+
+lemma birkhoffAverage_sub {f : α → α} {g g' : α → M} :
+    birkhoffAverage R f (g - g') = birkhoffAverage R f g - birkhoffAverage R f g' :=
+  funext₂ <| birkhoffAverage_apply_sub
 
 /-- Birkhoff average is "almost invariant" under `f`:
 the difference between `birkhoffAverage R f g n (f x)` and `birkhoffAverage R f g n x`
@@ -113,5 +142,12 @@ theorem birkhoffAverage_apply_sub_birkhoffAverage (f : α → α) (g : α → M)
     birkhoffAverage R f g n (f x) - birkhoffAverage R f g n x =
       (n : R)⁻¹ • (g (f^[n] x) - g x) := by
   simp only [birkhoffAverage, birkhoffSum_apply_sub_birkhoffSum, ← smul_sub]
+
+/-- Birkhoff average is "almost invariant" under `f`:
+the difference between `birkhoffAverage R f g n ∘ f` and `birkhoffAverage R f g n`
+is equal to `(n : R)⁻¹ • (g ∘ f^[n] - g)`. -/
+theorem birkhoffAverage_comp_sub_birkhoffAverage (f : α → α) (g : α → M) (n : ℕ) :
+    birkhoffAverage R f g n ∘ f - birkhoffAverage R f g n = (n : R)⁻¹ • (g ∘ f^[n] - g) :=
+  funext <| birkhoffAverage_apply_sub_birkhoffAverage f g n
 
 end AddCommGroup
