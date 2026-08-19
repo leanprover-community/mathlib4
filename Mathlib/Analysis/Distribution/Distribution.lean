@@ -39,7 +39,7 @@ The theory will be expanded in future PRs.
   pointwise.
 * `Distribution.smulLeftCLM`: multiplication by a `C^n` function as a continuous linear map on
   `𝓓'^{n}(Ω, F)`. On locally integrable functions, this corresponds to pointwise multiplication.
-* `Distribution.ofFun Ω n f μ`: the distribution induced by a function `f : E → F`,
+* `Distribution.ofFun Ω f μ n`: the distribution induced by a function `f : E → F`,
   sending a test function `φ` to `∫ x, φ x • f x ∂μ`. This is the zero map if
   `f` is not locally integrable on `Ω`.
 
