@@ -79,6 +79,10 @@ the namespace `Real` in the above statements.
 
 We also give specialized versions of the one-dimensional real derivative (and iterated derivative)
 in `Real.deriv_fourierIntegral` and `Real.iteratedDeriv_fourierIntegral`.
+
+Finally, `Real.one_add_pow_mul_norm_fourier_le` records the decay of the Fourier transform of a
+function on the real line whose first `n` derivatives are integrable: `𝓕 f u` decays like
+`|u| ^ (-n)`, with an explicit bound which is also nontrivial at `u = 0`.
 -/
 
 @[expose] public section
@@ -827,5 +831,38 @@ theorem fourier_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf : ContD
   simp_rw [iteratedDeriv, ← fourier_continuousMultilinearMap_apply (A n hn),
     fourier_iteratedFDeriv hf A hn]
   simp [← coe_smul, smul_smul, ← mul_pow, innerSL_apply_apply ℝ]
+
+theorem norm_fourier_le_integral_norm (f : V → E) (w : V) :
+    ‖𝓕 f w‖ ≤ ∫ v, ‖f v‖ :=
+  VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ (innerₗ V) f w
+
+/-- If `f` and its first `n` derivatives are integrable, then the Fourier transform of `f` decays
+like `|u| ^ (-n)`, with an explicit bound that is also nontrivial at `u = 0`. -/
+theorem one_add_pow_mul_norm_fourier_le {f : ℝ → E} {n : ℕ} (hf : ContDiff ℝ n f)
+    (h'f : ∀ k ≤ n, Integrable (iteratedDeriv k f)) (u : ℝ) :
+    (1 + |u| ^ n) * ‖𝓕 f u‖ ≤
+      (∫ v, ‖f v‖) + ((2 * π) ^ n)⁻¹ * ∫ v, ‖iteratedDeriv n f v‖ := by
+  rw [add_mul, one_mul]
+  apply add_le_add (norm_fourier_le_integral_norm f u)
+  rw [inv_mul_eq_div, le_div_iff₀ (by positivity)]
+  calc
+    _ = (2 * π * |u|) ^ n * ‖𝓕 f u‖ := by rw [mul_pow]; ring
+    _ = ‖𝓕 (iteratedDeriv n f) u‖ := by
+      rw [congrFun (fourier_iteratedDeriv (N := (n : ℕ∞)) hf
+        (fun k hk ↦ h'f k (mod_cast hk)) le_rfl) u, norm_smul, norm_pow]
+      congr 2
+      simp [abs_of_nonneg pi_nonneg]
+    _ ≤ _ := norm_fourier_le_integral_norm _ u
+
+/-- The Fourier transform of a function whose first two derivatives are integrable decays
+quadratically. -/
+theorem one_add_sq_mul_norm_fourier_le {f : ℝ → E} (hf : ContDiff ℝ 2 f)
+    (h'f : ∀ k ≤ 2, Integrable (iteratedDeriv k f)) (u : ℝ) :
+    (1 + u ^ 2) * ‖𝓕 f u‖ ≤
+      (∫ v, ‖f v‖) + (4 * π ^ 2)⁻¹ * ∫ v, ‖iteratedDeriv 2 f v‖ := by
+  have := one_add_pow_mul_norm_fourier_le (n := 2) hf h'f u
+  rw [sq_abs] at this
+  convert this using 4
+  ring
 
 end Real
