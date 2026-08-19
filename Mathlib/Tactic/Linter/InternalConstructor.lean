@@ -6,6 +6,7 @@ Authors: Thomas R. Murrills
 module
 
 public meta import Lean.Linter.Basic
+public meta import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
@@ -45,30 +46,28 @@ register_option linter.internalConstructors : Bool := {
   -- Note: unlike style linters which are turned on in `Mathlib.Init`, we make this true
   -- everywhere so that downstream libraries do not accidentally use Mathlib internal constructors.
   defValue := true
-  descr := "allow internal constructors to be referenced downstream."
+  descr := "forbid internal constructors from being referenced during elaboration."
 }
 
-private partial def logInternalConstructors (t : InfoTree) (ctx? : Option ContextInfo := none) :
-    CommandElabM Unit :=
-  match t with
-  | .context ctx t =>
-    logInternalConstructors t <| ctx.mergeIntoOuter? ctx?
-  | .hole _ => return
-  | .node t ch => do
-    if let some ctx := ctx? then
-      match t with
-      | .ofTermInfo i =>
-        let .const n _ := i.expr.cleanupAnnotations | pure ()
-        if
-          ctx.env.isImportedConst n && !isPrivateName n &&
-          n.isInternal && ctx.env.isConstructor n
-        then
-          -- Use `withRef` to fall back to outer ref if `t.stx` has no position info
-          withRef t.stx do
-            logLintError linter.internalConstructors (← getRef)
-              m!"`{.ofConstName n}` is an internal constructor and should not be used directly."
-      | _ => pure ()
-    withRef t.stx do ch.forM (logInternalConstructors · ctx?)
+/-- Lints against using constructors with internal names during elaboration. -/
+def internalConstructor : Linter where
+  run := withSetOptionIn fun _ => do
+    unless Linter.getLinterValue linter.internalConstructors (← Linter.getLinterOptions) do
+      return
+    for t in ← getInfoTrees do
+      t.foldInfoM (init := ()) fun ctx info _ => do
+        match info with
+        | .ofTermInfo i =>
+          let .const n _ := i.expr.cleanupAnnotations | pure ()
+          if
+            ctx.env.isImportedConst n && !isPrivateName n &&
+            n.isInternal && ctx.env.isConstructor n
+          then
+            -- Use `withRef` to fall back to outer ref if `info.stx` has no position info
+            withRef info.stx do
+              logLintError linter.internalConstructors (← getRef)
+                m!"`{.ofConstName n}` is an internal constructor and should not be used directly."
+        | _ => pure ()
 where
   /-- We inline some of `logLint` so that we can log an error instead of a warning. -/
   logLintError (linterOption) (stx) (msg) := do
@@ -77,13 +76,5 @@ where
       .ofOriginatingSyntax stx  <|
       .tagged linterOption.name <|
       .tagged Linter.linterMessageTag m!"{msg}{disable}"
-
-/-- Lints against using constructors with internal names during elaboration. -/
-def internalConstructor : Linter where
-  run := withSetOptionIn fun _ => do
-    unless Linter.getLinterValue linter.internalConstructors (← Linter.getLinterOptions) do
-      return
-    for t in ← getInfoTrees do
-      logInternalConstructors t
 
 initialize addLinter internalConstructor
