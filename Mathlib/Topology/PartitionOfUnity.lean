@@ -268,6 +268,7 @@ theorem continuous_smul {g : X → E} {i : ι} (hg : ∀ x ∈ tsupport (f i), C
 /-- If `f` is a partition of unity on a set `s : Set X` and `g : ι → X → E` is a family of functions
 such that each `g i` is continuous at every point of the topological support of `f i`, then the sum
 `fun x ↦ ∑ᶠ i, f i x • g i x` is continuous on the whole space. -/
+@[fun_prop]
 theorem continuous_finsum_smul [ContinuousAdd E] {g : ι → X → E}
     (hg : ∀ (i), ∀ x ∈ tsupport (f i), ContinuousAt (g i) x) :
     Continuous fun x => ∑ᶠ i, f i x • g i x :=
