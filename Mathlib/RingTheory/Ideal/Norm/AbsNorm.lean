@@ -278,6 +278,22 @@ theorem finite_absNorm_heightOneSpectrum_le [IsDedekindDomain S] [Infinite S] (B
 
 end Ring.HasFiniteQuotients
 
+namespace Ring.HasFiniteQuotients
+
+variable [Ring.HasFiniteQuotients S]
+
+/-- A ring with finite quotients has only finitely many ideals of bounded norm. -/
+theorem finite_absNorm_le [IsDedekindDomain S] [Module.Free ℤ S] (B : ℕ) :
+    {I : Ideal S | I.absNorm ≤ B}.Finite :=
+  finite_cardQuot_le B
+
+/-- A ring with finite quotients has only finitely many nonzero prime ideals of bounded norm. -/
+theorem finite_absNorm_heightOneSpectrum_le [IsDedekindDomain S] [Module.Free ℤ S] (B : ℕ) :
+    {p : IsDedekindDomain.HeightOneSpectrum S | p.asIdeal.absNorm ≤ B}.Finite :=
+  finite_cardQuot_heightOneSpectrum_le B
+
+end Ring.HasFiniteQuotients
+
 namespace Ideal
 
 variable [IsDedekindDomain S]
