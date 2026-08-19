@@ -89,7 +89,7 @@ assert_not_exists ContDiffAt HasDerivAt
 @[expose] public section
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
-open Bornology ContinuousLinearMap Metric Topology
+open ContinuousLinearMap Metric Topology
 open scoped Pointwise NNReal Filter
 
 universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
@@ -98,7 +98,7 @@ variable {𝕜 : Type u𝕜} {G : Type uG} {E : Type uE} {E' : Type uE'} {E'' : 
   {F' : Type uF'} {F'' : Type uF''} {P : Type uP}
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup E'] [NormedAddCommGroup E'']
-  [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y y' : E}
+  [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y : E}
 
 namespace MeasureTheory
 section NontriviallyNormedField
@@ -827,7 +827,6 @@ variable [NormedSpace 𝕜 E]
 variable [NormedSpace 𝕜 E']
 variable [NormedSpace 𝕜 E'']
 variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
-variable {n : ℕ∞}
 variable [MeasurableSpace G] {μ ν : Measure G}
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 
