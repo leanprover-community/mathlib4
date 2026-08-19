@@ -86,8 +86,9 @@ theorem Multiseries.add_def {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {X Y : Multiseries basis_hd basis_tl} : X + Y = Multiseries.add X Y := rfl
 
 @[simp]
-theorem const_add_const (X Y : MultiseriesExpansion []) : X + Y = X.toReal + Y.toReal := by
-  simp [add_def, add, ofReal, toReal]
+theorem const_add_const (X Y : MultiseriesExpansion []) :
+    X + Y = .ofReal (X.toReal + Y.toReal) := by
+  simp [add_def, add]
 
 @[simp]
 theorem add_seq {basis_hd basis_tl} {X Y : MultiseriesExpansion (basis_hd :: basis_tl)} :
@@ -137,7 +138,8 @@ set_option backward.isDefEq.respectTransparency false in
 private theorem zero_add' {basis : Basis} {ms : MultiseriesExpansion basis} :
     0 + ms = ms := by
   cases basis with
-  | nil => simp [toReal]
+  | nil =>
+    simp
   | cons =>
     simp [ext_iff, zero_def]
     rfl
@@ -171,7 +173,7 @@ set_option backward.isDefEq.respectTransparency false in
 private theorem add_zero' {basis : Basis} {ms : MultiseriesExpansion basis} :
     ms + 0 = ms := by
   cases basis with
-  | nil => simp [toReal]
+  | nil => simp
   | cons basis_hd basis_tl =>
     simp [ext_iff, zero_def]
     rfl
@@ -296,7 +298,7 @@ theorem add_mulConst {basis : Basis} {X Y : MultiseriesExpansion basis} {c : ℝ
     (X + Y).mulConst c = (X.mulConst c) + (Y.mulConst c) := by
   cases basis with
   | nil =>
-    simp [mulConst, add_def, add, ofReal, toReal]
+    simp [mulConst, add_def, add]
     ring_nf
   | cons basis_hd basis_tl =>
     rw [ext_iff]
@@ -342,8 +344,7 @@ private theorem add_comm' {basis : Basis} {X Y : MultiseriesExpansion basis} :
     X + Y = Y + X := by
   cases basis with
   | nil =>
-    simp
-    ring_nf
+    rw [const_add_const, const_add_const, add_comm]
   | cons basis_hd basis_tl =>
     rw [ext_iff]
     simp [Multiseries.add_comm' (basis_hd := basis_hd) (basis_tl := basis_tl)]
@@ -400,8 +401,7 @@ private theorem add_assoc' {basis : Basis} {X Y Z : MultiseriesExpansion basis} 
     X + (Y + Z) = (X + Y) + Z := by
   cases basis with
   | nil =>
-    simp [toReal]
-    ring_nf
+    simp only [const_add_const, ofReal_toReal, add_assoc]
   | cons basis_hd basis_tl =>
     rw [ext_iff]
     simp [Multiseries.add_assoc' (basis_hd := basis_hd) (basis_tl := basis_tl)]

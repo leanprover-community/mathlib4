@@ -5,7 +5,7 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 
 /-!

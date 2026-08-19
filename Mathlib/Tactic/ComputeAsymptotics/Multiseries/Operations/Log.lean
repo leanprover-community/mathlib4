@@ -22,7 +22,7 @@ namespace Mathlib.Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
-open LazySeries Stream' Seq
+open LazySeries Stream' Stream'.Seq
 
 /-- Series defining the logarithm function:
 ```
@@ -49,12 +49,10 @@ theorem logSeries_toFormalMultilinearSeries_eq :
 theorem logSeries_convergent : logSeries.Convergent := by
   apply convergent_of_HasFPowerSeriesAt
   convert! hasFPowerSeriesAt_log_one_add
-  rw [logSeries_toFormalMultilinearSeries_eq]
 
 theorem logSeries_toFun : logSeries.toFun =ᶠ[𝓝 0] (fun t ↦ Real.log (1 + t)) := by
   apply toFun_of_HasFPowerSeriesAt
   convert! hasFPowerSeriesAt_log_one_add
-  rw [logSeries_toFormalMultilinearSeries_eq]
 
 mutual
 
@@ -231,7 +229,7 @@ theorem log_approximates {basis : Basis}
     have h_tendsto_zero : Tendsto (coef.toReal⁻¹ • (f - fun x ↦ coef.toReal)) atTop (𝓝 0) := by
       convert tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis h_sorted h_approx h_trimmed
       ext t
-      simp [inv, toReal, ofReal]
+      simp [inv]
       field
     set g := coef.toReal⁻¹ • (f - fun x ↦ coef.toReal)
     apply logSeries_toFun.comp_tendsto at h_tendsto_zero

@@ -21,7 +21,7 @@ namespace Mathlib.Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
-open LazySeries Stream' Seq
+open LazySeries Stream'
 open scoped Nat
 
 /-- Series defining the exponential function:
@@ -47,6 +47,7 @@ theorem expSeries_toFormalMultilinearSeries_eq :
   simp only [toFormalMultilinearSeries]
   unfold NormedSpace.expSeries FormalMultilinearSeries.ofScalars
   simp [coeff, expSeries_get]
+  rfl
 
 theorem expSeries_convergent : expSeries.Convergent := by
   apply convergent_of_HasFPowerSeriesAt (f := Real.exp)
@@ -99,9 +100,7 @@ theorem exp_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 theorem exp_toFun {basis : Basis} {ms : MultiseriesExpansion basis} :
     ms.exp.toFun = Real.exp ∘ ms.toFun := by
   ext t
-  cases basis with
-  | nil => simp [exp, toReal, ofReal]
-  | cons => simp [exp]
+  cases basis <;> simp [exp]
 
 mutual
 

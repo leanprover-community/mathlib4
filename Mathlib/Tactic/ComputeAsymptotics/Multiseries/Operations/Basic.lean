@@ -97,7 +97,7 @@ theorem Multiseries.const_mulConst {basis_hd : ℝ → ℝ} {basis_tl : Basis} {
 theorem const_mulConst {basis : Basis} {x y : ℝ} :
     (const basis x).mulConst y = const basis (y * x) := by
   cases basis with
-  | nil => simp [mulConst, const, ofReal, toReal]
+  | nil => simp [mulConst, const]
   | cons =>
     rw [ext_iff]
     simp only [mulConst_seq, const_seq, mulConst_toFun, const_toFun']
@@ -119,7 +119,7 @@ theorem Multiseries.mulConst_one {basis_hd basis_tl} {ms : Multiseries basis_hd 
 theorem mulConst_one {basis} {ms : MultiseriesExpansion basis} :
     ms.mulConst 1 = ms := by
   cases basis with
-  | nil => simp [mulConst, ofReal, toReal]
+  | nil => simp [mulConst]
   | cons =>
     simp only [ext_iff, mulConst_seq, mulConst_toFun, one_smul, and_true]
     rw [Multiseries.mulConst_one]
@@ -142,7 +142,7 @@ theorem mulConst_mulConst {basis : Basis} {ms : MultiseriesExpansion basis} {x y
     (ms.mulConst x).mulConst y = ms.mulConst (x * y) := by
   cases basis with
   | nil =>
-    simp [mulConst, ofReal, toReal]
+    simp [mulConst]
     ring_nf
   | cons =>
     simp only [ext_iff, mulConst_seq, mulConst_toFun]
@@ -230,7 +230,7 @@ theorem mulConst_not_zero {basis : Basis} {ms : MultiseriesExpansion basis} {c :
   contrapose! h_ne_zero
   cases basis with
   | nil =>
-    simp [mulConst, ofReal, toReal] at h_ne_zero ⊢
+    simp [mulConst] at h_ne_zero ⊢
     grind
   | cons =>
     cases ms
@@ -256,7 +256,7 @@ theorem mulConst_trimmed {basis : Basis} {ms : MultiseriesExpansion basis} {c : 
 theorem mulConst_realCoef {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ} :
     (ms.mulConst c).realCoef = c * ms.realCoef := by
   cases basis with
-  | nil => simp [mulConst, ofReal, toReal]
+  | nil => simp [mulConst]
   | cons basis_hd basis_tl =>
     cases ms with
     | nil => simp [mulConst, realCoef]
@@ -281,7 +281,7 @@ theorem Multiseries.mulConst_exps {basis_hd basis_tl} {ms : Multiseries basis_hd
 theorem mulConst_exps {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ} :
     (ms.mulConst c).exps = ms.exps := by
   cases basis with
-  | nil => simp [mulConst, ofReal, toReal]
+  | nil => simp [mulConst]
   | cons basis_hd basis_tl =>
     simp only [exps_eq_Seq_exps, mulConst_seq]
     rw [Multiseries.mulConst_exps]

@@ -142,7 +142,7 @@ theorem Multiseries.const_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c
   simp only [Multiseries.const]
   constructor
   · exact const_trimmed hc
-  cases basis_tl <;> simp [const, Multiseries.const, ofReal, toReal, hc]
+  cases basis_tl <;> simp [const, Multiseries.const, hc]
 
 theorem const_trimmed {basis : Basis} {c : ℝ} (hc : c ≠ 0) : (const basis c).Trimmed := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
@@ -164,7 +164,7 @@ theorem Multiseries.monomialRpow_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Ba
     · simp only [one]
       apply MultiseriesExpansion.const_trimmed (by simp)
     · cases basis_tl <;> simp [MultiseriesExpansion.one, MultiseriesExpansion.const,
-        MultiseriesExpansion.ofReal, MultiseriesExpansion.toReal, Multiseries.const]
+        Multiseries.const]
   | succ m =>
     simp only [Multiseries.monomialRpow]
     apply Multiseries.Trimmed.cons

@@ -224,7 +224,7 @@ theorem Multiseries.one_mul' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 theorem one_mul' {basis : Basis} {ms : MultiseriesExpansion basis} :
     mul one ms = ms := by
   cases basis with
-  | nil => simp [mul, one, const, ofReal, toReal]
+  | nil => simp [mul, one, const]
   | cons basis_hd basis_tl =>
     simp only [ext_iff, mul_seq, one_seq, mul_toFun, one_toFun, one_mul, and_true]
     rw [Multiseries.one_mul']
@@ -284,7 +284,7 @@ mutual
       X.mul (Y.mulConst c) = (X.mul Y).mulConst c := by
     cases basis with
     | nil =>
-      simp [mul, mulConst, ofReal, toReal]
+      simp [mul, mulConst]
       ring_nf
     | cons basis_hd basis_tl =>
       simp only [ext_iff, mul_seq, mulConst_seq, mul_toFun, mulConst_toFun,
@@ -352,7 +352,7 @@ mutual
       (X.mulConst c).mul Y = (X.mul Y).mulConst c := by
     cases basis with
     | nil =>
-      simp [mul, mulConst, ofReal, toReal]
+      simp [mul, mulConst]
       ring_nf
     | cons basis_hd basis_tl =>
       simp only [ext_iff, mul_seq, mulConst_seq, mul_toFun, mulConst_toFun,
@@ -480,7 +480,7 @@ mutual
       Z.mul (X + Y) = Z.mul X + Z.mul Y := by
     cases basis with
     | nil =>
-      simp [mul, ofReal, toReal]
+      simp [mul]
       ring_nf
     | cons basis_hd basis_tl =>
       simp only [ext_iff, mul_seq, add_seq, mul_toFun, add_toFun]
@@ -586,7 +586,7 @@ mutual
       (X + Y).mul Z = X.mul Z + Y.mul Z := by
     cases basis with
     | nil =>
-      simp [mul, ofReal, toReal]
+      simp [mul]
       ring_nf
     | cons basis_hd basis_tl =>
       simp only [ext_iff, mul_seq, add_seq, mul_toFun, add_toFun]
@@ -695,7 +695,7 @@ mutual
       (X.mul Y).mul Z = X.mul (Y.mul Z) := by
     cases basis with
     | nil =>
-      simp [mul, ofReal, toReal]
+      simp [mul]
       ring_nf
     | cons basis_hd basis_tl =>
       simp only [ext_iff, mul_seq, Multiseries.mul_assoc' (by simpa using hZ_sorted),

@@ -26,59 +26,56 @@ section Const
 
 @[MultiseriesExpansion_const]
 theorem const_const (c : ℝ) : (MultiseriesExpansion.const [] c).toReal = c := by
-  simp [MultiseriesExpansion.const, ofReal, toReal]
+  simp [MultiseriesExpansion.const]
 
 @[MultiseriesExpansion_const]
 theorem one_const : (@MultiseriesExpansion.one []).toReal = 1 := by simp [one, const_const]
 
 @[MultiseriesExpansion_const]
 theorem neg_const (x : MultiseriesExpansion []) : (x.neg).toReal = -x.toReal := by
-  simp [neg, mulConst, toReal, ofReal]
+  simp [neg, mulConst]
 
 @[MultiseriesExpansion_const]
 theorem add_const (x y : MultiseriesExpansion []) :
     (MultiseriesExpansion.add x y).toReal = x.toReal + y.toReal := by
-  simp [add, ofReal, toReal]
+  simp [add]
 
 @[MultiseriesExpansion_const]
 theorem mul_const (x y : MultiseriesExpansion []) :
     (MultiseriesExpansion.mul x y).toReal = x.toReal * y.toReal := by
-  simp [mul, toReal, ofReal]
+  simp [mul]
 
 @[MultiseriesExpansion_const]
 theorem mulConst_const (x : MultiseriesExpansion []) (c : ℝ) :
     (MultiseriesExpansion.mulConst c x).toReal = c * x.toReal := by
-  simp [mulConst, toReal, ofReal]
+  simp [mulConst]
 
 @[MultiseriesExpansion_const]
 theorem inv_const (x : MultiseriesExpansion []) :
     (MultiseriesExpansion.inv x).toReal = (x.toReal)⁻¹ := by
-  simp [inv, toReal, ofReal]
+  simp [inv]
 
 @[MultiseriesExpansion_const]
 theorem pow_const (x : MultiseriesExpansion []) (a : ℝ) :
     (MultiseriesExpansion.pow x a).toReal = (x.toReal) ^ a := by
-  simp [pow, toReal, ofReal]
+  simp [pow]
 
 @[MultiseriesExpansion_const]
 theorem extendBasisEnd_const (f : ℝ → ℝ) (x : MultiseriesExpansion []) :
     (MultiseriesExpansion.extendBasisEnd f x) =
     MultiseriesExpansion.mk (.cons 0 x .nil) (fun _ ↦ x.toReal) := by
-  simp [MultiseriesExpansion.extendBasisEnd, MultiseriesExpansion.const, Multiseries.const,
-    toReal, ofReal]
+  simp [MultiseriesExpansion.extendBasisEnd, MultiseriesExpansion.const, Multiseries.const]
 
 @[MultiseriesExpansion_const]
 theorem updateBasis_const (ms : MultiseriesExpansion []) (ex : BasisExtension []) :
     (MultiseriesExpansion.updateBasis ex ms) = MultiseriesExpansion.const _ ms.toReal := by
   cases ex with
   | nil =>
-    simp [MultiseriesExpansion.updateBasis, BasisExtension.getBasis, MultiseriesExpansion.const,
-      toReal, ofReal]
+    simp [MultiseriesExpansion.updateBasis, BasisExtension.getBasis, MultiseriesExpansion.const]
   | insert f ex_tl =>
     simp only [BasisExtension.getBasis, updateBasis, const_toFun, mk_eq_mk_iff_iff, const_seq,
       Multiseries.const, Multiseries.cons_eq_cons, and_true, true_and, const_toFun']
     rw [updateBasis_const]
-
 
 -- @[MultiseriesExpansion_const]
 -- theorem updateBasis_const_real (ms : ℝ) (ex : BasisExtension []) :
@@ -105,7 +102,7 @@ theorem log_const (x : MultiseriesExpansion []) (logBasis : LogBasis []) :
 @[MultiseriesExpansion_const]
 theorem exp_const (x : MultiseriesExpansion []) :
     (MultiseriesExpansion.exp x).toReal = Real.exp x.toReal := by
-  simp [exp, toReal, ofReal]
+  simp [exp]
 
 end Const
 

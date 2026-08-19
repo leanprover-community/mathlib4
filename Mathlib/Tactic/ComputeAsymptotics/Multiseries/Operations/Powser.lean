@@ -19,7 +19,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 
 @[expose] public section
 
-open Filter Asymptotics Topology Stream'
+open Filter Asymptotics Topology Stream' Stream'.Seq
 
 namespace Mathlib.Tactic.ComputeAsymptotics
 
@@ -30,8 +30,6 @@ namespace MultiseriesExpansion
 abbrev LazySeries := Seq ℝ
 
 namespace LazySeries
-
-open Seq
 
 -- I do not know why it is necessary
 /-- Recursion principle for lazy series. -/
@@ -47,7 +45,7 @@ def recOn {motive : LazySeries → Sort*} (s : LazySeries) (nil : motive Seq.nil
 ```
 -/
 def ofFnFrom (f : ℕ → ℝ) (n : ℕ) : LazySeries :=
-  ⟨fun i ↦ some (f (n + i)), by simp [IsSeq]⟩
+  Seq.nats.drop n |>.map f
 
 /-- Lazy series defined by a function:
 ```
@@ -60,13 +58,13 @@ def ofFn (f : ℕ → ℝ) : LazySeries :=
 theorem ofFnFrom_eq_cons {f : ℕ → ℝ} {n : ℕ} :
     ofFnFrom f n = Seq.cons (f n) (ofFnFrom f (n + 1)) := by
   ext i x
-  simp only [ofFnFrom, get?_mk, Option.some.injEq]
+  simp only [ofFnFrom, map_get?, drop_get?, nats_get?, Option.map_some, Option.some.injEq]
   cases i with
   | zero =>
     simp
   | succ i =>
-    simp only [get?_cons_succ, get?_mk, Option.some.injEq]
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;> (convert h using 2; ring)
+    simp
+    grind
 
 @[simp]
 theorem ofFnFrom_get {f : ℕ → ℝ} {n m : ℕ} : (ofFnFrom f n).get? m = some (f (n + m)) := by
@@ -306,7 +304,7 @@ theorem powser_seq {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 theorem Multiseries.powser_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : Multiseries basis_hd basis_tl} :
     Multiseries.powser .nil ms = .nil := by
-  simp [Multiseries.powser, Multiseries.gcorec_nil]
+  rw [Multiseries.powser, Multiseries.gcorec_nil (by simp)]
 
 @[simp]
 theorem Multiseries.powser_cons {s_hd : ℝ} {s_tl : LazySeries}

@@ -106,6 +106,9 @@ theorem zero_def {basis_hd basis_tl} :
   rfl
 
 @[simp]
+theorem zero_def' : (0 : MultiseriesExpansion []) = ofReal 0 := rfl
+
+@[simp]
 theorem Multiseries.zero_def {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     (0 : Multiseries basis_hd basis_tl) = .nil := rfl
 
@@ -505,7 +508,7 @@ theorem extendBasisMiddle_approximates {left right : Basis} {b : ℝ → ℝ}
 theorem extendBasisEnd_toFun {basis : Basis} {b : ℝ → ℝ} {ms : MultiseriesExpansion basis} :
     (ms.extendBasisEnd b).toFun = ms.toFun := by
   cases basis with
-  | nil => simp [extendBasisEnd, toReal]
+  | nil => simp [extendBasisEnd]
   | cons => simp [extendBasisEnd]
 
 @[simp]

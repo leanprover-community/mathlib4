@@ -21,7 +21,7 @@ public meta section
 
 namespace Mathlib.Tactic.ComputeAsymptotics
 
-open Filter Asymptotics Stream' Seq Normalization
+open Filter Asymptotics Normalization
 
 open Lean Elab Meta Tactic Qq
 

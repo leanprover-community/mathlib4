@@ -227,7 +227,7 @@ theorem Multiseries.neg_zpow {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 theorem neg_zpow {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℤ} :
     ms.neg.pow a = (ms.pow a).mulConst ((-1)^a) := by
   cases basis with
-  | nil => simp [neg, pow, mulConst, ← mul_zpow, ofReal, toReal]
+  | nil => simp [neg, pow, mulConst, ← mul_zpow]
   | cons basis_hd basis_tl =>
     simp only [ext_iff, pow_seq, neg_seq, mulConst_seq, pow_toFun, neg_toFun,
       mulConst_toFun]
@@ -413,7 +413,7 @@ theorem pow_approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : 
 theorem npow_eq_pow {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℕ} :
     (ms.npow a) = ms.pow a := by
   cases basis with
-  | nil => simp [npow, pow, toReal]
+  | nil => simp [npow, pow]
   | cons basis_hd basis_tl =>
     simp only [npow, pow, mk_replaceFun, ms_eq_mk_iff, mk_seq, mk_toFun, true_and]
     ext t
@@ -422,7 +422,7 @@ theorem npow_eq_pow {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℕ} 
 theorem zpow_eq_pow {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℤ} :
     (ms.zpow a) = ms.pow a := by
   cases basis with
-  | nil => simp [zpow, pow, toReal]
+  | nil => simp [zpow, pow]
   | cons basis_hd basis_tl =>
     simp only [zpow, pow, mk_replaceFun, ms_eq_mk_iff, mk_seq, mk_toFun, true_and]
     ext t
