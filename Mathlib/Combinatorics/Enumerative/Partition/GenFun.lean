@@ -61,54 +61,48 @@ lemma coeff_genFun (f : ℕ → ℕ → R) (n : ℕ) :
     (genFun f).coeff n = ∑ p : n.Partition, p.parts.toFinsupp.prod f :=
   PowerSeries.coeff_mk _ _
 
-/-- The summands in the formula `Nat.Partition.hasProd_genFun` tends to infinity in their order. -/
-theorem tendsto_order_genFun_term_atTop_nhds_top (f : ℕ → ℕ → R) (i : ℕ) :
-    Filter.Tendsto (fun j ↦ (f (i + 1) (j + 1) • (X : R⟦X⟧) ^ ((i + 1) * (j + 1))).order)
-    Filter.atTop (nhds ⊤) := by
-  refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr (fun n ↦ Filter.eventually_atTop.mpr ⟨n, ?_⟩)
-  intro m hm
-  grw [PowerSeries.smul_eq_C_mul, ← le_order_mul]
-  refine lt_add_of_nonneg_of_lt (by simp) ?_
-  nontriviality R using Subsingleton.eq_zero (α := R⟦X⟧)
-  rw [order_X_pow]
-  norm_cast
-  grind
+/-- Factor of generating function associated with character $f(i, c)$ for partition functions. -/
+noncomputable def genFunFactor (f : ℕ → ℕ → R) (i : ℕ) : R⟦X⟧ :=
+  PowerSeries.mk fun n ↦ if n ≠ 0 ∧ i ∣ n then f i (n / i) else 0
 
-variable [TopologicalSpace R]
+@[simp]
+theorem constantCoeff_genFunFactor (f : ℕ → ℕ → R) (i : ℕ) :
+    (genFunFactor f i).constantCoeff = 0 := by
+  simp [genFunFactor]
 
-/-- The infinite sum in the formula `Nat.Partition.hasProd_genFun` always converges. -/
-theorem summable_genFun_term (f : ℕ → ℕ → R) (i : ℕ) :
-    Summable fun j ↦ f (i + 1) (j + 1) • (X : R⟦X⟧) ^ ((i + 1) * (j + 1)) := by
-  apply WithPiTopology.summable_of_tendsto_order_atTop_nhds_top
-  apply tendsto_order_genFun_term_atTop_nhds_top
+@[simp]
+theorem coeff_genFunFactor (f : ℕ → ℕ → R) {i j : ℕ} (hi : i ≠ 0) (hj : j ≠ 0) :
+    (genFunFactor f i).coeff (j * i) = f i j := by
+  simp [genFunFactor, hi, hj]
 
-/-- Alternative form of `summable_genFun_term` that unshifts the first index. -/
-theorem summable_genFun_term' (f : ℕ → ℕ → R) {i : ℕ} (hi : i ≠ 0) :
-    Summable fun j ↦ f i (j + 1) • (X : R⟦X⟧) ^ (i * (j + 1)) := by
-  obtain ⟨a, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hi
-  apply summable_genFun_term
+theorem dvd_of_coeff_genFunFactor_ne_zero {f : ℕ → ℕ → R} {i n : ℕ}
+    (h : (genFunFactor f i).coeff n ≠ 0) :
+    i ∣ n := by
+  simp_all [genFunFactor]
 
-variable [T2Space R]
+private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → R) {n : ℕ} (p : Partition n) {s : Finset ℕ}
+    (hs : Icc 1 n ⊆ s) :
+    p.parts.toFinsupp.prod f = ∏ i ∈ s, coeff (p.toFinsuppAntidiag i) (1 + genFunFactor f i) := by
+  simp_rw [Finsupp.prod, Multiset.toFinsupp_support, Multiset.toFinsupp_apply]
+  apply prod_subset_one_on_sdiff
+  · grind
+  · intro i hi
+    rw [mem_sdiff, Multiset.mem_toFinset] at hi
+    simp [toFinsuppAntidiag, hi.2]
+  · intro i hi
+    rw [Multiset.mem_toFinset] at hi
+    simp [map_add, toFinsuppAntidiag, (p.parts_pos hi).ne.symm, Multiset.count_ne_zero.mpr hi]
 
-private theorem aux_dvd_of_coeff_ne_zero {f : ℕ → ℕ → R} {d : ℕ} {s : Finset ℕ} (hs0 : 0 ∉ s)
+private theorem aux_dvd_of_coeff_ne_zero {f : ℕ → ℕ → R} {d : ℕ} {s : Finset ℕ}
     {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiag d)
-    (hprod : ∀ i ∈ s, (coeff (g i)) (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) ≠ (0 : R)) (x : ℕ) :
+    (hcoeff : ∀ i ∈ s, (coeff (g i)) (1 + genFunFactor f i) ≠ 0) (x : ℕ) :
     x ∣ g x := by
   by_cases hx : x ∈ s
-  · specialize hprod x hx
-    contrapose hprod
-    have hx0 : x ≠ 0 := fun h ↦ hs0 (h ▸ hx)
-    rw [map_add, (summable_genFun_term' f hx0).map_tsum _ (WithPiTopology.continuous_coeff _ _)]
-    rw [show (0 : R) = 0 + ∑' (i : ℕ), 0 by simp]
-    congrm (?_ + ∑' (i : ℕ), ?_)
-    · suffices g x ≠ 0 by simp [this]
-      contrapose hprod
-      simp [hprod]
-    · rw [map_smul, coeff_X_pow]
-      apply smul_eq_zero_of_right
-      suffices g x ≠ x * (i + 1) by simp [this]
-      contrapose hprod
-      simp [hprod]
+  · by_cases hgx : g x = 0
+    · simp [hgx]
+    specialize hcoeff x hx
+    simp only [map_add, coeff_one, hgx, ↓reduceIte, zero_add] at hcoeff
+    exact dvd_of_coeff_genFunFactor_ne_zero hcoeff
   · suffices g x = 0 by simp [this]
     contrapose! hx
     exact mem_of_subset (mem_finsuppAntidiag.mp hg).2 <| by simpa using hx
@@ -116,8 +110,8 @@ private theorem aux_dvd_of_coeff_ne_zero {f : ℕ → ℕ → R} {d : ℕ} {s : 
 private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {d : ℕ} {s : Finset ℕ}
     (hs0 : 0 ∉ s) {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiag d)
     (hg' : g ∉ Set.range (toFinsuppAntidiag (n := d))) :
-    ∏ i ∈ s, (coeff (g i)) (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1)) : R⟦X⟧) = 0 := by
-  suffices ∃ i ∈ s, (coeff (g i)) ((1 : R⟦X⟧) + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) = 0 by
+    ∏ i ∈ s, (coeff (g i)) (1 + genFunFactor f i) = 0 := by
+  suffices ∃ i ∈ s, (coeff (g i)) (1 + genFunFactor f i) = 0 by
     obtain ⟨i, hi, hi'⟩ := this
     apply prod_eq_zero hi hi'
   contrapose! hg' with hprod
@@ -126,7 +120,7 @@ private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {
     refine ⟨fun h ↦ ⟨?_, ?_⟩, by grind⟩
     · contrapose hs0 with rfl
       exact mem_of_subset (mem_finsuppAntidiag.mp hg).2 (by simpa using h)
-    · exact Nat.le_of_dvd (Nat.pos_of_ne_zero h) <| aux_dvd_of_coeff_ne_zero hs0 hg hprod _
+    · exact Nat.le_of_dvd (Nat.pos_of_ne_zero h) <| aux_dvd_of_coeff_ne_zero hg hprod _
   refine ⟨Nat.Partition.mk (Finsupp.mk g.support (fun i ↦ g i / i) ?_).toMultiset ?_ ?_, ?_⟩
   · simpa using hgne0
   · suffices ∀ i, g i ≠ 0 → i ≠ 0 by simpa [Nat.pos_iff_ne_zero]
@@ -135,63 +129,58 @@ private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {
     refine Eq.trans ?_ h1
     suffices ∑ x ∈ g.support, g x / x * x = ∑ x ∈ s, g x by simpa [Finsupp.sum]
     apply sum_subset_zero_on_sdiff h2 (by simp)
-    exact fun x hx ↦ Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hs0 hg hprod x
+    exact fun x hx ↦ Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hg hprod x
   · ext x
-    simpa [toFinsuppAntidiag] using Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hs0 hg hprod x
+    simpa [toFinsuppAntidiag] using Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hg hprod x
 
-private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → R) {n : ℕ} (p : Partition n) {s : Finset ℕ}
-    (hs : Icc 1 n ⊆ s) (hs0 : 0 ∉ s) :
-    p.parts.toFinsupp.prod f =
-    ∏ i ∈ s, coeff (p.toFinsuppAntidiag i) (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) := by
-  simp_rw [Finsupp.prod, Multiset.toFinsupp_support, Multiset.toFinsupp_apply]
-  apply prod_subset_one_on_sdiff
-  · grind
-  · intro x hx
-    rw [mem_sdiff, Multiset.mem_toFinset] at hx
-    have hx0 : x ≠ 0 := fun h ↦ hs0 (h ▸ hx.1)
-    have hsum := (summable_genFun_term' f hx0).map_tsum _
-      (WithPiTopology.continuous_constantCoeff R)
-    simp [toFinsuppAntidiag, hsum, hx.2, hx0]
-  · intro i hi
-    rw [Multiset.mem_toFinset] at hi
-    have hi0 : i ≠ 0 := (p.parts_pos hi).ne.symm
-    rw [map_add, (summable_genFun_term' f hi0).map_tsum _ (WithPiTopology.continuous_coeff _ _)]
-    suffices f i (Multiset.count i p.parts) =
-        ∑' j, if Multiset.count i p.parts * i = i * (j + 1) then f i (j + 1) else 0 by
-      simpa [toFinsuppAntidiag, hi, hi0, coeff_X_pow]
-    rw [tsum_eq_single (Multiset.count i p.parts - 1) ?_]
-    · rw [mul_comm]
-      simp [Nat.sub_add_cancel (Multiset.one_le_count_iff_mem.mpr hi)]
-    intro b hb
-    suffices Multiset.count i p.parts * i ≠ i * (b + 1) by simp [this]
-    rw [mul_comm i, (mul_left_inj' (Nat.ne_zero_of_lt (p.parts_pos hi))).ne]
-    grind
+variable [TopologicalSpace R]
+
+theorem hasSum_genFunFactor (f : ℕ → ℕ → R) {i : ℕ} (hi : i ≠ 0) :
+    HasSum (fun j ↦ (f i (j + 1) • (X : R⟦X⟧) ^ (i * (j + 1)))) (genFunFactor f i) := by
+  have hinj : Function.Injective (fun j ↦ i * (j + 1)) :=
+    (mul_right_injective₀ hi).comp (add_left_injective 1)
+  convert! (hinj.hasSum_iff ?_).mpr (genFunFactor f i).hasSum_of_monomials_self with j
+  · simp [genFunFactor, hi, monomial_eq_C_mul_X_pow, smul_eq_C_mul]
+  intro n h
+  suffices ¬(n ≠ 0 ∧ i ∣ n) by simp [genFunFactor, this]
+  contrapose! h
+  obtain ⟨h0, k, rfl⟩ := h
+  have : k ≠ 0 := fun h ↦ by simp [h] at h0
+  obtain ⟨j, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero this
+  simp
 
 theorem hasProd_genFun (f : ℕ → ℕ → R) :
-    HasProd (fun i ↦ 1 + ∑' j, f (i + 1) (j + 1) • X ^ ((i + 1) * (j + 1))) (genFun f) := by
+    HasProd (fun i ↦ 1 + genFunFactor f (i + 1)) (genFun f) := by
   rw [HasProd, WithPiTopology.tendsto_iff_coeff_tendsto]
   refine fun d ↦ tendsto_atTop_of_eventually_const (fun s (hs : s ≥ range d) ↦ ?_)
-  have : ∏ i ∈ s, ((1 : R⟦X⟧) + ∑' j, f (i + 1) (j + 1) • X ^ ((i + 1) * (j + 1)))
-      = ∏ i ∈ s.map (addRightEmbedding 1), (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) := by simp
+  have : ∏ i ∈ s, (1 + genFunFactor f (i + 1))
+      = ∏ i ∈ s.map (addRightEmbedding 1), (1 + genFunFactor f i) := by simp
   rw [this]
   have hs : Icc 1 d ⊆ s.map (addRightEmbedding 1) := by
     intro i
     suffices 1 ≤ i → i ≤ d → ∃ a ∈ s, a + 1 = i by simpa
     intro h1 h2
     refine ⟨i - 1, mem_of_subset hs ?_, ?_⟩ <;> grind
-  rw [coeff_genFun, coeff_prod]
+  rw [coeff_prod, coeff_genFun]
   refine (sum_of_injOn toFinsuppAntidiag (toFinsuppAntidiag_injective d).injOn ?_ ?_ ?_).symm
   · intro p _
     exact mem_of_subset (finsuppAntidiag_mono hs _) p.toFinsuppAntidiag_mem_finsuppAntidiag
   · exact fun g hg hg' ↦ aux_prod_coeff_eq_zero_of_notMem_range f (by simp) hg (by simpa using hg')
-  · exact fun p _ ↦ aux_prod_f_eq_prod_coeff f p hs (by simp)
+  · exact fun p _ ↦ aux_prod_f_eq_prod_coeff f p hs
 
 theorem multipliable_genFun (f : ℕ → ℕ → R) :
-    Multipliable fun i ↦ (1 : R⟦X⟧) + ∑' j, f (i + 1) (j + 1) • X ^ ((i + 1) * (j + 1)) :=
+    Multipliable fun i ↦ 1 + genFunFactor f (i + 1) :=
   (hasProd_genFun f).multipliable
 
+variable [T2Space R]
+
+theorem hasProd_genFun' (f : ℕ → ℕ → R) :
+    HasProd (fun i ↦ 1 + ∑' j, f (i + 1) (j + 1) • X ^ ((i + 1) * (j + 1))) (genFun f) := by
+  convert hasProd_genFun f with i
+  exact (hasSum_genFunFactor f (by simp)).tsum_eq
+
 theorem genFun_eq_tprod (f : ℕ → ℕ → R) :
-    genFun f = ∏' i, (1 + ∑' j, f (i + 1) (j + 1) • X ^ ((i + 1) * (j + 1))) :=
+    genFun f = ∏' i, (1 + genFunFactor f (i + 1)) :=
   (hasProd_genFun f).tprod_eq.symm
 
 end Nat.Partition
