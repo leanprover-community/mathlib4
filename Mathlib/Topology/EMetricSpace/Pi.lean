@@ -74,8 +74,6 @@ instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (X b)] : PseudoEMetricS
 
 end Pi
 
-variable {γ : Type w} [EMetricSpace γ]
-
 section Pi
 
 variable {X : β → Type*} [Fintype β]
