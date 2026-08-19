@@ -763,48 +763,15 @@ theorem vonStaudt_clausen {k : ℕ} (hk : Even k) :
   rw [← pIntegral_iff_not_dvd_den]
   exact not_dvd_den_vonStaudt_sum hk
 
-/- `p · bernoulli i` is `p`-integral for every `i` (von Staudt: `v_p(B_i) ≥ -1`). -/
-private theorem pIntegral_p_mul_bernoulli {p : ℕ} [Fact p.Prime] (i : ℕ) :
-    pIntegral p (p * bernoulli i) := by
-  have hp : p.Prime := Fact.out
-  rcases Nat.even_or_odd i with he | ho
-  · obtain ⟨l, rfl⟩ := even_iff_exists_two_mul.1 he
-    rcases Nat.eq_zero_or_pos l with rfl | hl
-    · simp
-    · have hid : p * (bernoulli (2 * l) + vonStaudtIndicator (2 * l) p / p)
-                 - vonStaudtIndicator (2 * l) p = p * bernoulli (2 * l) := by
-        field [hp.ne_zero]
-      rw [← hid]
-      apply sub_mem (mul_mem (natCast_mem _ p) (pIntegral_bernoulli_add_indicator (by lia) he))
-      simp [vonStaudtIndicator, apply_ite]
-  · obtain rfl | hne := eq_or_ne i 1
-    · rw [bernoulli_one]
-      obtain rfl | hp2 := eq_or_ne p 2
-      · norm_num
-      · have h2 : ¬ p ∣ 2 := fun hd => hp2 ((Nat.prime_dvd_prime_iff_eq hp Nat.prime_two).mp hd)
-        have hph : ((p : ℚ) * (-1 / 2) : ℚ) = -((p : ℚ) / (2 : ℕ)) := by push_cast; ring
-        rw [hph]
-        exact neg_mem (pIntegral_div_natCast (natCast_mem _ p) h2)
-    · obtain ⟨m, rfl⟩ := ho
-      rw [bernoulli_eq_zero_of_odd ⟨m, rfl⟩ (by lia), mul_zero]
-      exact zero_mem _
-
-/-- `(p : ℚ) · bernoulli i` is `p`-integral: `p` does not divide the denominator of `p · Bᵢ`
-(equivalently `v_p(Bᵢ) ≥ -1`). -/
-theorem not_dvd_den_p_mul_bernoulli {p : ℕ} [Fact p.Prime] (i : ℕ) :
-    ¬ p ∣ ((p : ℚ) * bernoulli i).den :=
-  Rat.padicValuation_le_one_iff.mp (pIntegral_p_mul_bernoulli i)
-
-/- The denominator of a `p`-integral rational is a unit mod `p`. -/
+/-- The denominator of a `p`-integral rational is a unit mod `p`. -/
 private theorem den_ne {p : ℕ} [Fact p.Prime] {x : ℚ} (hx : pIntegral p x) :
     (x.den : ZMod p) ≠ 0 := by
-  rw [Ne, ZMod.natCast_eq_zero_iff]
-  exact Rat.padicValuation_le_one_iff.mp hx
+  rwa [Ne, ZMod.natCast_eq_zero_iff, ← pIntegral_iff_not_dvd_den]
 
 /- Casting respects addition of two `p`-integral rationals. -/
 private theorem cast_add_pIntegral {p : ℕ} [Fact p.Prime] {a b : ℚ}
     (ha : pIntegral p a) (hb : pIntegral p b) :
-    (((a + b : ℚ)) : ZMod p) = (a : ZMod p) + (b : ZMod p) :=
+    ((a + b : ℚ) : ZMod p) = a + b :=
   Rat.cast_add_of_ne_zero (den_ne ha) (den_ne hb)
 
 /- Casting respects multiplication of two `p`-integral rationals. -/
@@ -839,57 +806,46 @@ private theorem factorization_add_three_le {q : ℕ} (hq5 : 5 ≤ q) {j : ℕ} (
 /-- **Faulhaber mod `p²`.** For even `k ≥ 2` with `(p - 1) ∤ k`, the power sum `∑_{a<p} aᵏ`
 equals `p·Bₖ` up to a `p²`-multiple of a `p`-integral rational: there is `W` with
 `p ∤ W.den` and `∑_{a<p} aᵏ − p·Bₖ = p²·W`. -/
-theorem faulhaber_mod_sq {p : ℕ} [Fact p.Prime] {k : ℕ} (hk : Even k) (hk2 : 2 ≤ k)
-    (hk1 : ¬ (p - 1) ∣ k) :
-    ∃ W : ℚ, ¬ p ∣ W.den ∧
-      (∑ a ∈ range p, (a : ℚ) ^ k) - (p : ℚ) * bernoulli k = (p : ℚ) ^ 2 * W := by
+theorem faulhaber_mod_sq {p : ℕ} [Fact p.Prime] {k : ℕ} (hk : Even k) (hk1 : ¬ p - 1 ∣ k) :
+    ∃ W : ℚ, ¬ p ∣ W.den ∧ (∑ a ∈ range p, (a ^ k : ℚ)) - p * bernoulli k = p ^ 2 * W := by
+  have hk2 : 2 ≤ k := by
+    have : k ≠ 0 := by rintro rfl; simp at hk1
+    grind
   have hp : p.Prime := Fact.out
   have hpodd : Odd p := hp.odd_of_ne_two (fun h => hk1 (h ▸ one_dvd k))
   have hp5 : 5 ≤ p := by
-    have h2 := hp.two_le
-    by_contra hlt
-    have hlt5 : p < 5 := by omega
-    interval_cases p
-    · exact (by decide : ¬ Odd 2) hpodd
-    · exact hk1 hk.two_dvd
-    · exact absurd hp (by decide)
-  have hkm1 : ¬ (p - 1) ∣ (k - 1) := by
-    obtain ⟨s, hs⟩ := hpodd
-    obtain ⟨r, hr⟩ := hk
-    rintro ⟨t, ht⟩
-    have hp1 : p - 1 = 2 * s := by omega
-    have hev : k - 1 = 2 * (s * t) := by rw [ht, hp1]; ring
-    omega
-  refine ⟨∑ i ∈ range k, bernoulli i * ((k + 1).choose i : ℚ) * (p : ℚ) ^ (k - 1 - i) / (k + 1),
-    ?_, ?_⟩
+    by_contra
+    obtain rfl | rfl : p = 3 ∨ p = 4 := by grind [hp.odd_iff.1 hpodd]
+    · grind
+    · grind
+  have hkm1 : ¬ p - 1 ∣ k - 1 := by grind [→ Dvd.dvd.even]
+  use ∑ i ∈ range k, bernoulli i * (k + 1).choose i * p ^ (k - 1 - i) / (k + 1)
+  constructor
   · rw [← Rat.padicValuation_le_one_iff]
     refine (Rat.padicValuation p).map_sum_le fun i hi => ?_
     rw [mem_range] at hi
     have hden2 : ((k + 1 - i : ℕ) : ℚ) ≠ 0 := by rw [Ne, Nat.cast_eq_zero]; omega
-    have habs : bernoulli i * ((k + 1).choose i : ℚ) * (p : ℚ) ^ (k - 1 - i) / (k + 1)
-        = bernoulli i * (k.choose i : ℚ) * (p : ℚ) ^ (k - 1 - i) / ((k + 1 - i : ℕ) : ℚ) := by
-      have hk1' : ((k : ℚ) + 1) = ((k + 1 : ℕ) : ℚ) := by push_cast; ring
-      rw [div_eq_div_iff (by positivity) hden2, hk1']
+    have habs : bernoulli i * (k + 1).choose i * p ^ (k - 1 - i) / (k + 1)
+        = bernoulli i * k.choose i * p ^ (k - 1 - i) / ((k + 1 - i : ℕ) : ℚ) := by
       have hnat : ((k + 1).choose i : ℚ) * ((k + 1 - i : ℕ) : ℚ)
           = (k.choose i : ℚ) * ((k + 1 : ℕ) : ℚ) := by
         exact_mod_cast (Nat.choose_mul_succ_eq k i).symm
-      linear_combination (bernoulli i * (p : ℚ) ^ (k - 1 - i)) * hnat
+      grind
     rw [habs]
     rcases Nat.lt_or_ge i (k - 1) with hlt | hge
-    · have hpeel : (p : ℚ) ^ (k - 1 - i) = (p : ℚ) * (p : ℚ) ^ (k - 2 - i) := by
+    · have hpeel : (p : ℚ) ^ (k - 1 - i) = p * p ^ (k - 2 - i) := by
         rw [show k - 1 - i = 1 + (k - 2 - i) by omega, pow_add, pow_one]
-      have hregroup : bernoulli i * (k.choose i : ℚ) * ((p : ℚ) * (p : ℚ) ^ (k - 2 - i))
+      have hregroup : bernoulli i * k.choose i * ((p : ℚ) * (p : ℚ) ^ (k - 2 - i))
             / ((k + 1 - i : ℕ) : ℚ)
           = ((p : ℚ) * bernoulli i)
             * ((k.choose i : ℚ) * ((p : ℚ) ^ (k - 2 - i) / ((k + 1 - i : ℕ) : ℚ))) := by ring
       rw [hpeel, hregroup]
-      refine mul_mem (pIntegral_p_mul_bernoulli i) (mul_mem (natCast_mem _ _) ?_)
+      refine mul_mem (pIntegral_mul_bernoulli) (mul_mem (natCast_mem _ _) ?_)
       refine pIntegral_pow_div (by omega) ?_
       have h3 : 3 ≤ k + 1 - i := by omega
       have hb := factorization_add_three_le hp5 h3
       omega
-    · have hik : i = k - 1 := by omega
-      subst hik
+    · obtain rfl : i = k - 1 := by omega
       have hz : k - 1 - (k - 1) = 0 := by omega
       have htwo : k + 1 - (k - 1) = 2 := by omega
       rw [hz, pow_zero, mul_one, htwo]
