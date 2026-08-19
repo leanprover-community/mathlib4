@@ -71,7 +71,7 @@ variable {F A B : Type*}
     [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 /-- A non-unital star monomorphism between C⋆-algebras is an order embedding. -/
-def NonUnitalStarAlgHom.orderEmbedding (φ : A →⋆ₙₐ[ℂ] B) (hφ : Function.Injective φ) :
+def NonUnitalStarAlgHom.toOrderEmbedding (φ : A →⋆ₙₐ[ℂ] B) (hφ : Function.Injective φ) :
     A ↪o B where
   toFun := φ
   inj' := hφ
@@ -87,11 +87,11 @@ def NonUnitalStarAlgHom.orderEmbedding (φ : A →⋆ₙₐ[ℂ] B) (hφ : Funct
 /-- A non-unital star monomorphism between C⋆-algebras is an order embedding. -/
 protected lemma NonUnitalStarAlgHom.map_le_map_iff (f : F) (hf : Function.Injective f) {x y : A} :
     f x ≤ f y ↔ x ≤ y :=
-  (orderEmbedding (f : A →⋆ₙₐ[ℂ] B) hf).le_iff_le
+  (toOrderEmbedding (f : A →⋆ₙₐ[ℂ] B) hf).le_iff_le
 
 protected lemma NonUnitalStarAlgHom.map_lt_map_iff (f : F) (hf : Function.Injective f) {x y : A} :
     f x < f y ↔ x < y :=
-  (orderEmbedding (f : A →⋆ₙₐ[ℂ] B) hf).lt_iff_lt
+  (toOrderEmbedding (f : A →⋆ₙₐ[ℂ] B) hf).lt_iff_lt
 
 end OrderEmbedding
 namespace NonUnitalStarAlgHom

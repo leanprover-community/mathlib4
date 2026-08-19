@@ -301,7 +301,7 @@ instance Subtype.starOrderedRing (s : S) [hs : IsClosed (s : Set A)] : StarOrder
       simp only [MulMemClass.coe_mul, StarMemClass.coe_star]
       rw [IsSelfAdjoint.star_eq (by cfc_tac), ← cfcₙ_mul ..]
       convert (cfcₙ_id' ℝ (x : A)).symm using 1
-      exact cfcₙ_congr fun r hr ↦ by rw [Real.mul_self_sqrt (by grind)]
+      exact cfcₙ_congr fun r hr ↦ by grind [Real.mul_self_sqrt]
     · rintro ⟨s, hs⟩
       simp [← Subtype.coe_le_coe, hs]
 

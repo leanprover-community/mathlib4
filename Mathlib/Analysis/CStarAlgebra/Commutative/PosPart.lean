@@ -17,7 +17,7 @@ open scoped CStarAlgebra ComplexOrder
 
 public section
 
-section ContinuousMap
+namespace ContinuousMap
 
 variable {X : Type*} [TopologicalSpace X] [CompactSpace X] (f : C(X, ℝ))
 
@@ -25,7 +25,7 @@ variable {X : Type*} [TopologicalSpace X] [CompactSpace X] (f : C(X, ℝ))
 left come from entirely different instances. On the left-hand side, the `⁺`,`⁻` come from the
 continuous functional calculus on the C⋆-algebra `C(X, ℂ)`. On the right-hand side, the `⁺`,`⁻`
 come from the fact that `C(X, ℝ)` is lattice and an additive group. -/
-private lemma ContinuousMap.realToRCLike_posPart_negPart :
+private lemma realToRCLike_posPart_negPart :
     (f.realToRCLike ℂ)⁺ = f⁺.realToRCLike ℂ ∧ (f.realToRCLike ℂ)⁻ = f⁻.realToRCLike ℂ := by
   refine CFC.posPart_negPart_unique ?_ ?_ ?_ ?_ <;> simp_rw [← realToRCLikeStarAlgHom_apply]
   · simp only [← map_sub, posPart_sub_negPart]
@@ -38,10 +38,10 @@ private lemma ContinuousMap.realToRCLike_posPart_negPart :
   · simpa [← realToRCLikeStarAlgHom_apply] using realToRCLike_monotone X ℂ (posPart_nonneg f)
   · simpa [← realToRCLikeStarAlgHom_apply] using realToRCLike_monotone X ℂ (negPart_nonneg f)
 
-lemma ContinuousMap.realToRCLike_posPart : (f.realToRCLike ℂ)⁺ = f⁺.realToRCLike ℂ :=
+lemma realToRCLike_posPart : (f.realToRCLike ℂ)⁺ = f⁺.realToRCLike ℂ :=
   f.realToRCLike_posPart_negPart.1
 
-lemma ContinuousMap.realToRCLike_negPart : (f.realToRCLike ℂ)⁻ = f⁻.realToRCLike ℂ :=
+lemma realToRCLike_negPart : (f.realToRCLike ℂ)⁻ = f⁻.realToRCLike ℂ :=
   f.realToRCLike_posPart_negPart.2
 
 end ContinuousMap
@@ -89,20 +89,16 @@ a C⋆-algebra -/
 protected lemma Commute.posPart_mono {a b : A} (hab : Commute a b) (hle : a ≤ b)
     (ha : IsSelfAdjoint a := by cfc_tac) (hb : IsSelfAdjoint b := by cfc_tac) :
     a⁺ ≤ b⁺ := by
-  have := isMulCommutative_nonUnital_adjoin_pair hab
-  have : IsClosed ((adjoin ℂ {a, b}).topologicalClosure : Set A) :=
-    NonUnitalStarSubalgebra.isClosed_topologicalClosure _
-  let a' : (adjoin ℂ {a, b}).topologicalClosure :=
-    ⟨a, subset_closure <| subset_adjoin _ _ <| by simp⟩
-  let b' : (adjoin ℂ {a, b}).topologicalClosure :=
-    ⟨b, subset_closure <| subset_adjoin _ _ <| by simp⟩
-  replace hle : a' ≤ b' := hle
-  have : a'⁺ ≤ b'⁺ := CStarAlgebra.posPart_mono _ hle
-  simp_rw [← Subtype.coe_le_coe, ← NonUnitalStarSubalgebraClass.subtype_apply,
-    CFC.posPart_def] at this
-  have ha' : IsSelfAdjoint a' := Subtype.ext ha.star_eq
-  have hb' : IsSelfAdjoint b' := Subtype.ext hb.star_eq
-  rwa [NonUnitalStarAlgHomClass.map_cfcₙ .., NonUnitalStarAlgHomClass.map_cfcₙ ..] at this
+  let S := (adjoin ℂ {a, b}).topologicalClosure
+  have : IsMulCommutative S := have := isMulCommutative_nonUnital_adjoin_pair hab; inferInstance
+  have : IsClosed (S : Set A) := NonUnitalStarSubalgebra.isClosed_topologicalClosure _
+  have h : a ∈ S ∧ b ∈ S := by constructor <;> exact subset_closure <| subset_adjoin _ _ <| by simp
+  clear_value S
+  lift a to S using h.1
+  lift b to S using h.2
+  have : (↑a⁺ : A) ≤ (↑b⁺ : A) := by simpa using CStarAlgebra.posPart_mono S hle
+  simp only [← NonUnitalStarSubalgebraClass.subtype_apply, CFC.posPart_def] at this ⊢
+  rwa [← NonUnitalStarAlgHomClass.map_cfcₙ .., ← NonUnitalStarAlgHomClass.map_cfcₙ ..]
 
 /-- The negative part map `fun a ↦ a⁻` is antitone on commuting selfadjoint elements in
 a C⋆-algebra -/
