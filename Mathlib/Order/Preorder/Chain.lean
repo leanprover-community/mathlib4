@@ -263,6 +263,12 @@ theorem IsMaxChain.isChain (h : IsMaxChain r s) : IsChain r s :=
 theorem IsMaxChain.not_superChain (h : IsMaxChain r s) : ¬SuperChain r s t := fun ht =>
   ht.2.ne <| h.2 ht.1 ht.2.1
 
+theorem maximal_isChain_iff : Maximal (IsChain r) s ↔ IsMaxChain r s where
+  mp h := ⟨h.prop, fun _ ht hst ↦ hst.antisymm <| h.le_of_ge ht hst⟩
+  mpr h := ⟨h.isChain, fun _ ht hst ↦ h.right ht hst |>.ge⟩
+
+alias ⟨_, IsMaxChain.maximal_isChain⟩ := maximal_isChain_iff
+
 theorem IsMaxChain.bot_mem [LE α] [OrderBot α] (h : IsMaxChain (· ≤ ·) s) : ⊥ ∈ s :=
   (h.2 (h.1.insert fun _ _ _ => Or.inl bot_le) <| subset_insert _ _).symm ▸ mem_insert _ _
 
