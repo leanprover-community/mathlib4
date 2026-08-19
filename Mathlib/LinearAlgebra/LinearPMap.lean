@@ -1248,8 +1248,8 @@ theorem resolventLM_commute [IsCancelMulZero R] [Module.IsTorsionFree R E] {f : 
     f.resolventLM z₁ ∘ₗ f.resolventLM z₂ = f.resolventLM z₂ ∘ₗ f.resolventLM z₁ := by
   by_cases hz : z₁ = z₂
   · rw [hz]
-  have h1 := resolventLM_sub_resolventLM_eq hz₁ hz₂
-  have h2 := resolventLM_sub_resolventLM_eq hz₂ hz₁
+  have h₁ := resolventLM_sub_resolventLM_eq hz₁ hz₂
+  have h₂ := resolventLM_sub_resolventLM_eq hz₂ hz₁
   have : (z₁ - z₂) • f.resolventLM z₂ ∘ₗ f.resolventLM z₁ =
       -((z₂ - z₁) • f.resolventLM z₁ ∘ₗ f.resolventLM z₂) := by grind
   rw [← neg_smul, neg_sub] at this
