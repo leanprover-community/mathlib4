@@ -392,7 +392,7 @@ end AntilipschitzWith
 
 
 theorem Isometry.dimH_image (hf : Isometry f) (s : Set X) : dimH (f '' s) = dimH s :=
-  le_antisymm (hf.lipschitz.dimH_image_le _) (hf.antilipschitz.le_dimH_image _)
+  le_antisymm (hf.lipschitzWith.dimH_image_le _) (hf.antilipschitzWith.le_dimH_image _)
 
 namespace IsometryEquiv
 
@@ -416,8 +416,8 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E
 
 @[simp]
 theorem dimH_image (e : E ≃L[𝕜] F) (s : Set E) : dimH (e '' s) = dimH s :=
-  le_antisymm (e.lipschitz.dimH_image_le s) <| by
-    simpa only [e.symm_image_image] using e.symm.lipschitz.dimH_image_le (e '' s)
+  le_antisymm (e.lipschitzWith.dimH_image_le s) <| by
+    simpa only [e.symm_image_image] using e.symm.lipschitzWith.dimH_image_le (e '' s)
 
 @[simp]
 theorem dimH_preimage (e : E ≃L[𝕜] F) (s : Set F) : dimH (e ⁻¹' s) = dimH s := by
