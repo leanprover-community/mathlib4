@@ -215,7 +215,7 @@ theorem LipschitzOnWith.extend_finite_dimension {α : Type*} [PseudoMetricSpace 
     `E'` and such a space to transfer the result to `E'`. -/
   let ι : Type _ := Basis.ofVectorSpaceIndex ℝ E'
   let A := (Basis.ofVectorSpace ℝ E').equivFun.toContinuousLinearEquiv
-  have LA : LipschitzWith ‖A.toContinuousLinearMap‖₊ A := by apply A.lipschitz
+  have LA : LipschitzWith ‖A.toContinuousLinearMap‖₊ A := by apply A.lipschitzWith
   have L : LipschitzOnWith (‖A.toContinuousLinearMap‖₊ * K) (A ∘ f) s :=
     LA.comp_lipschitzOnWith hf
   obtain ⟨g, hg, gs⟩ :
@@ -223,7 +223,7 @@ theorem LipschitzOnWith.extend_finite_dimension {α : Type*} [PseudoMetricSpace 
     L.extend_pi
   refine ⟨A.symm ∘ g, ?_, ?_⟩
   · have LAsymm : LipschitzWith ‖A.symm.toContinuousLinearMap‖₊ A.symm := by
-      apply A.symm.lipschitz
+      apply A.symm.lipschitzWith
     apply (LAsymm.comp hg).weaken
     rw [lipschitzExtensionConstant, ← mul_assoc]
     exact mul_le_mul' (le_max_left _ _) le_rfl
@@ -272,7 +272,7 @@ theorem ContinuousLinearMap.isOpen_injective [FiniteDimensional 𝕜 E] :
   filter_upwards [this] with φ hφ
   apply φ.injective_iff_antilipschitz.mpr
   exact ⟨(K⁻¹ - ‖φ - φ₀‖₊)⁻¹, inv_pos_of_pos (tsub_pos_of_lt hφ),
-    H.add_sub_lipschitzWith (φ - φ₀).lipschitz hφ⟩
+    H.add_sub_lipschitzWith (φ - φ₀).lipschitzWith hφ⟩
 
 open ContinuousLinearMap
 

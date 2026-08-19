@@ -21,7 +21,7 @@ universe v
 
 open List Subtype Nat Function
 
-variable {α : Type*} {β : Type v} {γ : Type*}
+variable {α : Type*}
 
 namespace Multiset
 
