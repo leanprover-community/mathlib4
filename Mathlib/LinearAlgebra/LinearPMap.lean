@@ -1250,17 +1250,10 @@ theorem resolventLM_commute [IsCancelMulZero R] [Module.IsTorsionFree R E] {f : 
   · rw [hz]
   have h1 := resolventLM_sub_resolventLM_eq hz₁ hz₂
   have h2 := resolventLM_sub_resolventLM_eq hz₂ hz₁
-  have : (z₂ - z₁) • f.resolventLM z₁ ∘ₗ f.resolventLM z₂ +
-      (z₁ - z₂) • f.resolventLM z₂ ∘ₗ f.resolventLM z₁ = 0 := by
-    rw [← h1, ← h2]
-    ext x
-    simp
-  have := eq_neg_of_add_eq_zero_right this
+  have : (z₁ - z₂) • f.resolventLM z₂ ∘ₗ f.resolventLM z₁ =
+      -((z₂ - z₁) • f.resolventLM z₁ ∘ₗ f.resolventLM z₂) := by grind
   rw [← neg_smul, neg_sub] at this
-  apply smul_cancel_of_non_zero_divisor (z₁ - z₂) ?_ this.symm
-  intro f hf
-  have : z₁ - z₂ ≠ 0 := by grind
-  rwa [← smul_eq_zero_iff_right this]
+  grind [smul_cancel_of_non_zero_divisor, smul_eq_zero_iff_right]
 
 /-- The second resolvent identity -/
 theorem resolventLM_sub_resolventLM_eq' {f g : E →ₗ.[R] E} {z : R} (hz₁ : z ∈ f.resolventSet)
