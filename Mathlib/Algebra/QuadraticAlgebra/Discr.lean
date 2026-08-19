@@ -147,8 +147,8 @@ theorem discr_eq_im_sq_mul_discr' (e : QuadraticAlgebra R a' b' ≃ₐ[R] Quadra
 `QuadraticAlgebra R (discr a b) 0`. -/
 def algEquivDiscrZero [Invertible (2 : R)] (a b : R) :
     QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R (discr a b) 0 :=
-  (changeGeneratorEquiv a b (unitOfInvertible (2 : R)) (-b) (by grind [discr_def, val_unitOfInvertible])
-    (by grind [val_unitOfInvertible])).symm
+  (changeGeneratorEquiv a b (unitOfInvertible (2 : R)) (-b)
+    (by grind [discr_def, val_unitOfInvertible]) (by grind [val_unitOfInvertible])).symm
 
 /-- If `2` is regular, `QuadraticAlgebra R a b` and `QuadraticAlgebra R a' b'` are isomorphic
 iff `discr a b = u ^ 2 * discr a' b'` for some unit `u` with `2 ∣ b - u * b'`. -/
