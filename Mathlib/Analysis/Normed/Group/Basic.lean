@@ -23,7 +23,7 @@ normed group
 @[expose] public section
 
 
-variable {𝓕 α ι κ E F G : Type*}
+variable {𝓕 α ι E F G : Type*}
 
 open Filter Function Metric Bornology
 open ENNReal Filter NNReal Uniformity Pointwise Topology
@@ -639,12 +639,6 @@ lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ =
 @[to_additive]
 theorem mem_eball_one_iff {r : ℝ≥0∞} : a ∈ eball 1 r ↔ ‖a‖ₑ < r := by
   rw [Metric.mem_eball, edist_one_right]
-
-@[deprecated (since := "2026-01-24")]
-alias mem_emetric_ball_zero_iff := mem_eball_zero_iff
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias mem_emetric_ball_one_iff := mem_eball_one_iff
 
 end ENorm
 

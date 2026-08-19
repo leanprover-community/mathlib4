@@ -108,11 +108,6 @@ alias LE.le.isCofinalFor := IsCofinalFor.of_subset
 @[deprecated (since := "2026-03-23")] alias HasSubset.Subset.isCofinalFor := LE.le.isCofinalFor
 @[deprecated (since := "2026-03-23")] alias HasSubset.Subset.isCoinitialFor := LE.le.isCoinitialFor
 
-@[deprecated LE.le.isCofinalFor (since := "2026-01-08")]
-alias HasSubset.Subset.iscofinalfor := IsCofinalFor.of_subset
-@[deprecated LE.le.isCoinitialFor (since := "2026-01-08")]
-alias HasSubset.Subset.iscoinitialfor := IsCoinitialFor.of_subset
-
 @[to_dual (attr := refl)]
 protected lemma IsCofinalFor.rfl : IsCofinalFor s s := .of_subset .rfl
 
@@ -274,6 +269,14 @@ theorem IsLeast.isGLB (h : IsLeast s a) : IsGLB s a :=
   ⟨h.2, fun _ hb => hb h.1⟩
 
 @[to_dual]
+theorem IsGLB.isLeast (h : IsGLB s a) (hmem : a ∈ s) : IsLeast s a :=
+  ⟨hmem, h.left⟩
+
+@[to_dual]
+theorem isLeast_iff_isGLB_and_mem : IsLeast s a ↔ IsGLB s a ∧ a ∈ s :=
+  ⟨fun h ↦ ⟨h.isGLB, h.left⟩, fun ⟨h, hmem⟩ ↦ h.isLeast hmem⟩
+
+@[to_dual]
 theorem IsLUB.upperBounds_eq (h : IsLUB s a) : upperBounds s = Ici a :=
   Set.ext fun _ => ⟨fun hb => h.2 hb, fun hb => upperBounds_mono_mem hb h.1⟩
 
@@ -284,6 +287,10 @@ theorem IsLeast.lowerBounds_eq (h : IsLeast s a) : lowerBounds s = Iic a :=
 @[to_dual]
 theorem IsGreatest.lt_iff (h : IsGreatest s a) : a < b ↔ ∀ x ∈ s, x < b :=
   ⟨fun hlt _x hx => (h.2 hx).trans_lt hlt, fun h' => h' _ h.1⟩
+
+@[to_dual]
+theorem IsGreatest.le_iff (h : IsGreatest s a) : b ≤ a ↔ ∃ x ∈ s, b ≤ x :=
+  ⟨fun hle ↦ ⟨a, h.1, hle⟩, fun ⟨_, hxs, hxb⟩ ↦ hxb.trans (h.2 hxs)⟩
 
 @[to_dual le_isGLB_iff]
 theorem isLUB_le_iff (h : IsLUB s a) : a ≤ b ↔ b ∈ upperBounds s := by
@@ -452,9 +459,6 @@ theorem bddAbove_Iio : BddAbove (Iio a) :=
 @[to_dual]
 theorem le_of_isLUB_Iio (a : α) (hb : IsLUB (Iio a) b) : b ≤ a :=
   (isLUB_le_iff hb).mpr fun _ hk => le_of_lt hk
-
-@[deprecated (since := "2026-01-17")] alias lub_Iio_le := le_of_isLUB_Iio
-@[deprecated (since := "2026-01-17")] alias le_glb_Ioi := le_of_isGLB_Ioi
 
 @[to_dual]
 theorem lub_Iio_eq_self_or_Iio_eq_Iic [PartialOrder γ] {j : γ} (i : γ) (hj : IsLUB (Iio i) j) :
