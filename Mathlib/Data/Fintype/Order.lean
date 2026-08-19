@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Finite.Basic  -- shake: keep (IsAtomic α), cf. lean#13417
-public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Atoms
 
 import Mathlib.Data.Finite.Prod
@@ -51,12 +50,11 @@ We provide a few instances for concrete types:
 
 public section
 
-
 open Finset
 
 namespace Fintype
 
-variable {ι α : Type*} [Fintype ι] [Fintype α]
+variable {α : Type*} [Fintype α]
 
 section Nonempty
 
@@ -96,11 +94,11 @@ noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : Complete
   isLUB_sSup s := Set.coe_toFinset s ▸ Finset.isLUB_sup_id
   isGLB_sInf s := Set.coe_toFinset s ▸ Finset.isGLB_inf_id
 
+attribute [local instance] toCompleteLattice in
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
 noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice.MinimalAxioms α where
-  __ := toCompleteLattice α
   iInf_sup_le_sup_sInf := fun a s => by
     convert! (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
     rw [Finset.inf_eq_iInf]
@@ -112,6 +110,7 @@ noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [
     simp_rw [Set.mem_toFinset]
     rfl
 
+attribute [local instance] toCompleteLattice in
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
 noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
@@ -352,6 +351,14 @@ lemma map_iSup_of_antitone (f : ι → α) {g : α → β} (hg : Antitone g) :
 lemma map_iInf_of_antitone (f : ι → α) {g : α → β} (hg : Antitone g) :
     g (⨅ i, f i) = ⨆ i, g (f i) :=
   map_iInf_of_monotone (β := βᵒᵈ) f hg
+
+@[to_dual ciInf_le_iff]
+theorem le_ciSup_iff {a : α} {f : ι → α} : a ≤ ⨆ i, f i ↔ ∃ x, a ≤ f x := by
+  simpa using (Finite.isGreatest_ciSup f).le_iff
+
+@[to_dual lt_ciInf_iff]
+theorem ciSup_lt_iff {a : α} {f : ι → α} : ⨆ i, f i < a ↔ ∀ x, f x < a := by
+  simpa using (Finite.isGreatest_ciSup f).lt_iff
 
 end CCLO
 
