@@ -416,7 +416,7 @@ theorem circleIntegrable_sub_inv_iff {c w : ℂ} {R : ℝ} :
 theorem CircleIntegrable.sub_zpow_smul [NormedSpace ℂ E] {f : ℂ → E} {c w : ℂ} {R : ℝ}
     (n : ℤ) (hf : CircleIntegrable f c R) (hw : w ∉ sphere c |R|) :
     CircleIntegrable (fun z ↦ (z - w) ^ n • f z) c R :=
-  hf.fun_smul_of_continuousOn <| (continuousOn_id.sub continuousOn_const).zpow₀ n
+  hf.fun_continuousOn_smul <| (continuousOn_id.sub continuousOn_const).zpow₀ n
     fun _ hz ↦ Or.inl (sub_ne_zero.2 (ne_of_mem_of_not_mem hz hw))
 
 variable [NormedSpace ℂ E]
