@@ -98,7 +98,7 @@ equivalent to the initial value problem defined by `f`.
 section
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {t₀ tmin tmax : ℝ}
+  {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {t₀ : ℝ}
 
 /-- The Picard iteration. It will be shown that if `α : ℝ → E` and `picard f t₀ x₀ α` agree on an
 interval containing `t₀`, then `α` is a solution to `f` with `α t₀ = x₀` on this interval. -/
@@ -202,8 +202,8 @@ lemma range_toContinuousMap :
 instance [CompleteSpace E] : CompleteSpace (FunSpace t₀ x₀ r L) := by
   rw [completeSpace_iff_isComplete_range isUniformInducing_toContinuousMap]
   apply IsClosed.isComplete
-  rw [range_toContinuousMap, setOf_and]
-  apply isClosed_setOf_lipschitzWith L |>.preimage continuous_coeFun |>.inter
+  rw [range_toContinuousMap, ofPred_and]
+  apply isClosed_setOfPred_lipschitzWith L |>.preimage continuous_coeFun |>.inter
   simp_rw [mem_closedBall_iff_norm]
   exact isClosed_le (by fun_prop) (by fun_prop)
 
