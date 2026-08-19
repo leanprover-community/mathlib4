@@ -28,7 +28,7 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 
 open Set
 
-variable {α : Type*} {r : α → α → Prop} {c c₁ c₂ s t : Set α} {a b x y : α}
+variable {α : Type*} {r : α → α → Prop} {c c₁ c₂ s t : Set α} {a b x : α}
 
 /-- Predicate for whether a set is reachable from `∅` using `SuccChain` and `⋃₀`. -/
 inductive ChainClosure (r : α → α → Prop) : Set α → Prop
