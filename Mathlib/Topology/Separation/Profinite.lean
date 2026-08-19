@@ -58,7 +58,7 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
       have h_nhds : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := fun y y_in => by
         rw [hx, mem_singleton_iff] at y_in
         rwa [y_in]
-      exact exists_subset_nhds_of_compactSpace hdir hNcl h_nhds
+      exact exists_subset_nhds_of_compactSpace hdir hNcl (mem_nhdsSet_iff_forall.mpr h_nhds)
     · rintro ⟨V, ⟨hxV, -, V_op⟩, hUV : V ⊆ U⟩
       rw [mem_nhds_iff]
       exact ⟨V, hUV, V_op, hxV⟩⟩
