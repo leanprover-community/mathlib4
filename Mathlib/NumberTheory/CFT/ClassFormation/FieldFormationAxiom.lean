@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.CFT.ClassFormation.Basic
 public import Mathlib.NumberTheory.CFT.ClassFormation.GroupCohomology
+public import Mathlib.NumberTheory.CFT.ClassFormation.Sheaves
 public import Mathlib.GroupTheory.PGroup
 
 /-!
@@ -78,20 +79,58 @@ noncomputable abbrev shortComplexHOfComp
   ShortComplex.mk (Φ.inflation f g fg n) (Φ.restriction f g fg n)
     (Φ.inflation_comp_restriction_eq_zero f g fg n)
 
-def repAddEquivQuotientToInvariants (hfg : f ≫ g = fg := by cat_disch) :
-    (Φ.rep g) ≃+ (Φ.rep fg).quotientToInvariants (autMapOfIsGaloisCover f g fg).ker where
-  toFun x := ⟨Φ.sheaf.obj.map (isConnectedHomMk f).op x, sorry⟩
-  invFun := sorry
-  left_inv := sorry
-  right_inv := sorry
-  map_add' := sorry
+noncomputable def repAddEquivQuotientToInvariants (hfg : f ≫ g = fg := by cat_disch) :
+    Φ.rep g ≃+ Representation.invariants
+        ((Φ.rep fg).ρ.comp (autMapOfIsGaloisCover f g fg).ker.subtype) :=
+  AddEquiv.ofBijective
+    (AddMonoidHom.mk'
+      (fun x ↦ ⟨Φ.sheaf.obj.map (isConnectedHomMk f).op x, by
+        simp only [Representation.mem_invariants, MonoidHom.coe_comp, Subgroup.coe_subtype,
+          Function.comp_apply, Subtype.forall, MonoidHom.mem_ker]
+        intro σ hσ
+        dsimp
+        rw [autMapOfIsGaloisCover_eq_one_iff' f g fg] at hσ
+        rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp]
+        congr 4
+        ext
+        simpa⟩) (by simp)) (by
+    obtain ⟨h₁, h₂⟩ := (isSheafFor_singleton_iff_of_isGaloisCover ..).1
+      (GaloisCategory.isSheafFor_singleton _ Φ.isSheaf_forget (isConnectedHomMk f))
+    refine ⟨fun x₁ x₂ hx ↦ h₁ (by simpa using hx), fun ⟨y, hy⟩ ↦ ?_⟩
+    obtain ⟨x, rfl⟩ := h₂ y (fun σ ↦ by
+      simp only [Representation.mem_invariants, MonoidHom.coe_comp, Subgroup.coe_subtype,
+        Function.comp_apply, representation_apply, Subtype.forall, MonoidHom.mem_ker] at hy
+      exact hy ((Aut.overMap f g fg) σ⁻¹) (by simp))
+    exact ⟨x, rfl⟩)
+
+@[simp]
+lemma repAddEquivQuotientToInvariants_apply_val (x : Φ.rep g)
+    (hfg : f ≫ g = fg := by cat_disch) :
+    ((Φ.repAddEquivQuotientToInvariants f g fg) x).val =
+      Φ.sheaf.obj.map (isConnectedHomMk f).op x := rfl
 
 noncomputable def shortComplexHOfCompIso₁ (hfg : f ≫ g = fg := by cat_disch) :
     AddCommGrpCat.of (groupCohomology ((Φ.rep fg).quotientToInvariants
       (autMapOfIsGaloisCover f g fg).ker) 1) ≅
     Φ.H g 1 :=
   (forget₂ _ Ab).mapIso (groupCohomology.mapIso (autQuotientMulEquiv f g fg)
-    (AddEquiv.toLinearEquiv (Φ.repAddEquivQuotientToInvariants f g fg).symm sorry) sorry 1)
+    (AddEquiv.toLinearEquiv (Φ.repAddEquivQuotientToInvariants f g fg).symm (by simp)) (by
+      intro σ
+      induction σ using QuotientGroup.induction_on with | _ σ
+      ext x
+      dsimp
+      simp only [Representation.subrepresentation_apply]
+      obtain ⟨y, hy⟩ := (Φ.repAddEquivQuotientToInvariants f g fg).surjective x
+      rw [← hy, AddEquiv.symm_apply_apply]
+      apply (Φ.repAddEquivQuotientToInvariants f g fg).injective
+      ext
+      simp only [AddEquiv.apply_symm_apply, autQuotientMulEquiv_mk f g fg σ,
+        LinearMap.coe_restrict_apply, representation_apply,
+        Φ.repAddEquivQuotientToInvariants_apply_val f g fg,
+        ← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp]
+      congr 4
+      ext
+      simp) 1)
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]

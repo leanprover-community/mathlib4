@@ -42,6 +42,10 @@ namespace Formation
 
 variable [GaloisCategory C] (Φ : Formation C)
 
+lemma isSheaf_forget : Presieve.IsSheaf (isConnectedTopology C) (Φ.sheaf.obj ⋙ forget _) := by
+  rw [← isSheaf_iff_isSheaf_of_type]
+  exact Presheaf.isSheaf_comp_of_isSheaf _ _ (forget _) Φ.sheaf.property
+
 section
 
 variable {Y X : C} (f : Y ⟶ X) [PreGaloisCategory.IsConnected X]
@@ -49,9 +53,9 @@ variable {Y X : C} (f : Y ⟶ X) [PreGaloisCategory.IsConnected X]
 
 /-- If `Φ` is a formation and `f : Y ⟶ X` is a Galois cover, this is the induced
 representation of the group of automorphisms of `Over.mk f`. -/
-@[nolint unusedArguments]
+@[implicit_reducible, nolint unusedArguments]
 def representation [IsGaloisCover f] :
-    Representation (ULift.{v} ℤ) (Aut (Over.mk f)) (Φ.sheaf.obj.obj (op ⟨Y, inferInstance⟩)) where
+    Representation (ULift.{v} ℤ) (Aut (Over.mk f)) (Φ.sheaf.obj.obj (op (isConnectedMk Y))) where
   toFun g :=
     { toFun := (Φ.sheaf.obj.map (ObjectProperty.homMk g.inv.left).op).hom.toFun
       map_add' := by simp
@@ -68,6 +72,11 @@ def representation [IsGaloisCover f] :
     rfl
 
 variable [IsGaloisCover f]
+
+@[simp]
+lemma representation_apply (σ : Aut (Over.mk f)) (x : Φ.sheaf.obj.obj (op (isConnectedMk Y))) :
+    Φ.representation f σ x =
+      Φ.sheaf.obj.map (ObjectProperty.homMk σ.inv.left).op x := rfl
 
 /-- If `Φ` is a formation and `f : Y ⟶ X` is a Galois cover, this is the induced
 representation of the group of automorphisms of `Over.mk f`, as an object

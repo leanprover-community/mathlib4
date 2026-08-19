@@ -57,6 +57,10 @@ noncomputable def autMapOfIsGaloisCover (h : f ≫ g = fg := by cat_disch) :
     Aut (Over.mk fg) →* Aut (Over.mk g) :=
   autMapHom (Over.homMk f)
 
+lemma autMapOfIsGaloisCover_surjective (h : f ≫ g = fg := by cat_disch) :
+    Function.Surjective (autMapOfIsGaloisCover f g fg) :=
+  autMap_surjective_of_isGalois _
+
 @[reassoc (attr := simp)]
 lemma comp_autMapOfIsGaloisCover_hom_left
     (γ : Aut (Over.mk fg)) (h : f ≫ g = fg := by cat_disch) :
@@ -96,11 +100,35 @@ def kerAutMapOfIsGaloisCoverMulEquiv (h : f ≫ g = fg := by cat_disch) :
   invFun σ := ⟨(Aut.overMap f g fg) σ, by simp⟩
   map_mul' := by aesop
 
+lemma autMapOfIsGaloisCover_eq_one_iff (σ : Aut (Over.mk fg))
+    (h : f ≫ g = fg := by cat_disch) :
+    autMapOfIsGaloisCover f g fg h σ = 1 ↔ σ.hom.left ≫ f = f := by
+  refine ⟨fun hσ ↦ ?_, fun hσ ↦ autMapOfIsGaloisCover_eq f g fg _ _ h ?_⟩
+  · simpa [hσ, Aut.one_def] using (comp_autMapOfIsGaloisCover_hom_left f g fg σ).symm
+  · simpa [Aut.one_def] using hσ.symm
+
+lemma autMapOfIsGaloisCover_eq_one_iff' (σ : Aut (Over.mk fg))
+    (h : f ≫ g = fg := by cat_disch) :
+    autMapOfIsGaloisCover f g fg h σ = 1 ↔ σ.inv.left ≫ f = f := by
+  rw [autMapOfIsGaloisCover_eq_one_iff f g fg]
+  refine ⟨fun hσ ↦ ?_, fun hσ ↦ ?_⟩
+  · nth_rw 1 [← hσ]
+    simp [← Over.comp_left_assoc, σ.inv_hom_id]
+  · nth_rw 1 [← hσ]
+    simp [← Over.comp_left_assoc, σ.hom_inv_id]
+
 noncomputable def autQuotientMulEquiv (h : f ≫ g = fg := by cat_disch) :
     Aut (Over.mk fg) ⧸ (autMapOfIsGaloisCover f g fg h).ker ≃* Aut (Over.mk g) :=
   MulEquiv.ofBijective (QuotientGroup.lift _ (autMapOfIsGaloisCover f g fg h) (by simp)) (by
-    sorry)
+    refine ⟨?_, fun σ ↦ ?_⟩
+    · rw [← MonoidHom.ker_eq_bot_iff, eq_bot_iff]
+      intro σ hσ
+      induction σ using QuotientGroup.induction_on with | _ σ
+      simpa using hσ
+    · obtain ⟨σ', rfl⟩ := (autMapOfIsGaloisCover_surjective f g fg) σ
+      exact ⟨σ', by simp⟩)
 
+@[simp]
 lemma autQuotientMulEquiv_mk (σ : Aut (Over.mk fg)) (h : f ≫ g = fg := by cat_disch) :
   (autQuotientMulEquiv f g fg) σ = (autMapOfIsGaloisCover f g fg) σ := rfl
 
