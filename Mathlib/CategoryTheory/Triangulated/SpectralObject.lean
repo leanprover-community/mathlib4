@@ -184,7 +184,7 @@ section
 variable (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
 
 /-- The image of a spectral object by a triangulated functor. -/
-@[simps]
+@[implicit_reducible, simps]
 def mapTriangulatedFunctor : SpectralObject D ι where
   ω₁ := X.ω₁ ⋙ F
   δ' := Functor.whiskerRight X.δ' F ≫
