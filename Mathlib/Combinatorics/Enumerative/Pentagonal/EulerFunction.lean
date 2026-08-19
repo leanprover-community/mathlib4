@@ -42,7 +42,7 @@ namespace Pentagonal
 
 lemma pow_mul_prod_bound (k n : ℕ) {x : R} (hx : ‖x‖ < 1) :
     ‖x ^ ((k + 1) * n) * ∏ i ∈ range (n + 1), (1 - x ^ (k + i + 1))‖ ≤
-    ‖x‖ ^ ((k + 1) * n) * ∏' i, (1 + ‖x‖ ^ i) := by
+      ‖x‖ ^ ((k + 1) * n) * ∏' i, (1 + ‖x‖ ^ i) := by
   grw [norm_mul_le, Finset.norm_prod_le, norm_pow_le]
   refine mul_le_mul_of_nonneg_left ?_ (by simp)
   trans ∏ i ∈ Ico (k + 1) (n + 1 + (k + 1)), (1 + ‖x‖ ^ i)
