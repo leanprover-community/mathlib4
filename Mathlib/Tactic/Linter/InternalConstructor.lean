@@ -60,8 +60,7 @@ def internalConstructor : Linter where
         | .ofTermInfo i =>
           let .const n _ := i.expr.cleanupAnnotations | pure ()
           if
-            ctx.env.isImportedConst n && !isPrivateName n &&
-            n.isInternal && ctx.env.isConstructor n
+            n.isInternal && !isPrivateName n && ctx.env.isImportedConst n && ctx.env.isConstructor n
           then
             -- Use `withRef` to fall back to outer ref if `info.stx` has no position info
             withRef info.stx do
