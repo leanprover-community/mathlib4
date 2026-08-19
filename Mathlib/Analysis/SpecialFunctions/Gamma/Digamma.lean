@@ -71,7 +71,7 @@ theorem digamma_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) :
   have := congrArg (logDeriv · s) (funext Gamma_mul_Gamma_one_sub)
   rw [logDeriv_fun_mul, logDeriv_fun_div, ← Function.comp_def Gamma, ← Function.comp_def sin,
     logDeriv_comp, logDeriv_comp] at this <;>
-    try first | fun_prop | grind [sin_eq_zero_iff, ofReal_ne_zero, pi_ne_zero]
+    try first | fun_prop | grind [sin_eq_zero_iff, ofReal_ne_zero, Real.pi_ne_zero]
   simp [digamma_def] at this ⊢
   grind
 
