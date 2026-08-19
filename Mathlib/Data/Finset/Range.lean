@@ -34,11 +34,11 @@ assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMo
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*}
 
 namespace Finset
 
-open Multiset Subtype Function
+open Multiset
 
 /-! ### range -/
 
@@ -47,7 +47,7 @@ section Range
 
 open Nat
 
-variable {n m l : ℕ}
+variable {n m : ℕ}
 
 /-- `range n` is the set of natural numbers less than `n`. -/
 def range (n : ℕ) : Finset ℕ :=

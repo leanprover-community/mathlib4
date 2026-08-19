@@ -598,7 +598,7 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 /-- The star operation on `NonUnitalSubalgebra` commutes with `NonUnitalAlgebra.adjoin`. -/
 theorem star_adjoin_comm (s : Set A) :
     star (NonUnitalAlgebra.adjoin R s) = NonUnitalAlgebra.adjoin R (star s) :=
-  have this :
+  have :
     ∀ t : Set A, NonUnitalAlgebra.adjoin R (star t) ≤ star (NonUnitalAlgebra.adjoin R t) := fun _ =>
     NonUnitalAlgebra.adjoin_le fun _ hx => NonUnitalAlgebra.subset_adjoin R hx
   le_antisymm (by simpa only [star_star] using NonUnitalSubalgebra.star_mono (this (star s)))
@@ -1102,7 +1102,6 @@ variable [Nonempty ι] {K : ι → NonUnitalStarSubalgebra R A} {dir : Directed 
   {f : ∀ i, K i →⋆ₙₐ[R] B} {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
   {T : NonUnitalStarSubalgebra R A} {hT : T = iSup K}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
@@ -1115,7 +1114,6 @@ theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
 theorem iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
     (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
     iSupLift K dir f hf T hT ⟨x, hx⟩ = f i x := by
@@ -1123,7 +1121,6 @@ theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
   dsimp [iSupLift]
   apply Set.iUnionLift_mk
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iSupLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
     iSupLift K dir f hf T hT x = f i ⟨x, hx⟩ := by
   subst hT
@@ -1168,6 +1165,22 @@ instance instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [StarRing A] [Modul
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
+
+theorem map_center_le_center {F} [IsScalarTower R B B] [SMulCommClass R B B] [FunLike F A B]
+    [NonUnitalAlgHomClass F R A B] [StarHomClass F A B] {f : F} (hf : Function.Surjective f) :
+    map f (center R A) ≤ center R B :=
+  Set.image_center_subset hf
+
+theorem comap_center_le_center {F} [IsScalarTower R B B] [SMulCommClass R B B] [FunLike F A B]
+    [NonUnitalAlgHomClass F R A B] [StarHomClass F A B] {f : F} (hf : Function.Injective f) :
+    comap f (center R B) ≤ center R A :=
+  Set.preimage_center_subset hf
+
+@[simp]
+theorem map_center_eq {F} [IsScalarTower R B B] [SMulCommClass R B B] [EquivLike F A B]
+    [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] (f : F) :
+    map f (center R A) = center R B :=
+  SetLike.coe_injective (Set.image_center_eq f)
 
 protected theorem center_prod [IsScalarTower R B B] [SMulCommClass R B B] :
     center R (A × B) = prod (center R A) (center R B) :=

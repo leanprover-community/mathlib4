@@ -5,13 +5,10 @@ Authors: Joël Riou, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
 public import Mathlib.AlgebraicGeometry.Modules.Presheaf
-public import Mathlib.AlgebraicGeometry.OpenImmersion
-public import Mathlib.AlgebraicGeometry.AffineScheme
-public import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
+public import Mathlib.AlgebraicGeometry.Restrict
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.SheafOfModules
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.Topology.Sheaves.Module
@@ -51,6 +48,9 @@ noncomputable instance : Abelian X.Modules :=
   inferInstanceAs <| Abelian (SheafOfModules.{u} X.ringCatSheaf)
 instance : HasLimits X.Modules := inferInstanceAs (HasLimits (SheafOfModules X.ringCatSheaf))
 instance : HasColimits X.Modules := inferInstanceAs (HasColimits (SheafOfModules X.ringCatSheaf))
+
+instance : IsGrothendieckAbelian.{u} X.Modules :=
+  inferInstanceAs (IsGrothendieckAbelian (SheafOfModules _))
 
 section Functor
 
@@ -143,7 +143,6 @@ lemma isSheaf (M : X.Modules) : M.presheaf.IsSheaf := SheafOfModules.isSheaf M
 @[simp] lemma toPresheaf_obj : (toPresheaf X).obj M = M.presheaf := rfl
 @[simp] lemma toPresheaf_map : (toPresheaf X).map φ = φ.mapPresheaf := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Hom.isIso_iff_isIso_app {M N : X.Modules} {φ : M ⟶ N} :
     IsIso φ ↔ ∀ U, IsIso (φ.app U) := by
   rw [← isIso_iff_of_reflects_iso _ (toPresheaf X), NatTrans.isIso_iff_isIso_app]
@@ -178,10 +177,12 @@ lemma pushforward_obj_presheaf_map {U V : Y.Opens} (i : U ⟶ V) :
 lemma pushforward_map_app (φ : M ⟶ N) (U : Y.Opens) :
     ((pushforward f).map φ).app U = φ.app (f ⁻¹ᵁ U) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The pullback functor for categories of sheaves of modules over schemes. -/
 def pullback : Y.Modules ⥤ X.Modules :=
   SheafOfModules.pullback f.toRingCatSheafHom
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The pullback functor for categories of sheaves of modules over schemes
 is left adjoint to the pushforward functor. -/
 def pullbackPushforwardAdjunction : pullback f ⊣ pushforward f :=
@@ -229,12 +230,14 @@ def pushforwardComp :
 @[simp] lemma pushforwardComp_hom_app_app (U) : ((pushforwardComp f g).hom.app M).app U = 𝟙 _ := rfl
 @[simp] lemma pushforwardComp_inv_app_app (U) : ((pushforwardComp f g).inv.app M).app U = 𝟙 _ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The composition of two pullback functors for sheaves of modules on schemes
 identify to the pullback for the composition. -/
 def pullbackComp :
     pullback g ⋙ pullback f ≅ pullback (f ≫ g) :=
   SheafOfModules.pullbackComp _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Pushforwards along equal morphisms are isomorphic. -/
 def pushforwardCongr {f g : X ⟶ Y} (hf : f = g) : pushforward f ≅ pushforward g :=
     pushforwardNatIso _ (Opens.mapIso _ _ (hf ▸ rfl)) ≪≫
@@ -250,6 +253,7 @@ def pushforwardCongr {f g : X ⟶ Y} (hf : f = g) : pushforward f ≅ pushforwar
 def pullbackCongr {f g : X ⟶ Y} (hf : f = g) : pullback f ≅ pullback g :=
   eqToIso (hf ▸ rfl)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma conjugateEquiv_pullbackComp_inv :
     conjugateEquiv ((pullbackPushforwardAdjunction g).comp (pullbackPushforwardAdjunction f))
       (pullbackPushforwardAdjunction (f ≫ g)) (pullbackComp f g).inv =
@@ -302,7 +306,6 @@ lemma pseudofunctor_right_unitality :
   simp [← this]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] pseudofunctor_associativity pseudofunctor_left_unitality
   pseudofunctor_right_unitality Bicategory.toNatTrans_conjugateEquiv
   conjugateEquiv_pullbackId_hom Adjunction.ofCat_comp conjugateEquiv_pullbackComp_inv in
@@ -440,6 +443,7 @@ lemma restrictAdjunction_counit_app_app (M : X.Modules) (U : X.Opens) :
 def restrictFunctorIsoPullback : restrictFunctor f ≅ pullback f :=
   (restrictAdjunction f).leftAdjointUniq (pullbackPushforwardAdjunction f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Restriction along the identity is isomorphic to the identity. -/
 def restrictFunctorId : restrictFunctor (𝟙 X) ≅ 𝟭 _ :=
@@ -458,12 +462,10 @@ lemma restrictFunctorId_inv_app_app :
     (restrictFunctorId.inv.app M).app U =
       M.presheaf.map (eqToHom (show 𝟙 X ''ᵁ U = U by simp)).op := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Restriction along the composition is isomorphic to the composition of restrictions. -/
 def restrictFunctorComp : restrictFunctor (f ≫ g) ≅ restrictFunctor g ⋙ restrictFunctor f :=
-  have : (f.opensFunctor ⋙ g.opensFunctor).IsContinuous
-      (Opens.grothendieckTopology X) (Opens.grothendieckTopology Z) :=
-    Functor.isContinuous_comp _ _ _ (Opens.grothendieckTopology _) _
   SheafOfModules.pushforwardNatIso _ (NatIso.ofComponents fun _ ↦ eqToIso (by simp)) ≪≫
     SheafOfModules.pushforwardCongr (by ext : 3; simp [← Functor.map_comp, SheafedSpace.sheaf]) ≪≫
     (SheafOfModules.pushforwardComp _ _).symm
@@ -476,6 +478,7 @@ lemma restrictFunctorComp_hom_app_app (M : Z.Modules) :
 lemma restrictFunctorComp_inv_app_app (M : Z.Modules) :
     ((restrictFunctorComp f g).inv.app M).app U = M.presheaf.map (eqToHom (by simp)).op := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Restriction along equal morphisms are isomorphic. -/
 def restrictFunctorCongr {f g : X ⟶ Y} (hf : f = g) [IsOpenImmersion f] [IsOpenImmersion g] :
