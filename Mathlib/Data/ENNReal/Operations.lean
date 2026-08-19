@@ -554,7 +554,7 @@ theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) :
     iInf f + iInf g = ⨅ a, f a + g a := by
   rw [ENNReal.iInf_add]
   simp_rw [ENNReal.add_iInf]
-  exact iInf₂_eq_iInf_diagonal (fun i j ↦ f i + g j) h
+  exact iInf₂_eq_iInf_diag_of_cofinal (fun i j ↦ f i + g j) h
 
 lemma iInf_add_iInf_of_monotone {ι : Type*} [Preorder ι] [IsCodirectedOrder ι] {f g : ι → ℝ≥0∞}
     (hf : Monotone f) (hg : Monotone g) : iInf f + iInf g = ⨅ a, f a + g a :=
