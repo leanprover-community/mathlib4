@@ -178,10 +178,9 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
   let newVarName ← match newVarName with
                  | some v => pure v.getId
                  | none   => e.fvarId!.getUserName
-  let prfEx ← mkAppOptM ``CanLift.prf #[none, none, coe, p, inst, e, prf]
+  let prfEx ← mkAppOptM ``CanLift.prf #[none, newType, coe, p, inst, e, prf]
   let prfEx ← instantiateMVars prfEx
-  let prfSyn : Term := ⟨← prfEx.toSyntax⟩
-  let prfSyn ← `(term| (show ∃ _ : $t, _ from $prfSyn))
+  let prfSyn ← prfEx.toSyntax
   -- if we have a new variable, but no hypothesis name was provided, we temporarily use a dummy
   -- hypothesis name
   let newEqName ← if isNewVar && !isNewEq then withMainContext <| getUnusedUserName `tmpVar
