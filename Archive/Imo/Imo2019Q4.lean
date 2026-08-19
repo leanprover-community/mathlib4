@@ -3,6 +3,8 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+module
+
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.Nat.Multiplicity
 public import Mathlib.Data.Nat.Prime.Int
@@ -25,6 +27,7 @@ Now for `n ≥ 6` we have `RHS < 2 ^ (n ^ 2) < (n(n-1)/2)! < k!`. We then treat 
 individually.
 -/
 
+public section
 
 open Nat Finset
 

@@ -3,6 +3,8 @@ Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
+module
+
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Ring.GeomSum
@@ -28,6 +30,7 @@ We provide a direct translation of the solution found in
 https://www.imo-official.org/problems/IMO2013SL.pdf
 -/
 
+public section
 
 namespace Imo2013Q5
 

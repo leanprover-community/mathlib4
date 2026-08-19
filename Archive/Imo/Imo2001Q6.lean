@@ -3,6 +3,8 @@ Copyright (c) 2021 Sara Díaz Real. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sara Díaz Real
 -/
+module
+
 public import Mathlib.Algebra.Ring.Associated
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.LinearCombination
@@ -20,7 +22,7 @@ Prove that $a*b + c*d$ is not prime.
 
 variable {a b c d : ℤ}
 
-theorem imo2001_q6 (hd : 0 < d) (hdc : d < c) (hcb : c < b) (hba : b < a)
+public theorem imo2001_q6 (hd : 0 < d) (hdc : d < c) (hcb : c < b) (hba : b < a)
     (h : a * c + b * d = (a + b - c + d) * (-a + b + c + d)) : ¬Prime (a * b + c * d) := by
   intro (h0 : Prime (a * b + c * d))
   have ha : 0 < a := by lia

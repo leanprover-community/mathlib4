@@ -3,6 +3,8 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
+module
+
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
@@ -33,6 +35,8 @@ By the same reasoning this bound holds when "girls" and "boys" are swapped throu
 are $21^2$ girl-boy pairs in all and $21^2 > 210 + 210$, so some girl-boy pairs solved only problems
 in common that were not hard for girls or boys. By condition 2 the result follows.
 -/
+
+@[expose] public section
 
 namespace Imo2001Q3
 

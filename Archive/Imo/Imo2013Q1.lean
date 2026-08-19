@@ -3,6 +3,8 @@ Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
+module
+
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 public import Mathlib.Algebra.Order.Field.Rat
 public import Mathlib.Tactic.FieldSimp
@@ -24,6 +26,7 @@ Adaptation of the solution found in https://www.imo-official.org/problems/IMO201
 We prove a slightly more general version where k does not need to be strictly positive.
 -/
 
+public section
 
 namespace Imo2013Q1
 

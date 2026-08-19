@@ -3,6 +3,8 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
+module
+
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Data.NNReal.Basic
@@ -22,6 +24,7 @@ for all positive real numbers `w`, `x`, `y`, `z`, satisfying `wx = yz`.
 The desired theorem is that either `f = fun x => x` or `f = fun x => 1/x`
 -/
 
+public section
 
 open Real
 
