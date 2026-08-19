@@ -143,7 +143,7 @@ def mapPair : F ⟶ G where
   app
     | ⟨left⟩ => f
     | ⟨right⟩ => g
-  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by cat_disch
+  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨u⟩ => by cat_disch
 
 @[simp]
 theorem mapPair_left : (mapPair f g).app ⟨left⟩ = f :=
@@ -160,7 +160,7 @@ def mapPairIso (f : F.obj ⟨left⟩ ≅ G.obj ⟨left⟩) (g : F.obj ⟨right�
   NatIso.ofComponents (fun j ↦ match j with
     | ⟨left⟩ => f
     | ⟨right⟩ => g)
-    (fun ⟨⟨u⟩⟩ => by cat_disch)
+    (fun ⟨u⟩ => by cat_disch)
 
 end
 
@@ -1236,6 +1236,13 @@ theorem prodComparison_comp :
       G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by
   unfold prodComparison
   ext <;> simp [← G.map_comp]
+
+@[reassoc]
+lemma map_braiding_hom_comp_prodComparison
+    [HasBinaryProduct B A] [HasBinaryProduct (F.obj B) (F.obj A)] :
+    F.map (prod.braiding _ _).hom ≫ prodComparison F A B  =
+    prodComparison F B A ≫ (prod.braiding _ _).hom := by
+  ext <;> simp [← Functor.map_comp]
 
 end ProdComparison
 
