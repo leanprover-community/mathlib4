@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.ENat.Defs
+public import Mathlib.Data.ENat.Basic
 public import Mathlib.Data.Set.Card
 public import Mathlib.Order.CompletePartialOrder
 
@@ -27,7 +29,7 @@ This file defines k-edge-connectivity for simple graphs.
 
 namespace SimpleGraph
 
-variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ} {u v w x y : V}
+variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ∞} {u v w x y : V}
 
 variable (G k u v) in
 /-- Two vertices are `k`-edge-reachable if they remain reachable after removing strictly fewer than
@@ -77,7 +79,7 @@ lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected := by
   simp [IsEdgeConnected, Preconnected]
 
 lemma IsEdgeReachable.reachable (hk : k ≠ 0) (huv : G.IsEdgeReachable k u v) : G.Reachable u v :=
-  isEdgeReachable_one.mp (huv.anti (Nat.one_le_iff_ne_zero.mpr hk))
+  isEdgeReachable_one.mp (huv.anti (Order.one_le_iff_ne_zero.mpr hk))
 
 @[nontriviality]
 lemma IsEdgeReachable.of_subsingleton [Subsingleton V] : G.IsEdgeReachable k u v :=
@@ -98,7 +100,7 @@ lemma IsEdgeReachable.le_degree [Fintype (G.neighborSet u)] (h : G.IsEdgeReachab
     (huv : u ≠ v) : k ≤ G.degree u := by
   classical
   by_contra! hh
-  rw [← card_incidenceSet_eq_degree, ← ENat.natCast_lt_natCast, Set.coe_fintypeCard] at hh
+  rw [← card_incidenceSet_eq_degree, Set.coe_fintypeCard] at hh
   obtain ⟨w, _⟩ := h hh |>.exists_isPath
   simpa using w.adj_snd <| mt Walk.Nil.eq huv
 
@@ -108,8 +110,45 @@ lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
   exact (h u v).le_degree hv.symm
 
 theorem IsEdgeConnected.le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
-    (h : G.IsEdgeConnected k) : k ≤ G.minDegree :=
-  le_minDegree_of_forall_le_degree G k fun _ ↦ le_degree h
+    (hk : k ≠ ⊤) (h : G.IsEdgeConnected k) : k ≤ G.minDegree :=by
+  -- old solution
+  --exact le_minDegree_of_forall_le_degree G k (le_degree h)
+
+  #check WithTop.coe_le_coe
+  let n : ℕ := WithTop.untop k hk
+  have hn : (n : ℕ∞) = k := by{
+    simp [n,WithTop.untop]
+    aesop
+  }
+  rw [←hn]
+  have hh : G.IsEdgeConnected (↑n) := by
+    simp_all only [n]
+  simp 
+  apply le_minDegree_of_forall_le_degree 
+  intro v'
+  #check le_degree (u := v') hh 
+  have := le_degree (u := v') hh 
+  simp at this ; assumption
+
+
+  --rw [←WithTop.coe_le_coe]
+  --simp 
+ -- exact le_minDegree_of_forall_le_degree G n (by exact le_degree h hh)
+ -- exact?
+ -- exact le_degree h 
+
+/-
+  exact le_minDegree_of_forall_le_degree G (WithTop.untop k hk) fun _ ↦ (
+  by
+    #check le_degree (k := WithTop.untop k (by exact WithTop.coe_ne_top)) h
+    expose_names
+    --apply le_degree (u := x) (k := WithTop.untop k (by exact WithTop.coe_ne_top)) h
+    exact le_minDegree_of_forall_le_degree G (WithTop.untop k hk) fun x ↦ by(
+      exact_mod_cast le_degree h
+      )
+    exact (le_degree h)
+    -/
+  --le_degree h
 
 lemma isEdgeReachable_add_one (hk : k ≠ 0) :
     G.IsEdgeReachable (k + 1) u v ↔ ∀ e, (G.deleteEdges {e}).IsEdgeReachable k u v := by
@@ -150,13 +189,13 @@ lemma isBridge_iff_not_isEdgeReachable_two (huv : G.Adj u v) :
 alias isBridge_iff_adj_and_not_isEdgeConnected_two := isBridge_iff_not_isEdgeReachable_two
 
 lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e}).Reachable u v := by
-  simp [isEdgeReachable_add_one]
+  simp [isEdgeReachable_add_one, ←one_add_one_eq_two]
 
 /-- A graph is 2-edge-connected iff it has no bridge. -/
 -- TODO: This should be `G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e` after
 -- https://github.com/leanprover-community/mathlib4/pull/32583
 lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
-  simp [isEdgeConnected_add_one]
+  simp [isEdgeConnected_add_one, ←one_add_one_eq_two]
 
 lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
     ∃ w : V, G.Adj u w ∧ G.IsEdgeReachable 2 u w := by
@@ -179,17 +218,62 @@ The edge reachability number of a graph `G` and two vertices `u`,`v` is the larg
 `u`,`v` are `k`-edge-reachable
 -/
 noncomputable def edgeReachability (G : SimpleGraph V) (u v : V) : ℕ∞ :=
-  ⨆ (k : ℕ) (_ : G.IsEdgeReachable k u v), k
+  ⨆ (k : ℕ∞) (_ : G.IsEdgeReachable k u v), k
 
 /--
 The edge connectivity number of a graph `G` is the largest `k` such that `G` is `k`-edge-connected.
 -/
 noncomputable def edgeConnectivity (G : SimpleGraph V) : ℕ∞ :=
-  ⨆ (k : ℕ) (_ : G.IsEdgeConnected k), k
+  ⨆ (k : ℕ∞) (_ : G.IsEdgeConnected k), k
 
+noncomputable def edgeConnectivity' (G : SimpleGraph V) : ℕ∞ :=
+  ⨆ (k : ℕ) (_ : G.IsEdgeConnected k), k
+theorem equiv_defs : G.edgeConnectivity = G.edgeConnectivity' := by
+ -- unfold edgeConnectivity
+ -- unfold edgeConnectivity'
+  
+  apply eq_of_le_of_ge 
+  refine iSup_le fun k => iSup_le fun h => ?_
+  cases k using WithTop.recTopCoe with
+  | top =>
+      have hn : ∀ n : ℕ, G.IsEdgeConnected (n : ℕ∞) := by
+        intro n
+        -- this is provable
+        exact h.mono (by simp)
+      rw [show (⊤ : ℕ∞) = ⨆ n : ℕ, (n : ℕ∞) by simp]
+      refine iSup_le fun n => ?_
+      exact le_iSup_of_le n (le_iSup_of_le (hn n) le_rfl)
+  | coe n =>
+      exact le_iSup_of_le n (le_iSup_of_le h le_rfl)
+--  sorry
+  · refine iSup_le fun k => iSup_le fun h => ?_
+    exact le_iSup_of_le (k : ℕ∞) (le_iSup_of_le h le_rfl)
+  apply iSup₂_le
+  intro i h
+  #check le_iSup_of_le
+  -- no they are not
+  apply le_iSup_of_le
+  apply le_iSup_of_le
+  have : i ≤ i := by
+    exact ENat.forall_natCast_le_iff_le.mp fun a a_1 ↦ a_1
+   
+  #check le_rfl
+  sorry
+
+#check WithTop.instCompleteLattice
+#check instCompleteLatticeWithTop
+#check 
+#synth CompleteLattice (WithTop ℕ)
+noncomputable instance : CompleteLattice ℕ∞ := by
+  exact completeLatticeOfCompleteSemilatticeSup ℕ∞
 theorem IsEdgeReachable.le_edgeReachability (h : G.IsEdgeReachable k u v) :
-    k ≤ G.edgeReachability u v :=
-  le_iSup₂ (α := ℕ∞) k h
+    k ≤ G.edgeReachability u v := by
+      unfold edgeReachability
+      #check ENat
+      #check CompleteLattice
+      apply le_iSup₂ (α := ℕ∞) k h
+
+  --le_iSup₂ (α := ℕ∞) k h
 
 theorem Reachable.edgeReachability_ne_zero (h : G.Reachable u v) : G.edgeReachability u v ≠ 0 := by
   simpa [← Order.one_le_iff_ne_zero] using isEdgeReachable_one.mpr h |>.le_edgeReachability
@@ -197,9 +281,19 @@ theorem Reachable.edgeReachability_ne_zero (h : G.Reachable u v) : G.edgeReachab
 theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
   le_iSup₂ (α := ℕ∞) k h
 
+-- check if this is in mathlib or not... 
+theorem iSup_enat : (⨆ k : ℕ∞, k) = ⊤ := by
+  apply top_unique
+  exact le_iSup (fun k : ℕ∞ => k) ⊤
+
 @[simp]
 theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnectivity = ⊤ := by
-  simpa [edgeConnectivity, IsEdgeConnected, IsEdgeReachable] using ENat.iSup_natCast
+  #check ENat.iSup_natCast
+  #check ENat.iSup_coe_eq_top
+  simp [edgeConnectivity, IsEdgeConnected, IsEdgeReachable]
+  exact iSup_enat
+   
+   
 
 @[simp]
 theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
@@ -225,6 +319,7 @@ theorem edgeReachability_le_degree_right [Fintype <| G.neighborSet v] (huv : u �
   exact edgeReachability_le_degree_left huv.symm
 
 theorem edgeConnectivity_le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj] :
+    -- changed efintion of edgeconnectivity to index over ℕ∞ instead of ℕ , are the two defintions equivalent??
     G.edgeConnectivity ≤ G.minDegree := iSup₂_le fun _ h ↦ mod_cast h.le_minDegree
 
 /-!
