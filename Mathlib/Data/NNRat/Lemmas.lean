@@ -20,11 +20,10 @@ cycles.
 
 @[expose] public section
 
-open Function
 open scoped NNRat
 
 namespace NNRat
-variable {α : Type*} {q : ℚ≥0}
+variable {α : Type*}
 
 @[simp, norm_cast]
 lemma coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :

@@ -540,7 +540,7 @@ end Submodule
 
 namespace AlgHom
 
-variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
+variable {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
 variable [CommSemiring R]
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
 variable (φ : A →ₐ[R] B)
@@ -927,6 +927,18 @@ instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
 
+theorem map_center_le_center {f : A →ₐ[R] B} (hf : Function.Surjective f) :
+    map f (center R A) ≤ center R B :=
+  Set.image_center_subset hf
+
+theorem comap_center_le_center {f : A →ₐ[R] B} (hf : Function.Injective f) :
+    comap f (center R B) ≤ center R A :=
+  Set.preimage_center_subset hf
+
+@[simp]
+theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
+  SetLike.coe_injective (Set.image_center_eq f)
+
 end Center
 
 section Centralizer
@@ -1022,14 +1034,14 @@ variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B
 @[simps coe toSubsemiring]
 def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A where
   carrier := { a | ϕ a = ψ a }
-  zero_mem' := by simp only [Set.mem_setOf_eq, map_zero]
-  one_mem' := by simp only [Set.mem_setOf_eq, map_one]
+  zero_mem' := by simp only [Set.mem_ofPred_eq, map_zero]
+  one_mem' := by simp only [Set.mem_ofPred_eq, map_one]
   add_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
-    rw [Set.mem_setOf_eq, map_add, map_add, hx, hy]
+    rw [Set.mem_ofPred_eq, map_add, map_add, hx, hy]
   mul_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
-    rw [Set.mem_setOf_eq, map_mul, map_mul, hx, hy]
+    rw [Set.mem_ofPred_eq, map_mul, map_mul, hx, hy]
   algebraMap_mem' x := by
-    simp only [Set.mem_setOf_eq, AlgHomClass.commutes]
+    simp only [Set.mem_ofPred_eq, AlgHomClass.commutes]
 
 @[simp]
 theorem mem_equalizer (φ ψ : A →ₐ[R] B) (x : A) : x ∈ equalizer φ ψ ↔ φ x = ψ x :=

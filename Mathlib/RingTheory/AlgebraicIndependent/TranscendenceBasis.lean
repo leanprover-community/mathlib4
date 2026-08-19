@@ -333,8 +333,8 @@ theorem isAlgebraic_adjoin_iff_of_matroid_isBasis [NoZeroDivisors A] {s t : Set 
 theorem matroid_closure_eq [IsDomain A] {s : Set A} :
     (matroid R A).closure s = algebraicClosure (adjoin R s) A := by
   have ⟨B, hB⟩ := (matroid R A).exists_isBasis s
-  simp_rw [← hB.closure_eq_closure, hB.1.1.1.closure_eq_setOf_isBasis_insert, Set.ext_iff,
-    mem_setOf, matroid_isBasis_iff, ← matroid_indep_iff, hB.1.1.1, subset_insert, true_and,
+  simp_rw [← hB.closure_eq_closure, hB.1.1.1.closure_eq_setOfPred_isBasis_insert, Set.ext_iff,
+    mem_ofPred, matroid_isBasis_iff, ← matroid_indep_iff, hB.1.1.1, subset_insert, true_and,
     SetLike.mem_coe, mem_algebraicClosure, ← isAlgebraic_adjoin_iff_of_matroid_isBasis hB,
     forall_mem_insert]
   exact fun _ ↦ and_iff_left fun x hx ↦ isAlgebraic_algebraMap (⟨x, subset_adjoin hx⟩ : adjoin R B)
@@ -451,7 +451,7 @@ theorem Polynomial.trdeg_of_isDomain [IsDomain R] : trdeg R (Polynomial R) = 1 :
   simpa using (IsTranscendenceBasis.polynomial Unit R).lift_cardinalMk_eq_trdeg.symm
 
 -- TODO: generalize to Nontrivial S
-theorem trdeg_lt_aleph0 [IsDomain R] [fin : FiniteType R S] : trdeg R S < ℵ₀ :=
+theorem trdeg_lt_aleph0_of_finiteType [IsDomain R] [fin : FiniteType R S] : trdeg R S < ℵ₀ :=
   have ⟨n, f, surj⟩ := FiniteType.iff_quotient_mvPolynomial''.mp fin
   lift_lt.mp <| (lift_trdeg_le_of_surjective f surj).trans_lt <| by simp
 

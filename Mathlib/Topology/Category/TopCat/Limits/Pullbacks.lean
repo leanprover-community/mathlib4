@@ -25,8 +25,6 @@ noncomputable section
 
 namespace TopCat
 
-variable {J : Type v} [Category.{w} J]
-
 section Pullback
 
 variable {X Y Z : TopCat.{u}}
@@ -128,14 +126,13 @@ theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
   simp only [induced_compose, induced_inf]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem range_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     Set.range (prod.lift (pullback.fst f g) (pullback.snd f g)) =
       { x | (Limits.prod.fst ≫ f) x = (Limits.prod.snd ≫ g) x } := by
   ext x
   constructor
   · rintro ⟨y, rfl⟩
-    simp only [← ConcreteCategory.comp_apply, Set.mem_setOf_eq]
+    simp only [← ConcreteCategory.comp_apply, Set.mem_ofPred_eq]
     simp [pullback.condition]
   · rintro (h : f (_, _).1 = g (_, _).2)
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
@@ -167,7 +164,6 @@ def pullbackHomeoPreimage
     ext x
     exact Exists.choose_spec x.2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isInducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     IsInducing <| ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨by simp [prod_topology, pullback_topology, induced_compose, ← coe_comp]⟩

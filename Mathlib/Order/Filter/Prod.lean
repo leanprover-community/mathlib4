@@ -88,7 +88,7 @@ theorem mem_prod_top {s : Set (α × β)} :
 theorem eventually_prod_principal_iff {p : α × β → Prop} {s : Set β} :
     (∀ᶠ x : α × β in f ×ˢ 𝓟 s, p x) ↔ ∀ᶠ x : α in f, ∀ y : β, y ∈ s → p (x, y) := by
   rw [eventually_iff, eventually_iff, mem_prod_principal]
-  simp only [mem_setOf_eq]
+  simp only [mem_ofPred_eq]
 
 theorem comap_prod (f : α → β × γ) (b : Filter β) (c : Filter γ) :
     comap f (b ×ˢ c) = comap (Prod.fst ∘ f) b ⊓ comap (Prod.snd ∘ f) c := by
@@ -203,7 +203,7 @@ theorem Eventually.diag_of_prod_right {f : Filter α} {g : Filter γ} {p : α ×
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
   exact (ht.prod_mk hs.diag_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2]
 
-theorem tendsto_diag : Tendsto (fun i => (i, i)) f (f ×ˢ f) :=
+theorem tendsto_diag : Tendsto Function.diag f (f ×ˢ f) :=
   tendsto_iff_eventually.mpr fun _ hpr => hpr.diag_of_prod
 
 theorem prod_iInf_left [Nonempty ι] {f : ι → Filter α} {g : Filter β} :
