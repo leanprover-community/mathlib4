@@ -46,10 +46,10 @@ def evalExpr (base : Σ u : Level, Q(Type u)) (postCtx : Simp.Context) (e : Expr
   let iM : Q(AddCommMonoid $M) ← synthInstanceQ q(AddCommMonoid $M)
   Mathlib.Tactic.Module.eval iM base postCtx e
 
-/-- The `Simp.Context` used by `ModuleNF.cleanup` -/
+/-- The `Simp.Context` used by `ModuleNF.cleanup`. -/
 def cleanupCtx : MetaM Simp.Context := do
   let thms ← [``one_smul, ``zero_smul, ``add_zero, ``zero_add, ``mul_one,
-    ``one_mul].foldlM (·.addConst ·) ({} : SimpTheorems)
+    ``one_mul, ``neg_one_smul, ``algebraMap_smul].foldlM (·.addConst ·) ({} : SimpTheorems)
   Simp.mkContext { failIfUnchanged := false }
     (simpTheorems := #[thms]) (congrTheorems := ← getSimpCongrTheorems)
 
@@ -84,7 +84,8 @@ the two sides have the same normal form, otherwise the rewritten goal is left op
 
 Like `match_scalars` and `module`, linear combinations are parsed from `+`, `-`, `•` and `0`, other
 subexpressions (including variables) are atoms, and the scalars are interpreted in the largest
-scalar ring encountered (see `match_scalars` for the requirements on scalar types).
+scalar ring encountered, and subtraction requires a ring (see `match_scalars` for the requirements
+on scalar types).
 
 Examples:
 ```
@@ -129,6 +130,18 @@ Locations whose scalar ring is not comparable with `R` keep their own ring. For 
 example [CommRing S] [CommRing T] [AddCommGroup M] [Module S M] [Module T M]
     (s : S) (x y : M) (h : s • x + s • x = y) : (s * 2) • x = y := by
   module_nf with T at h  -- `h`'s scalars are not comparable with `T` and keep their ring `S`
+  exact h
+```
+
+Scalar actions collected through an algebra tower are lowered back to the smallest ring that
+expresses them:
+
+```
+example [CommRing R] [CommRing S] [Algebra R S] [AddCommGroup M]
+    [Module R M] [Module S M] [IsScalarTower R S M]
+    (a b : R) (u : S) (x y : M) (P : M → Prop)
+    (h : P (b • x + y)) : P (a • x + u • y + (1 - u) • y - (a - b) • x) := by
+  module_nf  -- the `R`-actions collect in `S` and lower back to `R`
   exact h
 ```
 

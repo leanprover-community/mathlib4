@@ -90,6 +90,11 @@ example (x y : M) (h : (1 : R) • x + (0 : R) • y = 0) : x = 0 := by
   module_nf at h
   exact h
 
+-- surviving negative unit coefficients are displayed with `-`
+example (x y : M) (h : x - y - x = 0) : -y = 0 := by
+  module_nf at h
+  exact h
+
 example (x : M) (h : x + x + x = 0) : (3 : ℕ) • x = 0 := by
   module_nf at h
   exact h
@@ -159,6 +164,24 @@ example (s : Finset ℕ) (v : ℕ → M) (a b : R) :
 example {A : Type*} [Ring A] [Module A M] (a b : A) (x : M) :
     a • x + b • x = (a + b) • x := by
   module_nf
+
+example {S : Type*} [CommRing S] [Algebra R S] [Module S M] [IsScalarTower R S M]
+    (a b : R) (u : S) (x y : M) (P : M → Prop) (h : P (b • x + y)) :
+    P (a • x + u • y + (1 - u) • y - (a - b) • x) := by
+  module_nf
+  exact h
+
+example {S : Type*} [CommRing S] [Algebra R S] [Module S M] [IsScalarTower R S M]
+    (a b : R) (u : S) (x y : M) (P : M → Prop) (h : P (b • x + u • y)) :
+    P (a • x + 1 • y + (u - 1) • y - (a - b) • x) := by
+  module_nf
+  exact h
+
+example {S : Type*} [CommRing S] [Algebra R S] [Module S M] [IsScalarTower R S M]
+    (a b : R) (u v : S) (x y : M) (P : M → Prop) (h : P (b • x + y)) :
+    P (a • x + u • y + (1 - u) • y - (a - b) • x + v • x - v • x) := by
+  module_nf
+  exact h
 
 example {K : Type*} [Field K] [Module K M] (a : K) (ha : a ≠ 0) (x : M) :
     a⁻¹ • a • x = x := by
