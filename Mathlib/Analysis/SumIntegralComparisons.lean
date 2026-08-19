@@ -82,7 +82,7 @@ lemma integral_le_sum_Ico_of_le (hab : a ≤ b)
 private theorem intervalIntegrable_subset_of_integrableOn
     (hfi : IntegrableOn f (Icc x₀ (x₀ + a)))
     (k : ℕ) (hk : k + 1 ≤ a) : IntervalIntegrable f volume (x₀ + k) (x₀ + ↑(k + 1)) := by
-  refine IntegrableOn.intervalIntegrable (hfi.mono_set ?_)
+  refine (hfi.mono_set ?_).intervalIntegrable
   rw [uIcc_of_le (by simp)]
   apply Icc_subset_Icc <;> simp [-Nat.cast_add, hk]
 
