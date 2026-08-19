@@ -174,6 +174,7 @@ variable [TopologicalSpace X]
 instance instContinuousEvalConst : ContinuousEvalConst H X V where
   continuous_eval_const := continuous_eval_const
 
+/-- An RKHS has a continuous kernel when the kernel is jointly continuous in its two arguments. -/
 class ContinuousKernel : Prop where
   continuous_kernel : Continuous fun p : X × X => kernel H p.1 p.2
 
