@@ -207,17 +207,6 @@ theorem posSemidef_kernel : (kernel H).PosSemidef := by
       kernel_inner, -inner_kerFun, -kerFun_inner]
     simp [← Finsupp.sum_inner, ← Finsupp.inner_sum, -kerFun_inner, -inner_kerFun]
 
-variable {H} in
-theorem lipschitzWith_ennnorm (f : H) (x y : X) :
-    edist (f x) (f y) ≤ ‖f‖₊ * edist (kerFun H x) (kerFun H y) := by
-  by_cases h : f = 0
-  · simp [h]
-  simp_rw [edist_eq_enorm_sub, ← eval_apply, ← sub_apply]
-  grw [le_opENorm]
-  rw [← enorm_eq_nnnorm, mul_comm, ENNReal.mul_le_mul_iff_right (enorm_ne_zero.mpr h) enorm_ne_top]
-  simp_rw [kerFun_eq_adjoint_eval, ← LinearIsometryEquiv.map_sub, enorm_le_iff_norm_le,
-    LinearIsometryEquiv.norm_map, le_refl]
-
 /-!
 ## Construction of RKHS from kernel
 -/
