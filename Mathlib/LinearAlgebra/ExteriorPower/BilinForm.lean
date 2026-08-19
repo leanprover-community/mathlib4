@@ -22,9 +22,8 @@ determinant of the matrix of pairings. For finite free modules, we also prove th
 
 ## Theorems
 
-* `exteriorPower.bilinForm_ιMulti_ιMulti`: the determinant formula on decomposable elements.
-
 * `exteriorPower.bilinForm_nondegenerate`: bijectivity of `B` is preserved on exterior powers.
+
 -/
 
 noncomputable section
@@ -39,9 +38,6 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (k : ℕ)
   (B : LinearMap.BilinForm R M)
 
 -- TODO: Generalize `matrixOf_updateCol` and `matrixOf_updateRow` beyond bilinear forms.
--- In `BilinFormAux` we use these identities when one of the two families is updated,
--- so that the determinant update lemmas apply.
-/-- Updating `w` at `l` replaces column `l` by `fun i ↦ B (v i) z`. -/
 lemma matrixOf_updateCol {ι : Type*} [DecidableEq ι] (v w : ι → M) (z : M) (l : ι) :
     (Matrix.of fun i j ↦ B (v i) (Function.update w l z j)) =
       (Matrix.of fun i j ↦ B (v i) (w j)).updateCol l (fun i ↦ B (v i) z) := by
@@ -49,7 +45,6 @@ lemma matrixOf_updateCol {ι : Type*} [DecidableEq ι] (v w : ι → M) (z : M) 
   simp only [update_apply, Matrix.of_apply, Matrix.updateCol_apply]
   aesop
 
-/-- Updating `v` at `l` replaces row `l` by `fun j ↦ B z (w j)`. -/
 lemma matrixOf_updateRow {ι : Type*} [DecidableEq ι] (v w : ι → M) (z : M) (l : ι) :
     (Matrix.of fun i j ↦ B (Function.update v l z i) (w j)) =
       (Matrix.of fun i j ↦ B (v i) (w j)).updateRow l (fun j ↦ B z (w j)) := by
@@ -57,12 +52,10 @@ lemma matrixOf_updateRow {ι : Type*} [DecidableEq ι] (v w : ι → M) (z : M) 
   simp only [update_apply, Matrix.of_apply, Matrix.updateRow_apply]
   aesop
 
-/-- The matrix whose `(i, j)` entry is `B (v i) (w j)`. -/
 def pairingMatrix (v w : Fin k → M) : Matrix (Fin k) (Fin k) R :=
   Matrix.of fun i j ↦ B (v i) (w j)
 
-/-- The nested alternating map `(v, w) ↦ det (fun i j ↦ B (v i) (w j))` used to define `BilinForm`.
-
+/--
 TODO: Remove the explicit `DecidableEq` argument from `MultilinearMap`; then the
 `Subsingleton.elim` cases below should disappear. The current API requires them because
 the alternating-map laws carry an implicit decidability instance.
@@ -130,8 +123,7 @@ lemma bijective_pairingDual [Module.Finite R M] [Module.Free R M] (k : ℕ) :
     refine ⟨e.injective_constr_of_linearIndependent d.linearIndependent, ?_⟩
     rw [← LinearMap.range_eq_top, Basis.constr_range, d.span_eq]
 
-/-- On wedges of `k` vectors, `BilinForm` is the determinant of the matrix of pairings. -/
-@[simp] public lemma bilinForm_ιMulti_ιMulti {k : ℕ} (C : LinearMap.BilinForm R M)
+@[simp] lemma bilinForm_ιMulti_ιMulti {k : ℕ} (C : LinearMap.BilinForm R M)
     (v w : Fin k → M) :
     exteriorPower.BilinForm k C (ιMulti R k v) (ιMulti R k w) =
       (Matrix.of fun i j ↦ C (v i) (w j)).det := by
@@ -144,9 +136,6 @@ lemma bijective_pairingDual [Module.Finite R M] [Module.Free R M] (k : ℕ) :
     (BilinFormAux k C v) w = (Matrix.of fun i j ↦ C (v i) (w j)).det := by
       rfl
 
-/-- `BilinForm` is the composition of `exteriorPower.map` with `pairingDual`.
-
-This auxiliary lemma is used in `bilinForm_nondegenerate`. -/
 lemma bilinForm_eq_pairingDual_comp_map {k : ℕ} (C : LinearMap.BilinForm R M) :
     exteriorPower.BilinForm k C =
       (pairingDual R M k).comp (exteriorPower.map k C) := by
@@ -162,8 +151,6 @@ section
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
-/-- If `B` is bijective as a linear map from `M` to its dual, then the induced map on the
-`k`th exterior power is bijective as well. -/
 public lemma bilinForm_nondegenerate [Module.Free R M] [Module.Finite R M] (k : ℕ)
     (B : LinearMap.BilinForm R M) (hB : Bijective B) :
     Bijective (exteriorPower.BilinForm k B) := by
