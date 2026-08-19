@@ -436,6 +436,10 @@ instance instModule : Module 𝕜 (Lp E p μ) :=
 theorem coeFn_smul (c : 𝕜) (f : Lp E p μ) : ⇑(c • f) =ᵐ[μ] c • ⇑f :=
   AEEqFun.coeFn_smul _ _
 
+theorem coeFn_linearCombination {ι : Type*} (c : ι →₀ 𝕜) (f : ι → Lp E p μ) :
+    ⇑(c.linearCombination 𝕜 f) =ᵐ[μ] c.linearCombination 𝕜 (fun i ↦ ⇑(f i)) :=
+  (coeFn_finsetSum _ _).trans <| eventuallyEq_sum fun i _ ↦ coeFn_smul (c i) (f i)
+
 instance instIsCentralScalar [Module 𝕜ᵐᵒᵖ E] [IsBoundedSMul 𝕜ᵐᵒᵖ E] [IsCentralScalar 𝕜 E] :
     IsCentralScalar 𝕜 (Lp E p μ) where
   op_smul_eq_smul k f := Subtype.ext <| op_smul_eq_smul k (f : α →ₘ[μ] E)
@@ -678,7 +682,7 @@ lemma MeasureTheory.MemLp.continuousLinearMap_comp [NontriviallyNormedField 𝕜
     [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {f : α → E}
     (h_Lp : MemLp f p μ) (L : E →L[𝕜] F) :
     MemLp (fun x ↦ L (f x)) p μ :=
-  LipschitzWith.comp_memLp L.lipschitz (by simp) h_Lp
+  LipschitzWith.comp_memLp L.lipschitzWith (by simp) h_Lp
 
 namespace LipschitzWith
 
@@ -737,7 +741,7 @@ variable {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ]
 
 /-- Composing `f : Lp` with `L : E →L[𝕜] F`. -/
 def compLp (L : E →SL[σ] F) (f : Lp E p μ) : Lp F p μ :=
-  L.lipschitz.compLp (map_zero L) f
+  L.lipschitzWith.compLp (map_zero L) f
 
 theorem coeFn_compLp (L : E →SL[σ] F) (f : Lp E p μ) : ∀ᵐ a ∂μ, (L.compLp f) a = L (f a) :=
   LipschitzWith.coeFn_compLp _ _ _

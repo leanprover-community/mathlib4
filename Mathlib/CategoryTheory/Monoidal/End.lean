@@ -70,7 +70,7 @@ attribute [local instance] endofunctorMonoidalCategory
 
 @[simp] theorem endofunctorMonoidalCategory_tensorMap_app
     {F G H K : C ⥤ C} {α : F ⟶ G} {β : H ⟶ K} (X : C) :
-    (α ⊗ₘ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := rfl
+    (α ⊗ₘ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := NatTrans.hcomp_app _ _ _
 
 @[simp] theorem endofunctorMonoidalCategory_whiskerLeft_app
     {F H K : C ⥤ C} {β : H ⟶ K} (X : C) :
@@ -112,19 +112,15 @@ instance : (tensoringRight C).Monoidal :=
       μIso := fun X Y => (Functor.isoWhiskerRight (curriedAssociatorNatIso C)
       ((evaluation C (C ⥤ C)).obj X ⋙ (evaluation C C).obj Y)) }
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tensoringRight_ε :
     ε (tensoringRight C) = (rightUnitorNatIso C).inv := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tensoringRight_η :
     η (tensoringRight C) = (rightUnitorNatIso C).hom := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tensoringRight_μ (X Y : C) (Z : C) :
     (μ (tensoringRight C) X Y).app Z = (α_ Z X Y).hom := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tensoringRight_δ (X Y : C) (Z : C) :
     (δ (tensoringRight C) X Y).app Z = (α_ Z X Y).inv := rfl
 
