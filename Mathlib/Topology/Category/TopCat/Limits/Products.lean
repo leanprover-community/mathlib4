@@ -28,8 +28,6 @@ noncomputable section
 
 namespace TopCat
 
-variable {J : Type v} [Category.{w} J]
-
 /-- The projection from the product as a bundled continuous map. -/
 abbrev piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : TopCat.of (∀ i, α i) ⟶ α i :=
   ofHom ⟨fun f => f i, continuous_apply i⟩
@@ -152,18 +150,14 @@ equipped with the product topology.
 def prodIsoProd (X Y : TopCat.{u}) : X ⨯ Y ≅ TopCat.of (X × Y) :=
   (limit.isLimit _).conePointUniqueUpToIso (prodBinaryFanIsLimit X Y)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem prodIsoProd_hom_fst (X Y : TopCat.{u}) :
-    (prodIsoProd X Y).hom ≫ prodFst = Limits.prod.fst := by
-  simp [← Iso.eq_inv_comp, prodIsoProd]
+    (prodIsoProd X Y).hom ≫ prodFst = Limits.prod.fst :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
-    (prodIsoProd X Y).hom ≫ prodSnd = Limits.prod.snd := by
-  simp [← Iso.eq_inv_comp, prodIsoProd]
+    (prodIsoProd X Y).hom ≫ prodSnd = Limits.prod.snd :=
   rfl
 
 -- Note that `(x : X ⨯ Y)` would mean `(x : ↑X × ↑Y)` below:
@@ -189,7 +183,6 @@ theorem prod_topology {X Y : TopCat.{u}} :
   simp [induced_compose]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
     Set.range (Limits.prod.map f g) =
       (Limits.prod.fst : Y ⨯ Z ⟶ _) ⁻¹' Set.range f ∩
@@ -233,7 +226,6 @@ end Prod
 protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
   BinaryCofan.mk (ofHom ⟨Sum.inl, by fun_prop⟩) (ofHom ⟨Sum.inr, by fun_prop⟩)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The constructed binary coproduct cofan in `TopCat` is the coproduct. -/
 def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y) := by
   refine Limits.BinaryCofan.isColimitMk (fun s => ofHom
@@ -249,7 +241,6 @@ def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y)
     ext (x | x)
     exacts [ConcreteCategory.congr_hom h₁ x, ConcreteCategory.congr_hom h₂ x]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
       IsOpenEmbedding c.inl ∧ IsOpenEmbedding c.inr ∧ IsCompl (range c.inl) (range c.inr) := by
@@ -287,7 +278,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
           · rw [continuousOn_iff_continuous_domRestrict]
             convert_to Continuous (f ∘ h₁.isEmbedding.toHomeomorph.symm)
             · ext ⟨x, hx⟩
-              exact dif_pos hx
+              exact dite_eq_left hx
             fun_prop
           · exact h₁.isOpen_range
         · revert h x
@@ -300,7 +291,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
             convert_to! Continuous
                 (g ∘ h₂.isEmbedding.toHomeomorph.symm ∘ Subtype.map _ this)
             · ext ⟨x, hx⟩
-              exact dif_neg hx
+              exact dite_eq_right hx
             apply Continuous.comp
             · exact g.hom.continuous_toFun
             · apply Continuous.comp (by fun_prop)
@@ -315,7 +306,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
       · intro T f g
         ext x
         dsimp
-        rw [dif_neg]
+        rw [dite_eq_right]
         · exact congr_arg g (Equiv.ofInjective_symm_apply _ _)
         · rintro ⟨y, e⟩
           have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩

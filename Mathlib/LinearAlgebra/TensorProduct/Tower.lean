@@ -467,7 +467,7 @@ theorem distribBaseChange_tmul (n : N) (q : Q) (a : A) :
 theorem distribBaseChange_symm_tmul
     (n : N) (q : Q) (a b : A) :
     (distribBaseChange R A N Q).symm ((a ⊗ₜ n) ⊗ₜ (b ⊗ₜ q)) = (a * b) ⊗ₜ (n ⊗ₜ q) := by
-  apply ((distribBaseChange R A N Q).apply_eq_iff_symm_apply.mp ?_).symm
+  apply ((distribBaseChange R A N Q).eq_symm_apply.mpr ?_).symm
   rw [tmul_eq_smul_one_tmul b, ← smul_tmul, smul_tmul', mul_comm]
   simp
 
@@ -519,7 +519,6 @@ section rightComm
 variable [CommSemiring S] [Module S M] [Module S P] [Algebra S B]
   [IsScalarTower S B M] [SMulCommClass R S M] [SMulCommClass S R M]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (S) in
 /-- A tensor product analogue of `mul_right_comm`.
 
@@ -798,8 +797,8 @@ end Semiring
 
 section Ring
 
-variable {R A B M N : Type*} [CommRing R]
-variable [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {R A M N : Type*} [CommRing R]
+variable [Ring A] [Algebra R A]
 variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (f g : M →ₗ[R] N)
 
