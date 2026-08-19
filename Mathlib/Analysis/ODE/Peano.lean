@@ -88,11 +88,7 @@ lemma mapsTo_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
   intro s hs
   rw [mem_Icc] at hs ⊢
   have := stepSize_nonneg t₀ n
-  have h_t₀_le_tmax : t₀.val ≤ tmax := t₀.2.2
-  unfold delayedInput
-  constructor
-  · exact le_max_right _ _
-  · apply max_le <;> linarith
+  exact ⟨le_max_right _ _, max_le (by linarith) t₀.2.2⟩
 
 /-- The delayed input is Lipschitz continuous with constant one. -/
 lemma lipschitzWith_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
