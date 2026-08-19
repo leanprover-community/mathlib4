@@ -680,9 +680,8 @@ theorem HasMFDerivWithinAt.mfderivWithin_eq_zero (h : HasMFDerivWithinAt I I' f 
     mfderiv[s] f x = 0 := by
   simp only [mfld_simps, mfderivWithin, h.mdifferentiableWithinAt, ↓reduceIte]
   simp only [HasMFDerivWithinAt, mfld_simps] at h
-  rw [fderivWithin, ite_eq_left]
-  · simp
-  · exact h.2
+  rw [fderivWithin, ite_eq_left (by exact h.2)]
+  simp
 
 theorem MDifferentiable.mfderivWithin (h : MDiffAt f x) (hxs : UniqueMDiffAt[s] x) :
     mfderiv[s] f x = mfderiv% f x := by
