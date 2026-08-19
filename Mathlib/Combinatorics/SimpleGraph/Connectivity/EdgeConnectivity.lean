@@ -154,11 +154,6 @@ lemma isEdgeConnected_two_iff_Preconnected :
 @[deprecated (since := "2026-08-13")]
 alias isEdgeConnected_two := isEdgeConnected_two_iff_Preconnected
 
-lemma all_notBridge_Preconnected : (∀ e, ¬G.IsBridge e) → G.Preconnected  := by
-  intro h u v
-  by_contra huv
-  exact h s(u,v) (IsBridge.of_not_reachable huv)
-
 /-- A graph is 2-edge-connected iff it has no bridge. -/
 theorem isEdgeConnected_two_iff_notBridge : G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e := by
   constructor
@@ -174,7 +169,9 @@ theorem isEdgeConnected_two_iff_notBridge : G.IsEdgeConnected 2 ↔ ∀ e, ¬G.I
     cases e; expose_names
     by_cases hV : Nonempty V
     · have hG : G.Preconnected := by
-        exact all_notBridge_Preconnected h
+        intro u v
+        by_contra huv
+        exact h s(u,v) (IsBridge.of_not_reachable huv)
       have hG' : G.Connected := G.connected_iff.mpr ⟨hG, hV⟩
       exact (hG'.connected_delete_edge_of_not_isBridge (h (s(x, y)))).preconnected
     · intro u v
