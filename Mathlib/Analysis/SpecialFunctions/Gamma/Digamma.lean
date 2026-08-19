@@ -59,7 +59,7 @@ theorem digamma_apply_add_one (s : ℂ) (hs : ∀ m : ℕ, s ≠ - m) :
   rw [digamma_def, logDeriv_apply, logDeriv_apply, deriv_Gamma_add_one s hs0, Gamma_add_one s hs0,
     add_div, div_mul_cancel_right₀ (Gamma_ne_zero hs), mul_div_mul_left _ _ hs0, add_comm]
 
-open Real in
+open scoped Real in
 /-- Euler's reflection formula for the digamma function:
 `ψ (1 - s) = ψ s + π * cot (π * s)` for `s` not an integer. -/
 theorem digamma_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) :

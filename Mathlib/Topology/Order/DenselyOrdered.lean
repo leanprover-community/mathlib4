@@ -17,7 +17,7 @@ open Set Filter TopologicalSpace Topology
 
 open OrderDual (toDual ofDual)
 
-variable {α β : Type*}
+variable {α : Type*}
 
 section DenselyOrdered
 

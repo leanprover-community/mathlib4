@@ -58,7 +58,7 @@ open Function OrderDual
 
 universe u v
 
-variable {ι : Type*} {α : Type u} {β : Type v}
+variable {α : Type u} {β : Type v}
 
 /-! ### Monotonicity on the dual order
 

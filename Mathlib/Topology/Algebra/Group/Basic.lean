@@ -228,7 +228,7 @@ theorem continuousAt_inv {x : G} : ContinuousAt Inv.inv x :=
 theorem tendsto_inv (a : G) : Tendsto Inv.inv (𝓝 a) (𝓝 a⁻¹) :=
   continuousAt_inv
 
-variable [TopologicalSpace α] {f : α → G} {s : Set α} {x : α}
+variable [TopologicalSpace α] {f : α → G} {x : α}
 
 @[to_additive]
 instance OrderDual.instContinuousInv : ContinuousInv Gᵒᵈ := ‹ContinuousInv G›
@@ -832,6 +832,18 @@ theorem Filter.HasBasis.nhds_of_one {ι : Sort*} {p : ι → Prop} {s : ι → S
   rw [← nhds_translation_mul_inv]
   simp_rw [div_eq_mul_inv]
   exact hb.comap _
+
+@[to_additive]
+theorem Filter.HasBasis.nhds_of_one' {ι : Sort*} {p : ι → Prop} {s : ι → Set G}
+    (hb : (𝓝 1).HasBasis p s) (x : G) :
+    (𝓝 x).HasBasis p fun i ↦ x • (s i) := by
+  rw [← map_mul_left_nhds_one x]
+  exact hb.map (x * ·)
+
+@[to_additive]
+theorem Filter.HasBasis.nhds_one_inv {ι : Sort*} {p : ι → Prop} {U : ι → Set G}
+    (hU : (𝓝 1).HasBasis p U) : (𝓝 1).HasBasis p fun i ↦ (U i)⁻¹ := by
+  simpa [← nhds_inv] using hU.inv
 
 @[to_additive]
 theorem mem_closure_iff_nhds_one {x : G} {s : Set G} :
