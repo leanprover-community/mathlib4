@@ -455,7 +455,7 @@ theorem zpow_approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a :
     (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed) :
     (ms.zpow a).Approximates := by
   rw [zpow_eq_pow]
-  rcases lt_trichotomy 0 ms.realCoef with (h_leading | h_leading | h_leading)
+  rcases lt_trichotomy 0 ms.leadingCoef with (h_leading | h_leading | h_leading)
   · apply pow_approximates <;> assumption
   · have : IsZero ms := by apply IsZero_of_leadingMonomial_zero_coef h_trimmed h_leading.symm
     cases basis with

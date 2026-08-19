@@ -145,13 +145,13 @@ structure ExtractDeepCoefResult (ms : MS) (depth : Q(Nat)) where
   coef : MS
   /-- Proof that `coef` is trimmed -/
   trimmed : Q(($coef.val).Trimmed)
-  /-- Proof that `coef` has the same `exps` as `ms` -/
-  h_exps : Q(List.replicate $depth 0 ++ (MultiseriesExpansion.leadingMonomial $coef.val).unit =
+  /-- Proof that `coef` has the same unit part as `ms` -/
+  h_unit : Q(List.replicate $depth 0 ++ (MultiseriesExpansion.leadingMonomial $coef.val).unit =
     (MultiseriesExpansion.leadingMonomial $ms.val).unit)
   /-- Proof that `coef` has the same real coefficient as `ms` -/
   h_coef : Q(($ms.val).leadingMonomial.coef = ($coef.val).leadingMonomial.coef)
 
-lemma MultiseriesExpansion.leadingMonomial_cons_exps {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+lemma MultiseriesExpansion.leadingMonomial_cons_unit {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {coef : MultiseriesExpansion basis_tl}
     {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ} {depth : ℕ}
     {basis : Basis} {deepCoef : MultiseriesExpansion basis}
@@ -185,10 +185,10 @@ partial def extractDeepCoef (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimme
     }
     let new_h_trimmed : Q(MultiseriesExpansion.Trimmed $coef) :=
       q((MultiseriesExpansion.Trimmed.elim_cons $h_trimmed).left)
-    let ⟨deepCoef, h_coef_trimmed, h_exps, h_coef⟩ ← extractDeepCoef newMS new_h_trimmed newDepth
+    let ⟨deepCoef, h_coef_trimmed, h_unit, h_coef⟩ ← extractDeepCoef newMS new_h_trimmed newDepth
     have : $exp =Q 0 := ⟨⟩
     return ⟨deepCoef, q($h_coef_trimmed),
-      q(@MultiseriesExpansion.leadingMonomial_cons_exps _ _ $coef $tl $f $newDepth _ _ $h_exps),
+      q(@MultiseriesExpansion.leadingMonomial_cons_unit _ _ $coef $tl $f $newDepth _ _ $h_unit),
       q((@MultiseriesExpansion.leadingMonomial_cons_coef _ _ $exp $coef $tl $f).trans $h_coef)⟩
 
 
@@ -239,9 +239,9 @@ Returns `G` and the MS representing `exp G.f`. -/
 def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $ms.val))
     (left : Q(Basis))
     (right_hd : Q(ℝ → ℝ)) (right_tl : Q(Basis))
-    (coef : Q(ℝ)) (exps : Q(UnitMonomial))
-    (h_leading : Q((MultiseriesExpansion.leadingMonomial $ms.val) = ⟨$coef, $exps⟩))
-    (h_first_is_pos' : Q(($exps).FirstNonzeroIsPos))
+    (coef : Q(ℝ)) (unit : Q(UnitMonomial))
+    (h_leading : Q((MultiseriesExpansion.leadingMonomial $ms.val) = ⟨$coef, $unit⟩))
+    (h_first_is_pos' : Q(($unit).FirstNonzeroIsPos))
     (h_left : Q(∀ g ∈ List.getLast? $left, $(ms.val).toFun =o[atTop] (Real.log ∘ g)))
     (h_right : Q((Real.log ∘ $right_hd) =o[atTop] $(ms.val).toFun)) : BasisM (MS × MS) := do
   let h_first_is_pos : Q((($ms.val).leadingMonomial).unit.FirstNonzeroIsPos) :=
@@ -249,15 +249,15 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimme
   haveI : $ms.basis =Q $left ++ $right_hd :: $right_tl := ⟨⟩; do
   -- extract deep coef `G`
   let depth := mkNatLitQ <| ← computeLength left
-  let ⟨G, hG_trimmed, hG_exps, hG_coef⟩ := ← extractDeepCoef ms h_trimmed depth
+  let ⟨G, hG_trimmed, hG_unit, hG_coef⟩ := ← extractDeepCoef ms h_trimmed depth
   let ⟨Gf, hGf⟩ ← Normalization.getFun G.val
   haveI : $G.basis =Q $right_hd :: $right_tl := ⟨⟩
     let h_ms_equiv_G : Q($(ms.val).toFun ~[atTop] $Gf) :=
-      let hG_exps : Q(List.replicate (List.length $left) 0 ++
+      let hG_unit : Q(List.replicate (List.length $left) 0 ++
           (MultiseriesExpansion.leadingMonomial $G.val).unit =
-          (MultiseriesExpansion.leadingMonomial $ms.val).unit) := hG_exps
+          (MultiseriesExpansion.leadingMonomial $ms.val).unit) := hG_unit
       q(MultiseriesExpansion.IsEquivalent_of_leadingMonomial_zeros_append $ms.h_sorted $G.h_sorted
-        $ms.h_approx $G.h_approx $h_trimmed $hG_trimmed $hGf $ms.h_basis $hG_coef $hG_exps)
+        $ms.h_approx $G.h_approx $h_trimmed $hG_trimmed $hGf $ms.h_basis $hG_coef $hG_unit)
   do
   -- insert `exp g` in basis
   match ← compareReal coef with
@@ -373,8 +373,8 @@ theorem MultiseriesExpansion.sub_log_exp_toFun {basis basis' : Basis} {ex : Basi
 partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(MultiseriesExpansion.Trimmed $ms.val)) :
     BasisM <| (res : MS) × Q(($res.val).toFun = Real.exp ∘ ($ms.val).toFun) := do
   let ⟨leading, h_leading⟩ ← getLeadingMonomialWithProof ms.val
-  let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in createExpMS"
-  match ← getFirstNonzeroIsPos exps with
+  let ~q(⟨$coef, $unit⟩) := leading | panic! "Unexpected leading in createExpMS"
+  match ← getFirstNonzeroIsPos unit with
   | .wrong h_nonpos' =>
     let h_nonpos : Q(¬ ($ms.val).leadingMonomial.unit.FirstNonzeroIsPos) :=
       q($h_leading ▸ $h_nonpos')
@@ -414,7 +414,7 @@ partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(MultiseriesExpansion
       return ← res.replaceFun' q(Real.exp ∘ $ms_f) q($h)
     | .gt h_right =>
       let (G, G_exp) ← insertEquivalentToBasis ms q($h_trimmed) q($left) q($right_hd) q($right_tl)
-        q($coef) q($exps) q($h_leading) q($h_first_is_pos') q($h_left) q($h_right)
+        q($coef) q($unit) q($h_leading) q($h_first_is_pos') q($h_left) q($h_right)
       let ⟨Gf, hGf⟩ ← Normalization.getFun q($G.val)
       let ⟨_, h_G_exp_f⟩ ← Normalization.getFun q($G_exp.val)
       -- create H = F - G
@@ -422,8 +422,8 @@ partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(MultiseriesExpansion
       let ⟨H, hH_fun, _⟩ ← trimPartialMS (ms.sub G)
       -- prove `¬ FirstNonzeroIsPos` for `H`
       let ⟨H_leading, hH_leading⟩ ← getLeadingMonomialWithProof H.val
-      let ~q(⟨$H_coef, $H_exps⟩) := H_leading | panic! "Unexpected leading of H in createExpMS"
-      let .wrong h_H_nonpos' := (← getFirstNonzeroIsPos H_exps)
+      let ~q(⟨$H_coef, $H_unit⟩) := H_leading | panic! "Unexpected leading of H in createExpMS"
+      let .wrong h_H_nonpos' := (← getFirstNonzeroIsPos H_unit)
         | panic! "Unexpected nonpos in createExpMS"
       let h_H_nonpos : Q(¬ ($H.val).leadingMonomial.unit.FirstNonzeroIsPos) :=
         q($hH_leading ▸ $h_H_nonpos')

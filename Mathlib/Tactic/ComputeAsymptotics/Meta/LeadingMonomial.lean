@@ -30,8 +30,8 @@ partial def getLeadingMonomial {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $
       return q(⟨0, List.replicate (List.length ($basis_hd :: $basis_tl)) 0⟩)
     | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
       match ← getLeadingMonomial coef with
-      | ~q(⟨$coef_coef, $coef_exps⟩) =>
-        return q(⟨$coef_coef, $exp :: $coef_exps⟩)
+      | ~q(⟨$coef_coef, $coef_unit⟩) =>
+        return q(⟨$coef_coef, $exp :: $coef_unit⟩)
       | _ =>
         return q(⟨Monomial.coef (MultiseriesExpansion.leadingMonomial $coef),
           $exp :: Monomial.unit (MultiseriesExpansion.leadingMonomial $coef)⟩)
@@ -55,8 +55,8 @@ partial def getLeadingMonomialWithProof {basis : Q(Basis)} (ms : Q(MultiseriesEx
     | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
       let ⟨coef_t, coef_h_eq⟩ ← getLeadingMonomialWithProof coef
       match coef_t with
-      | ~q(⟨$coef_coef, $coef_exps⟩) =>
-        return ⟨q(⟨$coef_coef, $exp :: $coef_exps⟩),
+      | ~q(⟨$coef_coef, $coef_unit⟩) =>
+        return ⟨q(⟨$coef_coef, $exp :: $coef_unit⟩),
           q(MultiseriesExpansion.cons_leadingMonomial' $coef_h_eq)⟩
       | _ =>
         return ⟨q(⟨Monomial.coef (MultiseriesExpansion.leadingMonomial $coef),
@@ -79,7 +79,7 @@ def getLeadingMonomialCoefPos {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $b
     | ~q(MultiseriesExpansion.mk .nil $f) => return .none
     | _ =>
       let ⟨rhs, h_eq⟩ ← getLeadingMonomialWithProof ms
-      let ~q(⟨$coef, $exps⟩) := rhs | return .none
+      let ~q(⟨$coef, $unit⟩) := rhs | return .none
       let .pos pf ← compareReal coef | return .none
       return .some q(Eq.subst (motive := fun (x : Monomial) ↦ 0 < x.coef) (Eq.symm $h_eq) $pf)
   | _ => panic! "Unexpected basis in getLeadingMonomialCoefPos"

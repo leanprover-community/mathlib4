@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Copyright (c) 2026 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
@@ -23,41 +23,42 @@ namespace MultiseriesExpansion
 
 mutual
 
-/-- List of leading exponents of a `Multiseries basis_hd basis_tl`. -/
-def Multiseries.exps {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) : UnitMonomial :=
+/-- Unit part of the leading monomial of a `Multiseries basis_hd basis_tl`. -/
+def Multiseries.leadingUnit {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
+    UnitMonomial :=
   match ms.head with
   | none => List.replicate (basis_hd :: basis_tl).length 0
-  | some (exp, coef) => exp :: coef.exps
+  | some (exp, coef) => exp :: coef.leadingUnit
 
-/-- List of leading exponents of a `MultiseriesExpansion basis`. -/
-def exps {basis : Basis} (ms : MultiseriesExpansion basis) : UnitMonomial :=
+/-- Unit part of the leading monomial of a `MultiseriesExpansion basis`. -/
+def leadingUnit {basis : Basis} (ms : MultiseriesExpansion basis) : UnitMonomial :=
   match basis with
   | [] => []
-  | List.cons _ _ => ms.seq.exps
+  | List.cons _ _ => ms.seq.leadingUnit
 
 end
 
-/-- Real coefficient at the leading monomial of a `MultiseriesExpansion basis`. -/
-def realCoef {basis : Basis} (ms : MultiseriesExpansion basis) : ℝ :=
+/-- Coefficient of the leading monomial of a `MultiseriesExpansion basis`. -/
+def leadingCoef {basis : Basis} (ms : MultiseriesExpansion basis) : ℝ :=
   match basis with
   | [] => ms.toReal
   | List.cons _ _ =>
     match ms.seq.head with
     | none => 0
-    | some (_, coef) => coef.realCoef
+    | some (_, coef) => coef.leadingCoef
 
 /-- Leading monomial of a `MultiseriesExpansion basis`. -/
 def leadingMonomial {basis : Basis} (ms : MultiseriesExpansion basis) : Monomial :=
-  ⟨ms.realCoef, ms.exps⟩
+  ⟨ms.leadingCoef, ms.leadingUnit⟩
 
 @[simp]
-theorem const_realCoef' {ms : MultiseriesExpansion []} :
-    ms.realCoef = ms.toReal := rfl
+theorem const_leadingCoef' {ms : MultiseriesExpansion []} :
+    ms.leadingCoef = ms.toReal := rfl
 
 @[simp]
-theorem const_exps' {ms : MultiseriesExpansion []} :
-    ms.exps = [] := by
-  simp [exps]
+theorem const_leadingUnit' {ms : MultiseriesExpansion []} :
+    ms.leadingUnit = [] := by
+  simp [leadingUnit]
 
 @[simp]
 theorem const_leadingMonomial {ms : MultiseriesExpansion []} :
@@ -65,33 +66,35 @@ theorem const_leadingMonomial {ms : MultiseriesExpansion []} :
   simp [leadingMonomial]
 
 @[simp]
-theorem exps_eq_Seq_exps {basis_hd basis_tl} {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
-    ms.exps = ms.seq.exps := by
-  simp [exps, Multiseries.exps]
+theorem leadingUnit_eq_seq_leadingUnit {basis_hd basis_tl}
+    {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
+    ms.leadingUnit = ms.seq.leadingUnit := by
+  simp [leadingUnit, Multiseries.leadingUnit]
 
 @[simp]
-theorem Multiseries.nil_exps {basis_hd basis_tl} :
-    (nil : Multiseries basis_hd basis_tl).exps =
+theorem Multiseries.nil_leadingUnit {basis_hd basis_tl} :
+    (nil : Multiseries basis_hd basis_tl).leadingUnit =
       List.replicate (basis_hd :: basis_tl).length 0 := by
-  simp [Multiseries.exps]
+  simp [Multiseries.leadingUnit]
 
 @[simp]
-theorem Multiseries.cons_exps {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+theorem Multiseries.cons_leadingUnit {basis_hd basis_tl} {exp : ℝ}
+    {coef : MultiseriesExpansion basis_tl}
     {tl : Multiseries basis_hd basis_tl} :
-    (cons exp coef tl).exps = exp :: coef.exps := by
-  simp [Multiseries.exps]
+    (cons exp coef tl).leadingUnit = exp :: coef.leadingUnit := by
+  simp [Multiseries.leadingUnit]
 
 @[simp]
-theorem nil_realCoef {basis_hd} {basis_tl} {f : ℝ → ℝ} :
-    (@realCoef (basis_hd :: basis_tl) (mk .nil f)) = 0 := by
-  simp [realCoef]
+theorem nil_leadingCoef {basis_hd} {basis_tl} {f : ℝ → ℝ} :
+    (@leadingCoef (basis_hd :: basis_tl) (mk .nil f)) = 0 := by
+  simp [leadingCoef]
 
 @[simp]
-theorem cons_realCoef {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+theorem cons_leadingCoef {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ} :
-    (@realCoef (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) =
-    coef.realCoef := by
-  simp [realCoef]
+    (@leadingCoef (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) =
+    coef.leadingCoef := by
+  simp [leadingCoef]
 
 @[simp]
 theorem nil_leadingMonomial {basis_hd basis_tl} {f : ℝ → ℝ} :
@@ -107,10 +110,10 @@ theorem cons_leadingMonomial {basis_hd} {basis_tl} {exp : ℝ} {coef : Multiseri
   simp [leadingMonomial]
 
 theorem cons_leadingMonomial' {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
-    {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ} {coef' : ℝ} {exps : UnitMonomial}
-    (h_eq : coef.leadingMonomial = ⟨coef', exps⟩) :
+    {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ} {coef' : ℝ} {unit : UnitMonomial}
+    (h_eq : coef.leadingMonomial = ⟨coef', unit⟩) :
     (@leadingMonomial (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) =
-    ⟨coef', exp :: exps⟩ := by
+    ⟨coef', exp :: unit⟩ := by
   rw [cons_leadingMonomial]
   simp [h_eq]
 
@@ -123,31 +126,31 @@ theorem leadingMonomial_cons_coef {basis_hd} {basis_tl} {exp : ℝ}
 
 mutual
 
-theorem Multiseries.exps_length {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
-    ms.exps.length = (basis_hd :: basis_tl).length := by
+theorem Multiseries.leadingUnit_length {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
+    ms.leadingUnit.length = (basis_hd :: basis_tl).length := by
   cases ms with
   | nil => simp
   | cons exp coef tl =>
-    simp only [Multiseries.cons_exps, List.length_cons, Nat.add_right_cancel_iff]
-    rw [exps_length]
+    simp only [Multiseries.cons_leadingUnit, List.length_cons, Nat.add_right_cancel_iff]
+    rw [leadingUnit_length]
 
-theorem exps_length {basis : Basis} (ms : MultiseriesExpansion basis) :
-    ms.exps.length = basis.length := by
+theorem leadingUnit_length {basis : Basis} (ms : MultiseriesExpansion basis) :
+    ms.leadingUnit.length = basis.length := by
   cases basis with
   | nil => simp
   | cons basis_hd basis_tl =>
-    simp only [exps_eq_Seq_exps, List.length_cons]
-    rw [Multiseries.exps_length]
+    simp only [leadingUnit_eq_seq_leadingUnit, List.length_cons]
+    rw [Multiseries.leadingUnit_length]
     simp
 
 end
 
 theorem leadingMonomial_length {basis : Basis} {ms : MultiseriesExpansion basis} :
     ms.leadingMonomial.unit.length = basis.length := by
-  simp [leadingMonomial, exps_length]
+  simp [leadingMonomial, leadingUnit_length]
 
-theorem Multiseries.exps_ne_nil {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
-    ms.exps ≠ [] := by
+theorem Multiseries.leadingUnit_ne_nil {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
+    ms.leadingUnit ≠ [] := by
   cases ms with
   | nil => simp
   | cons exp coef tl =>
@@ -156,7 +159,7 @@ theorem Multiseries.exps_ne_nil {basis_hd basis_tl} (ms : Multiseries basis_hd b
 theorem leadingMonomial_ne_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
     ms.leadingMonomial.unit ≠ [] := by
-  simpa [leadingMonomial] using Multiseries.exps_ne_nil _
+  simpa [leadingMonomial] using Multiseries.leadingUnit_ne_nil _
 
 theorem leadingMonomial_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ}
@@ -174,7 +177,8 @@ theorem IsZero_of_leadingMonomial_zero_coef {basis : Basis} {ms : MultiseriesExp
     cases ms with
     | nil => simp
     | cons exp coef tl =>
-    simp only [leadingMonomial, cons_realCoef, exps_eq_Seq_exps, mk_seq, Multiseries.cons_exps] at h
+    simp only [leadingMonomial, cons_leadingCoef, leadingUnit_eq_seq_leadingUnit, mk_seq,
+      Multiseries.cons_leadingUnit] at h
     replace h_trimmed := h_trimmed.elim_cons
     have : IsZero coef := IsZero_of_leadingMonomial_zero_coef h_trimmed.left h
     simp [this] at h_trimmed
@@ -277,8 +281,8 @@ mutual
       ms.toFun ~[atTop] ms.leadingMonomial.toFun basis := by
     cases basis with
     | nil =>
-      simp only [const_toFun, leadingMonomial, const_realCoef', const_exps', Monomial.toFun,
-        UnitMonomial.toFun_nil]
+      simp only [const_toFun, leadingMonomial, const_leadingCoef', const_leadingUnit',
+        Monomial.toFun, UnitMonomial.toFun_nil]
       convert! Asymptotics.IsEquivalent.refl using 1
       ext x
       simp
@@ -287,8 +291,9 @@ mutual
       | nil =>
         have hF := Approximates.elim_nil h_approx
         unfold leadingMonomial
-        simp only [mk_toFun, realCoef, mk_seq, Multiseries.head_nil, exps_eq_Seq_exps,
-          Multiseries.nil_exps, List.length_cons, Monomial.zero_coef_toFun']
+        simp only [mk_toFun, leadingCoef, mk_seq, Multiseries.head_nil,
+          leadingUnit_eq_seq_leadingUnit, Multiseries.nil_leadingUnit, List.length_cons,
+          Monomial.zero_coef_toFun']
         apply EventuallyEq.isEquivalent (by assumption)
       | cons exp coef tl f =>
         obtain ⟨h_coef, _, h_tl⟩ := h_approx.elim_cons
@@ -305,10 +310,10 @@ mutual
         exact coef_ih
 end
 
-/-- If `f` is approximated by `ms`, and `ms.realCoef > 0`, then
+/-- If `f` is approximated by `ms`, and `ms.leadingCoef > 0`, then
 `f` is eventually positive. -/
 theorem eventually_pos_of_coef_pos {basis : Basis} {ms : MultiseriesExpansion basis}
-    (h_pos : 0 < ms.realCoef) (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
+    (h_pos : 0 < ms.leadingCoef) (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed) (h_basis : WellFormedBasis basis) :
     ∀ᶠ t in atTop, 0 < ms.toFun t := by
   apply (IsEquivalent_leadingMonomial h_sorted h_approx h_trimmed h_basis).eventually_pos
@@ -349,7 +354,7 @@ theorem IsLittleO_of_lt_leadingMonomial_left {left right : Basis}
     (IsEquivalent_leadingMonomial h_sorted1 h_approx1 h_trimmed1 h_basis)
   apply Asymptotics.IsLittleO.trans_isEquivalent _
     (IsEquivalent_leadingMonomial h_sorted2 h_approx2 h_trimmed2 h_basis.of_append_right).symm
-  apply Monomial.isLittleO_of_lt_exps_left h_basis _ _ _ h_lt
+  apply Monomial.isLittleO_of_lt_unit_left h_basis _ _ _ h_lt
   · simp [leadingMonomial_length]
   · simp [leadingMonomial_length]
   · contrapose! h2
@@ -368,7 +373,7 @@ theorem IsLittleO_of_lt_leadingMonomial_right {left right : Basis}
     (IsEquivalent_leadingMonomial h_sorted2 h_approx2 h_trimmed2 h_basis.of_append_right)
   apply Asymptotics.IsLittleO.trans_isEquivalent _
     (IsEquivalent_leadingMonomial h_sorted1 h_approx1 h_trimmed1 h_basis).symm
-  apply Monomial.isLittleO_of_lt_exps_right h_basis _ _ _ h_lt
+  apply Monomial.isLittleO_of_lt_unit_right h_basis _ _ _ h_lt
   · simp [leadingMonomial_length]
   · simp [leadingMonomial_length]
   · contrapose! h1
@@ -395,7 +400,7 @@ theorem IsEquivalent_of_leadingMonomial_zeros_append {left right : Basis} {f2 : 
     (h_f2 : ms2.toFun = f2)
     (h_basis : WellFormedBasis (left ++ right))
     (h_coef : ms1.leadingMonomial.coef = ms2.leadingMonomial.coef)
-    (h_exps : List.replicate left.length 0 ++ ms2.leadingMonomial.unit = ms1.leadingMonomial.unit) :
+    (h_unit : List.replicate left.length 0 ++ ms2.leadingMonomial.unit = ms1.leadingMonomial.unit) :
     ms1.toFun ~[atTop] f2 := by
   subst h_f2
   apply Asymptotics.IsEquivalent.trans
@@ -416,15 +421,15 @@ theorem IsEquivalent_of_leadingMonomial_zeros_append {left right : Basis} {f2 : 
 
 theorem IsEquivalent_of_leadingMonomial_zeros_append_mul_coef {left right : Basis}
     {ms1 : MultiseriesExpansion (left ++ right)} {ms2 : MultiseriesExpansion right}
-    {coef1 coef2 : ℝ} {exps1 exps2 : UnitMonomial}
+    {coef1 coef2 : ℝ} {unit1 unit2 : UnitMonomial}
     (h_sorted1 : ms1.Sorted) (h_sorted2 : ms2.Sorted)
     (h_approx1 : ms1.Approximates) (h_approx2 : ms2.Approximates)
     (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
     (h_basis : WellFormedBasis (left ++ right))
-    (h_leading1 : ms1.leadingMonomial = ⟨coef1, exps1⟩)
-    (h_leading2 : ms2.leadingMonomial = ⟨coef2, exps2⟩)
+    (h_leading1 : ms1.leadingMonomial = ⟨coef1, unit1⟩)
+    (h_leading2 : ms2.leadingMonomial = ⟨coef2, unit2⟩)
     (h_coef : coef1 / coef2 ≠ 0)
-    (h_exps : List.replicate left.length 0 ++ exps2 = exps1) :
+    (h_unit : List.replicate left.length 0 ++ unit2 = unit1) :
     ms1.toFun ~[atTop] (coef1 / coef2) • ms2.toFun := by
   apply Asymptotics.IsEquivalent.trans
     (IsEquivalent_leadingMonomial h_sorted1 h_approx1 h_trimmed1 h_basis)
@@ -445,92 +450,93 @@ theorem IsEquivalent_of_leadingMonomial_zeros_append_mul_coef {left right : Basi
     Monomial.zeros_append_toFun _
   rw [← this, ← Monomial.smul_toFun]
   congr 1
-  simp only [Monomial.smul, h_leading1, h_leading2, h_exps, Monomial.mk.injEq, and_true, t2']
+  simp only [Monomial.smul, h_leading1, h_leading2, h_unit, Monomial.mk.injEq, and_true, t2']
   rw [div_mul_cancel₀]
   contrapose! h_coef
   simp [h_coef]
 
 theorem FirstNonzeroIsPos_ne_zero {basis : Basis} {ms : MultiseriesExpansion basis}
-    (h_pos : ms.exps.FirstNonzeroIsPos) :
+    (h_pos : ms.leadingUnit.FirstNonzeroIsPos) :
     ¬ IsZero ms := by
   intro h
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
-  · simp only [const_exps'] at h_pos
+  · simp only [const_leadingUnit'] at h_pos
     cases h_pos
   · apply UnitMonomial.AllZero.not_FirstNonzeroIsPos _ h_pos
     cases h with | nil f =>
-    simp only [exps_eq_Seq_exps, mk_seq, Multiseries.nil_exps, List.length_cons]
+    simp only [leadingUnit_eq_seq_leadingUnit, mk_seq, Multiseries.nil_leadingUnit,
+      List.length_cons]
     exact UnitMonomial.AllZero.replicate
 
 /- ## Leading terms of basic constructions -/
 
 @[simp]
-theorem const_realCoef {basis : Basis} {c : ℝ} :
-    (@MultiseriesExpansion.const basis c).realCoef = c := by
+theorem const_leadingCoef {basis : Basis} {c : ℝ} :
+    (@MultiseriesExpansion.const basis c).leadingCoef = c := by
   cases basis with
-  | nil => simp [const, realCoef, ofReal, toReal]
+  | nil => simp [const, leadingCoef, ofReal, toReal]
   | cons basis_hd basis_tl =>
-    simp only [realCoef, const, Multiseries.const, mk_seq, Multiseries.head_cons]
-    rw [const_realCoef]
+    simp only [leadingCoef, const, Multiseries.const, mk_seq, Multiseries.head_cons]
+    rw [const_leadingCoef]
 
 mutual
 
 @[simp]
-theorem Multiseries.const_exps {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
-    (Multiseries.const basis_hd basis_tl c).exps =
+theorem Multiseries.const_leadingUnit {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
+    (Multiseries.const basis_hd basis_tl c).leadingUnit =
       List.replicate (basis_hd :: basis_tl).length 0 := by
-  simp only [Multiseries.const, Multiseries.cons_exps, List.length_cons]
-  rw [const_exps]
+  simp only [Multiseries.const, Multiseries.cons_leadingUnit, List.length_cons]
+  rw [const_leadingUnit]
   simp [List.replicate_succ]
 
 @[simp]
-theorem const_exps {basis : Basis} {c : ℝ} :
-    (@MultiseriesExpansion.const basis c).exps = List.replicate basis.length 0 := by
+theorem const_leadingUnit {basis : Basis} {c : ℝ} :
+    (@MultiseriesExpansion.const basis c).leadingUnit = List.replicate basis.length 0 := by
   cases basis with
   | nil => simp
   | cons =>
-    simp only [exps_eq_Seq_exps, const_seq, List.length_cons]
-    rw [Multiseries.const_exps]
+    simp only [leadingUnit_eq_seq_leadingUnit, const_seq, List.length_cons]
+    rw [Multiseries.const_leadingUnit]
     simp
 
 end
 
 theorem const_leadingMonomial_eq {basis : Basis} {c : ℝ} :
     (@MultiseriesExpansion.const basis c).leadingMonomial = ⟨c, List.replicate basis.length 0⟩ := by
-  simp [leadingMonomial, const_realCoef, const_exps]
+  simp [leadingMonomial, const_leadingCoef, const_leadingUnit]
 
-theorem monomialRpow_realCoef {basis : Basis} {n : ℕ} {r : ℝ} (h : n < basis.length) :
-    (@MultiseriesExpansion.monomialRpow basis n r).realCoef = 1 := by
+theorem monomialRpow_leadingCoef {basis : Basis} {n : ℕ} {r : ℝ} (h : n < basis.length) :
+    (@MultiseriesExpansion.monomialRpow basis n r).leadingCoef = 1 := by
   cases basis with
   | nil => simp at h
   | cons basis_hd basis_tl =>
     cases n with
     | zero =>
-      simp [realCoef, Multiseries.monomialRpow, one, const_realCoef]
+      simp [leadingCoef, Multiseries.monomialRpow, one, const_leadingCoef]
     | succ n =>
-      simp [realCoef, Multiseries.monomialRpow, monomialRpow_realCoef (by simpa using h)]
+      simp [leadingCoef, Multiseries.monomialRpow, monomialRpow_leadingCoef (by simpa using h)]
 
 mutual
 
-theorem Multiseries.monomialRpow_exps {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} {r : ℝ}
+theorem Multiseries.monomialRpow_leadingUnit {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} {r : ℝ}
     (h : n < (basis_hd :: basis_tl).length) :
-    (Multiseries.monomialRpow basis_hd basis_tl n r).exps =
+    (Multiseries.monomialRpow basis_hd basis_tl n r).leadingUnit =
     List.replicate n 0 ++ r :: List.replicate ((basis_hd :: basis_tl).length - n - 1) 0 := by
   cases n with
   | zero => simp [Multiseries.monomialRpow, one]
   | succ n =>
-    simp only [Multiseries.monomialRpow, Multiseries.cons_exps, List.replicate_succ,
+    simp only [Multiseries.monomialRpow, Multiseries.cons_leadingUnit, List.replicate_succ,
       List.length_cons, Nat.reduceSubDiff, List.cons_append, List.cons.injEq, true_and]
-    rw [monomialRpow_exps (by simpa using h)]
+    rw [monomialRpow_leadingUnit (by simpa using h)]
 
-theorem monomialRpow_exps {basis : Basis} {n : ℕ} {r : ℝ} (h : n < basis.length) :
-    (@MultiseriesExpansion.monomialRpow basis n r).exps =
+theorem monomialRpow_leadingUnit {basis : Basis} {n : ℕ} {r : ℝ} (h : n < basis.length) :
+    (@MultiseriesExpansion.monomialRpow basis n r).leadingUnit =
     List.replicate n 0 ++ r :: List.replicate (basis.length - n - 1) 0 := by
   cases basis with
   | nil => simp at h
   | cons basis_hd basis_tl =>
-    simp only [exps_eq_Seq_exps, monomialRpow_seq, List.length_cons]
-    rw [Multiseries.monomialRpow_exps h]
+    simp only [leadingUnit_eq_seq_leadingUnit, monomialRpow_seq, List.length_cons]
+    rw [Multiseries.monomialRpow_leadingUnit h]
     simp
 
 end
@@ -538,7 +544,7 @@ end
 theorem monomialRpow_leadingMonomial_eq {basis : Basis} {n : ℕ} (h : n < basis.length) (r : ℝ) :
     (@MultiseriesExpansion.monomialRpow basis n r).leadingMonomial =
     ⟨1, List.replicate n 0 ++ r :: List.replicate (basis.length - n - 1) 0⟩ := by
-  simp [leadingMonomial, monomialRpow_realCoef h, monomialRpow_exps h]
+  simp [leadingMonomial, monomialRpow_leadingCoef h, monomialRpow_leadingUnit h]
 
 theorem monomial_leadingMonomial_eq {basis : Basis} {n : ℕ} (h : n < basis.length) :
     (@MultiseriesExpansion.monomial basis n).leadingMonomial =
@@ -561,11 +567,11 @@ theorem extendBasisEnd_leadingMonomial_eq {basis : Basis} {b : ℝ → ℝ}
 
 lemma log_basis_getLast_IsLittleO_aux {basis : Basis}
     {ms : MultiseriesExpansion basis}
-    (h_pos : ms.exps.FirstNonzeroIsPos) :
+    (h_pos : ms.leadingUnit.FirstNonzeroIsPos) :
     basis ≠ [] := by
   contrapose! h_pos
   subst h_pos
-  simp [const_exps']
+  simp [const_leadingUnit']
 
 -- TODO: move?
 set_option backward.isDefEq.respectTransparency false in
@@ -576,7 +582,7 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
     (Real.log ∘ (basis.getLast (log_basis_getLast_IsLittleO_aux h_pos))) =o[atTop] ms.toFun := by
   simp only [leadingMonomial] at h_pos
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
-  · simp only [const_exps'] at h_pos
+  · simp only [const_leadingUnit'] at h_pos
     cases h_pos
   have h_basis' := h_basis.push_log_last
   let ms' :
@@ -607,19 +613,19 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
   rw [monomial_leadingMonomial_eq (by simp)]
   simp only [List.cons_append, List.length_cons, List.length_append, List.length_nil, zero_add,
     add_tsub_cancel_left, tsub_self, List.replicate_zero, extendBasisEnd_leadingMonomial_eq]
-  have h_len : ms.exps.length = basis_tl.length + 1 := by
-    simp only [exps_length, List.length_cons]
+  have h_len : ms.leadingUnit.length = basis_tl.length + 1 := by
+    simp only [leadingUnit_length, List.length_cons]
   clear * - h_pos h_len
   simp only [leadingMonomial]
-  generalize ms.exps = exps at *
+  generalize ms.leadingUnit = unit at *
   generalize basis_tl.length + 1 = n at *
-  induction n generalizing exps with
+  induction n generalizing unit with
   | zero =>
     simp only [List.length_eq_zero_iff] at h_len
     simp only [h_len] at h_pos
     cases h_pos
   | succ n ih =>
-    obtain _ | ⟨exp, exps_tl⟩ := exps
+    obtain _ | ⟨exp, unit_tl⟩ := unit
     · simp at h_len
     simp only [List.length_cons, Nat.add_right_cancel_iff] at h_len
     simp only [UnitMonomial.FirstNonzeroIsPos.cons_iff] at h_pos
@@ -636,8 +642,8 @@ theorem tendsto_zero_of_zero_coef {basis : Basis} {ms : MultiseriesExpansion bas
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
     (h_basis : WellFormedBasis basis)
-    {t_coef : ℝ} {t_exps : UnitMonomial}
-    (h_eq : ms.leadingMonomial = ⟨t_coef, t_exps⟩)
+    {t_coef : ℝ} {t_unit : UnitMonomial}
+    (h_eq : ms.leadingMonomial = ⟨t_coef, t_unit⟩)
     (h_coef : t_coef = 0) :
     Tendsto ms.toFun atTop (𝓝 0) := by
   apply (IsEquivalent.tendsto_nhds_iff
@@ -650,27 +656,27 @@ theorem tendsto_const_of_AllZero {basis : Basis} {ms : MultiseriesExpansion basi
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
     (h_basis : WellFormedBasis basis)
-    {t_coef : ℝ} {t_exps : UnitMonomial}
-    (h_eq : ms.leadingMonomial = ⟨t_coef, t_exps⟩)
-    (h_exps : t_exps.AllZero)
+    {t_coef : ℝ} {t_unit : UnitMonomial}
+    (h_eq : ms.leadingMonomial = ⟨t_coef, t_unit⟩)
+    (h_unit : t_unit.AllZero)
     (hf_eq : f = ms.toFun) :
     Tendsto f atTop (𝓝 t_coef) := by
   rw [hf_eq]
   apply (IsEquivalent.tendsto_nhds_iff
     (IsEquivalent_leadingMonomial h_sorted h_approx h_trimmed h_basis)).mpr
   rw [h_eq]
-  apply Monomial.toFun_tendsto_const_of_allZero h_exps
+  apply Monomial.toFun_tendsto_const_of_allZero h_unit
 
 theorem tendsto_zero_of_FirstNonzeroIsNeg_aux {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates)
-    {t_coef : ℝ} {t_exps : UnitMonomial}
-    (h_eq : ms.leadingMonomial = ⟨t_coef, t_exps⟩)
-    (h_exps : t_exps.FirstNonzeroIsNeg) :
+    {t_coef : ℝ} {t_unit : UnitMonomial}
+    (h_eq : ms.leadingMonomial = ⟨t_coef, t_unit⟩)
+    (h_unit : t_unit.FirstNonzeroIsNeg) :
     Tendsto ms.toFun atTop (𝓝 0) := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
-  · simp only [leadingMonomial, realCoef, exps, Monomial.mk.injEq, List.nil_eq] at h_eq
-    simp [h_eq.right] at h_exps
+  · simp only [leadingMonomial, leadingCoef, leadingUnit, Monomial.mk.injEq, List.nil_eq] at h_eq
+    simp [h_eq.right] at h_unit
   cases ms with
   | nil =>
     apply Approximates.elim_nil at h_approx
@@ -679,10 +685,10 @@ theorem tendsto_zero_of_FirstNonzeroIsNeg_aux {basis : Basis} {ms : MultiseriesE
   | cons exp coef tl f =>
     obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
     obtain ⟨h_coef_approx, h_maj, h_tl_approx⟩ := h_approx.elim_cons
-    simp only [leadingMonomial, realCoef, mk_seq, Multiseries.head_cons, exps_eq_Seq_exps,
-      Multiseries.cons_exps, Monomial.mk.injEq] at h_eq
-    simp only [← h_eq.right, UnitMonomial.FirstNonzeroIsNeg.cons_iff] at h_exps
-    obtain h_neg | h_zero := h_exps
+    simp only [leadingMonomial, leadingCoef, mk_seq, Multiseries.head_cons,
+      leadingUnit_eq_seq_leadingUnit, Multiseries.cons_leadingUnit, Monomial.mk.injEq] at h_eq
+    simp only [← h_eq.right, UnitMonomial.FirstNonzeroIsNeg.cons_iff] at h_unit
+    obtain h_neg | h_zero := h_unit
     · exact Majorized.tendsto_zero_of_neg h_neg h_maj
     have hC : Tendsto coef.toFun atTop (𝓝 0) := by
       apply tendsto_zero_of_FirstNonzeroIsNeg_aux (t_coef := t_coef) h_coef_sorted h_coef_approx _
@@ -703,13 +709,13 @@ theorem tendsto_zero_of_FirstNonzeroIsNeg {basis : Basis} {ms : MultiseriesExpan
     {f : ℝ → ℝ}
     (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates)
-    {t_coef : ℝ} {t_exps : UnitMonomial}
-    (h_eq : ms.leadingMonomial = ⟨t_coef, t_exps⟩)
-    (h_exps : t_exps.FirstNonzeroIsNeg)
+    {t_coef : ℝ} {t_unit : UnitMonomial}
+    (h_eq : ms.leadingMonomial = ⟨t_coef, t_unit⟩)
+    (h_unit : t_unit.FirstNonzeroIsNeg)
     (hf_eq : f = ms.toFun) :
     Tendsto f atTop (𝓝 0) := by
   rw [hf_eq]
-  apply tendsto_zero_of_FirstNonzeroIsNeg_aux h_sorted h_approx h_eq h_exps
+  apply tendsto_zero_of_FirstNonzeroIsNeg_aux h_sorted h_approx h_eq h_unit
 
 theorem tendsto_top_of_FirstNonzeroIsPos {basis : Basis} {ms : MultiseriesExpansion basis}
     {f : ℝ → ℝ}
@@ -717,9 +723,9 @@ theorem tendsto_top_of_FirstNonzeroIsPos {basis : Basis} {ms : MultiseriesExpans
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
     (h_basis : WellFormedBasis basis)
-    {t_coef : ℝ} {t_exps : UnitMonomial}
-    (h_eq : ms.leadingMonomial = ⟨t_coef, t_exps⟩)
-    (h_exps : t_exps.FirstNonzeroIsPos)
+    {t_coef : ℝ} {t_unit : UnitMonomial}
+    (h_eq : ms.leadingMonomial = ⟨t_coef, t_unit⟩)
+    (h_unit : t_unit.FirstNonzeroIsPos)
     (h_coef : 0 < t_coef)
     (hf_eq : f = ms.toFun) :
     Tendsto f atTop atTop := by
@@ -736,9 +742,9 @@ theorem tendsto_bot_of_FirstNonzeroIsPos {basis : Basis} {ms : MultiseriesExpans
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
     (h_basis : WellFormedBasis basis)
-    {t_coef : ℝ} {t_exps : UnitMonomial}
-    (h_eq : ms.leadingMonomial = ⟨t_coef, t_exps⟩)
-    (h_exps : t_exps.FirstNonzeroIsPos)
+    {t_coef : ℝ} {t_unit : UnitMonomial}
+    (h_eq : ms.leadingMonomial = ⟨t_coef, t_unit⟩)
+    (h_unit : t_unit.FirstNonzeroIsPos)
     (h_coef : t_coef < 0)
     (hf_eq : f = ms.toFun) :
     Tendsto f atTop atBot := by

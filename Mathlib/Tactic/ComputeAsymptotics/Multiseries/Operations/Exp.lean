@@ -107,7 +107,7 @@ mutual
 theorem Multiseries.exp_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : Multiseries basis_hd basis_tl}
     (h : ms.Sorted)
-    (h_nonpos : ¬ ms.exps.FirstNonzeroIsPos) :
+    (h_nonpos : ¬ ms.leadingUnit.FirstNonzeroIsPos) :
     ms.exp.Sorted := by
   cases ms with
   | nil => simpa [Multiseries.exp] using Multiseries.one_sorted
@@ -128,17 +128,17 @@ theorem Multiseries.exp_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   · exact Multiseries.powser_sorted h_tl_sorted h_comp
   · apply exp_sorted h_coef_sorted
     contrapose! h_nonpos
-    simp only [Multiseries.cons_exps]
+    simp only [Multiseries.cons_leadingUnit]
     exact UnitMonomial.FirstNonzeroIsPos.of_tail rfl h_nonpos
 
 theorem exp_sorted {basis : Basis} {ms : MultiseriesExpansion basis}
     (h : ms.Sorted)
-    (h_nonpos : ¬ ms.exps.FirstNonzeroIsPos) :
+    (h_nonpos : ¬ ms.leadingUnit.FirstNonzeroIsPos) :
     ms.exp.Sorted := by
   cases basis with
   | nil => apply Sorted.const
   | cons basis_hd basis_tl =>
-    simp only [sorted_iff_seq_sorted, exps_eq_Seq_exps, exp_seq] at *
+    simp only [sorted_iff_seq_sorted, leadingUnit_eq_seq_leadingUnit, exp_seq] at *
     apply Multiseries.exp_sorted h h_nonpos
 
 end
@@ -147,7 +147,7 @@ theorem exp_approximates {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_basis : WellFormedBasis basis)
     (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates)
-    (h_nonpos : ¬ ms.exps.FirstNonzeroIsPos) :
+    (h_nonpos : ¬ ms.leadingUnit.FirstNonzeroIsPos) :
     ms.exp.Approximates := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · simp
@@ -183,7 +183,7 @@ theorem exp_approximates {basis : Basis} {ms : MultiseriesExpansion basis}
       simp
     · apply exp_approximates h_basis.tail h_coef_sorted h_coef
       contrapose! h_nonpos
-      simp only [exps_eq_Seq_exps, mk_seq, Multiseries.cons_exps]
+      simp only [leadingUnit_eq_seq_leadingUnit, mk_seq, Multiseries.cons_leadingUnit]
       exact UnitMonomial.FirstNonzeroIsPos.of_tail rfl h_nonpos
   apply h.replaceFun _
   simp only [pow_zero, one_mul, mulMonomial_toFun, powser_toFun, expSeries_toFun, mk_toFun,

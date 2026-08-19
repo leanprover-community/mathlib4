@@ -103,7 +103,7 @@ theorem Multiseries.log_sorted {basis_hd basis_tl}
     {logBasis : LogBasis (basis_hd :: basis_tl)}
     {ms : Multiseries basis_hd basis_tl}
     (h_logBasis : logBasis.WellFormed)
-    (h_last : ∀ x, ms.exps.getLast? = .some x → x = 0)
+    (h_last : ∀ x, ms.leadingUnit.getLast? = .some x → x = 0)
     (h_sorted : ms.Sorted) :
     (ms.log logBasis).Sorted := by
   cases ms with
@@ -138,7 +138,7 @@ theorem Multiseries.log_sorted {basis_hd basis_tl}
             (LogBasis.tail_WellFormed h_logBasis) _ h_coef_sorted
           intro x h
           specialize h_last x
-          simpa [-exps_eq_Seq_exps, List.getLast?_cons, h] using h_last
+          simpa [-leadingUnit_eq_seq_leadingUnit, List.getLast?_cons, h] using h_last
         · apply mulConst_sorted
           exact h_logBasis.left
       · simp
@@ -160,14 +160,15 @@ theorem log_sorted {basis : Basis}
     {logBasis : LogBasis basis}
     {ms : MultiseriesExpansion basis}
     (h_logBasis : logBasis.WellFormed)
-    (h_last : ∀ x, ms.exps.getLast? = .some x → x = 0)
+    (h_last : ∀ x, ms.leadingUnit.getLast? = .some x → x = 0)
     (h_sorted : ms.Sorted) :
     (ms.log logBasis).Sorted := by
   cases basis with
   | nil => apply Sorted.const
   | cons basis_hd basis_tl =>
     simp only [sorted_iff_seq_sorted, log_seq]
-    exact Multiseries.log_sorted h_logBasis (by simpa [exps] using h_last) (by simpa using h_sorted)
+    exact Multiseries.log_sorted h_logBasis (by simpa [leadingUnit] using h_last)
+      (by simpa using h_sorted)
 termination_by 2 * basis.length
 decreasing_by grind
 
@@ -181,8 +182,8 @@ theorem log_approximates {basis : Basis}
     (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
-    (h_pos : 0 < ms.realCoef)
-    (h_last : ∀ x, ms.exps.getLast? = .some x → x = 0) :
+    (h_pos : 0 < ms.leadingCoef)
+    (h_last : ∀ x, ms.leadingUnit.getLast? = .some x → x = 0) :
     (ms.log logBasis).Approximates := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · simp
@@ -255,7 +256,7 @@ theorem log_approximates {basis : Basis}
       (Real.log ∘ coef.toFun + exp • log_hd.toFun)) +
       ((mk tl (f - basis_hd ^ exp * coef.toFun)).mulMonomial coef.inv (-exp)).powser logSeries
     have h : ms.Approximates := by
-      have h_coef_last : ∀ (x : ℝ), coef.exps.getLast? = some x → x = 0 := by
+      have h_coef_last : ∀ (x : ℝ), coef.leadingUnit.getLast? = some x → x = 0 := by
         simp
         simp [List.getLast?_cons] at h_last
         grind

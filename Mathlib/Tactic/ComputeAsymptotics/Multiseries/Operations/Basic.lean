@@ -253,45 +253,46 @@ theorem mulConst_trimmed {basis : Basis} {ms : MultiseriesExpansion basis} {c : 
     · exact mulConst_trimmed h_trimmed.left hc
     · exact mulConst_not_zero h_trimmed.right hc
 
-theorem mulConst_realCoef {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ} :
-    (ms.mulConst c).realCoef = c * ms.realCoef := by
+theorem mulConst_leadingCoef {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ} :
+    (ms.mulConst c).leadingCoef = c * ms.leadingCoef := by
   cases basis with
   | nil => simp [mulConst]
   | cons basis_hd basis_tl =>
     cases ms with
-    | nil => simp [mulConst, realCoef]
+    | nil => simp [mulConst, leadingCoef]
     | cons exp coef tl =>
-      simp only [realCoef, mulConst, mk_seq, Multiseries.map_cons, id_eq, mk_toFun,
+      simp only [leadingCoef, mulConst, mk_seq, Multiseries.map_cons, id_eq, mk_toFun,
         Multiseries.head_cons]
-      rw [mulConst_realCoef]
+      rw [mulConst_leadingCoef]
 
 mutual
 
 @[simp]
-theorem Multiseries.mulConst_exps {basis_hd basis_tl} {ms : Multiseries basis_hd basis_tl} {c : ℝ} :
-    (ms.mulConst c).exps = ms.exps := by
+theorem Multiseries.mulConst_leadingUnit {basis_hd basis_tl}
+    {ms : Multiseries basis_hd basis_tl} {c : ℝ} :
+    (ms.mulConst c).leadingUnit = ms.leadingUnit := by
   cases ms with
   | nil => simp
   | cons exp coef tl =>
-  simp only [Multiseries.mulConst, Multiseries.map_cons, id_eq, Multiseries.cons_exps,
+  simp only [Multiseries.mulConst, Multiseries.map_cons, id_eq, Multiseries.cons_leadingUnit,
     List.cons.injEq, true_and]
-  rw [mulConst_exps]
+  rw [mulConst_leadingUnit]
 
 @[simp]
-theorem mulConst_exps {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ} :
-    (ms.mulConst c).exps = ms.exps := by
+theorem mulConst_leadingUnit {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ} :
+    (ms.mulConst c).leadingUnit = ms.leadingUnit := by
   cases basis with
   | nil => simp [mulConst]
   | cons basis_hd basis_tl =>
-    simp only [exps_eq_Seq_exps, mulConst_seq]
-    rw [Multiseries.mulConst_exps]
+    simp only [leadingUnit_eq_seq_leadingUnit, mulConst_seq]
+    rw [Multiseries.mulConst_leadingUnit]
 
 end
 
 theorem mulConst_leadingMonomial {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ} :
     (ms.mulConst c).leadingMonomial =
     ⟨c * ms.leadingMonomial.coef, ms.leadingMonomial.unit⟩ := by
-  simp [leadingMonomial, mulConst_realCoef, mulConst_exps]
+  simp [leadingMonomial, mulConst_leadingCoef, mulConst_leadingUnit]
 
 @[simp]
 theorem neg_toFun {basis : Basis} {ms : MultiseriesExpansion basis} :

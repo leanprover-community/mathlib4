@@ -157,25 +157,25 @@ def computeTendstoAtTop (f : Q(ℝ → ℝ)) :
       pure (q(MultiseriesExpansion.Approximates.nil_tendsto_zero $ms_trimmed.h_approx) : Expr)
     | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
       let ⟨leading, h_leading_eq⟩ ← getLeadingMonomialWithProof ms_trimmed.val
-      let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendstoAtTop"
-      match ← getFirstIs exps with
-      | .pos h_exps =>
+      let ~q(⟨$coef, $unit⟩) := leading | panic! "Unexpected leading in computeTendstoAtTop"
+      match ← getFirstIs unit with
+      | .pos h_unit =>
         match ← compareReal q($coef) with
         | .neg h_coef =>
           pure q(MultiseriesExpansion.tendsto_bot_of_FirstNonzeroIsPos (f := $f)
             $ms_trimmed.h_sorted $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis
-            $h_leading_eq $h_exps $h_coef rfl)
+            $h_leading_eq $h_unit $h_coef rfl)
         | .pos h_coef =>
           pure q(MultiseriesExpansion.tendsto_top_of_FirstNonzeroIsPos (f := $f)
             $ms_trimmed.h_sorted $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis
-            $h_leading_eq $h_exps $h_coef rfl)
+            $h_leading_eq $h_unit $h_coef rfl)
         | .zero _ => panic! "Unexpected zero coef with FirstNonzeroIsPos"
-      | .neg h_exps =>
+      | .neg h_unit =>
         pure q(MultiseriesExpansion.tendsto_zero_of_FirstNonzeroIsNeg (f := $f) $ms_trimmed.h_sorted
-          $ms_trimmed.h_approx $h_leading_eq $h_exps rfl)
-      | .zero h_exps =>
+          $ms_trimmed.h_approx $h_leading_eq $h_unit rfl)
+      | .zero h_unit =>
         pure (q(MultiseriesExpansion.tendsto_const_of_AllZero (f := $f) $ms_trimmed.h_sorted
-          $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps rfl) :
+          $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_unit rfl) :
             Expr)
     | _ => panic! "Unexpected result of trimMS"
     let ⟨0, t, h_tendsto⟩ ← inferTypeQ h_tendsto

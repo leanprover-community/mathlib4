@@ -91,15 +91,15 @@ def compare (x y : MS)
   haveI : $x.basis =Q $left ++ $y.basis := ⟨⟩; do
   let ⟨tx, htx⟩ ← getLeadingMonomialWithProof x.val
   let ⟨ty, hty⟩ ← getLeadingMonomialWithProof y.val
-  let ~q(⟨$x_coef, $x_exps⟩) := tx | panic! "Unexpected x in compareLeadingMonomials"
-  let ~q(⟨$y_coef, $y_exps⟩) := ty | panic! "Unexpected y in compareLeadingMonomials"
+  let ~q(⟨$x_coef, $x_unit⟩) := tx | panic! "Unexpected x in compareLeadingMonomials"
+  let ~q(⟨$y_coef, $y_unit⟩) := ty | panic! "Unexpected y in compareLeadingMonomials"
   let n : Nat := (← computeLength x.basis) - (← computeLength y.basis)
   let zeros ← replicate n q(0 : ℝ)
-  let y_exps' : Q(List ℝ) := ← reduceAppend (α := q(ℝ)) q($zeros) q($y_exps)
-  -- haveI : $x_exps =Q (MultiseriesExpansion.leadingMonomial $x.val).exps := ⟨⟩; do
-  haveI : $y_exps' =Q List.replicate (List.length $left) 0 ++ $y_exps := ⟨⟩
+  let y_unit' : Q(List ℝ) := ← reduceAppend (α := q(ℝ)) q($zeros) q($y_unit)
+  -- haveI : $x_unit =Q (MultiseriesExpansion.leadingMonomial $x.val).unit := ⟨⟩; do
+  haveI : $y_unit' =Q List.replicate (List.length $left) 0 ++ $y_unit := ⟨⟩
   do
-  let res ← compareLists q($x_exps) q($y_exps')
+  let res ← compareLists q($x_unit) q($y_unit')
   match res with
   | .lt h' =>
     let h : Q(($x.val).leadingMonomial.unit < List.replicate (List.length $left) 0 ++
@@ -165,7 +165,7 @@ lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     {ms : MultiseriesExpansion (left ++ right_hd :: right_tl)}
     (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : MultiseriesExpansion.Trimmed ms)
-    (h_exps : (ms.leadingMonomial).unit.FirstNonzeroIsPos)
+    (h_unit : (ms.leadingMonomial).unit.FirstNonzeroIsPos)
     (h_coef : 0 < (ms.leadingMonomial).coef)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))
     (h_equiv : ms.toFun ~[atTop] f')
@@ -176,7 +176,7 @@ lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
   · apply Tendsto.comp Real.tendsto_exp_atTop
     apply h_equiv.tendsto_atTop
     exact MultiseriesExpansion.tendsto_top_of_FirstNonzeroIsPos h_sorted h_approx h_trimmed
-      h_basis rfl h_exps h_coef rfl
+      h_basis rfl h_unit h_coef rfl
   · exact log_congr_IsEquivalent_left left h_equiv h_left
   · exact log_congr_IsEquivalent_right' right_hd right_tl h_equiv h_right
 
@@ -185,7 +185,7 @@ lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     {ms : MultiseriesExpansion (left ++ right_hd :: right_tl)}
     (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : MultiseriesExpansion.Trimmed ms)
-    (h_exps : (ms.leadingMonomial).unit.FirstNonzeroIsPos)
+    (h_unit : (ms.leadingMonomial).unit.FirstNonzeroIsPos)
     (h_coef : (ms.leadingMonomial).coef < 0)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))
     (h_equiv : ms.toFun ~[atTop] f')
