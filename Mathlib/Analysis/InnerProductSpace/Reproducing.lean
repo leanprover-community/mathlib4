@@ -97,7 +97,10 @@ lemma eval_def (x : X) : eval H x = .proj x ∘L coeCLM 𝕜 := by rfl
 @[simp]
 lemma eval_apply (x : X) (f : H) : eval H x f = f x := by rfl
 
-lemma continuous_eval (x : X) : Continuous (fun (f : H) ↦ f x) := (eval H x).continuous
+lemma continuous_eval_const (x : X) : Continuous (fun (f : H) ↦ f x) := (eval H x).continuous
+
+@[deprecated (since := "2026-08-19")]
+alias continuous_eval := continuous_eval_const
 
 variable (H) [CompleteSpace H] [CompleteSpace V]
 
@@ -146,12 +149,57 @@ lemma norm_kernel_eq_norm_kerFun_sq (x) : ‖kernel H x x‖ = ‖kerFun H x‖ 
 lemma norm_kerFun_eq_sqrt_norm_kernel (x) : ‖kerFun H x‖ = √‖kernel H x x‖ := by
   rw [norm_kernel_eq_norm_kerFun_sq, Real.sqrt_sq (norm_nonneg _)]
 
+lemma norm_sq_kerFun_eq (x y : X) :
+    ‖kerFun H x - kerFun H y‖^2 = ‖kernel H x x - kernel H y x - kernel H x y + kernel H y y‖ := by
+  rw [sq, ← ContinuousLinearMap.norm_adjoint_comp_self]
+  simp [← kernel_apply, ← sub_add]
+
+lemma norm_kerFun_eq (x y : X) :
+    ‖kerFun H x - kerFun H y‖ = √‖kernel H x x - kernel H y x - kernel H x y + kernel H y y‖ := by
+  apply Eq.symm
+  rw [Real.sqrt_eq_iff_eq_sq (opNorm_nonneg _) (opNorm_nonneg _)]
+  simp [norm_sq_kerFun_eq]
+
 lemma norm_kernel_le (x y) : ‖kernel H x y‖ ≤ √‖kernel H x x‖ * √‖kernel H y y‖ := by
   grw [kernel_apply, opNorm_comp_le]
   simp [norm_kerFun_eq_sqrt_norm_kernel]
 
 lemma norm_kernel_sq_le (x y) : ‖kernel H x y‖ ^ 2 ≤ ‖kernel H x x‖ * ‖kernel H y y‖ := by
   grw [norm_kernel_le]; simp [mul_pow]
+
+section continuous
+
+variable [TopologicalSpace X]
+
+instance instContinuousEvalConst : ContinuousEvalConst H X V where
+  continuous_eval_const := continuous_eval_const
+
+class ContinuousKernel : Prop where
+  continuous_kernel : Continuous fun p : X × X => kernel H p.1 p.2
+
+theorem continuous_kerFun [ContinuousKernel H] : Continuous (kerFun H) := by
+  rw [continuous_iff_continuousAt]
+  intro x
+  rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero]
+  simp_rw [norm_kerFun_eq]
+  refine Tendsto.comp (y:=(𝓝 0)) (by simpa using ((Real.continuous_sqrt).tendsto 0)) ?_
+  have hK : Continuous fun p : X × X => kernel H p.1 p.2 :=
+    ContinuousKernel.continuous_kernel (H := H)
+  have h1 : Continuous (fun y ↦ kernel H x x) := continuous_const (X:=X)
+  have h2 : Continuous (fun y ↦ kernel H y x) := hK.comp (continuous_id.prodMk continuous_const)
+  have h3 : Continuous (fun y ↦ kernel H x y) := hK.comp (continuous_const.prodMk continuous_id)
+  have h4 : Continuous (fun y ↦ kernel H y y) := hK.comp (continuous_id.prodMk continuous_id)
+  simpa using (h4 |>.sub h3 |>.sub h2 |>.add h1).norm.tendsto x
+
+theorem continuous_eval' [ContinuousKernel H] : Continuous fun x : X => eval H x := by
+  simp_rw +singlePass [← adjoint_adjoint (eval H _), ← kerFun_eq_adjoint_eval]
+  exact ContinuousLinearMap.adjoint.continuous.comp (continuous_kerFun H)
+
+instance instContinuousEval [ContinuousKernel H] : ContinuousEval H X V where
+  continuous_eval := isBoundedBilinearMap_apply.continuous.comp
+    (((continuous_eval' H).comp continuous_snd).prodMk continuous_fst)
+
+end continuous
 
 variable {H} in
 /-- The evaluation of an element `f` of a reproducing kernel Hilbert space at a point `x` is
