@@ -949,7 +949,7 @@ lemma meromorphicOrderAt_mul_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt �
   meromorphicOrderAt_smul_of_ne_zero hg hg'
 
 /-- meromorphicOrderAt is invariant under scaling. -/
-@[simp] theorem meromorphicOrderAt_const_smul_iff_meromorphicOrderAt {f : 𝕜 → E} {s : 𝕜}
+@[simp] theorem meromorphicOrderAt_const_smul_eq_meromorphicOrderAt {f : 𝕜 → E} {s : 𝕜}
     (hs : s ≠ 0) :
     meromorphicOrderAt (s • f) x = meromorphicOrderAt f x := by
   by_cases hf : MeromorphicAt f x
@@ -958,7 +958,7 @@ lemma meromorphicOrderAt_mul_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt �
   simp_all
 
 /-- meromorphicOrderAt is invariant under scaling. -/
-@[simp] theorem meromorphicOrderAt_fun_const_smul_iff_meromorphicOrderAt {f : 𝕜 → E} {s : 𝕜}
+@[simp] theorem meromorphicOrderAt_fun_const_smul_eq_meromorphicOrderAt {f : 𝕜 → E} {s : 𝕜}
     (hs : s ≠ 0) :
     meromorphicOrderAt (fun x ↦ s • f x) x = meromorphicOrderAt f x :=
   meromorphicOrderAt_const_smul_iff_meromorphicOrderAt hs
