@@ -74,11 +74,15 @@ variable {f : α → β} {x : α}
 theorem edist_eq (hf : Isometry f) (x y : α) : edist (f x) (f y) = edist x y :=
   hf x y
 
-theorem lipschitz (h : Isometry f) : LipschitzWith 1 f :=
+theorem lipschitzWith (h : Isometry f) : LipschitzWith 1 f :=
   LipschitzWith.of_edist_le fun x y => (h x y).le
 
-theorem antilipschitz (h : Isometry f) : AntilipschitzWith 1 f := fun x y => by
+@[deprecated (since := "2026-08-16")] alias lipschitz := lipschitzWith
+
+theorem antilipschitzWith (h : Isometry f) : AntilipschitzWith 1 f := fun x y => by
   simp only [h x y, ENNReal.coe_one, one_mul, le_refl]
+
+@[deprecated (since := "2026-08-16")] alias antilipschitz := antilipschitzWith
 
 /-- Any map on a subsingleton is an isometry -/
 @[nontriviality]
@@ -127,11 +131,11 @@ lemma postcomp_pi [Fintype α] {g : β → γ} (hg : Isometry g) : Isometry (fun
 
 /-- An isometry from a metric space is a uniform continuous map -/
 protected theorem uniformContinuous (hf : Isometry f) : UniformContinuous f :=
-  hf.lipschitz.uniformContinuous
+  hf.lipschitzWith.uniformContinuous
 
 /-- An isometry from a metric space is a uniform inducing map -/
 theorem isUniformInducing (hf : Isometry f) : IsUniformInducing f :=
-  hf.antilipschitz.isUniformInducing hf.uniformContinuous
+  hf.antilipschitzWith.isUniformInducing hf.uniformContinuous
 
 theorem tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
     (hf : Isometry f) : Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto (f ∘ g) a (𝓝 (f b)) :=
@@ -139,7 +143,7 @@ theorem tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filte
 
 /-- An isometry is continuous. -/
 protected theorem continuous (hf : Isometry f) : Continuous f :=
-  hf.lipschitz.continuous
+  hf.lipschitzWith.continuous
 
 /-- The right inverse of an isometry is an isometry. -/
 theorem right_inv {f : α → β} {g : β → α} (h : Isometry f) (hg : RightInverse g f) : Isometry g :=
@@ -193,11 +197,11 @@ variable [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
 
 /-- An isometry from an emetric space is injective -/
 protected theorem injective (h : Isometry f) : Injective f :=
-  h.antilipschitz.injective
+  h.antilipschitzWith.injective
 
 /-- An isometry from an emetric space is a uniform embedding -/
 lemma isUniformEmbedding (hf : Isometry f) : IsUniformEmbedding f :=
-  hf.antilipschitz.isUniformEmbedding hf.lipschitz.uniformContinuous
+  hf.antilipschitzWith.isUniformEmbedding hf.lipschitzWith.uniformContinuous
 
 /-- An isometry from an emetric space is an embedding -/
 theorem isEmbedding (hf : Isometry f) : IsEmbedding f := hf.isUniformEmbedding.isEmbedding
@@ -205,7 +209,7 @@ theorem isEmbedding (hf : Isometry f) : IsEmbedding f := hf.isUniformEmbedding.i
 /-- An isometry from a complete emetric space is a closed embedding -/
 theorem isClosedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
     IsClosedEmbedding f :=
-  hf.antilipschitz.isClosedEmbedding hf.lipschitz.uniformContinuous
+  hf.antilipschitzWith.isClosedEmbedding hf.lipschitzWith.uniformContinuous
 
 end EMetricIsometry
 
@@ -304,10 +308,10 @@ protected theorem continuous : Continuous f :=
   (IsometryClass.isometry f).continuous
 
 protected theorem lipschitz : LipschitzWith 1 f :=
-  (IsometryClass.isometry f).lipschitz
+  (IsometryClass.isometry f).lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 f :=
-  (IsometryClass.isometry f).antilipschitz
+  (IsometryClass.isometry f).antilipschitzWith
 
 theorem ediam_image (s : Set α) : Metric.ediam (f '' s) = Metric.ediam s :=
   (IsometryClass.isometry f).ediam_image s
