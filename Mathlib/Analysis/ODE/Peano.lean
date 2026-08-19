@@ -83,7 +83,6 @@ lemma mapsTo_delayedInput_previous_interval (n k : ℕ) (t₀ : Icc tmin tmax) :
     mul_nonneg (Nat.cast_nonneg k) (stepSize_nonneg t₀ n)
   exact ⟨le_max_right _ _, max_le (by linarith) (by linarith)⟩
 
-/-- The delayed input maps `Icc t₀ tmax` to itself. -/
 lemma mapsTo_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
     MapsTo (delayedInput t₀ n) (Icc t₀.val tmax) (Icc t₀.val tmax) := by
   intro s hs
