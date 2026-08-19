@@ -53,7 +53,7 @@ theorem birkhoffAverage_zero_apply (f : α → α) (g : α → M) (x : α) :
 theorem birkhoffAverage_zero (f : α → α) (g : α → M) : birkhoffAverage R f g 0 = 0 :=
   funext <| birkhoffAverage_zero_apply _ _ _
 
-@[deprecated (since := "2026-08-06")] alias birkhoffAverage_zero' := birkhoffAverage_zero
+@[deprecated (since := "2026-08-19")] alias birkhoffAverage_zero' := birkhoffAverage_zero
 
 theorem birkhoffAverage_one_apply (f : α → α) (g : α → M) (x : α) :
     birkhoffAverage R f g 1 x = g x := by
@@ -63,7 +63,7 @@ theorem birkhoffAverage_one_apply (f : α → α) (g : α → M) (x : α) :
 theorem birkhoffAverage_one (f : α → α) (g : α → M) : birkhoffAverage R f g 1 = g :=
   funext <| birkhoffAverage_one_apply R f g
 
-@[deprecated (since := "2026-08-06")] alias birkhoffAverage_one' := birkhoffAverage_one
+@[deprecated (since := "2026-08-19")] alias birkhoffAverage_one' := birkhoffAverage_one
 
 theorem map_birkhoffAverage (S : Type*) {F N : Type*}
     [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
@@ -86,7 +86,7 @@ theorem birkhoffAverage_congr_ring (S : Type*) [DivisionSemiring S] [Module S M]
     birkhoffAverage (α := α) (M := M) R = birkhoffAverage S := by
   ext; apply birkhoffAverage_apply_congr_ring
 
-@[deprecated (since := "2026-08-06")] alias birkhoffAverage_congr_ring':= birkhoffAverage_congr_ring
+@[deprecated (since := "2026-08-19")] alias birkhoffAverage_congr_ring':= birkhoffAverage_congr_ring
 
 theorem Function.IsFixedPt.birkhoffAverage_eq {f : α → α} {x : α} (h : IsFixedPt f x)
     (g : α → M) {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n x = g x := by
@@ -95,6 +95,8 @@ theorem Function.IsFixedPt.birkhoffAverage_eq {f : α → α} {x : α} (h : IsFi
 lemma birkhoffAverage_add_apply {f : α → α} {g g' : α → M} (n : ℕ) (x : α) :
     birkhoffAverage R f (g + g') n x = birkhoffAverage R f g n x + birkhoffAverage R f g' n x := by
   simp [birkhoffAverage, birkhoffSum, sum_add_distrib, smul_add]
+
+@[deprecated (since := "2026-08-19")] alias birkhoffSum_add' := birkhoffSum_add_apply
 
 lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' :=
