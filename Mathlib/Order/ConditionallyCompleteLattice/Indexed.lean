@@ -85,22 +85,16 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {a b : α}
 
+@[to_dual]
 theorem isLUB_ciSup [Nonempty ι] {f : ι → α} (H : BddAbove (range f)) :
     IsLUB (range f) (⨆ i, f i) :=
   isLUB_csSup (range_nonempty f) H
 
+@[to_dual]
 theorem isLUB_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) (Hne : s.Nonempty) :
     IsLUB (f '' s) (⨆ i : s, f i) := by
   rw [← sSup_image']
   exact isLUB_csSup (Hne.image _) H
-
-theorem isGLB_ciInf [Nonempty ι] {f : ι → α} (H : BddBelow (range f)) :
-    IsGLB (range f) (⨅ i, f i) :=
-  isGLB_csInf (range_nonempty f) H
-
-theorem isGLB_ciInf_set {f : β → α} {s : Set β} (H : BddBelow (f '' s)) (Hne : s.Nonempty) :
-    IsGLB (f '' s) (⨅ i : s, f i) :=
-  isLUB_ciSup_set (α := αᵒᵈ) H Hne
 
 theorem ciSup_le_iff [Nonempty ι] {f : ι → α} {a : α} (hf : BddAbove (range f)) :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
