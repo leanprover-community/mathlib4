@@ -51,6 +51,7 @@ theorem tendstoUniformlyOn_tsum_nat {f : ℕ → β → F} {u : ℕ → ℝ} (hu
       s :=
   fun v hv => tendsto_finset_range.eventually (tendstoUniformlyOn_tsum hu hfu v hv)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An infinite sum of functions with eventually summable sup norm is the uniform limit of its
 partial sums. Version relative to a set, with general index set. -/
 theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → β → F} {u : ι → ℝ}
@@ -115,10 +116,9 @@ function is. -/
 theorem continuousOn_tsum [TopologicalSpace β] {f : α → β → F} {s : Set β}
     (hf : ∀ i, ContinuousOn (f i) s) (hu : Summable u) (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) :
     ContinuousOn (fun x => ∑' n, f n x) s := by
-  classical
-    refine (tendstoUniformlyOn_tsum hu hfu).continuousOn (Frequently.of_forall ?_)
-    intro t
-    exact continuousOn_finsetSum _ fun i _ => hf i
+  refine (tendstoUniformlyOn_tsum hu hfu).continuousOn (Frequently.of_forall ?_)
+  intro t
+  exact continuousOn_finsetSum _ fun i _ => hf i
 
 /-- An infinite sum of functions with summable sup norm is continuous if each individual
 function is. -/

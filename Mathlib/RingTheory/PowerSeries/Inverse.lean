@@ -73,7 +73,7 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
   · rintro ⟨i, j⟩ _hij
     obtain H | H := le_or_gt n j
     · aesop
-    rw [if_pos H, if_pos]
+    rw [ite_eq_left H, ite_eq_left]
     · rfl
     refine ⟨?_, fun hh ↦ H.not_ge ?_⟩
     · rintro ⟨⟩
@@ -96,7 +96,7 @@ theorem coeff_invOfUnit (n : ℕ) (φ : R⟦X⟧) (u : Rˣ) :
 @[simp]
 theorem constantCoeff_invOfUnit (φ : R⟦X⟧) (u : Rˣ) :
     constantCoeff (invOfUnit φ u) = ↑u⁻¹ := by
-  rw [← coeff_zero_eq_constantCoeff_apply, coeff_invOfUnit, if_pos rfl]
+  rw [← coeff_zero_eq_constantCoeff_apply, coeff_invOfUnit, ite_eq_left rfl]
 
 @[simp]
 theorem mul_invOfUnit (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff φ = u) :
@@ -147,7 +147,7 @@ theorem coeff_inv (n) (φ : k⟦X⟧) :
 theorem constantCoeff_inv (φ : k⟦X⟧) : constantCoeff φ⁻¹ = (constantCoeff φ)⁻¹ :=
   MvPowerSeries.constantCoeff_inv φ
 
-theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff φ = 0 :=
+protected theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff φ = 0 :=
   MvPowerSeries.inv_eq_zero
 
 theorem zero_inv : (0 : k⟦X⟧)⁻¹ = 0 :=
@@ -236,21 +236,21 @@ def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
 theorem isUnit_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) :
     IsUnit (divXPowOrder f) :=
   ⟨Unit_of_divided_by_X_pow_order f,
-    by simp only [Unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]⟩
+    by simp only [Unit_of_divided_by_X_pow_order, dite_eq_right hf, Units.val_mk]⟩
 
 theorem Unit_of_divided_by_X_pow_order_nonzero {f : k⟦X⟧} (hf : f ≠ 0) :
     ↑(Unit_of_divided_by_X_pow_order f) = divXPowOrder f := by
-  simp only [Unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]
+  simp only [Unit_of_divided_by_X_pow_order, dite_eq_right hf, Units.val_mk]
 
 @[simp]
 theorem Unit_of_divided_by_X_pow_order_zero : Unit_of_divided_by_X_pow_order (0 : k⟦X⟧) = 1 := by
-  simp only [Unit_of_divided_by_X_pow_order, dif_pos]
+  simp only [Unit_of_divided_by_X_pow_order, dite_eq_left]
 
 theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
     f = divXPowOrder f ↔ IsUnit f :=
   ⟨fun h ↦ by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h ↦ by
     have : f.order = 0 := by
-      simp [order_zero_of_unit h]
+      simp [order_zero_of_isUnit h]
     conv_lhs => rw [← X_pow_order_mul_divXPowOrder (f := f), this, ENat.toNat_zero,
       pow_zero, one_mul]⟩
 

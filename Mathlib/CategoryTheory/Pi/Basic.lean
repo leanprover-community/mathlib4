@@ -21,7 +21,7 @@ We define the pointwise category structure on indexed families of objects in a c
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 universe w₀ w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -67,7 +67,7 @@ instance (f : J → I) : (j : J) → Category ((C ∘ f) j) :=
 
 /-- Pull back an `I`-indexed family of objects to a `J`-indexed family, along a function `J → I`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def comap (h : J → I) : (∀ i, C i) ⥤ (∀ j, C (h j)) where
   obj f i := f (h i)
   map α i := α (h i)
@@ -75,7 +75,6 @@ def comap (h : J → I) : (∀ i, C i) ⥤ (∀ j, C (h j)) where
 variable (I)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism between
 pulling back a grading along the identity function,
 and the identity functor. -/
@@ -90,7 +89,6 @@ variable {I}
 variable {K : Type w₂}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism comparing between
 pulling back along two successive functions, and
 pulling back along their composition
@@ -105,7 +103,6 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
     naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
@@ -239,6 +236,7 @@ variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 variable {F G : ∀ i, C i ⥤ D i}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.
 -/
@@ -316,6 +314,7 @@ def Pi.eqToEquivalenceFunctorIso (f : J → I) {i' j' : J} (h : i' = j') :
 
 attribute [local simp] eqToHom_map
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Reindexing a family of categories gives equivalent `Pi` categories. -/
 @[simps]
@@ -334,6 +333,7 @@ noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
     Pi.evalCompEqToEquivalenceFunctor C (e.apply_symm_apply i) ≪≫
     (leftUnitor _).symm)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A product of categories indexed by `Option J` identifies to a binary product. -/
 @[simps]

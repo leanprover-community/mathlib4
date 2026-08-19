@@ -626,6 +626,7 @@ noncomputable def hom : TensorBimod.X (regular R) P ⟶ P.X :=
 noncomputable def inv : P.X ⟶ TensorBimod.X (regular R) P :=
   (λ_ P.X).inv ≫ (η[R.X] ▷ _) ≫ coequalizer.π _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   dsimp only [hom, inv, TensorBimod.X]
@@ -688,6 +689,7 @@ noncomputable def hom : TensorBimod.X P (regular S) ⟶ P.X :=
 noncomputable def inv : P.X ⟶ TensorBimod.X P (regular S) :=
   (ρ_ P.X).inv ≫ (_ ◁ η[S.X]) ≫ coequalizer.π _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   dsimp only [hom, inv, TensorBimod.X]
@@ -768,7 +770,6 @@ noncomputable def rightUnitorBimod {X Y : Mon C} (M : Bimod X Y) : M.tensorBimod
     (RightUnitorBimod.hom_right_act_hom' M)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem whiskerLeft_id_bimod {X Y Z : Mon C} {M : Bimod X Y} {N : Bimod Y Z} :
     whiskerLeft M (𝟙 N) = 𝟙 (M.tensorBimod N) := by
   ext
@@ -776,7 +777,6 @@ theorem whiskerLeft_id_bimod {X Y Z : Mon C} {M : Bimod X Y} {N : Bimod Y Z} :
   simp [TensorBimod.X]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem id_whiskerRight_bimod {X Y Z : Mon C} {M : Bimod X Y} {N : Bimod Y Z} :
     whiskerRight (𝟙 M) N = 𝟙 (M.tensorBimod N) := by
   ext
@@ -1014,7 +1014,7 @@ theorem triangle_bimod {X Y Z : Mon C} (M : Bimod X Y) (N : Bimod Y Z) :
   simp only [Category.assoc]
 
 /-- The bicategory of algebras (monoids) and bimodules, all internal to some monoidal category. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def monBicategory : Bicategory (Mon C) where
   Hom X Y := Bimod X Y
   homCategory X Y := (inferInstance : Category (Bimod X Y))

@@ -24,7 +24,7 @@ universe u v w x y
 
 namespace Filter
 
-variable {α : Type u} {f g : Filter α} {s t : Set α}
+variable {α : Type u} {f : Filter α} {s : Set α}
 
 @[simp]
 theorem biInter_mem {β : Type v} {s : β → Set α} {is : Set β} (hf : is.Finite) :
@@ -53,7 +53,7 @@ end Filter
 
 namespace Filter
 
-variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {ι : Sort x}
+variable {α : Type u} {β : Type v} {ι : Sort x}
 
 section Lattice
 
@@ -79,7 +79,7 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
 
 theorem mem_iInf_of_iInter {ι} {s : ι → Filter α} {U : Set α} {I : Set ι} (I_fin : I.Finite)
     {V : I → Set α} (hV : ∀ (i : I), V i ∈ s i) (hU : ⋂ i, V i ⊆ U) : U ∈ ⨅ i, s i := by
-  haveI := I_fin.fintype
+  have := I_fin.fintype
   refine mem_of_superset (iInter_mem.2 fun i => ?_) hU
   exact mem_iInf_of_mem (i : ι) (hV _)
 
@@ -115,8 +115,8 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
   · dsimp only
     split_ifs
     exacts [hV ⟨i,_⟩, univ_mem]
-  · exact dif_neg hi
-  · simp only [iInter_dite, biInter_eq_iInter, dif_pos (Subtype.coe_prop _), Subtype.coe_eta,
+  · exact dite_eq_right hi
+  · simp only [iInter_dite, biInter_eq_iInter, dite_eq_left (Subtype.coe_prop _), Subtype.coe_eta,
       iInter_univ, inter_univ, true_and]
 
 theorem exists_iInter_of_mem_iInf {ι : Sort*} {α : Type*} {f : ι → Filter α} {s}
@@ -140,7 +140,7 @@ theorem mem_biInf_principal {ι : Type*} {p : ι → Prop} {s : ι → Set α} {
     rintro ⟨I, hIf, V, hV₁, hV₂, rfl⟩
     choose! t ht₁ ht₂ using hV₁
     refine ⟨I ∩ {i | p i}, hIf.inter_of_left _, fun i ↦ And.right, ?_⟩
-    simp only [mem_inter_iff, iInter_and, biInter_eq_iInter, ht₂, mem_setOf_eq]
+    simp only [mem_inter_iff, iInter_and, biInter_eq_iInter, ht₂, mem_ofPred_eq]
     gcongr with i hpi
     exact ht₁ i hpi
   · rintro ⟨I, hIf, hpI, hst⟩
@@ -164,7 +164,7 @@ theorem _root_.Pairwise.exists_mem_filter_of_disjoint {ι : Type*} [Finite ι] {
 theorem _root_.Set.PairwiseDisjoint.exists_mem_filter {ι : Type*} {l : ι → Filter α} {t : Set ι}
     (hd : t.PairwiseDisjoint l) (ht : t.Finite) :
     ∃ s : ι → Set α, (∀ i, s i ∈ l i) ∧ t.PairwiseDisjoint s := by
-  haveI := ht.to_subtype
+  have := ht.to_subtype
   rcases (hd.subtype _ _).exists_mem_filter_of_disjoint with ⟨s, hsl, hsd⟩
   lift s to (i : t) → {s // s ∈ l i} using hsl
   rcases @Subtype.exists_pi_extension ι (fun i => { s // s ∈ l i }) _ _ s with ⟨s, rfl⟩
@@ -246,12 +246,12 @@ end Lattice
 @[simp]
 theorem eventually_all {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i, p i x) ↔ ∀ i, ∀ᶠ x in l, p i x := by
-  simpa only [Filter.Eventually, setOf_forall] using iInter_mem
+  simpa only [Filter.Eventually, ofPred_forall] using iInter_mem
 
 @[simp]
 theorem eventually_all_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i ∈ I, p i x) ↔ ∀ i ∈ I, ∀ᶠ x in l, p i x := by
-  simpa only [Filter.Eventually, setOf_forall] using biInter_mem hI
+  simpa only [Filter.Eventually, ofPred_forall] using biInter_mem hI
 
 protected alias _root_.Set.Finite.eventually_all := eventually_all_finite
 
