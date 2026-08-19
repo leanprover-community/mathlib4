@@ -19,7 +19,7 @@ access by the user. However, even internal names (e.g. `_mkInternal`) can be use
 anonymous constructor notation `⟨...⟩`. This linter assumes internal constructors are internal for
 a reason, and lints against using them.
 
-## TODO
+## Future work
 
 - This linter could be extensible in multiple ways:
   - Custom predicates (e.g. the ability to register non-internal constructors as forbidden)
