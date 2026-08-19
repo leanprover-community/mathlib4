@@ -337,7 +337,7 @@ end Order
 /-! ## Center of a ring -/
 
 section Center
-variable {R : Type u}
+variable {R : Type u} {S : Type v}
 
 section NonUnitalNonAssocRing
 variable (R) [NonUnitalNonAssocRing R]
@@ -375,7 +375,7 @@ is isomorphic to the center of its opposite. -/
 end NonUnitalNonAssocRing
 
 section NonUnitalRing
-variable [NonUnitalRing R]
+variable [NonUnitalRing R] [NonUnitalRing S]
 
 -- no instance diamond, unlike the unital version
 example : (center.instNonUnitalCommRing _).toNonUnitalRing =
@@ -386,6 +386,19 @@ theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := Subs
 
 instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ center R) := fun _ =>
   decidable_of_iff' _ mem_center_iff
+
+theorem map_center_le_center {F} [FunLike F R S] [NonUnitalRingHomClass F R S] {f : F}
+    (hf : Function.Surjective f) : map f (center R) ≤ center S :=
+  Set.image_center_subset hf
+
+theorem comap_center_le_center {F} [FunLike F R S] [NonUnitalRingHomClass F R S] {f : F}
+    (hf : Function.Injective f) : comap f (center S) ≤ center R :=
+  Set.preimage_center_subset hf
+
+@[simp]
+theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
+    map f (center R) = center S :=
+  SetLike.coe_injective (Set.image_center_eq f)
 
 @[simp]
 theorem center_eq_top (R) [NonUnitalCommRing R] : center R = ⊤ :=

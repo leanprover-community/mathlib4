@@ -23,7 +23,7 @@ Once mathlib has more material on the localization at a prime ideal, the results
 can be proven using more general going-up/going-down theory.
 -/
 
-@[expose] public section
+public section
 
 open Polynomial Submodule
 
@@ -34,7 +34,7 @@ namespace Ideal
 section
 
 variable {R : Type*} [CommRing R]
-variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
+variable {S : Type*} [CommRing S] {f : R →+* S} {I : Ideal S}
 
 theorem coeff_zero_mem_comap_of_root_mem_of_eval_mem {r : S} (hr : r ∈ I) {p : R[X]}
     (hp : p.eval₂ f r ∈ I) : p.coeff 0 ∈ I.comap f := by
@@ -303,8 +303,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
 end
 
 /-- More general going-up theorem than `exists_ideal_over_prime_of_isIntegral_of_isDomain`.
-TODO: Version of going-up theorem with arbitrary length chains (by induction on this)?
-  Not sure how best to write an ascending chain in Lean -/
+Generalized to arbitrary length chains in `Ideal.exists_ltSeries_of_hasGoingUp`. -/
 theorem exists_ideal_over_prime_of_isIntegral_of_isPrime
     [Algebra.IsIntegral R S] (P : Ideal R) [IsPrime P]
     (I : Ideal S) [IsPrime I] (hIP : I.comap (algebraMap R S) ≤ P) :
