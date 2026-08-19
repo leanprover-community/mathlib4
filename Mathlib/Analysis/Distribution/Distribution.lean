@@ -416,15 +416,17 @@ theorem ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) :
     · have hcf : ¬ LocallyIntegrableOn (c • f) Ω μ := by aesop
       rw [ofFun_eq_zero hf, ofFun_eq_zero hcf, smul_zero]
 
-theorem smulLeftCLM_toDistribution [LocallyCompactSpace E] {g : E → ℝ} (hg : ContDiff ℝ n g)
+theorem smulLeftCLM_ofFun [LocallyCompactSpace E] {g : E → ℝ} (hg : ContDiff ℝ n g)
     {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ) :
-    smulLeftCLM Ω F n g (toDistribution Ω f μ n) = toDistribution Ω (fun x ↦ g x • f x) μ n := by
+    smulLeftCLM Ω F n g (ofFun Ω f μ n) = ofFun Ω (fun x ↦ g x • f x) μ n := by
   have hgf : LocallyIntegrableOn (fun x ↦ g x • f x) Ω μ :=
     hf.continuousOn_smul Ω.isOpen.isLocallyClosed hg.continuous.continuousOn
   ext φ
-  rw [smulLeftCLM_apply_apply, toDistribution_apply hf, toDistribution_apply hgf]
+  rw [smulLeftCLM_apply_apply, ofFun_apply hf, ofFun_apply hgf]
   refine integral_congr_ae (ae_of_all _ fun x ↦ ?_)
   simp only [TestFunction.smulLeftCLM_apply_apply hg, smul_comm (φ x), smul_assoc]
+
+variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
 
 theorem ofFun_injective {f f' : E → F} {μ : Measure E}
     (hf : LocallyIntegrableOn f Ω μ) (hf' : LocallyIntegrableOn f' Ω μ)
