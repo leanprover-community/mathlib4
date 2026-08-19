@@ -87,6 +87,14 @@ protected lemma _root_.Subtype.isSelfAdjoint_iff {S : Type*} [Star R] [SetLike S
 alias ⟨of_subtypeVal, subtypeVal⟩ := Subtype.isSelfAdjoint_iff
 
 @[simp]
+lemma _root_.Subtype.isSelfAdjoint_mk_iff {S : Type*} [Star R] [SetLike S R]
+    [StarMemClass S R] {s : S} {x : R} {hx : x ∈ s} :
+    IsSelfAdjoint (⟨x, hx⟩ : s) ↔ IsSelfAdjoint x := by
+  simp [isSelfAdjoint_iff, Subtype.ext_iff]
+
+alias ⟨of_subtypeMk, subtypeMk⟩ := Subtype.isSelfAdjoint_mk_iff
+
+@[simp]
 theorem star_iff [InvolutiveStar R] {x : R} : IsSelfAdjoint (star x) ↔ IsSelfAdjoint x := by
   simpa only [IsSelfAdjoint, star_star] using eq_comm
 
