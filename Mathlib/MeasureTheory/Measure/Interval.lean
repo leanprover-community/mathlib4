@@ -6,8 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.Measure.Continuity
-
-import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Order.Interval.Set.Monotone
 
 /-!
 # Measures of intervals

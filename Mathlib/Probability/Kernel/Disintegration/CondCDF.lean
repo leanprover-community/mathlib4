@@ -9,8 +9,6 @@ public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 
-import Mathlib.Order.Interval.Set.Monotone
-
 /-!
 # Conditional cumulative distribution function
 
