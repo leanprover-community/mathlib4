@@ -99,6 +99,10 @@ theorem mk_eq_add_smul_omega (x y : R) :
     (⟨x, y⟩ : QuadraticAlgebra R a b) = algebraMap _ _ x + y • ω := by
   ext <;> simp
 
+/-- Decomposition of an element of a quadratic algebra in the basis `(1, ω)`. -/
+theorem re_smul_add_im_smul (x : QuadraticAlgebra R a b) : x.re • 1 + x.im • ω = x := by
+  ext <;> simp
+
 variable {A : Type*} [Ring A] [Algebra R A]
 
 @[ext]

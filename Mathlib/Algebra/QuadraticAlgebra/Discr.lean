@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Matrix.Nonsingular
 
 /-!
 # Discriminant of a quadratic algebra
@@ -72,76 +73,101 @@ theorem algebraMap_discr [CommRing R] (a b : R) :
 discriminant is a square. -/
 theorem exists_sq_eq_iff_isSquare_discr [CommRing R] [Invertible (2 : R)] {a b : R} :
     (∃ r : R, r ^ 2 = a + b * r) ↔ IsSquare (discr a b) := by
-  rw [isSquare_iff_exists_sq]
-  have h2 := mul_invOf_self (2 : R)
-  refine ⟨fun ⟨r, hr⟩ ↦ ⟨2 * r - b, by rw [discr_def]; grind⟩, fun ⟨s, hs⟩ ↦ ⟨⅟2 * (b + s), ?_⟩⟩
-  rw [discr_def] at hs
-  grind
+  rw [isSquare_iff_exists_sq, discr_def]
+  exact ⟨fun ⟨r, hr⟩ ↦ ⟨2 * r - b, by grind⟩,
+    fun ⟨r, hr⟩ ↦ ⟨⅟2 * (b + r), by grind [mul_invOf_self (2 : R)]⟩⟩
 
 end discr
 
 section classification
 
-variable [CommRing R] {a b a' b' : R} (f : QuadraticAlgebra R a' b' →ₐ[R] QuadraticAlgebra R a b)
+variable [CommRing R] {a b a' b' : R}
+  (f : QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra R a' b')
 
 private theorem smul_omega_sub_eq :
-    (trace (f ω) - b') • f ω = algebraMap R _ (norm (f ω)) + a' • 1 := by
+    (trace (f ω) - b) • f ω = algebraMap R _ (norm (f ω)) + a • 1 := by
   rw [sub_smul, ← sub_neg_eq_add, sub_eq_sub_iff_sub_eq_sub, ← sq_eq_trace_smul_sub_norm,
     sub_neg_eq_add, ← map_pow, sq, omega_mul_omega_eq_add, map_add, map_smul, map_smul, map_one,
     add_comm]
 
-/-- If `(f ω).im` is regular, an algebra map sends `ω` to an element of trace `b'`. -/
-theorem trace_map_omega (h : IsRegular (f ω).im) :
-    trace (f ω) = b' := by
+/-- The matrix of an algebra map `f` between quadratic algebras in the bases `1, ω` is
+`[1, (f ω).re; 0, (f ω).im]` since `f 1 = 1`. In particular, its determinant is `(f ω).im`,
+see `det_toMatrix_algHom`. -/
+theorem toMatrix_algHom :
+    f.toLinearMap.toMatrix (basis a b) (basis a' b') = !![1, (f ω).re; 0, (f ω).im] := by
+  ext i j
+  fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
+
+/-- The determinant of an algebra map `f` between quadratic algebras, in the bases `1, ω`,
+is `(f ω).im`. -/
+theorem det_toMatrix_algHom :
+    (f.toLinearMap.toMatrix (basis a b) (basis a' b')).det = (f ω).im := by
+  simp [toMatrix_algHom, Matrix.det_fin_two]
+
+/-- An algebra map `f` between quadratic algebras is injective exactly when `(f ω).im` is
+regular, that being the determinant of `f` in the bases `1, ω`, see `det_toMatrix_algHom`. -/
+theorem isRegular_im_omega_iff_injective :
+    IsRegular (f ω).im ↔ Function.Injective f := by
+  have h : (f.toLinearMap.toMatrix (basis a b) (basis a' b')).mulVec ∘ (basis a b).equivFun =
+      (basis a' b').equivFun ∘ f :=
+    funext fun x ↦ LinearMap.toMatrix_mulVec_repr (basis a b) (basis a' b') f.toLinearMap x
+  rw [isRegular_iff_mem_nonZeroDivisors, ← det_toMatrix_algHom,
+    ← Matrix.nonsingular_iff_det_mem_nonZeroDivisors, ← Matrix.isLeftRegular_iff_nonsingular,
+    Matrix.isLeftRegular_iff_mulVec_injective,
+    ← Function.Injective.of_comp_iff' _ (basis a b).equivFun.bijective,
+    ← (basis a' b').equivFun.injective.of_comp_iff, h]
+
+/-- An injective algebra map sends `ω` to an element of trace `b`. -/
+theorem trace_algHom_omega (hf : Function.Injective f) :
+    trace (f ω) = b := by
+  have h := (isRegular_im_omega_iff_injective f).mpr hf
   simpa [h.right.mul_right_eq_zero_iff, sub_eq_zero] using congr_arg im (smul_omega_sub_eq f)
 
-/-- If `(f ω).im` is regular, an algebra map sends `ω` to an element of norm `-a'`. -/
-theorem norm_map_omega (h : IsRegular (f ω).im) :
-    norm (f ω) = -a' := by
-  simpa [trace_map_omega f h, ← Algebra.algebraMap_eq_smul_one, add_eq_zero_iff_eq_neg,
+/-- An injective algebra map sends `ω` to an element of norm `-a`. -/
+theorem norm_algHom_omega (hf : Function.Injective f) :
+    norm (f ω) = -a := by
+  simpa [trace_algHom_omega f hf, ← Algebra.algebraMap_eq_smul_one, add_eq_zero_iff_eq_neg,
     ← map_neg] using (smul_omega_sub_eq f).symm
 
-/-- If `(f ω).im` is regular, an algebra map commutes with conjugation. -/
-theorem map_star (h : IsRegular (f ω).im) (x : QuadraticAlgebra R a' b') :
-    f (star x) = star (f x) := by
-  have hs : ∀ {c d : R} (r : R) (y : QuadraticAlgebra R c d), star (r • y) = r • star y := by
-    intro c d r y; ext <;> simp only [re_star, im_star, re_smul, im_smul, smul_eq_mul] <;> ring
-  have ha : ∀ {c d : R} (r : R),
-      star (algebraMap R (QuadraticAlgebra R c d) r) = algebraMap R _ r := by
-    intro c d r; ext <;> simp
-  have homega : f (star ω) = star (f ω) := by
-    rw [star_eq, map_sub, AlgHom.commutes, star_eq (f ω), trace_map_omega f h, trace_omega]
-  rw [← mk_eta x, mk_eq_add_smul_omega]
-  simp only [star_add, ha, hs, map_add, map_smul, AlgHom.commutes, homega]
-
-/-- If `(f ω).im` is regular, an algebra map preserves traces. -/
-theorem trace_map (h : IsRegular (f ω).im) (x : QuadraticAlgebra R a' b') :
+/-- An injective algebra map preserves traces. -/
+theorem trace_algHom (hf : Function.Injective f) (x : QuadraticAlgebra R a b) :
     trace (f x) = trace x := by
-  have key : algebraMap R (QuadraticAlgebra R a b) (trace (f x)) =
-      algebraMap R (QuadraticAlgebra R a b) (trace x) := by
-    rw [algebraMap_trace_eq_add_star, ← AlgHom.commutes f (trace x),
-      algebraMap_trace_eq_add_star, map_add, map_star f h]
-  simpa using congr_arg re key
+  rw [← re_smul_add_im_smul x]
+  simp [trace_algHom_omega f hf, mul_comm]
 
-/-- The transformation law in the case when `(f ω).im` is regular. -/
-theorem discr_eq_im_sq_mul_discr (h : IsRegular (f ω).im) :
-    discr a' b' = (f ω).im ^ 2 * discr a b := by
-  rw [im_sq_mul_discr (f ω), trace_map_omega f h, norm_map_omega f h, discr_def]
+/-- An injective algebra map commutes with conjugation. -/
+theorem algHom_star (hf : Function.Injective f) (x : QuadraticAlgebra R a b) :
+    f (star x) = star (f x) := by
+  rw [star_eq, map_sub, AlgHom.commutes, star_eq (f x), trace_algHom f hf]
+
+/-- An injective algebra map preserves norms. -/
+theorem norm_algHom (hf : Function.Injective f) (x : QuadraticAlgebra R a b) :
+    norm (f x) = norm x := by
+  apply algebraMap_injective
+  rw [algebraMap_norm_eq_mul_star, ← algHom_star f hf, ← map_mul, ← algebraMap_norm_eq_mul_star,
+    AlgHom.commutes]
+
+/-- The transformation law for an injective algebra map. -/
+theorem discr_eq_im_sq_mul_discr (hf : Function.Injective f) :
+    discr a b = (f ω).im ^ 2 * discr a' b' := by
+  rw [im_sq_mul_discr (f ω), trace_algHom_omega f hf, norm_algHom_omega f hf, discr_def]
   ring
 
 /-- Any `R`-algebra isomorphism between quadratic algebras sends `ω` to an element
 whose imaginary part is a unit. -/
-theorem isUnit_im_omega_of_algEquiv (e : QuadraticAlgebra R a' b' ≃ₐ[R] QuadraticAlgebra R a b) :
+theorem isUnit_im_omega_of_algEquiv (e : QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a' b') :
     IsUnit (e ω).im := by
-  simpa [Module.Basis.det_apply, Matrix.det_fin_two, Module.Basis.toMatrix_apply] using
-    (basis a b).isUnit_det ((basis a' b').map e.toLinearEquiv)
+  have h := e.toLinearEquiv.isUnit_det (basis a b) (basis a' b')
+  rwa [show (LinearMap.toMatrix (basis a b) (basis a' b')) e.toLinearEquiv.toLinearMap
+      = (LinearMap.toMatrix (basis a b) (basis a' b')) e.toAlgHom.toLinearMap from rfl,
+    det_toMatrix_algHom] at h
 
 /-- `discr_eq_im_sq_mul_discr` for an `R`-algebra isomorphism `e`, for which `(e ω).im` is
 automatically a unit (`isUnit_im_omega_of_algEquiv`). -/
-theorem discr_eq_im_sq_mul_discr' (e : QuadraticAlgebra R a' b' ≃ₐ[R] QuadraticAlgebra R a b) :
-    discr a' b' = (e ω).im ^ 2 * discr a b := by
+theorem discr_eq_im_sq_mul_discr' (e : QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a' b') :
+    discr a b = (e ω).im ^ 2 * discr a' b' := by
   rw [discr_eq_im_sq_mul_discr e.toAlgHom, AlgEquiv.toAlgHom_apply]
-  exact (isUnit_im_omega_of_algEquiv e).isRegular
+  exact e.injective
 
 /-- If `2` is a unit, `QuadraticAlgebra R a b` is isomorphic to the standard form
 `QuadraticAlgebra R (discr a b) 0`. -/
@@ -159,7 +185,7 @@ theorem nonempty_algEquiv_iff (h : IsRegular (2 : R)) :
   · refine ⟨(isUnit_im_omega_of_algEquiv e).unit,
       by rw [discr_eq_im_sq_mul_discr' e, IsUnit.unit_spec], ⟨(e ω).re, ?_⟩⟩
     rw [IsUnit.unit_spec, sub_eq_iff_eq_add', add_comm, mul_comm _ b', ← trace_def, eq_comm]
-    exact trace_map_omega e.toAlgHom (isUnit_im_omega_of_algEquiv e).isRegular
+    exact trace_algHom_omega e.toAlgHom e.injective
   · rw [discr_def, discr_def] at hu
     rw [← h.left.eq_iff, mul_sub, mul_sub, ← mul_rotate, ← mul_assoc, ← mul_assoc, ← mul_assoc,
       ← hk, ← h.left.eq_iff, mul_sub, ← mul_assoc, ← mul_assoc, ← pow_two, ← mul_pow, ← hk]
