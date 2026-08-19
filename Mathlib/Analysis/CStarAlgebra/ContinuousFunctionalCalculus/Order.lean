@@ -500,7 +500,7 @@ theorem norm_posPart_mono {a b : A} (hab : a ≤ b) : ‖a⁺‖ ≤ ‖b⁺‖ 
     ‖a⁺‖ ^ 3 = ‖a⁺ * a⁺ * a⁺‖ := by
       conv_rhs => rw [← cfcₙ_id' ℝ a⁺, ← cfcₙ_mul .., ← cfcₙ_mul ..]
       simp [← pow_three', norm_cfcₙ_pow ℝ a⁺ 3]
-    _ ≤ ‖a⁺ * b⁺ * a⁺‖ := norm_le_norm_of_nonneg_of_le (by cfc_tac) key
+    _ ≤ ‖a⁺ * b⁺ * a⁺‖ := norm_le_norm_of_le_of_nonneg key
     _ ≤ ‖a⁺‖ * ‖b⁺‖ * ‖a⁺‖ := norm_mul₃_le ..
 
 theorem norm_negPart_anti {a b : A} (hab : a ≤ b) : ‖b⁻‖ ≤ ‖a⁻‖ := by
@@ -522,7 +522,7 @@ lemma isBounded_of_bddAbove_of_bddBelow {s : Set A} (hbd : BddAbove s) (hbd' : B
   obtain ⟨a, ha⟩ := hbd'
   obtain ⟨b, hb⟩ := hbd
   refine (Metric.isBounded_iff_subset_closedBall a).mpr ⟨‖b - a‖, fun x hx ↦ ?_⟩
-  aesop (add simp [dist_eq_norm, norm_le_norm_of_nonneg_of_le, mem_lowerBounds, mem_upperBounds])
+  aesop (add simp [dist_eq_norm, norm_le_norm_of_le_of_nonneg, mem_lowerBounds, mem_upperBounds])
 
 /-- The set of nonnegative elements in a C⋆-algebra is closed. -/
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
