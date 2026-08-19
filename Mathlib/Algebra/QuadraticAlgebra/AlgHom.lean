@@ -12,8 +12,9 @@ public import Mathlib.LinearAlgebra.Matrix.Nonsingular
 /-!
 # Algebra maps between quadratic algebras
 
-An `R`-algebra map `f : QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra R a' b'` is determined by
-the image of `ω`, and its matrix in the bases `1, ω` is `!![1, (f ω).re; 0, (f ω).im]`. Its
+An `R`-algebra homomorphism `f : QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra R a' b'` is
+determined by the image of `ω`, and its matrix in the bases `1, ω` is
+`!![1, (f ω).re; 0, (f ω).im]`. Its
 determinant `(f ω).im` governs everything: `f` is injective exactly when `(f ω).im` is regular,
 and an injective `f` preserves the trace, the conjugation and the norm.
 
@@ -21,7 +22,8 @@ and an injective `f` preserves the trace, the conjugation and the norm.
 
 * `QuadraticAlgebra.isRegular_im_omega_iff_injective`: `f` is injective iff `(f ω).im` is regular.
 * `QuadraticAlgebra.trace_algHom`, `QuadraticAlgebra.algHom_star`,
-  `QuadraticAlgebra.norm_algHom`: an injective algebra map preserves trace, conjugation and norm.
+  `QuadraticAlgebra.norm_algHom`: an injective algebra homomorphism preserves the trace, the
+  conjugation and the norm.
 * `QuadraticAlgebra.isUnit_im_omega_of_algEquiv`: for an algebra isomorphism, `(e ω).im` is a unit.
 -/
 
@@ -38,7 +40,7 @@ private theorem smul_omega_sub_eq :
     sub_neg_eq_add, ← map_pow, sq, omega_mul_omega_eq_add, map_add, map_smul, map_smul, map_one,
     add_comm]
 
-/-- The matrix of an algebra map `f` between quadratic algebras in the bases `1, ω` is
+/-- The matrix of an algebra homomorphism `f` between quadratic algebras in the bases `1, ω` is
 `[1, (f ω).re; 0, (f ω).im]` since `f 1 = 1`. In particular, its determinant is `(f ω).im`,
 see `det_toMatrix_algHom`. -/
 theorem toMatrix_algHom :
@@ -46,13 +48,13 @@ theorem toMatrix_algHom :
   ext i j
   fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
 
-/-- The determinant of an algebra map `f` between quadratic algebras, in the bases `1, ω`,
+/-- The determinant of an algebra homomorphism `f` between quadratic algebras, in the bases `1, ω`,
 is `(f ω).im`. -/
 theorem det_toMatrix_algHom :
     (f.toLinearMap.toMatrix (basis a b) (basis a' b')).det = (f ω).im := by
   simp [toMatrix_algHom, Matrix.det_fin_two]
 
-/-- An algebra map `f` between quadratic algebras is injective exactly when `(f ω).im` is
+/-- An algebra homomorphism `f` between quadratic algebras is injective exactly when `(f ω).im` is
 regular, that being the determinant of `f` in the bases `1, ω`, see `det_toMatrix_algHom`. -/
 theorem isRegular_im_omega_iff_injective :
     IsRegular (f ω).im ↔ Function.Injective f := by
@@ -65,30 +67,30 @@ theorem isRegular_im_omega_iff_injective :
     ← Function.Injective.of_comp_iff' _ (basis a b).equivFun.bijective,
     ← (basis a' b').equivFun.injective.of_comp_iff, h]
 
-/-- An injective algebra map sends `ω` to an element of trace `b`. -/
+/-- An injective algebra homomorphism sends `ω` to an element of trace `b`. -/
 theorem trace_algHom_omega (hf : Function.Injective f) :
     trace (f ω) = b := by
   have h := (isRegular_im_omega_iff_injective f).mpr hf
   simpa [h.right.mul_right_eq_zero_iff, sub_eq_zero] using congr_arg im (smul_omega_sub_eq f)
 
-/-- An injective algebra map sends `ω` to an element of norm `-a`. -/
+/-- An injective algebra homomorphism sends `ω` to an element of norm `-a`. -/
 theorem norm_algHom_omega (hf : Function.Injective f) :
     norm (f ω) = -a := by
   simpa [trace_algHom_omega f hf, ← Algebra.algebraMap_eq_smul_one, add_eq_zero_iff_eq_neg,
     ← map_neg] using (smul_omega_sub_eq f).symm
 
-/-- An injective algebra map preserves traces. -/
+/-- An injective algebra homomorphism preserves traces. -/
 theorem trace_algHom (hf : Function.Injective f) (x : QuadraticAlgebra R a b) :
     trace (f x) = trace x := by
   rw [← re_smul_add_im_smul x]
   simp [trace_algHom_omega f hf, mul_comm]
 
-/-- An injective algebra map commutes with conjugation. -/
+/-- An injective algebra homomorphism commutes with conjugation. -/
 theorem algHom_star (hf : Function.Injective f) (x : QuadraticAlgebra R a b) :
     f (star x) = star (f x) := by
   rw [star_eq, map_sub, AlgHom.commutes, star_eq (f x), trace_algHom f hf]
 
-/-- An injective algebra map preserves norms. -/
+/-- An injective algebra homomorphism preserves norms. -/
 theorem norm_algHom (hf : Function.Injective f) (x : QuadraticAlgebra R a b) :
     norm (f x) = norm x := by
   apply algebraMap_injective
