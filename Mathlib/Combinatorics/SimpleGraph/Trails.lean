@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
 
 /-!
 
@@ -125,6 +126,9 @@ theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
     (h : p.IsEulerian) : h.isTrail.edgesFinset = G.edgeFinset := by
   ext e
   simp [h.mem_edges_iff]
+
+theorem IsEulerian.isChordless {u v : V} {p : G.Walk u v} (hp : p.IsEulerian) : p.IsChordless :=
+  fun _ ⟨hadj, hnmem, _⟩ ↦ hnmem <| hp.mem_edges_iff.mpr hadj
 
 theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEulerian) [Fintype V]
     [DecidableRel G.Adj] : Even (G.degree x) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
