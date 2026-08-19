@@ -64,6 +64,8 @@ open Real in
 `ψ (1 - s) = ψ s + π * cot (π * s)` for `s` not an integer. -/
 theorem digamma_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) :
     digamma (1 - s) = digamma s + π * cot (π * s) := by
+  -- The idea is to apply `logDeriv` to both sides of `Gamma_mul_Gamma_one_sub`. This produces
+  -- side conditions, which the two `have`s below allow the `<;> try ...` line to discharge.
   have (m : ℕ) : s ≠ -m := by simpa using hs (-m)
   have (m : ℕ) : 1 - s ≠ -m := fun _ ↦ hs (1 + m) (by push_cast; grind)
   have := congrArg (logDeriv · s) (funext Gamma_mul_Gamma_one_sub)
