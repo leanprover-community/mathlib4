@@ -429,12 +429,6 @@ theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : Ii
     ¬r (enum r o₁) (enum r o₂) ↔ o₂ ≤ o₁ := by
   rw [enum_lt_enum (r := r), not_lt]
 
-@[simp]
-theorem enum_le_enum' [LinearOrder α] [WellFoundedLT α]
-    {o₁ o₂ : Iio (type (α := α) (· < ·))} :
-    enum (α := α) (· < ·) o₁ ≤ enum (α := α) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
-  rw [← enum_le_enum, not_lt]
-
 theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Iio (type r)} :
     enum r o₁ = enum r o₂ ↔ o₁ = o₂ :=
   EmbeddingLike.apply_eq_iff_eq _
@@ -656,6 +650,18 @@ instance _root_.hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.ToTy
 noncomputable instance (o : Ordinal) : SuccOrder o.ToType :=
   .ofLinearWellFoundedLT _
 
+/-- The order isomorphism between ordinals less than `o` and `o.ToType`. -/
+noncomputable def ToType.mk {o : Ordinal} : Set.Iio o ≃o o.ToType :=
+  orderIsoShrink (Iio o)
+
+/-- Convert an element of `o.ToType` to the corresponding element of `Iio o`. -/
+noncomputable abbrev ToType.toOrd {o : Ordinal} (α : o.ToType) : Set.Iio o := ToType.mk.symm α
+
+noncomputable instance (o : Ordinal) : Coe o.ToType (Set.Iio o) where
+  coe := ToType.toOrd
+noncomputable instance (o : Ordinal) : CoeOut o.ToType Ordinal where
+  coe x := x.toOrd
+
 @[simp]
 theorem type_toType (o : Ordinal.{u}) : typeLT o.ToType = o := by
   rw [← lift_inj.{u + 1, u}, ← (orderIsoShrink (Iio o)).toRelIsoLT.ordinal_lift_type_eq,
@@ -680,6 +686,12 @@ theorem typein_lt_self {o : Ordinal} (i : o.ToType) : typein (α := o.ToType) (�
   simp_rw [← type_toType o]
   apply typein_lt_type
 
+-- TODO: generalize to other well-orders
+@[simp]
+theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : Iio (type (· < ·))} :
+    enum (· < ·) o₁ ≤ enum (α := a.ToType) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
+  rw [← enum_le_enum, not_lt]
+
 theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.ToType) :
     enum (α := o.ToType) (· < ·) ⟨0, type_toType _ ▸ h0⟩ ≤ a := by
   rw [← not_lt]
@@ -698,18 +710,6 @@ of `α.ToType` into `β.ToType`. -/
 noncomputable def principalSegToType {α β : Ordinal} (h : α < β) : α.ToType <i β.ToType := by
   apply Classical.choice (type_lt_iff.mp _)
   rwa [type_toType, type_toType]
-
-/-- The order isomorphism between ordinals less than `o` and `o.ToType`. -/
-noncomputable def ToType.mk {o : Ordinal} : Set.Iio o ≃o o.ToType :=
-  orderIsoShrink (Iio o)
-
-/-- Convert an element of `o.ToType` to the corresponding element of `Iio o`. -/
-noncomputable abbrev ToType.toOrd {o : Ordinal} (α : o.ToType) : Set.Iio o := ToType.mk.symm α
-
-noncomputable instance (o : Ordinal) : Coe o.ToType (Set.Iio o) where
-  coe := ToType.toOrd
-noncomputable instance (o : Ordinal) : CoeOut o.ToType Ordinal where
-  coe x := x.toOrd
 
 /-- `o.ToType` is an `OrderBot` whenever `o ≠ 0`. -/
 @[instance_reducible, deprecated WellFoundedLT.toOrderBot (since := "2026-04-12")]
