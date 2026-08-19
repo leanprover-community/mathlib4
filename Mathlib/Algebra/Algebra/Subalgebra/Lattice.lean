@@ -824,7 +824,7 @@ end CommSemiring
 section Ring
 
 variable [CommRing R] [Ring A]
-variable [Algebra R A] {s t : Set A}
+variable [Algebra R A] {s : Set A}
 
 @[simp]
 theorem adjoin_singleton_intCast (n : ℤ) : R[n : A] = ⊥ := by

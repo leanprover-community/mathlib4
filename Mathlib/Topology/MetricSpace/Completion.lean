@@ -105,7 +105,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
         by_cases! h : ε ≤ dist x y
         · exact Or.inl h
         · have Z := hε h
-          simp only [Set.mem_setOf_eq] at Z
+          simp only [Set.mem_ofPred_eq] at Z
           exact Or.inr Z
     simp only [not_le.mpr hxy, false_or] at this
     exact ts this
@@ -188,7 +188,7 @@ theorem LipschitzWith.completion_extension [MetricSpace β] [CompleteSpace β] {
 
 theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
     (h : LipschitzWith K f) : LipschitzWith K (Completion.map f) :=
-  one_mul K ▸ (coe_isometry.lipschitz.comp h).completion_extension
+  one_mul K ▸ (coe_isometry.lipschitzWith.comp h).completion_extension
 
 theorem Isometry.completion_extension [PseudoMetricSpace β] [CompleteSpace β] [T0Space β]
     {f : α → β} (h : Isometry f) : Isometry (Completion.extension f) :=

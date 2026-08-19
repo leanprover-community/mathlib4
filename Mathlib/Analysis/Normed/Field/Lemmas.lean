@@ -101,7 +101,7 @@ theorem uniformContinuousOn_inv₀ {s : Set α} (hs : sᶜ ∈ 𝓝 0) :
   rw [Metric.uniformContinuousOn_iff_le]
   intro ε hε
   rcases NormedAddGroup.nhds_zero_basis_norm_lt.mem_iff.mp hs with ⟨r, hr₀, hr⟩
-  simp only [Set.subset_compl_comm (t := s), Set.compl_setOf, not_lt] at hr
+  simp only [Set.subset_compl_comm (t := s), Set.compl_ofPred, not_lt] at hr
   have hs₀ : ∀ x ∈ s, x ≠ 0 := fun x hx ↦ norm_pos_iff.mp <| hr₀.trans_le (hr hx)
   refine ⟨ε * r ^ 2, by positivity, fun x hx y hy hxy ↦ ?_⟩
   calc

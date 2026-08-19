@@ -28,7 +28,7 @@ open Finsupp hiding single
 
 universe u₁ u₂ u₃ u₄
 
-variable (k : Type u₁) (G : Type u₂) (H : Type*) {R S T M : Type*}
+variable (k : Type u₁) (G : Type u₂) {R : Type*}
 
 /-! ### Multiplicative monoids -/
 
@@ -60,7 +60,6 @@ section Mul
 
 variable [Semiring k] [Mul G] [Semiring R]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R] [MulHomClass g_hom G R]
     (f : k →+* R) (g : g_hom) (a b : k[G])
     (h_comm : ∀ {x y}, y ∈ a.coeff.support → Commute (f (b.coeff x)) (g y)) :
@@ -86,7 +85,7 @@ end One
 /-! #### Semiring structure -/
 section Semiring
 
-variable [Semiring k] [Monoid G] [Semiring R] [Semiring S] [Semiring T] [Monoid M]
+variable [Semiring k] [Monoid G] [Semiring R]
 
 /-- `liftNC` as a `RingHom`, for when `f x` and `g y` commute -/
 def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) : k[G] →+* R :=
@@ -160,7 +159,7 @@ end One
 /-! #### Semiring structure -/
 section Semiring
 
-variable [Semiring k] [AddMonoid G] [Semiring R] [Semiring S] [Semiring T] [AddMonoid M]
+variable [Semiring k] [AddMonoid G] [Semiring R]
 
 /-- `liftNC` as a `RingHom`, for when `f` and `g` commute -/
 def liftNCRingHom (f : k →+* R) (g : Multiplicative G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
