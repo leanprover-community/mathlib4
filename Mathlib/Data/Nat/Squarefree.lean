@@ -303,44 +303,21 @@ theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type*} [Ad
     Finset.sum_eq_multiset_sum]
   rfl
 
+@[deprecated "Use `exists_sq_mul_squarefree` instead, which binds the witnesses in the order in \
+which they appear." (since := "2026-08-17")]
+protected theorem sq_mul_squarefree (n : ℕ) : ∃ a b : ℕ, b ^ 2 * a = n ∧ Squarefree a := by
+  obtain ⟨b, a, h, hs⟩ := exists_sq_mul_squarefree n
+  exact ⟨a, b, h, hs⟩
+
 theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
     ∃ a b : ℕ, 0 < a ∧ 0 < b ∧ b ^ 2 * a = n ∧ Squarefree a := by
-  classical
-  set S := {s ∈ range (n + 1) | s ∣ n ∧ ∃ x, s = x ^ 2}
-  have hSne : S.Nonempty := by
-    use 1
-    have h1 : 0 < n ∧ ∃ x : ℕ, 1 = x ^ 2 := ⟨hn, ⟨1, (one_pow 2).symm⟩⟩
-    simp [S, h1]
-  let s := Finset.max' S hSne
-  have hs : s ∈ S := Finset.max'_mem S hSne
-  simp only [S, Finset.mem_filter, Finset.mem_range] at hs
-  obtain ⟨-, ⟨a, hsa⟩, ⟨b, hsb⟩⟩ := hs
-  rw [hsa] at hn
-  obtain ⟨hlts, hlta⟩ := CanonicallyOrderedAdd.mul_pos.mp hn
-  rw [hsb] at hsa hn hlts
-  refine ⟨a, b, hlta, (pow_pos_iff two_ne_zero).mp hlts, hsa.symm, ?_⟩
-  rintro x ⟨y, hy⟩
-  rw [Nat.isUnit_iff]
-  by_contra hx
-  refine Nat.lt_le_asymm ?_ (Finset.le_max' S ((b * x) ^ 2) ?_)
-  · convert!
-      lt_mul_of_one_lt_right hlts
-        (one_lt_pow two_ne_zero (one_lt_iff_ne_zero_and_ne_one.mpr ⟨fun h => by simp_all, hx⟩))
-    using 1
-    rw [mul_pow]
-  · simp_rw [S, hsa, Finset.mem_filter, Finset.mem_range]
-    refine ⟨Nat.lt_succ_iff.mpr (le_of_dvd hn ?_), ?_, ⟨b * x, rfl⟩⟩ <;> use y <;> rw [hy] <;> ring
+  obtain ⟨b, a, h, hs⟩ := exists_sq_mul_squarefree n
+  exact ⟨a, b, Nat.pos_of_ne_zero hs.ne_zero, Nat.pos_of_ne_zero (by grind), h, hs⟩
 
 theorem sq_mul_squarefree_of_pos' {n : ℕ} (h : 0 < n) :
     ∃ a b : ℕ, (b + 1) ^ 2 * (a + 1) = n ∧ Squarefree (a + 1) := by
   obtain ⟨a₁, b₁, ha₁, hb₁, hab₁, hab₂⟩ := sq_mul_squarefree_of_pos h
   refine ⟨a₁.pred, b₁.pred, ?_, ?_⟩ <;> simpa only [add_one, succ_pred_eq_of_pos, ha₁, hb₁]
-
-theorem sq_mul_squarefree (n : ℕ) : ∃ a b : ℕ, b ^ 2 * a = n ∧ Squarefree a := by
-  rcases n with - | n
-  · exact ⟨1, 0, by simp, squarefree_one⟩
-  · obtain ⟨a, b, -, -, h₁, h₂⟩ := sq_mul_squarefree_of_pos (succ_pos n)
-    exact ⟨a, b, h₁, h₂⟩
 
 /-- `Squarefree` is multiplicative. Note that the → direction does not require `hmn`
 and generalizes to arbitrary commutative monoids. See `Squarefree.of_mul_left` and
