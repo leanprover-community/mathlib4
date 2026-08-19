@@ -163,11 +163,11 @@ free of trailing slashes, and unset when empty.
 
 A read URL is `{base}/{azureContainerName}/{key}`, the namespace the Azure
 account serves. Any host that mirrors that namespace is therefore a valid base.
-Note that this override mechanism is different than `MATHLIB_CACHE_GET_URL`, which
-when set . This distinction corresponds to 'internal' consumers of the cache (CI, mathlib4 contributors)
-and 'external' consumers (which can expect a 'flat' endpoint instead of the lookup chain).
-`MATHLIB_CACHE_BASE_URL` is thus an internal flag in this sense, tied to 'internal infra' implementation details
-(that isn, the custom lookup chain across containers).
+This override differs from `MATHLIB_CACHE_GET_URL`. That variable serves
+external consumers: it names one flat endpoint and bypasses the container
+lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
+CI and contributors to the mathlib4 repository. It keeps the lookup chain and
+rebases each container read under the given host.
 
 Only reads follow this base. Uploads, marker writes, and the blob-listing
 query authenticate against Azure and use `Container.azureURL` directly.
