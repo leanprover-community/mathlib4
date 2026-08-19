@@ -38,13 +38,6 @@ for example, the circle is not defeq to `{z : ℂ | abs z = 1}`, which is the ke
 considered as a homomorphism from `ℂ` to `ℝ`, nor is it defeq to `{z : ℂ | normSq z = 1}`, which
 is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
 
-## TODO
-
-Provide `MeasurableSpace` and `BorelSpace` instances for `Circle`, inherited from the ambient
-subtype.  They cannot be stated here, since this file does not import the measure-theoretic
-hierarchy, so they would need a new file -- mirroring `Mathlib/MeasureTheory/Group/AddCircle.lean`,
-which plays this role for the additive circle.
-
 -/
 
 @[expose] public section
