@@ -82,8 +82,8 @@ end Pentagonal
 
 public section
 
-/-- The Euler function $ϕ(x) = \sum_{k=-\infty}^{\infty}(-1)^k x^{k (3k - 1) / 2}$, defined
-as power series with the same coefficients as `PowerSeries.pentagonalSeries`'s. See
+/-- The Euler function $\phi(x) = \sum_{k=-\infty}^{\infty}(-1)^k x^{k (3k - 1) / 2}$, defined
+as a power series with the same coefficients as `PowerSeries.pentagonalSeries`. See
 `eulerFunction_eq_tsum_pentagonal` for the expression using pentagonal numbers. -/
 noncomputable def eulerFunction (x : R) : R :=
   ∑' n, (PowerSeries.pentagonalSeries R).coeff n * x ^ n
