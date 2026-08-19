@@ -34,6 +34,11 @@ def Aut.overMap {Z Y X : C} (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ X)
   map_one' := rfl
   map_mul' _ _ := rfl
 
+@[simp]
+lemma Aut.overMap_hom_left {Z Y X : C} (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ X)
+    (fac : f ≫ g = fg := by cat_disch) (γ : Aut (Over.mk f)) :
+    (Aut.overMap f g fg fac γ).hom.left = γ.hom.left := rfl
+
 open PreGaloisCategory
 
 namespace GaloisCategory
@@ -72,6 +77,32 @@ lemma comp_autMapOfIsGaloisCover_inv_left
     f ≫ ((autMapOfIsGaloisCover f g fg h) γ).inv.left =
       γ.inv.left ≫ f := by
   simpa using! comp_autMapOfIsGaloisCover_hom_left f g fg γ⁻¹
+
+@[simp]
+lemma autMapOfIsGaloisCover_overMap
+    (γ : Aut (Over.mk f)) (h : f ≫ g = fg := by cat_disch) :
+    (autMapOfIsGaloisCover f g fg h) ((Aut.overMap f g fg h) γ) = 1 :=
+  autMapOfIsGaloisCover_eq _ _ _ _ _ (h := h) (hφ := by
+    simp [Aut.one_def, dsimp% γ.hom.w])
+
+@[simps]
+def kerAutMapOfIsGaloisCoverMulEquiv (h : f ≫ g = fg := by cat_disch) :
+    (autMapOfIsGaloisCover f g fg h).ker ≃* Aut (Over.mk f) where
+  toFun σ := Over.isoMk ((Over.forget _).mapIso σ.val) (by
+    obtain ⟨σ, hσ⟩ := σ
+    have := hσ
+    simp only [MonoidHom.mem_ker] at hσ
+    simpa [hσ, Aut.one_def] using! (comp_autMapOfIsGaloisCover_hom_left f g fg σ).symm)
+  invFun σ := ⟨(Aut.overMap f g fg) σ, by simp⟩
+  map_mul' := by aesop
+
+noncomputable def autQuotientMulEquiv (h : f ≫ g = fg := by cat_disch) :
+    Aut (Over.mk fg) ⧸ (autMapOfIsGaloisCover f g fg h).ker ≃* Aut (Over.mk g) :=
+  MulEquiv.ofBijective (QuotientGroup.lift _ (autMapOfIsGaloisCover f g fg h) (by simp)) (by
+    sorry)
+
+lemma autQuotientMulEquiv_mk (σ : Aut (Over.mk fg)) (h : f ≫ g = fg := by cat_disch) :
+  (autQuotientMulEquiv f g fg) σ = (autMapOfIsGaloisCover f g fg) σ := rfl
 
 end
 

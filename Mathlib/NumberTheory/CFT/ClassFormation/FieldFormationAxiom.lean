@@ -6,10 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.NumberTheory.CFT.ClassFormation.Basic
+public import Mathlib.NumberTheory.CFT.ClassFormation.GroupCohomology
 public import Mathlib.GroupTheory.PGroup
 
 /-!
-# THe field formation axiom
+# The field formation axiom
 
 -/
 
@@ -29,12 +30,20 @@ namespace Formation
 
 variable (Φ : Formation C)
 
+example (X : Type u) [Finite X] :
+    Subsingleton X ↔ Nat.card X ≤ 1 := by exact Iff.symm Finite.card_le_one_iff_subsingleton
+
 lemma isZero_H_of_degMap_eq_one
     {Y X : C} [PreGaloisCategory.IsConnected Y] [PreGaloisCategory.IsConnected X]
-    (f : Y ⟶ X) [IsGaloisCover f] (n : ℕ) [NeZero n]
-    (hf : degMap f = 1) :
-    IsZero (Φ.H f n) := sorry
-
+    (f : Y ⟶ X) [IsGaloisCover f] (n : ℕ) [NeZero n] (hf : degMap f = 1) :
+    IsZero (Φ.H f n) := by
+  obtain _ | n := n
+  · aesop
+  · apply Functor.map_isZero
+    have : Subsingleton (Aut (Over.mk f)) := by
+      rw [← natCard_aut_overMk] at hf
+      rw [← Finite.card_le_one_iff_subsingleton, hf]
+    apply isZero_groupCohomology_succ_of_subsingleton
 
 lemma exists_fac_of_degMap_eq_pow {Y X : C} [PreGaloisCategory.IsConnected Y]
     [PreGaloisCategory.IsConnected X] (f : Y ⟶ X)
@@ -53,15 +62,83 @@ variable {Z Y X : C}
   [PreGaloisCategory.IsConnected X]
   [IsGaloisCover f] [IsGaloisCover g] [IsGaloisCover fg]
 
+@[reassoc]
+lemma inflation_comp_restriction_eq_zero
+    (n : ℕ) [NeZero n] (hfg : f ≫ g = fg := by cat_disch) :
+    Φ.inflation f g fg n ≫ Φ.restriction f g fg n = 0 := by
+  dsimp only [inflation, restriction]
+  rw [← Functor.map_comp, ← groupCohomology.map_comp,
+    groupCohomology.map_eq_zero _ _ _ (by aesop), Functor.map_zero]
+
 /-- The short complex consisting of the inflation and the restriction,
 in nonzero degree. -/
 noncomputable abbrev shortComplexHOfComp
     (n : ℕ) [NeZero n] (hfg : f ≫ g = fg := by cat_disch) :
     ShortComplex Ab.{v} :=
-  ShortComplex.mk (Φ.inflation f g fg n) (Φ.restriction f g fg n) sorry
+  ShortComplex.mk (Φ.inflation f g fg n) (Φ.restriction f g fg n)
+    (Φ.inflation_comp_restriction_eq_zero f g fg n)
+
+def repAddEquivQuotientToInvariants (hfg : f ≫ g = fg := by cat_disch) :
+    (Φ.rep g) ≃+ (Φ.rep fg).quotientToInvariants (autMapOfIsGaloisCover f g fg).ker where
+  toFun x := ⟨Φ.sheaf.obj.map (isConnectedHomMk f).op x, sorry⟩
+  invFun := sorry
+  left_inv := sorry
+  right_inv := sorry
+  map_add' := sorry
+
+noncomputable def shortComplexHOfCompIso₁ (hfg : f ≫ g = fg := by cat_disch) :
+    AddCommGrpCat.of (groupCohomology ((Φ.rep fg).quotientToInvariants
+      (autMapOfIsGaloisCover f g fg).ker) 1) ≅
+    Φ.H g 1 :=
+  (forget₂ _ Ab).mapIso (groupCohomology.mapIso (autQuotientMulEquiv f g fg)
+    (AddEquiv.toLinearEquiv (Φ.repAddEquivQuotientToInvariants f g fg).symm sorry) sorry 1)
+
+set_option backward.isDefEq.respectTransparency.types false in
+@[reassoc]
+lemma shortComplexHOfCompIso_comm₁₂ (hfg : f ≫ g = fg := by cat_disch) :
+    (Φ.shortComplexHOfCompIso₁ f g fg).hom ≫ Φ.inflation f g fg 1 =
+      (forget₂ _ Ab).map (groupCohomology.H1InfRes (Φ.rep fg)
+        (autMapOfIsGaloisCover f g fg).ker).f := by
+  rw [← cancel_epi (Φ.shortComplexHOfCompIso₁ f g fg).inv, Iso.inv_hom_id_assoc]
+  dsimp only [shortComplexHOfCompIso₁, Functor.mapIso_inv]
+  erw [← Functor.map_comp]
+  dsimp only [inflation]
+  congr 1
+  dsimp [groupCohomology.mapIso, groupCohomology.H1InfRes]
+  rw [← groupCohomology.map_comp]
+  rfl
+
+@[simps! -isSimp]
+noncomputable def shortComplexHOfCompIso₃ (hfg : f ≫ g = fg := by cat_disch) :
+    AddCommGrpCat.of
+      (groupCohomology ((Φ.rep fg).res (autMapOfIsGaloisCover f g fg).ker.subtype) 1) ≅
+    Φ.H f 1 :=
+  (forget₂ _ _).mapIso (groupCohomology.mapIso
+    (kerAutMapOfIsGaloisCoverMulEquiv f g fg) (.refl _ _) (by cat_disch) _)
+
+@[reassoc]
+lemma shortComplexHOfCompIso_comm₂₃ (hfg : f ≫ g = fg := by cat_disch) :
+    dsimp% AddCommGrpCat.ofHom (groupCohomology.map (autMapOfIsGaloisCover f g fg).ker.subtype
+      (𝟙 (Rep.res (autMapOfIsGaloisCover f g fg).ker.subtype (Φ.rep fg))) 1).hom ≫
+    (Φ.shortComplexHOfCompIso₃ f g fg).hom = Φ.restriction f g fg 1 := by
+  dsimp only [shortComplexHOfCompIso₃, Functor.mapIso_hom]
+  rw [← ModuleCat.forget₂_map, ← Functor.map_comp, groupCohomology.mapIso_hom,
+    ← groupCohomology.map_comp]
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def shortComplexHOfCompIso (hfg : f ≫ g = fg := by cat_disch) :
+    (groupCohomology.H1InfRes (Φ.rep fg) (autMapOfIsGaloisCover f g fg).ker).map
+      (forget₂ _ _) ≅ Φ.shortComplexHOfComp f g fg 1 :=
+  ShortComplex.isoMk (Φ.shortComplexHOfCompIso₁ f g fg) (Iso.refl _)
+    (Φ.shortComplexHOfCompIso₃ f g fg)
+      (by simp [Φ.shortComplexHOfCompIso_comm₁₂ f g fg])
+      (by simp [Φ.shortComplexHOfCompIso_comm₂₃ f g fg])
 
 lemma shortComplexHOfComp_one_exact (hfg : f ≫ g = fg := by cat_disch) :
-    (Φ.shortComplexHOfComp f g fg 1).Exact := sorry
+    (Φ.shortComplexHOfComp f g fg 1).Exact :=
+  ShortComplex.exact_of_iso (Φ.shortComplexHOfCompIso f g fg)
+    (ShortComplex.Exact.map (groupCohomology.H1InfRes_exact ..) _)
 
 lemma isZero_H_one_comp (hf : IsZero (Φ.H f 1)) (hg : IsZero (Φ.H g 1))
     (hfg : f ≫ g = fg := by cat_disch) :
