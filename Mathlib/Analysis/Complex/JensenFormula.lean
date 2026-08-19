@@ -368,7 +368,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     rw [circleAverage_congr_codiscreteWithin (f₂ := 0) _ hR]
     · simp only [circleAverage, mul_inv_rev, Pi.zero_apply, intervalIntegral.integral_zero,
         smul_eq_mul, mul_zero]
-    apply Filter.codiscreteWithin_mono (U := CB) sphere_subset_closedBall
+    apply Filter.codiscreteWithin_mono (s := CB) sphere_subset_closedBall
     filter_upwards [this] with z hz
     simp_all
 
