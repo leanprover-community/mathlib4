@@ -44,7 +44,7 @@ open scoped MeasureTheory ENNReal ProbabilityTheory
 
 namespace ProbabilityTheory
 
-variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {α : Type*} {mα : MeasurableSpace α}
 
 namespace Kernel
 

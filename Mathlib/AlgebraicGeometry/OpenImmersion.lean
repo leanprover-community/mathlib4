@@ -30,8 +30,6 @@ namespace AlgebraicGeometry
 
 universe v v₁ v₂ u
 
-variable {C : Type u} [Category.{v} C]
-
 /-- A morphism of Schemes is an open immersion if it is an open immersion as a morphism
 of LocallyRingedSpaces
 -/
@@ -601,7 +599,6 @@ instance : IsOpenImmersion (pullback.fst g f) := by
   rw [← pullbackSymmetry_hom_comp_snd]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance [IsOpenImmersion g] :
     IsOpenImmersion (limit.π (cospan f g) WalkingCospan.one) := by
   rw [← limit.w (cospan f g) WalkingCospan.Hom.inl]
