@@ -32,14 +32,13 @@ open Set
 
 open Filter hiding map
 
-open Function MeasurableSpace Topology Filter ENNReal NNReal Interval MeasureTheory
-open scoped symmDiff
+open Function Topology ENNReal
 
-variable {α β γ ι R R' : Type*}
+variable {α ι : Type*}
 
 namespace MeasureTheory
 
-variable {m : MeasurableSpace α} {μ : Measure α} {s s₁ s₂ t : Set α}
+variable {m : MeasurableSpace α} {μ : Measure α}
 
 /-- **Continuity from below**:
 the measure of the union of a directed sequence of (not necessarily measurable) sets

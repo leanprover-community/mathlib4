@@ -29,12 +29,12 @@ noncomputable section
 
 open Set Function ENNReal NNReal
 
-variable {α β γ ι R R' : Type*}
+variable {α ι R R' : Type*}
 
 namespace MeasureTheory
 
-variable {m0 : MeasurableSpace α} {mβ : MeasurableSpace β} [MeasurableSpace γ]
-variable {μ μ₁ μ₂ ν ν' : Measure α} {s t : Set α}
+variable {m0 : MeasurableSpace α}
+variable {μ ν : Measure α} {s : Set α}
 
 namespace Measure
 
@@ -210,7 +210,7 @@ theorem ae_smul_measure_le [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ�
 
 section Module
 
-variable {R : Type*} [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+variable [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
   [Module.IsTorsionFree R ℝ≥0∞] {c : R} {p : α → Prop}
 
 lemma ae_smul_measure_iff (hc : c ≠ 0) {μ : Measure α} : (∀ᵐ x ∂c • μ, p x) ↔ ∀ᵐ x ∂μ, p x := by
@@ -260,7 +260,6 @@ theorem measure_toMeasurable_add_inter_right {s t : Set α} (hs : MeasurableSet 
 theorem measure_support_eq_zero_iff {E : Type*} [Zero E] (μ : Measure α := by volume_tac)
     {f : α → E} : μ f.support = 0 ↔ f =ᵐ[μ] 0 := by
   rfl
-
 
 section Sum
 
@@ -385,8 +384,6 @@ end Sum
 end Measure
 
 open Measure
-
-open MeasureTheory
 
 lemma NullMeasurableSet.smul_measure (h : NullMeasurableSet s μ) (c : ℝ≥0∞) :
     NullMeasurableSet s (c • μ) := by

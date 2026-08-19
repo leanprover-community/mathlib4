@@ -79,18 +79,13 @@ The measure is denoted `volume`.
 measure, almost everywhere, measure space, completion, null set, null measurable set
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
-noncomputable section
+open Set Function Filter ENNReal
 
-open Set
-
-open Filter hiding map
-
-open Function MeasurableSpace Topology Filter ENNReal NNReal Interval MeasureTheory
 open scoped symmDiff
 
-variable {α β γ ι R R' : Type*}
+variable {α β ι : Type*}
 
 namespace MeasureTheory
 
@@ -507,7 +502,7 @@ lemma ext_of_measurableAtoms [Countable α] {μ ν : Measure α}
 
 section OuterMeasure
 
-variable [ms : MeasurableSpace α] {s t : Set α}
+variable [ms : MeasurableSpace α]
 
 /-- Obtain a measure by giving an outer measure where all sets in the σ-algebra are
   Carathéodory measurable. -/
@@ -554,8 +549,7 @@ end OuterMeasure
 
 namespace Measure
 
-variable {m0 : MeasurableSpace α} {mβ : MeasurableSpace β} [MeasurableSpace γ]
-variable {μ μ₁ μ₂ ν ν' : Measure α} {s t : Set α}
+variable {μ : Measure α}
 
 /-- If `u` is a superset of `t` with the same (finite) measure (both sets possibly non-measurable),
 then for any measurable set `s` one also has `μ (t ∩ s) = μ (u ∩ s)`. -/

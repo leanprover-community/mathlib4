@@ -8,7 +8,7 @@ module
 public import Mathlib.MeasureTheory.Measure.Continuity
 
 /-!
-# Measure of intervals
+# Measure of intervals
 
 See also `Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass`.
 -/
@@ -19,7 +19,7 @@ open Set Filter Topology Interval
 
 namespace MeasureTheory
 
-variable {α γ : Type*} {m0 : MeasurableSpace α} [MeasurableSpace γ] {μ : Measure α}
+variable {α : Type*} {m0 : MeasurableSpace α} {μ : Measure α}
 
 /-- See also `MeasureTheory.ae_restrict_uIoc_iff`. -/
 theorem ae_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :

@@ -31,16 +31,15 @@ open Set
 
 open Filter hiding map
 
-open Function MeasurableSpace Topology Filter ENNReal NNReal Interval MeasureTheory
-open scoped symmDiff
+open ENNReal
 
-variable {α β γ ι R R' : Type*}
+variable {α β ι R : Type*}
 
 namespace MeasureTheory
 
 section
 
-variable {m0 : MeasurableSpace α} {mβ : MeasurableSpace β} [MeasurableSpace γ]
+variable {m0 : MeasurableSpace α} {mβ : MeasurableSpace β}
 variable {μ μ₁ μ₂ ν ν' : Measure α} {s t : Set α}
 
 namespace Measure
@@ -259,8 +258,6 @@ lemma nonempty_of_neZero (μ : Measure α) [NeZero μ] : Nonempty α :=
 
 section Sum
 
-variable {f : ι → Measure α}
-
 theorem le_sum (μ : ι → Measure α) (i : ι) : μ i ≤ sum μ :=
   le_iff.2 fun s hs ↦ by simpa only [sum_apply μ hs] using ENNReal.le_tsum i
 
@@ -278,7 +275,6 @@ end Measure
 
 open Measure
 
-open MeasureTheory
 
 @[simp]
 theorem ae_eq_bot : ae μ = ⊥ ↔ μ = 0 := by
