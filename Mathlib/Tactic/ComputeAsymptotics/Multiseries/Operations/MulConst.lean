@@ -67,9 +67,7 @@ open Filter Asymptotics
 @[simp]
 theorem mulConst_toFun {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ} :
     (ms.mulConst c).toFun = c • ms.toFun := by
-  cases basis with
-  | nil => rfl
-  | cons => rfl
+  cases basis <;> rfl
 
 @[simp]
 theorem mulConst_seq {basis_hd basis_tl} {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
@@ -78,14 +76,13 @@ theorem mulConst_seq {basis_hd basis_tl} {ms : MultiseriesExpansion (basis_hd ::
 
 @[simp]
 theorem Multiseries.mulConst_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
-  @mulConst basis_hd basis_tl c nil = nil := by
+    @mulConst basis_hd basis_tl c nil = nil := by
   simp [mulConst]
 
 @[simp]
 theorem Multiseries.mulConst_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c exp : ℝ}
     {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl} :
-    (cons exp coef tl).mulConst c =
-    cons exp (coef.mulConst c) (tl.mulConst c) := by
+    (cons exp coef tl).mulConst c = cons exp (coef.mulConst c) (tl.mulConst c) := by
   simp [mulConst]
 
 @[simp]
@@ -99,9 +96,7 @@ mutual
 @[simp]
 theorem Multiseries.const_mulConst {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x y : ℝ} :
     (Multiseries.const basis_hd basis_tl x).mulConst y = Multiseries.const _ _ (y * x) := by
-  simp only [Multiseries.const, Multiseries.mulConst_cons, Multiseries.mulConst_nil,
-    Multiseries.cons_eq_cons, and_true, true_and]
-  rw [const_mulConst]
+  simp [Multiseries.const, const_mulConst (basis := basis_tl)]
 
 @[simp]
 theorem const_mulConst {basis : Basis} {x y : ℝ} :
@@ -111,8 +106,7 @@ theorem const_mulConst {basis : Basis} {x y : ℝ} :
   | cons =>
     rw [ext_iff]
     simp only [mulConst_seq, const_seq, mulConst_toFun, const_toFun']
-    refine ⟨?_, rfl⟩
-    apply Multiseries.const_mulConst
+    exact ⟨Multiseries.const_mulConst, rfl⟩
 
 end
 
@@ -121,9 +115,7 @@ mutual
 @[simp]
 theorem Multiseries.mulConst_one {basis_hd basis_tl} {ms : Multiseries basis_hd basis_tl} :
     ms.mulConst 1 = ms := by
-  simp only [Multiseries.mulConst]
-  convert! Multiseries.map_id _
-  exact mulConst_one
+  simp [Multiseries.mulConst, mulConst_one (basis := basis_tl), Function.id_def]
 
 @[simp]
 theorem mulConst_one {basis} {ms : MultiseriesExpansion basis} :
@@ -142,25 +134,17 @@ mutual
 theorem Multiseries.mulConst_mulConst {basis_hd basis_tl} {ms : Multiseries basis_hd basis_tl}
     {x y : ℝ} :
     (ms.mulConst x).mulConst y = ms.mulConst (x * y) := by
-  simp only [Multiseries.mulConst, ← Multiseries.map_comp, CompTriple.comp_eq]
-  congr 1
-  ext1
-  simp [mulConst_mulConst (basis := basis_tl)]
+  simp [Multiseries.mulConst, ← Multiseries.map_comp, CompTriple.comp_eq, Function.comp_def,
+    mulConst_mulConst (basis := basis_tl)]
 
 @[simp]
 theorem mulConst_mulConst {basis : Basis} {ms : MultiseriesExpansion basis} {x y : ℝ} :
     (ms.mulConst x).mulConst y = ms.mulConst (x * y) := by
   cases basis with
-  | nil =>
-    simp [mulConst]
-    ring_nf
+  | nil => simp [mulConst, mul_assoc, mul_left_comm]
   | cons =>
     simp only [ext_iff, mulConst_seq, mulConst_toFun]
-    constructor
-    · rw [Multiseries.mulConst_mulConst]
-    · ext1
-      simp
-      ring_nf
+    exact ⟨by rw [Multiseries.mulConst_mulConst], by simp [smul_smul, mul_comm]⟩
 
 end
 
@@ -169,26 +153,16 @@ mutual
 theorem Multiseries.mulConst_sorted {basis_hd basis_tl} {ms : Multiseries basis_hd basis_tl} {c : ℝ}
     (h_sorted : ms.Sorted) : (ms.mulConst c).Sorted := by
   let motive (ms : Multiseries basis_hd basis_tl) : Prop :=
-    ∃ (X : Multiseries basis_hd basis_tl), ms = X.mulConst c ∧ X.Sorted
-  apply Multiseries.Sorted.coind motive
-  · simp only [motive]
-    use ms
-  · intro exp' coef' tl' ih
-    simp only [motive] at ih
-    obtain ⟨X, h_ms_eq, hX_sorted⟩ := ih
-    cases X with
-    | nil => simp at h_ms_eq
-    | cons exp coef tl =>
-      obtain ⟨hX_coef_sorted, hX_comp, hX_tl_sorted⟩ := hX_sorted.elim_cons
-      simp at h_ms_eq
-      constructor
-      · simp only [h_ms_eq]
-        exact mulConst_sorted hX_coef_sorted
-      constructor
-      · simpa [h_ms_eq]
-      simp only [motive]
-      use tl
-      simpa [h_ms_eq]
+    ∃ X : Multiseries basis_hd basis_tl, ms = X.mulConst c ∧ X.Sorted
+  refine Multiseries.Sorted.coind motive ⟨ms, rfl, h_sorted⟩ ?_
+  rintro exp' coef' tl' ⟨X, h_ms_eq, hX_sorted⟩
+  cases X with
+  | nil => simp at h_ms_eq
+  | cons exp coef tl =>
+    obtain ⟨hX_coef_sorted, hX_comp, hX_tl_sorted⟩ := hX_sorted.elim_cons
+    simp only [Multiseries.mulConst_cons, Multiseries.cons_eq_cons] at h_ms_eq
+    obtain ⟨rfl, rfl, rfl⟩ := h_ms_eq
+    exact ⟨mulConst_sorted hX_coef_sorted, by simpa using hX_comp, tl, rfl, hX_tl_sorted⟩
 
 /-- Multiplication by a constant preserves `Sorted`. -/
 theorem mulConst_sorted {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ}
@@ -209,38 +183,27 @@ theorem mulConst_approximates {basis : Basis} {ms : MultiseriesExpansion basis} 
   cases basis with
   | nil => simp
   | cons basis_hd basis_tl =>
-  let motive (ms' : MultiseriesExpansion (basis_hd :: basis_tl)) : Prop :=
-    ∃ (X : MultiseriesExpansion (basis_hd :: basis_tl)),
-      ms' = X.mulConst c ∧ X.Approximates
-  apply Approximates.coind motive
-  · simp only [motive]
-    use ms
-  · rintro _ ⟨X, rfl, hX_approx⟩
+    let motive (ms' : MultiseriesExpansion (basis_hd :: basis_tl)) : Prop :=
+      ∃ X : MultiseriesExpansion (basis_hd :: basis_tl), ms' = X.mulConst c ∧ X.Approximates
+    refine Approximates.coind motive ⟨ms, rfl, h_approx⟩ ?_
+    rintro _ ⟨X, rfl, hX_approx⟩
     cases X with
     | nil =>
       left
-      apply Approximates.elim_nil at hX_approx
       simp only [mulConst_seq, mk_seq, Multiseries.mulConst_nil, mulConst_toFun, mk_toFun, true_and]
-      grw [hX_approx]
-      simp
+      exact (Approximates.elim_nil hX_approx).mono fun t h ↦ by simp [h]
     | cons X_exp X_coef X_tl fX =>
       obtain ⟨hX_coef, hX_maj, hX_tl⟩ := hX_approx.elim_cons
       right
       simp only [mulConst_seq, mk_seq, Multiseries.mulConst_cons, Multiseries.cons_eq_cons,
         mulConst_toFun, mk_toFun, ↓existsAndEq, and_true, mulConst_approximates hX_coef,
         Algebra.mul_smul_comm, true_and, exists_eq_left', hX_maj.smul]
-      refine ⟨_, ?_, hX_tl⟩
-      simp only [mk_eq_mk_iff_iff, mulConst_seq, mk_seq, mulConst_toFun, mk_toFun, true_and]
-      ext t
-      simp
-      ring
+      exact ⟨_, by simp [smul_sub], hX_tl⟩
 
 @[simp]
 theorem neg_toFun {basis : Basis} {ms : MultiseriesExpansion basis} :
     ms.neg.toFun = -ms.toFun := by
-  convert! mulConst_toFun
-  ext
-  simp
+  simp [neg]
 
 @[simp]
 theorem neg_seq {basis_hd basis_tl} {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
@@ -255,10 +218,8 @@ theorem Multiseries.neg_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
 @[simp]
 theorem Multiseries.neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl} :
-    (cons exp coef tl).neg =
-    cons exp (coef.neg) (tl.neg) := by
-  simp [neg]
-  rfl
+    (cons exp coef tl).neg = cons exp coef.neg tl.neg := by
+  simp [Multiseries.neg, MultiseriesExpansion.neg]
 
 @[simp]
 theorem Multiseries.neg_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
