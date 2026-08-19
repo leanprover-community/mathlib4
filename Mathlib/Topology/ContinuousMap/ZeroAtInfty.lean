@@ -20,7 +20,6 @@ compact space, this type has nice properties.
 
 * Create more instances of algebraic structures (e.g., `NonUnitalSemiring`) once the necessary
   type classes (e.g., `IsTopologicalRing`) are sufficiently generalized.
-* Relate the unitization of `C₀(α, β)` to the Alexandroff compactification.
 -/
 
 @[expose] public section
@@ -264,6 +263,16 @@ instance instAddCommGroup [AddCommGroup β] [IsTopologicalAddGroup β] : AddComm
 instance instIsCentralScalar [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [SMulWithZero Rᵐᵒᵖ β]
     [ContinuousConstSMul R β] [IsCentralScalar R β] : IsCentralScalar R C₀(α, β) :=
   ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
+
+instance instIsScalarTower' [Zero β] {R S : Type*} [Zero R] [Zero S] [SMulWithZero R β]
+    [SMulWithZero S β] [ContinuousConstSMul R β] [ContinuousConstSMul S β] [SMul R S]
+    [IsScalarTower R S β] : IsScalarTower R S C₀(α, β) where
+  smul_assoc _ _ _ := ext fun _ => smul_assoc ..
+
+instance instSMulCommClass' [Zero β] {R S : Type*} [Zero R] [Zero S] [SMulWithZero R β]
+    [SMulWithZero S β] [ContinuousConstSMul R β] [ContinuousConstSMul S β] [SMulCommClass R S β] :
+    SMulCommClass R S C₀(α, β) where
+  smul_comm _ _ _ := ext fun _ => smul_comm ..
 
 instance instSMulWithZero [Zero β] {R : Type*} [Zero R] [SMulWithZero R β]
     [ContinuousConstSMul R β] : SMulWithZero R C₀(α, β) := fast_instance%
