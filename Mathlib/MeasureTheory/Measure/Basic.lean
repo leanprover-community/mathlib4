@@ -446,7 +446,7 @@ theorem nonempty_inter_of_measure_lt_add' (μ : Measure α)
 
 /-- If `u` is a superset of `t` with the same (finite) measure (both sets possibly non-measurable),
 then for any measurable set `s` one also has `μ (t ∩ s) = μ (u ∩ s)`. -/
-theorem measure_inter_eq_of_measure_eq (hs : MeasurableSet s) (h : μ t = μ u)
+theorem Measure.measure_inter_eq_of_measure_eq (hs : MeasurableSet s) (h : μ t = μ u)
     (htu : t ⊆ u) (ht_ne_top : μ t ≠ ∞) : μ (t ∩ s) = μ (u ∩ s) := by
   rw [h] at ht_ne_top
   refine le_antisymm (by gcongr) ?_
@@ -459,7 +459,7 @@ theorem measure_inter_eq_of_measure_eq (hs : MeasurableSet s) (h : μ t = μ u)
   have B : μ (u \ s) ≠ ∞ := (lt_of_le_of_lt (measure_mono sdiff_subset) ht_ne_top.lt_top).ne
   exact ENNReal.le_of_add_le_add_right B A
 
-lemma measure_inter_eq_of_ae (h : ∀ᵐ a ∂μ, a ∈ t) :
+lemma Measure.measure_inter_eq_of_ae (h : ∀ᵐ a ∂μ, a ∈ t) :
     μ (t ∩ s) = μ s := by
   refine le_antisymm (measure_mono inter_subset_right) ?_
   apply EventuallyLE.measure_le
@@ -470,7 +470,7 @@ satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s
 Here, we require that the measure of `t` is finite. The conclusion holds without this assumption
 when the measure is s-finite (for example when it is σ-finite),
 see `measure_toMeasurable_inter_of_sFinite`. -/
-theorem measure_toMeasurable_inter (hs : MeasurableSet s) (ht : μ t ≠ ∞) :
+theorem Measure.measure_toMeasurable_inter (hs : MeasurableSet s) (ht : μ t ≠ ∞) :
     μ (toMeasurable μ t ∩ s) = μ (t ∩ s) :=
   (measure_inter_eq_of_measure_eq hs (measure_toMeasurable t).symm (subset_toMeasurable μ t)
       ht).symm
