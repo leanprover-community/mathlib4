@@ -102,7 +102,7 @@ theorem coeff_pentagonalSeries_mul_eq_extend (n : ℕ) (f : ℕ → R) :
   · obtain ⟨k, rfl⟩ := hn
     simp [pentagonal_injective.extend_apply, -Int.coe_negOnePow]
   · rw [Function.extend_apply' _ _ _ (by simpa using hn)]
-    simp [PowerSeries.coeff_pentagonalSeries_eq_zero R hn]
+    simp [coeff_pentagonalSeries_eq_zero R hn]
 
 namespace WithPiTopology
 variable [TopologicalSpace R]
