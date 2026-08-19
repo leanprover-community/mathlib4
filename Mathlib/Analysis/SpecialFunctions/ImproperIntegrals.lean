@@ -5,9 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
@@ -166,6 +165,12 @@ theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) 
   · have : IntegrableOn (fun x ↦ x ^ s) (Ioi (1 : ℝ)) := h.mono (Ioi_subset_Ioi zero_le_one) le_rfl
     rw [integrableOn_Ioi_rpow_iff zero_lt_one] at this
     exact hs.not_gt this
+
+theorem not_integrableOn_Ioi_rpow_of_neg_one_le {a s : ℝ} (hs : -1 ≤ s) :
+    ¬ IntegrableOn (fun x ↦ x ^ s) (Ioi a) := by
+  refine fun h ↦ not_lt.mpr hs ?_
+  rw [← integrableAtFilter_rpow_atTop_iff]
+  exact ⟨Ioi a, Ioi_mem_atTop a, h⟩
 
 theorem setIntegral_Ioi_zero_rpow (s : ℝ) : ∫ x in Ioi (0 : ℝ), x ^ s = 0 :=
   MeasureTheory.integral_undef (not_integrableOn_Ioi_rpow s)
