@@ -35,16 +35,16 @@ namespace Mathlib.Tactic.Linter
 public meta section
 
 /--
-Allow internal constructors (e.g. `_mkInternal`) to be referenced during elaboration. By
-default, this is `false`, and disallows references arising from notation as well (including e.g.
+Forbid internal constructors (e.g. `_mkInternal`) from being referenced during elaboration. By
+default, this is `true`, and disallows references arising from notation as well (including e.g.
 anonymous constructor notation).
 
 Internal constructors may be used freely in the module in which they were defined.
 -/
-register_option linter.allowInternalConstructors : Bool := {
-  -- Note: unlike style linters which are turned on in `Mathlib.Init`, we make this false
+register_option linter.internalConstructors : Bool := {
+  -- Note: unlike style linters which are turned on in `Mathlib.Init`, we make this true
   -- everywhere so that downstream libraries do not accidentally use Mathlib internal constructors.
-  defValue := false
+  defValue := true
   descr := "allow internal constructors to be referenced downstream."
 }
 
@@ -65,15 +65,14 @@ private partial def logInternalConstructors (t : InfoTree) (ctx? : Option Contex
         then
           -- Use `withRef` to fall back to outer ref if `t.stx` has no position info
           withRef t.stx do
-            logLintErrorSuggestingTrue linter.allowInternalConstructors (← getRef)
+            logLintError linter.internalConstructors (← getRef)
               m!"`{.ofConstName n}` is an internal constructor and should not be used directly."
       | _ => pure ()
     withRef t.stx do ch.forM (logInternalConstructors · ctx?)
 where
-  /-- We inline some of `logLint` so that we can (1) log an error (2) adjust the suggested
-  option value from `false` to `true`. -/
-  logLintErrorSuggestingTrue (linterOption) (stx) (msg) := do
-    let disable := .note m!"This linter can be disabled with `set_option {linterOption.name} true`"
+  /-- We inline some of `logLint` so that we can log an error instead of a warning. -/
+  logLintError (linterOption) (stx) (msg) := do
+    let disable := .note m!"This linter can be disabled with `set_option {linterOption.name} false`"
     logErrorAt stx <|
       .ofOriginatingSyntax stx  <|
       .tagged linterOption.name <|
@@ -82,7 +81,7 @@ where
 /-- Lints against using constructors with internal names during elaboration. -/
 def internalConstructor : Linter where
   run := withSetOptionIn fun _ => do
-    if Linter.getLinterValue linter.allowInternalConstructors (← Linter.getLinterOptions) then
+    unless Linter.getLinterValue linter.internalConstructors (← Linter.getLinterOptions) do
       return
     for t in ← getInfoTrees do
       logInternalConstructors t
