@@ -127,9 +127,7 @@ lemma bijective_pairingDual [Module.Finite R M] [Module.Free R M] (k : ℕ) :
     (v w : Fin k → M) :
     exteriorPower.BilinForm k C (ιMulti R k v) (ιMulti R k w) =
       (Matrix.of fun i j ↦ C (v i) (w j)).det := by
-  simp only [exteriorPower.BilinForm, LinearMap.comp_apply]
-  rw [exteriorPower.alternatingMapLinearEquiv_apply_ιMulti (BilinFormAux k C) v]
-  exact (exteriorPower.alternatingMapLinearEquiv_apply_ιMulti (BilinFormAux k C v) w).trans rfl
+  simp [exteriorPower.BilinForm, BilinFormAux, pairingMatrix]
 
 lemma bilinForm_eq_pairingDual_comp_map {k : ℕ} (C : LinearMap.BilinForm R M) :
     exteriorPower.BilinForm k C =
