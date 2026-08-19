@@ -199,7 +199,7 @@ end NontriviallyNormedField
 section Ring
 
 -- The next lemmas assume we are working over a ring.
-variable {R E E' F F' G : Type*} [Ring R]
+variable {R E F : Type*} [Ring R]
   [TopologicalSpace E] [AddCommGroup E] [Module R E]
   [TopologicalSpace F] [AddCommGroup F] [Module R F] {f : E →L[R] F}
 
