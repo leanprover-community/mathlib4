@@ -581,6 +581,9 @@ lemma homMk_comp_homMk {x₀ x₁ x₂ : X _⦋0⦌} {e₀₁ : Edge x₀ x₁} 
     homMk e₀₁ ≫ homMk e₁₂ = homMk e₀₂ :=
   Truncated.HomotopyCategory.homMk_comp_homMk h.toTruncated
 
+/-- Induction principle for morphisms in the homotopy category of a simplicial set:
+in order to prove a property for all morphisms, its suffices to prove the property for
+morphisms induced by an edge and that the property is stable by composition. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 lemma hom_rec {motive : ∀ {x y : X.HomotopyCategory}, (x ⟶ y) → Prop}
     (homMk : ∀ {x y : X _⦋0⦌} (e : Edge x y), motive (homMk e))
