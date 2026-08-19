@@ -30,7 +30,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   [Category.{v₆} T'] {L' : C' ⥤ T'} {R' : D' ⥤ T'} {F₁ : C ⥤ C'} {F₂ : D ⥤ D'} {F : T ⥤ T'}
   (α : F₁ ⋙ L' ⟶ L ⋙ F) (β : R ⋙ F ⟶ F₂ ⋙ R')
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
 @[simps, implicit_reducible]
@@ -43,7 +42,6 @@ def commaMapEquivalenceFunctor [IsIso β] (X : Comma L' R') :
     homMk f.right.right (congrArg CommaMorphism.right (StructuredArrow.w f)),
     by simp⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
 @[simps]

@@ -40,7 +40,7 @@ coincide with the existing topology and uniformity on matrices.
 open WithLp
 open scoped Matrix
 
-variable {𝕜 m n l E : Type*}
+variable {𝕜 m n l : Type*}
 
 section EntrywiseSupNorm
 
@@ -149,7 +149,7 @@ def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) :=
   @NormedRing.induced ((Matrix n n 𝕜) ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)) _
     _ _ _ ContinuousLinearMap.toNormedRing _ _ toEuclideanCLM.injective
 
-open Bornology Filter
+open Filter
 open scoped Topology Uniformity
 
 /-- The metric on `Matrix m n 𝕜` arising from the operator norm given by the identification with

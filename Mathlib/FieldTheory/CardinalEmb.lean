@@ -291,7 +291,7 @@ def equivLim : (E⟮<i⟯ →ₐ[F] Ē) ≃ limit (embFunctor F E) i where
       simp
   right_inv f := Subtype.ext <| funext fun j ↦ by
     have := Nonempty.intro j
-    simp_rw [dif_pos this]
+    simp_rw [dite_eq_left this]
     apply Subalgebra.iSupLift_comp_inclusion
 
 theorem equivLim_coherence (x l) : (equivLim hi x).1 l = embFunctor F E (mem_Iio.mp l.2).le x :=
