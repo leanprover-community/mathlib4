@@ -58,7 +58,7 @@ def internalConstructor : Linter where
       t.foldInfoM (init := ()) fun ctx info _ => do
         match info with
         | .ofTermInfo i =>
-          let .const n _ := i.expr | pure ()
+          let .const n _ := i.expr.cleanupAnnotations | pure ()
           if
             n.isInternal && !isPrivateName n && ctx.env.isImportedConst n && ctx.env.isConstructor n
           then
