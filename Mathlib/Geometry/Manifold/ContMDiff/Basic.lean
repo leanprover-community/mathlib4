@@ -416,7 +416,7 @@ then `e` is `C^n`. -/
 lemma contMDiff_isOpenEmbedding [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiff I I n e := by
   have := h.isManifold_singleton (I := I) (n := ω)
-  rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
+  rw [@contMDiff_iff]
   use h.continuous
   intro x y
   -- show the function is actually the identity on the range of I ∘ e
@@ -428,7 +428,7 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
   · simp_all [I.right_inv, chartAt_self_eq]
   · -- `hz` implies that `z ∈ range (I ∘ e)`
     have := hz.1
-    rw [@extChartAt_target _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace] at this
+    rw [extChartAt_target] at this
     have := this.1
     rw [mem_preimage, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
       h.toOpenPartialHomeomorph_target] at this
@@ -471,8 +471,8 @@ lemma ContMDiff.of_comp_isOpenEmbedding {f : M → M'} (hf : ContMDiff I I' n (e
     ext
     rw [Function.comp_apply, Function.comp_apply, IsOpenEmbedding.toOpenPartialHomeomorph_left_inv]
   rw [this]
-  apply @ContMDiffOn.comp_contMDiff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    h'.singletonChartedSpace _ _ (range e') _ (contMDiffOn_isOpenEmbedding_symm h') hf
+  let := h'.singletonChartedSpace
+  apply ContMDiffOn.comp_contMDiff (t := range e') (contMDiffOn_isOpenEmbedding_symm h') hf
   simp
 
 end

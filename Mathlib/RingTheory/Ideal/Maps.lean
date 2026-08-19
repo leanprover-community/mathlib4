@@ -354,6 +354,9 @@ theorem mem_map_iff_of_surjective {I : Ideal R} {y} : y ∈ map f I ↔ ∃ x, x
 theorem le_map_of_comap_le_of_surjective : comap f K ≤ I → K ≤ map f I := fun h =>
   map_comap_of_surjective f hf K ▸ map_mono h
 
+theorem map_eq_image_of_surjective : map f I = ⇑f '' ↑I := by
+  grind [Ideal.mem_map_iff_of_surjective f hf, SetLike.mem_coe]
+
 end
 
 theorem map_comap_eq_self_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
@@ -525,7 +528,6 @@ section Bijective
 variable (hf : Function.Bijective f) {I : Ideal R} {K : Ideal S}
 include hf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Special case of the correspondence theorem for isomorphic rings -/
 def relIsoOfBijective : Ideal S ≃o Ideal R where
   toFun := comap f
@@ -669,7 +671,6 @@ def mapHom : Ideal R →+* Ideal S where
 protected theorem map_pow (n : ℕ) : map f (I ^ n) = map f I ^ n :=
   map_pow (mapHom f) I n
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comap_radical : comap f (radical K) = radical (comap f K) := by
   ext
   simp [radical]
@@ -1254,7 +1255,6 @@ theorem eq_liftOfSurjective (hf : Function.Surjective f) (g : A →+* C)
 
 end RingHom
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any ring isomorphism induces an order isomorphism of ideals. -/
 @[simps apply]
 def RingEquiv.idealComapOrderIso {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) :
