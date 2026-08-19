@@ -12,6 +12,8 @@ public import Mathlib.Analysis.SpecificLimits.FloorPow
 public import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
+import Mathlib.MeasureTheory.Measure.Continuity
+
 /-!
 # The strong law of large numbers
 

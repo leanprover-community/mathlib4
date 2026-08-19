@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.BoxIntegral.Partition.Additive
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Box-additive functions defined by measures
 

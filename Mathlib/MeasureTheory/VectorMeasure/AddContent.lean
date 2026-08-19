@@ -12,6 +12,8 @@ public import Mathlib.MeasureTheory.Measure.MeasuredSets
 public import Mathlib.MeasureTheory.Measure.Trim
 public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Constructing a vector measure from an additive content
 

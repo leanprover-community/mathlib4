@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 public import Mathlib.MeasureTheory.SetSemiring
+
+import Mathlib.MeasureTheory.Measure.Basic
+import Mathlib.MeasureTheory.Measure.Continuity
 import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
@@ -48,7 +51,7 @@ noncomputable instance : PseudoEMetricSpace (MeasuredSets μ) where
   edist s t := μ ((s : Set α) ∆ t)
   edist_self := by simp
   edist_comm := by grind
-  edist_triangle s t u := measure_symmDiff_le _ _ _
+  edist_triangle s t u := by exact measure_symmDiff_le _ _ _
 
 lemma MeasuredSets.edist_def (s t : MeasuredSets μ) : edist s t = μ ((s : Set α) ∆ t) := rfl
 

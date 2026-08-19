@@ -9,6 +9,8 @@ public import Mathlib.MeasureTheory.Constructions.Projective
 public import Mathlib.MeasureTheory.Measure.AddContent
 public import Mathlib.MeasureTheory.SetAlgebra
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Additive content built from a projective family of measures
 

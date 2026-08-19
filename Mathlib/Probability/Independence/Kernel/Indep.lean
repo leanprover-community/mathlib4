@@ -9,6 +9,8 @@ public import Mathlib.Probability.Kernel.Basic
 public import Mathlib.Tactic.Peel
 public import Mathlib.Analysis.Normed.Group.Basic
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Independence of families of sets with respect to a kernel and a measure
 

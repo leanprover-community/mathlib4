@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Covering.Differentiation
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Besicovitch covering theorems
 

@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Probability.Kernel.Disintegration.Integral
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Uniqueness of the conditional kernel
 

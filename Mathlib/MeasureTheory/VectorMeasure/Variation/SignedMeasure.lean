@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
+
+import Mathlib.MeasureTheory.Measure.Basic
 /-!
 # Equivalence of variation definitions for signed measures
 

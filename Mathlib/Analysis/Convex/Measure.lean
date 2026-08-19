@@ -9,6 +9,8 @@ public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Convex sets are null-measurable
 

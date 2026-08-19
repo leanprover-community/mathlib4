@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Vitali families
 

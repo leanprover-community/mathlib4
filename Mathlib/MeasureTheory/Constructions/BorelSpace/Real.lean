@@ -10,6 +10,8 @@ public import Mathlib.MeasureTheory.MeasurableSpace.Prod
 public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.Topology.Instances.Real.Lemmas
 
+import Mathlib.MeasureTheory.Measure.Continuity
+
 /-!
 # Borel (measurable) spaces ℝ, ℝ≥0, ℝ≥0∞
 

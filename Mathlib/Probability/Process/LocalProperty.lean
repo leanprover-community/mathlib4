@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Probability.Process.Stopping
 
+import Mathlib.MeasureTheory.Measure.Continuity
+
 /-! # Local properties of processes
 
 This file defines local and stable properties of stochastic processes with respect to a filtration.

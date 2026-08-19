@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Normed.Order.UpperLower
 public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Order-connected sets are null-measurable
 

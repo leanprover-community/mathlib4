@@ -9,6 +9,9 @@ public import Mathlib.Probability.Kernel.Composition.MapComap
 public import Mathlib.Probability.Martingale.Convergence
 public import Mathlib.Probability.Process.PartitionFiltration
 
+import Mathlib.MeasureTheory.Measure.Basic
+import Mathlib.MeasureTheory.Measure.Continuity
+
 /-!
 # Kernel density
 

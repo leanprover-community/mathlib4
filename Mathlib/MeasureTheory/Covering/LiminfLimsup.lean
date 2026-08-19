@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Covering.DensityTheorem
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Liminf, limsup, and uniformly locally doubling measures.
 
