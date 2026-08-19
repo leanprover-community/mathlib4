@@ -152,19 +152,19 @@ lemma isEdgeConnected_two_iff_forall_preconnected :
   simp [isEdgeConnected_add_one]
 
 @[deprecated (since := "2026-08-13")]
-alias isEdgeConnected_two := isEdgeConnected_two_iff_Preconnected
+alias isEdgeConnected_two := isEdgeConnected_two_iff_forall_preconnected
 
 /-- A graph is 2-edge-connected iff it has no bridge. -/
 theorem isEdgeConnected_two_iff_forall_not_isBridge : G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e := by
   constructor
   · intro h
-    rw [isEdgeConnected_two_iff_Preconnected] at h
+    rw [isEdgeConnected_two_iff_forall_preconnected] at h
     intro e
     cases e; expose_names
     intro hbridge
     exact (isBridge_iff.mp hbridge) (h s(x, y) x y)
   · intro h
-    rw [isEdgeConnected_two_iff_Preconnected]
+    rw [isEdgeConnected_two_iff_forall_preconnected]
     intro e
     cases e; expose_names
     by_cases hV : Nonempty V
