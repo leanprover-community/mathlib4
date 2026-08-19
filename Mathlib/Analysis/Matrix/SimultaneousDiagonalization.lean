@@ -5,10 +5,8 @@ Authors: Moe Tabei
 -/
 module
 
-public import Mathlib.Algebra.Order.Star.Real
-public import Mathlib.Analysis.Matrix.LDL
+public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Analysis.Matrix.Spectrum
-public import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # Simultaneous diagonalization of two real quadratic forms
@@ -29,26 +27,19 @@ quadratic forms, one of which is positive definite, can be diagonalized simultan
 
 ## Implementation notes
 
-The classical argument replaces `A` by its square root. Instead we use the LDL decomposition
-of `A`, which produces an invertible `L` with `L * A * Lᴴ` diagonal with positive entries, and
-then rescale the rows by the inverse square roots of those entries to reach the identity. The
-resulting congruence of `B` is again symmetric, so the spectral theorem finishes the proof.
+Conjugating by the inverse of `CFC.sqrt A` turns `A` into the identity. The resulting congruence
+of `B` is again symmetric, so `Matrix.IsHermitian.spectral_theorem` diagonalizes it by an
+orthogonal matrix, and the two changes of basis compose.
 -/
 
 @[expose] public section
 
 open Matrix Unitary
+open scoped MatrixOrder
 
 namespace Matrix
 
-variable {n : Type*} [Fintype n] [LinearOrder n] [WellFoundedLT n] [LocallyFiniteOrderBot n]
-
-/-- Rescaling a positive real by the inverse of its square root on both sides gives `1`. -/
-private lemma inv_sqrt_mul_mul_inv_sqrt {x : ℝ} (hx : 0 < x) :
-    (Real.sqrt x)⁻¹ * x * (Real.sqrt x)⁻¹ = 1 := by
-  have h : Real.sqrt x ≠ 0 := Real.sqrt_ne_zero'.mpr hx
-  field_simp
-  exact (Real.sq_sqrt hx.le).symm
+variable {n : Type*} [Fintype n] [DecidableEq n]
 
 /-- **Simultaneous diagonalization of two real quadratic forms.** If `A` is positive definite
 and `B` is symmetric, then some invertible matrix `P` satisfies `Pᵀ * A * P = 1` and takes `B`
@@ -57,30 +48,26 @@ theorem PosDef.exists_simultaneous_diagonalization {A B : Matrix n n ℝ} (hA : 
     (hB : B.IsSymm) :
     ∃ P : Matrix n n ℝ, IsUnit P.det ∧ Pᵀ * A * P = 1 ∧ ∃ d : n → ℝ, Pᵀ * B * P = diagonal d := by
   classical
-  -- The LDL decomposition makes `L * A * Lᴴ` diagonal with positive entries.
-  set L : Matrix n n ℝ := LDL.lowerInv hA with hLdef
-  have hLunit : IsUnit L := isUnit_of_invertible L
-  have hdiag : L * A * Lᴴ = diagonal (LDL.diagEntries hA) :=
-    (LDL.diag_eq_lowerInv_conj hA).symm
-  have hDpos : (diagonal (LDL.diagEntries hA)).PosDef := by
-    rw [← hdiag]
-    exact hA.mul_mul_conjTranspose_same (vecMul_injective_iff_isUnit.mpr hLunit)
-  have hd : ∀ i, 0 < LDL.diagEntries hA i := posDef_diagonal_iff.mp hDpos
-  have hsq : ∀ i, Real.sqrt (LDL.diagEntries hA i) ≠ 0 := fun i => Real.sqrt_ne_zero'.mpr (hd i)
-  -- Rescaling the rows by `1 / √dᵢ` turns `A` into the identity.
-  set e : n → ℝ := fun i => (Real.sqrt (LDL.diagEntries hA i))⁻¹ with hedef
-  set W : Matrix n n ℝ := diagonal e * L with hWdef
-  have hLt : Lᵀ = Lᴴ := (conjTranspose_eq_transpose_of_trivial L).symm
-  have hWt : Wᵀ = Wᴴ := (conjTranspose_eq_transpose_of_trivial W).symm
-  have hone : (fun i => e i * LDL.diagEntries hA i * e i) = fun _ => (1 : ℝ) := by
-    funext i
-    simp only [hedef]
-    exact inv_sqrt_mul_mul_inv_sqrt (hd i)
+  -- The positive definite square root of `A` is invertible, and conjugating by its inverse
+  -- turns `A` into the identity.
+  set S : Matrix n n ℝ := CFC.sqrt A with hSdef
+  have hSherm : S.IsHermitian := (CFC.sqrt_nonneg A).posSemidef.1
+  have hSS : S * S = A := CFC.sqrt_mul_sqrt_self A hA.posSemidef.nonneg
+  have hdetS : IsUnit S.det := by
+    have hprod : S.det * S.det = A.det := by rw [← det_mul, hSS]
+    refine isUnit_iff_ne_zero.mpr fun h => hA.det_pos.ne' ?_
+    rw [← hprod, h, zero_mul]
+  set W : Matrix n n ℝ := S⁻¹ with hWdef
+  have hSsymm : Sᵀ = S := by
+    rw [← conjTranspose_eq_transpose_of_trivial]
+    exact hSherm
+  have hWsymm : Wᵀ = W := by rw [hWdef, transpose_nonsing_inv, hSsymm]
+  have hWh : Wᴴ = W := by rw [conjTranspose_eq_transpose_of_trivial, hWsymm]
+  have hWt : Wᵀ = Wᴴ := by rw [hWsymm, hWh]
   have hWA : W * A * Wᵀ = 1 := by
-    rw [hWdef, transpose_mul, diagonal_transpose, hLt,
-      show diagonal e * L * A * (Lᴴ * diagonal e)
-        = diagonal e * (L * A * Lᴴ) * diagonal e by simp only [mul_assoc],
-      hdiag, diagonal_mul_diagonal, diagonal_mul_diagonal, hone, diagonal_one]
+    rw [hWsymm, hWdef, ← hSS,
+      show S⁻¹ * (S * S) * S⁻¹ = S⁻¹ * S * (S * S⁻¹) by simp only [mul_assoc],
+      nonsing_inv_mul S hdetS, mul_nonsing_inv S hdetS, mul_one]
   -- The congruence of `B` is symmetric, so the spectral theorem diagonalizes it.
   have hBher : B.IsHermitian := by
     change Bᴴ = B
@@ -101,17 +88,7 @@ theorem PosDef.exists_simultaneous_diagonalization {A B : Matrix n n ℝ} (hA : 
   · have hdetV : IsUnit V.det := by
       have h : Vᵀ.det * V.det = 1 := by rw [← det_mul, hV1, det_one]
       exact isUnit_iff_ne_zero.mpr (right_ne_zero_of_mul_eq_one h)
-    have hLdet : IsUnit L.det :=
-      letI : Invertible L := LDL.invertibleLowerInv hA
-      isUnit_det_of_invertible L
-    have hEdet : IsUnit (diagonal e).det := by
-      rw [det_diagonal]
-      refine isUnit_iff_ne_zero.mpr (Finset.prod_ne_zero_iff.mpr fun i _ => ?_)
-      simp only [hedef]
-      exact inv_ne_zero (hsq i)
-    have hdetW : IsUnit W.det := by
-      rw [hWdef, det_mul]
-      exact hEdet.mul hLdet
+    have hdetW : IsUnit W.det := isUnit_nonsing_inv_det S hdetS
     rw [det_mul, det_transpose]
     exact hdetW.mul hdetV
   · rw [transpose_mul, transpose_transpose,
@@ -121,11 +98,11 @@ theorem PosDef.exists_simultaneous_diagonalization {A B : Matrix n n ℝ} (hA : 
       show Vᵀ * W * B * (Wᵀ * V) = Vᵀ * (W * B * Wᵀ) * V by simp only [mul_assoc], hWt]
     conv_lhs => rw [hspec]
     rw [show Vᵀ * (V * diagonal (RCLike.ofReal ∘ hC.eigenvalues) * Vᵀ) * V
-        = (Vᵀ * V) * diagonal (RCLike.ofReal ∘ hC.eigenvalues) * (Vᵀ * V) by
+        = Vᵀ * V * diagonal (RCLike.ofReal ∘ hC.eigenvalues) * (Vᵀ * V) by
           simp only [mul_assoc],
       hV1, one_mul, mul_one]
 
-omit [LinearOrder n] [WellFoundedLT n] [LocallyFiniteOrderBot n] in
+omit [DecidableEq n] in
 /-- Congruence by `P` on matrices corresponds to the change of variables `x ↦ P *ᵥ x` on the
 associated quadratic forms. -/
 private lemma dotProduct_mulVec_congr (P M : Matrix n n ℝ) (x : n → ℝ) :
