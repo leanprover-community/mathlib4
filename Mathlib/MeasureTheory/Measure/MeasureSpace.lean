@@ -79,7 +79,7 @@ The measure is denoted `volume`.
 measure, almost everywhere, measure space, completion, null set, null measurable set
 -/
 
-public noncomputable section
+@[expose] public noncomputable section
 
 open Set Function Filter ENNReal
 
