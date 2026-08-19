@@ -20,6 +20,10 @@ When both measures have finite variation, we prove stronger results, notably ver
 of the Fubini theorem. We give general versions for arbitrary pairing functions, and
 specialized versions for scalar multiplication.
 
+When both measures have finite variation, we prove stronger results, notably versions
+of the Fubini theorem. We give general versions for arbitrary pairing functions, and
+specialized versions for scalar multiplication.
+
 The API is modelled on the one for the product of positive measures.
 -/
 
@@ -167,6 +171,15 @@ lemma prod_eq_of_forall_apply_prod {ρ : VectorMeasure (X × Y) G} (hρ : ∀ (s
   · rintro - ⟨s, hs, t, ht, rfl⟩
     rw [prod_apply, hρ _ _ hs ht]
 
+@[simp] lemma map_prod_swap :
+    (μ.prod ν B).map Prod.swap = ν.prod μ B.flip := by
+  by_cases h : HasProd μ ν B; swap
+  · simp [prod_eq_zero_of_not_hasProd, h, hasProd_flip_iff]
+  have : HasProd ν μ B.flip := h.flip
+  apply (prod_eq_of_forall_apply_prod (fun s t hs ht ↦ ?_)).symm
+  rw [map_apply _ measurable_swap (hs.prod ht)]
+  simp
+
 lemma prod_apply_eq_integral [CompleteSpace G] [IsFiniteMeasure μ.variation]
     {s : Set (X × Y)} (hs : MeasurableSet s) :
     μ.prod ν B s = ∫ᵛ x, ν (Prod.mk x ⁻¹' s) ∂[B.flip; μ] := by
@@ -210,12 +223,7 @@ theorem integral_prod_swap (f : X × Y → H) {A : E →L[ℝ] F →L[ℝ] G} {B
   have I (z : Y × X) : z.swap = MeasurableEquiv.prodComm z := rfl
   simp_rw [I, ← integral_map_equiv]
   congr
-  by_cases h : HasProd μ ν A; swap
-  · simp [prod_eq_zero_of_not_hasProd, h, hasProd_flip_iff]
-  have : HasProd ν μ A.flip := h.flip
-  apply (prod_eq_of_forall_apply_prod (fun s t hs ht ↦ ?_)).symm
-  rw [map_apply _ MeasurableEquiv.prodComm.measurable (hs.prod ht)]
-  simp [MeasurableEquiv.prodComm]
+  exact map_prod_swap
 
 /-- The vector measure integral is measurable. This shows that the integrand of (the right-hand-side
 of) Fubini's theorem is measurable. This version has `f` in curried form. -/
@@ -360,7 +368,7 @@ theorem integral_prod_smul [CompleteSpace F] {B : E →L[ℝ] F →L[ℝ] H}
     {f : X × Y → ℝ} (hf : Integrable f (μ.variation.prod ν.variation)) :
     ∫ᵛ z, f z ∂•(μ.prod ν B) = ∫ᵛ x, (∫ᵛ y, f (x, y) ∂•ν) ∂[B.flip; μ] := by
   by_cases h : CompleteSpace H
-  · exact integral_prod hf (fun x y z ↦ by simp)
+  · exact integral_prod hf (by simp)
   · simp [integral_of_not_completeSpace, h]
 
 /-- Symmetric version of **Fubini's Theorem**: For integrable functions on `X × Y`,
@@ -424,7 +432,7 @@ theorem integral_integral_smul_symm [CompleteSpace E] {B : E →L[ℝ] F →L[�
     ∫ᵛ y, (∫ᵛ x, f x y ∂•μ) ∂[B; ν] = ∫ᵛ z, f z.1 z.2 ∂•(μ.prod ν B) :=
   (integral_prod_smul_symm hf).symm
 
-/-- Change the order of Bochner integration in integrals wrt vector measures.
+/-- Change the order of integration in integrals wrt vector measures.
 We express this with respect to general pairing functions, with a compatibility
 condition saying that the compositions coincide up to reordering. -/
 theorem integral_integral_swap
@@ -444,7 +452,7 @@ theorem integral_integral_swap
   rw [integral_integral (A := A') (D := D') hf (by simp [D', A', P])]
   exact (integral_integral_symm hf (by simp [D', A', P, h])).symm
 
-/-- Change the order of Bochner integration in integrals wrt vector measures.
+/-- Change the order of integration in integrals wrt vector measures.
 Case where `f` is scalar. -/
 theorem integral_integral_smul_swap [CompleteSpace E] [CompleteSpace F]
     [IsFiniteMeasure ν.variation] [IsFiniteMeasure μ.variation]
