@@ -101,7 +101,6 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
   simpa only [injectiveSeminorm, Set.coe_ofPred, Set.mem_ofPred_eq]
     using Seminorm.sSup_apply dualSeminorms_bounded
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] instSeminormedAddCommGroup in
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
