@@ -818,7 +818,7 @@ theorem limiting_fourier_lim2_aux (x : ℝ) (C : ℝ) :
       (Measure.restrict volume (Ici (-Real.log x))) := by
   simp_rw [div_eq_mul_inv C]
   exact (((integrable_inv_one_add_sq.comp_div
-    (by simp [Real.pi_ne_zero])).const_mul _).const_mul _).restrict
+    (by simp [pi_ne_zero])).const_mul _).const_mul _).restrict
 
 theorem limiting_fourier_lim2 (A : ℝ) (ψ : ℝ → ℂ) (hψ : IsW21 ψ) (hx : 1 ≤ x) :
     Tendsto (fun σ' ↦ A * ↑(x ^ (1 - σ')) *
@@ -1338,7 +1338,7 @@ lemma bound_I2 (x : ℝ) (ψ : ℝ → ℂ) (hψ : IsW21 ψ) :
     decay_bounds_key ψ hψ _
   have twopi : 0 ≤ 2 * π := by simp [pi_nonneg]
   have l3 : Integrable (fun a ↦ (1 + (a / (2 * π)) ^ 2)⁻¹) :=
-    integrable_inv_one_add_sq.comp_div (by norm_num [Real.pi_ne_zero])
+    integrable_inv_one_add_sq.comp_div (by norm_num [pi_ne_zero])
   have l2 : IntegrableOn (fun i ↦ W21.norm ψ * (1 + (i / (2 * π)) ^ 2)⁻¹) (Ici (-Real.log x)) := by
     exact (l3.const_mul _).integrableOn
   have l1 : IntegrableOn (fun i ↦ ‖𝓕 ψ (i / (2 * π))‖) (Ici (-Real.log x)) := by
@@ -1577,7 +1577,7 @@ lemma wiener_ikehara_smooth (hf : ∀ (σ' : ℝ), 1 < σ' → Summable (nterm f
     have : ContDiff ℝ ∞ (fun x : ℝ => (rexp (2 * π * x))) := (contDiff_const.mul contDiff_id).exp
     exact (Complex.ofRealCLM.contDiff.comp this).mul (hsmooth.comp this)
   have h2 : HasCompactSupport h := by
-    have : 2 * π ≠ 0 := by simp [Real.pi_ne_zero]
+    have : 2 * π ≠ 0 := by simp [pi_ne_zero]
     simpa using! (comp_exp_support hsupp hplus).comp_smul this |>.mul_left
   obtain ⟨g, hg⟩ := fourier_surjection_on_schwartz (toSchwartz h h1 h2)
 
