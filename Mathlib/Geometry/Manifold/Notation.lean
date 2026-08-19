@@ -265,7 +265,8 @@ def totalSpaceMk (e : Expr) : MetaM Expr := do
             bound variable (`{x}` : `{base}`).\n\
             Hint: applying the `T%` elaborator twice makes no sense."
         let trivBundle ← mkAppOptM ``Bundle.Trivial #[some base, some tgt]
-        let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[some base, some trivBundle, some tgt, some x, some (e.app x).headBeta]
+        let body ← mkAppOptM ``Bundle.TotalSpace.mk'
+          #[some base, some trivBundle, some tgt, some x,some (e.app x).headBeta]
         mkLambdaFVars #[x] body
   | _ => return e.headBeta
 
