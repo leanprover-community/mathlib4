@@ -3,6 +3,8 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+module
+
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Fintype.Powerset
@@ -24,6 +26,8 @@ https://en.wikipedia.org/wiki/Erdos-Szekeres_theorem#Pigeonhole_principle.
 
 sequences, increasing, decreasing, Ramsey, Erdos-Szekeres, Erdős–Szekeres, Erdős-Szekeres
 -/
+
+@[expose] public section
 
 open Function Finset
 

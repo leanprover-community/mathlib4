@@ -3,6 +3,7 @@ Copyright (c) 2024 Enrico Z. Borba. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
+module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.MeasureTheory.Integral.Prod
@@ -68,6 +69,8 @@ We then show the two integrals equal their respective values `l - √(l^2 - d^2)
 * https://www.isa-afp.org/entries/Buffons_Needle.html
 
 -/
+
+@[expose] public section
 
 open MeasureTheory (MeasureSpace IsProbabilityMeasure Measure pdf.IsUniform)
 open ProbabilityTheory Real

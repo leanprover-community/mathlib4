@@ -3,6 +3,8 @@ Copyright (c) 2021 James Arthur, Benjamin Davidson, Andrew Souther. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Arthur, Benjamin Davidson, Andrew Souther
 -/
+module
+
 public import Mathlib.Analysis.SpecialFunctions.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
@@ -40,6 +42,7 @@ continues to develop, it should eventually become possible to redefine `disc` an
 to the n-ball.
 -/
 
+@[expose] public section
 
 open Set Real MeasureTheory intervalIntegral
 
