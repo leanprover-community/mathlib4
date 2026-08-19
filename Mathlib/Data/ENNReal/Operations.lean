@@ -679,7 +679,7 @@ lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSu
   cases isEmpty_or_nonempty ι
   · simp only [iSup_of_empty, bot_eq_zero, zero_add]
   · simp_rw [ENNReal.iSup_add, ENNReal.add_iSup]
-    exact iSup₂_eq_iSup_diagonal (fun i j ↦ f i + g j) h
+    exact iSup₂_eq_iSup_diag_of_cofinal (fun i j ↦ f i + g j) h
 
 lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f g : ι → ℝ≥0∞}
     (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
