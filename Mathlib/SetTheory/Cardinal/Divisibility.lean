@@ -49,7 +49,7 @@ theorem isUnit_iff : IsUnit a ↔ a = 1 := by
   · exact (not_isUnit_zero h).elim
   rw [isUnit_iff_forall_dvd] at h
   obtain ⟨t, ht⟩ := h 1
-  rw [eq_comm, mul_eq_one_iff_of_one_le] at ht
+  rw [eq_comm, mul_eq_one_iff_of_one_le_left] at ht
   · exact ht.1
   · exact Cardinal.one_le_iff_ne_zero.mpr ha
   · apply Cardinal.one_le_iff_ne_zero.mpr
