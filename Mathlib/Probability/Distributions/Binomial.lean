@@ -253,4 +253,3 @@ theorem integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.
     _ = p * (n + 1) := by grind [add_pow p.val (1 - p) n, one_pow]
 
 end ProbabilityTheory
-#min_imports
