@@ -116,17 +116,14 @@ theorem map {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHomClass F R 
     {x : R} (f : F) (hx : IsSelfAdjoint x) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx
 
-lemma of_map {F R S : Type*} [AddCancelMonoid R] [AddMonoid S]
-    [StarAddMonoid R] [StarAddMonoid S]
+lemma of_map {F R S : Type*} [AddMonoid R] [AddMonoid S] [StarAddMonoid R] [StarAddMonoid S]
     [FunLike F R S] [StarHomClass F R S] [AddMonoidHomClass F R S] (f : F)
     {x : R} (hf : Function.Injective f) (hx : IsSelfAdjoint (f x)) :
-    IsSelfAdjoint x := by
-  have : star x + x = x + x := hf <| by simp [map_star, hx.star_eq]
-  simpa
+    IsSelfAdjoint x :=
+  hf <| by simp [map_star, hx.star_eq]
 
 lemma _root_.Function.Injective.isSelfAdjoint_apply_iff
-    {F R S : Type*} [AddCancelMonoid R] [AddMonoid S]
-    [StarAddMonoid R] [StarAddMonoid S]
+    {F R S : Type*} [AddMonoid R] [AddMonoid S] [StarAddMonoid R] [StarAddMonoid S]
     [FunLike F R S] [StarHomClass F R S] [AddMonoidHomClass F R S] (f : F)
     {x : R} (hf : Function.Injective f) :
     IsSelfAdjoint (f x) ↔ IsSelfAdjoint x :=
