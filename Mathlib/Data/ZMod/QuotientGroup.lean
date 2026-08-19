@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 public import Mathlib.Data.ZMod.Basic
 
 /-!
@@ -47,6 +48,14 @@ def quotientZMultiplesEquivZMod (a : ℤ) : ℤ ⧸ AddSubgroup.zmultiples a ≃
 @[simp]
 lemma index_zmultiples (a : ℤ) : (AddSubgroup.zmultiples a).index = a.natAbs := by
   rw [AddSubgroup.index, Nat.card_congr (quotientZMultiplesEquivZMod a).toEquiv, Nat.card_zmod]
+
+/-- The relative index of `zmultiples a` in `zmultiples b` (as subgroups of `ℤ`, `a b : ℕ`),
+multiplied by `gcd a b`, is `a`. -/
+lemma relIndex_zmultiples_mul (a b : ℕ) :
+    (AddSubgroup.zmultiples (a : ℤ)).relIndex (AddSubgroup.zmultiples (b : ℤ)) * a.gcd b = a := by
+  rw [show a.gcd b = ((a : ℤ).gcd (b : ℤ) : ℤ).natAbs by simp [Int.gcd_natCast_natCast],
+    ← AddSubgroup.relIndex_sup_left, ← index_zmultiples, ← Int.zmultiples_sup,
+    AddSubgroup.relIndex_mul_index le_sup_left, index_zmultiples, Int.natAbs_natCast]
 
 end Int
 
