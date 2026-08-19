@@ -362,9 +362,9 @@ theorem ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) :
       rw [ofFun_eq_zero hf, ofFun_eq_zero hcf, smul_zero]
 
 theorem toDistribution_dirac_eq_delta (x : E) :
-    toDistribution Ω (1 : E → ℝ) (Measure.dirac x) n = delta x := by
+    ofFun Ω (1 : E → ℝ) (Measure.dirac x) n = delta x := by
   ext φ
-  rw [Pi.one_def, toDistribution_apply <|
+  rw [Pi.one_def, ofFun_apply <|
     (locallyIntegrable_const (1 : ℝ)).locallyIntegrableOn (Ω : Set E)]
   simp
 
