@@ -28,17 +28,20 @@ public section
 
 namespace QuadraticAlgebra.Rat
 
+-- TODO: expose the isomorphism itself, as a `def` taking a decomposition
+-- `r ^ 2 * d = discr a b` with `r ≠ 0`, and deduce this statement from it. Making `d` canonical
+-- instead would need a squarefree-part function on `ℚ`, which does not exist yet.
 /-- Every `QuadraticAlgebra ℚ a b` with nonzero discriminant is isomorphic to
 `QuadraticAlgebra ℚ d 0` for a squarefree integer `d`. -/
 theorem exists_squarefree_algEquiv (a b : ℚ) (hd : discr a b ≠ 0) :
     ∃ d : ℤ, Squarefree d ∧
       Nonempty (QuadraticAlgebra ℚ a b ≃ₐ[ℚ] QuadraticAlgebra ℚ (d : ℚ) 0) := by
-  obtain ⟨d, r, hd', hc⟩ := Rat.exists_sq_mul_squarefree (discr a b)
+  obtain ⟨r, d, hc, hd'⟩ := Rat.exists_sq_mul_squarefree (discr a b)
   have hr : r ≠ 0 := by
     intro rfl
-    exact hd (by simpa using hc)
+    exact hd (by simpa using hc.symm)
   exact ⟨d, hd', ⟨(algEquivDiscrZero a b).trans
-    (mapEquiv (d : ℚ) 0 (Units.mk0 r hr) 0 (by simpa [Units.val_mk0] using hc) (by ring))⟩⟩
+    (mapEquiv (d : ℚ) 0 (Units.mk0 r hr) 0 (by simpa [Units.val_mk0] using hc.symm) (by ring))⟩⟩
 
 /-- For squarefree integers `d₁`, `d₂`, the standard forms `QuadraticAlgebra ℚ d₁ 0` and
 `QuadraticAlgebra ℚ d₂ 0` are isomorphic if and only if `d₁ = d₂`. -/

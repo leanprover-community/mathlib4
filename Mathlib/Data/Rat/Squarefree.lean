@@ -25,9 +25,9 @@ public section
 
 /-- Every rational is a square times a squarefree integer. -/
 theorem Rat.exists_sq_mul_squarefree (q : ℚ) :
-    ∃ (d : ℤ) (r : ℚ), Squarefree d ∧ q = r ^ 2 * d := by
+    ∃ (r : ℚ) (d : ℤ), r ^ 2 * d = q ∧ Squarefree d := by
   obtain ⟨e, d, hed, hd⟩ := _root_.exists_sq_mul_squarefree (q.num * q.den)
-  refine ⟨d, e / q.den, hd, ?_⟩
+  refine ⟨e / q.den, d, ?_, hd⟩
   rw [div_pow, div_mul_eq_mul_div, ← Int.cast_pow, ← Int.cast_mul, hed, sq,
     Int.cast_mul, Int.cast_natCast, mul_div_mul_right _ _ (Nat.cast_ne_zero.mpr q.den_nz),
     Rat.num_div_den]
