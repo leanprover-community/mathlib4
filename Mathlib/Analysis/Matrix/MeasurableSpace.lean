@@ -63,16 +63,15 @@ lemma measurable_toEuclideanCLM {𝕜 : Type*} [RCLike 𝕜] [ContinuousAdd 𝕜
     [BorelSpace 𝕜] [Fintype m] [DecidableEq m] :
     Measurable (fun (S, x) ↦ toEuclideanCLM (n := m) (𝕜 := 𝕜) S x) := by
   apply Continuous.measurable
-  refine Continuous.comp ?_ <| continuous_pi fun i ↦ ?_
-  · fun_prop
-  · simp only [LinearEquiv.toEquiv_symm, Equiv.symm_symm, Equiv.invFun_as_coe,
-    LinearEquiv.coe_symm_toEquiv, LinearMap.toMatrix'_symm, OrthonormalBasis.coe_toBasis_repr,
-    LinearEquiv.coe_coe, LinearEquiv.trans_apply, LinearIsometryEquiv.coe_toLinearEquiv,
-    WithLp.linearEquiv_apply, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
-    WithLp.addEquiv_apply, toLin'_apply, LinearEquiv.symm_mk, LinearMap.coe_mk, AddHom.coe_mk,
-    LinearEquiv.coe_mk, LinearEquiv.coe_toEquiv, Finsupp.linearEquivFunOnFinite_apply,
-    Finsupp.equivFunOnFinite_symm_apply_apply]
-    fun_prop
+  refine Continuous.comp (by fun_prop) <| continuous_pi fun i ↦ ?_
+  simp only [LinearEquiv.toEquiv_symm, Equiv.symm_symm, Equiv.invFun_as_coe,
+  LinearEquiv.coe_symm_toEquiv, LinearMap.toMatrix'_symm, OrthonormalBasis.coe_toBasis_repr,
+  LinearEquiv.coe_coe, LinearEquiv.trans_apply, LinearIsometryEquiv.coe_toLinearEquiv,
+  WithLp.linearEquiv_apply, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+  WithLp.addEquiv_apply, toLin'_apply, LinearEquiv.symm_mk, LinearMap.coe_mk, AddHom.coe_mk,
+  LinearEquiv.coe_mk, LinearEquiv.coe_toEquiv, Finsupp.linearEquivFunOnFinite_apply,
+  Finsupp.equivFunOnFinite_symm_apply_apply]
+  fun_prop
 
 end BorelSpace
 
