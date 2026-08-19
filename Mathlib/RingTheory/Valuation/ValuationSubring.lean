@@ -225,7 +225,7 @@ def ofSubring (R : Subring K) (hR : ∀ x : K, x ∈ R ∨ x⁻¹ ∈ R) : Valua
 
 @[simp]
 theorem ofSubring_toSubring (R : Subring K) (hR : ∀ x : K, x ∈ R ∨ x⁻¹ ∈ R) :
-  (ValuationSubring.ofSubring R hR).toSubring = R := rfl
+    (ValuationSubring.ofSubring R hR).toSubring = R := rfl
 
 @[simp]
 theorem mem_ofSubring (R : Subring K) (hR : ∀ x : K, x ∈ R ∨ x⁻¹ ∈ R) (x : K) :
