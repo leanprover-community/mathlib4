@@ -23,8 +23,8 @@ field, for `QuadraticAlgebra K a b` to be a field.
 
 ## Main results
 
-* `QuadraticAlgebra.discr_map`: the discriminant scales by `u ^ 2` under the change of
-  generator `ω ↦ u • ω + k`.
+* `QuadraticAlgebra.discr_changeGenerator`: the discriminant scales by `u ^ 2` under the change
+  of generator `ω ↦ u • ω + k`.
 * `QuadraticAlgebra.exists_sq_eq_iff_isSquare_discr`: over a ring with `2` invertible,
   `X ^ 2 - b * X - a` has a root iff `discr a b` is a square.
 * `QuadraticAlgebra.nonempty_algEquiv_iff_of_invertible_two` and
@@ -53,11 +53,13 @@ theorem im_sq_mul_discr [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
     z.im ^ 2 * discr a b = trace z ^ 2 - 4 * norm z := by
   rw [trace_def, norm_def, discr_def]; ring
 
-/-- Under the change of generator `ω ↦ u • ω + k` (see `QuadraticAlgebra.map`), the
+/-- Under the change of generator `ω ↦ u • ω + k` (see `QuadraticAlgebra.changeGenerator`), the
 discriminant is multiplied by `u ^ 2`. -/
-theorem discr_map [CommRing R] (a b u k : R) :
+theorem discr_changeGenerator [CommRing R] (a b u k : R) :
     discr (u ^ 2 * a - u * b * k - k ^ 2) (u * b + 2 * k) = u ^ 2 * discr a b := by
   rw [discr_def, discr_def]; ring
+
+@[deprecated (since := "2026-08-14")] alias discr_map := discr_changeGenerator
 
 /-- The discriminant is the square of the different `ω - star ω`. -/
 theorem algebraMap_discr [CommRing R] (a b : R) :
@@ -145,7 +147,7 @@ theorem discr_eq_im_sq_mul_discr' (e : QuadraticAlgebra R a' b' ≃ₐ[R] Quadra
 `QuadraticAlgebra R (discr a b) 0`. -/
 def algEquivDiscrZero [Invertible (2 : R)] (a b : R) :
     QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R (discr a b) 0 :=
-  (mapEquiv a b (unitOfInvertible (2 : R)) (-b) (by grind [discr_def, val_unitOfInvertible])
+  (changeGeneratorEquiv a b (unitOfInvertible (2 : R)) (-b) (by grind [discr_def, val_unitOfInvertible])
     (by grind [val_unitOfInvertible])).symm
 
 /-- If `2` is regular, `QuadraticAlgebra R a b` and `QuadraticAlgebra R a' b'` are isomorphic
@@ -153,7 +155,7 @@ iff `discr a b = u ^ 2 * discr a' b'` for some unit `u` with `2 ∣ b - u * b'`.
 theorem nonempty_algEquiv_iff (h : IsRegular (2 : R)) :
     Nonempty (QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a' b') ↔
       ∃ u : Rˣ, discr a b = (u : R) ^ 2 * discr a' b' ∧ 2 ∣ (b - u * b') := by
-  refine ⟨fun ⟨e⟩ ↦ ?_, fun ⟨u, hu, ⟨k, hk⟩⟩ ↦ ⟨mapEquiv a' b' u k ?_ (by grind)⟩⟩
+  refine ⟨fun ⟨e⟩ ↦ ?_, fun ⟨u, hu, ⟨k, hk⟩⟩ ↦ ⟨changeGeneratorEquiv a' b' u k ?_ (by grind)⟩⟩
   · refine ⟨(isUnit_im_omega_of_algEquiv e).unit,
       by rw [discr_eq_im_sq_mul_discr' e, IsUnit.unit_spec], ⟨(e ω).re, ?_⟩⟩
     rw [IsUnit.unit_spec, sub_eq_iff_eq_add', add_comm, mul_comm _ b', ← trace_def, eq_comm]

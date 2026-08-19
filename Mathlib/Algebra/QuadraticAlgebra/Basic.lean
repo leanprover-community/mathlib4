@@ -21,8 +21,9 @@ Let `R` be a commutative ring. We define:
 
 * `QuadraticAlgebra.trace`: the trace, as an `R`-linear map
 
-* `QuadraticAlgebra.map` and `QuadraticAlgebra.mapEquiv`: the `R`-algebra map, respectively
-  isomorphism (when `u` is a unit), induced by the change of generator `ω ↦ u • ω + k`
+* `QuadraticAlgebra.changeGenerator` and `QuadraticAlgebra.changeGeneratorEquiv`: the `R`-algebra
+  map, respectively isomorphism (when `u` is a unit), induced by the change of generator
+  `ω ↦ u • ω + k`
 
 We prove:
 
@@ -384,54 +385,62 @@ theorem sq_eq_trace_smul_sub_norm :
 
 end trace
 
-section map
+section changeGenerator
 
 variable [CommRing R]
 
 -- The quadratic relation satisfied by the new generator `u • ω + k`; this is what makes
--- `map` well defined. Stated with `x * x` rather than `x ^ 2` to match the shape of the
--- subtype condition of `lift` (`{ u // u * u = a • 1 + b • u }`), so it feeds `map` verbatim.
-private theorem map_relation (a b u k : R) :
+-- `changeGenerator` well defined. Stated with `x * x` rather than `x ^ 2` to match the shape of
+-- the subtype condition of `lift` (`{ u // u * u = a • 1 + b • u }`), so it feeds
+-- `changeGenerator` verbatim.
+private theorem changeGenerator_relation (a b u k : R) :
     (u • ω + algebraMap R (QuadraticAlgebra R a b) k) *
         (u • ω + algebraMap R (QuadraticAlgebra R a b) k) =
       (u ^ 2 * a - u * b * k - k ^ 2) • 1 +
         (u * b + 2 * k) • (u • ω + algebraMap R (QuadraticAlgebra R a b) k) := by
   ext <;> simp <;> ring
 
-/-- The `R`-algebra map induced by the change of generator `ω ↦ u • ω + k`, see `map_omega`. -/
+/-- The `R`-algebra map induced by the change of generator `ω ↦ u • ω + k`, see
+`changeGenerator_omega`. -/
 @[simps!]
-def map (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
+def changeGenerator (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
     (hb : b' = u * b + 2 * k) :
     QuadraticAlgebra R a' b' →ₐ[R] QuadraticAlgebra R a b :=
-  lift ⟨u • ω + algebraMap R _ k, by rw [ha, hb]; exact map_relation a b u k⟩
+  lift ⟨u • ω + algebraMap R _ k, by rw [ha, hb]; exact changeGenerator_relation a b u k⟩
 
 @[simp]
-theorem map_omega (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
+theorem changeGenerator_omega (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
     (hb : b' = u * b + 2 * k) :
-    map a b u k ha hb ω = u • ω + algebraMap R (QuadraticAlgebra R a b) k := by
+    changeGenerator a b u k ha hb ω = u • ω + algebraMap R (QuadraticAlgebra R a b) k := by
   ext <;> simp
 
-theorem map_injective (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
+theorem changeGenerator_injective (a b u k : R) {a' b' : R}
+    (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
     (hb : b' = u * b + 2 * k) (hu : IsRegular u) :
-    Function.Injective (map a b u k ha hb) := by
+    Function.Injective (changeGenerator a b u k ha hb) := by
   intro z w h
   have hy : z.im = w.im := hu.right <| by simpa using congr_arg im h
   exact QuadraticAlgebra.ext (by simpa [hy] using congr_arg re h) hy
 
-/-- `map` along a unit `u`, as an isomorphism. -/
+/-- `changeGenerator` along a unit `u`, as an isomorphism. -/
 @[simps! apply symm_apply]
-def mapEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
+def changeGeneratorEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
     (ha : a' = (u : R) ^ 2 * a - (u : R) * b * k - k ^ 2)
     (hb : b' = (u : R) * b + 2 * k) :
     QuadraticAlgebra R a' b' ≃ₐ[R] QuadraticAlgebra R a b where
-  __ := map a b u k ha hb
-  invFun := map a' b' (u⁻¹ : Rˣ) (-(u⁻¹ : Rˣ) * k)
+  __ := changeGenerator a b u k ha hb
+  invFun := changeGenerator a' b' (u⁻¹ : Rˣ) (-(u⁻¹ : Rˣ) * k)
     (by grind [sq, mul_assoc, Units.inv_mul_cancel_left])
     (by grind [Units.inv_mul_cancel_left])
   left_inv _ := by ext <;> simp [mul_assoc]
   right_inv _ := by ext <;> simp [mul_assoc]
 
-end map
+@[deprecated (since := "2026-08-14")] alias map := changeGenerator
+@[deprecated (since := "2026-08-14")] alias map_omega := changeGenerator_omega
+@[deprecated (since := "2026-08-14")] alias map_injective := changeGenerator_injective
+@[deprecated (since := "2026-08-14")] alias mapEquiv := changeGeneratorEquiv
+
+end changeGenerator
 
 section field
 
