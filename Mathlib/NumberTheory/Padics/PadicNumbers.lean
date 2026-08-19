@@ -87,8 +87,9 @@ def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
 def Int.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℤ ℤᵐ⁰ :=
   (Rat.padicValuation p).comap (Int.castRingHom ℚ)
 
+@[simp]
 lemma Rat.padicValuation_cast (p : ℕ) [Fact p.Prime] (x : ℤ) :
-    Rat.padicValuation p (Int.cast x) = Int.padicValuation p x :=
+    Rat.padicValuation p x = Int.padicValuation p x :=
   rfl
 
 @[simp]
