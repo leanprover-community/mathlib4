@@ -23,9 +23,7 @@ We define addition of measures, and scalar multiplication with `ℝ≥0∞`.
 measure, almost everywhere, measure space, completion, null set, null measurable set
 -/
 
-@[expose] public section
-
-noncomputable section
+public noncomputable section
 
 open Set Function ENNReal NNReal
 
@@ -161,7 +159,7 @@ def coeAddHom {_ : MeasurableSpace α} : Measure α →+ Set α → ℝ≥0∞ w
   map_add' := coe_add
 
 @[simp]
-theorem coeAddHom_apply {_ : MeasurableSpace α} (μ : Measure α) : coeAddHom μ = ⇑μ := rfl
+theorem coeAddHom_apply {_ : MeasurableSpace α} (μ : Measure α) : coeAddHom μ = ⇑μ := (rfl)
 
 @[simp]
 theorem coe_finsetSum {_m : MeasurableSpace α} (I : Finset ι) (μ : ι → Measure α) :

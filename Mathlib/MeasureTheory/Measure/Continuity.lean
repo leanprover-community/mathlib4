@@ -24,7 +24,7 @@ Various forms of continuity of measures from above or below.
 measure, almost everywhere, measure space, completion, null set, null measurable set
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

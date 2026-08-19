@@ -79,7 +79,7 @@ The measure is denoted `volume`.
 measure, almost everywhere, measure space, completion, null set, null measurable set
 -/
 
-@[expose] public noncomputable section
+public noncomputable section
 
 open Set Function Filter ENNReal
 
@@ -516,7 +516,7 @@ theorem le_toOuterMeasure_caratheodory (μ : Measure α) : ms ≤ μ.toOuterMeas
 @[simp]
 theorem toMeasure_toOuterMeasure (m : OuterMeasure α) (h : ms ≤ m.caratheodory) :
     (m.toMeasure h).toOuterMeasure = m.trim :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem toMeasure_apply (m : OuterMeasure α) (h : ms ≤ m.caratheodory) {s : Set α}

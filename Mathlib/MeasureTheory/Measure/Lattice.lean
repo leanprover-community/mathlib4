@@ -23,7 +23,7 @@ Measures on `α` form a complete lattice.
 measure, almost everywhere, measure space, completion, null set, null measurable set
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
