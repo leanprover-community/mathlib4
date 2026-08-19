@@ -160,7 +160,7 @@ lemma all_notBridge_Preconnected : (∀ e, ¬G.IsBridge e) → G.Preconnected  :
   exact h s(u,v) (IsBridge.of_not_reachable huv)
 
 /-- A graph is 2-edge-connected iff it has no bridge. -/
-theorem isEdgeConnected_two_iff_notBridge : G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e := by
+theorem isEdgeConnected_two_iff_forall_not_isBridge : G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e := by
   constructor
   · intro h
     rw [isEdgeConnected_two_iff_Preconnected] at h
