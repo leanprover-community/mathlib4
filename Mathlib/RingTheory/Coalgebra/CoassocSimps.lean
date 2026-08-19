@@ -47,11 +47,11 @@ open Coalgebra
 open Qq
 namespace CoassocSimps
 
-variable {R A M N P M' N' P' Q Q' M₁ M₂ M₃ N₁ N₂ N₃ : Type*}
+variable {R A M N P M' N' P' Q M₁ M₂ M₃ N₁ N₂ N₃ : Type*}
     [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
     [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P]
     [AddCommMonoid M'] [Module R M'] [AddCommMonoid N'] [Module R N']
-    [AddCommMonoid P'] [Module R P'] [AddCommMonoid Q] [Module R Q] [AddCommMonoid Q'] [Module R Q']
+    [AddCommMonoid P'] [Module R P'] [AddCommMonoid Q] [Module R Q]
     [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
     [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
     [Module R M₁] [Module R M₂] [Module R M₃] [Module R N₁] [Module R N₂] [Module R N₃]
