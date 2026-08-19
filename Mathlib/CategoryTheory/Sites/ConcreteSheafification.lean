@@ -601,6 +601,7 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
         dsimp
         rw [Category.assoc] }
 
+-- Priority lowered due to performance reasons, see #41462
 instance (priority := 900) sheafToPresheaf_isRightAdjoint : (sheafToPresheaf J D).IsRightAdjoint :=
   (plusPlusAdjunction J D).isRightAdjoint
 
