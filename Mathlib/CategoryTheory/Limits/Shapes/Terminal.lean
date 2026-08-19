@@ -33,34 +33,26 @@ variable (C)
 /-- A category has a terminal object if it has a limit over the empty diagram.
 Use `hasTerminal_of_unique` to construct instances.
 -/
+@[to_dual
+/-- A category has an initial object if it has a colimit over the empty diagram.
+Use `hasInitial_of_unique` to construct instances.
+-/]
 abbrev HasTerminal :=
   HasLimitsOfShape (Discrete.{0} PEmpty) C
 
-/-- A category has an initial object if it has a colimit over the empty diagram.
-Use `hasInitial_of_unique` to construct instances.
--/
-abbrev HasInitial :=
-  HasColimitsOfShape (Discrete.{0} PEmpty) C
-
 section Univ
 
-variable (X : C) {F₁ : Discrete.{w} PEmpty ⥤ C} {F₂ : Discrete.{w'} PEmpty ⥤ C}
+variable {F₁ : Discrete.{w} PEmpty ⥤ C} {F₂ : Discrete.{w'} PEmpty ⥤ C}
 
+@[to_dual]
 theorem hasTerminalChangeDiagram (h : HasLimit F₁) : HasLimit F₂ :=
   ⟨⟨⟨⟨limit F₁, by cat_disch, by simp⟩,
     isLimitChangeEmptyCone C (limit.isLimit F₁) _ (eqToIso rfl)⟩⟩⟩
 
+@[to_dual]
 theorem hasTerminalChangeUniverse [h : HasLimitsOfShape (Discrete.{w} PEmpty) C] :
     HasLimitsOfShape (Discrete.{w'} PEmpty) C where
   has_limit _ := hasTerminalChangeDiagram C (h.1 (Functor.empty C))
-
-theorem hasInitialChangeDiagram (h : HasColimit F₁) : HasColimit F₂ :=
-  ⟨⟨⟨⟨colimit F₁, by cat_disch, by simp⟩,
-    isColimitChangeEmptyCocone C (colimit.isColimit F₁) _ (eqToIso rfl)⟩⟩⟩
-
-theorem hasInitialChangeUniverse [h : HasColimitsOfShape (Discrete.{w} PEmpty) C] :
-    HasColimitsOfShape (Discrete.{w'} PEmpty) C where
-  has_colimit _ := hasInitialChangeDiagram C (h.1 (Functor.empty C))
 
 end Univ
 
@@ -68,15 +60,13 @@ end Univ
 You can use the notation `⊤_ C`.
 This object is characterized by having a unique morphism from any object.
 -/
-abbrev terminal [HasTerminal C] : C :=
-  limit (Functor.empty.{0} C)
-
+@[to_dual
 /-- An arbitrary choice of initial object, if one exists.
 You can use the notation `⊥_ C`.
 This object is characterized by having a unique morphism to any object.
--/
-abbrev initial [HasInitial C] : C :=
-  colimit (Functor.empty.{0} C)
+-/]
+abbrev terminal [HasTerminal C] : C :=
+  limit (Functor.empty.{0} C)
 
 /-- Notation for the terminal object in `C` -/
 notation "⊤_ " C:20 => terminal C
@@ -90,92 +80,66 @@ variable {C}
 
 /-- We can more explicitly show that a category has a terminal object by specifying the object,
 and showing there is a unique morphism to it from any other object. -/
+@[to_dual
+/-- We can more explicitly show that a category has an initial object by specifying the object,
+and showing there is a unique morphism from it to any other object. -/]
 theorem hasTerminal_of_unique (X : C) [∀ Y, Nonempty (Y ⟶ X)] [∀ Y, Subsingleton (Y ⟶ X)] :
     HasTerminal C where
   has_limit F := .mk ⟨_, (isTerminalEquivUnique F X).invFun fun _ ↦
     ⟨Classical.inhabited_of_nonempty', (Subsingleton.elim · _)⟩⟩
 
+@[to_dual]
 theorem IsTerminal.hasTerminal {X : C} (h : IsTerminal X) : HasTerminal C :=
   { has_limit := fun F => HasLimit.mk ⟨⟨X, by cat_disch, by simp⟩,
     isLimitChangeEmptyCone _ h _ (Iso.refl _)⟩ }
 
-/-- We can more explicitly show that a category has an initial object by specifying the object,
-and showing there is a unique morphism from it to any other object. -/
-theorem hasInitial_of_unique (X : C) [∀ Y, Nonempty (X ⟶ Y)] [∀ Y, Subsingleton (X ⟶ Y)] :
-    HasInitial C where
-  has_colimit F := .mk ⟨_, (isInitialEquivUnique F X).invFun fun _ ↦
-    ⟨Classical.inhabited_of_nonempty', (Subsingleton.elim · _)⟩⟩
-
-theorem IsInitial.hasInitial {X : C} (h : IsInitial X) : HasInitial C where
-  has_colimit F :=
-    HasColimit.mk ⟨⟨X, by cat_disch, by simp⟩, isColimitChangeEmptyCocone _ h _ (Iso.refl _)⟩
-
 /-- The map from an object to the terminal object. -/
+@[to_dual «to» /-- The map to an object from the initial object. -/]
 abbrev terminal.from [HasTerminal C] (P : C) : P ⟶ ⊤_ C :=
   limit.lift (Functor.empty C) (asEmptyCone P)
 
-/-- The map to an object from the initial object. -/
-abbrev initial.to [HasInitial C] (P : C) : ⊥_ C ⟶ P :=
-  colimit.desc (Functor.empty C) (asEmptyCocone P)
-
 /-- A terminal object is terminal. -/
+@[to_dual /-- An initial object is initial. -/]
 def terminalIsTerminal [HasTerminal C] : IsTerminal (⊤_ C) where
   lift _ := terminal.from _
 
-/-- An initial object is initial. -/
-def initialIsInitial [HasInitial C] : IsInitial (⊥_ C) where
-  desc _ := initial.to _
-
+@[to_dual uniqueFromInitial]
 instance uniqueToTerminal [HasTerminal C] (P : C) : Unique (P ⟶ ⊤_ C) :=
   isTerminalEquivUnique _ (⊤_ C) terminalIsTerminal P
 
-instance uniqueFromInitial [HasInitial C] (P : C) : Unique (⊥_ C ⟶ P) :=
-  isInitialEquivUnique _ (⊥_ C) initialIsInitial P
+@[to_dual (attr := ext)]
+theorem terminal.hom_ext [HasTerminal C] {P : C} (f g : P ⟶ ⊤_ C) : f = g := by ext ⟨⟨⟩⟩
 
-@[ext] theorem terminal.hom_ext [HasTerminal C] {P : C} (f g : P ⟶ ⊤_ C) : f = g := by ext ⟨⟨⟩⟩
-
-@[ext] theorem initial.hom_ext [HasInitial C] {P : C} (f g : ⊥_ C ⟶ P) : f = g := by ext ⟨⟨⟩⟩
-
-@[reassoc (attr := simp)]
+-- `initial.to_comp` does not need the `reassoc` attribute.
+@[to_dual (attr := simp) to_comp, reassoc (attr := simp)]
 theorem terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
     f ≫ terminal.from Q = terminal.from P := by
   simp [eq_iff_true_of_subsingleton]
 
--- `initial.to_comp_assoc` does not need the `simp` attribute.
-@[simp, reassoc]
-theorem initial.to_comp [HasInitial C] {P Q : C} (f : P ⟶ Q) : initial.to P ≫ f = initial.to Q := by
-  simp [eq_iff_true_of_subsingleton]
-
+set_option linter.translate.warnInvalid false in
 /-- The (unique) isomorphism between the chosen initial object and any other initial object. -/
-@[simps!]
+@[to_dual (attr := simps!)
+/-- The (unique) isomorphism between the chosen terminal object and any other terminal object. -/]
 def initialIsoIsInitial [HasInitial C] {P : C} (t : IsInitial P) : ⊥_ C ≅ P :=
   initialIsInitial.uniqueUpToIso t
 
-/-- The (unique) isomorphism between the chosen terminal object and any other terminal object. -/
-@[simps!]
-def terminalIsoIsTerminal [HasTerminal C] {P : C} (t : IsTerminal P) : ⊤_ C ≅ P :=
-  terminalIsTerminal.uniqueUpToIso t
+attribute [to_dual existing terminalIsoIsTerminal_inv] initialIsoIsInitial_hom
+attribute [to_dual existing terminalIsoIsTerminal_hom] initialIsoIsInitial_inv
 
 /-- Any morphism from a terminal object is split mono. -/
+@[to_dual isSplitEpi_to /-- Any morphism to an initial object is split epi. -/]
 instance terminal.isSplitMono_from {Y : C} [HasTerminal C] (f : ⊤_ C ⟶ Y) : IsSplitMono f :=
   IsTerminal.isSplitMono_from terminalIsTerminal _
 
-/-- Any morphism to an initial object is split epi. -/
-instance initial.isSplitEpi_to {Y : C} [HasInitial C] (f : Y ⟶ ⊥_ C) : IsSplitEpi f :=
-  IsInitial.isSplitEpi_to initialIsInitial _
-
+@[to_dual]
 instance hasInitial_op_of_hasTerminal [HasTerminal C] : HasInitial Cᵒᵖ :=
   (initialOpOfTerminal terminalIsTerminal).hasInitial
 
-instance hasTerminal_op_of_hasInitial [HasInitial C] : HasTerminal Cᵒᵖ :=
-  (terminalOpOfInitial initialIsInitial).hasTerminal
-
+@[to_dual]
 theorem hasTerminal_of_hasInitial_op [HasInitial Cᵒᵖ] : HasTerminal C :=
   (terminalUnopOfInitial initialIsInitial).hasTerminal
 
-theorem hasInitial_of_hasTerminal_op [HasTerminal Cᵒᵖ] : HasInitial C :=
-  (initialUnopOfTerminal terminalIsTerminal).hasInitial
-
+@[to_dual]
 instance {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C] :
     HasLimit ((CategoryTheory.Functor.const J).obj (⊤_ C)) :=
   HasLimit.mk
@@ -199,14 +163,6 @@ theorem limitConstTerminal_inv_π {J : Type*} [Category* J] {C : Type*} [Categor
     {j : J} :
     limitConstTerminal.inv ≫ limit.π ((CategoryTheory.Functor.const J).obj (⊤_ C)) j =
       terminal.from _ := by cat_disch
-
-instance {J : Type*} [Category* J] {C : Type*} [Category* C] [HasInitial C] :
-    HasColimit ((CategoryTheory.Functor.const J).obj (⊥_ C)) :=
-  HasColimit.mk
-    { cocone :=
-        { pt := ⊥_ C
-          ι := { app := fun _ => initial.to _ } }
-      isColimit := { desc := fun _ => initial.to _ } }
 
 /-- The colimit of the constant `⊥_ C` functor is `⊥_ C`. -/
 @[simps inv]
@@ -249,101 +205,67 @@ category.
 This is an isomorphism iff `G` preserves terminal objects, see
 `CategoryTheory.Limits.PreservesTerminal.ofIsoComparison`.
 -/
-def terminalComparison [HasTerminal C] [HasTerminal D] : G.obj (⊤_ C) ⟶ ⊤_ D :=
-  terminal.from _
-
+@[to_dual
 -- TODO: Show this is an isomorphism if and only if `G` preserves initial objects.
 /--
 The comparison morphism from the initial object in the target category to the image of the initial
 object.
--/
-def initialComparison [HasInitial C] [HasInitial D] : ⊥_ D ⟶ G.obj (⊥_ C) :=
-  initial.to _
+-/]
+def terminalComparison [HasTerminal C] [HasTerminal D] : G.obj (⊤_ C) ⟶ ⊤_ D :=
+  terminal.from _
 
 end Comparison
 
 variable {J : Type u} [Category.{v} J]
 
+@[to_dual]
 instance hasLimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C} : HasLimit F :=
   HasLimit.mk { cone := _, isLimit := limitOfDiagramInitial (initialIsInitial) F }
 
--- This is reducible to allow usage of lemmas about `cone_point_unique_up_to_iso`.
+-- This is reducible to allow usage of lemmas about `conePointUniqueUpToIso`.
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object then the image of it is isomorphic
 to the limit of `F`. -/
+@[to_dual
+/-- For a functor `F : J ⥤ C`, if `J` has a terminal object then the image of it is isomorphic
+to the colimit of `F`. -/]
 abbrev limitOfInitial (F : J ⥤ C) [HasInitial J] : limit F ≅ F.obj (⊥_ J) :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitOfDiagramInitial initialIsInitial F)
 
+@[to_dual]
 instance hasLimit_of_domain_hasTerminal [HasTerminal J] {F : J ⥤ C}
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : HasLimit F :=
   HasLimit.mk { cone := _, isLimit := limitOfDiagramTerminal (terminalIsTerminal) F }
 
--- This is reducible to allow usage of lemmas about `cone_point_unique_up_to_iso`.
+-- This is reducible to allow usage of lemmas about `conePointUniqueUpToIso`.
 /-- For a functor `F : J ⥤ C`, if `J` has a terminal object and all the morphisms in the diagram
 are isomorphisms, then the image of the terminal object is isomorphic to the limit of `F`. -/
+@[to_dual
+/-- For a functor `F : J ⥤ C`, if `J` has an initial object and all the morphisms in the diagram
+are isomorphisms, then the image of the initial object is isomorphic to the colimit of `F`. -/]
 abbrev limitOfTerminal (F : J ⥤ C) [HasTerminal J] [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :
     limit F ≅ F.obj (⊤_ J) :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitOfDiagramTerminal terminalIsTerminal F)
 
-instance hasColimit_of_domain_hasTerminal [HasTerminal J] {F : J ⥤ C} : HasColimit F :=
-  HasColimit.mk { cocone := _, isColimit := colimitOfDiagramTerminal (terminalIsTerminal) F }
-
--- This is reducible to allow usage of lemmas about `cocone_point_unique_up_to_iso`.
-/-- For a functor `F : J ⥤ C`, if `J` has a terminal object then the image of it is isomorphic
-to the colimit of `F`. -/
-abbrev colimitOfTerminal (F : J ⥤ C) [HasTerminal J] : colimit F ≅ F.obj (⊤_ J) :=
-  IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
-    (colimitOfDiagramTerminal terminalIsTerminal F)
-
-instance hasColimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C}
-    [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : HasColimit F :=
-  HasColimit.mk { cocone := _, isColimit := colimitOfDiagramInitial (initialIsInitial) F }
-
--- This is reducible to allow usage of lemmas about `cocone_point_unique_up_to_iso`.
-/-- For a functor `F : J ⥤ C`, if `J` has an initial object and all the morphisms in the diagram
-are isomorphisms, then the image of the initial object is isomorphic to the colimit of `F`. -/
-abbrev colimitOfInitial (F : J ⥤ C) [HasInitial J] [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :
-    colimit F ≅ F.obj (⊥_ J) :=
-  IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
-    (colimitOfDiagramInitial initialIsInitial _)
-
-/-- If `j` is initial in the index category, then the map `limit.π F j` is an isomorphism.
--/
+/-- If `j` is initial in the index category, then the map `limit.π F j` is an isomorphism. -/
+@[to_dual isIso_ι_of_isTerminal
+/-- If `j` is terminal in the index category, then the map `colimit.ι F j` is an isomorphism. -/]
 theorem isIso_π_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasLimit F] :
     IsIso (limit.π F j) :=
   ⟨⟨limit.lift _ (coneOfDiagramInitial I F), ⟨by ext; simp, by simp⟩⟩⟩
 
+@[to_dual isIso_ι_terminal]
 instance isIso_π_initial [HasInitial J] (F : J ⥤ C) : IsIso (limit.π F (⊥_ J)) :=
   isIso_π_of_isInitial initialIsInitial F
 
+@[to_dual isIso_ι_of_isInitial]
 theorem isIso_π_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasLimit F]
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsIso (limit.π F j) :=
   ⟨⟨limit.lift _ (coneOfDiagramTerminal I F), by ext; simp, by simp⟩⟩
 
+@[to_dual isIso_ι_initial]
 instance isIso_π_terminal [HasTerminal J] (F : J ⥤ C) [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :
     IsIso (limit.π F (⊤_ J)) :=
   isIso_π_of_isTerminal terminalIsTerminal F
-
-/-- If `j` is terminal in the index category, then the map `colimit.ι F j` is an isomorphism.
--/
-theorem isIso_ι_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasColimit F] :
-    IsIso (colimit.ι F j) :=
-  ⟨⟨colimit.desc _ (coconeOfDiagramTerminal I F), ⟨by simp, by ext; simp⟩⟩⟩
-
-instance isIso_ι_terminal [HasTerminal J] (F : J ⥤ C) : IsIso (colimit.ι F (⊤_ J)) :=
-  isIso_ι_of_isTerminal terminalIsTerminal F
-
-theorem isIso_ι_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasColimit F]
-    [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsIso (colimit.ι F j) :=
-  ⟨⟨colimit.desc _ (coconeOfDiagramInitial I F), by
-    refine ⟨?_, by ext; simp⟩
-    simp only [colimit.ι_desc, coconeOfDiagramInitial_pt, coconeOfDiagramInitial_ι_app,
-      Functor.const_obj_obj, IsInitial.to_self]
-    grind
-  ⟩⟩
-
-instance isIso_ι_initial [HasInitial J] (F : J ⥤ C) [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :
-    IsIso (colimit.ι F (⊥_ J)) :=
-  isIso_ι_of_isInitial initialIsInitial F
 
 end
 

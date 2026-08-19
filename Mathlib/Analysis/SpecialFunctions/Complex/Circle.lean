@@ -298,10 +298,9 @@ lemma range_path_ssubset_univ (x y : Circle) : range (path x y) ⊂ univ := by
 lemma range_path_inter_range_path (h : x ≠ y) : range (path x y) ∩ range (path y x) = {x, y} := by
   rw [← image_univ, ← image_univ, unitInterval.univ_eq_Icc, ← Ioc_insert_left (by simp),
     ← Ioo_insert_right (by simp)]
-  simp_rw [image_insert_eq]
   have h : Disjoint ((x.path y) '' Ioo 0 1) ((y.path x) '' Ioo 0 1) := by
     refine (disjoint_path_image_Ioc h).mono ?_ ?_ <;> exact image_mono Ioo_subset_Ioc_self
-  grind
+  grind [image_insert_eq]
 
 lemma isPathConnected_compl_singleton (x : Circle) : IsPathConnected {x}ᶜ := by
   refine ⟨-x, neg_ne_self x, fun y (hyx : y ≠ x) ↦ ?_⟩

@@ -17,9 +17,8 @@ measure) to vector measures through a bilinear pairing.
 Let `E`, `F` be normed vector spaces, and `G` be a Banach space (complete normed vector space).
 We fix a continuous linear pairing `B : E →L[ℝ] F →L[ℝ] G` and an `F`-valued vector measure `μ`
 on a measurable space `X`.
-For an integrable function `f : X → E` with respect to the total variation of the vector measure
-on `X` informally written `μ ∘ B.flip`, we define the `G`-valued integral, which is informally
-written `∫ B (f x) ∂μ x`.
+For an integrable function `f : X → E` with respect to the total variation of `μ`,
+we define the `G`-valued integral, which is informally written `∫ B (f x) ∂μ x`.
 
 Such integral is defined through the general setting `setToFun` which sends a set function to the
 integral of integrable functions, see the file
@@ -54,10 +53,6 @@ The integral against vector measures is defined through the extension process de
 ## Note
 
 Let `μ` be a vector measure and `B` be a continuous linear pairing.
-We often consider integrable functions with respect to the total variation of
-`μ.transpose B` = `μ.mapRange B.flip.toAddMonoidHom B.flip.continuous`, which is the reference
-measure for the pairing integral.
-
 When `f` is not integrable with respect to `μ.variation`, the value of
 `μ.integral B f` is set to `0`. This is an analogous convention to the Bochner integral. However,
 there are cases where a natural definition of the integral as an unconditional sum exists, but `f`
@@ -73,11 +68,10 @@ public section
 open Set MeasureTheory VectorMeasure ContinuousLinearMap Filter Topology
 open scoped ENNReal NNReal
 
-variable {ι X Y E F G H : Type*} {mX : MeasurableSpace X} [MeasurableSpace Y]
+variable {ι X Y E F G : Type*} {mX : MeasurableSpace X} [MeasurableSpace Y]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  [NormedAddCommGroup H] [NormedSpace ℝ H]
 
 namespace MeasureTheory
 
@@ -234,20 +228,20 @@ function with respect to a signed measure. -/
   simp [nnnorm_smul, mul_comm]
 
 /-- `f : X → E` is said to be integrable with respect to `μ` and `B` if it is integrable with
-respect to `(μ.transpose B).variation`. -/
+respect to `μ.variation`. -/
 protected abbrev Integrable (μ : VectorMeasure X F) (f : X → E) : Prop :=
   MeasureTheory.Integrable f μ.variation
 
 /-- `f : X → E` is said to be integrable with respect to `μ` and `B` on `s` if it is integrable with
 respect to the vector measure `μ.restrict s`. When `s` is measurable, this is equivalent to
-integrability with respect to `(μ.transpose B).variation.restrict s`. -/
+integrability with respect to `μ.variation.restrict s`. -/
 protected abbrev IntegrableOn
     (μ : VectorMeasure X F) (f : X → E) (s : Set X) : Prop :=
   (μ.restrict s).Integrable f
 
 /-- The `G`-valued integral of `E`-valued function and the `F`-valued vector measure `μ` with linear
 paring `B : E →L[ℝ] F →L[ℝ] G` . This is set to be `0` if `G` is not complete or if `f` is not
-integrable with respect to `(μ.transpose B).variation`. Notation `∫ᵛ x, f x ∂[B; μ]`.
+integrable with respect to `μ.variation`. Notation `∫ᵛ x, f x ∂[B; μ]`.
 
 When `μ` is `G`-valued, to get the integral in `G` of a real-valued function, take
 `B = ContinousLinearMap.lsmul ℝ ℝ`. Notation `∫ᵛ x, f x ∂•μ`.
@@ -814,7 +808,7 @@ theorem nndist_integral_add_vectorMeasure_le_lintegral
   rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel_left]
   exact enorm_integral_le_lintegral_enorm
 
-variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X} {v : F}
+variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X}
 
 lemma variation_transpose_map_le :
     ((μ.map φ).transpose B).variation ≤ Measure.map φ (μ.transpose B).variation := by
