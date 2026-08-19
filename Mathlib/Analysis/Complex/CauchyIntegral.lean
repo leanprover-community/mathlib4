@@ -577,12 +577,13 @@ theorem circleIntegral_div_sub_of_differentiable_on_off_countable {R : ℝ} {c w
   simpa only [smul_eq_mul, div_eq_inv_mul] using
     circleIntegral_sub_inv_smul_of_differentiable_on_off_countable hs hw hc hd
 
-/--
+/-
 Helper lemma for `hasDerivAt_circleIntegral_sub_inv_smul`: For `w ∈ ball c R`, there is a radius
 `d > 0` such that `ball w d ⊆ ball c R` and all points of `ball w d` keep distance at least `d` from
 the circle `sphere c R`.
 -/
-lemma exists_ball_subset_forall_le_norm_circleMap_sub {R : ℝ} {c w : ℂ} (hw : w ∈ ball c R) :
+private lemma exists_ball_subset_forall_le_norm_circleMap_sub {R : ℝ} {c w : ℂ}
+    (hw : w ∈ ball c R) :
     ∃ d > 0, ball w d ⊆ ball c R ∧ ∀ x ∈ ball w d, ∀ θ : ℝ, d ≤ ‖circleMap c R θ - x‖ := by
   have hR : 0 < R := pos_of_mem_ball hw
   rw [mem_ball] at hw
