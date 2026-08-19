@@ -28,7 +28,7 @@ Compare with `Equiv.Perm.isCoatom_stabilizer` for the case of the permutation gr
   * Formalize the other cases of the classification.
     The next one should be the *imprimitive case*.
 
-## Reference
+## References
 
 The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 *A classification of the maximal subgroups of the finite

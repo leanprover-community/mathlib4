@@ -406,14 +406,22 @@ lemma ιMulti_family_span {I : Type*} [LinearOrder I] (v : I → M) :
 
 end ιMulti_family
 
+lemma subsingleton_of_span_eq_top_of_card_lt {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
+    (hg : Submodule.span R (range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
+    Subsingleton (⋀[R]^i M) := by
+  replace hi : range (ιMulti_family R i g) = ∅ := by
+    rw [range_eq_empty_iff, powersetCard.eq_empty_iff.mpr hi, isEmpty_coe_sort]
+  suffices (⊥ : Submodule R (⋀[R]^i M)) = ⊤ by
+    rwa [subsingleton_iff_bot_eq_top, Submodule.subsingleton_iff] at this
+  rw [← ιMulti_family_span_of_span R hg, hi, Submodule.span_empty]
+
 /-! Linear equivalences in degrees 0 and 1. -/
 
 variable (R M) in
 /-- The linear equivalence ` ⋀[R]^0 M ≃ₗ[R] R`. -/
 @[simps! -isSimp symm_apply]
 noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
-  LinearEquiv.ofLinear
-    (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
+  .ofLinearMap (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
     { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
       map_add' := by intros; simp only [add_smul]
       map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply] }
@@ -431,22 +439,21 @@ variable (R M) in
 /-- The linear equivalence `M ≃ₗ[R] ⋀[R]^1 M`. -/
 @[simps! -isSimp symm_apply]
 noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
-  LinearEquiv.ofLinear
-    (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
-      have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
-        ext i
-        fin_cases i
-        rfl
-      exact
-        { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
-          map_add' := fun m₁ m₂ ↦ by
-            rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
-            simp only [Fin.isValue, AlternatingMap.map_update_add]
-          map_smul' := fun r m ↦ by
-            dsimp
-            rw [h]; nth_rw 2 [h]
-            simp only [Fin.isValue, AlternatingMap.map_update_smul] })
-    (by aesop) (by aesop)
+  .ofLinearMap (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
+    have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
+      ext i
+      fin_cases i
+      rfl
+    exact
+      { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
+        map_add' := fun m₁ m₂ ↦ by
+          rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
+          simp only [Fin.isValue, AlternatingMap.map_update_add]
+        map_smul' := fun r m ↦ by
+          dsimp
+          rw [h]; nth_rw 2 [h]
+          simp only [Fin.isValue, AlternatingMap.map_update_smul] })
+  (by aesop) (by aesop)
 
 @[simp]
 lemma oneEquiv_ιMulti (f : Fin 1 → M) :

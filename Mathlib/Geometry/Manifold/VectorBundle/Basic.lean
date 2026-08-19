@@ -63,15 +63,11 @@ fields, etc.
 
 assert_not_exists mfderiv
 
-open Bundle Set OpenPartialHomeomorph
-
+open Bundle Filter Set OpenPartialHomeomorph
 open Function (id_def)
+open scoped Manifold Topology ContDiff
 
-open Filter
-
-open scoped Manifold Bundle Topology ContDiff
-
-variable {n : ℕ∞ω} {𝕜 B B' F M : Type*} {E : B → Type*}
+variable {n : ℕ∞ω} {𝕜 B F M : Type*} {E : B → Type*}
 
 /-! ### Charted space structure on a fiber bundle -/
 
@@ -106,7 +102,6 @@ fiber `F` is naturally a charted space modelled on `HB.prod F`. -/
 instance FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace F E) :=
   ChartedSpace.comp _ (B × F) _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem FiberBundle.chartedSpace_chartAt (x : TotalSpace F E) :
     chartAt (ModelProd HB F) x =
       (trivializationAt F E x.proj).toOpenPartialHomeomorph ≫ₕ
@@ -134,7 +129,6 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜
 
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
     extChartAt (IB.prod 𝓘(𝕜, F)) x =
       (trivializationAt F E x.proj).toPartialEquiv ≫
@@ -489,7 +483,7 @@ instance Bundle.TotalSpace.isManifold :
 section
 
 variable {F E}
-variable {e e' : Trivialization F (π F E)} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
+variable {e : Trivialization F (π F E)} [MemTrivializationAtlas e]
 
 namespace Bundle.Trivialization
 
