@@ -701,18 +701,15 @@ lemma one_le_div_ae {β : Type*} [Group β] [LE β] [MulRightMono β] (f g : α 
 theorem le_ae_restrict : ae μ ⊓ 𝓟 s ≤ ae (μ.restrict s) := fun _s hs =>
   eventually_inf_principal.2 (ae_imp_of_ae_restrict hs)
 
-@[simp]
-theorem ae_restrict_eq (hs : MeasurableSet s) : ae (μ.restrict s) = ae μ ⊓ 𝓟 s := by
-  ext t
-  simp only [mem_inf_principal, mem_ae_iff, restrict_apply_eq_zero' hs.nullMeasurableSet,
-    compl_ofPred, Classical.not_imp, fun a => and_comm (a := a ∈ s) (b := a ∉ t)]
-  rfl
-
 theorem ae_restrict_eq₀ (hs : NullMeasurableSet s μ) : ae (μ.restrict s) = ae μ ⊓ 𝓟 s := by
   ext t
   simp only [mem_inf_principal, mem_ae_iff, restrict_apply_eq_zero' hs, compl_ofPred,
     Classical.not_imp, fun a => and_comm (a := a ∈ s) (b := a ∉ t)]
   rfl
+
+@[simp]
+theorem ae_restrict_eq (hs : MeasurableSet s) : ae (μ.restrict s) = ae μ ⊓ 𝓟 s :=
+  ae_restrict_eq₀ hs.nullMeasurableSet
 
 theorem ae_restrict_eq_bot {s} : ae (μ.restrict s) = ⊥ ↔ μ s = 0 :=
   ae_eq_bot.trans restrict_eq_zero
