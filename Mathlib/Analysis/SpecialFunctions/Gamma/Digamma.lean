@@ -67,10 +67,9 @@ theorem digamma_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) :
   have (m : ℕ) : s ≠ -m := by simpa using hs (-m)
   have (m : ℕ) : 1 - s ≠ -m := fun _ ↦ hs (1 + m) (by push_cast; grind)
   have := congrArg (logDeriv · s) (funext Gamma_mul_Gamma_one_sub)
-  rw [(by rfl : (fun _ ↦ _ * _) = _ * _), (by rfl : (fun _ ↦ _ / _) = _ / _),
-    logDeriv_mul, logDeriv_div, ← Function.comp_def Gamma, ← Function.comp_def sin,
-    logDeriv_comp, logDeriv_comp] at this
-    <;> try first | fun_prop | grind [sin_eq_zero_iff, ofReal_ne_zero, pi_ne_zero, Gamma_ne_zero]
+  rw [logDeriv_fun_mul, logDeriv_fun_div, ← Function.comp_def Gamma, ← Function.comp_def sin,
+    logDeriv_comp, logDeriv_comp] at this <;>
+    try first | fun_prop | grind [sin_eq_zero_iff, ofReal_ne_zero, pi_ne_zero]
   simp [digamma_def] at this ⊢
   grind
 
