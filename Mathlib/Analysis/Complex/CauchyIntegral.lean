@@ -600,9 +600,9 @@ lemma exists_ball_subset_forall_le_norm_circleMap_sub {R : ℝ} {c w : ℂ} (hw 
 
 omit [CompleteSpace E]
 /--
-**Derivative of the Cauchy integral**: if `g` is circle integrable and `w` lies inside the circle,
-then the Cauchy-type integral `fun w ↦ ∮ z in C(c, R), (z - w)⁻¹ • g z` has derivative
-`∮ z in C(c, R), ((z - w) ^ 2)⁻¹ • g z` at `w`.
+**Derivative of the Cauchy integral**: if `f` is circle integrable and `w` lies inside the circle,
+then the Cauchy-type integral `fun w ↦ ∮ z in C(c, R), (z - w)⁻¹ • f z` has derivative
+`∮ z in C(c, R), ((z - w) ^ 2)⁻¹ • f z` at `w`.
 -/
 theorem hasDerivAt_circleIntegral_sub_inv_smul {f : ℂ → E} {R : ℝ} {c w : ℂ}
     (hg : CircleIntegrable f c R) (hw : w ∈ ball c R) :
