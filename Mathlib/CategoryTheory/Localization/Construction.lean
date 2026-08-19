@@ -203,6 +203,28 @@ def objEquiv : C ≃ W.Localization where
 instance : W.Q.EssSurj where
   mem_essImage Y := ⟨(objEquiv W).symm Y, ⟨Iso.refl _⟩⟩
 
+-- `backward.isDefEq.respectTransparency.instances false` stays here. Measured with all
+-- `respectTransparency` options at their default values.
+--
+-- `induction` builds an application of `Quiver.Path.rec`. The objects have type
+-- `Paths (LocQuiver W)`, so Lean solves the eliminator's type parameter to that synonym and then
+-- needs a `Quiver` instance argument for it. The rejected assignment is
+--   ?inst : Quiver.{uC', uC} (Paths (LocQuiver W))
+--     := instQuiverLocQuiver W : Quiver.{uC', uC} (LocQuiver W)
+-- The direct type check runs at exactly [instances]. There the two types differ by `Paths`, which
+-- is semireducible, so the check fails.
+--
+-- Lean then falls back to synthesis of `Quiver.{uC', uC} (Paths (LocQuiver W))`. Search finds
+-- the path category instance, but at the wrong universe, and rejects its own answer:
+--   result type Quiver.{max uC uC', uC} (Paths (LocQuiver W))
+--   is not definitionally equal to Quiver.{uC', uC} (Paths (LocQuiver W))
+-- Synthesis therefore returns nothing, and the third step, the comparison of the candidate with a
+-- synthesized instance, never runs. `?inst` stays unassigned, so `mkElimApp` receives a coercion
+-- in place of the target and reports `Internal error in mkElimApp`.
+--
+-- The instance that fits is the one on the carrier, visible only if `Paths` unfolds. Instance
+-- search cannot return it, and levels do not use reducibility, so no mark helps. The full
+-- diagnosis and the rejected fix attempts are in `Mathlib/CategoryTheory/PathCategory/Basic.lean`.
 set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all

@@ -290,7 +290,11 @@ theorem monotone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
     AddConstMapClass.rel_map_of_Icc ha fun _x hx _y hy hxy ↦ hf hx hy hxy.le⟩
 
 -- Defeq abuse: there is no `AddConstMapClass _ _ Hᵒᵈ _ _`.
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here and is no longer necessary on
+-- this toolchain. This declaration and `strictAnti_iff_Icc` below both compile with every
+-- `respectTransparency` option at its default.
+-- Checked by breaking the proof on purpose, so that the test can fail. The `OrderDual` defeq abuse
+-- above is still real. Only the option is obsolete.
 theorem antitone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
@@ -304,7 +308,6 @@ theorem strictMono_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid 
   ⟨(StrictMono.strictMonoOn · _), AddConstMapClass.rel_map_of_Icc ha⟩
 
 -- Defeq abuse: there is no `AddConstMapClass _ _ Hᵒᵈ _ _`.
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem strictAnti_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :

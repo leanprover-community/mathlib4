@@ -130,12 +130,13 @@ def homeomorph : I ≃ₜ unitInterval := Homeomorph.ulift
 lemma ext {x y : I.{u}} (h : homeomorph x = homeomorph y) : x = y :=
   homeomorph.injective h
 
-set_option backward.isDefEq.respectTransparency.instances false in
+-- 3 `backward.isDefEq.respectTransparency.instances false` options were here and below.
+-- They are obsolete on this toolchain. The declarations compile with no replacement.
+-- Checked with a poison test, so the test can fail.
 /-- The symmetrization map `TopCat.I ⟶ TopCat.I`. -/
 def symm : I.{u} ⟶ I :=
   ofHom ⟨homeomorph.symm ∘ unitInterval.symm ∘ homeomorph, by fun_prop⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 lemma homeomorph_symm (x : I) :
     homeomorph (symm x) = unitInterval.symm (homeomorph x) := rfl
@@ -143,7 +144,6 @@ lemma homeomorph_symm (x : I) :
 instance : OfNat I.{u} 0 := ⟨homeomorph.symm 0⟩
 instance : OfNat I.{u} 1 := ⟨homeomorph.symm 1⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp] lemma homeomorph_zero : homeomorph (0 : I.{u}) = 0 := by simp [OfNat.ofNat]
 @[simp] lemma homeomorph_one : homeomorph (1 : I.{u}) = 1 := by simp [OfNat.ofNat]
 @[simp] lemma symm_one : I.symm 1 = 0 := by aesop

@@ -686,7 +686,9 @@ lemma eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt
     grind
 
 -- Defeq abuse: `h` should be translated into a statement about `aᵒᵈ`.
-set_option backward.isDefEq.respectTransparency.instances false in
+-- 3 `backward.isDefEq.respectTransparency.instances false` options were here and below.
+-- They are obsolete on this toolchain. The declarations compile with no replacement.
+-- Checked with a poison test, so the test can fail.
 /-- If a function is continuous on the right at a point `a`, then its variations on `Ioi a` and
 on `Ici a` coincide. We give a version relative to a set `s`. -/
 lemma eVariationOn_inter_Ioi_eq_inter_Ici_of_continuousWithinAt
@@ -717,7 +719,6 @@ lemma eVariationOn_Ioc_eq_Icc_of_continuousWithinAt
   have : (𝓝[Ioi a] a).NeBot := nhdsGT_neBot_of_exists_gt ⟨b, hab⟩
   exact eVariationOn_Ioc_eq_Icc_of_continuousWithinAt' h'
 
-set_option backward.isDefEq.respectTransparency.instances false in
 lemma eVariationOn_Ico_eq_Icc_of_continuousWithinAt'
     [TopologicalSpace α] [OrderTopology α] {f : α → M} {a b : α}
     [h : (𝓝[<] a).NeBot] (h' : ContinuousWithinAt f (Iic a) a) :
@@ -725,7 +726,6 @@ lemma eVariationOn_Ico_eq_Icc_of_continuousWithinAt'
   rw [← comp_ofDual f, ← comp_ofDual f, ← Ioc_toDual, ← Icc_toDual]
   exact eVariationOn_Ioc_eq_Icc_of_continuousWithinAt' h'
 
-set_option backward.isDefEq.respectTransparency.instances false in
 lemma eVariationOn_Ico_eq_Icc_of_continuousWithinAt
     [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α] {f : α → M} {a b : α}
     (h' : ContinuousWithinAt f (Iic a) a) :

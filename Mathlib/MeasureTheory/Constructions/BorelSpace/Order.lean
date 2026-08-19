@@ -75,7 +75,9 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
     exact GenerateMeasurable.basic _ isOpen_Iio
 
 -- Applying an instance about `α` to `αᵒᵈ`.
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
+-- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
+-- the test can fail.
 theorem borel_eq_generateFrom_Ioi : borel α = .generateFrom (range Ioi) :=
   @borel_eq_generateFrom_Iio αᵒᵈ _ (by infer_instance : SecondCountableTopology α) _ _
 

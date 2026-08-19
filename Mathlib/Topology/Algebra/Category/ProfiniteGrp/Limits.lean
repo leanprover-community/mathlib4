@@ -94,7 +94,9 @@ def toLimit (P : ProfiniteGrp.{u}) : P ⟶ limit (diagram P) :=
   continuous_toFun := toLimitFun_continuous P }
 
 -- Defeq abuse, see `change` below.
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
+-- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
+-- the test can fail.
 /-- An auxiliary result, superseded by `toLimit_surjective` -/
 theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   apply dense_iff_inter_open.mpr

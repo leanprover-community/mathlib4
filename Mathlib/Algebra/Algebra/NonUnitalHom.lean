@@ -102,7 +102,9 @@ variable [Semiring R] [Semiring S] {φ : R →+* S}
 
 -- This needs `DFunLike.coe φ = DFunLike.coe (φ : R →* S)` to hold at `instances` transparency,
 -- which seems reasonable but isn't true at the moment.
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
+-- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
+-- the test can fail.
 -- see Note [lower instance priority]
 instance (priority := 100) {F R S A B : Type*}
     {_ : Semiring R} {_ : Semiring S} {φ : R →+* S}

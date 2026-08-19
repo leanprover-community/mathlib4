@@ -155,7 +155,9 @@ theorem isLUB_iff_of_subset_of_subset_closure {α : Type*} [TopologicalSpace α]
     upperBounds_mono_set hst
 
 -- Defeq abuse: `hst` and `hts` should be translated into statements about the order dual.
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
+-- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
+-- the test can fail.
 theorem isGLB_iff_of_subset_of_subset_closure {α : Type*} [TopologicalSpace α] [Preorder α]
     [ClosedIciTopology α] {s t : Set α} (hst : s ⊆ t) (hts : t ⊆ closure s) {x : α} :
     IsGLB s x ↔ IsGLB t x :=

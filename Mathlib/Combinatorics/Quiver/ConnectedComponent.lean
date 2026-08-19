@@ -183,6 +183,25 @@ lemma stronglyConnectedComponent_singleton_iff (v : V) :
 
 -- Defeq abuse: `h` does not apply to `a` and `b`, as `a b : Symmetrify V` and this leaks into
 -- `p`, which has type `@Path V inst✝ a b` which makes no sense at `instances` transparency.
+-- `backward.isDefEq.respectTransparency.instances false` stays here. Measured with all
+-- `respectTransparency` options at their default values. This is not the `Paths` universe problem
+-- of the other quiver files. Here the two instances really are different.
+--
+-- `obtain ⟨p⟩ := h a b` gives a path `p` of the plain quiver on `V`. The goal is about
+-- `Symmetrify V`, so `induction p` solves the eliminator's type parameter to `Symmetrify V` and
+-- needs a `Quiver` instance argument for it. The rejected assignment is
+--   ?inst : Quiver.{u_3, u_2} (Symmetrify V) := inst✝ : Quiver.{u_3, u_2} V
+-- The direct type check runs at exactly [instances]. There `Symmetrify V =?= V` fails, because
+-- `Symmetrify` is semireducible.
+--
+-- Lean then falls back to synthesis, which succeeds here and answers `symmetrifyQuiver V`. The
+-- third step compares the candidate with that answer and fails:
+--   the rejected candidate value inst✝
+--   is not definitionally equal to the synthesized instance symmetrifyQuiver V
+-- The two are different quivers. `symmetrifyQuiver` has `Hom a b = (a ⟶ b) ⊕ (b ⟶ a)`. The
+-- candidate is the correct one, because `p` is a path of the plain quiver, and the motive uses
+-- the symmetrified quiver on its own. Instance search cannot know this, so no mark helps. Without
+-- the option Lean reports `Internal error in mkElimApp`.
 set_option backward.isDefEq.respectTransparency.instances false in
 lemma IsStronglyConnected.isStronglyConnected_symmetrify (h : IsStronglyConnected V) :
     IsStronglyConnected (Symmetrify V) := by

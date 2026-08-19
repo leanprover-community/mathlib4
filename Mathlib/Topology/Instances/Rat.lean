@@ -120,7 +120,9 @@ set_option linter.style.whitespace false in -- linter false positive
 lemma nndist_eq (p q : ℚ≥0) : nndist p q = nndist (p : ℚ) (q : ℚ) := rfl
 
 -- Defeq abuse, applying instances about `Subtype` to `ℚ≥0`.
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
+-- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
+-- the test can fail.
 instance : IsTopologicalSemiring ℚ≥0 where
   toContinuousAdd := continuousAdd_induced Nonneg.coeRingHom
   toContinuousMul := continuousMul_induced Nonneg.coeRingHom

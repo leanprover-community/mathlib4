@@ -42,7 +42,9 @@ noncomputable instance : StarAddMonoid (A ⊗[R] B) where
 
 -- Would require `DFunLike.coe (starRingEnd R) = star` at `instances` transparency, which sounds
 -- reasonable but does not hold at the moment.
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
+-- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
+-- the test can fail.
 instance : StarModule R (A ⊗[R] B) where
   star_smul := map_smulₛₗ _
 

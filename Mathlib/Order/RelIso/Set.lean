@@ -36,7 +36,10 @@ theorem map_inf [SemilatticeInf α] [LinearOrder β] [FunLike F β α]
   (StrictMono.monotone fun _ _ => map_rel a).map_inf m n
 
 -- Defeq abuse: should mediate between `β` and `βᵒᵈ` explicitly
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here and is no longer necessary on
+-- this toolchain. The declaration compiles with every `respectTransparency` option at its default.
+-- Checked by breaking the proof on purpose, so that the test can fail. The `OrderDual` defeq abuse
+-- above is still real. Only the option is obsolete.
 theorem map_sup [SemilatticeSup α] [LinearOrder β] [FunLike F β α]
     [RelHomClass F (· > ·) (· > ·)] (a : F) (m n : β) :
     a (m ⊔ n) = a m ⊔ a n :=

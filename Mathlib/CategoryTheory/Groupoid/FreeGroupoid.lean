@@ -82,6 +82,28 @@ theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
     Quiver.Path.reverse_comp, Quiver.reverse_reverse, Quiver.Path.reverse_toPath,
     Quiver.Path.comp_assoc] using this
 
+-- `backward.isDefEq.respectTransparency.instances false` stays here. Measured with all
+-- `respectTransparency` options at their default values.
+--
+-- `induction` builds an application of `Quiver.Path.rec`. The objects have type
+-- `Paths (Symmetrify V)`, so Lean solves the eliminator's type parameter to that synonym and then
+-- needs a `Quiver` instance argument for it. The rejected assignment is
+--   ?inst : Quiver.{v, u} (Paths (Symmetrify V))
+--     := symmetrifyQuiver V : Quiver.{v, u} (Symmetrify V)
+-- The direct type check runs at exactly [instances]. There the two types differ by `Paths`, which
+-- is semireducible, so the check fails.
+--
+-- Lean then falls back to synthesis of `Quiver.{v, u} (Paths (Symmetrify V))`. Search finds
+-- the path category instance, but at the wrong universe, and rejects its own answer:
+--   result type Quiver.{max u v, u} (Paths (Symmetrify V))
+--   is not definitionally equal to Quiver.{v, u} (Paths (Symmetrify V))
+-- Synthesis therefore returns nothing, and the third step, the comparison of the candidate with a
+-- synthesized instance, never runs. `?inst` stays unassigned, so `mkElimApp` receives a coercion
+-- in place of the target and reports `Internal error in mkElimApp`.
+--
+-- The instance that fits is the one on the carrier, visible only if `Paths` unfolds. Instance
+-- search cannot return it, and levels do not use reducibility, so no mark helps. The full
+-- diagnosis and the rejected fix attempts are in `Mathlib/CategoryTheory/PathCategory/Basic.lean`.
 set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency.types false in
 open Relation in
@@ -180,6 +202,10 @@ def lift (φ : V ⥤q V') : Quiver.FreeGroupoid V ⥤ V' :=
     symm
     apply Groupoid.comp_inv
 
+-- `backward.isDefEq.respectTransparency.instances false` stays here too, but for another reason.
+-- This declaration runs no `induction`, so it is not the universe problem above. Without the
+-- option the last `rw` line reports `Tactic `rewrite` failed: Did not find an occurrence`. That
+-- failure is not analysed yet.
 set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 theorem lift_spec (φ : V ⥤q V') : of V ⋙q (lift φ).toPrefunctor = φ := by

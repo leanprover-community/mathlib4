@@ -66,7 +66,9 @@ def pullbackTop (f : X ⟶ Y) : (pullback f).obj ⊤ ≅ ⊤ :=
   iso_of_both_ways (leTop _)
     (homMk (pullback.lift f (𝟙 _) (by simp)) (pullback.lift_snd _ _ _))
 
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
+-- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
+-- the test can fail.
 /-- There is a morphism from `⊤ : MonoOver A` to the pullback of a monomorphism along itself;
 as the category is thin this is an isomorphism. -/
 def topLEPullbackSelf {A B : C} (f : A ⟶ B) [Mono f] :

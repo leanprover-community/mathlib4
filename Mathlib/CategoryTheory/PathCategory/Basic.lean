@@ -29,6 +29,7 @@ section
 
 /-- A type synonym for the category of paths in a quiver.
 -/
+@[implicit_reducible]
 def Paths (V : Type u₁) : Type u₁ := V
 
 instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)⟩
@@ -54,7 +55,75 @@ def of : V ⥤q Paths V where
 
 variable {V}
 
--- TODO: regressed after removing respectTransparency
+-- Severity High
+-- Four `backward.isDefEq.respectTransparency.instances false` options stay in this file. No
+-- acceptable fix was found for them. Only `induction_fixed_target` below is repaired, with a
+-- lemma swap that needs no option.
+--
+-- Diagnosis. Traced with every `respectTransparency` option at its default value, plus
+-- `diagnostics true`, `trace.diagnostics true`, `trace.Meta.isDefEq.assign.checkTypes true`,
+-- `trace.Meta.synthInstance true` and `pp.universes true`.
+--
+-- The cause is a universe mismatch, not a reducibility gap. `induction f` builds an application
+-- of `Quiver.Path.rec`. The binders `a` and `b` have type `Paths V`, so Lean solves the type
+-- parameter of the eliminator to `Paths V`. The eliminator then needs an instance argument
+-- `?inst : Quiver.{v₁, u₁} (Paths V)`. The only candidate in context is the ambient
+-- `inst✝ : Quiver.{v₁, u₁} V`. Lean checks that assignment at exactly [instances], where
+-- `Paths V =?= V` is false, because `Paths` is semireducible. Lean then falls back to instance
+-- search.
+--
+-- The search finds a result, but at the wrong universe. The chain is `categoryPaths`, then
+-- `Category.toCategoryStruct`, then `CategoryStruct.toQuiver`. Because `categoryPaths` is a
+-- `Category.{max u₁ v₁}`, the result is `Quiver.{max u₁ v₁, u₁} (Paths V)`. Lean reports:
+--   result type Quiver.{max u₁ v₁, u₁} (Paths V)
+--   is not definitionally equal to Quiver.{v₁, u₁} (Paths V)
+-- There is no constraint `u₁ ≤ v₁`, so the two levels are different. The search returns nothing,
+-- and `?inst` stays unassigned.
+--
+-- With `?inst` open, Lean cannot match the type of the target `f`. It compares
+-- `Quiver.Hom.{max u₁ v₁, u₁} a b` with `Quiver.Path.{v₁, u₁} ?m a`, fails, and inserts a
+-- coercion metavariable. `mkElimApp` calls `Term.ensureHasType` on each target, so it receives
+-- that coercion metavariable in place of `f`. Its final check `targets.contains motiveArg` then
+-- fails and raises `Internal error in mkElimApp: Expected first 2 arguments of motive in
+-- conclusion to be one of the targets`.
+--
+-- So `Paths V` carries two `Quiver` instances at two different universes. The correct one here is
+-- the ambient `Quiver.{v₁, u₁} V`, which is reachable only by unfolding `Paths`. Instance search
+-- cannot return it, because it finds the category instance first.
+--
+-- Why no fix is applied. No reducibility mark can help, because level unification does not use
+-- reducibility. Measured and rejected: `implicit_reducible` on `Paths`,
+-- `induction (f : Quiver.Path _ _)`, `induction f using Quiver.Path.rec` with no arguments, a
+-- named binder in place of `_`, and `maxSynthPendingDepth` from 3 up to 32.
+--
+-- Two edits do make the four declarations compile, but both are rejected on purpose:
+--   `induction f using @Quiver.Path.rec V _ X`, and a local
+--   `let : Quiver (Paths V) := inferInstanceAs (Quiver V)`.
+-- The first means the same as `induction f`. It only changes which metavariables `mkElimApp`
+-- creates, it is not visible in the error message, and it breaks if a binder is renamed. The
+-- second shadows the path quiver with the arrow quiver, so `⟶` changes meaning in the rest of the
+-- proof. Neither edit says anything about the mathematics, so neither is a fix. This family needs
+-- a change in Lean, not in Mathlib.
+--
+-- Note on the Lean diagnostic. It prints
+-- `Workaround: set_option backward.isDefEq.respectTransparency.instanceSearchTypes false`, but
+-- that option changes nothing here. The option that changed the behaviour is
+-- `respectTransparency.instances`. The metavariable comes from `mkElimApp` and not from instance
+-- search, so the hint names the wrong option.
+--
+-- The same internal error appears in `Groupoid/FreeGroupoid.lean`,
+-- `Localization/Construction.lean`, `Localization/StructuredArrow.lean` and
+-- `Combinatorics/Quiver/ConnectedComponent.lean`. Each of them puts a type synonym over a quiver
+-- and then runs `induction` or `cases` through the synonym.
+--
+-- Potential fix: use a one-field structure for `Paths`; induction needs a bit of a dance.
+/-
+  intro b f
+  cases a
+  cases b
+  dsimp [Quiver.Hom] at f
+  induction f with
+-/
 set_option backward.isDefEq.respectTransparency.instances false in
 /-- To prove a property on morphisms of a path category with given source `a`, it suffices to
 prove it for the identity and prove that the property is preserved under composition on the right
@@ -68,7 +137,13 @@ lemma induction_fixed_source {a : Paths V} (P : ∀ {b : Paths V}, (a ⟶ b) →
   | nil => exact id
   | cons _ w h => exact comp _ w h
 
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here. The `zero` branch used
+-- `cases f`, which needs the same rejected assignment as the note above,
+--   ?inst : Quiver.{v₁, u₁} (Paths V) := inst✝ : Quiver.{v₁, u₁} V,
+-- with the same failure of the direct check at [instances] and the same empty fallback synthesis.
+-- The branch now uses `Quiver.Path.eq_of_length_zero` and `Quiver.Path.eq_nil_of_length_zero`
+-- instead. Both state facts about paths, and neither runs an eliminator through the synonym, so
+-- the proof needs no option and no reducibility mark.
 set_option backward.isDefEq.respectTransparency false in
 /-- To prove a property on morphisms of a path category with given target `b`, it suffices to prove
 it for the identity and prove that the property is preserved under composition on the left
@@ -80,9 +155,10 @@ lemma induction_fixed_target {b : Paths V} (P : ∀ {a : Paths V}, (a ⟶ b) →
   intro a f
   generalize h : f.length = k
   induction k generalizing f a with
-  | zero => cases f with
-    | nil => exact id
-    | cons _ _ => simp at h
+  | zero =>
+    obtain rfl := Quiver.Path.eq_of_length_zero f h
+    obtain rfl := Quiver.Path.eq_nil_of_length_zero f h
+    exact id
   | succ k h' =>
     obtain ⟨c, f, q, hq, rfl⟩ := f.eq_toPath_comp_of_length_eq_succ h
     exact comp _ _ (h' _ hq)

@@ -50,7 +50,9 @@ instance : Category.{w, w + 1} CompactlyGenerated.{u, w} :=
   inferInstanceAs <| Category (InducedCategory _ toTop)
 
 -- Would need to have a new type synonym for the `FunLike` instance for the induced category.
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
+-- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
+-- the test can fail.
 instance : ConcreteCategory.{w} CompactlyGenerated.{u, w} (C(·, ·)) :=
   inferInstanceAs <| ConcreteCategory (InducedCategory _ toTop) _
 

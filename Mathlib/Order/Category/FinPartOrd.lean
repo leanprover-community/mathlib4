@@ -54,7 +54,9 @@ instance largeCategory : LargeCategory FinPartOrd :=
   inferInstanceAs <| Category (InducedCategory _ toPartOrd)
 
 -- Would need to have a new type synonym for the `FunLike` instance for the induced category.
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
+-- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
+-- the test can fail.
 instance concreteCategory : ConcreteCategory FinPartOrd (· →o ·) :=
   inferInstanceAs <| ConcreteCategory (InducedCategory _ toPartOrd) _
 

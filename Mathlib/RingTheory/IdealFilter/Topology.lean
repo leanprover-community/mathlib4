@@ -126,7 +126,9 @@ lemma mem_nhds_zero_iff {s : Set (WithIdealFilter F)} :
 
 -- Defeq abuse: uses `AddSubmonoidClass (Submodule A A) A` as
 -- `AddSubmonoidClass (Submodule A A) (WithIdealFilter F)`.
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
+-- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
+-- the test can fail.
 /-- The topology is linear in the sense that `𝓝 0` has a basis of ideals. -/
 instance instIsLinearTopology : IsLinearTopology (WithIdealFilter F) (WithIdealFilter F) :=
   IsLinearTopology.mk_of_hasBasis' (R := (WithIdealFilter F))

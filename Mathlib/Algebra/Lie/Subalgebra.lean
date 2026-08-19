@@ -548,7 +548,9 @@ variable {K K'} in
 
 variable (R L)
 
-set_option backward.isDefEq.respectTransparency.instances false in
+-- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
+-- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
+-- the test can fail.
 instance wellFoundedGT_of_noetherian [IsNoetherian R L] : WellFoundedGT (LieSubalgebra R L) :=
   RelHomClass.isWellFounded (⟨toSubmodule, @fun _ _ h ↦ h⟩ : _ →r (· > ·))
 

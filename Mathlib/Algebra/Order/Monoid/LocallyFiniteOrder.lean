@@ -180,12 +180,31 @@ def LocallyFiniteOrder.orderMonoidHom (G : Type*) [CommGroup G] [LinearOrder G]
   have : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
   ⟨(orderAddMonoidHom (Additive G)).toMultiplicative, (orderAddMonoidHom (Additive G)).2⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
+-- Severity High
+-- `backward.isDefEq.respectTransparency.instances false` was here. The fix replaces
+-- `‹LocallyFiniteOrder G›` with `inferInstanceAs (LocallyFiniteOrder G)`. The proof needs no option
+-- and no reducibility attribute.
+--
+-- Diagnosis. `orderAddMonoidHom_strictMono` needs an argument of type
+-- `LocallyFiniteOrder (Additive G)`. The elaborator offers the ambient `inst✝` for it, which has
+-- type `LocallyFiniteOrder G`. The type check for that argument runs at [instances], and
+-- `Additive G =?= G` holds only at [default]. The check fails, so Lean falls back to instance
+-- search. Search returns `this`, the variable of the `let` line. The fallback then compares `inst✝`
+-- with `this` at [default]. That comparison fails as well. `‹T›` expands to `show T by assumption`,
+-- and Lean postpones a `by` block. The value of `this` is therefore still an unassigned
+-- metavariable, and Lean cannot assign it here. Lean next tries the carrier `G`, where no
+-- `AddCommGroup G` instance exists. Neither carrier closes, so the two attempts repeat 60000 times.
+-- That repetition is the `(deterministic) timeout at whnf`.
+--
+-- The fix. `inferInstanceAs` needs no `by` block, so `this` holds a real value. The comparison is
+-- then `inst✝ =?= inst✝`, and it closes. The binders `a` and `b` become `_`, because the new proof
+-- term does not name them. `implicit_reducible` on `Additive` does not help, because the failed
+-- check runs at [instances].
 lemma LocallyFiniteOrder.orderMonoidHom_strictMono {G : Type*} [CommGroup G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] :
     StrictMono (orderMonoidHom G) :=
-  let : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
-  fun a b h ↦ orderAddMonoidHom_strictMono h
+  let : LocallyFiniteOrder (Additive G) := inferInstanceAs (LocallyFiniteOrder G)
+  fun _ _ h ↦ orderAddMonoidHom_strictMono h
 
 open scoped WithZero in
 /-- Any nontrivial linearly ordered abelian group with zero that is locally finite
