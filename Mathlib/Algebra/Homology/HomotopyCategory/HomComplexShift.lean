@@ -53,7 +53,6 @@ def rightShift (a n' : ℤ) (hn' : n' + a = n) : Cochain K (L⟦a⟧) n' :=
   Cochain.mk (fun p q hpq => γ.v p (p + n) rfl ≫
     (L.shiftFunctorObjXIso a q (p + n) (by lia)).inv)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rightShift_v (a n' : ℤ) (hn' : n' + a = n) (p q : ℤ) (hpq : p + n' = q)
     (p' : ℤ) (hp' : p + n = p') :
     (γ.rightShift a n' hn').v p q hpq = γ.v p p' hp' ≫
@@ -116,6 +115,7 @@ lemma shift_v (a : ℤ) (p q : ℤ) (hpq : p + n = q) (p' q' : ℤ)
   subst hp' hq'
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma shift_v' (a : ℤ) (p q : ℤ) (hpq : p + n = q) :
     (γ.shift a).v p q hpq = γ.v (p + a) (q + a) (by lia) := by
@@ -434,7 +434,6 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, rightShift_zero, smul_zero]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma δ_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n)
     (m m' : ℤ) (hm' : m' + a = m) :
     δ n m (γ.rightUnshift n hn) = a.negOnePow • (δ n' m' γ).rightUnshift m hm' := by
@@ -469,7 +468,6 @@ lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, leftShift_zero, smul_zero]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma δ_leftUnshift {a n' : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n')
     (m m' : ℤ) (hm' : m + a = m') :
     δ n m (γ.leftUnshift n hn) = a.negOnePow • (δ n' m' γ).leftUnshift m hm' := by
@@ -494,7 +492,6 @@ lemma δ_shift (a m : ℤ) :
   · rw [δ_shape _ _ hnm, δ_shape _ _ hnm, shift_zero, smul_zero]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma leftShift_rightShift (a n' : ℤ) (hn' : n' + a = n) :
     (γ.rightShift a n' hn').leftShift a n hn' =
       (a * n + (a * (a - 1)) / 2).negOnePow • γ.shift a := by
@@ -583,6 +580,7 @@ def equivHomShift :
     (K ⟶ L⟦n⟧) ≃+ Cocycle K L n :=
   (equivHom _ _).trans (rightShiftAddEquiv _ _ _ (zero_add n)).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma equivHomShift_comp {K' : CochainComplex C ℤ}
     (g : K' ⟶ K) (f : K ⟶ L⟦n⟧) :
     equivHomShift (g ≫ f) = Cocycle.precomp (equivHomShift f) g := by
@@ -594,6 +592,7 @@ lemma equivHomShift_symm_precomp
     equivHomShift.symm (z.precomp g) = g ≫ equivHomShift.symm z :=
   equivHomShift.injective (by simp [equivHomShift_comp])
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma equivHomShift_comp_shift (f : K ⟶ L⟦n⟧) {L' : CochainComplex C ℤ} (g : L ⟶ L') :
     equivHomShift (f ≫ g⟦n⟧') = Cocycle.postcomp (equivHomShift f) g := by
   ext p q rfl

@@ -103,7 +103,7 @@ private theorem tendstoInDistribution_inv_sqrt_mul_var_mul_sum_sub
   have mX0 := (hident 0).aemeasurable_fst
   have intX0 : Integrable (X 0) P := memLp_one_iff_integrable.1 <|
     (memLp_two_of_variance_ne_zero mX0.aestronglyMeasurable hX).mono_exponent (by simp)
-  have this (n : ℕ) ω : (√(n * Var[X 0; P]))⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * P[X 0]) =
+  have (n : ℕ) ω : (√(n * Var[X 0; P]))⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * P[X 0]) =
       (√n)⁻¹ * ∑ k ∈ Finset.range n, (X k ω - P[X 0]) / √Var[X 0; P] := by
     rw [← Finset.sum_div, Finset.sum_sub_distrib]
     simp [field]

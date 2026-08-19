@@ -22,7 +22,6 @@ is again finitely generated.
 public section
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 
@@ -76,7 +75,7 @@ end Submodule
 
 section ModuleAndAlgebra
 
-variable (R A B M N : Type*)
+variable (R A M N : Type*)
 
 instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
     [Module R M] [h : Module.Finite R M] : Module.Finite A (TensorProduct R A M) := by
@@ -161,7 +160,7 @@ private lemma RingHom.Finite.tensorProductMap_id
     [Algebra R S] [Algebra R T] [Algebra R S']
     {f : S →ₐ[R] S'} (Hf : f.Finite) :
     (Algebra.TensorProduct.map f (AlgHom.id R T)).toRingHom.Finite := by
-  letI := f.toRingHom.toAlgebra
+  let := f.toRingHom.toAlgebra
   have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
   have : Module.Finite S S' := finite_algebraMap.mp Hf
   change (Algebra.TensorProduct.map (Algebra.ofId S S') (AlgHom.id R T)).Finite

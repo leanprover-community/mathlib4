@@ -16,13 +16,13 @@ This file defines basic scalar actions on extended nonnegative reals, showing th
 `MulAction`s, `DistribMulAction`s, `Module`s and `Algebra`s restrict from `ℝ≥0∞` to `ℝ≥0`.
 -/
 
-@[expose] public section
+public section
 
-open Set NNReal ENNReal
+open NNReal ENNReal
 
 namespace ENNReal
 
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
+variable {a b c : ℝ≥0∞} {r : ℝ≥0}
 
 -- TODO: generalize some of these to `WithTop α`
 section Actions
@@ -58,6 +58,7 @@ noncomputable instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ≥0∞ M]
 noncomputable instance {M : Type*} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
   fast_instance% Module.compHom M ofNNRealHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An `Algebra` over `ℝ≥0∞` restricts to an `Algebra` over `ℝ≥0`. -/
 noncomputable instance {A : Type*} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra ℝ≥0 A where
   commutes' r x := by simp [Algebra.commutes]
