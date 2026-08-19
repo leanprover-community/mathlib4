@@ -117,9 +117,8 @@ end ring
 
 section field
 
-variable {K L M : Type*}
+variable {K L : Type*}
 variable [Field K] [LieRing L] [LieAlgebra K L]
-variable [AddCommGroup M] [Module K M] [LieRingModule L M]
 
 variable [Module.Finite K L]
 variable (Φ : LinearMap.BilinForm K L) (hΦ_nondeg : Φ.Nondegenerate)

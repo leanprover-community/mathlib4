@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 open Category Limits MonoidalCategory CartesianMonoidalCategory
 
-variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] {X X' Y Y' Z : C}
+variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] {Y : C}
 
 instance CartesianMonoidalCategory.isLeftAdjoint_prod_functor
     (A : C) [Closed A] :

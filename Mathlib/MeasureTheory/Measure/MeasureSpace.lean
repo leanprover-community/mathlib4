@@ -91,13 +91,13 @@ open Filter hiding map
 open Function MeasurableSpace Topology Filter ENNReal NNReal Interval MeasureTheory
 open scoped symmDiff
 
-variable {α β γ δ ι R R' : Type*}
+variable {α β γ ι R R' : Type*}
 
 namespace MeasureTheory
 
 section
 
-variable {m : MeasurableSpace α} {μ μ₁ μ₂ : Measure α} {s s₁ s₂ t : Set α}
+variable {m : MeasurableSpace α} {μ : Measure α} {s s₁ s₂ t : Set α}
 
 instance ae_isMeasurablyGenerated : IsMeasurablyGenerated (ae μ) :=
   ⟨fun _s hs =>
@@ -820,7 +820,7 @@ end OuterMeasure
 section
 
 variable {m0 : MeasurableSpace α} {mβ : MeasurableSpace β} [MeasurableSpace γ]
-variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : Measure α} {s s' t : Set α}
+variable {μ μ₁ μ₂ ν ν' : Measure α} {s t : Set α}
 namespace Measure
 
 /-- If `u` is a superset of `t` with the same (finite) measure (both sets possibly non-measurable),

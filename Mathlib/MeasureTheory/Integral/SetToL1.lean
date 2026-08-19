@@ -607,7 +607,7 @@ theorem norm_setToL1_le' (hT : DominatedFinMeasAdditive μ T C) : ‖setToL1 hT�
 
 theorem setToL1_lipschitz (hT : DominatedFinMeasAdditive μ T C) :
     LipschitzWith (Real.toNNReal C) (setToL1 hT) :=
-  (setToL1 hT).lipschitz.weaken (norm_setToL1_le' hT)
+  (setToL1 hT).lipschitzWith.weaken (norm_setToL1_le' hT)
 
 /-- If `fs i → f` in `L1`, then `setToL1 hT (fs i) → setToL1 hT f`. -/
 theorem tendsto_setToL1 (hT : DominatedFinMeasAdditive μ T C) (f : α →₁[μ] E) {ι}

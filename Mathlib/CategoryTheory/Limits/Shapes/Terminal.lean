@@ -42,7 +42,7 @@ abbrev HasTerminal :=
 
 section Univ
 
-variable (X : C) {F₁ : Discrete.{w} PEmpty ⥤ C} {F₂ : Discrete.{w'} PEmpty ⥤ C}
+variable {F₁ : Discrete.{w} PEmpty ⥤ C} {F₂ : Discrete.{w'} PEmpty ⥤ C}
 
 @[to_dual]
 theorem hasTerminalChangeDiagram (h : HasLimit F₁) : HasLimit F₂ :=
