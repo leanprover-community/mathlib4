@@ -38,6 +38,13 @@ for example, the circle is not defeq to `{z : ℂ | abs z = 1}`, which is the ke
 considered as a homomorphism from `ℂ` to `ℝ`, nor is it defeq to `{z : ℂ | normSq z = 1}`, which
 is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
 
+## TODO
+
+Provide `MeasurableSpace` and `BorelSpace` instances for `Circle`, inherited from the ambient
+subtype.  They cannot be stated here, since this file does not import the measure-theoretic
+hierarchy, so they would need a new file -- mirroring `Mathlib/MeasureTheory/Group/AddCircle.lean`,
+which plays this role for the additive circle.
+
 -/
 
 @[expose] public section
@@ -69,7 +76,12 @@ lemma coe_injective : Injective ((↑) : Circle → ℂ) := fun _ _ ↦ ext
 -- Not simp because `SetLike.coe_eq_coe` already proves it
 lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
-lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
+@[simp] lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
+
+@[simp] lemma nnnorm_coe (z : Circle) : ‖(z : ℂ)‖₊ = 1 := NNReal.coe_injective z.norm_coe
+
+@[simp] lemma enorm_coe (z : Circle) : ‖(z : ℂ)‖ₑ = 1 := by
+  rw [enorm_eq_nnnorm, z.nnnorm_coe, ENNReal.coe_one]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_norm_sq]
@@ -202,6 +214,22 @@ protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace �
     (u : Circle) (v : E) :
     ‖u • v‖ = ‖v‖ := by
   rw [smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]
+
+@[simp]
+protected lemma nnnorm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
+    (u : Circle) (v : E) :
+    ‖u • v‖₊ = ‖v‖₊ := by
+  rw [smul_def, nnnorm_smul, u.nnnorm_coe, one_mul]
+
+@[simp]
+protected lemma enorm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
+    (u : Circle) (v : E) :
+    ‖u • v‖ₑ = ‖v‖ₑ := by
+  rw [enorm_eq_nnnorm, enorm_eq_nnnorm, u.nnnorm_smul]
+
+instance {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E] : IsIsometricSMul Circle E :=
+  ⟨fun u ↦ Isometry.of_dist_eq fun x y ↦ by
+    rw [dist_eq_norm, dist_eq_norm, ← smul_sub, Circle.norm_smul]⟩
 
 end Circle
 
