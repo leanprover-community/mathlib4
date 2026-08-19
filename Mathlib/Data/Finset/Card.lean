@@ -448,7 +448,9 @@ lemma card_le_card_of_surjective {f : s → t} (hf : f.Surjective) : #t ≤ #s :
   rcases t.eq_empty_or_nonempty with rfl | ⟨b₀, hb₀⟩
   · simp
   · classical apply card_le_card_of_surjOn (fun a ↦ if ha : a ∈ s then (f ⟨a, ha⟩ : β) else b₀)
-    grind [Set.SurjOn, hf ⟨_, _⟩]
+    intro b hb
+    obtain ⟨⟨a, ha⟩, hab⟩ := hf ⟨b, hb⟩
+    grind
 
 grind_pattern card_le_card_of_surjective => f.Surjective, #s
 grind_pattern card_le_card_of_surjective => f.Surjective, #t
