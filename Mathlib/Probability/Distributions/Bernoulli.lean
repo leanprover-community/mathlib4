@@ -205,7 +205,7 @@ section HasLaw
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
 theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M]
-    [MeasurableSpace M] [MeasurableSingletonClass M] (c : M) {s : Set Ω}
+    [MeasurableSpace M] (c : M) {s : Set Ω}
     (hs : NullMeasurableSet s P) :
     HasLaw (s.indicator (fun _ ↦ c)) (bernoulliMeasure c 0 ⟨P.real s, by simp⟩) P where
   aemeasurable := aemeasurable_const.indicator₀ hs
@@ -220,7 +220,7 @@ theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [
         ENNReal.ofReal_sub]
 
 theorem hasLaw_indicator_one_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M] [One M]
-    [MeasurableSpace M] [MeasurableSingletonClass M] {s : Set Ω}
+    [MeasurableSpace M] {s : Set Ω}
     (hs : NullMeasurableSet s P) :
     HasLaw (s.indicator (1 : Ω → M)) (bernoulliMeasure 1 0 ⟨P.real s, by simp⟩) P :=
   hasLaw_indicator_bernoulliMeasure 1 hs
