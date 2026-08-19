@@ -56,6 +56,44 @@ variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 #guard_msgs in
 #check T% X
 
+section
+
+variable {F₁ F₂ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  {B : Type*} [TopologicalSpace B]
+  (V₁ : B → Type*) [TopologicalSpace (TotalSpace F₁ V₁)]
+  [∀ x, AddCommGroup (V₁ x)] [∀ x, Module 𝕜 (V₁ x)]
+  [∀ x, TopologicalSpace (V₁ x)] [∀ x, IsTopologicalAddGroup (V₁ x)] [∀ x, ContinuousSMul 𝕜 (V₁ x)]
+  [FiberBundle F₁ V₁]
+  (V₂ : B → Type*) [TopologicalSpace (TotalSpace F₂ V₂)]
+  [∀ x, AddCommGroup (V₂ x)] [∀ x, Module 𝕜 (V₂ x)]
+  [∀ x, TopologicalSpace (V₂ x)] [∀ x, IsTopologicalAddGroup (V₂ x)] [∀ x, ContinuousSMul 𝕜 (V₂ x)]
+  [FiberBundle F₂ V₂]
+  (b : M → B)
+
+-- Pullback bundle
+variable {v₁ : Π x : M, V₁ (b x)}
+
+/-- info: (T% v₁) : M → TotalSpace F₁ V₁ -/
+#guard_msgs in
+#check T% v₁
+
+-- Hom-bundle
+variable {ϕ : Π x : M, V₁ (b x) →L[𝕜] V₂ (b x)}
+
+/-- info: (T% ϕ) : M → TotalSpace (F₁ →L[𝕜] F₂) fun y ↦ V₁ y →L[𝕜] V₂ y -/
+#guard_msgs in
+#check T% ϕ
+
+-- Hom-bundle with TangentSpace as domain (verifies TangentSpace intercept in `findModelFiber?`)
+variable {ϕ_TM : Π x : M, TangentSpace I x →L[𝕜] V₁ (b x)}
+
+/-- info: (T% ϕ_TM) : M → TotalSpace (E →L[𝕜] F₁) fun y ↦ TangentSpace I y →L[𝕜] V₁ (b y) -/
+#guard_msgs in
+#check T% ϕ_TM
+
+end
+
 variable {x : M}
 
 -- Testing precedence.
