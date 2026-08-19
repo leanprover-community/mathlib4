@@ -337,18 +337,14 @@ theorem meromorphicNFAt_finprod {x : 𝕜} {ι : Type*} {f : ι → 𝕜 → �
   · exact finprod_of_not_hasFiniteMulSupport h₃f ▸ analyticAt_const.meromorphicNFAt
 
 /-- MeromorphicNFAt is invariant under scaling. -/
-@[simp] theorem meromorphicNFAt_const_smul_iff_meromorphicNFAt {s : 𝕜} (hs : s ≠ 0) :
+@[to_fun (attr := simp) meromorphicNFAt_fun_const_smul_iff_meromorphicNFAt]
+theorem meromorphicNFAt_const_smul_iff_meromorphicNFAt {s : 𝕜} (hs : s ≠ 0) :
     MeromorphicNFAt (s • f) x ↔ MeromorphicNFAt f x := by
   constructor
   <;> intro hf
   · rw [((eq_inv_smul_iff₀ hs).mpr rfl : f = s⁻¹ • s • f)]
     fun_prop
   · fun_prop
-
-/-- MeromorphicNFAt is invariant under scaling. -/
-@[simp] theorem meromorphicNFAt_fun_const_smul_iff_meromorphiNFcAt {s : 𝕜} (hs : s ≠ 0) :
-    MeromorphicNFAt (fun x ↦ s • f x) x ↔ MeromorphicNFAt f x :=
-  meromorphicNFAt_const_smul_iff_meromorphicNFAt hs
 
 /-- Integer powers of meromorphic functions in normal form are in normal form. -/
 @[to_fun (attr := fun_prop)]
@@ -740,15 +736,11 @@ theorem meromorphicNFOn_finprod {ι : Type*} {f : ι → 𝕜 → 𝕜} (h₁f :
   fun x hx ↦ meromorphicNFAt_finprod (h₁f · hx) (h₂f x hx)
 
 /-- MeromorphicNFOn is invariant under scaling. -/
-@[simp] theorem meromorphicNFOn_const_smul_iff_meromorphicNFOn {s : 𝕜} (hs : s ≠ 0) :
+@[to_fun (attr := simp) meromorphicNFOn_fun_const_smul_iff_meromorphicNFOn]
+theorem meromorphicNFOn_const_smul_iff_meromorphicNFOn {s : 𝕜} (hs : s ≠ 0) :
     MeromorphicNFOn (s • f) U ↔ MeromorphicNFOn f U :=
   ⟨fun hf _ hx ↦ (meromorphicNFAt_const_smul_iff_meromorphicNFAt hs).mp (hf hx),
     fun hf _ hx ↦ (meromorphicNFAt_const_smul_iff_meromorphicNFAt hs).mpr (hf hx)⟩
-
-/-- MeromorphicNFOn is invariant under scaling. -/
-@[simp] theorem meromorphicNFOn_fun_const_smul_iff_meromorphicNFOn {s : 𝕜} (hs : s ≠ 0) :
-    MeromorphicNFOn (fun x ↦ s • f x) U ↔ MeromorphicNFOn f U :=
-  meromorphicNFOn_const_smul_iff_meromorphicNFOn hs
 
 /-- Integer powers of meromorphic functions in normal form are in normal form. -/
 @[to_fun]

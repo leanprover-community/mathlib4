@@ -306,7 +306,8 @@ theorem divisor_fun_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : 
   divisor_smul h₁f₁ h₁f₂ h₂f₁ h₂f₂
 
 /-- The divisor of a function is invariant when scaling of the function. -/
-@[simp] theorem divisor_const_smul {f : 𝕜 → E} {s : 𝕜} {U : Set 𝕜} (hs : s ≠ 0) :
+@[to_fun (attr := simp) divisor_fun_const_smul]
+theorem divisor_const_smul {f : 𝕜 → E} {s : 𝕜} {U : Set 𝕜} (hs : s ≠ 0) :
     divisor (s • f) U = divisor f U := by
   ext z
   by_cases h₁f : MeromorphicOn f U
@@ -315,11 +316,6 @@ theorem divisor_fun_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : 
       simp_all
     · simp_all
   · simp_all
-
-/-- The divisor of a function is invariant when scaling of the function. -/
-@[simp] theorem divisor_fun_const_smul {f : 𝕜 → E} {s : 𝕜} {U : Set 𝕜} (hs : s ≠ 0) :
-    divisor (fun x ↦ s • f x) U = divisor f U :=
-  divisor_const_smul hs
 
 /--
 If orders are finite, the divisor of the product of two meromorphic functions is the sum of the
