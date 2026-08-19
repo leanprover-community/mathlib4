@@ -18,7 +18,7 @@ subgroup, subgroups
 
 @[expose] public section
 
-variable {ι : Sort*} {G : Type*} [Group G]
+variable {G : Type*} [Group G]
 
 namespace Subgroup
 
