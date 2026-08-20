@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.MeasureTheory.Measure.Dirac.Def
-public import Mathlib.MeasureTheory.Measure.MeasureSpace
+public import Mathlib.MeasureTheory.Measure.Filter
 
 /-!
 # Pushforward of a measure

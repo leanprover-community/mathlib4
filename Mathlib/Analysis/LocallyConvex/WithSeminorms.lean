@@ -6,7 +6,7 @@ Authors: Moritz Doll, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Topology.Algebra.Equicontinuity
 public import Mathlib.Topology.MetricSpace.Equicontinuity
@@ -791,7 +791,6 @@ namespace WithSeminorms
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [SeminormedRing 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
-variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 /-- Two families of seminorms `p` and `q` on the same space generate the same topology
 if each `p i` is bounded by some `C • Finset.sup s q` and vice-versa.

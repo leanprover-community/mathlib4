@@ -560,6 +560,20 @@ end CFCn
 
 end Main
 
+section Semifield
+
+lemma CFC.mul_self_eq_zero_iff (R : Type*) {A : Type*} {p : A → Prop} [Semifield R] [StarRing R]
+    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A]
+    [StarRing A] [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+    [NonUnitalContinuousFunctionalCalculus R A p] (a : A) (ha : p a := by cfc_tac) :
+    a * a = 0 ↔ a = 0 := by
+  refine ⟨fun h ↦ ?_, by rintro rfl; simp⟩
+  refine CFC.eq_zero_of_quasispectrum_eq_zero (R := R) a fun r hr ↦ ?_
+  rw [← cfcₙ_id' R a, ← cfcₙ_mul .., ← cfcₙ_zero (R := R) a, cfcₙ_eq_cfcₙ_iff_eqOn] at h
+  simpa using h hr
+
+end Semifield
+
 section Neg
 
 variable {R A : Type*} {p : A → Prop} [CommRing R] [Nontrivial R] [StarRing R] [MetricSpace R]

@@ -49,7 +49,7 @@ variable [Fintype ι]
 variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
 
 section
-variable {m n : ℕ} [_i : Fact (finrank ℝ F = n)]
+variable {n : ℕ} [_i : Fact (finrank ℝ F = n)]
 
 /-- The volume form coming from an orientation in an inner product space gives measure `1` to the
 parallelepiped associated to any orthonormal basis. This is a rephrasing of
