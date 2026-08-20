@@ -5,14 +5,12 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Basic
-public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Data.Nat.Squarefree
 
 /-!
 # Fundamental discriminants
 
-A fundamental discriminant is an integer `D ≡ 0, 1 [ZMOD 4]` that is primitive, i.e. not a proper
+A fundamental discriminant is an integer `D ≡ 0, 1 mod 4` that is primitive, i.e. not a proper
 square multiple of a smaller discriminant. These are exactly the discriminants of quadratic fields.
 
 The definition and the results below are elementary arithmetic on `ℤ`, so this file is kept
@@ -26,73 +24,58 @@ independent of the theory of quadratic fields.
 
 * `Int.isFundamentalDiscr_iff_squarefree`: the concrete squarefree characterization, `D ≡ 1 mod 4`
   squarefree or `D = 4m` with `m` squarefree and `m ≡ 2, 3 mod 4`.
+* `Int.isFundamentalDiscr_four_mul_add_one`: `4m + 1` is a fundamental discriminant if and only if
+  it is squarefree.
+* `Int.isFundamentalDiscr_four_mul`: `4m` is a fundamental discriminant if and only if `m` is
+  squarefree and `m ≡ 2, 3 mod 4`.
 -/
 
 @[expose] public section
 
 namespace Int
 
-/-- `D` is a fundamental discriminant: it is a discriminant (`D % 4 = 0 ∨ 1`) and primitive, i.e.
-`D / 4 ≢ 0, 1 [ZMOD 4]` when `4 ∣ D`, and no odd prime square divides `D`. -/
+/-- `D` is a fundamental discriminant: it is a discriminant (`D ≡ 0, 1 mod 4`) and primitive,
+i.e. `D / 4 ≢ 0, 1 mod 4` when `4 ∣ D`, and no odd prime square divides `D`. -/
 def IsFundamentalDiscr (D : ℤ) : Prop :=
-  (D % 4 = 0 ∨ D % 4 = 1) ∧ (∀ x, D = 4 * x → ¬ 4 ∣ x ∧ ¬ x % 4 = 1) ∧
-    ∀ p, Nat.Prime p → Odd p → ¬ (p : ℤ) ^ 2 ∣ D
+  (D % 4 = 0 ∨ D % 4 = 1) ∧ (∀ x, D = 4 * x → ¬ 4 ∣ x ∧ x % 4 ≠ 1) ∧
+    ∀ p : ℕ, p.Prime → Odd p → ¬ (p : ℤ) ^ 2 ∣ D
 
 theorem isFundamentalDiscr_def {D : ℤ} :
     IsFundamentalDiscr D ↔
-      (D % 4 = 0 ∨ D % 4 = 1) ∧ (∀ x, D = 4 * x → ¬ 4 ∣ x ∧ ¬ x % 4 = 1) ∧
-        ∀ p, Nat.Prime p → Odd p → ¬ (p : ℤ) ^ 2 ∣ D := Iff.rfl
+      (D % 4 = 0 ∨ D % 4 = 1) ∧ (∀ x, D = 4 * x → ¬ 4 ∣ x ∧ x % 4 ≠ 1) ∧
+        ∀ p : ℕ, p.Prime → Odd p → ¬ (p : ℤ) ^ 2 ∣ D := Iff.rfl
 
-theorem isFundamentalDiscr_iff_forall_prime {D : ℤ} :
-    IsFundamentalDiscr D ↔
-      (D % 4 = 0 ∨ D % 4 = 1) ∧ (∀ p, Nat.Prime p → p ≠ 2 → ¬ (p : ℤ) ^ 2 ∣ D) ∧
-        ¬ ∃ e : ℤ, D = 4 * e ∧ (e % 4 = 0 ∨ e % 4 = 1) := by
-  rw [isFundamentalDiscr_def]
-  refine and_congr_right fun _ => ⟨fun ⟨hB, hC⟩ =>
-      ⟨fun p hp hp2 => hC p hp (hp.odd_of_ne_two hp2), ?_⟩,
-    fun ⟨hC', hB'⟩ => ⟨fun x hx => ?_, fun p hp hpo => hC' p hp ?_⟩⟩
-  · rintro ⟨e, rfl, he | he⟩
-    · exact (hB e rfl).1 (EuclideanDomain.mod_eq_zero.mp he)
-    · exact (hB e rfl).2 he
-  · exact ⟨fun h4 => hB' ⟨x, hx, Or.inl (EuclideanDomain.mod_eq_zero.mpr h4)⟩,
-      fun h1 => hB' ⟨x, hx, Or.inr h1⟩⟩
-  · rintro rfl; exact (by decide : ¬ Odd 2) hpo
+theorem IsFundamentalDiscr.ne_zero {D : ℤ} (h : IsFundamentalDiscr D) : D ≠ 0 := by
+  grind [isFundamentalDiscr_def]
+
+theorem IsFundamentalDiscr.emod_four_eq_zero_or_one {D : ℤ} (h : IsFundamentalDiscr D) :
+    D % 4 = 0 ∨ D % 4 = 1 := h.1
 
 /-- `D` is a fundamental discriminant if and only if either `D ≡ 1 mod 4` and `D` is squarefree,
-or `D = 4 * m` with `m` squarefree and `m ≡ 2, 3 mod 4`. -/
+or `D = 4 * d` with `d` squarefree and `d ≡ 2, 3 mod 4`. -/
 theorem isFundamentalDiscr_iff_squarefree {D : ℤ} :
     IsFundamentalDiscr D ↔
       (D % 4 = 1 ∧ Squarefree D) ∨
         (D % 4 = 0 ∧ Squarefree (D / 4) ∧ (D / 4 % 4 = 2 ∨ D / 4 % 4 = 3)) := by
-  rw [isFundamentalDiscr_iff_forall_prime]
-  refine Iff.symm ?_
-  obtain hD | hD := Int.even_or_odd D
-  · obtain ⟨k, rfl⟩ := even_iff_exists_two_mul.mp hD
-    have h₁ : ¬ 2 * k % 4 = 1 := by lia
-    simp only [h₁, false_and, EuclideanDomain.mod_eq_zero, false_or, or_false, ne_eq, not_exists,
-      not_and, not_or, and_congr_right_iff]
-    rw [show (4 : ℤ) = 2 * 2 by norm_num, Int.mul_dvd_mul_iff_left two_ne_zero]
-    rintro ⟨c, rfl⟩
-    have h₂ {p : ℕ} {hp : p.Prime} {hp' : ¬p = 2} : ((p : ℤ) ^ 2 ∣ 4 * c ↔ (p : ℤ) ^ 2 ∣ c) := by
-      refine ⟨fun h ↦ IsCoprime.dvd_of_dvd_mul_left ?_ h, fun h ↦ h.mul_left 4⟩
-      rw [← Nat.cast_pow, show (4 : ℤ) = (2 ^ 2 : ℕ) by norm_num]
-      exact (Nat.coprime_pow_primes 2 2 hp (Nat.prime_two) hp').isCoprime
-    have h₃ : c % 4 = 2 ∨ c % 4 = 3 ↔ ¬4 ∣ c ∧ ¬c % 4 = 1 := by grind
-    simp +contextual only [← mul_assoc, Int.reduceMul, ne_eq, OfNat.ofNat_ne_zero,
-      not_false_eq_true, mul_div_cancel_left₀, Int.squarefree_iff_forall_prime, h₃, h₂,
-      mul_eq_mul_left_iff, forall_eq', and_congr_left_iff, and_imp]
-    refine fun hc _ ↦ ⟨by tauto, fun h p hp ↦ ?_⟩
-    obtain rfl | hp' := eq_or_ne p 2
-    · lia
-    · exact h p hp hp'
-  · obtain ⟨k, rfl⟩ := odd_iff_exists_bit1.mp hD
-    have h₁ : ¬ (2 * k + 1) % 4 = 0 := by lia
-    have h₂ {x : ℤ} : ¬ (2 * k + 1) = 4 * x := by lia
-    simp only [Int.squarefree_iff_forall_prime, h₁, false_and, or_false, false_or, ne_eq, h₂,
-      EuclideanDomain.mod_eq_zero, exists_const, not_false_eq_true, and_true, and_congr_right_iff]
-    refine fun _ ↦  ⟨by tauto, fun h p hp ↦ ?_⟩
-    obtain rfl | hp' := eq_or_ne p 2
-    · lia
-    · exact h p hp hp'
+  -- The two `have`s below are picked up from the context by the `grind` calls at the end.
+  have {m} : Squarefree m ↔ ¬ 4 ∣ m ∧ ∀ p : ℕ, p.Prime → Odd p → ¬ (p : ℤ) ^ 2 ∣ m := by
+    rw [squarefree_iff_prime_sq_not_dvd, Nat.forall_prime_iff_two_and_odd]
+    simp
+  have {m p : ℤ} (hp : Odd p) : p ^ 2 ∣ 4 * m ↔ p ^ 2 ∣ m := by
+    rw [show (4 : ℤ) = 2 ^ 2 by norm_num]
+    exact (IsCoprime.pow hp.isCoprime_two).dvd_mul_left_iff
+  by_cases h : 4 ∣ D
+  · obtain ⟨d, rfl⟩ := h
+    simp +contextual only [Int.mul_ediv_cancel_left d four_ne_zero]
+    grind [isFundamentalDiscr_def]
+  · grind [isFundamentalDiscr_def]
+
+theorem isFundamentalDiscr_four_mul_add_one {m : ℤ} :
+    IsFundamentalDiscr (4 * m + 1) ↔ Squarefree (4 * m + 1) := by
+  simp [isFundamentalDiscr_iff_squarefree]
+
+theorem isFundamentalDiscr_four_mul {m : ℤ} :
+    IsFundamentalDiscr (4 * m) ↔ Squarefree m ∧ (m % 4 = 2 ∨ m % 4 = 3) := by
+  simp [isFundamentalDiscr_iff_squarefree]
 
 end Int
