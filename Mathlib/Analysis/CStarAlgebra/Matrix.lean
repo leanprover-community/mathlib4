@@ -40,7 +40,7 @@ coincide with the existing topology and uniformity on matrices.
 open WithLp
 open scoped Matrix
 
-variable {𝕜 m n l E : Type*}
+variable {𝕜 m n l : Type*}
 
 section EntrywiseSupNorm
 

@@ -58,7 +58,7 @@ def SuperChain (s t : Set α) : Prop :=
 def IsMaxChain (s : Set α) : Prop :=
   IsChain r s ∧ ∀ ⦃t⦄, IsChain r t → s ⊆ t → s = t
 
-variable {r} {c c₁ c₂ s t : Set α} {a b x y : α}
+variable {r} {c s t : Set α} {a b x y : α}
 
 @[simp] lemma IsChain.empty : IsChain r ∅ := pairwise_empty _
 @[simp] lemma IsChain.singleton : IsChain r {a} := pairwise_singleton ..
