@@ -213,16 +213,11 @@ theorem lift₂Expand_of {C : Sort*} {P : X → S → X → S → C}
     (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) : lift₂Expand P hP (r₁ /ₒ s₁) (r₂ /ₒ s₂) = P r₁ s₁ r₂ s₂ :=
   rfl
 
-set_option backward.privateInPublic true in
-@[to_additive]
-private abbrev smul' (r₁ : R) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
-  oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁)
-
+-- We unofficially take `smul' r₁ s₁ r₂ s₂ := oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁)`.
 @[to_additive]
 private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R) (huv : u * r₁ = v * s₂) :
-    OreLocalization.smul' r₁ s₁ r₂ s₂ = v • r₂ /ₒ (u * s₁) := by
+    oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁) = v • r₂ /ₒ (u * s₁) := by
   -- Porting note: `assoc_rw` was not ported yet
-  simp only [smul']
   have h₀ := ore_eq r₁ s₂; set v₀ := oreNum r₁ s₂; set u₀ := oreDenom r₁ s₂
   rcases oreCondition (u₀ : R) u with ⟨r₃, s₃, h₃⟩
   have :=
@@ -241,39 +236,36 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
   · rw [← mul_assoc (b := (u₀ : R)), mul_assoc (c := (u₀ : R)), h₃]
     simp only [mul_assoc]
 
-set_option backward.privateInPublic true in
-/-- The multiplication on the Ore localization of monoids. -/
-@[to_additive /-- The addition on the Ore localization of additive monoids. -/]
-private abbrev smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
-  liftExpand (smul' r s) fun r₁ r₂ s' hs => by
-    rcases oreCondition r s' with ⟨r₁', s₁', h₁⟩
-    rw [smul'_char _ _ _ _ _ _ h₁]
-    rcases oreCondition r ⟨_, hs⟩ with ⟨r₂', s₂', h₂⟩
-    rw [smul'_char _ _ _ _ _ _ h₂]
-    rcases oreCondition (s₁' : R) (s₂') with ⟨r₃', s₃', h₃⟩
-    have : s₃' * r₁' * s' = (r₃' * r₂' * r₂) * s' := by
-      rw [mul_assoc, ← h₁, ← mul_assoc, h₃, mul_assoc, h₂]
-      simp [mul_assoc]
-    rcases ore_right_cancel _ _ _ this with ⟨s₄', h₄⟩
-    have : (s₄' * r₃') * (s₂' * s) ∈ S := by
-      rw [mul_assoc, ← mul_assoc r₃', ← h₃]
-      exact (s₄' * (s₃' * s₁' * s)).2
-    rw [OreLocalization.expand' _ _ (s₄' * s₃'), OreLocalization.expand _ (s₂' * s) _ this]
-    simp only [Submonoid.smul_def, Submonoid.coe_mul, smul_smul, mul_assoc, h₄]
-    congr 1
-    ext; simp only [Submonoid.coe_mul, ← mul_assoc]
-    rw [mul_assoc (s₄' : R), h₃, ← mul_assoc]
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The scalar multiplication on the Ore localization of monoids. -/
-@[to_additive
-  /-- the vector addition on the Ore localization of additive monoids. -/]
+@[to_additive /-- The vector addition on the Ore localization of additive monoids. -/]
 protected abbrev smul (y : R[S⁻¹]) (x : X[S⁻¹]) : X[S⁻¹] :=
+  let smul' (r₁ : R) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
+    oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁)
+  let smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
+    liftExpand (smul' r s) fun r₁ r₂ s' hs => by
+      rcases oreCondition r s' with ⟨r₁', s₁', h₁⟩
+      simp only [smul']
+      rw [smul'_char _ _ _ _ _ _ h₁]
+      rcases oreCondition r ⟨_, hs⟩ with ⟨r₂', s₂', h₂⟩
+      rw [smul'_char _ _ _ _ _ _ h₂]
+      rcases oreCondition (s₁' : R) (s₂') with ⟨r₃', s₃', h₃⟩
+      have : s₃' * r₁' * s' = (r₃' * r₂' * r₂) * s' := by
+        rw [mul_assoc, ← h₁, ← mul_assoc, h₃, mul_assoc, h₂]
+        simp [mul_assoc]
+      rcases ore_right_cancel _ _ _ this with ⟨s₄', h₄⟩
+      have : (s₄' * r₃') * (s₂' * s) ∈ S := by
+        rw [mul_assoc, ← mul_assoc r₃', ← h₃]
+        exact (s₄' * (s₃' * s₁' * s)).2
+      rw [OreLocalization.expand' _ _ (s₄' * s₃'), OreLocalization.expand _ (s₂' * s) _ this]
+      simp only [Submonoid.smul_def, Submonoid.coe_mul, smul_smul, mul_assoc, h₄]
+      congr 1
+      ext; simp only [Submonoid.coe_mul, ← mul_assoc]
+      rw [mul_assoc (s₄' : R), h₃, ← mul_assoc]
   liftExpand (smul'' · · x) (fun r₁ r₂ s hs => by
     cases x with | _ x s₂
-    change OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
+    change smul' r₁ s x s₂ = smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
     rcases oreCondition r₁ s₂ with ⟨r₁', s₁', h₁⟩
+    simp only [smul']
     rw [smul'_char _ _ _ _ _ _ h₁]
     rcases oreCondition (r₂ * r₁) s₂ with ⟨r₂', s₂', h₂⟩
     rw [smul'_char _ _ _ _ _ _ h₂]
@@ -300,29 +292,27 @@ instance : Mul R[S⁻¹] :=
 
 @[to_additive]
 theorem oreDiv_smul_oreDiv {r₁ : R} {r₂ : X} {s₁ s₂ : S} :
-    (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁) := by
-  with_unfolding_all rfl
+    (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁) := rfl
 
 @[to_additive]
 theorem oreDiv_mul_oreDiv {r₁ : R} {r₂ : R} {s₁ s₂ : S} :
-    (r₁ /ₒ s₁) * (r₂ /ₒ s₂) = oreNum r₁ s₂ * r₂ /ₒ (oreDenom r₁ s₂ * s₁) := by
-  with_unfolding_all rfl
+    (r₁ /ₒ s₁) * (r₂ /ₒ s₂) = oreNum r₁ s₂ * r₂ /ₒ (oreDenom r₁ s₂ * s₁) := rfl
 
 /-- A characterization lemma for the scalar multiplication on the Ore localization,
 allowing for a choice of Ore numerator and Ore denominator. -/
 @[to_additive /-- A characterization lemma for the vector addition on the Ore localization,
 allowing for a choice of Ore minuend and Ore subtrahend. -/]
 theorem oreDiv_smul_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (r' : R) (s' : S) (huv : s' * r₁ = r' * s₂) :
-    (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) := by
-  with_unfolding_all exact smul'_char r₁ r₂ s₁ s₂ s' r' huv
+    (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) :=
+  smul'_char r₁ r₂ s₁ s₂ s' r' huv
 
 /-- A characterization lemma for the multiplication on the Ore localization, allowing for a choice
 of Ore numerator and Ore denominator. -/
 @[to_additive /-- A characterization lemma for the addition on the Ore localization,
 allowing for a choice of Ore minuend and Ore subtrahend. -/]
 theorem oreDiv_mul_char (r₁ r₂ : R) (s₁ s₂ : S) (r' : R) (s' : S) (huv : s' * r₁ = r' * s₂) :
-    r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) := by
-  with_unfolding_all exact smul'_char r₁ r₂ s₁ s₂ s' r' huv
+    r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=
+  smul'_char r₁ r₂ s₁ s₂ s' r' huv
 
 /-- Another characterization lemma for the scalar multiplication on the Ore localization delivering
 Ore witnesses and conditions bundled in a sigma type. -/
