@@ -75,7 +75,6 @@ theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- The functor from differential graded objects to homological complexes.
 -/
@@ -99,7 +98,6 @@ def dgoToHomologicalComplex :
         have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := (congr_fun f.comm i).symm
         simp only [dite_true, Category.assoc, eqToHom_f', reassoc_of% this] }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor from homological complexes to differential graded objects.
 -/
 @[simps]
@@ -135,7 +133,6 @@ def dgoEquivHomologicalComplexCounitIso :
     { hom := { f := fun i => 𝟙 (X.X i) }
       inv := { f := fun i => 𝟙 (X.X i) } })
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The category of differential graded objects in `V` is equivalent
 to the category of homological complexes in `V`.

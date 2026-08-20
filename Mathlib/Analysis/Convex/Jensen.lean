@@ -37,7 +37,7 @@ public section
 
 open Finset Set Convex
 
-variable {𝕜 E F β ι : Type*}
+variable {𝕜 E β ι : Type*}
 
 /-! ### Jensen's inequality -/
 
