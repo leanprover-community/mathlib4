@@ -228,7 +228,7 @@ theorem even_torsionOrder :
     rw [even_iff_two_dvd, ← this]
     apply orderOf_dvd_natCard
   rw [← Subgroup.orderOf_coe, ← orderOf_units, Units.val_neg, val_one, orderOf_neg_one,
-    ringChar.eq_zero, if_neg (by decide)]
+    ringChar.eq_zero, ite_eq_right (by decide)]
 
 section odd
 

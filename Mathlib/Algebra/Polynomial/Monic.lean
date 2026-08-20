@@ -72,7 +72,7 @@ theorem monic_mul_C_of_leadingCoeff_mul_eq_one {b : R} (hp : p.leadingCoeff * b 
 theorem monic_X_pow_add {n : ℕ} (H : degree p < n) : Monic (X ^ n + p) :=
   monic_of_degree_le n
     (le_trans (degree_add_le _ _) (max_le (degree_X_pow_le _) (le_of_lt H)))
-    (by rw [coeff_add, coeff_X_pow, if_pos rfl, coeff_eq_zero_of_degree_lt H, add_zero])
+    (by rw [coeff_add, coeff_X_pow, ite_eq_left rfl, coeff_eq_zero_of_degree_lt H, add_zero])
 
 variable (a) in
 theorem monic_X_pow_add_C {n : ℕ} (h : n ≠ 0) : (X ^ n + C a).Monic :=

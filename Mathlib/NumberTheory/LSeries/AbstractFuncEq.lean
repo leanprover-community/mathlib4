@@ -314,7 +314,7 @@ lemma isStrongFEPair_toStrongFEPair : IsStrongFEPair P.toStrongFEPair where
   hf₀ := rfl
   hg₀ := rfl
 
-/- Alternative form for the difference between `f - f₀` and its modified term. -/
+/-- Alternative form for the difference between `f - f₀` and its modified term. -/
 lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
     ((Ioo 0 1).indicator (fun x : ℝ ↦ P.f₀ - (P.ε * ↑(x ^ (-P.k))) • P.g₀)
     + ({1} : Set ℝ).indicator (fun _ ↦ P.f₀ - P.f 1)) (Ioi 0) := by

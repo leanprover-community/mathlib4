@@ -164,7 +164,7 @@ namespace IsLocalDiffeomorphAt
 
 variable {f : M → N} {x : M}
 
-variable {I I' J n}
+variable {I J n}
 
 /-- An arbitrary choice of local inverse of `f` near `x`. -/
 def localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
@@ -384,9 +384,9 @@ end Basic
 
 section Differential
 
-variable {f : M → N} {s : Set M} {x : M}
+variable {f : M → N} {x : M}
 
-variable {I I' J n}
+variable {I J n}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≠ 0`, the differential `df_x`

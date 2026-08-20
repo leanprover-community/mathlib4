@@ -31,6 +31,7 @@ variable {a c : ℂ} {R : ℝ}
 /--
 If `a` is any complex number, the function `(log ‖· - a‖)` is circle integrable over every circle.
 -/
+@[fun_prop]
 lemma circleIntegrable_log_norm_sub_const (r : ℝ) : CircleIntegrable (log ‖· - a‖) c r :=
   MeromorphicOn.circleIntegrable_log_norm (fun z hz ↦ by fun_prop)
 
@@ -55,7 +56,7 @@ theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (l
     _ = ‖1 - z⁻¹ * a‖ := by field_simp
   _ = 0 := by
     rw [circleAverage_zero_one_congr_inv (f := fun x ↦ log ‖1 - x * a‖),
-      HarmonicOnNhd.circleAverage_eq, zero_mul, sub_zero,
+      InnerProductSpace.HarmonicOnNhd.circleAverage_eq, zero_mul, sub_zero,
       CStarRing.norm_of_mem_unitary (unitary ℂ).one_mem, log_one]
     intro x hx
     have : ‖x * a‖ < 1 := by
@@ -159,7 +160,7 @@ If `a : ℂ` has norm greater than one, then `circleAverage (log ‖· - a‖) 0
 @[simp]
 theorem circleAverage_log_norm_sub_const₂ (h : 1 < ‖a‖) :
     circleAverage (log ‖· - a‖) 0 1 = log ‖a‖ := by
-  rw [HarmonicOnNhd.circleAverage_eq, zero_sub, norm_neg]
+  rw [InnerProductSpace.HarmonicOnNhd.circleAverage_eq, zero_sub, norm_neg]
   intro x hx
   apply AnalyticAt.harmonicAt_log_norm (by fun_prop)
   rw [sub_ne_zero]
