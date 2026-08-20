@@ -185,11 +185,11 @@ abbrev BinaryFan (X Y : C) :=
   Cone (pair X Y)
 
 /-- The first projection of a binary fan. -/
-abbrev BinaryFan.fst {X Y : C} (s : BinaryFan X Y) :=
+abbrev BinaryFan.fst {X Y : C} (s : BinaryFan X Y) : s.pt ⟶ X :=
   s.π.app ⟨WalkingPair.left⟩
 
 /-- The second projection of a binary fan. -/
-abbrev BinaryFan.snd {X Y : C} (s : BinaryFan X Y) :=
+abbrev BinaryFan.snd {X Y : C} (s : BinaryFan X Y) : s.pt ⟶ Y :=
   s.π.app ⟨WalkingPair.right⟩
 
 -- Marking this `@[simp]` causes loops since `s.fst` is reducibly defeq to the LHS.
@@ -235,10 +235,10 @@ theorem BinaryFan.IsLimit.hom_ext {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s
 abbrev BinaryCofan (X Y : C) := Cocone (pair X Y)
 
 /-- The first inclusion of a binary cofan. -/
-abbrev BinaryCofan.inl {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPair.left⟩
+abbrev BinaryCofan.inl {X Y : C} (s : BinaryCofan X Y) : X ⟶ s.pt := s.ι.app ⟨WalkingPair.left⟩
 
 /-- The second inclusion of a binary cofan. -/
-abbrev BinaryCofan.inr {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPair.right⟩
+abbrev BinaryCofan.inr {X Y : C} (s : BinaryCofan X Y) : Y ⟶ s.pt := s.ι.app ⟨WalkingPair.right⟩
 
 /-- Constructs an isomorphism of `BinaryCofan`s out of an isomorphism of the tips that commutes with
 the injections. -/
@@ -379,6 +379,12 @@ lemma BinaryFan.IsLimit.lift_snd {W : C} {s : BinaryFan X Y} (h : IsLimit s)
     lift h f g ≫ s.snd = g :=
   h.fac (BinaryFan.mk f g) _
 
+lemma BinaryFan.IsLimit.exists_lift
+    {X Y : C} {s : BinaryFan X Y} (h : IsLimit s)
+    {W : C} (f₁ : W ⟶ X) (f₂ : W ⟶ Y) :
+    ∃ (φ : W ⟶ s.pt), φ ≫ s.fst = f₁ ∧ φ ≫ s.snd = f₂ :=
+  ⟨lift h f₁ f₂, by simp, by simp⟩
+
 /-- If `s` is a limit binary fan over `X` and `Y`, then every pair of morphisms `f : W ⟶ X` and
 `g : W ⟶ Y` induces a morphism `l : W ⟶ s.pt` satisfying `l ≫ s.fst = f` and `l ≫ s.snd = g`.
 -/
@@ -406,6 +412,12 @@ lemma BinaryCofan.IsColimit.inr_desc {W : C} {s : BinaryCofan X Y} (h : IsColimi
     (f : X ⟶ W) (g : Y ⟶ W) :
     s.inr ≫ desc h f g = g :=
   h.fac (BinaryCofan.mk f g) _
+
+lemma BinaryCofan.IsColimit.exists_desc
+    {X Y : C} {s : BinaryCofan X Y} (h : IsColimit s)
+    {W : C} (f₁ : X ⟶ W) (f₂ : Y ⟶ W) :
+    ∃ (φ : s.pt ⟶ W), s.inl ≫ φ = f₁ ∧ s.inr ≫ φ = f₂ :=
+  ⟨desc h f₁ f₂, by simp, by simp⟩
 
 /-- If `s` is a colimit binary cofan over `X` and `Y`, then every pair of morphisms `f : X ⟶ W` and
 `g : Y ⟶ W` induces a morphism `l : s.pt ⟶ W` satisfying `s.inl ≫ l = f` and `s.inr ≫ l = g`.
