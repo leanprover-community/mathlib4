@@ -20,10 +20,6 @@ When both measures have finite variation, we prove stronger results, notably ver
 of the Fubini theorem. We give general versions for arbitrary pairing functions, and
 specialized versions for scalar multiplication.
 
-When both measures have finite variation, we prove stronger results, notably versions
-of the Fubini theorem. We give general versions for arbitrary pairing functions, and
-specialized versions for scalar multiplication.
-
 The API is modelled on the one for the product of positive measures.
 -/
 

@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.BoundedVariation
-public import Mathlib.MeasureTheory.Measure.Stieltjes
 public import Mathlib.MeasureTheory.VectorMeasure.BoundedVariation
 public import Mathlib.MeasureTheory.VectorMeasure.Prod
 public import Mathlib.MeasureTheory.VectorMeasure.WithDensityVec
@@ -37,10 +36,10 @@ of the vector measure associated to the bounded variation function `fg`.
 -/
 
 
-@[expose] public section
+public section
 
-open Filter Set MeasureTheory MeasurableSpace VectorMeasure
-open scoped Topology NNReal ENNReal
+open Filter Set MeasureTheory VectorMeasure
+open scoped Topology ENNReal
 
 namespace BoundedVariationOn
 
@@ -120,9 +119,8 @@ variable [NormedSpace ℝ E] [CompleteSpace E] [NormedSpace ℝ F] [CompleteSpac
   rcases eq_or_neBot (𝓝[>] x) with hx | hx
   · simp [rightLim_eq_of_eq_bot _ hx]
   apply rightLim_eq_of_tendsto
-  suffices H : Tendsto (fun x ↦ (f x, g x)) (𝓝[>] x) (𝓝 (f.rightLim x, g.rightLim x)) by
-    have : Continuous (fun (p : E × F) ↦ B p.1 p.2) := by fun_prop
-    apply (this.continuousAt (x := (f.rightLim x, g.rightLim x))).tendsto.comp H
+  suffices H : Tendsto (fun x ↦ (f x, g x)) (𝓝[>] x) (𝓝 (f.rightLim x, g.rightLim x)) from
+    (B.continuous₂.continuousAt (x := (f.rightLim x, g.rightLim x))).tendsto.comp H
   rw [nhds_prod_eq]
   exact Tendsto.prodMk (hf.tendsto_rightLim _) (hg.tendsto_rightLim _)
 
@@ -135,9 +133,8 @@ variable [NormedSpace ℝ E] [CompleteSpace E] [NormedSpace ℝ F] [CompleteSpac
   rcases eq_or_neBot (𝓝[<] x) with hx | hx
   · simp [leftLim_eq_of_eq_bot _ hx]
   apply leftLim_eq_of_tendsto
-  suffices H : Tendsto (fun x ↦ (f x, g x)) (𝓝[<] x) (𝓝 (f.leftLim x, g.leftLim x)) by
-    have : Continuous (fun (p : E × F) ↦ B p.1 p.2) := by fun_prop
-    apply (this.continuousAt (x := (f.leftLim x, g.leftLim x))).tendsto.comp H
+  suffices H : Tendsto (fun x ↦ (f x, g x)) (𝓝[<] x) (𝓝 (f.leftLim x, g.leftLim x)) from
+    (B.continuous₂.continuousAt (x := (f.leftLim x, g.leftLim x))).tendsto.comp H
   rw [nhds_prod_eq]
   exact Tendsto.prodMk (hf.tendsto_leftLim _) (hg.tendsto_leftLim _)
 
@@ -163,7 +160,7 @@ lemma setIntegral_Icc_rightLim_sub_leftLim_eq
     apply (integral_integral_smul_swap _).symm
     apply Integrable.of_bound _ 1
     · filter_upwards with ⟨x, y⟩
-      simp only [indicator, mem_Icc, Pi.one_apply, Function.uncurry_apply_pair, Real.norm_eq_abs]
+      simp [indicator]
       grind
     · apply Measurable.aestronglyMeasurable
       simp only [indicator, mem_Icc, Pi.one_apply]
@@ -175,7 +172,7 @@ lemma setIntegral_Icc_rightLim_sub_leftLim_eq
     filter_upwards with y hy
     apply VectorMeasure.setIntegral_congr_ae
     filter_upwards with x hx
-    simp only [indicator, Pi.one_apply]
+    simp [indicator]
     grind
   _ = ∫ᵛ y in Icc a b, f.rightLim b - f.leftLim y ∂[B; hg.vectorMeasure] := by
     apply VectorMeasure.setIntegral_congr_ae
@@ -191,8 +188,8 @@ variable [CompleteSpace G]
 This is the most general version of the integration by parts formula for vector measures. -/
 theorem vectorMeasure_bilinear_comp_eq
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) :
-    (hf.bilinear_comp hg B).vectorMeasure = hf.vectorMeasure.withDensity g.rightLim B.flip
-      + hg.vectorMeasure.withDensity f.leftLim B := by
+    (hf.bilinear_comp hg B).vectorMeasure = hf.vectorMeasure.withDensity g.rightLim B.flip +
+      hg.vectorMeasure.withDensity f.leftLim B := by
   apply VectorMeasure.ext_of_Icc _ _ (fun a b hab ↦ ?_)
   have := setIntegral_Icc_rightLim_sub_leftLim_eq  hf hg (B := B) (a := a) (b := b)
   rw [integral_fun_sub hg.rightLim.integrable (integrable_const _),
@@ -211,8 +208,7 @@ theorem vectorMeasure_bilinear_comp_eq'
       + hg.vectorMeasure.withDensity f.rightLim B := by
   have : (hf.bilinear_comp hg B).vectorMeasure = (hg.bilinear_comp hf B.flip).vectorMeasure :=
     ext_of_Icc _ _ (fun a b hab ↦ by simp [hab])
-  rw [this, hg.vectorMeasure_bilinear_comp_eq hf, add_comm]
-  rw [ContinuousLinearMap.flip_flip]
+  rw [this, hg.vectorMeasure_bilinear_comp_eq hf, add_comm, B.flip_flip]
 
 /-- *Integration by parts* for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
 Version with a general pairing function `B`, and over a general integration set `s`. -/
