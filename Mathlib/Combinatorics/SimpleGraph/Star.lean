@@ -92,6 +92,7 @@ theorem maxDegree_starGraph [Fintype V] [DecidableEq V] (r : V) :
     Nat.le_sub_one_of_lt <| maxDegree_lt_card_verts _
 
 /-- An equivalence of vertex types lifts to an isomorphism of star graphs. -/
+@[simps toEquiv]
 def starGraphIsoOfEquiv [DecidableEq W] (e : V ≃ W) (v : V) (w : W) :
     starGraph v ≃g starGraph w where
   __ := e.trans <| .swap w (e v)
@@ -108,6 +109,7 @@ theorem coe_starGraphIsoOfEquiv [DecidableEq W] (e : V ≃ W) (v : V) (w : W) :
   rfl
 
 /-- An embedding between vertex types lifts to an embedding between star graphs. -/
+@[simps toEmbedding]
 def starGraphEmbeddingOfEmbedding [DecidableEq W] (f : V ↪ W) (v : V) (w : W) :
     starGraph v ↪g starGraph w where
   __ := f.trans <| Equiv.swap w (f v)
@@ -134,6 +136,7 @@ theorem starGraph_isIndContained_starGraph {v : V} {w : W} :
   exact ⟨(⟨·.some.toEmbedding⟩), fun ⟨f⟩ ↦ starGraphEmbeddingOfEmbedding f v w |>.isIndContained⟩
 
 /-- There's a copy of the star graph centered at every vertex. -/
+@[simps toHom]
 def starGraphCopyNeighborSet (v : V) : Copy (starGraph (none : Option (G.neighborSet v))) G where
   toHom.toFun
   | none => v
