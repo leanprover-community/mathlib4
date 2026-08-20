@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Order.Group.PosPart
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Topology.DiscreteSubset
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Tactic.Peel
@@ -668,7 +667,7 @@ singleton indicator functions.
   set s := h.toFinset with hs
   by_cases hw : w ∈ s
   · simp [hw]
-  · simp only [hw, if_false]
+  · simp only [hw, ite_false]
     have : w ∉ support D := by simpa only [hs, Set.Finite.mem_toFinset] using hw
     exact (notMem_support.mp this).symm
 

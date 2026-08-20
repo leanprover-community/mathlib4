@@ -34,7 +34,7 @@ disconnected.
 
 universe u v
 
-open CategoryTheory Topology
+open CategoryTheory
 
 /--
 The category of profinite groups. A term of this type consists of a profinite

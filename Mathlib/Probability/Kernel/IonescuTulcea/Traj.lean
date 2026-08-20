@@ -130,7 +130,7 @@ lemma frestrictLe_iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
   ext i
   simp only [frestrictLe_apply]
   obtain ⟨(zero | j), hj⟩ := i <;> rw [iterateInduction]
-  rw [dif_pos (mem_Iic.1 hj)]
+  rw [dite_eq_left (mem_Iic.1 hj)]
 
 end iterateInduction
 
@@ -432,7 +432,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
       split_ifs with h1 h2 h3 h4 h5
       any_goals lia
       cases h2
-      rw [iterateInduction, dif_neg (by lia)]
+      rw [iterateInduction, dite_eq_right (by lia)]
   -- We now want to prove that the integral of `χₙ`, which is equal to the `trajContent`
   -- of `Aₙ`, converges to `0`.
   have aux x n :
@@ -594,7 +594,6 @@ theorem traj_eq_prod (a : ℕ) :
     all_goals fun_prop
   all_goals fun_prop
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem traj_map_updateFinset {n : ℕ} (x : Π i : Iic n, X i) :
     (traj κ n x).map (updateFinset · (Iic n) x) = traj κ n x := by
   nth_rw 2 [traj_eq_prod]
@@ -750,7 +749,7 @@ theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
   · congr with y
     apply stronglyMeasurable_condExp.dependsOn_of_piLE
     simp only [Set.mem_Iic, updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite]
-    exact fun i hi ↦ (if_pos hi).symm
+    exact fun i hi ↦ (ite_eq_left hi).symm
   any_goals fun_prop
   exact (mcf.comp_measurable measurable_updateFinset).aestronglyMeasurable
 
