@@ -159,14 +159,12 @@ theorem isEdgeConnected_two_iff_forall_not_isBridge : G.IsEdgeConnected 2 ↔ �
   constructor
   · intro h
     rw [isEdgeConnected_two_iff_forall_preconnected] at h
-    intro e
-    cases e; expose_names
+    rintro ⟨x,y⟩ 
     intro hbridge
     exact (isBridge_iff.mp hbridge) (h s(x, y) x y)
   · intro h
     rw [isEdgeConnected_two_iff_forall_preconnected]
-    intro e
-    cases e; expose_names
+    rintro ⟨x,y⟩
     by_cases hV : Nonempty V
     · have hG : G.Preconnected := by
         intro u v
