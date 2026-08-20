@@ -10,7 +10,7 @@ public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 public import Mathlib.Topology.Separation.GDelta
 
 /-!
-# Completely metrizable subspaces of a T6 are 'Gδ'.
+# Completely metrizable subspaces of a T6 space are 'Gδ'.
 
 ## Main results
 This file provides a proof that all completely metrizable subspaces of
