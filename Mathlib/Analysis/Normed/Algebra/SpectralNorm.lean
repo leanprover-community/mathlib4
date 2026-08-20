@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Analysis.Normed.Algebra.SpectralRadiusLimit
+public import Mathlib.Analysis.Normed.Field.WithAbs
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
 /-!
@@ -355,8 +356,33 @@ noncomputable def toAbsoluteValue (f : SpectralNorm 𝕜 A) : AbsoluteValue A �
     map_mul' x y := by simpa [spectralNorm_unique (f.modify y) f] using f.modify_mul y x }
   else AbsoluteValue.trivial
 
+theorem toAbsoluteValue_algebraMap (f : SpectralNorm 𝕜 A) (x : 𝕜) :
+    f.toAbsoluteValue (algebraMap 𝕜 A x) = ‖x‖ := by
+  sorry
+
+variable (𝕜 A) in
 /-- The absolute value on a finite extension of a complete normed field. -/
 noncomputable def absoluteValue : AbsoluteValue A ℝ :=
   (spectralNorm 𝕜 A).toAbsoluteValue
 
+variable (A) in
+theorem absoluteValue_algebraMap (x : 𝕜) : absoluteValue 𝕜 A (algebraMap 𝕜 A x) = ‖x‖ :=
+  (spectralNorm 𝕜 A).toAbsoluteValue_algebraMap x
+
 end SpectralNorm
+
+namespace AbsoluteValue
+
+variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ) (L : Type*) [Field L] [Algebra K L]
+  [FiniteDimensional K L] [CompleteSpace (WithAbs v)]
+
+/-- The unique extension of a complete absolue value to a finite extension. -/
+noncomputable def extension : AbsoluteValue L ℝ :=
+  SpectralNorm.absoluteValue (WithAbs v) L
+
+instance : (v.extension L).LiesOver v where
+  comp_eq := by
+    ext x
+    exact SpectralNorm.absoluteValue_algebraMap L (WithAbs.toAbs v x)
+
+end AbsoluteValue
