@@ -373,9 +373,7 @@ lemma continuousOn_comp_tonelliApproximation_delayedInput
   apply hf.continuousOn.comp
     (ContinuousOn.prodMk continuousOn_id (continuousOn_tonelliApproximation_delayedInput hf n))
   intro s hs
-  exact
-    ⟨mem_Icc.mp ⟨t₀.2.1.trans hs.1, hs.2⟩,
-      mapsTo_tonelliApproximation_delayedInput hf n hs⟩
+  exact ⟨mem_Icc.mp (Icc_t0_subset_Icc hs), mapsTo_tonelliApproximation_delayedInput hf n hs⟩
 
 lemma mem_Icc_of_mem_uIoc {s t : ℝ} (ht : t ∈ Icc t₀.val tmax)
     (hs : s ∈ uIoc t₀.val t) : s ∈ Icc t₀.val tmax :=
