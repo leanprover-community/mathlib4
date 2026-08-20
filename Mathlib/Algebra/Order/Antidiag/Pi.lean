@@ -9,7 +9,7 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 public import Mathlib.Data.Finset.Sym
-public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Pi.Torsion
 
 /-!
 # Antidiagonal of functions as finsets
@@ -46,7 +46,7 @@ identification. See `Finset.finAntidiag` for the details.
 
 open Function
 
-variable {ι μ μ' : Type*}
+variable {ι μ : Type*}
 
 namespace Finset
 section AddCommMonoid

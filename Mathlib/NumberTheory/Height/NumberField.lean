@@ -245,7 +245,7 @@ private lemma relIndex_span_span_nat_mul (m : ℕ) {n : ℕ} (hn : n ≠ 0) (a :
   have H₁ : span {(n * m : 𝓞 K)} = Submodule.map f (span {↑m}) := by
     simp [LinearMap.map_span, f]
   have H₂ : span {↑(n * m), n * a} = Submodule.map f (span {↑m, a}) := by
-    simp [LinearMap.map_span, f, Set.image_pair]
+    simp [LinearMap.map_span, f]
   rw [H₁, H₂]
   exact AddSubgroup.relIndex_map_map_of_injective _ _ hf |>.symm
 
@@ -479,7 +479,8 @@ of a tuple of rational numbers equals `1` if the tuple consists of coprime integ
 lemma iSup_finitePlace_apply_eq_one_of_gcd_eq_one (v : FinitePlace ℚ) (hx : Finset.univ.gcd x = 1) :
     ⨆ i, v (x i) = 1 := by
   have hv : IsNonarchimedean (v ·) := FinitePlace.add_le v
-  have H (n : ℤ) : v n ≤ 1 := IsNonarchimedean.apply_intCast_le_one hv
+  have H (n : ℤ) : v n ≤ 1 := hv.apply_intCast_le_one (map_zero_le v 1) (map_one v)
+    (map_neg_eq_map v)
   obtain ⟨f, hf⟩ := Finset.gcd_eq_sum_mul .univ x
   apply_fun v at hf
   simp_rw [hx, Int.cast_one, map_one, Int.cast_sum, Int.cast_mul] at hf

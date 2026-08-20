@@ -5,9 +5,11 @@ Authors: Kim Morrison, Simon Hudon
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.SetLike
 
 /-!
 # The natural monoidal structure on any category with finite (co)products.

@@ -47,7 +47,7 @@ variable {R : Type u} {S : Type v}
 
 namespace MvPolynomial
 
-variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
+variable {σ : Type*} {a a' : R} {n m : σ}
 
 section CommRing
 
@@ -117,7 +117,6 @@ section Degrees
 theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem degrees_sub_le [DecidableEq σ] {p q : MvPolynomial σ R} :
     (p - q).degrees ≤ p.degrees ∪ q.degrees := by
   simpa [degrees_def] using! AddMonoidAlgebra.supDegree_sub_le

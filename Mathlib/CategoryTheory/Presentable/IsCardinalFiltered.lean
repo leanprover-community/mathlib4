@@ -54,6 +54,14 @@ lemma hasCardinalLT_arrow_walkingParallelFamily {T : Type u}
 
 namespace IsCardinalFiltered
 
+instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (J : Type*) [Category* J] [Subsingleton J] [Nonempty J] [Quiver.IsThin J] :
+    IsCardinalFiltered J κ where
+  nonempty_cocone F _ :=
+    ⟨Cocone.mk (Classical.arbitrary _)
+      { app _ := eqToHom (by subsingleton)
+        naturality _ _ _ := by subsingleton }⟩
+
 variable {J : Type u} [Category.{v} J] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
   [IsCardinalFiltered J κ]
 
@@ -224,7 +232,6 @@ instance isCardinalFiltered_under
               dsimp at this ⊢
               simp only [reassoc_of% this, Category.comp_id] } }⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance isCardinalFiltered_prod (J₁ : Type u) (J₂ : Type u')
     [Category.{v} J₁] [Category.{v'} J₂] (κ : Cardinal.{w}) [Fact κ.IsRegular]
