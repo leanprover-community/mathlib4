@@ -93,7 +93,6 @@ lemma mapsTo_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
 lemma lipschitzWith_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
     LipschitzWith 1 (delayedInput t₀ n) := by
   rw [lipschitzWith_iff_dist_le_mul]
-  simp only [NNReal.coe_one, one_mul, Real.dist_eq]
   intro x y
   simpa [delayedInput, Real.dist_eq, sub_sub_sub_cancel_right] using
     abs_max_sub_max_le_abs (x - stepSize t₀ n) (y - stepSize t₀ n) t₀.val
