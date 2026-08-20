@@ -27,7 +27,7 @@ equivalence to prove that immersions compose (in nice situations).
   iff `mfderiv I J f x` has a continuous left inverse
 * `IsLocalDiffeomorphAt.isDiffImmersionAt`: if `f` is a local diffeomorphism at `x`, then `f` is an
   immersion at `x` in the sense of differentials.
-* `IsDiffImmersionAt.comp`: `f` is an immersion at `x`, and `g` is an immersion at `f x`
+* `IsDiffImmersionAt.comp`: if `f` is an immersion at `x`, and `g` is an immersion at `f x`
   (both in the sense of differentials), then `g ∘ f` is an immersion (of differentials) at `x`
 * `IsDiffImmersionAt.of_comp`: if `g ∘ f` is an immersion at `x` (of differentials), then
   (assuming `f` and `g` are differentiable at `x` resp. `f x`), `f` is also an immersion at `x`
@@ -63,7 +63,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 variable {f : M → M'} {x : M} {n : WithTop ℕ∞}
 
 variable (I I' f x) in
-/-- We say a map `f : M → M` is an immersionat `x` in the sense of differentials
+/-- We say a map `f : M → M` is an immersion at `x` in the sense of differentials
 if `mfderiv I I' f x` splits, i.e. has a continuous left inverse.
 
 In nice situations (but not always), this is equivalent to `IsImmersionAt`.
