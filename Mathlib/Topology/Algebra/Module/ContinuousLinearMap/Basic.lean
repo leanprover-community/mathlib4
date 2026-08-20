@@ -8,12 +8,12 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
 public import Mathlib.Algebra.Module.Submodule.EqLocus
-public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.Algebra.Module.Basic
 public import Mathlib.Data.FunLike.Module
 public import Mathlib.Data.FunLike.Ring
+public import Mathlib.Algebra.Module.Submodule.Invariant
 
 /-!
 # Continuous linear maps
@@ -51,7 +51,6 @@ Later files endow it with a topological structure, see the docstring of
 assert_not_exists TrivialStar
 
 open LinearMap (ker range)
-open Topology Filter Pointwise
 
 universe u v w u'
 
@@ -589,13 +588,14 @@ theorem toLinearMap_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ
 instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) :=
   fast_instance% FunLike.monoidWithZero
 
-@[simp, norm_cast]
-theorem coe_pow' (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+@[deprecated (since := "2026-07-23")] alias coe_pow' := FunLike.coe_pow_eq_iterate
 
 @[simp, norm_cast]
-theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : (↑(f ^ n) : M₁ →ₗ[R₁] M₁) = f ^ n :=
-  DFunLike.ext' <| (coe_pow' f n).trans <| .symm <| hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+theorem toLinearMap_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : (↑(f ^ n) : M₁ →ₗ[R₁] M₁) = f ^ n :=
+  DFunLike.ext' <| (FunLike.coe_pow_eq_iterate f n).trans
+    <| .symm <| hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+
+@[deprecated (since := "2026-07-24")] protected alias coe_pow := toLinearMap_pow
 
 instance instNatCast [ContinuousAdd M₁] : NatCast (M₁ →L[R₁] M₁) where
   natCast n := n • (1 : M₁ →L[R₁] M₁)

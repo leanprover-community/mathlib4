@@ -99,16 +99,10 @@ theorem continuousWithinAt_toIcoMod_Ici : ContinuousWithinAt (toIcoMod hp a) (Ic
   continuousWithinAt_id.sub <|
     (continuousWithinAt_toIcoDiv_Ici hp a x).smul continuousWithinAt_const
 
-@[deprecated (since := "2026-01-04")]
-alias continuous_right_toIcoMod := continuousWithinAt_toIcoMod_Ici
-
 /-- `toIocMod` is continuous on the right at every point. -/
 theorem continuousWithinAt_toIocMod_Iic : ContinuousWithinAt (toIocMod hp a) (Iic x) x :=
   continuousWithinAt_id.sub <|
     (continuousWithinAt_toIocDiv_Iic hp a x).smul continuousWithinAt_const
-
-@[deprecated (since := "2026-01-04")]
-alias continuous_left_toIocMod := continuousWithinAt_toIocMod_Iic
 
 /-- At every point `x`, for all `y < x` sufficiently close to `x`,
 we have `toIcoDiv hp a y = toIocDiv hp a x`.
@@ -327,10 +321,10 @@ def liftIoc (f : 𝕜 → B) : AddCircle p → B :=
 variable {p a}
 
 theorem equivIco_coe_eq {x : 𝕜} (hx : x ∈ Ico a (a + p)) : (equivIco p a) x = ⟨x, hx⟩ := by
-  rw [Equiv.apply_eq_iff_eq_symm_apply, equivIco, QuotientAddGroup.equivIcoMod_symm_apply]
+  rw [← Equiv.eq_symm_apply, equivIco, QuotientAddGroup.equivIcoMod_symm_apply]
 
 theorem equivIoc_coe_eq {x : 𝕜} (hx : x ∈ Ioc a (a + p)) : (equivIoc p a) x = ⟨x, hx⟩ := by
-  rw [Equiv.apply_eq_iff_eq_symm_apply, equivIoc, QuotientAddGroup.equivIocMod_symm_apply]
+  rw [← Equiv.eq_symm_apply, equivIoc, QuotientAddGroup.equivIocMod_symm_apply]
 
 @[simp]
 lemma coe_equivIco {y : AddCircle p} :
@@ -661,7 +655,6 @@ lemma isOfFinAddOrder_iff_exists_rat_eq_div {a : 𝕜} :
 
 variable (p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural bijection between points of order `n` and natural numbers less than and coprime to
 `n`. The inverse of the map sends `m ↦ (m/n * p : AddCircle p)` where `m` is coprime to `n` and
 satisfies `0 ≤ m < n`. -/

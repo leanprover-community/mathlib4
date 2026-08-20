@@ -269,14 +269,6 @@ theorem isometry_toCloseds : Isometry (@NonemptyCompacts.toCloseds α _ _) :=
 theorem isometry_toCompacts : Isometry (NonemptyCompacts.toCompacts (α := α)) :=
   fun _ _ => rfl
 
-/-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
-@[deprecated
-  "Use `TopologicalSpace.NonemptyCompacts.isClosedEmbedding_toCloseds.isClosed_range` instead"
-  (since := "2026-01-28")]
-theorem isClosed_in_closeds [CompleteSpace α] :
-    IsClosed (range <| @NonemptyCompacts.toCloseds α _ _) :=
-  NonemptyCompacts.isClosedEmbedding_toCloseds.isClosed_range
-
 theorem isometry_singleton : Isometry ({·} : α → NonemptyCompacts α) :=
   fun _ _ => hausdorffEDist_singleton
 
@@ -291,52 +283,6 @@ theorem lipschitz_prod :
 end NonemptyCompacts
 
 end TopologicalSpace
-
-namespace EMetric
-
-open Metric
-
-@[deprecated (since := "2026-01-08")]
-alias mem_hausdorffEntourage_of_hausdorffEdist_lt :=
-  mem_hausdorffEntourage_of_hausdorffEDist_lt
-
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_le_of_mem_hausdorffEntourage := hausdorffEDist_le_of_mem_hausdorffEntourage
-
-@[deprecated (since := "2026-01-08")]
-alias continuous_infEdist_hausdorffEdist :=
-  TopologicalSpace.Closeds.continuous_infEDist
-
-@[deprecated (since := "2026-01-08")]
-alias Closeds.edist_eq := TopologicalSpace.Closeds.edist_eq
-
-@[deprecated (since := "2026-01-08")]
-alias Closeds.isometry_singleton := TopologicalSpace.Closeds.isometry_singleton
-
-@[deprecated (since := "2026-01-08")]
-alias Closeds.lipschitz_sup := TopologicalSpace.Closeds.lipschitz_sup
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.isometry_toCloseds :=
-  TopologicalSpace.NonemptyCompacts.isometry_toCloseds
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.isClosed_in_closeds :=
-  TopologicalSpace.NonemptyCompacts.isClosed_in_closeds
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.isometry_singleton :=
-  TopologicalSpace.NonemptyCompacts.isometry_singleton
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.lipschitz_sup :=
-  TopologicalSpace.NonemptyCompacts.lipschitz_sup
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.lipschitz_prod :=
-  TopologicalSpace.NonemptyCompacts.lipschitz_prod
-
-end EMetric --namespace
 
 namespace Metric
 
