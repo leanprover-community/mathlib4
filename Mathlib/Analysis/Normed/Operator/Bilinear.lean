@@ -153,12 +153,12 @@ variable [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃]
 For a version bundled as `LinearIsometryEquiv`, see
 `ContinuousLinearMap.flipL`. -/
 def flip (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') : F' →SL[σ₂₃] E' →SL[σ₁₃] G' :=
-  letI : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
-  letI : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
-  letI : SeminormedAddCommGroup F' := NormableSpace.toSeminormedAddCommGroup 𝕜₂ F'
-  letI : NormedSpace 𝕜₂ F' := NormableSpace.toNormedSpace 𝕜₂ F'
-  letI : SeminormedAddCommGroup G' := NormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
-  letI : NormedSpace 𝕜₃ G' := NormableSpace.toNormedSpace 𝕜₃ G'
+  let : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
+  let : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
+  let : SeminormedAddCommGroup F' := NormableSpace.toSeminormedAddCommGroup 𝕜₂ F'
+  let : NormedSpace 𝕜₂ F' := NormableSpace.toNormedSpace 𝕜₂ F'
+  let : SeminormedAddCommGroup G' := NormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
+  let : NormedSpace 𝕜₃ G' := NormableSpace.toNormedSpace 𝕜₃ G'
   LinearMap.mkContinuous₂
     (LinearMap.mk₂'ₛₗ σ₂₃ σ₁₃ (fun y x => f x y) (fun x y z => (f z).map_add x y)
       (fun c y x => (f x).map_smulₛₗ c y) (fun z x y => by simp only [f.map_add, add_apply])
@@ -294,12 +294,12 @@ def compSLOfNormedSpace : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂]
 
 /-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
 def compSL : (F' →SL[σ₂₃] G') →L[𝕜₃] (E' →SL[σ₁₂] F') →SL[σ₂₃] E' →SL[σ₁₃] G' :=
-  letI : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
-  letI : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
-  letI : SeminormedAddCommGroup F' := NormableSpace.toSeminormedAddCommGroup 𝕜₂ F'
-  letI : NormedSpace 𝕜₂ F' := NormableSpace.toNormedSpace 𝕜₂ F'
-  letI : SeminormedAddCommGroup G' := NormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
-  letI : NormedSpace 𝕜₃ G' := NormableSpace.toNormedSpace 𝕜₃ G'
+  let : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
+  let : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
+  let : SeminormedAddCommGroup F' := NormableSpace.toSeminormedAddCommGroup 𝕜₂ F'
+  let : NormedSpace 𝕜₂ F' := NormableSpace.toNormedSpace 𝕜₂ F'
+  let : SeminormedAddCommGroup G' := NormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
+  let : NormedSpace 𝕜₃ G' := NormableSpace.toNormedSpace 𝕜₃ G'
   compSLOfNormedSpace E' F' G' σ₁₂ σ₂₃
 
 theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 := by
@@ -403,7 +403,7 @@ lemma bilinearComp_zero_left {f : E' →SL[σ₁₃] F' →SL[σ₂₃] G'} {gF 
 lemma bilinearComp_zero_right {f : E' →SL[σ₁₃] F' →SL[σ₂₃] G'} {gE : E'' →SL[σ₁'] E'} :
     bilinearComp f gE (0 : F'' →SL[σ₂'] F') = 0 := by ext; simp
 
-variable [RingHomIsometric σ₁₃] [RingHomIsometric σ₁'] [RingHomIsometric σ₂']
+variable [RingHomIsometric σ₁₃] [RingHomIsometric σ₁'] [RingHomIsometric σ₂'] [NormableSpace 𝕜 E']
 
 /-- Derivative of a continuous bilinear map `f : E →L[𝕜] F →L[𝕜] G` interpreted as a map `E × F → G`
 at point `p : E × F` evaluated at `q : E × F`, as a continuous bilinear map. -/
@@ -411,11 +411,11 @@ def deriv₂ (f : E' →L[𝕜] Fₗ' →L[𝕜] Gₗ') : E' × Fₗ' →L[𝕜]
   f.bilinearComp (fst _ _ _) (snd _ _ _) + f.flip.bilinearComp (snd _ _ _) (fst _ _ _)
 
 @[simp]
-theorem coe_deriv₂ (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (p : E × Fₗ) :
-    ⇑(f.deriv₂ p) = fun q : E × Fₗ => f p.1 q.2 + f q.1 p.2 :=
+theorem coe_deriv₂ (f : E' →L[𝕜] Fₗ' →L[𝕜] Gₗ') (p : E' × Fₗ') :
+    ⇑(f.deriv₂ p) = fun q : E' × Fₗ' => f p.1 q.2 + f q.1 p.2 :=
   rfl
 
-theorem map_add_add (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (x x' : E) (y y' : Fₗ) :
+theorem map_add_add (f : E' →L[𝕜] Fₗ' →L[𝕜] Gₗ') (x x' : E') (y y' : Fₗ') :
     f (x + x') (y + y') = f x y + f.deriv₂ (x, y) (x', y') + f x' y' := by
   simp only [map_add, add_apply, coe_deriv₂, add_assoc]
   abel
@@ -454,12 +454,9 @@ theorem nnnorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight
 
 variable (𝕜 E Fₗ) in
 /-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
-`smulRightL (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`.
-
-This is also known as a rank-one operator.
-See also `InnerProductSpace.rankOne` for the rank-one operator on Hilbert spaces. -/
-@[simps! apply_apply]
-def smulRightL : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ :=
+`smulRightLOfNormedSpace (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`.
+*Do not use*: use instead `smulRightL` which works for normable spaces. -/
+def smulRightLOfNormedSpace : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ :=
   LinearMap.mkContinuous₂
     { toFun := smulRightₗ
       map_add' := fun c₁ c₂ => by
@@ -471,6 +468,20 @@ def smulRightL : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ 
     1 fun c x => by
       simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
         le_refl]
+
+variable (𝕜 E' Fₗ') in
+/-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
+`smulRightL (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`.
+
+This is also known as a rank-one operator.
+See also `InnerProductSpace.rankOne` for the rank-one operator on Hilbert spaces. -/
+@[simps! apply_apply]
+def smulRightL [IsTopologicalAddGroup Fₗ'] : StrongDual 𝕜 E' →L[𝕜] Fₗ' →L[𝕜] E' →L[𝕜] Fₗ' :=
+  let : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
+  let : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
+  let : SeminormedAddCommGroup Fₗ' := NormableSpace.toSeminormedAddCommGroup 𝕜 Fₗ'
+  let : NormedSpace 𝕜 Fₗ' := NormableSpace.toNormedSpace 𝕜 Fₗ'
+  smulRightLOfNormedSpace 𝕜 E' Fₗ'
 
 end ContinuousLinearMap
 
