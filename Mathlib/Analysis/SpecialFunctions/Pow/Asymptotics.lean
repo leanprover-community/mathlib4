@@ -155,8 +155,9 @@ nonrec theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
 theorem ENNReal.tendsto_rpow_at_top {y : ℝ} (hy : 0 < y) :
     Tendsto (fun x : ℝ≥0∞ ↦ x ^ y) (𝓝 ∞) (𝓝 ∞) := by
   rw [nhds_top_basis_Ici.tendsto_iff nhds_top_basis_Ici]
-  refine fun x hx ↦ ⟨x ^ y⁻¹, (rpow_lt_top_of_nonneg (inv_nonneg.2 hy.le) hx.ne), ?_⟩
-  exact fun z hz ↦ (rpow_inv_le_iff hy).1 hz
+  intro x hx
+  refine ⟨x ^ y⁻¹, (rpow_lt_top_of_nonneg (inv_nonneg.2 hy.le) hx.ne), ?_⟩
+  exact fun _ ↦ (rpow_inv_le_iff hy).1
 
 end Limits
 
