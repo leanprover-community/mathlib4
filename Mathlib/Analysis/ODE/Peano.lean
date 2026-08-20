@@ -51,6 +51,9 @@ namespace IsPeano
 variable {E : Type*} [NormedAddCommGroup E]
   {f : ℝ × E → E} {α : ℝ → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {r L : ℝ≥0}
 
+private lemma Icc_t0_subset_Icc : Icc t₀.val tmax ⊆ Icc tmin tmax :=
+  Icc_subset_Icc_left t₀.2.1
+
 lemma mul_abs_sub_le_radius {t : ℝ} (hf : IsPeano f t₀ x₀ r L)
     (ht : t ∈ Icc t₀.val tmax) : L * |t - t₀| ≤ r := by
   have h_diff : t - t₀ ≤ max (tmax - t₀) (t₀ - tmin) := by
@@ -147,7 +150,7 @@ private lemma tonelliIterate_bounds (hf : IsPeano f t₀ x₀ r L) (n k : ℕ) :
           (ContinuousOn.comp hk.2.continuousOn
             (lipschitzWith_delayedInput t₀ n).continuous.continuousOn
             (mapsTo_delayedInput t₀ n)))
-        (fun t ht ↦ ⟨⟨t₀.2.1.trans ht.1, ht.2⟩, h_map ht⟩)
+        (fun t ht ↦ ⟨Icc_t0_subset_Icc ht, h_map ht⟩)
     have h_int :
         IntervalIntegrable
           (fun s ↦ f (s, tonelliIterate f t₀ x₀ n k (delayedInput t₀ n s)))
@@ -160,7 +163,7 @@ private lemma tonelliIterate_bounds (hf : IsPeano f t₀ x₀ r L) (n k : ℕ) :
         intervalIntegral.integral_interval_sub_left]
       · refine intervalIntegral.norm_integral_le_of_norm_le_const fun t ht ↦ ?_
         have ht' := uIoc_subset_uIcc.trans (uIcc_subset_Icc hb ha) ht
-        exact hf.norm_le t ⟨t₀.2.1.trans ht'.1, ht'.2⟩ _ (h_map ht')
+        exact hf.norm_le t (Icc_t0_subset_Icc ht') _ (h_map ht')
       · exact h_int.mono_set (uIcc_subset_uIcc left_mem_uIcc <| Icc_subset_uIcc ha)
       · exact h_int.mono_set (uIcc_subset_uIcc left_mem_uIcc <| Icc_subset_uIcc hb)
     refine ⟨fun t ht ↦ ?_, h_lip⟩
