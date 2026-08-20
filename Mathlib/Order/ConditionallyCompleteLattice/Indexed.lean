@@ -50,6 +50,7 @@ theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)
 
 @[deprecated (since := "2026-05-04")] alias WithBot.ciSup_empty := WithBot.iSup_empty
 
+@[to_dual]
 theorem WithBot.coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
     {α : Type*} [CompleteLattice α] (f : ι → α) :
     ⨆ i ∈ s, f i = ⨆ i ∈ s, (f i : WithBot α) := by
@@ -62,12 +63,7 @@ theorem WithBot.coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
   · simpa only [iSup_pos h] using by apply le_biSup _ h
   · simpa only [iSup_neg h] using le_trans (by simp) (le_biSup _ hj)
 
-@[to_dual existing]
-theorem WithTop.coe_biInf {ι : Type*} {s : Set ι} (hs : s.Nonempty)
-    {α : Type*} [CompleteLattice α] (f : ι → α) :
-    ⨅ i ∈ s, f i = ⨅ i ∈ s, (f i : WithTop α) :=
-  WithBot.coe_biSup (α := αᵒᵈ) hs f
-
+@[to_dual]
 theorem WithBot.coe_biInf {ι : Type*} {s : Set ι} {α : Type*} [CompleteLattice α] (f : ι → α) :
     ⨅ i ∈ s, f i = ⨅ i ∈ s, (f i : WithBot α) := by
   refine le_antisymm (by simpa using fun _ ↦ biInf_le _) <|
@@ -75,11 +71,6 @@ theorem WithBot.coe_biInf {ι : Type*} {s : Set ι} {α : Type*} [CompleteLattic
   by_cases h : i ∈ s
   · simpa only [iInf_pos h] using by apply biInf_le _ h
   · simp [iInf_neg h]
-
-@[to_dual existing]
-theorem WithTop.coe_biSup {ι : Type*} {s : Set ι} {α : Type*} [CompleteLattice α] (f : ι → α) :
-    ⨆ i ∈ s, f i = ⨆ i ∈ s, (f i : WithTop α) :=
-  WithBot.coe_biInf (α := αᵒᵈ) f
 
 end
 
