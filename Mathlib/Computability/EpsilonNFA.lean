@@ -70,9 +70,28 @@ lemma mem_εClosure_of_mem_step (hts : t ∈ M.step s none) (hs : s ∈ M.εClos
 @[deprecated mem_εClosure_of_mem_step (since := "2026-07-07")]
 alias εClosure.step := MemεClosure.step
 
+/-- An induction principle for membership of `M.εClosure S`. If `motive` holds of all elements of
+`S` and is preserved under ε-transitions, then it holds of all elements of `M.εClosure S`. -/
+@[elab_as_elim]
+lemma εClosure_induction {motive : ∀ x, x ∈ M.εClosure S → Prop}
+    (base : ∀ (x) (hx : x ∈ S), motive x (M.subset_εClosure S hx))
+    (step : ∀ (x y) (hyx : y ∈ M.step x none) (hx : x ∈ M.εClosure S),
+      motive x hx → motive y (M.mem_εClosure_of_mem_step hyx hx))
+    {x : σ} (hx : x ∈ M.εClosure S) : motive x hx := by
+  induction hx with
+  | base _ hx => exact base _ hx
+  | step _ _ hyx _ ih => exact step _ _ hyx _ ih
+
+/-- `M.εClosure S` is the smallest set containing `S` which is closed under ε-transitions of `M`. -/
+lemma εClosure_min {T : Set σ} (hST : S ⊆ T)
+    (hT : ∀ x ∈ T, ∀ y ∈ M.step x none, y ∈ T) : M.εClosure S ⊆ T := fun x hx ↦ by
+  induction hx using εClosure_induction with
+  | base _ hx => exact hST hx
+  | step _ _ hyx _ ih => exact hT _ ih _ hyx
+
 @[simp]
 theorem εClosure_empty : M.εClosure ∅ = ∅ :=
-  eq_empty_of_forall_notMem fun s hs ↦ by induction hs <;> assumption
+  subset_empty_iff.1 <| M.εClosure_min subset_rfl (by simp)
 
 @[simp]
 theorem εClosure_univ : M.εClosure univ = univ :=
@@ -80,7 +99,7 @@ theorem εClosure_univ : M.εClosure univ = univ :=
 
 theorem mem_εClosure_iff_exists : s ∈ M.εClosure S ↔ ∃ t ∈ S, s ∈ M.εClosure {t} where
   mp h := by
-    induction h with
+    induction h using εClosure_induction with
     | base => tauto
     | step _ _ _ _ ih =>
       obtain ⟨s, _, _⟩ := ih
@@ -88,7 +107,8 @@ theorem mem_εClosure_iff_exists : s ∈ M.εClosure S ↔ ∃ t ∈ S, s ∈ M.
       solve_by_elim [mem_εClosure_of_mem_step]
   mpr := by
     intro ⟨t, _, h⟩
-    induction h <;> subst_vars <;> solve_by_elim [mem_εClosure_of_mem_step]
+    induction h using εClosure_induction <;> subst_vars <;>
+      solve_by_elim [mem_εClosure_of_mem_step]
 
 /-- `M.stepSet S a` is the union of the ε-closure of `M.step s a` for all `s ∈ S`. -/
 def stepSet (S : Set σ) (a : α) : Set σ :=
@@ -201,7 +221,7 @@ theorem isPath_append {x y : List (Option α)} :
 theorem mem_εClosure_iff_exists_path {s₁ s₂ : σ} :
     s₂ ∈ M.εClosure {s₁} ↔ ∃ n, M.IsPath s₁ s₂ (.replicate n none) where
   mp h := by
-    induction h with
+    induction h using εClosure_induction with
     | base t =>
       use 0
       subst t
@@ -306,12 +326,8 @@ def toεNFA (M : NFA α σ) : εNFA α σ where
   accept := M.accept
 
 @[simp]
-theorem toεNFA_εClosure (M : NFA α σ) (S : Set σ) : M.toεNFA.εClosure S = S := by
-  ext a
-  refine ⟨?_, fun ha ↦ εNFA.subset_εClosure _ _ ha⟩
-  rintro (⟨_, h⟩ | ⟨_, _, h, _⟩)
-  · exact h
-  · cases h
+theorem toεNFA_εClosure (M : NFA α σ) (S : Set σ) : M.toεNFA.εClosure S = S :=
+  (εNFA.εClosure_min _ subset_rfl (by simp [toεNFA])).antisymm  (εNFA.subset_εClosure ..)
 
 @[simp]
 theorem toεNFA_evalFrom_match (M : NFA α σ) (start : Set σ) :

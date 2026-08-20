@@ -88,6 +88,21 @@ def span (S : Set (ℙ K V)) : Subspace K V where
 /-- The span of a set of points contains the set of points. -/
 theorem subset_span (S : Set (ℙ K V)) : S ⊆ span S := fun _x hx => .of_mem _ hx
 
+/-- An induction principle for membership of `span S`. If `motive` holds of all points of `S` and is
+preserved under taking the point determined by the (non-zero) sum of two non-zero vectors, then it
+holds of all points of `span S`. -/
+@[elab_as_elim]
+lemma span_induction {S : Set (ℙ K V)} {motive : ∀ x, x ∈ span S → Prop}
+    (of_mem : ∀ (x) (hx : x ∈ S), motive x (subset_span S hx))
+    (add : ∀ (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0)
+      (hv' : Projectivization.mk K v hv ∈ span S)
+      (hw' : Projectivization.mk K w hw ∈ span S), motive _ hv' → motive _ hw' →
+      motive (Projectivization.mk K (v + w) hvw) ((span S).mem_add v w hv hw hvw hv' hw'))
+    {x : ℙ K V} (hx : x ∈ span S) : motive x hx := by
+  induction hx with
+  | of_mem _ hx => exact of_mem _ hx
+  | add v w hv hw hvw _ _ ih₁ ih₂ => exact add v w hv hw hvw _ _ ih₁ ih₂
+
 /-- The span of a set of points is a Galois insertion between sets of points of a projective space
 and subspaces of the projective space. -/
 def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe where
@@ -95,7 +110,7 @@ def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe whe
   gc A B :=
     ⟨fun h => le_trans (subset_span _) h, by
       intro h x hx
-      induction hx with
+      induction hx using span_induction with
       | of_mem => apply h; assumption
       | add => apply B.mem_add; assumption'⟩
   le_l_u _ := subset_span _
