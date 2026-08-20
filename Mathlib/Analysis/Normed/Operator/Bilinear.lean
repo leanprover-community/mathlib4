@@ -326,7 +326,7 @@ theorem _root_.Continuous.clm_comp_const {X} [TopologicalSpace X] {g : X → F' 
     Continuous (fun x => (g x).comp f : X → E' →SL[σ₁₃] G') :=
   (ContinuousLinearMap.flip (compSL E' F' G' σ₁₂ σ₂₃) f).continuous.comp hg
 
-variable (𝕜 σ₁₂ σ₂₃ E' Fₗ' Gₗ')
+variable (𝕜 σ₁₂ σ₂₃ E E' Fₗ Fₗ' Gₗ Gₗ')
 
 /-- Composition of continuous linear maps as a continuous bilinear map. -/
 def compL : (Fₗ' →L[𝕜] Gₗ') →L[𝕜] (E' →L[𝕜] Fₗ') →L[𝕜] E' →L[𝕜] Gₗ' :=
@@ -339,7 +339,7 @@ theorem norm_compL_le : ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
 theorem compL_apply (f : Fₗ' →L[𝕜] Gₗ') (g : E' →L[𝕜] Fₗ') : compL 𝕜 E' Fₗ' Gₗ' f g = f.comp g :=
   rfl
 
-variable (Eₗ') {𝕜 E' Fₗ' Gₗ'}
+variable (Eₗ Eₗ') {𝕜 E E' Fₗ Fₗ' Gₗ Gₗ'}
 
 /-- Apply `L(x,-)` pointwise to bilinear maps, as a continuous bilinear map -/
 @[simps! apply]
@@ -364,7 +364,7 @@ theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR E
 
 theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompL Eₗ L‖ ≤ ‖L‖ := by
   rw [precompL, opNorm_flip, ← opNorm_flip L]
-  exact norm_precompR_le L.flip
+  exact norm_precompR_le _ L.flip
 
 end ContinuousLinearMap
 
