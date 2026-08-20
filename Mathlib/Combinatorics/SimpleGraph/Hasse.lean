@@ -59,11 +59,13 @@ theorem hasseDualIso_apply (a : αᵒᵈ) : hasseDualIso a = ofDual a :=
 theorem hasseDualIso_symm_apply (a : α) : hasseDualIso.symm a = toDual a :=
   rfl
 
+/-- Lift an order embedding with an `OrdConnected` range to a graph embedding
+between Hasse diagrams -/
 @[simps toEmbedding]
-protected def Embedding.hasse (f : α ↪o β) (h : (Set.range f).OrdConnected) :
+protected def Embedding.hasse (f : α ↪o β) (hf : (Set.range f).OrdConnected) :
     hasse α ↪g hasse β where
   toEmbedding := f.toEmbedding
-  map_rel_iff' := by simp [h.apply_covBy_apply_iff]
+  map_rel_iff' := by simp [hf.apply_covBy_apply_iff]
 
 @[simp]
 theorem Embedding.coe_hasse (f : α ↪o β) (hf) : ⇑(Embedding.hasse f hf) = f :=
