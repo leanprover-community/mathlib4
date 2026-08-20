@@ -95,10 +95,8 @@ lemma lipschitzWith_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
   rw [lipschitzWith_iff_dist_le_mul]
   simp only [NNReal.coe_one, one_mul, Real.dist_eq]
   intro x y
-  have h_dist :=
+  simpa [delayedInput, Real.dist_eq, sub_sub_sub_cancel_right] using
     abs_max_sub_max_le_abs (x - stepSize t₀ n) (y - stepSize t₀ n) t₀.val
-  rw [sub_sub_sub_cancel_right] at h_dist
-  assumption
 
 /-- The recursively defined curves used to build the Tonelli approximations. -/
 noncomputable def tonelliIterate (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x₀ : E) (n : ℕ) :
