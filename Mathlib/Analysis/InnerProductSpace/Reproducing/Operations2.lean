@@ -24,7 +24,7 @@ open InnerProductSpace Submodule RKHS
 
 namespace RKHS
 
-namespace Add
+namespace Add'
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {X : Type*}
@@ -123,6 +123,6 @@ theorem norm_sq_kerFun_add (x : X) (v : V) :
     ‖kerFun (H + H') x v‖ ^ 2 = ‖kerFun H x v‖ ^ 2 + ‖kerFun H' x v‖ ^ 2 := by
   simp [← (projection H H').norm_map, projection_kerFun, WithLp.prod_norm_sq_eq_of_L2]
 
-end Add
+end Add'
 
 end RKHS
