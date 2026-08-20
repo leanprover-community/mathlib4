@@ -112,7 +112,7 @@ jobs:
         echo "from_date=$from_date" >> "$GITHUB_OUTPUT"
         echo "to_date=$to_date" >> "$GITHUB_OUTPUT"
 
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Configure Lean
       uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
@@ -129,7 +129,7 @@ jobs:
         printf $'::group::Running lake env\n'
         lake env | tr ':' '\n'
         echo "::endgroup::"
-        for repo in Mathlib Archive Counterexamples; do
+        for repo in Mathlib Archive Counterexamples Wanted; do
           echo "::group::Retrieving the cache for ${repo}"
           lake exe cache get "$repo" || true
           echo "::endgroup::"
@@ -141,12 +141,12 @@ jobs:
         NEW_DATE: "${{ steps.process_dates.outputs.to_date }}"
         DRY_RUN: "${{ toJson(inputs.dry_run) }}"
       run: |
-        # We create a temporary file importing `Mathlib`, `Archive` and `Counterexamples`
-        # and running `#clear_deprecations` with the expected date-range.
+        # We create a temporary file importing `Mathlib`, `Archive`, `Counterexamples` and
+        # `Wanted`, and running `#clear_deprecations` with the expected date-range.
         tmplean="$(mktemp -p Mathlib --suffix=.lean RMDXXX)"
         echo "::group::Creating ${tmplean} file"
         {
-          for repo in Mathlib Archive Counterexamples; do
+          for repo in Mathlib Archive Counterexamples Wanted; do
             printf $'import %s\n' "$repo"
           done
           REALLY=$([ "$DRY_RUN" = "true" ] && echo "" || echo "really")

@@ -334,7 +334,7 @@ lemma integral_nonneg {f : α →ₛ F} (hf : 0 ≤ᵐ[μ] f) :
   · suffices μ (f ⁻¹' {f y}) = 0 by simp [this, measureReal_def]
     rw [← nonpos_iff_eq_zero]
     refine le_of_le_of_eq (measure_mono fun x hx ↦ ?_) (ae_iff.mp hf)
-    simp only [Set.mem_preimage, mem_singleton_iff, mem_setOf_eq] at hx ⊢
+    simp only [Set.mem_preimage, mem_singleton_iff, mem_ofPred_eq] at hx ⊢
     exact hx ▸ hy
 
 lemma integral_mono {f g : α →ₛ F} (h : f ≤ᵐ[μ] g) (hf : Integrable f μ) (hg : Integrable g μ) :

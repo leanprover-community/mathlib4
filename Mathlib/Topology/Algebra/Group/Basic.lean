@@ -37,6 +37,8 @@ groups.
 topological space, group, topological group
 -/
 
+set_option linter.style.longFile 1600
+
 @[expose] public section
 
 open Set Filter TopologicalSpace Function Topology MulOpposite Pointwise
@@ -48,7 +50,7 @@ variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
 /-- In a Hausdorff magma with continuous multiplication, the centralizer of any set is closed. -/
 lemma Set.isClosed_centralizer {M : Type*} (s : Set M) [Mul M] [TopologicalSpace M]
     [SeparatelyContinuousMul M] [T2Space M] : IsClosed (centralizer s) := by
-  rw [centralizer, setOf_forall]
+  rw [centralizer, ofPred_forall]
   refine isClosed_sInter ?_
   rintro - ⟨m, ht, rfl⟩
   refine isClosed_imp (by simp) <| isClosed_eq ?_ ?_
@@ -226,7 +228,7 @@ theorem continuousAt_inv {x : G} : ContinuousAt Inv.inv x :=
 theorem tendsto_inv (a : G) : Tendsto Inv.inv (𝓝 a) (𝓝 a⁻¹) :=
   continuousAt_inv
 
-variable [TopologicalSpace α] {f : α → G} {s : Set α} {x : α}
+variable [TopologicalSpace α] {f : α → G} {x : α}
 
 @[to_additive]
 instance OrderDual.instContinuousInv : ContinuousInv Gᵒᵈ := ‹ContinuousInv G›
@@ -284,10 +286,16 @@ section PointwiseLimits
 variable (G₁ G₂ : Type*) [TopologicalSpace G₂] [T2Space G₂]
 
 @[to_additive]
-theorem isClosed_setOf_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
+theorem isClosed_setOfPred_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
     IsClosed { f : G₁ → G₂ | ∀ x, f x⁻¹ = (f x)⁻¹ } := by
-  simp only [setOf_forall]
+  simp only [ofPred_forall]
   exact isClosed_iInter fun i => isClosed_eq (continuous_apply _) (continuous_apply _).inv
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_map_inv := isClosed_setOfPred_map_inv
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_map_neg := isClosed_setOfPred_map_neg
 
 end PointwiseLimits
 
@@ -428,6 +436,16 @@ instance ConjAct.units_continuousConstSMul {M} [Monoid M] [TopologicalSpace M]
     [ContinuousMul M] : ContinuousConstSMul (ConjAct Mˣ) M :=
   ⟨fun _ => (continuous_const.mul continuous_id).mul continuous_const⟩
 
+open scoped Pointwise in
+instance [Group G] [Group H] [TopologicalSpace G] [MulDistribMulAction H G]
+    [ContinuousConstSMul H G] {𝒢 : Subgroup G} (h : H) [DiscreteTopology 𝒢] :
+    DiscreteTopology ↑(h • 𝒢) := by
+  simp only [← SetLike.coe_sort_coe, ← isDiscrete_iff_discreteTopology] at *
+  refine IsDiscrete.image_of_isOpenMap ‹_› ?_ fun x y ↦ by simp
+  apply IsOpenMap.of_inverse (f' := fun x ↦ h⁻¹ • x) (continuous_const_smul _) <;>
+  · intro x
+    simp
+
 variable [TopologicalSpace G] [Inv G] [Mul G]
 
 /-- Conjugation is jointly continuous on `G × G` when both `mul` and `inv` are continuous. -/
@@ -443,6 +461,10 @@ theorem IsTopologicalGroup.continuous_conj_prod [ContinuousMul G] [ContinuousInv
 theorem IsTopologicalGroup.continuous_conj [SeparatelyContinuousMul G] (g : G) :
     Continuous fun h : G => g * h * g⁻¹ :=
   (continuous_mul_const g⁻¹).comp (continuous_const_mul g)
+
+instance {G : Type*} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G] :
+    ContinuousConstSMul (ConjAct G) G where
+  continuous_const_smul h := IsTopologicalGroup.continuous_conj (ConjAct.ofConjAct h)
 
 /-- Conjugation acting on fixed element of the group is continuous when both `mul` and
 `inv` are continuous. -/
@@ -745,17 +767,28 @@ def Subgroup.connectedComponentOfOne (G : Type*) [TopologicalSpace G] [Group G]
   mul_mem' hg hh := mul_mem_connectedComponent_one hg hh
   inv_mem' hg := inv_mem_connectedComponent_one hg
 
+/-- If a subgroup of a topological group is commutative, then so is its topological closure. -/
+@[to_additive
+/-- If a subgroup of an additive topological group is commutative, then so is its
+topological closure. -/]
+instance Subgroup.isMulCommutative_topologicalClosure [T2Space G] (s : Subgroup G)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubmonoid.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
 /-- If a subgroup of a topological group is commutative, then so is its topological closure.
 
 See note [reducible non-instances]. -/
-@[to_additive
+@[to_additive (attr := deprecated Subgroup.isMulCommutative_topologicalClosure
+(since := "2026-07-29"))
   /-- If a subgroup of an additive topological group is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances]. -/]
 abbrev Subgroup.commGroupTopologicalClosure [T2Space G] (s : Subgroup G)
     (hs : ∀ x y : s, x * y = y * x) : CommGroup s.topologicalClosure :=
-  { s.topologicalClosure.toGroup, s.toSubmonoid.commMonoidTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 variable (G) in
 @[to_additive]
@@ -801,10 +834,22 @@ theorem Filter.HasBasis.nhds_of_one {ι : Sort*} {p : ι → Prop} {s : ι → S
   exact hb.comap _
 
 @[to_additive]
+theorem Filter.HasBasis.nhds_of_one' {ι : Sort*} {p : ι → Prop} {s : ι → Set G}
+    (hb : (𝓝 1).HasBasis p s) (x : G) :
+    (𝓝 x).HasBasis p fun i ↦ x • (s i) := by
+  rw [← map_mul_left_nhds_one x]
+  exact hb.map (x * ·)
+
+@[to_additive]
+theorem Filter.HasBasis.nhds_one_inv {ι : Sort*} {p : ι → Prop} {U : ι → Set G}
+    (hU : (𝓝 1).HasBasis p U) : (𝓝 1).HasBasis p fun i ↦ (U i)⁻¹ := by
+  simpa [← nhds_inv] using hU.inv
+
+@[to_additive]
 theorem mem_closure_iff_nhds_one {x : G} {s : Set G} :
     x ∈ closure s ↔ ∀ U ∈ (𝓝 1 : Filter G), ∃ y ∈ s, y / x ∈ U := by
   rw [mem_closure_iff_nhds_basis ((𝓝 1 : Filter G).basis_sets.nhds_of_one x)]
-  simp_rw [Set.mem_setOf, id]
+  simp_rw [Set.mem_ofPred, id]
 
 /-- A monoid homomorphism (a bundled morphism of a type that implements `MonoidHomClass`)
 from a topological group to a topological monoid is continuous
@@ -1057,7 +1102,6 @@ lemma Filter.tendsto_const_div_iff' (b : G) {c : G} {f : α → G} {l : Filter �
 @[deprecated (since := "2026-02-03")]
 alias Filter.tendsto_const_div_iff := Filter.tendsto_const_div_iff'
 
-
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive (attr := simps! +simpRhs)
   /-- A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`. -/]
@@ -1097,6 +1141,18 @@ theorem tendsto_div_nhds_one_iff {α : Type*} {l : Filter α} {x : G} {u : α �
     Tendsto (u · / x) l (𝓝 1) ↔ Tendsto u l (𝓝 x) :=
   haveI A : Tendsto (fun _ : α => x) l (𝓝 x) := tendsto_const_nhds
   ⟨fun h => by simpa using h.mul A, fun h => by simpa using h.div' A⟩
+
+/-- If `f → a` and `g → b` along a nontrivial filter on the domain, valued in a
+Hausdorff topological group, then `f / g → 1` if and only if `a = b`. -/
+@[to_additive]
+theorem tendsto_div_nhds_one_iff_eq {α : Type*} {l : Filter α} [l.NeBot] [T2Space G]
+    {f g : α → G} {a b : G} (hf : Tendsto f l (𝓝 a)) (hg : Tendsto g l (𝓝 b)) :
+    Tendsto (fun x ↦ f x / g x) l (𝓝 1) ↔ a = b :=
+  ⟨fun hfg => tendsto_nhds_unique hf <| by simpa using hfg.mul hg,
+   fun h => by subst h; simpa using hf.div' hg⟩
+
+@[to_additive]
+alias ⟨eq_of_tendsto_div_nhds_one, _⟩ := tendsto_div_nhds_one_iff_eq
 
 @[to_additive]
 theorem nhds_translation_div (x : G) : comap (· / x) (𝓝 1) = 𝓝 x := by
@@ -1182,7 +1238,7 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       rw [preimage_compl, compl_compl] at H
       convert! H
       ext x
-      simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_ofPred_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_nonempty_iff' }
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
@@ -1209,7 +1265,7 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
       apply Finite.of_preimage _ (equivOp S).surjective
       convert! H using 1
       ext x
-      simp only [image_smul, mem_setOf_eq, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_ofPred_eq, mem_preimage, mem_image, Prod.exists]
       exact Set.op_smul_inter_nonempty_iff }
 
 end

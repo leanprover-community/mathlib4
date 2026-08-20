@@ -50,7 +50,7 @@ theorem exists_Ioo_extr_on_Icc (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (h
       -- `f` is a constant, so we can take any point in `Ioo a b`
       rcases nonempty_Ioo.2 hab with ⟨c', hc'⟩
       refine ⟨c', hc', Or.inl fun x hx ↦ ?_⟩
-      simp only [mem_setOf_eq, this x hx, this c' (Ioo_subset_Icc_self hc'), le_rfl]
+      simp only [mem_ofPred_eq, this x hx, this c' (Ioo_subset_Icc_self hc'), le_rfl]
     · refine ⟨C, ⟨lt_of_le_of_ne Cmem.1 <| mt ?_ hC, lt_of_le_of_ne Cmem.2 <| mt ?_ hC⟩, Or.inr Cge⟩
       exacts [fun h => by rw [h], fun h => by rw [h, hfI]]
   · refine ⟨c, ⟨lt_of_le_of_ne cmem.1 <| mt ?_ hc, lt_of_le_of_ne cmem.2 <| mt ?_ hc⟩, Or.inl cle⟩

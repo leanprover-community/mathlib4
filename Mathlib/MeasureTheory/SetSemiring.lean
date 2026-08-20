@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.Order.Partition.Finpartition
 public import Mathlib.Order.SupClosed
+public import Mathlib.Order.SetAccumulate
 
 /-! # Semirings and rings of sets
 
@@ -407,7 +408,7 @@ noncomputable def disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j : 
 
 private theorem disjointOfUnion_coe (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j : J) :
     hC.disjointOfUnion hJ j = (hC.exists_partition_disjointed hJ j).choose.parts := by
-  rw [disjointOfUnion, dif_pos j.2]
+  rw [disjointOfUnion, dite_eq_left j.2]
 
 lemma pairwiseDisjoint_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     PairwiseDisjoint J (hC.disjointOfUnion hJ) := by
@@ -479,7 +480,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
 
 end disjointOfUnion
 
-private lemma _root_.Set.Ioc_mem_setOf_Ioc_le [LinearOrder α] (u v : α) :
+private lemma _root_.Set.Ioc_mem_ofPred_Ioc_le [LinearOrder α] (u v : α) :
     Set.Ioc u v ∈ {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} :=
   ⟨u, max u v, by grind, by grind⟩
 
@@ -492,15 +493,15 @@ protected lemma Ioc [LinearOrder α] [Nonempty α] :
   inter_mem := by
     rintro s ⟨u, v, huv, rfl⟩ t ⟨u', v', hu'v', rfl⟩
     rw [Set.Ioc_inter_Ioc]
-    apply Ioc_mem_setOf_Ioc_le
+    apply Ioc_mem_ofPred_Ioc_le
   sdiff_eq_sUnion' := by
     rintro s ⟨u, v, huv, rfl⟩ t ⟨u', v', hu'v', rfl⟩
     rcases le_or_gt u' u with hu | hu
-    · rcases Ioc_mem_setOf_Ioc_le (max u v') v with ⟨u'', v'', h'', heq⟩
+    · rcases Ioc_mem_ofPred_Ioc_le (max u v') v with ⟨u'', v'', h'', heq⟩
       exists {Set.Ioc u'' v''}
       grind [coe_singleton, pairwiseDisjoint_singleton]
     rcases le_or_gt v v' with hv | hv
-    · rcases Ioc_mem_setOf_Ioc_le u (min u' v) with ⟨u'', v'', h'', heq⟩
+    · rcases Ioc_mem_ofPred_Ioc_le u (min u' v) with ⟨u'', v'', h'', heq⟩
       exists {Set.Ioc u'' v''}
       grind [coe_singleton, pairwiseDisjoint_singleton]
     rw [show Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v by grind]

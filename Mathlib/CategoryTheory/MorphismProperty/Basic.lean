@@ -287,7 +287,7 @@ section
 variable (P : MorphismProperty C)
 
 /-- The set in `Set (Arrow C)` which corresponds to `P : MorphismProperty C`. -/
-def toSet : Set (Arrow C) := setOf (fun f ↦ P f.hom)
+def toSet : Set (Arrow C) := Set.ofPred (fun f ↦ P f.hom)
 
 lemma mem_toSet_iff (f : Arrow C) : f ∈ P.toSet ↔ P f.hom := Iff.rfl
 
@@ -502,7 +502,6 @@ def isoClosure (P : MorphismProperty C) : MorphismProperty C :=
 lemma le_isoClosure (P : MorphismProperty C) : P ≤ P.isoClosure :=
   fun _ _ f hf => ⟨_, _, f, hf, ⟨Iso.refl _⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance isoClosure_respectsIso (P : MorphismProperty C) :
     RespectsIso P.isoClosure where
   precomp := fun e (he : IsIso e) f ⟨_, _, f', hf', ⟨iso⟩⟩ => ⟨_, _, f', hf',
@@ -536,7 +535,6 @@ theorem arrow_mk_iso_iff (P : MorphismProperty C) [RespectsIso P] {W X Y Z : C}
     {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) : P f ↔ P g :=
   P.arrow_iso_iff e
 
-set_option backward.isDefEq.respectTransparency false in
 theorem RespectsIso.of_respects_arrow_iso (P : MorphismProperty C)
     (hP : ∀ (f g : Arrow C) (_ : f ≅ g) (_ : P f.hom), P g.hom) : RespectsIso P where
   precomp {X Y Z} e (he : IsIso e) f hf := by
@@ -693,9 +691,6 @@ theorem epimorphisms.infer_property [hf : Epi f] : (epimorphisms C) f :=
   hf
 
 end
-
-@[deprecated "Use `op_isomorphisms _` instead." (since := "2026-01-18")]
-lemma isomorphisms_op : (isomorphisms C).op = isomorphisms Cᵒᵖ := op_isomorphisms _
 
 instance RespectsIso.monomorphisms : RespectsIso (monomorphisms C) := by
   apply RespectsIso.mk <;>

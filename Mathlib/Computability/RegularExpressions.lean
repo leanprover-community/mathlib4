@@ -160,11 +160,11 @@ theorem deriv_one (a : α) : deriv 1 a = 0 :=
 
 @[simp]
 theorem deriv_char_self (a : α) : deriv (char a) a = 1 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 @[simp]
 theorem deriv_char_of_ne (h : a ≠ b) : deriv (char a) b = 0 :=
-  if_neg h
+  ite_eq_right h
 
 @[simp]
 theorem deriv_add (P Q : RegularExpression α) (a : α) : deriv (P + Q) a = deriv P a + deriv Q a :=
