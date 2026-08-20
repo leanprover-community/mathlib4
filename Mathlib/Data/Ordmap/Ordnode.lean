@@ -5,10 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Batteries.Data.List.Lemmas
 public import Mathlib.Order.Compare
 public import Mathlib.Data.Nat.PSub
 public import Mathlib.Data.Tree.Basic
 public import Batteries.Data.List.Basic
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Ordered sets
