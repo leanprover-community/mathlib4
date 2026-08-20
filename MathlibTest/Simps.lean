@@ -84,9 +84,9 @@ run_cmd liftTermElabM do
   guard <| state.2.map (·.4) == #[true, false, true]
   guard <| state.2.map (·.5) == #[false, false, false]
 
-structure Top (α β : Type _) extends Left α, Right α β
+structure TopOld (α β : Type _) extends Left α, Right α β
 
-initialize_simps_projections Top
+initialize_simps_projections TopOld
 
 structure NewTop (α β : Type _) extends Right α β, Left α
 

@@ -282,8 +282,7 @@ theorem mem_support_iff_of_commute {g c : Perm α} (hgc : Commute g c) (x : α) 
   simp only [mem_support, not_iff_not, ← mul_apply]
   rw [← hgc, mul_apply, Equiv.apply_eq_iff_eq]
 
-theorem support_mul_le (f g : Perm α) : (f * g).support ≤ f.support ⊔ g.support := fun x => by
-  simp only [sup_eq_union]
+theorem support_mul_le (f g : Perm α) : (f * g).support ≤ f.support ∪ g.support := fun x => by
   rw [mem_union, mem_support, mem_support, mem_support, mul_apply, ← not_and_or, not_imp_not]
   rintro ⟨hf, hg⟩
   rw [hg, hf]
@@ -365,7 +364,7 @@ theorem mem_support_of_mem_noncommProd_support {α β : Type*} [DecidableEq β] 
   · intro a s ha ih comm hs
     rw [Finset.noncommProd_insert_of_notMem s a f comm ha]
     apply mt (Finset.mem_of_subset (support_mul_le _ _))
-    rw [Finset.sup_eq_union, Finset.notMem_union]
+    rw [Finset.notMem_union]
     exact ⟨hs a (s.mem_insert_self a), ih (fun a ha ↦ hs a (Finset.mem_insert_of_mem ha))⟩
 
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
@@ -398,7 +397,7 @@ theorem Disjoint.support_mul (h : Disjoint f g) : (f * g).support = f.support �
       ⟨(congr_arg f hg).symm.trans h, hg⟩
 
 theorem support_prod_of_pairwise_disjoint (l : List (Perm α)) (h : l.Pairwise Disjoint) :
-    l.prod.support = (l.map support).foldr (· ⊔ ·) ⊥ := by
+    l.prod.support = (l.map support).foldr (· ∪ ·) ⊥ := by
   induction l with
   | nil => simp
   | cons hd tl hl =>
@@ -423,7 +422,7 @@ theorem support_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
     apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
       simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
 
-theorem support_prod_le (l : List (Perm α)) : l.prod.support ≤ (l.map support).foldr (· ⊔ ·) ⊥ := by
+theorem support_prod_le (l : List (Perm α)) : l.prod.support ≤ (l.map support).foldr (· ∪ ·) ⊥ := by
   induction l with
   | nil => simp
   | cons hd tl hl =>

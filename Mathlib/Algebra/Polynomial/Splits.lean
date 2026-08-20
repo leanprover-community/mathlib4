@@ -384,7 +384,7 @@ theorem Splits.roots_map_of_ne_zero {S : Type*} [CommRing S] [IsDomain S]
   induction hf using Submonoid.closure_induction with
   | mem p hp => obtain (⟨r, rfl⟩ | ⟨a, rfl⟩) := hp <;> simp
   | one => simp
-  | mul x y _ _ hx hy => simp_all [roots_mul, show x * y ≠ 0 by aesop]
+  | mul x y _ _ hx hy => simp_all [roots_mul, show x * y ≠ 0 by contrapose hφ; simp [hφ]]
 
 theorem Splits.roots_map_of_injective {S : Type*} [CommRing S] [IsDomain S]
     (hf : f.Splits) {i : R →+* S} (hi : Function.Injective i) : (f.map i).roots = f.roots.map i :=

@@ -121,11 +121,11 @@ theorem mem_nhdsWithin_iff_eventuallyEq {s t : Set α} {x : α} :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_nhdsWithin_inter_self {s t : Set α} {x : α} : t ∈ 𝓝[s ∩ t] x :=
-  mem_nhdsWithin_iff_eventuallyEq.mpr <| by simp [inter_assoc]
+  mem_nhdsWithin_iff_eventuallyEq.mpr <| by simp
 
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_nhdsWithin_self_inter {s t : Set α} {x : α} : s ∈ 𝓝[s ∩ t] x :=
-  mem_nhdsWithin_iff_eventuallyEq.mpr <| by simp [inter_comm s t, inter_assoc]
+  mem_nhdsWithin_iff_eventuallyEq.mpr <| by simp
 
 theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠ[𝓝 x] t :=
   set_eventuallyEq_iff_inf_principal.symm
