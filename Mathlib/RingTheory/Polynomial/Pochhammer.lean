@@ -223,9 +223,7 @@ theorem ascPochhammer_eval_succ (r : ℕ) (n : S) :
     n * (ascPochhammer S r).eval (n + 1) = (ascPochhammer S r).eval n * (n + r) := by
   induction r with
   | zero => simp
-  | succ r ih =>
-    rw [ascPochhammer_succ_eval, ascPochhammer_succ_eval, ← mul_assoc, ih]
-    grind
+  | succ r ih => grind [ascPochhammer_succ_eval]
 
 @[deprecated ascPochhammer_eval_succ (since := "2026-08-16")]
 theorem ascPochhammer_nat_eval_succ (r : ℕ) (n : ℕ) :
