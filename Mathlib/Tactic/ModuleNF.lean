@@ -37,17 +37,14 @@ def inferBase (es : Array Expr) : MetaM (Σ u : Level, Q(Type u)) := do
   | r :: rs => rs.foldlM Algebra.pickLargerRing r
 
 /-- Rewrite `e`, an expression in some `AddCommMonoid`, into `module_nf` normal form using
-`Mathlib.Tactic.Module.eval`.  Fails when `e` is not an application or is an atom for the
-module parser, so that `AtomM.recurse` descends into its subexpressions instead. -/
+`Mathlib.Tactic.Module.eval`. -/
 def evalExpr (base : Σ u : Level, Q(Type u)) (postCtx : Simp.Context) (e : Expr) :
     AtomM Simp.Result := do
   let e ← withReducible <| whnf e
   guard e.isApp
   let ⟨_, M, e⟩ ← inferTypeQ' e
   let iM : Q(AddCommMonoid $M) ← synthInstanceQ q(AddCommMonoid $M)
-  let r ← Mathlib.Tactic.Module.eval iM base postCtx e
-  if r.proof?.isNone then failure
-  return r
+  Mathlib.Tactic.Module.eval iM base postCtx e
 
 /-- The `Simp.Context` used by `ModuleNF.cleanup` -/
 def cleanupCtx : MetaM Simp.Context := do

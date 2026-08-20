@@ -195,4 +195,14 @@ example {S T : Type*} [CommRing S] [CommRing T] [Module S M] [Module T M]
   module_nf at h₁ h₂
   exact ⟨h₁, h₂⟩
 
+example (f : M → M) (c a b : R) (x : M) :
+    c • f (a • x + b • x) + c • f ((a + b) • x) = (2 : ℕ) • c • f ((a + b) • x) := by
+  module_nf
+
+example (f : M → R) (x y z : M)
+    (h : f (x + y + z + (x - z)) + f (x + y + z - (x - z)) = 0) :
+    f (2 • x + y) + f (y + 2 • z) = 0 := by
+  module_nf with ℤ at h ⊢
+  exact h
+
 end CommRing
