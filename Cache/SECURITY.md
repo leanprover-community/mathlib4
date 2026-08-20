@@ -142,9 +142,8 @@ The trust model does not attempt to defend against:
 ## Provider-owned native releases
 
 For dependencies not representable by portable Lean cache entries, `cache get`
-runs a short allowlist of provider targets. CSDP's `release` facet supplies the
-expensive platform build, then its ordinary target refreshes only the
-toolchain-sensitive Lean wrapper; Mathlib excludes CSDP from its Azure cache.
+runs a short allowlist of provider targets. CSDP's `release` facet supplies its
+complete platform build; Mathlib excludes CSDP from its Azure cache.
 
 The checked-in manifest pins the provider source, while
 `Cache.Native.prefetchTargets` limits what the trusted cache binary may invoke.

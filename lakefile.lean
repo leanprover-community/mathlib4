@@ -18,7 +18,7 @@ require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
 -- `sos` supplies the Mathlib-free native certificate-search engine.
-require "leanprover" / "sos" @ git "v0.2.2"
+require "leanprover" / "sos" @ git "v0.2.3"
 
 
 /-!

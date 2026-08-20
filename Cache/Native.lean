@@ -15,9 +15,8 @@ on which `lake build --no-build` succeeds.
 
 namespace Cache.Native
 
-/-- Allowlisted dependency targets, in order. The release supplies the expensive
-solver build; `CSDP` then refreshes its toolchain-sensitive Lean wrapper. -/
-def prefetchTargets : Array String := #["@CSDP:release", "CSDP:shared"]
+/-- Allowlisted dependency release targets. -/
+def prefetchTargets : Array String := #["@CSDP:release"]
 
 /-- Only commands which unpack the ordinary Mathlib cache promise a complete
 build tree. `get-` intentionally downloads without unpacking and does not. -/

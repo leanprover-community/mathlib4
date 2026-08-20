@@ -469,8 +469,8 @@ def test_sosCacheDelivery : IO Unit := do
     (!Cache.IO.isPartOfMathlibCache `CSDP)
   for root in #[`HexBasic, `HexMvPoly, `HexPoly, `SOS] do
     assertTrue s!"{root} is part of the Mathlib cache" (Cache.IO.isPartOfMathlibCache root)
-  assertTrue "CSDP release precedes its toolchain-sensitive wrapper"
-    (Cache.Native.prefetchTargets == #["@CSDP:release", "CSDP:shared"])
+  assertTrue "CSDP is fetched from its provider release"
+    (Cache.Native.prefetchTargets == #["@CSDP:release"])
   assertTrue "cache get prefetches native releases"
     (Cache.Native.shouldPrefetch ["get"])
   assertTrue "cache get! prefetches native releases"
