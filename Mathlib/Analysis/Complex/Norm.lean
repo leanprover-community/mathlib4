@@ -389,12 +389,11 @@ lemma normSq_ofReal_sub_I_mul_sqrt_one_sub {x : ℝ} (hx : ‖x‖ ≤ 1) :
 
 /-- A complex number whose norm equals its real part is its real part, coerced back. -/
 lemma eq_coe_re_of_norm_eq {w : ℂ} (h : ‖w‖ = w.re) : w = ↑(w.re) := by
-  have hre : 0 ≤ w.re := by rw [← h]; exact norm_nonneg w
   have h_im : w.im ^ 2 = 0 := by
     have := sq_norm_sub_sq_im w
     rw [h, sq] at this
     linarith
-  exact Complex.ext (by simp [hre]) ((sq_eq_zero_iff).mp h_im)
+  exact Complex.ext (by simp) (sq_eq_zero_iff.mp h_im)
 
 lemma eq_coe_re_of_mul_eq_norm_mul {w : ℂ} (h : re (z * star w) = ‖z‖ * ‖w‖) :
     z * star w = ↑(re (z * star w)) := by

@@ -1906,7 +1906,6 @@ public import Mathlib.Analysis.Complex.OpenMapping
 public import Mathlib.Analysis.Complex.OperatorNorm
 public import Mathlib.Analysis.Complex.Order
 public import Mathlib.Analysis.Complex.Periodic
-public import Mathlib.Analysis.Complex.TriangleEquality
 public import Mathlib.Analysis.Complex.PhragmenLindelof
 public import Mathlib.Analysis.Complex.Poisson
 public import Mathlib.Analysis.Complex.Polynomial.Basic
@@ -1923,6 +1922,7 @@ public import Mathlib.Analysis.Complex.SqrtDeriv
 public import Mathlib.Analysis.Complex.SummableUniformlyOn
 public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Complex.Tietze
+public import Mathlib.Analysis.Complex.TriangleEquality
 public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.Complex.UnitDisc.Basic
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
