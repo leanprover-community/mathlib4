@@ -1188,18 +1188,18 @@ theorem integrableOn_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
 theorem integral_comp_exp (g : ℝ → E) :
     ∫ x : ℝ, exp x • g (exp x) = ∫ y in Ioi 0, g y := by
   symm
-  rw [← Real.range_exp, ← image_univ]
+  rw [← range_exp, ← image_univ]
   simpa [abs_of_pos (exp_pos _)] using integral_image_eq_integral_abs_deriv_smul
-    MeasurableSet.univ (fun x _ ↦ (Real.hasDerivAt_exp x).hasDerivWithinAt)
+    MeasurableSet.univ (fun x _ ↦ (hasDerivAt_exp x).hasDerivWithinAt)
     (fun x _ y _ hxy ↦ exp_injective hxy) g
 
 theorem integrable_comp_exp (g : ℝ → E) :
     Integrable (fun x : ℝ ↦ exp x • g (exp x)) ↔ IntegrableOn g (Ioi 0) := by
   rw [← integrableOn_univ]
   symm
-  rw [← Real.range_exp, ← image_univ]
+  rw [← range_exp, ← image_univ]
   simpa [abs_of_pos (exp_pos _)] using integrableOn_image_iff_integrableOn_abs_deriv_smul
-    MeasurableSet.univ (fun x _ ↦ (Real.hasDerivAt_exp x).hasDerivWithinAt)
+    MeasurableSet.univ (fun x _ ↦ (hasDerivAt_exp x).hasDerivWithinAt)
     (fun x _ y _ hxy ↦ exp_injective hxy) g
 
 /-- Substitution `y = log x` in integrals over `Ioi 0`. -/
