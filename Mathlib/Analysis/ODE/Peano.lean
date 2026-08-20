@@ -242,28 +242,12 @@ end TonelliApproximation
 
 section ArzelaAscoli
 
-/-- Restrict a curve on `ℝ` to the interval `Icc t₀ tmax`. -/
-private def restrictToIcc (α : ℝ → E) : Icc t₀.val tmax → E :=
-  fun t ↦ α t
-
-/-- Package a continuous function on `Icc t₀ tmax` as a continuous map. -/
-private def continuousMapOnIcc (α : Icc t₀.val tmax → E) (hα : Continuous α) :
-    C(Icc t₀.val tmax, E) where
-  toFun := α
-  continuous_toFun := hα
-
-/-- Package a continuous map on the compact interval `Icc t₀ tmax` as a bounded continuous map. -/
-private def boundedContinuousFunctionOnIcc (α : C(Icc t₀.val tmax, E)) :
-    Icc t₀.val tmax →ᵇ E :=
-  BoundedContinuousFunction.mkOfCompact α
-
 /-- The Tonelli approximations as bounded continuous functions on `Icc t₀ tmax`. -/
 private noncomputable def boundedTonelliApproximation
     (hf : IsPeano f t₀ x₀ r L) (n : ℕ) : Icc t₀.val tmax →ᵇ E :=
-  boundedContinuousFunctionOnIcc
-    (continuousMapOnIcc (restrictToIcc (tonelliApproximation f t₀ x₀ n))
-      (continuousOn_iff_continuous_domRestrict.mp
-        (lipschitzOnWith_tonelliApproximation hf n).continuousOn))
+  .mkOfCompact ⟨(Icc t₀.val tmax).domRestrict (tonelliApproximation f t₀ x₀ n),
+    continuousOn_iff_continuous_domRestrict.mp
+      (lipschitzOnWith_tonelliApproximation hf n).continuousOn⟩
 
 /-- The bounded continuous form of each Tonelli approximation has Lipschitz constant `L`. -/
 private lemma lipschitzWith_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
@@ -286,18 +270,10 @@ variable [FiniteDimensional ℝ E]
 /-- The closure of the family of the Tonelli approximations is compact. -/
 private lemma isCompact_closure_range_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
     IsCompact (closure (range (boundedTonelliApproximation hf))) := by
-  apply BoundedContinuousFunction.arzela_ascoli (closedBall x₀ r) _ _ _ _
-  · apply isCompact_closedBall
-  · intro g x hg
-    simp only [mem_range] at hg
-    obtain ⟨n, rfl⟩ := hg
-    unfold boundedTonelliApproximation boundedContinuousFunctionOnIcc continuousMapOnIcc
-      restrictToIcc
-    simp only [BoundedContinuousFunction.mkOfCompact_apply]
-    apply mapsTo_tonelliApproximation_closedBall hf n x.property
-  · intro x U hU
-    apply (equicontinuous_boundedTonelliApproximation hf x U hU).mono
-    simp
+  apply BoundedContinuousFunction.arzela_ascoli (closedBall x₀ r) (isCompact_closedBall _ _)
+  · rintro g x ⟨n, rfl⟩
+    exact mapsTo_tonelliApproximation_closedBall hf n x.2
+  · exact fun x U hU ↦ (equicontinuous_boundedTonelliApproximation hf x U hU).mono (by simp)
 
 /-- The Tonelli approximations admit a convergent subsequence of bounded continuous functions. -/
 private lemma exists_tendsto_subseq_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
