@@ -55,7 +55,7 @@ lemma LocalSubring.map_maximalIdeal_eq_top_of_isMax {R : LocalSubring K}
   obtain ⟨M, h_is_max, h_incl⟩ := Ideal.exists_le_maximal _ h_is_not_top
   let fSₘ : LocalSubring K := LocalSubring.ofPrime S M
   have h_RleSₘ : R ≤ fSₘ := by
-    refine ⟨hS.le.trans (LocalSubring.le_ofPrime ..), ((local_hom_TFAE _).out 2 0).mp ?_⟩
+    refine ⟨hS.le.trans (LocalSubring.le_ofPrime ..), ((local_hom_TFAE _).out 3 1).mp ?_⟩
     conv_rhs => rw [← IsLocalization.AtPrime.map_eq_maximalIdeal M]
     refine .trans ?_ (Ideal.map_mono h_incl)
     rw [Ideal.map_map]; rfl
@@ -71,7 +71,7 @@ lemma LocalSubring.mem_of_isMax_of_isIntegral {R : LocalSubring K}
     (S := S) (maximalIdeal R.toSubring) (le_maximalIdeal (by simp))
   have : R = .ofPrime S.toSubring Q := by
     have hRS : R.toSubring ≤ S.toSubring := fun r hr ↦ algebraMap_mem S ⟨r, hr⟩
-    refine hR.eq_of_le ⟨hRS.trans (LocalSubring.le_ofPrime _ _), ((local_hom_TFAE _).out 2 0).mp ?_⟩
+    refine hR.eq_of_le ⟨hRS.trans (LocalSubring.le_ofPrime _ _), ((local_hom_TFAE _).out 3 1).mp ?_⟩
     conv_rhs => rw [← IsLocalization.AtPrime.map_eq_maximalIdeal Q]
     refine .trans ?_ (Ideal.map_mono <| Ideal.map_le_iff_le_comap.mpr e.ge)
     rw [Ideal.map_map]; rfl
@@ -91,7 +91,6 @@ lemma ValuationSubring.isMax_toLocalSubring (R : ValuationSubring K) :
   have : x' = x := by simpa [Subtype.ext_iff, inv_mul_eq_iff_eq_mul₀ hx0] using hx'
   exact h' (this ▸ x'.2)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 00IB]
 lemma LocalSubring.exists_valuationRing_of_isMax {R : LocalSubring K} (hR : IsMax R) :
     ∃ R' : ValuationSubring K, R'.toLocalSubring = R := by
@@ -149,7 +148,7 @@ lemma Ideal.image_subset_nonunits_valuationSubring {A : Subring K} (I : Ideal A)
   have ⟨V, hV⟩ := (LocalSubring.ofPrime A M).exists_le_valuationSubring
   refine ⟨V, (LocalSubring.le_ofPrime ..).trans hV.1, ?_⟩
   rw [← V.image_maximalIdeal]
-  refine .trans ?_ (Set.image_mono <| ((local_hom_TFAE _).out 0 2).mp hV.2)
+  refine .trans ?_ (Set.image_mono <| ((local_hom_TFAE _).out 1 3).mp hV.2)
   rw [← IsLocalization.AtPrime.map_eq_maximalIdeal M, map_map]
   refine .trans ?_ (Set.image_mono <| map_mono le)
   rintro _ ⟨a, ha, rfl⟩
@@ -172,7 +171,6 @@ open Polynomial Algebra in
   exact ⟨V, fun r hr ↦ hV.1 (B.algebraMap_mem ⟨r, hr⟩),
     (V.inv_mem_nonunits_iff.mp <| hV.2 ⟨_, Ideal.subset_span rfl, rfl⟩).resolve_left hx0⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 open Polynomial Algebra in
 @[stacks 090P "part (2)"] lemma LocalSubring.exists_le_valuationSubring_of_isIntegrallyClosedIn
     {x : K} {R : LocalSubring K} (hxR : x ∉ R.toSubring) [IsIntegrallyClosedIn R.toSubring K] :
@@ -190,7 +188,7 @@ open Polynomial Algebra in
       ⟨.C H.unit⁻¹.1 * p, by simp [Polynomial.Monic], by simpa using .inr hpx⟩
   have ⟨V, hV⟩ := Ideal.image_subset_nonunits_valuationSubring (A := B.toSubring) _ this
   refine ⟨V, ⟨fun r hr ↦ hV.1 (B.algebraMap_mem ⟨r, hr⟩),
-    ((local_hom_TFAE _).out 3 0).mp fun r hr ↦ ?_⟩, (V.inv_mem_nonunits_iff.mp <|
+    ((local_hom_TFAE _).out 4 1).mp fun r hr ↦ ?_⟩, (V.inv_mem_nonunits_iff.mp <|
       hV.2 ⟨_, le_add_self (α := Ideal B) (Ideal.subset_span rfl), rfl⟩).resolve_left hx0⟩
   rw [← V.image_maximalIdeal] at hV
   obtain ⟨⟨r, _⟩, hr, rfl⟩ := hV.2 ⟨_, le_self_add (α := Ideal B) (Ideal.mem_map_of_mem _ hr), rfl⟩

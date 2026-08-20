@@ -106,7 +106,9 @@ lemma rel_bot_eq_right_group_rel (H : Subgroup G) :
     exact ⟨b * a⁻¹, h, 1, rfl, by rw [mul_one, inv_mul_cancel_right]⟩
 
 /-- Create a double coset out of an element of `H \ G / K` -/
-def quotToDoubleCoset (H K : Subgroup G) (q : Quotient (H : Set G) K) : Set G :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def quotToDoubleCoset (H K : Subgroup G) (q : Quotient (H : Set G) K) : Set G :=
   doubleCoset q.out H K
 
 /-- Map from `G` to `H \ G / K` -/

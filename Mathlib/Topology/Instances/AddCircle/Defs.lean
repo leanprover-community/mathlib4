@@ -99,16 +99,10 @@ theorem continuousWithinAt_toIcoMod_Ici : ContinuousWithinAt (toIcoMod hp a) (Ic
   continuousWithinAt_id.sub <|
     (continuousWithinAt_toIcoDiv_Ici hp a x).smul continuousWithinAt_const
 
-@[deprecated (since := "2026-01-04")]
-alias continuous_right_toIcoMod := continuousWithinAt_toIcoMod_Ici
-
 /-- `toIocMod` is continuous on the right at every point. -/
 theorem continuousWithinAt_toIocMod_Iic : ContinuousWithinAt (toIocMod hp a) (Iic x) x :=
   continuousWithinAt_id.sub <|
     (continuousWithinAt_toIocDiv_Iic hp a x).smul continuousWithinAt_const
-
-@[deprecated (since := "2026-01-04")]
-alias continuous_left_toIocMod := continuousWithinAt_toIocMod_Iic
 
 /-- At every point `x`, for all `y < x` sufficiently close to `x`,
 we have `toIcoDiv hp a y = toIocDiv hp a x`.
@@ -317,20 +311,20 @@ def equivIoc : AddCircle p ≃ Ioc a (a + p) :=
 /-- Given a function on `𝕜`, return the unique function on `AddCircle p` agreeing with `f` on
 `[a, a + p)`. -/
 def liftIco (f : 𝕜 → B) : AddCircle p → B :=
-  restrict _ f ∘ AddCircle.equivIco p a
+  domRestrict _ f ∘ AddCircle.equivIco p a
 
 /-- Given a function on `𝕜`, return the unique function on `AddCircle p` agreeing with `f` on
 `(a, a + p]`. -/
 def liftIoc (f : 𝕜 → B) : AddCircle p → B :=
-  restrict _ f ∘ AddCircle.equivIoc p a
+  domRestrict _ f ∘ AddCircle.equivIoc p a
 
 variable {p a}
 
 theorem equivIco_coe_eq {x : 𝕜} (hx : x ∈ Ico a (a + p)) : (equivIco p a) x = ⟨x, hx⟩ := by
-  rw [Equiv.apply_eq_iff_eq_symm_apply, equivIco, QuotientAddGroup.equivIcoMod_symm_apply]
+  rw [← Equiv.eq_symm_apply, equivIco, QuotientAddGroup.equivIcoMod_symm_apply]
 
 theorem equivIoc_coe_eq {x : 𝕜} (hx : x ∈ Ioc a (a + p)) : (equivIoc p a) x = ⟨x, hx⟩ := by
-  rw [Equiv.apply_eq_iff_eq_symm_apply, equivIoc, QuotientAddGroup.equivIocMod_symm_apply]
+  rw [← Equiv.eq_symm_apply, equivIoc, QuotientAddGroup.equivIocMod_symm_apply]
 
 @[simp]
 lemma coe_equivIco {y : AddCircle p} :
@@ -661,7 +655,6 @@ lemma isOfFinAddOrder_iff_exists_rat_eq_div {a : 𝕜} :
 
 variable (p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural bijection between points of order `n` and natural numbers less than and coprime to
 `n`. The inverse of the map sends `m ↦ (m/n * p : AddCircle p)` where `m` is coprime to `n` and
 satisfies `0 ≤ m < n`. -/
@@ -797,7 +790,7 @@ theorem liftIoc_eq_liftIco {f : 𝕜 → B} (hf : f a = f (a + p)) :
 
 theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
     liftIco p a f =
-      Quot.lift (restrict (Icc a <| a + p) f)
+      Quot.lift (domRestrict (Icc a <| a + p) f)
           (by
             rintro _ _ ⟨_⟩
             exact h) ∘
@@ -806,7 +799,7 @@ theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
 
 theorem liftIoc_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
     liftIoc p a f =
-      Quot.lift (restrict (Icc a <| a + p) f)
+      Quot.lift (domRestrict (Icc a <| a + p) f)
           (by
             rintro _ _ ⟨_⟩
             exact h) ∘
@@ -826,7 +819,7 @@ theorem liftIco_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (
     (hc : ContinuousOn f <| Icc a (a + p)) : Continuous (liftIco p a f) := by
   rw [liftIco_eq_lift_Icc hf]
   refine Continuous.comp ?_ (homeoIccQuot p a).continuous_toFun
-  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_restrict.mp hc)
+  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_domRestrict.mp hc)
 
 theorem liftIco_zero_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f 0 = f p)
     (hc : ContinuousOn f <| Icc 0 p) : Continuous (liftIco p 0 f) :=
@@ -836,7 +829,7 @@ theorem liftIoc_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (
     (hc : ContinuousOn f <| Icc a (a + p)) : Continuous (liftIoc p a f) := by
   rw [liftIoc_eq_lift_Icc hf]
   refine Continuous.comp ?_ (homeoIccQuot p a).continuous_toFun
-  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_restrict.mp hc)
+  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_domRestrict.mp hc)
 
 theorem liftIoc_zero_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f 0 = f p)
     (hc : ContinuousOn f <| Icc 0 p) : Continuous (liftIoc p 0 f) :=
