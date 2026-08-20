@@ -741,8 +741,8 @@ noncomputable def restrictNormalHomSupProd (K L : IntermediateField F E) [Normal
 injective: an automorphism of the compositum is determined by its restrictions to `K` and `L`. -/
 theorem restrictNormalHomSupProd_injective (K L : IntermediateField F E) [Normal F K] [Normal F L] :
     Function.Injective (restrictNormalHomSupProd K L) := by
-  letI : Algebra K ↑(K ⊔ L) := (inclusion le_sup_left).toAlgebra
-  letI : Algebra L ↑(K ⊔ L) := (inclusion le_sup_right).toAlgebra
+  let : Algebra K ↑(K ⊔ L) := (inclusion le_sup_left).toAlgebra
+  let : Algebra L ↑(K ⊔ L) := (inclusion le_sup_right).toAlgebra
   rw [← MonoidHom.ker_eq_bot_iff]
   suffices (IsScalarTower.toAlgHom F K ↑(K ⊔ L)).fieldRange ⊔
       (IsScalarTower.toAlgHom F L ↑(K ⊔ L)).fieldRange = ⊤ by
