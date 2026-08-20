@@ -303,16 +303,16 @@ allowing for a choice of Ore numerator and Ore denominator. -/
 @[to_additive /-- A characterization lemma for the vector addition on the Ore localization,
 allowing for a choice of Ore minuend and Ore subtrahend. -/]
 theorem oreDiv_smul_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (r' : R) (s' : S) (huv : s' * r₁ = r' * s₂) :
-    (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) := by
-  exact smul'_char r₁ r₂ s₁ s₂ s' r' huv
+    (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) :=
+  smul'_char r₁ r₂ s₁ s₂ s' r' huv
 
 /-- A characterization lemma for the multiplication on the Ore localization, allowing for a choice
 of Ore numerator and Ore denominator. -/
 @[to_additive /-- A characterization lemma for the addition on the Ore localization,
 allowing for a choice of Ore minuend and Ore subtrahend. -/]
 theorem oreDiv_mul_char (r₁ r₂ : R) (s₁ s₂ : S) (r' : R) (s' : S) (huv : s' * r₁ = r' * s₂) :
-    r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) := by
-  exact smul'_char r₁ r₂ s₁ s₂ s' r' huv
+    r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=
+  smul'_char r₁ r₂ s₁ s₂ s' r' huv
 
 /-- Another characterization lemma for the scalar multiplication on the Ore localization delivering
 Ore witnesses and conditions bundled in a sigma type. -/
