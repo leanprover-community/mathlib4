@@ -39,8 +39,12 @@ example (X : Type) [TopologicalSpace X] [CompactSpace X] [T2Space X] [Extremally
     Stonean := ↧X
 
 -- `Profinite` is reducibly `CompHausLike _`, but has its own `Profinite.of`.
-example (X : Type) [TopologicalSpace X] [CompactSpace X] [T2Space X] [TotallyDisconnectedSpace X] :
-    (↧X : Profinite) = Profinite.of X := rfl
+section
+variable (X : Type) [TopologicalSpace X] [CompactSpace X] [T2Space X] [TotallyDisconnectedSpace X]
+
+#guard_expr (↧X : Profinite) =ₛ Profinite.of X
+
+end
 
 /-! ### Parameterised categories
 
