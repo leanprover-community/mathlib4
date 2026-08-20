@@ -5,7 +5,14 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 module
 
+public import Batteries.Logic
 public import Mathlib.Algebra.Group.Semigroup
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Tactic.OfNat
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Monoids and groups
@@ -18,8 +25,6 @@ including monoids and groups. Structures that do not require an identity are def
 @[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered Function.const_injective
-
-universe u v w
 
 open Function
 
@@ -60,7 +65,7 @@ attribute [to_additive existing] isDedekindFiniteMonoid_iff
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
-class AddZeroClass (M : Type u) extends AddZero M where
+class AddZeroClass (M : Type*) extends AddZero M where
   /-- Zero is a left neutral element for addition -/
   protected zero_add : ∀ a : M, 0 + a = a
   /-- Zero is a right neutral element for addition -/
@@ -69,21 +74,21 @@ class AddZeroClass (M : Type u) extends AddZero M where
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
 @[to_additive]
-class MulOneClass (M : Type u) extends MulOne M where
+class MulOneClass (M : Type*) extends MulOne M where
   /-- One is a left neutral element for multiplication -/
   protected one_mul : ∀ a : M, 1 * a = a
   /-- One is a right neutral element for multiplication -/
   protected mul_one : ∀ a : M, a * 1 = a
 
 @[to_additive (attr := ext)]
-theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
+theorem MulOneClass.ext {M : Type*} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
   rintro @⟨@⟨⟨one₁⟩, ⟨mul₁⟩⟩, one_mul₁, mul_one₁⟩ @⟨@⟨⟨one₂⟩, ⟨mul₂⟩⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
   congr
   exact (one_mul₂ one₁).symm.trans (mul_one₁ one₂)
 
 section MulOneClass
 
-variable {M : Type u} [MulOneClass M]
+variable {M : Type*} [MulOneClass M]
 
 @[to_additive (attr := simp)]
 theorem one_mul : ∀ a : M, 1 * a = a :=
@@ -135,7 +140,7 @@ end IsUnital
 
 section
 
-variable {M : Type u}
+variable {M : Type*}
 
 attribute [to_additive existing] npowRec
 
@@ -354,7 +359,7 @@ theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
 
 /-- `NSMul` is an implementation detail of `AddMonoid`. It is needed because it is
 impossible to extend `SMul ℕ M` and `SMul ℤ M` at the same time. -/
-class NSMul (M : Type u) where
+class NSMul (M : Type*) where
   /-- Multiplication by a natural number.
   Set this to `nsmulRec` unless `Module` diamonds are possible. -/
   protected nsmul : ℕ → M → M
@@ -362,7 +367,7 @@ class NSMul (M : Type u) where
 /-- `NPow` is an implementation detail of `Monoid`. It is needed because it is
 impossible to extend `Pow M ℕ` and `Pow M ℤ` at the same time. -/
 @[to_additive]
-class NPow (M : Type u) where
+class NPow (M : Type*) where
   /-- Raising to the power of a natural number. -/
   protected npow : ℕ → M → M
 
@@ -374,7 +379,7 @@ instance NPow.toPow {M : Type*} [NPow M] : Pow M ℕ :=
 instance NPow.ofPow {M : Type*} [Pow M ℕ] : NPow M := ⟨fun n x ↦ Pow.pow x n⟩
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M, NSMul M where
+class AddMonoid (M : Type*) extends AddSemigroup M, AddZeroClass M, NSMul M where
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
   protected nsmul_zero (x : M) : 0 • x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
@@ -385,7 +390,7 @@ attribute [instance 50] AddZero.toAdd
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
-class Monoid (M : Type u) extends Semigroup M, MulOneClass M, NPow M where
+class Monoid (M : Type*) extends Semigroup M, MulOneClass M, NPow M where
   npow := npowRecAuto
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
   protected npow_zero (x : M) : x ^ 0 = 1 := by intros; rfl
@@ -520,11 +525,11 @@ class IsMulTorsionFree (M : Type*) [Monoid M] where
 attribute [to_additive existing] isMulTorsionFree_iff
 
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
-class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
+class AddCommMonoid (M : Type*) extends AddMonoid M, AddCommSemigroup M
 
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
-class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
+class CommMonoid (M : Type*) extends Monoid M, CommSemigroup M
 
 /-- Shortcut instance for `IsCommutativeHMul M → IsDedekindFiniteMonoid M`.
 
@@ -538,13 +543,13 @@ section LeftCancelMonoid
 /-- An additive monoid in which addition is left-cancellative.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is not enough. -/
-class AddLeftCancelMonoid (M : Type u) extends AddMonoid M, AddLeftCancelSemigroup M
+class AddLeftCancelMonoid (M : Type*) extends AddMonoid M, AddLeftCancelSemigroup M
 
 attribute [instance 75] AddLeftCancelMonoid.toAddMonoid -- See note [lower cancel priority]
 
 /-- A monoid in which multiplication is left-cancellative. -/
 @[to_additive]
-class LeftCancelMonoid (M : Type u) extends Monoid M, LeftCancelSemigroup M
+class LeftCancelMonoid (M : Type*) extends Monoid M, LeftCancelSemigroup M
 
 attribute [instance 75] LeftCancelMonoid.toMonoid -- See note [lower cancel priority]
 
@@ -555,13 +560,13 @@ section RightCancelMonoid
 /-- An additive monoid in which addition is right-cancellative.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is not enough. -/
-class AddRightCancelMonoid (M : Type u) extends AddMonoid M, AddRightCancelSemigroup M
+class AddRightCancelMonoid (M : Type*) extends AddMonoid M, AddRightCancelSemigroup M
 
 attribute [instance 75] AddRightCancelMonoid.toAddMonoid -- See note [lower cancel priority]
 
 /-- A monoid in which multiplication is right-cancellative. -/
 @[to_additive]
-class RightCancelMonoid (M : Type u) extends Monoid M, RightCancelSemigroup M
+class RightCancelMonoid (M : Type*) extends Monoid M, RightCancelSemigroup M
 
 attribute [instance 75] RightCancelMonoid.toMonoid -- See note [lower cancel priority]
 
@@ -572,32 +577,32 @@ section CancelMonoid
 /-- An additive monoid in which addition is cancellative on both sides.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddRightCancelMonoid` is not enough. -/
-class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancelMonoid M
+class AddCancelMonoid (M : Type*) extends AddLeftCancelMonoid M, AddRightCancelMonoid M
 
 /-- A monoid in which multiplication is cancellative. -/
 @[to_additive]
-class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
+class CancelMonoid (M : Type*) extends LeftCancelMonoid M, RightCancelMonoid M
 
 /-- Commutative version of `AddCancelMonoid`. -/
-class AddCancelCommMonoid (M : Type u) extends AddCommMonoid M, AddLeftCancelMonoid M
+class AddCancelCommMonoid (M : Type*) extends AddCommMonoid M, AddLeftCancelMonoid M
 
 attribute [instance 75] AddCancelCommMonoid.toAddCommMonoid -- See note [lower cancel priority]
 
 /-- Commutative version of `CancelMonoid`. -/
 @[to_additive]
-class CancelCommMonoid (M : Type u) extends CommMonoid M, LeftCancelMonoid M
+class CancelCommMonoid (M : Type*) extends CommMonoid M, LeftCancelMonoid M
 
 attribute [instance 75] CancelCommMonoid.toCommMonoid -- See note [lower cancel priority]
 
 -- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
+instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type*) [CancelCommMonoid M] :
     CancelMonoid M :=
   { CommMagma.IsLeftCancelMul.toIsRightCancelMul M with }
 
 /-- Any `CancelMonoid G` satisfies `IsCancelMul G`. -/
 @[to_additive /-- Any `AddCancelMonoid G` satisfies `IsCancelAdd G`. -/]
-instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type u) [CancelMonoid M] :
+instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type*) [CancelMonoid M] :
     IsCancelMul M where
 
 end CancelMonoid
@@ -674,11 +679,11 @@ the `Div` instance in `DivInvMonoid`.
 We keep it as a separate definition rather than inlining it in `DivInvMonoid` so that the `Div`
 field of individual `DivInvMonoid`s constructed using that default value will not be unfolded at
 `.instance` transparency. -/
-def DivInvMonoid.div' {G : Type u} [Monoid G] [Inv G] (a b : G) : G := a * b⁻¹
+def DivInvMonoid.div' {G : Type*} [Monoid G] [Inv G] (a b : G) : G := a * b⁻¹
 
 /-- `ZSMul` is an implementation detail of `SubNegMonoid`. It is needed because it is
 impossible to extend `SMUl ℕ M` and `SMul ℤ M` at the same time. -/
-class ZSMul (G : Type u) where
+class ZSMul (G : Type*) where
   /-- Multiplication by an integer.
   Set this to `zsmulRec` unless `Module` diamonds are possible. -/
   protected zsmul : ℤ → G → G
@@ -686,7 +691,7 @@ class ZSMul (G : Type u) where
 /-- `ZPow` is an implementation detail of `DivInvMonoid`. It is needed because it is
 impossible to extend `Pow M ℕ` and `Pow M ℤ` at the same time. -/
 @[to_additive]
-class ZPow (G : Type u) where
+class ZPow (G : Type*) where
   /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
   protected zpow : ℤ → G → G
 
@@ -715,7 +720,7 @@ In the same way, adding a `zpow` field makes it possible to avoid definitional f
 in diamonds. See the definition of `Monoid` and Note [forgetful inheritance] for more
 explanations on this.
 -/
-class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G, ZPow G where
+class DivInvMonoid (G : Type*) extends Monoid G, Inv G, Div G, ZPow G where
   protected div := DivInvMonoid.div'
   /-- `a / b := a * b⁻¹` -/
   protected div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
@@ -735,7 +740,7 @@ for the `Sub` instance in `SubNegMonoid`.
 We keep it as a separate definition rather than inlining it in `SubNegMonoid` so that the `Sub`
 field of individual `SubNegMonoid`s constructed using that default value will not be unfolded at
 `.instance` transparency. -/
-def SubNegMonoid.sub' {G : Type u} [AddMonoid G] [Neg G] (a b : G) : G := a + -b
+def SubNegMonoid.sub' {G : Type*} [AddMonoid G] [Neg G] (a b : G) : G := a + -b
 
 attribute [to_additive existing SubNegMonoid.sub'] DivInvMonoid.div'
 
@@ -756,7 +761,7 @@ In the same way, adding a `zsmul` field makes it possible to avoid definitional 
 in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] for more
 explanations on this.
 -/
-class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G, ZSMul G where
+class SubNegMonoid (G : Type*) extends AddMonoid G, Neg G, Sub G, ZSMul G where
   protected sub := SubNegMonoid.sub'
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
   protected zsmul_zero' (a : G) : (0 : ℤ) • a = 0 := by intros; rfl
@@ -769,12 +774,12 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G, ZSMul G where
 attribute [to_additive SubNegMonoid] DivInvMonoid
 
 /-- A group is called *cyclic* if it is generated by a single element. -/
-class IsAddCyclic (G : Type u) [SMul ℤ G] : Prop where
+class IsAddCyclic (G : Type*) [SMul ℤ G] : Prop where
   protected exists_zsmul_surjective : ∃ g : G, Function.Surjective (· • g : ℤ → G)
 
 /-- A group is called *cyclic* if it is generated by a single element. -/
 @[to_additive (attr := wikidata Q245462)]
-class IsCyclic (G : Type u) [Pow G ℤ] : Prop where
+class IsCyclic (G : Type*) [Pow G ℤ] : Prop where
   protected exists_zpow_surjective : ∃ g : G, Function.Surjective (g ^ · : ℤ → G)
 
 @[to_additive]
@@ -892,7 +897,7 @@ end InvOneClass
 
 /-- A `SubtractionMonoid` is a `SubNegMonoid` with involutive negation and such that
 `-(a + b) = -b + -a` and `a + b = 0 → -a = b`. -/
-class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G where
+class SubtractionMonoid (G : Type*) extends SubNegMonoid G, InvolutiveNeg G where
   protected neg_add_rev (a b : G) : -(a + b) = -b + -a
   /-- Despite the asymmetry of `neg_eq_of_add`, the symmetric version is true thanks to the
   involutivity of negation. -/
@@ -903,7 +908,7 @@ class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G whe
 
 This is the immediate common ancestor of `Group` and `GroupWithZero`. -/
 @[to_additive]
-class DivisionMonoid (G : Type u) extends DivInvMonoid G, InvolutiveInv G where
+class DivisionMonoid (G : Type*) extends DivInvMonoid G, InvolutiveInv G where
   protected mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹
   /-- Despite the asymmetry of `inv_eq_of_mul`, the symmetric version is true thanks to the
   involutivity of inversion. -/
@@ -932,13 +937,13 @@ theorem eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ :=
 end DivisionMonoid
 
 /-- Commutative `SubtractionMonoid`. -/
-class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMonoid G
+class SubtractionCommMonoid (G : Type*) extends SubtractionMonoid G, AddCommMonoid G
 
 /-- Commutative `DivisionMonoid`.
 
 This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
 @[to_additive SubtractionCommMonoid]
-class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
+class DivisionCommMonoid (G : Type*) extends DivisionMonoid G, CommMonoid G
 
 /-- A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
@@ -948,7 +953,7 @@ with a default so that `a / b = a * b⁻¹` holds by definition.
 Use `Group.ofLeftAxioms` or `Group.ofRightAxioms` to define a group structure
 on a type with the minimum proof obligations.
 -/
-class Group (G : Type u) extends DivInvMonoid G where
+class Group (G : Type*) extends DivInvMonoid G where
   protected inv_mul_cancel : ∀ a : G, a⁻¹ * a = 1
 
 /-- An `AddGroup` is an `AddMonoid` with a unary `-` satisfying `-a + a = 0`.
@@ -959,7 +964,7 @@ with a default so that `a - b = a + -b` holds by definition.
 Use `AddGroup.ofLeftAxioms` or `AddGroup.ofRightAxioms` to define an
 additive group structure on a type with the minimum proof obligations.
 -/
-class AddGroup (A : Type u) extends SubNegMonoid A where
+class AddGroup (A : Type*) extends SubNegMonoid A where
   protected neg_add_cancel : ∀ a : A, -a + a = 0
 
 attribute [to_additive (attr := wikidata Q83478)] Group
@@ -1026,12 +1031,12 @@ instance (priority := 100) Group.toCancelMonoid : CancelMonoid G where
 end Group
 
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
-class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
+class AddCommGroup (G : Type*) extends AddGroup G, AddCommMonoid G
 
 /-- A commutative group is a group with commutative `(*)`. -/
 -- There is intentionally no `IsMulCommutative` for `CommGroup` instance for performance reasons.
 @[to_additive (attr := wikidata Q181296)]
-class CommGroup (G : Type u) extends Group G, CommMonoid G
+class CommGroup (G : Type*) extends Group G, CommMonoid G
 
 section CommGroup
 

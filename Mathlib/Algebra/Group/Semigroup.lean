@@ -5,19 +5,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 module
 
-public import Batteries.Logic
-public import Batteries.Util.LibraryNote
-public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Algebra.Regular.Defs
-public import Mathlib.Data.Int.Notation
-public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Tactic.MkIffOfInductiveProp
-public import Mathlib.Tactic.OfNat
-public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Simps
-public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.CrossRefAttribute
-public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Semigroups and algebraic structures without identities
@@ -27,11 +17,7 @@ a distinguished one or zero. This includes cancellation and commutativity mixins
 supporting lemmas and instances.
 -/
 
-@[expose] public section
-
-assert_not_exists MonoidWithZero DenselyOrdered Function.const_injective
-
-universe u v w
+public section
 
 open Function
 
@@ -42,19 +28,19 @@ section Mul
 variable [Mul G]
 
 /-- A mixin for left cancellative multiplication. -/
-@[mk_iff] class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
+@[mk_iff] class IsLeftCancelMul (G : Type*) [Mul G] : Prop where
   /-- Multiplication is left cancellative (i.e. left regular). -/
   protected mul_left_cancel (a : G) : IsLeftRegular a
 /-- A mixin for right cancellative multiplication. -/
-@[mk_iff] class IsRightCancelMul (G : Type u) [Mul G] : Prop where
+@[mk_iff] class IsRightCancelMul (G : Type*) [Mul G] : Prop where
   /-- Multiplication is right cancellative (i.e. right regular). -/
   protected mul_right_cancel (a : G) : IsRightRegular a
 /-- A mixin for cancellative multiplication. -/
 @[mk_iff]
-class IsCancelMul (G : Type u) [Mul G] : Prop extends IsLeftCancelMul G, IsRightCancelMul G
+class IsCancelMul (G : Type*) [Mul G] : Prop extends IsLeftCancelMul G, IsRightCancelMul G
 
 /-- A mixin for left cancellative addition. -/
-class IsLeftCancelAdd (G : Type u) [Add G] : Prop where
+class IsLeftCancelAdd (G : Type*) [Add G] : Prop where
   /-- Addition is left cancellative (i.e. left regular). -/
   protected add_left_cancel (a : G) : IsAddLeftRegular a
 
@@ -62,7 +48,7 @@ attribute [to_additive] IsLeftCancelMul
 attribute [to_additive] isLeftCancelMul_iff
 
 /-- A mixin for right cancellative addition. -/
-class IsRightCancelAdd (G : Type u) [Add G] : Prop where
+class IsRightCancelAdd (G : Type*) [Add G] : Prop where
   /-- Addition is right cancellative (i.e. right regular). -/
   protected add_right_cancel (a : G) : IsAddRightRegular a
 
@@ -71,7 +57,7 @@ attribute [to_additive] isRightCancelMul_iff
 
 /-- A mixin for cancellative addition. -/
 @[mk_iff]
-class IsCancelAdd (G : Type u) [Add G] : Prop extends IsLeftCancelAdd G, IsRightCancelAdd G
+class IsCancelAdd (G : Type*) [Add G] : Prop extends IsLeftCancelAdd G, IsRightCancelAdd G
 
 attribute [to_additive] IsCancelMul
 attribute [to_additive existing] isCancelMul_iff
@@ -155,13 +141,13 @@ end Mul
 
 /-- A semigroup is a type with an associative `(*)`. -/
 @[ext]
-class Semigroup (G : Type u) extends Mul G where
+class Semigroup (G : Type*) extends Mul G where
   /-- Multiplication is associative -/
   protected mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
 
 /-- An additive semigroup is a type with an associative `(+)`. -/
 @[ext]
-class AddSemigroup (G : Type u) extends Add G where
+class AddSemigroup (G : Type*) extends Add G where
   /-- Addition is associative -/
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
 
@@ -212,13 +198,13 @@ end IsCommutative
 
 /-- A commutative additive magma is a type with an addition which commutes. -/
 @[ext]
-class AddCommMagma (G : Type u) extends Add G where
+class AddCommMagma (G : Type*) extends Add G where
   /-- Addition is commutative in a commutative additive magma. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
 /-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
 @[ext]
-class CommMagma (G : Type u) extends Mul G where
+class CommMagma (G : Type*) extends Mul G where
   /-- Multiplication is commutative in a commutative multiplicative magma. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
 
@@ -226,11 +212,11 @@ attribute [to_additive] CommMagma
 
 /-- A commutative semigroup is a type with an associative commutative `(*)`. -/
 @[ext]
-class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G where
+class CommSemigroup (G : Type*) extends Semigroup G, CommMagma G where
 
 /-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
 @[ext]
-class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G where
+class AddCommSemigroup (G : Type*) extends AddSemigroup G, AddCommMagma G where
 
 attribute [to_additive] CommSemigroup
 
@@ -255,34 +241,34 @@ lemma isRightRegular_iff_isRegular : IsRightRegular a ↔ IsRegular a := by
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
 @[to_additive AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd /-- Any `AddCommMagma G` that
 satisfies `IsRightCancelAdd G` also satisfies `IsLeftCancelAdd G`. -/]
-lemma CommMagma.IsRightCancelMul.toIsLeftCancelMul (G : Type u) [CommMagma G] [IsRightCancelMul G] :
+lemma CommMagma.IsRightCancelMul.toIsLeftCancelMul (G : Type*) [CommMagma G] [IsRightCancelMul G] :
     IsLeftCancelMul G :=
   ⟨fun _ _ _ h => mul_right_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
 
 /-- Any `CommMagma G` that satisfies `IsLeftCancelMul G` also satisfies `IsRightCancelMul G`. -/
 @[to_additive AddCommMagma.IsLeftCancelAdd.toIsRightCancelAdd /-- Any `AddCommMagma G` that
 satisfies `IsLeftCancelAdd G` also satisfies `IsRightCancelAdd G`. -/]
-lemma CommMagma.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommMagma G] [IsLeftCancelMul G] :
+lemma CommMagma.IsLeftCancelMul.toIsRightCancelMul (G : Type*) [CommMagma G] [IsLeftCancelMul G] :
     IsRightCancelMul G :=
   ⟨fun _ _ _ h => mul_left_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
 
 /-- Any `CommMagma G` that satisfies `IsLeftCancelMul G` also satisfies `IsCancelMul G`. -/
 @[to_additive AddCommMagma.IsLeftCancelAdd.toIsCancelAdd /-- Any `AddCommMagma G` that satisfies
 `IsLeftCancelAdd G` also satisfies `IsCancelAdd G`. -/]
-lemma CommMagma.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsLeftCancelMul G] :
+lemma CommMagma.IsLeftCancelMul.toIsCancelMul (G : Type*) [CommMagma G] [IsLeftCancelMul G] :
     IsCancelMul G := { CommMagma.IsLeftCancelMul.toIsRightCancelMul G with }
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsCancelMul G`. -/
 @[to_additive AddCommMagma.IsRightCancelAdd.toIsCancelAdd /-- Any `AddCommMagma G` that satisfies
 `IsRightCancelAdd G` also satisfies `IsCancelAdd G`. -/]
-lemma CommMagma.IsRightCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsRightCancelMul G] :
+lemma CommMagma.IsRightCancelMul.toIsCancelMul (G : Type*) [CommMagma G] [IsRightCancelMul G] :
     IsCancelMul G := { CommMagma.IsRightCancelMul.toIsLeftCancelMul G with }
 
 end CommMagma
 
 /-- A `LeftCancelSemigroup` is a semigroup such that `a * b = a * c` implies `b = c`. -/
 @[ext]
-class LeftCancelSemigroup (G : Type u) extends Semigroup G, IsLeftCancelMul G
+class LeftCancelSemigroup (G : Type*) extends Semigroup G, IsLeftCancelMul G
 
 library_note «lower cancel priority» /--
 We lower the priority of inheriting from cancellative structures.
@@ -295,7 +281,7 @@ attribute [instance 75] LeftCancelSemigroup.toSemigroup -- See note [lower cance
 /-- An `AddLeftCancelSemigroup` is an additive semigroup such that
 `a + b = a + c` implies `b = c`. -/
 @[ext]
-class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G, IsLeftCancelAdd G
+class AddLeftCancelSemigroup (G : Type*) extends AddSemigroup G, IsLeftCancelAdd G
 
 attribute [instance 75] AddLeftCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
 
@@ -309,14 +295,14 @@ add_decl_doc AddLeftCancelSemigroup.toIsLeftCancelAdd
 
 /-- A `RightCancelSemigroup` is a semigroup such that `a * b = c * b` implies `a = c`. -/
 @[ext]
-class RightCancelSemigroup (G : Type u) extends Semigroup G, IsRightCancelMul G
+class RightCancelSemigroup (G : Type*) extends Semigroup G, IsRightCancelMul G
 
 attribute [instance 75] RightCancelSemigroup.toSemigroup -- See note [lower cancel priority]
 
 /-- An `AddRightCancelSemigroup` is an additive semigroup such that
 `a + b = c + b` implies `a = c`. -/
 @[ext]
-class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G, IsRightCancelAdd G
+class AddRightCancelSemigroup (G : Type*) extends AddSemigroup G, IsRightCancelAdd G
 
 attribute [instance 75] AddRightCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
 
