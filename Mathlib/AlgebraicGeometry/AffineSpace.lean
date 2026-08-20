@@ -69,7 +69,6 @@ instance over : 𝔸(n; S).CanonicallyOver S where
 /-- The map from the affine `n`-space over `S` to the integral model `Spec ℤ[n]`. -/
 def toSpecMvPoly : 𝔸(n; S) ⟶ Spec ℤ[n] := pullback.snd _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Morphisms into `Spec ℤ[n]` are equivalent the choice of `n` global sections.
@@ -209,13 +208,11 @@ lemma isoOfIsAffine_hom_appTop [IsAffine S] :
         (eval₂Hom ((𝔸(n; S) ↘ S).appTop).hom (coord S)) := by
   simp [isoOfIsAffine_hom]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma isoOfIsAffine_inv_appTop_coord [IsAffine S] (i) :
     (isoOfIsAffine n S).inv.appTop (coord _ i) = (Scheme.ΓSpecIso (.of _)).inv (.X i) :=
   homOfVector_appTop_coord _ _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma isoOfIsAffine_inv_over [IsAffine S] :
     (isoOfIsAffine n S).inv ≫ 𝔸(n; S) ↘ S = Spec.map (CommRingCat.ofHom C) ≫ S.isoSpec.inv :=
@@ -230,7 +227,6 @@ def SpecIso (R : CommRingCat.{u}) :
   isoOfIsAffine _ _ ≪≫ Scheme.Spec.mapIso (MvPolynomial.mapEquiv _
     (Scheme.ΓSpecIso R).symm.commRingCatIsoToRingEquiv).toCommRingCatIso.op
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma SpecIso_hom_appTop (R : CommRingCat.{u}) :
     (SpecIso n R).hom.appTop = (Scheme.ΓSpecIso _).hom ≫
@@ -250,7 +246,6 @@ lemma SpecIso_inv_appTop_coord (R : CommRingCat.{u}) (i) :
   congr 1
   exact map_X _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma SpecIso_inv_over (R : CommRingCat.{u}) :
     (SpecIso n R).inv ≫ 𝔸(n; Spec R) ↘ Spec R = Spec.map (CommRingCat.ofHom C) := by

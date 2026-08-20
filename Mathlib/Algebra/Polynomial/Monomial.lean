@@ -21,8 +21,8 @@ namespace Polynomial
 
 universe u
 
-variable {R : Type u} {a b : R} {m n : ℕ}
-variable [Semiring R] {p q r : R[X]}
+variable {R : Type u} {a : R} {m n : ℕ}
+variable [Semiring R] {r : R[X]}
 
 lemma monomial_one_eq_iff [Nontrivial R] : (monomial m 1 : R[X]) = monomial n 1 ↔ m = n :=
   monomial_left_inj one_ne_zero

@@ -39,7 +39,7 @@ measure.
 
 @[expose] public section
 
-open Filter BoundedContinuousFunction Complex
+open BoundedContinuousFunction Complex
 
 namespace BoundedContinuousFunction
 

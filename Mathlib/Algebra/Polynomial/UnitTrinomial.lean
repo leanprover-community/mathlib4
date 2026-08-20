@@ -51,17 +51,17 @@ variable {k m n u v w}
 theorem trinomial_leading_coeff' (hkm : k < m) (hmn : m < n) :
     (trinomial k m n u v w).coeff n = w := by
   rw [trinomial_def, coeff_add, coeff_add, coeff_C_mul_X_pow, coeff_C_mul_X_pow, coeff_C_mul_X_pow,
-    if_neg (hkm.trans hmn).ne', if_neg hmn.ne', if_pos rfl, zero_add, zero_add]
+    ite_eq_right (hkm.trans hmn).ne', ite_eq_right hmn.ne', ite_eq_left rfl, zero_add, zero_add]
 
 theorem trinomial_middle_coeff (hkm : k < m) (hmn : m < n) :
     (trinomial k m n u v w).coeff m = v := by
   rw [trinomial_def, coeff_add, coeff_add, coeff_C_mul_X_pow, coeff_C_mul_X_pow, coeff_C_mul_X_pow,
-    if_neg hkm.ne', if_pos rfl, if_neg hmn.ne, zero_add, add_zero]
+    ite_eq_right hkm.ne', ite_eq_left rfl, ite_eq_right hmn.ne, zero_add, add_zero]
 
 theorem trinomial_trailing_coeff' (hkm : k < m) (hmn : m < n) :
     (trinomial k m n u v w).coeff k = u := by
   rw [trinomial_def, coeff_add, coeff_add, coeff_C_mul_X_pow, coeff_C_mul_X_pow, coeff_C_mul_X_pow,
-    if_pos rfl, if_neg hkm.ne, if_neg (hkm.trans hmn).ne, add_zero, add_zero]
+    ite_eq_left rfl, ite_eq_right hkm.ne, ite_eq_right (hkm.trans hmn).ne, add_zero, add_zero]
 
 theorem trinomial_natDegree (hkm : k < m) (hmn : m < n) (hw : w ≠ 0) :
     (trinomial k m n u v w).natDegree = n := by
@@ -169,9 +169,9 @@ theorem isUnitTrinomial_iff :
   replace hy := hp.2 m (mem_insert_of_mem (mem_insert_self m {n}))
   replace hz := hp.2 n (mem_insert_of_mem (mem_insert_of_mem (mem_singleton_self n)))
   simp_rw [coeff_add, coeff_C_mul, coeff_X_pow_self, mul_one, coeff_X_pow] at hx hy hz
-  rw [if_neg hkm.ne, if_neg (hkm.trans hmn).ne] at hx
-  rw [if_neg hkm.ne', if_neg hmn.ne] at hy
-  rw [if_neg (hkm.trans hmn).ne', if_neg hmn.ne'] at hz
+  rw [ite_eq_right hkm.ne, ite_eq_right (hkm.trans hmn).ne] at hx
+  rw [ite_eq_right hkm.ne', ite_eq_right hmn.ne] at hy
+  rw [ite_eq_right (hkm.trans hmn).ne', ite_eq_right hmn.ne'] at hz
   simp_rw [mul_zero, zero_add, add_zero] at hx hy hz
   exact ⟨k, m, n, hkm, hmn, hx.unit, hy.unit, hz.unit, rfl⟩
 

@@ -30,7 +30,7 @@ theorem Setoid.IsPartition.ncard_eq_finsum {α : Type*} {P : Set (Set α)}
   have hst' (t : Set α) : Nat.card ↑(s ∩ t) = (hst t).toFinset.card :=
     Nat.card_eq_card_finite_toFinset (hst t)
   suffices hs' : _ by
-    rw [finsum_def, dif_pos hs']
+    rw [finsum_def, dite_eq_left hs']
     simp only [← Nat.card_coe_set_eq, Nat.card_eq_card_finite_toFinset hs]
     rw [Finset.sum_congr rfl (fun t ht ↦ by exact hst' ↑t)]
     rw [← Finset.card_sigma, eq_comm]
