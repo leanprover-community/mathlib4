@@ -188,7 +188,7 @@ theorem LipschitzWith.completion_extension [MetricSpace β] [CompleteSpace β] {
 
 theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
     (h : LipschitzWith K f) : LipschitzWith K (Completion.map f) :=
-  one_mul K ▸ (coe_isometry.lipschitz.comp h).completion_extension
+  one_mul K ▸ (coe_isometry.lipschitzWith.comp h).completion_extension
 
 theorem Isometry.completion_extension [PseudoMetricSpace β] [CompleteSpace β] [T0Space β]
     {f : α → β} (h : Isometry f) : Isometry (Completion.extension f) :=
