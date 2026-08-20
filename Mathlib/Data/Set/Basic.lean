@@ -70,12 +70,15 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
-protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) :=
-  fun _ _ h => congrArg ofPred h
-protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) :=
-  fun p => ⟨ofPred p, rfl⟩
-protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) :=
-  ⟨Set.mem_injective, Set.mem_surjective⟩
+/-- Membership as an equivalence between sets and predicates. -/
+@[simps]
+def memEquiv : Set α ≃ (α → Prop) where
+  toFun := Membership.mem
+  invFun := ofPred
+
+protected lemma mem_injective : Injective fun s : Set α ↦ (· ∈ s) := memEquiv.injective
+protected lemma mem_surjective : Surjective fun s : Set α ↦ (· ∈ s) := memEquiv.surjective
+protected lemma mem_bijective : Bijective fun s : Set α ↦ (· ∈ s) := memEquiv.bijective
 
 instance instDistribLattice : DistribLattice (Set α) where
   le := (· ≤ ·)
