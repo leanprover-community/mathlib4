@@ -159,7 +159,7 @@ theorem isEdgeConnected_two_iff_forall_not_isBridge : G.IsEdgeConnected 2 ↔ �
   constructor
   · intro h
     rw [isEdgeConnected_two_iff_forall_preconnected] at h
-    rintro ⟨x,y⟩ 
+    rintro ⟨x,y⟩
     intro hbridge
     exact (isBridge_iff.mp hbridge) (h s(x, y) x y)
   · intro h
