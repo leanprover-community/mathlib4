@@ -29,41 +29,36 @@ basic properties.
 
 @[expose] public section
 
--- #42623
-theorem Finite.ciInf_le_iff {ι α : Type*} [Finite ι] [Nonempty ι]
-    [ConditionallyCompleteLinearOrder α] {a : α}
-    {f : ι → α} : ⨅ i, f i ≤ a ↔ ∃ x, f x ≤ a :=
-  ⟨fun h ↦ (exists_eq_ciInf_of_finite).imp fun _ hi ↦ hi.trans_le h,
-    fun ⟨i, h⟩ ↦ (ciInf_le f i).trans h⟩
-
--- #42623
-theorem Finite.lt_ciInf_iff {ι α : Type*} [Finite ι] [Nonempty ι]
-    [ConditionallyCompleteLinearOrder α] {a : α}
-    {f : ι → α} : a < ⨅ i, f i ↔ ∀ x, a < f x := by
-  contrapose!
-  exact Finite.ciInf_le_iff
-
 open Filter
 
 open scoped Topology
 
-variable {A : Type*}
+variable {𝕜 A : Type*}
 
 section SeminormedRing
 
-variable [SeminormedRing A]
+variable [NormedField 𝕜] [SeminormedRing A] [NormedAlgebra 𝕜 A]
 
-/-- The limit `‖a ^ k‖ ^ (1 / k)` of an element `a` in a normed ring. -/
+/-- The limit `‖a ^ k‖ ^ (1 / k)` of an element `a` in a normed ring.
+We use `k : ℕ+` to ease the eventual generalization to `NonUnitalSeminormedRing`. -/
 noncomputable def spectralRadiusLim (a : A) : ℝ :=
-  atTop.limUnder fun k : ℕ ↦ ‖a ^ k‖ ^ (k : ℝ)⁻¹
+  atTop.limUnder fun k : ℕ+ ↦ ‖a ^ (k : ℕ)‖ ^ (k : ℝ)⁻¹
 
-theorem tendsto_spectralRadiusLim (a : A) :
-    atTop.Tendsto (fun k : ℕ ↦ ‖a ^ k‖ ^ (k : ℝ)⁻¹) (𝓝 (spectralRadiusLim a)) := by
+/-- `spectralRadiusLim a` is the limit of `‖a ^ k‖ ^ (1 / k)` over `k : ℕ+`.
+See `tendsto_spectralRadiusLim` for the limit over `k : ℕ`. -/
+theorem tendsto_spectralRadiusLim' (a : A) :
+    atTop.Tendsto (fun k : ℕ+ ↦ ‖a ^ (k : ℕ)‖ ^ (k : ℝ)⁻¹) (𝓝 (spectralRadiusLim a)) := by
   have h : Submultiplicative fun k ↦ ‖a ^ k‖ :=
     fun m n ↦ by simpa [pow_add] using norm_mul_le (a ^ m) (a ^ n)
-  exact tendsto_nhds_limUnder ⟨h.lim, h.tendsto_lim fun n ↦ norm_nonneg (a ^ n)⟩
+  exact tendsto_nhds_limUnder ⟨h.lim,
+    (h.tendsto_lim fun n ↦ norm_nonneg (a ^ n)).comp tendsto_PNat_val_atTop_atTop⟩
 
-@[bound]
+/-- `spectralRadiusLim a` is the limit of `‖a ^ k‖ ^ (1 / k)` over `k : ℕ`.
+See `tendsto_spectralRadiusLim'` for the limit over `k : ℕ+`. -/
+theorem tendsto_spectralRadiusLim (a : A) :
+    atTop.Tendsto (fun k : ℕ ↦ ‖a ^ k‖ ^ (k : ℝ)⁻¹) (𝓝 (spectralRadiusLim a)) :=
+  PNat.tendsto_comp_val_iff.mp (tendsto_spectralRadiusLim' a)
+
 theorem spectralRadiusLim_nonneg (a : A) : 0 ≤ spectralRadiusLim a :=
   ge_of_tendsto' (tendsto_spectralRadiusLim a) fun _ ↦ by positivity
 
@@ -82,13 +77,23 @@ meta def evalSpectralRadiusLim : PositivityExt where eval {u α} _ pα? e :=
 
 end Mathlib.Meta.Positivity
 
-example (a : A) : 0 ≤ spectralRadiusLim a := by
-  positivity
-
 theorem spectralRadiusLim_le_norm (a : A) : spectralRadiusLim a ≤ ‖a‖ := by
-  refine le_of_tendsto (tendsto_spectralRadiusLim a) (eventually_atTop.mpr ⟨1, fun n hn ↦ ?_⟩)
-  grw [norm_pow_le' a hn, ← Real.rpow_natCast_mul (by positivity),
-    mul_inv_cancel₀ (by positivity), Real.rpow_one]
+  refine le_of_tendsto (tendsto_spectralRadiusLim' a) (Eventually.of_forall fun k ↦ ?_)
+  grw [Real.rpow_inv_le_iff_of_pos, Real.rpow_natCast, norm_pow_le'] <;> positivity
+
+@[simp]
+theorem spectralRadiusLim_zero : spectralRadiusLim (0 : A) = 0 :=
+  le_antisymm (by simpa using spectralRadiusLim_le_norm (0 : A)) (spectralRadiusLim_nonneg 0)
+
+@[simp]
+theorem spectralRadiusLim_neg (a : A) : spectralRadiusLim (-a) = spectralRadiusLim a :=
+  tendsto_nhds_unique (by simpa using tendsto_spectralRadiusLim (-a)) (tendsto_spectralRadiusLim a)
+
+theorem spectralRadiusLim_smul (c : 𝕜) (a : A) :
+    spectralRadiusLim (c • a) = ‖c‖ * spectralRadiusLim a := by
+  refine tendsto_nhds_unique ((tendsto_spectralRadiusLim' (c • a)).congr fun k ↦ ?_)
+    ((tendsto_spectralRadiusLim' a).const_mul ‖c‖)
+  simp [smul_pow, norm_smul, Real.mul_rpow, ← Real.rpow_natCast_mul]
 
 theorem spectralRadiusLim_pow_of_ne_zero (a : A) {n : ℕ} (hn : n ≠ 0) :
     spectralRadiusLim (a ^ n) = spectralRadiusLim a ^ n := by
