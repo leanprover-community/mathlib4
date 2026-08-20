@@ -107,6 +107,7 @@ lemma exists_bound_of_invariant_of_isBigO {f : ℍ → E} (hf_cont : Continuous 
     have : (1 : ℝ) ≤ g 1 0 ^ 2 := mod_cast (one_le_sq_iff_one_le_abs _).mpr (Int.one_le_abs hg)
     nlinarith
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A function on `ℍ` which is invariant under a finite-index subgroup of `SL(2, ℤ)`, and satisfies
 an `O((im τ) ^ t)` bound at all cusps for some `0 ≤ t`, is in fact uniformly bounded by a multiple
 of `(max (im τ) (1 / im τ)) ^ t`. -/
@@ -122,7 +123,7 @@ lemma exists_bound_of_subgroup_invariant_of_isBigO
       exact ⟨g⁻¹ * h, hgh, (mul_inv_cancel_left g h).symm⟩
     simp [-sl_moeb, hj', mul_smul, hf_inv j⁻¹ (inv_mem hj)]
   have hf'_cont γ : Continuous (f' · γ) := QuotientGroup.induction_on γ fun g ↦ by
-    simp only [sl_moeb, f']
+    simp only [sl_moeb, f', Quotient.lift_mk]
     fun_prop
   have hf'_inv τ (g : SL(2, ℤ)) γ : f' (g • τ) (g • γ) = f' τ γ := by
     induction γ using QuotientGroup.induction_on
