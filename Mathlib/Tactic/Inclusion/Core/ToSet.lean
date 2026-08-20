@@ -71,13 +71,6 @@ class Coarsen (Iα α : Type*) [ToSet Iα α] where
   /-- If `x ∈ t` then `x ∈ coarsen s t`. -/
   mem_coarsen_right {x : α} {s t : Iα} (hx : x ∈ t) : x ∈ coarsen s t
 
-theorem Coarsen.mem_coarsen_of_or {Iα α : Type*} [ToSet Iα α] [Coarsen Iα α]
-    {p q : Prop} {x : α} {s t : Iα} (h : p ∨ q)
-    (hp : p → x ∈ s) (hq : q → x ∈ t) :
-    x ∈ Coarsen.coarsen (α := α) s t :=
-  h.elim (fun hp' ↦ Coarsen.mem_coarsen_left (hp hp'))
-    (fun hq' ↦ Coarsen.mem_coarsen_right (hq hq'))
-
 universe u
 
 /-- A `Cover Iα α` specifies a function `coverMap` to compute a "refined" inclusion of `F s`

@@ -43,10 +43,8 @@ structure HypothesisExt where
   /-- The priority of the extension. Extensions with higher priority are tried first. -/
   priority : Nat := eval_prio default
 
-/-- A named family of inclusion and hypothesis extensions. -/
+/-- A family of inclusion and hypothesis extensions. -/
 structure InclusionFamily where
-  /-- The name of an inclusion family. -/
-  name : Name
   /-- The `DiscrTree`-indexed collection of inclusion extensions. -/
   inclusionExt : EnvExt InclusionExt
   /-- The `DiscrTree`-indexed collection of hypothesis extensions. -/
@@ -66,7 +64,7 @@ def registerInclusionFamily (name : Name) (ref : Name := by exact decl_name%) :
     throw <| IO.userError s!"Inclusion family `{name}` is already registered"
   let inclusionExt ← initializeEnvExt ``InclusionExt (ref.str "inclusionExt")
   let hypothesisExt ← initializeEnvExt ``HypothesisExt (ref.str "hypothesisExt")
-  let family := { name, inclusionExt, hypothesisExt }
+  let family := { inclusionExt, hypothesisExt }
   inclusionFamiliesRef.modify (·.insert name family)
   return family
 
@@ -121,15 +119,7 @@ structure InclusionParamDecl where
   defaultValue? : Option Expr := none
 
 /-- The collection of registered inclusion parameters, indexed by name. -/
-structure InclusionParams where
-  /-- Map from names to their inclusion parameter declaration. -/
-  decls : NameMap InclusionParamDecl := {}
-  deriving Inhabited
-
-/-- If `name` is the name of an `InclusionParamDecl` `param` then return `some param`,
-otherwise return `none`. -/
-def InclusionParams.find? (params : InclusionParams) (name : Name) : Option InclusionParamDecl :=
-  params.decls.find? name
+abbrev InclusionParams := NameMap InclusionParamDecl
 
 /-- Evaluate the declaration `n` as an `InclusionParamDecl`. -/
 def mkInclusionParamDecl (name : Name) : ImportM InclusionParamDecl := do
@@ -143,8 +133,7 @@ initialize inclusionParamExt :
     mkInitial := pure {}
     ofOLeanEntry := fun _ name => return (name, ← mkInclusionParamDecl name)
     toOLeanEntry := (·.1)
-    addEntry := fun state (_, decl) =>
-      { state with decls := state.decls.insert decl.name decl }
+    addEntry := fun state (_, decl) => state.insert decl.name decl
   }
 
 end InclusionParam

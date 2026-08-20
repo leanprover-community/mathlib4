@@ -41,7 +41,7 @@ def addInclusionParam (declName : Name) (kind : AttributeKind) : AttrM Unit := d
   let decl ← mkInclusionParamDecl declName
   MetaM.run' <| validateInclusionParamDecl decl
   let params := inclusionParamExt.getState env
-  if params.decls.contains decl.name then
+  if params.contains decl.name then
     throwError "Inclusion parameter `{decl.name}` is already registered"
   inclusionParamExt.add (declName, decl) kind
 

@@ -25,14 +25,8 @@ namespace Inclusion
 declare_config_elab elabInclusionConfig InclusionConfig where
   omit paramSettings, families
 
-/-- Syntax for specifying an inclusion parameter. -/
-syntax inclusionParam := ident " := " term
-
-/-- Syntax for specifying an inclusion family. -/
-syntax inclusionFamily := ident
-
-/-- Parser for an inclusion family or parameter. -/
-def inclusionArg := (inclusionParam.unary `atomic).binary `orelse inclusionFamily
+/-- Syntax for specifying an inclusion family or parameter. -/
+syntax inclusionArg := ident (" := " term)?
 
 /-- Collect the enabled inclusion families and user-set parameter values and pass them into
 `config`. -/
@@ -42,13 +36,13 @@ def collectInclusionArgs (config : InclusionConfig) (argStxs : Array Syntax) :
   let params := inclusionParamExt.getState (← getEnv)
   for argStx in argStxs do
     match argStx with
-    | `(inclusionFamily| $familyStx:ident) =>
+    | `(inclusionArg| $familyStx:ident) =>
       let family := familyStx.getId.eraseMacroScopes
       unless config.families.contains family do
         unless (← getInclusionFamily? family).isSome do
           throwError "Unknown inclusion family `{family}`"
         config := { config with families := config.families.push family }
-    | `(inclusionParam| $nameStx:ident := $valueStx:term) =>
+    | `(inclusionArg| $nameStx:ident := $valueStx:term) =>
       let name := nameStx.getId
       let some decl := params.find? name
         | throwError "Unknown inclusion parameter `{name}`"

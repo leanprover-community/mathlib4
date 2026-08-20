@@ -66,8 +66,6 @@ def IVar.expr (iVar : IVar) : Expr := iVar.iExpr.expr
 /-- An `ExprInclusion` is a structure associated with an expression `e`, containing a computed
 inclusion set for `e` and a proof that this inclusion is correct. -/
 structure ExprInclusion where
-  /-- The types of the inclusion result. -/
-  iType : IType
   /-- The expression computing an inclusion set for `e`. -/
   inclusion : Expr
   /-- A proof of `e ∈ inclusion`, where `e` is the represented expression. -/
@@ -105,7 +103,7 @@ structure InclusionM.Context where
 
 /-- The mutable state of the `InclusionM` monad. -/
 structure InclusionM.State where
-  /-- The inclusion variables registered for expressions encountered during construction. -/
+  /-- A map from expressions to their inclusion variables. -/
   iVars : ExprMap IVar := {}
 
 /-- The monad used by the `inclusion` tactic during the construction of `ExprInclusion`s. -/

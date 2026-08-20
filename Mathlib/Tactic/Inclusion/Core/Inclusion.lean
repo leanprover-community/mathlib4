@@ -129,7 +129,7 @@ def mkExprInclusion (output : IExpr) (body : ExprInclusionBody) : HypothesisM Ex
       let inclusionBody ← iVar.mkCoverMap output.iType hypBody.inclusionBody cover coarsen inclusion
       let proofBody ← iVar.mkCoverMapProof output hypBody cover coarsen inclusion proof
       return { inclusionBody, proofBody }
-  return ⟨output.iType, body.inclusionBody, body.proofBody⟩
+  return ⟨body.inclusionBody, body.proofBody⟩
 
 /-- Construct an `ExprInclusion` for `e`. -/
 def toExprInclusion (e : Expr) : InclusionM ExprInclusion := do
