@@ -94,33 +94,21 @@ lemma mapsTo_delayedInput_previous_interval (n k : ℕ) (t₀ : Icc tmin tmax) :
   rw [mem_Icc] at hs ⊢
   have h_mul_nonneg : 0 ≤ (k : ℝ) * stepSize t₀ n :=
     mul_nonneg (Nat.cast_nonneg k) (stepSize_nonneg t₀ n)
-  unfold delayedInput
-  constructor
-  · exact le_max_right _ _
-  · apply max_le <;> linarith
+  exact ⟨le_max_right _ _, max_le (by linarith) (by linarith)⟩
 
-/-- The delayed input maps `Icc t₀ tmax` to itself. -/
 lemma mapsTo_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
     MapsTo (delayedInput t₀ n) (Icc t₀.val tmax) (Icc t₀.val tmax) := by
   intro s hs
   rw [mem_Icc] at hs ⊢
   have := stepSize_nonneg t₀ n
-  have h_t₀_le_tmax : t₀.val ≤ tmax := t₀.2.2
-  unfold delayedInput
-  constructor
-  · exact le_max_right _ _
-  · apply max_le <;> linarith
+  exact ⟨le_max_right _ _, max_le (by linarith) t₀.2.2⟩
 
-/-- The delayed input is Lipschitz continuous with constant one. -/
 lemma lipschitzWith_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
     LipschitzWith 1 (delayedInput t₀ n) := by
   rw [lipschitzWith_iff_dist_le_mul]
-  simp only [NNReal.coe_one, one_mul, Real.dist_eq]
   intro x y
-  have h_dist :=
+  simpa [delayedInput, Real.dist_eq, sub_sub_sub_cancel_right] using
     abs_max_sub_max_le_abs (x - stepSize t₀ n) (y - stepSize t₀ n) t₀.val
-  rw [sub_sub_sub_cancel_right] at h_dist
-  assumption
 
 /-- The recursively defined curves used to build the Tonelli approximations. -/
 noncomputable def tonelliIterate (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x₀ : E) (n : ℕ) :
@@ -207,13 +195,8 @@ lemma tonelliIterate_eq_succ_on_Icc (n : ℕ) (k : ℕ) (t : ℝ)
     simp only [add_right_inj]
     apply intervalIntegral.integral_congr
     intro s hs
-    have hs_min : (t₀ : ℝ) ≤ s := min_eq_left ht.1 ▸ hs.1
-    have hs_max : s ≤ t := max_eq_right ht.1 ▸ hs.2
-    have hs_in_Icc : s ∈ Icc (t₀ : ℝ) ((t₀ : ℝ) + (k + 1 : ℝ) * stepSize t₀ n) :=
-      ⟨hs_min, le_trans hs_max ht.2⟩
-    simp only [
-      ih (delayedInput t₀ n s)
-        (mapsTo_delayedInput_previous_interval n k t₀ hs_in_Icc)]
+    simp only [ih _ (mapsTo_delayedInput_previous_interval n k t₀
+      (uIcc_subset_Icc (left_mem_Icc.mpr (ht.1.trans ht.2)) ht hs))]
 
 /-- The diagonal sequence of Tonelli approximations. -/
 noncomputable def tonelliApproximation
