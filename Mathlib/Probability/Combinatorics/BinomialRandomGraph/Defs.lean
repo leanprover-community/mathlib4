@@ -56,7 +56,7 @@ lemma binomialRandom_eq_map : G(V, p) = map fromEdgeSet setBer(Sym2.diagSetᶜ, 
   refine (map_eq_comap measurable_fromEdgeSet measurableEmbedding_edgeSet ?_
     fromEdgeSet_edgeSet).symm
   filter_upwards [setBernoulli_ae_subset] with S hS
-  exact ⟨fromEdgeSet S, by simpa [← Set.compl_setOf, Set.subset_compl_iff_disjoint_right] using hS⟩
+  exact ⟨fromEdgeSet S, by simpa [← Set.compl_ofPred, Set.subset_compl_iff_disjoint_right] using hS⟩
 
 variable (p) in
 lemma binomialRandom_apply' (S : Set (SimpleGraph V)) :
@@ -74,7 +74,7 @@ instance : IsProbabilityMeasure G(V, p) := by
   refine measurableEmbedding_edgeSet.isProbabilityMeasure_comap ?_
   filter_upwards [setBernoulli_ae_subset] with s hs
   refine ⟨.fromEdgeSet s, ?_⟩
-  simpa [← Set.disjoint_compl_right_iff_subset, ← Set.compl_setOf] using hs
+  simpa [← Set.disjoint_compl_right_iff_subset, ← Set.compl_ofPred] using hs
 
 variable (V) in
 @[simp] lemma binomialRandom_zero : G(V, 0) = dirac ⊥ := by simp [binomialRandom_eq_map]
@@ -96,11 +96,5 @@ variable (p) in
   congr!
   rw [Nat.card_eq_fintype_card, ← Sym2.card_diagSet_compl, Fintype.card_eq_nat_card,
     ← Nat.card_coe_set_eq]
-
--- This should be restated as an equality of distributions once
--- https://github.com/leanprover-community/mathlib4/pull/28248 is in.
-proof_wanted binomialRandom_map_ncard_edgeSet_singleton [Finite V] (n : ℕ) :
-    G(V, p).map (fun G ↦ G.edgeSet.ncard) {n} = ((Nat.card V).choose 2).choose n * toNNReal p ^ n *
-      toNNReal (σ p) ^ ((Nat.card V).choose 2 - n)
 
 end SimpleGraph

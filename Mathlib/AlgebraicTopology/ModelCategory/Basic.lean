@@ -96,7 +96,6 @@ section mk'
 
 open MorphismProperty
 
-set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations C]
     [CategoryWithWeakEquivalences C]
@@ -123,7 +122,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for `ModelCategory C` which assumes a formulation of axioms
 using weak factorization systems. -/
-@[implicit_reducible]
+@[instance_reducible]
 def mk' [CategoryWithFibrations C] [CategoryWithCofibrations C]
     [CategoryWithWeakEquivalences C] [HasFiniteLimits C] [HasFiniteColimits C]
     [(weakEquivalences C).HasTwoOutOfThreeProperty]

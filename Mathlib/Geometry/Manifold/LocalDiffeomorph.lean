@@ -164,7 +164,7 @@ namespace IsLocalDiffeomorphAt
 
 variable {f : M → N} {x : M}
 
-variable {I I' J n}
+variable {I J n}
 
 /-- An arbitrary choice of local inverse of `f` near `x`. -/
 def localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
@@ -380,16 +380,13 @@ def IsLocalDiffeomorph.diffeomorphOfBijective
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx }
 
-@[deprecated (since := "2025-12-19")]
-alias IsLocalDiffeomorph.diffeomorph_of_bijective := IsLocalDiffeomorph.diffeomorphOfBijective
-
 end Basic
 
 section Differential
 
-variable {f : M → N} {s : Set M} {x : M}
+variable {f : M → N} {x : M}
 
-variable {I I' J n}
+variable {I J n}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≠ 0`, the differential `df_x`

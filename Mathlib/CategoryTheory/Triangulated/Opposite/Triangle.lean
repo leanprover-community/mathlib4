@@ -29,14 +29,13 @@ between `(Triangle C)ᵒᵖ` and `Triangle Cᵒᵖ`, called
 
 namespace CategoryTheory.Pretriangulated
 
-open Category Limits Preadditive ZeroObject Opposite
+open Category Limits Preadditive ZeroObject Pretriangulated.Opposite
 
 variable (C : Type*) [Category* C] [HasShift C ℤ]
 
 namespace TriangleOpEquivalence
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor which sends a triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` in `C` to the triangle
 `op Z ⟶ op Y ⟶ op X ⟶ (op Z)⟦1⟧` in `Cᵒᵖ` (without introducing signs). -/
 @[simps]
@@ -57,7 +56,6 @@ noncomputable def functor : (Triangle C)ᵒᵖ ⥤ Triangle Cᵒᵖ where
         rfl }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor which sends a triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` in `Cᵒᵖ` to the triangle
 `Z.unop ⟶ Y.unop ⟶ X.unop ⟶ Z.unop⟦1⟧` in `C` (without introducing signs). -/
 @[simps]
@@ -108,6 +106,7 @@ noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
 
 end TriangleOpEquivalence
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An anti-equivalence between the categories of triangles in `C` and in `Cᵒᵖ`.
 A triangle in `Cᵒᵖ` shall be distinguished iff it corresponds to a distinguished

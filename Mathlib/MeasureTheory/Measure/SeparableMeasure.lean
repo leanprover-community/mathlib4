@@ -109,6 +109,7 @@ theorem measureDense_measurableSet : μ.MeasureDense {s | MeasurableSet s} where
   measurable _ h := h
   approx s hs _ ε ε_pos := ⟨s, hs, by simpa⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Measure.MeasureDense.completion (h𝒜 : μ.MeasureDense 𝒜) : μ.completion.MeasureDense 𝒜 where
   measurable s hs := (h𝒜.measurable s hs).nullMeasurableSet
   approx s hs hμs ε ε_pos := by

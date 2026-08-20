@@ -94,6 +94,10 @@ lemma isDetecting : ObjectProperty.IsDetecting (freeYoneda R) :=
 
 end freeYoneda
 
+instance hasSeparator {C₀ : Type u} [SmallCategory C₀] (R₀ : C₀ᵒᵖ ⥤ RingCat.{u}) :
+    HasSeparator (PresheafOfModules.{u} R₀) :=
+  ⟨_, (freeYoneda.isSeparating R₀).isSeparator_coproduct⟩
+
 instance wellPowered {C₀ : Type u} [SmallCategory C₀] (R₀ : C₀ᵒᵖ ⥤ RingCat.{u}) :
     WellPowered.{u} (PresheafOfModules.{u} R₀) :=
   wellPowered_of_isDetecting (freeYoneda.isDetecting R₀)
@@ -168,6 +172,7 @@ lemma ι_fromFreeYonedaCoproduct_apply (m : M.Elements) (X : Cᵒᵖ) (x : m.fre
   ConcreteCategory.congr_hom
     ((evaluation R X ⋙ forget _).congr_map (M.ι_fromFreeYonedaCoproduct m)) x
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma fromFreeYonedaCoproduct_app_mk (m : M.Elements) :
     M.fromFreeYonedaCoproduct.app _ (M.freeYonedaCoproductMk m) = m.2 := by

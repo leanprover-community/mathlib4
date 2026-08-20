@@ -71,6 +71,7 @@ lemma map_coe {n : SimplexCategoryᵒᵖ} (a : A.obj n) :
     f.map.app n a = φ.app n a :=
   map_eq_of_mem _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma image_le : A.image f.map ≤ B := by
   rintro n _ ⟨a, ha, rfl⟩
   have := f.map_coe ⟨a, ha⟩

@@ -119,11 +119,17 @@ public def validateTitle (title : String) : Array String := Id.run do
       -- Future: we could check if `scope` describes a directory that actually exist.
       -- Should we allow special syntax such as `Data/*/Basic` or `{Set,Group}Theory`?
 
-    -- Titles should be lower-cased (but we allow abbreviations).
+    -- Titles should be lower-cased (but we allow abbreviations, or a `s` or `'ed` suffix).
     if subject.front.toLower != subject.front then
       let firstWord := subject.takeWhile (!·.isWhitespace)
-      if !isAbbreviation firstWord then
-        errors := errors.push "error: the PR subject should be lowercased"
+      let suffixes := ["'s", "s", "'ed"]
+      let mut withoutSuffix := firstWord
+      for suff in suffixes do
+        if firstWord.endsWith suff then
+          withoutSuffix := firstWord.dropSuffix suff
+          break
+      if !(isAbbreviation withoutSuffix) then
+        errors := errors.push s!"error: the PR subject `{subject}` should be lowercased"
     if subject.endsWith "." then
       errors := errors.push "error: the PR title should not end with a full stop"
     else if subject.endsWith " " then

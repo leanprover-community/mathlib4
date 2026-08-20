@@ -14,9 +14,10 @@ public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -44,6 +45,8 @@ We register the following instances:
   `Add.add`, `Neg.neg`/`Sub.sub`, `Mul.mul`, `Div.div`, and `HPow.hPow`.
 
 -/
+
+set_option linter.style.longFile 1700
 
 @[expose] public section
 
@@ -399,9 +402,7 @@ class MulOneClass (M : Type u) extends MulOne M where
 @[to_additive (attr := ext)]
 theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
   rintro @⟨@⟨⟨one₁⟩, ⟨mul₁⟩⟩, one_mul₁, mul_one₁⟩ @⟨@⟨⟨one₂⟩, ⟨mul₂⟩⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
-  -- FIXME (See https://github.com/leanprover/lean4/issues/1711)
-  -- congr
-  suffices one₁ = one₂ by cases this; rfl
+  congr
   exact (one_mul₂ one₁).symm.trans (mul_one₁ one₂)
 
 section MulOneClass
@@ -417,6 +418,44 @@ theorem mul_one : ∀ a : M, a * 1 = a :=
   MulOneClass.mul_one
 
 end MulOneClass
+
+section IsUnital
+
+/-- A multiplicative magma is **unital** if there exists a unit.
+
+**Note**: Do not use this unless it is the only reasonable way to phrase or prove a statement.
+In general you should use `NonUnitalRing`, `Ring`, etc. -/
+@[mk_iff] class IsUnital (A : Type*) [Mul A] : Prop where
+  isUnital : ∃ u : A, ∀ x : A, u * x = x ∧ x * u = x
+
+/-- A multiplicative magma is **not-unital** if there does not exist a unit.
+
+**Note**: Do not use this unless it is the only reasonable way to phrase or prove a statement.
+In general you should use `NonUnitalRing`, `Ring`, etc. -/
+@[mk_iff] class IsNotUnital (A : Type*) [Mul A] : Prop where
+  isNotUnital : ∀ u : A, ∃ x : A, u * x ≠ x ∨ x * u ≠ x
+
+variable {A : Type*}
+
+@[simp, push] lemma not_isUnital_iff_isNotUnital [Mul A] : ¬IsUnital A ↔ IsNotUnital A := by
+  simp [isUnital_iff, isNotUnital_iff, -not_and, Classical.not_and_iff_not_or_not]
+
+@[simp, push] lemma not_isNotUnital_iff_isUnital [Mul A] : ¬IsNotUnital A ↔ IsUnital A := by
+  grind [not_isUnital_iff_isNotUnital]
+
+/-- A unital magma is `MulOneClass`.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toMulOneClass [Mul A] [IsUnital A] : MulOneClass A where
+  one := isUnital.choose
+  one_mul a := (isUnital.choose_spec a).1
+  mul_one a := (isUnital.choose_spec a).2
+
+lemma MulOneClass.isUnital [MulOneClass A] : IsUnital A where
+  isUnital := ⟨1, fun x ↦ ⟨one_mul x, mul_one x⟩⟩
+
+end IsUnital
 
 section
 
@@ -594,7 +633,7 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   | one => simp [npowRec']
   | bit b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
-    cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
+    cases b <;> simp only [Nat.bit, Bool.cond_false, Bool.cond_true, npowRec'_two_mul]
     rw [npowRec'_succ (by lia), npowRec'_two_mul, ← npowRec'_two_mul,
       ← npowRec'_mul_comm (by lia), mul_assoc]
 
@@ -783,6 +822,13 @@ namespace IsDedekindFiniteMonoid
 end IsDedekindFiniteMonoid
 
 end Monoid
+
+attribute [local instance] IsUnital.toMulOneClass in
+/-- A unital semigroup is a monoid.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toMonoid {A : Type*} [Semigroup A] [IsUnital A] : Monoid A where
 
 /-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
 injective. -/
@@ -1068,8 +1114,12 @@ variable [DivInvMonoid G]
     ZPow.zpow n x = x ^ n :=
   rfl
 
-@[to_additive (attr := simp) zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
+@[to_additive zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
   DivInvMonoid.zpow_zero' a
+
+-- `zpow_zero` is provable by `simp` (via `zpow_ofNat`), so the `simpNF` linter rejects tagging it.
+-- We still want the additive `zero_zsmul` to be `simp`, so we tag that one manually.
+attribute [simp] zero_zsmul
 
 @[to_additive (attr := simp, norm_cast) natCast_zsmul]
 theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
@@ -1080,7 +1130,9 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 
 
-@[to_additive ofNat_zsmul]
+-- TODO: consider also making `ofNat_zsmul` a `simp` lemma; it is currently not, because it breaks
+-- `simp`-normal forms involving `(2 : ℤ) • ·` used in the theory of oriented angles.
+@[to_additive ofNat_zsmul, simp]
 lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
   zpow_natCast ..
 
@@ -1111,14 +1163,18 @@ theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mu
 
 @[to_additive]
 theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc]
 
 @[to_additive (attr := simp)]
 theorem one_div (a : G) : 1 / a = a⁻¹ :=
   (inv_eq_one_div a).symm
 
-@[to_additive (attr := simp) one_zsmul]
+@[to_additive one_zsmul]
 lemma zpow_one (a : G) : a ^ (1 : ℤ) = a := by rw [zpow_ofNat, pow_one]
+
+-- `zpow_one` is provable by `simp` (via `zpow_ofNat`), so the `simpNF` linter rejects tagging it.
+-- We still want the additive `one_zsmul` to be `simp`, so we tag that one manually.
+attribute [simp] one_zsmul
 
 @[to_additive two_zsmul] lemma zpow_two (a : G) : a ^ (2 : ℤ) = a * a := by rw [zpow_ofNat, pow_two]
 
