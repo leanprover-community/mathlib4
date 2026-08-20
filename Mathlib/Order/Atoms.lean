@@ -11,8 +11,8 @@ public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Order.WellFounded
 public import Mathlib.Tactic.Nontriviality
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -1278,7 +1278,7 @@ instance isCoatomistic [∀ i, CompleteLattice (π i)] [∀ i, IsCoatomistic (π
 end Pi
 
 section BooleanAlgebra
-variable [BooleanAlgebra α] {a b : α}
+variable [BooleanAlgebra α] {a : α}
 
 @[simp] lemma isAtom_compl : IsAtom aᶜ ↔ IsCoatom a := isCompl_compl.symm.isAtom_iff_isCoatom
 @[simp] lemma isCoatom_compl : IsCoatom aᶜ ↔ IsAtom a := isCompl_compl.symm.isCoatom_iff_isAtom

@@ -226,7 +226,6 @@ theorem cospan_map_id {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (w : WalkingCospan
 theorem span_map_id {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (w : WalkingSpan) :
     (span f g).map (WalkingSpan.Hom.id w) = 𝟙 _ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Every diagram indexing a pullback is naturally isomorphic (actually, equal) to a `cospan` -/
 @[simps (rhsMd := default)]
 def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map inr) :=
@@ -234,7 +233,6 @@ def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map
   (fun j => eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
   (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Every diagram indexing a pushout is naturally isomorphic (actually, equal) to a `span` -/
 @[simps (rhsMd := default)]
 def diagramIsoSpan (F : WalkingSpan ⥤ C) : F ≅ span (F.map fst) (F.map snd) :=
