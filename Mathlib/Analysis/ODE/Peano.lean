@@ -125,13 +125,8 @@ lemma tonelliIterate_eq_succ_on_Icc (n : ℕ) (k : ℕ) (t : ℝ)
     simp only [add_right_inj]
     apply intervalIntegral.integral_congr
     intro s hs
-    have hs_min : (t₀ : ℝ) ≤ s := min_eq_left ht.1 ▸ hs.1
-    have hs_max : s ≤ t := max_eq_right ht.1 ▸ hs.2
-    have hs_in_Icc : s ∈ Icc (t₀ : ℝ) ((t₀ : ℝ) + (k + 1 : ℝ) * stepSize t₀ n) :=
-      ⟨hs_min, le_trans hs_max ht.2⟩
-    simp only [
-      ih (delayedInput t₀ n s)
-        (mapsTo_delayedInput_previous_interval n k t₀ hs_in_Icc)]
+    simp only [ih _ (mapsTo_delayedInput_previous_interval n k t₀
+      (uIcc_subset_Icc (left_mem_Icc.mpr (ht.1.trans ht.2)) ht hs))]
 
 /-- The diagonal sequence of Tonelli approximations. -/
 noncomputable def tonelliApproximation
