@@ -290,28 +290,28 @@ theorem integral_univ_inv_one_add_sq : ∫ (x : ℝ), (1 + x ^ 2)⁻¹ = π :=
     (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atTop)
 
 theorem integrable_inv_one_add_mul_sq {b : ℝ} (hb : b ≠ 0) :
-    Integrable fun x : ℝ ↦ (1 + (b * x) ^ 2)⁻¹ :=
+    Integrable fun x ↦ (1 + (b * x) ^ 2)⁻¹ :=
   (integrable_inv_one_add_sq.comp_mul_left' hb).congr (by simp)
 
 @[simp]
 theorem integral_univ_inv_one_add_mul_sq (b : ℝ) :
-    ∫ (x : ℝ), (1 + (b * x) ^ 2)⁻¹ = π / |b| := by
+    ∫ x, (1 + (b * x) ^ 2)⁻¹ = π / |b| := by
   rw [Measure.integral_comp_mul_left (fun x ↦ (1 + x ^ 2)⁻¹) b, integral_univ_inv_one_add_sq]
   simp [abs_inv, div_eq_inv_mul]
 
 theorem integrableOn_Ioi_zero_inv_mul_one_add_log_sq {b : ℝ} (hb : b ≠ 0) :
     IntegrableOn (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹) (Ioi 0) := by
-  rw [show (fun t : ℝ ↦ (t * (1 + (b * log t) ^ 2))⁻¹)
-      = fun t : ℝ ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ by ext t ; simp [mul_comm],
+  rw [show (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹)
+      = fun t ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ by ext t ; simp [mul_comm],
     integrableOn_comp_log_Ioi_zero (fun u ↦ (1 + (b * u) ^ 2)⁻¹)]
   exact integrable_inv_one_add_mul_sq hb
 
 /-- The total mass of the log-Cauchy density on `Ioi 0`. -/
 @[simp]
 theorem integral_Ioi_zero_inv_mul_one_add_log_sq (b : ℝ) :
-    ∫ (t : ℝ) in Ioi 0, (t * (1 + (b * log t) ^ 2))⁻¹ = π / |b| := by
-  rw [show (fun t : ℝ ↦ (t * (1 + (b * log t) ^ 2))⁻¹)
-      = fun t : ℝ ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ by ext t ; simp [mul_comm],
+    ∫ t in Ioi 0, (t * (1 + (b * log t) ^ 2))⁻¹ = π / |b| := by
+  rw [show (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹)
+      = fun t ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ by ext t ; simp [mul_comm],
     integral_comp_log_Ioi_zero (fun u ↦ (1 + (b * u) ^ 2)⁻¹),
     integral_univ_inv_one_add_mul_sq b]
 

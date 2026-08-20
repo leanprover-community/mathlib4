@@ -1186,7 +1186,7 @@ theorem integrableOn_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
 
 /-- Substitution `y = exp x` in integrals over the whole line. -/
 theorem integral_comp_exp (g : ℝ → E) :
-    ∫ x : ℝ, exp x • g (exp x) = ∫ y in Ioi 0, g y := by
+    ∫ x, exp x • g (exp x) = ∫ y in Ioi 0, g y := by
   symm
   rw [← range_exp, ← image_univ]
   simpa [abs_of_pos (exp_pos _)] using integral_image_eq_integral_abs_deriv_smul
@@ -1194,7 +1194,7 @@ theorem integral_comp_exp (g : ℝ → E) :
     (fun x _ y _ hxy ↦ exp_injective hxy) g
 
 theorem integrable_comp_exp (g : ℝ → E) :
-    Integrable (fun x : ℝ ↦ exp x • g (exp x)) ↔ IntegrableOn g (Ioi 0) := by
+    Integrable (fun x ↦ exp x • g (exp x)) ↔ IntegrableOn g (Ioi 0) := by
   rw [← integrableOn_univ]
   symm
   rw [← range_exp, ← image_univ]
@@ -1204,7 +1204,7 @@ theorem integrable_comp_exp (g : ℝ → E) :
 
 /-- Substitution `y = log x` in integrals over `Ioi 0`. -/
 theorem integral_comp_log_Ioi_zero (g : ℝ → E) :
-    ∫ x in Ioi (0 : ℝ), x⁻¹ • g (log x) = ∫ y : ℝ, g y := by
+    ∫ x in Ioi 0, x⁻¹ • g (log x) = ∫ y, g y := by
   simpa using (integral_comp_exp (fun x ↦ x⁻¹ • g (log x))).symm
 
 theorem integrableOn_comp_log_Ioi_zero (g : ℝ → E) :
