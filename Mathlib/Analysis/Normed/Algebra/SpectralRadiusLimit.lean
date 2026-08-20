@@ -105,8 +105,13 @@ theorem spectralRadiusLim_pow_of_ne_zero (a : A) {n : ℕ} (hn : n ≠ 0) :
 theorem spectralRadiusLim_pow [NormOneClass A] (a : A) (n : ℕ) :
     spectralRadiusLim (a ^ n) = spectralRadiusLim a ^ n := by
   by_cases hn : n = 0
-  · simpa [hn, eq_comm] using tendsto_spectralRadiusLim (1 : A)
+  · symm
+    simpa [hn] using tendsto_spectralRadiusLim (1 : A)
   · exact spectralRadiusLim_pow_of_ne_zero a hn
+
+@[simp]
+theorem spectralRadiusLim_one [NormOneClass A] : spectralRadiusLim (1 : A) = 1 := by
+  simpa using spectralRadiusLim_pow 1 0
 
 theorem spectralRadiusLim_le_norm_pow (a : A) {n : ℕ} (hn : n ≠ 0) :
     spectralRadiusLim a ≤ ‖a ^ n‖ ^ (n : ℝ)⁻¹ := by
