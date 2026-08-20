@@ -159,8 +159,6 @@ theorem tendsto_lim (hbdd : BddBelow (range fun n => u n / n)) :
     rw [← this] at key
     exact (key.congr h0).of_tendsto_comp (g := Real.exp) (by simp)
   let : Inhabited (Ioi (0 : ℝ)) := ⟨1, by simp⟩
-  let : ConditionallyCompleteLinearOrder (Ioi (0 : ℝ)) :=
-    ordConnectedSubsetConditionallyCompleteLinearOrder (Ioi (0 : ℝ))
   simp_rw [Subadditive.lim, Submultiplicative.lim, h0]
   rw [Real.exp_monotone.map_csInf_of_continuousAt Real.continuous_exp.continuousAt
     Nonempty.of_subtype (hbdd.mono (image_subset_range _ _)), Set.image_image]
