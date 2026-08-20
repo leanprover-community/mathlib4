@@ -6,6 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.Measure.Comap
+public import Mathlib.MeasureTheory.Measure.Continuity
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
 /-!
 # Restricting a measure to a subset or a subtype
@@ -25,12 +27,12 @@ pullback under `Subtype.val`) and the restriction to a set as above.
 open scoped ENNReal NNReal Topology
 open Set MeasureTheory Measure Filter MeasurableSpace ENNReal Function
 
-variable {R α β δ γ ι : Type*}
+variable {R α β δ ι : Type*}
 
 namespace MeasureTheory
 
-variable {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
-variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : Measure α} {s s' t : Set α}
+variable {m0 : MeasurableSpace α} [MeasurableSpace β]
+variable {μ ν : Measure α} {s s' t : Set α}
 
 namespace Measure
 
@@ -143,6 +145,9 @@ theorem restrict_le_self : μ.restrict s ≤ μ :=
 
 theorem absolutelyContinuous_restrict : μ.restrict s ≪ μ :=
   Measure.absolutelyContinuous_of_le Measure.restrict_le_self
+
+theorem _root_.MeasureTheory.ae_restrict_le : ae (μ.restrict s) ≤ ae μ :=
+  ae_mono restrict_le_self
 
 variable (μ)
 
@@ -599,6 +604,12 @@ theorem ae_restrict_uIoc_eq [LinearOrder α] (a b : α) :
   simp only [uIoc_eq_union, ae_restrict_union_eq]
 
 open scoped Interval in
+/-- See also `ae_restrict_uIoc_iff`. -/
+theorem ae_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
+    (∀ᵐ x ∂μ, x ∈ Ι a b → P x) ↔ (∀ᵐ x ∂μ, x ∈ Ioc a b → P x) ∧ ∀ᵐ x ∂μ, x ∈ Ioc b a → P x := by
+  simp only [uIoc_eq_union, mem_union, or_imp, eventually_and]
+
+open scoped Interval in
 /-- See also `MeasureTheory.ae_uIoc_iff`. -/
 theorem ae_restrict_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
     (∀ᵐ x ∂μ.restrict (Ι a b), P x) ↔
@@ -629,11 +640,8 @@ theorem ae_restrict_iff' {p : α → Prop} (hs : MeasurableSet s) :
   ae_restrict_iff'₀ hs.nullMeasurableSet
 
 theorem _root_.Filter.EventuallyEq.restrict {f g : α → δ} {s : Set α} (hfg : f =ᵐ[μ] g) :
-    f =ᵐ[μ.restrict s] g := by
-  -- note that we cannot use `ae_restrict_iff` since we do not require measurability
-  refine hfg.filter_mono ?_
-  rw [Measure.ae_le_iff_absolutelyContinuous]
-  exact absolutelyContinuous_restrict
+    f =ᵐ[μ.restrict s] g :=
+  hfg.filter_mono ae_restrict_le
 
 theorem ae_restrict_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ.restrict s, x ∈ s :=
   (ae_restrict_iff'₀ hs).2 (Filter.Eventually.of_forall fun _ => id)
@@ -679,18 +687,6 @@ theorem mem_map_restrict_ae_iff {β} {s : Set α} {t : Set β} {f : α → β} (
     (∀ᵐ x ∂∑ i ∈ s, μ i, p x) ↔ ∀ i ∈ s, ∀ᵐ x ∂μ i, p x := by
   induction s using Finset.cons_induction <;> simp [*]
 
-theorem ae_eq_comp' {ν : Measure β} {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ)
-    (h : g =ᵐ[ν] g') (h2 : μ.map f ≪ ν) : g ∘ f =ᵐ[μ] g' ∘ f :=
-  (tendsto_ae_map hf).mono_right h2.ae_le h
-
-theorem Measure.QuasiMeasurePreserving.ae_eq_comp {ν : Measure β} {f : α → β} {g g' : β → δ}
-    (hf : QuasiMeasurePreserving f μ ν) (h : g =ᵐ[ν] g') : g ∘ f =ᵐ[μ] g' ∘ f :=
-  ae_eq_comp' hf.aemeasurable h hf.absolutelyContinuous
-
-theorem ae_eq_comp {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ) (h : g =ᵐ[μ.map f] g') :
-    g ∘ f =ᵐ[μ] g' ∘ f :=
-  ae_eq_comp' hf h AbsolutelyContinuous.rfl
-
 @[to_additive]
 theorem div_ae_eq_one {β} [Group β] (f g : α → β) : f / g =ᵐ[μ] 1 ↔ f =ᵐ[μ] g := by
   refine ⟨fun h ↦ h.mono fun x hx ↦ ?_, fun h ↦ h.mono fun x hx ↦ ?_⟩
@@ -713,9 +709,6 @@ theorem ae_restrict_eq (hs : MeasurableSet s) : ae (μ.restrict s) = ae μ ⊓ �
   simp only [mem_inf_principal, mem_ae_iff, restrict_apply_eq_zero' hs, compl_ofPred,
     Classical.not_imp, fun a => and_comm (a := a ∈ s) (b := a ∉ t)]
   rfl
-
-lemma ae_restrict_le : ae (μ.restrict s) ≤ ae μ :=
-  ae_mono restrict_le_self
 
 theorem ae_restrict_eq_bot {s} : ae (μ.restrict s) = ⊥ ↔ μ s = 0 :=
   ae_eq_bot.trans restrict_eq_zero
@@ -775,12 +768,12 @@ lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
       rw [Measure.restrict_apply₀' hs]
       simp
     have B : NullMeasurableSet (t ∩ s) (μ.restrict s) :=
-      h.mono_ac absolutelyContinuous_restrict
+      h.mono restrict_le_self
     simpa using A.union B
 
 lemma nullMeasurableSet_restrict_of_subset {t : Set α} (ht : t ⊆ s) :
     NullMeasurableSet t (μ.restrict s) ↔ NullMeasurableSet t μ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.mono_ac absolutelyContinuous_restrict⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.mono restrict_le_self⟩
   obtain ⟨t', t'_subs, ht', t't⟩ : ∃ t' ⊆ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
     h.exists_measurable_subset_ae_eq
   have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t' ↔ x ∈ t) := by
@@ -1019,7 +1012,7 @@ theorem mem_map_indicator_ae_iff_mem_map_restrict_ae_of_zero_mem [Zero β] {t : 
   rw [Measure.restrict_apply' hs, Set.indicator_preimage, Set.ite]
   simp_rw [Set.compl_union, Set.compl_inter]
   change μ (((f ⁻¹' t)ᶜ ∪ sᶜ) ∩ ((fun _ => (0 : β)) ⁻¹' t \ s)ᶜ) = 0 ↔ μ ((f ⁻¹' t)ᶜ ∩ s) = 0
-  simp only [ht, ← Set.compl_eq_univ_sdiff, compl_compl, if_true,
+  simp only [ht, ← Set.compl_eq_univ_sdiff, compl_compl, ite_true,
     Set.preimage_const]
   simp_rw [Set.union_inter_distrib_right, Set.compl_inter_self s, Set.union_empty]
 
@@ -1028,7 +1021,7 @@ theorem mem_map_indicator_ae_iff_of_zero_notMem [Zero β] {t : Set β} (ht : (0 
   classical
   rw [mem_map, mem_ae_iff, Set.indicator_preimage, Set.ite, Set.compl_union, Set.compl_inter]
   change μ (((f ⁻¹' t)ᶜ ∪ sᶜ) ∩ ((fun _ => (0 : β)) ⁻¹' t \ s)ᶜ) = 0 ↔ μ ((f ⁻¹' t)ᶜ ∪ sᶜ) = 0
-  simp only [ht, if_false, Set.compl_empty, Set.empty_sdiff, Set.inter_univ, Set.preimage_const]
+  simp only [ht, ite_false, Set.compl_empty, Set.empty_sdiff, Set.inter_univ, Set.preimage_const]
 
 theorem map_restrict_ae_le_map_indicator_ae [Zero β] (hs : MeasurableSet s) :
     Filter.map f (ae <| μ.restrict s) ≤ Filter.map (s.indicator f) (ae μ) := by
