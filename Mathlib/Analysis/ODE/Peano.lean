@@ -275,14 +275,9 @@ private lemma isCompact_closure_range_boundedTonelliApproximation (hf : IsPeano 
 private lemma exists_tendsto_subseq_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
     ∃ β : Icc t₀.val tmax →ᵇ E, ∃ φ : ℕ → ℕ, StrictMono φ ∧
       Tendsto (boundedTonelliApproximation hf ∘ φ) atTop (nhds β) := by
-  let s : Set (Icc t₀.val tmax →ᵇ E) := closure (range (boundedTonelliApproximation hf))
-  have h_s_compact : IsCompact s := by
-    simpa [s] using isCompact_closure_range_boundedTonelliApproximation hf
-  have h_mem : ∀ n, boundedTonelliApproximation hf n ∈
-      closure (range (boundedTonelliApproximation hf)) := by
-    intro n
-    exact subset_closure ⟨n, rfl⟩
-  obtain ⟨β, _, φ, hφ_mono, hφ_tendsto⟩ := h_s_compact.tendsto_subseq h_mem
+  obtain ⟨β, _, φ, hφ_mono, hφ_tendsto⟩ :=
+    (isCompact_closure_range_boundedTonelliApproximation hf).tendsto_subseq
+      fun n ↦ subset_closure ⟨n, rfl⟩
   exact ⟨β, φ, hφ_mono, hφ_tendsto⟩
 
 end ArzelaAscoli
