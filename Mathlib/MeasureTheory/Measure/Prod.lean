@@ -525,13 +525,13 @@ noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)}
 lemma prod_sum_left {ι : Type*} (m : ι → Measure α) (μ : Measure β) [SFinite μ] :
     (Measure.sum m).prod μ = Measure.sum (fun i ↦ (m i).prod μ) := by
   ext s hs
-  simp only [prod_apply hs, lintegral_sum_measure, hs, sum_apply]
+  simp [prod_apply, hs]
 
 lemma prod_sum_right {ι' : Type*} [Countable ι'] (m : Measure α) (m' : ι' → Measure β)
     [∀ n, SFinite (m' n)] :
     m.prod (Measure.sum m') = Measure.sum (fun p ↦ m.prod (m' p)) := by
   ext s hs
-  simp only [prod_apply hs, hs, sum_apply]
+  simp only [prod_apply hs, hs, Measure.sum_apply]
   have M : ∀ x, MeasurableSet (Prod.mk x ⁻¹' s) := fun x => measurable_prodMk_left hs
   simp_rw [Measure.sum_apply _ (M _)]
   rw [lintegral_tsum (fun i ↦ (measurable_measure_prodMk_left hs).aemeasurable)]
@@ -685,7 +685,7 @@ theorem prod_swap : map Prod.swap (μ.prod ν) = ν.prod μ := by
   have : sum (fun (i : ℕ × ℕ) ↦ map Prod.swap ((sfiniteSeq μ i.1).prod (sfiniteSeq ν i.2)))
        = sum (fun (i : ℕ × ℕ) ↦ map Prod.swap ((sfiniteSeq μ i.2).prod (sfiniteSeq ν i.1))) := by
     ext s hs
-    rw [sum_apply _ hs, sum_apply _ hs]
+    rw [Measure.sum_apply _ hs, Measure.sum_apply _ hs]
     exact ((Equiv.prodComm ℕ ℕ).tsum_eq _).symm
   rw [← sum_sfiniteSeq μ, ← sum_sfiniteSeq ν, prod_sum, prod_sum,
     map_sum measurable_swap.aemeasurable, this]
@@ -753,7 +753,7 @@ theorem prodAssoc_prod [SFinite τ] :
       = sum (fun (p : (ℕ × ℕ) × ℕ) ↦
         (sfiniteSeq μ p.1.1).prod ((sfiniteSeq ν p.1.2).prod (sfiniteSeq τ p.2))) := by
     ext s hs
-    rw [sum_apply _ hs, sum_apply _ hs, ← (Equiv.prodAssoc _ _ _).tsum_eq]
+    rw [Measure.sum_apply _ hs, Measure.sum_apply _ hs, ← (Equiv.prodAssoc _ _ _).tsum_eq]
     simp only [Equiv.prodAssoc_apply]
   rw [← sum_sfiniteSeq μ, ← sum_sfiniteSeq ν, ← sum_sfiniteSeq τ, prod_sum, prod_sum,
     map_sum MeasurableEquiv.prodAssoc.measurable.aemeasurable, prod_sum, prod_sum, this]
@@ -846,7 +846,7 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
 lemma prod_smul_left {μ : Measure α} {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (c : R) : (c • μ).prod ν = c • (μ.prod ν) := by
   ext s hs
-  rw [prod_apply hs, Measure.smul_apply, prod_apply hs]
+  rw [prod_apply hs, smul_apply, prod_apply hs]
   simp
 
 end Measure

@@ -67,7 +67,7 @@ theorem totalVariation_eq_variation (μ : SignedMeasure X) : μ.totalVariation =
   · obtain ⟨s, hs, hpos, hneg, hposPart, hnegPart⟩ := μ.toJordanDecomposition_spec
     calc μ.totalVariation r
       _ = ‖μ (s ∩ r)‖ₑ + ‖μ (sᶜ ∩ r)‖ₑ := by
-          rw [totalVariation, Measure.add_apply, hposPart, hnegPart,
+          rw [totalVariation, add_apply, hposPart, hnegPart,
             μ.toMeasureOfZeroLE_apply_eq_enorm hs hpos hr,
             μ.toMeasureOfLEZero_apply_eq_enorm hs.compl hneg hr]
       _ ≤ μ.variation (s ∩ r) + μ.variation (sᶜ ∩ r) :=

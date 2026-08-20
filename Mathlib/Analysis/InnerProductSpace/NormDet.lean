@@ -423,7 +423,7 @@ Using Euclidean Hausdorff measure with the domain dimension, the volume of the i
 theorem euclideanHausdorffMeasure_image [MeasurableSpace U] [BorelSpace U] [MeasurableSpace V]
     [BorelSpace V] (f : U →ₗ[ℝ] V) (s : Set U) :
     μHE[finrank ℝ U] (f '' s) = ENNReal.ofReal f.normDet * μHE[finrank ℝ U] s := by
-  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply, nnreal_smul_coe_apply,
+  simp_rw [euclideanHausdorffMeasure_def, _root_.smul_apply, nnreal_smul_coe_apply,
     hausdorffMeasure_image]
   exact mul_left_comm _ _ _
 

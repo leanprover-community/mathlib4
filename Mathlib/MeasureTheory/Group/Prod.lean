@@ -278,7 +278,7 @@ theorem ae_measure_preimage_mul_right_lt_top_of_ne_zero (h2s : ν' s ≠ 0) (h3s
   refine (absolutelyContinuous_of_isMulLeftInvariant μ' ν' ?_).ae_le
   refine mt ?_ h2s
   intro hν
-  rw [hν, Measure.coe_zero, Pi.zero_apply]
+  rw [hν, zero_apply]
 
 /-- A technical lemma relating two different measures. This is basically [Halmos, §60 Th. A].
   Note that if `f` is the characteristic function of a measurable set `t` this states that
@@ -331,7 +331,7 @@ theorem measure_mul_measure_eq (s t : Set G) (h2s : ν' s ≠ 0) (h3s : ν' s �
 theorem measure_eq_div_smul (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
     μ' = (μ' s / ν' s) • ν' := by
   ext1 t -
-  rw [Measure.smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
+  rw [smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
     measure_mul_measure_eq μ' ν' s t h2s h3s, mul_div_assoc, ENNReal.mul_div_cancel h2s h3s]
 
 end SigmaFinite

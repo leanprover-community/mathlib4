@@ -446,7 +446,7 @@ variable [MeasurableSpace X] [BorelSpace X]
 (we use `≤ᶠ[𝓝[≥] 0]` to state this), then `mkMetric m₁ hm₁ ≤ c • mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono_smul {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} {c : ℝ≥0∞} (hc : c ≠ ∞) (h0 : c ≠ 0)
     (hle : m₁ ≤ᶠ[𝓝[≥] 0] c • m₂) : (mkMetric m₁ : Measure X) ≤ c • mkMetric m₂ := fun s ↦ by
-  rw [← OuterMeasure.coe_mkMetric, coe_smul, ← OuterMeasure.coe_mkMetric]
+  rw [← OuterMeasure.coe_mkMetric, FunLike.coe_smul, ← OuterMeasure.coe_mkMetric]
   exact OuterMeasure.mkMetric_mono_smul hc h0 hle s
 
 @[simp]
@@ -1079,7 +1079,7 @@ theorem map_homothety_hausdorffMeasure {d : ℝ} (hd : 0 ≤ d) (x : P) {c : �
     Measure.map (AffineMap.homothety x c) μH[d] = ‖c‖₊⁻¹ ^ d • μH[d] := by
   ext s hs
   rw [Measure.map_apply (AffineMap.homothety_continuous x c).measurable hs,
-    hausdorffMeasure_homothety_preimage hd x hc s, Measure.smul_apply]
+    hausdorffMeasure_homothety_preimage hd x hc s, smul_apply]
 
 end NormedFieldAffine
 
