@@ -39,8 +39,8 @@ variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricS
 `p₃`. If either of those points equals `p₂`, this is π/2. Use
 `open scoped EuclideanGeometry` to access the `∠ p₁ p₂ p₃`
 notation. -/
-nonrec def angle (p₁ p₂ p₃ : P) : ℝ :=
-  angle (p₁ -ᵥ p₂ : V) (p₃ -ᵥ p₂)
+def angle (p₁ p₂ p₃ : P) : ℝ :=
+  InnerProductGeometry.angle (p₁ -ᵥ p₂ : V) (p₃ -ᵥ p₂)
 
 @[inherit_doc] scoped notation "∠" => EuclideanGeometry.angle
 
@@ -131,16 +131,16 @@ theorem angle_smul_left_of_pos {p₁ p₂ p₄ : P} (p₃ : P) {r : ℝ} (hr : 0
 
 /-- The angle at a point does not depend on the order of the other two
 points. -/
-nonrec theorem angle_comm (p₁ p₂ p₃ : P) : ∠ p₁ p₂ p₃ = ∠ p₃ p₂ p₁ :=
-  angle_comm _ _
+theorem angle_comm (p₁ p₂ p₃ : P) : ∠ p₁ p₂ p₃ = ∠ p₃ p₂ p₁ :=
+  InnerProductGeometry.angle_comm _ _
 
 /-- The angle at a point is nonnegative. -/
-nonrec theorem angle_nonneg (p₁ p₂ p₃ : P) : 0 ≤ ∠ p₁ p₂ p₃ :=
-  angle_nonneg _ _
+theorem angle_nonneg (p₁ p₂ p₃ : P) : 0 ≤ ∠ p₁ p₂ p₃ :=
+  InnerProductGeometry.angle_nonneg _ _
 
 /-- The angle at a point is at most π. -/
-nonrec theorem angle_le_pi (p₁ p₂ p₃ : P) : ∠ p₁ p₂ p₃ ≤ π :=
-  angle_le_pi _ _
+theorem angle_le_pi (p₁ p₂ p₃ : P) : ∠ p₁ p₂ p₃ ≤ π :=
+  InnerProductGeometry.angle_le_pi _ _
 
 /-- The angle ∠AAB at a point is always `π / 2`. -/
 @[simp] lemma angle_self_left (p₀ p : P) : ∠ p₀ p₀ p = π / 2 := by
@@ -186,12 +186,12 @@ theorem angle_eq_angle_of_angle_eq_pi (p₁ : P) {p₂ p₃ p₄ : P} (h : ∠ p
   exact angle_smul_right_of_pos p₁ hr hpr
 
 /-- If ∠BCD = π, then ∠ACB + ∠ACD = π. -/
-nonrec theorem angle_add_angle_eq_pi_of_angle_eq_pi (p₁ : P) {p₂ p₃ p₄ : P} (h : ∠ p₂ p₃ p₄ = π) :
+theorem angle_add_angle_eq_pi_of_angle_eq_pi (p₁ : P) {p₂ p₃ p₄ : P} (h : ∠ p₂ p₃ p₄ = π) :
     ∠ p₁ p₃ p₂ + ∠ p₁ p₃ p₄ = π := by
   unfold angle at h
   rw [angle_comm p₁ p₃ p₂, angle_comm p₁ p₃ p₄]
   unfold angle
-  exact angle_add_angle_eq_pi_of_angle_eq_pi _ h
+  exact InnerProductGeometry.angle_add_angle_eq_pi_of_angle_eq_pi _ h
 
 /-- **Vertical Angles Theorem**: angles opposite each other, formed by two intersecting straight
 lines, are equal. -/
@@ -477,29 +477,29 @@ theorem angle_lt_pi_of_not_collinear {p₁ p₂ p₃ : P} (h : ¬Collinear ℝ (
   (angle_le_pi _ _ _).lt_of_ne <| angle_ne_pi_of_not_collinear h
 
 /-- The cosine of the angle between three points is 1 if and only if the angle is 0. -/
-nonrec theorem cos_eq_one_iff_angle_eq_zero {p₁ p₂ p₃ : P} :
+theorem cos_eq_one_iff_angle_eq_zero {p₁ p₂ p₃ : P} :
     Real.cos (∠ p₁ p₂ p₃) = 1 ↔ ∠ p₁ p₂ p₃ = 0 :=
-  cos_eq_one_iff_angle_eq_zero
+  InnerProductGeometry.cos_eq_one_iff_angle_eq_zero
 
 /-- The cosine of the angle between three points is 0 if and only if the angle is π / 2. -/
-nonrec theorem cos_eq_zero_iff_angle_eq_pi_div_two {p₁ p₂ p₃ : P} :
+theorem cos_eq_zero_iff_angle_eq_pi_div_two {p₁ p₂ p₃ : P} :
     Real.cos (∠ p₁ p₂ p₃) = 0 ↔ ∠ p₁ p₂ p₃ = π / 2 :=
-  cos_eq_zero_iff_angle_eq_pi_div_two
+  InnerProductGeometry.cos_eq_zero_iff_angle_eq_pi_div_two
 
 /-- The cosine of the angle between three points is -1 if and only if the angle is π. -/
-nonrec theorem cos_eq_neg_one_iff_angle_eq_pi {p₁ p₂ p₃ : P} :
+theorem cos_eq_neg_one_iff_angle_eq_pi {p₁ p₂ p₃ : P} :
     Real.cos (∠ p₁ p₂ p₃) = -1 ↔ ∠ p₁ p₂ p₃ = π :=
-  cos_eq_neg_one_iff_angle_eq_pi
+  InnerProductGeometry.cos_eq_neg_one_iff_angle_eq_pi
 
 /-- The sine of the angle between three points is 0 if and only if the angle is 0 or π. -/
-nonrec theorem sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi {p₁ p₂ p₃ : P} :
+theorem sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi {p₁ p₂ p₃ : P} :
     Real.sin (∠ p₁ p₂ p₃) = 0 ↔ ∠ p₁ p₂ p₃ = 0 ∨ ∠ p₁ p₂ p₃ = π :=
-  sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi
+  InnerProductGeometry.sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi
 
 /-- The sine of the angle between three points is 1 if and only if the angle is π / 2. -/
-nonrec theorem sin_eq_one_iff_angle_eq_pi_div_two {p₁ p₂ p₃ : P} :
+theorem sin_eq_one_iff_angle_eq_pi_div_two {p₁ p₂ p₃ : P} :
     Real.sin (∠ p₁ p₂ p₃) = 1 ↔ ∠ p₁ p₂ p₃ = π / 2 :=
-  sin_eq_one_iff_angle_eq_pi_div_two
+  InnerProductGeometry.sin_eq_one_iff_angle_eq_pi_div_two
 
 /-- Three points are collinear if and only if the first or third point equals the second or
 the sine of the angle between three points is zero. -/

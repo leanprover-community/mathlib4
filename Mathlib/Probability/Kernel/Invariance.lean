@@ -44,8 +44,8 @@ variable {κ η : Kernel α α} {μ : Measure α}
 theorem Invariant.def (hκ : Invariant κ μ) : μ.bind κ = μ :=
   hκ
 
-nonrec theorem Invariant.comp_const (hκ : Invariant κ μ) : κ ∘ₖ const α μ = const α μ := by
-  rw [comp_const κ μ, hκ.def]
+theorem Invariant.comp_const (hκ : Invariant κ μ) : κ ∘ₖ const α μ = const α μ := by
+  rw [Kernel.comp_const κ μ, hκ.def]
 
 theorem Invariant.comp (hκ : Invariant κ μ) (hη : Invariant η μ) :
     Invariant (κ ∘ₖ η) μ := by

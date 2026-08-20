@@ -168,13 +168,13 @@ theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
     NNReal.mk (∑'[L] n, f n) (tsum_nonneg hf₁) = ∑'[L] n, NNReal.mk (f n) (hf₁ n) :=
   NNReal.eq <| Eq.symm <| coe_tsum (f := fun x => ⟨f x, hf₁ x⟩)
 
-nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) :
+theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) :
     ∑'[L] x, a * f x = a * ∑'[L] x, f x :=
-  NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_left]
+  NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, _root_.tsum_mul_left]
 
-nonrec theorem tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) :
+theorem tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) :
     ∑'[L] x, f x * a = (∑'[L] x, f x) * a :=
-  NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_right]
+  NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, _root_.tsum_mul_right]
 
 theorem summable_comp_injective {β : Type*} {f : α → ℝ≥0} (hf : Summable f) {i : β → α}
     (hi : Function.Injective i) : Summable (f ∘ i) := by
@@ -184,14 +184,14 @@ theorem summable_comp_injective {β : Type*} {f : α → ℝ≥0} (hf : Summable
 theorem summable_nat_add (f : ℕ → ℝ≥0) (hf : Summable f) (k : ℕ) : Summable fun i => f (i + k) :=
   summable_comp_injective hf <| add_left_injective k
 
-nonrec theorem summable_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) :
+theorem summable_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) :
     (Summable fun i => f (i + k)) ↔ Summable f := by
   rw [← summable_coe, ← summable_coe]
-  exact @summable_nat_add_iff ℝ _ _ _ (fun i => (f i : ℝ)) k
+  exact @_root_.summable_nat_add_iff ℝ _ _ _ (fun i => (f i : ℝ)) k
 
-nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} :
+theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} :
     HasSum (fun n => f (n + k)) a ↔ HasSum f (a + ∑ i ∈ range k, f i) := by
-  rw [← hasSum_coe, hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; norm_cast
+  rw [← hasSum_coe, _root_.hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; norm_cast
 
 theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
     ∑' i, f i = (∑ i ∈ range k, f i) + ∑' i, f (i + k) :=
@@ -214,10 +214,10 @@ theorem tendsto_atTop_zero_of_summable {f : ℕ → ℝ≥0} (hf : Summable f) :
 
 /-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
 space. This does not need a summability assumption, as otherwise all sums are zero. -/
-nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
+theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
     Tendsto (fun s : Finset α => ∑' b : { x // x ∉ s }, f b) atTop (𝓝 0) := by
   simp_rw [← tendsto_coe, coe_tsum, NNReal.coe_zero]
-  exact tendsto_tsum_compl_atTop_zero fun a : α => (f a : ℝ)
+  exact _root_.tendsto_tsum_compl_atTop_zero fun a : α => (f a : ℝ)
 
 /-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0`. -/
 def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=

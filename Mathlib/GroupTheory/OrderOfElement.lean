@@ -1167,9 +1167,9 @@ theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.ca
   · simp only [card_eq_zero_of_infinite, dvd_zero]
 
 @[to_additive]
-nonrec lemma Subgroup.orderOf_dvd_natCard {G : Type*} [Group G] (s : Subgroup G) {x} (hx : x ∈ s) :
+lemma Subgroup.orderOf_dvd_natCard {G : Type*} [Group G] (s : Subgroup G) {x} (hx : x ∈ s) :
     orderOf x ∣ Nat.card s := by
-  simpa using orderOf_dvd_natCard (⟨x, hx⟩ : s)
+  simpa using _root_.orderOf_dvd_natCard (⟨x, hx⟩ : s)
 
 @[to_additive]
 lemma Subgroup.orderOf_le_card {G : Type*} [Group G] (s : Subgroup G) (hs : (s : Set G).Finite)

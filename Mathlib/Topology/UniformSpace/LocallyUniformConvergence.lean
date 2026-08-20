@@ -66,10 +66,10 @@ theorem tendstoLocallyUniformlyOn_iff_forall_tendsto :
   forall₂_comm.trans <| forall₄_congr fun _ _ _ _ => by
     simp_rw [mem_map, mem_prod_iff_right, mem_preimage]
 
-nonrec theorem IsOpen.tendstoLocallyUniformlyOn_iff_forall_tendsto (hs : IsOpen s) :
+theorem IsOpen.tendstoLocallyUniformlyOn_iff_forall_tendsto (hs : IsOpen s) :
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ x ∈ s, Tendsto (fun y : ι × α => (f y.2, F y.1 y.2)) (p ×ˢ 𝓝 x) (𝓤 β) :=
-  tendstoLocallyUniformlyOn_iff_forall_tendsto.trans <| forall₂_congr fun x hx => by
+  _root_.tendstoLocallyUniformlyOn_iff_forall_tendsto.trans <| forall₂_congr fun x hx => by
     rw [hs.nhdsWithin_eq hx]
 
 theorem tendstoLocallyUniformly_iff_forall_tendsto :

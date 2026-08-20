@@ -83,8 +83,8 @@ theorem coeff_inj {x y : R⟦Γ⟧} : x.coeff = y.coeff ↔ x = y :=
 
 /-- The support of a Hahn series is just the set of indices whose coefficients are nonzero.
   Notably, it is well-founded. -/
-nonrec def support (x : R⟦Γ⟧) : Set Γ :=
-  support x.coeff
+def support (x : R⟦Γ⟧) : Set Γ :=
+  Function.support x.coeff
 
 @[simp]
 theorem support_mk (f : Γ → R) (h) : support ⟨f, h⟩ = Function.support f :=
@@ -131,8 +131,8 @@ theorem support_zero : support (0 : R⟦Γ⟧) = ∅ :=
   Function.support_zero
 
 @[simp]
-nonrec theorem support_nonempty_iff {x : R⟦Γ⟧} : x.support.Nonempty ↔ x ≠ 0 := by
-  rw [support, support_nonempty_iff, Ne, coeff_fun_eq_zero_iff]
+theorem support_nonempty_iff {x : R⟦Γ⟧} : x.support.Nonempty ↔ x ≠ 0 := by
+  rw [support, Function.support_nonempty_iff, Ne, coeff_fun_eq_zero_iff]
 
 @[simp]
 theorem support_eq_empty_iff {x : R⟦Γ⟧} : x.support = ∅ ↔ x = 0 :=

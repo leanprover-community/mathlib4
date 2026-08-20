@@ -654,17 +654,17 @@ theorem sSup_atoms_eq_top {α} [CompleteLattice α] [IsAtomistic α] :
     sSup { a : α | IsAtom a } = ⊤ :=
   isLUB_atoms_top.sSup_eq
 
-nonrec lemma CompleteLattice.isAtomistic_iff {α} [CompleteLattice α] :
+lemma CompleteLattice.isAtomistic_iff {α} [CompleteLattice α] :
     IsAtomistic α ↔ ∀ b : α, ∃ s : Set α, b = sSup s ∧ ∀ a ∈ s, IsAtom a := by
-  simp_rw [isAtomistic_iff, isLUB_iff_sSup_eq, eq_comm]
+  simp_rw [_root_.isAtomistic_iff, isLUB_iff_sSup_eq, eq_comm]
 
 lemma eq_sSup_atoms {α} [CompleteLattice α] [IsAtomistic α] (b : α) :
     ∃ s : Set α, b = sSup s ∧ ∀ a ∈ s, IsAtom a :=
   CompleteLattice.isAtomistic_iff.1 ‹_› b
 
-nonrec lemma CompleteLattice.isCoatomistic_iff {α} [CompleteLattice α] :
+lemma CompleteLattice.isCoatomistic_iff {α} [CompleteLattice α] :
     IsCoatomistic α ↔ ∀ b : α, ∃ s : Set α, b = sInf s ∧ ∀ a ∈ s, IsCoatom a := by
-  simp_rw [isCoatomistic_iff, isGLB_iff_sInf_eq, eq_comm]
+  simp_rw [_root_.isCoatomistic_iff, isGLB_iff_sInf_eq, eq_comm]
 
 lemma eq_sInf_coatoms {α} [CompleteLattice α] [IsCoatomistic α] (b : α) :
     ∃ s : Set α, b = sInf s ∧ ∀ a ∈ s, IsCoatom a :=

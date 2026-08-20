@@ -51,9 +51,9 @@ scoped instance : TopologicalSpace (A ⟶ R) :=
   .induced (fun f ↦ f.hom : _ → A → R) inferInstance
 
 @[fun_prop]
-nonrec lemma continuous_apply (x : A) :
+lemma continuous_apply (x : A) :
     Continuous (fun f : A ⟶ R ↦ f.hom x) :=
-  (continuous_apply x).comp continuous_induced_dom
+  (_root_.continuous_apply x).comp continuous_induced_dom
 
 variable (R A) in
 lemma isEmbedding_hom :

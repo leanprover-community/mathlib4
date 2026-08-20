@@ -193,11 +193,11 @@ lemma IsAbsoluteValue.abv_sum [Semiring R] [Semiring S] [PartialOrder S] [IsOrde
     (f : ι → R) (s : Finset ι) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 
-nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R]
+lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R]
     [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
     abv (∏ i ∈ s, f i) = ∏ i ∈ s, abv (f i) :=
-  map_prod abv f s
+  _root_.map_prod abv f s
 
 lemma IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R]
     [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]

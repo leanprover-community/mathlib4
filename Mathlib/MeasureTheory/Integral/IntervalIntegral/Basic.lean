@@ -708,18 +708,19 @@ theorem integral_cases (f : ℝ → E) (a b) :
     (∫ x in a..b, f x ∂μ) ∈ ({∫ x in Ι a b, f x ∂μ, -∫ x in Ι a b, f x ∂μ} : Set E) := by
   rw [intervalIntegral_eq_integral_uIoc]; split_ifs <;> simp
 
-nonrec theorem integral_undef (h : ¬IntervalIntegrable f μ a b) : ∫ x in a..b, f x ∂μ = 0 := by
+theorem integral_undef (h : ¬IntervalIntegrable f μ a b) : ∫ x in a..b, f x ∂μ = 0 := by
   rw [intervalIntegrable_iff] at h
-  rw [intervalIntegral_eq_integral_uIoc, integral_undef h, smul_zero]
+  rw [intervalIntegral_eq_integral_uIoc, MeasureTheory.integral_undef h, smul_zero]
 
 theorem intervalIntegrable_of_integral_ne_zero {a b : ℝ} {f : ℝ → E} {μ : Measure ℝ}
     (h : (∫ x in a..b, f x ∂μ) ≠ 0) : IntervalIntegrable f μ a b :=
   not_imp_comm.1 integral_undef h
 
-nonrec theorem integral_non_aestronglyMeasurable
+theorem integral_non_aestronglyMeasurable
     (hf : ¬AEStronglyMeasurable f (μ.restrict (Ι a b))) :
     ∫ x in a..b, f x ∂μ = 0 := by
-  rw [intervalIntegral_eq_integral_uIoc, integral_non_aestronglyMeasurable hf, smul_zero]
+  rw [intervalIntegral_eq_integral_uIoc, MeasureTheory.integral_non_aestronglyMeasurable hf,
+    smul_zero]
 
 theorem integral_non_aestronglyMeasurable_of_le (h : a ≤ b)
     (hf : ¬AEStronglyMeasurable f (μ.restrict (Ioc a b))) : ∫ x in a..b, f x ∂μ = 0 :=
@@ -773,21 +774,22 @@ theorem norm_integral_le_of_norm_le_const {a b C : ℝ} {f : ℝ → E} (h : ∀
   norm_integral_le_of_norm_le_const_ae <| Eventually.of_forall h
 
 @[simp]
-nonrec theorem integral_add (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b) :
+theorem integral_add (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b) :
     ∫ x in a..b, f x + g x ∂μ = (∫ x in a..b, f x ∂μ) + ∫ x in a..b, g x ∂μ := by
-  simp only [intervalIntegral_eq_integral_uIoc, integral_add hf.def' hg.def', smul_add]
+  simp only [intervalIntegral_eq_integral_uIoc, MeasureTheory.integral_add hf.def' hg.def',
+    smul_add]
 
-nonrec theorem integral_finsetSum {ι} {s : Finset ι} {f : ι → ℝ → E}
+theorem integral_finsetSum {ι} {s : Finset ι} {f : ι → ℝ → E}
     (h : ∀ i ∈ s, IntervalIntegrable (f i) μ a b) :
     ∫ x in a..b, ∑ i ∈ s, f i x ∂μ = ∑ i ∈ s, ∫ x in a..b, f i x ∂μ := by
-  simp only [intervalIntegral_eq_integral_uIoc, integral_finsetSum s fun i hi => (h i hi).def',
-    Finset.smul_sum]
+  simp only [intervalIntegral_eq_integral_uIoc,
+    MeasureTheory.integral_finsetSum s fun i hi => (h i hi).def', Finset.smul_sum]
 
 @[deprecated (since := "2026-04-08")] alias integral_finset_sum := integral_finsetSum
 
 @[simp]
-nonrec theorem integral_neg : ∫ x in a..b, -f x ∂μ = -∫ x in a..b, f x ∂μ := by
-  simp only [intervalIntegral, integral_neg]; abel
+theorem integral_neg : ∫ x in a..b, -f x ∂μ = -∫ x in a..b, f x ∂μ := by
+  simp only [intervalIntegral, MeasureTheory.integral_neg]; abel
 
 @[simp]
 theorem integral_sub (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b) :
@@ -798,10 +800,10 @@ theorem integral_sub (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable
 ensure that for `c ≠ 0`, `c • f` is integrable iff `f` is. For scalar multiplication by more
 general rings assuming integrability, see `IntervalIntegrable.integral_smul`. -/
 @[simp]
-nonrec theorem integral_smul [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+theorem integral_smul [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
     [SMulCommClass ℝ 𝕜 E] (r : 𝕜) (f : ℝ → E) :
     ∫ x in a..b, r • f x ∂μ = r • ∫ x in a..b, f x ∂μ := by
-  simp only [intervalIntegral, integral_smul, smul_sub]
+  simp only [intervalIntegral, MeasureTheory.integral_smul, smul_sub]
 
 theorem _root_.IntervalIntegrable.integral_smul
     {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass ℝ R E]
@@ -810,10 +812,10 @@ theorem _root_.IntervalIntegrable.integral_smul
   simp only [intervalIntegral, smul_sub, hf.1.integral_smul, hf.2.integral_smul]
 
 @[simp]
-nonrec theorem integral_smul_const [CompleteSpace E]
+theorem integral_smul_const [CompleteSpace E]
     {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : ℝ → 𝕜) (c : E) :
     ∫ x in a..b, f x • c ∂μ = (∫ x in a..b, f x ∂μ) • c := by
-  simp only [intervalIntegral_eq_integral_uIoc, integral_smul_const, smul_assoc]
+  simp only [intervalIntegral_eq_integral_uIoc, _root_.integral_smul_const, smul_assoc]
 
 @[simp]
 theorem integral_const_mul [NormedDivisionRing 𝕜] [NormedAlgebra ℝ 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
@@ -839,19 +841,19 @@ theorem integral_const [CompleteSpace E] (c : E) : ∫ _ in a..b, c = (b - a) �
   simp only [integral_const', Real.volume_Ioc, ENNReal.toReal_ofReal', ← neg_sub b,
     max_zero_sub_eq_self, measureReal_def]
 
-nonrec theorem integral_smul_measure (c : ℝ≥0∞) :
+theorem integral_smul_measure (c : ℝ≥0∞) :
     ∫ x in a..b, f x ∂c • μ = c.toReal • ∫ x in a..b, f x ∂μ := by
-  simp only [intervalIntegral, Measure.restrict_smul, integral_smul_measure, smul_sub]
+  simp only [intervalIntegral, Measure.restrict_smul, MeasureTheory.integral_smul_measure, smul_sub]
 
 end Basic
 
 -- TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
 
-nonrec theorem _root_.RCLike.intervalIntegral_ofReal {𝕜 : Type*} [RCLike 𝕜] {a b : ℝ}
+theorem _root_.RCLike.intervalIntegral_ofReal {𝕜 : Type*} [RCLike 𝕜] {a b : ℝ}
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegral, integral_ofReal, RCLike.ofReal_sub]
 
-nonrec theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} :
+theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} :
     (∫ x in a..b, (f x : ℂ) ∂μ) = ↑(∫ x in a..b, f x ∂μ) :=
   RCLike.intervalIntegral_ofReal
 
@@ -962,7 +964,7 @@ theorem integral_comp_add_right (d) : (∫ x in a..b, f (x + d)) = ∫ x in a + 
     _ = ∫ x in a + d..b + d, f x := by rw [map_add_right_eq_self]
 
 @[simp]
-nonrec theorem integral_comp_add_left (d) :
+theorem integral_comp_add_left (d) :
     (∫ x in a..b, f (d + x)) = ∫ x in d + a..d + b, f x := by
   simpa only [add_comm d] using integral_comp_add_right f d
 
@@ -1272,10 +1274,10 @@ theorem integral_zero_ae (h : ∀ᵐ x ∂μ, x ∈ Ι a b → f x = 0) : ∫ x 
     ∫ x in a..b, f x ∂μ = ∫ _ in a..b, 0 ∂μ := integral_congr_ae h
     _ = 0 := integral_zero
 
-nonrec theorem integral_indicator {a₁ a₂ a₃ : ℝ} (h : a₂ ∈ Icc a₁ a₃) :
+theorem integral_indicator {a₁ a₂ a₃ : ℝ} (h : a₂ ∈ Icc a₁ a₃) :
     ∫ x in a₁..a₃, indicator {x | x ≤ a₂} f x ∂μ = ∫ x in a₁..a₂, f x ∂μ := by
   have : {x | x ≤ a₂} ∩ Ioc a₁ a₃ = Ioc a₁ a₂ := Iic_inter_Ioc_of_le h.2
-  rw [integral_of_le h.1, integral_of_le (h.1.trans h.2), integral_indicator,
+  rw [integral_of_le h.1, integral_of_le (h.1.trans h.2), MeasureTheory.integral_indicator,
     Measure.restrict_restrict, this]
   · exact measurableSet_Iic
   all_goals apply measurableSet_Iic

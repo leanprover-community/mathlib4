@@ -141,14 +141,14 @@ theorem prime_generator_of_prime {P : Ideal A} (h : Prime P) [P.IsPrincipal] :
   prime_generator_of_isPrime _ h.ne_zero
 
 open UniqueFactorizationMonoid in
-nonrec theorem mem_normalizedFactors_iff {p I : Ideal A} (hI : I ≠ ⊥) :
+theorem mem_normalizedFactors_iff {p I : Ideal A} (hI : I ≠ ⊥) :
     p ∈ normalizedFactors I ↔ p.IsPrime ∧ I ≤ p := by
   rw [← dvd_iff_le]
   by_cases hp : p = 0
   · rw [← zero_eq_bot] at hI
     simp only [hp, zero_notMem_normalizedFactors, zero_dvd_iff, hI, false_iff, not_and,
       not_false_eq_true, implies_true]
-  · rwa [mem_normalizedFactors_iff hI, prime_iff_isPrime]
+  · rwa [UniqueFactorizationMonoid.mem_normalizedFactors_iff hI, prime_iff_isPrime]
 
 variable (A) in
 open UniqueFactorizationMonoid in

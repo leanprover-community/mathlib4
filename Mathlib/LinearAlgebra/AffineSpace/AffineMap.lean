@@ -340,8 +340,8 @@ theorem snd_linear : (snd : P1 × P2 →ᵃ[k] P2).linear = LinearMap.snd k V1 V
 
 variable (k P1)
 /-- Identity map as an affine map. -/
-nonrec def id : P1 →ᵃ[k] P1 where
-  toFun := id
+def id : P1 →ᵃ[k] P1 where
+  toFun := _root_.id
   linear := LinearMap.id
   map_vadd' _ _ := rfl
 

@@ -167,7 +167,7 @@ theorem Primrec.computableIn [Primcodable α] [Primcodable σ]
     {f : α → σ} {O} (hf : Primrec f) : ComputableIn O f :=
   (Primrec.to_comp hf).computableIn
 
-nonrec theorem Primrec₂.computableIn₂ [Primcodable α] [Primcodable β] [Primcodable σ]
+theorem Primrec₂.computableIn₂ [Primcodable α] [Primcodable β] [Primcodable σ]
     {f : α → β → σ} {O} (hf : Primrec₂ f) : ComputableIn₂ O f :=
   hf.computableIn
 

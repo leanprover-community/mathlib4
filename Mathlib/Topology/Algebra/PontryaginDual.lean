@@ -125,8 +125,8 @@ theorem map_comp (g : B →ₜ* C) (f : A →ₜ* B) :
   ContinuousMonoidHom.ext fun _x => PontryaginDual.ext fun _y => rfl
 
 @[simp]
-nonrec theorem map_mul (f g : A →ₜ* G) : map (f * g) = map f * map g :=
-  ContinuousMonoidHom.ext fun x => PontryaginDual.ext fun y => map_mul x (f y) (g y)
+theorem map_mul (f g : A →ₜ* G) : map (f * g) = map f * map g :=
+  ContinuousMonoidHom.ext fun x => PontryaginDual.ext fun y => _root_.map_mul x (f y) (g y)
 
 variable (A B C G)
 

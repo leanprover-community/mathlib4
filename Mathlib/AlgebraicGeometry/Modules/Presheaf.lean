@@ -35,7 +35,7 @@ abbrev ringCatSheaf : TopCat.Sheaf RingCat.{u} X :=
   (sheafCompose _ (forget₂ CommRingCat RingCat.{u})).obj X.sheaf
 
 /-- The category of presheaves of modules over a scheme. -/
-nonrec abbrev PresheafOfModules := PresheafOfModules.{u} X.ringCatSheaf.obj
+abbrev PresheafOfModules := _root_.PresheafOfModules.{u} X.ringCatSheaf.obj
 
 variable {X Y} in
 /-- The morphism of sheaves of rings corresponding to a morphism of schemes. -/

@@ -407,9 +407,9 @@ theorem RCond.mono {ι : Type*} {r : (ι → ℝ) → Ioi (0 : ℝ)} (h : l₁ �
     l₁.RCond r :=
   fun hR => hr (le_iff_imp.1 h.1 hR)
 
-nonrec theorem RCond.min {ι : Type*} {r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)} (h₁ : l.RCond r₁)
-    (h₂ : l.RCond r₂) : l.RCond fun x => min (r₁ x) (r₂ x) :=
-  fun hR x => congr_arg₂ min (h₁ hR x) (h₂ hR x)
+theorem RCond.min {ι : Type*} {r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)} (h₁ : l.RCond r₁)
+    (h₂ : l.RCond r₂) : l.RCond fun x => Min.min (r₁ x) (r₂ x) :=
+  fun hR x => congr_arg₂ Min.min (h₁ hR x) (h₂ hR x)
 
 @[gcongr, mono]
 theorem toFilterDistortion_mono (I : Box ι) (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂) :

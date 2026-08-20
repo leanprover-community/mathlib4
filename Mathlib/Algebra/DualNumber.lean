@@ -103,12 +103,12 @@ variable {A : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [A
 /-- For two `R`-algebra morphisms out of `A[ε]` to agree, it suffices for them to agree on the
 elements of `A` and the `A`-multiples of `ε`. -/
 @[ext 1100]
-nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
+theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
     (hinl : f.comp (inlAlgHom _ _ _) = g.comp (inlAlgHom _ _ _))
     (hinr : f.toLinearMap ∘ₗ (LinearMap.toSpanSingleton A A[ε] ε).restrictScalars R =
         g.toLinearMap ∘ₗ (LinearMap.toSpanSingleton A A[ε] ε).restrictScalars R) :
       f = g :=
-  algHom_ext' hinl (by
+  TrivSqZeroExt.algHom_ext' hinl (by
     ext a
     change f (inr a) = g (inr a)
     simpa only [inr_eq_smul_eps] using! DFunLike.congr_fun hinr a)

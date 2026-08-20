@@ -164,9 +164,9 @@ protected theorem toFinset_ofPred [Fintype α] (p : α → Prop) [DecidablePred 
 @[deprecated (since := "2026-07-09")] protected alias toFinset_setOf := Set.Finite.toFinset_ofPred
 
 @[simp]
-nonrec theorem disjoint_toFinset {hs : s.Finite} {ht : t.Finite} :
+theorem disjoint_toFinset {hs : s.Finite} {ht : t.Finite} :
     Disjoint hs.toFinset ht.toFinset ↔ Disjoint s t :=
-  @disjoint_toFinset _ _ _ hs.fintype ht.fintype
+  @Set.disjoint_toFinset _ _ _ hs.fintype ht.fintype
 
 protected theorem toFinset_inter [DecidableEq α] (hs : s.Finite) (ht : t.Finite)
     (h : (s ∩ t).Finite) : h.toFinset = hs.toFinset ∩ ht.toFinset := by

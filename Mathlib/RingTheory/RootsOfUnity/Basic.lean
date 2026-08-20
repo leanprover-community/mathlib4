@@ -156,13 +156,13 @@ theorem restrictRootsOfUnity_coe_apply [MonoidHomClass F R S] (σ : F) (ζ : roo
   rfl
 
 /-- Restrict a monoid isomorphism to the nth roots of unity. -/
-nonrec def MulEquiv.restrictRootsOfUnity (σ : R ≃* S) (n : ℕ) :
+def MulEquiv.restrictRootsOfUnity (σ : R ≃* S) (n : ℕ) :
     rootsOfUnity n R ≃* rootsOfUnity n S where
-  toFun := restrictRootsOfUnity σ n
-  invFun := restrictRootsOfUnity σ.symm n
+  toFun := _root_.restrictRootsOfUnity σ n
+  invFun := _root_.restrictRootsOfUnity σ.symm n
   left_inv ξ := by ext; exact σ.symm_apply_apply _
   right_inv ξ := by ext; exact σ.apply_symm_apply _
-  map_mul' := (restrictRootsOfUnity _ n).map_mul
+  map_mul' := (_root_.restrictRootsOfUnity _ n).map_mul
 
 @[simp]
 theorem MulEquiv.restrictRootsOfUnity_coe_apply (σ : R ≃* S) (ζ : rootsOfUnity k R) :

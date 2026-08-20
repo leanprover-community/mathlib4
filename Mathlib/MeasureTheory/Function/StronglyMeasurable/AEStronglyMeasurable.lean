@@ -839,6 +839,9 @@ theorem _root_.aestronglyMeasurable_const_smul_iff [ContinuousConstSMul G β] (c
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
   ⟨fun h => by simpa only [inv_smul_smul] using h.fun_const_smul c⁻¹, fun h => h.const_smul c⟩
 
+<<<<<<< nonrecnodot
+theorem _root_.IsUnit.aestronglyMeasurable_const_smul_iff {c : M} (hc : IsUnit c) :
+=======
 /-- Multiplying by an a.e. strongly measurable scalar *function* with values in a group preserves
 a.e. strong measurability. This is the varying-scalar analogue of
 `aestronglyMeasurable_const_smul_iff`. -/
@@ -849,9 +852,10 @@ theorem _root_.aestronglyMeasurable_smul_iff [TopologicalSpace G] [ContinuousInv
 
 nonrec theorem _root_.IsUnit.aestronglyMeasurable_const_smul_iff [ContinuousConstSMul M β] {c : M}
     (hc : IsUnit c) :
+>>>>>>> master
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
   let ⟨u, hu⟩ := hc
-  hu ▸ aestronglyMeasurable_const_smul_iff u
+  hu ▸ _root_.aestronglyMeasurable_const_smul_iff u
 
 theorem _root_.aestronglyMeasurable_const_smul_iff₀ [ContinuousConstSMul G₀ β] {c : G₀}
     (hc : c ≠ 0) :

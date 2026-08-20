@@ -55,11 +55,11 @@ theorem nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = 𝓝 x ×ˢ 𝓝 0
 theorem nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = 𝓝 0 ×ˢ 𝓝 m :=
   nhds_def _
 
-nonrec theorem continuous_fst : Continuous (fst : tsze R M → R) :=
-  continuous_fst
+theorem continuous_fst : Continuous (fst : tsze R M → R) :=
+  _root_.continuous_fst
 
-nonrec theorem continuous_snd : Continuous (snd : tsze R M → M) :=
-  continuous_snd
+theorem continuous_snd : Continuous (snd : tsze R M → M) :=
+  _root_.continuous_snd
 
 theorem continuous_inl [Zero M] : Continuous (inl : R → tsze R M) :=
   continuous_id.prodMk continuous_const
@@ -169,11 +169,11 @@ theorem uniformity_def :
       ((𝓤 R).comap fun p => (p.1.fst, p.2.fst)) ⊓ ((𝓤 M).comap fun p => (p.1.snd, p.2.snd)) :=
   rfl
 
-nonrec theorem uniformContinuous_fst : UniformContinuous (fst : tsze R M → R) :=
-  uniformContinuous_fst
+theorem uniformContinuous_fst : UniformContinuous (fst : tsze R M → R) :=
+  _root_.uniformContinuous_fst
 
-nonrec theorem uniformContinuous_snd : UniformContinuous (snd : tsze R M → M) :=
-  uniformContinuous_snd
+theorem uniformContinuous_snd : UniformContinuous (snd : tsze R M → M) :=
+  _root_.uniformContinuous_snd
 
 theorem uniformContinuous_inl [Zero M] : UniformContinuous (inl : R → tsze R M) :=
   uniformContinuous_id.prodMk uniformContinuous_const

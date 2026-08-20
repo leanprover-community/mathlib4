@@ -91,9 +91,9 @@ theorem map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.
   (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_zsmul _ _
 
 @[simp]
-nonrec theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
+theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
     F.map (∑ a ∈ s, f a) = ∑ a ∈ s, F.map (f a) :=
-  map_sum F.mapAddHom f s
+  _root_.map_sum F.mapAddHom f s
 
 variable {F}
 

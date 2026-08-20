@@ -80,9 +80,9 @@ theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M 
 Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
 bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
 @[simps]
-nonrec def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
-  { curry (f.restrictScalars R) with
-    toFun := curry (f.restrictScalars R)
+def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
+  { TensorProduct.curry (f.restrictScalars R) with
+    toFun := TensorProduct.curry (f.restrictScalars R)
     map_smul' := fun c x => LinearMap.ext fun y => f.map_smul c (x ⊗ₜ y) }
 
 theorem restrictScalars_curry (f : M ⊗[R] N →ₗ[A] P) :
@@ -94,10 +94,10 @@ a better `ext` lemma than `TensorProduct.AlgebraTensorModule.ext` below.
 
 See note [partially-applied ext lemmas]. -/
 @[ext high]
-nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
+theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
   fun _ _ h =>
   LinearMap.restrictScalars_injective R <|
-    curry_injective <| (congr_arg (LinearMap.restrictScalars R) h :)
+    TensorProduct.curry_injective <| (congr_arg (LinearMap.restrictScalars R) h :)
 
 theorem ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   curry_injective <| LinearMap.ext₂ H
@@ -107,17 +107,17 @@ theorem ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x �
 Constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N →[R] P` with the
 property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
 the given bilinear map `M →[A] N →[R] P`. -/
-nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
-  { lift (f.restrictScalars R) with
+def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
+  { TensorProduct.lift (f.restrictScalars R) with
     map_smul' := fun c =>
       show
         ∀ x : M ⊗[R] N,
-          (lift (f.restrictScalars R)).comp (lsmul R R _ c) x =
-            (lsmul R R _ c).comp (lift (f.restrictScalars R)) x
+          (TensorProduct.lift (f.restrictScalars R)).comp (lsmul R R _ c) x =
+            (lsmul R R _ c).comp (TensorProduct.lift (f.restrictScalars R)) x
         from
         LinearMap.ext_iff.1 <|
           TensorProduct.ext' fun x y => by
-            simp only [comp_apply, Algebra.lsmul_coe, smul_tmul', lift.tmul,
+            simp only [comp_apply, Algebra.lsmul_coe, smul_tmul', TensorProduct.lift.tmul,
               coe_restrictScalars, f.map_smul, smul_apply] }
 
 @[simp]
@@ -169,10 +169,10 @@ def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
 
 The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`. -/
 @[simps! apply]
-nonrec def mk (A M N : Type*) [Semiring A]
+def mk (A M N : Type*) [Semiring A]
     [AddCommMonoid M] [Module R M] [Module A M] [SMulCommClass R A M]
     [AddCommMonoid N] [Module R N] : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
-  { mk R M N with map_smul' := fun _ _ => rfl }
+  { TensorProduct.mk R M N with map_smul' := fun _ _ => rfl }
 
 variable {R A B M N P Q}
 

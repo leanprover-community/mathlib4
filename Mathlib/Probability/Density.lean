@@ -192,13 +192,13 @@ theorem eq_of_map_eq_withDensity' [SigmaFinite μ] {X : Ω → E} [HasPDF X ℙ 
   map_eq_withDensity_pdf X ℙ μ ▸
     withDensity_eq_iff_of_sigmaFinite (measurable_pdf X ℙ μ).aemeasurable hmf
 
-nonrec theorem ae_lt_top [IsFiniteMeasure ℙ] {μ : Measure E} {X : Ω → E} :
+theorem ae_lt_top [IsFiniteMeasure ℙ] {μ : Measure E} {X : Ω → E} :
     ∀ᵐ x ∂μ, pdf X ℙ μ x < ∞ :=
   rnDeriv_lt_top (map X ℙ) μ
 
-nonrec theorem ofReal_toReal_ae_eq [IsFiniteMeasure ℙ] {X : Ω → E} :
+theorem ofReal_toReal_ae_eq [IsFiniteMeasure ℙ] {X : Ω → E} :
     (fun x => ENNReal.ofReal (pdf X ℙ μ x).toReal) =ᵐ[μ] pdf X ℙ μ :=
-  ofReal_toReal_ae_eq ae_lt_top
+  MeasureTheory.ofReal_toReal_ae_eq ae_lt_top
 
 section IntegralPDFMul
 
@@ -256,13 +256,13 @@ section Real
 
 variable {X : Ω → ℝ}
 
-nonrec theorem _root_.Real.hasPDF_iff [SFinite ℙ] :
+theorem _root_.Real.hasPDF_iff [SFinite ℙ] :
     HasPDF X ℙ ↔ AEMeasurable X ℙ ∧ map X ℙ ≪ volume := by
-  rw [hasPDF_iff, and_iff_right (inferInstance : HaveLebesgueDecomposition _ _)]
+  rw [MeasureTheory.hasPDF_iff, and_iff_right (inferInstance : HaveLebesgueDecomposition _ _)]
 
 /-- A real-valued random variable `X` `HasPDF X ℙ λ` (where `λ` is the Lebesgue measure) if and
 only if the push-forward measure of `ℙ` along `X` is absolutely continuous with respect to `λ`. -/
-nonrec theorem _root_.Real.hasPDF_iff_of_aemeasurable [SFinite ℙ] (hX : AEMeasurable X ℙ) :
+theorem _root_.Real.hasPDF_iff_of_aemeasurable [SFinite ℙ] (hX : AEMeasurable X ℙ) :
     HasPDF X ℙ ↔ map X ℙ ≪ volume := by
   rw [Real.hasPDF_iff, and_iff_right hX]
 

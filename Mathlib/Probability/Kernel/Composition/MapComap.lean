@@ -97,9 +97,9 @@ lemma map_id (κ : Kernel α β) : map κ id = κ := by
 @[simp]
 lemma map_id' (κ : Kernel α β) : map κ (fun a ↦ a) = κ := map_id κ
 
-nonrec theorem lintegral_map (κ : Kernel α β) (hf : Measurable f) (a : α) {g' : γ → ℝ≥0∞}
+theorem lintegral_map (κ : Kernel α β) (hf : Measurable f) (a : α) {g' : γ → ℝ≥0∞}
     (hg : Measurable g') : ∫⁻ b, g' b ∂map κ f a = ∫⁻ a, g' (f a) ∂κ a := by
-  rw [map_apply _ hf, lintegral_map hg hf]
+  rw [map_apply _ hf, MeasureTheory.lintegral_map hg hf]
 
 lemma map_apply_eq_iff_map_symm_apply_eq (κ : Kernel α β) {f : β ≃ᵐ γ} (η : Kernel α γ) :
     κ.map f = η ↔ κ = η.map f.symm := by

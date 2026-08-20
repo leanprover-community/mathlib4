@@ -499,7 +499,7 @@ variable {N N'} in
 theorem mem_sup_right {x : M} (hx : x ∈ N') : x ∈ N ⊔ N' :=
   (mem_sup _ _ _).mpr ⟨0, by simp, x, hx, by simp⟩
 
-nonrec theorem eq_bot_iff : N = ⊥ ↔ ∀ m : M, m ∈ N → m = 0 := by rw [eq_bot_iff]; exact Iff.rfl
+theorem eq_bot_iff : N = ⊥ ↔ ∀ m : M, m ∈ N → m = 0 := by rw [_root_.eq_bot_iff]; exact Iff.rfl
 
 instance subsingleton_of_bot : Subsingleton (LieSubmodule R L (⊥ : LieSubmodule R L M)) := by
   apply subsingleton_of_bot_eq_top

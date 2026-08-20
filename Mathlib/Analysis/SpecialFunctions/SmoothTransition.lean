@@ -162,8 +162,9 @@ theorem one_of_one_le (h : 1 ≤ x) : smoothTransition x = 1 :=
   (div_eq_one_iff_eq <| (pos_denom x).ne').2 <| by rw [zero_of_nonpos (sub_nonpos.2 h), add_zero]
 
 @[simp]
-nonrec theorem zero_iff_nonpos : smoothTransition x = 0 ↔ x ≤ 0 := by
-  simp only [smoothTransition, _root_.div_eq_zero_iff, (pos_denom x).ne', zero_iff_nonpos, or_false]
+theorem zero_iff_nonpos : smoothTransition x = 0 ↔ x ≤ 0 := by
+  simp only [smoothTransition, _root_.div_eq_zero_iff, (pos_denom x).ne',
+    _root_.expNegInvGlue.zero_iff_nonpos, or_false]
 
 theorem zero_of_nonpos (h : x ≤ 0) : smoothTransition x = 0 := zero_iff_nonpos.2 h
 

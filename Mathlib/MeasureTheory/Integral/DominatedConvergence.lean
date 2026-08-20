@@ -167,7 +167,7 @@ variable {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {a b : ℝ} {f : ℝ → E} {μ : Measure ℝ}
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
-nonrec theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter ι}
+theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter ι}
     [l.IsCountablyGenerated] {F : ι → ℝ → E} (bound : ℝ → ℝ)
     (hF_meas : ∀ᶠ n in l, AEStronglyMeasurable (F n) (μ.restrict (Ι a b)))
     (h_bound : ∀ᶠ n in l, ∀ᵐ x ∂μ, x ∈ Ι a b → ‖F n x‖ ≤ bound x)
@@ -177,7 +177,8 @@ nonrec theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter
   simp only [intervalIntegrable_iff, intervalIntegral_eq_integral_uIoc,
     ← ae_restrict_iff' (α := ℝ) (μ := μ) measurableSet_uIoc] at *
   exact tendsto_const_nhds.smul <|
-    tendsto_integral_filter_of_dominated_convergence bound hF_meas h_bound bound_integrable h_lim
+    MeasureTheory.tendsto_integral_filter_of_dominated_convergence
+      bound hF_meas h_bound bound_integrable h_lim
 
 theorem _root_.TendstoUniformlyOn.tendsto_intervalIntegral_of_continuousOn
     {l : Filter ι} [l.IsCountablyGenerated] {F : ι → ℝ → E}
@@ -200,7 +201,7 @@ theorem _root_.TendstoUniformlyOn.tendsto_intervalIntegral_of_continuousOn
     exact .of_forall fun x hx ↦ h_lim.tendsto_at <| uIoc_subset_uIcc hx
 
 /-- Lebesgue dominated convergence theorem for parametric interval integrals. -/
-nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → ℝ → E}
+theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → ℝ → E}
     (bound : ι → ℝ → ℝ) (hF_meas : ∀ n, AEStronglyMeasurable (F n) (μ.restrict (Ι a b)))
     (h_bound : ∀ n, ∀ᵐ t ∂μ, t ∈ Ι a b → ‖F n t‖ ≤ bound n t)
     (bound_summable : ∀ᵐ t ∂μ, t ∈ Ι a b → Summable fun n => bound n t)
@@ -209,10 +210,8 @@ nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F :
     HasSum (fun n => ∫ t in a..b, F n t ∂μ) (∫ t in a..b, f t ∂μ) := by
   simp only [intervalIntegrable_iff, intervalIntegral_eq_integral_uIoc, ←
     ae_restrict_iff' (α := ℝ) (μ := μ) measurableSet_uIoc] at *
-  exact
-    (hasSum_integral_of_dominated_convergence bound hF_meas h_bound bound_summable bound_integrable
-          h_lim).const_smul
-      _
+  exact (MeasureTheory.hasSum_integral_of_dominated_convergence
+     bound hF_meas h_bound bound_summable bound_integrable h_lim).const_smul _
 
 /-- Interval integrals commute with countable sums, when the supremum norms are summable (a
 special case of the dominated convergence theorem). -/
@@ -484,9 +483,9 @@ theorem continuous_primitive (h_int : ∀ a b, IntervalIntegrable f μ a b) (a :
   apply ContinuousWithinAt.continuousAt _ (Icc_mem_nhds hb₁ hb₂)
   exact continuousWithinAt_primitive (measure_singleton b₀) (h_int _ _)
 
-nonrec theorem _root_.MeasureTheory.Integrable.continuous_primitive (h_int : Integrable f μ)
+theorem _root_.MeasureTheory.Integrable.continuous_primitive (h_int : Integrable f μ)
     (a : ℝ) : Continuous fun b => ∫ x in a..b, f x ∂μ :=
-  continuous_primitive (fun _ _ => h_int.intervalIntegrable) a
+  intervalIntegral.continuous_primitive (fun _ _ => h_int.intervalIntegrable) a
 
 variable [IsLocallyFiniteMeasure μ] {f : X → ℝ → E}
 

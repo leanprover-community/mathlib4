@@ -265,9 +265,9 @@ theorem Bornology.IsBounded.disjoint_cobounded [Bornology α]
 theorem Set.Finite.isBounded [Bornology α] {s : Set α} (hs : s.Finite) : IsBounded s :=
   Bornology.le_cofinite α hs.compl_mem_cofinite
 
-nonrec lemma Filter.Tendsto.eventually_ne_cobounded [Bornology α] {f : β → α} {l : Filter β}
+lemma Filter.Tendsto.eventually_ne_cobounded [Bornology α] {f : β → α} {l : Filter β}
     (h : Tendsto f l (cobounded α)) (a : α) : ∀ᶠ x in l, f x ≠ a :=
-  h.eventually <| eventually_ne_cobounded a
+  h.eventually <| Bornology.eventually_ne_cobounded a
 
 instance : Bornology PUnit :=
   ⟨⊥, bot_le⟩

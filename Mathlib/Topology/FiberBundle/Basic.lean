@@ -728,11 +728,11 @@ theorem continuous_totalSpaceMk (b : B) :
   FiberBundle.continuous_totalSpaceMk F Z.Fiber b
 
 /-- The projection on the base of a fiber bundle created from core is continuous -/
-nonrec theorem continuous_proj : Continuous Z.proj :=
+theorem continuous_proj : Continuous Z.proj :=
   FiberBundle.continuous_proj F Z.Fiber
 
 /-- The projection on the base of a fiber bundle created from core is an open map -/
-nonrec theorem isOpenMap_proj : IsOpenMap Z.proj :=
+theorem isOpenMap_proj : IsOpenMap Z.proj :=
   FiberBundle.isOpenMap_proj F Z.Fiber
 
 end FiberBundleCore
