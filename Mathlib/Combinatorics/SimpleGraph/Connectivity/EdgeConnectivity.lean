@@ -165,7 +165,7 @@ theorem isEdgeConnected_two_iff_forall_not_isBridge : G.IsEdgeConnected 2 ↔ �
   · intro h
     rw [isEdgeConnected_two_iff_forall_preconnected]
     rintro ⟨x,y⟩
-    by_cases hV : Nonempty V
+    cases isEmpty_or_nonempty V
     · have hG : G.Preconnected := by
         intro u v
         by_contra huv
