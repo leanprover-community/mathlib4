@@ -27,8 +27,6 @@ open MeasureTheory Metric Set Filter
 
 open scoped Real Topology Interval NNReal
 
-namespace circleIntegral
-
 variable {𝕜 E H : Type*} [RCLike 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace ℂ E] [SMulCommClass 𝕜 ℂ E]
   [NormedAddCommGroup H] [NormedSpace 𝕜 H]
@@ -63,7 +61,7 @@ point `x₀`, assuming `F x₀` is circle integrable, `x ↦ F x z` is Lipschitz
 `x₀` for every `z` on the circle (with a neighborhood independent of `z`) with circle integrable
 Lipschitz bound, and `F x` is a.e. strongly measurable along `circleMap c R` for `x` in a possibly
 smaller neighborhood of `x₀`. -/
-theorem hasFDerivAt_integral_of_dominated_loc_of_lip
+theorem hasFDerivAt_circleIntegral_of_dominated_loc_of_lip
     {F : H → ℂ → E} {F' : ℂ → H →L[𝕜] E} {x₀ : H} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (fun θ : ℝ ↦ F x (circleMap c R θ))
       (volume.restrict (Ι 0 (2 * π))))
@@ -90,7 +88,7 @@ point `x₀`, assuming `F x₀` is circle integrable, `x ↦ F x z` is different
 of `x₀` for every `z` on the circle with derivative norm uniformly bounded by a circle integrable
 function (the neighborhood independent of `z`), and `F x` is a.e. strongly measurable along
 `circleMap c R` for `x` in a possibly smaller neighborhood of `x₀`. -/
-theorem hasFDerivAt_integral_of_dominated_of_fderiv_le
+theorem hasFDerivAt_circleIntegral_of_dominated_of_fderiv_le
     {F : H → ℂ → E} {F' : H → ℂ → H →L[𝕜] E} {x₀ : H} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (fun θ : ℝ ↦ F x (circleMap c R θ))
       (volume.restrict (Ι 0 (2 * π))))
@@ -115,7 +113,7 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le
 neighborhood of `x₀` for every `z` on the circle (with a neighborhood independent of `z`) with
 circle integrable Lipschitz bound, and `F x` is a.e. strongly measurable along `circleMap c R` for
 `x` in a possibly smaller neighborhood of `x₀`. -/
-theorem hasDerivAt_integral_of_dominated_loc_of_lip
+theorem hasDerivAt_circleIntegral_of_dominated_loc_of_lip
     {F : 𝕜 → ℂ → E} {F' : ℂ → E} {x₀ : 𝕜} {s : Set 𝕜} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (fun θ : ℝ ↦ F x (circleMap c R θ))
       (volume.restrict (Ι 0 (2 * π))))
@@ -142,7 +140,7 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip
 on a neighborhood of `x₀` for every `z` on the circle (with a neighborhood independent of `z`) with
 derivative uniformly bounded by a circle integrable function, and `F x` is a.e. strongly measurable
 along `circleMap c R` for `x` in a possibly smaller neighborhood of `x₀`. -/
-theorem hasDerivAt_integral_of_dominated_loc_of_deriv_le
+theorem hasDerivAt_circleIntegral_of_dominated_loc_of_deriv_le
     {F : 𝕜 → ℂ → E} {F' : 𝕜 → ℂ → E} {x₀ : 𝕜} {s : Set 𝕜} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (fun θ : ℝ ↦ F x (circleMap c R θ))
       (volume.restrict (Ι 0 (2 * π))))
@@ -163,5 +161,3 @@ theorem hasDerivAt_integral_of_dominated_loc_of_deriv_le
       norm_deriv_circleMap_smul_le (h_bound _ (circleMap_mem_sphere' c R θ) x hx))
     (bound_integrable.const_mul _)
     (.of_forall fun θ _ x hx ↦ (h_diff _ (circleMap_mem_sphere' c R θ) x hx).const_smul _)
-
-end circleIntegral
