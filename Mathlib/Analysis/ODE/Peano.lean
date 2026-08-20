@@ -56,16 +56,10 @@ private lemma Icc_t0_subset_Icc : Icc t₀.val tmax ⊆ Icc tmin tmax :=
 
 lemma mul_abs_sub_le_radius {t : ℝ} (hf : IsPeano f t₀ x₀ r L)
     (ht : t ∈ Icc t₀.val tmax) : L * |t - t₀| ≤ r := by
-  have h_diff : t - t₀ ≤ max (tmax - t₀) (t₀ - tmin) := by
-    calc
-      t - t₀ ≤ tmax - t₀ := sub_le_sub_right ht.2 t₀
-      tmax - t₀ ≤ max (tmax - t₀) (t₀ - tmin) := le_max_left (tmax - t₀) (t₀ - tmin)
-  calc
-    L * |t - t₀| = L * (t - t₀) := by rw [abs_of_nonneg (sub_nonneg.mpr ht.1)]
-    L * (t - t₀) ≤ L * max (tmax - t₀) (t₀ - tmin) := by
-      apply mul_le_mul_of_nonneg_left h_diff
-      positivity
-    L * max (tmax - t₀) (t₀ - tmin) ≤ r := hf.mul_max_le
+  rw [abs_of_nonneg (sub_nonneg.mpr ht.1)]
+  refine le_trans ?_ hf.mul_max_le
+  gcongr
+  exact (sub_le_sub_right ht.2 _).trans (le_max_left _ _)
 
 variable [NormedSpace ℝ E]
 
