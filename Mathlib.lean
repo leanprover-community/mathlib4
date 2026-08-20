@@ -5605,12 +5605,15 @@ public import Mathlib.MeasureTheory.Measure.AEDisjoint
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.Measure.AddContent
+public import Mathlib.MeasureTheory.Measure.Basic
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 public import Mathlib.MeasureTheory.Measure.Comap
+public import Mathlib.MeasureTheory.Measure.CompleteLattice
 public import Mathlib.MeasureTheory.Measure.Complex
 public import Mathlib.MeasureTheory.Measure.Content
+public import Mathlib.MeasureTheory.Measure.Continuity
 public import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 public import Mathlib.MeasureTheory.Measure.Count
 public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
@@ -5622,6 +5625,7 @@ public import Mathlib.MeasureTheory.Measure.Dirac
 public import Mathlib.MeasureTheory.Measure.DiracProba
 public import Mathlib.MeasureTheory.Measure.Doubling
 public import Mathlib.MeasureTheory.Measure.EverywherePos
+public import Mathlib.MeasureTheory.Measure.Filter
 public import Mathlib.MeasureTheory.Measure.FiniteMeasure
 public import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 public import Mathlib.MeasureTheory.Measure.FiniteMeasurePi
@@ -5641,6 +5645,7 @@ public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosedProd
 public import Mathlib.MeasureTheory.Measure.Hausdorff
 public import Mathlib.MeasureTheory.Measure.IntegralCharFun
+public import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
@@ -5650,12 +5655,13 @@ public import Mathlib.MeasureTheory.Measure.LevyConvergence
 public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 public import Mathlib.MeasureTheory.Measure.Map
-public import Mathlib.MeasureTheory.Measure.MeasureSpace
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 public import Mathlib.MeasureTheory.Measure.MeasuredSets
+public import Mathlib.MeasureTheory.Measure.Module
 public import Mathlib.MeasureTheory.Measure.MutuallySingular
 public import Mathlib.MeasureTheory.Measure.NullMeasurable
 public import Mathlib.MeasureTheory.Measure.OpenPos
+public import Mathlib.MeasureTheory.Measure.OuterMeasure
 public import Mathlib.MeasureTheory.Measure.Portmanteau
 public import Mathlib.MeasureTheory.Measure.PreVariation
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
@@ -5671,6 +5677,7 @@ public import Mathlib.MeasureTheory.Measure.SeparableMeasure
 public import Mathlib.MeasureTheory.Measure.Stieltjes
 public import Mathlib.MeasureTheory.Measure.Sub
 public import Mathlib.MeasureTheory.Measure.SubFinite
+public import Mathlib.MeasureTheory.Measure.Sum
 public import Mathlib.MeasureTheory.Measure.Support
 public import Mathlib.MeasureTheory.Measure.Tight
 public import Mathlib.MeasureTheory.Measure.TightNormed
