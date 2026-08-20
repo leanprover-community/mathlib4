@@ -198,8 +198,7 @@ variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
 /-- The constant indicator of a set follows a Bernoulli distribution. -/
 theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M]
-    [MeasurableSpace M] (c : M) {s : Set Ω}
-    (hs : NullMeasurableSet s P) :
+    [MeasurableSpace M] (c : M) {s : Set Ω} (hs : NullMeasurableSet s P) :
     HasLaw (s.indicator (fun _ ↦ c)) Ber(c, 0, ⟨P.real s, by simp⟩) P := by
   classical
   have h : AEMeasurable (s.indicator fun _ ↦ c) P := aemeasurable_const.indicator₀ hs
