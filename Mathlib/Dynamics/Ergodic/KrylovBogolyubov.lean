@@ -8,20 +8,25 @@ module
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.Measure.Support
 
 import Mathlib.MeasureTheory.Measure.DiracProba
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 import Mathlib.MeasureTheory.Measure.Prokhorov
 import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
 # Krylov-Bogolyubov theorem
 
-The Krylov–Bogolyubov theorem asserts the existence of invariant Borel probability measures
-for continuous dynamics on compact metrizable spaces.
+The Krylov–Bogolyubov (or Krylov–Bogoliubov) theorem asserts the existence of invariant Borel
+probability measures for continuous dynamics on compact metrizable spaces.
 
 ## Main results
 
-- `exists_measurePreserving_probabilityMeasure`: the Krylov-Bogolyubov theorem.
+- `exists_measurePreserving_probabilityMeasure`: the classical Krylov-Bogolyubov theorem.
+- `exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant` gives an invariant
+  probability measure defined over a (not necessarily compact) ambient space, supported on a
+  compact, forward invariant subset
 
 ## Implementation notes
 
@@ -29,8 +34,12 @@ In order to minimise public imports, the details of the proof are contained in p
 We define a sequence of empirical orbit measures for the system starting from a given point,
 and show that the cluster points of this sequence give an invariant measure if the space is compact.
 
-We do not assume that the space is metrizable; it is sufficient to assume `HasOuterApproxClosed`
-and `T2Space`.
+We do not assume that the space is metrizable; it is sufficient to assume it is Hausdorff.
+
+## TODO
+
+- When the `Measurable` requirement of `MeasurePreserving` is relaxed,
+  `exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant` can be generalized.
 -/
 
 namespace MeasureTheory
@@ -86,44 +95,74 @@ lemma tendsto_integral_comp_sub_integral_orbitMeasure (hf : Continuous f) :
 
 end Integrals
 
-lemma ProbabilityMeasure.map_eq_self_of_mapClusterPt
-    [TopologicalSpace X] [BorelSpace X] [HasOuterApproxClosed X]
+lemma ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt
+    [TopologicalSpace X] [BorelSpace X]
     {α : Type*} {F : Filter α} {f : X → X} (hf : Continuous f)
     {u : α → ProbabilityMeasure X} {μ : ProbabilityMeasure X} (hμ : MapClusterPt μ F u)
     (h : ∀ g : X →ᵇ ℝ, Tendsto (fun t ↦ (∫ y, g (f y) ∂(u t)) - ∫ y, g y ∂(u t)) F (nhds 0)) :
-    μ.map hf.measurable.aemeasurable = μ := by
+    ∀ g : X →ᵇ ℝ, ∫ y, g (f y) ∂μ = ∫ y, g y ∂μ := by
   rcases (mapClusterPt_iff_ultrafilter.mp hμ) with ⟨U, hUl, hUμ⟩
-  have hpush_to_μ : Tendsto (fun t ↦ (u t).map hf.measurable.aemeasurable) U (nhds μ) := by
-    rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto]
-    intro g
-    have hbase : Tendsto (fun t ↦ ∫ y, g y ∂(u t)) U (nhds (∫ y, g y ∂μ)) :=
-      (ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp hUμ) g
-    have hdiff : Tendsto (fun t ↦ (∫ y, g (f y) ∂(u t)) - ∫ y, g y ∂(u t)) U (nhds 0) :=
-      (h g).mono_left hUl
-    have hcomp : Tendsto (fun t ↦ ∫ y, g (f y) ∂(u t)) U (nhds (∫ y, g y ∂μ)) := by
-      simpa using hdiff.add hbase
-    have hmap_integral (t : α) :
-        ∫ y, g y ∂((u t).map hf.measurable.aemeasurable : Measure X) = ∫ y, g (f y) ∂(u t) := by
-      rw [ProbabilityMeasure.toMeasure_map]
-      exact MeasureTheory.integral_map_of_stronglyMeasurable
-        hf.measurable g.continuous.stronglyMeasurable
-    simpa only [hmap_integral] using hcomp
-  have hpush_to_map :=
-    ProbabilityMeasure.tendsto_map_of_tendsto_of_continuous u μ hUμ hf
-  exact tendsto_nhds_unique hpush_to_map hpush_to_μ
+  intro g
+  have hgf : Tendsto (fun t ↦ ∫ y, g (f y) ∂(u t)) U (nhds (∫ y, g (f y) ∂μ)) :=
+    (ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp hUμ) (g.compContinuous ⟨f, hf⟩)
+  have hgf' : Tendsto (fun t ↦ ∫ y, g (f y) ∂(u t)) U (nhds (∫ y, g y ∂μ)) := by
+    simpa using ((h g).mono_left hUl).add
+      ((ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp hUμ) g)
+  exact tendsto_nhds_unique hgf hgf'
 
 /-- **Krylov-Bogolyubov theorem**: there exists an invariant Borel probability measure,
-for a continuous function on a nonempty, compact, Hausdorff space which satisfies
-`HasOuterApproxClosed`. It is sufficient for the space to be metrizable. -/
+for a continuous function on a nonempty, compact, Hausdorff space. -/
 public theorem exists_measurePreserving_probabilityMeasure
-    [TopologicalSpace X] [BorelSpace X] [HasOuterApproxClosed X] [T2Space X]
+    [TopologicalSpace X] [BorelSpace X] [T2Space X]
     [CompactSpace X] [Nonempty X] {f : X → X} (hf : Continuous f) :
     ∃ μ : ProbabilityMeasure X, MeasurePreserving f μ μ := by
   obtain ⟨x⟩ := ‹Nonempty X›
   obtain ⟨μ, _, hμ⟩ := isCompact_univ.exists_mapClusterPt
-      (u := fun n ↦ orbitMeasure f x n) (f := atTop) (by simp)
-  have hmap := ProbabilityMeasure.map_eq_self_of_mapClusterPt hf hμ
+    (u := fun n ↦ orbitMeasure f x n) (f := atTop) (by simp)
+  have hμinv := ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt hf hμ
     (tendsto_integral_comp_sub_integral_orbitMeasure f (hf := hf) (x := x))
-  exact ⟨μ, ⟨hf.measurable, congrArg ProbabilityMeasure.toMeasure hmap⟩⟩
+  obtain ⟨ν, hνreg, hνfin, hμν⟩ := (μ : Measure X).exists_regular_eq_of_compactSpace
+  have hprob : ν Set.univ = 1 := by
+    rw [← ENNReal.toReal_eq_one_iff]
+    change ν.real Set.univ = 1
+    simpa using (hμν (BoundedContinuousFunction.const X 1)).symm
+  have : (ν.map f).Regular := by
+    have := Measure.InnerRegularCompactLTTop.map_of_continuous hf (μ := ν)
+    infer_instance
+  have hmap : ν.map f = ν := by
+    apply Measure.ext_of_integral_eq_on_compactlySupported
+    intro g
+    rw [integral_map hf.aemeasurable] --
+    · simp_rw [← g.toBoundedContinuousFunction_apply]
+      rw [← ContinuousMap.coe_mk f hf]
+      simp_rw [← g.toBoundedContinuousFunction.compContinuous_apply ⟨f,hf⟩, ← hμν]
+      exact hμinv g.toBoundedContinuousFunction
+    · exact g.continuous.aestronglyMeasurable
+  exact ⟨⟨ν, ⟨hprob⟩⟩,hf.measurable, hmap⟩
+
+/-- **Krylov-Boboglyubov theorem** for forward invariant compact sets. -/
+public theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
+    [TopologicalSpace X] [BorelSpace X] [T2Space X]
+    {K : Set X} (hcomp : IsCompact K) (hnonempty : K.Nonempty)
+    {f : X → X} (hfcont : ContinuousOn f K) (hfinv : Set.MapsTo f K K)
+    (hfmeas : Measurable f) : -- TODO: relax this
+    ∃ μ : ProbabilityMeasure X, MeasurePreserving f μ μ ∧ Measure.support μ ⊆ K := by
+  have : CompactSpace K := isCompact_iff_compactSpace.mp hcomp
+  have : Nonempty K := hnonempty.to_subtype
+  let f' : K → K := Set.MapsTo.restrict f K K hfinv
+  let ι : K → X := Subtype.val
+  obtain ⟨μ, hμ⟩ := exists_measurePreserving_probabilityMeasure (hfcont.mapsToRestrict hfinv)
+  have hιmeas : Measurable ι :=  measurable_subtype_coe
+  let ν := μ.map hιmeas.aemeasurable
+  have hιmp : MeasurePreserving ι μ ν := ⟨hιmeas, by simp [ν]⟩
+  have hsemi : Function.Semiconj ι f' f := by
+    intro
+    rfl
+  refine ⟨ν, ⟨hιmp.of_semiconj hμ hsemi hfmeas, ?_⟩⟩
+  -- Now we prove that the invariant measure is supported on the forward invariant set
+  apply Measure.support_subset_of_isClosed hcomp.isClosed
+  rw [MeasureTheory.mem_ae_iff]
+  simpa [ν, ι] using
+    (ProbabilityMeasure.map_apply' μ hιmeas.aemeasurable hcomp.isClosed.measurableSet.compl)
 
 end MeasureTheory
