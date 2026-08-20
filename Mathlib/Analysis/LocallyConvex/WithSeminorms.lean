@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
-public import Mathlib.Analysis.Normed.Order.Hom.Basic
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Topology.Algebra.Equicontinuity
 public import Mathlib.Topology.MetricSpace.Equicontinuity
@@ -25,6 +24,8 @@ public import Mathlib.Topology.Algebra.Module.LocallyConvex
   bounded by a finite number of seminorms in `E`.
 * `WithSeminorms p`, when `p` is a family of seminorms on `E`, is a proposition expressing that the
   (existing) topology on `E` is induced by the seminorms `p`.
+* `NormableSpace 𝕜 E` is a class asserting that the (existing) topology on `E` is induced
+  by *some* `𝕜`-seminorm
 * `PolynormableSpace 𝕜 E` is a class asserting that the (existing) topology on `E` is induced
   by *some* family of `𝕜`-seminorms. If `𝕜` is `RCLike`, this is equivalent to
   `LocallyConvexSpace 𝕜 E`.
