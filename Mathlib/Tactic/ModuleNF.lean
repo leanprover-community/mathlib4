@@ -9,7 +9,17 @@ public import Mathlib.Tactic.Algebra.Basic
 public import Mathlib.Tactic.Module
 public meta import Mathlib.Tactic.Ring.RingNF
 
-/-! # `module_nf` tactic -/
+/-! # `module_nf` tactic
+
+This file provides the `module_nf` tactic, a normalization companion to the `match_scalars` and
+`module` tactics. It rewrites linear combinations appearing at targeted locations into a normal
+form, with the scalars of common terms collected and normalized using `ring_nf`.
+
+The rewriting is performed by `Mathlib.Tactic.Module.eval` and reuses the same parsing
+infrastructure as `match_scalars`. Nested module expressions are rewritten using `AtomM.recurse` and
+the scalar ring of the normalized expression is inferred jointly across targeted locations or
+specified explicitly.
+-/
 
 public meta section
 
@@ -18,12 +28,24 @@ open Qq Parser.Tactic Elab.Tactic Meta
 
 namespace Mathlib.Tactic.ModuleNF
 
-def evalExpr (postCtx : Simp.Context) (e : Expr) : AtomM Simp.Result := do
+/-- Infer the scalar ring over which the scalar rings appearing in `es` should be normalized. -/
+def inferBase (es : Array Expr) : MetaM (Σ u : Level, Q(Type u)) := do
+  let rings := (← es.toList.mapM Algebra.collectScalarRings).flatten
+  let rings ← rings.eraseDups.mapM getLevelQ'
+  match rings with
+  | [] => return ⟨0, q(ℕ)⟩
+  | r :: rs => rs.foldlM Algebra.pickLargerRing r
+
+/-- Rewrite `e`, an expression in some `AddCommMonoid`, into `module_nf` normal form using
+`Mathlib.Tactic.Module.eval`.  Fails when `e` is not an application or is an atom for the
+module parser, so that `AtomM.recurse` descends into its subexpressions instead. -/
+def evalExpr (base : Σ u : Level, Q(Type u)) (postCtx : Simp.Context) (e : Expr) :
+    AtomM Simp.Result := do
   let e ← withReducible <| whnf e
   guard e.isApp
   let ⟨_, M, e⟩ ← inferTypeQ' e
   let iM : Q(AddCommMonoid $M) ← synthInstanceQ q(AddCommMonoid $M)
-  let r ← Mathlib.Tactic.Module.eval iM postCtx e
+  let r ← Mathlib.Tactic.Module.eval iM base postCtx e
   if r.proof?.isNone then failure
   return r
 
@@ -39,19 +61,33 @@ def cleanup (ctx : Simp.Context) (r : Simp.Result) : MetaM Simp.Result := do
   r.mkEqTrans (← Simp.main r.expr ctx (methods := Simp.mkDefaultMethodsCore {})).1
 
 /-- Run the `module_nf` rewrite on the expression `e` -/
-def moduleNFCore (s : IO.Ref AtomM.State) (e : Expr) : ReaderT Simp.Context MetaM Simp.Result := do
+def moduleNFCore (s : IO.Ref AtomM.State) (base : Σ u : Level, Q(Type u)) (e : Expr) :
+    ReaderT Simp.Context MetaM Simp.Result := do
   let postCtx ← read
   let cleanCtx ← cleanupCtx
-  AtomM.recurse s { red := .instances } (wellBehavedDischarge := true) (evalExpr postCtx)
+  AtomM.recurse s { red := .instances } (wellBehavedDischarge := true) (evalExpr base postCtx)
     (cleanup cleanCtx) e
 
-/-- Normalization tactic for module expressions, it writes each linear combination of atoms as
-`c₁ • x₁ + c₂ • x₂ + ... + cₙ • xₙ`, collecting the scalars of repeated atoms and normalizing them
-with `ring_nf`.
+/-- Infer a common base scalar ring across all locations targeted by `loc`.
 
-Like `match_scalars` and `module`, linear combinations are parsed from `+`, `-`, `•` and `0`,
-other subexpressions (including variables) are atoms, and the scalars are interpreted in the
-largest scalar ring encountered (see `match_scalars` for the requirements on scalar types).
+The locations read are exactly those that `transformAtNondepPropLocation` rewrites when the
+tactic runs, so the inferred ring reflects the rewrite set. -/
+def inferBaseAtLocation (loc : Location) : TacticM (Σ u : Level, Q(Type u)) :=
+  withMainContext do
+    inferBase (← (← mapNondepPropLocation loc (fun fvarId => fvarId.getType) getMainTarget).mapM
+      (whnf ·))
+
+/-- A normalization tactic for module expressions.
+
+`module_nf` rewrites every linear combination `a • x + ... + b • y` appearing at the targeted
+locations into a normal form, collecting the scalars of common terms and normalizing them with
+`ring_nf`.  In particular, a goal `⊢ a • x + ... + b • y = c • x + ... + d • y` is closed when
+the two sides have the same normal form, otherwise the rewritten goal is left open, and
+`module_nf` can be used non-terminally.
+
+Like `match_scalars` and `module`, linear combinations are parsed from `+`, `-`, `•` and `0`, other
+subexpressions (including variables) are atoms, and the scalars are interpreted in the largest
+scalar ring encountered (see `match_scalars` for the requirements on scalar types).
 
 Examples:
 ```
@@ -71,12 +107,71 @@ example [AddCommMonoid M] [CommSemiring R] [Module R M] (a b : R) (x : M)
   module_nf at h ⊢
   exact h
 ```
+
+The scalar ring is inferred once per invocation by examining the locations targeted by the tactic,
+so that the scalar rings of independently rewritten locations agree:
+
+```
+example [AddCommGroup M] (x : M) : x + x = (2 : ℤ) • x := by
+  module_nf  -- mixed scalars: the ring is inferred jointly, so both sides normalize over ℤ
+```
+
+The common scalar ring can also be specified explicitly with `module_nf with R`, which normalizes
+every location's scalars over `R`. For example:
+
+```
+example [AddCommGroup M] [Field K] [Module K M] (x y : M) (h : x + x = y) :
+    (2 : K) • x = y := by
+  module_nf with K at h
+  exact h
+```
+
+Locations whose scalar ring is not comparable with `R` keep their own ring. For example:
+
+```
+example [CommRing S] [CommRing T] [AddCommGroup M] [Module S M] [Module T M]
+    (s : S) (x y : M) (h : s • x + s • x = y) : (s * 2) • x = y := by
+  module_nf with T at h  -- `h`'s scalars are not comparable with `T` and keep their ring `S`
+  exact h
+```
+
+When inferring the common scalar ring, the tactic descends through equalities and arithmetic
+operations `+`, `-`, `*`, `^`, `•` at each location but not through any other context, e.g.
+conjunctions, applications, `≤`. So if there are several subexpressions at a location that are
+separated by such a context then normalization may result in mixed scalar rings. For example:
+
+```
+example [AddCommGroup M] (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
+    P (x + x) ∧ P ((2 : ℤ) • x) := by
+  module_nf
+  -- `⊢ P (2 • x) ∧ P ((2 : ℤ) • x)`: the first conjunct normalized over `ℕ`, not `ℤ`,
+  -- so `exact ⟨h, h⟩` would fail here
+```
+
+The scalar rings can be aligned by specifying `ℤ` explicitly:
+
+```
+example [AddCommGroup M] (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
+    P (x + x) ∧ P ((2 : ℤ) • x) := by
+  module_nf with ℤ
+  exact ⟨h, h⟩
+```
 -/
-elab (name := moduleNF) "module_nf" loc:(location)? : tactic => do
-  let loc := (loc.map expandLocation).getD (.targets #[] true)
-  let s ← IO.mkRef {}
-  let postCtx ← Mathlib.Tactic.Module.postprocessCtx
-  transformAtNondepPropLocation (moduleNFCore s) "module_nf" loc .error false postCtx
+syntax (name := moduleNF) "module_nf" (" with " term)? (location)? : tactic
+
+elab_rules : tactic
+  | `(tactic| module_nf $[with $R:term]? $[$loc:location]?) => withMainContext do
+    let loc := (loc.map expandLocation).getD (.targets #[] true)
+    let base ← match R with
+      | some R => do
+        let ⟨u, B⟩ ← getLevelQ' (← elabTerm R none)
+        unless (← trySynthInstance q(Semiring.{u} $B)) matches .some _ do
+          throwError "module_nf failed: {B} is not a semiring"
+        pure ⟨u, B⟩
+      | none => inferBaseAtLocation loc
+    let s ← IO.mkRef {}
+    let postCtx ← Mathlib.Tactic.Module.postprocessCtx
+    transformAtNondepPropLocation (moduleNFCore s base) "module_nf" loc .error false postCtx
 
 end Mathlib.Tactic.ModuleNF
 

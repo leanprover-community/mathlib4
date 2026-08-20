@@ -640,17 +640,50 @@ def qNF.rebuild {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddCommMonoid $M))
     let ⟨e, pfT⟩ ← qNF.rebuild iM iR iRM postCtx t
     pure ⟨q($r' • $x + $e), (q(NF.eval_cons_eq $x $hr $pfT) :)⟩
 
+/-- Attempt to lift the scalars of `l` into the ring `base`.
+
+`base` must be a semiring acting on `M`, and `qNF.matchRings` must be able to relate the parsed ring
+`R` to it (it throws when the two rings are not comparable; this is caught here and returned as
+`none`).  On success, the lifted list is returned together with a proof that its evaluation agrees
+with that of `l`. -/
+def qNF.liftToBase? {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddCommMonoid $M))
+    (iR : Q(Semiring $R)) (iRM : Q(Module $R $M)) (base : Σ w : Level, Q(Type w))
+    (l : qNF R M) :
+    MetaM (Option (Σ w : Level, Σ B : Q(Type w), Σ iB : Q(Semiring $B),
+      Σ _ : Q(@Module $B $M $iB $iM), Σ l' : qNF B M,
+      Q(NF.eval $(l'.toNF) = NF.eval $(l.toNF)))) := do
+  let ⟨w, B⟩ := base
+  let some iB ← synthInstanceQ? q(Semiring.{w} $B) | return none
+  let some iBM ← synthInstanceQ? q(Module $B $M) | return none
+  try
+    let ⟨w', B', iB', iBM', ⟨l', pfL⟩, _, _⟩ ← qNF.matchRings iRM iB iBM l [] q(0) q(0)
+    return some ⟨w', B', iB', iBM', l', pfL⟩
+  catch _ => return none
+
 /-- Normalize an expression in an `AddCommMonoid` into the form `c₁ • x₁ + (c₂ • x₂ + ... + 0)`
-with normalized scalars by chaining `parse` and `qNF.rebuild`. -/
-def eval {M : Q(Type v)} (iM : Q(AddCommMonoid $M)) (postCtx : Simp.Context) (e : Q($M)) :
-    AtomM Simp.Result := do
+with normalized scalars by chaining `parse` and `qNF.rebuild`.
+
+When `base?` is provided, `eval` will also attempt to lift the coefficients into `base?`. If `base?`
+is not a semiring acting on `M` or when `qNF.matchRings` cannot relate the parsed ring to `base?`
+then the result falls back to the parsed ring. -/
+def eval {M : Q(Type v)} (iM : Q(AddCommMonoid $M)) (base? : Option (Σ u : Level, Q(Type u)))
+    (postCtx : Simp.Context) (e : Q($M)) : AtomM Simp.Result := do
   let ⟨_, _, iR, iRM, l, pf⟩ ← parse iM e
   if let [((_, x), _)] := l then
     -- a single atom with unit coefficient is already in normal form
     if ← withTransparency (← read).red <| isDefEq x e then
       return { expr := e }
-  let ⟨e, pf_rebuild⟩ ← qNF.rebuild iM iR iRM postCtx l
-  return { expr := e, proof? := some (← mkEqTrans pf pf_rebuild) }
+  let lifted? ← match base? with
+    | some base => qNF.liftToBase? iM iR iRM base l
+    | none => pure none
+  let (e', pf') ← match lifted? with
+    | some ⟨_, _, iB, iBM, l', pfL⟩ => do
+      let ⟨e', pf'⟩ ← qNF.rebuild iM iB iBM postCtx l'
+      pure ((e' : Expr), ← mkEqTrans (← mkEqSymm pfL) pf')
+    | none => do
+      let ⟨e', pf'⟩ ← qNF.rebuild iM iR iRM postCtx l
+      pure ((e' : Expr), (pf' : Expr))
+  return { expr := e', proof? := some (← mkEqTrans pf pf') }
 
 /-- Given a goal parseable as a linear combination `⊢ a • x + ... + b • y = c • x + ... + d • y`,
 `match_scalars` splits up the goal into equalities of the scalars for each respective atom. This
