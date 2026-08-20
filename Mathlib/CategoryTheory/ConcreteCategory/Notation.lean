@@ -43,32 +43,33 @@ open Lean Elab Term Meta PrettyPrinter Delaborator SubExpr
 
 namespace OfNotation
 
-/-- The number of explicit arguments of `declName`, together with the index of the last one among
-*all* of its arguments.
+/-- The number of explicit arguments of a declaration of type `ty`, together with the index of the
+last one among *all* of its arguments.
 
-Returns `none` if `declName` does not exist or takes no explicit argument. -/
-def explicitArgs? (declName : Name) : MetaM (Option (Nat × Nat)) := do
-  let some info := (← getEnv).find? declName | return none
-  forallTelescopeReducing info.type fun args _ => do
-    let mut num := 0
-    let mut lastIdx? := none
-    for h : i in [0:args.size] do
-      if (← args[i].fvarId!.getBinderInfo).isExplicit then
-        num := num + 1
-        lastIdx? := some i
-    return lastIdx?.map (num, ·)
+Returns `none` if `ty` takes no explicit argument. -/
+def explicitArgs? (ty : Expr) : Option (Nat × Nat) := go ty 0 0 none where
+  /-- Walk down the binders of `ty`, where `idx` is the index of the current argument, `num` the
+  number of explicit arguments seen so far and `lastIdx?` the index of the last one. -/
+  go : Expr → Nat → Nat → Option Nat → Option (Nat × Nat)
+    | .forallE _ _ body bi, idx, num, lastIdx? =>
+      if bi.isExplicit then go body (idx + 1) (num + 1) (some idx)
+      else go body (idx + 1) num lastIdx?
+    | _, _, num, lastIdx? => lastIdx?.map (num, ·)
 
 /-- Find the bundling map `FooCat.of` to use for the type `ty`, along with its number of explicit
 arguments.
 
-Before unfolding `ty`, we check the head constant `FooCat` of, since a category can be reducibly
+Before unfolding `ty`, we check its head constant `FooCat`, since a category can be reducibly
 defined in terms of another one while still having its own `of`: `Profinite` reduces to
 `CompHausLike _`, yet `↧X : Profinite` should be `Profinite.of X`, not `CompHausLike.of _ X`.
-If no  `.of` is found for the non-unfolded `ty`, we unfold it and try again. -/
+If no `.of` is found for the non-unfolded `ty`, we unfold it and try again. -/
 partial def findOf? (ty : Expr) : MetaM (Option (Name × Nat)) := do
   let ty ← whnfCore ty
   if let .const declName _ := ty.getAppFn then
-    if let some (num, _) ← explicitArgs? (declName ++ `of) then return some (declName ++ `of, num)
+    let ofName := declName ++ `of
+    -- `FooCat.of` is allowed not to exist, in which case we move on to unfolding `ty`.
+    if let some info := (← getEnv).find? ofName then
+      if let some (num, _) := explicitArgs? info.type then return some (ofName, num)
   match ← unfoldDefinition? ty with
   | some ty => findOf? ty
   | none => return none
@@ -113,7 +114,7 @@ def delabOf : Delab := go <|> delabApp where
   go := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
     let e ← getExpr
     let .const declName _ := e.getAppFn | failure
-    let some (_, lastIdx) ← explicitArgs? declName | failure
+    let some (_, lastIdx) := explicitArgs? (← getConstInfo declName).type | failure
     guard <| lastIdx < e.getAppNumArgs
     withNaryArg lastIdx do `(↧$(← delab))
 
