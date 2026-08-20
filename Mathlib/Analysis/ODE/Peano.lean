@@ -257,11 +257,9 @@ private lemma lipschitzWith_boundedTonelliApproximation (hf : IsPeano f t₀ x�
 
 /-- The family of bounded continuous Tonelli approximations is equicontinuous. -/
 private lemma equicontinuous_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
-    Equicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) := by
-  have : UniformEquicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) :=
-    LipschitzWith.uniformEquicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) L
-      (lipschitzWith_boundedTonelliApproximation hf)
-  apply UniformEquicontinuous.equicontinuous this
+    Equicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) :=
+  (LipschitzWith.uniformEquicontinuous _ L
+    (lipschitzWith_boundedTonelliApproximation hf)).equicontinuous
 
 variable [FiniteDimensional ℝ E]
 
