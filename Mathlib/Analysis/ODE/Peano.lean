@@ -387,6 +387,13 @@ private lemma mem_Icc_of_mem_uIoc {s t : ℝ} (ht : t ∈ Icc t₀.val tmax)
     (hs : s ∈ uIoc t₀.val t) : s ∈ Icc t₀.val tmax :=
   Icc_subset_Icc_right ht.2 (Ioc_subset_Icc_self (uIoc_of_le ht.1 ▸ hs))
 
+private lemma forall_mem_Icc_eq_integral_of_eqOn {a b : ℝ} {β : ℝ → E} (ht₀ : t₀.val ∈ Icc a b)
+    (hαβ : EqOn α β (Icc a b)) (hβ : ∀ t ∈ Icc a b, β t = x₀ + ∫ u in t₀..t, f (u, β u)) :
+    ∀ t ∈ Icc a b, α t = x₀ + ∫ u in t₀..t, f (u, α u) := fun t ht ↦ by
+  have h : EqOn (fun u ↦ f (u, β u)) (fun u ↦ f (u, α u)) (uIcc t₀.val t) :=
+    fun u hu ↦ by simp only [hαβ (uIcc_subset_Icc ht₀ ht hu)]
+  rw [hαβ ht, hβ t ht, intervalIntegral.integral_congr h]
+
 variable [FiniteDimensional ℝ E]
 
 /-! ### Existence of integral and differential solutions -/
