@@ -9,6 +9,7 @@ public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Analysis.MeanInequalitiesPow
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+
 import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 
 /-!
@@ -75,14 +76,14 @@ theorem lintegral_rpow_div_add_rpow_div_eq_one_of_lintegral_rpow_eq_one {p q : �
     simp [hpq.symm.pos]
   · exact (hf.pow_const _).mul_const _
 
-/-- Hölder's inequality for functions with norm 1 -/
+/-- Hölder's inequality for functions with norm `1` -/
 theorem lintegral_mul_le_one_of_lintegral_rpow_eq_one {p q : ℝ} (hpq : p.HolderConjugate q)
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hf_norm : ∫⁻ a, f a ^ p ∂μ = 1)
     (hg_norm : ∫⁻ a, g a ^ q ∂μ = 1) : (∫⁻ a, (f * g) a ∂μ) ≤ 1 := by
   rw [← lintegral_rpow_div_add_rpow_div_eq_one_of_lintegral_rpow_eq_one hpq hf hf_norm hg_norm]
   exact lintegral_mono fun a ↦ young_inequality (f a) (g a) hpq
 
-/-- Equality case of Hölder's inequality for functions with norm 1 -/
+/-- Equality case of Hölder's inequality for functions with norm `1` -/
 theorem lintegral_mul_eq_one_iff_of_lintegral_rpow_eq_one {p q : ℝ} (hpq : p.HolderConjugate q)
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (hf_norm : ∫⁻ a, f a ^ p ∂μ = 1) (hg_norm : ∫⁻ a, g a ^ q ∂μ = 1) :
@@ -149,7 +150,7 @@ theorem lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_ne_top {p q : ℝ} (hpq : p.Hol
     (hg_nonzero : ∫⁻ a, g a ^ q ∂μ ≠ 0) :
     ∫⁻ a, (f * g) a ∂μ ≤ (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) * (∫⁻ a, g a ^ q ∂μ) ^ (1 / q) := by
   rw [lintegral_mul_eq_lintegral_funMulInvSnorm_mul_funMulInvSnorm_mul_Lp_mul_Lq
-    p q hf_nontop hg_nontop hf_nonzero hg_nonzero]
+      p q hf_nontop hg_nontop hf_nonzero hg_nonzero]
   apply mul_le_of_le_one_left'
   have hf1 := lintegral_rpow_funMulInvSnorm_eq_one hpq.pos hf_nonzero hf_nontop
   have hg1 := lintegral_rpow_funMulInvSnorm_eq_one hpq.symm.pos hg_nonzero hg_nontop
@@ -163,7 +164,7 @@ theorem lintegral_mul_eq_Lp_mul_Lq_iff_of_ne_zero_of_ne_top {p q : ℝ} (hpq : p
     ∫⁻ a, (f * g) a ∂μ = (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) * (∫⁻ a, g a ^ q ∂μ) ^ (1 / q) ↔
       (∫⁻ a, f a ^ p ∂μ)⁻¹ • f ^ p =ᵐ[μ] (∫⁻ a, g a ^ q ∂μ)⁻¹ • g ^ q := by
   rw [lintegral_mul_eq_lintegral_funMulInvSnorm_mul_funMulInvSnorm_mul_Lp_mul_Lq
-    p q hf_nontop hg_nontop hf_nonzero hg_nonzero]
+      p q hf_nontop hg_nontop hf_nonzero hg_nonzero]
   have hf0 := rpow_eq_zero_iff_of_pos hpq.one_div_pos |>.not.mpr hf_nonzero
   have hg0 := rpow_eq_zero_iff_of_pos hpq.symm.one_div_pos |>.not.mpr hg_nonzero
   have hftop : (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) ≠ ⊤ := rpow_ne_top_of_ne_zero hf_nonzero hf_nontop
@@ -171,9 +172,9 @@ theorem lintegral_mul_eq_Lp_mul_Lq_iff_of_ne_zero_of_ne_top {p q : ℝ} (hpq : p
   rw [ENNReal.mul_eq_right (mul_ne_zero hf0 hg0) (mul_ne_top hftop hgtop)]
   have hf1 := lintegral_rpow_funMulInvSnorm_eq_one hpq.pos hf_nonzero hf_nontop
   have hg1 := lintegral_rpow_funMulInvSnorm_eq_one hpq.symm.pos hg_nonzero hg_nontop
-  rw [lintegral_mul_eq_one_iff_of_lintegral_rpow_eq_one
-    hpq (hf.funMulInvSnorm p) (hg.funMulInvSnorm q) hf1 hg1]
-  rw [funMulInvSnorm_rpow' hpq.left_pos, funMulInvSnorm_rpow' hpq.right_pos]
+  rw [lintegral_mul_eq_one_iff_of_lintegral_rpow_eq_one hpq (hf.funMulInvSnorm p)
+      (hg.funMulInvSnorm q) hf1 hg1, funMulInvSnorm_rpow' hpq.left_pos,
+    funMulInvSnorm_rpow' hpq.right_pos]
 
 theorem ae_eq_zero_of_lintegral_rpow_eq_zero {p : ℝ} (hp0 : 0 ≤ p) {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_zero : ∫⁻ a, f a ^ p ∂μ = 0) : f =ᵐ[μ] 0 := by
