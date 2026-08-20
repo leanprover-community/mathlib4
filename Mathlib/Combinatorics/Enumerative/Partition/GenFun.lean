@@ -19,7 +19,18 @@ G_f(X) = \sum_{n = 0}^{\infty} \left(\sum_{p \in P_{n}} \prod_{i \in p} f(i, \#i
 $$
 where $P_n$ is all partitions of $n$, $\#i$ is the count of $i$ in the partition $p$.
 We give the definition `Nat.Partition.genFun` using the first equation, and prove the second
-equation in `Nat.Partition.hasProd_genFun` (with shifted indices).
+equation in `Nat.Partition.hasProd_genFun` (with shifted indices). To avoid nested infinite
+expression, the factors in the second equation is defined as `Nat.Partition.genFunFactor`, and its
+equivalence to the infinite sum is shown at `Nat.Partition.hasSum_genFunFactor`.
+
+We also introduce `Nat.Partition.genFunDistincts` for the case where only partitions with
+distinct parts are considered. In this case, the generating function is
+$$
+G_f(X) = \sum_{n = 0}^{\infty} \left(\sum_{p \in P_n'} \prod_{i \in p} f(i)\right) X^n
+= \prod_{i = 1}^{\infty}\left(1 + f(i) X^{i}\right)
+$$
+where $P_n'$ is all partitions of $n$ with distinct parts. We give the definition using the first
+equation, and prove the second equation in `Nat.Partition.hasProd_genFunDistincts`
 
 This generating function can be specialized to
 * When $f(i, c) = 1$, this is the generating function for partition function $p(n)$
@@ -56,12 +67,53 @@ See the module docstring of `Combinatorics.Enumerative.Partition.GenFun` for mor
 noncomputable def genFun (f : ℕ → ℕ → R) : R⟦X⟧ :=
   PowerSeries.mk fun n ↦ ∑ p : n.Partition, p.parts.toFinsupp.prod f
 
+/-- Generating function associated with character $f(i)$ for partitions with distinct parts. This is
+equivalent to `Nat.Partition.genFun` with a character $f(i, c)$ where only $f(i, 1)$ are non-zero
+and are equal to $f(i)$. (See `Nat.Partition.genFunDistincts_eq_genFun`) -/
+def genFunDistincts (f : ℕ → R) : R⟦X⟧ :=
+  PowerSeries.mk fun n ↦ ∑ p ∈ Nat.Partition.distincts n, (p.parts.map f).prod
+
 @[simp]
 lemma coeff_genFun (f : ℕ → ℕ → R) (n : ℕ) :
     (genFun f).coeff n = ∑ p : n.Partition, p.parts.toFinsupp.prod f :=
   PowerSeries.coeff_mk _ _
 
-/-- Factor of generating function associated with character $f(i, c)$ for partition functions. -/
+-- TODO: this was an intermediate lemma in this file but is no longer in use. Generalize this
+-- and move this to a better place.
+theorem tendsto_order_genFun_term_atTop_nhds_top (f : ℕ → ℕ → R) (i : ℕ) :
+    Filter.Tendsto (fun j ↦ (f (i + 1) (j + 1) • (X : R⟦X⟧) ^ ((i + 1) * (j + 1))).order)
+    Filter.atTop (nhds ⊤) := by
+  refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr (fun n ↦ Filter.eventually_atTop.mpr ⟨n, ?_⟩)
+  intro m hm
+  grw [PowerSeries.smul_eq_C_mul, ← le_order_mul]
+  refine lt_add_of_nonneg_of_lt (by simp) ?_
+  nontriviality R using Subsingleton.eq_zero (α := R⟦X⟧)
+  rw [order_X_pow]
+  norm_cast
+  grind
+
+@[simp]
+lemma coeff_genFunDistincts (f : ℕ → R) (n : ℕ) :
+    (genFunDistincts f).coeff n = ∑ p ∈ Nat.Partition.distincts n, (p.parts.map f).prod :=
+  PowerSeries.coeff_mk _ _
+
+theorem genFunDistincts_eq_genFun (f : ℕ → R) :
+    genFunDistincts f = genFun (fun i c ↦ Pi.single 1 (f i) c) := by
+  ext n
+  rw [coeff_genFunDistincts, coeff_genFun]
+  refine sum_of_injOn id (Set.injOn_id _) (by simp) (fun p _ hp ↦ ?_) (fun p hp ↦ ?_)
+  · obtain ⟨i, hi⟩ : ∃ i, 1 < p.parts.count i := by
+      simpa [distincts, Multiset.nodup_iff_count_le_one] using hp
+    have : i ∈ p.parts.toFinsupp.support := by
+      simpa [Multiset.mem_toFinset] using Multiset.one_le_count_iff_mem.mp hi.le
+    apply prod_eq_zero this
+    simp [hi.ne.symm]
+  · have hp : p.parts.Nodup := by simpa [distincts] using hp
+    simp +contextual [Finsupp.prod, prod_eq_multiset_prod, Multiset.dedup_eq_self.mpr hp,
+      Multiset.count_eq_one_of_mem hp]
+
+/-- Factor for part $i$ of the generating function associated with character $f(i, c)$ for partition
+functions. -/
 noncomputable def genFunFactor (f : ℕ → ℕ → R) (i : ℕ) : R⟦X⟧ :=
   PowerSeries.mk fun n ↦ if n ≠ 0 ∧ i ∣ n then f i (n / i) else 0
 
@@ -75,23 +127,25 @@ theorem coeff_genFunFactor (f : ℕ → ℕ → R) {i j : ℕ} (hi : i ≠ 0) (h
     (genFunFactor f i).coeff (j * i) = f i j := by
   simp [genFunFactor, hi, hj]
 
+@[simp]
+theorem coeff_genFunFactor_self (f : ℕ → ℕ → R) {i : ℕ} (hi : i ≠ 0) :
+    (genFunFactor f i).coeff i = f i 1 := by
+  simpa using coeff_genFunFactor f hi (one_ne_zero)
+
 theorem dvd_of_coeff_genFunFactor_ne_zero {f : ℕ → ℕ → R} {i n : ℕ}
-    (h : (genFunFactor f i).coeff n ≠ 0) :
-    i ∣ n := by
+    (h : (genFunFactor f i).coeff n ≠ 0) : i ∣ n := by
   simp_all [genFunFactor]
 
 private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → R) {n : ℕ} (p : Partition n) {s : Finset ℕ}
     (hs : Icc 1 n ⊆ s) :
     p.parts.toFinsupp.prod f = ∏ i ∈ s, coeff (p.toFinsuppAntidiag i) (1 + genFunFactor f i) := by
   simp_rw [Finsupp.prod, Multiset.toFinsupp_support, Multiset.toFinsupp_apply]
-  apply prod_subset_one_on_sdiff
+  refine prod_subset_one_on_sdiff ?_ (fun i hi ↦ ?_) (fun i hi ↦ ?_)
   · grind
-  · intro i hi
-    rw [mem_sdiff, Multiset.mem_toFinset] at hi
+  · rw [mem_sdiff, Multiset.mem_toFinset] at hi
     simp [toFinsuppAntidiag, hi.2]
-  · intro i hi
-    rw [Multiset.mem_toFinset] at hi
-    simp [map_add, toFinsuppAntidiag, (p.parts_pos hi).ne.symm, Multiset.count_ne_zero.mpr hi]
+  · rw [Multiset.mem_toFinset] at hi
+    simp [toFinsuppAntidiag, (p.parts_pos hi).ne.symm, Multiset.count_ne_zero.mpr hi]
 
 private theorem aux_dvd_of_coeff_ne_zero {f : ℕ → ℕ → R} {d : ℕ} {s : Finset ℕ}
     {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiag d)
@@ -111,11 +165,10 @@ private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {
     (hs0 : 0 ∉ s) {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiag d)
     (hg' : g ∉ Set.range (toFinsuppAntidiag (n := d))) :
     ∏ i ∈ s, (coeff (g i)) (1 + genFunFactor f i) = 0 := by
-  suffices ∃ i ∈ s, (coeff (g i)) (1 + genFunFactor f i) = 0 by
+  suffices ∃ i ∈ s, coeff (g i) (1 + genFunFactor f i) = 0 by
     obtain ⟨i, hi, hi'⟩ := this
-    apply prod_eq_zero hi hi'
+    exact prod_eq_zero hi hi'
   contrapose! hg' with hprod
-  rw [Set.mem_range]
   have hgne0 (i : ℕ) : g i ≠ 0 ↔ i ≠ 0 ∧ i ≤ g i := by
     refine ⟨fun h ↦ ⟨?_, ?_⟩, by grind⟩
     · contrapose hs0 with rfl
@@ -125,10 +178,9 @@ private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {
   · simpa using hgne0
   · suffices ∀ i, g i ≠ 0 → i ≠ 0 by simpa [Nat.pos_iff_ne_zero]
     exact fun i h ↦ ((hgne0 i).mp h).1
-  · obtain ⟨h1, h2⟩ := mem_finsuppAntidiag.mp hg
-    refine Eq.trans ?_ h1
+  · obtain ⟨rfl, h⟩ := mem_finsuppAntidiag.mp hg
     suffices ∑ x ∈ g.support, g x / x * x = ∑ x ∈ s, g x by simpa [Finsupp.sum]
-    apply sum_subset_zero_on_sdiff h2 (by simp)
+    apply sum_subset_zero_on_sdiff h (by simp)
     exact fun x hx ↦ Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hg hprod x
   · ext x
     simpa [toFinsuppAntidiag] using Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hg hprod x
@@ -153,8 +205,8 @@ theorem hasProd_genFun (f : ℕ → ℕ → R) :
     HasProd (fun i ↦ 1 + genFunFactor f (i + 1)) (genFun f) := by
   rw [HasProd, WithPiTopology.tendsto_iff_coeff_tendsto]
   refine fun d ↦ tendsto_atTop_of_eventually_const (fun s (hs : s ≥ range d) ↦ ?_)
-  have : ∏ i ∈ s, (1 + genFunFactor f (i + 1))
-      = ∏ i ∈ s.map (addRightEmbedding 1), (1 + genFunFactor f i) := by simp
+  have : ∏ i ∈ s, (1 + genFunFactor f (i + 1)) =
+    ∏ i ∈ s.map (addRightEmbedding 1), (1 + genFunFactor f i) := by simp
   rw [this]
   have hs : Icc 1 d ⊆ s.map (addRightEmbedding 1) := by
     intro i
@@ -168,9 +220,24 @@ theorem hasProd_genFun (f : ℕ → ℕ → R) :
   · exact fun g hg hg' ↦ aux_prod_coeff_eq_zero_of_notMem_range f (by simp) hg (by simpa using hg')
   · exact fun p _ ↦ aux_prod_f_eq_prod_coeff f p hs
 
-theorem multipliable_genFun (f : ℕ → ℕ → R) :
+theorem multipliable_one_add_genFunFactor (f : ℕ → ℕ → R) :
     Multipliable fun i ↦ 1 + genFunFactor f (i + 1) :=
   (hasProd_genFun f).multipliable
+
+@[deprecated (since := "2026-08-30")] alias multipliable_genFun := multipliable_one_add_genFunFactor
+
+theorem hasProd_genFunDistincts (f : ℕ → R) :
+    HasProd (fun i ↦ 1 + f (i + 1) • X ^ (i + 1)) (genFunDistincts f) := by
+  rw [genFunDistincts_eq_genFun]
+  convert hasProd_genFun (fun i c ↦ Pi.single 1 (f i) c) with i
+  ext n
+  by_cases hn : n = i + 1
+  · simp [hn]
+  suffices n ≠ 0 → i + 1 ∣ n → n / (i + 1) = 1 → 0 = f (i + 1) by
+    simpa [hn, genFunFactor, Pi.single_apply]
+  intro h0 h1 h2
+  obtain ⟨j, rfl⟩ := h1
+  simp_all
 
 variable [T2Space R]
 
@@ -182,5 +249,9 @@ theorem hasProd_genFun' (f : ℕ → ℕ → R) :
 theorem genFun_eq_tprod (f : ℕ → ℕ → R) :
     genFun f = ∏' i, (1 + genFunFactor f (i + 1)) :=
   (hasProd_genFun f).tprod_eq.symm
+
+theorem genFunDistincts_eq_tprod (f : ℕ → R) :
+    genFunDistincts f = ∏' i, (1 + f (i + 1) • X ^ (i + 1)) :=
+  (hasProd_genFunDistincts f).tprod_eq.symm
 
 end Nat.Partition
