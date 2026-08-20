@@ -36,9 +36,6 @@ equivalence to prove that immersions compose (in nice situations).
 * `IsDiffImmersionAt.prodMap`: if `f` is an immersion at `x` and `g` is an immersion at `y`,
   then `f × g` is an immersion at `(x, y)` (all in the sense of differentials)
 
-## TODO
-
-
 -/
 
 open Function Topology
