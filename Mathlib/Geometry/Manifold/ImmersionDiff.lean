@@ -31,10 +31,10 @@ equivalence to prove that immersions compose (in nice situations).
   (both in the sense of differentials), then `g ∘ f` is an immersion (of differentials) at `x`
 * `IsDiffImmersionAt.of_comp`: if `g ∘ f` is an immersion at `x` (of differentials), then
   (assuming `f` and `g` are differentiable at `x` resp. `f x`), `f` is also an immersion at `x`
-* `IsDiffImmersionAt.of_injective_of_finiteDimensional`: if `f : M → N` has injective `mfderiv` at
-  `x` and `N` is finite-dimensional, then `f` is an immersion at `x`
 * `IsDiffImmersionAt.prodMap`: if `f` is an immersion at `x` and `g` is an immersion at `y`,
   then `f × g` is an immersion at `(x, y)` (all in the sense of differentials)
+* `IsDiffImmersionAt.of_injective_of_finiteDimensional`: if `f : M → N` has injective `mfderiv` at
+  `x` and `N` is finite-dimensional, then `f` is an immersion at `x`
 
 -/
 
@@ -52,13 +52,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F F' G : Type*} {E' : 
   {G : Type*} [TopologicalSpace G] {G' : Type*} [TopologicalSpace G']
   {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
   {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F G'}
-
-variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  {n : WithTop ℕ∞} [IsManifold I n M] [IsManifold I' n M']
-variable {f : M → M'} {x : M} {n : WithTop ℕ∞}
 
 variable (I I' f x) in
 /-- We say a map `f : M → M` is an immersion at `x` in the sense of differentials
@@ -68,11 +65,11 @@ In nice situations (but not always), this is equivalent to `IsImmersionAt`.
 Please use `IsImmersionAt` in general. -/
 def IsDiffImmersionAt (f : M → M') (x : M) : Prop := mfderiv% f x |>.HasLeftInverse
 
+variable {n : WithTop ℕ∞} {f g : M → M'} {x : M}
+
 lemma isDiffImmersionAt_iff : IsDiffImmersionAt I I' f x ↔ (mfderiv% f x).HasLeftInverse := by rfl
 
 namespace IsDiffImmersionAt
-
-variable {f g : M → M'} {x : M}
 
 lemma mfderiv_injective (hf : IsDiffImmersionAt I I' f x) : Injective (mfderiv% f x) :=
   hf.injective
