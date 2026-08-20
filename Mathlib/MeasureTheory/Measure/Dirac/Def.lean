@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.MeasureSpace
+public import Mathlib.MeasureTheory.Measure.Module
 
 /-!
 # Dirac measure
