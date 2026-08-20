@@ -104,8 +104,9 @@ theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circl
   (hasDerivAt_circleMap c R θ).differentiableAt
 
 /-- The circleMap is real analytic. -/
-theorem analyticOnNhd_circleMap (c : ℂ) (R : ℝ) :
-    AnalyticOnNhd ℝ (circleMap c R) Set.univ := by
+@[fun_prop]
+theorem analyticOnNhd_circleMap (c : ℂ) (R : ℝ) {u : Set ℝ} :
+    AnalyticOnNhd ℝ (circleMap c R) u := by
   intro z hz
   apply analyticAt_const.add
   apply analyticAt_const.mul
