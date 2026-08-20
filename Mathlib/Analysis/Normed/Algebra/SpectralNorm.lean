@@ -65,6 +65,8 @@ structure SpectralNorm extends OneHom A ℝ, ZeroHom A ℝ where
   map_pow' x k : toFun (x ^ k) = toFun x ^ k
   map_smul_eq_mul' (c : 𝕜) x : toFun (c • x) = ‖c‖ * toFun x
 
+attribute [nolint docBlame] SpectralNorm.toZeroHom
+
 namespace SpectralNorm
 
 instance : FunLike (SpectralNorm 𝕜 A) A ℝ where
