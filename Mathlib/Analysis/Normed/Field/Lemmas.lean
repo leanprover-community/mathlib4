@@ -206,8 +206,8 @@ lemma tendsto_zpow_nhdsNE_zero_cobounded {m : ℤ} (hm : m < 0) :
     Tendsto (· ^ m) (𝓝[≠] 0) (cobounded α) := by
   obtain ⟨m, rfl⟩ := neg_surjective m
   lift m to ℕ using by lia
-  simpa [Function.comp_def] using
-    (tendsto_pow_cobounded_cobounded (by lia)).comp tendsto_inv₀_nhdsNE_zero
+  simp only [zpow_neg, zpow_natCast, ← inv_pow]
+  exact (tendsto_pow_cobounded_cobounded (by lia)).comp tendsto_inv₀_nhdsNE_zero
 
 end NormedDivisionRing
 

@@ -503,7 +503,7 @@ theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
     simp [det]
 
 noncomputable instance : InvOneClass (Matrix n n α) :=
-  { Matrix.one, Matrix.inv with inv_one := inv_eq_left_inv (by simp) }
+  { inv_one := inv_eq_left_inv (by simp) }
 
 theorem inv_smul (k : α) [Invertible k] (h : IsUnit A.det) : (k • A)⁻¹ = ⅟k • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])

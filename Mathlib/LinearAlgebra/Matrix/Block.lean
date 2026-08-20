@@ -100,7 +100,7 @@ instance decidableBlockTriangular [DecidableEq R] [Fintype m] [DecidableLT α] :
 
 end Zero
 
-protected theorem BlockTriangular.neg [NegZeroClass R] {M : Matrix m m R}
+protected theorem BlockTriangular.neg [Zero R] [Neg R] [NegZeroClass R] {M : Matrix m m R}
     (hM : BlockTriangular M b) : BlockTriangular (-M) b :=
   fun _ _ h => by rw [neg_apply, hM h, neg_zero]
 

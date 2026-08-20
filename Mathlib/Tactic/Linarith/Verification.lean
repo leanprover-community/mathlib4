@@ -156,7 +156,7 @@ def addNegEqProofsIdx : List (Expr × Nat) → MetaM (List (Expr × Nat))
     match iq with
     | Ineq.eq => do
       let nep :=
-        mkAppN (← mkAppM `Iff.mpr #[← mkAppOptM ``neg_eq_zero #[none, none, t]]) #[h]
+        mkAppN (← mkAppM `Iff.mpr #[← mkAppOptM ``neg_eq_zero #[none, none, none, none, t]]) #[h]
       let tl ← addNegEqProofsIdx tl
       return (h, i)::(nep, i)::tl
     | _ => return (h, i) :: (← addNegEqProofsIdx tl)

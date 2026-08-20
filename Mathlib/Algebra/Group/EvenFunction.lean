@@ -47,7 +47,8 @@ lemma Even.zero [Zero β] : Function.Even (fun (_ : α) ↦ (0 : β)) := Even.co
 lemma Odd.eq [Neg β] {f : α → β} (hf : f.Odd) (x : α) : f (-x) = -f x := hf x
 
 /-- The zero function is odd. -/
-lemma Odd.zero [NegZeroClass β] : Function.Odd (fun (_ : α) ↦ (0 : β)) := fun _ ↦ neg_zero.symm
+lemma Odd.zero [Zero β] [Neg β] [NegZeroClass β] :
+    Function.Odd (fun (_ : α) ↦ (0 : β)) := fun _ ↦ neg_zero.symm
 
 section composition
 
@@ -161,7 +162,8 @@ lemma Odd.sum_eq_zero [Fintype α] [InvolutiveNeg α] {f : α → β} (hf : f.Od
   hf.finsetSum_eq_zero <| Finset.map_univ_equiv (Equiv.neg α)
 
 /-- An odd function vanishes at zero. -/
-lemma Odd.map_zero [NegZeroClass α] (hf : f.Odd) : f 0 = 0 := by simp [← neg_eq_self, ← hf 0]
+lemma Odd.map_zero [Zero α] [Neg α] [NegZeroClass α] (hf : f.Odd) :
+    f 0 = 0 := by simp [← neg_eq_self, ← hf 0]
 
 end torsionfree
 

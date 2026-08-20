@@ -229,10 +229,11 @@ instance instAdd [AddZeroClass R] [ContinuousAdd R] : Add C(X, R)₀ where
 
 @[simp] lemma coe_add [AddZeroClass R] [ContinuousAdd R] (f g : C(X, R)₀) : ⇑(f + g) = f + g := rfl
 
-instance instNeg [NegZeroClass R] [ContinuousNeg R] : Neg C(X, R)₀ where
+instance instNeg [Zero R] [Neg R] [NegZeroClass R] [ContinuousNeg R] : Neg C(X, R)₀ where
   neg f := ⟨- f, by simp⟩
 
-@[simp] lemma coe_neg [NegZeroClass R] [ContinuousNeg R] (f : C(X, R)₀) : ⇑(-f) = -f := rfl
+@[simp] lemma coe_neg [Zero R] [Neg R] [NegZeroClass R] [ContinuousNeg R] (f : C(X, R)₀) :
+    ⇑(-f) = -f := rfl
 
 instance instSub [SubNegZeroMonoid R] [ContinuousSub R] : Sub C(X, R)₀ where
   sub f g := ⟨f - g, by simp⟩
