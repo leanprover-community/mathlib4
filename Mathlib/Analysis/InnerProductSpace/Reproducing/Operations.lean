@@ -92,7 +92,7 @@ private def toKerOrthogonal :
     congr 2
     simp_rw [inner_H₀_def, Finsupp.linearCombination_apply, Finsupp.sum, ← coe_inner, sum_inner,
       inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
-    simp [kerFun_apply, ← OfKernel.kernel_ofKernel, inner_add_left]
+    simp [inner_add_left, kerFun_apply]
 
 -- The map whose extention with `.complL` yields `linearIsometry`. -/
 private def linearIsometryAux :
@@ -115,7 +115,7 @@ def linearIsometry :
     | hp => exact isClosed_eq (((linearIsometryAux K K').toContinuousLinearMap.extend
           UniformSpace.Completion.toComplL).continuous.norm) continuous_norm
     | ih x =>
-      rw [← UniformSpace.Completion.coe_toComplL (𝕜 := 𝕜), ContinuousLinearMap.extend_eq _
+      rw [← UniformSpace.Completion.coe_toComplL (S := 𝕜), ContinuousLinearMap.extend_eq _
         (by simp [UniformSpace.Completion.denseRange_coe])
         (by simp [UniformSpace.Completion.isUniformInducing_coe])]
       simp [(linearIsometryAux K K').norm_map x]
@@ -124,7 +124,7 @@ private lemma linearIsometry_kerFun_apply_eq_mk (x : X) (v : V) :
     linearIsometry K K' (kerFun (OfKernel (K + K')) x v) =
     Submodule.Quotient.mk (WithLp.toLp 2 (kerFun (OfKernel K) x v, kerFun (OfKernel K') x v)) := by
   simp only [linearIsometry, LinearIsometry.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
-  rw [OfKernel.kerFun_OfKernel_apply, ← UniformSpace.Completion.coe_toComplL (𝕜 := 𝕜),
+  rw [OfKernel.kerFun_OfKernel_apply, ← UniformSpace.Completion.coe_toComplL (S := 𝕜),
     ContinuousLinearMap.extend_eq _
       (by simp [UniformSpace.Completion.denseRange_coe])
       (by simp [UniformSpace.Completion.isUniformInducing_coe])]
