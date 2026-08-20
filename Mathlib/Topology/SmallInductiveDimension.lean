@@ -173,7 +173,7 @@ theorem Topology.IsInducing.hasSmallInductiveDimensionLT {f : X → Y} (hf : IsI
     rintro _ ⟨U, hU, rfl⟩
     apply ih U hU
     apply (hf.restrictPreimage <| frontier U).comp
-    refine (hf.comp IsInducing.subtypeVal).codRestrict fun x ↦ ?_ 
+    refine (hf.comp IsInducing.subtypeVal).codRestrict fun x ↦ ?_
     exact hf.continuous.frontier_preimage_subset U x.2
 
 theorem Topology.IsInducing.hasSmallInductiveDimensionLE {f : X → Y} (hf : IsInducing f)
