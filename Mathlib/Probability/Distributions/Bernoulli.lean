@@ -175,6 +175,8 @@ section Integral
 
 variable {E : Type*} [NormedAddCommGroup E]
 
+section tkt
+
 variable {X E : Type*} {mX : MeasurableSpace X} [SeminormedAddCommGroup E]
   {f : X → E} {p : ENNReal} {μ ν : Measure X}
 
@@ -203,36 +205,37 @@ lemma test' : eLpNormEssSup f (μ + ν) ≤ eLpNormEssSup f μ + eLpNormEssSup f
   grw [hx, ← le_add_left]
   rfl
 
-lemma test'' (p : ℝ) (hp : 1 ≤ p) : eLpNorm' f p (μ + ν) ≤ eLpNorm' f p μ + eLpNorm' f p ν := by
-  grw [eLpNorm', lintegral_add_measure, ENNReal.rpow_add_le_add_rpow, ← eLpNorm', ← eLpNorm']
+lemma test'' (p : ℝ) (hp : 0 ≤ p) : eLpNorm' f p (μ + ν) ≤
+    (ENNReal.ofReal (1 / p))⁻¹.LpAddConst * (eLpNorm' f p μ + eLpNorm' f p ν) := by
+  grw [eLpNorm', lintegral_add_measure, ENNReal.rpow_add_le_mul_rpow_add_rpow', ← eLpNorm', ← eLpNorm']
   simp
   grind
-  rw [one_div_le]
-  simpa
-  grind
-  grind
 
-lemma test''' (hp : 1 ≤ p) : MemLp f p (μ + ν) ↔ MemLp f p μ ∧ MemLp f p ν where
+lemma test''' : MemLp f p (μ + ν) ↔ MemLp f p μ ∧ MemLp f p ν where
   mp h := ⟨h.left_of_add_measure, h.right_of_add_measure⟩
   mpr h := by
     refine ⟨h.1.aestronglyMeasurable.add_measure h.2.aestronglyMeasurable, ?_⟩
-    obtain rfl | hp' := eq_or_ne p ∞
-    · grw [eLpNorm_exponent_top, test, max_le_add_of_nonneg, ← eLpNorm_exponent_top,
+    rw [eLpNorm]
+    split_ifs with hp hp'
+    · simp
+    · rw [hp'] at h
+      grw [test, max_le_add_of_nonneg, ← eLpNorm_exponent_top,
         ← eLpNorm_exponent_top, h.1.2]
       · simp
       · exact h.2.2.ne
       all_goals positivity
-    · grw [eLpNorm_eq_eLpNorm' _ hp', test'', ← eLpNorm_eq_eLpNorm', ← eLpNorm_eq_eLpNorm',
+    · grw [test'', ← eLpNorm_eq_eLpNorm', ← eLpNorm_eq_eLpNorm',
         h.1.2]
       · simp
       · exact h.2.2.ne
-      · exact zero_lt_one.trans_le hp |>.ne'
+      · rw [ENNReal.LpAddConst]
+        split_ifs <;> positivity
+      · exact (ENNReal.LpAddConst_lt_top _).ne
+      · exact hp
       · exact hp'
-      · exact zero_lt_one.trans_le hp |>.ne'
+      · exact hp
       · exact hp'
-      · rw [← ENNReal.ofReal_le_iff_le_toReal hp']
-        simpa
-      · exact zero_lt_one.trans_le hp |>.ne'
+      · simp
 
 @[simp]
 lemma eLpNormEssSup_dirac [MeasurableSingletonClass X] (x : X) :
@@ -251,11 +254,17 @@ lemma memLp_dirac (x : X) (q : ℝ≥0∞) [MeasurableSingletonClass X] : MemLp 
   · simp [eLpNorm']
     finiteness
 
-lemma memLp_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) (q : ℝ≥0∞)
-    (hq : 1 ≤ q) :
+end tkt
+
+@[simp]
+lemma memLp_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) (q : ℝ≥0∞) :
     MemLp f q Ber(x, y, p) := by
-  simp [bernoulliMeasure_def, test''', hq,
-    Integrable.smul_measure_nnreal]
+  simp [bernoulliMeasure_def, test''']
+  refine ⟨MemLp.smul_measure ?_ ?_, MemLp.smul_measure ?_ ?_⟩
+  · simp [memLp_dirac]
+  · simp
+  · simp [memLp_dirac]
+  · simp
 
 lemma integrable_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) :
     Integrable f Ber(x, y, p) := by
@@ -278,8 +287,6 @@ lemma variance_id_bernoulliMeasure : Var[id; Ber(1, 0, p)] = p * (1 - p) := by
   simp [integral_bernoulliMeasure]
   ring
 
-private lemma memLp_top_id_bernoulliMeasure : MemLp (id : ℝ → ℝ)
-
 end Integral
 
 section HasLaw
@@ -287,6 +294,14 @@ section HasLaw
 /-! ### Bernoulli random variables -/
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+
+@[simp]
+lemma HasLaw.memLp_bernoulliMeasure [MeasurableSingletonClass X] (x y : ℝ) (p : I) (f : Ω → ℝ)
+    (q : ℝ≥0∞) (hf : HasLaw f Ber(x, y, p) P) :
+    MemLp f q P := by
+  convert MemLp.comp_of_map (g := id) ?_ hf.aemeasurable
+  simp
+  simp [hf.map_eq]
 
 /-- The constant indicator of a set follows a Bernoulli distribution. -/
 theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M]

@@ -263,7 +263,9 @@ lemma variance_id_binomial : Var[id; Bin(ℝ, n, p)] = p * (1 - p) * n := by
   rw [← this.variance_eq, IndepFun.variance_sum]
   · simp [fun i ↦ (lawX i).variance_eq, variance_id_bernoulliMeasure]
     ring
-
+  · exact fun i _ ↦ (lawX i).memLp_bernoulliMeasure (X := ℝ) _ _ _ _ _
+  · intro _ _ _ _ h
+    exact hX.indepFun h
 
 end Integral
 
