@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.Geometry.Manifold.Diffeomorph
@@ -72,6 +73,8 @@ theorem UniqueMDiffOn.tangentBundle_proj_preimage {s : Set M} (hs : UniqueMDiffO
     UniqueMDiffOn I.tangent (π E (TangentSpace I) ⁻¹' s) :=
   hs.bundle_preimage _
 
+/- TODO: define `vmfderiv` for the derivative from a vector space to a manifold, and use it
+to rewrite the last term in the expression below. -/
 /-- To write a linear map between tangent spaces in coordinates amounts to precomposing and
 postcomposing it with derivatives of extended charts.
 Concrete version of `inTangentCoordinates_eq`. -/
@@ -80,15 +83,14 @@ lemma inTangentCoordinates_eq_mfderiv_comp
     {ϕ : Π x : N, TangentSpace% (f x) →L[𝕜] TangentSpace% (g x)} {x₀ : N} {x : N}
     (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
     inTangentCoordinates I I' f g ϕ x₀ x =
-    ((NormedSpace.fromTangentSpace (extChartAt I' (g x₀) (g x))).toContinuousLinearMap
-        ∘L mfderiv% (extChartAt I' (g x₀)) (g x)) ∘L (ϕ x) ∘L
+      mvfderiv I' (extChartAt I' (g x₀)) (g x) ∘L (ϕ x) ∘L
       (mfderiv[range I] (extChartAt I (f x₀)).symm (extChartAt I (f x₀) (f x))
         ∘L (NormedSpace.fromTangentSpace
           (extChartAt I (f x₀) (f x))).symm.toContinuousLinearMap) := by
   rw [inTangentCoordinates_eq f g ϕ hx hy, tangentBundleCore_coordChange]
   congr
   · have : MDiffAt (extChartAt I' (g x₀)) (g x) := mdifferentiableAt_extChartAt hy
-    simp_all [mfderiv]
+    simp_all [mvfderiv, mfderiv]
     rfl
   · simp only [mfderivWithin, writtenInExtChartAt, modelWithCornersSelf_coe, range_id, inter_univ]
     rw [ite_eq_left]
