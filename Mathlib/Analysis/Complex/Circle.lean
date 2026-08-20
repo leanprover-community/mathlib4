@@ -70,11 +70,8 @@ lemma coe_injective : Injective ((↑) : Circle → ℂ) := fun _ _ ↦ ext
 lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
 @[simp] lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
-
 @[simp] lemma nnnorm_coe (z : Circle) : ‖(z : ℂ)‖₊ = 1 := NNReal.coe_injective z.norm_coe
-
-@[simp] lemma enorm_coe (z : Circle) : ‖(z : ℂ)‖ₑ = 1 := by
-  rw [enorm_eq_nnnorm, z.nnnorm_coe, ENNReal.coe_one]
+@[simp] lemma enorm_coe (z : Circle) : ‖(z : ℂ)‖ₑ = 1 := by simp [enorm_eq_nnnorm]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_norm_sq]
