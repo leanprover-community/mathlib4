@@ -50,6 +50,10 @@ def topEquivalence : ObjectProperty.FullSubcategory (C := C) ⊤ ≌ C where
   counitIso := Iso.refl _
   functor_unitIso_comp := by cat_disch
 
+lemma isEquivalence_ι (h : P = ⊤) : P.ι.IsEquivalence := by
+  rw [h]
+  exact (topEquivalence C).isEquivalence_functor
+
 end CategoryTheory.ObjectProperty
 
 namespace CategoryTheory.Equivalence

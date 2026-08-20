@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Finiteness.Quotient
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.RingTheory.RamificationInertia.Inertia
 
 /-!
 # Ramification index and inertia degree
@@ -48,8 +49,6 @@ local notation "f" => algebraMap R S
 
 open Module
 
-open UniqueFactorizationMonoid
-
 attribute [local instance] Ideal.Quotient.field
 
 section DecEq
@@ -66,6 +65,7 @@ and there is an algebra structure `R / p → S / P`.
 
 Note: This definition of inertia degree will eventually be replaced by `Ideal.inertiaDeg`.
 -/
+@[deprecated "Use `Ideal.inertiaDeg` instead." (since := "2026-08-14")]
 noncomputable def inertiaDeg' : ℕ :=
   if hPp : comap f P = p then
     letI : Algebra (R ⧸ p) (S ⧸ P) := Quotient.algebraQuotientOfLEComap hPp.ge
@@ -73,40 +73,51 @@ noncomputable def inertiaDeg' : ℕ :=
   else 0
 
 -- Useful for the `nontriviality` tactic using `comap_eq_of_scalar_tower_quotient`.
-@[simp]
+@[simp, deprecated "Use `Ideal.inertiaDeg` instead." (since := "2026-08-14")]
 theorem inertiaDeg'_of_subsingleton [hp : p.IsMaximal] [hQ : Subsingleton (S ⧸ P)] :
     inertiaDeg' p P = 0 := by
   have := Ideal.Quotient.subsingleton_iff.mp hQ
   subst this
-  exact dif_neg fun h => hp.ne_top <| h.symm.trans comap_top
+  exact dite_eq_right fun h => hp.ne_top <| h.symm.trans comap_top
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_of_subsingleton :=
   inertiaDeg'_of_subsingleton
 
-@[simp]
+@[simp, deprecated "Use `Ideal.inertiaDeg_eq_of_isMaximal` instead." (since := "2026-08-14")]
 theorem inertiaDeg'_algebraMap [P.LiesOver p] :
     inertiaDeg' p P = finrank (R ⧸ p) (S ⧸ P) := by
-  rw [inertiaDeg', dif_pos (over_def P p).symm]
+  rw [inertiaDeg', dite_eq_left (over_def P p).symm]
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_algebraMap := inertiaDeg'_algebraMap
 
+@[deprecated "Use `inertiaDeg_eq_of_isMaximal` instead." (since := "2026-08-14")]
+theorem inertiaDeg'_eq_inertiaDeg [P.LiesOver p] [p.IsMaximal] [P.IsMaximal] :
+    p.inertiaDeg' P = P.inertiaDeg R := by
+  rw [inertiaDeg'_algebraMap, inertiaDeg_eq_of_isMaximal p P]
+
+@[deprecated (since := "2026-07-03")] alias inertiaDeg_eq_inertiaDeg' := inertiaDeg'_eq_inertiaDeg
+
+@[deprecated "Use `Ideal.inertiaDeg_pos` instead." (since := "2026-08-14")]
 theorem inertiaDeg'_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg' p P :=
   have : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
   finrank_pos.trans_eq (inertiaDeg'_algebraMap p P).symm
 
 /-- Variant with a weaker constraint, but on the prime upstairs instead. -/
+@[deprecated "Use `Ideal.inertiaDeg_pos` instead." (since := "2026-08-14")]
 theorem inertiaDeg'_pos' [P.IsPrime] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg' p P :=
   have : p.IsPrime := Ideal.over_def P p ▸ inferInstance
   Module.finrank_pos.trans_eq (inertiaDeg'_algebraMap p P).symm
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_pos' := inertiaDeg'_pos'
 
+@[deprecated "Use `Ideal.inertiaDeg_pos` instead." (since := "2026-08-14")]
 theorem inertiaDeg'_ne_zero [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] :
     inertiaDeg' p P ≠ 0 :=
   (Nat.ne_of_lt (inertiaDeg'_pos p P)).symm
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_ne_zero := inertiaDeg'_ne_zero
 
+@[deprecated "Use `Ideal.inertiaDeg` instead." (since := "2026-08-14")]
 lemma inertiaDeg'_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
     inertiaDeg' p (P.comap e) = inertiaDeg' p P := by
   have he : (P.comap e).comap (algebraMap R S) = p ↔ P.comap (algebraMap R S₁) = p := by
@@ -114,11 +125,12 @@ lemma inertiaDeg'_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
   by_cases h : P.LiesOver p
   · rw [inertiaDeg'_algebraMap, inertiaDeg'_algebraMap]
     exact (Quotient.algEquivOfEqComap p e rfl).toLinearEquiv.finrank_eq
-  · rw [inertiaDeg', dif_neg (fun eq => h ⟨(he.mp eq).symm⟩)]
-    rw [inertiaDeg', dif_neg (fun eq => h ⟨eq.symm⟩)]
+  · rw [inertiaDeg', dite_eq_right (fun eq => h ⟨(he.mp eq).symm⟩)]
+    rw [inertiaDeg', dite_eq_right (fun eq => h ⟨eq.symm⟩)]
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_comap_eq := inertiaDeg'_comap_eq
 
+@[deprecated "Use `Ideal.inertiaDeg` instead." (since := "2026-08-14")]
 lemma inertiaDeg'_map_eq (P : Ideal S)
     {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁] (e : E) :
     inertiaDeg' p (P.map e) = inertiaDeg' p P := by
@@ -127,10 +139,11 @@ lemma inertiaDeg'_map_eq (P : Ideal S)
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_map_eq := inertiaDeg'_map_eq
 
+@[deprecated "Use `Ideal.inertiaDeg` instead." (since := "2026-08-14")]
 theorem inertiaDeg'_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
     [hP : P.LiesOver (⊥ : Ideal R)] :
     (⊥ : Ideal R).inertiaDeg' P = finrank R S := by
-  rw [inertiaDeg', dif_pos (over_def P (⊥ : Ideal R)).symm]
+  rw [inertiaDeg', dite_eq_left (over_def P (⊥ : Ideal R)).symm]
   replace hP : P = ⊥ := eq_bot_of_liesOver_bot R P
   rw [Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot R).symm
     ((quotEquivOfEq hP).trans (RingEquiv.quotientBot S)).symm]
@@ -138,6 +151,7 @@ theorem inertiaDeg'_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_bot := inertiaDeg'_bot
 
+@[deprecated "Use `Ideal.inertiaDeg_above_le` instead." (since := "2026-08-14")]
 theorem inertiaDeg'_le_inertiaDeg' {T : Type*} [CommRing T] [Algebra R T] [Algebra S T]
     [IsScalarTower R S T] [Module.Finite R T] (Q : Ideal T) [P.LiesOver p] [Q.LiesOver P]
     [p.IsPrime] : inertiaDeg' P Q ≤ inertiaDeg' p Q := by
@@ -154,6 +168,7 @@ end DecEq
 
 section absNorm
 
+@[deprecated "Use `Ideal.absNorm_pow_inertiaDeg` instead." (since := "2026-08-14")]
 lemma absNorm_eq_pow_inertiaDeg'_of_liesOver {S : Type*} [CommRing S] [IsDedekindDomain S]
     [Module.Free ℤ S] [IsDedekindDomain R] [Module.Free ℤ R] [Algebra S R] [Module.Finite S R]
     (P : Ideal R) (p : Ideal S) [P.LiesOver p] (hp : p.IsPrime) (hp_ne_bot : p ≠ ⊥) :
@@ -167,6 +182,7 @@ lemma absNorm_eq_pow_inertiaDeg'_of_liesOver {S : Type*} [CommRing S] [IsDedekin
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg' P)`.
 See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/
+@[deprecated "Use `Ideal.natAbs_pow_inertiaDeg` instead." (since := "2026-08-14")]
 lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
     (P : Ideal R) [P.LiesOver (span {p})] (hp : Prime p) :
     absNorm P = p.natAbs ^ ((span {p}).inertiaDeg' P) := by
@@ -176,6 +192,7 @@ lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module
 /-- The absolute norm of an ideal `P` above a rational (positive) prime `p` is
 `p ^ ((span {p}).inertiaDeg' P)`.
 See `absNorm_eq_pow_inertiaDeg` for a version with `p` of type `ℤ`. -/
+@[deprecated "Use `Ideal.natAbs_pow_inertiaDeg` instead." (since := "2026-08-14")]
 lemma absNorm_eq_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
     (P : Ideal R) [P.LiesOver (span {(p : ℤ)})] (hp : p.Prime) :
     absNorm P = p ^ ((span {(p : ℤ)}).inertiaDeg' P) :=
@@ -191,13 +208,14 @@ variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 /-- Let `T / S / R` be a tower of algebras, `p, P, I` be ideals in `R, S, T`, respectively,
   and `p` and `P` are maximal. If `p = P ∩ S` and `P = I ∩ S`,
   then `f (I | p) = f (P | p) * f (I | P)`. -/
+@[deprecated "Use `Ideal.inertiaDeg_tower` instead." (since := "2026-08-14")]
 theorem inertiaDeg'_algebra_tower (p : Ideal R) (P : Ideal S) (I : Ideal T) [p.IsMaximal]
     [P.IsMaximal] [P.LiesOver p] [I.LiesOver P] : inertiaDeg' p I =
     inertiaDeg' p P * inertiaDeg' P I := by
   have h₁ := P.over_def p
   have h₂ := I.over_def P
   have h₃ := (LiesOver.trans I P p).over
-  simp only [inertiaDeg', dif_pos h₁.symm, dif_pos h₂.symm, dif_pos h₃.symm]
+  simp only [inertiaDeg', dite_eq_left h₁.symm, dite_eq_left h₂.symm, dite_eq_left h₃.symm]
   let : Algebra (R ⧸ p) (S ⧸ P) := Ideal.Quotient.algebraQuotientOfLEComap h₁.le
   let : Algebra (S ⧸ P) (T ⧸ I) := Ideal.Quotient.algebraQuotientOfLEComap h₂.le
   let : Algebra (R ⧸ p) (T ⧸ I) := Ideal.Quotient.algebraQuotientOfLEComap h₃.le

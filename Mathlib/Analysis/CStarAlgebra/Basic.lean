@@ -38,15 +38,13 @@ Note that the type classes corresponding to C⋆-algebras are defined in
 
 assert_not_exists ContinuousLinearMap.hasOpNorm
 
-open Topology
-
 local postfix:max "⋆" => star
 
 /-- A normed star group is a normed group with a compatible `star` which is isometric. -/
 class NormedStarGroup (E : Type*) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
   norm_star_le : ∀ x : E, ‖x⋆‖ ≤ ‖x‖
 
-variable {𝕜 E α : Type*}
+variable {𝕜 E : Type*}
 
 section NormedStarGroup
 
