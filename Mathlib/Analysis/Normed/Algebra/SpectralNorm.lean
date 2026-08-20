@@ -39,8 +39,8 @@ This file follows a [MathOverflow answer](https://mathoverflow.net/a/419366/9568
 
 ## Main statements
 
-* `spectralNorm_unique`: uniqueness of spectral norms on a finite-dimensional algebra over a
-  complete normed field.
+* `SpectralNorm.spectralNorm_unique`: uniqueness of spectral norms on a finite-dimensional algebra
+  over a complete normed field.
 -/
 
 @[expose] public section
@@ -51,14 +51,10 @@ open scoped Topology
 
 variable {𝕜 A B : Type*}
 
-section Ring
-
-variable [SeminormedCommRing 𝕜] [Ring A] [Ring B] [Algebra 𝕜 A] [Algebra 𝕜 B]
-
 variable (𝕜 A) in
 /-- The type of all spectral norms on `A` over `𝕜`. -/
 @[ext]
-structure SpectralNorm extends OneHom A ℝ, ZeroHom A ℝ where
+structure SpectralNorm [SeminormedCommRing 𝕜] [Ring A] [Algebra 𝕜 A] extends OneHom A ℝ, ZeroHom A ℝ where
   nonneg' x : 0 ≤ toFun x
   map_add_le_add' x y (h : Commute x y) : toFun (x + y) ≤ toFun x + toFun y
   map_mul_le_mul' x y (h : Commute x y) : toFun (x * y) ≤ toFun x * toFun y
@@ -68,6 +64,10 @@ structure SpectralNorm extends OneHom A ℝ, ZeroHom A ℝ where
 attribute [nolint docBlame] SpectralNorm.toZeroHom
 
 namespace SpectralNorm
+
+section Ring
+
+variable [SeminormedCommRing 𝕜] [Ring A] [Ring B] [Algebra 𝕜 A] [Algebra 𝕜 B]
 
 instance : FunLike (SpectralNorm 𝕜 A) A ℝ where
   coe f := f.toFun
@@ -114,8 +114,6 @@ protected def comap (f : SpectralNorm 𝕜 B) (g : A →ₐ[𝕜] B) : SpectralN
   map_pow' x k := by rw [map_pow, f.map_pow]
   map_smul_eq_mul' c x := by rw [map_smul, f.map_smul_eq_mul]
 
-end SpectralNorm
-
 end Ring
 
 section CommRing
@@ -138,7 +136,7 @@ instance [NormOneClass 𝕜] : RingSeminormClass (SpectralNorm 𝕜 A) A ℝ whe
 end CommRing
 
 @[simp]
-protected theorem SpectralNorm.eq_zero_iff [SeminormedCommRing 𝕜] [DivisionRing A] [Algebra 𝕜 A]
+protected theorem eq_zero_iff [SeminormedCommRing 𝕜] [DivisionRing A] [Algebra 𝕜 A]
     {f : SpectralNorm 𝕜 A} {x : A} : f x = 0 ↔ x = 0 := by
   refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
   · have : Commute x x⁻¹ := Commute.inv_right₀ rfl
@@ -156,14 +154,14 @@ section NormedField
 variable [NormedField 𝕜] [Field A] [Algebra 𝕜 A] [FiniteDimensional 𝕜 A]
 
 /-- Type synonym to -/
-private def SpectralNorm.space (_f : SpectralNorm 𝕜 A) := A
+private def space (_f : SpectralNorm 𝕜 A) := A
 deriving Field, Algebra 𝕜
 
 private instance (f : SpectralNorm 𝕜 A) : FiniteDimensional 𝕜 f.space :=
   inferInstanceAs (FiniteDimensional 𝕜 A)
 
 /-- The ring norm defined by a spectral norm. -/
-private def SpectralNorm.ringNorm (f : SpectralNorm 𝕜 A) : RingNorm f.space where
+private def ringNorm (f : SpectralNorm 𝕜 A) : RingNorm f.space where
   toFun := f
   map_zero' := map_zero f
   add_le' := map_add_le_add f
@@ -207,3 +205,5 @@ theorem spectralNorm_unique [CompleteSpace 𝕜] (f g : SpectralNorm 𝕜 A) : f
   exact le_antisymm (spectralNorm_le f g x) (spectralNorm_le g f x)
 
 end NontriviallyNormedField
+
+end SpectralNorm
