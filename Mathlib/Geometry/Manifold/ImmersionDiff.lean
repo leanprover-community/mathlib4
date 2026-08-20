@@ -33,10 +33,11 @@ equivalence to prove that immersions compose (in nice situations).
   (assuming `f` and `g` are differentiable at `x` resp. `f x`), `f` is also an immersion at `x`
 * `IsDiffImmersionAt.of_injective_of_finiteDimensional`: if `f : M → N` has injective `mfderiv` at
   `x` and `N` is finite-dimensional, then `f` is an immersion at `x`
-
-## TODO
 * `IsDiffImmersionAt.prodMap`: if `f` is an immersion at `x` and `g` is an immersion at `y`,
   then `f × g` is an immersion at `(x, y)` (all in the sense of differentials)
+
+## TODO
+
 
 -/
 
@@ -88,10 +89,14 @@ lemma continuousAt (hf : IsDiffImmersionAt I I' f x) : ContinuousAt f x :=
 lemma congr (hf : IsDiffImmersionAt I I' f x) (hfg : g =ᶠ[𝓝 x] f) : IsDiffImmersionAt I I' g x := by
   rwa [isDiffImmersionAt_iff, hfg.mfderiv_eq]
 
--- This proof requires further lemmas relating the tangent bundles of `M`, `M'` and `M × M'`.
-proof_wanted prodMap {y : N} (hf : IsDiffImmersionAt I I' f x) {g : N → N'}
+/-- If `f` is an immersion at `x` and `g` is an immersion at `y`, then `f × g` is an immersion at
+`(x, y)` (all in the sense of differentials). -/
+lemma prodMap {y : N} (hf : IsDiffImmersionAt I I' f x) {g : N → N'}
     (hg : IsDiffImmersionAt J J' g y) :
-    IsDiffImmersionAt (I.prod J) (I'.prod J') (Prod.map f g) (x, y)
+    IsDiffImmersionAt (I.prod J) (I'.prod J') (Prod.map f g) (x, y) := by
+  rw [isDiffImmersionAt_iff, mfderiv_prodMap hf.mdifferentiableAt hg.mdifferentiableAt]
+  rw [isDiffImmersionAt_iff] at hf hg
+  exact hf.prodMap hg
 
 lemma of_mfderiv_isInvertible (hf : (mfderiv% f x).IsInvertible) : IsDiffImmersionAt I I' f x := by
   rw [isDiffImmersionAt_iff]
