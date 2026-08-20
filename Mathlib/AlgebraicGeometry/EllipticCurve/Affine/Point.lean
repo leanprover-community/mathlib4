@@ -726,7 +726,7 @@ affine `2`-torsion point. -/
 theorem isRoot_twoTorsionPolynomial_iff (h2 : NeZero (2 : F)) (hΔ : W.Δ ≠ 0) (x : F) :
     W.twoTorsionPolynomial.toPoly.IsRoot x ↔
       ∃ y, ∃ h : W.Nonsingular x y, some x y h + some x y h = 0 := by
-  rw [IsRoot.def, eval_twoTorsionPolynomial_toPoly, b₂, b₄, b₆]
+  rw [IsRoot.def, eval_toPoly_twoTorsionPolynomial, b₂, b₄, b₆]
   constructor
   · intro hroot
     set y := (-W.a₁ * x - W.a₃) / 2
