@@ -49,6 +49,8 @@ inductive MemFiniteInterClosure : Set α → Prop
 /-- The smallest set of sets containing `S` which is closed under finite intersections. -/
 @[expose] def finiteInterClosure : Set (Set α) := {s | MemFiniteInterClosure S s}
 
+@[simp] lemma subset_finiteInterClosure : S ⊆ finiteInterClosure S := fun _ ↦ .basic
+
 theorem finiteInterClosure_finiteInter : FiniteInter (finiteInterClosure S) where
   univ_mem := .univ
   inter_mem _ h _  := .inter h
