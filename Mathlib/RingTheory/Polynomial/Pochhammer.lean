@@ -218,19 +218,20 @@ theorem factorial_mul_ascPochhammer (S : Type*) [Semiring S] (r n : ℕ) :
     (r ! : S) * (ascPochhammer S n).eval (r + 1 : S) = (r + n)! := by
   rw_mod_cast [ascPochhammer_nat_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 
-theorem ascPochhammer_eval_succ {S : Type*} [CommSemiring S] (r : ℕ) (n : S) :
-    n * (ascPochhammer S r).eval (n + 1) = (n + r) * (ascPochhammer S r).eval n := by
+variable {S} in
+theorem ascPochhammer_eval_succ (r : ℕ) (n : S) :
+    n * (ascPochhammer S r).eval (n + 1) = (ascPochhammer S r).eval n * (n + r) := by
   induction r with
   | zero => simp
   | succ r ih =>
     rw [ascPochhammer_succ_eval, ascPochhammer_succ_eval, ← mul_assoc, ih]
-    push_cast
-    ring
+    grind
 
 @[deprecated ascPochhammer_eval_succ (since := "2026-08-16")]
 theorem ascPochhammer_nat_eval_succ (r : ℕ) (n : ℕ) :
-    n * (ascPochhammer ℕ r).eval (n + 1) = (n + r) * (ascPochhammer ℕ r).eval n :=
-  ascPochhammer_eval_succ r n
+    n * (ascPochhammer ℕ r).eval (n + 1) = (n + r) * (ascPochhammer ℕ r).eval n := by
+  convert ascPochhammer_eval_succ r n using 1
+  grind
 
 namespace Nat
 variable (a b : ℕ)
