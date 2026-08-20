@@ -143,69 +143,6 @@ lemma mul_inv_cancel_comm (a b : G) : a * b * a⁻¹ = b := by rw [mul_comm, inv
 
 end CommGroup
 
-namespace IsMulCommutative
-
-/-- A `Monoid` which `IsMulCommutative` is a `CommMonoid`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/
-@[to_additive
-/-- A `AddMonoid` which `IsMulCommutative` is a `AddCommMonoid`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/ ]
-scoped instance (priority := 50) {M : Type*} [Monoid M] [IsMulCommutative M] :
-    CommMonoid M where
-
-/-- A `DivisionMonoid` which `IsMulCommutative` is a `DivisionCommMonoid`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/
-@[to_additive
-/-- A `SubtractionMonoid` which `IsMulCommutative` is a `SubtractionCommMonoid`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/ ]
-scoped instance (priority := 50) {M : Type*} [DivisionMonoid M] [IsMulCommutative M] :
-    DivisionCommMonoid M where
-
-/-- A `Group` which `IsMulCommutative` is a `CommGroup`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/
-@[to_additive
-/-- An `AddGroup` which `IsMulCommutative` is a `AddCommGroup`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/ ]
-scoped instance (priority := 50) {G : Type*} [Group G] [IsMulCommutative G] :
-    CommGroup G where
-
-end IsMulCommutative
 
 /-! We initialize the projections for the group structures for `@[simps]` here.
 

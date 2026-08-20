@@ -314,49 +314,6 @@ add_decl_doc RightCancelSemigroup.toIsRightCancelMul
 /-- Any `AddRightCancelSemigroup` satisfies `IsRightCancelAdd`. -/
 add_decl_doc AddRightCancelSemigroup.toIsRightCancelAdd
 
-namespace IsMulCommutative
-
-/-- A magma which `IsMulCommutative` is a `CommMagma`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/
-@[to_additive
-/-- An additive magma which `IsMulCommutative` is a `AddCommMagma`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/ ]
-scoped instance (priority := 50) {M : Type*} [Mul M] [IsMulCommutative M] : CommMagma M where
-  mul_comm := mul_comm'
-
-/-- A `Semigroup` which `IsMulCommutative` is a `CommSemigroup`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/
-@[to_additive
-/-- An `AddSemigroup` which `IsMulCommutative` is a `AddCommSemigroup`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/ ]
-scoped instance (priority := 50) {M : Type*} [Semigroup M] [IsMulCommutative M] :
-    CommSemigroup M where
-
-end IsMulCommutative
 
 /-! We initialize the projections for the semigroup structures for `@[simps]` here. -/
 initialize_simps_projections Semigroup
