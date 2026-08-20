@@ -39,6 +39,13 @@ lemma Aut.overMap_hom_left {Z Y X : C} (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ X
     (fac : f ≫ g = fg := by cat_disch) (γ : Aut (Over.mk f)) :
     (Aut.overMap f g fg fac γ).hom.left = γ.hom.left := rfl
 
+lemma Aut.injective_overMap {Z Y X : C} (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ X)
+    (fac : f ≫ g = fg := by cat_disch) :
+    Function.Injective (overMap f g fg fac) := by
+  intro σ₁ σ₂ hσ
+  ext
+  exact (Over.forget X).congr_map (congr_arg Iso.hom hσ)
+
 open PreGaloisCategory
 
 namespace GaloisCategory

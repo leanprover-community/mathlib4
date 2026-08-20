@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.CFT.ClassFormation.Basic
 public import Mathlib.NumberTheory.CFT.ClassFormation.GroupCohomology
 public import Mathlib.NumberTheory.CFT.ClassFormation.Sheaves
+public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryCorrespondence
 public import Mathlib.GroupTheory.PGroup
 
 /-!
@@ -18,6 +19,11 @@ public import Mathlib.GroupTheory.PGroup
 @[expose] public section
 
 universe w v u
+
+lemma IsPGroup.exists_subgroup {G : Type*} [Group G] [Finite G] {p : ℕ}
+    [Fact p.Prime] {d : ℕ} (hG : Nat.card G = p ^ (d + 1)) :
+    ∃ (H : Subgroup G) (_ : H.Normal), Nat.card H = p ^ d := by
+  sorry
 
 open CategoryTheory Limits Opposite
 
@@ -53,7 +59,19 @@ lemma exists_fac_of_degMap_eq_pow {Y X : C} [PreGaloisCategory.IsConnected Y]
     ∃ (d₁ d₂ : ℕ) (hd₁ : 0 ≠ d₁) (hd₂ : 0 ≠ d₂) (hd : d₁ + d₂ = d)
       (Z : C) (a : Y ⟶ Z) (b : Z ⟶ X) (_ : PreGaloisCategory.IsConnected Z),
         a ≫ b = f ∧ IsGaloisCover a ∧ IsGaloisCover b ∧ degMap a = p ^ d₁ ∧
-          degMap b = p ^ d₂ := sorry
+          degMap b = p ^ d₂ := by
+  obtain ⟨d, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (n := d) (by lia)
+  have hf' := natCard_aut_overMk f
+  rw [hf] at hf'
+  obtain ⟨H, _, h₁⟩ := IsPGroup.exists_subgroup hf'
+  obtain ⟨Z, _, a, b, fac, _, _, h₂⟩ := exists_of_normal_subgroup H
+  have ha : degMap a = Nat.card H := sorry
+  refine ⟨d, 1, by lia, by simp, by lia, Z, a, b, inferInstance, fac,
+    inferInstance, inferInstance, by rw [ha, h₁], ?_⟩
+  rw [degMap_comp' a b f, ha, h₁, Nat.succ_eq_add_one,
+    pow_add, pow_one] at hf
+  rw [pow_one]
+  exact mul_right_injective₀ (NeZero.ne _) hf
 
 section
 

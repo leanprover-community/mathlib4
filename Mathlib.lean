@@ -5767,6 +5767,7 @@ public import Mathlib.NumberTheory.CFT.ClassFormation.FieldFormationAxiom
 public import Mathlib.NumberTheory.CFT.ClassFormation.FintypeCat
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryAut
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryConnected
+public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryCorrespondence
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryDegree
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryEquivalence
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryInduction
