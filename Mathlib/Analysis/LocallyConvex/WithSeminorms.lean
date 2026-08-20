@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
+public import Mathlib.Analysis.Normed.Order.Hom.Basic
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Topology.Algebra.Equicontinuity
 public import Mathlib.Topology.MetricSpace.Equicontinuity
@@ -285,6 +286,18 @@ structure WithSeminorms (p : SeminormFamily 𝕜 E ι) [topology : TopologicalSp
   topology_eq_withSeminorms : topology = p.moduleFilterBasis.topology
 
 variable (𝕜 E) in
+/-- A topological vector space `E` is **normable** over `𝕜` if its topology is induced by
+*some* `𝕜`-seminorm.
+To endow such a space with a normed space structure with the same topology, use:
+```
+  let : SeminormedAddCommGroup E := NormableSpace.toSeminormedAddCommGroup 𝕜 E
+  let : NormedSpace 𝕜 E := NormableSpace.toNormedSpace 𝕜 E
+```
+-/
+class NormableSpace [topology : TopologicalSpace E] where
+  withSeminorms' : ∃ (p : Seminorm 𝕜 E), WithSeminorms (fun (_ : Fin 1) ↦ p)
+
+variable (𝕜 E) in
 /-- A topological vector space `E` is **polynormable** over `𝕜` if its topology is induced by
 *some* family of `𝕜`-seminorms. Equivalently, its topology is induced by *all* its continuous
 seminorm.
@@ -474,6 +487,10 @@ theorem WithSeminorms.toPolynormableSpace {p : SeminormFamily 𝕜 E ι} (hp : W
       intro i
       exact iInf_le (ι := {p : Seminorm 𝕜 E // Continuous p}) _ ⟨p i, hp' i⟩
 
+instance [h : NormableSpace 𝕜 E] : PolynormableSpace 𝕜 E := by
+  rcases h.withSeminorms' with ⟨q, hq⟩
+  exact hq.toPolynormableSpace
+
 end TopologicalSpace
 
 /-- The uniform structure induced by a family of seminorms is exactly the infimum of the ones
@@ -498,10 +515,38 @@ theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, iInf_const, coe_normSeminorm,
     comap_norm_nhds_zero]
 
-/-- A (semi-)normed space is polynormable. -/
-instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
-    PolynormableSpace 𝕜 E :=
-  norm_withSeminorms 𝕜 E |>.toPolynormableSpace
+/-- A (semi-)normed space is normable. -/
+instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] : NormableSpace 𝕜 E :=
+  ⟨⟨normSeminorm 𝕜 E, norm_withSeminorms 𝕜 E⟩⟩
+
+variable [NormedField 𝕜] [ha : AddCommGroup E] [hm : Module 𝕜 E]
+  [t : TopologicalSpace E] [hn : NormableSpace 𝕜 E]
+
+variable (𝕜 E)
+
+/-- A seminorm defining the topology in a normable space. -/
+noncomputable def NormableSpace.seminorm : Seminorm 𝕜 E := hn.withSeminorms'.choose
+
+/-- A normable space can be endowed with a seminorm defining the same topology. -/
+noncomputable abbrev NormableSpace.toSeminormedAddCommGroup : SeminormedAddCommGroup E := by
+  let q := NormableSpace.seminorm 𝕜 E
+  have hq := hn.withSeminorms'.choose_spec
+  have : IsTopologicalAddGroup E := hq.topologicalAddGroup
+  let : Norm E := ⟨NormableSpace.seminorm 𝕜 E⟩
+  let c : SeminormedSpace.Core 𝕜 E :=
+  { norm_nonneg x := apply_nonneg q x
+    norm_smul c x := map_smul_eq_mul q c x
+    norm_triangle x y := map_add_le_add q x y }
+  refine SeminormedAddCommGroup.ofCoreReplaceTopology c ?_
+  rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 hq, ciInf_unique]
+  rfl
+
+/-- A normable space can be endowed with a normed space structure. -/
+noncomputable abbrev NormableSpace.toNormedSpace :
+    letI : SeminormedAddCommGroup E := NormableSpace.toSeminormedAddCommGroup 𝕜 E
+    NormedSpace 𝕜 E :=
+  letI : SeminormedAddCommGroup E := NormableSpace.toSeminormedAddCommGroup 𝕜 E
+  { norm_smul_le c x := (map_smul_eq_mul (NormableSpace.seminorm 𝕜 E) c x).le }
 
 end NormedSpace
 
