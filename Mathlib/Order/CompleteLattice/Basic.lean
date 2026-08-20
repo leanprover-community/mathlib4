@@ -47,7 +47,7 @@ variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → 
 
 section
 
-variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
+variable [CompleteSemilatticeSup α] {s t : Set α} {a : α}
 
 @[to_dual]
 theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t :=
@@ -441,18 +441,11 @@ theorem iSup₂_comm {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι
 
 @[to_dual (attr := simp)]
 theorem iSup_iSup_eq_left {b : β} {f : ∀ x : β, x = b → α} : ⨆ x, ⨆ h : x = b, f x h = f b rfl :=
-  (le_iSup₂ (f := f) b rfl).antisymm'
-    (iSup_le fun c =>
-      iSup_le <| by
-        rintro rfl
-        rfl)
+  le_antisymm (iSup₂_le fun _ h ↦ h ▸ le_rfl) (le_iSup₂ (f := f) b rfl)
 
 @[to_dual (attr := simp)]
 theorem iSup_iSup_eq_right {b : β} {f : ∀ x : β, b = x → α} : ⨆ x, ⨆ h : b = x, f x h = f b rfl :=
-  (le_iSup₂ b rfl).antisymm'
-    (iSup₂_le fun c => by
-      rintro rfl
-      rfl)
+  le_antisymm (iSup₂_le fun _ h ↦ h ▸ le_refl (f b rfl)) (le_iSup₂ b rfl)
 
 @[to_dual]
 theorem iSup_subtype {p : ι → Prop} {f : Subtype p → α} : iSup f = ⨆ (i) (h : p i), f ⟨i, h⟩ :=
@@ -708,7 +701,9 @@ end le
 ### `iSup` and `iInf` under `Type`
 -/
 
-@[to_dual iInf_of_isEmpty]
+/-- This `simp` lemma goes well with `sSup_empty` in a complete lattice. -/
+@[to_dual (attr := simp) iInf_of_isEmpty
+/-- This `simp` lemma goes well with `sInf_empty` in a complete lattice. -/]
 theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f = sSup (∅ : Set α) :=
   congr_arg sSup (range_eq_empty f)
 

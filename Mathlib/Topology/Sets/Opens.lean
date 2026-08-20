@@ -257,13 +257,9 @@ theorem mem_iSup {ι} {x : α} {s : ι → Opens α} : x ∈ iSup s ↔ ∃ i, x
 theorem mem_sSup {Us : Set (Opens α)} {x : α} : x ∈ sSup Us ↔ ∃ u ∈ Us, x ∈ u := by
   simp_rw [sSup_eq_iSup, mem_iSup, exists_prop]
 
-/-- Open sets in a topological space form a frame. -/
-@[instance_reducible]
-def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
+instance instFrame : Frame (Opens α) := fast_instance% .ofMinimalAxioms {
   inf_sSup_le_iSup_inf a s :=
-    (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le
-
-instance instFrame : Frame (Opens α) := fast_instance% .ofMinimalAxioms frameMinimalAxioms
+    (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le }
 
 theorem mem_himp {U V : Opens α} {x : α} : x ∈ U ⇨ V ↔ ∃ W : Opens α, W ⊓ U ≤ V ∧ x ∈ W := by
   simp [himp_eq_sSup]
@@ -282,10 +278,10 @@ theorem mem_compl {U : Opens α} {x : α} : x ∈ Uᶜ ↔ ∃ V : Opens α, Dis
   simp [compl_eq_sSup_disjoint]
 
 theorem interior_compl {U : Opens α} : Opens.interior (U : Set α)ᶜ = Uᶜ := by
-  simp [←himp_bot, himp_def]
+  simp [← himp_bot, himp_def]
 
 theorem coe_compl_eq_interior_compl {U : Opens α} : ↑(Uᶜ) = interior (U : Set α)ᶜ := by
-  rw [←interior_compl, coe_interior]
+  rw [← interior_compl, coe_interior]
 
 /-- The coercion from open sets to sets as a `FrameHom`. -/
 @[simps] protected def frameHom : FrameHom (Opens α) (Set α) where

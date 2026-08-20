@@ -57,7 +57,7 @@ separately.
 @[expose] public section
 
 
-open NNReal ENNReal ContinuousLinearMap MulOpposite
+open NNReal ContinuousLinearMap MulOpposite
 
 universe u v
 
