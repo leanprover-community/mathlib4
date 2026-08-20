@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 
+import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
+
 /-!
 # Quasi-Measure-Preserving Functions
 

@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
+import Mathlib.MeasureTheory.Measure.Basic
+import Mathlib.MeasureTheory.Measure.Continuity
+
 /-!
 # Inner regularity of finite measures
 

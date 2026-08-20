@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Covering.VitaliFamily
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Vitali covering theorems
 

@@ -9,6 +9,8 @@ public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.MeasureTheory.Measure.OpenPos
 public import Mathlib.MeasureTheory.Measure.Doubling
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # The product measure
 

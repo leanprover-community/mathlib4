@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Map
 
+import Mathlib.MeasureTheory.Measure.Filter
+
 /-!
 # Pullback of a measure
 

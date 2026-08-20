@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Classes for s-finite measures
 

@@ -5,7 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.MeasureTheory.Measure.Filter
 public import Mathlib.MeasureTheory.Measure.Restrict
+
+import Mathlib.MeasureTheory.Measure.Basic
+import Mathlib.MeasureTheory.Measure.Continuity
 
 /-!
 # Classes for finite measures

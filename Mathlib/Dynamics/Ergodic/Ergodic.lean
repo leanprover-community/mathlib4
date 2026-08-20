@@ -8,6 +8,8 @@ module
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Ergodic maps and measures
 

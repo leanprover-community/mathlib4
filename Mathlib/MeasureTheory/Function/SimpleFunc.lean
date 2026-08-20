@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Simple functions
 

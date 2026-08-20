@@ -12,6 +12,8 @@ public import Mathlib.Data.Bool.Basic
 public import Mathlib.MeasureTheory.Measure.Real
 public import Mathlib.Topology.UniformSpace.Compact
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Integrals of Riemann, Henstock-Kurzweil, and McShane
 

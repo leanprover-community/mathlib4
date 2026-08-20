@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
+import Mathlib.MeasureTheory.Measure.Basic
+import Mathlib.MeasureTheory.Measure.Continuity
+
 /-!
 # Unsigned Hahn decomposition theorem
 

@@ -13,6 +13,8 @@ public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.ContinuousMap.CocompactMap
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Measures on Groups
 

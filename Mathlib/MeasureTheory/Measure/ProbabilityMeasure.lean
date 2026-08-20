@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Measure.FiniteMeasure
 public import Mathlib.MeasureTheory.Integral.Average
 
+import Mathlib.MeasureTheory.Measure.Continuity
+
 /-!
 # Probability measures
 

@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Method of exhaustion
 

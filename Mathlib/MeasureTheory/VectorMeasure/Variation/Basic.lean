@@ -9,6 +9,8 @@ public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.MeasureTheory.Measure.Dirac
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Properties of variation
 

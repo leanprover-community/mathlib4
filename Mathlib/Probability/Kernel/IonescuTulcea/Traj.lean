@@ -13,6 +13,8 @@ public import Mathlib.Probability.Kernel.CondDistrib
 public import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
 public import Mathlib.Probability.Kernel.SetIntegral
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Ionescu-Tulcea theorem
 

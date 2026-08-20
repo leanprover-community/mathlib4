@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # The Giry monad
 

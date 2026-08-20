@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Restrict
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-! # Mutually singular measures
 
 Two measures `μ`, `ν` are said to be mutually singular (`MeasureTheory.Measure.MutuallySingular`,

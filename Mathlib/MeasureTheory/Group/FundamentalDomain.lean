@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Fundamental domain of a group action
 

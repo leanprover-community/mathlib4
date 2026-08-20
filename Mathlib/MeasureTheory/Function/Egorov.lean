@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
+import Mathlib.MeasureTheory.Measure.Continuity
+
 /-!
 # Egorov theorem
 

@@ -9,6 +9,8 @@ public import Mathlib.Analysis.Normed.Group.Continuity
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Topology.MetricSpace.Thickening
 
+import Mathlib.MeasureTheory.Measure.Continuity
+
 /-!
 # Borel sigma algebras on (pseudo-)metric spaces
 

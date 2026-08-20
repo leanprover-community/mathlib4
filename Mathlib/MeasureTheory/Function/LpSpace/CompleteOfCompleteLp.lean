@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
+import Mathlib.MeasureTheory.Measure.Filter
+
 /-!
 # If an `Lp` space is complete, so is the target space
 -/

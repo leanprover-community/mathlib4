@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Measure.Restrict
 public import Mathlib.Topology.DiscreteSubset
 
+import Mathlib.MeasureTheory.Measure.Interval
+
 /-!
 # Measures having value zero on singletons
 

@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 public import Mathlib.Tactic.CrossRefAttribute
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Conditional Probability
 

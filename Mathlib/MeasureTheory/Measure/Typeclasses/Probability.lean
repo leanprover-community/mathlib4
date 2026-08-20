@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 public import Mathlib.Topology.UnitInterval
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Classes for probability measures
 

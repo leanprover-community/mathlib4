@@ -9,6 +9,7 @@ public import Mathlib.Probability.ProductMeasure
 public import Mathlib.Probability.HasLaw
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
+import Mathlib.MeasureTheory.Measure.Basic
 
 /-!
 # Product of bernoulli distributions on a set

@@ -11,6 +11,8 @@ public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Dirac measure
 

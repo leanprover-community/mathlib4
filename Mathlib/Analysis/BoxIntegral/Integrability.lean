@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.BoxIntegral.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # McShane integrability vs Bochner integrability
 

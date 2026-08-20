@@ -9,6 +9,8 @@ public import Mathlib.MeasureTheory.Measure.Stieltjes
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
 
+import Mathlib.MeasureTheory.Measure.Basic
+import Mathlib.MeasureTheory.Measure.Continuity
 import Mathlib.MeasureTheory.VectorMeasure.AddContent
 import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 

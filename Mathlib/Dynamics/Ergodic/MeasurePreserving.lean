@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.Order.Filter.EventuallyConst
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Measure-preserving maps
 

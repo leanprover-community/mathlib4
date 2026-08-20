@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Group.Action
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Følner sequences and filters - definitions and properties
 
