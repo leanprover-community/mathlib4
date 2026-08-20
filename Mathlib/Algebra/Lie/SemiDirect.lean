@@ -68,7 +68,8 @@ def toProd : K ⋊⁅ψ⁆ L ≃ K × L where
 
 instance : AddCommGroup (K ⋊⁅ψ⁆ L) := toProd.addCommGroup
 
-instance : Module R (K ⋊⁅ψ⁆ L) := toProd.module R
+instance : Module R (K ⋊⁅ψ⁆ L) :=
+  { toProd with map_add' _ _ := rfl : (K ⋊⁅ψ⁆ L) ≃+ K × L }.module R
 
 /-- `LieAlgebra.SemiDirectSum.toProd` as a linear equivalence. -/
 def toProdl : (K ⋊⁅ψ⁆ L) ≃ₗ[R] K × L :=
@@ -96,7 +97,6 @@ instance : LieRing (K ⋊⁅ψ⁆ L) where
   lie_self _ := by simp
   leibniz_lie _ _ _ := by simp; grind [lie_skew]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : LieAlgebra R (K ⋊⁅ψ⁆ L) where
   lie_smul _ _ _ := by simp [smul_sub, smul_add]
 

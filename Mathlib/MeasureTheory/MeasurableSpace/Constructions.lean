@@ -114,7 +114,6 @@ protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, Meas
     MeasurableSet (disjointed f n) :=
   disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
   refine measurable_to_nat fun x => ?_
@@ -563,7 +562,7 @@ theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι �
   classical
     refine ⟨fun x => if hx : x ∈ ⋃ i, t i then f ⟨x, hx⟩ else g default x,
       hfm.dite ((hg default).comp measurable_subtype_coe) (.iUnion t_meas), fun i x hx => ?_⟩
-    simp only [dif_pos (mem_iUnion.2 ⟨i, hx⟩)]
+    simp only [dite_eq_left (mem_iUnion.2 ⟨i, hx⟩)]
     exact iUnionLift_of_mem ⟨x, mem_iUnion.2 ⟨i, hx⟩⟩ hx
 
 end Prod
@@ -746,11 +745,11 @@ theorem measurable_piEquivPiSubtypeProd_symm (p : δ → Prop) [DecidablePred p]
     Measurable (Equiv.piEquivPiSubtypeProd p X).symm := by
   refine measurable_pi_iff.2 fun j => ?_
   by_cases hj : p j
-  · simp only [hj, dif_pos, Equiv.piEquivPiSubtypeProd_symm_apply]
+  · simp only [hj, dite_eq_left, Equiv.piEquivPiSubtypeProd_symm_apply]
     have : Measurable fun (f : ∀ i : { x // p x }, X i.1) => f ⟨j, hj⟩ :=
       measurable_pi_apply (X := fun i : {x // p x} => X i.1) ⟨j, hj⟩
     exact Measurable.comp this measurable_fst
-  · simp only [hj, Equiv.piEquivPiSubtypeProd_symm_apply, dif_neg, not_false_iff]
+  · simp only [hj, Equiv.piEquivPiSubtypeProd_symm_apply, dite_eq_right, not_false_iff]
     have : Measurable fun (f : ∀ i : { x // ¬p x }, X i.1) => f ⟨j, hj⟩ :=
       measurable_pi_apply (X := fun i : {x // ¬p x} => X i.1) ⟨j, hj⟩
     exact Measurable.comp this measurable_snd

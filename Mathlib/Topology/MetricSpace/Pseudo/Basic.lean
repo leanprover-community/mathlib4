@@ -20,7 +20,7 @@ Further results about pseudo-metric spaces.
 
 public section
 
-open Set Filter TopologicalSpace Bornology
+open Set Filter TopologicalSpace
 open scoped ENNReal NNReal Uniformity Topology
 
 universe u v
@@ -239,8 +239,6 @@ theorem IsCompact.isSeparable {α : Type*} [TopologicalSpace α] [PseudoMetrizab
 namespace Metric
 
 section SecondCountable
-
-open TopologicalSpace
 
 /-- A pseudometric space is second countable if, for every `ε > 0`, there is a countable set which
 is `ε`-dense. -/
