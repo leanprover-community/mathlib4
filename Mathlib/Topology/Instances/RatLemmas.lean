@@ -32,7 +32,7 @@ compactification.
 public section
 
 
-open Set Metric Filter TopologicalSpace
+open Set Filter TopologicalSpace
 
 open Topology OnePoint
 

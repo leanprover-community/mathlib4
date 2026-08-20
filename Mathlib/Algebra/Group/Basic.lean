@@ -1028,11 +1028,6 @@ alias additive_of_symmetric_of_total := additive_of_symm_of_total
 @[to_additive existing additive_of_symmetric_of_total, deprecated (since := "2026-06-10")]
 alias multiplicative_of_symmetric_of_total := multiplicative_of_symm_of_total
 
-@[deprecated (since := "2026-01-09")]
-alias additive_of_symmetric_of_isTotal := additive_of_symm_of_total
-@[to_additive existing additive_of_symmetric_of_isTotal, deprecated (since := "2026-01-09")]
-alias multiplicative_of_symmetric_of_isTotal := multiplicative_of_symm_of_total
-
 /-- If a binary function from a type equipped with a total relation `r` to a monoid is
   anti-symmetric (i.e. satisfies `f a b * f b a = 1`), in order to show it is multiplicative
   (i.e. satisfies `f a c = f a b * f b c`), we may assume `r a b` and `r b c` are satisfied.
@@ -1049,11 +1044,6 @@ theorem multiplicative_of_total (p : α → Prop) (hswap : ∀ {a b}, p a → p 
   · simp_rw [and_imp]; exact @hswap
   · exact fun rab rbc pab _pbc pac => hmul rab rbc pab.1 pab.2 pac.2
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
-
-@[deprecated (since := "2026-01-09")]
-alias additive_of_isTotal := additive_of_total
-@[to_additive existing additive_of_isTotal, deprecated (since := "2026-01-09")]
-alias multiplicative_of_isTotal := multiplicative_of_total
 
 end multiplicative
 
