@@ -3,6 +3,8 @@ Copyright (c) 2020 Jalex Stark, Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Yury Kudryashov
 -/
+module
+
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Tactic.FieldSimp
@@ -22,11 +24,10 @@ We prove that the sum of the reciprocals of the first `n` triangular numbers is 
 discrete_sum
 -/
 
-
 open Finset
 
 /-- **Sum of the Reciprocals of the Triangular Numbers** -/
-theorem Theorems100.inverse_triangle_sum (n : ℕ) :
+public theorem Theorems100.inverse_triangle_sum (n : ℕ) :
     ∑ k ∈ range n, (2 : ℚ) / (k * (k + 1)) = if n = 0 then 0 else 2 - (2 : ℚ) / n := by
   apply sum_range_induction _ _ rfl
   rintro (_ | _)
