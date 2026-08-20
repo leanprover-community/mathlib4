@@ -218,7 +218,6 @@ def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
 variable {F G}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone over `F ⋙ G`, we can construct a `Cocone G` with the same cocone point.
 -/
 @[simps]
@@ -243,7 +242,6 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
   map f := { hom := f.hom }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternative equational lemma for `(extendCocone c).ι.app` in case a lift of the object
 is given explicitly. -/
 lemma extendCocone_obj_ι_app' (c : Cocone (F ⋙ G)) {X : D} {Y : C} (f : X ⟶ F.obj Y) :
@@ -392,7 +390,6 @@ lemma hasColimit_comp_iff :
     HasColimit (F ⋙ G) ↔ HasColimit G :=
   ⟨fun _ ↦ Functor.Final.hasColimit_of_comp F, fun _ ↦ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem preservesColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesColimit (F ⋙ G) H] : PreservesColimit G H where
@@ -401,7 +398,6 @@ theorem preservesColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ 
     let hc' := isColimitOfPreserves H ((isColimitWhiskerEquiv F _).symm hc)
     exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma preservesColimit_comp_iff {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B} :
     PreservesColimit (F ⋙ G) H ↔ PreservesColimit G H :=
@@ -582,7 +578,6 @@ def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
 variable {F G}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a cone over `F ⋙ G`, we can construct a `Cone G` with the same cocone point.
 -/
 @[simps]
@@ -609,7 +604,6 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G where
             · rw [← Functor.map_comp] } }
   map f := { hom := f.hom }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternative equational lemma for `(extendCone c).π.app` in case a lift of the object
 is given explicitly. -/
 lemma extendCone_obj_π_app' (c : Cone (F ⋙ G)) {X : C} {Y : D} (f : F.obj X ⟶ Y) :
@@ -748,7 +742,6 @@ lemma hasLimit_comp_iff :
     HasLimit (F ⋙ G) ↔ HasLimit G :=
   ⟨fun _ ↦ Functor.Initial.hasLimit_of_comp F, fun _ ↦ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem preservesLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesLimit (F ⋙ G) H] : PreservesLimit G H where
@@ -757,7 +750,6 @@ theorem preservesLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     let hc' := isLimitOfPreserves H ((isLimitWhiskerEquiv F _).symm hc)
     exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma preservesLimit_comp_iff {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B} :
     PreservesLimit (F ⋙ G) H ↔ PreservesLimit G H :=
@@ -999,7 +991,6 @@ open CategoryTheory.Functor
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Final functors preserve filteredness.
 
 This can be seen as a generalization of `IsFiltered.of_right_adjoint` (which states that right
@@ -1173,7 +1164,6 @@ private lemma Grothendieck.final_map_small {C : Type u₁} [SmallCategory C] {F 
   simp [i, fiberwiseColimitMapCompEquivalence]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Grothendieck.map α` for a natural transformation `α : F ⟶ G`, with
 `F G : C ⥤ Cat`, is final if for each `X : C`, the functor `α.app X` is final. -/
 lemma Grothendieck.final_map {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G)
@@ -1212,7 +1202,6 @@ end Prod
 
 namespace ObjectProperty
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- For the full subcategory induced by an object property `P` on `C`, to show initiality of
 the inclusion functor it is enough to consider arrows to objects outside of the subcategory. -/
 theorem initial_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)

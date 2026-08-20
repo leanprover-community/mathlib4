@@ -60,18 +60,15 @@ open scoped BoundedContinuousFunction
 variable {E : Type*} [NormedAddCommGroup E]
   {f : ℝ × E → E} {α : ℝ → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {r L : ℝ≥0}
 
+private lemma Icc_t0_subset_Icc : Icc t₀.val tmax ⊆ Icc tmin tmax :=
+  Icc_subset_Icc_left t₀.2.1
+
 lemma mul_abs_sub_le_radius {t : ℝ} (hf : IsPeano f t₀ x₀ r L)
     (ht : t ∈ Icc t₀.val tmax) : L * |t - t₀| ≤ r := by
-  have h_diff : t - t₀ ≤ max (tmax - t₀) (t₀ - tmin) := by
-    calc
-      t - t₀ ≤ tmax - t₀ := sub_le_sub_right ht.2 t₀
-      tmax - t₀ ≤ max (tmax - t₀) (t₀ - tmin) := le_max_left (tmax - t₀) (t₀ - tmin)
-  calc
-    L * |t - t₀| = L * (t - t₀) := by rw [abs_of_nonneg (sub_nonneg.mpr ht.1)]
-    L * (t - t₀) ≤ L * max (tmax - t₀) (t₀ - tmin) := by
-      apply mul_le_mul_of_nonneg_left h_diff
-      positivity
-    L * max (tmax - t₀) (t₀ - tmin) ≤ r := hf.mul_max_le
+  rw [abs_of_nonneg (sub_nonneg.mpr ht.1)]
+  refine le_trans ?_ hf.mul_max_le
+  gcongr
+  exact (sub_le_sub_right ht.2 _).trans (le_max_left _ _)
 
 variable [NormedSpace ℝ E]
 
@@ -103,33 +100,21 @@ lemma mapsTo_delayedInput_previous_interval (n k : ℕ) (t₀ : Icc tmin tmax) :
   rw [mem_Icc] at hs ⊢
   have h_mul_nonneg : 0 ≤ (k : ℝ) * stepSize t₀ n :=
     mul_nonneg (Nat.cast_nonneg k) (stepSize_nonneg t₀ n)
-  unfold delayedInput
-  constructor
-  · exact le_max_right _ _
-  · apply max_le <;> linarith
+  exact ⟨le_max_right _ _, max_le (by linarith) (by linarith)⟩
 
-/-- The delayed input maps `Icc t₀ tmax` to itself. -/
 lemma mapsTo_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
     MapsTo (delayedInput t₀ n) (Icc t₀.val tmax) (Icc t₀.val tmax) := by
   intro s hs
   rw [mem_Icc] at hs ⊢
   have := stepSize_nonneg t₀ n
-  have h_t₀_le_tmax : t₀.val ≤ tmax := t₀.2.2
-  unfold delayedInput
-  constructor
-  · exact le_max_right _ _
-  · apply max_le <;> linarith
+  exact ⟨le_max_right _ _, max_le (by linarith) t₀.2.2⟩
 
-/-- The delayed input is Lipschitz continuous with constant one. -/
 lemma lipschitzWith_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
     LipschitzWith 1 (delayedInput t₀ n) := by
   rw [lipschitzWith_iff_dist_le_mul]
-  simp only [NNReal.coe_one, one_mul, Real.dist_eq]
   intro x y
-  have h_dist :=
+  simpa [delayedInput, Real.dist_eq, sub_sub_sub_cancel_right] using
     abs_max_sub_max_le_abs (x - stepSize t₀ n) (y - stepSize t₀ n) t₀.val
-  rw [sub_sub_sub_cancel_right] at h_dist
-  assumption
 
 /-- The recursively defined curves used to build the Tonelli approximations. -/
 noncomputable def tonelliIterate (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x₀ : E) (n : ℕ) :
@@ -168,7 +153,7 @@ private lemma tonelliIterate_bounds (hf : IsPeano f t₀ x₀ r L) (n k : ℕ) :
           (ContinuousOn.comp hk.2.continuousOn
             (lipschitzWith_delayedInput t₀ n).continuous.continuousOn
             (mapsTo_delayedInput t₀ n)))
-        (fun t ht ↦ ⟨⟨t₀.2.1.trans ht.1, ht.2⟩, h_map ht⟩)
+        (fun t ht ↦ ⟨Icc_t0_subset_Icc ht, h_map ht⟩)
     have h_int :
         IntervalIntegrable
           (fun s ↦ f (s, tonelliIterate f t₀ x₀ n k (delayedInput t₀ n s)))
@@ -181,7 +166,7 @@ private lemma tonelliIterate_bounds (hf : IsPeano f t₀ x₀ r L) (n k : ℕ) :
         intervalIntegral.integral_interval_sub_left]
       · refine intervalIntegral.norm_integral_le_of_norm_le_const fun t ht ↦ ?_
         have ht' := uIoc_subset_uIcc.trans (uIcc_subset_Icc hb ha) ht
-        exact hf.norm_le t ⟨t₀.2.1.trans ht'.1, ht'.2⟩ _ (h_map ht')
+        exact hf.norm_le t (Icc_t0_subset_Icc ht') _ (h_map ht')
       · exact h_int.mono_set (uIcc_subset_uIcc left_mem_uIcc <| Icc_subset_uIcc ha)
       · exact h_int.mono_set (uIcc_subset_uIcc left_mem_uIcc <| Icc_subset_uIcc hb)
     refine ⟨fun t ht ↦ ?_, h_lip⟩
@@ -216,13 +201,8 @@ lemma tonelliIterate_eq_succ_on_Icc (n : ℕ) (k : ℕ) (t : ℝ)
     simp only [add_right_inj]
     apply intervalIntegral.integral_congr
     intro s hs
-    have hs_min : (t₀ : ℝ) ≤ s := min_eq_left ht.1 ▸ hs.1
-    have hs_max : s ≤ t := max_eq_right ht.1 ▸ hs.2
-    have hs_in_Icc : s ∈ Icc (t₀ : ℝ) ((t₀ : ℝ) + (k + 1 : ℝ) * stepSize t₀ n) :=
-      ⟨hs_min, le_trans hs_max ht.2⟩
-    simp only [
-      ih (delayedInput t₀ n s)
-        (mapsTo_delayedInput_previous_interval n k t₀ hs_in_Icc)]
+    simp only [ih _ (mapsTo_delayedInput_previous_interval n k t₀
+      (uIcc_subset_Icc (left_mem_Icc.mpr (ht.1.trans ht.2)) ht hs))]
 
 /-- The diagonal sequence of Tonelli approximations. -/
 noncomputable def tonelliApproximation
@@ -238,6 +218,11 @@ lemma mapsTo_tonelliApproximation_closedBall (hf : IsPeano f t₀ x₀ r L) (n :
 lemma lipschitzOnWith_tonelliApproximation (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
     LipschitzOnWith L (tonelliApproximation f t₀ x₀ n) (Icc t₀.val tmax) :=
   lipschitzOnWith_tonelliIterate hf (n + 1) (n + 1)
+
+/-- Every diagonal Tonelli approximation takes the value `x₀` at `t₀`. -/
+lemma tonelliApproximation_apply_t₀ (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x₀ : E) (n : ℕ) :
+    tonelliApproximation f t₀ x₀ n t₀ = x₀ :=
+  tonelliIterate_apply_t₀ f t₀ x₀ (n + 1) (n + 1)
 
 /-- Every diagonal Tonelli approximation satisfies the integral equation with delayed input. -/
 lemma tonelliApproximation_eq_integral (n : ℕ) (t : ℝ) (ht : t ∈ Icc t₀.val tmax) :
