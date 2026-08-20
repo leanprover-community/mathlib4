@@ -13,8 +13,10 @@ public import Mathlib.Data.Nat.Squarefree
 # Fundamental discriminants
 
 A fundamental discriminant is an integer `D ≡ 0, 1 [ZMOD 4]` that is primitive, i.e. not a proper
-square multiple of a smaller discriminant. These are exactly the discriminants of quadratic
-fields.
+square multiple of a smaller discriminant. These are exactly the discriminants of quadratic fields.
+
+The definition and the results below are elementary arithmetic on `ℤ`, so this file is kept
+independent of the theory of quadratic fields.
 
 ## Main definitions
 
@@ -33,21 +35,17 @@ namespace Int
 /-- `D` is a fundamental discriminant: it is a discriminant (`D % 4 = 0 ∨ 1`) and primitive, i.e.
 `D / 4 ≢ 0, 1 [ZMOD 4]` when `4 ∣ D`, and no odd prime square divides `D`. -/
 def IsFundamentalDiscr (D : ℤ) : Prop :=
-  (D % 4 = 0 ∨ D % 4 = 1) ∧
-    (∀ x : ℤ, D = 4 * x → ¬ 4 ∣ x ∧ ¬ x % 4 = 1) ∧
-    ∀ p : ℕ, Nat.Prime p → Odd p → ¬ (p : ℤ) ^ 2 ∣ D
+  (D % 4 = 0 ∨ D % 4 = 1) ∧ (∀ x, D = 4 * x → ¬ 4 ∣ x ∧ ¬ x % 4 = 1) ∧
+    ∀ p, Nat.Prime p → Odd p → ¬ (p : ℤ) ^ 2 ∣ D
 
 theorem isFundamentalDiscr_def {D : ℤ} :
     IsFundamentalDiscr D ↔
-      (D % 4 = 0 ∨ D % 4 = 1) ∧
-        (∀ x : ℤ, D = 4 * x → ¬ 4 ∣ x ∧ ¬ x % 4 = 1) ∧
-        ∀ p : ℕ, Nat.Prime p → Odd p → ¬ (p : ℤ) ^ 2 ∣ D := Iff.rfl
+      (D % 4 = 0 ∨ D % 4 = 1) ∧ (∀ x, D = 4 * x → ¬ 4 ∣ x ∧ ¬ x % 4 = 1) ∧
+        ∀ p, Nat.Prime p → Odd p → ¬ (p : ℤ) ^ 2 ∣ D := Iff.rfl
 
-/-- The definition, restated with `p ≠ 2` for `Odd p` and the `∀ x` clause as a `¬ ∃ e`. -/
 theorem isFundamentalDiscr_iff_forall_prime {D : ℤ} :
     IsFundamentalDiscr D ↔
-      (D % 4 = 0 ∨ D % 4 = 1) ∧
-        (∀ p : ℕ, p.Prime → p ≠ 2 → ¬ (p : ℤ) ^ 2 ∣ D) ∧
+      (D % 4 = 0 ∨ D % 4 = 1) ∧ (∀ p, Nat.Prime p → p ≠ 2 → ¬ (p : ℤ) ^ 2 ∣ D) ∧
         ¬ ∃ e : ℤ, D = 4 * e ∧ (e % 4 = 0 ∨ e % 4 = 1) := by
   rw [isFundamentalDiscr_def]
   refine and_congr_right fun _ => ⟨fun ⟨hB, hC⟩ =>
@@ -60,8 +58,8 @@ theorem isFundamentalDiscr_iff_forall_prime {D : ℤ} :
       fun h1 => hB' ⟨x, hx, Or.inr h1⟩⟩
   · rintro rfl; exact (by decide : ¬ Odd 2) hpo
 
-/-- Concrete squarefree characterization: `D ≡ 1 mod 4` squarefree, or `D = 4m` with `m`
-squarefree and `m ≡ 2, 3 mod 4`. -/
+/-- `D` is a fundamental discriminant if and only if either `D ≡ 1 mod 4` and `D` is squarefree,
+or `D = 4 * m` with `m` squarefree and `m ≡ 2, 3 mod 4`. -/
 theorem isFundamentalDiscr_iff_squarefree {D : ℤ} :
     IsFundamentalDiscr D ↔
       (D % 4 = 1 ∧ Squarefree D) ∨
