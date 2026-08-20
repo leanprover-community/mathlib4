@@ -387,4 +387,30 @@ lemma normSq_ofReal_sub_I_mul_sqrt_one_sub {x : ℝ} (hx : ‖x‖ ≤ 1) :
   rw [← normSq_neg, neg_sub', sub_neg_eq_add]
   simpa using normSq_ofReal_add_I_mul_sqrt_one_sub (x := -x) (by simpa)
 
+/-- A complex number whose norm equals its real part is its real part, coerced back. -/
+lemma eq_coe_re_of_norm_eq {w : ℂ} (h : ‖w‖ = w.re) : w = ↑(w.re) := by
+  have hre : 0 ≤ w.re := by rw [← h]; exact norm_nonneg w
+  have h_im : w.im ^ 2 = 0 := by
+    have := sq_norm_sub_sq_im w
+    rw [h, sq] at this
+    linarith
+  exact Complex.ext (by simp [hre]) ((sq_eq_zero_iff).mp h_im)
+
+lemma eq_coe_re_of_mul_eq_norm_mul {w : ℂ} (h : re (z * star w) = ‖z‖ * ‖w‖) :
+    z * star w = ↑(re (z * star w)) := by
+  have hnorm : ‖z * star w‖ = ‖z‖ * ‖w‖ := by rw [Complex.norm_mul, star_def, norm_conj]
+  exact eq_coe_re_of_norm_eq (hnorm.trans h.symm)
+
+/-- Multiplying `z` by `star z / ‖z‖` yields the norm of `z`. -/
+lemma mul_star_div_norm_eq_norm : z * (star z / (‖z‖ : ℂ)) = (‖z‖ : ℂ) := by
+  rcases eq_or_ne z 0 with rfl | hz
+  · simp
+  · have h₁ : (‖z‖ : ℂ) ≠ 0 := ofReal_ne_zero.mpr (norm_ne_zero_iff.mpr hz)
+    calc
+      z * (star z / (‖z‖ : ℂ))
+          = (z * star z) / (‖z‖ : ℂ) := by simp [mul_div_assoc]
+      _ = (↑(‖z‖ ^ 2) : ℂ) / (‖z‖ : ℂ) := by
+        rw [star_def, mul_conj, normSq_eq_norm_sq, ofReal_pow]
+      _ = (‖z‖ : ℂ) := by simp [pow_two, h₁]
+
 end Complex
