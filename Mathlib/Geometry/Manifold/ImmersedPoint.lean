@@ -9,34 +9,34 @@ public import Mathlib.Geometry.Manifold.LocalDiffeomorph
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Analysis.Normed.Module.ContinuousInverse
 
-/-! # Immersed points of differentiable maps
+/-! # Immersions in the sense of differentials
 
-Given a map `f : M → N` between manifolds, we call `x` and *immersed point* of `f` if and only if
-the `mfderiv` of `f` at `x` *splits*, i.e. admits a continuous left inverse. (If `M` is
-finite-dimensional, this is equivalent to injectivity of the `mfderiv`.)
-Under (relatively mild) conditions, this is equivalent to being an immersion at `x` (which is why we
-call this notation `IsDiffImmersionAt f x`: "f is an immersion at the level of differentials").
-This will be shown in a future PR.
+Given a map `f : M → N` between manifolds, we say `f` is an immersion in the sense of differentials
+at `x` if and only if the `mfderiv` of `f` at `x` *splits*, i.e. admits a continuous left inverse.
+(If `M` is finite-dimensional, this is equivalent to injectivity of the `mfderiv`.)
+Under (relatively mild) conditions, this is equivalent to being an immersion at `x`.
+This is not true in full generality; there are counterexamples involving manifolds with boundary.
+This equivalence will be shown in a future PR.
 
 `IsDiffImmersionAt` always behaves nicely under composition: future PRs will use the above
 equivalence to prove that immersions compose (in nice situations).
 
 ## Main definitions and results
 
-* `IsDiffImmersionAt`: `x` is an *immersed point* of `f` iff `mfderiv I J f x` has a continuous left
-  inverse
-* `IsLocalDiffeomorphAt.isDiffImmersionAt`: if `f` is a local diffeomorphism at `x`, then `x` is an
-  immersed point of `f`
-* `IsDiffImmersionAt.comp`: if `x` is an immersed point of `f` and `f x` is an immersed point of `g`,
-  then `x` is an immersed point of `g ∘ f`
-* `IsDiffImmersionAt.of_comp`: if `g ∘ f` has immersed point `x`, then (assuming `f` and `g` are
-  differentiable at `x` resp. `f x`), then `x` also an immersed point of `f`.
-* `IsDiffImmersionAt.of_injective_of_finiteDimensional`: if `f : M → N` has injective `mfderiv` at `x`
-  and `N` is finite-dimensional, then `x` is an immersed point of `f`.
+* `IsDiffImmersionAt`: `f` is an immersion at `x` in the sense of differentials
+  iff `mfderiv I J f x` has a continuous left inverse
+* `IsLocalDiffeomorphAt.isDiffImmersionAt`: if `f` is a local diffeomorphism at `x`, then `f` is an
+  immersion at `x` in the sense of differentials.
+* `IsDiffImmersionAt.comp`: `f` is an immersion at `x`, and `g` is an immersion at `f x`
+  (both in the sense of differentials), then `g ∘ f` is an immersion (of differentials) at `x`
+* `IsDiffImmersionAt.of_comp`: if `g ∘ f` is an immersion at `x` (of differentials), then
+  (assuming `f` and `g` are differentiable at `x` resp. `f x`), `f` is also an immersion at `x`
+* `IsDiffImmersionAt.of_injective_of_finiteDimensional`: if `f : M → N` has injective `mfderiv` at
+  `x` and `N` is finite-dimensional, then `f` is an immersion at `x`
 
 ## TODO
-* `IsDiffImmersionAt.prodMap`: if `x` is an immersed point of `f` and `y` is an immersed point of `g`,
-  then `(x, y)` is an immersed point of `f × g`.
+* `IsDiffImmersionAt.prodMap`: if `f` is an immersion at `x` and `g` is an immersion at `y`,
+  then `f × g` is an immersion at `(x, y)` (all in the sense of differentials)
 
 -/
 
@@ -63,8 +63,11 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 variable {f : M → M'} {x : M} {n : WithTop ℕ∞}
 
 variable (I I' f x) in
-/-- We say a map `f : M → M` splits at `x` if `mfderiv I I' f x` splits,
-i.e. has a continuous left inverse. -/
+/-- We say a map `f : M → M` is an immersionat `x` in the sense of differentials
+if `mfderiv I I' f x` splits, i.e. has a continuous left inverse.
+
+In nice situations (but not always), this is equivalent to `IsImmersionAt`.
+Please use `IsImmersionAt` in general. -/
 def IsDiffImmersionAt (f : M → M') (x : M) : Prop := mfderiv% f x |>.HasLeftInverse
 
 lemma isDiffImmersionAt_iff : IsDiffImmersionAt I I' f x ↔ (mfderiv% f x).HasLeftInverse := by rfl
@@ -94,26 +97,28 @@ lemma of_mfderiv_isInvertible (hf : (mfderiv% f x).IsInvertible) : IsDiffImmersi
   rw [isDiffImmersionAt_iff]
   exact ContinuousLinearMap.HasLeftInverse.of_isInvertible hf
 
-/-- If `f` is a local diffeomorphism at `x`, then `x` is an immersed point of `f`. -/
+/-- If `f` is a local diffeomorphism at `x`, then `f` is an immersion at `x`
+(in the sense of differentials). -/
 lemma _root_.IsLocalDiffeomorphAt.isDiffImmersionAt
     (hf : IsLocalDiffeomorphAt I I' n f x) (hn : n ≠ 0) : IsDiffImmersionAt I I' f x :=
   of_mfderiv_isInvertible (hf.isInvertible_mfderiv hn)
 
-/-- Every point is an immersed point of a continuous linear equivalence. -/
+/-- A continuous linear equivalence is an immersion at every point
+(in the sense of differentials). -/
 lemma _root_.ContinuousLinearEquiv.isDiffImmersionAt (f : E ≃L[𝕜] F) {x : E} :
     IsDiffImmersionAt 𝓘(𝕜, E) 𝓘(𝕜, F) f x :=
   (f.toDiffeomorph.isLocalDiffeomorph _).isDiffImmersionAt (by simp)
 
-/-- If `x` is an immersed point of `x` and `f x` is an immersed point of `g`, then `x` is an
-immersed point of `g ∘ f`. -/
+/-- If `f` is an immersion at `x`, and `g` is an immersion at `f x` (both in the sense of
+differentials), then `g ∘ f` is an immersion at `x`. -/
 lemma comp {g : M' → N} (hg : IsDiffImmersionAt I' J g (f x)) (hf : IsDiffImmersionAt I I' f x) :
     IsDiffImmersionAt I J (g ∘ f) x := by
   rw [isDiffImmersionAt_iff, mfderiv_comp x hg.mdifferentiableAt hf.mdifferentiableAt]
   rw [isDiffImmersionAt_iff] at hf hg
   exact hg.comp hf
 
-/-- If `x` is an immersed point of `g ∘ f`, then `x` is an immersed point of `x`
-provided `f` and `g` are differentiable at `x` and `f x`, respectively. -/
+/-- If `g ∘ f` is an immersion at `x` (of differentials), then (assuming `f` and `g` are
+differentiable at `x` resp. `f x`), `f` is also an immersion at `x`. -/
 lemma of_comp {g : M' → N} (hf : MDiffAt f x) (hg : MDiffAt g (f x))
     (hfg : IsDiffImmersionAt I J (g ∘ f) x) : IsDiffImmersionAt I I' f x := by
   rw [isDiffImmersionAt_iff, mfderiv_comp x hg hf] at hfg
@@ -157,8 +162,8 @@ lemma comp_isLocalDiffeomorphAt_right_iff (hf : ContinuousAt f x)
   symm
   exact Filter.eventuallyEq_of_mem (hf hg.localInverse_eventuallyEq_left) (by intro; simp)
 
-/-- If `mfderiv I J f x` is injective and `N` is finite-dimensional,
-`x` is an immersed point of `f`. -/
+/-- If `mfderiv I J f x` is injective and `N` is finite-dimensional, then `f` is an immersion
+(in the sense of differentials) at `x`. -/
 lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E']
     (hf' : Injective (mfderiv% f x)) : IsDiffImmersionAt I I' f x := by
   have : FiniteDimensional 𝕜 (TangentSpace I' (f x)) := inferInstanceAs (FiniteDimensional 𝕜 E')
