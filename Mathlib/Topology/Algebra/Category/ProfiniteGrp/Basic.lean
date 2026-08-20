@@ -349,7 +349,7 @@ abbrev limitCone : Limits.Cone F where
       exact funext fun x => (x.2 f).symm }
 
 /-- Applying a map out of a finite-group-valued diagram after an explicit limit projection. -/
-@[to_additive (attr := simp)
+@[to_additive
   /-- Applying a map out of a finite-additive-group-valued diagram after an explicit limit
   projection. -/]
 lemma limitCone_π_forget₂_map_apply (K : J ⥤ FiniteGrp.{max u v}) (j : J)
