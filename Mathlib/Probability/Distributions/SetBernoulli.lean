@@ -116,7 +116,7 @@ lemma HasLaw.indicator_one_of_setBernoulli_of_mem (hi : i ∈ u) {S : Ω → Set
     HasLaw ({ω | i ∈ S ω}.indicator (1 : Ω → M)) Ber(1, 0, p) P :=
   hS.indicator_of_setBernoulli_of_mem hi 1
 
-lemma HasLaw.indicator_of_setBernoulli_of_notMem' (hi : i ∉ u) {S : Ω → Set ι} {M : Type*} [Zero M]
+lemma HasLaw.indicator_of_setBernoulli_of_notMem (hi : i ∉ u) {S : Ω → Set ι} {M : Type*} [Zero M]
     [MeasurableSpace M] [MeasurableSingletonClass M]
     (hS : HasLaw S setBer(u, p) P) (f : Ω → M) :
     HasLaw ({ω | i ∈ S ω}.indicator f) (dirac 0) P := by
