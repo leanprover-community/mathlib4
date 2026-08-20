@@ -51,10 +51,20 @@ open scoped Topology
 
 variable {𝕜 A B : Type*}
 
+namespace SpectralNorm
+
+section SeminormedCommRing
+
+variable [SeminormedCommRing 𝕜]
+
+section Semiring
+
+variable [Semiring A] [Semiring B] [Algebra 𝕜 A] [Algebra 𝕜 B]
+
 variable (𝕜 A) in
 /-- The type of all spectral norms on `A` over `𝕜`. -/
 @[ext]
-structure SpectralNorm [SeminormedCommRing 𝕜] [Ring A] [Algebra 𝕜 A] extends OneHom A ℝ, ZeroHom A ℝ where
+structure _root_.SpectralNorm extends OneHom A ℝ, ZeroHom A ℝ where
   nonneg' x : 0 ≤ toFun x
   map_add_le_add' x y (h : Commute x y) : toFun (x + y) ≤ toFun x + toFun y
   map_mul_le_mul' x y (h : Commute x y) : toFun (x * y) ≤ toFun x * toFun y
@@ -62,12 +72,6 @@ structure SpectralNorm [SeminormedCommRing 𝕜] [Ring A] [Algebra 𝕜 A] exten
   map_smul_eq_mul' (c : 𝕜) x : toFun (c • x) = ‖c‖ * toFun x
 
 attribute [nolint docBlame] SpectralNorm.toZeroHom
-
-namespace SpectralNorm
-
-section Ring
-
-variable [SeminormedCommRing 𝕜] [Ring A] [Ring B] [Algebra 𝕜 A] [Algebra 𝕜 B]
 
 instance : FunLike (SpectralNorm 𝕜 A) A ℝ where
   coe f := f.toFun
@@ -114,30 +118,26 @@ protected def comap (f : SpectralNorm 𝕜 B) (g : A →ₐ[𝕜] B) : SpectralN
   map_pow' x k := by rw [map_pow, f.map_pow]
   map_smul_eq_mul' c x := by rw [map_smul, f.map_smul_eq_mul]
 
-end Ring
+end Semiring
 
-section CommRing
-
-variable [SeminormedCommRing 𝕜] [CommRing A] [Algebra 𝕜 A]
-
-instance : SubadditiveHomClass (SpectralNorm 𝕜 A) A ℝ where
+instance [CommSemiring A] [Algebra 𝕜 A] : SubadditiveHomClass (SpectralNorm 𝕜 A) A ℝ where
   map_add_le_add f x y := f.map_add_le_add (Commute.all x y)
 
-instance : SubmultiplicativeHomClass (SpectralNorm 𝕜 A) A ℝ where
+instance [CommSemiring A] [Algebra 𝕜 A] : SubmultiplicativeHomClass (SpectralNorm 𝕜 A) A ℝ where
   map_mul_le_mul f x y := f.map_mul_le_mul (Commute.all x y)
 
-instance [NormOneClass 𝕜] : SeminormClass (SpectralNorm 𝕜 A) 𝕜 A where
+instance [NormOneClass 𝕜] [CommRing A] [Algebra 𝕜 A] :
+    SeminormClass (SpectralNorm 𝕜 A) 𝕜 A where
   map_zero f := map_zero f
   map_neg_eq_map f x := by simpa using f.map_smul_eq_mul (-1) x
   map_smul_eq_mul f := f.map_smul_eq_mul
 
-instance [NormOneClass 𝕜] : RingSeminormClass (SpectralNorm 𝕜 A) A ℝ where
-
-end CommRing
+instance [NormOneClass 𝕜] [CommRing A] [Algebra 𝕜 A] :
+    RingSeminormClass (SpectralNorm 𝕜 A) A ℝ where
 
 @[simp]
-protected theorem eq_zero_iff [SeminormedCommRing 𝕜] [DivisionRing A] [Algebra 𝕜 A]
-    {f : SpectralNorm 𝕜 A} {x : A} : f x = 0 ↔ x = 0 := by
+protected theorem eq_zero_iff [DivisionRing A] [Algebra 𝕜 A] {f : SpectralNorm 𝕜 A} {x : A} :
+    f x = 0 ↔ x = 0 := by
   refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
   · have : Commute x x⁻¹ := Commute.inv_right₀ rfl
     have h := f.map_mul_le_mul this
@@ -145,9 +145,10 @@ protected theorem eq_zero_iff [SeminormedCommRing 𝕜] [DivisionRing A] [Algebr
     simp [h, hx]
   · rw [hx, map_zero]
 
-instance [SeminormedCommRing 𝕜] [NormOneClass 𝕜] [Field A] [Algebra 𝕜 A] :
-    RingNormClass (SpectralNorm 𝕜 A) A ℝ where
+instance [NormOneClass 𝕜] [Field A] [Algebra 𝕜 A] : RingNormClass (SpectralNorm 𝕜 A) A ℝ where
   eq_zero_of_map_eq_zero f := f.eq_zero_iff.mp
+
+end SeminormedCommRing
 
 section NormedField
 
