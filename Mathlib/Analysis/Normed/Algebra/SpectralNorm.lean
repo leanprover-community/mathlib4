@@ -341,15 +341,19 @@ theorem modify_mul (f : SpectralNorm 𝕜 A) (y : A) (x : A) :
 
 end modification
 
-variable [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [Field A] [Algebra 𝕜 A]
+variable [NormedField 𝕜] [CompleteSpace 𝕜] [Field A] [Algebra 𝕜 A]
   [FiniteDimensional 𝕜 A]
 
+open Classical in
 /-- A spectral norm on a finite extension of a complete normed field defines an absolute value. -/
-def toAbsoluteValue (f : SpectralNorm 𝕜 A) : AbsoluteValue A ℝ where
-  __ := f
-  eq_zero' _ := f.eq_zero_iff
-  add_le' := map_add_le_add f
-  map_mul' x y := by simpa [spectralNorm_unique (f.modify y) f] using f.modify_mul y x
+noncomputable def toAbsoluteValue (f : SpectralNorm 𝕜 A) : AbsoluteValue A ℝ :=
+  if h : ∃ x : 𝕜, 1 < ‖x‖ then
+  letI : NontriviallyNormedField 𝕜 := ⟨h⟩
+  { __ := f
+    eq_zero' _ := f.eq_zero_iff
+    add_le' := map_add_le_add f
+    map_mul' x y := by simpa [spectralNorm_unique (f.modify y) f] using f.modify_mul y x }
+  else AbsoluteValue.trivial
 
 /-- The absolute value on a finite extension of a complete normed field. -/
 noncomputable def absoluteValue : AbsoluteValue A ℝ :=
