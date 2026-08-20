@@ -295,39 +295,19 @@ lemma exists_tendstoUniformlyOn_subseq_tonelliApproximation (hf : IsPeano f t₀
         TendstoUniformlyOn (tonelliApproximation f t₀ x₀ ∘ φ) α atTop (Icc t₀.val tmax) := by
   obtain ⟨β, φ, hφ_mono, hβ_tendsto⟩ := exists_tendsto_subseq_boundedTonelliApproximation hf
   let α : ℝ → E := fun t ↦ if h : t ∈ Icc t₀.val tmax then β ⟨t, h⟩ else 0
+  have hα : ∀ t : Icc t₀.val tmax, α t = β t := fun t ↦ dite_eq_left t.2
+  have h_uniform : TendstoUniformly (fun n ↦ boundedTonelliApproximation hf (φ n)) β atTop :=
+    BoundedContinuousFunction.tendsto_iff_tendstoUniformly.mp hβ_tendsto
   refine ⟨α, φ, hφ_mono, ?_, ?_, ?_⟩
-  · rw [continuousOn_iff_continuous_domRestrict]
-    have h_restrict : (Set.Icc t₀.val tmax).domRestrict α = β := by
-      ext x
-      simp only [α, Set.domRestrict]
-      exact dite_eq_left x.prop
-    rw [h_restrict]
+  · rw [continuousOn_iff_continuous_domRestrict,
+      show (Icc t₀.val tmax).domRestrict α = β from funext hα]
     exact β.continuous
   · intro t ht
-    have hα_apply : α t = β ⟨t, ht⟩ := by
-      simp only [α]
-      exact dite_eq_left ht
-    rw [hα_apply]
-    let t' : Icc t₀.val tmax := ⟨t, ht⟩
-    have h_uniform : TendstoUniformly (fun n ↦ boundedTonelliApproximation hf (φ n)) β atTop :=
-      BoundedContinuousFunction.tendsto_iff_tendstoUniformly.mp hβ_tendsto
-    have h_pointwise :
-        Tendsto (fun n ↦ boundedTonelliApproximation hf (φ n) t') atTop (nhds (β t')) :=
-      h_uniform.tendsto_at t'
-    apply isClosed_closedBall.mem_of_tendsto h_pointwise
-    filter_upwards with n
-    change tonelliApproximation f t₀ x₀ (φ n) t ∈ closedBall x₀ r
-    exact mapsTo_tonelliApproximation_closedBall hf (φ n) ht
-  · have h_uniform : TendstoUniformly (fun n ↦ boundedTonelliApproximation hf (φ n)) β atTop :=
-      BoundedContinuousFunction.tendsto_iff_tendstoUniformly.mp hβ_tendsto
-    rw [tendstoUniformlyOn_iff_tendstoUniformly_comp_coe]
-    have hα_comp : α ∘ Subtype.val = ⇑β := by
-      ext t
-      simp only [Function.comp_apply, α]
-      exact dite_eq_left t.prop
-    rw [hα_comp]
-    change TendstoUniformly
-      (fun n (t : Icc t₀.val tmax) ↦ boundedTonelliApproximation hf (φ n) t) ⇑β atTop
+    rw [hα ⟨t, ht⟩]
+    refine isClosed_closedBall.mem_of_tendsto (h_uniform.tendsto_at ⟨t, ht⟩) ?_
+    filter_upwards with n using mapsTo_tonelliApproximation_closedBall hf (φ n) ht
+  · rw [tendstoUniformlyOn_iff_tendstoUniformly_comp_coe,
+      show α ∘ Subtype.val = ⇑β from funext hα]
     exact h_uniform
 
 variable {φ : ℕ → ℕ}
