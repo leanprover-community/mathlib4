@@ -1048,15 +1048,30 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
 
-set_option backward.isDefEq.respectTransparency false in
+/-- Definitional identification between the tangent space of a manifold at a point and the
+model space. *Do not use*, unless when setting up foundational properties of the tangent space:
+this definition is a technical detail related to our specific implementation of tangent spaces,
+but it has no mathematical meaning. The mathematically meaningful version of this definition
+is the derivative of the extended chart at `x`, in its `mvfderiv` version. -/
+def tangentSpaceCastModel (x : M) : TangentSpace I x ≃L[𝕜] E where
+  toFun v := v
+  invFun v := v
+  map_add' x y := rfl
+  map_smul' c x := rfl
+
 /-- Identifying the tangent space at a normed space with the normed space itself.
 This canonical identification (which, in mathlib, is implemented using an abuse of definitional
 equality) is very prevalent in a number of places: this device allows making it explicit. -/
-def NormedSpace.fromTangentSpace (v : E) : TangentSpace 𝓘(𝕜, E) v ≃L[𝕜] E where
+def NormedSpace.fromTangentSpace (v : E) : TangentSpace 𝓘(𝕜, E) v ≃L[𝕜] E :=
+  tangentSpaceCastModel 𝓘(𝕜, E) v
+
+/-- Definitional identification between the tangent space of a manifold at two points. This only
+makes sense mathematically when `x = y`. -/
+def tangentSpaceCast (x y : M) : TangentSpace I x ≃L[𝕜] TangentSpace I y where
   toFun v := v
   invFun v := v
-  map_add' := by simp
-  map_smul' := by simp
+  map_add' x y := rfl
+  map_smul' c x := rfl
 
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
 
