@@ -302,7 +302,7 @@ theorem integral_univ_inv_one_add_mul_sq (b : ℝ) :
 theorem integrableOn_Ioi_zero_inv_mul_one_add_log_sq {b : ℝ} (hb : b ≠ 0) :
     IntegrableOn (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹) (Ioi 0) := by
   rw [show (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹)
-      = fun t ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ by ext t ; simp [mul_comm],
+      = fun t ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ by ext t; simp [mul_comm],
     integrableOn_comp_log_Ioi_zero (fun u ↦ (1 + (b * u) ^ 2)⁻¹)]
   exact integrable_inv_one_add_mul_sq hb
 
@@ -311,7 +311,7 @@ theorem integrableOn_Ioi_zero_inv_mul_one_add_log_sq {b : ℝ} (hb : b ≠ 0) :
 theorem integral_Ioi_zero_inv_mul_one_add_log_sq (b : ℝ) :
     ∫ t in Ioi 0, (t * (1 + (b * log t) ^ 2))⁻¹ = π / |b| := by
   rw [show (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹)
-      = fun t ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ by ext t ; simp [mul_comm],
+      = fun t ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ by ext t; simp [mul_comm],
     integral_comp_log_Ioi_zero (fun u ↦ (1 + (b * u) ^ 2)⁻¹),
     integral_univ_inv_one_add_mul_sq b]
 
