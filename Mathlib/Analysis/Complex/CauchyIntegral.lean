@@ -578,45 +578,41 @@ theorem circleIntegral_div_sub_of_differentiable_on_off_countable {R : ℝ} {c w
     circleIntegral_sub_inv_smul_of_differentiable_on_off_countable hs hw hc hd
 
 /-
-Helper lemma for `hasDerivAt_circleIntegral_sub_zpow_smul`: For `w ∈ ball c R`, there is a radius
-`d > 0` such that `ball w d ⊆ ball c R` and all points of `ball w d` keep distance at least `d`
-and at most `2 * R` from the circle `sphere c R`.
+Helper lemma for `hasDerivAt_circleIntegral_sub_zpow_smul`: For `w ∉ sphere c |R|`, there is a
+radius `d > 0` and a constant `M` such that all points of `ball w d` keep distance at least `d`
+and at most `M` from the circle `sphere c |R|`.
 -/
-private lemma exists_ball_subset_forall_le_norm_circleMap_sub {R : ℝ} {c w : ℂ}
-    (hw : w ∈ ball c R) :
-    ∃ d > 0, ball w d ⊆ ball c R ∧
-      ∀ x ∈ ball w d, ∀ θ : ℝ, d ≤ ‖circleMap c R θ - x‖ ∧ ‖circleMap c R θ - x‖ ≤ 2 * R := by
-  have hR : 0 < R := pos_of_mem_ball hw
-  rw [mem_ball] at hw
-  refine ⟨(R - dist w c) / 2, by linarith, fun x hx ↦ ?_, fun x hx θ ↦ ?_⟩ <;>
-    rw [mem_ball] at hx
-  · rw [mem_ball]
-    have := dist_triangle x w c
-    linarith
-  · have h₁ : dist (circleMap c R θ) c = R := by
-      simpa [abs_of_pos hR] using mem_sphere.1 (circleMap_mem_sphere' c R θ)
-    have h₂ := dist_triangle (circleMap c R θ) x c
-    have h₃ := dist_triangle x w c
-    have h₄ := dist_triangle (circleMap c R θ) c x
-    rw [dist_comm c x] at h₄
-    rw [← dist_eq_norm]
-    exact ⟨by linarith, by linarith⟩
+private lemma exists_ball_forall_le_norm_circleMap_sub {R : ℝ} {c w : ℂ}
+    (hw : w ∉ sphere c |R|) :
+    ∃ d > 0, ∃ M : ℝ, ∀ x ∈ ball w d, ∀ θ : ℝ,
+      d ≤ ‖circleMap c R θ - x‖ ∧ ‖circleMap c R θ - x‖ ≤ M := by
+  have hd₀ : 0 < abs (dist w c - |R|) :=
+    abs_pos.2 (sub_ne_zero.2 fun h ↦ hw (mem_sphere.2 h))
+  refine ⟨abs (dist w c - |R|) / 2, by positivity, |R| + dist c w + abs (dist w c - |R|) / 2,
+    fun x hx θ ↦ ?_⟩
+  rw [mem_ball] at hx
+  have h₁ : dist (circleMap c R θ) c = |R| := mem_sphere.1 (circleMap_mem_sphere' c R θ)
+  have h₂ : abs (dist w c - |R|) ≤ dist (circleMap c R θ) w := by
+    calc abs (dist w c - |R|) = |dist (circleMap c R θ) c - dist w c| := by rw [h₁, abs_sub_comm]
+      _ ≤ dist (circleMap c R θ) w := abs_dist_sub_le _ _ _
+  have h₃ := dist_triangle (circleMap c R θ) x w
+  have h₄ := dist_triangle4 (circleMap c R θ) c w x
+  rw [dist_comm w x] at h₄
+  rw [← dist_eq_norm]
+  exact ⟨by linarith, by linarith⟩
 
 omit [CompleteSpace E]
 /--
-**Derivative of Cauchy-type integrals**: if `f` is circle integrable and `w` lies inside the
+**Derivative of Cauchy-type integrals**: if `f` is circle integrable and `w` does not lie on the
 circle, then for every `n : ℤ` the Cauchy-type integral
 `fun w ↦ ∮ z in C(c, R), (z - w) ^ n • f z` has derivative
 `-n • ∮ z in C(c, R), (z - w) ^ (n - 1) • f z` at `w`.
 -/
 theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w : ℂ} {n : ℤ}
-    (hf : CircleIntegrable f c R) (hw : w ∈ ball c R) :
+    (hf : CircleIntegrable f c R) (hw : w ∉ sphere c |R|) :
     HasDerivAt (fun w ↦ ∮ z in C(c, R), (z - w) ^ n • f z)
       ((-n : ℂ) • ∮ z in C(c, R), (z - w) ^ (n - 1) • f z) w := by
-  have hR : 0 < R := pos_of_mem_ball hw
-  have hw' : w ∉ sphere c |R| := fun h ↦
-    (mem_ball.1 hw).ne (by simpa [abs_of_pos hR] using mem_sphere.1 h)
-  obtain ⟨d, hd, hsub, hdist⟩ := exists_ball_subset_forall_le_norm_circleMap_sub hw
+  obtain ⟨d, hd, M, hdist⟩ := exists_ball_forall_le_norm_circleMap_sub hw
   have hfm : AEStronglyMeasurable (fun θ ↦ f (circleMap c R θ))
       (volume.restrict (uIoc 0 (2 * π))) := (intervalIntegrable_iff.1 hf).aestronglyMeasurable
   simp only [circleIntegral, deriv_circleMap]
@@ -624,7 +620,7 @@ theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w :
   refine (intervalIntegral.hasDerivAt_integral_of_dominated_loc_of_deriv_le
     (F' := fun x θ ↦ (-n : ℂ) • ((circleMap 0 R θ * I)
       • (circleMap c R θ - x) ^ (n - 1) • f (circleMap c R θ)))
-    (bound := fun θ ↦ |(n : ℝ)| * R * max (d ^ (n - 1)) ((2 * R) ^ (n - 1)) *
+    (bound := fun θ ↦ |(n : ℝ)| * |R| * max (d ^ (n - 1)) (M ^ (n - 1)) *
       ‖f (circleMap c R θ)‖)
     (ball_mem_nhds w hd) ?_ ?_ ?_ ?_ ?_ ?_).2
   · -- Measurability of the integrand, for `x` near `w`
@@ -632,14 +628,14 @@ theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w :
     exact (Continuous.aestronglyMeasurable (by fun_prop)).smul
       ((Measurable.aestronglyMeasurable (by fun_prop)).smul hfm)
   · -- Integrability of the integrand at `w`
-    simpa only [deriv_circleMap] using (hf.sub_zpow_smul n hw').out
+    simpa only [deriv_circleMap] using (hf.sub_zpow_smul n hw).out
   · -- Measurability of the differentiated integrand
     exact ((Continuous.aestronglyMeasurable (by fun_prop)).smul
       ((Measurable.aestronglyMeasurable (by fun_prop)).smul hfm)).const_smul _
   · -- Uniform bound for the differentiated integrand near `w`
     filter_upwards with θ _ x hx
     obtain ⟨hlb, hub⟩ := hdist x hx θ
-    have key : ‖circleMap c R θ - x‖ ^ (n - 1) ≤ max (d ^ (n - 1)) ((2 * R) ^ (n - 1)) := by
+    have key : ‖circleMap c R θ - x‖ ^ (n - 1) ≤ max (d ^ (n - 1)) (M ^ (n - 1)) := by
       rcases le_or_gt 0 (n - 1) with h | h
       · exact le_max_of_le_right (zpow_le_zpow_left₀ h (norm_nonneg _) hub)
       · refine le_max_of_le_left ?_
@@ -647,9 +643,9 @@ theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w :
         exact inv_anti₀ (zpow_pos hd _) (zpow_le_zpow_left₀ (by omega) hd.le hlb)
     have norm_eq : ‖(-n : ℂ) • ((circleMap 0 R θ * I)
         • (circleMap c R θ - x) ^ (n - 1) • f (circleMap c R θ))‖
-        = |(n : ℝ)| * R * ‖circleMap c R θ - x‖ ^ (n - 1) * ‖f (circleMap c R θ)‖ := by
+        = |(n : ℝ)| * |R| * ‖circleMap c R θ - x‖ ^ (n - 1) * ‖f (circleMap c R θ)‖ := by
       rw [norm_smul, norm_smul, norm_smul, norm_neg, Complex.norm_intCast, norm_zpow, norm_mul,
-        Complex.norm_I, mul_one, norm_circleMap_zero, abs_of_pos hR]
+        Complex.norm_I, mul_one, norm_circleMap_zero]
       ring
     rw [norm_eq]
     exact mul_le_mul_of_nonneg_right (mul_le_mul_of_nonneg_left key (by positivity))
@@ -658,7 +654,7 @@ theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w :
     exact (IntervalIntegrable.norm hf).const_mul _
   · -- Differentiability of the integrand in `x`, for `x` near `w`
     filter_upwards with θ _ x hx
-    have hne : circleMap c R θ - x ≠ 0 := sub_ne_zero.2 (circleMap_ne_mem_ball (hsub hx) θ)
+    have hne : circleMap c R θ - x ≠ 0 := norm_pos_iff.mp (hd.trans_le (hdist x hx θ).1)
     have h₁ : HasDerivAt (fun y : ℂ ↦ (circleMap c R θ - y) ^ n)
         (-((n : ℂ) * (circleMap c R θ - x) ^ (n - 1))) x :=
       (hasDerivAt_zpow n _ (Or.inl hne)).comp_const_sub (circleMap c R θ) x
@@ -666,12 +662,12 @@ theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w :
       (by module)
 
 /--
-**Derivative of the Cauchy integral**: if `f` is circle integrable and `w` lies inside the circle,
-then the Cauchy-type integral `fun w ↦ ∮ z in C(c, R), (z - w)⁻¹ • f z` has derivative
+**Derivative of the Cauchy integral**: if `f` is circle integrable and `w` does not lie on the
+circle, then the Cauchy-type integral `fun w ↦ ∮ z in C(c, R), (z - w)⁻¹ • f z` has derivative
 `∮ z in C(c, R), (z - w) ^ (-2) • f z` at `w`.
 -/
 theorem hasDerivAt_circleIntegral_sub_inv_smul {f : ℂ → E} {R : ℝ} {c w : ℂ}
-    (hf : CircleIntegrable f c R) (hw : w ∈ ball c R) :
+    (hf : CircleIntegrable f c R) (hw : w ∉ sphere c |R|) :
     HasDerivAt (fun w ↦ ∮ z in C(c, R), (z - w)⁻¹ • f z)
       (∮ z in C(c, R), (z - w) ^ (-2 : ℤ) • f z) w := by
   simpa only [show (-1 : ℤ) - 1 = -2 by norm_num, zpow_neg_one, Int.cast_neg, Int.cast_one,
