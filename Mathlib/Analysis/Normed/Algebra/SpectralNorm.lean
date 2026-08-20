@@ -30,8 +30,10 @@ public import Mathlib.Topology.Algebra.UniformField
 
 This file defines spectral norms and uses them to construct extensions of absolute values.
 
-If `A` is an algebra over a normed field `𝕜`, then a spectral norm on `A` over `𝕜` is
-a `𝕜`-vector space norm on `A` satisfying `‖x * y‖ ≤ ‖x‖ * ‖y‖` and `‖x ^ k‖ = ‖x‖ ^ k`.
+If `A` is an algebra over a normed field `𝕜`, then a spectral norm on `A` over `𝕜` is a `𝕜`-vector
+space norm on `A` satisfying `‖x ^ k‖ = ‖x‖ ^ k` and `‖x * y‖ ≤ ‖x‖ * ‖y‖` when `x` and `y` commute.
+
+
 
 In this file we prove that a spectral norm on a finite extension of a complete normed field is
 multiplicative, thereby defining an absolute value. This is the key ingredient needed to extend
@@ -69,20 +71,19 @@ open Filter
 
 open scoped Topology
 
-variable {𝕜 A : Type*} [NormedField 𝕜]
+variable {𝕜 A B : Type*} [NormedField 𝕜]
 
 section Ring
 
-variable [Ring A] [Algebra 𝕜 A]
+variable [Ring A] [Ring B] [Algebra 𝕜 A] [Algebra 𝕜 B]
 
 variable (𝕜 A) in
 /-- The type of all spectral norms on `A` over `𝕜`. -/
 @[ext]
-structure SpectralNorm extends OneHom A ℝ where
+structure SpectralNorm extends ZeroHom A ℝ, OneHom A ℝ where
   nonneg' x : 0 ≤ toFun x
-  eq_zero' x : toFun x = 0 ↔ x = 0
-  add_le' x y : toFun (x + y) ≤ toFun x + toFun y
-  mul_le' x y : toFun (x * y) ≤ toFun x * toFun y
+  map_add_le_add' x y (h : Commute x y) : toFun (x + y) ≤ toFun x + toFun y
+  map_mul_le_mul' x y (h : Commute x y) : toFun (x * y) ≤ toFun x * toFun y
   map_pow' x k : toFun (x ^ k) = toFun x ^ k
   map_smul_eq_mul' (c : 𝕜) x : toFun (c • x) = ‖c‖ * toFun x
 
@@ -93,37 +94,116 @@ instance : FunLike (SpectralNorm 𝕜 A) A ℝ where
   coe_injective _ _ := SpectralNorm.ext
 
 @[simp]
+theorem coe_toZeroHom (f : SpectralNorm 𝕜 A) : ⇑f.toZeroHom = f := rfl
+
+@[simp]
 theorem coe_toOneHom (f : SpectralNorm 𝕜 A) : ⇑f.toOneHom = f := rfl
+
+instance : ZeroHomClass (SpectralNorm 𝕜 A) A ℝ where
+  map_zero f := f.map_zero'
 
 instance : OneHomClass (SpectralNorm 𝕜 A) A ℝ where
   map_one f := f.map_one'
 
-@[simp]
-protected theorem eq_zero {f : SpectralNorm 𝕜 A} {x : A} : f x = 0 ↔ x = 0 :=
-  f.eq_zero' x
+instance : NonnegHomClass (SpectralNorm 𝕜 A) A ℝ where
+  apply_nonneg := nonneg'
 
-instance : SubmultiplicativeHomClass (SpectralNorm 𝕜 A) A ℝ where
-  map_mul_le_mul := mul_le'
+protected theorem map_add_le_add (f : SpectralNorm 𝕜 A) {x y : A} (h : Commute x y) :
+    f (x + y) ≤ f x + f y :=
+  f.map_add_le_add' x y h
+
+protected theorem map_mul_le_mul (f : SpectralNorm 𝕜 A) {x y : A} (h : Commute x y) :
+    f (x * y) ≤ f x * f y :=
+  f.map_mul_le_mul' x y h
 
 @[simp]
 protected theorem map_pow (f : SpectralNorm 𝕜 A) (x : A) (k : ℕ) : f (x ^ k) = f x ^ k :=
   f.map_pow' x k
 
+protected theorem map_smul_eq_mul (f : SpectralNorm 𝕜 A) (c : 𝕜) (x : A) : f (c • x) = ‖c‖ * f x :=
+  f.map_smul_eq_mul' c x
+
+protected def comap (f : SpectralNorm 𝕜 B) (g : A →ₐ[𝕜] B) :
+    SpectralNorm 𝕜 A where
+  toFun x := f (g x)
+  map_zero' := by rw [map_zero, map_zero]
+  map_one' := by rw [map_one, map_one]
+  nonneg' x := apply_nonneg f (g x)
+  map_add_le_add' x y h := by grw [map_add, f.map_add_le_add (h.map g)]
+  map_mul_le_mul' x y h := by grw [map_mul, f.map_mul_le_mul (h.map g)]
+  map_pow' x k := by rw [map_pow, f.map_pow]
+  map_smul_eq_mul' c x := by rw [map_smul, f.map_smul_eq_mul]
+
+end SpectralNorm
+
+end Ring
+
+section CommRing
+
+variable [CommRing A] [Algebra 𝕜 A]
+
+namespace SpectralNorm
+
+instance : SubmultiplicativeHomClass (SpectralNorm 𝕜 A) A ℝ where
+  map_mul_le_mul f x y := f.map_mul_le_mul (Commute.all x y)
+
 instance : SeminormClass (SpectralNorm 𝕜 A) 𝕜 A where
-  map_add_le_add := add_le'
-  map_zero f := f.eq_zero.mpr rfl
+  map_add_le_add f x y := f.map_add_le_add (Commute.all x y)
+  map_zero f := map_zero f
   map_neg_eq_map f x := by simpa using f.map_smul_eq_mul' (-1) x
   map_smul_eq_mul := map_smul_eq_mul'
 
 end SpectralNorm
 
-variable [FiniteDimensional 𝕜 A]
+end CommRing
+
+section DivisionRing
+
+namespace SpectralNorm
+
+variable [DivisionRing A] [Algebra 𝕜 A]
+
+@[simp]
+protected theorem eq_zero_iff {f : SpectralNorm 𝕜 A} {x : A} : f x = 0 ↔ x = 0 := by
+  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+  · have : Commute x x⁻¹ := Commute.inv_right_iff₀.mpr rfl -- todo: library lemma
+    have h := f.map_mul_le_mul this
+    contrapose! h
+    simp [h, hx]
+  · rw [hx, map_zero]
+
+end SpectralNorm
+
+end DivisionRing
+
+section NormedAlgebra
+
+variable [SeminormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A]
 
 variable (𝕜 A) in
-/-- Construction of a spectral norm on a finite-dimensional algebra `A` over a normed field `𝕜`. -/
-def spectralNorm : SpectralNorm 𝕜 A := by
-  -- use `spectralRadiusLim`
-  sorry
+noncomputable def spectralRadiusLimNorm : SpectralNorm 𝕜 A where
+  toFun := spectralRadiusLim
+  map_zero' := spectralRadiusLim_zero
+  map_one' := spectralRadiusLim_one
+  nonneg' := spectralRadiusLim_nonneg
+  map_add_le_add' _ _ := Commute.spectralRadiusLim_add_le
+  map_mul_le_mul' _ _ := Commute.spectralRadiusLim_mul_le
+  map_pow' := spectralRadiusLim_pow
+  map_smul_eq_mul' := spectralRadiusLim_smul
+
+end NormedAlgebra
+
+section FiniteDimensional
+
+variable [Field A] [Algebra 𝕜 A] [FiniteDimensional 𝕜 A]
+
+variable (𝕜 A) in
+open scoped Matrix.Norms.Operator in
+/-- Construction of a spectral norm on a finite extension of a normed field `𝕜`. -/
+noncomputable def spectralNorm : SpectralNorm 𝕜 A :=
+  haveI : NeZero (Module.finrank 𝕜 A) := ⟨Module.finrank_pos.ne'⟩
+  (spectralRadiusLimNorm 𝕜 _).comap
+    ((algEquivMatrix (Module.finBasis 𝕜 A)).toAlgHom.comp (Algebra.lmul 𝕜 A))
 
 variable [CompleteSpace 𝕜]
 
@@ -133,7 +213,7 @@ theorem spectralNorm_unique (f g : SpectralNorm 𝕜 A) :
   -- use equivalence of norms
   sorry
 
-end Ring
+end FiniteDimensional
 
 section Field
 
@@ -206,13 +286,13 @@ private theorem modifyAux_mul_le (f : SpectralNorm 𝕜 A) (a x y : A) :
   rw [Function.comp_apply, id_def, pow_add, pow_add, div_mul_div_comm, mul_mul_mul_comm]
   grw [map_mul_le_mul]
 
-private theorem modifyAux_eq_zero {f : SpectralNorm 𝕜 A} {a x : A} (ha : a ≠ 0) :
-    f.modifyAux a x = 0 ↔ x = 0 := by
-  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
-  · have h := f.modifyAux_mul_le a x x⁻¹
-    contrapose! h
-    simp [ha, hx, h]
-  · simp [hx]
+-- private theorem modifyAux_eq_zero {f : SpectralNorm 𝕜 A} {a x : A} (ha : a ≠ 0) :
+--     f.modifyAux a x = 0 ↔ x = 0 := by
+--   refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+--   · have h := f.modifyAux_mul_le a x x⁻¹
+--     contrapose! h
+--     simp [ha, hx, h]
+--   · simp [hx]
 
 private theorem modifyAux_pow (f : SpectralNorm 𝕜 A) {a : A} (ha : a ≠ 0) (x : A) (k : ℕ) :
     f.modifyAux a (x ^ k) = f.modifyAux a x ^ k := by
@@ -245,11 +325,11 @@ open Classical in
 noncomputable def modify (f : SpectralNorm 𝕜 A) (a : A) : SpectralNorm 𝕜 A :=
   if ha : a = 0 then f else
   { toFun := f.modifyAux a
+    map_zero' := f.modifyAux_apply_zero a
     map_one' := f.modifyAux_apply_one ha
     nonneg' := f.modifyAux_nonneg a
-    eq_zero' x := modifyAux_eq_zero ha
-    add_le' := f.modifyAux_add_le a
-    mul_le' := f.modifyAux_mul_le a
+    map_add_le_add' x y _ := f.modifyAux_add_le a x y
+    map_mul_le_mul' x y _ := f.modifyAux_mul_le a x y
     map_pow' := f.modifyAux_pow ha
     map_smul_eq_mul' := f.modifyAux_map_smul_eq_mul a }
 
@@ -266,6 +346,8 @@ variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 A]
 /-- A spectral norm on a finite extension of a complete normed field defines an absolute value. -/
 def toAbsoluteValue (f : SpectralNorm 𝕜 A) : AbsoluteValue A ℝ where
   __ := f
+  eq_zero' _ := f.eq_zero_iff
+  add_le' := map_add_le_add f
   map_mul' x y := by simpa [spectralNorm_unique (f.modify y) f] using f.modify_mul y x
 
 end SpectralNorm
