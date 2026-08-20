@@ -279,7 +279,7 @@ theorem indep_bot_right (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} [IsZeroOrMarkovKernel κ] :
     Indep m' ⊥ κ μ := by
   intro s t _ ht
-  rw [Set.mem_ofPred_eq, MeasurableSpace.measurableSet_bot_iff] at ht
+  rw [Set.mem_ofPred, MeasurableSpace.measurableSet_bot_iff] at ht
   rcases eq_zero_or_isMarkovKernel κ with rfl | h
   · simp
   refine Filter.Eventually.of_forall (fun a ↦ ?_)

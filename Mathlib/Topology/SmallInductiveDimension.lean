@@ -111,7 +111,7 @@ noncomputable def smallInductiveDimension : WithBot ℕ∞ :=
 private theorem hasSmallInductiveDimensionLT_of_smallInductiveDimension_lt {n : ℕ}
     (h : smallInductiveDimension X < n) : HasSmallInductiveDimensionLT X n := by
   contrapose! h
-  simp only [smallInductiveDimension, le_sInf_iff, mem_ofPred_eq]
+  simp only [smallInductiveDimension, le_sInf_iff, mem_ofPred]
   intro a ha
   contrapose! ha
   exact ⟨n, ha, h⟩

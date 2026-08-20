@@ -52,7 +52,7 @@ theorem IsLinearSet.definable [Finite α] (hs : IsLinearSet s) : A.Definable pre
           x.1 i • Term.var (Sum.inr (Sum.inr x))))), ?_⟩
   ext x
   simp only [mem_vadd_set, SetLike.mem_coe, AddSubmonoid.mem_closure_finset', Finset.univ_eq_attach,
-    nsmul_eq_mul, vadd_eq_add, ↓existsAndEq, true_and, mem_ofPred_eq, Formula.realize_iExs,
+    nsmul_eq_mul, vadd_eq_add, ↓existsAndEq, true_and, mem_ofPred, Formula.realize_iExs,
     Formula.realize_iInf, Formula.realize_equal, Term.realize_var, Sum.elim_inl,
     Term.realize_varsToConstants, coe_con, presburger.realize_add, presburger.realize_natCast,
     Nat.cast_id, presburger.realize_sum, presburger.realize_nsmul, Sum.elim_inr, smul_eq_mul]
@@ -69,7 +69,7 @@ theorem IsSemilinearSet.definable [Finite α] (hs : IsSemilinearSet s) :
   refine ⟨Formula.iSup φ, ?_⟩
   ext x
   have := fun s hs x => Set.ext_iff.1 (hφ ⟨s, hs⟩).symm x
-  simp only [mem_ofPred_eq] at this
+  simp only [mem_ofPred] at this
   simp [this]
 
 namespace FirstOrder.Language.presburger
@@ -140,7 +140,7 @@ lemma isSemilinearSet_formula_realize_semilinear (φ : presburger[[A]].Formula �
   let e := Equiv.sumEmpty α (Fin 0)
   convert! (isSemilinearSet_boundedFormula_realize φ).image (LinearMap.funLeft ℕ ℕ e.symm)
   ext x
-  simp only [mem_ofPred_eq, mem_image]
+  simp only [mem_ofPred, mem_image]
   rw [(e.arrowCongr (.refl ℕ)).exists_congr_left]
   simp [Formula.Realize, Unique.eq_default, Function.comp_def, LinearMap.funLeft, e]
 
@@ -169,7 +169,7 @@ theorem mul_not_definable : ¬ A.Definable presburger {v : Fin 3 → ℕ | v 0 =
   rw [definable₁_iff_ultimately_periodic] at hsqr
   rcases hsqr with ⟨k, p, hp, h⟩
   specialize h ((max k p) * (max k p)) ((Nat.le_mul_self _).trans' (le_max_left _ _))
-  simp only [mem_ofPred_eq, exists_apply_eq_apply, true_iff] at h
+  simp only [mem_ofPred, exists_apply_eq_apply, true_iff] at h
   rcases h with ⟨x, h₁⟩
   by_cases h₂ : x ≤ max k p
   · apply Nat.mul_self_le_mul_self at h₂

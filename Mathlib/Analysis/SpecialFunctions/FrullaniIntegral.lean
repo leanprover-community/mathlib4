@@ -140,7 +140,7 @@ lemma tendsto_integral_inv_smul_nhdsWithin (hf : LocallyIntegrableOn f (Ioi 0)) 
       _ < M * (η / M) := mul_lt_mul_of_pos_left ht_bound hM
       _ = η := mul_div_cancel₀ η (ne_of_gt hM)
   have := hη_sub ⟨mem_ball.2 hx_lt_η, hx_pos⟩
-  rw [mem_ofPred_eq, dist_eq_norm] at this
+  rw [mem_ofPred, dist_eq_norm] at this
   exact le_of_lt this
 
 /-- If `f → R` as `x → +∞` and `f` is locally integrable on `(0, ∞)`, then the weighted integral

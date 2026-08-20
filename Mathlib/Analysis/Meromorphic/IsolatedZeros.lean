@@ -124,7 +124,7 @@ theorem eventually_nhdsSet_eventuallyEq_codiscreteWithin (hf : MeromorphicOn f U
     ∀ᶠ x in 𝓝ˢ U, f =ᶠ[𝓝[≠] x] g := by
   rw [eventually_nhdsSet_iff_exists]
   use {x | f =ᶠ[𝓝[≠] x] g}
-  simp only [Set.mem_ofPred_eq, imp_self, implies_true, and_true]
+  simp only [Set.mem_ofPred, imp_self, implies_true, and_true]
   constructor
   · apply isOpen_setOfPred_eventually_nhdsWithin
   · intro x hx

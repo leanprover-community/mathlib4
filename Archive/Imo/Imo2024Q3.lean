@@ -271,7 +271,7 @@ lemma infinite_setOfPred_apply_eq_anti {j k : ℕ} (hj : 0 < j) (hk : {i | a i =
     have hk0 : ({i | a i = k} \ {0}).Infinite := hk.sdiff (Set.finite_singleton _)
     convert! hk0 using 1
     ext i
-    simp only [Set.mem_image, Set.mem_ofPred_eq, Set.mem_sdiff, Set.mem_singleton_iff]
+    simp only [Set.mem_image, Set.mem_ofPred, Set.mem_sdiff, Set.mem_singleton_iff]
     refine ⟨?_, ?_⟩
     · rintro ⟨j, rfl, rfl⟩
       simp
@@ -280,7 +280,7 @@ lemma infinite_setOfPred_apply_eq_anti {j k : ℕ} (hj : 0 < j) (hk : {i | a i =
   have hinj : Set.InjOn (fun x ↦ Nat.nth (a · = a x) (j - 1) + 1)
       ({i | a (i + 1) = k} \ Set.Ico 0 N) := by
     intro x hx y hy h
-    simp only [Set.mem_sdiff, Set.mem_ofPred_eq, Set.mem_Ico, zero_le, true_and, not_lt] at hx hy
+    simp only [Set.mem_sdiff, Set.mem_ofPred, Set.mem_Ico, zero_le, true_and, not_lt] at hx hy
     rcases hx with ⟨hxk, hNx⟩
     rcases hy with ⟨hyk, hNy⟩
     simp only [add_left_inj] at h
@@ -296,10 +296,10 @@ lemma infinite_setOfPred_apply_eq_anti {j k : ℕ} (hj : 0 < j) (hk : {i | a i =
   have hk'' : (_ \ Set.Ico 0 (N + 2)).Infinite :=
     ((Set.infinite_image_iff hinj).mpr (hk'.sdiff (Set.finite_Ico _ _))).sdiff (Set.finite_Ico _ _)
   refine hk''.mono fun _ hi ↦ ?_
-  simp only [Set.mem_image, Set.mem_sdiff, Set.mem_ofPred_eq, Set.mem_Ico, zero_le, true_and,
+  simp only [Set.mem_image, Set.mem_sdiff, Set.mem_ofPred, Set.mem_Ico, zero_le, true_and,
     not_lt] at hi
   rcases hi with ⟨⟨x, -, rfl⟩, _⟩
-  rw [Set.mem_ofPred_eq, hc.apply_nth_add_one_eq_of_lt (by lia), Nat.sub_add_cancel hj]
+  rw [Set.mem_ofPred, hc.apply_nth_add_one_eq_of_lt (by lia), Nat.sub_add_cancel hj]
 
 @[deprecated (since := "2026-07-09")]
 alias infinite_setOf_apply_eq_anti := infinite_setOfPred_apply_eq_anti
@@ -351,9 +351,9 @@ lemma finite_setOfPred_k_lt_card :
   rw [← Set.finite_image_iff]
   · refine Set.Finite.of_sdiff (hc.finite_setOfPred_apply_eq_k_add_one.subset fun i hi ↦ ?_)
       (Set.finite_Iic N)
-    simp only [Set.mem_sdiff, Set.mem_image, Set.mem_ofPred_eq, Set.mem_Iic, not_le] at hi
+    simp only [Set.mem_sdiff, Set.mem_image, Set.mem_ofPred, Set.mem_Iic, not_le] at hi
     rcases hi with ⟨⟨j, hjf, rfl⟩, hNi⟩
-    rw [Set.mem_ofPred_eq, hc.apply_nth_add_one_eq hjf (by lia)]
+    rw [Set.mem_ofPred, hc.apply_nth_add_one_eq hjf (by lia)]
   · intro i hi j hj hij
     simp only [add_left_inj] at hij
     apply_fun a at hij
@@ -617,7 +617,7 @@ lemma setOfPred_apply_eq_of_apply_big_of_N'_le {i : ℕ} (h : Big a (a i)) (hN' 
       apply_fun a at htu
       rwa [Nat.nth_mem_of_infinite ht.2, Nat.nth_mem_of_infinite hu.2] at htu
   refine hs ▸ Finset.card_le_card (Finset.subset_iff.2 fun j hj ↦ ?_)
-  simp only [Set.Finite.mem_toFinset, Set.mem_ofPred_eq]
+  simp only [Set.Finite.mem_toFinset, Set.mem_ofPred]
   simp only [Finset.mem_image, Finset.mem_Icc] at hj
   rcases hj with ⟨t, ⟨ht1, htk⟩, rfl⟩
   have hN1 : N < a i - 1 := by
@@ -683,7 +683,7 @@ lemma apply_add_one_eq_card_small_le_card_eq {i : ℕ} (hi : N' a N < i) (hib : 
           have := hc.N_add_one_lt_apply_of_apply_big_of_N'_le hib hi.le
           lia
   · intro t ht u hu htu
-    simp only [Finset.coe_filter, Finset.mem_range, Set.mem_ofPred_eq, Nat.lt_add_one_iff] at ht hu
+    simp only [Finset.coe_filter, Finset.mem_range, Set.mem_ofPred, Nat.lt_add_one_iff] at ht hu
     rw [← Small] at ht hu
     have ht0 : 0 < t := by
       by_contra! h0
@@ -847,7 +847,7 @@ lemma nonempty_pSet (n : ℕ) : (pSet a n).Nonempty := by
   rcases hc.infinite_setOfPred_apply_eq_one.exists_gt n with ⟨i, hi1, hni⟩
   rcases hc.infinite_setOfPred_apply_eq_one.exists_gt i with ⟨j, hj1, hij⟩
   refine ⟨j - n, ?_⟩
-  simp only [pSet, Finset.mem_Ico, Set.mem_ofPred_eq]
+  simp only [pSet, Finset.mem_Ico, Set.mem_ofPred]
   exact ⟨i, ⟨hni.le, by lia⟩, hi1 ▸ ⟨hc.small_one, hj1 ▸ (by congr; lia)⟩⟩
 
 lemma exists_mem_Ico_small_and_apply_add_p_eq (n : ℕ) :
@@ -862,7 +862,7 @@ lemma p_pos (n : ℕ) : 0 < p a n := by
 lemma card_filter_apply_eq_Ico_add_p_le_one (n : ℕ) {j : ℕ} (hjs : Small a j) :
     #{i ∈ Finset.Ico n (n + p a n) | a i = j} ≤ 1 := by
   have h : IsLeast (pSet a n) (p a n) := isLeast_csInf (hc.nonempty_pSet n)
-  simp only [IsLeast, pSet, Set.mem_ofPred_eq, mem_lowerBounds, forall_exists_index, and_imp,
+  simp only [IsLeast, pSet, Set.mem_ofPred, mem_lowerBounds, forall_exists_index, and_imp,
     Finset.mem_Ico] at h
   rw [Finset.card_le_one_iff]
   intro x y hx hy

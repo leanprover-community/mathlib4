@@ -76,27 +76,25 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 /-! ### Lemmas about `mem` and `Set.ofPred` -/
 
 @[simp, mfld_simps, push]
-theorem mem_ofPred_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
+theorem mem_ofPred {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
 
-@[deprecated (since := "2026-07-09")] alias mem_setOf_eq := mem_ofPred_eq
+@[deprecated (since := "2026-07-09")] alias mem_setOf_eq := mem_ofPred
+@[deprecated (since := "2026-07-09")] alias mem_setOf := mem_ofPred
+@[deprecated (since := "2026-08-12")] alias mem_ofPred_eq := mem_ofPred
 
-grind_pattern mem_ofPred_eq => x ∈ Set.ofPred p
+grind_pattern mem_ofPred => x ∈ Set.ofPred p
 
 /-- This lemma is intended for use with `rw` where a membership predicate is needed,
 hence the explicit argument and the equality in the reverse direction from normal.
-See also `Set.mem_ofPred_eq` for the reverse direction applied to an argument. -/
+See also `Set.mem_ofPred` for the reverse direction applied to an argument. -/
 theorem eq_mem_ofPred (p : α → Prop) : p = (· ∈ {a | p a}) := rfl
 
 @[deprecated (since := "2026-07-09")] alias eq_mem_setOf := eq_mem_ofPred
 
-theorem mem_ofPred {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a := Iff.rfl
-
-@[deprecated (since := "2026-07-09")] alias mem_setOf := mem_ofPred
-
 /-- If `h : a ∈ {x | p x}` then `h.out : p x`. These are definitionally equal, but this can
 nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
 argument to `simp`. -/
-alias ⟨_root_.Membership.mem.out, _⟩ := mem_ofPred
+lemma _root_.Membership.mem.out {a : α} {p : α → Prop} (h : a ∈ {x | p x}) : p a := mem_ofPred.mp h
 
 theorem notMem_ofPred_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a := Iff.rfl
 
