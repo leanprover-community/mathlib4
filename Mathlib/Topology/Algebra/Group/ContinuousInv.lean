@@ -170,6 +170,7 @@ theorem IsCompact.inv (hs : IsCompact s) : IsCompact s⁻¹ := by
 
 variable (G)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Inversion in a topological group as a homeomorphism. -/
 @[to_additive /-- Negation in a topological group as a homeomorphism. -/]
 protected def Homeomorph.inv (G : Type*) [TopologicalSpace G] [InvolutiveInv G]

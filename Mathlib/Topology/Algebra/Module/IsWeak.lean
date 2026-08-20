@@ -136,6 +136,7 @@ protected theorem congr [AddCommMonoid E'] [Module 𝕜 E']
     rw [f.toEquiv.iInf_congr]
     simp
 
+set_option fun_prop.projDefaultTransparency true in
 /-- Map `F` into the topological dual of `E` with the weak topology induced by `F` -/
 def eval [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] : F →ₗ[𝕜] StrongDual 𝕜 E where
   toFun f := ⟨B.flip f, by fun_prop⟩

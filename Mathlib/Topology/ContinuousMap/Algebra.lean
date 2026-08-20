@@ -589,6 +589,7 @@ instance module : Module R C(α, M) := fast_instance%
 
 variable (R)
 
+set_option fun_prop.projDefaultTransparency true in
 /-- Composition on the left by a continuous linear map, as a `ContinuousLinearMap`.
 Similar to `LinearMap.compLeft`. -/
 @[simps]

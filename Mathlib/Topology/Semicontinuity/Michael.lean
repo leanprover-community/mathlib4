@@ -129,7 +129,7 @@ theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuou
     rw [← forall_and, ← forall_and]
     intro n
     induction n with
-    | zero => exact ⟨by fun_prop, hg_mem, (hF 0 g ⟨hg_cont, hg_mem⟩).2.2⟩
+    | zero => exact ⟨hg_cont, hg_mem, (hF 0 g ⟨hg_cont, hg_mem⟩).2.2⟩
     | succ n ih => simp [ih, P, hF, -singleton_add]
   -- Prove the sequence is uniformly cauchy. The (necessarily continuous) limit is a selection
   have hUnif : UniformCauchySeqOn h Filter.atTop univ := by
