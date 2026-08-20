@@ -483,7 +483,7 @@ theorem riemannZeta_conj (s : ℂ) : riemannZeta (conj s) = conj (riemannZeta s)
 
 /-- **Conjugation symmetry of the completed zeta function** for `0 < re s`, where the
 relation `Λ s = ζ s * Γ_ℝ s` is available. -/
-theorem completedRiemannZeta_conj_of_re_pos {s : ℂ} (hs : 0 < s.re) :
+private theorem completedRiemannZeta_conj_of_re_pos {s : ℂ} (hs : 0 < s.re) :
     completedRiemannZeta (conj s) = conj (completedRiemannZeta s) := by
   have hcs : 0 < (conj s).re := by rwa [conj_re]
   have key {z : ℂ} (hz : 0 < z.re) : completedRiemannZeta z = riemannZeta z * Gammaℝ z := by
