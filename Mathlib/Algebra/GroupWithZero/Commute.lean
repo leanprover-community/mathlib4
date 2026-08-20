@@ -75,6 +75,7 @@ theorem inv_left_iff₀ : Commute a⁻¹ b ↔ Commute a b :=
 theorem inv_left₀ (h : Commute a b) : Commute a⁻¹ b :=
   inv_left_iff₀.2 h
 
+variable (a) in
 theorem inv_left_self₀ : Commute a⁻¹ a :=
   (Commute.refl a).inv_left₀
 
@@ -82,6 +83,7 @@ theorem inv_left_self₀ : Commute a⁻¹ a :=
 theorem inv_right_iff₀ : Commute a b⁻¹ ↔ Commute a b :=
   SemiconjBy.inv_right_iff₀
 
+variable (a) in
 theorem inv_right₀ (h : Commute a b) : Commute a b⁻¹ :=
   inv_right_iff₀.2 h
 
