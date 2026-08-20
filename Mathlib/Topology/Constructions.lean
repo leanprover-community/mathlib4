@@ -48,7 +48,7 @@ open scoped Set.Notation
 
 universe u v u' v'
 
-variable {X : Type u} {Y : Type v} {Z W ε ζ : Type*}
+variable {X : Type u} {Y : Type v} {Z : Type*}
 
 section Constructions
 
@@ -299,7 +299,6 @@ def of : X ≃ CofiniteTopology X := (WithTopology.equiv _ _).symm
 
 instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite := by
   simp_rw [isOpen_coinduced, TopologicalSpace.cofinite, isOpen_mk, ← Set.preimage_compl,
     WithTopology.preimage_toTopology, image_nonempty,

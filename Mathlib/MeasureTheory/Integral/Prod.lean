@@ -6,7 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Integration with respect to the product measure
@@ -61,7 +61,6 @@ section
 
 variable [NormedSpace ℝ E]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The Bochner integral is measurable. This shows that the integrand of (the right-hand-side of)
   Fubini's theorem is measurable.
   This version has `f` in curried form. -/
@@ -557,7 +556,7 @@ section ContinuousLinearMap
 
 variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
   [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
-  [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G}
+  [NormedAddCommGroup G] [NormedSpace ℝ G]
   {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
   {L : E × F →L[ℝ] G}
 

@@ -41,9 +41,9 @@ measurable space, σ-algebra, measurable function
 
 assert_not_exists Covariant MonoidWithZero
 
-open Set Encodable Function Equiv
+open Set Function
 
-variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
+variable {α β γ δ : Type*} {ι : Sort*} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
 @[class] structure MeasurableSpace (α : Type*) where
@@ -526,8 +526,6 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
   fun _ h => hf (hg h)
 
 attribute [fun_prop] Measurable.fun_comp
-
-@[deprecated (since := "2026-01-23")] alias Measurable.comp' := Measurable.fun_comp
 
 @[simp, fun_prop]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
