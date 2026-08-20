@@ -230,8 +230,7 @@ theorem ascPochhammer_eval_succ (r : ℕ) (n : S) :
 @[deprecated ascPochhammer_eval_succ (since := "2026-08-16")]
 theorem ascPochhammer_nat_eval_succ (r : ℕ) (n : ℕ) :
     n * (ascPochhammer ℕ r).eval (n + 1) = (n + r) * (ascPochhammer ℕ r).eval n := by
-  convert ascPochhammer_eval_succ r n using 1
-  grind
+  simp [ascPochhammer_eval_succ, mul_comm]
 
 namespace Nat
 variable (a b : ℕ)
