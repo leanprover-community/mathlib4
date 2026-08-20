@@ -90,7 +90,6 @@ lemma mapsTo_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
   have := stepSize_nonneg t₀ n
   exact ⟨le_max_right _ _, max_le (by linarith) t₀.2.2⟩
 
-/-- The delayed input is Lipschitz continuous with constant one. -/
 lemma lipschitzWith_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
     LipschitzWith 1 (delayedInput t₀ n) := by
   rw [lipschitzWith_iff_dist_le_mul]
