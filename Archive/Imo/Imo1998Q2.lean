@@ -98,7 +98,6 @@ def A : Finset (AgreedTriple C J) :=
   Finset.univ.filter @fun (a : AgreedTriple C J) =>
     (a.judgePair.Agree r a.contestant ∧ a.judgePair.Distinct)
 
-open scoped Classical in
 theorem A_maps_to_offDiag_judgePair (a : AgreedTriple C J) :
     a ∈ A r → a.judgePair ∈ Finset.offDiag (@Finset.univ J _) := by simp [A, Finset.mem_offDiag]
 

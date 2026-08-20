@@ -79,7 +79,6 @@ then `maxDecSequencesTo f i < maxDecSequencesTo f j`.
 -/
 private lemma maxIncSequencesTo_lt {i j : α} (hij : i < j) (hfij : f i < f j) :
     maxIncSequencesTo f i < maxIncSequencesTo f j := by
-  classical
   rw [Nat.lt_iff_add_one_le]
   refine le_max' _ _ ?_
   have : maxIncSequencesTo f i ∈ incSequencesTo f i := max'_mem _ incSequencesTo_nonempty

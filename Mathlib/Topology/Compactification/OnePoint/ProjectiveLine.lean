@@ -38,7 +38,7 @@ open Projectivization Matrix Polynomial OnePoint
 
 section MatrixProdAction
 
-variable {R n : Type*} [Semiring R] [Fintype n] [DecidableEq n]
+variable {R : Type*} [Semiring R]
 
 @[simp] lemma Matrix.mulVec_fin_two (m : Matrix (Fin 2) (Fin 2) R) (v : Fin 2 → R) :
     m *ᵥ v = ![m 0 0 * v 0 + m 0 1 * v 1, m 1 0 * v 0 + m 1 1 * v 1] := by
@@ -92,8 +92,8 @@ def equivProjectivization : OnePoint K ≃ ℙ K (Fin 2 → K) where
   left_inv p := by cases p <;> simp
   right_inv p := by
     induction p using ind with | h w hw =>
-    by_cases h₀ : w 1 = 0 <;> simp only [mk_eq_mk_iff', h₀, Projectivization.lift_mk, if_true,
-        if_false, OnePoint.elim_infty, OnePoint.elim_some]
+    by_cases h₀ : w 1 = 0 <;> simp only [mk_eq_mk_iff', h₀, Projectivization.lift_mk, ite_true,
+        ite_false, OnePoint.elim_infty, OnePoint.elim_some]
     · have : w 0 ≠ 0 := fun h ↦ hw <| funext <| by simp_all
       use (w 0)⁻¹
       ext i
@@ -130,6 +130,7 @@ lemma equivProjectivization_smul {g : GL (Fin 2) K} (x : OnePoint K) :
     equivProjectivization K (g • x) = g • equivProjectivization K x := by
   rw [Equiv.smul_def, Equiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma smul_infty_def {g : GL (Fin 2) K} :
     g • ∞ = (equivProjectivization K).symm (.mk K ![g 0 0, g 1 0] (fun h ↦ by
       simpa [det_fin_two, show g 0 0 = 0 from congr_fun h 0, show g 1 0 = 0 from congr_fun h 1]
@@ -201,7 +202,7 @@ lemma IsParabolic.smul_eq_self_iff {g : GL (Fin 2) K} (hg : g.IsParabolic) [NeZe
       refine fun hb ↦ fixpointPolynomial_eq_zero_iff.not.mpr hg ?_
       simp [fixpointPolynomial, hb, hc, hd]
     · have : discrim (g 1 0) (g 1 1 - g 0 0) (-g 0 1) = 0 := by rw [discrim]; grind
-      simpa [parabolicFixedPoint, if_neg hc, sq, sub_eq_add_neg]
+      simpa [parabolicFixedPoint, ite_eq_right hc, sq, sub_eq_add_neg]
         using quadratic_eq_zero_iff_of_discrim_eq_zero hc this c
 
 lemma IsParabolic.parabolicFixedPoint_pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]

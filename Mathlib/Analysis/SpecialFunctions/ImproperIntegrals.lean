@@ -5,9 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
@@ -167,6 +166,12 @@ theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) 
     rw [integrableOn_Ioi_rpow_iff zero_lt_one] at this
     exact hs.not_gt this
 
+theorem not_integrableOn_Ioi_rpow_of_neg_one_le {a s : ℝ} (hs : -1 ≤ s) :
+    ¬ IntegrableOn (fun x ↦ x ^ s) (Ioi a) := by
+  refine fun h ↦ not_lt.mpr hs ?_
+  rw [← integrableAtFilter_rpow_atTop_iff]
+  exact ⟨Ioi a, Ioi_mem_atTop a, h⟩
+
 theorem setIntegral_Ioi_zero_rpow (s : ℝ) : ∫ x in Ioi (0 : ℝ), x ^ s = 0 :=
   MeasureTheory.integral_undef (not_integrableOn_Ioi_rpow s)
 
@@ -301,7 +306,7 @@ theorem integrableOn_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
     positivity
 
 @[simp]
-theorem integral_inv_divlog_sq_Ioi {c : ℝ} (hc : 1 < c) :
+theorem integral_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
     ∫ (t : ℝ) in .Ioi c, t⁻¹ / (log t) ^ 2 = (log c)⁻¹ := by
   convert! integral_Ioi_of_hasDerivAt_of_tendsto' (m := 0) (f := fun t ↦ -(log t)⁻¹) ?_
     (integrableOn_inv_div_log_sq_Ioi hc) ?_ using 1
