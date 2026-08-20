@@ -1701,6 +1701,7 @@ public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.CStarAlgebra.Commutative.PosPart
 public import Mathlib.Analysis.CStarAlgebra.CompletelyPositiveMap
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
