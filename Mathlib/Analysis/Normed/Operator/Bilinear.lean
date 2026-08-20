@@ -25,7 +25,7 @@ open Filter hiding map_smul
 open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ : Type*}
+variable {𝕜 𝕜₂ 𝕜₃ E Eₗ E' Eₗ' F Fₗ F' Fₗ' G Gₗ G' Gₗ' : Type*}
 
 section SemiNormed
 
@@ -38,6 +38,14 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 Eₗ] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
   [NormedSpace 𝕜 Gₗ] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
   [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+
+variable
+  [AddCommGroup E'] [Module 𝕜 E'] [TopologicalSpace E']
+  [AddCommGroup Eₗ'] [Module 𝕜 Eₗ'] [TopologicalSpace Eₗ'] [NormableSpace 𝕜 Eₗ']
+  [AddCommGroup F'] [Module 𝕜₂ F'] [TopologicalSpace F'] [NormableSpace 𝕜₂ F']
+  [AddCommGroup Fₗ'] [Module 𝕜 Fₗ'] [TopologicalSpace Fₗ'] [NormableSpace 𝕜 Fₗ']
+  [AddCommGroup G'] [Module 𝕜₃ G'] [TopologicalSpace G'] [NormableSpace 𝕜₃ G']
+  [AddCommGroup Gₗ'] [Module 𝕜 Gₗ'] [TopologicalSpace Gₗ'] [NormableSpace 𝕜 Gₗ']
 
 namespace ContinuousLinearMap
 
@@ -139,11 +147,18 @@ end LinearMap
 namespace ContinuousLinearMap
 
 variable [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃]
+  [NormableSpace 𝕜 E'] [IsTopologicalAddGroup G'] [IsTopologicalAddGroup Gₗ']
 
 /-- Flip the order of arguments of a continuous bilinear map.
 For a version bundled as `LinearIsometryEquiv`, see
 `ContinuousLinearMap.flipL`. -/
-def flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : F →SL[σ₂₃] E →SL[σ₁₃] G :=
+def flip (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') : F' →SL[σ₂₃] E' →SL[σ₁₃] G' :=
+  letI : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
+  letI : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
+  letI : SeminormedAddCommGroup F' := NormableSpace.toSeminormedAddCommGroup 𝕜₂ F'
+  letI : NormedSpace 𝕜₂ F' := NormableSpace.toNormedSpace 𝕜₂ F'
+  letI : SeminormedAddCommGroup G' := NormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
+  letI : NormedSpace 𝕜₃ G' := NormableSpace.toNormedSpace 𝕜₃ G'
   LinearMap.mkContinuous₂
     (LinearMap.mk₂'ₛₗ σ₂₃ σ₁₃ (fun y x => f x y) (fun x y z => (f z).map_add x y)
       (fun c y x => (f x).map_smulₛₗ c y) (fun z x y => by simp only [f.map_add, add_apply])
@@ -156,11 +171,11 @@ private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f�
     exact (flip f).le_opNorm₂ y x
 
 @[simp]
-theorem flip_apply (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) : f.flip y x = f x y :=
+theorem flip_apply (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') (x : E') (y : F') : f.flip y x = f x y :=
   rfl
 
 @[simp]
-theorem flip_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : f.flip.flip = f := by
+theorem flip_flip (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') : f.flip.flip = f := by
   ext
   rfl
 
@@ -177,14 +192,14 @@ theorem opENorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖�
   simp [enorm_eq_nnnorm]
 
 @[simp]
-lemma flip_zero : flip (0 : E →SL[σ₁₃] F →SL[σ₂₃] G) = 0 := rfl
+lemma flip_zero : flip (0 : E' →SL[σ₁₃] F' →SL[σ₂₃] G') = 0 := rfl
 
 @[simp]
-theorem flip_add (f g : E →SL[σ₁₃] F →SL[σ₂₃] G) : (f + g).flip = f.flip + g.flip :=
+theorem flip_add (f g : E' →SL[σ₁₃] F' →SL[σ₂₃] G') : (f + g).flip = f.flip + g.flip :=
   rfl
 
 @[simp]
-theorem flip_smul (c : 𝕜₃) (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : (c • f).flip = c • f.flip :=
+theorem flip_smul (c : 𝕜₃) (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') : (c • f).flip = c • f.flip :=
   rfl
 
 variable (E F G σ₁₃ σ₂₃)
@@ -235,95 +250,111 @@ theorem flipₗᵢ_symm : (flipₗᵢ 𝕜 E Fₗ Gₗ).symm = flipₗᵢ 𝕜 F
 theorem coe_flipₗᵢ : ⇑(flipₗᵢ 𝕜 E Fₗ Gₗ) = flip :=
   rfl
 
-variable (F σ₁₂)
-variable [RingHomIsometric σ₁₂]
+variable (F' σ₁₂)
+variable [RingHomIsometric σ₁₂] [IsTopologicalAddGroup F'] [IsTopologicalAddGroup Fₗ']
 
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
 vector.
 
 This is the continuous version of `LinearMap.applyₗ`. -/
-def apply' : E →SL[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F :=
-  flip (.id 𝕜₂ (E →SL[σ₁₂] F))
+def apply' : E' →SL[σ₁₂] (E' →SL[σ₁₂] F') →L[𝕜₂] F' :=
+  flip (.id 𝕜₂ (E' →SL[σ₁₂] F'))
 
-variable {F σ₁₂}
+variable {F' σ₁₂}
 
 @[simp]
-theorem apply_apply' (v : E) (f : E →SL[σ₁₂] F) : apply' F σ₁₂ v f = f v :=
+theorem apply_apply' (v : E') (f : E' →SL[σ₁₂] F') : apply' F' σ₁₂ v f = f v :=
   rfl
 
-variable (𝕜 Fₗ)
+variable (𝕜 Fₗ')
 
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
 vector.
 
 This is the continuous version of `LinearMap.applyₗ`. -/
-def apply : E →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] Fₗ :=
-  flip (.id 𝕜 (E →L[𝕜] Fₗ))
+def apply : E' →L[𝕜] (E' →L[𝕜] Fₗ') →L[𝕜] Fₗ' :=
+  flip (.id 𝕜 (E' →L[𝕜] Fₗ'))
 
-variable {𝕜 Fₗ}
+variable {𝕜 Fₗ'}
 
 @[simp]
-theorem apply_apply (v : E) (f : E →L[𝕜] Fₗ) : apply 𝕜 Fₗ v f = f v :=
+theorem apply_apply (v : E') (f : E' →L[𝕜] Fₗ') : apply 𝕜 Fₗ' v f = f v :=
   rfl
 
-variable (σ₁₂ σ₂₃ E F G)
+variable (σ₁₂ σ₂₃ E F G E' F' G')
 
-
-/-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
-def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
+/-- Composition of continuous semilinear maps as a continuous semibilinear map.
+Do not use: use instead the version `compSL` which works on normable spaces. -/
+def compSLOfNormedSpace : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
     (LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add fun c f g => by
       ext
       simp only [map_smulₛₗ, comp_apply, smul_apply])
     1 fun f g => by simpa only [one_mul] using! opNorm_comp_le f g
 
-theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
-  LinearMap.mkContinuous₂_norm_le _ zero_le_one _
+/-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
+def compSL : (F' →SL[σ₂₃] G') →L[𝕜₃] (E' →SL[σ₁₂] F') →SL[σ₂₃] E' →SL[σ₁₃] G' :=
+  letI : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
+  letI : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
+  letI : SeminormedAddCommGroup F' := NormableSpace.toSeminormedAddCommGroup 𝕜₂ F'
+  letI : NormedSpace 𝕜₂ F' := NormableSpace.toNormedSpace 𝕜₂ F'
+  letI : SeminormedAddCommGroup G' := NormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
+  letI : NormedSpace 𝕜₃ G' := NormableSpace.toNormedSpace 𝕜₃ G'
+  compSLOfNormedSpace E' F' G' σ₁₂ σ₂₃
 
-variable {σ₁₂ σ₂₃ E F G}
-
-@[simp]
-theorem compSL_apply (f : F →SL[σ₂₃] G) (g : E →SL[σ₁₂] F) : compSL E F G σ₁₂ σ₂₃ f g = f.comp g :=
+theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 := by
+  have : ‖compSLOfNormedSpace E F G σ₁₂ σ₂₃‖ ≤ 1 :=
+    LinearMap.mkContinuous₂_norm_le _ zero_le_one _
+  convert this
+  ext
   rfl
 
-theorem _root_.Continuous.const_clm_comp {X} [TopologicalSpace X] {f : X → E →SL[σ₁₂] F}
-    (hf : Continuous f) (g : F →SL[σ₂₃] G) :
-    Continuous (fun x => g.comp (f x) : X → E →SL[σ₁₃] G) :=
-  (compSL E F G σ₁₂ σ₂₃ g).continuous.comp hf
+variable {σ₁₂ σ₂₃ E F G E' F' G'}
 
--- Giving the implicit argument speeds up elaboration significantly
-theorem _root_.Continuous.clm_comp_const {X} [TopologicalSpace X] {g : X → F →SL[σ₂₃] G}
-    (hg : Continuous g) (f : E →SL[σ₁₂] F) :
-    Continuous (fun x => (g x).comp f : X → E →SL[σ₁₃] G) :=
-  (@ContinuousLinearMap.flip _ _ _ _ _ (E →SL[σ₁₃] G) _ _ _ _ _ _ _ _ _ _ _ _ _
-    (compSL E F G σ₁₂ σ₂₃) f).continuous.comp hg
+@[simp]
+theorem compSL_apply (f : F' →SL[σ₂₃] G') (g : E' →SL[σ₁₂] F') :
+    compSL E' F' G' σ₁₂ σ₂₃ f g = f.comp g :=
+  rfl
 
-variable (𝕜 σ₁₂ σ₂₃ E Fₗ Gₗ)
+theorem _root_.Continuous.const_clm_comp {X} [TopologicalSpace X] {f : X → E' →SL[σ₁₂] F'}
+    (hf : Continuous f) (g : F' →SL[σ₂₃] G') :
+    Continuous (fun x => g.comp (f x) : X → E' →SL[σ₁₃] G') :=
+  (compSL E' F' G' σ₁₂ σ₂₃ g).continuous.comp hf
+
+theorem _root_.Continuous.clm_comp_const {X} [TopologicalSpace X] {g : X → F' →SL[σ₂₃] G'}
+    (hg : Continuous g) (f : E' →SL[σ₁₂] F') :
+    Continuous (fun x => (g x).comp f : X → E' →SL[σ₁₃] G') :=
+  (ContinuousLinearMap.flip (compSL E' F' G' σ₁₂ σ₂₃) f).continuous.comp hg
+
+variable (𝕜 σ₁₂ σ₂₃ E' Fₗ' Gₗ')
 
 /-- Composition of continuous linear maps as a continuous bilinear map. -/
-def compL : (Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ :=
-  compSL E Fₗ Gₗ (RingHom.id 𝕜) (RingHom.id 𝕜)
+def compL : (Fₗ' →L[𝕜] Gₗ') →L[𝕜] (E' →L[𝕜] Fₗ') →L[𝕜] E' →L[𝕜] Gₗ' :=
+  compSL E' Fₗ' Gₗ' (RingHom.id 𝕜) (RingHom.id 𝕜)
 
 theorem norm_compL_le : ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
   norm_compSL_le _ _ _ _ _
 
 @[simp]
-theorem compL_apply (f : Fₗ →L[𝕜] Gₗ) (g : E →L[𝕜] Fₗ) : compL 𝕜 E Fₗ Gₗ f g = f.comp g :=
+theorem compL_apply (f : Fₗ' →L[𝕜] Gₗ') (g : E' →L[𝕜] Fₗ') : compL 𝕜 E' Fₗ' Gₗ' f g = f.comp g :=
   rfl
 
-variable (Eₗ) {𝕜 E Fₗ Gₗ}
+variable (Eₗ') {𝕜 E' Fₗ' Gₗ'}
 
 /-- Apply `L(x,-)` pointwise to bilinear maps, as a continuous bilinear map -/
 @[simps! apply]
-def precompR (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : E →L[𝕜] (Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ :=
-  compL 𝕜 Eₗ Fₗ Gₗ ∘L L
+def precompR (L : E' →L[𝕜] Fₗ' →L[𝕜] Gₗ') : E' →L[𝕜] (Eₗ' →L[𝕜] Fₗ') →L[𝕜] Eₗ' →L[𝕜] Gₗ' :=
+  compL 𝕜 Eₗ' Fₗ' Gₗ' ∘L L
+
+variable [IsTopologicalAddGroup E']
 
 /-- Apply `L(-,y)` pointwise to bilinear maps, as a continuous bilinear map -/
-def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ :=
-  (precompR Eₗ (flip L)).flip
+def precompL (L : E' →L[𝕜] Fₗ' →L[𝕜] Gₗ') : (Eₗ' →L[𝕜] E') →L[𝕜] Fₗ' →L[𝕜] Eₗ' →L[𝕜] Gₗ' :=
+  (precompR Eₗ' (flip L)).flip
 
-@[simp] lemma precompL_apply (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (u : Eₗ →L[𝕜] E) (f : Fₗ) (g : Eₗ) :
-    precompL Eₗ L u f g = L (u g) f := rfl
+omit [IsTopologicalAddGroup Fₗ'] in
+@[simp] lemma precompL_apply (L : E' →L[𝕜] Fₗ' →L[𝕜] Gₗ') (u : Eₗ' →L[𝕜] E') (f : Fₗ') (g : Eₗ') :
+    precompL Eₗ' L u f g = L (u g) f := rfl
 
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
@@ -333,46 +364,50 @@ theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR E
 
 theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompL Eₗ L‖ ≤ ‖L‖ := by
   rw [precompL, opNorm_flip, ← opNorm_flip L]
-  exact norm_precompR_le _ L.flip
+  exact norm_precompR_le L.flip
 
 end ContinuousLinearMap
 
 namespace ContinuousLinearMap
 
-variable {E' F' : Type*} [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F']
+variable {E'' F'' : Type*} [AddCommGroup E''] [AddCommGroup F'']
+  [TopologicalSpace E''] [TopologicalSpace F'']
+  [IsTopologicalAddGroup G'] [IsTopologicalAddGroup Gₗ']
 variable {𝕜₁' : Type*} {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₁'] [NontriviallyNormedField 𝕜₂']
-  [NormedSpace 𝕜₁' E'] [NormedSpace 𝕜₂' F'] {σ₁' : 𝕜₁' →+* 𝕜} {σ₁₃' : 𝕜₁' →+* 𝕜₃} {σ₂' : 𝕜₂' →+* 𝕜₂}
+  [Module 𝕜₁' E''] [Module 𝕜₂' F''] [NormableSpace 𝕜₁' E''] [NormableSpace 𝕜₂' F'']
+  {σ₁' : 𝕜₁' →+* 𝕜} {σ₁₃' : 𝕜₁' →+* 𝕜₃} {σ₂' : 𝕜₂' →+* 𝕜₂}
   {σ₂₃' : 𝕜₂' →+* 𝕜₃} [RingHomCompTriple σ₁' σ₁₃ σ₁₃'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
   [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃'] [RingHomIsometric σ₂₃']
 
-/-- Compose a bilinear map `E →SL[σ₁₃] F →SL[σ₂₃] G` with two linear maps
-`E' →SL[σ₁'] E` and `F' →SL[σ₂'] F`. -/
-def bilinearComp (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (gE : E' →SL[σ₁'] E) (gF : F' →SL[σ₂'] F) :
-    E' →SL[σ₁₃'] F' →SL[σ₂₃'] G :=
+/-- Compose a bilinear map `E' →SL[σ₁₃] F' →SL[σ₂₃] G'` with two linear maps
+`E'' →SL[σ₁'] E'` and `F'' →SL[σ₂'] F'`. -/
+def bilinearComp (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') (gE : E'' →SL[σ₁'] E') (gF : F'' →SL[σ₂'] F') :
+    E'' →SL[σ₁₃'] F'' →SL[σ₂₃'] G' :=
   ((f.comp gE).flip.comp gF).flip
 
 @[simp]
-theorem bilinearComp_apply (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (gE : E' →SL[σ₁'] E) (gF : F' →SL[σ₂'] F)
-    (x : E') (y : F') : f.bilinearComp gE gF x y = f (gE x) (gF y) :=
+theorem bilinearComp_apply
+    (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') (gE : E'' →SL[σ₁'] E') (gF : F'' →SL[σ₂'] F')
+    (x : E'') (y : F'') : f.bilinearComp gE gF x y = f (gE x) (gF y) :=
   rfl
 
 @[simp]
-lemma bilinearComp_zero {gE : E' →SL[σ₁'] E} {gF : F' →SL[σ₂'] F} :
-    bilinearComp (0 : E →SL[σ₁₃] F →SL[σ₂₃] G) gE gF = 0 := rfl
+lemma bilinearComp_zero {gE : E'' →SL[σ₁'] E'} {gF : F'' →SL[σ₂'] F'} :
+    bilinearComp (0 : E' →SL[σ₁₃] F' →SL[σ₂₃] G') gE gF = 0 := rfl
 
 @[simp]
-lemma bilinearComp_zero_left {f : E →SL[σ₁₃] F →SL[σ₂₃] G} {gF : F' →SL[σ₂'] F} :
-    bilinearComp f (0 : E' →SL[σ₁'] E) gF = 0 := by ext; simp
+lemma bilinearComp_zero_left {f : E' →SL[σ₁₃] F' →SL[σ₂₃] G'} {gF : F'' →SL[σ₂'] F'} :
+    bilinearComp f (0 : E'' →SL[σ₁'] E') gF = 0 := by ext; simp
 
 @[simp]
-lemma bilinearComp_zero_right {f : E →SL[σ₁₃] F →SL[σ₂₃] G} {gE : E' →SL[σ₁'] E} :
-    bilinearComp f gE (0 : F' →SL[σ₂'] F) = 0 := by ext; simp
+lemma bilinearComp_zero_right {f : E' →SL[σ₁₃] F' →SL[σ₂₃] G'} {gE : E'' →SL[σ₁'] E'} :
+    bilinearComp f gE (0 : F'' →SL[σ₂'] F') = 0 := by ext; simp
 
 variable [RingHomIsometric σ₁₃] [RingHomIsometric σ₁'] [RingHomIsometric σ₂']
 
 /-- Derivative of a continuous bilinear map `f : E →L[𝕜] F →L[𝕜] G` interpreted as a map `E × F → G`
 at point `p : E × F` evaluated at `q : E × F`, as a continuous bilinear map. -/
-def deriv₂ (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : E × Fₗ →L[𝕜] E × Fₗ →L[𝕜] Gₗ :=
+def deriv₂ (f : E' →L[𝕜] Fₗ' →L[𝕜] Gₗ') : E' × Fₗ' →L[𝕜] E' × Fₗ' →L[𝕜] Gₗ' :=
   f.bilinearComp (fst _ _ _) (snd _ _ _) + f.flip.bilinearComp (snd _ _ _) (fst _ _ _)
 
 @[simp]

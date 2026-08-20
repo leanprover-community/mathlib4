@@ -552,6 +552,22 @@ noncomputable abbrev NormableSpace.toNormedSpace :
   letI : SeminormedAddCommGroup E := NormableSpace.toSeminormedAddCommGroup 𝕜 E
   { norm_smul_le c x := (map_smul_eq_mul (NormableSpace.seminorm 𝕜 E) c x).le }
 
+instance [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [NormableSpace 𝕜 F] :
+    NormableSpace 𝕜 (E × F) := by
+  let : SeminormedAddCommGroup E := NormableSpace.toSeminormedAddCommGroup 𝕜 E
+  let : NormedSpace 𝕜 E := NormableSpace.toNormedSpace 𝕜 E
+  let : SeminormedAddCommGroup F := NormableSpace.toSeminormedAddCommGroup 𝕜 F
+  let : NormedSpace 𝕜 F := NormableSpace.toNormedSpace 𝕜 F
+  infer_instance
+
+instance {E : ι → Type*} [Finite ι] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+    [∀ i, TopologicalSpace (E i)] [∀ i, NormableSpace 𝕜 (E i)] :
+    NormableSpace 𝕜 (Π i, E i) := by
+  let A i : SeminormedAddCommGroup (E i) := NormableSpace.toSeminormedAddCommGroup 𝕜 (E i)
+  let B i : NormedSpace 𝕜 (E i) := NormableSpace.toNormedSpace 𝕜 (E i)
+  let : Fintype ι := Fintype.ofFinite ι
+  infer_instance
+
 end NormedSpace
 
 section NontriviallyNormedField
