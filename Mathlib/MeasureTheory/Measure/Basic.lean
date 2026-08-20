@@ -324,7 +324,7 @@ theorem union_ae_eq_right_iff_ae_subset : s ∪ t =ᵐ[μ] t ↔ s ≤ᵐ[μ] t 
 
 theorem ae_eq_of_ae_subset_of_measure_ge (h₁ : s ≤ᵐ[μ] t) (h₂ : μ t ≤ μ s)
     (hsm : NullMeasurableSet s μ) (ht : μ t ≠ ∞) : s =ᵐ[μ] t := by
-  refine eventuallyLE_antisymm_iff.mpr ⟨h₁, ae_le_set.mpr ?_⟩
+  refine eventuallySubset_antisymm_iff.mpr ⟨h₁, ae_le_set.mpr ?_⟩
   replace h₂ : μ t = μ s := h₂.antisymm (measure_mono_ae h₁)
   replace ht : μ s ≠ ∞ := h₂ ▸ ht
   rw [measure_sdiff' t hsm ht, measure_congr (union_ae_eq_left_iff_ae_subset.mpr h₁), h₂, tsub_self]
