@@ -115,6 +115,7 @@ section prodProdProdComm
 
 variable (R M₁ M₂ M₃ M₄)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product of topological modules is four-way commutative up to continuous linear isomorphism.
 This is `LinearEquiv.prodProdProdComm` prodAssoc as a continuous linear equivalence. -/
 def prodProdProdComm : ((M₁ × M₂) × M₃ × M₄) ≃L[R] (M₁ × M₃) × M₂ × M₄ where
