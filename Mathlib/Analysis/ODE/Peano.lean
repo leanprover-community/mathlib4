@@ -402,7 +402,7 @@ lemma exists_eq_forall_mem_Icc_eq_integral_forward (hf : IsPeano f t₀ x₀ r L
   · filter_upwards with n
     filter_upwards with s hs
     have hs := mem_Icc_of_mem_uIoc ht hs
-    apply hf.norm_le s ⟨t₀.2.1.trans hs.1, hs.2⟩
+    apply hf.norm_le s (Icc_t0_subset_Icc hs)
     exact mapsTo_tonelliApproximation_delayedInput hf (φ n) hs
   · have h_lim :=
       tendsto_tonelliApproximation_delayedInput_of_tendstoUniformlyOn_tonelliApproximation
@@ -414,10 +414,10 @@ lemma exists_eq_forall_mem_Icc_eq_integral_forward (hf : IsPeano f t₀ x₀ r L
         ⟨Tendsto.prodMk_nhds tendsto_const_nhds (h_lim s hs), ?_⟩
       apply Eventually.of_forall
       exact fun n ↦ mem_prod.mpr
-        ⟨⟨t₀.2.1.trans hs.1, hs.2⟩,
+        ⟨Icc_t0_subset_Icc hs,
           MapsTo.comp (mapsTo_tonelliApproximation_closedBall hf _)
             (mapsTo_delayedInput t₀ _) hs⟩
-    · refine ⟨⟨t₀.2.1.trans hs.1, hs.2⟩, ?_⟩
+    · refine ⟨Icc_t0_subset_Icc hs, ?_⟩
       apply IsClosed.mem_of_tendsto isClosed_closedBall (hα_tendsto.tendsto_at hs)
       exact Eventually.of_forall (fun n ↦ mapsTo_tonelliApproximation_closedBall hf (φ n) hs)
 
