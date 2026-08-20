@@ -91,7 +91,7 @@ theorem lintegral_mul_eq_one_iff_of_lintegral_rpow_eq_one {p q : ℝ} (hpq : p.H
   have heqiff := lintegral_eq_iff_ae_eq_of_ae_le (hle.trans_lt one_lt_top |>.ne_top) (by fun_prop)
     (ae_of_all μ fun _ ↦ young_inequality _ _ hpq)
   rw [heqiff]
-  have := ae_lt_top' (.mul hf hg) (hle.trans_lt one_lt_top).ne |>.ne_top_of_lt
+  have := ae_lt_top' (.mul hf hg) (hle.trans_lt one_lt_top).ne |>.ne_of_lt
   refine Filter.eventually_congr <| this.mono fun a ha ↦ ?_
   simp_rw [Pi.mul_apply, Pi.pow_apply, young_inequality_eq_iff (f a) (g a) hpq]
   refine ⟨fun h ↦ h.resolve_left ?_ |>.resolve_left <| ?_, fun h ↦ .inr <| .inr h⟩
