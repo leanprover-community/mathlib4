@@ -311,8 +311,9 @@ theorem integrableOn_Ioi_zero_inv_mul_one_add_log_sq {b : ℝ} (hb : b ≠ 0) :
     integrableOn_comp_log_Ioi_zero (fun u ↦ (1 + (b * u) ^ 2)⁻¹)]
   exact integrable_inv_one_add_mul_sq hb
 
-/-- The total mass of the log-Cauchy density on `Ioi 0`. -/
-@[simp]
+/-- The total mass of the log-Cauchy density on `Ioi 0`.
+
+This is not `@[simp]`: `simp` rewrites the left-hand side with `mul_inv_rev`. -/
 theorem integral_Ioi_zero_inv_mul_one_add_log_sq (b : ℝ) :
     ∫ t in Ioi 0, (t * (1 + (b * log t) ^ 2))⁻¹ = π / |b| := by
   rw [show (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹)
