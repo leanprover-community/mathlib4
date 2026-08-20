@@ -312,7 +312,6 @@ lemma exists_tendstoUniformlyOn_subseq_tonelliApproximation (hf : IsPeano f t₀
 
 variable {φ : ℕ → ℕ}
 
-/-- The time-step sizes of the Tonelli approximations tend to zero. -/
 lemma tendsto_stepSize_zero : Tendsto (stepSize t₀) atTop (nhds 0) :=
   tendsto_const_div_atTop_nhds_zero_nat (tmax - t₀)
 
