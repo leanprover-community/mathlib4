@@ -148,8 +148,8 @@ private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → R) {n : ℕ} (p : 
     simp [toFinsuppAntidiag, (p.parts_pos hi).ne.symm, Multiset.count_ne_zero.mpr hi]
 
 private theorem aux_dvd_of_coeff_ne_zero {f : ℕ → ℕ → R} {d : ℕ} {s : Finset ℕ}
-    {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiag d)
-    (hcoeff : ∀ i ∈ s, (coeff (g i)) (1 + genFunFactor f i) ≠ 0) (x : ℕ) :
+    {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiag d) (hcoeff : ∀ i ∈ s, (coeff (g i))
+    (1 + genFunFactor f i) ≠ 0) (x : ℕ) :
     x ∣ g x := by
   by_cases hx : x ∈ s
   · by_cases hgx : g x = 0
@@ -164,8 +164,8 @@ private theorem aux_dvd_of_coeff_ne_zero {f : ℕ → ℕ → R} {d : ℕ} {s : 
 private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {d : ℕ} {s : Finset ℕ}
     (hs0 : 0 ∉ s) {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiag d)
     (hg' : g ∉ Set.range (toFinsuppAntidiag (n := d))) :
-    ∏ i ∈ s, (coeff (g i)) (1 + genFunFactor f i) = 0 := by
-  suffices ∃ i ∈ s, coeff (g i) (1 + genFunFactor f i) = 0 by
+    ∏ i ∈ s, (1 + genFunFactor f i).coeff (g i) = 0 := by
+  suffices ∃ i ∈ s, (1 + genFunFactor f i).coeff (g i) = 0 by
     obtain ⟨i, hi, hi'⟩ := this
     exact prod_eq_zero hi hi'
   contrapose! hg' with hprod
@@ -176,8 +176,8 @@ private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {
     · exact Nat.le_of_dvd (Nat.pos_of_ne_zero h) <| aux_dvd_of_coeff_ne_zero hg hprod _
   refine ⟨Nat.Partition.mk (Finsupp.mk g.support (fun i ↦ g i / i) ?_).toMultiset ?_ ?_, ?_⟩
   · simpa using hgne0
-  · suffices ∀ i, g i ≠ 0 → i ≠ 0 by simpa [Nat.pos_iff_ne_zero]
-    exact fun i h ↦ ((hgne0 i).mp h).1
+  · suffices ∀ i, g i ≠ 0 → 0 < i by simpa
+    exact fun i h ↦ Nat.pos_iff_ne_zero.mpr ((hgne0 i).mp h).1
   · obtain ⟨rfl, h⟩ := mem_finsuppAntidiag.mp hg
     suffices ∑ x ∈ g.support, g x / x * x = ∑ x ∈ s, g x by simpa [Finsupp.sum]
     apply sum_subset_zero_on_sdiff h (by simp)
