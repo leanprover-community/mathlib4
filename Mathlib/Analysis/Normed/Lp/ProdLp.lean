@@ -560,11 +560,13 @@ def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
 lemma prodContinuousLinearEquiv_symm_apply (x : α × β) :
     (prodContinuousLinearEquiv p 𝕜 α β).symm x = toLp p x := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `WithLp.fst` as a continuous linear map. -/
 @[simps! coe apply]
 def fstL : WithLp p (α × β) →L[𝕜] α where
   __ := fstₗ ..
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `WithLp.snd` as a continuous linear map. -/
 @[simps! coe apply]
 def sndL : WithLp p (α × β) →L[𝕜] β where

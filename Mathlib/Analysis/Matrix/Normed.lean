@@ -431,6 +431,7 @@ For a matrix over a field, the norm defined in this section agrees with the oper
 section
 variable [NontriviallyNormedField α] [NormedAlgebra ℝ α]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
     ‖A‖₊ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖₊ := by
   rw [ContinuousLinearMap.opNNNorm_eq_of_bounds _ (linfty_opNNNorm_mulVec _) fun N hN => ?_]
@@ -449,6 +450,7 @@ lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
     nnnorm_one, mul_one] at hN
   exact hN
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma linfty_opNorm_eq_opNorm (A : Matrix m n α) :
     ‖A‖ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖ :=
   congr_arg NNReal.toReal (linfty_opNNNorm_eq_opNNNorm A)

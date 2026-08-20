@@ -323,6 +323,7 @@ theorem IsCompact.inv (hs : IsCompact s) : IsCompact s⁻¹ := by
 
 variable (G)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Inversion in a topological group as a homeomorphism. -/
 @[to_additive /-- Negation in a topological group as a homeomorphism. -/]
 protected def Homeomorph.inv (G : Type*) [TopologicalSpace G] [InvolutiveInv G]
@@ -1102,6 +1103,7 @@ lemma Filter.tendsto_const_div_iff' (b : G) {c : G} {f : α → G} {l : Filter �
 @[deprecated (since := "2026-02-03")]
 alias Filter.tendsto_const_div_iff := Filter.tendsto_const_div_iff'
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive (attr := simps! +simpRhs)
   /-- A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`. -/]
@@ -1120,6 +1122,7 @@ theorem isOpenMap_div_left (a : G) : IsOpenMap (a / ·) :=
 theorem isClosedMap_div_left (a : G) : IsClosedMap (a / ·) :=
   (Homeomorph.divLeft _).isClosedMap
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A version of `Homeomorph.mulRight a⁻¹ b` that is defeq to `b / a`. -/
 @[to_additive (attr := simps! +simpRhs)
   /-- A version of `Homeomorph.addRight (-a) b` that is defeq to `b - a`. -/]
@@ -1409,6 +1412,7 @@ instance {G} [TopologicalSpace G] [AddGroup G] [IsTopologicalAddGroup G] :
     IsTopologicalGroup (Multiplicative G) where
   continuous_inv := @continuous_neg G _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `G` is a group with topological `⁻¹`, then it is homeomorphic to its units. -/
 @[to_additive /-- If `G` is an additive group with topological negation, then it is homeomorphic to
 its additive units. -/]
