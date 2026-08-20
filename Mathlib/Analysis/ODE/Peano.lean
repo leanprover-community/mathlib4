@@ -472,66 +472,30 @@ theorem exists_eq_forall_mem_Icc_eq_integral
     exists_eq_forall_mem_Icc_eq_integral_forward hf
   obtain ⟨α₂, hα₂_cont, hα₂_maps, hα₂_eq⟩ :=
     exists_eq_forall_mem_Icc_eq_integral_backward hf
+  have ht₀₁ : t₀.val ∈ Icc t₀.val tmax := left_mem_Icc.mpr t₀.2.2
+  have ht₀₂ : t₀.val ∈ Icc tmin t₀.val := right_mem_Icc.mpr t₀.2.1
+  have hα₁_t₀ : α₁ t₀ = x₀ := by
+    simpa using hα₁_eq t₀ ht₀₁
+  have hα₂_t₀ : α₂ t₀ = x₀ := by
+    simpa using hα₂_eq t₀ ht₀₂
   let α : ℝ → E := fun t ↦ if t₀ ≤ t then α₁ t else α₂ t
-  have hα_eq_α₁ : EqOn α α₁ (Icc t₀ tmax) := by
-    intro t ht
-    unfold α
-    rw [ite_eq_left ht.1]
-  have hα_eq_α₂ : EqOn α α₂ (Icc tmin t₀) := by
-    intro t ht
-    unfold α
-    by_cases ht_t₀ : t = t₀.val
-    · rw [ite_eq_left (ge_of_eq ht_t₀)]
-      rw [hα₁_eq, hα₂_eq, ht_t₀]
-      · simp
-      · exact ht
-      · rw [Set.mem_Icc]
-        constructor
-        · apply le_of_eq ht_t₀.symm
-        · apply le_trans ht.2 t₀.prop.2
-    · replace ht_t₀ := not_le_of_gt (lt_of_le_of_ne ht.2 ht_t₀)
-      rw [ite_eq_right ht_t₀]
-  have h_union : Icc tmin t₀ ∪ Icc t₀ tmax = Icc tmin tmax := by
-    apply Set.Icc_union_Icc_eq_Icc
-    · exact t₀.prop.1
-    · exact t₀.prop.2
-  use α
-  refine ⟨?_, ?_, ?_⟩
+  have hα_eq_α₁ : EqOn α α₁ (Icc t₀ tmax) := fun t ht ↦ ite_eq_left ht.1
+  have hα_eq_α₂ : EqOn α α₂ (Icc tmin t₀) := fun t ht ↦ by
+    rcases ht.2.lt_or_eq with h | h
+    · exact ite_eq_right (not_le.mpr h)
+    · subst h
+      exact (ite_eq_left le_rfl).trans (hα₁_t₀.trans hα₂_t₀.symm)
+  have h_union : Icc tmin t₀ ∪ Icc t₀ tmax = Icc tmin tmax :=
+    Icc_union_Icc_eq_Icc t₀.2.1 t₀.2.2
+  refine ⟨α, ?_, ?_, fun t ht ↦ ?_⟩
   · rw [← h_union]
-    apply ContinuousOn.union_of_isClosed ?_ ?_ isClosed_Icc isClosed_Icc
-    · apply ContinuousOn.congr hα₂_cont hα_eq_α₂
-    · apply ContinuousOn.congr hα₁_cont hα_eq_α₁
+    exact (hα₂_cont.congr hα_eq_α₂).union_of_isClosed (hα₁_cont.congr hα_eq_α₁)
+      isClosed_Icc isClosed_Icc
   · rw [← h_union]
-    apply MapsTo.union (MapsTo.congr hα₂_maps hα_eq_α₂.symm)
-      (MapsTo.congr hα₁_maps hα_eq_α₁.symm)
-  · intro t ht
-    by_cases ht_t₀ : t₀.val ≤ t
-    · have ht_interval : t ∈ Icc t₀.val tmax := ⟨ht_t₀, ht.2⟩
-      rw [hα_eq_α₁ ht_interval, hα₁_eq t ht_interval]
-      simp only [add_right_inj]
-      rw [intervalIntegral.integral_congr]
-      intro s hs
-      simp only
-      rw [hα_eq_α₁]
-      rw [Set.uIcc_of_le ht_interval.1] at hs
-      rw [Set.mem_Icc]
-      constructor
-      · exact hs.1
-      · apply le_trans hs.2 ht_interval.2
-    · simp only [not_le] at ht_t₀
-      apply le_of_lt at ht_t₀
-      have ht_interval : t ∈ Icc tmin t₀.val := ⟨ht.1, ht_t₀⟩
-      rw [hα_eq_α₂ ht_interval, hα₂_eq t ht_interval]
-      simp only [add_right_inj]
-      rw [intervalIntegral.integral_congr]
-      intro s hs
-      simp only
-      rw [hα_eq_α₂]
-      rw [Set.uIcc_of_ge ht_interval.2] at hs
-      rw [Set.mem_Icc]
-      constructor
-      · apply le_trans ht_interval.1 hs.1
-      · exact hs.2
+    exact (hα₂_maps.congr hα_eq_α₂.symm).union (hα₁_maps.congr hα_eq_α₁.symm)
+  · rcases le_total t₀.val t with h | h
+    · exact forall_mem_Icc_eq_integral_of_eqOn ht₀₁ hα_eq_α₁ hα₁_eq t ⟨h, ht.2⟩
+    · exact forall_mem_Icc_eq_integral_of_eqOn ht₀₂ hα_eq_α₂ hα₂_eq t ⟨ht.1, h⟩
 
 /-- **Peano existence theorem**, differential form. A solution to the initial value problem exists
 on the full time interval. -/
