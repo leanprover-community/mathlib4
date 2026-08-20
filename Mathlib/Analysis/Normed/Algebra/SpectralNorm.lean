@@ -141,7 +141,7 @@ end CommRing
 protected theorem SpectralNorm.eq_zero_iff [SeminormedCommRing 𝕜] [DivisionRing A] [Algebra 𝕜 A]
     {f : SpectralNorm 𝕜 A} {x : A} : f x = 0 ↔ x = 0 := by
   refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
-  · have : Commute x x⁻¹ := Commute.inv_right₀ rfl -- todo: library lemma
+  · have : Commute x x⁻¹ := Commute.inv_right₀ rfl
     have h := f.map_mul_le_mul this
     contrapose! h
     simp [h, hx]
