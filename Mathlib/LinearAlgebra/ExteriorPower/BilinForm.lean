@@ -11,10 +11,11 @@ public import Mathlib.LinearAlgebra.BilinearForm.Properties
 /-!
 # Bilinear forms on exterior powers
 
-For a bilinear form `B` on a module `M`, this file defines the basis-independent bilinear form
-induced by `B` on each exterior power. On decomposable elements, its value is given by the
-determinant of the matrix of pairings. For finite free modules, we also prove that bijectivity of
-`B` implies bijectivity of the induced linear map.
+For a bilinear form `B` on a module `M`, we define the bilinear form induced by `B`
+on each exterior power.
+
+For finite free modules, we also prove that bijectivity of `B` implies
+bijectivity of the induced linear map.
 
 ## Definitions
 
