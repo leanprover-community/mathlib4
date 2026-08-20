@@ -327,6 +327,9 @@ theorem WithSeminorms.continuousSMul (hp : WithSeminorms p) : ContinuousSMul �
   rw [hp.withSeminorms_eq]
   exact ModuleFilterBasis.continuousSMul _
 
+instance [h : PolynormableSpace 𝕜 E] : ContinuousSMul 𝕜 E :=
+  h.withSeminorms'.continuousSMul
+
 theorem WithSeminorms.hasBasis (hp : WithSeminorms p) :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ p.basisSets) id := by
   rw [congr_fun (congr_arg (@nhds E) hp.1) 0]
