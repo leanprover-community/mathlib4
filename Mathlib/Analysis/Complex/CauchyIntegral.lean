@@ -579,12 +579,13 @@ theorem circleIntegral_div_sub_of_differentiable_on_off_countable {R : ℝ} {c w
 
 /-
 Helper lemma for `hasDerivAt_circleIntegral_sub_zpow_smul`: For `w ∈ ball c R`, there is a radius
-`d > 0` such that `ball w d ⊆ ball c R` and all points of `ball w d` keep distance at least `d` from
-the circle `sphere c R`.
+`d > 0` such that `ball w d ⊆ ball c R` and all points of `ball w d` keep distance at least `d`
+and at most `2 * R` from the circle `sphere c R`.
 -/
 private lemma exists_ball_subset_forall_le_norm_circleMap_sub {R : ℝ} {c w : ℂ}
     (hw : w ∈ ball c R) :
-    ∃ d > 0, ball w d ⊆ ball c R ∧ ∀ x ∈ ball w d, ∀ θ : ℝ, d ≤ ‖circleMap c R θ - x‖ := by
+    ∃ d > 0, ball w d ⊆ ball c R ∧
+      ∀ x ∈ ball w d, ∀ θ : ℝ, d ≤ ‖circleMap c R θ - x‖ ∧ ‖circleMap c R θ - x‖ ≤ 2 * R := by
   have hR : 0 < R := pos_of_mem_ball hw
   rw [mem_ball] at hw
   refine ⟨(R - dist w c) / 2, by linarith, fun x hx ↦ ?_, fun x hx θ ↦ ?_⟩ <;>
@@ -596,17 +597,20 @@ private lemma exists_ball_subset_forall_le_norm_circleMap_sub {R : ℝ} {c w : �
       simpa [abs_of_pos hR] using mem_sphere.1 (circleMap_mem_sphere' c R θ)
     have h₂ := dist_triangle (circleMap c R θ) x c
     have h₃ := dist_triangle x w c
+    have h₄ := dist_triangle (circleMap c R θ) c x
+    rw [dist_comm c x] at h₄
     rw [← dist_eq_norm]
-    linarith
+    exact ⟨by linarith, by linarith⟩
 
 omit [CompleteSpace E]
 /--
-**Derivative of Cauchy-type integrals**: if `f` is circle integrable, `n < 0`, and `w` lies
-inside the circle, then the Cauchy-type integral `fun w ↦ ∮ z in C(c, R), (z - w) ^ n • f z`
-has derivative `-n • ∮ z in C(c, R), (z - w) ^ (n - 1) • f z` at `w`.
+**Derivative of Cauchy-type integrals**: if `f` is circle integrable and `w` lies inside the
+circle, then for every `n : ℤ` the Cauchy-type integral
+`fun w ↦ ∮ z in C(c, R), (z - w) ^ n • f z` has derivative
+`-n • ∮ z in C(c, R), (z - w) ^ (n - 1) • f z` at `w`.
 -/
 theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w : ℂ} {n : ℤ}
-    (hn : n < 0) (hf : CircleIntegrable f c R) (hw : w ∈ ball c R) :
+    (hf : CircleIntegrable f c R) (hw : w ∈ ball c R) :
     HasDerivAt (fun w ↦ ∮ z in C(c, R), (z - w) ^ n • f z)
       ((-n : ℂ) • ∮ z in C(c, R), (z - w) ^ (n - 1) • f z) w := by
   have hR : 0 < R := pos_of_mem_ball hw
@@ -620,7 +624,8 @@ theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w :
   refine (intervalIntegral.hasDerivAt_integral_of_dominated_loc_of_deriv_le
     (F' := fun x θ ↦ (-n : ℂ) • ((circleMap 0 R θ * I)
       • (circleMap c R θ - x) ^ (n - 1) • f (circleMap c R θ)))
-    (bound := fun θ ↦ |(n : ℝ)| * R * d ^ (n - 1) * ‖f (circleMap c R θ)‖)
+    (bound := fun θ ↦ |(n : ℝ)| * R * max (d ^ (n - 1)) ((2 * R) ^ (n - 1)) *
+      ‖f (circleMap c R θ)‖)
     (ball_mem_nhds w hd) ?_ ?_ ?_ ?_ ?_ ?_).2
   · -- Measurability of the integrand, for `x` near `w`
     filter_upwards with x
@@ -633,9 +638,13 @@ theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w :
       ((Measurable.aestronglyMeasurable (by fun_prop)).smul hfm)).const_smul _
   · -- Uniform bound for the differentiated integrand near `w`
     filter_upwards with θ _ x hx
-    have key : ‖circleMap c R θ - x‖ ^ (n - 1) ≤ d ^ (n - 1) := by
-      rw [show n - 1 = -(1 - n) by ring, zpow_neg, zpow_neg]
-      exact inv_anti₀ (zpow_pos hd _) (zpow_le_zpow_left₀ (by omega) hd.le (hdist x hx θ))
+    obtain ⟨hlb, hub⟩ := hdist x hx θ
+    have key : ‖circleMap c R θ - x‖ ^ (n - 1) ≤ max (d ^ (n - 1)) ((2 * R) ^ (n - 1)) := by
+      rcases le_or_gt 0 (n - 1) with h | h
+      · exact le_max_of_le_right (zpow_le_zpow_left₀ h (norm_nonneg _) hub)
+      · refine le_max_of_le_left ?_
+        rw [show n - 1 = -(1 - n) by ring, zpow_neg, zpow_neg]
+        exact inv_anti₀ (zpow_pos hd _) (zpow_le_zpow_left₀ (by omega) hd.le hlb)
     have norm_eq : ‖(-n : ℂ) • ((circleMap 0 R θ * I)
         • (circleMap c R θ - x) ^ (n - 1) • f (circleMap c R θ))‖
         = |(n : ℝ)| * R * ‖circleMap c R θ - x‖ ^ (n - 1) * ‖f (circleMap c R θ)‖ := by
@@ -667,7 +676,7 @@ theorem hasDerivAt_circleIntegral_sub_inv_smul {f : ℂ → E} {R : ℝ} {c w : 
       (∮ z in C(c, R), (z - w) ^ (-2 : ℤ) • f z) w := by
   simpa only [show (-1 : ℤ) - 1 = -2 by norm_num, zpow_neg_one, Int.cast_neg, Int.cast_one,
     neg_neg, one_smul]
-    using hasDerivAt_circleIntegral_sub_zpow_smul (n := -1) (by norm_num) hf hw
+    using hasDerivAt_circleIntegral_sub_zpow_smul (n := -1) hf hw
 
 end circle
 
