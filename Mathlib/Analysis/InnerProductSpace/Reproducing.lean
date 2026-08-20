@@ -7,13 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Analysis.InnerProductSpace.Positive
-<<<<<<< HEAD
 public import Mathlib.Analysis.InnerProductSpace.ProdL2
 public import Mathlib.Analysis.Normed.Operator.Extend
-=======
-public import Mathlib.Analysis.Normed.Operator.Extend
 public import Mathlib.Topology.Algebra.LinearMapCompletion
->>>>>>> master
 
 /-!
 # Reproducing Kernel Hilbert Spaces
