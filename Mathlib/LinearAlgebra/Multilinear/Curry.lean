@@ -25,12 +25,12 @@ in linear functions), called respectively `multilinearCurryLeftEquiv` and
 
 @[expose] public section
 
-open Fin Function Finset Set
+open Fin Function Finset
 
 universe uR uS uι uι' v v' v₁ v₂ v₃
 
-variable {R : Type uR} {S : Type uS} {ι : Type uι} {ι' : Type uι'} {n : ℕ}
-  {M : Fin n.succ → Type v} {M₁ : ι → Type v₁} {M₂ : Type v₂} {M₃ : Type v₃} {M' : Type v'}
+variable {R : Type uR} {ι : Type uι} {ι' : Type uι'} {n : ℕ}
+  {M : Fin n.succ → Type v} {M₁ : ι → Type v₁} {M₂ : Type v₂} {M' : Type v'}
 
 /-!
 ### Currying

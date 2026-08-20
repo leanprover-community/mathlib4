@@ -176,7 +176,7 @@ lemma Cauchy.map_of_le [UniformSpace β] {f : Filter α} {m : α → β} (hf : C
     (hm : UniformContinuousOn m s) (hfs : f ≤ 𝓟 s) :
     Cauchy (map m f) := by
   suffices Cauchy (comap (Subtype.val : s → α) f) by
-    simpa [Set.restrict_def, ← Function.comp_def, ← map_map,
+    simpa [Set.domRestrict_def, ← Function.comp_def, ← map_map,
       subtype_coe_map_comap, inf_eq_left.mpr hfs] using this.map hm.restrict
   exact hf.comap' (fun _ x ↦ x) (comap_coe_neBot_of_le_principal (h := hf.1) hfs)
 
@@ -371,10 +371,12 @@ class CompleteSpace (α : Type u) [UniformSpace α] : Prop where
   /-- In a complete uniform space, every Cauchy filter converges. -/
   complete : ∀ {f : Filter α}, Cauchy f → ∃ x, f ≤ 𝓝 x
 
-theorem complete_univ {α : Type u} [UniformSpace α] [CompleteSpace α] :
+theorem isComplete_univ {α : Type u} [UniformSpace α] [CompleteSpace α] :
     IsComplete (univ : Set α) := fun f hf _ => by
   rcases CompleteSpace.complete hf with ⟨x, hx⟩
   exact ⟨x, mem_univ x, hx⟩
+
+@[deprecated (since := "2026-07-27")] alias complete_univ := isComplete_univ
 
 instance CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace β] :
     CompleteSpace (α × β) where
@@ -413,7 +415,7 @@ theorem completeSpace_of_isComplete_univ (h : IsComplete (univ : Set α)) : Comp
   ⟨fun hf => let ⟨x, _, hx⟩ := h _ hf ((@principal_univ α).symm ▸ le_top); ⟨x, hx⟩⟩
 
 theorem completeSpace_iff_isComplete_univ : CompleteSpace α ↔ IsComplete (univ : Set α) :=
-  ⟨@complete_univ α _, completeSpace_of_isComplete_univ⟩
+  ⟨@isComplete_univ α _, completeSpace_of_isComplete_univ⟩
 
 theorem completeSpace_iff_ultrafilter :
     CompleteSpace α ↔ ∀ l : Ultrafilter α, Cauchy (l : Filter α) → ∃ x : α, ↑l ≤ 𝓝 x := by
@@ -470,8 +472,6 @@ instance : CompleteSpace α where
   complete {f} hf := by
     obtain ⟨x, rfl⟩ := eq_pure_of_cauchy hf
     exact ⟨x, pure_le_nhds x⟩
-
-variable {X}
 
 /-- A constant to which a Cauchy filter in a discrete uniform space converges. -/
 noncomputable def cauchyConst {f : Filter α} (hf : Cauchy f) : α :=
@@ -829,7 +829,7 @@ namespace SequentiallyComplete
 
 variable {f : Filter α} (hf : Cauchy f) {U : ℕ → SetRel α α} (U_mem : ∀ n, U n ∈ 𝓤 α)
 
-open Set Finset
+open Set
 
 noncomputable section
 
