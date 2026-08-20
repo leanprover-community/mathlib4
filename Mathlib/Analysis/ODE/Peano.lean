@@ -213,6 +213,11 @@ lemma lipschitzOnWith_tonelliApproximation (hf : IsPeano f t₀ x₀ r L) (n : �
     LipschitzOnWith L (tonelliApproximation f t₀ x₀ n) (Icc t₀.val tmax) :=
   lipschitzOnWith_tonelliIterate hf (n + 1) (n + 1)
 
+/-- Every diagonal Tonelli approximation takes the value `x₀` at `t₀`. -/
+lemma tonelliApproximation_apply_t₀ (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x₀ : E) (n : ℕ) :
+    tonelliApproximation f t₀ x₀ n t₀ = x₀ :=
+  tonelliIterate_apply_t₀ f t₀ x₀ (n + 1) (n + 1)
+
 /-- Every diagonal Tonelli approximation satisfies the integral equation with delayed input. -/
 lemma tonelliApproximation_eq_integral (n : ℕ) (t : ℝ) (ht : t ∈ Icc t₀.val tmax) :
     tonelliApproximation f t₀ x₀ n t =
