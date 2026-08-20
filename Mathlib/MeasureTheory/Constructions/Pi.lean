@@ -10,6 +10,8 @@ public import Mathlib.Logic.Encodable.Pi
 public import Mathlib.MeasureTheory.Group.Measure
 public import Mathlib.MeasureTheory.MeasurableSpace.Pi
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Indexed product measures
 

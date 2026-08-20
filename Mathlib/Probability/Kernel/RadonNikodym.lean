@@ -8,6 +8,8 @@ module
 public import Mathlib.Probability.Kernel.Disintegration.Density
 public import Mathlib.Probability.Kernel.WithDensity
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Radon-Nikodym derivative and Lebesgue decomposition for kernels
 

@@ -6,7 +6,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-public import Mathlib.MeasureTheory.Measure.MeasureSpace
+public import Mathlib.MeasureTheory.Measure.CompleteLattice
+
+import Mathlib.MeasureTheory.Measure.Filter
 
 /-!
 # Pushforward of a measure

@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
+import Mathlib.MeasureTheory.Measure.Continuity
+
 /-!
 # Monotone convergence theorem and addition of Lebesgue integrals
 

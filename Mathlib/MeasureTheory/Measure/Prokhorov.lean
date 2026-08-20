@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Measure.Tight
 
 import Mathlib.MeasureTheory.Integral.Regular
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
+import Mathlib.MeasureTheory.Measure.Basic
 import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 
 /-!

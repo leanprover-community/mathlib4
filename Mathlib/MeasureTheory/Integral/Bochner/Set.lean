@@ -11,6 +11,10 @@ public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
+import Mathlib.MeasureTheory.Measure.Basic
+import Mathlib.MeasureTheory.Measure.Continuity
+import Mathlib.MeasureTheory.Measure.Interval
+
 /-!
 # Set integral
 

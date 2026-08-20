@@ -11,6 +11,8 @@ public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Topology.TietzeExtension
 
+import Mathlib.MeasureTheory.Measure.Continuity
+
 /-!
 # Finite measures
 

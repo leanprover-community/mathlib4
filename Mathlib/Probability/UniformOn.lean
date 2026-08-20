@@ -9,6 +9,7 @@ public import Mathlib.Probability.ConditionalProbability
 public import Mathlib.MeasureTheory.Measure.Count
 public import Mathlib.MeasureTheory.Constructions.Pi
 
+import Mathlib.MeasureTheory.Measure.Basic
 
 /-!
 # Classical probability

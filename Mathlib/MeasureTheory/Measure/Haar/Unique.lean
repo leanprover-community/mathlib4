@@ -12,6 +12,8 @@ public import Mathlib.Topology.Metrizable.Urysohn
 public import Mathlib.Topology.ContinuousMap.Ordered
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Uniqueness of Haar measure in locally compact groups
 

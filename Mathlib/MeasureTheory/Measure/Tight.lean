@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.MeasureTheory.Measure.Regular
 
+import Mathlib.MeasureTheory.Measure.Basic
 import Mathlib.MeasureTheory.Measure.RegularityCompacts
 
 /-!

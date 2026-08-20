@@ -9,6 +9,10 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 public import Mathlib.Topology.Order.LeftRightLim
 
+import Mathlib.MeasureTheory.Measure.Basic
+import Mathlib.MeasureTheory.Measure.Continuity
+import Mathlib.MeasureTheory.Measure.Interval
+
 /-!
 # Stieltjes measures on the real line
 

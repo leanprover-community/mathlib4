@@ -9,6 +9,8 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Fundamental theorem of calculus and integration by parts for absolutely continuous functions
 

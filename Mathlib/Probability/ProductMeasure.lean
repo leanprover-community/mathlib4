@@ -8,6 +8,8 @@ module
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
 public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 
+import Mathlib.MeasureTheory.Measure.Continuity
+
 /-!
 # Infinite product of probability measures
 

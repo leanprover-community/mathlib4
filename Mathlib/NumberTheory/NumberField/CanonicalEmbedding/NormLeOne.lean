@@ -9,6 +9,8 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCon
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
 public import Mathlib.NumberTheory.NumberField.Units.Regulator
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Fundamental Cone: set of elements of norm ≤ 1
 

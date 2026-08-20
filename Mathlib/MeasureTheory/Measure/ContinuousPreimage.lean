@@ -9,6 +9,8 @@ public import Mathlib.Topology.CompactOpen
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Measure.Regular
 
+import Mathlib.MeasureTheory.Measure.Basic
+
 /-!
 # Continuity of the preimage of a set under a measure-preserving continuous function
 

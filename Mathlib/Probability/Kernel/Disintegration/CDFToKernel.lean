@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 public import Mathlib.Probability.Kernel.Composition.CompProd
 public import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 
+import Mathlib.MeasureTheory.Measure.Basic
+import Mathlib.MeasureTheory.Measure.Continuity
+
 /-!
 # Building a Markov kernel from a conditional cumulative distribution function
 

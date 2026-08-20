@@ -8,6 +8,10 @@ module
 public import Mathlib.MeasureTheory.Measure.Comap
 public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
+import Mathlib.MeasureTheory.Measure.Basic
+import Mathlib.MeasureTheory.Measure.Continuity
+import Mathlib.MeasureTheory.Measure.Filter
+
 /-!
 # Restricting a measure to a subset or a subtype
 
@@ -603,7 +607,13 @@ theorem ae_restrict_uIoc_eq [LinearOrder α] (a b : α) :
   simp only [uIoc_eq_union, ae_restrict_union_eq]
 
 open scoped Interval in
-/-- See also `MeasureTheory.ae_uIoc_iff`. -/
+/-- See also `ae_restrict_uIoc_iff`. -/
+theorem ae_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
+    (∀ᵐ x ∂μ, x ∈ Ι a b → P x) ↔ (∀ᵐ x ∂μ, x ∈ Ioc a b → P x) ∧ ∀ᵐ x ∂μ, x ∈ Ioc b a → P x := by
+  simp only [uIoc_eq_union, mem_union, or_imp, eventually_and]
+
+open scoped Interval in
+/-- See also `ae_uIoc_iff`. -/
 theorem ae_restrict_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
     (∀ᵐ x ∂μ.restrict (Ι a b), P x) ↔
       (∀ᵐ x ∂μ.restrict (Ioc a b), P x) ∧ ∀ᵐ x ∂μ.restrict (Ioc b a), P x := by
