@@ -225,7 +225,7 @@ lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} 
     rw [← hv, toGeneralLinearGroup_toLinearEquiv_apply]
     exact v.prop
   · intro hu
-    refine ⟨⟨u.toLinearEquiv, hu⟩, rfl⟩
+    exact ⟨⟨u.toLinearEquiv, hu⟩, rfl⟩
 
 /-- The natural action of `SpecialLinearGroup R V` on `V`. -/
 instance : DistribMulAction (SpecialLinearGroup R V) V :=

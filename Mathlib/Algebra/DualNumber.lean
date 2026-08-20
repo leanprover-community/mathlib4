@@ -214,7 +214,7 @@ theorem range_inlAlgHom_sup_adjoin_eps :
   refine add_mem ?_ (mul_mem ?_ ?_)
   · exact le_sup_left (α := Subalgebra R _) <| Set.mem_range_self x.fst
   · exact le_sup_left (α := Subalgebra R _) <| Set.mem_range_self x.snd
-  · refine le_sup_right (α := Subalgebra R _) <| subset_adjoin <| Set.mem_singleton ε
+  · exact le_sup_right (α := Subalgebra R _) <| subset_adjoin <| Set.mem_singleton ε
 
 @[simp]
 theorem range_lift

@@ -502,7 +502,7 @@ instance WithBot.instArchimedean (M) [AddCommMonoid M] [PartialOrder M] [Archime
   | bot => exact absurd hxy bot_le.not_gt
   | coe y =>
     cases x with
-    | bot => refine ⟨0, bot_le⟩
+    | bot => exact ⟨0, bot_le⟩
     | coe x => simpa [← WithBot.coe_nsmul] using (Archimedean.arch x (by simpa using hxy))
 
 instance WithZero.instMulArchimedean (M) [CommMonoid M] [PartialOrder M] [MulArchimedean M] :
@@ -513,5 +513,5 @@ instance WithZero.instMulArchimedean (M) [CommMonoid M] [PartialOrder M] [MulArc
   | zero => cases hxy.pos.false
   | coe y =>
     cases x with
-    | zero => refine ⟨0, zero_le⟩
+    | zero => exact ⟨0, zero_le⟩
     | coe x => simpa [← WithZero.coe_pow] using (MulArchimedean.arch x (by simpa using hxy))

@@ -132,9 +132,8 @@ instance [P.Nonempty] : (P.shiftClosure A).Nonempty :=
   .mono P.le_shiftClosure
 
 variable {P Q} in
-lemma monotone_shiftClosure (h : P ≤ Q) : P.shiftClosure A ≤ Q.shiftClosure A := by
-  rintro X ⟨Y, a, i, hY⟩
-  refine ⟨Y, a, i, h Y hY⟩
+lemma monotone_shiftClosure (h : P ≤ Q) : P.shiftClosure A ≤ Q.shiftClosure A :=
+  fun _ ⟨Y, a, i, hY⟩ ↦ ⟨Y, a, i, h Y hY⟩
 
 lemma shiftClosure_eq_self [P.IsClosedUnderIsomorphisms] [P.IsStableUnderShift A] :
     P.shiftClosure A = P := by

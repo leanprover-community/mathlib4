@@ -219,12 +219,11 @@ instance :
           naturality := fun _ _ f ↦ hom_ext <| congrArg SemiRingCat.Hom.hom <|
             (SemiRingCat.HasLimits.limitCone.{v, u}
             (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u})).π.naturality f } }
-  createsLimitOfReflectsIso fun c' t =>
+  createsLimitOfReflectsIso fun _ t =>
     { liftedCone := c
       validLift := IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _) t
-      makesLimit := by
-        refine IsLimit.ofFaithful (forget₂ CommSemiRingCat.{u} SemiRingCat.{u})
-          (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _) (fun s => _) fun s => rfl }
+      makesLimit := IsLimit.ofFaithful (forget₂ CommSemiRingCat.{u} SemiRingCat.{u})
+          (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _) (fun _ ↦ _) fun _ => rfl }
 
 /-- A choice of limit cone for a functor into `CommSemiRingCat`.
 (Generally, you'll just want to use `limit F`.)

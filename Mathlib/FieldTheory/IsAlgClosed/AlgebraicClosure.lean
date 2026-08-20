@@ -173,7 +173,7 @@ theorem Monics.map_eq_prod {f : Monics k} :
   dsimp [AlgebraicClosure]
   rw [← Ideal.Quotient.mk_comp_algebraMap, ← map_map, ← Polynomial.map_prod, ← sub_eq_zero,
     ← coeff_sub, ← Polynomial.map_sub, ← subProdXSubC, coeff_map, Ideal.Quotient.eq_zero_iff_mem]
-  refine le_maxIdeal _ (Ideal.subset_span ⟨⟨f, _⟩, rfl⟩)
+  exact le_maxIdeal _ (Ideal.subset_span ⟨⟨f, _⟩, rfl⟩)
 
 set_option backward.isDefEq.respectTransparency false in
 instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=

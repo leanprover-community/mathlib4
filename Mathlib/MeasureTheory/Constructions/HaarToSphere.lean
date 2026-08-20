@@ -289,7 +289,7 @@ lemma integrableOn_fun_norm_addHaar {f : ℝ → F} {r : ℝ} :
       intro x hx
       simp only [support_indicator, mem_inter_iff, mem_Ioo, Function.mem_support, ne_eq,
         smul_eq_zero, pow_eq_zero_iff', not_or, not_and, Decidable.not_not] at hx
-      refine mem_Ioi.mpr hx.1.1
+      exact mem_Ioi.mpr hx.1.1
     _ ↔ IntegrableOn (fun y ↦ y ^ (Module.finrank ℝ E - 1) • f y) (Ioo 0 r) volume := by
       rw [← integrable_indicator_iff measurableSet_Ioo, ← integrableOn_univ]
 

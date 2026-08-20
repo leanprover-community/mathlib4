@@ -32,7 +32,7 @@ theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
         cos_eq_neg_one_iff] at h
       rcases h with ⟨k, rfl⟩ | ⟨⟨k, rfl⟩, hn⟩
       · cases n.even_or_odd with
-        | inl hn => refine .inl ⟨⟨k * 2, ?_⟩, hn⟩; simp [mul_assoc]
+        | inl hn => exact .inl ⟨⟨k * 2, by simp [mul_assoc]⟩, hn⟩
         | inr hn => exact .inr <| .inl ⟨⟨_, rfl⟩, hn⟩
       · exact .inl ⟨⟨2 * k + 1, by push_cast; ring⟩, hn⟩
     · rcases eq_or_ne (cos x) 0 with hcosx | hcosx

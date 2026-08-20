@@ -78,7 +78,7 @@ instance (q : Ideal (p.Fiber S)) [q.IsPrime] : Localization.AtPrime.IsLiesOverAl
 lemma Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, r • x = 1 ⊗ₜ[R] s := by
   obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_tmul_one _
     (Algebra.TensorProduct.comm _ _ _ x)
-  refine ⟨r, hr, s, by simpa using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
+  exact ⟨r, hr, s, by simpa using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/

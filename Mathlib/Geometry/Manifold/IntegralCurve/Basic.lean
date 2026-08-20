@@ -111,7 +111,7 @@ lemma isMIntegralCurveAt_iff' :
   · intro ⟨s, hs, h⟩
     rw [Metric.mem_nhds_iff] at hs
     obtain ⟨ε, hε, hε'⟩ := hs
-    refine ⟨ε, hε, fun t ht ↦ (h t (hε' ht)).mono hε'⟩
+    exact ⟨ε, hε, fun t ht ↦ (h t (hε' ht)).mono hε'⟩
   · intro ⟨ε, hε, h⟩
     exact ⟨Metric.ball t₀ ε, Metric.ball_mem_nhds _ hε, h⟩
 

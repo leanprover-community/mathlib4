@@ -131,7 +131,7 @@ protected lemma nonneg (d : PseudoMetric X R) (x y : X) : 0 ≤ d x y := by
   by_contra! H
   have : d x x < 0 := by
     calc d x x ≤ d x y + d y x := d.triangle' x y x
-      _ < 0 + 0 := by refine add_lt_add H (d.symm x y ▸ H)
+      _ < 0 + 0 := add_lt_add H (d.symm x y ▸ H)
       _ = 0 := by simp
   exact this.ne (d.refl x)
 

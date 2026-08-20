@@ -46,7 +46,7 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
   NatIso.ofComponents
     (fun W => by
       refine ?_ ≪≫ HasLimit.isoOfNatIso (W.unop.multicospanComp _ _).symm
-      refine
+      exact
         (isLimitOfPreserves F (limit.isLimit _)).conePointUniqueUpToIso (limit.isLimit _))
     (by
       intro A B f
@@ -74,7 +74,7 @@ def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
   NatIso.ofComponents
     (fun X => by
       refine ?_ ≪≫ HasColimit.isoOfNatIso (J.diagramCompIso F P X.unop)
-      refine
+      exact
         (isColimitOfPreserves F
               (colimit.isColimit (J.diagram P (unop X)))).coconePointUniqueUpToIso
           (colimit.isColimit _))

@@ -518,9 +518,7 @@ theorem isAdicCauchy_iff (f : ℕ → M) :
     induction n, hmn using Nat.le_induction with
     | base => rfl
     | succ n hmn ih =>
-        trans
-        · exact ih
-        · refine SModEq.mono (smul_mono (Ideal.pow_le_pow_right hmn) (by rfl)) (h n)
+        exact ih.trans <| SModEq.mono (smul_mono (Ideal.pow_le_pow_right hmn) (by rfl)) (h n)
 
 /-- Construct `I`-adic Cauchy sequence from sequence satisfying the successive Cauchy condition. -/
 @[simps]

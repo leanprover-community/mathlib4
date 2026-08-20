@@ -93,12 +93,12 @@ lemma isOpen_etaleLocus : IsOpen (etaleLocus R A) := by
 lemma basicOpen_subset_etaleLocus_iff_etale {f : A} :
     ↑(PrimeSpectrum.basicOpen f) ⊆ etaleLocus R A ↔ Algebra.Etale R (Localization.Away f) := by
   rw [basicOpen_subset_etaleLocus_iff]
-  refine ⟨fun H ↦ ⟨H, inferInstance⟩, fun _ ↦ inferInstance⟩
+  exact ⟨fun H ↦ ⟨H, inferInstance⟩, fun _ ↦ inferInstance⟩
 
 lemma etaleLocus_eq_univ_iff_etale :
     etaleLocus R A = Set.univ ↔ Algebra.Etale R A := by
   rw [etaleLocus_eq_univ_iff]
-  refine ⟨fun H ↦ ⟨H, inferInstance⟩, fun _ ↦ inferInstance⟩
+  exact ⟨fun H ↦ ⟨H, inferInstance⟩, fun _ ↦ inferInstance⟩
 
 lemma exists_etale_of_isEtaleAt
     (P : Ideal A) [P.IsPrime] [IsEtaleAt R P] :

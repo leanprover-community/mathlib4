@@ -192,7 +192,7 @@ def TransitiveRelation.ofIsTrans {X : Type w} {φ : X → X → Prop} (hφ : IsT
   t := ↾(fun ⟨⟨⟨⟨x₁, _⟩, h⟩, ⟨⟨_, x₂'⟩, h'⟩⟩, h₁₂⟩ => by
     dsimp at h₁₂
     rw [← h₁₂] at h'
-    refine ⟨⟨x₁, x₂'⟩, hφ.trans _ _ _ h h'⟩)
+    exact ⟨⟨x₁, x₂'⟩, hφ.trans _ _ _ h h'⟩)
 
 /-- Standard equivalence relations on types are internal equivalence relations in the category of
 types. -/

@@ -85,7 +85,7 @@ theorem exists_nonempty_limit_obj_of_isColimit [IsFiltered K] {c : Cocone H} (hc
     ∃ k, Nonempty (limit <| 𝒢 ⋙ yoneda.obj (H.obj k)) := by
   refine exists_nonempty_limit_obj_of_colimit F G H ?_
   suffices T ≅ colimit H from Nonempty.map (lim.map (whiskerLeft 𝒢 (yoneda.map this.hom))) h
-  refine hT.symm ≪≫ IsColimit.coconePointUniqueUpToIso hc (colimit.isColimit _)
+  exact hT.symm ≪≫ IsColimit.coconePointUniqueUpToIso hc (colimit.isColimit _)
 
 end Interchange
 

@@ -174,7 +174,7 @@ lemma IsDynCoverOf.iterate_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (n : ℕ) {s
     choose! t ht using key
     simp only [toFinset_range, Finset.coe_image, Finset.coe_univ, image_univ, mem_range,
       exists_exists_eq_and, sn]
-    refine ⟨t, (dynEntourage T (U ○ U) (m * n)).symm <| h_dyncover t <| by simpa using ht⟩
+    exact ⟨t, (dynEntourage T (U ○ U) (m * n)).symm <| h_dyncover t <| by simpa using ht⟩
   · rw [toFinset_card]
     apply (Fintype.card_range_le dyncover).trans
     simp only [Fintype.card_fun, Fintype.card_coe, Fintype.card_fin, le_refl]

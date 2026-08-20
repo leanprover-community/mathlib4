@@ -734,8 +734,7 @@ variable {enc}
 
 /-- The low level tape corresponding to the given tape over alphabet `Γ`. -/
 def trTape' (L R : ListBlank Γ) : Tape Bool := by
-  refine
-      Tape.mk' (L.flatMap (fun x ↦ (enc x).toList.reverse) ⟨n, ?_⟩)
+  refine Tape.mk' (L.flatMap (fun x ↦ (enc x).toList.reverse) ⟨n, ?_⟩)
         (R.flatMap (fun x ↦ (enc x).toList) ⟨n, ?_⟩) <;>
     simp only [enc0, List.Vector.replicate, List.reverse_replicate, Bool.default_bool,
       List.Vector.toList_mk]

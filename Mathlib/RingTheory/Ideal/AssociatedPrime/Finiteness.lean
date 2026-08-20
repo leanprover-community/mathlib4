@@ -101,7 +101,7 @@ theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
   obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
   have hxN : x ∉ N := fun h ↦ hp.ne_top (by rw [show N.mkQ x = 0 by simpa]; simp)
   have := Submodule.isQuotientEquivQuotientPrime_iff.mpr ⟨x, hp, rfl⟩
-  refine ⟨_, by simpa [hs₂], s.snoc _ (hs₂ ▸ this), by simpa, rfl⟩
+  exact ⟨_, by simpa [hs₂], s.snoc _ (hs₂ ▸ this), by simpa, rfl⟩
 
 /-- If a property on finitely generated modules over a Noetherian ring satisfies that:
 

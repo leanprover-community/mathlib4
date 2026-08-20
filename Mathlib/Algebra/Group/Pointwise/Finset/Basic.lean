@@ -889,7 +889,7 @@ theorem mem_pow {a : α} {n : ℕ} :
 @[to_additive]
 lemma card_pow_le : ∀ {n}, #(s ^ n) ≤ #s ^ n
   | 0 => by simp
-  | n + 1 => by rw [pow_succ, pow_succ]; refine card_mul_le.trans (by gcongr; exact card_pow_le)
+  | n + 1 => by rw [pow_succ, pow_succ]; exact card_mul_le.trans (by gcongr; exact card_pow_le)
 
 @[to_additive]
 theorem mul_univ_of_one_mem [Fintype α] (hs : (1 : α) ∈ s) : s * univ = univ :=

@@ -96,7 +96,7 @@ determining what that value is). -/
 lemma tendsto_hurwitzZeta_sub_one_div_nhds_one (a : UnitAddCircle) :
     Tendsto (fun s ↦ hurwitzZeta a s - 1 / (s - 1) / Gammaℝ s) (𝓝 1) (𝓝 (hurwitzZeta a 1)) := by
   simp only [hurwitzZeta, add_sub_right_comm]
-  refine (tendsto_hurwitzZetaEven_sub_one_div_nhds_one a).add
+  exact (tendsto_hurwitzZetaEven_sub_one_div_nhds_one a).add
     (differentiable_hurwitzZetaOdd a 1).continuousAt.tendsto
 
 /-- The difference of two Hurwitz zeta functions is differentiable everywhere. -/

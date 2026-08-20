@@ -505,7 +505,7 @@ private lemma exists_mul_left_lt (h₁ : a ≠ 0 ∨ b ≠ ⊤) (h₂ : a ≠ �
   · rcases lt_trichotomy a 0 with a0 | rfl | a0
     · obtain ⟨a', aa', a0'⟩ := exists_between a0
       rw [mul_top_of_neg a0] at hc
-      refine ⟨a', mem_Ioo.2 ⟨aa', lt_top_of_lt a0'⟩, mul_top_of_neg a0' ▸ hc⟩
+      exact ⟨a', mem_Ioo.2 ⟨aa', lt_top_of_lt a0'⟩, mul_top_of_neg a0' ▸ hc⟩
     · rw [ne_self_iff_false, ne_self_iff_false, false_or] at h₁; exact h₁.rec
     · rw [mul_top_of_pos a0] at hc; exact (not_top_lt hc).rec
   · obtain ⟨a', aa', hc'⟩ := exists_between ((lt_div_iff b0 b_top.ne).2 hc)

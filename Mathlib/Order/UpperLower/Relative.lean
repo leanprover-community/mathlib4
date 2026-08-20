@@ -115,13 +115,13 @@ protected lemma IsRelUpperSet.sInter
     {S : Set (Set α)} (hS : S.Nonempty) (hf : ∀ s ∈ S, IsRelUpperSet s P) :
     IsRelUpperSet (⋂₀ S) P := fun b mb ↦ by
   obtain ⟨s₀, ms₀⟩ := hS
-  refine ⟨(hf s₀ ms₀ (mb s₀ ms₀)).1, fun _ x y s ms ↦ (hf s ms (mb s ms)).2 x y⟩
+  exact ⟨(hf s₀ ms₀ (mb s₀ ms₀)).1, fun _ x y s ms ↦ (hf s ms (mb s ms)).2 x y⟩
 
 protected lemma IsRelLowerSet.sInter
     {S : Set (Set α)} (hS : S.Nonempty) (hf : ∀ s ∈ S, IsRelLowerSet s P) :
     IsRelLowerSet (⋂₀ S) P := fun b mb ↦ by
   obtain ⟨s₀, ms₀⟩ := hS
-  refine ⟨(hf s₀ ms₀ (mb s₀ ms₀)).1, fun _ x y s ms ↦ (hf s ms (mb s ms)).2 x y⟩
+  exact ⟨(hf s₀ ms₀ (mb s₀ ms₀)).1, fun _ x y s ms ↦ (hf s ms (mb s ms)).2 x y⟩
 
 protected lemma IsRelUpperSet.iInter
     [Nonempty ι] {f : ι → Set α} (hf : ∀ i, IsRelUpperSet (f i) P) : IsRelUpperSet (⋂ i, f i) P :=

@@ -826,7 +826,7 @@ theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, St
       calc
         C • (δ : ℝ≥0∞) ^ (1 / p.toReal) ≤ C • μ { x | C ≤ ‖f (ℐ C) x‖₊ } ^ (1 / p.toReal) := by
           rw [smul_def, smul_def, smul_eq_mul, smul_eq_mul]
-          refine mul_le_mul' le_rfl
+          exact mul_le_mul' le_rfl
             (rpow_le_rpow (hℐ C).le (one_div_nonneg.2 toReal_nonneg))
         _ ≤ eLpNorm ({ x | C ≤ ‖f (ℐ C) x‖₊ }.indicator (f (ℐ C))) p μ := by
           refine le_eLpNorm_of_bddBelow hp hp' _

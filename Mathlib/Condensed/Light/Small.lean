@@ -71,7 +71,7 @@ noncomputable def equivSmallFreeIso :
   conjugateIsoEquiv (Sheaf.adjunction _ (ModuleCat.adj R))
     (((equivSmall _).symm.toAdjunction.comp
       (freeForgetAdjunction R)).comp (equivSmall _).toAdjunction) |>.symm <| by
-  refine NatIso.ofComponents
+  exact NatIso.ofComponents
     (fun X ↦ (fullyFaithfulSheafToPresheaf _ _).preimageIso
       (isoWhiskerRight ((equivSmallModel LightProfinite).op.invFunIdAssoc _).symm _ ≪≫
         (Functor.associator _ _ _)))

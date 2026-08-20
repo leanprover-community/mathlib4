@@ -243,7 +243,7 @@ theorem isLocalMin_T_real {n k : ℕ} (hn : n ≠ 0) (hk₁ : k < n) (hk₂ : Od
   · intro x hx
     dsimp
     rw [(eval_T_real_eq_neg_one_iff hn _).mpr ⟨k, le_of_lt hk₁, hk₂, rfl⟩]
-    refine (abs_le.mp (abs_eval_T_real_le_one n (by grind))).1
+    exact (abs_le.mp (abs_eval_T_real_le_one n (by grind))).1
   · rw [← cos_pi]
     exact cos_lt_cos_of_nonneg_of_le_pi (le_of_lt zero_lt) (le_refl π) lt_pi
   · rw [← cos_zero]
