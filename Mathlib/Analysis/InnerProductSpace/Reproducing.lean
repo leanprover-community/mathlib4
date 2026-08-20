@@ -149,16 +149,16 @@ lemma norm_kernel_eq_norm_kerFun_sq (x) : ‖kernel H x x‖ = ‖kerFun H x‖ 
 lemma norm_kerFun_eq_sqrt_norm_kernel (x) : ‖kerFun H x‖ = √‖kernel H x x‖ := by
   rw [norm_kernel_eq_norm_kerFun_sq, Real.sqrt_sq (norm_nonneg _)]
 
-lemma norm_sq_kerFun_eq (x y : X) :
+lemma norm_kerFun_sub_kerFun_sq (x y : X) :
     ‖kerFun H x - kerFun H y‖^2 = ‖kernel H x x - kernel H y x - kernel H x y + kernel H y y‖ := by
   rw [sq, ← ContinuousLinearMap.norm_adjoint_comp_self]
   simp [← kernel_apply, ← sub_add]
 
-lemma norm_kerFun_eq (x y : X) :
+lemma norm_kerFun_sub_kerFun (x y : X) :
     ‖kerFun H x - kerFun H y‖ = √‖kernel H x x - kernel H y x - kernel H x y + kernel H y y‖ := by
   apply Eq.symm
   rw [Real.sqrt_eq_iff_eq_sq (opNorm_nonneg _) (opNorm_nonneg _)]
-  simp [norm_sq_kerFun_eq]
+  simp [norm_kerFun_sub_kerFun_sq]
 
 lemma norm_kernel_le (x y) : ‖kernel H x y‖ ≤ √‖kernel H x x‖ * √‖kernel H y y‖ := by
   grw [kernel_apply, opNorm_comp_le]
@@ -182,7 +182,7 @@ theorem continuous_kerFun [ContinuousKernel H] : Continuous (kerFun H) := by
   rw [continuous_iff_continuousAt]
   intro x
   rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero]
-  simp_rw [norm_kerFun_eq]
+  simp_rw [norm_kerFun_sub_kerFun]
   refine Tendsto.comp (y:=(𝓝 0)) (by simpa using ((Real.continuous_sqrt).tendsto 0)) ?_
   have hK : Continuous fun p : X × X => kernel H p.1 p.2 :=
     ContinuousKernel.continuous_kernel (H := H)
