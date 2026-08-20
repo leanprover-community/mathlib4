@@ -196,8 +196,12 @@ variable
 theorem norm_smulRightL (c : StrongDual 𝕜 E) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 
-lemma norm_smulRightL_le : ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
-  LinearMap.mkContinuous₂_norm_le _ zero_le_one _
+lemma norm_smulRightL_le : ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 := by
+  have : ‖smulRightLOfNormedSpace 𝕜 E Fₗ‖ ≤ 1 :=
+    LinearMap.mkContinuous₂_norm_le _ zero_le_one _
+  convert this
+  ext
+  rfl
 
 /-! ### Composition with isometries -/
 
