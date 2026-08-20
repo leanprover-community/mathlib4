@@ -6,13 +6,14 @@ Authors: Justin Palumbo
 module
 
 
-public import Mathlib.Topology.GDelta.MetrizableSpace
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
+public import Mathlib.Topology.Separation.GDelta
 
 /-!
 # Completely metrizable subspaces of a metric space are 'Gδ'.
 
 This file provides a proof that all completely metrizable subspaces of
+a T6 space are Gδ. In particular, all completely metrizable subspaces of
 a metric space are Gδ. This result is commonly credited to Alexandrov,
 where it is usually framed in terms of Polish spaces - Polish subspaces of
 a Polish space are Gδ.
@@ -25,16 +26,16 @@ open scoped ENNReal
 
 namespace TopologicalSpace.IsCompletelyMetrizableSpace
 
-variable {X : Type*} [TopologicalSpace X] [MetrizableSpace X]
+variable {X : Type*} [TopologicalSpace X] [T6Space X]
 
-/-- **Alexandrov's theorem**: a subspace of a metrizable space which is completely
+/-- **Alexandrov's theorem**: a subspace of a T6 space which is completely
 metrizable for the subspace topology is a `Gδ` set. -/
 theorem isGδ {s : Set X} (hs : IsCompletelyMetrizableSpace s) : IsGδ s := by
   let := upgradeIsCompletelyMetrizable s
   let U : ℕ → Set X := fun n : ℕ ↦ ⋃₀
       {V : Set X | IsOpen V ∧ (ediam ((↑) ⁻¹' V : Set s) ≤ (n : ℝ≥0∞)⁻¹)}
   have hopen : ∀ n, IsOpen (U n) := fun n ↦ isOpen_sUnion (fun t hht ↦ hht.1)
-  -- `closure s` is Gδ because all closed sets are in perfectly normal spaces,
+  -- `closure s` is Gδ because all closed sets are Gδ in perfectly normal spaces,
   -- and every `U n` is Gδ by virtue of being open
   -- so it's sufficient to prove `s` is their intersection
   suffices s = closure s ∩ (⋂ n, U n) by
