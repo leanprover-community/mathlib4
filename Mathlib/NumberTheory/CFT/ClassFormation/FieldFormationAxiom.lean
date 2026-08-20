@@ -9,7 +9,8 @@ public import Mathlib.NumberTheory.CFT.ClassFormation.Basic
 public import Mathlib.NumberTheory.CFT.ClassFormation.GroupCohomology
 public import Mathlib.NumberTheory.CFT.ClassFormation.Sheaves
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryCorrespondence
-public import Mathlib.GroupTheory.PGroup
+public import Mathlib.GroupTheory.Sylow
+public import Mathlib.GroupTheory.IndexNormal
 
 /-!
 # The field formation axiom
@@ -23,7 +24,13 @@ universe w v u
 lemma IsPGroup.exists_subgroup {G : Type*} [Group G] [Finite G] {p : ℕ}
     [Fact p.Prime] {d : ℕ} (hG : Nat.card G = p ^ (d + 1)) :
     ∃ (H : Subgroup G) (_ : H.Normal), Nat.card H = p ^ d := by
-  sorry
+  obtain ⟨H, h⟩ := Sylow.exists_subgroup_card_pow_prime (G := G) p (n := d) (by
+    rw [hG]
+    exact dvd_of_mul_right_eq p (by lia))
+  refine ⟨H, Subgroup.normal_of_index_eq_minFac_card ?_, h⟩
+  rw [hG, show (p ^ (d + 1)).minFac = p from Nat.Prime.pow_minFac Fact.out (by simp)]
+  rw [← H.index_mul_card, h, add_comm, pow_add, pow_one] at hG
+  exact mul_left_injective₀ (NeZero.ne _) hG
 
 open CategoryTheory Limits Opposite
 
