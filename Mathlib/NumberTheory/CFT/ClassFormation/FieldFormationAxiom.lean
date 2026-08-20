@@ -56,7 +56,7 @@ lemma exists_fac_of_degMap_eq_pow {Y X : C} [PreGaloisCategory.IsConnected Y]
     [PreGaloisCategory.IsConnected X] (f : Y ⟶ X)
     [IsGaloisCover f] {p d : ℕ} [Fact p.Prime]
     (hf : degMap f = p ^ d) (hd : 2 ≤ d) :
-    ∃ (d₁ d₂ : ℕ) (hd₁ : 0 ≠ d₁) (hd₂ : 0 ≠ d₂) (hd : d₁ + d₂ = d)
+    ∃ (d₁ d₂ : ℕ) (_ : 0 ≠ d₁) (_ : 0 ≠ d₂) (_ : d₁ + d₂ = d)
       (Z : C) (a : Y ⟶ Z) (b : Z ⟶ X) (_ : PreGaloisCategory.IsConnected Z),
         a ≫ b = f ∧ IsGaloisCover a ∧ IsGaloisCover b ∧ degMap a = p ^ d₁ ∧
           degMap b = p ^ d₂ := by
@@ -65,7 +65,8 @@ lemma exists_fac_of_degMap_eq_pow {Y X : C} [PreGaloisCategory.IsConnected Y]
   rw [hf] at hf'
   obtain ⟨H, _, h₁⟩ := IsPGroup.exists_subgroup hf'
   obtain ⟨Z, _, a, b, fac, _, _, h₂⟩ := exists_of_normal_subgroup H
-  have ha : degMap a = Nat.card H := sorry
+  have ha : degMap a = Nat.card H := by
+    rw [degMap_eq_card_range_overMap a b f, h₂]
   refine ⟨d, 1, by lia, by simp, by lia, Z, a, b, inferInstance, fac,
     inferInstance, inferInstance, by rw [ha, h₁], ?_⟩
   rw [degMap_comp' a b f, ha, h₁, Nat.succ_eq_add_one,

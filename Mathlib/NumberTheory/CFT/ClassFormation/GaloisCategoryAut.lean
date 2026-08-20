@@ -46,6 +46,14 @@ lemma Aut.injective_overMap {Z Y X : C} (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ 
   ext
   exact (Over.forget X).congr_map (congr_arg Iso.hom hσ)
 
+noncomputable def Aut.overMapEquiv
+    {Z Y X : C} (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ X)
+    (fac : f ≫ g = fg := by cat_disch) :
+    Aut (Over.mk f) ≃* (Aut.overMap f g fg).range :=
+  MulEquiv.ofBijective (overMap f g fg).rangeRestrict ⟨by
+    simpa only [MonoidHom.rangeRestrict_injective_iff] using
+      Aut.injective_overMap f g fg, MonoidHom.rangeRestrict_surjective _⟩
+
 open PreGaloisCategory
 
 namespace GaloisCategory

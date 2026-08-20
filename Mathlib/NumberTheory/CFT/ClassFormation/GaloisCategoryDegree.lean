@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Data.Set.Card
+public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryAut
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryInduction
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCover
 
@@ -151,6 +152,15 @@ lemma natCard_aut_overMk {Y X : C} [PreGaloisCategory.IsConnected X]
     (f : Y ⟶ X) [IsGaloisCover f] :
     Nat.card (Aut (Over.mk f)) = degMap f := by
   simp
+
+lemma degMap_eq_card_range_overMap
+    {Z Y X : C} [PreGaloisCategory.IsConnected Y] [PreGaloisCategory.IsConnected X]
+    (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ X) [IsGaloisCover fg]
+    (fac : f ≫ g = fg := by cat_disch) :
+    degMap f = Nat.card (Aut.overMap f g fg).range := by
+  have := isGaloisCover_of_comp f g fg
+  rw [← natCard_aut_overMk]
+  exact Nat.card_congr (Aut.overMapEquiv f g fg).toEquiv
 
 end GaloisCategory
 
