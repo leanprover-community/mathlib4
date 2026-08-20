@@ -251,11 +251,9 @@ private noncomputable def boundedTonelliApproximation
 
 /-- The bounded continuous form of each Tonelli approximation has Lipschitz constant `L`. -/
 private lemma lipschitzWith_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
-    LipschitzWith L (boundedTonelliApproximation hf n) := by
-  rw [lipschitzWith_iff_dist_le_mul]
-  intro t s
-  rw [boundedTonelliApproximation]
-  exact (lipschitzOnWith_tonelliApproximation hf n).dist_le_mul t.val t.property s.val s.property
+    LipschitzWith L (boundedTonelliApproximation hf n) :=
+  lipschitzWith_iff_dist_le_mul.mpr fun t s ↦
+    (lipschitzOnWith_tonelliApproximation hf n).dist_le_mul t.val t.2 s.val s.2
 
 /-- The family of bounded continuous Tonelli approximations is equicontinuous. -/
 private lemma equicontinuous_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
