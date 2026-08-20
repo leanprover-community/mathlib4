@@ -28,7 +28,6 @@ universe w
 
 open CategoryTheory Limits
 
-set_option backward.isDefEq.respectTransparency.types false in
 open Cardinal.SharplyLT.IsCardinalFilteredAndHasCardinalLT in
 lemma Cardinal.SharplyLT.exists_retract_of_isCardinalPresentable
     {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
@@ -49,7 +48,7 @@ lemma Cardinal.SharplyLT.exists_retract_of_isCardinalPresentable
   obtain ⟨K, i, hi⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ₂
     (isColimit κ₁ κ₂ p) (𝟙 X)
   exact ⟨colimit κ₁ κ₂ p K,
-    { i := i, r := colimit.π κ₁ κ₂ p K }, Subtype K.val,
+    { i := i, r := colimit.π κ₁ κ₂ p K }, K.val,
     inferInstance, K.prop.1, K.prop.2, ⟨.colimit (K.val.mono_coe.functor ⋙ p.diag)
       (fun _ ↦ p.prop_diag_obj _)⟩⟩
 
