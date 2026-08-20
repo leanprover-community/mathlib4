@@ -375,7 +375,7 @@ lemma continuousOn_comp_tonelliApproximation_delayedInput
   intro s hs
   exact ⟨mem_Icc.mp (Icc_t0_subset_Icc hs), mapsTo_tonelliApproximation_delayedInput hf n hs⟩
 
-lemma mem_Icc_of_mem_uIoc {s t : ℝ} (ht : t ∈ Icc t₀.val tmax)
+private lemma mem_Icc_of_mem_uIoc {s t : ℝ} (ht : t ∈ Icc t₀.val tmax)
     (hs : s ∈ uIoc t₀.val t) : s ∈ Icc t₀.val tmax :=
   Icc_subset_Icc_right ht.2 (Ioc_subset_Icc_self (uIoc_of_le ht.1 ▸ hs))
 
