@@ -172,7 +172,6 @@ theorem Topology.IsInducing.hasSmallInductiveDimensionLT {f : X → Y} (hf : IsI
     refine .succ n _ (hs.isInducing hf) ?_
     rintro _ ⟨U, hU, rfl⟩
     apply ih U hU
-    apply (hf.restrictPreimage <| frontier U).comp
     refine (hf.comp IsInducing.subtypeVal).codRestrict fun x ↦ ?_
     exact hf.continuous.frontier_preimage_subset U x.2
 
@@ -204,5 +203,5 @@ instance {p : X → Prop} (n : ℕ) [h : HasSmallInductiveDimensionLT X n] :
 
 /-- The small inductive dimension is preserved by homeomorphisms. -/
 protected theorem Homeomorph.smallInductiveDimension_congr (f : X ≃ₜ Y) :
-    smallInductiveDimension X = smallInductiveDimension Y := by
+    smallInductiveDimension X = smallInductiveDimension Y :=
   le_antisymm f.isInducing.smallInductiveDimension_le f.symm.isInducing.smallInductiveDimension_le
