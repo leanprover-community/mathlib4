@@ -135,7 +135,9 @@ private theorem lintegral_mul_eq_lintegral_funMulInvSnorm_mul_funMulInvSnorm_mul
     (hf_nonzero : ∫⁻ a, f a ^ p ∂μ ≠ 0) (hg_nonzero : ∫⁻ a, g a ^ q ∂μ ≠ 0) :
     ∫⁻ a, (f * g) a ∂μ = (∫⁻ a, (funMulInvSnorm f p μ * funMulInvSnorm g q μ) a ∂μ) *
       ((∫⁻ c : α, f c ^ p ∂μ) ^ (1 / p) * (∫⁻ c : α, g c ^ q ∂μ) ^ (1 / q)) := by
-  rw [← lintegral_mul_const' _ _ <| by grind [mul_eq_top, rpow_eq_top_iff]]
+  have : (∫⁻ (c : α), f c ^ p ∂μ) ^ (1 / p) * (∫⁻ (c : α), g c ^ q ∂μ) ^ (1 / q) ≠ ∞ := by
+    grind [mul_eq_top, rpow_eq_top_iff]
+  rw [← lintegral_mul_const' _ _ this]
   refine lintegral_congr fun a ↦ ?_
   rw [Pi.mul_apply, fun_eq_funMulInvSnorm_mul_eLpNorm f hf_nonzero hf_nontop,
     fun_eq_funMulInvSnorm_mul_eLpNorm g hg_nonzero hg_nontop, Pi.mul_apply]
