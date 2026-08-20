@@ -163,7 +163,6 @@ lemma IsStableUnderBaseChange.tensorProduct (hP : RingHom.IsStableUnderBaseChang
   -- This only works because the `Algebra.TensorProduct.rightAlgebra` instance is present here.
   hP _ _ _ _ h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsStableUnderBaseChange.pushout_inl (hP : RingHom.IsStableUnderBaseChange @P)
     (hP' : RingHom.RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T) (H : P g.hom) :
     P (pushout.inl _ _ : S ⟶ pushout f g).hom := by

@@ -70,18 +70,15 @@ open scoped BoundedContinuousFunction
 variable {E : Type*} [NormedAddCommGroup E]
   {f : ℝ × E → E} {α : ℝ → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {r L : ℝ≥0}
 
+private lemma Icc_t0_subset_Icc : Icc t₀.val tmax ⊆ Icc tmin tmax :=
+  Icc_subset_Icc_left t₀.2.1
+
 lemma mul_abs_sub_le_radius {t : ℝ} (hf : IsPeano f t₀ x₀ r L)
     (ht : t ∈ Icc t₀.val tmax) : L * |t - t₀| ≤ r := by
-  have h_diff : t - t₀ ≤ max (tmax - t₀) (t₀ - tmin) := by
-    calc
-      t - t₀ ≤ tmax - t₀ := sub_le_sub_right ht.2 t₀
-      tmax - t₀ ≤ max (tmax - t₀) (t₀ - tmin) := le_max_left (tmax - t₀) (t₀ - tmin)
-  calc
-    L * |t - t₀| = L * (t - t₀) := by rw [abs_of_nonneg (sub_nonneg.mpr ht.1)]
-    L * (t - t₀) ≤ L * max (tmax - t₀) (t₀ - tmin) := by
-      apply mul_le_mul_of_nonneg_left h_diff
-      positivity
-    L * max (tmax - t₀) (t₀ - tmin) ≤ r := hf.mul_max_le
+  rw [abs_of_nonneg (sub_nonneg.mpr ht.1)]
+  refine le_trans ?_ hf.mul_max_le
+  gcongr
+  exact (sub_le_sub_right ht.2 _).trans (le_max_left _ _)
 
 variable [NormedSpace ℝ E]
 
@@ -113,33 +110,21 @@ lemma mapsTo_delayedInput_previous_interval (n k : ℕ) (t₀ : Icc tmin tmax) :
   rw [mem_Icc] at hs ⊢
   have h_mul_nonneg : 0 ≤ (k : ℝ) * stepSize t₀ n :=
     mul_nonneg (Nat.cast_nonneg k) (stepSize_nonneg t₀ n)
-  unfold delayedInput
-  constructor
-  · exact le_max_right _ _
-  · apply max_le <;> linarith
+  exact ⟨le_max_right _ _, max_le (by linarith) (by linarith)⟩
 
-/-- The delayed input maps `Icc t₀ tmax` to itself. -/
 lemma mapsTo_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
     MapsTo (delayedInput t₀ n) (Icc t₀.val tmax) (Icc t₀.val tmax) := by
   intro s hs
   rw [mem_Icc] at hs ⊢
   have := stepSize_nonneg t₀ n
-  have h_t₀_le_tmax : t₀.val ≤ tmax := t₀.2.2
-  unfold delayedInput
-  constructor
-  · exact le_max_right _ _
-  · apply max_le <;> linarith
+  exact ⟨le_max_right _ _, max_le (by linarith) t₀.2.2⟩
 
-/-- The delayed input is Lipschitz continuous with constant one. -/
 lemma lipschitzWith_delayedInput (t₀ : Icc tmin tmax) (n : ℕ) :
     LipschitzWith 1 (delayedInput t₀ n) := by
   rw [lipschitzWith_iff_dist_le_mul]
-  simp only [NNReal.coe_one, one_mul, Real.dist_eq]
   intro x y
-  have h_dist :=
+  simpa [delayedInput, Real.dist_eq, sub_sub_sub_cancel_right] using
     abs_max_sub_max_le_abs (x - stepSize t₀ n) (y - stepSize t₀ n) t₀.val
-  rw [sub_sub_sub_cancel_right] at h_dist
-  assumption
 
 /-- The recursively defined curves used to build the Tonelli approximations. -/
 noncomputable def tonelliIterate (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x₀ : E) (n : ℕ) :
@@ -178,7 +163,7 @@ private lemma tonelliIterate_bounds (hf : IsPeano f t₀ x₀ r L) (n k : ℕ) :
           (ContinuousOn.comp hk.2.continuousOn
             (lipschitzWith_delayedInput t₀ n).continuous.continuousOn
             (mapsTo_delayedInput t₀ n)))
-        (fun t ht ↦ ⟨⟨t₀.2.1.trans ht.1, ht.2⟩, h_map ht⟩)
+        (fun t ht ↦ ⟨Icc_t0_subset_Icc ht, h_map ht⟩)
     have h_int :
         IntervalIntegrable
           (fun s ↦ f (s, tonelliIterate f t₀ x₀ n k (delayedInput t₀ n s)))
@@ -191,7 +176,7 @@ private lemma tonelliIterate_bounds (hf : IsPeano f t₀ x₀ r L) (n k : ℕ) :
         intervalIntegral.integral_interval_sub_left]
       · refine intervalIntegral.norm_integral_le_of_norm_le_const fun t ht ↦ ?_
         have ht' := uIoc_subset_uIcc.trans (uIcc_subset_Icc hb ha) ht
-        exact hf.norm_le t ⟨t₀.2.1.trans ht'.1, ht'.2⟩ _ (h_map ht')
+        exact hf.norm_le t (Icc_t0_subset_Icc ht') _ (h_map ht')
       · exact h_int.mono_set (uIcc_subset_uIcc left_mem_uIcc <| Icc_subset_uIcc ha)
       · exact h_int.mono_set (uIcc_subset_uIcc left_mem_uIcc <| Icc_subset_uIcc hb)
     refine ⟨fun t ht ↦ ?_, h_lip⟩
@@ -226,13 +211,8 @@ lemma tonelliIterate_eq_succ_on_Icc (n : ℕ) (k : ℕ) (t : ℝ)
     simp only [add_right_inj]
     apply intervalIntegral.integral_congr
     intro s hs
-    have hs_min : (t₀ : ℝ) ≤ s := min_eq_left ht.1 ▸ hs.1
-    have hs_max : s ≤ t := max_eq_right ht.1 ▸ hs.2
-    have hs_in_Icc : s ∈ Icc (t₀ : ℝ) ((t₀ : ℝ) + (k + 1 : ℝ) * stepSize t₀ n) :=
-      ⟨hs_min, le_trans hs_max ht.2⟩
-    simp only [
-      ih (delayedInput t₀ n s)
-        (mapsTo_delayedInput_previous_interval n k t₀ hs_in_Icc)]
+    simp only [ih _ (mapsTo_delayedInput_previous_interval n k t₀
+      (uIcc_subset_Icc (left_mem_Icc.mpr (ht.1.trans ht.2)) ht hs))]
 
 /-- The diagonal sequence of Tonelli approximations. -/
 noncomputable def tonelliApproximation
@@ -248,6 +228,11 @@ lemma mapsTo_tonelliApproximation_closedBall (hf : IsPeano f t₀ x₀ r L) (n :
 lemma lipschitzOnWith_tonelliApproximation (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
     LipschitzOnWith L (tonelliApproximation f t₀ x₀ n) (Icc t₀.val tmax) :=
   lipschitzOnWith_tonelliIterate hf (n + 1) (n + 1)
+
+/-- Every diagonal Tonelli approximation takes the value `x₀` at `t₀`. -/
+lemma tonelliApproximation_apply_t₀ (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x₀ : E) (n : ℕ) :
+    tonelliApproximation f t₀ x₀ n t₀ = x₀ :=
+  tonelliIterate_apply_t₀ f t₀ x₀ (n + 1) (n + 1)
 
 /-- Every diagonal Tonelli approximation satisfies the integral equation with delayed input. -/
 lemma tonelliApproximation_eq_integral (n : ℕ) (t : ℝ) (ht : t ∈ Icc t₀.val tmax) :
@@ -267,75 +252,42 @@ end TonelliApproximation
 
 section ArzelaAscoli
 
-/-- Restrict a curve on `ℝ` to the interval `Icc t₀ tmax`. -/
-private def restrictToIcc (α : ℝ → E) : Icc t₀.val tmax → E :=
-  fun t ↦ α t
-
-/-- Package a continuous function on `Icc t₀ tmax` as a continuous map. -/
-private def continuousMapOnIcc (α : Icc t₀.val tmax → E) (hα : Continuous α) :
-    C(Icc t₀.val tmax, E) where
-  toFun := α
-  continuous_toFun := hα
-
-/-- Package a continuous map on the compact interval `Icc t₀ tmax` as a bounded continuous map. -/
-private def boundedContinuousFunctionOnIcc (α : C(Icc t₀.val tmax, E)) :
-    Icc t₀.val tmax →ᵇ E :=
-  BoundedContinuousFunction.mkOfCompact α
-
 /-- The Tonelli approximations as bounded continuous functions on `Icc t₀ tmax`. -/
 private noncomputable def boundedTonelliApproximation
     (hf : IsPeano f t₀ x₀ r L) (n : ℕ) : Icc t₀.val tmax →ᵇ E :=
-  boundedContinuousFunctionOnIcc
-    (continuousMapOnIcc (restrictToIcc (tonelliApproximation f t₀ x₀ n))
-      (continuousOn_iff_continuous_domRestrict.mp
-        (lipschitzOnWith_tonelliApproximation hf n).continuousOn))
+  .mkOfCompact ⟨(Icc t₀.val tmax).domRestrict (tonelliApproximation f t₀ x₀ n),
+    continuousOn_iff_continuous_domRestrict.mp
+      (lipschitzOnWith_tonelliApproximation hf n).continuousOn⟩
 
 /-- The bounded continuous form of each Tonelli approximation has Lipschitz constant `L`. -/
 private lemma lipschitzWith_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
-    LipschitzWith L (boundedTonelliApproximation hf n) := by
-  rw [lipschitzWith_iff_dist_le_mul]
-  intro t s
-  rw [boundedTonelliApproximation]
-  exact (lipschitzOnWith_tonelliApproximation hf n).dist_le_mul t.val t.property s.val s.property
+    LipschitzWith L (boundedTonelliApproximation hf n) :=
+  lipschitzWith_iff_dist_le_mul.mpr fun t s ↦
+    (lipschitzOnWith_tonelliApproximation hf n).dist_le_mul t.val t.2 s.val s.2
 
 /-- The family of bounded continuous Tonelli approximations is equicontinuous. -/
 private lemma equicontinuous_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
-    Equicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) := by
-  have : UniformEquicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) :=
-    LipschitzWith.uniformEquicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) L
-      (lipschitzWith_boundedTonelliApproximation hf)
-  apply UniformEquicontinuous.equicontinuous this
+    Equicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) :=
+  (LipschitzWith.uniformEquicontinuous _ L
+    (lipschitzWith_boundedTonelliApproximation hf)).equicontinuous
 
 variable [FiniteDimensional ℝ E]
 
 /-- The closure of the family of the Tonelli approximations is compact. -/
 private lemma isCompact_closure_range_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
     IsCompact (closure (range (boundedTonelliApproximation hf))) := by
-  apply BoundedContinuousFunction.arzela_ascoli (closedBall x₀ r) _ _ _ _
-  · apply isCompact_closedBall
-  · intro g x hg
-    simp only [mem_range] at hg
-    obtain ⟨n, rfl⟩ := hg
-    unfold boundedTonelliApproximation boundedContinuousFunctionOnIcc continuousMapOnIcc
-      restrictToIcc
-    simp only [BoundedContinuousFunction.mkOfCompact_apply]
-    apply mapsTo_tonelliApproximation_closedBall hf n x.property
-  · intro x U hU
-    apply (equicontinuous_boundedTonelliApproximation hf x U hU).mono
-    simp
+  apply BoundedContinuousFunction.arzela_ascoli (closedBall x₀ r) (isCompact_closedBall _ _)
+  · rintro g x ⟨n, rfl⟩
+    exact mapsTo_tonelliApproximation_closedBall hf n x.2
+  · exact fun x U hU ↦ (equicontinuous_boundedTonelliApproximation hf x U hU).mono (by simp)
 
 /-- The Tonelli approximations admit a convergent subsequence of bounded continuous functions. -/
 private lemma exists_tendsto_subseq_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
     ∃ β : Icc t₀.val tmax →ᵇ E, ∃ φ : ℕ → ℕ, StrictMono φ ∧
       Tendsto (boundedTonelliApproximation hf ∘ φ) atTop (nhds β) := by
-  let s : Set (Icc t₀.val tmax →ᵇ E) := closure (range (boundedTonelliApproximation hf))
-  have h_s_compact : IsCompact s := by
-    simpa [s] using isCompact_closure_range_boundedTonelliApproximation hf
-  have h_mem : ∀ n, boundedTonelliApproximation hf n ∈
-      closure (range (boundedTonelliApproximation hf)) := by
-    intro n
-    exact subset_closure ⟨n, rfl⟩
-  obtain ⟨β, _, φ, hφ_mono, hφ_tendsto⟩ := h_s_compact.tendsto_subseq h_mem
+  obtain ⟨β, _, φ, hφ_mono, hφ_tendsto⟩ :=
+    (isCompact_closure_range_boundedTonelliApproximation hf).tendsto_subseq
+      fun n ↦ subset_closure ⟨n, rfl⟩
   exact ⟨β, φ, hφ_mono, hφ_tendsto⟩
 
 end ArzelaAscoli
@@ -353,44 +305,23 @@ lemma exists_tendstoUniformlyOn_subseq_tonelliApproximation (hf : IsPeano f t₀
         TendstoUniformlyOn (tonelliApproximation f t₀ x₀ ∘ φ) α atTop (Icc t₀.val tmax) := by
   obtain ⟨β, φ, hφ_mono, hβ_tendsto⟩ := exists_tendsto_subseq_boundedTonelliApproximation hf
   let α : ℝ → E := fun t ↦ if h : t ∈ Icc t₀.val tmax then β ⟨t, h⟩ else 0
+  have hα : ∀ t : Icc t₀.val tmax, α t = β t := fun t ↦ dite_eq_left t.2
+  have h_uniform : TendstoUniformly (fun n ↦ boundedTonelliApproximation hf (φ n)) β atTop :=
+    BoundedContinuousFunction.tendsto_iff_tendstoUniformly.mp hβ_tendsto
   refine ⟨α, φ, hφ_mono, ?_, ?_, ?_⟩
-  · rw [continuousOn_iff_continuous_domRestrict]
-    have h_restrict : (Set.Icc t₀.val tmax).domRestrict α = β := by
-      ext x
-      simp only [α, Set.domRestrict]
-      exact dite_eq_left x.prop
-    rw [h_restrict]
+  · rw [continuousOn_iff_continuous_domRestrict,
+      show (Icc t₀.val tmax).domRestrict α = β from funext hα]
     exact β.continuous
   · intro t ht
-    have hα_apply : α t = β ⟨t, ht⟩ := by
-      simp only [α]
-      exact dite_eq_left ht
-    rw [hα_apply]
-    let t' : Icc t₀.val tmax := ⟨t, ht⟩
-    have h_uniform : TendstoUniformly (fun n ↦ boundedTonelliApproximation hf (φ n)) β atTop :=
-      BoundedContinuousFunction.tendsto_iff_tendstoUniformly.mp hβ_tendsto
-    have h_pointwise :
-        Tendsto (fun n ↦ boundedTonelliApproximation hf (φ n) t') atTop (nhds (β t')) :=
-      h_uniform.tendsto_at t'
-    apply isClosed_closedBall.mem_of_tendsto h_pointwise
-    filter_upwards with n
-    change tonelliApproximation f t₀ x₀ (φ n) t ∈ closedBall x₀ r
-    exact mapsTo_tonelliApproximation_closedBall hf (φ n) ht
-  · have h_uniform : TendstoUniformly (fun n ↦ boundedTonelliApproximation hf (φ n)) β atTop :=
-      BoundedContinuousFunction.tendsto_iff_tendstoUniformly.mp hβ_tendsto
-    rw [tendstoUniformlyOn_iff_tendstoUniformly_comp_coe]
-    have hα_comp : α ∘ Subtype.val = ⇑β := by
-      ext t
-      simp only [Function.comp_apply, α]
-      exact dite_eq_left t.prop
-    rw [hα_comp]
-    change TendstoUniformly
-      (fun n (t : Icc t₀.val tmax) ↦ boundedTonelliApproximation hf (φ n) t) ⇑β atTop
+    rw [hα ⟨t, ht⟩]
+    refine isClosed_closedBall.mem_of_tendsto (h_uniform.tendsto_at ⟨t, ht⟩) ?_
+    filter_upwards with n using mapsTo_tonelliApproximation_closedBall hf (φ n) ht
+  · rw [tendstoUniformlyOn_iff_tendstoUniformly_comp_coe,
+      show α ∘ Subtype.val = ⇑β from funext hα]
     exact h_uniform
 
 variable {φ : ℕ → ℕ}
 
-/-- The time-step sizes of the Tonelli approximations tend to zero. -/
 lemma tendsto_stepSize_zero : Tendsto (stepSize t₀) atTop (nhds 0) :=
   tendsto_const_div_atTop_nhds_zero_nat (tmax - t₀)
 
@@ -450,11 +381,9 @@ lemma continuousOn_comp_tonelliApproximation_delayedInput
   apply hf.continuousOn.comp
     (ContinuousOn.prodMk continuousOn_id (continuousOn_tonelliApproximation_delayedInput hf n))
   intro s hs
-  exact
-    ⟨mem_Icc.mp ⟨t₀.2.1.trans hs.1, hs.2⟩,
-      mapsTo_tonelliApproximation_delayedInput hf n hs⟩
+  exact ⟨mem_Icc.mp (Icc_t0_subset_Icc hs), mapsTo_tonelliApproximation_delayedInput hf n hs⟩
 
-lemma mem_Icc_of_mem_uIoc {s t : ℝ} (ht : t ∈ Icc t₀.val tmax)
+private lemma mem_Icc_of_mem_uIoc {s t : ℝ} (ht : t ∈ Icc t₀.val tmax)
     (hs : s ∈ uIoc t₀.val t) : s ∈ Icc t₀.val tmax :=
   Icc_subset_Icc_right ht.2 (Ioc_subset_Icc_self (uIoc_of_le ht.1 ▸ hs))
 
@@ -481,7 +410,7 @@ lemma exists_eq_forall_mem_Icc_eq_integral_forward (hf : IsPeano f t₀ x₀ r L
   · filter_upwards with n
     filter_upwards with s hs
     have hs := mem_Icc_of_mem_uIoc ht hs
-    apply hf.norm_le s ⟨t₀.2.1.trans hs.1, hs.2⟩
+    apply hf.norm_le s (Icc_t0_subset_Icc hs)
     exact mapsTo_tonelliApproximation_delayedInput hf (φ n) hs
   · have h_lim :=
       tendsto_tonelliApproximation_delayedInput_of_tendstoUniformlyOn_tonelliApproximation
@@ -493,10 +422,10 @@ lemma exists_eq_forall_mem_Icc_eq_integral_forward (hf : IsPeano f t₀ x₀ r L
         ⟨Tendsto.prodMk_nhds tendsto_const_nhds (h_lim s hs), ?_⟩
       apply Eventually.of_forall
       exact fun n ↦ mem_prod.mpr
-        ⟨⟨t₀.2.1.trans hs.1, hs.2⟩,
+        ⟨Icc_t0_subset_Icc hs,
           MapsTo.comp (mapsTo_tonelliApproximation_closedBall hf _)
             (mapsTo_delayedInput t₀ _) hs⟩
-    · refine ⟨⟨t₀.2.1.trans hs.1, hs.2⟩, ?_⟩
+    · refine ⟨Icc_t0_subset_Icc hs, ?_⟩
       apply IsClosed.mem_of_tendsto isClosed_closedBall (hα_tendsto.tendsto_at hs)
       exact Eventually.of_forall (fun n ↦ mapsTo_tonelliApproximation_closedBall hf (φ n) hs)
 
