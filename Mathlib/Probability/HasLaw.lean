@@ -42,6 +42,9 @@ structure HasLaw (P : Measure Ω := by volume_tac) : Prop where
 
 attribute [fun_prop] HasLaw.aemeasurable
 
+lemma hasLaw_map (hX : AEMeasurable X P) : HasLaw X (P.map X) P where
+  map_eq := rfl
+
 lemma HasLaw.measure_eq (hX : HasLaw X μ P) {p : 𝓧 → Prop} (hp : MeasurableSet {x | p x}) :
     P {ω | p (X ω)} = μ {x | p x} := by
   rw [← hX.map_eq, map_apply_of_aemeasurable hX.aemeasurable hp]

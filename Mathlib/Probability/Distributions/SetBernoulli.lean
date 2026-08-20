@@ -215,21 +215,22 @@ lemma setBernoulli_empty : setBer((∅ : Set ι), p) = Measure.dirac ∅ := by
 
 omit [Countable ι] in
 lemma HasLaw.hasLaw_indicator_infinitePi_ite_of_setBernoulli [DecidablePred (· ∈ u)]
+    {M : Type*} [MeasurableSpace M] [MeasurableSingletonClass M] [Zero M] (c : M)
     {S : Ω → Set ι} (hS : HasLaw S setBer(u, p) P) :
-    HasLaw (fun ω i ↦ {ω' | i ∈ S ω'}.indicator 1 ω)
-      (infinitePi (fun i ↦ if i ∈ u then Ber(1, 0, p) else dirac 0)) P := by
+    HasLaw (fun ω i ↦ {ω' | i ∈ S ω'}.indicator (fun _ ↦ c) ω)
+      (infinitePi (fun i ↦ if i ∈ u then Ber(c, 0, p) else dirac 0)) P := by
   classical
-  have : (fun ω i ↦ {ω' | i ∈ S ω'}.indicator 1 ω) =
-      (fun s i ↦ if i ∈ s then 1 else 0) ∘ S := by ext ω i; by_cases h : i ∈ S ω <;> simp [h]
+  have : (fun ω i ↦ {ω' | i ∈ S ω'}.indicator (fun _ ↦ c) ω) =
+      (fun s i ↦ if i ∈ s then c else 0) ∘ S := by ext ω i; by_cases h : i ∈ S ω <;> simp [h]
   rw [this]
   constructor
   · exact Measurable.comp_aemeasurable
       (measurable_pi_lambda _ fun i ↦ .ite (by measurability) (by fun_prop) (by fun_prop))
       hS.aemeasurable
-  have : (fun s i ↦ if i ∈ s then 1 else 0) ∘ (fun (p : ι → Prop) ↦ {i | p i}) =
-      fun p i ↦ if p i then 1 else 0 := by ext; simp
+  have : (fun s i ↦ if i ∈ s then c else 0) ∘ (fun (p : ι → Prop) ↦ {i | p i}) =
+      fun p i ↦ if p i then c else 0 := by ext; simp
   rw [← AEMeasurable.map_map_of_aemeasurable, hS.map_eq, setBernoulli_eq_map, map_map, this,
-    infinitePi_map_pi (f := fun x q ↦ if q then 1 else 0) (μ := fun i ↦ Ber(i ∈ u, False, p))]
+    infinitePi_map_pi (f := fun x q ↦ if q then c else 0) (μ := fun i ↦ Ber(i ∈ u, False, p))]
   · congr with i : 1
     split_ifs with hi <;> simp [hi]
   any_goals fun_prop

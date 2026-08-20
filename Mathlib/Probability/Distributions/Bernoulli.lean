@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Probability.HasLaw
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # Bernoulli distribution
@@ -140,15 +141,6 @@ lemma bernoulliMeasure_real_apply_of_notMem_of_notMem (p : I) {s : Set X}
   classical
   simp_all [bernoulliMeasure_real_apply]
 
-@[simp]
-lemma bernoulliMeasure_real_apply_singleton_left [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
-    Ber(x, y, p).real {x} = p :=
-  bernoulliMeasure_real_apply_of_mem_of_notMem p (by simp) (by simp) (by grind)
-
-lemma bernoulliMeasure_real_apply_singleton_right [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
-    Ber(x, y, p).real {y} = 1 - p := by
-  simp [h]
-
 instance : IsProbabilityMeasure Ber(x, y, p) where
   measure_univ := by simp [bernoulliMeasure_def]
 
@@ -183,6 +175,88 @@ section Integral
 
 variable {E : Type*} [NormedAddCommGroup E]
 
+variable {X E : Type*} {mX : MeasurableSpace X} [SeminormedAddCommGroup E]
+  {f : X → E} {p : ENNReal} {μ ν : Measure X}
+
+lemma test : eLpNormEssSup f (μ + ν) = max (eLpNormEssSup f μ) (eLpNormEssSup f ν) := by
+  apply le_antisymm
+  · apply eLpNormEssSup_le_of_ae_enorm_bound
+    rw [ae_add_measure_iff]
+    constructor
+    filter_upwards [enorm_ae_le_eLpNormEssSup f μ] with x hx
+    grw [hx, ← le_max_left]
+    filter_upwards [enorm_ae_le_eLpNormEssSup f ν] with x hx
+    grw [hx, ← le_max_right]
+  · rw [max_le_iff]
+    constructor
+    · exact eLpNormEssSup_mono_measure _ (by exact AbsolutelyContinuous.add_right (fun ⦃s⦄ a ↦ a) ν)
+    · exact eLpNormEssSup_mono_measure _ (by exact AbsolutelyContinuous.add_right' (fun ⦃s⦄ a ↦ a) μ)
+
+lemma test' : eLpNormEssSup f (μ + ν) ≤ eLpNormEssSup f μ + eLpNormEssSup f ν := by
+  apply eLpNormEssSup_le_of_ae_enorm_bound
+  rw [ae_add_measure_iff]
+  constructor
+  filter_upwards [enorm_ae_le_eLpNormEssSup f μ] with x hx
+  grw [hx, ← le_add_right]
+  rfl
+  filter_upwards [enorm_ae_le_eLpNormEssSup f ν] with x hx
+  grw [hx, ← le_add_left]
+  rfl
+
+lemma test'' (p : ℝ) (hp : 1 ≤ p) : eLpNorm' f p (μ + ν) ≤ eLpNorm' f p μ + eLpNorm' f p ν := by
+  grw [eLpNorm', lintegral_add_measure, ENNReal.rpow_add_le_add_rpow, ← eLpNorm', ← eLpNorm']
+  simp
+  grind
+  rw [one_div_le]
+  simpa
+  grind
+  grind
+
+lemma test''' (hp : 1 ≤ p) : MemLp f p (μ + ν) ↔ MemLp f p μ ∧ MemLp f p ν where
+  mp h := ⟨h.left_of_add_measure, h.right_of_add_measure⟩
+  mpr h := by
+    refine ⟨h.1.aestronglyMeasurable.add_measure h.2.aestronglyMeasurable, ?_⟩
+    obtain rfl | hp' := eq_or_ne p ∞
+    · grw [eLpNorm_exponent_top, test, max_le_add_of_nonneg, ← eLpNorm_exponent_top,
+        ← eLpNorm_exponent_top, h.1.2]
+      · simp
+      · exact h.2.2.ne
+      all_goals positivity
+    · grw [eLpNorm_eq_eLpNorm' _ hp', test'', ← eLpNorm_eq_eLpNorm', ← eLpNorm_eq_eLpNorm',
+        h.1.2]
+      · simp
+      · exact h.2.2.ne
+      · exact zero_lt_one.trans_le hp |>.ne'
+      · exact hp'
+      · exact zero_lt_one.trans_le hp |>.ne'
+      · exact hp'
+      · rw [← ENNReal.ofReal_le_iff_le_toReal hp']
+        simpa
+      · exact zero_lt_one.trans_le hp |>.ne'
+
+@[simp]
+lemma eLpNormEssSup_dirac [MeasurableSingletonClass X] (x : X) :
+    eLpNormEssSup f (dirac x) = ‖f x‖ₑ := by
+  simp [eLpNormEssSup, essSup, Filter.limsup, Filter.limsSup]
+  apply le_antisymm
+  · apply sInf_le le_rfl
+  · simp
+
+lemma memLp_dirac (x : X) (q : ℝ≥0∞) [MeasurableSingletonClass X] : MemLp f q (dirac x) := by
+  refine ⟨by fun_prop, ?_⟩
+  rw [eLpNorm]
+  split_ifs with hq hq'
+  · simp
+  · simp
+  · simp [eLpNorm']
+    finiteness
+
+lemma memLp_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) (q : ℝ≥0∞)
+    (hq : 1 ≤ q) :
+    MemLp f q Ber(x, y, p) := by
+  simp [bernoulliMeasure_def, test''', hq,
+    Integrable.smul_measure_nnreal]
+
 lemma integrable_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) :
     Integrable f Ber(x, y, p) := by
   simp [bernoulliMeasure_def, integrable_add_measure, integrable_dirac,
@@ -196,6 +270,16 @@ lemma integral_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (
   · simp [NNReal.smul_def]
   all_goals exact (integrable_dirac (by simp)).smul_measure_nnreal
 
+lemma integral_id_bernoulliMeasure : ∫ x : ℝ, x ∂Ber(1, 0, p) = p := by
+  simp [integral_bernoulliMeasure]
+
+lemma variance_id_bernoulliMeasure : Var[id; Ber(1, 0, p)] = p * (1 - p) := by
+  rw [variance_eq_integral (by fun_prop)]
+  simp [integral_bernoulliMeasure]
+  ring
+
+private lemma memLp_top_id_bernoulliMeasure : MemLp (id : ℝ → ℝ)
+
 end Integral
 
 section HasLaw
@@ -204,25 +288,22 @@ section HasLaw
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
+/-- The constant indicator of a set follows a Bernoulli distribution. -/
 theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M]
-    [MeasurableSpace M] (c : M) {s : Set Ω}
-    (hs : NullMeasurableSet s P) :
-    HasLaw (s.indicator (fun _ ↦ c)) (bernoulliMeasure c 0 ⟨P.real s, by simp⟩) P where
-  aemeasurable := aemeasurable_const.indicator₀ hs
-  map_eq := by
-    classical
-    have := (aemeasurable_const (b := c)).indicator₀ hs
-    apply eq_bernoulliMeasure
-    all_goals
-      intro t ht h1 h2
-      rw [map_apply_of_aemeasurable this ht]
-      simp_all [Set.indicator_const_preimage_eq_union, measure_compl₀ hs, ENNReal.coe_nnreal_eq,
-        ENNReal.ofReal_sub]
+    [MeasurableSpace M] (c : M) {s : Set Ω} (hs : NullMeasurableSet s P) :
+    HasLaw (s.indicator (fun _ ↦ c)) Ber(c, 0, ⟨P.real s, by simp⟩) P := by
+  classical
+  have h : AEMeasurable (s.indicator fun _ ↦ c) P := aemeasurable_const.indicator₀ hs
+  refine ⟨h, eq_bernoulliMeasure ?_ ?_ ?_ ?_⟩
+  all_goals
+    intro t ht h1 h2
+    simp_all [map_apply_of_aemeasurable h ht, Set.indicator_const_preimage_eq_union,
+      measure_compl₀ hs, ENNReal.coe_nnreal_eq, ENNReal.ofReal_sub]
 
+/-- The constant indicator of a set follows a Bernoulli distribution. -/
 theorem hasLaw_indicator_one_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M] [One M]
-    [MeasurableSpace M] {s : Set Ω}
-    (hs : NullMeasurableSet s P) :
-    HasLaw (s.indicator (1 : Ω → M)) (bernoulliMeasure 1 0 ⟨P.real s, by simp⟩) P :=
+    [MeasurableSpace M] {s : Set Ω} (hs : NullMeasurableSet s P) :
+    HasLaw (s.indicator (1 : Ω → M)) Ber(1, 0, ⟨P.real s, by simp⟩) P :=
   hasLaw_indicator_bernoulliMeasure 1 hs
 
 end HasLaw
