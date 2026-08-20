@@ -81,7 +81,7 @@ lemma generator_ker : (generator K K').ker = (Submodule.span 𝕜 {p : WithLp 2
   simp [inner_add_right, ← kerFun_inner, WithLp.prod_inner_apply,
     ← hq _ (Submodule.subset_span ⟨x, v, rfl⟩)]
 
-/-- Helper function for `linearIsometryAux`. -/
+/-- Helper function for `linearIsometry`. -/
 private def toKerOrthogonal :
     H₀ (K + K') →ₗᵢ[𝕜] (generator K K').kerᗮ where
   toLinearMap := Finsupp.linearCombination 𝕜 (fun xv =>
@@ -94,41 +94,25 @@ private def toKerOrthogonal :
       inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
     simp [inner_add_left, kerFun_apply]
 
--- The map whose extention with `.complL` yields `linearIsometry`. -/
-private def linearIsometryAux :
-    H₀ (K + K') →ₗᵢ[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) ⧸ (generator K K').ker :=
-  (Submodule.quotientEquivOrthogonal (generator K K').ker).symm.toLinearIsometry.comp
-    (toKerOrthogonal K K')
-
 /-- The RKHS made from a sum of kernels is linearly isometrically isomorphic to a quotient space
 formed by quotienting the pair of RKHS formed by the consituent kernels with the kernel of the map
 `generator`. -/
 def linearIsometry :
-    OfKernel (K + K') →ₗᵢ[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) ⧸ (generator K K').ker where
-  toFun f := (linearIsometryAux K K').toContinuousLinearMap.extend
-    UniformSpace.Completion.toComplL f
-  map_add' := by simp [map_add]
-  map_smul' := by simp [map_smul]
-  norm_map' f := by
-    simp only [LinearMap.coe_mk, AddHom.coe_mk]
-    induction f using UniformSpace.Completion.induction_on with
-    | hp => exact isClosed_eq (((linearIsometryAux K K').toContinuousLinearMap.extend
-          UniformSpace.Completion.toComplL).continuous.norm) continuous_norm
-    | ih x =>
-      rw [← UniformSpace.Completion.coe_toComplL (S := 𝕜), ContinuousLinearMap.extend_eq _
-        (by simp [UniformSpace.Completion.denseRange_coe])
-        (by simp [UniformSpace.Completion.isUniformInducing_coe])]
-      simp [(linearIsometryAux K K').norm_map x]
+    OfKernel (K + K') →ₗᵢ[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) ⧸ (generator K K').ker :=
+  (Submodule.quotientEquivOrthogonal (generator K K').ker).symm.toLinearIsometry.comp
+    (toKerOrthogonal K K').fromCompletion
 
 private lemma linearIsometry_kerFun_apply_eq_mk (x : X) (v : V) :
     linearIsometry K K' (kerFun (OfKernel (K + K')) x v) =
     Submodule.Quotient.mk (WithLp.toLp 2 (kerFun (OfKernel K) x v, kerFun (OfKernel K') x v)) := by
-  simp only [linearIsometry, LinearIsometry.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
-  rw [OfKernel.kerFun_OfKernel_apply, ← UniformSpace.Completion.coe_toComplL (S := 𝕜),
-    ContinuousLinearMap.extend_eq _
-      (by simp [UniformSpace.Completion.denseRange_coe])
-      (by simp [UniformSpace.Completion.isUniformInducing_coe])]
-  simp [linearIsometryAux, toKerOrthogonal]
+  simp only [linearIsometry, LinearIsometry.coe_comp, LinearIsometryEquiv.coe_toLinearIsometry,
+    coe_quotientEquivOrthogonal_symm, LinearIsometry.coe_fromCompletion, Function.comp_apply,
+    quotientEquivOfIsCompl_symm_apply, Submodule.Quotient.eq, LinearMap.mem_ker, coe_coe, map_sub,
+    sub_eq_zero]
+  congr
+  rw [OfKernel.kerFun_OfKernel_apply,
+    UniformSpace.Completion.extension_coe (toKerOrthogonal K K').isometry.uniformContinuous]
+  simp [toKerOrthogonal]
 
 /-- The RKHS made from a sum of kernels is linearly isometrically equivalent to a quotient space
 formed by quotienting the pair of RKHS formed by the consituent kernels with the kernel of the map
