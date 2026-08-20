@@ -156,9 +156,7 @@ lemma norm_kerFun_sub_kerFun_sq (x y : X) :
 
 lemma norm_kerFun_sub_kerFun (x y : X) :
     ‖kerFun H x - kerFun H y‖ = √‖kernel H x x - kernel H y x - kernel H x y + kernel H y y‖ := by
-  apply Eq.symm
-  rw [Real.sqrt_eq_iff_eq_sq (opNorm_nonneg _) (opNorm_nonneg _)]
-  simp [norm_kerFun_sub_kerFun_sq]
+  rw [← norm_kerFun_sub_kerFun_sq, Real.sqrt_sq (norm_nonneg _)]
 
 lemma norm_kernel_le (x y) : ‖kernel H x y‖ ≤ √‖kernel H x x‖ * √‖kernel H y y‖ := by
   grw [kernel_apply, opNorm_comp_le]
