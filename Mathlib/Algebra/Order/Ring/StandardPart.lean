@@ -191,7 +191,9 @@ private theorem mul_le_mul_of_nonneg_left' {x y z : FiniteResidueField K} (h : x
   rw [← map_mul, ← map_mul]
   rw [← map_zero mk] at hz
   rw [mk_le_mk] at h hz ⊢
-  grind [mul_le_mul_of_nonneg_left]
+  cases hz
+  · grind [mul_le_mul_of_nonneg_left]
+  · grind
 
 instance : IsOrderedRing (FiniteResidueField K) where
   zero_le_one := mk.monotone' zero_le_one
