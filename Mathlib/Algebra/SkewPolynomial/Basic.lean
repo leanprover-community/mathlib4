@@ -104,7 +104,7 @@ variable [Semiring R] {p q : SkewPolynomial R}
 
 lemma zero_def : (0 : SkewPolynomial R) = (0 : SkewMonoidAlgebra R (Multiplicative ℕ)) := rfl
 
-variable {S S₁ S₂ : Type*}
+variable {S : Type*}
 
 /--
 The set of all `n` such that `X^n` has a non-zero coefficient.

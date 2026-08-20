@@ -36,11 +36,11 @@ noncomputable section
 
 universe u v w
 
-variable {F : Type u} {K : Type v} {L : Type w}
+variable {K : Type v} {L : Type w}
 
 namespace Polynomial
 
-variable [Field K] [Field L] [Field F]
+variable [Field K] [Field L]
 
 open Polynomial
 

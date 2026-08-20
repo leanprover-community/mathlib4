@@ -169,8 +169,8 @@ def Differentiable (f : E → F) :=
   ∀ x, DifferentiableAt 𝕜 f x
 
 variable {𝕜}
-variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable {f : E → F}
+variable {f' : E →L[𝕜] F}
 variable {x : E}
 variable {s : Set E}
 variable {L : Filter E}

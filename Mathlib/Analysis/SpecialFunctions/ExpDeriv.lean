@@ -37,7 +37,7 @@ section
 open Complex
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
-  {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
+  {f : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- The function `Complex.exp` is complex analytic. -/
 @[fun_prop]

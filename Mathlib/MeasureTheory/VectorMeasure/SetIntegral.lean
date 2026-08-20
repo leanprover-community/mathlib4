@@ -26,7 +26,7 @@ open scoped ENNReal NNReal Finset
 
 variable {ι X E F G H : Type*} {mX : MeasurableSpace X}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] [NormedAddCommGroup H]
-  {μ ν : VectorMeasure X F} {f g : X → E} {s t : Set X}
+  {μ : VectorMeasure X F} {f g : X → E} {s t : Set X}
 
 namespace MeasureTheory.VectorMeasure
 

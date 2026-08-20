@@ -373,8 +373,7 @@ theorem HasSubst.comp
     HasSubst (substAlgHom hb a) :=
   MvPowerSeries.IsNilpotent_substAlgHom hb.const ha
 
-variable {a : PowerSeries S} {b : MvPowerSeries υ T} {a' : MvPowerSeries τ S}
-  {b' : τ → MvPowerSeries υ T} [IsScalarTower R S T]
+variable {a : PowerSeries S} {b : MvPowerSeries υ T} [IsScalarTower R S T]
 
 theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
     ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha) = substAlgHom (ha.comp hb) :=
@@ -593,6 +592,21 @@ include hP in
 lemma subst_substInvOfIsUnit_left : (P.substInvOfIsUnit hP').subst P = X := by
   let := hP'.invertible
   rw [P.substInvOfIsUnit_eq_substInv hP', P.subst_substInv_left hP]
+
+include hP hP' in
+/-- A right compositional inverse `Q` of `P` is equal to `P.substInvOfIsUnit hP'`. -/
+lemma eq_substInvOfIsUnit_of_subst_eq_X {Q : R⟦X⟧} (hQ : HasSubst Q) (hPQ : P.subst Q = X) :
+    Q = P.substInvOfIsUnit hP' := calc
+  _ = PowerSeries.subst Q X := (subst_X hQ).symm
+  _ = _ := by
+    rw [← P.subst_substInvOfIsUnit_left hP hP',
+      subst_comp_subst_apply (HasSubst.of_constantCoeff_zero' hP) hQ _, hPQ, X_subst _]
+
+include hP hP' in
+/-- A right compositional inverse `Q` of `P` is also a left compositional inverse. -/
+lemma subst_eq_X_of_subst_eq_X {Q : R⟦X⟧} (hQ : HasSubst Q) (hPQ : P.subst Q = X) :
+    Q.subst P = X := by
+  rw [P.eq_substInvOfIsUnit_of_subst_eq_X hP hP' hQ hPQ, P.subst_substInvOfIsUnit_left hP hP']
 
 end IsUnit
 

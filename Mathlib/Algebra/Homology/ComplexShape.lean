@@ -127,11 +127,8 @@ def trans (c₁ c₂ : ComplexShape ι) : ComplexShape ι where
     exact c₁.prev_eq w₁ w₁'
 
 @[to_dual]
-instance subsingleton_next (c : ComplexShape ι) (i : ι) : Subsingleton { j // c.Rel i j } := by
-  constructor
-  rintro ⟨j, rij⟩ ⟨k, rik⟩
-  congr
-  exact c.next_eq rij rik
+instance subsingleton_next (c : ComplexShape ι) (i : ι) : Subsingleton { j // c.Rel i j } :=
+  Subtype.subsingleton_iff.mpr fun _ _ rij rik ↦ c.next_eq rij rik
 
 open scoped Classical in
 /-- An arbitrary choice of index `j` such that `Rel i j`, if such exists.

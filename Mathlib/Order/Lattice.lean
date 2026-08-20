@@ -351,6 +351,16 @@ class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 
 attribute [to_dual existing] Lattice.toSemilatticeInf
 
+/-- Auxiliary constructor for `to_dual`. -/
+@[to_dual existing mk, instance_reducible]
+def Lattice.mkDual {α : Type*} [SemilatticeInf α] (sup : α → α → α)
+    (le_sup_left : ∀ a b, a ≤ sup a b) (le_sup_right : ∀ a b, b ≤ sup a b)
+    (sup_le : ∀ a b c, a ≤ c → b ≤ c → sup a b ≤ c) : Lattice α where
+  sup
+  le_sup_left
+  le_sup_right
+  sup_le
+
 instance OrderDual.instLattice (α) [Lattice α] : Lattice αᵒᵈ where
 
 /-- The partial orders from `SemilatticeSup_mk'` and `SemilatticeInf_mk'` agree

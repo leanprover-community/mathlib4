@@ -29,7 +29,7 @@ function spaces).
 
 universe u' u v w
 
-variable {ι ι' 𝕜 R V E F V₁ V₂ V₃ : Type*}
+variable {ι R V E F V₁ V₂ V₃ : Type*}
 
 /-! ## Line derivative -/
 

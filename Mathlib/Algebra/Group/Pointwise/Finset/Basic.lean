@@ -55,7 +55,7 @@ open Function MulOpposite
 
 open scoped Pointwise
 
-variable {F α β γ : Type*}
+variable {F α β : Type*}
 
 namespace Finset
 
@@ -1251,7 +1251,7 @@ end Group
 end Finset
 
 namespace Fintype
-variable {ι : Type*} {α β : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (β i)]
+variable {ι : Type*} {α : ι → Type*} [Fintype ι] [DecidableEq ι]
   [∀ i, DecidableEq (α i)]
 
 @[to_additive]

@@ -28,7 +28,7 @@ open MeasureTheory Filter
 open scoped ENNReal
 
 namespace ProbabilityTheory
-variable {Ω : Type*} {m₀ m m' : MeasurableSpace Ω} {hm : m ≤ m₀} {X Y : Ω → ℝ} {μ : Measure[m₀] Ω}
+variable {Ω : Type*} {m₀ m : MeasurableSpace Ω} {hm : m ≤ m₀} {X Y : Ω → ℝ} {μ : Measure[m₀] Ω}
   {s : Set Ω}
 
 variable (m X μ) in

@@ -39,7 +39,7 @@ noncomputable section
 universe u u' v v' u₁' w w'
 
 variable {R : Type u} {S : Type u'} {M : Type v} {M' : Type v'} {M₁ : Type v}
-variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
+variable {ι : Type w} {η : Type u₁'} {φ : η → Type*}
 
 open Cardinal DirectSum Function Module Set Submodule
 

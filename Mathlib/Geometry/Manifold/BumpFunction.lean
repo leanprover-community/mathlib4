@@ -74,7 +74,7 @@ section FiniteDimensional
 
 variable [FiniteDimensional ℝ E]
 
-variable {c : M} (f : SmoothBumpFunction I c) {x : M}
+variable {c : M} (f : SmoothBumpFunction I c)
 
 /-- The function defined by `f : SmoothBumpFunction c`. Use automatic coercion to function
 instead. -/

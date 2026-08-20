@@ -30,7 +30,6 @@ variable {X Y W Z : Type*}
 section
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [TopologicalSpace Z]
-  {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
 namespace Homeomorph
 

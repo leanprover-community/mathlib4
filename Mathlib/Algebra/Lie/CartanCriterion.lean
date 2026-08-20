@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.LinearAlgebra.Lagrange
-public import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Cartan's criteria

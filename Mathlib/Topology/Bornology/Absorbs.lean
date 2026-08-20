@@ -65,7 +65,7 @@ namespace Absorbs
 
 section SMul
 
-variable {M α : Type*} [Bornology M] [SMul M α] {s s₁ s₂ t t₁ t₂ : Set α} {S T : Set (Set α)}
+variable {M α : Type*} [Bornology M] [SMul M α] {s s₁ s₂ t t₁ t₂ : Set α} {T : Set (Set α)}
 
 protected lemma empty : Absorbs M s ∅ := by simp [Absorbs]
 

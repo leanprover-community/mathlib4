@@ -35,9 +35,9 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 @[expose] public section
 
-variable {𝕜 E F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
+variable {𝕜 E : Type*} [RCLike 𝕜]
+variable [NormedAddCommGroup E]
+variable [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 local notation "absR" => @abs ℝ _ _

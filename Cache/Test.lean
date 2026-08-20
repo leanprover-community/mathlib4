@@ -159,6 +159,66 @@ def test_Container_azureURL : IO Unit := do
     "https://lakecache.blob.core.windows.net/mathlib4"
     Container.legacy.azureURL
 
+/-- A variable that names a read URL or a read chain arrives trimmed, and an
+empty or whitespace-only value means unset. `MATHLIB_CACHE_BASE_URL`,
+`MATHLIB_CACHE_GET_URL`, and `MATHLIB_CACHE_FROM` follow that rule. CI wires
+them from a GitHub Actions `vars` lookup, which yields `""` for an undefined
+variable, and such a value behaves as an absent one. The upload endpoint
+`MATHLIB_CACHE_PUT_URL` keeps the opposite rule: an empty value there fails the
+upload rather than divert it to the fallback container. -/
+def test_envValueNormalization : IO Unit := do
+  IO.println "nonEmptyEnvValue / normalizeBaseURL:"
+  -- `<unset>` stands in for `none`, so a failure shows both sides as strings.
+  let shown (value? : Option String) : String := value?.getD "<unset>"
+  assertEq "absent value reads as unset" "<unset>" (shown (nonEmptyEnvValue none))
+  assertEq "empty value reads as unset" "<unset>" (shown (nonEmptyEnvValue (some "")))
+  assertEq "whitespace-only value reads as unset" "<unset>"
+    (shown (nonEmptyEnvValue (some " \n")))
+  assertEq "value is trimmed" "master,forks" (shown (nonEmptyEnvValue (some " master,forks\n")))
+  assertEq "URL keeps its own path" "https://cache.example.org/mathlib4"
+    (shown (normalizeBaseURL (some "https://cache.example.org/mathlib4")))
+  assertEq "trailing slashes are stripped" "https://cache.example.org"
+    (shown (normalizeBaseURL (some "https://cache.example.org///")))
+  assertEq "a slash-only value reads as unset" "<unset>" (shown (normalizeBaseURL (some "/")))
+
+/-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set
+and falls back to the Azure account when it is not. `getBaseURLFrom` is pure,
+so this test covers both branches; the environment-reading wrapper
+(`getBaseURL`) adds no logic of its own. -/
+def test_getBaseURLFrom : IO Unit := do
+  IO.println "getBaseURLFrom:"
+  assertEq "no override → the Azure account"
+    defaultGetBaseURL (getBaseURLFrom none)
+  assertEq "override → the given base"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org"))
+  -- A GitHub Actions `${{ vars.… }}` lookup yields "" while the variable is
+  -- undefined, so an empty value must keep the default.
+  assertEq "empty value counts as unset"
+    defaultGetBaseURL (getBaseURLFrom (some ""))
+  assertEq "whitespace-only value counts as unset"
+    defaultGetBaseURL (getBaseURLFrom (some " \n"))
+  assertEq "override is trimmed"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org\n"))
+  -- A base written with a trailing slash must not double the separator in
+  -- `{base}/{container}/{key}`.
+  assertEq "trailing slash is stripped"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org/"))
+
+/-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
+`azureURL`, under whichever base `MATHLIB_CACHE_BASE_URL` selects. With no
+override, reads address Azure directly and the two URL families coincide. -/
+def test_Container_getURL : IO Unit := do
+  IO.println "Container.getURL:"
+  let base ← getBaseURL
+  assertEq "master read URL" s!"{base}/mathlib4-master" (← Container.master.getURL)
+  assertEq "forks read URL" s!"{base}/mathlib4-forks" (← Container.forks.getURL)
+  assertEq "legacy read URL" s!"{base}/mathlib4" (← Container.legacy.getURL)
+  -- The effective base drives this guard, so an empty variable reaches the
+  -- assertions below: it means unset, and the Azure host answers for it.
+  if base == defaultGetBaseURL then
+    assertEq "default read URL matches azureURL"
+      Container.master.azureURL (← Container.master.getURL)
+
 /-- Whether a container lays files out flat (`/f/<hash>`) or namespaces them by
 repo (`/f/<repo>/<hash>`). The layout is fixed per container so that all of a
 container's writers stay on non-colliding paths:
@@ -221,6 +281,28 @@ def test_defaultContainersForRepo : IO Unit := do
     ((defaultContainersForRepo MATHLIBREPO).getLast? == some .legacy)
   assertTrue "nightly-testing chain ends with legacy"
     ((defaultContainersForRepo NIGHTLY_TESTING_REPO).getLast? == some .legacy)
+
+/-- `effectiveGetURLs` pairs the lookup chain with read URLs in trust order.
+This test covers the default chain and the `--cache-from` override. The
+`MATHLIB_CACHE_GET_URL` and `MATHLIB_CACHE_FROM` branches need process state,
+so the CI integration tests exercise them instead. -/
+def test_effectiveGetURLs : IO Unit := do
+  IO.println "effectiveGetURLs:"
+  if (← getEnvNonEmpty "MATHLIB_CACHE_GET_URL").isSome ||
+      (← getEnvNonEmpty "MATHLIB_CACHE_FROM").isSome then
+    IO.println "  skipped: MATHLIB_CACHE_GET_URL or MATHLIB_CACHE_FROM is set"
+    return
+  let base ← getBaseURL
+  assertTrue "default chain pairs each container with its read URL"
+    ((← effectiveGetURLs MATHLIBREPO) ==
+      [(some .master, s!"{base}/mathlib4-master"),
+       (some .legacy, s!"{base}/mathlib4")])
+  cacheFromOverride.set (some [.forks, .master])
+  assertTrue "--cache-from override keeps its order"
+    ((← effectiveGetURLs MATHLIBREPO) ==
+      [(some .forks, s!"{base}/mathlib4-forks"),
+       (some .master, s!"{base}/mathlib4-master")])
+  cacheFromOverride.set none
 
 end PerRepoAllowlist
 
@@ -382,25 +464,56 @@ end ExtractPRNumber
 section HashFromFileName
 
 /-- Recovers the UInt64 cache hash from a cached file's path, the inverse of
-`UInt64.asLTar`. The subtle case is `.ltar.part` — the suffix curl writes during
-a download — where `.part` must be stripped before `.ltar`. A regression here
-corrupts cache lookups, so both suffixes and a non-hex stem are covered. -/
+`UInt64.asLTar`. The subtle cases are the in-flight suffixes curl writes during a
+download: today's process-tagged `.ltar.<pid>.part` (see `IO.PARTSUFFIX`) and the
+untagged `.ltar.part` a cache from before tagging may have left in the shared
+directory. A regression here corrupts cache lookups, so every suffix and a
+non-hex stem are covered. -/
 def test_hashFromFileName : IO Unit := do
   IO.println "hashFromFileName:"
   assertTrue "plain .ltar file"
     (hashFromFileName "abc123def.ltar" == String.parseHexToUInt64? "000000abc123def")
-  assertTrue "in-flight .ltar.part file strips both suffixes"
+  assertTrue "in-flight process-tagged .part file strips all three suffixes"
+    (hashFromFileName "abc123def.ltar.31415.part" == String.parseHexToUInt64? "000000abc123def")
+  assertTrue "legacy untagged .ltar.part file strips both suffixes"
     (hashFromFileName "abc123def.ltar.part" == String.parseHexToUInt64? "000000abc123def")
+  assertTrue "the tag this process actually writes round-trips"
+    (hashFromFileName ("abc123def.ltar" ++ IO.PARTSUFFIX) ==
+      String.parseHexToUInt64? "000000abc123def")
   assertTrue "full 16-digit hex stem"
     (hashFromFileName "deadbeef00112233.ltar" == String.parseHexToUInt64? "deadbeef00112233")
   -- A non-hex stem returns none rather than a garbage hash.
   assertTrue "non-hex stem returns none"
     (hashFromFileName "nothexa.ltar" == none)
+  assertTrue "non-hex stem returns none for a tagged part file too"
+    (hashFromFileName "nothexa.ltar.31415.part" == none)
   -- Directory components are ignored; only the basename's stem is parsed.
   assertTrue "leading path is ignored"
     (hashFromFileName "/path/to/abc123def.ltar" == String.parseHexToUInt64? "000000abc123def")
 
 end HashFromFileName
+
+section TempFileNames
+
+/-- Every temporary file `cache` writes into the shared `CACHEDIR` carries this process's
+tag, so two runs in flight in one cache directory cannot write each other's curl
+configuration or each other's partial downloads. The `.part` ending is load-bearing
+beyond uniqueness: the download monitor keys both its rename-on-success and its
+remove-on-error off it. -/
+def test_tempFileNames : IO Unit := do
+  IO.println "temporary file names:"
+  assertTrue "the process tag is non-empty" (!IO.PROCTAG.isEmpty)
+  assertTrue "the in-flight suffix still ends in .part" (IO.PARTSUFFIX.endsWith ".part")
+  assertTrue "the in-flight suffix is tagged, not a bare .part" (IO.PARTSUFFIX != ".part")
+  assertTrue "the in-flight suffix carries the tag" ((IO.PARTSUFFIX.splitOn IO.PROCTAG).length == 2)
+  assertTrue "the curl config carries the tag"
+    ((IO.CURLCFG.toString.splitOn IO.PROCTAG).length == 2)
+  assertTrue "the curl config sits in the cache directory"
+    (IO.CURLCFG.parent == some IO.CACHEDIR)
+  -- The tag must not reintroduce a path separator or a shell/curl-config hazard.
+  assertTrue "the tag is a bare identifier" (IO.PROCTAG.all fun c => c.isAlphanum)
+
+end TempFileNames
 
 section IsRemoteURL
 
@@ -494,6 +607,24 @@ def test_markerURL : IO Unit := do
   assertEq "marker repo is lowercased in the path"
     "https://lakecache.blob.core.windows.net/mathlib4-forks/m/alice/mathlib4/abc123"
     (markerURL .forks "Alice/Mathlib4" "abc123")
+
+/-- Marker probes read through the base URL; marker writes address Azure
+directly (`markerURL`). The two URLs agree only under the default base. -/
+def test_markerReadURL : IO Unit := do
+  IO.println "markerReadURL:"
+  let base ← getBaseURL
+  assertEq "probe URL follows the read base"
+    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
+    (← markerReadURL .forks "alice/mathlib4" "abc123")
+  assertEq "probe repo is lowercased in the path"
+    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
+    (← markerReadURL .forks "Alice/Mathlib4" "abc123")
+  -- The effective base drives this guard, so an empty variable reaches the
+  -- assertions below: it means unset, and the Azure host answers for it.
+  if base == defaultGetBaseURL then
+    assertEq "default probe URL matches the write URL"
+      (markerURL .forks "alice/mathlib4" "abc123")
+      (← markerReadURL .forks "alice/mathlib4" "abc123")
 
 end Marker
 
@@ -888,6 +1019,21 @@ def test_parseFlagOpt : IO Unit := do
 
 end CliOptions
 
+section ReadRedirects
+
+/-- Reads follow redirects, so a read base can answer with the blob's current
+location. This test pins the flag set, because each flag bounds what a redirect
+may do: `--proto-redir =https` holds a transfer on an encrypted protocol, and
+`--max-redirs` bounds the chain. The upload path builds its own `curl`
+arguments and carries none of these flags. -/
+def test_curlFollowRedirectArgs : IO Unit := do
+  IO.println "curlFollowRedirectArgs:"
+  assertEq "read redirect flags"
+    "--location --proto-redir =https --max-redirs 5"
+    (" ".intercalate curlFollowRedirectArgs.toList)
+
+end ReadRedirects
+
 section CacheMissStatus
 
 /-- `isCacheMissStatus` decides whether a read's HTTP status is a benign miss
@@ -908,6 +1054,10 @@ def test_isCacheMissStatus : IO Unit := do
   assertTrue "200 is not a miss"               (!isCacheMissStatus 200 true)
   assertTrue "500 is not a miss"               (!isCacheMissStatus 500 true)
   assertTrue "403-as-miss is scoped to 403"    (!isCacheMissStatus 401 true)
+  -- A refused redirect (`--proto-redir`, `--max-redirs`) leaves its status
+  -- here. A miss verdict would make it look like an empty cache and send the
+  -- read silently down the container chain, so it counts as a failure.
+  assertTrue "302 is not a miss"               (!isCacheMissStatus 302 true)
 
 end CacheMissStatus
 
@@ -1055,17 +1205,23 @@ def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
   test_Container_azureURL
+  test_Container_getURL
+  test_envValueNormalization
+  test_getBaseURLFrom
   test_Container_flatPath
   test_defaultContainersForRepo
+  test_effectiveGetURLs
   test_mkFileURL
   test_parseCacheFromList
   test_extractRepoFromUrl
   test_extractPRNumber
   test_hashFromFileName
+  test_tempFileNames
   test_isRemoteURL
   test_UInt64_asLTar
   test_hash_roundtrip
   test_markerURL
+  test_markerReadURL
   test_getRepoScope
   test_shouldWarnNonDefaultScope
   test_getNonDefaultScopeReason
@@ -1076,6 +1232,7 @@ def runAll : IO Unit := do
   test_isKnownOpt
   test_parseNamedOpt
   test_parseFlagOpt
+  test_curlFollowRedirectArgs
   test_isCacheMissStatus
   test_isAlreadyPresentStatus
   test_expandDownloadRounds

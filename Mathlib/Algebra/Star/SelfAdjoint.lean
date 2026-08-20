@@ -79,6 +79,22 @@ theorem _root_.isSelfAdjoint_iff [Star R] {x : R} : IsSelfAdjoint x ↔ star x =
   Iff.rfl
 
 @[simp]
+protected lemma _root_.Subtype.isSelfAdjoint_iff {S : Type*} [Star R] [SetLike S R]
+    [StarMemClass S R] {s : S} {x : s} :
+    IsSelfAdjoint (x : R) ↔ IsSelfAdjoint x := by
+  simp [isSelfAdjoint_iff, Subtype.ext_iff]
+
+alias ⟨of_subtypeVal, subtypeVal⟩ := Subtype.isSelfAdjoint_iff
+
+@[simp]
+lemma _root_.Subtype.isSelfAdjoint_mk_iff {S : Type*} [Star R] [SetLike S R]
+    [StarMemClass S R] {s : S} {x : R} {hx : x ∈ s} :
+    IsSelfAdjoint (⟨x, hx⟩ : s) ↔ IsSelfAdjoint x := by
+  simp [isSelfAdjoint_iff, Subtype.ext_iff]
+
+alias ⟨of_subtypeMk, subtypeMk⟩ := Subtype.isSelfAdjoint_mk_iff
+
+@[simp]
 theorem star_iff [InvolutiveStar R] {x : R} : IsSelfAdjoint (star x) ↔ IsSelfAdjoint x := by
   simpa only [IsSelfAdjoint, star_star] using eq_comm
 
@@ -105,8 +121,20 @@ lemma commute_of_mul_eq_isSelfAdjoint {R : Type*} [Mul R] [StarMul R] (x y z : R
 /-- Functions in a `StarHomClass` preserve self-adjoint elements. -/
 @[aesop 10% apply]
 theorem map {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHomClass F R S]
-    {x : R} (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
+    {x : R} (f : F) (hx : IsSelfAdjoint x) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx
+
+lemma of_map {F R S : Type*} [Star R] [Star S]
+    [FunLike F R S] [StarHomClass F R S] (f : F)
+    {x : R} (hf : Function.Injective f) (hx : IsSelfAdjoint (f x)) :
+    IsSelfAdjoint x :=
+  hf <| by simp [map_star, hx.star_eq]
+
+lemma _root_.Function.Injective.isSelfAdjoint_apply_iff
+    {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHomClass F R S]
+    (f : F) {x : R} (hf : Function.Injective f) :
+    IsSelfAdjoint (f x) ↔ IsSelfAdjoint x :=
+  ⟨.of_map f hf, .map f⟩
 
 /- note: this lemma is *not* marked as `simp` so that Lean doesn't look for a `[TrivialStar R]`
 instance every time it sees `⊢ IsSelfAdjoint (f x)`, which will likely occur relatively often. -/
@@ -607,34 +635,46 @@ theorem isSelfAdjoint_smul_of_mem_skewAdjoint [Ring R] [AddCommGroup A] [Module 
     (ha : a ∈ skewAdjoint A) : IsSelfAdjoint (r • a) :=
   (star_smul _ _).trans <| (congr_arg₂ _ hr ha).trans <| neg_smul_neg _ _
 
-protected instance IsStarNormal.zero [NonUnitalNonAssocSemiring R]
+@[simp]
+protected lemma Subtype.isStarNormal_iff {S R : Type*} [Star R] [Mul R] [SetLike S R]
+    [StarMemClass S R] [MulMemClass S R] {s : S} {x : s} :
+    IsStarNormal (x : R) ↔ IsStarNormal x := by
+  simp [isStarNormal_iff, commute_iff_eq, Subtype.ext_iff]
+
+namespace IsStarNormal
+
+alias ⟨of_subtypeVal, subtypeVal⟩ := Subtype.isStarNormal_iff
+
+protected instance zero [NonUnitalNonAssocSemiring R]
     [StarAddMonoid R] : IsStarNormal (0 : R) :=
   ⟨by simp only [Commute.refl, star_zero]⟩
 
-protected instance IsStarNormal.one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
+protected instance one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
   ⟨by simp only [Commute.refl, star_one]⟩
 
-protected instance IsStarNormal.star [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
+protected instance star [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
     IsStarNormal (star x) :=
   ⟨show star (star x) * star x = star x * star (star x) by rw [star_star, star_comm_self']⟩
 
-protected instance IsStarNormal.neg [NonUnitalNonAssocRing R]
+protected instance neg [NonUnitalNonAssocRing R]
     [StarAddMonoid R] {x : R} [IsStarNormal x] : IsStarNormal (-x) :=
   ⟨show star (-x) * -x = -x * star (-x) by simp_rw [star_neg, neg_mul_neg, star_comm_self']⟩
 
-protected instance IsStarNormal.val_inv [Monoid R] [StarMul R] {x : Rˣ} [IsStarNormal (x : R)] :
+protected instance val_inv [Monoid R] [StarMul R] {x : Rˣ} [IsStarNormal (x : R)] :
     IsStarNormal (↑x⁻¹ : R) where
   star_comm_self := by simpa [← Units.coe_star_inv, -Commute.units_val_iff] using star_comm_self
 
-protected instance IsStarNormal.map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
+protected instance map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
     [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :
     IsStarNormal (f r) where
   star_comm_self := by simpa [map_star] using! congr(f $(hr.star_comm_self))
 
-protected instance IsStarNormal.smul {R A : Type*} [SMul R A] [Star R] [Star A] [Mul A]
+protected instance smul {R A : Type*} [SMul R A] [Star R] [Star A] [Mul A]
     [StarModule R A] [SMulCommClass R A A] [IsScalarTower R A A]
     (r : R) (a : A) [ha : IsStarNormal a] : IsStarNormal (r • a) where
   star_comm_self := star_smul r a ▸ ha.star_comm_self.smul_left (star r) |>.smul_right r
+
+end IsStarNormal
 
 -- see Note [lower instance priority]
 instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [TrivialStar R]

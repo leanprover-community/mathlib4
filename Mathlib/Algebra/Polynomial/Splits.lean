@@ -669,14 +669,9 @@ noncomputable section
 
 universe u v w
 
-variable {F : Type u} {K : Type v} {L : Type w}
-
 section Splits
 
 section CommRing
-
-variable [CommRing K] [Field L] [Field F]
-variable (i : K →+* L)
 
 variable {i}
 
@@ -684,8 +679,7 @@ variable (i)
 
 end CommRing
 
-variable [CommRing R] [Field K] [Field L] [Field F]
-variable (i : K →+* L)
+variable [CommRing R]
 
 section UFD
 
@@ -694,8 +688,6 @@ attribute [local instance] PrincipalIdealRing.to_uniqueFactorizationMonoid
 local infixl:50 " ~ᵤ " => Associated
 
 end UFD
-
-variable [Algebra R K] [Algebra R L]
 
 end Splits
 

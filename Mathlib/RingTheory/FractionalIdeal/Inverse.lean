@@ -34,7 +34,7 @@ public section
 
 assert_not_exists IsDedekindDomain
 
-variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
+variable (K : Type*) [Field K]
 
 open scoped nonZeroDivisors Polynomial
 

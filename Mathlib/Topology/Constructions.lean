@@ -48,7 +48,7 @@ open scoped Set.Notation
 
 universe u v u' v'
 
-variable {X : Type u} {Y : Type v} {Z W ε ζ : Type*}
+variable {X : Type u} {Y : Type v} {Z : Type*}
 
 section Constructions
 

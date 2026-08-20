@@ -32,7 +32,7 @@ with an additional assumption that `s` is bounded below.
 
 open Set
 
-variable {α β γ : Type*} {ι : Sort*}
+variable {α : Type*}
 
 /-- A conditionally complete lattice is a lattice in which
 every nonempty subset which is bounded above has a supremum, and

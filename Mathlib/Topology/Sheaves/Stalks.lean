@@ -273,7 +273,6 @@ lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens 
   simpa [pullbackPushforwardAdjunction, Functor.lanAdjunction_unit]
     using! h V (leOfHom b)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk

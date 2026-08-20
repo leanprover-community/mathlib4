@@ -164,7 +164,7 @@ namespace IsLocalDiffeomorphAt
 
 variable {f : M → N} {x : M}
 
-variable {I I' J n}
+variable {I J n}
 
 /-- An arbitrary choice of local inverse of `f` near `x`. -/
 def localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
@@ -384,9 +384,9 @@ end Basic
 
 section Differential
 
-variable {f : M → N} {s : Set M} {x : M}
+variable {f : M → N} {x : M}
 
-variable {I I' J n}
+variable {I J n}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≠ 0`, the differential `df_x`
@@ -398,11 +398,11 @@ is a linear equivalence. -/
   invFun := mfderiv% hf.localInverse (f x)
   left_inv := by
     apply ContinuousLinearMap.leftInverse_of_comp
-    rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_left.mfderiv_eq]
+    rw [← mfderiv_id, hf.localInverse_eventuallyEq_left.symm.mfderiv_eq]
     exact (mfderiv_comp _ (hf.localInverse_mdifferentiableAt hn) (hf.mdifferentiableAt hn)).symm
   right_inv := by
     apply ContinuousLinearMap.rightInverse_of_comp
-    rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_right.mfderiv_eq]
+    rw [← mfderiv_id, hf.localInverse_eventuallyEq_right.symm.mfderiv_eq]
     -- We need to rewrite the base point hf.localInverse (f x) = x twice,
     -- in the differentiability hypothesis and for applying the chain rule.
     have hf' : MDifferentiableAt I J f (hf.localInverse (f x)) := by
@@ -410,6 +410,7 @@ is a linear equivalence. -/
       exact hf.mdifferentiableAt hn
     rw [mfderiv_comp _ hf' (hf.localInverse_mdifferentiableAt hn),
       hf.localInverse_left_inv hf.localInverse_mem_target]
+    rfl
   continuous_toFun := (mfderiv% f x).cont
   continuous_invFun := (mfderiv% hf.localInverse (f x)).cont
   map_add' := fun x_1 y ↦ map_add _ x_1 y

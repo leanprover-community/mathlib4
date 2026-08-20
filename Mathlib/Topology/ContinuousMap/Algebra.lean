@@ -38,7 +38,7 @@ assert_not_exists StoneCech
 namespace ContinuousFunctions
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-variable {f g : { f : α → β | Continuous f }}
+variable {f : { f : α → β | Continuous f }}
 
 instance : CoeFun { f : α → β | Continuous f } fun _ => α → β :=
   ⟨Subtype.val⟩

@@ -9,7 +9,6 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Algebra.Module.LinearMap.Basic
-public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Data.Set.MulAntidiagonal
 
 /-!
@@ -65,7 +64,7 @@ noncomputable section
 
 namespace DiscreteConvolution
 
-variable {M S E E' E'' F F' G R : Type*}
+variable {M S E E' F : Type*}
 
 /-! ### Multiplication Fiber -/
 

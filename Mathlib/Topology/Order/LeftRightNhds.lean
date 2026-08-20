@@ -22,7 +22,7 @@ open Set Filter TopologicalSpace Topology Function
 
 open OrderDual (toDual ofDual)
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 section LinearOrder
 

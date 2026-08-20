@@ -61,10 +61,11 @@ open Opposite
 variable {X : Type u} [Preorder X]
 
 /-- Express an inequality as a morphism in the corresponding preorder category. -/
+@[to_dual self]
 def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
 
-@[inherit_doc homOfLE]
+@[inherit_doc homOfLE, to_dual self]
 abbrev _root_.LE.le.hom := @homOfLE
 
 @[simp]
@@ -123,12 +124,9 @@ def opHomOfLE {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
 theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
   h.unop.le
 
+@[to_dual uniqueFromBot]
 instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) where
   default := homOfLE le_top
-  uniq := fun a => by rfl
-
-instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where
-  default := homOfLE bot_le
   uniq := fun a => by rfl
 
 variable (X) in

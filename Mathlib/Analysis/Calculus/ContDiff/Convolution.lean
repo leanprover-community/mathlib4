@@ -33,11 +33,11 @@ open scoped Pointwise NNReal Filter
 
 universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
 
-variable {𝕜 : Type u𝕜} {G : Type uG} {E : Type uE} {E' : Type uE'} {E'' : Type uE''} {F : Type uF}
-  {F' : Type uF'} {F'' : Type uF''} {P : Type uP}
+variable {𝕜 : Type u𝕜} {G : Type uG} {E : Type uE} {E' : Type uE'} {F : Type uF}
+  {P : Type uP}
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup E'] [NormedAddCommGroup E'']
-  [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y y' : E}
+variable [NormedAddCommGroup E] [NormedAddCommGroup E']
+  [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x : G} {y : E}
 
 namespace MeasureTheory
 
@@ -47,10 +47,8 @@ section RCLike
 variable [RCLike 𝕜]
 variable [NormedSpace 𝕜 E]
 variable [NormedSpace 𝕜 E']
-variable [NormedSpace 𝕜 E'']
 variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
-variable {n : ℕ∞}
-variable [MeasurableSpace G] {μ ν : Measure G}
+variable [MeasurableSpace G] {μ : Measure G}
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 
 variable [NormedAddCommGroup G] [BorelSpace G]
@@ -107,7 +105,6 @@ variable [NormedSpace 𝕜 E]
 variable [NormedSpace 𝕜 E']
 variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
 variable {f₀ : 𝕜 → E} {g₀ : 𝕜 → E'}
-variable {n : ℕ∞}
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 variable {μ : Measure 𝕜}
 variable [IsAddLeftInvariant μ] [SFinite μ]
@@ -129,7 +126,7 @@ end Real
 
 section WithParam
 
-variable [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace ℝ F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace ℝ F]
   [NormedSpace 𝕜 F] [MeasurableSpace G] [NormedAddCommGroup G] [BorelSpace G]
   [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : Measure G}
   (L : E →L[𝕜] E' →L[𝕜] F)

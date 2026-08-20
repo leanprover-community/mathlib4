@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.Measure.Comap
+public import Mathlib.MeasureTheory.Measure.Continuity
 public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
 /-!
@@ -26,12 +27,12 @@ pullback under `Subtype.val`) and the restriction to a set as above.
 open scoped ENNReal NNReal Topology
 open Set MeasureTheory Measure Filter MeasurableSpace ENNReal Function
 
-variable {R α β δ γ ι : Type*}
+variable {R α β δ ι : Type*}
 
 namespace MeasureTheory
 
-variable {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
-variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : Measure α} {s s' t : Set α}
+variable {m0 : MeasurableSpace α} [MeasurableSpace β]
+variable {μ ν : Measure α} {s s' t : Set α}
 
 namespace Measure
 
@@ -601,6 +602,12 @@ open scoped Interval in
 theorem ae_restrict_uIoc_eq [LinearOrder α] (a b : α) :
     ae (μ.restrict (Ι a b)) = ae (μ.restrict (Ioc a b)) ⊔ ae (μ.restrict (Ioc b a)) := by
   simp only [uIoc_eq_union, ae_restrict_union_eq]
+
+open scoped Interval in
+/-- See also `ae_restrict_uIoc_iff`. -/
+theorem ae_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
+    (∀ᵐ x ∂μ, x ∈ Ι a b → P x) ↔ (∀ᵐ x ∂μ, x ∈ Ioc a b → P x) ∧ ∀ᵐ x ∂μ, x ∈ Ioc b a → P x := by
+  simp only [uIoc_eq_union, mem_union, or_imp, eventually_and]
 
 open scoped Interval in
 /-- See also `MeasureTheory.ae_uIoc_iff`. -/

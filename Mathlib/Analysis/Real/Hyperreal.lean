@@ -6,8 +6,11 @@ Authors: Abhimanyu Pallavi Sudhir, Violeta Hernández Palacios
 module
 
 public import Mathlib.Algebra.Order.Ring.StandardPart
-public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Order.Filter.FilterProduct
+public import Mathlib.Algebra.Order.Module.Field
+public import Mathlib.Data.EReal.Inv
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Construction of the hyperreal numbers as an ultraproduct of real sequences

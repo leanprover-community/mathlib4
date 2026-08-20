@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.RepresentationTheory.Coinvariants
+public import Mathlib.RepresentationTheory.Rep.Iso
 
 /-!
 # Projective resolution of `k` as a trivial `k`-linear representation of a finite cyclic group

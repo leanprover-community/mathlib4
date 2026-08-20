@@ -294,6 +294,27 @@ theorem comp_nullHomotopicMap' (f : C ⟶ D) (hom : ∀ i j, c.Rel j i → (D.X 
   · rfl
   · rw [comp_zero]
 
+@[simp]
+lemma nullHomotopicMap_add (h₁ h₂ : ∀ i j, C.X i ⟶ D.X j) :
+    nullHomotopicMap (h₁ + h₂) = nullHomotopicMap h₁ + nullHomotopicMap h₂ := by
+  ext
+  simp [nullHomotopicMap]
+  abel
+
+@[simp]
+lemma nullHomotopicMap_neg (h₁ : ∀ i j, C.X i ⟶ D.X j) :
+    nullHomotopicMap (-h₁) = -nullHomotopicMap h₁ := by
+  ext
+  simp [nullHomotopicMap]
+  abel
+
+@[simp]
+lemma nullHomotopicMap_sub (h₁ h₂ : ∀ i j, C.X i ⟶ D.X j) :
+    nullHomotopicMap (h₁ - h₂) = nullHomotopicMap h₁ - nullHomotopicMap h₂ := by
+  ext
+  simp [nullHomotopicMap]
+  abel
+
 set_option backward.defeqAttrib.useBackward true in
 /-- Compatibility of `nullHomotopicMap` with the application of additive functors -/
 theorem map_nullHomotopicMap {W : Type*} [Category* W] [Preadditive W] (G : V ⥤ W) [G.Additive]
@@ -404,6 +425,19 @@ theorem nullHomotopicMap'_f_eq_zero {k₀ : ι} (hk₀ : ∀ l : ι, ¬c.Rel k�
     (nullHomotopicMap' h).f k₀ = 0 := by
   simp only [nullHomotopicMap']
   apply nullHomotopicMap_f_eq_zero hk₀ hk₀'
+
+lemma sub_eq_nullHomotopicMap (h : Homotopy f g) :
+    f - g = nullHomotopicMap h.hom := by
+  ext
+  simp [nullHomotopicMap, HomologicalComplex.sub_f_apply, h.comm]
+
+lemma eq_add_nullHomotopicMap (h : Homotopy f g) :
+    f = g + nullHomotopicMap h.hom := by
+  simp [← h.sub_eq_nullHomotopicMap]
+
+lemma eq_sub_nullHomotopicMap (h : Homotopy f g) :
+    g = f - nullHomotopicMap h.hom := by
+  simp [← h.sub_eq_nullHomotopicMap]
 
 /-!
 `Homotopy.mkInductive` allows us to build a homotopy of chain complexes inductively,
@@ -681,6 +715,22 @@ end
 end MkCoinductive
 
 end Homotopy
+
+namespace ChainComplex
+
+variable {K L : ChainComplex V ℕ} (h : ∀ i j, K.X i ⟶ L.X j)
+
+@[reassoc]
+lemma nullHomotopicMap_f_zero :
+    (Homotopy.nullHomotopicMap h).f 0 = h 0 1 ≫ L.d 1 0 :=
+  Homotopy.nullHomotopicMap_f_of_not_rel_left (by simp) (by simp) _
+
+lemma nullHomotopicMap_f_succ (n : ℕ) :
+    (Homotopy.nullHomotopicMap h).f (n + 1) =
+        K.d (n + 1) n ≫ h n (n + 1) + h (n + 1) (n + 2) ≫ L.d (n + 2) (n + 1) :=
+  Homotopy.nullHomotopicMap_f (by simp) (by simp) _
+
+end ChainComplex
 
 /-- A homotopy equivalence between two chain complexes consists of a chain map each way,
 and homotopies from the compositions to the identity chain maps.

@@ -594,7 +594,7 @@ section Sign
 
 open Function
 
-variable {a : Type*} (g : Perm α) (k : Perm (fixedPoints g))
+variable (g : Perm α) (k : Perm (fixedPoints g))
     (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α))
 
 set_option backward.isDefEq.respectTransparency false in

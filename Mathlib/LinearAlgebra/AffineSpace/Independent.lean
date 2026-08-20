@@ -779,10 +779,7 @@ theorem exists_affineIndependent (s : Set P) :
     · have : Submodule.span k b = Submodule.span k (insert 0 b) := by simp
       simp only [direction_affineSpan, ← hb₂, Equiv.coe_vaddConst, Set.singleton_union,
         vectorSpan_eq_span_vsub_set_right k (Set.mem_insert p _), this]
-      congr
-      change (Equiv.vaddConst p).symm '' insert p (Equiv.vaddConst p '' b) = _
-      rw [Set.image_insert_eq, ← Set.image_comp]
-      simp
+      simp [← Set.image_comp]
     · use p
       simp only [Equiv.coe_vaddConst, Set.singleton_union, Set.mem_inter_iff]
       exact ⟨mem_affineSpan k (Set.mem_insert p _), mem_affineSpan k hp⟩

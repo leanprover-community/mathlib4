@@ -325,7 +325,6 @@ theorem Perm.maximum_eq {l l' : List α} (h : l ~ l') :
     l.maximum = l'.maximum := by
   induction h with grind [maximum_cons]
 
-
 @[to_dual]
 lemma getD_max?_eq_unbotD_maximum (l : List α) (d : α) : l.max?.getD d = l.maximum.unbotD d := by
   cases hy : l.maximum with

@@ -26,8 +26,6 @@ open CategoryTheory Option
 
 universe u
 
-variable {α β : Type*}
-
 
 /-- The category of two-pointed types. -/
 structure TwoP : Type (u + 1) where

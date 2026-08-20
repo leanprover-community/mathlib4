@@ -627,7 +627,7 @@ theorem succ_eq_csInf [ConditionallyCompleteLattice α] [SuccOrder α] [NoMaxOrd
 
 section Preorder
 
-variable [Preorder α] [PredOrder α] {a b : α}
+variable [Preorder α] [PredOrder α] {a : α}
 
 -- TODO: auto-generate all of these through `to_dual`
 

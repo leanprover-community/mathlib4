@@ -129,7 +129,7 @@ def id : P →ᴬ[R] P := { AffineMap.id R P with cont := continuous_id }
 @[simp, norm_cast]
 theorem coe_id : ⇑(id R P) = _root_.id := rfl
 
-variable {R P} {W₂ Q₂ W₃ Q₃ : Type*}
+variable {R P} {W₂ Q₂ : Type*}
 variable [AddCommGroup W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor W₂ Q₂]
 
 /-- The composition of continuous affine maps as a continuous affine map -/

@@ -393,13 +393,13 @@ variable (G : C ⥤ Type w)
 @[simps!]
 def grothendieckTypeToCatFunctor : Grothendieck (G ⋙ typeToCat) ⥤ G.Elements where
   obj X := ⟨X.1, X.2.as⟩
-  map f := ⟨f.1, f.2.1.1⟩
+  map f := ⟨f.1, f.2.1⟩
 
 /-- Auxiliary definition for `grothendieckTypeToCat`, to speed up elaboration. -/
 @[simps!]
 def grothendieckTypeToCatInverse : G.Elements ⥤ Grothendieck (G ⋙ typeToCat) where
   obj X := ⟨X.1, ⟨X.2⟩⟩
-  map f := ⟨f.1, ⟨⟨f.2⟩⟩⟩
+  map f := ⟨f.1, ⟨f.2⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Grothendieck construction applied to a functor to `Type`
@@ -416,7 +416,7 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
         rcases X with ⟨_, ⟨⟩⟩
         exact Iso.refl _)
       (by
-        rintro ⟨_, ⟨⟩⟩ ⟨_, ⟨⟩⟩ ⟨base, ⟨⟨f⟩⟩⟩
+        rintro ⟨_, ⟨⟩⟩ ⟨_, ⟨⟩⟩ ⟨base, ⟨f⟩⟩
         dsimp at *
         simp
         rfl)

@@ -31,7 +31,7 @@ public section
 
 open Set Filter Function Topology
 
-variable {α β γ δ : Type*} [TopologicalSpace α]
+variable {α β : Type*} [TopologicalSpace α]
 
 /-!
 ## Properties of the neighborhood-within filter

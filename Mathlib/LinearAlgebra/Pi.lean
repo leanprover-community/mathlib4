@@ -39,8 +39,8 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
 
 universe u v w x y z u' v' w' x' y'
 
-variable {R : Type u} {K : Type u'} {M : Type v} {V : Type v'} {M₂ : Type w} {V₂ : Type w'}
-variable {M₃ : Type y} {V₃ : Type y'} {M₄ : Type z} {ι : Type x} {ι' : Type x'}
+variable {R : Type u} {M : Type v} {M₂ : Type w}
+variable {M₃ : Type y} {ι : Type x} {ι' : Type x'}
 
 open Function Submodule
 

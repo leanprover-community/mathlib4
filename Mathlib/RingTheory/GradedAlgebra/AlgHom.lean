@@ -38,7 +38,7 @@ notation:25 𝒜 " →ₐᵍ[" R "] " ℬ => GradedAlgHom R 𝒜 ℬ
 
 namespace GradedAlgHom
 
-variable {R S T U V A B C D ι : Type*}
+variable {R A B C D ι : Type*}
   [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
   [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
   [DecidableEq ι] [AddMonoid ι]

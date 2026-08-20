@@ -47,7 +47,7 @@ namespace intervalIntegral
 
 open MeasureTheory
 
-variable {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
+variable {f : ℝ → ℝ} (c d : ℝ)
 
 /-! ### Integrals of the form `c * ∫ x in a..b, f (c * x + d)` -/
 section

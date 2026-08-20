@@ -33,7 +33,7 @@ open CategoryTheory Category Limits Preadditive
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [Preadditive C] {R : Type*} [Ring R] [Linear R C]
+variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 namespace CochainComplex
 

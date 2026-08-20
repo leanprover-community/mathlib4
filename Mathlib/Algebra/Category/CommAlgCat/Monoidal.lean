@@ -104,7 +104,7 @@ instance : CartesianMonoidalCategory (CommAlgCat.{u} R)ᵒᵖ where
   fst_def S T := by ext x; change x ⊗ₜ 1 = x ⊗ₜ algebraMap R T.unop 1; simp
   snd_def S T := by ext x; change 1 ⊗ₜ x = algebraMap R S.unop 1 ⊗ₜ x; simp
 
-variable {A B C D : (CommAlgCat.{u} R)ᵒᵖ}
+variable {A B C : (CommAlgCat.{u} R)ᵒᵖ}
 
 @[simp] lemma fst_unop_hom (A B : (CommAlgCat.{u} R)ᵒᵖ) : (fst A B).unop.hom = includeLeft := rfl
 @[simp] lemma snd_unop_hom (A B : (CommAlgCat.{u} R)ᵒᵖ) : (snd A B).unop.hom = includeRight := rfl

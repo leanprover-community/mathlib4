@@ -272,8 +272,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
       set g := fun i : ℕ ↦ p.coeff i • x ^ i
       obtain ⟨m, hm_in, hm⟩ : ∃ (m : ℕ) (_ : 0 < p.natDegree → m < p.natDegree),
           f ((Finset.range p.natDegree).sum g) ≤ f (g m) := by
-        obtain ⟨m, hm, h⟩ := IsNonarchimedean.finset_image_add (map_zero _) (apply_nonneg _) hf_na g
-          (Finset.range p.natDegree)
+        obtain ⟨m, hm, h⟩ := hf_na.finset_image_add g (Finset.range p.natDegree) (map_zero_le f)
         rw [Finset.nonempty_range_iff, ← zero_lt_iff, Finset.mem_range] at hm
         exact ⟨m, hm, h⟩
       exact lt_of_le_of_lt hm (hn' m (hm_in h_deg))
@@ -281,7 +280,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
       have h_eq : f 0 = f (x ^ p.natDegree) := by
         rw [← hx, aeval_eq_sum_range, Finset.sum_range_succ, add_comm, hp.coeff_natDegree,
           one_smul, ← max_eq_left_of_lt h_lt]
-        exact IsNonarchimedean.add_eq_max_of_ne hf_na (ne_of_gt h_lt)
+        exact hf_na.add_eq_max_of_ne (map_neg_eq_map f) (ne_of_gt h_lt)
       exact h_eq ▸ ne_of_gt (lt_of_le_of_lt (apply_nonneg _ _) h_lt)
     exact h0 (map_zero _)
 
@@ -327,7 +326,7 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
       rw [h, esymm]
       obtain ⟨t, ht_card, hts, ht_ge⟩ : ∃ t : Multiset L, card t = card s - m ∧
           (∀ x : L, x ∈ t → x ∈ s) ∧ f (map prod (powersetCard (card s - m) s)).sum ≤ f t.prod :=
-        hf_na.multiset_powerset_image_add s m
+        hf_na.multiset_powerset_image_add m s
       apply le_trans ht_ge
       have h_pr : f t.prod ≤ (t.map f).prod := le_prod_of_submultiplicative_of_nonneg f
         (apply_nonneg _) (le_of_eq hf1) (map_mul_le_mul _) t
@@ -664,7 +663,7 @@ variable (K L) in
 def spectralAlgNorm : AlgebraNorm K L where
   toFun       := spectralNorm K L
   map_zero'   := spectralNorm_zero
-  add_le' _ _ := IsNonarchimedean.add_le spectralNorm_nonneg isNonarchimedean_spectralNorm
+  add_le' _ _ := isNonarchimedean_spectralNorm.add_le spectralNorm_nonneg
   mul_le' x y := spectralNorm_mul (h_alg.isAlgebraic x) (h_alg.isAlgebraic y)
   smul' k x   := spectralNorm_smul k (h_alg.isAlgebraic x)
   neg' x      := spectralNorm_neg (h_alg.isAlgebraic x)

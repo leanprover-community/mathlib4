@@ -430,7 +430,7 @@ instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) where
   exists_isCompl := fun ⟨x, hx⟩ => by
     simp_rw [Set.Ici.isCompl_iff]
     obtain ⟨y, rfl, hcodisjoint⟩ := exists_inf_eq_and_codisjoint hx
-    exact ⟨⟨y, inf_le_right⟩, rfl, hcodisjoint⟩
+    exact ⟨⟨y, inf_le_right⟩, hcodisjoint, rfl⟩
 
 /-- A disjoint element can be enlarged to a complementary element. -/
 @[to_dual /-- A codisjoint element can be shrunk to a complementary element. -/]

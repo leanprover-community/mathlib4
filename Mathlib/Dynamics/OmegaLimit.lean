@@ -6,6 +6,7 @@ Authors: Jean Lo
 module
 
 public import Mathlib.Dynamics.Flow
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # ω-limits

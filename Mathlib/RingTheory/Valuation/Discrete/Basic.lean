@@ -175,7 +175,7 @@ theorem generator_eq_exp_neg_one_of_mem_range (hπ : exp (-1) ∈ Set.range v) :
     have ⟨π, hπ⟩ := hπ
     cases k with
     | ofNat n => refine ⟨1, ?_, π ^ n, ?_⟩ <;> simp [hπ]
-    | negSucc n => refine ⟨π ^ (n + 1), ?_, 1, ?_⟩ <;> simp [hπ, Int.negSucc_eq, mul_assoc]
+    | negSucc n => refine ⟨π ^ (n + 1), ?_, 1, ?_⟩ <;> simp [hπ, Int.negSucc_eq, ← exp_add]
 
 /--
 The generator of a surjective discrete valuation in `ℤᵐ⁰` is equal to `exp (-1)`. -/

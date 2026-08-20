@@ -41,8 +41,8 @@ assert_not_exists GroupWithZero
 
 open Set Pointwise
 
-variable {α G M R A S : Type*}
-variable [Monoid M] [AddMonoid A]
+variable {α G M S : Type*}
+variable [Monoid M]
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by

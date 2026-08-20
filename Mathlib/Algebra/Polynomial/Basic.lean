@@ -16,7 +16,6 @@ public import Mathlib.Tactic.FastInstance
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.Algebra.Order.Group.Nat
 
-import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Theory of univariate polynomials
