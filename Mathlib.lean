@@ -1701,6 +1701,7 @@ public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.CStarAlgebra.Commutative.PosPart
 public import Mathlib.Analysis.CStarAlgebra.CompletelyPositiveMap
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
@@ -2647,6 +2648,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 public import Mathlib.CategoryTheory.ConcreteCategory.Representable
 public import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
@@ -2934,6 +2936,10 @@ public import Mathlib.CategoryTheory.Limits.Presheaf
 public import Mathlib.CategoryTheory.Limits.Set
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryFan
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.ProdComparison
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.WalkingPair
 public import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 public import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
@@ -5649,7 +5655,6 @@ public import Mathlib.MeasureTheory.Measure.LevyConvergence
 public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 public import Mathlib.MeasureTheory.Measure.Map
-public import Mathlib.MeasureTheory.Measure.MeasureSpace
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 public import Mathlib.MeasureTheory.Measure.MeasuredSets
 public import Mathlib.MeasureTheory.Measure.Module
