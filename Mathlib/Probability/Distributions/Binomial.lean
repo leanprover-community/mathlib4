@@ -243,6 +243,18 @@ lemma iIndepFun.hasLaw_sum_binomial {ι : Type*} [Fintype ι] {X : ι → Ω →
   convert hX.hasLaw_sum_map_cast_binomial ℕ lawX
   simp
 
+lemma variance_id_binomial : Var[id; Bin(ℝ, n, p)] = p * (1 - p) * n := by
+  obtain ⟨Ω', mΩ', P', X, -, lawX, hX, _⟩ := exists_hasLaw_indepFun (fun _ ↦ ℝ)
+    (fun i : Fin n ↦ Ber(1, 0, p))
+  have := hX.hasLaw_sum_map_cast_binomial ℝ lawX
+  rw [Fintype.card_fin] at this
+  rw [← this.variance_eq, IndepFun.variance_sum]
+  · simp [fun i ↦ (lawX i).variance_eq, variance_id_bernoulliMeasure]
+    ring
+  · exact fun i _ ↦ (lawX i).memLp_bernoulliMeasure 2
+  · intro _ _ _ _ h
+    exact hX.indepFun h
+
 end Integral
 
 /-! ### Binomial random variables -/
