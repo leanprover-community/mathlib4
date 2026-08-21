@@ -7,8 +7,7 @@ module
 
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.RingTheory.Valuation.RankOne
-public import Mathlib.NumberTheory.Padics.ProperSpace
-public import Mathlib.NumberTheory.LocalField.Basic
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 
 /-!
 # p-adic numbers with a valuative relation
@@ -65,7 +64,5 @@ instance : IsValuativeTopology ℚ_[p] := by
     refine ⟨p ^ log (embedding γ.val), zpow_pos (by positivity) _, fun _ hz ↦ hγ ?_⟩
     rw [mem_ball_zero_iff, norm_lt_zpow_iff_mulValuation_lt_exp, exp_log (by simp)] at hz
     simpa [restrict_lt_iff_lt_embedding] using hz
-
-instance : IsNonarchimedeanLocalField ℚ_[p] where
 
 end Padic
