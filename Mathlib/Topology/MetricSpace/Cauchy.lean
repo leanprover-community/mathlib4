@@ -30,7 +30,7 @@ open scoped Uniformity Topology
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {X ι : Type*}
+variable {α : Type u} {β : Type v}
 variable [PseudoMetricSpace α]
 
 /-- A very useful criterion to show that a space is complete is to show that all sequences

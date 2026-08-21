@@ -28,7 +28,7 @@ assert_not_exists Monoid
 open Function
 
 namespace Nat
-variable {a b c d m n k : ℕ} {p : ℕ → Prop}
+variable {a b c m n k : ℕ}
 
 -- TODO: Move the `LinearOrder ℕ` instance to `Order.Nat` (https://github.com/leanprover-community/mathlib4/pull/13092).
 instance instLinearOrder : LinearOrder ℕ where
