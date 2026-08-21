@@ -5,11 +5,8 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Equivalent power-multiplicative norms
@@ -100,5 +97,3 @@ theorem eq_of_powMul_faithful (f₁ : AlgebraNorm R S) (hf₁_pm : IsPowMul f₁
   obtain ⟨C₁, C₂, hC₁_pos, hC₂_pos, hC⟩ := h_eq x
   obtain ⟨hC₁, hC₂⟩ := forall_and.mp hC
   rw [hy, h1, h2, eq_seminorms hg₁_pm hg₂_pm ⟨C₁, hC₁_pos, hC₁⟩ ⟨C₂, hC₂_pos, hC₂⟩]
-
-open IntermediateField
