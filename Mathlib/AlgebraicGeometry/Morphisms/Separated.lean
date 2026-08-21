@@ -336,7 +336,6 @@ protected class IsSeparated (X : Scheme.{u}) : Prop where
 
 attribute [instance] IsSeparated.isSeparated_terminal_from
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSeparated_iff_isClosedImmersion_prod_lift {X : Scheme.{u}} :
     X.IsSeparated ↔ IsClosedImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
   rw [isSeparated_iff, AlgebraicGeometry.isSeparated_iff, iff_iff_eq,

@@ -25,7 +25,6 @@ namespace Polynomial
 
 open Ideal.Quotient Ideal RingHom
 
-set_option linter.flexible false in
 example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
   -- We will apply the generalized Eisenstein criterion with `q = X ^ 2 + 1` and `K = ZMod 3`.
   set f : ℤ[X] := X ^ 4 - 10 * X ^ 2 + 1 with hf_eq
@@ -42,7 +41,7 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
     have hdeg_q₃ : q₃.natDegree = 2 := by unfold q₃; compute_degree!
     suffices Irreducible q₃ by simpa [q] using this
     apply irreducible_of_degree_le_three_of_not_isRoot
-      (by simp_all) (by simp_all [q₃]; decide)
+      (by simp_all) (by simp_rw [q₃, IsRoot.def, eval_add, eval_pow, eval_X, eval_one]; decide)
   · unfold q; monicity!
   · exact Monic.isPrimitive hf_lC
   · simp_all
