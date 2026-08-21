@@ -21,9 +21,9 @@ summand is a nonnegative real multiple of one complex number of norm one. That i
 ## Main results
 
 * `sameRay_sum`: an element on the same ray as every summand is on the same ray as the sum.
-* `norm_sum_eq_of_pairwise_sameRay` and `pairwise_sameRay_of_norm_sum_eq`, packaged as
-  `norm_sum_eq_iff_pairwise_sameRay`: triangle equality holds iff the summands pairwise lie on a
-  common closed ray.
+* `norm_sum_eq_iff_pairwise_sameRay`: triangle equality holds iff the summands pairwise lie on a
+  common closed ray. Its easy direction is `norm_sum_eq_of_pairwise_sameRay`, which needs less
+  structure.
 * `Complex.aligned_of_pairwise_sameRay`: if the summands pairwise lie on a common ray, every
   nonzero summand has the same phase as the sum.
 * `Complex.triangle_equality_iff_aligned`: triangle equality holds iff every summand is a
@@ -34,8 +34,9 @@ summand is a nonnegative real multiple of one complex number of norm one. That i
 The finite-sum results are proved by induction on the `Finset`, using `sameRay_iff_norm_add` on
 the two vectors `v a` and `∑ j ∈ t, v j` at each step; no inner-product structure is involved.
 Each is stated with the weakest structure it needs: `sameRay_sum` in an ordered module,
-`norm_sum_eq_of_pairwise_sameRay` in a seminormed space, and only the converse
-`pairwise_sameRay_of_norm_sum_eq` in a strictly convex space.
+`norm_sum_eq_of_pairwise_sameRay` in a seminormed space, and only
+`norm_sum_eq_iff_pairwise_sameRay`, whose forcing direction is the one that can fail, in a
+strictly convex space.
 
 `Complex.triangle_equality_iff_aligned` is stated over `ℂ` rather than in a general strictly
 convex space on purpose: the norm-one element it produces exists only if the space is nontrivial,
@@ -82,12 +83,14 @@ theorem norm_sum_eq_of_pairwise_sameRay {E : Type*} [SeminormedAddCommGroup E] [
 section StrictConvex
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [StrictConvexSpace ℝ E] {v : ι → E}
 
-theorem pairwise_sameRay_of_norm_sum_eq (h : ‖∑ i ∈ s, v i‖ = ∑ i ∈ s, ‖v i‖) :
-    ∀ i ∈ s, ∀ j ∈ s, SameRay ℝ (v i) (v j) := by
+theorem norm_sum_eq_iff_pairwise_sameRay :
+    ‖∑ i ∈ s, v i‖ = ∑ i ∈ s, ‖v i‖ ↔ ∀ i ∈ s, ∀ j ∈ s, SameRay ℝ (v i) (v j) := by
+  refine ⟨?_, norm_sum_eq_of_pairwise_sameRay⟩
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a t ha ih =>
-    simp only [sum_cons, mem_cons] at h ⊢
+    simp only [sum_cons, mem_cons]
+    intro h
     have ht : ‖∑ j ∈ t, v j‖ = ∑ j ∈ t, ‖v j‖ :=
       le_antisymm (norm_sum_le _ _) (by linarith [norm_add_le (v a) (∑ j ∈ t, v j)])
     have hp := ih ht
@@ -101,20 +104,11 @@ theorem pairwise_sameRay_of_norm_sum_eq (h : ‖∑ i ∈ s, v i‖ = ∑ i ∈ 
     · exact (key i hi).symm
     · exact hp i hi j hj
 
-theorem norm_sum_eq_iff_pairwise_sameRay :
-    ‖∑ i ∈ s, v i‖ = ∑ i ∈ s, ‖v i‖ ↔ ∀ i ∈ s, ∀ j ∈ s, SameRay ℝ (v i) (v j) :=
-  ⟨pairwise_sameRay_of_norm_sum_eq, norm_sum_eq_of_pairwise_sameRay⟩
-
 end StrictConvex
 
 namespace Complex
 
 variable {v : ι → ℂ}
-
-lemma coeff_of_nonneg_smul {u : ℂ} {k : ℝ} (hk : 0 ≤ k) (hu : u ≠ 0) :
-    k = ‖(k : ℂ) * u‖ / ‖u‖ := by
-  rw [norm_mul, Complex.norm_of_nonneg hk, mul_div_assoc,
-    div_self (norm_ne_zero_iff.2 hu), mul_one]
 
 lemma aligned_of_pairwise_sameRay (hp : ∀ i ∈ s, ∀ j ∈ s, SameRay ℝ (v i) (v j)) (hi : i ∈ s)
     (hvi : v i ≠ 0) : v i / (‖v i‖ : ℂ) = (∑ j ∈ s, v j) / (‖∑ j ∈ s, v j‖ : ℂ) :=
@@ -133,7 +127,7 @@ theorem triangle_equality_iff_aligned :
       · rw [norm_div, Complex.norm_of_nonneg (norm_nonneg _), div_self (norm_ne_zero_iff.2 h0)]
       · rcases eq_or_ne (v i) 0 with hv | hv
         · simp [hv]
-        · rw [← aligned_of_pairwise_sameRay (pairwise_sameRay_of_norm_sum_eq h) hi hv,
+        · rw [← aligned_of_pairwise_sameRay (norm_sum_eq_iff_pairwise_sameRay.1 h) hi hv,
             mul_div_cancel₀ _ (ofReal_ne_zero.2 (norm_ne_zero_iff.2 hv))]
   · rw [show ∑ i ∈ s, v i = ((∑ i ∈ s, ‖v i‖ : ℝ) : ℂ) * c by
         rw [ofReal_sum, sum_mul]; exact sum_congr rfl hvc,
