@@ -458,7 +458,7 @@ open scoped Bundle Manifold ContDiff
 
 open Lean Meta Elab Tactic
 
-/-- `d[s] f x` (scoped to the `Manifold` namespace) elaborates to `mvfderivWithin I J f s x`,
+/-- `d[s] f x` (scoped to the `Manifold` namespace) elaborates to `mvfderivWithin I f s x`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "d[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
@@ -466,7 +466,7 @@ scoped elab:max "d[" s:term "]" ppSpace t:term:arg : term => do
   let (srcI, _tgtI) ← findModels e none
   mkAppM ``mvfderivWithin #[srcI, e, es]
 
-/-- `d% f x` (scoped to the `Manifold` namespace) elaborates to `mvfderiv I J f x`,
+/-- `d% f x` (scoped to the `Manifold` namespace) elaborates to `mvfderiv I f x`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "d%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none

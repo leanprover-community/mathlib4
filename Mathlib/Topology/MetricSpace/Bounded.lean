@@ -43,7 +43,7 @@ open scoped ENNReal Uniformity Topology Pointwise
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {X ι : Type*}
+variable {α : Type u} {β : Type v} {ι : Type*}
 
 section UniformSpace
 variable [UniformSpace α] [Preorder α] [CompactIccSpace α]
@@ -584,7 +584,7 @@ end Metric
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
 @[positivity Metric.diam _]

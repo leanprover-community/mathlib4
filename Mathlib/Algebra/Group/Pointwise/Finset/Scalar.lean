@@ -47,11 +47,11 @@ pointwise subtraction
 
 assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction IsOrderedMonoid
 
-open Function MulOpposite
+open MulOpposite
 
 open scoped Pointwise
 
-variable {F α β γ : Type*}
+variable {α β γ : Type*}
 
 namespace Finset
 

@@ -159,7 +159,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       classical
       have hc : Fintype.card ι2 = m + 1 := by
         rw [Fintype.card_of_subtype {x | x ≠ i}]
-        · rw [Finset.filter_not, Finset.filter_eq' _ i, if_pos (Finset.mem_univ _),
+        · rw [Finset.filter_not, Finset.filter_eq' _ i, ite_eq_left (Finset.mem_univ _),
             Finset.card_sdiff, Finset.card_univ, hn]
           simp
         · simp
@@ -579,7 +579,7 @@ theorem sum_reflectionCircumcenterWeightsWithCircumcenter {n : ℕ} {i₁ i₂ :
     sum_const, filter_or, filter_eq']
   rw [card_union_of_disjoint]
   · norm_num
-  · simpa only [if_true, mem_univ, disjoint_singleton] using h
+  · simpa only [ite_true, mem_univ, disjoint_singleton] using h
 
 /-- The reflection of the circumcenter of a simplex in an edge, in
 terms of `pointsWithCircumcenter`. -/
