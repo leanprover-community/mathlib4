@@ -16,34 +16,11 @@ This file defines the Levi-Civita connection on a (finite-dimensional) Riemannia
 A connection `∇` on the tangent bundle of a Riemannian manifold `(M, g)` is called a
 *Levi-Civita connection* if it is both compatible with the metric `g` and torsion-free.
 Any two such connections are equal (on differentiable vector fields), which is why one speaks of
-*the* Levi-Civita connection on `TM`.
-We construct a Levi-Civita connection and prove that is defines a compatible torsion-free
-connection.
+*the* Levi-Civita connection on `TM`. We prove this uniqueness, construct a Levi-Civita connection
+and prove that is defines a compatible torsion-free connection.
 
-The starting observation to the construction of the Levi-Civita is the Koszul formula, expressing
-a term `⟪∇ X Y, Z⟫` (for differentiable vector fields `X`, `Y` and `Z`) without reference to the
-Levi-Civita connection. This implies uniqueness; there are several approaches to turning this into
-a construction.
-One recovers `∇ X Y` from expressions `⟪∇ X Y, Z⟫` via an orthonormal frame: the coefficients of
-`∇ X Y` w.r.t. an orthonormal frame `{sⁱ}` are precisely `⟪∇ X Y, sⁱ⟫`. This approach is non-ideal
-as it only works locally: in general, orthonormal frames only exist locally near each point.
-It also requires auxiliary choices: choosing a chart and an ordered basis for the model space `E`
-of the manifold induces an orthonormal frame, but there is no such canonical choice in general.
-One could also abstract away this correspondence, via a lemma "there exists a unique vector field W
-such that `⟪W, Z⟫ = ⟪∇ X Y, Z⟫` for all `Z`" (and prove all connection properties by verifying
-that such witnesses are linear by uniqueness). As a side effect, this would lose any definitional
-control about the resulting connection.
-A more elegant approach uses an explicit formula, but avoiding auxiliary choices. Instead, we make
-use of the so-called *musical isomorphism*.
-
-A Riemannian metric `g` on `M` induces so-called **musical isomorphisms** between the tangent and
-cotangent bundles of `M` (and, more generally, tensor fields of orders `(k+d, l)` and `(k, l+d)`
-for `k, l, d : ℕ`), by associating to a tangent vector `X \in T_pM` the cotangent vector `g(X, ·)`.
-Non-degeneracy of the metric `g` implies that this induces an isomorphism `T_pM → (T_pM)*` at each
-point, which combines to a bundle isomorphism `TM → T*M`.
-Similarly, a `(2,0)`-tensor (i.e., a map `T_pM × T_pM → ℝ` at each point) induces a `(1,1)`-tensor
-(i.e., a map `T_pM → (T_pM)*` at each point).
-We apply this to the `(2,0)`-tensor `(X, Z) ↦ ∇ X Y Z`, to obtain a `(1,1)`-tensor denoted `∇ Y`.
+Future PRs will prove smoothness: if `M` is `C^{n+2}` and `g` is `C^{n+1}`, the Levi-Civita
+connection is a `C^n` connection.
 
 ## Main definitions and results
 
@@ -66,8 +43,15 @@ We apply this to the `(2,0)`-tensor `(X, Z) ↦ ∇ X Y Z`, to obtain a `(1,1)`-
 
 ## Implementation notes
 
-* construction of LC using a tensoriality argument, and the musical isomorphism
-  (avoids the use of local frames and trivialisations)
+* The starting observation to the construction of the Levi-Civita is the Koszul formula, expressing
+  a term `⟪∇ X Y, Z⟫` (for differentiable vector fields `X`, `Y` and `Z`) without reference to the
+  Levi-Civita connection. Our construction recovers `∇ X Y` from expressions `⟪∇ X Y, Z⟫` by duality.
+* Our particular duality argument uses a tensoriality argument and the musical isomorphism:
+  the metric `g` induces a map from `(2,0)`-tensors (i.e., a map `T_pM × T_pM → ℝ` at each point)
+  to `(1,1)`-tensors (i.e., a map `T_pM → (T_pM)*` at each point); we apply this to the
+  `(2,0)`-tensor `(X, Z) ↦ ∇ X Y Z p`, to obtain a `(1,1)`-tensor `∇ Y`.
+  This avoids the use of local frames and trivializations (which require auxiliary choices and/or
+  gluing together local constructions).
 
 ## Tags
 
