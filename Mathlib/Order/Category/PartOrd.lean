@@ -40,7 +40,6 @@ instance : CoeSort PartOrd (Type _) :=
 
 attribute [coe] PartOrd.carrier
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `PartOrd R`. -/
 @[ext]
 structure Hom (X Y : PartOrd.{u}) where

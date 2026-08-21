@@ -143,6 +143,7 @@ instance restrict_RankOne : RankOne (v.restrict) where
 lemma restrict_RankOne_hom_eq :
   RankOne.hom v.restrict = (RankOne.hom v).comp embedding := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {K} in
 theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom v (v.restrict x) < γ := by
@@ -153,7 +154,7 @@ theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom
   · simp only [restrict₀_apply, MonoidWithZeroHom.coe_ofClass, restrict_def, map_eq_zero,
       dite_eq_left_iff, coe_ne_zero, imp_false, not_not] at hk
     by_contra h0
-    rw [dif_pos (by rw [dif_pos ((zero_iff v).mpr h0)]), eq_comm] at hk
+    rw [dite_eq_left (by rw [dite_eq_left ((zero_iff v).mpr h0)]), eq_comm] at hk
     simp at hk
   · convert! h
     simp only [restrict_RankOne_hom_eq, coe_comp, Function.comp_apply, ← hk]
@@ -170,7 +171,7 @@ variable {K : Type*} [DivisionRing K] (v : Valuation K Γ₀) [RankLeOne v]
 
 /-- If a valuation has rank at most one and is non trivial,
 then it has rank one -/
-@[implicit_reducible]
+@[instance_reducible]
 def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
   exists_val_nontrivial := by
     by_contra! H'
@@ -179,7 +180,7 @@ def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
 
 /-- If a valuation has rank at most one and is non trivial,
 then it has rank one -/
-@[implicit_reducible]
+@[instance_reducible]
 def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ (.ofClass v))ˣ) : RankOne v where
   exists_val_nontrivial := by
     by_contra! H'
@@ -218,7 +219,7 @@ variable {R : Type*} [Ring R] [ValuativeRel R]
 
 /-- A valuative relation has a rank one valuation when it is both nontrivial
 and the rank is at most one. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Valuation.RankOne.ofRankLeOneStruct [ValuativeRel.IsNontrivial R] (e : RankLeOneStruct R) :
     Valuation.RankOne (valuation R) where
   hom' := e.emb.comp embedding

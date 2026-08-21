@@ -98,6 +98,11 @@ instance [Monoid A] : Subsingleton (HasMulAntidiagonal A) where
     congr with n xy
     rw [ha, hb]
 
+@[to_additive]
+lemma nonempty_antidiagonal {M : Type*} [Monoid M] [Finset.HasMulAntidiagonal M] (a : M) :
+    (Finset.mulAntidiagonal a).Nonempty :=
+  ⟨(1, a), by simp⟩
+
 -- The goal of this lemma is to allow to rewrite mulAntidiagonal/antidiagonal
 -- when the decidability instances obfuscate Lean
 set_option linter.overlappingInstances false in
@@ -265,6 +270,7 @@ open Multiplicative
 
 variable {A : Type*} [AddMonoid A] [HasAntidiagonal A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : HasMulAntidiagonal (Multiplicative A) where
   mulAntidiagonal a :=
     (antidiagonal (toAdd a)).map ⟨fun p ↦ (ofAdd p.1 , ofAdd p.2), fun _ _ h ↦ by aesop⟩

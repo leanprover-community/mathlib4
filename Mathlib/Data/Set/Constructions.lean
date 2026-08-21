@@ -52,14 +52,13 @@ variable {S}
 
 theorem finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
     ↑F ⊆ S → ⋂₀ (↑F : Set (Set α)) ∈ S := by
-  classical
-    refine Finset.induction_on F (fun _ => ?_) ?_
-    · simp [cond.univ_mem]
-    · intro a s _ h1 h2
-      suffices a ∩ ⋂₀ ↑s ∈ S by simpa
-      exact
-        cond.inter_mem (h2 (Finset.mem_insert_self a s))
-          (h1 fun x hx => h2 <| Finset.mem_insert_of_mem hx)
+  refine Finset.induction_on F (fun _ => ?_) ?_
+  · simp [cond.univ_mem]
+  · intro a s _ h1 h2
+    suffices a ∩ ⋂₀ ↑s ∈ S by simpa
+    exact
+      cond.inter_mem (h2 (Finset.mem_insert_self a s))
+        (h1 fun x hx => h2 <| Finset.mem_insert_of_mem hx)
 
 theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
     (H : P ∈ finiteInterClosure (insert A S)) : P ∈ S ∨ ∃ Q ∈ S, P = A ∩ Q := by

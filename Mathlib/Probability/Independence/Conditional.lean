@@ -230,7 +230,7 @@ lemma condIndepSets_iff (s1 s2 : Set (Set Ω)) (hs1 : ∀ s ∈ s1, MeasurableSe
     filter_upwards [hs1_eq s hs, hs2_eq t ht, hs12_eq s hs t ht, h'] with ω hs_eq ht_eq hst_eq h'
     rw [← hst_eq, Pi.mul_apply, ← hs_eq, ← ht_eq, h', ENNReal.toReal_mul]
   · refine ((stronglyMeasurable_condExpKernel ((hs1 s hs).inter (hs2 t ht))).ae_eq_trim_iff hm'
-      ((measurable_condExpKernel (hs1 s hs)).mul
+      ((measurable_condExpKernel (hs1 s hs)).fun_mul
         (measurable_condExpKernel (hs2 t ht))).stronglyMeasurable).mpr ?_
     filter_upwards [hs1_eq s hs, hs2_eq t ht, hs12_eq s hs t ht, h] with ω hs_eq ht_eq hst_eq h
     have h_ne_top : condExpKernel μ m' ω (s ∩ t) ≠ ∞ := measure_ne_top (condExpKernel μ m' ω) _
@@ -682,12 +682,12 @@ theorem iCondIndepFun_iff_condExp_inter_preimage_eq_mul {β : ι → Type*}
   · classical
     let g := fun i ↦ if hi : i ∈ s then (h_sets i hi).choose else Set.univ
     specialize h s (sets := g) (fun i hi ↦ ?_)
-    · simp only [g, dif_pos hi]
+    · simp only [g, dite_eq_left hi]
       exact (h_sets i hi).choose_spec.1
     · have hg : ∀ i ∈ s, sets i = f i ⁻¹' g i := by
         intro i hi
         rw [(h_sets i hi).choose_spec.2.symm]
-        simp only [g, dif_pos hi]
+        simp only [g, dite_eq_left hi]
       convert! h with i hi i hi <;> exact hg i hi
 
 theorem condIndepFun_iff_condIndepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
@@ -804,9 +804,8 @@ lemma condIndepFun_iff_map_prod_eq_prod_comp_trim
           ∘ₘ μ.trim hm' := by
   rw [condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg]
   congr!
-  · rw [Measure.compProd_map (by fun_prop), compProd_trim_condExpKernel,
-      Measure.map_map (by fun_prop) ((measurable_id.mono le_rfl hm').prodMk measurable_id)]
-    rfl
+  · rw [Measure.compProd_map (by fun_prop), compProd_trim_condExpKernel]
+    exact Measure.map_map (by fun_prop) ((measurable_id.mono le_rfl hm').prodMk measurable_id)
   · rw [Measure.compProd_eq_comp_prod]
 
 /-- Two random variables `f, g` are conditionally independent given a third `k` iff the

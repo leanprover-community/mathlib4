@@ -296,7 +296,7 @@ lemma toReal_limsup {u : α → ℝ≥0∞} (h₁ : ∀ᶠ a in f, u a ≠ ∞)
   obtain ⟨x, hx⟩ := h₂
   rw [eventually_map] at hx
   have hx₀ : 0 ≤ x := by obtain ⟨i, hi⟩ := hx.exists; exact toReal_nonneg.trans hi
-  simp only [limsup, limsSup, eventually_map, ne_eq, sInf_eq_top, Set.mem_setOf_eq, not_forall]
+  simp only [limsup, limsSup, eventually_map, ne_eq, sInf_eq_top, Set.mem_ofPred_eq, not_forall]
   refine ⟨.ofReal x, ?_, by simp⟩
   filter_upwards [h₁, hx] with i hi
   simp [le_ofReal_iff_toReal_le, *]
