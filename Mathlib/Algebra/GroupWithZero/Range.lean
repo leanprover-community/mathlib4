@@ -176,19 +176,29 @@ section DomainGroupWithZero
 
 variable [GroupWithZero A] [GroupWithZero B] (f : A →*₀ B)
 
-/-- When the domain is a group with zero, `range f` is already a subgroup with zero. -/
+/-- When the domain is a group with zero, the range of `f` is closed under inverses, so
+`MonoidWithZeroHom.mrange₀ f` upgrades to a subgroup with zero. -/
 def rangeSubgroupWithZero : SubgroupWithZero B where
-  carrier := range f
-  zero_mem' := ⟨0, map_zero f⟩
-  one_mem' := ⟨1, map_one f⟩
-  mul_mem' := by rintro _ _ ⟨a, rfl⟩ ⟨b, rfl⟩; exact ⟨a * b, map_mul f a b⟩
+  __ := mrange₀ f
   inv_mem' := by rintro _ ⟨a, rfl⟩; exact ⟨a⁻¹, map_inv₀ f a⟩
+
+@[simp]
+lemma coe_rangeSubgroupWithZero : (rangeSubgroupWithZero f : Set B) = range f := rfl
 
 @[simp]
 lemma coe_valueGroup₀_eq_range : (valueGroup₀ f : Set B) = range f :=
   subset_antisymm
     (SubgroupWithZero.closure_le (s := rangeSubgroupWithZero f) |>.2 (subset_refl _))
     subset_valueGroup₀
+
+/-- When the domain is a group with zero, the value group with zero *is* the range. -/
+lemma valueGroup₀_eq_rangeSubgroupWithZero : valueGroup₀ f = rangeSubgroupWithZero f :=
+  SetLike.ext' (coe_valueGroup₀_eq_range f)
+
+/-- When the domain is a group with zero, the value group with zero and the range agree as
+submonoids with zero. -/
+lemma toSubmonoidWithZero_valueGroup₀ : (valueGroup₀ f).toSubmonoidWithZero = mrange₀ f :=
+  SetLike.ext' (coe_valueGroup₀_eq_range f)
 
 lemma valueGroup_eq_range : Units.val '' (valueGroup f) = range f \ {0} := by
   ext x

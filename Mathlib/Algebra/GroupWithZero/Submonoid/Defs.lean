@@ -176,3 +176,27 @@ theorem coe_copy {t : Set M₀} (ht : t = s) : (s.copy t ht : Set M₀) = t := r
 theorem copy_eq {t : Set M₀} (ht : t = s) : s.copy t ht = s := SetLike.coe_injective ht
 
 end SubmonoidWithZero
+
+namespace MonoidWithZeroHom
+
+variable {A B : Type*} [MulZeroOneClass A] [MulZeroOneClass B]
+
+/-- The range of a monoid with zero hom, as a submonoid with zero of the codomain.
+
+This is `MonoidHom.mrange` upgraded: the range of a `→*₀` always contains `0`. -/
+def mrange₀ (f : A →*₀ B) : SubmonoidWithZero B where
+  carrier := Set.range f
+  zero_mem' := ⟨0, map_zero f⟩
+  one_mem' := ⟨1, map_one f⟩
+  mul_mem' := by rintro _ _ ⟨a, rfl⟩ ⟨b, rfl⟩; exact ⟨a * b, map_mul f a b⟩
+
+@[simp, norm_cast]
+lemma coe_mrange₀ (f : A →*₀ B) : (mrange₀ f : Set B) = Set.range f := rfl
+
+@[simp]
+lemma mem_mrange₀ {f : A →*₀ B} {b : B} : b ∈ mrange₀ f ↔ ∃ a, f a = b := Iff.rfl
+
+@[simp]
+lemma apply_mem_mrange₀ (f : A →*₀ B) (a : A) : f a ∈ mrange₀ f := ⟨a, rfl⟩
+
+end MonoidWithZeroHom
