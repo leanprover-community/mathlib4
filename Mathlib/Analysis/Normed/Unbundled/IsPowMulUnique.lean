@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
@@ -59,3 +60,17 @@ public theorem IsPowMul.unique [CompleteSpace K] {f g : AlgebraNorm K L}
   exact ⟨ C2, C1, hC2_pos, hC1_pos,
     forall_and.mpr ⟨fun y ↦ hC2 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩,
       fun y ↦ hC1 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩⟩⟩
+
+/-- A power-multiplicative algebra norm over a complete normed field is multiplicative. -/
+@[expose]
+public def AlgebraNorm.toMulAlgebraNorm [CompleteSpace K] (f : AlgebraNorm K L)
+    (hf : IsPowMul f) : MulAlgebraNorm K L where
+  __ := f
+  map_one' := by simpa [map_ne_zero_iff_ne_zero, sq] using hf 1 one_le_two
+  map_mul' x y := by
+    by_cases hx : f x = 0
+    · simp [eq_zero_of_map_eq_zero f hx]
+    · let g : AlgebraNorm K L := algebraNormFromConst hx hf
+      have hg : IsPowMul g := seminormFromConst_isPowMul hx hf
+      rw [hf.unique hg]
+      exact seminormFromConst_const_mul hx hf y

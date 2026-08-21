@@ -727,42 +727,14 @@ theorem NormedAlgebra.norm_eq_spectralNorm {L : Type*} [NormedField L] [NormedAl
       spectralNorm_unique (f := (toMulAlgebraNorm K L).toAlgebraNorm)
       (MulRingNorm.isPowMul (toMulAlgebraNorm K L).toMulRingNorm)]
 
-variable (K) in
-/-- Given a nonzero `x : L`, this is the real-valued function sending `y ∈ L` to the limit of
-`(f (y * x^n))/((f x)^n)`, regarded as an algebra norm. -/
-def algNormFromConst {x : L} (hx : x ≠ 0) : AlgebraNorm K L :=
-  have hx' : spectralAlgNorm K L x ≠ 0 := (map_ne_zero_iff_ne_zero (spectralAlgNorm K L)).mpr hx
-  algebraNormFromConst hx' spectralAlgNorm_isPowMul
-
-theorem algNormFromConst_def {x y : L} (hx : x ≠ 0) :
-    algNormFromConst K hx y =
-      seminormFromConst ((map_ne_zero_iff_ne_zero (spectralAlgNorm K L)).mpr hx)
-        isPowMul_spectralNorm y :=
-  rfl
-
 section CompleteSpace
 
 variable [CompleteSpace K]
 
-/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
-  `L/K` is an algebraic extension, then the spectral norm on `L` is multiplicative. -/
-theorem spectralAlgNorm_mul (x y : L) :
-    spectralAlgNorm K L (x * y) = spectralAlgNorm K L x * spectralAlgNorm K L y := by
-  by_cases hx : x = 0
-  · simp [hx, zero_mul, map_zero]
-  · have hx' : spectralAlgNorm K L x ≠ 0 :=
-      ne_of_gt (spectralNorm_zero_lt hx (Algebra.IsAlgebraic.isAlgebraic x))
-    set f : AlgebraNorm K L := algNormFromConst K hx with hf
-    have hf_pow : IsPowMul f := seminormFromConst_isPowMul hx' isPowMul_spectralNorm
-    rw [← spectralNorm_unique hf_pow, hf]
-    exact seminormFromConst_const_mul hx' isPowMul_spectralNorm _
-
 variable (K L) in
 /-- The spectral norm is a multiplicative `K`-algebra norm on `L`. -/
 def spectralMulAlgNorm : MulAlgebraNorm K L :=
-  { spectralAlgNorm K L with
-    map_one' := spectralAlgNorm_one
-    map_mul' := spectralAlgNorm_mul }
+  (spectralAlgNorm K L).toMulAlgebraNorm isPowMul_spectralNorm
 
 theorem spectralMulAlgNorm_def (x : L) : spectralMulAlgNorm K L x = spectralNorm K L x := rfl
 
