@@ -94,7 +94,7 @@ instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
     continuousAt_inv₀ x x_ne s s_in := by
       obtain ⟨γ, hs⟩ := Valued.mem_nhds.mp s_in; clear s_in
       rw [mem_map, Valued.mem_nhds]
-      let γ' := Units.mk0 ((ValueGroup₀.restrict₀ _) x) (v.restrict.ne_zero_iff.mpr x_ne)
+      let γ' := Units.mk0 (v.restrict x) (v.restrict.ne_zero_iff.mpr x_ne)
       use min (γ * (γ' * γ')) γ'
       intro y y_in
       apply hs
@@ -108,10 +108,10 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
   intro x x_ne
   refine ⟨{ k | v k < v x }, ?_, fun h => lt_irrefl _ h⟩
   rw [Valued.mem_nhds]
-  set γ' := Units.mk0 ((ValueGroup₀.restrict₀ _) x) (v.restrict.ne_zero_iff.mpr x_ne) with hdef
+  set γ' := Units.mk0 (v.restrict x) (v.restrict.ne_zero_iff.mpr x_ne) with hdef
   exact ⟨γ', fun y hy => by
     simp only [Valuation.restrict_lt_iff_lt_embedding, hdef, sub_zero, Units.val_mk0,
-      mem_ofPred_eq, embedding_restrict₀] at hy
+      mem_ofPred_eq, Valuation.coe_restrict] at hy
     simpa using hy⟩
 
 section
@@ -133,7 +133,7 @@ theorem Valued.continuous_valuation [hv : Valued K Γ₀] :
       (Valuation.ne_zero_iff _).mpr h
     rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero v_ne]
     simp_rw [v.restrict_inj]
-    apply Valued.locally_const (by simpa [restrict₀_apply] using v_ne)
+    apply Valued.locally_const (by simpa using v_ne)
 
 theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
     (hsurj : Function.Surjective hv.v) : Continuous hv.v := by
@@ -144,7 +144,7 @@ theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
     intro γ hγ
     rw [Filter.Eventually, Valued.mem_nhds_zero]
     obtain ⟨x, hx⟩ := hsurj γ
-    use Units.mk0 (restrict₀ (.ofClass hv.v) x) (by simp [restrict₀_apply, hx, hγ])
+    use Units.mk0 (restrict₀ (.ofClass hv.v) x) (by simp [hx, hγ])
     simp only [Units.val_mk0, ofPred_subset_ofPred, ← v.restrict_def, Valuation.restrict_lt_iff, hx,
       imp_self, implies_true]
   · have h0 : hv.v x ≠ 0 := (Valuation.ne_zero_iff _).mpr h

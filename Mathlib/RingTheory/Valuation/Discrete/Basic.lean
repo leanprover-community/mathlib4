@@ -118,9 +118,17 @@ lemma generator_ne_zero : (generator v : Γ) ≠ 0 := by simp
 the value group that is `< 1`, as an element of `valueGroup v`. -/
 noncomputable def generator' : valueGroup (.ofClass v) := ⟨generator v, generator_mem_valueGroup v⟩
 
+/-- Given a discrete valuation `v`, this is `Valuation.IsRankOneDiscrete.generator` as an element
+of the value group with zero. -/
+noncomputable def generator₀ : ValueGroup₀ (.ofClass v) :=
+  ⟨(generator v : Γ), generator_mem_valueGroup v⟩
+
 @[simp]
-lemma embedding_generator' :
-    ValueGroup₀.embedding (f := .ofClass v) (generator' v) = generator v := rfl
+lemma embedding_generator₀ :
+    ValueGroup₀.embedding (f := .ofClass v) (generator₀ v) = (generator v : Γ) := rfl
+
+@[simp]
+lemma coe_generator₀ : ((generator₀ v : ValueGroup₀ (.ofClass v)) : Γ) = generator v := rfl
 
 lemma generator'_zpowers_eq_top : (zpowers (generator' v)) = ⊤ := by
   rw [← map_subtype_inj, MonoidHom.map_zpowers,
@@ -134,17 +142,16 @@ instance : IsCyclic <| valueGroup (.ofClass v) := by
   rw [← generator_zpowers_eq_valueGroup]
   exact isCyclic_zpowers (generator v)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : v.IsNontrivial := by
   apply IsNontrivial.mk
   by_contra! h1
   have hvalueGroup : valueGroup (.ofClass v) = ⊥ := by
-    simp only [valueGroup, valueMonoid, Submonoid.coe_set_mk, Subsemigroup.coe_set_mk,
-      closure_eq_bot_iff, subset_singleton_iff, mem_preimage, mem_range, forall_exists_index,
-      Units.ext_iff]
-    intro y x
-    specialize h1 x
-    aesop
+    rw [valueGroup, SubgroupWithZero.units_eq_bot, valueGroup₀_eq_closure,
+      SubgroupWithZero.closure_eq_bot_iff]
+    rintro _ ⟨x, rfl⟩
+    rcases eq_or_ne (MonoidWithZeroHom.ofClass v x) 0 with h | h
+    · exact .inl h
+    · exact .inr (h1 x h)
   aesop (add safe forward [generator_lt_one, generator_zpowers_eq_valueGroup])
 
 lemma valueGroup_genLTOne_eq_generator : (valueGroup (.ofClass v)).genLTOne = generator v :=

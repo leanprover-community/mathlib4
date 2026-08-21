@@ -144,6 +144,9 @@ theorem closure_mono ⦃h k : Set G₀⦄ (h' : h ⊆ k) : closure h ≤ closure
 theorem closure_eq (s : SubgroupWithZero G₀) : closure (s : Set G₀) = s :=
   le_antisymm (closure_le.2 le_rfl) subset_closure
 
+@[simp] theorem closure_eq_bot_iff : closure k = ⊥ ↔ k ⊆ {0, 1} := by
+  rw [eq_bot_iff, closure_le, coe_bot]
+
 @[simp] theorem closure_empty : closure (∅ : Set G₀) = ⊥ :=
   le_antisymm (closure_le.2 <| Set.empty_subset _) bot_le
 

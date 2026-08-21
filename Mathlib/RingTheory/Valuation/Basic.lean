@@ -471,6 +471,8 @@ def restrict : Valuation R (ValueGroup₀ (.ofClass v)) where
 lemma restrict_def (x : R) : v.restrict x = restrict₀ (.ofClass v) x := rfl
 
 @[simp]
+lemma coe_restrict (x : R) : ((v.restrict x : ValueGroup₀ (.ofClass v)) : Γ₀) = v x := rfl
+
 lemma embedding_restrict (x : R) : embedding (v.restrict x) = v x :=
   embedding_restrict₀ x
 
@@ -585,6 +587,18 @@ lemma not_isNontrivial_one [IsDomain R] [DecidablePred fun x : R ↦ x = 0] :
   rintro ⟨⟨x, hx, hx'⟩⟩
   rcases eq_or_ne x 0 with rfl | hx0 <;>
   simp_all [one_apply_of_ne_zero]
+
+/-- The non-degeneracy hypothesis for a value group with zero.
+
+Note that `Nontrivial (ValueGroup₀ (.ofClass v))` is *not* the right statement: it holds for every
+valuation, since `⊥ = {0, 1}` for subgroups with zero. -/
+instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
+    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.ValueGroup₀ (.ofClass v))ˣ := by
+  obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
+  refine ⟨Units.mk0 (MonoidWithZeroHom.ValueGroup₀.restrict₀ (.ofClass v) x) (by simpa using h0),
+    1, ?_⟩
+  simp only [ne_eq, Units.ext_iff, Units.val_mk0, Units.val_one]
+  simpa using h1
 
 instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
     [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueGroup (.ofClass v)) := by
@@ -781,28 +795,64 @@ namespace IsEquiv
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-/-- An equivalence of valuations `v.IsEquiv w` induces the following map from `ValueGroup₀ v` to
-`ValueGroup₀ w`: given `x : ValueGroup₀ v` and nonzero `a b : R` such that `(v a) * x = (v b)`,
-`valueGroup₀Fun x` is defined as `(w b) * (w a)⁻¹`. -/
-noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ (.ofClass v)) :
+/-- Equivalent valuations send a ratio to `0` at the same time. -/
+theorem mk_eq_zero_iff_of_isEquiv (h : v.IsEquiv w) (r s : R) :
+    ValueGroup₀.mk (.ofClass v) r s = 0 ↔ ValueGroup₀.mk (.ofClass w) r s = 0 := by
+  simp only [ValueGroup₀.mk_eq_zero_iff, MonoidWithZeroHom.coe_ofClass, IsEquiv.eq_zero h]
+
+/-- Equivalent valuations identify the same ratios. -/
+theorem mk_eq_mk_of_isEquiv (h : v.IsEquiv w) {r₁ s₁ r₂ s₂ : R}
+    (H : ValueGroup₀.mk (.ofClass v) r₁ s₁ = ValueGroup₀.mk (.ofClass v) r₂ s₂) :
+    ValueGroup₀.mk (.ofClass w) r₁ s₁ = ValueGroup₀.mk (.ofClass w) r₂ s₂ := by
+  by_cases h₁ : ValueGroup₀.mk (.ofClass v) r₁ s₁ = 0
+  · rw [(mk_eq_zero_iff_of_isEquiv h r₁ s₁).1 h₁,
+      (mk_eq_zero_iff_of_isEquiv h r₂ s₂).1 (H ▸ h₁)]
+  have h₂ : ¬ (ValueGroup₀.mk (.ofClass v) r₂ s₂ = 0) := fun hh ↦ h₁ (H.trans hh)
+  rw [ValueGroup₀.mk_eq_zero_iff, not_or] at h₁ h₂
+  obtain ⟨hr₁, -⟩ := h₁
+  obtain ⟨hr₂, -⟩ := h₂
+  rw [ValueGroup₀.mk_inj _ hr₁ hr₂] at H
+  rw [ValueGroup₀.mk_inj _ (h.ofClass_eq_zero.ne.1 hr₁) (h.ofClass_eq_zero.ne.1 hr₂)]
+  simpa only [MonoidWithZeroHom.coe_ofClass] using h.eq_iff.1 H
+
+/-- Equivalent valuations order ratios the same way. -/
+theorem mk_le_mk_iff_of_isEquiv (h : v.IsEquiv w) (r₁ s₁ r₂ s₂ : R) :
+    ValueGroup₀.mk (.ofClass v) r₁ s₁ ≤ ValueGroup₀.mk (.ofClass v) r₂ s₂ ↔
+      ValueGroup₀.mk (.ofClass w) r₁ s₁ ≤ ValueGroup₀.mk (.ofClass w) r₂ s₂ := by
+  by_cases h₁ : ValueGroup₀.mk (.ofClass v) r₁ s₁ = 0
+  · rw [h₁, (mk_eq_zero_iff_of_isEquiv h r₁ s₁).1 h₁]
+    simp
+  by_cases h₂ : ValueGroup₀.mk (.ofClass v) r₂ s₂ = 0
+  · rw [h₂, (mk_eq_zero_iff_of_isEquiv h r₂ s₂).1 h₂]
+    simp only [nonpos_iff_eq_zero]
+    rw [mk_eq_zero_iff_of_isEquiv h r₁ s₁]
+  rw [ValueGroup₀.mk_eq_zero_iff, not_or] at h₁ h₂
+  obtain ⟨hr₁, -⟩ := h₁
+  obtain ⟨hr₂, -⟩ := h₂
+  rw [ValueGroup₀.mk_le_mk_iff _ hr₁ hr₂,
+    ValueGroup₀.mk_le_mk_iff _ (h.ofClass_eq_zero.ne.1 hr₁) (h.ofClass_eq_zero.ne.1 hr₂)]
+  simpa only [MonoidWithZeroHom.coe_ofClass] using h.le_iff_le
+
+/-- An equivalence of valuations `v.IsEquiv w` induces a map `ValueGroup₀ v → ValueGroup₀ w`,
+sending the ratio `(v r)⁻¹ * v s` to `(w r)⁻¹ * w s`. -/
+noncomputable def valueGroup₀Fun (_h : v.IsEquiv w) (x : ValueGroup₀ (.ofClass v)) :
     ValueGroup₀ (.ofClass w) :=
-  if hx : x = 0 then 0 else
-    haveI c := (x.zero_or_exists_mk'.resolve_left hx).choose
-    valueGroup.mk (.ofClass w) c.1.1 c.1.2 (h.eq_zero.ne.mp c.2.1) (h.eq_zero.ne.mp c.2.2)
+  ValueGroup₀.mk (.ofClass w) (ValueGroup₀.exists_mk _ x).choose
+    (ValueGroup₀.exists_mk _ x).choose_spec.choose
 
-theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : (MonoidWithZeroHom.ofClass v) r ≠ 0)
-    (hs : (MonoidWithZeroHom.ofClass v) s ≠ 0)
-    (hr' : (MonoidWithZeroHom.ofClass w) r ≠ 0 := h.ofClass_eq_zero.ne.1 hr)
-    (hs' : (MonoidWithZeroHom.ofClass w) s ≠ 0 := h.ofClass_eq_zero.ne.1 hs) :
-    valueGroup₀Fun h (valueGroup.mk (.ofClass v) r s hr hs) =
-      valueGroup.mk (.ofClass w) r s hr' hs' := by
-  rw [valueGroup₀Fun, dite_eq_right (by simp)]
-  generalize_proofs _ _ _ _ H _
-  have c_spec := H.choose_spec
-  simp only [MonoidWithZeroHom.coe_ofClass, ne_eq, WithZero.coe_inj, valueGroup.mk_inj] at c_spec ⊢
-  rwa [← h.eq_iff, eq_comm]
+@[simp]
+theorem valueGroup₀Fun_mk (h : v.IsEquiv w) (r s : R) :
+    valueGroup₀Fun h (ValueGroup₀.mk (.ofClass v) r s) = ValueGroup₀.mk (.ofClass w) r s := by
+  have hx := (ValueGroup₀.exists_mk (MonoidWithZeroHom.ofClass v)
+    (ValueGroup₀.mk (.ofClass v) r s)).choose_spec.choose_spec
+  exact mk_eq_mk_of_isEquiv h hx.symm
 
-theorem valueGroup₀Fun_zero (h : v.IsEquiv w) : valueGroup₀Fun h 0 = 0 := by simp [valueGroup₀Fun]
+@[simp]
+theorem valueGroup₀Fun_zero (h : v.IsEquiv w) : valueGroup₀Fun h 0 = 0 := by
+  have h0 : (0 : ValueGroup₀ (.ofClass v)) = ValueGroup₀.mk (.ofClass v) 0 0 :=
+    Subtype.ext (by simp)
+  rw [h0, valueGroup₀Fun_mk]
+  exact Subtype.ext (by simp)
 
 /-- The isomorphism between the `ValueGroup₀`'s of two equivalent valuations. -/
 noncomputable def orderMonoidIso (h : v.IsEquiv w) :
@@ -810,55 +860,27 @@ noncomputable def orderMonoidIso (h : v.IsEquiv w) :
   toFun := valueGroup₀Fun h
   invFun := valueGroup₀Fun h.symm
   map_mul' x y := by
-    obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
-    · simp_all [valueGroup₀Fun_zero]
-    obtain _ | ⟨r₂, s₂, hr₂, hs₂, rfl⟩ := y.zero_or_exists_mk
-    · simp_all [valueGroup₀Fun_zero]
-    simp [← WithZero.coe_mul, valueGroup.mk_mul, valueGroup₀Fun_spec h]
+    obtain ⟨r₁, s₁, rfl⟩ := ValueGroup₀.exists_mk _ x
+    obtain ⟨r₂, s₂, rfl⟩ := ValueGroup₀.exists_mk _ y
+    rw [ValueGroup₀.mk_mul, valueGroup₀Fun_mk, valueGroup₀Fun_mk, valueGroup₀Fun_mk,
+      ValueGroup₀.mk_mul]
   left_inv x := by
-    obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
-    · simp_all [valueGroup₀Fun_zero]
-    rw [valueGroup₀Fun_spec h, valueGroup₀Fun_spec h.symm]
+    obtain ⟨r, s, rfl⟩ := ValueGroup₀.exists_mk _ x
+    rw [valueGroup₀Fun_mk, valueGroup₀Fun_mk]
   right_inv x := by
-    obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
-    · simp_all [valueGroup₀Fun_zero]
-    rw [valueGroup₀Fun_spec h.symm, valueGroup₀Fun_spec h]
-  map_le_map_iff' {x} {y} := by
-    simp only [valueGroup₀Fun, ne_eq]
-    split_ifs with hx0 hy0 hy0
-    · simp [hx0, hy0]
-    · simp [hx0]
-    · simp [hx0, hy0]
-    · generalize_proofs _ _ _ _ hx _ _ hy
-      conv_rhs => rw [hx.choose_spec, hy.choose_spec]
-      simp only [valueGroup.mk, WithZero.coe_le_coe, Subtype.mk_le_mk]
-      nth_rw 2 [mul_comm]
-      rw [le_mul_inv_iff_mul_le, mul_assoc, mul_comm, ← le_mul_inv_iff_mul_le, inv_inv]
-      nth_rw 4 [mul_comm]
-      conv_rhs =>
-        rw [le_mul_inv_iff_mul_le, mul_assoc, mul_comm, ← le_mul_inv_iff_mul_le, inv_inv]
-      generalize_proofs _ hx' hx20 hy' hy10 hx10 hy20
-      rw [← Units.mk0_mul _ _ (mul_ne_zero hx10 hy20), ← Units.mk0_mul _ _ (mul_ne_zero hx20 hy10),
-        ← Units.mk0_mul, ← Units.mk0_mul]
-      · simp only [← Units.val_le_val]
-        repeat rw [Units.val_mk0]
-        simp only [MonoidWithZeroHom.coe_ofClass, ← map_mul w, ← h.le_iff_le]
-        simp
-      · simpa only [MonoidWithZeroHom.coe_ofClass, ← map_mul v, ne_eq, h.eq_zero, map_mul w]
-          using mul_ne_zero hx10 hy20
-      · simpa only [MonoidWithZeroHom.coe_ofClass, ← map_mul v, ne_eq, h.eq_zero, map_mul w]
-          using mul_ne_zero hx20 hy10
+    obtain ⟨r, s, rfl⟩ := ValueGroup₀.exists_mk _ x
+    rw [valueGroup₀Fun_mk, valueGroup₀Fun_mk]
+  map_le_map_iff' {x y} := by
+    obtain ⟨r₁, s₁, rfl⟩ := ValueGroup₀.exists_mk _ x
+    obtain ⟨r₂, s₂, rfl⟩ := ValueGroup₀.exists_mk _ y
+    rw [valueGroup₀Fun_mk, valueGroup₀Fun_mk]
+    exact (mk_le_mk_iff_of_isEquiv h r₁ s₁ r₂ s₂).symm
 
 @[simp]
 theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
     h.orderMonoidIso (v.restrict a) = w.restrict a := by
-  have h_res := h.restrict
-  by_cases ha : v a = 0
-  · rw [← restrict_eq_zero_iff] at ha
-    rwa [ha, map_zero, Eq.comm, ← h_res.eq_zero]
-  · rw [(v.restrict_eq_mk ha)]
-    simp [orderMonoidIso, valueGroup₀Fun_spec h (hs := ha),
-      w.restrict_eq_mk ((eq_zero h.symm).ne.mpr ha)]
+  rw [v.restrict_eq_mk, w.restrict_eq_mk]
+  exact valueGroup₀Fun_mk h 1 a
 
 lemma orderMonoidIso_spec₀ (h : v.IsEquiv w) (a : R) :
     h.orderMonoidIso (restrict₀ (.ofClass v) a) = restrict₀ (.ofClass w) a :=
@@ -872,18 +894,15 @@ theorem orderMonoidIso_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :
 theorem orderMonoidIso_eq_refl (h : v.IsEquiv v) :
     h.orderMonoidIso = .refl _ := by
   ext x
-  obtain (rfl | ⟨x, y, _, _, rfl⟩) := x.zero_or_exists_mk
-  · simp
-  · simp [orderMonoidIso, valueGroup₀Fun_spec h]
+  obtain ⟨r, s, rfl⟩ := ValueGroup₀.exists_mk _ x
+  simp [orderMonoidIso]
 
 @[simp]
 theorem orderMonoidIso_trans (h : v.IsEquiv w) (h' : w.IsEquiv u) :
     h.orderMonoidIso.trans h'.orderMonoidIso = (h.trans h').orderMonoidIso := by
   ext x
-  obtain (rfl | ⟨x, y, _, _, rfl⟩) := x.zero_or_exists_mk
-  · simp
-  · simp [orderMonoidIso, valueGroup₀Fun_spec h, valueGroup₀Fun_spec h',
-      valueGroup₀Fun_spec (trans h h')]
+  obtain ⟨r, s, rfl⟩ := ValueGroup₀.exists_mk _ x
+  simp [orderMonoidIso]
 
 end IsEquiv
 

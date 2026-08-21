@@ -87,7 +87,7 @@ theorem subgroups_basis :
         rw [Valuation.map_mul, Hx, zero_mul]
         exact Units.zero_lt _
       · set u : (ValueGroup₀ (.ofClass v))ˣ := Units.mk0 ((restrict₀ (.ofClass v)) x)
-          (by simp [restrict₀_apply]; aesop) with hu_def
+          (by simp [MonoidWithZeroHom.coe_ofClass, Hx]) with hu_def
         have hu : ValueGroup₀.embedding u⁻¹.1 = γx⁻¹ := by
           simp [restrict₀_apply, embedding_apply, hu_def, Hx]
         use u⁻¹ * γ
@@ -104,7 +104,7 @@ theorem subgroups_basis :
         simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred_eq, Valuation.map_mul, Hx,
           mul_zero, Units.zero_lt]
       · set u : (ValueGroup₀ (.ofClass v))ˣ := Units.mk0 ((restrict₀ (.ofClass v)) x)
-          (by simp [restrict₀_apply]; aesop) with hu_def
+          (by simp [MonoidWithZeroHom.coe_ofClass, Hx]) with hu_def
         have hu : ValueGroup₀.embedding u⁻¹.1 = γx⁻¹ := by simp [restrict₀_apply, embedding_apply,
           hu_def, Hx]
         use u⁻¹ * γ

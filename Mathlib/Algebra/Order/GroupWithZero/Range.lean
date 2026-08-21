@@ -47,6 +47,14 @@ lemma embedding_unit_ne_zero (a : (ValueGroup₀ f)ˣ) : embedding a.1 ≠ 0 := 
 lemma embedding_unit_pos (a : (ValueGroup₀ f)ˣ) : 0 < embedding a.1 :=
   zero_lt_iff.2 (embedding_unit_ne_zero a)
 
+variable {r₁ s₁ r₂ s₂ : A}
+
+/-- Comparing two ratios, when the denominators do not vanish. -/
+theorem mk_le_mk_iff (f : A →*₀ B) (hr₁ : f r₁ ≠ 0) (hr₂ : f r₂ ≠ 0) :
+    mk f r₁ s₁ ≤ mk f r₂ s₂ ↔ f (s₁ * r₂) ≤ f (s₂ * r₁) := by
+  rw [← Subtype.coe_le_coe, coe_mk, coe_mk, inv_mul_eq_div, inv_mul_eq_div,
+    div_le_div_iff₀ (zero_lt_iff.2 hr₁) (zero_lt_iff.2 hr₂), map_mul, map_mul]
+
 end ValueGroup₀
 
 end MonoidWithZeroHom
