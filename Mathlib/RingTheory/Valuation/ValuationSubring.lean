@@ -381,18 +381,14 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
   left_inv P := by ext1; simp
   right_inv S := by ext1; simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- An ordered variant of `primeSpectrumEquiv`. -/
 @[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
   { OrderDual.ofDual.trans (primeSpectrumEquiv A) with
     map_rel_iff' {a b} :=
       ⟨a.rec <| fun a => b.rec <| fun b => fun h => by
-        simp only [OrderDual.toDual_le_toDual]
-        dsimp at h
-        have := idealOfLE_le_of_le A _ _ ?_ ?_ h
-        · rwa [idealOfLE_ofPrime, idealOfLE_ofPrime] at this
-        all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
+        simpa using idealOfLE_le_of_le A _ _ (le_ofPrime A (PrimeSpectrum.asIdeal _))
+          (le_ofPrime A (PrimeSpectrum.asIdeal _)) h,
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
 instance le_total_ideal : @Std.Total {S // A ≤ S} (· ≤ ·) := by
@@ -698,7 +694,6 @@ theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
   rw [← π.map_one, ← sub_eq_zero, ← π.map_sub, Ideal.Quotient.eq_zero_iff_mem, valuation_lt_one_iff]
   simp [mem_principalUnitGroup_iff]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The principal unit group agrees with the kernel of the canonical map from
 the units of `A` to the units of the residue field of `A`. -/
 def principalUnitGroupEquiv :
@@ -706,11 +701,12 @@ def principalUnitGroupEquiv :
   toFun x :=
     ⟨A.unitGroupMulEquiv ⟨_, A.principal_units_le_units x.2⟩,
       A.coe_mem_principalUnitGroup_iff.1 x.2⟩
-  invFun x :=
+  invFun := fun ⟨x, hx⟩ ↦
     ⟨A.unitGroupMulEquiv.symm x, by
-      rw [A.coe_mem_principalUnitGroup_iff]; simp⟩
+      rw [A.coe_mem_principalUnitGroup_iff];
+      simpa using hx⟩
   left_inv x := by simp
-  right_inv x := by simp
+  right_inv x := by ext; simp
   map_mul' _ _ := rfl
 
 theorem principalUnitGroupEquiv_apply (a : A.principalUnitGroup) :
@@ -751,10 +747,10 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
   QuotientGroup.liftEquiv _ A.surjective_unitGroupToResidueFieldUnits
     A.ker_unitGroupToResidueFieldUnits.symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
-    (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _ _ →* _).comp
-        (QuotientGroup.mk' (A.principalUnitGroup.subgroupOf A.unitGroup)) =
+    (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _
+      A.principalUnitGroup →* _).comp (QuotientGroup.mk'
+      (A.principalUnitGroup.subgroupOf A.unitGroup)) =
       A.unitGroupToResidueFieldUnits := rfl
 
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk_apply

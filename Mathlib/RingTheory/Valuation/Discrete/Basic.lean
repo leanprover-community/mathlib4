@@ -134,14 +134,13 @@ instance : IsCyclic <| valueGroup (.ofClass v) := by
   rw [← generator_zpowers_eq_valueGroup]
   exact isCyclic_zpowers (generator v)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : v.IsNontrivial := by
   apply IsNontrivial.mk
   by_contra! h1
   have hvalueGroup : valueGroup (.ofClass v) = ⊥ := by
-    simp only [valueGroup, valueMonoid, Submonoid.coe_set_mk, Subsemigroup.coe_set_mk,
-      closure_eq_bot_iff, subset_singleton_iff, mem_preimage, mem_range, forall_exists_index,
-      Units.ext_iff]
+    simp only [valueGroup, valueMonoid, MonoidWithZeroHom.coe_ofClass, Submonoid.coe_set_mk,
+      Subsemigroup.coe_set_mk, closure_eq_bot_iff, subset_singleton_iff, mem_preimage, mem_range,
+      forall_exists_index]
     intro y x
     specialize h1 x
     aesop
