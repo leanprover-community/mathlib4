@@ -265,8 +265,8 @@ section Field
 variable {F K : Type*} [NormedField F] [Field K] [Algebra F K]
 
 /-- If `K` is a field, the function `seminormFromConst` is a `RingNorm` on `K`. -/
-@[simps!]
-def normFromConst {k : K} {g : RingSeminorm K} (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) : RingNorm K :=
+def normFromConst {k : K} {g : RingSeminorm K} (hg_k : g k ≠ 0)
+    (hg_pm : IsPowMul g) : RingNorm K :=
   (seminormFromConst hg_k hg_pm).toRingNorm (RingSeminorm.ne_zero_iff.mpr
     ⟨k, by rwa [seminormFromConst_def hg_k, seminormFromConst_apply_c hg_k hg_pm]⟩)
 
