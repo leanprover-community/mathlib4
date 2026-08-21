@@ -463,11 +463,7 @@ lemma Unitization.cfcₙ_eq_cfc_inr {R : Type*} [Semifield R] [StarRing R] [Metr
   · obtain ⟨hf, ha⟩ := h
     rw [← cfcₙ_eq_cfc (quasispectrum_inr_eq R ℂ a ▸ hf)]
     exact (inrNonUnitalStarAlgHom ℂ A).map_cfcₙ f a
-  · obtain (hf | ha) := not_and_or.mp h
-    · rw [cfcₙ_apply_of_not_continuousOn a hf, inr_zero,
-        cfc_apply_of_not_continuousOn _ (quasispectrum_eq_spectrum_inr' R ℂ a ▸ hf)]
-    · rw [cfcₙ_apply_of_not_predicate a ha, inr_zero,
-        cfc_apply_of_not_predicate _ (not_iff_not.mpr hp |>.mpr ha)]
+  · grind [quasispectrum_eq_spectrum_inr' R ℂ a, inr_zero]
 
 lemma Unitization.complex_cfcₙ_eq_cfc_inr (a : A) (f : ℂ → ℂ) (hf₀ : f 0 = 0 := by cfc_zero_tac) :
     cfcₙ f a = cfc f (a : A⁺¹) :=

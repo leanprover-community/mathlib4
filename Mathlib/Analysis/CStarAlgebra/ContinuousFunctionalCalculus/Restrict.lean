@@ -165,12 +165,12 @@ lemma cfc_eq_restrict (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S)) 
     apply cfc_congr fun x hx ↦ ?_
     lift x to spectrum S a using hx
     simp [Function.comp]
-  · have : ¬ ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (spectrum S a) := by
-      refine fun hg' ↦ hg ?_
+  · have hcont (hg' : ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (spectrum S a)) :
+        ContinuousOn g (spectrum R a) := by
       rw [halg.isEmbedding.continuousOn_iff]
       simpa [halg.isEmbedding.continuousOn_iff, Function.comp_def, h.left_inv _] using
         hg'.comp halg.isEmbedding.continuous.continuousOn (fun _ : R ↦ spectrum.algebraMap_mem S)
-    rw [cfc_apply_of_not_continuousOn a hg, cfc_apply_of_not_continuousOn a this]
+    grind
 
 end Generic
 
@@ -336,16 +336,13 @@ lemma cfcₙ_eq_restrict (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S
     apply cfcₙ_congr fun x hx ↦ ?_
     lift x to σₙ S a using hx
     simp
-  · simp only [not_and_or] at hg
-    obtain (hg | hg) := hg
-    · have : ¬ ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (σₙ S a) := by
-        refine fun hg' ↦ hg ?_
-        rw [halg.isEmbedding.continuousOn_iff]
-        simpa [halg.isEmbedding.continuousOn_iff, Function.comp_def, h.left_inv _] using
-          hg'.comp halg.isEmbedding.continuous.continuousOn
-          (fun _ : R ↦ quasispectrum.algebraMap_mem S)
-      rw [cfcₙ_apply_of_not_continuousOn a hg, cfcₙ_apply_of_not_continuousOn a this]
-    · rw [cfcₙ_apply_of_not_map_zero a hg, cfcₙ_apply_of_not_map_zero a (by simpa [h.map_zero])]
+  · have hcont (hg' : ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (σₙ S a)) :
+        ContinuousOn g (σₙ R a) := by
+      rw [halg.isEmbedding.continuousOn_iff]
+      simpa [halg.isEmbedding.continuousOn_iff, Function.comp_def, h.left_inv _] using
+        hg'.comp halg.isEmbedding.continuous.continuousOn
+        (fun _ : R ↦ quasispectrum.algebraMap_mem S)
+    grind [h.map_zero, map_eq_zero]
 
 end Generic
 
