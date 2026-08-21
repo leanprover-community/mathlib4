@@ -208,8 +208,7 @@ protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace �
 @[simp]
 protected lemma nnnorm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
     (u : Circle) (v : E) :
-    ‖u • v‖₊ = ‖v‖₊ := by
-  rw [smul_def, nnnorm_smul, u.nnnorm_coe, one_mul]
+    ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_injective (u.norm_smul v)
 
 @[simp]
 protected lemma enorm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
