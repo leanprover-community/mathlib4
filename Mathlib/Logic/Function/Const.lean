@@ -31,7 +31,7 @@ If a constant function has non-empty co domain, then it can be represented by `F
 see `isConst_iff_exists_eq_const`.
 
 The intended use is for expressing that a function is constant when the exact constant value is
-not known, no unique or not easy to express. To state the constant value explicitly,
+not known, not unique or not easy to express. To state the constant value explicitly,
 use `Function.const`. -/
 @[expose]
 def IsConst (f : α → β) : Prop :=
