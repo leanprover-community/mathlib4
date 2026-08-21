@@ -6,7 +6,6 @@ Authors: Johan Commelin, Jiedong Jiang, Christian Merten
 module
 
 public import Mathlib.Topology.WithTopology
-public import Mathlib.Order.BourbakiWitt
 public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Topology.Sober
 public import Mathlib.Topology.Spectral.Prespectral

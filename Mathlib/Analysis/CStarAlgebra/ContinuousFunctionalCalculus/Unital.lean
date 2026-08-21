@@ -752,6 +752,15 @@ lemma isUnit_cfc_iff (f : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) :
 
 alias ⟨_, isUnit_cfc⟩ := isUnit_cfc_iff
 
+include R in
+variable (R) in
+lemma CFC.pow_eq_zero_iff (a : A) (n : ℕ) (hn : n ≠ 0) (hp : p a := by cfc_tac) :
+    a ^ n = 0 ↔ a = 0 := by
+  refine ⟨fun h ↦ ?_, by rintro rfl; simp [hn]⟩
+  refine CFC.eq_zero_of_spectrum_subset_zero (R := R) a fun r hr ↦ ?_
+  rw [← cfc_id' R a, ← cfc_pow .., ← cfc_zero (R := R) a, cfc_eq_cfc_iff_eqOn] at h
+  simpa [hn] using h hr
+
 variable [ContinuousInv₀ R] (f : R → R) (a : A)
 
 /-- Bundle `cfc f a` into a unit given a proof that `f` is nonzero on the spectrum of `a`. -/

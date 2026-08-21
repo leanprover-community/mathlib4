@@ -30,7 +30,7 @@ See `RingCon.Quotient` for quotients of (possibly non-commutative) semirings.
 
 open Set
 
-variable {ι ι' R S : Type*} [Ring R] (I J : Ideal R) {a b : R}
+variable {ι ι' R : Type*} [Ring R] (I J : Ideal R) {a b : R}
 
 namespace Ideal.Quotient
 
