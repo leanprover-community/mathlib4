@@ -152,6 +152,52 @@ theorem units_eq_bot {s : SubgroupWithZero G₀} : s.units = ⊥ ↔ s = ⊥ := 
   rw [← units_bot]
   exact unitsOrderIso.injective.eq_iff
 
+/-! ### Non-degeneracy
+
+`⊥ = {0, 1}`, so `Nontrivial ↥s` holds for *every* subgroup with zero and is useless as a
+non-degeneracy hypothesis: there is no analogue of `Subgroup.nontrivial_iff_ne_bot`.
+`Nontrivial (↥s)ˣ` is the right condition. -/
+
+theorem eq_bot_iff_forall {s : SubgroupWithZero G₀} : s = ⊥ ↔ ∀ x ∈ s, x = 0 ∨ x = 1 := by
+  rw [eq_bot_iff]
+  exact ⟨fun h _ hx ↦ mem_bot.1 (h hx), fun h _ hx ↦ mem_bot.2 (h _ hx)⟩
+
+theorem ne_bot_iff_exists {s : SubgroupWithZero G₀} : s ≠ ⊥ ↔ ∃ x ∈ s, x ≠ 0 ∧ x ≠ 1 := by
+  simp [eq_bot_iff_forall, not_or]
+
+/-- **The non-degeneracy criterion.** Note that `Nontrivial ↥s` is *not* equivalent to `s ≠ ⊥`:
+it holds for every `s`, since `⊥ = {0, 1}`. -/
+@[simp]
+theorem nontrivial_units_iff_ne_bot {s : SubgroupWithZero G₀} : Nontrivial (↥s)ˣ ↔ s ≠ ⊥ := by
+  rw [ne_bot_iff_exists]
+  constructor
+  · rintro ⟨u, w, huw⟩
+    rcases eq_or_ne u 1 with rfl | hu
+    · refine ⟨((w : ↥s) : G₀), (w : ↥s).2, ZeroMemClass.coe_eq_zero.not.2 w.ne_zero, ?_⟩
+      exact OneMemClass.coe_eq_one.not.2 fun h ↦ huw.symm (Units.ext (by simpa using h))
+    · refine ⟨((u : ↥s) : G₀), (u : ↥s).2, ZeroMemClass.coe_eq_zero.not.2 u.ne_zero, ?_⟩
+      exact OneMemClass.coe_eq_one.not.2 fun h ↦ hu (Units.ext (by simpa using h))
+  · rintro ⟨x, hx, hx0, hx1⟩
+    refine ⟨Units.mk0 (⟨x, hx⟩ : ↥s) (fun h ↦ hx0 (ZeroMemClass.coe_eq_zero.2 h)), 1, ?_⟩
+    intro h
+    rw [Units.ext_iff] at h
+    exact hx1 (congrArg Subtype.val h)
+
+/-- The units of the *subtype* `↥s` versus the subgroup of units `s.units`. These are not
+definitionally equal, so this equivalence is what lets statements about `(↥s)ˣ` reach the
+`Subgroup G₀ˣ` API. -/
+def unitsMulEquiv (s : SubgroupWithZero G₀) : (↥s)ˣ ≃* ↥s.units where
+  toFun u := ⟨Units.mk0 ((u : ↥s) : G₀) (ZeroMemClass.coe_eq_zero.not.2 u.ne_zero), (u : ↥s).2⟩
+  invFun w := Units.mk0 (⟨((w : G₀ˣ) : G₀), w.2⟩ : ↥s)
+    fun h ↦ (w : G₀ˣ).ne_zero (congrArg Subtype.val h)
+  left_inv _ := by ext; rfl
+  right_inv _ := by ext; rfl
+  map_mul' _ _ := by ext; rfl
+
+instance nontrivial_units_subgroup (s : SubgroupWithZero G₀) [Nontrivial (↥s)ˣ] :
+    Nontrivial ↥s.units :=
+  (unitsMulEquiv s).toEquiv.injective.nontrivial
+
 /-- Taking units turns the closure of `k` into the `Subgroup` closure of the preimage of `k`.
 
 This is the hook through which the whole `Subgroup.closure` API — `closure_induction`,

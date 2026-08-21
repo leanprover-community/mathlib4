@@ -528,6 +528,7 @@ public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.GroupWithZero.Center
 public import Mathlib.Algebra.GroupWithZero.Commute
+public import Mathlib.Algebra.GroupWithZero.Cyclic
 public import Mathlib.Algebra.GroupWithZero.Conj
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.GroupWithZero.Divisibility
@@ -555,6 +556,7 @@ public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.GroupWithZero.Subgroup.Defs
 public import Mathlib.Algebra.GroupWithZero.Subgroup.Lattice
 public import Mathlib.Algebra.GroupWithZero.Subgroup.Units
+public import Mathlib.Algebra.GroupWithZero.Subgroup.ZPowers
 public import Mathlib.Algebra.GroupWithZero.Submonoid.CancelMulZero
 public import Mathlib.Algebra.GroupWithZero.Submonoid.Defs
 public import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
@@ -1021,6 +1023,7 @@ public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Bounds
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Order.GroupWithZero.Cyclic
 public import Mathlib.Algebra.Order.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.GroupWithZero.Lex
