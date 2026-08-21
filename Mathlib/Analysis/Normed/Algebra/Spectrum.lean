@@ -34,7 +34,7 @@ Theorems specific to *complex* Banach algebras, such as *Gelfand's formula* can 
 * `spectrum.subset_closedBall_norm`: the spectrum is a subset of closed disk of radius
   equal to the norm.
 * `spectrum.isCompact`/`quasispectrum.isCompact`: the (quasi)spectrum is compact.
-* `quasispectrum.spectralRadius_le_nnnorm`: the spectral radius is bounded above by the norm.
+* `spectralRadius_le_nnnorm`: the spectral radius is bounded above by the norm.
 
 ## Implementation notes
 
@@ -85,6 +85,12 @@ noncomputable def spectralRadius (𝕜 : Type*) {A : Type*}
   ⨆ k ∈ quasispectrum 𝕜 a, (‖k‖₊ : ℝ≥0∞)
 
 variable {𝕜 : Type*} {A : Type*}
+
+@[simp]
+theorem Unitization.spectralRadius_inr [NormedField 𝕜] [NonUnitalRing A]
+    [Module 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] (a : A) :
+    spectralRadius 𝕜 (a : Unitization 𝕜 A) = spectralRadius 𝕜 a := by
+  simp [spectralRadius, quasispectrum_eq_spectrum_union_zero, ← quasispectrum_eq_spectrum_inr']
 
 namespace spectrum
 
@@ -420,15 +426,24 @@ end ExpMapping
 
 end spectrum
 
-namespace quasispectrum
+section quasispectrum
 
-variable [NormedField 𝕜] [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [CompleteSpace A]
-variable [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] [CompleteSpace 𝕜]
+variable [NormedField 𝕜] [NonUnitalNormedRing A] [NormedSpace 𝕜 A]
+variable [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
+
+open WithLp in
+private lemma quasispectrum_eq_spectrum_toLp_inr (a : A) :
+    quasispectrum 𝕜 a = spectrum 𝕜 (toLp 1 (a : Unitization 𝕜 A)) := by
+  simpa [Unitization.quasispectrum_eq_spectrum_inr 𝕜, unitizationAlgEquiv] using
+    AlgEquiv.spectrum_eq (WithLp.unitizationAlgEquiv 𝕜).symm (a : Unitization 𝕜 A) |>.symm
+
+variable [CompleteSpace 𝕜] [CompleteSpace A]
+
+namespace quasispectrum
 
 @[simp]
 theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (quasispectrum 𝕜 a) := by
-  rw [Unitization.quasispectrum_eq_spectrum_inr 𝕜,
-    ← AlgEquiv.spectrum_eq (WithLp.unitizationAlgEquiv 𝕜).symm (a : Unitization 𝕜 A)]
+  rw [quasispectrum_eq_spectrum_toLp_inr]
   exact spectrum.isCompact _
 
 grind_pattern isCompact => IsCompact (quasispectrum 𝕜 a)
@@ -454,35 +469,34 @@ theorem isCompact_nnreal {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A]
 grind_pattern isCompact_nnreal => IsCompact (quasispectrum ℝ≥0 a)
 
 theorem isClosed (a : A) : IsClosed (quasispectrum 𝕜 a) := by
-  rw [Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜,
-    ← AlgEquiv.spectrum_eq (WithLp.unitizationAlgEquiv 𝕜).symm (a : Unitization 𝕜 A)]
+  rw [quasispectrum_eq_spectrum_toLp_inr]
   exact spectrum.isClosed _
 
 theorem isBounded (a : A) : Bornology.IsBounded (quasispectrum 𝕜 a) := by
-  rw [Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜,
-    ← AlgEquiv.spectrum_eq (WithLp.unitizationAlgEquiv 𝕜).symm (a : Unitization 𝕜 A)]
+  rw [quasispectrum_eq_spectrum_toLp_inr]
   exact spectrum.isBounded _
 
 theorem norm_le_norm_of_mem {a : A} {k : 𝕜} (hk : k ∈ quasispectrum 𝕜 a) :
     ‖k‖ ≤ ‖a‖ := by
-  rw [Unitization.quasispectrum_eq_spectrum_inr 𝕜,
-    ← AlgEquiv.spectrum_eq (WithLp.unitizationAlgEquiv 𝕜).symm (a : Unitization 𝕜 A)] at hk
-  have h : ‖(WithLp.unitizationAlgEquiv 𝕜).symm (a : Unitization 𝕜 A)‖ = ‖a‖ :=
-    WithLp.unitization_norm_inr a
-  simpa [h] using spectrum.norm_le_norm_of_mem hk
+  rw [quasispectrum_eq_spectrum_toLp_inr] at hk
+  simpa [WithLp.unitization_norm_inr a] using spectrum.norm_le_norm_of_mem hk
 
-theorem _root_.spectralRadius_le_nnnorm (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ :=
+end quasispectrum
+
+open quasispectrum
+
+theorem spectralRadius_le_nnnorm (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ :=
   iSup₂_le fun _ => mod_cast norm_le_norm_of_mem
 
 @[deprecated (since := "2026-08-13")]
-alias _root_.spectrum.spectralRadius_le_nnnorm := spectralRadius_le_nnnorm
+alias spectrum.spectralRadius_le_nnnorm := spectralRadius_le_nnnorm
 
-theorem exists_nnnorm_eq_spectralRadius [ProperSpace 𝕜] (a : A) :
+theorem exists_nnnorm_quasispectrum_eq_spectralRadius [ProperSpace 𝕜] (a : A) :
     ∃ k ∈ quasispectrum 𝕜 a, (‖k‖₊ : ℝ≥0∞) = spectralRadius 𝕜 a := by
   obtain ⟨k, hk, h⟩ := (isCompact a).exists_isMaxOn (nonempty 𝕜 a) continuous_nnnorm.continuousOn
   exact ⟨k, hk, le_antisymm (le_iSup₂ (α := ℝ≥0∞) k hk) (iSup₂_le <| mod_cast h)⟩
 
-theorem spectralRadius_lt_of_forall_lt [ProperSpace 𝕜] {a : A} {r : ℝ≥0}
+theorem spectralRadius_lt_of_forall_quasispectrum_lt [ProperSpace 𝕜] {a : A} {r : ℝ≥0}
     (hr : ∀ k ∈ quasispectrum 𝕜 a, ‖k‖₊ < r) : spectralRadius 𝕜 a < r :=
   sSup_image.symm.trans_lt <| ((isCompact a).sSup_lt_iff_of_continuous
     (nonempty 𝕜 a) continuous_enorm.continuousOn (r : ℝ≥0∞)).mpr (by simpa using hr)
@@ -832,8 +846,7 @@ theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [Proper
     upperHemicontinuous_spectrum 𝕜 (WithLp 1 (Unitization 𝕜 A)) |>.comp
       unitization_isometry_inr.continuous
   ext1 a
-  rw [Unitization.quasispectrum_eq_spectrum_inr,
-    ← AlgEquiv.spectrum_eq (unitizationAlgEquiv 𝕜 (𝕜 := 𝕜) (A := A) |>.symm)]
+  rw [quasispectrum_eq_spectrum_toLp_inr]
   congr
 
 /-- The map `a ↦ quasispectrum ℝ≥0 a` is upper hemicontinuous. -/
