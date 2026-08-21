@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Complex.Harmonic.MeanValue
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Analysis.SpecialFunctions.Integrals.LogTrigonometric
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Log
 public import Mathlib.MeasureTheory.Integral.CircleAverage
 
 /-!
@@ -23,17 +23,6 @@ public section
 open Filter Interval intervalIntegral MeasureTheory Metric Real
 
 variable {a c : ℂ} {R : ℝ}
-
-/-!
-## Circle Integrability
--/
-
-/--
-If `a` is any complex number, the function `(log ‖· - a‖)` is circle integrable over every circle.
--/
-@[fun_prop]
-lemma circleIntegrable_log_norm_sub_const (r : ℝ) : CircleIntegrable (log ‖· - a‖) c r :=
-  MeromorphicOn.circleIntegrable_log_norm (fun z hz ↦ by fun_prop)
 
 /-!
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ < 1`.
