@@ -294,6 +294,37 @@ lemma LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered [Nontrivial G] :
   rw [← isAddCyclic_additive_iff, LinearOrderedAddCommGroup.isAddCyclic_iff_not_denselyOrdered]
   rfl
 
+/-- A cyclic linearly ordered commutative group is mul-archimedean. -/
+@[to_additive /-- A cyclic linearly ordered additive commutative group is archimedean. -/]
+lemma MulArchimedean.of_isCyclic {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+    [IsCyclic G] : MulArchimedean G := by
+  obtain ⟨g, hg⟩ := IsCyclic.exists_zpow_surjective (G := G)
+  -- replace `g` by whichever of `g`, `g⁻¹` is `> 1`, unless `G` is trivial
+  suffices H : ∀ h : G, 1 < h → (∀ z : G, ∃ n : ℤ, h ^ n = z) → MulArchimedean G by
+    rcases lt_trichotomy g 1 with hg1 | rfl | hg1
+    · refine H g⁻¹ (Left.one_lt_inv_iff.2 hg1) fun z ↦ ?_
+      obtain ⟨n, rfl⟩ := hg z
+      exact ⟨-n, by rw [inv_zpow, ← zpow_neg, neg_neg]⟩
+    · refine ⟨fun x {y} hy ↦ ?_⟩
+      obtain ⟨n, rfl⟩ := hg y
+      simp at hy
+    · exact H g hg1 hg
+  rintro h hh1 hsurj
+  refine ⟨fun x {y} hy ↦ ?_⟩
+  obtain ⟨a, rfl⟩ := hsurj x
+  obtain ⟨b, rfl⟩ := hsurj y
+  have hb : 1 ≤ b := by
+    by_contra hb
+    have h0 : h ^ b ≤ h ^ (0 : ℤ) := (zpow_le_zpow_iff_right hh1).2 (by omega)
+    rw [zpow_zero] at h0
+    exact absurd hy (not_lt.2 h0)
+  refine ⟨a.toNat, ?_⟩
+  rw [← zpow_natCast, ← zpow_mul, zpow_le_zpow_iff_right hh1]
+  calc a ≤ (a.toNat : ℤ) := Int.self_le_toNat a
+    _ = 1 * (a.toNat : ℤ) := (one_mul _).symm
+    _ ≤ b * (a.toNat : ℤ) := by
+        exact mul_le_mul_of_nonneg_right hb (Int.natCast_nonneg _)
+
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. -/
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
@@ -556,3 +587,21 @@ lemma WithZero.denselyOrdered_set_iff_subsingleton {X : Type*} [LinearOrder X]
   WithBot.denselyOrdered_set_iff_subsingleton
 
 end DenselyOrdered
+
+/-- A group with zero whose group of units is cyclic is mul-archimedean.
+
+`MulArchimedean` is therefore never needed as a hypothesis alongside cyclicity. -/
+lemma MulArchimedean.of_isCyclic_units {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀]
+    [IsCyclic G₀ˣ] : MulArchimedean G₀ :=
+  Units.mulArchimedean_iff.mp MulArchimedean.of_isCyclic
+
+/-- A non-degenerate group with zero whose group of units is cyclic is order-isomorphic to `ℤᵐ⁰`.
+
+Note that `MulArchimedean` is not a hypothesis: cyclicity supplies it. -/
+lemma nonempty_orderIso_withZeroMulInt_of_isCyclic_units {G₀ : Type*}
+    [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] [IsCyclic G₀ˣ] :
+    Nonempty (G₀ ≃*o ℤᵐ⁰) := by
+  have : MulArchimedean G₀ˣ := MulArchimedean.of_isCyclic
+  have : MulArchimedean G₀ := MulArchimedean.of_isCyclic_units
+  rw [LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered, ← denselyOrdered_units_iff]
+  exact (LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered (G := G₀ˣ)).1 ‹_›
