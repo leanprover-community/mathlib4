@@ -466,29 +466,7 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 @[implicit_reducible]
 def restrict : Valuation R (ValueGroup₀ (.ofClass v)) where
   __ := restrict₀ (.ofClass v)
-  map_add_le_max' x y := by
-    by_cases H : v x ≠ 0 ∨ v y ≠ 0
-    · rcases H with h | h
-      all_goals simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, coe_ofClass, h,
-        reduceDIte, le_sup_iff]
-      all_goals split_ifs with H
-      · simp [H]
-      · simp only [H, ↓reduceDIte, WithZero.coe_le_coe, Subtype.mk_le_mk, ← Units.val_le_val,
-          Units.val_mk0]
-        split_ifs with hy
-        · simpa [hy] using map_add_le _ (le_rfl (a := v x)) (hy ▸ zero_le)
-        · simp [hy, ← Units.val_le_val]
-      · simp [H]
-      · simp only [H, ↓reduceDIte, WithZero.coe_le_coe, Subtype.mk_le_mk]
-        split_ifs with hx
-        · simpa [hx, ← Units.val_le_val] using map_add_le _ (hx ▸ zero_le) (le_rfl (a := v y))
-        · simp [hx, ← Units.val_le_val]
-    · simp only [ne_eq, not_or, Decidable.not_not] at H
-      simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply,
-        MonoidWithZeroHom.coe_ofClass, H, ↓reduceDIte, max_self, nonpos_iff_eq_zero]
-      replace H : v (x + y) = 0 :=
-        le_antisymm (map_add_le _ (le_of_eq H.1) (le_of_eq H.2)) zero_le
-      simp [H]
+  map_add_le_max' x y := Subtype.coe_le_coe.1 (v.map_add_le_max' x y)
 
 lemma restrict_def (x : R) : v.restrict x = restrict₀ (.ofClass v) x := rfl
 
@@ -497,21 +475,18 @@ lemma embedding_restrict (x : R) : embedding (v.restrict x) = v x :=
   embedding_restrict₀ x
 
 lemma restrict_lt_iff_lt_embedding {x : R} {g : ValueGroup₀ (.ofClass v)} :
-    v.restrict x < g ↔ v x < embedding g :=
-  embedding_strictMono.lt_iff_lt.symm.trans (by simp)
+    v.restrict x < g ↔ v x < embedding g := Subtype.coe_lt_coe.symm
 
 lemma restrict_le_iff_le_embedding {x : R} {g : ValueGroup₀ (.ofClass v)} :
-    v.restrict x ≤ g ↔ v x ≤ embedding g :=
-  embedding_strictMono.le_iff_le.symm.trans (by simp)
+    v.restrict x ≤ g ↔ v x ≤ embedding g := Subtype.coe_le_coe.symm
 
-lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) : v.restrict x =
-    (valueGroup.mk (.ofClass v) 1 x (by simp) hx : ValueGroup₀ (.ofClass v)) := by
-  simp [restrict_def, restrict₀_apply, valueGroup.mk, hx]
+lemma restrict_eq_mk (x : R) : v.restrict x = ValueGroup₀.mk (.ofClass v) 1 x := by
+  refine Subtype.ext ?_
+  change v x = (v 1)⁻¹ * v x
+  simp
 
 @[simp]
-lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
-  simp only [restrict_def, restrict₀_apply]
-  split_ifs with h <;> simpa [zero_lt_iff]
+lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := Subtype.coe_lt_coe.symm
 
 @[simp]
 lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
@@ -523,7 +498,7 @@ lemma restrict_le_iff {x y : R} : v.restrict x ≤ v.restrict y ↔ v x ≤ v y 
 
 @[simp]
 lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y :=
-  embedding_inj.symm.trans (by simp)
+  Subtype.coe_inj.symm
 
 theorem isEquiv_restrict : v.IsEquiv v.restrict := fun _ _ ↦ v.restrict_le_iff.symm
 
@@ -545,19 +520,19 @@ lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
 
 lemma exists_div_eq_of_unit (γ : (ValueGroup₀ (.ofClass v))ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
-  set u := WithZero.unzero (Units.ne_zero γ) with hu_def
-  obtain ⟨a, ⟨ha, x, hax⟩⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
-  have hx : 0 < v x := by
-    rw [← restrict_pos_iff, restrict_def, WithZero.pos_iff_ne_zero, ne_eq, restrict₀_eq_zero_iff]
-    aesop
-  use x, a, hx, zero_lt_iff.mpr ha
+  have hγ0 : ((γ.1 : ValueGroup₀ (.ofClass v)) : Γ₀) ≠ 0 := by
+    rw [ne_eq, ZeroMemClass.coe_eq_zero]
+    exact γ.ne_zero
+  obtain h | ⟨a, ha, x, hax⟩ := (mem_valueGroup₀_iff_of_comm _).mp γ.1.2
+  · exact absurd h hγ0
+  simp only [MonoidWithZeroHom.coe_ofClass] at ha hax
+  have hx : v x ≠ 0 := by rw [← hax]; exact mul_ne_zero ha hγ0
+  refine ⟨x, a, zero_lt_iff.2 hx, zero_lt_iff.2 ha, ?_⟩
   have ha0 : v.restrict a ≠ 0 := by simpa using ha
-  rw [div_eq_iff ha0, mul_comm, ← embedding_strictMono.injective.eq_iff, map_mul,
-    embedding_restrict, embedding_restrict]
-  rw [← MonoidWithZeroHom.coe_ofClass, ← hax]
-  congr
-  rw [← WithZero.coe_unzero (Units.ne_zero γ)]
-  exact Eq.refl ..
+  rw [div_eq_iff ha0]
+  refine Subtype.ext ?_
+  change v x = ((γ.1 : ValueGroup₀ (.ofClass v)) : Γ₀) * v a
+  rw [← hax, mul_comm]
 
 lemma IsEquiv.restrict {Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀']
     {w : Valuation R Γ₀'} (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by
@@ -610,13 +585,6 @@ lemma not_isNontrivial_one [IsDomain R] [DecidablePred fun x : R ↦ x = 0] :
   rintro ⟨⟨x, hx, hx'⟩⟩
   rcases eq_or_ne x 0 with rfl | hx0 <;>
   simp_all [one_apply_of_ne_zero]
-
-instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
-    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueMonoid (.ofClass v)) := by
-  obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
-  rw [Submonoid.nontrivial_iff_exists_ne_one]
-  use (Units.mk0 (v x) h0), (MonoidWithZeroHom.ofClass v).mem_valueMonoid (Set.mem_range_self x)
-  simpa [Units.ext_iff]
 
 instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
     [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueGroup (.ofClass v)) := by
