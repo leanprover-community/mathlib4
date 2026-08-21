@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
+public import Mathlib.Topology.Algebra.WithZeroTopology.Subgroup
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
@@ -144,7 +145,9 @@ theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
     intro γ hγ
     rw [Filter.Eventually, Valued.mem_nhds_zero]
     obtain ⟨x, hx⟩ := hsurj γ
-    use Units.mk0 (restrict₀ (.ofClass hv.v) x) (by simp [hx, hγ])
+    use Units.mk0 (restrict₀ (.ofClass hv.v) x) (by
+      rw [ne_eq, ValueGroup₀.restrict₀_eq_zero_iff, MonoidWithZeroHom.coe_ofClass, hx]
+      exact hγ)
     simp only [Units.val_mk0, ofPred_subset_ofPred, ← v.restrict_def, Valuation.restrict_lt_iff, hx,
       imp_self, implies_true]
   · have h0 : hv.v x ≠ 0 := (Valuation.ne_zero_iff _).mpr h
@@ -326,16 +329,22 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
       norm_cast
       exact Valuation.map_mul _ _ _
   map_add_le_max' x y := by
-    simp_rw [le_max_iff, Function.comp_apply]
-    rw [embedding_strictMono.le_iff_le, embedding_strictMono.le_iff_le (f := embedding)]
-    apply Completion.induction_on₂ x y
-      (p := fun x y => extension (x + y) ≤ extension x ∨ extension (x + y) ≤ extension y)
-    · have cont : Continuous (Valued.extension : hat K → _) := Valued.continuous_extension
-      exact (isClosed_le (by fun_prop) <| cont.comp continuous_fst).union
-          (isClosed_le (by fun_prop) <| cont.comp continuous_snd)
-    · intro x y
-      norm_cast
-      exact le_max_iff.mp (v.restrict.map_add x y)
+    have key : ∀ a b : hat K,
+        extension (a + b) ≤ extension a ∨ extension (a + b) ≤ extension b := fun a b ↦ by
+      apply Completion.induction_on₂ a b
+        (p := fun a b => extension (a + b) ≤ extension a ∨ extension (a + b) ≤ extension b)
+      · have cont : Continuous (Valued.extension : hat K → _) := Valued.continuous_extension
+        exact (isClosed_le (α := ValueGroup₀ (.ofClass hv.v))
+              (f := fun x : hat K × hat K => extension (x.1 + x.2)) (g := fun x => extension x.1)
+              (cont.comp (continuous_fst.add continuous_snd)) (cont.comp continuous_fst)).union
+          (isClosed_le (α := ValueGroup₀ (.ofClass hv.v))
+              (f := fun x : hat K × hat K => extension (x.1 + x.2)) (g := fun x => extension x.2)
+              (cont.comp (continuous_fst.add continuous_snd)) (cont.comp continuous_snd))
+      · intro a b
+        norm_cast
+        exact le_max_iff.mp (v.restrict.map_add a b)
+    simp only [Function.comp_apply, le_max_iff]
+    exact (key x y).imp (fun h ↦ embedding_monotone h) (fun h ↦ embedding_monotone h)
 
 lemma extensionValuation_toFun (x : hat K) : Valued.extensionValuation x =
     ValueGroup₀.embedding (Valued.extension x) := rfl

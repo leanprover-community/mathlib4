@@ -7842,6 +7842,7 @@ public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.Algebra.Valued.WithZeroMulInt
 public import Mathlib.Topology.Algebra.WithZeroTopology
+public import Mathlib.Topology.Algebra.WithZeroTopology.Subgroup
 public import Mathlib.Topology.ApproximateUnit
 public import Mathlib.Topology.Baire.BaireMeasurable
 public import Mathlib.Topology.Baire.CompleteMetrizable
