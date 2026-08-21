@@ -2007,6 +2007,7 @@ public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Convex.Strong
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Convex.TotallyBounded
+public import Mathlib.Analysis.Convex.TriangleEquality
 public import Mathlib.Analysis.Convex.Uniform
 public import Mathlib.Analysis.Convex.Visible
 public import Mathlib.Analysis.Convolution
