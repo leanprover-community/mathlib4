@@ -257,7 +257,7 @@ public theorem IsLeviCivitaConnection.uniqueness
     (hY : MDiffAt (T% Y) x) (X₀ : TangentSpace% x) :
     cov Y x X₀ = cov' Y x X₀ := by
   apply injective_inner_mdifferentiableAt_vectorField; ext Z hZ
-  exact (hcov.apply_eq_extend I X₀ hY hZ).trans <| hcov'.apply_eq_extend I X₀ hY hZ |>.symm
+  exact (hcov.apply_eq_extend I X₀ hY hZ).trans (hcov'.apply_eq_extend I X₀ hY hZ).symm
 
 end uniqueness
 
@@ -286,8 +286,8 @@ theorem tensorialAt_leviCivitaAuxInner₁
       mvfderiv_fun_add, inner_add_left, inner_add_right]
     ring
 
-/-- `leviCivitaAuxInner` is tensorial with respect to its second argument. -/
-theorem tensorialAt_leviCivitaAuxInner₂
+/-- `leviCivitaAuxInner` is tensorial with respect to its third argument. -/
+theorem tensorialAt_leviCivitaAuxInner₃
     (x : M) (hY : MDiffAt (T% Y) x) (hX : MDiffAt (T% X) x) :
     TensorialAt I E (leviCivitaAuxInner I X Y · x) x where
   smul hf hZ := by
@@ -303,6 +303,12 @@ theorem tensorialAt_leviCivitaAuxInner₂
       inner_add_left, inner_add_right]
     ring
 
+-- TODO move!
+instance : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
+
+-- TODO move!
+instance : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
+
 /-- Almost the function underlying our construction of the Levi-Civita connection:
 this is the desired `(1,1)`-tensor, but without considerations to the junk value when
 applied to non-differentiable vector fields. -/
@@ -310,12 +316,10 @@ noncomputable def leviCivitaAuxOfMDiffAt (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x :=
   -- Use the musical isomorphism to produce a candidate `∇ Y` as a `(1,1)`-tensor
   -- (rather than a `2`-tensor).
-  have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
-  have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
   (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L
     (TensorialAt.mkHom₂ _ (x := x)
       (fun _Z hZ ↦ tensorialAt_leviCivitaAuxInner₁ _ _ hY hZ)
-      (fun _X hX ↦ tensorialAt_leviCivitaAuxInner₂ _ _ hY hX))
+      (fun _X hX ↦ tensorialAt_leviCivitaAuxInner₃ _ _ hY hX))
 
 theorem leviCivitaAuxOfMDiffAt_apply_inner
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
