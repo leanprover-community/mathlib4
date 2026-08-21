@@ -896,7 +896,6 @@ theorem subsemigroup_eq_subgroup :
     MulArchimedeanClass.subsemigroup (toUpperSetMulArchimedeanClass s) = (subgroup s : Set M) :=
   rfl
 
--- set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 @[to_additive (attr := simp)]
 theorem subgroup_eq_bot : subgroup (M := M) ⊤ = ⊥ := by

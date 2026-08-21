@@ -416,8 +416,7 @@ theorem isUniformizer_of_maximalIdeal_eq_span [v.IsRankOneDiscrete] {r : K₀}
       (valuationSubring_not_isField v) hr
   obtain ⟨π, hπ⟩ := exists_isUniformizer_of_isCyclic_of_nontrivial v
   obtain ⟨n, u, hu⟩ := exists_pow_Uniformizer hr₀ ⟨π, hπ⟩
-  rw [Uniformizer.is_generator ⟨π, hπ⟩] at hr
-  rw [span_singleton_eq_span_singleton] at hr
+  rw [Uniformizer.is_generator ⟨π, hπ⟩, span_singleton_eq_span_singleton] at hr
   exact hπ.of_associated hr
 
 theorem ideal_isPrincipal [IsCyclic (valueGroup (.ofClass v))]
