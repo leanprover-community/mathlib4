@@ -224,7 +224,7 @@ theorem toSphereBallBound_mul_measure_unitBall_le_toSphere_ball {ε : ℝ}
         using this (ε := min ε 2) (by simp [hε]) (by simp)
     · gcongr
       simp
-  rw [μ.toSphere_apply' measurableSet_ball, Subtype.image_ball, setOf_mem_eq]
+  rw [μ.toSphere_apply' measurableSet_ball, Subtype.image_ball, ofPred_mem_eq]
   grw [← ball_subset_sector_of_small_epsilon] <;> try assumption
   · have hdim : Module.finrank ℝ E ≠ 0 := Module.finrank_pos.ne'
     have : min (ENNReal.ofReal ε) 2 = ENNReal.ofReal ε := by simpa

@@ -6,7 +6,6 @@ Authors: Ben Eltschig
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Triple
-public import Mathlib.CategoryTheory.Limits.Elements
 public import Mathlib.CategoryTheory.Sites.GlobalSections
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 
@@ -98,6 +97,7 @@ noncomputable def coconstantSheaf [HasProducts.{w} A] : A ⥤ Sheaf J A :=
 
 variable [HasColimitsOfSize.{w, w} A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {A} in
 /-- The fibre of any presheaf `P : Cᵒᵖ ⥤ A` at `point J` is just `P` evaluated at
 the terminal object. -/

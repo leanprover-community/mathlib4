@@ -69,6 +69,7 @@ lemma analyticWithinAt_sinh {x : ℂ} {s : Set ℂ} : AnalyticWithinAt ℂ sinh 
   contDiff_sinh.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Complex.sinh` is complex analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_sinh {s : Set ℂ} : AnalyticOnNhd ℂ sinh s :=
   fun _ _ ↦ analyticAt_sinh
 
@@ -114,6 +115,7 @@ lemma analyticWithinAt_cosh {x : ℂ} {s : Set ℂ} : AnalyticWithinAt ℂ cosh 
   contDiff_cosh.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Complex.cosh` is complex analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_cosh {s : Set ℂ} : AnalyticOnNhd ℂ cosh s :=
   fun _ _ ↦ analyticAt_cosh
 
@@ -300,7 +302,7 @@ end
 
 namespace Real
 
-variable {x y z : ℝ}
+variable {x y : ℝ}
 
 theorem hasStrictDerivAt_sinh (x : ℝ) : HasStrictDerivAt sinh (cosh x) x :=
   (Complex.hasStrictDerivAt_sinh x).real_of_complex
@@ -331,6 +333,7 @@ lemma analyticWithinAt_sinh {s : Set ℝ} : AnalyticWithinAt ℝ sinh s x :=
   contDiff_sinh.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Real.sinh` is real analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_sinh {s : Set ℝ} : AnalyticOnNhd ℝ sinh s :=
   fun _ _ ↦ analyticAt_sinh
 
@@ -369,6 +372,7 @@ lemma analyticWithinAt_cosh {s : Set ℝ} : AnalyticWithinAt ℝ cosh s x :=
   contDiff_cosh.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Real.cosh` is real analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_cosh {s : Set ℝ} : AnalyticOnNhd ℝ cosh s :=
   fun _ _ ↦ analyticAt_cosh
 
@@ -789,7 +793,7 @@ end LogDeriv
 end
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 alias ⟨_, sinh_pos_of_pos⟩ := Real.sinh_pos_iff
 alias ⟨_, sinh_nonneg_of_nonneg⟩ := Real.sinh_nonneg_iff

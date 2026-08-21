@@ -41,7 +41,7 @@ universe u
 
 namespace CategoryTheory
 
-open MonoidalCategory Functor
+open MonoidalCategory CategoryTheory.Functor
 
 namespace FreeMonoidalCategory
 
@@ -138,7 +138,6 @@ section
 
 variable (C)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Our normalization procedure works by first defining a functor `F C ⥤ (N C ⥤ N C)` (which turns
 out to be very easy), and then obtain a functor `F C ⥤ N C` by plugging in the normal object
 `𝟙_ C`. -/
@@ -172,7 +171,7 @@ theorem tensorFunc_obj_map (Z : F C) {n n' : N C} (f : n ⟶ n') :
     ((tensorFunc C).obj Z).map f = inclusion.map f ▷ Z := by
   cases n
   cases n'
-  rcases f with ⟨⟨h⟩⟩
+  rcases f with ⟨h⟩
   dsimp at h
   subst h
   simp
@@ -225,12 +224,13 @@ theorem normalizeIsoApp_tensor (X Y : F C) (n : N C) :
 theorem normalizeIsoApp_unitor (n : N C) : normalizeIsoApp C (𝟙_ (F C)) n = ρ_ _ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `normalizeIso`. -/
 @[simps!]
 def normalizeIsoAux (X : F C) : (tensorFunc C).obj X ≅ (normalize' C).obj X :=
   NatIso.ofComponents (normalizeIsoApp C X)
     (by
-      rintro ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩
+      rintro ⟨X⟩ ⟨Y⟩ ⟨f⟩
       dsimp at f
       subst f
       dsimp
@@ -255,6 +255,7 @@ theorem normalizeObj_congr (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y
       simp [congr_fun ih₁ n, congr_fun ih₂ (normalizeObj Y n)]
   | _ => funext; rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y) :
     inclusionObj n ◁ f ≫ (normalizeIsoApp' C Y n).hom =
@@ -280,6 +281,7 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between `n ⊗ X` and `normalize X n` is natural (in both `X` and `n`, but
 naturality in `n` is trivial and was "proved" in `normalizeIsoAux`). This is the real heart
@@ -291,6 +293,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
     convert! normalize_naturality n f using 1
     any_goals dsimp; rw [normalizeIsoApp_eq]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between an object and its normal form is natural. -/
 def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=

@@ -47,7 +47,7 @@ open scoped Pointwise
 
 namespace Subgroup
 
-open Cardinal Function
+open Function
 
 variable {G G' : Type*} [Group G] [Group G'] (H K L : Subgroup G)
 
@@ -531,7 +531,7 @@ theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
   exact Nat.card_pos.ne'
 
 /-- Finite index implies finite quotient. -/
-@[to_additive (attr := implicit_reducible) /-- Finite index implies finite quotient. -/]
+@[to_additive (attr := instance_reducible) /-- Finite index implies finite quotient. -/]
 noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) :=
   @Fintype.ofFinite _ (Nat.finite_of_card_ne_zero hH)
 
@@ -561,6 +561,7 @@ lemma finite_quotient_of_pretransitive_of_index_ne_zero {X : Type*} [MulAction G
   have := (MulAction.pretransitive_iff_subsingleton_quotient G X).1 inferInstance
   exact finite_quotient_of_finite_quotient_of_index_ne_zero hi
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
     ∃ n, 0 < n ∧ n ≤ H.index ∧ a ^ n ∈ H := by
@@ -680,6 +681,20 @@ instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
 lemma isFiniteRelIndex_iff_relIndex_ne_zero : H.IsFiniteRelIndex K ↔ H.relIndex K ≠ 0 :=
   ⟨fun _ ↦ relIndex_ne_zero, IsFiniteRelIndex.mk⟩
 
+@[to_additive (attr := simp)]
+instance : IsFiniteRelIndex H H := by
+  simp [isFiniteRelIndex_iff_relIndex_ne_zero]
+
+@[to_additive]
+protected theorem IsFiniteRelIndex.trans (hHK : IsFiniteRelIndex H K) (hKL : IsFiniteRelIndex K L) :
+    IsFiniteRelIndex H L where
+  relIndex_ne_zero := relIndex_ne_zero_trans hHK.relIndex_ne_zero hKL.relIndex_ne_zero
+
+@[to_additive]
+protected theorem IsFiniteRelIndex.inf (hHK : IsFiniteRelIndex H L) (hKL : IsFiniteRelIndex K L) :
+    IsFiniteRelIndex (H ⊓ K) L where
+  relIndex_ne_zero := relIndex_inf_ne_zero hHK.relIndex_ne_zero hKL.relIndex_ne_zero
+
 @[to_additive]
 theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
   ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
@@ -690,8 +705,8 @@ lemma isFiniteRelIndex_iff_finiteIndex :
   rw [isFiniteRelIndex_iff_relIndex_ne_zero, finiteIndex_iff, relIndex]
 
 @[to_additive]
-theorem not_finiteIndex_iff : ¬ H.FiniteIndex ↔ H.index = 0 :=
-  by simp [finiteIndex_iff]
+theorem not_finiteIndex_iff : ¬ H.FiniteIndex ↔ H.index = 0 := by
+  simp [finiteIndex_iff]
 
 @[simp]
 theorem finiteIndex_toAddSubgroup_iff : H.toAddSubgroup.FiniteIndex ↔ H.FiniteIndex := by
@@ -707,7 +722,7 @@ lemma isFiniteRelIndex_top_iff : H.IsFiniteRelIndex ⊤ ↔ H.FiniteIndex := by
   rw [finiteIndex_iff, isFiniteRelIndex_iff_relIndex_ne_zero, relIndex_top_right]
 
 /-- A finite index subgroup has finite quotient. -/
-@[to_additive (attr := implicit_reducible) /-- A finite index subgroup has finite quotient -/]
+@[to_additive (attr := instance_reducible) /-- A finite index subgroup has finite quotient -/]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
   fintypeOfIndexNeZero FiniteIndex.index_ne_zero
 
@@ -791,6 +806,23 @@ lemma isFiniteRelIndex_of_le_right (h : K ≤ L) [H.IsFiniteRelIndex L] :
   exact mt (relIndex_eq_zero_of_le_right h) relIndex_ne_zero
 
 @[to_additive]
+theorem isFiniteRelIndex_comap_iff {K : Subgroup G'} {f : G' →* G} :
+    IsFiniteRelIndex (H.comap f) K ↔ IsFiniteRelIndex H (K.map f) := by
+  rw [isFiniteRelIndex_iff_relIndex_ne_zero, isFiniteRelIndex_iff_relIndex_ne_zero, relIndex_comap]
+
+@[to_additive]
+theorem IsFiniteRelIndex.map (f : G →* G') (hHK : IsFiniteRelIndex H K) :
+    IsFiniteRelIndex (H.map f) (K.map f) := by
+  rw [← isFiniteRelIndex_comap_iff, comap_map_eq]
+  exact isFiniteRelIndex_of_le_left K le_sup_left
+
+@[to_additive]
+theorem IsFiniteRelIndex.comap (f : G' →* G) (hHK : IsFiniteRelIndex H K) :
+    IsFiniteRelIndex (H.comap f) (K.comap f) := by
+  rw [isFiniteRelIndex_comap_iff, map_comap_eq]
+  exact isFiniteRelIndex_of_le_right H inf_le_right
+
+@[to_additive]
 lemma isFiniteRelIndex_of_finiteIndex [h : H.FiniteIndex] : H.IsFiniteRelIndex K := by
   rw [← isFiniteRelIndex_top_iff] at h
   exact isFiniteRelIndex_of_le_right _ le_top
@@ -843,11 +875,13 @@ variable {G H : Type*} [Group H] (h : H)
 -- NB: `to_additive` does not work to generate the second lemma from the first here, because it
 -- would need to additivize `G`, but not `H`.
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Subgroup.relIndex_pointwise_smul [Group G] [MulDistribMulAction H G] (J K : Subgroup G) :
     (h • J).relIndex (h • K) = J.relIndex K := by
   rw [pointwise_smul_def K, ← relIndex_comap, pointwise_smul_def,
     comap_map_eq_self_of_injective (by intro a b; simp)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma AddSubgroup.relIndex_pointwise_smul [AddGroup G] [DistribMulAction H G]
     (J K : AddSubgroup G) : (h • J).relIndex (h • K) = J.relIndex K := by
   rw [pointwise_smul_def K, ← relIndex_comap, pointwise_smul_def,

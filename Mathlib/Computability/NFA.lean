@@ -119,11 +119,6 @@ theorem evalFrom_append (S : Set σ) (x y : List α) :
     M.evalFrom S (x ++ y) = M.evalFrom (M.evalFrom S x) y := by
   simp only [evalFrom, List.foldl_append]
 
-@[deprecated "Use evalFrom_append, evalFrom_cons, and evalFrom_nil" (since := "2025-11-17")]
-theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
-    M.evalFrom S (x ++ [a]) = M.stepSet (M.evalFrom S x) a := by
-  simp only [evalFrom_append, evalFrom_cons, evalFrom_nil]
-
 variable (M) in
 @[simp]
 theorem evalFrom_union (S T : Set σ) (x : List α) :
@@ -144,13 +139,6 @@ variable (M) in
 theorem evalFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → Set σ) (x : List α) :
     M.evalFrom (⋃ (i) (j), f i j) x = ⋃ (i) (j), M.evalFrom (f i j) x := by
   simp
-
-variable (M) in
-@[deprecated evalFrom_iUnion₂ (since := "2025-11-17")]
-theorem evalFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
-    ∀ (x : List α), M.evalFrom (⋃ i ∈ t, f i) x = ⋃ i ∈ t, M.evalFrom (f i) x
-  | [] => by simp
-  | a :: x => by simp [stepSet, evalFrom_biUnion _ _ x]
 
 variable (M) in
 theorem evalFrom_eq_biUnion_singleton (S : Set σ) (x : List α) :
@@ -219,8 +207,9 @@ theorem acceptsFrom_iUnion {ι : Sort*} (s : ι → Set σ) :
     M.acceptsFrom (⋃ i, s i) = ⋃ i, M.acceptsFrom (s i) := by
   ext x
   simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion]
-  simp_rw [↑mem_iUnion, ↑mem_setOf_eq]; tauto
+  simp_rw [↑mem_iUnion, ↑mem_ofPred_eq]; tauto
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 theorem acceptsFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → Set σ) :
     M.acceptsFrom (⋃ (i) (j), f i j) = ⋃ (i) (j), M.acceptsFrom (f i j) := by
@@ -231,10 +220,10 @@ variable (M) in
 private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
     x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
   induction x generalizing S with
-  | nil => simp only [nil_mem_acceptsFrom, mem_setOf_eq]; tauto
+  | nil => simp only [nil_mem_acceptsFrom, mem_ofPred_eq]; tauto
   | cons a x ih =>
     have h : M.stepSet {s ∈ S | p} a = {s ∈ M.stepSet S a | p} := by
-      ext s; simp only [stepSet, mem_setOf_eq, mem_iUnion, exists_prop]; tauto
+      ext s; simp only [stepSet, mem_ofPred_eq, mem_iUnion, exists_prop]; tauto
     simp [h, ih]
 
 variable (M) in
@@ -385,7 +374,7 @@ theorem reverse_reverse : M.reverse.reverse = M := by
 theorem disjoint_stepSet_reverse {a : α} {S S' : Set σ} :
     Disjoint S (M.reverse.stepSet S' a) ↔ Disjoint S' (M.stepSet S a) := by
   rw [← not_iff_not]
-  simp only [Set.not_disjoint_iff, mem_stepSet, reverse_step, Set.mem_setOf_eq]
+  simp only [Set.not_disjoint_iff, mem_stepSet, reverse_step, Set.mem_ofPred_eq]
   tauto
 
 theorem disjoint_evalFrom_reverse {x : List α} {S S' : Set σ}

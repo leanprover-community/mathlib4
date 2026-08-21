@@ -227,7 +227,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
     simp only [V, iUnion_inter]
     apply Countable.biUnion
     · exact bct.mono (sep_subset _ _)
-    · exact sep_subset_setOf _ _
+    · exact sep_subset_ofPred _ _
   refine ⟨V ∩ C, D, Vct, ⟨?_, ?_⟩, ?_⟩
   · refine hclosed.sdiff (isOpen_biUnion fun _ ↦ ?_)
     exact fun ⟨Ub, _⟩ ↦ IsTopologicalBasis.isOpen bbasis Ub
