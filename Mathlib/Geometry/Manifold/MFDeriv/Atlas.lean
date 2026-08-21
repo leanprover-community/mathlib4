@@ -415,7 +415,8 @@ theorem TangentBundle.continuousLinearMapAt_trivializationAt
   have : MDiffAt (extChartAt I x₀) x := mdifferentiableAt_extChartAt hx
   simp only [extChartAt, OpenPartialHomeomorph.extend, PartialEquiv.coe_trans,
     ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.toFun_eq_coe] at this
-  simp [hx, mfderiv, this]
+  simp only [hx, mfderiv, this, mfld_simps]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The inverse trivialization of the tangent bundle at a point is the manifold derivative of the
@@ -427,7 +428,8 @@ theorem TangentBundle.symmL_trivializationAt
       mfderiv[range I] (extChartAt I x₀).symm (extChartAt I x₀ x) := by
   have : MDiffAt[range I] ((chartAt H x₀).symm ∘ I.symm) (I (chartAt H x₀ x)) := by
     simpa using mdifferentiableWithinAt_extChartAt_symm (by simp [hx])
-  simp [hx, mfderivWithin, this]
+  simp only [hx, mfderivWithin, this, mfld_simps]
+  rfl
 
 omit [IsManifold I 1 M] in
 /-- The `fderivWithin` of the round-trip composition `(extChartAt I x) ∘ (extChartAt I x).symm`

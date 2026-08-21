@@ -518,14 +518,13 @@ theorem IsCompact.union (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∪
 protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
   isCompact_singleton.union hs
 
--- TODO: reformulate using `𝓝ˢ`
 /-- If `V : ι → Set X` is a decreasing family of closed compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. We assume each `V i` is compact *and* closed because `X` is
-not assumed to be Hausdorff. See `exists_subset_nhds_of_compact` for version assuming this. -/
+not assumed to be Hausdorff. See `exists_subset_nhds_of_isCompact` for a version assuming this. -/
 theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
     (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) (hV_closed : ∀ i, IsClosed (V i))
-    {U : Set X} (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U := by
-  obtain ⟨W, hsubW, W_op, hWU⟩ := exists_open_set_nhds hU
+    {U : Set X} (hU : U ∈ 𝓝ˢ (⋂ i, V i)) : ∃ i, V i ⊆ U := by
+  obtain ⟨W, W_op, hsubW, hWU⟩ := mem_nhdsSet_iff_exists.mp hU
   suffices ∃ i, V i ⊆ W from this.imp fun i hi => hi.trans hWU
   by_contra! H
   replace H : ∀ i, (V i ∩ Wᶜ).Nonempty := fun i => Set.inter_compl_nonempty_iff.mpr (H i)
@@ -975,7 +974,7 @@ theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
 
 theorem exists_subset_nhds_of_compactSpace [CompactSpace X] [Nonempty ι]
     {V : ι → Set X} (hV : Directed (· ⊇ ·) V) (hV_closed : ∀ i, IsClosed (V i)) {U : Set X}
-    (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U :=
+    (hU : U ∈ 𝓝ˢ (⋂ i, V i)) : ∃ i, V i ⊆ U :=
   exists_subset_nhds_of_isCompact' hV (fun i => (hV_closed i).isCompact) hV_closed hU
 
 /-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is compact
