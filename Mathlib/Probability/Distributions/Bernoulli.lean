@@ -178,7 +178,7 @@ variable {E : Type*} [NormedAddCommGroup E]
 @[simp]
 lemma memLp_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) (q : ℝ≥0∞) :
     MemLp f q Ber(x, y, p) := by
-  simp [bernoulliMeasure_def, MemLp.add_measure, MemLp.smul_measure_nnreal]
+  simp [bernoulliMeasure_def, memLp_add_measure, MemLp.smul_measure_nnreal]
 
 @[simp]
 lemma integrable_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) :
