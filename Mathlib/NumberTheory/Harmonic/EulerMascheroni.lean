@@ -87,7 +87,7 @@ lemma strictAnti_eulerMascheroniSeq' : StrictAnti eulerMascheroniSeq' := by
   refine strictAnti_nat_of_succ_lt (fun n ↦ ?_)
   rcases Nat.eq_zero_or_pos n with rfl | hn
   · simp [eulerMascheroniSeq']
-  simp_rw [eulerMascheroniSeq', eq_false_intro hn.ne', reduceCtorEq, if_false]
+  simp_rw [eulerMascheroniSeq', eq_false_intro hn.ne', reduceCtorEq, ite_false]
   rw [← sub_pos, sub_sub_sub_comm,
     harmonic_succ, Rat.cast_add, ← sub_sub, sub_self, zero_sub, sub_eq_add_neg, neg_sub,
     ← sub_eq_neg_add, sub_pos, ← log_div (by positivity) (by positivity), ← neg_lt_neg_iff,
@@ -116,7 +116,7 @@ lemma eulerMascheroniSeq_lt_eulerMascheroniSeq' (m n : ℕ) :
   have (r : ℕ) : eulerMascheroniSeq r < eulerMascheroniSeq' r := by
     rcases eq_zero_or_pos r with rfl | hr
     · simp [eulerMascheroniSeq, eulerMascheroniSeq']
-    simp only [eulerMascheroniSeq, eulerMascheroniSeq', hr.ne', if_false]
+    simp only [eulerMascheroniSeq, eulerMascheroniSeq', hr.ne', ite_false]
     gcongr
     linarith
   apply (strictMono_eulerMascheroniSeq.monotone (le_max_left m n)).trans_lt
@@ -151,7 +151,7 @@ lemma tendsto_harmonic_sub_log :
     Tendsto (fun n : ℕ ↦ harmonic n - log n) atTop (𝓝 eulerMascheroniConstant) := by
   apply tendsto_eulerMascheroniSeq'.congr'
   filter_upwards [eventually_ne_atTop 0] with n hn
-  simp_rw [eulerMascheroniSeq', hn, if_false]
+  simp_rw [eulerMascheroniSeq', hn, ite_false]
 
 lemma eulerMascheroniSeq_lt_eulerMascheroniConstant (n : ℕ) :
     eulerMascheroniSeq n < eulerMascheroniConstant := by

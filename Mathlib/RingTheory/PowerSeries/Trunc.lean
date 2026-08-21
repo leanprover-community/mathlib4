@@ -99,7 +99,7 @@ theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+*
     intro _ h
     rw [mem_range] at h
     congr
-    rw [coeff_trunc, if_pos h]
+    rw [coeff_trunc, ite_eq_left h]
 
 @[simp] theorem trunc_X (n) : trunc (n + 2) X = (Polynomial.X : R[X]) := by
   ext d
@@ -168,7 +168,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
   ext d
   rw [coeff_trunc, coeff_trunc, Polynomial.coeff_coe]
   split_ifs with h
-  · rw [coeff_trunc, if_pos <| lt_of_lt_of_le h hnm]
+  · rw [coeff_trunc, ite_eq_left <| lt_of_lt_of_le h hnm]
   · rfl
 
 @[simp] theorem trunc_trunc {n} (f : R⟦X⟧) : trunc n ↑(trunc n f) = trunc n f :=

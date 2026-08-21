@@ -118,15 +118,16 @@ lemma ιNormalizedChainComplex_d {n : ℕ} (x : X _⦋n + 1⦌) :
   simp [ιNormalizedChainComplex, Preadditive.sum_comp,
     -ιChainComplex_toNormalizedChainComplex_f]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma ιNormalizedChainComplex_fromNormalizedChainComplex_f (x : X _⦋n⦌) :
     X.ιNormalizedChainComplex x ≫ (X.fromNormalizedChainComplex R).f n =
       X.ιChainComplex x ≫ (PInfty).f n := by
   dsimp [ιNormalizedChainComplex]
   rw [Category.assoc, toNormalizedChainComplex_f_fromNormalizedChainComplex_f]
-  rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ιNormalizedChainComplex_eq_zero (x : X _⦋n⦌) (hx : x ∈ X.degenerate n) :
     X.ιNormalizedChainComplex (R := R) x = 0 := by
   rw [← cancel_mono ((X.fromNormalizedChainComplex R).f n), zero_comp,
@@ -188,7 +189,6 @@ section
 
 variable {X Y}
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma chainComplexMap_PInfty :
     chainComplexMap f R ≫ PInfty = PInfty ≫ chainComplexMap f R :=
@@ -200,7 +200,6 @@ noncomputable def normalizedChainComplexMap :
     X.normalizedChainComplex R ⟶ Y.normalizedChainComplex R :=
   X.fromNormalizedChainComplex R ≫ chainComplexMap f R ≫ Y.toNormalizedChainComplex R
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toNormalizedChainComplex_normalizedChainComplexMap :
     X.toNormalizedChainComplex R ≫ normalizedChainComplexMap f R =
