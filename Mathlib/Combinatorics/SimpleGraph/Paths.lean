@@ -392,7 +392,7 @@ theorem _root_.SimpleGraph.exists_isTrail_forall_length_le_of_pred [Finite G.edg
       ∀ u' v' (p' : G.Walk u' v') (hp' : p'.IsTrail), P hp' → p'.length ≤ p.length := by
   have := Fintype.ofFinite G.edgeSet
   let s := {(p.length) | (u : V) (v : V) (p : G.Walk u v) (hp : p.IsTrail) (hp' : P hp)}
-  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeFinset.card)
+  have : s.Finite := Set.finite_le_nat G.edgeFinset.card |>.subset
     fun n ⟨u, v, p, hp, hp', hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
   have ⟨u₀, v₀, p₀, hp₀, hp₀'⟩ := h
   have ⟨n, hmax⟩ := this.exists_maximal ⟨_, ⟨u₀, v₀, p₀, hp₀, hp₀', rfl⟩⟩
