@@ -13,7 +13,8 @@ This file implements the maps that show how RKHSs created from kernels formed by
 to a set of kernels relate to the RKHSs of the constituant kernels.
 
 ## main definitions
- - `OfKernel_add_equiv`: isometric equivalence between the RKHS `OfKernel (K + K')` and the
+ - `generator`: the operator `(f,g) ↦ ↑f + ↑f` inducing the RKHS `H + H'`.
+ - `OfKernelAddEquiv`: isometric equivalence between the RKHS `OfKernel (K + K')` and the
     quotient space over `OfKernel K × OfKernel K'`.
  - `projection`: isometry yielding the elements of `H × H'` achieving the norm of `H + H'`.
 -/
@@ -91,15 +92,17 @@ variable [Fact K.PosSemidef] [Fact K'.PosSemidef]
 instance : Fact (K + K').PosSemidef :=
   ⟨Matrix.PosSemidef.add (Fact.out : K.PosSemidef) (Fact.out : K'.PosSemidef)⟩
 
-def OfKernel_add_equiv : OfKernel (K + K') ≃ₗᵢ[𝕜] OfKernel K + OfKernel K' := equiv
+/-- The RKHSS constructed from the sum of two kernels is linearly isometrically isomorphic to the
+sum of the RKHSs created by the consituant kernels. -/
+def OfKernelAddEquiv : OfKernel (K + K') ≃ₗᵢ[𝕜] OfKernel K + OfKernel K' := equiv
   (by simp [OfKernel.kernel_ofKernel, kernel_sum_eq_sum_of_kernel])
 
 end OfKernel
 
 omit [CompleteSpace V]
 
-/-- Projection that takes a function `f : Sum' H H'` to the unique pair in `WithLp 2 H × H'` that
-achieves its norm. -/
+/-- Projection that takes a function `f : H + H'` to the unique pair in `H × H'` that achieves
+its norm. -/
 def projection : H + H' →ₗᵢ[𝕜] WithLp 2 (H × H') :=
   ((generator H H').kerᗮ).subtypeₗᵢ.comp
     (generator H H').ker.quotientEquivOrthogonal.toLinearIsometry
