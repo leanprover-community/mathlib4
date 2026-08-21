@@ -16,8 +16,9 @@ public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 Let `F₁ : C₁ ⥤ D` and `F₂ : C₂ ⥤ D` be `κ`-accessible functors between
 `κ`-accessible categories. If we also assume that `F₁` preserves `κ`-presentable
 objects (a property which holds for a well chosen regular cardinal `κ` according to
-the uniformization theorem (TODO @joelriou)), we show that the comma category
-`Comma F₁ F₂` is also `κ`-accessible.
+the uniformization theorem, see the file
+`Mathlib/CategoryTheory/Presentable/Uniformization.lean`), we show that
+the comma category `Comma F₁ F₂` is also `κ`-accessible.
 
 The key point in the technical proof is that if `f : Comma F₁ F₂`, then `f`
 is the `κ`-filtered colimit (indexed by a category denoted `J κ f` here) of the
