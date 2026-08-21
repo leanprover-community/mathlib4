@@ -72,8 +72,7 @@ theorem infEDist_inv (x : E) (s : Set E) : infEDist x⁻¹ s = infEDist x s⁻¹
 
 @[to_additive (attr := simp)]
 theorem ediam_inv (s : Set E) : ediam s⁻¹ = ediam s := by
-  rw [← image_inv_eq_inv]
-  exact isometry_inv.ediam_image s
+  simpa using isometry_inv.ediam_image s
 
 @[to_additive]
 theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
@@ -84,9 +83,7 @@ theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
 
 @[to_additive]
 theorem ediam_div_le (s t : Set E) : ediam (s / t) ≤ ediam s + ediam t := by
-  rw [div_eq_mul_inv]
-  refine (ediam_mul_le s t⁻¹).trans ?_
-  rw [ediam_inv]
+  grw [div_eq_mul_inv, ediam_mul_le, ediam_inv]
 
 end EMetric
 
@@ -97,25 +94,16 @@ theorem diam_inv (s : Set E) : diam s⁻¹ = diam s := by
 @[to_additive]
 theorem diam_mul_le {s t : Set E} (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t) :
     diam (s * t) ≤ diam s + diam t := by
-  rcases s.eq_empty_or_nonempty with rfl | _
-  · simp [diam_nonneg]
-  rcases t.eq_empty_or_nonempty with rfl | _
-  · simp [diam_nonneg]
-  have hst : Bornology.IsBounded (s * t) := hs.mul ht
   have hd_s : ediam s ≠ ⊤ := hs.ediam_ne_top
   have hd_t : ediam t ≠ ⊤ := ht.ediam_ne_top
   simp only [diam]
   rw [← ENNReal.toReal_add hd_s hd_t]
-  have h_le := ediam_mul_le s t
-  exact (ENNReal.toReal_le_toReal hst.ediam_ne_top (ENNReal.add_ne_top.mpr ⟨hd_s, hd_t⟩)).mpr h_le
+  exact ENNReal.toReal_mono (ENNReal.add_ne_top.mpr ⟨hd_s, hd_t⟩) (ediam_mul_le s t)
 
 @[to_additive]
 theorem diam_div_le {s t : Set E} (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t) :
     diam (s / t) ≤ diam s + diam t := by
-  rw [div_eq_mul_inv]
-  have h_diam_inv : diam t⁻¹ = diam t := diam_inv t
-  have key := diam_mul_le hs ht.inv
-  rwa [h_diam_inv] at key
+  grw [div_eq_mul_inv, diam_mul_le hs ht.inv, diam_inv]
 
 variable (δ s x y)
 
