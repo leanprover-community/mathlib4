@@ -40,14 +40,9 @@ theorem tendstoInDistribution_iff_tendstoInDistribution_inner
     (hX' : AEMeasurable X' P') (hX : ∀ n, AEMeasurable (X n) P) :
     TendstoInDistribution X atTop X' (fun _ ↦ P) P' ↔
     (∀ t, TendstoInDistribution (⟪X · ·, t⟫) atTop (⟪X' ·, t⟫) (fun _ ↦ P) P') where
-  mp := by
-    intro h t
-    simpa [Function.comp_def] using
-      h.continuous_comp (g := fun x : E ↦ ⟪x, t⟫)
-        (continuous_id.inner continuous_const)
-  mpr := by
-    intro h
-    refine tendstoInDistribution_iff_tendsto_charFun hX hX' |>.2 fun t ↦ ?_
+  mp h t := h.continuous_comp (continuous_id.inner continuous_const)
+  mpr h := by
+    refine .of_tendsto_charFun hX hX' fun t ↦ ?_
     rw [charFun_map_eq_charFun_map_inner_one hX']
     refine (h t).tendsto_charFun 1 |>.congr fun n ↦ ?_
     rw [charFun_map_eq_charFun_map_inner_one (hX n)]
