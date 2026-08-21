@@ -90,12 +90,6 @@ instance : IsFractionRing (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) 
     rwa [isUnit_iff_norm_isUnit, isUnit_iff_ne_zero, algebraMap_eq, norm_baseChange ℚ a b,
       eq_intCast, Int.cast_ne_zero, ← mem_nonZeroDivisors_iff_ne_zero, norm_mem_nonZeroDivisors_iff]
 
-instance [h : Fact (¬ IsSquare (discr a b))] : Fact (¬ IsSquare (discr (a : ℚ) (b : ℚ))) := by
-  rwa [discr_intCast, Rat.isSquare_intCast_iff]
-
-instance [Fact (¬ IsSquare (discr a b))] : IsDomain (QuadraticAlgebra ℤ a b) :=
-  .of_faithfulSMul _ (QuadraticAlgebra ℚ a b)
-
 theorem isDomain_iff :
     IsDomain (QuadraticAlgebra ℤ a b) ↔ ¬ IsSquare (discr a b) := by
   simp [IsFractionRing.isDomain_iff_isField (K := QuadraticAlgebra ℚ a b),
