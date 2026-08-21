@@ -151,8 +151,6 @@ end Prod
 
 section Pi
 
-open Finset
-
 variable {X : β → Type*} [Fintype β] [∀ b, MetricSpace (X b)]
 
 /-- A finite product of metric spaces is a metric space, with the sup distance. -/
@@ -163,8 +161,6 @@ end Pi
 namespace Metric
 
 section SecondCountable
-
-open TopologicalSpace
 
 -- TODO: use `Countable` instead of `Encodable`
 /-- A metric space is second countable if one can reconstruct up to any `ε>0` any element of the

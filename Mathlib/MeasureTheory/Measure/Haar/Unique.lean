@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.Measure.EverywherePos
 public import Mathlib.Topology.Metrizable.Urysohn
 public import Mathlib.Topology.ContinuousMap.Ordered
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
 /-!
 # Uniqueness of Haar measure in locally compact groups
@@ -66,7 +67,7 @@ the measures but discarding the assumption that they are finite on compact sets.
 
 @[expose] public section
 
-open Filter Set TopologicalSpace Function MeasureTheory Measure
+open Filter Set TopologicalSpace Function MeasureTheory
 open scoped Uniformity Topology ENNReal Pointwise NNReal
 
 namespace MeasureTheory

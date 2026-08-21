@@ -91,7 +91,7 @@ namespace Finset
 
 section Sized
 
-variable [Fintype α] {𝒜 : Finset (Finset α)} {s : Finset α} {r : ℕ}
+variable [Fintype α] {𝒜 : Finset (Finset α)} {r : ℕ}
 
 theorem subset_powersetCard_univ_iff : 𝒜 ⊆ powersetCard r univ ↔ (𝒜 : Set (Finset α)).Sized r :=
   forall_congr' fun A => by rw [mem_powersetCard_univ, mem_coe]
