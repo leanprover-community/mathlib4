@@ -589,17 +589,11 @@ theorem isMulCommutative_adjoin {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal
     IsMulCommutative (adjoin R s) := by
   have := adjoin_le_centralizer_centralizer R s
   refine .of_setLike_mul_comm fun _ h₁ _ h₂ ↦ ?_
-  have hcomm' : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := by
-    refine forall₂_comm.mp <| Set.union_star_self_comm (by grind [hcomm.forall₂, Set.Pairwise])
-      fun x hx y hy ↦ ?_
-    obtain (rfl | h) := eq_or_ne x y
-    · specialize hnormal x hx
-      exact star_comm_self' x |>.symm
-    · exact Commute.eq (hcomm_star hy hx h.symm)
   apply this at h₁
   apply this at h₂
   rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
-  exact Set.centralizer_centralizer_comm_of_comm (fun a ha b hb _ ↦ hcomm' a ha b hb) _ h₁ _ h₂
+  exact Set.centralizer_centralizer_comm_of_comm
+    (by grind [Set.Pairwise.commute_union_star_self_iff]) _ h₁ _ h₂
 
 open scoped IsMulCommutative in
 /-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of

@@ -1228,6 +1228,16 @@ end Centralizer
 
 end NonUnitalStarSubalgebra
 
+/-- `s ∪ star s` commutes pairwise if and only if all elements of `s` are normal, elements of `s`
+commute pairwise, and distinct elements of `s` commute with the `star` of the other. -/
+lemma Set.Pairwise.commute_union_star_self_iff {R : Type*} [Mul R] [StarMul R] {s : Set R} :
+    (s ∪ star s).Pairwise Commute ↔
+      s.Pairwise Commute ∧ s.Pairwise (Commute · <| star ·) ∧ ∀ x ∈ s, IsStarNormal x := by
+  simp only [Set.pairwise_union_of_symm_of_refl, Set.Pairwise.commute_star_iff, Set.mem_star,
+    and_self_left, and_congr_right_iff]
+  conv in ∀ b, star b ∈ s → _ => rw [star_involutive.surjective.forall]
+  grind [isStarNormal_iff, Set.Pairwise, star_star]
+
 namespace NonUnitalStarAlgebra
 
 open NonUnitalStarSubalgebra
@@ -1268,17 +1278,11 @@ theorem isMulCommutative_adjoin {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal
     IsMulCommutative (adjoin R s) := by
   have := adjoin_le_centralizer_centralizer R s
   refine .of_setLike_mul_comm fun _ h₁ _ h₂ ↦ ?_
-  have hcomm' : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := by
-    refine forall₂_comm.mp <| Set.union_star_self_comm (by grind [hcomm.forall₂, Set.Pairwise])
-      fun x hx y hy ↦ ?_
-    obtain (rfl | h) := eq_or_ne x y
-    · specialize hnormal x hx
-      exact star_comm_self' x |>.symm
-    · exact Commute.eq (hcomm_star hy hx h.symm)
   apply this at h₁
   apply this at h₂
   rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
-  exact Set.centralizer_centralizer_comm_of_comm (fun a ha b hb _ ↦ hcomm' a ha b hb) _ h₁ _ h₂
+  exact Set.centralizer_centralizer_comm_of_comm
+    (by grind [Set.Pairwise.commute_union_star_self_iff]) _ h₁ _ h₂
 
 variable (R) in
 instance isMulCommutative_adjoin_singleton (a : A) [IsStarNormal a] :
