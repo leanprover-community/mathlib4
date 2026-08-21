@@ -5,8 +5,9 @@ Authors: Edison Xu
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Subgroup.Defs
+public import Mathlib.Algebra.GroupWithZero.Subgroup.Units
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Order.Hom.Monoid
 
 /-!
 # Ordered structures on submonoids and subgroups with zero
@@ -79,3 +80,24 @@ instance (priority := 75) toLinearOrderedCommGroupWithZero :
   __ := SubgroupWithZeroClass.toCommGroupWithZero s
 
 end SubgroupWithZeroClass
+
+namespace SubgroupWithZero
+
+variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
+
+/-- The units of `↥s`, as an ordered group, are the subgroup of units `s.units`. -/
+def unitsOrderMonoidIso (s : SubgroupWithZero Γ) : (↥s)ˣ ≃*o ↥s.units where
+  __ := unitsMulEquiv s
+  map_le_map_iff' := Iff.rfl
+
+/-- Equal subgroups with zero give order-isomorphic (and multiplicatively isomorphic) types. -/
+@[simps!]
+def orderIsoOfEq {s t : SubgroupWithZero Γ} (h : s = t) : ↥s ≃*o ↥t where
+  toFun x := ⟨x.1, h ▸ x.2⟩
+  invFun x := ⟨x.1, h.symm ▸ x.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
+  map_le_map_iff' := Iff.rfl
+
+end SubgroupWithZero

@@ -130,6 +130,12 @@ lemma embedding_generator₀ :
 @[simp]
 lemma coe_generator₀ : ((generator₀ v : ValueGroup₀ (.ofClass v)) : Γ) = generator v := rfl
 
+lemma generator_zpowers₀_eq_valueGroup₀ :
+    SubgroupWithZero.zpowers₀ ((generator v : Γ)) = valueGroup₀ (.ofClass v) := by
+  apply SubgroupWithZero.unitsOrderIso.injective
+  simpa [SubgroupWithZero.units_zpowers₀ (generator v).ne_zero]
+    using generator_zpowers_eq_valueGroup v
+
 lemma generator'_zpowers_eq_top : (zpowers (generator' v)) = ⊤ := by
   rw [← map_subtype_inj, MonoidHom.map_zpowers,
     subtype_apply, ← MonoidHom.range_eq_map, Subgroup.subtype_range]

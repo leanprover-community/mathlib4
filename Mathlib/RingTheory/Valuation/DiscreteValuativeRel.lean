@@ -59,9 +59,11 @@ lemma IsDiscrete.of_compatible_withZeroMulInt [Ring R] [ValuativeRel R]
     · classical
       exfalso
       refine (MonoidWithZeroHom.range_nontrivial
-        (ValueGroupWithZero.orderMonoidIso v).toMonoidWithZeroHom).not_subsingleton ?_
+        (MonoidWithZeroHom.ValueGroup₀.embedding.comp
+          (ValueGroupWithZero.orderMonoidIso v).toMonoidWithZeroHom)).not_subsingleton ?_
       rw [← WithZero.denselyOrdered_set_iff_subsingleton]
-      exact (ValueGroupWithZero.embed_strictMono v).denselyOrdered_range
+      exact (MonoidWithZeroHom.ValueGroup₀.embedding_strictMono.comp
+        (ValueGroupWithZero.embed_strictMono v)).denselyOrdered_range
     · rw [isNontrivial_iff_nontrivial_units] at h
       rw [← LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered] at H
       rw [nonempty_orderIso_withZeroMul_int_iff] at H
