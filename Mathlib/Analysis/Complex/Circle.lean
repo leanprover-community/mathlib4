@@ -213,8 +213,7 @@ protected lemma nnnorm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 
 @[simp]
 protected lemma enorm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
     (u : Circle) (v : E) :
-    ‖u • v‖ₑ = ‖v‖ₑ := by
-  rw [enorm_eq_nnnorm, enorm_eq_nnnorm, u.nnnorm_smul]
+    ‖u • v‖ₑ = ‖v‖ₑ := by simp [enorm_eq_nnnorm]
 
 instance {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E] : IsIsometricSMul Circle E :=
   ⟨fun u ↦ Isometry.of_dist_eq fun x y ↦ by simp [dist_eq_norm, ← smul_sub]⟩
