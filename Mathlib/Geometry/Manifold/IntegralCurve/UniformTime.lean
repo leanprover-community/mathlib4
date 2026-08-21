@@ -76,7 +76,10 @@ lemma isMIntegralCurve_abs_add_one_of_isMIntegralCurveOn_Ioo [BoundarylessManifo
   have ht : t ∈ Ioo (-(|t| + 1)) (|t| + 1) := by
     rw [mem_Ioo, ← abs_lt]
     exact lt_add_one _
-  apply HasMFDerivAt.congr_of_eventuallyEq (f := γ (|t| + 1))
+  /- TODO: to fix the defeq abuse, the correct fix is probably to introduce `vmfderiv` as
+  the derivative from a vector space to a manifold, and use it in the definition of
+  `IsMIntegralCurveOn` and friends. -/
+  apply HasMFDerivAt.congr_of_eventuallyEq_abuse (f := γ (|t| + 1))
   · exact hγ (|t| + 1) (by positivity) _ ht |>.hasMFDerivAt (Ioo_mem_nhds ht.1 ht.2)
   · rw [Filter.eventuallyEq_iff_exists_mem]
     refine ⟨Ioo (-(|t| + 1)) (|t| + 1), ?_,
