@@ -77,6 +77,10 @@ instance algebraNormClass : AlgebraNormClass (AlgebraNorm R S) R S where
 
 theorem toFun_eq_coe (p : AlgebraNorm R S) : p.toFun = p := rfl
 
+@[simp]
+theorem toRingNorm_apply (p : AlgebraNorm R S) (x : S) : p.toRingNorm x = p x :=
+  rfl
+
 @[ext]
 theorem ext {p q : AlgebraNorm R S} : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q

@@ -732,7 +732,7 @@ variable (K) in
 `(f (y * x^n))/((f x)^n)`, regarded as an algebra norm. -/
 def algNormFromConst {x : L} (hx : x ≠ 0) : AlgebraNorm K L :=
   have hx' : spectralAlgNorm K L x ≠ 0 := (map_ne_zero_iff_ne_zero (spectralAlgNorm K L)).mpr hx
-  algebraNormFromConst spectralAlgNorm_one hx' spectralAlgNorm_isPowMul
+  algebraNormFromConst hx' spectralAlgNorm_isPowMul
 
 theorem algNormFromConst_def {x y : L} (hx : x ≠ 0) :
     algNormFromConst K hx y = seminormFromConst spectralAlgNorm_one.le
