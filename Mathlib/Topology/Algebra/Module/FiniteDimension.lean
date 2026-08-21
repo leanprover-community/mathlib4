@@ -605,15 +605,14 @@ theorem ContinuousLinearMap.isStrictMap_of_finiteDimensional [T2Space F] [Finite
 variable (E) in
 private lemma isNormableSpace_of_t2Space_finiteDimensional
     [T2Space E] [FiniteDimensional 𝕜 E] : IsNormableSpace 𝕜 E := by
-  let b := Basis.ofVectorSpace 𝕜 E
   have e : E ≃L[𝕜] (Basis.ofVectorSpaceIndex 𝕜 E) → 𝕜 :=
-    { __ := b.equivFun
-      continuous_toFun := continuous_equivFun_basis_aux b
-      continuous_invFun := IsModuleTopology.continuous_of_linearMap (R := 𝕜)
-        (A := (Basis.ofVectorSpaceIndex 𝕜 E) → 𝕜) (B := E) b.equivFun.symm }
+    (Basis.ofVectorSpace 𝕜 E).equivFun.toContinuousLinearEquiv
   exact e.isNormableSpace
 
-instance [FiniteDimensional 𝕜 E] : IsNormableSpace 𝕜 E := by
+/-- A finite dimensional topological vector space over a complete normed field is normable.
+
+Not registered as a global instance only for performance reasons. -/
+theorem isNormableSpace_of_finiteDimensional [FiniteDimensional 𝕜 E] : IsNormableSpace 𝕜 E := by
   let F := SeparationQuotient E
   have : IsNormableSpace 𝕜 F := isNormableSpace_of_t2Space_finiteDimensional _
   let f : E →ₗ[𝕜] F := SeparationQuotient.mkCLM 𝕜 E
