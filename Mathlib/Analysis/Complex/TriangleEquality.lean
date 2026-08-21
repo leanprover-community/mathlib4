@@ -11,28 +11,44 @@ public import Mathlib.Analysis.Complex.Arg
 # Triangle equality for finite sums
 
 The triangle inequality `‖∑ i ∈ s, v i‖ ≤ ∑ i ∈ s, ‖v i‖` is an equality exactly when the
-summands pairwise lie on a common closed ray. Over `ℂ` this says that all the nonzero summands
-share a single phase, which extends `Complex.norm_add_eq_iff` from two summands to finite
-families.
+summands pairwise lie on a common closed ray: this is `norm_sum_eq_iff_pairwise_sameRay`, which
+extends the two-vector statement `sameRay_iff_norm_add` to finite families.
 
-Only `pairwise_sameRay_of_norm_sum_eq` needs strict convexity; the converse holds in any normed
-space, and `sameRay_sum` in any ordered module.
+Over `ℂ`, lying on a common ray means sharing a phase, so triangle equality says that every
+summand is a nonnegative real multiple of one complex number of norm one. That is
+`Complex.triangle_equality_iff_aligned`, the finite-family form of `Complex.norm_add_eq_iff`.
 
 ## Main results
 
 * `sameRay_sum`: an element on the same ray as every summand is on the same ray as the sum.
-* `norm_sum_eq_of_pairwise_sameRay`, `pairwise_sameRay_of_norm_sum_eq`,
+* `norm_sum_eq_of_pairwise_sameRay` and `pairwise_sameRay_of_norm_sum_eq`, packaged as
   `norm_sum_eq_iff_pairwise_sameRay`: triangle equality holds iff the summands pairwise lie on a
   common closed ray.
-* `Complex.aligned_of_pairwise_sameRay`: pairwise alignment gives every nonzero summand the same
-  phase as the sum.
-* `Complex.triangle_equality_iff_aligned`: triangle equality holds iff every term is a
-  nonnegative real multiple of a single unit.
+* `Complex.aligned_of_pairwise_sameRay`: if the summands pairwise lie on a common ray, every
+  nonzero summand has the same phase as the sum.
+* `Complex.triangle_equality_iff_aligned`: triangle equality holds iff every summand is a
+  nonnegative real multiple of a single complex number of norm one.
 
-## References
+## Implementation notes
 
-See `Complex.norm_add_eq_iff` in `Mathlib/Analysis/Complex/Arg.lean` for two summands, and
-`sameRay_iff_norm_add` for the two-vector statement in a strictly convex space.
+The finite-sum results are proved by induction on the `Finset`, using `sameRay_iff_norm_add` on
+the two vectors `v a` and `∑ j ∈ t, v j` at each step; no inner-product structure is involved.
+Each is stated with the weakest structure it needs: `sameRay_sum` in an ordered module,
+`norm_sum_eq_of_pairwise_sameRay` in a seminormed space, and only the converse
+`pairwise_sameRay_of_norm_sum_eq` in a strictly convex space.
+
+`Complex.triangle_equality_iff_aligned` is stated over `ℂ` rather than in a general strictly
+convex space on purpose: the norm-one element it produces exists only if the space is nontrivial,
+so generalising it would trade `ℂ` for a `Nontrivial` hypothesis.
+
+## TODO
+
+The results above that do not mention `ℂ` belong in a normed-space file, next to
+`sameRay_iff_norm_add`; they live here for now because that is where they arose.
+
+## Tags
+
+triangle inequality, triangle equality, same ray, phase, strictly convex space
 -/
 
 public section
