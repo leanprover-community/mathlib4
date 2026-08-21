@@ -346,3 +346,11 @@ lemma setLike_mul_comm {S M : Type*} [SetLike S M] [Mul M] [MulMemClass S M]
     {s : S} [IsMulCommutative s] ⦃a b : M⦄ (ha : a ∈ s) (hb : b ∈ s) :
     a * b = b * a :=
   isMulCommutative_iff_of_setLike.mp ‹_› a ha b hb
+
+/-- Commutativity of multiplication passes to smaller subobjects. -/
+@[to_additive /-- Commutativity of addition passes to smaller subobjects. -/ ]
+lemma isMulCommutative_mono {S M : Type*} [SetLike S M] [Mul M] [MulMemClass S M]
+    [LE S] [IsConcreteLE S M] {s t : S} (h : s ≤ t) [IsMulCommutative t] :
+    IsMulCommutative s :=
+  .of_setLike_mul_comm fun _ ha _ hb ↦
+    setLike_mul_comm (mem_of_le_of_mem h ha) (mem_of_le_of_mem h hb)
