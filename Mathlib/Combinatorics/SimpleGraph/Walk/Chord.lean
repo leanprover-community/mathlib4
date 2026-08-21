@@ -66,24 +66,32 @@ protected theorem IsChord.map (f : Copy G G') (hp : p.IsChord s(a, b)) :
   · exact List.mem_map_of_mem hp.right.right.left
   · exact List.mem_map_of_mem hp.right.right.right
 
-theorem isChord_map_iff {f : G ↪g G'} :
-    (p.map f.toHom).IsChord s(f a, f b) ↔ p.IsChord s(a, b) := by
-  refine ⟨fun ⟨hadj, hp, ha, hb⟩ ↦ ⟨f.map_adj_iff.mp hadj, fun h ↦ hp ?_, ?_, ?_⟩, .map f.toCopy⟩
+protected theorem IsChord.of_map {f : G ↪g G'} (hp : (p.map f.toHom).IsChord s(f a, f b)) :
+    p.IsChord s(a, b) := by
+  rcases hp with ⟨hadj, hp, ha, hb⟩
+  refine ⟨f.map_adj_iff.mp hadj, fun h ↦ hp ?_, ?_, ?_⟩
   · rw [edges_map]
     exact List.mem_map_of_mem h
   · simpa using ha
   · simpa using hb
 
-protected theorem IsChordless.of_map {f : Copy G G'} (hp : (p.map f.toHom).IsChordless) :
-    p.IsChordless :=
-  Sym2.ind fun _ _ h ↦ hp <| h.map f
+theorem isChord_map_iff {f : G ↪g G'} : (p.map f.toHom).IsChord s(f a, f b) ↔ p.IsChord s(a, b) :=
+  ⟨.of_map, .map f.toCopy⟩
 
-theorem isChordless_map_iff {f : G ↪g G'} : (p.map f.toHom).IsChordless ↔ p.IsChordless := by
-  refine ⟨.of_map (f := f.toCopy), fun hp ↦ Sym2.ind fun a b he ↦ ?_⟩
+protected theorem IsChordless.map (f : G ↪g G') (hp : p.IsChordless) :
+    (p.map f.toHom).IsChordless := by
+  refine Sym2.ind fun a b he ↦ ?_
   have ⟨_, _, ha, hb⟩ := he
   rw [support_map, List.mem_map] at ha hb
   rcases ha, hb with ⟨⟨a, _, rfl⟩, ⟨b, _, rfl⟩⟩
   exact hp <| isChord_map_iff.mp he
+
+protected theorem IsChordless.of_map {f : Copy G G'} (hp : (p.map f.toHom).IsChordless) :
+    p.IsChordless :=
+  Sym2.ind fun _ _ h ↦ hp <| h.map f
+
+theorem isChordless_map_iff {f : G ↪g G'} : (p.map f.toHom).IsChordless ↔ p.IsChordless :=
+  ⟨.of_map (f := f.toCopy), .map f⟩
 
 end Walk
 end SimpleGraph
