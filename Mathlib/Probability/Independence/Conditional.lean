@@ -682,12 +682,12 @@ theorem iCondIndepFun_iff_condExp_inter_preimage_eq_mul {β : ι → Type*}
   · classical
     let g := fun i ↦ if hi : i ∈ s then (h_sets i hi).choose else Set.univ
     specialize h s (sets := g) (fun i hi ↦ ?_)
-    · simp only [g, dif_pos hi]
+    · simp only [g, dite_eq_left hi]
       exact (h_sets i hi).choose_spec.1
     · have hg : ∀ i ∈ s, sets i = f i ⁻¹' g i := by
         intro i hi
         rw [(h_sets i hi).choose_spec.2.symm]
-        simp only [g, dif_pos hi]
+        simp only [g, dite_eq_left hi]
       convert! h with i hi i hi <;> exact hg i hi
 
 theorem condIndepFun_iff_condIndepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}

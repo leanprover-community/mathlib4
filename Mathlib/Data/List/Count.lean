@@ -8,6 +8,7 @@ module
 public import Batteries.Data.List.Perm
 public import Mathlib.Tactic.Common
 public import Batteries.Data.List.Lemmas
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Counting in lists

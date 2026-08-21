@@ -92,12 +92,12 @@ variable {S}
 /-- If `S` has no Dirichlet density, then `dirichletDensity S = 0`. -/
 theorem dirichletDensity_eq_zero_of_not_hasDirichletDensity
     (h : ∀ δ, ¬ S.HasDirichletDensity δ) : S.dirichletDensity = 0 := by
-  rw [dirichletDensity, dif_neg (not_exists.mpr h)]
+  rw [dirichletDensity, dite_eq_right (not_exists.mpr h)]
 
 /-- If `S` has Dirichlet density `δ`, then `dirichletDensity S = δ`. -/
 theorem HasDirichletDensity.dirichletDensity_eq {δ : ℝ} (h : S.HasDirichletDensity δ) :
     S.dirichletDensity = δ := by
-  rw [dirichletDensity, dif_pos ⟨δ, h⟩, tendsto_nhds_unique (Exists.choose_spec ⟨δ, h⟩) h]
+  rw [dirichletDensity, dite_eq_left ⟨δ, h⟩, tendsto_nhds_unique (Exists.choose_spec ⟨δ, h⟩) h]
 
 /-- The empty set has Dirichlet density `0`. -/
 theorem hasDirichletDensity_empty :

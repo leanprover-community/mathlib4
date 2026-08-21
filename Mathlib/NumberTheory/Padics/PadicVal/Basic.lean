@@ -80,6 +80,9 @@ alias self := padicValNat_base
 theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
   eq_zero_iff.2 <| Or.inr <| Or.inr h
 
+theorem dvd_of_ne_zero {n : ℕ} (h : padicValNat p n ≠ 0) : p ∣ n :=
+  not_not.mp (mt padicValNat.eq_zero_of_not_dvd h)
+
 end padicValNat
 
 /-- For `p ≠ 1`, the `p`-adic valuation of an integer `z ≠ 0` is the largest natural number `k` such
@@ -372,6 +375,46 @@ theorem lt_sum_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} {S 
       (Hind (fun i hi => hF _ (by rw [Finset.cons_eq_insert, Finset.mem_insert]; exact Or.inr hi)))
 
 end padicValRat
+
+namespace Rat
+
+/-- The numerator or denominator of a rational number has zero `p`-adic valuation. -/
+theorem num_or_den_zero_padicVal (a : ℚ) {p : ℕ} (hp : p.Prime) :
+    padicValInt p a.num = 0 ∨ padicValNat p a.den = 0 := by
+  have h := a.reduced
+  contrapose! h
+  apply not_coprime_of_dvd_of_dvd hp.one_lt <;>
+    grind [padicValNat.dvd_of_ne_zero h.1, padicValNat.dvd_of_ne_zero h.2]
+
+/-- The numerator and denominator of a rational number with even `p`-adic valuation
+also have even `p`-adic valuation. -/
+theorem num_den_even_padicVal_of_even_padicVal {a : ℚ} {p : ℕ} (hp : p.Prime)
+    (h : Even (padicValRat p a)) : Even (padicValInt p a.num) ∧ Even (padicValNat p a.den) := by
+  rcases num_or_den_zero_padicVal a hp with (h0 | h0) <;>
+    simpa [h0, padicValRat_def] using h
+
+/-- A rational number is a square if and only if it is nonnegative,
+and has even `p`-adic valuation for all `p`. -/
+theorem isSquare_iff_even_factorization {a : ℚ} :
+    IsSquare a ↔ 0 ≤ a ∧ ∀ (p : ℕ), p.Prime → Even (padicValRat p a) := by
+  constructor
+  · refine fun ⟨r, hr⟩ ↦ ⟨by simpa [hr] using mul_self_nonneg r, fun p hp ↦ ?_⟩
+    have : Fact (p.Prime) := ⟨hp⟩
+    rw [hr]
+    by_cases hr0 : r = 0
+    · simp [hr0]
+    simp [padicValRat.mul hr0 hr0]
+  · intro ⟨hR, hf⟩
+    rw [isSquare_iff]
+    constructor
+    · refine Int.isSquare_iff_nonneg_even_factorization.mpr ⟨num_nonneg.mpr hR, fun p hp ↦ ?_⟩
+      have num_even := (num_den_even_padicVal_of_even_padicVal hp (hf p hp)).1
+      simpa [Nat.factorization_def _ hp, padicValInt] using num_even
+    · refine Nat.isSquare_iff_even_factorization.mpr (fun p hp ↦ ?_)
+      have den_even := (num_den_even_padicVal_of_even_padicVal hp (hf p hp)).2
+      rwa [Nat.factorization_def _ hp]
+
+end Rat
 
 namespace padicValNat
 

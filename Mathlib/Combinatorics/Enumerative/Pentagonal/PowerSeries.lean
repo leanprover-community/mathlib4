@@ -83,7 +83,7 @@ def pentagonalSeries : R⟦X⟧ :=
     0
 
 theorem coeff_pentagonalSeries_eq_zero {n : ℕ} (h : n ∉ Set.range pentagonal) :
-    (pentagonalSeries R).coeff n = 0 := dif_neg <| by simpa using h
+    (pentagonalSeries R).coeff n = 0 := dite_eq_right <| by simpa using h
 
 @[simp]
 theorem coeff_pentagonalSeries_pentagonal (k : ℤ) :
