@@ -794,8 +794,9 @@ theorem NormedAlgebra.norm_eq_spectralNorm {L : Type*} [NormedField L] [NormedAl
       (MulRingNorm.isPowMul (toMulAlgebraNorm K L).toMulRingNorm)]
 
 variable (K) in
-/-- Given a nonzero `x : L`, this is the real-valued function sending `y ∈ L` to the limit of
-`(f (y * x^n))/((f x)^n)`, regarded as an algebra norm. -/
+/-- Given a nonzero `x : L`, and assuming that `(spectralAlgNorm h_alg hna) 1 ≤ 1`, this is
+  the real-valued function sending `y ∈ L` to the limit of  `(f (y * x^n))/((f x)^n)`,
+  regarded as an algebra norm. -/
 def algNormFromConst {x : L} (hx : x ≠ 0) :
     AlgebraNorm K L :=
   have hx' : spectralAlgNorm K L x ≠ 0 :=
