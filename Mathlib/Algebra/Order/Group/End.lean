@@ -133,6 +133,7 @@ variable [Preorder α]
 
 instance : Mul (α →o α) where mul f g := f.comp g
 instance : One (α →o α) where one := .id
+instance : NPow (α →o α) where npow n f := { toFun := f^[n], monotone' := f.monotone.iterate n }
 instance : IsMulApplyEqComp (α →o α) α where mul_apply_eq_comp _ _ _ := rfl
 instance : IsOneApplyEqSelf (α →o α) α where one_apply_eq_self _ := rfl
 
