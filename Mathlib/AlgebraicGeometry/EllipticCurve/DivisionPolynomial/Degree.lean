@@ -242,9 +242,9 @@ lemma coeff_preΨ' (n : ℕ) : (W.preΨ' n).coeff ((n ^ 2 - if Even n then 4 els
 lemma coeff_preΨ'_ne_zero {n : ℕ} (h : (n : R) ≠ 0) :
     (W.preΨ' n).coeff ((n ^ 2 - if Even n then 4 else 1) / 2) ≠ 0 := by
   rcases n.even_or_odd' with ⟨n, rfl | rfl⟩
-  · rw [coeff_preΨ', if_pos <| even_two_mul n, n.mul_div_cancel_left two_pos]
+  · rw [coeff_preΨ', ite_eq_left <| even_two_mul n, n.mul_div_cancel_left two_pos]
     exact right_ne_zero_of_mul <| by rwa [← Nat.cast_mul]
-  · rwa [coeff_preΨ', if_neg n.not_even_two_mul_add_one]
+  · rwa [coeff_preΨ', ite_eq_right n.not_even_two_mul_add_one]
 
 @[simp]
 lemma natDegree_preΨ' {n : ℕ} (h : (n : R) ≠ 0) :

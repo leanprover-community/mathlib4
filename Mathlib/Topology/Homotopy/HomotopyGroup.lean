@@ -73,8 +73,8 @@ abbrev insertAt (i : N) : (I × I^{ j // j ≠ i }) ≃ₜ I^N :=
 theorem insertAt_boundary (i : N) {t₀ : I} {t}
     (H : (t₀ = 0 ∨ t₀ = 1) ∨ t ∈ boundary { j // j ≠ i }) : insertAt i ⟨t₀, t⟩ ∈ boundary N := by
   obtain H | ⟨j, H⟩ := H
-  · use i; rwa [funSplitAt_symm_apply, dif_pos rfl]
-  · use j; rwa [funSplitAt_symm_apply, dif_neg j.prop, Subtype.coe_eta]
+  · use i; rwa [funSplitAt_symm_apply, dite_eq_left rfl]
+  · use j; rwa [funSplitAt_symm_apply, dite_eq_right j.prop, Subtype.coe_eta]
 
 end Cube
 
@@ -192,7 +192,6 @@ def currySum (q : Ω^ (M ⊕ N) X x) : C(I^M, Ω^ N X x) where
     ⟨sumArrowHomeomorphProdArrow.invFun,
       sumArrowHomeomorphProdArrow.continuous_invFun⟩).curry.continuous_toFun _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma currySum_apply_inl_inr (p : Ω^ (M ⊕ N) X x) (y : I^(M ⊕ N)) :
     currySum x p (y ∘ Sum.inl) (y ∘ Sum.inr) = p y := by
@@ -364,7 +363,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
   dsimp
   rw [homotopyTo_apply]
   apply H.eq_fst; use i
-  rw [funSplitAt_symm_apply, dif_pos rfl]; exact yH
+  rw [funSplitAt_symm_apply, dite_eq_left rfl]; exact yH
 
 /-- The converse to `GenLoop.homotopyTo`: a homotopy between two loops in the space of
   `n`-dimensional loops can be seen as a homotopy between two `n+1`-dimensional paths. -/
@@ -419,7 +418,7 @@ def symmAt (i : N) (f : Ω^ N X x) : Ω^ N X x :=
 
 theorem transAt_distrib {i j : N} (h : i ≠ j) (a b c d : Ω^ N X x) :
     transAt i (transAt j a b) (transAt j c d) = transAt j (transAt i a c) (transAt i b d) := by
-  ext; simp_rw [transAt, coe_copy, Function.update_apply, if_neg h, if_neg h.symm]
+  ext; simp_rw [transAt, coe_copy, Function.update_apply, ite_eq_right h, ite_eq_right h.symm]
   split_ifs <;>
     · congr 1; ext1; simp only [Function.update, eq_rec_constant, dite_eq_ite]
       apply ite_ite_comm; rintro rfl; exact h.symm

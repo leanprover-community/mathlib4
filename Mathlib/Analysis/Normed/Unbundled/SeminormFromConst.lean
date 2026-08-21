@@ -118,9 +118,6 @@ theorem tendsto_seminormFromConst_seq_atTop (x : R) :
   tendsto_atTop_ciInf (seminormFromConst_seq_antitone hf1 hc hpm x)
     (seminormFromConst_bddBelow c f x)
 
-@[deprecated (since := "2026-01-14")]
-alias seminormFromConst_isLimit := tendsto_seminormFromConst_seq_atTop
-
 theorem seminormFromConst_one : seminormFromConst' c f 1 = 1 := by
   apply tendsto_nhds_unique_of_eventuallyEq (tendsto_seminormFromConst_seq_atTop hf1 hc hpm 1)
     tendsto_const_nhds
