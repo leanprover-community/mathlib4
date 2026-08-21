@@ -79,6 +79,11 @@ example (a : ZMod 7) (h : a + 14 = 2) : a + 7 = 2 := by
   reduce_mod_char at *
   assumption
 
+-- Multiple explicitly listed hypotheses and the target are all reduced.
+example (a : ZMod 7) (h : a + 14 = 2) (_h2 : a + 21 = 2) : a + 7 = 2 := by
+  reduce_mod_char at h _h2 ⊢
+  exact h
+
 -- A stress test:
 example (a b : ZMod 37) : (a + b)^37 = a^37 + b^37 := by ring_nf; reduce_mod_char
 
