@@ -38,7 +38,7 @@ of a single element `e : α` from `M : Matroid α`.
 
 open Set
 
-variable {α : Type*} {M M' N : Matroid α} {e f : α} {I B D R X : Set α}
+variable {α : Type*} {M N : Matroid α} {e : α} {I B D R X : Set α}
 
 namespace Matroid
 

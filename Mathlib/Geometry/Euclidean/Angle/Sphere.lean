@@ -21,7 +21,7 @@ public section
 
 noncomputable section
 
-open Module Complex
+open Module
 
 open scoped EuclideanGeometry Real RealInnerProductSpace ComplexConjugate
 
@@ -247,6 +247,37 @@ theorem two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi {s : Sphere P} {p₁ 
   rw [← oangle_center_eq_two_zsmul_oangle hp₁ hp₂ hp₃ hp₂p₁ hp₂p₃,
     oangle_eq_pi_sub_two_zsmul_oangle_center_right hp₁ hp₃ hp₁p₃, add_sub_cancel]
 
+/-- For a tangent line to a sphere of nonzero radius, twice the oriented angle between the line
+and the radius at the tangent point equals `π`. -/
+theorem IsTangentAt.two_zsmul_oangle_eq_pi {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
+    (h : s.IsTangentAt p as) (hs : s.radius ≠ 0) (hq : q ∈ as) (hqp : q ≠ p) :
+    (2 : ℤ) • ∡ q p s.center = π := by
+  have hcp : s.center ≠ p := by
+    rintro rfl
+    exact hs (s.center_mem_iff.mp h.mem_sphere)
+  rw [Real.Angle.two_zsmul_eq_pi_iff, ← Real.Angle.abs_toReal_eq_pi_div_two_iff,
+    ← angle_eq_abs_oangle_toReal hqp hcp]
+  exact h.angle_eq_pi_div_two hq
+
+/-- **Alternate segment theorem**: Oriented angle version of "the angle between a tangent and
+a chord equals the inscribed angle subtending that chord", for oriented angles mod π,
+represented here as equality of twice the angles. -/
+theorem two_zsmul_oangle_tangent_eq {s : Sphere P} {p₁ p₂ p₃ p₄ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s)
+    (hp₃ : p₃ ∈ s) (htan : s.IsTangentAt p₁ line[ℝ, p₁, p₄]) (hp₄p₁ : p₄ ≠ p₁) (hp₃p₁ : p₃ ≠ p₁)
+    (hp₃p₂ : p₃ ≠ p₂) (hp₂p₁ : p₂ ≠ p₁) :
+    (2 : ℤ) • ∡ p₄ p₁ p₂ = (2 : ℤ) • ∡ p₁ p₃ p₂ := by
+  have hcenter : s.center ≠ p₁ := (ne_center_of_mem_of_mem_of_ne hp₁ hp₃ hp₃p₁.symm).symm
+  have hr : s.radius ≠ 0 := by rw [← mem_sphere.mp hp₁]; exact dist_ne_zero.mpr hcenter.symm
+  have htan_chord : (2 : ℤ) • ∡ p₄ p₁ p₂ = π + (2 : ℤ) • ∡ s.center p₁ p₂ := by
+    have hright : (2 : ℤ) • ∡ p₄ p₁ s.center = π :=
+      htan.two_zsmul_oangle_eq_pi hr (right_mem_affineSpan_pair ℝ p₁ p₄) hp₄p₁
+    rw [← oangle_add hp₄p₁ hcenter hp₂p₁, smul_add, hright]
+  have hinscribed : (2 : ℤ) • ∡ p₁ p₃ p₂ = π + (2 : ℤ) • ∡ s.center p₁ p₂ := by
+    have h := two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi hp₁ hp₃ hp₂ hp₃p₁ hp₃p₂ hp₂p₁.symm
+    rw [oangle_rev, smul_neg] at h
+    rw [← h]; abel
+  exact htan_chord.trans hinscribed.symm
+
 /-- A base angle of an isosceles triangle with apex at the center of a circle is acute. -/
 theorem abs_oangle_center_left_toReal_lt_pi_div_two {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) : |(∡ s.center p₂ p₁).toReal| < π / 2 :=
@@ -445,19 +476,15 @@ theorem mem_circumsphere_of_two_zsmul_oangle_eq {t : Triangle ℝ P} {p : P} {i�
 
 end Oriented
 
+open scoped Affine.Simplex Module.Oriented.Arbitrary in
 /-- The circumradius of a triangle may be expressed explicitly as half the length of a side
 divided by the sine of the angle at the third point (a version of the law of sines or sine rule). -/
 theorem dist_div_sin_angle_div_two_eq_circumradius (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
     (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     dist (t.points i₁) (t.points i₃) / Real.sin (∠ (t.points i₁) (t.points i₂) (t.points i₃)) / 2 =
       t.circumradius := by
-  set S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points) with hS
+  let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
   let t' : Triangle ℝ S := t.restrict S le_rfl
-  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
-    rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
-    simp⟩
-  have : Module.Oriented ℝ S.direction (Fin 2) :=
-    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
   convert! t'.dist_div_sin_oangle_div_two_eq_circumradius h₁₂ h₁₃ h₂₃ using 3
   · rw [← Real.Angle.sin_toReal,
       Real.abs_sin_eq_sin_abs_of_abs_le_pi (Real.Angle.abs_toReal_le_pi _),

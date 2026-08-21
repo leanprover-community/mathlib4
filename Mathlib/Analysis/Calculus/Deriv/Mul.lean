@@ -31,7 +31,7 @@ noncomputable section
 
 open scoped Topology Filter ENNReal
 
-open Filter Asymptotics Set
+open Filter Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]

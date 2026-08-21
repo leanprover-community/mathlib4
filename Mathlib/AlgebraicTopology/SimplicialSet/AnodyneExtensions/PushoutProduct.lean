@@ -12,6 +12,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
 public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.Monoidal.Braided.PushoutObjObj
 public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 
 /-!
 # Anodyne extensions and pushout-products, fibrations and pullbacks
@@ -40,7 +41,7 @@ the file `Mathlib/AlgebraicTopology/SimplicialSet/Skeleton.lean`).
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

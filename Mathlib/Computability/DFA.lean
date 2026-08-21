@@ -262,7 +262,6 @@ theorem accepts_reindex (g : σ ≃ σ') : (reindex g M).accepts = M.accepts := 
   ext x
   simp [mem_accepts]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comap_reindex (f : α' → α) (g : σ ≃ σ') :
     (reindex g M).comap f = reindex g (M.comap f) := by
   simp [comap, reindex]
