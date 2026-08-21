@@ -72,7 +72,7 @@ variable (ρ : Representation k G V) (σ : Representation k G W)
 /-- The subspace of invariants, consisting of the vectors fixed by all elements of `G`.
 -/
 def invariants : Submodule k V where
-  carrier := setOf fun v => ∀ g : G, ρ g v = v
+  carrier := Set.ofPred fun v => ∀ g : G, ρ g v = v
   zero_mem' g := by simp only [map_zero]
   add_mem' hv hw g := by simp only [hv g, hw g, map_add]
   smul_mem' r v hv g := by simp only [hv g, map_smulₛₗ, RingHom.id_apply]
@@ -267,7 +267,6 @@ noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
   map {X Y} f := Rep.ofHom ⟨((invariantsFunctor k S).map ((Rep.resFunctor S.subtype).map f)).hom,
     fun g ↦ QuotientGroup.induction_on g fun g ↦ by ext; simp [hom_comm_apply]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor equipping a module with the trivial representation, and
 the functor sending a representation to its submodule of invariants. -/
 @[simps]

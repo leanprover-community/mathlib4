@@ -105,7 +105,7 @@ theorem IsLindelof.image_of_continuousOn {f : X → Y} (hs : IsLindelof s) (hf :
   have : NeBot (l.comap f ⊓ 𝓟 s) :=
     comap_inf_principal_neBot_of_image_mem lne (le_principal_iff.1 ls)
   obtain ⟨x, hxs, hx⟩ : ∃ x ∈ s, ClusterPt x (l.comap f ⊓ 𝓟 s) := @hs _ this _ inf_le_right
-  haveI := hx.neBot
+  have := hx.neBot
   use f x, mem_image_of_mem f hxs
   have : Tendsto f (𝓝 x ⊓ (comap f l ⊓ 𝓟 s)) (𝓝 (f x) ⊓ l) := by
     convert! (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
@@ -643,9 +643,6 @@ theorem isLindelof_iff_isLindelof_univ : IsLindelof s ↔ IsLindelof (univ : Set
 theorem isLindelof_iff_lindelofSpace : IsLindelof s ↔ LindelofSpace s :=
   isLindelof_iff_isLindelof_univ.trans isLindelof_univ_iff
 
-@[deprecated (since := "2026-01-12")]
-alias isLindelof_iff_LindelofSpace := isLindelof_iff_lindelofSpace
-
 lemma IsLindelof.of_coe [LindelofSpace s] : IsLindelof s := isLindelof_iff_lindelofSpace.mpr ‹_›
 
 theorem IsLindelof.countable (hs : IsLindelof s) (hs' : DiscreteTopology s) : s.Countable :=
@@ -684,14 +681,8 @@ instance Quot.lindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofS
     rw [← range_quot_mk]
     exact isLindelof_range continuous_quot_mk
 
-@[deprecated (since := "2026-01-12")]
-alias Quot.LindelofSpace := Quot.lindelofSpace
-
 instance Quotient.lindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
   Quot.lindelofSpace
-
-@[deprecated (since := "2026-01-12")]
-alias Quotient.LindelofSpace := Quotient.lindelofSpace
 
 /-- A continuous image of a Lindelöf set is a Lindelöf set within the codomain. -/
 theorem LindelofSpace.of_continuous_surjective {f : X → Y} [LindelofSpace X] (hf : Continuous f)
@@ -724,9 +715,6 @@ theorem HereditarilyLindelofSpace.isLindelof [HereditarilyLindelofSpace X] (s : 
     IsLindelof s := by
   apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
   exact subset_univ s
-
-@[deprecated (since := "2026-01-12")]
-alias HereditarilyLindelof_LindelofSets := HereditarilyLindelofSpace.isLindelof
 
 theorem HereditarilyLindelofSpace.of_forall_isOpen (H : ∀ s : Set X, IsOpen s → IsLindelof s) :
     HereditarilyLindelofSpace X := by

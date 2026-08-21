@@ -154,7 +154,7 @@ theorem DifferentiableAt.differentiableAt_norm_of_smul (h : DifferentiableAt ℝ
 theorem DifferentiableAt.fderiv_norm_self {x : E} (h : DifferentiableAt ℝ (‖·‖) x) :
     fderiv ℝ (‖·‖) x x = ‖x‖ := by
   rw [← h.lineDeriv_eq_fderiv, lineDeriv]
-  have this (t : ℝ) : ‖x + t • x‖ = |1 + t| * ‖x‖ := by
+  have (t : ℝ) : ‖x + t • x‖ = |1 + t| * ‖x‖ := by
     rw [← norm_eq_abs, ← norm_smul, add_smul, one_smul]
   simp_rw [this]
   rw [deriv_mul_const]
