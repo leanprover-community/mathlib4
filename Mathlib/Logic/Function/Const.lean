@@ -33,6 +33,7 @@ see `isConst_iff_exists_eq_const`.
 The intended use is for expressing that a function is constant when the exact constant value is
 not known, no unique or not easy to express. To state the constant value explicitly,
 use `Function.const`. -/
+@[expose]
 def IsConst (f : α → β) : Prop :=
   ∀ x y, f x = f y
 
@@ -53,7 +54,7 @@ theorem IsConst.const (b : β) :
 theorem IsConst.of_subsingleton_domain [Subsingleton α] (f : α → β) : IsConst f :=
   fun _ _ ↦ congrArg f <| Subsingleton.elim _ _
 
-/-- All function on into a subsingleton codomain are constant. -/
+/-- All function to a subsingleton codomain are constant. -/
 @[simp]
 theorem IsConst.of_subsingleton_codomain [Subsingleton β] (f : α → β) : IsConst f :=
   fun _ _ ↦ Subsingleton.elim _ _
