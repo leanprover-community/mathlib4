@@ -59,7 +59,9 @@ local diffeomorphism, manifold
 
 public noncomputable section
 
-open Manifold Set TopologicalSpace
+open Set TopologicalSpace
+
+open scoped Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
