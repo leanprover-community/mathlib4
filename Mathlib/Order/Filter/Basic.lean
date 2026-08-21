@@ -1373,7 +1373,7 @@ lemma LE.le.eventuallySubset {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) :
 theorem LE.le.eventuallyLE {α} {l : Filter α} {s t : Set α} (h : s ≤ t) : s ≤ᶠ[l] t :=
   .of_forall h
 
-alias Filter.EventuallyLE.of_subset := HasSubset.Subset.eventuallySubset
+alias Filter.EventuallyLE.of_subset := LE.le.eventuallySubset
 alias Filter.EventuallyLE.of_le := LE.le.eventuallyLE
 
 variable {α : Type*}
