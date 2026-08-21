@@ -28,6 +28,9 @@ Here, we take (i) as the definition, and the equivalence between the various def
 is obtained in the lemma `Cardinal.SharplyLT.tfae`. In particular, using (ii),
 we show that `Cardinal.SharplyLT` is transitive.
 
+This notion is used in the file `Mathlib/CategoryTheory/Presentable/Uniformization.lean`
+in the proof of the uniformization theorem for accessible categories.
+
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
