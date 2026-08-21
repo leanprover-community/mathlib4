@@ -47,7 +47,7 @@ def constructibleTopology (X : Type*) [TopologicalSpace X] : TopologicalSpace X 
 abbrev WithConstructibleTopology (X : Type*) [TopologicalSpace X] : Type _ :=
   WithTopology X (constructibleTopology X)
 
-open Topology
+open scoped Topology
 
 lemma WithConstructibleTopology.isOpen_iff {s : Set (WithConstructibleTopology X)} :
     IsOpen s ↔ IsOpen[constructibleTopology X] (WithTopology.toTopology _ ⁻¹' s) :=

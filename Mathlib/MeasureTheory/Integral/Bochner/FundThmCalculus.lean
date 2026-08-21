@@ -23,7 +23,9 @@ theorem for a locally finite measure `μ` and a function `f` continuous at a poi
 
 public section
 
-open Filter MeasureTheory Topology Asymptotics Metric
+open Filter MeasureTheory Asymptotics Metric
+
+open scoped Topology
 
 variable {X E ι : Type*} [MeasurableSpace X] [NormedAddCommGroup E] [NormedSpace ℝ E]
   [CompleteSpace E]
