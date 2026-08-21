@@ -16,7 +16,7 @@ intervals as finsets and fintypes.
 
 ## TODO
 
-Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedMul` or `SuccOrder`
+Some lemmas can be generalized using `IsOrderedAddMonoid`, `CanonicallyOrderedAdd` or `SuccOrder`
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
@@ -30,6 +30,7 @@ variable (a b c : ℕ)
 
 namespace Nat
 
+set_option backward.isDefEq.respectTransparency false in
 instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finsetIcc a b := ⟨List.range' a (b + 1 - a), List.nodup_range'⟩
   finsetIco a b := ⟨List.range' a (b - a), List.nodup_range'⟩

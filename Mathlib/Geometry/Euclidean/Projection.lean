@@ -6,7 +6,6 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
-public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
@@ -45,27 +44,27 @@ def orthogonalProjection (s : AffineSubspace 𝕜 P) [Nonempty s]
   letI x := Classical.arbitrary s
   AffineIsometryEquiv.vaddConst 𝕜 x
     |>.toContinuousAffineEquiv.toContinuousAffineMap.comp
-      s.direction.orthogonalProjection.toContinuousAffineMap
+      s.direction.orthogonalProjectionOnto.toContinuousAffineMap
     |>.comp <| AffineIsometryEquiv.vaddConst 𝕜 (x : P) |>.symm
 
 theorem orthogonalProjection_apply (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p} :
-    orthogonalProjection s p = s.direction.orthogonalProjection (p -ᵥ Classical.arbitrary s)
+    orthogonalProjection s p = s.direction.orthogonalProjectionOnto (p -ᵥ Classical.arbitrary s)
       +ᵥ Classical.arbitrary s :=
   rfl
 
 theorem orthogonalProjection_apply' (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p} :
     (orthogonalProjection s p : P) =
-      (s.direction.orthogonalProjection (p -ᵥ Classical.arbitrary s) : V) +ᵥ
+      (s.direction.orthogonalProjectionOnto (p -ᵥ Classical.arbitrary s) : V) +ᵥ
       (Classical.arbitrary s : P) :=
   rfl
 
 theorem orthogonalProjection_apply_mem (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p x} (hx : x ∈ s) :
-    orthogonalProjection s p = (s.direction.orthogonalProjection (p -ᵥ x) : V) +ᵥ x := by
+    orthogonalProjection s p = (s.direction.orthogonalProjectionOnto (p -ᵥ x) : V) +ᵥ x := by
   rw [orthogonalProjection_apply, coe_vadd, vadd_eq_vadd_iff_sub_eq_vsub, ← Submodule.coe_sub,
-    ← map_sub, vsub_sub_vsub_cancel_left, Submodule.coe_orthogonalProjection_apply,
+    ← map_sub, vsub_sub_vsub_cancel_left, Submodule.coe_orthogonalProjectionOnto_apply,
     Submodule.starProjection_eq_self_iff]
   exact s.vsub_mem_direction (SetLike.coe_mem _) hx
 
@@ -87,14 +86,14 @@ theorem orthogonalProjection_congr {s₁ s₂ : AffineSubspace 𝕜 P} {p₁ p�
 @[simp]
 theorem orthogonalProjection_linear {s : AffineSubspace 𝕜 P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] :
-    (orthogonalProjection s).linear = s.direction.orthogonalProjection :=
+    (orthogonalProjection s).linear = s.direction.orthogonalProjectionOnto :=
   rfl
 
 /-- The continuous linear map corresponding to `orthogonalProjection`. -/
 @[simp]
 theorem orthogonalProjection_contLinear {s : AffineSubspace 𝕜 P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] :
-    (orthogonalProjection s).contLinear = s.direction.orthogonalProjection :=
+    (orthogonalProjection s).contLinear = s.direction.orthogonalProjectionOnto :=
   rfl
 
 /-- The `orthogonalProjection` lies in the given subspace. -/
@@ -120,7 +119,7 @@ theorem inter_eq_singleton_orthogonalProjection {s : AffineSubspace 𝕜 P} [Non
     (mk'_nonempty p s.directionᗮ)
     (by
       rw [direction_mk' p s.directionᗮ]
-      exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection)
+      exact s.direction.isCompl_orthogonal)
   rwa [Set.eq_singleton_iff_nonempty_unique_mem.1 hq |>.2 _
     ⟨orthogonalProjection_mem _, orthogonalProjection_mem_orthogonal _ _⟩]
 
@@ -207,7 +206,7 @@ theorem vsub_orthogonalProjection_mem_direction_orthogonal (s : AffineSubspace �
 part of the orthogonal projection. -/
 theorem orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
-    s.direction.orthogonalProjection (p -ᵥ orthogonalProjection s p) = 0 := by
+    s.direction.orthogonalProjectionOnto (p -ᵥ orthogonalProjection s p) = 0 := by
   simpa using vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
 /-- The characteristic property of the orthogonal projection, for a point given in the underlying
@@ -306,7 +305,7 @@ lemma dist_orthogonalProjection_eq_dist_iff_eq_of_mem {s : AffineSubspace 𝕜 P
     [s.direction.HasOrthogonalProjection] {p₁ p₂ : P} (hp₂ : p₂ ∈ s) :
     haveI : Nonempty s := ⟨p₂, hp₂⟩
     dist p₁ (orthogonalProjection s p₁) = dist p₁ p₂ ↔ orthogonalProjection s p₁ = p₂ := by
-  haveI : Nonempty s := ⟨p₂, hp₂⟩
+  have : Nonempty s := ⟨p₂, hp₂⟩
   constructor
   · intro h
     rwa [← sq_eq_sq₀ dist_nonneg dist_nonneg, pow_two, pow_two, dist_comm _ p₂,
@@ -426,7 +425,7 @@ theorem reflection_apply_of_mem (s : AffineSubspace 𝕜 P) [Nonempty s]
 theorem reflection_apply' (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
     reflection s p = (↑(orthogonalProjection s p) -ᵥ p) +ᵥ (orthogonalProjection s p : P) := by
-  rw [reflection_apply, orthogonalProjection_apply', Submodule.coe_orthogonalProjection_apply]
+  rw [reflection_apply, orthogonalProjection_apply', Submodule.coe_orthogonalProjectionOnto_apply]
   set x : P := ↑(Classical.arbitrary s)
   set v : V := s.direction.starProjection (p -ᵥ x)
   rw [Submodule.reflection_apply, two_smul, sub_eq_add_neg, neg_vsub_eq_vsub_rev, add_assoc,

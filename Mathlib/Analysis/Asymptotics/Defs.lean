@@ -57,26 +57,27 @@ set_option linter.style.longFile 1600
 
 assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClass
 
-open Set Topology Filter NNReal
+open Set Filter
+
+open scoped Topology
 
 namespace Asymptotics
 
 
 variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
-  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {G'' : Type*} {E''' : Type*}
-  {R : Type*} {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
+  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {E''' : Type*}
+  {R : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
+  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [SeminormedRing R]
   [SeminormedAddGroup E''']
-  [SeminormedRing R']
 
 variable {S : Type*} [NormedRing S] [NormMulClass S]
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
-variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
+variable {f'' : α → E''} {g'' : α → F''}
 variable {l l' : Filter α}
 
 section Defs
@@ -1176,7 +1177,7 @@ theorem isBigOWith_const_const (c : E) {c' : F''} (hc' : c' ≠ 0) (l : Filter �
   simp only [IsBigOWith_def]
   apply univ_mem'
   intro x
-  rw [mem_setOf, div_mul_cancel₀ _ (norm_ne_zero_iff.mpr hc')]
+  rw [mem_ofPred, div_mul_cancel₀ _ (norm_ne_zero_iff.mpr hc')]
 
 theorem isBigO_const_const (c : E) {c' : F''} (hc' : c' ≠ 0) (l : Filter α) :
     (fun _x : α => c) =O[l] fun _x => c' :=
@@ -1407,21 +1408,22 @@ section Sum
 
 variable {ι : Type*} {A : ι → α → E'} {C : ι → ℝ} {s : Finset ι}
 
-theorem IsBigOWith.sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :
-    IsBigOWith (∑ i ∈ s, C i) l (fun x => ∑ i ∈ s, A i x) g := by
+@[to_fun] theorem IsBigOWith.sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :
+    IsBigOWith (∑ i ∈ s, C i) l (∑ i ∈ s, A i) g := by
   induction s using Finset.cons_induction with
-  | empty => simp only [isBigOWith_zero', Finset.sum_empty]
+  | empty =>
+      rw [Finset.sum_empty]
+      apply isBigOWith_zero'
   | cons i s is IH =>
     simp only [Finset.sum_cons, Finset.forall_mem_cons] at h ⊢
     exact h.1.add (IH h.2)
 
-theorem IsBigO.sum (h : ∀ i ∈ s, A i =O[l] g) : (fun x => ∑ i ∈ s, A i x) =O[l] g := by
+@[to_fun] theorem IsBigO.sum (h : ∀ i ∈ s, A i =O[l] g) : (∑ i ∈ s, A i) =O[l] g := by
   simp only [IsBigO_def] at *
   choose! C hC using h
   exact ⟨_, IsBigOWith.sum hC⟩
 
-theorem IsLittleO.sum (h : ∀ i ∈ s, A i =o[l] g') : (fun x => ∑ i ∈ s, A i x) =o[l] g' := by
-  simp only [← Finset.sum_apply]
+@[to_fun] theorem IsLittleO.sum (h : ∀ i ∈ s, A i =o[l] g') : (∑ i ∈ s, A i) =o[l] g' := by
   exact Finset.sum_induction A (· =o[l] g') (fun _ _ ↦ .add) (isLittleO_zero ..) h
 
 variable {B : ι → α → ℝ}

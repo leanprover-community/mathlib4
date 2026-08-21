@@ -59,16 +59,21 @@ local diffeomorphism, manifold
 
 public noncomputable section
 
-open Manifold Set TopologicalSpace
+open Set TopologicalSpace
+
+open scoped Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {H : Type*} [TopologicalSpace H]
-  {G : Type*} [TopologicalSpace G]
-  (I : ModelWithCorners 𝕜 E H) (J : ModelWithCorners 𝕜 F G)
-  (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-  (N : Type*) [TopologicalSpace N] [ChartedSpace G N] (n : WithTop ℕ∞)
+  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  {H₁ : Type*} [TopologicalSpace H₁]
+  {H₂ : Type*} [TopologicalSpace H₂]
+  {H₃ : Type*} [TopologicalSpace H₃]
+  (I : ModelWithCorners 𝕜 E H₁) (J : ModelWithCorners 𝕜 F H₂) (K : ModelWithCorners 𝕜 F' H₃)
+  (M : Type*) [TopologicalSpace M] [ChartedSpace H₁ M]
+  (N : Type*) [TopologicalSpace N] [ChartedSpace H₂ N]
+  (P : Type*) [TopologicalSpace P] [ChartedSpace H₃ P] (n : WithTop ℕ∞)
 
 section PartialDiffeomorph
 /-- A partial diffeomorphism on `s` is a function `f : M → N` such that `f` restricts to a
@@ -86,7 +91,7 @@ as `toFun` doesn't determine `invFun` outside of `target`. -/
 instance : CoeFun (PartialDiffeomorph I J M N n) fun _ => M → N :=
   ⟨fun Φ => Φ.toFun⟩
 
-variable {I J M N n}
+variable {I J K M N P n}
 
 /-- A diffeomorphism is a partial diffeomorphism. -/
 def Diffeomorph.toPartialDiffeomorph (h : Diffeomorph I J M N n) :
@@ -102,6 +107,7 @@ namespace PartialDiffeomorph
 variable (Φ : PartialDiffeomorph I J M N n)
 
 /-- A partial diffeomorphism is also a local homeomorphism. -/
+@[expose, simps toPartialHomeomorph_toPartialEquiv]
 def toOpenPartialHomeomorph : OpenPartialHomeomorph M N where
   toPartialEquiv := Φ.toPartialEquiv
   open_source := Φ.open_source
@@ -110,6 +116,7 @@ def toOpenPartialHomeomorph : OpenPartialHomeomorph M N where
   continuousOn_invFun := Φ.contMDiffOn_invFun.continuousOn
 
 /-- The inverse of a local diffeomorphism. -/
+@[expose, simps toPartialEquiv]
 protected def symm : PartialDiffeomorph J I N M n where
   toPartialEquiv := Φ.toPartialEquiv.symm
   open_source := Φ.open_target
@@ -125,6 +132,15 @@ protected theorem mdifferentiableOn (hn : n ≠ 0) : MDiff[Φ.source] Φ :=
 protected theorem mdifferentiableAt (hn : n ≠ 0) {x : M} (hx : x ∈ Φ.source) :
     MDiffAt Φ x :=
   (Φ.mdifferentiableOn hn x hx).mdifferentiableAt (Φ.open_source.mem_nhds hx)
+
+/-- Composition of partial diffeomorphisms. -/
+@[expose, simps toPartialEquiv]
+protected def trans (Ψ : PartialDiffeomorph J K N P n) : PartialDiffeomorph I K M P n where
+  __ := Φ.toOpenPartialHomeomorph.trans Ψ.toOpenPartialHomeomorph
+  contMDiffOn_toFun :=
+    Ψ.contMDiffOn_toFun.comp (Φ.contMDiffOn_toFun.mono inter_subset_left) inter_subset_right
+  contMDiffOn_invFun :=
+    Φ.contMDiffOn_invFun.comp (Ψ.contMDiffOn_invFun.mono inter_subset_left) inter_subset_right
 
 /- We could add lots of additional API (following `Diffeomorph` and `OpenPartialHomeomorph`),
 such as
@@ -150,7 +166,7 @@ namespace IsLocalDiffeomorphAt
 
 variable {f : M → N} {x : M}
 
-variable {I I' J n}
+variable {I J n}
 
 /-- An arbitrary choice of local inverse of `f` near `x`. -/
 def localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
@@ -221,6 +237,16 @@ lemma localInverse_contMDiffAt (hf : IsLocalDiffeomorphAt I J n f x) :
 lemma localInverse_mdifferentiableAt (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) :
     MDiffAt hf.localInverse (f x) :=
   hf.localInverse_contMDiffAt.mdifferentiableAt hn
+
+lemma comp (hf : IsLocalDiffeomorphAt I J n f x) {g : N → P}
+    (hg : IsLocalDiffeomorphAt J K n g (f x)) :
+    IsLocalDiffeomorphAt I K n (g ∘ f) x := by
+  obtain ⟨Φ, hx, heq⟩ := hf
+  obtain ⟨Ψ, hy, heq'⟩ := hg
+  refine ⟨Φ.trans Ψ, by simp [hx, ← heq.eq_of_mem hx, hy], ?_⟩
+  intro y ⟨hyl, hyr⟩
+  have hfy : f y ∈ Ψ.source := by rwa [heq.eq_of_mem hyl]
+  simp [← heq.eq_of_mem hyl, ← heq'.eq_of_mem hfy]
 
 end IsLocalDiffeomorphAt
 
@@ -356,16 +382,13 @@ def IsLocalDiffeomorph.diffeomorphOfBijective
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx }
 
-@[deprecated (since := "2025-12-19")]
-alias IsLocalDiffeomorph.diffeomorph_of_bijective := IsLocalDiffeomorph.diffeomorphOfBijective
-
 end Basic
 
 section Differential
 
-variable {f : M → N} {s : Set M} {x : M}
+variable {f : M → N} {x : M}
 
-variable {I I' J n}
+variable {I J n}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≠ 0`, the differential `df_x`
@@ -377,11 +400,11 @@ is a linear equivalence. -/
   invFun := mfderiv% hf.localInverse (f x)
   left_inv := by
     apply ContinuousLinearMap.leftInverse_of_comp
-    rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_left.mfderiv_eq]
+    rw [← mfderiv_id, hf.localInverse_eventuallyEq_left.symm.mfderiv_eq]
     exact (mfderiv_comp _ (hf.localInverse_mdifferentiableAt hn) (hf.mdifferentiableAt hn)).symm
   right_inv := by
     apply ContinuousLinearMap.rightInverse_of_comp
-    rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_right.mfderiv_eq]
+    rw [← mfderiv_id, hf.localInverse_eventuallyEq_right.symm.mfderiv_eq]
     -- We need to rewrite the base point hf.localInverse (f x) = x twice,
     -- in the differentiability hypothesis and for applying the chain rule.
     have hf' : MDifferentiableAt I J f (hf.localInverse (f x)) := by
@@ -389,6 +412,7 @@ is a linear equivalence. -/
       exact hf.mdifferentiableAt hn
     rw [mfderiv_comp _ hf' (hf.localInverse_mdifferentiableAt hn),
       hf.localInverse_left_inv hf.localInverse_mem_target]
+    rfl
   continuous_toFun := (mfderiv% f x).cont
   continuous_invFun := (mfderiv% hf.localInverse (f x)).cont
   map_add' := fun x_1 y ↦ map_add _ x_1 y

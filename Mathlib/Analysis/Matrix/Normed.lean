@@ -438,7 +438,6 @@ lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
   refine Finset.sup_le fun i _ => ?_
   cases isEmpty_or_nonempty n
   · simp
-  classical
   let x : n → α := fun j => unitOf (A i j)
   have hxn : ‖x‖₊ = 1 := by
     simp_rw [x, Pi.nnnorm_def, norm_unitOf, Finset.sup_const Finset.univ_nonempty]
@@ -601,6 +600,7 @@ lemma frobenius_norm_replicateCol (v : n → α) : ‖replicateCol ι v‖ = ‖
 lemma frobenius_nnnorm_replicateCol (v : n → α) : ‖replicateCol ι v‖₊ = ‖toLp 2 v‖₊ :=
   Subtype.ext <| frobenius_norm_replicateCol v
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖toLp 2 v‖₊ := by
   simp_rw [frobenius_nnnorm_def, ← Finset.sum_product', Finset.univ_product_univ,
