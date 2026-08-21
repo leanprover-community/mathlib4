@@ -328,7 +328,7 @@ theorem WithSeminorms.continuousSMul (hp : WithSeminorms p) : ContinuousSMul �
   rw [hp.withSeminorms_eq]
   exact ModuleFilterBasis.continuousSMul _
 
-instance [h : PolynormableSpace 𝕜 E] : ContinuousSMul 𝕜 E :=
+instance (priority := 90) [h : PolynormableSpace 𝕜 E] : ContinuousSMul 𝕜 E :=
   h.withSeminorms'.continuousSMul
 
 theorem WithSeminorms.hasBasis (hp : WithSeminorms p) :
