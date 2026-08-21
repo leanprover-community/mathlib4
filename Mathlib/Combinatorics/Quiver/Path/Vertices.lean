@@ -118,6 +118,11 @@ lemma vertices_comp {a b c : V} (p : Path a b) (q : Path b c) :
     p.length = 0 ↔ p = Path.nil := by
   cases p <;> tauto
 
+lemma vertices_comp_get_length_eq {a b c : V} (p₁ : Path a c) (p₂ : Path c b)
+    (h : p₁.length < (p₁.comp p₂).vertices.length := by simp) :
+    (p₁.comp p₂).vertices.get ⟨p₁.length, h⟩ = c := by
+  simp
+
 @[simp]
 lemma vertices_toPath {i j : V} (e : i ⟶ j) :
     e.toPath.vertices = [i, j] := by
