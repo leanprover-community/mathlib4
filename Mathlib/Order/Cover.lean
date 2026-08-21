@@ -193,10 +193,14 @@ variable [LT α] {a b : α}
 theorem CovBy.lt (h : a ⋖ b) : a < b :=
   h.1
 
+@[to_dual none]
+theorem not_covBy : ¬a ⋖ b ↔ a < b → ∃ c, a < c ∧ c < b := by
+  simp_rw [CovBy, not_and, not_forall, not_not, exists_prop]
+
 /-- If `a < b`, then `b` does not cover `a` iff there's an element in between. -/
 @[to_dual none]
 theorem not_covBy_iff (h : a < b) : ¬a ⋖ b ↔ ∃ c, a < c ∧ c < b := by
-  simp_rw [CovBy, h, true_and, not_forall, exists_prop, not_not]
+  simp_rw [not_covBy, h, true_implies]
 
 @[to_dual none]
 alias ⟨exists_lt_lt_of_not_covBy, _⟩ := not_covBy_iff
@@ -206,12 +210,12 @@ alias LT.lt.exists_lt_lt := exists_lt_lt_of_not_covBy
 
 /-- In a dense order, nothing covers anything. -/
 @[to_dual self]
-theorem not_covBy [DenselyOrdered α] : ¬a ⋖ b := fun h =>
+theorem not_covBy_of_denselyOrdered [DenselyOrdered α] : ¬a ⋖ b := fun h =>
   let ⟨_, hc⟩ := exists_between h.1
   h.2 hc.1 hc.2
 
 theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α, ¬a ⋖ b :=
-  ⟨fun h _ _ => @not_covBy _ _ _ _ h, fun h =>
+  ⟨fun h _ _ => @not_covBy_of_denselyOrdered _ _ _ _ h, fun h =>
     ⟨fun _ _ hab => exists_lt_lt_of_not_covBy hab <| h _ _⟩⟩
 
 @[to_dual self, simp]
@@ -779,9 +783,7 @@ lemma coe_covBy_coe : (a : WithTop α) ⋖ b ↔ a ⋖ b := by
 
 @[to_dual (attr := simp) not_bot_covBy]
 theorem not_covBy_top [NoMaxOrder α] {a : WithTop α} : ¬ a ⋖ ⊤ := by
-  unfold CovBy
-  push Not
-  intro ha
+  refine not_covBy.mpr fun ha ↦ ?_
   obtain ⟨a, rfl⟩ := ne_top_iff_exists.mp <| WithTop.lt_top_iff_ne_top.mp ha
   have ⟨b, hab⟩ := NoMaxOrder.exists_gt a
   exact ⟨b, coe_lt_coe.mpr hab, coe_lt_top b⟩

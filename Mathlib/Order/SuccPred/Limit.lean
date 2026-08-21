@@ -65,7 +65,8 @@ alias not_isSuccPrelimit_iff_exists_covBy := not_isSuccPrelimit_iff
 alias not_isPredPrelimit_iff_exists_covBy := not_isPredPrelimit_iff
 
 @[to_dual (attr := simp)]
-theorem IsSuccPrelimit.of_dense [DenselyOrdered α] (a : α) : IsSuccPrelimit a := fun _ => not_covBy
+theorem IsSuccPrelimit.of_dense [DenselyOrdered α] (a : α) : IsSuccPrelimit a :=
+  fun _ ↦ not_covBy_of_denselyOrdered
 
 @[to_dual (attr := simp)]
 theorem isSuccPrelimit_toDual_iff : IsSuccPrelimit (toDual a) ↔ IsPredPrelimit a := by
