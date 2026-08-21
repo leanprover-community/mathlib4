@@ -707,7 +707,7 @@ end BoundarySpectrum
 /-- If `𝕜₁` is a normed field contained as subfield of a larger normed field `𝕜₂`, and if `a : A`
 is an element (in a possibly non-unital `𝕜₂`-algebra) whose `𝕜₂` quasispectrum restricts to `𝕜₁`,
 then the spectral radii over each scalar field coincide. -/
-lemma _root_.QuasispectrumRestricts.spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [NormedField 𝕜₁]
+lemma QuasispectrumRestricts.spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [NormedField 𝕜₁]
     [NormedField 𝕜₂] [NonUnitalRing A] [Module 𝕜₁ A] [Module 𝕜₂ A] [NormedAlgebra 𝕜₁ 𝕜₂]
     [IsScalarTower 𝕜₁ 𝕜₂ A] [IsScalarTower 𝕜₂ A A] [SMulCommClass 𝕜₂ A A]
     {f : 𝕜₂ → 𝕜₁} {a : A} (h : QuasispectrumRestricts a f) :
