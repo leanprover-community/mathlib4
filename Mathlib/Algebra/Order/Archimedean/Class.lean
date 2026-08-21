@@ -846,7 +846,7 @@ noncomputable def toUpperSetMulArchimedeanClass :
     UpperSet (FiniteMulArchimedeanClass M) ↪o UpperSet (MulArchimedeanClass M) :=
   .ofStrictMono (fun s ↦
     { carrier := {a | ∀ h : a ≠ ⊤, ⟨a, h⟩ ∈ s}
-      upper' _ _ le mem ne := s.upper le (mem <| ne_top_of_le_ne_top ne le)})
+      upper' _ _ le mem ne := s.upper le (mem <| ne_top_of_le_ne_top ne le) })
   fun s t lt ↦ by
     simp only [lt_iff_le_not_ge, ne_eq, ← SetLike.mem_coe, ← UpperSet.coe_subset_coe,
       UpperSet.coe_mk, Set.subset_def] at lt ⊢
