@@ -33,11 +33,9 @@ lemma embedding_strictMono : StrictMono (embedding (f := f)) :=
 
 lemma embedding_monotone : Monotone (embedding (f := f)) := embedding_strictMono.monotone
 
-@[simp]
 lemma embedding_le_embedding {a b : ValueGroup₀ f} : embedding a ≤ embedding b ↔ a ≤ b :=
   embedding_strictMono.le_iff_le
 
-@[simp]
 lemma embedding_lt_embedding {a b : ValueGroup₀ f} : embedding a < embedding b ↔ a < b :=
   embedding_strictMono.lt_iff_lt
 

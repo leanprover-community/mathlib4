@@ -196,7 +196,6 @@ lemma coe_mrange₀ (f : A →*₀ B) : (mrange₀ f : Set B) = Set.range f := r
 @[simp]
 lemma mem_mrange₀ {f : A →*₀ B} {b : B} : b ∈ mrange₀ f ↔ ∃ a, f a = b := Iff.rfl
 
-@[simp]
 lemma apply_mem_mrange₀ (f : A →*₀ B) (a : A) : f a ∈ mrange₀ f := ⟨a, rfl⟩
 
 end MonoidWithZeroHom

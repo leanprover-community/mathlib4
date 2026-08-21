@@ -528,8 +528,8 @@ public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.GroupWithZero.Center
 public import Mathlib.Algebra.GroupWithZero.Commute
-public import Mathlib.Algebra.GroupWithZero.Cyclic
 public import Mathlib.Algebra.GroupWithZero.Conj
+public import Mathlib.Algebra.GroupWithZero.Cyclic
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.GroupWithZero.Equiv

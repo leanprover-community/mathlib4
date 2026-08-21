@@ -112,7 +112,7 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
   set γ' := Units.mk0 (v.restrict x) (v.restrict.ne_zero_iff.mpr x_ne) with hdef
   exact ⟨γ', fun y hy => by
     simp only [Valuation.restrict_lt_iff_lt_embedding, hdef, sub_zero, Units.val_mk0,
-      mem_ofPred_eq, Valuation.coe_restrict] at hy
+      mem_ofPred_eq] at hy
     simpa using hy⟩
 
 section
@@ -370,7 +370,7 @@ lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
       (fun a ↦ by simp [extensionValuation_apply_coe a])
     · simp only [extensionValuation_toFun]
       have hr (r : K) : ValueGroup₀.embedding (restrict₀ (.ofClass hv.v) r) = v r := by
-        simp [embedding_restrict₀]
+        simp
       have h (a b : ValueGroup₀ (.ofClass hv.v)) :
           ValueGroup₀.embedding a = ValueGroup₀.embedding b ↔ a = b := by
         rw [embedding_strictMono.injective.eq_iff]
@@ -456,7 +456,7 @@ noncomputable def valueGroup₀_equiv_extensionValuation :
     have hx := (restrict₀_surjective (.ofClass hv.v) a).choose_spec
     have hy := (restrict₀_surjective (.ofClass hv.v) b).choose_spec
     apply_fun embedding at hx hy hab
-    simp only [embedding_restrict₀, coe_ofClass, embedding_apply] at hx hy
+    simp only [embedding_apply] at hx hy
     simp only [valueGroup₀_hom_extensionValuation, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
       embedding_apply, Valuation.coe_restrict, extensionValuation_apply_coe] at hab
     exact Subtype.ext (by rw [← hx, ← hy]; exact hab)

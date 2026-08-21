@@ -1074,7 +1074,8 @@ lemma embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
 /-- Embedding into the value group of the canonical valuation and back is the identity. -/
 @[simp]
 lemma coe_embed_valuation (x : ValueGroupWithZero R) :
-    ((embed (valuation R) x : ValueGroup₀ (.ofClass (valuation R))) : ValueGroupWithZero R) = x := by
+    ((embed (valuation R) x : ValueGroup₀ (.ofClass (valuation R))) :
+      ValueGroupWithZero R) = x := by
   induction x using ValueGroupWithZero.ind with
   | mk r s =>
     rw [embed_mk, ValueGroupWithZero.mk_eq_div, ← ValueGroup₀.embedding_apply, map_div₀]
@@ -1113,11 +1114,9 @@ ValueGroupWithZero R
 ```
 the map from `ValueGroupWithZero R` to itself is identity.
 -/
-@[simp]
 lemma embedding_embed_valuation_eq (γ : ValueGroupWithZero R) :
-    embedding (embed (valuation R) γ) = γ := by
-  induction γ using ValueGroupWithZero.ind
-  simp [mk_eq_div]
+    embedding (embed (valuation R) γ) = γ :=
+  coe_embed_valuation γ
 
 /-- The map `embed v` is strictly monotone. -/
 lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
@@ -1190,9 +1189,14 @@ lemma orderMonoidIso_valuation_eq_restrict₀ [v.Compatible] (x : R) :
 /-- This is the same as `ValuativeRel.ValueGroupWithZero.embedding_embed_valuation_eq`, where
 `embed` is upgraded to `orderMonoidIso`. -/
 @[simp]
+lemma coe_orderMonoidIso_valuation (γ : ValueGroupWithZero R) :
+    ((orderMonoidIso (valuation R) γ : ValueGroup₀ (.ofClass (valuation R))) :
+      ValueGroupWithZero R) = γ :=
+  coe_embed_valuation γ
+
 lemma embedding_orderMonoidIso_valuation_eq (γ : ValueGroupWithZero R) :
     embedding (orderMonoidIso (valuation R) γ) = γ :=
-  embedding_embed_valuation_eq γ
+  coe_orderMonoidIso_valuation γ
 
 /-- The map `orderMonoidIso v` is strictly monotone. -/
 lemma orderMonoidIso_strictMono [v.Compatible] : StrictMono (orderMonoidIso v) :=

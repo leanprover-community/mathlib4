@@ -145,7 +145,6 @@ lemma embedding_apply (x : ValueGroup₀ f) : embedding x = (x : B) := rfl
 
 lemma embedding_injective : Function.Injective (embedding (f := f)) := Subtype.val_injective
 
-@[simp]
 lemma embedding_inj {a b : ValueGroup₀ f} : embedding a = embedding b ↔ a = b :=
   embedding_injective.eq_iff
 

@@ -46,6 +46,7 @@ noncomputable def valueGroup₀OrderIsoWithZeroUnits :
   OrderMonoidIso.withZeroUnits.symm.trans
     (SubgroupWithZero.unitsOrderMonoidIso (valueGroup₀ (.ofClass v))).withZero
 
+omit hv in
 @[simp]
 lemma valueGroup₀OrderIsoWithZeroUnits_symm_coe (u : ↥(valueGroup (.ofClass v))) :
     (valueGroup₀OrderIsoWithZeroUnits v).symm (u : WithZero ↥(valueGroup (.ofClass v))) =

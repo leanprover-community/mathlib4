@@ -513,7 +513,8 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   have hs0' : 0 < Valued.v.restrict (toVal v s) := by
     simp [restrict_pos_iff, h.pos_iff, ← hv, hs₀]
   have h' : v.restrict.IsEquiv w.restrict := h.restrict
-  rw [← hr, equiv_apply, Set.mem_ofPred_eq, lt_div_iff₀ (c := Valued.v.restrict s) ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
+  rw [← hr, equiv_apply, Set.mem_ofPred_eq,
+    lt_div_iff₀ (c := Valued.v.restrict s) ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
     ← map_mul, ← lt_def, ← ofVal_mul,
     ← hy, ← toVal_mul, ←  h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply]
   simp only [toVal_mul, orderRingIso_symm_apply, lt_def, ofVal_mul, restrict_lt_iff]
@@ -538,8 +539,8 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   simp only [equiv_symm_apply, Set.mem_ofPred_eq]
   simp only [equiv_apply, Units.val_mk0, Set.mem_ofPred_eq] at hx
   rw [lt_div_iff₀, ← map_mul, restrict_lt_iff, hv, h.lt_iff_lt, map_mul] at hx
-  · rw [← hr, lt_div_iff₀ (c := Valued.v.restrict s) ((restrict_pos_iff Valued.v s).mpr hs₀), ← map_mul, ← lt_def,
-      ← h.orderRingIso_apply]
+  · rw [← hr, lt_div_iff₀ (c := Valued.v.restrict s) ((restrict_pos_iff Valued.v s).mpr hs₀),
+      ← map_mul, ← lt_def, ← h.orderRingIso_apply]
     simp only [orderRingIso_apply, toVal_mul, lt_def, ofVal_mul, restrict_lt_iff]
     rw [map_mul]
     exact hx

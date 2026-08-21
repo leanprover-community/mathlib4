@@ -83,7 +83,6 @@ lemma genLTOne₀_isGreatest : IsGreatest {x : Γ | x ∈ s ∧ x < 1} s.genLTOn
   have hg1 := s.genLTOne₀_lt_one
   have hn : 1 ≤ n := by
     by_contra hn
-    push_neg at hn
     exact absurd hx1 (not_lt.2 (one_le_zpow_of_nonpos₀ hg hg1.le (by omega)))
   calc s.genLTOne₀ ^ n ≤ s.genLTOne₀ ^ (1 : ℤ) :=
         zpow_le_zpow_right_of_le_one₀ hg hg1.le hn
