@@ -96,16 +96,20 @@ theorem degree_eq_natDegree (hp : p ≠ 0) : degree p = (natDegree p : WithBot �
   have hn : degree p = some n := Classical.not_not.1 hn
   rw [natDegree, hn]; rfl
 
-theorem degree_eq_iff_natDegree_eq {p : R[X]} {n : ℕ} (hp : p ≠ 0) :
+theorem degree_eq_iff_natDegree_eq {n : ℕ} (hp : p ≠ 0) :
     p.degree = n ↔ p.natDegree = n := by rw [degree_eq_natDegree hp]; exact WithBot.coe_eq_coe
 
-theorem degree_eq_iff_natDegree_eq_of_pos {p : R[X]} {n : ℕ} (hn : 0 < n) :
+theorem degree_eq_iff_natDegree_eq_of_pos {n : ℕ} (hn : 0 < n) :
     p.degree = n ↔ p.natDegree = n := by
   obtain rfl | h := eq_or_ne p 0
   · simp [hn.ne]
   · exact degree_eq_iff_natDegree_eq h
 
-theorem natDegree_eq_of_degree_eq_some {p : R[X]} {n : ℕ} (h : degree p = n) : natDegree p = n := by
+theorem degree_eq_iff_natDegree_eq_of_neZero {n : ℕ} [NeZero n] :
+    p.degree = n ↔ p.natDegree = n :=
+  degree_eq_iff_natDegree_eq_of_pos (Nat.pos_of_neZero n)
+
+theorem natDegree_eq_of_degree_eq_some {n : ℕ} (h : degree p = n) : natDegree p = n := by
   rw [natDegree, h, Nat.cast_withBot, WithBot.unbotD_coe]
 
 theorem degree_ne_of_natDegree_ne {n : ℕ} : p.natDegree ≠ n → degree p ≠ n :=

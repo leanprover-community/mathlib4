@@ -7,6 +7,7 @@ module
 
 public import Aesop
 public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Int.Init
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.SimpRw

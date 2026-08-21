@@ -6,9 +6,10 @@ Authors: Chris Hughes, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Algebra.Opposites
-public import Mathlib.Tactic.Spread
 public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.Spread
 
 /-!
 # Definitions of group actions
