@@ -22,8 +22,10 @@ inner product space, Hilbert space, norm
 public section
 
 
-open RCLike Real Filter Topology
+open RCLike Real Filter
 open LinearMap renaming BilinForm → BilinForm
+
+open scoped Topology
 
 variable {𝕜 E : Type*} [RCLike 𝕜]
 

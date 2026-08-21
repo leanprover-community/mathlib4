@@ -46,7 +46,9 @@ is not representable as a Stieltjes measure.
 
 noncomputable section
 
-open Set Filter Function ENNReal NNReal Topology MeasureTheory
+open Set Filter Function ENNReal NNReal MeasureTheory
+
+open scoped Topology
 
 open ENNReal (ofReal)
 

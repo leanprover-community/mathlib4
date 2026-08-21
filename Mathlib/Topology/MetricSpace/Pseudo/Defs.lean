@@ -99,7 +99,7 @@ abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀
     fun z => ⟨dist z z, forall_eq.2 <| forall_eq.2 le_rfl⟩
 
 /-- The distance function (given an ambient metric space on `α`), which returns
-  a nonnegative real number `dist x y` given `x y : α`. -/
+a real number `dist x y` given `x y : α`. This type class does not enforce non-negativity. -/
 @[ext]
 class Dist (α : Type*) where
   /-- Distance between two points -/

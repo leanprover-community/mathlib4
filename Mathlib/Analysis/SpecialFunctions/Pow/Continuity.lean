@@ -16,8 +16,9 @@ This file contains lemmas about continuity of the power functions on `ℂ`, `ℝ
 
 public section
 
+open Real NNReal ENNReal Filter Set
 
-open Real Topology NNReal ENNReal Filter Set
+open scoped Topology
 
 section CpowLimits
 

@@ -34,7 +34,9 @@ strong dual, polar
 
 public section
 
-open Topology Bornology
+open Bornology
+
+open scoped Topology
 
 namespace NormedSpace
 

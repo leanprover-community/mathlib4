@@ -834,6 +834,18 @@ theorem Filter.HasBasis.nhds_of_one {ι : Sort*} {p : ι → Prop} {s : ι → S
   exact hb.comap _
 
 @[to_additive]
+theorem Filter.HasBasis.nhds_of_one' {ι : Sort*} {p : ι → Prop} {s : ι → Set G}
+    (hb : (𝓝 1).HasBasis p s) (x : G) :
+    (𝓝 x).HasBasis p fun i ↦ x • (s i) := by
+  rw [← map_mul_left_nhds_one x]
+  exact hb.map (x * ·)
+
+@[to_additive]
+theorem Filter.HasBasis.nhds_one_inv {ι : Sort*} {p : ι → Prop} {U : ι → Set G}
+    (hU : (𝓝 1).HasBasis p U) : (𝓝 1).HasBasis p fun i ↦ (U i)⁻¹ := by
+  simpa [← nhds_inv] using hU.inv
+
+@[to_additive]
 theorem mem_closure_iff_nhds_one {x : G} {s : Set G} :
     x ∈ closure s ↔ ∀ U ∈ (𝓝 1 : Filter G), ∃ y ∈ s, y / x ∈ U := by
   rw [mem_closure_iff_nhds_basis ((𝓝 1 : Filter G).basis_sets.nhds_of_one x)]
