@@ -22,6 +22,7 @@ Here we prove the following:
 * `sin_lt`: for `x > 0` we have `sin x < x`.
 * `sin_gt_sub_cube`: For `0 < x` we have `x - x ^ 3 / 6 < sin x`.
 * `lt_tan`: for `0 < x < π/2` we have `x < tan x`.
+* `arctan_lt_self`: for `x > 0` we have `arctan x < x`.
 * `cos_le_one_div_sqrt_sq_add_one` and `cos_lt_one_div_sqrt_sq_add_one`: for
   `-3 * π / 2 ≤ x ≤ 3 * π / 2`, we have `cos x ≤ 1 / sqrt (x ^ 2 + 1)`, with strict inequality if
   `x ≠ 0`. (This bound is not quite optimal, but not far off)
@@ -215,6 +216,36 @@ theorem le_tan {x : ℝ} (h1 : 0 ≤ x) (h2 : x < π / 2) : x ≤ tan x := by
   rcases eq_or_lt_of_le h1 with (rfl | h1')
   · rw [tan_zero]
   · exact le_of_lt (lt_tan h1' h2)
+
+/-- For `0 < x` we have `arctan x < x`.
+
+This is `lt_tan` reflected in the diagonal: `tan` lies above the identity on `(0, π / 2)`, hence
+its inverse lies below it. -/
+theorem arctan_lt_self (h : 0 < x) : arctan x < x := by
+  simpa using lt_tan (arctan_pos.2 h) (arctan_lt_pi_div_two x)
+
+theorem arctan_le_self (h : 0 ≤ x) : arctan x ≤ x := by
+  obtain rfl | h := h.eq_or_lt
+  · simp
+  · exact (arctan_lt_self h).le
+
+theorem self_lt_arctan (h : x < 0) : x < arctan x := by
+  simpa using arctan_lt_self <| neg_pos.2 h
+
+theorem self_le_arctan (h : x ≤ 0) : x ≤ arctan x := by
+  simpa using arctan_le_self <| neg_nonneg.2 h
+
+theorem abs_arctan_lt_abs (h : x ≠ 0) : |arctan x| < |x| := by
+  rcases h.lt_or_gt with h | h
+  · rw [abs_of_neg h, abs_of_neg (arctan_lt_zero.2 h)]
+    exact neg_lt_neg (self_lt_arctan h)
+  · rw [abs_of_pos h, abs_of_pos (arctan_pos.2 h)]
+    exact arctan_lt_self h
+
+theorem abs_arctan_le_abs : |arctan x| ≤ |x| := by
+  rcases eq_or_ne x 0 with rfl | h
+  · simp
+  · exact (abs_arctan_lt_abs h).le
 
 theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx2 : x ≤ 3 * π / 2)
     (hx3 : x ≠ 0) : cos x < (1 / √(x ^ 2 + 1) : ℝ) := by
