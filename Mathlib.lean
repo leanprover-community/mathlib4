@@ -552,7 +552,9 @@ public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.GroupWithZero.Semiconj
 public import Mathlib.Algebra.GroupWithZero.Shrink
 public import Mathlib.Algebra.GroupWithZero.Subgroup
+public import Mathlib.Algebra.GroupWithZero.Subgroup.Defs
 public import Mathlib.Algebra.GroupWithZero.Submonoid.CancelMulZero
+public import Mathlib.Algebra.GroupWithZero.Submonoid.Defs
 public import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
 public import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
 public import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
