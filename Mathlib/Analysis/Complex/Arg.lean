@@ -26,8 +26,8 @@ the usual way this is considered.
 * `Complex.sameRay_iff_aligned`: two nonzero complex numbers are on the same ray iff they have
   the same phase.
 * `Complex.exists_nonneg_mul_of_sameRay`: the `*` form of `SameRay.exists_nonneg_right`.
-* `Complex.sameRay_of_mul_of_real_pos`, `Complex.inv_norm_smul_eq_of_mul_of_real_pos`,
-  `Complex.aligned_of_mul_of_real_pos`: positive real scaling preserves `SameRay` and unit phase.
+* `Complex.sameRay_ofReal_mul`, `Complex.aligned_of_mul_of_real_pos`: nonnegative real scaling
+  preserves `SameRay`, and positive real scaling preserves the phase.
   See also `SameRay.inv_norm_smul_eq` in `Mathlib/Analysis/Normed/Module/Ray.lean`.
 
 -/
@@ -88,10 +88,10 @@ lemma sameRay_iff_aligned (hz : z ≠ 0) (hw : w ≠ 0) :
 
 alias ⟨aligned_of_sameRay, _⟩ := sameRay_iff_aligned
 
-/-- If `z = c * w` with `c > 0`, then `z` and `w` lie on the same closed ray. -/
-lemma sameRay_of_mul_of_real_pos (hc_pos : 0 < c) (h : z = (c : ℂ) * w) : SameRay ℝ z w := by
-  rw [h]
-  exact SameRay.sameRay_pos_smul_left w hc_pos
+/-- A nonnegative real multiple of `w` lies on the same closed ray as `w`. -/
+lemma sameRay_ofReal_mul (hc : 0 ≤ c) : SameRay ℝ ((c : ℂ) * w) w := by
+  rw [← real_smul]
+  exact SameRay.sameRay_nonneg_smul_left w hc
 
 /-- A complex number on the same ray as a nonzero `w` is a nonnegative real multiple of `w`. -/
 lemma exists_nonneg_mul_of_sameRay (h : SameRay ℝ z w) (hw : w ≠ 0) :
@@ -99,14 +99,10 @@ lemma exists_nonneg_mul_of_sameRay (h : SameRay ℝ z w) (hw : w ≠ 0) :
   obtain ⟨k, hk, hz⟩ := h.exists_nonneg_right hw
   exact ⟨k, hk, by rwa [real_smul] at hz⟩
 
-/-- If `z = c * w` with `c > 0` and both are nonzero, their unit vectors agree. -/
-lemma inv_norm_smul_eq_of_mul_of_real_pos (hc_pos : 0 < c) (h : z = (c : ℂ) * w) (hz : z ≠ 0)
-    (hw : w ≠ 0) : (‖z‖)⁻¹ • z = (‖w‖)⁻¹ • w :=
-  SameRay.inv_norm_smul_eq hz hw (sameRay_of_mul_of_real_pos hc_pos h)
-
-/-- If `z = c * w` with `c > 0` and both are nonzero, they have the same normalized phase. -/
-lemma aligned_of_mul_of_real_pos (hc_pos : 0 < c) (h : z = (c : ℂ) * w) (hz : z ≠ 0)
-    (hw : w ≠ 0) : z / (‖z‖ : ℂ) = w / (‖w‖ : ℂ) :=
-  aligned_of_sameRay hz hw (sameRay_of_mul_of_real_pos hc_pos h)
+/-- A positive real multiple of a nonzero `w` has the same phase as `w`. -/
+lemma aligned_of_mul_of_real_pos (hc_pos : 0 < c) (hw : w ≠ 0) :
+    ((c : ℂ) * w) / (‖(c : ℂ) * w‖ : ℂ) = w / (‖w‖ : ℂ) :=
+  aligned_of_sameRay (mul_ne_zero (ofReal_ne_zero.2 hc_pos.ne') hw) hw
+    (sameRay_ofReal_mul hc_pos.le)
 
 end Complex
