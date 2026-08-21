@@ -296,7 +296,7 @@ To endow such a space with a normed space structure with the same topology, use:
 ```
 -/
 class NormableSpace [topology : TopologicalSpace E] where
-  withSeminorms' : ∃ (p : Seminorm 𝕜 E), WithSeminorms (fun (_ : Fin 1) ↦ p)
+  withSeminorms' : ∃ (p : Seminorm 𝕜 E), WithSeminorms (fun (_ : Unit) ↦ p)
 
 variable (𝕜 E) in
 /-- A topological vector space `E` is **polynormable** over `𝕜` if its topology is induced by
@@ -515,7 +515,7 @@ section NormedSpace
 
 /-- The topology of a `NormedSpace 𝕜 E` is induced by the seminorm `normSeminorm 𝕜 E`. -/
 theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
-    WithSeminorms fun _ : Fin 1 => normSeminorm 𝕜 E := by
+    WithSeminorms fun _ : Unit => normSeminorm 𝕜 E := by
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, iInf_const, coe_normSeminorm,
     comap_norm_nhds_zero]
 
@@ -646,7 +646,7 @@ theorem WithSeminorms.isVonNBounded_iff_seminorm_bddAbove {s : Set E} (hp : With
 the unit ball for this seminorm is a bounded neighborhood of `0`. -/
 theorem withSeminorms_iff_mem_nhds_isVonNBounded [IsTopologicalAddGroup E]
     [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} :
-    WithSeminorms (fun (_ : Fin 1) ↦ p) ↔ p.ball 0 1 ∈ 𝓝 0 ∧ IsVonNBounded 𝕜 (p.ball 0 1) := by
+    WithSeminorms (fun (_ : Unit) ↦ p) ↔ p.ball 0 1 ∈ 𝓝 0 ∧ IsVonNBounded 𝕜 (p.ball 0 1) := by
   /- The nontrivial direction is from right to left. With `SeminormFamily.withSeminorms_of_nhds`,
   we need to see that the neighborhoods of zero for the initial topology and for `p` coincide. -/
   refine ⟨fun h ↦ ⟨?_, ?_⟩, ?_⟩
@@ -669,7 +669,7 @@ theorem withSeminorms_iff_mem_nhds_isVonNBounded [IsTopologicalAddGroup E]
       rwa [smul_set_subset_smul_set_iff₀ c_ne] at this
     grw [← this]
     apply FilterBasis.mem_filter_of_mem
-    change p.ball 0 (‖c⁻¹‖) ∈ SeminormFamily.basisSets (fun (i : Fin 1) ↦ p)
+    change p.ball 0 (‖c⁻¹‖) ∈ SeminormFamily.basisSets (fun (i : Unit) ↦ p)
     apply SeminormFamily.basisSets_singleton_mem _ 0
     simpa using c_ne
   · /- Show that a neighborhood `s` for `p` is a neighborhood for the topology, by using the
@@ -750,7 +750,7 @@ theorem continuous_normedSpace_rng (F) [SeminormedAddCommGroup F] [NormedSpace �
     [TopologicalSpace E] {p : ι → Seminorm 𝕝 E} (hp : WithSeminorms p)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∃ (s : Finset ι) (C : ℝ≥0), (normSeminorm 𝕝₂ F).comp f ≤ C • s.sup p) :
     Continuous f := by
-  rw [← Seminorm.isBounded_const (Fin 1)] at hf
+  rw [← Seminorm.isBounded_const Unit] at hf
   exact continuous_of_isBounded hp (norm_withSeminorms 𝕝₂ F) f hf
 
 lemma _root_.Seminorm.abs_le_of_le [Module ℝ E] {p : Seminorm ℝ E}
@@ -772,7 +772,7 @@ theorem continuous_normedSpace_dom (E) [SeminormedAddCommGroup E] [NormedSpace �
     [TopologicalSpace F] {q : ι → Seminorm 𝕝₂ F} (hq : WithSeminorms q)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∀ i : ι, ∃ C : ℝ≥0, (q i).comp f ≤ C • normSeminorm 𝕝 E) :
     Continuous f := by
-  rw [← Seminorm.const_isBounded (Fin 1)] at hf
+  rw [← Seminorm.const_isBounded Unit] at hf
   exact continuous_of_isBounded (norm_withSeminorms 𝕝 E) hq f hf
 
 @[deprecated (since := "2026-03-09")]
