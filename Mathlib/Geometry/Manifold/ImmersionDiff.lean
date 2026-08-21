@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Normed.Module.ContinuousInverse
 
 Given a map `f : M → N` between manifolds, we say `f` is an immersion in the sense of differentials
 at `x` if and only if the `mfderiv` of `f` at `x` *splits*, i.e. admits a continuous left inverse.
-(If `M` is finite-dimensional, this is equivalent to injectivity of the `mfderiv`.)
+(If `N` is finite-dimensional, this is equivalent to injectivity of the `mfderiv`.)
 Under (relatively mild) conditions, this is equivalent to being an immersion at `x`.
 This is not true in full generality; there are counterexamples involving manifolds with boundary.
 This equivalence will be shown in a future PR.
@@ -166,7 +166,6 @@ lemma comp_isLocalDiffeomorphAt_right_iff (hf : ContinuousAt f x)
 lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E']
     (hf' : Injective (mfderiv% f x)) : IsDiffImmersionAt I I' f x := by
   have : FiniteDimensional 𝕜 (TangentSpace I' (f x)) := inferInstanceAs (FiniteDimensional 𝕜 E')
-  have : T2Space (TangentSpace% (f x)) := inferInstanceAs (T2Space E')
   exact ContinuousLinearMap.HasLeftInverse.of_injective_of_finiteDimensional hf'
 
 end IsDiffImmersionAt
