@@ -1,10 +1,10 @@
-module
-
 /-
 Copyright (c) 2026 Felix Pernegger,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Pernegger
 -/
+module
+
 public import Mathlib.Combinatorics.Quiver.Basic
 public import Mathlib.Data.EReal.Operations
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
