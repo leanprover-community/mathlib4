@@ -103,12 +103,6 @@ theorem sum_pos_of_mem {α : Type*} [DecidableEq α] {s : Finset α} {f : α →
   exact add_pos_of_pos_of_nonneg ha_pos (Finset.sum_nonneg fun x hx =>
     h_nonneg x (Finset.mem_of_mem_erase hx))
 
-lemma Finset.inf'_eq_ciInf {α β} [ConditionallyCompleteLinearOrder β] {s : Finset α}
-    (h : s.Nonempty) (f : α → β) :
-    s.inf' h f = ⨅ i : s, f i := by
-  rw [Finset.inf'_eq_csInf_image]
-  congr; ext x; simp [Set.mem_image, Set.mem_range]
-
 variable {n : Type*}
 
 lemma exists_pos_of_ne_zero [Fintype n] {v : n → ℝ} (h_nonneg : ∀ i, 0 ≤ v i)
@@ -158,16 +152,6 @@ lemma Nat.eq_one_or_one_lt (n : ℕ) (hn : n ≠ 0) : n = 1 ∨ 1 < n := by
   rcases n with _ | n
   · exact Or.inl rfl
   · exact Or.inr (Nat.succ_lt_succ (Nat.succ_pos _))
-
-lemma Finset.inf'_eq_of_forall_le_of_exists_le {α β} [LinearOrder β] {s : Finset α}
-    (hs : s.Nonempty) (f : α → β) (y : β) (h_le : ∀ i ∈ s, y ≤ f i)
-    (h_exists : ∃ i ∈ s, f i = y) :
-    s.inf' hs f = y := by
-  apply le_antisymm
-  · obtain ⟨i, hi_mem, hi_eq⟩ := h_exists
-    rw [← hi_eq]
-    exact inf'_le f hi_mem
-  · exact (le_inf'_iff hs f).mpr h_le
 
 lemma ne_zero_of_mem_stdSimplex {n : Type*} [Fintype n] [Nonempty n] {x : n → ℝ}
     (hx : x ∈ stdSimplex ℝ n) : x ≠ 0 := by
