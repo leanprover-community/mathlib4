@@ -284,6 +284,9 @@ members is also a member. Also called down-set, downward-closed set. -/]
 def IsUpperSet {α : Type*} [LE α] (s : Set α) : Prop :=
   ∀ ⦃a b : α⦄, a ≤ b → a ∈ s → b ∈ s
 
+theorem IsUpperSet.mem_of_le_of_mem {α : Type*} [LE α] {s : Set α} (h : IsUpperSet s) {a b : α}
+  (hab : a ≤ b) (ha : a ∈ s) : b ∈ s := h hab ha
+
 @[inherit_doc IsUpperSet]
 structure UpperSet (α : Type*) [LE α] where
   /-- The carrier of an `UpperSet`. -/

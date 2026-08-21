@@ -186,6 +186,11 @@ namespace MulArchimedeanClass
 @[to_additive /-- The archimedean class of a given element. -/]
 def mk (a : M) : MulArchimedeanClass M := toAntisymmetrization _ (MulArchimedeanOrder.of a)
 
+@[to_additive]
+theorem mk_eq_mk' {a b : M} : mk a = mk b ↔ MulArchimedeanOrder.of a ≤ MulArchimedeanOrder.of b ∧
+    MulArchimedeanOrder.of a ≥ MulArchimedeanOrder.of b :=
+  toAntisymmetrization_eq (· ≤ ·) (MulArchimedeanOrder.of a) (MulArchimedeanOrder.of b)
+
 /-- An induction principle for `MulArchimedeanClass`. -/
 @[to_additive (attr := elab_as_elim, induction_eliminator)
 /-- An induction principle for `ArchimedeanClass` -/]
@@ -203,12 +208,9 @@ variable (M) in
 @[to_additive (attr := simp)]
 theorem range_mk : Set.range (mk (M := M)) = Set.univ := Set.range_eq_univ.mpr (mk_surjective M)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem mk_eq_mk {a b : M} : mk a = mk b ↔ (∃ m, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n, |a|ₘ ≤ |b|ₘ ^ n) := by
-  unfold mk toAntisymmetrization
-  rw [Quotient.eq]
-  rfl
+  simp [mk_eq_mk', MulArchimedeanOrder.le_def]
 
 /-- Lift a `M → α` function to `MulArchimedeanClass M → α`. -/
 @[to_additive /-- Lift a `M → α` function to `ArchimedeanClass M → α`. -/]
@@ -836,18 +838,39 @@ theorem coe_congrOrderIso_apply (e : MulArchimedeanClass M ≃o MulArchimedeanCl
 theorem congrOrderIso_symm (e : MulArchimedeanClass M ≃o MulArchimedeanClass N) :
     (congrOrderIso e).symm = congrOrderIso e.symm := rfl
 
+@[to_additive (attr := simp)]
+noncomputable abbrev toUpperSetMulArchimedeanClassAux (s : UpperSet (FiniteMulArchimedeanClass M)) :
+    UpperSet (MulArchimedeanClass M) :=
+  { carrier := {a | ∀ h : a ≠ ⊤, ⟨a, h⟩ ∈ s}
+    upper' a b le mem ne := by
+      exact IsUpperSet.mem_of_le_of_mem s.upper
+                      (a := ⟨a, ne_top_of_le_ne_top ne le⟩) (b := ⟨b, ne⟩) le
+                      (mem <| ne_top_of_le_ne_top ne le)}
+
+@[to_additive]
+lemma strictMono_toUpperSetMulArchimedeanClassAux :
+    StrictMono (toUpperSetMulArchimedeanClassAux (M := M)) := by
+  intro s t lt
+  simp_rw [lt_iff_le_not_ge] at lt ⊢
+  constructor
+  · simpa [← SetLike.mem_coe] using! fun a ha1 ha2 ↦ Set.mem_of_subset_of_mem lt.1 (ha1 ha2)
+  · intro hst
+    apply lt.2
+    simp only [toUpperSetMulArchimedeanClassAux, ne_eq, ← SetLike.mem_coe, UpperSet.mk_le_mk,
+      ge_iff_le, Set.ofPred_subset_ofPred] at hst
+    rw [← UpperSet.coe_subset_coe] at lt ⊢
+    intro ⟨x, hx⟩ mem
+    apply Set.mem_of_subset_of_mem (s₁ := s) ?_ mem
+    rw [Set.subset_def]
+    exact fun x hx => hst x.1 (fun _ ↦ hx) x.2
+
 /-- The upper set in `MulArchimedeanClass M` consisting of an upper set in
 `FiniteMulArchimedeanClass M` plus `⊤`. -/
 @[to_additive /-- The upper set in `ArchimedeanClass M` consisting of an upper set in
 `FiniteArchimedeanClass M` plus `⊤`. -/]
 noncomputable def toUpperSetMulArchimedeanClass :
     UpperSet (FiniteMulArchimedeanClass M) ↪o UpperSet (MulArchimedeanClass M) :=
-  .ofStrictMono (fun s ↦
-    { carrier := {a | ∀ h : a ≠ ⊤, ⟨a, h⟩ ∈ s}
-      upper' _ _ le mem ne := s.upper le (mem <| ne_top_of_le_ne_top ne le) })
-  fun s t lt ↦ by
-    simp_rw [lt_iff_le_not_ge] at lt ⊢
-    exact ⟨fun _ mem ne ↦ lt.1 (mem _), fun hst ↦ lt.2 fun x mem ↦ hst (fun _ ↦ mem) x.2⟩
+  .ofStrictMono (toUpperSetMulArchimedeanClassAux) strictMono_toUpperSetMulArchimedeanClassAux
 
 /-- The `MulArchimedeanClass.subsemigroup` associated to an upper set in
 `FiniteMulArchimedeanClass M` is a subgroup. -/
@@ -865,11 +888,12 @@ theorem subsemigroup_eq_subgroup :
     MulArchimedeanClass.subsemigroup (toUpperSetMulArchimedeanClass s) = (subgroup s : Set M) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+-- set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 @[to_additive (attr := simp)]
 theorem subgroup_eq_bot : subgroup (M := M) ⊤ = ⊥ := by
-  ext; simp [subgroup, MulArchimedeanClass.subsemigroup, toUpperSetMulArchimedeanClass]
+  ext
+  simp [subgroup, MulArchimedeanClass.subsemigroup, toUpperSetMulArchimedeanClass]
 
 @[to_additive (attr := simp)]
 theorem mem_subgroup_iff : a ∈ subgroup s ↔ ∀ h : a ≠ 1, mk a h ∈ s := by

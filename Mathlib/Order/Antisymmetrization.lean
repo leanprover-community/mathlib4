@@ -131,6 +131,11 @@ variable {α}
 def toAntisymmetrization : α → Antisymmetrization α r :=
   Quotient.mk _
 
+@[simp]
+theorem toAntisymmetrization_eq (a b : α) :
+    toAntisymmetrization r a = toAntisymmetrization r b ↔ r a b ∧ r b a :=
+  Quotient.eq
+
 /-- Get a representative from the antisymmetrization. -/
 noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
   Quotient.out

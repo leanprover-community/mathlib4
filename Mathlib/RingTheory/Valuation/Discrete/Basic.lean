@@ -324,8 +324,6 @@ theorem IsUniformizer.of_associated {π₁ π₂ : K₀} (h1 : IsUniformizer v �
   have : v (u.1 : K) = 1 := (Integers.isUnit_iff_valuation_eq_one <| integer.integers v).mp u.isUnit
   rwa [IsUniformizer.iff, ← hu, Subring.coe_mul, map_mul, this, mul_one, ← IsUniformizer.iff]
 
-attribute [local implicit_reducible] Valuation.valuationSubring
-
 /-- If two elements of `K₀` are uniformizers, then they are associated. -/
 theorem associated_of_isUniformizer {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁)
     (h2 : IsUniformizer v π₂) : Associated π₁ π₂ := by
@@ -408,7 +406,6 @@ theorem valuationSubring_not_isField [Nontrivial (valueGroup (.ofClass v))]
   rw [← isUnit_iff_exists_inv] at h
   exact hπ.not_isUnit h
 
-attribute [local instance_reducible] Valuation.valuationSubring in
 theorem isUniformizer_of_maximalIdeal_eq_span [v.IsRankOneDiscrete] {r : K₀}
     (hr : maximalIdeal v.valuationSubring = Ideal.span {r}) :
     IsUniformizer v r := by
@@ -423,7 +420,6 @@ theorem isUniformizer_of_maximalIdeal_eq_span [v.IsRankOneDiscrete] {r : K₀}
   rw [span_singleton_eq_span_singleton] at hr
   exact hπ.of_associated hr
 
-attribute [local instance_reducible] Valuation.valuationSubring in
 theorem ideal_isPrincipal [IsCyclic (valueGroup (.ofClass v))]
     [Nontrivial (valueGroup (.ofClass v))] (I : Ideal K₀) : I.IsPrincipal := by
   suffices ∀ P : Ideal K₀, P.IsPrime → Submodule.IsPrincipal P by

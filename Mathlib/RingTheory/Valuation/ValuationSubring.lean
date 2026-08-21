@@ -436,6 +436,7 @@ variable {Γ Γ₁ Γ₂ : Type*} [LinearOrderedCommGroupWithZero Γ]
   (v₁ : Valuation K Γ₁) (v₂ : Valuation K Γ₂)
 
 /-- The valuation subring associated to a valuation. -/
+@[instance_reducible]
 def valuationSubring : ValuationSubring K :=
   { v.integer with
     mem_or_inv_mem' := by
@@ -481,7 +482,7 @@ variable (A : ValuationSubring K)
 
 @[simp]
 theorem valuationSubring_valuation : A.valuation.valuationSubring = A := by
-  ext; rw [← A.valuation_le_one_iff]; rfl
+  ext; simp [← A.valuation_le_one_iff, - valuation_le_one_iff]
 
 theorem integer_valuation : A.valuation.integer = A.toSubring :=
   congr(($A.valuationSubring_valuation).toSubring)
