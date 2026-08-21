@@ -860,9 +860,8 @@ theorem one_add_sq_mul_norm_fourier_le {f : ℝ → E} (hf : ContDiff ℝ 2 f)
     (h'f : ∀ k ≤ 2, Integrable (iteratedDeriv k f)) (u : ℝ) :
     (1 + u ^ 2) * ‖𝓕 f u‖ ≤
       (∫ v, ‖f v‖) + (4 * π ^ 2)⁻¹ * ∫ v, ‖iteratedDeriv 2 f v‖ := by
-  have := one_add_pow_mul_norm_fourier_le (n := 2) hf h'f u
-  rw [sq_abs] at this
-  convert this using 4
-  ring
+  convert one_add_pow_mul_norm_fourier_le hf h'f u using 3
+  · simp
+  · ring
 
 end Real
