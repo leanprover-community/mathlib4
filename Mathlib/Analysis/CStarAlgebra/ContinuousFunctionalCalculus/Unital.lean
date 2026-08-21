@@ -331,9 +331,15 @@ lemma cfc_apply_of_not_predicate {f : R → R} (a : A) (ha : ¬ p a) :
     cfc f a = 0 := by
   rw [cfc_def, dite_eq_right (not_and_of_not_left _ ha)]
 
+grind_pattern cfc_apply_of_not_predicate => cfc f a where
+  guard ¬ p a
+
 lemma cfc_apply_of_not_continuousOn {f : R → R} (a : A) (hf : ¬ ContinuousOn f (spectrum R a)) :
     cfc f a = 0 := by
   rw [cfc_def, dite_eq_right (not_and_of_not_right _ hf)]
+
+grind_pattern cfc_apply_of_not_continuousOn => cfc f a where
+  guard ¬ ContinuousOn f (spectrum R a)
 
 lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a, R)) :
     cfcHom ha f = cfc (Function.extend Subtype.val f g) a := by
@@ -348,14 +354,16 @@ lemma cfc_eq_cfcL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectru
     cfc f a = cfcL ha ⟨_, hf.domRestrict⟩ := by
   rw [cfc_def, dite_eq_left ⟨ha, hf⟩, cfcL_apply]
 
+grind_pattern mkD_of_not_continuousOn => mkD (s.domRestrict f) g where
+  guard ¬ ContinuousOn f s
+
 set_option backward.privateInPublic true in
 /-- A version of `cfc_apply` in terms of `ContinuousMap.mkD` -/
 lemma cfc_apply_mkD :
     cfc f a = cfcHom (a := a) ha (mkD ((spectrum R a).domRestrict f) 0) := by
   by_cases hf : ContinuousOn f (spectrum R a)
   · rw [cfc_apply f a, mkD_of_continuousOn hf]
-  · rw [cfc_apply_of_not_continuousOn a hf, mkD_of_not_continuousOn hf,
-      map_zero]
+  · grind
 
 set_option backward.privateInPublic true in
 /-- A version of `cfc_eq_cfcL` in terms of `ContinuousMapZero.mkD` -/
@@ -369,10 +377,7 @@ lemma cfc_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
   by_cases h : p a ∧ ContinuousOn f (spectrum R a)
   · rw [cfc_apply f a h.1 h.2]
     exact haf h.2 h.1
-  · simp only [not_and_or] at h
-    obtain (h | h) := h
-    · rwa [cfc_apply_of_not_predicate _ h]
-    · rwa [cfc_apply_of_not_continuousOn _ h]
+  · grind
 
 lemma cfc_commute_cfc (f g : R → R) (a : A) : Commute (cfc f a) (cfc g a) := by
   refine cfc_cases (fun x ↦ Commute x (cfc g a)) a f (by simp) fun hf ha ↦ ?_
@@ -419,10 +424,7 @@ lemma cfc_congr {f g : R → R} {a : A} (hfg : (spectrum R a).EqOn f g) :
   · rw [cfc_apply (ha := h.1) (hf := h.2.congr hfg), cfc_apply (ha := h.1) (hf := h.2)]
     congr 2
     exact Set.domRestrict_eq_iff.mpr hfg
-  · obtain (ha | hg) := not_and_or.mp h
-    · simp [cfc_apply_of_not_predicate a ha]
-    · rw [cfc_apply_of_not_continuousOn a hg, cfc_apply_of_not_continuousOn]
-      exact fun hf ↦ hg (hf.congr hfg.symm)
+  · grind [continuousOn_congr hfg]
 
 lemma eqOn_of_cfc_eq_cfc {f g : R → R} {a : A} (h : cfc f a = cfc g a)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
@@ -452,7 +454,7 @@ lemma cfc_const_one : cfc (fun _ : R ↦ 1) a = 1 := cfc_one R a
 lemma cfc_zero : cfc (0 : R → R) a = 0 := by
   by_cases ha : p a
   · exact cfc_apply (0 : R → R) a ▸ map_zero (cfcHom ha)
-  · rw [cfc_apply_of_not_predicate a ha]
+  · grind
 
 @[simp]
 lemma cfc_const_zero : cfc (fun _ : R ↦ 0) a = 0 :=
@@ -466,7 +468,7 @@ lemma cfc_mul (f g : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by 
   by_cases ha : p a
   · rw [cfc_apply f a, cfc_apply g a, ← map_mul, cfc_apply _ a]
     congr
-  · simp [cfc_apply_of_not_predicate a ha]
+  · grind
 
 lemma cfc_pow (f : R → R) (n : ℕ) (a : A)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
@@ -480,7 +482,7 @@ lemma cfc_add (f g : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont
   by_cases ha : p a
   · rw [cfc_apply f a, cfc_apply g a, ← map_add, cfc_apply _ a]
     congr
-  · simp [cfc_apply_of_not_predicate a ha]
+  · grind
 
 lemma cfc_const_add (r : R) (f : R → R) (a : A)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
@@ -509,7 +511,7 @@ lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     congr 1
     ext
     simp
-  · simp [cfc_apply_of_not_predicate a ha]
+  · grind [Finset.sum_eq_zero]
 
 open Finset in
 lemma cfc_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R) (a : A)
@@ -526,7 +528,7 @@ lemma cfc_smul {S : Type*} [SMul S R] [ContinuousConstSMul S R]
     simp_rw [← Pi.smul_def, ← smul_one_smul R s _]
     rw [← map_smul]
     congr
-  · simp [cfc_apply_of_not_predicate a ha]
+  · grind [smul_zero]
 
 lemma cfc_const_mul (r : R) (f : R → R) (a : A)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
@@ -538,10 +540,9 @@ lemma cfc_star (f : R → R) (a : A) : cfc (fun x ↦ star (f x)) a = star (cfc 
   · obtain ⟨ha, hf⟩ := h
     rw [cfc_apply f a, ← map_star, cfc_apply _ a]
     congr
-  · obtain (ha | hf) := not_and_or.mp h
-    · simp [cfc_apply_of_not_predicate a ha]
-    · rw [cfc_apply_of_not_continuousOn a hf, cfc_apply_of_not_continuousOn, star_zero]
-      exact fun hf_star ↦ hf <| by simpa using hf_star.star
+  · have : ContinuousOn f (spectrum R a) ↔ ContinuousOn (fun x ↦ star (f x)) (spectrum R a) :=
+      ⟨fun h ↦ h.star, fun h ↦ by simpa using h.star⟩
+    grind
 
 lemma cfc_pow_id (a : A) (n : ℕ) (ha : p a := by cfc_tac) : cfc (· ^ n : R → R) a = a ^ n := by
   rw [cfc_pow .., cfc_id' ..]
@@ -714,7 +715,7 @@ instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) whe
     · rw [← cfc_star, ← cfc_mul .., ← cfc_mul ..]
       congr! 2
       exact mul_comm _ _
-    · simp [cfc_apply_of_not_continuousOn a h]
+    · grind
 
 -- The following two lemmas are just `cfc_predicate`, but specific enough for the `@[simp]` tag.
 @[simp]
@@ -872,17 +873,15 @@ lemma cfc_sub : cfc (fun x ↦ f x - g x) a = cfc f a - cfc g a := by
   by_cases ha : p a
   · rw [cfc_apply f a, cfc_apply g a, ← map_sub, cfc_apply ..]
     congr
-  · simp [cfc_apply_of_not_predicate a ha]
+  · grind
 
 lemma cfc_neg : cfc (fun x ↦ -(f x)) a = -(cfc f a) := by
   by_cases h : p a ∧ ContinuousOn f (spectrum R a)
   · obtain ⟨ha, hf⟩ := h
     rw [cfc_apply f a, ← map_neg, cfc_apply ..]
     congr
-  · obtain (ha | hf) := not_and_or.mp h
-    · simp [cfc_apply_of_not_predicate a ha]
-    · rw [cfc_apply_of_not_continuousOn a hf, cfc_apply_of_not_continuousOn, neg_zero]
-      exact fun hf_neg ↦ hf <| by simpa using hf_neg.fun_neg
+  · simp_rw [← Pi.neg_def]
+    grind [continuousOn_neg_iff, Pi.neg_def]
 
 lemma cfc_neg' : cfc (-f) = (-cfc f : A → A) := by ext1 a; exact cfc_neg f a
 
@@ -930,7 +929,7 @@ lemma cfc_mono {f g : R → R} {a : A} (h : ∀ x ∈ spectrum R a, f x ≤ g x)
   by_cases ha : p a
   · rw [cfc_apply f a, cfc_apply g a]
     exact cfcHom_mono ha fun x ↦ h x.1 x.2
-  · simp only [cfc_apply_of_not_predicate _ ha, le_rfl]
+  · grind
 
 lemma cfc_nonneg_iff [NonnegSpectrumClass R A] (f : R → R) (a : A)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
@@ -958,13 +957,13 @@ lemma cfc_nonneg {f : R → R} {a : A} (h : ∀ x ∈ spectrum R a, 0 ≤ f x) :
     0 ≤ cfc f a := by
   by_cases hf : ContinuousOn f (spectrum R a)
   · simpa using cfc_mono h
-  · simp only [cfc_apply_of_not_continuousOn _ hf, le_rfl]
+  · grind
 
 lemma cfc_nonpos (f : R → R) (a : A) (h : ∀ x ∈ spectrum R a, f x ≤ 0) :
     cfc f a ≤ 0 := by
   by_cases hf : ContinuousOn f (spectrum R a)
   · simpa using cfc_mono h
-  · simp only [cfc_apply_of_not_continuousOn _ hf, le_rfl]
+  · grind
 
 lemma cfc_le_algebraMap (f : R → R) (r : R) (a : A) (h : ∀ x ∈ spectrum R a, f x ≤ r)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
