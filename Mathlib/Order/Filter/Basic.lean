@@ -1367,7 +1367,7 @@ theorem Set.EqOn.eventuallyEq_of_mem {α β} {s : Set α} {l : Filter α} {f g :
     (hl : s ∈ l) : f =ᶠ[l] g :=
   h.eventuallyEq.filter_mono <| Filter.le_principal_iff.2 hl
 
-lemma HasSubset.Subset.eventuallySubset {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s ≤ᶠ[l] t :=
+lemma LE.le.eventuallySubset {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s ≤ᶠ[l] t :=
   .of_forall h
 
 theorem LE.le.eventuallyLE {α} {l : Filter α} {s t : Set α} (h : s ≤ t) : s ≤ᶠ[l] t :=
