@@ -80,7 +80,7 @@ public section
 
 variable {α β : Type*}
 
-open Filter Set Function
+open Filter Set
 
 namespace Filter
 

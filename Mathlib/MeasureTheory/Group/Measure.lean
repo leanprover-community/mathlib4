@@ -12,7 +12,6 @@ public import Mathlib.MeasureTheory.Group.Pointwise
 public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.ContinuousMap.CocompactMap
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
 # Measures on Groups
@@ -543,7 +542,9 @@ theorem innerRegular_inv_iff : μ.inv.InnerRegular ↔ μ.InnerRegular :=
 
 /-- Continuity of the measure of translates of a compact set: Given a compact set `k` in a
 topological group, for `g` close enough to the origin, `μ (g • k \ k)` is arbitrarily small. -/
-@[to_additive]
+@[to_additive /-- Continuity of the measure of translates of a compact set: Given a compact set `k`
+in an additive topological group, for `g` close enough to the origin, `μ (g +ᵥ k \ k)` is
+arbitrarily small. -/]
 lemma eventually_nhds_one_measure_smul_sdiff_lt [LocallyCompactSpace G]
     [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
     (hk : IsCompact k) (h'k : IsClosed k) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
@@ -564,7 +565,9 @@ alias eventually_nhds_one_measure_smul_diff_lt := eventually_nhds_one_measure_sm
 /-- Continuity of the measure of translates of a compact set:
 Given a closed compact set `k` in a topological group,
 the measure of `g • k \ k` tends to zero as `g` tends to `1`. -/
-@[to_additive]
+@[to_additive /-- Continuity of the measure of translates of a compact set:
+Given a closed compact set `k` in an additive topological group,
+the measure of `g +ᵥ k \ k` tends to zero as `g` tends to `0`. -/]
 lemma tendsto_measure_smul_sdiff_isCompact_isClosed [LocallyCompactSpace G]
     [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
     (hk : IsCompact k) (h'k : IsClosed k) :
@@ -695,7 +698,7 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
     simp_rw [M]
     apply ENNReal.Tendsto.mul_const _ (Or.inl ENNReal.top_ne_zero)
     exact ENNReal.tendsto_nat_nhds_top.comp (tendsto_add_atTop_nat _)
-  simp only [ENNReal.top_mul', K_pos.ne', if_false] at N
+  simp only [ENNReal.top_mul', K_pos.ne', ite_false] at N
   apply top_le_iff.1
   exact le_of_tendsto' N fun n => measure_mono (subset_univ _)
 
@@ -918,20 +921,20 @@ instance prod.instIsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : 
     (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite μ] [SFinite ν]
     [MeasurableMul G] [MeasurableMul H] : IsHaarMeasure (μ.prod ν) where
 
-/-- If the neutral element of a group is not isolated, then a Haar measure on this group has
-no atoms.
+/-- If the neutral element of a group is not isolated, then a Haar measure on this group has value
+zero on singletons.
 
 The additive version of this instance applies in particular to show that an additive Haar
 measure on a nontrivial finite-dimensional real vector space has no atom. -/
 @[to_additive
 /-- If the zero element of an additive group is not isolated, then an additive Haar measure on this
-group has no atoms.
+group has value zero on singletons.
 
 This applies in particular to show that an additive Haar measure on a nontrivial
 finite-dimensional real vector space has no atom. -/]
-instance (priority := 100) IsHaarMeasure.noAtoms [IsTopologicalGroup G] [BorelSpace G] [T1Space G]
-    [WeaklyLocallyCompactSpace G] [(𝓝[≠] (1 : G)).NeBot] (μ : Measure G) [μ.IsHaarMeasure] :
-    NoAtoms μ := by
+instance (priority := 100) IsHaarMeasure.nullSingletonClass [IsTopologicalGroup G] [BorelSpace G]
+    [T1Space G] [WeaklyLocallyCompactSpace G] [(𝓝[≠] (1 : G)).NeBot] (μ : Measure G)
+    [μ.IsHaarMeasure] : NullSingletonClass μ := by
   cases eq_or_ne (μ 1) 0 with
   | inl h => constructor; simpa
   | inr h =>
@@ -939,6 +942,9 @@ instance (priority := 100) IsHaarMeasure.noAtoms [IsTopologicalGroup G] [BorelSp
     have K_inf : Set.Infinite K := infinite_of_mem_nhds (1 : G) K_nhds
     exact absurd (K_inf.meas_eq_top ⟨_, h, fun x _ ↦ (haar_singleton _ _).ge⟩)
       K_compact.measure_lt_top.ne
+
+@[deprecated (since := "2026-06-09")]
+alias IsHaarMeasure.noAtoms := IsHaarMeasure.nullSingletonClass
 
 instance IsAddHaarMeasure.domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
     [MeasurableSpace A] [TopologicalSpace A] [BorelSpace A] [IsTopologicalAddGroup A]

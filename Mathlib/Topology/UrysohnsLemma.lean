@@ -82,7 +82,7 @@ lemmas about `midpoint`.
 Urysohn's lemma, normal topological space, locally compact topological space
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 
 variable {X : Type*} [TopologicalSpace X]
@@ -155,7 +155,7 @@ theorem subset_right_C (c : CU P) : c.C ⊆ c.right.C :=
 
 /-- `n`-th approximation to a continuous function `f : X → ℝ` such that `f = 0` on `c.C` and `f = 1`
 outside of `c.U`. -/
-noncomputable def approx : ℕ → CU P → X → ℝ
+def approx : ℕ → CU P → X → ℝ
   | 0, c, x => indicator c.Uᶜ 1 x
   | n + 1, c, x => midpoint ℝ (approx n c.left x) (approx n c.right x)
 
@@ -237,7 +237,7 @@ theorem approx_mono (c : CU P) (x : X) : Monotone fun n => c.approx n x :=
 * `0 ≤ f x ≤ 1` for all `x`;
 * `f` equals zero on `c.C` and equals one outside of `c.U`;
 -/
-protected noncomputable def lim (c : CU P) (x : X) : ℝ :=
+protected def lim (c : CU P) (x : X) : ℝ :=
   ⨆ n, c.approx n x
 
 theorem tendsto_approx_atTop (c : CU P) (x : X) :
@@ -485,7 +485,7 @@ lemma exists_tsupport_one_of_isOpen_isClosed [R1Space X] {s t : Set X}
   rw [← compl_compl s] at hscp
   obtain ⟨u, v, huIsOpen, hvIsOpen, hscompl_subset_u, ht_subset_v, hDisjointuv⟩ :=
     SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed (isClosed_compl_iff.mpr hs)
-    hscp ht (HasSubset.Subset.disjoint_compl_left hst)
+    hscp ht (LE.le.disjoint_compl_left hst)
   rw [← subset_compl_iff_disjoint_right] at hDisjointuv
   have huvc : closure u ⊆ vᶜ := closure_minimal hDisjointuv hvIsOpen.isClosed_compl
 -- although `sᶜ` is not compact, `closure s` is compact and we can apply
@@ -505,7 +505,7 @@ lemma exists_tsupport_one_of_isOpen_isClosed [R1Space X] {s t : Set X}
       obtain ⟨u1, hu1⟩ := SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed cIsClosed
         (IsCompact.of_isClosed_subset hscp isClosed_closure
         (closure_mono (compl_subset_compl.mpr Pc)))
-        (isClosed_compl_iff.mpr u0IsOpen) (HasSubset.Subset.disjoint_compl_right csubu0)
+        (isClosed_compl_iff.mpr u0IsOpen) (LE.le.disjoint_compl_right csubu0)
       simp_rw [← subset_compl_iff_disjoint_right, compl_subset_comm (s := u0)] at hu1
       obtain ⟨v1, hu1, hv1, hcu1, hv1u, hu1v1⟩ := hu1
       refine ⟨u1, hu1, hcu1, ?_, Pc, (Pc.trans hcu1).trans subset_closure⟩

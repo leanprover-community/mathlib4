@@ -59,7 +59,7 @@ variable {m m₁ m₂ : MeasurableSpace α} {m' : MeasurableSpace β} {f : α �
 
 /-- The forward image of a measurable space under a function. `map f m` contains the sets
   `s : Set β` whose preimage under `f` is measurable. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def map (f : α → β) (m : MeasurableSpace α) : MeasurableSpace β where
   MeasurableSet' s := MeasurableSet[m] <| f ⁻¹' s
   measurableSet_empty := m.measurableSet_empty
@@ -78,7 +78,7 @@ theorem map_comp {f : α → β} {g : β → γ} : (m.map f).map g = m.map (g �
 
 /-- The reverse image of a measurable space under a function. `comap f m` contains the sets
   `s : Set α` such that `s` is the `f`-preimage of a measurable set in `β`. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def comap (f : α → β) (m : MeasurableSpace β) : MeasurableSpace α where
   MeasurableSet' s := ∃ s', MeasurableSet[m] s' ∧ f ⁻¹' s' = s
   measurableSet_empty := ⟨∅, m.measurableSet_empty, rfl⟩
@@ -113,11 +113,13 @@ theorem gc_comap_map (f : α → β) :
 theorem map_mono (h : m₁ ≤ m₂) : m₁.map f ≤ m₂.map f :=
   (gc_comap_map f).monotone_u h
 
+@[gcongr]
 theorem monotone_map : Monotone (MeasurableSpace.map f) := fun _ _ => map_mono
 
 theorem comap_mono (h : m₁ ≤ m₂) : m₁.comap g ≤ m₂.comap g :=
   (gc_comap_map g).monotone_l h
 
+@[gcongr]
 theorem monotone_comap : Monotone (MeasurableSpace.comap g) := fun _ _ h => comap_mono h
 
 @[simp]
@@ -149,6 +151,11 @@ theorem comap_map_le : (m.map f).comap f ≤ m :=
 
 theorem le_map_comap : m ≤ (m.comap g).map g :=
   (gc_comap_map g).le_u_l _
+
+theorem map_comap_eq_of_surjective (hg : Function.Surjective g) : (m.comap g).map g = m := by
+  refine le_antisymm (fun S hS => ?_) le_map_comap
+  rw [map_def, measurableSet_comap] at hS
+  aesop
 
 end Functors
 
@@ -197,6 +204,10 @@ theorem comap_measurable {m : MeasurableSpace β} (f : α → β) : Measurable[m
 lemma measurable_comap_iff {mα : MeasurableSpace α} {mγ : MeasurableSpace γ}
     {f : α → β} {g : β → γ} : Measurable[mα, mγ.comap g] f ↔ Measurable (g ∘ f) := by
   simp [measurable_iff_comap_le]
+
+lemma measurable_comap_iff_right {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} {g : α → β}
+    {f : β → γ} (hg : Function.Surjective g) : Measurable f ↔ Measurable[mβ.comap g] (f ∘ g) := by
+  rw [measurable_iff_le_map, measurable_iff_le_map, ← map_comp, map_comap_eq_of_surjective hg]
 
 theorem Measurable.mono {ma ma' : MeasurableSpace α} {mb mb' : MeasurableSpace β} {f : α → β}
     (hf : @Measurable α β ma mb f) (ha : ma ≤ ma') (hb : mb' ≤ mb) : @Measurable α β ma' mb' f :=

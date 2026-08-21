@@ -31,7 +31,7 @@ measurable. -/
 theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α → β} (u : Filter ι) [NeBot u]
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
     Measurable g := by
-  letI : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
+  let : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
   apply measurable_of_isClosed'
   intro s h1s h2s h3s
   have : Measurable fun x => infNndist (g x) s := by
@@ -103,7 +103,7 @@ theorem measurable_of_tendsto_metrizable_ae {μ : Measure α} [μ.IsComplete] {f
   aemeasurable_iff_measurable.mp
     (aemeasurable_of_tendsto_metrizable_ae' (fun i => (hf i).aemeasurable) h_ae_tendsto)
 
-theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty ι] {μ : Measure α}
+theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Nonempty ι] {μ : Measure α}
     {f : ι → α → β} {L : Filter ι} [L.IsCountablyGenerated] (hf : ∀ n, AEMeasurable (f n) μ)
     (h_ae_tendsto : ∀ᵐ x ∂μ, ∃ l : β, Tendsto (fun n => f n x) L (𝓝 l)) :
     ∃ f_lim : α → β, Measurable f_lim ∧ ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) := by

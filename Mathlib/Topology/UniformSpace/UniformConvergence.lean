@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
@@ -110,6 +111,7 @@ theorem tendstoUniformlyOn_iff_tendsto :
 /-- A sequence of functions `Fₙ` converges uniformly to a limiting function `f` with respect to a
 filter `p` if, for any entourage of the diagonal `u`, one has `p`-eventually
 `(f x, Fₙ x) ∈ u` for all `x`. -/
+@[wikidata Q1411887]
 def TendstoUniformly (F : ι → α → β) (f : α → β) (p : Filter ι) :=
   ∀ u ∈ 𝓤 β, ∀ᶠ n in p, ∀ x : α, (f x, F n x) ∈ u
 
@@ -128,7 +130,7 @@ theorem tendstoUniformlyOn_iff_tendstoUniformly_comp_coe :
   forall₂_congr fun u _ => by simp
 
 lemma tendstoUniformlyOn_iff_restrict {K : Set α} : TendstoUniformlyOn F f p K ↔
-    TendstoUniformly (fun n : ι => K.restrict (F n)) (K.restrict f) p :=
+    TendstoUniformly (fun n : ι => K.domRestrict (F n)) (K.domRestrict f) p :=
   tendstoUniformlyOn_iff_tendstoUniformly_comp_coe
 
 /-- A sequence of functions `Fₙ` converges uniformly to a limiting function `f` w.r.t.
@@ -290,12 +292,12 @@ protected theorem TendstoUniformlyOn.prodMk {ι' β' : Type*} [UniformSpace β']
     (h' : TendstoUniformlyOn F' f' p' s) :
     TendstoUniformlyOn (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a)) (p ×ˢ p')
       s :=
-  (congr_arg _ s.inter_self).mp ((h.prodMap h').comp fun a => (a, a))
+  (congr_arg _ s.inter_self).mp ((h.prodMap h').comp Function.diag)
 
 theorem TendstoUniformly.prodMk {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'} {f' : α → β'}
     {p' : Filter ι'} (h : TendstoUniformly F f p) (h' : TendstoUniformly F' f' p') :
     TendstoUniformly (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a)) (p ×ˢ p') :=
-  (h.prodMap h').comp fun a => (a, a)
+  (h.prodMap h').comp Function.diag
 
 /-- Uniform convergence on a filter `p'` to a constant function is equivalent to convergence in
 `p ×ˢ p'`. -/
@@ -548,7 +550,7 @@ theorem UniformCauchySeqOn.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' 
 theorem UniformCauchySeqOn.prod {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'}
     {p' : Filter ι'} (h : UniformCauchySeqOn F p s) (h' : UniformCauchySeqOn F' p' s) :
     UniformCauchySeqOn (fun (i : ι × ι') a => (F i.fst a, F' i.snd a)) (p ×ˢ p') s :=
-  (congr_arg _ s.inter_self).mp ((h.prodMap h').comp fun a => (a, a))
+  (congr_arg _ s.inter_self).mp ((h.prodMap h').comp Function.diag)
 
 theorem UniformCauchySeqOn.prod' {β' : Type*} [UniformSpace β'] {F' : ι → α → β'}
     (h : UniformCauchySeqOn F p s) (h' : UniformCauchySeqOn F' p s) :

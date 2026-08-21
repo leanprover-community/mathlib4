@@ -87,7 +87,7 @@ variable (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (x : E)
 isometrically isomorphic to the `L²` product of `K` and `Kᗮ`. -/
 @[simps! symm_apply]
 def orthogonalDecomposition : E ≃ₗᵢ[𝕜] WithLp 2 (K × Kᗮ) where
-  __ := (K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection).symm
+  __ := (K.prodEquivOfIsCompl Kᗮ K.isCompl_orthogonal).symm
     ≪≫ₗ (WithLp.linearEquiv 2 𝕜 (K × Kᗮ)).symm
   norm_map' _ := by
     rw [← sq_eq_sq₀ (by positivity) (by positivity), WithLp.prod_norm_sq_eq_of_L2,
@@ -102,14 +102,14 @@ theorem orthogonalDecomposition_apply :
 
 theorem toLinearEquiv_orthogonalDecomposition :
     K.orthogonalDecomposition.toLinearEquiv =
-      (K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection).symm ≪≫ₗ
+      (K.prodEquivOfIsCompl Kᗮ K.isCompl_orthogonal).symm ≪≫ₗ
         (WithLp.linearEquiv 2 𝕜 (K × Kᗮ)).symm :=
   rfl
 
 theorem toLinearEquiv_orthogonalDecomposition_symm :
     K.orthogonalDecomposition.symm.toLinearEquiv =
       WithLp.linearEquiv 2 𝕜 (K × Kᗮ) ≪≫ₗ
-        K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection :=
+        K.prodEquivOfIsCompl Kᗮ K.isCompl_orthogonal :=
   rfl
 
 theorem coe_orthogonalDecomposition :
@@ -142,9 +142,9 @@ theorem sndL_comp_coe_orthogonalDecomposition :
 /-- If a subspace `K` of an inner product space `E` admits an orthogonal projection, then the
 quotient `E ⧸ K` is isometrically isomorphic to the orthogonal complement `Kᗮ` of `K`. -/
 def quotientEquivOrthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ where
-  __ := K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection
+  __ := K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal
   norm_map' y := by
-    set f := K.quotientEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection
+    set f := K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal
     rw [coe_norm, ← norm_orthogonalProjectionOnto_apply Kᗮ (f y).2,
       orthogonalProjectionOnto_orthogonal, coe_norm, starProjection_minimal, eq_comm]
     have h : ‖Quotient.mk (f y).val‖ = sInf ((fun (x : E) ↦ ‖(f y).val + x‖) '' K.toAddSubgroup) :=
@@ -156,26 +156,22 @@ def quotientEquivOrthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ where
 
 @[simp]
 theorem coe_quotientEquivOrthogonal :
-    ⇑K.quotientEquivOrthogonal =
-      K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection :=
+    ⇑K.quotientEquivOrthogonal = K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal :=
   rfl
 
 @[simp]
 theorem coe_quotientEquivOrthogonal_symm :
-    ⇑K.quotientEquivOrthogonal.symm =
-      (K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection).symm :=
+    ⇑K.quotientEquivOrthogonal.symm = (K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal).symm :=
   rfl
 
 @[simp]
 lemma toLinearEquiv_quotientEquivOrthogonal :
-    (quotientEquivOrthogonal K).toLinearEquiv =
-      K.quotientEquivOfIsCompl _ K.isCompl_orthogonal_of_hasOrthogonalProjection :=
+    (quotientEquivOrthogonal K).toLinearEquiv = K.quotientEquivOfIsCompl _ K.isCompl_orthogonal :=
   rfl
 
 theorem quotientEquivOrthogonal_mk (x : E) (hx : x ∈ Kᗮ) :
     K.quotientEquivOrthogonal (Quotient.mk x) = ⟨x, hx⟩ := by
-  simp [← K.quotientEquivOfIsCompl_apply_mk_right
-    K.isCompl_orthogonal_of_hasOrthogonalProjection ⟨x, hx⟩]
+  simp [← K.quotientEquivOfIsCompl_apply_mk_right K.isCompl_orthogonal ⟨x, hx⟩]
 
 theorem quotientEquivOrthogonal_symm_eq_mk (x : E) (hx : x ∈ Kᗮ) :
     K.quotientEquivOrthogonal.symm ⟨x, hx⟩ = Quotient.mk x := by

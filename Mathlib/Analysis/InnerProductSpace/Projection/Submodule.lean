@@ -47,7 +47,7 @@ theorem sup_orthogonal_inf_of_hasOrthogonalProjection {K₁ K₂ : Submodule �
 variable {K} in
 /-- If `K` admits an orthogonal projection, then `K` and `Kᗮ` span the whole space. -/
 theorem sup_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection] : K ⊔ Kᗮ = ⊤ := by
-  convert! Submodule.sup_orthogonal_inf_of_hasOrthogonalProjection (le_top : K ≤ ⊤) using 2
+  convert Submodule.sup_orthogonal_inf_of_hasOrthogonalProjection (le_top : K ≤ ⊤)
   simp
 
 /-- If `K` admits an orthogonal projection, then the orthogonal complement of its orthogonal
@@ -87,15 +87,15 @@ of all elements equal to zero. Then `Kᗮ = ⊥`, `Kᗮᗮ = ⊤`. -/
 theorem orthogonal_orthogonal_eq_closure [CompleteSpace E] :
     Kᗮᗮ = K.topologicalClosure := by
   refine le_antisymm ?_ ?_
-  · convert! Submodule.orthogonal_orthogonal_monotone K.le_topologicalClosure using 1
+  · convert Submodule.orthogonal_orthogonal_monotone K.le_topologicalClosure
     rw [K.topologicalClosure.orthogonal_orthogonal]
   · exact K.topologicalClosure_minimal K.le_orthogonal_orthogonal Kᗮ.isClosed_orthogonal
 
 variable {K}
 
-/-- If `K` admits an orthogonal projection, `K` and `Kᗮ` are complements of each other. -/
+@[deprecated isCompl_orthogonal (since := "2026-05-07")]
 theorem isCompl_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection] : IsCompl K Kᗮ :=
-  ⟨K.orthogonal_disjoint, codisjoint_iff.2 Submodule.sup_orthogonal_of_hasOrthogonalProjection⟩
+  K.isCompl_orthogonal
 
 @[simp]
 theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [K.HasOrthogonalProjection]
@@ -110,7 +110,7 @@ theorem orthogonal_eq_bot_iff [K.HasOrthogonalProjection] : Kᗮ = ⊥ ↔ K = �
   have : K ⊔ Kᗮ = ⊤ := Submodule.sup_orthogonal_of_hasOrthogonalProjection
   rwa [h, sup_comm, bot_sup_eq] at this
 
-open Topology Finsupp RCLike Real Filter
+open Topology RCLike Real Filter
 
 /-- Given a monotone family `U` of complete submodules of `E` and a fixed `x : E`,
 the orthogonal projection of `x` on `U i` tends to the orthogonal projection of `x` on
@@ -167,46 +167,26 @@ theorem topologicalClosure_eq_top_iff [CompleteSpace E] :
   · rw [h, Submodule.bot_orthogonal_eq_top]
 
 theorem orthogonalProjectionOnto_apply_eq_projectionOnto [K.HasOrthogonalProjection] (x : E) :
-    K.orthogonalProjectionOnto x =
-      K.projectionOnto _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection x := by
-  have : IsCompl K Kᗮ := Submodule.isCompl_orthogonal_of_hasOrthogonalProjection
-  conv_lhs => rw [← projection_add_projection_eq_self this x]
-  simp_rw [projection_apply]
-  rw [map_add, orthogonalProjectionOnto_mem_subspace_eq_self,
-    orthogonalProjectionOnto_apply_of_mem_orthogonal (Submodule.coe_mem _), add_zero]
+    K.orthogonalProjectionOnto x = K.projectionOnto _ K.isCompl_orthogonal x := rfl
 
 @[deprecated (since := "2026-05-05")]
 alias orthogonalProjection_apply_eq_linearProjOfIsCompl :=
   orthogonalProjectionOnto_apply_eq_projectionOnto
 
-@[deprecated (since := "2025-12-26")] alias orthogonalProjection_eq_linearProjOfIsCompl :=
-  orthogonalProjectionOnto_apply_eq_projectionOnto
-
 theorem toLinearMap_orthogonalProjectionOnto_eq_projectionOnto [K.HasOrthogonalProjection] :
-    (K.orthogonalProjectionOnto : E →ₗ[𝕜] K) =
-      K.projectionOnto _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection :=
-  LinearMap.ext orthogonalProjectionOnto_apply_eq_projectionOnto
+    (K.orthogonalProjectionOnto : E →ₗ[𝕜] K) = K.projectionOnto _ K.isCompl_orthogonal := rfl
 
 @[deprecated (since := "2026-05-05")]
 alias toLinearMap_orthogonalProjection_eq_linearProjOfIsCompl :=
   toLinearMap_orthogonalProjectionOnto_eq_projectionOnto
 
-@[deprecated (since := "2025-12-26")] alias orthogonalProjection_coe_eq_linearProjOfIsCompl :=
-  toLinearMap_orthogonalProjectionOnto_eq_projectionOnto
-
 open Submodule in
 theorem toLinearMap_starProjection_eq_isComplProjection [K.HasOrthogonalProjection] :
-    K.starProjection.toLinearMap =
-      K.projection Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection := by
-  simp [starProjection, toLinearMap_orthogonalProjectionOnto_eq_projectionOnto, projection]
-
-@[deprecated (since := "2025-12-26")] alias starProjection_coe_eq_isCompl_projection :=
-  toLinearMap_starProjection_eq_isComplProjection
+    K.starProjection.toLinearMap = K.projection Kᗮ K.isCompl_orthogonal := rfl
 
 open Submodule in
 theorem starProjection_apply_eq_isComplProjection [K.HasOrthogonalProjection] (x : E) :
-    K.starProjection x = K.projection Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection x :=
-  congr($toLinearMap_starProjection_eq_isComplProjection x)
+    K.starProjection x = K.projection Kᗮ K.isCompl_orthogonal x := rfl
 
 end Submodule
 

@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
-public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 public import Mathlib.MeasureTheory.Measure.AEDisjoint
 
 /-!
@@ -97,6 +96,10 @@ def NullMeasurableSet [MeasurableSpace α] (s : Set α)
 theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasurableSet s μ :=
   h.eventuallyMeasurableSet
 
+theorem _root_.MeasureTheory.nullMeasurableSet_iff_eventuallyMeasurableSet (s : Set α) :
+    NullMeasurableSet s μ ↔ EventuallyMeasurableSet m0 (ae μ) s :=
+  Iff.rfl
+
 theorem nullMeasurableSet_empty : NullMeasurableSet ∅ μ :=
   MeasurableSet.empty
 
@@ -122,9 +125,9 @@ theorem compl_iff : NullMeasurableSet sᶜ μ ↔ NullMeasurableSet s μ :=
 theorem of_subsingleton [Subsingleton α] : NullMeasurableSet s μ :=
   Subsingleton.measurableSet
 
-set_option backward.isDefEq.respectTransparency false in
-protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ :=
-  EventuallyMeasurableSet.congr hs h.symm
+protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ := by
+  rw [nullMeasurableSet_iff_eventuallyMeasurableSet]
+  exact EventuallyMeasurableSet.congr hs h.symm
 
 @[measurability]
 protected theorem iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
@@ -202,7 +205,7 @@ theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
     simpa only [union_empty] using hst.symm.union this
 
 theorem toMeasurable_ae_eq (h : NullMeasurableSet s μ) : toMeasurable μ s =ᵐ[μ] s := by
-  rw [toMeasurable_def, dif_pos]
+  rw [toMeasurable_def, dite_eq_left]
   exact (exists_measurable_superset_ae_eq h).choose_spec.2.2
 
 theorem compl_toMeasurable_compl_ae_eq (h : NullMeasurableSet s μ) : (toMeasurable μ sᶜ)ᶜ =ᵐ[μ] s :=
@@ -255,7 +258,7 @@ theorem measure_iUnion₀ [Countable ι] {f : ι → Set α} (hd : Pairwise (AED
 theorem measure_union₀_aux (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
     (hd : AEDisjoint μ s t) : μ (s ∪ t) = μ s + μ t := by
   rw [union_eq_iUnion, measure_iUnion₀, tsum_fintype, Fintype.sum_bool, cond, cond]
-  exacts [(pairwise_on_bool AEDisjoint.symmetric).2 hd, fun b => Bool.casesOn b ht hs]
+  exacts [pairwise_on_bool.mpr hd, fun b ↦ Bool.casesOn b ht hs]
 
 /-- A null measurable set `t` is Carathéodory measurable: for any `s`, we have
 `μ (s ∩ t) + μ (s \ t) = μ s`. -/
@@ -379,7 +382,7 @@ end
 
 section NullMeasurable
 
-variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {μ : Measure α}
+variable [m : MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {μ : Measure α}
 
 /-- A function `f : α → β` is null measurable if the preimage of a measurable set is a null
 measurable set.
@@ -389,6 +392,9 @@ the σ-algebra on the codomain is countably generated, but stronger in general. 
 def NullMeasurable (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∀ ⦃s : Set β⦄, MeasurableSet s → NullMeasurableSet (f ⁻¹' s) μ
 
+theorem _root_.MeasureTheory.nullMeasurable_iff_eventuallyMeasurable (f : α → β) :
+    NullMeasurable f μ ↔ EventuallyMeasurable m (ae μ) f := by rfl
+
 protected theorem _root_.Measurable.nullMeasurable (h : Measurable f) : NullMeasurable f μ :=
   h.eventuallyMeasurable
 
@@ -396,17 +402,31 @@ protected theorem NullMeasurable.measurable' (h : NullMeasurable f μ) :
     @Measurable (NullMeasurableSpace α μ) β _ _ f :=
   h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Measurable.comp_nullMeasurable {g : β → γ} (hg : Measurable g) (hf : NullMeasurable f μ) :
-    NullMeasurable (g ∘ f) μ :=
-  hg.comp_eventuallyMeasurable hf
+    NullMeasurable (g ∘ f) μ := by
+  rw [nullMeasurable_iff_eventuallyMeasurable]
+  exact hg.comp_eventuallyMeasurable hf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem NullMeasurable.congr {g : α → β} (hf : NullMeasurable f μ) (hg : f =ᵐ[μ] g) :
-    NullMeasurable g μ :=
-  EventuallyMeasurable.congr hf hg.symm
+    NullMeasurable g μ := by
+  rw [nullMeasurable_iff_eventuallyMeasurable]
+  exact EventuallyMeasurable.congr hf hg.symm
 
 end NullMeasurable
+
+section AEMeasurable
+
+variable {m : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α} {f : α → β}
+
+protected theorem _root_.AEMeasurable.nullMeasurable (h : AEMeasurable f μ) :
+    NullMeasurable f μ :=
+  let ⟨_g, hgm, hg⟩ := h; hgm.nullMeasurable.congr hg.symm
+
+theorem _root_.AEMeasurable.nullMeasurableSet_preimage {s : Set β} (hf : AEMeasurable f μ)
+    (hs : MeasurableSet s) : NullMeasurableSet (f ⁻¹' s) μ :=
+  hf.nullMeasurable hs
+
+end AEMeasurable
 
 section IsComplete
 
@@ -417,7 +437,7 @@ section IsComplete
 class Measure.IsComplete {_ : MeasurableSpace α} (μ : Measure α) : Prop where
   out' : ∀ s, μ s = 0 → MeasurableSet s
 
-variable {m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
+variable {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
 
 theorem Measure.isComplete_iff : μ.IsComplete ↔ ∀ s, μ s = 0 → MeasurableSet s :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩

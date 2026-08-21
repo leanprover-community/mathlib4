@@ -7,7 +7,6 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
-public meta import Lean.Linter.Basic
 public meta import Lean.Elab.AssertExists
 public import Lean.Message
 
@@ -284,6 +283,11 @@ outside `Mathlib/Algebra/Notation.lean`.
 def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra),
   (`Mathlib, `Mathlib.Deprecated),
+  -- Files in `Wanted` look like theorems but have no proofs (`proof_wanted`), so importing them
+  -- is banned everywhere: they may import from `Mathlib`, never the other way around.
+  (`Mathlib, `Wanted),
+  (`Archive, `Wanted),
+  (`Counterexamples, `Wanted),
 
   -- This is used to test the linter.
   (`MathlibTest.Header, `Mathlib.Deprecated),
@@ -617,6 +621,7 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Analysis.Convex.SimplicialComplex.AffineIndependentUnion, `Mathlib.AlgebraicTopology),
   (`Mathlib.Probability.Kernel.Category, `Mathlib.CategoryTheory), -- For the category of s-finite/Markov kernels
   (`Mathlib.RepresentationTheory.Continuous, `Mathlib.Topology), -- For continuous representations
+  (`Mathlib.RepresentationTheory.Homological.ContCohomology, `Mathlib.Topology),  -- For continuous cohomology
   -- TODO: think about the role of Analysis and Algebra, and perhaps further separation
   (`Mathlib.Algebra.Order.Archimedean.Real, `Mathlib.Analysis),
   (`Mathlib.Algebra.Star.CHSH, `Mathlib.Analysis),
