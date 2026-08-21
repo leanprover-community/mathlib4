@@ -80,6 +80,11 @@ def eLpNormEssSup (f : α → ε) (μ : Measure α) :=
 lemma eLpNormEssSup_eq_essSup_enorm (f : α → ε) (μ : Measure α) :
     eLpNormEssSup f μ = essSup (‖f ·‖ₑ) μ := rfl
 
+@[simp]
+lemma eLpNormEssSup_dirac [MeasurableSingletonClass α] (f : α → ε) (a : α) :
+    eLpNormEssSup f (Measure.dirac a) = ‖f a‖ₑ := by
+  simp [eLpNormEssSup]
+
 /-- `ℒp` seminorm, equal to `0` for `p=0`, to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to
 `essSup ‖f‖ μ` for `p = ∞`. -/
 def eLpNorm {_ : MeasurableSpace α}
