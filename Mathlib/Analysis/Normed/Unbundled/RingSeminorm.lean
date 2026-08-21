@@ -242,6 +242,10 @@ instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
 
 theorem toFun_eq_coe (p : RingNorm R) : p.toFun = p := rfl
 
+@[simp]
+theorem toRingSeminorm_apply (p : RingNorm R) (x : R) : p.toRingSeminorm x = p x :=
+  rfl
+
 @[ext]
 theorem ext {p q : RingNorm R} : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
