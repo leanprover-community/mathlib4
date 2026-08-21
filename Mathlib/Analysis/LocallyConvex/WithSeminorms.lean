@@ -1074,36 +1074,36 @@ lemma Topology.IsInducing.withSeminorms {q : SeminormFamily 𝕜₂ F ι}
   rw [hf.eq_induced]
   exact f.withSeminorms_induced hq
 
-theorem Topology.IsInducing.polynormableSpace [PolynormableSpace 𝕜₂ F]
-    [TopologicalSpace E] {f : E →ₛₗ[σ₁₂] F} (hf : IsInducing f) :
-    PolynormableSpace 𝕜 E :=
-  hf.withSeminorms (PolynormableSpace.withSeminorms 𝕜₂ F) |>.toPolynormableSpace
-
 theorem Topology.IsInducing.isNormableSpace [h : IsNormableSpace 𝕜₂ F]
     [TopologicalSpace E] {f : E →ₛₗ[σ₁₂] F} (hf : IsInducing f) :
     IsNormableSpace 𝕜 E := by
   rcases h.withSeminorms' with ⟨p, hp⟩
   exact ⟨p.comp f, hf.withSeminorms hp⟩
 
-instance [PolynormableSpace 𝕜₂ F] {S : Submodule 𝕜₂ F} :
-    PolynormableSpace 𝕜₂ S :=
-  IsInducing.polynormableSpace (f := S.subtype) .subtypeVal
+theorem Topology.IsInducing.polynormableSpace [PolynormableSpace 𝕜₂ F]
+    [TopologicalSpace E] {f : E →ₛₗ[σ₁₂] F} (hf : IsInducing f) :
+    PolynormableSpace 𝕜 E :=
+  hf.withSeminorms (PolynormableSpace.withSeminorms 𝕜₂ F) |>.toPolynormableSpace
 
 instance [IsNormableSpace 𝕜₂ F] {S : Submodule 𝕜₂ F} :
     IsNormableSpace 𝕜₂ S :=
   IsInducing.isNormableSpace (f := S.subtype) .subtypeVal
 
+instance [PolynormableSpace 𝕜₂ F] {S : Submodule 𝕜₂ F} :
+    PolynormableSpace 𝕜₂ S :=
+  IsInducing.polynormableSpace (f := S.subtype) .subtypeVal
+
 theorem ContinuousLinearEquiv.isNormableSpace {σ₂₁ : 𝕜₂ →+* 𝕜}
-    [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] [h : IsNormableSpace 𝕜₂ F]
+    [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] [IsNormableSpace 𝕜₂ F]
     [TopologicalSpace E] (f : E ≃SL[σ₁₂] F) :
     IsNormableSpace 𝕜 E :=
-  (f.toHomeomorph.isInducing ).isNormableSpace
+  f.toHomeomorph.isInducing.isNormableSpace
 
 theorem ContinuousLinearEquiv.PolynormableSpace {σ₂₁ : 𝕜₂ →+* 𝕜}
-    [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] [h : PolynormableSpace 𝕜₂ F]
+    [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] [PolynormableSpace 𝕜₂ F]
     [TopologicalSpace E] (f : E ≃SL[σ₁₂] F) :
     PolynormableSpace 𝕜 E :=
-  (f.toHomeomorph.isInducing ).polynormableSpace
+  f.toHomeomorph.isInducing.polynormableSpace
 
 section NontriviallyNormedField
 
