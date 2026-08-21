@@ -188,7 +188,7 @@ def mk (a : M) : MulArchimedeanClass M := toAntisymmetrization _ (MulArchimedean
 
 @[to_additive]
 theorem mk_eq_mk' {a b : M} : mk a = mk b ↔ MulArchimedeanOrder.of a ≤ MulArchimedeanOrder.of b ∧
-    MulArchimedeanOrder.of a ≥ MulArchimedeanOrder.of b :=
+    MulArchimedeanOrder.of b ≤ MulArchimedeanOrder.of a :=
   toAntisymmetrization_eq (· ≤ ·) (MulArchimedeanOrder.of a) (MulArchimedeanOrder.of b)
 
 /-- An induction principle for `MulArchimedeanClass`. -/
@@ -838,47 +838,25 @@ theorem coe_congrOrderIso_apply (e : MulArchimedeanClass M ≃o MulArchimedeanCl
 theorem congrOrderIso_symm (e : MulArchimedeanClass M ≃o MulArchimedeanClass N) :
     (congrOrderIso e).symm = congrOrderIso e.symm := rfl
 
-/--
-The upper set in `MulArchimedeanClass M` consisting of an upper set in
-`FiniteMulArchimedeanClass M` plus `⊤`. It is upgraded into `OrderEmbedding` in
-`FiniteMulArchimedeanClass.toUpperSetMulArchimedeanClass`.
-Do not use this definition directly.
--/
-@[to_additive (attr := simp) /--
-The upper set in `ArchimedeanClass M` consisting of an upper set in
-`FiniteArchimedeanClass M` plus `⊤`. It is upgraded into `OrderEmbedding` in
-`FiniteArchimedeanClass.toUpperSetArchimedeanClass`.
-Do not use this definition directly. -/]
-noncomputable abbrev toUpperSetMulArchimedeanClassAux (s : UpperSet (FiniteMulArchimedeanClass M)) :
-    UpperSet (MulArchimedeanClass M) where
-  carrier := {a | ∀ h : a ≠ ⊤, ⟨a, h⟩ ∈ s}
-  upper' a b le mem ne := s.upper (a := ⟨a, ne_top_of_le_ne_top ne le⟩) (b := ⟨b, ne⟩) le
-    (mem <| ne_top_of_le_ne_top ne le)
-
-@[to_additive]
-lemma strictMono_toUpperSetMulArchimedeanClassAux :
-    StrictMono (toUpperSetMulArchimedeanClassAux (M := M)) := by
-  intro s t lt
-  simp_rw [lt_iff_le_not_ge] at lt ⊢
-  constructor
-  · simpa [← SetLike.mem_coe] using! fun a ha1 ha2 ↦ Set.mem_of_subset_of_mem lt.1 (ha1 ha2)
-  · intro hst
-    apply lt.2
-    simp only [toUpperSetMulArchimedeanClassAux, ne_eq, ← SetLike.mem_coe, UpperSet.mk_le_mk,
-      ge_iff_le, Set.ofPred_subset_ofPred] at hst
-    rw [← UpperSet.coe_subset_coe] at lt ⊢
-    intro ⟨x, hx⟩ mem
-    apply Set.mem_of_subset_of_mem (s₁ := s) ?_ mem
-    rw [Set.subset_def]
-    exact fun x hx => hst x.1 (fun _ ↦ hx) x.2
-
 /-- The upper set in `MulArchimedeanClass M` consisting of an upper set in
 `FiniteMulArchimedeanClass M` plus `⊤`. -/
 @[to_additive /-- The upper set in `ArchimedeanClass M` consisting of an upper set in
 `FiniteArchimedeanClass M` plus `⊤`. -/]
 noncomputable def toUpperSetMulArchimedeanClass :
     UpperSet (FiniteMulArchimedeanClass M) ↪o UpperSet (MulArchimedeanClass M) :=
-  .ofStrictMono (toUpperSetMulArchimedeanClassAux) strictMono_toUpperSetMulArchimedeanClassAux
+  .ofStrictMono (fun s ↦
+    { carrier := {a | ∀ h : a ≠ ⊤, ⟨a, h⟩ ∈ s}
+      upper' _ _ le mem ne := s.upper le (mem <| ne_top_of_le_ne_top ne le)})
+  fun s t lt ↦ by
+    simp only [lt_iff_le_not_ge, ne_eq, ← SetLike.mem_coe, ← UpperSet.coe_subset_coe,
+      UpperSet.coe_mk, Set.subset_def] at lt ⊢
+    exact ⟨fun a ha1 ha2 ↦ lt.1 _ (ha1 ha2),
+      fun hst ↦ (lt.2 fun ⟨x, hx⟩ mem ↦ hst x (fun _ ↦ mem) _)⟩
+
+@[to_additive (attr := simp)]
+theorem mem_toUpperSetMulArchimedeanClass {s : UpperSet (FiniteMulArchimedeanClass M)}
+    {a : MulArchimedeanClass M} :
+    a ∈ toUpperSetMulArchimedeanClass s ↔ ∀ h : a ≠ ⊤, ⟨a, h⟩ ∈ s := Iff.rfl
 
 /-- The `MulArchimedeanClass.subsemigroup` associated to an upper set in
 `FiniteMulArchimedeanClass M` is a subgroup. -/
@@ -899,8 +877,7 @@ theorem subsemigroup_eq_subgroup :
 variable (M) in
 @[to_additive (attr := simp)]
 theorem subgroup_eq_bot : subgroup (M := M) ⊤ = ⊥ := by
-  ext
-  simp [subgroup, MulArchimedeanClass.subsemigroup, toUpperSetMulArchimedeanClass]
+  ext; simp [subgroup, MulArchimedeanClass.subsemigroup]
 
 @[to_additive (attr := simp)]
 theorem mem_subgroup_iff : a ∈ subgroup s ↔ ∀ h : a ≠ 1, mk a h ∈ s := by
