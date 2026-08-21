@@ -79,9 +79,10 @@ theorem mem_tail_of_count_ge_two {x : α} {l : List α} (h : 2 ≤ l.count x) : 
 theorem exists_pos_get_of_dropLast_count_ge_two {l : List α} {x : α}
     (h : 2 ≤ l.dropLast.count x) :
     ∃ (i : Nat) (hi : i < l.length), 0 < i ∧ i < l.length - 1 ∧ l.get ⟨i, hi⟩ = x := by
-  match l with
-  | [] | [_] => simp at h
-  | _ :: _ :: _ => grind
+  obtain ⟨j, hj, hjx⟩ := getElem_of_mem (mem_tail_of_count_ge_two h)
+  rw [length_tail, length_dropLast] at hj
+  refine ⟨j + 1, by omega, Nat.succ_pos _, by omega, ?_⟩
+  rw [get_eq_getElem, ← hjx, getElem_tail, getElem_dropLast]
 
 end decidableCount
 
