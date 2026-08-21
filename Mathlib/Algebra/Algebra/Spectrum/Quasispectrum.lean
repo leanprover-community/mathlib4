@@ -287,10 +287,25 @@ lemma NonUnitalAlgHom.quasispectrum_apply_subset' {F R : Type*} (S : Type*) {A B
 /-- If `φ` is non-unital algebra homomorphism over a scalar ring `R`, then
 `quasispectrum R (φ a) ⊆ quasispectrum R a`. -/
 lemma NonUnitalAlgHom.quasispectrum_apply_subset {F R A B : Type*}
-    [CommRing R] [NonUnitalRing A] [NonUnitalRing B] [Module R A] [Module R B]
+    [CommSemiring R] [NonUnitalRing A] [NonUnitalRing B] [Module R A] [Module R B]
     [FunLike F A B] [NonUnitalAlgHomClass F R A B] (φ : F) (a : A) :
     quasispectrum R (φ a) ⊆ quasispectrum R a :=
   NonUnitalAlgHom.quasispectrum_apply_subset' R φ a
+
+@[simp]
+lemma AlgEquiv.quasispectrum_eq {F R A B : Type*} [CommSemiring R] [NonUnitalRing A]
+    [NonUnitalRing B] [Module R A] [Module R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
+    (f : F) (a : A) : quasispectrum R (f a) = quasispectrum R a := by
+  /- the `Star` material is here because `AlgEquiv` only exists for unital algebras,
+  and we have no `NonUnitalAlgEquiv` type, so we use `StarAlgEquiv` instead because that allows
+  for non-unital algebras -/
+  let : Star A := ⟨id⟩
+  let : Star B := ⟨id⟩
+  have : StarHomClass F A B := ⟨fun _ _ ↦ rfl⟩
+  let e := StarAlgEquivClass.toStarAlgEquiv f
+  apply subset_antisymm
+  · exact NonUnitalAlgHom.quasispectrum_apply_subset' R e a
+  · simpa using! NonUnitalAlgHom.quasispectrum_apply_subset' R e.symm (e a)
 
 @[simp]
 lemma quasispectrum.coe_zero [Nontrivial R] (a : A) : (0 : quasispectrum R a) = (0 : R) := rfl
