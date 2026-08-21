@@ -18,7 +18,8 @@ Let `F₁ : C₁ ⥤ D` and `F₂ : C₂ ⥤ D` be `κ`-accessible functors betw
 objects (a property which holds for a well chosen regular cardinal `κ` according to
 the uniformization theorem, see the file
 `Mathlib/CategoryTheory/Presentable/Uniformization.lean`), we show that
-the comma category `Comma F₁ F₂` is also `κ`-accessible.
+the comma category `Comma F₁ F₂` is also `κ`-accessible (see the instance
+`Comma.isCardinalAccessibleCategory`).
 
 The key point in the technical proof is that if `f : Comma F₁ F₂`, then `f`
 is the `κ`-filtered colimit (indexed by a category denoted `J κ f` here) of the
@@ -96,7 +97,12 @@ lemma isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
     have := Functor.preservesColimitsOfShape_of_isCardinalAccessible F₁ κ J
     have := Functor.preservesColimitsOfShape_of_isCardinalAccessible F₂ κ J
     refine ⟨fun g ↦ ?_, fun j f₁ f₂ hf ↦ ?_⟩
-    · obtain ⟨j, f₁, f₂, hf₁, hf₂⟩ :
+    · /- We need to show that any morphism `g : Comma.mk _ _ f ⟶ c.pt`
+      lifts as a morphism `Comma.mk _ _ f ⟶ G.obj j` for a suitable `j`.
+      By using that `X₁` and `X₂` are `κ`-presentable, we start by lifting
+      the maps `g.left` and `g.right` as `f₁ : X₁ ⟶ (G.obj j).left` and
+      `f₂ : X₂ ⟶ (G.obj j).right`. -/
+      obtain ⟨j, f₁, f₂, hf₁, hf₂⟩ :
           ∃ (j : J) (f₁ : X₁ ⟶ (G.obj j).left) (f₂ : X₂ ⟶ (G.obj j).right),
             f₁ ≫ (c.ι.app j).left = g.left ∧ f₂ ≫ (c.ι.app j).right = g.right := by
         obtain ⟨j₁, f₁, hf₁⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
@@ -108,6 +114,9 @@ lemma isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
           f₂ ≫ (G.map (rightToMax j₁ j₂)).right, ?_, ?_⟩
         · rw [Category.assoc, ← hf₁, ← Comma.comp_left, Cocone.w]
         · rw [Category.assoc, ← hf₂, ← Comma.comp_right, Cocone.w]
+      /- Replacing `j` by a "larger" `j'` (i.e. using a morphism `j ⟶ j'`),
+      we may obtain a commutative square. This uses that `F₁.obj X₁`
+      is `κ`-presentable. -/
       obtain ⟨j', a, ha⟩ := IsCardinalPresentable.exists_eq_of_isColimit'
         κ (isColimitOfPreserves (snd _ _ ⋙ F₂) hc)
         (F₁.map f₁ ≫ (G.obj j).hom) (f ≫ F₂.map f₂) (by
@@ -118,15 +127,18 @@ lemma isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
       refine ⟨j', { left := f₁ ≫ (G.map a).left, right := f₂ ≫ (G.map a).right }, ?_⟩
       ext
       · dsimp
-        simp[← hf₁, ← Comma.comp_left]
+        simp [← hf₁, ← Comma.comp_left]
       · dsimp
         simp [← hf₂, ← Comma.comp_right]
-    · obtain ⟨j₁, a, ha⟩ := IsCardinalPresentable.exists_eq_of_isColimit'
-        κ (isColimitOfPreserves (fst _ _) hc) f₁.left f₂.left
-          ((fst _ _).congr_map hf)
-      obtain ⟨j₂, b, hb⟩ := IsCardinalPresentable.exists_eq_of_isColimit'
-        κ (isColimitOfPreserves (snd _ _) hc) f₁.right f₂.right
-          ((snd _ _).congr_map hf)
+    · /- We need to show that two morphisms `f₁` and `f₂` in `Comma.mk _ _ f ⟶ G.obj j`
+      which become equal after postcomposing with `G.obj j ⟶ c.pt` also become equal
+      after postcomposing with `G.obj j ⟶ G.obj j'` for a suitable map `j ⟶ j'`.
+      The proof proceeds by considering separately the left and the right parts
+      of these morphisms in the comma category. -/
+      obtain ⟨j₁, a, ha⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ
+        (isColimitOfPreserves (fst _ _) hc) f₁.left f₂.left ((fst _ _).congr_map hf)
+      obtain ⟨j₂, b, hb⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ
+        (isColimitOfPreserves (snd _ _) hc) f₁.right f₂.right ((snd _ _).congr_map hf)
       dsimp at ha hb
       obtain ⟨j', a', b', h⟩ := IsFiltered.span a b
       refine ⟨j', a ≫ a', ?_⟩
@@ -309,9 +321,17 @@ open IsCardinalFiltered in
 private instance : IsCardinalFiltered (J κ f) κ := by
   rw [isCardinalFiltered_iff']
   refine ⟨fun ι j hι ↦ ?_, fun ι j k g hι hι' ↦ ?_⟩
-  · obtain ⟨j₁, ⟨a₁⟩⟩ := IsCardinalFiltered.exists_max (fun i ↦ (j i).fst) hι
+  · /- Given a family of objects `j : ι → J κ f` with `ι` of cardinality `< κ`,
+    we need to find an object `k : J κ f`, such that for any `i : ι`,
+    there exists a morphism `j i ⟶ k`. We first use that `J₁ κ f` and `J₂ κ f`
+    are `κ`-filtered in order to find `j₁` and `j₂`, and using `exists_of_j₁_of_j₂'`,
+    we obtain a morphism `c : F₁.obj j₁.left.obj ⟶ F₂.obj j₂'.left.obj` which
+    corresponds to an object `J.mk j₁ j₂' c : J κ f` -/
+    obtain ⟨j₁, ⟨a₁⟩⟩ := IsCardinalFiltered.exists_max (fun i ↦ (j i).fst) hι
     obtain ⟨j₂, ⟨a₂⟩⟩ := IsCardinalFiltered.exists_max (fun i ↦ (j i).snd) hι
     obtain ⟨j₂', b, c, h₁⟩ := exists_of_j₁_of_j₂' j₁ j₂
+    /- for each `i : ι`, we find a `j₂'' i : J₂ κ f` such that
+    we have a morphism from `j i` to `J.mk j₁ (j₂'' i) (c ≫ F₂.map (d i).left.hom)`. -/
     choose j₂'' d h₂ using
       fun i ↦ IsCardinalPresentable.exists_eq_of_isColimit' κ
         (isColimitOfPreserves F₂ ((isCardinalPresentable C₂ κ).ι.denseAt f.right))
@@ -324,12 +344,19 @@ private instance : IsCardinalFiltered (J κ f) κ := by
                 dsimp% CostructuredArrow.w (a₂ i), dsimp% (j i).hom.w])
     dsimp at h₁ h₂
     simp only [Category.assoc] at h₂
+    /- Using that `J₂ κ f` is `κ`-filtered, we find `l : J₂ κ f` which is "larger"
+    that `j₂'' i` for any `i : ι`. More precisely, we have morphisms `e i : j₂'' i ⟶ l`
+    such that all the compositions `d i ≫ e i` are equal to the same morphism `g : j₂' ⟶ l`.
+    The object `J.mk j₁ l (c ≫ F₂.map g.left.hom) : J κ f` is the expected object `k`. -/
     obtain ⟨l, e, g, fac⟩ := wideSpan d hι
     refine ⟨J.mk j₁ l (c ≫ F₂.map g.left.hom) ?_, fun i ↦ ⟨?_⟩⟩
     · dsimp
       rw [h₁, Category.assoc, ← Functor.map_comp, dsimp% CostructuredArrow.w g]
     · refine J.homMk (a₁ i) (a₂ i ≫ b ≫ g) (by simp [← fac i, reassoc_of% h₂])
-  · let g₁ (i : ι) := (π₁ κ f).map (g i)
+  · /- Given a family of morphisms `g : ι → (j ⟶ k)` between two objects of `J κ f`,
+    where `ι` is of cardinality `< κ`, we need to find an object `l'` and a morphism
+    `c : k ⟶ l'` such that all the compositions `g i ≫ c` are equal. -/
+    let g₁ (i : ι) := (π₁ κ f).map (g i)
     let g₂ (i : ι) := (π₂ κ f).map (g i)
     obtain ⟨l, a, ⟨b⟩⟩ := exists_of_j₁_of_j₂ (coeq g₁ hι) (coeq g₂ hι)
     obtain ⟨l', c, d, h₁, h₂⟩ := J.exists_hom (coeqHom g₁ hι ≫ a) (coeqHom g₂ hι ≫ b)
@@ -399,7 +426,8 @@ protected lemma isCardinalFilteredGenerator_isCardinalPresentable :
       ⟨_, _, (Comma.isCardinalPresentable F₁ F₂ κ).ι.denseAt f⟩,
     fun g ↦ g.left.property⟩)
 
-instance : IsCardinalAccessibleCategory (Comma F₁ F₂) κ where
+instance isCardinalAccessibleCategory :
+    IsCardinalAccessibleCategory (Comma F₁ F₂) κ where
   exists_generator :=
     ⟨_, inferInstance, Comma.isCardinalFilteredGenerator_isCardinalPresentable.{w} F₁ F₂ κ⟩
 
