@@ -9,7 +9,6 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 public import Mathlib.Analysis.CStarAlgebra.Unitary.Maps
 public import Mathlib.Analysis.Convex.Strict.Extreme
 
-import Mathlib.Analysis.Convex.Strict.Extreme
 import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
