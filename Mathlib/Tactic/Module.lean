@@ -627,7 +627,10 @@ the same processing as `Mathlib.Tactic.Module.postprocess` and then normalizes
 with `ring_nf` if it's applicable. -/
 def normalizeScalar (postCtx : Simp.Context) (e : Expr) : AtomM Simp.Result := do
   let (r, _) ← Simp.main e postCtx (methods := Simp.mkDefaultMethodsCore {})
-  let some r' ← RingNF.evalExpr? r.expr | return r
+  let some r' ← RingNF.evalExpr? r.expr
+    | -- The scalar is an atom for `ring_nf` but it may contain expressions that can be normalized
+      -- by `module_nf`. So run the `module`'s `evalAtom` over it.
+      r.mkEqTrans (← (← read).evalAtom r.expr)
   r.mkEqTrans (← RingNF.cleanup {} r')
 
 /-- Rebuild the reified list `l` as an expression `c₁' • x₁ + (c₂' • x₂ + ... + 0)`

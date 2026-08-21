@@ -228,4 +228,19 @@ example (f : M → R) (x y z : M)
   module_nf with ℤ at h ⊢
   exact h
 
+example {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (f : ℕ → R) (n : ℕ) (y : M)
+    (h : (f (n + n) + 1 - 1) • y = 0) : f (n + n) • y = 0 := by
+  module_nf at *
+  guard_hyp h : f (2 • n) • y = 0
+  guard_target = f (2 • n) • y = 0
+  exact h
+
+example {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (f : M → R) (a b c d: R) (x y : M)
+    (_h1 : (f (a • x + b • x) + 1 - 1) • y = 0)
+    (h2 : f ((c + d) • x) • y = 0) : f (c • x + d • x) • y = 0 := by
+  module_nf at *
+  guard_hyp _h1 : f ((a + b) • x) • y = 0
+  guard_target = f ((c + d) • x) • y = 0
+  exact h2
+
 end CommRing
