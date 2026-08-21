@@ -142,6 +142,32 @@ theorem mkContinuous₂_norm_le (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃]
     (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : ‖f.mkContinuous₂ C hC‖ ≤ C :=
   (f.mkContinuous₂_norm_le' hC).trans_eq <| max_eq_left h0
 
+/-- Given a bilinear map, convert it to a continuous bilinear map if there exists a continuous
+bilinear map which coincides with it.
+This may seem silly: why not use the witness directly? The reason to use this is good
+definitional behavior: in use cases for normable spaces, the witness is constructed by putting a
+norm on the space, so it has a complicated definition which the kernel struggles with, while
+the output of the current definition is definitionally much nicer.
+-/
+def mkContinuous₂OfExists [IsTopologicalAddGroup G'] (f : E' →ₛₗ[σ₁₃] F' →ₛₗ[σ₂₃] G')
+    (hf : ∃ g : E' →SL[σ₁₃] F' →SL[σ₂₃] G', ∀ a b, f a b = g a b) :
+    E' →SL[σ₁₃] F' →SL[σ₂₃] G' where
+  toFun a :=
+    { toFun b := f a b
+      map_add' b b' := by simp
+      map_smul' c b := by simp
+      cont := by
+        rcases hf with ⟨g, hg⟩
+        convert (g a).continuous
+        apply hg }
+  map_add' a a' := by ext; simp
+  map_smul' c a := by ext; simp
+  cont := by
+    rcases hf with ⟨g, hg⟩
+    convert g.continuous
+    apply hg
+
+
 end LinearMap
 
 namespace ContinuousLinearMap
@@ -149,21 +175,29 @@ namespace ContinuousLinearMap
 variable [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃]
   [NormableSpace 𝕜 E'] [IsTopologicalAddGroup G'] [IsTopologicalAddGroup Gₗ']
 
-/-- Flip the order of arguments of a continuous bilinear map.
-For a version bundled as `LinearIsometryEquiv`, see
-`ContinuousLinearMap.flipL`. -/
-def flip (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') : F' →SL[σ₂₃] E' →SL[σ₁₃] G' :=
+/-- Flip the order of arguments of a continuous bilinear map. Linear version.
+Do not use: use instead `flip` which outputs a continuous bilinear map. -/
+def flipₗ (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') : F' →ₛₗ[σ₂₃] E' →ₛₗ[σ₁₃] G' :=
+  LinearMap.mk₂'ₛₗ σ₂₃ σ₁₃ (fun y x => f x y) (fun x y z => (f z).map_add x y)
+      (fun c y x => (f x).map_smulₛₗ c y) (fun z x y => by simp only [f.map_add, add_apply])
+        (fun c y x => by simp only [f.map_smulₛₗ, smul_apply])
+
+lemma exists_eq_flipₗ (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') :
+    ∃ g : F' →SL[σ₂₃] E' →SL[σ₁₃] G', ∀ a b, flipₗ f a b = g a b := by
   let : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
   let : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
   let : SeminormedAddCommGroup F' := NormableSpace.toSeminormedAddCommGroup 𝕜₂ F'
   let : NormedSpace 𝕜₂ F' := NormableSpace.toNormedSpace 𝕜₂ F'
   let : SeminormedAddCommGroup G' := NormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
   let : NormedSpace 𝕜₃ G' := NormableSpace.toNormedSpace 𝕜₃ G'
-  LinearMap.mkContinuous₂
-    (LinearMap.mk₂'ₛₗ σ₂₃ σ₁₃ (fun y x => f x y) (fun x y z => (f z).map_add x y)
-      (fun c y x => (f x).map_smulₛₗ c y) (fun z x y => by simp only [f.map_add, add_apply])
-        (fun c y x => by simp only [f.map_smulₛₗ, smul_apply]))
-    ‖f‖ fun y x => (f.le_opNorm₂ x y).trans_eq <| by simp only [mul_right_comm]
+  exact ⟨LinearMap.mkContinuous₂ (flipₗ f)
+    ‖f‖ fun y x => (f.le_opNorm₂ x y).trans_eq <| by simp only [mul_right_comm], fun a b ↦ rfl⟩
+
+/-- Flip the order of arguments of a continuous bilinear map.
+For a version bundled as `LinearIsometryEquiv`, see
+`ContinuousLinearMap.flipL`. -/
+def flip (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') : F' →SL[σ₂₃] E' →SL[σ₁₃] G' :=
+  (flipₗ f).mkContinuous₂OfExists (exists_eq_flipₗ f)
 
 private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
   f.opNorm_le_bound₂ (norm_nonneg f.flip) fun x y => by
@@ -283,31 +317,31 @@ theorem apply_apply (v : E') (f : E' →L[𝕜] Fₗ') : apply 𝕜 Fₗ' v f = 
 
 variable (σ₁₂ σ₂₃ E F G E' F' G')
 
-/-- Composition of continuous semilinear maps as a continuous semibilinear map.
-Do not use: use instead the version `compSL` which works on normable spaces. -/
-def compSLOfNormedSpace : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
-  LinearMap.mkContinuous₂
-    (LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add fun c f g => by
-      ext
-      simp only [map_smulₛₗ, comp_apply, smul_apply])
-    1 fun f g => by simpa only [one_mul] using! opNorm_comp_le f g
+/-- Composition of continuous semilinear maps as a semibilinear map.
+Do not use: use instead the version `compSL` which outputs a continuous semibilinear map. -/
+def compSLₗ : (F' →SL[σ₂₃] G') →ₗ[𝕜₃] (E' →SL[σ₁₂] F') →ₛₗ[σ₂₃] E' →SL[σ₁₃] G' :=
+  LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add
+    fun c f g => by ext; simp only [map_smulₛₗ, comp_apply, smul_apply]
 
-/-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
-def compSL : (F' →SL[σ₂₃] G') →L[𝕜₃] (E' →SL[σ₁₂] F') →SL[σ₂₃] E' →SL[σ₁₃] G' :=
+lemma exists_eq_compSLₗ :
+    ∃ g : (F' →SL[σ₂₃] G') →L[𝕜₃] (E' →SL[σ₁₂] F') →SL[σ₂₃] E' →SL[σ₁₃] G',
+      ∀ a b, compSLₗ E' F' G' σ₁₂ σ₂₃ a b = g a b := by
   let : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
   let : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
   let : SeminormedAddCommGroup F' := NormableSpace.toSeminormedAddCommGroup 𝕜₂ F'
   let : NormedSpace 𝕜₂ F' := NormableSpace.toNormedSpace 𝕜₂ F'
   let : SeminormedAddCommGroup G' := NormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
   let : NormedSpace 𝕜₃ G' := NormableSpace.toNormedSpace 𝕜₃ G'
-  compSLOfNormedSpace E' F' G' σ₁₂ σ₂₃
+  exact ⟨LinearMap.mkContinuous₂ (compSLₗ E' F' G' σ₁₂ σ₂₃) 1
+    fun f g => by simpa only [one_mul] using! opNorm_comp_le f g, fun a b ↦ rfl⟩
 
-theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 := by
-  have : ‖compSLOfNormedSpace E F G σ₁₂ σ₂₃‖ ≤ 1 :=
-    LinearMap.mkContinuous₂_norm_le _ zero_le_one _
-  convert this
-  ext
-  rfl
+/-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
+def compSL : (F' →SL[σ₂₃] G') →L[𝕜₃] (E' →SL[σ₁₂] F') →SL[σ₂₃] E' →SL[σ₁₃] G' :=
+  (compSLₗ E' F' G' σ₁₂ σ₂₃).mkContinuous₂OfExists (exists_eq_compSLₗ E' F' G' σ₁₂ σ₂₃)
+
+theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
+  ContinuousLinearMap.opNorm_le_bound₂ _ zero_le_one
+    fun f g => by simpa only [one_mul] using! opNorm_comp_le f g
 
 variable {σ₁₂ σ₂₃ E F G E' F' G'}
 
@@ -452,36 +486,41 @@ theorem nnnorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight
 @[simp] theorem nnnorm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_toSpanSingleton _
 
-variable (𝕜 E Fₗ) in
-/-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
-`smulRightLOfNormedSpace (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`.
-*Do not use*: use instead `smulRightL` which works for normable spaces. -/
-def smulRightLOfNormedSpace : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ :=
-  LinearMap.mkContinuous₂
-    { toFun := smulRightₗ
-      map_add' := fun c₁ c₂ => by
-        ext x
-        simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
-      map_smul' := fun m c => by
-        ext x
-        simp [smul_smul] }
-    1 fun c x => by
-      simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
-        le_refl]
+variable [IsTopologicalAddGroup Fₗ']
+variable (𝕜 E' Fₗ')
 
-variable (𝕜 E' Fₗ') in
+/-- `ContinuousLinearMap.smulRight` as a trilinear map:
+`smulRightLₗ (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`.
+Do not use: use instead `smulRightL` which outputs a continuous trilinear map. -/
+@[simps! apply_apply]
+def smulRightLₗ : StrongDual 𝕜 E' →ₗ[𝕜] Fₗ' →ₗ[𝕜] E' →L[𝕜] Fₗ' where
+  toFun := smulRightₗ
+  map_add' := fun c₁ c₂ => by
+    ext x
+    simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
+  map_smul' := fun m c => by
+    ext x
+    simp [smul_smul]
+
+lemma exists_eq_smulRightLₗ :
+    ∃ g : StrongDual 𝕜 E' →L[𝕜] Fₗ' →L[𝕜] E' →L[𝕜] Fₗ',
+      ∀ a b, smulRightLₗ 𝕜 E' Fₗ' a b = g a b := by
+  let : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
+  let : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
+  let : SeminormedAddCommGroup Fₗ' := NormableSpace.toSeminormedAddCommGroup 𝕜 Fₗ'
+  let : NormedSpace 𝕜 Fₗ' := NormableSpace.toNormedSpace 𝕜 Fₗ'
+  exact ⟨LinearMap.mkContinuous₂ (smulRightLₗ 𝕜 E' Fₗ') 1
+    fun c x => by simp only [smulRightLₗ, coe_smulRightₗ, one_mul, norm_smulRight_apply,
+      LinearMap.coe_mk, AddHom.coe_mk, le_refl], fun a b ↦ rfl⟩
+
 /-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
 `smulRightL (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`.
 
 This is also known as a rank-one operator.
 See also `InnerProductSpace.rankOne` for the rank-one operator on Hilbert spaces. -/
 @[simps! apply_apply]
-def smulRightL [IsTopologicalAddGroup Fₗ'] : StrongDual 𝕜 E' →L[𝕜] Fₗ' →L[𝕜] E' →L[𝕜] Fₗ' :=
-  let : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
-  let : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
-  let : SeminormedAddCommGroup Fₗ' := NormableSpace.toSeminormedAddCommGroup 𝕜 Fₗ'
-  let : NormedSpace 𝕜 Fₗ' := NormableSpace.toNormedSpace 𝕜 Fₗ'
-  smulRightLOfNormedSpace 𝕜 E' Fₗ'
+def smulRightL : StrongDual 𝕜 E' →L[𝕜] Fₗ' →L[𝕜] E' →L[𝕜] Fₗ' :=
+  (smulRightLₗ 𝕜 E' Fₗ').mkContinuous₂OfExists (exists_eq_smulRightLₗ 𝕜 E' Fₗ')
 
 end ContinuousLinearMap
 

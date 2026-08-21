@@ -784,6 +784,9 @@ theorem deriv_fourier
   ext x
   exact (hasDerivAt_fourier hf hf' x).deriv
 
+
+#check LinearMap.toSpanSingleton
+
 /-- The Fourier integral of the Fréchet derivative of a function is obtained by multiplying the
 Fourier integral of the original function by `2πI x`. -/
 theorem fourier_deriv
@@ -791,11 +794,20 @@ theorem fourier_deriv
     𝓕 (deriv f) = fun (x : ℝ) ↦ (2 * π * I * x) • (𝓕 f x) := by
   ext x
   have I : Integrable (fun x ↦ fderiv ℝ f x) := by
-    simpa only [← toSpanSingleton_deriv] using!
-      (ContinuousLinearMap.smulRightL ℝ ℝ E 1).integrable_comp hf'
+    have W := (ContinuousLinearMap.smulRightL ℝ ℝ E 1).integrable_comp hf'
+    simp at W
+    simp [← toSpanSingleton_deriv]
+    -- convert W using 1
+    sorry
   have : 𝓕 (deriv f) x = 𝓕 (fderiv ℝ f) x 1 := by
     simp only [fourier_continuousLinearMap_apply I, fderiv_apply_one_eq_deriv]
   rw [this, fourier_fderiv hf h'f I]
+  simp only [fourierSMulRight_apply, neg_apply, innerSL_apply_apply ℝ, smul_smul,
+    RCLike.inner_apply', conj_trivial, mul_one, neg_smul, smul_neg, neg_neg, neg_mul, ← coe_smul]
+
+#exit
+
+  simp
   simp only [fourierSMulRight_apply, neg_apply, innerSL_apply_apply ℝ, smul_smul,
     RCLike.inner_apply', conj_trivial, mul_one, neg_smul, smul_neg, neg_neg, neg_mul, ← coe_smul]
 
