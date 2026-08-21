@@ -217,9 +217,7 @@ theorem _root_.WithTop.isSuccPrelimit_coe_iff {α} [LT α] {x : α} :
   simp [IsSuccPrelimit, WithTop.forall]
 
 @[to_dual]
-theorem IsSuccPrelimit.withTopCoe {α} [LT α] {x : α} (h : IsSuccPrelimit x) :
-    IsSuccPrelimit (x : WithTop α) :=
-  WithTop.isSuccPrelimit_coe_iff.mpr h
+alias ⟨_, IsSuccPrelimit.withTopCoe⟩ := WithTop.isSuccPrelimit_coe_iff
 
 @[to_dual (attr := simp)]
 theorem _root_.WithTop.isSuccPrelimit_top {α} [LT α] [NoMaxOrder α] :
@@ -247,9 +245,7 @@ theorem _root_.WithTop.isSuccLimit_coe_iff {x : α} :
   simp [isSuccLimit_iff]
 
 @[to_dual]
-theorem IsSuccLimit.withTopCoe {x : α} (h : IsSuccLimit x) :
-    IsSuccLimit (x : WithTop α) :=
-  WithTop.isSuccLimit_coe_iff.mpr h
+alias ⟨_, IsSuccLimit.withTopCoe⟩ := WithTop.isSuccLimit_coe_iff
 
 @[to_dual]
 theorem _root_.WithTop.isSuccLimit_top [Nonempty α] [NoMaxOrder α] :
@@ -269,8 +265,7 @@ theorem _root_.WithTop.isPredLimit_coe_iff {x : α} :
   simp [WithTop.isPredPrelimit_iff, isPredLimit_iff, WithTop.exists]
 
 @[to_dual]
-theorem IsPredLimit.withTopCoe {x : α} (h : IsPredLimit x) : IsPredLimit (x : WithTop α) :=
-  WithTop.isPredLimit_coe_iff.mpr h
+alias ⟨_, IsPredLimit.withTopCoe⟩ := WithTop.isPredLimit_coe_iff
 
 @[to_dual]
 theorem _root_.WithTop.isPredLimit_iff {x : WithTop α} :
