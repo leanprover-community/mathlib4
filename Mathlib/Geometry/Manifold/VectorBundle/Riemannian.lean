@@ -268,3 +268,14 @@ instance (g : ContMDiffRiemannianMetric IB n F E) :
 end Construction
 
 end Bundle
+
+section
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+
+instance [FiniteDimensional ℝ E] {x : M} : CompleteSpace (TangentSpace I x) :=
+  FiniteDimensional.complete ℝ _
+
+end

@@ -303,12 +303,6 @@ theorem tensorialAt_leviCivitaAuxInner₃
       inner_add_left, inner_add_right]
     ring
 
--- TODO move!
-instance : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
-
--- TODO move!
-instance : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
-
 /-- Almost the function underlying our construction of the Levi-Civita connection:
 this is the desired `(1,1)`-tensor, but without considerations to the junk value when
 applied to non-differentiable vector fields. -/
