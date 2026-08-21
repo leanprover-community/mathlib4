@@ -23,6 +23,7 @@ In this file, we prove uniqueness of power-multiplicative norms over complete no
 
 open IntermediateField
 
+-- todo: drop `Nontrivially` (power-multiplicative on algebraic extension of trivially normed field implies trivial)
 variable {K L : Type*} [NontriviallyNormedField K] [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
 
 def AlgebraNorm.copy (_f : AlgebraNorm K L) (x : L) : Type _ := K⟮x⟯
