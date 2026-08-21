@@ -353,11 +353,19 @@ def succOrderEmb (n : ℕ) : Fin n ↪o Fin (n + 1) := .ofStrictMono succ strict
 @[simps! apply toEmbedding]
 def castLEOrderEmb (h : n ≤ m) : Fin n ↪o Fin m := .ofStrictMono (castLE h) (strictMono_castLE h)
 
+@[simp]
+theorem coe_castLEOrderEmb (h : n ≤ m) : castLEOrderEmb h = castLE h :=
+  rfl
+
 /-- `Fin.castAdd` as an `OrderEmbedding`.
 
 `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAddEmb` and `Fin.addNatEmb`. -/
 @[simps! apply toEmbedding]
 def castAddOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (castAdd m) (strictMono_castAdd m)
+
+@[simp]
+theorem coe_castAddOrderEmb (m : ℕ) : (castAddOrderEmb m : Fin n → _) = castAdd m :=
+  rfl
 
 /-- `Fin.castSucc` as an `OrderEmbedding`.
 
@@ -365,11 +373,19 @@ def castAddOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (castAdd m) (s
 @[simps! apply toEmbedding]
 def castSuccOrderEmb : Fin n ↪o Fin (n + 1) := .ofStrictMono castSucc strictMono_castSucc
 
+@[simp]
+theorem coe_castSuccOrderEmb : (castSuccOrderEmb : Fin n → _) = castSucc :=
+  rfl
+
 /-- `Fin.addNat` as an `OrderEmbedding`.
 
 `addNatOrderEmb m i` adds `m` to `i`, generalizes `Fin.succ`. -/
 @[simps! apply toEmbedding]
 def addNatOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (addNat · m) (strictMono_addNat m)
+
+@[simp]
+theorem coe_addNatOrderEmb (m : ℕ) : (addNatOrderEmb m : Fin n → _) = (addNat · m) :=
+  rfl
 
 /-- `Fin.natAdd` as an `OrderEmbedding`.
 
@@ -377,10 +393,18 @@ def addNatOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (addNat · m) (
 @[simps! apply toEmbedding]
 def natAddOrderEmb (n) : Fin m ↪o Fin (n + m) := .ofStrictMono (natAdd n) (strictMono_natAdd n)
 
+@[simp]
+theorem coe_natAddOrderEmb (n : ℕ) : (natAddOrderEmb n : Fin m → _) = natAdd n :=
+  rfl
+
 /-- `Fin.succAbove p` as an `OrderEmbedding`. -/
 @[simps! apply toEmbedding]
 def succAboveOrderEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
   OrderEmbedding.ofStrictMono (succAbove p) (strictMono_succAbove p)
+
+@[simp]
+theorem coe_succAboveOrderEmb (p : Fin (n + 1)) : succAboveOrderEmb p = succAbove p :=
+  rfl
 
 @[simp]
 lemma range_succAboveOrderEmb {n : ℕ} (i : Fin (n + 1)) :
