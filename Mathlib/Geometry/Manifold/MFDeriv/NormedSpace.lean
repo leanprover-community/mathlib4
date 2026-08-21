@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-! # Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces
@@ -614,13 +613,29 @@ variable {f : E → E'} {s : Set E} {x : E}
 @[simp]
 theorem mvfderivWithin_eq_fderivWithin :
     d[s] f x = fderivWithin 𝕜 f s x := by
-  convert! mfderivWithin_eq_fderivWithin (f := f) (s := s) (x := x)
+  by_cases h : MDiffAt[s] f x
+  · simp [mvfderivWithin, mfderivWithin, h, chartAt_self_eq]
+    rfl
+  · simp only [mvfderivWithin, mfderivWithin, h]
+    rw [mdifferentiableWithinAt_iff_differentiableWithinAt] at h
+    exact (fderivWithin_zero_of_not_differentiableWithinAt h).symm
 
 /-- For maps between vector spaces, `mvfderiv` and `fderiv` coincide -/
 @[simp]
-theorem mvfderiv_eq_fderiv :
-    d% f x = fderiv 𝕜 f x := by
-  convert! mfderiv_eq_fderiv (f := f) (x := x)
+theorem mvfderiv_eq_fderiv : d% f x = fderiv 𝕜 f x := by
+  rw [← mvfderivWithin_univ, ← fderivWithin_univ, mvfderivWithin_eq_fderivWithin]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- For maps between vector spaces, `mfderivWithin` and `fderivWithin` coincide -/
+@[simp]
+theorem mfderivWithin_eq_fderivWithin : mfderiv[s] f x = fderivWithin 𝕜 f s x := by
+  convert! mvfderivWithin_eq_fderivWithin
+
+
+/-- For maps between vector spaces, `mfderiv` and `fderiv` coincide -/
+@[simp]
+theorem mfderiv_eq_fderiv : mfderiv% f x = fderiv 𝕜 f x := by
+  convert! mvfderiv_eq_fderiv
 
 end
 
