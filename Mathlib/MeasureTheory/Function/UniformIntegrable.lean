@@ -297,7 +297,10 @@ protected theorem UnifLpTail.restrict (h : UnifLpTail f p μ) (s : Set α) :
 theorem unifLpTail_top_iff (hf : ∀ i, AEStronglyMeasurable (f i) μ) :
     UnifLpTail f ∞ μ ↔ ⨆ i, eLpNormEssSup (f i) μ < ∞ := by
   constructor <;> intro h
-  · obtain ⟨M, hM, hMf⟩ := (nhds_top_basis_Ici.tendsto_iff nhds_zero_basis_Iic).1 h 1 zero_lt_one
+  · -- Direct implication: if `eLpNormEssSup (f i) (μ.restrict { x | M ≤ ‖f i x‖ₑ })` converges to
+    -- `0`, then is smaller than `1` at some point. But then, `f i` is
+    -- bounded by `1` on  `{ x | M ≤ ‖f i x‖ₑ }`, and by `M` on `{ x | M ≤ ‖f i x‖ₑ }ᶜ`.
+    obtain ⟨M, hM, hMf⟩ := (nhds_top_basis_Ici.tendsto_iff nhds_zero_basis_Iic).1 h 1 zero_lt_one
     simp only [mem_Ici, eLpNorm_exponent_top, mem_Iic, iSup_le_iff] at hMf
     apply iSup_lt_iff.2 ⟨max M 1, by finiteness, fun i ↦ eLpNormEssSup_le_of_ae_enorm_bound ?_⟩
     have key := ae_le_eLpNormEssSup (f := f i) (μ := μ.restrict { x | M ≤ ‖f i x‖ₑ })
@@ -306,7 +309,9 @@ theorem unifLpTail_top_iff (hf : ∀ i, AEStronglyMeasurable (f i) μ) :
     simp only [le_max_iff, or_iff_not_imp_left]
     filter_upwards [key] with x hx hxM
     exact (hx (not_le.1 hxM).le).trans (hMf M le_rfl i)
-  · apply EventuallyEq.tendsto (_root_.nhds_top_basis.eventually_iff.2 _)
+  · -- Indirect implication: if `M` is larger than `⨆ i, eLpNormEssSup (f i) μ`, then
+    -- `eLpNormEssSup (f i) (μ.restrict { x | M ≤ ‖f i x‖ₑ }) = 0`.
+    apply EventuallyEq.tendsto (_root_.nhds_top_basis.eventually_iff.2 _)
     refine ⟨⨆ i, eLpNormEssSup (f i) μ, h, fun m hm ↦ ?_⟩
     simp only [eLpNorm_exponent_top, iSup_eq_zero, eLpNormEssSup_eq_zero_iff]
     intro i
@@ -938,7 +943,6 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
 theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, StronglyMeasurable (f i))
     (hfu : UniformIntegrable f p μ) {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ C : ℝ≥0, ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ε := by
-  --obtain ⟨M, hMf, hM⟩ := exists_between hfu.bdd
   obtain ⟨δ, hδpos, hδ⟩ := (unifIntegrable_iff.1 hfu.unifIntegrable) ε hε
   obtain ⟨C, hC⟩ : ∃ C : ℝ≥0, ∀ i, μ { x | C ≤ ‖f i x‖₊ } ≤ δ := by
     by_contra! hcon
