@@ -59,7 +59,8 @@ lemma triangle_equality_of_norm_eq_perron_root
     _ = (A *ᵥ x_abs) i := by rw [h_x_abs_eig]
     _ = ∑ j, A i j * x_abs j := by simp [mulVec_apply]
     _ = ∑ j, ‖(A i j : ℂ) * x j‖ := by
-        simp_rw [x_abs, norm_mul, norm_ofReal, abs_of_nonneg (hA_nonneg _ _)]
+        simp_rw [x_abs, norm_mul, Complex.norm_real, Real.norm_eq_abs,
+          abs_of_nonneg (hA_nonneg _ _)]
 
 /-- `(A *ᵥ |x|) i` is positive when `|x|` is a Perron eigenvector. -/
 lemma mulVec_x_abs_pos_of_irreducible {A : Matrix n n ℝ} (hA_irred : A.IsIrreducible)
@@ -102,7 +103,8 @@ lemma sum_s_ne_zero_of_triangle_eq {A : Matrix n n ℝ} (hA_irred : A.IsIrreduci
   have h_norm_s_zero : ‖∑ j, (A i j : ℂ) * x j‖ = 0 := by rw [hs_zero]; exact norm_zero
   have h_sum_norm_zero : ∑ j, ‖(A i j : ℂ) * x j‖ = 0 := h_triangle_eq i ▸ h_norm_s_zero
   have h_sum_A_x_abs_zero : ∑ j, A i j * x_abs j = 0 := by
-    simpa [norm_mul, norm_ofReal, abs_of_nonneg (hA_nonneg _ _)] using h_sum_norm_zero
+    simpa [norm_mul, Complex.norm_real, Real.norm_eq_abs,
+      abs_of_nonneg (hA_nonneg _ _)] using h_sum_norm_zero
   have h_Ax_abs_i_zero : (A *ᵥ x_abs) i = 0 := by simpa [mulVec_apply]
   have h_pos := mulVec_x_abs_pos_of_irreducible hA_irred (fun _ => norm_nonneg _) h_x_abs_eig
       hx_abs_ne_zero i
@@ -134,7 +136,8 @@ lemma aligned_neighbors_of_triangle_eq {A : Matrix n n ℝ} (hA_irred : A.IsIrre
   have hs_ne_zero : s ≠ 0 :=
     sum_s_ne_zero_of_triangle_eq hA_irred hA_nonneg h_triangle_eq h_x_abs_eig hx_ne_zero k
   have h_aligned_with_sum : ∀ l', z l' ≠ 0 → z l' / ↑‖z l'‖ = s / ↑‖s‖ := fun l' hz =>
-    Complex.aligned_of_triangle_eq rfl (h_triangle_eq k) hs_ne_zero l' (by simp) hz
+    Complex.aligned_of_pairwise_sameRay
+      (norm_sum_eq_iff_pairwise_sameRay.1 (h_triangle_eq k)) (by simp) hz
   have h_zl_ne_zero : z l ≠ 0 := by
     apply term_ne_zero_of_pos_entry hAkl_pos
     exact norm_pos_iff.mp (h_x_abs_pos l)
@@ -144,9 +147,9 @@ lemma aligned_neighbors_of_triangle_eq {A : Matrix n n ℝ} (hA_irred : A.IsIrre
   have h_align_l := h_aligned_with_sum l h_zl_ne_zero
   have h_align_m := h_aligned_with_sum m h_zm_ne_zero
   have h_xl_aligned : x l / ↑‖x l‖ = z l / ↑‖z l‖ := by
-    exact (Complex.aligned_of_mul_of_real_pos hAkl_pos rfl (norm_pos_iff.mp (h_x_abs_pos l))).symm
+    exact (Complex.aligned_of_mul_of_real_pos hAkl_pos (norm_pos_iff.mp (h_x_abs_pos l))).symm
   have h_xm_aligned : x m / ↑‖x m‖ = z m / ↑‖z m‖ := by
-    exact (Complex.aligned_of_mul_of_real_pos hAkm_pos rfl (norm_pos_iff.mp (h_x_abs_pos m))).symm
+    exact (Complex.aligned_of_mul_of_real_pos hAkm_pos (norm_pos_iff.mp (h_x_abs_pos m))).symm
   rw [h_xl_aligned, h_xm_aligned, h_align_l, h_align_m]
 
 lemma aligned_term_of_triangle_eq {ι : Type*} {s : Finset ι} {v : ι → ℂ}
@@ -168,8 +171,8 @@ lemma aligned_term_of_triangle_eq {ι : Type*} {s : Finset ι} {v : ι → ℂ}
       exact le_antisymm h_sum_ge_single h_single_nonneg
     have h_vj_zero : ‖v j‖ = 0 := h_all_zero j h_j
     exact h_vj_ne_zero (norm_eq_zero.mp h_vj_zero)
-  have h_aligned := Complex.aligned_of_triangle_eq rfl h_sum h_sum_ne_zero j h_j h_vj_ne_zero
-  exact h_aligned
+  exact Complex.aligned_of_pairwise_sameRay
+    (norm_sum_eq_iff_pairwise_sameRay.1 h_sum) h_j h_vj_ne_zero
 
 /-- `|x|` is strictly positive for a primitive matrix eigenpair at the Perron root. -/
 lemma eigenvector_norm_pos_of_primitive_and_norm_eq_perron_root
@@ -236,7 +239,7 @@ lemma component_phase_alignment
     (hx_abs_pos : 0 < ‖x i‖) :
     x i / ‖x i‖ = ((A ^ k) m i : ℂ) * x i / ‖((A ^ k) m i : ℂ) * x i‖ := by
   have h_ne : x i ≠ 0 := norm_pos_iff.mp hx_abs_pos
-  exact (Complex.aligned_of_mul_of_real_pos hAk_pos rfl h_ne).symm
+  exact (Complex.aligned_of_mul_of_real_pos hAk_pos h_ne).symm
 
 /-- All components of a primitive eigenvector share the same phase. -/
 lemma entries_share_phase_of_primitive
