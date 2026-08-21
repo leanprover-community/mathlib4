@@ -45,13 +45,13 @@ connection is a `C^n` connection.
 
 * The starting observation to the construction of the Levi-Civita is the Koszul formula, expressing
   a term `⟪∇ X Y, Z⟫` (for differentiable vector fields `X`, `Y` and `Z`) without reference to the
-  Levi-Civita connection. Our construction recovers `∇ X Y` from expressions `⟪∇ X Y, Z⟫` by duality.
-* Our particular duality argument uses a tensoriality argument and the musical isomorphism:
-  the metric `g` induces a map from `(2,0)`-tensors (i.e., a map `T_pM × T_pM → ℝ` at each point)
-  to `(1,1)`-tensors (i.e., a map `T_pM → (T_pM)*` at each point); we apply this to the
-  `(2,0)`-tensor `(X, Z) ↦ ∇ X Y Z p`, to obtain a `(1,1)`-tensor `∇ Y`.
-  This avoids the use of local frames and trivializations (which require auxiliary choices and/or
-  gluing together local constructions).
+  Levi-Civita connection.
+  Our construction recovers `∇ X Y` from expressions `⟪∇ X Y, Z⟫` by duality. We use a tensoriality
+  argument and the musical isomorphism: the metric `g` induces a map from `(2,0)`-tensors
+  (i.e., a map `T_pM × T_pM → ℝ` at each point) to `(1,1)`-tensors (i.e., a map `T_pM → (T_pM)*`
+  at each point); we apply this to the `(2,0)`-tensor `(X, Z) ↦ ∇ X Y Z`, to obtain a `(1,1)`-tensor
+  denoted `∇ Y`. This avoids the use of local frames and trivializations (which require auxiliary
+  choices and/or gluing on local constructions).
 
 ## Tags
 
@@ -266,40 +266,38 @@ section existence
 variable (X Y Z) in
 /-- Auxiliary quantity for the construction of the Levi-Civita connection:
 If `∇` is the Levi-Civita connection on `TM`, this formula will express `⟨∇ X Y, Z⟩`. -/
-noncomputable def leviCivitaAux₀ (x : M) : ℝ :=
+noncomputable def leviCivitaAuxInner (x : M) : ℝ :=
   (d% ⟪Y, Z⟫ x (X x) + d% ⟪Z, X⟫ x (Y x) - d% ⟪X, Y⟫ x (Z x)
   - ⟪Y, VectorField.mlieBracket I X Z⟫ x
   - ⟪Z, VectorField.mlieBracket I Y X⟫ x
   + ⟪X, VectorField.mlieBracket I Z Y⟫ x) / 2
 
-/-- `leviCivitaAux₀` is tensorial with respect to its first argument. -/
-theorem tensorialAt₁_leviCivitaAux₀
-    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {Z : Π x, TangentSpace I x}
-    (hZ : MDiffAt (T% Z) x) :
-    TensorialAt I E (leviCivitaAux₀ I · Y Z x) x where
+/-- `leviCivitaAuxInner` is tensorial with respect to its first argument. -/
+theorem tensorialAt_leviCivitaAuxInner₁
+    (x : M) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    TensorialAt I E (leviCivitaAuxInner I · Y Z x) x where
   smul hf hX := by
-    simp (disch := fun_prop) [leviCivitaAux₀, mvfderiv_fun_mul,
+    simp (disch := fun_prop) [leviCivitaAuxInner, mvfderiv_fun_mul,
       mlieBracket_smul_left, mlieBracket_smul_right,
       inner_add_right, inner_smul_left, inner_smul_right, real_inner_comm]
     ring
   add hX₁ hX₂ := by
-    simp (disch := fun_prop) [leviCivitaAux₀, mlieBracket_add_right, mlieBracket_add_left,
+    simp (disch := fun_prop) [leviCivitaAuxInner, mlieBracket_add_right, mlieBracket_add_left,
       mvfderiv_fun_add, inner_add_left, inner_add_right]
     ring
 
-/-- `leviCivitaAux₀` is tensorial with respect to its second argument. -/
-theorem tensorialAt₂_leviCivitaAux₀
-    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {X : Π x, TangentSpace I x}
-    (hX : MDiffAt (T% X) x) :
-    TensorialAt I E (leviCivitaAux₀ I X Y · x) x where
+/-- `leviCivitaAuxInner` is tensorial with respect to its second argument. -/
+theorem tensorialAt_leviCivitaAuxInner₂
+    (x : M) (hY : MDiffAt (T% Y) x) (hX : MDiffAt (T% X) x) :
+    TensorialAt I E (leviCivitaAuxInner I X Y · x) x where
   smul hf hZ := by
-    simp (disch := fun_prop) [leviCivitaAux₀,
+    simp (disch := fun_prop) [leviCivitaAuxInner,
       mlieBracket_smul_right, mlieBracket_smul_left,
       mvfderiv_fun_mul,
       inner_smul_left, inner_smul_right, inner_add_right, real_inner_comm]
     ring
   add hZ₁ hZ₂ := by
-    simp (disch := fun_prop) [leviCivitaAux₀,
+    simp (disch := fun_prop) [leviCivitaAuxInner,
       mlieBracket_add_right, mlieBracket_add_left,
       mvfderiv_fun_add,
       inner_add_left, inner_add_right]
@@ -308,8 +306,7 @@ theorem tensorialAt₂_leviCivitaAux₀
 /-- Almost the function underlying our construction of the Levi-Civita connection:
 this is the desired `(1,1)`-tensor, but without considerations to the junk value when
 applied to non-differentiable vector fields. -/
-noncomputable def leviCivitaAux₁
-    {Y : Π x : M, TangentSpace I x} {x : M} (hY : MDiffAt (T% Y) x) :
+noncomputable def leviCivitaAuxOfMDiffAt (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x :=
   -- Use the musical isomorphism to produce a candidate `∇ Y` as a `(1,1)`-tensor
   -- (rather than a `2`-tensor).
@@ -317,42 +314,42 @@ noncomputable def leviCivitaAux₁
   have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
   (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L
     (TensorialAt.mkHom₂ _ (x := x)
-      (fun _Z hZ ↦ tensorialAt₁_leviCivitaAux₀ _ _ hY hZ)
-      (fun _X hX ↦ tensorialAt₂_leviCivitaAux₀ _ _ hY hX))
+      (fun _Z hZ ↦ tensorialAt_leviCivitaAuxInner₁ _ _ hY hZ)
+      (fun _X hX ↦ tensorialAt_leviCivitaAuxInner₂ _ _ hY hX))
 
-theorem leviCivitaAux₁_apply_inner {x : M}
+theorem leviCivitaAuxOfMDiffAt_apply_inner
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    ⟪leviCivitaAux₁ I hY (X x), Z x⟫ = leviCivitaAux₀ I X Y Z x := by
-  unfold leviCivitaAux₁
+    ⟪leviCivitaAuxOfMDiffAt I hY (X x), Z x⟫ = leviCivitaAuxInner I X Y Z x := by
+  unfold leviCivitaAuxOfMDiffAt
   simp [TensorialAt.mkHom₂_apply _ _ hX hZ]
 
 open scoped Classical in
 /-- The function underlying our construction of the Levi-Civita connection on `(M,g)` -/
-noncomputable def leviCivitaConnectionAux
+noncomputable def leviCivitaAux
     (Y : Π x : M, TangentSpace I x) (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x :=
-  if hY : MDiffAt (T% Y) x then leviCivitaAux₁ I hY else 0
+  if hY : MDiffAt (T% Y) x then leviCivitaAuxOfMDiffAt I hY else 0
 
-theorem leviCivitaConnectionAux_apply_inner {x : M}
+theorem leviCivitaAux_apply_inner
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    ⟪leviCivitaConnectionAux I Y x (X x), Z x⟫ = leviCivitaAux₀ I X Y Z x := by
-  simpa [leviCivitaConnectionAux, dif_pos hY] using leviCivitaAux₁_apply_inner I hX hY hZ
+    ⟪leviCivitaAux I Y x (X x), Z x⟫ = leviCivitaAuxInner I X Y Z x := by
+  simpa [leviCivitaAux, dite_eq_left hY] using leviCivitaAuxOfMDiffAt_apply_inner I hX hY hZ
 
-lemma isCovariantDerivativeOn_leviCivitaConnectionAux :
-    IsCovariantDerivativeOn E (leviCivitaConnectionAux I (M := M)) where
+lemma isCovariantDerivativeOn_leviCivitaAux :
+    IsCovariantDerivativeOn E (leviCivitaAux I (M := M)) where
   add {Y Y'} x hY hY' _ := by
     apply injective_eval_mdifferentiableAt_vectorField; ext X hX
     apply injective_inner_mdifferentiableAt_vectorField; ext Z hZ
-    simp (disch := fun_prop) [leviCivitaConnectionAux, dif_pos, TensorialAt.mkHom₂_apply,
-      leviCivitaAux₁, leviCivitaAux₀, mvfderiv_fun_add,
+    simp (disch := fun_prop) [leviCivitaAux, dite_eq_left, TensorialAt.mkHom₂_apply,
+      leviCivitaAuxOfMDiffAt, leviCivitaAuxInner, mvfderiv_fun_add,
       mlieBracket_add_left, mlieBracket_add_right,
       inner_add_left, inner_add_right]
     ring
   leibniz {Y f x} hY hf _ := by
     apply injective_eval_mdifferentiableAt_vectorField; ext X hX
     apply injective_inner_mdifferentiableAt_vectorField; ext Z hZ
-    simp (disch := fun_prop) [leviCivitaConnectionAux, dif_pos, leviCivitaAux₁,
-      TensorialAt.mkHom₂_apply, leviCivitaAux₀, mvfderiv_fun_mul,
+    simp (disch := fun_prop) [leviCivitaAux, dite_eq_left, leviCivitaAuxOfMDiffAt,
+      TensorialAt.mkHom₂_apply, leviCivitaAuxInner, mvfderiv_fun_mul,
       mlieBracket_smul_left, mlieBracket_smul_right,
       inner_add_left, inner_add_right, inner_smul_left, inner_smul_right, real_inner_comm]
     ring
@@ -363,19 +360,19 @@ this is unique up to the value on non-differentiable vector fields.
 If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead. -/
 public noncomputable def leviCivitaConnection :
     CovariantDerivative I E (TangentSpace I : M → Type _) where
-  toFun := leviCivitaConnectionAux I
-  isCovariantDerivativeOnUniv := isCovariantDerivativeOn_leviCivitaConnectionAux I
+  toFun := leviCivitaAux I
+  isCovariantDerivativeOnUniv := isCovariantDerivativeOn_leviCivitaAux I
 
-public theorem leviCivitaConnection_apply_inner {x : M}
+public theorem leviCivitaConnection_apply_inner
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     ⟪leviCivitaConnection I M Y x (X x), Z x⟫ =
       (d% ⟪Y, Z⟫ x (X x) + d% ⟪Z, X⟫ x (Y x) - d% ⟪X, Y⟫ x (Z x)
       - ⟪Y, VectorField.mlieBracket I X Z⟫ x
       - ⟪Z, VectorField.mlieBracket I Y X⟫ x
       + ⟪X, VectorField.mlieBracket I Z Y⟫ x) / 2 :=
-  leviCivitaConnectionAux_apply_inner _ hX hY hZ
+  leviCivitaAux_apply_inner _ hX hY hZ
 
-public theorem leviCivitaConnection_apply_inner_right {x : M}
+public theorem leviCivitaConnection_apply_inner_right
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     ⟪X x, leviCivitaConnection I M Y x (Z x)⟫ =
       (d% ⟪Y, X⟫ x (Z x) + d% ⟪X, Z⟫ x (Y x) - d% ⟪Z, Y⟫ x (X x)
@@ -383,7 +380,7 @@ public theorem leviCivitaConnection_apply_inner_right {x : M}
       - ⟪X, VectorField.mlieBracket I Y Z⟫ x
       + ⟪Z, VectorField.mlieBracket I X Y⟫ x) / 2 := by
   rw [real_inner_comm]
-  exact leviCivitaConnectionAux_apply_inner _ hZ hY hX
+  exact leviCivitaAux_apply_inner _ hZ hY hX
 
 public lemma isMetricCompatible_leviCivitaConnection :
     (leviCivitaConnection I M).IsMetricCompatible (M := M) (V := TangentSpace I) := by
