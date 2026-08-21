@@ -362,26 +362,26 @@ instance : Add (F.Point S) where
 lemma add_eq_eval₂ [UniformSpace R] [DiscreteUniformity R] {x y : F.Point S} :
     (x + y).val = F.toPowerSeries.eval₂ (algebraMap R S) ![x.val, y.val] := by
   obtain rfl := DiscreteUniformity.eq_bot (X := R)
-  letI : UniformSpace R := ⊥
-  haveI : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
+  let : UniformSpace R := ⊥
+  have : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
   exact congrFun (coe_aeval (F.hasEval_point x y)) F.toPowerSeries
 
 instance : AddMonoid (F.Point S) where
   zero_add x := Subtype.ext <| by
-    letI : UniformSpace R := ⊥
+    let : UniformSpace R := ⊥
     rw [add_eq_eval₂, zero_apply, F.zero_add x.prop]
   add_zero x := Subtype.ext <| by
-    letI : UniformSpace R := ⊥
+    let : UniformSpace R := ⊥
     rw [add_eq_eval₂, zero_apply, F.add_zero x.prop]
   nsmul := nsmulRec
   add_assoc x y z := Subtype.ext <| by
-    letI : UniformSpace R := ⊥
+    let : UniformSpace R := ⊥
     simp only [add_eq_eval₂]
     exact F.add_assoc x.prop y.prop z.prop
 
 instance [F.IsComm] : AddCommMonoid (F.Point S) where
   add_comm x y := Subtype.ext <| by
-    letI : UniformSpace R := ⊥
+    let : UniformSpace R := ⊥
     simp [add_eq_eval₂, F.add_comm x.prop y.prop]
 
 end FormalGroup

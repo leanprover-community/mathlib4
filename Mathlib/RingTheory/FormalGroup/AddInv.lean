@@ -17,6 +17,11 @@ such that $F(i(X), X) = F(X, i(X)) = 0$.
 * The power series `addInvX`, which is the additive inverse of `X` under formal group $F$ sense,
 namely, $F(i(X), X) = 0$.
 
+* `FormalGroup.neg_add`: evaluating `addInvX F` at a topologically nilpotent element `a` of a
+complete linearly topologized `R`-algebra `S` gives an additive inverse of `a` for `F`. This
+upgrades `AddMonoid (F.Point S)` to `AddGroup (F.Point S)`, and `AddCommMonoid` to
+`AddCommGroup` when `F` is commutative.
+
 ## References
 * [Hazewinkel, Michiel. «Formal Groups and Applications»]
 
@@ -28,7 +33,7 @@ noncomputable section
 
 namespace FormalGroup
 
-variable {R σ : Type*} [CommRing R] (f g : PowerSeries R) (F : FormalGroup R) (n : ℕ)
+variable {R : Type*} [CommRing R] (F : FormalGroup R) (n : ℕ)
 
 open PowerSeries Finset Fin Finsupp
 
@@ -165,38 +170,56 @@ theorem subst_addInv_eq_zero : F.toPowerSeries.subst ![(addInvX F), X] = 0 := by
   rw [coeff_subst_addInv_trunc _ _ hn, addInv_trunc_aux, coeff_subst_sum_C_addInvAux_mul_X_pow,
     map_zero]
 
-variable (φ : MvPowerSeries σ R)
+section Eval
 
-/-- For any multivariate power series `φ` with zero constant coefficient, `addInv F φ` is the
-additive inverse of `φ` under formal group `F` sense. -/
-def addInv : MvPowerSeries σ R := subst φ (addInvX F)
+variable {S : Type*} [CommRing S] [UniformSpace S] [IsUniformAddGroup S] [IsLinearTopology S S]
+  [CompleteSpace S] [T2Space S] [IsTopologicalRing S]
+  [UniformSpace R] [DiscreteUniformity R] [Algebra R S]
+
+/-- Evaluating `addInvX F` at a topologically nilpotent element `a` of `S` produces an additive
+inverse of `a` for the formal group law `F`. -/
+theorem neg_add {a : S} (ha : IsTopologicallyNilpotent a) :
+    F.toPowerSeries.eval₂ (algebraMap R S) ![eval₂ (algebraMap R S) a (addInvX F), a] = 0 := by
+  have hb : MvPowerSeries.HasEval (fun _ : Unit ↦ a) := ⟨fun _ ↦ ha, by simp⟩
+  calc
+    _ = MvPowerSeries.eval₂ (algebraMap R S) (fun _ : Unit ↦ a)
+          (F.toPowerSeries.subst ![addInvX F, X]) := by
+      rw [MvPowerSeries.eval₂_subst (MvPowerSeries.HasSubst.addInvAux F) hb]
+      congr! 2 with i
+      fin_cases i <;> simp [X, eval₂]
+    _ = 0 := by simp [subst_addInv_eq_zero, ← MvPolynomial.coe_zero]
+
+end Eval
+
+variable (S : Type*) [CommRing S] [UniformSpace S] [IsUniformAddGroup S] [CompleteSpace S]
+  [T2Space S] [IsTopologicalRing S] [IsLinearTopology S S] [Algebra R S]
+
+open WithPiTopology in
+instance : Neg (F.Point S) where
+  neg x :=
+    letI : UniformSpace R := ⊥
+    haveI : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
+    ⟨aeval x.prop (addInvX F), .map (continuous_aeval x.prop)
+      (isTopologicallyNilpotent_of_constantCoeff_zero (constantCoeff_addInvX F))⟩
 
 @[simp]
-theorem addInv_apply : addInv F φ = subst φ (addInvX F) := rfl
+lemma neg_eq_eval₂ [UniformSpace R] [DiscreteUniformity R] {x : F.Point S} :
+    (-x).val = eval₂ (algebraMap R S) x.val (addInvX F) := by
+  obtain rfl := DiscreteUniformity.eq_bot (X := R)
+  let : UniformSpace R := ⊥
+  have : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
+  exact congrFun (coe_aeval x.prop) (addInvX F)
 
-instance : Neg (F.Point σ) where
-  neg f := ⟨F.addInv f.val, MvPowerSeries.isNilpotent_constCoeff_subst_of_isNilpotent_constCoeff
-    f.prop.const (HasSubst.of_constantCoeff_zero' rfl)⟩
-
-@[simp]
-lemma neg_apply {f : F.Point σ} : (-f).val = F.addInv f.val := rfl
-
-/-- For any multivariate power series `φ` with zero constant coefficient, then the additive
-inverse of `φ` (under `F` sense) plus `φ` (under `F` sense) equals zero. -/
-theorem neg_add_cancel (f : F.Point σ) : (-f) + f = 0 := Subtype.ext <| by
-  have h : (0 : MvPowerSeries σ R) = subst f.val (0 : PowerSeries R) := by
-    simp [← coe_substAlgHom f.prop]
-  rw [add_apply, zero_apply, h, ← subst_addInv_eq_zero, subst,
-    MvPowerSeries.subst_comp_subst_apply (MvPowerSeries.HasSubst.addInvAux F) f.prop.const]
-  congr! 2 with s
-  fin_cases s <;> simp [subst, X, MvPowerSeries.subst_X f.prop.const]
-
-instance : AddGroup (F.Point σ) where
+instance : AddGroup (F.Point S) where
   nsmul := nsmulRec
   zsmul := zsmulRec
-  neg_add_cancel := F.neg_add_cancel
+  neg_add_cancel x := Subtype.ext <| by
+    let : UniformSpace R := ⊥
+    rw [add_eq_eval₂, neg_eq_eval₂, zero_apply, F.neg_add x.prop]
 
-instance [F.IsComm] : AddCommGroup (F.Point σ) where
-  add_comm x y := Subtype.ext <| F.comm' x.prop y.prop
+instance [F.IsComm] : AddCommGroup (F.Point S) where
+  add_comm x y := Subtype.ext <| by
+    let : UniformSpace R := ⊥
+    simp [add_eq_eval₂, F.add_comm x.prop y.prop]
 
 end FormalGroup
