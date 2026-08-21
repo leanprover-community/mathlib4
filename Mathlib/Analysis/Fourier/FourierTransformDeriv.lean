@@ -842,7 +842,7 @@ theorem one_add_pow_mul_norm_fourier_le {f : ℝ → E} {n : ℕ} (hf : ContDiff
     (h'f : ∀ k ≤ n, Integrable (iteratedDeriv k f)) (u : ℝ) :
     (1 + |u| ^ n) * ‖𝓕 f u‖ ≤
       (∫ v, ‖f v‖) + ((2 * π) ^ n)⁻¹ * ∫ v, ‖iteratedDeriv n f v‖ := by
-  rw [add_mul, one_mul]
+  rw [one_add_mul]
   apply add_le_add (norm_fourier_le_integral_norm f u)
   rw [inv_mul_eq_div, le_div_iff₀ (by positivity)]
   calc
