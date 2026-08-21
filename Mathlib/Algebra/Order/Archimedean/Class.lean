@@ -838,14 +838,22 @@ theorem coe_congrOrderIso_apply (e : MulArchimedeanClass M ≃o MulArchimedeanCl
 theorem congrOrderIso_symm (e : MulArchimedeanClass M ≃o MulArchimedeanClass N) :
     (congrOrderIso e).symm = congrOrderIso e.symm := rfl
 
-@[to_additive (attr := simp)]
+/--
+The upper set in `MulArchimedeanClass M` consisting of an upper set in
+`FiniteMulArchimedeanClass M` plus `⊤`. It is upgraded into `OrderEmbedding` in
+`FiniteMulArchimedeanClass.toUpperSetMulArchimedeanClass`.
+Do not use this definition directly.
+-/
+@[to_additive (attr := simp) /--
+The upper set in `ArchimedeanClass M` consisting of an upper set in
+`FiniteArchimedeanClass M` plus `⊤`. It is upgraded into `OrderEmbedding` in
+`FiniteArchimedeanClass.toUpperSetArchimedeanClass`.
+Do not use this definition directly. -/]
 noncomputable abbrev toUpperSetMulArchimedeanClassAux (s : UpperSet (FiniteMulArchimedeanClass M)) :
-    UpperSet (MulArchimedeanClass M) :=
-  { carrier := {a | ∀ h : a ≠ ⊤, ⟨a, h⟩ ∈ s}
-    upper' a b le mem ne := by
-      exact IsUpperSet.mem_of_le_of_mem s.upper
-                      (a := ⟨a, ne_top_of_le_ne_top ne le⟩) (b := ⟨b, ne⟩) le
-                      (mem <| ne_top_of_le_ne_top ne le)}
+    UpperSet (MulArchimedeanClass M) where
+  carrier := {a | ∀ h : a ≠ ⊤, ⟨a, h⟩ ∈ s}
+  upper' a b le mem ne := s.upper (a := ⟨a, ne_top_of_le_ne_top ne le⟩) (b := ⟨b, ne⟩) le
+    (mem <| ne_top_of_le_ne_top ne le)
 
 @[to_additive]
 lemma strictMono_toUpperSetMulArchimedeanClassAux :
