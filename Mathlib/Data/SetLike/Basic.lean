@@ -217,13 +217,12 @@ An instance of this class is automatically available on any order defined via `L
 -/
 class IsConcreteLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
   /-- The order corresponds to set inclusion. -/
-  protected le_iff' {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
+  protected le_iff {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
 
 section default
 
 variable (A B : Type*)
 
--- TODO : rename to `ofMembership`
 /-- The order induced from a `Membership` instance by inclusion.
 An order defined this way automatically makes available an instance of `IsConcreteLE`.
 -/
@@ -231,15 +230,16 @@ An order defined this way automatically makes available an instance of `IsConcre
   le := fun H K ↦ ∀ ⦃x⦄, x ∈ H → x ∈ K
 
 instance [Membership B A] : letI := LE.ofSetLike A B; IsConcreteLE A B :=
-  letI := LE.ofSetLike A B; { le_iff' := .rfl }
+  letI := LE.ofSetLike A B; { le_iff := .rfl }
 
 /-- The preorder induced from a `Membership` instance by inclusion.
 A preorder defined this way automatically makes available an instance of `IsConcreteLE`.
 -/
-@[reducible] def Preorder.ofSetLike [SetLike A B] : Preorder A where
+@[reducible] def Preorder.ofSetLike [Membership B A] : Preorder A where
   __ := LE.ofSetLike A B
   lt s t := letI := LE.ofSetLike A B; s ≤ t ∧ ¬t ≤ s
-  __ := Preorder.lift (SetLike.coe : A → Set B)
+  le_refl _ _ h := h
+  le_trans _ _ _ h₁ h₂ _ h₃ := h₂ (h₁ h₃)
 
 /-- The partial order induced from a `SetLike` instance by inclusion.
 A partial order defined this way automatically makes available an instance of `IsConcreteLE`.
@@ -260,8 +260,7 @@ section LE
 
 variable [LE A] [IsConcreteLE A B] {p q : A}
 
-theorem le_def : p ≤ q ↔ ∀ ⦃x : B⦄, x ∈ p → x ∈ q :=
-  IsConcreteLE.le_iff'
+alias le_def := IsConcreteLE.le_iff
 
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
 alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
