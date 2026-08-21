@@ -23,13 +23,11 @@ noncomputable section
 
 open Polynomial
 
-open Finset
-
 namespace Polynomial
 
 universe u v w z
 
-variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {a b : R} {n : ℕ}
+variable {R : Type u} {A : Type z} {a b : R} {n : ℕ}
 
 section Semiring
 
@@ -106,7 +104,7 @@ theorem divX_C_mul_X_pow : divX (C a * X ^ n) = if n = 0 then 0 else C a * X ^ (
   simp only [divX_C_mul, divX_X_pow, mul_ite, mul_zero]
 
 theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
-  haveI := Nontrivial.of_polynomial_ne hp0
+  have := Nontrivial.of_polynomial_ne hp0
   calc
     degree (divX p) < (divX p * X + C (p.coeff 0)).degree :=
       if h : degree p ≤ 0 then by

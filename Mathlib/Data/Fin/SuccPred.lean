@@ -512,7 +512,7 @@ def succAbove (p : Fin (n + 1)) (i : Fin n) : Fin (n + 1) :=
 /-- Embedding `i : Fin n` into `Fin (n + 1)` with a hole around `p : Fin (n + 1)`
 embeds `i` by `castSucc` when the resulting `i.castSucc < p`. -/
 lemma succAbove_of_castSucc_lt (p : Fin (n + 1)) (i : Fin n) (h : castSucc i < p) :
-    p.succAbove i = castSucc i := if_pos h
+    p.succAbove i = castSucc i := ite_eq_left h
 
 lemma succAbove_of_succ_le (p : Fin (n + 1)) (i : Fin n) (h : succ i ≤ p) :
     p.succAbove i = castSucc i :=
@@ -521,7 +521,7 @@ lemma succAbove_of_succ_le (p : Fin (n + 1)) (i : Fin n) (h : succ i ≤ p) :
 /-- Embedding `i : Fin n` into `Fin (n + 1)` with a hole around `p : Fin (n + 1)`
 embeds `i` by `succ` when the resulting `p < i.succ`. -/
 lemma succAbove_of_le_castSucc (p : Fin (n + 1)) (i : Fin n) (h : p ≤ castSucc i) :
-    p.succAbove i = i.succ := if_neg (Fin.not_lt.2 h)
+    p.succAbove i = i.succ := ite_eq_right (Fin.not_lt.2 h)
 
 lemma succAbove_of_lt_succ (p : Fin (n + 1)) (i : Fin n) (h : p < succ i) :
     p.succAbove i = succ i := succAbove_of_le_castSucc _ _ (le_castSucc_iff.mpr h)
@@ -752,14 +752,14 @@ def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
 
 lemma predAbove_of_le_castSucc (p : Fin n) (i : Fin (n + 1)) (h : i ≤ castSucc p) :
     p.predAbove i = i.castPred (Fin.ne_of_lt <| Fin.lt_of_le_of_lt h <| castSucc_lt_last _) :=
-  dif_neg <| Fin.not_lt.2 h
+  dite_eq_right <| Fin.not_lt.2 h
 
 lemma predAbove_of_lt_succ (p : Fin n) (i : Fin (n + 1)) (h : i < succ p) :
     p.predAbove i = i.castPred (Fin.ne_last_of_lt h) :=
   predAbove_of_le_castSucc _ _ (le_castSucc_iff.mpr h)
 
 lemma predAbove_of_castSucc_lt (p : Fin n) (i : Fin (n + 1)) (h : castSucc p < i) :
-    p.predAbove i = i.pred (Fin.ne_zero_of_lt h) := dif_pos h
+    p.predAbove i = i.pred (Fin.ne_zero_of_lt h) := dite_eq_left h
 
 lemma predAbove_of_succ_le (p : Fin n) (i : Fin (n + 1)) (h : succ p ≤ i) :
     p.predAbove i = i.pred (Fin.ne_of_gt <| Fin.lt_of_lt_of_le (succ_pos _) h) :=

@@ -100,7 +100,7 @@ theorem intervalGapsWithin_mapsTo : (Set.Iio k).MapsTo
   intro j hj
   rw [mem_Iio] at hj
   simp only [intervalGapsWithin_snd_of_lt, intervalGapsWithin_succ_fst_of_lt,
-    Prod.mk.eta, SetLike.mem_coe, hj]
+    SetLike.mem_coe, hj]
   convert! F.orderEmbOfFin_mem h ⟨j, hj⟩ using 1
 
 theorem intervalGapsWithin_injOn : (Set.Iio k).InjOn

@@ -205,7 +205,7 @@ variable (L M)
 
 /-- Any linearly-ordered type is naturally a structure in the language `Language.order`.
 This is not an instance, because sometimes the `Language.order.Structure` is defined first. -/
-@[implicit_reducible]
+@[instance_reducible]
 def orderStructure [LE M] : Language.order.Structure M where
   RelMap | .le => (fun x => x 0 ≤ x 1)
 
@@ -234,6 +234,7 @@ instance [Language.order.Structure M] [Language.order.OrderedStructure M]
 
 variable [L.OrderedStructure M]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [Language.order.Structure M] [Language.order.OrderedStructure M] :
     LHom.IsExpansionOn (orderLHom L) M where
   map_onRelation := by simp [order.relation_eq_leSymb]
@@ -354,12 +355,12 @@ section structure_to_order
 variable (L) [IsOrdered L] (M) [L.Structure M]
 
 /-- Any structure in an ordered language can be ordered correspondingly. -/
-@[implicit_reducible]
+@[instance_reducible]
 def leOfStructure : LE M where
   le a b := Structure.RelMap (leSymb : L.Relations 2) ![a, b]
 
 instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
-  letI := L.leOfStructure M
+  let := L.leOfStructure M
   constructor
   simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi]
   intros
@@ -375,7 +376,7 @@ def decidableLEOfStructure
     DecidableLE M := h
 
 /-- Any model of a theory of preorders is a preorder. -/
-@[implicit_reducible]
+@[instance_reducible]
 def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
   __ := L.leOfStructure M
   le_refl := (Relations.realize_reflexive.mp <|
@@ -384,14 +385,14 @@ def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
     Theory.model_iff _ |>.mp h _ <| by simp [preorderTheory]).trans
 
 /-- Any model of a theory of partial orders is a partial order. -/
-@[implicit_reducible]
+@[instance_reducible]
 def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
   __ := L.preorderOfModels M
   le_antisymm := (Relations.realize_antisymmetric.mp <|
     Theory.model_iff _ |>.mp h _ <| by simp [partialOrderTheory]).antisymm
 
 /-- Any model of a theory of linear orders is a linear order. -/
-@[implicit_reducible]
+@[instance_reducible]
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
     [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     LinearOrder M where
@@ -408,6 +409,7 @@ variable [Language.order.Structure M] [LE M] [Language.order.OrderedStructure M]
   {N : Type*} [Language.order.Structure N] [LE N] [Language.order.OrderedStructure N]
   {F : Type*}
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [FunLike F M N] [OrderHomClass F M N] : Language.order.HomClass F M N :=
   ⟨fun _ => isEmptyElim, by
     simp only [forall_relations, relation_eq_leSymb, relMap_leSymb, Fin.isValue,
@@ -415,11 +417,13 @@ instance [FunLike F M N] [OrderHomClass F M N] : Language.order.HomClass F M N :
     exact fun φ x => map_rel φ⟩
 
 -- If `OrderEmbeddingClass` or `RelEmbeddingClass` is defined, this should be generalized.
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Language.order.StrongHomClass (M ↪o N) M N :=
   ⟨fun _ => isEmptyElim,
     by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
     Function.comp_apply, RelEmbedding.map_rel_iff, implies_true]⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [EquivLike F M N] [OrderIsoClass F M N] : Language.order.StrongHomClass F M N :=
   ⟨fun _ => isEmptyElim,
     by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
@@ -471,8 +475,8 @@ lemma dlo_isExtensionPair
   classical
   rw [isExtensionPair_iff_exists_embedding_closure_singleton_sup]
   intro S S_fg f m
-  letI := Language.order.linearOrderOfModels M
-  letI := Language.order.linearOrderOfModels N
+  let := Language.order.linearOrderOfModels M
+  let := Language.order.linearOrderOfModels N
   have := Language.order.denselyOrdered_of_dlo N
   have := Language.order.noBotOrder_of_dlo N
   have := Language.order.noTopOrder_of_dlo N
@@ -499,7 +503,7 @@ lemma dlo_isExtensionPair
 set_option backward.isDefEq.respectTransparency false in
 instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [Nonempty M] :
     Infinite M := by
-  letI := orderStructure ℚ
+  let := orderStructure ℚ
   obtain ⟨f, _⟩ := embedding_from_cg cg_of_countable default (dlo_isExtensionPair ℚ M)
   exact Infinite.of_injective f f.injective
 
@@ -511,8 +515,8 @@ lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [No
   ext N
   refine ⟨fun ⟨hF, h⟩ => ⟨hF.finite, Theory.IsUniversal.models_of_embedding h.some⟩,
     fun ⟨hF, h⟩ => ⟨FG.of_finite, ?_⟩⟩
-  letI := Language.order.linearOrderOfModels M
-  letI := Language.order.linearOrderOfModels N
+  let := Language.order.linearOrderOfModels M
+  let := Language.order.linearOrderOfModels N
   exact ⟨StrongHomClass.toEmbedding (nonempty_orderEmbedding_of_finite_infinite N M).some⟩
 
 /-- Any countable nonempty model of the theory of dense linear orders is a Fraïssé limit of the
@@ -528,7 +532,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem isFraisse_finite_linear_order :
     IsFraisse {M : CategoryTheory.Bundled.{0} Language.order.Structure |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
-  letI : Language.order.Structure ℚ := orderStructure _
+  let : Language.order.Structure ℚ := orderStructure _
   exact (isFraisseLimit_of_countable_nonempty_dlo ℚ).isFraisse
 
 open Cardinal
@@ -566,9 +570,9 @@ example (α β : Type w') [LinearOrder α] [LinearOrder β]
     [Countable α] [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α]
     [Nonempty α] [Countable β] [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] :
     Nonempty (α ≃o β) := by
-  letI := orderStructure α
-  letI := orderStructure β
-  letI := StrongHomClass.toOrderIsoClass Language.order α β (α ≃[Language.order] β)
+  let := orderStructure α
+  let := orderStructure β
+  let := StrongHomClass.toOrderIsoClass Language.order α β (α ≃[Language.order] β)
   exact ⟨(IsFraisseLimit.nonempty_equiv (isFraisseLimit_of_countable_nonempty_dlo α)
     (isFraisseLimit_of_countable_nonempty_dlo β)).some⟩
 

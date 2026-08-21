@@ -23,7 +23,7 @@ We provide basic instances, as well as a custom tactic for discharging
 
 noncomputable section
 
-open Topology Filter Set Int Set.Icc
+open Set Int Set.Icc
 
 /-! ### The unit interval -/
 
@@ -508,7 +508,7 @@ theorem projIcc_eq_zero {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 0 ↔ x 
 theorem projIcc_eq_one {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 1 ↔ 1 ≤ x :=
   projIcc_eq_right zero_lt_one
 
-namespace Tactic.Interactive
+namespace Mathlib.Tactic.Interactive
 
 /--
 `unit_interval` solves the goals `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` for
@@ -523,7 +523,7 @@ macro "unit_interval" : tactic =>
 
 example (x : unitInterval) : 0 ≤ (x : ℝ) := by unit_interval
 
-end Tactic.Interactive
+end Mathlib.Tactic.Interactive
 
 section
 

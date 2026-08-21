@@ -55,6 +55,9 @@ theorem IsCoprime.symm (H : IsCoprime x y) : IsCoprime y x :=
 theorem isCoprime_comm : IsCoprime x y ↔ IsCoprime y x :=
   ⟨IsCoprime.symm, IsCoprime.symm⟩
 
+instance : @Std.Symm R IsCoprime where
+  symm _ _ := .symm
+
 theorem isCoprime_self : IsCoprime x x ↔ IsUnit x :=
   ⟨fun ⟨a, b, h⟩ => .of_mul_eq_one (a + b) <| by rwa [mul_comm, add_mul], fun h =>
     let ⟨b, hb⟩ := isUnit_iff_exists_inv'.1 h

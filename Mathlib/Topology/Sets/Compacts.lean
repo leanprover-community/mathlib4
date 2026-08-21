@@ -166,6 +166,15 @@ theorem singleton_injective : Function.Injective ({·} : α → Compacts α) :=
 theorem singleton_inj {x y : α} : ({x} : Compacts α) = {y} ↔ x = y :=
   singleton_injective.eq_iff
 
+theorem disjoint_coe_iff (K L : Compacts α) : Disjoint (K : Set α) L ↔ Disjoint K L where
+  mp h := .of_orderEmbedding (.ofMapLEIff SetLike.coe (fun _ _ => SetLike.coe_subset_coe)) h
+  mpr h := by
+    rw [Set.disjoint_iff]
+    intro x ⟨hxK, hxL⟩
+    specialize @h {x}
+    simp_rw [← SetLike.coe_subset_coe, coe_singleton, singleton_subset_iff] at h
+    exact h hxK hxL
+
 instance [Nonempty α] : Nontrivial (Compacts α) := by
   constructor
   obtain ⟨x⟩ := ‹Nonempty α›
@@ -275,7 +284,7 @@ theorem singleton_prod_singleton (x : α) (y : β) :
 
 open Topology
 
-/-- The compacts neigbourhoods of a compact -/
+/-- The compacts neighbourhoods of a compact -/
 def compactNhds (K : Compacts α) : Set (Compacts α) :=
   {K' | ∀ (x : K), (K': Set α) ∈ 𝓝 x.val}
 
@@ -292,7 +301,7 @@ lemma exists_open_set_nhds_of_mem_compactsNhds {K K' : Compacts α} (h : K' ∈ 
     ∃ U : Opens α, (K : Set α) ⊆ U ∧ (U : Set α) ⊆ K' :=
   exists_open_set_nhds_of_compactsNhds ⟨K', h⟩
 
-/-- The compact neigbourhood induced by the existence of an open subset between two compacts -/
+/-- The compact neighbourhood induced by the existence of an open subset between two compacts -/
 def compactNhdsMkOfOpens {K : Compacts α} (L : Compacts α) (U : Opens α)
     (h1 : (K : Set α) ⊆ U) (h2 : (U : Set α) ⊆ L) :
     K.compactNhds :=
@@ -313,7 +322,7 @@ instance (K : Compacts α) : IsCodirectedOrder K.openNhds where
   ⟨Subtype.mk_le_mk.2 inf_le_left, Subtype.mk_le_mk.2 inf_le_right⟩⟩
 
 instance (K : Compacts α) : Top K.openNhds := ⟨⊤, Set.subset_univ _⟩
--- in particular `K.openNhds` is not empty and thus the induced catgory is cofiltered
+-- in particular `K.openNhds` is not empty and thus the induced category is cofiltered
 
 instance : Bot (⊥ : Compacts α).openNhds := ⟨⊥, fun _ h ↦ h⟩
 
@@ -369,14 +378,14 @@ namespace Opens
 /-- The set of compacts inside an open subset -/
 def compactsInside (U : Opens α) : Set (Compacts α) := {K | (K : Set α) ⊆ U}
 
-/-- For `K` a compact subset insde an open subset `U`, `U` has a structure of open neighbourhood
+/-- For `K` a compact subset inside an open subset `U`, `U` has a structure of open neighbourhood
 of `K` -/
 def openNhdsOfCompactsInside {U : Opens α} (K : U.compactsInside) : (K.val).openNhds :=
   ⟨U, K.property⟩
 
 end Opens
 
-/-- For `U` an open neighbourhood of `K`, `K` has a structure of compact insde `U` -/
+/-- For `U` an open neighbourhood of `K`, `K` has a structure of compact inside `U` -/
 def Compacts.compactsInsideOfOpenNhds {K : Compacts α} (U : K.openNhds) : (U.val).compactsInside :=
   ⟨K, U.property⟩
 
@@ -613,6 +622,14 @@ theorem toCloseds_prod [T2Space α] [T2Space β] (K : NonemptyCompacts α) (L : 
 theorem singleton_prod_singleton (x : α) (y : β) :
     ({x} ×ˢ {y} : NonemptyCompacts (α × β)) = {(x, y)} :=
   NonemptyCompacts.ext Set.singleton_prod_singleton
+
+/-- `TopologicalSpace.NonemptyCompacts.toCompacts` as an order embedding. -/
+def toCompactsOrderEmbedding : NonemptyCompacts α ↪o Compacts α :=
+  .ofMapLEIff toCompacts fun _ _ => .rfl
+
+@[simp]
+theorem coe_toCompactsOrderEmbedding : ⇑(toCompactsOrderEmbedding (α := α)) = toCompacts :=
+  rfl
 
 end NonemptyCompacts
 

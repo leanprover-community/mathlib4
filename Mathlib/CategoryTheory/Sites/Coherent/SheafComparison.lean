@@ -36,7 +36,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open Limits Functor regularTopology
+open Limits CategoryTheory.Functor regularTopology
 
 variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 

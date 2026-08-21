@@ -15,8 +15,8 @@ public import Mathlib.NumberTheory.ModularForms.QExpansion
 This file contains results specific to modular forms of level one, i.e. modular forms for
 `SL(2, ℤ)`.
 
-TODO: Add finite-dimensionality of these spaces of modular forms.
-
+Finite-dimensionality of these spaces is proved in a later file
+(`Mathlib/NumberTheory/ModularForms/LevelOne/DimensionFormula.lean`).
 -/
 
 public section
@@ -114,4 +114,4 @@ lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm �
 lemma ModularForm.levelOne_neg_weight_rank_zero (hk : k < 0) :
     Module.rank ℂ (ModularForm 𝒮ℒ k) = 0 := by
   refine rank_eq_zero_iff.mpr fun f ↦ ⟨_, one_ne_zero, ?_⟩
-  simpa [← coe_eq_zero_iff] using levelOne_neg_weight_eq_zero hk f
+  simpa [← FunLike.coe_zero_iff] using levelOne_neg_weight_eq_zero hk f

@@ -23,8 +23,6 @@ namespace Stream'.WSeq
 
 variable {α : Type u}
 
-open Function
-
 /-- A weak sequence is *productive* if it never stalls forever - there are
 always a finite number of `think`s between `cons` constructors.
 The sequence itself is allowed to be infinite though. -/

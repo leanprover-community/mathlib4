@@ -48,6 +48,7 @@ complex `K` to the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`. 
 noncomputable def shortComplexFunctor (i : ι) :=
   shortComplexFunctor' C c (c.prev i) i (c.next i)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `shortComplexFunctor C c j ≅ shortComplexFunctor' C c i j k`
 when `c.prev j = i` and `c.next j = k`. -/
@@ -762,7 +763,7 @@ end CochainComplex
 namespace HomologicalComplex
 
 variable {C ι : Type*} [Category* C] [Preadditive C] {c : ComplexShape ι}
-  {K L : HomologicalComplex C c} {f g : K ⟶ L}
+  {K L : HomologicalComplex C c}
 
 variable (φ ψ : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i]
 

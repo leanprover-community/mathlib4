@@ -82,7 +82,7 @@ theorem isIntegral_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f) {x
 
 end
 
-open Classical in
+open scoped Classical in
 theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A] [Algebra R A]
     {x : A} {f : R[X]} (hf : f.Monic) (hfx : aeval x f = 0) :
     span R (Finset.image (x ^ ·) (Finset.range (natDegree f))) =
@@ -121,8 +121,6 @@ theorem RingHom.isIntegralElem_one : f.IsIntegralElem 1 :=
 
 theorem isIntegral_one [Algebra R B] : IsIntegral R (1 : B) :=
   (algebraMap R B).isIntegralElem_one
-
-variable (f : R →+* S)
 
 theorem IsIntegral.of_pow [Algebra R B] {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
     IsIntegral R x :=
@@ -170,15 +168,15 @@ theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [Ring S] [CommRing
     (h : (algebraMap T S).comp φ.toRingHom = algebraMap R S) (a : S) :
     IsIntegral R a ↔ IsIntegral T a := by
   constructor <;> intro ha
-  · letI : Algebra R T := φ.toRingHom.toAlgebra
-    letI : IsScalarTower R T S :=
+  · let : Algebra R T := φ.toRingHom.toAlgebra
+    let : IsScalarTower R T S :=
       ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, ← h, mul_assoc]; rfl⟩
     exact IsIntegral.tower_top ha
   · have h' : (algebraMap T S) = (algebraMap R S).comp φ.symm.toRingHom := by
       have : RingHomInvPair (φ : R →+* T) φ.symm := RingHomInvPair.of_ringEquiv _
       simp only [← h, RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, RingHomCompTriple.comp_eq]
-    letI : Algebra T R := φ.symm.toRingHom.toAlgebra
-    letI : IsScalarTower T R S :=
+    let : Algebra T R := φ.symm.toRingHom.toAlgebra
+    let : IsScalarTower T R S :=
       ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, h', mul_assoc]; rfl⟩
     exact IsIntegral.tower_top ha
 
@@ -196,10 +194,9 @@ protected theorem IsIntegral.algebraMap [Algebra A B] [IsScalarTower R A B] {x :
   use f, hf
   rw [IsScalarTower.algebraMap_eq R A B, ← hom_eval₂, hx, map_zero]
 
-theorem isIntegral_algebraMap_iff [Algebra A B] [IsScalarTower R A B] {x : A}
-    (hAB : Function.Injective (algebraMap A B)) :
+theorem isIntegral_algebraMap_iff [Algebra A B] [IsScalarTower R A B] {x : A} [FaithfulSMul A B] :
     IsIntegral R (algebraMap A B x) ↔ IsIntegral R x :=
-  isIntegral_algHom_iff (IsScalarTower.toAlgHom R A B) hAB
+  isIntegral_algHom_iff (IsScalarTower.toAlgHom R A B) (FaithfulSMul.algebraMap_injective A B)
 
 theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
     IsIntegral R r ↔ ∃ s : Set R, s.Finite ∧ IsIntegral (Subring.closure s) r := by

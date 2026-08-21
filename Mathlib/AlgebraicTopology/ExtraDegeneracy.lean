@@ -105,9 +105,9 @@ def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegenera
   s' := (point.mapIso e).inv ≫ ed.s' ≫ (drop.mapIso e).hom.app (op ⦋0⦌)
   s n := (drop.mapIso e).inv.app (op ⦋n⦌) ≫ ed.s n ≫ (drop.mapIso e).hom.app (op ⦋n + 1⦌)
   s'_comp_ε := by
-    simpa [dsimp% w₀] using dsimp% (point.mapIso e).inv_hom_id
+    simpa [w₀] using dsimp% (point.mapIso e).inv_hom_id
   s₀_comp_δ₁ := by
-    simp [← SimplicialObject.δ_naturality, s₀_comp_δ₁_assoc, dsimp% w₀_assoc]
+    simp [← SimplicialObject.δ_naturality, s₀_comp_δ₁_assoc, w₀_assoc]
   s_comp_δ₀ n := by
     simpa [← SimplicialObject.δ_naturality] using
       congr_app (drop.mapIso e).inv_hom_id (op ⦋n⦌)
@@ -407,7 +407,6 @@ def const (X : C) : ExtraDegeneracy (Augmented.const.obj X) where
   s' := 𝟙 _
   s _ := 𝟙 _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a preadditive category and `X` is an augmented simplicial object
 in `C` that has an extra degeneracy, then the augmentation on the alternating
 face map complex of `X` is a homotopy equivalence. -/

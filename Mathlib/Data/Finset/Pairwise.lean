@@ -73,7 +73,7 @@ end Set
 
 namespace List
 
-variable {β : Type*} [DecidableEq α] {r : α → α → Prop} {l : List α}
+variable [DecidableEq α] {r : α → α → Prop} {l : List α}
 
 theorem pairwise_of_coe_toFinset_pairwise (hl : (l.toFinset : Set α).Pairwise r) (hn : l.Nodup) :
     l.Pairwise r := by

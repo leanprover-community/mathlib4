@@ -127,7 +127,7 @@ theorem mongePoint_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace 
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).mongePoint = s.mongePoint := by
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   simp_rw [mongePoint]
   rw [← Simplex.centroid, ← Simplex.centroid]
   simp [centroid_restrict, circumcenter_restrict]
@@ -170,7 +170,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
       simp_rw [centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
         mongePointWeightsWithCircumcenter] <;>
     rw [add_tsub_assoc_of_le (by decide : 1 ≤ 2), (by decide : 2 - 1 = 1)]
-  · rw [if_pos (mem_univ _), card_fin]
+  · rw [ite_eq_left (mem_univ _), card_fin]
     field
   · simp [field]
     ring

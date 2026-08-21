@@ -21,7 +21,7 @@ recommended to use the standard `CategoryTheory.SmallModel (FGModuleCat R)` inst
 
 universe v w u
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R]
 
 open CategoryTheory
 

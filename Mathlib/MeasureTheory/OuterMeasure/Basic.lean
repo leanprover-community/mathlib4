@@ -167,7 +167,7 @@ end OuterMeasureClass
 
 namespace OuterMeasure
 
-variable {α β : Type*} {m : OuterMeasure α}
+variable {α : Type*} {m : OuterMeasure α}
 
 /-- If `s : ι → Set α` is a sequence of sets, `S = ⋃ n, s n`, and `m (S \ s n)` tends to zero along
 some nontrivial filter (usually `atTop` on `ι = ℕ`), then `m S = ⨆ n, m (s n)`. -/

@@ -320,7 +320,6 @@ lemma toSingleMk_precomp
   ext : 1
   exact (Cochain.toSingleEquiv h).injective (by simp [Cochain.toSingleMk_precomp])
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toSingleMk_surjective {q n : ℤ} (α : Cocycle K ((singleFunctor C q).obj X) n)
     (p : ℤ) (h : p + n = q) (p' : ℤ) (hp' : p' + 1 = p) :
     ∃ (f : K.X p ⟶ X) (hf : K.d p' p ≫ f = 0), toSingleMk f h p' hp' hf = α := by
@@ -358,7 +357,6 @@ lemma toSingleMk_zero {p q : ℤ} {n : ℤ} (h : p + n = q)
     toSingleMk (0 : K.X p ⟶ X) h p' hp' (by simp) = 0 := by
   cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toSingleMk_mem_coboundaries_iff {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
     (p' : ℤ) (hp' : p' + 1 = p) (hf : K.d p' p ≫ f = 0)
     (p'' : ℤ) (hp'' : p + 1 = p'') :

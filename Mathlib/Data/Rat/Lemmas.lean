@@ -56,14 +56,6 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
     rw [qdf]
     exact Rat.num_ne_zero.2 ((divInt_ne_zero hd).mpr hn)
 
-@[deprecated Rat.num_divInt (since := "2025-12-27")]
-theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d :=
-  Int.gcd_comm .. ▸ Rat.num_divInt ..
-
-@[deprecated Rat.den_divInt (since := "2025-12-27")]
-theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d :=
-  Int.gcd_comm .. ▸ Rat.den_divInt ..
-
 theorem add_den_dvd_lcm (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den.lcm q₂.den := by
   rw [add_def, normalize_eq, Nat.div_dvd_iff_dvd_mul (Nat.gcd_dvd_right _ _)
     (Nat.gcd_pos_of_pos_right _ (by simp [Nat.pos_iff_ne_zero])), ← Nat.gcd_mul_lcm,
@@ -313,6 +305,7 @@ theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℚ)⁻¹.num = 1 :
   change 0 < (a : ℤ)
   lia
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by simp
 
 theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by simp

@@ -216,7 +216,7 @@ theorem isPreprimitive_congr (hφ : Function.Surjective φ) (hf : Function.Bijec
   · intro _
     apply IsPreprimitive.of_surjective hf.surjective
   · intro _
-    haveI := (isPretransitive_congr hφ hf).mpr toIsPretransitive
+    have := (isPretransitive_congr hφ hf).mpr toIsPretransitive
     exact {
       isTrivialBlock_of_isBlock {B} hB := by
         rw [← Set.preimage_image_eq B hf.injective]

@@ -5,7 +5,7 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.Semigroup
 
 /-!
 # Instances on pempty

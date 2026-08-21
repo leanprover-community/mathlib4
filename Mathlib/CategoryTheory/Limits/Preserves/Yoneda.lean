@@ -6,7 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.CategoryTheory.Limits.FunctorToTypes
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Yoneda preserves certain colimits
@@ -35,7 +35,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open CategoryTheory.Limits Opposite Functor
+open CategoryTheory.Limits Opposite CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 
@@ -77,7 +77,6 @@ theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X
     Quiver.Hom.unop_op]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance {X : C} : PreservesColimit F (coyoneda.obj (op (yoneda.obj X))) := by
   suffices IsIso (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) from
     preservesColimit_of_isIso_post _ _

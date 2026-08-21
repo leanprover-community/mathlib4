@@ -33,7 +33,7 @@ variable {C : Type u₁} [Category.{v₁} C] (W : MorphismProperty C)
 a `HasLocalization.{w} W` instance by shrinking the morphisms in `D`.
 (This version assumes that the types of objects of the categories
 `C` and `D` are in the same universe.) -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def hasLocalizationOfLocallySmall
     {D : Type u₁} [Category.{v₂} D] [LocallySmall.{w} D]
     (L : C ⥤ D) [L.IsLocalization W] :
@@ -41,7 +41,7 @@ noncomputable def hasLocalizationOfLocallySmall
   D := ShrinkHoms D
   L := L ⋙ (ShrinkHoms.equivalence D).functor
 
--- adding `@[implicit_reducible]` causes downstream breakage
+-- adding `@[instance_reducible]` causes downstream breakage
 set_option warn.classDefReducibility false in
 /-- If `L : C ⥤ D` is a localization functor for a class of morphisms
 `W : MorphismProperty C`, and `D` is locally `w`-small, we may obtain

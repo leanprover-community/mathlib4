@@ -507,6 +507,10 @@ lemma toReal (hp : 1 < p.toReal) [HolderConjugate p q] :
     p.toReal.HolderConjugate q.toReal :=
   toReal_iff hp |>.mpr ‹_›
 
+lemma toReal_of_ne_top (hp : p ≠ ∞) (hq : q ≠ ∞) [HolderConjugate p q] :
+    p.toReal.HolderConjugate q.toReal :=
+  toReal ((toReal_lt_toReal one_ne_top hp).mpr ((lt_top_iff_one_lt q p).mp hq.lt_top))
+
 lemma of_toNNReal (h : NNReal.HolderConjugate p.toNNReal q.toNNReal) :
     HolderConjugate p q :=
   .of_toReal <| by simpa only [coe_toNNReal_eq_toReal] using h.coe

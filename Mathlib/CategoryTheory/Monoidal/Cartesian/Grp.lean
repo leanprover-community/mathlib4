@@ -30,7 +30,7 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- If `X` represents a presheaf of additive monoids, then `X` is an additive monoid object. -/]
 def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     GrpObj X where
@@ -91,6 +91,9 @@ lemma GrpObj.ofRepresentableBy_yonedaGrpObjRepresentableBy :
     ofRepresentableBy G _ (yonedaGrpObjRepresentableBy G) = ‹GrpObj G› := by
   ext; change lift (fst G G) (snd G G) ≫ μ = μ; rw [lift_fst_snd, Category.id_comp]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 variable (X) in
 /-- If `X` represents a presheaf of groups `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of groups. -/
@@ -116,6 +119,9 @@ def yonedaGrp : Grp C ⥤ Cᵒᵖ ⥤ GrpCat.{v} where
   obj G := yonedaGrpObj G.X
   map {G H} ψ := { app Y := GrpCat.ofHom ((yonedaMon.map ψ.hom).app Y).hom }
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive (attr := reassoc)]
 lemma yonedaGrp_naturality (α : yonedaGrpObj G ⟶ yonedaGrpObj H) (f : X ⟶ Y) (g : Y ⟶ G) :
     α.app _ (f ≫ g) = f ≫ α.app _ g := congr($(α.naturality f.op) g)
@@ -148,7 +154,7 @@ lemma essImage_yonedaGrp :
   · rintro ⟨G, ⟨α⟩⟩
     exact ⟨G.X, ⟨Functor.representableByEquiv.symm (Functor.isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
-    letI := GrpObj.ofRepresentableBy X F e
+    let := GrpObj.ofRepresentableBy X F e
     exact ⟨⟨X⟩, ⟨yonedaGrpObjIsoOfRepresentableBy X F e⟩⟩
 
 @[to_additive (attr := reassoc)]
@@ -187,7 +193,8 @@ lemma GrpObj.one_inv : η[G] ≫ ι = η := by simp [GrpObj.inv_eq_inv, GrpObj.c
 open scoped _root_.CategoryTheory.Obj in
 /-- If `G` is a group object and `F` is monoidal,
 then `Hom(X, G) → Hom(F X, F G)` preserves inverses. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- If `G` is an additive group object and `F` is monoidal,
+then `Hom(X, G) → Hom(F X, F G)` preserves negation. -/]
 lemma Functor.map_inv' {D : Type*} [Category* D] [CartesianMonoidalCategory D] (F : C ⥤ D)
     [F.Monoidal] {X G : C} (f : X ⟶ G) [GrpObj G] :
     F.map (f⁻¹) = (F.map f)⁻¹ := by
@@ -270,7 +277,8 @@ lemma hom_pow (f : G ⟶ H) (n : ℕ) : (f ^ n).hom = f.hom ^ n := by
 end Hom
 
 /-- A commutative group object is a group object in the category of group objects. -/
-@[to_additive]
+@[to_additive /-- A commutative additive group object is an additive group object in the category of
+additive group objects. -/]
 instance : GrpObj H where inv := Grp.homMk' { hom := ι[H.X] }
 
 namespace Hom
@@ -283,15 +291,12 @@ lemma hom_hom_div (f g : G ⟶ H) : (f / g).hom.hom = f.hom.hom / g.hom.hom := r
 lemma hom_hom_zpow (f : G ⟶ H) (n : ℤ) : (f ^ n).hom.hom = f.hom.hom ^ n := by
   cases n <;> simp
 
-@[deprecated (since := "2025-12-18")] alias hom_inv := hom_hom_inv
-@[deprecated (since := "2025-12-18")] alias hom_div := hom_hom_div
-@[deprecated (since := "2025-12-18")] alias hom_zpow := hom_hom_zpow
-
 end Hom
 
 attribute [local simp] mul_eq_mul comp_mul mul_comm mul_div_mul_comm in
 /-- A commutative group object is a commutative group object in the category of group objects. -/
-@[to_additive]
+@[to_additive /-- A commutative additive group object is a commutative additive group object in the
+category of additive group objects. -/]
 instance : IsCommMonObj H where
 
 @[to_additive]
@@ -317,7 +322,8 @@ lemma GrpObj.conj_eq_snd_of_isCommMonObj [IsCommMonObj G] : conj G = snd G G := 
 open scoped IsMulCommutative in
 /-- `G` is a commutative group object if and only if the commutator map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`
 is constant. -/
-@[to_additive]
+@[to_additive /-- `G` is a commutative additive group object if and only if the commutator map
+`(x, y) ↦ x + y + (-x) + (-y)` is constant. -/]
 lemma isCommMonObj_iff_commutator_eq_toUnit_η :
     IsCommMonObj G ↔ GrpObj.commutator G = toUnit _ ≫ η := by
   rw [isCommMonObj_iff_isMulCommutative]

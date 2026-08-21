@@ -100,6 +100,7 @@ lemma _root_.AlgebraicGeometry.isPullback_of_isClosedImmersion
 def map (I : X.IdealSheafData) (f : X ⟶ Y) : Y.IdealSheafData :=
   (I.subschemeι ≫ f).ker
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma le_map_iff_comap_le {I : X.IdealSheafData} {f : X ⟶ Y} {J : Y.IdealSheafData} :
     J ≤ I.map f ↔ J.comap f ≤ I := by
   constructor

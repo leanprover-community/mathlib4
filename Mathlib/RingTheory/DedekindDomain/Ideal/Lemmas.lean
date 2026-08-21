@@ -102,7 +102,7 @@ theorem isPrime_of_prime {P : Ideal A} (h : Prime P) : IsPrime P := by
   refine ⟨?_, fun hxy => ?_⟩
   · rintro rfl
     rw [← one_eq_top] at h
-    exact h.not_unit isUnit_one
+    exact h.not_isUnit isUnit_one
   · simp only [← dvd_span_singleton, ← span_singleton_mul_span_singleton] at hxy ⊢
     exact h.dvd_or_dvd hxy
 
@@ -155,7 +155,7 @@ open UniqueFactorizationMonoid in
 theorem mem_primesOver_iff_mem_normalizedFactors {p : Ideal R} [h : p.IsMaximal]
     [Algebra R A] [IsDomain R] [IsTorsionFree R A] (hp : p ≠ ⊥) {P : Ideal A} :
     P ∈ p.primesOver A ↔ P ∈ normalizedFactors (map (algebraMap R A) p) := by
-  rw [primesOver, Set.mem_setOf_eq, mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hp),
+  rw [primesOver, Set.mem_ofPred_eq, mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hp),
     liesOver_iff, under_def, and_congr_right_iff, map_le_iff_le_comap]
   intro hP
   refine ⟨fun h ↦ le_of_eq h, fun h' ↦ ((IsCoatom.le_iff_eq (isMaximal_def.mp h) ?_).mp h').symm⟩
@@ -267,7 +267,7 @@ lemma mul_iInf (I : Ideal A) {ι : Type*} [Nonempty ι] (J : ι → Ideal A) :
   by_cases hI : I = 0
   · simp [hI]
   refine (le_iInf fun i ↦ mul_mono_right (iInf_le _ _)).antisymm ?_
-  have H : ⨅ i, I * J i ≤ I := (iInf_le _ (Nonempty.some ‹_›)).trans mul_le_right
+  have H : ⨅ i, I * J i ≤ I := (iInf_le _ (Nonempty.some ‹_›)).trans mul_le_left
   obtain ⟨K, hK⟩ := dvd_iff_le.mpr H
   grw [hK, le_iInf (a := K) fun i ↦ ?_]
   rw [← mul_le_mul_iff_of_pos_left (a := I), ← hK]
@@ -306,7 +306,7 @@ and the lcm is their infimum, and use this to instantiate `NormalizedGCDMonoid (
 
 @[simp]
 theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
-  letI := UniqueFactorizationMonoid.toNormalizedGCDMonoid (Ideal A)
+  let := UniqueFactorizationMonoid.toNormalizedGCDMonoid (Ideal A)
   have hgcd : gcd I J = I ⊔ J := by
     rw [gcd_eq_normalize _ _, normalize_eq]
     · rw [dvd_iff_le, sup_le_iff, ← dvd_iff_le, ← dvd_iff_le]
@@ -323,8 +323,8 @@ theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
 
 /-- Ideals in a Dedekind domain have gcd and lcm operators that (trivially) are compatible with
 the normalization operator. -/
-noncomputable instance : NormalizedGCDMonoid (Ideal A) :=
-  { normalizationMonoid with
+noncomputable instance : StrongNormalizedGCDMonoid (Ideal A) :=
+  { strongNormalizationMonoid with
     gcd := (· ⊔ ·)
     gcd_dvd_left := fun _ _ => by simpa only [dvd_iff_le] using le_sup_left
     gcd_dvd_right := fun _ _ => by simpa only [dvd_iff_le] using le_sup_right
@@ -427,7 +427,6 @@ theorem irreducible_pow_sup (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) :
 
 theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : n ≤ emultiplicity J I) :
     J ^ n ⊔ I = J ^ n := by
-  classical
   by_cases hI : I = ⊥
   · simp_all
   rw [irreducible_pow_sup hI hJ, min_eq_right]
@@ -439,7 +438,6 @@ alias _root_.irreducible_pow_sup_of_le := irreducible_pow_sup_of_le
 
 theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ)
     (hn : emultiplicity J I ≤ n) : J ^ n ⊔ I = J ^ multiplicity J I := by
-  classical
   rw [irreducible_pow_sup hI hJ, min_eq_left]
   · congr
     rw [← Nat.cast_inj (R := ℕ∞), ← FiniteMultiplicity.emultiplicity_eq_multiplicity,
@@ -591,6 +589,7 @@ def comap (f : R →+* S) (hf : Function.Surjective f) (v : HeightOneSpectrum S)
   isPrime := v.asIdeal.comap_isPrime f
   ne_bot := (Ideal.eq_bot_of_comap_eq_bot' hf).mt v.ne_bot
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism between `HeightOneSpectrum`s of isomorphic rings. -/
 @[simps]
 def equivOfRingEquiv (e : R ≃+* S) : (HeightOneSpectrum R) ≃ (HeightOneSpectrum S) where
@@ -729,7 +728,6 @@ theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFact
 alias _root_.idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors :=
   idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between the sets of normalized factors of I and J induced by a ring
 isomorphism `f : R/I ≅ A/J`. -/
 def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
@@ -923,7 +921,6 @@ def quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R) (P : ι → 
   HeightOneSpectrum.quotientEquivPiOfProdEq I
     (fun i ↦ ⟨P i, (isPrime_of_prime (prime i)), (prime i).ne_zero⟩) e (by grind) prod_eq
 
-open scoped Classical in
 /-- **Chinese remainder theorem** for a Dedekind domain: `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`,
 where `P i` ranges over the prime factors of `I` and `e i` over the multiplicities. -/
 def quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
@@ -1087,6 +1084,7 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
 alias _root_.normalizedFactorsEquivSpanNormalizedFactors :=
   normalizedFactorsEquivSpanNormalizedFactors
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bijection `normalizedFactorsEquivSpanNormalizedFactors` between the set of prime
 factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. See
 `count_normalizedFactorsSpan_eq_count` for the version stated in terms of multisets `count`. -/
@@ -1162,7 +1160,6 @@ variable {A : Type*} [CommRing A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMax
 
 namespace IsDedekindDomain
 
-open scoped Classical in
 variable (p) in
 /-- The finite set of all prime factors of the pushforward of `p`. -/
 noncomputable abbrev primesOverFinset : Finset (Ideal B) :=
@@ -1232,7 +1229,7 @@ namespace IsDedekindDomain
 theorem primesOver_finite : (primesOver p B).Finite := by
   by_cases hpb : p = ⊥
   · rw [hpb] at hpm ⊢
-    haveI : IsDomain A := IsDomain.of_bot_isPrime A
+    have : IsDomain A := IsDomain.of_bot_isPrime A
     rw [primesOver_bot A B]
     exact Set.finite_singleton ⊥
   · rw [← coe_primesOverFinset hpb B]

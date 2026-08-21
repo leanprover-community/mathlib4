@@ -199,6 +199,7 @@ theorem _root_.CoxeterMatrix.toCoxeterSystem_simple (M : CoxeterMatrix B) :
 
 local prefix:100 "s" => cs.simple
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
   have : (FreeGroup.of i) * (FreeGroup.of i) ∈ M.relationsSet := ⟨(i, i), by simp [relation]⟩
@@ -222,6 +223,7 @@ theorem simple_mul_simple_cancel_left {w : W} (i : B) : s i * (s i * w) = w := b
 theorem inv_simple (i : B) : (s i)⁻¹ = s i :=
   (eq_inv_of_mul_eq_one_right (cs.simple_mul_simple_self i)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
   have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ M.relationsSet := ⟨(i, i'), rfl⟩
@@ -314,6 +316,7 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
   val_inv := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
   inv_val := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet)) :
     (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (M.relationsSet))
     ((MulEquiv.symm cs.mulEquiv) a) = a := calc
@@ -349,6 +352,7 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
     cs.lift ⟨f, hf⟩ (s i) = f i := congrFun (congrArg Subtype.val (cs.lift.left_inv ⟨f, hf⟩)) i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If two Coxeter systems on the same group `W` have the same Coxeter matrix `M : Matrix B B ℕ`
 and the same simple reflection map `B → W`, then they are identical. -/
 theorem simple_determines_coxeterSystem :
@@ -433,10 +437,10 @@ lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) 
   rw [getElem_alternatingWord i j p (k + 1) (by lia),
     getElem_alternatingWord j i p k (by lia)]
   by_cases h_even : Even (p + k)
-  · rw [if_pos h_even, ← add_assoc]
+  · rw [ite_eq_left h_even, ← add_assoc]
     simp only [ite_eq_right_iff, isEmpty_Prop, Nat.not_even_iff_odd, Even.add_one h_even,
       IsEmpty.forall_iff]
-  · rw [if_neg h_even, ← add_assoc]
+  · rw [ite_eq_right h_even, ← add_assoc]
     simp [Odd.add_one (Nat.not_even_iff_odd.mp h_even)]
 
 lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
@@ -495,15 +499,16 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
   clear hm
   push_cast
   rcases Int.even_or_odd' m' with ⟨k, rfl | rfl⟩
-  · rw [if_pos (by use k; ring), if_pos (by use -k + (M i i'); ring), mul_comm 2 k, ← sub_mul]
+  · rw [ite_eq_left (by use k; ring), ite_eq_left (by use -k + (M i i'); ring), mul_comm 2 k,
+      ← sub_mul]
     repeat rw [Int.mul_ediv_cancel _ (by simp)]
     rw [zpow_sub, zpow_natCast, simple_mul_simple_pow' cs i i', ← inv_zpow]
     simp
   · have : ¬Even (2 * k + 1) := Int.not_even_iff_odd.2 ⟨k, rfl⟩
-    rw [if_neg this]
+    rw [ite_eq_right this]
     have : ¬Even (↑(M i i') * 2 - (2 * k + 1)) :=
       Int.not_even_iff_odd.2 ⟨↑(M i i') - k - 1, by ring⟩
-    rw [if_neg this]
+    rw [ite_eq_right this]
     rw [(by ring : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),
       (by ring : 2 * k + 1 = 1 + k * 2)]
     repeat rw [Int.add_mul_ediv_right _ _ (by simp)]

@@ -36,6 +36,7 @@ private noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ℕ∞ :=
 noncomputable def Ideal.height : ℕ∞ :=
   ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J ‹J ∈ I.minimalPrimes›.isPrime
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For a prime ideal, its height equals its prime height. -/
 private lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
   simp [height, primeHeight, Ideal.minimalPrimes_eq_subsingleton_self]
@@ -51,7 +52,7 @@ lemma Ideal.height_eq_inf_minimalPrimes : I.height = ⨅ J ∈ I.minimalPrimes, 
 
 lemma Ideal.exists_isPrime_height_eq {I : Ideal R} {n : ℕ} (hI : I.height = n) :
     ∃ (p : Ideal R) (_ : p.IsPrime) (_  : I ≤ p), p.height = n := by
-  simp only [Ideal.height, ENat.iInf_eq_coe_iff] at hI
+  simp only [Ideal.height, ENat.iInf_eq_natCast_iff] at hI
   rcases hI with ⟨⟨p, ⟨⟨⟨hpp, hIp⟩, _⟩, h⟩, -⟩, -⟩
   exact ⟨p, hpp, hIp, h ▸ p.height_eq_primeHeight⟩
 
@@ -93,15 +94,13 @@ private lemma Ideal.primeHeight_lt_top (I : Ideal R) [I.FiniteHeight] [I.IsPrime
   rw [← I.height_eq_primeHeight]
   exact Ideal.height_lt_top ‹I.IsPrime›.ne_top
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.exists_ltSeries_length_eq_height (p : Ideal R) [p.IsPrime] [p.FiniteHeight] :
     ∃ (l : LTSeries (PrimeSpectrum R)),
       RelSeries.last l = ⟨p, inferInstance⟩ ∧ l.length = p.height := by
-  obtain ⟨n, hn⟩ := Option.ne_none_iff_exists'.mp (p.height_ne_top (IsPrime.ne_top ‹_›))
+  obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp (p.height_ne_top (IsPrime.ne_top ‹_›))
   rw [Ideal.height_eq_primeHeight, Ideal.primeHeight] at hn ⊢
-  obtain ⟨l, last, len⟩ := Order.exists_series_of_height_eq_coe (⟨p, ‹_›⟩ : PrimeSpectrum R) hn
-  rw [hn]
-  exact ⟨l, last, by rw [len, WithTop.some_eq_coe, ENat.some_eq_coe]⟩
+  obtain ⟨l, last, len⟩ := Order.exists_series_of_height_eq_coe (⟨p, ‹_›⟩ : PrimeSpectrum R) hn.symm
+  exact ⟨l, last, len ▸ hn⟩
 
 private lemma Ideal.height_mono_of_isPrime {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
     I.height ≤ J.height := by
@@ -211,7 +210,7 @@ lemma Ideal.finiteHeight_of_le {I J : Ideal R} (e : I ≤ J) (hJ : J ≠ ⊤) [F
 
 /-- If J is a prime ideal containing I, and its height is less than or equal to the height of I,
 then J is a minimal prime over I -/
-lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPrime]
+lemma Ideal.mem_minimalPrimes_of_height_le {I J : Ideal R} (e : I ≤ J) [J.IsPrime]
     [FiniteHeight J] (e' : J.height ≤ I.height) : J ∈ I.minimalPrimes := by
   obtain ⟨p, h₁, h₂⟩ := Ideal.exists_minimalPrimes_le e
   convert! h₁
@@ -220,6 +219,9 @@ lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPr
   have := finiteHeight_of_le h₂ IsPrime.ne_top'
   exact lt_irrefl _ ((height_strict_mono_of_isPrime h₃).trans_le
     (e'.trans <| height_mono h₁.le))
+
+@[deprecated (since := "2026-07-28")]
+alias Ideal.mem_minimalPrimes_of_height_eq := Ideal.mem_minimalPrimes_of_height_le
 
 /-- A prime ideal has height zero if and only if it is minimal -/
 lemma Ideal.height_eq_zero_iff {I : Ideal R} [I.IsPrime] : height I = 0 ↔ I ∈ minimalPrimes R := by
@@ -433,11 +435,11 @@ lemma IsLocalization.height_map_of_disjoint {S : Type*} [CommRing S] [Algebra R 
   rw [AtPrime.ringKrullDim_eq_height P, AtPrime.ringKrullDim_eq_height p] at this
   exact WithBot.coe_eq_coe.mp this
 
-@[deprecated "Use `mem_minimalPrimes_of_height_eq` instead." (since := "2026-04-02")]
+@[deprecated "Use `mem_minimalPrimes_of_height_le` instead." (since := "2026-04-02")]
 private lemma mem_minimalPrimes_of_primeHeight_eq_height {I J : Ideal R} [J.IsPrime] (e : I ≤ J)
     (e' : J.primeHeight = I.height) [J.FiniteHeight] : J ∈ I.minimalPrimes := by
   rw [← J.height_eq_primeHeight] at e'
-  exact mem_minimalPrimes_of_height_eq e (e' ▸ le_refl _)
+  exact mem_minimalPrimes_of_height_le e (e' ▸ le_refl _)
 
 lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Ideal R) (r : ℕ)
     (hr : r ≤ I.height) : ∃ J ≤ I, J.spanRank ≤ r ∧ r ≤ J.height := by
@@ -478,7 +480,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
         exact Order.add_one_le_of_lt (lt_of_le_of_ne (h₃.trans this) h)
       intro e
       apply hx₂ p
-      · refine ⟨mem_minimalPrimes_of_height_eq (le_sup_left.trans hp.le) (e.symm.trans_le h₃),
+      · refine ⟨mem_minimalPrimes_of_height_le (le_sup_left.trans hp.le) (e.symm.trans_le h₃),
           e.symm⟩
       · apply hp.le <| Ideal.mem_sup_right <| mem_span_singleton_self x
 

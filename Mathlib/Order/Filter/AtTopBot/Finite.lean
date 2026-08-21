@@ -18,7 +18,7 @@ the finiteness theory developed in Mathlib.
 
 public section
 
-variable {ι ι' α β γ : Type*}
+variable {ι α β : Type*}
 
 open Set
 
@@ -124,7 +124,7 @@ theorem HasAntitoneBasis.subbasis_with_rel {f : Filter α} {s : ℕ → Set α}
 
 end Filter
 
-open Filter Finset
+open Filter
 
 namespace Nat
 

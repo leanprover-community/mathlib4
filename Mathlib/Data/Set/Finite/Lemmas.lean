@@ -30,7 +30,7 @@ open Set Function
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u} {β : Type v}
 
 namespace Set
 
@@ -39,7 +39,7 @@ namespace Set
 theorem Finite.fin_embedding {s : Set α} (h : s.Finite) :
     ∃ (n : ℕ) (f : Fin n ↪ α), range f = s :=
   ⟨_, (Fintype.equivFin (h.toFinset : Set α)).symm.asEmbedding, by
-    simp only [Finset.coe_sort_coe, Equiv.asEmbedding_range, Finite.coe_toFinset, setOf_mem_eq]⟩
+    simp only [Finset.coe_sort_coe, Equiv.asEmbedding_range, Finite.coe_toFinset, ofPred_mem_eq]⟩
 
 theorem Finite.fin_param {s : Set α} (h : s.Finite) :
     ∃ (n : ℕ) (f : Fin n → α), Injective f ∧ range f = s :=
@@ -68,7 +68,7 @@ theorem sUnion_finite_eq_univ {X : Type*} : ⋃₀ {(s : Set X) | Set.Finite s} 
 
 /-! ### Infinite sets -/
 
-variable {s t : Set α}
+variable {s : Set α}
 
 /-! ### Order properties -/
 

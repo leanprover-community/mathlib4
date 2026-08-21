@@ -52,8 +52,8 @@ continuous, then `ψ` is either the inclusion map or the composition of the incl
 complex conjugation. -/
 theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ : K →+* ℂ}
     (hc : UniformContinuous ψ) : ψ.toFun = K.subtype ∨ ψ.toFun = conj ∘ K.subtype := by
-  letI : IsTopologicalDivisionRing ℂ := IsTopologicalDivisionRing.mk
-  letI : IsTopologicalRing K.topologicalClosure :=
+  let : IsTopologicalDivisionRing ℂ := IsTopologicalDivisionRing.mk
+  let : IsTopologicalRing K.topologicalClosure :=
     Subring.instIsTopologicalRing K.topologicalClosure.toSubring
   set ι : K → K.topologicalClosure := ⇑(Subfield.inclusion K.le_topologicalClosure)
   have ui : IsUniformInducing ι :=
@@ -63,7 +63,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
   let di := ui.isDenseInducing (?_ : DenseRange ι)
   · -- extψ : closure(K) →+* ℂ is the extension of ψ : K →+* ℂ
     let extψ := IsDenseInducing.extendRingHom ui di.dense hc
-    haveI hψ := (uniformContinuous_uniformly_extend ui di.dense hc).continuous
+    have hψ := (uniformContinuous_uniformly_extend ui di.dense hc).continuous
     rcases Complex.subfield_eq_of_closed (Subfield.isClosed_topologicalClosure K) with h | h
     · left
       let j := RingEquiv.subfieldCongr h

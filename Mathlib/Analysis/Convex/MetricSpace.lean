@@ -5,11 +5,12 @@ Authors: Andrew Yang, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.Algebra
 
 /-!
 
@@ -42,8 +43,6 @@ that has little to do with this definition.
 public section
 
 namespace Convexity
-
-open ConvexSpace
 
 variable {I X : Type*}
 
@@ -276,7 +275,7 @@ instance (priority := low) {V P : Type*}
 instance IsConvexDist.subtype (s : Set X) (hs : IsConvexSet ℝ s) :
     letI : ConvexSpace ℝ s := .subtype s hs
     IsConvexDist s := by
-  letI : ConvexSpace ℝ s := .subtype s hs
+  let : ConvexSpace ℝ s := .subtype s hs
   refine ⟨fun f ↦ ?_⟩
   convert dist_iConvexComb_fst_snd_le (X := X) (f.map fun x ↦ (x.1, x.2)) <;>
     simp [Subtype.dist_eq, Finsupp.sum_mapDomain_index, add_mul]

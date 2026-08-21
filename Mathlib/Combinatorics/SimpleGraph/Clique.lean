@@ -13,6 +13,7 @@ public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Lattice.Nat
 public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Graph cliques
@@ -339,6 +340,7 @@ theorem is3Clique_iff_exists_cycle_length_three :
     ⟨(fun ⟨_, a, _, _, hab, hac, hbc, _⟩ => ⟨a, cons hab (cons hbc (cons hac.symm nil)), by aesop⟩),
     (fun ⟨_, .cons hab (.cons hbc (.cons hca nil)), _, _⟩ => ⟨_, _, _, _, hab, hca.symm, hbc, rfl⟩)⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If a set of vertices `A` is an `n`-clique in subgraph of `G` induced by a superset of `A`,
 its embedding is an `n`-clique in `G`. -/
 theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
@@ -404,15 +406,25 @@ theorem not_cliqueFree_iff_top_isContained (n : ℕ) : ¬G.CliqueFree n ↔ comp
 
 @[deprecated (since := "2026-03-23")] alias not_cliqueFree_iff := not_cliqueFree_iff_top_isContained
 
-theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (Copy (completeGraph <| Fin n) G) := by
+theorem cliqueFree_iff_free_top_fin : G.CliqueFree n ↔ (completeGraph (Fin n)).Free G :=
+  not_cliqueFree_iff_top_isContained n |>.not_right
+
+alias ⟨CliqueFree.free_top_fin, _⟩ := cliqueFree_iff_free_top_fin
+
+theorem cliqueFree_iff_isEmpty_copy_top_fin {n : ℕ} :
+    G.CliqueFree n ↔ IsEmpty (Copy (completeGraph <| Fin n) G) := by
   contrapose!
   exact not_cliqueFree_iff_top_isContained n
 
+@[deprecated (since := "2026-07-04")] alias cliqueFree_iff := cliqueFree_iff_isEmpty_copy_top_fin
+
 /-- A simple graph has no `card β`-cliques iff it does not contain `⊤ : SimpleGraph β`. -/
-theorem cliqueFree_iff_top_free {β : Type*} [Fintype β] :
+theorem cliqueFree_card_iff_free_top {β : Type*} [Fintype β] :
     G.CliqueFree (card β) ↔ (⊤ : SimpleGraph β).Free G := by
   rw [← not_iff_not, not_free, not_cliqueFree_iff_top_isContained,
     isContained_congr (Iso.completeGraph (equivFin β)) Iso.refl]
+
+@[deprecated (since := "2026-07-04")] alias cliqueFree_iff_top_free := cliqueFree_card_iff_free_top
 
 theorem IsContained.not_cliqueFree_card [Fintype α] (f : completeGraph α ⊑ G) :
     ¬G.CliqueFree (card α) := by
@@ -459,15 +471,15 @@ theorem CliqueFree.comap {H : SimpleGraph β} (hle : H ⊑ G) (h : G.CliqueFree 
 
 /-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
-  rw [cliqueFree_iff]
+  rw [cliqueFree_iff_free_top_fin]
   contrapose! hc
   simpa only [Fintype.card_fin] using card_le_of_embedding hc.some.toEmbedding
 
 /-- A complete `r`-partite graph has no `n`-cliques for `r < n`. -/
 theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*)
     (hc : card ι < n) : (completeMultipartiteGraph V).CliqueFree n := by
-  rw [cliqueFree_iff, isEmpty_iff]
-  intro f
+  rw [cliqueFree_iff_free_top_fin]
+  intro ⟨f⟩
   obtain ⟨v, w, hn, he⟩ := exists_ne_map_eq_of_card_lt (Sigma.fst ∘ f) (by simp [hc])
   rw [← top_adj, ← f.topEmbedding.map_adj_iff, comap_adj, top_adj] at hn
   exact absurd he hn
@@ -476,6 +488,7 @@ namespace completeMultipartiteGraph
 
 variable {ι : Type*} (V : ι → Type*)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Embedding of the complete graph on `ι` into `completeMultipartiteGraph` on `ι` nonempty parts -/
 @[simps]
 def topEmbedding (f : ∀ (i : ι), V i) :
@@ -486,7 +499,7 @@ def topEmbedding (f : ∀ (i : ι), V i) :
 
 theorem not_cliqueFree_of_le_card [Fintype ι] (f : ∀ (i : ι), V i) (hc : n ≤ card ι) :
     ¬ (completeMultipartiteGraph V).CliqueFree n :=
-  fun hf ↦ (cliqueFree_iff.1 <| hf.mono hc).elim' <|
+  fun hf ↦ (cliqueFree_iff_isEmpty_copy_top_fin.1 <| hf.mono hc).elim' <|
     topEmbedding V f |>.toCopy.comp (Iso.completeGraph (equivFin ι).symm).toCopy
 
 theorem not_cliqueFree_of_infinite [Infinite ι] (f : ∀ (i : ι), V i) :
@@ -546,11 +559,11 @@ lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} 
   have ht : (t : Set α) \ {x} = t := sdiff_eq_left.mpr <| Set.disjoint_singleton_right.mpr hf
   exact h t ⟨ht ▸ hc.1.sdiff_of_sup_edge, hc.2⟩
 
-open Classical in
 /-- Adding an edge increases the clique number by at most one. -/
 protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
-    (G ⊔ edge v w).CliqueFree (n + 1) :=
-  fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
+    (G ⊔ edge v w).CliqueFree (n + 1) := by
+  classical
+  exact fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
     (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
 
 lemma IsNClique.exists_not_adj_of_cliqueFree_succ (hc : G.IsNClique n s)
@@ -840,6 +853,7 @@ section IndepSet
 variable {s : Set α}
 
 /-- An independent set in a graph is a set of vertices that are pairwise not adjacent. -/
+@[wikidata Q1060343]
 abbrev IsIndepSet (s : Set α) : Prop :=
   s.Pairwise (fun v w ↦ ¬G.Adj v w)
 
@@ -882,6 +896,7 @@ theorem isIndepSet_neighborSet_of_triangleFree (h : G.CliqueFree 3) (v : α) :
   obtain ⟨j, avj, k, avk, _, ajk⟩ := nind
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The embedding of an independent set of an induced subgraph of the subgraph `G` is an independent
 set in `G` and vice versa. -/

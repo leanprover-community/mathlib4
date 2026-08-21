@@ -24,7 +24,7 @@ version.
 
 public section
 
-open Set Metric TopologicalSpace Function Filter
+open Set TopologicalSpace Filter
 
 open scoped Topology NNReal
 

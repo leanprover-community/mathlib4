@@ -394,7 +394,7 @@ theorem proj_dioph (i : α) : DiophFn fun v => v i :=
   abs_poly_dioph (Poly.proj i)
 
 theorem diophPFun_comp1 {S : Set (Option α → ℕ)} (d : Dioph S) {f} (df : DiophPFun f) :
-    Dioph {v : α → ℕ | ∃ h : f.Dom v, f.fn v h ::ₒ v ∈ S} :=
+    Dioph {v : α → ℕ | ∃ h : v ∈ f.Dom, f.fn v h ::ₒ v ∈ S} :=
   ext (ex1_dioph (d.inter df)) fun v =>
     ⟨fun ⟨x, hS, (h : Exists _)⟩ => by
       rw [show (x ::ₒ v) ∘ some = v from funext fun s => rfl] at h
@@ -443,6 +443,7 @@ theorem diophFn_vec (f : Vector3 ℕ n → ℕ) : DiophFn f ↔ Dioph {v | f (v 
 theorem diophPFun_vec (f : Vector3 ℕ n →. ℕ) : DiophPFun f ↔ Dioph {v | (v ∘ fs, v fz) ∈ f.graph} :=
   ⟨reindex_dioph _ (fz ::ₒ fs), reindex_dioph _ (none::some)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem diophFn_compn :
     ∀ {n} {S : Set (α ⊕ (Fin2 n) → ℕ)} (_ : Dioph S) {f : Vector3 ((α → ℕ) → ℕ) n}
       (_ : VectorAllP DiophFn f), Dioph {v : α → ℕ | (v ⊗ fun i => f i v) ∈ S}
@@ -466,7 +467,7 @@ theorem diophFn_compn :
                 congr! 1
                 ext x; obtain _ | _ | _ := x <;> rfl
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
-            @diophFn_compn n (fun v => (v ∘ inl ⊗ f (v ∘ inl) :: v ∘ inr) ∈ S) this _ dfl
+            @diophFn_compn n {v | (v ∘ inl ⊗ f (v ∘ inl) :: v ∘ inr) ∈ S} this _ dfl
           ext this fun v => by
             dsimp
             congr! 3 with x
@@ -476,6 +477,7 @@ theorem dioph_comp {S : Set (Vector3 ℕ n)} (d : Dioph S) (f : Vector3 ((α →
     (df : VectorAllP DiophFn f) : Dioph {v | (fun i => f i v) ∈ S} :=
   diophFn_compn (reindex_dioph _ inr d) df
 
+set_option backward.isDefEq.respectTransparency false in
 theorem diophFn_comp {f : Vector3 ℕ n → ℕ} (df : DiophFn f) (g : Vector3 ((α → ℕ) → ℕ) n)
     (dg : VectorAllP DiophFn g) : DiophFn fun v => f fun i => g i v :=
   dioph_comp ((diophFn_vec _).1 df) ((fun v ↦ v none) :: fun i v ↦ g i (v ∘ some)) <| by

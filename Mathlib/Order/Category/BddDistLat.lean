@@ -48,7 +48,6 @@ abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat where
 theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `BddDistLat R`. -/
 @[ext]
 structure Hom (X Y : BddDistLat.{u}) where

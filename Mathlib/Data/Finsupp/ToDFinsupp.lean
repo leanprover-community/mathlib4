@@ -251,6 +251,7 @@ variable {η : ι → Type*} {N : Type*} [Semiring R]
 
 open Finsupp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Finsupp.split` is an equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σ i, η i) →₀ N) ≃ Π₀ i, η i →₀ N where
   toFun f := ⟨split f, Trunc.mk ⟨(splitSupport f : Finset ι).val, fun i => by
@@ -297,9 +298,10 @@ theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [Zero N] (a : Σ i, η
   by_cases h : i = j
   · subst h
     classical simp [split_apply, Finsupp.single_apply]
-  suffices Finsupp.single (⟨i, a⟩ : Σ i, η i) n ⟨j, b⟩ = 0 by simp [split_apply, dif_neg h, this]
+  suffices Finsupp.single (⟨i, a⟩ : Σ i, η i) n ⟨j, b⟩ = 0 by
+    simp [split_apply, dite_eq_right h, this]
   have H : (⟨i, a⟩ : Σ i, η i) ≠ ⟨j, b⟩ := by simp [h]
-  classical rw [Finsupp.single_apply, if_neg H]
+  classical rw [Finsupp.single_apply, ite_eq_right H]
 
 -- Without this Lean fails to find the `AddZeroClass` instance on `Π₀ i, (η i →₀ N)`.
 attribute [-instance] Finsupp.instZero

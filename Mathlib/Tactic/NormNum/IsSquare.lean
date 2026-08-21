@@ -166,12 +166,12 @@ def evalIsSquareRat : NormNumExt where eval {u αP} e := do
           assertInstancesCommute
           return .isTrue q(isSquare_of_isNNRat_rat $a $n $d $pn $pd $pa)
         | .mk false pd =>
-          let ⟨e, he⟩ := Tactic.NormNum.proveNatGCD n d
+          let ⟨e, he⟩ := proveNatGCD n d
           have : $e =Q 1 := ⟨⟩
           assertInstancesCommute
           return .isFalse q(not_isSquare_of_isNNRat_rat_of_den $a $n $d $pd $he $pa)
       | .mk false pn =>
-        let ⟨e, he⟩ := Tactic.NormNum.proveNatGCD n d
+        let ⟨e, he⟩ := proveNatGCD n d
         have : $e =Q 1 := ⟨⟩
         assertInstancesCommute
         return .isFalse q(not_isSquare_of_isNNRat_rat_of_num $a $n $d $pn $he $pa)

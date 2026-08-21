@@ -17,9 +17,8 @@ measure) to vector measures through a bilinear pairing.
 Let `E`, `F` be normed vector spaces, and `G` be a Banach space (complete normed vector space).
 We fix a continuous linear pairing `B : E →L[ℝ] F →L[ℝ] G` and an `F`-valued vector measure `μ`
 on a measurable space `X`.
-For an integrable function `f : X → E` with respect to the total variation of the vector measure
-on `X` informally written `μ ∘ B.flip`, we define the `G`-valued integral, which is informally
-written `∫ B (f x) ∂μ x`.
+For an integrable function `f : X → E` with respect to the total variation of `μ`,
+we define the `G`-valued integral, which is informally written `∫ B (f x) ∂μ x`.
 
 Such integral is defined through the general setting `setToFun` which sends a set function to the
 integral of integrable functions, see the file
@@ -54,10 +53,6 @@ The integral against vector measures is defined through the extension process de
 ## Note
 
 Let `μ` be a vector measure and `B` be a continuous linear pairing.
-We often consider integrable functions with respect to the total variation of
-`μ.transpose B` = `μ.mapRange B.flip.toAddMonoidHom B.flip.continuous`, which is the reference
-measure for the pairing integral.
-
 When `f` is not integrable with respect to `μ.variation`, the value of
 `μ.integral B f` is set to `0`. This is an analogous convention to the Bochner integral. However,
 there are cases where a natural definition of the integral as an unconditional sum exists, but `f`
@@ -73,11 +68,10 @@ public section
 open Set MeasureTheory VectorMeasure ContinuousLinearMap Filter Topology
 open scoped ENNReal NNReal
 
-variable {ι X Y E F G H : Type*} {mX : MeasurableSpace X} [MeasurableSpace Y]
+variable {ι X Y E F G : Type*} {mX : MeasurableSpace X} [MeasurableSpace Y]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  [NormedAddCommGroup H] [NormedSpace ℝ H]
 
 namespace MeasureTheory
 
@@ -139,9 +133,11 @@ namespace VectorMeasure
 variable (μ ν : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) {C : E →L[ℝ] F →L[ℝ] G}
   {f g : X → E} {φ : X → Y}
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma transpose_zero : (0 : VectorMeasure X F).transpose B = 0 := by
   simp [transpose]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma transpose_restrict (s : Set X) :
     (μ.restrict s).transpose B = (μ.transpose B).restrict s := by
   by_cases hs : MeasurableSet s
@@ -149,12 +145,14 @@ lemma transpose_restrict (s : Set X) :
     simp [VectorMeasure.restrict_apply, hs, ht, transpose]
   · simp [restrict_not_measurable _ hs]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma transpose_map : (μ.map φ).transpose B = (μ.transpose B).map φ := by
   by_cases hφ : Measurable φ; swap
   · simp [map, hφ]
   ext s hs
   simp [transpose, map_apply, hs, hφ]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma transpose_add :
     (μ + ν).transpose B = μ.transpose B + ν.transpose B := by
   simp [transpose]
@@ -163,11 +161,13 @@ lemma transpose_smul (c : ℝ) :
     (c • μ).transpose B = c • μ.transpose B := by
   simp [transpose, mapRange_smul]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma transpose_dirac (x : X) (v : F) :
     (dirac x v).transpose B = dirac x (B.flip v) := by
   ext s hs : 1
   by_cases hx : x ∈ s <;> simp [transpose, hx, hs]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma variation_transpose_le :
     (μ.transpose B).variation ≤ ‖B‖₊ • μ.variation := by
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
@@ -198,13 +198,12 @@ lemma variation_transpose_eq_smul [Nontrivial E] {C : ℝ≥0}
       grw [this, smul_smul, mul_inv_cancel₀ hC, one_smul]
     apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
     have : ‖μ s‖ₑ ≤ C⁻¹ • ‖(μ.transpose B) s‖ₑ := by
-      simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe]
       obtain ⟨x, hx⟩ : ∃ (x : E), x ≠ 0 := exists_ne 0
       have : ‖B.flip (μ s) x‖₊ ≤ ‖B.flip (μ s)‖₊ * ‖x‖₊ := le_opNNNorm _ _
       simp only [flip_apply, hB] at this
       rw [mul_right_comm, mul_le_mul_iff_left₀ (by simpa), ← le_div_iff₀' (by positivity),
-        div_eq_inv_mul] at this
-      exact ENNReal.coe_le_coe_of_le this
+        div_eq_inv_mul, ← ENNReal.coe_le_coe] at this
+      exact this
     grw [this, enorm_measure_le_variation, Measure.smul_apply]
 
 lemma variation_transpose_eq [Nontrivial E] (hB : ∀ x y, ‖B x y‖₊ = ‖x‖₊ * ‖y‖₊) :
@@ -229,21 +228,20 @@ function with respect to a signed measure. -/
   simp [nnnorm_smul, mul_comm]
 
 /-- `f : X → E` is said to be integrable with respect to `μ` and `B` if it is integrable with
-respect to `(μ.transpose B).variation`. -/
+respect to `μ.variation`. -/
 protected abbrev Integrable (μ : VectorMeasure X F) (f : X → E) : Prop :=
   MeasureTheory.Integrable f μ.variation
 
 /-- `f : X → E` is said to be integrable with respect to `μ` and `B` on `s` if it is integrable with
 respect to the vector measure `μ.restrict s`. When `s` is measurable, this is equivalent to
-integrability with respect to `(μ.transpose B).variation.restrict s`. -/
+integrability with respect to `μ.variation.restrict s`. -/
 protected abbrev IntegrableOn
     (μ : VectorMeasure X F) (f : X → E) (s : Set X) : Prop :=
   (μ.restrict s).Integrable f
 
-open Classical in
 /-- The `G`-valued integral of `E`-valued function and the `F`-valued vector measure `μ` with linear
 paring `B : E →L[ℝ] F →L[ℝ] G` . This is set to be `0` if `G` is not complete or if `f` is not
-integrable with respect to `(μ.transpose B).variation`. Notation `∫ᵛ x, f x ∂[B; μ]`.
+integrable with respect to `μ.variation`. Notation `∫ᵛ x, f x ∂[B; μ]`.
 
 When `μ` is `G`-valued, to get the integral in `G` of a real-valued function, take
 `B = ContinousLinearMap.lsmul ℝ ℝ`. Notation `∫ᵛ x, f x ∂•μ`.
@@ -303,11 +301,13 @@ theorem transpose_zero_cbm (μ : VectorMeasure X F) :
   ext
   simp [transpose]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem transpose_add_vectorMeasure (μ ν : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
     (μ + ν).transpose B = μ.transpose B + ν.transpose B := by
   simp [transpose]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem transpose_add_cbm (μ : VectorMeasure X F) (B C : E →L[ℝ] F →L[ℝ] G) :
     μ.transpose (B + C) = μ.transpose B + μ.transpose C := by
@@ -331,24 +331,28 @@ theorem transpose_finsetSum_cbm (μ : VectorMeasure X F) (B : ι → E →L[ℝ]
   | empty => simp
   | insert i s his ih => simp [Finset.sum_insert, his, ih]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem transpose_neg_vectorMeasure (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
     (-μ).transpose B = - (μ.transpose B) := by
   ext
   simp [transpose]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem transpose_neg_cbm (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
     μ.transpose (-B) = - (μ.transpose B) := by
   ext
   simp [transpose]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem transpose_sub_vectorMeasure (μ ν : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
     (μ - ν).transpose B = μ.transpose B - ν.transpose B := by
   ext
   simp [transpose]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem transpose_sub_cbm (μ : VectorMeasure X F) (B C : E →L[ℝ] F →L[ℝ] G) :
     μ.transpose (B - C) = μ.transpose B - μ.transpose C := by
@@ -530,6 +534,7 @@ theorem integral_smul_nnreal_vectorMeasure (f : X → E) (c : ℝ≥0) :
     ∫ᵛ x, f x ∂[B; c • μ] = c • ∫ᵛ x, f x ∂[B; μ] :=
   integral_smul_vectorMeasure f (c : ℝ)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem integral_add_vectorMeasure (hμ : μ.Integrable f) (hν : ν.Integrable f) :
     ∫ᵛ x, f x ∂[B; μ + ν] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, f x ∂[B; ν] :=
   setToFun_add_left'' (by simp [transpose]) hμ hν (by grw [variation_add_le])
@@ -566,6 +571,7 @@ theorem integral_zero_cbm :
     ∫ᵛ x, f x ∂[(0 : E →L[ℝ] F →L[ℝ] G); μ] = 0 := by
   simp [integral, FunLike.coe_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem integral_add_cbm (hB : μ.Integrable f) :
     ∫ᵛ x, f x ∂[B + C; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, f x ∂[C; μ] := by
   refine setToFun_add_left'' (by simp [transpose]) hB hB ?_
@@ -802,7 +808,7 @@ theorem nndist_integral_add_vectorMeasure_le_lintegral
   rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel_left]
   exact enorm_integral_le_lintegral_enorm
 
-variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X} {v : F}
+variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X}
 
 lemma variation_transpose_map_le :
     ((μ.map φ).transpose B).variation ≤ Measure.map φ (μ.transpose B).variation := by
@@ -818,6 +824,7 @@ theorem Integrable.map {β : Type*} [MeasurableSpace β] {φ : X → β}
   apply ((integrable_map_measure hfm hφ.aemeasurable).2 h).mono_measure
   apply variation_map_le
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem integral_map {β : Type*} [MeasurableSpace β]
     {φ : X → β} (hφ : Measurable φ) {f : β → E}
     (hfm : AEStronglyMeasurable f (μ.variation.map φ))

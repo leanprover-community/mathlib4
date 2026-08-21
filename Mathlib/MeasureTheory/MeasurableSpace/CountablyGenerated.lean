@@ -57,6 +57,9 @@ class CountablyGenerated (α : Type*) [m : MeasurableSpace α] : Prop where
 
 /-- A countable set of sets that generate the measurable space.
 We insert `∅` to ensure it is nonempty. -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable
 def countableGeneratingSet (α : Type*) [MeasurableSpace α] [h : CountablyGenerated α] :
     Set (Set α) :=
   insert ∅ h.isCountablyGenerated.choose
@@ -83,6 +86,9 @@ lemma measurableSet_countableGeneratingSet [MeasurableSpace α] [CountablyGenera
   exact measurableSet_generateFrom hs
 
 /-- A countable sequence of sets generating the measurable space. -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable
 def natGeneratingSequence (α : Type*) [MeasurableSpace α] [CountablyGenerated α] : ℕ → (Set α) :=
   enumerateCountable (countable_countableGeneratingSet (α := α)) ∅
 
@@ -100,7 +106,7 @@ theorem CountablyGenerated.comap [m : MeasurableSpace β] [h : CountablyGenerate
     @CountablyGenerated α (.comap f m) := by
   rcases h with ⟨⟨b, hbc, rfl⟩⟩
   rw [comap_generateFrom]
-  letI := generateFrom (preimage f '' b)
+  let := generateFrom (preimage f '' b)
   exact ⟨_, hbc.image _, rfl⟩
 
 theorem CountablyGenerated.sup {m₁ m₂ : MeasurableSpace β} (h₁ : @CountablyGenerated β m₁)
@@ -138,11 +144,14 @@ section CountablyGeneratedAtom
 
 variable {mα : MeasurableSpace α} [CountablyGenerated α]
 
-open Classical in
+open scoped Classical in
 /-- The atoms in a countably generated measurable space.
 
 Some of those sets may be empty, but the nonempty ones are the atoms of the measurable space.
 See `measurableAtom_eq_countablyGeneratedAtom_natGeneratingSequence`. -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable
 def countablyGeneratedAtom (α : Type*) [MeasurableSpace α] [CountablyGenerated α] :
     (ℕ → Prop) → Set α :=
   fun p ↦ ⋂ n, if p n then natGeneratingSequence α n else (natGeneratingSequence α n)ᶜ
@@ -156,7 +165,7 @@ lemma measurableSet_countablyGeneratedAtom (p : ℕ → Prop) :
 lemma disjoint_countablyGeneratedAtom :
     Pairwise (Function.onFun Disjoint (countablyGeneratedAtom α)) := by
   intro p q hpq s hsp hsq
-  simp only [le_eq_subset, bot_eq_empty, subset_empty_iff] at hsp hsq ⊢
+  simp only [bot_eq_empty, subset_empty_iff] at hsp hsq ⊢
   ext x
   simp only [mem_empty_iff_false, iff_false]
   intro hxs
@@ -175,7 +184,7 @@ lemma mem_countablyGeneratedAtom_natGeneratingSequence (x : α) :
     x ∈ countablyGeneratedAtom α (x ∈ natGeneratingSequence α ·) := by
   simp [countablyGeneratedAtom]; grind
 
-open Classical in
+open scoped Classical in
 /-- Any measurable set in a countably generated measurable space can be expressed as a union of
 atoms. -/
 lemma exists_eq_iUnion_countablyGeneratedAtom {s : Set α} (hs : MeasurableSet s) :
@@ -282,7 +291,7 @@ then this is witnessed by sets in `S`. -/
 theorem separating_of_generateFrom (S : Set (Set α))
     [h : @SeparatesPoints α (generateFrom S)] :
     ∀ x y : α, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y := by
-  letI := generateFrom S
+  let := generateFrom S
   intro x y hxy
   rw [← forall_generateFrom_mem_iff_mem_iff] at hxy
   exact separatesPoints_def <| fun _ hs ↦ (hxy _ hs).mp
@@ -391,7 +400,7 @@ theorem exists_countablyGenerated_le_of_countablySeparated [m : MeasurableSpace 
 
 open Function
 
-open Classical in
+open scoped Classical in
 /-- A map from a measurable space to the Cantor space `ℕ → Bool` induced by a countable
 sequence of sets generating the measurable space. -/
 noncomputable
@@ -403,7 +412,7 @@ theorem measurable_mapNatBool [MeasurableSpace α] [CountablyGenerated α] :
   rw [measurable_pi_iff]
   refine fun n ↦ measurable_to_bool ?_
   simp only [preimage, mem_singleton_iff, mapNatBool,
-    Bool.decide_iff, setOf_mem_eq]
+    Bool.decide_iff, ofPred_mem_eq]
   apply measurableSet_natGeneratingSequence
 
 theorem injective_mapNatBool [MeasurableSpace α] [CountablyGenerated α]
@@ -479,7 +488,6 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
     | empty => exact ⟨∅, by simp, by simp⟩
     | compl u _ hu =>
       obtain ⟨S, hS_subset, rfl⟩ := hu
-      classical
       refine ⟨(memPartition t n).toFinset \ S, ?_, ?_⟩
       · simp only [Finset.coe_sdiff, coe_toFinset]
         exact sdiff_subset
@@ -528,7 +536,7 @@ lemma generateFrom_iUnion_memPartition (t : ℕ → Set α) :
       rw [hun]
       exact MeasurableSet.univ
     | succ n ih =>
-      simp only [memPartition_succ, mem_setOf_eq] at hun
+      simp only [memPartition_succ, mem_ofPred_eq] at hun
       obtain ⟨v, hv, huv⟩ := hun
       rcases huv with rfl | rfl
       · exact (ih v hv).inter (measurableSet_generateFrom ⟨n, rfl⟩)
@@ -571,7 +579,10 @@ variable [m : MeasurableSpace α] [h : CountablyGenerated α]
 /-- For each `n : ℕ`, `countablePartition α n` is a partition of the space in at most
 `2^n` sets. Each partition is finer than the preceding one. The measurable space generated by
 the union of all those partitions is the measurable space on `α`. -/
-def countablePartition (α : Type*) [MeasurableSpace α] [CountablyGenerated α] : ℕ → Set (Set α) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def countablePartition (α : Type*) [MeasurableSpace α] [CountablyGenerated α] :
+    ℕ → Set (Set α) :=
   memPartition (enumerateCountable countable_countableGeneratingSet ∅)
 
 lemma measurableSet_enumerateCountable_countableGeneratingSet
@@ -627,7 +638,9 @@ lemma measurableSet_countablePartition (n : ℕ) {s : Set α} (hs : s ∈ counta
   generateFrom_countablePartition_le α n _ (measurableSet_generateFrom hs)
 
 /-- The set in `countablePartition α n` to which `a : α` belongs. -/
-def countablePartitionSet (n : ℕ) (a : α) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def countablePartitionSet (n : ℕ) (a : α) : Set α :=
   memPartitionSet (enumerateCountable countable_countableGeneratingSet ∅) n a
 
 lemma countablePartitionSet_mem (n : ℕ) (a : α) :

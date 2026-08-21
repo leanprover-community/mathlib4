@@ -468,8 +468,7 @@ section Group
 
 section
 
-variable {k G V : Type*} [Semiring k] [Group G] [AddCommMonoid V] [Module k V]
-  (ρ : Representation k G V)
+variable {k G : Type*} [Semiring k] [Group G]
 @[simp]
 theorem coeff_ofMulAction {H : Type*} [MulAction G H] (g : G) (f : k[H]) (h : H) :
     (ofMulAction k G H g f).coeff h = f.coeff (g⁻¹ • h) := by
@@ -495,9 +494,9 @@ variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k 
 lemma asAlgebraHom_ofMulAction_smul_eq_mul (x y : k[G]) :
     (ofMulAction k G G).asAlgebraHom x y = x * y := by
   induction x using induction_on with
-  | hM g => ext; simp [MonoidAlgebra.coeff_single_mul_apply]
-  | hadd x y hx hy => simp [hx, hy, add_mul]
-  | hsmul r x hx => simp [← hx]
+  | of g => ext; simp [MonoidAlgebra.coeff_single_mul_apply]
+  | add x y hx hy => simp [hx, hy, add_mul]
+  | smul r x hx => simp [← hx]
 
 @[deprecated (since := "2026-06-18")]
 alias ofMulAction_self_smul_eq_mul := asAlgebraHom_ofMulAction_smul_eq_mul
@@ -698,9 +697,8 @@ end LinearHom
 
 section
 
-variable {k G : Type*} [CommSemiring k] [Monoid G] {α A B : Type*}
+variable {k G : Type*} [CommSemiring k] [Monoid G] {α A : Type*}
   [AddCommMonoid A] [Module k A] (ρ : Representation k G A)
-  [AddCommMonoid B] [Module k B] (τ : Representation k G B)
 
 open Finsupp
 
@@ -732,7 +730,6 @@ lemma free_single_single (g h : G) (i : α) (r : k) :
 
 variable (k G) (α : Type*)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The free `k[G]`-module on a type `α` is isomorphic to the representation `free k G α`. -/
 noncomputable def finsuppLEquivFreeAsModule : (α →₀ k[G]) ≃ₗ[k[G]] (free k G α).asModule where
   toAddEquiv := (asModuleEquiv _).symm.toAddEquiv

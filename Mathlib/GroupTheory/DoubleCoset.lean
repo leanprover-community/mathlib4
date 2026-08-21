@@ -71,7 +71,7 @@ lemma eq_of_not_disjoint {H K : Subgroup G} {a b : G}
   apply doubleCoset_eq_of_mem ha
 
 /-- The setoid defined by the `doubleCoset` relation -/
-@[implicit_reducible]
+@[instance_reducible]
 def setoid (H K : Set G) : Setoid G :=
   Setoid.ker fun x => doubleCoset x H K
 
@@ -106,7 +106,9 @@ lemma rel_bot_eq_right_group_rel (H : Subgroup G) :
     exact ⟨b * a⁻¹, h, 1, rfl, by rw [mul_one, inv_mul_cancel_right]⟩
 
 /-- Create a double coset out of an element of `H \ G / K` -/
-def quotToDoubleCoset (H K : Subgroup G) (q : Quotient (H : Set G) K) : Set G :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def quotToDoubleCoset (H K : Subgroup G) (q : Quotient (H : Set G) K) : Set G :=
   doubleCoset q.out H K
 
 /-- Map from `G` to `H \ G / K` -/
@@ -140,6 +142,7 @@ lemma mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
   rw [eq]
   exact mem_doubleCoset.mp (h.symm ▸ mem_doubleCoset_self H K b)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) (a : G) :
     a ∈ quotToDoubleCoset H K i ↔ mk H K a = i := by
   refine ⟨fun hg ↦ by simp [mk_eq_of_doubleCoset_eq (doubleCoset_eq_of_mem hg)], fun hg ↦ ?_⟩

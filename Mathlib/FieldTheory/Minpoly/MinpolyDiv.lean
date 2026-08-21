@@ -45,7 +45,7 @@ variable {R x}
 
 lemma minpolyDiv_eq_zero (hx : ¬IsIntegral R x) : minpolyDiv R x = 0 := by
   delta minpolyDiv minpoly
-  rw [dif_neg hx, Polynomial.map_zero, zero_divByMonic]
+  rw [dite_eq_right hx, Polynomial.map_zero, zero_divByMonic]
 
 lemma eval_minpolyDiv_self : (minpolyDiv R x).eval x = aeval x (derivative <| minpoly R x) := by
   rw [← eval_map_algebraMap, ← derivative_map, ← minpolyDiv_spec R x]; simp
@@ -157,7 +157,6 @@ lemma span_coeff_minpolyDiv :
     Submodule.span R (Set.range (coeff (minpolyDiv R x))) =
       Subalgebra.toSubmodule (R[x]) := by
   nontriviality S
-  classical
   apply le_antisymm
   · rw [Submodule.span_le]
     rintro _ ⟨i, rfl⟩

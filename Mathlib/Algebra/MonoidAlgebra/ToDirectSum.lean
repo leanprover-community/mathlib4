@@ -165,7 +165,6 @@ namespace DirectSum
 
 variable [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toAddMonoidAlgebra_zero [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
     toAddMonoidAlgebra 0 = (0 : AddMonoidAlgebra M ι) := by simp [toAddMonoidAlgebra]
@@ -267,6 +266,6 @@ theorem AddMonoidAlgebra.toDirectSum_pow [DecidableEq ι] [AddMonoid ι] [Semiri
 theorem DirectSum.toAddMonoidAlgebra_pow [DecidableEq ι] [AddMonoid ι] [Semiring M]
     [∀ m : M, Decidable (m ≠ 0)] (f : ⨁ _ : ι, M) (n : ℕ) :
     (f ^ n).toAddMonoidAlgebra = toAddMonoidAlgebra f ^ n := by
-  classical exact map_pow addMonoidAlgebraRingEquivDirectSum.symm f n
+  exact map_pow addMonoidAlgebraRingEquivDirectSum.symm f n
 
 end Equivs

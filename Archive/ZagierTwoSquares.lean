@@ -38,7 +38,7 @@ variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
 def zagierSet : Set (ℕ × ℕ × ℕ) := {t | t.1 * t.1 + 4 * t.2.1 * t.2.2 = 4 * k + 1}
 
 lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < x ∧ 0 < y ∧ 0 < z := by
-  rw [zagierSet, mem_setOf_eq] at h
+  rw [zagierSet, mem_ofPred_eq] at h
   refine ⟨?_, ?_, ?_⟩
   all_goals
     by_contra q
@@ -57,7 +57,7 @@ lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < 
 lemma zagierSet_upper_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) :
     x ≤ k + 1 ∧ y ≤ k ∧ z ≤ k := by
   obtain ⟨_, _, _⟩ := zagierSet_lower_bound k h
-  rw [zagierSet, mem_setOf_eq] at h
+  rw [zagierSet, mem_ofPred_eq] at h
   refine ⟨?_, ?_, ?_⟩ <;> nlinarith
 
 lemma zagierSet_subset : zagierSet k ⊆ Ioc 0 (k + 1) ×ˢ Ioc 0 k ×ˢ Ioc 0 k := by
@@ -80,7 +80,7 @@ variable (k : ℕ)
 
 /-- The obvious involution `(x, y, z) ↦ (x, z, y)`. -/
 def obvInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨x, z, y⟩, by
-  simp only [zagierSet, Set.mem_setOf_eq] at h ⊢
+  simp only [zagierSet, Set.mem_ofPred_eq] at h ⊢
   linarith [h]⟩
 
 theorem obvInvo_sq : obvInvo k ^ 2 = 1 := rfl
@@ -93,7 +93,7 @@ theorem sq_add_sq_of_nonempty_fixedPoints (hn : (fixedPoints (obvInvo k)).Nonemp
   obtain ⟨⟨⟨x, y, z⟩, he⟩, hf⟩ := hn
   have := mem_fixedPoints_iff.mp hf
   simp only [obvInvo, Subtype.mk.injEq, Prod.mk.injEq, true_and] at this
-  simp only [zagierSet, Set.mem_setOf_eq] at he
+  simp only [zagierSet, Set.mem_ofPred_eq] at he
   use x, (2 * y)
   rw [show 2 * y * (2 * y) = 4 * y * y by linarith, ← he, this.1]
 
@@ -103,7 +103,7 @@ def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
   ⟨if x + z < y then ⟨x + 2 * z, z, y - x - z⟩ else
    if 2 * y < x then ⟨x - 2 * y, x + z - y, y⟩ else
                      ⟨2 * y - x, y, x + z - y⟩, by
-  split_ifs with less more <;> simp only [zagierSet, Set.mem_setOf_eq] at h ⊢
+  split_ifs with less more <;> simp only [zagierSet, Set.mem_ofPred_eq] at h ⊢
   · -- less: `x + z < y` (`x < y - z` as stated by Zagier)
     rw [Nat.sub_sub]; zify [less.le] at h ⊢; linarith [h]
   · -- more: `2 * y < x`
@@ -113,6 +113,7 @@ def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
 
 variable [hk : Fact (4 * k + 1).Prime]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `complexInvo k` is indeed an involution. -/
 theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
   change complexInvo k ∘ complexInvo k = id
@@ -139,6 +140,7 @@ theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
       ← Nat.add_sub_assoc less, ← add_assoc, Nat.sub_add_cancel more, Nat.sub_sub _ _ y,
       ← two_mul, add_comm, Nat.add_sub_cancel]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any fixed point of `complexInvo k` must be `(1, 1, k)`. -/
 theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (complexInvo k)) :
     t.val = (1, 1, k) := by
@@ -152,7 +154,7 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
   · -- more
     obtain ⟨_, _, _⟩ := mem; simp_all
   · -- middle (the one fixed point falls under this case)
-    simp only [zagierSet, Set.mem_setOf_eq] at h
+    simp only [zagierSet, Set.mem_ofPred_eq] at h
     replace mem := mem.1
     rw [tsub_eq_iff_eq_add_of_le more, ← two_mul] at mem
     replace mem := (mul_left_cancel₀ two_ne_zero mem).symm
@@ -167,8 +169,9 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
 
 /-- The singleton containing `(1, 1, k)`. -/
 def singletonFixedPoint : Finset (zagierSet k) :=
-  {⟨(1, 1, k), (by simp only [zagierSet, Set.mem_setOf_eq]; linarith)⟩}
+  {⟨(1, 1, k), (by simp only [zagierSet, Set.mem_ofPred_eq]; linarith)⟩}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `complexInvo k` has exactly one fixed point. -/
 theorem card_fixedPoints_eq_one : Fintype.card (fixedPoints (complexInvo k)) = 1 := by
   rw [show 1 = Finset.card (singletonFixedPoint k) by rfl, ← Set.toFinset_card]

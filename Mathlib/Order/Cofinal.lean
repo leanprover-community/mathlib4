@@ -5,11 +5,14 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.GaloisConnection.Basic
-public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Order.WellFounded
 
 import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.SetNotation
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Cofinal sets
@@ -165,13 +168,15 @@ theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s 
 
 /-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
 well-ordering of `α` is a cofinal set. -/
-theorem isCofinal_setOf_imp_lt (r : α → α → Prop) [h : IsWellFounded α r] :
+theorem isCofinal_setOfPred_imp_lt (r : α → α → Prop) [h : IsWellFounded α r] :
     IsCofinal { a | ∀ b, r b a → b < a } := by
   intro a
   obtain ⟨b, hb, hb'⟩ := h.wf.has_min (Set.Ici a) Set.nonempty_Ici
   refine ⟨b, fun c hc ↦ ?_, hb⟩
   by_contra! hc'
   exact hb' c (hb.trans hc') hc
+
+@[deprecated (since := "2026-07-09")] alias isCofinal_setOf_imp_lt := isCofinal_setOfPred_imp_lt
 
 theorem isCofinal_range_of_strictMono [WellFoundedLT α] {f : α → α} (hf : StrictMono f) :
     IsCofinal (range f) :=

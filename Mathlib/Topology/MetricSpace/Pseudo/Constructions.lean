@@ -35,12 +35,12 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
   uniformity_dist := (uniformity_basis_dist.comap _).eq_biInf
   toBornology := Bornology.induced f
   cobounded_sets := Set.ext fun s => mem_comap_iff_compl.trans <| by
-    simp only [← isBounded_def, isBounded_iff, forall_mem_image, mem_setOf]
+    simp only [← isBounded_def, isBounded_iff, forall_mem_image, mem_ofPred]
 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `TopologicalSpace`
 structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace α]
     [m : PseudoMetricSpace β] {f : α → β} (hf : IsInducing f) : PseudoMetricSpace α :=
   .replaceTopology (.induced f m) hf.eq_induced
@@ -48,7 +48,7 @@ def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace
 /-- Pull back a pseudometric space structure by a uniform inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `UniformSpace`
 structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsUniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : PseudoMetricSpace β]
     (f : α → β) (h : IsUniformInducing f) : PseudoMetricSpace α :=
   .replaceUniformity (.induced f m) h.comap_uniformity.symm

@@ -1,18 +1,23 @@
+module
+
 /-
 manually ported from
 https://github.com/leanprover-community/mathlib/blob/4f4a1c875d0baa92ab5d92f3fb1bb258ad9f3e5b/test/matrix.lean
 -/
+
+public import Lean
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.LinearAlgebra.Matrix.Determinant.Bird
+import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
 import Mathlib.LinearAlgebra.Matrix.Notation
 import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.Tactic.Determinant.Bird
-import Qq
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.NormDet
+meta import Mathlib.Data.Fin.VecNotation
+meta import Mathlib.Data.Matrix.Basic
+meta import Qq
 
 open Qq
-
-variable {α β : Type} [Semiring α] [Ring β]
 
 namespace Matrix
 
@@ -113,6 +118,8 @@ section delaborators
 
 end delaborators
 
+variable {α β : Type} [Semiring α] [Ring β]
+
 example {a a' b b' c c' d d' : α} :
   !![a, b; c, d] + !![a', b'; c', d'] = !![a + a', b + b'; c + c', d + d'] := by
   simp
@@ -165,6 +172,7 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
       Finset.card_singleton, one_smul]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 example {R : Type*} [Semiring R] {a b c d : R} :
     !![a, b] * (transpose !![c, d]) = !![a * c + b * d] := by
   ext i j
@@ -189,65 +197,63 @@ example (ι : Type*) [Inhabited ι] : Matrix.replicateCol ι (fun (_ : Fin 3) =>
   simp_all
   rfl
 
-section BirdDet
-
-open BirdDet
+section NormDet
 
 variable
   {R : Type*}
   [CommRing R]
 
-example : birdDet 0 #[] = (1 : ℤ) := by
+example : Matrix.det !![] = (1 : ℤ) := by
   eval_det
 
-example : birdDet 1 #[-1] = -1 := by
+example : Matrix.det !![-1] = -1 := by
   eval_det
 
-example : birdDet 2 #[1, 2, 3, 4] = -2 := by
+example : Matrix.det !![1, 2; 3, 4] = -2 := by
   eval_det
 
-example : birdDet 2 (let A := #[1, 2, 3, 4]; A) = -2 := by
+example : Matrix.det (let A := !![1, 2; 3, 4]; A) = -2 := by
   eval_det
 
-example (a b c d : R) :
-    birdDet 2 #[a, b, c, d] = a * d - b * c := by
+example (a b c d : R) : Matrix.det !![a, b; c, d] = a * d - b * c := by
   eval_det
   ring
 
-example (a b c d : R) :
-    birdDet 2 #[a, b, c, d] = a * d - b * c := by
+example (a b c d : R) : Matrix.det !![a, b; c, d] = a * d - b * c := by
   simp only [norm_det]
   ring
 
-example : birdDet 2 #[1, 2, 2, 4] + birdDet 2 #[2, 3, 4, 5] = -2 := by
-  simp only [norm_det]
+example : Matrix.det !![1, 2; 2, 4] + Matrix.det !![2, 3; 4, 5] = -2 := by
+  eval_det
   norm_num
 
-example : birdDet 2 #[birdDet 2 #[2, 3, 4, 5], 2, 2, 4] = -12 := by
-  simp only [norm_det]
+example : Matrix.det !![Matrix.det !![2, 3; 4, 5], 2; 2, 4] = -12 := by
+  eval_det
 
-example :
-  birdDet 8
-    #[ 2,  0, -1,  0,  0,  0,  0,  0,
-       0,  2,  0, -1,  0,  0,  0,  0,
-      -1,  0,  2, -1,  0,  0,  0,  0,
-       0, -1, -1,  2, -1,  0,  0,  0,
-       0,  0,  0, -1,  2, -1,  0,  0,
-       0,  0,  0,  0, -1,  2, -1,  0,
-       0,  0,  0,  0,  0, -1,  2, -1,
-       0,  0,  0,  0,  0,  0, -1,  2] = 1 := by
-  simp only [norm_det]
+example : Matrix.det
+    !![ 2,  0, -1,  0,  0,  0,  0,  0;
+        0,  2,  0, -1,  0,  0,  0,  0;
+       -1,  0,  2, -1,  0,  0,  0,  0;
+        0, -1, -1,  2, -1,  0,  0,  0;
+        0,  0,  0, -1,  2, -1,  0,  0;
+        0,  0,  0,  0, -1,  2, -1,  0;
+        0,  0,  0,  0,  0, -1,  2, -1;
+        0,  0,  0,  0,  0,  0, -1,  2] = 1 := by
+  eval_det
 
 open MvPolynomial in
-lemma test_case_11 :
-    birdDet (R := MvPolynomial (Fin 3) R)
-      3
-      #[1 , X 0, (X 0) ^ 2,
-        1 , X 1, (X 1) ^ 2,
-        1 , X 2, (X 2) ^ 2] = (X 0 - X 1) * (X 1 - X 2) * (X 2 - X 0) := by
-  simp only [norm_det]
+example : Matrix.det (R := MvPolynomial (Fin 3) R)
+    !![1 , X 0, (X 0) ^ 2;
+       1 , X 1, (X 1) ^ 2;
+       1 , X 2, (X 2) ^ 2] = (X 0 - X 1) * (X 1 - X 2) * (X 2 - X 0) := by
+  eval_det
   ring
 
-end BirdDet
+example {K : Type*} [Field K] (x i j k : K) (hx : x ≠ 0) : Matrix.det
+    !![x ^ 3, 0, 0; i, 1 / x, 0; j, k, 1 / x ^ 2] = 1 := by
+  eval_det
+  field_simp [hx]
+
+end NormDet
 
 end Matrix

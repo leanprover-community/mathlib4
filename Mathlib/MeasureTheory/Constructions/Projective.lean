@@ -63,7 +63,6 @@ lemma eq_zero_of_isEmpty [h : IsEmpty (Π i, α i)]
 /-- Auxiliary lemma for `measure_univ_eq`. -/
 lemma measure_univ_eq_of_subset (hP : IsProjectiveMeasureFamily P) (hJI : J ⊆ I) :
     P I univ = P J univ := by
-  classical
   have : (univ : Set (∀ i : I, α i)) =
       Finset.restrict₂ hJI ⁻¹' (univ : Set (∀ i : J, α i)) := by
     rw [preimage_univ]
@@ -151,7 +150,7 @@ lemma measure_univ_unique (hμ : IsProjectiveLimit μ P) (hν : IsProjectiveLimi
 theorem unique [∀ i, IsFiniteMeasure (P i)]
     (hμ : IsProjectiveLimit μ P) (hν : IsProjectiveLimit ν P) :
     μ = ν := by
-  haveI : IsFiniteMeasure μ := hμ.isFiniteMeasure
+  have : IsFiniteMeasure μ := hμ.isFiniteMeasure
   refine ext_of_generate_finite (measurableCylinders α) generateFrom_measurableCylinders.symm
     isPiSystem_measurableCylinders (fun s hs ↦ ?_) (hμ.measure_univ_unique hν)
   obtain ⟨I, S, hS, rfl⟩ := (mem_measurableCylinders _).mp hs

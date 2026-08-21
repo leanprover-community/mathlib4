@@ -197,13 +197,13 @@ end
 
 section
 
-open Functor
+open CategoryTheory.Functor
 
 variable (X : Type u₄) [Category.{v₄} X]
 
 variable (F G) in
 /-- The data of a categorical commutative square over a cospan `F, G` with cone point `X` is
-that of a functor `T : X ⥤ A`, a functor `L : X ⥤ C`, and a `CatCommSqOver T L F G`.
+that of a functor `T : X ⥤ A`, a functor `L : X ⥤ C`, and a `CatCommSq T L F G`.
 Note that this is *exactly* what an object of
 `((whiskeringRight X A B).obj F) ⊡ ((whiskeringRight X C B).obj G)` is,
 so `CatCommSqOver F G X` is in equivalent to
@@ -326,7 +326,6 @@ def toCatCommSqOver : (X ⥤ F ⊡ G) ⥤ CatCommSqOver F G X where
   map_id := by intros; ext <;> simp
   map_comp := by intros; ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Interpret a `CatCommSqOver` as a functor to the categorical pullback. -/
 @[simps!]
 def CatCommSqOver.toFunctorToCategoricalPullback :
@@ -346,6 +345,7 @@ def CatCommSqOver.toFunctorToCategoricalPullback :
   map_id := by intros; ext <;> simp
   map_comp := by intros; ext <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The universal property of categorical pullbacks, stated as an equivalence
 of categories between functors `X ⥤ (F ⊡ G)` and categorical commutative squares
@@ -411,6 +411,7 @@ section
 variable {J K : X ⥤ F ⊡ G}
     (e₁ : J ⋙ π₁ F G ≅ K ⋙ π₁ F G) (e₂ : J ⋙ π₂ F G ≅ K ⋙ π₂ F G)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma toCatCommSqOver_mapIso_mkNatIso_eq_mkIso
     (coh :
@@ -456,7 +457,7 @@ end
 section Bifunctoriality
 
 namespace CatCommSqOver
-open Functor
+open CategoryTheory.Functor
 
 section transform
 
@@ -465,7 +466,6 @@ variable {A₁ : Type u₄} {B₁ : Type u₅} {C₁ : Type u₆}
   {F₁ : A₁ ⥤ B₁} {G₁ : C₁ ⥤ B₁}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Functorially transform a `CatCommSqOver F G X` by whiskering it with a
 `CatCospanTransform`. -/
 @[simps!]
@@ -608,7 +608,6 @@ variable
     [Category.{v₄} X] [Category.{v₅} Y] [Category.{v₆} Z]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A functor `U : X ⥤ Y` (functorially) induces a functor
 `CatCommSqOver F G Y ⥤ CatCommSqOver F G X` by whiskering left the underlying
 categorical commutative square by U. -/
@@ -635,6 +634,7 @@ def precompose :
   map_id := by intros; ext <;> simp
   map_comp := by intros; ext <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable (X) in
 /-- The construction `precompose` respects functor identities. -/
@@ -644,6 +644,7 @@ def precomposeObjId :
   NatIso.ofComponents fun _ =>
     CatCommSqOver.mkIso (Functor.leftUnitor _) (Functor.leftUnitor _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The construction `precompose` respects functor composition. -/
 @[simps!]
@@ -706,6 +707,7 @@ variable {A₁ : Type u₄} {B₁ : Type u₅} {C₁ : Type u₆}
   [Category.{v₄} A₁] [Category.{v₅} B₁] [Category.{v₆} C₁]
   {F₁ : A₁ ⥤ B₁} {G₁ : C₁ ⥤ B₁}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical compatibility square between (the object components of)
 `precompose` and `transform`.
@@ -773,6 +775,7 @@ lemma precomposeObjTransformObjSquare_iso_hom_comp
       (Functor.associator _ _ _).hom := by
   ext <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical compatibility square between (the object components of)
 `transform` and `precompose`.

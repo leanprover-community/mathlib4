@@ -43,6 +43,7 @@ def restrictionXIso {i : ι} {i' : ι'} (h : e.f i = i') :
   eqToIso (h ▸ rfl)
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma restriction_d_eq {i j : ι} {i' j' : ι'} (hi : e.f i = i') (hj : e.f j = j') :
     (K.restriction e).d i j = (K.restrictionXIso e hi).hom ≫ K.d i' j' ≫
@@ -59,6 +60,7 @@ def restrictionMap : K.restriction e ⟶ L.restriction e where
   f i := φ.f (e.f i)
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma restrictionMap_f' {i : ι} {i' : ι'} (hi : e.f i = i') :
     (restrictionMap φ e).f i = (K.restrictionXIso e hi).hom ≫

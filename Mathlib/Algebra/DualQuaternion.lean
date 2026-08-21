@@ -31,6 +31,7 @@ variable {R : Type*} [CommRing R]
 
 namespace Quaternion
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The dual quaternions can be equivalently represented as a quaternion with dual coefficients,
 or as a dual number with quaternion coefficients.
 

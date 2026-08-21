@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Measure.Restrict
 public import Mathlib.Topology.DiscreteSubset
 
@@ -94,7 +95,7 @@ theorem exists_accPt_of_nullSingletonClass {X : Type*} [TopologicalSpace X] [Mea
     {μ : Measure X} [NullSingletonClass μ] {E : Set X} [SeparableSpace E] (hE : 0 < μ E) :
     ∃ x, AccPt x (𝓟 E) := by
   by_contra! h
-  haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x _ => h x
+  have : DiscreteTopology E := discreteTopology_of_noAccPts fun x _ => h x
   exact hE.ne' <| (Set.countable_coe_iff.mp <| separableSpace_iff_countable.mp ‹_›).measure_zero μ
 
 @[deprecated (since := "2026-06-09")]

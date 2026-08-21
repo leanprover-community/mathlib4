@@ -115,6 +115,7 @@ theorem of_convergence_epsilon :
       _ ≤ fib (n + 1) * fib (n + 2) := by gcongr; lia
       _ ≤ B * nB := by gcongr
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_convergence [TopologicalSpace K] [OrderTopology K] :
     Filter.Tendsto (of v).convs Filter.atTop <| 𝓝 v := by
   simpa [LinearOrderedAddCommGroup.tendsto_nhds, abs_sub_comm] using of_convergence_epsilon v

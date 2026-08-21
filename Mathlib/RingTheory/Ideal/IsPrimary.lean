@@ -58,7 +58,7 @@ theorem isPrimary_of_isMaximal_radical {I : Ideal R} (hi : IsMaximal (radical I)
     by_cases h : I + span {y} = ⊤
     · rw [← span_singleton_le_iff_mem, ← mul_top (span {x}), ← h, mul_add,
         span_singleton_mul_span_singleton, add_le_iff, span_singleton_le_iff_mem]
-      exact Or.inl ⟨mul_le_left, hxy⟩
+      exact Or.inl ⟨mul_le_right, hxy⟩
     · obtain ⟨m, hm, hy⟩ := exists_le_maximal (I + span {y}) h
       rw [add_le_iff, span_singleton_le_iff_mem, ← hm.isPrime.radical_le_iff] at hy
       exact Or.inr (hi.eq_of_le hm.ne_top hy.1 ▸ hy.2)
@@ -72,9 +72,6 @@ lemma isPrimary_finsetInf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (hi
     (hs' : ∀ ⦃y⦄, y ∈ s → (f y).radical = (f i).radical) :
     IsPrimary (s.inf f) :=
   Submodule.isPrimary_finsetInf hi hs (by simpa)
-
-@[deprecated (since := "2026-01-19")]
-alias isPrimary_finset_inf := isPrimary_finsetInf
 
 lemma IsPrimary.comap {I : Ideal S} (hI : I.IsPrimary) (φ : R →+* S) : (I.comap φ).IsPrimary := by
   rw [isPrimary_iff] at hI ⊢

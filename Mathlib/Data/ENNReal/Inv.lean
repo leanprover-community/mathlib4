@@ -65,7 +65,7 @@ theorem coe_inv_le : (↑r⁻¹ : ℝ≥0∞) ≤ (↑r)⁻¹ :=
 
 @[simp, norm_cast]
 theorem coe_inv (hr : r ≠ 0) : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ :=
-  coe_inv_le.antisymm <| sInf_le <| mem_setOf.2 <| by rw [← coe_mul, mul_inv_cancel₀ hr, coe_one]
+  coe_inv_le.antisymm <| sInf_le <| mem_ofPred.2 <| by rw [← coe_mul, mul_inv_cancel₀ hr, coe_one]
 
 @[simp, norm_cast]
 theorem coe_inv' [NeZero r] : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ := coe_inv (NeZero.ne r)
@@ -599,6 +599,7 @@ lemma le_mul_of_forall_lt {a b c : ℝ≥0∞} (h₁ : a ≠ 0 ∨ b ≠ ∞) (h
     (h _ (ENNReal.lt_inv_iff_lt_inv.1 ha') _ (ENNReal.lt_inv_iff_lt_inv.1 hb')).trans_eq
     (ENNReal.mul_inv (Or.inr hb'.ne_top) (Or.inl ha'.ne_top)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The birational order isomorphism between `ℝ≥0∞` and the unit interval `Set.Iic (1 : ℝ≥0∞)`. -/
 @[simps! apply_coe]
 def orderIsoIicOneBirational : ℝ≥0∞ ≃o Iic (1 : ℝ≥0∞) := by
@@ -614,6 +615,7 @@ theorem orderIsoIicOneBirational_symm_apply (x : Iic (1 : ℝ≥0∞)) :
     orderIsoIicOneBirational.symm x = (x.1⁻¹ - 1)⁻¹ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Order isomorphism between an initial interval in `ℝ≥0∞` and an initial interval in `ℝ≥0`. -/
 @[simps! apply_coe]
 def orderIsoIicCoe (a : ℝ≥0) : Iic (a : ℝ≥0∞) ≃o Iic a :=

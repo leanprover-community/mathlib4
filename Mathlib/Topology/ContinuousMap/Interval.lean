@@ -47,7 +47,6 @@ theorem IccExtendCM_of_mem {f : C(Icc a b, E)} {x : α} (hx : x ∈ Icc a b) :
     IccExtendCM f x = f ⟨x, hx⟩ := by
   simp [IccExtendCM, projIccCM, projIcc, hx.1, hx.2]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The concatenation of two continuous maps defined on adjacent intervals. If the values of the
 functions on the common bound do not agree, this is defined as an arbitrarily chosen constant
 map. See `concatCM` for the corresponding map on the subtype of compatible function pairs. -/
@@ -128,8 +127,8 @@ noncomputable def concatCM :
   toFun fg := concat fg.val.1 fg.val.2
   continuous_toFun := by
     let S : Set (C(Icc a b, E) × C(Icc b c, E)) := {fg | fg.1 ⊤ = fg.2 ⊥}
-    change Continuous (S.restrict concat.uncurry)
-    refine continuousOn_iff_continuous_restrict.mp (fun fg hfg => ?_)
+    change Continuous (S.domRestrict concat.uncurry)
+    refine continuousOn_iff_continuous_domRestrict.mp (fun fg hfg => ?_)
     refine tendsto_concat ?_ hfg ?_ ?_
     · exact eventually_nhdsWithin_of_forall (fun _ => id)
     · exact tendsto_nhdsWithin_of_tendsto_nhds continuousAt_fst

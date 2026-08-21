@@ -65,7 +65,7 @@ theorem disc_eq_regionBetween :
       regionBetween
         (fun x => -sqrt (r ^ 2 - x ^ 2)) (fun x => sqrt (r ^ 2 - x ^ 2)) (Ioc (-r) r) := by
   ext p
-  simp only [disc, regionBetween, mem_setOf_eq, mem_Ioo, mem_Ioc]
+  simp only [disc, regionBetween, mem_ofPred_eq, mem_Ioo, mem_Ioc]
   constructor <;> intro h
   · cases abs_lt_of_sq_lt_sq' (lt_of_add_lt_of_nonneg_left h (sq_nonneg p.2)) r.2 with
     | intro left right =>

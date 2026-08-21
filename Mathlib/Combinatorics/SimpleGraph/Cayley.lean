@@ -66,7 +66,7 @@ instance [Fintype M] [DecidableEq M] [DecidablePred (· ∈ s)] :
 
 variable (M) in
 /-- `mulCayley` is a left (order-)adjoint. -/
-@[to_additive]
+@[to_additive /-- `addCayley` is a left (order-)adjoint. -/]
 lemma mulCayley_gc :
     GaloisConnection (mulCayley ·) ({g : M | ∀ a, a * g ≠ a → ·.Adj (a * g) a}) := by
   intro S G

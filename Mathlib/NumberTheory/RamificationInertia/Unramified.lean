@@ -5,8 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
-public import Mathlib.RingTheory.RamificationInertia.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.RingTheory.RamificationInertia.Ramification
 
 /-!
 
@@ -93,8 +94,9 @@ that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified 
 lemma isUnramifiedAt_iff_of_isDedekindDomain
     {p : Ideal S} [p.IsPrime] [EssFiniteType R S] [IsDomain R]
     [Module.Finite ℤ R] [CharZero R] [Algebra.IsIntegral R S] :
-    Algebra.IsUnramifiedAt R p ↔ e(p|R) = 1 :=
-  Ideal.ramificationIdx'_eq_one_iff.symm
+    Algebra.IsUnramifiedAt R p ↔ e(p|R) = 1 := by
+  have : Ring.HasFiniteQuotients R := .of_module_finite ℤ _
+  exact Ideal.ramificationIdx'_eq_one_iff.symm
 
 /-- In characteristic zero the generic point is unramified: if `S` is a domain that is integral
 over a characteristic-zero domain `R` and `R → S` is injective, then `S` is unramified at the zero
@@ -150,9 +152,9 @@ theorem isUnramifiedIn_iff_forall_of_isDedekindDomain [IsDomain R] [IsDedekindDo
 theorem IsUnramifiedIn.ramificationIdx_eq_one [IsDomain R]
     [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
     [Algebra.IsIntegral R S] {𝔭 : Ideal R} (hunr : IsUnramifiedIn S 𝔭) {𝔓 : Ideal S}
-    [𝔓.IsPrime] (hP : 𝔓.LiesOver 𝔭) : Ideal.ramificationIdx 𝔓 R = 1 :=
-  Ideal.ramificationIdx_eq_one_iff.mpr
-    (hunr 𝔓 inferInstance hP)
+    [𝔓.IsPrime] (hP : 𝔓.LiesOver 𝔭) : Ideal.ramificationIdx 𝔓 R = 1 := by
+  have : Ring.HasFiniteQuotients R := .of_module_finite ℤ _
+  exact Ideal.ramificationIdx_eq_one_iff.mpr (hunr 𝔓 inferInstance hP)
 
 /-- A nonzero ideal of `R` is unramified in `S` if and only if every prime ideal of `S` lying
 over it has ramification index `1`. -/
@@ -161,6 +163,7 @@ theorem isUnramifiedIn_iff_forall_ramificationIdx_eq_one [IsDomain R]
     [Algebra.IsIntegral R S] {𝔭 : Ideal R} :
     IsUnramifiedIn S 𝔭 ↔
       ∀ (𝔓 : Ideal S) [𝔓.IsPrime], 𝔓.LiesOver 𝔭 → Ideal.ramificationIdx 𝔓 R = 1 := by
+  have : Ring.HasFiniteQuotients R := .of_module_finite ℤ _
   refine ⟨fun hunr 𝔓 _ hP ↦ hunr.ramificationIdx_eq_one hP, fun h 𝔓 _ hP ↦ ?_⟩
   rw [← Ideal.ramificationIdx_eq_one_iff]
   exact h 𝔓 hP

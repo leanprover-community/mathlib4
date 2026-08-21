@@ -66,6 +66,7 @@ abbrev HoCat := Quotient (BifibrantObject.homRel C)
 
 /-- The quotient functor from the category of bifibrant objects to its
 homotopy category. -/
+@[implicit_reducible]
 def toHoCat : BifibrantObject C ⥤ HoCat C := Quotient.functor _
 
 lemma toHoCat_obj_surjective : Function.Surjective (toHoCat (C := C)).obj :=
@@ -204,6 +205,7 @@ def toHoCatCompιFibrantObject :
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The inclusion functor `BifibrantObject.HoCat C ⥤ CofibrantObject.HoCat C`. -/
+@[implicit_reducible]
 def HoCat.ιCofibrantObject : HoCat C ⥤ CofibrantObject.HoCat C :=
   CategoryTheory.Quotient.lift _
     (BifibrantObject.ιCofibrantObject ⋙ CofibrantObject.toHoCat) (fun _ _ _ _ h ↦ by
@@ -286,13 +288,15 @@ noncomputable def bifibrantResolutionMap {X₁ X₂ : CofibrantObject C} (f : X�
     bifibrantResolutionObj X₁ ⟶ bifibrantResolutionObj X₂ :=
   (exists_bifibrant_map f).choose
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma bifibrantResolutionMap_fac {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) :
     iBifibrantResolutionObj X₁ ≫ homMk (bifibrantResolutionMap f).hom =
       f ≫ iBifibrantResolutionObj X₂ :=
   (exists_bifibrant_map f).choose_spec
 
-set_option backward.isDefEq.respectTransparency false in
 instance {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) [WeakEquivalence f] :
     WeakEquivalence (bifibrantResolutionMap f) := by
   rw [weakEquivalence_iff]
@@ -301,6 +305,9 @@ instance {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) [WeakEquivalence f]
     bifibrantResolutionMap_fac, weakEquivalence_precomp_iff]
   infer_instance
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma bifibrantResolutionMap_fac' {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) :
     toHoCat.map X₁.iBifibrantResolutionObj ≫
@@ -331,10 +338,9 @@ lemma bifibrantResolutionObj_hom_ext
     _ (iBifibrantResolutionObj X).hom).1
   simpa using! h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bifibrant resolution functor from the category of cofibrant objects
 to the homotopy category of bifibrant objects. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def HoCat.bifibrantResolution' : CofibrantObject C ⥤ BifibrantObject.HoCat C where
   obj X := BifibrantObject.toHoCat.obj (bifibrantResolutionObj X)
   map f := BifibrantObject.toHoCat.map (bifibrantResolutionMap f)
@@ -342,9 +348,9 @@ noncomputable def HoCat.bifibrantResolution' : CofibrantObject C ⥤ BifibrantOb
   map_comp {X₁ X₂ X₃} f g := bifibrantResolutionObj_hom_ext (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The bifibrant resolution functor from the homotopy category of
 cofibrant objects to the homotopy category of bifibrant objects. -/
+@[implicit_reducible]
 noncomputable def HoCat.bifibrantResolution :
     CofibrantObject.HoCat C ⥤ BifibrantObject.HoCat C :=
   CategoryTheory.Quotient.lift _ CofibrantObject.HoCat.bifibrantResolution' (by
@@ -373,7 +379,6 @@ lemma HoCat.adjUnit_app (X : CofibrantObject C) :
     HoCat.adjUnit.app (toHoCat.obj X) =
       toHoCat.map (iBifibrantResolutionObj X) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance (X : CofibrantObject.HoCat C) : WeakEquivalence (HoCat.adjUnit.app X) := by
   obtain ⟨X, rfl⟩ := toHoCat_obj_surjective X
   rw [HoCat.adjUnit_app, weakEquivalence_toHoCat_map_iff,
@@ -400,7 +405,6 @@ lemma HoCat.adjCounit'_app (X : BifibrantObject C) :
       BifibrantObject.toHoCat.map (BifibrantObject.homMk
         (iBifibrantResolutionObj (.mk X.obj)).hom) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance (X : BifibrantObject.HoCat C) : IsIso (HoCat.adjCounit'.app X) := by
   obtain ⟨X, rfl⟩ := BifibrantObject.toHoCat_obj_surjective X
   rw [HoCat.adjCounit'_app]
@@ -422,7 +426,6 @@ lemma HoCat.adjCounitIso_inv_app (X : BifibrantObject C) :
       BifibrantObject.toHoCat.map (BifibrantObject.homMk
         ((iBifibrantResolutionObj (.mk X.obj))).hom) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the category `CofibrantObject.HoCat C` and `BifibrantObject.HoCat C`. -/
 noncomputable def HoCat.adj :
     HoCat.bifibrantResolution (C := C) ⊣ BifibrantObject.HoCat.ιCofibrantObject where
@@ -434,8 +437,7 @@ noncomputable def HoCat.adj :
     rw [comp_hom_eq_id]; push inv
     apply bifibrantResolutionObj_hom_ext
     dsimp
-    simp only [HoCat.adjCounitIso_inv_app,
-      BifibrantObject.HoCat.ιCofibrantObject_map_toHoCat_map, ObjectProperty.homMk_hom]
+    simp only [HoCat.adjCounitIso_inv_app]
     apply bifibrantResolutionMap_fac'
   right_triangle_components X := by
     obtain ⟨X, rfl⟩ := BifibrantObject.toHoCat_obj_surjective X
@@ -452,13 +454,11 @@ instance : (BifibrantObject.HoCat.ιCofibrantObject (C := C)).Full :=
 instance : (BifibrantObject.HoCat.ιCofibrantObject (C := C)).Faithful :=
   HoCat.adj.fullyFaithfulROfIsIsoCounit.faithful
 
-set_option backward.isDefEq.respectTransparency false in
 instance (X : CofibrantObject.HoCat C) : WeakEquivalence (HoCat.adj.unit.app X) := by
   obtain ⟨X, rfl⟩ := toHoCat_obj_surjective X
   dsimp [HoCat.adj]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : HoCat.bifibrantResolution.IsLocalization (weakEquivalences (HoCat C)) :=
   HoCat.adj.isLocalization_leftAdjoint _ (by
     intro X Y f hf

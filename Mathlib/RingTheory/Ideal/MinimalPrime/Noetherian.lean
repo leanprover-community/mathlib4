@@ -28,7 +28,7 @@ lemma Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
   by_contra hI
   obtain ⟨I : Ideal R, hI : ¬ I.minimalPrimes.Finite, hmax⟩ :=
     set_has_maximal_iff_noetherian.mpr hR {I : Ideal R | ¬ I.minimalPrimes.Finite} ⟨I, hI⟩
-  simp only [Set.mem_setOf_eq, not_imp_not] at hmax
+  simp only [Set.mem_ofPred_eq, not_imp_not] at hmax
   have h1 : ¬ I.IsPrime := by contrapose hI; simp [minimalPrimes_eq_subsingleton_self]
   have h2 : I ≠ ⊤ := by contrapose hI; simp [hI, minimalPrimes_top]
   obtain ⟨x, hx, y, hy, h⟩ := (not_isPrime_iff.mp h1).resolve_left h2

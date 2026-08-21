@@ -64,10 +64,10 @@ lemma mulIndicator_apply (s : Set α) (f : α → M) (a : α) [Decidable (a ∈ 
   congr
 
 @[to_additive (attr := simp)]
-lemma mulIndicator_of_mem (h : a ∈ s) (f : α → M) : mulIndicator s f a = f a := if_pos h
+lemma mulIndicator_of_mem (h : a ∈ s) (f : α → M) : mulIndicator s f a = f a := ite_eq_left h
 
 @[to_additive (attr := simp)]
-lemma mulIndicator_of_notMem (h : a ∉ s) (f : α → M) : mulIndicator s f a = 1 := if_neg h
+lemma mulIndicator_of_notMem (h : a ∉ s) (f : α → M) : mulIndicator s f a = 1 := ite_eq_right h
 
 @[to_additive]
 lemma mulIndicator_eq_one_or_self (s : Set α) (f : α → M) (a : α) :
@@ -203,7 +203,7 @@ lemma mulIndicator_inter_mulSupport (s : Set α) (f : α → M) :
 @[to_additive]
 lemma comp_mulIndicator (h : M → β) (f : α → M) {s : Set α} {x : α} [DecidablePred (· ∈ s)] :
     h (s.mulIndicator f x) = s.piecewise (h ∘ f) (const α (h 1)) x := by
-  letI := Classical.decPred (· ∈ s)
+  let := Classical.decPred (· ∈ s)
   convert! s.apply_piecewise f (const α 1) (fun _ => h) (x := x) using 2
 
 @[to_additive]
@@ -227,6 +227,13 @@ lemma mulIndicator_comp_of_one {g : M → N} (hg : g 1 = 1) :
 lemma comp_mulIndicator_const (c : M) (f : M → N) (hf : f 1 = 1) :
     (fun x => f (s.mulIndicator (fun _ => c) x)) = s.mulIndicator fun _ => f c :=
   (mulIndicator_comp_of_one hf).symm
+
+/-- Evaluating the indicator of a family of functions at a point commutes with the indicator:
+`s.mulIndicator f a b = s.mulIndicator (f · b) a`. -/
+@[to_additive]
+lemma mulIndicator_apply_apply (f : α → β → M) (b : β) :
+    s.mulIndicator f a b = s.mulIndicator (fun i ↦ f i b) a := by
+  by_cases h : a ∈ s <;> simp [h]
 
 @[to_additive]
 lemma mulIndicator_preimage (s : Set α) (f : α → M) (B : Set M) :

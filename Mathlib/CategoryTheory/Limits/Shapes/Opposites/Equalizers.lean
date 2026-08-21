@@ -31,7 +31,6 @@ open Opposite
 namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-variable {J : Type u₂} [Category.{v₂} J]
 
 instance hasEqualizers_opposite [HasCoequalizers C] : HasEqualizers Cᵒᵖ :=
   haveI : HasColimitsOfShape WalkingParallelPairᵒᵖ C :=
@@ -80,24 +79,28 @@ def opParallelPairIso {X Y : C} (f g : X ⟶ Y) :
     _ ≅ walkingParallelPairOpEquiv.inverse ⋙ parallelPair f.op g.op :=
       isoWhiskerLeft _ (parallelPairOpIso f g).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opParallelPairIso_hom_app_zero {X Y : C} (f g : X ⟶ Y) :
     (opParallelPairIso f g).hom.app (op WalkingParallelPair.zero) = 𝟙 _ := by
   simp [opParallelPairIso]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opParallelPairIso_hom_app_one {X Y : C} (f g : X ⟶ Y) :
     (opParallelPairIso f g).hom.app (op WalkingParallelPair.one) = 𝟙 _ := by
   simp [opParallelPairIso]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opParallelPairIso_inv_app_zero {X Y : C} (f g : X ⟶ Y) :
     (opParallelPairIso f g).inv.app (op WalkingParallelPair.zero) = 𝟙 _ := by
   simp [opParallelPairIso]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opParallelPairIso_inv_app_one {X Y : C} (f g : X ⟶ Y) :
@@ -130,16 +133,19 @@ def op {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.op g.op :=
   (Cone.postcompose (parallelPairOpIso f g).symm.hom).obj
     (Cone.whisker walkingParallelPairOpEquiv.functor (Cocone.op c))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma op_π_app_one {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
     c.op.π.app .one = Quiver.Hom.op (c.ι.app .zero) := by
   simp [op]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma op_π_app_zero {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
     c.op.π.app .zero = Quiver.Hom.op (c.ι.app .one) := by
   simp [op]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem op_ι {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
     c.op.ι = c.π.op := by simp [Cofork.op, Fork.ι]
@@ -153,16 +159,19 @@ def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : Cofork f.unop g.unop :
   Cone.unop ((Cone.postcompose (opParallelPairIso f.unop g.unop).symm.hom).obj
     (Cone.whisker walkingParallelPairOpEquiv.inverse c))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma unop_ι_app_one {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
     c.unop.ι.app .one = Quiver.Hom.unop (c.π.app .zero) := by
   simp [unop]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma unop_ι_app_zero {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
     c.unop.ι.app .zero = Quiver.Hom.unop (c.π.app .one) := by
   simp [unop]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem unop_π {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
     c.unop.π = c.ι.unop := by simp [Fork.unop, Cofork.π]

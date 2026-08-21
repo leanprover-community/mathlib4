@@ -6,6 +6,7 @@ Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryash
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!

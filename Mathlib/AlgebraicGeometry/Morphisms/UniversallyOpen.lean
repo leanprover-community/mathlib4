@@ -42,9 +42,6 @@ along any morphism `Y' ⟶ Y` is (topologically) an open map.
 class UniversallyOpen (f : X ⟶ Y) : Prop where
   universally_isOpenMap : universally (topologically @IsOpenMap) f
 
-@[deprecated (since := "2026-01-20")]
-alias UniversallyOpen.out := UniversallyOpen.universally_isOpenMap
-
 lemma Scheme.Hom.isOpenMap {X Y : Scheme} (f : X ⟶ Y) [UniversallyOpen f] :
     IsOpenMap f := UniversallyOpen.universally_isOpenMap _ _ _ IsPullback.of_id_snd
 
@@ -79,10 +76,12 @@ instance {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
 instance : MorphismProperty.IsMultiplicative @UniversallyOpen where
   id_mem _ := inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance fst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyOpen g] :
     UniversallyOpen (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g hg
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyOpen f] :
     UniversallyOpen (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g hf

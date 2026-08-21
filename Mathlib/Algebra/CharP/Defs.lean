@@ -156,7 +156,7 @@ namespace ringChar
 variable [NonAssocSemiring R]
 
 lemma spec : ∀ x : ℕ, (x : R) = 0 ↔ ringChar R ∣ x := by
-  letI : CharP R (ringChar R) := (Classical.choose_spec (CharP.existsUnique R)).1
+  let : CharP R (ringChar R) := (Classical.choose_spec (CharP.existsUnique R)).1
   exact CharP.cast_eq_zero_iff R (ringChar R)
 
 lemma eq (p : ℕ) [C : CharP R p] : ringChar R = p :=
@@ -299,7 +299,7 @@ end CharP
 
 namespace NeZero
 
-variable [AddMonoidWithOne R] {r : R} {n p : ℕ}
+variable [AddMonoidWithOne R] {n p : ℕ}
 
 lemma of_not_dvd [CharP R p] (h : ¬p ∣ n) : NeZero (n : R) :=
   ⟨(CharP.cast_eq_zero_iff R p n).not.mpr h⟩
@@ -388,7 +388,7 @@ noncomputable def ringExpChar : ℕ := max (ringChar R) 1
 
 lemma ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
   rcases h with _ | h
-  · haveI := CharP.ofCharZero R
+  · have := CharP.ofCharZero R
     rw [ringExpChar, ringChar.eq R 0]; rfl
   rw [ringExpChar, ringChar.eq R q]
   exact Nat.max_eq_left h.one_lt.le

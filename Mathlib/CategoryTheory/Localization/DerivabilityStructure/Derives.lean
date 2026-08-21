@@ -33,8 +33,6 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open Limits Category
-
 variable {C₁ : Type u₁} {C₂ : Type u₂} {H : Type u₃}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} H]
   {D₂ : Type u₄} [Category.{v₄} D₂]
@@ -77,7 +75,6 @@ lemma isIso_of_isRightDerivedFunctor (X₁ : C₁) [RF.IsRightDerivedFunctor α 
 @[deprecated (since := "2026-06-22")] alias isIso := isIso_of_isRightDerivedFunctor
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isRightDerivedFunctor_of_isIso (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
     RF.IsRightDerivedFunctor α W₂ := by
   have := h.hasPointwiseRightDerivedFunctor

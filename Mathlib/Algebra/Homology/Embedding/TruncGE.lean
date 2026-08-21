@@ -56,7 +56,7 @@ variable (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
 
 namespace truncGE'
 
-open Classical in
+open scoped Classical in
 /-- The `X` field of `truncGE'`. -/
 noncomputable def X (i : ι) : C :=
   if e.BoundaryGE i
@@ -66,14 +66,14 @@ noncomputable def X (i : ι) : C :=
 /-- The isomorphism `truncGE'.X K e i ≅ K.opcycles (e.f i)` when `e.BoundaryGE i` holds. -/
 noncomputable def XIsoOpcycles {i : ι} (hi : e.BoundaryGE i) :
     X K e i ≅ K.opcycles (e.f i) :=
-  eqToIso (if_pos hi)
+  eqToIso (ite_eq_left hi)
 
 /-- The isomorphism `truncGE'.X K e i ≅ K.X (e.f i)` when `e.BoundaryGE i` does not hold. -/
 noncomputable def XIso {i : ι} (hi : ¬ e.BoundaryGE i) :
     X K e i ≅ K.X (e.f i) :=
-  eqToIso (if_neg hi)
+  eqToIso (ite_eq_right hi)
 
-open Classical in
+open scoped Classical in
 /-- The `d` field of `truncGE'`. -/
 noncomputable def d (i j : ι) : X K e i ⟶ X K e j :=
   if hij : c.Rel i j
@@ -90,10 +90,10 @@ lemma d_comp_d (i j k : ι) : d K e i j ≫ d K e j k = 0 := by
   dsimp [d]
   by_cases hij : c.Rel i j
   · by_cases hjk : c.Rel j k
-    · rw [dif_pos hij, dif_pos hjk, dif_neg (e.not_boundaryGE_next hij)]
+    · rw [dite_eq_left hij, dite_eq_left hjk, dite_eq_right (e.not_boundaryGE_next hij)]
       split_ifs <;> simp
-    · rw [dif_neg hjk, comp_zero]
-  · rw [dif_neg hij, zero_comp]
+    · rw [dite_eq_right hjk, comp_zero]
+  · rw [dite_eq_right hij, zero_comp]
 
 end truncGE'
 
@@ -102,7 +102,7 @@ of complex shapes `e` which satisfies `e.IsTruncGE`. -/
 noncomputable def truncGE' : HomologicalComplex C c where
   X := truncGE'.X K e
   d := truncGE'.d K e
-  shape _ _ h := dif_neg h
+  shape _ _ h := dite_eq_right h
 
 /-- The isomorphism `(K.truncGE' e).X i ≅ K.X i'` when `e.f i = i'`
 and `e.BoundaryGE i` does not hold. -/
@@ -116,21 +116,23 @@ noncomputable def truncGE'XIsoOpcycles {i : ι} {i' : ι'} (hi' : e.f i = i') (h
     (K.truncGE' e).X i ≅ K.opcycles i' :=
   (truncGE'.XIsoOpcycles K e hi) ≪≫ eqToIso (by subst hi'; rfl)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma truncGE'_d_eq {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
     (hi' : e.f i = i') (hj' : e.f j = j') (hi : ¬ e.BoundaryGE i) :
     (K.truncGE' e).d i j = (K.truncGE'XIso e hi' hi).hom ≫ K.d i' j' ≫
       (K.truncGE'XIso e hj' (e.not_boundaryGE_next hij)).inv := by
   dsimp [truncGE', truncGE'.d]
-  rw [dif_pos hij, dif_neg hi]
+  rw [dite_eq_left hij, dite_eq_right hi]
   subst hi' hj'
   simp [truncGE'XIso]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma truncGE'_d_eq_fromOpcycles {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
     (hi' : e.f i = i') (hj' : e.f j = j') (hi : e.BoundaryGE i) :
     (K.truncGE' e).d i j = (K.truncGE'XIsoOpcycles e hi' hi).hom ≫ K.fromOpcycles i' j' ≫
       (K.truncGE'XIso e hj' (e.not_boundaryGE_next hij)).inv := by
   dsimp [truncGE', truncGE'.d]
-  rw [dif_pos hij, dif_pos hi]
+  rw [dite_eq_left hij, dite_eq_left hi]
   subst hi' hj'
   simp [truncGE'XIso, truncGE'XIsoOpcycles]
 
@@ -160,7 +162,7 @@ section
 
 variable {K L M}
 
-open Classical in
+open scoped Classical in
 /-- The morphism `K.truncGE' e ⟶ L.truncGE' e` induced by a morphism `K ⟶ L`. -/
 noncomputable def truncGE'Map : K.truncGE' e ⟶ L.truncGE' e where
   f i :=
@@ -171,12 +173,12 @@ noncomputable def truncGE'Map : K.truncGE' e ⟶ L.truncGE' e where
     else
       (K.truncGE'XIso e rfl hi).hom ≫ φ.f (e.f i) ≫ (L.truncGE'XIso e rfl hi).inv
   comm' i j hij := by
-    rw [dif_neg (e.not_boundaryGE_next hij)]
+    rw [dite_eq_right (e.not_boundaryGE_next hij)]
     by_cases hi : e.BoundaryGE i
-    · rw [dif_pos hi]
+    · rw [dite_eq_left hi]
       simp [truncGE'_d_eq_fromOpcycles _ e hij rfl rfl hi,
         ← cancel_epi (K.pOpcycles (e.f i))]
-    · rw [dif_neg hi]
+    · rw [dite_eq_right hi]
       simp [truncGE'_d_eq _ e hij rfl rfl hi]
 
 lemma truncGE'Map_f_eq_opcyclesMap {i : ι} (hi : e.BoundaryGE i) {i' : ι'} (h : e.f i = i') :
@@ -184,13 +186,13 @@ lemma truncGE'Map_f_eq_opcyclesMap {i : ι} (hi : e.BoundaryGE i) {i' : ι'} (h 
       (K.truncGE'XIsoOpcycles e h hi).hom ≫ opcyclesMap φ i' ≫
         (L.truncGE'XIsoOpcycles e h hi).inv := by
   subst h
-  exact dif_pos hi
+  exact dite_eq_left hi
 
 lemma truncGE'Map_f_eq {i : ι} (hi : ¬ e.BoundaryGE i) {i' : ι'} (h : e.f i = i') :
     (truncGE'Map φ e).f i =
       (K.truncGE'XIso e h hi).hom ≫ φ.f i' ≫ (L.truncGE'XIso e h hi).inv := by
   subst h
-  exact dif_neg hi
+  exact dite_eq_right hi
 
 variable (K) in
 @[simp]
@@ -226,7 +228,7 @@ end
 
 namespace restrictionToTruncGE'
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary definition for `HomologicalComplex.restrictionToTruncGE'`. -/
 noncomputable def f (i : ι) : (K.restriction e).X i ⟶ (K.truncGE' e).X i :=
   if hi : e.BoundaryGE i then
@@ -234,20 +236,22 @@ noncomputable def f (i : ι) : (K.restriction e).X i ⟶ (K.truncGE' e).X i :=
   else
     (K.truncGE'XIso e rfl hi).inv
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma f_eq_iso_hom_pOpcycles_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : e.BoundaryGE i) :
     f K e i = (K.restrictionXIso e hi').hom ≫ K.pOpcycles i' ≫
       (K.truncGE'XIsoOpcycles e hi' hi).inv := by
   dsimp [f]
-  rw [dif_pos hi]
+  rw [dite_eq_left hi]
   subst hi'
   simp [restrictionXIso]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma f_eq_iso_hom_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : ¬ e.BoundaryGE i) :
     f K e i = (K.restrictionXIso e hi').hom ≫ (K.truncGE'XIso e hi' hi).inv := by
   dsimp [f]
-  rw [dif_neg hi]
+  rw [dite_eq_right hi]
   subst hi'
   simp [restrictionXIso]
 
@@ -273,6 +277,7 @@ end restrictionToTruncGE'
 noncomputable def restrictionToTruncGE' : K.restriction e ⟶ K.truncGE' e where
   f := restrictionToTruncGE'.f K e
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma restrictionToTruncGE'_hasLift : e.HasLift (K.restrictionToTruncGE' e) := by
   intro j hj i' _
@@ -298,6 +303,7 @@ lemma isIso_restrictionToTruncGE' (i : ι) (hi : ¬ e.BoundaryGE i) :
   rw [K.restrictionToTruncGE'_f_eq_iso_hom_iso_inv e rfl hi]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {K L} in
 @[reassoc (attr := simp)]

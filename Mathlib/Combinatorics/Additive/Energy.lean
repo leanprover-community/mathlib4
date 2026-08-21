@@ -123,6 +123,7 @@ variable {s t}
     Eₘ[s, t] = #{x ∈ ((s ×ˢ t) ×ˢ s ×ˢ t) | x.1.1 * x.1.2 = x.2.1 * x.2.2} :=
   card_equiv (.prodProdProdComm _ _ _ _) (by simp [and_and_and_comm])
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive] lemma mulEnergy_eq_sum_sq' (s t : Finset α) :
     Eₘ[s, t] = ∑ a ∈ s * t, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = a} ^ 2 := by
   simp_rw [mulEnergy_eq_card_filter, sq, ← card_product]

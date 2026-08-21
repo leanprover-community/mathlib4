@@ -18,7 +18,7 @@ public meta section
 
 namespace Mathlib.Tactic
 
-open Lean Meta Tactic
+open Lean
 
 variable {m : Type → Type}
 

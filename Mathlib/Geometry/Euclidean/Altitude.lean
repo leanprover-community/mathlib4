@@ -106,7 +106,7 @@ lemma altitude_restrict_eq_comap_subtype {n : ℕ} (s : Simplex ℝ P n) (S : Af
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).altitude i = (s.altitude i).comap S.subtype := by
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   rw [← s.map_altitude_restrict S hS, comap_map_eq_of_injective S.subtype_injective]
 
 open Module
@@ -287,7 +287,7 @@ variable {n : ℕ} (s : Simplex ℝ P n)
 lemma inner_vsub_altitudeFoot_vsub_altitudeFoot_eq_zero {i j : Fin (n + 1)} (h : i ≠ j) :
     have : NeZero n := by grind [neZero_iff]
     ⟪s.points j -ᵥ s.altitudeFoot i, s.points i -ᵥ s.altitudeFoot i⟫ = 0 := by
-  haveI : NeZero n := by grind [neZero_iff]
+  have : NeZero n := by grind [neZero_iff]
   refine Submodule.inner_right_of_mem_orthogonal
     (K := vectorSpan ℝ (s.points '' {i}ᶜ))
     (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan

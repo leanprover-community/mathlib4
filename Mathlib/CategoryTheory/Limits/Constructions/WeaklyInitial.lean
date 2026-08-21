@@ -22,7 +22,7 @@ These are primarily useful to show the General Adjoint Functor Theorem.
 public section
 
 
-universe v u
+universe w v u
 
 namespace CategoryTheory
 
@@ -34,7 +34,7 @@ variable {C : Type u} [Category.{v} C]
 If `C` has (small) products and a small weakly initial set of objects, then it has a weakly initial
 object.
 -/
-theorem has_weakly_initial_of_weakly_initial_set_and_hasProducts [HasProducts.{v} C] {ι : Type v}
+theorem has_weakly_initial_of_weakly_initial_set_and_hasProducts [HasProducts.{w} C] {ι : Type w}
     {B : ι → C} (hB : ∀ A : C, ∃ i, Nonempty (B i ⟶ A)) : ∃ T : C, ∀ X, Nonempty (T ⟶ X) :=
   ⟨∏ᶜ B, fun X => ⟨Pi.π _ _ ≫ (hB X).choose_spec.some⟩⟩
 
@@ -43,11 +43,15 @@ theorem has_weakly_initial_of_weakly_initial_set_and_hasProducts [HasProducts.{v
 The initial object is constructed as the wide equalizer of all endomorphisms on the given weakly
 initial object.
 -/
-theorem hasInitial_of_weakly_initial_and_hasWideEqualizers [HasWideEqualizers.{v} C] {T : C}
+theorem hasInitial_of_weakly_initial_and_hasWideEqualizers [HasWideEqualizers.{w} C] {T : C}
+    [LocallySmall.{w} C]
     (hT : ∀ X, Nonempty (T ⟶ X)) : HasInitial C := by
   let endos := T ⟶ T
+  have : HasLimitsOfShape (WalkingParallelFamily endos) C :=
+    hasLimitsOfShape_of_equivalence
+      (WalkingParallelFamily.equivalenceOfEquiv (equivShrink.{w} endos).symm)
   let i := wideEqualizer.ι (id : endos → endos)
-  haveI : Nonempty endos := ⟨𝟙 _⟩
+  have : Nonempty endos := ⟨𝟙 _⟩
   have : ∀ X : C, Unique (wideEqualizer (id : endos → endos) ⟶ X) := by
     intro X
     refine ⟨⟨i ≫ Classical.choice (hT X)⟩, fun a => ?_⟩
@@ -58,7 +62,7 @@ theorem hasInitial_of_weakly_initial_and_hasWideEqualizers [HasWideEqualizers.{v
       rw [Category.assoc, Category.assoc]
       apply wideEqualizer.condition (id : endos → endos) (h ≫ e ≫ i)
     rw [Category.comp_id, cancel_mono_id i] at this
-    haveI : IsSplitEpi e := IsSplitEpi.mk' ⟨i ≫ h, this⟩
+    have : IsSplitEpi e := IsSplitEpi.mk' ⟨i ≫ h, this⟩
     rw [← cancel_epi e]
     apply equalizer.condition
   exact hasInitial_of_unique (wideEqualizer (id : endos → endos))

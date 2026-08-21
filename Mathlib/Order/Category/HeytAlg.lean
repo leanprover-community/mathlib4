@@ -19,7 +19,7 @@ This file defines `HeytAlg`, the category of Heyting algebras.
 
 universe u
 
-open CategoryTheory Opposite Order
+open CategoryTheory Order
 
 /-- The category of Heyting algebras. -/
 structure HeytAlg where
@@ -41,7 +41,6 @@ attribute [coe] HeytAlg.carrier
 /-- Construct a bundled `HeytAlg` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [HeytingAlgebra X] : HeytAlg := ⟨X⟩
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `HeytAlg R`. -/
 @[ext]
 structure Hom (X Y : HeytAlg.{u}) where

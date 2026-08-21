@@ -52,7 +52,7 @@ of `p`, i.e., those `e < x` for which there is a prime `p ∈ (k, x]` that divid
 -/
 def U (x k : ℕ) : Finset ℕ := (P x k).biUnion fun p ↦ {e ∈ range x | p ∣ e + 1}
 
-open Classical in
+open scoped Classical in
 /-- Those `e < x` for which `e + 1` is a product of powers of primes smaller than or equal to `k`.
 -/
 noncomputable def M (x k : ℕ) : Finset ℕ := {e ∈ range x | ∀ p : ℕ, p.Prime ∧ p ∣ e + 1 → p ≤ k}

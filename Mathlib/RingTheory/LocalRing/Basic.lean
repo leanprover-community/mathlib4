@@ -36,6 +36,27 @@ theorem of_nonunits_add [Nontrivial R]
   isUnit_or_isUnit_of_add_one {a b} hab :=
     or_iff_not_and_not.2 fun H => h a b H.1 H.2 <| hab.symm ▸ isUnit_one
 
+variable [IsLocalRing R]
+
+theorem isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a ∨ IsUnit b := by
+  rcases h with ⟨u, hu⟩
+  rw [← Units.inv_mul_eq_one, mul_add] at hu
+  apply Or.imp _ _ (isUnit_or_isUnit_of_add_one hu) <;> exact (u⁻¹.isUnit_units_mul _).mp
+
+theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
+  fun H ↦ not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
+
+variable (R) in
+/-- The nonunits of a local semiring form an additive submonoid. -/
+@[expose] def nonunitsAddSubmonoid : AddSubmonoid R where
+  carrier := nonunits R
+  zero_mem' := by simp
+  add_mem' := nonunits_add
+
+theorem exists_of_isUnit_sum {ι : Type*} {s : Finset ι} {f : ι → R}
+    (h : IsUnit (∑ i ∈ s, f i)) : ∃ i ∈ s, IsUnit (f i) := by
+  contrapose! h; exact (nonunitsAddSubmonoid R).sum_mem h
+
 end Semiring
 
 section CommSemiring
@@ -66,16 +87,6 @@ theorem of_unique_nonzero_prime (h : ∃! P : Ideal R, P ≠ ⊥ ∧ Ideal.IsPri
       · rintro rfl
         exact hPnot_top (hM.1.2 P (bot_lt_iff_ne_bot.2 hPnonzero)))
 
-variable [IsLocalRing R]
-
-theorem isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a ∨ IsUnit b := by
-  rcases h with ⟨u, hu⟩
-  rw [← Units.inv_mul_eq_one, mul_add] at hu
-  apply Or.imp _ _ (isUnit_or_isUnit_of_add_one hu) <;> exact isUnit_of_mul_isUnit_right
-
-theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
-  fun H => not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
-
 end CommSemiring
 
 section Ring
@@ -86,11 +97,7 @@ theorem of_isUnit_or_isUnit_one_sub_self [Nontrivial R] (h : ∀ a : R, IsUnit a
     IsLocalRing R :=
   ⟨fun {a b} hab => add_sub_cancel_left a b ▸ hab.symm ▸ h a⟩
 
-end Ring
-
-section CommRing
-
-variable [CommRing R] [IsLocalRing R]
+variable [IsLocalRing R]
 
 theorem isUnit_or_isUnit_one_sub_self (a : R) : IsUnit a ∨ IsUnit (1 - a) :=
   isUnit_or_isUnit_of_isUnit_add <| (add_sub_cancel a 1).symm ▸ isUnit_one
@@ -110,7 +117,7 @@ theorem of_surjective' [Ring S] [Nontrivial S] (f : R →+* S) (hf : Function.Su
     rw [← f.map_one, ← f.map_sub]
     apply f.isUnit_map)
 
-end CommRing
+end Ring
 
 end IsLocalRing
 

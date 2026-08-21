@@ -41,9 +41,6 @@ theorem modEq_iff_intModEq {a b z : ℤ} : a ≡ b [PMOD z] ↔ a ≡ b [ZMOD z]
   simp [modEq_iff_zsmul', dvd_iff_exists_eq_mul_left, Int.ModEq,
     Int.emod_eq_emod_iff_emod_sub_eq_zero, ← Int.dvd_iff_emod_eq_zero]
 
-@[deprecated (since := "2026-01-13")]
-alias modEq_iff_int_modEq := modEq_iff_intModEq
-
 variable {G : Type*} [AddCommGroupWithOne G] [CharZero G]
 
 @[simp, norm_cast]
@@ -207,7 +204,7 @@ lemma of_mul_right (m : ℤ) : a ≡ b [ZMOD n * m] → a ≡ b [ZMOD n] :=
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c`. -/
 theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) :
     a ≡ b [ZMOD m / gcd m c] := by
-  letI d := gcd m c
+  let d := gcd m c
   rw [modEq_iff_dvd] at h ⊢
   refine Int.dvd_of_dvd_mul_right_of_gcd_one (?_ : m / d ∣ c / d * (b - a)) ?_
   · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (gcd_dvd_right ..), Int.sub_mul]

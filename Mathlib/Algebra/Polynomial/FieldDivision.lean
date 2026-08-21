@@ -197,29 +197,32 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
   lia
 
-section NormalizationMonoid
 
-variable [NormalizationMonoid R]
-
-instance instNormalizationMonoid : NormalizationMonoid R[X] where
+instance instNormalizationMonoid [NormalizationMonoid R] : NormalizationMonoid R[X] where
   normUnit p :=
     ⟨C ↑(normUnit p.leadingCoeff), C ↑(normUnit p.leadingCoeff)⁻¹, by
       rw [← map_mul, Units.mul_inv, C_1], by rw [← map_mul, Units.inv_mul, C_1]⟩
   normUnit_zero := Units.ext (by simp)
+  normUnit_one := Units.ext (by simp)
+  normUnit_mul_units u h := Units.ext <| by
+    dsimp only [Units.val_mul]
+    obtain ⟨_, ⟨w, rfl⟩, h2⟩ := isUnit_iff.1 ⟨u, rfl⟩
+    rw [leadingCoeff_mul, ← h2, leadingCoeff_C, normUnit_mul_units _ (leadingCoeff_ne_zero.2 h),
+      Units.eq_inv_mul_iff_mul_eq, Units.val_mul, C_mul, ← mul_assoc, ← h2, ← C_mul]
+    simp
+
+instance [StrongNormalizationMonoid R] : StrongNormalizationMonoid R[X] where
   normUnit_mul hp0 hq0 :=
     Units.ext
       (by
         dsimp
         rw [Ne, ← leadingCoeff_eq_zero] at *
-        rw [leadingCoeff_mul, normUnit_mul hp0 hq0, Units.val_mul, C_mul])
-  normUnit_coe_units u :=
-    Units.ext
-      (by
-        dsimp
-        rw [← mul_one u⁻¹, Units.val_mul, Units.eq_inv_mul_iff_mul_eq]
-        rcases Polynomial.isUnit_iff.1 ⟨u, rfl⟩ with ⟨_, ⟨w, rfl⟩, h2⟩
-        rw [← h2, leadingCoeff_C, normUnit_coe_units, ← C_mul, Units.mul_inv, C_1]
-        rfl)
+        simp_rw [normUnit, leadingCoeff_mul, normUnit_mul hp0 hq0, Units.val_mul, C_mul])
+  normUnit_coe_units := normUnit_coe_units
+
+section NormalizationMonoid
+
+variable [NormalizationMonoid R]
 
 @[simp]
 theorem coe_normUnit {p : R[X]} : (normUnit p : R[X]) = C ↑(normUnit p.leadingCoeff) := by
@@ -237,11 +240,11 @@ theorem roots_normalize {R} [CommRing R] [IsDomain R] [NormalizationMonoid R] {p
     (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 
-theorem normUnit_X : normUnit (X : Polynomial R) = 1 := by
+theorem normUnit_X : normUnit (X : R[X]) = 1 := by
   have := coe_normUnit (R := R) (p := X)
   rwa [leadingCoeff_X, normUnit_one, Units.val_one, map_one, Units.val_eq_one] at this
 
-theorem X_eq_normalize : (X : Polynomial R) = normalize X := by
+theorem X_eq_normalize : X = normalize (X : R[X]) := by
   simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
 end NormalizationMonoid
@@ -250,7 +253,7 @@ end IsDomain
 
 section DivisionRing
 
-variable [DivisionRing R] {p q : R[X]}
+variable [DivisionRing R] {p : R[X]}
 
 theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 < degree p :=
   lt_of_not_ge fun h => by
@@ -261,7 +264,7 @@ end DivisionRing
 
 section SimpleRing
 
-variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] {p q : R[X]}
+variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] {p : R[X]}
 
 @[simp]
 protected theorem map_eq_zero (f : R →+* S) : p.map f = 0 ↔ p = 0 :=
@@ -365,13 +368,12 @@ instance instEuclideanDomain : EuclideanDomain R[X] :=
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
-    classical
     have : ¬degree (q * C (leadingCoeff q)⁻¹) ≤ degree p :=
       not_le_of_gt <| by rwa [degree_mul_leadingCoeff_inv q hq0]
-    rw [mod_def, modByMonic, dif_pos (monic_mul_leadingCoeff_inv hq0)]
+    rw [mod_def, modByMonic, dite_eq_left (monic_mul_leadingCoeff_inv hq0)]
     unfold divModByMonicAux
     dsimp
-    simp only [this, false_and, if_false]⟩
+    simp only [this, false_and, ite_false]⟩
 
 protected theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
@@ -548,7 +550,7 @@ theorem monic_normalize [DecidableEq R] (hp0 : p ≠ 0) : Monic (normalize p) :=
   rw [Monic, leadingCoeff_normalize, normalize_eq_one]
   apply hp0
 
-theorem normalize_eq_self_iff_monic [DecidableEq R] {p : Polynomial R} (hp : p ≠ 0) :
+theorem normalize_eq_self_iff_monic [DecidableEq R] {p : R[X]} (hp : p ≠ 0) :
     normalize p = p ↔ p.Monic :=
   ⟨fun h ↦ h ▸ monic_normalize hp, fun h ↦ Monic.normalize_eq_self h⟩
 
@@ -605,6 +607,10 @@ theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map 
 theorem degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by
   simp [normalize_apply]
 
+@[simp]
+theorem natDegree_normalize [DecidableEq R] : natDegree (normalize p) = natDegree p :=
+  natDegree_eq_of_degree_eq degree_normalize
+
 theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
   have : Prime (normalize p) :=
@@ -649,7 +655,6 @@ then `f / (X - a)` is coprime with `X - a`.
 Note that we do not assume `f a = 0`, because `f / (X - a) = (f - f a) / (X - a)`. -/
 theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f : K[X]) (a : K)
     (hf' : f.derivative.eval a ≠ 0) : IsCoprime (X - C a : K[X]) (f /ₘ (X - C a)) := by
-  classical
   refine Or.resolve_left
       (EuclideanDomain.dvd_or_coprime (X - C a) (f /ₘ (X - C a))
         (irreducible_of_degree_eq_one (Polynomial.degree_X_sub_C a))) ?_

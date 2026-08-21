@@ -59,7 +59,7 @@ universe v v₀ u u₀
 
 namespace CategoryTheory
 
-open Category Limits Functor IsPullback
+open Category Limits CategoryTheory.Functor IsPullback
 
 variable {C : Type u} [Category.{v} C]
 
@@ -151,7 +151,7 @@ alias _root_.CategoryTheory.Classifier.isTerminalFrom_eq_χ₀ := isTerminalFrom
 
 end Subobject.Classifier
 
-open Subobject
+open CategoryTheory.Subobject
 /-- A category `C` has a subobject classifier if there is at least one subobject classifier. -/
 class HasSubobjectClassifier (C : Type u) [Category.{v} C] : Prop where
   /-- There is some classifier. -/
@@ -410,6 +410,7 @@ alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.homEquiv_eq := ho
 @[deprecated (since := "2026-03-06")]
 alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.homEquiv_eq := homEquiv_eq
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For any subobject `x`, the pullback of `h.Ω₀` along the characteristic map of `x`
 given by `h.homEquiv` is `x` itself. -/
 lemma pullback_homEquiv_symm_obj_Ω₀ {X : C} (x : Subobject X) :
@@ -485,6 +486,9 @@ alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_left_π :
 @[deprecated (since := "2026-03-06")]
 alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_left_π := iso_inv_left_π
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma iso_inv_hom_left_comp :
     (h.iso m).inv.hom.left ≫ m =
@@ -497,11 +501,6 @@ alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_hom_left_
   iso_inv_hom_left_comp
 @[deprecated (since := "2026-03-06")]
 alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_hom_left_comp :=
-  iso_inv_hom_left_comp
-
-set_option linter.dupNamespace false in
-@[deprecated (since := "2025-12-18")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_left_comp :=
   iso_inv_hom_left_comp
 
 set_option backward.isDefEq.respectTransparency false in
@@ -519,6 +518,7 @@ alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.isPullback := isP
 alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.isPullback := isPullback
 
 variable {m}
+set_option backward.isDefEq.respectTransparency.types false in
 lemma uniq {χ' : X ⟶ Ω} {π : U ⟶ h.Ω₀}
     (sq : IsPullback m π χ' h.Ω₀.arrow) : χ' = h.χ m := by
   apply h.homEquiv.injective
@@ -703,7 +703,6 @@ section Equivalence
 
 variable {D : Type*} [Category* D]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The image of a subobject classifier under an equivalence of categories is a subobject classifier.
 -/

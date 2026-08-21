@@ -23,7 +23,7 @@ equivalent to the epsilon numbers given by `Ordinal.epsilon`.
 
 * `IsPrincipal`: A principal (or indecomposable) ordinal under some binary operation. We include `0`
   and other typically excluded edge cases for simplicity.
-* `not_bddAbove_setOf_isPrincipal`: Principal ordinals (under any operation) are unbounded.
+* `not_bddAbove_setOfPred_isPrincipal`: Principal ordinals (under any operation) are unbounded.
 * `isPrincipal_add_iff_zero_or_omega0_opow`: The additive principal ordinals are
   `0` and the ordinal powers of `ω`.
 * `isPrincipal_mul_iff_le_two_or_omega0_opow_opow`: The multiplicative principal ordinals are
@@ -177,13 +177,16 @@ private theorem isPrincipal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o :
       ⟨_, Set.mk_mem_prod ha (hb.trans_le h)⟩
 
 /-- Principal ordinals under any operation are unbounded. -/
-theorem not_bddAbove_setOf_isPrincipal (op : Ordinal → Ordinal → Ordinal) :
+theorem not_bddAbove_setOfPred_isPrincipal (op : Ordinal → Ordinal → Ordinal) :
     ¬ BddAbove { o | IsPrincipal op o } := by
   rintro ⟨a, ha⟩
   exact ((le_nfp _ _).trans (ha (isPrincipal_nfp_iSup op (succ a)))).not_gt (lt_succ a)
 
+@[deprecated (since := "2026-07-09")]
+alias not_bddAbove_setOf_isPrincipal := not_bddAbove_setOfPred_isPrincipal
+
 @[deprecated (since := "2026-03-17")]
-alias not_bddAbove_principal := not_bddAbove_setOf_isPrincipal
+alias not_bddAbove_principal := not_bddAbove_setOfPred_isPrincipal
 
 /-! ### Additive principal ordinals -/
 
@@ -426,15 +429,15 @@ theorem natCast_mul_omega0 {n : ℕ} (hn : 0 < n) : n * ω = ω :=
 theorem mul_lt_omega0_opow (c0 : 0 < c) (ha : a < ω ^ c) (hb : b < ω) : a * b < ω ^ c := by
   rcases zero_or_succ_or_isSuccLimit c with (rfl | ⟨c, rfl⟩ | l)
   · exact (lt_irrefl _).elim c0
-  · rw [opow_succ] at ha
+  · rw [succ_eq_add_one, opow_add_one] at ha
     obtain ⟨n, hn, an⟩ :=
       ((isNormal_mul_right <| opow_pos _ omega0_pos).lt_iff_exists_lt isSuccLimit_omega0).1 ha
-    grw [an, opow_succ, mul_assoc]
+    grw [an, succ_eq_add_one, opow_add_one, mul_assoc]
     gcongr
     exacts [opow_pos _ omega0_pos, isPrincipal_mul_omega0 hn hb]
   · rcases ((isNormal_opow one_lt_omega0).lt_iff_exists_lt l).1 ha with ⟨x, hx, ax⟩
     refine (mul_le_mul' (le_of_lt ax) (le_of_lt hb)).trans_lt ?_
-    rw [← opow_succ, opow_lt_opow_iff_right one_lt_omega0]
+    rw [← opow_add_one, opow_lt_opow_iff_right one_lt_omega0]
     exact l.succ_lt hx
 
 theorem mul_omega0_opow_opow (a0 : 0 < a) (h : a < ω ^ ω ^ b) : a * ω ^ ω ^ b = ω ^ ω ^ b := by
@@ -497,12 +500,13 @@ theorem mul_eq_opow_log_succ (ha : a ≠ 0) (hb : IsPrincipal (· * ·) b) (hb�
     have hb₁ : 1 < b := one_lt_two.trans hb₂
     have hbo₀ : b ^ log b a ≠ 0 := pos_iff_ne_zero.1 (opow_pos _ (zero_lt_one.trans hb₁))
     apply (mul_le_mul_left (le_of_lt (lt_mul_succ_div a hbo₀)) c).trans
-    rw [mul_assoc, opow_succ]
+    rw [mul_assoc]
+    conv_rhs => rw [succ_eq_add_one, opow_add_one]
     gcongr
     refine (hb (hbl.succ_lt ?_) hcb).le
-    rw [← lt_mul_iff_div_lt hbo₀, ← opow_succ]
-    exact lt_opow_succ_log_self hb₁ _
-  · grw [opow_succ, opow_log_le_self b ha]
+    rw [← lt_mul_iff_div_lt hbo₀, ← opow_add_one]
+    simpa [succ_eq_add_one] using lt_opow_succ_log_self hb₁ _
+  · grw [succ_eq_add_one, opow_add_one, opow_log_le_self b ha]
 
 /-! #### Exponential principal ordinals -/
 

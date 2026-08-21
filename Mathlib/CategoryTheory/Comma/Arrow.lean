@@ -72,7 +72,7 @@ theorem comp_left {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).left = f.left ≫ g.left := rfl
 
 /-- An object in the arrow category is simply a morphism in `T`. -/
-@[simps, to_dual self]
+@[simps, to_dual self, implicit_reducible]
 def mk {X Y : T} (f : X ⟶ Y) : Arrow T where
   left := X
   right := Y
@@ -286,6 +286,7 @@ theorem left_hom_inv_right [IsIso sq] : sq.left ≫ g.hom ≫ inv sq.right = f.h
 theorem inv_left_hom_right [IsIso sq] : inv sq.left ≫ f.hom ≫ sq.right = g.hom := by
   simp only [w, IsIso.inv_comp_eq]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[to_dual epi_right]
 instance mono_left [Mono sq] : Mono sq.left where
@@ -322,7 +323,7 @@ theorem square_to_iso_invert (i : Arrow T) {X Y : T} (p : X ≅ Y) (sq : i ⟶ A
 in terms of the inverse of `i`. -/
 theorem square_from_iso_invert {X Y : T} (i : X ≅ Y) (p : Arrow T) (sq : Arrow.mk i.hom ⟶ p) :
     i.inv ≫ sq.left ≫ p.hom = sq.right := by
-  simp [Arrow.w_mk_left]
+  simp
 
 variable {C : Type u} [Category.{v} C]
 
@@ -347,6 +348,7 @@ def squareToSnd {X Y Z : C} {i : Arrow C} {f : X ⟶ Y} {g : Y ⟶ Z} (sq : i �
 def leftFunc : Arrow C ⥤ C :=
   Comma.fst _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation from `leftFunc` to `rightFunc`, given by the arrow itself. -/
 @[simps]
@@ -371,6 +373,7 @@ attribute [to_dual self (reorder := X Y)] mapArrow_map
 
 variable (C D)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor `(C ⥤ D) ⥤ (Arrow C ⥤ Arrow D)` which sends
 a functor `F : C ⥤ D` to `F.mapArrow`. -/
@@ -383,6 +386,7 @@ attribute [to_dual self (reorder := X Y)] mapArrowFunctor_map_app
 
 variable {C D}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `Arrow C ≌ Arrow D` induced by an equivalence `C ≌ D`. -/
 @[simps]

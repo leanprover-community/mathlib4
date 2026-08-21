@@ -263,7 +263,7 @@ end specialversions
 
 section limit
 
-open Filter Topology abelSummationProof intervalIntegral
+open Filter Topology intervalIntegral
 
 theorem locallyIntegrableOn_mul_sum_Icc {m : ℕ} (ha : 0 ≤ a) {g : ℝ → 𝕜}
     (hg : LocallyIntegrableOn g (Set.Ici a)) :
@@ -323,7 +323,7 @@ end limit
 
 section summable
 
-open Filter abelSummationProof
+open Filter
 
 private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
     (h_bdd : (fun n : ℕ ↦ ‖f n‖ * ∑ k ∈ Icc 0 n, ‖c k‖) =O[atTop] fun _ ↦ (1 : ℝ))
@@ -385,8 +385,9 @@ theorem summable_mul_of_bigO_atTop'
   have h : ∀ n, ∑ k ∈ Icc 1 n, ‖c k‖ = ∑ k ∈ Icc 0 n, ‖(fun n ↦ if n = 0 then 0 else c n) k‖ := by
     intro n
     rw [Icc_eq_cons_Ioc n.zero_le, sum_cons, ← Icc_add_one_left_eq_Ioc, zero_add]
-    simp_rw [if_pos, norm_zero, zero_add]
-    exact Finset.sum_congr rfl fun _ h ↦ by rw [if_neg (zero_lt_one.trans_le (mem_Icc.mp h).1).ne']
+    simp_rw [ite_eq_left, norm_zero, zero_add]
+    exact Finset.sum_congr rfl fun _ h ↦ by
+      rw [ite_eq_right (zero_lt_one.trans_le (mem_Icc.mp h).1).ne']
   simp_rw [h] at h_bdd hg₁
   refine Summable.congr_atTop (summable_mul_of_bigO_atTop_aux (fun n ↦ if n = 0 then 0 else c n) 1
     h_bdd (by rwa [Nat.cast_one]) (fun n ↦ ?_) hg₁ hg₂) ?_
@@ -394,6 +395,6 @@ theorem summable_mul_of_bigO_atTop'
       (fun _ ht ↦ hf_diff _ ht.1)
       (hf_int.integrableOn_compact_subset Set.Icc_subset_Ici_self isCompact_Icc)
   · filter_upwards [eventually_ne_atTop 0] with k hk
-    simp_rw [if_neg hk]
+    simp_rw [ite_eq_right hk]
 
 end summable

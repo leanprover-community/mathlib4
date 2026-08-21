@@ -67,12 +67,12 @@ noncomputable def d {G A : C} {M : ModuleCat (End G)ᵐᵒᵖ}
     (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) : ∐ (fun (_ : M) => G) ⟶ A :=
   Sigma.desc fun (m : M) => g m
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem ι_d {G A : C} {M : ModuleCat (End G)ᵐᵒᵖ} (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) (m : M) :
     Sigma.ι _ m ≫ d g = g.hom m := by
   simp [d]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] IsFiltered.isConnected in
 /-- This is the "Lemma" in [mitchell1981]. -/

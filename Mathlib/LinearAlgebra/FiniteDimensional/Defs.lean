@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.Free
-public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Finite-dimensional vector spaces
@@ -108,7 +107,7 @@ theorem _root_.Module.Basis.finiteDimensional_of_finite {ι : Type w} [Finite ι
   Module.Finite.of_basis h
 
 /-- If a vector space is `FiniteDimensional`, all bases are indexed by a finite type -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintypeBasisIndex {ι : Type*} [FiniteDimensional K V] (b : Basis ι K V) :
     Fintype ι :=
   @Fintype.ofFinite _ (Module.Finite.finite_basis b)

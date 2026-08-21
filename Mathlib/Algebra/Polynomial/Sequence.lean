@@ -153,7 +153,7 @@ lemma span_degreeLT {m : ℕ} (hCoeff : ∀ i < m, IsUnit (S i).leadingCoeff) :
       rw [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, rightinv, mul_one]
     -- which we can now combine to show that `P - head` must have strictly lower degree,
     -- as its leading term has been cancelled, completing our proof.
-    have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero hPhead
+    have tail_degree_lt := P.degree_sub_lt_left head_degree_eq p_ne_zero hPhead
     rwa [degree_eq_natDegree p_ne_zero, hp] at tail_degree_lt
 
 /-- The first `m + 1` polynomials of a polynomial sequence span all polynomials of degree `≤ m` if

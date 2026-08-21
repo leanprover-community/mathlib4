@@ -65,7 +65,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
   have hW_sub_S : W ⊆ rationalSolutions := by
     intro s hs_in_W
     rw [rationalSolutions]
-    simp only [Set.mem_setOf_eq] at hs_in_W ⊢
+    simp only [Set.mem_ofPred_eq] at hs_in_W ⊢
     rcases hs_in_W with ⟨x, y, z, h₁, t, ht_gt_zero, hx_t, hy_t, hz_t⟩
     use x, y, z
     have key_gt_zero : 0 < t ^ 2 + t + 1 := by linarith [pow_pos ht_gt_zero 2, ht_gt_zero]
@@ -99,7 +99,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
         set z : ℚ := -t * (t + 1) with hz_def
         simp only [t, W, K, g, Set.mem_image, Prod.exists]
         use x, y, z; constructor
-        · simp only [Set.mem_setOf_eq]
+        · simp only [Set.mem_ofPred_eq]
           use x, y, z; constructor
           · rfl
           · use t; constructor

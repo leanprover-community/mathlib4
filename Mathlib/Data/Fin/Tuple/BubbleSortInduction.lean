@@ -40,7 +40,7 @@ theorem bubble_sort_induction' {n : ℕ} {α : Type*} [LinearOrder α] {f : Fin 
     (h : ∀ (σ : Equiv.Perm (Fin n)) (i j : Fin n),
       i < j → (f ∘ σ) j < (f ∘ σ) i → P (f ∘ σ) → P (f ∘ σ ∘ Equiv.swap i j)) :
     P (f ∘ sort f) := by
-  letI := @Preorder.lift _ (Lex (Fin n → α)) _ fun σ : Equiv.Perm (Fin n) => toLex (f ∘ σ)
+  let := @Preorder.lift _ (Lex (Fin n → α)) _ fun σ : Equiv.Perm (Fin n) => toLex (f ∘ σ)
   refine
     @WellFounded.induction_bot' _ _ _ (IsWellFounded.wf : WellFounded (· < ·))
       (Equiv.refl _) (sort f) P (fun σ => f ∘ σ) (fun σ hσ hfσ => ?_) hf

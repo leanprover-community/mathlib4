@@ -94,8 +94,8 @@ abbrev OrderEmbedding (α β : Type*) [LE α] [LE β] :=
   @RelEmbedding α β (· ≤ ·) (· ≤ ·)
 
 to_dual_insert_cast_fun OrderEmbedding :=
-  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩,
-  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩
+  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩,
+  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩
 
 /-- Notation for an `OrderEmbedding`. -/
 infixl:25 " ↪o " => OrderEmbedding
@@ -106,8 +106,8 @@ abbrev OrderIso (α β : Type*) [LE α] [LE β] :=
   @RelIso α β (· ≤ ·) (· ≤ ·)
 
 to_dual_insert_cast_fun OrderIso :=
-  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩,
-  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩
+  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩,
+  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩
 
 /-- Notation for an `OrderIso`. -/
 infixl:25 " ≃o " => OrderIso
@@ -316,6 +316,7 @@ theorem mk_le_mk {f g : α → β} {hf hg} : mk f hf ≤ mk g hg ↔ f ≤ g :=
 theorem apply_mono {f g : α →o β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ y) : f x ≤ g y :=
   (h₁ x).trans <| g.mono h₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Curry/uncurry as an order isomorphism between `α × β →o γ` and `α →o β →o γ`. -/
 def curry : (α × β →o γ) ≃o (α →o β →o γ) where
   toFun f := ⟨fun x ↦ ⟨Function.curry f x, fun _ _ h ↦ f.mono ⟨le_rfl, h⟩⟩, fun _ _ h _ =>
@@ -843,11 +844,15 @@ theorem symm_apply_apply (e : α ≃o β) (x : α) : e.symm (e x) = x :=
 theorem symm_refl (α : Type*) [LE α] : (refl α).symm = refl α :=
   rfl
 
-theorem apply_eq_iff_eq_symm_apply (e : α ≃o β) (x : α) (y : β) : e x = y ↔ x = e.symm y :=
-  e.toEquiv.apply_eq_iff_eq_symm_apply
-
 theorem symm_apply_eq (e : α ≃o β) {x : α} {y : β} : e.symm y = x ↔ y = e x :=
   e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (e : α ≃o β) {x : α} {y : β} : x = e.symm y ↔ e x = y :=
+  e.toEquiv.eq_symm_apply
+
+@[deprecated eq_symm_apply (since := "2026-07-26")]
+theorem apply_eq_iff_eq_symm_apply (e : α ≃o β) (x : α) (y : β) : e x = y ↔ x = e.symm y :=
+  e.eq_symm_apply.symm
 
 @[simp]
 theorem symm_symm (e : α ≃o β) : e.symm.symm = e := rfl
@@ -1028,8 +1033,6 @@ theorem dualDual_symm_apply (a : αᵒᵈᵒᵈ) : (dualDual α).symm a = ofDual
   rfl
 
 end LE
-
-open Set
 
 section LE
 

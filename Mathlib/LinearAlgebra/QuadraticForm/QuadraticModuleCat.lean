@@ -131,8 +131,6 @@ end QuadraticModuleCat
 
 namespace CategoryTheory.Iso
 
-open QuadraticForm
-
 variable {X Y Z : QuadraticModuleCat.{v} R}
 
 /-- Build a `QuadraticForm.IsometryEquiv` from an isomorphism in the category

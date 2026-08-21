@@ -37,7 +37,7 @@ variable {M R α β : Type*}
 
 section Group
 
-open UniformSpace CauchyFilter Filter Set
+open UniformSpace
 
 variable [UniformSpace α]
 
@@ -228,7 +228,7 @@ theorem AddMonoidHom.extension_coe [CompleteSpace β] [T0Space β] (f : α →+ 
     (hf : Continuous f) (a : α) : f.extension hf a = f a :=
   UniformSpace.Completion.extension_coe (uniformContinuous_addMonoidHom_of_continuous hf) a
 
-@[continuity]
+@[continuity, fun_prop]
 theorem AddMonoidHom.continuous_extension [CompleteSpace β] [T0Space β] (f : α →+ β)
     (hf : Continuous f) : Continuous (f.extension hf) :=
   UniformSpace.Completion.continuous_extension

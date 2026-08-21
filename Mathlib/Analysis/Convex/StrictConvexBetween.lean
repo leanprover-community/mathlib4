@@ -20,7 +20,6 @@ space.
 
 @[expose] public section
 
-open Metric
 open scoped Convex
 
 variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]

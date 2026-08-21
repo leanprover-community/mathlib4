@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.ClickSuggestions.FindPremises
+meta import Mathlib.Tactic.ClickSuggestions.FindPremises
 
 /-!
 # generating lemma suggestions, given the the shortlist of candidate lemmas
@@ -157,7 +158,7 @@ def findRflTarget? (root subExpr : Expr) (rwKind : RwKind) : ClickSuggestionsM (
   catch _ =>
     return none
 
-/-- Compute the library rearch suggestions. This uses `token` to incrementally udpate the output. -/
+/-- Compute the library rearch suggestions. This uses `token` to incrementally update the output. -/
 public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalContext)
     (rwKind : RwKind) (parentDecl? : Option Name)
     (token : RefreshToken) : ClickSuggestionsM Unit := do

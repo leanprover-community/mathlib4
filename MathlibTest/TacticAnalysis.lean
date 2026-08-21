@@ -363,7 +363,7 @@ info: `skip` (+1 later steps) can be replaced with `grind`
 ---
 info: `rfl` can be replaced with `grind`
 ---
-warning: 'skip' tactic does nothing
+warning: Unused tactic linter: `skip` does nothing
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/

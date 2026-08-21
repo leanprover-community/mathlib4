@@ -65,7 +65,7 @@ theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} := by
 
 theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f pos} := by
   classical rw [← Fintype.coe_image_univ, univ_eq]
-  classical simp [Finset.coe_insert]
+  simp [Finset.coe_insert]
 
 @[simp, norm_cast] lemma coe_mul {α} [MulZeroOneClass α] [HasDistribNeg α] (a b : SignType) :
     ↑(a * b) = (a : α) * b :=
@@ -180,6 +180,7 @@ theorem exists_signed_sum [DecidableEq α] (s : Finset α) (f : α → ℤ) :
   ⟨t, inferInstance, fun b => sgn b, fun b => g b, fun b => hg b, by simp [ht], fun a ha =>
     (sum_attach t fun b ↦ ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We can decompose a sum of absolute value less than `n` into a sum of at most `n` signs. -/
 theorem exists_signed_sum' [Nonempty α] [DecidableEq α] (s : Finset α) (f : α → ℤ)
     (n : ℕ) (h : (∑ i ∈ s, (f i).natAbs) ≤ n) :

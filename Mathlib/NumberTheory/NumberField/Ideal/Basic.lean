@@ -54,7 +54,7 @@ For `I` an integral ideal of `K`, the group morphism from the group of roots of 
 of order `n` to `(𝓞 K ⧸ I)ˣ`.
 -/
 def Ideal.rootsOfUnityMapQuot (n : ℕ) : (rootsOfUnity n (𝓞 K)) →* ((𝓞 K) ⧸ I)ˣ :=
-  (Units.map (Ideal.Quotient.mk I).toMonoidHom).restrict _
+  (Units.map (Ideal.Quotient.mk I).toMonoidHom).domRestrict _
 
 @[simp]
 theorem Ideal.rootsOfUnityMapQuot_apply (n : ℕ) {x : (𝓞 K)ˣ} (hx : x ∈ rootsOfUnity n (𝓞 K)) :
@@ -64,7 +64,7 @@ theorem Ideal.rootsOfUnityMapQuot_apply (n : ℕ) {x : (𝓞 K)ˣ} (hx : x ∈ r
 For `I` an integral ideal of `K`, the group morphism from the torsion of `K` to `(𝓞 K ⧸ I)ˣ`.
 -/
 def Ideal.torsionMapQuot : (Units.torsion K) →* ((𝓞 K) ⧸ I)ˣ :=
-  (Units.map (Ideal.Quotient.mk I).toMonoidHom).restrict (torsion K)
+  (Units.map (Ideal.Quotient.mk I).toMonoidHom).domRestrict (torsion K)
 
 @[simp]
 theorem Ideal.torsionMapQuot_apply {x : (𝓞 K)ˣ} (hx : x ∈ torsion K) :

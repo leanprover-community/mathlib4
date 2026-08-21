@@ -40,7 +40,7 @@ noncomputable section
 
 open DirectSum TensorProduct
 
-open Set LinearMap Submodule
+open LinearMap
 
 section TensorProduct
 
@@ -128,12 +128,6 @@ lemma finsuppLeft_smul' (s : S) (t : (ι →₀ M) ⊗[R] N) :
     finsuppLeft R S M N ι (s • t) = s • finsuppLeft R S M N ι t := by
   simp
 
-@[deprecated (since := "2026-01-01")] alias finsuppLeft' := finsuppLeft
-
-@[nolint synTaut, deprecated "is syntactic rfl now" (since := "2026-01-01")]
-lemma finsuppLeft'_apply (x : (ι →₀ M) ⊗[R] N) :
-    finsuppLeft R S M N ι x = finsuppLeft R S M N ι x := rfl
-
 variable (R M N ι) in
 /-- The tensor product of `ι →₀ R` and `N` is linearly equivalent to `ι →₀ N` -/
 noncomputable def finsuppScalarLeft :
@@ -192,13 +186,6 @@ lemma finsuppScalarRight_symm_apply_single (i : ι) (m : M) :
 theorem finsuppScalarRight_smul (s : S) (t) :
     finsuppScalarRight R S M ι (s • t) = s • finsuppScalarRight R S M ι t := by
   simp
-
-@[deprecated (since := "2026-01-01")] alias finsuppScalarRight' := finsuppScalarRight
-
-@[nolint synTaut, deprecated "is syntactic rfl now" (since := "2026-01-01")]
-theorem coe_finsuppScalarRight' :
-    ⇑(finsuppScalarRight R S M ι) = finsuppScalarRight R S M ι :=
-  rfl
 
 end TensorProduct
 

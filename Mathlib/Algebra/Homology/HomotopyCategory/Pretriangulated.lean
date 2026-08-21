@@ -95,7 +95,7 @@ noncomputable def homotopyToZeroOfId : Homotopy (𝟙 (mappingCone (𝟙 K))) 0 
 
 section mapOfHomotopy
 
-variable {K₁ L₁ K₂ L₂ K₃ L₃ : CochainComplex C ℤ} {φ₁ : K₁ ⟶ L₁} {φ₂ : K₂ ⟶ L₂}
+variable {K₁ L₁ K₂ L₂ : CochainComplex C ℤ} {φ₁ : K₁ ⟶ L₁} {φ₂ : K₂ ⟶ L₂}
   {a : K₁ ⟶ K₂} {b : L₁ ⟶ L₂} (H : Homotopy (φ₁ ≫ b) (a ≫ φ₂))
 
 /-- The morphism `mappingCone φ₁ ⟶ mappingCone φ₂` that is induced by a square that
@@ -488,6 +488,7 @@ lemma isomorphic_distinguished (T₁ : Triangle (HomotopyCategory C (ComplexShap
   obtain ⟨X, Y, f, ⟨e'⟩⟩ := hT₁
   exact ⟨X, Y, f, ⟨e ≪≫ e'⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable [HasZeroObject C] in
 lemma contractible_distinguished (X : HomotopyCategory C (ComplexShape.up ℤ)) :

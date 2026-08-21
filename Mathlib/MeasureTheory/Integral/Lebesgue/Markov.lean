@@ -89,7 +89,7 @@ theorem setLIntegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} {s
     (hf : AEMeasurable f (μ.restrict s)) (hμf : μ ({x ∈ s | f x = ∞}) ≠ 0) :
     ∫⁻ x in s, f x ∂μ = ∞ :=
   lintegral_eq_top_of_measure_eq_top_ne_zero hf <|
-    mt (eq_bot_mono <| by rw [← setOf_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
+    mt (eq_bot_mono <| by rw [← ofPred_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
 
 theorem measure_eq_top_of_lintegral_ne_top {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hμf : ∫⁻ x, f x ∂μ ≠ ∞) : μ {x | f x = ∞} = 0 :=

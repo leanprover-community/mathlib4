@@ -40,14 +40,10 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
   have : π < (√(2 - sqrtTwoAddSeries 0 n) / 2 + 1 / (2 ^ n) ^ 3 / 4) * (2 : ℝ) ^ (n + 2) := by
     rw [← div_lt_iff₀ (by simp), ← sin_pi_over_two_pow_succ, ← sub_lt_iff_lt_add']
     calc
-      π / 2 ^ (n + 2) - sin (π / 2 ^ (n + 2)) < (π / 2 ^ (n + 2)) ^ 3 / 4 :=
-        sub_lt_comm.1 <| sin_gt_sub_cube (by positivity) <| div_le_one_of_le₀ ?_ (by positivity)
-      _ ≤ (4 / 2 ^ (n + 2)) ^ 3 / 4 := by gcongr; exact pi_le_four
+      π / 2 ^ (n + 2) - sin (π / 2 ^ (n + 2)) < (π / 2 ^ (n + 2)) ^ 3 / 6 :=
+        sub_lt_comm.1 <| sin_gt_sub_cube (by positivity)
+      _ ≤ (4 / 2 ^ (n + 2)) ^ 3 / 4 := by gcongr; exacts [pi_le_four, by norm_num]
       _ = 1 / (2 ^ n) ^ 3 / 4 := by simp [add_comm n, pow_add, div_mul_eq_div_div]; norm_num
-    calc
-      π ≤ 4 := pi_le_four
-      _ = 2 ^ (0 + 2) := by norm_num
-      _ ≤ 2 ^ (n + 2) := by gcongr <;> norm_num
   refine lt_of_lt_of_le this (le_of_eq ?_); rw [add_mul]; congr 1
   · ring
   simp only [show (4 : ℝ) = 2 ^ 2 by norm_num, ← pow_mul, div_div, ← pow_add]

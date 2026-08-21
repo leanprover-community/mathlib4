@@ -77,8 +77,8 @@ lemma tendstoLocallyUniformlyOn_of_forall_tendsto {s : Set α}
     (hf : ContinuousOn f s) (h_tendsto : ∀ x ∈ s, Tendsto (F · x) atTop (𝓝 (f x))) :
     TendstoLocallyUniformlyOn F f atTop s := by
   rw [tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe]
-  exact tendstoLocallyUniformly_of_forall_tendsto (hF_cont · |>.restrict)
-    (fun _ _ h x ↦ hF_mono _ x.2 h) hf.restrict (fun x ↦ h_tendsto x x.2)
+  exact tendstoLocallyUniformly_of_forall_tendsto (hF_cont · |>.domRestrict)
+    (fun _ _ h x ↦ hF_mono _ x.2 h) hf.domRestrict (fun x ↦ h_tendsto x x.2)
 
 /-- **Dini's theorem**: if `F n` is a monotone increasing collection of continuous functions on a
 compact space converging pointwise to a continuous function `f`, then `F n` converges uniformly to

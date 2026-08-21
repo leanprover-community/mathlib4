@@ -135,7 +135,6 @@ def liftToPlusObjLimitObj {K : Type s} [SmallCategory K] [FinCategory K]
     [ReflectsLimitsOfShape K (forget D)] (F : K ⥤ Cᵒᵖ ⥤ D) (X : C)
     (S : Cone (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))) :
     S.pt ⟶ (J.plusObj (limit F)).obj (op X) :=
-  let x := (J.Cover X)ᵒᵖ
   let F' := F ⋙ J.diagramFunctor D X
   let e := colimitLimitIso (F ⋙ J.diagramFunctor D X)
   let t : J.diagram (limit F) X ≅ limit (F ⋙ J.diagramFunctor D X) :=
@@ -257,9 +256,9 @@ instance preservesLimitsOfShape_presheafToSheaf
     [PreservesLimits (forget D)] [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] :
     PreservesLimitsOfShape K (plusPlusSheaf J D) := by
   let e := (FinCategory.equivAsType K).symm.trans (AsSmall.equiv.{0, 0, t})
-  haveI : HasLimitsOfShape (AsSmall.{t} (FinCategory.AsType K)) D :=
+  have : HasLimitsOfShape (AsSmall.{t} (FinCategory.AsType K)) D :=
     Limits.hasLimitsOfShape_of_equivalence e
-  haveI : FinCategory (AsSmall.{t} (FinCategory.AsType K)) := by
+  have : FinCategory (AsSmall.{t} (FinCategory.AsType K)) := by
     constructor
     · change Fintype (ULift _)
       infer_instance

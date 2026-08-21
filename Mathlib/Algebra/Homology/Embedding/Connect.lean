@@ -93,6 +93,7 @@ def d : ∀ (n m : ℤ), X K L n ⟶ X K L m
 @[simp] lemma d_zero_one : h.d 0 1 = L.d 0 1 := rfl
 @[simp] lemma d_sub_two_sub_one : h.d (-2) (-1) = K.d 1 0 := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma shape (n m : ℤ) (hnm : n + 1 ≠ m) : h.d n m = 0 :=
   match n, m with
   | .ofNat n, .ofNat m => L.shape _ _ (by simp at hnm ⊢; lia)
@@ -152,6 +153,7 @@ def restrictionGEIso :
       (j' := (n + 1 : ℕ)) (by simp) (by simp), cochainComplex_d, h.d_ofNat]
     simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `h : ConnectData K L`, then `h.cochainComplex` identifies to `K` in degrees `≤ -1`. -/
 @[simps!]

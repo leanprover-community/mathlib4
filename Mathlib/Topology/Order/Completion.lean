@@ -5,10 +5,11 @@ Authors: Violeta Hernández Palacios, Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.Data.Prod.Lex
 public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Topology.Order.Basic
-public import Mathlib.Order.UpperLower.CompleteLattice
 public import Mathlib.Order.Completion
 
 import Mathlib.Algebra.Order.Field.Basic
@@ -65,12 +66,14 @@ instance : TopologicalSpace (Fill α) := Preorder.topology _
 
 instance : OrderTopology (Fill α) := ⟨rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A continuous embedding of `α` into `Fill α`. -/
 def some : α ↪o Fill α where
   toFun x := ⟨toLex (x, 0), by simp⟩
   inj' _ := by simp
   map_rel_iff' := by simp [Prod.Lex.toLex_le_toLex']
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : DenselyOrdered (Fill α) where
   dense := by
     simp only [ofLex_toLex, Subtype.forall, Prod.Lex.lt_iff, Subtype.mk_lt_mk,
@@ -90,6 +93,7 @@ instance : DenselyOrdered (Fill α) where
       · grind [ofLex_toLex]
       · simp [Prod.Lex.lt_iff, hs, hs']
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem continuous_some [TopologicalSpace α] [OrderTopology α] : Continuous (X := α) some := by
   simp only [OrderTopology.continuous_iff, ofLex_toLex, Subtype.forall, Lex.forall, Prod.forall]
   refine fun x q ⟨hx₁, hx₂⟩ ↦ ⟨?_, ?_⟩

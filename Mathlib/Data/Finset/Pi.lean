@@ -164,11 +164,14 @@ theorem restrict_def (s : Finset ι) : s.restrict (π := π) = fun f x ↦ f x :
 
 variable {s t u : Finset ι}
 
-theorem _root_.Set.piCongrLeft_comp_restrict :
-    (s.equivToSet.symm.piCongrLeft (fun i : s ↦ π i)) ∘ (s : Set ι).restrict = s.restrict := rfl
+theorem _root_.Set.piCongrLeft_comp_domRestrict :
+    (s.equivToSet.symm.piCongrLeft (fun i : s ↦ π i)) ∘ (s : Set ι).domRestrict = s.restrict := rfl
+
+@[deprecated (since := "2026-07-19")]
+alias _root_.Set.piCongrLeft_comp_restrict := _root_.Set.piCongrLeft_comp_domRestrict
 
 theorem piCongrLeft_comp_restrict :
-    (s.equivToSet.piCongrLeft (fun i : s ↦ π i)) ∘ s.restrict = (s : Set ι).restrict := rfl
+    (s.equivToSet.piCongrLeft (fun i : s ↦ π i)) ∘ s.restrict = (s : Set ι).domRestrict := rfl
 
 /-- If a function `f` is restricted to a finite set `t`, and `s ⊆ t`,
 this is the restriction to `s`. -/
@@ -184,7 +187,7 @@ theorem restrict₂_comp_restrict₂ (hst : s ⊆ t) (htu : t ⊆ u) :
     (restrict₂ (π := π) hst) ∘ (restrict₂ htu) = restrict₂ (hst.trans htu) := rfl
 
 lemma dependsOn_restrict (s : Finset ι) : DependsOn (s.restrict (π := π)) s :=
-  (s : Set ι).dependsOn_restrict
+  (s : Set ι).dependsOn_domRestrict
 
 lemma restrict_preimage_univ [DecidablePred (· ∈ s)] (t : (i : s) → Set (π i)) :
     s.restrict ⁻¹' (Set.univ.pi t) =
@@ -192,11 +195,13 @@ lemma restrict_preimage_univ [DecidablePred (· ∈ s)] (t : (i : s) → Set (π
   ext
   simp_all
 
-lemma restrict_preimage [DecidableEq ι] {I : Set ι}
+lemma domRestrict_preimage [DecidableEq ι] {I : Set ι}
     [DecidablePred (· ∈ I)] (s : Finset I) (u : (i : I) → Set (π i)) :
-    I.restrict ⁻¹' Set.pi s u =
+    I.domRestrict ⁻¹' Set.pi s u =
       Set.pi (s.image Subtype.val) (fun i ↦ if h : i ∈ I then u ⟨i, h⟩ else .univ) := by
   grind
+
+@[deprecated (since := "2026-07-19")] alias restrict_preimage := domRestrict_preimage
 
 lemma restrict₂_preimage [DecidablePred (· ∈ s)] (hst : s ⊆ t) (u : (i : s) → Set (π i)) :
     (restrict₂ hst) ⁻¹' (Set.univ.pi u) =

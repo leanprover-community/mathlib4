@@ -353,6 +353,7 @@ def ω : X q := (2, 1)
 /-- We define `ωb = 2 - √3`, which is the inverse of `ω`. -/
 def ωb : X q := (2, -1)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ω_mul_ωb : (ω : X q) * ωb = 1 := by
   dsimp [ω, ωb]
   ext <;> simp; ring
@@ -360,6 +361,7 @@ theorem ω_mul_ωb : (ω : X q) * ωb = 1 := by
 theorem ωb_mul_ω : (ωb : X q) * ω = 1 := by
   rw [mul_comm, ω_mul_ωb]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A closed form for the recurrence relation. -/
 theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^ 2 ^ i := by
   induction i with
@@ -379,9 +381,11 @@ theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^
 /-- We define `α = √3`. -/
 def α : X q := (0, 1)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma α_sq : (α ^ 2 : X q) = 3 := by
   ext <;> simp [α, sq]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma one_add_α_sq : ((1 + α) ^ 2 : X q) = 2 * ω := by
   ext <;> simp [α, ω, sq] <;> norm_num
 
@@ -511,12 +515,9 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   exact mod_cast h
 
 set_option backward.isDefEq.respectTransparency false in
--- TODO: fix non-terminal simp (acting on two goals with different simp sets)
-set_option linter.flexible false in
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
 theorem mersenne_coe_X (p : ℕ) : (mersenne p : X (q p)) = 0 := by
-  ext <;> simp [mersenne, q, ZMod.natCast_eq_zero_iff, -pow_pos]
-  apply Nat.minFac_dvd
+  ext <;> simp [mersenne, q, ZMod.natCast_eq_zero_iff, Nat.minFac_dvd, -pow_pos]
 
 theorem ω_pow_eq_neg_one (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
     (ω : X (q (p' + 2))) ^ 2 ^ (p' + 1) = -1 := by
@@ -555,7 +556,7 @@ theorem order_ω (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
         orderOf_dvd_iff_pow_eq_one.1 o
     have h : (1 : ZMod (q (p' + 2))) = -1 :=
       congr_arg Prod.fst (ω_pow.symm.trans (ω_pow_eq_neg_one p' h))
-    haveI : Fact (2 < (q (p' + 2) : ℕ)) := ⟨two_lt_q _⟩
+    have : Fact (2 < (q (p' + 2) : ℕ)) := ⟨two_lt_q _⟩
     apply ZMod.neg_one_ne_one h.symm
   · apply orderOf_dvd_iff_pow_eq_one.2
     apply Units.ext

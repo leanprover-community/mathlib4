@@ -65,6 +65,9 @@ noncomputable def skyscraperPresheafHomEquiv :
   left_inv f := by cat_disch
   right_inv g := by cat_disch
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma toPresheafFiber_skyscraperPresheafHomEquiv_symm
     (g : P ⟶ Φ.skyscraperPresheaf M) (X : C) (x : Φ.fiber.obj X) :
@@ -72,6 +75,7 @@ lemma toPresheafFiber_skyscraperPresheafHomEquiv_symm
       g.app (op X) ≫ Pi.π _ x := by
   simp [skyscraperPresheafHomEquiv_symm_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma skyscraperPresheafHomEquiv_naturality_left_symm
     (f : P ⟶ Q) (g : Q ⟶ Φ.skyscraperPresheaf M) :
@@ -178,6 +182,7 @@ private lemma isSheaf_skyscraperPresheaf_aux
   simpa [hz₁, hz₂, φ₁, φ₂] using!
     (Cone.w s φ₂.op =≫ Pi.π _ z).trans (Cone.w s φ₁.op =≫ Pi.π _ z).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isSheaf_skyscraperPresheaf (M : A) :
     Presheaf.IsSheaf J (Φ.skyscraperPresheaf M) := by
@@ -232,6 +237,7 @@ instance : (Φ.sheafFiber (A := A)).IsLeftAdjoint :=
 instance : (Φ.skyscraperSheafFunctor (A := A)).IsRightAdjoint :=
   Φ.skyscraperSheafAdjunction.isRightAdjoint
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma skyscraperSheafAdjunction_homEquiv_apply_hom {F : Sheaf J A} {M : A}
@@ -245,6 +251,7 @@ lemma skyscraperSheafAdjunction_homEquiv_apply_hom {F : Sheaf J A} {M : A}
 alias skyscraperSheafAdjunction_homEquiv_apply_val :=
   skyscraperSheafAdjunction_homEquiv_apply_hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma skyscraperSheafAdjunction_homEquiv_symm_apply {F : Sheaf J A} {M : A}

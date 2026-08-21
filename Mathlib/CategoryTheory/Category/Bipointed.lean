@@ -97,6 +97,9 @@ def swap : Bipointed ⥤ Bipointed where
   obj X := ⟨X, X.toProd.swap⟩
   map f := ⟨f.toFun, f.map_snd, f.map_fst⟩
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence between `Bipointed` and itself induced by `Prod.swap` both ways. -/
 @[simps!]
 def swapEquiv : Bipointed ≌ Bipointed where

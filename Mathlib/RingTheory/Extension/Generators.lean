@@ -162,7 +162,7 @@ noncomputable
 def ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Generators R S s := by
   refine ofSurjective (Subtype.val : s → S) ?_
   rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_range_eq_range_aeval,
-    Subtype.range_coe_subtype, Set.setOf_mem_eq]
+    Subtype.range_coe_subtype, Set.ofPred_mem_eq]
 
 variable (R S) in
 /-- The `Generators` containing the whole algebra, which induces the canonical map  `R[S] → S`. -/
@@ -552,7 +552,7 @@ lemma toComp_toAlgHom_monomial (Q : Generators S T ι') (P : Generators R S ι) 
     simp [rename_eq_aeval]
     rfl
   · ext f (i₁ | i₂) <;>
-      simp [Finsupp.mapDomain_notin_range, Finsupp.mapDomain_apply Sum.inr_injective]
+      simp [Finsupp.mapDomain_of_notMem_range, Finsupp.mapDomain_apply Sum.inr_injective]
 
 @[simp]
 lemma toAlgHom_ofComp_rename (Q : Generators S T ι') (P : Generators R S ι) (p : P.Ring) :
@@ -659,7 +659,7 @@ lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R
 
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
-  letI : DecidableEq (ι' →₀ ℕ) := Classical.decEq _
+  let : DecidableEq (ι' →₀ ℕ) := Classical.decEq _
   apply le_antisymm
   · rw [Ideal.map_le_iff_le_comap]
     rintro x (hx : algebraMap P.Ring S x = 0)
@@ -689,7 +689,7 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
         toComp_toAlgHom_monomial ..
       simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
           this]
-      rw [monomial_mul, ← map_add, Prod.mk_add_mk, add_zero, zero_add, one_mul]
+      rw [monomial_mul_monomial, ← map_add, Prod.mk_add_mk, add_zero, zero_add, one_mul]
     · apply Ideal.mul_mem_left
       refine Ideal.mem_map_of_mem _ ?_
       simp only [ker_eq_ker_aeval_val, AddEquiv.toEquiv_eq_coe, RingHom.mem_ker, map_sum]

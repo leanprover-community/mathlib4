@@ -10,6 +10,7 @@ public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Prod.PProd
 public import Mathlib.Data.Sum.Basic
 public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Logic.IsEmpty.Basic
 
 /-!
 # Injective functions
@@ -477,13 +478,13 @@ def subtypeOrLeftEmbedding (p q : α → Prop) [DecidablePred p] :
 theorem subtypeOrLeftEmbedding_apply_left {p q : α → Prop} [DecidablePred p]
     (x : { x // p x ∨ q x }) (hx : p x) :
     subtypeOrLeftEmbedding p q x = Sum.inl ⟨x, hx⟩ :=
-  dif_pos hx
+  dite_eq_left hx
 
 @[simp]
 theorem subtypeOrLeftEmbedding_apply_right {p q : α → Prop} [DecidablePred p]
     (x : { x // p x ∨ q x }) (hx : ¬p x) :
     subtypeOrLeftEmbedding p q x = Sum.inr ⟨x, x.prop.resolve_left hx⟩ :=
-  dif_neg hx
+  dite_eq_right hx
 
 @[grind =]
 theorem subtypeOrLeftEmbedding_apply {p q : α → Prop} [DecidablePred p]

@@ -60,7 +60,7 @@ open scoped Fin.IntCast Fin.NatCast
     · rw [← Int.natCast_dvd] at h
       rw [Int.emod_eq_zero_of_dvd h, Int.toNat_zero]
     · rw [Int.emod_natAbs_of_neg (by lia) (NeZero.ne n),
-        if_neg (by rwa [← Int.natCast_dvd] at h)]
+        ite_eq_right (by rwa [← Int.natCast_dvd] at h)]
       have : x % n < n := Int.emod_lt_of_pos x (by have := NeZero.ne n; lia)
       lia
 
@@ -132,8 +132,8 @@ attribute [scoped instance] Fin.instCommRing
 
 end CommRing
 
-instance (n : ℕ) [NeZero n] : NeZero (1 : Fin (n + 1)) :=
-  open Fin.CommRing in inferInstance
+instance (n : ℕ) [NeZero n] : NeZero (1 : Fin (n + 1)) where
+  out := by simp
 
 end Fin
 

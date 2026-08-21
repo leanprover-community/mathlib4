@@ -195,7 +195,7 @@ theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries 
   · simp
   · rw [LieSubmodule.eq_bot_iff] at h; apply IsTrivial.mk; intro x m; apply h
     apply LieSubmodule.subset_lieSpan
-    simp only [Subtype.exists, LieSubmodule.mem_top, exists_prop, true_and, Set.mem_setOf]
+    simp only [Subtype.exists, LieSubmodule.mem_top, exists_prop, true_and, Set.mem_ofPred]
     exact ⟨x, m, rfl⟩
 
 section
@@ -714,13 +714,11 @@ theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M) (h₁ : M₁ ≤ M₂
 def maxNilpotentSubmodule :=
   sSup { N : LieSubmodule R L M | IsNilpotent L N }
 
--- TODO: should infer_instance be considered normalising?
-set_option linter.flexible false in
 instance instMaxNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
     IsNilpotent L (maxNilpotentSubmodule R L M) := by
   have hwf := CompleteLattice.WellFoundedGT.isSupClosedCompact (LieSubmodule R L M) inferInstance
   refine hwf { N : LieSubmodule R L M | IsNilpotent L N } ⟨⊥, ?_⟩ fun N₁ h₁ N₂ h₂ => ?_ <;>
-  simp_all <;> infer_instance
+  simp_all only [Set.mem_ofPred] <;> infer_instance
 
 theorem isNilpotent_iff_le_maxNilpotentSubmodule [IsNoetherian R M] (N : LieSubmodule R L M) :
     IsNilpotent L N ↔ N ≤ maxNilpotentSubmodule R L M :=

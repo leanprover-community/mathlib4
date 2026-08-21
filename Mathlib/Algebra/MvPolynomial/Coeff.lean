@@ -65,7 +65,7 @@ private lemma coeff_linearCombination_X_pow_of_ne (a : σ →₀ R) {n : ℕ}
     ← C_eq_coe_nat, coeff_C_mul, smul_eq_C_mul, mul_pow, Finset.prod_mul_distrib, ← map_prod,
     coeff_prod_X_pow, mul_ite, mul_one, mul_zero]
   apply Finset.sum_eq_zero (fun x hx ↦ ?_)
-  rw [if_neg]
+  rw [ite_eq_right]
   rintro ⟨rfl⟩
   apply hs
   simp only [Finset.mem_piAntidiag] at hx
@@ -109,5 +109,10 @@ theorem coeff_add_pow (d : Fin 2 →₀ ℕ) (n : ℕ) :
   · rw [multinomial_eq_of_support_subset (Finset.subset_univ d.support), Finset.univ_fin2,
       Nat.binomial_eq_choose Fin.zero_ne_one, hd]
   · rfl
+
+/-- A monomial in two variables equals `C a * X 0 ^ d 0 * X 1 ^ d 1`. -/
+theorem monomial_fin_two (d : Fin 2 →₀ ℕ) (a : R) :
+    monomial d a = C a * X 0 ^ d 0 * X 1 ^ d 1 := by
+  rw [monomial_eq, mul_assoc, d.prod_fintype _ fun _ ↦ pow_zero _, Fin.prod_univ_two]
 
 end MvPolynomial

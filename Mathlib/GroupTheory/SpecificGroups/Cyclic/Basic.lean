@@ -85,7 +85,7 @@ alias IsCyclic.commutative := IsCyclic.isMulCommutative
 open scoped IsMulCommutative in
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
       /-- A cyclic group is always commutative. This is not an `instance` because often we have
       a better proof of `AddCommGroup`. -/]
 def IsCyclic.commGroup [Group α] [IsCyclic α] : CommGroup α :=

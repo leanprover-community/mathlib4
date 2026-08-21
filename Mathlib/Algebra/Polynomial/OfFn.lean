@@ -105,7 +105,7 @@ theorem injective_ofFn (n : ℕ) : Function.Injective (ofFn (R := R) n) :=
 
 omit [DecidableEq R] in
 theorem surjective_toFn (n : ℕ) : Function.Surjective (toFn (R := R) n) :=
-  open Classical in
+  open scoped Classical in
   Function.RightInverse.surjective <| toFn_comp_ofFn_eq_id n
 
 theorem ofFn_comp_toFn_eq_id_of_natDegree_lt {n : ℕ} {p : R[X]} (h_deg : p.natDegree < n) :

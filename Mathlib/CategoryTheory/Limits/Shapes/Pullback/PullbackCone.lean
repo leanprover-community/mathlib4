@@ -144,7 +144,6 @@ theorem mk_snd {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫
 theorem condition (t : PullbackCone f g) : fst t ≫ f = snd t ≫ g :=
   (t.w inl).trans (t.w inr).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To check whether two morphisms are equalized by the maps of a pullback cone, it suffices to
 check it for `fst t` and `snd t` -/
 theorem equalizer_ext (t : PullbackCone f g) {W : C} {k l : W ⟶ t.pt} (h₀ : k ≫ fst t = l ≫ fst t)
@@ -365,7 +364,6 @@ theorem mk_inr {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ i
 theorem condition (t : PushoutCocone f g) : f ≫ inl t = g ≫ inr t :=
   (t.w fst).trans (t.w snd).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To check whether a morphism is coequalized by the maps of a pushout cocone, it suffices to check
   it for `inl t` and `inr t` -/
 theorem coequalizer_ext (t : PushoutCocone f g) {W : C} {k l : t.pt ⟶ W}

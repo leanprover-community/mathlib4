@@ -37,7 +37,7 @@ element in a lattice ordered group.
 positive part, negative part
 -/
 
-@[expose] public section
+public section
 
 open Function
 

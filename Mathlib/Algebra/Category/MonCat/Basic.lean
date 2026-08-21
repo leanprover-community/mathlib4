@@ -70,7 +70,6 @@ structure AddMonCat.Hom (A B : AddMonCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `MonCat`. -/
 @[to_additive, ext]
 structure MonCat.Hom (A B : MonCat.{u}) where
@@ -106,6 +105,7 @@ abbrev ofHom {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : of X ⟶ of Y
   ConcreteCategory.ofHom (C := MonCat) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+@[to_additive /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/]
 def Hom.Simps.hom (X Y : MonCat.{u}) (f : Hom X Y) :=
   f.hom
 
@@ -256,7 +256,6 @@ structure AddCommMonCat.Hom (A B : AddCommMonCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `CommMonCat`. -/
 @[to_additive, ext]
 structure CommMonCat.Hom (A B : CommMonCat.{u}) where
@@ -503,7 +502,8 @@ instance CommMonCat.forget_reflects_isos : (forget CommMonCat.{u}).ReflectsIsomo
     exact e.toCommMonCatIso.isIso_hom
 
 /-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms. -/
-@[to_additive]
+@[to_additive
+  /-- Ensure that `forget₂ AddCommMonCat AddMonCat` automatically reflects isomorphisms. -/]
 instance CommMonCat.forget₂_full : (forget₂ CommMonCat MonCat).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩
 

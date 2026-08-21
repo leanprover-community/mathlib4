@@ -16,7 +16,7 @@ then a.e. all points belong to finitely many sets of the family.
 
 We prove several versions of this lemma:
 
-- `MeasureTheory.ae_finite_setOf_mem`: as stated above;
+- `MeasureTheory.ae_finite_setOfPred_mem`: as stated above;
 - `MeasureTheory.measure_limsup_cofinite_eq_zero`:
   in terms of `Filter.limsup` along `Filter.cofinite`;
 - `MeasureTheory.measure_limsup_atTop_eq_zero`:
@@ -67,25 +67,31 @@ theorem measure_limsup_atTop_eq_zero {s : ℕ → Set α} (hs : ∑' i, μ (s i)
 (sometimes called the "*first* Borel-Cantelli lemma"):
 if `(s i)` is a countable family of sets such that `∑' i, μ (s i)` is finite,
 then a.e. all points belong to finitely many sets of the family. -/
-theorem ae_finite_setOf_mem {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
+theorem ae_finite_setOfPred_mem {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
     ∀ᵐ x ∂μ, {i | x ∈ s i}.Finite := by
   rw [ae_iff, ← measure_limsup_cofinite_eq_zero h]
   congr 1 with x
   simp [mem_limsup_iff_frequently_mem, Filter.Frequently]
 
+@[deprecated (since := "2026-07-09")]
+alias ae_finite_setOf_mem := ae_finite_setOfPred_mem
+
 /-- A version of the **Borel-Cantelli lemma**: if `pᵢ` is a sequence of predicates such that
 `∑' i, μ {x | pᵢ x}` is finite, then the measure of `x` such that `pᵢ x` holds frequently as `i → ∞`
 (or equivalently, `pᵢ x` holds for infinitely many `i`) is equal to zero. -/
-theorem measure_setOf_frequently_eq_zero {p : ℕ → α → Prop} (hp : ∑' i, μ { x | p i x } ≠ ∞) :
+theorem measure_setOfPred_frequently_eq_zero {p : ℕ → α → Prop} (hp : ∑' i, μ { x | p i x } ≠ ∞) :
     μ { x | ∃ᶠ n in atTop, p n x } = 0 := by
-  simpa only [limsup_eq_iInf_iSup_of_nat, frequently_atTop, ← bex_def, setOf_forall,
-    setOf_exists] using! measure_limsup_atTop_eq_zero hp
+  simpa only [limsup_eq_iInf_iSup_of_nat, frequently_atTop, ← bex_def, ofPred_forall,
+    ofPred_exists] using! measure_limsup_atTop_eq_zero hp
+
+@[deprecated (since := "2026-07-09")]
+alias measure_setOf_frequently_eq_zero := measure_setOfPred_frequently_eq_zero
 
 /-- A version of the **Borel-Cantelli lemma**: if `sᵢ` is a sequence of sets such that
 `∑' i, μ sᵢ` is finite, then for almost all `x`, `x` does not belong to `sᵢ` for large `i`. -/
 theorem ae_eventually_notMem {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠ ∞) :
     ∀ᵐ x ∂μ, ∀ᶠ n in atTop, x ∉ s n :=
-  measure_setOf_frequently_eq_zero hs
+  measure_setOfPred_frequently_eq_zero hs
 
 theorem measure_liminf_cofinite_eq_zero [Infinite ι] {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
     μ (liminf s cofinite) = 0 := by

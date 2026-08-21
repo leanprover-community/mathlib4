@@ -191,14 +191,14 @@ noncomputable def transferFocal.quotientKerMulEquivQuotientFocalSubroupOf :
   QuotientGroup.quotientKerEquivOfSurjective P.transferFocal (transferFocal_surjective P)
 
 lemma ker_restrict_transferFocal_eq_focalSubgroupOf :
-    (P.transferFocal.restrict P).ker = P.focalSubgroupOf := by
+    (P.transferFocal.domRestrict P).ker = P.focalSubgroupOf := by
   ext g
   have hQ : IsPGroup p (P ⧸ P.focalSubgroupOf) := P.2.to_quotient P.focalSubgroupOf
-  rw [MonoidHom.mem_ker, MonoidHom.restrict_apply, transferFocal_eq_pow]
+  rw [MonoidHom.mem_ker, MonoidHom.domRestrict_apply, transferFocal_eq_pow]
   simpa using (hQ.powEquiv' P.not_dvd_index).apply_eq_iff_eq (x := g) (y := 1)
 
 lemma ker_transferFocal_inf_eq_focalSubgroup : P.transferFocal.ker ⊓ P = P.focalSubgroup := by
-  rw [← subgroupOf_map_subtype, ← MonoidHom.ker_restrict, ← map_focalSubgroupOf]
+  rw [← subgroupOf_map_subtype, ← MonoidHom.ker_domRestrict, ← map_focalSubgroupOf]
   exact congr_arg _ (ker_restrict_transferFocal_eq_focalSubgroupOf P)
 
 open scoped IsMulCommutative in

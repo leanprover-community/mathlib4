@@ -21,7 +21,7 @@ CI job and assigned a trust level:
 
 | Container             | Who may write                                          | Trust  |
 |-----------------------|--------------------------------------------------------|--------|
-| `master`              | mathlib4 `master`/`staging`                            | high   |
+| `master`              | mathlib4 `master`/`staging`, `v4.*` release tags       | high   |
 | `forks`               | mathlib4 PR builds, non-master branches, `bors try`    | medium |
 | `nightly-testing`     | nightly-testing's trusted branches                     | medium |
 | `pr-toolchain-tests`  | nightly-testing's experimental toolchain branches      | low    |
@@ -131,6 +131,8 @@ The trust model does not attempt to defend against:
   branch builds the cache binary itself.
 - **Compromised storage tenant** — admin-level compromise defeats the access
   grants.
+- **Substituted read endpoint** — a host named by `MATHLIB_CACHE_GET_URL`
+  chooses the bytes it serves, and it carries the storage tenant's trust.
 - **Sandbox escape via kernel vulnerability** — invalidates Layer 3.
 - **Maintainer trust on the trusted branches** — write access to a branch the
   cache binary is built from can land a bad tool, workflow, or toolchain.
@@ -148,5 +150,5 @@ The trust model does not attempt to defend against:
 | Trust property tests                           | [`Cache/Test.lean`](Test.lean)                                   |
 | User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md)   |
 | OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` job) |
-| (repo, branch) → trust class policy table      | [`.github/actions/cache-trust-dispatch/action.yml`](../.github/actions/cache-trust-dispatch/action.yml) |
-| Caller `cache_application_id` ternaries        | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`build_fork.yml`](../.github/workflows/build_fork.yml), [`ci_dev.yml`](../.github/workflows/ci_dev.yml) |
+| (repo, ref) → trust class policy table         | [`.github/actions/cache-trust-dispatch/action.yml`](../.github/actions/cache-trust-dispatch/action.yml) |
+| Caller `cache_application_id` wiring           | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`build_fork.yml`](../.github/workflows/build_fork.yml), [`ci_dev.yml`](../.github/workflows/ci_dev.yml), [`release_cache.yml`](../.github/workflows/release_cache.yml) |

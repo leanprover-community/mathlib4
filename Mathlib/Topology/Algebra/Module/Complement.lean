@@ -385,6 +385,7 @@ theorem _root_.ContinuousLinearMap.closedComplemented_ker_of_rightInverse [Conti
     f₁.ker.ClosedComplemented :=
   f₂.isTopCompl_range_ker_of_leftInverse f₁ h.leftInverse |>.symm.closedComplemented
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `p` is a closed complemented submodule,
 then there exists a submodule `q` and a continuous linear equivalence `M ≃L[R] (p × q)` such that
 `e (x : p) = (x, 0)`, `e (y : q) = (0, y)`, and `e.symm x = x.1 + x.2`.

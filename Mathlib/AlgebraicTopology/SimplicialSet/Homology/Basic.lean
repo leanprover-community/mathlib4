@@ -37,6 +37,7 @@ It computes the simplicial homology of a simplicial sets with coefficients
 in `R`. One can recover the ordinary simplicial chain complex when `C := Ab`
 and `X := ℤ`.
 -/
+@[implicit_reducible]
 noncomputable def chainComplexFunctor : C ⥤ SSet.{w} ⥤ ChainComplex C ℕ :=
   (Functor.postcompose₂.obj (AlgebraicTopology.alternatingFaceMapComplex _)).obj
     (sigmaConst ⋙ SimplicialObject.whiskering _ _)
@@ -50,7 +51,6 @@ alias _root_.AlgebraicTopology.SSet.singularChainComplexFunctor :=
   chainComplexFunctor
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] SSet.chainComplexFunctor in
 attribute [local simp←] _root_.SSet.yonedaEquiv_symm_comp in
 /-- The adjunction `Hom(Cⁿ(-, X), F) ≃ Hom(X, F(Δ[n]))` for `R : C` and `F : SSet ⥤ C`. -/
@@ -86,7 +86,6 @@ noncomputable def ιChainComplex {n : ℕ} (x : X _⦋n⦌) : R ⟶ (X.chainComp
   Sigma.ι (fun (_ : X _⦋n⦌) ↦ R) x
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ιChainComplex_d {n : ℕ} (x : X _⦋n + 1⦌) :
     X.ιChainComplex x ≫ (X.chainComplex R).d (n + 1) n =
@@ -100,7 +99,7 @@ lemma ι_chainComplexMap_f {n : ℕ} (x : X _⦋n⦌) :
       Y.ιChainComplex (f.app _ x) := by
   dsimp [chainComplexMap, chainComplexFunctor, ιChainComplex, Sigma.map',
     chainComplex, chainComplexFunctor]
-  simp [Sigma.ι_desc]
+  simp
 
 /-- The colimit cofan which defines the simplicial `n`-chains
 `(X.chainComplex R).X n`. -/

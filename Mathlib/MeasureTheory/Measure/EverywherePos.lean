@@ -216,7 +216,11 @@ open scoped Pointwise
 topological group, then it is a Gδ set. This is nontrivial, as there is no second-countability or
 metrizability assumption in the statement, so a general compact closed set has no reason to be
 a countable intersection of open sets. -/
-@[to_additive]
+@[to_additive
+/-- If a compact closed set is everywhere positive with respect to a left-invariant measure on a
+topological additive group, then it is a Gδ set. This is nontrivial, as there is no
+second-countability or metrizability assumption in the statement, so a general compact closed set
+has no reason to be a countable intersection of open sets. -/]
 lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
     {k : Set G} (h : μ.IsEverywherePos k) (hk : IsCompact k) (h'k : IsClosed k) :
     IsGδ k := by
@@ -275,7 +279,10 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
 
 /-- **Halmos' theorem: Haar measure is completion regular.** More precisely, any finite measure
 set can be approximated from inside by a level set of a continuous function with compact support. -/
-@[to_additive innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_addGroup]
+@[to_additive innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_addGroup
+/-- **Halmos' theorem: Haar measure is completion regular.** More precisely, any finite measure
+set can be approximated from inside by a level set of a continuous function with compact
+support. -/]
 theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group :
     InnerRegularWRT μ (fun s ↦ ∃ (f : G → ℝ), Continuous f ∧ HasCompactSupport f ∧ s = f ⁻¹' {1})
     (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞) := by

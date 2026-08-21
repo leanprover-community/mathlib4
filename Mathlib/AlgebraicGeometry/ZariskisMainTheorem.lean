@@ -188,6 +188,7 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
     (Q := @Surjective ⊓ @Flat ⊓ @LocallyOfFinitePresentation) this
     ⟨⟨‹_›, inferInstance⟩, inferInstance⟩ ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 **Zariski's main theorem**
 
@@ -287,6 +288,7 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
   rw [← RingHom.algebraMap_toAlgebra (X.presheaf.germ _ _ _).hom, @RingHom.quasiFinite_algebraMap]
   exact .of_isLocalization (hr.primeIdealOf ⟨x, hxV⟩).asIdeal.primeCompl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.isOpen_quasiFiniteAt [LocallyOfFiniteType f] :
     IsOpen { x | f.QuasiFiniteAt x } := by
   wlog H : IsAffineHom f
@@ -399,6 +401,7 @@ lemma IsClosedImmersion.eq_proper_inf_monomorphisms :
   ext
   exact IsClosedImmersion.iff_isProper_and_mono ..
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 02UP]
 lemma exists_isFinite_morphismRestrict_of_finite_preimage_singleton
     [IsProper f] (y : Y) (hx : (f ⁻¹' {y}).Finite) :

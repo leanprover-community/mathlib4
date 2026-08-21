@@ -59,7 +59,7 @@ theorem germ_injective_of_isIntegral [IsIntegral X] {U : X.Opens} (x : X) (hx : 
   rw [← (X.presheaf.germ U x hx).hom.map_zero] at hy
   obtain ⟨W, hW, iU, iV, e⟩ := X.presheaf.germ_eq _ hx hx _ _ hy
   cases Subsingleton.elim iU iV
-  haveI : Nonempty W := ⟨⟨_, hW⟩⟩
+  have : Nonempty W := ⟨⟨_, hW⟩⟩
   exact map_injective_of_isIntegral X iU e
 
 theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : X.Opens) [Nonempty U] :

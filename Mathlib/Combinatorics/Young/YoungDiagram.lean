@@ -184,9 +184,9 @@ section Transpose
 
 /-- The `transpose` of a Young diagram is obtained by swapping i's with j's. -/
 def transpose (μ : YoungDiagram) : YoungDiagram where
-  cells := (Equiv.prodComm _ _).finsetCongr μ.cells
+  cells := Equiv.Finset.congr (Equiv.prodComm _ _) μ.cells
   isLowerSet _ _ h := by
-    simp only [Finset.mem_coe, Equiv.finsetCongr_apply, Finset.mem_map_equiv]
+    simp only [Finset.mem_coe, Equiv.Finset.congr_apply, Finset.mem_map_equiv]
     intro hcell
     apply μ.isLowerSet _ hcell
     simp [h]
@@ -259,6 +259,7 @@ theorem mem_row_iff {μ : YoungDiagram} {i : ℕ} {c : ℕ × ℕ} : c ∈ μ.ro
 
 theorem mk_mem_row_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.row i ↔ (i, j) ∈ μ := by simp [row]
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem exists_notMem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j) ∉ μ := by
   obtain ⟨j, hj⟩ :=
     Infinite.exists_notMem_finset

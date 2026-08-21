@@ -49,7 +49,7 @@ variable [Fintype ι]
 variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
 
 section
-variable {m n : ℕ} [_i : Fact (finrank ℝ F = n)]
+variable {n : ℕ} [_i : Fact (finrank ℝ F = n)]
 
 /-- The volume form coming from an orientation in an inner product space gives measure `1` to the
 parallelepiped associated to any orthonormal basis. This is a rephrasing of
@@ -81,7 +81,7 @@ end
 parallelepiped spanned by any orthonormal basis. -/
 theorem OrthonormalBasis.volume_parallelepiped (b : OrthonormalBasis ι ℝ F) :
     volume (parallelepiped b) = 1 := by
-  haveI : Fact (finrank ℝ F = finrank ℝ F) := ⟨rfl⟩
+  have : Fact (finrank ℝ F = finrank ℝ F) := ⟨rfl⟩
   let o := (stdOrthonormalBasis ℝ F).toBasis.orientation
   rw [← o.measure_eq_volume]
   exact o.measure_orthonormalBasis b

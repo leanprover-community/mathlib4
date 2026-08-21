@@ -99,6 +99,8 @@ Valid arguments are:
                           --cache-from. Used by CI to widen reads per job;
                           --cache-from takes precedence when both are set.
 
+An empty value means unset for MATHLIB_CACHE_GET_URL and MATHLIB_CACHE_FROM.
+
 See Cache/README.md for more details.
 "
 
@@ -256,7 +258,7 @@ def main (args : List String) : IO Unit := do
       unstageFiles stagingDir?.get! overwrite
   let putStaged (stagingDir : FilePath) := do
     let repo := repo?.getD MATHLIBREPO
-    if !(←stagingDir.isDir) then IO.println "--staging-dir must be a directory" return
+    if !(← stagingDir.isDir) then IO.println "--staging-dir must be a directory" return
     else
       let fileSet ← getFilesWithExtension stagingDir "ltar"
       let auth ← getUploadAuth

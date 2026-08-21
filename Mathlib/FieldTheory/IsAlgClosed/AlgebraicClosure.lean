@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Data.Multiset.Fintype
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.SplittingField.Construction
@@ -73,7 +72,7 @@ lemma Monics.splits_finsetProd {s : Finset (Monics k)} {f : Monics k} (hf : f �
   (splits_prod_iff fun j _ ↦ map_ne_zero j.2.ne_zero).mp
     (by simpa [Polynomial.map_prod] using SplittingField.splits (∏ f ∈ s, f.1)) f hf
 
-open Classical in
+open scoped Classical in
 /-- Given a finite set of monic polynomials, construct an algebra homomorphism
 to the splitting field of the product of the polynomials
 sending indeterminates $X_{f_i}$ to the distinct roots of `f`. -/
@@ -82,12 +81,13 @@ def toSplittingField (s : Finset (Monics k)) :
   MvPolynomial.aeval fun fi ↦
     if hf : fi.1 ∈ s then (finEquivRoots (Monics.splits_finsetProd hf) fi.2).1.1 else 37
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toSplittingField_coeff {s : Finset (Monics k)} {f} (h : f ∈ s) (n) :
     toSplittingField s ((subProdXSubC f).coeff n) = 0 := by
   classical
   simp_rw [← AlgHom.coe_toRingHom, ← coeff_map, subProdXSubC, Polynomial.map_sub,
     Polynomial.map_prod, Polynomial.map_sub, map_X, map_C, toSplittingField,
-    AlgHom.coe_toRingHom, MvPolynomial.aeval_X, dif_pos h,
+    AlgHom.coe_toRingHom, MvPolynomial.aeval_X, dite_eq_left h,
     ← (finEquivRoots (Monics.splits_finsetProd h)).symm.prod_comp, Equiv.apply_symm_apply]
   rw [Finset.prod_coe_sort (f := fun x : _ × ℕ ↦ X - C x.1), (Multiset.toEnumFinset _)
     |>.prod_eq_multiset_prod, ← Function.comp_def (X - C ·) Prod.fst, ← Multiset.map_map,
@@ -195,6 +195,7 @@ instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
           erw [eval_C]
           simp⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsAlgClosure k (AlgebraicClosure k) := .of_splits fun f hf _ ↦ by
   rw [show f = (⟨f, hf⟩ : Monics k) from rfl, Monics.map_eq_prod]
   exact Splits.prod fun _ _ ↦ (Splits.X_sub_C _).map _

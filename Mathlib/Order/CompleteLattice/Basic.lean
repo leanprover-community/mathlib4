@@ -47,7 +47,7 @@ variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → 
 
 section
 
-variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
+variable [CompleteSemilatticeSup α] {s t : Set α} {a : α}
 
 @[to_dual]
 theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t :=
@@ -441,18 +441,11 @@ theorem iSup₂_comm {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι
 
 @[to_dual (attr := simp)]
 theorem iSup_iSup_eq_left {b : β} {f : ∀ x : β, x = b → α} : ⨆ x, ⨆ h : x = b, f x h = f b rfl :=
-  (le_iSup₂ (f := f) b rfl).antisymm'
-    (iSup_le fun c =>
-      iSup_le <| by
-        rintro rfl
-        rfl)
+  le_antisymm (iSup₂_le fun _ h ↦ h ▸ le_rfl) (le_iSup₂ (f := f) b rfl)
 
 @[to_dual (attr := simp)]
 theorem iSup_iSup_eq_right {b : β} {f : ∀ x : β, b = x → α} : ⨆ x, ⨆ h : b = x, f x h = f b rfl :=
-  (le_iSup₂ b rfl).antisymm'
-    (iSup₂_le fun c => by
-      rintro rfl
-      rfl)
+  le_antisymm (iSup₂_le fun _ h ↦ h ▸ le_refl (f b rfl)) (le_iSup₂ b rfl)
 
 @[to_dual]
 theorem iSup_subtype {p : ι → Prop} {f : Subtype p → α} : iSup f = ⨆ (i) (h : p i), f ⟨i, h⟩ :=
@@ -470,7 +463,7 @@ theorem iSup_subtype'' {ι} (s : Set ι) (f : ι → α) : ⨆ i : s, f i = ⨆ 
 
 @[to_dual]
 theorem biSup_const {a : α} {s : Set β} (hs : s.Nonempty) : ⨆ i ∈ s, a = a := by
-  haveI : Nonempty s := Set.nonempty_coe_sort.mpr hs
+  have : Nonempty s := Set.nonempty_coe_sort.mpr hs
   rw [← iSup_subtype'', iSup_const]
 
 @[to_dual]
@@ -502,7 +495,7 @@ theorem sup_iSup [Nonempty ι] {f : ι → α} {a : α} : (a ⊔ ⨆ x, f x) = �
 @[to_dual]
 theorem biSup_sup {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
     (⨆ (i) (h : p i), f i h) ⊔ a = ⨆ (i) (h : p i), f i h ⊔ a := by
-  haveI : Nonempty { i // p i } :=
+  have : Nonempty { i // p i } :=
     let ⟨i, hi⟩ := h
     ⟨⟨i, hi⟩⟩
   rw [iSup_subtype', iSup_subtype', iSup_sup]
@@ -708,7 +701,9 @@ end le
 ### `iSup` and `iInf` under `Type`
 -/
 
-@[to_dual iInf_of_isEmpty]
+/-- This `simp` lemma goes well with `sSup_empty` in a complete lattice. -/
+@[to_dual (attr := simp) iInf_of_isEmpty
+/-- This `simp` lemma goes well with `sInf_empty` in a complete lattice. -/]
 theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f = sSup (∅ : Set α) :=
   congr_arg sSup (range_eq_empty f)
 

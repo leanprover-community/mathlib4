@@ -28,7 +28,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 namespace Limits
 
@@ -143,8 +143,7 @@ def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
     simp only [Functor.const_obj_obj, IsColimit.fac, NatTrans.comp_app, Functor.comp_obj,
       Grothendieck.forget_obj, natTransIntoForgetCompFiberwiseColimit_app,
       whiskerLeft_app]
-    simp only [coconeFiberwiseColimitOfCocone_pt, Functor.const_obj_obj,
-      coconeFiberwiseColimitOfCocone_ι_app] at this
+    simp only [coconeFiberwiseColimitOfCocone_pt, coconeFiberwiseColimitOfCocone_ι_app] at this
     simp [← this]
 
 lemma hasColimit_fiberwiseColimit [HasColimit G] : HasColimit (fiberwiseColimit G) where

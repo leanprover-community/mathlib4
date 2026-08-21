@@ -20,7 +20,7 @@ public section
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 
-open Function Localization MvPolynomial Polynomial TensorProduct PrimeSpectrum Topology
+open Function Localization Polynomial TensorProduct PrimeSpectrum Topology
 open scoped Pointwise
 
 namespace PrimeSpectrum

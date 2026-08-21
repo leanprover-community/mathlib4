@@ -98,6 +98,7 @@ attribute [nolint simpNF] comp.eq_2 comp.eq_4
 @[aesop safe destruct (rule_sets := [CategoryTheory])]
 lemma false_of_from_star' {X : C} (f : Hom star (of X)) : False := (f : PEmpty).elim
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Category.{v} (WithTerminal C) where
   Hom X Y := Hom X Y
   id _ := id _
@@ -137,6 +138,7 @@ def map {D : Type*} [Category* D] (F : C ⥤ D) : WithTerminal C ⥤ WithTermina
     | of _, star, _ => PUnit.unit
     | star, star, _ => PUnit.unit
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism between the functor `map (𝟭 C)` and `𝟭 (WithTerminal C)`. -/
 @[simps!]
@@ -145,6 +147,7 @@ def mapId (C : Type*) [Category* C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) :=
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
 @[simps!]
@@ -169,6 +172,7 @@ def map₂ {D : Type*} [Category* D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ 
     | star, star, _ => rfl
 
 -- Note: ...
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The prelax functor from `Cat` to `Cat` defined with `WithTerminal`. -/
 @[simps]
 def prelaxfunctor : PrelaxFunctor Cat Cat where
@@ -336,6 +340,7 @@ section
 
 variable {D : Type*} [Category* D]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor `WithTerminal C ⥤ D` can be seen as an element of the comma category
 `Comma (𝟭 (C ⥤ D)) (const C)`. -/
@@ -350,6 +355,7 @@ def mkCommaObject (F : WithTerminal C ⥤ D) : Comma (𝟭 (C ⥤ D)) (Functor.c
         rw [Category.comp_id, ← F.map_comp]
         congr 1 }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A morphism of functors `WithTerminal C ⥤ D` gives a morphism between the associated comma
 objects. -/
@@ -359,7 +365,6 @@ def mkCommaMorphism {F G : WithTerminal C ⥤ D} (η : F ⟶ G) : mkCommaObject 
   left := Functor.whiskerLeft incl η
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- An element of the comma category `Comma (𝟭 (C ⥤ D)) (Functor.const C)` can be seen as a
 functor `WithTerminal C ⥤ D`. -/
 @[simps!]
@@ -422,12 +427,11 @@ instance subsingleton_hom {J : Type*} : Quiver.IsThin (WithTerminal (Discrete J)
   constructor
   intro a b
   casesm* WithTerminal _, (_ : WithTerminal _) ⟶ (_ : WithTerminal _)
-  · exact congr_arg (ULift.up ∘ PLift.up) rfl
+  · exact Discrete.hom_eq
   · rfl
   · rfl
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Implementation detail for `widePullbackShapeEquiv`. -/
 @[simps apply]
 private def widePullbackShapeEquivObj {J : Type*} :
@@ -442,7 +446,6 @@ private def widePullbackShapeEquivObj {J : Type*} :
   right_inv x := by cases x <;> simp
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Implementation detail for `widePullbackShapeEquiv`. -/
 private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
     (x ⟶ y) ≃ (widePullbackShapeEquivObj x ⟶ widePullbackShapeEquivObj y) where
@@ -452,7 +455,7 @@ private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
   invFun f := match x, y with
   | some x, some y =>
     cast (by
-        have eq : x = y := PLift.down (ULift.down (down f))
+        have eq : x = y := f.eq
         rw [eq]
         rfl) (Hom.id (some y))
   | none, some y => by cases f
@@ -512,6 +515,7 @@ attribute [nolint simpNF] comp.eq_3
 @[aesop safe destruct (rule_sets := [CategoryTheory])]
 lemma false_of_to_star' {X : C} (f : Hom (of X) star) : False := (f : PEmpty).elim
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Category.{v} (WithInitial C) where
   Hom X Y := Hom X Y
   id X := id X
@@ -551,6 +555,7 @@ def map {D : Type*} [Category* D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial 
     | star, of _, _ => PUnit.unit
     | star, star, _ => PUnit.unit
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism between the functor `map (𝟭 C)` and `𝟭 (WithInitial C)`. -/
 @[simps!]
@@ -559,6 +564,7 @@ def mapId (C : Type*) [Category* C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) :=
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
 @[simps!]
@@ -677,6 +683,7 @@ def inclLift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z �
   hom := { app := fun _ => 𝟙 _ }
   inv := { app := fun _ => 𝟙 _ }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism between `(lift F _ _).obj WithInitial.star` with `Z`. -/
 @[simps!]
 def liftStar {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
@@ -690,7 +697,7 @@ theorem liftStar_lift_map {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : �
       M x ≫ (inclLift F M hM).hom.app x := by
   simp [incl]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The uniqueness of `lift`. -/
 @[simp]
 def liftUnique {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
@@ -749,6 +756,7 @@ section
 
 variable {D : Type*} [Category* D]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor `WithInitial C ⥤ D` can be seen as an element of the comma category
 `Comma (const C) (𝟭 (C ⥤ D))`. -/
@@ -763,6 +771,7 @@ def mkCommaObject (F : WithInitial C ⥤ D) : Comma (Functor.const C) (𝟭 (C �
         rw [Category.id_comp, ← F.map_comp]
         congr 1 }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A morphism of functors `WithInitial C ⥤ D` gives a morphism between the associated comma
 objects. -/

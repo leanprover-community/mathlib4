@@ -39,6 +39,7 @@ variable (V : Type u₁) [Quiver.{v₁} V]
 
 namespace Paths
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance categoryPaths : Category.{max u₁ v₁} (Paths V) where
   Hom := fun X Y : V => Quiver.Path X Y
   id _ := Quiver.Path.nil
@@ -138,6 +139,7 @@ theorem lift_toPath {C} [Category* C] (φ : V ⥤q C) {X Y : V} (f : X ⟶ Y) :
   dsimp [Quiver.Hom.toPath, lift]
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem lift_spec {C} [Category* C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPrefunctor = φ := by
   fapply Prefunctor.ext
@@ -191,6 +193,7 @@ end Paths
 variable (W : Type u₂) [Quiver.{v₂} W]
 
 -- A restatement of `Prefunctor.mapPath_comp` using `f ≫ g` instead of `f.comp g`.
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem Prefunctor.mapPath_comp' (F : V ⥤q W) {X Y Z : Paths V} (f : X ⟶ Y) (g : Y ⟶ Z) :
     F.mapPath (f ≫ g) = (F.mapPath f).comp (F.mapPath g) :=
@@ -258,6 +261,7 @@ def pathsHomRel : HomRel (Paths C) := fun _ _ p q =>
 Assistance investigating this would be appreciated. -/
 attribute [nolint simpNF] pathsHomRel.eq_1
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor from a category to the canonical quotient of its path category. -/
 @[simps]
 def toQuotientPaths : C ⥤ Quotient (pathsHomRel C) where
@@ -272,6 +276,7 @@ to the original category. -/
 def quotientPathsTo : Quotient (pathsHomRel C) ⥤ C :=
   Quotient.lift _ (pathComposition C) fun _ _ _ _ w => w
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical quotient of the path category of a category
 is equivalent to the original category. -/

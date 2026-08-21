@@ -148,6 +148,7 @@ def toList : WType (Listβ γ) → List γ
   | WType.mk Listα.nil _ => []
   | WType.mk (Listα.cons hd) f => hd :: (f PUnit.unit).toList
 
+set_option backward.isDefEq.respectTransparency false in
 theorem leftInverse_list : Function.LeftInverse (ofList γ) (toList _)
   | WType.mk Listα.nil f => by
     simp only [toList, ofList, mk.injEq, heq_eq_eq, true_and]

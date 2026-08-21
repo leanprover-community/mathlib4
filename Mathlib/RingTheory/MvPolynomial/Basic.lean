@@ -119,8 +119,8 @@ lemma restrictSupport_add (s t : Set (σ →₀ ℕ)) :
   apply le_antisymm
   · rw [restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff, Set.add_subset_iff]
     intro x hx y hy
-    simp [show monomial (x + y) (1 : R) = monomial x 1 * monomial y 1 by simp, -monomial_mul,
-      *, Submodule.mul_mem_mul]
+    simp [show monomial (x + y) (1 : R) = monomial x 1 * monomial y 1 by simp,
+      -monomial_mul_monomial, *, Submodule.mul_mem_mul]
   · rw [restrictSupport_eq_span, restrictSupport_eq_span, Submodule.span_mul_span,
       Submodule.span_le, Set.mul_subset_iff]
     simp +contextual [Set.add_mem_add]
@@ -156,7 +156,6 @@ def restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs : IsUpperSet s) :
     obtain ⟨⟨i, j⟩, hij, e⟩ := Finset.exists_ne_zero_of_sum_ne_zero hm
     refine hs (by simp_all [eq_comm]) (hy (show j ∈ y.support by aesop))
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrictScalars_restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs) :
     (restrictSupportIdeal (R := R) s hs).restrictScalars R = restrictSupport R s :=
@@ -180,7 +179,6 @@ theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
   rw [totalDegree, Finset.sup_le_iff]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ s ∈ p.support, ∀ i, (s : σ →₀ ℕ) i ≤ n := by
   rw [restrictDegree, restrictSupport, AddMonoidAlgebra.mem_supported]
@@ -216,15 +214,16 @@ theorem linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R)
   (basisMonomials σ R).linearIndependent.comp (fun s : σ => Finsupp.single s 1)
     (Finsupp.single_left_injective one_ne_zero)
 
-private lemma finite_setOf_bounded (α) [Finite α] (n : ℕ) : Finite {f : α →₀ ℕ | ∀ a, f a ≤ n} :=
+private lemma finite_setOfPred_bounded (α) [Finite α] (n : ℕ) :
+    Finite {f : α →₀ ℕ | ∀ a, f a ≤ n} :=
   ((Set.Finite.pi' fun _ ↦ Set.finite_le_nat _).preimage DFunLike.coe_injective.injOn).to_subtype
 
 instance [Finite σ] (N : ℕ) : Module.Finite R (restrictDegree σ R N) :=
-  have := finite_setOf_bounded σ N
+  have := finite_setOfPred_bounded σ N
   Module.Finite.of_basis (basisRestrictSupport R _)
 
 instance [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) :=
-  have := finite_setOf_bounded σ N
+  have := finite_setOfPred_bounded σ N
   have : Finite {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ N} := by
     rw [Set.finite_coe_iff] at this ⊢
     exact this.subset fun n hn i ↦ (eq_or_ne (n i) 0).elim

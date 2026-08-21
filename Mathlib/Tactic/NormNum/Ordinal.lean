@@ -85,10 +85,10 @@ def evalOrdinalLE : NormNumExt where
       let ⟨an, pa⟩ ← deriveNat a i
       let ⟨bn, pb⟩ ← deriveNat b i
       if an.natLit! ≤ bn.natLit! then
-        have this : decide ($an ≤ $bn) =Q true := ⟨⟩
+        have : decide ($an ≤ $bn) =Q true := ⟨⟩
         pure (.isTrue q(isNat_ordinalLE_true $pa $pb $this))
       else
-        have this : decide ($an ≤ $bn) =Q false := ⟨⟩
+        have : decide ($an ≤ $bn) =Q false := ⟨⟩
         pure (.isFalse q(isNat_ordinalLE_false $pa $pb $this))
     | _, _ => throwError "not inequality on ordinals"
 
@@ -103,10 +103,10 @@ def evalOrdinalLT : NormNumExt where
       let ⟨an, pa⟩ ← deriveNat a i
       let ⟨bn, pb⟩ ← deriveNat b i
       if an.natLit! < bn.natLit! then
-        have this : decide ($an < $bn) =Q true := ⟨⟩
+        have : decide ($an < $bn) =Q true := ⟨⟩
         pure (.isTrue q(isNat_ordinalLT_true $pa $pb $this))
       else
-        have this : decide ($an < $bn) =Q false := ⟨⟩
+        have : decide ($an < $bn) =Q false := ⟨⟩
         pure (.isFalse q(isNat_ordinalLT_false $pa $pb $this))
     | _, _ => throwError "not strict inequality on ordinals"
 

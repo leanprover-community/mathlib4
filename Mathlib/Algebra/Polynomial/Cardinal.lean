@@ -18,10 +18,10 @@ of `#R` and `ℵ₀`.
 
 public section
 
-open Cardinal Fintype
+open Cardinal
 
 universe u v
-variable {R : Type u} {M : Type v} [Semiring R]
+variable {R : Type u} [Semiring R]
 
 namespace Polynomial
 

@@ -135,6 +135,7 @@ def IsSpecial : Prop :=
 def IsSpecial' : Prop :=
   u.w * u.z = succPNat (u.x * u.y)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   dsimp [IsSpecial, IsSpecial']
   let ⟨wp, x, y, zp, ap, bp⟩ := u
@@ -308,11 +309,11 @@ decreasing_by apply u.step_wf _h
 
 theorem reduce_a {u : XgcdType} (h : u.r = 0) : u.reduce = u.finish := by
   rw [reduce]
-  exact if_pos h
+  exact ite_eq_left h
 
 theorem reduce_b {u : XgcdType} (h : u.r ≠ 0) : u.reduce = u.step.reduce.flip := by
   rw [reduce]
-  exact if_neg h
+  exact ite_eq_right h
 
 theorem reduce_isReduced : ∀ u : XgcdType, u.reduce.IsReduced
   | u =>

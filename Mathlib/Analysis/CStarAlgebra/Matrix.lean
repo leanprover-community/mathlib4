@@ -5,6 +5,7 @@ Authors: Hans Parshall
 -/
 module
 
+public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Analysis.RCLike.Basic
@@ -39,7 +40,7 @@ coincide with the existing topology and uniformity on matrices.
 open WithLp
 open scoped Matrix
 
-variable {𝕜 m n l E : Type*}
+variable {𝕜 m n l : Type*}
 
 section EntrywiseSupNorm
 
@@ -106,6 +107,19 @@ def toEuclideanCLM :
       map_mul' := fun _ _ ↦ rfl
       map_star' := adjoint_toContinuousLinearMap }
 
+@[fun_prop]
+lemma continuous_uncurry_toEuclideanCLM :
+    Continuous (fun (S, x) ↦ toEuclideanCLM (n := n) (𝕜 := 𝕜) S x) := by
+  refine Continuous.comp (by fun_prop) <| continuous_pi fun i ↦ ?_
+  simp only [LinearEquiv.toEquiv_symm, Equiv.symm_symm, Equiv.invFun_as_coe,
+    LinearEquiv.coe_symm_toEquiv, toMatrix'_symm, OrthonormalBasis.coe_toBasis_repr,
+    LinearEquiv.coe_coe, LinearEquiv.trans_apply, LinearIsometryEquiv.coe_toLinearEquiv,
+    linearEquiv_apply, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+    addEquiv_apply, toLin'_apply, LinearEquiv.symm_mk, coe_mk, AddHom.coe_mk, LinearEquiv.coe_mk,
+    LinearEquiv.coe_toEquiv, Finsupp.linearEquivFunOnFinite_apply,
+    Finsupp.equivFunOnFinite_symm_apply_apply]
+  fun_prop
+
 lemma coe_toEuclideanCLM_eq_toEuclideanLin (A : Matrix n n 𝕜) :
     (toEuclideanCLM (n := n) (𝕜 := 𝕜) A : _ →ₗ[𝕜] _) = toEuclideanLin A :=
   rfl
@@ -135,7 +149,7 @@ lemma inner_toEuclideanCLM (A : Matrix n n ℝ) (x y : EuclideanSpace ℝ n) :
 
 /-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)
 structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddCommGroupL2Op`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
   @NormedAddCommGroup.induced ((Matrix m n 𝕜) ≃ₗ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m)) _
     _ _ _ ContinuousLinearMap.toNormedAddCommGroup.toNormedAddGroup _ _ <|
@@ -143,12 +157,12 @@ def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
 
 /-- An auxiliary definition used only to construct the true `NormedRing` (and `Metric`) structure
 provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedRingL2Op`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) :=
   @NormedRing.induced ((Matrix n n 𝕜) ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)) _
     _ _ _ ContinuousLinearMap.toNormedRing _ _ toEuclideanCLM.injective
 
-open Bornology Filter
+open Filter
 open scoped Topology Uniformity
 
 /-- The metric on `Matrix m n 𝕜` arising from the operator norm given by the identification with
@@ -288,6 +302,12 @@ lemma instCStarRing : CStarRing (Matrix n n 𝕜) where
   norm_mul_self_le M := le_of_eq <| Eq.symm <| l2_opNorm_conjTranspose_mul_self M
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instCStarRing
+
+/-- The matrices `Matrix n n ℂ` with the L2 operator norm form a `CStarAlgebra`. -/
+@[instance_reducible] noncomputable def instCStarAlgebra {n : Type*} [Fintype n] [DecidableEq n] :
+    CStarAlgebra (Matrix n n ℂ) where
+
+scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instCStarAlgebra
 
 end Matrix
 

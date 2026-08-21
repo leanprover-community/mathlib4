@@ -47,7 +47,7 @@ universe v v' u u'
 
 namespace CategoryTheory
 
-open Limits MonoidalCategory Functor PushoutObjObj
+open Limits MonoidalCategory CategoryTheory.Functor PushoutObjObj
 
 variable {C : Type u} [Category.{v} C]
 
@@ -103,8 +103,8 @@ section Monoidal
 
 variable [MonoidalCategory C] (X₁ X₂ X₃ : Arrow C) {W : C}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Left-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
   pushout-product of `W ◁ X₁` and `X₂`. -/
 @[simps!]

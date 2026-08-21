@@ -245,8 +245,8 @@ theorem coeff_seq_mem (k : ℕ) {i : ℕ} (hi : i ≥ (g.map (Ideal.Quotient.mk 
       nth_rw 1 [g.eq_X_pow_mul_shift_add_trunc n]
       rw [add_mul, mul_assoc, IsUnit.mul_val_inv, hs]
       ring
-    rw [key, map_sub, Polynomial.coeff_coe, coeff_trunc, if_neg hi.not_gt, zero_sub, neg_mem_iff,
-      pow_succ']
+    rw [key, map_sub, Polynomial.coeff_coe, coeff_trunc, ite_eq_right hi.not_gt, zero_sub,
+      neg_mem_iff, pow_succ']
     refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal' (fun i ↦ ?_) i
     refine coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal'
       (by simp [n, g.coeff_trunc_order_mem]) (fun i ↦ ?_) i
@@ -339,7 +339,7 @@ theorem eq_zero_of_mul_eq [IsHausdorff I A]
           (fun j _ ↦ ih j) i le_rfl
         rw [map_add, Polynomial.coeff_coe]
         refine Ideal.add_mem _ ?_ (g.coeff_trunc_order_mem I j)
-        simp_rw [coeff_X_pow_mul', if_neg (lt_of_le_of_lt hj hi).not_ge, zero_mem]
+        simp_rw [coeff_X_pow_mul', ite_eq_right (lt_of_le_of_lt hj hi).not_ge, zero_mem]
       simp_rw [Polynomial.coeff_coe,
         Polynomial.coeff_eq_zero_of_degree_lt (lt_of_lt_of_le hdeg (by simpa)), zero_mem]
     rw [add_mul, mul_comm (X ^ _), ← eq_sub_iff_add_eq] at heq
@@ -533,13 +533,13 @@ infixl:70 " %ʷ " => weierstrassMod
 
 @[simp]
 theorem weierstrassDiv_zero_right [IsPrecomplete (IsLocalRing.maximalIdeal A) A] : f /ʷ 0 = 0 := by
-  rw [weierstrassDiv, dif_neg (by simp)]
+  rw [weierstrassDiv, dite_eq_right (by simp)]
 
 alias weierstrassDiv_zero := weierstrassDiv_zero_right
 
 @[simp]
 theorem weierstrassMod_zero_right [IsPrecomplete (IsLocalRing.maximalIdeal A) A] : f %ʷ 0 = 0 := by
-  rw [weierstrassMod, dif_neg (by simp)]
+  rw [weierstrassMod, dite_eq_right (by simp)]
 
 alias weierstrassMod_zero := weierstrassMod_zero_right
 
@@ -560,13 +560,13 @@ include hg
 theorem isWeierstrassDivision_weierstrassDiv_weierstrassMod
     [IsAdicComplete (IsLocalRing.maximalIdeal A) A] :
     f.IsWeierstrassDivision g (f /ʷ g) (f %ʷ g) := by
-  simp_rw [weierstrassDiv, weierstrassMod, dif_pos hg]
+  simp_rw [weierstrassDiv, weierstrassMod, dite_eq_left hg]
   exact (IsWeierstrassDivisor.of_map_ne_zero hg).isWeierstrassDivisionAt_div_mod f
 
 theorem eq_mul_weierstrassDiv_add_weierstrassMod
     [IsAdicComplete (IsLocalRing.maximalIdeal A) A] :
     f = g * (f /ʷ g) + (f %ʷ g) := by
-  simp_rw [weierstrassDiv, weierstrassMod, dif_pos hg]
+  simp_rw [weierstrassDiv, weierstrassMod, dite_eq_left hg]
   exact ((IsWeierstrassDivisor.of_map_ne_zero hg).isWeierstrassDivisionAt_div_mod f).2
 
 variable {f} in
@@ -765,9 +765,11 @@ theorem IsWeierstrassDivision.isWeierstrassFactorization
     rw [Polynomial.degree_sub_eq_left_of_degree_lt H1, Polynomial.degree_X_pow]
   refine ⟨⟨⟨fun {i} hi ↦ ?_⟩, .sub_of_left (Polynomial.monic_X_pow _) H1⟩, Units.isUnit _, ?_⟩
   · rw [hfdeg] at hi
-    simp_rw [f, Polynomial.coeff_sub, Polynomial.coeff_X_pow, if_neg hi.ne, zero_sub, neg_mem_iff]
+    simp_rw [f, Polynomial.coeff_sub, Polynomial.coeff_X_pow, ite_eq_right hi.ne, zero_sub,
+      neg_mem_iff]
     have := H.coeff_f_sub_r_mem hi
-    rwa [map_sub, coeff_X_pow, if_neg hi.ne, zero_sub, neg_mem_iff, Polynomial.coeff_coe] at this
+    rwa [map_sub, coeff_X_pow, ite_eq_right hi.ne, zero_sub, neg_mem_iff,
+      Polynomial.coeff_coe] at this
   · have := congr($(H.2) * ↑(H.isUnit_of_map_ne_zero hg).unit⁻¹)
     rw [add_mul, mul_assoc, IsUnit.mul_val_inv, mul_one, ← sub_eq_iff_eq_add] at this
     simp_rw [← this, f, Polynomial.coe_sub, Polynomial.coe_pow, Polynomial.coe_X, sub_mul]
@@ -778,7 +780,8 @@ theorem IsWeierstrassFactorization.isWeierstrassDivision
       (Polynomial.X ^ (g.map (IsLocalRing.residue A)).order.toNat - f) := by
   set n := (g.map (IsLocalRing.residue A)).order.toNat with hn
   constructor
-  · refine (Polynomial.degree_sub_lt ?_ (Polynomial.monic_X_pow n).ne_zero ?_).trans_eq (by simpa)
+  · refine (Polynomial.degree_sub_lt_left ?_ (Polynomial.monic_X_pow n).ne_zero ?_).trans_eq
+      (by simpa)
     · simp_rw [H.degree_eq_coe_lift_order_map, Polynomial.degree_X_pow, n,
         ENat.lift_eq_toNat_of_lt_top]
     · rw [(Polynomial.monic_X_pow n).leadingCoeff, H.isDistinguishedAt.monic.leadingCoeff]

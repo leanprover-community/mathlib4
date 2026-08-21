@@ -108,6 +108,8 @@ class UnitalShelf (α : Type u) extends Shelf α, One α where
   one_act : ∀ a : α, act 1 a = a
   act_one : ∀ a : α, act a 1 = a
 
+attribute [instance 100] UnitalShelf.toOne
+
 /-- The type of homomorphisms between shelves.
 This is also the notion of rack and quandle homomorphisms.
 -/
@@ -422,6 +424,7 @@ theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAc
   dsimp only [dihedralAct]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : Quandle (Dihedral n) where
   act := dihedralAct n
   self_distrib := by
@@ -647,6 +650,7 @@ theorem well_def {R : Type*} [Rack R] {G : Type*} [Group G] (f : R →◃ Quandl
 
 end toEnvelGroup.mapAux
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a map from a rack to a group, lift it to being a map from the enveloping group.
 More precisely, the `EnvelGroup` functor is left adjoint to `Quandle.Conj`.
 -/

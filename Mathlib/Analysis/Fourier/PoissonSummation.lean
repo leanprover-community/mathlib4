@@ -115,9 +115,6 @@ theorem Real.tsum_eq_tsum_fourier {f : C(ℝ, ℂ)}
        using (hasSum_apply (summable_of_locally_summable_norm h_norm).hasSum x).tsum_eq
   · simp_rw [← Real.fourierCoeff_tsum_comp_add h_norm, smul_eq_mul, F, coe_mk]
 
-@[deprecated (since := "2025-11-16")]
-alias Real.tsum_eq_tsum_fourierIntegral := Real.tsum_eq_tsum_fourier
-
 section RpowDecay
 
 variable {E : Type*} [NormedAddCommGroup E]
@@ -202,10 +199,6 @@ theorem Real.tsum_eq_tsum_fourier_of_rpow_decay_of_summable {f : ℝ → ℂ} (h
     ((isBigO_norm_restrict_cocompact ⟨_, hc⟩ (zero_lt_one.trans hb) hf K).comp_tendsto
     Int.tendsto_coe_cofinite)) hFf x
 
-@[deprecated (since := "2025-11-16")]
-alias Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable :=
-  Real.tsum_eq_tsum_fourier_of_rpow_decay_of_summable
-
 /-- **Poisson's summation formula**, assuming that both `f` and its Fourier transform decay as
 `|x| ^ (-b)` for some `1 < b`. (This is the one-dimensional case of Corollary VII.2.6 of Stein and
 Weiss, *Introduction to Fourier analysis on Euclidean spaces*.) -/
@@ -215,10 +208,6 @@ theorem Real.tsum_eq_tsum_fourier_of_rpow_decay {f : ℝ → ℂ} (hc : Continuo
     ∑' n : ℤ, f (x + n) = ∑' n : ℤ, 𝓕 f n * fourier n (x : UnitAddCircle) :=
   Real.tsum_eq_tsum_fourier_of_rpow_decay_of_summable hc hb hf (summable_of_isBigO
     (Real.summable_abs_int_rpow hb) (hFf.comp_tendsto Int.tendsto_coe_cofinite)) x
-
-@[deprecated (since := "2025-11-16")]
-alias Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay :=
-  Real.tsum_eq_tsum_fourier_of_rpow_decay
 
 end RpowDecay
 
@@ -233,8 +222,5 @@ theorem SchwartzMap.tsum_eq_tsum_fourier (f : 𝓢(ℝ, ℂ)) (x : ℝ) :
   -- `b = 2` and work with that.
   apply Real.tsum_eq_tsum_fourier_of_rpow_decay f.continuous one_lt_two
     (f.isBigO_cocompact_rpow (-2)) ((𝓕 f).isBigO_cocompact_rpow (-2))
-
-@[deprecated (since := "2025-11-16")]
-alias SchwartzMap.tsum_eq_tsum_fourierIntegral := SchwartzMap.tsum_eq_tsum_fourier
 
 end Schwartz

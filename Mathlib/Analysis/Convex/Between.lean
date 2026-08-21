@@ -378,6 +378,7 @@ theorem wbtw_self_left (x y : P) : Wbtw R x x y :=
 theorem wbtw_self_right (x y : P) : Wbtw R x y y :=
   right_mem_affineSegment _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
   refine ⟨fun h => ?_, fun h => ?_⟩
@@ -1090,7 +1091,7 @@ theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
   replace hT := hT.comp_embedding ⟨_, h⟩
   rw [affineIndependent_iff_not_collinear] at hT
   contrapose hT
-  simp [Set.range_comp, Set.image_insert_eq, hT.symm.collinear]
+  simp [Set.range_comp, hT.symm.collinear]
 
 variable (R)
 

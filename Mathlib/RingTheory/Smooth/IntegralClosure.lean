@@ -160,7 +160,6 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma TensorProduct.toIntegralClosure_bijective_of_isLocalization
     (M : Submonoid R) [IsLocalization M S] :
     Function.Bijective (toIntegralClosure R S B) := by
-  classical
   let φ : integralClosure R B →ₐ[R] integralClosure S (S ⊗[R] B) :=
     AlgHom.codRestrict (Algebra.TensorProduct.includeRight.comp (integralClosure R B).val)
       ((integralClosure S (S ⊗[R] B)).restrictScalars R) fun ⟨x, hx⟩ ↦ by
@@ -177,7 +176,7 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalization
   convert!
     (IsLocalization.algEquiv (Algebra.algebraMapSubmonoid (integralClosure R B) M)
         (S ⊗[R] integralClosure R B) (integralClosure S (S ⊗[R] B))).bijective
-  rw [← AlgHom.coe_restrictScalars' R, ← AlgEquiv.coe_restrictScalars' R, ← AlgEquiv.coe_toAlgHom]
+  rw [← AlgHom.coe_restrictScalars' R, ← AlgEquiv.coe_restrictScalars R, ← AlgEquiv.coe_toAlgHom]
   congr 1
   ext1
   · apply IsLocalization.algHom_ext M; ext

@@ -17,7 +17,7 @@ of continuous multilinear maps.
 
 public section
 
-open Filter Asymptotics
+open Filter
 
 open scoped ENNReal ContDiff
 
@@ -29,7 +29,7 @@ variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section fderiv
 
-variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞} {n : ℕ}
+variable {n : ℕ}
 variable {f : E → F} {x : E} {s : Set E}
 
 /-- A polynomial function is infinitely differentiable. -/
@@ -54,8 +54,6 @@ namespace ContinuousMultilinearMap
 
 variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F) {n : ℕ∞ω} {x : Π i, E i}
-
-open FormalMultilinearSeries
 
 lemma contDiffAt : ContDiffAt 𝕜 n f x := f.cpolynomialAt.contDiffAt
 

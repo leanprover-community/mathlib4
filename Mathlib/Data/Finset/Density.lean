@@ -6,8 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Algebra.Order.Ring.NNRat
 public import Mathlib.Data.Fintype.Card
-public import Mathlib.Data.NNRat.Order
 public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Tactic.Positivity.Basic
 
@@ -52,7 +52,7 @@ overengineering basic definitions is likely to hinder user experience.
 -- TODO
 -- assert_not_exists Ring
 
-open Function Multiset Nat
+open Function Nat
 
 variable {𝕜 α β : Type*} [Fintype α]
 
@@ -167,7 +167,7 @@ lemma dens_inter_add_dens_union (s t : Finset α) :
     dens (s ∩ t) + dens (s ∪ t) = dens s + dens t := by rw [add_comm, dens_union_add_dens_inter]
 
 @[simp] lemma dens_union_of_disjoint (h : Disjoint s t) : dens (s ∪ t) = dens s + dens t := by
-  rw [← disjUnion_eq_union s t h, dens_disjUnion _ _ _]
+  rw [← disjUnion_eq_union s t h, dens_disjUnion]
 
 lemma dens_sdiff_add_dens_eq_dens (h : s ⊆ t) : dens (t \ s) + dens s = dens t := by
   simp [dens, ← card_sdiff_add_card_eq_card h, add_div]

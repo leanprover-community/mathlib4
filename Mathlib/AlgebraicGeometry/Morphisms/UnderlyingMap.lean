@@ -239,6 +239,7 @@ lemma IsDominant.of_comp [H : IsDominant (f ≫ g)] : IsDominant g := by
 lemma IsDominant.comp_iff [IsDominant f] : IsDominant (f ≫ g) ↔ IsDominant g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance IsDominant.respectsIso : MorphismProperty.RespectsIso @IsDominant :=
   MorphismProperty.respectsIso_of_isStableUnderComposition fun _ _ f (_ : IsIso f) ↦ inferInstance
 

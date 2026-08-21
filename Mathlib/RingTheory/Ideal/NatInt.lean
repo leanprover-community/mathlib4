@@ -94,7 +94,7 @@ theorem Ideal.isPrime_int_iff {P : Ideal ℤ} :
 
 theorem ringKrullDim_nat : ringKrullDim ℕ = 2 := by
   refine le_antisymm (iSup_le fun s ↦ le_of_not_gt fun hs ↦ ?_) ?_
-  · replace hs : 2 < s.length := ENat.coe_lt_coe.mp (WithBot.coe_lt_coe.mp hs)
+  · replace hs : 2 < s.length := ENat.natCast_lt_natCast.mp (WithBot.coe_lt_coe.mp hs)
     let s := s.take ⟨3, by lia⟩
     have : NeZero s.length := ⟨three_ne_zero⟩
     have h1 : ⊥ < (s 1).asIdeal := bot_le.trans_lt (s.step 0)

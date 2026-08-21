@@ -51,13 +51,13 @@ theorem Fin.snoc_eq_cons_rotate {α : Type*} (v : Fin n → α) (a : α) :
     @Fin.snoc _ (fun _ => α) v a = fun i => @Fin.cons _ (fun _ => α) a v (finRotate _ i) := by
   ext ⟨i, h⟩
   by_cases h' : i < n
-  · rw [finRotate_of_lt h', Fin.snoc, Fin.cons, dif_pos h']
+  · rw [finRotate_of_lt h', Fin.snoc, Fin.cons, dite_eq_left h']
     rfl
   · have h'' : n = i := by
       simp only [not_lt] at h'
       exact (Nat.eq_of_le_of_lt_succ h' h).symm
     subst h''
-    rw [finRotate_last', Fin.snoc, Fin.cons, dif_neg (lt_irrefl _)]
+    rw [finRotate_last', Fin.snoc, Fin.cons, dite_eq_right (lt_irrefl _)]
     rfl
 
 @[simp]
@@ -128,8 +128,8 @@ theorem finRotate_symm_lt_iff_ne_zero [NeZero n] (i : Fin n) :
 def finCycle (k : Fin n) : Equiv.Perm (Fin n) where
   toFun i := i + k
   invFun i := i - k
-  left_inv i := by haveI := NeZero.of_pos k.pos; simp
-  right_inv i := by haveI := NeZero.of_pos k.pos; simp
+  left_inv i := by have := NeZero.of_pos k.pos; simp
+  right_inv i := by have := NeZero.of_pos k.pos; simp
 
 lemma finCycle_eq_finRotate_iterate {k : Fin n} : finCycle k = (finRotate n)^[k.1] := by
   match n with

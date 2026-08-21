@@ -154,6 +154,7 @@ variable {S M} [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup M₂]
     [Module R M] [Module S M₂]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open DistribMulAction AddSubgroup in
 private lemma _root_.AddHom.map_smul_top_toAddSubgroup_of_surjective
     {f : M →+ M₂} {as : List R} {bs : List S} (hf : Function.Surjective f)
@@ -570,6 +571,7 @@ lemma map_first_exact_on_four_term_right_exact_of_isSMulRegular_last
 
 section Perm
 
+set_option backward.isDefEq.respectTransparency.types false in
 open _root_.LinearMap in
 private lemma IsWeaklyRegular.swap {a b : R} (h1 : IsWeaklyRegular M [a, b])
     (h2 : torsionBy R M b = a • torsionBy R M b → torsionBy R M b = ⊥) :

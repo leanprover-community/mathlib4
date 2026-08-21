@@ -181,7 +181,7 @@ variable [Fintype ι']
 theorem basis_toMatrix_mul_linearMap_toMatrix [Finite κ] [Fintype κ'] [DecidableEq ι'] :
     c.toMatrix c' * LinearMap.toMatrix b' c' f = LinearMap.toMatrix b' c f :=
   (Matrix.toLin b' c).injective <| by
-    haveI := Classical.decEq κ'
+    have := Classical.decEq κ'
     rw [toLin_toMatrix, toLin_mul b' c' c, toLin_toMatrix, c.toLin_toMatrix, LinearMap.id_comp]
 
 theorem basis_toMatrix_mul [Fintype κ] [Finite ι] [DecidableEq κ]
@@ -244,9 +244,9 @@ namespace Module.Basis
 @[simp]
 theorem toMatrix_mul_toMatrix {ι'' : Type*} [Fintype ι'] (b'' : ι'' → M) :
     b.toMatrix b' * b'.toMatrix b'' = b.toMatrix b'' := by
-  haveI := Classical.decEq ι
-  haveI := Classical.decEq ι'
-  haveI := Classical.decEq ι''
+  have := Classical.decEq ι
+  have := Classical.decEq ι'
+  have := Classical.decEq ι''
   ext i j
   simp only [Matrix.mul_apply, toMatrix_apply, sum_repr_mul_repr]
 
@@ -255,7 +255,7 @@ theorem toMatrix_mul_toMatrix_flip [DecidableEq ι] [Fintype ι'] :
     b.toMatrix b' * b'.toMatrix b = 1 := by rw [toMatrix_mul_toMatrix, toMatrix_self]
 
 /-- A matrix whose columns form a basis `b'`, expressed w.r.t. a basis `b`, is invertible. -/
-@[implicit_reducible]
+@[instance_reducible]
 def invertibleToMatrix [DecidableEq ι] [Fintype ι] (b b' : Basis ι R₂ M₂) :
     Invertible (b.toMatrix b') :=
   ⟨b'.toMatrix b, toMatrix_mul_toMatrix_flip _ _, toMatrix_mul_toMatrix_flip _ _⟩
@@ -264,8 +264,7 @@ def invertibleToMatrix [DecidableEq ι] [Fintype ι] (b b' : Basis ι R₂ M₂)
 theorem toMatrix_reindex (b : Basis ι R M) (v : ι' → M) (e : ι ≃ ι') :
     (b.reindex e).toMatrix v = (b.toMatrix v).submatrix e.symm _root_.id := by
   ext
-  simp only [toMatrix_apply, repr_reindex, Matrix.submatrix_apply, _root_.id,
-    Finsupp.mapDomain_equiv_apply]
+  simp [toMatrix_apply]
 
 @[simp]
 theorem toMatrix_map (b : Basis ι R M) (f : M ≃ₗ[R] N) (v : ι → N) :

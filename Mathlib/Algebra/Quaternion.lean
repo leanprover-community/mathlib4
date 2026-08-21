@@ -506,7 +506,7 @@ def imKₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   map_smul' _ _ := rfl
 
 /-- `QuaternionAlgebra.equivTuple` as a linear equivalence. -/
-def linearEquivTuple : ℍ[R,c₁,c₂,c₃] ≃ₗ[R] Fin 4 → R := (equivTuple ..).linearEquiv _
+def linearEquivTuple : ℍ[R,c₁,c₂,c₃] ≃ₗ[R] Fin 4 → R := (addEquivTuple c₁ c₂ c₃).linearEquiv R
 
 @[simp]
 theorem coe_linearEquivTuple :
@@ -752,6 +752,7 @@ protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
 
 instance : Star ℍ[R] := inferInstanceAs <| Star ℍ[R,-1,0,-1]
 instance : StarRing ℍ[R] := inferInstanceAs <| StarRing ℍ[R,-1,0,-1]
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,0,-1]) a
 
 @[ext]

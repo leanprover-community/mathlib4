@@ -86,6 +86,7 @@ theorem _root_.IsOpen.ae_eq_empty_iff_eq (hU : IsOpen U) :
 theorem _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0) : U = ∅ :=
   (hU.measure_eq_zero_iff μ).mp h₀
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.IsClosed.ae_eq_univ_iff_eq (hF : IsClosed F) :
     F =ᵐ[μ] univ ↔ F = univ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
@@ -237,12 +238,6 @@ theorem measure_closedEBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ
   (measure_eball_pos μ x hr).trans_le (measure_mono eball_subset_closedEBall)
 
 end Metric
-
-@[deprecated (since := "2026-01-24")]
-alias EMetric.measure_ball_pos := Metric.measure_eball_pos
-
-@[deprecated (since := "2026-01-24")]
-alias EMetric.measure_closedBall_pos := Metric.measure_closedEBall_pos
 
 section MeasureZero
 /-! ## Meagre sets and measure zero

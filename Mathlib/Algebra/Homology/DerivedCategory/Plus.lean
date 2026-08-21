@@ -70,7 +70,6 @@ noncomputable instance : (Qh : _ ⥤ Plus C).CommShift ℤ := by
   dsimp only [Qh]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (Qh : _ ⥤ Plus C).IsTriangulated := by
   dsimp only [Qh]
   infer_instance

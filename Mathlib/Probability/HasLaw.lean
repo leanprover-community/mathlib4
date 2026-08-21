@@ -88,7 +88,7 @@ protected lemma HasLaw.id : HasLaw id μ μ where
 
 protected lemma HasLaw.ae_iff (hX : HasLaw X μ P) {p : 𝓧 → Prop} (hp : Measurable p) :
     (∀ᵐ ω ∂P, p (X ω)) ↔ ∀ᵐ x ∂μ, p x := by
-  rw [← hX.map_eq, ae_map_iff hX.aemeasurable (measurableSet_setOf.2 hp)]
+  rw [← hX.map_eq, ae_map_iff hX.aemeasurable (measurableSet_setOfPred.2 hp)]
 
 protected theorem HasLaw.isFiniteMeasure_iff (hX : HasLaw X μ P) :
     IsFiniteMeasure P ↔ IsFiniteMeasure μ := by

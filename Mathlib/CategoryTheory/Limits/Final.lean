@@ -218,7 +218,6 @@ def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
 variable {F G}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone over `F ⋙ G`, we can construct a `Cocone G` with the same cocone point.
 -/
 @[simps]
@@ -243,7 +242,6 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
   map f := { hom := f.hom }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternative equational lemma for `(extendCocone c).ι.app` in case a lift of the object
 is given explicitly. -/
 lemma extendCocone_obj_ι_app' (c : Cocone (F ⋙ G)) {X : D} {Y : C} (f : X ⟶ F.obj Y) :
@@ -333,6 +331,7 @@ instance (priority := 100) compCreatesColimit {B : Type u₄} [Category.{v₄} B
     let i := liftedColimitMapsToOriginal ((isColimitExtendCoconeEquiv F (G := G ⋙ H) _).symm hc)
     exact (Cocone.whiskering F).mapIso i ≪≫ ((coconesEquiv F (G ⋙ H)).unitIso.app _).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by
   simp only [colimit.pre_eq (colimitCoconeComp F (getColimitCocone G)) (getColimitCocone G),
@@ -360,7 +359,6 @@ theorem ι_colimitIso_inv [HasColimit G] (X : C) :
   simp [colimitIso]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A pointfree version of `colimitIso`, stating that whiskering by `F` followed by taking the
 colimit is isomorphic to taking the colimit on the codomain of `F`. -/
 def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
@@ -401,6 +399,11 @@ theorem preservesColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ 
     exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
 set_option backward.defeqAttrib.useBackward true in
+lemma preservesColimit_comp_iff {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B} :
+    PreservesColimit (F ⋙ G) H ↔ PreservesColimit G H :=
+  ⟨fun _ ↦ preservesColimit_of_comp F, fun _ ↦ inferInstance⟩
+
+set_option backward.defeqAttrib.useBackward true in
 theorem reflectsColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [ReflectsColimit (F ⋙ G) H] : ReflectsColimit G H where
   reflects {c} hc := by
@@ -410,7 +413,7 @@ theorem reflectsColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B
 
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is final and `F ⋙ G` creates colimits of `H`, then so does `G`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def createsColimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesColimit (F ⋙ G) H] : CreatesColimit G H where
   reflects := (reflectsColimit_of_comp F).reflects
@@ -437,7 +440,7 @@ theorem reflectsColimitsOfShape_of_final {B : Type u₄} [Category.{v₄} B] (H 
 include F in
 /-- If `H` creates colimits of shape `C` and `F : C ⥤ D` is final, then `H` creates colimits of
 shape `D`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def createsColimitsOfShapeOfFinal {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
     [CreatesColimitsOfShape C H] : CreatesColimitsOfShape D H where
   CreatesColimit := createsColimitOfComp F
@@ -575,7 +578,6 @@ def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
 variable {F G}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a cone over `F ⋙ G`, we can construct a `Cone G` with the same cocone point.
 -/
 @[simps]
@@ -602,7 +604,6 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G where
             · rw [← Functor.map_comp] } }
   map f := { hom := f.hom }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternative equational lemma for `(extendCone c).π.app` in case a lift of the object
 is given explicitly. -/
 lemma extendCone_obj_π_app' (c : Cone (F ⋙ G)) {X : C} {Y : D} (f : F.obj X ⟶ Y) :
@@ -692,6 +693,7 @@ instance (priority := 100) compCreatesLimit {B : Type u₄} [Category.{v₄} B] 
     let i := liftedLimitMapsToOriginal ((isLimitExtendConeEquiv F (G := G ⋙ H) _).symm hc)
     exact (Cone.whiskering F).mapIso i ≪≫ ((conesEquiv F (G ⋙ H)).unitIso.app _).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := by
   rw [limit.pre_eq (limitConeComp F (getLimitCone G)) (getLimitCone G)]
@@ -710,7 +712,6 @@ def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
   (asIso (limit.pre G F)).symm
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A pointfree version of `limitIso`, stating that whiskering by `F` followed by taking the
 limit is isomorphic to taking the limit on the codomain of `F`. -/
 def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
@@ -750,6 +751,11 @@ theorem preservesLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
 set_option backward.defeqAttrib.useBackward true in
+lemma preservesLimit_comp_iff {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B} :
+    PreservesLimit (F ⋙ G) H ↔ PreservesLimit G H :=
+  ⟨fun _ ↦ preservesLimit_of_comp F, fun _ ↦ inferInstance⟩
+
+set_option backward.defeqAttrib.useBackward true in
 theorem reflectsLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [ReflectsLimit (F ⋙ G) H] : ReflectsLimit G H where
   reflects {c} hc := by
@@ -759,7 +765,7 @@ theorem reflectsLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
 
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is initial and `F ⋙ G` creates limits of `H`, then so does `G`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def createsLimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesLimit (F ⋙ G) H] : CreatesLimit G H where
   reflects := (reflectsLimit_of_comp F).reflects
@@ -786,7 +792,7 @@ theorem reflectsLimitsOfShape_of_initial {B : Type u₄} [Category.{v₄} B] (H 
 include F in
 /-- If `H` creates limits of shape `C` and `F : C ⥤ D` is initial, then `H` creates limits of shape
 `D`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def createsLimitsOfShapeOfInitial {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
     [CreatesLimitsOfShape C H] : CreatesLimitsOfShape D H where
   CreatesLimit := createsLimitOfComp F
@@ -850,7 +856,6 @@ theorem initial_iff_comp_equivalence [IsEquivalence G] : Initial F ↔ Initial (
 theorem initial_iff_equivalence_comp [IsEquivalence F] : Initial G ↔ Initial (F ⋙ G) :=
   ⟨fun _ => initial_equivalence_comp _ _, fun _ => initial_of_equivalence_comp F _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
   let s₁ : C ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} C := AsSmall.equiv
   let s₂ : D ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} D := AsSmall.equiv
@@ -872,7 +877,6 @@ instance initial_comp [Initial F] [Initial G] : Initial (F ⋙ G) := by
   suffices Final (F ⋙ G).op from initial_of_final_op _
   exact final_comp F.op G.op
 
-set_option backward.isDefEq.respectTransparency false in
 theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := by
   let s₁ : C ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} C := AsSmall.equiv
   let s₂ : D ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} D := AsSmall.equiv
@@ -928,15 +932,15 @@ variable {C : Type u₁} [Category.{v₁} C] {c : C}
 
 lemma final_fromPUnit_of_isTerminal (hc : Limits.IsTerminal c) : (fromPUnit c).Final where
   out c' := by
-    letI : Inhabited (StructuredArrow c' (fromPUnit c)) := ⟨.mk (Y := default) (hc.from c')⟩
-    letI : Subsingleton (StructuredArrow c' (fromPUnit c)) :=
+    let : Inhabited (StructuredArrow c' (fromPUnit c)) := ⟨.mk (Y := default) (hc.from c')⟩
+    let : Subsingleton (StructuredArrow c' (fromPUnit c)) :=
       ⟨fun i j ↦ StructuredArrow.obj_ext _ _ (by cat_disch) (hc.hom_ext _ _)⟩
     infer_instance
 
 lemma initial_fromPUnit_of_isInitial (hc : Limits.IsInitial c) : (fromPUnit c).Initial where
   out c' := by
-    letI : Inhabited (CostructuredArrow (fromPUnit c) c') := ⟨.mk (Y := default) (hc.to c')⟩
-    letI : Subsingleton (CostructuredArrow (fromPUnit c) c') :=
+    let : Inhabited (CostructuredArrow (fromPUnit c) c') := ⟨.mk (Y := default) (hc.to c')⟩
+    let : Subsingleton (CostructuredArrow (fromPUnit c) c') :=
       ⟨fun i j ↦ CostructuredArrow.obj_ext _ _ (by cat_disch) (hc.hom_ext _ _)⟩
     infer_instance
 
@@ -982,12 +986,11 @@ end
 end Functor
 
 section Filtered
-open Functor
+open CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Final functors preserve filteredness.
 
 This can be seen as a generalization of `IsFiltered.of_right_adjoint` (which states that right
@@ -1053,7 +1056,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {E : Type u₃} [Category.{v₃} E]
 
-open Functor
+open CategoryTheory.Functor
 
 /-- The functor `StructuredArrow.pre X T S` is final if `T` is final. -/
 instance StructuredArrow.final_pre (T : C ⥤ D) [Final T] (S : D ⥤ E) (X : E) :
@@ -1077,7 +1080,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable (F : D ⥤ Cat) (G : C ⥤ D)
 
-open Functor
+open CategoryTheory.Functor
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A prefunctor mapping structured arrows on `G` to structured arrows on `pre F G` with their
@@ -1102,7 +1105,7 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
   constructor
   rintro ⟨d, f⟩
   let ⟨u, c, g⟩ : Nonempty (StructuredArrow d G) := inferInstance
-  letI : Nonempty (StructuredArrow ⟨d, f⟩ (pre F G)) :=
+  let : Nonempty (StructuredArrow ⟨d, f⟩ (pre F G)) :=
     ⟨u, ⟨c, (F.map g).toFunctor.obj f⟩, ⟨(by exact g), (by exact 𝟙 _)⟩⟩
   apply zigzag_isConnected
   rintro ⟨⟨⟨⟩⟩, ⟨bi, fi⟩, ⟨gbi, gfi⟩⟩ ⟨⟨⟨⟩⟩, ⟨bj, fj⟩, ⟨gbj, gfj⟩⟩
@@ -1161,7 +1164,6 @@ private lemma Grothendieck.final_map_small {C : Type u₁} [SmallCategory C] {F 
   simp [i, fiberwiseColimitMapCompEquivalence]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Grothendieck.map α` for a natural transformation `α : F ⟶ G`, with
 `F G : C ⥤ Cat`, is final if for each `X : C`, the functor `α.app X` is final. -/
 lemma Grothendieck.final_map {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G)
@@ -1219,6 +1221,7 @@ section Restriction
 
 variable {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `Over j ⥤ J` is initial, restricting a limit cone to the diagram above `j`,
 preserves the limit. -/
@@ -1234,6 +1237,7 @@ noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
   · exact NatIso.ofComponents (fun k ↦ CategoryTheory.Over.isoMk (Iso.refl _))
   · exact Cone.ext (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `Over j ⥤ J` is final, restricting a colimit cocone to the diagram below `j`,
 preserves the limit. -/

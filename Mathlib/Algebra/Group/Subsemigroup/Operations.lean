@@ -50,7 +50,7 @@ In this file we define various operations on `Subsemigroup`s and `MulHom`s.
 ### Operations on `MulHom`s
 
 * `MulHom.srange`: range of a semigroup homomorphism as a subsemigroup of the codomain;
-* `MulHom.restrict`: restrict a semigroup homomorphism to a subsemigroup;
+* `MulHom.domRestrict`: restrict a semigroup homomorphism to a subsemigroup of its domain;
 * `MulHom.codRestrict`: restrict the codomain of a semigroup homomorphism to a subsemigroup;
 * `MulHom.srangeRestrict`: restrict a semigroup homomorphism to its range;
 
@@ -595,13 +595,20 @@ theorem map_mclosure (f : M →ₙ* N) (s : Set M) : (closure s).map f = closure
 
 /-- Restriction of a semigroup hom to a subsemigroup of the domain. -/
 @[to_additive /-- Restriction of an AddSemigroup hom to an `AddSubsemigroup` of the domain. -/]
-def restrict {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) (S : σ) : S →ₙ* N :=
+def domRestrict {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N)
+    (S : σ) : S →ₙ* N :=
   f.comp (MulMemClass.subtype S)
 
 @[to_additive (attr := simp)]
-theorem restrict_apply {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) {S : σ}
-    (x : S) : f.restrict S x = f x :=
+theorem domRestrict_apply {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M]
+    (f : M →ₙ* N) {S : σ} (x : S) : f.domRestrict S x = f x :=
   rfl
+
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
+@[deprecated (since := "2026-07-19")] alias _root_.AddHom.restrict := _root_.AddHom.domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddHom.restrict_apply := _root_.AddHom.domRestrict_apply
 
 /-- Restriction of a semigroup hom to a subsemigroup of the codomain. -/
 @[to_additive (attr := simps)

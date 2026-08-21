@@ -41,6 +41,7 @@ lemma op_p (x : P.II) :
     dsimp% P.op.p ⟨Subcomplex.N.opEquiv.symm x.1, x.2⟩ =
       ⟨Subcomplex.N.opEquiv.symm (P.p x), by simp⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma op_ancestralRel_iff (x y : P.II) :
     P.op.AncestralRel ⟨Subcomplex.N.opEquiv.symm x.1, x.2⟩

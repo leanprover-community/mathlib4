@@ -9,6 +9,8 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
+# Forgetful functors that reflect isomorphisms
+
 A `forget₂ C D` forgetful functor between concrete categories `C` and `D`
 whose forgetful functors both reflect isomorphisms, itself reflects isomorphisms.
 -/
@@ -34,9 +36,9 @@ where `forget C` reflects isomorphisms, itself reflects isomorphisms. -/
 instance reflectsIsomorphisms_forget₂ [HasForget₂ C D] [(forget C).ReflectsIsomorphisms] :
     (forget₂ C D).ReflectsIsomorphisms :=
   { reflects := fun X Y f {i} => by
-      haveI i' : IsIso ((forget D).map ((forget₂ C D).map f)) := Functor.map_isIso (forget D) _
-      haveI : IsIso ((forget C).map f) := by
-        rwa [← @HasForget₂.forget_comp C _ _ _ _ _ D _ _ _ _ _]
+      have i' : IsIso ((forget D).map ((forget₂ C D).map f)) := Functor.map_isIso (forget D) _
+      have : IsIso ((forget C).map f) := by
+        rwa [← @HasForget₂.forget_comp (C := C) (D := D)]
       apply isIso_of_reflects_iso f (forget C) }
 
 end CategoryTheory

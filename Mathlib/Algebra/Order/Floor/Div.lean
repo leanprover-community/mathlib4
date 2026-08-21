@@ -51,7 +51,7 @@ Note in both cases we only allow dividing by positive inputs. We enforce the fol
 * Prove `⌈a / b⌉ = a ⌈/⌉ b` when `a, b : ℕ`
 -/
 
-@[expose] public section
+public section
 
 variable {ι α β : Type*}
 

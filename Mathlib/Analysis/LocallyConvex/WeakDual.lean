@@ -137,9 +137,9 @@ functionals. -/
 theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
     Continuous[⨅ i, induced (f i) inferInstance, inferInstance] φ := by
-  letI t𝕜 : TopologicalSpace 𝕜 := inferInstance
-  letI t₁ : TopologicalSpace E := ⨅ i, induced (f i) t𝕜
-  letI t₂ (s : Finset ι) : TopologicalSpace E := ⨅ i : s, induced (f i) t𝕜
+  let t𝕜 : TopologicalSpace 𝕜 := inferInstance
+  let t₁ : TopologicalSpace E := ⨅ i, induced (f i) t𝕜
+  let t₂ (s : Finset ι) : TopologicalSpace E := ⨅ i : s, induced (f i) t𝕜
   suffices
       Continuous[t₁, t𝕜] φ ↔ ∃ s : Finset ι, Continuous[t₂ s, t𝕜] φ by
     simp_rw [this, ← mem_span_iff_continuous_of_finite, Submodule.span_range_eq_iSup,
@@ -163,7 +163,7 @@ theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜]
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
     ∃ s : Finset ι, ∃ c : ℝ≥0, φ.toSeminorm ≤
       c • (s.sup fun i ↦ (f i).toSeminorm) := by
-  letI t𝕜 : TopologicalSpace 𝕜 := inferInstance
+  let t𝕜 : TopologicalSpace 𝕜 := inferInstance
   let t := ⨅ i, induced (f i) t𝕜
   have : IsTopologicalAddGroup E := topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
   have : WithSeminorms (fun i ↦ (f i).toSeminorm) := by

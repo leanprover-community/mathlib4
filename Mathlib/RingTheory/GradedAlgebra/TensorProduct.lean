@@ -33,6 +33,7 @@ variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 variable [DecidableEq ι] [AddMonoid ι]
 variable [Semiring A] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance baseChange : GradedAlgebra fun i ↦ (𝒜 i).baseChange S where
   one_mem := tmul_mem_baseChange_of_mem _ <| one_mem_graded 𝒜
   mul_mem i j := by

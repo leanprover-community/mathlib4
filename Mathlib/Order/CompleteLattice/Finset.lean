@@ -21,9 +21,9 @@ public section
 
 assert_not_exists IsOrderedMonoid MonoidWithZero
 
-open Function Multiset OrderDual
+open Function
 
-variable {F α β γ ι κ : Type*}
+variable {α β γ ι : Type*}
 
 section Lattice
 
@@ -37,7 +37,6 @@ that works for `ι : Sort*`. -/
 `⨅ i ∈ t, s i`. This version assumes `ι` is a `Type*`. See `iInf_eq_iInf_finset'` for a version
 that works for `ι : Sort*`. -/]
 theorem iSup_eq_iSup_finset (s : ι → α) : ⨆ i, s i = ⨆ t : Finset ι, ⨆ i ∈ t, s i := by
-  classical
   refine le_antisymm ?_ ?_
   · exact iSup_le fun b => le_iSup_of_le {b} <| le_iSup_of_le b <| le_iSup_of_le (by simp) <| le_rfl
   · exact iSup_le fun t => iSup_le fun b => iSup_le fun _ => le_iSup _ _

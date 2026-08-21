@@ -386,7 +386,7 @@ variable {s} in
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).excenter signs = s.excenter signs := by
   rw [← s.excenterExists_restrict S hS] at h
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   exact (h.excenter_map S.subtypeₐᵢ).symm
 
 /-- The incenter of a simplex. -/
@@ -642,7 +642,7 @@ lemma ExcenterExists.excenter_notMem_affineSpan_pair [Nat.AtLeastTwo n]
   · convert!
     h.excenter_notMem_affineSpan_face (fs := { i, j }) (m := 1) (by simp_all)
       Nat.AtLeastTwo.ne_one.symm
-    simp [Set.image_insert_eq]
+    simp
 
 lemma incenter_notMem_affineSpan_pair [Nat.AtLeastTwo n] (i j : Fin (n + 1)) :
     s.incenter ∉ line[ℝ, s.points i, s.points j] :=
@@ -798,7 +798,7 @@ variable {s} in
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).touchpoint signs i = s.touchpoint signs i := by
   rw [← s.excenterExists_restrict S hS] at h
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   exact (h.touchpoint_map S.subtypeₐᵢ i).symm
 
 lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
@@ -1146,7 +1146,7 @@ variable {s} in
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).touchpointWeights signs = s.touchpointWeights signs := by
   rw [← s.excenterExists_restrict S hS] at h
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   exact (h.touchpointWeights_map S.subtypeₐᵢ).symm
 
 variable {s} in
@@ -1328,7 +1328,7 @@ lemma affineSpan_pair_eq_orthRadius [Fact (Module.finrank ℝ V = 2)] (signs : F
       (t.exsphere signs).orthRadius (t.touchpoint signs i₁) := by
   convert! (t.excenterExists signs).affineSpan_faceOpposite_eq_orthRadius i₁
   have hc : {i₁}ᶜ = ({i₂, i₃} : Set (Fin 3)) := by grind
-  simp [Simplex.range_faceOpposite_points, hc, Set.image_insert_eq]
+  simp [Simplex.range_faceOpposite_points, hc]
 
 lemma affineSpan_pair_eq_orthRadius_insphere [Fact (Module.finrank ℝ V = 2)]
     {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :

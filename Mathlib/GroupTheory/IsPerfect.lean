@@ -29,12 +29,12 @@ Among the basic results, we show that
   homomorphism is perfect.
 -/
 
-@[expose] public section
+public section
 
 namespace Group
 open Subgroup
 
-variable {G G' : Type*} [Group G] [Group G'] {H K : Subgroup G} (f : G →* G')
+variable {G G' : Type*} [Group G] [Group G'] {H : Subgroup G} (f : G →* G')
 
 variable (G) in
 /-- A group `G` is perfect if `G` equals its commutator subgroup `⁅G, G⁆`. -/
@@ -82,7 +82,7 @@ lemma not_isNilpotent [Nontrivial G] [IsPerfect G] : ¬ IsNilpotent G :=
 open scoped IsMulCommutative in
 variable (G) in
 lemma not_isMulCommutative [Nontrivial G] [IsPerfect G] : ¬ IsMulCommutative G :=
-  fun _ ↦ (not_isSolvable G) CommGroup.isSolvable
+  fun _ ↦ (not_isSolvable G) inferInstance
 
 instance subsingleton_of_isMulCommutative
     [hG : IsPerfect G] [h_comm : IsMulCommutative G] : Subsingleton G := by

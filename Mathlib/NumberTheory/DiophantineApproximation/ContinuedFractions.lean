@@ -47,7 +47,7 @@ end Convergent
 
 namespace Real
 
-variable {ξ : ℝ} {u v : ℤ}
+variable {ξ : ℝ}
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,

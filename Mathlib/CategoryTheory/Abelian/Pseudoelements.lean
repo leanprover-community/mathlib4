@@ -179,7 +179,6 @@ scoped[Pseudoelement] attribute [instance] CategoryTheory.Abelian.Pseudoelement.
 
 theorem pseudoApply_mk' {P Q : C} (f : P ⟶ Q) (a : Over P) : f ⟦a⟧ = ⟦↑(a.hom ≫ f)⟧ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Applying a pseudoelement to a composition of morphisms is the same as composing
 with each morphism. Sadly, this is not a definitional equality, but at least it is true. -/
 theorem comp_apply {P Q R : C} (f : P ⟶ Q) (g : Q ⟶ R) (a : P) : (f ≫ g) a = g (f a) :=
@@ -205,7 +204,6 @@ section
 
 attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The arrows pseudo-equal to a zero morphism are precisely the zero morphisms. -/
 theorem pseudoZero_aux {P : C} (Q : C) (f : Over P) : f ≈ (0 : Q ⟶ P) ↔ f.hom = 0 :=
   ⟨fun ⟨R, p, q, _, _, comm⟩ => zero_of_epi_comp p (by simp [comm]), fun hf =>
@@ -241,7 +239,6 @@ theorem pseudoZero_iff {P : C} (a : Over P) : a = (0 : P) ↔ a.hom = 0 := by
 
 end Zero
 
-open Pseudoelement
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Morphisms map the zero pseudoelement to the zero pseudoelement. -/
@@ -306,7 +303,6 @@ theorem pseudo_surjective_of_epi {P Q : C} (f : P ⟶ Q) [Epi f] : Function.Surj
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A morphism that is surjective on pseudoelements is an epimorphism. -/
 theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f → Epi f := by
   intro h
@@ -382,11 +378,11 @@ theorem exact_of_pseudo_exact (S : ShortComplex C)
       -- Let's give a name to the second pullback morphism.
       let j : pullback (kernel.ι (cokernel.π S.f)) (kernel.ι S.g) ⟶ kernel S.g := pullback.snd _ _
       -- Since `q` is an epimorphism, in particular this means that `j` is an epimorphism.
-      haveI pe : Epi j := epi_of_epi_fac hz₂
+      have pe : Epi j := epi_of_epi_fac hz₂
       -- But it is also a monomorphism, because `kernel.ι (cokernel.π f)` is: A kernel is
       -- always a monomorphism and the pullback of a monomorphism is a monomorphism.
       -- But mono + epi = iso, so `j` is an isomorphism.
-      haveI : IsIso j := isIso_of_mono_of_epi _
+      have : IsIso j := isIso_of_mono_of_epi _
       -- But then `kernel.ι g` can be expressed using all of the maps of the pullback square, and we
       -- are done.
       rw [(Iso.eq_inv_comp (asIso j)).2 pullback.condition.symm]

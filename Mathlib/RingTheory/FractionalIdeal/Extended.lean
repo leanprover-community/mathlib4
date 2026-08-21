@@ -37,7 +37,10 @@ This file defines the extension of a fractional ideal along a ring homomorphism.
 fractional ideal, fractional ideals, extended, extension
 -/
 
-@[expose] public section
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- This is why this section is `noncomputable`.
+-- See https://github.com/leanprover/lean4/issues/14084.
+@[expose] public noncomputable section
 
 open IsLocalization FractionalIdeal Module Submodule
 

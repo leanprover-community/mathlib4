@@ -109,7 +109,7 @@ private lemma ConvexOn.map_condExp_le_of_hereditarilyLindelofSpace [IsFiniteMeas
     · exact ((L i).integrable_comp hf_int).add (integrable_const (c i))
     · filter_upwards [hf] with a ha using hLc1 i ⟨f a, ha⟩
   filter_upwards [hp, hw, hφ_cvx.1.condExp_mem hm hf_int hs hf] with a hp hw hq
-  rw [show φ (μ[f | m] a) = s.restrict φ ⟨μ[f | m] a, hq⟩ by simp, ← hLc2]
+  rw [show φ (μ[f | m] a) = s.domRestrict φ ⟨μ[f | m] a, hq⟩ by simp, ← hLc2]
   simpa [iSup_congr hp] using! ciSup_le hw
 
 /-- Conditional Jensen's inequality for finite measures. -/

@@ -225,7 +225,7 @@ theorem eq_one_of_sq_sub_mul_sq_eq_zero {p : ℕ} [Fact p.Prime] {a : ℤ} (ha :
 of the equation `x^2 - a*y^2 = 0` with `x ≠ 0`. -/
 theorem eq_one_of_sq_sub_mul_sq_eq_zero' {p : ℕ} [Fact p.Prime] {a : ℤ} (ha : (a : ZMod p) ≠ 0)
     {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 - a * y ^ 2 = 0) : legendreSym p a = 1 := by
-  haveI hy : y ≠ 0 := by
+  have hy : y ≠ 0 := by
     rintro rfl
     rw [zero_pow two_ne_zero, mul_zero, sub_zero, sq_eq_zero_iff] at hxy
     exact hx hxy

@@ -401,6 +401,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
     rw [id_apply_of_one_lt _ _ _ A, _root_.zero_apply]
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
     (id 𝕜 F (p 0 v0)).comp p = p := by
@@ -582,7 +583,7 @@ theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
     ∃ (j : _) (hj : j ∈ compPartialSumSource m M N), compChangeOfVariables m M N j hj = i := by
   rcases i with ⟨n, c⟩
   refine ⟨⟨c.length, c.blocksFun⟩, ?_, ?_⟩
-  · simp only [compPartialSumTargetSet, Set.mem_setOf_eq] at hi
+  · simp only [compPartialSumTargetSet, Set.mem_ofPred_eq] at hi
     simp only [mem_compPartialSumSource_iff, hi.left, hi.right, true_and, and_true]
     exact fun a => c.one_le_blocks' _
   · dsimp [compChangeOfVariables]
@@ -860,8 +861,6 @@ theorem AnalyticAt.comp {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt �
   rw [← analyticWithinAt_univ] at hg hf ⊢
   apply hg.comp hf (by simp)
 
-@[deprecated (since := "2026-01-24")] alias AnalyticAt.comp' := AnalyticAt.fun_comp
-
 /-- Version of `AnalyticAt.comp` where point equality is a separate hypothesis. -/
 @[to_fun]
 theorem AnalyticAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : AnalyticAt 𝕜 g y)
@@ -888,6 +887,7 @@ theorem AnalyticOnNhd.comp' {s : Set E} {g : F → G} {f : E → F} (hg : Analyt
     (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (g ∘ f) s :=
   fun z hz => (hg (f z) (Set.mem_image_of_mem f hz)).comp (hf z hz)
 
+@[to_fun]
 theorem AnalyticOnNhd.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F}
     (hg : AnalyticOnNhd 𝕜 g t) (hf : AnalyticOnNhd 𝕜 f s) (st : Set.MapsTo f s t) :
     AnalyticOnNhd 𝕜 (g ∘ f) s :=
@@ -1083,6 +1083,7 @@ theorem length_gather (a : Composition n) (b : Composition a.length) :
   show (map List.sum (a.blocks.splitWrtComposition b)).length = b.blocks.length by
     rw [length_map, length_splitWrtComposition]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary function used in the definition of `sigmaEquivSigmaPi` below, associating to
 two compositions `a` of `n` and `b` of `a.length`, and an index `i` bounded by the length of
 `a.gather b`, the subcomposition of `a` made of those blocks belonging to the `i`-th block of

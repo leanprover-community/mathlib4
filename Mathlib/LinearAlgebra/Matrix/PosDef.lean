@@ -282,7 +282,7 @@ theorem _root_.Matrix.posDef_conjTranspose_iff {M : Matrix n n R} : Mᴴ.PosDef 
   ⟨(by simpa using ·.conjTranspose), .conjTranspose⟩
 
 lemma diag_pos [Nontrivial R] {A : Matrix n n R} (hA : A.PosDef) {i : n} : 0 < A i i := by
-  classical simpa [trace] using hA.2 (x := Finsupp.single i 1)
+  simpa [trace] using hA.2 (x := Finsupp.single i 1)
 
 end PosDef
 
@@ -594,7 +594,6 @@ end Matrix
 
 namespace QuadraticForm
 
-open QuadraticMap
 
 variable {n : Type*} [Fintype n]
 

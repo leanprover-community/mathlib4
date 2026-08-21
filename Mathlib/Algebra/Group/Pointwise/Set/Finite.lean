@@ -17,7 +17,7 @@ assert_not_exists MulAction MonoidWithZero
 
 open scoped Pointwise
 
-variable {F α β γ : Type*}
+variable {α β : Type*}
 
 namespace Set
 

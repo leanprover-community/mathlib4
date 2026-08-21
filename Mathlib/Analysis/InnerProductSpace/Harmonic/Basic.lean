@@ -88,8 +88,10 @@ variable (f) in
 /--
 Harmonicity is an open property.
 -/
-theorem isOpen_setOf_harmonicAt : IsOpen { x : E | HarmonicAt f x } :=
+theorem isOpen_setOfPred_harmonicAt : IsOpen { x : E | HarmonicAt f x } :=
   isOpen_iff_mem_nhds.2 (fun _ hx ↦ hx.eventually)
+
+@[deprecated (since := "2026-07-09")] alias isOpen_setOf_harmonicAt := isOpen_setOfPred_harmonicAt
 
 /--
 If `f` is harmonic in a neighborhood of `s`, it is harmonic in a neighborhood of every subset.

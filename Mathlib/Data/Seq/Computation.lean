@@ -446,7 +446,7 @@ theorem Results.val_unique {s : Computation α} {a b m n} (h1 : Results s a m) (
   mem_unique h1.mem h2.mem
 
 theorem Results.len_unique {s : Computation α} {a b m n} (h1 : Results s a m) (h2 : Results s b n) :
-    m = n := by haveI := h1.terminates; haveI := h2.terminates; rw [← h1.length, h2.length]
+    m = n := by have := h1.terminates; have := h2.terminates; rw [← h1.length, h2.length]
 
 theorem exists_results_of_mem {s : Computation α} {a} (h : a ∈ s) : ∃ n, Results s a n :=
   haveI := terminates_of_mem h
@@ -482,7 +482,7 @@ theorem results_think {s : Computation α} {a n} (h : Results s a n) : Results (
 
 theorem of_results_think {s : Computation α} {a n} (h : Results (think s) a n) :
     ∃ m, Results s a m ∧ n = m + 1 := by
-  haveI := of_think_terminates h.terminates
+  have := of_think_terminates h.terminates
   have := results_of_terminates' _ (of_think_mem h.mem)
   exact ⟨_, this, Results.len_unique h (results_think this)⟩
 

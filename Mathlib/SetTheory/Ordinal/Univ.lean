@@ -15,7 +15,7 @@ order type of the ordinals. These are related via `Cardinal.univ.ord = Ordinal.u
 `Ordinal.univ.card = Cardinal.univ`.
 
 The cardinal `Cardinal.univ` is strongly inaccessible. This reflects the fact that in ZFC, the
-cardinals form a proper class. See `IsInaccessible.univ` for a proof.
+cardinals form a proper class. See `Cardinal.IsInaccessible.univ` for a proof.
 
 ## Implementation notes
 
@@ -132,7 +132,8 @@ theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
   congr_fun lift_umax _
 
 theorem lift_lt_univ (c : Cardinal) : lift.{u + 1, u} c < univ.{u, u + 1} := by
-  simpa only [Ordinal.liftPrincipalSeg_coe, lift_ord, lift_succ, ord_le, Order.succ_le_iff] using!
+  simpa only [Ordinal.liftPrincipalSeg_coe, lift_ord, Cardinal.lift_succ, ord_le,
+    Order.succ_le_iff] using!
     le_of_lt (Ordinal.liftPrincipalSeg.{u, u + 1}.lt_top (Order.succ c).ord)
 
 theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} := by
