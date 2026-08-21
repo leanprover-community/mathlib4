@@ -413,7 +413,6 @@ include R in
 lemma cfc_predicate_one : p 1 :=
   map_one (algebraMap R A) ▸ cfc_predicate_algebraMap (1 : R)
 
-@[congr]
 lemma cfc_congr {f g : R → R} {a : A} (hfg : (spectrum R a).EqOn f g) :
     cfc f a = cfc g a := by
   by_cases h : p a ∧ ContinuousOn g (spectrum R a)
@@ -424,6 +423,14 @@ lemma cfc_congr {f g : R → R} {a : A} (hfg : (spectrum R a).EqOn f g) :
     · simp [cfc_apply_of_not_predicate a ha]
     · rw [cfc_apply_of_not_continuousOn a hg, cfc_apply_of_not_continuousOn]
       exact fun hf ↦ hg (hf.congr hfg.symm)
+
+/-- A version of `cfc_congr` whose hypothesis is a bounded universal quantifier instead of
+`Set.EqOn`. This is the version tagged `@[congr]`, so that `congr! with x hx` introduces the
+pointwise goal directly. -/
+@[congr]
+lemma cfc_congr' {f g : R → R} {a : A} (hfg : ∀ x ∈ spectrum R a, f x = g x) :
+    cfc f a = cfc g a :=
+  cfc_congr hfg
 
 lemma eqOn_of_cfc_eq_cfc {f g : R → R} {a : A} (h : cfc f a = cfc g a)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
@@ -449,7 +456,8 @@ set_option backward.privateInPublic true in
 include ha in
 lemma cfc_const_one : cfc (fun _ : R ↦ 1) a = 1 := cfc_one R a
 
-@[simp]
+-- not `@[simp]`: `simp` normalizes `cfc 0 a` to `cfc (fun _ ↦ 0) a` via `cfc_congr'`,
+-- which `cfc_const_zero` handles
 lemma cfc_zero : cfc (0 : R → R) a = 0 := by
   by_cases ha : p a
   · exact cfc_apply (0 : R → R) a ▸ map_zero (cfcHom ha)
@@ -653,7 +661,7 @@ end Comp
 
 lemma CFC.eq_algebraMap_of_spectrum_subset_singleton (r : R) (h_spec : spectrum R a ⊆ {r})
     (ha : p a := by cfc_tac) : a = algebraMap R A r := by
-  simpa [cfc_id R a, cfc_const r a] using
+  simpa [cfc_id' R a, cfc_const r a] using
     cfc_congr (f := id) (g := fun _ : R ↦ r) (a := a) fun x hx ↦ by simpa using h_spec hx
 
 lemma CFC.eq_zero_of_spectrum_subset_zero (h_spec : spectrum R a ⊆ {0}) (ha : p a := by cfc_tac) :
@@ -713,8 +721,8 @@ instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) whe
     rw [Commute, SemiconjBy]
     by_cases h : ContinuousOn f (spectrum R a)
     · rw [← cfc_star, ← cfc_mul .., ← cfc_mul ..]
-      congr! 2
-      grind [Set.EqOn]
+      congr! 1 with x hx
+      exact mul_comm ..
     · simp [cfc_apply_of_not_continuousOn a h]
 
 -- The following two lemmas are just `cfc_predicate`, but specific enough for the `@[simp]` tag.
@@ -786,7 +794,6 @@ lemma cfc_inv_id (a : Aˣ) (ha : p a := by cfc_tac) :
     cfc (fun x ↦ x⁻¹ : R → R) (a : A) = a⁻¹ := by
   rw [← Ring.inverse_unit]
   convert! cfc_inv (id : R → R) (a : A) ?_
-  · exact fun _ _ ↦ rfl
   · exact (cfc_id R (a : A)).symm
   · rintro x hx rfl
     exact spectrum.zero_notMem R a.isUnit hx
@@ -943,7 +950,7 @@ lemma cfc_nonneg_iff [NonnegSpectrumClass R A] (f : R → R) (a : A)
 lemma StarOrderedRing.nonneg_iff_spectrum_nonneg [NonnegSpectrumClass R A] (a : A)
     (ha : p a := by cfc_tac) : 0 ≤ a ↔ ∀ x ∈ spectrum R a, 0 ≤ x := by
   have := cfc_nonneg_iff (id : R → R) a (by fun_prop) ha
-  simpa [cfc_id _ a ha] using this
+  simpa [cfc_id' _ a ha] using this
 
 lemma cfc_isStrictlyPositive_iff [NonnegSpectrumClass R A] (f : R → R) (a : A)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
@@ -954,7 +961,7 @@ lemma cfc_isStrictlyPositive_iff [NonnegSpectrumClass R A] (f : R → R) (a : A)
 lemma StarOrderedRing.isStrictlyPositive_iff_spectrum_pos [NonnegSpectrumClass R A] (a : A)
     (ha : p a := by cfc_tac) : IsStrictlyPositive a ↔ ∀ x ∈ spectrum R a, 0 < x := by
   have := cfc_isStrictlyPositive_iff (id : R → R) a (by fun_prop) ha
-  simpa [cfc_id _ a ha] using this
+  simpa [cfc_id' _ a ha] using this
 
 lemma cfc_nonneg {f : R → R} {a : A} (h : ∀ x ∈ spectrum R a, 0 ≤ f x) :
     0 ≤ cfc f a := by
