@@ -42,7 +42,7 @@ assert_not_exists Module.Basis
 
 noncomputable section
 
-open Set Function Filter
+open Set Function
 open scoped NNReal Topology ENNReal
 
 namespace MeasureTheory

@@ -54,7 +54,7 @@ universe u v w z
 
 open scoped Matrix
 
-open Matrix Module Fintype Polynomial Finset IntermediateField
+open Matrix Module Fintype Polynomial Finset
 
 namespace Algebra
 

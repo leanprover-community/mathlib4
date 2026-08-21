@@ -29,9 +29,6 @@ locally convex, bounded convergence
 
 public section
 
-
-open Topology UniformConvergence
-
 variable {R 𝕜₁ 𝕜₂ E F : Type*}
 
 variable [AddCommGroup E] [TopologicalSpace E] [AddCommGroup F] [TopologicalSpace F]

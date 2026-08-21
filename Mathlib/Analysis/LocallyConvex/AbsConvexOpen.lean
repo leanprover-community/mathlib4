@@ -35,7 +35,7 @@ convex open neighborhoods of zero.
 
 open NormedField Set
 
-open NNReal Pointwise Topology
+open Topology
 
 variable {𝕜 E : Type*}
 

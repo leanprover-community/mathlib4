@@ -227,14 +227,14 @@ theorem updateCol_ne [DecidableEq n] {j' : n} (j_ne : j' ≠ j) :
 theorem updateRow_apply [DecidableEq m] {i' : m} :
     updateRow M i b i' j = if i' = i then b j else M i' j := by
   by_cases h : i' = i
-  · rw [h, updateRow_self, if_pos rfl]
-  · rw [updateRow_ne h, if_neg h]
+  · rw [h, updateRow_self, ite_eq_left rfl]
+  · rw [updateRow_ne h, ite_eq_right h]
 
 theorem updateCol_apply [DecidableEq n] {j' : n} :
     updateCol M j c i j' = if j' = j then c i else M i j' := by
   by_cases h : j' = j
-  · rw [h, updateCol_self, if_pos rfl]
-  · rw [updateCol_ne h, if_neg h]
+  · rw [h, updateCol_self, ite_eq_left rfl]
+  · rw [updateCol_ne h, ite_eq_right h]
 
 @[simp]
 theorem updateCol_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : m → R) :

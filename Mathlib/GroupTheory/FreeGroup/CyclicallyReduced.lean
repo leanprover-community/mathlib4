@@ -11,6 +11,8 @@ public import Mathlib.GroupTheory.FreeGroup.Reduce
 public import Mathlib.Tactic.Group
 
 /-!
+# Cyclically reduced words in free groups
+
 This file defines some extra lemmas for free groups, in particular about cyclically reduced words.
 We show that free groups are (strongly) torsion-free in the sense of `IsMulTorsionFree`, i.e.,
 taking powers by every non-zero element `n : ℕ` is injective.

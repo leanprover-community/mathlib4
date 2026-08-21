@@ -76,7 +76,6 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
       by_contra
       exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; lia)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' : SimplexCategory}
     (i : Δ ⟶ Δ') [Mono i] :
@@ -172,7 +171,6 @@ def natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ Γ₂ ⟶ 𝟭 _ 
   ((Functor.whiskeringLeft _ _ _).obj (toKaroubi (SimplicialObject C))).preimage
     (Γ₂N₂ToKaroubiIso.hom ≫ Γ₂N₁.natTrans)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
     Γ₂N₂.natTrans.app P =
       (N₂ ⋙ Γ₂).map P.decompId_i ≫
@@ -182,7 +180,6 @@ theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
 
 end Γ₂N₂
 
-set_option backward.isDefEq.respectTransparency false in
 theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
     Γ₂N₁.natTrans.app X =
       (Γ₂N₂ToKaroubiIso.app X).inv ≫
@@ -221,7 +218,7 @@ theorem identity_N₂ :
     (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
     (Functor.associator _ _ _).inv ≫ Γ₂N₂.natTrans ◫ 𝟙 (@N₂ C _ _) = 𝟙 N₂ := by
   ext P : 2
-  dsimp only [NatTrans.comp_app, NatTrans.hcomp_app, Functor.comp_map, Functor.associator,
+  simp only [NatTrans.comp_app, NatTrans.hcomp_app, Functor.comp_map, Functor.associator,
     NatTrans.id_app, Functor.comp_obj]
   rw [Γ₂.map_id, N₂.map_id, comp_id, id_comp, id_comp, identity_N₂_objectwise P]
 

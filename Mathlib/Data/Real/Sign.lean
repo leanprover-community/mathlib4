@@ -34,12 +34,14 @@ otherwise. -/
 noncomputable def sign (r : ℝ) : ℝ :=
   if r < 0 then -1 else if 0 < r then 1 else 0
 
-theorem sign_of_neg {r : ℝ} (hr : r < 0) : sign r = -1 := by rw [sign, if_pos hr]
+theorem sign_of_neg {r : ℝ} (hr : r < 0) : sign r = -1 := by rw [sign, ite_eq_left hr]
 
-theorem sign_of_pos {r : ℝ} (hr : 0 < r) : sign r = 1 := by rw [sign, if_pos hr, if_neg hr.not_gt]
+theorem sign_of_pos {r : ℝ} (hr : 0 < r) : sign r = 1 := by
+  rw [sign, ite_eq_left hr, ite_eq_right hr.not_gt]
 
 @[simp]
-theorem sign_zero : sign 0 = 0 := by rw [sign, if_neg (lt_irrefl _), if_neg (lt_irrefl _)]
+theorem sign_zero : sign 0 = 0 := by
+  rw [sign, ite_eq_right (lt_irrefl _), ite_eq_right (lt_irrefl _)]
 
 @[simp]
 theorem sign_one : sign 1 = 1 :=

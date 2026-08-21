@@ -16,13 +16,13 @@ This file defines basic scalar actions on extended nonnegative reals, showing th
 `MulAction`s, `DistribMulAction`s, `Module`s and `Algebra`s restrict from `ℝ≥0∞` to `ℝ≥0`.
 -/
 
-@[expose] public section
+public section
 
-open Set NNReal ENNReal
+open NNReal ENNReal
 
 namespace ENNReal
 
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
+variable {a b c : ℝ≥0∞} {r : ℝ≥0}
 
 -- TODO: generalize some of these to `WithTop α`
 section Actions

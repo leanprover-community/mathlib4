@@ -1110,7 +1110,7 @@ end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup
 variable [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β] [PosSMulMono α β]
-  {a : α} {b b₁ b₂ : β}
+  {a : α} {b₁ b₂ : β}
 
 lemma smul_max_of_nonpos (ha : a ≤ 0) (b₁ b₂ : β) : a • max b₁ b₂ = min (a • b₁) (a • b₂) :=
   (antitone_smul_left ha : Antitone (_ : β → β)).map_max

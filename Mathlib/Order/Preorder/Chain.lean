@@ -58,7 +58,7 @@ def SuperChain (s t : Set α) : Prop :=
 def IsMaxChain (s : Set α) : Prop :=
   IsChain r s ∧ ∀ ⦃t⦄, IsChain r t → s ⊆ t → s = t
 
-variable {r} {c c₁ c₂ s t : Set α} {a b x y : α}
+variable {r} {c s t : Set α} {a b x y : α}
 
 @[simp] lemma IsChain.empty : IsChain r ∅ := pairwise_empty _
 @[simp] lemma IsChain.singleton : IsChain r {a} := pairwise_singleton ..
@@ -263,6 +263,12 @@ theorem IsMaxChain.isChain (h : IsMaxChain r s) : IsChain r s :=
 theorem IsMaxChain.not_superChain (h : IsMaxChain r s) : ¬SuperChain r s t := fun ht =>
   ht.2.ne <| h.2 ht.1 ht.2.1
 
+theorem maximal_isChain_iff : Maximal (IsChain r) s ↔ IsMaxChain r s where
+  mp h := ⟨h.prop, fun _ ht hst ↦ hst.antisymm <| h.le_of_ge ht hst⟩
+  mpr h := ⟨h.isChain, fun _ ht hst ↦ h.right ht hst |>.ge⟩
+
+alias ⟨_, IsMaxChain.maximal_isChain⟩ := maximal_isChain_iff
+
 theorem IsMaxChain.bot_mem [LE α] [OrderBot α] (h : IsMaxChain (· ≤ ·) s) : ⊥ ∈ s :=
   (h.2 (h.1.insert fun _ _ _ => Or.inl bot_le) <| subset_insert _ _).symm ▸ mem_insert _ _
 
@@ -300,13 +306,13 @@ noncomputable def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
 theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
     SuperChain r s (SuccChain r s) := by
   have : IsChain r s ∧ SuperChain r s h.choose := h.choose_spec
-  simpa [SuccChain, dif_pos, exists_and_left.mp h] using this.2
+  simpa [SuccChain, dite_eq_left, exists_and_left.mp h] using this.2
 
 theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) := by
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).1
   else
     rw [exists_and_left] at h
-    simpa [SuccChain, dif_neg, h] using hs
+    simpa [SuccChain, dite_eq_right, h] using hs
 
 theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain r s) :
     SuperChain r s (SuccChain r s) := by

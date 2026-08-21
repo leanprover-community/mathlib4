@@ -35,7 +35,7 @@ we have only proved it for the discrete case so far).
 @[expose] public section
 
 
-open Filter Order TopologicalSpace
+open TopologicalSpace
 
 open scoped MeasureTheory NNReal ENNReal Topology
 
@@ -97,7 +97,7 @@ lemma hittingAfter_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι �
   ext ω
   classical
   simp only [hittingAfter_def, Set.mem_univ, and_true]
-  rw [if_pos ⟨n, le_rfl⟩]
+  rw [ite_eq_left ⟨n, le_rfl⟩]
   exact_mod_cast csInf_Ici
 
 end Basic
@@ -123,13 +123,13 @@ theorem notMem_of_lt_hittingBtwn {m k : ι} (hk₁ : k < hittingBtwn u s n m ω)
   intro h
   have hexists : ∃ j ∈ Set.Icc n m, u j ω ∈ s := ⟨k, ⟨hk₂, le_trans hk₁.le <| hittingBtwn_le _⟩, h⟩
   refine not_le.2 hk₁ ?_
-  simp_rw [hittingBtwn, if_pos hexists]
+  simp_rw [hittingBtwn, ite_eq_left hexists]
   exact csInf_le bddBelow_Icc.inter_of_left ⟨⟨hk₂, le_trans hk₁.le <| hittingBtwn_le _⟩, h⟩
 
 theorem notMem_of_lt_hittingAfter {k : ι} (hk₁ : k < hittingAfter u s n ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
   refine fun h ↦ not_le.2 hk₁ ?_
-  rw [hittingAfter, if_pos ⟨k, hk₂, h⟩]
+  rw [hittingAfter, ite_eq_left ⟨k, hk₂, h⟩]
   exact_mod_cast csInf_le bddBelow_Ici.inter_of_left ⟨hk₂, h⟩
 
 theorem hittingBtwn_eq_end_iff {m : ι} : hittingBtwn u s n m ω = m ↔
@@ -178,7 +178,7 @@ theorem hittingBtwn_mem_Icc {m : ι} (hnm : n ≤ m) (ω : Ω) : hittingBtwn u s
 
 theorem hittingBtwn_mem_set [WellFoundedLT ι] {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
     u (hittingBtwn u s n m ω) ω ∈ s := by
-  simp_rw [hittingBtwn, if_pos h_exists]
+  simp_rw [hittingBtwn, ite_eq_left h_exists]
   have h_nonempty : (Set.Icc n m ∩ {i : ι | u i ω ∈ s}).Nonempty := by
     obtain ⟨k, hk₁, hk₂⟩ := h_exists
     exact ⟨k, Set.mem_inter hk₁ hk₂⟩
@@ -188,7 +188,7 @@ theorem hittingBtwn_mem_set [WellFoundedLT ι] {m : ι} (h_exists : ∃ j ∈ Se
 
 lemma hittingAfter_mem_set [WellFoundedLT ι] (h_exists : ∃ j, n ≤ j ∧ u j ω ∈ s) :
     u (hittingAfter u s n ω).untopA ω ∈ s := by
-  rw [hittingAfter, if_pos h_exists]
+  rw [hittingAfter, ite_eq_left h_exists]
   have h_nonempty : {i : ι | n ≤ i ∧ u i ω ∈ s}.Nonempty := by
     obtain ⟨k, hk₁, hk₂⟩ := h_exists
     exact ⟨k, Set.mem_inter hk₁ hk₂⟩
@@ -199,7 +199,7 @@ theorem hittingBtwn_mem_set_of_hittingBtwn_lt [WellFoundedLT ι] {m : ι}
     u (hittingBtwn u s n m ω) ω ∈ s := by
   by_cases h : ∃ j ∈ Set.Icc n m, u j ω ∈ s
   · exact hittingBtwn_mem_set h
-  · simp_rw [hittingBtwn, if_neg h] at hl
+  · simp_rw [hittingBtwn, ite_eq_right h] at hl
     exact False.elim (hl.ne rfl)
 
 lemma hittingAfter_mem_set_of_ne_top [WellFoundedLT ι] (hl : hittingAfter u s n ω ≠ ⊤) :
@@ -211,13 +211,13 @@ lemma hittingAfter_mem_set_of_ne_top [WellFoundedLT ι] (hl : hittingAfter u s n
 theorem hittingBtwn_le_of_mem {m : ι} (hin : n ≤ i) (him : i ≤ m) (his : u i ω ∈ s) :
     hittingBtwn u s n m ω ≤ i := by
   have h_exists : ∃ k ∈ Set.Icc n m, u k ω ∈ s := ⟨i, ⟨hin, him⟩, his⟩
-  simp_rw [hittingBtwn, if_pos h_exists]
+  simp_rw [hittingBtwn, ite_eq_left h_exists]
   exact csInf_le (BddBelow.inter_of_left bddBelow_Icc) (Set.mem_inter ⟨hin, him⟩ his)
 
 lemma hittingAfter_le_of_mem (hin : n ≤ i) (his : u i ω ∈ s) :
     hittingAfter u s n ω ≤ i := by
   have h_exists : ∃ k, n ≤ k ∧ u k ω ∈ s := ⟨i, hin, his⟩
-  rw [hittingAfter, if_pos h_exists]
+  rw [hittingAfter, ite_eq_left h_exists]
   exact_mod_cast csInf_le (BddBelow.inter_of_left bddBelow_Ici) (Set.mem_inter hin his)
 
 theorem hittingBtwn_le_iff_of_exists [WellFoundedLT ι] {m : ι}
@@ -251,7 +251,7 @@ theorem hittingBtwn_le_iff_of_lt [WellFoundedLT ι] {m : ι} (i : ι) (hi : i < 
     hittingBtwn u s n m ω ≤ i ↔ ∃ j ∈ Set.Icc n i, u j ω ∈ s := by
   by_cases h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s
   · rw [hittingBtwn_le_iff_of_exists h_exists]
-  · simp_rw [hittingBtwn, if_neg h_exists]
+  · simp_rw [hittingBtwn, ite_eq_right h_exists]
     push Not at h_exists
     simp only [not_le.mpr hi, Set.mem_Icc, false_iff, not_exists, not_and, and_imp]
     exact fun k hkn hki => h_exists k ⟨hkn, hki.trans hi.le⟩
@@ -261,11 +261,11 @@ theorem hittingBtwn_lt_iff {m : ι} (i : ι) (hi : i ≤ m) :
   constructor <;> intro h'
   · have h : ∃ j ∈ Set.Icc n m, u j ω ∈ s := by
       by_contra h
-      simp_rw [hittingBtwn, if_neg h, ← not_le] at h'
+      simp_rw [hittingBtwn, ite_eq_right h, ← not_le] at h'
       exact h' hi
     have hni : n < i := (le_hittingBtwn_of_exists h).trans_lt h'
     have h_le := le_hittingBtwn (u := u) (s := s) (hni.le.trans hi) ω
-    rw [hittingBtwn, if_pos h, csInf_lt_iff] at h'
+    rw [hittingBtwn, ite_eq_left h, csInf_lt_iff] at h'
     rotate_left
     · exact ⟨n, by simp [mem_lowerBounds]; grind⟩
     · exact h
@@ -285,7 +285,7 @@ lemma hittingAfter_lt_iff :
       push Not at h_top
       exact h_top
     have h_le := le_hittingAfter (u := u) (s := s) (n := n) ω
-    rw [hittingAfter, if_pos h_exists] at h'
+    rw [hittingAfter, ite_eq_left h_exists] at h'
     norm_cast at h'
     rw [csInf_lt_iff] at h'
     rotate_left
@@ -300,9 +300,9 @@ lemma hittingAfter_lt_iff :
 
 theorem hittingBtwn_eq_hittingBtwn_of_exists {m₁ m₂ : ι} (h : m₁ ≤ m₂)
     (h' : ∃ j ∈ Set.Icc n m₁, u j ω ∈ s) : hittingBtwn u s n m₁ ω = hittingBtwn u s n m₂ ω := by
-  simp only [hittingBtwn, if_pos h']
+  simp only [hittingBtwn, ite_eq_left h']
   obtain ⟨j, hj₁, hj₂⟩ := h'
-  rw [if_pos]
+  rw [ite_eq_left]
   · refine le_antisymm ?_ (by gcongr; exacts [bddBelow_Icc.inter_of_left, ⟨j, hj₁, hj₂⟩])
     refine le_csInf ⟨j, Set.Icc_subset_Icc_right h hj₁, hj₂⟩ fun i hi => ?_
     by_cases hi' : i ≤ m₁
@@ -349,7 +349,7 @@ theorem hittingBtwn_mono_right (u : ι → Ω → β) (s : Set β) (n : ι) :
   intro m₁ m₂ hm
   by_cases h : ∃ j ∈ Set.Icc n m₁, u j ω ∈ s
   · exact (hittingBtwn_eq_hittingBtwn_of_exists hm h).le
-  · simp_rw [hittingBtwn, if_neg h]
+  · simp_rw [hittingBtwn, ite_eq_right h]
     split_ifs with h'
     · obtain ⟨j, hj₁, hj₂⟩ := h'
       refine le_csInf ⟨j, hj₁, hj₂⟩ ?_
@@ -409,9 +409,6 @@ theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι]
     simpa [h_set_eq_Union] using MeasurableSet.iUnion fun j =>
       MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
-@[deprecated (since := "2026-01-25")]
-alias hittingBtwn_isStoppingTime := Adapted.isStoppingTime_hittingBtwn
-
 theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι]
     [WellFoundedLT ι] [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β}
     {s : Set β} {n : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
@@ -422,13 +419,10 @@ theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι
   simpa [h_set_eq_Union] using MeasurableSet.iUnion fun j =>
     MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
-@[deprecated (since := "2026-01-25")]
-alias hittingAfter_isStoppingTime := Adapted.isStoppingTime_hittingAfter
-
 theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     {u : ι → Ω → β} {s : Set β} {n m : ι} {ω : Ω} (h : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
     stoppedValue u (fun ω ↦ (hittingBtwn u s n m ω : ι)) ω ∈ s := by
-  simp only [stoppedValue, hittingBtwn, if_pos h]
+  simp only [stoppedValue, hittingBtwn, ite_eq_left h]
   obtain ⟨j, hj₁, hj₂⟩ := h
   have : sInf (Set.Icc n m ∩ {i | u i ω ∈ s}) ∈ Set.Icc n m ∩ {i | u i ω ∈ s} :=
     csInf_mem (Set.nonempty_of_mem ⟨hj₁, hj₂⟩)
@@ -467,9 +461,6 @@ theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyComplete
   refine MeasurableSet.iUnion fun i => MeasurableSet.iUnion fun hi =>
     (f.mono hi _ (hτ.measurableSet_eq i)).inter ?_
   simpa using hf.isStoppingTime_hittingBtwn hs n
-
-@[deprecated (since := "2026-01-25")]
-alias isStoppingTime_hittingBtwn_isStoppingTime := Adapted.isStoppingTime_hittingBtwn_isStoppingTime
 
 section CompleteLattice
 

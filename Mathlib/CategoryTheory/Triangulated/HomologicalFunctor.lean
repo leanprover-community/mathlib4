@@ -189,8 +189,8 @@ lemma homologySequenceδ_naturality
 variable (T)
 variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
   [Pretriangulated C] [Abelian A] [F.IsHomological]
-variable [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
-  (hT' : T' ∈ distTriang C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+variable [F.ShiftSequence ℤ] (T : Triangle C) (hT : T ∈ distTriang C)
+  (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
 section
 include hT
@@ -231,7 +231,6 @@ lemma homologySequence_exact₃ :
     ((F.shiftIso 1 n₀ n₁ (by lia)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma homologySequence_exact₁ :
     (ShortComplex.mk _ _ (F.homologySequenceδ_comp T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (inv_rot_of_distTriang _ hT) n₁)

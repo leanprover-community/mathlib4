@@ -85,7 +85,7 @@ attribute [arith_mult] BoundingSieve.nu_mult
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: `BoundingSieve.weights`. -/
 @[positivity BoundingSieve.weights _ _]

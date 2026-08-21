@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 import Mathlib.Probability.Notation
+public import Mathlib.Probability.Notation
 
 /-! # Conditional Lebesgue expectation
 
@@ -94,10 +95,10 @@ meta def condLExpUnexpander : Lean.PrettyPrinter.Unexpander
 #check P⁻[X|mΩ] (sorry : Ω)
 
 theorem condLExp_of_not_le (hm_not : ¬mΩ ≤ mΩ₀) : P⁻[X|mΩ] = 0 := by
-  rw [condLExp, dif_neg hm_not]
+  rw [condLExp, dite_eq_right hm_not]
 
 theorem condLExp_of_not_sigmaFinite (hm : mΩ ≤ mΩ₀) (hμm_not : ¬SigmaFinite (P.trim hm)) :
-    P⁻[X|mΩ] = 0 := by simp [condLExp, dif_pos hm, hμm_not]
+    P⁻[X|mΩ] = 0 := by simp [condLExp, dite_eq_left hm, hμm_not]
 
 theorem condLExp_eq_self (hm : mΩ ≤ mΩ₀) (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
     (hX : Measurable[mΩ] X) : P⁻[X|mΩ] = X := by

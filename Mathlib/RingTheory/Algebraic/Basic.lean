@@ -134,6 +134,10 @@ variable [IsScalarTower R S A]
 theorem isAlgebraic_zero [Nontrivial R] : IsAlgebraic R (0 : A) :=
   ⟨_, X_ne_zero, aeval_X 0⟩
 
+@[grind →]
+theorem Transcendental.ne_zero [Nontrivial R] {x : A} (ht : Transcendental R x) : x ≠ 0 :=
+  fun h ↦ ht (h ▸ isAlgebraic_zero)
+
 /-- An element of `R` is algebraic, when viewed as an element of the `R`-algebra `A`. -/
 theorem isAlgebraic_algebraMap [Nontrivial R] (x : R) : IsAlgebraic R (algebraMap R A x) :=
   ⟨_, X_sub_C_ne_zero x, by rw [map_sub, aeval_X, aeval_C, sub_self]⟩
@@ -691,7 +695,7 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : IsAlgebraic K (x : L)) :
     contradiction
   · intro p a hp ha _ih _ne_zero aeval_eq
     refine A.inv_mem_of_root_of_coeff_zero_ne_zero aeval_eq ?_
-    rwa [coeff_add, hp, zero_add, coeff_C, if_pos rfl]
+    rwa [coeff_add, hp, zero_add, coeff_C, ite_eq_left rfl]
   · intro p hp ih _ne_zero aeval_eq
     rw [map_mul, aeval_X, mul_eq_zero] at aeval_eq
     rcases aeval_eq with aeval_eq | x_eq

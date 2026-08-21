@@ -58,9 +58,6 @@ class FormallyUnramified (f : X ⟶ Y) : Prop where
 
 alias Scheme.Hom.formallyUnramified_appLE := FormallyUnramified.formallyUnramified_appLE
 
-@[deprecated (since := "2026-01-20")]
-alias FormallyUnramified.formallyUnramified_of_affine_subset := Scheme.Hom.formallyUnramified_appLE
-
 namespace FormallyUnramified
 
 instance : HasRingHomProperty @FormallyUnramified RingHom.FormallyUnramified where

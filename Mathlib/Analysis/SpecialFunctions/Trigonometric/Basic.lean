@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Field.NegOnePow
 public import Mathlib.Algebra.Field.Periodic
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Analysis.SpecialFunctions.Exp
 
@@ -83,8 +84,6 @@ theorem continuous_cosh : Continuous cosh := by
 end Complex
 
 namespace Real
-
-variable {x y z : ℝ}
 
 @[continuity, fun_prop]
 theorem continuous_sin : Continuous sin :=

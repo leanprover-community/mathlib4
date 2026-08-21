@@ -98,8 +98,8 @@ end
 
 namespace Primcodable
 
-variable {α : Type*} {β : Type*}
-variable [Primcodable α] [Primcodable β]
+variable {α : Type*}
+variable [Primcodable α]
 
 open Primrec
 
@@ -136,8 +136,8 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
+variable {α : Type*} {β : Type*} {σ : Type*}
+variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 theorem list_cons : Primrec₂ (@List.cons α) :=
   list_cons' (Primcodable.prim _)
@@ -267,7 +267,7 @@ theorem list_findIdx {f : α → List β} {p : α → β → Bool}
     (hf : Primrec f) (hp : Primrec₂ p) : Primrec fun a => (f a).findIdx (p a) :=
   (list_foldr hf (const 0) <|
         to₂ <| cond (hp.comp fst <| fst.comp snd) (const 0) (succ.comp <| snd.comp snd)).of_eq
-    fun a => by dsimp; induction f a <;> simp [List.findIdx_cons, *]
+    fun a => by dsimp; induction f a <;> simp_all [List.findIdx_cons, Bool.cond_eq_ite]
 
 theorem list_idxOf [DecidableEq α] : Primrec₂ (@List.idxOf α _) :=
   to₂ <| list_findIdx snd <| Primrec.beq.comp₂ snd.to₂ (fst.comp fst).to₂
@@ -299,7 +299,7 @@ theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α 
         (snd.comp <| snd.comp snd)).of_eq
   fun a ps => by
   induction ps with simp [List.lookup, *]
-  | cons p ps ih => cases ha : a == p.1 <;> simp
+  | cons p ps ih => cases ha : a == p.1 <;> simp_all [Bool.cond_eq_ite, beq_iff_eq]
 
 set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g : β → List σ → Option σ}
@@ -428,9 +428,9 @@ namespace PrimrecPred
 
 open List Primrec
 
-variable {α β : Type*} {p : α → Prop} {L : List α} {b : β}
+variable {α : Type*} {p : α → Prop} {L : List α}
 
-variable [Primcodable α] [Primcodable β]
+variable [Primcodable α]
 
 /-- Checking if any element of a list satisfies a decidable predicate is primitive recursive. -/
 theorem exists_mem_list : (hf : PrimrecPred p) → PrimrecPred fun L : List α ↦ ∃ a ∈ L, p a
@@ -635,7 +635,6 @@ theorem const {n} : ∀ m, @Primrec' n fun _ => m
 theorem head {n : ℕ} : @Primrec' n.succ head :=
   (get 0).of_eq fun v => by simp [get_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tail {n f} (hf : @Primrec' n f) : @Primrec' n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @get _ i.succ).of_eq fun v => by
     rw [← ofFn_get v.tail]; congr; funext i; simp

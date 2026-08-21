@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.FastInstance
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Subgroups
@@ -598,8 +599,6 @@ lemma inclusion_inj {H K : Subgroup G} (h : H ≤ K) {x y : H} :
 theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
     K.subtype.comp (inclusion hH) = H.subtype :=
   rfl
-
-open Set
 
 /-- A subgroup `H` is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
 structure Normal : Prop where

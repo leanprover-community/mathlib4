@@ -24,7 +24,6 @@ variable {α β γ : Type*}
 
 namespace Set
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Sets on sum types are order-equivalent to pairs of sets on each summand. -/
 @[simps apply]
 def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
@@ -155,6 +154,26 @@ theorem orderIsoOfSurjective_self_symm_apply (b : β) :
 
 end StrictMono
 
+/-- Two order embeddings with the same range are equal if their domain has no nontrivial order
+automorphisms. -/
+lemma OrderEmbedding.eq_of_range_eq [Preorder α] [Preorder β] [Subsingleton (α ≃o α)]
+    {f g : α ↪o β} (h : Set.range f = Set.range g) : f = g := by
+  let e : α ≃o α := f.orderIso.trans ((OrderIso.setCongr _ _ h).trans g.orderIso.symm)
+  have he : e = OrderIso.refl α := Subsingleton.elim _ _
+  ext x
+  have : g (e x) = f x := congrArg Subtype.val <|
+    g.orderIso.apply_symm_apply (OrderIso.setCongr _ _ h (f.orderIso x))
+  simp_all
+
+/-- Two strictly monotone functions are equal provided that their ranges are equal, assuming the
+type of order automorphisms of the domain is a subsingleton. -/
+lemma StrictMono.eq_of_range_eq [LinearOrder α] [Preorder β]
+    [Subsingleton (α ≃o α)] {f g : α → β} (hf : StrictMono f) (hg : StrictMono g)
+    (h : Set.range f = Set.range g) : f = g := by
+  have : Set.range (OrderEmbedding.ofStrictMono f hf) = Set.range f := by simp
+  have : Set.range (OrderEmbedding.ofStrictMono g hg) = Set.range g := by simp
+  grind [OrderEmbedding.eq_of_range_eq]
+
 /-- Two order embeddings on a well-order are equal provided that their ranges are equal. -/
 lemma OrderEmbedding.range_inj [LinearOrder α] [WellFoundedLT α] [Preorder β] {f g : α ↪o β} :
     Set.range f = Set.range g ↔ f = g := by
@@ -215,7 +234,6 @@ protected def Ici [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
   right_inv y := by simp
   map_rel_iff' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between lattices induces an order isomorphism between corresponding
 interval sublattices. -/
 protected def Icc [Lattice α] [Lattice β] (e : α ≃o β) (x y : α) :

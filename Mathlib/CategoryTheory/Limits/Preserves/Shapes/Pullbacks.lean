@@ -52,7 +52,6 @@ abbrev map : PullbackCone (G.map f) (G.map g) :=
   PullbackCone.mk (G.map c.fst) (G.map c.snd)
     (by simpa using G.congr_map c.condition)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The map (as a cone) of a pullback cone is limit iff
 the map (as a pullback cone) is limit. -/
@@ -181,7 +180,6 @@ variable {W X Y : C} {f : W ⟶ X} {g : W ⟶ Y} (c : PushoutCocone f g) (G : C 
 abbrev map : PushoutCocone (G.map f) (G.map g) :=
   PushoutCocone.mk (G.map c.inl) (G.map c.inr) (by simpa using G.congr_map c.condition)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The map (as a cocone) of a pushout cocone is colimit iff
 the map (as a pushout cocone) is limit. -/
@@ -239,7 +237,6 @@ def isColimitOfHasPushoutOfPreservesColimit [i : HasPushout f g] :
       simp only [← G.map_comp, pushout.condition])) :=
   isColimitPushoutCoconeMapOfIsColimit G _ (pushoutIsPushout f g)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F` preserves the pushout of `f, g`, it also preserves the pushout of `g, f`. -/
 lemma preservesPushout_symmetry : PreservesColimit (span g f) G where
   preserves {c} hc := ⟨by
@@ -336,9 +333,7 @@ instance : IsIso (pushoutComparison G f g) := by
   rw [← PreservesPushout.iso_hom]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A pushout cocone in `C` is colimit iff it becomes limit
 after the application of `yoneda.obj X` for all `X : C`. -/
 def PushoutCocone.isColimitYonedaEquiv (c : PushoutCocone f g) :

@@ -317,7 +317,7 @@ section Summable
 
 variable [Semiring R] [TopologicalSpace R]
 
-open WithPiTopology MvPowerSeries.WithPiTopology
+open MvPowerSeries.WithPiTopology
 
 variable {R}
 

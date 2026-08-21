@@ -41,8 +41,8 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
 
 universe u v w x y z u' v' w' y'
 
-variable {R : Type u} {K : Type u'} {M : Type v} {V : Type v'} {M₂ : Type w} {V₂ : Type w'}
-variable {M₃ : Type y} {V₃ : Type y'} {M₄ : Type z} {ι : Type x}
+variable {R : Type u} {M : Type v} {M₂ : Type w}
+variable {M₃ : Type y} {M₄ : Type z} {ι : Type x}
 variable {M₅ M₆ : Type*}
 
 section Prod
@@ -90,7 +90,6 @@ theorem fst_surjective : Function.Surjective (fst R M M₂) := fun x => ⟨(x, 0
 
 theorem snd_surjective : Function.Surjective (snd R M M₂) := fun x => ⟨(0, x), rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The prod of two linear maps is a linear map. -/
 @[simps]
 def prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : M →ₗ[R] M₂ × M₃ where
@@ -478,7 +477,6 @@ theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module 
   rw [this] at h
   simpa [this] using h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a linear map `f : E →ₗ[R] F` and a complement `C` of its kernel, we get a linear
 equivalence between `C` and `range f`. -/
 @[simps!]

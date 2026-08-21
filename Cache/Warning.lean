@@ -130,11 +130,8 @@ def getNonDefaultScopeReason (repoExplicit? detectedRepo? : Option String)
   unless (← scopeIsHead) do
     if let some s ← scopeOverride.get then
       return s!"--scope={s} (explicit per-commit scope)"
-    let scope? ← IO.getEnv "MATHLIB_CACHE_REPO_SCOPE"
-    if let some scope := scope? then
-      let trimmed := scope.trimAscii
-      if !trimmed.isEmpty then
-        return s!"MATHLIB_CACHE_REPO_SCOPE={trimmed} (explicit per-commit scope)"
+    if let some scope ← getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE" then
+      return s!"MATHLIB_CACHE_REPO_SCOPE={scope} (explicit per-commit scope)"
 
   -- Condition 2: --cache-from override
   if let some cliOverride := cliCacheFromOverride? then

@@ -157,7 +157,7 @@ variable (L) (R)
 
 set_option linter.translate.warnInvalid false in
 /-- The functor sending an object `X` in the comma category to `X.left`. -/
-@[to_dual (reorder := L R) (attr := simps, implicit_reducible)
+@[to_dual (reorder := L R) (attr := implicit_reducible, simps)
 /-- The functor sending an object `X` in the comma category to `X.right`. -/]
 def fst : Comma L R ⥤ A where
   obj X := X.left

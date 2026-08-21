@@ -222,13 +222,13 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
   have hd_le : ∀ x y, ↑(d x y) ≤ 2 * dist x y := by
     refine PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => ?_
     by_cases H : ∃ n, (x₁, x₄) ∉ U n
-    · refine (dif_pos H).trans_le ?_
+    · refine (dite_eq_left H).trans_le ?_
       rw [← div_le_iff₀' zero_lt_two, ← mul_one_div (_ ^ _), ← pow_succ]
       simp only [le_max_iff, hle_d, ← not_and_or]
       rintro ⟨h₁₂, h₂₃, h₃₄⟩
       refine Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) ?_)
       exact ⟨x₂, h₁₂, x₃, h₂₃, h₃₄⟩
-    · exact (dif_neg H).trans_le zero_le
+    · exact (dite_eq_right H).trans_le zero_le
   -- Porting note: without the next line, `uniformity_basis_dist_pow` ends up introducing some
   -- `Subtype.val` applications instead of `NNReal.toReal`.
   rw [mem_Ioo, ← NNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hr

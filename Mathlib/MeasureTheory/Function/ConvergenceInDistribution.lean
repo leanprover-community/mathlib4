@@ -295,7 +295,6 @@ lemma TendstoInMeasure.tendstoInDistribution_of_aemeasurable [l.IsCountablyGener
   tendstoInDistribution_of_tendstoInMeasure_sub X Z (tendstoInDistribution_const hZ)
     (by simpa [tendstoInMeasure_iff_norm] using h) hX
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- **Slutsky's theorem**: if `X n` converges in distribution to `Z`, and `Y n` converges in
 probability to a constant `c`, then the pair `(X n, Y n)` converges in distribution to `(Z, c)`. -/
 theorem TendstoInDistribution.prodMk_of_tendstoInMeasure_const

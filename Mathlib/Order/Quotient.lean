@@ -19,7 +19,7 @@ relation is automatically transitive (we don't need to take the transitive closu
 **condensation**.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

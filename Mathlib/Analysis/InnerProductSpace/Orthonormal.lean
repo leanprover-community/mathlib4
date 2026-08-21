@@ -30,7 +30,7 @@ For the existence of orthonormal bases, Hilbert bases, etc., see the file
 
 noncomputable section
 
-open RCLike Real Filter Module Topology ComplexConjugate Finsupp
+open RCLike Real Module ComplexConjugate Finsupp
 
 open LinearMap (BilinForm)
 
@@ -139,7 +139,7 @@ theorem Orthonormal.inner_left_sum {v : ι → E} (hv : Orthonormal 𝕜 v) (l :
     {i : ι} (hi : i ∈ s) : ⟪∑ i ∈ s, l i • v i, v i⟫ = conj (l i) := by
   classical
   simp only [sum_inner, inner_smul_left, orthonormal_iff_ite.mp hv, hi, mul_boole,
-    Finset.sum_ite_eq', if_true]
+    Finset.sum_ite_eq', ite_true]
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
 vectors picks out the coefficient of that vector. -/

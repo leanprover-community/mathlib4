@@ -24,7 +24,7 @@ The proof is based on the Cauchy integral formula for the derivative of an analy
 
 public section
 
-open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory Bornology
+open TopologicalSpace Metric Set Filter Function Bornology
 
 open scoped Topology Filter NNReal Real
 

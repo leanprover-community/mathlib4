@@ -493,14 +493,6 @@ variable {P P'}
 
 universe w'' u'' v''
 
-variable {R'' : Type u''} {S'' : Type v''} {ι'' : Type w''}
-  [CommRing R''] [CommRing S''] [Algebra R'' S''] {P'' : Generators R'' S'' ι''}
-variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
-  [IsScalarTower R R'' S''] [IsScalarTower R S S'']
-variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
-  [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
-variable [IsScalarTower S S' S'']
-
 open Extension
 
 set_option backward.isDefEq.respectTransparency false in

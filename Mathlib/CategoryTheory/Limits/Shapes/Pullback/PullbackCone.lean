@@ -104,14 +104,12 @@ theorem π_app_left (c : PullbackCone f g) : c.π.app WalkingCospan.left = c.fst
 
 theorem π_app_right (c : PullbackCone f g) : c.π.app WalkingCospan.right = c.snd := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem condition_one (t : PullbackCone f g) : t.π.app WalkingCospan.one = t.fst ≫ f := by
   have w := t.π.naturality WalkingCospan.Hom.inl
   dsimp at w; simpa using w
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A pullback cone on `f` and `g` is determined by morphisms `fst : W ⟶ X` and `snd : W ⟶ Y`
 such that `fst ≫ f = snd ≫ g`. -/
@@ -146,7 +144,6 @@ theorem mk_snd {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫
 theorem condition (t : PullbackCone f g) : fst t ≫ f = snd t ≫ g :=
   (t.w inl).trans (t.w inr).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To check whether two morphisms are equalized by the maps of a pullback cone, it suffices to
 check it for `fst t` and `snd t` -/
 theorem equalizer_ext (t : PullbackCone f g) {W : C} {k l : W ⟶ t.pt} (h₀ : k ≫ fst t = l ≫ fst t)
@@ -293,7 +290,6 @@ def PullbackCone.ofCone {F : WalkingCospan ⥤ C} (t : Cone F) :
   pt := t.pt
   π := t.π ≫ (diagramIsoCospan F).hom
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A diagram `WalkingCospan ⥤ C` is isomorphic to some `PullbackCone.mk` after
 composing with `diagramIsoCospan`. -/
@@ -328,14 +324,12 @@ theorem ι_app_left (c : PushoutCocone f g) : c.ι.app WalkingSpan.left = c.inl 
 -- This cannot be `@[simp]` because `c.inr` is reducibly defeq to the LHS.
 theorem ι_app_right (c : PushoutCocone f g) : c.ι.app WalkingSpan.right = c.inr := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem condition_zero (t : PushoutCocone f g) : t.ι.app WalkingSpan.zero = f ≫ t.inl := by
   have w := t.ι.naturality WalkingSpan.Hom.fst
   dsimp at w; simpa using w.symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A pushout cocone on `f` and `g` is determined by morphisms `inl : Y ⟶ W` and `inr : Z ⟶ W` such
 that `f ≫ inl = g ↠ inr`. -/
@@ -370,7 +364,6 @@ theorem mk_inr {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ i
 theorem condition (t : PushoutCocone f g) : f ≫ inl t = g ≫ inr t :=
   (t.w fst).trans (t.w snd).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To check whether a morphism is coequalized by the maps of a pushout cocone, it suffices to check
   it for `inl t` and `inr t` -/
 theorem coequalizer_ext (t : PushoutCocone f g) {W : C} {k l : t.pt ⟶ W}
@@ -386,7 +379,6 @@ def ext {s t : PushoutCocone f g} (i : s.pt ≅ t.pt) (w₁ : s.inl ≫ i.hom = 
     (w₂ : s.inr ≫ i.hom = t.inr := by cat_disch) : s ≅ t :=
   WalkingSpan.ext i w₁ w₂
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between a pushout cocone and the corresponding pushout cocone
 reconstructed using `PushoutCocone.mk`. -/
@@ -394,7 +386,6 @@ reconstructed using `PushoutCocone.mk`. -/
 def eta (t : PushoutCocone f g) : t ≅ mk t.inl t.inr t.condition :=
   PushoutCocone.ext (Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- This is a slightly more convenient method to verify that a pushout cocone is a colimit cocone.
 It only asks for a proof of facts that carry any mathematical content -/
@@ -434,13 +425,11 @@ def IsColimit.desc {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y ⟶
     (w : f ≫ h = g ≫ k) : t.pt ⟶ W :=
   ht.desc (PushoutCocone.mk _ _ w)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma IsColimit.inl_desc {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k) : inl t ≫ IsColimit.desc ht h k w = h :=
   ht.fac _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma IsColimit.inr_desc {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k) : inr t ≫ IsColimit.desc ht h k w = k :=
@@ -453,7 +442,6 @@ def IsColimit.desc' {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y �
     (w : f ≫ h = g ≫ k) : { l : t.pt ⟶ W // inl t ≫ l = h ∧ inr t ≫ l = k } :=
   ⟨IsColimit.desc ht h k w, by simp⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- This is a more convenient formulation to show that a `PushoutCocone` constructed using
 `PushoutCocone.mk` is a colimit cocone.
 -/
@@ -524,7 +512,6 @@ def PushoutCocone.ofCocone {F : WalkingSpan ⥤ C} (t : Cocone F) :
   pt := t.pt
   ι := (diagramIsoSpan F).inv ≫ t.ι
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A diagram `WalkingSpan ⥤ C` is isomorphic to some `PushoutCocone.mk` after composing with
 `diagramIsoSpan`. -/

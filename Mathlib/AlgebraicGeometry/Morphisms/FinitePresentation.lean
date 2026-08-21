@@ -49,10 +49,6 @@ class LocallyOfFinitePresentation (f : X ⟶ Y) : Prop where
 
 alias Scheme.Hom.finitePresentation_appLE := LocallyOfFinitePresentation.finitePresentation_appLE
 
-@[deprecated (since := "2026-01-20")]
-alias LocallyOfFinitePresentation.finitePresentation_of_affine_subset :=
-  Scheme.Hom.finitePresentation_appLE
-
 instance : HasRingHomProperty @LocallyOfFinitePresentation RingHom.FinitePresentation where
   isLocal_ringHomProperty := RingHom.finitePresentation_isLocal
   eq_affineLocally' := by

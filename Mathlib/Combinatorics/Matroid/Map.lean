@@ -205,7 +205,7 @@ lemma comap_indep_iff_of_injOn (hf : InjOn f (f ⁻¹' N.E)) :
       simp_rw [comap_ground_eq, ← image_subset_iff]
       exact (image_mono (insert_subset heX h.2.2)).trans h.1.subset_ground
   suffices N.Indep (insert (f e) (f '' I)) → ∃ x ∈ I, f x = f e
-    by simpa [← not_indep_iff hIE, injOn_insert heI, h.2.1, image_insert_eq]
+    by simpa [← not_indep_iff hIE, injOn_insert heI, h.2.1]
   exact h.1.mem_of_insert_indep (mem_image_of_mem f heX)
 
 @[simp] lemma comap_isBase_iff {B : Set α} :
@@ -407,7 +407,7 @@ lemma IsBasis.map {X : Set α} (hIX : M.IsBasis I X) {f : α → β} (hf) :
   refine (hIX.indep.map f hf).isBasis_of_forall_insert (image_mono hIX.subset) ?_
   rintro _ ⟨⟨e, he, rfl⟩, he'⟩
   have hss := insert_subset (hIX.subset_ground he) hIX.indep.subset_ground
-  rw [← not_indep_iff (by simpa [← image_insert_eq] using image_mono hss)]
+  rw [← not_indep_iff (by simpa using image_mono hss)]
   simp only [map_indep_iff, not_exists, not_and]
   intro J hJ hins
   rw [← image_insert_eq, hf.image_eq_image_iff hss hJ.subset_ground] at hins

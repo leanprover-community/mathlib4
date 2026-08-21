@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Order.Group.Action
-public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 
 /-! # Pointwise instances on `Submodule`s
 
@@ -70,8 +71,6 @@ protected def pointwiseNeg : Neg (Submodule R M) where
       smul_mem' := fun r m hm => Set.mem_neg.2 <| smul_neg r m ▸ p.smul_mem r <| Set.mem_neg.1 hm }
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseNeg
-
-open scoped Pointwise
 
 @[simp]
 theorem coe_set_neg (S : Submodule R M) : ↑(-S) = -(S : Set M) :=
@@ -139,8 +138,6 @@ variable {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M]
 
 end Semiring
 
-open scoped Pointwise
-
 @[simp]
 theorem neg_eq_self [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M) : -p = p :=
   ext fun _ => p.neg_mem_iff
@@ -201,8 +198,6 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseDistribMulAction
 theorem pointwise_smul_def {a : α} {S : Submodule R M} :
     a • S = S.map (DistribSMul.toLinearMap R M a) := rfl
 
-open scoped Pointwise
-
 @[simp, norm_cast]
 theorem coe_pointwise_smul (a : α) (S : Submodule R M) : ↑(a • S) = a • (S : Set M) :=
   rfl
@@ -251,6 +246,15 @@ theorem smul_le_self_of_tower {α : Type*} [Monoid α] [SMul α R] [DistribMulAc
     [SMulCommClass α R M] [IsScalarTower α R M] (a : α) (S : Submodule R M) : a • S ≤ S := by
   rintro y ⟨x, hx, rfl⟩
   exact smul_of_tower_mem _ a hx
+
+theorem smul_eq_self_of_isUnit [SMul α R] [IsScalarTower α R M] {N : Submodule R M}
+    {u : α} (hu : IsUnit u) : u • N = N := by
+  refine le_antisymm (N.smul_le_self_of_tower u) ?_
+  grw [← (u • N).smul_le_self_of_tower hu.unit⁻¹.val, ← mul_smul, IsUnit.val_inv_mul, one_smul]
+
+theorem smul_eq_self {α : Type*} [Group α] [SMul α R] [DistribMulAction α M] [SMulCommClass α R M]
+    [IsScalarTower α R M] {N : Submodule R M} (u : α) : u • N = N :=
+  smul_eq_self_of_isUnit (Group.isUnit u)
 
 end
 
@@ -316,7 +320,7 @@ protected def pointwiseSetSMul : SMul (Set S) (Submodule R M) where
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetSMul
 
-variable (sR : Set R) (s : Set S) (N : Submodule R M)
+variable (s : Set S) (N : Submodule R M)
 
 lemma mem_set_smul_def (x : M) :
     x ∈ s • N ↔

@@ -24,7 +24,7 @@ Most proofs just invoke the corresponding fact about continuous multilinear maps
 noncomputable section
 
 open scoped NNReal
-open Finset Metric
+open Finset
 
 /-!
 ### Type variables
@@ -615,7 +615,7 @@ section Norm
 (and not just a `SeminormedAddCommGroup`). -/
 
 universe u wE wF v
-variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {ι : Type v}
+variable {𝕜 : Type u} {E : Type wE} {F : Type wF} {ι : Type v}
   [Fintype ι]
   [NontriviallyNormedField 𝕜]
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]

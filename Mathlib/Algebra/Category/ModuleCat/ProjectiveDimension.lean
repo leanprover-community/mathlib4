@@ -42,7 +42,7 @@ universe v v' u u'
 
 variable {R : Type u} [Ring R]
 
-open CategoryTheory Abelian Module
+open CategoryTheory Module
 
 namespace ModuleCat
 

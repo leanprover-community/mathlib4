@@ -5,7 +5,6 @@ Authors: Zikang Yu
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Ordinal
 public import Mathlib.SetTheory.Ordinal.FixedPointApproximants
 public import Mathlib.Topology.DerivedSet
 
@@ -56,7 +55,7 @@ Cantor-Bendixson derivative sequence of a closed set.
 
 @[expose] public section
 
-open Filter Set Cardinal OrdinalApprox Function
+open Set Cardinal OrdinalApprox Function
 
 universe u
 

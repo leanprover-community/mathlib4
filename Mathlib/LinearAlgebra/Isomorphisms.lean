@@ -21,9 +21,9 @@ public import Mathlib.LinearAlgebra.Quotient.Card
 
 universe u v
 
-variable {R M M₂ M₃ : Type*}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-variable [Module R M] [Module R M₂] [Module R M₃]
+variable {R M M₂ : Type*}
+variable [Ring R] [AddCommGroup M] [AddCommGroup M₂]
+variable [Module R M] [Module R M₂]
 variable (f : M →ₗ[R] M₂)
 
 /-! The first and second isomorphism theorems for modules. -/
@@ -157,7 +157,6 @@ namespace Submodule
 
 variable (S T : Submodule R M) (h : S ≤ T)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map from the third isomorphism theorem for modules: `(M / S) / (T / S) → M / T`. -/
 def quotientQuotientEquivQuotientAux (h : S ≤ T) : (M ⧸ S) ⧸ T.map S.mkQ →ₗ[R] M ⧸ T :=
   liftQ _ (mapQ S T LinearMap.id h)
@@ -176,7 +175,6 @@ theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
 theorem quotientQuotientEquivQuotientAux_mk_mk (x : M) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Noether's third isomorphism theorem** for modules: `(M / S) / (T / S) ≃ M / T`. -/
 def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ T :=
   { quotientQuotientEquivQuotientAux S T h with

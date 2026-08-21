@@ -202,7 +202,6 @@ noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos
   let f := closure_equiv_closure x (1 : ℤ) (by simp [h.left.ne'])
   exact ((((e.trans e').trans f).trans g').trans g : G ≃+o ℤ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If an element of a linearly ordered mul-archimedean group is the least element greater than 1,
 then the whole group is isomorphic (and order-isomorphic) to the multiplicative integers. -/
 noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_isLeast_one_lt
@@ -267,7 +266,6 @@ lemma LinearOrderedAddCommGroup.isAddCyclic_iff_not_denselyOrdered {A : Type*}
     IsAddCyclic A ↔ ¬ DenselyOrdered A := by
   rw [← discrete_iff_not_denselyOrdered, isAddCyclic_iff_nonempty_equiv_int]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered. -/
@@ -276,7 +274,6 @@ lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
   rw [← OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr]
   exact LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered, exclusively.
@@ -289,7 +286,6 @@ lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
     LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered,
     denselyOrdered_iff_of_orderIsoClass e]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any non-trivial linearly ordered mul-archimedean group is either cyclic, or densely ordered,
 exclusively. -/
 @[to_additive existing]
@@ -308,7 +304,6 @@ lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
   intro ⟨f⟩
   exact ⟨OrderMonoidIso.withZeroUnits.symm.trans f.withZero⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open WithZero in
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered, exclusively -/
@@ -335,7 +330,6 @@ lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
 
 section WellFounded
 
-set_option backward.isDefEq.respectTransparency false in
 lemma LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete
     {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Nontrivial G] {g : G} :
     Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃+o ℤ) := by
@@ -386,7 +380,6 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discr
 alias LinearOrderedAddCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete :=
   LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete
 
-set_option backward.isDefEq.respectTransparency false in
 lemma LinearOrderedCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete
     {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] {g : G} :
     Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
@@ -414,7 +407,6 @@ lemma LinearOrderedCommGroup.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete
 alias LinearOrderedCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete :=
   LinearOrderedCommGroup.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete
 
-set_option backward.isDefEq.respectTransparency false in
 lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete_of_ne_zero
     {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
     Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔ Nonempty (G₀ ≃*o ℤᵐ⁰) := by

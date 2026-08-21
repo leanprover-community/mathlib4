@@ -14,6 +14,7 @@ import Mathlib.Analysis.Convex.Deriv
 import Mathlib.InformationTheory.KullbackLeibler.ChainRule
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.RadonNikodym
+public import Mathlib.Probability.Notation
 
 /-!
 # Data processing inequality for the Kullback-Leibler divergence
@@ -145,7 +146,7 @@ lemma toReal_klDiv_map_of_ac (hμν : μ ≪ ν) (hg : Measurable g) :
 lemma klDiv_map_of_ac (hμν : μ ≪ ν) (hg : Measurable g) (h_int : Integrable (llr μ ν) μ) :
     klDiv (μ.map g) (ν.map g) =
       ENNReal.ofReal (∫ x, klFun ((ν[fun x ↦ (μ.rnDeriv ν x).toReal | m𝓨.comap g]) x) ∂ν) := by
-  rw [klDiv_eq_integral_klFun, if_pos ⟨hμν.map hg, integrable_llr_map hμν hg h_int⟩]
+  rw [klDiv_eq_integral_klFun, ite_eq_left ⟨hμν.map hg, integrable_llr_map hμν hg h_int⟩]
   congr
   rw [← toReal_klDiv_eq_integral_klFun (hμν.map hg), toReal_klDiv_map_of_ac hμν hg]
 

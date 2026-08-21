@@ -115,6 +115,7 @@ def AnalyticWithinAt (f : E → F) (s : Set E) (x : E) : Prop :=
 
 /-- Given a function `f : E → F`, we say that `f` is analytic on a set `s` if it is analytic around
 every point of `s`. -/
+@[fun_prop]
 def AnalyticOnNhd (f : E → F) (s : Set E) :=
   ∀ x, x ∈ s → AnalyticAt 𝕜 f x
 

@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
 public import Mathlib.Order.WithBotTop
+public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 
 /-!
 # Truncations for a t-structure
@@ -452,7 +452,6 @@ noncomputable def eTruncLTGELTSelfToGELT :
   (Functor.associator _ _ _).inv ≫ Functor.whiskerLeft _ (t.eTruncLTι b) ≫
     (Functor.rightUnitor _).hom
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X

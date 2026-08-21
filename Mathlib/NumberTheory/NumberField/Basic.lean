@@ -10,6 +10,7 @@ public import Mathlib.Algebra.CharZero.AddMonoidHom
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
@@ -318,6 +319,8 @@ instance : IsDedekindDomain (𝓞 K) :=
 
 instance : Free ℤ (𝓞 K) :=
   IsIntegralClosure.module_free ℤ ℚ K (𝓞 K)
+
+instance : Ring.HasFiniteQuotients (𝓞 K) := .of_module_finite ℤ _
 
 instance : IsLocalization (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) K :=
   IsIntegralClosure.isLocalization_of_isSeparable ℤ ℚ K (𝓞 K)

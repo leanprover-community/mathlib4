@@ -484,7 +484,7 @@ noncomputable def Ext.biproductAddEquiv {J : Type*} [Fintype J] {X : J → C} {c
     simp only [Ext.comp_sum, ← comp_assoc_of_second_deg_zero, mk₀_comp_mk₀]
     rw [Finset.sum_eq_single i _ (by simp), bicone_ι_π_self, mk₀_id_comp]
     intro _ _ hij
-    rw [c.ι_π, dif_neg hij.symm, mk₀_zero, zero_comp]
+    rw [c.ι_π, dite_eq_right hij.symm, mk₀_zero, zero_comp]
   map_add' _ _ := by
     simp only [comp_add, Pi.add_def]
 
@@ -501,7 +501,7 @@ noncomputable def Ext.addEquivBiproduct (X : C) {J : Type*} [Fintype J] {Y : J �
     simp only [Ext.sum_comp, comp_assoc_of_second_deg_zero, mk₀_comp_mk₀]
     rw [Finset.sum_eq_single i _ (by simp), bicone_ι_π_self, comp_mk₀_id]
     intro _ _ hij
-    rw [c.ι_π, dif_neg hij, mk₀_zero, comp_zero]
+    rw [c.ι_π, dite_eq_right hij, mk₀_zero, comp_zero]
   map_add' _ _ := by
     simp only [add_comp, Pi.add_def]
 

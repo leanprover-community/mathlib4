@@ -861,8 +861,6 @@ theorem AnalyticAt.comp {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt �
   rw [← analyticWithinAt_univ] at hg hf ⊢
   apply hg.comp hf (by simp)
 
-@[deprecated (since := "2026-01-24")] alias AnalyticAt.comp' := AnalyticAt.fun_comp
-
 /-- Version of `AnalyticAt.comp` where point equality is a separate hypothesis. -/
 @[to_fun]
 theorem AnalyticAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : AnalyticAt 𝕜 g y)
@@ -889,6 +887,7 @@ theorem AnalyticOnNhd.comp' {s : Set E} {g : F → G} {f : E → F} (hg : Analyt
     (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (g ∘ f) s :=
   fun z hz => (hg (f z) (Set.mem_image_of_mem f hz)).comp (hf z hz)
 
+@[to_fun]
 theorem AnalyticOnNhd.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F}
     (hg : AnalyticOnNhd 𝕜 g t) (hf : AnalyticOnNhd 𝕜 f s) (st : Set.MapsTo f s t) :
     AnalyticOnNhd 𝕜 (g ∘ f) s :=

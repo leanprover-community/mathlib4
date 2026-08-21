@@ -340,6 +340,12 @@ lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [SeminormedAddCommGrou
     rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
   simp_rw [rankOne_def', comp_assoc, innerSL_apply_comp]
 
+theorem lipschitzWith_adjoint_apply (f : E) :
+    LipschitzWith ‖f‖₊ (fun T : F →L[𝕜] E ↦ T.adjoint f) :=
+  .of_dist_le_mul fun x y ↦ by
+    simp only [dist_eq_norm, coe_nnnorm, ← sub_apply, ← map_sub]
+    grw [le_opNorm, mul_comm, LinearIsometryEquiv.norm_map]
+
 end
 
 end ContinuousLinearMap

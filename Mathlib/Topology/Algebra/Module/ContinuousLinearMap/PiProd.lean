@@ -62,7 +62,6 @@ Indexed products:
 assert_not_exists TrivialStar
 
 open LinearMap (ker range)
-open Topology Filter Pointwise
 
 universe u v w u'
 

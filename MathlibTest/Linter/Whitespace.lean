@@ -5,26 +5,6 @@ import all Mathlib.Tactic.Linter.Whitespace
 import Mathlib.Tactic.Linter.Style
 import Mathlib.Init
 
--- Deprecation warnings for the old linter option.
-section
-
-set_option linter.style.setOption true
-
-/--
-warning: `linter.style.commandStart` has been deprecated: use the `linter.style.whitespace` option instead
--/
-#guard_msgs in
-set_option linter.style.commandStart true
-
-/--
-warning: `linter.style.commandStart` has been deprecated: use the `linter.style.whitespace` option instead
--/
-#guard_msgs in
-set_option linter.style.commandStart true in
-example : Nat := 0
-
-end
-
 set_option linter.style.whitespace true
 
 /--

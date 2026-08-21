@@ -49,9 +49,9 @@ universe u v
 
 namespace MvPolynomial
 
-open Set Function Finsupp
+open Function Finsupp
 
-variable {R : Type u} {σ : Type v} {a a' a₁ a₂ : R} {s : σ →₀ ℕ}
+variable {R : Type u} {σ : Type v} {a : R} {s : σ →₀ ℕ}
 
 section PDeriv
 
@@ -78,7 +78,7 @@ theorem pderiv_monomial {i : σ} :
 
 lemma X_mul_pderiv_monomial {i : σ} {m : σ →₀ ℕ} {r : R} :
     X i * pderiv i (monomial m r) = m i • monomial m r := by
-  rw [pderiv_monomial, X, monomial_mul, smul_monomial]
+  rw [pderiv_monomial, X, monomial_mul_monomial, smul_monomial]
   by_cases h : m i = 0
   · simp_rw [h, Nat.cast_zero, mul_zero, zero_smul, monomial_zero]
   rw [one_mul, mul_comm, nsmul_eq_mul, add_comm, sub_add_single_one_cancel h]
@@ -130,7 +130,7 @@ theorem coeff_pderiv {i : σ} (p : MvPolynomial σ R) (m : σ →₀ ℕ) :
     simp only [h, ↓reduceIte, zero_mul]
     by_cases hn : n i = 0
     · simp [hn]
-    apply if_neg
+    apply ite_eq_right
     rwa [tsub_eq_iff_eq_add_of_le (fun _ ↦ by grind)]
 
 theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R} {i : σ} :

@@ -295,7 +295,7 @@ lemma star_le_iff {x y : R} : star x ≤ y ↔ x ≤ star y := by rw [← star_l
 
 lemma star_lt_iff {x y : R} : star x < y ↔ x < star y := by rw [← star_lt_star_iff, star_star]
 
-@[simp]
+@[simp, grind =]
 lemma star_nonneg_iff {x : R} : 0 ≤ star x ↔ 0 ≤ x := by
   simpa using star_le_star_iff (x := 0) (y := x)
 
@@ -303,7 +303,7 @@ lemma star_nonneg_iff {x : R} : 0 ≤ star x ↔ 0 ≤ x := by
 lemma star_nonpos_iff {x : R} : star x ≤ 0 ↔ x ≤ 0 := by
   simpa using star_le_star_iff (x := x) (y := 0)
 
-@[simp]
+@[simp, grind =]
 lemma star_pos_iff {x : R} : 0 < star x ↔ 0 < x := by
   simpa using star_lt_star_iff (x := 0) (y := x)
 

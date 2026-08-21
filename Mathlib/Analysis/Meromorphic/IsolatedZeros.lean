@@ -137,7 +137,7 @@ end MeromorphicAt
 theorem MeromorphicOn.deriv_eventuallyEq_codiscreteWithin (hf : MeromorphicOn f U)
     (hg : MeromorphicOn g U) (h : f =ᶠ[codiscreteWithin U] g) :
     deriv f =ᶠ[codiscreteWithin U] deriv g := by
-  rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin_iff_forall_mem_nhdsNE]
+  rw [eventuallyEq_codiscreteWithin_iff_forall_eventually_nhdsNE]
   intro x hx
   by_cases hacc : AccPt x (𝓟 U)
   · have h : f =ᶠ[𝓝[≠] x] g :=

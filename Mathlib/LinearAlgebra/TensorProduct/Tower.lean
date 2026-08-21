@@ -519,7 +519,6 @@ section rightComm
 variable [CommSemiring S] [Module S M] [Module S P] [Algebra S B]
   [IsScalarTower S B M] [SMulCommClass R S M] [SMulCommClass S R M]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (S) in
 /-- A tensor product analogue of `mul_right_comm`.
 
@@ -798,8 +797,8 @@ end Semiring
 
 section Ring
 
-variable {R A B M N : Type*} [CommRing R]
-variable [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {R A M N : Type*} [CommRing R]
+variable [Ring A] [Algebra R A]
 variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (f g : M →ₗ[R] N)
 

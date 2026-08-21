@@ -30,7 +30,7 @@ assert_not_exists IsOrderedMonoid Field Finset Set.Icc GaloisConnection
 
 namespace Rat
 
-variable {a b c p q : ℚ}
+variable {a b c q : ℚ}
 
 @[simp] lemma mkRat_nonneg {a : ℤ} (ha : 0 ≤ a) (b : ℕ) : 0 ≤ mkRat a b := by
   simpa using divInt_nonneg ha (Int.natCast_nonneg _)
@@ -38,7 +38,7 @@ variable {a b c p q : ℚ}
 theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) : 0 ≤ Rat.ofScientific m s e := by
   rw [Rat.ofScientific]
   cases s
-  · rw [if_neg (by decide)]
+  · rw [ite_eq_right (by decide)]
     exact num_nonneg.mp <| Int.natCast_nonneg _
   · grind [normalize_eq_mkRat, Rat.mkRat_nonneg]
 

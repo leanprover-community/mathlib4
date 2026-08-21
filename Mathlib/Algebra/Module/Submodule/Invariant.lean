@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.LinearAlgebra.Span.Defs

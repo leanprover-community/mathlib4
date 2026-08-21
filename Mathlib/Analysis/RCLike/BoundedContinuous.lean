@@ -14,7 +14,7 @@ public import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 public section
 
-open Filter Real RCLike BoundedContinuousFunction
+open Real RCLike BoundedContinuousFunction
 
 open scoped Topology
 
@@ -46,10 +46,10 @@ theorem restrict_toContinuousMap_eq_toContinuousMapStar_restrict
     simp only [toContinuousMapStarₐ_apply_apply, AlgHom.compLeftContinuous_apply_apply,
       ofRealAm_coe] at hg_apply
     have h_comp_eq : (@ofRealAm 𝕜 _).compLeftContinuousBounded ℝ lipschitzWith_ofReal
-        (x.comp reCLM (@reCLM 𝕜 _).lipschitz) = x := by
+        (x.comp reCLM (@reCLM 𝕜 _).lipschitzWith) = x := by
       ext a
       simp [hg_apply]
-    use x.comp reCLM (@reCLM 𝕜 _).lipschitz
+    use x.comp reCLM (@reCLM 𝕜 _).lipschitzWith
     refine ⟨by rwa [h_comp_eq], ?_⟩
     ext a
     simp [hg_apply]

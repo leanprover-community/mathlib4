@@ -31,7 +31,7 @@ independence and linear span of sets in a vector space but where the scalars are
 variable {α β : Type*} [CommGroup α] [CommGroup β]
 
 section dissociation
-variable {s : Set α} {t u : Finset α} {d : ℕ} {a : α}
+variable {s : Set α} {t u : Finset α} {a : α}
 open Set
 
 /-- A set is dissociated iff all its finite subsets have different products.
@@ -79,8 +79,8 @@ lemma not_mulDissociated_iff_exists_disjoint :
 
 @[to_additive (attr := simp)] lemma MulEquiv.mulDissociated_preimage (e : β ≃* α) :
     MulDissociated (e ⁻¹' s) ↔ MulDissociated s := by
-  simp [MulDissociated, InjOn, ← e.finsetCongr.forall_congr_right, ← e.apply_eq_iff_eq,
-    (Finset.map_injective _).eq_iff]
+  simp [MulDissociated, InjOn, ← (Equiv.Finset.congr e.toEquiv).forall_congr_right,
+    ← e.apply_eq_iff_eq, (Finset.map_injective _).eq_iff]
 
 @[to_additive (attr := simp)] lemma mulDissociated_inv : MulDissociated s⁻¹ ↔ MulDissociated s :=
   (MulEquiv.inv α).mulDissociated_preimage

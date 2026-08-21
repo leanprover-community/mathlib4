@@ -589,7 +589,7 @@ lemma image_chainBetween_isChain {a b c d n : ℕ} :
 open Finset in
 lemma card_chainBetween {a b c d : ℕ} (hac : a ≤ c) (hbd : b ≤ d) :
     #(chainBetween a b c d) = c + d + 1 - (a + b) := by
-  rw [chainBetween, if_pos ⟨hac, hbd⟩, card_union_of_disjoint, Finset.card_Icc_prod]
+  rw [chainBetween, ite_eq_left ⟨hac, hbd⟩, card_union_of_disjoint, Finset.card_Icc_prod]
   · simp only [Icc_self, card_singleton, Nat.card_Icc]
     rw [← Finset.Ico_map_sectR, card_map, Nat.card_Ico]
     lia
@@ -894,14 +894,14 @@ noncomputable def x0y0 (n : ℕ) (C : Set Hollom) : ℕ × ℕ :=
 
 lemma x0y0_mem (h : (C ∩ level (n + 1)).Nonempty) :
     embed (n + 1) (x0y0 n C) ∈ C := by
-  rw [x0y0, dif_pos h]
+  rw [x0y0, dite_eq_left h]
   exact WellFounded.min_mem _ {x | embed (n + 1) x ∈ C} _
 
 lemma x0y0_min (z : ℕ × ℕ) (hC : IsChain (· ≤ ·) C) (h : embed (n + 1) z ∈ C) :
     embed (n + 1) (x0y0 n C) ≤ embed (n + 1) z := by
   have : (C ∩ level (n + 1)).Nonempty := ⟨_, h, by simp [level_eq_range]⟩
   refine hC.le_of_not_gt h (x0y0_mem this) ?_
-  rw [x0y0, dif_pos this, OrderEmbedding.lt_iff_lt]
+  rw [x0y0, dite_eq_left this, OrderEmbedding.lt_iff_lt]
   exact wellFounded_lt.not_lt_min {x | embed (n + 1) x ∈ C} h
 
 /--
@@ -951,7 +951,7 @@ We will later show the same assuming `C ∩ level (n + 1)` is infinite.
 -/
 lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n + 1)).Finite) :
     ∀ᶠ a in atTop, embed n '' Set.Ici (a, a) ⊆ S n C \ (C ∩ level n) := by
-  rw [S, if_pos h']
+  rw [S, ite_eq_left h']
   -- Take a maximal pair `(b, c)` so that any `(d, e, n)` in `C` satisfies
   -- `(d, e, n) ≤ (b, c, n)`.
   obtain ⟨b, c, hab⟩ : ∃ b c, ∀ d e, h(d, e, n + 1) ∈ C → (d, e) ≤ (b, c) := by
@@ -986,7 +986,7 @@ We earlier showed the same assuming `C ∩ level (n + 1)` is finite.
 -/
 lemma square_subset_S_case_2 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n + 1)).Infinite) :
     ∀ᶠ a in atTop, embed n '' Set.Ici (a, a) ⊆ S n C \ (C ∩ level n) := by
-  rw [S, if_neg h']
+  rw [S, ite_eq_right h']
   filter_upwards [eventually_ge_atTop (x0 n C + 1), eventually_ge_atTop (y0 n C + 1),
     square_subset_R h] with a hax hay haR
   simp [Set.subset_def, embed_apply] at *
@@ -1036,7 +1036,7 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
   cases (C ∩ level (n + 1)).finite_or_infinite
   -- In the case that `C ∩ level (n + 1)` is finite, this is immediate from the definition of `S`.
   case inl h =>
-    rw [S, if_pos h, Set.mem_ofPred_eq] at hx
+    rw [S, ite_eq_left h, Set.mem_ofPred_eq] at hx
     intro hy
     refine f.incomp_apply ?_ (hx.2 _ hy).symm
     have := R_subset_level hx.1
@@ -1047,7 +1047,7 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
   case inr h =>
     -- Write `(x, y, n)` for our given point, and set `(a, b, n + 1) := f(x, y, n)`
     induction S_subset_level hx using induction_on_level with | h x y =>
-    simp only [S, if_neg h, Set.mem_ofPred_eq] at hx
+    simp only [S, ite_eq_right h, Set.mem_ofPred_eq] at hx
     intro hp
     set fp := f h(x, y, n) with hfp
     clear_value fp
@@ -1172,7 +1172,7 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
     set c := f x with hc
     have hc' : c ∈ C ∩ level (n - 1) := h _ (F_subs hx)
     clear_value c
-    rw [coe_image, chainBetween, Ico_self, if_pos (by lia), empty_union, ← Icc_map_sectL] at hx
+    rw [coe_image, chainBetween, Ico_self, ite_eq_left (by lia), empty_union, ← Icc_map_sectL] at hx
     simp only [embed_apply, coe_map, Function.Embedding.sectL_apply, coe_Icc,
       Set.mem_image, Set.mem_Icc, exists_exists_and_eq_and] at hx
     obtain ⟨b, ⟨hab, hba⟩, rfl⟩ := hx

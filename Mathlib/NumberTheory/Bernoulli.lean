@@ -7,13 +7,11 @@ module
 
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Algebra.GCDMonoid.FinsetLemmas
-public import Mathlib.Algebra.Field.GeomSum
 public import Mathlib.Data.Nat.Choose.Bounds
 public import Mathlib.RingTheory.PowerSeries.Exp
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.RingTheory.ZMod.UnitsCyclic
 public import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Algebra.Order.Star.Basic
 
 /-!
 # Bernoulli numbers
@@ -231,7 +229,7 @@ theorem sum_bernoulli (n : ℕ) :
   | succ n =>
   suffices (∑ i ∈ range n, ↑((n + 2).choose (i + 2)) * bernoulli (i + 2)) = n / 2 by
     simp only [this, sum_range_succ', cast_succ, bernoulli_one, bernoulli_zero, choose_one_right,
-      mul_one, choose_zero_right, cast_zero, if_false, zero_add, succ_succ_ne_one]
+      mul_one, choose_zero_right, cast_zero, ite_false, zero_add, succ_succ_ne_one]
     ring
   have f := sum_bernoulli' n.succ.succ
   simp_rw [sum_range_succ', cast_succ, ← eq_sub_iff_add_eq] at f
@@ -247,7 +245,7 @@ theorem bernoulli_spec' (n : ℕ) :
     (∑ k ∈ antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli k.1) =
       if n = 0 then 1 else 0 := by
   cases n with | zero => simp | succ n =>
-  rw [if_neg (succ_ne_zero _)]
+  rw [ite_eq_right (succ_ne_zero _)]
   -- algebra facts
   have h₁ : (1, n) ∈ antidiagonal n.succ := by simp [mem_antidiagonal, add_comm]
   have h₃ : (1 + n).choose n = n + 1 := by simp [add_comm]
@@ -273,12 +271,12 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   -- constant coefficient is a special case
   cases n with | zero => simp | succ n =>
   simp only [bernoulliPowerSeries, coeff_mul, coeff_X, sum_antidiagonal_succ', one_div, coeff_mk,
-    coeff_one, coeff_exp, map_sub, factorial, if_pos, cast_succ, cast_mul,
-    sub_zero, add_eq_zero, if_false, one_ne_zero, and_false, ← map_mul, ← map_sum]
+    coeff_one, coeff_exp, map_sub, factorial, ite_eq_left, cast_succ, cast_mul,
+    sub_zero, add_eq_zero, ite_false, one_ne_zero, and_false, ← map_mul, ← map_sum]
   cases n with | zero => simp | succ n =>
-  rw [if_neg n.succ_succ_ne_one]
+  rw [ite_eq_right n.succ_succ_ne_one]
   have hfact : ∀ m, (m ! : ℚ) ≠ 0 := fun m => mod_cast factorial_ne_zero m
-  have hite2 : ite (n.succ = 0) 1 0 = (0 : ℚ) := if_neg n.succ_ne_zero
+  have hite2 : ite (n.succ = 0) 1 0 = (0 : ℚ) := ite_eq_right n.succ_ne_zero
   simp only [CharP.cast_eq_zero, zero_add, inv_one, map_one, sub_self, mul_zero]
   rw [← map_zero (algebraMap ℚ A), ← zero_div (n.succ ! : ℚ), ← hite2, ← bernoulli_spec', sum_div]
   refine congr_arg (algebraMap ℚ A) (sum_congr rfl fun x h => eq_div_of_mul_eq (hfact n.succ) ?_)
@@ -672,6 +670,57 @@ theorem vonStaudt_clausen (k : ℕ) :
     by_contra h
     obtain ⟨p, hp, hdvd⟩ := ne_one_iff_exists_prime_dvd.mp h
     exact (let : Fact p.Prime := ⟨hp⟩; not_dvd_den_vonStaudt_sum hk) hdvd
+
+section Valuation
+
+variable {k p : ℕ} [Fact p.Prime]
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then the `p`-adic valuation of the Bernoulli
+number `B₂ₖ` is `WithZero.exp 1`, the valuation of `1 / p`. -/
+theorem padicValuation_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    Rat.padicValuation p (bernoulli (2 * k)) = WithZero.exp 1 := by
+  have hkey := not_dvd_den_bernoulli_add_indicator (k := k) (p := p) hk
+  rw [show vonStaudtIndicator (2 * k) p = 1 by simp [vonStaudtIndicator, hpk]] at hkey
+  have h1 : 1 < Rat.padicValuation p (1 / (p : ℚ)) := by simp
+  simpa using (Rat.padicValuation p).map_sub_eq_of_lt_right
+    (lt_of_le_of_lt (Rat.padicValuation_le_one_iff.mpr hkey) h1)
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then the `p`-adic valuation of the Bernoulli
+number `B₂ₖ` is `-1`. -/
+theorem padicValRat_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    padicValRat p (bernoulli (2 * k)) = -1 := by
+  grind [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+    WithZero.exp_inj, WithZero.exp_ne_zero, padicValuation_bernoulli hk hpk]
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p` divides the denominator of the
+Bernoulli number `B₂ₖ`. -/
+theorem dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) : p ∣ (bernoulli (2 * k)).den := by
+  by_contra hcon
+  simp [← Rat.padicValuation_le_one_iff, padicValuation_bernoulli hk hpk] at hcon
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p` does not divide the numerator of the
+Bernoulli number `B₂ₖ`. -/
+theorem not_dvd_num_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    ¬ (p : ℤ) ∣ (bernoulli (2 * k)).num := by
+  rw [Int.natCast_dvd]
+  exact fun hnum ↦ Nat.not_coprime_of_dvd_of_dvd (Fact.out : p.Prime).one_lt hnum
+    (dvd_den_bernoulli hk hpk) (bernoulli (2 * k)).reduced
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p ^ 2` does not divide the denominator of
+the Bernoulli number `B₂ₖ`: each prime occurs in the denominator with multiplicity one. -/
+theorem not_sq_dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    ¬ p ^ 2 ∣ (bernoulli (2 * k)).den := by
+  have hp : p.Prime := Fact.out
+  have hpne : (p : ℚ) ≠ 0 := mod_cast hp.ne_zero
+  have h1 : ¬ p ∣ (p * bernoulli (2 * k)).den := by
+    simp [← Rat.padicValuation_le_one_iff, padicValuation_bernoulli hk hpk, ← WithZero.exp_add]
+  have h2 : (bernoulli (2 * k)).den ∣ p * ((p : ℚ) * bernoulli (2 * k)).den := by
+    have hd := Rat.mul_den_dvd (1 / (p : ℚ)) ((p : ℚ) * bernoulli (2 * k))
+    rwa [one_div, inv_mul_cancel_left₀ hpne, show ((p : ℚ)⁻¹).den = p by simp [hp.ne_zero]] at hd
+  contrapose! h1
+  simpa [Nat.mul_dvd_mul_iff_left hp.pos, pow_two] using h1.trans h2
+
+end Valuation
 
 end Bernoulli
 

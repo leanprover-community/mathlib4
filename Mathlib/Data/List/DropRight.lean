@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.TakeWhile
-public import Mathlib.Data.List.Basic
 
 /-!
 
@@ -104,11 +103,11 @@ theorem rdropWhile_concat (x : α) :
 
 @[simp]
 theorem rdropWhile_concat_pos (x : α) (h : p x) : rdropWhile p (l ++ [x]) = rdropWhile p l := by
-  rw [rdropWhile_concat, if_pos h]
+  rw [rdropWhile_concat, ite_eq_left h]
 
 @[simp]
 theorem rdropWhile_concat_neg (x : α) (h : ¬p x) : rdropWhile p (l ++ [x]) = l ++ [x] := by
-  rw [rdropWhile_concat, if_neg h]
+  rw [rdropWhile_concat, ite_eq_right h]
 
 theorem rdropWhile_singleton (x : α) : rdropWhile p [x] = if p x then [] else [x] := by
   rw [← nil_append [x], rdropWhile_concat, rdropWhile_nil]
@@ -158,11 +157,11 @@ theorem rtakeWhile_concat (x : α) :
 
 @[simp]
 theorem rtakeWhile_concat_pos (x : α) (h : p x) :
-    rtakeWhile p (l ++ [x]) = rtakeWhile p l ++ [x] := by rw [rtakeWhile_concat, if_pos h]
+    rtakeWhile p (l ++ [x]) = rtakeWhile p l ++ [x] := by rw [rtakeWhile_concat, ite_eq_left h]
 
 @[simp]
 theorem rtakeWhile_concat_neg (x : α) (h : ¬p x) : rtakeWhile p (l ++ [x]) = [] := by
-  rw [rtakeWhile_concat, if_neg h]
+  rw [rtakeWhile_concat, ite_eq_right h]
 
 theorem rtakeWhile_suffix : l.rtakeWhile p <:+ l := by
   rw [← reverse_prefix, rtakeWhile, reverse_reverse]

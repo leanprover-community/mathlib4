@@ -29,7 +29,7 @@ the indicator function of `closedBall 0 1` with a function as above with `s = ba
 
 noncomputable section
 
-open Set Metric TopologicalSpace Function Asymptotics MeasureTheory Module
+open Set Metric TopologicalSpace Function MeasureTheory Module
   ContinuousLinearMap Filter MeasureTheory.Measure Bornology
 
 open scoped Pointwise Topology NNReal Convolution ContDiff
@@ -483,7 +483,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
             (Ioi 1 ×ˢ univ) by
           apply this.congr
           rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
-          simp only [hR, uncurry_apply_pair, if_true, Function.comp_apply]
+          simp only [hR, uncurry_apply_pair, ite_true, Function.comp_apply]
         apply (y_smooth E).comp
         · apply ContDiffOn.prodMk
           · refine
@@ -504,7 +504,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
           simp only [prodMk_mem_set_prod_eq, mem_Ioo, mem_univ, and_true, A, B]
       eq_one := fun R hR x hx => by
         have A : 0 < R + 1 := by linarith
-        simp only [hR, if_true]
+        simp only [hR, ite_true]
         apply y_eq_one_of_mem_closedBall (IR R hR)
         simp only [norm_smul, inv_div, mem_closedBall_zero_iff, Real.norm_eq_abs, abs_div, abs_two,
           abs_of_nonneg A.le]
@@ -514,7 +514,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
       support := fun R hR => by
         have A : 0 < (R + 1) / 2 := by linarith
         have C : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
-        simp only [hR, if_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
+        simp only [hR, ite_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]
         refine congr (congr_arg ball (Eq.refl 0)) ?_
         field }

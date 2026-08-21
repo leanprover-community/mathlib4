@@ -52,7 +52,7 @@ open Function Set Submodule
 universe u' u
 
 variable {ι : Type u'} {ι' : Type*} {R : Type*} {K : Type*} {s : Set ι}
-variable {M : Type*} {M' : Type*} {V : Type u}
+variable {M : Type*} {M' : Type*}
 
 section Semiring
 

@@ -267,7 +267,7 @@ theorem cancel_coe {a : ℝ≥0} : AddLECancellable (a : ℝ≥0∞) :=
   cancel_of_ne coe_ne_top
 
 theorem add_right_inj (h : a ≠ ∞) : a + b = a + c ↔ b = c :=
-  (cancel_of_ne h).inj
+  (cancel_of_ne h).inj_right
 
 theorem add_left_inj (h : a ≠ ∞) : b + a = c + a ↔ b = c :=
   (cancel_of_ne h).inj_left
@@ -454,7 +454,7 @@ end Sub
 
 section Interval
 
-variable {x y z : ℝ≥0∞} {ε ε₁ ε₂ : ℝ≥0∞} {s : Set ℝ≥0∞}
+variable {x y : ℝ≥0∞} {ε ε₁ ε₂ : ℝ≥0∞}
 
 protected theorem Ico_eq_Iio : Ico 0 y = Iio y :=
   Ico_bot
@@ -502,7 +502,7 @@ end Interval
 section iInf
 
 variable {ι : Sort*} {f g : ι → ℝ≥0∞}
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
+variable {a b c d : ℝ≥0∞} {r : ℝ≥0}
 
 theorem toNNReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toNNReal = ⨅ i, (f i).toNNReal := by
   cases isEmpty_or_nonempty ι

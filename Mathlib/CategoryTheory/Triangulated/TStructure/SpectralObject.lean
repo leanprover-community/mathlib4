@@ -80,8 +80,8 @@ lemma ω₁δ_naturality (a' b' c' : EInt) (hab' : a' ≤ b') (hbc' : b' ≤ c')
       t.ω₁δ a b c hab hbc ≫ Functor.whiskerRight (t.ω₁.map (homMk₁ (φ.app 0) (φ.app 1))) _ := by
   ext
   dsimp
-  simp only [ω₁δ_app, ← Functor.map_comp, NatTrans.naturality_assoc, Functor.comp_map,
-    Category.assoc, ← Functor.map_comp_assoc, NatTrans.naturality_app_assoc,
+  simp only [NatTrans.hcomp_app, ω₁δ_app, ← Functor.map_comp, NatTrans.naturality_assoc,
+    Functor.comp_map, Category.assoc, ← Functor.map_comp_assoc, NatTrans.naturality_app_assoc,
     Functor.whiskeringRight_obj_map, Functor.whiskerRight_app, NatTrans.naturality]
   congr 2
   simp only [Functor.map_comp, Category.assoc]

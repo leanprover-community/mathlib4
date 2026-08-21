@@ -48,7 +48,7 @@ variable {α : Type u'}
 
 open FirstOrder Cardinal
 
-open Computability List Structure Fin
+open Computability List Fin
 
 namespace Term
 
@@ -226,7 +226,7 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
   | falsum => intro l; rw [listEncode, singleton_append, listDecode]
   | equal =>
     intro l
-    rw [listEncode, cons_append, cons_append, listDecode, dif_pos]
+    rw [listEncode, cons_append, cons_append, listDecode, dite_eq_left]
     · simp only [eq_mp_eq_cast, cast_eq, nil_append]
     · simp only
   | @rel φ_n φ_l φ_R ts =>
@@ -242,10 +242,10 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
       rw [getElem_append_left, getElem_map]
       · simp only [getElem_finRange, cast_mk, Fin.eta, Function.comp_apply, Sum.getLeft?_inl]
       · simp only [length_map, length_finRange, is_lt]
-    rw [dif_pos]
+    rw [dite_eq_left]
     swap
     · exact fun i => Option.isSome_iff_exists.2 ⟨⟨_, ts i⟩, h i⟩
-    rw [dif_pos]
+    rw [dite_eq_left]
     swap
     · intro i
       obtain ⟨h1, h2⟩ := Option.eq_some_iff_get_eq.1 (h i)

@@ -365,13 +365,13 @@ protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Fi
   | cons a s ha ih =>
     simp_rw [Finset.sum_cons, QuadraticMap.map_add, ih, add_assoc, Finset.sym2_cons,
       Finset.sum_filter, Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons,
-      Sym2.mkEmbedding_apply, Sym2.mk_isDiag_iff, not_true, if_false, zero_add,
+      Sym2.mkEmbedding_apply, Sym2.mk_isDiag_iff, not_true, ite_false, zero_add,
       Sym2.map_mk, polarSym2_sym2Mk, ← polarBilin_apply_apply, _root_.map_sum,
       polarBilin_apply_apply]
     congr 2
     rw [add_comm]
     congr! with i hi
-    rw [if_pos (ne_of_mem_of_not_mem hi ha).symm]
+    rw [ite_eq_left (ne_of_mem_of_not_mem hi ha).symm]
 
 protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
     Q (∑ i ∈ s, f i) = ∑ ij ∈ s.sym2, polarSym2 Q (ij.map f) - ∑ i ∈ s, Q (f i) := by
@@ -671,7 +671,6 @@ section Semiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 variable {N' : Type*} [AddCommMonoid N'] [Module R N']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A bilinear map gives a quadratic map by applying the argument twice. -/
 def toQuadraticMap (B : BilinMap R M N) : QuadraticMap R M N where
   toFun x := B x x

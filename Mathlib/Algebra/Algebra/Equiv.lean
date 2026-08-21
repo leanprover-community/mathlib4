@@ -841,7 +841,7 @@ end RingEquiv
 
 namespace MulSemiringAction
 
-variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 
 section
 
@@ -957,7 +957,6 @@ variable {R S M₁ M₂ : Type*} [CommSemiring R] [AddCommMonoid M₁] [Module R
   [SMulCommClass S R M₁] [SMulCommClass S R M₂] [SMul R S] [IsScalarTower R S M₁]
   [IsScalarTower R S M₂]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- A linear equivalence of two modules induces an equivalence of algebras of their
 endomorphisms. -/

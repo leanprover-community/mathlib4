@@ -16,7 +16,7 @@ public import Mathlib.Data.Rat.Cast.Defs
 
 open Function
 
-variable {F ι α β : Type*}
+variable {α : Type*}
 
 namespace Rat
 variable [DivisionRing α] [CharZero α] {p q : ℚ}

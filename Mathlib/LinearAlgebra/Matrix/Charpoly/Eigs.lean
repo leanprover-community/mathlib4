@@ -25,7 +25,7 @@ In fields we show that:
 * `Matrix.trace_eq_sum_roots_charpoly_of_splits`: the trace is the sum of the roots of the
   characteristic polynomial if the polynomial splits in the field of the matrix.
 * `Matrix.spectrum_transpose`: a matrix and its transpose have the same spectrum
-  (`Matrix.spectralRadius_transpose` is in `Analysis.Matrix.Spectrum`).
+  (`Matrix.spectralRadius_transpose` is in `Mathlib/Analysis/Matrix/Spectrum.lean`).
 
 In an algebraically closed field we show that:
 
@@ -86,9 +86,8 @@ theorem mem_spectrum_iff_isRoot_charpoly {r : K} : r ∈ spectrum K A ↔ IsRoot
   simp [mem_spectrum_iff_not_isUnit_eval_charpoly]
 
 /-- A matrix and its transpose have the same spectrum. -/
-theorem spectrum_transpose (A : Matrix n n K) : spectrum K A.transpose = spectrum K A := by
-  ext μ
-  rw [mem_spectrum_iff_isRoot_charpoly, mem_spectrum_iff_isRoot_charpoly, charpoly_transpose]
+@[simp] theorem spectrum_transpose (A : Matrix n n K) : spectrum K Aᵀ = spectrum K A := by
+  ext; simp [mem_spectrum_iff_isRoot_charpoly]
 
 theorem det_eq_prod_roots_charpoly_of_splits [IsDomain R] (hAps : B.charpoly.Splits) :
     B.det = (Matrix.charpoly B).roots.prod := by

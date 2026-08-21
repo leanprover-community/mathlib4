@@ -192,7 +192,7 @@ def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
     · simp [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top]
     · simp only [J.radical_pow n.succ_ne_zero, Ideal.le_radical]
 
-variable {I J K : Ideal R}
+variable {J K : Ideal R}
 
 /-- The diagram of powers of `J` is initial in the diagram of all ideals with
 radical containing `J`. This uses Noetherianness. -/

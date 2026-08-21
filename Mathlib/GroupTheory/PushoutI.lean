@@ -10,8 +10,7 @@ public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
 
 /-!
-
-## Pushouts of Monoids and Groups
+# Pushouts of Monoids and Groups
 
 This file defines wide pushouts of monoids and groups and proves some properties
 of the amalgamated product of groups (i.e. the special case where all the maps
@@ -109,7 +108,6 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     simp only [DFunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
@@ -118,7 +116,6 @@ theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
   simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe,
     lift_apply_inl, CoprodI.lift_of]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_base (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
@@ -519,7 +516,6 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
           (h3 _ _ List.mem_cons_self)]
 
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g • w := by

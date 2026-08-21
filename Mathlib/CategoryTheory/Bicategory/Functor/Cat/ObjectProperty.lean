@@ -31,8 +31,6 @@ universe w v v' u u'
 
 namespace CategoryTheory
 
-open Bicategory
-
 namespace Pseudofunctor
 
 variable {B : Type u} [Bicategory.{w, v} B] (F : Pseudofunctor B Cat.{v', u'})
@@ -121,7 +119,6 @@ lemma mapComp_inv_app {X Y Z : B} (f : X ⟶ Y) (g : Y ⟶ Z) (M : P.Obj X) :
     (P.mapComp f g).inv.app M = ObjectProperty.homMk
       ((F.mapComp f g).inv.toNatTrans.app M.obj) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a property of objects `P` for a pseudofunctor from `B` to `Cat`, this is
 the induced pseudofunctor which sends `X : B` to the full subcategory of `F.obj X`
 consisting of objects satisfying `P`. -/

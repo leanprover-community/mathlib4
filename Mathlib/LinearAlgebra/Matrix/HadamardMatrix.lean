@@ -24,7 +24,7 @@ closure, the order identity `n = s * star s` from constant row or column sums, t
 * [W. de Launey and D. L. Flannery, *Algebraic Design Theory*][deLauneyFlannery2011]
 -/
 
-@[expose] public section
+public section
 
 
 variable {m n R : Type*}

@@ -50,7 +50,7 @@ given in SGA III Exp. 21 Section 6.
 
 @[expose] public section
 
-open Set Function
+open Function
 
 noncomputable section
 
@@ -76,6 +76,17 @@ structure Hom {ι₂ M₂ N₂ : Type*}
   coroot_coweightMap : coweightMap ∘ Q.coroot = P.coroot ∘ indexEquiv.symm
 
 namespace Hom
+
+@[simp] lemma pairing {ι₂ M₂ N₂ : Type*}
+    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    {P : RootPairing ι R M N} {Q : RootPairing ι₂ R M₂ N₂} (f : Hom P Q) {i j : ι} :
+    Q.pairing (f.indexEquiv i) (f.indexEquiv j) = P.pairing i j := by
+  have hi : f.weightMap (P.root i) = Q.root (f.indexEquiv i) := by
+    simpa using congr_fun f.root_weightMap i
+  have hj : f.coweightMap (Q.coroot (f.indexEquiv j)) = P.coroot j := by
+    simpa using congr_fun f.coroot_coweightMap (f.indexEquiv j)
+  simpa  [← root_coroot_eq_pairing, ← hi, ← hj] using
+    LinearMap.congr_fun₂ f.weight_coweight_transpose (Q.coroot (f.indexEquiv j)) (P.root i)
 
 lemma weight_coweight_transpose_apply {ι₂ M₂ N₂ : Type*}
     [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]

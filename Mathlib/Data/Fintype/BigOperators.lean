@@ -31,8 +31,6 @@ public section
 
 assert_not_exists MulAction
 
-open Mathlib
-
 universe u v
 
 variable {α : Type*} {β : Type*} {γ : Type*}
@@ -235,7 +233,7 @@ theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → �
     ∏ i, c i = ∏ i ∈ Finset.range n, if h : i < n then c ⟨i, h⟩ else 1 := by
   rw [← Fin.prod_univ_eq_prod_range, Finset.prod_congr rfl]
   rintro ⟨i, hi⟩ _
-  simp only [hi, dif_pos]
+  simp only [hi, dite_eq_left]
 
 @[to_additive]
 theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] (p : α → Prop)

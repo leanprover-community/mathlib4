@@ -52,7 +52,6 @@ theorem discr_eq_basisMatrix_det_sq [DecidableEq (K →+* ℂ)] :
     ← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, ← (equivReindex K).symm_symm,
     Algebra.discr_reindex, eq_ratCast]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped ComplexConjugate ComplexOrder in
 theorem sign_discr :
     (discr K).sign = (-1) ^ nrComplexPlaces K := by

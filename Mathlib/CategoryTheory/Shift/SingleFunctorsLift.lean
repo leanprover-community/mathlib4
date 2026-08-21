@@ -24,7 +24,7 @@ we lift `F` in `SingleFunctor C D A`.
 
 namespace CategoryTheory
 
-open Category CategoryTheory.Functor
+open CategoryTheory.Functor
 
 variable {C D E : Type*} [Category C] [Category D] [Category E]
   {A : Type*} [AddMonoid A] [HasShift D A] [HasShift E A]

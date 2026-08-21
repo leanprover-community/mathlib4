@@ -25,7 +25,7 @@ This file establishes the relationship between the adic valuation on `K` associa
 adic valuation on `L` associated to `w`, in terms of the ramification index.
 -/
 
-@[expose] public section
+public section
 
 namespace IsDedekindDomain.HeightOneSpectrum
 

@@ -28,13 +28,13 @@ and `List.alternatingProd`, `List.alternatingSum`, their alternating counterpart
 public section
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
-variable {ι α β M N P G : Type*}
+variable {α β M N G : Type*}
 
 namespace List
 
 section Monoid
 
-variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
+variable [Monoid M] [Monoid N] {l₁ l₂ : List M} {a : M}
 
 @[to_additive]
 theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.prod

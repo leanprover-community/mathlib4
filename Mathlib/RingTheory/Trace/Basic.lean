@@ -50,8 +50,8 @@ the roots of the minimal polynomial of `s` over `R`.
 
 universe u v w z
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-variable [Algebra R S] [Algebra R T]
+variable {R S : Type*} [CommRing R] [CommRing S]
+variable [Algebra R S]
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 variable {ι κ : Type w}
 
@@ -162,7 +162,7 @@ attribute [-instance] Field.toEuclideanDomain
 theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegral R x) :
     IsIntegral R (Algebra.trace L F x) := by
   have hx' : IsIntegral L x := hx.tower_top
-  rw [← isIntegral_algebraMap_iff (algebraMap L (AlgebraicClosure F)).injective, trace_eq_sum_roots]
+  rw [← isIntegral_algebraMap_iff (B := AlgebraicClosure F), trace_eq_sum_roots]
   · refine (IsIntegral.multiset_sum ?_).nsmul _
     intro y hy
     rw [mem_roots_map (minpoly.ne_zero hx')] at hy
@@ -309,8 +309,8 @@ lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) 
       obtain rfl : g = minpoly K x := by simpa using hg₂
       cases hx hg₁
     | succ n =>
-      rw [nextCoeff, if_neg, ← hg₂, coeff_expand (by positivity),
-        if_neg, neg_zero, mul_zero, LinearMap.zero_apply]
+      rw [nextCoeff, ite_eq_right, ← hg₂, coeff_expand (by positivity),
+        ite_eq_right, neg_zero, mul_zero, LinearMap.zero_apply]
       · rw [natDegree_expand]
         intro h
         have := Nat.dvd_sub (dvd_mul_left (p ^ (n + 1)) g.natDegree) h
@@ -439,7 +439,7 @@ section Field
 variable (K) (E : Type z) [Field E]
 variable [Algebra K E]
 variable [Module.Finite K L] [Algebra.IsSeparable K L] [IsAlgClosed E]
-variable (b : κ → L) (pb : PowerBasis K L)
+variable (b : κ → L)
 
 theorem traceMatrix_eq_embeddingsMatrix_mul_trans : (traceMatrix K b).map (algebraMap K E) =
     embeddingsMatrix K E b * (embeddingsMatrix K E b)ᵀ := by
@@ -516,7 +516,7 @@ theorem traceForm_nondegenerate_tfae [FiniteDimensional K L] :
 
 theorem Algebra.trace_ne_zero [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     Algebra.trace K L ≠ 0 :=
-  ((traceForm_nondegenerate_tfae K L).out 0 1).mp ‹_›
+  ((traceForm_nondegenerate_tfae K L).out 1 2).mp ‹_›
 
 theorem Algebra.trace_surjective [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     Function.Surjective (Algebra.trace K L) := by

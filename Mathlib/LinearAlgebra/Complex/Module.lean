@@ -52,8 +52,6 @@ element of a `StarModule` over `ℂ`.
 assert_not_exists NNReal
 namespace Complex
 
-open ComplexConjugate
-
 open scoped Complex.SMul
 
 variable {R : Type*} {S : Type*}
@@ -138,7 +136,7 @@ theorem algHom_ext ⦃f g : ℂ →ₐ[ℝ] A⦄ (h : f I = g I) : f = g := by
 
 end
 
-open Module Submodule
+open Module
 
 /-- `ℂ` has a basis over `ℝ` given by `1` and `I`. -/
 noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=

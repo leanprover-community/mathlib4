@@ -32,7 +32,7 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} {t₀ : ℝ}
+  {γ : ℝ → M} {v : (x : M) → TangentSpace I x} {s : Set ℝ} {t₀ : ℝ}
 
 /-! ### Translation lemmas -/
 
@@ -101,8 +101,6 @@ end Translation
 /-! ### Scaling lemmas -/
 
 section Scaling
-
-open Manifold
 
 lemma IsMIntegralCurveOn.comp_mul (hγ : IsMIntegralCurveOn γ v s) (a : ℝ) :
     IsMIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by

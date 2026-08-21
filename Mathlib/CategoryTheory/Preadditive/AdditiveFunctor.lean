@@ -123,7 +123,6 @@ lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
     dsimp
     rw [F.map_add]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma additive_of_comp_faithful
     (F : C ⥤ D) (G : D ⥤ E) [G.Additive] [(F ⋙ G).Additive] [Faithful G] :
     F.Additive where
@@ -165,7 +164,6 @@ instance {E' : Type*} [Category* E'] [Preadditive E'] (G : C ⥤ D ⥤ E) (F : E
   infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 universe w in
 instance [HasCoproducts.{w} C] : (sigmaConst.{w} (C := C)).Additive where
 

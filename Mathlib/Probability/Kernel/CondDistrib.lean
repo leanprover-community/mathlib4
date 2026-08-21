@@ -399,7 +399,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk {Ω F} {m�
     AEStronglyMeasurable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   refine ⟨fun x => hf.mk f x.2, hf.stronglyMeasurable_mk.comp_measurable measurable_snd, ?_⟩
   suffices h : Measure.QuasiMeasurePreserving Prod.snd (μ.map fun ω ↦ (X ω, ω)) μ from
-    Measure.QuasiMeasurePreserving.ae_eq h hf.ae_eq_mk
+    Measure.QuasiMeasurePreserving.ae_eq_comp h hf.ae_eq_mk
   refine ⟨measurable_snd, Measure.AbsolutelyContinuous.mk fun s hs hμs => ?_⟩
   rw [Measure.map_apply measurable_snd hs]
   by_cases hX : AEMeasurable X μ

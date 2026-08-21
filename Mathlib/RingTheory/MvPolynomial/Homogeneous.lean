@@ -5,7 +5,6 @@ Authors: Johan Commelin, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
@@ -115,12 +114,10 @@ lemma homogeneousSubmodule_fg [Finite σ] (n : ℕ) :
 
 variable {σ R}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem homogeneousSubmodule_mul (m n : ℕ) :
     homogeneousSubmodule σ R m * homogeneousSubmodule σ R n ≤ homogeneousSubmodule σ R (m + n) :=
   weightedHomogeneousSubmodule_mul 1 m n
 
-set_option backward.isDefEq.respectTransparency false in
 lemma homogeneousSubmodule_one_eq_span_X :
     MvPolynomial.homogeneousSubmodule σ R 1 = .span R (.range X) := by
   simp [MvPolynomial.homogeneousSubmodule_eq_finsupp_supported,
@@ -229,7 +226,6 @@ theorem sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
     (h : ∀ i ∈ s, IsHomogeneous (φ i) n) : IsHomogeneous (∑ i ∈ s, φ i) n :=
   (homogeneousSubmodule σ R n).sum_mem h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul (hφ : IsHomogeneous φ m) (hψ : IsHomogeneous ψ n) : IsHomogeneous (φ * ψ) (m + n) :=
   homogeneousSubmodule_mul m n <| Submodule.mul_mem_mul hφ hψ
 
@@ -522,7 +518,7 @@ section HomogeneousComponent
 
 open Finset Finsupp
 
-variable (n : ℕ) (φ ψ : MvPolynomial σ R)
+variable (n : ℕ) (φ : MvPolynomial σ R)
 
 theorem homogeneousComponent_mem :
     homogeneousComponent n φ ∈ homogeneousSubmodule σ R n :=

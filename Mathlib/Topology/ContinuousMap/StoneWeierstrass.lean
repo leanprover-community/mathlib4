@@ -591,7 +591,6 @@ lemma ker_evalStarAlgHom_inter_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) :
     refine fun hf ↦ ⟨?_, nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom h0 hf⟩
     exact adjoin_le_starAlgebra_adjoin _ _ hf
 
-set_option backward.isDefEq.respectTransparency false in
 -- the statement should be in terms of nonunital subalgebras, but we lack API
 open RingHom Filter Topology in
 theorem AlgHom.closure_ker_inter {F S K A : Type*} [CommRing K] [Ring A] [Algebra K A]

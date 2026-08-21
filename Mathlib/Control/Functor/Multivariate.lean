@@ -40,7 +40,7 @@ variable {n : ℕ}
 
 namespace MvFunctor
 
-variable {α β : TypeVec.{u} n} {F : TypeVec.{u} n → Type v} [MvFunctor F]
+variable {α : TypeVec.{u} n} {F : TypeVec.{u} n → Type v} [MvFunctor F]
 
 /-- predicate lifting over multivariate functors -/
 def LiftP {α : TypeVec n} (P : ∀ i, α i → Prop) (x : F α) : Prop :=

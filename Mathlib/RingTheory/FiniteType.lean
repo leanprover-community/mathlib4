@@ -32,7 +32,7 @@ open Polynomial
 section ModuleAndAlgebra
 
 universe uR uS uA uB uM uN
-variable (R : Type uR) (S : Type uS) (A : Type uA) (B : Type uB) (M : Type uM) (N : Type uN)
+variable (R : Type uR) (S : Type uS) (A : Type uA) (B : Type uB)
 
 /-- An algebra over a commutative semiring is of `FiniteType` if it is finitely generated
 over the base ring as algebra. -/
@@ -41,11 +41,9 @@ class Algebra.FiniteType [CommSemiring R] [Semiring A] [Algebra R A] : Prop wher
 
 namespace Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R]
 
 namespace Finite
-
-open Submodule Set
 
 variable {R S M N}
 
@@ -66,8 +64,6 @@ namespace Algebra
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra R B]
-variable [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
 
 namespace FiniteType
 
@@ -230,10 +226,8 @@ end Finite
 
 namespace FiniteType
 
--- TODO: should infer_instance be marked as normalising?
-set_option linter.flexible false in
 variable (A) in
-theorem id : FiniteType (RingHom.id A) := by simp [FiniteType]; infer_instance
+theorem id : FiniteType (RingHom.id A) := by rw [FiniteType]; infer_instance
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by

@@ -35,7 +35,7 @@ open Metric
 
 namespace Complex
 
-variable {f : ℂ → ℂ} {s : Set ℂ} {M R : ℝ} {z w : ℂ}
+variable {f : ℂ → ℂ} {M R : ℝ} {z w : ℂ}
 
 section SchwarzTransform
 

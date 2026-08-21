@@ -134,7 +134,6 @@ lemma cartanMatrix_le_zero_of_ne
     b.cartanMatrix i j ≤ 0 :=
   b.pairingIn_le_zero_of_ne (by rwa [ne_eq, ← Subtype.ext_iff]) i.property j.property
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma cartanMatrix_mem_of_ne {i j : b.support} (hij : i ≠ j) :
     b.cartanMatrix i j ∈ ({-3, -2, -1, 0} : Set ℤ) := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
@@ -354,7 +353,6 @@ lemma apply_mem_range_root_of_cartanMatrixEq
     rw [root_reflectionPerm, this, ← hl, ← root_reflectionPerm]
     exact mem_range_self _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A root system is determined by its Cartan matrix. -/
 def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsRootSystem] [P₂.IsReduced]
     (he : ∀ i j, b₂.cartanMatrix (e i) (e j) = b.cartanMatrix i j) :
@@ -376,6 +374,21 @@ def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsRootSystem] [P₂.IsReduced]
   Equiv.mk' P P₂ (b.toWeightBasis.equiv b₂.toWeightBasis e) e' he'
 
 end Uniqueness
+
+omit [IsDomain R] [Finite ι] in
+lemma map_equiv_cartanMatrix {ι₂ M₂ N₂ : Type*} [DecidableEq ι₂]
+    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    {P₂ : RootPairing ι₂ R M₂ N₂} [P₂.IsCrystallographic]
+    (e : P.Equiv P₂) :
+    (b.map e).cartanMatrix =
+      b.cartanMatrix.reindex (b.supportMapEquiv e) (b.supportMapEquiv e) := by
+  ext ⟨i, -⟩ ⟨j, -⟩
+  apply FaithfulSMul.algebraMap_injective ℤ R
+  simp only [cartanMatrix, cartanMatrixIn_def, reindex_apply, submatrix_apply,
+    supportMapEquiv_symm_apply_coe, algebraMap_pairingIn]
+  suffices ∀ i j, P₂.pairing (e.indexEquiv i) (e.indexEquiv j) = P.pairing i j by
+    simpa using this (e.indexEquiv.symm i) (e.indexEquiv.symm j)
+  simp
 
 end IsCrystallographic
 

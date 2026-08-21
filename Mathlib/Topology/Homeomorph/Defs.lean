@@ -37,7 +37,7 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
 open Set Topology Filter
 
-variable {X Y W Z : Type*}
+variable {X Y Z : Type*}
 
 /-- Homeomorphism between `X` and `Y`, also called topological isomorphism -/
 structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
@@ -54,8 +54,7 @@ infixl:25 " ≃ₜ " => Homeomorph
 
 namespace Homeomorph
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [TopologicalSpace Z]
-  {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
