@@ -200,8 +200,7 @@ lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
 instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
     IsCardinalFiltered κ.ord.ToType κ :=
   isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
-    have h : Function.Surjective (fun i ↦ (⟨f i, Set.mem_range_self i⟩ : Set.range f)) :=
-      fun _ ↦ by aesop
+    have h := Set.rangeFactorization_surjective (f := f)
     contrapose! hs
     rw [← hκ.out.cof_ord, ← Ordinal.cof_toType]
     refine (Order.cof_le fun j ↦ ?_).trans (Cardinal.mk_le_of_surjective h)
