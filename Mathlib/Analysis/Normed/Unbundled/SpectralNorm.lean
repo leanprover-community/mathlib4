@@ -735,8 +735,9 @@ def algNormFromConst {x : L} (hx : x ≠ 0) : AlgebraNorm K L :=
   algebraNormFromConst hx' spectralAlgNorm_isPowMul
 
 theorem algNormFromConst_def {x y : L} (hx : x ≠ 0) :
-    algNormFromConst K hx y = seminormFromConst spectralAlgNorm_one.le
-      ((map_ne_zero_iff_ne_zero (spectralAlgNorm K L)).mpr hx) isPowMul_spectralNorm y :=
+    algNormFromConst K hx y =
+      seminormFromConst ((map_ne_zero_iff_ne_zero (spectralAlgNorm K L)).mpr hx)
+        isPowMul_spectralNorm y :=
   rfl
 
 section CompleteSpace
@@ -751,11 +752,10 @@ theorem spectralAlgNorm_mul (x y : L) :
   · simp [hx, zero_mul, map_zero]
   · have hx' : spectralAlgNorm K L x ≠ 0 :=
       ne_of_gt (spectralNorm_zero_lt hx (Algebra.IsAlgebraic.isAlgebraic x))
-    have hf1 : (spectralAlgNorm K L) 1 ≤ 1 := le_of_eq spectralAlgNorm_one
     set f : AlgebraNorm K L := algNormFromConst K hx with hf
-    have hf_pow : IsPowMul f := seminormFromConst_isPowMul hf1 hx' isPowMul_spectralNorm
+    have hf_pow : IsPowMul f := seminormFromConst_isPowMul hx' isPowMul_spectralNorm
     rw [← spectralNorm_unique hf_pow, hf]
-    exact seminormFromConst_const_mul hf1 hx' isPowMul_spectralNorm _
+    exact seminormFromConst_const_mul hx' isPowMul_spectralNorm _
 
 variable (K L) in
 /-- The spectral norm is a multiplicative `K`-algebra norm on `L`. -/
