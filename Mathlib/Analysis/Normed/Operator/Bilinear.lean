@@ -41,11 +41,11 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
 
 variable
   [AddCommGroup E'] [Module 𝕜 E'] [TopologicalSpace E']
-  [AddCommGroup Eₗ'] [Module 𝕜 Eₗ'] [TopologicalSpace Eₗ'][IsNormableSpace 𝕜 Eₗ']
-  [AddCommGroup F'] [Module 𝕜₂ F'] [TopologicalSpace F'][IsNormableSpace 𝕜₂ F']
-  [AddCommGroup Fₗ'] [Module 𝕜 Fₗ'] [TopologicalSpace Fₗ'][IsNormableSpace 𝕜 Fₗ']
-  [AddCommGroup G'] [Module 𝕜₃ G'] [TopologicalSpace G'][IsNormableSpace 𝕜₃ G']
-  [AddCommGroup Gₗ'] [Module 𝕜 Gₗ'] [TopologicalSpace Gₗ'][IsNormableSpace 𝕜 Gₗ']
+  [AddCommGroup Eₗ'] [Module 𝕜 Eₗ'] [TopologicalSpace Eₗ'] [IsNormableSpace 𝕜 Eₗ']
+  [AddCommGroup F'] [Module 𝕜₂ F'] [TopologicalSpace F'] [IsNormableSpace 𝕜₂ F']
+  [AddCommGroup Fₗ'] [Module 𝕜 Fₗ'] [TopologicalSpace Fₗ'] [IsNormableSpace 𝕜 Fₗ']
+  [AddCommGroup G'] [Module 𝕜₃ G'] [TopologicalSpace G'] [IsNormableSpace 𝕜₃ G']
+  [AddCommGroup Gₗ'] [Module 𝕜 Gₗ'] [TopologicalSpace Gₗ'] [IsNormableSpace 𝕜 Gₗ']
 
 namespace ContinuousLinearMap
 
@@ -173,7 +173,7 @@ end LinearMap
 namespace ContinuousLinearMap
 
 variable [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃]
- [IsNormableSpace 𝕜 E'] [IsTopologicalAddGroup G'] [IsTopologicalAddGroup Gₗ']
+  [IsNormableSpace 𝕜 E'] [IsTopologicalAddGroup G'] [IsTopologicalAddGroup Gₗ']
 
 /-- Flip the order of arguments of a continuous bilinear map. Linear version.
 Do not use: use instead `flip` which outputs a continuous bilinear map. -/
@@ -408,7 +408,7 @@ variable {E'' F'' : Type*} [AddCommGroup E''] [AddCommGroup F'']
   [TopologicalSpace E''] [TopologicalSpace F'']
   [IsTopologicalAddGroup G'] [IsTopologicalAddGroup Gₗ']
 variable {𝕜₁' : Type*} {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₁'] [NontriviallyNormedField 𝕜₂']
-  [Module 𝕜₁' E''] [Module 𝕜₂' F''][IsNormableSpace 𝕜₁' E''][IsNormableSpace 𝕜₂' F'']
+  [Module 𝕜₁' E''] [Module 𝕜₂' F''] [IsNormableSpace 𝕜₁' E''] [IsNormableSpace 𝕜₂' F'']
   {σ₁' : 𝕜₁' →+* 𝕜} {σ₁₃' : 𝕜₁' →+* 𝕜₃} {σ₂' : 𝕜₂' →+* 𝕜₂}
   {σ₂₃' : 𝕜₂' →+* 𝕜₃} [RingHomCompTriple σ₁' σ₁₃ σ₁₃'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
   [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃'] [RingHomIsometric σ₂₃']
@@ -437,7 +437,7 @@ lemma bilinearComp_zero_left {f : E' →SL[σ₁₃] F' →SL[σ₂₃] G'} {gF 
 lemma bilinearComp_zero_right {f : E' →SL[σ₁₃] F' →SL[σ₂₃] G'} {gE : E'' →SL[σ₁'] E'} :
     bilinearComp f gE (0 : F'' →SL[σ₂'] F') = 0 := by ext; simp
 
-variable [RingHomIsometric σ₁₃] [RingHomIsometric σ₁'] [RingHomIsometric σ₂'][IsNormableSpace 𝕜 E']
+variable [RingHomIsometric σ₁₃] [RingHomIsometric σ₁'] [RingHomIsometric σ₂'] [IsNormableSpace 𝕜 E']
 
 /-- Derivative of a continuous bilinear map `f : E →L[𝕜] F →L[𝕜] G` interpreted as a map `E × F → G`
 at point `p : E × F` evaluated at `q : E × F`, as a continuous bilinear map. -/

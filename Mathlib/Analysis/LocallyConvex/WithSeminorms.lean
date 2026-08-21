@@ -24,7 +24,7 @@ public import Mathlib.Topology.Algebra.Module.LocallyConvex
   bounded by a finite number of seminorms in `E`.
 * `WithSeminorms p`, when `p` is a family of seminorms on `E`, is a proposition expressing that the
   (existing) topology on `E` is induced by the seminorms `p`.
-*`IsNormableSpace 𝕜 E` is a class asserting that the (existing) topology on `E` is induced
+* `IsNormableSpace 𝕜 E` is a class asserting that the (existing) topology on `E` is induced
   by *some* `𝕜`-seminorm
 * `PolynormableSpace 𝕜 E` is a class asserting that the (existing) topology on `E` is induced
   by *some* family of `𝕜`-seminorms. If `𝕜` is `RCLike`, this is equivalent to
@@ -536,7 +536,7 @@ noncomputable abbrev IsNormableSpace.toSeminormedAddCommGroup : SeminormedAddCom
   let q := IsNormableSpace.seminorm 𝕜 E
   have hq := hn.withSeminorms'.choose_spec
   have : IsTopologicalAddGroup E := hq.topologicalAddGroup
-  let : Norm E :=⟨IsNormableSpace.seminorm 𝕜 E⟩
+  let : Norm E := ⟨IsNormableSpace.seminorm 𝕜 E⟩
   let c : SeminormedSpace.Core 𝕜 E :=
   { norm_nonneg x := apply_nonneg q x
     norm_smul c x := map_smul_eq_mul q c x
@@ -550,9 +550,9 @@ noncomputable abbrev IsNormableSpace.toNormedSpace :
     letI : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
     NormedSpace 𝕜 E :=
   letI : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
-  { norm_smul_le c x := (map_smul_eq_mul(IsNormableSpace.seminorm 𝕜 E) c x).le }
+  { norm_smul_le c x := (map_smul_eq_mul (IsNormableSpace.seminorm 𝕜 E) c x).le }
 
-instance [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F][IsNormableSpace 𝕜 F] :
+instance [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsNormableSpace 𝕜 F] :
     IsNormableSpace 𝕜 (E × F) := by
   let : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
   let : NormedSpace 𝕜 E := IsNormableSpace.toNormedSpace 𝕜 E
