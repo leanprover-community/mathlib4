@@ -7981,6 +7981,7 @@ public import Mathlib.Topology.ContinuousMap.T0Sierpinski
 public import Mathlib.Topology.ContinuousMap.Units
 public import Mathlib.Topology.ContinuousMap.Weierstrass
 public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+public import Mathlib.Topology.ContinuousMap.ZeroAtInftyUnitization
 public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.Convenient.Category
 public import Mathlib.Topology.Convenient.ContinuousMapGeneratedBy
