@@ -26,16 +26,50 @@ This file defines spectral norms and uses them to construct extensions of absolu
 
 @[expose] public section
 
+-- todo: golf `normFromConst` file
+
+-- #42986
 open Filter Topology in
 theorem tendsto_nhds_unique_of_forall {X Y : Type*} [TopologicalSpace X] [T2Space X] {f g : Y → X}
     {l : Filter Y} {a b : X} [NeBot l] (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b))
     (hfg : ∀ y, f y = g y) : a = b :=
   tendsto_nhds_unique_of_eventuallyEq ha hb (Eventually.of_forall hfg)
 
+section fromConst
+
+variable {K L : Type*} [NormedField K] [Field L] [Algebra K L]
+
+@[simp]
+theorem RingNorm.toRingSeminorm_apply (f : RingNorm L) (x : L) :
+    f.toRingSeminorm x = f x :=
+  rfl
+
+@[simp]
+theorem AlgebraNorm.toRingNorm_apply (f : AlgebraNorm K L) (x : L) :
+    f.toRingNorm x = f x :=
+  rfl
+
+open Filter Topology in
+noncomputable def algebraNormFromConst {c : L}
+    {f : AlgebraNorm K L} (h1 : f 1 = 1) (h0 : f c ≠ 0) (hf : IsPowMul f) : AlgebraNorm K L where
+  __ := normFromConst h1.le h0 hf
+  smul' x y := by
+    have hx : f (algebraMap K L x) = ‖x‖ := by
+      rw [Algebra.algebraMap_eq_smul_one, map_smul_eq_mul, h1, mul_one]
+    have hy y : f (algebraMap K L x * y) = f (algebraMap K L x) * f y := by
+      rw [← Algebra.smul_def, map_smul_eq_mul, hx]
+    simp [Algebra.smul_def, seminormFromConst_isMul_of_isMul h1.le h0 hf hy y,
+      seminormFromConst_apply_of_isMul h1.le h0 hf hy, hx]
+
+end fromConst
+
+#exit
+
 section matrices
 
 open scoped Matrix.Norms.Operator
 
+-- #43016
 theorem Matrix.linfty_opNNNorm_blockDiagonal
     {R m n o : Type*} [SeminormedAddCommGroup R]
     [DecidableEq o] [Fintype m] [Fintype n] [Fintype o] (M : o → Matrix m n R) :
@@ -44,12 +78,14 @@ theorem Matrix.linfty_opNNNorm_blockDiagonal
     Finset.sup_product_right, Finset.sum_product, blockDiagonal_apply, apply_ite]
   simp
 
+-- ##43016
 theorem Matrix.linfty_opNorm_blockDiagonal
     {R m n o : Type*} [SeminormedAddCommGroup R]
     [DecidableEq o] [Fintype m] [Fintype n] [Fintype o] (M : o → Matrix m n R) :
     ‖blockDiagonal M‖ = ‖M‖ :=
   congr_arg ((↑) : NNReal → Real) <| linfty_opNNNorm_blockDiagonal M
 
+-- waiting on spectral radius (also look into futher golfing)
 open Filter Topology in
 private theorem Matrix.spectralRadiusLim_conj_le {R m n : Type*}
     [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
@@ -73,6 +109,7 @@ private theorem Matrix.spectralRadiusLim_conj_le {R m n : Type*}
     ((Real.continuous_const_rpow hc).tendsto' 0 1 c.rpow_zero).comp tendsto_inv_atTop_nhds_zero_nat
   exact ((key hA).mul (tendsto_spectralRadiusLim B)).mul (key hC)
 
+-- waiting on spectral radius (also look into futher golfing)
 theorem Matrix.spectralRadiusLim_conj {R m n : Type*}
     [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
     (A : Matrix m n R) (B : Matrix n n R) (C : Matrix n m R)
@@ -83,6 +120,7 @@ theorem Matrix.spectralRadiusLim_conj {R m n : Type*}
   have := Matrix.spectralRadiusLim_conj_le C (A * B * C) A hCA hAC
   rwa [h] at this
 
+-- waiting on spectral radius
 theorem Matrix.spectralRadiusLim_blockMatrix {R m : Type*} [DecidableEq m] [Fintype m]
     [NormedCommRing R] (A : Matrix m m R) (n : Type*) [DecidableEq n] [Fintype n] [Nonempty n] :
     spectralRadiusLim (Matrix.blockDiagonal fun _ : n ↦ A) = spectralRadiusLim A := by
@@ -92,6 +130,7 @@ theorem Matrix.spectralRadiusLim_blockMatrix {R m : Type*} [DecidableEq m] [Fint
 
 end matrices
 
+-- #43015
 section unique
 
 open IntermediateField
@@ -137,6 +176,7 @@ theorem IsPowMul.unique [CompleteSpace K] {f g : AlgebraNorm K L}
 
 end unique
 
+-- all blocked by spectral radius
 section spectralRadiusLimNorm
 
 variable (K L M : Type*) [NormedField K] [Field L] [Field M] [Algebra K L] [Algebra K M]
@@ -359,8 +399,6 @@ theorem spectralAlgNorm_isPowMul : IsPowMul (spectralAlgNorm' K L) :=
   isPowMul_spectralNorm'
 
 end spectralAlgNorm
-
-
 
 
 
