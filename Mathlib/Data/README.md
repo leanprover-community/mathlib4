@@ -1,8 +1,14 @@
 # Data structures
 
-This folder contains results about data structures such as `List`, `Bool` or `Option`.
-In an ideal world, this folder wouldn't exist as its content could reasonably be upstreamed
-to either Core or Batteries.
+This folder contains definitions and results about data structures
+such as `List`, `Bool` or `Option` that could reasonably be upstreamed to either Core or Batteries.
+
+Other definitions and results that are more "mathematics-flavored" but do not clearly belong
+to a specific mathematical domain should instead go in `Basic`.
+
+Note that, although the possibility of upstreaming is the defining property of this folder,
+the maintainer of Core and Batteries can refuse the upstreaming of material from this folder
+to Core or Batteries.
 
 ## TODO
 
