@@ -6,8 +6,9 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.Complement
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-! # Continuous linear maps with a continuous left/right inverse
 
@@ -198,7 +199,7 @@ end NontriviallyNormedField
 section Ring
 
 -- The next lemmas assume we are working over a ring.
-variable {R E E' F F' G : Type*} [Ring R]
+variable {R E F : Type*} [Ring R]
   [TopologicalSpace E] [AddCommGroup E] [Module R E]
   [TopologicalSpace F] [AddCommGroup F] [Module R F] {f : E →L[R] F}
 
