@@ -34,8 +34,6 @@ theorem countP_lt_length_iff {l : List α} {p : α → Bool} :
 
 variable [BEq α] [LawfulBEq α] {l l₁ l₂ : List α}
 
-section beq
-
 @[simp]
 theorem count_lt_length_iff {a : α} : l.count a < l.length ↔ ∃ b ∈ l, b ≠ a := by simp [count]
 
@@ -64,12 +62,6 @@ theorem count_map_of_injective [BEq β] [LawfulBEq β] (l : List α) (f : α →
   unfold Function.comp
   simp only [hf.beq_eq]
 
-end beq
-
-section decidableCount
-
-variable {α : Type*} [DecidableEq α]
-
 theorem mem_tail_of_count_ge_two {x : α} {l : List α} (h : 2 ≤ l.count x) : x ∈ l.tail := by
   cases l with
   | nil => simp at h
@@ -84,7 +76,5 @@ theorem exists_pos_get_of_dropLast_count_ge_two {l : List α} {x : α}
   rw [length_tail, length_dropLast] at hj
   refine ⟨j + 1, by omega, Nat.succ_pos _, by omega, ?_⟩
   rw [get_eq_getElem, ← hjx, getElem_tail, getElem_dropLast]
-
-end decidableCount
 
 end List
