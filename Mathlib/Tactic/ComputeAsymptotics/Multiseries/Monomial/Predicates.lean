@@ -27,7 +27,7 @@ This trichotomy determines the asymptotic behaviour of a monomial:
 
 @[expose] public section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 /-- Unit monomial, represented as a list of its exponents. `[e₁, e₂, ..., eₙ]` corresponds to
 `basis[0] ^ e₁ * ... * basis[n] ^ eₙ` where `basis` is the basis of functions. -/
@@ -143,4 +143,4 @@ theorem not_FirstNonzeroIsPos {li : UnitMonomial} (h : FirstNonzeroIsNeg li) :
 
 end FirstNonzeroIsNeg
 
-end Tactic.ComputeAsymptotics.UnitMonomial
+end Mathlib.Tactic.ComputeAsymptotics.UnitMonomial

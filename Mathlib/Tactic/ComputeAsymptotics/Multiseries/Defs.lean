@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Seq.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
+public import Mathlib.Data.Real.Basic
 
 /-!
 
@@ -41,9 +42,9 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 @[expose] public section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
-open Filter Stream' Topology
+open Filter Asymptotics Topology Stream'
 
 /-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)
@@ -764,6 +765,149 @@ theorem coind {s : Multiseries basis_hd basis_tl}
         grind
       · grind [h_step exp coef tl h]
 
+/-- A predicate that says that a function `op` preserves well-orderedness of multiseries. -/
+abbrev PreservesSorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) : Prop :=
+  ∀ x, x.Sorted → (op x).Sorted
+
+theorem PreservesSorted.comp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {op op' : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
+    (h_preserves : PreservesSorted op) (h_preserves' : PreservesSorted op') :
+    PreservesSorted (op ∘ op') := by
+  simp [PreservesSorted] at *
+  grind
+
+theorem coind_friend {ms : Multiseries basis_hd basis_tl}
+    (motive : (ms : Multiseries basis_hd basis_tl) → Prop)
+    (h_base : motive ms)
+    (h_step : ∀ exp coef tl, motive (.cons exp coef tl) →
+        coef.Sorted ∧
+        tl.leadingExp < exp ∧
+        ∃ (op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl)
+        (x : Multiseries basis_hd basis_tl), tl = op x ∧
+        FriendlyOperation op ∧ PreservesSorted op ∧ motive x) :
+    ms.Sorted := by
+  let motive' (ms : Multiseries basis_hd basis_tl) : Prop :=
+    ∃ (op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl)
+      (x : Multiseries basis_hd basis_tl), ms = op x ∧ FriendlyOperation op ∧
+      PreservesSorted op ∧ motive x
+  apply Sorted.coind motive'
+  · use id, ms
+    simp [h_base, FriendlyOperation.id, PreservesSorted]
+  intro exp coef tl ⟨op, x, h_eq, h_friend, h_preserves, hx⟩
+  cases x with
+  | nil =>
+    have : Sorted (.cons exp coef tl) := by
+      rw [h_eq]
+      apply h_preserves
+      apply Sorted.nil
+    obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := this.elim_cons
+    exact ⟨h_coef_sorted, h_comp, fun _ ↦ tl, .nil, rfl, FriendlyOperation.const,
+      fun _ _ ↦ h_tl, hx⟩
+  | cons x_exp x_coef x_tl =>
+  obtain ⟨hx_coef, hx_comp, op', y, hx_tl, h_friend', h_preserves', hy⟩ :=
+    h_step x_exp x_coef x_tl hx
+  obtain ⟨x_tl', hx_tl_head, this⟩ : ∃ (x_tl' : Multiseries basis_hd basis_tl),
+      x_tl.head = x_tl'.head ∧ Sorted (.cons x_exp x_coef x_tl') := by
+    cases x_tl with
+    | nil =>
+      use .nil
+      simp only [head_nil, true_and]
+      apply Sorted.cons_nil hx_coef
+    | cons x_tl_exp x_tl_coef x_tl_tl =>
+      use .cons x_tl_exp x_tl_coef .nil
+      simp only [head_cons, true_and]
+      apply Sorted.cons hx_coef
+      · simpa using hx_comp
+      apply Sorted.cons_nil
+      cases y with
+      | nil =>
+        have : Sorted (.cons x_tl_exp x_tl_coef x_tl_tl) := by
+          rw [hx_tl]
+          apply h_preserves'
+          apply Sorted.nil
+        obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := this.elim_cons
+        assumption
+      | cons y_exp y_coef y_tl =>
+        have : Sorted (basis_hd := basis_hd) (.cons y_exp y_coef .nil) := by
+          apply Sorted.cons_nil
+          grind
+        apply h_preserves' at this
+        have hT := FriendlyOperation.destruct_apply_eq_unfold h_friend'
+        have h1 := hT (.cons y_exp y_coef .nil)
+        have h2 := hT (.cons y_exp y_coef y_tl)
+        simp only [tail_cons, head_cons] at h1 h2
+        cases hT_head : h_friend'.unfold (some (y_exp, y_coef)) with
+        | none =>
+          simp [hT_head, ← hx_tl] at h2
+        | some v =>
+        obtain ⟨z_exp, z_coef, op'', h_friend''⟩ := v
+        simp only [hT_head, Option.map_some, ← hx_tl, destruct_cons, Option.some.injEq,
+          Prod.mk.injEq] at h1 h2
+        obtain ⟨rfl, rfl, rfl⟩ := h2
+        apply destruct_eq_cons at h1
+        rw [h1] at this
+        obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := this.elim_cons
+        assumption
+  apply h_preserves at this
+  have hT := FriendlyOperation.destruct_apply_eq_unfold h_friend
+  have h1 := hT (.cons x_exp x_coef x_tl')
+  have h2 := hT (.cons x_exp x_coef x_tl)
+  simp only [tail_cons, head_cons] at h1 h2
+  cases hT_head : h_friend.unfold (some (x_exp, x_coef)) with
+  | none => simp [← h_eq, hT_head] at h2
+  | some v =>
+  obtain ⟨exp', coef', op'', h_friend''⟩ := v
+  simp only [hT_head, Option.map_some, ← h_eq, destruct_cons, Option.some.injEq,
+    Prod.mk.injEq] at h1 h2
+  obtain ⟨rfl, rfl, h_tl_eq⟩ := h2
+  apply destruct_eq_cons at h1
+  rw [h1] at this
+  obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := this.elim_cons
+  refine ⟨h_coef_sorted, ?_, ?_⟩
+  · simpa [h_tl_eq, leadingExp, FriendlyOperation.head_eq_head h_friend'' hx_tl_head] using h_comp
+  simp only [motive']
+  use (fun z ↦ if (op' z).leadingExp < x_exp then
+    (op (.cons x_exp x_coef (op' z))).tail else .nil), y
+  constructorm* _ ∧ _
+  · simp [← hx_tl, ← h_eq, hx_comp]
+  · change FriendlyOperation ((fun z ↦ if z.leadingExp < (x_exp : WithBot ℝ) then
+      (op (.cons x_exp x_coef z)).tail else .nil) ∘ op')
+    apply FriendlyOperation.comp _ h_friend'
+    simp only [leadingExp]
+    let P (hd : Option (ℝ × MultiseriesExpansion basis_tl)) : Prop :=
+      (match hd with | none => ⊥ | some (exp, _) => exp) < (x_exp : WithBot ℝ)
+    apply FriendlyOperation.ite (P := P)
+    · apply FriendlyOperation.cons_tail h_friend
+    · apply FriendlyOperation.const
+  · intro z hz
+    dsimp
+    split_ifs with h_if
+    · apply Sorted.tail
+      apply h_preserves
+      apply Sorted.cons hx_coef h_if (h_preserves' z hz)
+    · apply Sorted.nil
+  · exact hy
+
+theorem coind_friend' {ms : Multiseries basis_hd basis_tl}
+    {γ : Type*} (op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl)
+    [FriendlyOperationClass op]
+    (motive : (ms : Multiseries basis_hd basis_tl) → Prop)
+    (C : γ → Prop)
+    (h_op : ∀ c x, C c → x.Sorted → (op c x).Sorted)
+    (h_base : motive ms)
+    (h_step : ∀ exp coef tl, motive (.cons exp coef tl) →
+        coef.Sorted ∧
+        tl.leadingExp < exp ∧
+        ∃ c x, tl = op c x ∧ C c ∧ motive x) :
+    ms.Sorted := by
+  apply Sorted.coind_friend motive h_base
+  intro exp coef tl ih
+  specialize h_step exp coef tl ih
+  obtain ⟨h_coef_sorted, h_comp, c, x, h_tl, h_C, hx⟩ := h_step
+  refine ⟨h_coef_sorted, h_comp, op c, x, h_tl, FriendlyOperationClass.FriendlyOperation _,
+    by grind, hx⟩
+
 end Multiseries.Sorted
 
 namespace Sorted
@@ -938,4 +1082,4 @@ end Approximates
 
 end MultiseriesExpansion
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

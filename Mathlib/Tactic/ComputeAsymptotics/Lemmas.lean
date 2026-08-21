@@ -34,7 +34,7 @@ public section
 
 open Filter Topology Asymptotics
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 variable {α 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
   [OrderTopology 𝕜] {l : Filter α} (f : 𝕜 → α) (c : 𝕜)
@@ -83,4 +83,4 @@ theorem isBigO_of_div_tendsto_atBot {f g : ℝ → ℝ} {l : Filter ℝ}
     f =O[l] g :=
   Asymptotics.IsLittleO.isBigO (.of_tendsto_div_atBot h)
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics
