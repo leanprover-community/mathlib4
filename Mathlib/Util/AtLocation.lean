@@ -27,7 +27,7 @@ public meta section
 `loc`.
 * If `loc` is a list of locations, runs at each specified hypothesis (and finally the goal if `⊢` is
   included), and fails if any of the tactic applications fail.
-* If `loc` is `*`, runs at the target and at the nondependent `Prop` hypotheses (those produced by
+* If `loc` is `*`, runs at the target and at the nondependent `Prop` hypotheses in reversed order (those produced by
   `Lean.MVarId.getNondepPropHyps`), calling `failed` if no location succeeds.
 
 The implementation adapts `Lean.Elab.Tactic.withLocation` with a restricted wildcard. -/
