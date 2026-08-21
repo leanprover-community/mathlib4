@@ -242,7 +242,7 @@ lemma HasLaw.hasLaw_indicator_infinitePi_ite_of_setBernoulli [DecidablePred (· 
 lemma HasLaw.hasLaw_indicator_one_infinitePi_ite_of_setBernoulli [DecidablePred (· ∈ u)]
     {M : Type*} [MeasurableSpace M] [MeasurableSingletonClass M] [Zero M] [One M]
     {S : Ω → Set ι} (hS : HasLaw S setBer(u, p) P) :
-    HasLaw (fun ω i ↦ {ω' | i ∈ S ω'}.indicator 1 ω)
+    HasLaw (fun ω i ↦ {ω' | i ∈ S ω'}.indicator (1 : Ω → M) ω)
       (infinitePi (fun i ↦ if i ∈ u then Ber(1, 0, p) else dirac 0)) P :=
   hS.hasLaw_indicator_infinitePi_ite_of_setBernoulli 1
 
