@@ -18,47 +18,95 @@ public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryAut
 
 namespace CategoryTheory
 
-open Limits
+open Limits PreGaloisCategory
 
 variable {C : Type*} [Category* C]
 
-abbrev SingleObj.HasQuotient {X : C} (H : Subgroup (Aut X)) :=
-    HasColimit (SingleObj.functor ((Aut.toEnd X).comp H.subtype))
+namespace SingleObj
 
-noncomputable def SingleObj.quotient {X : C} (H : Subgroup (Aut X)) [HasQuotient H] : C :=
+variable {X : C} (H : Subgroup (Aut X))
+
+abbrev HasQuotient {X : C} (H : Subgroup (Aut X)) :=
+  HasColimit (SingleObj.functor ((Aut.toEnd X).comp H.subtype))
+
+variable [HasQuotient H]
+
+noncomputable def quotient : C :=
   colimit (SingleObj.functor ((Aut.toEnd X).comp H.subtype))
 
-noncomputable def SingleObj.quotient.π {X : C} (H : Subgroup (Aut X)) [HasQuotient H] :
-    X ⟶ quotient H :=
+namespace quotient
+
+noncomputable def π : X ⟶ quotient H :=
   colimit.ι (SingleObj.functor ((Aut.toEnd X).comp H.subtype))
     (Quiver.SingleObj.star _)
+
+variable {H} in
+@[reassoc (attr := simp)]
+lemma w (h : H) : h.val.hom ≫ π H = π H :=
+  colimit.w (SingleObj.functor ((Aut.toEnd X).comp H.subtype)) (Quiver.SingleObj.toHom h)
+
+variable {H} in
+@[reassoc (attr := simp)]
+lemma w' (h : H) : h.val.inv ≫ π H = π H := w (h⁻¹)
+
+set_option backward.isDefEq.respectTransparency false in
+@[implicit_reducible]
+noncomputable def cocone :
+    Cocone (SingleObj.functor ((Aut.toEnd X).comp H.subtype)) where
+  pt := SingleObj.quotient H
+  ι := SingleObj.natTrans (SingleObj.quotient.π H) (fun h ↦ by simp [Aut.unitsEndEquivAut])
+
+noncomputable def isColimit : IsColimit (cocone H) :=
+  colimit.isColimit (SingleObj.functor ((Aut.toEnd X).comp H.subtype))
+
+instance {X : C} (H : Subgroup (Aut X)) [SingleObj.HasQuotient H] :
+    Epi (SingleObj.quotient.π H) where
+  left_cancellation _ _ h := (isColimit H).hom_ext (fun _ ↦ h)
+
+end quotient
+
+end SingleObj
 
 namespace GaloisCategory
 
 variable [GaloisCategory C]
 
-instance {X : C} (H : Subgroup (Aut X)) : SingleObj.HasQuotient H := by
+instance {X : C} [PreGaloisCategory.IsConnected X] (H : Subgroup (Aut X)) :
+    SingleObj.HasQuotient H := by
+  obtain ⟨G', hg, hf, ⟨e⟩⟩ := Finite.exists_type_univ_nonempty_mulEquiv.{_, 0} H
+  have := hasColimitsOfShape_of_equivalence e.toSingleObjEquiv.symm (C := C)
+  infer_instance
+
+instance {X : C} [PreGaloisCategory.IsConnected X] (H : Subgroup (Aut X)) :
+    PreGaloisCategory.IsConnected (SingleObj.quotient H) :=
+  PreGaloisCategory.IsConnected.of_epi (SingleObj.quotient.π H)
+
+instance {X : C} [IsGalois X] (H : Subgroup (Aut X)) :
+    IsGaloisCover (SingleObj.quotient.π H) := by
+  rw [isGaloisCover_def]
   sorry
 
 section
 
 variable {Y X : C} {f : Y ⟶ X}
-  [PreGaloisCategory.IsConnected X]
+  [PreGaloisCategory.IsConnected X] [PreGaloisCategory.IsConnected Y]
   (H : Subgroup (Aut (Over.mk f)))
 
 noncomputable abbrev overQuotient : Over X := SingleObj.quotient H
 
-instance [IsGaloisCover f] : PreGaloisCategory.IsConnected (overQuotient H).left := by
-  sorry
-
-instance [PreGaloisCategory.IsConnected Y] :
-    PreGaloisCategory.IsConnected (overQuotient H).left := by
-  sorry
-
 noncomputable abbrev overQuotientπ : Y ⟶ (overQuotient H).left :=
   (SingleObj.quotient.π H).left
 
-instance [IsGaloisCover f] : IsGaloisCover (overQuotientπ H) := sorry
+instance : PreGaloisCategory.IsConnected (overQuotient H).left := by
+  rw [← isConnected_over_iff]
+  infer_instance
+
+instance [IsGaloisCover f] : IsGaloisCover (overQuotientπ H) :=
+  (isGalois_iff_of_isEquivalence
+    (Over.iteratedSliceEquiv (overQuotient H)).functor
+      (Over.mk (Y := Over.mk f) (Over.homMk (overQuotientπ H)))).2 (by
+        change IsGaloisCover (SingleObj.quotient.π H)
+        infer_instance)
 
 @[simp]
 lemma range_overMap_overQuotientπ :
@@ -68,8 +116,8 @@ lemma range_overMap_overQuotientπ :
 end
 
 lemma exists_of_subgroup
-    {Y X : C} {f : Y ⟶ X} [PreGaloisCategory.IsConnected X] [IsGaloisCover f]
-    (H : Subgroup (Aut (Over.mk f))) :
+    {Y X : C} {f : Y ⟶ X} [PreGaloisCategory.IsConnected Y]
+    [PreGaloisCategory.IsConnected X] [IsGaloisCover f] (H : Subgroup (Aut (Over.mk f))) :
     ∃ (Z : C) (_ : PreGaloisCategory.IsConnected Z) (a : Y ⟶ Z) (b : Z ⟶ X) (fac : a ≫ b = f)
       (_ : IsGaloisCover a), (Aut.overMap a b f).range = H :=
   ⟨(overQuotient H).left, inferInstance, overQuotientπ H, (overQuotient H).hom,
@@ -82,8 +130,8 @@ lemma isGaloisCover_iff_normal
     IsGaloisCover g ↔ (Aut.overMap f g fg).range.Normal := sorry
 
 lemma exists_of_normal_subgroup
-    {Y X : C} {f : Y ⟶ X} [PreGaloisCategory.IsConnected X] [IsGaloisCover f]
-    (H : Subgroup (Aut (Over.mk f))) [H.Normal] :
+    {Y X : C} {f : Y ⟶ X} [PreGaloisCategory.IsConnected Y] [PreGaloisCategory.IsConnected X]
+    [IsGaloisCover f] (H : Subgroup (Aut (Over.mk f))) [H.Normal] :
     ∃ (Z : C) (_ :PreGaloisCategory.IsConnected Z) (a : Y ⟶ Z) (b : Z ⟶ X) (fac : a ≫ b = f)
       (_ : IsGaloisCover a) (_ : IsGaloisCover b), (Aut.overMap a b f).range = H := by
   obtain ⟨Z, _, a, b, fac, _, h⟩ := exists_of_subgroup H

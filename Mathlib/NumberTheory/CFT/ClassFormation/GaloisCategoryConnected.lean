@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Galois.Decomposition
+public import Mathlib.CategoryTheory.Galois.Prorepresentability
 public import Mathlib.CategoryTheory.Galois.GaloisObjects
 
 /-!
@@ -27,6 +28,21 @@ open GaloisCategory PreGaloisCategory Limits
 
 namespace PreGaloisCategory
 
+lemma isConnected_iff_pretransitive_and_nonempty
+    [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] (X : C) :
+    PreGaloisCategory.IsConnected X ↔ MulAction.IsPretransitive (Aut F) (F.obj X).obj ∧
+      Nonempty (F.obj X).obj :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦
+    { notInitial := not_initial_of_inhabited F (Classical.arbitrary (F.obj X).obj)
+      noTrivialComponent Y i _ hY := by
+        rw [← isIso_iff_of_reflects_iso _ F,
+          ConcreteCategory.isIso_iff_bijective]
+        refine ⟨injective_of_mono ((forget _).map (F.map i)), fun x ↦ ?_⟩
+        rw [not_initial_iff_fiber_nonempty F] at hY
+        let y : (F.obj Y).obj := Classical.arbitrary _
+        obtain ⟨g, rfl⟩ := MulAction.exists_smul_eq  (Aut F) (F.map i y) x
+        exact ⟨g • y, by simp [mulAction_naturality]⟩}⟩
+
 lemma IsConnected.of_iso
     {X Y : C} [PreGaloisCategory.IsConnected X] (e : X ≅ Y) :
     IsConnected Y where
@@ -34,6 +50,19 @@ lemma IsConnected.of_iso
   noTrivialComponent Z i _ hZ := by
     rw [← isIso_comp_right_iff _ e.inv]
     exact noTrivialComponent _ _ hZ
+
+lemma IsConnected.of_epi [GaloisCategory C]
+    {X Y : C} [PreGaloisCategory.IsConnected X] (p : X ⟶ Y) [Epi p] :
+    PreGaloisCategory.IsConnected Y := by
+  let F := getFiberFunctor C
+  rw [isConnected_iff_pretransitive_and_nonempty F]
+  have hp : Function.Surjective (F.map p) :=
+    surjective_of_epi ((forget _).map (F.map p))
+  refine ⟨⟨fun y₁ y₂ ↦ ?_⟩, ⟨F.map p (Classical.arbitrary (F.obj X).obj)⟩⟩
+  obtain ⟨x₁, rfl⟩ := hp y₁
+  obtain ⟨x₂, rfl⟩ := hp y₂
+  obtain ⟨g, rfl⟩ := MulAction.exists_smul_eq (Aut F) x₁ x₂
+  exact ⟨g, by simp [mulAction_naturality]⟩
 
 variable (C) in
 /-- The property of objects satisfied by conencted objects (in a pre-Galois

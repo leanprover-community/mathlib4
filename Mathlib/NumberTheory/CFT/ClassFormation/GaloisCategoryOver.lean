@@ -92,7 +92,6 @@ lemma exists_aut_of_isConnected
   refine ⟨g, ?_⟩
   rwa [← NatTrans.naturality_apply]
 
-
 /-- If `F : C ⥤ FintypeCat.{w}` is a fiber functor, and `s : F.obj S` where
 `S` is a connected object of `C`, this is the fiber functor
 on `Over S` which sends `f : X ⟶ S` to the inverse image of `s` by `F.map f`. -/
