@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.WithOne.Defs
 public import Mathlib.Algebra.GroupWithZero.Equiv
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Data.Nat.Cast.Defs
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Option.NAry
 
 /-!
@@ -262,6 +261,7 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) where
 
 instance instDivInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) where
 
+set_option backward.isDefEq.respectTransparency false in
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) where
   inv_inv a := (Option.map_map _ _ _).trans <| by simp
 
@@ -364,6 +364,8 @@ def exp (a : M) : Mᵐ⁰ := coe <| .ofAdd a
 
 @[simp] lemma exp_ne_zero {a : M} : exp a ≠ 0 := by simp [exp]
 
+lemma exp_eq_coe_ofAdd (a : M) : exp a = coe (Multiplicative.ofAdd a) := rfl
+
 lemma exp_injective : Injective (exp : M → Mᵐ⁰) :=
   Multiplicative.ofAdd.injective.comp WithZero.coe_injective
 
@@ -409,13 +411,17 @@ def log (x : Mᵐ⁰) : M := x.recZeroCoe 0 Multiplicative.toAdd
 lemma log_mul {x y : Mᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x * y) = log x + log y := by
   lift x to Multiplicative M using hx; lift y to Multiplicative M using hy; rfl
 
-@[simp← ] lemma exp_nsmul (n : ℕ) (a : M) : exp (n • a) = exp a ^ n := rfl
+@[simp ←] lemma exp_nsmul (n : ℕ) (a : M) : exp (n • a) = exp a ^ n := rfl
 
 @[simp]
 lemma log_pow : ∀ (x : Mᵐ⁰) (n : ℕ), log (x ^ n) = n • log x
   | 0, 0 => by simp
   | 0, n + 1 => by simp
   | (x : Multiplicative M), n => rfl
+
+lemma toAdd_unzero_eq_log {x : Mᵐ⁰} (hx : x ≠ 0) : (unzero hx).toAdd = log x := by
+  lift x to Multiplicative M using hx
+  simp [log]
 
 end AddMonoid
 
@@ -433,12 +439,7 @@ def logEquiv : (Gᵐ⁰)ˣ ≃ G := unitsWithZeroEquiv.toEquiv.trans Multiplicat
 
 @[simp] lemma coe_expEquiv_apply (a : G) : expEquiv a = exp a := rfl
 
-@[simp] lemma logEquiv_apply (x : (Gᵐ⁰)ˣ) : logEquiv x = log x := by
-  obtain ⟨_ | a, _ | b, hab, hba⟩ := x
-  · cases hab
-  · cases hab
-  · cases hab
-  · rfl
+@[simp] lemma logEquiv_apply (x : (Gᵐ⁰)ˣ) : logEquiv x = log x := toAdd_unzero_eq_log x.ne_zero
 
 lemma logEquiv_unitsMk0 (x : Gᵐ⁰) (hx) : logEquiv (.mk0 x hx) = log x := logEquiv_apply _
 
@@ -448,14 +449,19 @@ lemma logEquiv_unitsMk0 (x : Gᵐ⁰) (hx) : logEquiv (.mk0 x hx) = log x := log
 lemma log_div {x y : Gᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x / y) = log x - log y := by
   lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; rfl
 
-@[simp] lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹ := rfl
+-- This is deliberately not a `simp` lemma: the group structure on `Gᵐ⁰` interacts much worse with
+-- the order relation than the one on `G`, so `exp (-a)` is a better normal form than `(exp a)⁻¹`.
+-- The `simp` lemma pushing `⁻¹` inside `exp` is `WithZero.inv_exp` below.
+lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹ := rfl
+
+@[simp] lemma inv_exp (a : G) : (exp a)⁻¹ = exp (-a) := rfl
 
 @[simp]
 lemma log_inv : ∀ x : Gᵐ⁰, log x⁻¹ = -log x
   | 0 => by simp
   | (x : Multiplicative G) => rfl
 
-@[simp← ] lemma exp_zsmul (n : ℤ) (a : G) : exp (n • a) = exp a ^ n := rfl
+@[simp ←] lemma exp_zsmul (n : ℤ) (a : G) : exp (n • a) = exp a ^ n := rfl
 
 @[simp]
 lemma log_zpow (x : Gᵐ⁰) (n : ℤ) : log (x ^ n) = n • log x := by cases n <;> simp [log_pow, log_inv]

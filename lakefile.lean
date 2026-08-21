@@ -8,12 +8,12 @@ open Lake DSL
 
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
+
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.86" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "main"
   with NameMap.empty.insert `errorOnBuild
-    "ProofWidgets not up-to-date. \
-    Please run `lake exe cache get` to fetch the latest ProofWidgets. \
-    If this does not work, report your issue on the Lean Zulip."
+    "ProofWidgets failed to reuse pre-built JS code. \
+    Please report this issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
@@ -39,16 +39,30 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 ]
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
-`Archive` and `Counterexamples`. (`tests` omits the first two options.) -/
+`Archive` and `Counterexamples`. -/
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
-    ⟨`maxSynthPendingDepth, .ofNat 3⟩
+    ⟨`maxSynthPendingDepth, .ofNat 3⟩,
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
+/-- These options are passed as `leanOptions` when building `MathlibTest`. We don't use the typical
+mathlib options in order to simulate the default downstream environment. -/
+abbrev mathlibTestOptions : Array LeanOption := #[
+    ⟨`pp.mvars.anonymous, false⟩ -- test stability: pretty-print `?m.37` as `?_`
+  ]
+
 package mathlib where
   testDriver := "MathlibTest"
+  lintDriver := "batteries/runLinter"
+  lintDriverArgs := #["Mathlib"]
+  -- A version of Mathlib only supports the toolchain it is built with.
+  fixedToolchain := true
+  -- Mathlib oleans are built on Linux CI and used across platforms.
+  platformIndependent := true
+  -- Mathlib currently expects artifacts to be in the build directory.
+  restoreAllArtifacts := true
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
@@ -66,16 +80,31 @@ lean_lib Mathlib where
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
-lean_lib Cache
+lean_lib Cache where
+  globs := #[`Cache.+]
 
 lean_lib MathlibTest where
-  globs := #[.submodules `MathlibTest]
+  globs := #[`MathlibTest.+]
+  leanOptions := mathlibTestOptions
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
 
 lean_lib Counterexamples where
   leanOptions := mathlibLeanOptions
+
+/-- Wanted statements: `Wanted/X/Y/Z.lean` contains the `proof_wanted` statements
+corresponding to `Mathlib/X/Y/Z.lean`. Each file carries a copyright header naming the
+author of the original statements, but beyond that contains only imports, context setup
+(`open`/`namespace`/`variable`) and `proof_wanted` statements; in particular there are no
+module docstrings, so the header style linter is disabled.
+`proof_wanted` elaborates to a `private` placeholder declaration, so every module here
+consists solely of private declarations; the `privateModule` linter is disabled accordingly
+(neither `@[expose] public section` nor a `public` modifier suppresses it, since the
+placeholder is unconditionally `private`). -/
+lean_lib Wanted where
+  leanOptions := mathlibLeanOptions.push ⟨`weak.linter.style.header, false⟩
+    |>.push ⟨`weak.linter.privateModule, false⟩
 
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where
@@ -99,6 +128,12 @@ lean_exe autolabel where
 lean_exe cache where
   root := `Cache.Main
 
+/-- `lake exe cache-test` runs the cache tool's unit tests (container URL
+construction, per-repo trust-ordered allowlist, `--cache-from` parsing).
+Runnable standalone — does not require building Mathlib or `MathlibTest`. -/
+lean_exe «cache-test» where
+  root := `Cache.Test
+
 /-- `lake exe check-yaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe «check-yaml» where
   srcDir := "scripts"
@@ -121,6 +156,10 @@ lean_exe «lint-style» where
 /-- `lake exe check-title-labels` checks if a PR title obeys some basic formatting requirements.
 Currently, these checks are quite lenient, but could be made stricter in the future. -/
 lean_exe «check_title_labels» where
+  srcDir := "scripts"
+
+/-- `lake exe nightly-testing-checklist` reports nightly-testing branch status. -/
+lean_exe «nightly-testing-checklist» where
   srcDir := "scripts"
 
 lean_exe mathlib_test_executable where

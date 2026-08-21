@@ -1,3 +1,4 @@
+module
 import Mathlib.Data.EReal.Basic
 import Mathlib.Order.LiminfLimsup
 

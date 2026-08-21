@@ -77,6 +77,7 @@ namespace Scheme
   limits library easier.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
@@ -122,6 +123,7 @@ instance (i : 𝖣.J) :
     LocallyRingedSpace.IsOpenImmersion ((D.toLocallyRingedSpaceGlueData).toGlueData.ι i) := by
   apply LocallyRingedSpace.GlueData.ι_isOpenImmersion
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The glued scheme of a glue data.
 This should not be used outside this file. Use `AlgebraicGeometry.Scheme.GlueData.glued` instead. -/
 def gluedScheme : Scheme := by
@@ -138,6 +140,7 @@ def gluedScheme : Scheme := by
     exact Set.mem_image_of_mem _ ⟨z, hz⟩
   · infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
   createsColimitOfFullyFaithfulOfIso D.gluedScheme
     (HasColimit.isoOfNatIso (𝖣.diagramIso forgetToLocallyRingedSpace).symm)
@@ -170,6 +173,7 @@ theorem ι_isoLocallyRingedSpace_inv (i : D.J) :
       D.isoLocallyRingedSpace.inv = (𝖣.ι i).toLRSHom :=
   𝖣.ι_gluedIso_inv forgetToLocallyRingedSpace i
 
+set_option backward.isDefEq.respectTransparency false in
 instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   rw [IsOpenImmersion, ← D.ι_isoLocallyRingedSpace_inv]; infer_instance
 
@@ -202,6 +206,7 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (D.vPullbackCone i j) :=
 local notation "D_" => TopCat.GlueData.toGlueData <|
   D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The underlying topological space of the glued scheme is isomorphic to the gluing of the
 underlying spaces -/
 def isoCarrier :
@@ -214,6 +219,7 @@ def isoCarrier :
     LocallyRingedSpace.GlueData.isoSheafedSpace _
   exact Scheme.GlueData.isoLocallyRingedSpace _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ι_isoCarrier_inv (i : D.J) :
     (D_).ι i ≫ D.isoCarrier.inv = (D.ι i).base := by
@@ -235,6 +241,7 @@ See `AlgebraicGeometry.Scheme.GlueData.ι_eq_iff`. -/
 def Rel (a b : Σ i, ((D.U i).carrier : Type _)) : Prop :=
   ∃ x : (D.V (a.1, b.1)).carrier, D.f _ _ x = a.2 ∧ (D.t _ _ ≫ D.f _ _) x = b.2
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     𝖣.ι i x = 𝖣.ι j y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
   refine Iff.trans ?_
@@ -246,6 +253,7 @@ theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     rfl -- `rfl` was not needed before https://github.com/leanprover-community/mathlib4/pull/13170
   · infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen (D.ι i ⁻¹' U) := by
   rw [← (TopCat.homeoOfIso D.isoCarrier.symm).isOpen_preimage, TopCat.GlueData.isOpen_iff]
   apply forall_congr'
@@ -280,24 +288,28 @@ def gluedCoverT' (x y z : 𝒰.I₀) :
   · simp [pullback.condition]
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem gluedCoverT'_fst_fst (x y z : 𝒰.I₀) :
     𝒰.gluedCoverT' x y z ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ pullback.snd _ _ := by
   delta gluedCoverT'; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem gluedCoverT'_fst_snd (x y z : 𝒰.I₀) :
     gluedCoverT' 𝒰 x y z ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
       pullback.snd _ _ ≫ pullback.snd _ _ := by
   delta gluedCoverT'; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem gluedCoverT'_snd_fst (x y z : 𝒰.I₀) :
     gluedCoverT' 𝒰 x y z ≫ pullback.snd _ _ ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ pullback.snd _ _ := by
   delta gluedCoverT'; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem gluedCoverT'_snd_snd (x y z : 𝒰.I₀) :
     gluedCoverT' 𝒰 x y z ≫ pullback.snd _ _ ≫ pullback.snd _ _ =
@@ -337,6 +349,7 @@ def gluedCover : Scheme.GlueData.{u} where
   cocycle x y z := glued_cover_cocycle 𝒰 x y z
   f_open _ := inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical morphism from the gluing of an open cover of `X` into `X`.
 This is an isomorphism, as witnessed by an `IsIso` instance. -/
 def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
@@ -344,12 +357,13 @@ def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
   · exact fun x => 𝒰.f x
   rintro ⟨x, y⟩
   change pullback.fst _ _ ≫ _ = ((pullbackSymmetry _ _).hom ≫ pullback.fst _ _) ≫ _
-  simpa using pullback.condition
+  simpa using! pullback.condition
 
 @[simp, reassoc]
 theorem ι_fromGlued (x : 𝒰.I₀) : 𝒰.gluedCover.ι x ≫ 𝒰.fromGlued = 𝒰.f x :=
   Multicoequalizer.π_desc _ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem fromGlued_injective : Function.Injective 𝒰.fromGlued := by
   intro x y h
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
@@ -370,6 +384,7 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued := by
       IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance (x : 𝒰.gluedCover.glued.carrier) :
     IsIso (𝒰.fromGlued.stalkMap x) := by
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
@@ -378,6 +393,8 @@ instance (x : 𝒰.gluedCover.glued.carrier) :
   rw [this]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 theorem isOpenMap_fromGlued : IsOpenMap 𝒰.fromGlued := by
   intro U hU
   rw [isOpen_iff_forall_mem_open]
@@ -388,20 +405,17 @@ theorem isOpenMap_fromGlued : IsOpenMap 𝒰.fromGlued := by
   constructor
   · rw [← Set.image_preimage_eq_inter_range]
     apply (𝒰.f (𝒰.idx x)).isOpenEmbedding.isOpenMap
-    convert hU (𝒰.idx x) using 1
+    convert! hU (𝒰.idx x) using 1
     simp only [← ι_fromGlued, gluedCover_U, Hom.comp_base, TopCat.hom_comp, ContinuousMap.coe_comp,
       Set.preimage_comp]
     congr! 1
     exact Set.preimage_image_eq _ 𝒰.fromGlued_injective
   · exact ⟨hx, 𝒰.covers x⟩
 
-@[deprecated (since := "2025-10-07")] alias fromGlued_open_map := isOpenMap_fromGlued
-
 theorem isOpenEmbedding_fromGlued : IsOpenEmbedding 𝒰.fromGlued :=
   .of_continuous_injective_isOpenMap (by fun_prop) 𝒰.fromGlued_injective 𝒰.isOpenMap_fromGlued
 
-@[deprecated (since := "2025-10-07")] alias fromGlued_isOpenEmbedding := isOpenEmbedding_fromGlued
-
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Epi 𝒰.fromGlued.base := by
   rw [TopCat.epi_iff_surjective]
   intro x
@@ -422,6 +436,8 @@ instance : IsIso 𝒰.fromGlued :=
     apply PresheafedSpace.IsOpenImmersion.to_iso
   isIso_of_reflects_iso _ F
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Given an open cover of `X`, and a morphism `𝒰.X x ⟶ Y` for each open subscheme in the cover,
 such that these morphisms are compatible in the intersection (pullback), we may glue the morphisms
 together into a morphism `X ⟶ Y`.
@@ -440,6 +456,7 @@ def glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme.{u}} (f : ∀ x, 𝒰.X x
   change pullback.fst _ _ ≫ f _ = (_ ≫ _) ≫ f _
   simpa [pullbackSymmetry_hom_comp_fst] using hf _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hom_ext (𝒰 : OpenCover.{v} X) {Y : Scheme} (f₁ f₂ : X ⟶ Y)
     (h : ∀ x, 𝒰.f x ≫ f₁ = 𝒰.f x ≫ f₂) : f₁ = f₂ := by
   rw [← cancel_epi 𝒰.ulift.fromGlued]
@@ -448,6 +465,8 @@ theorem hom_ext (𝒰 : OpenCover.{v} X) {Y : Scheme} (f₁ f₂ : X ⟶ Y)
   rw [fromGlued, Multicoequalizer.π_desc_assoc, Multicoequalizer.π_desc_assoc]
   exact h _
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme} (f : ∀ x, 𝒰.X x ⟶ Y)
     (hf : ∀ x y, pullback.fst (𝒰.f x) (𝒰.f y) ≫ f x = pullback.snd _ _ ≫ f y)
@@ -471,6 +490,8 @@ lemma hom_ext_of_forall {X Y : Scheme} (f g : X ⟶ Y)
       refine ⟨fun x ↦ ⟨x, by simpa using hxU x⟩, inferInstance⟩ }
   exact 𝒰.hom_ext _ _ hU
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalize to covers in subcanonical topologies
 open pullback in
 attribute [local simp] condition condition_assoc in
@@ -493,6 +514,7 @@ For such a diagram, we can glue them directly since the gluing conditions are al
 The intended usage is to provide the following instances:
 - `∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)`
 - `(F ⋙ forget).IsLocallyDirected`
+
 and to directly use the `colimit` API.
 Also see `AlgebraicGeometry.Scheme.IsLocallyDirected.openCover` for the open cover of the `colimit`.
 
@@ -518,6 +540,7 @@ lemma V_self (i) : V F i i = ⊤ :=
 
 variable [(F ⋙ forget).IsLocallyDirected]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).ι (V F i k).ι) :
     ∃ (l : J) (fi : l ⟶ i) (fj : l ⟶ j) (fk : l ⟶ k)
       (α : F.obj l ⟶ pullback (V F i j).ι (V F i k).ι) (z : F.obj l),
@@ -541,8 +564,8 @@ lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).�
       (by simp)
   have : IsOpenImmersion α := by
     apply +allowSynthFailures IsOpenImmersion.of_comp
-    · exact inferInstanceAs (IsOpenImmersion (pullback.fst _ _))
-    · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, α]
+    · exact (inferInstance : IsOpenImmersion (pullback.fst (V F i j).ι (V F i k).ι))
+    · simp only [limit.lift_π, PullbackCone.mk_π_app, α]
       infer_instance
   have : α z = x := by
     apply (pullback.fst (C := Scheme) _ _).isOpenEmbedding.injective
@@ -553,6 +576,8 @@ lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).�
 
 variable [Quiver.IsThin J]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma fst_inv_eq_snd_inv
     {i j : J} (k₁ k₂ : (k : J) × (k ⟶ i) × (k ⟶ j)) {U : (F.obj i).Opens}
     (h₁ : (F.map k₁.2.1).opensRange ≤ U) (h₂ : (F.map k₂.2.1).opensRange ≤ U) :
@@ -565,8 +590,10 @@ lemma fst_inv_eq_snd_inv
   obtain ⟨l, hli, hlj, y, hy₁, hy₂⟩ := (F ⋙ forget).exists_map_eq_of_isLocallyDirected k₁.2.1 k₂.2.1
     ((pullback.fst _ _ ≫ (F.map k₁.2.1).isoOpensRange.inv) x)
     ((pullback.snd _ _ ≫ (F.map k₂.2.1).isoOpensRange.inv) x) (by
-      simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map, ← Hom.comp_apply,
-        Category.assoc, Hom.isoOpensRange_inv_comp]
+      simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map,
+        ConcreteCategory.hom_ofHom, Hom.comp_base, TopCat.hom_comp, ContinuousMap.comp_apply,
+        TypeCat.Fun.coe_mk]
+      simp only [← Hom.comp_apply]
       congr 5
       simpa using congr($(pullback.condition (f := (F.obj i).homOfLE h₁)
         (g := (F.obj i).homOfLE h₂)) ≫ Scheme.Opens.ι _))
@@ -585,7 +612,7 @@ lemma fst_inv_eq_snd_inv
       TopCat.hom_comp, ContinuousMap.comp_apply] at hy₁
     apply (pullback.fst ((F.obj i).homOfLE h₁) _).isOpenEmbedding.injective
     simp only [← Scheme.Hom.comp_apply, α, pullback.lift_fst]
-    simp [hy₁]
+    simp_all
   refine ⟨α.opensRange, ⟨y, this⟩, ?_⟩
   rw [← cancel_epi α.isoOpensRange.hom]
   simp [α, ← Functor.map_comp, Subsingleton.elim (hli ≫ k₁.2.2) (hlj ≫ k₂.2.2)]
@@ -598,12 +625,14 @@ def tAux (i j : J) : (V F i j).toScheme ⟶ F.obj j :=
       dsimp [Scheme.Opens.iSupOpenCover]
       apply fst_inv_eq_snd_inv F
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma homOfLE_tAux (i j : J) {k : J} (fi : k ⟶ i) (fj : k ⟶ j) :
     (F.obj i).homOfLE (le_iSup_of_le ⟨k, fi, fj⟩ le_rfl) ≫
       tAux F i j = (F.map fi).isoOpensRange.inv ≫ F.map fj :=
   (Scheme.Opens.iSupOpenCover (J := Σ k, (k ⟶ i) × (k ⟶ j)) _).ι_glueMorphisms _ _ ⟨k, fi, fj⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation detail)
 The transition map `V i j ⟶ V j i` in the glue data associated to a locally directed diagram. -/
 def t (i j : J) : (V F i j).toScheme ⟶ (V F j i).toScheme :=
@@ -625,6 +654,7 @@ variable [Small.{u} J]
 
 local notation3:max "↓"j:arg => Equiv.symm (equivShrink _) j
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation detail)
 The glue data associated to a locally directed diagram.
 
@@ -655,10 +685,10 @@ def glueData : Scheme.GlueData where
     obtain ⟨l, fi, fj, fk, α, z, hα, hα₁, hα₂, e⟩ := this -- doing them in the same step times out.
     refine ⟨α.opensRange, ⟨_, e⟩, ?_⟩
     rw [← cancel_mono (pullback.snd _ _), ← cancel_mono (Scheme.Opens.ι _)]
-    simp only [t, Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+    simp only [t, Category.assoc, limit.lift_π, PullbackCone.mk_π_app,
       limit.lift_π_assoc, cospan_left, IsOpenImmersion.lift_fac, Category.id_comp]
     rw [IsOpenImmersion.comp_lift_assoc]
-    simp only [limit.lift_π_assoc, PullbackCone.mk_pt, cospan_left, PullbackCone.mk_π_app]
+    simp only [limit.lift_π_assoc, cospan_left, PullbackCone.mk_π_app]
     rw [← cancel_epi α.isoOpensRange.hom]
     simp_rw [Scheme.Hom.isoOpensRange_hom_ι_assoc, IsOpenImmersion.comp_lift_assoc]
     simp only [reassoc_of% hα₁, homOfLE_tAux F _ _ fi fj, Iso.hom_inv_id_assoc, reassoc_of% hα₂]
@@ -679,6 +709,7 @@ def glueData : Scheme.GlueData where
       ← Iso.inv_comp_eq, Scheme.Hom.isoOpensRange_inv_comp]
     exact (Scheme.homOfLE_ι _ _).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma glueDataι_naturality {i j : Shrink.{u} J} (f : ↓i ⟶ ↓j) :
     F.map f ≫ (glueData F).ι j = (glueData F).ι i := by
   have : IsIso (V F ↓i ↓j).ι := by
@@ -691,9 +722,11 @@ lemma glueDataι_naturality {i j : Shrink.{u} J} (f : ↓i ⟶ ↓j) :
   rw [← cancel_epi (V F ↓i ↓j).ι, ← this, ← Category.assoc,
     ← (Iso.eq_inv_comp _).mp (homOfLE_tAux F ↓i ↓j (𝟙 _) f),
     ← Category.assoc, ← Category.assoc, Category.assoc]
-  convert Category.id_comp _
+  convert! Category.id_comp _
   simp [← cancel_mono (Opens.ι _), V]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation detail)
 The cocone associated to a locally directed diagram.
 
@@ -706,6 +739,8 @@ def cocone : Cocone F where
     simp only [← IsIso.inv_comp_eq, ← Functor.map_inv, ← Functor.map_comp_assoc,
       glueDataι_naturality, Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation detail)
 The cocone associated to a locally directed diagram is a colimit.
 
@@ -729,6 +764,8 @@ def isColimit : IsColimit (cocone F) where
     simp [← hm ↓i, cocone, reassoc_of% glueDataι_naturality]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation detail)
 The cocone associated to a locally directed diagram is a colimit as locally ringed spaces.
 
@@ -748,7 +785,7 @@ def isColimitForgetToLocallyRingedSpace :
       rw [← CategoryTheory.GlueData.ι, reassoc_of% GlueData.ι_isoLocallyRingedSpace_inv,
         reassoc_of% GlueData.ι_isoLocallyRingedSpace_inv,
         ← cancel_epi (Hom.isoOpensRange (F.map _)).hom.toLRSHom]
-      simp only [Opens.iSupOpenCover, Cover.ulift, V, ← Hom.comp_toLRSHom_assoc,
+      simp +instances only [Opens.iSupOpenCover, Cover.ulift, V, ← Hom.comp_toLRSHom_assoc,
         Cover.ι_fromGlued_assoc, homOfLE_ι, Hom.isoOpensRange_hom_ι, Cover.idx]
       generalize_proofs _ _ h
       rw [homOfLE_tAux F ↓i ↓j h.choose.2.1 h.choose.2.2, Iso.hom_inv_id_assoc]
@@ -773,6 +810,8 @@ instance : PreservesColimit F Scheme.forgetToLocallyRingedSpace :=
 instance : CreatesColimit F Scheme.forgetToLocallyRingedSpace :=
   CategoryTheory.createsColimitOfReflectsIsomorphismsOfPreserves
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The open cover of the colimit of a locally directed diagram by the components. -/
 @[simps! I₀ X f]
 def openCover : (colimit F).OpenCover :=
@@ -783,9 +822,11 @@ def openCover : (colimit F).OpenCover :=
   change colimit.ι F i = _ ≫ (glueData F).ι (equivShrink J i) ≫ _
   simp [← Category.assoc, ← Iso.comp_inv_eq, cocone]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (i) : IsOpenImmersion (colimit.ι F i) :=
   inferInstanceAs (IsOpenImmersion ((openCover F).f i))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
     colimit.ι F i xi = colimit.ι F j xj ↔
       ∃ k fi fj, ∃ (x : F.obj k), F.map fi x = xi ∧ F.map fj x = xj := by
@@ -798,7 +839,7 @@ lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
   simp only [Limits.colimit, ← Scheme.Hom.comp_apply,
     colimit.comp_coconePointUniqueUpToIso_inv, cocone, glueDataι_naturality]
   refine ?_ ∘ ((glueData F).ι_eq_iff _ _ _ _).mp
-  dsimp only [GlueData.Rel]
+  dsimp +instances only [GlueData.Rel]
   rintro ⟨x, rfl, rfl⟩
   obtain ⟨⟨k, ki, kj⟩, y, hy : F.map ki y = (glueData F).f i j x⟩ := mem_iSup.mp x.2
   refine ⟨k, ki, kj, y, hy, ?_⟩
@@ -809,6 +850,7 @@ lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
   · simp [← glueDataι_naturality F kj]; rfl
   · simp [← glueDataι_naturality F ki, ← hy]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ι_jointly_surjective (x : ↑(colimit F)) :
     ∃ (i : J) (xi : F.obj i), colimit.ι F i xi = x := by
   obtain ⟨i, xi, h⟩ :=
@@ -820,7 +862,7 @@ lemma ι_jointly_surjective (x : ↑(colimit F)) :
   congr 5
   have := eqToHom_naturality (fun j ↦ (glueData F).ι j)
     (show i = ((equivShrink J) ((equivShrink J).symm i)) by simp)
-  simp [cocone, Functor.const_obj_obj, eqToHom_map, ← this]
+  simp [cocone, eqToHom_map, ← this]
 
 instance (F : WidePushoutShape J ⥤ Scheme.{u}) [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)] :
     (F ⋙ forget).IsLocallyDirected :=

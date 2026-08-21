@@ -108,6 +108,8 @@ class UnitalShelf (α : Type u) extends Shelf α, One α where
   one_act : ∀ a : α, act 1 a = a
   act_one : ∀ a : α, act a 1 = a
 
+attribute [instance 100] UnitalShelf.toOne
+
 /-- The type of homomorphisms between shelves.
 This is also the notion of rack and quandle homomorphisms.
 -/
@@ -324,7 +326,7 @@ variable {S₁ : Type*} {S₂ : Type*} {S₃ : Type*} [Shelf S₁] [Shelf S₂] 
 
 instance : FunLike (S₁ →◃ S₂) S₁ S₂ where
   coe := toFun
-  coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+  coe_injective | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
 @[simp] theorem toFun_eq_coe (f : S₁ →◃ S₂) : f.toFun = f := rfl
 
@@ -393,14 +395,13 @@ instance Conj.quandle (G : Type*) [Group G] : Quandle (Conj G) where
     simp [mul_assoc]
   fix := by simp
 
-@[simp]
+@[simp, grind =]
 theorem conj_act_eq_conj {G : Type*} [Group G] (x y : Conj G) :
     x ◃ y = ((x : G) * (y : G) * (x : G)⁻¹ : G) :=
   rfl
 
 theorem conj_swap {G : Type*} [Group G] (x y : Conj G) : x ◃ y = y ↔ y ◃ x = x := by
-  dsimp [Conj] at *; constructor
-  repeat' intro h; conv_rhs => rw [eq_mul_inv_of_mul_eq (eq_mul_inv_of_mul_eq h)]; simp
+  grind [eq_mul_inv_iff_mul_eq]
 
 /-- `Conj` is functorial
 -/
@@ -423,6 +424,7 @@ theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAc
   dsimp only [dihedralAct]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : Quandle (Dihedral n) where
   act := dihedralAct n
   self_distrib := by
@@ -648,6 +650,7 @@ theorem well_def {R : Type*} [Rack R] {G : Type*} [Group G] (f : R →◃ Quandl
 
 end toEnvelGroup.mapAux
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a map from a rack to a group, lift it to being a map from the enveloping group.
 More precisely, the `EnvelGroup` functor is left adjoint to `Quandle.Conj`.
 -/

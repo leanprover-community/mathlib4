@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Sites.ConstantSheaf
-public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.Condensed.Basic
 public import Mathlib.Condensed.Light.Basic
 public import Mathlib.Condensed.Light.Instances
@@ -32,7 +31,7 @@ set or module that characterize it as discrete.
 
 universe u v w
 
-open CategoryTheory Limits Opposite GrothendieckTopology
+open CategoryTheory Opposite
 
 namespace Condensed
 
@@ -90,10 +89,10 @@ noncomputable def discreteUnderlyingAdj : discrete C ⊣ underlying C :=
 end LightCondensed
 
 /-- A version of `LightCondensed.discrete` in the `LightCondSet` namespace -/
-noncomputable abbrev LightCondSet.discrete := LightCondensed.discrete (Type u)
+noncomputable abbrev LightCondSet.discrete := LightCondensed.discrete <| Type u
 
 /-- A version of `LightCondensed.underlying` in the `LightCondSet` namespace -/
-noncomputable abbrev LightCondSet.underlying := LightCondensed.underlying (Type u)
+noncomputable abbrev LightCondSet.underlying := LightCondensed.underlying <| Type u
 
 /-- A version of `LightCondensed.discrete_underlying_adj` in the `LightCondSet` namespace -/
 noncomputable abbrev LightCondSet.discreteUnderlyingAdj : discrete ⊣ underlying :=

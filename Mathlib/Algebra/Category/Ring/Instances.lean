@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 # Ring-theoretic results in terms of categorical language
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -48,7 +48,7 @@ theorem CommRingCat.isLocalHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S �
 
 theorem isLocalHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalHom f.hom.hom :=
   { map_nonunit := fun a ha => by
-      convert f.inv.hom.isUnit_map ha
+      convert! f.inv.hom.isUnit_map ha
       simp }
 
 -- see Note [lower instance priority]

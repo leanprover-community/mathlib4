@@ -22,7 +22,7 @@ assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 assert_not_exists Finset.preimage Finset.sigma Fintype.piFinset
 assert_not_exists Finset.piecewise Set.indicator MonoidHom.coeFn Function.support IsSquare
 
-open Fin Function
+open Function
 
 variable {ι κ G M : Type*} {s s₁ s₂ : Finset ι} {a : ι}
 
@@ -153,12 +153,21 @@ lemma prod_filter_not_mul_prod_filter (s : Finset ι) (p : ι → Prop) [Decidab
     (∏ x ∈ s with ¬p x, f x) * ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
 
+open Classical in
+@[to_additive]
+lemma prod_eq_of_subset
+    {s₁ s₂ : Finset ι} (h : s₁ ⊆ s₂) (f : ι → M) (hf : ∀ (i : ι), i ∈ s₂ → i ∉ s₁ → f i = 1) :
+    ∏ i ∈ s₁, f i = ∏ i ∈ s₂, f i := by
+  rw [show s₂ = s₁.disjUnion (s₂ \ s₁) disjoint_sdiff by simpa, Finset.prod_disjUnion,
+    Finset.prod_eq_one (s := s₂ \ s₁) (by aesop), mul_one]
+
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive]
 theorem prod_filter_xor (p q : ι → Prop) [DecidablePred p] [DecidablePred q] :
-    (∏ x ∈ s with (Xor' (p x) (q x)), f x) =
+    (∏ x ∈ s with (Xor (p x) (q x)), f x) =
       (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
   classical rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
-  simp only [Xor']
+  simp only [Xor]
 
 @[to_additive]
 theorem _root_.IsCompl.prod_mul_prod [Fintype ι] {s t : Finset ι} (h : IsCompl s t) (f : ι → M) :
@@ -310,9 +319,8 @@ lemma prod_mul_prod_comm (f g h i : ι → M) :
 theorem prod_filter_of_ne {p : ι → Prop} [DecidablePred p] (hp : ∀ x ∈ s, f x ≠ 1 → p x) :
     ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x :=
   (prod_subset (filter_subset _ _)) fun x => by
-    classical
-      rw [not_imp_comm, mem_filter]
-      exact fun h₁ h₂ => ⟨h₁, by simpa using hp _ h₁ h₂⟩
+    rw [not_imp_comm, mem_filter]
+    exact fun h₁ h₂ => ⟨h₁, by simpa using hp _ h₁ h₂⟩
 
 -- If we use `[DecidableEq M]` here, some rewrites fail because they find a wrong `Decidable`
 -- instance first; `{∀ x, Decidable (f x ≠ 1)}` doesn't work with `rw ← prod_filter_ne_one`
@@ -326,11 +334,11 @@ theorem prod_filter (p : ι → Prop) [DecidablePred p] (f : ι → M) :
     ∏ a ∈ s with p a, f a = ∏ a ∈ s, if p a then f a else 1 :=
   calc
     ∏ a ∈ s with p a, f a = ∏ a ∈ s with p a, if p a then f a else 1 :=
-      prod_congr rfl fun a h => by rw [if_pos]; simpa using (mem_filter.1 h).2
+      prod_congr rfl fun a h => by rw [ite_eq_left]; simpa using (mem_filter.1 h).2
     _ = ∏ a ∈ s, if p a then f a else 1 := by
       { refine prod_subset (filter_subset _ s) fun x hs h => ?_
         rw [mem_filter, not_and] at h
-        exact if_neg (by simpa using h hs) }
+        exact ite_eq_right (by simpa using h hs) }
 
 @[to_additive]
 theorem prod_eq_single_of_mem {s : Finset ι} {f : ι → M} (a : ι) (h : a ∈ s)
@@ -393,7 +401,7 @@ lemma prod_congr_of_eq_on_inter {ι M : Type*} {s₁ s₂ : Finset ι} {f g : ι
 @[to_additive]
 theorem prod_eq_mul_of_mem {s : Finset ι} {f : ι → M} (a b : ι) (ha : a ∈ s) (hb : b ∈ s)
     (hn : a ≠ b) (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) : ∏ x ∈ s, f x = f a * f b := by
-  haveI := Classical.decEq ι; let s' := ({a, b} : Finset ι)
+  have := Classical.decEq ι; let s' := ({a, b} : Finset ι)
   have hu : s' ⊆ s := by grind
   have hf : ∀ c ∈ s, c ∉ s' → f c = 1 := by grind
   rw [← Finset.prod_subset hu hf]
@@ -403,7 +411,7 @@ theorem prod_eq_mul_of_mem {s : Finset ι} {f : ι → M} (a b : ι) (ha : a ∈
 theorem prod_eq_mul {s : Finset ι} {f : ι → M} (a b : ι) (hn : a ≠ b)
     (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) (ha : a ∉ s → f a = 1) (hb : b ∉ s → f b = 1) :
     ∏ x ∈ s, f x = f a * f b := by
-  haveI := Classical.decEq ι; by_cases h₁ : a ∈ s <;> by_cases h₂ : b ∈ s
+  have := Classical.decEq ι; by_cases h₁ : a ∈ s <;> by_cases h₂ : b ∈ s
   · exact prod_eq_mul_of_mem a b h₁ h₂ hn h₀
   · rw [hb h₂, mul_one]
     apply prod_eq_single_of_mem a h₁
@@ -461,8 +469,7 @@ variable {f s}
 @[to_additive]
 theorem prod_subtype {p : ι → Prop} {F : Fintype (Subtype p)} (s : Finset ι) (h : ∀ x, x ∈ s ↔ p x)
     (f : ι → M) : ∏ a ∈ s, f a = ∏ a : Subtype p, f a := by
-  have : (· ∈ s) = p := Set.ext h
-  subst p
+  obtain rfl : p = (· ∈ s) := by simp [h]
   rw [← prod_coe_sort]
   congr!
 
@@ -485,7 +492,7 @@ theorem prod_congr_set [Fintype ι] (s : Set ι) [DecidablePred (· ∈ s)] (f :
 @[to_additive]
 theorem prod_extend_by_one [DecidableEq ι] (s : Finset ι) (f : ι → M) :
     ∏ i ∈ s, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i :=
-  (prod_congr rfl) fun _i hi => if_pos hi
+  (prod_congr rfl) fun _i hi => ite_eq_left hi
 
 /-- Also see `Finset.prod_ite_mem_eq` -/
 @[to_additive /-- Also see `Finset.sum_ite_mem_eq` -/]
@@ -597,7 +604,7 @@ theorem prod_multiset_map_count [DecidableEq ι] (s : Multiset ι) {M : Type*} [
 @[to_additive]
 theorem prod_multiset_count [DecidableEq M] (s : Multiset M) :
     s.prod = ∏ m ∈ s.toFinset, m ^ s.count m := by
-  convert prod_multiset_map_count s id
+  convert! prod_multiset_map_count s id
   rw [Multiset.map_id]
 
 @[to_additive]
@@ -797,7 +804,7 @@ theorem prod_biUnion_of_pairwise_eq_one [DecidableEq ι] {s : Finset κ} {t : κ
     ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
   classical
   let t' k := (t k).filter (fun i ↦ f i ≠ 1)
-  have : s.biUnion t' = (s.biUnion t).filter (fun i ↦ f i ≠ 1) := by ext; grind
+  have : s.biUnion t' = (s.biUnion t).filter (fun i ↦ f i ≠ 1) := by grind
   rw [← prod_filter_ne_one, ← this, prod_biUnion]
   swap
   · intro i hi j hj hij a hai haj k hk
@@ -897,11 +904,17 @@ additive group reduces to the difference of the last and first terms. -/]
 lemma prod_range_div (f : ℕ → G) (n : ℕ) : (∏ i ∈ range n, f (i + 1) / f i) = f n / f 0 := by
   apply prod_range_induction <;> simp
 
-@[to_additive]
+/-- A reversed telescoping product along `{0, ..., n - 1}` of a commutative-group-valued function
+reduces to the ratio of the first and last factors. -/
+@[to_additive /-- A reversed telescoping sum along `{0, ..., n - 1}` of a function valued in a
+commutative additive group reduces to the difference of the first and last terms. -/]
 lemma prod_range_div' (f : ℕ → G) (n : ℕ) : (∏ i ∈ range n, f i / f (i + 1)) = f 0 / f n := by
   apply prod_range_induction <;> simp
 
-@[to_additive]
+/-- Express `f n` as `f 0` multiplied by the telescoping product of consecutive ratios from
+`0` to `n - 1`. -/
+@[to_additive /-- Express `f n` as `f 0` plus the telescoping sum of consecutive differences from
+`0` to `n - 1`. -/]
 lemma eq_prod_range_div (f : ℕ → G) (n : ℕ) : f n = f 0 * ∏ i ∈ range n, f (i + 1) / f i := by
   rw [prod_range_div, mul_div_cancel]
 
@@ -1067,10 +1080,6 @@ lemma mem_sum {a : M} {s : Finset ι} {m : ι → Multiset M} :
     a ∈ ∑ i ∈ s, m i ↔ ∃ i ∈ s, a ∈ m i := by
   induction s using Finset.cons_induction with grind
 
-@[deprecated Multiset.mem_sum (since := "2025-08-24")]
-theorem _root_.Finset.mem_sum {f : ι → Multiset M} (s : Finset ι) (b : M) :
-    (b ∈ ∑ x ∈ s, f x) ↔ ∃ a ∈ s, b ∈ f a := Multiset.mem_sum
-
 @[to_additive]
 lemma prod_map_prod {α : Type*} [CommMonoid M] {m : Multiset ι} {s : Finset α} {f : ι → α → M} :
     (m.map fun i ↦ ∏ a ∈ s, f i a).prod = ∏ a ∈ s, (m.map fun i ↦ f i a).prod := by
@@ -1114,6 +1123,13 @@ theorem prod_sum {ι : Type*} [CommMonoid M] (f : ι → Multiset M) (s : Finset
 end Multiset
 
 @[to_additive (attr := simp)]
+lemma IsUnit.multisetProd_iff [CommMonoid M] {s : Multiset M} :
+    IsUnit s.prod ↔ ∀ a ∈ s, IsUnit a := by
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a s ih => simpa using fun _ ↦ ih
+
+@[to_additive (attr := simp)]
 lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :
     IsUnit (∏ a ∈ s, f a) ↔ ∀ a ∈ s, IsUnit (f a) := by
   induction s using Finset.cons_induction with grind
@@ -1122,6 +1138,9 @@ lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :
 lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
     IsUnit (∏ a, f a) ↔ ∀ a, IsUnit (f a) := by simp
 
-theorem nat_abs_sum_le (s : Finset ι) (f : ι → ℤ) :
+theorem Int.natAbs_sum_le (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
   induction s using Finset.cons_induction with grind
+
+@[deprecated (since := "2026-02-14")]
+alias nat_abs_sum_le := Int.natAbs_sum_le

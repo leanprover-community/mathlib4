@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Order.Basic
 public import Mathlib.Order.SuccPred.Limit
-import Mathlib.Topology.Order.IsLUB
+import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # `Filter.atTop` and `Filter.atBot` for intervals in a linear order topology
@@ -197,3 +197,48 @@ theorem tendsto_Ioi_atBot {f : α → Ioi a} (ha : IsPredPrelimit a := by exact 
 theorem tendsto_Iio_atTop {f : α → Iio a} (ha : IsSuccPrelimit a := by exact .of_dense _) :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : X)) l (𝓝[<] a) := by
   rw [← comap_coe_Iio_nhdsLT a ha, tendsto_comap_iff, Function.comp_def]
+
+section LocallyFinite
+variable [LinearOrder α] [LocallyFiniteOrder α] [NoMaxOrder X] [NoMinOrder X]
+
+/-- A family of closed intervals bounded by diverging limits is locally finite. -/
+theorem locallyFinite_Icc_of_tendsto {f g : α → X}
+    (hl : Tendsto f atTop atTop) (hu : Tendsto g atBot atBot) :
+    LocallyFinite (fun n => Set.Icc (f n) (g n)) := by
+  intro x
+  cases isEmpty_or_nonempty α
+  · use univ
+    simp [Subsingleton.elim _ (∅ : Set α)]
+  obtain ⟨x_L, hx_L⟩ := exists_lt x
+  obtain ⟨x_R, hx_R⟩ := exists_gt x
+  obtain ⟨a_L, ha_L : ∀ a ≤ a_L, g a ≤ x_L⟩ :=
+    hu.eventually_le_atBot x_L |>.exists_forall_of_atBot
+  obtain ⟨a_R, ha_R : ∀ a ≥ a_R, x_R ≤ f a⟩ :=
+    hl.eventually_ge_atTop x_R |>.exists_forall_of_atTop
+  refine ⟨Ioo x_L x_R, Ioo_mem_nhds hx_L hx_R, (finite_Icc a_L a_R).subset ?_⟩
+  rintro n ⟨y, ⟨hf, hg⟩, ⟨hxL, hxR⟩⟩
+  constructor
+  · contrapose! hxL
+    exact hg.trans (ha_L n hxL.le)
+  · contrapose! hxR
+    exact (ha_R n hxR.le).trans hf
+
+/-- A family of half-open intervals bounded by diverging limits is locally finite. -/
+theorem locallyFinite_Ico_of_tendsto {l u : α → X}
+    (hl : Tendsto l atTop atTop) (hu : Tendsto u atBot atBot) :
+    LocallyFinite (fun n => Set.Ico (l n) (u n)) :=
+  locallyFinite_Icc_of_tendsto hl hu |>.subset fun _ => Set.Ico_subset_Icc_self
+
+/-- A family of half-open intervals bounded by diverging limits is locally finite. -/
+theorem locallyFinite_Ioc_of_tendsto {l u : α → X}
+    (hl : Tendsto l atTop atTop) (hu : Tendsto u atBot atBot) :
+    LocallyFinite (fun n => Set.Ioc (l n) (u n)) :=
+  locallyFinite_Icc_of_tendsto hl hu |>.subset fun _ => Set.Ioc_subset_Icc_self
+
+/-- A family of open intervals bounded by diverging limits is locally finite. -/
+theorem locallyFinite_Ioo_of_tendsto {l u : α → X}
+    (hl : Tendsto l atTop atTop) (hu : Tendsto u atBot atBot) :
+    LocallyFinite (fun n => Set.Ioo (l n) (u n)) :=
+  locallyFinite_Icc_of_tendsto hl hu |>.subset fun _ => Set.Ioo_subset_Icc_self
+
+end LocallyFinite

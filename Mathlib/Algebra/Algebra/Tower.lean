@@ -25,7 +25,7 @@ An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorph
 @[expose] public section
 
 
-open Pointwise
+open scoped Pointwise
 
 universe u v w u₁ v₁
 
@@ -75,6 +75,10 @@ def lsmul : A →ₐ[R] Module.End B M where
 
 @[simp]
 theorem lsmul_coe (a : A) : (lsmul R B M a : M → M) = (a • ·) := rfl
+
+lemma lsmul_apply (a : A) (m : M) : lsmul R B M a m = a • m := rfl
+
+lemma lsmul_eq_smul_one (a : A) : lsmul R R M a = a • 1 := rfl
 
 end Algebra
 
@@ -133,20 +137,6 @@ theorem Algebra.ext {S : Type u} {A : Type v} [CommSemiring S] [Semiring A] (h1 
   Algebra.algebra_ext _ _ fun r => by
     simpa only [@Algebra.smul_def _ _ _ _ h1, @Algebra.smul_def _ _ _ _ h2, mul_one] using h r 1
 
-/-- In a tower, the canonical map from the middle element to the top element is an
-algebra homomorphism over the bottom element. -/
-def toAlgHom : S →ₐ[R] A :=
-  { algebraMap S A with commutes' := fun _ => (algebraMap_apply _ _ _ _).symm }
-
-theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
-
-@[simp]
-theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
-  RingHom.ext fun _ => rfl
-
-@[simp]
-theorem coe_toAlgHom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
-
 variable {R S A B}
 
 @[simp]
@@ -197,6 +187,9 @@ def restrictScalars (f : A →ₐ[S] B) : A →ₐ[R] B :=
 
 theorem restrictScalars_apply (f : A →ₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
 
+@[simp] lemma toLinearMap_restrictScalars (f : A →ₐ[S] B) :
+    (f.restrictScalars R).toLinearMap = f.toLinearMap.restrictScalars R := rfl
+
 @[simp]
 theorem coe_restrictScalars (f : A →ₐ[S] B) : (f.restrictScalars R : A →+* B) = f := rfl
 
@@ -211,18 +204,26 @@ section
 
 variable {R}
 
-/-- Any `f : A →ₐ[R] B` is also an `R ⧸ I`-algebra homomorphism if the `R`-algebra structure on
-`A` and `B` factors via `R ⧸ I`. -/
-@[simps! apply]
-def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
-    (f : A →ₐ[R] B) : A →ₐ[S] B where
-  toRingHom := f
-  commutes' := by simp [h.forall, ← IsScalarTower.algebraMap_apply]
+/-- Any `f : A →ₐ[R] B` is also an `S`-algebra homomorphism if the `R`-algebra structure on
+`A` and `B` factors via a surjective ring homomorphism `R →+* S`. -/
+@[simps! apply symm_apply]
+def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S)) :
+    (A →ₐ[R] B) ≃ (A →ₐ[S] B) where
+  toFun f := { f with commutes' := by simp [h.forall, ← IsScalarTower.algebraMap_apply] }
+  invFun := restrictScalars R
 
 @[simp]
 lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
     (f : A →ₐ[R] B) :
     (f.extendScalarsOfSurjective h).restrictScalars R = f := rfl
+
+/-- Any `f : A →ₐ[R] B` is also an `S`-algebra homomorphism if the `R`-algebra structure on
+`A` and `B` factors via a surjective ring homomorphism `R →+* S`. -/
+@[simps! apply symm_apply]
+def extendScalarsHomOfSurjective (h : Function.Surjective (algebraMap R S)) :
+    (A →ₐ[R] A) ≃* (A →ₐ[S] A) where
+  __ := extendScalarsOfSurjective h
+  map_mul' _ _ := rfl
 
 end
 
@@ -239,38 +240,70 @@ def restrictScalars (f : A ≃ₐ[S] B) : A ≃ₐ[R] B :=
 
 theorem restrictScalars_apply (f : A ≃ₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
 
-@[simp]
-theorem coe_restrictScalars (f : A ≃ₐ[S] B) : (f.restrictScalars R : A ≃+* B) = f := rfl
+@[simp] lemma toAlgHom_restrictScalars (f : A ≃ₐ[S] B) :
+    (f.restrictScalars R).toAlgHom = f.toAlgHom.restrictScalars R := rfl
+
+@[simp] lemma toLinearEquiv_restrictScalars (f : A ≃ₐ[S] B) :
+    (f.restrictScalars R).toLinearEquiv = f.toLinearEquiv.restrictScalars R := rfl
 
 @[simp]
-theorem coe_restrictScalars' (f : A ≃ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
+theorem toRingEquiv_restrictScalars (f : A ≃ₐ[S] B) : (f.restrictScalars R : A ≃+* B) = f := rfl
+
+@[simp]
+theorem coe_restrictScalars (f : A ≃ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
+
+@[deprecated (since := "2026-07-06")] alias coe_restrictScalars' := coe_restrictScalars
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A ≃ₐ[S] B) → A ≃ₐ[R] B) := fun _ _ h =>
   AlgEquiv.ext (AlgEquiv.congr_fun h :)
 
+@[simp]
+lemma symm_restrictScalars (f : A ≃ₐ[S] B) :
+    (f.restrictScalars R).symm = f.symm.restrictScalars R :=
+  rfl
+
+@[deprecated "Use `symm_restrictScalars` instead." (since := "2026-07-06")]
 lemma restrictScalars_symm_apply (f : A ≃ₐ[S] B) (x : B) :
-    (f.restrictScalars R).symm x = f.symm x := rfl
+    (f.restrictScalars R).symm x = f.symm x := by
+  simp
 
-@[simp]
+@[deprecated "Use `symm_restrictScalars` instead." (since := "2026-07-06")]
 lemma coe_restrictScalars_symm (f : A ≃ₐ[S] B) :
-    ((f.restrictScalars R).symm : B ≃+* A) = f.symm := rfl
+    ((f.restrictScalars R).symm : B ≃+* A) = f.symm := by
+  simp
+
+@[deprecated "Use `symm_restrictScalars` instead." (since := "2026-07-06")]
+lemma coe_restrictScalars_symm' (f : A ≃ₐ[S] B) :
+    ((restrictScalars R f).symm : B → A) = f.symm := by
+  simp
+
+/-- `AlgEquiv.restrictScalars` as a homomorphism. -/
+def restrictScalarsHom : (A ≃ₐ[S] A) →* (A ≃ₐ[R] A) :=
+  MulSemiringAction.toAlgAut (A ≃ₐ[S] A) R A
 
 @[simp]
-lemma coe_restrictScalars_symm' (f : A ≃ₐ[S] B) :
-    ((restrictScalars R f).symm : B → A) = f.symm := rfl
+theorem restrictScalarsHom_apply (f : A ≃ₐ[S] A) : f.restrictScalarsHom R = f.restrictScalars R :=
+  rfl
+
+theorem restrictScalarsHom_injective :
+    Function.Injective (restrictScalarsHom R : (A ≃ₐ[S] A) →* (A ≃ₐ[R] A)) :=
+  restrictScalars_injective R
 
 section
 
 variable {R}
 
-/-- Any `f : A ≃ₐ[R] B` is also an `R ⧸ I`-algebra isomorphism if the `R`-algebra structure on
-`A` and `B` factors via `R ⧸ I`. -/
-@[simps! apply]
-def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
-    (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
-  toRingEquiv := f
-  commutes' := (f.toAlgHom.extendScalarsOfSurjective h).commutes'
+/-- Any `f : A ≃ₐ[R] B` is also an `S`-algebra isomorphism if the `R`-algebra structure on
+`A` and `B` factors via a surjective ring homomorphism `R →+* S`. -/
+@[simps! apply symm_apply]
+def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S)) :
+    (A ≃ₐ[R] B) ≃ A ≃ₐ[S] B where
+  toFun f := { f with commutes' := (f.toAlgHom.extendScalarsOfSurjective h).commutes' }
+  invFun := AlgEquiv.restrictScalars R
+
+@[simp] lemma coe_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A ≃ₐ[R] B) : ⇑(extendScalarsOfSurjective h f) = f := rfl
 
 @[simp]
 lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
@@ -281,6 +314,19 @@ lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebr
 lemma extendScalarsOfSurjective_symm (h : Function.Surjective (algebraMap R S))
     (f : A ≃ₐ[R] B) :
     (f.extendScalarsOfSurjective h).symm = f.symm.extendScalarsOfSurjective h := rfl
+
+/-- Any `f : A ≃ₐ[R] B` is also an `S`-algebra isomorphism if the `R`-algebra structure on
+`A` and `B` factors via a surjective ring homomorphism `R →+* S`. -/
+@[simps! apply symm_apply]
+def extendScalarsHomOfSurjective (h : Function.Surjective ⇑(algebraMap R S)) :
+    (A ≃ₐ[R] A) ≃* (A ≃ₐ[S] A) where
+  __ := extendScalarsOfSurjective h
+  map_mul' _ _ := rfl
+
+@[simp]
+lemma toMonoidHom_symm_extendScalarsHomOfSurjective (h : Function.Surjective (algebraMap R S)) :
+    (extendScalarsHomOfSurjective h (A := A).symm : (A ≃ₐ[S] A) →* _) = restrictScalarsHom R :=
+  rfl
 
 end
 
@@ -306,6 +352,22 @@ theorem restrictScalars_span (hsur : Function.Surjective (algebraMap R A)) (X : 
 theorem coe_span_eq_span_of_surjective (h : Function.Surjective (algebraMap R A)) (s : Set M) :
     (Submodule.span A s : Set M) = Submodule.span R s :=
   congr_arg ((↑) : Submodule R M → Set M) (Submodule.restrictScalars_span R A h s)
+
+/--
+Given a commutative ring `R`, an `R`-algebra `S` and an `R`-module `M` with a scalar tower
+`IsScalarTower R S M`, if the algebra map from `R` to `S` is surjective, then this induces an order
+isomorphism `Submodule S M ≃o Submodule R M`.
+-/
+@[simps apply symm_apply]
+def orderIsoOfAlgebraMapSurjective
+    {R S M : Type*} [CommRing R] [Ring S] [AddCommGroup M]
+    [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) : Submodule S M ≃o Submodule R M where
+  toFun N := N.restrictScalars R
+  invFun N := ⟨N.toAddSubmonoid, by simpa [h.forall] using N.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' := .rfl
 
 end Submodule
 
@@ -401,7 +463,7 @@ section Algebra.algebraMapSubmonoid
 
 @[simp]
 theorem Algebra.algebraMapSubmonoid_map_map {R A B : Type*} [CommSemiring R] [CommSemiring A]
-    [Algebra R A] (M : Submonoid R) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B] :
+    [Algebra R A] (M : Submonoid R) [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B] :
     algebraMapSubmonoid B (algebraMapSubmonoid A M) = algebraMapSubmonoid B M :=
   algebraMapSubmonoid_map_eq _ (IsScalarTower.toAlgHom R A B)
 

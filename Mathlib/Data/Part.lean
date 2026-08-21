@@ -5,12 +5,13 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 module
 
-public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Partial values of a type
+
 This file defines `Part α`, the partial values of a type.
 `o : Part α` carries a proposition `o.Dom`, its domain, along with a function `get : o.Dom → α`, its
 value. The rule is then that every partial value has a value but, to access it, you need to provide
@@ -28,15 +29,18 @@ translate back and forth between a partial value with a decidable domain and an 
   `some a`.
 * `Part.toOption`: Converts a `Part α` with a decidable domain to an `Option α`.
 * `Part.equivOption`: Classical equivalence between `Part α` and `Option α`.
+
 Monadic structure:
 * `Part.bind`: `o.bind f` has value `(f (o.get _)).get _` (`f o` morally) and is defined when `o`
   and `f (o.get _)` are defined.
 * `Part.map`: Maps the value and keeps the same domain.
+
 Other:
 * `Part.restrict`: `Part.restrict p o` replaces the domain of `o : Part α` by `p : Prop` so long as
   `p → o.Dom`.
 * `Part.assert`: `assert p f` appends `p` to the domains of the values of a partial function.
 * `Part.unwrap`: Gets the value of a partial value regardless of its domain. Unsound.
+
 ## Notation
 For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a`. Formally, it means
 `o.Dom` and `o.get _ = a`.
@@ -225,11 +229,11 @@ theorem eq_of_mem {a b : Part α} (ha : a.Dom) (hb : a.get ha ∈ b) : a = b := 
 
 @[simp]
 theorem none_toOption [Decidable (@none α).Dom] : (none : Part α).toOption = Option.none :=
-  dif_neg id
+  dite_eq_right id
 
 @[simp]
 theorem some_toOption (a : α) [Decidable (some a).Dom] : (some a).toOption = Option.some a :=
-  dif_pos trivial
+  dite_eq_left trivial
 
 instance noneDecidable : Decidable (@none α).Dom :=
   instDecidableFalse
@@ -244,11 +248,11 @@ def getOrElse (a : Part α) [Decidable a.Dom] (d : α) :=
 
 theorem getOrElse_of_dom (a : Part α) (h : a.Dom) [Decidable a.Dom] (d : α) :
     getOrElse a d = a.get h :=
-  dif_pos h
+  dite_eq_left h
 
 theorem getOrElse_of_not_dom (a : Part α) (h : ¬a.Dom) [Decidable a.Dom] (d : α) :
     getOrElse a d = d :=
-  dif_neg h
+  dite_eq_right h
 
 @[simp]
 theorem getOrElse_none (d : α) [Decidable (none : Part α).Dom] : getOrElse none d = d :=
@@ -272,7 +276,7 @@ theorem toOption_eq_some_iff {o : Part α} [Decidable o.Dom] {a : α} :
   rw [← Option.mem_def, mem_toOption]
 
 protected theorem Dom.toOption {o : Part α} [Decidable o.Dom] (h : o.Dom) : o.toOption = o.get h :=
-  dif_pos h
+  dite_eq_left h
 
 theorem toOption_eq_none_iff {a : Part α} [Decidable a.Dom] : a.toOption = Option.none ↔ ¬a.Dom :=
   Ne.dite_eq_right_iff fun _ => Option.some_ne_none _
@@ -427,6 +431,12 @@ theorem mem_bind_iff {f : Part α} {g : α → Part β} {b} : b ∈ f.bind g ↔
     | _, ⟨⟨_, _⟩, rfl⟩ => ⟨_, ⟨_, rfl⟩, ⟨_, rfl⟩⟩,
     fun ⟨_, h₁, h₂⟩ => mem_bind h₁ h₂⟩
 
+/-- `Part.bind` produces `some b` iff the input is `some a` and the continuation maps `a` to
+`some b`. This is the `Part` analogue of `Option.bind_eq_some_iff`. -/
+theorem bind_eq_some_iff {b : β} {x : Part α} {f : α → Part β} :
+    x.bind f = some b ↔ ∃ a, x = some a ∧ f a = some b := by
+  simp only [eq_some_iff, mem_bind_iff]
+
 protected theorem Dom.bind {o : Part α} (h : o.Dom) (f : α → Part β) : o.bind f = f (o.get h) := by
   ext b
   simp only [Part.mem_bind_iff]
@@ -493,10 +503,10 @@ instance : LawfulMonad
   map_const := by simp [Functor.mapConst, Functor.map]
   --Porting TODO : In Lean3 these were automatic by a tactic
   seqLeft_eq x y := ext'
-    (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, const, (· <$> ·), and_comm])
+    (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, (· <$> ·), and_comm])
     (fun _ _ => rfl)
   seqRight_eq x y := ext'
-    (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, const, (· <$> ·)])
+    (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, (· <$> ·)])
     (fun _ _ => rfl)
   pure_seq x y := ext'
     (by simp [Seq.seq, Part.bind, assert, (· <$> ·), pure])

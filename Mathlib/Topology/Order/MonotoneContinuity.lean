@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
@@ -22,7 +21,7 @@ We also prove that an `OrderIso` is continuous.
 continuous, monotone
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter

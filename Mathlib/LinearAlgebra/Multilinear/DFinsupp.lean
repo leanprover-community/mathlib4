@@ -101,7 +101,7 @@ def dfinsuppFamily
           forall_true_left]
         simp_rw [or_iff_not_imp_right]
         intro h
-        push_neg at h
+        push Not at h
         refine ⟨fun i _ => p i, fun i => (s i).prop _ |>.resolve_right ?_, rfl⟩
         exact mt ((f p).map_coord_zero (m := fun i => x i _) i) h⟩}
   map_update_add' {dec} m i x y := DFinsupp.ext fun p => by
@@ -207,7 +207,7 @@ on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ Π�
 def fromDFinsuppEquiv :
     ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (p i)) N) ≃ₗ[R]
       MultilinearMap R (fun i ↦ Π₀ j : κ i, M i j) N :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     ((DFinsupp.lsum ℕ fun _ ↦ .id).compMultilinearMapₗ R ∘ₗ MultilinearMap.dfinsuppFamilyₗ)
     (LinearMap.pi fun p ↦ MultilinearMap.compLinearMapₗ fun i ↦ DFinsupp.lsingle (p i))
     (by ext f x; simp)

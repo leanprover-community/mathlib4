@@ -21,7 +21,7 @@ This is crucial in Fourier-Motzkin constructions.
 
 assert_not_exists MonoidWithZero
 
-open Pointwise
+open scoped Pointwise
 
 variable {G H α β : Type*}
 

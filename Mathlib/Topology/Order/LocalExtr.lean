@@ -155,6 +155,7 @@ theorem IsLocalMinOn.not_nhds_le_map [TopologicalSpace β] (hf : IsLocalMinOn f 
   let ⟨_y, hy⟩ := (this.and self_mem_nhdsWithin).exists
   hy.1.not_gt hy.2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsLocalMaxOn.not_nhds_le_map [TopologicalSpace β] (hf : IsLocalMaxOn f s a)
     [NeBot (𝓝[>] f a)] : ¬𝓝 (f a) ≤ map f (𝓝[s] a) :=
   @IsLocalMinOn.not_nhds_le_map α βᵒᵈ _ _ _ _ _ ‹_› hf ‹_›
@@ -312,7 +313,7 @@ end Preorder
 section OrderedAddCommMonoid
 
 variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
-  {f g : α → β} {a : α} {s : Set α} {l : Filter α}
+  {f g : α → β} {a : α} {s : Set α}
 
 nonrec theorem IsLocalMin.add (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
     IsLocalMin (fun x => f x + g x) a :=
@@ -338,7 +339,7 @@ end OrderedAddCommMonoid
 section OrderedAddCommGroup
 
 variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
-  {f g : α → β} {a : α} {s : Set α} {l : Filter α}
+  {f g : α → β} {a : α} {s : Set α}
 
 nonrec theorem IsLocalMin.neg (hf : IsLocalMin f a) : IsLocalMax (fun x => -f x) a :=
   hf.neg
@@ -381,7 +382,7 @@ end OrderedAddCommGroup
 
 section SemilatticeSup
 
-variable [SemilatticeSup β] {f g : α → β} {a : α} {s : Set α} {l : Filter α}
+variable [SemilatticeSup β] {f g : α → β} {a : α} {s : Set α}
 
 nonrec theorem IsLocalMin.sup (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
     IsLocalMin (fun x => f x ⊔ g x) a :=
@@ -403,7 +404,7 @@ end SemilatticeSup
 
 section SemilatticeInf
 
-variable [SemilatticeInf β] {f g : α → β} {a : α} {s : Set α} {l : Filter α}
+variable [SemilatticeInf β] {f g : α → β} {a : α} {s : Set α}
 
 nonrec theorem IsLocalMin.inf (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
     IsLocalMin (fun x => f x ⊓ g x) a :=
@@ -428,7 +429,7 @@ end SemilatticeInf
 
 section LinearOrder
 
-variable [LinearOrder β] {f g : α → β} {a : α} {s : Set α} {l : Filter α}
+variable [LinearOrder β] {f g : α → β} {a : α} {s : Set α}
 
 nonrec theorem IsLocalMin.min (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
     IsLocalMin (fun x => min (f x) (g x)) a :=

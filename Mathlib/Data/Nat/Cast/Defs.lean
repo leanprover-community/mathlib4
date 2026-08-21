@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Gabriel Ebner
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.DivInvMonoid
 public import Mathlib.Data.Nat.Init
 public import Mathlib.Tactic.SplitIfs
 
@@ -86,27 +86,30 @@ theorem cast_zero : ((0 : ℕ) : R) = 0 :=
 theorem cast_succ (n : ℕ) : ((succ n : ℕ) : R) = n + 1 :=
   AddMonoidWithOne.natCast_succ _
 
-theorem cast_add_one (n : ℕ) : ((n + 1 : ℕ) : R) = n + 1 :=
-  cast_succ _
-
 @[simp, norm_cast]
 theorem cast_ite (P : Prop) [Decidable P] (m n : ℕ) :
     ((ite P m n : ℕ) : R) = ite P (m : R) (n : R) := by
   split_ifs <;> rfl
 
-end Nat
-
-namespace Nat
-
 @[simp, norm_cast]
-theorem cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
+theorem cast_one : ((1 : ℕ) : R) = 1 := by
   rw [cast_succ, Nat.cast_zero, zero_add]
 
 @[simp, norm_cast]
-theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
+theorem cast_add (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
   induction n with
   | zero => simp
   | succ n ih => rw [add_succ, cast_succ, ih, cast_succ, add_assoc]
+
+theorem cast_add_one (n : ℕ) : ((n + 1 : ℕ) : R) = n + 1 :=
+  cast_succ _
+
+theorem cast_one_add (n : ℕ) : ((1 + n : ℕ) : R) = 1 + n := by
+  rw [Nat.cast_add, Nat.cast_one]
+
+end Nat
+
+namespace Nat
 
 /-- Computationally friendlier cast than `Nat.unaryCast`, using binary representation. -/
 protected def binCast [Zero R] [One R] [Add R] : ℕ → R
@@ -125,10 +128,11 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
       rw [Nat.binCast]
       by_cases h : (k + 1) % 2 = 0
       · conv => rhs; rw [← Nat.mod_add_div (k + 1) 2]
-        rw [if_pos h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
+        rw [ite_eq_left h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
         rw [h, Nat.zero_add, Nat.succ_mul, Nat.one_mul]
       · conv => rhs; rw [← Nat.mod_add_div (k + 1) 2]
-        rw [if_neg h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
+        rw [ite_eq_right h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2),
+          ← Nat.cast_add]
         have h1 := Or.resolve_left (Nat.mod_two_eq_zero_or_one (succ k)) h
         rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]
         simp only [Nat.cast_add, Nat.cast_one]
@@ -153,7 +157,7 @@ protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOn
     natCast := Nat.binCast,
     natCast_zero := by simp only [Nat.binCast],
     natCast_succ := fun n => by
-      letI : AddMonoidWithOne R := AddMonoidWithOne.unary
+      let : AddMonoidWithOne R := AddMonoidWithOne.unary
       rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }
 
 theorem one_add_one_eq_two [AddMonoidWithOne R] : 1 + 1 = (2 : R) := by

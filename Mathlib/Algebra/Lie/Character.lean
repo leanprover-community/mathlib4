@@ -34,6 +34,7 @@ universe u v w w₁
 namespace LieAlgebra
 
 variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- A character of a Lie algebra is a morphism to the scalars. -/
 abbrev LieCharacter :=
@@ -54,7 +55,7 @@ theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
     LieSubmodule.mem_toSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span] at h
   induction h using Submodule.span_induction with
   | mem y h =>
-    simp only [Subtype.exists, LieSubmodule.mem_top, exists_const, Set.mem_setOf_eq] at h
+    simp only [Subtype.exists, LieSubmodule.mem_top, exists_const, Set.mem_ofPred_eq] at h
     obtain ⟨z, w, rfl⟩ := h
     exact lieCharacter_apply_lie ..
   | zero => exact map_zero _

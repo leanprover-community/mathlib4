@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Normed.Operator.Mul
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Bounded linear maps
@@ -60,7 +61,7 @@ open Topology
 
 open Filter (Tendsto)
 
-open Metric ContinuousLinearMap
+open ContinuousLinearMap
 
 section Semiring
 
@@ -76,6 +77,7 @@ inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`.
 
 (We put only the typeclasses strictly necessary for the definition, although the main case of
 interest is when `𝕜` itself is a normed ring and `E, F` are normed modules.) -/
+@[wikidata Q2342396]
 structure IsBoundedLinearMap : Prop
     extends IsLinearMap 𝕜 f where
   bound : ∃ M, 0 < M ∧ ∀ x : E, ‖f x‖ ≤ M * ‖x‖
@@ -107,10 +109,10 @@ def toContinuousLinearMap (f : E → F) (hf : IsBoundedLinearMap 𝕜 f) : E →
       AddMonoidHomClass.continuous_of_bound (toLinearMap f hf) C hC }
 
 theorem zero : IsBoundedLinearMap 𝕜 fun _ : E => (0 : F) :=
-  (0 : E →ₗ[𝕜] F).isLinear.with_bound 0 <| by simp [le_refl]
+  (0 : E →ₗ[𝕜] F).isLinear.with_bound 0 <| by simp
 
 theorem id : IsBoundedLinearMap 𝕜 fun x : E => x :=
-  LinearMap.id.isLinear.with_bound 1 <| by simp [le_refl]
+  LinearMap.id.isLinear.with_bound 1 <| by simp
 
 theorem fst : IsBoundedLinearMap 𝕜 fun x : E × F => x.1 := by
   refine (LinearMap.fst 𝕜 E F).isLinear.with_bound 1 fun x => ?_
@@ -308,7 +310,7 @@ theorem ContinuousLinearMap.isBoundedLinearMap (f : E →L[𝕜] F) : IsBoundedL
 
 namespace IsBoundedLinearMap
 
-variable {f g : E → F}
+variable {f : E → F}
 
 /-- A map between normed spaces is linear and continuous if and only if it is bounded. -/
 theorem isLinearMap_and_continuous_iff_isBoundedLinearMap (f : E → F) :
@@ -336,7 +338,7 @@ continuous multilinear map `f (g m₁, ..., g mₙ)` is a bounded linear operati
 theorem isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜] E) :
     IsBoundedLinearMap 𝕜 fun f : ContinuousMultilinearMap 𝕜 (fun _ : ι => E) F =>
       f.compContinuousLinearMap fun _ => g :=
-  (ContinuousMultilinearMap.compContinuousLinearMapL (ι := ι) (G := F) (fun _ ↦ g))
+  (ContinuousMultilinearMap.compContinuousLinearMapL (ι := ι) (F := F) (fun _ ↦ g))
     |>.isBoundedLinearMap
 
 end
@@ -354,7 +356,7 @@ theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] 
     bound :=
       ⟨max ‖f‖ 1, zero_lt_one.trans_le (le_max_right _ _), fun x y =>
         (f.le_opNorm₂ x y).trans <| by
-          apply_rules [mul_le_mul_of_nonneg_right, norm_nonneg, le_max_left] ⟩ }
+          gcongr; apply le_max_left ⟩ }
 
 /-- A bounded bilinear map `f : E × F → G` defines a continuous linear map
 `f : E →L[𝕜] F →L[𝕜] G`. -/
@@ -542,7 +544,7 @@ protected theorem isOpen [CompleteSpace E] : IsOpen (range ((↑) : (E ≃L[𝕜
   refine fun e => IsOpen.mem_nhds ?_ (mem_range_self _)
   let O : (E →L[𝕜] F) → E →L[𝕜] E := fun f => (e.symm : F →L[𝕜] E).comp f
   have h_O : Continuous O := (isBoundedBilinearMap_comp (𝕜 := 𝕜) (F := F) (G := E)).continuous_right
-  convert show IsOpen (O ⁻¹' { x | IsUnit x }) from Units.isOpen.preimage h_O using 1
+  convert! show IsOpen (O ⁻¹' {x | IsUnit x}) from Units.isOpen.preimage h_O using 1
   ext f'
   constructor
   · rintro ⟨e', rfl⟩

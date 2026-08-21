@@ -41,7 +41,7 @@ theorem mem_tangentConeAt_iff_exists_seq {R E : Type*} [AddCommGroup E] [SMul R 
       (∀ᶠ n in atTop, x + d n ∈ s) ∧ Tendsto (fun n ↦ c n • d n) atTop (𝓝 y) := by
   constructor
   · intro h
-    simp only [tangentConeAt_def, Set.mem_setOf, ← map₂_smul, ← map_prod_eq_map₂, ClusterPt,
+    simp only [tangentConeAt_def, Set.mem_ofPred, ← map₂_smul, ← map_prod_eq_map₂, ClusterPt,
       ← neBot_inf_comap_iff_map'] at h
     rcases @exists_seq_tendsto _ _ _ h with ⟨cd, hcd⟩
     simp only [tendsto_inf, tendsto_comap_iff, tendsto_prod_iff', tendsto_nhdsWithin_iff] at hcd
@@ -74,11 +74,11 @@ end
 
 /-- In a normed space over a nontrivially normed field,
 a point `y` belongs to the tangent cone of a set `s` at `x`
-iff there exiss a sequence of scalars `c n` and a sequence of points `d n` such that
+iff there exists a sequence of scalars `c n` and a sequence of points `d n` such that
 
 - `‖c n‖ → ∞` as `n → ∞`;
 - `x + d n ∈ s` for sufficiently large `n`;
-- `c n • d n` tendst to `y`.
+- `c n • d n` tends to `y`.
 
 Before https://github.com/leanprover-community/mathlib4/pull/34127,
 the right-hand side of this equivalence was the definition of the tangent cone.

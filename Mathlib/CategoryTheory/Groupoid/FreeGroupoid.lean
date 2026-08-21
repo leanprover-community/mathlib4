@@ -70,6 +70,7 @@ open Quiver
 instance {V} [Quiver V] [Nonempty V] : Nonempty (Quiver.FreeGroupoid V) := by
   inhabit V; exact ⟨⟨@default V _⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
     HomRel.CompClosure redStep p q → HomRel.CompClosure redStep p.reverse q.reverse := by
   rintro ⟨_, _, XW, _, _, WY, _, _, f⟩
@@ -81,6 +82,7 @@ theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
     Quiver.Path.reverse_comp, Quiver.reverse_reverse, Quiver.Path.reverse_toPath,
     Quiver.Path.comp_assoc] using this
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Relation in
 theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
     Quot.mk (@HomRel.CompClosure _ _ redStep _ _) (p ≫ p.reverse) =
@@ -137,6 +139,32 @@ theorem of_eq :
     of V = (Quiver.Symmetrify.of ⋙q (Paths.of (Quiver.Symmetrify V))).comp
       (Quotient.functor <| @redStep V _).toPrefunctor := rfl
 
+/-- Induction principle for proving a property for all the morphisms
+in the free groupoid of a quiver `V`: it suffices to prove the property
+for morphisms `(of V).map f` coming for the quiver `V` and their
+inverses, and that the property is multiplicative (i.e. stable under
+composition and satisfied by identities). -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+lemma hom_rec {motive : ∀ {x y : Quiver.FreeGroupoid V}, (x ⟶ y) → Prop}
+    (of_map : ∀ {x y : V} (f : x ⟶ y), motive ((of V).map f))
+    (inv_of_map : ∀ {x y : V} (f : x ⟶ y), motive (inv ((of V).map f)))
+    (id : ∀ (x : V), motive (𝟙 ((of V).obj x)))
+    (comp : ∀ {x y z : Quiver.FreeGroupoid V} (f : x ⟶ y) (g : y ⟶ z),
+      motive f → motive g → motive (f ≫ g))
+    {x y : Quiver.FreeGroupoid V} (f : x ⟶ y) :
+    motive f := by
+  have {x y : Symmetrify V} (f : x ⟶ y) :
+      motive ((Quotient.functor _).map ((Paths.of _).map f)) := by
+    induction f with
+    | inl f => apply of_map
+    | inr f => simpa only [← Groupoid.inv_eq_inv] using! inv_of_map f
+  induction x with | _ x
+  induction y with | _ y
+  obtain ⟨f, rfl⟩ := (Quotient.functor _).map_surjective f
+  induction f using Paths.induction with
+  | id => apply id
+  | comp p f hp => simpa using! comp _ _ hp (this f)
+
 section UniversalProperty
 
 variable {V' : Type u'} [Groupoid V']
@@ -151,11 +179,13 @@ def lift (φ : V ⥤q V') : Quiver.FreeGroupoid V ⥤ V' :=
     symm
     apply Groupoid.comp_inv
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lift_spec (φ : V ⥤q V') : of V ⋙q (lift φ).toPrefunctor = φ := by
   rw [of_eq, Prefunctor.comp_assoc, Prefunctor.comp_assoc, Functor.toPrefunctor_comp]
   dsimp [lift]
   rw [Quotient.lift_spec, Paths.lift_spec, Quiver.Symmetrify.lift_spec]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem lift_unique (φ : V ⥤q V') (Φ : Quiver.FreeGroupoid V ⥤ V')
     (hΦ : of V ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
   apply Quotient.lift_unique
@@ -168,7 +198,7 @@ theorem lift_unique (φ : V ⥤q V') (Φ : Quiver.FreeGroupoid V ⥤ V')
     change Φ.map (Groupoid.inv ((Quotient.functor redStep).toPrefunctor.map f.toPath)) =
       Groupoid.inv (Φ.map ((Quotient.functor redStep).toPrefunctor.map f.toPath))
     have := Functor.map_inv Φ ((Quotient.functor redStep).toPrefunctor.map f.toPath)
-    convert this <;> simp only [Groupoid.inv_eq_inv]
+    convert! this <;> simp only [Groupoid.inv_eq_inv]
 
 end UniversalProperty
 

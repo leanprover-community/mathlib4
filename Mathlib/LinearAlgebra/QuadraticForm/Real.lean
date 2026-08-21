@@ -8,7 +8,9 @@ module
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 public import Mathlib.Data.Sign.Basic
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # Real quadratic forms
@@ -42,8 +44,9 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
     by_cases hi : w i = 0
     · simp [hi]
     · simp only [hi, ↓reduceDIte, Units.val_mk0, u]; field_simp; simp
-  convert QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℝ w)
-    ((Pi.basisFun ℝ ι).unitsSMul fun i => .mk0 _ (hu i))
+  convert!
+    QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℝ w)
+      ((Pi.basisFun ℝ ι).unitsSMul fun i => .mk0 _ (hu i))
   ext1 v
   classical
   suffices ∑ i, (w i / |(u i : ℝ)|) * v i ^ 2 = ∑ i, w i * (v i ^ 2 * |(u i : ℝ)|⁻¹) by

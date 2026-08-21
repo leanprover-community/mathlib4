@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.Set
 public import Mathlib.Data.Nat.Notation
 
 /-!
@@ -235,7 +234,7 @@ namespace Set
 
 /-! ### Infinite sets -/
 
-variable {s t : Set α}
+variable {s : Set α}
 
 theorem infinite_coe_iff {s : Set α} : Infinite s ↔ s.Infinite :=
   not_finite_iff_infinite.symm.trans finite_coe_iff.not

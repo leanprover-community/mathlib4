@@ -12,8 +12,8 @@ public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
-
 # Module structure on stalks
+
 Let `M` be a presheaf of `R`-modules on a topological space. We endow `M.presheaf.stalk x` with
 an `R.stalk x`-module structure.
 
@@ -49,14 +49,15 @@ def colimit.smul (r : (R ⋙ forget _).ColimitType) (m : (M ⋙ forget _).Colimi
       bowtie (leftToMax U V₁) (leftToMax U V₂)
         (rightToMax U V₁) (f ≫ rightToMax U V₂)
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ α β ?_
-    simp [*, ← elementwise_of% R.map_comp, ← elementwise_of% M.map_comp, -Functor.map_comp]
+    simp [*, ← R.map_comp_apply, ← M.map_comp_apply, -Functor.map_comp]
   · rintro ⟨U₁, a₁⟩ ⟨U₂, a₂⟩ ⟨V, b⟩ ⟨f : U₁ ⟶ U₂, rfl : a₂ = R.map _ a₁⟩
     obtain ⟨s, α, β, h₁, h₂⟩ :=
       bowtie (leftToMax U₁ V) (f ≫ leftToMax U₂ V)
         (rightToMax U₁ V) (rightToMax U₂ V)
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ α β ?_
-    simp [*, ← elementwise_of% R.map_comp, ← elementwise_of% M.map_comp, -Functor.map_comp]
+    simp [*, ← R.map_comp_apply, ← M.map_comp_apply, -Functor.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation). The module structure on `AddCommGrpCat.FilteredColimits.colimit`. -/
 noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.colimit R)
     (AddCommGrpCat.FilteredColimits.colimit M) where
@@ -92,7 +93,12 @@ noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.c
       (rightToMax V₁ V₂ ≫ rightToMax U (max V₁ V₂))
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ β α ?_
     dsimp
-    simp only [*, ← ConcreteCategory.comp_apply, ← Functor.map_comp, map_add, smul_add]
+    -- We use this pattern instead of a single `simp` to avoid heatbeat modifications
+    rw [H, H, H]
+    simp only [← ConcreteCategory.comp_apply, ← Functor.map_comp]
+    simp only [map_add, ← ConcreteCategory.comp_apply, ← Functor.map_comp, h₁, h₂, h₃, h₄, H]
+    simp only [Functor.map_comp, RingCat.hom_comp, RingHom.coe_comp, Function.comp_apply,
+      Category.assoc, AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, smul_add]
   add_smul r s m := Quot.induction_on₃ r s m <| by
     rintro ⟨U₁, a₁⟩ ⟨U₂, a₂⟩ ⟨V, b⟩
     obtain ⟨s, α, β, h₁, h₂, h₃, h₄⟩ := crown₄
@@ -109,7 +115,7 @@ noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.c
     rintro ⟨V, b⟩
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ (𝟙 _) (leftToMax _ _) ?_
     dsimp
-    simp only [map_zero, zero_smul, *]
+    simp only [map_zero, zero_smul]
 
 /-- Given a cofiltered diagram of rings `R`, and a module `M` over `R`,
 this is the `colim R`-module structure of `colim M`. -/
@@ -124,12 +130,13 @@ noncomputable abbrev IsColimit.module {cR : Cocone R} (hcR : IsColimit cR) {cM :
     (IsColimit.coconePointUniqueUpToIso hcR
           (RingCat.FilteredColimits.colimitCoconeIsColimit R)).ringCatIsoToRingEquiv.toRingHom
 
+set_option backward.defeqAttrib.useBackward true in
 lemma IsColimit.ι_smul {cR : Cocone R} (hcR : IsColimit cR) {cM : Cocone M}
     (hcM : IsColimit cM) (i : C) (r : R.obj i) (m : M.obj i) :
     letI := IsColimit.module R M H hcR hcM
     cM.ι.app i (r • m) =
       HSMul.hSMul (α := cR.pt) (β := cM.pt) (cR.ι.app i r) (cM.ι.app i m) := by
-  letI := filteredColimitsModule R M H
+  let := filteredColimitsModule R M H
   let α := IsColimit.coconePointUniqueUpToIso hcM
     (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit M)
   let β := IsColimit.coconePointUniqueUpToIso hcR
@@ -139,7 +146,7 @@ lemma IsColimit.ι_smul {cR : Cocone R} (hcR : IsColimit cR) {cM : Cocone M}
     (β := AddCommGrpCat.FilteredColimits.colimit M)
     ((cR.ι.app i ≫ β.hom) r) ((cM.ι.app i ≫ α.hom) m))
   simp only [Functor.const_obj_obj, comp_coconePointUniqueUpToIso_hom, α, β]
-  obtain ⟨s, α, H⟩ :=  IsFilteredOrEmpty.cocone_maps (leftToMax i i) (rightToMax i i)
+  obtain ⟨s, α, H⟩ := IsFilteredOrEmpty.cocone_maps (leftToMax i i) (rightToMax i i)
   refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ (leftToMax _ _ ≫ α) α ?_
   dsimp
   simp only [← ConcreteCategory.comp_apply, ← Functor.map_comp, *]
@@ -152,6 +159,8 @@ variable {X : TopCat.{u}} {R : X.Presheaf RingCat.{u}} (M : PresheafOfModules.{u
 
 variable (x : X)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 noncomputable
 instance : Module (R.stalk x) ↑(TopCat.Presheaf.stalk M.presheaf x) :=
   letI (i : (OpenNhds x)ᵒᵖ) : Module (((OpenNhds.inclusion x).op ⋙ R).obj i)
@@ -160,6 +169,8 @@ instance : Module (R.stalk x) ↑(TopCat.Presheaf.stalk M.presheaf x) :=
   Limits.IsColimit.module ((OpenNhds.inclusion x).op ⋙ R) ((OpenNhds.inclusion x).op ⋙ M.presheaf)
     (fun f r m ↦ M.map_smul _ _ _) (Limits.colimit.isColimit _) (Limits.colimit.isColimit _)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma germ_ringCat_smul (U : Opens X) (hx : x ∈ U) (r : R.obj (op U)) (m : M.obj (op U)) :
     TopCat.Presheaf.germ M.presheaf U x hx (r • m) =
       R.germ U x hx r • TopCat.Presheaf.germ M.presheaf U x hx m :=
@@ -175,6 +186,8 @@ section CommRingCat
 variable {X : TopCat.{u}} {R : X.Presheaf CommRingCat.{u}}
   (M : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 noncomputable
 instance (x : X) : Module (R.stalk x) ↑(TopCat.Presheaf.stalk M.presheaf x) :=
   letI (i : (OpenNhds x)ᵒᵖ) : Module (((OpenNhds.inclusion x).op ⋙ R ⋙ forget₂ _ RingCat).obj i)
@@ -185,6 +198,8 @@ instance (x : X) : Module (R.stalk x) ↑(TopCat.Presheaf.stalk M.presheaf x) :=
     (fun f r m ↦ M.map_smul _ _ _) (Limits.isColimitOfPreserves (forget₂ _ _)
       (Limits.colimit.isColimit ((OpenNhds.inclusion x).op ⋙ R))) (Limits.colimit.isColimit _)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma germ_smul (x : X) (U : Opens X) (hx : x ∈ U) (r : R.obj (op U)) (m : M.obj (op U)) :
     TopCat.Presheaf.germ M.presheaf U x hx (r • m) =
       R.germ U x hx r • TopCat.Presheaf.germ M.presheaf U x hx m :=

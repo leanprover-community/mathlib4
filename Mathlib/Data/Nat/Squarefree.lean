@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.Nat.Factorization.Basic
 public import Mathlib.NumberTheory.Divisors
@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
 # Lemmas about squarefreeness of natural numbers
+
 A number is squarefree when it is not divisible by any squares except the squares of units.
 
 ## Main Results
@@ -168,9 +169,8 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
         lt_of_le_of_lt (by gcongr) (Nat.minFac_lemma n k h)
       @minSqFacAux_has_prop n' (k + 2) (pos_of_dvd_of_pos nd' n0) (i + 1)
         (by simp [e, left_distrib]) fun m m2 d => ?_
-    rcases Nat.eq_or_lt_of_le (ih m m2 (dvd_trans d nd')) with me | ml
-    · subst me
-      contradiction
+    rcases Nat.eq_or_lt_of_le (ih m m2 (dvd_trans d nd')) with rfl | ml
+    · contradiction
     apply (Nat.eq_or_lt_of_le ml).resolve_left
     intro me
     rw [← me, e] at d
@@ -191,17 +191,15 @@ termination_by n.sqrt + 2 - k
 theorem minSqFac_has_prop (n : ℕ) : MinSqFacProp n (minSqFac n) := by
   dsimp only [minSqFac]; split_ifs with d2 d4
   · exact ⟨prime_two, (dvd_div_iff_mul_dvd d2).1 d4, fun p pp _ => pp.two_le⟩
-  · rcases Nat.eq_zero_or_pos n with n0 | n0
-    · subst n0
-      cases d4 (by decide)
+  · rcases Nat.eq_zero_or_pos n with rfl | n0
+    · cases d4 (by decide)
     refine minSqFacProp_div _ prime_two d2 (mt (dvd_div_iff_mul_dvd d2).2 d4) ?_
     refine minSqFacAux_has_prop 3 (Nat.div_pos (le_of_dvd n0 d2) (by decide)) 0 rfl ?_
     refine fun p pp dp => succ_le_of_lt (lt_of_le_of_ne pp.two_le ?_)
     rintro rfl
     contradiction
-  · rcases Nat.eq_zero_or_pos n with n0 | n0
-    · subst n0
-      cases d2 (by decide)
+  · rcases Nat.eq_zero_or_pos n with rfl | n0
+    · cases d2 (by decide)
     refine minSqFacAux_has_prop _ n0 0 rfl ?_
     refine fun p pp dp => succ_le_of_lt (lt_of_le_of_ne pp.two_le ?_)
     rintro rfl
@@ -305,43 +303,21 @@ theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type*} [Ad
     Finset.sum_eq_multiset_sum]
   rfl
 
+@[deprecated "Use `exists_sq_mul_squarefree` instead, which binds the witnesses in the order in \
+which they appear." (since := "2026-08-17")]
+protected theorem sq_mul_squarefree (n : ℕ) : ∃ a b : ℕ, b ^ 2 * a = n ∧ Squarefree a := by
+  obtain ⟨b, a, h, hs⟩ := exists_sq_mul_squarefree n
+  exact ⟨a, b, h, hs⟩
+
 theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
     ∃ a b : ℕ, 0 < a ∧ 0 < b ∧ b ^ 2 * a = n ∧ Squarefree a := by
-  classical
-  set S := {s ∈ range (n + 1) | s ∣ n ∧ ∃ x, s = x ^ 2}
-  have hSne : S.Nonempty := by
-    use 1
-    have h1 : 0 < n ∧ ∃ x : ℕ, 1 = x ^ 2 := ⟨hn, ⟨1, (one_pow 2).symm⟩⟩
-    simp [S, h1]
-  let s := Finset.max' S hSne
-  have hs : s ∈ S := Finset.max'_mem S hSne
-  simp only [S, Finset.mem_filter, Finset.mem_range] at hs
-  obtain ⟨-, ⟨a, hsa⟩, ⟨b, hsb⟩⟩ := hs
-  rw [hsa] at hn
-  obtain ⟨hlts, hlta⟩ := CanonicallyOrderedAdd.mul_pos.mp hn
-  rw [hsb] at hsa hn hlts
-  refine ⟨a, b, hlta, (pow_pos_iff two_ne_zero).mp hlts, hsa.symm, ?_⟩
-  rintro x ⟨y, hy⟩
-  rw [Nat.isUnit_iff]
-  by_contra hx
-  refine Nat.lt_le_asymm ?_ (Finset.le_max' S ((b * x) ^ 2) ?_)
-  · convert lt_mul_of_one_lt_right hlts
-      (one_lt_pow two_ne_zero (one_lt_iff_ne_zero_and_ne_one.mpr ⟨fun h => by simp_all, hx⟩))
-      using 1
-    rw [mul_pow]
-  · simp_rw [S, hsa, Finset.mem_filter, Finset.mem_range]
-    refine ⟨Nat.lt_succ_iff.mpr (le_of_dvd hn ?_), ?_, ⟨b * x, rfl⟩⟩ <;> use y <;> rw [hy] <;> ring
+  obtain ⟨b, a, h, hs⟩ := exists_sq_mul_squarefree n
+  exact ⟨a, b, Nat.pos_of_ne_zero hs.ne_zero, Nat.pos_of_ne_zero (by grind), h, hs⟩
 
 theorem sq_mul_squarefree_of_pos' {n : ℕ} (h : 0 < n) :
     ∃ a b : ℕ, (b + 1) ^ 2 * (a + 1) = n ∧ Squarefree (a + 1) := by
   obtain ⟨a₁, b₁, ha₁, hb₁, hab₁, hab₂⟩ := sq_mul_squarefree_of_pos h
   refine ⟨a₁.pred, b₁.pred, ?_, ?_⟩ <;> simpa only [add_one, succ_pred_eq_of_pos, ha₁, hb₁]
-
-theorem sq_mul_squarefree (n : ℕ) : ∃ a b : ℕ, b ^ 2 * a = n ∧ Squarefree a := by
-  rcases n with - | n
-  · exact ⟨1, 0, by simp, squarefree_one⟩
-  · obtain ⟨a, b, -, -, h₁, h₂⟩ := sq_mul_squarefree_of_pos (succ_pos n)
-    exact ⟨a, b, h₁, h₂⟩
 
 /-- `Squarefree` is multiplicative. Note that the → direction does not require `hmn`
 and generalizes to arbitrary commutative monoids. See `Squarefree.of_mul_left` and
@@ -370,10 +346,20 @@ lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p ∈ n.primeFac
 lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p ∈ s, p) = s := by
   have hn : ∏ p ∈ s, p ≠ 0 := prod_ne_zero_iff.2 fun p hp ↦ (hs _ hp).ne_zero
   ext p
-  rw [mem_primeFactors_of_ne_zero hn, and_congr_right (fun hp ↦ hp.prime.dvd_finset_prod_iff _)]
+  rw [mem_primeFactors_of_ne_zero hn, and_congr_right (fun hp ↦ hp.prime.dvd_finsetProd_iff _)]
   refine ⟨?_, fun hp ↦ ⟨hs _ hp, _, hp, dvd_rfl⟩⟩
   rintro ⟨hp, q, hq, hpq⟩
   rwa [← ((hs _ hq).dvd_iff_eq hp.ne_one).1 hpq]
+
+theorem primeFactors_prod_primeFactors (n : ℕ) :
+    (∏ p ∈ n.primeFactors, p).primeFactors = n.primeFactors :=
+  primeFactors_prod fun _ hp ↦ n.mem_primeFactors.mp hp |>.left
+
+theorem prod_primeFactors_dvd_iff {n k : ℕ} (hk : k ≠ 0) :
+    (∏ p ∈ n.primeFactors, p) ∣ k ↔ n.primeFactors ⊆ k.primeFactors := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · grw [← Nat.primeFactors_mono h hk, primeFactors_prod_primeFactors]
+  · grw [← k.prod_primeFactors_dvd, Finset.prod_dvd_prod_of_subset _ _ _ h]
 
 lemma primeFactors_div_gcd (hm : Squarefree m) (hn : n ≠ 0) :
     primeFactors (m / m.gcd n) = primeFactors m \ primeFactors n := by

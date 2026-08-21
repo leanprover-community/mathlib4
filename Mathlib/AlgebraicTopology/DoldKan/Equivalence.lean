@@ -91,7 +91,7 @@ obtained by composing the previous equivalence with the equivalences
 `Karoubi (ChainComplex C ℕ) ≌ ChainComplex C ℕ`. Instead, we polish this construction
 in `Compatibility.lean` by ensuring good definitional properties of the equivalence (e.g.
 the inverse functor is definitionally equal to
-`Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject C`) and
+`Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`, which is induced by `Γ₀'`) and
 showing compatibilities for the unit and counit isomorphisms.
 
 In this file `Equivalence.lean`, assuming the category `A` is abelian, we obtain
@@ -146,6 +146,9 @@ def N : SimplicialObject A ⥤ ChainComplex A ℕ :=
 def Γ : ChainComplex A ℕ ⥤ SimplicialObject A :=
   Idempotents.DoldKan.Γ
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The comparison isomorphism between `normalizedMooreComplex A` and
 the functor `Idempotents.DoldKan.N` from the pseudoabelian case -/
 @[simps!]

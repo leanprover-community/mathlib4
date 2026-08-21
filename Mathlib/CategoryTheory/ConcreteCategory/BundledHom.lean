@@ -5,7 +5,8 @@ Authors: Kim Morrison, Yury Kudryashov
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
-public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Tactic.Common
+public import Mathlib.Util.CompileInductive
 
 deprecated_module (since := "2026-02-02")

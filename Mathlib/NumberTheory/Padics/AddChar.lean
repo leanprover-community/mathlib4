@@ -50,7 +50,7 @@ variable {R : Type*} [NormedRing R] [Algebra ℤ_[p] R] [IsBoundedSMul ℤ_[p] R
 lemma AddChar.tendsto_eval_one_sub_pow {κ : AddChar ℤ_[p] R} (hκ : Continuous κ) :
     Tendsto (fun n ↦ (κ 1 - 1) ^ n) atTop (𝓝 0) := by
   refine (PadicInt.fwdDiff_tendsto_zero ⟨κ, hκ⟩).congr fun n ↦ ?_
-  simpa only [AddChar.map_zero_eq_one, mul_one] using fwdDiff_addChar_eq κ 0 1 n
+  simpa only [AddChar.map_zero_eq_one, mul_one] using! fwdDiff_addChar_eq κ 0 1 n
 
 namespace PadicInt
 variable [CompleteSpace R]

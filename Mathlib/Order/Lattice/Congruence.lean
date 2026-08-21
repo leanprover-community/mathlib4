@@ -118,7 +118,7 @@ open Function
 @[simps!]
 def ker [LatticeHomClass F α β] (f : F) : LatticeCon α where
   toSetoid := Setoid.ker f
-  inf _ _ := by simp_all only [Setoid.ker, onFun, map_inf]
-  sup _ _ := by simp_all only [Setoid.ker, onFun, map_sup]
+  inf _ _ := by simp_all +instances only [Setoid.ker, onFun, map_inf]
+  sup _ _ := by simp_all +instances only [Setoid.ker, onFun, map_sup]
 
 end LatticeCon

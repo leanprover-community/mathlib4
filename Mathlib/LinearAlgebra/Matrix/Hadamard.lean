@@ -159,6 +159,16 @@ end One
 theorem hadamard_self_eq_self_iff [Mul α] {A : Matrix m n α} :
     A ⊙ A = A ↔ ∀ i j, IsIdempotentElem (A i j) := ext_iff.symm
 
+theorem submatrix_hadamard {l o : Type*} [Mul α]
+    (A B : Matrix m n α) (e : l → m) (f : o → n) :
+    (A ⊙ B).submatrix e f = A.submatrix e f ⊙ B.submatrix e f := rfl
+
+theorem transpose_hadamard [Mul α] (A B : Matrix m n α) : (A ⊙ B)ᵀ = Aᵀ ⊙ Bᵀ :=
+  ext fun _ _ => rfl
+
+theorem conjTranspose_hadamard [Mul α] [StarMul α] (A B : Matrix m n α) : (A ⊙ B)ᴴ = Bᴴ ⊙ Aᴴ :=
+  ext fun _ _ => StarMul.star_mul _ _
+
 section single
 
 variable [DecidableEq m] [DecidableEq n] [MulZeroClass α]
@@ -178,11 +188,12 @@ end single
 section trace
 
 variable [Fintype m] [Fintype n]
-variable (R) [Semiring α]
+variable (R) [NonUnitalSemiring α]
 
 theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A * Bᵀ) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dotProduct_vecMul_hadamard [DecidableEq m] [DecidableEq n] (v : m → α) (w : n → α) :
     v ᵥ* (A ⊙ B) ⬝ᵥ w = trace (diagonal v * A * (B * diagonal w)ᵀ) := by
   rw [← sum_hadamard_eq, Finset.sum_comm]
