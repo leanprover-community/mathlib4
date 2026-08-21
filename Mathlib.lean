@@ -553,6 +553,8 @@ public import Mathlib.Algebra.GroupWithZero.Semiconj
 public import Mathlib.Algebra.GroupWithZero.Shrink
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.GroupWithZero.Subgroup.Defs
+public import Mathlib.Algebra.GroupWithZero.Subgroup.Lattice
+public import Mathlib.Algebra.GroupWithZero.Subgroup.Units
 public import Mathlib.Algebra.GroupWithZero.Submonoid.CancelMulZero
 public import Mathlib.Algebra.GroupWithZero.Submonoid.Defs
 public import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
@@ -1024,6 +1026,7 @@ public import Mathlib.Algebra.Order.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.GroupWithZero.Lex
 public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 public import Mathlib.Algebra.Order.GroupWithZero.Range
+public import Mathlib.Algebra.Order.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
