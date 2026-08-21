@@ -54,6 +54,14 @@ lemma hasCardinalLT_arrow_walkingParallelFamily {T : Type u}
 
 namespace IsCardinalFiltered
 
+instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (J : Type*) [Category* J] [Subsingleton J] [Nonempty J] [Quiver.IsThin J] :
+    IsCardinalFiltered J κ where
+  nonempty_cocone F _ :=
+    ⟨Cocone.mk (Classical.arbitrary _)
+      { app _ := eqToHom (by subsingleton)
+        naturality _ _ _ := by subsingleton }⟩
+
 variable {J : Type u} [Category.{v} J] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
   [IsCardinalFiltered J κ]
 
@@ -189,6 +197,7 @@ lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
       { app a := homOfLE (hj a)
         naturality _ _ _ := rfl }⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
     IsCardinalFiltered κ.ord.ToType κ :=
   isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
@@ -201,6 +210,7 @@ instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
 
 open IsCardinalFiltered
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance isCardinalFiltered_under
     (J : Type u) [Category.{v} J] (κ : Cardinal.{w}) [Fact κ.IsRegular]
@@ -238,6 +248,7 @@ instance isCardinalFiltered_prod (J₁ : Type u) (J₂ : Type u')
           · simpa using c₁.w f
           · simpa using c₂.w f }⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isCardinalFiltered_pi {ι : Type u'} (J : ι → Type u) [∀ i, Category.{v} (J i)]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [∀ i, IsCardinalFiltered (J i) κ] :
     IsCardinalFiltered (∀ i, J i) κ where

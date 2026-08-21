@@ -66,6 +66,7 @@ lemma natDegree_sum_le_of_forall_le {n : ℕ} (f : ι → S[X]) (h : ∀ i ∈ s
     natDegree (∑ i ∈ s, f i) ≤ n :=
   le_trans (natDegree_sum_le s f) <| (Finset.fold_max_le n).mpr <| by simpa
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The leading coefficient of a sum of polynomials with the same degree is
 the sum of the leading coefficients, provided that this sum is nonzero.
 -/
@@ -267,7 +268,7 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
     (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
   nontriviality R
   convert! multiset_prod_X_sub_C_nextCoeff (by assumption)
-  rw [nextCoeff, if_neg]
+  rw [nextCoeff, ite_eq_right]
   swap
   · rw [natDegree_multiset_prod_of_monic]
     swap
@@ -393,6 +394,7 @@ the sum of the degrees, where the degree of the zero polynomial is ⊥.
 theorem degree_prod [Nontrivial R] : (∏ i ∈ s, f i).degree = ∑ i ∈ s, (f i).degree :=
   map_prod (@degreeMonoidHom R _ _ _) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients.
 

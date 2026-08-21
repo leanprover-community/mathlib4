@@ -30,8 +30,7 @@ lemma SolutionSetCondition.of_isCardinalAccessible
   obtain ⟨κ, _, _⟩ := IsAccessibleCategory.exists_cardinal.{w} (StructuredArrow Y F)
   obtain ⟨ι, X₀, h⟩ := ObjectProperty.EssentiallySmall.exists_eq_isoClosure_ofObj.{w}
     (isCardinalPresentable (StructuredArrow Y F) κ)
-  refine ⟨ι, fun i ↦ (X₀ i).right, fun i ↦ (X₀ i).hom,
-    fun X g ↦ ?_⟩
+  refine ⟨ι, fun i ↦ (X₀ i).right, fun i ↦ (X₀ i).hom, fun X g ↦ ?_⟩
   let E := CostructuredArrow (isCardinalPresentable _ κ).ι (StructuredArrow.mk g)
   have : IsFiltered E := isFiltered_of_isCardinalFiltered _ κ
   let γ : E := Classical.arbitrary _

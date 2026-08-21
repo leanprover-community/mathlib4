@@ -25,6 +25,7 @@ the type `Skeleton C` is `w`-small, and `C` is `w`-locally small.
 
 @[expose] public section
 
+
 universe w w' v v' u u'
 
 open CategoryTheory
@@ -205,7 +206,10 @@ end ShrinkHoms
 
 namespace Shrink
 
-noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
+/- The priority is lower than that of `Preorder.smallCategory`: when `C` is a small preorder,
+`Shrink.{w} C` then gets its category structure from `Preorder (Shrink.{w} C)`
+(see `Mathlib/Order/Shrink.lean`), with morphisms in `Type w` rather than in `Type v`. -/
+noncomputable instance (priority := 50) [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
   inferInstanceAs (Category (InducedCategory _ (equivShrink C).symm))
 
 /-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/

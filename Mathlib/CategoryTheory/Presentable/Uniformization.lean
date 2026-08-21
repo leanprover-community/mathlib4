@@ -5,22 +5,33 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.SharplyLT.Lemmas
 public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
+public import Mathlib.CategoryTheory.Presentable.SharplyLT.Lemmas
 
 /-!
 # The uniformization theorem
+
+The main result in this file is `IsCardinalAccessibleCategory.uniformization`
+which says that if `F : C ⥤ D` is an accessible functor between accessible
+categories, there exists a regular cardinal `κ` such that `C` and `D`
+are `κ`-accessible categories, and `F` is a `κ`-accessible functor
+which preserves `κ`-presentable objects.
+
+## References
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
 
 @[expose] public section
 
-universe w v v' u u'
+universe w
 
-open CategoryTheory Limits Cardinal.SharplyLT.IsCardinalFilteredAndHasCardinalLT in
+open CategoryTheory Limits
+
+open Cardinal.SharplyLT.IsCardinalFilteredAndHasCardinalLT in
 lemma Cardinal.SharplyLT.exists_retract_of_isCardinalPresentable
     {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
-    (hκ : κ₁.SharplyLT κ₂) {C : Type u} [Category.{v} C]
+    (hκ : κ₁.SharplyLT κ₂) {C : Type*} [Category* C]
     [IsCardinalAccessibleCategory C κ₁] (X : C) [IsCardinalPresentable X κ₂] :
     ∃ (Y : C) (_ : Retract X Y) (J : Type w) (_ : PartialOrder J),
       IsCardinalFiltered J κ₁ ∧ HasCardinalLT J κ₂ ∧
@@ -37,41 +48,42 @@ lemma Cardinal.SharplyLT.exists_retract_of_isCardinalPresentable
   obtain ⟨K, i, hi⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ₂
     (isColimit κ₁ κ₂ p) (𝟙 X)
   exact ⟨colimit κ₁ κ₂ p K,
-    { i := i, r := colimit.π κ₁ κ₂ p K }, Subtype K.val,
-    inferInstance, K.prop.1, K.prop.2, ⟨.colimit _ (fun k ↦ p.prop_diag_obj _)⟩⟩
+    { i := i, r := colimit.π κ₁ κ₂ p K }, K.val,
+    inferInstance, K.prop.1, K.prop.2, ⟨.colimit (K.val.mono_coe.functor ⋙ p.diag)
+      (fun _ ↦ p.prop_diag_obj _)⟩⟩
 
 namespace CategoryTheory
 
-open Limits
-
 namespace IsCardinalAccessibleCategory
 
-variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 
-lemma uniformization'
+lemma uniformization_aux
     (F : C ⥤ D) {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
     [IsCardinalAccessibleCategory C κ₁] [IsCardinalAccessibleCategory D κ₁]
     [F.IsCardinalAccessible κ₁] (hκ : κ₁.SharplyLT κ₂)
     (hF : isCardinalPresentable C κ₁ ≤ (isCardinalPresentable D κ₂).inverseImage F) :
-    isCardinalPresentable C κ₂ ≤ (isCardinalPresentable D κ₂).inverseImage F := by
-  intro X hX
-  simp only [isCardinalPresentable_iff] at hX
-  obtain ⟨Y, r, J, _, _, hJ, ⟨p⟩⟩ := hκ.exists_retract_of_isCardinalPresentable X
-  refine (isCardinalPresentable D κ₂).prop_of_retract (r.map F) ?_
-  have := F.preservesColimitsOfShape_of_isCardinalAccessible κ₁
-  have (j : J) : IsCardinalPresentable ((p.diag ⋙ F).obj j) κ₂ := hF _ (p.prop_diag_obj j)
-  exact isCardinalPresentable_of_isColimit _ (isColimitOfPreserves F p.isColimit) _
-    ((hasCardinalLT_arrow_iff_of_isThin _ _ (Cardinal.IsRegular.aleph0_le Fact.out)).2 hJ)
+    F.PreservesCardinalPresentable κ₂ where
+  le_inverseImage_isCardinalPresentable X hX := by
+    simp only [isCardinalPresentable_iff] at hX
+    obtain ⟨Y, r, J, _, _, hJ, ⟨p⟩⟩ := hκ.exists_retract_of_isCardinalPresentable X
+    refine (isCardinalPresentable D κ₂).prop_of_retract (r.map F) ?_
+    have := F.preservesColimitsOfShape_of_isCardinalAccessible κ₁
+    have (j : J) : IsCardinalPresentable ((p.diag ⋙ F).obj j) κ₂ := hF _ (p.prop_diag_obj j)
+    exact isCardinalPresentable_of_isColimit _ (isColimitOfPreserves F p.isColimit) _
+      ((hasCardinalLT_arrow_iff_of_isThin _ _ (Cardinal.IsRegular.aleph0_le Fact.out)).2 hJ)
 
+/-- Uniformization theorem for accessible categories: if `F i : C ⥤ D` for `i : ι`
+is a small family of accessible functors between accessible categories, there exists
+a regular cardinal `κ` such that `C` and `D` are `κ`-accessible, and the
+functors `F i` are `κ`-accessible functors which preserve `κ`-presentable objects. -/
 lemma uniformization_of_small
     [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
-    {ι : Type*} [Small.{w} ι] (F : ι → C ⥤ D)
-    [∀ i, Functor.IsAccessible.{w} (F i)] :
+    {ι : Type*} [Small.{w} ι] (F : ι → C ⥤ D) [∀ i, Functor.IsAccessible.{w} (F i)] :
     ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
-      IsCardinalAccessibleCategory C κ ∧
-      IsCardinalAccessibleCategory D κ ∧
+      IsCardinalAccessibleCategory C κ ∧ IsCardinalAccessibleCategory D κ ∧
       (∀ i, (F i).IsCardinalAccessible κ) ∧
-        ∀ i, isCardinalPresentable C κ ≤ (isCardinalPresentable D κ).inverseImage (F i) := by
+        ∀ i, (F i).PreservesCardinalPresentable κ := by
   obtain ⟨κ, _, _, _, _⟩ :
       ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
         IsCardinalAccessibleCategory C κ ∧ IsCardinalAccessibleCategory D κ ∧
@@ -104,33 +116,37 @@ lemma uniformization_of_small
   exact ⟨κ', inferInstance, h₁.isCardinalAccessibleCategory C,
     h₁.isCardinalAccessibleCategory D,
     fun i ↦ Functor.isCardinalAccessible_of_le _ h₁.le,
-    fun i ↦ uniformization' _ h₁
+    fun i ↦ uniformization_aux _ h₁
       (fun X hX ↦ isCardinalPresentable_monotone _ h₂.le _
         (hκ₀ i _ (ObjectProperty.prop_map_obj _ _ hX)))⟩
 
-lemma uniformization (F : C ⥤ D)
-    [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
-    [Functor.IsAccessible.{w} F] :
+/-- Uniformization theorem for accessible categories: if `F` is an accessible
+functor between accessible categories, there exists a regular cardinal `κ`
+such that `C` and `D` are `κ`-accessible, the functor `F` is `κ`-accessible
+and preserves `κ`-presentable objects. -/
+lemma uniformization [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
+    (F : C ⥤ D) [Functor.IsAccessible.{w} F] :
     ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
-      IsCardinalAccessibleCategory C κ ∧
-      IsCardinalAccessibleCategory D κ ∧
-      F.IsCardinalAccessible κ ∧
-        isCardinalPresentable C κ ≤ (isCardinalPresentable D κ).inverseImage F := by
+      IsCardinalAccessibleCategory C κ ∧ IsCardinalAccessibleCategory D κ ∧
+      F.IsCardinalAccessible κ ∧ F.PreservesCardinalPresentable κ := by
   obtain ⟨κ, _, h₁, h₂, h₃, h₄⟩ := uniformization_of_small (fun (_ : Fin 1) ↦ F)
   exact ⟨κ, inferInstance, h₁, h₂, h₃ 0, h₄ 0⟩
 
+/-- If `F₁ : C₁ ⥤ D₁` and `F₂ : C₂ ⥤ D₂` are accessible functors between
+accessible categories, there exists a regular cardinal `κ` such that
+`F₁` and `F₂` are `κ`-accessible functors between `κ`-accessible categories
+and they preserve `κ`-presentable objects. -/
 lemma uniformization_pair
     {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Category* D₁] [Category* D₂]
-    (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂)
     [IsAccessibleCategory.{w} C₁] [IsAccessibleCategory.{w} C₂]
     [IsAccessibleCategory.{w} D₁] [IsAccessibleCategory.{w} D₂]
+    (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂)
     [Functor.IsAccessible.{w} F₁] [Functor.IsAccessible.{w} F₂] :
     ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
       IsCardinalAccessibleCategory C₁ κ ∧ IsCardinalAccessibleCategory D₁ κ ∧
       IsCardinalAccessibleCategory C₂ κ ∧ IsCardinalAccessibleCategory D₂ κ ∧
       F₁.IsCardinalAccessible κ ∧ F₂.IsCardinalAccessible κ ∧
-        F₁.PreservesCardinalPresentable κ ∧
-        F₂.PreservesCardinalPresentable κ := by
+        F₁.PreservesCardinalPresentable κ ∧ F₂.PreservesCardinalPresentable κ := by
   obtain ⟨κ, _, _, _, _, _, _, _⟩ :
       ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
         IsCardinalAccessibleCategory C₁ κ ∧ IsCardinalAccessibleCategory D₁ κ ∧
@@ -160,8 +176,8 @@ lemma uniformization_pair
     hκ.isCardinalAccessibleCategory _,
     Functor.isCardinalAccessible_of_le _ hκ.le,
     Functor.isCardinalAccessible_of_le _ hκ.le,
-    ⟨uniformization' _ hκ (fun X₁ hX₁ ↦ ?_)⟩,
-    ⟨uniformization' _ hκ (fun X₂ hX₂ ↦ ?_)⟩⟩
+    uniformization_aux _ hκ (fun X₁ hX₁ ↦ ?_),
+    uniformization_aux _ hκ (fun X₂ hX₂ ↦ ?_)⟩
   · have := hκ₁ _ (ObjectProperty.prop_map_obj _ F₁ hX₁)
     exact isCardinalPresentable_of_le _ hκ₁'.le
   · have := hκ₂ _ (ObjectProperty.prop_map_obj _ F₂ hX₂)

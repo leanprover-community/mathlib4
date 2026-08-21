@@ -1,4 +1,5 @@
-# Reusable workflow invoked by build.yml, bors.yml, build_fork.yml, and ci_dev.yml.
+# Reusable workflow invoked by build.yml, bors.yml, build_fork.yml, ci_dev.yml,
+# and release_cache.yml.
 
 on:
   workflow_call:
@@ -47,6 +48,7 @@ env:
   # are valid by-products of the Mathlib build. Build artifacts fetched from Lake's cache do
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
+  MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
 
 jobs:
   build:
@@ -56,6 +58,7 @@ jobs:
       build-outcome: ${{ steps.build.outcome }}
       archive-outcome: ${{ steps.archive.outcome }}
       counterexamples-outcome: ${{ steps.counterexamples.outcome }}
+      wanted-outcome: ${{ steps.wanted.outcome }}
       cache-staging-has-files: ${{ steps.cache_staging_check.outputs.has_files }}
       mk_all-outcome: ${{ steps.mk_all.outcome }}
       noisy-outcome: ${{ steps.noisy.outcome }}
@@ -79,7 +82,7 @@ jobs:
           # We just populate the env vars for this step to make them viewable in the logs
 
       - name: Checkout local actions
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -229,12 +232,13 @@ jobs:
       # storing and transferring oleans over the network.
       # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
 
-      - name: fetch archive and counterexamples cache
+      - name: fetch archive, counterexamples and wanted cache
         shell: bash
         run: |
           cd pr-branch
           ../tools-branch/.lake/build/bin/cache get Archive.lean
           ../tools-branch/.lake/build/bin/cache get Counterexamples.lean
+          ../tools-branch/.lake/build/bin/cache get Wanted.lean
 
       - name: build archive
         id: archive
@@ -252,8 +256,16 @@ jobs:
           ../tools-branch/scripts/lake-build-with-retry.sh Counterexamples
           # results of build at pr-branch/.lake/build_summary_Counterexamples.json
 
+      - name: build wanted
+        id: wanted
+        continue-on-error: true
+        run: |
+          cd pr-branch
+          ../tools-branch/scripts/lake-build-with-retry.sh Wanted
+          # results of build at pr-branch/.lake/build_summary_Wanted.json
+
       # Runs in the build job because it only needs the freshly-built Mathlib/
-      # Archive/Counterexamples oleans, which are present here; keeping it in
+      # Archive/Counterexamples/Wanted oleans, which are present here; keeping it in
       # `build` also spares `test_lint` from fetching Archive/Counterexamples.
       - name: check for noisy stdout lines
         id: noisy
@@ -262,7 +274,7 @@ jobs:
           buildMsgs="$(
             ##  we exploit `lake`s replay feature: since the cache is present, running
             ##  `lake build` will reproduce all the outputs without having to recompute
-            lake build -q --iofail Mathlib Archive Counterexamples
+            lake build -q --iofail Mathlib Archive Counterexamples Wanted
           )"
           if [ -n "${buildMsgs}" ]
           then
@@ -298,6 +310,13 @@ jobs:
         run: |
           cd pr-branch
           lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Counterexamples.lean
+
+      - name: stage Wanted cache files
+        if: ${{ steps.wanted.outcome == 'success' }}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Wanted.lean
 
       - name: check cache staging contents
         id: cache_staging_check
@@ -394,7 +413,7 @@ jobs:
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
     steps:
       - name: Checkout local actions
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -462,19 +481,19 @@ jobs:
       # the archive/counterexamples builds all succeeded. The condition reads those
       # from the build job's outputs, and the problem-matcher wrap is gated to match.
       - name: begin gh-problem-match-wrap for test step
-        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' }}
+        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
         uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
         with:
           action: add # In order to be able to run a multiline script, we need to add/remove the problem matcher before and after.
           linters: lean
       - name: test mathlib
-        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' }}
+        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
         id: test
         run: |
           cd pr-branch
           ../tools-branch/scripts/lake-build-wrapper.py .lake/build_summary_MathlibTest.json lake --iofail test
       - name: end gh-problem-match-wrap for test step
-        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' }}
+        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
         uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
         with:
           action: remove
@@ -604,7 +623,7 @@ jobs:
       # `build_template` via `pull_request_target`, never this one — so
       # `pr_branch_ref` is always a trusted ref here. Fork PRs keep `master`.
       - name: Checkout tools branch
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
           fetch-depth: 1
@@ -674,7 +693,7 @@ jobs:
       contents: read
     steps:
 
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.pr_branch_ref }}
           # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
@@ -686,12 +705,18 @@ jobs:
       # Sparse-checkout master's `.github/actions/` so the trust dispatch
       # below loads from a trust-rooted source, not from PR-branch-controlled
       # content. Mirrors the `Checkout local actions` step in the `build` job.
-      - name: Checkout local actions
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      # Also check out the cache tool (`Cache/`) at this ref. The verify step
+      # below compares it against the PR branch's `Cache/` to classify a cache
+      # miss. `github.workflow_sha` is the base ref the workflow runs from,
+      # master for fork PRs, whose `cache` binary wrote the cache.
+      - name: Checkout local actions and Cache baseline
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
-          sparse-checkout: .github/actions
+          sparse-checkout: |
+            .github/actions
+            Cache
           path: workflow-actions
 
       # Sets MATHLIB_CACHE_FROM in env so the `cache get` calls below pick
@@ -730,16 +755,60 @@ jobs:
           lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
 
       - name: verify that everything was available in the cache
+        # Verify the cache reconstitutes this commit's oleans. This job reads
+        # the cache with the PR branch's own `lake exe cache get`. The write
+        # path uses master's `cache` binary for fork PRs and the PR branch's
+        # binary for every other build. So a fork PR whose `Cache/` differs
+        # from master reads a different `.ltar` key space (say, after a
+        # `rootHashGeneration` bump) and misses every file. That is an expected
+        # invalidation: warn and continue. Any other build reads and writes
+        # with the same binary, so a miss there is a real gap and is fatal.
+        env:
+          # GitHub sets this from the event payload; it is empty for pushes
+          # (master, bors), so those fail closed below.
+          HEAD_REPO_IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
         run: |
-          echo "::group::{verify Mathlib cache}"
-          lake build --no-build --rehash -v Mathlib
-          echo "::endgroup::"
-          echo "::group::{verify Archive cache}"
-          lake build --no-build --rehash -v Archive
-          echo "::endgroup::"
-          echo "::group::{verify Counterexamples cache}"
-          lake build --no-build --rehash -v Counterexamples
-          echo "::endgroup::"
+          set +e
+          fail=0
+          for target in Mathlib Archive Counterexamples; do
+            echo "::group::{verify ${target} cache}"
+            lake build --no-build --rehash -v "${target}" || fail=1
+            echo "::endgroup::"
+          done
+          if [ "${fail}" -eq 0 ]; then
+            exit 0
+          fi
+
+          # Only fork PRs read and write the cache with different binaries.
+          # Every other build (master, bors, dev branches) uses one binary, so
+          # a miss is a real gap.
+          if [ "${HEAD_REPO_IS_FORK}" != "true" ]; then
+            echo "::error::Cache verification failed on an in-repo build; the uploaded cache is incomplete."
+            exit 1
+          fi
+
+          # `workflow-actions/Cache` is master's cache tool at
+          # `github.workflow_sha`; `Cache` is the PR branch's. Matching source
+          # means the key spaces agree, so the miss is a real gap. Differing
+          # source means the PR changed the key space, so the miss is expected.
+          # The cache writer is master's binary at upload time, which can be
+          # newer than `workflow_sha` when a `Cache/` change lands on master
+          # mid-build; that skew can only hard-fail like an unguarded verify
+          # or soft-pass a key space that genuinely diverged.
+          dout=$(diff -rq workflow-actions/Cache Cache 2>&1)
+          dstat=$?
+          if [ "${dstat}" -eq 0 ]; then
+            echo "::error::Cache verification failed and this PR's Cache/ matches master's, so the key spaces agree: the uploaded cache is incomplete."
+            exit 1
+          elif [ "${dstat}" -eq 1 ]; then
+            echo "::warning::Cache verification incomplete, but this PR's Cache/ differs from master's. CI wrote the cache with master's binary and this job reads it with the PR branch's, so a changed key space (such as a rootHashGeneration bump) misses as expected. Continuing; the cache repopulates once this lands on master."
+            echo "${dout}"
+            exit 0
+          else
+            echo "::error::Cache verification failed and master's Cache/ baseline could not be compared (diff status ${dstat}); treating as a failure."
+            echo "${dout}"
+            exit 1
+          fi
 
       - name: check declarations in db files
         run: |
@@ -751,7 +820,7 @@ jobs:
           lake exe graph
 
       - name: Checkout local actions
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -801,6 +870,9 @@ jobs:
         run: |
           lake env lean scripts/create_deprecated_modules.lean
           lake env lean scripts/autolabel.lean
+          # Executing this also runs the export and writes a (gitignored) `crossrefs.json`,
+          # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
+          lake env lean scripts/export_crossrefs.lean
           lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything
@@ -961,7 +1033,7 @@ jobs:
             contains(steps.actorTeams.outputs.teams, 'bot-users')
           )
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
-        uses: GrantBirki/comment@3439715f0cf3b8fc29bf47be0e3226679c06c41a # v3.0.0
+        uses: GrantBirki/comment@937820f3623fd0e300294bcc64ac7577fc0ad4cc # v3.0.3
         with:
           # This token is masked by the token minting action and will not be logged accidentally.
           token: ${{ steps.auto-merge-app-token.outputs.token }}

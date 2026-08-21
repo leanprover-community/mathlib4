@@ -38,7 +38,6 @@ protected instance (priority := low) isCardinalPresentable
     let j : J := Classical.arbitrary _
     exact ⟨j, eqToHom (IsDiscrete.eq_of_hom (c.ι.app j)).symm, by subsingleton⟩)
 
-set_option backward.defeqAttrib.useBackward true in
 protected instance (priority := low) isCardinalAccessible
     {D : Type*} [Category* D]
     (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
@@ -51,20 +50,11 @@ protected instance (priority := low) isCardinalAccessible
     exact Functor.IsEventuallyConstantFrom.isColimitOfIsIso (i₀ := j)
       (fun _ _ ↦ by dsimp; infer_instance) _⟩⟩⟩
 
-instance (priority := low)
+protected instance (priority := low) isAccessible
     {D : Type*} [Category* D] (F : C ⥤ D) :
-    Functor.IsAccessible.{w} F :=
-  ⟨.aleph0, Cardinal.fact_isRegular_aleph0, inferInstance⟩
-
-instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [Subsingleton C] [Nonempty C] :
-    IsCardinalFiltered C κ where
-  nonempty_cocone F _ :=
-    ⟨Cocone.mk (Classical.arbitrary _)
-      { app _ := eqToHom (by subsingleton) }⟩
-
-instance (α : Type*) [Preorder α] [Subsingleton α] : IsDiscrete α where
-  eq_of_hom _ := by subsingleton
+    Functor.IsAccessible.{w} F where
+  exists_cardinal :=
+    ⟨.aleph0, Cardinal.fact_isRegular_aleph0, inferInstance⟩
 
 instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [Subsingleton C] [Nonempty C] :
@@ -72,7 +62,7 @@ instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
   has_colimits_of_shape J := ⟨fun F ↦
     ⟨Cocone.mk (Classical.arbitrary C)
       { app _ := eqToHom (by subsingleton) },
-      { desc _ := eqToHom (by subsingleton) }⟩ ⟩
+      { desc _ := eqToHom (by subsingleton) }⟩⟩
   exists_generator := by
     let X : C := Classical.arbitrary _
     refine ⟨.ofObj (fun (_ : PUnit.{w + 1}) ↦ X), inferInstance,

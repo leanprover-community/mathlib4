@@ -185,6 +185,7 @@ open Real
 
 attribute [-instance] Real.decidableEq
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
 theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     ∃ q : S,
@@ -234,7 +235,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     congr
     simp_rw [map_sum, map_sub, map_smul, Finset.sum_apply',
       Finsupp.sub_apply, Finsupp.smul_apply, Finset.sum_sub_distrib, Basis.repr_self_apply,
-      smul_eq_mul, mul_boole, Finset.sum_ite_eq', Finset.mem_univ, if_true]
+      smul_eq_mul, mul_boole, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
   · exact mod_cast ε_le
 
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
@@ -319,14 +320,14 @@ theorem mkMMem_surjective [IsDedekindDomain S] [Algebra.IsAlgebraic R S] :
   obtain ⟨J, mk0_eq_mk0, J_dvd⟩ := exists_mk0_eq_mk0 bS adm ⟨I, hI⟩
   exact ⟨⟨J, J_dvd⟩, mk0_eq_mk0.symm⟩
 
-open Classical in
+open scoped Classical in
 /-- The **class number theorem**: the class group of an integral closure `S` of `R` in an
 algebraic extension `L` is finite if there is an admissible absolute value.
 
 See also `ClassGroup.fintypeOfAdmissibleOfFinite` where `L` is a finite
 extension of `K = Frac(R)`, supplying most of the required assumptions automatically.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
     [Algebra.IsAlgebraic R S] : Fintype (ClassGroup S) :=
   @Fintype.ofSurjective _ _ _
@@ -348,7 +349,7 @@ absolute value.
 See also `ClassGroup.fintypeOfAdmissibleOfAlgebraic` where `L` is an
 algebraic extension of `R`, that includes some extra assumptions.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintypeOfAdmissibleOfFinite [IsIntegralClosure S R L] :
     Fintype (ClassGroup S) := by
   letI := Classical.decEq L
