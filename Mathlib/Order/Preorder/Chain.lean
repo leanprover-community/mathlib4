@@ -58,7 +58,7 @@ def SuperChain (s t : Set α) : Prop :=
 def IsMaxChain (s : Set α) : Prop :=
   IsChain r s ∧ ∀ ⦃t⦄, IsChain r t → s ⊆ t → s = t
 
-variable {r} {c c₁ c₂ s t : Set α} {a b x y : α}
+variable {r} {c s t : Set α} {a b x y : α}
 
 @[simp] lemma IsChain.empty : IsChain r ∅ := pairwise_empty _
 @[simp] lemma IsChain.singleton : IsChain r {a} := pairwise_singleton ..
@@ -263,6 +263,12 @@ theorem IsMaxChain.isChain (h : IsMaxChain r s) : IsChain r s :=
 theorem IsMaxChain.not_superChain (h : IsMaxChain r s) : ¬SuperChain r s t := fun ht =>
   ht.2.ne <| h.2 ht.1 ht.2.1
 
+theorem maximal_isChain_iff : Maximal (IsChain r) s ↔ IsMaxChain r s where
+  mp h := ⟨h.prop, fun _ ht hst ↦ hst.antisymm <| h.le_of_ge ht hst⟩
+  mpr h := ⟨h.isChain, fun _ ht hst ↦ h.right ht hst |>.ge⟩
+
+alias ⟨_, IsMaxChain.maximal_isChain⟩ := maximal_isChain_iff
+
 theorem IsMaxChain.bot_mem [LE α] [OrderBot α] (h : IsMaxChain (· ≤ ·) s) : ⊥ ∈ s :=
   (h.2 (h.1.insert fun _ _ _ => Or.inl bot_le) <| subset_insert _ _).symm ▸ mem_insert _ _
 
@@ -289,23 +295,24 @@ protected theorem IsMaxChain.nonempty_iff (h : IsMaxChain r s) : Nonempty α ↔
 theorem IsMaxChain.symm (h : IsMaxChain r s) : IsMaxChain (flip r) s :=
   ⟨h.isChain.symm, fun _ ht₁ ht₂ ↦ h.2 ht₁.symm ht₂⟩
 
-open Classical in
+open scoped Classical in
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`
 is one of these chains. Otherwise it is `s`. -/
-def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then h.choose else s
 
 theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
     SuperChain r s (SuccChain r s) := by
   have : IsChain r s ∧ SuperChain r s h.choose := h.choose_spec
-  simpa [SuccChain, dif_pos, exists_and_left.mp h] using this.2
+  simpa [SuccChain, dite_eq_left, exists_and_left.mp h] using this.2
 
-open Classical in
-theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
-  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).1
-  else by
+theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) := by
+  if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).1
+  else
     rw [exists_and_left] at h
-    simpa [SuccChain, dif_neg, h] using hs
+    simpa [SuccChain, dite_eq_right, h] using hs
 
 theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain r s) :
     SuperChain r s (SuccChain r s) := by
@@ -313,10 +320,9 @@ theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain
   obtain ⟨t, ht, hst⟩ := hs₂ hs₁
   exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
 
-open Classical in
-theorem subset_succChain : s ⊆ SuccChain r s :=
-  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
-  else by
+theorem subset_succChain : s ⊆ SuccChain r s := by
+  if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).2.1
+  else
     simp [SuccChain, h]
 
 end Chain

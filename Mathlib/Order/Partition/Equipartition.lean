@@ -142,7 +142,7 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
   have bij : z'.Bijective := by
     refine (bijective_iff_injective_and_card z').mpr ⟨fun a b e ↦ ?_, by simp⟩
     simp_rw [z', z, Fin.mk.injEq, mul_comm #P.parts] at e
-    haveI : NeZero #P.parts := ⟨((Nat.zero_le _).trans_lt (gl a)).ne'⟩
+    have : NeZero #P.parts := ⟨((Nat.zero_le _).trans_lt (gl a)).ne'⟩
     change (#P.parts).divModEquiv.symm (_, _) = (#P.parts).divModEquiv.symm (_, _) at e
     simp only [Equiv.apply_eq_iff_eq, Prod.mk.injEq] at e
     apply_fun f
