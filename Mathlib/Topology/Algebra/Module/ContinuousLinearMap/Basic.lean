@@ -7,6 +7,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 module
 
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
+public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.Algebra.Module.Submodule.Invariant
 public import Mathlib.Data.FunLike.Module
 public import Mathlib.Data.FunLike.Ring
