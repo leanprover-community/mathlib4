@@ -198,25 +198,25 @@ instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [Continuous
     ContinuousSMul Circle α :=
   inferInstanceAs <| ContinuousSMul (Submonoid.unitSphere _) α
 
+section Norm
+
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E] (u : Circle) (v : E)
+
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
-    (u : Circle) (v : E) :
-    ‖u • v‖ = ‖v‖ := by
+protected lemma norm_smul : ‖u • v‖ = ‖v‖ := by
   rw [smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]
 
 @[simp]
-protected lemma nnnorm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
-    (u : Circle) (v : E) :
-    ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_injective (u.norm_smul v)
+protected lemma nnnorm_smul : ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_injective (u.norm_smul v)
 
 @[simp]
-protected lemma enorm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
-    (u : Circle) (v : E) :
-    ‖u • v‖ₑ = ‖v‖ₑ := by simp [enorm_eq_nnnorm]
+protected lemma enorm_smul : ‖u • v‖ₑ = ‖v‖ₑ := by simp [enorm_eq_nnnorm]
 
-instance {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E] : IsIsometricSMul Circle E :=
-  ⟨fun u ↦ Isometry.of_dist_eq fun x y ↦ by simp [dist_eq_norm, ← smul_sub]⟩
+instance : IsIsometricSMul Circle E :=
+  ⟨fun c ↦ Isometry.of_dist_eq fun x y ↦ by simp [dist_eq_norm, ← smul_sub]⟩
+
+end Norm
 
 end Circle
 
