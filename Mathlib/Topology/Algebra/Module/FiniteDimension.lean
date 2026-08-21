@@ -609,12 +609,10 @@ private lemma isNormableSpace_of_t2Space_finiteDimensional
     (Basis.ofVectorSpace 𝕜 E).equivFun.toContinuousLinearEquiv
   exact e.isNormableSpace
 
--- We restate the typeclass assumptions to make sure that `FiniteDimensional 𝕜 E` comes before
--- `ContinuousSMul 𝕜 E` to avoid the loop
--- `ContinuousSMul 𝕜 E <- IsNormableSpace 𝕜 E <- ContinuousSMul 𝕜 E`
-/-- A finite dimensional topological vector space over a complete normed field is normable. -/
-instance {E : Type*} [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-    [Module 𝕜 E] [FiniteDimensional 𝕜 E] [ContinuousSMul 𝕜 E] : IsNormableSpace 𝕜 E := by
+/-- A finite dimensional topological vector space over a complete normed field is normable.
+
+Not registered as a global instance only for performance reasons. -/
+theorem isNormableSpace_of_finiteDimensional [FiniteDimensional 𝕜 E] : IsNormableSpace 𝕜 E := by
   let F := SeparationQuotient E
   have : IsNormableSpace 𝕜 F := isNormableSpace_of_t2Space_finiteDimensional _
   let f : E →ₗ[𝕜] F := SeparationQuotient.mkCLM 𝕜 E
