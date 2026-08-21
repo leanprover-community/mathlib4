@@ -578,30 +578,6 @@ variable {A G V : Type*} [CommRing A] [Monoid G] [AddCommGroup V] [Module A V]
   {ρ : Representation A G V} in
 instance : Ring (Representation.IntertwiningMap ρ ρ) where
 
-instance instCompSMul : SMul (IntertwiningMap ρ ρ) (IntertwiningMap σ ρ) where
-  smul f g := f.comp g
-
-instance instCompModule : Module (IntertwiningMap ρ ρ) (IntertwiningMap σ ρ) :=
-  fast_instance%
-  {one_smul _ := rfl, mul_smul _ _ _ := rfl, smul_zero := IntertwiningMap.comp_zero _ _ _,
-    smul_add := IntertwiningMap.add_comp _ _ _, add_smul := IntertwiningMap.comp_add _ _ _,
-    zero_smul := IntertwiningMap.zero_comp _ _ _}
-
-instance instPrecompSMul :
-    SMul (MulOpposite (IntertwiningMap σ σ)) (IntertwiningMap σ ρ) where
-  smul f g := g.comp f.unop
-
-instance instPrecompModule : Module (MulOpposite (IntertwiningMap σ σ)) (IntertwiningMap σ ρ) :=
-  fast_instance%
-  {one_smul _ := rfl, mul_smul _ _ _ := rfl, smul_zero _ := IntertwiningMap.zero_comp _ _ _ _,
-    smul_add f x y := IntertwiningMap.comp_add _ _ _ x y f.unop,
-    add_smul x y f := IntertwiningMap.add_comp _ _ _ f x.unop y.unop,
-    zero_smul := IntertwiningMap.comp_zero _ _ _}
-
-instance instBimodule : SMulCommClass (MulOpposite (IntertwiningMap σ σ)) (IntertwiningMap ρ ρ)
-    (IntertwiningMap σ ρ) where
-  smul_comm _ _ _ := rfl
-
 instance : Algebra A (IntertwiningMap ρ ρ) :=
   Algebra.ofModule (fun a f g => rfl) (fun a f g => by ext; simp)
 

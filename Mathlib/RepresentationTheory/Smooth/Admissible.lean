@@ -44,7 +44,7 @@ lemma finiteDimensional_invariants_of_le_subgroup {H₁ H₂ : Subgroup G} (h : 
 
 instance {H : Subgroup G} [FiniteDimensional k (invariants (ρ.comp H.subtype))] :
     FiniteDimensional k (HeckeModule₁ H ρ) :=
-  LinearEquiv.finiteDimensional (invariantsHeckeModule₁Equiv H ρ)
+  LinearEquiv.finiteDimensional (HeckeModule₁.invariantsEquiv H ρ)
 
 namespace Smooth
 
@@ -62,22 +62,18 @@ lemma isAdmissible_iff' : IsAdmissible ρ ↔
     ∀ (H : OpenSubgroup G), FiniteDimensional k (HeckeModule₁ H ρ) := by
   rw [isAdmissible_iff]
   exact ⟨fun h H => inferInstance,
-    fun h H => LinearEquiv.finiteDimensional (invariantsHeckeModule₁Equiv H ρ).symm⟩
+    fun h H => LinearEquiv.finiteDimensional (HeckeModule₁.invariantsEquiv H ρ).symm⟩
 
 variable [IsAdmissible ρ]
 
-lemma IsAdmissible.finiteDimensional_invariants (H : OpenSubgroup G) :
+instance IsAdmissible.finiteDimensional_invariants (H : OpenSubgroup G) :
     FiniteDimensional k (invariants (ρ.comp H.1.subtype)) := (isAdmissible_iff ρ).mp inferInstance H
-
-lemma IsAdmissible.finiteDimensional_HeckeModule₁ (H : OpenSubgroup G) :
-    FiniteDimensional k (HeckeModule₁ H.1 ρ) := (isAdmissible_iff' ρ).mp inferInstance H
 
 lemma isAdmissible_injective {f : IntertwiningMap σ ρ}
     (h_inj : Function.Injective f) : IsAdmissible σ := by
   rw [isAdmissible_iff']
   intro H
-  have : FiniteDimensional k (HeckeModule₁ H ρ) :=
-    IsAdmissible.finiteDimensional_HeckeModule₁ ρ H
+  have : FiniteDimensional k (HeckeModule₁ H ρ) := inferInstance
   have : Function.Injective (IntertwiningMap.llcomp (ind H.subtype (trivial k H k)) σ ρ f) := by
     intro _ _ h_eq
     apply IntertwiningMap.ext
@@ -174,7 +170,7 @@ lemma IsIrreducible.finiteDimensional_intertwiningMap_self :
   obtain ⟨v, hv⟩ := exists_ne (0 : V)
   let H := ρ.stabilizer v
   have : FiniteDimensional k (HeckeModule₁ H ρ) :=
-    IsAdmissible.finiteDimensional_HeckeModule₁ ρ ⟨H, IsSmooth.smooth v⟩
+    (isAdmissible_iff' ρ).mp inferInstance ⟨H, IsSmooth.smooth v⟩
   let f := HeckeModule₁.invariantsMk H (ρ := ρ) ⟨v, (fun h ↦ by simp [mem_stabilizer.mp h.2])⟩
   have hf : f ≠ 0 := by
     have hfeq : f (cosetVectorMk k 1 H) = v := by
