@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Star.Unitary
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Quadratic algebras: involution, norm, trace, and change of generator.
+# Quadratic algebras: involution, norm, trace, change of generator, etc.
 
 Let `R` be a commutative ring. We define:
 
@@ -24,6 +24,8 @@ Let `R` be a commutative ring. We define:
 * `QuadraticAlgebra.changeGenerator` and `QuadraticAlgebra.changeGeneratorEquiv`: the `R`-algebra
   map, respectively isomorphism (when `u` is a unit), induced by the change of generator
   `ω ↦ u • ω + k`
+
+* `QuadraticAlgebra.baseChange`: the `R`-algebra homomorphism induced by a base change `R → S`
 
 We prove:
 
@@ -437,6 +439,50 @@ def changeGeneratorEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
 @[deprecated (since := "2026-08-14")] alias mapEquiv := changeGeneratorEquiv
 
 end changeGenerator
+
+section baseChange
+
+variable {R S : Type*} (S)
+
+section CommSemiring
+
+variable [CommSemiring R] [CommRing S] [Algebra R S] (a b : R)
+
+/-- The `R`-algebra map between quadratic algebras induced by the base change `R → S`,
+sending `ω` to `ω`. -/
+@[simps!]
+def baseChange :
+    QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b) :=
+  lift ⟨omega, by ext <;> simp [Algebra.algebraMap_eq_smul_one]⟩
+
+theorem baseChange_omega :
+    baseChange S a b ω = ω := by
+  ext <;> simp
+
+theorem baseChange_injective [FaithfulSMul R S] :
+    Function.Injective (baseChange S a b) := by
+  intro _ _ h
+  simp only [QuadraticAlgebra.ext_iff, re_baseChange_apply, ← Algebra.algebraMap_eq_smul_one,
+    algebraMap.coe_inj, im_baseChange_apply] at h
+  exact QuadraticAlgebra.ext_iff.mpr h
+
+end CommSemiring
+
+section CommRing
+
+variable [CommRing R] [CommRing S] [Algebra R S] (a b : R)
+
+theorem norm_baseChange (x : QuadraticAlgebra R a b) :
+    norm (baseChange S a b x) = algebraMap R S (norm x) := by
+  simp [norm_def, Algebra.smul_def]
+
+theorem trace_baseChange (x : QuadraticAlgebra R a b) :
+    trace (baseChange S a b x) = algebraMap R S (trace x) := by
+  simp [trace_def, Algebra.smul_def, map_ofNat]
+
+end CommRing
+
+end baseChange
 
 section field
 
