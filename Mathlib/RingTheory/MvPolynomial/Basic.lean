@@ -119,8 +119,8 @@ lemma restrictSupport_add (s t : Set (σ →₀ ℕ)) :
   apply le_antisymm
   · rw [restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff, Set.add_subset_iff]
     intro x hx y hy
-    simp [show monomial (x + y) (1 : R) = monomial x 1 * monomial y 1 by simp, -monomial_mul,
-      *, Submodule.mul_mem_mul]
+    simp [show monomial (x + y) (1 : R) = monomial x 1 * monomial y 1 by simp,
+      -monomial_mul_monomial, *, Submodule.mul_mem_mul]
   · rw [restrictSupport_eq_span, restrictSupport_eq_span, Submodule.span_mul_span,
       Submodule.span_le, Set.mul_subset_iff]
     simp +contextual [Set.add_mem_add]

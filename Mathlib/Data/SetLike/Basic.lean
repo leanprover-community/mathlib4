@@ -305,7 +305,7 @@ end LE
 
 section Preorder
 
-variable [Preorder A] [IsMemLE A B] {p q : A}
+variable [Preorder A] [IsMemLE A B]
 
 @[gcongr, mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
