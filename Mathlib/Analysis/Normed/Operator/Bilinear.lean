@@ -167,7 +167,6 @@ def mkContinuous₂OfExists [IsTopologicalAddGroup G'] (f : E' →ₛₗ[σ₁�
     convert g.continuous
     apply hg
 
-
 end LinearMap
 
 namespace ContinuousLinearMap
