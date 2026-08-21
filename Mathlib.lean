@@ -2289,6 +2289,7 @@ public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
