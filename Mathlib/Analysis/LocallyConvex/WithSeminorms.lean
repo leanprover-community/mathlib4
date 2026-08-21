@@ -24,7 +24,7 @@ public import Mathlib.Topology.Algebra.Module.LocallyConvex
   bounded by a finite number of seminorms in `E`.
 * `WithSeminorms p`, when `p` is a family of seminorms on `E`, is a proposition expressing that the
   (existing) topology on `E` is induced by the seminorms `p`.
-* `NormableSpace 𝕜 E` is a class asserting that the (existing) topology on `E` is induced
+*`IsNormableSpace 𝕜 E` is a class asserting that the (existing) topology on `E` is induced
   by *some* `𝕜`-seminorm
 * `PolynormableSpace 𝕜 E` is a class asserting that the (existing) topology on `E` is induced
   by *some* family of `𝕜`-seminorms. If `𝕜` is `RCLike`, this is equivalent to
@@ -291,11 +291,11 @@ variable (𝕜 E) in
 *some* `𝕜`-seminorm.
 To endow such a space with a normed space structure with the same topology, use:
 ```
-  let : SeminormedAddCommGroup E := NormableSpace.toSeminormedAddCommGroup 𝕜 E
-  let : NormedSpace 𝕜 E := NormableSpace.toNormedSpace 𝕜 E
+  let : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
+  let : NormedSpace 𝕜 E := IsNormableSpace.toNormedSpace 𝕜 E
 ```
 -/
-class NormableSpace [topology : TopologicalSpace E] where
+class IsNormableSpace [topology : TopologicalSpace E] where
   withSeminorms' : ∃ (p : Seminorm 𝕜 E), WithSeminorms (fun (_ : Unit) ↦ p)
 
 variable (𝕜 E) in
@@ -491,7 +491,7 @@ theorem WithSeminorms.toPolynormableSpace {p : SeminormFamily 𝕜 E ι} (hp : W
       intro i
       exact iInf_le (ι := {p : Seminorm 𝕜 E // Continuous p}) _ ⟨p i, hp' i⟩
 
-instance [h : NormableSpace 𝕜 E] : PolynormableSpace 𝕜 E := by
+instance [h : IsNormableSpace 𝕜 E] : PolynormableSpace 𝕜 E := by
   rcases h.withSeminorms' with ⟨q, hq⟩
   exact hq.toPolynormableSpace
 
@@ -520,23 +520,23 @@ theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E
     comap_norm_nhds_zero]
 
 /-- A (semi-)normed space is normable. -/
-instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] : NormableSpace 𝕜 E :=
+instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] : IsNormableSpace 𝕜 E :=
   ⟨⟨normSeminorm 𝕜 E, norm_withSeminorms 𝕜 E⟩⟩
 
 variable [NormedField 𝕜] [ha : AddCommGroup E] [hm : Module 𝕜 E]
-  [t : TopologicalSpace E] [hn : NormableSpace 𝕜 E]
+  [t : TopologicalSpace E] [hn : IsNormableSpace 𝕜 E]
 
 variable (𝕜 E)
 
 /-- A seminorm defining the topology in a normable space. -/
-noncomputable def NormableSpace.seminorm : Seminorm 𝕜 E := hn.withSeminorms'.choose
+noncomputable def IsNormableSpace.seminorm : Seminorm 𝕜 E := hn.withSeminorms'.choose
 
 /-- A normable space can be endowed with a seminorm defining the same topology. -/
-noncomputable abbrev NormableSpace.toSeminormedAddCommGroup : SeminormedAddCommGroup E := by
-  let q := NormableSpace.seminorm 𝕜 E
+noncomputable abbrev IsNormableSpace.toSeminormedAddCommGroup : SeminormedAddCommGroup E := by
+  let q := IsNormableSpace.seminorm 𝕜 E
   have hq := hn.withSeminorms'.choose_spec
   have : IsTopologicalAddGroup E := hq.topologicalAddGroup
-  let : Norm E := ⟨NormableSpace.seminorm 𝕜 E⟩
+  let : Norm E :=⟨IsNormableSpace.seminorm 𝕜 E⟩
   let c : SeminormedSpace.Core 𝕜 E :=
   { norm_nonneg x := apply_nonneg q x
     norm_smul c x := map_smul_eq_mul q c x
@@ -546,25 +546,25 @@ noncomputable abbrev NormableSpace.toSeminormedAddCommGroup : SeminormedAddCommG
   rfl
 
 /-- A normable space can be endowed with a normed space structure. -/
-noncomputable abbrev NormableSpace.toNormedSpace :
-    letI : SeminormedAddCommGroup E := NormableSpace.toSeminormedAddCommGroup 𝕜 E
+noncomputable abbrev IsNormableSpace.toNormedSpace :
+    letI : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
     NormedSpace 𝕜 E :=
-  letI : SeminormedAddCommGroup E := NormableSpace.toSeminormedAddCommGroup 𝕜 E
-  { norm_smul_le c x := (map_smul_eq_mul (NormableSpace.seminorm 𝕜 E) c x).le }
+  letI : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
+  { norm_smul_le c x := (map_smul_eq_mul(IsNormableSpace.seminorm 𝕜 E) c x).le }
 
-instance [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [NormableSpace 𝕜 F] :
-    NormableSpace 𝕜 (E × F) := by
-  let : SeminormedAddCommGroup E := NormableSpace.toSeminormedAddCommGroup 𝕜 E
-  let : NormedSpace 𝕜 E := NormableSpace.toNormedSpace 𝕜 E
-  let : SeminormedAddCommGroup F := NormableSpace.toSeminormedAddCommGroup 𝕜 F
-  let : NormedSpace 𝕜 F := NormableSpace.toNormedSpace 𝕜 F
+instance [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F][IsNormableSpace 𝕜 F] :
+    IsNormableSpace 𝕜 (E × F) := by
+  let : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
+  let : NormedSpace 𝕜 E := IsNormableSpace.toNormedSpace 𝕜 E
+  let : SeminormedAddCommGroup F := IsNormableSpace.toSeminormedAddCommGroup 𝕜 F
+  let : NormedSpace 𝕜 F := IsNormableSpace.toNormedSpace 𝕜 F
   infer_instance
 
 instance {E : ι → Type*} [Finite ι] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
-    [∀ i, TopologicalSpace (E i)] [∀ i, NormableSpace 𝕜 (E i)] :
-    NormableSpace 𝕜 (Π i, E i) := by
-  let A i : SeminormedAddCommGroup (E i) := NormableSpace.toSeminormedAddCommGroup 𝕜 (E i)
-  let B i : NormedSpace 𝕜 (E i) := NormableSpace.toNormedSpace 𝕜 (E i)
+    [∀ i, TopologicalSpace (E i)] [∀ i, IsNormableSpace 𝕜 (E i)] :
+    IsNormableSpace 𝕜 (Π i, E i) := by
+  let A i : SeminormedAddCommGroup (E i) := IsNormableSpace.toSeminormedAddCommGroup 𝕜 (E i)
+  let B i : NormedSpace 𝕜 (E i) := IsNormableSpace.toNormedSpace 𝕜 (E i)
   let : Fintype ι := Fintype.ofFinite ι
   infer_instance
 

@@ -60,7 +60,7 @@ case of finite dimensional topological vector spaces over a complete field.
 See also `ContinuousLinearMap.apply` for the case of normed spaces.
 
 TODO: generalize the two constructions in the setting of maps from a bornological space to a locally
-convex one, or define a `NormableSpace` class to deduce this case from the normed case.
+convex one, or define a`IsNormableSpace` class to deduce this case from the normed case.
 -/
 def ContinuousLinearMap.evalL : E →L[𝕜] (E →L[𝕜] F) →L[𝕜] F :=
   LinearMap.toContinuousLinearMap.symm.toLinearMap |>.flip |>.toContinuousBilinearMap

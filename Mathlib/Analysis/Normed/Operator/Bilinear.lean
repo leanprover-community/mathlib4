@@ -41,11 +41,11 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
 
 variable
   [AddCommGroup E'] [Module 𝕜 E'] [TopologicalSpace E']
-  [AddCommGroup Eₗ'] [Module 𝕜 Eₗ'] [TopologicalSpace Eₗ'] [NormableSpace 𝕜 Eₗ']
-  [AddCommGroup F'] [Module 𝕜₂ F'] [TopologicalSpace F'] [NormableSpace 𝕜₂ F']
-  [AddCommGroup Fₗ'] [Module 𝕜 Fₗ'] [TopologicalSpace Fₗ'] [NormableSpace 𝕜 Fₗ']
-  [AddCommGroup G'] [Module 𝕜₃ G'] [TopologicalSpace G'] [NormableSpace 𝕜₃ G']
-  [AddCommGroup Gₗ'] [Module 𝕜 Gₗ'] [TopologicalSpace Gₗ'] [NormableSpace 𝕜 Gₗ']
+  [AddCommGroup Eₗ'] [Module 𝕜 Eₗ'] [TopologicalSpace Eₗ'][IsNormableSpace 𝕜 Eₗ']
+  [AddCommGroup F'] [Module 𝕜₂ F'] [TopologicalSpace F'][IsNormableSpace 𝕜₂ F']
+  [AddCommGroup Fₗ'] [Module 𝕜 Fₗ'] [TopologicalSpace Fₗ'][IsNormableSpace 𝕜 Fₗ']
+  [AddCommGroup G'] [Module 𝕜₃ G'] [TopologicalSpace G'][IsNormableSpace 𝕜₃ G']
+  [AddCommGroup Gₗ'] [Module 𝕜 Gₗ'] [TopologicalSpace Gₗ'][IsNormableSpace 𝕜 Gₗ']
 
 namespace ContinuousLinearMap
 
@@ -173,7 +173,7 @@ end LinearMap
 namespace ContinuousLinearMap
 
 variable [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃]
-  [NormableSpace 𝕜 E'] [IsTopologicalAddGroup G'] [IsTopologicalAddGroup Gₗ']
+ [IsNormableSpace 𝕜 E'] [IsTopologicalAddGroup G'] [IsTopologicalAddGroup Gₗ']
 
 /-- Flip the order of arguments of a continuous bilinear map. Linear version.
 Do not use: use instead `flip` which outputs a continuous bilinear map. -/
@@ -184,12 +184,12 @@ def flipₗ (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') : F' →ₛₗ[σ₂�
 
 lemma exists_eq_flipₗ (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') :
     ∃ g : F' →SL[σ₂₃] E' →SL[σ₁₃] G', ∀ a b, flipₗ f a b = g a b := by
-  let : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
-  let : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
-  let : SeminormedAddCommGroup F' := NormableSpace.toSeminormedAddCommGroup 𝕜₂ F'
-  let : NormedSpace 𝕜₂ F' := NormableSpace.toNormedSpace 𝕜₂ F'
-  let : SeminormedAddCommGroup G' := NormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
-  let : NormedSpace 𝕜₃ G' := NormableSpace.toNormedSpace 𝕜₃ G'
+  let : SeminormedAddCommGroup E' := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E'
+  let : NormedSpace 𝕜 E' := IsNormableSpace.toNormedSpace 𝕜 E'
+  let : SeminormedAddCommGroup F' := IsNormableSpace.toSeminormedAddCommGroup 𝕜₂ F'
+  let : NormedSpace 𝕜₂ F' := IsNormableSpace.toNormedSpace 𝕜₂ F'
+  let : SeminormedAddCommGroup G' := IsNormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
+  let : NormedSpace 𝕜₃ G' := IsNormableSpace.toNormedSpace 𝕜₃ G'
   exact ⟨LinearMap.mkContinuous₂ (flipₗ f)
     ‖f‖ fun y x => (f.le_opNorm₂ x y).trans_eq <| by simp only [mul_right_comm], fun a b ↦ rfl⟩
 
@@ -326,12 +326,12 @@ def compSLₗ : (F' →SL[σ₂₃] G') →ₗ[𝕜₃] (E' →SL[σ₁₂] F') 
 lemma exists_eq_compSLₗ :
     ∃ g : (F' →SL[σ₂₃] G') →L[𝕜₃] (E' →SL[σ₁₂] F') →SL[σ₂₃] E' →SL[σ₁₃] G',
       ∀ a b, compSLₗ E' F' G' σ₁₂ σ₂₃ a b = g a b := by
-  let : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
-  let : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
-  let : SeminormedAddCommGroup F' := NormableSpace.toSeminormedAddCommGroup 𝕜₂ F'
-  let : NormedSpace 𝕜₂ F' := NormableSpace.toNormedSpace 𝕜₂ F'
-  let : SeminormedAddCommGroup G' := NormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
-  let : NormedSpace 𝕜₃ G' := NormableSpace.toNormedSpace 𝕜₃ G'
+  let : SeminormedAddCommGroup E' := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E'
+  let : NormedSpace 𝕜 E' := IsNormableSpace.toNormedSpace 𝕜 E'
+  let : SeminormedAddCommGroup F' := IsNormableSpace.toSeminormedAddCommGroup 𝕜₂ F'
+  let : NormedSpace 𝕜₂ F' := IsNormableSpace.toNormedSpace 𝕜₂ F'
+  let : SeminormedAddCommGroup G' := IsNormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
+  let : NormedSpace 𝕜₃ G' := IsNormableSpace.toNormedSpace 𝕜₃ G'
   exact ⟨LinearMap.mkContinuous₂ (compSLₗ E' F' G' σ₁₂ σ₂₃) 1
     fun f g => by simpa only [one_mul] using! opNorm_comp_le f g, fun a b ↦ rfl⟩
 
@@ -408,7 +408,7 @@ variable {E'' F'' : Type*} [AddCommGroup E''] [AddCommGroup F'']
   [TopologicalSpace E''] [TopologicalSpace F'']
   [IsTopologicalAddGroup G'] [IsTopologicalAddGroup Gₗ']
 variable {𝕜₁' : Type*} {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₁'] [NontriviallyNormedField 𝕜₂']
-  [Module 𝕜₁' E''] [Module 𝕜₂' F''] [NormableSpace 𝕜₁' E''] [NormableSpace 𝕜₂' F'']
+  [Module 𝕜₁' E''] [Module 𝕜₂' F''][IsNormableSpace 𝕜₁' E''][IsNormableSpace 𝕜₂' F'']
   {σ₁' : 𝕜₁' →+* 𝕜} {σ₁₃' : 𝕜₁' →+* 𝕜₃} {σ₂' : 𝕜₂' →+* 𝕜₂}
   {σ₂₃' : 𝕜₂' →+* 𝕜₃} [RingHomCompTriple σ₁' σ₁₃ σ₁₃'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
   [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃'] [RingHomIsometric σ₂₃']
@@ -437,7 +437,7 @@ lemma bilinearComp_zero_left {f : E' →SL[σ₁₃] F' →SL[σ₂₃] G'} {gF 
 lemma bilinearComp_zero_right {f : E' →SL[σ₁₃] F' →SL[σ₂₃] G'} {gE : E'' →SL[σ₁'] E'} :
     bilinearComp f gE (0 : F'' →SL[σ₂'] F') = 0 := by ext; simp
 
-variable [RingHomIsometric σ₁₃] [RingHomIsometric σ₁'] [RingHomIsometric σ₂'] [NormableSpace 𝕜 E']
+variable [RingHomIsometric σ₁₃] [RingHomIsometric σ₁'] [RingHomIsometric σ₂'][IsNormableSpace 𝕜 E']
 
 /-- Derivative of a continuous bilinear map `f : E →L[𝕜] F →L[𝕜] G` interpreted as a map `E × F → G`
 at point `p : E × F` evaluated at `q : E × F`, as a continuous bilinear map. -/
@@ -505,10 +505,10 @@ def smulRightLₗ : StrongDual 𝕜 E' →ₗ[𝕜] Fₗ' →ₗ[𝕜] E' →L[�
 lemma exists_eq_smulRightLₗ :
     ∃ g : StrongDual 𝕜 E' →L[𝕜] Fₗ' →L[𝕜] E' →L[𝕜] Fₗ',
       ∀ a b, smulRightLₗ 𝕜 E' Fₗ' a b = g a b := by
-  let : SeminormedAddCommGroup E' := NormableSpace.toSeminormedAddCommGroup 𝕜 E'
-  let : NormedSpace 𝕜 E' := NormableSpace.toNormedSpace 𝕜 E'
-  let : SeminormedAddCommGroup Fₗ' := NormableSpace.toSeminormedAddCommGroup 𝕜 Fₗ'
-  let : NormedSpace 𝕜 Fₗ' := NormableSpace.toNormedSpace 𝕜 Fₗ'
+  let : SeminormedAddCommGroup E' := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E'
+  let : NormedSpace 𝕜 E' := IsNormableSpace.toNormedSpace 𝕜 E'
+  let : SeminormedAddCommGroup Fₗ' := IsNormableSpace.toSeminormedAddCommGroup 𝕜 Fₗ'
+  let : NormedSpace 𝕜 Fₗ' := IsNormableSpace.toNormedSpace 𝕜 Fₗ'
   exact ⟨LinearMap.mkContinuous₂ (smulRightLₗ 𝕜 E' Fₗ') 1
     fun c x => by simp only [smulRightLₗ, coe_smulRightₗ, one_mul, norm_smulRight_apply,
       LinearMap.coe_mk, AddHom.coe_mk, le_refl], fun a b ↦ rfl⟩
