@@ -331,7 +331,6 @@ theorem linfty_opNorm_blockDiagonal [DecidableEq l] (M : l → Matrix m n α) :
     ‖blockDiagonal M‖ = ‖M‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_blockDiagonal M
 
-
 end SeminormedAddCommGroup
 
 section NonUnitalSeminormedRing
