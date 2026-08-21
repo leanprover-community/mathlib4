@@ -482,7 +482,7 @@ variable (A : ValuationSubring K)
 
 @[simp]
 theorem valuationSubring_valuation : A.valuation.valuationSubring = A := by
-  ext; simp [← A.valuation_le_one_iff, - valuation_le_one_iff]
+  ext; simp [-valuation_le_one_iff, ← A.valuation_le_one_iff]
 
 theorem integer_valuation : A.valuation.integer = A.toSubring :=
   congr(($A.valuationSubring_valuation).toSubring)
