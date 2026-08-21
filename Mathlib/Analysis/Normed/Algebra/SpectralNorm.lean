@@ -22,43 +22,6 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 # Spectral norms and extensions of absolute values
 
 This file defines spectral norms and uses them to construct extensions of absolute values.
-
-For a normed algebra `A` with `‖1‖ = 1` over a normed field `𝕜`, the spectral radius limit
-`lim ‖x ^ k‖ ^ (1 / k)` defines a function `f : A → ℝ` satisfying the following properties:
-* `f 0 = 0` (`spectralRadiusLim_zero`),
-* `f 1 = 1` (`spectralRadiusLim_one`),
-* `0 ≤ f x` for all `x : A` (`spectralRadiusLim_zero`),
-* `f (x + y) ≤ f x + f y` for all commuting `x y : A` (`Commute.spectralRadiusLim_add_le`),
-* `f (x * y) ≤ f x * f y` for all commuting `x y : A` (`Commute.spectralRadiusLim_mul_le`),
-* `f (x ^ k) = (f x) ^ k` for all `x : A` and `k : ℕ` (`spectralRadiusLim_pow`),
-* `f (c • x) = ‖c‖ * f x` for all `c : 𝕜` and `x : A` (`spectralRadiusLim_smul`).
-
-In general, if `A` is an algebra over a normed field `𝕜`, then a function `f : A → ℝ` satisfying
-these properties is called a **spectral norm**.
-
-For a finite-dimensional algebra over a complete normed field, there exists a unique spectral norm
-(see `spectralNorm` and `spectralNorm_unique`).
-
-For a finite extension of a complete normed field, applying uniqueness to the spectral norm `‖x‖`
-and the modified spectral norm `‖x‖_y = lim_{n → ∞} ‖x * y ^ n‖ / ‖y‖ ^ n` proves that the
-spectral norm is multiplicative, defining an absolute value (see `SpectralNorm.absoluteValue`).
-
-This gives a construction of extensions of absolute values that works uniformly across the
-archimedean and non-archimedean cases (bypassing Gelfand-Mazur).
-
-This file follows a [MathOverflow answer](https://mathoverflow.net/a/419366/95685) by Denis Nardin.
-
-## Main definitions
-
-* `SpectralNorm 𝕜 A`: the type of all spectral norms on `A` over `𝕜`.
-* `spectralRadiusLimNorm`: spectral norm defined by the spectral radius limit.
-* `spectralNorm`: a choice of spectral norm on a finite-dimensional algebra over a normed field.
-* `SpectralNorm.absoluteValue`: the absolute value on a finite extension of a complete normed field.
-
-## Main statements
-
-* `spectralNorm_unique`: uniqueness of spectral norms on a finite-dimensional algebra over a
-  complete normed field.
 -/
 
 @[expose] public section
@@ -196,17 +159,26 @@ noncomputable def spectralRadiusLimNorm : AlgebraNorm K L where
     simp [← map_mul, h, hx]
   smul' x y := by rw [map_smul, spectralRadiusLim_smul]
 
-@[simp]
+variable {K L M}
+
 theorem spectralRadiusLimNorm_def (x : L) : spectralRadiusLimNorm K L x =
     spectralRadiusLim (Algebra.leftMulMatrix (Module.finBasis K L) x) :=
   rfl
+
+@[simp]
+theorem spectralRadiusLimNorm_one : spectralRadiusLimNorm K L 1 = 1 := by
+  have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
+  rw [spectralRadiusLimNorm_def, map_one, spectralRadiusLim_one]
+
+theorem spectralRadiusLimNorm_extends (x : K) :
+    spectralRadiusLimNorm K L (algebraMap K L x) = ‖x‖ := by
+  rw [Algebra.algebraMap_eq_smul_one, map_smul_eq_mul, spectralRadiusLimNorm_one, mul_one]
 
 theorem isPowMul_spectralRadiusLimNorm : IsPowMul (spectralRadiusLimNorm K L) := by
   have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
   intro x k hk
   simp_rw [spectralRadiusLimNorm_def, map_pow, spectralRadiusLim_pow]
 
-variable {K L} in
 theorem spectralRadiusLimNorm_apply
     {ι : Type*} [DecidableEq ι] [Fintype ι] (b : Module.Basis ι K L) (x : L) :
     spectralRadiusLimNorm K L x = spectralRadiusLim (Algebra.leftMulMatrix b x) := by
@@ -237,7 +209,7 @@ theorem spectralRadiusLimNorm_algebraMap (x : L) :
 
 end spectralRadiusLimNorm
 
-section new
+section spectralNorm
 
 open Filter
 
@@ -248,17 +220,158 @@ open IntermediateField
 variable (K : Type*) [NormedField K] (L : Type*) [Field L] [Algebra K L]
 
 open Classical in
-noncomputable def spectralNorm (x : L) : ℝ :=
-  if hx : IsIntegral K x then
-    haveI := adjoin.finiteDimensional hx
+/-- This will eventually replace `spectralNorm`. -/
+noncomputable def spectralNorm' (x : L) : ℝ :=
+  if hx : IsAlgebraic K x then
+    haveI := adjoin.finiteDimensional hx.isIntegral
     spectralRadiusLimNorm K K⟮x⟯ (AdjoinSimple.gen K x)
   else 0
 
-def spectralAlgNorm [Algebra.IsAlgebraic K L] : AlgebraNorm K L := by
-  -- use `spectralNorm`
-  sorry
+variable {K L}
 
-end new
+theorem spectralNorm'_eq_zero {x : L} (hx : ¬ IsAlgebraic K x) : spectralNorm' K L x = 0 :=
+  dite_eq_right hx
+
+theorem IsAlgebraic.spectralNorm'_eq {x : L} (hx : IsAlgebraic K x) :
+    haveI := adjoin.finiteDimensional hx.isIntegral
+    spectralNorm' K L x = spectralRadiusLimNorm K K⟮x⟯ (AdjoinSimple.gen K x) :=
+  dite_eq_left hx
+
+theorem FiniteDimensional.spectralNorm'_eq [FiniteDimensional K L] (x : L) :
+    spectralNorm' K L x = spectralRadiusLimNorm K L x :=
+  (Algebra.IsAlgebraic.isAlgebraic x).spectralNorm'_eq.trans
+    (spectralRadiusLimNorm_algebraMap (AdjoinSimple.gen K x)).symm
+
+theorem spectralNorm'_algebraMap {E : Type*} [Field E] [Algebra K E] [Algebra E L]
+    [IsScalarTower K E L] (x : E) :
+    spectralNorm' K L (algebraMap E L x) = spectralNorm' K E x := by
+  by_cases hx : IsAlgebraic K x
+  · rw [hx.spectralNorm'_eq, hx.algebraMap.spectralNorm'_eq]
+    let f := IsScalarTower.toAlgHom K E L
+    have hf : K⟮x⟯.map f = K⟮algebraMap E L x⟯ := by
+      rw [IntermediateField.adjoin_map, Set.image_singleton,
+        IsScalarTower.toAlgHom_apply]
+    let g : K⟮x⟯ →ₐ[K] K⟮algebraMap E L x⟯ := (equivMap K⟮x⟯ f).trans (equivOfEq hf)
+    let := g.toRingHom.toAlgebra
+    have := adjoin.finiteDimensional hx.isIntegral
+    have : FiniteDimensional K K⟮algebraMap E L x⟯ :=
+      adjoin.finiteDimensional hx.algebraMap.isIntegral
+    exact spectralRadiusLimNorm_algebraMap (AdjoinSimple.gen K x)
+  · rw [spectralNorm'_eq_zero hx, spectralNorm'_eq_zero]
+    exact mt (isAlgebraic_algebraMap_iff (algebraMap E L).injective).mp hx
+
+theorem spectralNorm'_eq_of_mem (E : IntermediateField K L) [FiniteDimensional K E]
+    (x : L) (y : E) (h : x = y) : spectralNorm' K L x = spectralRadiusLimNorm K E y := by
+  rw [h, ← E.algebraMap_apply, spectralNorm'_algebraMap, FiniteDimensional.spectralNorm'_eq]
+
+@[simp]
+theorem spectralNorm'_zero : spectralNorm' K L 0 = 0 := by
+  rw [spectralNorm'_eq_of_mem ⊥ 0 0 rfl, map_zero]
+
+@[simp]
+theorem spectralNorm'_one : spectralNorm' K L 1 = 1 := by
+  rw [spectralNorm'_eq_of_mem ⊥ 1 1 rfl, spectralRadiusLimNorm_one]
+
+theorem spectralNorm'_neg (x : L) : spectralNorm' K L (-x) = spectralNorm' K L x := by
+  by_cases hx : IsAlgebraic K x
+  · have : FiniteDimensional K K⟮x⟯ := adjoin.finiteDimensional hx.isIntegral
+    rw [spectralNorm'_eq_of_mem K⟮x⟯ x (AdjoinSimple.gen K x) rfl,
+      spectralNorm'_eq_of_mem K⟮x⟯ (-x) (-AdjoinSimple.gen K x) rfl, map_neg_eq_map]
+  · rw [spectralNorm'_eq_zero, spectralNorm'_eq_zero hx]
+    contrapose! hx
+    simpa using hx.neg
+
+theorem spectralNorm'_smul (x : K) (y : L) :
+    spectralNorm' K L (x • y) = ‖x‖ * spectralNorm' K L y := by
+  by_cases hx : x = 0
+  · simp [hx]
+  by_cases hy : IsAlgebraic K y
+  · have : FiniteDimensional K K⟮y⟯ := adjoin.finiteDimensional hy.isIntegral
+    rw [spectralNorm'_eq_of_mem K⟮y⟯ y (AdjoinSimple.gen K y) rfl,
+      spectralNorm'_eq_of_mem K⟮y⟯ (x • y) (x • AdjoinSimple.gen K y) rfl, map_smul_eq_mul]
+  · rw [spectralNorm'_eq_zero, spectralNorm'_eq_zero hy, mul_zero]
+    contrapose! hy
+    simpa [hx] using hy.smul x⁻¹
+
+theorem spectralNorm'_extends (x : K) : spectralNorm' K L (algebraMap K L x) = ‖x‖ := by
+  rw [Algebra.algebraMap_eq_smul_one, spectralNorm'_smul, spectralNorm'_one, mul_one]
+
+theorem spectralNorm'_add {x y : L} (hx : IsAlgebraic K x) (hy : IsAlgebraic K y) :
+    spectralNorm' K L (x + y) ≤ spectralNorm' K L x + spectralNorm' K L y := by
+  have : FiniteDimensional K K⟮x, y⟯ := finiteDimensional_adjoin_pair hx.isIntegral hy.isIntegral
+  rw [spectralNorm'_eq_of_mem K⟮x, y⟯ x (AdjoinPair.gen₁ K x y) rfl,
+    spectralNorm'_eq_of_mem K⟮x, y⟯ y (AdjoinPair.gen₂ K x y) rfl,
+    spectralNorm'_eq_of_mem K⟮x, y⟯ (x + y) (AdjoinPair.gen₁ K x y + AdjoinPair.gen₂ K x y) rfl]
+  apply map_add_le_add
+
+theorem spectralNorm'_mul {x y : L} (hx : IsAlgebraic K x) (hy : IsAlgebraic K y) :
+    spectralNorm' K L (x * y) ≤ spectralNorm' K L x * spectralNorm' K L y := by
+  have : FiniteDimensional K K⟮x, y⟯ := finiteDimensional_adjoin_pair hx.isIntegral hy.isIntegral
+  rw [spectralNorm'_eq_of_mem K⟮x, y⟯ x (AdjoinPair.gen₁ K x y) rfl,
+    spectralNorm'_eq_of_mem K⟮x, y⟯ y (AdjoinPair.gen₂ K x y) rfl,
+    spectralNorm'_eq_of_mem K⟮x, y⟯ (x * y) (AdjoinPair.gen₁ K x y * AdjoinPair.gen₂ K x y) rfl]
+  apply map_mul_le_mul
+
+theorem eq_zero_of_spectralNorm'_eq_zero {x : L} (hx : IsAlgebraic K x)
+    (hx0 : spectralNorm' K L x = 0) : x = 0 := by
+  rw [hx.spectralNorm'_eq] at hx0
+  exact Subtype.ext_iff.mp (eq_zero_of_map_eq_zero _ hx0)
+
+theorem isPowMul_spectralNorm' : IsPowMul (spectralNorm' K L) := by
+  intro x k hk
+  by_cases hx : IsAlgebraic K x
+  · have : FiniteDimensional K K⟮x⟯ := adjoin.finiteDimensional hx.isIntegral
+    rw [spectralNorm'_eq_of_mem K⟮x⟯ x (AdjoinSimple.gen K x) rfl,
+      spectralNorm'_eq_of_mem K⟮x⟯ (x ^ k) (AdjoinSimple.gen K x ^ k) rfl,
+      isPowMul_spectralRadiusLimNorm (AdjoinSimple.gen K x) hk]
+  · rw [spectralNorm'_eq_zero hx, spectralNorm'_eq_zero, zero_pow (by grind)]
+    contrapose! hx
+    exact hx.of_pow hk
+
+end spectralNorm
+
+section spectralAlgNorm
+
+variable (K : Type*) [NormedField K] (L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
+
+open Algebra.IsAlgebraic in
+noncomputable def spectralAlgNorm' : AlgebraNorm K L where
+  toFun := spectralNorm' K L
+  map_zero' := spectralNorm'_zero
+  add_le' x y := spectralNorm'_add (isAlgebraic x) (isAlgebraic y)
+  neg' := spectralNorm'_neg
+  mul_le' x y := spectralNorm'_mul (isAlgebraic x) (isAlgebraic y)
+  eq_zero_of_map_eq_zero' x := eq_zero_of_spectralNorm'_eq_zero (isAlgebraic x)
+  smul' := spectralNorm'_smul
+
+variable {K L}
+
+theorem spectralAlgNorm_def (x : L) : spectralAlgNorm' K L x = spectralNorm' K L x :=
+  rfl
+
+theorem spectralAlgNorm_extends (x : K) : spectralAlgNorm' K L (algebraMap K L x) = ‖x‖ :=
+  spectralNorm'_extends x
+
+theorem spectralAlgNorm_one : spectralAlgNorm' K L (1 : L) = 1 :=
+  spectralNorm'_one
+
+theorem spectralAlgNorm_isPowMul : IsPowMul (spectralAlgNorm' K L) :=
+  isPowMul_spectralNorm'
+
+end spectralAlgNorm
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 open Filter
 
