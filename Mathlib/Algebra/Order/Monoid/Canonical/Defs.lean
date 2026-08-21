@@ -123,7 +123,7 @@ section MulOneClass
 variable [MulOneClass α]
 
 section LE
-variable [LE α] [CanonicallyOrderedMul α] {a b : α}
+variable [LE α] [CanonicallyOrderedMul α]
 
 @[to_additive]
 instance : IsBotOneClass α where
@@ -189,7 +189,7 @@ section Monoid
 variable [Monoid α]
 
 section PartialOrder
-variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
+variable [PartialOrder α] [CanonicallyOrderedMul α] {a : α}
 
 @[to_additive] instance CanonicallyOrderedCommMonoid.toUniqueUnits : Unique αˣ where
   uniq a := Units.ext <| le_one_iff_eq_one.mp (le_of_mul_le_left a.mul_inv.le)
@@ -202,7 +202,7 @@ section CommMonoid
 variable [CommMonoid α]
 
 section PartialOrder
-variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
+variable [PartialOrder α] [CanonicallyOrderedMul α] {a b : α}
 
 @[to_additive (attr := simp) add_pos_iff]
 theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
