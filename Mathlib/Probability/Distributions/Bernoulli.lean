@@ -178,17 +178,12 @@ variable {E : Type*} [NormedAddCommGroup E]
 @[simp]
 lemma memLp_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) (q : ℝ≥0∞) :
     MemLp f q Ber(x, y, p) := by
-  simp [bernoulliMeasure_def, test''']
-  refine ⟨MemLp.smul_measure ?_ ?_, MemLp.smul_measure ?_ ?_⟩
-  · simp [memLp_dirac]
-  · simp
-  · simp [memLp_dirac]
-  · simp
+  simp [bernoulliMeasure_def, MemLp.add_measure, MemLp.smul_measure_nnreal]
 
+@[simp]
 lemma integrable_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) :
-    Integrable f Ber(x, y, p) := by
-  simp [bernoulliMeasure_def, integrable_add_measure, integrable_dirac,
-    Integrable.smul_measure_nnreal]
+    Integrable f Ber(x, y, p) :=
+  memLp_one_iff_integrable.1 (memLp_bernoulliMeasure ..)
 
 variable [NormedSpace ℝ E] [CompleteSpace E]
 
@@ -214,13 +209,23 @@ section HasLaw
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
-@[simp]
-lemma HasLaw.memLp_bernoulliMeasure [MeasurableSingletonClass X] (x y : ℝ) (p : I) (f : Ω → ℝ)
+lemma HasLaw.memLp_comp_bernoulliMeasure {E : Type*} [NormedAddCommGroup E]
+    [MeasurableSingletonClass X] {f : Ω → X} (g : X → E) (q : ℝ≥0∞) (hf : HasLaw f Ber(x, y, p) P) :
+    MemLp (g ∘ f) q P :=
+  hf.memLp_comp (by simp)
+
+lemma HasLaw.memLp_bernoulliMeasure [NormedAddCommGroup X] [MeasurableSingletonClass X] {f : Ω → X}
     (q : ℝ≥0∞) (hf : HasLaw f Ber(x, y, p) P) :
-    MemLp f q P := by
-  convert MemLp.comp_of_map (g := id) ?_ hf.aemeasurable
-  simp
-  simp [hf.map_eq]
+    MemLp f q P := hf.memLp_comp_bernoulliMeasure id q
+
+lemma HasLaw.integrable_comp_bernoulliMeasure {E : Type*} [NormedAddCommGroup E]
+    [MeasurableSingletonClass X] {f : Ω → X} (g : X → E) (hf : HasLaw f Ber(x, y, p) P) :
+    Integrable (g ∘ f) P :=
+  hf.integrable_comp (by simp)
+
+lemma HasLaw.integrable_bernoulliMeasure [NormedAddCommGroup X] [MeasurableSingletonClass X]
+    {f : Ω → X} (hf : HasLaw f Ber(x, y, p) P) :
+    Integrable f  P := hf.integrable_comp_bernoulliMeasure id
 
 /-- The constant indicator of a set follows a Bernoulli distribution. -/
 theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M]

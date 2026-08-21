@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Etienne Marion
 -/
 module
 
+public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.Distributions.SetBernoulli
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
@@ -232,8 +233,8 @@ lemma iIndepFun.hasLaw_finsetSum_map_cast_binomial {ι R : Type*} {s : Finset ι
   · rw [infinitePi_eq_pi]
     exact hX.hasLaw_pi (by simpa)
   have : HasLaw (fun ω ↦ ((S ω).ncard : R)) Bin(R, s.card, p) P' := by
-    convert (hasLaw_map .of_discrete).comp <| (measurePreserving_ncard_setBernoulli_binomial_ncard (by simp)).comp_hasLaw hS <;>
-    simp
+    convert (hasLaw_map .of_discrete).comp <|
+      (measurePreserving_ncard_setBernoulli_binomial_ncard (by simp)).comp_hasLaw hS <;> simp
   convert this with ω
   rw [Set.ncard_eq_toFinset_card _ (toFinite (S ω)), Finset.card_eq_sum_ite (Finset.subset_univ _)]
   simp [Set.indicator]
@@ -263,7 +264,7 @@ lemma variance_id_binomial : Var[id; Bin(ℝ, n, p)] = p * (1 - p) * n := by
   rw [← this.variance_eq, IndepFun.variance_sum]
   · simp [fun i ↦ (lawX i).variance_eq, variance_id_bernoulliMeasure]
     ring
-  · exact fun i _ ↦ (lawX i).memLp_bernoulliMeasure (X := ℝ) _ _ _ _ _
+  · exact fun i _ ↦ (lawX i).memLp_bernoulliMeasure 2
   · intro _ _ _ _ h
     exact hX.indepFun h
 
@@ -278,5 +279,12 @@ variable {X : Ω → ℝ}
 The expectation of a binomial random variable with parameters `n` and `p` is `pn`. -/
 theorem integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n := by
   rw [hX.integral_eq, integral_id_binomial]
+
+/-- **Variance of a binomial random variable**.
+
+The variance of a binomial random variable with parameters `n` and `p` is `p(1 - p)n`. -/
+theorem variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
+    Var[X; P] = p * (1 - p) * n := by
+  rw [hX.variance_eq, variance_id_binomial]
 
 end ProbabilityTheory

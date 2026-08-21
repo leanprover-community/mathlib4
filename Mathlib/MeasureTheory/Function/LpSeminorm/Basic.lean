@@ -715,6 +715,10 @@ theorem MemLp.smul_measure {f : α → ε} {c : ℝ≥0∞} (hf : MemLp f p μ) 
     MemLp f p (c • μ) :=
   hf.of_measure_le_smul hc le_rfl
 
+theorem MemLp.smul_measure_nnreal {f : α → ε} {c : ℝ≥0} (hf : MemLp f p μ) :
+    MemLp f p (c • μ) :=
+  hf.of_measure_le_smul (by simp) le_rfl
+
 variable {ε : Type*} [ENorm ε] in
 theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
     eLpNorm f 1 (μ + ν) = eLpNorm f 1 μ + eLpNorm f 1 ν := by
@@ -852,7 +856,7 @@ theorem eLpNorm_eq_zero_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) (h0
   rw [eLpNorm_eq_eLpNorm' h0 h_top]
   exact eLpNorm'_eq_zero_iff (ENNReal.toReal_pos h0 h_top) hf
 
-lemma eLpNormEssSup_add_measure :
+lemma eLpNormEssSup_add_measure {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] {f : α → ε} :
     eLpNormEssSup f (μ + ν) = max (eLpNormEssSup f μ) (eLpNormEssSup f ν) := by
   refine le_antisymm (eLpNormEssSup_le_of_ae_enorm_bound ?_) ?_
   · rw [ae_add_measure_iff]
