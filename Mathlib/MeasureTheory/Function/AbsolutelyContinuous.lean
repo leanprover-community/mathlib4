@@ -181,6 +181,22 @@ theorem mono (hf : AbsolutelyContinuousOnInterval f a b) (habcd : uIcc c d ⊆ u
   refine le_trans (Filter.map_mono ?_) hf
   gcongr; exact disjWithin_mono habcd
 
+theorem congr (hf : AbsolutelyContinuousOnInterval f a b)
+    (hfg : Set.EqOn f g (uIcc a b)) : AbsolutelyContinuousOnInterval g a b := by
+  apply hf.congr'
+  rw [eventuallyEq_inf_principal_iff]
+  filter_upwards with (n, I) hnI
+  exact Finset.sum_congr rfl fun i hi ↦ by rw [hfg (hnI.1 i hi).1, hfg (hnI.1 i hi).2]
+
+@[refl, simp]
+theorem refl : AbsolutelyContinuousOnInterval f a a := by
+  apply tendsto_nhds_of_eventually_eq
+  rw [eventually_inf_principal]
+  filter_upwards with (n, I) hnI
+  refine Finset.sum_eq_zero fun i hi ↦ ?_
+  obtain ⟨h₁, h₂⟩ := hnI.1 i hi
+  simp_all
+
 variable {f g : ℝ → F}
 
 @[to_fun]
