@@ -44,39 +44,13 @@ open scoped Topology ENNReal
 namespace BoundedVariationOn
 
 variable {α E F G M : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-  [SecondCountableTopology α] [hα : MeasurableSpace α] [BorelSpace α]
+  [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
   [PseudoEMetricSpace M]
-
-theorem stronglyMeasurable {f : α → M} (hf : BoundedVariationOn f univ) :
-    StronglyMeasurable f :=
-  StronglyMeasurable.of_countable_not_continuousAt hf.countable_not_continuousAt
-
-theorem measurable [MeasurableSpace M] [BorelSpace M] {f : α → M} (hf : BoundedVariationOn f univ) :
-    Measurable f :=
-  hf.stronglyMeasurable.measurable
-
-variable {μ : Measure α} {f : α → E}
-
-theorem memLp_top (hf : BoundedVariationOn f univ) : MemLp f ∞ μ := by
-  rcases isEmpty_or_nonempty α with hα | ⟨⟨x⟩⟩
-  · simp only [MemLp.of_discrete]
-  apply memLp_top_of_bound hf.stronglyMeasurable.aestronglyMeasurable
-    (‖f x‖ + (eVariationOn f univ).toReal)
-  filter_upwards with y
-  grw [← hf.dist_le (mem_univ x) (mem_univ y), dist_comm, dist_eq_norm_sub]
-  exact norm_le_norm_add_norm_sub' (f y) (f x)
-
-theorem memLp [IsFiniteMeasure μ] {p : ℝ≥0∞} (hf : BoundedVariationOn f univ) : MemLp f p μ :=
-  hf.memLp_top.mono_exponent le_top
-
-theorem integrable [IsFiniteMeasure μ] (hf : BoundedVariationOn f univ) : Integrable f μ :=
-  memLp_one_iff_integrable.1 hf.memLp
+  {μ : Measure α} {f : α → E}
 
 /-- Two vector measures which agree on closed intervals are equal. -/
 theorem _root_.MeasureTheory.VectorMeasure.ext_of_Icc
-    {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
-    [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α]
     (μ ν : VectorMeasure α E) (hμ : ∀ ⦃a b⦄, a ≤ b → μ (Icc a b) = ν (Icc a b)) : μ = ν := by
   rcases isEmpty_or_nonempty α with hα | hα
   · ext s hs
