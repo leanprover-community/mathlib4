@@ -10,6 +10,8 @@ public import Mathlib.Logic.Pairwise
 public import Mathlib.Order.Monotone.Basic
 public import Mathlib.Order.ULift
 
+import Mathlib.Tactic.GRewrite
+
 /-!
 # (Semi-)lattices
 
@@ -301,6 +303,16 @@ theorem sup_eq_sup_iff_left : a ⊔ b = a ⊔ c ↔ b ≤ a ⊔ c ∧ c ≤ a �
 @[to_dual]
 theorem sup_eq_sup_iff_right : a ⊔ c = b ⊔ c ↔ a ≤ b ⊔ c ∧ b ≤ a ⊔ c :=
   ⟨fun h => ⟨h ▸ le_sup_left, h.symm ▸ le_sup_left⟩, fun h => sup_congr_right h.1 h.2⟩
+
+@[to_dual]
+theorem sup_eq_sup_mono_left (h : a ⊔ b = a ⊔ c) (had : a ≤ d) : d ⊔ b = d ⊔ c := by
+  rw [sup_eq_sup_iff_left] at *
+  exact h.imp (le_trans · (sup_le_sup_right had _)) (le_trans · (sup_le_sup_right had _))
+
+@[to_dual]
+theorem sup_eq_sup_mono_right (h : a ⊔ c = b ⊔ c) (hcd : c ≤ d) : a ⊔ d = b ⊔ d := by
+  rw [sup_eq_sup_iff_right] at *
+  refine h.imp ?_ ?_ <;> intro h' <;> grw [hcd] at h' <;> assumption
 
 @[to_dual inf_lt_or_inf_lt]
 theorem Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
