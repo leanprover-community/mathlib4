@@ -79,7 +79,7 @@ lemma posPart_sub_negPart (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : a⁺ - 
   rw [← cfcₙ_sub _ _]
   conv_rhs => rw [← cfcₙ_id ℝ a]
   congr! 2 with
-  exact _root_.posPart_sub_negPart _
+  exact fun x _ ↦ _root_.posPart_sub_negPart x
 
 section Unique
 
@@ -90,6 +90,7 @@ lemma posPart_neg (a : A) : (-a)⁺ = a⁻ := by
   by_cases ha : IsSelfAdjoint a
   · rw [posPart_def, negPart_def, ← cfcₙ_comp_neg _ _]
     congr! 2
+    exact fun x _ ↦ _root_.posPart_neg x
   · have ha' : ¬ IsSelfAdjoint (-a) := fun h ↦ ha (by simpa using h.neg)
     rw [posPart_def, negPart_def, cfcₙ_apply_of_not_predicate a ha,
       cfcₙ_apply_of_not_predicate _ ha']

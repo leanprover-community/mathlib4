@@ -413,6 +413,7 @@ include R in
 lemma cfc_predicate_one : p 1 :=
   map_one (algebraMap R A) ▸ cfc_predicate_algebraMap (1 : R)
 
+@[congr]
 lemma cfc_congr {f g : R → R} {a : A} (hfg : (spectrum R a).EqOn f g) :
     cfc f a = cfc g a := by
   by_cases h : p a ∧ ContinuousOn g (spectrum R a)
@@ -713,7 +714,7 @@ instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) whe
     by_cases h : ContinuousOn f (spectrum R a)
     · rw [← cfc_star, ← cfc_mul .., ← cfc_mul ..]
       congr! 2
-      exact mul_comm _ _
+      grind [Set.EqOn]
     · simp [cfc_apply_of_not_continuousOn a h]
 
 -- The following two lemmas are just `cfc_predicate`, but specific enough for the `@[simp]` tag.
@@ -785,6 +786,7 @@ lemma cfc_inv_id (a : Aˣ) (ha : p a := by cfc_tac) :
     cfc (fun x ↦ x⁻¹ : R → R) (a : A) = a⁻¹ := by
   rw [← Ring.inverse_unit]
   convert! cfc_inv (id : R → R) (a : A) ?_
+  · exact fun _ _ ↦ rfl
   · exact (cfc_id R (a : A)).symm
   · rintro x hx rfl
     exact spectrum.zero_notMem R a.isUnit hx

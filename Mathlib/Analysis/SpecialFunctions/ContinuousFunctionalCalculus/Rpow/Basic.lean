@@ -116,7 +116,8 @@ lemma nnrpow_add {a : A} {x y : ℝ≥0} (hx : 0 < x) (hy : 0 < y) :
     a ^ (x + y) = a ^ x * a ^ y := by
   simp only [nnrpow_def]
   rw [← cfcₙ_mul _ _ a]
-  congr! 2 with z
+  congr! 2
+  intro z hz
   exact mod_cast z.rpow_add' <| ne_of_gt (add_pos hx hy)
 
 @[simp]
@@ -156,7 +157,8 @@ lemma nnrpow_nnrpow {a : A} {x y : ℝ≥0} : (a ^ x) ^ y = a ^ (x * y) := by
     all_goals try simp
     simp only [nnrpow_def]
     rw [← cfcₙ_comp _ _ a]
-    congr! 2 with u
+    congr! 2
+    intro u hu
     ext
     simp [Real.rpow_mul]
   case neg =>

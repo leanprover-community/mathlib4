@@ -328,6 +328,7 @@ lemma cfcₙ_predicate_zero : p 0 :=
 lemma cfcₙ_predicate (f : R → R) (a : A) : p (cfcₙ f a) :=
   cfcₙ_cases p a f (cfcₙ_predicate_zero R) fun _ _ _ ↦ cfcₙHom_predicate ..
 
+@[congr]
 lemma cfcₙ_congr {f g : R → R} {a : A} (hfg : (σₙ R a).EqOn f g) :
     cfcₙ f a = cfcₙ g a := by
   by_cases h : p a ∧ ContinuousOn g (σₙ R a) ∧ g 0 = 0
@@ -541,7 +542,7 @@ instance IsStarNormal.cfcₙ_map (f : R → R) (a : A) : IsStarNormal (cfcₙ f 
     simp only [Commute, SemiconjBy]
     rw [← cfcₙ_apply f a, ← cfcₙ_star, ← cfcₙ_mul .., ← cfcₙ_mul ..]
     congr! 2
-    exact mul_comm _ _
+    grind [Set.EqOn]
 
 -- The following two lemmas are just `cfcₙ_predicate`, but specific enough for the `@[simp]` tag.
 @[simp]
