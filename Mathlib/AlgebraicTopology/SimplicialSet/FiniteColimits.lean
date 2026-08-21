@@ -32,7 +32,7 @@ lemma iSup_range_eq_top_of_isColimit :
     ⨆ (j : J), Subcomplex.range (c.ι.app j) = ⊤ := by
   ext n x
   simp only [Subfunctor.iSup_obj, Subfunctor.range_obj, Set.mem_iUnion, Set.mem_range,
-    Subfunctor.top_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
+    Subfunctor.top_obj, Set.mem_univ, iff_true]
   exact Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves ((evaluation _ _).obj n) hc) x
 
