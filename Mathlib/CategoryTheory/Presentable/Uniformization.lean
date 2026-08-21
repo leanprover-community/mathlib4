@@ -58,7 +58,7 @@ namespace IsCardinalAccessibleCategory
 
 variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 
-lemma uniformization'
+lemma uniformization_aux
     (F : C ⥤ D) {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
     [IsCardinalAccessibleCategory C κ₁] [IsCardinalAccessibleCategory D κ₁]
     [F.IsCardinalAccessible κ₁] (hκ : κ₁.SharplyLT κ₂)
@@ -73,6 +73,10 @@ lemma uniformization'
     exact isCardinalPresentable_of_isColimit _ (isColimitOfPreserves F p.isColimit) _
       ((hasCardinalLT_arrow_iff_of_isThin _ _ (Cardinal.IsRegular.aleph0_le Fact.out)).2 hJ)
 
+/-- Uniformization theorem for accessible categories: if `F i : C ⥤ D` for `i : ι`
+is a small family of accessible functors between accessible categories, there exists
+a regular cardinal `κ` such that `C` and `D` are `κ`-accessible, and the
+functors `F i` are `κ`-accessible functors which preserve `κ`-presentable objects. -/
 lemma uniformization_of_small
     [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
     {ι : Type*} [Small.{w} ι] (F : ι → C ⥤ D) [∀ i, Functor.IsAccessible.{w} (F i)] :
@@ -112,10 +116,14 @@ lemma uniformization_of_small
   exact ⟨κ', inferInstance, h₁.isCardinalAccessibleCategory C,
     h₁.isCardinalAccessibleCategory D,
     fun i ↦ Functor.isCardinalAccessible_of_le _ h₁.le,
-    fun i ↦ uniformization' _ h₁
+    fun i ↦ uniformization_aux _ h₁
       (fun X hX ↦ isCardinalPresentable_monotone _ h₂.le _
         (hκ₀ i _ (ObjectProperty.prop_map_obj _ _ hX)))⟩
 
+/-- Uniformization theorem for accessible categories: if `F` is an accessible
+functor between accessible categories, there exists a regular cardinal `κ`
+such that `C` and `D` are `κ`-accessible, the functor `F` is `κ`-accessible
+and preserves `κ`-presentable objects. -/
 lemma uniformization [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
     (F : C ⥤ D) [Functor.IsAccessible.{w} F] :
     ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
@@ -124,6 +132,10 @@ lemma uniformization [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
   obtain ⟨κ, _, h₁, h₂, h₃, h₄⟩ := uniformization_of_small (fun (_ : Fin 1) ↦ F)
   exact ⟨κ, inferInstance, h₁, h₂, h₃ 0, h₄ 0⟩
 
+/-- If `F₁ : C₁ ⥤ D₁` and `F₂ : C₂ ⥤ D₂` are accessible functors between
+accessible categories, there exists a regular cardinal `κ` such that
+`F₁` and `F₂` are `κ`-accessible functors between `κ`-accessible categories
+and they preserve `κ`-presentable objects. -/
 lemma uniformization_pair
     {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Category* D₁] [Category* D₂]
     [IsAccessibleCategory.{w} C₁] [IsAccessibleCategory.{w} C₂]
@@ -164,8 +176,8 @@ lemma uniformization_pair
     hκ.isCardinalAccessibleCategory _,
     Functor.isCardinalAccessible_of_le _ hκ.le,
     Functor.isCardinalAccessible_of_le _ hκ.le,
-    uniformization' _ hκ (fun X₁ hX₁ ↦ ?_),
-    uniformization' _ hκ (fun X₂ hX₂ ↦ ?_)⟩
+    uniformization_aux _ hκ (fun X₁ hX₁ ↦ ?_),
+    uniformization_aux _ hκ (fun X₂ hX₂ ↦ ?_)⟩
   · have := hκ₁ _ (ObjectProperty.prop_map_obj _ F₁ hX₁)
     exact isCardinalPresentable_of_le _ hκ₁'.le
   · have := hκ₂ _ (ObjectProperty.prop_map_obj _ F₂ hX₂)
