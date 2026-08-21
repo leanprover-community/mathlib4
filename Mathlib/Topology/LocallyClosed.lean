@@ -150,12 +150,14 @@ lemma IsLocallyClosedAt.preimage {x : X} {s : Set Y} {f : X → Y}
   obtain ⟨U, hU, Z, hZ, eq⟩ := hs
   exact ⟨_, hf.tendsto x hU, _, hZ.preimage hf, by simp [← preimage_inter, eq]⟩
 
+/-
+We start by proving that the four first conditions in `isLocallyClosedAt_tfae` are monotonous
+in `U`.
+-/
+
 private lemma mono_aux₁ (U V : Set X) (U_sub_V : U ⊆ V)
     (h : ∃ Z, IsClosed Z ∧ V ∩ s = V ∩ Z) : ∃ Z, IsClosed Z ∧ U ∩ s = U ∩ Z := by
-  let ⟨Z, Z_closed, eq⟩ := h
-  refine ⟨Z, Z_closed, ?_⟩
-  simp_rw [Set.ext_iff, mem_inter_iff, and_congr_right_iff] at eq ⊢
-  exact fun x hx ↦ eq x (U_sub_V hx)
+  grind [inter_eq_inter_mono_left]
 
 private lemma mono_aux₂ (U V : Set X) (U_sub_V : U ⊆ V)
     (h : IsClosed (V ↓∩ s)) : IsClosed (U ↓∩ s) :=
@@ -167,8 +169,7 @@ private lemma mono_aux₃ (U V : Set X) (U_sub_V : U ⊆ V)
 
 private lemma mono_aux₄ (U V : Set X) (U_sub_V : U ⊆ V)
     (h : V ∩ s = V ∩ closure s) : U ∩ s = U ∩ closure s := by
-  simp_rw [Set.ext_iff, mem_inter_iff, and_congr_right_iff] at h ⊢
-  exact fun x hx ↦ h x (U_sub_V hx)
+  grind [inter_eq_inter_mono_left]
 
 /-- A set `s` is locally closed at a point `x` if one of the equivalent conditions below hold
 1. There is a neighborhood `U` of `x` such that `U ∩ s` can be written `U ∩ Z` for some closed set
