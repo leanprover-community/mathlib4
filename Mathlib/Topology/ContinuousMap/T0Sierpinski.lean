@@ -36,7 +36,7 @@ theorem eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
   · intro u h
     rw [← generateFrom_iUnion_isOpen]
     apply isOpen_generateFrom_of_mem
-    simp only [Set.mem_iUnion, Set.mem_setOf_eq, isOpen_induced_iff]
+    simp only [Set.mem_iUnion, Set.mem_ofPred_eq, isOpen_induced_iff]
     exact ⟨⟨u, h⟩, {True}, isOpen_singleton_true, by simp [Set.preimage]⟩
 
 variable (X : Type*) [TopologicalSpace X]

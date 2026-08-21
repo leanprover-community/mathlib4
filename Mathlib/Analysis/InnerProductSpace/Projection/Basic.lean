@@ -35,9 +35,9 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 @[expose] public section
 
-variable {𝕜 E F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
+variable {𝕜 E : Type*} [RCLike 𝕜]
+variable [NormedAddCommGroup E]
+variable [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 local notation "absR" => @abs ℝ _ _
@@ -82,7 +82,7 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv' [K.HasOrthogonalProjec
 instance : (⊤ : Submodule 𝕜 E).HasOrthogonalProjection := ⟨fun v ↦ ⟨v, trivial, by simp⟩⟩
 
 instance (K : ClosedSubmodule 𝕜 E) [CompleteSpace E] : K.HasOrthogonalProjection := by
-  letI := K.isClosed'
+  let := K.isClosed'
   infer_instance
 
 /-- If `K` admits an orthogonal projection, `K` and `Kᗮ` are complements of each other. -/

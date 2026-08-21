@@ -124,8 +124,8 @@ theorem mk_of_measure_univ_le [IsFiniteMeasure μ] [Countable G] (h_meas : NullM
       replace h_meas : ∀ g : G, NullMeasurableSet (g • s) μ := fun g => by
         rw [← inv_inv g, ← preimage_smul]; exact h_meas.preimage (h_qmp g⁻¹)
       have h_meas' : NullMeasurableSet {a | ∃ g : G, g • a ∈ s} μ := by
-        rw [← iUnion_smul_eq_setOf_exists]; exact .iUnion h_meas
-      rw [ae_iff_measure_eq h_meas', ← iUnion_smul_eq_setOf_exists]
+        rw [← iUnion_smul_eq_ofPred_exists]; exact .iUnion h_meas
+      rw [ae_iff_measure_eq h_meas', ← iUnion_smul_eq_ofPred_exists]
       refine le_antisymm (measure_mono <| subset_univ _) ?_
       rw [measure_iUnion₀ aedisjoint h_meas]
       exact h_measure_univ_le }
@@ -287,7 +287,7 @@ is determined by the measure of its intersection with a fundamental domain for t
   its intersection with a fundamental domain for the action of `G`. -/]
 theorem measure_eq_card_smul_of_smul_ae_eq_self [Finite G] (h : IsFundamentalDomain G s μ)
     (t : Set α) (ht : ∀ g : G, (g • t : Set α) =ᵐ[μ] t) : μ t = Nat.card G • μ (t ∩ s) := by
-  haveI : Fintype G := Fintype.ofFinite G
+  have : Fintype G := Fintype.ofFinite G
   rw [h.measure_eq_tsum]
   replace ht : ∀ g : G, (g • t ∩ s : Set α) =ᵐ[μ] (t ∩ s : Set α) := fun g =>
     ae_eq_set_inter (ht g) (ae_eq_refl s)
@@ -465,7 +465,7 @@ theorem essSup_measure_restrict (hs : IsFundamentalDomain G s μ) {f : α → �
   intro γ
   ext x
   rw [mem_smul_set_iff_inv_smul_mem]
-  simp only [mem_setOf_eq, hf γ⁻¹ x]
+  simp only [mem_ofPred_eq, hf γ⁻¹ x]
 
 end IsFundamentalDomain
 
@@ -593,8 +593,8 @@ variable [MeasurableConstSMul G α] [SMulInvariantMeasure G α μ]
 protected theorem fundamentalInterior : IsFundamentalDomain G (fundamentalInterior G s) μ where
   nullMeasurableSet := hs.nullMeasurableSet.fundamentalInterior _ _
   ae_covers := by
-    simp_rw [ae_iff, not_exists, ← mem_inv_smul_set_iff, setOf_forall, ← compl_setOf,
-      setOf_mem_eq, ← compl_iUnion]
+    simp_rw [ae_iff, not_exists, ← mem_inv_smul_set_iff, ofPred_forall, ← compl_ofPred,
+      ofPred_mem_eq, ← compl_iUnion]
     have :
       ((⋃ g : G, g⁻¹ • s) \ ⋃ g : G, g⁻¹ • fundamentalFrontier G s) ⊆
         ⋃ g : G, g⁻¹ • fundamentalInterior G s := by
@@ -602,7 +602,7 @@ protected theorem fundamentalInterior : IsFundamentalDomain G (fundamentalInteri
         fundamentalFrontier_union_fundamentalInterior]; rfl
     refine eq_bot_mono (μ.mono <| compl_subset_compl.2 this) ?_
     simp only [iUnion_inv_smul, compl_sdiff, ENNReal.bot_eq_zero,
-      @iUnion_smul_eq_setOf_exists _ _ _ _ s]
+      @iUnion_smul_eq_ofPred_exists _ _ _ _ s]
     exact measure_union_null
       (measure_iUnion_null fun _ => measure_smul_null hs.measure_fundamentalFrontier _) hs.ae_covers
   aedisjoint := (pairwise_disjoint_fundamentalInterior _ _).mono fun _ _ => Disjoint.aedisjoint
@@ -684,13 +684,15 @@ noncomputable def covolume (G α : Type*) [One G] [SMul G α] [MeasurableSpace �
 variable [Group G] [MulAction G α] [MeasurableSpace α]
 
 /-- If there is a fundamental domain `s`, then `HasFundamentalDomain` holds. -/
-@[to_additive]
+@[to_additive /-- If there is an additive fundamental domain `s`, then `HasAddFundamentalDomain`
+holds. -/]
 lemma IsFundamentalDomain.hasFundamentalDomain (ν : Measure α) {s : Set α}
     (fund_dom_s : IsFundamentalDomain G s ν) :
     HasFundamentalDomain G α ν := ⟨⟨s, fund_dom_s⟩⟩
 
 /-- The `covolume` can be computed by taking the `volume` of any given fundamental domain `s`. -/
-@[to_additive]
+@[to_additive /-- The `addCovolume` can be computed by taking the `volume` of any given additive
+fundamental domain `s`. -/]
 lemma IsFundamentalDomain.covolume_eq_volume (ν : Measure α) [Countable G]
     [MeasurableConstSMul G α] [SMulInvariantMeasure G α ν] {s : Set α}
     (fund_dom_s : IsFundamentalDomain G s ν) : covolume G α ν = ν s := by
@@ -766,7 +768,7 @@ lemma IsFundamentalDomain.projection_respects_measure_apply {ν : Measure α}
 variable {ν : Measure α}
 
 /-- Any two measures satisfying `QuotientMeasureEqMeasurePreimage` are equal. -/
-@[to_additive]
+@[to_additive /-- Any two measures satisfying `AddQuotientMeasureEqMeasurePreimage` are equal. -/]
 lemma QuotientMeasureEqMeasurePreimage.unique
     [hasFun : HasFundamentalDomain G α ν] (μ μ' : Measure (Quotient α_mod_G))
     [QuotientMeasureEqMeasurePreimage ν μ] [QuotientMeasureEqMeasurePreimage ν μ'] :
@@ -776,14 +778,17 @@ lemma QuotientMeasureEqMeasurePreimage.unique
 
 /-- The quotient map to `α ⧸ G` is measure-preserving between the restriction of `volume` to a
   fundamental domain in `α` and a related measure satisfying `QuotientMeasureEqMeasurePreimage`. -/
-@[to_additive IsAddFundamentalDomain.measurePreserving_add_quotient_mk]
+@[to_additive IsAddFundamentalDomain.measurePreserving_add_quotient_mk /-- The quotient map to
+the additive quotient of `α` by `G` is measure-preserving between the restriction of `volume` to
+an additive fundamental domain in `α` and a related measure satisfying
+`AddQuotientMeasureEqMeasurePreimage`. -/]
 theorem IsFundamentalDomain.measurePreserving_quotient_mk
     {𝓕 : Set α} (h𝓕 : IsFundamentalDomain G 𝓕 ν)
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] :
     MeasurePreserving π (ν.restrict 𝓕) μ where
   measurable := measurable_quotient_mk' (s := α_mod_G)
   map_eq := by
-    haveI : HasFundamentalDomain G α ν := ⟨𝓕, h𝓕⟩
+    have : HasFundamentalDomain G α ν := ⟨𝓕, h𝓕⟩
     rw [h𝓕.projection_respects_measure (μ := μ)]
 
 variable [SMulInvariantMeasure G α ν] [Countable G] [MeasurableConstSMul G α]
@@ -791,7 +796,9 @@ variable [SMulInvariantMeasure G α ν] [Countable G] [MeasurableConstSMul G α]
 /-- Given a measure upstairs (i.e., on `α`), and a choice `s` of fundamental domain, there's always
 an artificial way to generate a measure downstairs such that the pair satisfies the
 `QuotientMeasureEqMeasurePreimage` typeclass. -/
-@[to_additive]
+@[to_additive /-- Given a measure upstairs (i.e., on `α`), and a choice `s` of additive
+fundamental domain, there's always an artificial way to generate a measure downstairs such that
+the pair satisfies the `AddQuotientMeasureEqMeasurePreimage` typeclass. -/]
 lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage_quotientMeasure
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν) :
     QuotientMeasureEqMeasurePreimage ν ((ν.restrict s).map π) where
@@ -799,7 +806,8 @@ lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage_quotientMeasure
 
 /-- One can prove `QuotientMeasureEqMeasurePreimage` by checking behavior with respect to a single
 fundamental domain. -/
-@[to_additive]
+@[to_additive /-- One can prove `AddQuotientMeasureEqMeasurePreimage` by checking behavior with
+respect to a single additive fundamental domain. -/]
 lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage {μ : Measure (Quotient α_mod_G)}
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν) (h : μ = (ν.restrict s).map π) :
     QuotientMeasureEqMeasurePreimage ν μ := by
@@ -807,7 +815,8 @@ lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage {μ : Measure (Quotie
 
 
 /-- If a fundamental domain has volume 0, then `QuotientMeasureEqMeasurePreimage` holds. -/
-@[to_additive]
+@[to_additive /-- If an additive fundamental domain has volume 0, then
+`AddQuotientMeasureEqMeasurePreimage` holds. -/]
 theorem IsFundamentalDomain.quotientMeasureEqMeasurePreimage_of_zero
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν)
     (vol_s : ν s = 0) :
@@ -820,19 +829,19 @@ theorem IsFundamentalDomain.quotientMeasureEqMeasurePreimage_of_zero
 
 /-- If a measure `μ` on a quotient satisfies `QuotientMeasureEqMeasurePreimage` with respect to a
 sigma-finite measure `ν`, then it is itself `SigmaFinite`. -/
-@[to_additive]
+@[to_additive /-- If a measure `μ` on a quotient satisfies `AddQuotientMeasureEqMeasurePreimage`
+with respect to a sigma-finite measure `ν`, then it is itself `SigmaFinite`. -/]
 lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
     [i : SigmaFinite ν] [i' : HasFundamentalDomain G α ν]
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] :
     SigmaFinite μ := by
   rw [sigmaFinite_iff]
   obtain ⟨A, hA_meas, hA, hA'⟩ := Measure.toFiniteSpanningSetsIn (h := i)
-  simp only [mem_setOf_eq] at hA_meas
+  simp only [mem_ofPred_eq] at hA_meas
   refine ⟨⟨fun n ↦ π '' (A n), by simp, fun n ↦ ?_, ?_⟩⟩
   · obtain ⟨s, fund_dom_s⟩ := i'
     have : π ⁻¹' π '' (A n) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
     have measπAn : MeasurableSet (π '' A n) := by
-      let _ : Setoid α := α_mod_G
       rw [measurableSet_quotient, Quotient.mk''_eq_mk, this]
       apply MeasurableSet.iUnion
       exact fun g ↦ MeasurableSet.const_smul (hA_meas n) g
@@ -845,7 +854,8 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
 
 /-- A measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` and having finite
 covolume is a finite measure. -/
-@[to_additive]
+@[to_additive /-- A measure `μ` on the additive quotient of `α` by `G` satisfying
+`AddQuotientMeasureEqMeasurePreimage` and having finite covolume is a finite measure. -/]
 theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ]
     [hasFun : HasFundamentalDomain G α ν] (h : covolume G α ν ≠ ∞) :
@@ -860,7 +870,8 @@ theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
 
 /-- A finite measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` has finite
 covolume. -/
-@[to_additive]
+@[to_additive /-- A finite measure `μ` on the additive quotient of `α` by `G` satisfying
+`AddQuotientMeasureEqMeasurePreimage` has finite covolume. -/]
 theorem QuotientMeasureEqMeasurePreimage.covolume_ne_top
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] [IsFiniteMeasure μ] :
     covolume G α ν < ∞ := by
@@ -883,9 +894,11 @@ local notation "α_mod_G" => MulAction.orbitRel G α
 
 local notation "π" => @Quotient.mk _ α_mod_G
 
-/-- If a measure `μ` on a quotient satisfies `QuotientVolumeEqVolumePreimage` with respect to a
+/-- If a measure `μ` on a quotient satisfies `QuotientMeasureEqMeasurePreimage` with respect to a
 sigma-finite measure, then it is itself `SigmaFinite`. -/
-@[to_additive MeasureTheory.instSigmaFiniteAddQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace]
+@[to_additive MeasureTheory.instSigmaFiniteAddQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace
+/-- If a measure `μ` on a quotient satisfies `AddQuotientMeasureEqMeasurePreimage` with respect to a
+sigma-finite measure, then it is itself `SigmaFinite`. -/]
 instance [SigmaFinite (volume : Measure α)] [HasFundamentalDomain G α]
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage volume μ] :
     SigmaFinite μ :=

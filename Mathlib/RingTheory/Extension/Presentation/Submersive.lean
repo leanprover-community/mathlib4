@@ -214,7 +214,6 @@ noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)
 @[simp]
 lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
     (ofBijectiveAlgebraMap h).jacobian = 1 := by
-  classical
   have : (algebraMap (ofBijectiveAlgebraMap h).Ring S).mapMatrix
       (ofBijectiveAlgebraMap h).jacobiMatrix = 1 := by
     ext (i j : PEmpty)
@@ -349,7 +348,7 @@ private lemma jacobiMatrix_comp_₂₂_det :
   simp only [Matrix.toBlocks₂₂, AlgHom.mapMatrix_apply, Matrix.map_apply, Matrix.of_apply,
     RingHom.mapMatrix_apply, Generators.algebraMap_apply, map_aeval, coe_eval₂Hom]
   rw [jacobiMatrix_comp_inr_inr, ← IsScalarTower.algebraMap_eq]
-  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
+  simp only [aeval]
   generalize P.jacobiMatrix i j = p
   induction p using MvPolynomial.induction_on with
   | C a =>
