@@ -161,7 +161,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     · apply mdifferentiableWithinAt_extChartAt_symm
       exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
     · exact inter_subset_left.trans (extChartAt_target_subset_range (g x₀))
-  rw [inTangentCoordinates_eq_mfderiv_comp, A,
+  rw [inTangentCoordinates_eq_mfderiv_comp_abuse, A,
     ← mfderivWithin_comp_of_eq, ← mfderiv_comp_mfderivWithin_of_eq]
   · exact mfderivWithin_eq_fderivWithin
   · exact mdifferentiableAt_extChartAt (by simpa using h'x)
@@ -415,7 +415,6 @@ lemma contMDiff_equivTangentBundleProd :
   exact (contMDiff_fst.contMDiff_tangentMap le_rfl).prodMk
     (contMDiff_snd.contMDiff_tangentMap le_rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical equivalence between the product of tangent bundles and the tangent bundle of a
 product is smooth. -/
 lemma contMDiff_equivTangentBundleProd_symm :

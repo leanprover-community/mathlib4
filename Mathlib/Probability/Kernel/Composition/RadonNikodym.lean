@@ -41,7 +41,7 @@ open scoped ENNReal
 
 namespace ProbabilityTheory
 
-variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {μ ν : Measure α} {κ η : Kernel α β}
 
 /-- Auxiliary lemma for `rnDeriv_measure_compProd_left`. -/

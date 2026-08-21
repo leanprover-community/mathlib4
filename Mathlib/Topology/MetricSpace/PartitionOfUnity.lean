@@ -29,7 +29,7 @@ metric space, partition of unity, locally finite
 
 public section
 
-open Topology ENNReal NNReal Filter Set Function TopologicalSpace Metric
+open Topology ENNReal NNReal Filter Set TopologicalSpace Metric
 
 variable {ι X : Type*}
 

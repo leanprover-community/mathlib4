@@ -37,6 +37,8 @@ groups.
 topological space, group, topological group
 -/
 
+set_option linter.style.longFile 1600
+
 @[expose] public section
 
 open Set Filter TopologicalSpace Function Topology MulOpposite Pointwise
@@ -226,7 +228,7 @@ theorem continuousAt_inv {x : G} : ContinuousAt Inv.inv x :=
 theorem tendsto_inv (a : G) : Tendsto Inv.inv (𝓝 a) (𝓝 a⁻¹) :=
   continuousAt_inv
 
-variable [TopologicalSpace α] {f : α → G} {s : Set α} {x : α}
+variable [TopologicalSpace α] {f : α → G} {x : α}
 
 @[to_additive]
 instance OrderDual.instContinuousInv : ContinuousInv Gᵒᵈ := ‹ContinuousInv G›
@@ -765,17 +767,28 @@ def Subgroup.connectedComponentOfOne (G : Type*) [TopologicalSpace G] [Group G]
   mul_mem' hg hh := mul_mem_connectedComponent_one hg hh
   inv_mem' hg := inv_mem_connectedComponent_one hg
 
+/-- If a subgroup of a topological group is commutative, then so is its topological closure. -/
+@[to_additive
+/-- If a subgroup of an additive topological group is commutative, then so is its
+topological closure. -/]
+instance Subgroup.isMulCommutative_topologicalClosure [T2Space G] (s : Subgroup G)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubmonoid.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
 /-- If a subgroup of a topological group is commutative, then so is its topological closure.
 
 See note [reducible non-instances]. -/
-@[to_additive
+@[to_additive (attr := deprecated Subgroup.isMulCommutative_topologicalClosure
+(since := "2026-07-29"))
   /-- If a subgroup of an additive topological group is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances]. -/]
 abbrev Subgroup.commGroupTopologicalClosure [T2Space G] (s : Subgroup G)
     (hs : ∀ x y : s, x * y = y * x) : CommGroup s.topologicalClosure :=
-  { s.topologicalClosure.toGroup, s.toSubmonoid.commMonoidTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 variable (G) in
 @[to_additive]
@@ -819,6 +832,18 @@ theorem Filter.HasBasis.nhds_of_one {ι : Sort*} {p : ι → Prop} {s : ι → S
   rw [← nhds_translation_mul_inv]
   simp_rw [div_eq_mul_inv]
   exact hb.comap _
+
+@[to_additive]
+theorem Filter.HasBasis.nhds_of_one' {ι : Sort*} {p : ι → Prop} {s : ι → Set G}
+    (hb : (𝓝 1).HasBasis p s) (x : G) :
+    (𝓝 x).HasBasis p fun i ↦ x • (s i) := by
+  rw [← map_mul_left_nhds_one x]
+  exact hb.map (x * ·)
+
+@[to_additive]
+theorem Filter.HasBasis.nhds_one_inv {ι : Sort*} {p : ι → Prop} {U : ι → Set G}
+    (hU : (𝓝 1).HasBasis p U) : (𝓝 1).HasBasis p fun i ↦ (U i)⁻¹ := by
+  simpa [← nhds_inv] using hU.inv
 
 @[to_additive]
 theorem mem_closure_iff_nhds_one {x : G} {s : Set G} :
