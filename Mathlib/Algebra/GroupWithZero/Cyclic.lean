@@ -44,6 +44,10 @@ of a single element, i.e. when its group of units is cyclic.
 `isCyclic_iff_subsingleton_units`. Never write `[IsCyclic G₀]` for a group with zero. -/
 abbrev IsCyclicWithZero (G₀ : Type*) [GroupWithZero G₀] : Prop := IsCyclic G₀ˣ
 
+/-- The units of a cyclic subgroup with zero form a cyclic subgroup of `G₀ˣ`. -/
+instance SubgroupWithZero.isCyclic_units (s : SubgroupWithZero G₀) [IsCyclicWithZero ↥s] :
+    IsCyclic ↥s.units := (SubgroupWithZero.unitsMulEquiv s).isCyclic.mp ‹_›
+
 /-- Documents the foot-gun: `IsCyclic` on a group with zero says the group is `{0, 1}`. -/
 theorem isCyclic_iff_subsingleton_units : IsCyclic G₀ ↔ Subsingleton G₀ˣ := by
   constructor

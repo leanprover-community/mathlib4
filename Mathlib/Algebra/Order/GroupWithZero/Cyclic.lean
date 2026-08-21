@@ -41,8 +41,6 @@ namespace SubgroupWithZero
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 variable (s : SubgroupWithZero Γ) [Nontrivial (↥s)ˣ] [IsCyclicWithZero ↥s]
 
-instance : IsCyclic ↥s.units := (unitsMulEquiv s).isCyclic.mp ‹_›
-
 /-- With-zero analogue of `LinearOrderedCommGroup.Subgroup.exists_generator_lt_one`.
 
 Note the extra `0 < g`: it is not implied by `g < 1`, since `0 < 1`. -/

@@ -142,6 +142,11 @@ instance : IsCyclic <| valueGroup (.ofClass v) := by
   rw [← generator_zpowers_eq_valueGroup]
   exact isCyclic_zpowers (generator v)
 
+instance : IsCyclicWithZero (ValueGroup₀ (.ofClass v)) :=
+  (SubgroupWithZero.unitsMulEquiv (valueGroup₀ (.ofClass v))).isCyclic.mpr
+    (by rw [units_valueGroup₀]; infer_instance)
+
+
 instance : v.IsNontrivial := by
   apply IsNontrivial.mk
   by_contra! h1
@@ -277,8 +282,8 @@ end CommRing
 
 section Ring
 
-variable {R : Type*} [Ring R] (v : Valuation R Γ) [IsCyclic (valueGroup (.ofClass v))]
-  [Nontrivial (valueGroup (.ofClass v))]
+variable {R : Type*} [Ring R] (v : Valuation R Γ) [IsCyclicWithZero (ValueGroup₀ (.ofClass v))]
+  [Nontrivial (ValueGroup₀ (.ofClass v))ˣ]
 
 instance IsRankOneDiscrete.mk' : IsRankOneDiscrete v :=
   ⟨(valueGroup (.ofClass v)).genLTOne, ⟨(valueGroup (.ofClass v)).genLTOne_zpowers_eq_top,
@@ -299,7 +304,7 @@ local notation "K₀" => v.valuationSubring
 
 section IsNontrivial
 
-variable [IsCyclic (valueGroup (.ofClass v))] [Nontrivial (valueGroup (.ofClass v))]
+variable [IsCyclicWithZero (ValueGroup₀ (.ofClass v))] [Nontrivial (ValueGroup₀ (.ofClass v))ˣ]
 
 theorem exists_isUniformizer_of_isCyclic_of_nontrivial : ∃ π : K₀, IsUniformizer v (π : K) := by
   simp only [IsUniformizer.iff, Subtype.exists, mem_valuationSubring_iff, exists_prop]
@@ -407,8 +412,8 @@ end Uniformizer
 
 end IsRankOneDiscrete
 
-theorem valuationSubring_not_isField [Nontrivial (valueGroup (.ofClass v))]
-    [IsCyclic (valueGroup (.ofClass v))] : ¬ IsField K₀ := by
+theorem valuationSubring_not_isField [Nontrivial (ValueGroup₀ (.ofClass v))ˣ]
+    [IsCyclicWithZero (ValueGroup₀ (.ofClass v))] : ¬ IsField K₀ := by
   obtain ⟨π, hπ⟩ := exists_isUniformizer_of_isCyclic_of_nontrivial v
   rintro ⟨-, -, h⟩
   have := hπ.ne_zero
@@ -432,8 +437,8 @@ theorem isUniformizer_of_maximalIdeal_eq_span [v.IsRankOneDiscrete] {r : K₀}
   exact hπ.of_associated hr
 
 set_option backward.isDefEq.respectTransparency false in
-theorem ideal_isPrincipal [IsCyclic (valueGroup (.ofClass v))]
-    [Nontrivial (valueGroup (.ofClass v))] (I : Ideal K₀) : I.IsPrincipal := by
+theorem ideal_isPrincipal [IsCyclicWithZero (ValueGroup₀ (.ofClass v))]
+    [Nontrivial (ValueGroup₀ (.ofClass v))ˣ] (I : Ideal K₀) : I.IsPrincipal := by
   suffices ∀ P : Ideal K₀, P.IsPrime → Submodule.IsPrincipal P by
     exact (IsPrincipalIdealRing.of_prime this).principal I
   intro P hP
@@ -454,13 +459,13 @@ theorem ideal_isPrincipal [IsCyclic (valueGroup (.ofClass v))]
       rw [← Ideal.IsMaximal.eq_of_le (IsLocalRing.maximalIdeal.isMaximal K₀) hP.ne_top hx_mem]
       exact ⟨π.1, π.is_generator⟩
 
-theorem valuationSubring_isPrincipalIdealRing [IsCyclic (valueGroup (.ofClass v))]
-    [Nontrivial (valueGroup (.ofClass v))] : IsPrincipalIdealRing K₀ :=
+theorem valuationSubring_isPrincipalIdealRing [IsCyclicWithZero (ValueGroup₀ (.ofClass v))]
+    [Nontrivial (ValueGroup₀ (.ofClass v))ˣ] : IsPrincipalIdealRing K₀ :=
   ⟨(ideal_isPrincipal v ·)⟩
 
 /-- This is Chapter I, Section 1, Proposition 1 in Serre's Local Fields -/
-instance valuationSubring_isDiscreteValuationRing [IsCyclic (valueGroup (.ofClass v))]
-    [Nontrivial (valueGroup (.ofClass v))] : IsDiscreteValuationRing K₀ where
+instance valuationSubring_isDiscreteValuationRing [IsCyclicWithZero (ValueGroup₀ (.ofClass v))]
+    [Nontrivial (ValueGroup₀ (.ofClass v))ˣ] : IsDiscreteValuationRing K₀ where
   toIsPrincipalIdealRing := valuationSubring_isPrincipalIdealRing v
   toIsLocalRing := inferInstance
   not_a_field' := by rw [ne_eq, ← isField_iff_maximalIdeal_eq]; exact valuationSubring_not_isField v

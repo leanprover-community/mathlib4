@@ -6,6 +6,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio, Edison Xu
 module
 
 public import Mathlib.Algebra.GroupWithZero.Range
+public import Mathlib.Algebra.Order.GroupWithZero.Cyclic
 public import Mathlib.Algebra.Order.GroupWithZero.Subgroup
 
 /-! # The range of a MonoidWithZeroHom
@@ -56,5 +57,17 @@ theorem mk_le_mk_iff (f : A →*₀ B) (hr₁ : f r₁ ≠ 0) (hr₂ : f r₂ �
     div_le_div_iff₀ (zero_lt_iff.2 hr₁) (zero_lt_iff.2 hr₂), map_mul, map_mul]
 
 end ValueGroup₀
+
+/-! ### Bridging the with-zero hypotheses to the `Subgroup Bˣ` API
+
+`valueGroup f` is by definition `(valueGroup₀ f).units`, but instance search does not unfold it,
+so the transfers are declared explicitly. This is what lets downstream statements be phrased in
+`ValueGroup₀ f` while their proofs still use the `Subgroup` API. -/
+
+instance [Nontrivial (ValueGroup₀ f)ˣ] : Nontrivial ↥(valueGroup f) :=
+  SubgroupWithZero.nontrivial_units_subgroup (valueGroup₀ f)
+
+instance [IsCyclicWithZero (ValueGroup₀ f)] : IsCyclic ↥(valueGroup f) :=
+  SubgroupWithZero.isCyclic_units (valueGroup₀ f)
 
 end MonoidWithZeroHom
