@@ -59,10 +59,20 @@ def limsSup (f : Filter α) : α :=
 def limsInf (f : Filter α) : α :=
   sSup { a | ∀ᶠ n in f, a ≤ n }
 
+@[simp]
+lemma limsInf_pure (a : α) : limsInf (pure a) = a := by
+  simp only [limsInf, eventually_pure]
+  exact csSup_Iic
+
 /-- The `limsup` of a function `u` along a filter `f` is the infimum of the `a` such that
 the inequality `u x ≤ a` eventually holds for `f`. -/
 def limsup (u : β → α) (f : Filter β) : α :=
   limsSup (map u f)
+
+@[simp]
+lemma limsSup_pure (a : α) : limsSup (pure a) = a := by
+  simp only [limsSup, eventually_pure]
+  exact csInf_Ici
 
 /-- The `liminf` of a function `u` along a filter `f` is the supremum of the `a` such that
 the inequality `u x ≥ a` eventually holds for `f`. -/
@@ -82,6 +92,14 @@ def bliminf (u : β → α) (f : Filter β) (p : β → Prop) :=
 section
 
 variable {f : Filter β} {u : β → α} {p : β → Prop}
+
+@[simp]
+lemma limsup_pure (b : β) : limsup u (pure b) = u b := by
+  simp [limsup]
+
+@[simp]
+lemma liminf_pure (b : β) : liminf u (pure b) = u b := by
+  simp [liminf]
 
 theorem limsup_eq : limsup u f = sInf { a | ∀ᶠ n in f, u n ≤ a } :=
   rfl
