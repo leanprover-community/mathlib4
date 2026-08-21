@@ -185,23 +185,47 @@ lemma measurePreserving_ncard_setBernoulli_binomial_ncard {ι : Type*} [Countabl
     rw [binomial_singleton, map_ncard_setBernoulli_singleton hu]
 
 /-- A sum of independent Bernoulli random variables is a binomial random variable. -/
-lemma iIndepFun.hasLaw_finsetSum_binomial {ι : Type*} {s : Finset ι} {X : ι → Ω → ℕ}
+lemma iIndepFun.hasLaw_finsetSum_map_cast_binomial {ι R : Type*} {s : Finset ι} {X : ι → Ω → R}
+    [MeasurableSpace R] [AddCommMonoidWithOne R] [MeasurableSingletonClass R] [MeasurableAdd₂ R]
     (hX : iIndepFun (s.restrict X) P) (lawX : ∀ i ∈ s, HasLaw (X i) Ber(1, 0, p) P) :
-    HasLaw (∑ i ∈ s, X i) Bin(s.card, p) P := by
+    HasLaw (∑ i ∈ s, X i) Bin(R, s.card, p) P := by
   classical
   obtain ⟨Ω', mΩ', P', S, -, hS⟩ := setBer((Finset.univ (α := s) : Set s), p).exists_hasLaw
-  convert hS.hasLaw_indicator_infinitePi_ite_of_setBernoulli.comp_of_hasLaw_comp
+  convert (hS.hasLaw_indicator_infinitePi_ite_of_setBernoulli 1).comp_of_hasLaw_comp
     (f := fun x ↦ ∑ i, x i) (Y := fun ω i ↦ X i.1 ω) (by fun_prop) ?_ ?_
   · simp only [Finset.sum_apply]
     rw [← Finset.sum_coe_sort, ← Finset.sum_coe_sort]
   · rw [infinitePi_eq_pi]
     exact hX.hasLaw_pi (by simpa)
-  have : HasLaw (fun ω ↦ (S ω).ncard) Bin(s.card, p) P' := by
-    convert (measurePreserving_ncard_setBernoulli_binomial_ncard (by simp)).comp_hasLaw hS <;>
-    simp
+  have : HasLaw (fun ω ↦ ((S ω).ncard : R)) Bin(R, s.card, p) P' := by
+    convert (hasLaw_map .of_discrete).comp <|
+      (measurePreserving_ncard_setBernoulli_binomial_ncard (by simp)).comp_hasLaw hS <;> simp
   convert this with ω
   rw [Set.ncard_eq_toFinset_card _ (toFinite (S ω)), Finset.card_eq_sum_ite (Finset.subset_univ _)]
   simp [Set.indicator]
+
+/-- A sum of independent Bernoulli random variables is a binomial random variable. -/
+lemma iIndepFun.hasLaw_finsetSum_binomial {ι : Type*} {s : Finset ι} {X : ι → Ω → ℕ}
+    (hX : iIndepFun (s.restrict X) P) (lawX : ∀ i ∈ s, HasLaw (X i) Ber(1, 0, p) P) :
+    HasLaw (∑ i ∈ s, X i) Bin(s.card, p) P := by
+  convert hX.hasLaw_finsetSum_map_cast_binomial lawX
+  simp
+
+/-- A sum of independent Bernoulli random variables is a binomial random variable. -/
+lemma iIndepFun.hasLaw_sum_map_cast_binomial {ι : Type*} (R : Type*) [Fintype ι] {X : ι → Ω → R}
+    [MeasurableSpace R] [AddCommMonoidWithOne R] [MeasurableSingletonClass R] [MeasurableAdd₂ R]
+    (hX : iIndepFun X P) (lawX : ∀ i, HasLaw (X i) Ber(1, 0, p) P) :
+    HasLaw (∑ i, X i) Bin(R, Fintype.card ι, p) P := by
+  convert (hX.restrict _).hasLaw_finsetSum_map_cast_binomial ?_
+  · simp
+  · simpa
+
+/-- A sum of independent Bernoulli random variables is a binomial random variable. -/
+lemma iIndepFun.hasLaw_sum_binomial {ι : Type*} [Fintype ι] {X : ι → Ω → ℕ}
+    (hX : iIndepFun X P) (lawX : ∀ i, HasLaw (X i) Ber(1, 0, p) P) :
+    HasLaw (∑ i, X i) Bin(Fintype.card ι, p) P := by
+  convert hX.hasLaw_sum_map_cast_binomial ℕ lawX
+  simp
 
 end Integral
 
