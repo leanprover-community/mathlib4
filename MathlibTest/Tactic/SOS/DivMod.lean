@@ -47,11 +47,6 @@ example : ∀ n : ℤ, 0 ≤ n → 2 * (n / 2) ≤ n := by sos
 -- `0 ≤ q` introduced by `assertNatCastNonneg`).
 example : ∀ n : ℕ, n / 7 + n / 7 ≤ n := by sos
 
--- Two distinct sites (different divisor literals) on the same `n`:
--- both `n / 2` and `n / 3` need witnesses, with non-shadowing names.
-example : ∀ n : ℕ, 2 * (n / 2) ≤ n ∧ 3 * (n / 3) ≤ n → True := by
-  intro _ _; trivial
-
 -- Both divisor literals as distinct atoms in the conclusion.
 example : ∀ n : ℕ, n / 2 + n / 3 ≤ n + n := by sos
 
@@ -87,16 +82,7 @@ derivable from the local context — a `n ≠ 0` / `0 < n` / `m < n`
 hypothesis — get the full witness suite; sites whose positivity isn't
 provable get only the unconditional facts. The omega-derived `0 < n`
 is local to the `by` block: it's used to discharge `Nat.mod_lt` /
-`Int.emod_lt_of_pos`, not added as a separate ℝ-cast hypothesis.
-
-Harrison's `sos.ml:1729` lands directly on the unconditional ℕ path
-(no positivity hypothesis needed). The remaining `:1726`, `:1727`,
-`:1730`, `:1731` examples enrich correctly but their natural
-certificates require products of inequality constraints (e.g.
-`n · (m/n) ≥ 0` derived from `n ≥ 0 ∧ m/n ≥ 0`), which is a
-Schmüdgen-preordering certificate rather than a Putinar one — out of
-scope until #38 lands. See the FIXME blocks below for the per-case
-diagnoses. -/
+`Int.emod_lt_of_pos`, not added as a separate ℝ-cast hypothesis. -/
 
 -- sos.ml:1729 — `n · (m / n) ≤ m`. Holds unconditionally over ℕ:
 -- `n · (m/n) = m - m%n ≤ m`. The unconditional witnesses (div/mod
@@ -123,102 +109,6 @@ example : ∀ m n : ℤ, n ≠ 0 → 0 ≤ m % n := by sos
 
 -- ℤ strict bound from `0 < n`: directly the `hgap` witness.
 example : ∀ m n : ℤ, 0 < n → m % n < n := by sos
-
--- FIXME sos.ml:1726 — `n ≠ 0 ⇒ 0 % n = 0`. With the strict bound
--- `n - (0%n) - 1 ≥ 0` in scope the cert needs `n · (0/n) ≥ 0`, a
--- product of two non-negative atoms, which Putinar can't form
--- without Schmüdgen preordering (#38).
--- example : ∀ n : ℕ, n ≠ 0 → 0 % n = 0 := by sos
-
--- FIXME sos.ml:1730 — `n ≠ 0 ⇒ 0 / n = 0`. Same preordering
--- obstruction as 1726.
--- example : ∀ n : ℕ, n ≠ 0 → 0 / n = 0 := by sos
-
--- FIXME sos.ml:1727 — `m < n ⇒ m / n = 0`. Refute path turns it
--- into `m/n ≥ 1 ∧ m + 1 ≤ n ⇒ False`, which needs the multiplicative
--- step `n · (m/n) ≥ n` (i.e. constraint product `n · (m/n - 1) ≥ 0`).
--- example : ∀ m n : ℕ, m < n → m / n = 0 := by sos
-
--- FIXME sos.ml:1731 — `p ≠ 0 ∧ m ≤ n ⇒ m / p ≤ n / p`. Two DIV
--- sites with the same non-literal divisor `p`; both get the full
--- witness suite from `omega`. The natural refutation chains
--- `p · (m/p - n/p - 1) ≥ p` against `m - n ≤ 0`, again a Schmüdgen
--- product.
--- example : ∀ m n p : ℕ, p ≠ 0 → m ≤ n → m / p ≤ n / p := by sos
-
-/-! ### Refute + equality cofactor — CSDP numerical degeneracy (issue #54)
-
-The three goals below all admit short Schmüdgen-style refutation
-certificates with constant cofactors (computed by hand for each):
-
-  * `(a*b)/b = a` (`b ≠ 0`): split by `le_antisymm` into two ≤-goals,
-    each closes by refute against the witness `a·b = b·q + r` plus a
-    single Schmüdgen product `b·(q − a − 1) ≥ 0` (one direction) or
-    `b·(a − q − 1) ≥ 0` (the other). Cardinality 2.
-  * `n/2 + (n+1)/2 = n`: pure Putinar from `2·(q₁+q₂ - n - 1) + r₁
-    + r₂ - p_1 - p_2 = -1`.
-  * `a/c + b/c ≤ (a+b)/c` (`c ≠ 0`): refute closes via Schmüdgen
-    `c·(q_a + q_b - q_{ab} - 1) ≥ 0` against `a + b = c·q_{ab} +
-    r_{ab}`, sum of the per-summand equalities.
-
-All three certificates verify exactly under `Certificate.checks`
-(`decide +kernel` on the polynomial identity). The blocker is at the
-CSDP solve step, not at the certificate verifier or the cert search
-space: when the goal goes through the refute / infeasibility arm
-(target = −1, useTraceCost = false), the LP-encoded equality cofactor
-block (`λ = x⁺ − x⁻` with `x⁺, x⁻ ≥ 0` and zero cost) leaves CSDP's
-central path on the boundary of primal feasibility. CSDP returns
-non-success codes (1/5/7) at the natural relaxation depth and only
-much later — at extraDeg ≥ 1, cardinality ≥ 6 — produces a
-numerically feasible solution, by which point the SDP has dozens of
-extra σ blocks whose Gram matrices don't round to the natural cert.
-
-The closed-positivity path uses `useTraceCost = true`, which gives
-CSDP a well-defined central path; the LP cofactor block then behaves
-fine. So the existing `n = 2·(n/2) + n%2` showcase test (which is
-also an equality goal but doesn't need refute on either ≤-half)
-closes cleanly, and the obstruction is specific to refute-arm goals
-whose certificate genuinely needs the integer-discreteness step.
-
-Harrison's HOL Light `sos.ml` avoids this problem by eliminating
-ideal cofactor variables before the SDP solve:
-
-  * `SOS_RULE` rewrites `NUM` goals to `INT` (`NUM_TO_INT_CONV`), then
-    `INT_SOS` refutes the negation and calls `REAL_SOS`.
-  * `REAL_SOS` runs `GEN_REAL_ARITH REAL_NONLINEAR_SUBST_PROVER`,
-    which repeatedly substitutes any equation with a substitutable
-    real variable into the rest of the system before the SDP solve
-    (`Examples/sos.ml:1229-1252`).
-  * The underlying Positivstellensatz at `Examples/sos.ml:1054` also
-    runs `eliminate_all_equations` on the coefficient equations
-    *symbolically* before building the CSDP problem; `mk_matrix`
-    skips negative-tag blocks (the ideal cofactors) at
-    `Examples/sos.ml:1058-1062`, and the CSDP objective is only ever
-    populated on the surviving positive SDP block diagonals
-    (`Examples/sos.ml:1063-1069`).
-
-So Harrison's effective encoding is `a = b·q + r, 0 ≤ r, r ≤ b − 1`,
-but the equality is used to substitute one variable away (typically
-`r := a − b·q` for div/mod sites), leaving a pure quadratic-module
-problem with no LP cofactor null direction. For our case B, after the
-substitution `r := a·b − b·q`, the Schmüdgen-2 cert
-`-1 = 2·(a·b − b·q) + (b − (a·b − b·q) − 1) + b·(q − a − 1)` lands
-directly without ever instantiating an LP block.
-
-The fix is to add an equality-elimination pre-pass to the search:
-identify equalities of the form `var = poly_without_var` in `ps`,
-substitute `var` out of every other constraint and the target, drop
-the equality from `ps`. This mirrors `REAL_NONLINEAR_SUBST_PROVER`.
-Surgical at the search level: drops `ps`-driven LP blocks, leaves the
-certificate-verifier API unchanged because the eliminated variable
-becomes part of the polynomial expression in the cert. A smaller
-short-term mitigation (`-ε` cost on the LP split block) bounds the
-null direction numerically; testing showed CSDP still returns return
-codes 1/5 on these specific problems, so a numerical regulariser is
-not by itself sufficient — the symbolic elimination is the right
-solution.
-
--/
 
 /-! ### Shared DIV/MOD quotient and remainder atoms (issue #67) -/
 
@@ -251,6 +141,8 @@ example : ∀ a b : ℕ, b ≠ 0 → (a * b) / b ≤ a := by
     st.restore
   have hpos : 0 < b := Nat.pos_of_ne_zero hb
   rw [Nat.mul_div_left _ hpos]
+
+/-! ### Refutation with equality elimination (issue #54) -/
 
 example : ∀ a b : ℕ, b ≠ 0 → (a * b) / b = a := by
   sos (config := { maxDepth := 0, maxSubsetCardinality := 2 })

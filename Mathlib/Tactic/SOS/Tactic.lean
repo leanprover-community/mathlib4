@@ -6,10 +6,9 @@ Authors: Kim Morrison
 module
 public meta import Mathlib.Tactic.SOS.Reify
 public meta import SOS.Engine
-public meta import SOS.Search
+public meta import SOS.Quote
 public import Mathlib.Tactic.SOS.Verifier
 public meta import Mathlib.Tactic.SOS.Lift
-public meta import Lean.ToExpr
 public meta import Lean.Elab.Tactic.Basic
 public meta import Lean.Elab.Tactic.Config
 public meta import Lean.Meta.Tactic.TryThis
@@ -44,40 +43,6 @@ private def ratTy : Expr := Lean.mkConst ``Rat
 private def cmvType (n : Nat) : MetaM Expr :=
   Meta.mkAppOptM ``CPoly.CMvPolynomial
     #[some (Lean.mkNatLit n), some ratTy, none]
-
-/-! ### `SOS.Poly n` → `Lean.Expr` -/
-
-/-- Build a `Lean.Expr` denoting the given `SOS.Poly n` value. -/
-private partial def Poly.toExprImpl {n : Nat} (p : SOS.Poly n) : Lean.Expr :=
-  let nE : Expr := Lean.mkNatLit n
-  match p with
-  | .const r => mkApp2 (.const ``SOS.Poly.const []) nE (Lean.toExpr r)
-  | .var i   => mkApp2 (.const ``SOS.Poly.var []) nE (Lean.toExpr i)
-  | .neg p'  => mkApp2 (.const ``SOS.Poly.neg []) nE p'.toExprImpl
-  | .add p' q => mkApp3 (.const ``SOS.Poly.add []) nE p'.toExprImpl q.toExprImpl
-  | .sub p' q => mkApp3 (.const ``SOS.Poly.sub []) nE p'.toExprImpl q.toExprImpl
-  | .mul p' q => mkApp3 (.const ``SOS.Poly.mul []) nE p'.toExprImpl q.toExprImpl
-  | .pow p' k => mkApp3 (.const ``SOS.Poly.pow []) nE p'.toExprImpl (Lean.mkNatLit k)
-
-private instance Poly.instToExpr (n : Nat) : Lean.ToExpr (SOS.Poly n) where
-  toExpr := Poly.toExprImpl
-  toTypeExpr := Lean.mkApp (.const ``SOS.Poly []) (Lean.mkNatLit n)
-
-/-! ### Decompiling `CMvPolynomial n ℚ` to `SOS.Poly n` -/
-
-/-- Build the AST for a single monomial `c · Πᵢ xᵢ^(eᵢ)`. -/
-private def Poly.ofMonomial {n : Nat} (c : Rat) (mono : CPoly.CMvMonomial n) : SOS.Poly n :=
-  Fin.foldr n (init := SOS.Poly.const c) fun i acc =>
-    let e := mono[i]
-    if e = 0 then acc
-    else SOS.Poly.mul acc (SOS.Poly.pow (SOS.Poly.var i) e)
-
-/-- Decompile a `CMvPolynomial n ℚ` value into a `SOS.Poly n` AST. -/
-private def Poly.decompile {n : Nat} (p : CPoly.CMvPolynomial n ℚ) : SOS.Poly n :=
-  p.1.toList.foldr
-    (fun (term : CPoly.CMvMonomial n × ℚ) (acc : SOS.Poly n) =>
-      SOS.Poly.add acc (Poly.ofMonomial term.2 term.1))
-    (SOS.Poly.const 0)
 
 /-! ### Bridge equality: `evalReal x p = origExpr` -/
 
@@ -586,30 +551,6 @@ whose strict-product exponent is `n`. -/
 syntax (name := sosWitnessExpTactic)
   "sos_witness " term "with" "exponent" ":=" num : tactic
 
-/-- Build a `SOS.Certificate n` Expr from a runtime `Certificate n`,
-quoted via `SOS.Poly.decompile` so each square round-trips through
-`ToExpr (SOS.Poly n)`. -/
-private structure DecompiledCertificate (n : Nat) where
-  /-- Subset-indexed σ blocks: each entry pairs the constraint-index
-  subset with the SOS decomposition's weighted-square terms `(c, p)`
-  interpreted as `c · p²`. The empty subset is σ₀; singletons are
-  Putinar σᵢ; higher cardinalities are Schmüdgen products. -/
-  sigmas : List (List Nat × List (ℚ × SOS.Poly n))
-  eqCofs : List (SOS.Poly n) := []
-
-private def decompileCertificate {n : Nat}
-    (cert : SOS.Certificate n) : DecompiledCertificate n :=
-  { sigmas := cert.sigmas.map (fun pair =>
-      (pair.1, pair.2.terms.map (fun t => (t.1, SOS.Poly.decompile t.2)))),
-    eqCofs := cert.eqCofs.map SOS.Poly.decompile }
-
-private def certExprOfDecompiled (n : Nat)
-    (cert : DecompiledCertificate n) : MetaM Expr := do
-  let sigmasE := Lean.toExpr cert.sigmas
-  let eqCofsE := Lean.toExpr cert.eqCofs
-  mkAppOptM ``SOS.Certificate.fromDecompiled
-    #[some (Lean.mkNatLit n), some sigmasE, some eqCofsE]
-
 /-- Cast each constraint's `Raw` to the typed `Poly n`. Returns
 `(inequality polys, equality polys)`, partitioned by `ConstraintKind`. -/
 private def castConstraints (constraints : Array SOS.Reify.ConstraintInfo)
@@ -634,108 +575,7 @@ private def buildStrictHεProof (εE : Expr) : TacticM Expr := do
     (Lean.mkConst ``Bool.true))
   mkAppM ``of_decide_eq_true #[hεE]
 
-/-! ### `sos?` — Try-this suggestion for the inline witness form
-
-Produces a "Try this: sos_witness <cert>" suggestion where `<cert>`
-is a literal `SOS.Certificate` value matching what the search just
-produced, decompiled to a clean `CMvPolynomial`-form. The user can
-click the suggestion to replace `sos?` in their source. -/
-
-/-- Render a single `SOS.Poly n` as a Lean source string using
-`CMvPolynomial.X` / `CMvPolynomial.C` and the standard arithmetic
-operators. Strips redundant `0 + …`, `1 * …`, and `…^1` that arise
-from `SOS.Poly.decompile`'s normal form. -/
-private partial def formatPoly {n : Nat} (p : SOS.Poly n)
-    (parenIfComposite : Bool := false) : String :=
-  -- Simplifications applied before formatting, preserving semantics:
-  --   (const 0) + q        → q
-  --   p + (const 0)        → p
-  --   (const 1) * q        → q
-  --   p * (const 1)        → p
-  --   p ^ 1                → p
-  -- These arise from `SOS.Poly.decompile`'s fold-from-zero normal form.
-  match p with
-  | .add (.const r) q =>
-    if r = 0 then formatPoly q parenIfComposite
-    else formatComposite parenIfComposite
-      s!"CMvPolynomial.C {ratLit r} + {formatPoly q}"
-  | .add p (.const r) =>
-    if r = 0 then formatPoly p parenIfComposite
-    else formatComposite parenIfComposite
-      s!"{formatPoly p} + CMvPolynomial.C {ratLit r}"
-  | .add p q =>
-    formatComposite parenIfComposite s!"{formatPoly p} + {formatPoly q}"
-  | .sub p q =>
-    formatComposite parenIfComposite s!"{formatPoly p} - {formatPoly q true}"
-  | .mul (.const r) q =>
-    if r = 1 then formatPoly q parenIfComposite
-    else formatComposite parenIfComposite
-      s!"CMvPolynomial.C {ratLit r} * {formatPoly q true}"
-  | .mul p (.const r) =>
-    if r = 1 then formatPoly p parenIfComposite
-    else formatComposite parenIfComposite
-      s!"{formatPoly p true} * CMvPolynomial.C {ratLit r}"
-  | .mul p q =>
-    formatComposite parenIfComposite s!"{formatPoly p true} * {formatPoly q true}"
-  | .neg p =>
-    formatComposite parenIfComposite s!"-{formatPoly p true}"
-  | .pow p 1 => formatPoly p parenIfComposite
-  | .pow p k => formatComposite parenIfComposite s!"{formatPoly p true}^{k}"
-  | .const r => s!"CMvPolynomial.C {ratLit r}"
-  | .var i => s!"CMvPolynomial.X {i.val}"
-where
-  ratLit (r : Rat) : String :=
-    if r.den = 1 then s!"({r.num} : ℚ)"
-    else s!"(({r.num} : ℚ) / {r.den})"
-  formatComposite (parens : Bool) (s : String) : String :=
-    if parens then s!"({s})" else s
-
-/-- Render a `ℚ` as a Lean source literal: `(n : ℚ)` for integers,
-`((n : ℚ) / d)` otherwise. -/
-private def ratLit (r : Rat) : String :=
-  if r.den = 1 then s!"({r.num} : ℚ)"
-  else s!"(({r.num} : ℚ) / {r.den})"
-
-/-- Render a list of weighted-square terms `(c, p)` as a Lean source
-literal `[(c₀, p₀), (c₁, p₁), …]`. -/
-private def formatTerms {n : Nat}
-    (terms : List (ℚ × SOS.Poly n)) : String :=
-  "[" ++ ", ".intercalate
-    (terms.map (fun t => s!"({ratLit t.1}, {formatPoly t.2})")) ++ "]"
-
-/-- Render a subset of constraint indices as a Lean source literal
-`[i₀, i₁, …]`. -/
-private def formatIdxs (idxs : List Nat) : String :=
-  "[" ++ ", ".intercalate (idxs.map toString) ++ "]"
-
-/-- Render the subset-indexed σ list as a Lean source literal
-`[(idxs₀, { terms := … }), …]`. -/
-private def formatSigmasList {n : Nat}
-    (ds : List (List Nat × List (ℚ × SOS.Poly n))) : String :=
-  let entries := ds.map fun pair =>
-    s!"({formatIdxs pair.1}, \{ terms := {formatTerms pair.2} })"
-  "[" ++ ", ".intercalate entries ++ "]"
-
-/-- Render a list of polynomial cofactors as a Lean source literal
-`[q₀, q₁, …]` for the `eqCofs` field. -/
-private def formatEqCofsList {n : Nat} (qs : List (SOS.Poly n)) : String :=
-  "[" ++ ", ".intercalate (qs.map (fun p => formatPoly p)) ++ "]"
-
-/-- Render a runtime `SOS.Certificate n` as a Lean source literal
-suitable as the argument to `sos_witness`. Includes `eqCofs := …` when
-the certificate carries equality cofactors. -/
-private def formatDecompiledCertificate {n : Nat}
-    (cert : DecompiledCertificate n) : String :=
-  let eqSuffix :=
-    if cert.eqCofs.isEmpty then ""
-    else s!", eqCofs := {formatEqCofsList cert.eqCofs}"
-  s!"\{ sigmas := {formatSigmasList cert.sigmas}{eqSuffix} }"
-
-/-- Format an ε rational as a Lean source literal (`(num : ℚ)` or
-`((num : ℚ) / den)`), suitable for the `with ε := …` clause. -/
-private def formatRat (r : ℚ) : String :=
-  if r.den = 1 then s!"({r.num} : ℚ)"
-  else s!"(({r.num} : ℚ) / {r.den})"
+/-! ### `sos?` suggestions -/
 
 /-- Emit the `Try this:` suggestion for a found certificate. When `ε?`
 is `some r`, append `with ε := <r>` so the suggestion compiles for
@@ -767,10 +607,10 @@ private def runSosTactic (parsed : SOS.Reify.ParsedGoal) (cfg : Config)
   let psCMv := pPolys.map SOS.Poly.toCMv
   let withFoundCert (cert : SOS.Certificate n) (mode : CloseMode)
       (ε? : Option ℚ) : TacticM Unit := do
-    let decompiled := decompileCertificate cert
+    let decompiled := cert.decompile
     if let some tk := suggest? then
-      emitSosSuggestion tk (formatDecompiledCertificate decompiled) ε?
-    let certE ← certExprOfDecompiled n decompiled
+      emitSosSuggestion tk decompiled.format ε?
+    let certE ← decompiled.toExpr
     closeSos parsed certE mode
   let strictIdxs : List Nat := Id.run do
     let mut idxs : Array Nat := #[]
@@ -811,21 +651,21 @@ private def runSosTactic (parsed : SOS.Reify.ParsedGoal) (cfg : Config)
     let hεProof ← buildStrictHεProof εE
     withFoundCert cert (.strict εE hεProof) (some epsilon)
   | .closedRefutation cert =>
-    let certE ← certExprOfDecompiled n (decompileCertificate cert)
+    let certE ← cert.decompile.toExpr
     closeSosClosedRefutation parsed certE
   | .nonnegRefutation power cert =>
-    let certE ← certExprOfDecompiled n (decompileCertificate cert)
+    let certE ← cert.decompile.toExpr
     closeSosNonnegRefutation parsed certE power
   | .strictProduct _ power cert =>
-    let decompiled := decompileCertificate cert
+    let decompiled := cert.decompile
     if let some tk := suggest? then
-      let certText := formatDecompiledCertificate decompiled
+      let certText := decompiled.format
       let suggestion :=
         s!"sos_witness {certText} with exponent := {power}"
       let sugg : Lean.Meta.Tactic.TryThis.Suggestion :=
         { suggestion := .string suggestion }
       Lean.Meta.Tactic.TryThis.addSuggestion tk sugg
-    let certE ← certExprOfDecompiled n decompiled
+    let certE ← decompiled.toExpr
     closeSosStrictProduct parsed certE power
 
 /-- Detect whether the *original* goal (before any lift / refute step)

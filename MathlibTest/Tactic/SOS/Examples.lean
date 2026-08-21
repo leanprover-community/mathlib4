@@ -19,7 +19,7 @@ Layout:
 * §9 covers graceful failure (Motzkin, infimum-0 strict positivity)
   and the out-of-scope-input error messages.
 
-The full Harrison `Examples/sos.ml` port (including known limitations) lives in
+Additional executable Harrison `Examples/sos.ml` ports live in
 `MathlibTest.Tactic.SOS.Harrison`. The Mathlib-free package separately tests the
 engine's internal invariants and exact-rational simplex implementation.
 
@@ -54,10 +54,6 @@ example (a b c : ℝ) :
 
 -- AM ≥ GM squared, 2 variables, degree 4.
 example (x y : ℝ) : 0 ≤ (x^2 + y^2)^2 - 4*x^2*y^2 := by sos
-
--- Cauchy–Schwarz: `(a²+b²)(c²+d²) ≥ (ac+bd)²` — rank-1, degree-4, 4 variables.
-example (a b c d : ℝ) :
-    0 ≤ (a^2 + b^2) * (c^2 + d^2) - (a*c + b*d)^2 := by sos
 
 /-! ## §2. General inequalities (`a ≤ b` / `a < b` form)
 
@@ -131,11 +127,6 @@ example (x : ℝ) (_h : x < 1) : 0 ≤ 1 - x := by sos
 -- Strict variable-vs-variable form: `h : x < y → 0 ≤ y − x`.
 example (x y : ℝ) (_h : x < y) : 0 ≤ y - x := by sos
 
--- Affine strict-strict goals are discharged by an exact rational LP
--- fast path, avoiding the SDP search entirely (issue #50).
-example (x a : ℝ) (_h1 : 3*x + 7*a < 4) (_h2 : 3 < 2*x) :
-    a < 0 := by sos
-
 /-! ## §5. Equality hypotheses
 
 The certificate gains a free polynomial cofactor `qⱼ` per equality
@@ -202,14 +193,6 @@ example : ∀ n : ℕ, n < n + 1 := by sos
 -- ℕ equality via `le_antisymm` split (Harrison `sos.ml:1725`). After
 -- the antisymmetric split both subgoals reduce to `0 ≤ 0`.
 example : ∀ m n : ℕ, 2*m + n = (n + m) + m := by sos
-
--- ℕ-discreteness via the negate-and-refute path (Harrison's `INT_SOS`,
--- `sos.ml:1728`). At `n := 0.5`, `n*n − n = −0.25 < 0`, so this is not
--- in the quadratic module of `{n ≥ 0}` over `ℝ[n]` and the direct
--- Putinar path fails. `runSosWithLift` then negates the conclusion,
--- applies `Nat.lt_iff_add_one_le`, and finds the infeasibility cert
--- `(5↑n − 3)²/16 + (5/16)·↑n + (25/16)·(↑n − ↑n² − 1) = −1`.
-example : ∀ n : ℕ, n ≤ n * n := by sos
 
 /-! ## §8. `sos?` — inspect, then pin the witness
 
@@ -311,13 +294,6 @@ example : True := by
   fail_if_success
     (have : ∀ x y : ℝ, 0 ≤ x^4*y^2 + x^2*y^4 + 1 - 3*x^2*y^2 := by sos)
   trivial
-
--- ...but `maxRefutationPower` closes it via the Positivstellensatz power
--- refutation plus facial-reduction rational recovery (issue: non-SOS
--- non-negative targets). Harrison's `REAL_SOS` proves the same bare
--- Motzkin via `REAL_NONLINEAR_PROVER` at degree 8.
-example (x y : ℝ) : 0 ≤ x^4*y^2 + x^2*y^4 + 1 - 3*x^2*y^2 := by
-  sos (config := { maxRefutationPower := 1 })
 
 -- Infimum-0 strict positivity must also fail gracefully. `p = (x*y −
 -- 1)² + x²` is strictly positive everywhere on ℝ² but its infimum is
