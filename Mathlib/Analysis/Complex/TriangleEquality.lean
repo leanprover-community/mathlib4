@@ -18,7 +18,7 @@ Over `ℂ`, lying on a common ray means sharing a phase, so triangle equality sa
 summand is a nonnegative real multiple of one complex number of norm one. That is
 `Complex.triangle_equality_iff_aligned`, the finite-family form of `Complex.norm_add_eq_iff`.
 
-## Main results
+## Main statements
 
 * `sameRay_sum`: an element on the same ray as every summand is on the same ray as the sum.
 * `norm_sum_eq_iff_pairwise_sameRay`: triangle equality holds iff the summands pairwise lie on a
@@ -28,26 +28,6 @@ summand is a nonnegative real multiple of one complex number of norm one. That i
   nonzero summand has the same phase as the sum.
 * `Complex.triangle_equality_iff_aligned`: triangle equality holds iff every summand is a
   nonnegative real multiple of a single complex number of norm one.
-
-## Implementation notes
-
-The finite-sum results are proved by induction on the `Finset`, using `sameRay_iff_norm_add` on
-the two vectors `v a` and `∑ j ∈ t, v j` at each step; no inner-product structure is involved.
-The auxiliary `sum_ne_zero_of_pairwise_sameRay` records that one nonzero summand on a common ray
-forces the whole sum to be nonzero, which is what lets the phase results below avoid assuming it.
-Each is stated with the weakest structure it needs: `sameRay_sum` in an ordered module,
-`norm_sum_eq_of_pairwise_sameRay` in a seminormed space, and only
-`norm_sum_eq_iff_pairwise_sameRay`, whose forcing direction is the one that can fail, in a
-strictly convex space.
-
-`Complex.triangle_equality_iff_aligned` is stated over `ℂ` rather than in a general strictly
-convex space on purpose: the norm-one element it produces exists only if the space is nontrivial,
-so generalising it would trade `ℂ` for a `Nontrivial` hypothesis.
-
-## TODO
-
-The results above that do not mention `ℂ` belong in a normed-space file, next to
-`sameRay_iff_norm_add`; they live here for now because that is where they arose.
 
 ## Tags
 
@@ -102,6 +82,8 @@ lemma sum_ne_zero_of_pairwise_sameRay (hp : ∀ i ∈ s, ∀ j ∈ s, SameRay �
   hvi <| eq_zero_of_sum_norm_eq_zero
     (by rw [← norm_sum_eq_of_pairwise_sameRay hp, h0, norm_zero]) hi
 
+/-- **Triangle equality** for a finite sum: the norm of the sum equals the sum of the norms
+exactly when the summands pairwise lie on a common closed ray. -/
 theorem norm_sum_eq_iff_pairwise_sameRay :
     ‖∑ i ∈ s, v i‖ = ∑ i ∈ s, ‖v i‖ ↔ ∀ i ∈ s, ∀ j ∈ s, SameRay ℝ (v i) (v j) := by
   refine ⟨?_, norm_sum_eq_of_pairwise_sameRay⟩
@@ -134,9 +116,11 @@ lemma aligned_of_pairwise_sameRay (hp : ∀ i ∈ s, ∀ j ∈ s, SameRay ℝ (v
   aligned_of_sameRay hvi (sum_ne_zero_of_pairwise_sameRay hp hi hvi)
     (sameRay_sum fun j hj ↦ hp i hi j hj)
 
+/-- **Triangle equality** over `ℂ`: the norm of the sum equals the sum of the norms exactly when
+every summand is a nonnegative real multiple of one complex number of norm one. -/
 theorem triangle_equality_iff_aligned :
     ‖∑ i ∈ s, v i‖ = ∑ i ∈ s, ‖v i‖ ↔ ∃ c : ℂ, ‖c‖ = 1 ∧ ∀ i ∈ s, v i = (‖v i‖ : ℂ) * c := by
-  refine ⟨fun h ↦ ?_, fun ⟨c, hc, hvc⟩ ↦ ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · rcases eq_or_ne (∑ i ∈ s, v i) 0 with h0 | h0
     · refine ⟨1, norm_one, fun i hi ↦ ?_⟩
       simp [eq_zero_of_sum_norm_eq_zero (by rw [← h, h0, norm_zero]) hi]
@@ -146,9 +130,10 @@ theorem triangle_equality_iff_aligned :
         · simp [hv]
         · rw [← aligned_of_pairwise_sameRay (norm_sum_eq_iff_pairwise_sameRay.1 h) hi hv,
             mul_div_cancel₀ _ (ofReal_ne_zero.2 (norm_ne_zero_iff.2 hv))]
-  · have hsum : ∑ i ∈ s, v i = ((∑ i ∈ s, ‖v i‖ : ℝ) : ℂ) * c := by
-      rw [ofReal_sum, sum_mul]
-      exact sum_congr rfl hvc
+  · rintro ⟨c, hc, hvc⟩
+    have hsum : ∑ i ∈ s, v i = ((∑ i ∈ s, ‖v i‖ : ℝ) : ℂ) * c := by
+        rw [ofReal_sum, sum_mul]
+        exact sum_congr rfl hvc
     rw [hsum, norm_mul, hc, mul_one,
       Complex.norm_of_nonneg (sum_nonneg fun i _ ↦ norm_nonneg (v i))]
 
