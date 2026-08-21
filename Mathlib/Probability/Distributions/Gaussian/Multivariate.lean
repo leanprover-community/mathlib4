@@ -170,8 +170,7 @@ def multivariateGaussian (μ : EuclideanSpace ℝ ι) (S : Matrix ι ι ℝ) :
 
 lemma multivariateGaussian_of_not_posSemidef (μ : EuclideanSpace ℝ ι) {S : Matrix ι ι ℝ}
     (hS : ¬ S.PosSemidef) : multivariateGaussian μ S = .dirac μ := by
-  have : ¬ (0 : Matrix ι ι ℝ) ≤ S := by change ¬ (S - 0).PosSemidef; simpa
-  simp [multivariateGaussian, CFC.sqrt_of_not_nonneg this]
+  simp [multivariateGaussian, CFC.sqrt_of_not_nonneg, nonneg_iff_posSemidef, hS]
 
 @[simp]
 lemma multivariateGaussian_zero_one :
