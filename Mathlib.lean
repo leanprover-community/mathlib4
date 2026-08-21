@@ -3081,6 +3081,7 @@ public import Mathlib.CategoryTheory.Localization.Pi
 public import Mathlib.CategoryTheory.Localization.Preadditive
 public import Mathlib.CategoryTheory.Localization.Predicate
 public import Mathlib.CategoryTheory.Localization.Prod
+public import Mathlib.CategoryTheory.Localization.Quadrifunctor
 public import Mathlib.CategoryTheory.Localization.Quotient
 public import Mathlib.CategoryTheory.Localization.Resolution
 public import Mathlib.CategoryTheory.Localization.SmallHom
