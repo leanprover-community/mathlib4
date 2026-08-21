@@ -80,7 +80,7 @@ noncomputable def coproductCofan : Cocone F where
   pt := coproduct F
   ι :=
     { app j := LocallyRingedSpace.homMk (colimit.ι (F ⋙ forgetToSheafedSpace) j)
-      naturality := fun ⟨j⟩ ⟨j'⟩ ⟨⟨(f : j = j')⟩⟩ => by subst f; simp }
+      naturality := fun ⟨j⟩ ⟨j'⟩ ⟨(f : j = j')⟩ => by subst f; simp }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
