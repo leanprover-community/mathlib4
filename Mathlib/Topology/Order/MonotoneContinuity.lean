@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
