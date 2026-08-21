@@ -9,8 +9,8 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
-public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
+public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 
 /-!
 # The monoidal category structure on simplicial sets

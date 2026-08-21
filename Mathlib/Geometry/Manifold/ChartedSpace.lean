@@ -120,7 +120,7 @@ open TopologicalSpace Topology
 
 universe u
 
-variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
+variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*}
 
 open Set OpenPartialHomeomorph Manifold
 

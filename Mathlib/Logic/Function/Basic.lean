@@ -14,7 +14,6 @@ public import Mathlib.Logic.Nontrivial.Defs
 public import Batteries.Tactic.Init
 public import Mathlib.Order.Defs.Unbundled
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Miscellaneous function constructions and lemmas
@@ -604,6 +603,10 @@ theorem injective_surjInv (h : Surjective f) : Injective (surjInv h) :=
 theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α → β) :
     Surjective f :=
   fun _ ↦ let ⟨a⟩ := na; ⟨a, Subsingleton.elim _ _⟩
+
+@[nontriviality] theorem bijective_of_subsingleton' [Nonempty α] [Subsingleton α] [Subsingleton β]
+    (f : α → β) : Bijective f :=
+  ⟨injective_of_subsingleton f, surjective_to_subsingleton f⟩
 
 theorem Surjective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
     (hf : ∀ i, Surjective (f i)) : Surjective (Pi.map f) := fun g ↦
