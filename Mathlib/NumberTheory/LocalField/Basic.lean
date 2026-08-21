@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 public import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.ValuativeRel
+public import Mathlib.RingTheory.Ideal.Quotient.Index
 
 /-!
 
@@ -36,6 +37,7 @@ This implies the following typeclasses via `inferInstance`
 - `ValuativeRel.IsDiscrete K`
 - `IsDiscreteValuationRing 𝒪[K]`
 - `Finite 𝓀[K]`
+- `Finite (𝒪[K] ⧸ 𝓂[K] ^ n)`
 
 Assuming we have a compatible `UniformSpace K` instance
 (e.g. via `IsTopologicalAddGroup.toUniformSpace` and `isUniformAddGroup_of_addCommGroup`) then
@@ -146,6 +148,10 @@ instance : Finite 𝓀[K] :=
         MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).2.2
+
+instance (n : ℕ) : Finite (𝒪[K] ⧸ 𝓂[K] ^ n) :=
+  haveI : Finite (𝒪[K] ⧸ 𝓂[K]) := inferInstanceAs (Finite 𝓀[K])
+  Ideal.finite_quotient_pow (IsNoetherian.noetherian _) n
 
 end TopologicalSpace
 
