@@ -200,10 +200,10 @@ lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
 instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
     IsCardinalFiltered κ.ord.ToType κ :=
   isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
-    have h := Set.rangeFactorization_surjective (f := f)
     contrapose! hs
     rw [← hκ.out.cof_ord, ← Ordinal.cof_toType]
-    refine (Order.cof_le fun j ↦ ?_).trans (Cardinal.mk_le_of_surjective h)
+    refine (Order.cof_le fun j ↦ ?_).trans
+      (Cardinal.mk_le_of_surjective (Set.rangeFactorization_surjective (f := f)))
     obtain ⟨k, hk⟩ := hs j
     exact ⟨_, Set.mem_range_self k, hk.le⟩)
 
