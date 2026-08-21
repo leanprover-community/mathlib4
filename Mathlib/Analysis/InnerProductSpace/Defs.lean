@@ -510,7 +510,7 @@ lemma topology_eq
     tF = cd.toNormedAddCommGroup.toMetricSpace.toUniformSpace.toTopologicalSpace := by
   let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ cd.toNormedAddCommGroup.toSeminormedAddCommGroup
     InnerProductSpace.Core.toNormedSpace
-  suffices WithSeminorms (fun (i : Fin 1) ↦ p) by
+  suffices WithSeminorms (fun (i : Unit) ↦ p) by
     rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 this]
     simp
   have : p.ball 0 1 = {v | re (cd.inner v v) < 1} := by

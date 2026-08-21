@@ -406,7 +406,7 @@ def seminormFamily : SeminormFamily 𝕜₂ (E →SWOT[σ] F) (E × F⋆) :=
   fun ⟨x, y⟩ => seminorm x y
 
 lemma withSeminorms : WithSeminorms (seminormFamily σ E F) :=
-  let e : E × F⋆ ≃ (Σ _ : E × F⋆, Fin 1) := .symm <| .sigmaUnique _ _
+  let e : E × F⋆ ≃ (Σ _ : E × F⋆, Unit) := .symm <| .sigmaUnique _ _
   isInducing_inducingFn.withSeminorms <| withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜₂ 𝕜₂)
     |>.congr_equiv e
 
