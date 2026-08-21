@@ -343,9 +343,7 @@ lemma cfcₙ_congr {f g : R → R} {a : A} (hfg : (σₙ R a).EqOn f g) :
     · rw [cfcₙ_apply_of_not_map_zero a h0, cfcₙ_apply_of_not_map_zero]
       exact fun hf ↦ h0 (hfg (quasispectrum.zero_mem R a) ▸ hf)
 
-/-- A version of `cfcₙ_congr` whose hypothesis is a bounded universal quantifier instead of
-`Set.EqOn`. This is the version tagged `@[congr]`, so that `congr! with x hx` introduces the
-pointwise goal directly. -/
+/-- A version of `cfcₙ_congr` suitable for `@[congr]`. -/
 @[congr]
 lemma cfcₙ_congr' {f g : R → R} {a : A} (hfg : ∀ x ∈ σₙ R a, f x = g x) :
     cfcₙ f a = cfcₙ g a :=
@@ -366,8 +364,6 @@ lemma cfcₙ_eq_cfcₙ_iff_eqOn {f g : R → R} {a : A} (ha : p a := by cfc_tac)
 
 variable (R)
 
--- not `@[simp]`: `simp` normalizes `cfcₙ 0 a` to `cfcₙ (fun _ ↦ 0) a` via `cfcₙ_congr'`,
--- which `cfcₙ_const_zero` handles
 lemma cfcₙ_zero : cfcₙ (0 : R → R) a = 0 := by
   by_cases ha : p a
   · exact cfcₙ_apply (0 : R → R) a ▸ map_zero (cfcₙHom ha)

@@ -424,9 +424,7 @@ lemma cfc_congr {f g : R → R} {a : A} (hfg : (spectrum R a).EqOn f g) :
     · rw [cfc_apply_of_not_continuousOn a hg, cfc_apply_of_not_continuousOn]
       exact fun hf ↦ hg (hf.congr hfg.symm)
 
-/-- A version of `cfc_congr` whose hypothesis is a bounded universal quantifier instead of
-`Set.EqOn`. This is the version tagged `@[congr]`, so that `congr! with x hx` introduces the
-pointwise goal directly. -/
+/-- A version of `cfc_congr` suitable for `@[congr]`. -/
 @[congr]
 lemma cfc_congr' {f g : R → R} {a : A} (hfg : ∀ x ∈ spectrum R a, f x = g x) :
     cfc f a = cfc g a :=
@@ -456,8 +454,6 @@ set_option backward.privateInPublic true in
 include ha in
 lemma cfc_const_one : cfc (fun _ : R ↦ 1) a = 1 := cfc_one R a
 
--- not `@[simp]`: `simp` normalizes `cfc 0 a` to `cfc (fun _ ↦ 0) a` via `cfc_congr'`,
--- which `cfc_const_zero` handles
 lemma cfc_zero : cfc (0 : R → R) a = 0 := by
   by_cases ha : p a
   · exact cfc_apply (0 : R → R) a ▸ map_zero (cfcHom ha)
