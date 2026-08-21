@@ -20,7 +20,9 @@ derivative, differentiable, Fréchet, calculus
 
 public section
 
-open Filter Asymptotics ContinuousLinearMap Set Topology
+open Filter Asymptotics ContinuousLinearMap Set
+
+open scoped Topology
 
 noncomputable section
 
