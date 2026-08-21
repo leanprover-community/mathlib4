@@ -116,6 +116,12 @@ lemma ofSimplex_le_ofSimplex_iff
     range_isoNerve_hom_app_obj]
   exact ⟨Set.preimage_mono (f := ULift.up), Set.preimage_mono⟩
 
+lemma mem_ofSimplex_obj_iff
+    {n m : ℕ} (s : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) (t : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋m⦌) :
+    s ∈ (Subcomplex.ofSimplex t).obj _ ↔
+      Set.range (objEquiv s) ⊆ Set.range (objEquiv t) := by
+  rw [← Subcomplex.ofSimplex_le_iff, ofSimplex_le_ofSimplex_iff]
+
 /-- Given a `n`-simplex `x` in `Δ[p] ⊗ Δ[q]`, this is the order preserving
 map `Fin (n + 1) →o Fin (m + 1)` (with `p + q = m`) which corresponds to the
 sum of the two components of `objEquiv x : Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)`. -/
@@ -253,6 +259,15 @@ lemma exists_nonDegenerate_max_dim {d : ℕ}
     obtain ⟨z, hz⟩ := hd' y (by lia)
     rw [← Subcomplex.ofSimplex_le_iff] at hz
     exact ⟨z, hz _ hy⟩
+
+lemma subcomplex_eq_top_iff (A : (Δ[p] ⊗ Δ[q] : SSet.{u}).Subcomplex)
+    {n : ℕ} (hn : p + q = n) :
+    A = ⊤ ↔ (Δ[p] ⊗ Δ[q]).nonDegenerate n ⊆ A.obj _ := by
+  refine ⟨by rintro rfl; tauto, fun hA ↦ ?_⟩
+  rw [Subcomplex.eq_top_iff_contains_nonDegenerate]
+  intro d x hx
+  obtain ⟨y, hy⟩ := exists_nonDegenerate_max_dim (x := ⟨x, hx⟩) hn
+  exact (Subcomplex.ofSimplex_le_iff ..).2 (hA y.prop) _ hy
 
 end prodStdSimplex
 
