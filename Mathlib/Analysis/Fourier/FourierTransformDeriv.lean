@@ -832,10 +832,6 @@ theorem fourier_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf : ContD
     fourier_iteratedFDeriv hf A hn]
   simp [← coe_smul, smul_smul, ← mul_pow, innerSL_apply_apply ℝ]
 
-theorem norm_fourier_le_integral_norm (f : V → E) (w : V) :
-    ‖𝓕 f w‖ ≤ ∫ v, ‖f v‖ :=
-  VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ (innerₗ V) f w
-
 /-- If `f` and its first `n` derivatives are integrable, then the Fourier transform of `f` decays
 like `|u| ^ (-n)`, with an explicit bound that is also nontrivial at `u = 0`. -/
 theorem one_add_pow_mul_norm_fourier_le {f : ℝ → E} {n : ℕ} (hf : ContDiff ℝ n f)
@@ -847,11 +843,7 @@ theorem one_add_pow_mul_norm_fourier_le {f : ℝ → E} {n : ℕ} (hf : ContDiff
   rw [inv_mul_eq_div, le_div_iff₀ (by positivity)]
   calc
     _ = (2 * π * |u|) ^ n * ‖𝓕 f u‖ := by rw [mul_pow]; ring
-    _ = ‖𝓕 (iteratedDeriv n f) u‖ := by
-      rw [fourier_iteratedDeriv  hf
-        (fun k hk ↦ h'f k (mod_cast hk)) le_rfl, norm_smul, norm_pow]
-      congr 2
-      simp [abs_of_nonneg pi_nonneg]
+    _ = ‖𝓕 (iteratedDeriv n f) u‖ := by simp [abs_of_nonneg pi_nonneg]
     _ ≤ _ := norm_fourier_le_integral_norm _ u
 
 /-- The Fourier transform of a function whose first two derivatives are integrable decays

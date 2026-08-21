@@ -439,6 +439,10 @@ lemma fourier_eq' (f : V → E) (w : V) :
     𝓕 f w = ∫ v, Complex.exp ((↑(-2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
   simp_rw [fourier_eq, Circle.smul_def, Real.fourierChar_apply, mul_neg, neg_mul]
 
+theorem norm_fourier_le_integral_norm (f : V → E) (w : V) :
+    ‖𝓕 f w‖ ≤ ∫ v, ‖f v‖ :=
+  VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ (innerₗ V) f w
+
 theorem fourier_congr_ae {f₁ f₂ : V → E} (hf : f₁ =ᵐ[volume] f₂) (x : V) : 𝓕 f₁ x = 𝓕 f₂ x := by
   apply integral_congr_ae
   filter_upwards [hf] with _ hf'
