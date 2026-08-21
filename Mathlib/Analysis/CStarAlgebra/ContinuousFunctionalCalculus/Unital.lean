@@ -354,9 +354,6 @@ lemma cfc_eq_cfcL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectru
     cfc f a = cfcL ha ⟨_, hf.domRestrict⟩ := by
   rw [cfc_def, dite_eq_left ⟨ha, hf⟩, cfcL_apply]
 
-grind_pattern mkD_of_not_continuousOn => mkD (s.domRestrict f) g where
-  guard ¬ ContinuousOn f s
-
 set_option backward.privateInPublic true in
 /-- A version of `cfc_apply` in terms of `ContinuousMap.mkD` -/
 lemma cfc_apply_mkD :
@@ -540,9 +537,7 @@ lemma cfc_star (f : R → R) (a : A) : cfc (fun x ↦ star (f x)) a = star (cfc 
   · obtain ⟨ha, hf⟩ := h
     rw [cfc_apply f a, ← map_star, cfc_apply _ a]
     congr
-  · have : ContinuousOn f (spectrum R a) ↔ ContinuousOn (fun x ↦ star (f x)) (spectrum R a) :=
-      ⟨fun h ↦ h.star, fun h ↦ by simpa using h.star⟩
-    grind
+  · grind [continuousOn_fun_star_iff]
 
 lemma cfc_pow_id (a : A) (n : ℕ) (ha : p a := by cfc_tac) : cfc (· ^ n : R → R) a = a ^ n := by
   rw [cfc_pow .., cfc_id' ..]
@@ -880,8 +875,7 @@ lemma cfc_neg : cfc (fun x ↦ -(f x)) a = -(cfc f a) := by
   · obtain ⟨ha, hf⟩ := h
     rw [cfc_apply f a, ← map_neg, cfc_apply ..]
     congr
-  · simp_rw [← Pi.neg_def]
-    grind [continuousOn_neg_iff, Pi.neg_def]
+  · grind [continuousOn_fun_neg_iff]
 
 lemma cfc_neg' : cfc (-f) = (-cfc f : A → A) := by ext1 a; exact cfc_neg f a
 

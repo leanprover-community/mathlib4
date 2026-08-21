@@ -277,9 +277,6 @@ lemma cfcₙ_eq_cfcₙL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (�
     cfcₙ f a = cfcₙL ha ⟨⟨_, hf.domRestrict⟩, hf0⟩ := by
   rw [cfcₙ_def, dite_eq_left ⟨ha, hf, hf0⟩, cfcₙL_apply]
 
-grind_pattern ContinuousMapZero.mkD_of_not_continuousOn => mkD (s.domRestrict f) g where
-  guard ¬ ContinuousOn f s
-
 set_option backward.privateInPublic true in
 /-- A version of `cfcₙ_apply` in terms of `ContinuousMapZero.mkD` -/
 lemma cfcₙ_apply_mkD :
@@ -377,7 +374,6 @@ lemma cfcₙ_mul : cfcₙ (fun x ↦ f x * g x) a = cfcₙ f a * cfcₙ g a := b
   by_cases ha : p a
   · rw [cfcₙ_apply f a, cfcₙ_apply g a, ← map_mul, cfcₙ_apply _ a]
     congr
-  -- `grind`'s ring normalisation does not fire without a `Semiring`, so `mul_zero` is explicit
   · grind [mul_zero]
 
 set_option backward.privateInPublic true in
@@ -436,10 +432,7 @@ lemma cfcₙ_star : cfcₙ (fun x ↦ star (f x)) a = star (cfcₙ f a) := by
   · obtain ⟨ha, hf, h0⟩ := h
     rw [cfcₙ_apply f a, ← map_star, cfcₙ_apply _ a]
     congr
-  · have : ContinuousOn f (σₙ R a) ↔ ContinuousOn (fun x ↦ star (f x)) (σₙ R a) :=
-      ⟨fun h ↦ h.star, fun h ↦ by simpa using h.star⟩
-    have : f 0 = 0 ↔ star (f 0) = 0 := (star_eq_zero (x := f 0)).symm
-    grind
+  · grind [continuousOn_fun_star_iff, star_eq_zero (x := f 0)]
 
 lemma cfcₙ_smul_id {S : Type*} [SMulZeroClass S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]
@@ -583,8 +576,7 @@ lemma cfcₙ_neg : cfcₙ (fun x ↦ -(f x)) a = -(cfcₙ f a) := by
   · obtain ⟨ha, hf, h0⟩ := h
     rw [cfcₙ_apply f a, ← map_neg, cfcₙ_apply ..]
     congr
-  · simp_rw [← Pi.neg_def]
-    grind [continuousOn_neg_iff, Pi.neg_def, neg_eq_zero]
+  · grind [continuousOn_fun_neg_iff, neg_eq_zero (a := f 0)]
 
 lemma cfcₙ_neg' : cfcₙ (-f) = (-cfcₙ f : A → A) := by ext1 a; exact (cfcₙ_neg f a)
 
