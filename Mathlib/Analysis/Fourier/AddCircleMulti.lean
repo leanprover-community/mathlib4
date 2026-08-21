@@ -220,7 +220,7 @@ theorem span_mFourierLp_closure_eq_top {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p
     (span ℂ (range (@mFourierLp d _ p _))).topologicalClosure = ⊤ := by
   simpa only [map_span, ContinuousLinearMap.coe_coe, ← range_comp, Function.comp_def] using
     (ContinuousMap.toLp_denseRange ℂ volume ℂ hp).topologicalClosure_map_submodule
-      span_mFourier_closure_eq_top
+      (span_mFourier_closure_eq_top (d := d))
 
 /-- The monomials `mFourierLp 2 n` are an orthonormal set in `L²`. -/
 theorem orthonormal_mFourier : Orthonormal ℂ (mFourierLp (d := d) 2) := by
