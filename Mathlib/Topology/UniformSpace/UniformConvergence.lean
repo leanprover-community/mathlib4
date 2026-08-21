@@ -292,12 +292,12 @@ protected theorem TendstoUniformlyOn.prodMk {ι' β' : Type*} [UniformSpace β']
     (h' : TendstoUniformlyOn F' f' p' s) :
     TendstoUniformlyOn (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a)) (p ×ˢ p')
       s :=
-  (congr_arg _ s.inter_self).mp ((h.prodMap h').comp fun a => (a, a))
+  (congr_arg _ s.inter_self).mp ((h.prodMap h').comp Function.diag)
 
 theorem TendstoUniformly.prodMk {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'} {f' : α → β'}
     {p' : Filter ι'} (h : TendstoUniformly F f p) (h' : TendstoUniformly F' f' p') :
     TendstoUniformly (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a)) (p ×ˢ p') :=
-  (h.prodMap h').comp fun a => (a, a)
+  (h.prodMap h').comp Function.diag
 
 /-- Uniform convergence on a filter `p'` to a constant function is equivalent to convergence in
 `p ×ˢ p'`. -/
@@ -550,7 +550,7 @@ theorem UniformCauchySeqOn.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' 
 theorem UniformCauchySeqOn.prod {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'}
     {p' : Filter ι'} (h : UniformCauchySeqOn F p s) (h' : UniformCauchySeqOn F' p' s) :
     UniformCauchySeqOn (fun (i : ι × ι') a => (F i.fst a, F' i.snd a)) (p ×ˢ p') s :=
-  (congr_arg _ s.inter_self).mp ((h.prodMap h').comp fun a => (a, a))
+  (congr_arg _ s.inter_self).mp ((h.prodMap h').comp Function.diag)
 
 theorem UniformCauchySeqOn.prod' {β' : Type*} [UniformSpace β'] {F' : ι → α → β'}
     (h : UniformCauchySeqOn F p s) (h' : UniformCauchySeqOn F' p s) :
