@@ -448,7 +448,7 @@ theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
   have : Nonempty t := nonempty_coe_sort.mpr (e.mapsTo.nonempty (nonempty_coe_sort.mp hs))
   obtain ⟨x, hc'⟩ := Opens.chart_eq this hc'
   -- As H has only one chart, `chartAt H x` is the identity: i.e., `c'` is the inclusion.
-  rw [hc', (chartAt_self_eq)]
+  rw [hc', chartAt_self_eq]
   -- Our expression equals this chart, at least on its source.
   rw [OpenPartialHomeomorph.subtypeRestr_def, OpenPartialHomeomorph.trans_refl]
   let goal :=

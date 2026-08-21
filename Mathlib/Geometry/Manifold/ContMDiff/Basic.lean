@@ -425,7 +425,7 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
   -- factorise into the chart `e` and the model `id`
   simp only [mfld_simps]
   rw [h.toOpenPartialHomeomorph_right_inv]
-  · simp_all [I.right_inv, chartAt_self_eq]
+  · simp_all [I.right_inv]
   · -- `hz` implies that `z ∈ range (I ∘ e)`
     have := hz.1
     rw [extChartAt_target] at this

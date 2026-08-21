@@ -352,6 +352,7 @@ theorem chartedSpaceSelf_atlas {H : Type*} [TopologicalSpace H] {e : OpenPartial
   Iff.rfl
 
 /-- In the model space, `chartAt` is always the identity. -/
+@[simp, mfld_simps]
 theorem chartAt_self_eq {H : Type*} [TopologicalSpace H] {x : H} :
     chartAt H x = OpenPartialHomeomorph.refl H := rfl
 

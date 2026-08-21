@@ -49,17 +49,14 @@ variable (I) in
 theorem ModelWithCorners.contMDiff : ContMDiff I 𝓘(𝕜, E) n I := by
   intro x
   refine contMDiffAt_iff.mpr ⟨I.continuousAt, ?_⟩
-  simpa using contDiffWithinAt_id.congr
-    (fun y hy ↦ by simpa using! I.right_inv hy)
-    (by simp [chartAt_self_eq])
+  simpa using contDiffWithinAt_id.congr (fun y hy ↦ by simpa using! I.right_inv hy) (by simp)
 @[deprecated (since := "2026-06-16")] alias contMDiff_model := ModelWithCorners.contMDiff
 
 variable (I) in
 theorem ModelWithCorners.contMDiffOn_symm : ContMDiffOn 𝓘(𝕜, E) I n I.symm (range I) := by
   intro x hx
   apply contMDiffWithinAt_iff.mpr ⟨by fun_prop, ?_⟩
-  simpa using contDiffWithinAt_id.congr
-    (fun y hy ↦ by simpa using! I.right_inv hy) (by simp [chartAt_self_eq, hx])
+  simpa using contDiffWithinAt_id.congr (fun y hy ↦ by simpa using! I.right_inv hy) (by simp [hx])
 @[deprecated (since := "2026-06-16")]
 alias contMDiffOn_model_symm := ModelWithCorners.contMDiffOn_symm
 
