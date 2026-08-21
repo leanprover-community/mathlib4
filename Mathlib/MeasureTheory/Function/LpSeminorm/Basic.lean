@@ -868,23 +868,25 @@ lemma eLpNormEssSup_add_measure {ε : Type*} [TopologicalSpace ε] [ContinuousEN
   · exact max_le_iff.2 ⟨eLpNormEssSup_mono_measure _ (.add_right .rfl _),
       eLpNormEssSup_mono_measure _ (.add_right' .rfl _)⟩
 
-lemma MemLp.add_measure : MemLp f p (μ + ν) ↔ MemLp f p μ ∧ MemLp f p ν where
-  mp h := ⟨h.left_of_add_measure, h.right_of_add_measure⟩
-  mpr h := by
-    refine ⟨h.1.aestronglyMeasurable.add_measure h.2.aestronglyMeasurable, ?_⟩
-    rw [eLpNorm]
-    split_ifs with hp hp'
+lemma MemLp.add_measure (h1 : MemLp f p μ) (h2 : MemLp f p ν) : MemLp f p (μ + ν) := by
+  refine ⟨h1.aestronglyMeasurable.add_measure h2.aestronglyMeasurable, ?_⟩
+  rw [eLpNorm]
+  split_ifs with hp hp'
+  · simp
+  · rw [hp'] at h1 h2
+    grw [eLpNormEssSup_add_measure, max_le_add_of_nonneg (by simp) (by simp),
+      ← eLpNorm_exponent_top, ← eLpNorm_exponent_top, h1.2, top_add]
+    exact h2.2.ne
+  · grw [eLpNorm', lintegral_add_measure, ENNReal.rpow_add_le_mul_rpow_add_rpow' _ _ (by simp),
+      ← eLpNorm', ← eLpNorm', ← eLpNorm_eq_eLpNorm' hp hp', ← eLpNorm_eq_eLpNorm' hp hp', h1.2]
     · simp
-    · rw [hp'] at h
-      grw [eLpNormEssSup_add_measure, max_le_add_of_nonneg (by simp) (by simp),
-        ← eLpNorm_exponent_top, ← eLpNorm_exponent_top, h.1.2, top_add]
-      exact h.2.2.ne
-    · grw [eLpNorm', lintegral_add_measure, ENNReal.rpow_add_le_mul_rpow_add_rpow' _ _ (by simp),
-        ← eLpNorm', ← eLpNorm', ← eLpNorm_eq_eLpNorm' hp hp', ← eLpNorm_eq_eLpNorm' hp hp', h.1.2]
-      · simp
-      · exact h.2.2.ne
-      · exact ENNReal.LpAddConst_ne_zero
-      · exact (ENNReal.LpAddConst_lt_top _).ne
+    · exact h2.2.ne
+    · exact ENNReal.LpAddConst_ne_zero
+    · exact (ENNReal.LpAddConst_lt_top _).ne
+
+lemma memLp_add_measure : MemLp f p (μ + ν) ↔ MemLp f p μ ∧ MemLp f p ν where
+  mp h := ⟨h.left_of_add_measure, h.right_of_add_measure⟩
+  mpr h := h.1.add_measure h.2
 
 end ENormedAddMonoid
 

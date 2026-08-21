@@ -60,6 +60,11 @@ def limsInf (f : Filter α) : α :=
   sSup { a | ∀ᶠ n in f, a ≤ n }
 
 @[simp]
+lemma limsSup_pure (a : α) : limsSup (pure a) = a := by
+  simp only [limsSup, eventually_pure]
+  exact csInf_Ici
+
+@[simp]
 lemma limsInf_pure (a : α) : limsInf (pure a) = a := by
   simp only [limsInf, eventually_pure]
   exact csSup_Iic
@@ -68,11 +73,6 @@ lemma limsInf_pure (a : α) : limsInf (pure a) = a := by
 the inequality `u x ≤ a` eventually holds for `f`. -/
 def limsup (u : β → α) (f : Filter β) : α :=
   limsSup (map u f)
-
-@[simp]
-lemma limsSup_pure (a : α) : limsSup (pure a) = a := by
-  simp only [limsSup, eventually_pure]
-  exact csInf_Ici
 
 /-- The `liminf` of a function `u` along a filter `f` is the supremum of the `a` such that
 the inequality `u x ≥ a` eventually holds for `f`. -/
