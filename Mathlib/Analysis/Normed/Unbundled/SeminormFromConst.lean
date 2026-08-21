@@ -275,6 +275,7 @@ theorem seminormFromConstRingNormOfField_def {k : K} {g : RingSeminorm K}
     (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) (x : K) :
     normFromConst hg_k hg_pm x = seminormFromConst' k g x := rfl
 
+/-- If `K` is a field, `seminormFromConst` applied to an `AlgebraNorm` is an `AlgebraNorm`. -/
 @[simps!]
 def algebraNormFromConst {k : K} {g : AlgebraNorm F K} (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) :
     AlgebraNorm F K where
