@@ -16,6 +16,8 @@ public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryAut
 
 @[expose] public section
 
+universe w
+
 namespace CategoryTheory
 
 open Limits PreGaloisCategory
@@ -63,6 +65,12 @@ instance {X : C} (H : Subgroup (Aut X)) [SingleObj.HasQuotient H] :
     Epi (SingleObj.quotient.π H) where
   left_cancellation _ _ h := (isColimit H).hom_ext (fun _ ↦ h)
 
+@[simps]
+noncomputable def autMap : H →* Aut (Over.mk (SingleObj.quotient.π H)) where
+  toFun σ := Over.isoMk σ.val
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
 end quotient
 
 end SingleObj
@@ -71,20 +79,38 @@ namespace GaloisCategory
 
 variable [GaloisCategory C]
 
-instance {X : C} [PreGaloisCategory.IsConnected X] (H : Subgroup (Aut X)) :
-    SingleObj.HasQuotient H := by
+section
+
+variable {X : C} [PreGaloisCategory.IsConnected X] (H : Subgroup (Aut X))
+
+instance : SingleObj.HasQuotient H := by
   obtain ⟨G', hg, hf, ⟨e⟩⟩ := Finite.exists_type_univ_nonempty_mulEquiv.{_, 0} H
-  have := hasColimitsOfShape_of_equivalence e.toSingleObjEquiv.symm (C := C)
+  have := hasColimitsOfShape_of_equivalence (C := C) e.toSingleObjEquiv.symm
   infer_instance
 
-instance {X : C} [PreGaloisCategory.IsConnected X] (H : Subgroup (Aut X)) :
-    PreGaloisCategory.IsConnected (SingleObj.quotient H) :=
+instance : PreGaloisCategory.IsConnected (SingleObj.quotient H) :=
   PreGaloisCategory.IsConnected.of_epi (SingleObj.quotient.π H)
+
+lemma map_quotientπ_eq_iff (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] (x y : F.obj X) :
+    F.map (SingleObj.quotient.π H) x = F.map (SingleObj.quotient.π H) y ↔
+      ∃ (σ : H), F.map σ.val.hom x = y := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · sorry
+  · rintro ⟨σ, rfl⟩
+    rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, SingleObj.quotient.w]
+
+end
 
 instance {X : C} [IsGalois X] (H : Subgroup (Aut X)) :
     IsGaloisCover (SingleObj.quotient.π H) := by
-  rw [isGaloisCover_def]
-  sorry
+  let F := getFiberFunctor C
+  let s : F.obj (SingleObj.quotient H) := Classical.arbitrary _
+  rw [isGaloisCover_def, isGalois_iff_pretransitive (fiberFunctorOver F _ s)]
+  refine ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_⟩
+  obtain ⟨σ, hσ⟩ := (map_quotientπ_eq_iff H F x y).1 (by
+    simp only [Over.mk_left, Over.mk_hom, Set.mem_preimage, Set.mem_singleton_iff] at hx hy
+    rw [hx, hy])
+  exact ⟨SingleObj.quotient.autMap H σ, Subtype.ext_iff.2 hσ⟩
 
 section
 
