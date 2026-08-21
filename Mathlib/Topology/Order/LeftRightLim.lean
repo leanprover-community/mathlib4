@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Order.LeftRight
 public import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Separation.Regular
 
@@ -68,7 +67,7 @@ theorem leftLim_eq_of_tendsto [hα : TopologicalSpace α] [h'α : OrderTopology 
     leftLim f a = y := by
   have h'' : ∃ y, Tendsto f (𝓝[<] a) (𝓝 y) := ⟨y, h'⟩
   rw [h'α.topology_eq_generate_intervals] at h h' h''
-  simp only [leftLim, neBot_iff.mp h, h'', not_true, or_self_iff, if_false]
+  simp only [leftLim, neBot_iff.mp h, h'', not_true, or_self_iff, ite_false]
   exact lim_eq h'
 
 theorem rightLim_eq_of_tendsto [TopologicalSpace α] [OrderTopology α] [T2Space β]
@@ -302,7 +301,7 @@ theorem le_leftLim (h : x < y) : f x ≤ leftLim f y := by
   rw [leftLim_eq_sSup hf]
   refine le_csSup ⟨f y, ?_⟩ (mem_image_of_mem _ h)
   simp only [upperBounds, mem_image, mem_Iio, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, mem_setOf_eq]
+    forall_apply_eq_imp_iff₂, mem_ofPred_eq]
   intro z hz
   exact hf hz.le
 

@@ -82,7 +82,7 @@ instance : TopologicalSpace (Aut F) :=
     Set.range (autEmbedding F) =
       ⋂ (f : Arrow C), { a | F.map f.hom ≫ (a f.right).hom = (a f.left).hom ≫ F.map f.hom } := by
   ext a
-  simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_setOf_eq]
+  simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_ofPred_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
   · use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
     rfl-/
@@ -94,7 +94,7 @@ lemma autEmbedding_range :
     Set.range (autEmbedding F) = ⋂ (f : Arrow C), { a | F.map f.hom ≫ (a f.right).hom =
       (a f.left).hom ≫ F.map f.hom } := by
   ext a
-  simp only [Set.mem_range, Set.mem_iInter, Set.mem_setOf_eq]
+  simp only [Set.mem_range, Set.mem_iInter, Set.mem_ofPred_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ by cat_disch, fun h ↦ ?_⟩
   exact ⟨NatIso.ofComponents a (fun {X Y} f ↦ by
     ext; simpa using ConcreteCategory.congr_hom (h ⟨X, Y, f⟩) _), rfl⟩
@@ -163,7 +163,6 @@ noncomputable def autEquivAutWhiskerRight {G : FintypeCat.{w} ⥤ FintypeCat.{v}
 
 variable [GaloisCategory C] [FiberFunctor F]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `H` is an open subset of `Aut F` such that `1 ∈ H`, there exists a finite
 set `I` of connected objects of `C` such that every `σ : Aut F` that induces the identity

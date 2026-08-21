@@ -37,7 +37,7 @@ variable {α : Type*} [PseudoEMetricSpace α]
 theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0∞}
     (h : hausdorffEDist s t < δ) : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 < δ} := by
   rw [hausdorffEDist, max_lt_iff] at h
-  rw [hausdorffEntourage, Set.mem_setOf]
+  rw [hausdorffEntourage, Set.mem_ofPred]
   conv => enter [2, 2, 1, 1, _]; rw [edist_comm]
   have {s t : Set α} (h : ⨆ x ∈ s, infEDist x t < δ) :
       s ⊆ SetRel.preimage {p | edist p.1 p.2 < δ} t := by
@@ -48,7 +48,7 @@ theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0
 theorem hausdorffEDist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0∞}
     (h : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 ≤ δ}) : hausdorffEDist s t ≤ δ := by
   rw [hausdorffEDist, max_le_iff]
-  rw [hausdorffEntourage, Set.mem_setOf] at h
+  rw [hausdorffEntourage, Set.mem_ofPred] at h
   conv at h => enter [2, 2, 1, 1, _]; rw [edist_comm]
   have {s t : Set α} (h : s ⊆ SetRel.preimage {p | edist p.1 p.2 ≤ δ} t) :
       ⨆ x ∈ s, infEDist x t ≤ δ := by
@@ -269,14 +269,6 @@ theorem isometry_toCloseds : Isometry (@NonemptyCompacts.toCloseds α _ _) :=
 theorem isometry_toCompacts : Isometry (NonemptyCompacts.toCompacts (α := α)) :=
   fun _ _ => rfl
 
-/-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
-@[deprecated
-  "Use `TopologicalSpace.NonemptyCompacts.isClosedEmbedding_toCloseds.isClosed_range` instead"
-  (since := "2026-01-28")]
-theorem isClosed_in_closeds [CompleteSpace α] :
-    IsClosed (range <| @NonemptyCompacts.toCloseds α _ _) :=
-  NonemptyCompacts.isClosedEmbedding_toCloseds.isClosed_range
-
 theorem isometry_singleton : Isometry ({·} : α → NonemptyCompacts α) :=
   fun _ _ => hausdorffEDist_singleton
 
@@ -291,52 +283,6 @@ theorem lipschitz_prod :
 end NonemptyCompacts
 
 end TopologicalSpace
-
-namespace EMetric
-
-open Metric
-
-@[deprecated (since := "2026-01-08")]
-alias mem_hausdorffEntourage_of_hausdorffEdist_lt :=
-  mem_hausdorffEntourage_of_hausdorffEDist_lt
-
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_le_of_mem_hausdorffEntourage := hausdorffEDist_le_of_mem_hausdorffEntourage
-
-@[deprecated (since := "2026-01-08")]
-alias continuous_infEdist_hausdorffEdist :=
-  TopologicalSpace.Closeds.continuous_infEDist
-
-@[deprecated (since := "2026-01-08")]
-alias Closeds.edist_eq := TopologicalSpace.Closeds.edist_eq
-
-@[deprecated (since := "2026-01-08")]
-alias Closeds.isometry_singleton := TopologicalSpace.Closeds.isometry_singleton
-
-@[deprecated (since := "2026-01-08")]
-alias Closeds.lipschitz_sup := TopologicalSpace.Closeds.lipschitz_sup
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.isometry_toCloseds :=
-  TopologicalSpace.NonemptyCompacts.isometry_toCloseds
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.isClosed_in_closeds :=
-  TopologicalSpace.NonemptyCompacts.isClosed_in_closeds
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.isometry_singleton :=
-  TopologicalSpace.NonemptyCompacts.isometry_singleton
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.lipschitz_sup :=
-  TopologicalSpace.NonemptyCompacts.lipschitz_sup
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.lipschitz_prod :=
-  TopologicalSpace.NonemptyCompacts.lipschitz_prod
-
-end EMetric --namespace
 
 namespace Metric
 

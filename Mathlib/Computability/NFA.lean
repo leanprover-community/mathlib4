@@ -207,7 +207,7 @@ theorem acceptsFrom_iUnion {ι : Sort*} (s : ι → Set σ) :
     M.acceptsFrom (⋃ i, s i) = ⋃ i, M.acceptsFrom (s i) := by
   ext x
   simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion]
-  simp_rw [↑mem_iUnion, ↑mem_setOf_eq]; tauto
+  simp_rw [↑mem_iUnion, ↑mem_ofPred_eq]; tauto
 
 set_option backward.isDefEq.respectTransparency false in
 variable (M) in
@@ -220,10 +220,10 @@ variable (M) in
 private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
     x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
   induction x generalizing S with
-  | nil => simp only [nil_mem_acceptsFrom, mem_setOf_eq]; tauto
+  | nil => simp only [nil_mem_acceptsFrom, mem_ofPred_eq]; tauto
   | cons a x ih =>
     have h : M.stepSet {s ∈ S | p} a = {s ∈ M.stepSet S a | p} := by
-      ext s; simp only [stepSet, mem_setOf_eq, mem_iUnion, exists_prop]; tauto
+      ext s; simp only [stepSet, mem_ofPred_eq, mem_iUnion, exists_prop]; tauto
     simp [h, ih]
 
 variable (M) in
@@ -374,7 +374,7 @@ theorem reverse_reverse : M.reverse.reverse = M := by
 theorem disjoint_stepSet_reverse {a : α} {S S' : Set σ} :
     Disjoint S (M.reverse.stepSet S' a) ↔ Disjoint S' (M.stepSet S a) := by
   rw [← not_iff_not]
-  simp only [Set.not_disjoint_iff, mem_stepSet, reverse_step, Set.mem_setOf_eq]
+  simp only [Set.not_disjoint_iff, mem_stepSet, reverse_step, Set.mem_ofPred_eq]
   tauto
 
 theorem disjoint_evalFrom_reverse {x : List α} {S S' : Set σ}
