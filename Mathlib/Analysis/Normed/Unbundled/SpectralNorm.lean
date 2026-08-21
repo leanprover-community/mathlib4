@@ -796,15 +796,17 @@ theorem NormedAlgebra.norm_eq_spectralNorm {L : Type*} [NormedField L] [NormedAl
 variable (K) in
 /-- Given a nonzero `x : L`, this is the real-valued function sending `y ∈ L` to the limit of
 `(f (y * x^n))/((f x)^n)`, regarded as an algebra norm. -/
-def algNormFromConst {x : L} (hx : x ≠ 0) : AlgebraNorm K L :=
-  have hx' : spectralAlgNorm K L x ≠ 0 := (map_ne_zero_iff_ne_zero (spectralAlgNorm K L)).mpr hx
+def algNormFromConst {x : L} (hx : x ≠ 0) :
+    AlgebraNorm K L :=
+  have hx' : spectralAlgNorm K L x ≠ 0 :=
+    (map_ne_zero_iff_ne_zero (spectralAlgNorm K L)).mpr hx
   algebraNormFromConst hx' spectralAlgNorm_isPowMul
 
-theorem algNormFromConst_def {x y : L} (hx : x ≠ 0) :
+theorem algNormFromConst_def {x y : L}
+    (hx : x ≠ 0) :
     algNormFromConst K hx y =
       seminormFromConst ((map_ne_zero_iff_ne_zero (spectralAlgNorm K L)).mpr hx)
-        isPowMul_spectralNorm y :=
-  rfl
+        isPowMul_spectralNorm y := rfl
 
 section CompleteSpace
 
