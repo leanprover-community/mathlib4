@@ -41,12 +41,12 @@ theorem isConst_iff {f : α → β} :
     IsConst f ↔ ∀ x y, f x = f y :=
   .rfl
 
-theorem IsConst.eq {f : α → β} (hf : IsConst f) (x y : α) :
+protected theorem IsConst.eq {f : α → β} (hf : IsConst f) (x y : α) :
     f x = f y :=
   hf x y
 
 @[simp]
-theorem IsConst.const (b : β) :
+protected theorem IsConst.const (b : β) :
     IsConst (const α b) := fun _ _ ↦ rfl
 
 /-- All function on a subsingleton domain are constant. -/
