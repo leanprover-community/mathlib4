@@ -9,6 +9,14 @@ public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Analysis.Normed.Algebra.SpectralRadiusLimit
 public import Mathlib.Analysis.Normed.Field.WithAbs
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
+public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.Normal.Closure
+public import Mathlib.RingTheory.Polynomial.Vieta
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Spectral norms and extensions of absolute values
@@ -55,12 +63,202 @@ This file follows a [MathOverflow answer](https://mathoverflow.net/a/419366/9568
 
 @[expose] public section
 
--- todo: check if this has utility elsewhere in the library
 open Filter Topology in
 theorem tendsto_nhds_unique_of_forall {X Y : Type*} [TopologicalSpace X] [T2Space X] {f g : Y → X}
     {l : Filter Y} {a b : X} [NeBot l] (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b))
     (hfg : ∀ y, f y = g y) : a = b :=
   tendsto_nhds_unique_of_eventuallyEq ha hb (Eventually.of_forall hfg)
+
+section matrices
+
+open scoped Matrix.Norms.Operator
+
+theorem Matrix.linfty_opNNNorm_blockDiagonal
+    {R m n o : Type*} [SeminormedAddCommGroup R]
+    [DecidableEq o] [Fintype m] [Fintype n] [Fintype o] (M : o → Matrix m n R) :
+    ‖blockDiagonal M‖₊ = ‖M‖₊ := by
+  simp_rw [Pi.nnnorm_def, linfty_opNNNorm_def, ← Finset.univ_product_univ,
+    Finset.sup_product_right, Finset.sum_product, blockDiagonal_apply, apply_ite]
+  simp
+
+theorem Matrix.linfty_opNorm_blockDiagonal
+    {R m n o : Type*} [SeminormedAddCommGroup R]
+    [DecidableEq o] [Fintype m] [Fintype n] [Fintype o] (M : o → Matrix m n R) :
+    ‖blockDiagonal M‖ = ‖M‖ :=
+  congr_arg ((↑) : NNReal → Real) <| linfty_opNNNorm_blockDiagonal M
+
+open Filter Topology in
+private theorem Matrix.spectralRadiusLim_conj_le {R m n : Type*}
+    [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
+    (A : Matrix m n R) (B : Matrix n n R) (C : Matrix n m R)
+    (hAC : A * C = 1) (hCA : C * A = 1) : spectralRadiusLim (A * B * C) ≤ spectralRadiusLim B := by
+  cases subsingleton_or_nontrivial (Matrix n n R)
+  · simp [Subsingleton.elim B 0]
+  have h k : (A * B * C) ^ k = A * B ^ k * C := by
+    induction k with
+    | zero => simp [hAC]
+    | succ n ih => transitivity A * B ^ n * (C * A) * B * C <;> grind [Matrix.mul_assoc]
+  suffices Tendsto (fun k : ℕ ↦ ‖A‖ ^ (k : ℝ)⁻¹ * ‖B ^ k‖ ^ (k : ℝ)⁻¹ * ‖C‖ ^ (k : ℝ)⁻¹) atTop
+      (𝓝 (1 * spectralRadiusLim B * 1)) by
+    rw [one_mul, mul_one] at this
+    refine le_of_tendsto_of_tendsto' (tendsto_spectralRadiusLim (A * B * C)) this fun n ↦ ?_
+    grw [h, Matrix.linfty_opNorm_mul, Matrix.linfty_opNorm_mul,
+      Real.mul_rpow, Real.mul_rpow] <;> positivity
+  have hA : ‖A‖ ≠ 0 := by contrapose! hCA; simp_all
+  have hC : ‖C‖ ≠ 0 := by contrapose! hCA; simp_all
+  have key {c : ℝ} (hc : c ≠ 0) :=
+    ((Real.continuous_const_rpow hc).tendsto' 0 1 c.rpow_zero).comp tendsto_inv_atTop_nhds_zero_nat
+  exact ((key hA).mul (tendsto_spectralRadiusLim B)).mul (key hC)
+
+theorem Matrix.spectralRadiusLim_conj {R m n : Type*}
+    [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
+    (A : Matrix m n R) (B : Matrix n n R) (C : Matrix n m R)
+    (hAC : A * C = 1) (hCA : C * A = 1) : spectralRadiusLim (A * B * C) = spectralRadiusLim B := by
+  refine le_antisymm (Matrix.spectralRadiusLim_conj_le A B C hAC hCA) ?_
+  have h : C * (A * B * C) * A = B := by
+    transitivity (C * A) * B * (C * A) <;> grind [Matrix.mul_assoc]
+  have := Matrix.spectralRadiusLim_conj_le C (A * B * C) A hCA hAC
+  rwa [h] at this
+
+theorem Matrix.spectralRadiusLim_blockMatrix {R m : Type*} [DecidableEq m] [Fintype m]
+    [NormedCommRing R] (A : Matrix m m R) (n : Type*) [DecidableEq n] [Fintype n] [Nonempty n] :
+    spectralRadiusLim (Matrix.blockDiagonal fun _ : n ↦ A) = spectralRadiusLim A := by
+  refine tendsto_nhds_unique_of_forall (tendsto_spectralRadiusLim (blockDiagonal fun _ ↦ A))
+    (tendsto_spectralRadiusLim A) fun k ↦ ?_
+  rw [← blockDiagonal_pow, Matrix.linfty_opNorm_blockDiagonal, Pi.pow_def, pi_norm_const]
+
+end matrices
+
+section unique
+
+open IntermediateField
+
+variable {K L : Type*} [NontriviallyNormedField K] [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
+
+/-- Type synonym of `K⟮x⟯`. -/
+private def AlgebraNorm.copy (_f : AlgebraNorm K L) (x : L) : Type _ := K⟮x⟯
+deriving Field, Algebra K
+
+private instance (f : AlgebraNorm K L) (x : L) : FiniteDimensional K (f.copy x) :=
+  adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
+
+private instance (f : AlgebraNorm K L) (x : L) : Algebra (f.copy x) L :=
+  inferInstanceAs (Algebra K⟮x⟯ L)
+
+/-- The ring norm defined by a spectral norm. -/
+private def AlgebraNorm.ringNorm (f : AlgebraNorm K L) (x : L) : RingNorm (f.copy x) where
+  toFun y := f ((algebraMap (f.copy x) L) y)
+  map_zero' := map_zero _
+  add_le' a b := map_add_le_add _ _ _
+  neg' y := by simp
+  mul_le' a b := map_mul_le_mul _ _ _
+  eq_zero_of_map_eq_zero' a ha := by rwa [map_eq_zero_iff_eq_zero, map_eq_zero] at ha
+
+private instance (f : AlgebraNorm K L) (x : L) : NormedRing (f.copy x) :=
+  (f.ringNorm x).toNormedRing
+
+private instance (f : AlgebraNorm K L) (x : L) : NormedAlgebra K (f.copy x) where
+  norm_smul_le c y := (map_smul_eq_mul f c (algebraMap (f.copy x) L y)).le
+
+theorem IsPowMul.unique [CompleteSpace K] {f g : AlgebraNorm K L}
+    (hf_pm : IsPowMul f) (hg_pm : IsPowMul g) : f = g := by
+  apply eq_of_powMul_faithful f hf_pm g hg_pm
+  intro x
+  let T₀ : g.copy x ≃ₗ[K] f.copy x := LinearEquiv.refl K K⟮x⟯
+  let T : g.copy x ≃L[K] f.copy x := T₀.toContinuousLinearEquiv
+  obtain ⟨C1, hC1_pos, hC1⟩ := T.symm.toContinuousLinearMap.isBoundedLinearMap.bound
+  obtain ⟨C2, hC2_pos, hC2⟩ := T.toContinuousLinearMap.isBoundedLinearMap.bound
+  exact ⟨ C2, C1, hC2_pos, hC1_pos,
+    forall_and.mpr ⟨fun y ↦ hC2 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩,
+      fun y ↦ hC1 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩⟩⟩
+
+end unique
+
+section spectralRadiusLimNorm
+
+variable (K L M : Type*) [NormedField K] [Field L] [Field M] [Algebra K L] [Algebra K M]
+  [Algebra L M] [IsScalarTower K L M] [FiniteDimensional K L] [FiniteDimensional K M]
+
+open scoped Matrix.Norms.Operator
+
+/-- The spectral norm defined by the spectral radius limit `lim ‖x ^ k‖ ^ (1 / k)`. -/
+noncomputable def spectralRadiusLimNorm : AlgebraNorm K L where
+  toFun x := spectralRadiusLim (Algebra.leftMulMatrix (Module.finBasis K L) x)
+  map_zero' := by rw [map_zero, spectralRadiusLim_zero]
+  add_le' x y := by grw [map_add, ((Commute.all x y).map _).spectralRadiusLim_add_le]
+  neg' x := by rw [map_neg, spectralRadiusLim_neg]
+  mul_le' x y := by grw [map_mul, ((Commute.all x y).map _).spectralRadiusLim_mul_le]
+  eq_zero_of_map_eq_zero' x h := by
+    have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
+    have : Commute x x⁻¹ := by simp -- merge master
+    have hx := (this.map (Algebra.leftMulMatrix (Module.finBasis K L))).spectralRadiusLim_mul_le
+    contrapose! hx
+    simp [← map_mul, h, hx]
+  smul' x y := by rw [map_smul, spectralRadiusLim_smul]
+
+@[simp]
+theorem spectralRadiusLimNorm_def (x : L) : spectralRadiusLimNorm K L x =
+    spectralRadiusLim (Algebra.leftMulMatrix (Module.finBasis K L) x) :=
+  rfl
+
+theorem isPowMul_spectralRadiusLimNorm : IsPowMul (spectralRadiusLimNorm K L) := by
+  have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
+  intro x k hk
+  simp_rw [spectralRadiusLimNorm_def, map_pow, spectralRadiusLim_pow]
+
+variable {K L} in
+theorem spectralRadiusLimNorm_apply
+    {ι : Type*} [DecidableEq ι] [Fintype ι] (b : Module.Basis ι K L) (x : L) :
+    spectralRadiusLimNorm K L x = spectralRadiusLim (Algebra.leftMulMatrix b x) := by
+  let ι' := Fin (Module.finrank K L)
+  let b' := Module.finBasis K L
+  rw [spectralRadiusLimNorm_def]
+  let m : Matrix ι ι K := Algebra.leftMulMatrix b x
+  let m' : Matrix ι' ι' K := Algebra.leftMulMatrix b' x
+  change spectralRadiusLim m' = spectralRadiusLim m
+  let v := b.toMatrix b'
+  let v' := b'.toMatrix b
+  have h : v * m' * v' = m := by
+    apply basis_toMatrix_mul_linearMap_toMatrix_mul_basis_toMatrix
+  have h' : v' * m * v = m' := by
+    apply basis_toMatrix_mul_linearMap_toMatrix_mul_basis_toMatrix
+  rw [← h']
+  exact Matrix.spectralRadiusLim_conj v' m v (b'.toMatrix_mul_toMatrix_flip b)
+    (b.toMatrix_mul_toMatrix_flip b')
+
+theorem spectralRadiusLimNorm_algebraMap (x : L) :
+    spectralRadiusLimNorm K M (algebraMap L M x) = spectralRadiusLimNorm K L x := by
+  have : FiniteDimensional L M := .of_restrictScalars_finite K L M
+  have : NeZero (Module.finrank L M) := ⟨Module.finrank_pos.ne'⟩
+  let bKL := Module.finBasis K L
+  let bLM := Module.finBasis L M
+  rw [spectralRadiusLimNorm_apply bKL, spectralRadiusLimNorm_apply (bKL.smulTower bLM),
+    Algebra.smulTower_leftMulMatrix_algebraMap, Matrix.spectralRadiusLim_blockMatrix]
+
+end spectralRadiusLimNorm
+
+section new
+
+open Filter
+
+open scoped Topology
+
+open IntermediateField
+
+variable (K : Type*) [NormedField K] (L : Type*) [Field L] [Algebra K L]
+
+open Classical in
+noncomputable def spectralNorm (x : L) : ℝ :=
+  if hx : IsIntegral K x then
+    haveI := adjoin.finiteDimensional hx
+    spectralRadiusLimNorm K K⟮x⟯ (AdjoinSimple.gen K x)
+  else 0
+
+def spectralAlgNorm [Algebra.IsAlgebraic K L] : AlgebraNorm K L := by
+  -- use `spectralNorm`
+  sorry
+
+end new
 
 open Filter
 
