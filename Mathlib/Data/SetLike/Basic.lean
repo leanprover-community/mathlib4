@@ -242,7 +242,7 @@ A preorder defined this way automatically makes available an instance of `IsConc
   __ := Preorder.lift (SetLike.coe : A → Set B)
 
 /-- The partial order induced from a `SetLike` instance by inclusion.
-A partial order defined this was will automatically makes available an instance of `IsConcreteLE`.
+A partial order defined this way automatically makes available an instance of `IsConcreteLE`.
 -/
 @[reducible] def PartialOrder.ofSetLike [SetLike A B] : PartialOrder A where
   __ := Preorder.ofSetLike A B

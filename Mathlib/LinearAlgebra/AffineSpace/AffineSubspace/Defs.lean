@@ -600,11 +600,11 @@ theorem eq_of_direction_eq_of_nonempty_of_le {s₁ s₂ : AffineSubspace k P}
 
 instance nonempty_sup_left (s₁ s₂ : AffineSubspace k P) [Nonempty s₁] :
     Nonempty (s₁ ⊔ s₂ : AffineSubspace k P) :=
-  .map (Set.inclusion <| SetLike.le_def.1 le_sup_left) ‹_›
+  .map (Set.inclusion <| SetLike.coe_subset_coe.2 le_sup_left) ‹_›
 
 instance nonempty_sup_right (s₁ s₂ : AffineSubspace k P) [Nonempty s₂] :
     Nonempty (s₁ ⊔ s₂ : AffineSubspace k P) :=
-  .map (Set.inclusion <| SetLike.le_def.1 le_sup_right) ‹_›
+  .map (Set.inclusion <| SetLike.coe_subset_coe.2 le_sup_right) ‹_›
 
 variable (k V)
 
