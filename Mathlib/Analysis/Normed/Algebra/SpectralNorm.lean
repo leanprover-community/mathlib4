@@ -11,7 +11,7 @@ public import Mathlib.Analysis.Normed.Field.WithAbs
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
-public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.Normal.Closure
@@ -34,36 +34,6 @@ theorem tendsto_nhds_unique_of_forall {X Y : Type*} [TopologicalSpace X] [T2Spac
     {l : Filter Y} {a b : X} [NeBot l] (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b))
     (hfg : ∀ y, f y = g y) : a = b :=
   tendsto_nhds_unique_of_eventuallyEq ha hb (Eventually.of_forall hfg)
-
-section fromConst
-
-variable {K L : Type*} [NormedField K] [Field L] [Algebra K L]
-
-@[simp]
-theorem RingNorm.toRingSeminorm_apply (f : RingNorm L) (x : L) :
-    f.toRingSeminorm x = f x :=
-  rfl
-
-@[simp]
-theorem AlgebraNorm.toRingNorm_apply (f : AlgebraNorm K L) (x : L) :
-    f.toRingNorm x = f x :=
-  rfl
-
-open Filter Topology in
-noncomputable def algebraNormFromConst {c : L}
-    {f : AlgebraNorm K L} (h1 : f 1 = 1) (h0 : f c ≠ 0) (hf : IsPowMul f) : AlgebraNorm K L where
-  __ := normFromConst h1.le h0 hf
-  smul' x y := by
-    have hx : f (algebraMap K L x) = ‖x‖ := by
-      rw [Algebra.algebraMap_eq_smul_one, map_smul_eq_mul, h1, mul_one]
-    have hy y : f (algebraMap K L x * y) = f (algebraMap K L x) * f y := by
-      rw [← Algebra.smul_def, map_smul_eq_mul, hx]
-    simp [Algebra.smul_def, seminormFromConst_isMul_of_isMul h1.le h0 hf hy y,
-      seminormFromConst_apply_of_isMul h1.le h0 hf hy, hx]
-
-end fromConst
-
-#exit
 
 section matrices
 
@@ -129,52 +99,6 @@ theorem Matrix.spectralRadiusLim_blockMatrix {R m : Type*} [DecidableEq m] [Fint
   rw [← blockDiagonal_pow, Matrix.linfty_opNorm_blockDiagonal, Pi.pow_def, pi_norm_const]
 
 end matrices
-
--- #43015
-section unique
-
-open IntermediateField
-
-variable {K L : Type*} [NontriviallyNormedField K] [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
-
-/-- Type synonym of `K⟮x⟯`. -/
-private def AlgebraNorm.copy (_f : AlgebraNorm K L) (x : L) : Type _ := K⟮x⟯
-deriving Field, Algebra K
-
-private instance (f : AlgebraNorm K L) (x : L) : FiniteDimensional K (f.copy x) :=
-  adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
-
-private instance (f : AlgebraNorm K L) (x : L) : Algebra (f.copy x) L :=
-  inferInstanceAs (Algebra K⟮x⟯ L)
-
-/-- The ring norm defined by a spectral norm. -/
-private def AlgebraNorm.ringNorm (f : AlgebraNorm K L) (x : L) : RingNorm (f.copy x) where
-  toFun y := f ((algebraMap (f.copy x) L) y)
-  map_zero' := map_zero _
-  add_le' a b := map_add_le_add _ _ _
-  neg' y := by simp
-  mul_le' a b := map_mul_le_mul _ _ _
-  eq_zero_of_map_eq_zero' a ha := by rwa [map_eq_zero_iff_eq_zero, map_eq_zero] at ha
-
-private instance (f : AlgebraNorm K L) (x : L) : NormedRing (f.copy x) :=
-  (f.ringNorm x).toNormedRing
-
-private instance (f : AlgebraNorm K L) (x : L) : NormedAlgebra K (f.copy x) where
-  norm_smul_le c y := (map_smul_eq_mul f c (algebraMap (f.copy x) L y)).le
-
-theorem IsPowMul.unique [CompleteSpace K] {f g : AlgebraNorm K L}
-    (hf_pm : IsPowMul f) (hg_pm : IsPowMul g) : f = g := by
-  apply eq_of_powMul_faithful f hf_pm g hg_pm
-  intro x
-  let T₀ : g.copy x ≃ₗ[K] f.copy x := LinearEquiv.refl K K⟮x⟯
-  let T : g.copy x ≃L[K] f.copy x := T₀.toContinuousLinearEquiv
-  obtain ⟨C1, hC1_pos, hC1⟩ := T.symm.toContinuousLinearMap.isBoundedLinearMap.bound
-  obtain ⟨C2, hC2_pos, hC2⟩ := T.toContinuousLinearMap.isBoundedLinearMap.bound
-  exact ⟨ C2, C1, hC2_pos, hC1_pos,
-    forall_and.mpr ⟨fun y ↦ hC2 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩,
-      fun y ↦ hC1 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩⟩⟩
-
-end unique
 
 -- all blocked by spectral radius
 section spectralRadiusLimNorm
@@ -372,7 +296,8 @@ end spectralNorm
 
 section spectralAlgNorm
 
-variable (K : Type*) [NormedField K] (L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
+-- todo: drop nontrivially
+variable (K : Type*) [NontriviallyNormedField K] (L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
 
 open Algebra.IsAlgebraic in
 noncomputable def spectralAlgNorm' : AlgebraNorm K L where
@@ -386,17 +311,22 @@ noncomputable def spectralAlgNorm' : AlgebraNorm K L where
 
 variable {K L}
 
-theorem spectralAlgNorm_def (x : L) : spectralAlgNorm' K L x = spectralNorm' K L x :=
+theorem spectralAlgNorm'_def (x : L) : spectralAlgNorm' K L x = spectralNorm' K L x :=
   rfl
 
-theorem spectralAlgNorm_extends (x : K) : spectralAlgNorm' K L (algebraMap K L x) = ‖x‖ :=
+theorem spectralAlgNorm'_extends (x : K) : spectralAlgNorm' K L (algebraMap K L x) = ‖x‖ :=
   spectralNorm'_extends x
 
-theorem spectralAlgNorm_one : spectralAlgNorm' K L (1 : L) = 1 :=
+theorem spectralAlgNorm'_one : spectralAlgNorm' K L (1 : L) = 1 :=
   spectralNorm'_one
 
-theorem spectralAlgNorm_isPowMul : IsPowMul (spectralAlgNorm' K L) :=
+theorem isPowMul_spectralAlgNorm' : IsPowMul (spectralAlgNorm' K L) :=
   isPowMul_spectralNorm'
+
+variable (K L) in
+/-- The spectral norm is a multiplicative `K`-algebra norm on `L`. -/
+noncomputable def spectralMulAlgNorm' [CompleteSpace K] : MulAlgebraNorm K L :=
+  (spectralAlgNorm' K L).toMulAlgebraNorm isPowMul_spectralAlgNorm'
 
 end spectralAlgNorm
 
