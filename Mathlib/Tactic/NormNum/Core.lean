@@ -217,10 +217,10 @@ def tryNormNum (post := false) (e : Expr) : SimpM Simp.Step := do
     return .continue
 
 /-- A `Methods` implementation which calls `norm_num`. -/
-def methods (useSimp := true) : Simp.Methods :=
+def methods (simprocs : Simp.SimprocsArray := #[]) (useSimp := true) : Simp.Methods :=
   if useSimp then {
-    pre := Simp.preDefault #[] >> tryNormNum
-    post := Simp.postDefault #[] >> tryNormNum (post := true)
+    pre := Simp.preDefault simprocs >> tryNormNum
+    post := Simp.postDefault simprocs >> tryNormNum (post := true)
     discharge? := Simp.dischargeGround
   } else {
     pre := tryNormNum
@@ -229,24 +229,28 @@ def methods (useSimp := true) : Simp.Methods :=
   }
 
 /-- Traverses the given expression using simp and normalises any numbers it finds. -/
-def deriveSimp (ctx : Simp.Context) (useSimp := true) (e : Expr) : MetaM Simp.Result :=
-  (·.1) <$> Simp.main e ctx (methods := methods useSimp)
+def deriveSimp (ctx : Simp.Context) (simprocs : Simp.SimprocsArray := #[]) (useSimp := true)
+    (e : Expr) : MetaM Simp.Result :=
+  (·.1) <$> Simp.main e ctx (methods := methods simprocs useSimp)
 
 /-- A discharger which calls `norm_num`, for use in downstream tactics populating `Simp.Methods`. -/
-def discharge (useSimp := true) (e : Expr) : SimpM (Option Expr) := do
-  (← deriveSimp (← readThe Simp.Context) useSimp e).ofTrue
+def discharge (simprocs : Simp.SimprocsArray := #[]) (useSimp := true) (e : Expr) :
+    SimpM (Option Expr) := do
+  (← deriveSimp (← readThe Simp.Context) simprocs useSimp e).ofTrue
 
 open Tactic in
 /-- Constructs a simp context from the simp argument syntax. -/
-def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Context := do
+def getSimpContext (cfg args : Syntax) (simpOnly := false) :
+    TacticM (Simp.Context × Simp.SimprocsArray) := do
   let { config, userConfig } ← elabSimpConfigCore cfg
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
-  let { ctx, .. } ←
-    elabSimpArgs args[0] (eraseLocal := false) (kind := .simp) (simprocs := {})
+  let simprocs ← if simpOnly then pure {} else Simp.getSimprocs
+  let { ctx, simprocs, .. } ←
+    elabSimpArgs args[0] (eraseLocal := false) (kind := .simp) (simprocs := #[simprocs])
       (← Simp.mkContext config (simpTheorems := #[simpTheorems])
         (congrTheorems := ← getSimpCongrTheorems) (userConfig := userConfig))
-  return ctx
+  return (ctx, simprocs)
 
 open Elab Tactic in
 /--
@@ -259,9 +263,9 @@ Elaborates a call to `norm_num only? [args]` or `norm_num1`.
 -/
 def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) :
     TacticM Unit := withMainContext do
-  let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
+  let (ctx, simprocs) ← getSimpContext cfg args (!useSimp || simpOnly)
   let loc := expandOptLocation loc
-  transformAtNondepPropLocation (fun e ctx ↦ deriveSimp ctx useSimp e) "norm_num" loc
+  transformAtNondepPropLocation (fun e ctx ↦ deriveSimp ctx simprocs useSimp e) "norm_num" loc
     (ifUnchanged := .silent) (mayCloseGoalFromHyp := true) ctx
 
 end Meta.NormNum
@@ -331,16 +335,18 @@ open Lean Elab Tactic
 
 /-- Elaborator for `norm_num1` conv tactic. -/
 @[tactic normNum1Conv] def elabNormNum1Conv : Tactic := fun _ ↦ withMainContext do
-  let ctx ← getSimpContext mkNullNode mkNullNode true
-  Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := false))
+  let (ctx, simprocs) ← getSimpContext mkNullNode mkNullNode true
+  Conv.applySimpResult
+    (← deriveSimp ctx simprocs (useSimp := false) (← instantiateMVars (← Conv.getLhs)))
 
 @[inherit_doc normNum] syntax (name := normNumConv)
     "norm_num" optConfig &" only"? (simpArgs)? : conv
 
 /-- Elaborator for `norm_num` conv tactic. -/
 @[tactic normNumConv] def elabNormNumConv : Tactic := fun stx ↦ withMainContext do
-  let ctx ← getSimpContext stx[1] stx[3] !stx[2].isNone
-  Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := true))
+  let (ctx, simprocs) ← getSimpContext stx[1] stx[3] !stx[2].isNone
+  Conv.applySimpResult
+    (← deriveSimp ctx simprocs (useSimp := true) (← instantiateMVars (← Conv.getLhs)))
 
 /-- `#norm_num e`, where `e` is an expression, will print the `norm_num` form of `e`.
 Unlike `norm_num`, this command does not fail when no simplifications are made.
