@@ -5,8 +5,8 @@ Authors: Matteo Cipollina, Michail Karatarakis
 -/
 module
 
+public import Mathlib.Analysis.Complex.TriangleEquality
 public import Mathlib.LinearAlgebra.Matrix.PerronFrobenius.Irreducible
-public import Mathlib.Analysis.CStarAlgebra.PerronFrobenius
 
 /-!
 # Spectral dominance for irreducible matrices
@@ -24,7 +24,7 @@ non-negative real matrices.
 ## Implementation notes
 
 Complex eigenvectors are treated through alignment and norm lemmas from
-`Mathlib.Analysis.CStarAlgebra.PerronFrobenius`.
+`Mathlib.Analysis.Complex.TriangleEquality`.
 
 ## References
 
@@ -113,7 +113,7 @@ lemma norm_eigenvector_is_eigenvector_of_triangle_eq (hA_nonneg : ∀ i j, 0 ≤
        _   = ‖lam‖ * ‖x i‖ := ?_
        _   = ((‖lam‖ : ℝ) • fun i => ‖x i‖) i := ?_
   · simp [mulVec_apply]
-  · simp_rw [Complex.norm_ofReal, abs_of_nonneg (hA_nonneg _ _)]
+  · simp_rw [Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg (hA_nonneg _ _)]
   · simp_rw [norm_mul]
   · exact (h_triangle_eq i).symm
   · simp; rfl
@@ -149,10 +149,10 @@ lemma aligned_of_all_nonneg_re_im {i : n} {x : n → ℂ}
     exact hz_ne_zero (by
       have : z j = 0 := norm_eq_zero.mp hzj_norm0
       simpa [z] using this)
-  have h_align :=
-    Complex.each_term_is_nonneg_real_multiple_of_sum_of_triangle_eq (s := Finset.univ)
-      (v := z) (u := s) (by simp [s]) (by simpa [s] using h_z_sum) hs_ne_zero
-  rcases h_align j (by simp) with ⟨c, hc_nonneg, hcz⟩
+  have h_pair := norm_sum_eq_iff_pairwise_sameRay.1 (by simpa [s] using h_z_sum)
+  rcases Complex.exists_nonneg_mul_of_sameRay
+      (sameRay_sum fun l _ ↦ h_pair j (by simp) l (by simp)) hs_ne_zero with
+    ⟨c, hc_nonneg, hcz⟩
   have hcz' : z j = (c : ℂ) * s := hcz
   have hcz_smul : z j = c • s := by simpa [smul_eq_mul] using hcz'
   refine ⟨c, hc_nonneg, ?_⟩
@@ -218,7 +218,7 @@ lemma sum_component_norms_eq_perron_power_norm [DecidableEq n] -- [CommSemiring 
     _ = ((A ^ k) *ᵥ (fun i ↦ ‖x i‖)) m := ?_
     _ = ((perronRoot_alt A) ^ k • (fun i ↦ ‖x i‖)) m := ?_
     _ = (perronRoot_alt A) ^ k * ‖x m‖ := ?_
-  · simp_rw [norm_mul, Complex.norm_ofReal]
+  · simp_rw [norm_mul, Complex.norm_real, Real.norm_eq_abs]
   · simp_rw [abs_of_pos (hAk_pos m _)]
   · simp [mulVec_apply]
   · simpa using congrArg (fun v => v m) h_pow_eig
@@ -533,6 +533,6 @@ theorem perron_root_is_spectral_radius (hA_irred : A.IsIrreducible) (hA_nonneg :
           congrArg (fun x : ℝ => (x : ℂ)) h_eq
       exact mem_spectrum_of_eigenvalue hvc_ne_zero hvc_eig
     have h_bound := eigenvalue_abs_le_perron_root hA_irred hA_nonneg hμ_complex
-    rwa [Complex.norm_ofReal] at h_bound
+    rwa [Complex.norm_real, Real.norm_eq_abs] at h_bound
 
 end Matrix
