@@ -110,12 +110,12 @@ lemma ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt
       ((ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp hUμ) g)
   exact tendsto_nhds_unique hgf hgf'
 
-/-- **Krylov-Bogolyubov theorem**: there exists an invariant Borel probability measure,
+/-- **Krylov-Bogolyubov theorem**: there exists a regular, invariant, Borel probability measure,
 for a continuous function on a nonempty, compact, Hausdorff space. -/
 public theorem exists_measurePreserving_probabilityMeasure
     [TopologicalSpace X] [BorelSpace X] [T2Space X]
     [CompactSpace X] [Nonempty X] {f : X → X} (hf : Continuous f) :
-    ∃ μ : ProbabilityMeasure X, MeasurePreserving f μ μ := by
+    ∃ μ : ProbabilityMeasure X, MeasurePreserving f μ μ ∧ Measure.Regular (μ : Measure X) := by
   obtain ⟨x⟩ := ‹Nonempty X›
   obtain ⟨μ, _, hμ⟩ := isCompact_univ.exists_mapClusterPt
     (u := fun n ↦ orbitMeasure f x n) (f := atTop) (by simp)
@@ -138,7 +138,8 @@ public theorem exists_measurePreserving_probabilityMeasure
       simp_rw [← g.toBoundedContinuousFunction.compContinuous_apply ⟨f,hf⟩, ← hμν]
       exact hμinv g.toBoundedContinuousFunction
     · exact g.continuous.aestronglyMeasurable
-  exact ⟨⟨ν, ⟨hprob⟩⟩,hf.measurable, hmap⟩
+  use ⟨ν, ⟨hprob⟩⟩
+  exact ⟨⟨hf.measurable, hmap⟩, hνreg⟩
 
 /-- **Krylov-Boboglyubov theorem** for forward invariant compact sets. -/
 public theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
@@ -146,19 +147,26 @@ public theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInv
     {K : Set X} (hcomp : IsCompact K) (hnonempty : K.Nonempty)
     {f : X → X} (hfcont : ContinuousOn f K) (hfinv : Set.MapsTo f K K)
     (hfmeas : Measurable f) : -- TODO: relax this
-    ∃ μ : ProbabilityMeasure X, MeasurePreserving f μ μ ∧ Measure.support μ ⊆ K := by
+    ∃ μ : ProbabilityMeasure X,
+      MeasurePreserving f μ μ ∧ Measure.Regular (μ : Measure X) ∧ Measure.support μ ⊆ K := by
   have : CompactSpace K := isCompact_iff_compactSpace.mp hcomp
   have : Nonempty K := hnonempty.to_subtype
   let f' : K → K := Set.MapsTo.restrict f K K hfinv
   let ι : K → X := Subtype.val
-  obtain ⟨μ, hμ⟩ := exists_measurePreserving_probabilityMeasure (hfcont.mapsToRestrict hfinv)
+  obtain ⟨μ, hμ, hμreg⟩ := exists_measurePreserving_probabilityMeasure (hfcont.mapsToRestrict hfinv)
+  have : IsFiniteMeasure (μ : Measure K) := inferInstance
   have hιmeas : Measurable ι :=  measurable_subtype_coe
   let ν := μ.map hιmeas.aemeasurable
+  use ν
+  have : IsFiniteMeasure (ν : Measure X) := by
+    simpa [ν] using (Measure.isFiniteMeasure_map (μ : Measure K) Subtype.val)
+  have : (ν : Measure X).InnerRegular :=
+    Measure.InnerRegular.map_of_continuous continuous_subtype_val
   have hιmp : MeasurePreserving ι μ ν := ⟨hιmeas, by simp [ν]⟩
   have hsemi : Function.Semiconj ι f' f := by
     intro
     rfl
-  refine ⟨ν, ⟨hιmp.of_semiconj hμ hsemi hfmeas, ?_⟩⟩
+  refine ⟨hιmp.of_semiconj hμ hsemi hfmeas, inferInstance, ?_⟩
   -- Now we prove that the invariant measure is supported on the forward invariant set
   apply Measure.support_subset_of_isClosed hcomp.isClosed
   rw [MeasureTheory.mem_ae_iff]
