@@ -214,7 +214,7 @@ protected lemma nnnorm_smul : ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_inject
 protected lemma enorm_smul : ‖u • v‖ₑ = ‖v‖ₑ := by simp [enorm_eq_nnnorm]
 
 instance : IsIsometricSMul Circle E :=
-  ⟨fun c ↦ Isometry.of_dist_eq fun x y ↦ by simp [dist_eq_norm, ← smul_sub]⟩
+  ⟨fun _ ↦ Isometry.of_dist_eq fun _ _ ↦ by simp [dist_eq_norm, ← smul_sub]⟩
 
 end Norm
 
