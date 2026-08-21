@@ -12,7 +12,17 @@ public import Mathlib.CategoryTheory.Subfunctor.Basic
 /-!
 # Shrinking sieve functors
 
-Universe-shrunk versions of the presheaf associated to a sieve.
+The presheaf associated to a sieve naturally takes values in the universe containing the hom-sets
+of the ambient category. For a locally small category, the Yoneda shrinking construction allows
+this presheaf to be represented in a chosen smaller universe.
+
+This file defines `Sieve.shrinkFunctor`, the universe-shrunk presheaf associated to a sieve, and
+constructs its comparison isomorphism with the lifted sieve presheaf. It also records the
+compatibility of this isomorphism with the inclusion into the corresponding Yoneda presheaf.
+
+## Tags
+
+sieve, presheaf, universe
 -/
 
 @[expose] public section

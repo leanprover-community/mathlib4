@@ -11,7 +11,24 @@ public import Mathlib.CategoryTheory.Sites.Sieves.Presieve
 /-!
 # Sieves
 
-The basic theory of sieves, including generation, lattices, and pullback and pushforward.
+For an object `X` of a category `C`, a sieve on `X` is a presieve on `X`, i.e. a predicate on
+morphisms with codomain `X`, with the additional property of being closed under precomposition.
+Thus a sieve records a collection of arrows into `X` that is stable under passing to further
+refinements.
+
+This file develops the basic theory of sieves. It gives `Sieve X` its complete lattice structure
+and defines `Sieve.generate`, the smallest sieve containing a presieve. Generation and the
+underlying-arrow presieve form a Galois insertion. The file also constructs sieves from indexed
+families of arrows or objects, and defines pullback and pushforward along a fixed morphism together
+with their Galois connection.
+
+Operations induced by functors between categories are developed in
+`Mathlib.CategoryTheory.Sites.Sieves.Functoriality`, while the presheaf associated to a sieve is
+developed in `Mathlib.CategoryTheory.Sites.Sieves.Presheaf`.
+
+## Tags
+
+sieve, pullback
 -/
 
 @[expose] public section

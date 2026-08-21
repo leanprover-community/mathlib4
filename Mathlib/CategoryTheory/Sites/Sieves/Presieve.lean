@@ -10,7 +10,22 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 /-!
 # Presieves
 
-Predicates on arrows, families of arrows, and operations on presieves.
+A presieve on an object `X` of a category `C` is an arbitrary predicate on morphisms with codomain
+`X`. Unlike a sieve, a presieve is not required to be closed under precomposition. Presieves are
+useful for specifying generating families of arrows before passing to the sieve they generate.
+
+This file develops the basic theory of presieves. It defines singleton presieves and presieves
+`Presieve.ofArrows` associated to indexed families of arrows, together with binding and
+pullback constructions. It also defines pullback and pushforward along a fixed morphism, the
+associated Galois connection, and the category, diagram, and cocone determined by a presieve.
+Finally, `Presieve.uncurry` realizes a presieve as a set in a sigma type.
+
+Functorial operations induced by a functor between categories are developed in
+`Mathlib.CategoryTheory.Sites.Sieves.Functoriality`.
+
+## Tags
+
+presieve, pullback
 -/
 
 @[expose] public section

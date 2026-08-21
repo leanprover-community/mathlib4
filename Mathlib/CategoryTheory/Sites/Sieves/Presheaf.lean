@@ -10,7 +10,19 @@ public import Mathlib.CategoryTheory.Sites.Sieves.Basic
 /-!
 # The presheaf associated to a sieve
 
-The presheaf and Yoneda inclusion associated to a sieve.
+A sieve `S` on an object `X` of a category `C` determines a presheaf whose value at `Y` is the type
+of morphisms `Y ⟶ X` belonging to `S`. The closure condition for a sieve makes this construction
+functorial, and the resulting presheaf is naturally a subfunctor of the Yoneda presheaf of `X`.
+
+This file defines the associated presheaf `Sieve.functor`, its monomorphic natural transformation
+`Sieve.functorInclusion` into `yoneda.obj X`, and natural transformations induced by inclusions of
+sieves. It also reconstructs a sieve from a subfunctor of a representable presheaf. Parallel
+constructions using `uliftYoneda` are provided for situations in which universe levels must be
+adjusted.
+
+## Tags
+
+sieve, presheaf, Yoneda
 -/
 
 @[expose] public section
