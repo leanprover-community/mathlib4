@@ -182,7 +182,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
   · rw [coeff_mul, coeff_mul, sum_congr rfl]
     intro _ hab
     have ha := lt_of_le_of_lt (antidiagonal.fst_le hab) h
-    rw [Polynomial.coeff_coe, coeff_trunc, if_pos ha]
+    rw [Polynomial.coeff_coe, coeff_trunc, ite_eq_left ha]
   · rfl
 
 @[simp] theorem trunc_mul_trunc {n} (f g : R⟦X⟧) :
@@ -217,7 +217,7 @@ theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R
 long truncation of the power series `f`. -/
 theorem coeff_coe_trunc_of_lt {n m} {f : R⟦X⟧} (h : n < m) :
     coeff n (trunc m f) = coeff n f := by
-  rwa [Polynomial.coeff_coe, coeff_trunc, if_pos]
+  rwa [Polynomial.coeff_coe, coeff_trunc, ite_eq_left]
 
 /-- The `n`-th coefficient of `f*g` may be calculated
 from the truncations of `f` and `g`. -/

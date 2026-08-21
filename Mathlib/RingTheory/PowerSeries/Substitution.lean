@@ -385,12 +385,13 @@ variable {a : τ → PowerSeries R} (n : ℕ) {x : τ → ℕ}
 lemma _root_.MvPowerSeries.HasSubst.trunc_lt (ha : MvPowerSeries.HasSubst a) (hx : ∀ i, n < x i) :
     MvPowerSeries.HasSubst (fun i => (PowerSeries.trunc (x i) (a i) : PowerSeries R)) where
   const_coeff s := by
-    rw [← constantCoeff_eq, Polynomial.constantCoeff_coe, coeff_trunc, if_pos (by linarith [hx s])]
+    rw [← constantCoeff_eq, Polynomial.constantCoeff_coe, coeff_trunc, ite_eq_left
+      (by linarith [hx s])]
     simp [ha.const_coeff s, constantCoeff]
   coeff_zero d :=
     Set.Finite.subset (ha.coeff_zero d) fun s hs => by
       by_contra! hc
-      simp only [← coeff_def rfl, Polynomial.coeff_coe, ne_eq, Set.mem_setOf_eq] at hc hs
+      simp only [← coeff_def rfl, Polynomial.coeff_coe, ne_eq, Set.mem_ofPred_eq] at hc hs
       simp [coeff_trunc, hc] at hs
 
 theorem trunc_subst_trunc (ha : MvPowerSeries.HasSubst a) (hx : ∀ i, n < x i) :
