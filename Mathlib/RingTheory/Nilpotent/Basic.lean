@@ -216,6 +216,28 @@ end Ring
 
 end Commute
 
+section Semiring
+
+variable [Semiring R] {x y : R}
+
+/-- In a semiring, two elements whose sum is zero have equal squares. -/
+theorem sq_eq_sq_of_add_eq_zero (h : x + y = 0) : x ^ 2 = y ^ 2 := by
+  simpa [h] using show x ^ 2 + (x + y) * y = x * (x + y) + y ^ 2 by grind
+
+/-- If two elements of a semiring sum to zero and the right one is nilpotent,
+then so is the left one. -/
+theorem IsNilpotent.of_add_eq_zero_left (h : x + y = 0) (hy : IsNilpotent y) :
+    IsNilpotent x := by
+  obtain ⟨n, hn⟩ := hy
+  use 2 * n
+  rw [pow_mul, sq_eq_sq_of_add_eq_zero h, pow_right_comm, hn, pow_two, mul_zero]
+
+theorem isNilpotent_iff_of_add_eq_zero (h : x + y = 0) :
+    IsNilpotent x ↔ IsNilpotent y :=
+  ⟨.of_add_eq_zero_left (add_eq_zero_comm.mp h), .of_add_eq_zero_left h⟩
+
+end Semiring
+
 section CommSemiring
 
 variable [CommSemiring R]
