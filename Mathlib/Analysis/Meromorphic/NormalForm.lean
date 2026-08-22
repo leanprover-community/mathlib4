@@ -25,8 +25,9 @@ form at a single point and along a set, respectively.
 
 @[expose] public section
 
-open Metric Set Topology WithTop
-open scoped Pointwise
+open Metric Set WithTop
+
+open scoped Topology Pointwise
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]

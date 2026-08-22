@@ -110,7 +110,9 @@ theorem orthogonal_eq_bot_iff [K.HasOrthogonalProjection] : Kᗮ = ⊥ ↔ K = �
   have : K ⊔ Kᗮ = ⊤ := Submodule.sup_orthogonal_of_hasOrthogonalProjection
   rwa [h, sup_comm, bot_sup_eq] at this
 
-open Topology RCLike Real Filter
+open RCLike Real Filter
+
+open scoped Topology
 
 /-- Given a monotone family `U` of complete submodules of `E` and a fixed `x : E`,
 the orthogonal projection of `x` on `U i` tends to the orthogonal projection of `x` on

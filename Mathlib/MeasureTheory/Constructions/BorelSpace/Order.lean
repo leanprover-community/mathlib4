@@ -184,7 +184,7 @@ section LinearOrder
 variable [LinearOrder α] {a b x : α} {μ : Measure α}
 
 -- we open this scope only here to avoid issues with list being treated as intervals above
-open Interval
+open scoped Interval
 
 @[simp, measurability]
 theorem measurableSet_Iio [ClosedIciTopology α] : MeasurableSet (Iio a) :=

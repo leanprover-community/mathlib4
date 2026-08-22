@@ -41,7 +41,9 @@ balanced
 @[expose] public section
 
 
-open Set Pointwise Topology Filter
+open Set Pointwise Filter
+
+open scoped Topology
 
 variable {𝕜 E ι : Type*}
 

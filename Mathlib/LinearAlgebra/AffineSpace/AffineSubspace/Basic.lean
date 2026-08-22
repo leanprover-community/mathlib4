@@ -26,7 +26,7 @@ and the affine span of a set of points.
 
 noncomputable section
 
-open Affine
+open scoped Affine
 
 open Set
 open scoped Pointwise

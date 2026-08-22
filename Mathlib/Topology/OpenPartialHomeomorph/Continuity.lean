@@ -21,7 +21,9 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 
 public section
 
-open Function Set Filter Topology
+open Function Set Filter
+
+open scoped Topology
 
 variable {X : Type*} {Y : Type*} {Z : Type*}
   [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]

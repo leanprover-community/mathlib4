@@ -24,7 +24,7 @@ supplied for true `εNFA`'s.
 
 open Set
 
-open Computability
+open scoped Computability
 
 -- "ε_NFA"
 

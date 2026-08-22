@@ -50,7 +50,7 @@ scoped[CompactlySupported] notation (priority := 2000)
 @[inherit_doc]
 scoped[CompactlySupported] notation α " →C_c " β => CompactlySupportedContinuousMap α β
 
-open CompactlySupported
+open scoped CompactlySupported
 
 section
 

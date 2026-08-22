@@ -83,7 +83,7 @@ scoped[Quaternion] notation "ℍ[" R "," a "," b "," c "]" =>
 scoped[Quaternion] notation "ℍ[" R "," a "," b "]" => QuaternionAlgebra R a 0 b
 
 namespace QuaternionAlgebra
-open Quaternion
+open scoped Quaternion
 
 /-- The equivalence between a quaternion algebra over `R` and `R × R × R × R`. -/
 @[simps]

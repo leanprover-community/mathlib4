@@ -31,8 +31,10 @@ formula which is an important input in functional equations of (un-completed) Di
 
 @[expose] public section
 
-open Filter Topology Asymptotics Real Set MeasureTheory
+open Filter Asymptotics Real Set MeasureTheory
 open Complex
+
+open scoped Topology
 
 namespace Complex
 

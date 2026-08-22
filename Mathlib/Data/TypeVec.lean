@@ -53,7 +53,7 @@ def Arrow (α : TypeVec.{u} n) (β : TypeVec.{v} n) :=
   ∀ i : Fin2 n, α i → β i
 
 @[inherit_doc] scoped[MvFunctor] infixl:40 " ⟹ " => TypeVec.Arrow
-open MvFunctor
+open scoped MvFunctor
 
 variable {α : TypeVec.{u} n} {β : TypeVec.{v} n} {γ : TypeVec.{w} n} {δ : TypeVec.{x} n} in
 section

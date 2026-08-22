@@ -262,7 +262,9 @@ lemma hasDerivAt_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
     HasDerivAt (qaryEntropy q) (log (q - 1) + log (1 - p) - log p) p :=
   deriv_qaryEntropy hp₀ hp₁ ▸ (differentiableAt_qaryEntropy hp₀ hp₁).hasDerivAt
 
-open Filter Topology Set
+open Filter Set
+
+open scoped Topology
 
 private lemma tendsto_log_one_sub_sub_log_nhdsGT_atAtop :
     Tendsto (fun p ↦ log (1 - p) - log p) (𝓝[>] 0) atTop := by

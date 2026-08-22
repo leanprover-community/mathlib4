@@ -936,3 +936,7 @@ theorem FiniteDimensional.of_locallyCompact_manifold
   exact FiniteDimensional.of_locallyCompactSpace 𝕜
 
 end Topology
+
+instance {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M} [FiniteDimensional 𝕜 E] :
+    FiniteDimensional 𝕜 (TangentSpace I x) :=
+  inferInstanceAs (FiniteDimensional 𝕜 E)

@@ -35,7 +35,7 @@ variable [IsScalarTower R S M]
 variable [Fintype l] [Fintype m] [Fintype n] [Fintype p]
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
 
-open Kronecker
+open scoped Kronecker
 
 variable (l m n p R S A M N)
 

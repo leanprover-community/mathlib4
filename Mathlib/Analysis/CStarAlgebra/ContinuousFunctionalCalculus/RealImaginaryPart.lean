@@ -11,7 +11,9 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instanc
 
 public section
 
-open Complex ComplexStarModule
+open Complex
+
+open scoped ComplexStarModule
 
 variable {A : Type*} [TopologicalSpace A]
 

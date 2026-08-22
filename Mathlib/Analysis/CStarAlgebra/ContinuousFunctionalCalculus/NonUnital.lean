@@ -786,7 +786,9 @@ end IsClosedEmbedding
 
 section UnitalToNonUnital
 
-open ContinuousMapZero Set Uniformity ContinuousMap
+open ContinuousMapZero Set ContinuousMap
+
+open scoped Uniformity
 
 variable {R A : Type*} {p : A → Prop} [Semifield R] [StarRing R] [MetricSpace R]
 variable [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]

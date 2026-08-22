@@ -263,7 +263,9 @@ end specialversions
 
 section limit
 
-open Filter Topology intervalIntegral
+open Filter intervalIntegral
+
+open scoped Topology
 
 theorem locallyIntegrableOn_mul_sum_Icc {m : ℕ} (ha : 0 ≤ a) {g : ℝ → 𝕜}
     (hg : LocallyIntegrableOn g (Set.Ici a)) :

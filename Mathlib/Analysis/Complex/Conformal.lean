@@ -59,7 +59,9 @@ this file.
 
 noncomputable section
 
-open Complex ContinuousLinearMap ComplexConjugate
+open Complex ContinuousLinearMap
+
+open scoped ComplexConjugate
 
 theorem isConformalMap_conj : IsConformalMap (conjLIE : ℂ →L[ℝ] ℂ) :=
   conjLIE.toLinearIsometry.isConformalMap

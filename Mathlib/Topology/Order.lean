@@ -48,7 +48,9 @@ finer, coarser, induced topology, coinduced topology
 
 @[expose] public section
 
-open Function Set Filter Topology
+open Function Set Filter
+
+open scoped Topology
 
 universe u v w
 

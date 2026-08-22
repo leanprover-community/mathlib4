@@ -21,7 +21,7 @@ then there exists a rank function for `P` with values in `ℕ`.
 
 universe u
 
-open Simplicial
+open scoped Simplicial
 
 namespace SSet.Subcomplex
 

@@ -22,7 +22,9 @@ Basic inequalities on trigonometric functions.
 
 noncomputable section
 
-open Topology Filter Set Filter Real
+open Filter Set Filter Real
+
+open scoped Topology
 
 namespace Real
 variable {x y : ℝ}

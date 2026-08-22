@@ -25,7 +25,9 @@ non degenerate `x.toN : X.N` such that `x.toN.subcomplex = x.subcomplex`.
 
 universe u
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SSet
 

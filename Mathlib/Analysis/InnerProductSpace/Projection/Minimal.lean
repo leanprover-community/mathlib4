@@ -25,7 +25,9 @@ variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 local notation "absR" => @abs ℝ _ _
 
-open Topology RCLike Real Filter InnerProductSpace
+open RCLike Real Filter InnerProductSpace
+
+open scoped Topology
 
 /-- **Existence of minimizers**, aka the **Hilbert projection theorem**.
 

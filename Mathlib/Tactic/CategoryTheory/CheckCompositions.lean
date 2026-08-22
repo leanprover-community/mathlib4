@@ -43,18 +43,26 @@ def checkComposition (e : Expr) : MetaM Unit := do
     | Quiver.Hom _ _ X' Y' =>
       withReducibleAndInstances do
         if !(← isDefEq X' X) then
-          logInfo m!"In composition\n  {e}\nthe source of\n  {f}\nis\n  {X'}\nbut should be\n  {X}"
+          let (X', X) ← addPPExplicitToExposeDiff X' X
+          logInfo m!"In composition{indentD e}\n\
+            the source of{indentD f}\nis{indentD X'}\nbut should be{indentD X}"
         if !(← isDefEq Y' Y) then
-          logInfo m!"In composition\n  {e}\nthe target of\n  {f}\nis\n  {Y'}\nbut should be\n  {Y}"
-    | _ => throwError "In composition\n  {e}\nthe type of\n  {f}\nis not a morphism."
+          let (Y', Y) ← addPPExplicitToExposeDiff Y' Y
+          logInfo m!"In composition{indentD e}\n\
+            the target of{indentD f}\nis{indentD Y'}\nbut should be{indentD Y}"
+    | _ => throwError "In composition{indentD e}\nthe type of{indentD f}\nis not a morphism."
     match_expr ← inferType g with
     | Quiver.Hom _ _ Y' Z' =>
       withReducibleAndInstances do
         if !(← isDefEq Y' Y) then
-          logInfo m!"In composition\n  {e}\nthe source of\n  {g}\nis\n  {Y'}\nbut should be\n  {Y}"
+          let (Y', Y) ← addPPExplicitToExposeDiff Y' Y
+          logInfo m!"In composition{indentD e}\n\
+            the source of{indentD g}\nis{indentD Y'}\nbut should be{indentD Y}"
         if !(← isDefEq Z' Z) then
-          logInfo m!"In composition\n  {e}\nthe target of\n  {g}\nis\n  {Z'}\nbut should be\n  {Z}"
-    | _ => throwError "In composition\n  {e}\nthe type of\n  {g}\nis not a morphism."
+          let (Z', Z) ← addPPExplicitToExposeDiff Z' Z
+          logInfo m!"In composition{indentD e}\n\
+            the target of{indentD g}\nis{indentD Z'}\nbut should be{indentD Z}"
+    | _ => throwError "In composition{indentD e}\nthe type of{indentD g}\nis not a morphism."
   | _ => throwError "{e} is not a composition."
 
 /-- Check the typing of categorical compositions in an expression. -/

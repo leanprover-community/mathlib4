@@ -151,7 +151,9 @@ assert_not_exists ChartedSpace
 
 local macro:max "𝔼" noWs n:superscript(term) : term => `(EuclideanSpace ℝ (Fin $(⟨n.raw[0]⟩)))
 
-open Topology ContDiff
+open ContDiff
+
+open scoped Topology
 
 /-- A diffeology on `X`, given by the smooth functions (or "plots") from ℝⁿ to `X`. -/
 class DiffeologicalSpace (X : Type*) where

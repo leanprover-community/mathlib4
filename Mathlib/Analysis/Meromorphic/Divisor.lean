@@ -23,7 +23,9 @@ of divisors and of meromorphic functions to subsets of their domain of definitio
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-open Filter Metric Topology
+open Filter Metric
+
+open scoped Topology
 
 namespace MeromorphicOn
 

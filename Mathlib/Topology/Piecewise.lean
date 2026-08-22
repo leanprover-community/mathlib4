@@ -13,7 +13,9 @@ public import Mathlib.Topology.ContinuousOn
 
 public section
 
-open Set Filter Function Topology Filter
+open Set Filter Function Filter
+
+open scoped Topology
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
   {f g : α → β} {s s' t : Set α} {x : α}

@@ -39,7 +39,7 @@ open Complex
 
 open CharZero
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 local notation "|" x "|" => Complex.abs x
 

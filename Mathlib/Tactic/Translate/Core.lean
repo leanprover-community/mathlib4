@@ -1206,7 +1206,19 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
   let allDecls := #[src, tgt] ++ nestedDecls
   if attrs.size > 0 then
     trace[translate_detail] "Applying attributes {attrs.map (·.stx)} to {allDecls}"
+  -- Sort the attributes based on their application time.
+  let mut attrs₁ := #[]
+  let mut attrs₂ := #[]
+  let mut attrs₃ := #[]
   for attr in attrs do
+    match getAttributeImpl (← getEnv) attr.name with
+    | .error errMsg => throwError errMsg
+    | .ok attrImpl =>
+      match attrImpl.applicationTime with
+      | .beforeElaboration => attrs₁ := attrs₁.push attr
+      | .afterTypeChecking => attrs₂ := attrs₂.push attr
+      | .afterCompilation => attrs₃ := attrs₃.push attr
+  for attr in attrs₁ ++ attrs₂ ++ attrs₃ do
     if let some impl := (← generatingAttrs.get).find? attr.name then
       withRef attr.stx do withLogging do
         translateLemmas t allDecls "simps lemmas" cfg

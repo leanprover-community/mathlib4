@@ -30,7 +30,9 @@ Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative
 
 @[expose] public section
 
-open Complex Filter Metric Real Set Topology
+open Complex Filter Metric Real Set
+
+open scoped Topology
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]

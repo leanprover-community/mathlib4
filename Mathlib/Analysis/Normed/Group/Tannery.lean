@@ -24,7 +24,9 @@ measure-theoretic result.
 
 public section
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- **Tannery's theorem**: topological sums commute with termwise limits, when the norms of the

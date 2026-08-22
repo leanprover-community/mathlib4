@@ -36,7 +36,9 @@ which shall be an equivalence for any additive category `C`.
 noncomputable section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits SimplexCategory
-  SimplicialObject Opposite CategoryTheory.Idempotents Simplicial DoldKan
+  SimplicialObject Opposite CategoryTheory.Idempotents
+
+open scoped Simplicial DoldKan
 
 namespace AlgebraicTopology
 

@@ -37,7 +37,9 @@ members of the approximating sequence are nonnegative bounded continuous functio
 
 @[expose] public section
 
-open NNReal ENNReal Topology BoundedContinuousFunction Set Metric Filter
+open NNReal ENNReal BoundedContinuousFunction Set Metric Filter
+
+open scoped Topology
 
 noncomputable section thickenedIndicator
 

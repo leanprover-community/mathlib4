@@ -79,7 +79,7 @@ scoped[Distributions] notation "𝓓^{" n "}(" Ω ", " F ")" => TestFunction Ω 
 with compact support. -/
 scoped[Distributions] notation "𝓓(" Ω ", " F ")" => TestFunction Ω F ⊤
 
-open Distributions
+open scoped Distributions
 
 /-- `TestFunctionClass B Ω F n` states that `B` is a type of `n`-times continuously
 differentiable functions `E → F` with compact support contained in `Ω : Opens E`. -/

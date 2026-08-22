@@ -19,7 +19,9 @@ public import Mathlib.Order.Filter.AtTopBot.Archimedean
 
 public section
 
-open Set Topology Filter
+open Set Filter
+
+open scoped Topology
 
 namespace Asymptotics
 

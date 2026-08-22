@@ -361,7 +361,7 @@ scoped[ChangeOfRings] notation:100 s:100 " ⊗ₜ[" R "," f "] " m:101 =>
 
 end Unbundled
 
-open ChangeOfRings
+open scoped ChangeOfRings
 
 namespace ExtendScalars
 

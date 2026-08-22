@@ -28,7 +28,7 @@ noncomputable section
 
 open Real Set
 
-open RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 namespace InnerProductGeometry
 

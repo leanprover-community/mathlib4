@@ -24,7 +24,9 @@ public section
 variable {α ι κ E F G : Type*}
 
 open Filter Function Metric
-open ENNReal Filter NNReal Uniformity Topology
+open ENNReal Filter NNReal Topology
+
+open scoped Uniformity
 
 section SeminormedGroup
 

@@ -51,7 +51,7 @@ weak dual, seminorm
 
 variable {𝕜 E F : Type*}
 
-open Topology
+open scoped Topology
 
 section BilinForm
 
@@ -95,8 +95,9 @@ lemma dualEmbedding_injective_of_separatingRight (B : E →ₗ[𝕜] F →ₗ[�
 
 variable {ι 𝕜 E F : Type*}
 
-open Topology TopologicalSpace
-open scoped NNReal
+open TopologicalSpace
+
+open scoped Topology NNReal
 
 section
 

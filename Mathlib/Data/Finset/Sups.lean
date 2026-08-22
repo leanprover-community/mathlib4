@@ -337,7 +337,7 @@ theorem infs_infs_infs_comm : s ⊼ t ⊼ (u ⊼ v) = s ⊼ u ⊼ (t ⊼ v) :=
 
 end Infs
 
-open FinsetFamily
+open scoped FinsetFamily
 
 section DistribLattice
 

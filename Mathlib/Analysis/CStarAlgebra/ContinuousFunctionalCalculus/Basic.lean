@@ -252,7 +252,7 @@ lemma IsSelfAdjoint.sq_spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
   rintro - ⟨x, -, rfl⟩
   exact sq_nonneg x
 
-open ComplexStarModule
+open scoped ComplexStarModule
 
 lemma SpectrumRestricts.eq_zero_of_neg {a : A} (ha : IsSelfAdjoint a)
     (ha₁ : SpectrumRestricts a ContinuousMap.realToNNReal)

@@ -36,7 +36,7 @@ elementary properties, like locally convex spaces.
 
 open RCLike
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 variable {𝕜 : Type*} [RCLike 𝕜] {F : Type*}
 namespace Module.Dual
