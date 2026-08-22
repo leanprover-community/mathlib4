@@ -5,13 +5,11 @@ Authors: Yaël Dillies, Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.Distributions.SetBernoulli
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Order.Interval.Set.Nat
-import Mathlib.Probability.Notation
 
 /-!
 # Binomial random variables
@@ -127,14 +125,13 @@ lemma binomial_real_self (n : ℕ) (p : I) :
 lemma map_cast_binomial_real_self [MeasurableSingletonClass R] [CharZero R] (n : ℕ) (p : I) :
     Bin(R, n, p).real {(n : R)} = p ^ n := by simp [map_cast_binomial_real_singleton]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma binomial_one_eq_bernoulliMeasure (p : I) :
     Bin(1, p) = Ber(1, 0, p) := by
   refine ext_of_measureReal_singleton fun k ↦ ?_
   match k with
   | 0 | 1 => simp
-  | k + 2 => simp [binomial_real_singleton]
+  | k + 2 => simp [binomial_real_singleton, Nat.choose_eq_zero_of_lt]
 
 lemma binomial_eq_sum_dirac (n : ℕ) (p : I) :
     Bin(n, p) =
@@ -188,20 +185,19 @@ variable {X : Ω → ℝ}
 /-- **Expectation of a binomial random variable**.
 
 The expectation of a binomial random variable with parameters `n` and `p` is `pn`. -/
-proof_wanted integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n
-
-/-- **Variance of a binomial random variable**.
-
-The variance of a binomial random variable with parameters `n` and `p` is `p(1 - p)n`. -/
-proof_wanted variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
-    Var[X; P] = p * (1 - p) * n
-
-/-- **Conditional variance of a binomial random variable**.
-
-The conditional variance of a binomial random variable is the product of the conditional
-probabilities that it's equal to `0` and that it's equal to `1`. -/
-proof_wanted condVar_of_hasLaw_binomial {m₀ : MeasurableSpace Ω} (hm : m ≤ m₀) {P : Measure[m₀] Ω}
-    (hX : HasLaw X Bin(ℝ, n, p) P) :
-    Var[X; P | m] =ᵐ[P] P[X | m] * P[1 - X | m]
+theorem integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n := by
+  rw [hX.integral_eq, integral_map_cast_binomial, ← n.range_succ_eq_Iic, Finset.sum_range_succ']
+  cases n with norm_num | succ n
+  calc
+    _ = p * ∑ x ∈ Finset.range (n + 1), (n + 1).choose (x + 1) * (x + 1) *
+        p.val ^ x * (1 - p) ^ (n - x) := by grind [Finset.mul_sum]
+    _ = p * ∑ x ∈ Finset.range (n + 1), n.choose x * (n + 1) * p.val ^ x * (1 - p) ^ (n - x) := by
+      congrm p * ∑ x ∈ Finset.range (n + 1), ?_ * p.val ^ x * (1 - p) ^ (n - x)
+      norm_cast
+      rw [← Nat.add_one_mul_choose_eq n x, mul_comm]
+    _ = p * (n + 1) * ∑ x ∈ Finset.range (n + 1), n.choose x * p.val ^ x * (1 - p) ^ (n - x) := by
+      rw [mul_assoc, Finset.mul_sum (a := (n : ℝ) + 1)]
+      group
+    _ = p * (n + 1) := by grind [add_pow p.val (1 - p) n, one_pow]
 
 end ProbabilityTheory

@@ -58,8 +58,6 @@ universe v₁ u₁ v u
 
 namespace CategoryTheory
 
-open Category
-
 variable (C : Type u) [Category.{v} C]
 
 /-- The definition of a Grothendieck topology: a set of sieves `J X` on each object `X` satisfying
