@@ -565,22 +565,22 @@ theorem iUnion_nonempty_index (s : Set α) (t : s.Nonempty → Set β) :
 end
 
 @[simp]
-theorem iInter_iInter_eq_left {b : β} {s : ∀ x : β, x = b → Set α} :
+theorem iInter_iInter_eq_left {b : ι} {s : ∀ x : ι, x = b → Set α} :
     ⋂ (x) (h : x = b), s x h = s b rfl :=
   iInf_iInf_eq_left
 
 @[simp]
-theorem iInter_iInter_eq_right {b : β} {s : ∀ x : β, b = x → Set α} :
+theorem iInter_iInter_eq_right {b : ι} {s : ∀ x : ι, b = x → Set α} :
     ⋂ (x) (h : b = x), s x h = s b rfl :=
   iInf_iInf_eq_right
 
 @[simp]
-theorem iUnion_iUnion_eq_left {b : β} {s : ∀ x : β, x = b → Set α} :
+theorem iUnion_iUnion_eq_left {b : ι} {s : ∀ x : ι, x = b → Set α} :
     ⋃ (x) (h : x = b), s x h = s b rfl :=
   iSup_iSup_eq_left
 
 @[simp]
-theorem iUnion_iUnion_eq_right {b : β} {s : ∀ x : β, b = x → Set α} :
+theorem iUnion_iUnion_eq_right {b : ι} {s : ∀ x : ι, b = x → Set α} :
     ⋃ (x) (h : b = x), s x h = s b rfl :=
   iSup_iSup_eq_right
 
@@ -651,12 +651,12 @@ theorem biInter_and' (p : ι' → Prop) (q : ι → ι' → Prop) (s : ∀ x y, 
   simp only [iInter_and, @iInter_comm _ ι]
 
 @[simp]
-theorem iUnion_iUnion_eq_or_left {b : β} {p : β → Prop} {s : ∀ x : β, x = b ∨ p x → Set α} :
+theorem iUnion_iUnion_eq_or_left {b : ι} {p : ι → Prop} {s : ∀ x : ι, x = b ∨ p x → Set α} :
     ⋃ (x) (h), s x h = s b (Or.inl rfl) ∪ ⋃ (x) (h : p x), s x (Or.inr h) := by
   simp only [iUnion_or, iUnion_union_distrib, iUnion_iUnion_eq_left]
 
 @[simp]
-theorem iInter_iInter_eq_or_left {b : β} {p : β → Prop} {s : ∀ x : β, x = b ∨ p x → Set α} :
+theorem iInter_iInter_eq_or_left {b : ι} {p : ι → Prop} {s : ∀ x : ι, x = b ∨ p x → Set α} :
     ⋂ (x) (h), s x h = s b (Or.inl rfl) ∩ ⋂ (x) (h : p x), s x (Or.inr h) := by
   simp only [iInter_or, iInter_inter_distrib, iInter_iInter_eq_left]
 
@@ -664,20 +664,20 @@ lemma iUnion_sum {s : α ⊕ β → Set γ} : ⋃ x, s x = (⋃ x, s (.inl x)) �
 
 lemma iInter_sum {s : α ⊕ β → Set γ} : ⋂ x, s x = (⋂ x, s (.inl x)) ∩ ⋂ x, s (.inr x) := iInf_sum
 
-theorem iUnion_psigma {γ : α → Type*} (s : PSigma γ → Set β) : ⋃ ia, s ia = ⋃ i, ⋃ a, s ⟨i, a⟩ :=
+theorem iUnion_psigma (s : PSigma κ → Set β) : ⋃ ia, s ia = ⋃ i, ⋃ a, s ⟨i, a⟩ :=
   iSup_psigma _
 
 /-- A reversed version of `iUnion_psigma` with a curried map. -/
-theorem iUnion_psigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
-    ⋃ i, ⋃ a, s i a = ⋃ ia : PSigma γ, s ia.1 ia.2 :=
+theorem iUnion_psigma' (s : ∀ i, κ i → Set β) :
+    ⋃ i, ⋃ a, s i a = ⋃ ia : PSigma κ, s ia.1 ia.2 :=
   iSup_psigma' _
 
-theorem iInter_psigma {γ : α → Type*} (s : PSigma γ → Set β) : ⋂ ia, s ia = ⋂ i, ⋂ a, s ⟨i, a⟩ :=
+theorem iInter_psigma (s : PSigma κ → Set β) : ⋂ ia, s ia = ⋂ i, ⋂ a, s ⟨i, a⟩ :=
   iInf_psigma _
 
 /-- A reversed version of `iInter_psigma` with a curried map. -/
-theorem iInter_psigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
-    ⋂ i, ⋂ a, s i a = ⋂ ia : PSigma γ, s ia.1 ia.2 :=
+theorem iInter_psigma' (s : ∀ i, κ i → Set β) :
+    ⋂ i, ⋂ a, s i a = ⋂ ia : PSigma κ, s ia.1 ia.2 :=
   iInf_psigma' _
 
 /-! ### Bounded unions and intersections -/
@@ -736,11 +736,11 @@ theorem biInter_eq_iInter (s : Set α) (t : ∀ x ∈ s, Set β) :
 @[simp] lemma biInter_const {s : Set α} (hs : s.Nonempty) (t : Set β) : ⋂ a ∈ s, t = t :=
   biInf_const hs
 
-theorem iUnion_subtype (p : α → Prop) (s : { x // p x } → Set β) :
+theorem iUnion_subtype (p : ι → Prop) (s : { x // p x } → Set β) :
     ⋃ x : { x // p x }, s x = ⋃ (x) (hx : p x), s ⟨x, hx⟩ :=
   iSup_subtype
 
-theorem iInter_subtype (p : α → Prop) (s : { x // p x } → Set β) :
+theorem iInter_subtype (p : ι → Prop) (s : { x // p x } → Set β) :
     ⋂ x : { x // p x }, s x = ⋂ (x) (hx : p x), s ⟨x, hx⟩ :=
   iInf_subtype
 
@@ -1078,14 +1078,19 @@ alias sInter_mono := sInter_subset_sInter
 theorem iUnion_subset_iUnion_const {s : Set α} (h : ι → ι₂) : ⋃ _ : ι, s ⊆ ⋃ _ : ι₂, s :=
   iSup_const_mono (α := Set α) h
 
-@[simp]
-theorem iUnion_singleton_eq_range (f : α → β) : ⋃ x : α, {f x} = range f := by
+/-- More general version of `iUnion_singleton_eq_range`, which can't be marked as `@[simp]`
+because it would interfere with `biUnion_of_singleton`. -/
+theorem iUnion_singleton_eq_range' (f : ι → β) : ⋃ x : ι, {f x} = range f := by
   ext x
-  simp [@eq_comm _ x]
+  simp [eq_comm]
 
-theorem iUnion_insert_eq_range_union_iUnion {ι : Type*} (x : ι → β) (t : ι → Set β) :
+@[simp]
+theorem iUnion_singleton_eq_range (f : α → β) : ⋃ x : α, {f x} = range f :=
+  iUnion_singleton_eq_range' f
+
+theorem iUnion_insert_eq_range_union_iUnion (x : ι → β) (t : ι → Set β) :
     ⋃ i, insert (x i) (t i) = range x ∪ ⋃ i, t i := by
-  simp_rw [← union_singleton, iUnion_union_distrib, union_comm, iUnion_singleton_eq_range]
+  simp_rw [← union_singleton, iUnion_union_distrib, union_comm, iUnion_singleton_eq_range']
 
 theorem iUnion_of_singleton (α : Type*) : (⋃ x, {x} : Set α) = univ := by simp [Set.ext_iff]
 
@@ -1137,8 +1142,8 @@ theorem sUnion_iUnion (s : ι → Set (Set α)) : ⋃₀ ⋃ i, s i = ⋃ i, ⋃
 theorem sInter_iUnion (s : ι → Set (Set α)) : ⋂₀ ⋃ i, s i = ⋂ i, ⋂₀ s i := by
   simp only [sInter_eq_biInter, biInter_iUnion]
 
-theorem iUnion_range_eq_sUnion {α β : Type*} (C : Set (Set α)) {f : ∀ s : C, β → (s : Type _)}
-    (hf : ∀ s : C, Surjective (f s)) : ⋃ y : β, range (fun s : C => (f s y).val) = ⋃₀ C := by
+theorem iUnion_range_eq_sUnion (C : Set (Set α)) {f : ∀ s : C, ι → s.1}
+    (hf : ∀ s : C, Surjective (f s)) : ⋃ y : ι, range (fun s : C => (f s y).val) = ⋃₀ C := by
   ext x; constructor
   · rintro ⟨s, ⟨y, rfl⟩, ⟨s, hs⟩, rfl⟩
     refine ⟨_, hs, ?_⟩
@@ -1148,8 +1153,8 @@ theorem iUnion_range_eq_sUnion {α β : Type*} (C : Set (Set α)) {f : ∀ s : C
     refine ⟨_, ⟨y, rfl⟩, ⟨s, hs⟩, ?_⟩
     exact congr_arg Subtype.val hy
 
-theorem iUnion_range_eq_iUnion (C : ι → Set α) {f : ∀ x : ι, β → C x}
-    (hf : ∀ x : ι, Surjective (f x)) : ⋃ y : β, range (fun x : ι => (f x y).val) = ⋃ x, C x := by
+theorem iUnion_range_eq_iUnion (C : ι → Set α) {f : ∀ x : ι, ι' → C x}
+    (hf : ∀ x : ι, Surjective (f x)) : ⋃ y : ι', range (fun x : ι => (f x y).val) = ⋃ x, C x := by
   ext x; rw [mem_iUnion, mem_iUnion]; constructor
   · rintro ⟨y, i, rfl⟩
     exact ⟨i, (f i y).2⟩
@@ -1235,7 +1240,7 @@ theorem pi_sdiff_pi_subset (i : Set α) (s t : ∀ a, Set (π a)) :
 
 @[deprecated (since := "2026-06-03")] alias pi_diff_pi_subset := pi_sdiff_pi_subset
 
-theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)) :
+theorem iUnion_univ_pi {ι : α → Sort*} (t : (a : α) → ι a → Set (π a)) :
     ⋃ x : (a : α) → ι a, pi univ (fun a => t a (x a)) = pi univ fun a => ⋃ j : ι a, t a j := by
   ext
   simp [Classical.skolem]
@@ -1245,7 +1250,7 @@ theorem biUnion_univ_pi {ι : α → Type*} (s : (a : α) → Set (ι a)) (t : (
   ext
   simp [Classical.skolem, forall_and]
 
-theorem pi_iUnion_eq_iInter_pi {α' : Type*} (s : α' → Set α) (t : (a : α) → Set (π a)) :
+theorem pi_iUnion_eq_iInter_pi (s : ι → Set α) (t : (a : α) → Set (π a)) :
     (⋃ i, s i).pi t = ⋂ i, (s i).pi t := by
   ext f
   simp
