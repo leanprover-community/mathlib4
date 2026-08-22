@@ -161,14 +161,13 @@ theorem isEdgeConnected_two_iff_forall_not_isBridge : G.IsEdgeConnected 2 ↔ �
   · rintro ⟨x, y⟩
     exact (isBridge_iff.mp · <| h s(x, y) x y)
   · rintro ⟨x, y⟩
-    cases isEmpty_or_nonempty V
-    · exact Preconnected.of_subsingleton
-    · have hG : G.Preconnected := by
-        intro u v
-        by_contra huv
-        exact h s(u,v) (IsBridge.of_not_reachable huv)
-      have hG' : G.Connected := ⟨hG⟩
-      exact (hG'.connected_delete_edge_of_not_isBridge (h (s(x, y)))).preconnected
+    nontriviality V
+    have hG : G.Preconnected := by
+      intro u v
+      by_contra huv
+      exact h s(u, v) (.of_not_reachable huv)
+    have hG' : G.Connected := ⟨hG⟩
+    exact (hG'.connected_delete_edge_of_not_isBridge (h (s(x, y)))).preconnected
 
 lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
     ∃ w : V, G.Adj u w ∧ G.IsEdgeReachable 2 u w := by
