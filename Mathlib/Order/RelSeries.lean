@@ -83,11 +83,6 @@ lemma rel_or_eq_of_le [r.IsTrans] (x : RelSeries r) {i j : Fin (x.length + 1)} (
   (Fin.lt_or_eq_of_le h).imp (x.rel_of_lt ·) (by rw [·])
 
 variable (p) in
-theorem toFun_injective [r.IsIrrefl] [r.IsTrans] : Function.Injective p := by
-  refine fun i j heq ↦ le_antisymm ?_ ?_ <;>
-    exact Fin.not_lt.mp (r.irrefl _ <| heq ▸ p.rel_of_lt ·)
-
-variable (p) in
 theorem isChain_setRange [r.IsTrans] : IsChain (· ~[r] ·) (.range p) := by
   rintro _ ⟨i, rfl⟩ _ ⟨j, rfl⟩ hne
   exact (Fin.lt_or_lt_of_ne <| mt (congrArg _) hne).imp p.rel_of_lt p.rel_of_lt
@@ -122,10 +117,6 @@ lemma isChain_toList (x : RelSeries r) : x.toList.IsChain (· ~[r] ·) := by
 
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| List.mem_ofFn.mpr ⟨_, rfl⟩
-
-variable (p) in
-theorem nodup_toList [r.IsIrrefl] [r.IsTrans] : p.toList.Nodup :=
-  List.nodup_ofFn_ofInjective p.toFun_injective
 
 /-- Every nonempty list satisfying the chain condition gives a relation series -/
 @[simps]
