@@ -4,6 +4,7 @@ public import Counterexamples.AharoniKorman
 public import Counterexamples.CanonicallyOrderedCommSemiringTwoMul
 public import Counterexamples.CharPZeroNeCharZero
 public import Counterexamples.CliffordAlgebraNotInjective
+public import Counterexamples.CommSemiring7InvertibleModule6
 public import Counterexamples.Cyclotomic105
 public import Counterexamples.DimensionPolynomial
 public import Counterexamples.DirectSumIsInternal
