@@ -21,8 +21,9 @@ of `Δ[p] ⊗ Δ[1]`.
 
 universe u
 
-open CategoryTheory Simplicial MonoidalCategory Opposite
-  CartesianMonoidalCategory
+open CategoryTheory MonoidalCategory Opposite CartesianMonoidalCategory
+
+open scoped Simplicial
 
 namespace SSet
 
