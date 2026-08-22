@@ -82,14 +82,14 @@ public register_option linter.style.admit : Bool := {
   descr := "enable the admit linter"
 }
 
-/-- The option `linter.style.nativeDecide` of the deprecated syntax linter flags usages of
-the `native_decide` tactic, which is disallowed in mathlib. -/
+/-- The option `linter.style.native` of the deprecated syntax linter flags proof tactics
+that trust native evaluation, which are disallowed in mathlib. -/
 -- Note: this linter is purely for user information. Running `lean4checker` in CI catches *any*
 -- additional axioms that are introduced (not just `ofReduceBool`): the point of this check is to
 -- alert the user quickly, not to be airtight.
-public register_option linter.style.nativeDecide : Bool := {
+public register_option linter.style.native : Bool := {
   defValue := false
-  descr := "enable the nativeDecide linter"
+  descr := "enable the native-evaluation linter"
 }
 
 /-- The option `linter.style.maxHeartbeats` of the deprecated syntax linter flags usages of
@@ -124,26 +124,22 @@ def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substri
         some default
   | _ => none
 
-/-- Whether a given piece of syntax represents a `decide` tactic call with the `native` option
-enabled. This may have false negatives for `decide (config := {<options>})` syntax. -/
-def isDecideNative (stx : Syntax ) : Bool :=
-  match stx with
-  | .node _ ``Lean.Parser.Tactic.decide args =>
-    -- The configuration passed to the tactic call.
-    let config := args[1]![0]
-    -- Check all configuration arguments in order to determine the final
-    -- toggling of the native decide option.
-    if let (.node _ _ config_args) := config then
-      let natives := config_args.filterMap (match ·[0] with
-        | `(Parser.Tactic.posConfigItem| +native) => some true
-        | `(Parser.Tactic.negConfigItem| -native) => some false
-        | `(Parser.Tactic.valConfigItem| (config := {native := true})) => some true
-        | `(Parser.Tactic.valConfigItem| (config := {native := false})) => some false
-        | _ => none)
-      natives.back? == some true
-    else
-      false
-  | _ => false
+/-- Whether the tactic syntax `stx` enables the `native` option. This may have false negatives for
+`tac (config := {<options>})` syntax. -/
+def usesNativeConfig (stx : Syntax) : Bool :=
+  let config := stx[1]![0]
+  if let .node _ _ configArgs := config then
+    let natives := configArgs.filterMap (match ·[0] with
+      | `(Parser.Tactic.posConfigItem| +native) => some true
+      | `(Parser.Tactic.negConfigItem| -native) => some false
+      | `(Parser.Tactic.valConfigItem| (native := true)) => some true
+      | `(Parser.Tactic.valConfigItem| (native := false)) => some false
+      | `(Parser.Tactic.valConfigItem| (config := {native := true})) => some true
+      | `(Parser.Tactic.valConfigItem| (config := {native := false})) => some false
+      | _ => none)
+    natives.back? == some true
+  else
+    false
 
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
 partial
@@ -168,7 +164,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
         "The `admit` tactic is discouraged: \
          please strongly consider using the synonymous `sorry` instead.")
     | ``Lean.Parser.Tactic.decide =>
-      if isDecideNative stx then
+      if usesNativeConfig stx then
         rargs.push (kind, stx, "Using `decide +native` is not allowed in mathlib: \
         because it trusts the entire Lean compiler (not just the Lean kernel), \
         it could quite possibly be used to prove false.")
@@ -178,6 +174,20 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       rargs.push (kind, stx, "Using `native_decide` is not allowed in mathlib: \
         because it trusts the entire Lean compiler (not just the Lean kernel), \
         it could quite possibly be used to prove false.")
+    | `Inclusion.inclusionTacStx =>
+      if usesNativeConfig stx then
+        rargs.push (kind, stx, "Using `inclusion +native` is not allowed in mathlib: \
+          because it trusts the entire Lean compiler (not just the Lean kernel), \
+          it could quite possibly be used to prove false.")
+      else
+        rargs
+    | `Inclusion.dyadicInterval =>
+      if usesNativeConfig stx then
+        rargs.push (kind, stx, "Using `dyadic_interval +native` is not allowed in mathlib: \
+          because it trusts the entire Lean compiler (not just the Lean kernel), \
+          it could quite possibly be used to prove false.")
+      else
+        rargs
     | ``Lean.Parser.Command.in =>
       match getSetOptionMaxHeartbeatsComment stx with
       | none => rargs
@@ -202,6 +212,10 @@ replacement syntax. For each individual case, linting can be turned on or off se
 * `cases'`, superseded by `obtain`, `rcases` and `cases` (controlled by `linter.style.cases`)
 * `induction'`, superseded by `induction` (controlled by `linter.style.induction`)
 * `admit`, superseded by `sorry` (controlled by `linter.style.admit`)
+* `native_decide` and `decide +native`, which trust the Lean compiler
+  (controlled by `linter.style.native`)
+* `inclusion +native` and `dyadic_interval +native`, which trust the Lean compiler
+  (controlled by `linter.style.native`)
 * `set_option maxHeartbeats`, should contain an explanatory comment
   (controlled by `linter.style.maxHeartbeats`)
 -/
@@ -211,7 +225,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       getLinterValue linter.style.induction (← getLinterOptions) ||
       getLinterValue linter.style.admit (← getLinterOptions) ||
       getLinterValue linter.style.maxHeartbeats (← getLinterOptions) ||
-      getLinterValue linter.style.nativeDecide (← getLinterOptions) do
+      getLinterValue linter.style.native (← getLinterOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
@@ -228,8 +242,9 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       | `Mathlib.Tactic.cases' => Linter.logLintIf linter.style.cases stx' msg
       | `Mathlib.Tactic.induction' => Linter.logLintIf linter.style.induction stx' msg
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
-      | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide =>
-        Linter.logLintIf linter.style.nativeDecide stx' msg
+      | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide |
+          `Inclusion.inclusionTacStx | `Inclusion.dyadicInterval =>
+        Linter.logLintIf linter.style.native stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
       | _ => continue) stx
 
