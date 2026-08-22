@@ -8,6 +8,7 @@ module
 public import Mathlib.Tactic.TautoSet
 public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.Separation.Basic
+public import Mathlib.Topology.LocallyClosed
 
 /-!
 # Discrete subsets of topological spaces
@@ -170,6 +171,15 @@ lemma IsDiscrete.eq_of_specializes (hs : IsDiscrete s)
   let := hs.1
   simpa only [← Topology.IsInducing.subtypeVal.specializes_iff, hab, Subtype.mk.injEq,
     true_iff] using specializes_iff_eq (X := s) (x := ⟨a, ha⟩) (y := ⟨b, hb⟩)
+
+lemma IsDiscrete.isLocallyClosed [T1Space X] (hs : IsDiscrete s) :
+    IsLocallyClosed s := by
+  simp_rw [isLocallyClosed_iff_isLocallyClosedAt, IsLocallyClosedAt]
+  rw [isDiscrete_iff_forall_mem_exists_isOpen] at hs
+  intro x hx
+  obtain ⟨U, U_open, hU⟩ := hs x hx
+  have x_in_U : x ∈ U := inter_subset_left (hU ▸ mem_singleton x)
+  exact ⟨U, U_open.mem_nhds x_in_U, {x}, isClosed_singleton, by simp [hU, x_in_U]⟩
 
 section cofinite_cocompact
 

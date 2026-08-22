@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.LocallyClosed
 public import Mathlib.Topology.Sets.Opens
 
 /-!
@@ -308,6 +309,24 @@ lemma quotient_finite_of_isOpen' [IsTopologicalGroup G] [CompactSpace G] (U : Su
 instance [IsTopologicalGroup G] [CompactSpace G] (U : OpenSubgroup G) (K : OpenSubgroup U) :
     Finite (U ⧸ K.toSubgroup) :=
   quotient_finite_of_isOpen' U.toSubgroup K.toSubgroup U.isOpen K.isOpen
+
+section LocallyClosed
+
+@[to_additive]
+lemma isClosed_of_isLocallyClosed [IsTopologicalGroup G] (U : Subgroup G)
+    (h : IsLocallyClosed (U : Set G)) :
+    IsClosed (U : Set G) := by
+  -- Since `U` is locally closed, it is open, hence closed, in the closed subgroup
+  -- `U.topologicalClosure`. Hence it is closed in `G`.
+  set V : Subgroup U.topologicalClosure := U.subgroupOf U.topologicalClosure with V_def
+  have V_closed : IsClosed (V : Set U.topologicalClosure) :=
+    V.isClosed_of_isOpen h.isOpen_preimage_val_closure
+  have clemb : IsClosedEmbedding U.topologicalClosure.subtype :=
+    U.isClosed_topologicalClosure.isClosedEmbedding_subtypeVal
+  rwa [clemb.isClosed_iff_image_isClosed, ← coe_map, V_def,
+    map_subgroupOf_eq_of_le U.le_topologicalClosure] at V_closed
+
+end LocallyClosed
 
 end Subgroup
 
