@@ -706,7 +706,8 @@ lemma sSup_image_lieSpan_singleton : sSup ((fun x ↦ lieSpan R L {x}) '' N) = N
 
 instance instIsCompactlyGenerated : IsCompactlyGenerated (LieSubmodule R L M) :=
   ⟨fun N ↦ ⟨(fun x ↦ lieSpan R L {x}) '' N, fun _ ⟨m, _, hm⟩ ↦
-    hm ▸ isCompactElement_lieSpan_singleton R L m, N.sSup_image_lieSpan_singleton⟩⟩
+    hm ▸ isCompactElement_lieSpan_singleton R L m,
+    isLUB_iff_sSup_eq.mpr N.sSup_image_lieSpan_singleton⟩⟩
 
 end LieSpan
 
