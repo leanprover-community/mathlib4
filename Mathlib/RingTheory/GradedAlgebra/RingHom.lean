@@ -144,8 +144,10 @@ theorem ext ⦃f g : 𝒜 →+*ᵍ ℬ⦄ : (∀ x, f x = g x) → f = g :=
 theorem mk_coe (f : 𝒜 →+*ᵍ ℬ) (h₁ h₂ h₃ h₄ h₅) : .mk ⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ h₅ = f :=
   ext fun _ => rfl
 
-theorem coe_ringHom_injective : (fun f : 𝒜 →+*ᵍ ℬ => (f : A →+* B)).Injective := fun _ _ h =>
+theorem coe_toRingHom_injective : (fun f : 𝒜 →+*ᵍ ℬ => (f : A →+* B)).Injective := fun _ _ h =>
   ext <| DFunLike.congr_fun (F := A →+* B) h
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_injective := coe_toRingHom_injective
 
 /-- Graded ring homomorphisms map zero to zero. -/
 protected theorem map_zero (f : 𝒜 →+*ᵍ ℬ) : f 0 = 0 :=

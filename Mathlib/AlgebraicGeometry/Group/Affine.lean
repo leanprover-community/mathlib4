@@ -279,7 +279,7 @@ def Spec.mapMulEquiv {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Bi
     simpa [-comp_over] using! f.w⟩
   left_inv f := by
     apply WithConv.ofConv_injective
-    apply AlgHom.coe_ringHom_injective
+    apply AlgHom.coe_toRingHom_injective
     simp
   right_inv f := by ext1; simp
   map_mul' f g := by
