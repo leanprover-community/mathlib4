@@ -372,21 +372,17 @@ lemma tendsto_densityProcess_limitProcess (hκν : fst κ ≤ ν)
     ∀ᵐ x ∂(ν a), Tendsto (fun n ↦ densityProcess κ ν n a x s) atTop
       (𝓝 ((countableFiltration γ).limitProcess
       (fun n x ↦ densityProcess κ ν n a x s) (ν a) x)) := by
-  refine Submartingale.ae_tendsto_limitProcess (martingale_densityProcess hκν a hs).submartingale
-    (R := (ν a univ).toNNReal) (fun n ↦ ?_)
-  refine (eLpNorm_densityProcess_le hκν n a s).trans_eq ?_
-  rw [coe_toNNReal]
-  exact measure_ne_top _ _
+  apply Submartingale.ae_tendsto_limitProcess (martingale_densityProcess hκν a hs).submartingale
+  apply (measure_ne_top (ν a) univ).lt_top.trans_le'
+  exact iSup_le_iff.2 fun n ↦ eLpNorm_densityProcess_le hκν n a s
 
 lemma memL1_limitProcess_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     MemLp ((countableFiltration γ).limitProcess
       (fun n x ↦ densityProcess κ ν n a x s) (ν a)) 1 (ν a) := by
-  refine Submartingale.memLp_limitProcess (martingale_densityProcess hκν a hs).submartingale
-    (R := (ν a univ).toNNReal) (fun n ↦ ?_)
-  refine (eLpNorm_densityProcess_le hκν n a s).trans_eq ?_
-  rw [coe_toNNReal]
-  exact measure_ne_top _ _
+  apply Submartingale.memLp_limitProcess (martingale_densityProcess hκν a hs).submartingale
+  apply (measure_ne_top (ν a) univ).lt_top.trans_le'
+  exact iSup_le_iff.2 fun n ↦ eLpNorm_densityProcess_le hκν n a s
 
 lemma tendsto_eLpNorm_one_densityProcess_limitProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
