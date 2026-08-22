@@ -38,7 +38,7 @@ public section
 
 noncomputable section
 
-open Topology
+open scoped Topology
 
 -- We begin with some general lemmas that are used below in the computation.
 theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R] [Algebra R ℤ_[p]]
