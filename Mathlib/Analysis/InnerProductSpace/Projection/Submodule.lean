@@ -66,6 +66,21 @@ theorem orthogonal_orthogonal [K.HasOrthogonalProjection] : Kᗮᗮ = K := by
     rw [inner_eq_zero_symm]
     exact hw v hv
 
+/-- If `K` admits an orthogonal projection, then its orthogonal complement relative to a larger
+submodule `W` is involutive. -/
+theorem orthogonal_inf_orthogonal_inf_of_le {K W : Submodule 𝕜 E} [K.HasOrthogonalProjection]
+    (h : K ≤ W) :
+    (Kᗮ ⊓ W)ᗮ ⊓ W = K := by
+  let K' : Submodule 𝕜 W := K.comap W.subtypeₗᵢ.toLinearMap
+  have hK : K = K'.map W.subtypeₗᵢ.toLinearMap := by
+    simp_rw [K', Submodule.map_comap_eq]
+    exact (inf_eq_right.mpr (by simpa using h)).symm
+  suffices ((map W.subtypeₗᵢ.toLinearMap K')ᗮ ⊓ W.subtypeₗᵢ.range)ᗮ ⊓ W.subtypeₗᵢ.range =
+      map W.subtypeₗᵢ.toLinearMap K' by
+    simpa [hK]
+  have : K'.HasOrthogonalProjection := HasOrthogonalProjection.comap (by simpa using h)
+  simp_rw [← Submodule.map_orthogonal, orthogonal_orthogonal]
+
 lemma orthogonal_le_orthogonal_iff {K₀ K₁ : Submodule 𝕜 E} [K₀.HasOrthogonalProjection]
     [K₁.HasOrthogonalProjection] : K₀ᗮ ≤ K₁ᗮ ↔ K₁ ≤ K₀ :=
   ⟨fun h ↦ by simpa using orthogonal_le h, orthogonal_le⟩

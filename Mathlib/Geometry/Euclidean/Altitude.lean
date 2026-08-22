@@ -8,6 +8,7 @@ module
 public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 public import Mathlib.Analysis.InnerProductSpace.Affine
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Shift
 
 /-!
 # Altitudes of a simplex
@@ -304,6 +305,36 @@ lemma inner_vsub_vsub_altitudeFoot_eq_height_sq [NeZero n] {i j : Fin (n + 1)} (
   suffices ⟪s.points j -ᵥ s.altitudeFoot i, s.points i -ᵥ s.altitudeFoot i⟫ = 0 by
     rwa [height, inner_vsub_vsub_left_eq_dist_sq_right_iff, inner_vsub_left_eq_zero_symm]
   exact s.inner_vsub_altitudeFoot_vsub_altitudeFoot_eq_zero h
+
+/-- Through a point on the altitude of a simplex, draw the perpendicular plane and restrict it to
+the affine span of the simplex. This is the same as shifting the base towards the vertex. -/
+theorem affineSubspaceMk'_lineMap_altitudeFoot_eq_shift {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
+    (i : Fin (n + 1)) (x : ℝ) :
+    AffineSubspace.mk' (AffineMap.lineMap (s.points i) (s.altitudeFoot i) x)
+      (s.altitude i).directionᗮ ⊓ affineSpan ℝ (Set.range s.points) =
+        (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
+  have h : AffineMap.lineMap (s.points i) (s.altitudeFoot i) x ∈
+      affineSpan ℝ (Set.range s.points) := by
+    refine vadd_mem_of_mem_direction (Submodule.smul_mem _ _ ?_) (mem_affineSpan ℝ (by simp))
+    exact vsub_mem_direction (s.altitudeFoot_mem_affineSpan _) (mem_affineSpan ℝ (by simp))
+  apply ext_of_direction_eq
+  · rw [direction_shift, direction_inf_of_mem (by simp) h, direction_mk',
+      direction_altitude, direction_affineSpan, direction_affineSpan]
+    exact Submodule.orthogonal_inf_orthogonal_inf_of_le <| vectorSpan_mono _ <| by simp
+  · refine ⟨AffineMap.lineMap (s.points i) (s.altitudeFoot i) x, ?_, ?_⟩
+    · simpa using h
+    · apply lineMap_mem_shift (by simp)
+
+/-- Through a point on the altitude of a simplex, draw the perpendicular plane and find the cross
+section with the closed interior. This is the same as the cross section between the shifted base
+and the closed interior. -/
+theorem closedInterior_inter_affineSubspaceMk'_lineMap_altitudeFoot {n : ℕ} [NeZero n]
+    (s : Simplex ℝ P n) (i : Fin (n + 1)) (x : ℝ) :
+    s.closedInterior ∩ AffineSubspace.mk' (AffineMap.lineMap (s.points i) (s.altitudeFoot i) x)
+      (s.altitude i).directionᗮ =
+        s.closedInterior ∩ (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
+  rw [← affineSubspaceMk'_lineMap_altitudeFoot_eq_shift, AffineSubspace.coe_inf, ← Set.inter_assoc,
+    Set.inter_right_comm, Set.inter_eq_left.mpr closedInterior_subset_affineSpan]
 
 variable [Nat.AtLeastTwo n]
 
