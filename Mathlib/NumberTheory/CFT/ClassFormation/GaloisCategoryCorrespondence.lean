@@ -24,6 +24,16 @@ open Limits PreGaloisCategory
 
 variable {C : Type*} [Category* C]
 
+-- to be moved
+def Aut.overForget {Y X : C} (f : Y ⟶ X) :
+    Aut (Over.mk f) →* Aut Y :=
+  Functor.mapAut _ (Over.forget X)
+
+lemma Aut.overMap_comp_overOverEquiv
+    {Z Y X : C} (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ X) (fac : f ≫ g = fg := by cat_disch) :
+    (Aut.overMap f g fg fac).comp (Aut.overOverEquiv f g fg fac) =
+      Aut.overForget (Y := Over.mk fg) (X := Over.mk g) (Over.homMk f) := rfl
+
 namespace Limits.SingleObj
 
 variable {G X : Type*} [Group G] {φ : G →* End X}
@@ -105,7 +115,39 @@ lemma injective_autMap : Function.Injective (autMap H) := by
   ext
   exact (Over.forget _).congr_map (congr_arg Iso.hom hσ)
 
+section
+
+variable {Y : C} (f : X ⟶ Y) (hf : ∀ h ∈ H, h.hom ≫ f = f)
+
+@[no_expose]
+noncomputable def desc : quotient H ⟶ Y :=
+  (SingleObj.quotient.isColimit H).desc
+    (Cocone.mk _ (natTrans f (fun h ↦ by simpa using! hf h h.2)))
+
+@[reassoc (attr := simp)]
+lemma fac : π H ≫ desc H f hf = f :=
+  (SingleObj.quotient.isColimit H).fac ..
+
+end
+
 end quotient
+
+section
+
+variable {Y X : C} (f : Y ⟶ X) [HasQuotient (Aut.overForget f).range]
+
+noncomputable def fromQuotientAutOverForgetRange :
+    SingleObj.quotient (Aut.overForget f).range ⟶ X :=
+  quotient.desc _ f (by
+    rintro _ ⟨σ, rfl⟩
+    simpa using! σ.hom.w)
+
+@[reassoc (attr := simp)]
+lemma π_comp_fromQuotientAutOverForgetRange :
+    SingleObj.quotient.π (Aut.overForget f).range ≫ fromQuotientAutOverForgetRange _ = f :=
+  quotient.fac ..
+
+end
 
 end SingleObj
 
@@ -173,20 +215,49 @@ instance {X : C} [IsGalois X] (H : Subgroup (Aut X)) :
     rw [hx, hy])
   exact ⟨SingleObj.quotient.autMap H ⟨σ, hσ⟩, Subtype.ext_iff.2 hσ'⟩
 
--- to be moved
-def Aut.overForget {Y X : C} (f : Y ⟶ X) :
-    Aut (Over.mk f) →* Aut Y :=
-  Functor.mapAut _ (Over.forget X)
+lemma isGalois_singleObjQuotient_iff_normal
+    {X : C} [IsGalois X] (H : Subgroup (Aut X)) :
+    IsGalois (SingleObj.quotient H) ↔ H.Normal := sorry
 
-omit [GaloisCategory C] in
-lemma Aut.overMap_comp_overOverEquiv
-    {Z Y X : C} (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ X) (fac : f ≫ g = fg := by cat_disch) :
-    (Aut.overMap f g fg fac).comp (Aut.overOverEquiv f g fg fac) =
-      Aut.overForget (Y := Over.mk fg) (X := Over.mk g) (Over.homMk f) := rfl
+section
+
+-- to be moved
+instance {Y X : FintypeCat.{w}} (f : Y ⟶ X) [Epi f] : Epi f.hom :=
+  inferInstanceAs (Epi ((forget _).map f))
+
+variable {Y X : C} [PreGaloisCategory.IsGalois Y] [PreGaloisCategory.IsConnected X] (f : Y ⟶ X)
+
+
+instance : IsIso (SingleObj.fromQuotientAutOverForgetRange f) := by
+  let F := getFiberFunctor C
+  have : Function.Surjective (F.map (SingleObj.quotient.π (Aut.overForget f).range)) :=
+    surjective_of_epi _
+  have : Mono (SingleObj.fromQuotientAutOverForgetRange f) :=
+    F.mono_of_mono_map (ConcreteCategory.mono_of_injective _ (fun y₁ y₂ hy ↦ by
+      obtain ⟨y₁, rfl⟩ := this y₁
+      obtain ⟨y₂, rfl⟩ := this y₂
+      replace hy : F.map f y₁ = F.map f y₂ := by
+        simpa only [← ConcreteCategory.comp_apply, ← F.map_comp,
+          SingleObj.π_comp_fromQuotientAutOverForgetRange] using hy
+      obtain ⟨σ, rfl⟩ : ∃ (σ : (Aut.overForget f).range), σ.val • y₁ = y₂ := by
+        obtain ⟨σ, hσ⟩ := MulAction.exists_smul_eq (Aut Y) y₁ y₂
+        refine ⟨⟨σ, ⟨Over.isoMk σ ?_, rfl⟩⟩, hσ⟩
+        rw [autMulFiber_def] at hσ
+        have : PreGaloisCategory.IsConnected (Over.mk f).left := by
+          dsimp
+          infer_instance
+        exact GaloisCategory.hom_ext_of_isConnected F y₁ (by simpa [hσ] using hy.symm)
+      rw [autMulFiber_def, ← ConcreteCategory.comp_apply, ← Functor.map_comp,
+        SingleObj.quotient.w]))
+  apply isIso_of_mono_of_epi
+
+end
 
 lemma isGalois_iff_normal
     {Y X : C} [PreGaloisCategory.IsGalois Y] [PreGaloisCategory.IsConnected X] (f : Y ⟶ X) :
-    IsGalois X ↔ (Aut.overForget f).range.Normal := sorry
+    IsGalois X ↔ (Aut.overForget f).range.Normal := by
+  rw [← isGalois_singleObjQuotient_iff_normal,
+    IsGalois.iff_of_iso (asIso (SingleObj.fromQuotientAutOverForgetRange f))]
 
 section
 

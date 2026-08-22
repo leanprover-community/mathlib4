@@ -105,6 +105,11 @@ lemma IsGalois.of_iso [GaloisCategory C]
   simp only [autMulFiber_def, Aut.autMulEquivOfIso_apply_hom,
     ← ConcreteCategory.comp_apply, ← Functor.map_comp, Iso.hom_inv_id_assoc]
 
+lemma IsGalois.iff_of_iso [GaloisCategory C]
+    {X Y : C} (e : X ≅ Y) :
+    PreGaloisCategory.IsGalois X ↔ PreGaloisCategory.IsGalois Y :=
+  ⟨fun _ ↦ .of_iso e, fun _ ↦ .of_iso e.symm⟩
+
 instance [GaloisCategory C] {X Y : C} [PreGaloisCategory.IsConnected X]
     [PreGaloisCategory.IsConnected Y] (f : X ⟶ Y) :
     Epi f :=

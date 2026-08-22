@@ -29,17 +29,23 @@ open PreGaloisCategory
 
 namespace GaloisCategory
 
-variable (F : C ⥤ FintypeCat.{w}) [GaloisCategory C] [FiberFunctor F]
+variable [GaloisCategory C]
 
 instance : HasFiniteColimits C where
   out _ _ _ :=
     Adjunction.hasColimitsOfShape_of_equivalence
       (functorToContAction (getFiberFunctor C))
 
-instance : PreservesFiniteColimits F := by
+instance (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] : PreservesFiniteColimits F := by
   change (PreservesFiniteColimits
     (functorToContAction F ⋙ ObjectProperty.ι _ ⋙ Action.forget _ _))
   infer_instance
+
+instance : Balanced C where
+  isIso_of_mono_of_epi f _ _ := by
+    let F := getFiberFunctor C
+    rw [← isIso_iff_of_reflects_iso _ (F ⋙ forget _)]
+    apply isIso_of_mono_of_epi
 
 end GaloisCategory
 
