@@ -70,21 +70,34 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
-protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) := injective_id
-protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) := surjective_id
-protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) := bijective_id
+variable (α) in
+/-- A set of `α`s is equivalent to a predicate on elements of type `α`. -/
+@[simps]
+def toProp : Set α ≃ (α → Prop) where
+  toFun := Membership.mem
+  invFun := ofPred
+
+protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) :=
+  toProp α |>.injective
+
+protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) :=
+  toProp α |>.surjective
+
+protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) :=
+  toProp α |>.bijective
 
 instance instDistribLattice : DistribLattice (Set α) where
-  __ : DistribLattice (α → Prop) := inferInstance
+  __ := toProp α |>.distribLattice
   le := (· ≤ ·)
-  lt := fun s t => s ⊆ t ∧ ¬t ⊆ s
+  lt s t := s ⊆ t ∧ ¬t ⊆ s
   sup := (· ∪ ·)
   inf := (· ∩ ·)
 
 instance instBoundedOrder : BoundedOrder (Set α) where
-  __ : BoundedOrder (α → Prop) := inferInstance
-  bot := ∅
   top := univ
+  le_top _ x _ := mem_univ x
+  bot := ∅
+  bot_le := nofun
 
 @[simp]
 theorem top_eq_univ : (⊤ : Set α) = univ :=
@@ -191,18 +204,20 @@ instance : Inhabited (Set α) :=
 theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t) : x ∈ t :=
   h hx
 
-theorem ofPred_injective : Function.Injective (@ofPred α) := injective_id
+theorem ofPred_injective : Function.Injective (@ofPred α) :=
+  toProp α |>.symm.injective
 
 @[deprecated (since := "2026-07-09")] alias setOf_injective := ofPred_injective
 
-theorem ofPred_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := Iff.rfl
+theorem ofPred_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q :=
+  ofPred_injective.eq_iff
 
 @[deprecated (since := "2026-07-09")] alias setOf_inj := ofPred_inj
 
 /-! ### Lemmas about `mem` and `ofPred` -/
 
 theorem ofPred_bijective : Bijective (ofPred : (α → Prop) → Set α) :=
-  bijective_id
+  toProp α |>.symm.bijective
 
 @[deprecated (since := "2026-07-09")] alias setOf_bijective := ofPred_bijective
 
