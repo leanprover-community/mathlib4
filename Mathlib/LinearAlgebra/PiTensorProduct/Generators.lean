@@ -41,7 +41,7 @@ variable {ι : Type*} [DecidableEq ι] (M : ι → Type*)
 the pi tensor product indexed by the complement of `{i₀}` and `M i₀`. -/
 noncomputable def equivPiTensorComplSingletonTensor (i₀ : ι) :
     (⨂[R] i, M i) ≃ₗ[R] ((⨂[R] (i : ({i₀}ᶜ : Set ι)), M i) ⊗[R] M i₀) :=
-  (reindex R (s := M) (Equiv.subtypeNeSumPUnit.{0} i₀).symm).trans
+  (reindex R (M := M) (Equiv.subtypeNeSumPUnit.{0} i₀).symm).trans
     ((tmulEquivDep R (fun i ↦ M (Equiv.subtypeNeSumPUnit i₀ i))).symm.trans
       (LinearEquiv.lTensor _ (subsingletonEquiv Unit.unit)))
 
@@ -55,7 +55,7 @@ lemma equivPiTensorComplSingletonTensor_tprod (i₀ : ι) (m : ∀ i, M i) :
   dsimp [equivPiTensorComplSingletonTensor]
   have : (reindex R M (Equiv.subtypeNeSumPUnit.{0} i₀).symm) (⨂ₜ[R] (i : ι), m i) =
       ⨂ₜ[R] j, m ((Equiv.subtypeNeSumPUnit.{0} i₀) j) := by
-    simp_rw [reindex_tprod (R := R) (s := M), Equiv.symm_symm]
+    simp_rw [reindex_tprod (R := R) (M := M), Equiv.symm_symm]
   rw [dsimp% this, dsimp% tmulEquivDep_symm_apply R
     (fun i ↦ M ((Equiv.subtypeNeSumPUnit.{0} i₀) i))]
   exact (LinearEquiv.lTensor_tmul _ _ _ _).trans (by congr; simp)
@@ -130,7 +130,7 @@ lemma ext_of_span_eq_top
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
-    {φ φ' : MultilinearMap R M N}
+    {φ φ' : MultilinearMap (.id R) M N}
     (h : ∀ (j : (i : ι) → γ i), φ (fun i ↦ g (j i)) = φ' (fun i ↦ g (j i))) :
     φ = φ' := by
   suffices lift φ = lift φ' by

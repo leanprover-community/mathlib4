@@ -138,7 +138,7 @@ variable (R) in
 theorem tprod_mul_tprod {na nb} (a : Fin na → M) (b : Fin nb → M) :
     tprod R a ₜ* tprod R b = tprod R (Fin.append a b) := by
   dsimp [gMul_def, mulEquiv]
-  rw [tmulEquiv_apply R M a b]
+  rw [tmulEquiv_apply R a b]
   refine (reindex_tprod _ _).trans ?_
   congr 1
   dsimp only [Fin.append, finSumFinEquiv, Equiv.coe_fn_symm_mk]
