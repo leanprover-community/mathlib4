@@ -59,9 +59,9 @@ instance (priority := low) {R : Type*} [Ring R] [ValuativeRel R] [UniformSpace R
     Valued R (ValueGroupWithZero R) where
   «v» := valuation R
   is_topological_valuation := by
-    simp_rw [Valuation.restrict_lt_iff_lt_embedding]
+    simp_rw [← Subtype.coe_lt_coe, Valuation.coe_restrict]
     convert! mem_nhds_zero_iff (R := R)
-    simpa [← Valuation.restrict_lt_iff_lt_embedding] using
+    simpa [← Subtype.coe_lt_coe, Valuation.coe_restrict] using
       (valuation R).exists_setOfPred_restrict_le_iff 0 _
 
 lemma v_eq_valuation {R : Type*} [Ring R] [ValuativeRel R] [UniformSpace R]

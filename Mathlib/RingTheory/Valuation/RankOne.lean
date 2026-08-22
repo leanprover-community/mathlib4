@@ -147,16 +147,14 @@ variable {K} in
 theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom v (v.restrict x) < γ := by
   have hγ_pos : 0 < γ := pos_iff_ne_zero.mpr hγ
   obtain ⟨x, h⟩ := NNReal.exists_lt_of_strictMono (RankOne.strictMono v.restrict) hγ_pos
-  obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val
+  obtain ⟨k, hk⟩ :=
+    ValueGroup₀.restrict₀_surjective (MonoidWithZeroHom.ofClass v.restrict) x.val
   refine ⟨k, ?_, ?_⟩
-  · simp only [restrict₀_apply, MonoidWithZeroHom.coe_ofClass, restrict_def, map_eq_zero] at hk
-    by_contra h0
-    rw [dite_eq_left (by simp [h0]), eq_comm] at hk
-    simp at hk
-  · convert! h
-    simp only [restrict_RankOne_hom_eq, coe_comp, Function.comp_apply, ← hk]
-    congr 1
-    exact (embedding_restrict₀ k).symm
+  · rintro rfl
+    rw [map_zero] at hk
+    exact x.ne_zero hk.symm
+  · rw [← hk, restrict_RankOne_hom_eq] at h
+    simpa using h
 
 end Restrict
 

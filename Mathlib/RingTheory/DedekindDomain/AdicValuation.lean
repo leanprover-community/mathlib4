@@ -658,10 +658,18 @@ instance : IsUniformAddGroup (adicCompletion K v) :=
 noncomputable def valuation : Valuation (adicCompletion K v) ℤᵐ⁰ :=
   Valued.v.comap (equiv K v).toRingHom
 
+theorem valueGroup₀_eq :
+    valueGroup₀ (.ofClass (valuation K v)) =
+      valueGroup₀ (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) := by
+  rw [valueGroup₀_eq_closure, valueGroup₀_eq_closure]
+  congr 1
+  simp [valuation, ← (toCompletion_surjective K v).range_comp]
+  rfl
+
 theorem valueGroup_eq :
     valueGroup (.ofClass (valuation K v)) =
       valueGroup (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) := by
-  simp [valuation, valueGroup, valueMonoid, ← (toCompletion_surjective K v).range_comp]; rfl
+  rw [← units_valueGroup₀, ← units_valueGroup₀, valueGroup₀_eq]
 
 /-- The multiplicative equivalence between the value group of the completion's valuation, pulled
 back along `equiv`, and that of the completion. -/
@@ -675,37 +683,24 @@ def valueGroupEquiv :
     ((valueGroupEquiv K v a : _) : ℤᵐ⁰ˣ) = a := rfl
 
 /-- The order-preserving multiplicative equivalence between the `ValueGroup₀` of the completion's
-valuation, pulled back along `equiv`, and that of the completion. -/
+valuation, pulled back along `equiv`, and that of the completion.
+
+Both are the *same* subgroup with zero of `ℤᵐ⁰`, so this is just a retagging. -/
 noncomputable def valueGroupOrderIso :
     ValueGroup₀ (.ofClass (valuation K v)) ≃*o
-      ValueGroup₀ (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) where
-  toFun := WithZero.map' (valueGroupEquiv K v)
-  invFun := WithZero.map' (valueGroupEquiv K v).symm
-  left_inv x := by match x with | 0 => simp | .coe a => simp
-  right_inv y := by match y with | 0 => simp | .coe b => simp
-  map_mul' := by simp
-  map_le_map_iff' {a b} := by
-    match a, b with
-    | 0, 0 => simp
-    | 0, .coe _ => simp
-    | .coe _, 0 => simp
-    | .coe a, .coe b => simp [← Subtype.coe_le_coe]
+      ValueGroup₀ (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) :=
+  SubgroupWithZero.orderIsoOfEq (valueGroup₀_eq K v)
 
-@[simp] theorem coe_valueGroupOrderIso_coe (a : valueGroup (.ofClass (valuation K v))) :
-    valueGroupOrderIso K v (a : ValueGroup₀ _) = (valueGroupEquiv K v a : ValueGroup₀ _) := by
-  simp [valueGroupOrderIso]
+@[simp] theorem coe_valueGroupOrderIso (g : ValueGroup₀ (.ofClass (valuation K v))) :
+    ((valueGroupOrderIso K v g : _) : ℤᵐ⁰) = (g : ℤᵐ⁰) := rfl
 
 theorem embedding_valueGroupOrderIso (g : ValueGroup₀ (.ofClass (valuation K v))) :
-    embedding (valueGroupOrderIso K v g) = embedding g := by
-  match g with
-  | 0 => simp [valueGroupOrderIso]
-  | .coe a => simp [coe_valueGroupOrderIso_coe, embedding_apply, coe_valueGroupEquiv]
+    embedding (valueGroupOrderIso K v g) = embedding g := rfl
 
 theorem valueGroupOrderIso_restrict (x : adicCompletion K v) :
     valueGroupOrderIso K v ((valuation K v).restrict x) =
-      Valued.v.restrict (toCompletion x) := by
-  apply embedding_strictMono.injective
-  rw [embedding_valueGroupOrderIso, embedding_restrict, embedding_restrict]; rfl
+      Valued.v.restrict (toCompletion x) :=
+  Subtype.ext rfl
 
 noncomputable instance : Valued (adicCompletion K v) ℤᵐ⁰ where
   v := valuation K v

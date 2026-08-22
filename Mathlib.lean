@@ -529,6 +529,7 @@ public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.GroupWithZero.Center
 public import Mathlib.Algebra.GroupWithZero.Commute
 public import Mathlib.Algebra.GroupWithZero.Conj
+public import Mathlib.Algebra.GroupWithZero.Cyclic
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.GroupWithZero.Equiv
@@ -552,7 +553,12 @@ public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.GroupWithZero.Semiconj
 public import Mathlib.Algebra.GroupWithZero.Shrink
 public import Mathlib.Algebra.GroupWithZero.Subgroup
+public import Mathlib.Algebra.GroupWithZero.Subgroup.Defs
+public import Mathlib.Algebra.GroupWithZero.Subgroup.Lattice
+public import Mathlib.Algebra.GroupWithZero.Subgroup.Units
+public import Mathlib.Algebra.GroupWithZero.Subgroup.ZPowers
 public import Mathlib.Algebra.GroupWithZero.Submonoid.CancelMulZero
+public import Mathlib.Algebra.GroupWithZero.Submonoid.Defs
 public import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
 public import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
 public import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
@@ -1017,11 +1023,13 @@ public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Bounds
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Order.GroupWithZero.Cyclic
 public import Mathlib.Algebra.Order.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.GroupWithZero.Lex
 public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 public import Mathlib.Algebra.Order.GroupWithZero.Range
+public import Mathlib.Algebra.Order.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
@@ -7839,6 +7847,7 @@ public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.Algebra.Valued.WithZeroMulInt
 public import Mathlib.Topology.Algebra.WithZeroTopology
+public import Mathlib.Topology.Algebra.WithZeroTopology.Subgroup
 public import Mathlib.Topology.ApproximateUnit
 public import Mathlib.Topology.Baire.BaireMeasurable
 public import Mathlib.Topology.Baire.CompleteMetrizable

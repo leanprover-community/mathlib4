@@ -1054,21 +1054,15 @@ def embed [v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ (.ofClass 
     (fun r s ↦ (restrict₀ (.ofClass v) r / (restrict₀ (.ofClass v) s))) <| by
     intro x y r s
     simp only [Valuation.Compatible.vle_iff_le (v := v), map_mul, ← and_imp, ← le_antisymm_iff]
-    rw [div_eq_div_iff]
-    · simp only [ValueGroup₀.restrict₀_apply, dite_mul, zero_mul]
-      split_ifs with h1 h2 h3 <;>
-      simp_all [← WithZero.coe_mul, ← Units.val_inj] <;> simpa
-    all_goals simp [ValueGroup₀.restrict₀]
-  map_zero' := by simp [lift_zero, ValueGroup₀.restrict₀]
-  map_one' := by simp [ValueGroup₀.restrict₀]
+    intro h
+    rw [div_eq_div_iff (by simp) (by simp), ← map_mul, ← map_mul]
+    exact Subtype.ext (by simpa [map_mul] using h)
+  map_zero' := by simp [lift_zero]
+  map_one' := by simp
   map_mul' _ _ := by
     apply lift_mul
-    simp only [map_mul, ValueGroup₀.restrict₀_apply, mul_dite, mul_zero, dite_mul, zero_mul,
-      Submonoid.coe_mul, Subtype.forall, posSubmonoid_def]
-    intro x y z hz w hw
-    split_ifs
-    all_goals simp_all
-    simp [field, ← WithZero.coe_mul, ← Units.val_inj]
+    intro x s y t
+    simp only [map_mul, Submonoid.coe_mul, div_mul_div_comm]
 
 /-- The element `.mk x s` in `ValueGroupWithZero R` is sent to `v x / v s` in the
 image group of `v`. -/
@@ -1076,6 +1070,16 @@ image group of `v`. -/
 lemma embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
     embed v (.mk x s) = (restrict₀ (.ofClass v) x / (restrict₀ (.ofClass v) s)) :=
   rfl
+
+/-- Embedding into the value group of the canonical valuation and back is the identity. -/
+@[simp]
+lemma coe_embed_valuation (x : ValueGroupWithZero R) :
+    ((embed (valuation R) x : ValueGroup₀ (.ofClass (valuation R))) :
+      ValueGroupWithZero R) = x := by
+  induction x using ValueGroupWithZero.ind with
+  | mk r s =>
+    rw [embed_mk, ValueGroupWithZero.mk_eq_div, ← ValueGroup₀.embedding_apply, map_div₀]
+    simp
 
 /--
 The triangle in the following diagram is commutative:
@@ -1110,11 +1114,9 @@ ValueGroupWithZero R
 ```
 the map from `ValueGroupWithZero R` to itself is identity.
 -/
-@[simp]
 lemma embedding_embed_valuation_eq (γ : ValueGroupWithZero R) :
-    embedding (embed (valuation R) γ) = γ := by
-  induction γ using ValueGroupWithZero.ind
-  simp [mk_eq_div]
+    embedding (embed (valuation R) γ) = γ :=
+  coe_embed_valuation γ
 
 /-- The map `embed v` is strictly monotone. -/
 lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
@@ -1126,13 +1128,13 @@ lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   rw [div_lt_div_iff₀] at h ⊢
   any_goals simp only [zero_lt_iff, ne_eq, Valuation.apply_posSubmonoid_ne_zero, not_false_eq_true]
   · rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
-    simp only [embed, coe_mk, ZeroHom.coe_mk, lift_valuation,
+    simp only [embed, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, lift_valuation,
       OneMemClass.coe_one, map_one, div_one]
     rw [embedding_restrict₀ a, embedding_restrict₀ b, embedding_restrict₀ r.1,
       embedding_restrict₀ s.1]
     simpa using h
-  · simp [restrict₀_apply, embed]
-  · simp [restrict₀_apply, embed]
+  · simp [embed, lift_valuation, Valuation.apply_posSubmonoid_ne_zero]
+  · simp [embed, lift_valuation, Valuation.apply_posSubmonoid_ne_zero]
 
 /--
 When we have `h : w.IsEquiv v`, the image group (with zero) of `v` is
@@ -1154,7 +1156,7 @@ theorem orderMonoidIso_embed [v.Compatible] {Γ' : Type*} [LinearOrderedCommGrou
     (w : Valuation R Γ') [w.Compatible] (x : ValueGroupWithZero R) (h : w.IsEquiv v) :
     h.orderMonoidIso
     (embed w x) = embed v x := by
-  simp only [embed, coe_mk, ZeroHom.coe_mk]
+  simp only [embed, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   induction x using ValueGroupWithZero.ind with
   | mk r s => simp [Valuation.IsEquiv.orderMonoidIso_spec₀]
 
@@ -1187,9 +1189,14 @@ lemma orderMonoidIso_valuation_eq_restrict₀ [v.Compatible] (x : R) :
 /-- This is the same as `ValuativeRel.ValueGroupWithZero.embedding_embed_valuation_eq`, where
 `embed` is upgraded to `orderMonoidIso`. -/
 @[simp]
+lemma coe_orderMonoidIso_valuation (γ : ValueGroupWithZero R) :
+    ((orderMonoidIso (valuation R) γ : ValueGroup₀ (.ofClass (valuation R))) :
+      ValueGroupWithZero R) = γ :=
+  coe_embed_valuation γ
+
 lemma embedding_orderMonoidIso_valuation_eq (γ : ValueGroupWithZero R) :
     embedding (orderMonoidIso (valuation R) γ) = γ :=
-  embedding_embed_valuation_eq γ
+  coe_orderMonoidIso_valuation γ
 
 /-- The map `orderMonoidIso v` is strictly monotone. -/
 lemma orderMonoidIso_strictMono [v.Compatible] : StrictMono (orderMonoidIso v) :=

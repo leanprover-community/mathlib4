@@ -73,7 +73,7 @@ instance isValuativeTopology : IsValuativeTopology R where
   mem_nhds_iff {s x} := by
     rw [Filter.hasBasis_iff.mp ((valuation R).subgroups_basis.hasBasis_nhds x) s]
     simp [neg_add_eq_sub, ← (valuation R).exists_setOfPred_restrict_le_iff,
-      ← restrict_lt_iff_lt_embedding]
+      ← Subtype.coe_lt_coe]
 
 /-- The uniform structure induced by a valuative relation. Note that this is not made into a
 global instance to avoid diamonds. If desired, one can equip a ring with a uniform space

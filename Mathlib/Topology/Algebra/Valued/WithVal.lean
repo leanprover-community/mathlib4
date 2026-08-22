@@ -399,10 +399,26 @@ variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
+theorem range_valued_v_eq : Set.range (Valued.v (R := WithVal v)) = Set.range v := by
+  ext x
+  exact ⟨fun ⟨r, hr⟩ ↦ ⟨r.ofVal, hr⟩, fun ⟨r, hr⟩ ↦ ⟨toVal v r, hr⟩⟩
+
+theorem valueGroup₀_eq : valueGroup₀ (.ofClass (Valued.v (R := WithVal v))) =
+    valueGroup₀ (.ofClass v) := by
+  rw [valueGroup₀_eq_closure, valueGroup₀_eq_closure]
+  congr 1
+  simpa using range_valued_v_eq v
+
 theorem valueGroup_eq : valueGroup (.ofClass (Valued.v (R := WithVal v))) =
     valueGroup (.ofClass v) := by
-  simp [valueGroup, valueMonoid, ← (WithVal.ofVal_surjective v).range_comp]
-  rfl
+  rw [← units_valueGroup₀, ← units_valueGroup₀, valueGroup₀_eq]
+
+/-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
+on `WithVal v` and the valuation `v`. Both are the *same* subgroup with zero of `Γ₀`, so this is
+just a retagging. -/
+def valueGroupOrderIso₀ : ValueGroup₀ (.ofClass (Valued.v (R := WithVal v))) ≃*o
+    ValueGroup₀ (.ofClass v) :=
+  SubgroupWithZero.orderIsoOfEq (valueGroup₀_eq v)
 
 /-- The multiplicative equivalence between the `valueGroup` of the valuation on `WithVal v`
 and the valuation `v`. -/
@@ -418,48 +434,23 @@ theorem strictMono_valueGroupEquiv : StrictMono (valueGroupEquiv v) :=
 theorem strictMono_valueGroupEquiv_symm : StrictMono (valueGroupEquiv v).symm :=
   fun _ _ _ ↦ by simpa
 
-set_option backward.isDefEq.respectTransparency.types false in
-/-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
-on `WithVal v` and the valuation `v`. -/
-@[simps!]
-def valueGroupOrderIso₀ : ValueGroup₀ (.ofClass (Valued.v (R := WithVal v))) ≃*o
-    ValueGroup₀ (.ofClass v) where
-  toFun := WithZero.map' (valueGroupEquiv v)
-  invFun := WithZero.map' (valueGroupEquiv v).symm
-  left_inv x := by
-    match x with
-    | 0 => simp
-    | .coe a => simp
-  right_inv y := by
-    match y with
-    | 0 => simp
-    | .coe b => simp
-  map_mul' := by simp
-  map_le_map_iff' {a b} := by
-    match a, b with
-    | 0, 0 => simp
-    | 0, .coe _ => simp
-    | .coe _, 0 => simp
-    | .coe a, .coe b => simp
+@[simp]
+lemma coe_valueGroupOrderIso₀ (x : ValueGroup₀ (.ofClass (Valued.v (R := WithVal v)))) :
+    ((valueGroupOrderIso₀ v x : ValueGroup₀ (.ofClass v)) : Γ₀) = (x : Γ₀) := rfl
 
 lemma valueGroupOrderIso₀_restrict (b : WithVal v) :
-    valueGroupOrderIso₀ v ((WithVal.valuation v).restrict b) = v.restrict b.ofVal := by
-  simp [(WithVal.valuation v).restrict_def, restrict₀_apply, ← valuation_apply_eq_ofVal,
-    v.restrict_def]
-  by_cases hb : v b.ofVal = 0 <;> simp [hb]
+    valueGroupOrderIso₀ v ((WithVal.valuation v).restrict b) = v.restrict b.ofVal :=
+  Subtype.ext rfl
 
 lemma valueGroupOrderIso₀_symm_restrict (b : R) :
-    (valueGroupOrderIso₀ v).symm (Valuation.restrict v b) = Valued.v.restrict (toVal v b) := by
-  simp [Valued.v.restrict_def, restrict₀_apply, ← apply_ofVal, v.restrict_def]
-  by_cases hb : v b = 0 <;> simp [hb]
+    (valueGroupOrderIso₀ v).symm (Valuation.restrict v b) = Valued.v.restrict (toVal v b) :=
+  Subtype.ext rfl
 
 lemma strictMono_valueGroupOrderIso₀ :
-    StrictMono (WithVal.valueGroupOrderIso₀ v) :=
-  WithZero.map'_strictMono (strictMono_valueGroupEquiv v)
+    StrictMono (WithVal.valueGroupOrderIso₀ v) := fun _ _ h ↦ h
 
 lemma strictMono_valueGroupOrderIso₀_symm :
-    StrictMono (WithVal.valueGroupOrderIso₀ v).symm :=
-  WithZero.map'_strictMono (strictMono_valueGroupEquiv_symm v)
+    StrictMono (WithVal.valueGroupOrderIso₀ v).symm := fun _ _ h ↦ h
 
 end ValueGroup₀
 
@@ -522,7 +513,8 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   have hs0' : 0 < Valued.v.restrict (toVal v s) := by
     simp [restrict_pos_iff, h.pos_iff, ← hv, hs₀]
   have h' : v.restrict.IsEquiv w.restrict := h.restrict
-  rw [← hr, equiv_apply, Set.mem_ofPred_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
+  rw [← hr, equiv_apply, Set.mem_ofPred_eq,
+    lt_div_iff₀ (c := Valued.v.restrict s) ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
     ← map_mul, ← lt_def, ← ofVal_mul,
     ← hy, ← toVal_mul, ←  h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply]
   simp only [toVal_mul, orderRingIso_symm_apply, lt_def, ofVal_mul, restrict_lt_iff]
@@ -547,8 +539,8 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   simp only [equiv_symm_apply, Set.mem_ofPred_eq]
   simp only [equiv_apply, Units.val_mk0, Set.mem_ofPred_eq] at hx
   rw [lt_div_iff₀, ← map_mul, restrict_lt_iff, hv, h.lt_iff_lt, map_mul] at hx
-  · rw [← hr, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), ← map_mul, ← lt_def,
-      ← h.orderRingIso_apply]
+  · rw [← hr, lt_div_iff₀ (c := Valued.v.restrict s) ((restrict_pos_iff Valued.v s).mpr hs₀),
+      ← map_mul, ← lt_def, ← h.orderRingIso_apply]
     simp only [orderRingIso_apply, toVal_mul, lt_def, ofVal_mul, restrict_lt_iff]
     rw [map_mul]
     exact hx
@@ -565,8 +557,6 @@ lemma IsEquiv.uniformContinuous (h : v.IsEquiv w) :
   simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
   intro x
-  let u := WithZero.unzero (Units.ne_zero x)
-  obtain ⟨a, ha, y, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
   simp only [Set.mem_ofPred_eq, RingHom.id_apply]
   set y₀ := h_val.orderMonoidIso x with hy₀_def
   have hy₀_ne_zero : y₀ ≠ 0 := by simp [hy₀_def]
@@ -618,7 +608,7 @@ theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
   exact ⟨r, 1, by
     simp only [map_one, zero_lt_one, restrict_def, hr, div_one, and_self, and_true]
     rw [← map_zero v]
-    simpa [← hr] using embedding_strictMono (WithZero.pos_iff_ne_zero.mpr (Units.ne_zero γ))⟩
+    simpa [← hr] using embedding_strictMono (zero_lt_iff.mpr γ.ne_zero)⟩
 
 open UniformSpace.Completion in
 theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
@@ -632,8 +622,6 @@ theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation
     convert!
       (mapEquiv h.uniformEquiv).toHomeomorph.isClosed_setOfPred_iff
         (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
-    rw [restrict_le_one_iff]
-    rfl
   | ih a =>
     simpa [Valued.valuedCompletion_apply] using! h.le_one_iff_le_one
 
