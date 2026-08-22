@@ -38,7 +38,8 @@ variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : Measurable
 namespace Measure
 
 /-- A map `f : α → β` is said to be *quasi-measure-preserving* (a.k.a. non-singular) w.r.t. measures
-`μa` and `μb` if it is measurable and `μb s = 0` implies `μa (f ⁻¹' s) = 0`. -/
+`μa` and `μb` if it is measurable and `μb s = 0` implies `μa (f ⁻¹' s) = 0`. Using
+`MeasureTheory.Measure.AbsolutelyContinuous.mk`, only measurable sets `s` may be considered. -/
 @[fun_prop]
 structure QuasiMeasurePreserving {m0 : MeasurableSpace α} (f : α → β)
   (μa : Measure α := by volume_tac)
@@ -73,6 +74,10 @@ theorem mono_right (h : QuasiMeasurePreserving f μa μb) (ha : μb ≪ μb') :
 theorem mono (ha : μa' ≪ μa) (hb : μb ≪ μb') (h : QuasiMeasurePreserving f μa μb) :
     QuasiMeasurePreserving f μa' μb' :=
   (h.mono_left ha).mono_right hb
+
+theorem of_eq_ae {f : α → α} (hf : QuasiMeasurePreserving f μ μ) (h : ae μ = ae ν) :
+    QuasiMeasurePreserving f ν ν :=
+  hf.mono h.ge.absolutelyContinuous_of_ae h.le.absolutelyContinuous_of_ae
 
 @[fun_prop]
 protected theorem comp {g : β → γ} {f : α → β} (hg : QuasiMeasurePreserving g μb μc)
