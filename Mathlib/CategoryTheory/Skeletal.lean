@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.IsoCat
 public import Mathlib.CategoryTheory.IsomorphismClasses
 public import Mathlib.CategoryTheory.Thin
 
@@ -23,6 +24,33 @@ show it is a skeleton of the original category. The advantage of this special ca
 separately is that lemmas and definitions about orderings can be used directly, for example for the
 subobject lattice. In addition, some of the commutative diagrams about the functors commute
 definitionally on the nose which is convenient in practice.
+
+## Main declarations
+
+* `Skeleton C`: the skeleton of a category `C`, defined as the quotient of objects by isomorphism.
+* `Functor.isEquivalence_iff_isIso_between_skeletal`: a functor between skeletal categories is an
+  equivalence if and only if it is an isomorphism.
+* `skeletonEquivalence C : Skeleton C ≌ C`: the canonical equivalence between a category and its
+  skeleton.
+* `Functor.mapSkeleton (F : C ⥤ D) : Skeleton C ⥤ Skeleton D`: the functor induced by `F` on
+  skeletons.
+* `Functor.isEquivalence_iff_mapSkeletonIsIso`: `F` is an equivalence if and only if the induced
+  functor on skeletons is an isomorphism.
+* `Equivalence.skeletonIsoCat (e : C ≌ D) : IsoCat (Skeleton C) (Skeleton D)`: the isomorphism
+  between skeletons induced by an equivalence.
+* `ThinSkeleton C`: the thin skeleton of a category, defined by quotienting objects by
+  isomorphism and equipped with a preorder structure.
+* `toThinSkeleton : C ⥤ ThinSkeleton C`: the canonical functor to the thin skeleton.
+* `ThinSkeleton.map (F : C ⥤ D) : ThinSkeleton C ⥤ ThinSkeleton D`: the functor induced by `F`
+  on thin skeletons.
+* `ThinSkeleton.fromThinSkeleton : ThinSkeleton C ⥤ C`: the functor from the thin skeleton of a
+  thin category back to the original category.
+* `ThinSkeleton.equivalence : ThinSkeleton C ≌ C`: the canonical equivalence between the thin
+  skeleton of a thin category and the original category.
+* `ThinSkeleton.thinSkeleton_isSkeleton`: the thin skeleton of a thin category is a skeleton of
+  that category.
+* `Equivalence.thinSkeletonOrderIso`: an equivalence from a thin category to a partial order
+  induces an order isomorphism from its thin skeleton.
 -/
 
 @[expose] public section
@@ -39,6 +67,17 @@ variable {E : Type u₃} [Category.{v₃} E]
 /-- A category is skeletal if isomorphic objects are equal. -/
 def Skeletal : Prop :=
   ∀ ⦃X Y : C⦄, IsIsomorphic X Y → X = Y
+
+/-- A functor between skeletal categories is an equivalence if and only if it is an isomorphism.
+-/
+theorem Functor.isEquivalence_iff_isIso_between_skeletal
+    (F : C ⥤ D) (hC : Skeletal C) (hD : Skeletal D) : F.IsEquivalence ↔ F.IsIso :=
+  ⟨fun _ ↦
+    { bijective_obj :=
+        Function.bijective_iff_has_inverse.mpr ⟨F.inv.obj,
+          fun _ ↦ hC ⟨F.asEquivalence.unitIso.symm.app _⟩,
+          fun _ ↦ hD ⟨F.asEquivalence.counitIso.app _⟩⟩ },
+    fun _ ↦ inferInstance⟩
 
 /-- `IsSkeletonOf C D F` says that `F : D ⥤ C` exhibits `D` as a skeletal full subcategory of `C`,
 in particular `F` is a (strong) equivalence and `D` is skeletal.
@@ -137,6 +176,10 @@ set_option backward.defeqAttrib.useBackward true in
   counitIso := NatIso.ofComponents fromSkeletonToSkeletonIso
   functor_unitIso_comp _ := Iso.inv_hom_id _
 
+noncomputable instance toSkeletonFunctor.isEquivalence : (toSkeletonFunctor C).IsEquivalence := by
+  change (skeletonEquivalence C).inverse.IsEquivalence
+  infer_instance
+
 set_option backward.isDefEq.respectTransparency.types false in
 theorem skeleton_skeletal : Skeletal (Skeleton C) := by
   rintro X Y ⟨h⟩
@@ -203,16 +246,32 @@ lemma mapSkeleton_injective [F.Full] [F.Faithful] : Function.Injective F.mapSkel
 lemma mapSkeleton_surjective [F.EssSurj] : Function.Surjective F.mapSkeleton.obj :=
   fun Y ↦ let ⟨X, h⟩ := EssSurj.mem_essImage F.mapSkeleton Y; ⟨X, skeleton_skeletal D h⟩
 
+instance mapSkeleton_isIso_of_isEquivalence [F.IsEquivalence] : F.mapSkeleton.IsIso where
+  faithful := inferInstance
+  full := inferInstance
+  bijective_obj := ⟨F.mapSkeleton_injective, F.mapSkeleton_surjective⟩
+
+/-- A functor is an equivalence if and only if its induced functor on skeletons is an isomorphism.
+-/
+theorem isEquivalence_iff_mapSkeletonIsIso :
+    F.IsEquivalence ↔ F.mapSkeleton.IsIso :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦
+    have : (F ⋙ toSkeletonFunctor D).IsEquivalence :=
+      isEquivalence_of_iso (toSkeletonFunctorCompMapSkeletonIso F)
+    isEquivalence_of_comp_right F (toSkeletonFunctor D)⟩
+
 end Functor
+
+/-- An equivalence of categories induces an isomorphism between their skeletons. -/
+noncomputable def Equivalence.skeletonIsoCat (e : C ≌ D) : IsoCat (Skeleton C) (Skeleton D) :=
+  e.functor.mapSkeleton.asIsomorphism
 
 /-- Two categories which are categorically equivalent have skeletons with equivalent objects.
 -/
-noncomputable def Equivalence.skeletonEquiv (e : C ≌ D) : Skeleton C ≃ Skeleton D :=
-  let f := ((skeletonEquivalence C).trans e).trans (skeletonEquivalence D).symm
-  { toFun := f.functor.obj
-    invFun := f.inverse.obj
-    left_inv := fun X => skeleton_skeletal C ⟨(f.unitIso.app X).symm⟩
-    right_inv := fun Y => skeleton_skeletal D ⟨f.counitIso.app Y⟩ }
+@[deprecated "use `Equivalence.skeletonIsoCat.objEquiv`"
+  (since := "2026-08-16")]
+noncomputable abbrev Equivalence.skeletonEquiv (e : C ≌ D) : Skeleton C ≃ Skeleton D :=
+  e.skeletonIsoCat.objEquiv
 
 variable (C D)
 
