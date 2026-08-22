@@ -238,6 +238,9 @@ Q220680:
 
 Q225973:
   title: Ore's theorem
+  decl: SimpleGraph.isHamiltonian_of_pairwise_not_adj_imp_card_le_degree_add_degree
+  authors: Snir Broshi
+  date: 2026-07
 
 Q226014:
   title: Poincaré recurrence theorem
@@ -309,6 +312,11 @@ Q268132:
 
 Q273037:
   title: Bondy–Chvátal theorem
+  decls:
+    - SimpleGraph.isHamiltonian_sup_edge_iff_of_card_le_degree_add_degree
+    - SimpleGraph.isHamiltonian_iff_of_eqvGen_bondyChvatalRel
+  authors: Snir Broshi
+  date: 2026-07
 
 Q276082:
   title: Wilson's theorem
