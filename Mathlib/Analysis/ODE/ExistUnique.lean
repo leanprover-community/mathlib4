@@ -5,7 +5,6 @@ Authors: Winston Yin
 -/
 module
 
-public import Mathlib.Analysis.ODE.Basic
 public import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
 
@@ -39,7 +38,7 @@ integral curve, vector field, existence, uniqueness, Picard-Lindelöf, Gronwall
 
 @[expose] public section
 
-open Function intervalIntegral MeasureTheory Metric Set
+open Function Metric Set
 open scoped Nat NNReal Topology
 
 /-! ## Existence of solutions to ODEs -/

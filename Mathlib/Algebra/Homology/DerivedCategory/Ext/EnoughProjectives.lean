@@ -96,7 +96,6 @@ namespace Abelian.Ext
 
 open DerivedCategory
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_projective [HasExt.{w} C] {P Y : C} {n : ℕ} [Projective P]
     (e : Ext P Y (n + 1)) : e = 0 := by
   let := HasDerivedCategory.standard C

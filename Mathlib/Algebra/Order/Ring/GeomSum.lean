@@ -21,7 +21,7 @@ public section
 
 assert_not_exists Field
 
-open Finset MulOpposite
+open Finset
 
 variable {R : Type*}
 
