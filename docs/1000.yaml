@@ -2245,6 +2245,9 @@ Q2607007:
 
 Q2621667:
   title: Nagata–Smirnov metrization theorem
+  decls:
+    - TopologicalSpace.metrizableSpace_iff_exists_sigmaLocallyFiniteBasis
+    - TopologicalSpace.metrizableSpace_iff_exists_sigmaDiscreteBasis
 
 Q2631152:
   title: Carathéodory's extension theorem
