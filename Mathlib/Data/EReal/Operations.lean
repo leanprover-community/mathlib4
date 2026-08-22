@@ -164,6 +164,12 @@ theorem add_lt_add_of_lt_of_le {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hz 
     (ht : t ≠ ⊤) : x + z < y + t :=
   add_lt_add_of_lt_of_le' h h' (ne_bot_of_le_ne_bot hz h') fun ht' => (ht ht').elim
 
+@[grind =]
+lemma add_eq_top_iff {x y : EReal} : x + y = ⊤ ↔ (x = ⊤ ∧ y ≠ ⊥) ∨ (x ≠ ⊥ ∧ y = ⊤) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · cases x <;> cases y <;> simp_all [← coe_add]
+  · obtain ⟨rfl, h⟩ | ⟨h, rfl⟩ := h <;> simp [h]
+
 theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤ :=
   add_lt_add hx.lt_top hy.lt_top
 
@@ -172,22 +178,23 @@ lemma add_ne_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y ≠ ⊤
 
 lemma add_ne_top_iff_ne_top₂ {x y : EReal} (hx : x ≠ ⊥) (hy : y ≠ ⊥) :
     x + y ≠ ⊤ ↔ x ≠ ⊤ ∧ y ≠ ⊤ := by
-  refine ⟨?_, fun h ↦ add_ne_top h.1 h.2⟩
-  cases x <;> simp_all only [ne_eq, not_false_eq_true, top_add_of_ne_bot, not_true_eq_false,
-    IsEmpty.forall_iff]
-  cases y <;> simp_all only [not_false_eq_true, ne_eq, add_top_of_ne_bot, not_true_eq_false,
-    coe_ne_top, and_self, implies_true]
+  grind only [= add_eq_top_iff]
+
+lemma add_eq_top_iff_eq_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
+    x + y = ⊤ ↔ x = ⊤ := by
+  grind only [= add_eq_top_iff]
 
 lemma add_ne_top_iff_ne_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
-    x + y ≠ ⊤ ↔ x ≠ ⊤ := by
-  cases x <;> simp [add_ne_top_iff_ne_top₂, hy, hy']
+    x + y ≠ ⊤ ↔ x ≠ ⊤ := add_eq_top_iff_eq_top_left hy hy' |>.ne
+
+lemma add_eq_top_iff_eq_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ ⊤) :
+    x + y = ⊤ ↔ y = ⊤ := add_comm x y ▸ add_eq_top_iff_eq_top_left hx hx'
 
 lemma add_ne_top_iff_ne_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ ⊤) :
-    x + y ≠ ⊤ ↔ y ≠ ⊤ := add_comm x y ▸ add_ne_top_iff_ne_top_left hx hx'
+    x + y ≠ ⊤ ↔ y ≠ ⊤ := add_eq_top_iff_eq_top_right hx hx' |>.ne
 
-lemma add_ne_top_iff_of_ne_bot_of_ne_top {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
-    x + y ≠ ⊤ ↔ x ≠ ⊤ := by
-  induction x <;> simp [EReal.add_ne_top_iff_ne_top₂, hy, hy']
+@[deprecated (since := "2026-07-02")] alias add_ne_top_iff_of_ne_bot_of_ne_top :=
+  add_ne_top_iff_ne_top_left
 
 /-! ### Negation -/
 
