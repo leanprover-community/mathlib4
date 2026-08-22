@@ -742,7 +742,7 @@ lemma mul_nonpos_iff {a b : EReal} : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a �
 lemma mul_eq_top (a b : EReal) :
     a * b = ⊤ ↔ (a = ⊥ ∧ b < 0) ∨ (a < 0 ∧ b = ⊥) ∨ (a = ⊤ ∧ 0 < b) ∨ (0 < a ∧ b = ⊤) := by
   induction a, b using EReal.induction₂_symm with
-  | symm h => grind [EReal.mul_comm]
+  | symm h => rw [EReal.mul_comm]; grind
   | top_top => simp
   | top_pos _ hx => simp [EReal.top_mul_coe_of_pos hx, hx]
   | top_zero => simp
