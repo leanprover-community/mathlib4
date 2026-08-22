@@ -50,7 +50,7 @@ lemma ab_zero_apply (x : S.X₁) : S.g (S.f x) = 0 := by
 def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g.hom :=
     AddMonoidHom.mk' (fun x => ⟨S.f x, S.ab_zero_apply x⟩) (by aesop)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The explicit left homology data of a short complex of abelian group that is
 given by a kernel and a quotient given by the `AddMonoidHom` API. -/
 @[simps]
@@ -99,6 +99,7 @@ noncomputable def abHomologyIso : S.homology ≅
     AddCommGrpCat.of ((AddMonoidHom.ker S.g.hom) ⧸ AddMonoidHom.range S.abToCycles) :=
   S.abLeftHomologyData.homologyIso
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma exact_iff_surjective_abToCycles :
     S.Exact ↔ Function.Surjective S.abToCycles := by
   rw [S.abLeftHomologyData.exact_iff_epi_f', abLeftHomologyData_f',

@@ -47,7 +47,7 @@ def localEpi (P : ObjectProperty C) : MorphismProperty C := fun _ _ f ↦
   ∀ ⦃Z⦄, P Z → Function.Injective fun (g : _ ⟶ Z) ↦ f ≫ g
 
 instance : P.localEpi.IsMultiplicative where
-  id_mem X Z _ := by simpa using Function.injective_id
+  id_mem X Z _ := by simpa using! Function.injective_id
   comp_mem f g hf hg T hT _ _ huv := hg hT (hf hT <| by simpa using huv)
 
 lemma localEpi.of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : P.localEpi f := by

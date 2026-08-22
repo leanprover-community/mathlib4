@@ -41,10 +41,11 @@ theorem spectrum_toLpLin [DecidableEq n] (p : ENNReal) :
     spectrum 𝕜 (toLpLin p p A) = spectrum 𝕜 A :=
   AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv (PiLp.basisFun p 𝕜 n)) _
 
-/-- The spectrum of a matrix `A` coincides with the spectrum of `toEuclideanLin A`. -/
-@[deprecated spectrum_toLpLin (since := "2026-01-21")]
-theorem spectrum_toEuclideanLin [DecidableEq n] : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
-  spectrum_toLpLin 2
+/-- The spectral radii of a matrix and its transpose are equal. See `Matrix.spectrum_transpose`. -/
+@[simp] theorem spectralRadius_transpose {K : Type*} [NormedField K] [DecidableEq n]
+    (A : Matrix n n K) :
+    spectralRadius K Aᵀ = spectralRadius K A := by
+  simp [spectralRadius]
 
 namespace IsHermitian
 
@@ -73,7 +74,7 @@ noncomputable def eigenvectorBasis : OrthonormalBasis n 𝕜 (EuclideanSpace �
 lemma mulVec_eigenvectorBasis (j : n) :
     A *ᵥ ⇑(hA.eigenvectorBasis j) = (hA.eigenvalues j) • ⇑(hA.eigenvectorBasis j) := by
   simpa only [eigenvectorBasis, OrthonormalBasis.reindex_apply, toLpLin_apply,
-    RCLike.real_smul_eq_coe_smul (K := 𝕜)] using
+    RCLike.real_smul_eq_coe_smul (K := 𝕜)] using!
       congr(⇑$((isSymmetric_toEuclideanLin_iff.mpr hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
@@ -162,6 +163,7 @@ lemma roots_charpoly_eq_eigenvalues :
   · simp
   · simp [Finset.prod_ne_zero_iff, Polynomial.X_sub_C_ne_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma roots_charpoly_eq_eigenvalues₀ :
     A.charpoly.roots = Multiset.map (RCLike.ofReal ∘ hA.eigenvalues₀) Finset.univ.val := by
   rw [hA.roots_charpoly_eq_eigenvalues]

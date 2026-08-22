@@ -95,8 +95,8 @@ namespace Algebra
 namespace TensorProduct
 
 universe uR uS uA uB uC uD uE uF
-variable {R : Type uR} {R' : Type*} {S : Type uS} {T : Type*}
-variable {A : Type uA} {B : Type uB} {C : Type uC} {D : Type uD} {E : Type uE} {F : Type uF}
+variable {R : Type uR} {S : Type uS} {T : Type*}
+variable {A : Type uA} {B : Type uB} {C : Type uC} {F : Type uF}
 
 /-!
 ### The `R`-algebra structure on `A ⊗[R] B`
@@ -277,6 +277,7 @@ def includeLeftRingHom : A →+* A ⊗[R] B where
 
 variable [CommSemiring S] [Algebra S A]
 
+set_option backward.defeqAttrib.useBackward true in
 instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
   { commutes' := fun r x => by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
@@ -542,6 +543,7 @@ lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
         (Subring.subset_closure (.inr ⟨_, rfl⟩))
   | add x y _ _ => exact add_mem ‹_› ‹_›
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `s` generates `T` as an `R`-algebra,
 then `{ 1 ⊗ x | x ∈ s }` generates `A ⊗[R] T` as an `A`-algebra. -/
 lemma adjoin_one_tmul_image_eq_top [CommSemiring R] [CommSemiring A]

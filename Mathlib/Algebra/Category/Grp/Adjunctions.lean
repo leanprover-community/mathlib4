@@ -65,6 +65,7 @@ theorem free_map_coe {α β : Type u} {f : α ⟶ β} (x : FreeAbelianGroup α) 
     (free.map f) x = f <$> x :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for abelian groups.
 -/
@@ -145,12 +146,12 @@ def abelianize : GrpCat.{u} ⥤ CommGrpCat.{u} where
   map_id := by
     intros
     ext : 1
-    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
+    apply (Equiv.eq_symm_apply Abelianization.lift).mp
     rfl
   map_comp := by
     intros
     ext : 1
-    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
+    apply (Equiv.eq_symm_apply Abelianization.lift).mp
     rfl
 
 /-- The abelianization-forgetful adjunction from `Group` to `CommGroup`. -/

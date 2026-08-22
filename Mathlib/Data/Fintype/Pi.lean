@@ -103,7 +103,7 @@ lemma eval_image_piFinset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a
 lemma eval_image_piFinset_const {β} [DecidableEq β] (t : Finset β) (a : α) :
     ((piFinset fun _i : α ↦ t).image fun f ↦ f a) = t := by
   obtain rfl | ht := t.eq_empty_or_nonempty
-  · haveI : Nonempty α := ⟨a⟩
+  · have : Nonempty α := ⟨a⟩
     simp
   · exact eval_image_piFinset (fun _ ↦ t) a fun _ _ ↦ ht
 

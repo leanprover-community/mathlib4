@@ -58,7 +58,6 @@ monotone/antitone), the scalar product of their sum is less than the size of the
 scalar product. -/
 theorem MonovaryOn.sum_smul_sum_le_card_smul_sum (hfg : MonovaryOn f g s) :
     (∑ i ∈ s, f i) • ∑ i ∈ s, g i ≤ #s • ∑ i ∈ s, f i • g i := by
-  classical
   obtain ⟨σ, hσ, hs⟩ := s.countable_toSet.exists_cycleOn
   rw [← card_range #s, sum_smul_sum_eq_sum_perm hσ]
   exact sum_le_card_nsmul _ _ _ fun n _ ↦
@@ -98,7 +97,7 @@ Special cases of the above when scalar multiplication is actually multiplication
 
 section Mul
 variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
-  {s : Finset ι} {σ : Perm ι} {f g : ι → α}
+  {s : Finset ι} {f g : ι → α}
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (e.g. they are both
 monotone/antitone), the product of their sum is less than the size of the set times their scalar

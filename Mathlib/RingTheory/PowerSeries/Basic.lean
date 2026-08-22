@@ -9,6 +9,7 @@ public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.MoveAdd
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.Ideal.Basic
@@ -55,6 +56,7 @@ noncomputable section
 open Finset (antidiagonal mem_antidiagonal)
 
 /-- Formal power series over a coefficient type `R` -/
+@[wikidata Q1003025]
 abbrev PowerSeries (R : Type*) :=
   MvPowerSeries Unit R
 
@@ -85,6 +87,10 @@ def monomial (n : ℕ) : R →ₗ[R] R⟦X⟧ :=
 theorem coeff_def {s : Unit →₀ ℕ} {n : ℕ} (h : s () = n) :
     coeff (R := R) n = MvPowerSeries.coeff s := by
   rw [coeff, ← h, ← Finsupp.unique_single s]
+
+@[simp]
+lemma coeff_coeToMvPowerSeries {f : R⟦X⟧} (n : ℕ) :
+    MvPowerSeries.coeff (Finsupp.single () n) f = f.coeff n := rfl
 
 /-- Two formal power series are equal if all their coefficients are equal. -/
 @[ext]
@@ -187,10 +193,10 @@ theorem coeff_C (n : ℕ) (a : R) : coeff n (C a : R⟦X⟧) = if n = 0 then a e
 
 @[simp]
 theorem coeff_zero_C (a : R) : coeff 0 (C a) = a := by
-  rw [coeff_C, if_pos rfl]
+  rw [coeff_C, ite_eq_left rfl]
 
 theorem coeff_C_of_ne_zero {a : R} {n : ℕ} (h : n ≠ 0) : coeff n (C a) = 0 := by
-  rw [coeff_C, if_neg h]
+  rw [coeff_C, ite_eq_right h]
 
 @[deprecated (since := "2026-05-20")] alias coeff_ne_zero_C := coeff_C_of_ne_zero
 
@@ -217,7 +223,7 @@ theorem coeff_zero_X : coeff 0 (X : R⟦X⟧) = 0 := by
   rw [coeff, Finsupp.single_zero, X, MvPowerSeries.coeff_zero_X]
 
 @[simp]
-theorem coeff_one_X : coeff 1 (X : R⟦X⟧) = 1 := by rw [coeff_X, if_pos rfl]
+theorem coeff_one_X : coeff 1 (X : R⟦X⟧) = 1 := by rw [coeff_X, ite_eq_left rfl]
 
 @[simp]
 theorem X_ne_zero [Nontrivial R] : (X : R⟦X⟧) ≠ 0 := fun H => by
@@ -226,12 +232,12 @@ theorem X_ne_zero [Nontrivial R] : (X : R⟦X⟧) ≠ 0 := fun H => by
 theorem X_pow_eq (n : ℕ) : (X : R⟦X⟧) ^ n = monomial n 1 :=
   MvPowerSeries.X_pow_eq _ n
 
+@[simp, grind =]
 theorem coeff_X_pow (m n : ℕ) : coeff m ((X : R⟦X⟧) ^ n) = if m = n then 1 else 0 := by
   rw [X_pow_eq, coeff_monomial]
 
-@[simp]
 theorem coeff_X_pow_self (n : ℕ) : coeff n ((X : R⟦X⟧) ^ n) = 1 := by
-  rw [coeff_X_pow, if_pos rfl]
+  simp
 
 @[simp]
 theorem coeff_one (n : ℕ) : coeff n (1 : R⟦X⟧) = if n = 0 then 1 else 0 :=
@@ -344,9 +350,9 @@ theorem coeff_C_mul_X_pow (x : R) (k n : ℕ) :
 @[simp]
 theorem coeff_mul_X_pow (p : R⟦X⟧) (n d : ℕ) :
     coeff (d + n) (p * X ^ n) = coeff d p := by
-  rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
+  rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, ite_eq_left rfl, mul_one]
   · rintro ⟨i, j⟩ h1 h2
-    rw [coeff_X_pow, if_neg, mul_zero]
+    rw [coeff_X_pow, ite_eq_right, mul_zero]
     rintro rfl
     apply h2
     rw [mem_antidiagonal, add_right_cancel_iff] at h1
@@ -357,9 +363,9 @@ theorem coeff_mul_X_pow (p : R⟦X⟧) (n d : ℕ) :
 @[simp]
 theorem coeff_X_pow_mul (p : R⟦X⟧) (n d : ℕ) :
     coeff (d + n) (X ^ n * p) = coeff d p := by
-  rw [coeff_mul, Finset.sum_eq_single (n, d), coeff_X_pow, if_pos rfl, one_mul]
+  rw [coeff_mul, Finset.sum_eq_single (n, d), coeff_X_pow, ite_eq_left rfl, one_mul]
   · rintro ⟨i, j⟩ h1 h2
-    rw [coeff_X_pow, if_neg, zero_mul]
+    rw [coeff_X_pow, ite_eq_right, zero_mul]
     rintro rfl
     apply h2
     rw [mem_antidiagonal, add_comm, add_right_cancel_iff] at h1
@@ -399,7 +405,7 @@ theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
   · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
-    rw [coeff_X_pow, if_neg, mul_zero]
+    rw [coeff_X_pow, ite_eq_right, mul_zero]
     exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 
 theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
@@ -408,7 +414,7 @@ theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
   · rw [← tsub_add_cancel_of_le h, coeff_X_pow_mul]
     simp
   · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
-    rw [coeff_X_pow, if_neg, zero_mul]
+    rw [coeff_X_pow, ite_eq_right, zero_mul]
     have := mem_antidiagonal.mp hx
     rw [add_comm] at this
     exact ((le_of_add_le_right this.le).trans_lt <| not_le.mp h).ne
@@ -425,7 +431,7 @@ theorem eq_shift_mul_X_add_const (φ : R⟦X⟧) :
   ext (_ | n)
   · simp
   · simp only [coeff_succ_mul_X, coeff_mk, map_add, coeff_C, n.succ_ne_zero,
-      if_false, add_zero]
+      ite_false, add_zero]
 
 /-- Split off the constant coefficient. -/
 theorem eq_X_mul_shift_add_const (φ : R⟦X⟧) :
@@ -433,7 +439,7 @@ theorem eq_X_mul_shift_add_const (φ : R⟦X⟧) :
   ext (_ | n)
   · simp
   · simp only [coeff_succ_X_mul, coeff_mk, map_add, coeff_C, n.succ_ne_zero,
-      if_false, add_zero]
+      ite_false, add_zero]
 
 section Map
 
@@ -548,7 +554,6 @@ noncomputable def rescale (a : R) : R⟦X⟧ →+* R⟦X⟧ where
   map_add' := by
     intros
     ext
-    dsimp only
     exact mul_add _ _ _
   map_mul' f g := by
     ext
@@ -855,7 +860,7 @@ end Semiring
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
+variable {R : Type*} [CommSemiring R] (φ : R[X])
 
 theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
     (f.toMvPowerSeries : PowerSeries R) =

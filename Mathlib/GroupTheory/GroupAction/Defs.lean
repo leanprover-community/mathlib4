@@ -204,18 +204,15 @@ def subgroup : Subgroup α where
   __ := submonoid M α
   inv_mem' ha _ := by rw [smul_inv', ha]
 
-/-- The notation for `FixedPoints.subgroup`, chosen to resemble `αᴹ`. -/
-scoped notation α "^*" M:51 => FixedPoints.subgroup M α
-
 @[simp]
-lemma mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
+lemma mem_subgroup (a : α) : a ∈ FixedPoints.subgroup M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
 instance : SMulCommClass M (FixedPoints.subgroup M α) α :=
   inferInstanceAs (SMulCommClass M (FixedPoints.submonoid M α) α)
 
 @[simp]
-lemma subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
+lemma subgroup_toSubmonoid : (FixedPoints.subgroup M α).toSubmonoid = submonoid M α :=
   rfl
 
 end FixedPoints
@@ -245,10 +242,6 @@ theorem mem_orbit_smul (g : G) (a : α) : a ∈ orbit G (g • a) := by
 @[to_additive]
 theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) := by
   simp only [orbit_smul, mem_orbit]
-
-@[to_additive]
-instance instMulAction (H : Subgroup G) : MulAction H α :=
-  inferInstanceAs (MulAction H.toSubmonoid α)
 
 @[to_additive]
 lemma subgroup_smul_def {H : Subgroup G} (a : H) (b : α) : a • b = (a : G) • b := rfl
@@ -300,7 +293,7 @@ of the orbit of `U` under `G`. -/]
 theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
     Quotient.mk' ⁻¹' Quotient.mk' '' U = ⋃ g : G, (g • ·) '' U := by
-  letI := orbitRel G α
+  let := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
   ext a
   constructor
@@ -321,7 +314,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
 theorem disjoint_image_image_iff {U V : Set α} :
     letI := orbitRel G α
     Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V := by
-  letI := orbitRel G α
+  let := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
   refine
     ⟨fun h a a_in_U g g_in_V =>
@@ -348,6 +341,10 @@ abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 
 variable {G α}
+
+@[to_additive (attr := simp)]
+lemma orbitRel.Quotient.quotient_smul_eq {g : G} {a : α} :
+    ⟦g • a⟧ = (⟦a⟧ : orbitRel.Quotient G α) := Quotient.eq.mpr ⟨g, rfl⟩
 
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
 @[to_additive /-- The orbit corresponding to an element of the quotient by `AddAction.orbitRel` -/]
@@ -479,7 +476,9 @@ def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action. -/
 @[to_additive /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive
 group action. -/]
-def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
       Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'

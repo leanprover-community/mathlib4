@@ -44,11 +44,12 @@ section LinearOrderedSemifield
 
 variable [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] {M : Matrix n n R}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If M is a positive scalar multiple of a doubly stochastic matrix, then there is a permutation matrix
 whose support is contained in the support of M.
 -/
-private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 < s)
+private lemma exists_perm_eq_zero_implies_eq_zero {s : R} (hs : 0 < s)
     (hM : ∃ M' ∈ doublyStochastic R n, M = s • M') :
     ∃ σ : Equiv.Perm n, ∀ i j, M i j = 0 → σ.permMatrix R i j = 0 := by
   rw [exists_mem_doublyStochastic_eq_smul_iff hs.le] at hM
@@ -113,8 +114,8 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     exact single_le_sum (fun j _ => hM.1 i j) (by simp)
   have : ∃ M' ∈ doublyStochastic R n, N = s' • M' := by
     rw [exists_mem_doublyStochastic_eq_smul_iff hs']
-    simp only [sub_apply, smul_apply, PEquiv.toMatrix_apply, Equiv.toPEquiv_apply, Option.mem_def,
-      Option.some.injEq, smul_eq_mul, mul_ite, mul_one, mul_zero, sub_nonneg,
+    simp only [Matrix.sub_apply, Matrix.smul_apply, PEquiv.toMatrix_apply, Equiv.toPEquiv_apply,
+      Option.mem_def, Option.some.injEq, smul_eq_mul, mul_ite, mul_one, mul_zero, sub_nonneg,
       sum_sub_distrib, sum_ite_eq, mem_univ, ↓reduceIte, N]
     refine ⟨fun i' j => ?_, by simp [s', hM.2.1], by simp [s', ← σ.eq_symm_apply, hM]⟩
     split
