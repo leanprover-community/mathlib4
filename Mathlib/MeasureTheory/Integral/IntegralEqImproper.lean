@@ -1194,12 +1194,10 @@ theorem integral_comp_exp (g : ℝ → E) :
 
 theorem integrable_comp_exp (g : ℝ → E) :
     Integrable (fun x ↦ exp x • g (exp x)) ↔ IntegrableOn g (Ioi 0) := by
-  rw [← integrableOn_univ]
+  rw [← integrableOn_univ, ← range_exp, ← image_univ]
   symm
-  rw [← range_exp, ← image_univ]
-  simpa [abs_of_pos (exp_pos _)] using integrableOn_image_iff_integrableOn_abs_deriv_smul
-    MeasurableSet.univ (fun x _ ↦ (hasDerivAt_exp x).hasDerivWithinAt)
-    (fun x _ y _ hxy ↦ exp_injective hxy) g
+  simpa using integrableOn_image_iff_integrableOn_abs_deriv_smul
+    .univ (fun x _ ↦ (hasDerivAt_exp x).hasDerivWithinAt) exp_injective.injOn g
 
 /-- Substitution `y = log x` in integrals over `Ioi 0`. -/
 theorem integral_comp_log_Ioi_zero (g : ℝ → E) :
