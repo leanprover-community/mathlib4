@@ -187,6 +187,7 @@ instance Prod.contMDiffSMul [SMul G M] [SMul G N] {n : ℕ∞ω} [ContMDiffSMul 
 
 /-- If `G` acts continuously differentiably on `G'` and `G'` acts continuously differentiably on
 `M`, then `G` acts continuously differentiably on `M`. -/
+@[to_additive]
 lemma IsScalarTower.contMDiffSMul (G' : Type*) [TopologicalSpace G'] [ChartedSpace H'' G']
     [Monoid G'] [SMul G G'] [MulAction G' M] [SMul G M] [IsScalarTower G G' M] {n : ℕ∞ω}
     [ContMDiffSMul I I'' n G G'] [ContMDiffSMul I'' I' n G' M] : ContMDiffSMul I I' n G M where
@@ -298,6 +299,7 @@ instance Prod.contMDiffConstSMul [SMul Γ N] [ContMDiffConstSMul I n Γ M]
 /-- If the action on `M` by any element of `Γ'` is continuously differentiable, and `Γ` acts on `Γ'`
 such that `Γ`, `Γ'` and `M` form a scalar tower, then the induced action on `M` by any element of
 `Γ` is continuously differentiable as well. -/
+@[to_additive]
 lemma IsScalarTower.contMDiffConstSMul (Γ' : Type*) [Monoid Γ'] [SMul Γ Γ'] [MulAction Γ' M]
     [IsScalarTower Γ Γ' M] [ContMDiffConstSMul I n Γ' M] : ContMDiffConstSMul I n Γ M where
   contMDiff_const_smul γ := by
