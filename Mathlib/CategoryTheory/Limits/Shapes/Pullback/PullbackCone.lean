@@ -104,6 +104,7 @@ theorem π_app_left (c : PullbackCone f g) : c.π.app WalkingCospan.left = c.fst
 
 theorem π_app_right (c : PullbackCone f g) : c.π.app WalkingCospan.right = c.snd := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem condition_one (t : PullbackCone f g) : t.π.app WalkingCospan.one = t.fst ≫ f := by
@@ -291,6 +292,7 @@ def PullbackCone.ofCone {F : WalkingCospan ⥤ C} (t : Cone F) :
   pt := t.pt
   π := t.π ≫ (diagramIsoCospan F).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A diagram `WalkingCospan ⥤ C` is isomorphic to some `PullbackCone.mk` after
 composing with `diagramIsoCospan`. -/
@@ -325,6 +327,7 @@ theorem ι_app_left (c : PushoutCocone f g) : c.ι.app WalkingSpan.left = c.inl 
 -- This cannot be `@[simp]` because `c.inr` is reducibly defeq to the LHS.
 theorem ι_app_right (c : PushoutCocone f g) : c.ι.app WalkingSpan.right = c.inr := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem condition_zero (t : PushoutCocone f g) : t.ι.app WalkingSpan.zero = f ≫ t.inl := by
@@ -388,6 +391,7 @@ reconstructed using `PushoutCocone.mk`. -/
 def eta (t : PushoutCocone f g) : t ≅ mk t.inl t.inr t.condition :=
   PushoutCocone.ext (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- This is a slightly more convenient method to verify that a pushout cocone is a colimit cocone.
 It only asks for a proof of facts that carry any mathematical content -/
@@ -514,6 +518,7 @@ def PushoutCocone.ofCocone {F : WalkingSpan ⥤ C} (t : Cocone F) :
   pt := t.pt
   ι := (diagramIsoSpan F).inv ≫ t.ι
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A diagram `WalkingSpan ⥤ C` is isomorphic to some `PushoutCocone.mk` after composing with
 `diagramIsoSpan`. -/

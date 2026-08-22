@@ -33,7 +33,7 @@ even though it is not strictly speaking an equation in the language of commutati
 The basic approach to prove equalities is to normalise both sides and check for equality.
 We use `Mathlib.Tactic.Ring.Common` to implement the normal forms and normalization procedure.
 
-This file defines the evaluation of basic operations such as addition and multipication of the
+This file defines the evaluation of basic operations such as addition and multiplication of the
 rational coefficients as embedded inside the (semi)ring. This is done using `norm_num`.
 
 It further implements the core `ring1` tactic.
@@ -479,7 +479,7 @@ partial def isOne {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
   else
     failure
 
-/-- The comarisons on the basetype used to compare normalized ring expressions. -/
+/-- The comparisons on the basetype used to compare normalized ring expressions. -/
 partial def _root_.Mathlib.Tactic.Ring.ringCompare {u : Lean.Level} {α : Q(Type u)} :
     Common.RingCompare (α := α) RatCoeff where
   eq zx zy := zx.value == zy.value

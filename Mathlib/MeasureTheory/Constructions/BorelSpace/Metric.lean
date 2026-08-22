@@ -116,16 +116,10 @@ theorem measurable_edist_left : Measurable fun y ↦ edist y x := by fun_prop
 theorem measurable_infEDist {s : Set α} : Measurable fun x => infEDist x s :=
   continuous_infEDist.measurable
 
-@[deprecated (since := "2026-01-08")]
-alias measurable_infEdist := measurable_infEDist
-
 @[fun_prop]
 protected theorem Measurable.infEDist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infEDist (f x) s :=
   measurable_infEDist.comp hf
-
-@[deprecated (since := "2026-01-08")]
-alias Measurable.infEdist := Measurable.infEDist
 
 /-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed
 thickenings converges to the measure of its closure as `r` tends to `0`. -/
@@ -201,7 +195,7 @@ theorem exists_borelSpace_of_countablyGenerated_of_separatesPoints (α : Type*)
     [m : MeasurableSpace α] [CountablyGenerated α] [SeparatesPoints α] :
     ∃ _ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ BorelSpace α := by
   rcases measurableEquiv_nat_bool_of_countablyGenerated α with ⟨s, ⟨f⟩⟩
-  letI := induced f inferInstance
+  let := induced f inferInstance
   let F := f.toEquiv.toHomeomorphOfIsInducing <| .induced _
   exact ⟨inferInstance, F.secondCountableTopology, F.symm.t4Space,
     f.measurableEmbedding.borelSpace F.isInducing⟩

@@ -12,17 +12,19 @@ public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPrese
 /-!
 # Cartan's Formula
 
-This file will, in the future, establish Cartan's classic formula, describing the characteristic
-function `characteristic f ⊤ r` as a sum of two circle averages,
+This file establishes Cartan's classic formula,
+`ValueDistribution.characteristic_top_eq_circleAverage_add_circleAverage`, describing the
+characteristic function `characteristic f ⊤ r` as a sum of two circle averages,
 
 - `circleAverage (logCounting f · r) 0 1` and
 - `circleAverage (fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖) 0 1`.
 
-As a corollary, Cartan's formula implies the (surprising, non-trival) fact that the characteristic
-function is monotone.
+As a corollary, Cartan's formula implies the (surprisingly non-trivial) fact that the
+characteristic function is monotone; this is stated in
+`ValueDistribution.characteristic_monotoneOn`.
 
-At present, this file establishes circle integrability of the function
-`a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖` and computes values of the circle integral.
+This file also establishes circle integrability of the function
+`a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖` and computes values of the circle average.
 
 ## References
 
@@ -32,7 +34,7 @@ discussion.
 
 public section
 
-open Filter Metric Real Set Topology
+open Filter Metric Real Set
 
 variable {f : ℂ → ℂ} {R : ℝ}
 
@@ -90,7 +92,7 @@ theorem circleIntegrable_log_meromorphicTrailingCoeffAt :
 
 /--
 Circle average of the function `fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖` that appears
-in Cartan's formula, in case where `f` has a zero at the origin.
+in Cartan's formula, in the case where `f` has a zero at the origin.
 -/
 theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_pos
     (h : 0 < meromorphicOrderAt f 0) :
@@ -99,7 +101,7 @@ theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_
 
 /--
 Circle average of the function `fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖` that appears
-in Cartan's formula, in case where  `f` has order zero at the origin.
+in Cartan's formula, in the case where `f` has order zero at the origin.
 -/
 theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_eq_zero
     (h : meromorphicOrderAt f 0 = 0) :
@@ -116,7 +118,7 @@ theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_
 
 /--
 Circle average of the function `fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖` that appears
-in Cartan's formula, in case where `f` has a pole at the origin.
+in Cartan's formula, in the case where `f` has a pole at the origin.
 -/
 theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_lt_zero
     (h : meromorphicOrderAt f 0 < 0) :
@@ -163,7 +165,7 @@ theorem circleIntegrable_logCounting (h : Meromorphic f) :
 **Cartan's formula** with the additive constant written explicitly as a circle average of the
 logarithm of the first nonzero Laurent coefficient of `f - a` at the origin.
 
-See `circleIntegrable_logCounting` and `circleIntegrable_log_trailingCoeff_of_meromorphic` for the
+See `circleIntegrable_logCounting` and `circleIntegrable_log_meromorphicTrailingCoeffAt` for the
 facts that the summands are actually circle integrable.
 -/
 theorem characteristic_top_eq_circleAverage_add_circleAverage (h : Meromorphic f) (hR : R ≠ 0) :
@@ -183,7 +185,7 @@ theorem characteristic_top_eq_circleAverage_add_circleAverage (h : Meromorphic f
       simp [logCounting_add_log_trailingCoeff_eq_circleAverage_add_logCounting_top h hR a]
 
 /--
-**Cartan's formula** in case where `0 < meromorphicOrderAt f 0`.
+**Cartan's formula** in the case where `0 < meromorphicOrderAt f 0`.
 -/
 theorem characteristic_top_eq_circleAverage_of_meromorphicOrderAt_pos
     (h₁f : Meromorphic f) (h₂f : 0 < meromorphicOrderAt f 0) (hR : R ≠ 0) :
@@ -193,9 +195,9 @@ theorem characteristic_top_eq_circleAverage_of_meromorphicOrderAt_pos
 
 /--
 Qualitative version of **Cartan's formula**: Away from the point `0`, the difference between
-`characteristic f ⊤` and `circleAverage (logCounting f · ·) 0 1` is constant. This qualitative
-version of Cartan's formula exists because the specific value of the constant does not matter in
-practise.
+`characteristic f ⊤` and `fun R ↦ circleAverage (logCounting f · R) 0 1` is constant. This
+qualitative version of Cartan's formula exists because the specific value of the constant does not
+matter in practice.
 -/
 theorem characteristic_top_eq_circleAverage_add_const (h : Meromorphic f) :
     ∃ const, ∀ R ≠ 0, characteristic f ⊤ R = circleAverage (logCounting f · R) 0 1 + const :=

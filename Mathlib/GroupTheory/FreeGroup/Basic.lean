@@ -669,6 +669,7 @@ def Lift.aux : List (α × Bool) → β := fun L =>
 theorem Red.Step.lift {f : α → β} (H : Red.Step L₁ L₂) : Lift.aux f L₁ = Lift.aux f L₂ := by
   obtain @⟨_, _, _, b⟩ := H; cases b <;> simp [Lift.aux, List.prod_append]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `β` is a group, then any function from `α` to `β` extends uniquely to a group homomorphism
 from the free group over `α` to `β` -/
 @[to_additive (attr := simps symm_apply)
@@ -719,12 +720,18 @@ theorem range_lift_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
   exact ⟨FreeGroup.of a, by simp only [lift_apply_of]⟩
 
 @[to_additive]
+theorem lift_surjective_iff_closure_range_eq_top :
+    Function.Surjective (lift f) ↔ Subgroup.closure (Set.range f) = ⊤ := by
+  rw [← MonoidHom.range_eq_top, range_lift_eq_closure]
+
+@[to_additive]
 theorem closure_eq_range (s : Set β) : Subgroup.closure s = (lift ((↑) : s → β)).range := by
   rw [FreeGroup.range_lift_eq_closure, Subtype.range_coe]
 
 /-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
 set of generators equals `⊤`. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- The generators of `FreeAddGroup α` generate `FreeAddGroup α`. That
+is, the additive subgroup closure of the set of generators equals `⊤`. -/]
 theorem closure_range_of (α) :
     Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
   rw [← range_lift_eq_closure, lift_of_eq_id]
@@ -741,6 +748,7 @@ section Map
 
 variable {β : Type v} (f : α → β) {x y : FreeGroup α}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any function from `α` to `β` extends uniquely to a group homomorphism from the free group over
   `α` to the free group over `β`. -/
 @[to_additive /-- Any function from `α` to `β` extends uniquely to an additive group homomorphism
@@ -938,6 +946,7 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
     exact List.recOn L
      rfl
      (fun ⟨⟨⟩, b⟩ tl ih => by
+        simp only [Bool.cond_eq_ite] at ih
         cases b <;> simp [zpow_add, ih] <;> rfl)
   right_inv x :=
     Int.induction_on x (by simp)

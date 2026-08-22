@@ -81,6 +81,8 @@ class ConditionallyCompleteLinearOrder (α : Type*)
   compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
     compareOfLessAndEq_rfl
 
+attribute [to_dual existing] ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove
+
 /-- A conditionally complete linear order with `Bot` is a linear order with least element, in which
 every nonempty subset which is bounded above has a supremum, and every nonempty subset (necessarily
 bounded below) has an infimum.  A typical example is the natural numbers.
@@ -112,7 +114,7 @@ instance : ConditionallyCompleteLattice my_T where
   __ := conditionallyCompleteLatticeOfsSup my_T ...
 ```
 -/
-@[to_dual (attr := implicit_reducible) (reorder := 4 5)
+@[to_dual (attr := instance_reducible) (reorder := 4 5)
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sInf` function
 that returns the greatest lower bound of a nonempty set which is bounded below. Usually this
 constructor provides poor definitional equalities.  If other fields are known explicitly, they
@@ -145,7 +147,7 @@ def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 :
 /-- A version of `conditionallyCompleteLatticeOfsSup` when we already know that `α` is a lattice.
 
 This should only be used when it is both hard and unnecessary to provide `sInf` explicitly. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := instance_reducible)
 /-- A version of `conditionallyCompleteLatticeOfsInf` when we already know that `α` is a lattice.
 
 This should only be used when it is both hard and unnecessary to provide `sSup` explicitly. -/]
@@ -169,7 +171,7 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
   __ :=
     letI : InfSet α := ⟨fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥⟩
     conditionallyCompleteLatticeOfLatticeOfsInf _ fun s _ hn ↦ by
-      simp only [dif_pos hn]
+      simp only [dite_eq_left hn]
       exact IsLeast.isGLB ⟨h.wf.min_mem s hn, fun _ hx ↦ h.wf.min_le hx⟩
   csSup_empty := by simp [sSup, bot_unique (WellFounded.min_le _ (mem_univ _))]
   csSup_of_not_bddAbove s H := by

@@ -40,7 +40,7 @@ variable {P : ℤ → Sort*} {lt : ∀ n < m, P n} {ge : ∀ n ≥ m, (∀ k < n
 lemma strongRec_of_ge :
     ∀ hn : m ≤ n, m.strongRec lt ge n = ge n hn fun k _ ↦ m.strongRec lt ge k := by
   refine m.strongRec (fun n hnm hmn ↦ (Int.not_lt.mpr hmn hnm).elim) (fun n _ ih hn ↦ ?_) n
-  rw [Int.strongRec, dif_neg (Int.not_lt.mpr hn)]
+  rw [Int.strongRec, dite_eq_right (Int.not_lt.mpr hn)]
   congr; revert ih
   refine n.inductionOn' m (fun _ ↦ ?_) (fun k hmk ih' ih ↦ ?_) (fun k hkm ih' _ ↦ ?_) <;> ext l hl
   · rw [inductionOn'_self, strongRec_of_lt hl]

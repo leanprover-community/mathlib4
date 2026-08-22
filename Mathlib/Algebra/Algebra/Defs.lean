@@ -396,14 +396,6 @@ variable {R A}
 @[simp] lemma algebraMap_self : algebraMap R R = .id _ := rfl
 lemma algebraMap_self_apply (x : R) : algebraMap R R x = x := rfl
 
-namespace id
-
-@[deprecated _root_.smul_eq_mul (since := "2025-12-02")]
-theorem smul_eq_mul (x y : R) : x • y = x * y :=
-  rfl
-
-end id
-
 end Semiring
 
 end Algebra
@@ -429,3 +421,12 @@ theorem algebraMap.smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribClass 
     algebraMap B C (a • b) = a • (algebraMap B C b) := coe_smul' _ _ _
 
 end algebraMap
+
+attribute [local instance] IsUnital.toSemiring in
+/-- A unital non-unital algebra is an algebra.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toAlgebra {R A : Type*} [CommSemiring R] [NonUnitalSemiring A]
+    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [IsUnital A] : Algebra R A :=
+  .ofModule smul_mul_assoc mul_smul_comm

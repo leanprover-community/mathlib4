@@ -63,7 +63,7 @@ theorem support_integralNormalization_subset :
   simp +contextual [sum_def, integralNormalization, coeff_monomial, mem_support_iff]
 
 theorem integralNormalization_coeff_degree {i : ℕ} (hi : p.degree = i) :
-    (integralNormalization p).coeff i = 1 := by rw [integralNormalization_coeff, if_pos hi]
+    (integralNormalization p).coeff i = 1 := by rw [integralNormalization_coeff, ite_eq_left hi]
 
 theorem integralNormalization_coeff_natDegree (hp : p ≠ 0) :
     (integralNormalization p).coeff (natDegree p) = 1 :=
@@ -71,7 +71,7 @@ theorem integralNormalization_coeff_natDegree (hp : p ≠ 0) :
 
 theorem integralNormalization_coeff_degree_ne {i : ℕ} (hi : p.degree ≠ i) :
     coeff (integralNormalization p) i = coeff p i * p.leadingCoeff ^ (p.natDegree - 1 - i) := by
-  rw [integralNormalization_coeff, if_neg hi]
+  rw [integralNormalization_coeff, ite_eq_right hi]
 
 theorem integralNormalization_coeff_ne_natDegree {i : ℕ} (hi : i ≠ natDegree p) :
     coeff (integralNormalization p) i = coeff p i * p.leadingCoeff ^ (p.natDegree - 1 - i) :=
@@ -124,9 +124,6 @@ theorem integralNormalization_mul_C_leadingCoeff (p : R[X]) :
       rw [le_tsub_iff_left (coe_lt_degree.mp h').le, Nat.succ_le_iff]
       exact coe_lt_degree.mp h'
     · simp [coeff_eq_zero_of_degree_lt (lt_of_le_of_ne (le_of_not_gt h') h)]
-
-@[deprecated (since := "2025-11-24")] alias integralNormalization_degree :=
-  degree_integralNormalization
 
 variable {A : Type*} [CommSemiring S] [Semiring A]
 
@@ -188,7 +185,7 @@ variable [Semiring R] [IsCancelMulZero R]
 @[simp]
 theorem support_integralNormalization {f : R[X]} :
     (integralNormalization f).support = f.support := by
-  nontriviality R using Subsingleton.eq_zero
+  nontriviality R using Subsingleton.eq_zero (α := R[X])
   have : IsDomain R := {}
   by_cases hf : f = 0; · simp [hf]
   ext i

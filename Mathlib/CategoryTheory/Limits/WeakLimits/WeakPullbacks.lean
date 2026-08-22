@@ -23,7 +23,7 @@ universe u v w
 
 noncomputable section
 
-open CategoryTheory Category Limits
+open CategoryTheory
 
 variable {C : Type*} [Category* C]
 

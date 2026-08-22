@@ -90,6 +90,7 @@ lemma ext_of_isTriangulatedClosed₃'
     (h₁ : P T.obj₁) (h₂ : P T.obj₂) : P.isoClosure T.obj₃ :=
   IsTriangulatedClosed₃.ext₃' T hT h₁ h₂
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 protected lemma distinguished_cocone_triangle [P.IsTriangulatedClosed₃]
     {X Y : C} (a : X ⟶ Y) (hX : P X) (hY : P Y) :
@@ -99,6 +100,7 @@ protected lemma distinguished_cocone_triangle [P.IsTriangulatedClosed₃]
   exact ⟨Z', hZ', b ≫ e.hom, e.inv ≫ c, isomorphic_distinguished _ h _
     (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm )⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 protected lemma distinguished_cocone_triangle₁ [P.IsTriangulatedClosed₁]
     {Y Z : C} (b : Y ⟶ Z) (hY : P Y) (hZ : P Z) :
@@ -108,6 +110,7 @@ protected lemma distinguished_cocone_triangle₁ [P.IsTriangulatedClosed₁]
   exact ⟨X', hX', e.inv ≫ a, c ≫ e.hom⟦1⟧', isomorphic_distinguished _ h _
     (Triangle.isoMk _ _ e.symm (Iso.refl _) (Iso.refl _))⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 protected lemma distinguished_cocone_triangle₂ [P.IsTriangulatedClosed₂]
     {X Z : C} (c : Z ⟶ X⟦(1 : ℤ)⟧) (hX : P X) (hZ : P Z) :
@@ -518,12 +521,10 @@ instance [P.ContainsZero] : P.trW.ContainsIdentities := by
   rw [← trW_isoClosure]
   exact ⟨fun X => ⟨_, _, _, contractible_distinguished X, prop_zero _⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma trW_of_isIso [P.ContainsZero] {X Y : C} (f : X ⟶ Y) [IsIso f] : P.trW f := by
   refine (P.trW.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
   exact Arrow.isoMk (Iso.refl _) (asIso f)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma smul_mem_trW_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
     P.trW (n • f) ↔ P.trW f :=
   P.trW.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
@@ -636,6 +637,7 @@ instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasRightCalculusOfFractio
       dsimp at eq
       rw [← sub_eq_zero, ← comp_sub, hq, reassoc_of% eq, zero_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance [IsTriangulated C] [P.IsTriangulated] : P.trW.IsCompatibleWithTriangulation := ⟨by
   rintro T₁ T₃ mem₁ mem₃ a b ⟨Z₅, g₅, h₅, mem₅, mem₅'⟩ ⟨Z₄, g₄, h₄, mem₄, mem₄'⟩ comm
@@ -719,7 +721,6 @@ instance [IsTriangulated C] : IsTriangulated P.FullSubcategory :=
   IsTriangulated.of_fully_faithful_triangulated_functor P.ι
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [F.Full] :
     F.essImage.IsTriangulated where
   isStableUnderShiftBy n :=

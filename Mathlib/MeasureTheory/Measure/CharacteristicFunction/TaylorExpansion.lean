@@ -66,7 +66,6 @@ lemma continuous_charFun : Continuous (charFun μ) := by
   refine contDiff_zero.1 (contDiff_charFun ?_)
   simpa using by fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : MemLp id n μ) (x : Fin n → E) :
     iteratedFDeriv ℝ n (charFun μ) t x = I ^ n * ∫ y, (∏ i, ⟪y, x i⟫) * exp (⟪y, t⟫ * I) ∂μ := by
   have h : innerₗ E = (innerSL ℝ).toLinearMap₁₂ := rfl
@@ -85,8 +84,8 @@ theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : MemLp id n μ) (x : Fin
   rw [fourierIntegral_continuousMultilinearMap_apply Real.continuous_fourierChar]
   swap;
   · exact integrable_fourierPowSMulRight _ (by simpa using hint.integrable_norm_pow') (by fun_prop)
-  simp only [fourierIntegral, Real.fourierChar, Circle.exp, ContinuousMap.coe_mk, ofReal_mul,
-    ofReal_ofNat, innerSL, map_neg, map_smul, ContinuousLinearMap.toLinearMap₁₂_apply,
+  simp only [fourierIntegral, Real.fourierChar, Circle.coe_exp, ofReal_mul,
+    ofReal_ofNat, innerSL, map_neg, map_smul, ContinuousLinearMap.toLinearMap₁₂_apply_apply_apply,
     LinearMap.mkContinuous₂_apply, innerₛₗ_apply_apply, smul_eq_mul, neg_neg, AddChar.coe_mk,
     ofReal_inv, fourierPowSMulRight_apply, Pi.ofNat_apply, real_smul, ofReal_prod, mul_one,
     Circle.smul_def]

@@ -248,7 +248,7 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
       ‖B‖ * ∑ i ∈ Finset.range (n + 1), (n.choose i) *
         ‖iteratedFDeriv ℝ i f x‖ * ‖iteratedFDeriv ℝ (n - i) g x‖ :=
     (B.bilinearRestrictScalars ℝ).norm_iteratedFDeriv_le_of_bilinear hf.1 hg.1 x (mod_cast le_top)
-  refine (IsBigO.of_norm_le estimate).trans (.const_mul_left (.sum fun i hi ↦ ?_) _)
+  refine (IsBigO.of_norm_le estimate).trans (.const_mul_left (.fun_sum fun i hi ↦ ?_) _)
   simp_rw [mul_assoc, pow_add]
   refine .const_mul_left (.mul (h1 i ?_).norm_left (h2 (n - i) ?_).norm_left) _ <;>
   grind
@@ -343,7 +343,7 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
   set t := {y : ℝ | 1 / 2 < y}
   have ht : Set.range (fun (x : H) ↦ (1 + ‖x‖ ^ 2)) ⊆ t := by
     rintro - ⟨y, rfl⟩
-    simp only [Set.mem_setOf_eq, t]
+    simp only [Set.mem_ofPred_eq, t]
     exact lt_add_of_lt_add_left (c := 0) (by norm_num) (by positivity)
   have hdiff : ContDiffOn ℝ ∞ (fun x ↦ x ^ r) t :=
     contDiffOn_fun_id.rpow_const_of_ne fun x hx ↦ (lt_trans (by norm_num) hx).ne'
@@ -392,7 +392,7 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
       congr
       simpa using hx''.le
     _ ≤ (2 : ℝ) ^ (n - r) := by
-      simp only [one_div, Set.mem_setOf_eq, t] at hx
+      simp only [one_div, Set.mem_ofPred_eq, t] at hx
       rw [Real.rpow_neg_eq_inv_rpow]
       gcongr
       exact ((inv_lt_comm₀ hx'' (by norm_num)).mpr hx).le

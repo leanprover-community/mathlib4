@@ -43,7 +43,7 @@ derivative, strictly differentiable, continuously differentiable, smooth, invers
 
 @[expose] public section
 
-open Function Set Filter Metric
+open Set Filter
 
 open scoped Topology NNReal
 
@@ -53,7 +53,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-open Asymptotics Filter Metric Set
+open Asymptotics Filter Set
 
 open ContinuousLinearMap (id)
 

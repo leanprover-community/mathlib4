@@ -62,7 +62,53 @@ lemma liftFun_vecCons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin
   simp only [liftFun_iff_succ r, forall_iff_succ, cons_val_succ, cons_val_zero, ← succ_castSucc,
     castSucc_zero]
 
-variable [Preorder α] {n : ℕ} {f : Fin (n + 1) → α} {a : α}
+open scoped Relator in
+lemma Fin.liftFun_cons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin n → α} {a : α} :
+    ((· < ·) ⇒ r) (cons a f) (cons a f) ↔ (∀ i, r a (f i)) ∧ ((· < ·) ⇒ r) f f := by
+  match n with
+  | 0 => simp [Relator.LiftFun]
+  | n + 1 =>
+    apply (liftFun_vecCons r).trans
+    simp only [forall_iff_succ, and_congr_left_iff, iff_self_and]
+    intro h r0 i
+    exact _root_.trans r0 (h (by grind))
+
+variable [Preorder α] {n : ℕ}
+
+lemma Fin.strictMono_insertNth_iff (q : Fin (n + 1)) (x : α) (f : Fin n → α) :
+    StrictMono (q.insertNth x f) ↔
+      StrictMono f ∧ (∀ i, i.castSucc < q → f i < x) ∧ (∀ i, q ≤ i.castSucc → x < f i) := by
+  refine ⟨fun h ↦ ⟨fun a b hab ↦ ?_, ⟨fun i hlt ↦ ?_, fun i hlt ↦ ?_⟩⟩, ?_⟩
+  · simpa [hab] using h (a := q.succAbove a) (b := q.succAbove b)
+  · have : q.succAbove i < q := by simp [succAbove_of_castSucc_lt, hlt]
+    simpa using h this
+  · have : q < q.succAbove i := by simp [succAbove_of_le_castSucc, hlt, ← le_castSucc_iff]
+    simpa using h this
+  · rintro ⟨h, hlt, hgt⟩ a b hab
+    cases a using succAboveCases q <;> cases b using succAboveCases q
+    · simp at hab
+    · rename_i j
+      have : q ≤ j.castSucc := by simpa [lt_succAbove_iff_le_castSucc] using hab
+      simpa using hgt _ this
+    · rename_i j
+      have : j.castSucc < q := by simpa [succAbove_lt_iff_castSucc_lt] using hab
+      simpa using hlt _ this
+    · simpa using h <| (strictMono_succAbove _).lt_iff_lt.mp hab
+
+lemma Fin.strictMono_cons {f : Fin n → α} {a : α} :
+    StrictMono (Fin.cons a f) ↔ (∀ j, a < f j) ∧ StrictMono f :=
+  liftFun_cons (· < ·)
+
+@[simp] lemma Fin.strictMono_cons_zero_succ {f : Fin n → Fin (n + 1)} :
+    StrictMono (Fin.cons 0 f) ↔ f = Fin.succ := by
+  refine ⟨fun h ↦ funext fun i ↦ ?_, fun h ↦ by simp [h, strictMono_id]⟩
+  have key (g : Fin (n + 1) → Fin (n + 1)) (hg : StrictMono g) : g = id := by
+    -- Import restrictions prevent us using `StrictMono.eq_id`: hence this manual proof.
+    refine funext fun x ↦ le_antisymm ?_ (hg.id_le x)
+    simpa using ((Fin.rev_strictAnti.comp_strictMono hg).comp Fin.rev_strictAnti).id_le (Fin.rev x)
+  simpa using congrFun (key _ h) i.succ
+
+variable {f : Fin (n + 1) → α} {a : α}
 
 @[simp] lemma strictMono_vecCons : StrictMono (vecCons a f) ↔ a < f 0 ∧ StrictMono f :=
   liftFun_vecCons (· < ·)
@@ -91,6 +137,9 @@ lemma monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f := 
 
 lemma StrictMono.vecCons (hf : StrictMono f) (ha : a < f 0) : StrictMono (vecCons a f) :=
   strictMono_vecCons.2 ⟨ha, hf⟩
+
+lemma StrictMono.removeNth (hf : StrictMono f) (i : Fin (n + 1)) : StrictMono (i.removeNth f) :=
+  hf.comp (Fin.strictMono_succAbove i)
 
 lemma StrictAnti.vecCons (hf : StrictAnti f) (ha : f 0 < a) : StrictAnti (vecCons a f) :=
   strictAnti_vecCons.2 ⟨ha, hf⟩

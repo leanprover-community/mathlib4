@@ -32,7 +32,7 @@ flow onto an invariant subset, and the time-reversal of a flow by a group.
 @[expose] public section
 
 
-open Set Function Filter
+open Set Function
 
 variable {τ α : Type*}
 
@@ -165,7 +165,7 @@ section AddMonoid
 variable [AddMonoid τ] (ϕ : Flow τ α)
 
 /-- Convert a flow to an additive monoid action. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toAddAction : AddAction τ α where
   vadd := ϕ
   add_vadd := ϕ.map_add'

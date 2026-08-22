@@ -69,7 +69,7 @@ theorem gl_smul_eq_self_iff_dist_sq_eq (h : g.val.det < 0) (htrace : g.val.trace
     g • z = z ↔ dist (z : ℂ) (-g 1 1 / g 1 0) ^ 2 = (-g.val.det) / g 1 0 ^ 2 := by
   rw [Matrix.trace_fin_two, ← eq_neg_iff_add_eq_zero] at htrace
   rw [eq_div_iff (by positivity), dist_eq_norm, ← Complex.normSq_eq_norm_sq, Complex.normSq_apply,
-    gl_smul_eq_iff_num_eq, σ, g.val_det_apply, if_neg h.not_gt]
+    gl_smul_eq_iff_num_eq, σ, g.val_det_apply, ite_eq_right h.not_gt]
   simp [num, denom, Complex.ext_iff, htrace, Matrix.det_fin_two, field]
   grind
 
@@ -117,7 +117,7 @@ theorem gl_smul_eq_self_iff_quadratic (h : 0 < g.val.det) :
   simp [gl_smul_eq_iff_num_eq, σ, h, num, denom]
   grind
 
-/-- If `g` is a non-scalar orientation perserving matrix with a fixed point in `ℍ`,
+/-- If `g` is a non-scalar orientation preserving matrix with a fixed point in `ℍ`,
 then it's an elliptic matrix. -/
 theorem isElliptic_of_exists_smul_eq_self (h : 0 < g.val.det) (hgc : g ∉ Subgroup.center _)
     (hfix : ∃ z : ℍ, g • z = z) : g.IsElliptic := by
@@ -172,12 +172,12 @@ theorem gl_smul_eq_self_iff_eq_fixedPt (hpos : 0 < g.val.det) (hell : g.IsEllipt
 
 theorem gl_smul_I_eq_I_iff_of_pos {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
     g • I = I ↔ g 0 0 = g 1 1 ∧ g 0 1 = -g 1 0 := by
-  rw [gl_smul_eq_iff_num_eq, σ, if_pos hg]
+  rw [gl_smul_eq_iff_num_eq, σ, ite_eq_left hg]
   simp [Complex.ext_iff, num, denom, and_comm]
 
 theorem gl_smul_I_eq_I_iff_of_neg {g : GL (Fin 2) ℝ} (hg : g.det.val < 0) :
     g • I = I ↔ g 0 0 = -g 1 1 ∧ g 0 1 = g 1 0 := by
-  rw [gl_smul_eq_iff_num_eq, σ, if_neg (not_lt_of_gt hg)]
+  rw [gl_smul_eq_iff_num_eq, σ, ite_eq_right (not_lt_of_gt hg)]
   simp [num, denom, Complex.ext_iff, and_comm]
 
 /-- A matrix acts trivially on `ℍ` iff it belongs to the center of `GL(2, ℝ)`,

@@ -47,7 +47,7 @@ theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
     (CauchySeq fun s : Finset ι => ∑ i ∈ s, f i) ↔
       ∀ ε > (0 : ℝ), ∃ s : Finset ι, ∀ t, Disjoint t s → ‖∑ i ∈ t, f i‖ < ε := by
   rw [cauchySeq_finset_iff_sum_vanishing, nhds_basis_ball.forall_iff]
-  · simp only [ball_zero_eq, Set.mem_setOf_eq]
+  · simp only [ball_zero_eq, Set.mem_ofPred_eq]
   · rintro s t hst ⟨s', hs'⟩
     exact ⟨s', fun t' ht' => hst <| hs' _ ht'⟩
 
@@ -142,7 +142,7 @@ theorem tsum_of_norm_bounded {f : ι → E} {g : ι → ℝ} {a : ℝ} (hg : Has
   by_cases hf : Summable f
   · exact hf.hasSum.norm_le_of_bounded hg h
   · rw [tsum_eq_zero_of_not_summable hf, norm_zero]
-    classical exact ge_of_tendsto' hg fun s => sum_nonneg fun i _hi => (norm_nonneg _).trans (h i)
+    exact ge_of_tendsto' hg fun s => sum_nonneg fun i _hi => (norm_nonneg _).trans (h i)
 
 /-- If `∑' i, ‖f i‖` is summable, then `‖∑' i, f i‖ ≤ (∑' i, ‖f i‖)`. Note that we do not assume
 that `∑' i, f i` is summable, and it might not be the case if `α` is not a complete space. -/

@@ -59,7 +59,7 @@ properties of the mgf from those of the characteristic function).
 @[expose] public section
 
 
-open MeasureTheory Filter Finset Real Complex
+open MeasureTheory Filter Real Complex
 
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
 
@@ -241,7 +241,7 @@ the same `integrableExpSet`. -/
 lemma integrableExpSet_eq_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ μ' = 0) :
     integrableExpSet X μ = integrableExpSet Y μ' := by
   ext t
-  simp only [integrableExpSet, Set.mem_setOf_eq]
+  simp only [integrableExpSet, Set.mem_ofPred_eq]
   by_cases hμ : μ = 0
   · simp [hμ, hμμ'.mp hμ]
   have : NeZero μ := ⟨hμ⟩
@@ -322,8 +322,9 @@ theorem _root_.MeasureTheory.Measure.ext_of_complexMGF_eq [IsFiniteMeasure μ]
     μ.map X = μ'.map Y := by
   have inner_ne_zero (x : ℝ) (h : x ≠ 0) : innerₗ ℝ x ≠ 0 :=
     DFunLike.ne_iff.mpr ⟨x, inner_self_ne_zero.mpr h⟩
+  have h_cont : Continuous fun p : ℝ × ℝ ↦ innerₗ ℝ p.1 p.2 := continuous_inner
   apply MeasureTheory.ext_of_integral_char_eq continuous_probChar probChar_ne_one inner_ne_zero
-    continuous_inner (fun w ↦ ?_)
+    h_cont (fun w ↦ ?_)
   rw [funext_iff] at h
   specialize h (Multiplicative.toAdd w * I)
   simp_rw [complexMGF, mul_assoc, mul_comm I, ← mul_assoc] at h

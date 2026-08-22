@@ -82,6 +82,9 @@ def associatorImpl (X Y Z : Dial C) :
   isoMk (prod.associator ..) (prod.associator ..) <| by
     simp [Subobject.inf_pullback, ← Subobject.pullback_comp, inf_assoc]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[simps!]
 instance : MonoidalCategoryStruct (Dial C) where
   tensorUnit := tensorUnitImpl

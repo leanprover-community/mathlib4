@@ -173,7 +173,7 @@ lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
   · intro _ w ho
     have := (w.three_le_chromaticNumber_of_odd_loop ho).trans h.chromaticNumber_le
     norm_cast
-  · apply colorable_iff_forall_connectedComponents.2
+  · apply colorable_iff_forall_connectedComponent.2
     intro c
     obtain ⟨_, hv⟩ := c.nonempty_supp
     use fun a ↦ Fin.ofNat 2 (c.connected_toSimpleGraph ⟨_, hv⟩ a).some.length

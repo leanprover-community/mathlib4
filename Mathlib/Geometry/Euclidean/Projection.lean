@@ -306,7 +306,7 @@ lemma dist_orthogonalProjection_eq_dist_iff_eq_of_mem {s : AffineSubspace 𝕜 P
     [s.direction.HasOrthogonalProjection] {p₁ p₂ : P} (hp₂ : p₂ ∈ s) :
     haveI : Nonempty s := ⟨p₂, hp₂⟩
     dist p₁ (orthogonalProjection s p₁) = dist p₁ p₂ ↔ orthogonalProjection s p₁ = p₂ := by
-  haveI : Nonempty s := ⟨p₂, hp₂⟩
+  have : Nonempty s := ⟨p₂, hp₂⟩
   constructor
   · intro h
     rwa [← sq_eq_sq₀ dist_nonneg dist_nonneg, pow_two, pow_two, dist_comm _ p₂,

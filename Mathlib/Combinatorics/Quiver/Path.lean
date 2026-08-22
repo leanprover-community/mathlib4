@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Wärn, Kim Morrison, Matteo Cipollina
+Authors: David Wärn, Kim Morrison, Matteo Cipollina, Runtian Zhou
 -/
 module
 
@@ -14,6 +14,8 @@ public import Batteries.Data.List.Basic
 
 Given a quiver `V`, we define the type of paths from `a : V` to `b : V` as an inductive
 family. We define composition of paths and the action of prefunctors on paths.
+
+We also define `Quiver.Reachable a b`, the existence of a directed path from `a` to `b`.
 -/
 
 @[expose] public section
@@ -308,6 +310,43 @@ instance instDecidableEq [DecidableEq V] [∀ (v w : V), DecidableEq (v ⟶ w)] 
 end BoundedPath
 
 end Path
+
+section Reachable
+
+variable {V : Type u} [Quiver V]
+
+/-- `Reachable a b` holds when there is a directed path from `a` to `b`.
+
+This is a preorder rather than an equivalence, since quiver paths are directed (compare the
+symmetric `SimpleGraph.Reachable`). -/
+def Reachable (a b : V) : Prop := Nonempty (Path a b)
+
+variable {a b c : V}
+
+protected theorem Reachable.elim {p : Prop} (h : Reachable a b) (hp : Path a b → p) : p :=
+  Nonempty.elim h hp
+
+@[refl]
+protected theorem Reachable.refl (a : V) : Reachable a a := ⟨.nil⟩
+
+@[simp]
+protected theorem Reachable.rfl : Reachable a a := .refl _
+
+@[trans]
+protected theorem Reachable.trans (hab : Reachable a b) (hbc : Reachable b c) : Reachable a c :=
+  hab.elim fun p => hbc.elim fun q => ⟨p.comp q⟩
+
+instance : IsPreorder V Reachable where
+  refl := .refl
+  trans _ _ _ := .trans
+
+/-- A path witnesses that its target is reachable from its source. -/
+protected theorem Path.reachable (p : Path a b) : Reachable a b := ⟨p⟩
+
+/-- An arrow witnesses that its target is reachable from its source. -/
+protected theorem Hom.reachable (e : a ⟶ b) : Reachable a b := ⟨e.toPath⟩
+
+end Reachable
 
 end Quiver
 

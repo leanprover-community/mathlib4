@@ -458,7 +458,7 @@ theorem iSup_dualAnnihilator_le_iInf {ι : Sort*} (U : ι → Submodule R M) :
 lemma coe_dualAnnihilator_span (s : Set M) :
     ((span R s).dualAnnihilator : Set (Module.Dual R M)) = {f | s ⊆ LinearMap.ker f} := by
   ext f
-  simp only [SetLike.mem_coe, mem_dualAnnihilator, Set.mem_setOf_eq, ← LinearMap.mem_ker]
+  simp only [SetLike.mem_coe, mem_dualAnnihilator, Set.mem_ofPred_eq, ← LinearMap.mem_ker]
   exact span_le
 
 @[simp]
@@ -466,7 +466,7 @@ lemma coe_dualCoannihilator_span (s : Set (Module.Dual R M)) :
     ((span R s).dualCoannihilator : Set M) = {x | ∀ f ∈ s, f x = 0} := by
   ext x
   have (φ : _) : x ∈ LinearMap.ker φ ↔ φ ∈ LinearMap.ker (Module.Dual.eval R M x) := by simp
-  simp only [SetLike.mem_coe, mem_dualCoannihilator, Set.mem_setOf_eq, ← LinearMap.mem_ker, this]
+  simp only [SetLike.mem_coe, mem_dualCoannihilator, Set.mem_ofPred_eq, ← LinearMap.mem_ker, this]
   exact span_le
 
 end Submodule

@@ -24,8 +24,6 @@ assert_not_exists Monoid
 
 open Function
 
-open Nat
-
 universe u v
 
 variable {α β γ : Type*}
@@ -59,7 +57,7 @@ theorem left_inv_of_invOfMemRange (b : Set.range f) : f (hf.invOfMemRange b) = b
 theorem right_inv_of_invOfMemRange (a : α) : hf.invOfMemRange ⟨f a, Set.mem_range_self a⟩ = a :=
   hf (Finset.choose_spec (fun a' => f a' = f a) _ _).right
 
-theorem invFun_restrict [Nonempty α] : (Set.range f).restrict (invFun f) = hf.invOfMemRange := by
+theorem invFun_restrict [Nonempty α] : (Set.range f).domRestrict (invFun f) = hf.invOfMemRange := by
   ext ⟨b, h⟩
   apply hf
   simp [hf.left_inv_of_invOfMemRange, @invFun_eq _ _ _ f b (Set.mem_range.mp h)]
@@ -92,7 +90,7 @@ theorem left_inv_of_invOfMemRange : f (f.invOfMemRange b) = b :=
 theorem right_inv_of_invOfMemRange (a : α) : f.invOfMemRange ⟨f a, Set.mem_range_self a⟩ = a :=
   f.injective.right_inv_of_invOfMemRange a
 
-theorem invFun_restrict [Nonempty α] : (Set.range f).restrict (invFun f) = f.invOfMemRange := by
+theorem invFun_restrict [Nonempty α] : (Set.range f).domRestrict (invFun f) = f.invOfMemRange := by
   ext ⟨b, h⟩
   apply f.injective
   simp [f.left_inv_of_invOfMemRange, @invFun_eq _ _ _ f b (Set.mem_range.mp h)]
@@ -112,7 +110,7 @@ namespace Fintype
 
 section Choose
 
-open Fintype Equiv
+open Fintype
 
 variable [Fintype α] (p : α → Prop) [DecidablePred p]
 

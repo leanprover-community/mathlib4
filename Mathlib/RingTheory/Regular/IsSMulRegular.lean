@@ -124,7 +124,7 @@ variable (R) in
 lemma biUnion_associatedPrimes_eq_compl_regular [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R M, p = { r : R | IsSMulRegular M r }ᶜ :=
   Eq.trans (biUnion_associatedPrimes_eq_zero_divisors R M) <| by
-    simp_rw [Set.compl_setOf, isSMulRegular_iff_right_eq_zero_of_smul,
+    simp_rw [Set.compl_ofPred, isSMulRegular_iff_right_eq_zero_of_smul,
       not_forall, exists_prop, and_comm]
 
 lemma isSMulRegular_iff_ker_lsmul_eq_bot :
@@ -168,6 +168,7 @@ lemma smul_top_inf_eq_smul_of_isSMulRegular_on_quot :
   exact Eq.trans (congrArg (· ⊓ N) (map_top _)) (map_comap_eq _ _).symm
 
 -- Who knew this didn't rely on exactness at the right!?
+set_option backward.isDefEq.respectTransparency.types false in
 open Function in
 lemma QuotSMulTop.map_first_exact_on_four_term_exact_of_isSMulRegular_last
     {M'''} [AddCommGroup M'''] [Module R M''']

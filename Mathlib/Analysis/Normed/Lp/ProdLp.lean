@@ -50,7 +50,7 @@ the only remaining results are about `Lipschitz` and `Antilipschitz`.
 
 @[expose] public section
 
-open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
+open Real Set Filter Bornology Uniformity NNReal ENNReal
 
 noncomputable section
 
@@ -184,12 +184,12 @@ variable {p α β}
 theorem prod_edist_eq_card (f g : WithLp 0 (α × β)) :
     edist f g =
       (if edist f.fst g.fst = 0 then 0 else 1) + (if edist f.snd g.snd = 0 then 0 else 1) := by
-  convert! if_pos rfl
+  convert! ite_eq_left rfl
 
 theorem prod_edist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     edist f g = (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
-  (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
+  (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
 theorem prod_edist_eq_sup (f g : WithLp ∞ (α × β)) :
     edist f g = edist f.fst g.fst ⊔ edist f.snd g.snd := rfl
@@ -218,7 +218,6 @@ theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
 This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 theorem prod_edist_comm (f g : WithLp p (α × β)) : edist f g = edist g f := by
-  classical
   rcases p.trichotomy with (rfl | rfl | h)
   · simp only [prod_edist_eq_card, edist_comm]
   · simp only [prod_edist_eq_sup, edist_comm]
@@ -250,12 +249,12 @@ variable {p α β}
 
 theorem prod_dist_eq_card (f g : WithLp 0 (α × β)) : dist f g =
     (if dist f.fst g.fst = 0 then 0 else 1) + (if dist f.snd g.snd = 0 then 0 else 1) := by
-  convert! if_pos rfl
+  convert! ite_eq_left rfl
 
 theorem prod_dist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     dist f g = (dist f.fst g.fst ^ p.toReal + dist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
-  (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
+  (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
 theorem prod_dist_eq_sup (f g : WithLp ∞ (α × β)) :
     dist f g = dist f.fst g.fst ⊔ dist f.snd g.snd := rfl
@@ -286,14 +285,14 @@ variable {p α β}
 @[simp]
 theorem prod_norm_eq_card (f : WithLp 0 (α × β)) :
     ‖f‖ = (if ‖f.fst‖ = 0 then 0 else 1) + (if ‖f.snd‖ = 0 then 0 else 1) := by
-  convert! if_pos rfl
+  convert! ite_eq_left rfl
 
 theorem prod_norm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := rfl
 
 theorem prod_norm_eq_add (hp : 0 < p.toReal) (f : WithLp p (α × β)) :
     ‖f‖ = (‖f.fst‖ ^ p.toReal + ‖f.snd‖ ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
-  (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
+  (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
 end Norm
 
@@ -770,6 +769,7 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
 
 section L1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem prod_norm_eq_of_L1 (x : WithLp 1 (α × β)) :
     ‖x‖ = ‖x.fst‖ + ‖x.snd‖ := by
   simp [prod_norm_eq_add]
@@ -790,6 +790,7 @@ theorem prod_nndist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     push_cast
     exact prod_dist_eq_of_L1 _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem prod_edist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     edist x y = edist x.fst y.fst + edist x.snd y.snd := by
   simp [prod_edist_eq_add]
@@ -1047,7 +1048,7 @@ lemma isBoundedSMulSeminormedAddCommGroupToProd
     [Module R α] [Module R β] [IsBoundedSMul R α] [IsBoundedSMul R β] :
     letI := pseudoMetricSpaceToProd p α β
     IsBoundedSMul R (α × β) := by
-  letI := pseudoMetricSpaceToProd p α β
+  let := pseudoMetricSpaceToProd p α β
   refine ⟨fun x y z ↦ ?_, fun x y z ↦ ?_⟩
   · simpa [dist_pseudoMetricSpaceToProd] using dist_smul_pair x (toLp p y) (toLp p z)
   · simpa [dist_pseudoMetricSpaceToProd] using dist_pair_smul x y (toLp p z)
@@ -1057,7 +1058,7 @@ lemma normSMulClassSeminormedAddCommGroupToProd
     [Module R α] [Module R β] [NormSMulClass R α] [NormSMulClass R β] :
     letI := seminormedAddCommGroupToProd p α β
     NormSMulClass R (α × β) := by
-  letI := seminormedAddCommGroupToProd p α β
+  let := seminormedAddCommGroupToProd p α β
   exact ⟨fun x y ↦ norm_smul x (toLp p y)⟩
 
 /-- This definition allows to endow `α × β` with a normed space structure corresponding to
@@ -1195,8 +1196,6 @@ def withLpProdCongr (f : α ≃ₗᵢ[𝕜] α') (g : β ≃ₗᵢ[𝕜] β') :
     WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (α' × β') where
   __ := (f.toLinearEquiv.prodCongr g.toLinearEquiv).withLpCongr p
   norm_map' := (f.toLinearIsometry.withLpProdMap p g.toLinearIsometry).norm_map
-
-@[deprecated (since := "2025-12-22")] alias _root_.LinearIsometry.withLpProdCongr := withLpProdCongr
 
 /-- Commutativity of the `L^p` product as a linear isometric equivalence. -/
 def withLpProdComm : WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (β × α) where

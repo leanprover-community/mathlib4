@@ -153,6 +153,9 @@ theorem symm_apply_apply (h : X ≃ₜ Y) (x : X) : h.symm (h x) = x :=
 theorem symm_apply_eq (h : X ≃ₜ Y) {x : X} {y : Y} : h.symm y = x ↔ y = h x :=
   Equiv.symm_apply_eq _
 
+theorem eq_symm_apply (h : X ≃ₜ Y) {x : X} {y : Y} : x = h.symm y ↔ h x = y :=
+  Equiv.eq_symm_apply _
+
 @[simp]
 theorem self_trans_symm (h : X ≃ₜ Y) : h.trans h.symm = Homeomorph.refl X := by
   ext
@@ -376,10 +379,12 @@ theorem nhds_eq_comap (h : X ≃ₜ Y) (x : X) : 𝓝 x = comap h (𝓝 (h x)) :
 theorem comap_nhds_eq (h : X ≃ₜ Y) (y : Y) : comap h (𝓝 y) = 𝓝 (h.symm y) := by
   rw [h.nhds_eq_comap, h.apply_symm_apply]
 
-theorem isClosed_setOf_iff {p : X → Prop} {q : Y → Prop} (f : X ≃ₜ Y) (hs : IsClopen {x | p x})
+theorem isClosed_setOfPred_iff {p : X → Prop} {q : Y → Prop} (f : X ≃ₜ Y) (hs : IsClopen {x | p x})
     (ht : IsClopen {y | q y}) : IsClosed { x : X | p x ↔ q (f x) } := by
   simpa [iff_def] using! (isClosed_imp hs.2 (f.isClosed_preimage.2 ht.1)).inter
     (isClosed_imp (f.isOpen_preimage.2 ht.2) hs.1)
+
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_iff := isClosed_setOfPred_iff
 
 end Homeomorph
 

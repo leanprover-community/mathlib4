@@ -107,10 +107,10 @@ theorem hasseDeriv_monomial (n : ℕ) (r : R) :
   simp only [hasseDeriv_coeff, coeff_monomial]
   by_cases hnik : n = i + k
   · grind
-  · rw [if_neg hnik, mul_zero]
+  · rw [ite_eq_right hnik, mul_zero]
     by_cases! hkn : k ≤ n
     · rw [← tsub_eq_iff_eq_add_of_le hkn] at hnik
-      rw [if_neg hnik]
+      rw [ite_eq_right hnik]
     · rw [Nat.choose_eq_zero_of_lt hkn, Nat.cast_zero, zero_mul, ite_self]
 
 theorem hasseDeriv_C (r : R) (hk : 0 < k) : hasseDeriv k (C r) = 0 := by
@@ -124,7 +124,6 @@ theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
   rw [← monomial_one_one_eq_X, hasseDeriv_monomial, Nat.choose_eq_zero_of_lt hk, Nat.cast_zero,
     zero_mul, monomial_zero_right]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
   induction k with
   | zero => rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
@@ -146,7 +145,6 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivativ
   congr
   rw [add_assoc, add_tsub_cancel_left]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasseDeriv_comp (k l : ℕ) :
     (@hasseDeriv R _ k).comp (hasseDeriv l) = (k + l).choose k • hasseDeriv (k + l) := by
   ext i : 2

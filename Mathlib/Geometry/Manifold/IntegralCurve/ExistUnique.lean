@@ -194,13 +194,13 @@ theorem isMIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
   -- since `Ioo a b` is connected, we get `s = Ioo a b` by showing that `s` is clopen in `Ioo a b`
   -- in the subtype topology (`s` is also non-empty by assumption)
   -- here we use a slightly weaker alternative theorem
-  suffices hsub : Ioo a b ⊆ s from fun t ht ↦ mem_setOf.mp ((subset_def ▸ hsub) t ht).1
+  suffices hsub : Ioo a b ⊆ s from fun t ht ↦ mem_ofPred.mp ((subset_def ▸ hsub) t ht).1
   apply isPreconnected_Ioo.subset_of_closure_inter_subset (s := Ioo a b) (u := s) _
     ⟨t₀, ⟨ht₀, ⟨h, ht₀⟩⟩⟩
   · -- is this really the most convenient way to pass to subtype topology?
     -- TODO: shorten this when better API around subtype topology exists
     rw [hs, inter_comm, ← Subtype.image_preimage_val, inter_comm, ← Subtype.image_preimage_val,
-      image_subset_image_iff Subtype.val_injective, preimage_setOf_eq]
+      image_subset_image_iff Subtype.val_injective, preimage_ofPred_eq]
     intro t ht
     rw [mem_preimage, ← closure_subtype] at ht
     revert ht t

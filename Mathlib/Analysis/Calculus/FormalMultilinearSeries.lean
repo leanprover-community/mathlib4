@@ -29,7 +29,7 @@ multilinear, formal series
 
 noncomputable section
 
-open Set Fin Topology
+open Set Fin
 
 universe u u' v w x y
 variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x} {H : Type y}
@@ -52,14 +52,18 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring �
   ∀ n : ℕ, E [×n]→L[𝕜] F
 deriving Inhabited
 
+-- This instance exists to avoid an nsmul diamond.
+instance (𝕜') [Semiring 𝕜'] [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [SMulCommClass 𝕜 𝕜' F] :
+    SMul 𝕜' (FormalMultilinearSeries 𝕜 E F) where
+  smul k x n := k • x n
+
 section AddCommMonoid
 
 /-- Copy `Pi.addCommMonoid`, ensuring the pointwise operations hold by defeq. -/
-instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) where
+instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) := fast_instance% {
   __ := Pi.addCommMonoid
   zero _ := 0
-  add x y n := x n + y n
-  nsmul k x n := k • x n
+  add x y n := x n + y n }
 
 end AddCommMonoid
 

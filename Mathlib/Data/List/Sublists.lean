@@ -301,7 +301,7 @@ theorem sublistsLen_length : ∀ l : List α, sublistsLen l.length l = [l]
 open Function
 
 theorem Pairwise.sublists' {R} :
-    ∀ {l : List α}, Pairwise R l → Pairwise (Lex (swap R)) (sublists' l)
+    ∀ {l : List α}, Pairwise R l → Pairwise (Lex (Function.swap R)) (sublists' l)
   | _, Pairwise.nil => pairwise_singleton _ _
   | _, @Pairwise.cons _ _ a l H₁ H₂ => by
     simp only [sublists'_cons, pairwise_append, pairwise_map, mem_sublists', mem_map, exists_imp,

@@ -35,7 +35,7 @@ variable (H : Nat.Primrec fun n => Encodable.encode (@decode (List β) _ n))
 open Primrec
 
 set_option backward.privateInPublic true in
-@[implicit_reducible]
+@[instance_reducible]
 private def prim : Primcodable (List β) := ⟨H⟩
 
 private theorem list_casesOn' {f : α → List β} {g : α → σ} {h : α → β × List β → σ}
@@ -55,7 +55,7 @@ set_option backward.privateInPublic true in
 private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ × β → σ}
     (hf : haveI := prim H; Primrec f) (hg : Primrec g) (hh : haveI := prim H; Primrec₂ h) :
     Primrec fun a => (f a).foldl (fun s b => h a (s, b)) (g a) := by
-  letI := prim H
+  let := prim H
   let G (a : α) (IH : σ × List β) : σ × List β := List.casesOn IH.2 IH fun b l => (h a (IH.1, b), l)
   have hG : Primrec₂ G := list_casesOn' H (snd.comp snd) snd <|
     to₂ <|
@@ -267,7 +267,7 @@ theorem list_findIdx {f : α → List β} {p : α → β → Bool}
     (hf : Primrec f) (hp : Primrec₂ p) : Primrec fun a => (f a).findIdx (p a) :=
   (list_foldr hf (const 0) <|
         to₂ <| cond (hp.comp fst <| fst.comp snd) (const 0) (succ.comp <| snd.comp snd)).of_eq
-    fun a => by dsimp; induction f a <;> simp [List.findIdx_cons, *]
+    fun a => by dsimp; induction f a <;> simp_all [List.findIdx_cons, Bool.cond_eq_ite]
 
 theorem list_idxOf [DecidableEq α] : Primrec₂ (@List.idxOf α _) :=
   to₂ <| list_findIdx snd <| Primrec.beq.comp₂ snd.to₂ (fst.comp fst).to₂
@@ -299,14 +299,14 @@ theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α 
         (snd.comp <| snd.comp snd)).of_eq
   fun a ps => by
   induction ps with simp [List.lookup, *]
-  | cons p ps ih => cases ha : a == p.1 <;> simp
+  | cons p ps ih => cases ha : a == p.1 <;> simp_all [Bool.cond_eq_ite, beq_iff_eq]
 
 set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g : β → List σ → Option σ}
     (hm : Primrec m) (hl : Primrec l) (hg : Primrec₂ g)
     (Ord : ∀ b, ∀ b' ∈ l b, m b' < m b)
     (H : ∀ b, g b ((l b).map f) = some (f b)) : Primrec f := by
-  haveI : DecidableEq β := Encodable.decidableEqOfEncodable β
+  have : DecidableEq β := Encodable.decidableEqOfEncodable β
   let mapGraph (M : List (β × σ)) (bs : List β) : List σ := bs.flatMap (Option.toList <| M.lookup ·)
   let bindList (b : β) : ℕ → List β := fun n ↦ n.rec [b] fun _ bs ↦ bs.flatMap l
   let graph (b : β) : ℕ → List (β × σ) := fun i ↦ i.rec [] fun i ih ↦
@@ -608,7 +608,7 @@ end Nat
 
 namespace Nat.Primrec'
 
-open List.Vector Primrec
+open List.Vector
 
 theorem to_prim {n f} (pf : @Nat.Primrec' n f) : Primrec f := by
   induction pf with
@@ -635,7 +635,6 @@ theorem const {n} : ∀ m, @Primrec' n fun _ => m
 theorem head {n : ℕ} : @Primrec' n.succ head :=
   (get 0).of_eq fun v => by simp [get_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tail {n f} (hf : @Primrec' n f) : @Primrec' n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @get _ i.succ).of_eq fun v => by
     rw [← ofFn_get v.tail]; congr; funext i; simp

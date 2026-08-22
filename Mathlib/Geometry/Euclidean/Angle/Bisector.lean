@@ -142,9 +142,9 @@ lemma oangle_eq_of_dist_orthogonalProjection_eq {p p' : P} {s₁ s₂ : AffineSu
     dist p (orthogonalProjection s₁ p) = dist p (orthogonalProjection s₂ p) →
     ∡ (orthogonalProjection s₁ p : P) p' p = ∡ p p' (orthogonalProjection s₂ p) := by
   intro hne h
-  haveI : Nonempty s₁ := ⟨p', hp'₁⟩
-  haveI : Nonempty s₂ := ⟨p', hp'₂⟩
-  haveI : Nonempty (s₁ ⊓ s₂ : AffineSubspace ℝ P) := ⟨p', hp'₁, hp'₂⟩
+  have : Nonempty s₁ := ⟨p', hp'₁⟩
+  have : Nonempty s₂ := ⟨p', hp'₂⟩
+  have : Nonempty (s₁ ⊓ s₂ : AffineSubspace ℝ P) := ⟨p', hp'₁, hp'₂⟩
   have hp₁ : orthogonalProjection s₁ p ≠ p' := by
     intro hp
     rw [hp, eq_comm, dist_orthogonalProjection_eq_dist_iff_eq_of_mem hp'₂] at h
@@ -217,8 +217,8 @@ lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq {p p' : P}
       (2 : ℤ) • ∡ p p' (orthogonalProjection s₂ p) →
     dist p (orthogonalProjection s₁ p) = dist p (orthogonalProjection s₂ p) := by
   intro hp₁ hp₂ h
-  haveI : Nonempty s₁ := ⟨p', hp'₁⟩
-  haveI : Nonempty s₂ := ⟨p', hp'₂⟩
+  have : Nonempty s₁ := ⟨p', hp'₁⟩
+  have : Nonempty s₂ := ⟨p', hp'₂⟩
   have h' : ∡ (orthogonalProjection s₁ p : P) p' p = ∡ p p' (orthogonalProjection s₂ p) :=
     oangle_eq_oangle_rev_of_two_zsmul_eq_of_angle_eq_pi_div_two h
       (angle_self_orthogonalProjection _ hp'₁) (angle_self_orthogonalProjection _ hp'₂)

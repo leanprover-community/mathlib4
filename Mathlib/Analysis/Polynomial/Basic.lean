@@ -34,12 +34,12 @@ namespace Polynomial
 variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] (P Q : 𝕜[X])
 
 theorem eventually_atTop_not_isRoot (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
-  atTop_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
+  atTop_le_cofinite <| (finite_setOfPred_isRoot hP).compl_mem_cofinite
 
 @[deprecated (since := "2026-02-05")] alias eventually_no_roots := eventually_atTop_not_isRoot
 
 theorem eventually_atBot_not_isRoot (hP : P ≠ 0) : ∀ᶠ x in atBot, ¬P.IsRoot x :=
-  atBot_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
+  atBot_le_cofinite <| (finite_setOfPred_isRoot hP).compl_mem_cofinite
 
 variable [OrderTopology 𝕜]
 
@@ -52,7 +52,7 @@ theorem isEquivalent_atTop_lead :
   · simp only [Polynomial.eval_eq_sum_range, sum_range_succ]
     exact
       IsLittleO.add_isEquivalent
-        (IsLittleO.sum fun i hi =>
+        (IsLittleO.fun_sum fun i hi =>
           IsLittleO.const_mul_left
             ((IsLittleO.const_mul_right fun hz => h <| leadingCoeff_eq_zero.mp hz) <|
               isLittleO_pow_pow_atTop_of_lt (mem_range.mp hi))
@@ -334,7 +334,7 @@ section Cobounded
 
 lemma eventually_cofinite_not_isRoot {R : Type*} [CommRing R] [IsDomain R] {P : R[X]} (hP : P ≠ 0) :
     ∀ᶠ x in cofinite, ¬P.IsRoot x :=
-  (finite_setOf_isRoot hP).compl_mem_cofinite
+  (finite_setOfPred_isRoot hP).compl_mem_cofinite
 
 open Bornology
 
@@ -345,7 +345,7 @@ lemma isEquivalent_cobounded_leading_monomial :
   by_cases h : P = 0
   · simp [h, IsEquivalent.refl]
   · simp only [eval_eq_sum_range, sum_range_succ]
-    exact (IsLittleO.sum fun i hi ↦
+    exact (IsLittleO.fun_sum fun i hi ↦
       ((isLittleO_pow_pow_cobounded_of_lt (mem_range.mp hi)).const_mul_right
         (leadingCoeff_ne_zero.mpr h)).const_mul_left _).add_isEquivalent .refl
 
@@ -389,7 +389,7 @@ theorem dvd_of_infinite_eval_dvd_eval
   set R := P %ₘ Q
   apply eq_zero_of_infinite_isRoot
   refine (h.sdiff (finite_abs_eval_le_of_degree_lt degR)).mono fun x mx ↦ ?_
-  simp only [Set.mem_sdiff, Set.mem_setOf_eq, not_le] at mx
+  simp only [Set.mem_sdiff, Set.mem_ofPred_eq, not_le] at mx
   rw [← eqR, eval_add, eval_mul, Int.dvd_add_self_mul, ← abs_dvd] at mx
   exact Int.eq_zero_of_abs_lt_dvd mx.1 mx.2
 

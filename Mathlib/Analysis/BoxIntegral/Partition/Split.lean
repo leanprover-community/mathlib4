@@ -63,7 +63,7 @@ def splitLower (I : Box ι) (i : ι) (x : ℝ) : WithBot (Box ι) :=
 theorem coe_splitLower : (splitLower I i x : Set (ι → ℝ)) = ↑I ∩ { y | y i ≤ x } := by
   rw [splitLower, coe_mk']
   ext y
-  simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_setOf_eq, forall_and, ← Pi.le_def,
+  simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_ofPred_eq, forall_and, ← Pi.le_def,
     le_update_iff, le_min_iff, and_assoc, and_forall_ne (p := fun j => y j ≤ upper I j) i, mem_def]
   rw [and_comm (a := y i ≤ x)]
 
@@ -101,7 +101,7 @@ theorem coe_splitUpper : (splitUpper I i x : Set (ι → ℝ)) = ↑I ∩ { y | 
   classical
   rw [splitUpper, coe_mk']
   ext y
-  simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_setOf_eq, forall_and,
+  simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_ofPred_eq, forall_and,
     forall_update_iff I.lower fun j z => z < y j, max_lt_iff, and_assoc (a := x < y i),
     and_forall_ne (p := fun j => lower I j < y j) i, mem_def]
   exact and_comm
@@ -173,11 +173,12 @@ theorem mem_split_iff' : J ∈ split I i x ↔
 
 @[simp]
 theorem iUnion_split (I : Box ι) (i : ι) (x : ℝ) : (split I i x).iUnion = I := by
-  simp [split, ← inter_union_distrib_left, ← setOf_or, le_or_gt]
+  simp [split, ← inter_union_distrib_left, ← ofPred_or, le_or_gt]
 
 theorem isPartitionSplit (I : Box ι) (i : ι) (x : ℝ) : IsPartition (split I i x) :=
   isPartition_iff_iUnion_eq.2 <| iUnion_split I i x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_split_boxes {M : Type*} [AddCommMonoid M] (I : Box ι) (i : ι) (x : ℝ) (f : Box ι → M) :
     (∑ J ∈ (split I i x).boxes, f J) =
       (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f := by

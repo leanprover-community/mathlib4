@@ -180,7 +180,7 @@ variable [Preorder α]
 /-- Every set generates a set closed under countable supremum. -/
 @[to_dual /-- Every set generates a set closed under countable infimum. -/]
 def countableSupClosure : ClosureOperator (Set α) := .ofPred
-  (fun s a ↦ ∃ (A : Set α) (_ : A ⊆ s) (_ : A.Nonempty) (_ : A.Countable), IsLUB A a)
+  (fun s ↦ {a | ∃ (A : Set α) (_ : A ⊆ s) (_ : A.Nonempty) (_ : A.Countable), IsLUB A a})
   CountableSupClosed
   (fun s x hxs ↦ ⟨{x}, by simp; grind, by simp, by simp, by simp⟩)
   (fun s ↦ by
@@ -229,7 +229,7 @@ lemma countableSupClosure_eq_sInter (s : Set α) :
     countableSupClosure s = ⋂₀ {t | s ⊆ t ∧ CountableSupClosed t} := by
   have : CountableSupClosed (⋂₀ {t | s ⊆ t ∧ CountableSupClosed t}) := by
     constructor
-    simp only [Set.subset_sInter_iff, Set.mem_setOf_eq, and_imp, Set.mem_sInter]
+    simp only [Set.subset_sInter_iff, Set.mem_ofPred_eq, and_imp, Set.mem_sInter]
     intro t ht ht_ne ht_c x hx t' hst' ht'
     exact ht'.isLUB_mem t (ht t' hst' ht') ht_ne ht_c x hx
   refine le_antisymm (countableSupClosure_min (by grind) (by grind)) (Set.sInter_subset_of_mem ?_)

@@ -130,7 +130,10 @@ theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : Uni
 then the set of points `x`
 such that the Birkhoff average of `g` along the orbit of `x` tends to `l x`
 is a closed set. -/
-theorem isClosed_setOf_tendsto_birkhoffAverage
+theorem isClosed_setOfPred_tendsto_birkhoffAverage
     (hf : LipschitzWith 1 f) (hg : UniformContinuous g) (hl : Continuous l) :
     IsClosed {x | Tendsto (birkhoffAverage 𝕜 f g · x) atTop (𝓝 (l x))} :=
-  (uniformEquicontinuous_birkhoffAverage 𝕜 hf hg).equicontinuous.isClosed_setOf_tendsto hl
+  (uniformEquicontinuous_birkhoffAverage 𝕜 hf hg).equicontinuous.isClosed_setOfPred_tendsto hl
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_tendsto_birkhoffAverage := isClosed_setOfPred_tendsto_birkhoffAverage

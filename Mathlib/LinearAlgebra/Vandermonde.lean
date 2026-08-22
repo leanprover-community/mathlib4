@@ -270,7 +270,8 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials (v : Fin
   simp_rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂_eq_sum]
   simp only [Matrix.vandermonde]
   have : (p j).support ⊆ range n := supp_subset_range <| Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
-  rw [sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
+  rw [Polynomial.sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this,
+    ← Fin.sum_univ_eq_sum_range]
   congr
   ext k
   rw [mul_comm, Matrix.of_apply, RingHom.id_apply]

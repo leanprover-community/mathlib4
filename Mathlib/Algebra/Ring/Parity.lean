@@ -33,8 +33,6 @@ to `Mathlib/Algebra/Group/Even.lean`.
 
 assert_not_exists DenselyOrdered IsOrderedRing
 
-open MulOpposite
-
 variable {F α β : Type*}
 
 section Monoid
@@ -342,6 +340,11 @@ lemma two_dvd_mul_sub_one (k : ℕ) : 2 ∣ k * (k - 1) := by
   rcases k with rfl | k; · simp
   simpa [mul_comm (k + 1)] using k.two_dvd_mul_add_one
 
+lemma eight_dvd_sq_sub_one_of_odd {k : ℕ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
+  obtain ⟨m, rfl⟩ := hk
+  obtain ⟨c, hc⟩ := two_dvd_mul_add_one m
+  exact ⟨c, by grind⟩
+
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, parity_simps]
@@ -388,8 +391,8 @@ variable {R : Type*} [Monoid R] [HasDistribNeg R] {m n : ℕ}
 
 lemma neg_one_pow_eq_ite : (-1 : R) ^ n = if Even n then 1 else (-1) := by
   cases even_or_odd n with
-  | inl h => rw [h.neg_one_pow, if_pos h]
-  | inr h => rw [h.neg_one_pow, if_neg (by simpa using h)]
+  | inl h => rw [h.neg_one_pow, ite_eq_left h]
+  | inr h => rw [h.neg_one_pow, ite_eq_right (by simpa using h)]
 
 lemma neg_one_pow_congr (h : Even m ↔ Even n) : (-1 : R) ^ m = (-1) ^ n := by
   simp [h, neg_one_pow_eq_ite]

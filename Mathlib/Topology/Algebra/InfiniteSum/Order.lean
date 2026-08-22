@@ -84,7 +84,7 @@ protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [CommGroup γ] [Pa
     (∏' (b : β), f b) ≤ (∏' (a : κ), f a) := by
   apply Multipliable.tprod_le_tprod_of_inj _
     (Subtype.coe_injective)
-    (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, h, implies_true])
+    (by simp only [Subtype.range_coe_subtype, Set.ofPred_mem_eq, h, implies_true])
     (by simp only [le_refl, implies_true])
     (by apply hf.subtype)
   apply hf
@@ -98,7 +98,6 @@ theorem prod_le_hasProd [L.NeBot] [L.LeAtTop] (s : Finset ι) (hs : ∀ i, i ∉
 @[to_additive]
 theorem isLUB_hasProd (h : ∀ i, 1 ≤ f i) (hf : HasProd f a) :
     IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a := by
-  classical
   exact isLUB_of_tendsto_atTop (Finset.prod_mono_set_of_one_le' h) hf
 
 @[to_additive]
@@ -235,6 +234,25 @@ protected theorem Multipliable.one_lt_tprod [L.LeAtTop] [L.NeBot] (hsum : Multip
 
 end OrderedCommGroup
 
+section WithZero
+
+variable [CommMonoidWithZero α] [TopologicalSpace α] [Preorder α] [ZeroLEOneClass α]
+  [PosMulMono α] [ClosedIciTopology α]
+
+theorem HasProd.nonneg [L.NeBot] {f : ι → α} (hf : ∀ i, 0 ≤ f i) {a : α} (h : HasProd f a L) :
+    0 ≤ a :=
+  ge_of_tendsto' h fun s ↦ s.prod_nonneg fun i _ ↦ hf i
+
+theorem tprod_nonneg {f : ι → α} (hf : ∀ i, 0 ≤ f i) :
+    0 ≤ ∏'[L] x, f x := by
+  by_cases h : Multipliable f L
+  · by_cases hbot : L.NeBot
+    · exact h.hasProd.nonneg hf
+    · simpa [tprod_bot hbot] using finprod_nonneg hf
+  · simp [tprod_eq_one_of_not_multipliable h]
+
+end WithZero
+
 section CanonicallyOrderedMul
 
 variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
@@ -266,7 +284,6 @@ protected theorem Multipliable.tprod_ne_one_iff (hf : Multipliable f) :
 omit [IsOrderedMonoid α] in
 @[to_additive]
 theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a := by
-  classical
   exact isLUB_of_tendsto_atTop (Finset.prod_mono_set' f) hf
 
 end CanonicallyOrderedMul

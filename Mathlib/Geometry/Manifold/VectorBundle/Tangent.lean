@@ -239,7 +239,6 @@ theorem mem_chart_source_iff (p q : TM) :
     p ∈ (chartAt (ModelProd H E) q).source ↔ p.1 ∈ (chartAt H q.1).source := by
   simp only [FiberBundle.chartedSpace_chartAt, mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
 theorem mem_chart_target_iff (p : H × E) (q : TM) :
     p ∈ (chartAt (ModelProd H E) q).target ↔ p.1 ∈ (chartAt H q.1).target := by
@@ -446,7 +445,6 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm :
   rintro a b x rfl
   simpa [PartialEquiv.prod] using ⟨rfl, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 variable (H I) in
 /-- In the tangent bundle to the model space, the second projection is `C^n`. -/
 lemma contMDiff_snd_tangentBundle_modelSpace :
@@ -471,6 +469,7 @@ lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
     convert! h.contMDiffWithinAt with y
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiffAt_vectorSpace_iff_contDiffAt
@@ -486,6 +485,7 @@ lemma contMDiffOn_vectorSpace_iff_contDiffOn
     CMDiff[s] n (T% V) ↔ ContDiffOn 𝕜 n V s := by
   simp only [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiff_vectorSpace_iff_contDiff {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} :

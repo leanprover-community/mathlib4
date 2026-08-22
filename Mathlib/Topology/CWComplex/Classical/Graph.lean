@@ -20,7 +20,7 @@ In this file we define the 1-skeleton of a CW complex as a graph.
 
 public section
 
-open Metric Set Graph
+open Set Graph
 
 namespace Topology
 

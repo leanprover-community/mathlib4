@@ -425,8 +425,6 @@ variable [Subsingleton Mˣ]
 @[to_additive] lemma Units.eq_one (u : Mˣ) : u = 1 := Subsingleton.elim ..
 @[to_additive] lemma IsUnit.eq_one : IsUnit a → a = 1 := by rintro ⟨u, rfl⟩; simp [u.eq_one]
 
-@[deprecated (since := "2025-11-19")] alias units_eq_one := Units.eq_one
-
 @[to_additive (attr := simp)]
 lemma isUnit_iff_eq_one : IsUnit a ↔ a = 1 where
   mp := IsUnit.eq_one
@@ -638,12 +636,12 @@ section NoncomputableDefs
 variable {M : Type*}
 
 /-- Constructs an inv operation for a `Monoid` consisting only of units. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def invOfIsUnit [Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
   inv := fun a => ↑(h a).unit⁻¹
 
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
     toInv := invOfIsUnit h,
@@ -652,7 +650,7 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 
 /-- Constructs a `CommGroup` structure on a `CommMonoid` consisting only of units. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
   { hM with
     toInv := invOfIsUnit h,

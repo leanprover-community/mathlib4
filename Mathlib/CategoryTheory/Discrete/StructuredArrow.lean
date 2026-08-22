@@ -28,6 +28,7 @@ variable {C : Type u} [Category.{v} C] {T : Type w}
 
 namespace Discrete
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ Discrete T` is a functor with `T` containing
 a unique element `t`, then this is the equivalence
@@ -41,6 +42,7 @@ def structuredArrowEquivalenceOfUnique
   unitIso := NatIso.ofComponents (fun _ ↦ StructuredArrow.isoMk (Iso.refl _))
   counitIso := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ Discrete T` is a functor with `T` containing
 a unique element `t`, then this is the equivalence

@@ -163,6 +163,7 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
 /-- Any function `I → C` gives a functor `Discrete I ⥤ C`. -/
+@[implicit_reducible]
 def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
   obj := F ∘ Discrete.as
   map {X Y} f := by
@@ -207,7 +208,7 @@ def functorComp {I : Type u₁} {J : Type u₁'} (f : J → C) (g : I → J) :
 a natural transformation is just a collection of maps,
 as the naturality squares are trivial.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def natTrans {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ⟶ G.obj i) :
     F ⟶ G where
   app := f
@@ -303,7 +304,7 @@ end Discrete
 lemma Discrete.forall {α : Type*} {p : Discrete α → Prop} :
     (∀ (a : Discrete α), p a) ↔ ∀ (a' : α), p ⟨a'⟩ := by
   rw [iff_iff_eq, discreteEquiv.forall_congr_left]
-  simp [discreteEquiv]
+  simp only [discreteEquiv, Equiv.symm_mk, Equiv.coe_fn_mk]
 
 @[simp]
 lemma Discrete.exists {α : Type*} {p : Discrete α → Prop} :
@@ -347,6 +348,9 @@ attribute [instance] IsDiscrete.subsingleton
 
 instance Discrete.isDiscrete (C : Type*) : IsDiscrete (Discrete C) where
   eq_of_hom := by rintro ⟨_⟩ ⟨_⟩ ⟨⟨rfl⟩⟩; rfl
+
+instance {C : Type*} [Category C] [Subsingleton C] [Quiver.IsThin C] : IsDiscrete C where
+  eq_of_hom _ := by subsingleton
 
 section
 

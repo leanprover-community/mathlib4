@@ -28,7 +28,7 @@ class IsTopologicalAddTorsor {V : Type*} [AddGroup V] [TopologicalSpace V]
     (P : Type*) [AddTorsor V P] [TopologicalSpace P] extends ContinuousVAdd V P where
   continuous_vsub : Continuous (fun x : P × P => x.1 -ᵥ x.2)
 
-/-- A topological torsor over a topological group is a torsor where `+ᵥ` and `-ᵥ` are continuous. -/
+/-- A topological torsor over a topological group is a torsor where `•` and `/ₛ` are continuous. -/
 @[to_additive]
 class IsTopologicalTorsor {V : Type*} [Group V] [TopologicalSpace V]
     (P : Type*) [Torsor V P] [TopologicalSpace P] extends ContinuousSMul V P where

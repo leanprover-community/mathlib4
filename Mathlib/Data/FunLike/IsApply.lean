@@ -204,7 +204,7 @@ variable {M M' F F' α β : Type*} [FunLike F α β] [FunLike F' α α]
 
 section Coercion
 
-@[to_additive (attr := norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_one [One F] [One β] [IsOneApply F α β] : ↑(1 : F) = (1 : α → β) := by ext; simp
 
 @[to_additive (attr := simp)]
@@ -213,66 +213,72 @@ theorem coe_one_iff [One F] [One β] [IsOneApply F α β] (f : F) : (f : α → 
   · intro h
     simp [DFunLike.ext_iff, h]
   · intro h
-    simp [funext_iff, h]
+    simp [h]
 
-@[to_additive (attr := norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_mul [Mul F] [Mul β] [IsMulApply F α β] (f g : F) : ↑(f * g) = (f : α → β) * g := by
   ext; simp
 
-@[to_additive (attr := norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_div [Div F] [Div β] [IsDivApply F α β] (f g : F) : ↑(f / g) = (f : α → β) / g := by
   ext; simp
 
-@[to_additive (attr := norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_inv [Inv F] [Inv β] [IsInvApply F α β] (f : F) : ↑(f⁻¹) = (f : α → β)⁻¹ := by
   ext; simp
 
-@[to_additive (attr := norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_smul [SMul M F] [SMul M β] [IsSMulApply M F α β] (n : M) (f : F) :
     ↑(n • f) = n • (f : α → β) := by
   ext; simp
 
-@[to_additive coe_smul']
+@[deprecated (since := "2026-07-23")] alias coe_smul' := coe_smul
+
+@[simp, norm_cast, to_additive existing coe_smul]
 theorem coe_pow [Pow F M] [Pow β M] [IsPowApply M F α β] (f : F) (n : M) :
     ↑(f ^ n) = (f : α → β) ^ n := by
   ext; simp
 
-attribute [norm_cast] coe_pow
-
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_one_eq_id [One F'] [IsOneApplyEqSelf F' α] : ↑(1 : F') = id := by
   ext; simp
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_one_eq_id_iff [One F'] [IsOneApplyEqSelf F' α] (f : F') : (f : α → α) = id ↔ f = 1 := by
   constructor
   · intro h
     simp [DFunLike.ext_iff, h]
   · intro h
-    simp [funext_iff, h]
+    simp [h]
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_mul_eq_comp [Mul F'] [IsMulApplyEqComp F' α] (f g : F') : ↑(f * g) = f ∘ g := by
   ext; simp
 
-@[norm_cast]
+@[simp, norm_cast]
 lemma coe_pow_eq_iterate [Monoid F'] [IsMulApplyEqComp F' α] [IsOneApplyEqSelf F' α]
     (f : F') (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   funext <| pow_apply_eq_iterate f n
 
+-- this lemma cannot be `simp` since this creates loops
 @[norm_cast]
-theorem coe_natCast [NatCast F'] [One F'] [SMul Nat α] [SMul Nat F'] [IsSMulApply Nat F' α α]
-    [IsNatCastApply F' α] [IsOneApplyEqSelf F' α] (n : Nat) :
+theorem natCast_eq_nsmul_one [NatCast F'] [One F'] [SMul Nat α] [SMul Nat F']
+    [IsSMulApply Nat F' α α] [IsNatCastApply F' α] [IsOneApplyEqSelf F' α] (n : ℕ) :
   (n : F') = n • (1 : F') := by
   apply DFunLike.ext
   simp
 
+@[deprecated (since := "2026-07-24")] alias coe_natCast := natCast_eq_nsmul_one
+
+-- this lemma cannot be `simp` since this creates loops
 @[norm_cast]
-theorem coe_intCast [IntCast F'] [One F'] [SMul Int α] [SMul Int F'] [IsSMulApply Int F' α α]
-    [IsIntCastApply F' α] [IsOneApplyEqSelf F' α] (n : Int) :
+theorem intCast_eq_zsmul_one [IntCast F'] [One F'] [SMul Int α] [SMul Int F']
+    [IsSMulApply Int F' α α] [IsIntCastApply F' α] [IsOneApplyEqSelf F' α] (n : ℤ) :
   (n : F') = n • (1 : F') := by
   apply DFunLike.ext
   simp
+
+@[deprecated (since := "2026-07-24")] alias coe_intCast := intCast_eq_zsmul_one
 
 end Coercion
 

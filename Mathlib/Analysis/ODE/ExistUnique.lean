@@ -39,7 +39,7 @@ integral curve, vector field, existence, uniqueness, Picard-Lindelöf, Gronwall
 
 @[expose] public section
 
-open Function intervalIntegral MeasureTheory Metric Set
+open Function Metric Set
 open scoped Nat NNReal Topology
 
 /-! ## Existence of solutions to ODEs -/
@@ -89,10 +89,10 @@ theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
   refine ⟨α', fun x hx ↦ ⟨?_, fun t ht ↦ ?_⟩, ?_⟩
   · rw [hα']
     beta_reduce
-    rw [dif_pos hx, FunSpace.compProj_val, ← hα, FunSpace.next_apply₀]
+    rw [dite_eq_left hx, FunSpace.compProj_val, ← hα, FunSpace.next_apply₀]
   · rw [hα']
     beta_reduce
-    rw [dif_pos hx, FunSpace.compProj_apply]
+    rw [dite_eq_left hx, FunSpace.compProj_apply]
     apply hasDerivWithinAt_picard_Icc t₀.2 hf.continuousOn_uncurry
       (α x hx |>.continuous_compProj.continuousOn)
       (fun _ ht' ↦ α x hx |>.compProj_mem_closedBall hf.mul_max_le)
@@ -103,7 +103,7 @@ theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
   · obtain ⟨L', h⟩ := FunSpace.exists_forall_closedBall_funSpace_dist_le_mul hf
     refine ⟨L', fun t ht ↦ LipschitzOnWith.of_dist_le_mul fun x hx y hy ↦ ?_⟩
     simp_rw [hα']
-    rw [dif_pos hx, dif_pos hy, FunSpace.compProj_apply, FunSpace.compProj_apply,
+    rw [dite_eq_left hx, dite_eq_left hy, FunSpace.compProj_apply, FunSpace.compProj_apply,
       ← FunSpace.toContinuousMap_apply_eq_apply, ← FunSpace.toContinuousMap_apply_eq_apply]
     have : Nonempty (Icc tmin tmax) := ⟨t₀⟩
     apply ContinuousMap.dist_le_iff_of_nonempty.mp

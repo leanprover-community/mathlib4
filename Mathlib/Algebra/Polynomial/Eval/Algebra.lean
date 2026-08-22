@@ -20,8 +20,6 @@ public section
 
 noncomputable section
 
-open Finset AddMonoidAlgebra
-
 open Polynomial
 
 namespace Polynomial

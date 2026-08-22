@@ -93,10 +93,10 @@ instance isDomain [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
 
 theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
   refine ⟨fun H => ⟨zero_ne_one_iff.1 ?_, fun {x y} h => ?_⟩, fun h => inferInstance⟩
-  · haveI : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
+  · have : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
     exact zero_ne_one
   · simp only [← eq_zero_iff_mem, (mk I).map_mul] at h ⊢
-    haveI := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H
+    have := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H
     exact eq_zero_or_eq_zero_of_mul_eq_zero h
 
 set_option backward.isDefEq.respectTransparency false in
@@ -120,8 +120,8 @@ protected noncomputable abbrev groupWithZero [hI : I.IsMaximal] :
     GroupWithZero (R ⧸ I) := fast_instance%
   { inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
-      show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
-    inv_zero := dif_pos rfl
+      show a * dite _ _ _ = _ by rw [dite_eq_right ha]; exact Classical.choose_spec (exists_inv ha)
+    inv_zero := dite_eq_left rfl
     __ := Quotient.nontrivial_iff.mpr hI.out.1 }
 
 /-- The quotient by a two-sided ideal that is maximal as a left ideal is a division ring.

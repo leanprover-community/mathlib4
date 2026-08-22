@@ -172,7 +172,7 @@ lemma atomistic : ∀ I : LieIdeal K L, sSup {J : LieIdeal K L | IsAtom J ∧ J 
     · exact le_sSup ⟨hJ, hJI⟩
     rw [← atomistic (J' ⊓ I)]
     apply sSup_le_sSup
-    simp only [le_inf_iff, Set.setOf_subset_setOf, and_imp]
+    simp only [le_inf_iff, Set.ofPred_subset_ofPred, and_imp]
     tauto
   suffices J ⊔ J' = ⊤ by rw [← sup_inf_assoc_of_le _ hJI, this, top_inf_eq]
   exact (orthogonal_isCompl Φ hΦ_nondeg hΦ_inv hΦ_refl hL J hJ).codisjoint.eq_top
@@ -198,11 +198,11 @@ theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   intro I hI
   apply (orthogonal_disjoint Φ hΦ_nondeg hΦ_inv hL I hI).mono_right
   apply sSup_le
-  simp only [Set.mem_sdiff, Set.mem_setOf_eq, Set.mem_singleton_iff, and_imp]
+  simp only [Set.mem_sdiff, Set.mem_ofPred_eq, Set.mem_singleton_iff, and_imp]
   intro J hJ hJI
   rw [← lie_eq_self_of_isAtom_of_nonabelian J hJ (hL J hJ), lieIdeal_oper_eq_span, lieSpan_le]
   rintro _ ⟨x, y, rfl⟩
-  simp only [orthogonal_carrier, Set.mem_setOf_eq]
+  simp only [orthogonal_carrier, Set.mem_ofPred_eq]
   intro z hz
   rw [← neg_eq_zero, ← hΦ_inv]
   suffices ⁅(x : L), z⁆ = 0 by simp only [this, map_zero, LinearMap.zero_apply]

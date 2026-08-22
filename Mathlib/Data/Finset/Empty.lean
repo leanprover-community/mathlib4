@@ -30,7 +30,7 @@ finite sets, finset
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
-open Multiset Subtype Function
+open Multiset Subtype
 
 universe u
 
@@ -195,7 +195,7 @@ end Empty
 end Finset
 
 namespace Mathlib.Meta
-open Qq Lean Meta Finset
+open Qq Lean
 
 /-- Attempt to prove that a finset is nonempty using the `finsetNonempty` aesop rule-set.
 

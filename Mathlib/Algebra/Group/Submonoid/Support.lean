@@ -54,8 +54,8 @@ theorem mem_mulSupport {x} : x ∈ M.mulSupport ↔ x ∈ M ∧ x⁻¹ ∈ M := 
 @[to_additive (attr := simp)]
 theorem mulSupport_toSubmonoid : M.mulSupport.toSubmonoid = M ⊓ M⁻¹ := rfl
 
-@[to_additive]
-/- The support of a submonoid is the largest subgroup it contains. -/
+/-- The support of a submonoid is the largest subgroup it contains. -/
+@[to_additive /-- The support of a submonoid is the largest subgroup it contains. -/]
 theorem _root_.Subgroup.gc_toSubmonoid_mulSupport :
     GaloisConnection (α := Subgroup G) Subgroup.toSubmonoid mulSupport :=
   fun _ _ ↦ ⟨fun _ _ ↦ by aesop, fun h _ hx ↦ (h hx).1⟩

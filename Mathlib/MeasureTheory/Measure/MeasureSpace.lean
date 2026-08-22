@@ -160,7 +160,7 @@ theorem measure_add_measure_compl (h : MeasurableSet s) : μ s + μ sᶜ = μ un
 theorem measure_biUnion₀ {s : Set β} {f : β → Set α} (hs : s.Countable)
     (hd : s.Pairwise (AEDisjoint μ on f)) (h : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
     μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) := by
-  haveI := hs.toEncodable
+  have := hs.toEncodable
   rw [biUnion_eq_iUnion]
   exact measure_iUnion₀ (hd.on_injective Subtype.coe_injective fun x => x.2) fun x => h x x.2
 
@@ -411,7 +411,7 @@ theorem measure_iUnion_toMeasurable {ι : Sort*} [Countable ι] (s : ι → Set 
 
 theorem measure_biUnion_toMeasurable {I : Set β} (hc : I.Countable) (s : β → Set α) :
     μ (⋃ b ∈ I, toMeasurable μ (s b)) = μ (⋃ b ∈ I, s b) := by
-  haveI := hc.toEncodable
+  have := hc.toEncodable
   simp only [biUnion_eq_iUnion, measure_iUnion_toMeasurable]
 
 @[simp]
@@ -542,7 +542,7 @@ theorem measure_iUnion_eq_iSup_accumulate [Preorder ι] [IsDirectedOrder ι]
 
 theorem measure_biUnion_eq_iSup {s : ι → Set α} {t : Set ι} (ht : t.Countable)
     (hd : DirectedOn ((· ⊆ ·) on s) t) : μ (⋃ i ∈ t, s i) = ⨆ i ∈ t, μ (s i) := by
-  haveI := ht.to_subtype
+  have := ht.to_subtype
   rw [biUnion_eq_iUnion, hd.directed_val.measure_iUnion, ← iSup_subtype'']
 
 /-- **Continuity from above**:
@@ -1202,12 +1202,12 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
       · refine mem_iUnion.2 ⟨1, ?_⟩
         simp [hx, hxt]
     · simp only [iInf_image, coe_toOuterMeasure, iInf_pair]
-      rw [tsum_eq_add_tsum_ite 0, tsum_eq_add_tsum_ite 1, if_neg zero_ne_one.symm,
+      rw [tsum_eq_add_tsum_ite 0, tsum_eq_add_tsum_ite 1, ite_eq_right zero_ne_one.symm,
         ENNReal.summable.tsum_eq_zero_iff.2 _, add_zero]
       · exact add_le_add (inf_le_left.trans <| by simp [ht']) (inf_le_right.trans <| by simp [ht'])
       · simp only [ite_eq_left_iff]
         intro n hn₁ hn₀
-        simp only [ht', if_neg hn₀, if_neg hn₁, measure_empty, le_refl, inf_of_le_left]
+        simp only [ht', ite_eq_right hn₀, ite_eq_right hn₁, measure_empty, le_refl, inf_of_le_left]
   · simp only [iInf_image, coe_toOuterMeasure, iInf_pair]
     -- Conversely, fixing `t' : ℕ → Set α` such that `s ⊆ ⋃ n, t' n`, we construct `t : Set α`
     -- for which `μ (t ∩ s) + ν (tᶜ ∩ s) ≤ ∑' n, μ (t' n) ⊓ ν (t' n)`.
@@ -1226,7 +1226,7 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
       obtain ⟨i, hi⟩ := mem_iUnion.1 <| ht' hx₂
       refine ⟨i, ?_, hi⟩
       by_contra h
-      simp only [mem_setOf_eq, not_lt] at h
+      simp only [mem_ofPred_eq, not_lt] at h
       exact mem_iInter₂.1 hx₁ i h hi
     have hle₂ : ν (tᶜ ∩ s) ≤ ∑' (n : {k | ν (t' k) < μ (t' k)}), ν (t' n) :=
       (measure_mono hcap).trans (measure_biUnion_le ν (to_countable {k | ν (t' k) < μ (t' k)}) _)
@@ -1240,11 +1240,11 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
         intro n hn; simpa
       · rw [Subtype.forall]
         intro n hn
-        rw [mem_setOf_eq] at hn
+        rw [mem_ofPred_eq] at hn
         simp [le_of_lt hn]
     · rw [Set.disjoint_iff]
       rintro k ⟨hk₁, hk₂⟩
-      rw [mem_setOf_eq] at hk₁ hk₂
+      rw [mem_ofPred_eq] at hk₁ hk₂
       exact False.elim <| hk₂.not_ge hk₁
 
 @[simp]
@@ -1455,14 +1455,6 @@ open Measure
 
 open MeasureTheory
 
-protected theorem _root_.AEMeasurable.nullMeasurable {f : α → β} (h : AEMeasurable f μ) :
-    NullMeasurable f μ :=
-  let ⟨_g, hgm, hg⟩ := h; hgm.nullMeasurable.congr hg.symm
-
-lemma _root_.AEMeasurable.nullMeasurableSet_preimage {f : α → β} {s : Set β}
-    (hf : AEMeasurable f μ) (hs : MeasurableSet s) : NullMeasurableSet (f ⁻¹' s) μ :=
-  hf.nullMeasurable hs
-
 @[simp]
 theorem ae_eq_bot : ae μ = ⊥ ↔ μ = 0 := by
   rw [← empty_mem_iff_bot, mem_ae_iff, compl_empty, measure_univ_eq_zero]
@@ -1476,6 +1468,33 @@ instance Measure.ae.neBot [NeZero μ] : (ae μ).NeBot := ae_neBot.2 <| NeZero.ne
 @[simp]
 theorem ae_zero {_m0 : MeasurableSpace α} : ae (0 : Measure α) = ⊥ :=
   ae_eq_bot.2 rfl
+
+@[gcongr, mono]
+theorem ae_mono (h : μ ≤ ν) : ae μ ≤ ae ν :=
+  fun s hs ↦ bot_unique <| (h sᶜ).trans_eq hs
+
+protected theorem AEDisjoint.of_le (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≤ μ) :
+    AEDisjoint ν s t :=
+  bot_unique <| (h' (s ∩ t)).trans_eq h
+
+theorem NullMeasurableSet.mono (h : NullMeasurableSet s μ) (h' : ν ≤ μ) :
+    NullMeasurableSet s ν := by
+  obtain ⟨t, ht, hst⟩ := h
+  exact ⟨t, ht, hst.filter_mono (ae_mono h')⟩
+
+lemma NullMeasurableSet.smul_measure (h : NullMeasurableSet s μ) (c : ℝ≥0∞) :
+    NullMeasurableSet s (c • μ) := by
+  obtain ⟨t, ht, hst⟩ := h
+  exact ⟨t, ht, hst.filter_mono (ae_smul_measure_le c)⟩
+
+lemma nullMeasurableSet_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
+    NullMeasurableSet s (c • μ) ↔ NullMeasurableSet s μ := by
+  simp only [nullMeasurableSet_iff_eventuallyMeasurableSet, μ.ae_ennreal_smul_measure_eq hc]
+
+theorem _root_.AEMeasurable.mono_measure {f : α → β} (h : AEMeasurable f μ) (h' : ν ≤ μ) :
+    AEMeasurable f ν := by
+  obtain ⟨g, hg, hfg⟩ := h
+  exact ⟨g, hg, hfg.filter_mono (ae_mono h')⟩
 
 section Intervals
 

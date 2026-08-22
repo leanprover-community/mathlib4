@@ -543,6 +543,7 @@ lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
         (Subring.subset_closure (.inr ⟨_, rfl⟩))
   | add x y _ _ => exact add_mem ‹_› ‹_›
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `s` generates `T` as an `R`-algebra,
 then `{ 1 ⊗ x | x ∈ s }` generates `A ⊗[R] T` as an `A`-algebra. -/
 lemma adjoin_one_tmul_image_eq_top [CommSemiring R] [CommSemiring A]

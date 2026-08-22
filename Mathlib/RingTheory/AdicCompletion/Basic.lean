@@ -550,6 +550,7 @@ theorem mk_zero_of (f : AdicCauchySequence I M)
     ← AdicCauchySequence.mk_eq_mk (show n ≤ m by lia)]
   simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by lia))) hl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by
   intro x

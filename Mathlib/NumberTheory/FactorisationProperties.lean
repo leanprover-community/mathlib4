@@ -189,7 +189,7 @@ theorem infinite_odd_deficient : {n : ℕ | Odd n ∧ n.Deficient}.Infinite := b
   rw [Set.infinite_iff_exists_gt]
   intro n
   obtain ⟨p, ⟨_, h2⟩⟩ := exists_infinite_primes (max (n + 1) 3)
-  exact ⟨p, Set.mem_setOf.mpr ⟨Prime.odd_of_ne_two h2 (Ne.symm (ne_of_lt (by grind))),
+  exact ⟨p, Set.mem_ofPred.mpr ⟨Prime.odd_of_ne_two h2 (Ne.symm (ne_of_lt (by grind))),
     Prime.deficient h2⟩, by grind⟩
 
 theorem abundant_iff_sum_divisors : Abundant n ↔ 2 * n < ∑ i ∈ n.divisors, i := by

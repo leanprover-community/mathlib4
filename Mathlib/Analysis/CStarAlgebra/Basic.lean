@@ -38,8 +38,6 @@ Note that the type classes corresponding to C⋆-algebras are defined in
 
 assert_not_exists ContinuousLinearMap.hasOpNorm
 
-open Topology
-
 local postfix:max "⋆" => star
 
 /-- A normed star group is a normed group with a compatible `star` which is isometric. -/
@@ -76,6 +74,26 @@ noncomputable
 instance [NormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] [StarModule 𝕜 E] :
     NormedSpace 𝕜 (selfAdjoint E) where
   norm_smul_le _ _ := norm_smul_le _ (_ : E)
+
+variable (x : E) (r : ℝ)
+
+@[simp] lemma Metric.star_ball : star (ball x r) = ball (star x) r := by
+  simpa using star_isometry.preimage_ball (star x) r
+
+@[simp] lemma Metric.star_closedBall : star (closedBall x r) = closedBall (star x) r := by
+  simpa using star_isometry.preimage_closedBall (star x) r
+
+@[simp] lemma Metric.star_sphere : star (sphere x r) = sphere (star x) r := by
+  simpa using star_isometry.preimage_sphere (star x) r
+
+@[simp] lemma dist_star_star (x y : E) : dist (star x) (star y) = dist x y :=
+  star_isometry.dist_eq x y
+
+@[simp] lemma edist_star_star (x y : E) : edist (star x) (star y) = edist x y :=
+  star_isometry.edist_eq x y
+
+@[simp] lemma nndist_star_star (x y : E) : nndist (star x) (star y) = nndist x y :=
+  star_isometry.nndist_eq x y
 
 end NormedStarGroup
 

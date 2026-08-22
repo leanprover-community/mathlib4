@@ -285,7 +285,7 @@ variable (R) [NonAssocRing R]
 /-- The characteristic of a finite ring cannot be zero. -/
 theorem char_ne_zero_of_finite (p : ℕ) [CharP R p] [Finite R] : p ≠ 0 := by
   rintro rfl
-  haveI : CharZero R := charP_to_charZero R
+  have : CharZero R := charP_to_charZero R
   exact absurd Nat.cast_injective (not_injective_infinite_finite ((↑) : ℕ → R))
 
 theorem ringChar_ne_zero_of_finite [Finite R] : ringChar R ≠ 0 :=

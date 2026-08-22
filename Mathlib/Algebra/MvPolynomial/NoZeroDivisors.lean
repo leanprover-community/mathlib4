@@ -50,7 +50,7 @@ lemma degreeOf_prod_eq {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ 
     (h : ∀ i ∈ s, f i ≠ 0) :
     degreeOf n (∏ i ∈ s, f i) = ∑ i ∈ s, degreeOf n (f i) := by
   rcases subsingleton_or_nontrivial (MvPolynomial σ R) with nontrivial | nontrivial
-  · simp [Subsingleton.eq_zero]
+  · simp [Subsingleton.eq_zero (α := MvPolynomial σ R)]
   · classical
     induction s using Finset.induction_on with
     | empty => simp

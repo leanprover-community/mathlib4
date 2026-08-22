@@ -80,9 +80,7 @@ theorem homOfLE_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
 theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 
-set_option linter.defProp false in
-@[inherit_doc leOfHom]
-abbrev _root_.Quiver.Hom.le := @leOfHom
+alias _root_.Quiver.Hom.le := leOfHom
 
 @[simp]
 theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
@@ -156,6 +154,7 @@ open CategoryTheory
 variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
 /-- A monotone function between preorders induces a functor between the associated categories. -/
+@[implicit_reducible]
 def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
   obj := f
   map g := CategoryTheory.homOfLE (h g.le)

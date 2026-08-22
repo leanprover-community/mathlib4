@@ -36,7 +36,7 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {C : Type*} [Category* C] (F : C ⥤ FintypeCat.{u}) [GaloisCategory C] [FiberFunctor F]
 
@@ -64,7 +64,6 @@ lemma exists_lift_of_mono_of_isConnected (X : C) (Y : Action FintypeCat.{u} (Aut
   suffices h : i.hom y = F.map f z by simpa [hu]
   exact hz.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Let `X` be an object of a Galois category with fiber functor `F` and `Y` a sub-`Aut F`-set
 of `F.obj X`. Then there exists a sub-object `Z` of `X` and an isomorphism

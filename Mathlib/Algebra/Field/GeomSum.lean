@@ -30,7 +30,7 @@ assert_not_exists IsOrderedRing
 
 variable {R K : Type*}
 
-open Finset MulOpposite
+open Finset
 
 section DivisionRing
 variable [DivisionRing K] {x y : K}

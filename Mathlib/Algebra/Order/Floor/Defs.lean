@@ -50,8 +50,6 @@ rounding, floor, ceil
 
 assert_not_exists Finset
 
-open Set
-
 variable {F α β : Type*}
 
 /-! ### Floor semiring -/
@@ -190,7 +188,7 @@ instance : FloorRing ℤ where
     rw [Int.cast_id, id_def]
 
 /-- A `FloorRing` constructor from the `floor` function alone. -/
-@[implicit_reducible]
+@[instance_reducible]
 def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (floor : α → ℤ)
     (gc_coe_floor : GaloisConnection (↑) floor) : FloorRing α :=
   { floor
@@ -199,7 +197,7 @@ def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (floor 
     gc_ceil_coe := fun a z => by rw [neg_le, ← gc_coe_floor, Int.cast_neg, neg_le_neg_iff] }
 
 /-- A `FloorRing` constructor from the `ceil` function alone. -/
-@[implicit_reducible]
+@[instance_reducible]
 def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (ceil : α → ℤ)
     (gc_ceil_coe : GaloisConnection ceil (↑)) : FloorRing α :=
   { floor := fun a => -ceil (-a)
@@ -228,7 +226,7 @@ theorem exists_floor'
 
 /-- Construct a `FloorRing` instance noncomputably, from the hypothesis that every element is
 bounded above by a natural number. -/
-@[no_expose, implicit_reducible]
+@[no_expose, instance_reducible]
 noncomputable def FloorRing.ofBounded
     (α) [Ring α] [LinearOrder α] [IsOrderedRing α] [Nontrivial α]
     (bounded : ∀ x : α, ∃ n : ℕ, x ≤ n) : FloorRing α :=

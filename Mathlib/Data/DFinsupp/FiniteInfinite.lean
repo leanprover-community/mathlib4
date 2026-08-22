@@ -34,7 +34,7 @@ instance DFinsupp.fintype {ι : Sort _} {π : ι → Sort _} [DecidableEq ι] [�
 
 instance DFinsupp.infinite_of_left {ι : Sort _} {π : ι → Sort _} [∀ i, Nontrivial (π i)]
     [∀ i, Zero (π i)] [Infinite ι] : Infinite (Π₀ i, π i) := by
-  letI := Classical.decEq ι; choose m hm using fun i => exists_ne (0 : π i)
+  let := Classical.decEq ι; choose m hm using fun i => exists_ne (0 : π i)
   exact Infinite.of_injective _ (DFinsupp.single_left_injective hm)
 
 /-- See `DFinsupp.infinite_of_right` for this in instance form, with the drawback that

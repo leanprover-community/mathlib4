@@ -56,7 +56,6 @@ error: Could not find a model with corners for `TangentBundle (modelWithCornersS
 Hint: the expected type contains metavariables, maybe you need to provide an implicit argument
 -/
 #guard_msgs in
-set_option pp.mvars.anonymous false in
 lemma contMDiff_proj : CMDiff ∞ (proj) := by
   unfold proj
   exact contMDiff_snd_tangentBundle_modelSpace 𝕜 𝓘(𝕜)
@@ -419,7 +418,6 @@ error: Could not find a model with corners for `ContinuousLinearMap σ E'' E''''
 Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 -/
 #guard_msgs in
-set_option pp.mvars.anonymous false in
 #check CMDiff 2 f
 
 variable {f : M → E'' →SL[σ] E''''} in
@@ -491,7 +489,6 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
 -/
 #guard_msgs in
 set_option trace.Elab.DiffGeo.MDiff true in
-set_option pp.mvars.anonymous false in
 #check CMDiff 2 f
 
 end

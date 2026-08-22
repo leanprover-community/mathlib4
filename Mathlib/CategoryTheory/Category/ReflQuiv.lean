@@ -150,6 +150,7 @@ namespace FreeRefl
 
 variable {V}
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Category (FreeRefl V) :=
   inferInstanceAs (Category (Quotient _))
 
@@ -239,6 +240,7 @@ section
 
 variable {D : Type*} [Category* D] (F : V ⥤rq D)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructor for functors from `FreeRefl`.
 (See also `lift'` for which the data is unbundled.) -/
 def lift : FreeRefl V ⥤ D :=
@@ -295,9 +297,11 @@ lemma quotientFunctor_map_id (V) [ReflQuiver V] (X : V) :
     (FreeRefl.quotientFunctor V).map (𝟙rq X).toPath = 𝟙 _ :=
   Quotient.sound _ .mk
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (V : Type*) [ReflQuiver V] [Unique V] : Unique (FreeRefl V) :=
   inferInstanceAs (Unique (Quotient _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (V : Type*) [ReflQuiver V] [Unique V]
     [∀ (x y : V), Unique (x ⟶ y)] (x y : FreeRefl V) :
     Unique (x ⟶ y) where
@@ -376,7 +380,7 @@ def freeReflNatTrans : ReflQuiv.forgetToQuiv ⋙ Cat.free ⟶ freeRefl where
 end Cat
 
 namespace ReflQuiv
-open Category Functor
+open Category
 
 namespace adj
 

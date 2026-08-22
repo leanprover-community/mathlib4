@@ -34,7 +34,6 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 lemma Module.Finite.of_finite_tensorProduct_of_faithfullyFlat {M : Type*} [AddCommGroup M]
     [Module R M] [Module.FaithfullyFlat R T] [Module.Finite T (T ⊗[R] M)] :
     Module.Finite R M := by
-  classical
   obtain ⟨n, s, hs⟩ := Module.Finite.exists_fin (R := T) (M := T ⊗[R] M)
   choose k t m h using fun i : Fin n ↦ TensorProduct.exists_sum_tmul_eq (s i)
   let f₀ : ((Σ i, Fin (k i)) → R) →ₗ[R] M := (Pi.basisFun R _).constr R fun ⟨i, j⟩ ↦ m i j

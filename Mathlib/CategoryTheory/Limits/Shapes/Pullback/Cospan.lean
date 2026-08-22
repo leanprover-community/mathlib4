@@ -150,7 +150,6 @@ def WalkingCospan.ext {F : WalkingCospan ⥤ C} {s t : Cone F} (i : s.pt ≅ t.p
   · exact w₂
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- To construct an isomorphism of cocones over the walking span,
 it suffices to construct an isomorphism
 of the cocone points and check it commutes with the legs from `left` and `right`. -/
@@ -170,11 +169,13 @@ def WalkingSpan.ext {F : WalkingSpan ⥤ C} {s t : Cocone F} (i : s.pt ≅ t.pt)
   · exact w₂
 
 /-- `cospan f g` is the functor from the walking cospan hitting `f` and `g`. -/
+@[implicit_reducible]
 def cospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) : WalkingCospan ⥤ C :=
   WidePullbackShape.wideCospan Z (fun j => WalkingPair.casesOn j X Y) fun j =>
     WalkingPair.casesOn j f g
 
 /-- `span f g` is the functor from the walking span hitting `f` and `g`. -/
+@[implicit_reducible]
 def span {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) : WalkingSpan ⥤ C :=
   WidePushoutShape.wideSpan X (fun j => WalkingPair.casesOn j Y Z) fun j =>
     WalkingPair.casesOn j f g
@@ -225,6 +226,7 @@ theorem cospan_map_id {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (w : WalkingCospan
 theorem span_map_id {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (w : WalkingSpan) :
     (span f g).map (WalkingSpan.Hom.id w) = 𝟙 _ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Every diagram indexing a pullback is naturally isomorphic (actually, equal) to a `cospan` -/
 @[simps (rhsMd := default)]
 def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map inr) :=
@@ -232,6 +234,7 @@ def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map
   (fun j => eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
   (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Every diagram indexing a pushout is naturally isomorphic (actually, equal) to a `span` -/
 @[simps (rhsMd := default)]
 def diagramIsoSpan (F : WalkingSpan ⥤ C) : F ≅ span (F.map fst) (F.map snd) :=

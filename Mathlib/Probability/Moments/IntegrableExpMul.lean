@@ -40,7 +40,7 @@ We prove the integrability of other functions for `t` in the interior of that in
 @[expose] public section
 
 
-open MeasureTheory Filter Finset Real
+open MeasureTheory Filter Real
 
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
 

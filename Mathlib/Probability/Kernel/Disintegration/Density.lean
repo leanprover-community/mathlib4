@@ -175,7 +175,7 @@ lemma meas_countablePartitionSet_le_of_fst_le (hκν : fst κ ≤ ν) (n : ℕ) 
     ≤ fst κ a (countablePartitionSet n x) := by
         rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)]
         refine measure_mono (fun x ↦ ?_)
-        simp only [mem_prod, mem_setOf_eq, and_imp]
+        simp only [mem_prod, mem_ofPred_eq, and_imp]
         exact fun h _ ↦ h
   _ ≤ ν a (countablePartitionSet n x) := hκν a _
 
@@ -219,7 +219,7 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
       have h0' : fst κ a (countablePartitionSet n x) = 0 := by simpa using (hκν a _).trans h0.le
       rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)] at h0'
       refine measure_mono_null (fun x ↦ ?_) h0'
-      simp only [mem_prod, mem_setOf_eq, and_imp]
+      simp only [mem_prod, mem_ofPred_eq, and_imp]
       exact fun h _ ↦ h
     · finiteness
   congr
@@ -235,7 +235,7 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
     rw [fst_apply' _ _ hu_meas] at h0'
     refine (measure_mono_null ?_ h0').symm
     intro p
-    simp only [mem_prod, mem_setOf_eq, and_imp]
+    simp only [mem_prod, mem_ofPred_eq, and_imp]
     exact fun h _ ↦ h
   rw [div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel h0, mul_one]
   exact measure_ne_top _ _
@@ -401,7 +401,7 @@ lemma tendsto_eLpNorm_one_densityProcess_limitProcess (hκν : fst κ ≤ ν) [I
     · refine fun ε _ ↦ ⟨2, fun n ↦ le_of_eq_of_le ?_ (?_ : 0 ≤ ENNReal.ofReal ε)⟩
       · suffices {x | 2 ≤ ‖densityProcess κ ν n a x s‖₊} = ∅ by simp [this]
         ext x
-        simp only [mem_setOf_eq, mem_empty_iff_false, iff_false, not_le]
+        simp only [mem_ofPred_eq, mem_empty_iff_false, iff_false, not_le]
         refine (?_ : _ ≤ (1 : ℝ≥0)).trans_lt one_lt_two
         rw [Real.nnnorm_of_nonneg (densityProcess_nonneg _ _ _ _ _ _)]
         exact mod_cast (densityProcess_le_one hκν _ _ _ _)
@@ -536,10 +536,10 @@ lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
   have : IsFiniteKernel κ := isFiniteKernel_of_isFiniteKernel_fst (h := isFiniteKernel_of_le hκν)
   have hgen : ‹MeasurableSpace γ› =
       .generateFrom {s | ∃ n, MeasurableSet[countableFiltration γ n] s} := by
-    rw [setOf_exists, generateFrom_iUnion_measurableSet (countableFiltration γ),
+    rw [ofPred_exists, generateFrom_iUnion_measurableSet (countableFiltration γ),
       iSup_countableFiltration]
   have hpi : IsPiSystem {s | ∃ n, MeasurableSet[countableFiltration γ n] s} := by
-    rw [setOf_exists]
+    rw [ofPred_exists]
     exact isPiSystem_iUnion_of_monotone _
       (fun n ↦ @isPiSystem_measurableSet _ (countableFiltration γ n))
       fun _ _ ↦ (countableFiltration γ).mono
@@ -660,14 +660,14 @@ lemma densityProcess_fst_univ_ae (κ : Kernel α (γ × β)) [IsFiniteKernel κ]
   have : {x | ¬ densityProcess κ (fst κ) n a x univ = 1}
       ⊆ {x | fst κ a (countablePartitionSet n x) = 0} := by
     intro x hx
-    simp only [mem_setOf_eq] at hx ⊢
+    simp only [mem_ofPred_eq] at hx ⊢
     rw [densityProcess_fst_univ] at hx
     simpa using hx
   refine measure_mono_null this ?_
   have : {x | fst κ a (countablePartitionSet n x) = 0}
       ⊆ ⋃ (u) (_ : u ∈ countablePartition γ n) (_ : fst κ a u = 0), u := by
     intro t ht
-    simp only [mem_setOf_eq, mem_iUnion, exists_prop] at ht ⊢
+    simp only [mem_ofPred_eq, mem_iUnion, exists_prop] at ht ⊢
     exact ⟨countablePartitionSet n t, countablePartitionSet_mem _ _, ht,
       mem_countablePartitionSet _ _⟩
   refine measure_mono_null this ?_
@@ -693,10 +693,10 @@ lemma tendsto_densityProcess_fst_atTop_univ_of_monotone (κ : Kernel α (γ × �
     simp_rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)]
     constructor
     · refine fun h h0 ↦ h (measure_mono_null (fun x ↦ ?_) h0)
-      simp only [mem_prod, mem_setOf_eq, and_imp]
+      simp only [mem_prod, mem_ofPred_eq, and_imp]
       exact fun h _ ↦ h
     · refine fun h_top ↦ eq_top_mono (measure_mono (fun x ↦ ?_)) h_top
-      simp only [mem_prod, mem_setOf_eq, and_imp]
+      simp only [mem_prod, mem_ofPred_eq, and_imp]
       exact fun h _ ↦ h
   by_cases h0 : fst κ a (countablePartitionSet n x) = 0
   · rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)] at h0 ⊢
@@ -706,9 +706,9 @@ lemma tendsto_densityProcess_fst_atTop_univ_of_monotone (κ : Kernel α (γ × �
         simp only [this, ENNReal.zero_div]
       convert! h0
       ext x
-      simp only [mem_prod, mem_univ, and_true, mem_setOf_eq]
+      simp only [mem_prod, mem_univ, and_true, mem_ofPred_eq]
     refine fun m ↦ measure_mono_null (fun x ↦ ?_) h0
-    simp only [mem_prod, mem_setOf_eq, and_imp]
+    simp only [mem_prod, mem_ofPred_eq, and_imp]
     exact fun h _ ↦ h
   refine ENNReal.Tendsto.div_const ?_ ?_
   · convert! tendsto_measure_iUnion_atTop (monotone_const.set_prod hseq)
@@ -739,7 +739,7 @@ lemma tendsto_density_fst_atTop_ae_of_monotone [IsFiniteKernel κ]
     convert! tendsto_integral_density_of_monotone (κ := κ) le_rfl a seq hseq hseq_iUnion hseq_meas
     simp only [measureReal_def]
     rw [fst_apply' _ _ MeasurableSet.univ]
-    simp only [mem_univ, setOf_true]
+    simp only [mem_univ, ofPred_true]
   · exact ae_of_all _ (fun c n m hnm ↦ density_mono_set le_rfl a c (hseq hnm))
   · exact ae_of_all _ (fun x m ↦ density_le_one le_rfl a x (seq m))
 

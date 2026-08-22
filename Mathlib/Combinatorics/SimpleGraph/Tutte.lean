@@ -79,7 +79,6 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
       G.deleteUniversalVerts.coe.IsClique K.supp) :
     ∃ M : Subgraph G, M.IsMatching ∧ M.vertsᶜ ⊆ G.universalVerts := by
-  classical
   have hrep := ConnectedComponent.Represents.image_out G.deleteUniversalVerts.coe.oddComponents
   -- First we match one node from each odd component to a universal vertex
   obtain ⟨t, ht, M1, hM1⟩ := Subgraph.IsMatching.exists_of_universalVerts
@@ -265,6 +264,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     exact tutte_exists_isAlternating_isCycles p hp hcalt (hnM2 _ hnbc) hpac hnpxb hM2ac
       hab.symm hnbc hxa.ne.symm hle (aux (by simp))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- From a graph on an even number of vertices with no perfect matching, we can remove an odd number
 of vertices such that there are more odd components in the resulting graph than vertices we removed.
 
@@ -317,7 +317,6 @@ A graph has a perfect matching if and only if: For every subset `u` of vertices,
 subset induces at most `u.ncard` components of odd size. This is formally stated using the
 predicate `IsTutteViolator`, which is satisfied exactly when this condition does not hold. -/
 theorem tutte : (∃ M : Subgraph G, M.IsPerfectMatching) ↔ ∀ u, ¬ G.IsTutteViolator u := by
-  classical
   refine ⟨by rintro ⟨M, hM⟩; apply not_isTutteViolator_of_isPerfectMatching hM, ?_⟩
   contrapose!
   intro h

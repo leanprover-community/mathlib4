@@ -45,9 +45,6 @@ Unbounded operators, closed operators
 
 @[expose] public section
 
-
-open Topology
-
 variable {R E F : Type*}
 variable [CommRing R] [AddCommGroup E] [AddCommGroup F]
 variable [Module R E] [Module R F]

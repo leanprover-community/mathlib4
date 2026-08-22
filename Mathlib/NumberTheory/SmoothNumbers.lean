@@ -154,7 +154,7 @@ lemma factoredNumbers_compl {N : ℕ} {s : Finset ℕ} (h : primesBelow N ≤ s)
   intro n hn
   simp only [Set.mem_compl_iff, mem_factoredNumbers, Set.mem_sdiff, ne_eq, not_and, not_forall,
     exists_prop, Set.mem_singleton_iff] at hn
-  simp only [Set.mem_setOf_eq]
+  simp only [Set.mem_ofPred_eq]
   obtain ⟨p, hp₁, hp₂⟩ := hn.1 hn.2
   have : N ≤ p := by
     contrapose! hp₂
@@ -189,6 +189,7 @@ lemma factoredNumbers.map_prime_pow_mul {F : Type*} [Mul F] {f : ℕ → F}
     f (p ^ e * m) = f (p ^ e) * f m :=
   hmul <| Coprime.pow_left _ <| hp.factoredNumbers_coprime hs <| Subtype.mem m
 
+set_option backward.isDefEq.respectTransparency false in
 open List Perm in
 /-- We establish the bijection from `ℕ × factoredNumbers s` to `factoredNumbers (s ∪ {p})`
 given by `(e, n) ↦ p^e * n` when `p ∉ s` is a prime. See `Nat.factoredNumbers_insert` for

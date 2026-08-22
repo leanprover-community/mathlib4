@@ -62,8 +62,6 @@ generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
 
 assert_not_exists RelIso
 
-open Function OrderDual
-
 universe u v
 
 variable {α : Type u} {β : Type*} {x y z : α}
@@ -161,7 +159,7 @@ a distributive lattice that is complemented is a Boolean algebra.
 
 This is not an instance, because it creates data using choice.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable
 def booleanAlgebraOfComplemented [BoundedOrder α] [ComplementedLattice α] : BooleanAlgebra α where
   __ := ((inferInstance : BoundedOrder α))
