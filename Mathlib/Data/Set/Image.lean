@@ -105,6 +105,9 @@ theorem preimage_ofPred_eq {p : α → Prop} {f : β → α} : f ⁻¹' { a | p 
 
 @[deprecated (since := "2026-07-09")] alias preimage_setOf_eq := preimage_ofPred_eq
 
+theorem preimage_singleton (f : α → β) (y : β) : f ⁻¹' {y} = {x | f x = y} :=
+  rfl
+
 @[simp]
 theorem preimage_id_eq : preimage (id : α → α) = id :=
   rfl
