@@ -18,6 +18,7 @@ We prove `Dyadic` is the localization of `ℤ` at `Submonoid.powers 2`.
 public section
 namespace Dyadic
 
+/-- The dyadic number ½. -/
 @[expose]
 def half : Units Dyadic where
   val := (1 : Dyadic) >>> 1
