@@ -113,10 +113,15 @@ lemma leOnePart_le_one' : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
 
 end DivInvMonoid
 
-section Group
-variable [Group α] {a b : α}
+section DivInvOneMonoid
+variable [DivInvOneMonoid α]
 
 @[to_additive (attr := simp)] lemma leOnePart_one : (1 : α)⁻ᵐ = 1 := by simp [leOnePart]
+
+end DivInvOneMonoid
+
+section Group
+variable [Group α] {a b : α}
 
 @[to_additive (attr := simp)] lemma leOnePart_inv (a : α) : a⁻¹⁻ᵐ = a⁺ᵐ := by
   simp [oneLePart, leOnePart]
@@ -228,12 +233,12 @@ end CommGroup
 end Lattice
 
 section DistribLattice
-variable [DistribLattice α] [Group α]
+variable [DistribLattice α]
 
-@[to_additive] lemma oneLePart_min (a b : α) : (min a b)⁺ᵐ = min a⁺ᵐ b⁺ᵐ := by
+@[to_additive] lemma oneLePart_min [DivInvMonoid α] (a b : α) : (min a b)⁺ᵐ = min a⁺ᵐ b⁺ᵐ := by
   simp [oneLePart, sup_inf_right]
 
-variable [MulLeftMono α] [MulRightMono α]
+variable [Group α] [MulLeftMono α] [MulRightMono α]
 
 @[to_additive] lemma leOnePart_max (a b : α) : (max a b)⁻ᵐ = min a⁻ᵐ b⁻ᵐ := by
   simp [leOnePart, inv_sup, sup_inf_right]
@@ -241,7 +246,10 @@ variable [MulLeftMono α] [MulRightMono α]
 end DistribLattice
 
 section LinearOrder
-variable [LinearOrder α] [Group α] {a b : α}
+variable [LinearOrder α] {a b : α}
+
+section DivInvMonoid
+variable [DivInvMonoid α]
 
 @[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = if 1 ≤ a then a else 1 := by
   rw [oneLePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
@@ -258,8 +266,10 @@ lemma oneLePart_of_one_lt_oneLePart (ha : 1 < a⁺ᵐ) : a⁺ᵐ = a := by
 
 @[to_additive (attr := simp)] lemma oneLePart_lt : a⁺ᵐ < b ↔ a < b ∧ 1 < b := sup_lt_iff
 
+end DivInvMonoid
+
 section covariantmul
-variable [MulLeftMono α]
+variable [Group α] [MulLeftMono α]
 
 @[to_additive] lemma leOnePart_eq_ite : a⁻ᵐ = if a ≤ 1 then a⁻¹ else 1 := by
   simp_rw [← one_le_inv']; rw [leOnePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
@@ -279,7 +289,7 @@ end covariantmul
 end LinearOrder
 
 namespace Pi
-variable {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] [∀ i, Group (α i)]
+variable {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] [∀ i, DivInvMonoid (α i)]
 
 @[to_additive (attr := simp)] lemma oneLePart_apply (f : ∀ i, α i) (i : ι) : f⁺ᵐ i = (f i)⁺ᵐ := rfl
 @[to_additive (attr := simp)] lemma leOnePart_apply (f : ∀ i, α i) (i : ι) : f⁻ᵐ i = (f i)⁻ᵐ := rfl
