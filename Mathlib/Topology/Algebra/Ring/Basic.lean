@@ -119,8 +119,11 @@ instance (priority := 100) IsSemitopologicalRing.toIsTopologicalAddGroup [NonUni
     [TopologicalSpace R] [IsSemitopologicalRing R] : IsTopologicalAddGroup R := ⟨⟩
 
 -- kept just to avoid breaking manual usage of the previous instance
-theorem IsTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing R]
+theorem IsTopologicalRing.isTopologicalAddGroup [NonUnitalNonAssocRing R]
     [TopologicalSpace R] [IsTopologicalRing R] : IsTopologicalAddGroup R := ⟨⟩
+
+@[deprecated (since := "2026-08-21")]
+alias IsTopologicalRing.to_topologicalAddGroup := IsTopologicalRing.isTopologicalAddGroup
 
 instance (priority := 50) DiscreteTopology.topologicalSemiring [TopologicalSpace R]
     [NonUnitalNonAssocSemiring R] [DiscreteTopology R] : IsTopologicalSemiring R := ⟨⟩
@@ -608,7 +611,7 @@ theorem coinduced_continuous {R S : Type*} [t : TopologicalSpace R] [Ring S] (f 
 def toAddGroupTopology (t : RingTopology R) : AddGroupTopology R where
   toTopologicalSpace := t.toTopologicalSpace
   toIsTopologicalAddGroup :=
-    @IsTopologicalRing.to_topologicalAddGroup _ _ t.toTopologicalSpace t.toIsTopologicalRing
+    @IsTopologicalRing.isTopologicalAddGroup _ _ t.toTopologicalSpace t.toIsTopologicalRing
 
 /-- The order embedding from ring topologies on `a` to additive group topologies on `a`. -/
 def toAddGroupTopology.orderEmbedding : OrderEmbedding (RingTopology R) (AddGroupTopology R) :=

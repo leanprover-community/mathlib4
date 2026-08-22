@@ -274,12 +274,18 @@ instance (priority := 100) continuousDiv_of_indiscreteTopology [TopologicalSpace
   ⟨continuous_of_indiscreteTopology⟩
 
 @[to_additive]
-instance (priority := 100) topologicalGroup_of_discreteTopology
+instance (priority := 100) isTopologicalGroup_of_discreteTopology
     [TopologicalSpace H] [Group H] [DiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
 
+@[to_additive (attr := deprecated (since := "2026-08-21"))]
+alias topologicalGroup_of_discreteTopology := isTopologicalGroup_of_discreteTopology
+
 @[to_additive]
-instance (priority := 100) topologicalGroup_of_indiscreteTopology
+instance (priority := 100) isTopologicalGroup_of_indiscreteTopology
     [TopologicalSpace H] [Group H] [IndiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
+
+@[to_additive (attr := deprecated (since := "2026-08-21"))]
+alias topologicalGroup_of_indiscreteTopology := isTopologicalGroup_of_indiscreteTopology
 
 section PointwiseLimits
 
@@ -621,9 +627,12 @@ instance Prod.instIsTopologicalGroup [TopologicalSpace H] [Group H] [IsTopologic
 instance OrderDual.instIsTopologicalGroup : IsTopologicalGroup Gᵒᵈ where
 
 @[to_additive]
-instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]
+instance Pi.isTopologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]
     [∀ b, IsTopologicalGroup (C b)] : IsTopologicalGroup (∀ b, C b) where
   continuous_inv := continuous_pi fun i => (continuous_apply i).inv
+
+@[to_additive (attr := deprecated (since := "2026-08-21"))]
+alias Pi.topologicalGroup := Pi.isTopologicalGroup
 
 open MulOpposite
 
@@ -668,23 +677,29 @@ theorem Homeomorph.shearMulRight_symm_coe :
 variable {G}
 
 @[to_additive]
-protected theorem Topology.IsInducing.topologicalGroup {F : Type*} [Group H] [TopologicalSpace H]
+protected theorem Topology.IsInducing.isTopologicalGroup {F : Type*} [Group H] [TopologicalSpace H]
     [FunLike F H G] [MonoidHomClass F H G] (f : F) (hf : IsInducing f) : IsTopologicalGroup H :=
   { toContinuousMul := hf.continuousMul _
     toContinuousInv := hf.continuousInv (map_inv f) }
 
+@[to_additive (attr := deprecated (since := "2026-08-21"))]
+protected alias Topology.IsInducing.topologicalGroup := Topology.IsInducing.isTopologicalGroup
+
 @[to_additive]
-theorem topologicalGroup_induced {F : Type*} [Group H] [FunLike F H G] [MonoidHomClass F H G]
+theorem isTopologicalGroup_induced {F : Type*} [Group H] [FunLike F H G] [MonoidHomClass F H G]
     (f : F) :
     @IsTopologicalGroup H (induced f ‹_›) _ :=
   letI := induced f ‹_›
-  IsInducing.topologicalGroup f ⟨rfl⟩
+  Topology.IsInducing.isTopologicalGroup f ⟨rfl⟩
+
+@[to_additive (attr := deprecated (since := "2026-08-21"))]
+alias topologicalGroup_induced := isTopologicalGroup_induced
 
 namespace Subgroup
 
 @[to_additive]
 instance (S : Subgroup G) : IsTopologicalGroup S :=
-  IsInducing.subtypeVal.topologicalGroup S.subtype
+  IsInducing.subtypeVal.isTopologicalGroup S.subtype
 
 end Subgroup
 
@@ -1498,7 +1513,7 @@ section LatticeOps
 variable {ι : Sort*} [Group G]
 
 @[to_additive]
-theorem topologicalGroup_sInf {ts : Set (TopologicalSpace G)}
+theorem isTopologicalGroup_sInf {ts : Set (TopologicalSpace G)}
     (h : ∀ t ∈ ts, @IsTopologicalGroup G t _) : @IsTopologicalGroup G (sInf ts) _ :=
   letI := sInf ts
   { toContinuousInv :=
@@ -1507,17 +1522,26 @@ theorem topologicalGroup_sInf {ts : Set (TopologicalSpace G)}
       @continuousMul_sInf _ _ _ fun t ht =>
         @IsTopologicalGroup.toContinuousMul G t _ <| h t ht }
 
-@[to_additive]
-theorem topologicalGroup_iInf {ts' : ι → TopologicalSpace G}
-    (h' : ∀ i, @IsTopologicalGroup G (ts' i) _) : @IsTopologicalGroup G (⨅ i, ts' i) _ := by
-  rw [← sInf_range]
-  exact topologicalGroup_sInf (Set.forall_mem_range.mpr h')
+@[to_additive (attr := deprecated (since := "2026-08-21"))]
+alias topologicalGroup_sInf := isTopologicalGroup_sInf
 
 @[to_additive]
-theorem topologicalGroup_inf {t₁ t₂ : TopologicalSpace G} (h₁ : @IsTopologicalGroup G t₁ _)
+theorem isTopologicalGroup_iInf {ts' : ι → TopologicalSpace G}
+    (h' : ∀ i, @IsTopologicalGroup G (ts' i) _) : @IsTopologicalGroup G (⨅ i, ts' i) _ := by
+  rw [← sInf_range]
+  exact isTopologicalGroup_sInf (Set.forall_mem_range.mpr h')
+
+@[to_additive (attr := deprecated (since := "2026-08-21"))]
+alias topologicalGroup_iInf := isTopologicalGroup_iInf
+
+@[to_additive]
+theorem isTopologicalGroup_inf {t₁ t₂ : TopologicalSpace G} (h₁ : @IsTopologicalGroup G t₁ _)
     (h₂ : @IsTopologicalGroup G t₂ _) : @IsTopologicalGroup G (t₁ ⊓ t₂) _ := by
   rw [inf_eq_iInf]
-  refine topologicalGroup_iInf fun b => ?_
+  refine isTopologicalGroup_iInf fun b => ?_
   cases b <;> assumption
+
+@[to_additive (attr := deprecated (since := "2026-08-21"))]
+alias topologicalGroup_inf := isTopologicalGroup_inf
 
 end LatticeOps
