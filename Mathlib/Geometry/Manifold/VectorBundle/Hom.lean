@@ -493,6 +493,35 @@ lemma MDifferentiable.clm_bundle_apply
     MDiff (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x ↦ (hϕ x).clm_bundle_apply (hv x)
 
+/-- Specialization of `MDifferentiableAt.clm_bundle_apply` to the trivial bundle on the source. -/
+lemma MDifferentiableAt.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[𝕜] E₂ (b x)}
+    (hψ : MDiffAt
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (F₁ →L[𝕜] E₂ x)) (b m) (ψ m)) x)
+    {w : M → F₁} (hb : MDiffAt b x) (hw : MDiffAt w x) :
+    MDiffAt (fun m ↦ TotalSpace.mk' F₂ (b m) (ψ m (w m))) x := by
+  apply MDifferentiableAt.clm_bundle_apply (E₁ := Bundle.Trivial B F₁) (F₁ := F₁) hψ
+  simp [mdifferentiableAt_totalSpace, hb, hw]
+
+/-- Applying a trivialization of a `C¹` vector bundle to a constant vector yields a
+differentiable function into the total space. Version for differentiability at a point. -/
+lemma Bundle.Trivialization.mdifferentiableAt_symm_const
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle 1 F₁ E₁ IB]
+    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e]
+    {x : B} (hx : x ∈ e.baseSet) (u : F₁) :
+    MDiffAt (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) x :=
+  e.contMDiffAt_symm_const hx _ |>.mdifferentiableAt one_ne_zero
+
+/-- Applying a trivialization `t` of a `C¹` vector bundle to a constant vector yields a function
+into the total space which is differentiable on `t.baseSet`. -/
+lemma Bundle.Trivialization.mdifferentiableOn_symm_const
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle 1 F₁ E₁ IB]
+    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e]
+    (u : F₁) :
+    MDiff[e.baseSet] (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) :=
+  fun _x hx ↦ (e.mdifferentiableAt_symm_const hx _).mdifferentiableWithinAt
+
 end OneVariable'
 
 section TwoVariables
