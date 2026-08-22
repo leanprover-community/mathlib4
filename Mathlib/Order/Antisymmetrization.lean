@@ -133,7 +133,7 @@ def toAntisymmetrization : α → Antisymmetrization α r :=
 
 @[simp]
 theorem toAntisymmetrization_eq (a b : α) :
-    toAntisymmetrization r a = toAntisymmetrization r b ↔ r a b ∧ r b a :=
+    toAntisymmetrization r a = toAntisymmetrization r b ↔ AntisymmRel r a b :=
   Quotient.eq
 
 /-- Get a representative from the antisymmetrization. -/
