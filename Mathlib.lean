@@ -3936,6 +3936,7 @@ public import Mathlib.Data.FinEnum
 public import Mathlib.Data.FinEnum.Option
 public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Finite.Option
 public import Mathlib.Data.Finite.Perm
 public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Finite.Set
