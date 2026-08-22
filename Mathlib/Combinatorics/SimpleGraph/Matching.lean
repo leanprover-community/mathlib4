@@ -21,13 +21,25 @@ the vertices in a matching is called its *support* (and sometimes the vertices i
 said to be *saturated* by the matching). A *perfect matching* is a matching whose support contains
 every vertex of the graph.
 
-In this module, we represent a matching as a subgraph whose vertices are each incident to at most
-one edge, and the edges of the subgraph represent the paired vertices.
+In this module, we define a matching predicate for simple graphs and one for subgraphs. A simple
+graph is a matching when every vertex in its support is incident to exactly one edge, so isolated
+vertices are allowed. A subgraph is a matching when every vertex declared in the subgraph is
+incident to exactly one edge, and the edges of the subgraph represent the paired vertices.
 
 ## Main definitions
 
+* `SimpleGraph.IsMatching`: `M.IsMatching` means that `M` is a matching as a simple graph,
+  ignoring isolated vertices.
+
 * `SimpleGraph.Subgraph.IsMatching`: `M.IsMatching` means that `M` is a matching of its
-  underlying graph.
+  underlying graph whose declared vertices are exactly the matched vertices.
+
+* `SimpleGraph.Subgraph.IsMatching.spanningCoe` relates the subgraph predicate to
+  `SimpleGraph.IsMatching`.
+
+* `SimpleGraph.Subgraph.isMatching_iff_support_eq_verts_and_spanningCoe` characterizes the
+  subgraph predicate as graph-level matching plus `M.support = M.verts`.
+
 
 * `SimpleGraph.Subgraph.IsPerfectMatching` defines when a subgraph `M` of a simple graph is a
   perfect matching, denoted `M.IsPerfectMatching`.
@@ -283,6 +295,32 @@ lemma IsPerfectMatching.induce_connectedComponent_isMatching (h : M.IsPerfectMat
 lemma IsPerfectMatching.toSubgraph_iff (h : M.spanningCoe ≤ G') :
     (G'.toSubgraph M.spanningCoe h).IsPerfectMatching ↔ M.IsPerfectMatching := by
   simp only [isPerfectMatching_iff, toSubgraph_adj, spanningCoe_adj]
+
+end Subgraph
+
+/--
+A simple graph is a matching if every vertex in its support is incident to exactly one edge.
+Isolated vertices are ignored.
+-/
+def IsMatching (M : SimpleGraph V) : Prop := ∀ ⦃v⦄, v ∈ M.support → ∃! w, M.Adj v w
+
+namespace Subgraph
+
+lemma IsMatching.spanningCoe (hM : M.IsMatching) : M.spanningCoe.IsMatching := by
+  intro v hv
+  obtain ⟨w, hvw⟩ := M.spanningCoe.mem_support.mp hv
+  simpa only [Subgraph.spanningCoe_adj] using
+    hM (M.edge_vert (by simpa only [Subgraph.spanningCoe_adj] using hvw))
+
+theorem isMatching_iff_support_eq_verts_and_spanningCoe :
+    M.IsMatching ↔ M.support = M.verts ∧ M.spanningCoe.IsMatching := by
+  refine ⟨fun hM ↦ ⟨hM.support_eq_verts, hM.spanningCoe⟩, ?_⟩
+  rintro ⟨h_support, hM⟩ v hv
+  have hv_support : v ∈ M.spanningCoe.support := by
+    rw [← h_support] at hv
+    obtain ⟨w, hvw⟩ := (M.mem_support).mp hv
+    exact M.spanningCoe.mem_support.mpr ⟨w, by simpa only [Subgraph.spanningCoe_adj] using hvw⟩
+  simpa only [Subgraph.spanningCoe_adj] using hM hv_support
 
 end Subgraph
 
