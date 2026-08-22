@@ -68,7 +68,10 @@ variable [Fintype m] [Fintype n]
 
 /-- `dotProduct v w` is the sum of the entrywise products `v i * w i`.
 
-See also `dotProductEquiv`. -/
+This is available in bundled forms as:
+* `dotProductBilin`
+* `dotProductEquiv`
+-/
 def dotProduct [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
   ∑ i, v i * w i
 
@@ -287,7 +290,12 @@ namespace Matrix
 
 /-- `M * N` is the usual product of matrices `M` and `N`, i.e. we have that
 `(M * N) i k` is the dot product of the `i`-th row of `M` by the `k`-th column of `N`.
-This is currently only defined when `m` is finite. -/
+This is currently only defined when `m` is finite.
+
+This is available in bundled forms as:
+* `Matrix.addMonoidHomMulLeft`
+* `Matrix.addMonoidHomMulRight`
+-/
 -- We want to be lower priority than `instHMul`, but without this we can't have operands with
 -- implicit dimensions.
 @[default_instance 100]
@@ -612,7 +620,9 @@ namespace Matrix
 
 /-- For two vectors `w` and `v`, `vecMulVec w v i j` is defined to be `w i * v j`.
 Put another way, `vecMulVec w v` is exactly `replicateCol ι w * replicateRow ι v` for
-`Unique ι`; see `vecMulVec_eq`. -/
+`Unique ι`; see `vecMulVec_eq`.
+
+This is available in a bundled form as `vecMulVecBilin`. -/
 def vecMulVec [Mul α] (w : m → α) (v : n → α) : Matrix m n α :=
   of fun x y => w x * v y
 
@@ -694,6 +704,11 @@ where `v` is seen as a column vector.
 
 The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `dotProduct`,
 so that `A *ᵥ v ⬝ᵥ B *ᵥ w` is parsed as `(A *ᵥ v) ⬝ᵥ (B *ᵥ w)`.
+
+This is available in bundled forms as:
+* `Matrix.mulVec.addMonoidHomLeft`
+* `Matrix.mulVecLin`
+* `Matrix.mulVecBilin`
 -/
 def mulVec [Fintype n] (M : Matrix m n α) (v : n → α) : m → α
   | i => (fun j => M i j) ⬝ᵥ v
@@ -713,6 +728,10 @@ where `v` is seen as a row vector.
 
 The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `dotProduct`,
 so that `v ᵥ* A ⬝ᵥ w ᵥ* B` is parsed as `(v ᵥ* A) ⬝ᵥ (w ᵥ* B)`.
+
+This is available in bundled forms as:
+* `Matrix.vecMulLinear`
+* `Matrix.vecMulBilin`
 -/
 def vecMul [Fintype m] (v : m → α) (M : Matrix m n α) : n → α
   | j => v ⬝ᵥ fun i => M i j
@@ -726,7 +745,7 @@ lemma vecMul_apply [Fintype m] (v : m → α) (M : Matrix m n α) (i : n) :
 lemma vecMul_apply_eq_sum [Fintype m] (v : m → α) (M : Matrix m n α) (i : n) :
     (v ᵥ* M) i = ∑ j : m, v j * M j i := rfl
 
-/-- Left multiplication by a matrix, as an `AddMonoidHom` from vectors to vectors. -/
+/-- Left multiplication by a matrix, as an `AddMonoidHom` from matrices to vectors. -/
 @[simps]
 def mulVec.addMonoidHomLeft [Fintype n] (v : n → α) : Matrix m n α →+ m → α where
   toFun M := M *ᵥ v
