@@ -62,8 +62,18 @@ theorem isCaratheodory_iff_le' {s : Set α} :
 @[simp]
 theorem isCaratheodory_empty : IsCaratheodory m ∅ := by simp [IsCaratheodory, sdiff_empty]
 
+/-- Sets with zero outer measure are Carathéodory-measurable. -/
+lemma isCaratheodory_of_measure_eq_zero (h : m s = 0) : m.IsCaratheodory s := by
+  rw [isCaratheodory_iff_le']; intro t
+  simpa [measure_mono_null inter_subset_left h] using
+    (measure_mono (Set.sdiff_subset : t \ s ⊆ t) : m (t \ s) ≤ m t)
+
 theorem isCaratheodory_compl : IsCaratheodory m s₁ → IsCaratheodory m s₁ᶜ := by
   simp [IsCaratheodory, sdiff_eq, add_comm]
+
+/-- A Carathéodory-measurable set and its complement add up to the measure of the whole space. -/
+theorem IsCaratheodory.measure_add_compl (h : m.IsCaratheodory s) : m s + m sᶜ = m univ := by
+  simpa [Set.sdiff_eq] using (h univ).symm
 
 @[simp]
 theorem isCaratheodory_compl_iff : IsCaratheodory m sᶜ ↔ IsCaratheodory m s :=
