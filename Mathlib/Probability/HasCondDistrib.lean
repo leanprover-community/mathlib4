@@ -1,14 +1,13 @@
 /-
 Copyright (c) 2026 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Paulo Rauber
+Authors: Rémy Degenne, Paulo Rauber, Bo Cowgill
 -/
 
 module
 
 public import Mathlib.Probability.HasLaw
-
-import Mathlib.Probability.Kernel.Composition.Lemmas
+public import Mathlib.Probability.Kernel.CondDistrib
 
 /-!
 # A predicate for having a specified conditional distribution
@@ -18,11 +17,24 @@ given `X` under the measure `P` is equal to the kernel `κ`.
 The statement uses `HasLaw` to express that the law of the pair `(X, Y)` under `P` is equal to
 `(P.map X) ⊗ₘ κ`, the product of the law of `X` under `P` and the kernel `κ`.
 The use of `HasLaw` also implies that `Y` and `X` are a.e. measurable.
+When a regular conditional distribution exists, we show that `condDistrib Y X P` satisfies this
+predicate and characterize all finite kernels satisfying it. We also characterize independence in
+terms of constant conditional distributions.
 
 ## Main definitions
 
 * `HasCondDistrib Y X κ P` : predicate stating that the conditional distribution of `Y` given `X`
   under the measure `P` is equal to the kernel `κ`.
+
+## Main results
+
+* `hasCondDistrib_condDistrib`: the regular conditional distribution is a conditional distribution.
+* `hasCondDistrib_iff_condDistrib_ae_eq`: a finite kernel is a conditional distribution if and only
+  if it is almost everywhere equal to the regular conditional distribution.
+* `indepFun_iff_hasCondDistrib_const`: independence is equivalent to the constant marginal kernel
+  being a conditional distribution.
+* `indepFun_iff_condDistrib_ae_eq_const`: independence is equivalent to the regular conditional
+  distribution being almost everywhere equal to the constant marginal kernel.
 
 -/
 
@@ -61,6 +73,64 @@ lemma HasCondDistrib.hasLaw_of_const [IsProbabilityMeasure P] {Q : Measure 𝓨}
       rw [h.map_eq, Measure.snd_compProd]
       simp [Measure.map_apply_of_aemeasurable h.aemeasurable_fst]
     rwa [Measure.snd_map_prodMk₀ h.aemeasurable_fst] at h_snd
+
+/-- Two random variables with specified laws are independent if and only if the conditional
+distribution of the second given the first is the constant kernel at its law. -/
+theorem indepFun_iff_hasCondDistrib_const_of_hasLaw [IsFiniteMeasure P]
+    {μ : Measure 𝓧} {ν : Measure 𝓨} (hX : HasLaw X μ P) (hY : HasLaw Y ν P) :
+    X ⟂ᵢ[P] Y ↔ HasCondDistrib Y X (Kernel.const 𝓧 ν) P := by
+  simp [indepFun_iff_hasLaw_prodMk_prod hX hY, HasCondDistrib, ← hX.map_eq, ← hY.map_eq,
+    Measure.compProd_const]
+
+/-- Two a.e.-measurable random variables are independent if and only if the conditional
+distribution of the second given the first is the constant kernel at its marginal distribution. -/
+theorem indepFun_iff_hasCondDistrib_const [IsFiniteMeasure P]
+    (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
+    X ⟂ᵢ[P] Y ↔ HasCondDistrib Y X (Kernel.const 𝓧 (P.map Y)) P :=
+  indepFun_iff_hasCondDistrib_const_of_hasLaw ⟨hX, rfl⟩ ⟨hY, rfl⟩
+
+alias ⟨IndepFun.hasCondDistrib_const, HasCondDistrib.indepFun_of_const⟩ :=
+  indepFun_iff_hasCondDistrib_const
+
+section CondDistrib
+
+variable [StandardBorelSpace 𝓨] [Nonempty 𝓨] [IsFiniteMeasure P]
+
+/-- The regular conditional distribution of `Y` given `X` is a conditional distribution. -/
+lemma hasCondDistrib_condDistrib (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
+    HasCondDistrib Y X (condDistrib Y X P) P where
+  aemeasurable := hX.prodMk hY
+  map_eq := (compProd_map_condDistrib hY).symm
+
+/-- A finite kernel is a conditional distribution of `Y` given `X` if and only if it is almost
+everywhere equal to the regular conditional distribution. -/
+theorem hasCondDistrib_iff_condDistrib_ae_eq [IsFiniteKernel κ]
+    (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
+    HasCondDistrib Y X κ P ↔ condDistrib Y X P =ᵐ[P.map X] κ := by
+  constructor
+  · intro h
+    exact condDistrib_ae_eq_of_measure_eq_compProd X hY h.map_eq
+  · intro h
+    exact ⟨hX.prodMk hY,
+      (hasCondDistrib_condDistrib hX hY).map_eq.trans (Measure.compProd_congr h)⟩
+
+/-- Two random variables with specified laws are independent if and only if the conditional
+distribution of the second given the first is almost everywhere the constant kernel at its law. -/
+theorem indepFun_iff_condDistrib_ae_eq_const_of_hasLaw {μ : Measure 𝓧} {ν : Measure 𝓨}
+    (hX : HasLaw X μ P) (hY : HasLaw Y ν P) :
+    X ⟂ᵢ[P] Y ↔ condDistrib Y X P =ᵐ[μ] Kernel.const 𝓧 ν := by
+  let _ : IsFiniteMeasure ν := hY.isFiniteMeasure_iff.mp inferInstance
+  rw [← hX.map_eq, indepFun_iff_hasCondDistrib_const_of_hasLaw hX hY,
+    hasCondDistrib_iff_condDistrib_ae_eq hX.aemeasurable hY.aemeasurable]
+
+/-- Two a.e.-measurable random variables are independent if and only if the conditional
+distribution of the second given the first is almost everywhere its marginal distribution. -/
+theorem indepFun_iff_condDistrib_ae_eq_const
+    (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
+    X ⟂ᵢ[P] Y ↔ condDistrib Y X P =ᵐ[P.map X] Kernel.const 𝓧 (P.map Y) :=
+  indepFun_iff_condDistrib_ae_eq_const_of_hasLaw ⟨hX, rfl⟩ ⟨hY, rfl⟩
+
+end CondDistrib
 
 variable [SFinite P] [IsSFiniteKernel κ]
 
