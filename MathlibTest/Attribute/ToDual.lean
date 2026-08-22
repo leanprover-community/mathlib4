@@ -336,13 +336,10 @@ inductive WithBot.LE : WithBot α → WithBot α → Prop where
   | bot_le (x : WithBot α) : WithBot.LE .bot x
   | coe_le_coe {a b : α} : a ≤ b → WithBot.LE (.coe a) (.coe b)
 
-set_option linter.translate.warnInvalid false in
 @[to_dual existing (reorder := 3 4)]
 inductive WithTop.LE : WithTop α → WithTop α → Prop where
   | le_top (x : WithTop α) : WithTop.LE x .top
   | coe_le_coe {a b : α} : a ≤ b → WithTop.LE (.coe a) (.coe b)
-
-attribute [to_dual existing bot_le] WithTop.LE.le_top
 
 @[to_dual]
 instance WithBot.instLE : _root_.LE (WithBot α) := ⟨WithBot.LE⟩

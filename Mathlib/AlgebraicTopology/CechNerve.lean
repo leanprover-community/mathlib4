@@ -50,13 +50,12 @@ namespace CategoryTheory.Arrow
 variable (f : Arrow C)
 variable [∀ n : ℕ, HasWidePullback.{0} f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Čech nerve associated to an arrow. -/
 @[simps, implicit_reducible]
 def cechNerve : SimplicialObject C where
   obj n := widePullback.{0} f.right (fun _ : Fin (n.unop.len + 1) => f.left) fun _ => f.hom
-  map g := WidePullback.lift (WidePullback.base _)
-    (fun i => WidePullback.π _ (g.unop.toOrderHom i)) (by simp)
+  map g := widePullback.lift (widePullback.base _)
+    (fun i => widePullback.π _ (g.unop.toOrderHom i)) (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -67,17 +66,15 @@ def mapCechNerve {f g : Arrow C}
     [∀ n : ℕ, HasWidePullback g.right (fun _ : Fin (n + 1) => g.left) fun _ => g.hom] (F : f ⟶ g) :
     f.cechNerve ⟶ g.cechNerve where
   app n :=
-    WidePullback.lift (WidePullback.base _ ≫ F.right) (fun i => WidePullback.π _ i ≫ F.left)
+    widePullback.lift (widePullback.base _ ≫ F.right) (fun i => widePullback.π _ i ≫ F.left)
       fun j => by simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve associated to an arrow. -/
 @[simps]
 def augmentedCechNerve : SimplicialObject.Augmented C where
   left := f.cechNerve
   right := f.right
-  hom := { app := fun _ => WidePullback.base _ }
+  hom := { app := fun _ => widePullback.base _ }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism between augmented Čech nerve associated to a morphism of arrows. -/
@@ -120,7 +117,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def equivalenceRightToLeft (X : SimplicialObject.Augmented C) (F : Arrow C)
     (G : X ⟶ F.augmentedCechNerve) : Augmented.toArrow.obj X ⟶ F where
-  left := G.left.app _ ≫ WidePullback.π _ 0
+  left := G.left.app _ ≫ widePullback.π _ 0
   right := G.right
   w := by
     have := G.w
@@ -135,13 +132,13 @@ def equivalenceLeftToRight (X : SimplicialObject.Augmented C) (F : Arrow C)
     (G : Augmented.toArrow.obj X ⟶ F) : X ⟶ F.augmentedCechNerve where
   left :=
     { app := fun x =>
-        Limits.WidePullback.lift (X.hom.app _ ≫ G.right)
+        Limits.widePullback.lift (X.hom.app _ ≫ G.right)
           (fun i => X.left.map (SimplexCategory.const _ x.unop i).op ≫ G.left) fun i => by simp
       naturality := by
         intro x y f
         dsimp
         ext
-        · simp only [WidePullback.lift_π, Category.assoc, ← X.left.map_comp_assoc]
+        · simp only [widePullback.lift_π, Category.assoc, ← X.left.map_comp_assoc]
           rfl
         · simp }
   right := G.right
@@ -158,7 +155,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
   right_inv := by
     intro A
     ext x : 2
-    · refine WidePullback.hom_ext _ _ _ (fun j => ?_) ?_
+    · refine widePullback.hom_ext _ _ _ (fun j => ?_) ?_
       · simp
       · simpa using congr_app A.w.symm x
     · simp
@@ -194,9 +191,9 @@ set_option backward.isDefEq.respectTransparency false in
 def cechConerve : CosimplicialObject C where
   obj n := widePushout f.left (fun _ : Fin (n.len + 1) => f.right) fun _ => f.hom
   map {x y} g := by
-    refine WidePushout.desc (WidePushout.head _)
-      (fun i => (@WidePushout.ι _ _ _ _ _ (fun _ => f.hom) (_) (g.toOrderHom i))) (fun j => ?_)
-    rw [← WidePushout.arrow_ι]
+    refine widePushout.desc (widePushout.head _)
+      (fun i => (@widePushout.ι _ _ _ _ _ (fun _ => f.hom) (_) (g.toOrderHom i))) (fun j => ?_)
+    rw [← widePushout.arrow_ι]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -206,9 +203,9 @@ def mapCechConerve {f g : Arrow C}
     [∀ n : ℕ, HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fun _ => f.hom]
     [∀ n : ℕ, HasWidePushout g.left (fun _ : Fin (n + 1) => g.right) fun _ => g.hom] (F : f ⟶ g) :
     f.cechConerve ⟶ g.cechConerve where
-  app n := WidePushout.desc (F.left ≫ WidePushout.head _)
-    (fun i => F.right ≫ (by apply WidePushout.ι _ i))
-    (fun i => (by rw [← Arrow.w_assoc F, ← WidePushout.arrow_ι]))
+  app n := widePushout.desc (F.left ≫ widePushout.head _)
+    (fun i => F.right ≫ (by apply widePushout.ι _ i))
+    (fun i => (by rw [← Arrow.w_assoc F, ← widePushout.arrow_ι]))
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -218,7 +215,7 @@ def augmentedCechConerve : CosimplicialObject.Augmented C where
   left := f.left
   right := f.cechConerve
   hom :=
-    { app := fun _ => (WidePushout.head _ : f.left ⟶ _) }
+    { app := fun _ => (widePushout.head _ : f.left ⟶ _) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism between augmented Čech conerves associated to a morphism of arrows. -/
@@ -261,9 +258,9 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 def equivalenceLeftToRight (F : Arrow C) (X : CosimplicialObject.Augmented C)
     (G : F.augmentedCechConerve ⟶ X) : F ⟶ Augmented.toArrow.obj X :=
-  Arrow.homMk G.left (WidePushout.ι _ 0 ≫ G.right.app ⦋0⦌ :) (by
+  Arrow.homMk G.left (widePushout.ι _ 0 ≫ G.right.app ⦋0⦌ :) (by
     dsimp
-    rw [WidePushout.arrow_ι_assoc (fun (_ : Fin 1) => F.hom)]
+    rw [widePushout.arrow_ι_assoc (fun (_ : Fin 1) => F.hom)]
     exact congr_app G.w ⦋0⦌)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -275,7 +272,7 @@ def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
   left := G.left
   right :=
     { app := fun x =>
-        Limits.WidePushout.desc (G.left ≫ X.hom.app _)
+        Limits.widePushout.desc (G.left ≫ X.hom.app _)
           (fun i => G.right ≫ X.right.map (SimplexCategory.const _ x i))
           (by
             rintro j
@@ -288,7 +285,7 @@ def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
         intro x y f
         dsimp
         ext
-        · simp only [WidePushout.ι_desc_assoc, WidePushout.ι_desc]
+        · simp only [widePushout.ι_desc_assoc, widePushout.ι_desc]
           rw [Category.assoc, ← X.right.map_comp]
           rfl
         · simp [← NatTrans.naturality] }
@@ -305,7 +302,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
     intro A
     ext x : 2
     · rfl
-    · refine WidePushout.hom_ext _ _ _ (fun j => ?_) ?_
+    · refine widePushout.hom_ext _ _ _ (fun j => ?_) ?_
       · dsimp
         simp only [Category.assoc, ← NatTrans.naturality A.right, Arrow.augmentedCechConerve_right,
           SimplexCategory.len_mk, Arrow.cechConerve_map, colimit.ι_desc,
@@ -319,7 +316,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
     ext
     · rfl
     · dsimp
-      rw [WidePushout.ι_desc]
+      rw [widePushout.ι_desc]
       nth_rw 2 [← Category.comp_id A.right]
       congr 1
       convert! X.right.map_id _
@@ -401,12 +398,12 @@ def wideCospan.limitIsoPi [Finite ι] (X : C) :
 
 @[reassoc (attr := simp)]
 lemma wideCospan.limitIsoPi_inv_comp_pi [Finite ι] (X : C) (j : ι) :
-    (wideCospan.limitIsoPi ι X).inv ≫ WidePullback.π _ j = Pi.π _ j :=
+    (wideCospan.limitIsoPi ι X).inv ≫ widePullback.π _ j = Pi.π _ j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ _
 
 @[reassoc (attr := simp)]
 lemma wideCospan.limitIsoPi_hom_comp_pi [Finite ι] (X : C) (j : ι) :
-    (wideCospan.limitIsoPi ι X).hom ≫ Pi.π _ j = WidePullback.π _ j := by
+    (wideCospan.limitIsoPi ι X).hom ≫ Pi.π _ j = widePullback.π _ j := by
   rw [← wideCospan.limitIsoPi_inv_comp_pi, Iso.hom_inv_id_assoc]
 
 set_option backward.isDefEq.respectTransparency false in
