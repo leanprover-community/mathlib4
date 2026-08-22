@@ -683,7 +683,7 @@ lemma exp_le_two_add_div_two_sub {x : ℝ} (hx : 0 ≤ x) (hx' : x < 2) :
 
 theorem prod_one_add_le_exp_sum {ι : Type*} (s : Finset ι) {f : ι → ℝ}
     (hf : ∀ i, 0 ≤ f i) : ∏ i ∈ s, (1 + f i) ≤ exp (∑ i ∈ s, f i) :=
-  (Finset.prod_le_prod (fun i _ ↦ add_nonneg zero_le_one (hf i))
+  (Finset.prod_le_prod₀ (fun i _ ↦ add_nonneg zero_le_one (hf i))
     fun i _ ↦ (add_comm 1 (f i)).le.trans (add_one_le_exp _)).trans
     (exp_sum s f).symm.le
 
