@@ -845,7 +845,6 @@ theorem one_add_pow_mul_norm_fourier_le {f : ℝ → E} {n : ℕ} (hf : ContDiff
     _ = (2 * π * |u|) ^ n * ‖𝓕 f u‖ := by rw [mul_pow]; ring
     _ = ‖𝓕 (iteratedDeriv n f) u‖ := by
       rw [fourier_iteratedDeriv hf (fun k hk ↦ h'f k (mod_cast hk)) le_rfl, norm_smul, norm_pow]
-      congr 2
       simp [abs_of_nonneg pi_nonneg]
     _ ≤ _ := norm_fourier_le_integral_norm _ u
 
