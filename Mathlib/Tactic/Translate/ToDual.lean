@@ -201,6 +201,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("coframe", ["Frame"]),
   ("epigraph", ["Hypograph"]),
   ("hypograph", ["Epigraph"]),
+  ("atomic", ["Coatomic"]),
+  ("coatomic", ["Atomic"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
