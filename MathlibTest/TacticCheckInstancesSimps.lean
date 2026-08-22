@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Simps
 
 set_option linter.tacticCheckInstances true
 
