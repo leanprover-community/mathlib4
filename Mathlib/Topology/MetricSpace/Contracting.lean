@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
+Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov, Yi Yuan
 -/
 module
 
@@ -9,6 +9,7 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Dynamics.FixedPoints.Topology
 public import Mathlib.Topology.MetricSpace.Lipschitz
+public import Mathlib.Topology.Semicontinuity.Basic
 
 /-!
 # Contracting maps
@@ -17,6 +18,8 @@ A Lipschitz continuous self-map with Lipschitz constant `K < 1` is called a *con
 In this file we prove the Banach fixed point theorem, some explicit estimates on the rate
 of convergence, and some properties of the map sending a contracting map to its fixed point.
 
+We also prove Caristi's fixed-point theorem for maps on nonempty complete metric spaces.
+
 ## Main definitions
 
 * `ContractingWith K f` : a Lipschitz continuous self-map with `K < 1`;
@@ -24,10 +27,11 @@ of convergence, and some properties of the map sending a contracting map to its 
   such that `edist x (f x) ≠ ∞`, `efixedPoint f hf x hx` is the unique fixed point of `f`
   in `Metric.eball x ∞`;
 * `fixedPoint` : the unique fixed point of a contracting map on a complete nonempty metric space.
+* `caristi_fixed_point`: Caristi's fixed-point theorem.
 
 ## Tags
 
-contracting map, fixed point, Banach fixed point theorem
+contracting map, fixed point, Banach fixed point theorem, Caristi fixed point theorem
 -/
 
 @[expose] public section
@@ -231,6 +235,77 @@ theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} 
   · apply edist_efixedPoint_lt_top'
 
 end ContractingWith
+
+lemma caristi_set_trans {X : Type*} [MetricSpace X] {φ : X → ℝ} {x y z : X}
+    (hxy : y ∈ {w | dist x w ≤ φ x - φ w}) (hyz : z ∈ {w | dist y w ≤ φ y - φ w}) :
+    z ∈ {w | dist x w ≤ φ x - φ w} := calc
+  _ ≤ dist x y + dist y z := dist_triangle _ _ _
+  _ ≤ (φ x - φ y) + (φ y - φ z) := add_le_add hxy hyz
+  _ = _ := by ring
+
+lemma isClosed_caristi_set {X : Type*} [MetricSpace X] {φ : X → ℝ}
+    (hφ : LowerSemicontinuous φ) (x : X) : IsClosed {y | dist x y ≤ φ x - φ y} := by
+  have h : LowerSemicontinuous (fun y ↦ dist x y + φ y) :=
+    (continuous_const.dist continuous_id).lowerSemicontinuous.add hφ
+  convert h.isClosed_preimage (φ x) using 1
+  ext y
+  simp [le_sub_iff_add_le]
+
+lemma exists_caristi_set_approx {X : Type*} [MetricSpace X] {φ : X → ℝ}
+    (hφ_bdd : BddBelow (Set.range φ)) (x : X) {e : ℝ} (he : 0 < e) :
+    ∃ y ∈ {w | dist x w ≤ φ x - φ w}, ∀ z ∈ {w | dist x w ≤ φ x - φ w}, φ y < φ z + e := by
+  obtain ⟨_, ⟨y, hy, rfl⟩, h⟩ := exists_lt_of_csInf_lt
+    (show (φ '' {w | dist x w ≤ φ x - φ w}).Nonempty from ⟨φ x, x, by simp, rfl⟩)
+    (lt_add_of_pos_right (sInf (φ '' {w | dist x w ≤ φ x - φ w})) he)
+  refine ⟨y, hy, fun z hz ↦ h.trans_le ?_⟩
+  simpa [add_comm] using add_le_add_right
+    (csInf_le (hφ_bdd.mono (Set.image_subset_range φ _)) ⟨z, hz, rfl⟩) e
+
+lemma existsUnique_iInter_of_antitone_of_diam_tendsto_zero {X : Type*}
+    [MetricSpace X] [CompleteSpace X] {T : ℕ → Set X} (hanti : Antitone T)
+    (hclosed : ∀ n, IsClosed (T n)) (hbounded : ∀ n, Bornology.IsBounded (T n))
+    (hne : ∀ n, (T n).Nonempty)
+    (hdiam : Filter.Tendsto (fun n ↦ Metric.diam (T n)) Filter.atTop (nhds 0)) :
+    ∃! x, x ∈ ⋂ n, T n := by
+  have hfin (N : ℕ) : (⋂ n ≤ N, T n).Nonempty :=
+    ⟨(hne N).choose, Set.mem_iInter.2 fun _ ↦ Set.mem_iInter.2 fun hn ↦
+      hanti hn (hne N).choose_spec⟩
+  obtain ⟨x, hx⟩ := Metric.nonempty_iInter_of_nonempty_biInter hclosed hbounded hfin hdiam
+  refine ⟨x, hx, fun y hy ↦ dist_eq_zero.mp (le_antisymm ?_ dist_nonneg)⟩
+  exact ge_of_tendsto' hdiam fun n ↦ Metric.dist_le_diam_of_mem (hbounded n)
+    (Set.mem_iInter.1 hy n) (Set.mem_iInter.1 hx n)
+
+/-- Caristi's fixed-point theorem. -/
+theorem caristi_fixed_point {X : Type*} [MetricSpace X] [CompleteSpace X] [Nonempty X]
+    (f : X → X) (φ : X → ℝ) (hφ : LowerSemicontinuous φ)
+    (hφ_bdd : BddBelow (Set.range φ))
+    (hf : ∀ x, dist x (f x) ≤ φ x - φ (f x)) : ∃ x, f x = x := by
+  have he (n : ℕ) : 0 < (1 / 2 : ℝ) ^ n := pow_pos (by norm_num) n
+  set x : ℕ → X := fun n ↦ Nat.rec (Classical.choice inferInstance)
+    (fun n y ↦ (exists_caristi_set_approx hφ_bdd y (he n)).choose) n
+  have hstep (n : ℕ) : x (n + 1) ∈ {y | dist (x n) y ≤ φ (x n) - φ y} := by
+    simpa [x] using (exists_caristi_set_approx hφ_bdd (x n) (he n)).choose_spec.1
+  have hball (n : ℕ) : {y | dist (x (n + 1)) y ≤ φ (x (n + 1)) - φ y} ⊆
+      Metric.closedBall (x (n + 1)) ((1 / 2 : ℝ) ^ n) := by
+    intro y hy
+    rw [Metric.mem_closedBall, dist_comm]
+    have happ : φ (x (n + 1)) < φ y + (1 / 2 : ℝ) ^ n := by
+      simpa [x] using (exists_caristi_set_approx hφ_bdd _ (he n)).choose_spec.2 y
+        (caristi_set_trans (hstep n) hy)
+    exact hy.trans <| by linarith
+  obtain ⟨x₀, hx₀, huniq⟩ := by
+    have hanti : Antitone (fun n ↦ {y | dist (x (n + 1)) y ≤ φ (x (n + 1)) - φ y}) :=
+      antitone_nat_of_succ_le fun n _ h ↦ caristi_set_trans (hstep (n + 1)) h
+    have he0 : Filter.Tendsto (fun n : ℕ ↦ (1 / 2 : ℝ) ^ n) Filter.atTop (nhds 0) :=
+      tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num) (by norm_num)
+    apply existsUnique_iInter_of_antitone_of_diam_tendsto_zero hanti
+      (fun n ↦ isClosed_caristi_set hφ (x (n + 1))) ?_ (fun n ↦ ⟨x (n + 1), by simp⟩) ?_
+    · exact fun n ↦ (Metric.isBounded_iff_subset_closedBall _).2 ⟨(1 / 2 : ℝ) ^ n, hball n⟩
+    · apply squeeze_zero (fun _ ↦ Metric.diam_nonneg)
+        (fun n ↦ Metric.diam_le_of_subset_closedBall (he n).le (hball n))
+      simpa using tendsto_const_nhds.mul he0
+  refine ⟨x₀, huniq (f x₀) ?_⟩
+  exact Set.mem_iInter.2 fun n ↦ caristi_set_trans (Set.mem_iInter.1 hx₀ n) (hf x₀)
 
 namespace ContractingWith
 
