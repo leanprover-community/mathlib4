@@ -28,7 +28,9 @@ https://math.stackexchange.com/questions/55738/how-to-prove-eulers-pentagonal-th
 -/
 
 namespace Pentagonal
-open Filter Topology
+open Filter
+
+open scoped Topology
 variable {R : Type*} [CommRing R]
 
 /--
