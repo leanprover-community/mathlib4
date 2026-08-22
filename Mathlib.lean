@@ -1215,6 +1215,7 @@ public import Mathlib.Algebra.Prime.Lemmas
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.QuadraticAlgebra.Discr
+public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
 public import Mathlib.Algebra.QuadraticAlgebra.NormDeterminant
 public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Algebra.Quandle
@@ -4710,6 +4711,7 @@ public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.GroupLieAlgebra
 public import Mathlib.Geometry.Manifold.HasGroupoid
 public import Mathlib.Geometry.Manifold.Immersion
+public import Mathlib.Geometry.Manifold.ImmersionDiff
 public import Mathlib.Geometry.Manifold.Instances.Icc
 public import Mathlib.Geometry.Manifold.Instances.Quotient
 public import Mathlib.Geometry.Manifold.Instances.Real
@@ -4749,6 +4751,7 @@ public import Mathlib.Geometry.Manifold.Submersion
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.LeviCivita
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear

@@ -47,8 +47,9 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 @[expose] public section
 
-open Affine Module Set
-open scoped Pointwise
+open Module Set
+
+open scoped Affine Pointwise
 
 section Coordinates
 
