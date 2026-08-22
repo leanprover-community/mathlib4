@@ -164,9 +164,8 @@ lemma comp_isLocalDiffeomorphAt_right_iff (hf : ContinuousAt f x)
 /-- If `mfderiv I J f x` is injective and `N` is finite-dimensional, then `f` is an immersion
 (in the sense of differentials) at `x`. -/
 lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E']
-    (hf' : Injective (mfderiv% f x)) : IsDiffImmersionAt I I' f x := by
-  have : FiniteDimensional 𝕜 (TangentSpace I' (f x)) := inferInstanceAs (FiniteDimensional 𝕜 E')
-  exact ContinuousLinearMap.HasLeftInverse.of_injective_of_finiteDimensional hf'
+    (hf' : Injective (mfderiv% f x)) : IsDiffImmersionAt I I' f x :=
+  ContinuousLinearMap.HasLeftInverse.of_injective_of_finiteDimensional hf'
 
 end IsDiffImmersionAt
 
