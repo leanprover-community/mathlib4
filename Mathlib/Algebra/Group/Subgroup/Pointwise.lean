@@ -570,5 +570,15 @@ lemma conjAct_pointwise_smul_eq_self {H : Subgroup G} {g : G} (hg : g ∈ normal
     ConjAct.toConjAct g • H = H :=
   conjAct_pointwise_smul_iff.2 hg
 
+/-- Conjugating the underlying set of a subgroup `H` by an element `g`, expressed as the product
+of singletons `{g} * H * {g⁻¹}`, is the underlying set of the pointwise conjugate
+`ConjAct.toConjAct g • H`. -/
+theorem singleton_mul_subgroup_mul_singleton_inv (g : G) (H : Subgroup G) :
+    ({g} : Set G) * H * {g⁻¹} = (ConjAct.toConjAct g • H : Subgroup G) := by
+  ext h
+  rw [coe_pointwise_smul, Set.mem_smul_set]
+  simp_rw [ConjAct.toConjAct_smul]
+  aesop
+
 end Group
 end Subgroup
