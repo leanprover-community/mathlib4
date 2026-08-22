@@ -286,4 +286,23 @@ theorem nhds_basis_closed_balanced [RegularSpace E] :
   refine ⟨balancedCore 𝕜 s, ⟨balancedCore_mem_nhds_zero hs.1, ?_⟩, balancedCore_subset s⟩
   exact ⟨hs.2.balancedCore, balancedCore_balanced s⟩
 
+variable [IsTopologicalAddGroup E] [FirstCountableTopology E]
+
+theorem exists_nhds_hasAntitoneBasis_balanced_open_add_closure_subset :
+    ∃ x : ℕ → Set E, (𝓝 (0 : E)).HasAntitoneBasis x ∧
+      ∀ n, IsOpen (x n) ∧ Balanced 𝕜 (x n) ∧ x (n + 1) + x (n + 1) ⊆ x n ∧
+        closure (x (n + 1)) ⊆ x n := by
+  obtain ⟨u, hu, hu_basis⟩ := (nhds_basis_opens (0 : E)).exists_antitone_subbasis
+  have hv_basis : (𝓝 0).HasAntitoneBasis (fun n ↦ balancedHull 𝕜 (u n)) := by
+    refine ⟨hu_basis.to_hasBasis ?_ ?_, fun _ _ hmn ↦ balancedHull_mono (hu_basis.antitone hmn)⟩
+    · intro i _
+      obtain ⟨W, hW⟩ := (nhds_basis_balanced 𝕜 E).mem_iff.mp ((hu i).2.mem_nhds (hu i).1)
+      obtain ⟨m, hm⟩ := hu_basis.mem_iff.mp hW.1.1
+      grind [hW.1.2.balancedHull_subset_of_subset hm]
+    · intro n _
+      obtain ⟨m, hm⟩ := hu_basis.mem_iff.mp ((hu n).2.mem_nhds (hu n).1)
+      grind [subset_balancedHull]
+  obtain ⟨φ, hφ_basis, hφ⟩ := hv_basis.exists_subbasis_add_closure_subset
+  exact ⟨_, hφ_basis, fun n ↦ by grind [balancedHull.balanced, IsOpen.balancedHull]⟩
+
 end Topology

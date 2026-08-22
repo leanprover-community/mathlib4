@@ -371,6 +371,23 @@ theorem IsClosed.iInter_closure_mul_left_eq {ι : Type*} {s : Set G} (hs : IsClo
     ⋂ (i) (_ : p i), closure (U i * s) = s := by
   rw [hU.iInter_closure_mul_left_eq_closure, hs.closure_eq]
 
+@[to_additive]
+theorem Filter.HasAntitoneBasis.exists_subbasis_mul_closure_subset {v : ℕ → Set G}
+    (hv : (𝓝 (1 : G)).HasAntitoneBasis v) :
+    ∃ φ : ℕ → ℕ, (𝓝 (1 : G)).HasAntitoneBasis (v ∘ φ) ∧
+      ∀ n, (v ∘ φ) (n + 1) * (v ∘ φ) (n + 1) ⊆ (v ∘ φ) n ∧
+        closure ((v ∘ φ) (n + 1)) ⊆ (v ∘ φ) n := by
+  obtain ⟨φ, -, hφ_mul, hφ_basis⟩ := hv.subbasis_with_rel
+    (r := fun i j ↦ v j * v j ⊆ v i) fun m ↦ by
+      obtain ⟨W, hW_open, hW_one, hW_mul⟩ :=
+        exists_open_nhds_one_mul_subset (hv.mem_of_mem (i := m) trivial)
+      obtain ⟨N, hN⟩ := hv.mem_iff.mp (hW_open.mem_nhds hW_one)
+      filter_upwards [Filter.eventually_ge_atTop N] with M hM
+      exact (mul_subset_mul ((hv.antitone hM).trans hN) ((hv.antitone hM).trans hN)).trans hW_mul
+  exact ⟨φ, hφ_basis, fun n ↦ ⟨hφ_mul n.lt_succ_self,
+    (closure_subset_mul_self_of_mem_nhds_one (hφ_basis.mem_of_mem (i := n + 1) trivial)).trans
+      (hφ_mul n.lt_succ_self)⟩⟩
+
 end IsTopologicalGroup
 
 section FilterMul
