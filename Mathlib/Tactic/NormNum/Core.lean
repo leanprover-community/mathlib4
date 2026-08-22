@@ -251,7 +251,7 @@ open Lean Elab Command in
 elab_rules : command
   | `($[$doc?:docComment]? norm_num_simproc [$attrs,*] $name:ident ($pat:term) $val:declVal) => do
     let procName := mkIdentFrom name (name.getId ++ `simproc)
-    elabCommand (← `($[$doc?:docComment]? @[norm_num $pat] def $name : NormNumExt $val:declVal))
+    elabCommand (← `($[$doc?:docComment]?@[norm_num $pat] def $name : NormNumExt $val:declVal))
     elabCommand (← `(def $procName : Simp.Simproc := NormNumExt.toSimproc $name))
     elabCommand (← `(simproc_pattern% $pat => $procName))
     elabCommand (← `(attribute [$attrs,*] $procName))
