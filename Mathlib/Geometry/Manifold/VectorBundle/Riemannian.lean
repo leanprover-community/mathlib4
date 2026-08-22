@@ -42,8 +42,9 @@ variable
 
 @[expose] public section
 
-open Manifold Bundle ContinuousLinearMap ENat Bornology
-open scoped ContDiff Topology
+open Bundle ContinuousLinearMap ENat Bornology
+
+open scoped Manifold ContDiff Topology
 
 section
 
