@@ -218,7 +218,7 @@ theorem IsPartition.sUnion_eq_univ {c : Set (Set α)} (hc : IsPartition c) : ⋃
     Set.mem_sUnion.2 <|
       let ⟨t, ht⟩ := hc.2 x
       ⟨t, by
-        simp only at ht
+        beta_reduce at ht
         tauto⟩
 
 /-- All elements of a partition of α are the equivalence class of some y ∈ α. -/

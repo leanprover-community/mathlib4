@@ -57,7 +57,7 @@ lemma coprime_factorizationLCMLeft_factorizationLCMRight :
     (factorizationLCMLeft a b).Coprime (factorizationLCMRight a b) := by
   rw [factorizationLCMLeft, factorizationLCMRight]
   refine coprime_prod_left_iff.mpr fun p hp ↦ coprime_prod_right_iff.mpr fun q hq ↦ ?_
-  dsimp only; split_ifs with h h'
+  beta_reduce; split_ifs with h h'
   any_goals simp only [coprime_one_right_eq_true, coprime_one_left_eq_true]
   refine coprime_pow_primes _ _ (prime_of_mem_primeFactors hp) (prime_of_mem_primeFactors hq) ?_
   contrapose h'; rwa [← h']
@@ -79,7 +79,7 @@ lemma factorizationLCMLeft_dvd_left : factorizationLCMLeft a b ∣ a := by
   · simp [factorizationLCMLeft]
   nth_rewrite 2 [← prod_factorization_pow_eq_self ha]
   rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
-  · apply prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le
+  · apply prod_dvd_prod_of_dvd; rintro p -; beta_reduce; split_ifs with le
     · rw [factorization_lcm ha hb]; apply pow_dvd_pow; exact sup_le le_rfl le
     · apply one_dvd
   · intro p hp; rw [mem_support_iff] at hp ⊢
@@ -93,7 +93,7 @@ lemma factorizationLCMRight_dvd_right : factorizationLCMRight a b ∣ b := by
   · simp only [dvd_zero]
   nth_rewrite 2 [← prod_factorization_pow_eq_self hb]
   rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
-  · apply Finset.prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le
+  · apply Finset.prod_dvd_prod_of_dvd; rintro p -; beta_reduce; split_ifs with le
     · apply one_dvd
     · rw [factorization_lcm ha hb]; apply pow_dvd_pow; exact sup_le (not_le.1 le).le le_rfl
   · intro p hp; rw [mem_support_iff] at hp ⊢

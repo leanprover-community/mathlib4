@@ -250,7 +250,7 @@ theorem le_gauge_of_notMem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {
   refine ⟨(a⁻¹ * b) • x, hs₀ hx' (by positivity) ?_, ?_⟩
   · rw [← div_eq_inv_mul]
     exact div_le_one_of_le₀ hba.le ha.le
-  · dsimp only
+  · beta_reduce
     rw [← mul_smul, mul_inv_cancel_left₀ ha.ne']
 
 theorem one_le_gauge_of_notMem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ s) :

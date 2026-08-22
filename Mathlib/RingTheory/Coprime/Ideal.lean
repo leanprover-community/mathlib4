@@ -103,7 +103,7 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
       rcases Finset.mem_cons.mp hj with (rfl | hj)
       · exact mul_mem_right _ _ hu
       · exact mul_mem_left _ _ (this _ hj ij)
-    · dsimp only
+    · beta_reduce
       rw [Finset.sum_cons, dite_eq_left rfl, add_comm]
       rw [← mul_one u] at huv
       rw [← huv, ← hμ, Finset.mul_sum]

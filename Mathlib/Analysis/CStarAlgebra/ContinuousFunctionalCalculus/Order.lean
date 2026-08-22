@@ -635,7 +635,7 @@ lemma pow_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) : 0 ≤ a ^ n :=
 lemma pow_monotone {a : A} (ha : 1 ≤ a) : Monotone (a ^ · : ℕ → A) := by
   have ha' : 0 ≤ a := zero_le_one.trans ha
   intro n m hnm
-  simp only
+  beta_reduce
   rw [← cfc_pow_id (R := ℝ) a, ← cfc_pow_id (R := ℝ) a, cfc_le_iff ..]
   rw [CFC.one_le_iff (R := ℝ) a] at ha
   peel ha with x hx _
@@ -644,7 +644,7 @@ lemma pow_monotone {a : A} (ha : 1 ≤ a) : Monotone (a ^ · : ℕ → A) := by
 lemma pow_antitone {a : A} (ha₁ : a ≤ 1) (ha₀ : 0 ≤ a := by cfc_tac) :
     Antitone (a ^ · : ℕ → A) := by
   intro n m hnm
-  simp only
+  beta_reduce
   rw [← cfc_pow_id (R := ℝ) a, ← cfc_pow_id (R := ℝ) a, cfc_le_iff ..]
   rw [CFC.le_one_iff (R := ℝ) a] at ha₁
   peel ha₁ with x hx _

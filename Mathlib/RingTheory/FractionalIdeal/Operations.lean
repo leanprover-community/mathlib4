@@ -589,7 +589,7 @@ variable (P) in
 theorem den_mul_self_eq_num' (I : FractionalIdeal S P) :
     spanSingleton S (algebraMap R P I.den) * I = I.num := by
   apply coeToSubmodule_injective
-  dsimp only
+  beta_reduce
   rw [coe_mul, ← smul_eq_mul, coe_spanSingleton, smul_eq_mul, Submodule.span_singleton_mul]
   convert! I.den_mul_self_eq_num using 1
   ext

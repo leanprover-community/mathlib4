@@ -187,7 +187,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
           ?_,
         ?_⟩
     · intro i j h
-      dsimp only
+      beta_reduce
       split_ifs with hi hj hj
       · rwa [Fin.val_fin_lt, f.lt_iff_lt]
       · lia

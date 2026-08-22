@@ -110,7 +110,7 @@ instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Mul A] [UniqueProds A] :
     simp only [ne_eq, ← coeff_eq_zero, ← support_nonempty_iff] at hf
     obtain ⟨af, haf, ag, hag, uniq⟩ := UniqueProds.uniqueMul_of_nonempty hf h
     have h := coeff_mul_mul_of_uniqueMul (uniq.mono subset_rfl Finset.subset_union_left)
-    dsimp only at eq
+    beta_reduce at eq
     rw [eq, coeff_mul_mul_of_uniqueMul (uniq.mono subset_rfl Finset.subset_union_right)] at h
     have := mul_left_cancel₀ (mem_support_iff.mp haf) h
     rw [← g₁.erase_add_single ag, ← g₂.erase_add_single ag, this] at eq ⊢

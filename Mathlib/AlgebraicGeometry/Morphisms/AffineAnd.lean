@@ -66,11 +66,11 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
     (hQs : RingHom.OfLocalizationSpan Q) : (affineAnd Q).IsLocal where
   respectsIso := affineAnd_respectsIso hPi
   to_basicOpen {X Y _} f r := fun ⟨hX, hf⟩ ↦ by
-    simp only at hf
+    beta_reduce at hf
     constructor
     · simp only [Scheme.preimage_basicOpen, Opens.map_top]
       exact (isAffineOpen_top X).basicOpen _
-    · dsimp only
+    · beta_reduce
       rw [morphismRestrict_appTop, CommRingCat.hom_comp, hPi.cancel_right_isIso]
       -- Not sure why the `show` fixes the following `rw` complaining about "motive is incorrect"
       change Q (Scheme.Hom.app f ((Y.basicOpen r).ι ''ᵁ ⊤)).hom

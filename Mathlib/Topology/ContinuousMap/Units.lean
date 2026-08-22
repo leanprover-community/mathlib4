@@ -71,7 +71,7 @@ theorem continuous_isUnit_unit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) :
       (Continuous.prodMk f.continuous
         (MulOpposite.continuous_op.comp (continuous_iff_continuousAt.mpr fun x => ?_)))
   have := NormedRing.inverse_continuousAt (h x).unit
-  simp only
+  beta_reduce
   simp only [← Ring.inverse_unit, IsUnit.unit_spec] at this ⊢
   exact this.comp (f.continuousAt x)
 
