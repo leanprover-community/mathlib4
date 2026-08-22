@@ -295,6 +295,41 @@ theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} {n : ℕ} (f : G →
     (h : G'.Colorable n) : G.Colorable n :=
   ⟨h.some.comap f⟩
 
+/-- If deleting a vertex `v` leaves an `n`-colorable graph and `v` has fewer than `n` neighbors,
+then `G` itself is `n`-colorable: color `G` with `v` removed, then give `v` one of the colors that
+does not appear on any neighbor of `v`. -/
+theorem Colorable.of_induce_compl_singleton {v : V} [Fintype (G.neighborSet v)]
+    (h : (G.induce {v}ᶜ).Colorable n) (hv : G.degree v < n) : G.Colorable n := by
+  classical
+  obtain ⟨C⟩ := h
+  have : NeZero n := ⟨by lia⟩
+  -- Extend `C` to all of `V`; the color it assigns to `v` itself is irrelevant.
+  let f (u) := if hu : u = v then ⟨0, by lia⟩ else C ⟨u, Set.mem_compl_singleton_iff.2 hu⟩
+  have hf (u) (hu : u ≠ v) : f u = C ⟨u, Set.mem_compl_singleton_iff.2 hu⟩ := dif_neg hu
+  -- As `v` has fewer than `n` neighbors, some color `a` is unused on them.
+  obtain ⟨a, ha⟩ : (((G.neighborFinset v).image f)ᶜ).Nonempty := by
+    have hlt : ((G.neighborFinset v).image f).card < n := by
+      apply Finset.card_image_le.trans_lt
+      rwa [card_neighborFinset_eq_degree]
+    rw [← Finset.card_pos, Finset.card_compl, Fintype.card_fin]
+    lia
+  rw [Finset.mem_compl] at ha
+  have key {q} (hq : G.Adj v q) : Function.update f v a v ≠ Function.update f v a q := by
+    rw [Function.update_self, Function.update_of_ne (G.ne_of_adj hq).symm]
+    refine fun hc ↦ ha ?_
+    rw [hc]
+    exact Finset.mem_image_of_mem f ((G.mem_neighborFinset v q).2 hq)
+  have hvalid {x y} (hxy : G.Adj x y) : Function.update f v a x ≠ Function.update f v a y := by
+    rcases eq_or_ne x v with hx | hx
+    · rw [hx] at hxy ⊢
+      exact key hxy
+    rcases eq_or_ne y v with hy | hy
+    · rw [hy] at hxy ⊢
+      exact (key hxy.symm).symm
+    rw [Function.update_of_ne hx, Function.update_of_ne hy, hf x hx, hf y hy]
+    exact C.valid hxy
+  exact ⟨Coloring.mk (Function.update f v a) hvalid⟩
+
 theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     G.Colorable n ↔ ∃ C : G.Coloring ℕ, ∀ v, C v < n := by
   constructor
