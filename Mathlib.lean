@@ -3623,6 +3623,7 @@ public import Mathlib.Combinatorics.Quiver.Path
 public import Mathlib.Combinatorics.Quiver.Path.Cycle
 public import Mathlib.Combinatorics.Quiver.Path.Decomposition
 public import Mathlib.Combinatorics.Quiver.Path.Replicate
+public import Mathlib.Combinatorics.Quiver.Path.Simple
 public import Mathlib.Combinatorics.Quiver.Path.Vertices
 public import Mathlib.Combinatorics.Quiver.Path.Weight
 public import Mathlib.Combinatorics.Quiver.Prefunctor
