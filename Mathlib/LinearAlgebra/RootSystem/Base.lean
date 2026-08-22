@@ -56,6 +56,10 @@ open FaithfulSMul (algebraMap_injective)
 open Module
 open End (invtSubmodule mem_invtSubmodule)
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 namespace RootPairing

@@ -24,6 +24,10 @@ open Function
 open Fintype (card)
 open scoped BigOperators Pointwise NNRat
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+
 variable {ι α R : Type*}
 
 local notation a " /ℚ " q => (q : ℚ≥0)⁻¹ • a

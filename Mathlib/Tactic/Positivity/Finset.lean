@@ -23,6 +23,10 @@ namespace Mathlib.Meta.Positivity
 
 open Qq Lean Meta Finset
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+
 /-- Extension for `Finset.card`. `#s` is positive if `s` is nonempty.
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/

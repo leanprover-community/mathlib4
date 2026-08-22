@@ -54,6 +54,10 @@ variable {α : Type*}
 variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
   {s t : Set α} (hs : s.IsPWO) (ht : t.IsPWO) (a : α)
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsRightCancelMul.mulRightStrictMono_of_mulRightMono
+
 /-- `Finset.mulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` that multiply to `a`, but its construction requires proofs that `s` and `t` are
 well-ordered. -/

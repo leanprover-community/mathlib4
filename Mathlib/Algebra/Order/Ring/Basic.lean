@@ -22,6 +22,10 @@ open Function
 
 variable {α M R : Type*}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 theorem IsSquare.nonneg [Semiring R] [LinearOrder R]
     [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     {x : R} (h : IsSquare x) : 0 ≤ x := by

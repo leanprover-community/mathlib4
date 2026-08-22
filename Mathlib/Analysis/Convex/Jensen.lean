@@ -39,6 +39,11 @@ open Finset Set Convex
 
 variable {𝕜 E β ι : Type*}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 /-! ### Jensen's inequality -/
 
 

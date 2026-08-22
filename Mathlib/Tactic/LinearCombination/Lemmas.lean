@@ -26,6 +26,11 @@ namespace Mathlib.Tactic.LinearCombination
 variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}
 variable {K : Type*} {t s : K}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 /-! ### Addition -/
 
 theorem add_eq_eq [Add α] (p₁ : (a₁ : α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl

@@ -19,6 +19,12 @@ public section
 
 variable {α : Type*}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono
+  IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 namespace Set
 
 section OrderedCommGroup

@@ -28,6 +28,11 @@ namespace Set
 variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedCancelAddMonoid M]
   [ExistsAddOfLE M] (a b c d : M)
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsRightCancelAdd.addRightStrictMono_of_addRightMono
+  IsRightCancelAdd.addRightReflectLE_of_addRightReflectLT
+
 theorem Ici_add_bij : BijOn (· + d) (Ici a) (Ici (a + d)) := by
   refine ⟨by simp [MapsTo], by simp, fun _ h => ?_⟩
   obtain ⟨c, rfl⟩ := exists_add_of_le (mem_Ici.mp h)

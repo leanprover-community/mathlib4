@@ -32,6 +32,11 @@ variable (R : Type*) {V V' P P' : Type*}
 
 open AffineEquiv AffineMap Module
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 section OrderedRing
 
 /-- The segment of points weakly between `x` and `y`. When convexity is refactored to support

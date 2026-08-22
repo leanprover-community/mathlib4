@@ -47,6 +47,11 @@ universe u v w x
 
 variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono
+  IsRightCancelMul.mulRightStrictMono_of_mulRightMono
+
 /-- In a Hausdorff magma with continuous multiplication, the centralizer of any set is closed. -/
 lemma Set.isClosed_centralizer {M : Type*} (s : Set M) [Mul M] [TopologicalSpace M]
     [SeparatelyContinuousMul M] [T2Space M] : IsClosed (centralizer s) := by

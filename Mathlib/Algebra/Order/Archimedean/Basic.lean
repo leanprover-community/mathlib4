@@ -41,6 +41,11 @@ open Int Set
 
 variable {G M R K : Type*}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 @[to_additive]
 lemma MulArchimedean.comap [CommMonoid G] [LinearOrder G] [CommMonoid M] [PartialOrder M]
     [MulArchimedean M] (f : G →* M) (hf : StrictMono f) :

@@ -43,6 +43,10 @@ open Finset Function Relator
 
 variable {R α β : Type*}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+
 /-! ### Bipartite graph -/
 
 

@@ -48,6 +48,10 @@ namespace MvPowerSeries
 
 open Finsupp
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 variable {σ R : Type*}
 
 section Ring

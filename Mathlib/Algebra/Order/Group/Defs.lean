@@ -32,6 +32,12 @@ universe u
 
 variable {α : Type u}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono
+  IsRightCancelMul.mulRightStrictMono_of_mulRightMono
+  IsLeftCancelMul.mulLeftReflectLE_of_mulLeftReflectLT
+
 alias OrderedCommGroup.le_of_mul_le_mul_left := le_of_mul_le_mul_left'
 
 attribute [to_additive] OrderedCommGroup.le_of_mul_le_mul_left

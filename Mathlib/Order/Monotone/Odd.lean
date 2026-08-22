@@ -25,6 +25,11 @@ open Set
 variable {G H : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
   [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 /-- An odd function on a linear ordered additive commutative group is strictly monotone on the whole
 group provided that it is strictly monotone on `Set.Ici 0`. -/
 theorem strictMono_of_odd_strictMonoOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x) = -f x)

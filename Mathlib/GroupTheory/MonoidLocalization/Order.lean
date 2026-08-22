@@ -26,6 +26,11 @@ section OrderedCancelCommMonoid
 variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α}
   {a₁ b₁ : α} {a₂ b₂ : s}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono
+  IsRightCancelMul.mulRightStrictMono_of_mulRightMono
+
 @[to_additive]
 instance le : LE (Localization s) :=
   ⟨fun a b =>

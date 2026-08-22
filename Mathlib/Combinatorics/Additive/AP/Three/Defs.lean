@@ -203,6 +203,10 @@ section OrderedCancelCommMonoid
 
 variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Set α} {a : α}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono
+
 @[to_additive]
 theorem threeGPFree_insert_of_lt (hs : ∀ i ∈ s, i < a) :
     ThreeGPFree (insert a s) ↔
