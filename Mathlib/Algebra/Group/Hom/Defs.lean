@@ -348,6 +348,18 @@ instance [MulHomClass F M N] : CoeTC F (M →ₙ* N) :=
 @[to_additive (attr := simp)]
 theorem MulHom.coe_coe [MulHomClass F M N] (f : F) : ((f : MulHom M N) : M → N) = f := rfl
 
+-- TODO: update when we have `pnpow`
+@[to_additive pnsmul_map]
+lemma MulHom.map_pnpow {M N : Type*} [Semigroup M] [Monoid N] (f : M →ₙ* N)
+    (a : M) {n : ℕ} (hn : n ≠ 0) : (f a) ^ n = f ((a * ·)^[n - 1] a) := by
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn
+  clear hn
+  simp only [Nat.succ_eq_add_one, Nat.add_one_sub_one, pow_succ']
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    simp only [pow_succ', IH, Function.iterate_succ', Function.comp_apply, map_mul]
+
 end Mul
 
 section mul_one
