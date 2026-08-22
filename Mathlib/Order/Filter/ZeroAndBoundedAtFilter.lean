@@ -132,11 +132,12 @@ def boundedFilterSubalgebra
   Submodule.toSubalgebra
     (boundedFilterSubmodule 𝕜 l)
     (const_boundedAtFilter l (1 : β))
-    (fun f g hf hg ↦ by simpa only [Pi.one_apply, mul_one, norm_mul] using! hf.mul hg)
+    (fun f g (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) ↦ by
+      simpa only [Pi.one_apply, mul_one, norm_mul] using! hf.mul hg)
 
 theorem BoundedAtFilter.prod {ι : Type} (s : Finset ι) [SeminormedCommRing β]
     {l : Filter α} {f : ι → α → β} (h : ∀ i ∈ s, BoundedAtFilter l (f i)) :
     BoundedAtFilter l (∏ i ∈ s, f i) :=
-  (boundedFilterSubalgebra β l).prod_mem (f := f) h
+  (boundedFilterSubalgebra β l).prod_mem (t := s) (f := f) h
 
 end Filter

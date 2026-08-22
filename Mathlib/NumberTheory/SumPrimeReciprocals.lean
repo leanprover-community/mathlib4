@@ -50,13 +50,14 @@ theorem Nat.Primes.tprod_eq_tprod_ite :
 @[to_additive /-- `Summable` over `Nat.Primes` iff over `ℕ` extending `f` by `0`. -/]
 theorem Nat.Primes.multipliable_iff_multipliable_ite :
     Multipliable (fun p : Primes ↦ f p) ↔ Multipliable fun n : ℕ ↦ if n.Prime then f n else 1 := by
-  rw [ite_prime_eq_mulIndicator]; exact multipliable_subtype_iff_mulIndicator
+  rw [ite_prime_eq_mulIndicator]
+  exact multipliable_subtype_iff_mulIndicator (s := {n : ℕ | n.Prime})
 
 /-- `HasProd` over `Nat.Primes` iff over `ℕ` extending `f` by `1`. -/
 @[to_additive /-- `HasSum` over `Nat.Primes` iff over `ℕ` extending `f` by `0`. -/]
 theorem Nat.Primes.hasProd_iff_hasProd_ite {a : M} :
     HasProd (fun p : Primes ↦ f p) a ↔ HasProd (fun n : ℕ ↦ if n.Prime then f n else 1) a := by
-  rw [ite_prime_eq_mulIndicator]; exact hasProd_subtype_iff_mulIndicator
+  rw [ite_prime_eq_mulIndicator]; exact hasProd_subtype_iff_mulIndicator (s := {n : ℕ | n.Prime})
 
 end PrimeSums
 
@@ -100,7 +101,8 @@ theorem not_summable_one_div_on_primes :
   intro h
   obtain ⟨k, hk⟩ := h.nat_tsum_vanishing (Iio_mem_nhds one_half_pos : Iio (1 / 2 : ℝ) ∈ 𝓝 0)
   specialize hk ({p | Nat.Prime p} ∩ {p | k ≤ p}) inter_subset_right
-  rw [tsum_subtype, indicator_indicator, inter_eq_left.mpr fun n hn ↦ hn.1, mem_Iio] at hk
+  rw [tsum_subtype, indicator_indicator,
+    inter_eq_left.mpr fun n (hn : n ∈ {p | Nat.Prime p} ∩ {p | k ≤ p}) ↦ hn.1, mem_Iio] at hk
   have h' : Summable (indicator ({p | Nat.Prime p} ∩ {p | k ≤ p}) fun n ↦ (1 : ℝ) / n) := by
     convert! h.indicator {n : ℕ | k ≤ n} using 1
     simp only [indicator_indicator, inter_comm]

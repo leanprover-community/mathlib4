@@ -180,7 +180,8 @@ theorem hasIntegral_congr (I : Box ι) (l : IntegrationParams) {f₁ f₂ : ℝ�
     {vol₁ vol₂ : ι →ᵇᵃ E →L[ℝ] F}
     (hf : EqOn f₁ f₂ I.Icc) (hvol : EqOn vol₁ vol₂ (Set.Iic I)) (y : F) :
     HasIntegral I l f₁ vol₁ y ↔ HasIntegral I l f₂ vol₂ y :=
-  tendsto_congr fun π ↦ integralSum_congr hf <| hvol.mono π.le_of_mem'
+  tendsto_congr fun π ↦ integralSum_congr hf <|
+    hvol.mono (show (π.boxes : Set (Box ι)) ⊆ Set.Iic I from π.le_of_mem')
 
 -- Porting note: using the above notation ℝⁿ here causes the theorem below to be silently ignored
 -- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Lean.204.20doesn't.20add.20lemma.20to.20the.20environment/near/363764522
