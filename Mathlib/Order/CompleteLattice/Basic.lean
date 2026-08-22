@@ -47,7 +47,7 @@ variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → 
 
 section
 
-variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
+variable [CompleteSemilatticeSup α] {s t : Set α} {a : α}
 
 @[to_dual]
 theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t :=
@@ -98,9 +98,11 @@ theorem sSup_le_sSup_of_subset_insert_bot (h : s ⊆ insert ⊥ t) : sSup s ≤ 
   (sSup_le_sSup h).trans_eq (sSup_insert.trans (bot_sup_eq _))
 
 @[to_dual (attr := simp)]
-theorem sSup_diff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
-  (sSup_le_sSup diff_subset).antisymm <|
-    sSup_le_sSup_of_subset_insert_bot <| subset_insert_diff_singleton _ _
+theorem sSup_sdiff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
+  (sSup_le_sSup sdiff_subset).antisymm <|
+    sSup_le_sSup_of_subset_insert_bot <| subset_insert_sdiff_singleton _ _
+
+@[deprecated (since := "2026-06-03")] alias sSup_diff_singleton_bot := sSup_sdiff_singleton_bot
 
 @[to_dual]
 theorem sSup_pair {a b : α} : sSup {a, b} = a ⊔ b :=
@@ -439,18 +441,11 @@ theorem iSup₂_comm {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι
 
 @[to_dual (attr := simp)]
 theorem iSup_iSup_eq_left {b : β} {f : ∀ x : β, x = b → α} : ⨆ x, ⨆ h : x = b, f x h = f b rfl :=
-  (le_iSup₂ (f := f) b rfl).antisymm'
-    (iSup_le fun c =>
-      iSup_le <| by
-        rintro rfl
-        rfl)
+  le_antisymm (iSup₂_le fun _ h ↦ h ▸ le_rfl) (le_iSup₂ (f := f) b rfl)
 
 @[to_dual (attr := simp)]
 theorem iSup_iSup_eq_right {b : β} {f : ∀ x : β, b = x → α} : ⨆ x, ⨆ h : b = x, f x h = f b rfl :=
-  (le_iSup₂ b rfl).antisymm'
-    (iSup₂_le fun c => by
-      rintro rfl
-      rfl)
+  le_antisymm (iSup₂_le fun _ h ↦ h ▸ le_refl (f b rfl)) (le_iSup₂ b rfl)
 
 @[to_dual]
 theorem iSup_subtype {p : ι → Prop} {f : Subtype p → α} : iSup f = ⨆ (i) (h : p i), f ⟨i, h⟩ :=
@@ -468,7 +463,7 @@ theorem iSup_subtype'' {ι} (s : Set ι) (f : ι → α) : ⨆ i : s, f i = ⨆ 
 
 @[to_dual]
 theorem biSup_const {a : α} {s : Set β} (hs : s.Nonempty) : ⨆ i ∈ s, a = a := by
-  haveI : Nonempty s := Set.nonempty_coe_sort.mpr hs
+  have : Nonempty s := Set.nonempty_coe_sort.mpr hs
   rw [← iSup_subtype'', iSup_const]
 
 @[to_dual]
@@ -479,7 +474,7 @@ theorem iSup_sup_eq : ⨆ x, f x ⊔ g x = (⨆ x, f x) ⊔ ⨆ x, g x :=
 @[to_dual]
 lemma Equiv.biSup_comp {ι ι' : Type*} {g : ι' → α} (e : ι ≃ ι') (s : Set ι') :
     ⨆ i ∈ e.symm '' s, g (e i) = ⨆ i ∈ s, g i := by
-  simpa only [iSup_subtype'] using (image e.symm s).symm.iSup_comp (g := g ∘ (↑))
+  simpa only [iSup_subtype'] using! (image e.symm s).symm.iSup_comp (g := g ∘ (↑))
 
 @[to_dual biInf_le]
 lemma le_biSup {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) : f i ≤ ⨆ i ∈ s, f i :=
@@ -500,7 +495,7 @@ theorem sup_iSup [Nonempty ι] {f : ι → α} {a : α} : (a ⊔ ⨆ x, f x) = �
 @[to_dual]
 theorem biSup_sup {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
     (⨆ (i) (h : p i), f i h) ⊔ a = ⨆ (i) (h : p i), f i h ⊔ a := by
-  haveI : Nonempty { i // p i } :=
+  have : Nonempty { i // p i } :=
     let ⟨i, hi⟩ := h
     ⟨⟨i, hi⟩⟩
   rw [iSup_subtype', iSup_subtype', iSup_sup]
@@ -706,7 +701,9 @@ end le
 ### `iSup` and `iInf` under `Type`
 -/
 
-@[to_dual iInf_of_isEmpty]
+/-- This `simp` lemma goes well with `sSup_empty` in a complete lattice. -/
+@[to_dual (attr := simp) iInf_of_isEmpty
+/-- This `simp` lemma goes well with `sInf_empty` in a complete lattice. -/]
 theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f = sSup (∅ : Set α) :=
   congr_arg sSup (range_eq_empty f)
 
@@ -716,7 +713,7 @@ theorem iSup_of_empty [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=
 
 @[to_dual]
 theorem isLUB_biSup {s : Set β} {f : β → α} : IsLUB (f '' s) (⨆ x ∈ s, f x) := by
-  simpa only [range_comp, Subtype.range_coe, iSup_subtype'] using
+  simpa only [range_comp, Subtype.range_coe, iSup_subtype'] using!
     @isLUB_iSup α s _ (f ∘ fun x => (x : β))
 
 @[to_dual]

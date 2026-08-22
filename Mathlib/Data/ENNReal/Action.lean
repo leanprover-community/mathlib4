@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Module.Torsion.Field
+public import Mathlib.Algebra.Order.AddTorsor
 public import Mathlib.Data.ENNReal.Operations
 
 /-!
@@ -15,13 +16,13 @@ This file defines basic scalar actions on extended nonnegative reals, showing th
 `MulAction`s, `DistribMulAction`s, `Module`s and `Algebra`s restrict from `ℝ≥0∞` to `ℝ≥0`.
 -/
 
-@[expose] public section
+public section
 
-open Set NNReal ENNReal
+open NNReal ENNReal
 
 namespace ENNReal
 
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
+variable {a b c : ℝ≥0∞} {r : ℝ≥0}
 
 -- TODO: generalize some of these to `WithTop α`
 section Actions
@@ -57,6 +58,7 @@ noncomputable instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ≥0∞ M]
 noncomputable instance {M : Type*} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
   fast_instance% Module.compHom M ofNNRealHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An `Algebra` over `ℝ≥0∞` restricts to an `Algebra` over `ℝ≥0`. -/
 noncomputable instance {A : Type*} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra ℝ≥0 A where
   commutes' r x := by simp [Algebra.commutes]
@@ -103,6 +105,16 @@ instance : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
 
 instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
   smul_le_smul_of_nonneg_right _r _ _a _b hab := _root_.mul_le_mul_left (coe_le_coe.2 hab) _
+
+instance : IsOrderedModule ℝ≥0 ℝ≥0∞ where
+
+example : CovariantClass ℝ≥0∞ ℝ≥0∞ (· • ·) (· ≤ ·) := inferInstance
+
+instance : IsOrderedSMul ℝ≥0 ℝ≥0∞ where
+  smul_le_smul_left a b hab c := by gcongr
+  smul_le_smul_right a b hab c := by gcongr
+
+example : CovariantClass ℝ≥0 ℝ≥0∞ (· • ·) (· ≤ ·) := inferInstance
 
 end Actions
 

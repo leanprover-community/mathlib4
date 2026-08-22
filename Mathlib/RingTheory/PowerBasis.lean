@@ -46,7 +46,7 @@ power basis, powerbasis
 
 open Finsupp Module Polynomial
 
-variable {R S T : Type*} [CommRing R] [Ring S] [Algebra R S]
+variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 variable {K : Type*} [Field K]
 
@@ -99,13 +99,9 @@ theorem mem_span_pow' {x y : S} {d : ℕ} :
     ext n
     simp_rw [Set.mem_range, Set.mem_image, Finset.mem_coe, Finset.mem_range]
     exact ⟨fun ⟨⟨i, hi⟩, hy⟩ => ⟨i, hi, hy⟩, fun ⟨i, hi, hy⟩ => ⟨⟨i, hi⟩, hy⟩⟩
-  simp only [this, mem_span_image_iff_linearCombination, degree_lt_iff_coeff_zero,
-    exists_iff_exists_finsupp, coeff, aeval_def, eval₂_eq_sum, Polynomial.sum,
-    mem_supported', linearCombination, Finsupp.sum, Algebra.smul_def,
-    LinearMap.id_coe, id, not_lt, Finsupp.coe_lsum, LinearMap.coe_smulRight,
-    Finset.mem_range, Finset.mem_coe]
-  simp_rw [@eq_comm _ y]
-  exact Iff.rfl
+  simp [this, mem_span_image_iff_linearCombination, degree_lt_iff_coeff_zero, eq_comm,
+    exists_iff_exists_finsupp, coeff, aeval_def, eval₂_eq_sum, Polynomial.sum, mem_supported',
+    Finsupp.sum, linearCombination, Algebra.smul_def, AddMonoidAlgebra.coeffEquiv.exists_congr_left]
 
 theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
     y ∈ Submodule.span R (Set.range fun i : Fin d => x ^ (i : ℕ)) ↔
@@ -115,7 +111,7 @@ theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
   · rintro ⟨f, h, hy⟩
     refine ⟨f, ?_, hy⟩
     by_cases hf : f = 0
-    · simp only [hf, natDegree_zero, degree_zero] at h ⊢
+    · simp only [hf, natDegree_zero, Polynomial.degree_zero] at h ⊢
       first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
     simpa [degree_eq_natDegree hf] using h
 
@@ -161,7 +157,7 @@ theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
 
 open Submodule.Quotient in
 theorem exists_gen_dvd_sub (pb : PowerBasis A B) (b : B) : ∃ a, pb.gen ∣ b - algebraMap A B a := by
-  simpa [← Ideal.mem_span_singleton, ← mk_eq_zero, mk_sub, sub_eq_zero] using pb.exists_smodEq b
+  simpa [← Ideal.mem_span_singleton, ← mk_eq_zero, mk_sub, sub_eq_zero] using! pb.exists_smodEq b
 
 section minpoly
 
@@ -238,10 +234,11 @@ protected theorem leftMulMatrix (pb : PowerBasis A S) : Algebra.leftMulMatrix pb
     convert! pb.aeval_minpolyGen
     rw [add_comm, aeval_eq_sum_range, Finset.sum_range_succ, ← leadingCoeff,
       pb.minpolyGen_monic.leadingCoeff, one_smul, natDegree_minpolyGen, Finset.sum_range]
-  · rw [Fintype.sum_eq_single (⟨(k : ℕ) + 1, lt_of_le_of_ne k.2 h⟩ : Fin pb.dim), if_pos, one_smul]
+  · rw [Fintype.sum_eq_single (⟨(k : ℕ) + 1, lt_of_le_of_ne k.2 h⟩ : Fin pb.dim), ite_eq_left,
+      one_smul]
     · rfl
     intro x hx
-    rw [if_neg, zero_smul]
+    rw [ite_eq_right, zero_smul]
     apply mt Fin.ext hx
 
 end minpoly
@@ -321,6 +318,9 @@ noncomputable def liftEquiv (pb : PowerBasis A S) :
   left_inv _ := pb.algHom_ext <| lift_gen _ _ _
   right_inv y := Subtype.ext <| lift_gen _ _ y.prop
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `pb.liftEquiv'` states that elements of the root set of the minimal
 polynomial of `pb.gen` correspond to maps sending `pb.gen` to that root. -/
 @[simps! -fullyApplied]
@@ -333,7 +333,7 @@ noncomputable def liftEquiv' [IsDomain B] (pb : PowerBasis A S) :
 
 /-- There are finitely many algebra homomorphisms `S →ₐ[A] B` if `S` is of the form `A[x]`
 and `B` is an integral domain. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def AlgHom.fintype [IsDomain B] (pb : PowerBasis A S) : Fintype (S →ₐ[A] B) :=
   letI := Classical.decEq B
   Fintype.ofEquiv _ pb.liftEquiv'.symm
@@ -418,14 +418,13 @@ theorem linearIndependent_pow [Algebra K S] (x : S) :
   · rw [minpoly.eq_zero h, natDegree_zero]
     exact linearIndependent_empty_type
   refine Fintype.linearIndependent_iff.2 fun g hg i => ?_
-  simp only at hg
   simp_rw [Algebra.smul_def, ← aeval_monomial, ← map_sum] at hg
   apply (fun hn0 => (minpoly.degree_le_of_ne_zero K x (mt (fun h0 => ?_) hn0) hg).not_gt).mtr
   · simp_rw [← C_mul_X_pow_eq_monomial]
     exact (degree_eq_natDegree <| minpoly.ne_zero h).symm ▸ degree_sum_fin_lt _
   · apply_fun lcoeff K i at h0
     simp_rw [map_sum, lcoeff_apply, coeff_monomial, Fin.val_eq_val, Finset.sum_ite_eq'] at h0
-    exact (if_pos <| Finset.mem_univ _).symm.trans h0
+    exact (ite_eq_left <| Finset.mem_univ _).symm.trans h0
 
 theorem IsIntegral.mem_span_pow [Nontrivial R] {x y : S} (hx : IsIntegral R x)
     (hy : ∃ f : R[X], y = aeval x f) :

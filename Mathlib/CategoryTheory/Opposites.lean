@@ -106,7 +106,7 @@ theorem op_comp_unop {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) : (g.unop ≫
 
 end
 
-open Functor
+open CategoryTheory.Functor
 
 variable [Category.{v₁} C]
 
@@ -135,13 +135,13 @@ section
 variable (C)
 
 /-- The functor from the double-opposite of a category to the underlying category. -/
-@[simps]
+@[implicit_reducible, simps]
 def unopUnop : Cᵒᵖᵒᵖ ⥤ C where
   obj X := unop (unop X)
   map f := f.unop.unop
 
 /-- The functor from a category to its double-opposite. -/
-@[simps]
+@[implicit_reducible, simps]
 def opOp : C ⥤ Cᵒᵖᵒᵖ where
   obj X := op (op X)
   map f := f.op.op
@@ -204,7 +204,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-- The opposite of a functor, i.e. considering a functor `F : C ⥤ D` as a functor `Cᵒᵖ ⥤ Dᵒᵖ`.
 In informal mathematics no distinction is made between these. -/
-@[simps]
+@[simps, implicit_reducible]
 protected def op (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ where
   obj X := op (F.obj (unop X))
   map f := (F.map f.unop).op
@@ -212,7 +212,7 @@ protected def op (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ where
 /-- Given a functor `F : Cᵒᵖ ⥤ Dᵒᵖ` we can take the "unopposite" functor `F : C ⥤ D`.
 In informal mathematics no distinction is made between these.
 -/
-@[simps]
+@[simps, implicit_reducible]
 protected def unop (F : Cᵒᵖ ⥤ Dᵒᵖ) : C ⥤ D where
   obj X := unop (F.obj (op X))
   map f := (F.map f.op).unop
@@ -231,7 +231,7 @@ variable (C D)
 
 /-- Taking the opposite of a functor is functorial.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def opHom : (C ⥤ D)ᵒᵖ ⥤ Cᵒᵖ ⥤ Dᵒᵖ where
   obj F := (unop F).op
   map α :=
@@ -240,7 +240,7 @@ def opHom : (C ⥤ D)ᵒᵖ ⥤ Cᵒᵖ ⥤ Dᵒᵖ where
 
 /-- Take the "unopposite" of a functor is functorial.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def opInv : (Cᵒᵖ ⥤ Dᵒᵖ) ⥤ (C ⥤ D)ᵒᵖ where
   obj F := op F.unop
   map α :=
@@ -278,7 +278,7 @@ end Compositions
 Another variant of the opposite of functor, turning a functor `C ⥤ Dᵒᵖ` into a functor `Cᵒᵖ ⥤ D`.
 In informal mathematics no distinction is made.
 -/
-@[simps]
+@[implicit_reducible, simps]
 protected def leftOp (F : C ⥤ Dᵒᵖ) : Cᵒᵖ ⥤ D where
   obj X := unop (F.obj (unop X))
   map f := (F.map f.unop).unop
@@ -287,7 +287,7 @@ protected def leftOp (F : C ⥤ Dᵒᵖ) : Cᵒᵖ ⥤ D where
 Another variant of the opposite of functor, turning a functor `Cᵒᵖ ⥤ D` into a functor `C ⥤ Dᵒᵖ`.
 In informal mathematics no distinction is made.
 -/
-@[simps]
+@[implicit_reducible, simps]
 protected def rightOp (F : Cᵒᵖ ⥤ D) : C ⥤ Dᵒᵖ where
   obj X := op (F.obj (op X))
   map f := (F.map f.op).op
@@ -388,7 +388,7 @@ section
 variable {F G : C ⥤ D}
 
 /-- The opposite of a natural transformation. -/
-@[to_dual self, simps (attr := to_dual self)]
+@[implicit_reducible, to_dual self, simps (attr := to_dual self)]
 protected def op (α : F ⟶ G) : G.op ⟶ F.op where
   app X := (α.app (unop X)).op
   naturality X Y f := Quiver.Hom.unop_inj (by simp)
@@ -415,7 +415,7 @@ lemma op_whiskerLeft {E : Type*} [Category* E] {H : E ⥤ C} (α : F ⟶ G) :
   cat_disch
 
 /-- The "unopposite" of a natural transformation. -/
-@[to_dual self, simps (attr := to_dual self)]
+@[implicit_reducible, to_dual self, simps (attr := to_dual self)]
 protected def unop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ⟶ G) : G.unop ⟶ F.unop where
   app X := (α.app (op X)).unop
   naturality X Y f := Quiver.Hom.op_inj (by simp)
@@ -446,11 +446,11 @@ lemma unop_whiskerLeft {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category* E] {H 
 /-- Given a natural transformation `α : F.op ⟶ G.op`,
 we can take the "unopposite" of each component obtaining a natural transformation `G ⟶ F`.
 -/
-@[to_dual self, simps (attr := to_dual self)]
+@[implicit_reducible, to_dual self, simps (attr := to_dual self)]
 protected def removeOp (α : F.op ⟶ G.op) : G ⟶ F where
   app X := (α.app (op X)).unop
   naturality X Y f :=
-    Quiver.Hom.op_inj <| by simpa only [Functor.op_map] using (α.naturality f.op).symm
+    Quiver.Hom.op_inj <| by simpa only [Functor.op_map] using! (α.naturality f.op).symm
 
 @[simp]
 theorem removeOp_id (F : C ⥤ D) : NatTrans.removeOp (𝟙 F.op) = 𝟙 F :=
@@ -458,11 +458,11 @@ theorem removeOp_id (F : C ⥤ D) : NatTrans.removeOp (𝟙 F.op) = 𝟙 F :=
 
 /-- Given a natural transformation `α : F.unop ⟶ G.unop`, we can take the opposite of each
 component obtaining a natural transformation `G ⟶ F`. -/
-@[simps, to_dual self]
+@[implicit_reducible, simps, to_dual self]
 protected def removeUnop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F.unop ⟶ G.unop) : G ⟶ F where
   app X := (α.app (unop X)).op
   naturality X Y f :=
-    Quiver.Hom.unop_inj <| by simpa only [Functor.unop_map] using (α.naturality f.unop).symm
+    Quiver.Hom.unop_inj <| by simpa only [Functor.unop_map] using! (α.naturality f.unop).symm
 
 @[simp]
 theorem removeUnop_id (F : Cᵒᵖ ⥤ Dᵒᵖ) : NatTrans.removeUnop (𝟙 F.unop) = 𝟙 F :=
@@ -477,7 +477,7 @@ variable {F G H : C ⥤ Dᵒᵖ}
 /-- Given a natural transformation `α : F ⟶ G`, for `F G : C ⥤ Dᵒᵖ`,
 taking `unop` of each component gives a natural transformation `G.leftOp ⟶ F.leftOp`.
 -/
-@[to_dual self, simps (attr := to_dual self)]
+@[implicit_reducible, to_dual self, simps (attr := to_dual self)]
 protected def leftOp (α : F ⟶ G) : G.leftOp ⟶ F.leftOp where
   app X := (α.app (unop X)).unop
   naturality X Y f := Quiver.Hom.op_inj (by simp)
@@ -500,11 +500,11 @@ lemma leftOpWhiskerRight {E : Type*} [Category* E] {H : E ⥤ C} (α : F ⟶ G) 
 /-- Given a natural transformation `α : F.leftOp ⟶ G.leftOp`, for `F G : C ⥤ Dᵒᵖ`,
 taking `op` of each component gives a natural transformation `G ⟶ F`.
 -/
-@[to_dual self, simps (attr := to_dual self)]
+@[implicit_reducible, to_dual self, simps (attr := to_dual self)]
 protected def removeLeftOp (α : F.leftOp ⟶ G.leftOp) : G ⟶ F where
   app X := (α.app (op X)).op
   naturality X Y f :=
-    Quiver.Hom.unop_inj <| by simpa only [Functor.leftOp_map] using (α.naturality f.op).symm
+    Quiver.Hom.unop_inj <| by simpa only [Functor.leftOp_map] using! (α.naturality f.op).symm
 
 @[simp]
 theorem removeLeftOp_id : NatTrans.removeLeftOp (𝟙 F.leftOp) = 𝟙 F :=
@@ -519,7 +519,7 @@ variable {F G H : Cᵒᵖ ⥤ D}
 /-- Given a natural transformation `α : F ⟶ G`, for `F G : Cᵒᵖ ⥤ D`,
 taking `op` of each component gives a natural transformation `G.rightOp ⟶ F.rightOp`.
 -/
-@[to_dual self, simps (attr := to_dual self)]
+@[implicit_reducible, to_dual self, simps (attr := to_dual self)]
 protected def rightOp (α : F ⟶ G) : G.rightOp ⟶ F.rightOp where
   app _ := (α.app _).op
   naturality X Y f := Quiver.Hom.unop_inj (by simp)
@@ -542,11 +542,11 @@ lemma rightOpWhiskerRight {E : Type*} [Category* E] {H : D ⥤ E} (α : F ⟶ G)
 /-- Given a natural transformation `α : F.rightOp ⟶ G.rightOp`, for `F G : Cᵒᵖ ⥤ D`,
 taking `unop` of each component gives a natural transformation `G ⟶ F`.
 -/
-@[to_dual self, simps (attr := to_dual self)]
+@[implicit_reducible, to_dual self, simps (attr := to_dual self)]
 protected def removeRightOp (α : F.rightOp ⟶ G.rightOp) : G ⟶ F where
   app X := (α.app X.unop).unop
   naturality X Y f :=
-    Quiver.Hom.op_inj <| by simpa only [Functor.rightOp_map] using (α.naturality f.unop).symm
+    Quiver.Hom.op_inj <| by simpa only [Functor.rightOp_map] using! (α.naturality f.unop).symm
 
 @[simp]
 theorem removeRightOp_id : NatTrans.removeRightOp (𝟙 F.rightOp) = 𝟙 F :=
@@ -647,7 +647,6 @@ theorem op_trans {H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) :
 @[simp]
 theorem op_symm (α : F ≅ G) : NatIso.op α.symm = (NatIso.op α).symm := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism between functors `G ≅ F` induced by a natural isomorphism
 between the opposite functors `F.op ≅ G.op`. -/
 @[simps]
@@ -836,6 +835,7 @@ namespace Functor
 variable (C)
 variable (D : Type u₂) [Category.{v₂} D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of functor categories induced by `op` and `unop`.
 -/
 @[simps]
@@ -852,6 +852,7 @@ def opUnopEquiv : (C ⥤ D)ᵒᵖ ≌ Cᵒᵖ ⥤ Dᵒᵖ where
         cat_disch)
   counitIso := NatIso.ofComponents fun F => F.unopOpIso
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of functor categories induced by `leftOp` and `rightOp`.
 -/
 @[simps!]

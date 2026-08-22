@@ -40,7 +40,7 @@ noncomputable def Valuation.extendToLocalization : Valuation B Γ :=
         constructor <;>
           · rw [f.mk'_eq_iff_eq, Submonoid.coe_mul]
             ring_nf
-      convert_to f.lift h (f.mk' (a + b) s) ≤ max (f.lift h _) (f.lift h _)
+      convert_to! f.lift h (f.mk' (a + b) s) ≤ max (f.lift h _) (f.lift h _)
       · refine congr_arg (f.lift h) (IsLocalization.eq_mk'_iff_mul_eq.2 ?_)
         rw [add_mul, map_add]
         rw [← IsLocalization.toLocalizationMap_apply S B, f.mk'_spec, f.mk'_spec,
@@ -50,6 +50,7 @@ noncomputable def Valuation.extendToLocalization : Valuation B Γ :=
       dsimp
       grw [max_mul_mul_right, v.map_add a b] }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Valuation.extendToLocalization_mk' (x : A) (y : S) :
     (v.extendToLocalization hS B) (IsLocalization.mk' _ x y) =

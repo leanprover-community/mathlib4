@@ -16,7 +16,7 @@ public import Mathlib.Algebra.Ring.Pi
 This file defines instances for ordered group, monoid, and related structures on Pi types.
 -/
 
-@[expose] public section
+public section
 
 variable {I α β γ : Type*}
 

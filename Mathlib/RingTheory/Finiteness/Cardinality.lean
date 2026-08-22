@@ -22,7 +22,6 @@ This file relates `Module.Finite` and `_root_.Finite`.
 @[expose] public section
 
 open Function (Surjective)
-open Finsupp
 
 section ModuleAndAlgebra
 

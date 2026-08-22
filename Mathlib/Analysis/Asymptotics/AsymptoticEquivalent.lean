@@ -62,7 +62,7 @@ namespace Asymptotics
 
 open Filter Function
 
-open Topology
+open scoped Topology
 
 section NormedAddCommGroup
 
@@ -145,10 +145,10 @@ theorem IsEquivalent.tendsto_nhds_iff {c : β} (huv : u ~[l] v) :
   ⟨huv.tendsto_nhds, huv.symm.tendsto_nhds⟩
 
 theorem IsEquivalent.add_isLittleO (huv : u ~[l] v) (hwv : w =o[l] v) : u + w ~[l] v := by
-  simpa only [IsEquivalent, add_sub_right_comm] using huv.add hwv
+  simpa only [IsEquivalent, add_sub_right_comm] using! huv.add hwv
 
 theorem IsEquivalent.sub_isLittleO (huv : u ~[l] v) (hwv : w =o[l] v) : u - w ~[l] v := by
-  simpa only [sub_eq_add_neg] using huv.add_isLittleO hwv.neg_left
+  simpa only [sub_eq_add_neg] using! huv.add_isLittleO hwv.neg_left
 
 theorem IsLittleO.add_isEquivalent (hu : u =o[l] w) (hv : v ~[l] w) : u + v ~[l] w :=
   add_comm v u ▸ hv.add_isLittleO hu
@@ -201,9 +201,6 @@ theorem isEquivalent_of_tendsto_one (huv : Tendsto (u / v) l (𝓝 1)) :
   by_contra! h
   replace h : ∃ᶠ t in l, (u / v) t = 0 := h.mono fun x ⟨hv, hu⟩ ↦ by simp [hv]
   simpa using tendsto_nhds_unique_of_frequently_eq (b := 0) huv tendsto_const_nhds h
-
-@[deprecated (since := "2026-01-26")] alias isEquivalent_of_tendsto_one' :=
-  isEquivalent_of_tendsto_one
 
 theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
     u ~[l] v ↔ Tendsto (u / v) l (𝓝 1) := by

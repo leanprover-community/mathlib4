@@ -50,10 +50,14 @@ simplicial objects in any category.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 
-open CategoryTheory Category SimplicialObject.Augmented Opposite Simplicial
+open CategoryTheory Category SimplicialObject.Augmented Opposite
+
+open scoped Simplicial
 
 namespace CategoryTheory
 
@@ -95,6 +99,7 @@ def map {D : Type*} [Category* D] {X : SimplicialObject.Augmented C} (ed : Extra
   s' := F.map ed.s'
   s n := F.map (ed.s n)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `X` and `Y` are isomorphic augmented simplicial objects, then an extra
 degeneracy for `X` gives also an extra degeneracy for `Y` -/
 def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegeneracy X) :
@@ -102,7 +107,7 @@ def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegenera
   s' := (point.mapIso e).inv ≫ ed.s' ≫ (drop.mapIso e).hom.app (op ⦋0⦌)
   s n := (drop.mapIso e).inv.app (op ⦋n⦌) ≫ ed.s n ≫ (drop.mapIso e).hom.app (op ⦋n + 1⦌)
   s'_comp_ε := by
-    simpa [w₀, ed.s'_comp_ε_assoc] using (point.mapIso e).inv_hom_id
+    simpa [w₀] using dsimp% (point.mapIso e).inv_hom_id
   s₀_comp_δ₁ := by
     simp [← SimplicialObject.δ_naturality, s₀_comp_δ₁_assoc, w₀_assoc]
   s_comp_δ₀ n := by
@@ -404,7 +409,6 @@ def const (X : C) : ExtraDegeneracy (Augmented.const.obj X) where
   s' := 𝟙 _
   s _ := 𝟙 _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a preadditive category and `X` is an augmented simplicial object
 in `C` that has an extra degeneracy, then the augmentation on the alternating
 face map complex of `X` is a homotopy equivalence. -/
