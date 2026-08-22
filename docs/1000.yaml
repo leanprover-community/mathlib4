@@ -1512,6 +1512,12 @@ Q1196538:
 
 Q1196729:
   title: Mertens's theorems
+  decls:
+    - Mertens.abs_sum_log_prime_div_sub_le_nat
+    - Mertens.sum_vonMangoldt_div_mul_log_sub_sub_isBigO
+    - Mertens.prod_prime_one_minus_inv_asymp
+  authors: Terence Tao
+  date: 2026
 
 Q1202608:
   title: De Gua's theorem

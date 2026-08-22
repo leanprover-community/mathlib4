@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Analysis.MellinTransform
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+public import Mathlib.MeasureTheory.Function.JacobianOneDim
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
 /-!
 # Derivative of the Gamma function
@@ -61,6 +63,12 @@ theorem hasDerivAt_GammaIntegral {s : ℂ} (hs : 0 < s.re) :
     rw [(by simp : (1 : ℂ) = Real.exp (-0))]
     exact (continuous_ofReal.comp (Real.continuous_exp.comp continuous_neg)).continuousWithinAt
 
+theorem hasDerivAt_Gamma {s : ℂ} (hs : 0 < s.re) :
+    HasDerivAt Gamma (∫ t : ℝ in Ioi 0, t ^ (s - 1) * (Real.log t * Real.exp (-t))) s := by
+  have : IsOpen {s : ℂ | 0 < s.re} := continuous_re.isOpen_preimage _ isOpen_Ioi
+  apply (hasDerivAt_GammaIntegral (by simpa using hs)).congr_of_eventuallyEq
+  filter_upwards [this.mem_nhds hs] with a using Gamma_eq_integral
+
 @[fun_prop]
 theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℂ Gamma s := by
   -- We will show, by induction on `n`, that `Gamma` is differentiable on `-n < Re s`.
@@ -68,12 +76,7 @@ theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : Differen
     this (⌊-s.re⌋₊ + 1) s (by grind [Nat.lt_floor_add_one (-s.re)]) hs
   intro n s hsre hs
   induction n generalizing s with
-  | zero =>
-    -- Case `n = 0`: use relation to `gammaIntegral`
-    replace hsre : 0 < s.re := by simpa using hsre
-    have : IsOpen {s : ℂ | 0 < s.re} := continuous_re.isOpen_preimage _ isOpen_Ioi
-    apply (hasDerivAt_GammaIntegral (by simpa using hsre)).differentiableAt.congr_of_eventuallyEq
-    filter_upwards [this.mem_nhds hsre] with a using Gamma_eq_integral
+  | zero => exact (hasDerivAt_Gamma (by simpa using hsre)).differentiableAt
   | succ n IH =>
     -- Induction step: use recurrence relation
     have hsne : s ≠ 0 := by grind [hs 0]
@@ -145,10 +148,75 @@ end Complex
 
 namespace Real
 
+open Complex MeasureTheory
+
+theorem hasDerivAt_Gamma {s : ℝ} (hs : 0 < s) :
+    HasDerivAt Gamma (∫ t in Ioi 0, t ^ (s - 1) * (log t * exp (-t))) s := by
+  convert (Complex.hasDerivAt_Gamma (by simpa using hs : 0 < (s:ℂ).re)).real_of_complex
+  · simp [Gamma_ofReal]
+  convert (ofReal_re ?_).symm
+  calc
+    _ = ∫ (t : ℝ) in Ioi 0, ↑(t ^ (s - 1) * (log t * exp (-t))) := by
+      refine setIntegral_congr_fun measurableSet_Ioi (fun x hx ↦ ?_)
+      simp only [mem_Ioi] at hx
+      norm_cast; rw [← ofReal_cpow hx.le]; norm_cast
+    _ = _ := by norm_cast
+
+theorem deriv_Gamma_one_eq_integral_log : deriv Gamma 1 = ∫ t in Ioi 0, log t * exp (-t) := by
+  simpa using (hasDerivAt_Gamma (by norm_num : 0 < (1 : ℝ))).deriv
+
+theorem integrableOn_log_log_mul_rpow {s : ℝ} (hs : 1 < s) :
+    IntegrableOn (fun t ↦ log (log t) * t ^ (-s)) (Ioi 1) := by
+  rw [← exp_zero, ← integrableOn_comp_exp_Ioi]
+  apply Integrable.mono' (g := fun x ↦ (2 * x ^ (- (1 : ℝ) / 2) + x) * exp (-(s - 1) * x))
+  · simp only [add_mul, mul_assoc]
+    refine (Integrable.const_mul ?_ _).add ?_
+    · simpa [IntegrableOn] using integrableOn_rpow_mul_exp_neg_mul_rpow
+        (by norm_num : -1 < (-1 : ℝ) / 2) (le_refl 1) (by linarith : 0 < s - 1)
+    simpa [IntegrableOn] using integrableOn_rpow_mul_exp_neg_mul_rpow
+        (by norm_num : -1 < (1 : ℝ)) (le_refl 1) (by linarith : 0 < s - 1)
+  · exact Measurable.aestronglyMeasurable (by fun_prop)
+  filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
+  simp only [mem_Ioi] at hx
+  simp only [log_exp, smul_eq_mul, norm_mul, norm_eq_abs, abs_exp, neg_sub, ← exp_mul]
+  rw [mul_comm, mul_assoc, ← exp_add]
+  gcongr
+  · rw [abs_le]; constructor
+    · grw [neg_le, ← log_inv, log_le_rpow_div (by positivity) (by positivity : 0 < (1 : ℝ) / 2)]
+      simp [← rpow_neg_eq_inv_rpow]; ring_nf; linarith
+    grw [log_le_self hx.le, le_add_iff_nonneg_left]
+    positivity
+  grind
+
+theorem deriv_Gamma_one_eq_integral_log_log {s : ℝ} (hs : 1 < s) :
+    deriv Gamma 1 = (s - 1) * (∫ t in Ioi 1, log (log t) * t ^ (-s)) + log (s - 1) := by
+  rw [deriv_Gamma_one_eq_integral_log, ← mul_zero (s - 1),
+      ← integral_comp_mul_left_Ioi' _ _ (by linarith), ← log_one,
+      ← integral_comp_log_Ioi _ zero_lt_one, smul_eq_mul]
+  have hs' : s - 1 ≠ 0 := by linarith
+  calc
+    _ = (s - 1) * ∫ (t : ℝ) in Ioi 1, (log (log t) + log (s - 1)) * t ^ (-s) := by
+      congr 1
+      refine setIntegral_congr_fun measurableSet_Ioi (fun x hx ↦ ?_)
+      simp only [mem_Ioi] at hx
+      have : x ^ (-(s - 1)) = x ^ (-s) * x := by rw [← rpow_add_one (by positivity)]; ring_nf
+      rw [log_mul hs' (log_pos hx).ne', smul_eq_mul, neg_mul_eq_neg_mul, mul_comm _ (log x),
+            ← rpow_def_of_pos (by linarith), this]
+      field_simp; ring
+    _ = (s - 1) * ((∫ t in Ioi 1, log (log t) * t ^ (-s)) + log (s - 1) * (s - 1)⁻¹)  := by
+      congr
+      simp_rw [add_mul]
+      convert integral_add (integrableOn_log_log_mul_rpow hs) (.const_mul ?_ _)
+      · rw [integral_const_mul]; congr; symm
+        convert! integral_Ioi_rpow_of_lt (a := -s) (c := 1) (by linarith) zero_lt_one using 1
+        simp; grind
+      exact integrableOn_Ioi_rpow_of_lt (by linarith) zero_lt_one
+    _ = _ := by field_simp
+
 @[fun_prop]
 theorem differentiableAt_Gamma {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℝ Gamma s := by
   refine (Complex.differentiableAt_Gamma _ ?_).hasDerivAt.real_of_complex.differentiableAt
-  simp_rw [← Complex.ofReal_natCast, ← Complex.ofReal_neg, Ne, Complex.ofReal_inj]
+  simp_rw [← ofReal_natCast, ← ofReal_neg, Ne, ofReal_inj]
   exact hs
 
 theorem differentiableOn_Gamma_Ioi : DifferentiableOn ℝ Gamma (Ioi 0) :=
