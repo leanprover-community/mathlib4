@@ -165,6 +165,7 @@ theorem exists_mem_cons_of_exists {p : α → Prop} {a : α} {l : List α} : (�
     ∃ x ∈ a :: l, p x :=
   fun ⟨x, xl, px⟩ => ⟨x, mem_cons_of_mem _ xl, px⟩
 
+@[aesop safe destruct]
 theorem or_exists_of_exists_mem_cons {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ a :: l, p x) →
     p a ∨ ∃ x ∈ l, p x := by grind
 
@@ -177,10 +178,12 @@ theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
     (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
   cons_subset.2 ⟨ainm, lsubm⟩
 
+@[aesop safe]
 theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l₁ ⊆ l) (l₂subl : l₂ ⊆ l) :
     l₁ ++ l₂ ⊆ l :=
   fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 
+@[simp]
 theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
     map f l₁ ⊆ map f l₂ ↔ l₁ ⊆ l₂ := by
   refine ⟨?_, map_subset f⟩; intro h2 x hx
@@ -191,12 +194,15 @@ lemma notMem_of_subset (h : l ⊆ l₁) {a : α} (ha : a ∉ l₁) : a ∉ l := 
 
 /-! ### append -/
 
+@[simp]
 theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ :=
   rfl
 
+@[aesop safe]
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
   fun _ _ ↦ append_cancel_left
 
+@[aesop safe]
 theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
   fun _ _ ↦ append_cancel_right
 
@@ -273,9 +279,11 @@ theorem reverse_involutive : Involutive (@reverse α) :=
 theorem reverse_injective : Injective (@reverse α) :=
   reverse_involutive.injective
 
+@[aesop safe]
 theorem reverse_surjective : Surjective (@reverse α) :=
   reverse_involutive.surjective
 
+@[aesop safe]
 theorem reverse_bijective : Bijective (@reverse α) :=
   reverse_involutive.bijective
 
@@ -371,9 +379,11 @@ theorem getLast?_append_of_ne_nil (l₁ : List α) :
   | [], hl₂ => by contradiction
   | b :: l₂, _ => getLast?_append_cons l₁ b l₂
 
+@[aesop safe]
 theorem mem_getLast?_append_of_mem_getLast? {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?) :
-    x ∈ (l₁ ++ l₂).getLast? := by grind
+    x ∈ (l₁ ++ l₂).getLast? := by aesop
 
+@[aesop safe]
 theorem mem_dropLast_of_mem_of_ne_getLast {a : α} (ha : a ∈ l)
     (ha' : a ≠ l.getLast (ne_nil_of_mem ha)) : a ∈ l.dropLast := by
   grind [dropLast_concat_getLast]
@@ -529,8 +539,13 @@ theorem idxOf_cons_eq {a b : α} (l : List α) : b = a → idxOf a (b :: l) = 0
 theorem idxOf_cons_ne {a b : α} (l : List α) (h : b ≠ a) : idxOf a (b :: l) = succ (idxOf a l) := by
   simp [idxOf_cons, beq_false_of_ne h]
 
+@[simp]
 theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a ∉ l := by
   grind
+
+@[aesop safe]
+theorem not_mem_of_idxOf_eq_length {a : α} {l : List α} (h : idxOf a l = length l) : a ∉ l :=
+  (idxOf_eq_length_iff.mp h)
 
 @[simp]
 theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
@@ -546,6 +561,7 @@ theorem idxOf_eq_zero_iff_head_eq {l : List α} (hl : l ≠ []) {a : α} :
     l.idxOf a = 0 ↔ l.head hl = a := by
   simp [hl, idxOf_eq_zero_iff_eq_nil_or_head_eq, head?_eq_some_head]
 
+@[aesop safe]
 theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) = idxOf a l₁ := by grind
 
 theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
@@ -986,6 +1002,7 @@ section eraseP
 variable {p : α → Bool}
 
 -- Cannot be @[simp] because `a` cannot be inferred by `simp`.
+@[aesop safe]
 theorem length_eraseP_add_one {l : List α} {a} (al : a ∈ l) (pa : p a) :
     (l.eraseP p).length + 1 = l.length := by grind
 
