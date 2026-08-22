@@ -999,20 +999,20 @@ variable (f : HeckeAlgebra₁ k H) (ρ : Representation k G V)
 
 variable (H) in
 /-- tbd -/
-abbrev HeckeCoset.trace_average :
+abbrev HeckeCoset.traceAverage :
     HeckeCoset H H → k := fun x => x.degreeInv k * x.diagMk₁.trace ρ
 
 variable (H) in
 /-- tbd -/
 class IsRelCompact [Module.Finite k (HeckeModule₁ H ρ)] : Prop where
-  hasFiniteSupport : (HeckeCoset.trace_average H ρ (k := k)).HasFiniteSupport
+  hasFiniteSupport : (HeckeCoset.traceAverage H ρ (k := k)).HasFiniteSupport
 
 variable [Module.Finite k (HeckeModule₁ H ρ)] [ρ.IsRelCompact H]
 
 /-- tbd -/
 def HeckeAlgebra₁.traceFinsupp :
     HeckeCoset H H →₀ k :=
-  Finsupp.ofSupportFinite (HeckeCoset.trace_average H ρ) (IsRelCompact.hasFiniteSupport)
+  Finsupp.ofSupportFinite (HeckeCoset.traceAverage H ρ) (IsRelCompact.hasFiniteSupport)
 
 @[simp]
 lemma HeckeAlgebra₁.traceFinsupp_apply (x : HeckeCoset H H) :
