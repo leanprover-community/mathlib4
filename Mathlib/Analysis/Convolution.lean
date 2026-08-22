@@ -73,13 +73,11 @@ The following notations are localized in the scope `Convolution`:
 
 ## To do
 
-* Existence and (uniform) continuity of the convolution if
+* Uniform continuity of the convolution if
   one of the maps is in `ℒ^p` and the other in `ℒ^q` with `1 / p + 1 / q = 1`.
   This might require a generalization of `MeasureTheory.MemLp.smul` where `smul` is generalized
   to a continuous bilinear map.
   (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255K)
-* The convolution is an `AEStronglyMeasurable` function
-  (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255I).
 * Prove properties about the convolution if both functions are rapidly decreasing.
 * Use `@[to_additive]` everywhere (this likely requires changes in `to_additive`)
 -/
@@ -513,15 +511,59 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
   · rw [h, L.map_zero₂]
   · exact (h <| sub_add_cancel x t).elim
 
-section
+section IsAddRightInvariant
 
 variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsAddRightInvariant μ]
+
+/-- The convolution of two a.e. strongly measurable functions is a.e. strongly measurable. -/
+@[fun_prop]
+protected theorem AEStronglyMeasurable.convolution (hf : AEStronglyMeasurable f μ)
+    (hg : AEStronglyMeasurable g μ) : AEStronglyMeasurable (f ⋆[L, μ] g) μ := by
+  suffices AEStronglyMeasurable (fun ⟨x, t⟩ ↦ g (x - t)) (μ.prod μ) from
+    (L.aestronglyMeasurable_comp₂ hf.comp_snd this).integral_prod_right'
+  exact hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_of_right_invariant μ μ)
 
 theorem Integrable.integrable_convolution (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⋆[L, μ] g) μ :=
   (hf.convolution_integrand L hg).integral_prod_left
 
-end
+end IsAddRightInvariant
+
+section IsAddLeftInvariant
+
+variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsNegInvariant μ] [IsAddLeftInvariant μ]
+
+omit [NormedSpace ℝ F] in
+lemma lintegral_enorm_convolution_integrand_le_enorm_mul_eLpNorm_mul_eLpNorm {p q : ENNReal}
+    [hpq : p.HolderConjugate q] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
+    (x₀ : G) : ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
+  rw [← eLpNorm_comp_measurePreserving hg (μ.measurePreserving_sub_left x₀),
+    ← eLpNorm_one_eq_lintegral_enorm]
+  exact eLpNorm_le_eLpNorm_mul_eLpNorm'_of_enorm hf
+    (hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_left μ x₀)) (L ·) ‖L‖₊
+    (.of_forall fun _ ↦ L.le_opENorm₂ ..)
+
+omit [NormedSpace ℝ F] in
+/-- If `MemLp f p μ` and `MemLp g q μ`, where `p` and `q` are Hölder conjugates, then the
+convolution of `f` and `g` exists everywhere. -/
+theorem ConvolutionExists.of_memLp_memLp [IsAddRightInvariant μ] {p q : ENNReal}
+    [hpq : p.HolderConjugate q] (hfp : MemLp f p μ) (hgq : MemLp g q μ) :
+    ConvolutionExists f g L μ := by
+  refine fun x ↦
+    ⟨hfp.aestronglyMeasurable.convolution_integrand_snd L hgq.aestronglyMeasurable x, ?_⟩
+  apply lt_of_le_of_lt (lintegral_enorm_convolution_integrand_le_enorm_mul_eLpNorm_mul_eLpNorm L
+    hfp.aestronglyMeasurable hgq.aestronglyMeasurable x (hpq := hpq))
+  finiteness
+
+/-- If `p` and `q` are Hölder conjugates, then the convolution of `f` and `g` is bounded everywhere
+by `‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ`. -/
+theorem enorm_convolution_le {p q : ENNReal}
+    [hpq : p.HolderConjugate q] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
+    (x₀ : G) : ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
+  (enorm_integral_le_lintegral_enorm _).trans <|
+    lintegral_enorm_convolution_integrand_le_enorm_mul_eLpNorm_mul_eLpNorm L hf hg x₀
+
+end IsAddLeftInvariant
 
 variable [TopologicalSpace G]
 variable [IsTopologicalAddGroup G]
@@ -644,6 +686,11 @@ theorem convolution_flip : g ⋆[L.flip, μ] f = f ⋆[L, μ] g := by
   simp_rw [convolution_def]
   rw [← integral_sub_left_eq_self _ μ x]
   simp_rw [sub_sub_self, flip_apply]
+
+/-- Special case of `convolution_flip` when `L` is symmetric. -/
+theorem convolution_symm (L : E →L[𝕜] E →L[𝕜] F) (hL : L.flip = L) :
+    f ⋆[L, μ] f' = f' ⋆[L, μ] f := by
+  rw [← convolution_flip, hL]
 
 /-- The symmetric definition of convolution. -/
 theorem convolution_eq_swap : (f ⋆[L, μ] g) x = ∫ t, L (f (x - t)) (g t) ∂μ := by
