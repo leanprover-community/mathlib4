@@ -305,13 +305,16 @@ theorem Measure.exists_isOpen_measure_lt_top [TopologicalSpace α] (μ : Measure
     [IsLocallyFiniteMeasure μ] (x : α) : ∃ s : Set α, x ∈ s ∧ IsOpen s ∧ μ s < ∞ := by
   simpa only [and_assoc] using (μ.finiteAt_nhds x).exists_mem_basis (nhds_basis_opens x)
 
+theorem Measure.smul_locallyfinite [TopologicalSpace α] (μ : Measure α) [IsLocallyFiniteMeasure μ]
+    {c : ℝ≥0∞} (h : c ≠ ∞) :
+    IsLocallyFiniteMeasure (c • μ) := by
+  refine ⟨fun x ↦ ?_⟩
+  obtain ⟨o, xo, o_open, μo⟩ := μ.exists_isOpen_measure_lt_top x
+  exact ⟨o, o_open.mem_nhds xo, ENNReal.mul_lt_top h.lt_top μo⟩
+
 instance isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α)
-    [IsLocallyFiniteMeasure μ] (c : ℝ≥0) : IsLocallyFiniteMeasure (c • μ) := by
-  refine ⟨fun x => ?_⟩
-  rcases μ.exists_isOpen_measure_lt_top x with ⟨o, xo, o_open, μo⟩
-  refine ⟨o, o_open.mem_nhds xo, ?_⟩
-  apply ENNReal.mul_lt_top _ μo
-  simp
+    [IsLocallyFiniteMeasure μ] (c : ℝ≥0) : IsLocallyFiniteMeasure (c • μ) :=
+  μ.smul_locallyfinite coe_ne_top
 
 protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
     (μ : Measure α) [IsLocallyFiniteMeasure μ] :
