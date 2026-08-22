@@ -18,12 +18,14 @@ namespace Dyadic
 
 section Lemmas
 
+-- Some of these lemmas are high priority then the generic ring lemmas so that the `simpNF` is happy
+
 @[simp] theorem toRat_one : toRat 1 = 1 := rfl
 
 @[simp] protected theorem natCast_zero : (Nat.cast 0 : Dyadic) = 0 := rfl
 @[simp] protected theorem natCast_one : (Nat.cast 1 : Dyadic) = 1 := rfl
 
-@[simp, norm_cast]
+@[simp high, norm_cast]
 protected theorem natCast_add (a b : ℕ) : (Nat.cast (a + b) : Dyadic) = a + b := by
   simp [← Dyadic.toRat_inj]
 
@@ -31,14 +33,14 @@ protected theorem natCast_add (a b : ℕ) : (Nat.cast (a + b) : Dyadic) = a + b 
 
 @[simp] protected theorem intCast_one : (Int.cast 1 : Dyadic) = 1 := rfl
 
-@[simp, norm_cast]
+@[simp high, norm_cast]
 protected theorem intCast_add (a b : ℤ) : (Int.cast (a + b) : Dyadic) = a + b := by
   simp [← Dyadic.toRat_inj]
 
 @[simp, norm_cast]
 theorem intCast_natCast (n : ℕ) : (Int.cast n : Dyadic) = n := rfl
 
-@[simp, norm_cast]
+@[simp high, norm_cast]
 protected theorem intCast_neg (a : Int) : ((-a : Int) : Dyadic) = -(a : Dyadic) := by
   simp [← Dyadic.toRat_inj]
 
