@@ -54,6 +54,23 @@ noncomputable def Aut.overMapEquiv
     simpa only [MonoidHom.rangeRestrict_injective_iff] using
       Aut.injective_overMap f g fg, MonoidHom.rangeRestrict_surjective _⟩
 
+@[simps!]
+def Aut.overOverEquiv
+    {Z Y X : C} (f : Z ⟶ Y) (g : Y ⟶ X) (fg : Z ⟶ X)
+    (fac : f ≫ g = fg := by cat_disch) :
+    Aut (Over.mk (Y := Over.mk fg) (X := Over.mk g) (Over.homMk f)) ≃* Aut (Over.mk f) where
+  toFun σ :=
+    Over.isoMk ((Over.forget _ ⋙ Over.forget _).mapIso σ) (by
+      simpa [Functor.mapIso] using (Over.forget _).congr_map σ.hom.w)
+  invFun σ :=
+    Over.isoMk (Over.isoMk ((Over.forget _).mapIso σ) (by
+      simpa [fac, Functor.mapIso] using σ.hom.w =≫ g)) (by
+        ext
+        simpa [Functor.mapIso] using σ.hom.w)
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
+
 open PreGaloisCategory
 
 namespace GaloisCategory
