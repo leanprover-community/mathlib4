@@ -169,9 +169,6 @@ theorem not_subsingleton_Pic_of_finite :
     ¬ ∀ (R : Type) [CommSemiring R] [Finite R], Subsingleton (CommRing.Pic R) :=
   fun h ↦ not_subsingleton _ (h R₇)
 
-instance (R : Type*) [CommSemiring R] [Finite R] : Finite (MaximalSpectrum R) :=
-  .of_injective (·.asIdeal.carrier) fun _ _ h ↦ by ext; exact congr(_ ∈ $h)
-
 /-- It is not the case that every semi-local commutative semiring has trivial Picard group. -/
 theorem not_subsingleton_Pic_of_finite_maximalSpectrum :
     ¬ ∀ (R : Type) [CommSemiring R] [Finite (MaximalSpectrum R)], Subsingleton (CommRing.Pic R) :=

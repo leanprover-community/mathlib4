@@ -50,4 +50,7 @@ theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_
 theorem isCoprime_of_ne {I J : MaximalSpectrum R} (h : I ≠ J) : IsCoprime I.1 J.1 :=
   Ideal.isCoprime_iff_sup_eq.mpr <| I.2.coprime_of_ne J.2 <| mt MaximalSpectrum.ext h
 
+instance [Finite R] : Finite (MaximalSpectrum R) :=
+  .of_injective (·.asIdeal.carrier) fun _ _ h ↦ by ext; exact congr(_ ∈ $h)
+
 end MaximalSpectrum
