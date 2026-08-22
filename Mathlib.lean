@@ -3706,6 +3706,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 public import Mathlib.Combinatorics.SimpleGraph.Ends.Properties
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.ErdosStoneSimonovits
+public import Mathlib.Combinatorics.SimpleGraph.Extremal.KovariSosTuran
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.TuranDensity
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Zarankiewicz
