@@ -17,6 +17,7 @@ public import Mathlib.Tactic.Linter.HaveILetI
 public import Mathlib.Tactic.Linter.Header
 public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.Multigoal
+public import Mathlib.Tactic.Linter.OddIndent
 public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.OverlappingInstances
 public import Mathlib.Tactic.Linter.PrivateModule
