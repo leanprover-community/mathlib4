@@ -318,7 +318,7 @@ TODO Consider removing this definition in favour of `exists_minimalFor_of_wellFo
 of `α`, this is an element of `s` whose image under `f` is maximal in the sense of
 `Function.not_argmaxOn_lt`.
 
-See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` or `s` is finite.
+See also `Set.Finite.exists_maximalFor` and related lemmas for the case when `α` or `s` is finite.
 -/]
 noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
   WellFounded.min (InvImage.wf f wellFounded_lt) s hs
