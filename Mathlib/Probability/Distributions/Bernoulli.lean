@@ -6,6 +6,7 @@ Authors: Etienne Marion, David Ledvinka
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Probability.HasLaw
 public import Mathlib.Topology.UnitInterval
 
 /-!
@@ -161,14 +162,28 @@ theorem map_bernoulliMeasure' (x y : X) {f : X → Y} (hf : Measurable f) (p : I
     Ber(x, y, p).map f = bernoulliMeasure (f x) (f y) p := by
   simp [bernoulliMeasure_def, Measure.map_add _ _ hf, Measure.map_smul, map_dirac' hf]
 
+lemma eq_bernoulliMeasure {μ : Measure X}
+    (h1 : ∀ s, MeasurableSet s → x ∈ s → y ∈ s → μ s = 1)
+    (h2 : ∀ s, MeasurableSet s → x ∈ s → y ∉ s → μ s = toNNReal p)
+    (h3 : ∀ s, MeasurableSet s → x ∉ s → y ∈ s → μ s = toNNReal (σ p))
+    (h4 : ∀ s, MeasurableSet s → x ∉ s → y ∉ s → μ s = 0) :
+    μ = Ber(x, y, p) := by
+  ext s hs
+  by_cases hx : x ∈ s <;> by_cases hy : y ∈ s <;> simp_all
+
 section Integral
 
 variable {E : Type*} [NormedAddCommGroup E]
 
+@[simp]
+lemma memLp_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) (q : ℝ≥0∞) :
+    MemLp f q Ber(x, y, p) := by
+  simp [bernoulliMeasure_def, memLp_add_measure, MemLp.smul_measure_nnreal]
+
+@[simp]
 lemma integrable_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) :
-    Integrable f Ber(x, y, p) := by
-  simp [bernoulliMeasure_def, integrable_add_measure, integrable_dirac,
-    Integrable.smul_measure_nnreal]
+    Integrable f Ber(x, y, p) :=
+  memLp_one_iff_integrable.1 (memLp_bernoulliMeasure ..)
 
 variable [NormedSpace ℝ E] [CompleteSpace E]
 
@@ -178,6 +193,58 @@ lemma integral_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (
   · simp [NNReal.smul_def]
   all_goals exact (integrable_dirac (by simp)).smul_measure_nnreal
 
+lemma integral_id_bernoulliMeasure : ∫ x : ℝ, x ∂Ber(1, 0, p) = p := by
+  simp [integral_bernoulliMeasure]
+
+lemma variance_id_bernoulliMeasure : Var[id; Ber(1, 0, p)] = p * (1 - p) := by
+  rw [variance_eq_integral (by fun_prop)]
+  simp [integral_bernoulliMeasure]
+  ring
+
 end Integral
+
+section HasLaw
+
+/-! ### Bernoulli random variables -/
+
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+
+lemma HasLaw.memLp_comp_bernoulliMeasure {E : Type*} [NormedAddCommGroup E]
+    [MeasurableSingletonClass X] {f : Ω → X} (g : X → E) (q : ℝ≥0∞) (hf : HasLaw f Ber(x, y, p) P) :
+    MemLp (g ∘ f) q P :=
+  hf.memLp_comp (by simp)
+
+lemma HasLaw.memLp_bernoulliMeasure [NormedAddCommGroup X] [MeasurableSingletonClass X] {f : Ω → X}
+    (q : ℝ≥0∞) (hf : HasLaw f Ber(x, y, p) P) :
+    MemLp f q P := hf.memLp_comp_bernoulliMeasure id q
+
+lemma HasLaw.integrable_comp_bernoulliMeasure {E : Type*} [NormedAddCommGroup E]
+    [MeasurableSingletonClass X] {f : Ω → X} (g : X → E) (hf : HasLaw f Ber(x, y, p) P) :
+    Integrable (g ∘ f) P :=
+  hf.integrable_comp (by simp)
+
+lemma HasLaw.integrable_bernoulliMeasure [NormedAddCommGroup X] [MeasurableSingletonClass X]
+    {f : Ω → X} (hf : HasLaw f Ber(x, y, p) P) :
+    Integrable f  P := hf.integrable_comp_bernoulliMeasure id
+
+/-- The constant indicator of a set follows a Bernoulli distribution. -/
+theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M]
+    [MeasurableSpace M] (c : M) {s : Set Ω} (hs : NullMeasurableSet s P) :
+    HasLaw (s.indicator (fun _ ↦ c)) Ber(c, 0, ⟨P.real s, by simp⟩) P := by
+  classical
+  have h : AEMeasurable (s.indicator fun _ ↦ c) P := aemeasurable_const.indicator₀ hs
+  refine ⟨h, eq_bernoulliMeasure ?_ ?_ ?_ ?_⟩
+  all_goals
+    intro t ht h1 h2
+    simp_all [map_apply_of_aemeasurable h ht, Set.indicator_const_preimage_eq_union,
+      measure_compl₀ hs, ENNReal.coe_nnreal_eq, ENNReal.ofReal_sub]
+
+/-- The constant indicator of a set follows a Bernoulli distribution. -/
+theorem hasLaw_indicator_one_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M] [One M]
+    [MeasurableSpace M] {s : Set Ω} (hs : NullMeasurableSet s P) :
+    HasLaw (s.indicator (1 : Ω → M)) Ber(1, 0, ⟨P.real s, by simp⟩) P :=
+  hasLaw_indicator_bernoulliMeasure 1 hs
+
+end HasLaw
 
 end ProbabilityTheory
