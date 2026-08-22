@@ -1174,16 +1174,6 @@ theorem integrableOn_comp_exp_Ioi (g : ℝ → E) (a : ℝ) :
       (measurableSet_Ioi (a := a)) (fun x _ ↦ (hasDerivAt_exp x).hasDerivWithinAt)
       (fun x _ y _ hxy ↦ exp_injective hxy) g
 
-/-- Substitution `y = log x` in integrals over `Ioi a` -/
-theorem integral_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
-    ∫ x in Ioi a, x⁻¹ • g (log x) = ∫ y in Ioi (log a), g y := by
-  simpa [exp_log ha] using (integral_comp_exp_Ioi (fun x ↦ x⁻¹ • g (log x)) (log a)).symm
-
-theorem integrableOn_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
-    IntegrableOn (fun x ↦ x⁻¹ • g (log x)) (Ioi a) ↔ IntegrableOn g (Ioi (log a)) := by
-  symm
-  simpa  [exp_log ha] using integrableOn_comp_exp_Ioi (fun x ↦ x⁻¹ • g (log x)) (log a)
-
 /-- Substitution `y = exp x` in integrals over the whole line. -/
 theorem integral_comp_exp (g : ℝ → E) :
     ∫ x, exp x • g (exp x) = ∫ y in Ioi 0, g y := by
@@ -1198,6 +1188,16 @@ theorem integrable_comp_exp (g : ℝ → E) :
   symm
   simpa using integrableOn_image_iff_integrableOn_abs_deriv_smul
     .univ (fun x _ ↦ (hasDerivAt_exp x).hasDerivWithinAt) exp_injective.injOn g
+
+/-- Substitution `y = log x` in integrals over `Ioi a` -/
+theorem integral_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
+    ∫ x in Ioi a, x⁻¹ • g (log x) = ∫ y in Ioi (log a), g y := by
+  simpa [exp_log ha] using (integral_comp_exp_Ioi (fun x ↦ x⁻¹ • g (log x)) (log a)).symm
+
+theorem integrableOn_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
+    IntegrableOn (fun x ↦ x⁻¹ • g (log x)) (Ioi a) ↔ IntegrableOn g (Ioi (log a)) := by
+  symm
+  simpa  [exp_log ha] using integrableOn_comp_exp_Ioi (fun x ↦ x⁻¹ • g (log x)) (log a)
 
 /-- Substitution `y = log x` in integrals over `Ioi 0`. -/
 theorem integral_comp_log_Ioi_zero (g : ℝ → E) :
