@@ -629,8 +629,7 @@ lemma u₄_def : S.u₄ = η * S.u₃ * S.u₂⁻¹ := rfl
 noncomputable def u₅ := -η ^ 2 * S.u₁ * S.u₂⁻¹
 lemma u₅_def : S.u₅ = -η ^ 2 * S.u₁ * S.u₂⁻¹ := rfl
 
-example (a b : 𝓞 K) (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 := by
-  exact mul_ne_zero ha hb
+example (a b : 𝓞 K) (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 := mul_ne_zero ha hb
 
 -- This is just a computation and the formulas are too long.
 set_option linter.style.whitespace false in

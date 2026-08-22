@@ -587,8 +587,7 @@ theorem coe_congrAddEquiv (u : (i : ι) → N i ≃+ P i) :
 def congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
     (⨁ i, N i) ≃ₗ[R] ⨁ i, P i where
   toAddEquiv := congrAddEquiv (fun i ↦ (u i).toAddEquiv)
-  map_smul' r x := by
-    exact (DirectSum.lmap (fun i ↦ (u i).toLinearMap)).map_smul r x
+  map_smul' r x := (DirectSum.lmap (fun i ↦ (u i).toLinearMap)).map_smul r x
 
 theorem coe_congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
     ⇑(congrLinearEquiv u) = ⇑(DirectSum.lmap (fun i ↦ (u i).toLinearMap)) :=

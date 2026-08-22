@@ -654,8 +654,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
 /-- The **Akra-Bazzi theorem**: `T ∈ O(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
 theorem isBigO_asympBound : T =O[atTop] asympBound g a b := by
   calc T
-    _ =O[atTop] (fun n => (1 - ε n) * asympBound g a b n) := by
-      exact R.T_isBigO_smoothingFn_mul_asympBound
+    _ =O[atTop] (fun n => (1 - ε n) * asympBound g a b n) := R.T_isBigO_smoothingFn_mul_asympBound
     _ =O[atTop] (fun n => 1 * asympBound g a b n) := by
       refine IsBigO.mul (isBigO_const_of_tendsto (y := 1) ?_ one_ne_zero) (isBigO_refl _ _)
       rw [← Function.comp_def (fun n => 1 - ε n) Nat.cast]

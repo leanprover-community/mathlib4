@@ -352,8 +352,8 @@ theorem support_smul_subset_vadd_support' [MulZeroClass R] [SMulWithZero R V] {x
 
 theorem support_smul_subset_vadd_support [MulZeroClass R] [SMulWithZero R V] {x : R⟦Γ⟧}
     {y : HahnModule Γ' R V} :
-    ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support := by
-  exact support_smul_subset_vadd_support'
+    ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support :=
+  support_smul_subset_vadd_support'
 
 theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
     [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : R⟦Γ⟧}

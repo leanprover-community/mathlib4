@@ -137,8 +137,8 @@ lemma rnDeriv_withDensity_left {μ ν : Measure α} [SigmaFinite μ] [SigmaFinit
   have h := rnDeriv_withDensity_left_of_absolutelyContinuous hμ'ν hfν
   have h1 : μ'.rnDeriv ν =ᵐ[ν] μ.rnDeriv ν :=
     Measure.rnDeriv_withDensity _ (Measure.measurable_rnDeriv _ _)
-  have h2 : (μ'.withDensity f).rnDeriv ν =ᵐ[ν] (μ.withDensity f).rnDeriv ν := by
-    exact rnDeriv_withDensity_withDensity_rnDeriv_left μ ν hf_ne_top
+  have h2 : (μ'.withDensity f).rnDeriv ν =ᵐ[ν] (μ.withDensity f).rnDeriv ν :=
+    rnDeriv_withDensity_withDensity_rnDeriv_left μ ν hf_ne_top
   filter_upwards [h, h1, h2] with x hx hx1 hx2
   rw [← hx2, hx, hx1]
 

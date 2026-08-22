@@ -225,8 +225,8 @@ theorem Prime.dvd_finsetProd_iff {S : Finset M₀} {p : M} (pp : Prime p) (g : M
 @[deprecated (since := "2026-04-08")] alias Prime.dvd_finset_prod_iff := Prime.dvd_finsetProd_iff
 
 theorem Prime.not_dvd_finsetProd {S : Finset M₀} {p : M} (pp : Prime p) {g : M₀ → M}
-    (hS : ∀ a ∈ S, ¬p ∣ g a) : ¬p ∣ S.prod g := by
-  exact mt (Prime.dvd_finsetProd_iff pp _).1 <| not_exists.2 fun a => not_and.2 (hS a)
+    (hS : ∀ a ∈ S, ¬p ∣ g a) : ¬p ∣ S.prod g :=
+  mt (Prime.dvd_finsetProd_iff pp _).1 <| not_exists.2 fun a => not_and.2 (hS a)
 
 @[deprecated (since := "2026-04-08")] alias Prime.not_dvd_finset_prod := Prime.not_dvd_finsetProd
 

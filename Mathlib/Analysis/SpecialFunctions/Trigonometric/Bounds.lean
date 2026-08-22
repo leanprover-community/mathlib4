@@ -184,8 +184,8 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
   let U := Ico 0 (π / 2)
   have intU : interior U = Ioo 0 (π / 2) := interior_Ico
   have half_pi_pos : 0 < π / 2 := div_pos pi_pos two_pos
-  have cos_pos {y : ℝ} (hy : y ∈ U) : 0 < cos y := by
-    exact cos_pos_of_mem_Ioo (Ico_subset_Ioo_left (neg_lt_zero.mpr half_pi_pos) hy)
+  have cos_pos {y : ℝ} (hy : y ∈ U) : 0 < cos y :=
+    cos_pos_of_mem_Ioo (Ico_subset_Ioo_left (neg_lt_zero.mpr half_pi_pos) hy)
   have sin_pos {y : ℝ} (hy : y ∈ interior U) : 0 < sin y := by
     rw [intU] at hy
     exact sin_pos_of_mem_Ioo (Ioo_subset_Ioo_right (div_le_self pi_pos.le one_le_two) hy)
