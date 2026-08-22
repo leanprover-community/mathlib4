@@ -377,7 +377,7 @@ theorem infsep_eq_iInf [Decidable s.Nontrivial] :
       rcases h with ⟨_, _, _, rfl⟩
       exact dist_nonneg
     refine eq_of_forall_le_iff fun _ => ?_
-    simp_rw [hs.le_infsep_iff, le_ciInf_set_iff (offDiag_nonempty.mpr hs) hb, imp_forall_iff,
+    simp_rw [hs.le_infsep_iff, le_ciInf_set_iff (hs.offDiag_nonempty) hb, imp_forall_iff,
       mem_offDiag, Prod.forall, uncurry_apply_pair, and_imp]
   · exact (not_nontrivial_iff.mp hs).infsep_zero
 

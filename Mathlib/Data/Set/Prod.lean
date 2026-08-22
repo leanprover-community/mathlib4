@@ -248,12 +248,12 @@ theorem Nonempty.fst : (s ×ˢ t).Nonempty → s.Nonempty := fun ⟨x, hx⟩ => 
 theorem Nonempty.snd : (s ×ˢ t).Nonempty → t.Nonempty := fun ⟨x, hx⟩ => ⟨x.2, hx.2⟩
 
 @[simp]
-theorem prod_nonempty_iff : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
+theorem prod_nonempty : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod h.2⟩
 
 @[simp]
 theorem prod_eq_empty_iff : s ×ˢ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
-  simp only [not_nonempty_iff_eq_empty.symm, prod_nonempty_iff, not_and_or]
+  simp only [not_nonempty_iff_eq_empty.symm, prod_nonempty, not_and_or]
 
 theorem prod_sub_preimage_iff {W : Set γ} {f : α × β → γ} :
     s ×ˢ t ⊆ f ⁻¹' W ↔ ∀ a b, a ∈ s → b ∈ t → f (a, b) ∈ W := by simp [subset_def]
@@ -305,7 +305,7 @@ first set is empty. -/
 theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ ∨ s = ∅ ∨ t = ∅ := by
   rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.1 h]
-  have st : s.Nonempty ∧ t.Nonempty := by rwa [prod_nonempty_iff] at h
+  have st : s.Nonempty ∧ t.Nonempty := by rwa [prod_nonempty] at h
   refine ⟨fun H => Or.inl ⟨?_, ?_⟩, ?_⟩
   · have := image_mono (f := Prod.fst) H
     rwa [fst_image_prod _ st.2, fst_image_prod _ (h.mono H).snd] at this
@@ -331,7 +331,7 @@ theorem prod_eq_prod_iff_of_nonempty (h : (s ×ˢ t).Nonempty) :
   constructor
   · intro heq
     have h₁ : (s₁ ×ˢ t₁ : Set _).Nonempty := by rwa [← heq]
-    rw [prod_nonempty_iff] at h h₁
+    rw [prod_nonempty] at h h₁
     rw [← fst_image_prod s h.2, ← fst_image_prod s₁ h₁.2, heq, eq_self_iff_true, true_and, ←
       snd_image_prod h.1 t, ← snd_image_prod h₁.1 t₁, heq]
   · grind
@@ -409,11 +409,8 @@ end Prod
 
 /-! ### Diagonal
 
-In this section we prove some lemmas about the diagonal set `{p | p.1 = p.2}` and the diagonal map
-`fun x ↦ (x, x)`.
+In this section we prove some lemmas about the diagonal set `diagonal α`.
 -/
-
-
 section Diagonal
 
 variable {α : Type*} {s t : Set α}
@@ -423,16 +420,6 @@ lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
 
 instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=
   h x.1 x.2
-
-theorem preimage_coe_coe_diagonal (s : Set α) :
-    Prod.map (fun x : s => (x : α)) (fun x : s => (x : α)) ⁻¹' diagonal α = diagonal s := by
-  ext ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
-  simp [Set.diagonal]
-
-@[simp]
-theorem range_diag : range Function.diag = diagonal α := by
-  ext ⟨x, y⟩
-  simp [diagonal, eq_comm]
 
 theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, (x, x) ∈ s := by grind
 
@@ -447,13 +434,17 @@ theorem diag_preimage_prod (s t : Set α) : Function.diag ⁻¹' s ×ˢ t = s �
 theorem diag_preimage_prod_self (s : Set α) : Function.diag ⁻¹' s ×ˢ s = s :=
   inter_self s
 
-theorem diag_image (s : Set α) : Function.diag '' s = diagonal α ∩ s ×ˢ s := by
-  rw [← range_diag, ← image_preimage_eq_range_inter, diag_preimage_prod_self]
-
 theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
   simp only [subsingleton_iff, eq_univ_iff_forall, Prod.forall, mem_diagonal_iff]
 
 theorem diagonal_eq_univ [Subsingleton α] : diagonal α = univ := diagonal_eq_univ_iff.2 ‹_›
+
+@[simp] theorem range_diag : range Function.diag = diagonal α := by
+  ext ⟨x, y⟩
+  simp
+
+theorem preimage_coe_coe_diagonal (s : Set α) :
+    Prod.map Subtype.val Subtype.val ⁻¹' diagonal α = diagonal s := by grind
 
 end Diagonal
 
@@ -549,6 +540,72 @@ end Pullback
 
 namespace Set
 
+section Diag
+
+variable {α : Type*} {s t : Set α} {a : α}
+
+instance decidableMemDiag [DecidablePred (· ∈ s)] [DecidableEq α] (x : α × α) :
+    Decidable (x ∈ s.diag) :=
+  inferInstanceAs (Decidable (_ ∧ _))
+
+theorem diag_mono : Monotone (diag : Set α → Set (α × α)) := fun _ _ h _ =>
+  And.imp_left (@h _)
+
+@[simp]
+theorem diag_nonempty : s.diag.Nonempty ↔ s.Nonempty := by
+  simp [diag, Set.Nonempty]
+
+@[simp]
+theorem diag_eq_empty : s.diag = ∅ ↔ s = ∅ := by
+  simp [Set.ext_iff]
+
+alias ⟨_, Nonempty.diag_nonempty⟩ := diag_nonempty
+
+@[simp]
+theorem diag_empty : (∅ : Set α).diag = ∅ := by grind
+
+theorem diag_subset_prod : s.diag ⊆ s ×ˢ s := by grind
+
+theorem diag_eq_sep_prod : s.diag = {x ∈ s ×ˢ s | x.1 = x.2} := by grind
+
+@[simp]
+theorem diag_singleton (a : α) : ({a} : Set α).diag = {(a, a)} := by grind
+
+@[simp]
+theorem diag_univ : (univ : Set α).diag = diagonal α := by grind
+
+theorem diag_inter : (s ∩ t).diag = s.diag ∩ t.diag := by grind
+
+theorem diag_union : (s ∪ t).diag = s.diag ∪ t.diag := by grind
+
+theorem diag_insert (a : α) (s : Set α) :
+    (insert a s).diag = insert (a, a) s.diag := by grind
+
+@[simp] theorem diag_image (s : Set α) : Function.diag '' s = s.diag := by grind
+
+theorem image_diag {β : Type*} (f : α × α → β) :
+    f '' s.diag = (fun x => f (x, x)) '' s := by grind
+
+theorem preimage_coe_coe_diag (s : Set α) :
+    Prod.map Subtype.val Subtype.val ⁻¹' s.diag = diagonal s := by grind
+
+lemma mk_mem_diag (h : a ∈ s) : (a, a) ∈ s.diag := by simpa
+
+lemma diag_subset_diagonal : s.diag ⊆ diagonal α := by grind
+
+lemma diag_subset_iff {t : Set (α × α)} : s.diag ⊆ t ↔ ∀ a ∈ s, (a, a) ∈ t := by grind
+
+lemma diag_injective : (diag : Set α → Set (α × α)).Injective := fun _ _ ↦ by simp [Set.ext_iff]
+
+@[simp] lemma diag_inj : s.diag = t.diag ↔ s = t := diag_injective.eq_iff
+
+lemma diag_sdiff : (s \ t).diag = s.diag \ t.diag := by grind
+
+@[simp] lemma fst_image_diag : Prod.fst '' s.diag = s := by ext; simp
+@[simp] lemma snd_image_diag : Prod.snd '' s.diag = s := by ext; simp
+
+end Diag
+
 section OffDiag
 
 variable {α : Type*} {s t : Set α} {a : α}
@@ -562,7 +619,7 @@ theorem offDiag_nonempty : s.offDiag.Nonempty ↔ s.Nontrivial := by
 
 @[simp]
 theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
-  rw [← not_nonempty_iff_eq_empty, ← not_nontrivial_iff, offDiag_nonempty.not]
+  simp [Set.ext_iff, Set.Subsingleton, forall_cond_comm]
 
 alias ⟨_, Nontrivial.offDiag_nonempty⟩ := offDiag_nonempty
 
@@ -612,6 +669,19 @@ theorem offDiag_union (h : Disjoint s t) :
 theorem offDiag_insert (ha : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
   grind
 
+variable (s)
+
+theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by grind
+
+@[simp]
+theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag := by grind
+
+@[simp]
+theorem prod_sdiff_offDiag : s ×ˢ s \ s.offDiag = s.diag := by grind
+
+@[simp]
+theorem prod_sdiff_diag : s ×ˢ s \ s.diag = s.offDiag := by grind
+
 end OffDiag
 
 /-! ### Cartesian set-indexed product of sets -/
@@ -646,34 +716,34 @@ theorem pi_inter_distrib : (s.pi fun i => t i ∩ t₁ i) = s.pi t ∩ s.pi t₁
 
 theorem pi_congr (h : s₁ = s₂) (h' : ∀ i ∈ s₁, t₁ i = t₂ i) : s₁.pi t₁ = s₂.pi t₂ := by grind
 
-theorem pi_eq_empty (hs : i ∈ s) (ht : t i = ∅) : s.pi t = ∅ := by grind
+theorem pi_eq_empty_of_eq_empty (hs : i ∈ s) (ht : t i = ∅) : s.pi t = ∅ := by grind
 
-theorem univ_pi_eq_empty (ht : t i = ∅) : pi univ t = ∅ :=
-  pi_eq_empty (mem_univ i) ht
+theorem univ_pi_eq_empty_of_eq_empty (ht : t i = ∅) : pi univ t = ∅ :=
+  pi_eq_empty_of_eq_empty (mem_univ i) ht
 
-theorem pi_nonempty_iff : (s.pi t).Nonempty ↔ ∀ i, ∃ x, i ∈ s → x ∈ t i := by
+theorem pi_nonempty : (s.pi t).Nonempty ↔ ∀ i, ∃ x, i ∈ s → x ∈ t i := by
   simp [Classical.skolem, Set.Nonempty]
 
-theorem univ_pi_nonempty_iff : (pi univ t).Nonempty ↔ ∀ i, (t i).Nonempty := by
+theorem univ_pi_nonempty : (pi univ t).Nonempty ↔ ∀ i, (t i).Nonempty := by
   simp [Classical.skolem, Set.Nonempty]
 
-theorem pi_eq_empty_iff : s.pi t = ∅ ↔ ∃ i, IsEmpty (α i) ∨ i ∈ s ∧ t i = ∅ := by
-  rw [← not_nonempty_iff_eq_empty, pi_nonempty_iff]
+theorem pi_eq_empty : s.pi t = ∅ ↔ ∃ i, IsEmpty (α i) ∨ i ∈ s ∧ t i = ∅ := by
+  rw [← not_nonempty_iff_eq_empty, pi_nonempty]
   push Not
   refine exists_congr fun i => ?_
   cases isEmpty_or_nonempty (α i) <;> simp [*, forall_and, eq_empty_iff_forall_notMem]
 
 @[simp]
-theorem univ_pi_eq_empty_iff : pi univ t = ∅ ↔ ∃ i, t i = ∅ := by
-  simp [← not_nonempty_iff_eq_empty, univ_pi_nonempty_iff]
+theorem univ_pi_eq_empty : pi univ t = ∅ ↔ ∃ i, t i = ∅ := by
+  simp [← not_nonempty_iff_eq_empty, univ_pi_nonempty]
 
 @[simp]
 theorem univ_pi_empty [h : Nonempty ι] : pi univ (fun _ => ∅ : ∀ i, Set (α i)) = ∅ :=
-  univ_pi_eq_empty_iff.2 <| h.elim fun x => ⟨x, rfl⟩
+  univ_pi_eq_empty.2 <| h.elim fun x => ⟨x, rfl⟩
 
 @[simp]
 theorem disjoint_univ_pi : Disjoint (pi univ t₁) (pi univ t₂) ↔ ∃ i, Disjoint (t₁ i) (t₂ i) := by
-  simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, univ_pi_eq_empty_iff]
+  simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, univ_pi_eq_empty]
 
 theorem Disjoint.set_pi (hi : i ∈ s) (ht : Disjoint (t₁ i) (t₂ i)) : Disjoint (s.pi t₁) (s.pi t₂) :=
   disjoint_left.2 fun _ h₁ h₂ => disjoint_left.1 ht (h₁ _ hi) (h₂ _ hi)
@@ -685,7 +755,7 @@ section Nonempty
 
 variable [∀ i, Nonempty (α i)]
 
-theorem pi_eq_empty_iff' : s.pi t = ∅ ↔ ∃ i ∈ s, t i = ∅ := by simp [pi_eq_empty_iff]
+theorem pi_eq_empty_iff' : s.pi t = ∅ ↔ ∃ i ∈ s, t i = ∅ := by simp [pi_eq_empty]
 
 @[simp]
 theorem disjoint_pi : Disjoint (s.pi t₁) (s.pi t₂) ↔ ∃ i ∈ s, Disjoint (t₁ i) (t₂ i) := by
@@ -928,7 +998,10 @@ variable {α β γ δ : Type*} {s : Set α} {f : α → β}
 section graphOn
 variable {x : α × β}
 
-@[simp] lemma mem_graphOn : x ∈ s.graphOn f ↔ x.1 ∈ s ∧ f x.1 = x.2 := by aesop (add simp graphOn)
+@[simp] lemma mem_graphOn : x ∈ s.graphOn f ↔ x.1 ∈ s ∧ f x.1 = x.2 := by
+  simp [graphOn, Prod.ext_iff]
+
+@[simp] lemma graphOn_id (s : Set α) : s.graphOn id = s.diag := s.diag_image
 
 @[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := image_empty _
 @[simp] lemma graphOn_eq_empty : graphOn f s = ∅ ↔ s = ∅ := image_eq_empty
