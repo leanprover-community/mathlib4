@@ -177,17 +177,3 @@ lemma smul_left_injective (hm : m ≠ 0) : ((· • m) : R → M).Injective := b
   (smul_left_injective _ hm).eq_iff
 
 end Ring
-
-section Semiring
-variable (R M) [Semiring R] [AddCommGroup M] [Module R M]
-
--- TODO: Add a `ℤ`-specific version of `smul_left_injective` and move this lemma to an earlier file.
-/-- Only a ring of characteristic zero can have a non-trivial module without additive or
-scalar torsion. -/
-lemma CharZero.of_isAddTorsionFree [Nontrivial M] [IsAddTorsionFree M] : CharZero R := by
-  refine ⟨fun {n m h} ↦ ?_⟩
-  obtain ⟨x, hx⟩ := exists_ne (0 : M)
-  replace h : (n : ℤ) • x = (m : ℤ) • x := by simp [← Nat.cast_smul_eq_nsmul R, h]
-  simpa using smul_left_injective ℤ hx h
-
-end Semiring

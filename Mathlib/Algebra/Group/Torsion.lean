@@ -87,6 +87,14 @@ lemma IsMulTorsionFree.zpow_eq_one_iff : a ^ n = 1 ↔ a = 1 ∨ n = 0 := by
 @[to_additive IsAddTorsionFree.zsmul_eq_zero_iff_left]
 lemma IsMulTorsionFree.zpow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by simp [*]
 
+@[to_additive zsmul_left_injective]
+lemma zpow_right_injective (ha : a ≠ 1) :
+    (a ^ · : ℤ → G).Injective := by
+  intro m n h
+  apply Int.sub_eq_zero.mp
+  apply (IsMulTorsionFree.zpow_eq_one_iff_right ha).mp
+  simp [zpow_sub, h]
+
 @[to_additive] lemma self_eq_inv : a = a⁻¹ ↔ a = 1 := by rw [← sq_eq_one, sq, mul_eq_one_iff_eq_inv]
 @[to_additive] lemma inv_eq_self : a⁻¹ = a ↔ a = 1 := by rw [eq_comm, self_eq_inv]
 @[to_additive] lemma self_ne_inv : a ≠ a⁻¹ ↔ a ≠ 1 := self_eq_inv.ne
