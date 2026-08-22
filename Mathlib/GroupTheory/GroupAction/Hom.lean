@@ -176,14 +176,16 @@ def _root_.MulActionSemiHomClass.toMulActionHom [MulActionSemiHomClass F φ X Y]
   map_smul' := map_smulₛₗ f
 
 /-- Any type satisfying `MulActionSemiHomClass` can be cast into `MulActionHom` via
-  `MulActionHomSemiClass.toMulActionHom`. -/
-@[to_additive]
+  `MulActionSemiHomClass.toMulActionHom`. -/
+@[to_additive /-- Any type satisfying `AddActionSemiHomClass` can be cast into `AddActionHom` via
+  `AddActionSemiHomClass.toAddActionHom`. -/]
 instance [MulActionSemiHomClass F φ X Y] : CoeTC F (X →ₑ[φ] Y) :=
   ⟨MulActionSemiHomClass.toMulActionHom⟩
 
 variable (M' X Y F) in
 /-- If Y/X/M forms a scalar tower, any map X → Y preserving X-action also preserves M-action. -/
-@[to_additive]
+@[to_additive /-- If Y/X/M forms a vadd tower, any map X → Y preserving X-action also preserves
+M-action. -/]
 theorem _root_.IsScalarTower.smulHomClass [MulOneClass X] [SMul X Y] [IsScalarTower M' X Y]
     [MulActionHomClass F X X Y] : MulActionHomClass F M' X Y where
   map_smulₛₗ f m x := by
