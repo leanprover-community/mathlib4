@@ -278,6 +278,20 @@ theorem coeToGL_det (g : SpecialLinearGroup n R) :
 @[simp]
 lemma coe_GL_coe_matrix (g : SpecialLinearGroup n R) : ((toGL g) : Matrix n n R) = g := rfl
 
+lemma toGL_range :
+    (toGL : SpecialLinearGroup n R →* GL n R).range = GeneralLinearGroup.det.ker := by
+  ext A
+  exact ⟨by rintro ⟨_, rfl⟩; simp, fun hA => ⟨⟨_,
+    (by simpa [GeneralLinearGroup.val_det_apply] using congrArg Units.val hA)⟩,
+      Units.ext rfl⟩⟩
+
+/-- toGLKerEquiv is the multiplicative equivalence between SpecialLinearGroup n R and the kernel of
+GeneralLinearGroup.det : GL n R →* Rˣ, induced by the inclusion toGL. -/
+noncomputable def toGLKerEquiv :
+    SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker :=
+  (MonoidHom.ofInjective toGL_injective).trans (MulEquiv.subgroupCongr toGL_range)
+    (MulEquiv.subgroupCongr toGL_range)
+
 variable (S) in
 /-- `mapGL` is the map from the special linear group over `R` to the general linear group over
 `S`, where `S` is an `R`-algebra. -/
