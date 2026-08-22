@@ -145,6 +145,11 @@ theorem comp_app {F G H : Sheaf C X} (f : F ⟶ G) (g : G ⟶ H) (t) :
     (f ≫ g).1.app t = f.1.app t ≫ g.1.app t :=
   rfl
 
+/-- The evaluation on an open functor. Given `U : Opens X`, `(sheafSections C).obj (op U)` is the
+sections functor usually written in the literature as `Γ(U, _)` -/
+@[simps!]
+def sheafSections : (Opens X)ᵒᵖ ⥤ Sheaf C X ⥤ C := CategoryTheory.sheafSections _ C
+
 end Sheaf
 
 lemma Presheaf.IsSheaf.section_ext {X : TopCat.{u}}
