@@ -73,7 +73,6 @@ class ContMDiffSMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [T
     (M : Type*) [TopologicalSpace M] [ChartedSpace H' M] [SMul G M] : Prop where
   contMDiff_smul : CMDiff n fun p : G × M ↦ p.1 • p.2
 
-
 /-- Typeclass stating that for each `γ : Γ`, the additive action `fun x : M ↦ γ +ᵥ x` is Cⁿ.
 Unlike `ContMDiffVAdd` (which requires the action to be Cⁿ jointly as a map `Γ × M → M`), no
 topology or manifold structure on `Γ` is required, so this class also covers additive actions of
