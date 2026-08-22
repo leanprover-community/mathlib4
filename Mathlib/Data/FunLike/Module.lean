@@ -28,7 +28,7 @@ namespace FunLike
 
 section SMulInstances
 
-variable [SMul M β] [SMul M' β] [SMul M F] [SMul M' F] [IsSMulApply M F α β] [IsSMulApply M' F α β]
+variable [SMul M β] [SMul M' β] [SMul M F] [SMul M' F] [IsSMulApply M F] [IsSMulApply M' F]
 
 include i in
 protected theorem isScalarTower [SMul M M'] [IsScalarTower M M' β] : IsScalarTower M M' F where
@@ -44,14 +44,14 @@ section ModuleInstance
 
 include i in
 protected theorem isCentralScalar [SMul M F] [SMul Mᵐᵒᵖ F] [SMul M β] [SMul Mᵐᵒᵖ β]
-    [IsCentralScalar M β] [IsSMulApply M F α β] [IsSMulApply Mᵐᵒᵖ F α β] :
+    [IsCentralScalar M β] [IsSMulApply M F] [IsSMulApply Mᵐᵒᵖ F] :
     IsCentralScalar M F where
   op_smul_eq_smul a b := by apply DFunLike.ext; simp [op_smul_eq_smul]
 
 /-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x` and
 `0 x = 0`, `(f + g) x = f x + g x` is a `DistribSMul` if `β` is a `DistribSMul`. -/
 protected abbrev distribSMul [AddZeroClass β] [AddZeroClass F] [DistribSMul M β]
-    [SMul M F] [IsZeroApply F α β] [IsAddApply F α β] [IsSMulApply M F α β] :
+    [SMul M F] [IsZeroApply F] [IsAddApply F] [IsSMulApply M F] :
     DistribSMul M F :=
   DFunLike.coe_injective.distribSMul (coeAddMonoidHom F α β) FunLike.coe_smul
 
@@ -59,25 +59,25 @@ protected abbrev distribSMul [AddZeroClass β] [AddZeroClass F] [DistribSMul M �
 is a `MulAction` if `β` is a `MulAction`. -/
 @[to_additive /-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x`
 is an `AddAction` if `β` is an `AddAction`. -/]
-protected abbrev mulAction [SMul M F] [Monoid M] [MulAction M β] [IsSMulApply M F α β] :
+protected abbrev mulAction [SMul M F] [Monoid M] [MulAction M β] [IsSMulApply M F] :
     MulAction M F :=
   DFunLike.coe_injective.mulAction _ FunLike.coe_smul
 
 /-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x`, `0 x = 0`,
 `(f + g) x = f x + g x` is a `DistribMulAction` if `β` is a `DistribMulAction`. -/
 protected abbrev distribMulAction [Monoid M] [AddMonoid β] [AddMonoid F] [DistribMulAction M β]
-    [SMul M F] [IsZeroApply F α β] [IsAddApply F α β] [IsSMulApply M F α β] :
+    [SMul M F] [IsZeroApply F] [IsAddApply F] [IsSMulApply M F] :
     DistribMulAction M F :=
   DFunLike.coe_injective.distribMulAction (coeAddMonoidHom F α β) FunLike.coe_smul
 
 variable [Semiring M] [AddCommMonoid β] [Module M β] [AddCommMonoid F]
 
 /-- A `FunLike` type is a `Module` if `β` is a `Module`. -/
-protected abbrev module [IsZeroApply F α β] [IsAddApply F α β] [SMul M F] [IsSMulApply M F α β] :
+protected abbrev module [IsZeroApply F] [IsAddApply F] [SMul M F] [IsSMulApply M F] :
     Module M F :=
   coeAddHom_injective.module M (coeAddMonoidHom F α β) coe_smul
 
-protected theorem moduleIsTorsionFree [Module M F] [IsSMulApply M F α β]
+protected theorem moduleIsTorsionFree [Module M F] [IsSMulApply M F]
     [Module.IsTorsionFree M β] : Module.IsTorsionFree M F :=
   DFunLike.coe_injective.moduleIsTorsionFree _ FunLike.coe_smul
 

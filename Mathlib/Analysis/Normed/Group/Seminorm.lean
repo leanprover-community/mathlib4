@@ -226,7 +226,7 @@ instance instZeroGroupSeminorm : Zero (GroupSeminorm E) :=
       inv' := fun _ => rfl }⟩
 
 @[to_additive]
-instance : IsZeroApply (GroupSeminorm E) E ℝ where
+instance : IsZeroApply (GroupSeminorm E) where
   zero_apply _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias _root_.GroupSeminorm.coe_zero := FunLike.coe_zero
@@ -252,7 +252,7 @@ instance : Add (GroupSeminorm E) :=
       inv' := fun x => by simp_rw [map_inv_eq_map p, map_inv_eq_map q] }⟩
 
 @[to_additive]
-instance : IsAddApply (GroupSeminorm E) E ℝ where
+instance : IsAddApply (GroupSeminorm E) where
   add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias _root_.GroupSeminorm.coe_add := FunLike.coe_add
@@ -459,7 +459,7 @@ instance toSMul : SMul R (AddGroupSeminorm E) :=
         apply map_add_le_add
       neg' := fun x => by simp_rw [map_neg_eq_map] }⟩
 
-instance : IsSMulApply R (AddGroupSeminorm E) E ℝ where
+instance : IsSMulApply R (AddGroupSeminorm E) where
   smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
@@ -529,7 +529,7 @@ instance : Zero (NonarchAddGroupSeminorm E) :=
       add_le_max' := fun r s => by simp only [Pi.zero_apply]; rw [max_eq_right]; rfl
       neg' := fun _ => rfl }⟩
 
-instance : IsZeroApply (NonarchAddGroupSeminorm E) E ℝ where
+instance : IsZeroApply (NonarchAddGroupSeminorm E) where
   zero_apply _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_zero := FunLike.coe_zero
@@ -646,7 +646,7 @@ instance : SMul R (GroupSeminorm E) :=
         apply map_mul_le_add
       inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩
 
-instance : IsSMulApply R (GroupSeminorm E) E ℝ where
+instance : IsSMulApply R (GroupSeminorm E) where
   smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
@@ -701,7 +701,7 @@ instance : SMul R (NonarchAddGroupSeminorm E) :=
         apply map_add_le_max
       neg' := fun x => by simp_rw [map_neg_eq_map p] }⟩
 
-instance : IsSMulApply R (NonarchAddGroupSeminorm E) E ℝ where
+instance : IsSMulApply R (NonarchAddGroupSeminorm E) where
   smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
@@ -778,7 +778,7 @@ instance : Add (GroupNorm E) :=
         of_not_not fun h => hx.not_gt <| add_pos (map_pos_of_ne_one p h) (map_pos_of_ne_one q h) }⟩
 
 @[to_additive]
-instance : IsAddApply (GroupNorm E) E ℝ where
+instance : IsAddApply (GroupNorm E) where
   add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias _root_.GroupNorm.coe_add := FunLike.coe_add
