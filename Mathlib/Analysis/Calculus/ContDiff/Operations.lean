@@ -78,8 +78,7 @@ theorem hasFTaylorSeriesUpToOn_pi {n : ℕ∞ω} :
 theorem hasFTaylorSeriesUpToOn_pi' {n : ℕ∞ω} :
     HasFTaylorSeriesUpToOn n Φ P' s ↔
       ∀ i, HasFTaylorSeriesUpToOn n (fun x => Φ x i)
-        (fun x m => (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ i).compContinuousMultilinearMap
-          (P' x m)) s := by
+        (fun x m => (ContinuousLinearMap.proj (R := 𝕜) (φ := F') i) ∘ᶠ (P' x m)) s := by
   convert! hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x ↦ Φ x i); ext; rfl
 
 theorem contDiffWithinAt_pi :
@@ -663,8 +662,7 @@ theorem iteratedFDerivWithin_const_smul_apply (hf : ContDiffWithinAt 𝕜 i f s 
 theorem iteratedFDerivWithin_smul_const_apply {f : E → A} (hf : ContDiffWithinAt 𝕜 i f s x)
     (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 i (fun y ↦ f y • v) s x =
-      ((ContinuousLinearMap.id 𝕜 A).smulRight v).compContinuousMultilinearMap
-        (iteratedFDerivWithin 𝕜 i f s x) :=
+      ((ContinuousLinearMap.id 𝕜 A).smulRight v) ∘ᶠ iteratedFDerivWithin 𝕜 i f s x :=
   (ContinuousLinearMap.id 𝕜 A).smulRight v |>.iteratedFDerivWithin_comp_left hf hu hx le_rfl
 
 theorem iteratedFDeriv_const_smul_apply (hf : ContDiffAt 𝕜 i f x) :
@@ -677,8 +675,7 @@ theorem iteratedFDeriv_const_smul_apply' (hf : ContDiffAt 𝕜 i f x) :
 
 theorem iteratedFDeriv_smul_const_apply {f : E → A} (hf : ContDiffAt 𝕜 i f x) :
     iteratedFDeriv 𝕜 i (fun y ↦ f y • v) x =
-      ((ContinuousLinearMap.id 𝕜 A).smulRight v).compContinuousMultilinearMap
-        (iteratedFDeriv 𝕜 i f x) :=
+      ((ContinuousLinearMap.id 𝕜 A).smulRight v) ∘ᶠ iteratedFDeriv 𝕜 i f x :=
   (ContinuousLinearMap.id 𝕜 A).smulRight v |>.iteratedFDeriv_comp_left hf le_rfl
 
 theorem iteratedFDeriv_comp_const_smul (a : 𝕜) (hf : ContDiff 𝕜 i f) :
