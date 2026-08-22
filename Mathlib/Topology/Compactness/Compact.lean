@@ -388,23 +388,56 @@ theorem isCompact_iff_finite_subfamily_closed :
       (∀ i, IsClosed (t i)) → Disjoint s (⋂ i, t i) → ∃ u : Finset ι, Disjoint s (⋂ i ∈ u, t i) :=
   ⟨fun hs => hs.elim_finite_subfamily_closed, isCompact_of_finite_subfamily_closed⟩
 
+/-- If `s : Set X` belongs to `𝓝 x ⊓ l` for all `x` from a compact set `K`,
+then it belongs to `(𝓝ˢ K) ⊓ l`,
+i.e., there exist an open `U ⊇ K` and `T ∈ l` such that `U ∩ T ⊆ s`. -/
+theorem IsCompact.mem_nhdsSet_inf_of_forall {K : Set X} {l : Filter X} {s : Set X}
+    (hK : IsCompact K) (hs : ∀ x ∈ K, s ∈ 𝓝 x ⊓ l) : s ∈ (𝓝ˢ K) ⊓ l := by
+  refine hK.induction_on (by simp) (fun t t' ht hs ↦ ?_) (fun t t' ht ht' ↦ ?_) fun x hx ↦ ?_
+  · exact inf_le_inf_right l (nhdsSet_mono ht) hs
+  · simp [nhdsSet_union, inf_sup_right, *]
+  · rcases ((nhds_basis_opens _).inf l.basis_sets).mem_iff.1 (hs x hx)
+      with ⟨⟨u, v⟩, ⟨⟨hx, huo⟩, hv⟩, hs⟩
+    refine ⟨u, nhdsWithin_le_nhds (huo.mem_nhds hx), mem_of_superset ?_ hs⟩
+    exact inter_mem_inf (huo.mem_nhdsSet.2 Subset.rfl) hv
+
+theorem IsCompact.nhdsSet_inf_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
+    (𝓝ˢ K) ⊓ l = ⨆ x ∈ K, 𝓝 x ⊓ l :=
+  le_antisymm (fun s hs ↦ hK.mem_nhdsSet_inf_of_forall <| by simpa using hs)
+    (iSup₂_le fun _ hx ↦ inf_le_inf_right l (nhds_le_nhdsSet hx))
+
+theorem IsCompact.inf_nhdsSet_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
+    l ⊓ (𝓝ˢ K) = ⨆ x ∈ K, l ⊓ 𝓝 x := by
+  simp [inf_comm l, hK.nhdsSet_inf_eq_biSup]
+
+/-- If `s : Set X` belongs to `l ⊓ 𝓝 x` for all `x` from a compact set `K`,
+then it belongs to `l ⊓ (𝓝ˢ K)`,
+i.e., there exist `T ∈ l` and an open `U ⊇ K` such that `T ∩ U ⊆ s`. -/
+theorem IsCompact.mem_inf_nhdsSet_of_forall {K : Set X} {l : Filter X} {s : Set X}
+    (hK : IsCompact K) (hs : ∀ y ∈ K, s ∈ l ⊓ 𝓝 y) : s ∈ l ⊓ 𝓝ˢ K :=
+  (hK.inf_nhdsSet_eq_biSup l).symm ▸ by simpa using hs
+
+/-- If `K` is a compact set, then `𝓝ˢ K ×ˢ l` is the supremum of the filters `𝓝 x ×ˢ l`
+over `x ∈ K`. -/
+theorem IsCompact.nhdsSet_prod_eq_biSup {K : Set X} (hK : IsCompact K) {Y} (l : Filter Y) :
+    (𝓝ˢ K) ×ˢ l = ⨆ x ∈ K, 𝓝 x ×ˢ l := by
+  rcases isEmpty_or_nonempty Y with hY | hY
+  · simp [filter_eq_bot_of_isEmpty l]
+  · let : TopologicalSpace Y := ⊤
+    have hKY : IsCompact ((fun x ↦ (x, hY.some)) '' K) :=
+      hK.image (continuous_id.prodMk continuous_const)
+    have h1 : 𝓝ˢ ((fun x ↦ (x, hY.some)) '' K) = (𝓝ˢ K) ×ˢ (⊤ : Filter Y) := by
+      simp_rw [prod_top, nhdsSet, sSup_image, iSup_image, nhds_prod_eq,
+        IndiscreteTopology.nhds_eq, prod_top, comap_iSup]
+    simpa only [h1, iSup_image, nhds_prod_eq, IndiscreteTopology.nhds_eq, prod_inf_prod,
+      inf_top_eq, top_inf_eq] using hKY.nhdsSet_inf_eq_biSup ((⊤ : Filter X) ×ˢ l)
+
 /-- If `s : Set (X × Y)` belongs to `𝓝 x ×ˢ l` for all `x` from a compact set `K`,
 then it belongs to `(𝓝ˢ K) ×ˢ l`,
 i.e., there exist an open `U ⊇ K` and `t ∈ l` such that `U ×ˢ t ⊆ s`. -/
 theorem IsCompact.mem_nhdsSet_prod_of_forall {K : Set X} {Y} {l : Filter Y} {s : Set (X × Y)}
-    (hK : IsCompact K) (hs : ∀ x ∈ K, s ∈ 𝓝 x ×ˢ l) : s ∈ (𝓝ˢ K) ×ˢ l := by
-  refine hK.induction_on (by simp) (fun t t' ht hs ↦ ?_) (fun t t' ht ht' ↦ ?_) fun x hx ↦ ?_
-  · exact prod_mono (nhdsSet_mono ht) le_rfl hs
-  · simp [sup_prod, *]
-  · rcases ((nhds_basis_opens _).prod l.basis_sets).mem_iff.1 (hs x hx)
-      with ⟨⟨u, v⟩, ⟨⟨hx, huo⟩, hv⟩, hs⟩
-    refine ⟨u, nhdsWithin_le_nhds (huo.mem_nhds hx), mem_of_superset ?_ hs⟩
-    exact prod_mem_prod (huo.mem_nhdsSet.2 Subset.rfl) hv
-
-theorem IsCompact.nhdsSet_prod_eq_biSup {K : Set X} (hK : IsCompact K) {Y} (l : Filter Y) :
-    (𝓝ˢ K) ×ˢ l = ⨆ x ∈ K, 𝓝 x ×ˢ l :=
-  le_antisymm (fun s hs ↦ hK.mem_nhdsSet_prod_of_forall <| by simpa using hs)
-    (iSup₂_le fun _ hx ↦ prod_mono (nhds_le_nhdsSet hx) le_rfl)
+    (hK : IsCompact K) (hs : ∀ x ∈ K, s ∈ 𝓝 x ×ˢ l) : s ∈ (𝓝ˢ K) ×ˢ l :=
+  (hK.nhdsSet_prod_eq_biSup l).symm ▸ by simpa using hs
 
 theorem IsCompact.prod_nhdsSet_eq_biSup {K : Set Y} (hK : IsCompact K) {X} (l : Filter X) :
     l ×ˢ (𝓝ˢ K) = ⨆ y ∈ K, l ×ˢ 𝓝 y := by
@@ -416,32 +449,6 @@ i.e., there exist `t ∈ l` and an open `U ⊇ K` such that `t ×ˢ U ⊆ s`. -/
 theorem IsCompact.mem_prod_nhdsSet_of_forall {K : Set Y} {X} {l : Filter X} {s : Set (X × Y)}
     (hK : IsCompact K) (hs : ∀ y ∈ K, s ∈ l ×ˢ 𝓝 y) : s ∈ l ×ˢ 𝓝ˢ K :=
   (hK.prod_nhdsSet_eq_biSup l).symm ▸ by simpa using hs
-
--- TODO: Is there a way to prove directly the `inf` version and then deduce the `Prod` one ?
--- That would seem a bit more natural.
-theorem IsCompact.nhdsSet_inf_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
-    (𝓝ˢ K) ⊓ l = ⨆ x ∈ K, 𝓝 x ⊓ l := by
-  have : ∀ f : Filter X, f ⊓ l = comap Function.diag (f ×ˢ l) := fun f ↦ by
-    simpa only [comap_prod] using! congrArg₂ (· ⊓ ·) comap_id.symm comap_id.symm
-  simp_rw [this, ← comap_iSup, hK.nhdsSet_prod_eq_biSup]
-
-theorem IsCompact.inf_nhdsSet_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
-    l ⊓ (𝓝ˢ K) = ⨆ x ∈ K, l ⊓ 𝓝 x := by
-  simp only [inf_comm l, hK.nhdsSet_inf_eq_biSup]
-
-/-- If `s : Set X` belongs to `𝓝 x ⊓ l` for all `x` from a compact set `K`,
-then it belongs to `(𝓝ˢ K) ⊓ l`,
-i.e., there exist an open `U ⊇ K` and `T ∈ l` such that `U ∩ T ⊆ s`. -/
-theorem IsCompact.mem_nhdsSet_inf_of_forall {K : Set X} {l : Filter X} {s : Set X}
-    (hK : IsCompact K) (hs : ∀ x ∈ K, s ∈ 𝓝 x ⊓ l) : s ∈ (𝓝ˢ K) ⊓ l :=
-  (hK.nhdsSet_inf_eq_biSup l).symm ▸ by simpa using hs
-
-/-- If `s : Set S` belongs to `l ⊓ 𝓝 x` for all `x` from a compact set `K`,
-then it belongs to `l ⊓ (𝓝ˢ K)`,
-i.e., there exist `T ∈ l` and an open `U ⊇ K` such that `T ∩ U ⊆ s`. -/
-theorem IsCompact.mem_inf_nhdsSet_of_forall {K : Set X} {l : Filter X} {s : Set X}
-    (hK : IsCompact K) (hs : ∀ y ∈ K, s ∈ l ⊓ 𝓝 y) : s ∈ l ⊓ 𝓝ˢ K :=
-  (hK.inf_nhdsSet_eq_biSup l).symm ▸ by simpa using hs
 
 /-- To show that `∀ y ∈ K, P x y` holds for `x` close enough to `x₀` when `K` is compact,
 it is sufficient to show that for all `y₀ ∈ K` there `P x y` holds for `(x, y)` close enough
