@@ -21,13 +21,13 @@ basis for multilinear maps given bases on the domain and codomain.
 
 open MultilinearMap
 
-variable {ι R : Type*} [CommSemiring R]
+variable {ι R S : Type*} [CommSemiring R] [CommSemiring S] {σ : R →+* S}
   {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
-  {N : Type*} [AddCommMonoid N] [Module R N]
+  {N : Type*} [AddCommMonoid N] [Module S N]
 
 /-- Two multilinear maps indexed by a `Fintype` are equal if they are equal when all arguments
 are basis vectors. -/
-theorem Module.Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R M N} {ιM : ι → Type*}
+theorem Module.Basis.ext_multilinear [Finite ι] {f g : MultilinearMap σ M N} {ιM : ι → Type*}
     (e : ∀ i, Basis (ιM i) R (M i))
     (h : ∀ v : (i : ι) → ιM i, (f fun i ↦ e i (v i)) = g fun i ↦ e i (v i)) : f = g := by
   cases nonempty_fintype ι
@@ -48,7 +48,7 @@ variable {κ : ι → Type*} (b : (i : ι) → Basis (κ i) R (M i))
 open scoped Classical in
 /-- A basis for multilinear maps given a finite basis on each domain and a basis on the codomain. -/
 noncomputable def multilinearMap [Finite ι] [∀ i, Finite (κ i)] :
-    Basis ((Π i, κ i) × ι') R (MultilinearMap R M N) where
+    Basis ((Π i, κ i) × ι') R (MultilinearMap (.id R) M N) where
   repr :=
     have : Fintype ι := Fintype.ofFinite _
     have (i : ι) : Fintype (κ i) := Fintype.ofFinite _
