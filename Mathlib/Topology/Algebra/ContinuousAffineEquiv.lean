@@ -136,6 +136,7 @@ end Basic
 
 section ReflSymmTrans
 
+set_option fun_prop.projDefaultTransparency true in
 variable (k P₁) in
 /-- Identity map as a `ContinuousAffineEquiv`. -/
 def refl : P₁ ≃ᴬ[k] P₁ where

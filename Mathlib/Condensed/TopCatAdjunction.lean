@@ -183,6 +183,7 @@ noncomputable def compactlyGeneratedAdjunction :
     (Functor.FullyFaithful.id _) fullyFaithfulCompactlyGeneratedToTop
     (Iso.refl _) (Iso.refl _)
 
+set_option fun_prop.projDefaultTransparency true in
 /--
 The counit of the adjunction `condensedSetToCompactlyGenerated ⊣ compactlyGeneratedToCondensedSet`
 is a homeomorphism.

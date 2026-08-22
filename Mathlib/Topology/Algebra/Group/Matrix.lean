@@ -59,7 +59,7 @@ lemma _root_.Topology.IsClosedEmbedding.generalLinearGroup_map [T0Space R]
 /-- The determinant is continuous as a map from the general linear group to the units. -/
 @[continuity, fun_prop] protected lemma continuous_det :
     Continuous (det : GL n R → Rˣ) := by
-  simp_rw [Units.continuous_iff, ← map_inv]
+  simp_rw [Units.continuous_iff, ← map_inv, Function.comp_def, val_det_apply]
   constructor <;> fun_prop
 
 @[continuity, fun_prop]
@@ -132,6 +132,7 @@ instance topologicalGroup : IsTopologicalGroup (SL n R) where
 -/
 section toGL
 
+set_option fun_prop.projDefaultTransparency true in
 /-- The natural map from `SL n A` to `GL n A` is continuous. -/
 @[fun_prop]
 lemma continuous_toGL : Continuous (toGL : SL n R → GL n R) := by

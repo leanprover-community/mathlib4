@@ -124,6 +124,7 @@ lemma toContinuousLinearMap_inj (f g : E₁ →P[R] E₂) :
     f.toContinuousLinearMap = g.toContinuousLinearMap ↔ f = g :=
   toContinuousLinearMap_injective.eq_iff
 
+set_option fun_prop.projDefaultTransparency true in
 instance : Zero (E₁ →P[R] E₂) where
   zero := .mk (0 : E₁ →ₚ[R] E₂) <| by fun_prop
 
