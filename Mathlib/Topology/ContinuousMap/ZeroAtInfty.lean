@@ -162,71 +162,69 @@ variable [TopologicalSpace β] (x : α)
 instance instZero [Zero β] : Zero C₀(α, β) :=
   ⟨⟨0, tendsto_const_nhds⟩⟩
 
+instance [Zero β] : IsZeroApply C₀(α, β) α β where
+  zero_apply _ := rfl
+
 instance instInhabited [Zero β] : Inhabited C₀(α, β) :=
   ⟨0⟩
 
-@[simp]
-theorem coe_zero [Zero β] : ⇑(0 : C₀(α, β)) = 0 :=
-  rfl
+@[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
 
-theorem zero_apply [Zero β] : (0 : C₀(α, β)) x = 0 :=
-  rfl
+@[deprecated (since := "2026-06-15")] protected alias zero_apply := _root_.zero_apply
 
 instance instMul [MulZeroClass β] [ContinuousMul β] : Mul C₀(α, β) :=
   ⟨fun f g =>
     ⟨f * g, by simpa only [mul_zero] using! (zero_at_infty f).mul (zero_at_infty g)⟩⟩
 
-@[simp]
-theorem coe_mul [MulZeroClass β] [ContinuousMul β] (f g : C₀(α, β)) : ⇑(f * g) = f * g :=
-  rfl
+instance [MulZeroClass β] [ContinuousMul β] : IsMulApply C₀(α, β) α β where
+  mul_apply _ _ _ := rfl
 
-theorem mul_apply [MulZeroClass β] [ContinuousMul β] (f g : C₀(α, β)) : (f * g) x = f x * g x :=
-  rfl
+@[deprecated (since := "2026-06-15")] alias coe_mul := FunLike.coe_mul
+
+@[deprecated (since := "2026-06-15")] protected alias mul_apply := _root_.mul_apply
 
 instance instMulZeroClass [MulZeroClass β] [ContinuousMul β] : MulZeroClass C₀(α, β) :=
-  fast_instance% DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
+  fast_instance% DFunLike.coe_injective.mulZeroClass _ FunLike.coe_zero FunLike.coe_mul
 
 instance instSemigroupWithZero [SemigroupWithZero β] [ContinuousMul β] :
     SemigroupWithZero C₀(α, β) := fast_instance%
-  DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
+  DFunLike.coe_injective.semigroupWithZero _ FunLike.coe_zero FunLike.coe_mul
 
 instance instAdd [AddZeroClass β] [ContinuousAdd β] : Add C₀(α, β) :=
   ⟨fun f g => ⟨f + g, by simpa only [add_zero] using! (zero_at_infty f).add (zero_at_infty g)⟩⟩
 
-@[simp]
-theorem coe_add [AddZeroClass β] [ContinuousAdd β] (f g : C₀(α, β)) : ⇑(f + g) = f + g :=
-  rfl
+instance [AddZeroClass β] [ContinuousAdd β] : IsAddApply C₀(α, β) α β where
+  add_apply _ _ _ := rfl
 
-theorem add_apply [AddZeroClass β] [ContinuousAdd β] (f g : C₀(α, β)) : (f + g) x = f x + g x :=
-  rfl
+@[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
+
+@[deprecated (since := "2026-06-15")] protected alias add_apply := _root_.add_apply
 
 instance instAddZeroClass [AddZeroClass β] [ContinuousAdd β] : AddZeroClass C₀(α, β) :=
-  fast_instance% DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
+  fast_instance% FunLike.addZeroClass
 
 instance instSMul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] :
     SMul R C₀(α, β) :=
   ⟨fun r f => ⟨r • f, by simpa [smul_zero] using! (zero_at_infty f).const_smul r⟩⟩
 
-@[simp, norm_cast]
-theorem coe_smul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] (r : R)
-    (f : C₀(α, β)) : ⇑(r • f) = r • ⇑f :=
-  rfl
+instance [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] :
+    IsSMulApply R C₀(α, β) α β where
+  smul_apply _ _ _ := rfl
 
-theorem smul_apply [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β]
-    (r : R) (f : C₀(α, β)) (x : α) : (r • f) x = r • f x :=
-  rfl
+@[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-06-15")] protected alias smul_apply := _root_.smul_apply
 
 section AddMonoid
 
 variable [AddMonoid β] [ContinuousAdd β] (f g : C₀(α, β))
 
-instance instAddMonoid : AddMonoid C₀(α, β) := fast_instance%
-  DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+instance instAddMonoid : AddMonoid C₀(α, β) := fast_instance% FunLike.addMonoid
 
 end AddMonoid
 
 instance instAddCommMonoid [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid C₀(α, β) :=
-  fast_instance% DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+  fast_instance% FunLike.addCommMonoid
 
 section AddGroup
 
@@ -235,36 +233,33 @@ variable [AddGroup β] [IsTopologicalAddGroup β] (f g : C₀(α, β))
 instance instNeg : Neg C₀(α, β) :=
   ⟨fun f => ⟨-f, by simpa only [neg_zero] using! (zero_at_infty f).neg⟩⟩
 
-@[simp]
-theorem coe_neg : ⇑(-f) = -f :=
-  rfl
+instance : IsNegApply C₀(α, β) α β where
+  neg_apply _ _ := rfl
 
-theorem neg_apply : (-f) x = -f x :=
-  rfl
+@[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
+
+@[deprecated (since := "2026-06-15")] protected alias neg_apply := _root_.neg_apply
 
 instance instSub : Sub C₀(α, β) :=
   ⟨fun f g => ⟨f - g, by simpa only [sub_zero] using! (zero_at_infty f).sub (zero_at_infty g)⟩⟩
 
-@[simp]
-theorem coe_sub : ⇑(f - g) = f - g :=
-  rfl
+instance : IsSubApply C₀(α, β) α β where
+  sub_apply _ _ _ := rfl
 
-theorem sub_apply : (f - g) x = f x - g x :=
-  rfl
+@[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
 
-instance instAddGroup : AddGroup C₀(α, β) := fast_instance%
-  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+@[deprecated (since := "2026-06-15")] protected alias sub_apply := _root_.sub_apply
+
+instance instAddGroup : AddGroup C₀(α, β) := fast_instance% FunLike.addGroup
 
 end AddGroup
 
 instance instAddCommGroup [AddCommGroup β] [IsTopologicalAddGroup β] : AddCommGroup C₀(α, β) :=
-  fast_instance%
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
-    rfl
+  fast_instance% FunLike.addCommGroup
 
 instance instIsCentralScalar [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [SMulWithZero Rᵐᵒᵖ β]
     [ContinuousConstSMul R β] [IsCentralScalar R β] : IsCentralScalar R C₀(α, β) :=
-  ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
+  FunLike.isCentralScalar
 
 instance instIsScalarTower' [Zero β] {R S : Type*} [Zero R] [Zero S] [SMulWithZero R β]
     [SMulWithZero S β] [ContinuousConstSMul R β] [ContinuousConstSMul S β] [SMul R S]
@@ -285,8 +280,7 @@ instance instMulActionWithZero [Zero β] {R : Type*} [MonoidWithZero R] [MulActi
   Function.Injective.mulActionWithZero ⟨_, coe_zero⟩ DFunLike.coe_injective coe_smul
 
 instance instModule [AddCommMonoid β] [ContinuousAdd β] {R : Type*} [Semiring R] [Module R β]
-    [ContinuousConstSMul R β] : Module R C₀(α, β) := fast_instance%
-  Function.Injective.module R ⟨⟨_, coe_zero⟩, coe_add⟩ DFunLike.coe_injective coe_smul
+    [ContinuousConstSMul R β] : Module R C₀(α, β) := fast_instance% FunLike.module
 
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] [IsTopologicalSemiring β] :
     NonUnitalNonAssocSemiring C₀(α, β) := fast_instance%
@@ -320,7 +314,7 @@ instance instIsScalarTower {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring �
     IsScalarTower R C₀(α, β) C₀(α, β) where
   smul_assoc r f g := by
     ext
-    simp only [smul_eq_mul, coe_mul, coe_smul, Pi.mul_apply, Pi.smul_apply]
+    simp only [smul_eq_mul, _root_.mul_apply, _root_.smul_apply]
     rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
 
 instance instSMulCommClass {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
@@ -328,7 +322,7 @@ instance instSMulCommClass {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring �
     SMulCommClass R C₀(α, β) C₀(α, β) where
   smul_comm r f g := by
     ext
-    simp only [smul_eq_mul, coe_smul, coe_mul, Pi.smul_apply, Pi.mul_apply]
+    simp only [smul_eq_mul, _root_.smul_apply, _root_.mul_apply]
     rw [← smul_eq_mul, ← smul_eq_mul, smul_comm]
 
 end AlgebraicStructure
