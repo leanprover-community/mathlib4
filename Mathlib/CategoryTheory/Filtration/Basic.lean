@@ -40,7 +40,6 @@ universe v u
 variable {C : Type u} [Category.{v} C]
 
 /-- A filtration on `X` indexed by `I`, as a functor `I ⥤ MonoOver X`. -/
-@[ext]
 structure Filtration (X : C) (I : Type*) [Category I] where
   /-- The underlying functor `I ⥤ MonoOver X`. -/
   toMonoOver : I ⥤ MonoOver X
@@ -70,7 +69,6 @@ instance (F : Filtration X I) (i : I) : Mono (F.ι.app i) := by
 end Filtration
 
 /-- A filtered object: an object equipped with a filtration. -/
-@[ext]
 structure FilteredObject (C : Type u) [Category.{v} C] (I : Type*) [Category I] where
   /-- The underlying object. -/
   X : C
