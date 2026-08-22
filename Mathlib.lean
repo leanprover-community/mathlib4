@@ -2761,6 +2761,7 @@ public import Mathlib.CategoryTheory.Functor.TwoSquare
 public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 public import Mathlib.CategoryTheory.Galois.Action
 public import Mathlib.CategoryTheory.Galois.Basic
+public import Mathlib.CategoryTheory.Galois.ContAction
 public import Mathlib.CategoryTheory.Galois.Decomposition
 public import Mathlib.CategoryTheory.Galois.Equivalence
 public import Mathlib.CategoryTheory.Galois.EssSurj
