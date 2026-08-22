@@ -202,16 +202,9 @@ section Norm
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E] (u : Circle) (v : E)
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-protected lemma norm_smul : ‖u • v‖ = ‖v‖ := by
-  rw [smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]
-
-@[simp]
-protected lemma nnnorm_smul : ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_injective (u.norm_smul v)
-
-@[simp]
-protected lemma enorm_smul : ‖u • v‖ₑ = ‖v‖ₑ := by simp [enorm_eq_nnnorm]
+@[simp] protected lemma norm_smul : ‖u • v‖ = ‖v‖ := by simp_rw [smul_def, norm_smul]
+@[simp] protected lemma nnnorm_smul : ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_injective (u.norm_smul v)
+@[simp] protected lemma enorm_smul : ‖u • v‖ₑ = ‖v‖ₑ := by simp [enorm_eq_nnnorm]
 
 instance : IsIsometricSMul Circle E :=
   ⟨fun _ ↦ Isometry.of_dist_eq fun _ _ ↦ by simp [dist_eq_norm, ← smul_sub]⟩
