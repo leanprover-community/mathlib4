@@ -1189,9 +1189,8 @@ theorem integral_comp_exp (g : ℝ → E) :
     ∫ x, exp x • g (exp x) = ∫ y in Ioi 0, g y := by
   symm
   rw [← range_exp, ← image_univ]
-  simpa [abs_of_pos (exp_pos _)] using integral_image_eq_integral_abs_deriv_smul
-    MeasurableSet.univ (fun x _ ↦ (hasDerivAt_exp x).hasDerivWithinAt)
-    (fun x _ y _ hxy ↦ exp_injective hxy) g
+  simpa using integral_image_eq_integral_abs_deriv_smul .univ
+    (fun x _ ↦ (hasDerivAt_exp x).hasDerivWithinAt) exp_injective.injOn g
 
 theorem integrable_comp_exp (g : ℝ → E) :
     Integrable (fun x ↦ exp x • g (exp x)) ↔ IntegrableOn g (Ioi 0) := by
