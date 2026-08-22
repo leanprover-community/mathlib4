@@ -7433,6 +7433,9 @@ public import Mathlib.Tactic.FunProp.Mor
 public import Mathlib.Tactic.FunProp.Theorems
 public import Mathlib.Tactic.FunProp.ToBatteries
 public import Mathlib.Tactic.FunProp.Types
+public import Mathlib.Tactic.FunSimp
+public import Mathlib.Tactic.FunSimp.Attr
+public import Mathlib.Tactic.FunSimp.Simproc
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.GCongr.Core
 public import Mathlib.Tactic.GCongr.CoreAttrs
