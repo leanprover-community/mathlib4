@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Geometry.Euclidean.Volume.Measure
 public import Mathlib.Geometry.Euclidean.Volume.Def
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Shift
 
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Shift
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-!
@@ -31,58 +31,45 @@ public section
 namespace Affine.Simplex
 variable {V P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V]
-variable [MetricSpace P] [MeasurableSpace P] [BorelSpace P] [NormedAddTorsor V P]
+variable [MetricSpace P] [NormedAddTorsor V P]
 variable {n : ℕ}
 
-theorem measurableSet_closedInterior (s : Simplex ℝ P n) : MeasurableSet s.closedInterior :=
-  s.isClosed_closedInterior.measurableSet
-
-omit [MeasurableSpace P] [BorelSpace P] in
-/-- Auxiliary lemma that converts the shifted plane from integral formula style
-to `AffineSubspace.shift`. -/
-private theorem convert_shifted_plane (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) (x : ℝ) :
-    -- LHS: through a point on the altitude, draw the perpendicular plane, restricted to the
-    -- affine span of the simplex.
-    AffineSubspace.mk' (x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i)
+/-- Through a point on the altitude of a simplex, draw the perpendicular plane and restrict it to
+the affine span of the simplex. This is the same as shifting the base towards the vertex. -/
+public theorem affineSubspaceMk'_lineMap_altitudeFoot_eq_shift (s : Simplex ℝ P (n + 1))
+    (i : Fin (n + 2)) (x : ℝ) :
+    AffineSubspace.mk' (AffineMap.lineMap (s.points i) (s.altitudeFoot i) x)
       (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ ⊓ affineSpan ℝ (Set.range s.points) =
-      -- RHS: shift the base towards the vertex.
       (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
-  rw [shift_eq ⟨s.altitudeFoot i, altitudeFoot_mem_affineSpan_image_compl s i⟩]
-  conv_rhs => conv in affineSpan _ _ =>
-    rw [← mk'_eq (altitudeFoot_mem_affineSpan_image_compl s i)]
-  rw [map_mk']
-  have h : x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i ∈
+  have h : AffineMap.lineMap (s.points i) (s.altitudeFoot i) x ∈
       affineSpan ℝ (Set.range s.points) := by
     refine vadd_mem_of_mem_direction (smul_mem _ _ ?_) (mem_affineSpan ℝ (by simp))
     exact vsub_mem_direction (s.altitudeFoot_mem_affineSpan _) (mem_affineSpan ℝ (by simp))
   apply ext_of_direction_eq
-  · rw [direction_inf_of_mem (by simp) h]
-    suffices (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ ⊓
-      (affineSpan ℝ (Set.range s.points)).direction = (affineSpan ℝ (s.points '' {i}ᶜ)).direction by
-      simpa
-    rw [← vectorSpan_pair, ← direction_affineSpan, affineSpan_pair_altitudeFoot_eq_altitude,
-      direction_altitude, direction_affineSpan]
-    rw [← (vectorSpan ℝ (Set.range s.points)).orthogonal_orthogonal, inf_orthogonal]
-    rw [inf_sup_assoc_of_le _ (orthogonal_le (vectorSpan_mono ℝ (by simp)))]
-    rw [((vectorSpan ℝ (Set.range s.points))ᗮ).isCompl_orthogonal.codisjoint.symm.eq_top]
-    rw [inf_top_eq, orthogonal_orthogonal, direction_affineSpan]
-  · refine ⟨x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i, ?_, ?_⟩
+  · rw [AffineSubspace.direction_shift, AffineSubspace.direction_inf_of_mem (by simp) h,
+      AffineSubspace.direction_mk', ← vectorSpan_pair, ← direction_affineSpan,
+      affineSpan_pair_altitudeFoot_eq_altitude, direction_altitude, direction_affineSpan,
+      direction_affineSpan]
+    exact orthogonal_inf_orthogonal_inf_of_le <| vectorSpan_mono _ <| by simp
+  · refine ⟨AffineMap.lineMap (s.points i) (s.altitudeFoot i) x, ?_, ?_⟩
     · simpa using h
-    · rw [sub_smul, sub_eq_add_neg, ← smul_neg]
-      simp
+    · apply lineMap_mem_shift (by simp)
 
-omit [MeasurableSpace P] [BorelSpace P] in
-/-- Auxiliary lemma that converts the shifted plane from integral formula style
-to `AffineSubspace.shift`. -/
-private theorem convert_shifted_plane' (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) (x : ℝ) :
-    -- LHS: through a point on the altitude, draw the perpendicular plane, intersecting with the
-    -- interior.
-    s.closedInterior ∩ AffineSubspace.mk' (x • (s.altitudeFoot i -ᵥ s.points i) +ᵥ s.points i)
+/-- Through a point on the altitude of a simplex, draw the perpendicular plane and find the cross
+section with the closed interior. This is the same as the cross section between the shifted base
+and the closed interior. -/
+public theorem closedInterior_inter_affineSubspaceMk'_lineMap_altitudeFoot
+    (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) (x : ℝ) :
+    s.closedInterior ∩ AffineSubspace.mk' (AffineMap.lineMap (s.points i) (s.altitudeFoot i) x)
       (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ =
-      -- RHS: shift the base towards the vertex, intersecting with the interior.
       s.closedInterior ∩ (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
-  rw [← convert_shifted_plane, AffineSubspace.coe_inf, ← Set.inter_assoc,
+  rw [← affineSubspaceMk'_lineMap_altitudeFoot_eq_shift, AffineSubspace.coe_inf, ← Set.inter_assoc,
     Set.inter_right_comm, Set.inter_eq_left.mpr closedInterior_subset_affineSpan]
+
+variable [MeasurableSpace P] [BorelSpace P]
+
+theorem measurableSet_closedInterior (s : Simplex ℝ P n) : MeasurableSet s.closedInterior :=
+  s.isClosed_closedInterior.measurableSet
 
 /-- The volume of the cross-section is scaled from the base because of homothety -/
 private theorem measure_cross_section (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
@@ -121,7 +108,8 @@ theorem euclideanHausdorffMeasure_closedInterior (s : Simplex ℝ P (n + 1)) (i 
   rw [EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral' (s.points i) haltitude0
     s.measurableSet_closedInterior haltitudeMem closedInterior_subset_affineSpan, ← ofReal_norm,
     ← dist_eq_norm_vsub', ← height, Nat.sub_eq_of_eq_add hn]
-  simp_rw [convert_shifted_plane' s i]
+  simp_rw [← AffineMap.lineMap_apply,
+    closedInterior_inter_affineSubspaceMk'_lineMap_altitudeFoot s i]
   rw [← setLIntegral_eq_of_support_subset (cross_section_support s i),
     lintegral_congr_ae (measure_cross_section s i)]
   -- Cancel common factors and reduce it to `∫ x in 0..1, x ^ n`

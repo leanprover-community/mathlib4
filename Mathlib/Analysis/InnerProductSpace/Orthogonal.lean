@@ -127,6 +127,12 @@ lemma map_orthogonal (f : E →ₗᵢ[𝕜] F) :
     LinearIsometry.coe_toLinearMap]
   grind [LinearIsometry.inner_map_map]
 
+lemma comap_orthogonal (f : F →ₗᵢ[𝕜] E) :
+    (K ⊓ f.range)ᗮ.comap f.toLinearMap = (K.comap f.toLinearMap)ᗮ := by
+  simp only [Submodule.ext_iff, mem_comap, LinearIsometry.coe_toLinearMap, mem_orthogonal, mem_inf,
+    LinearMap.mem_range, and_imp, forall_exists_index]
+  grind [LinearIsometry.inner_map_map]
+
 lemma map_orthogonal_equiv (f : E ≃ₗᵢ[𝕜] F) :
     Kᗮ.map (f.toLinearEquiv : E →ₗ[𝕜] F) = (K.map (f.toLinearEquiv : E →ₗ[𝕜] F))ᗮ := by
   refine (map_orthogonal K f.toLinearIsometry).trans ?_
