@@ -144,7 +144,7 @@ def Comp.run {F : Type u → Type w} {G : Type v → Type u} {α : Type v} (x : 
   x
 
 @[simp]
-theorem Comp.run_MK {F : Type u → Type w} {G : Type v → Type u} {α : Type v}
+theorem Comp.run_mk {F : Type u → Type w} {G : Type v → Type u} {α : Type v}
     (x : F (G α)) : (mk x).run = x := rfl
 
 @[simp]
