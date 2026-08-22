@@ -171,13 +171,16 @@ variable [Fintype ι] {f : E [⋀^ι]→L[𝕜] F} {m : ι → E}
 theorem bound (f : E [⋀^ι]→L[𝕜] F) : ∃ (C : ℝ), 0 < C ∧ (∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :=
   f.toContinuousMultilinearMap.bound
 
+instance : PseudoMetricSpace (E [⋀^ι]→L[𝕜] F) :=
+  fast_instance% .induced toContinuousMultilinearMap inferInstance
+
 /-- Continuous alternating maps form a seminormed additive commutative group.
 We override projection to `PseudoMetricSpace` to ensure that instances commute
 in `with_reducible_and_instances`. -/
-instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[𝕜] F) where
-  toPseudoMetricSpace := .induced toContinuousMultilinearMap inferInstance
-  __ := SeminormedAddCommGroup.induced _ _ (toMultilinearAddHom : E [⋀^ι]→L[𝕜] F →+ _)
-  norm f := ‖f.toContinuousMultilinearMap‖
+instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[𝕜] F) :=
+  fast_instance%
+  { __ := SeminormedAddCommGroup.induced _ _ (toMultilinearAddHom : E [⋀^ι]→L[𝕜] F →+ _)
+    norm f := ‖f.toContinuousMultilinearMap‖ }
 
 @[simp] theorem norm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ = ‖f‖ := rfl
 @[simp] theorem nnnorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖₊ = ‖f‖₊ := rfl

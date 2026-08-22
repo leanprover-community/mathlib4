@@ -484,7 +484,7 @@ lemma uniformity_eq_seminorm :
       _ ≤ r := (mul_comm _ _).trans_le hδ.le
 
 instance instPseudoMetricSpace : PseudoMetricSpace (ContinuousMultilinearMap 𝕜 E G) :=
-  .replaceUniformity
+  fast_instance% .replaceUniformity
     (ContinuousMultilinearMap.seminorm 𝕜 E G).toSeminormedAddCommGroup.toPseudoMetricSpace
     uniformity_eq_seminorm
 
@@ -1247,7 +1247,7 @@ theorem opNorm_zero_iff {f : ContinuousMultilinearMap 𝕜 E G} : ‖f‖ = 0 �
 /-- Continuous multilinear maps themselves form a normed group with respect to
 the operator norm. -/
 instance normedAddCommGroup : NormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) :=
-  NormedAddCommGroup.ofSeparation fun _ ↦ opNorm_zero_iff.mp
+  fast_instance% NormedAddCommGroup.ofSeparation fun _ ↦ opNorm_zero_iff.mp
 
 /-- An alias of `ContinuousMultilinearMap.normedAddCommGroup` with non-dependent types to help
 typeclass search. -/
