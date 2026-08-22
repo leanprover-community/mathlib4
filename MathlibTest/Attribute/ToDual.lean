@@ -455,3 +455,20 @@ structure HasLimitsOfSize where
 @[to_dual]
 structure HasColimitsOfSize where
   cofoo : ∀ _ : Type u, True
+
+-- The `simps` attribute is applied after `implicit_reducible`,
+-- which allows the `simps` lemmas to be `@[defeq]`
+@[to_dual (attr := simps, implicit_reducible) MyLE']
+def MyLE : Preorder α where
+  le := (· ≤ ·)
+  lt := (· < ·)
+  le_refl := le_refl
+  le_trans _ _ _ := le_trans
+  lt_iff_le_not_ge _ _ := lt_iff_le_not_ge
+
+/--
+info: @[defeq] theorem MyLE_le : ∀ {α : Type} [inst : PartialOrder α] (x1 x2 : α), (x1 ≤ x2) = (x1 ≤ x2) :=
+fun {α} [PartialOrder α] x1 x2 => Eq.refl (x1 ≤ x2)
+-/
+#guard_msgs in
+#print MyLE_le

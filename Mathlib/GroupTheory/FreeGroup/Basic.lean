@@ -623,10 +623,10 @@ def of (x : α) : FreeGroup α :=
   mk [(x, true)]
 
 @[to_additive (attr := elab_as_elim, induction_eliminator)]
-protected lemma induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 : C 1)
-    (of : ∀ x, C <| of x) (inv_of : ∀ x, C (.of x) → C (.of x)⁻¹)
-    (mul : ∀ x y, C x → C y → C (x * y)) : C z :=
-  Quot.inductionOn z fun L ↦ L.recOn C1 fun ⟨x, b⟩ _tl ih ↦
+protected lemma induction_on {motive : FreeGroup α → Prop} (z : FreeGroup α) (one : motive 1)
+    (of : ∀ x, motive <| of x) (inv_of : ∀ x, motive (.of x) → motive (.of x)⁻¹)
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive z :=
+  Quot.inductionOn z fun L ↦ L.recOn one fun ⟨x, b⟩ _tl ih ↦
     b.recOn (mul _ _ (inv_of _ <| of x) ih) (mul _ _ (of x) ih)
 
 /-- Two homomorphisms out of a free group are equal if they are equal on generators.
@@ -963,7 +963,7 @@ def equivIntOfUnique [Unique α] : FreeGroup α ≃ ℤ where
   invFun x := of default ^ x
   left_inv x := by
     induction x with
-    | C1 => simp
+    | one => simp
     | of x => simp [Unique.default_eq x]
     | inv_of x hx => simp [Unique.default_eq x]
     | mul x y hx hy => simp [zpow_add, hx, hy]
@@ -991,7 +991,7 @@ def _root_.FreeAddGroup.addEquivIntOfUnique [Unique α] : FreeAddGroup α ≃+ �
   invFun x := x • FreeAddGroup.of default
   left_inv x := by
     induction x with
-    | C1 => simp
+    | zero => simp
     | of x => simp [Unique.default_eq x]
     | neg_of x hx => simp [Unique.default_eq x]
     | add x y hx hy => simp [add_zsmul, hx, hy]
