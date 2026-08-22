@@ -289,6 +289,12 @@ theorem iSup₂_mono' {f : ∀ i, κ i → α} {g : ∀ i', κ' i' → α} (h : 
 theorem iSup_const_mono (h : ι → ι') : ⨆ _ : ι, a ≤ ⨆ _ : ι', a :=
   iSup_le <| le_iSup _ ∘ h
 
+@[to_dual iInf₂_eq_iInf_diag_of_cofinal]
+theorem iSup₂_eq_iSup_diag_of_cofinal (f : ι → ι → α) (h : ∀ i j, ∃ k, f i j ≤ f k k) :
+    ⨆ i, ⨆ j, f i j = ⨆ k, f k k :=
+  le_antisymm (iSup_le fun i ↦ iSup_mono' (h i))
+    (iSup_le fun k ↦ le_iSup_of_le k (le_iSup (f k) k))
+
 @[to_dual none]
 theorem iSup_iInf_le_iInf_iSup (f : ι → ι' → α) : ⨆ i, ⨅ j, f i j ≤ ⨅ j, ⨆ i, f i j :=
   iSup_le fun i => iInf_mono fun j => le_iSup (fun i => f i j) i

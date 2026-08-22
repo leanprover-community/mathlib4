@@ -195,6 +195,16 @@ theorem ciSup_mono_of_forall_exists {ι'} [Nonempty ι] {f : ι → α} {g : ι'
     (hg : BddAbove <| range g) (h : ∀ i, ∃ i', f i ≤ g i') : ⨆ i, f i ≤ ⨆ i', g i' :=
   ciSup_le fun i ↦ h i |>.elim <| le_ciSup_of_le hg
 
+theorem ciSup₂_eq_ciSup_diag_of_cofinal (f : ι → ι → α) (hf : BddAbove (range fun k ↦ f k k))
+    (h : ∀ i j, ∃ k, f i j ≤ f k k) :
+    ⨆ i, ⨆ j, f i j = ⨆ k, f k k := by
+  cases isEmpty_or_nonempty ι
+  · rw [iSup_of_empty', iSup_of_empty']
+  have h_le_diag : ∀ i j, f i j ≤ ⨆ k, f k k := fun i j ↦ (h i j).elim (le_ciSup_of_le hf)
+  have hrow : ∀ i, BddAbove (range (f i)) := fun i ↦ ⟨_, forall_mem_range.2 (h_le_diag i)⟩
+  exact IsLUB.ciSup_eq ⟨forall_mem_range.2 fun i ↦ ciSup_le (h_le_diag i),
+    fun b hb ↦ ciSup_le fun k ↦ (le_ciSup (hrow k) k).trans (hb (mem_range_self k))⟩
+
 theorem ciInf_mono_of_forall_exists {ι'} [Nonempty ι'] {f : ι → α} {g : ι' → α}
     (hf : BddBelow <| range f) (h : ∀ i', ∃ i, f i ≤ g i') : ⨅ i, f i ≤ ⨅ i', g i' :=
   ciSup_mono_of_forall_exists (α := αᵒᵈ) hf h

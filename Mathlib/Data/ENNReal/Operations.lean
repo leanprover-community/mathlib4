@@ -550,13 +550,11 @@ theorem sInf_add {s : Set ℝ≥0∞} : sInf s + a = ⨅ b ∈ s, b + a := by si
 theorem add_iInf {a : ℝ≥0∞} : a + iInf f = ⨅ b, a + f b := by
   rw [add_comm, iInf_add]; simp [add_comm]
 
-theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + iInf g = ⨅ a, f a + g a :=
-  suffices ⨅ a, f a + g a ≤ iInf f + iInf g from
-    le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) (iInf_le _ _)) this
-  calc
-    ⨅ a, f a + g a ≤ ⨅ (a) (a'), f a + g a' :=
-      le_iInf₂ fun a a' => let ⟨k, h⟩ := h a a'; iInf_le_of_le k h
-    _ = iInf f + iInf g := by simp_rw [iInf_add, add_iInf]
+theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) :
+    iInf f + iInf g = ⨅ a, f a + g a := by
+  rw [ENNReal.iInf_add]
+  simp_rw [ENNReal.add_iInf]
+  exact iInf₂_eq_iInf_diag_of_cofinal (fun i j ↦ f i + g j) h
 
 lemma iInf_add_iInf_of_monotone {ι : Type*} [Preorder ι] [IsCodirectedOrder ι] {f g : ι → ℝ≥0∞}
     (hf : Monotone f) (hg : Monotone g) : iInf f + iInf g = ⨅ a, f a + g a :=
@@ -679,11 +677,9 @@ lemma biSup_add_biSup_le {ι κ : Type*} {s : Set ι} {t : Set κ} (hs : s.Nonem
 
 lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSup g = ⨆ i, f i + g i := by
   cases isEmpty_or_nonempty ι
-  · simp
-  · refine le_antisymm ?_ (iSup_le fun a => add_le_add (le_iSup _ _) (le_iSup _ _))
-    refine iSup_add_iSup_le fun i j => ?_
-    rcases h i j with ⟨k, hk⟩
-    exact le_iSup_of_le k hk
+  · simp only [iSup_of_empty, bot_eq_zero, zero_add]
+  · simp_rw [ENNReal.iSup_add, ENNReal.add_iSup]
+    exact iSup₂_eq_iSup_diag_of_cofinal (fun i j ↦ f i + g j) h
 
 lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f g : ι → ℝ≥0∞}
     (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
