@@ -49,11 +49,26 @@ def IsBotOneClass.toOrderBot : OrderBot α where
   bot := 1
   bot_le _ := one_le
 
+@[to_additive]
+instance {β : Type*} [LE β] [One β] [IsBotOneClass β] :
+    IsBotOneClass (α × β) where
+  isBot_one := by simp [Prod.one_eq_mk, IsBot]
+
+@[to_additive]
+instance {ι : Type*} {M : ι → Type*} [(i : ι) → LE (M i)] [(i : ι) → One (M i)]
+    [(i : ι) → IsBotOneClass (M i)] : IsBotOneClass ((i : ι) → M i) where
+  isBot_one := fun _ _ ↦ one_le
+
 end LE
 
 -- See note [lower instance priority]
 instance (priority := 100) [LE α] [Zero α] [One α] [IsBotZeroClass α] : ZeroLEOneClass α where
   zero_le_one := zero_le
+
+-- See note [lower instance priority]
+@[to_additive]
+instance (priority := 100) [Preorder α] [One α] [Subsingleton α] : IsBotOneClass α where
+  isBot_one := fun a ↦ (Subsingleton.allEq _ a).le
 
 section Preorder
 variable [Preorder α] [One α] [IsBotOneClass α]
