@@ -109,7 +109,7 @@ Now we can use induction to show that solutions must be Fibonacci numbers.
 -/
 theorem imp_fib {n : ℕ} (m : ℕ) (h : NatPredicate N m n) :
     ∃ k : ℕ, m = fib k ∧ n = fib (k + 1) := by
-  induction n using Nat.strong_induction_on generalizing m with | h n ih => ?_
+  induction n using Nat.strong_induction_on generalizing m with | ind n ih
   have h3 : m ≤ n := h.m_le_n
   obtain (rfl : 1 = n) | (h4 : 1 < n) := (succ_le_iff.mpr h.n_pos).eq_or_lt
   · use 1
