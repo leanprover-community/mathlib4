@@ -27,6 +27,8 @@ positive semidefinite matrices.
 - `RKHS.OfKernel`: RKHS constructed from a positive semidefinite matrix.
 - `RKHS.kernel_ofKernel`: The kernel of the constructed RKHS is equal to the matrix, this is
     essentially Moore's theorem.
+- `RKHS.outerKernel`: the kernel generated from a function `f : X → V` with the rank-one operators
+  `⟪f x, •⟫ f y` as its entries.
 
 ## TODO
 
@@ -250,6 +252,14 @@ theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X 
       h (ff.sum fun x T ↦ .single x (T v))
   tfae_finish
 
+theorem posSemidef_iff_re_sum_kernel : K.PosSemidef ↔ K.IsHermitian ∧ ∀ (f : X × V →₀ 𝕜),
+    0 ≤ RCLike.re (f.sum fun xv z ↦ f.sum fun xv' w ↦ conj z * w * ⟪K xv'.1 xv.1 xv.2, xv'.2⟫_𝕜) :=
+  (posSemidef_tfae.out 1 2)
+
+theorem posSemidef_iff_re_sum_kernel' : K.PosSemidef ↔ K.IsHermitian ∧ ∀ (vv : X →₀ V),
+    0 ≤ RCLike.re (vv.sum fun x w ↦ vv.sum fun x' w' ↦ ⟪K x' x w, w'⟫_𝕜) :=
+  (posSemidef_tfae.out 1 3)
+
 set_option linter.unusedVariables false in
 /-- Auxiliary construction for `OfKernel`. TODO: Privatize -/
 @[nolint unusedArguments]
@@ -270,8 +280,7 @@ instance instPreInnerProductSpaceCoreH₀ : PreInnerProductSpace.Core 𝕜 (H₀
   smul_left _ _ _ := by
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.mul_sum, ← mul_assoc]
   re_inner_nonneg := by
-    have := (posSemidef_tfae.out 1 2).mp (Fact.out : K.PosSemidef)
-    exact this.2
+    exact (posSemidef_iff_re_sum_kernel.mp (Fact.out : K.PosSemidef)).2
 
 instance instSeminormedAddCommGroupH₀ : SeminormedAddCommGroup (H₀ K) :=
   InnerProductSpace.Core.toSeminormedAddCommGroup (𝕜 := 𝕜)
@@ -414,5 +423,48 @@ theorem coe_equiv (h : kernel H = kernel H') (f : H) : ⇑(equiv h f) = f := by
   simp_rw [← kerFun_inner, ← LinearIsometryEquiv.inner_map_map (equiv h), equiv_kerFun]
 
 end Equiv
+
+section outerKernel
+
+variable (𝕜) in
+/-- The kernel generated from a function `f : X → V` with the rank-one operators `⟪f y, •⟫ f x` as
+its entries. -/
+def outerKernel (f : X → V) : Matrix X X (V →L[𝕜] V) :=
+  Matrix.of fun x y ↦ InnerProductSpace.rankOne 𝕜 (f x) (f y)
+
+omit [CompleteSpace V] in
+variable (𝕜) in
+@[simp]
+lemma outerKernel_apply (f : X → V) (x y) :
+    (outerKernel 𝕜 f) x y = InnerProductSpace.rankOne 𝕜 (f x) (f y) :=
+  coe_inj.mp rfl
+
+omit [CompleteSpace V] in
+@[simp]
+lemma outerKernel_zero : outerKernel 𝕜 (0 : X → V) = 0 := by
+  ext
+  simp
+
+omit [CompleteSpace V] in
+variable (𝕜) in
+lemma outerKernel_inner (f : X → V) (x₁ x₂ : X) (v₁ v₂ : V) :
+    ⟪outerKernel 𝕜 f x₂ x₁ v₁, v₂⟫_𝕜 = conj ⟪f x₁, v₁⟫_𝕜 * ⟪f x₂, v₂⟫_𝕜 := by
+  simp [inner_smul_left]
+
+variable (𝕜) in
+lemma posSemidef_outerKernel (f : X → V) : (outerKernel 𝕜 f).PosSemidef := by
+  rw [posSemidef_iff_re_sum_kernel']
+  refine ⟨?_, fun x ↦ ?_⟩
+  · ext
+    simp_rw [Matrix.conjTranspose_apply, outerKernel_apply, star_eq_adjoint,
+      InnerProductSpace.adjoint_rankOne]
+  · simp_rw [outerKernel_apply, rankOne_apply, inner_smul_left, Finsupp.sum, ← Finset.mul_sum,
+      ← Finset.sum_mul, ← map_sum, RCLike.conj_mul]
+    simp
+
+instance (f : X → V) : Fact (outerKernel 𝕜 f).PosSemidef := by
+  simp [fact_iff, posSemidef_outerKernel 𝕜 f]
+
+end outerKernel
 
 end RKHS
