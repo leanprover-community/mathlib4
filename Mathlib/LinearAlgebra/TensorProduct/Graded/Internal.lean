@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.LinearAlgebra.TensorProduct.Decomposition
 public import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.Tactic.SuppressCompilation
@@ -26,6 +27,8 @@ that satisfies `Module ι (Additive ℤˣ)`).
   this is a type alias for `A ⊗[R] B` with the appropriate multiplication.
 * `GradedTensorProduct.instAlgebra`: the ring structure induced by this multiplication.
 * `GradedTensorProduct.liftEquiv`: a universal property for graded tensor products
+* `GradedTensorProduct.instGradedAlgebra`: the tensor product of graded algebras is itself a
+  graded algebra, graded by total degree.
 
 ## Notation
 
@@ -46,7 +49,6 @@ type.
 
 ## TODO
 
-* Show that the tensor product of graded algebras is itself a graded algebra.
 * Determine if replacing the synonym with a single-field structure improves performance.
 -/
 
@@ -135,6 +137,16 @@ theorem auxEquiv_one : auxEquiv R 𝒜 ℬ 1 = 1 := by
 
 theorem auxEquiv_symm_one : (auxEquiv R 𝒜 ℬ).symm 1 = 1 :=
   (LinearEquiv.symm_apply_eq _).mpr (auxEquiv_one _ _).symm
+
+/-- The submodule of `𝒜 ᵍ⊗[R] ℬ` corresponding to each total degree. -/
+def grade (i : ι) : Submodule R (𝒜 ᵍ⊗[R] ℬ) := TensorProduct.grade 𝒜 ℬ i
+
+theorem tmul_mem_grade {p q r : ι} {a : A} {b : B} (ha : a ∈ 𝒜 p) (hb : b ∈ ℬ q)
+    (hpqr : p + q = r) : a ᵍ⊗ₜ[R] b ∈ grade 𝒜 ℬ r :=
+  TensorProduct.tmul_mem_grade ha hb hpqr
+
+instance instDecomposition : Decomposition (grade 𝒜 ℬ) :=
+  inferInstanceAs (Decomposition (TensorProduct.grade 𝒜 ℬ))
 
 variable [Module ι (Additive ℤˣ)]
 
@@ -383,5 +395,25 @@ lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
     -- Qualified `map_smul` to avoid a TC timeout https://github.com/leanprover-community/mathlib4/pull/8386
     rw [LinearEquiv.map_smul, auxEquiv_tmul]
     simp_rw [decompose_coe, lof_eq_of]
+
+instance instGradedMonoid : SetLike.GradedMonoid (grade 𝒜 ℬ) where
+  one_mem :=
+    tmul_mem_grade 𝒜 ℬ (SetLike.one_mem_graded 𝒜) (SetLike.one_mem_graded ℬ) (zero_add 0)
+  mul_mem {i j} x y hx hy := by
+    refine (TensorProduct.mapsTo_gradeBy_iff _ (g := (mulHom 𝒜 ℬ).flip y)).2 ?_ hx
+    rintro p q rfl a ha b hb
+    refine (TensorProduct.mapsTo_gradeBy_iff _
+      (g := (mulHom 𝒜 ℬ (a ᵍ⊗ₜ[R] b)).comp (of R 𝒜 ℬ).toLinearMap)).2 ?_ hy
+    rintro p' q' rfl a' ha' b' hb'
+    lift b to ℬ q using hb
+    lift a' to 𝒜 p' using ha'
+    rw [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, ← mul_def, tmul_coe_mul_coe_tmul,
+      @Units.smul_def _ _ (_) (_)]
+    exact zsmul_mem (tmul_mem_grade 𝒜 ℬ (SetLike.mul_mem_graded ha a'.2)
+      (SetLike.mul_mem_graded b.2 hb') (add_add_add_comm p p' q q')) _
+
+/-- The tensor product of graded algebras is itself a graded algebra, graded by total degree. -/
+instance instGradedAlgebra : GradedAlgebra (grade 𝒜 ℬ) :=
+  { instGradedMonoid 𝒜 ℬ, instDecomposition 𝒜 ℬ with }
 
 end GradedTensorProduct
