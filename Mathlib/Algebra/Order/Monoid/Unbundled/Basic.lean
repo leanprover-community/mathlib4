@@ -1061,19 +1061,6 @@ section PartialOrder
 
 variable [PartialOrder α]
 
-@[to_additive]
-theorem mul_eq_one_iff_of_one_le [MulLeftMono α]
-    [MulRightMono α] {a b : α} (ha : 1 ≤ a) (hb : 1 ≤ b) :
-    a * b = 1 ↔ a = 1 ∧ b = 1 :=
-  Iff.intro
-    (fun hab : a * b = 1 =>
-      have : a ≤ 1 := hab ▸ le_mul_of_le_of_one_le le_rfl hb
-      have : a = 1 := le_antisymm this ha
-      have : b ≤ 1 := hab ▸ le_mul_of_one_le_of_le ha le_rfl
-      have : b = 1 := le_antisymm this hb
-      And.intro ‹a = 1› ‹b = 1›)
-    (by rintro ⟨rfl, rfl⟩; rw [mul_one])
-
 section Left
 
 variable [MulLeftMono α] {a b : α}
@@ -1085,6 +1072,20 @@ theorem eq_one_of_one_le_mul_left (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a *
 @[to_additive]
 theorem eq_one_of_mul_le_one_left (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : a = 1 :=
   ha.eq_of_not_lt' fun h => hab.not_gt <| one_lt_mul_of_lt_of_le' h hb
+
+@[to_additive]
+theorem mul_eq_one_iff_of_one_le_left (ha : 1 ≤ a) (hb : 1 ≤ b) :
+    a * b = 1 ↔ a = 1 ∧ b = 1 :=
+  Iff.intro
+    (fun hab : a * b = 1 =>
+      have : a = 1 := eq_one_of_mul_le_one_left ha hb hab.le
+      have : b = 1 := one_mul b ▸ ‹a = 1› ▸ hab
+      And.intro ‹a = 1› ‹b = 1›)
+    (by rintro ⟨rfl, rfl⟩; rw [mul_one])
+
+@[to_additive]
+instance (priority := 100) [IsBotOneClass α] : IsDedekindFiniteMonoid α where
+  mul_eq_one_symm := by simp [mul_eq_one_iff_of_one_le_left]
 
 end Left
 
@@ -1100,7 +1101,24 @@ theorem eq_one_of_one_le_mul_right (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a 
 theorem eq_one_of_mul_le_one_right (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : b = 1 :=
   hb.eq_of_not_lt' fun h => hab.not_gt <| Right.one_lt_mul_of_le_of_lt ha h
 
+@[to_additive]
+theorem mul_eq_one_iff_of_one_le_right (ha : 1 ≤ a) (hb : 1 ≤ b) :
+    a * b = 1 ↔ a = 1 ∧ b = 1 :=
+  Iff.intro
+    (fun hab : a * b = 1 =>
+      have : b = 1 := eq_one_of_mul_le_one_right ha hb hab.le
+      have : a = 1 := mul_one a ▸ ‹b = 1› ▸ hab
+      And.intro ‹a = 1› ‹b = 1›)
+    (by rintro ⟨rfl, rfl⟩; rw [mul_one])
+
+@[to_additive]
+instance (priority := 100) [IsBotOneClass α] : IsDedekindFiniteMonoid α where
+  mul_eq_one_symm := by simp [mul_eq_one_iff_of_one_le_right]
+
 end Right
+
+@[deprecated (since := "2026-08-18")]
+alias mul_eq_one_iff_of_one_le := mul_eq_one_iff_of_one_le_left
 
 end PartialOrder
 
@@ -1485,3 +1503,5 @@ end MulLECancellable
 lemma mulLECancellable_mul [LE α] [CommSemigroup α] [MulLeftMono α] {a b : α} :
     MulLECancellable (a * b) ↔ MulLECancellable a ∧ MulLECancellable b :=
   ⟨fun h ↦ ⟨h.of_mul_left, h.of_mul_right⟩, fun h ↦ h.1.mul h.2⟩
+
+set_option linter.style.longFile 1700
