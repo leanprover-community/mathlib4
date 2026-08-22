@@ -230,12 +230,18 @@ error: failed to synthesize
 Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `TotalSpace F (TangentSpace I)`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `TotalSpace F (TangentSpace I)` among local instances.
 [Elab.DiffGeo.MDiff] ✅️ TotalSpace
   [Elab.DiffGeo.MDiff] ✅️ TangentSpace
     [Elab.DiffGeo.MDiff] `TangentSpace I` is the total space of the `TangentBundle` of `M`
     [Elab.DiffGeo.MDiff] Found model: `I.tangent`
   [Elab.DiffGeo.MDiff] Found model: `I.tangent`
 [Elab.DiffGeo.MDiff] Finding a model with corners for: `F`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `F` among local instances.
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `F` is not a `Bundle.TotalSpace`.
@@ -323,6 +329,9 @@ variable {f : M → E'' →SL[id'] E'''} in
 error: Could not find a model with corners for `ContinuousLinearMap id' E'' E'''`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `M` among local instances.
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `M` is not a `Bundle.TotalSpace`.
@@ -337,6 +346,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
   [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²²`
   [Elab.DiffGeo.MDiff] Found model: `I`
 [Elab.DiffGeo.MDiff] Finding a model with corners for: `ContinuousLinearMap id' E'' E'''`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `ContinuousLinearMap id' E'' E'''` among local instances.
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not a `Bundle.TotalSpace`.
@@ -425,6 +437,9 @@ variable {f : M → E'' →SL[σ] E''''} in
 error: Could not find a model with corners for `ContinuousLinearMap σ E'' E''''`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `M` among local instances.
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `M` is not a `Bundle.TotalSpace`.
@@ -439,6 +454,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
   [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²⁵`
   [Elab.DiffGeo.MDiff] Found model: `I`
 [Elab.DiffGeo.MDiff] Finding a model with corners for: `ContinuousLinearMap σ E'' E''''`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `ContinuousLinearMap σ E'' E''''` among local instances.
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not a `Bundle.TotalSpace`.
@@ -643,6 +661,9 @@ set_option trace.Elab.DiffGeo.MDiff true in
 error: Could not find a model with corners for `↑(Set.Icc x y)`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Set.Icc x y)`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `↑(Set.Icc x y)` among local instances.
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not a `Bundle.TotalSpace`.
