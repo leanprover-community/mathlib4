@@ -4283,6 +4283,7 @@ public import Mathlib.Data.Nat.Hyperoperation
 public import Mathlib.Data.Nat.Init
 public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Nat.Log
+public import Mathlib.Data.Nat.MaxFac
 public import Mathlib.Data.Nat.MaxPowDiv
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Multiplicity
