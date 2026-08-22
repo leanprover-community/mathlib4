@@ -29,7 +29,7 @@ namespace StructuredArrow
 
 /-- The structured arrow category `StructuredArrow d T` depends on the chosen domain `d : D` in a
 functorial way, inducing a functor `Dᵒᵖ ⥤ Cat`. -/
-@[simps]
+@[implicit_reducible, simps]
 def functor (T : C ⥤ D) : Dᵒᵖ ⥤ Cat where
   obj d := .of <| StructuredArrow d.unop T
   map f := (map f.unop).toCatHom
@@ -46,7 +46,7 @@ namespace CostructuredArrow
 
 /-- The costructured arrow category `CostructuredArrow T d` depends on the chosen codomain `d : D`
 in a functorial way, inducing a functor `D ⥤ Cat`. -/
-@[simps]
+@[implicit_reducible, simps]
 def functor (T : C ⥤ D) : D ⥤ Cat where
   obj d := .of <| CostructuredArrow T d
   map f := (CostructuredArrow.map f).toCatHom
@@ -60,30 +60,27 @@ def functor (T : C ⥤ D) : D ⥤ Cat where
 variable {E : Type u₃} [Category.{v₃} E]
 variable (L : C ⥤ D) (R : E ⥤ D)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor used to establish the equivalence `grothendieckPrecompFunctorEquivalence` between
 the Grothendieck construction on `CostructuredArrow.functor` and the comma category. -/
-@[simps]
+@[implicit_reducible, simps]
 def grothendieckPrecompFunctorToComma : Grothendieck (R ⋙ functor L) ⥤ Comma L R where
   obj P := ⟨P.fiber.left, P.base, P.fiber.hom⟩
   map f := ⟨f.fiber.left, f.base, by simp⟩
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Fibers of `grothendieckPrecompFunctorToComma L R`, composed with `Comma.fst L R`, are isomorphic
 to the projection `proj L (R.obj X)`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def ιCompGrothendieckPrecompFunctorToCommaCompFst (X : E) :
     Grothendieck.ι (R ⋙ functor L) X ⋙ grothendieckPrecompFunctorToComma L R ⋙ Comma.fst _ _ ≅
     proj L (R.obj X) :=
   NatIso.ofComponents (fun X => Iso.refl _) (fun _ => by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The inverse functor used to establish the equivalence `grothendieckPrecompFunctorEquivalence`
 between the Grothendieck construction on `CostructuredArrow.functor` and the comma category. -/
-@[simps]
+@[implicit_reducible, simps]
 def commaToGrothendieckPrecompFunctor : Comma L R ⥤ Grothendieck (R ⋙ functor L) where
   obj X := ⟨X.right, mk X.hom⟩
   map f := ⟨f.right, homMk f.left⟩
@@ -94,7 +91,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- For `L : C ⥤ D`, taking the Grothendieck construction of `CostructuredArrow.functor L`
 precomposed with another functor `R : E ⥤ D` results in a category which is equivalent to
 the comma category `Comma L R`. -/
-@[simps]
+@[implicit_reducible, simps]
 def grothendieckPrecompFunctorEquivalence : Grothendieck (R ⋙ functor L) ≌ Comma L R where
   functor := grothendieckPrecompFunctorToComma _ _
   inverse := commaToGrothendieckPrecompFunctor _ _
@@ -103,7 +100,7 @@ def grothendieckPrecompFunctorEquivalence : Grothendieck (R ⋙ functor L) ≌ C
 
 /-- The functor projecting out the domain of arrows from the Grothendieck construction on
 costructured arrows. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def grothendieckProj : Grothendieck (functor L) ⥤ C :=
   grothendieckPrecompFunctorToComma L (𝟭 _) ⋙ Comma.fst _ _
 
