@@ -262,7 +262,7 @@ lemma SpectrumRestricts.eq_zero_of_neg {a : A} (ha : IsSelfAdjoint a)
   apply CFC.eq_zero_of_spectrum_subset_zero (R := ℝ) a
   rw [Set.subset_singleton_iff]
   simp only [← spectrum.neg_eq, Set.mem_neg] at ha₂
-  peel ha₁ with x hx _
+  gconvert ha₁ with x hx
   linarith [ha₂ (-x) ((neg_neg x).symm ▸ hx)]
 
 lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a : A}

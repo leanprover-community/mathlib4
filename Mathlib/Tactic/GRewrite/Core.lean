@@ -94,9 +94,9 @@ def grewriteUsingKAbstract (goal : MVarId) (e hrel pattern replacement : Expr)
   let mkImp (e₁ e₂ : Expr) : Expr := .forallE `_a e₁ e₂ .default
   let imp := if forwardImp then mkImp e' eNew else mkImp eNew e'
   let gcongrGoal ← mkFreshExprMVar imp
-  let (_, sideGoals) ← gcongrGoal.mvarId!.gcongr forwardImp
+  let (_, s) ← gcongrGoal.mvarId!.gcongr forwardImp
     |>.run (mainGoalDischarger := GRewrite.dischargeMain hrel)
-  pure (eNew, gcongrGoal, sideGoals)
+  pure (eNew, gcongrGoal, s.newGoals)
 
 end kabstract
 
@@ -409,14 +409,14 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         else throwTacticEx `grewrite goal m!"{hrelType} is not a valid relation"
       let index := (pattern.toHeadIndex, pattern.headNumArgs)
       let mvarIds := mvarIds ++ newMVars.map (·.mvarId!, #[])
-      if let ((some (eNew, impProof), { progress, ..}), newGoals) ←
+      if let ((some (eNew, impProof), { progress, ..}), s) ←
         grewriteCore `_Implies none e (forward := forwardImp) config |>.run
           { symm := symm', proof := hrel, type := hrelType, index, mvarIds }
           |>.run {} |>.run then
         let lctx? := match progress with
           | .matchedOutOfScope lctx => some lctx
           | _ => none
-        pure (lctx?, eNew, impProof, newGoals)
+        pure (lctx?, eNew, impProof, s.newGoals)
       else
         withLocalDeclD `_ (← inferType replacement) fun replacement' ↦ do
           let hrelType := updateRel hrelType replacement' symm

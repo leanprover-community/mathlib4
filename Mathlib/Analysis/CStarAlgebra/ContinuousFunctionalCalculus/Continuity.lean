@@ -99,7 +99,7 @@ theorem tendsto_cfc_fun {l : Filter X} {F : X → R → R} {f : R → R} {a : A}
     rw [hf.tendsto_domRestrict_iff_tendstoUniformlyOn Subtype.property]
     intro t
     simp only [eventually_comap, Subtype.forall]
-    peel h_tendsto t with ht x _
+    gconvert h_tendsto t with ht x
     simp_all
   · simpa [cfc_apply_of_not_predicate a ha] using tendsto_const_nhds
 
@@ -632,7 +632,7 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
     rw [hf.tendsto_domRestrict_iff_tendstoUniformlyOn (fun x ↦ x.2.1)]
     intro t
     simp only [eventually_comap, Subtype.forall]
-    peel h_tendsto t with ht x _
+    gconvert h_tendsto t with ht x
     simp_all
   · simpa [cfcₙ_apply_of_not_predicate a ha] using tendsto_const_nhds
 
