@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Pi
 public import Mathlib.Algebra.Ring.CompTypeclasses
 public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Data.Nat.Cast.Pi
+public import Mathlib.Data.Int.Cast.Pi
 
 /-!
 # Pi instances for ring
@@ -40,14 +42,14 @@ instance hasDistribNeg [∀ i, Mul (f i)] [∀ i, HasDistribNeg (f i)] : HasDist
   mul_neg _ _ := funext fun _ ↦ mul_neg _ _
 
 instance addMonoidWithOne [∀ i, AddMonoidWithOne (f i)] : AddMonoidWithOne (∀ i, f i) where
-  natCast n _ := n
+  __ := instNatCast
   natCast_zero := funext fun _ ↦ AddMonoidWithOne.natCast_zero
   natCast_succ n := funext fun _ ↦ AddMonoidWithOne.natCast_succ n
 
 instance addGroupWithOne [∀ i, AddGroupWithOne (f i)] : AddGroupWithOne (∀ i, f i) where
   __ := addGroup
   __ := addMonoidWithOne
-  intCast n _ := n
+  __ := instIntCast
   intCast_ofNat n := funext fun _ ↦ AddGroupWithOne.intCast_ofNat n
   intCast_negSucc n := funext fun _ ↦ AddGroupWithOne.intCast_negSucc n
 
