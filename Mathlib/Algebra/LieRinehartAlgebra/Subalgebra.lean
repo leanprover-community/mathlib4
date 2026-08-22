@@ -23,6 +23,11 @@ applicable to Lie-Rinehart rings and more generally any `A`-module with a Lie ri
 
 * A Lie-Rinehart subalgebra of a Lie-Rinehart algebra is a Lie-Rinehart algebra over the same ring.
 
+## Remark:
+
+Currently it is assumed that the 'subalgebra' keeps the full `A` and is a subset only on the level
+of `L`.
+
 -/
 
 public section
@@ -54,6 +59,18 @@ instance : SetLike (LieRinehartSubalgebra A L) L where
     exact SetLike.coe_injective h
 
 instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L) L
+
+instance : Top (LieRinehartSubalgebra A L) := ⟨{ (⊤ : Submodule A L) with
+      lie_mem' {_ _} _ _ := by aesop }⟩
+
+@[simp]
+theorem coe_top : ((⊤ : LieRinehartSubalgebra A L) : Set L) = Set.univ := rfl
+
+@[simp]
+theorem coe_eq_univ (L' : LieRinehartSubalgebra A L) : (L' : Set L) = Set.univ ↔ L' = ⊤ := by
+  rw [iff_comm, ← SetLike.coe_set_eq, coe_top]
+
+@[simp] lemma mem_top {x : L} : x ∈ (⊤ : LieRinehartSubalgebra A L) := trivial
 
 instance : AddSubgroupClass (LieRinehartSubalgebra A L) L where
   add_mem := Submodule.add_mem _
@@ -229,4 +246,45 @@ Lie-Rinehart algebras. -/
 @[simp]
 theorem coe_incl : ⇑(L'.incl R) = ((↑) : L' → L) := rfl
 
+variable {L₂ : Type*} [LieRing L₂] [Module A L₂] [LieRingModule L₂ A] [LieAlgebra R L₂]
+
+variable {R} in
+/-- The pushforward of a Lie-Rinehart subalgebra `L' ⊆ L` by `f : L → L₂` -/
+def map (f : L →ₗ⁅(AlgHom.id R A)⁆ L₂) :
+    LieRinehartSubalgebra A L₂ :=
+    letI : RingHomSurjective (AlgHom.id R A).toRingHom := {is_surjective := Function.surjective_id}
+    { L'.toSubmodule.map (f.toLinearMap') with
+      lie_mem' {x y} := by
+        rintro ⟨x', hx1, hx2⟩ ⟨y', hy1, hy2⟩
+        use ⁅x', y'⁆
+        constructor
+        · exact L'.lie_mem' hx1 hy1
+        · rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at *
+          rw [LieHom.map_lie, hx2, hy2]
+      }
+
 end LieRinehartSubalgebra
+
+namespace LieRinehartAlgebra
+namespace Hom
+
+variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRing L₁] [Module A L₁]
+  [LieRingModule L₁ A] [LieAlgebra R L₁] [LieRing L₂] [Module A L₂] [LieRingModule L₂ A]
+  [LieAlgebra R L₂] (f : L₁→ₗ⁅(AlgHom.id R A)⁆ L₂)
+
+/-- The range of a morphism of Lie-Rinehart algebras over the identity is a Lie-Rinehart
+subalgebra. -/
+def range : LieRinehartSubalgebra A L₂ := LieRinehartSubalgebra.map ⊤ f
+
+@[simp]
+theorem mem_range {x} : x ∈ range f ↔ ∃ y, f y = x := by
+  constructor
+  · rintro ⟨x', _, h2⟩; use x'; exact h2
+  · rintro ⟨x', h⟩; change ∃ y, _; aesop
+
+theorem coe_range : (range f : Set L₂) = Set.range f := by
+  ext _
+  simp
+
+end Hom
+end LieRinehartAlgebra
