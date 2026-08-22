@@ -50,19 +50,23 @@ open Filter Function Set NNReal ENNReal
 
 open scoped Topology
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
+variable {α δ : Type u} {β τ : Type v} {γ ζ : Type w} {ι : Type x}
 
-section PseudoEMetricSpace
-variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {s t : Set α} {f : α → β}
+section WeakPseudoEMetricSpace
+variable {K : ℝ≥0} {s t : Set α} {f : α → β}
 
 /-- A function `f` is **Lipschitz continuous** with constant `K ≥ 0` if for all `x, y`
 we have `dist (f x) (f y) ≤ K * dist x y`. -/
-def LipschitzWith (K : ℝ≥0) (f : α → β) := ∀ x y, edist (f x) (f y) ≤ K * edist x y
+def LipschitzWith [EDist α] [EDist β] (K : ℝ≥0) (f : α → β) :=
+  ∀ x y, edist (f x) (f y) ≤ K * edist x y
 
 /-- A function `f` is **Lipschitz continuous** with constant `K ≥ 0` **on `s`** if
 for all `x, y` in `s` we have `dist (f x) (f y) ≤ K * dist x y`. -/
-def LipschitzOnWith (K : ℝ≥0) (f : α → β) (s : Set α) :=
+def LipschitzOnWith [EDist α] [EDist β] (K : ℝ≥0) (f : α → β) (s : Set α) :=
   ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → edist (f x) (f y) ≤ K * edist x y
+
+variable [TopologicalSpace α] [WeakPseudoEMetricSpace α]
+  [TopologicalSpace β] [WeakPseudoEMetricSpace β]
 
 /-- `f : α → β` is called **locally Lipschitz continuous** iff every point `x`
 has a neighbourhood on which `f` is Lipschitz. -/
@@ -126,14 +130,16 @@ lemma Set.MapsTo.lipschitzOnWith_iff_restrict {t : Set β} (h : MapsTo f s t) :
 
 alias ⟨LipschitzOnWith.mapsToRestrict, _⟩ := Set.MapsTo.lipschitzOnWith_iff_restrict
 
-end PseudoEMetricSpace
+end WeakPseudoEMetricSpace
 
 namespace LipschitzWith
 
 open Metric
 
-variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-variable {K : ℝ≥0} {f : α → β} {x y : α} {r : ℝ≥0∞} {s : Set α}
+variable [TopologicalSpace α] [WeakPseudoEMetricSpace α] [TopologicalSpace β]
+  [WeakPseudoEMetricSpace β] [TopologicalSpace γ] [WeakPseudoEMetricSpace γ]
+  [PseudoEMetricSpace δ] [PseudoEMetricSpace τ] [PseudoEMetricSpace ζ]
+variable {K : ℝ≥0} {f : α → β} {g : δ → τ} {x y : α} {t : δ → β} {r : ℝ≥0∞} {s : Set α}
 
 protected theorem lipschitzOnWith (h : LipschitzWith K f) : LipschitzOnWith K f s :=
   fun x _ y _ => h x y
@@ -182,13 +188,14 @@ theorem edist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥
     _ < d := ENNReal.mul_lt_of_lt_div' h
 
 /-- A Lipschitz function is uniformly continuous. -/
-protected theorem uniformContinuous (hf : LipschitzWith K f) : UniformContinuous f :=
+protected theorem uniformContinuous (hg : LipschitzWith K g) : UniformContinuous g :=
   EMetric.uniformContinuous_iff.2 fun ε εpos =>
-    ⟨ε / K, ENNReal.div_pos_iff.2 ⟨ne_of_gt εpos, ENNReal.coe_ne_top⟩, hf.edist_lt_of_edist_lt_div⟩
+    ⟨ε / K, ENNReal.div_pos_iff.2 ⟨ne_of_gt εpos, ENNReal.coe_ne_top⟩, hg.edist_lt_of_edist_lt_div⟩
 
 /-- A Lipschitz function is continuous. -/
-protected theorem continuous (hf : LipschitzWith K f) : Continuous f :=
-  hf.uniformContinuous.continuous
+protected theorem continuous (ht : LipschitzWith K t) : Continuous t :=
+  let := PseudoEMetricSpace.ofEDist (α := β) edist edist_self edist_comm edist_triangle
+  continuous_le_rng WeakPseudoEMetricSpace.topology_le ht.uniformContinuous.continuous
 
 /-- Constant functions are Lipschitz (with any constant). -/
 protected theorem const (b : β) : LipschitzWith 0 fun _ : α => b := fun x y => by
@@ -198,7 +205,8 @@ protected theorem const' (b : β) {K : ℝ≥0} : LipschitzWith K fun _ : α => 
   simp only [edist_self, zero_le]
 
 @[simp]
-lemma zero_iff {β : Type*} [EMetricSpace β] (f : α → β) : LipschitzWith 0 f ↔ ∀ x y, f x = f y := by
+lemma zero_iff {α β : Type*} [EDist α] [TopologicalSpace β] [WeakEMetricSpace β] (f : α → β) :
+    LipschitzWith 0 f ↔ ∀ x y, f x = f y := by
   simp [LipschitzWith]
 
 /-- The identity is 1-Lipschitz. -/
@@ -213,9 +221,10 @@ theorem subtype_mk (hf : LipschitzWith K f) {p : β → Prop} (hp : ∀ x, p (f 
     LipschitzWith K (fun x => ⟨f x, hp x⟩ : α → { y // p y }) :=
   hf
 
-protected theorem eval {α : ι → Type u} [∀ i, PseudoEMetricSpace (α i)] [Fintype ι] (i : ι) :
-    LipschitzWith 1 (Function.eval i : (∀ i, α i) → α i) :=
-  LipschitzWith.of_edist_le fun f g => by convert! edist_le_pi_edist f g i
+protected theorem eval {α : ι → Type u} [∀ i, EDist (α i)] [Fintype ι] (i : ι) :
+    LipschitzWith 1 (Function.eval i : (∀ i, α i) → α i) := by
+  intro f g
+  simpa only [ENNReal.coe_one, one_mul] using edist_le_pi_edist f g i
 
 /-- The restriction of a `K`-Lipschitz function is `K`-Lipschitz. -/
 protected theorem restrict (hf : LipschitzWith K f) (s : Set α) :
@@ -233,26 +242,27 @@ theorem comp_lipschitzOnWith {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} {
     (hf : LipschitzWith Kf f) (hg : LipschitzOnWith Kg g s) : LipschitzOnWith (Kf * Kg) (f ∘ g) s :=
   lipschitzOnWith_iff_restrict.mpr <| hf.comp hg.to_restrict
 
-protected theorem prod_fst : LipschitzWith 1 (@Prod.fst α β) :=
+protected theorem prod_fst : LipschitzWith 1 (@Prod.fst δ τ) :=
   LipschitzWith.of_edist_le fun _ _ => le_max_left _ _
 
-protected theorem prod_snd : LipschitzWith 1 (@Prod.snd α β) :=
+protected theorem prod_snd : LipschitzWith 1 (@Prod.snd δ τ) :=
   LipschitzWith.of_edist_le fun _ _ => le_max_right _ _
 
 /-- If `f` and `g` are Lipschitz functions, so is the induced map `f × g` to the product type. -/
-protected theorem prodMk {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) {g : α → γ} {Kg : ℝ≥0}
-    (hg : LipschitzWith Kg g) : LipschitzWith (max Kf Kg) fun x => (f x, g x) := by
+protected theorem prodMk {f : α → τ} {Kf : ℝ≥0} (hf : LipschitzWith Kf f)
+    {g : α → ζ} {Kg : ℝ≥0} (hg : LipschitzWith Kg g) :
+    LipschitzWith (max Kf Kg) fun x => (f x, g x) := by
   intro x y
   rw [ENNReal.coe_mono.map_max, Prod.edist_eq, max_mul]
   exact max_le_max (hf x y) (hg x y)
 
-protected theorem prodMk_left (a : α) : LipschitzWith 1 (Prod.mk a : β → α × β) := by
+protected theorem prodMk_left (a : δ) : LipschitzWith 1 (Prod.mk a : τ → δ × τ) := by
   simpa only [max_eq_right zero_le_one] using! (LipschitzWith.const a).prodMk LipschitzWith.id
 
-protected theorem prodMk_right (b : β) : LipschitzWith 1 fun a : α => (a, b) := by
+protected theorem prodMk_right (b : τ) : LipschitzWith 1 fun a : δ => (a, b) := by
   simpa only [max_eq_left zero_le_one] using! LipschitzWith.id.prodMk (LipschitzWith.const b)
 
-protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ b, LipschitzWith Kα fun a => f a b)
+protected theorem uncurry {f : δ → τ → γ} {Kα Kβ : ℝ≥0} (hα : ∀ b, LipschitzWith Kα fun a => f a b)
     (hβ : ∀ a, LipschitzWith Kβ (f a)) : LipschitzWith (Kα + Kβ) (Function.uncurry f) := by
   rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩
   simp only [Function.uncurry, ENNReal.coe_add, add_mul]
@@ -295,19 +305,22 @@ end LipschitzWith
 
 namespace LipschitzOnWith
 
-variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-variable {K : ℝ≥0} {s : Set α} {f : α → β}
+variable [TopologicalSpace α] [WeakPseudoEMetricSpace α] [TopologicalSpace β]
+  [WeakPseudoEMetricSpace β] [TopologicalSpace γ] [WeakPseudoEMetricSpace γ]
+  [PseudoEMetricSpace δ] [PseudoEMetricSpace τ] [PseudoEMetricSpace ζ]
+variable {K : ℝ≥0} {s : Set α} {t : Set δ} {f : α → β} {g : δ → τ} {r : δ → β}
 
 @[simp]
-lemma zero_iff {β : Type*} [EMetricSpace β] (f : α → β) :
+lemma zero_iff {α β : Type*} [EDist α] [TopologicalSpace β] [WeakEMetricSpace β]
+    {s : Set α} (f : α → β) :
     LipschitzOnWith 0 f s ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y := by
   simp [LipschitzOnWith]
 
-protected theorem uniformContinuousOn (hf : LipschitzOnWith K f s) : UniformContinuousOn f s :=
-  uniformContinuousOn_iff_restrict.mpr hf.to_restrict.uniformContinuous
+protected theorem uniformContinuousOn (hg : LipschitzOnWith K g t) : UniformContinuousOn g t :=
+  uniformContinuousOn_iff_restrict.mpr hg.to_restrict.uniformContinuous
 
-protected theorem continuousOn (hf : LipschitzOnWith K f s) : ContinuousOn f s :=
-  hf.uniformContinuousOn.continuousOn
+protected theorem continuousOn (hr : LipschitzOnWith K r t) : ContinuousOn r t :=
+  continuousOn_iff_continuous_domRestrict.mpr hr.to_restrict.continuous
 
 protected theorem weaken (hf : LipschitzOnWith K f s) {K' : ℝ≥0} (h : K ≤ K') :
     LipschitzOnWith K' f s :=
@@ -327,11 +340,12 @@ protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : Lipschi
   lipschitzOnWith_iff_restrict.mpr <| hg.to_restrict.comp (hf.mapsToRestrict hmaps)
 
 /-- If `f` and `g` are Lipschitz on `s`, so is the induced map `f × g` to the product type. -/
-protected theorem prodMk {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith Kf f s)
-    (hg : LipschitzOnWith Kg g s) : LipschitzOnWith (max Kf Kg) (fun x => (f x, g x)) s := by
+protected theorem prodMk {g : α → τ} {e : α → ζ} {Kg Ke : ℝ≥0}
+    (hg : LipschitzOnWith Kg g s) (he : LipschitzOnWith Ke e s) :
+    LipschitzOnWith (max Kg Ke) (fun x => (g x, e x)) s := by
   intro _ hx _ hy
   rw [ENNReal.coe_mono.map_max, Prod.edist_eq, max_mul]
-  exact max_le_max (hf hx hy) (hg hx hy)
+  exact max_le_max (hg hx hy) (he hx hy)
 
 theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α) (t : Set β)
     (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (f · b) s) (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) :
@@ -347,7 +361,10 @@ theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α
 end LipschitzOnWith
 
 namespace LocallyLipschitz
-variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ] {f : α → β}
+variable [TopologicalSpace α] [WeakPseudoEMetricSpace α] [TopologicalSpace β]
+  [WeakPseudoEMetricSpace β] [TopologicalSpace γ] [WeakPseudoEMetricSpace γ]
+  [PseudoEMetricSpace δ] [PseudoEMetricSpace τ] [PseudoEMetricSpace ζ] {f : α → β} {g : δ → τ}
+  {r : δ → β}
 
 /-- A Lipschitz function is locally Lipschitz. -/
 protected lemma _root_.LipschitzWith.locallyLipschitz {K : ℝ≥0} (hf : LipschitzWith K f) :
@@ -363,14 +380,14 @@ protected lemma const (b : β) : LocallyLipschitz (fun _ : α ↦ b) :=
 
 /-- A locally Lipschitz function is continuous. (The converse is false: for example,
 $x ↦ \sqrt{x}$ is continuous, but not locally Lipschitz at 0.) -/
-protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continuous f := by
+protected theorem continuous (hr : LocallyLipschitz r) : Continuous r := by
   rw [continuous_iff_continuousAt]
   intro x
-  rcases (hf x) with ⟨K, t, ht, hK⟩
-  exact (hK.continuousOn).continuousAt ht
+  rcases hr x with ⟨K, t, ht, hK⟩
+  exact hK.continuousOn.continuousAt ht
 
 /-- The composition of locally Lipschitz functions is locally Lipschitz. -/
-protected lemma comp {f : β → γ} {g : α → β}
+protected lemma comp {f : β → γ} {g : δ → β}
     (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) : LocallyLipschitz (f ∘ g) := by
   intro x
   -- g is Lipschitz on t ∋ x, f is Lipschitz on u ∋ g(x)
@@ -381,7 +398,7 @@ protected lemma comp {f : β → γ} {g : α → β}
     ((mapsTo_preimage g u).mono_left inter_subset_right)
 
 /-- If `f` and `g` are locally Lipschitz, so is the induced map `f × g` to the product type. -/
-protected lemma prodMk {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (hg : LocallyLipschitz g) :
+protected lemma prodMk {f : α → τ} (hf : LocallyLipschitz f) {g : α → ζ} (hg : LocallyLipschitz g) :
     LocallyLipschitz fun x => (f x, g x) := by
   intro x
   rcases hf x with ⟨Kf, t₁, h₁t, hfL⟩
@@ -389,21 +406,21 @@ protected lemma prodMk {f : α → β} (hf : LocallyLipschitz f) {g : α → γ}
   refine ⟨max Kf Kg, t₁ ∩ t₂, Filter.inter_mem h₁t h₂t, ?_⟩
   exact (hfL.mono inter_subset_left).prodMk (hgL.mono inter_subset_right)
 
-protected theorem prodMk_left (a : α) : LocallyLipschitz (Prod.mk a : β → α × β) :=
+protected theorem prodMk_left (a : δ) : LocallyLipschitz (Prod.mk a : τ → δ × τ) :=
   (LipschitzWith.prodMk_left a).locallyLipschitz
 
-protected theorem prodMk_right (b : β) : LocallyLipschitz (fun a : α => (a, b)) :=
+protected theorem prodMk_right (b : τ) : LocallyLipschitz (fun a : δ => (a, b)) :=
   (LipschitzWith.prodMk_right b).locallyLipschitz
 
-protected theorem iterate {f : α → α} (hf : LocallyLipschitz f) : ∀ n, LocallyLipschitz f^[n]
+protected theorem iterate {f : δ → δ} (hf : LocallyLipschitz f) : ∀ n, LocallyLipschitz f^[n]
   | 0 => by simpa only [pow_zero] using! LocallyLipschitz.id
   | n + 1 => by rw [iterate_add, iterate_one]; exact (hf.iterate n).comp hf
 
-protected theorem mul_end {f g : Function.End α} (hf : LocallyLipschitz f)
-    (hg : LocallyLipschitz g) : LocallyLipschitz (f * g : Function.End α) := hf.comp hg
+protected theorem mul_end {f g : Function.End δ} (hf : LocallyLipschitz f)
+    (hg : LocallyLipschitz g) : LocallyLipschitz (f * g : Function.End δ) := hf.comp hg
 
-protected theorem pow_end {f : Function.End α} (h : LocallyLipschitz f) :
-    ∀ n : ℕ, LocallyLipschitz (f ^ n : Function.End α)
+protected theorem pow_end {f : Function.End δ} (h : LocallyLipschitz f) :
+    ∀ n : ℕ, LocallyLipschitz (f ^ n : Function.End δ)
   | 0 => by simpa only [pow_zero] using! LocallyLipschitz.id
   | n + 1 => by
     rw [pow_succ]
@@ -412,7 +429,8 @@ protected theorem pow_end {f : Function.End α} (h : LocallyLipschitz f) :
 end LocallyLipschitz
 
 namespace LocallyLipschitzOn
-variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {f : α → β} {s : Set α}
+variable [TopologicalSpace β] [WeakPseudoEMetricSpace β] [PseudoEMetricSpace δ] {f : δ → β}
+  {s : Set δ}
 
 protected lemma continuousOn (hf : LocallyLipschitzOn s f) : ContinuousOn f s :=
   continuousOn_iff_continuous_domRestrict.2 hf.restrict.continuous
