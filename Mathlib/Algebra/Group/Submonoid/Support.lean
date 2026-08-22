@@ -117,4 +117,53 @@ theorem maximal_isMulPointed (hMp : M.IsMulPointed) (hMs : M.IsMulSpanning) :
     Maximal IsMulPointed M :=
   ⟨hMp, fun N hN h ↦ by rw [SetLike.le_def] at h ⊢; aesop⟩
 
-end Submonoid.IsMulSpanning
+end IsMulSpanning
+
+section Group
+
+variable {G H : Type*} [Group G] [Group H] (f : G →* H) (M N : Submonoid G) (M' : Submonoid H)
+         {s : Set (Submonoid G)}
+
+variable {M N} in
+@[to_additive]
+theorem mulSupport_mono (h : M ≤ N) : M.mulSupport ≤ N.mulSupport := fun _ ↦ by aesop
+
+@[to_additive (attr := simp)]
+theorem mulSupport_inf : (M ⊓ N).mulSupport = M.mulSupport ⊓ N.mulSupport := by aesop
+
+@[to_additive (attr := simp)]
+theorem mulSupport_sInf (s : Set (Submonoid G)) :
+    (sInf s).mulSupport = InfSet.sInf (mulSupport '' s) := by aesop
+
+variable {M'} in
+@[to_additive (attr := aesop 90%)]
+theorem IsMulSpanning.comap (hM' : M'.IsMulSpanning) : (M'.comap f).IsMulSpanning := by aesop
+
+@[to_additive (attr := simp)]
+theorem comap_mulSupport : (M'.comap f).mulSupport = (M'.mulSupport).comap f := by aesop
+
+variable {f M} in
+@[to_additive]
+theorem IsMulSpanning.map (hM : M.IsMulSpanning) (hf : Function.Surjective f) :
+    (M.map f).IsMulSpanning := fun x ↦ by
+  obtain ⟨x', rfl⟩ := hf x
+  aesop
+
+end Group
+
+section CommGroup
+
+variable {G H : Type*} [CommGroup G] [CommGroup H] (f : G →* H) (M : Submonoid G)
+
+variable {f M} in
+@[to_additive (attr := simp)]
+theorem map_mulSupport (hsupp : f.ker ≤ M.mulSupport) :
+    (M.map f).mulSupport = (M.mulSupport).map f := by
+  ext
+  refine ⟨fun ⟨⟨a, ⟨ha₁, ha₂⟩⟩, ⟨b, ⟨hb₁, hb₂⟩⟩⟩ => ?_, by aesop⟩
+  have : (a * b)⁻¹ * b ∈ M := by exact mul_mem (hsupp (show f (a * b) = 1 by simp_all)).2 hb₁
+  aesop
+
+end CommGroup
+
+end Submonoid
