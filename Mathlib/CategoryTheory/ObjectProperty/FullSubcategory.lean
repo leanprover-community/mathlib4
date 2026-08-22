@@ -83,6 +83,10 @@ variable {P} in
 def homMk {X Y : P.FullSubcategory} (f : X.obj ⟶ Y.obj) : X ⟶ Y where
   hom := f
 
+@[simp]
+lemma homMk_id (X : P.FullSubcategory) :
+    (homMk (𝟙 _) : X ⟶ X) = 𝟙 _ := rfl
+
 variable {P} in
 lemma homMk_surjective {X Y : P.FullSubcategory} :
     Function.Surjective (homMk : (X.obj ⟶ Y.obj) → _) :=

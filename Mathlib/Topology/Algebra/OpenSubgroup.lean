@@ -238,6 +238,29 @@ theorem comap_comap {P : Type*} [Group P] [TopologicalSpace P] (K : OpenSubgroup
     (K.comap f₂ hf₂).comap f₁ hf₁ = K.comap (f₂.comp f₁) (hf₂.comp hf₁) :=
   rfl
 
+section
+
+variable {ι : Type*} [Finite ι] (U : ι → OpenSubgroup G)
+
+/-- The intersection of a finite family of open subgroups. -/
+@[to_additive]
+abbrev iInfOfFinite : OpenSubgroup G :=
+  ⟨⨅ i, U i, by
+    convert isOpen_iInter_of_finite (fun i ↦ (U i).isOpen)
+    aesop⟩
+
+attribute [inherit_doc iInfOfFinite] OpenAddSubgroup.iInfOfFinite
+
+@[to_additive]
+lemma iInfOfFinite_le (i : ι) :
+    iInfOfFinite U ≤ U i := by
+  intro x hx
+  rw [← mem_toSubgroup] at hx
+  simp at hx
+  tauto
+
+end
+
 end OpenSubgroup
 namespace Subgroup
 

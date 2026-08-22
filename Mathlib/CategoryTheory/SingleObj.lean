@@ -148,7 +148,7 @@ def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
 
 /-- A monoid homomorphism `f: M → End X` into the endomorphisms of an object `X` of a category `C`
 induces a functor `SingleObj M ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def functor {X : C} (f : M →* End X) : SingleObj M ⥤ C where
   obj _ := X
   map a := f a
@@ -156,12 +156,20 @@ def functor {X : C} (f : M →* End X) : SingleObj M ⥤ C where
   map_comp a b := map_mul f b a
 
 /-- Construct a natural transformation between functors `SingleObj M ⥤ C` by
-giving a compatible morphism `SingleObj.star M`. -/
+giving a compatible morphism. -/
 @[simps]
 def natTrans {F G : SingleObj M ⥤ C} (u : F.obj (SingleObj.star M) ⟶ G.obj (SingleObj.star M))
     (h : ∀ a : M, F.map a ≫ u = u ≫ G.map a) : F ⟶ G where
   app _ := u
   naturality _ _ a := h a
+
+/-- Construct a natural isomorphism between functors `SingleObj M ⥤ C` by
+giving a compatible isomorphism. -/
+@[simps]
+def natIso {F G : SingleObj M ⥤ C} (u : F.obj (SingleObj.star M) ≅ G.obj (SingleObj.star M))
+    (h : ∀ a : M, F.map a ≫ u.hom = u.hom ≫ G.map a) : F ≅ G where
+  hom := natTrans u.hom h
+  inv := natTrans u.inv (fun a ↦ by simp [← cancel_mono u.hom, h a])
 
 end SingleObj
 
