@@ -16,7 +16,7 @@ public import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
   integral curve at each point `x : M` is defined at least on an open interval `Ioo (-ε) ε`, then
   every point on `M` has a global integral curve passing through it.
 
-## Reference
+## References
 
 * [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]
 

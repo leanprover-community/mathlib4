@@ -36,7 +36,7 @@ We state simpler versions of the theorem for boundaryless manifolds as corollari
 * The case where the integral curve may venture to the boundary of the manifold. See Theorem 9.34,
   Lee. May require submanifolds.
 
-## Reference
+## References
 
 * [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]
 
