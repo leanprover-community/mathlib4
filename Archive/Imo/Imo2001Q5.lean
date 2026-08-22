@@ -201,7 +201,7 @@ lemma x_eq : s.x = 2 * π / 9 := by
     show (y + π / 6 - (5 * y + π / 6)) / 2 = -(2 * y) by ring, Real.cos_neg, ← mul_rotate, eq_comm,
     mul_left_eq_self₀] at iden
   have notleft : Real.cos (2 * y) * 2 ≠ 1 := by
-    unfold y; rw [mul_div_cancel₀ _ two_ne_zero]; by_contra h
+    rw [mul_div_cancel₀ _ two_ne_zero]; by_contra h
     rw [← eq_div_iff_mul_eq two_ne_zero, ← Real.cos_pi_div_three] at h
     apply Real.injOn_cos ⟨s.x_pos.le, by bx⟩ ⟨by positivity, by bound⟩ at h
     exact s.x_lt_pi_div_three.ne h
