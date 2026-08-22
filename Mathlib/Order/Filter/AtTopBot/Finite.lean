@@ -18,7 +18,7 @@ the finiteness theory developed in Mathlib.
 
 public section
 
-variable {ι ι' α β γ : Type*}
+variable {ι α β : Type*}
 
 open Set
 
