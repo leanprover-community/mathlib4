@@ -73,9 +73,7 @@ theorem LinearMap.isArtinian_iff_of_bijective {S P} [Semiring S] [AddCommMonoid 
 
 theorem isArtinian_of_injective (f : M →ₗ[R] P) (h : Function.Injective f) [IsArtinian R P] :
     IsArtinian R M :=
-  ⟨Subrelation.wf
-    (fun {A B} hAB => show A.map f < B.map f from Submodule.map_strictMono_of_injective h hAB)
-    (InvImage.wf (Submodule.map f) IsWellFounded.wf)⟩
+  Subrelation.wf (fun hAB ↦ Submodule.map_strictMono_of_injective h hAB) inferInstance
 
 instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian R N :=
   isArtinian_of_injective N.subtype Subtype.val_injective
@@ -84,12 +82,9 @@ theorem isArtinian_of_le {s t : Submodule R M} [IsArtinian R t] (h : s ≤ t) : 
   isArtinian_of_injective (Submodule.inclusion h) (Submodule.inclusion_injective h)
 
 variable (M) in
-theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f) [IsArtinian R M] :
+theorem isArtinian_of_surjective (f : M →ₗ[R] P) (h : Function.Surjective f) [IsArtinian R M] :
     IsArtinian R P :=
-  ⟨Subrelation.wf
-    (fun {A B} hAB =>
-      show A.comap f < B.comap f from Submodule.comap_strictMono_of_surjective hf hAB)
-    (InvImage.wf (Submodule.comap f) IsWellFounded.wf)⟩
+  Subrelation.wf (fun hAB ↦ Submodule.comap_strictMono_of_surjective h hAB) inferInstance
 
 /--
 If `M` is an Artinian `R` module, and `S` is an `R`-algebra with a surjective
@@ -123,7 +118,7 @@ theorem LinearEquiv.isArtinian_iff (f : M ≃ₗ[R] P) : IsArtinian R M ↔ IsAr
 -- This was previously a global instance,
 -- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
 lemma isArtinian_of_finite [Finite M] : IsArtinian R M :=
-  ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
+  Finite.wellFounded_of_trans_of_irrefl _
 
 open Submodule
 
@@ -133,8 +128,8 @@ theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R 
 
 /-- A module is Artinian iff every nonempty set of submodules has a minimal submodule among them. -/
 theorem set_has_minimal_iff_artinian :
-    (∀ a : Set <| Submodule R M, a.Nonempty → ∃ M' ∈ a, ∀ I ∈ a, ¬I < M') ↔ IsArtinian R M := by
-  rw [isArtinian_iff, WellFounded.wellFounded_iff_has_min]
+    (∀ a : Set <| Submodule R M, a.Nonempty → ∃ M' ∈ a, ∀ I ∈ a, ¬I < M') ↔ IsArtinian R M :=
+  WellFounded.wellFounded_iff_has_min.symm
 
 theorem IsArtinian.set_has_minimal [IsArtinian R M] (a : Set <| Submodule R M) (ha : a.Nonempty) :
     ∃ M' ∈ a, ∀ I ∈ a, ¬I < M' :=
@@ -161,8 +156,8 @@ open Function
 
 /-- Any injective endomorphism of an Artinian module is surjective. -/
 theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
-  have h := ‹IsArtinian R M›; contrapose h
-  rw [IsArtinian, WellFoundedLT, isWellFounded_iff]
+  have h := ‹IsArtinian R M›; contrapose! h
+  rw [IsArtinian, WellFoundedLT]
   refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded
   intro n
   simp_rw [pow_succ, Module.End.mul_eq_comp, LinearMap.range_comp, ← Submodule.map_top (f ^ n)]
@@ -368,10 +363,10 @@ theorem isArtinian_of_submodule_of_artinian (R M) [Semiring R] [AddCommMonoid M]
 /-- If `M / S / R` is a scalar tower, and `M / R` is Artinian, then `M / S` is also Artinian. -/
 theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M] [SMul R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M :=
-  ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
+  (Submodule.restrictScalarsEmbedding R S M).wellFounded h
 
 instance DivisionSemiring.instIsArtinianRing {K : Type*} [DivisionSemiring K] : IsArtinianRing K :=
-  ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
+  Finite.wellFounded_of_trans_of_irrefl _
 
 instance DivisionRing.instIsArtinianRing {K : Type*} [DivisionRing K] : IsArtinianRing K :=
   inferInstance
@@ -420,7 +415,7 @@ theorem Function.Surjective.isArtinianRing {R} [Semiring R] {S} [Semiring S] {F}
     [FunLike F R S] [RingHomClass F R S]
     {f : F} (hf : Function.Surjective f) [H : IsArtinianRing R] : IsArtinianRing S := by
   rw [isArtinianRing_iff] at H ⊢
-  exact ⟨(Ideal.orderEmbeddingOfSurjective f hf).wellFounded H.wf⟩
+  exact (Ideal.orderEmbeddingOfSurjective f hf).wellFounded H
 
 instance isArtinianRing_rangeS {R} [Semiring R] {S} [Semiring S] (f : R →+* S) [IsArtinianRing R] :
     IsArtinianRing f.rangeS :=
