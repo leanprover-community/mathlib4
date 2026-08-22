@@ -1089,7 +1089,8 @@ protected theorem R1Space.inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
     (h₁ : @R1Space X t₁) (h₂ : @R1Space X t₂) : @R1Space X (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]
   apply R1Space.iInf
-  simp [*]
+  rw [Bool.forall_bool, cond_false, cond_true]
+  exact ⟨h₂, h₁⟩
 
 instance [TopologicalSpace Y] [R1Space Y] : R1Space (X × Y) :=
   .inf (.induced _) (.induced _)
