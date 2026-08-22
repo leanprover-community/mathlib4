@@ -531,7 +531,8 @@ private lemma toHeckeCosetModuleMap_injective :
   ext
   apply (indTrivialOfMulActionEquiv k H₂).injective
   ext y
-  change f.toLeftCosetModule.coeff y = 0
+  simp only [LinearEquiv.coe_mk, IntertwiningMap.coe_toLinearMap, Equiv.coe_toIntertwiningMap,
+    ← toLeftCosetModule_apply, Pi.zero_apply, map_zero, coeff_zero, Finsupp.coe_zero]
   by_contra! hy
   apply hy
   have : IsHeckeTriple H₁ y.out H₂ := isHeckeTriple_of_coeff_ne_zero f y.out (by simpa using hy)
@@ -556,12 +557,12 @@ def toHeckeCosetModuleEquiv :
     exact toHeckeCosetModuleInv_isRightInv k H₁ H₂
 
 @[simp]
-lemma toHeckeCosetModuleEquiv_apply_mk₁ (x : HeckeCoset H₁ H₂) :
+lemma toHeckeCosetModuleEquiv_apply (x : HeckeCoset H₁ H₂) :
     (toHeckeCosetModuleEquiv k H₁ H₂) x.mk₁ = single x 1 :=
   toHeckeCosetModuleMap_apply_mk₁ k H₁ H₂ x
 
 @[simp]
-lemma toHeckeCosetModuleEquiv_symm_apply_single (x : HeckeCoset H₁ H₂) :
+lemma toHeckeCosetModuleEquiv_symm_apply (x : HeckeCoset H₁ H₂) :
     ((toHeckeCosetModuleEquiv k H₁ H₂).symm (single x 1)) = x.mk₁ :=
   toHeckeCosetModuleInv_apply_single k H₁ H₂ x
 
@@ -574,7 +575,7 @@ def coeff :
     (toHeckeCosetModuleEquiv k H₁ H₂).toLinearMap
 
 @[simp]
-lemma coeff_apply_mk₁ (x y : HeckeCoset H₁ H₂) [Decidable (x = y)] :
+lemma coeff_apply (x y : HeckeCoset H₁ H₂) [Decidable (x = y)] :
     x.mk₁.coeff y = if x = y then (1 : k) else 0 := by classical
   simp [coeff, Finsupp.single_apply]
 
@@ -730,7 +731,7 @@ lemma HeckeAlgebra₁.induction_on {p : HeckeAlgebra₁ k H → Prop}
     (smul : ∀ (r : k) x , p x → p (r • x))
     (add : ∀ x y, p x → p y → p (x + y)) :
     p f := by
-  change p (MulOpposite.op f.unop)
+  rw [← MulOpposite.op_unop f]
   refine HeckeBimodule₁.induction_on f.unop (p := fun x => p (MulOpposite.op x)) ?_ ?_ ?_ ?_
   · simpa using smul 0 (HeckeCoset.mk' H H 1).diagMk₁ (mk (HeckeCoset.mk' H H 1))
   · exact fun x => by simpa [HeckeCoset.diagMk₁] using mk x
@@ -1039,20 +1040,8 @@ open CategoryTheory
 abbrev toHeckeModule (A : Rep k G) : ModuleCat (HeckeAlgebra H σ) :=
   ModuleCat.of (HeckeAlgebra H σ) (HeckeModule H σ A.ρ)
 
-/-- The module over the opposite standard Hecke algebra associated a representation `ρ` of `G`. -/
-abbrev toHecke₁Module (A : Rep k G) : ModuleCat (HeckeAlgebra₁ k H) :=
-  ModuleCat.of (HeckeAlgebra₁ k H) (HeckeModule₁ H A.ρ)
-
 /-- The induced map between Hecke modules from a morphism between represeentations. -/
 abbrev toHeckeModuleMap {A B : Rep k G} (f : A ⟶ B) : toHeckeModule H σ A ⟶ toHeckeModule H σ B :=
-  ModuleCat.ofHom {
-    toFun g := f.hom.comp g
-    map_add' x y := by rw [IntertwiningMap.add_comp]
-    map_smul' _ _ := rfl}
-
-/-- The induced map between Hecke modules over the opposite standard Hecke algebra from a morphism
-between representations. -/
-abbrev toHecke₁ModuleMap {A B : Rep k G} (f : A ⟶ B) : toHecke₁Module H A ⟶ toHecke₁Module H B :=
   ModuleCat.ofHom {
     toFun g := f.hom.comp g
     map_add' x y := by rw [IntertwiningMap.add_comp]
@@ -1063,10 +1052,18 @@ abbrev toHeckeModuleFunctor : Rep k G ⥤ ModuleCat (HeckeAlgebra H σ) where
   obj := toHeckeModule H σ
   map := toHeckeModuleMap H σ
 
+/-- The module over the opposite standard Hecke algebra associated a representation `ρ` of `G`. -/
+abbrev toHecke₁Module :=
+  toHeckeModule H (trivial k H k)
+
+/-- The induced map between Hecke modules over the opposite standard Hecke algebra from a morphism
+between representations. -/
+abbrev toHecke₁ModuleMap {A B : Rep k G} :=
+  toHeckeModuleMap H (trivial k H k) (A := A) (B := B)
+
 /-- The functor sending represenations to Hecke modules over the opposite standard Hecke algbera. -/
-abbrev toHecke₁ModuleFunctor : Rep k G ⥤ ModuleCat (HeckeAlgebra₁ k H) where
-  obj := toHecke₁Module H
-  map := toHecke₁ModuleMap H
+abbrev toHecke₁ModuleFunctor :=
+  toHeckeModuleFunctor H (trivial k H k)
 
 end Rep
 
