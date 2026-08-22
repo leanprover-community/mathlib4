@@ -325,7 +325,52 @@ lemma Spec.map_residueFieldIso_inv_eq_fromSpecResidueField :
   rw [Spec.map_inj]
   simp [← Scheme.Spec.algebraMap_residueFieldIso_inv]
 
+/-- For a field `k`, the residue field of `Spec k` at any point `x` is canonically isomorphic
+to `k`. -/
+noncomputable def Spec.residueFieldIsoOfField {k : Type u} [Field k] (x : Spec (.of k)) :
+    (Spec (.of k)).residueField x ≅ .of k :=
+  Spec.residueFieldIso (.of k) x ≪≫
+    (Ideal.algEquivResidueFieldOfField x.asIdeal).symm.toRingEquiv.toCommRingCatIso
+
+@[reassoc]
+lemma Spec.residueFieldIsoOfField_inv {k : Type u} [Field k] (x : Spec (.of k)) :
+    (Spec.residueFieldIsoOfField x).inv =
+      (Scheme.ΓSpecIso (.of k)).inv ≫ (Spec (.of k)).Γevaluation x := by
+  have step : (Spec.residueFieldIsoOfField x).inv =
+      CommRingCat.ofHom (algebraMap (CommRingCat.of k) x.asIdeal.ResidueField) ≫
+        (Spec.residueFieldIso (.of k) x).inv := by
+    ext a; simp [Spec.residueFieldIsoOfField, Ideal.algEquivResidueFieldOfField_apply]
+  rw [step, Spec.algebraMap_residueFieldIso_inv (CommRingCat.of k) x, Scheme.germ_residue]
+
 end Spec
+
+/-- The `k`-algebra structure on `κ(x)` induced by a morphism `f : X ⟶ Spec k` factors through
+`f.residueFieldMap x`, after identifying `κ(f x)` with `k` via `Spec.residueFieldIsoOfField`. -/
+@[reassoc]
+lemma Hom.residueFieldIsoOfField_inv_residueFieldMap {X : Scheme.{u}} {k : Type u} [Field k]
+    (f : X ⟶ Spec (.of k)) (x : X) :
+    (Spec.residueFieldIsoOfField (f x)).inv ≫ f.residueFieldMap x =
+      (Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop ≫ X.Γevaluation x := by
+  simp [Spec.residueFieldIsoOfField_inv, Scheme.Γevaluation_naturality]
+
+/-- The residue degree of a morphism `f : X ⟶ Spec k` to the spectrum of a field at a point `x`
+equals the degree of `κ(x)` as a `k`-algebra, via the canonical `k`-algebra structure on `κ(x)`
+induced by `f`. -/
+lemma Hom.residueDegree_eq_finrank {X : Scheme.{u}} {k : Type u} [Field k]
+    (f : X ⟶ Spec (.of k)) (x : X) :
+    letI := Algebra.compHom (X.residueField x)
+      ((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom)
+    f.residueDegree x = Module.finrank k (X.residueField x) := by
+  algebraize [((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom),
+    (f.residueFieldMap x).hom]
+  let i := (Spec.residueFieldIsoOfField (f x)).commRingCatIsoToRingEquiv
+  refine Algebra.finrank_eq_of_equiv_equiv i (RingEquiv.refl _) ?_
+  have : algebraMap k ↑(X.residueField x) =
+      (f.residueFieldMap x).hom.comp i.symm.toRingHom :=
+    congrArg CommRingCat.Hom.hom (f.residueFieldIsoOfField_inv_residueFieldMap x).symm
+  rw [this]
+  ext c
+  simp [RingHom.algebraMap_toAlgebra]
 
 /-- A helper lemma to work with `AlgebraicGeometry.Scheme.SpecToEquivOfField`. -/
 lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
