@@ -93,6 +93,14 @@ theorem dvd_of_forall_prime_mul_dvd {a b : ℕ}
   obtain ⟨p, hp⟩ := exists_prime_and_dvd ha
   exact _root_.trans (dvd_mul_left a p) (hdvd p hp.1 hp.2)
 
+/-- No natural number other than `0` is divisible by every prime: any prime factor of `n + 1`
+is coprime to `n`. -/
+theorem exists_prime_not_dvd (hn : n ≠ 0) : ∃ p, p.Prime ∧ ¬p ∣ n := by
+  have hp : (n + 1).minFac.Prime := minFac_prime (by omega)
+  refine ⟨_, hp, fun h ↦ hp.ne_one ?_⟩
+  have hdvd := Nat.dvd_sub (minFac_dvd (n + 1)) h
+  rwa [Nat.add_sub_cancel_left, Nat.dvd_one] at hdvd
+
 theorem Prime.even_iff {p : ℕ} (hp : Prime p) : Even p ↔ p = 2 := by
   rw [even_iff_two_dvd, prime_dvd_prime_iff_eq prime_two hp, eq_comm]
 
