@@ -323,6 +323,20 @@ lemma mul_geom_sum₂_Ico (x y : R) {m n : ℕ} (hmn : m ≤ n) :
     ((x - y) * ∑ i ∈ Finset.Ico m n, x ^ i * y ^ (n - 1 - i)) = x ^ n - x ^ m * y ^ (n - m) :=
   (Commute.all x y).mul_geom_sum₂_Ico hmn
 
+/-- Summing `k` against the weights `x ^ k * (1 - x)` for `k < m`, plus `m` against the
+boundary weight `x ^ m`, gives the geometric sum `∑ k ∈ Icc 1 m, x ^ k`. This is the identity
+behind the mean of a censored geometric distribution: `x ^ k * (1 - x)` is the mass at `k` and
+`x ^ m` the mass collected at `m`. -/
+theorem sum_range_id_mul_geometric_add (x : R) (m : ℕ) :
+    (∑ k ∈ range m, (k : R) * (x ^ k * (1 - x))) + (m : R) * x ^ m =
+      ∑ k ∈ Finset.Icc 1 m, x ^ k := by
+  induction m with
+  | zero => simp
+  | succ m ih =>
+    rw [sum_range_succ, Finset.sum_Icc_succ_top (Nat.one_le_iff_ne_zero.mpr m.succ_ne_zero)]
+    push_cast
+    grind
+
 end CommRing
 
 namespace Nat
