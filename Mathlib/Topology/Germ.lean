@@ -46,42 +46,55 @@ namespace Filter.Germ
 
 /-- The value associated to a germ at a point. This is the common value
 shared by all representatives at the given point. -/
-def value {X α : Type*} [TopologicalSpace X] {x : X} (φ : Germ (𝓝 x) α) : α :=
-  Quotient.liftOn' φ (fun f ↦ f x) fun f g h ↦ by rw [Eventually.self_of_nhds h]
+noncomputable def value {X α : Type*} [TopologicalSpace X] {x : X} (φ : Germ (𝓝 x) α) : α :=
+  liftOn φ (Function.eval x) (fun _ _ h => h.self_of_nhds)
 
 @[simp]
-theorem value_ofFun (f : X → Y) (x : X) : value (f : Germ (𝓝 x) Y) = f x := rfl
+theorem value_ofFun (f : X → Y) (x : X) : value (f : Germ (𝓝 x) Y) = f x := liftOn_coe _ _ f
 
-@[simp]
-theorem value_const (c : Y) (x : X) : value (c : Germ (𝓝 x) Y) = c := rfl
+theorem value_const (c : Y) (x : X) : value (c : Germ (𝓝 x) Y) = c := value_ofFun _ x
 
 theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
     (ψ : Germ (𝓝 x) β) : (φ • ψ).value = φ.value • ψ.value :=
-  Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
+  Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ by
+    rw [← coe_smul', value_ofFun, value_ofFun, value_ofFun, Pi.smul_apply']
 
 /-- The map `Germ (𝓝 x) E → E` into a monoid `E` as a monoid homomorphism -/
 @[to_additive /-- The map `Germ (𝓝 x) E → E` as an additive monoid homomorphism -/]
+noncomputable
 def valueMulHom {X E : Type*} [Monoid E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →* E where
   toFun := Filter.Germ.value
-  map_one' := rfl
-  map_mul' φ ψ := Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
+  map_one' := by rw [← coe_one, value_ofFun, Pi.one_apply]
+  map_mul' φ ψ := Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ by
+    rw [← coe_mul, value_ofFun, value_ofFun, value_ofFun, Pi.mul_apply]
 
 /-- The map `Germ (𝓝 x) E → E` into a `𝕜`-module `E` as a `𝕜`-linear map -/
+noncomputable
 def valueₗ {X 𝕜 E : Type*} [Semiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace X]
     {x : X} : Germ (𝓝 x) E →ₗ[𝕜] E where
+  toFun := Filter.Germ.value
   __ := Filter.Germ.valueAddHom
-  map_smul' := fun _ φ ↦ Germ.inductionOn φ fun _ ↦ rfl
+  map_smul' := fun _ φ ↦ Germ.inductionOn φ fun _ ↦ by
+    rw [← coe_smul, value_ofFun, value_ofFun, Pi.smul_apply, RingHom.id_apply]
 
 /-- The map `Germ (𝓝 x) E → E` as a ring homomorphism -/
-def valueRingHom {X E : Type*} [Semiring E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →+* E :=
-  { Filter.Germ.valueMulHom, Filter.Germ.valueAddHom with }
+noncomputable
+def valueRingHom {X E : Type*} [Semiring E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →+* E where
+  toFun := Filter.Germ.value
+  __ := Filter.Germ.valueMulHom
+  __ := Filter.Germ.valueAddHom
 
 /-- The map `Germ (𝓝 x) E → E` as a monotone ring homomorphism -/
+noncomputable
 def valueOrderRingHom {X E : Type*} [Semiring E] [PartialOrder E] [TopologicalSpace X] {x : X} :
     Germ (𝓝 x) E →+*o E where
+  toFun := Filter.Germ.value
   __ := Filter.Germ.valueRingHom
   monotone' := fun φ ψ ↦
-  Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ h ↦ h.self_of_nhds
+  Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ h ↦ by
+    rw [coe_le] at h
+    rw [value_ofFun, value_ofFun]
+    exact h.self_of_nhds
 
 end Filter.Germ
 
@@ -113,6 +126,8 @@ theorem Filter.Eventually.germ_congr_set
 theorem restrictGermPredicate_congr {P : ∀ x : X, Germ (𝓝 x) Y → Prop}
     (hf : RestrictGermPredicate P A x f) (h : ∀ᶠ z in 𝓝ˢ A, g z = f z) :
     RestrictGermPredicate P A x g := by
+  unfold RestrictGermPredicate at hf ⊢
+  erw [Germ.liftOn_coe] at hf ⊢
   intro hx
   apply ((hf hx).and <| (eventually_nhdsSet_iff_forall.mp h x hx).eventually_nhds).mono
   rintro y ⟨hy, h'y⟩
@@ -121,7 +136,9 @@ theorem restrictGermPredicate_congr {P : ∀ x : X, Germ (𝓝 x) Y → Prop}
 theorem forall_restrictGermPredicate_iff {P : ∀ x : X, Germ (𝓝 x) Y → Prop} :
     (∀ x, RestrictGermPredicate P A x f) ↔ ∀ᶠ x in 𝓝ˢ A, P x f := by
   rw [eventually_nhdsSet_iff_forall]
-  rfl
+  unfold RestrictGermPredicate
+  apply forall_congr' fun a => ?_
+  exact (Germ.liftOn_coe _ _ f).to_iff
 
 theorem forall_restrictGermPredicate_of_forall
     {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (h : ∀ x, P x f) :
@@ -132,23 +149,27 @@ end RestrictGermPredicate
 namespace Filter.Germ
 /-- Map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y` to the corresponding germ
   of functions `X → Z` at `x ∈ X` -/
+noncomputable
 def sliceLeft [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.1) Z :=
   P.compTendsto (Prod.mk · p.2) (Continuous.prodMk_left p.2).continuousAt
 
 @[simp]
 theorem sliceLeft_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
-    (↑f : Germ (𝓝 (x, y)) Z).sliceLeft = fun x' ↦ f (x', y) :=
-  rfl
+    (↑f : Germ (𝓝 (x, y)) Z).sliceLeft = fun x' ↦ f (x', y) := by
+  unfold sliceLeft
+  apply coe_compTendsto
 
 /-- Map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y` to the corresponding germ
   of functions `Y → Z` at `y ∈ Y` -/
+noncomputable
 def sliceRight [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.2) Z :=
   P.compTendsto (Prod.mk p.1) (Continuous.prodMk_right p.1).continuousAt
 
 @[simp]
 theorem sliceRight_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
-    (↑f : Germ (𝓝 (x, y)) Z).sliceRight = fun y' ↦ f (x, y') :=
-  rfl
+    (↑f : Germ (𝓝 (x, y)) Z).sliceRight = fun y' ↦ f (x, y') := by
+  unfold sliceRight
+  apply coe_compTendsto
 
 lemma isConstant_comp_subtype {s : Set X} {f : X → Y} {x : s}
     (hf : (f : Germ (𝓝 (x : X)) Y).IsConstant) :
@@ -163,7 +184,8 @@ lemma IsLocallyConstant.of_germ_isConstant (h : ∀ x : X, (f : Germ (𝓝 x) Y)
   intro s
   rw [isOpen_iff_mem_nhds]
   intro a ha
-  obtain ⟨b, hb⟩ := h a
+  obtain ⟨b, hb⟩ := (Germ.isConstant_iff_exists _).1 (h a)
+  rw [Germ.coe_eq] at hb
   apply mem_of_superset hb
   intro x hx
   have : f x = f a := (mem_of_mem_nhds hb) ▸ hx

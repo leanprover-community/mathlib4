@@ -71,9 +71,9 @@ def IsFinitelySatisfiable : Prop :=
 
 variable {T} {T' : L.Theory}
 
-theorem Model.isSatisfiable (M : Type w) [Nonempty M] [L.Structure M] [M ⊨ T] :
+theorem Model.isSatisfiable (M : Type w) [L.Structure M] [M ⊨ T] :
     T.IsSatisfiable :=
-  ⟨((⊥ : Substructure _ (ModelType.of T M)).elementarySkolem₁Reduct.toModel T).shrink⟩
+  (exists_small_elementarySubstructure L (ModelType.of T M)).elim fun s _ => ⟨(s.toModel).shrink⟩
 
 theorem IsSatisfiable.mono (h : T'.IsSatisfiable) (hs : T ⊆ T') : T.IsSatisfiable :=
   ⟨(Theory.Model.mono (ModelType.is_model h.some) hs).bundled⟩
@@ -85,7 +85,8 @@ theorem isSatisfiable_of_isSatisfiable_onTheory {L' : Language.{w, w'}} (φ : L 
     (h : (φ.onTheory T).IsSatisfiable) : T.IsSatisfiable :=
   Model.isSatisfiable (h.some.reduct φ)
 
-theorem isSatisfiable_onTheory_iff {L' : Language.{w, w'}} {φ : L →ᴸ L'} (h : φ.Injective) :
+theorem isSatisfiable_onTheory_iff [IsNonemptyTheory T]
+    {L' : Language.{w, w'}} {φ : L →ᴸ L'} (h : φ.Injective) :
     (φ.onTheory T).IsSatisfiable ↔ T.IsSatisfiable := by
   classical
     refine ⟨isSatisfiable_of_isSatisfiable_onTheory φ, fun h' => ?_⟩
@@ -311,7 +312,7 @@ theorem models_iff_not_satisfiable (φ : L.Sentence) : T ⊨ᵇ φ ↔ ¬IsSatis
   exact h
 
 theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ) (M : Type*)
-    [L.Structure M] [M ⊨ T] [Nonempty M] : M ⊨ φ := by
+    [L.Structure M] [M ⊨ T] : M ⊨ φ := by
   rw [models_iff_not_satisfiable] at h
   contrapose h
   have : M ⊨ T ∪ {Formula.not φ} := by
@@ -335,7 +336,7 @@ theorem models_formula_iff_onTheory_models_equivSentence {φ : L.Formula α} :
     exact (Formula.realize_equivSentence _ _).1 (h.realize_sentence M)
 
 theorem ModelsBoundedFormula.realize_formula {φ : L.Formula α} (h : T ⊨ᵇ φ) (M : Type*)
-    [L.Structure M] [M ⊨ T] [Nonempty M] {v : α → M} : φ.Realize v := by
+    [L.Structure M] [M ⊨ T] {v : α → M} : φ.Realize v := by
   rw [models_formula_iff_onTheory_models_equivSentence] at h
   let : (constantsOn α).Structure M := constantsOn.structure v
   have : M ⊨ (L.lhomWithConstants α).onTheory T := (LHom.onTheory_model _ _).2 inferInstance
@@ -351,7 +352,7 @@ theorem models_toFormula_iff {φ : L.BoundedFormula α n} : T ⊨ᵇ φ.toFormul
 
 theorem ModelsBoundedFormula.realize_boundedFormula
     {φ : L.BoundedFormula α n} (h : T ⊨ᵇ φ) (M : Type*)
-    [L.Structure M] [M ⊨ T] [Nonempty M] {v : α → M} {xs : Fin n → M} : φ.Realize v xs := by
+    [L.Structure M] [M ⊨ T] {v : α → M} {xs : Fin n → M} : φ.Realize v xs := by
   have h' : φ.toFormula.Realize (Sum.elim v xs) := (models_toFormula_iff.2 h).realize_formula M
   simp only [BoundedFormula.realize_toFormula, Sum.elim_comp_inl, Sum.elim_comp_inr] at h'
   exact h'
@@ -400,7 +401,7 @@ theorem models_not_iff (h : T.IsComplete) (φ : L.Sentence) : T ⊨ᵇ φ.not �
     exact hφn h.1.some (hφ _)
 
 theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L.Structure M]
-    [M ⊨ T] [Nonempty M] : M ⊨ φ ↔ T ⊨ᵇ φ := by
+    [M ⊨ T] : M ⊨ φ ↔ T ⊨ᵇ φ := by
   rcases h.2 φ with hφ | hφn
   · exact iff_of_true (hφ.realize_sentence M) hφ
   · exact
@@ -408,7 +409,7 @@ theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L
         ((h.models_not_iff φ).1 hφn)
 
 /-- A complete theory is the `completeTheory` Th(M) of one of its models. -/
-theorem eq_complete_theory (h : T.IsComplete) (M : Type*) [L.Structure M] [M ⊨ T] [Nonempty M] :
+theorem eq_complete_theory (h : T.IsComplete) (M : Type*) [L.Structure M] [M ⊨ T] :
     {φ | T ⊨ᵇ φ} = L.completeTheory M := by
   ext φ
   simp only [Set.mem_ofPred_eq, L.mem_completeTheory]
@@ -444,7 +445,7 @@ theorem isComplete_iff_models_elementarily_equivalent :
 theorem models_elementarily_equivalent
     (h : T.IsComplete)
     (M N : Type*) [L.Structure M] [L.Structure N]
-    [M ⊨ T] [N ⊨ T] [Nonempty M] [Nonempty N] :
+    [M ⊨ T] [N ⊨ T] :
     ElementarilyEquivalent L M N := by
   rw [ElementarilyEquivalent, ← h.eq_complete_theory, ← h.eq_complete_theory]
 
@@ -476,16 +477,16 @@ namespace completeTheory
 variable (L) (M : Type w)
 variable [L.Structure M]
 
-theorem isSatisfiable [Nonempty M] : (L.completeTheory M).IsSatisfiable :=
+theorem isSatisfiable : (L.completeTheory M).IsSatisfiable :=
   Theory.Model.isSatisfiable M
 
 theorem mem_or_not_mem (φ : L.Sentence) : φ ∈ L.completeTheory M ∨ φ.not ∈ L.completeTheory M := by
   simp_rw [completeTheory, Set.mem_ofPred_eq, Sentence.Realize, Formula.realize_not, or_not]
 
-theorem isMaximal [Nonempty M] : (L.completeTheory M).IsMaximal :=
+theorem isMaximal : (L.completeTheory M).IsMaximal :=
   ⟨isSatisfiable L M, mem_or_not_mem L M⟩
 
-theorem isComplete [Nonempty M] : (L.completeTheory M).IsComplete :=
+theorem isComplete : (L.completeTheory M).IsComplete :=
   (completeTheory.isMaximal L M).isComplete
 
 end completeTheory

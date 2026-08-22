@@ -31,7 +31,7 @@ namespace FirstOrder
 namespace Language
 
 variable {L : Language.{u, v}} {T : L.Theory} {α : Type w} {n : ℕ}
-variable {M : Type*} [Nonempty M] [L.Structure M] [M ⊨ T]
+variable {M : Type*} [L.Structure M] [M ⊨ T]
 
 namespace Theory
 
@@ -162,12 +162,12 @@ theorem realize_bd_iff {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ)
     {v : α → M} {xs : Fin n → M} : φ.Realize v xs ↔ ψ.Realize v xs :=
   BoundedFormula.realize_iff.1 (h.realize_boundedFormula M)
 
-theorem realize_iff {φ ψ : L.Formula α} {M : Type*} [Nonempty M]
+theorem realize_iff {φ ψ : L.Formula α} {M : Type*}
     [L.Structure M] [M ⊨ T] (h : φ ⇔[T] ψ) {v : α → M} :
     φ.Realize v ↔ ψ.Realize v :=
   h.realize_bd_iff
 
-theorem models_sentence_iff {φ ψ : L.Sentence} {M : Type*} [Nonempty M]
+theorem models_sentence_iff {φ ψ : L.Sentence} {M : Type*}
     [L.Structure M] [M ⊨ T] (h : φ ⇔[T] ψ) :
     M ⊨ φ ↔ M ⊨ ψ :=
   h.realize_iff
@@ -228,7 +228,7 @@ theorem all_iff_not_ex_not (φ : L.BoundedFormula α (n + 1)) :
 theorem ex_iff_not_all_not (φ : L.BoundedFormula α (n + 1)) :
     φ.ex ⇔[T] φ.not.all.not := fun M v xs => by simp
 
-theorem iff_all_liftAt : φ ⇔[T] (φ.liftAt 1 n).all :=
+theorem iff_all_liftAt [IsNonemptyTheory T] : φ ⇔[T] (φ.liftAt 1 n).all :=
   fun M v xs => by
   rw [realize_iff, realize_all_liftAt_one_self]
 
