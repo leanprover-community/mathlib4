@@ -465,19 +465,8 @@ private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux_indep [Fac
   have hABC := affineIndependent_iff_not_collinear.1 t.independent
   apply hABC
   convert hBACπ
-  calc Set.range t.points = t.points '' {0, 1, 2} := by
-        rw [← Set.image_univ]
-        congr
-        ext i
-        fin_cases i <;> simp
-    _ = t.points '' {i₂, i₁, i₃} := by
-        congr 1
-        ext i
-        suffices i ∈ ({0, 1, 2} : Finset (Fin 3)) ↔ i ∈ ({i₂, i₁, i₃} : Finset (Fin 3)) by
-          simpa using this
-        clear! A B C
-        decide +revert
-    _ = {B, A, C} := by simp [Set.image_insert_eq, B, A, C]
+  simp_rw [← Set.image_univ, B, A, C, ← Set.image_singleton]
+  grind
 
 /-- Auxiliary lemma for dist_secondInter_point_eq_dist_secondInter_excenter in an oriented
 two-dimensional space. -/
