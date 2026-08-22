@@ -3972,6 +3972,7 @@ public import Mathlib.Data.Finset.Lattice.Pi
 public import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Finset.Mex
 public import Mathlib.Data.Finset.MulAntidiagonal
 public import Mathlib.Data.Finset.NAry
 public import Mathlib.Data.Finset.NatAntidiagonal
