@@ -5,9 +5,13 @@ Authors: Matteo Cipollina, Michail Karatarakis
 -/
 module
 
+public import Mathlib.Combinatorics.Quiver.Induced
+public import Mathlib.Combinatorics.Quiver.Path.Cycle
+public import Mathlib.Combinatorics.Quiver.Path.Decomposition
+public import Mathlib.Combinatorics.Quiver.Path.Replicate
+public import Mathlib.Combinatorics.Quiver.Path.Simple
+public import Mathlib.Data.Real.Basic
 public import Mathlib.LinearAlgebra.Matrix.Irreducible.Defs
-public import Mathlib.Combinatorics.Quiver.Path.PerronFrobenius
-public import Mathlib.Tactic
 public import Mathlib.Tactic.Linarith
 
 /-!
@@ -30,6 +34,23 @@ irreducible matrix, quiver path, Perron–Frobenius theorem
 
 @[expose] public section
 
+namespace Quiver.Path
+
+/-- A vertex in `activeVertices` is a vertex of the path. Converse of `mem_vertices_to_active`. -/
+lemma mem_activeVertices_to_vertices {V : Type*} [Quiver V] {a : V} :
+    ∀ {b : V} (p : Path a b) {x : V}, x ∈ p.activeVertices → x ∈ p.vertices := by
+  intro b p
+  induction p with
+  | nil => intro x hx; simpa using hx
+  | cons p' e ih =>
+    intro x hx
+    rw [activeVertices_cons] at hx
+    rcases hx with h | h
+    · exact (mem_vertices_cons p' e).mpr (Or.inl (ih h))
+    · exact (mem_vertices_cons p' e).mpr (Or.inr (by simpa using h))
+
+end Quiver.Path
+
 namespace Matrix
 section PerronFrobenius
 
@@ -42,15 +63,16 @@ variable {n : Type*} {A : Matrix n n ℝ}
 /-- A path in the submatrix `A.submatrix Subtype.val Subtype.val` lifts to a path in the
 original quiver `toQuiver A`, and all vertices along that lifted path lie in `S`. -/
 theorem path_in_submatrix_to_original (S : Set n) [DecidablePred S] {i j : S}
-    (p : @Quiver.Path S (letI := Matrix.toQuiver A; inducedQuiver S) i j) :
+    (p : @Quiver.Path S (letI := Matrix.toQuiver A; Quiver.induce S) i j) :
   letI : Quiver n := Matrix.toQuiver A
-  letI : Quiver S := inducedQuiver S
+  letI : Quiver S := Quiver.induce S
   ∃ p' : @Path n (Matrix.toQuiver A) i.val j.val,
     ∀ k, k ∈ p'.activeVertices → k ∈ S := by
   letI : Quiver n := Matrix.toQuiver A
-  letI : Quiver S := inducedQuiver S
-  let p' := (Subquiver.embedding S).mapPath p
-  exact ⟨p', Subquiver.mapPath_embedding_vertices_in_set S p⟩
+  letI : Quiver S := Quiver.induce S
+  let p' := (Quiver.inducePrefunctor S).mapPath p
+  exact ⟨p', fun k hk => mapPath_inducePrefunctor_mem_vertices S p
+    (mem_activeVertices_to_vertices p' hk)⟩
 
 
 /-- A path exists between vertices in `S` when the submatrix on `S` is irreducible. -/
@@ -58,34 +80,36 @@ theorem path_exists_in_support_of_irreducible (S : Set n) [DecidablePred S]
     (hS : IsIrreducible (A.submatrix (Subtype.val : S → n) (Subtype.val : S → n)))
     (i j : n) (hi : i ∈ S) (hj : j ∈ S) :
   letI : Quiver n := Matrix.toQuiver A
-  letI : Quiver S := inducedQuiver S
+  letI : Quiver S := Quiver.induce S
     ∃ p : Quiver.Path i j, ∀ k, k ∈ p.activeVertices → k ∈ S := by
   letI : Quiver n := Matrix.toQuiver A
-  letI : Quiver S := inducedQuiver S
+  letI : Quiver S := Quiver.induce S
   let i' : S := ⟨i, hi⟩
   let j' : S := ⟨j, hj⟩
   have h_submatrix := hS.connected
   obtain ⟨p_sub, _hp_sub_pos⟩ := h_submatrix i' j'
   -- Convert the path in `toQuiver (A.submatrix ...)` to a path in the induced quiver on `S`.
-  have p_sub' : @Quiver.Path S (letI := Matrix.toQuiver A; inducedQuiver S) i' j' := by
+  have p_sub' : @Quiver.Path S (letI := Matrix.toQuiver A; Quiver.induce S) i' j' := by
     -- Both quivers have the same arrows: `0 < A i.val j.val`.
     have conv : ∀ {a : S},
         @Quiver.Path S
             (Matrix.toQuiver (A.submatrix (Subtype.val : S → n) (Subtype.val : S → n))) i' a →
-          @Quiver.Path S (letI := Matrix.toQuiver A; inducedQuiver S) i' a := by
+          @Quiver.Path S (letI := Matrix.toQuiver A; Quiver.induce S) i' a := by
       intro a p
       induction p with
       | nil =>
           exact Quiver.Path.nil
       | @cons b c p e ih =>
           refine Quiver.Path.cons ih ?_
-          -- `e : 0 < (A.submatrix Subtype.val Subtype.val) _ _`, rewrite as `0 < A _ _`.
-          simpa [Matrix.toQuiver, Matrix.submatrix_apply] using e
+          -- `e : PLift (0 < (A.submatrix Subtype.val Subtype.val) _ _)`, and
+          -- `submatrix_apply` is definitional, so this is `PLift (0 < A _ _)`.
+          exact ⟨e.down⟩
     exact conv p_sub
   obtain ⟨p, hp⟩ := path_in_submatrix_to_original S p_sub'
   exact ⟨p, hp⟩
 
-lemma positive_mul_vec_pos [Fintype n] (hA_pos : ∀ i j, 0 < A i j) {x : n → ℝ} (hx_nonneg : ∀ i, 0 ≤ x i)
+lemma positive_mul_vec_pos [Fintype n] (hA_pos : ∀ i j, 0 < A i j) {x : n → ℝ}
+    (hx_nonneg : ∀ i, 0 ≤ x i)
     (hx_ne_zero : x ≠ 0) : ∀ i, 0 < (A.mulVec x) i := by
   intro i
   --  `A.mulVec x i = ∑ j, A i j * x j`
@@ -135,16 +159,18 @@ lemma irreducible_of_all_entries_positive {A : Matrix n n ℝ} (hA : ∀ i j, 0 
   intro i j
   simpa using (path_exists_of_pos_entry (A := A) (i := i) (j := j) (h_pos := hA i j))
 
-lemma exists_boundary_crossing_in_support [DecidableEq n] [Fintype n] (hA_irred : IsIrreducible A) (_ : ∀ i j, 0 ≤ A i j)
-    {v : n → ℝ} (hv_nonneg : ∀ i, 0 ≤ v i) (_ : v ≠ 0) (S T : Set n) (hS_nonempty : S.Nonempty) (hT_nonempty : T.Nonempty)
+lemma exists_boundary_crossing_in_support [DecidableEq n] [Fintype n]
+    (hA_irred : IsIrreducible A) (_ : ∀ i j, 0 ≤ A i j)
+    {v : n → ℝ} (hv_nonneg : ∀ i, 0 ≤ v i) (_ : v ≠ 0) (S T : Set n)
+    (hS_nonempty : S.Nonempty) (hT_nonempty : T.Nonempty)
     (h_partition : ∀ i, i ∈ S ↔ v i > 0) (h_complement : ∀ i, i ∈ T ↔ v i = 0) :
     ∃ (i j : n), i ∈ T ∧ j ∈ S ∧ 0 < A i j := by
   obtain ⟨i₀, hi₀_in_T⟩ := hT_nonempty
   obtain ⟨j₀, hj₀_in_S⟩ := hS_nonempty
   letI : Quiver n := toQuiver A
   obtain ⟨p, _hp_pos⟩ := hA_irred.connected i₀ j₀
-  obtain ⟨y, z, e, _, _, hy_not_S, hz_in_S, _⟩ :=
-    @Quiver.Path.exists_boundary_edge n (toQuiver A) _ _ p S
+  obtain ⟨y, hy_not_S, z, hz_in_S, e, _, _, _⟩ :=
+    @Quiver.Path.exists_notMem_mem_hom_path_path_of_notMem_mem n (toQuiver A) _ _ p S
     (fun h_i0_in_S => by
       have hi₀_zero : v i₀ = 0 := (h_complement i₀).mp hi₀_in_T
       have hi₀_pos : v i₀ > 0 := (h_partition i₀).mp h_i0_in_S
@@ -159,7 +185,8 @@ lemma exists_boundary_crossing_in_support [DecidableEq n] [Fintype n] (hA_irred 
 
 theorem exists_connecting_edge_of_irreducible [DecidableEq n] [Fintype n] {A : Matrix n n ℝ}
     (hA_irred : A.IsIrreducible) {v : n → ℝ}
-    (hv_nonneg : ∀ i, 0 ≤ v i) (S T : Set n) (hS_nonempty : S.Nonempty) (hT_nonempty : T.Nonempty)
+    (hv_nonneg : ∀ i, 0 ≤ v i) (S T : Set n) (hS_nonempty : S.Nonempty)
+    (hT_nonempty : T.Nonempty)
     (h_partition : ∀ i, i ∈ S ↔ v i > 0) (h_complement : ∀ i, i ∈ T ↔ v i = 0) :
     ∃ (i j : n), i ∈ T ∧ j ∈ S ∧ 0 < A i j :=
   exists_boundary_crossing_in_support hA_irred hA_irred.1 hv_nonneg
@@ -170,7 +197,8 @@ theorem exists_connecting_edge_of_irreducible [DecidableEq n] [Fintype n] {A : M
     S T hS_nonempty hT_nonempty h_partition h_complement
 
 theorem irreducible_mulVec_ne_zero [DecidableEq n] [Fintype n] (hA_irred : IsIrreducible A)
-    (hA_nonneg : ∀ i j, 0 ≤ A i j) (hA_ne_zero : A ≠ 0) {v : n → ℝ} (hv_nonneg : ∀ i, 0 ≤ v i) (hv_ne_zero : v ≠ 0) :
+    (hA_nonneg : ∀ i j, 0 ≤ A i j) (hA_ne_zero : A ≠ 0) {v : n → ℝ}
+    (hv_nonneg : ∀ i, 0 ≤ v i) (hv_ne_zero : v ≠ 0) :
     A *ᵥ v ≠ 0 := by
   by_contra h_Av_zero
   let S : Set n := {i | v i > 0}
@@ -211,7 +239,8 @@ theorem irreducible_mulVec_ne_zero [DecidableEq n] [Fintype n] (hA_irred : IsIrr
       rw [mulVec, dotProduct] at this
       have terms_nonneg : ∀ k ∈ Finset.univ, 0 ≤ A i k * v k :=
         fun k _ => mul_nonneg (hA_nonneg i k) (hv_nonneg k)
-      have term_j_is_zero := (Finset.sum_eq_zero_iff_of_nonneg terms_nonneg).mp this j (Finset.mem_univ _)
+      have term_j_is_zero :=
+        (Finset.sum_eq_zero_iff_of_nonneg terms_nonneg).mp this j (Finset.mem_univ _)
       have hv_j_pos : v j > 0 := by simp [S] at hj_S; exact hj_S
       exact (mul_eq_zero.mp term_j_is_zero).resolve_right (ne_of_gt hv_j_pos)
     exact (ne_of_gt hA_ij_pos) hA_ij_zero
@@ -233,10 +262,12 @@ lemma not_irreducible_of_zero_matrix {n : Type*} [Fintype n] [Nonempty n]
   | cons p' e =>
       exact (lt_irrefl (0 : ℝ)) e.down
 
-/-- If an irreducible matrix `A` has a row `i` where `A*v` is zero, then all entries `A i k` must be zero
-    for `k` in the support of `v`. -/
-lemma zero_block_of_mulVec_eq_zero_row [Fintype n] (hA_nonneg : ∀ i j, 0 ≤ A i j) {v : n → ℝ} (hv_nonneg : ∀ i, 0 ≤ v i)
-   (S : Set n) (hS_def: S = {i | 0 < v i}) (i : n) (h_Av_i_zero : (A *ᵥ v) i = 0) : ∀ k ∈ S, A i k = 0 := by
+/-- If an irreducible matrix `A` has a row `i` where `A*v` is zero, then all entries
+`A i k` must be zero for `k` in the support of `v`. -/
+lemma zero_block_of_mulVec_eq_zero_row [Fintype n] (hA_nonneg : ∀ i j, 0 ≤ A i j)
+    {v : n → ℝ} (hv_nonneg : ∀ i, 0 ≤ v i)
+    (S : Set n) (hS_def : S = {i | 0 < v i}) (i : n) (h_Av_i_zero : (A *ᵥ v) i = 0) :
+    ∀ k ∈ S, A i k = 0 := by
   intro k hk_S_mem
   rw [mulVec, dotProduct] at h_Av_i_zero
   have h_sum_terms_nonneg : ∀ l, 0 ≤ A i l * v l :=
@@ -293,10 +324,10 @@ theorem IsPrimitive.of_irreducible_pos_diagonal [Fintype n] [Nonempty n] [Decida
         intro q
         rw [h_shortest_len]
         exact Nat.find_min' hS_nonempty ⟨q, rfl⟩
-      have h_simple : p_shortest.IsStrictlySimple := isStrictlySimple_of_shortest p_shortest h_shortest
+      have h_simple : p_shortest.IsPath := isPath_of_shortest p_shortest h_shortest
       use p_shortest
       have h_len : p_shortest.length ≤ N - 1 := by
-        have h := @Quiver.Path.length_le_card_minus_one_of_isSimple n _ _ _ i j p_shortest h_simple
+        have h := @Quiver.Path.length_le_card_minus_one_of_isSimple n _ _ i j p_shortest h_simple
         simpa [N] using h
       exact h_len
     let e_loop : i ⟶ i := ⟨hA_diag_pos i⟩
@@ -326,8 +357,8 @@ private lemma exists_path_back_to_set
   letI : Quiver n := A.toQuiver
   letI : DecidablePred (· ∈ S) := Classical.decPred _
   obtain ⟨p, _hp_pos⟩ := hA_irred.connected u v
-  obtain ⟨i, j, e, _p₁, _p₂, hi, hj, _hp⟩ :=
-    Quiver.Path.exists_boundary_edge_from_set p S hu hv
+  obtain ⟨i, hi, j, hj, e, _p₁, _p₂, _hp⟩ :=
+    Quiver.Path.exists_mem_notMem_hom_path_path_of_notMem_mem p S hu hv
   refine ⟨i, j, e.toPath, hi, hj, ?_⟩
   intro k hk
   -- `e.toPath.vertices.tail = [j]`.
@@ -344,25 +375,23 @@ lemma path_exists_in_component {A : Matrix n n ℝ}
     (S : Set n) [DecidablePred (· ∈ S)]
     (hS_strong_conn :
       letI : Quiver n := A.toQuiver;
-      letI : Quiver S := inducedQuiver S;
+      letI : Quiver S := Quiver.induce S;
       Quiver.IsSStronglyConnected S)
     (i j : n) (hi : i ∈ S) (hj : j ∈ S) :
     letI : Quiver n := A.toQuiver
     ∃ p : Path i j, ∀ k, k ∈ p.vertices → k ∈ S := by
   letI : Quiver n := A.toQuiver
-  letI G_S : Quiver S := inducedQuiver S
+  letI G_S : Quiver S := Quiver.induce S
   let i' : S := ⟨i, hi⟩
   let j' : S := ⟨j, hj⟩
   obtain ⟨p_sub, _hp_pos⟩ := by
     letI : Quiver n := A.toQuiver
-    letI : Quiver S := inducedQuiver S
+    letI : Quiver S := Quiver.induce S
     exact hS_strong_conn i' j'
-  let p := Prefunctor.mapPath (Quiver.Subquiver.embedding S) p_sub
+  let p := Prefunctor.mapPath (Quiver.inducePrefunctor S) p_sub
   refine ⟨p, ?_⟩
   intro k hk
-  have hka : k ∈ p.activeVertices :=
-    mem_vertices_to_active hk
-  exact (Quiver.Subquiver.mapPath_embedding_vertices_in_set S p_sub _ hka)
+  exact mapPath_inducePrefunctor_mem_vertices S p_sub hk
 
 lemma Irreducible.exists_edge_out {A : Matrix n n ℝ}
     (hA_irred : A.IsIrreducible)
@@ -373,21 +402,21 @@ lemma Irreducible.exists_edge_out {A : Matrix n n ℝ}
   obtain ⟨j, hj_compl⟩ := Set.nonempty_compl.mpr hS_ne_univ
   obtain ⟨p, _hp_pos⟩ := hA_irred.connected i j
   have hj : j ∉ S := by simpa using hj_compl
-  obtain ⟨u, v, e, _p₁, _p₂, hu_in_S, hv_not_in_S, _hp⟩ :=
-    Quiver.Path.exists_boundary_edge_from_set p S hi hj
+  obtain ⟨u, hu_in_S, v, hv_not_in_S, e, _p₁, _p₂, _hp⟩ :=
+    Quiver.Path.exists_mem_notMem_hom_path_path_of_notMem_mem p S hi hj
   exact ⟨u, hu_in_S, v, hv_not_in_S, by simpa using e.down⟩
 
 -- Lemma: Simple paths have bounded length by vertex count
 lemma length_bounded_by_support_size [Quiver n] [DecidableEq n] [Fintype n] {_ : Matrix n n ℝ}
     {support : Set n} [DecidablePred (· ∈ support)] (_ : Set.Finite support)
     {i j : n} (p : Path i j)
-    (hp_support : ∀ k, k ∈ p.vertices → k ∈ support) (hp_simple : IsStrictlySimple p) :
+    (hp_support : ∀ k, k ∈ p.vertices → k ∈ support) (hp_simple : IsPath p) :
     p.length < support.toFinite.toFinset.card := by
   have h_subset : p.vertexFinset ⊆ support.toFinite.toFinset := by
     intro v hv
     simp only [Set.Finite.mem_toFinset]
     exact hp_support v (List.mem_toFinset.mp hv)
-  have h_card := card_vertexFinset_of_isStrictlySimple hp_simple
+  have h_card := card_vertexFinset_of_isPath hp_simple
   have h_card_le := Finset.card_le_card h_subset
   rw [h_card] at h_card_le
   exact h_card_le
@@ -427,6 +456,7 @@ lemma path_exists_in_support
     letI : Quiver n := Matrix.toQuiver A
     ∃ p : Quiver.Path i j, ∀ k, k ∈ p.activeVertices → k ∈ support := by
   classical
+  haveI : DecidablePred support := Classical.decPred _
   simpa using
     Matrix.path_exists_in_support_of_irreducible
       (A := A) (S := support) h_sub_irred i j hi hj
