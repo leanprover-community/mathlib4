@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Homotopy.Basic
 public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Topology.Constructions
 public import Mathlib.Analysis.Convex.Basic
 
 /-!
@@ -27,7 +28,7 @@ In this file, we define a `Homotopy` between two `Path`s. In addition, we define
   a `Path.Homotopy (p₀.trans p₁) (q₀.trans q₁)`
 * `Path.Homotopic p₀ p₁` is the relation saying that there is a homotopy between `p₀` and `p₁`
 * `Path.Homotopic.setoid x₀ x₁` is the setoid on `Path`s from `Path.Homotopic`
-* `Path.Homotopic.Quotient x₀ x₁` is the quotient type from `Path x₀ x₀` by `Path.Homotopic.setoid`
+* `Path.Homotopic.Quotient x₀ x₁` is the quotient type from `Path x₀ x₁` by `Path.Homotopic.setoid`
 
 -/
 
@@ -312,6 +313,17 @@ theorem mk_surjective : Function.Surjective (@mk X _ x₀ x₁) :=
 @[simp] theorem mk'_eq_mk (p : Path x₀ x₁) : Quotient.mk' p = mk p := rfl
 @[simp] theorem mk''_eq_mk (p : Path x₀ x₁) : Quotient.mk'' p = mk p := rfl
 
+/-- The quotient topology on `Path.Homotopic.Quotient x₀ x₁` induced from the compact-open
+topology on `Path x₀ x₁` (itself induced from `C(I, X)`). -/
+instance instTopologicalSpace (x₀ x₁ : X) :
+    TopologicalSpace (Path.Homotopic.Quotient x₀ x₁) :=
+  inferInstanceAs (TopologicalSpace (Quotient _))
+
+/-- `Path.Homotopic.Quotient.mk` is a quotient map for the quotient topology. -/
+theorem isQuotientMap_mk (x₀ x₁ : X) :
+    Topology.IsQuotientMap (mk : Path x₀ x₁ → Path.Homotopic.Quotient x₀ x₁) :=
+  isQuotientMap_quotient_mk'
+
 theorem exact {p q : Path x₀ x₁} (h : Quotient.mk p = Quotient.mk q) :
     Homotopic p q := by
   exact _root_.Quotient.exact h
@@ -371,6 +383,10 @@ theorem mk_cast {x y : X} (P : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) :
 theorem cast_rfl_rfl {x y : X} (γ : Homotopic.Quotient x y) : γ.cast rfl rfl = γ := by
   induction γ using Quotient.ind with | mk γ =>
   rfl
+
+@[simp, grind =]
+theorem cast_refl {x y : X} (h : y = x) : (refl x).cast h h = refl y := by
+  cases h; rfl
 
 @[simp, grind =]
 theorem cast_cast {x y : X} (γ : Homotopic.Quotient x y) {x' y'} (hx : x' = x) (hy : y' = y)
