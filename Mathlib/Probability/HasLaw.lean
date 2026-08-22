@@ -83,6 +83,7 @@ lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) (h₂ : Measurable X) :
   measurable := h₂
   map_eq := h₁.map_eq
 
+@[to_fun (attr := simp)]
 protected lemma HasLaw.id : HasLaw id μ μ where
   map_eq := map_id
 
