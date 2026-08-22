@@ -62,7 +62,6 @@ noncomputable def TopCat.toSSetObjEquiv (X : TopCat.{u}) (n : SimplexCategoryᵒ
   Equiv.ulift.{0}.trans (ConcreteCategory.homEquiv.trans
     (Homeomorph.ulift.continuousMapCongr (.refl _)))
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The *geometric realization functor* is
 the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
 
@@ -89,7 +88,6 @@ noncomputable def SSet.toTopSimplex :
     SSet.stdSimplex.{u} ⋙ SSet.toTop ≅ SimplexCategory.toTop :=
   Presheaf.isExtensionAlongULiftYoneda _
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : SSet.toTop.{u}.IsLeftKanExtension SSet.toTopSimplex.inv :=
   inferInstanceAs (Functor.IsLeftKanExtension _
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop.{u}))
