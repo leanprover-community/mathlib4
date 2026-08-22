@@ -47,7 +47,7 @@ relations with prime and perfect numbers.
 abundant, deficient, weird, pseudoperfect
 -/
 
-@[expose] public section
+public section
 
 open Finset
 

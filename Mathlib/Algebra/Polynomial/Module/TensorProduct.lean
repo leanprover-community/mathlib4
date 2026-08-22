@@ -16,7 +16,7 @@ For a commutative ring `R` and an `R`-module `M`, we obtain an isomorphism betwe
 `polynomialTensorProductLEquivPolynomialModule`.
 -/
 
-@[expose] public section
+public section
 
 open Polynomial TensorProduct LinearMap
 

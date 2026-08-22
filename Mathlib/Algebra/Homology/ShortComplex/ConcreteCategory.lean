@@ -19,7 +19,7 @@ if and only if it is so after applying the functor `forget₂ C Ab`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

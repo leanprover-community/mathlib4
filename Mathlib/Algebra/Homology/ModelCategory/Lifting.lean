@@ -28,7 +28,7 @@ a lifting `B ⟶ X` if this cocycle is a coboundary.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CochainComplex
 

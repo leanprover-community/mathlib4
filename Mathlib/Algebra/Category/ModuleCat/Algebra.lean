@@ -31,7 +31,7 @@ that carries these typeclasses, this seems hard to achieve.
 requiring users to write `ModuleCat' ℤ A` when `A` is merely a ring.)
 -/
 
-@[expose] public section
+public section
 
 
 universe v u w

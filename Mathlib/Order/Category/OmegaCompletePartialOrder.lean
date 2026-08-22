@@ -25,7 +25,7 @@ an `OmegaCompletePartialOrder`.
 
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory
@@ -72,6 +72,7 @@ open CategoryTheory.Limits
 namespace HasProducts
 
 /-- The pi-type gives a cone for a product. -/
+@[expose]
 def product {J : Type v} (f : J → ωCPO.{v}) : Fan f :=
   Fan.mk (of (∀ j, f j)) fun j => .mk (Pi.evalOrderHom j) fun _ => rfl
 
@@ -104,11 +105,13 @@ instance omegaCompletePartialOrderEqualizer {α β : Type*} [OmegaCompletePartia
 namespace HasEqualizers
 
 /-- The equalizer inclusion function as a `ContinuousHom`. -/
+@[expose]
 def equalizerι {α β : Type*} [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
     (f g : α →𝒄 β) : { a : α // f a = g a } →𝒄 α :=
   .mk (OrderHom.Subtype.val _) fun _ => rfl
 
 /-- A construction of the equalizer fork. -/
+@[expose]
 def equalizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : Fork f g :=
   Fork.ofι (P := ωCPO.of { a // f a = g a }) (equalizerι f g)
     (ContinuousHom.ext _ _ fun x => x.2)

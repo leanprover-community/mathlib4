@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Monoidal.Comon_
 When `M : Comon C` and `N : Mon C`, the morphisms `M.X ⟶ N.X` form a monoid (in Type).
 -/
 
-@[expose] public section
+public section
 
 universe v₁ u₁
 namespace CategoryTheory
@@ -24,6 +24,7 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 /--
 The morphisms in `C` between the underlying objects of a pair of bimonoids in `C` naturally have a
 (set-theoretic) monoid structure. -/
+@[expose]
 def Conv (M N : C) : Type v₁ := M ⟶ N
 
 namespace Conv

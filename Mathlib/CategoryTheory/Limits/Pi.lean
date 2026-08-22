@@ -18,7 +18,7 @@ Given a functor `F : J ⥤ Π i, C i` into a category of indexed families,
    `HasLimit F` instance
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory

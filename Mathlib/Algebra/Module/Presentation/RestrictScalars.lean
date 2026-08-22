@@ -21,7 +21,7 @@ a presentation of `B` as a `A`-module (and some additional data).
 
 -/
 
-@[expose] public section
+public section
 
 namespace Module
 

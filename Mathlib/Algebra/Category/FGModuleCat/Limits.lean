@@ -24,7 +24,7 @@ as is done for the other algebraic categories.
 Analogous constructions for Noetherian modules.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

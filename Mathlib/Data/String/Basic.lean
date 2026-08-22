@@ -18,7 +18,7 @@ import all Init.Data.Ord.String  -- for unfolding `String.compare`
 Supplementary theorems about the `String` type.
 -/
 
-@[expose] public section
+public section
 
 namespace String
 

@@ -15,7 +15,7 @@ A monoidal category is `MonoidalPreadditive` if it is preadditive and tensor pro
 is linear in both factors.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

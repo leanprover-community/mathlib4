@@ -20,7 +20,7 @@ squarefree as a corollary of the Marica-Schönheim inequality.
 [*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
 -/
 
-@[expose] public section
+public section
 
 open Finset
 open scoped FinsetFamily

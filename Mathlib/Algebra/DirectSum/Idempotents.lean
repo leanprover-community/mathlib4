@@ -17,7 +17,7 @@ of (left) ideals `R = V₁ ⊕ V₂ ⊕ ⋯ ⊕ Vₙ` then in the corresponding 
 `eᵢ`'s form a family of complete orthogonal idempotents.
 -/
 
-@[expose] public section
+public section
 
 namespace DirectSum
 

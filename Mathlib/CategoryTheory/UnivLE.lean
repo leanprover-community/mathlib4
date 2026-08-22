@@ -15,7 +15,7 @@ public import Mathlib.Logic.UnivLE
 We show `UnivLE.{max u v, v} ↔ EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v)`.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 

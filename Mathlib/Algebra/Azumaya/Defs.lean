@@ -29,7 +29,7 @@ TODO : Add the three more definitions and prove they are equivalent:
 Azumaya algebra, central simple algebra, noncommutative algebra
 -/
 
-@[expose] public section
+public section
 
 variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 

@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Order.Ring.Canonical
 This file defines a simple distance function on naturals from truncated subtraction.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat

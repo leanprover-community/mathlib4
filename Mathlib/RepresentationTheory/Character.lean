@@ -31,7 +31,7 @@ defined in `Mathlib/CategoryTheory/Simple.lean`
   in terms of `Vᘁ` and `ihom V W`.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

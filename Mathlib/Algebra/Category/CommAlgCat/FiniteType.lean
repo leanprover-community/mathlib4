@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.RingHomProperties
 We define the category of finitely generated `R`-algebras and show it is essentially small.
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
@@ -55,6 +55,7 @@ lemma RingHom.FiniteType.exists_smallRepr {S : Type v} [CommRing S] {f : R →+*
   exact ⟨T, e.symm.toRingEquiv, e.symm.toAlgHom.comp_algebraMap.symm⟩
 
 /-- Universe lift functor for finitely generated algebras. -/
+@[expose]
 def FGAlgCat.uliftFunctor : FGAlgCat.{v} R ⥤ FGAlgCat.{max v w} R where
   obj A := ⟨.of R <| ULift A.1, .equiv inferInstance ULift.algEquiv.symm⟩
   map {A B} f := ConcreteCategory.ofHom <|

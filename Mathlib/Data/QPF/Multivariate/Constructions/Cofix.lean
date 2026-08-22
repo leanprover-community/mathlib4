@@ -41,7 +41,7 @@ We define the relation `Mcongr` and take its quotient as the definition of `Cofi
   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
-@[expose] public section
+public section
 
 
 universe u
@@ -84,6 +84,7 @@ than the input. For `F a b c` a ternary functor, fix F is a binary functor such 
 Cofix F a b = F a b (Cofix F a b)
 ```
 -/
+@[expose]
 def Cofix (F : TypeVec (n + 1) → Type u) [MvQPF F] (α : TypeVec n) :=
   Quot (@Mcongr _ F _ α)
 

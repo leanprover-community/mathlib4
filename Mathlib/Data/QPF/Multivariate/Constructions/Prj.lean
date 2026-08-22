@@ -13,7 +13,7 @@ Projection functors are QPFs. The `n`-ary projection functors on `i` is an `n`-a
 functor `F` such that `F (α₀..αᵢ₋₁, αᵢ, αᵢ₊₁..αₙ₋₁) = αᵢ`
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -25,6 +25,7 @@ open MvFunctor
 variable {n : ℕ} (i : Fin2 n)
 
 /-- The projection `i` functor -/
+@[expose]
 def Prj (v : TypeVec.{u} n) : Type u := v i
 
 instance Prj.inhabited {v : TypeVec.{u} n} [Inhabited (v i)] : Inhabited (Prj i v) :=
@@ -36,6 +37,7 @@ def Prj.map ⦃α β : TypeVec n⦄ (f : α ⟹ β) : Prj i α → Prj i β := f
 instance Prj.mvfunctor : MvFunctor (Prj i) where map := @Prj.map _ i
 
 /-- Polynomial representation of the projection functor -/
+@[expose]
 def Prj.P : MvPFunctor.{u} n where
   A := PUnit
   B _ j := ULift <| PLift <| i = j

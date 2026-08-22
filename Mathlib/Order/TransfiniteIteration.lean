@@ -32,7 +32,7 @@ when we know `Cardinal.mk I < Cardinal.mk J`).
 
 -/
 
-@[expose] public section
+public section
 
 universe w u
 

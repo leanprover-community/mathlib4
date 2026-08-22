@@ -15,7 +15,7 @@ In this file we prove properties of `Filter.PTendsto` etc. in topological spaces
 `PContinuous`, a version of `Continuous` for partially defined functions.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter

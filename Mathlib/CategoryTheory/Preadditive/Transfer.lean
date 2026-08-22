@@ -15,7 +15,7 @@ A preadditive structure on a category `D` transfers to a preadditive structure o
 fully faithful functor `F : C ⥤ D`.
 -/
 
-@[expose] public section
+public section
 namespace CategoryTheory
 
 open Limits

@@ -18,7 +18,7 @@ public import Mathlib.CategoryTheory.Monoidal.Conv
 * Show that `Hopf (ModuleCat R) ≌ HopfAlgCat R`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

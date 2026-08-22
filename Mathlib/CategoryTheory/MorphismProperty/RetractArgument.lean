@@ -24,7 +24,7 @@ and `W₁.rlp = W₂` if `W₂` is.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

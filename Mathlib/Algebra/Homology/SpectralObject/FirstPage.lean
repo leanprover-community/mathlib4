@@ -21,7 +21,7 @@ see `spectralSequence_first_page_d_eq`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

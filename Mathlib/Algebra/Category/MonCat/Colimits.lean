@@ -47,7 +47,7 @@ Monoid.mk : {M : Type u} →
 ```
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -113,6 +113,7 @@ instance colimitSetoid : Setoid (Prequotient F) where
 
 /-- The underlying type of the colimit of a diagram in `MonCat`.
 -/
+@[expose]
 def ColimitType : Type v :=
   Quotient (colimitSetoid F)
 deriving Inhabited

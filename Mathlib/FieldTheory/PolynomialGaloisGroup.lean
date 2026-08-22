@@ -37,7 +37,7 @@ some results about some extension `E` above `p.SplittingField`.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Real
 
@@ -52,6 +52,7 @@ namespace Polynomial
 variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 
 /-- The Galois group of a polynomial. -/
+@[expose]
 def Gal :=
   p.SplittingField ≃ₐ[F] p.SplittingField
 deriving Group, Fintype, EquivLike, AlgEquivClass, MulSemiringAction _ p.SplittingField

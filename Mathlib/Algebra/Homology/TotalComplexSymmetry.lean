@@ -22,7 +22,7 @@ are compatible `[TotalComplexShapeSymmetrySymmetry c₁ c₂ c]`, then the isomo
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ideal TwoSidedIdeal
 

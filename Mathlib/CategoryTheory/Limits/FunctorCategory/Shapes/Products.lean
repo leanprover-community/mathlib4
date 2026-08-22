@@ -16,7 +16,7 @@ Given `f : α → D ⥤ C`, we prove the isomorphisms
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v₁ v₂ u u₁ u₂
 

@@ -23,7 +23,7 @@ All this could be made with 2-functors
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 namespace CategoryTheory.Cat

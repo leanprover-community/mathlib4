@@ -32,7 +32,7 @@ Frobenius reciprocity, Cartesian closed functor
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
