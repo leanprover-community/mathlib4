@@ -20,7 +20,9 @@ operations, and norm simplification lemmas for the asymptotic relations defined 
 
 assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClass
 
-open Topology Filter
+open Filter
+
+open scoped Topology
 
 namespace Asymptotics
 
