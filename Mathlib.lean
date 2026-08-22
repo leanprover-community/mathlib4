@@ -4709,7 +4709,6 @@ public import Mathlib.Geometry.Manifold.DerivationBundle
 public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.GroupLieAlgebra
 public import Mathlib.Geometry.Manifold.HasGroupoid
-public import Mathlib.Geometry.Manifold.ImmersedPoint
 public import Mathlib.Geometry.Manifold.Immersion
 public import Mathlib.Geometry.Manifold.ImmersionDiff
 public import Mathlib.Geometry.Manifold.Instances.Icc
