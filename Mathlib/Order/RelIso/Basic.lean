@@ -151,9 +151,14 @@ theorem id_comp (f : r →r s) : (RelHom.id s).comp f = f := rfl
 
 /-- A relation homomorphism is also a relation homomorphism between dual relations. -/
 @[simps]
-protected def swap : (r →r s) ≃ (swap r →r swap s) where
-  toFun f := ⟨f, f.map_rel⟩
-  invFun f := ⟨f, f.map_rel⟩
+protected def swap (f : r →r s) : swap r →r swap s :=
+  ⟨f, f.map_rel⟩
+
+/-- `Equiv` variant of `RelHom.swap`. -/
+@[simps]
+protected def swapEquiv : (r →r s) ≃ (swap r →r swap s) where
+  toFun := RelHom.swap
+  invFun := RelHom.swap
 
 /-- A function is a relation homomorphism from the preimage relation of `s` to `s`. -/
 @[simps]
@@ -293,9 +298,14 @@ theorem trans_refl (f : r ↪r s) : f.trans (.refl s) = f := rfl
 theorem refl_trans (f : r ↪r s) : .trans (.refl r) f = f := rfl
 
 /-- A relation embedding is also a relation embedding between dual relations. -/
-protected def swap : (r ↪r s) ≃ (swap r ↪r swap s) where
-  toFun f := ⟨f.toEmbedding, f.map_rel_iff⟩
-  invFun f := ⟨f.toEmbedding, f.map_rel_iff⟩
+protected def swap (f : r ↪r s) : swap r ↪r swap s :=
+  ⟨f.toEmbedding, f.map_rel_iff⟩
+
+/-- `Equiv` variant of `RelEmbedding.swap` -/
+@[simps]
+def swapEquiv : (r ↪r s) ≃ (swap r ↪r swap s) where
+  toFun := RelEmbedding.swap
+  invFun := RelEmbedding.swap
 
 @[simp]
 theorem swap_apply (f : r ↪r s) (a : α) : f.swap a = f a := rfl
@@ -692,14 +702,24 @@ protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : �
 
 /-- A relation isomorphism is also a relation isomorphism between dual relations. -/
 @[simps!]
-protected def swap : (r ≃r s) ≃ (swap r ≃r swap s) where
-  toFun f := ⟨f, f.map_rel_iff⟩
-  invFun f := ⟨f, f.map_rel_iff⟩
+protected def swap (f : r ≃r s) : swap r ≃r swap s :=
+  ⟨f, f.map_rel_iff⟩
+
+/-- `Equiv` variant of `RelIso.swap`. -/
+@[simps]
+def swapEquiv : (r ≃r s) ≃ (swap r ≃r swap s) where
+  toFun := RelIso.swap
+  invFun := RelIso.swap
 
 /-- A relation isomorphism is also a relation isomorphism between complemented relations. -/
 @[simps!]
-protected def compl : (r ≃r s) ≃ (rᶜ ≃r sᶜ) where
-  toFun f := ⟨f, f.map_rel_iff.not⟩
+protected def compl (f : r ≃r s) : rᶜ ≃r sᶜ :=
+  ⟨f, f.map_rel_iff.not⟩
+
+/-- `Equiv` variant of `RelIso.compl`. -/
+@[simps!]
+def complEquiv : (r ≃r s) ≃ (rᶜ ≃r sᶜ) where
+  toFun := RelIso.compl
   invFun f := ⟨f, not_iff_not.mp f.map_rel_iff⟩
 
 @[simp]
