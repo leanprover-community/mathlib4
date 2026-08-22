@@ -302,7 +302,7 @@ theorem integrable_inv_one_add_mul_sq {b : ℝ} (hb : b ≠ 0) :
 theorem integral_univ_inv_one_add_mul_sq (b : ℝ) :
     ∫ x, (1 + (b * x) ^ 2)⁻¹ = π / |b| := by
   rw [Measure.integral_comp_mul_left (fun x ↦ (1 + x ^ 2)⁻¹) b, integral_univ_inv_one_add_sq]
-  simp [abs_inv, div_eq_inv_mul]
+  simp [div_eq_inv_mul]
 
 theorem integrableOn_Ioi_zero_inv_mul_one_add_log_sq {b : ℝ} (hb : b ≠ 0) :
     IntegrableOn (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹) (Ioi 0) := by
