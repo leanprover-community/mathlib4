@@ -5748,7 +5748,9 @@ public import Mathlib.ModelTheory.Basic
 public import Mathlib.ModelTheory.Bundled
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Definability
+public import Mathlib.ModelTheory.DefinablyFull
 public import Mathlib.ModelTheory.DirectLimit
+public import Mathlib.ModelTheory.ElementaryChain
 public import Mathlib.ModelTheory.ElementaryMaps
 public import Mathlib.ModelTheory.ElementarySubstructures
 public import Mathlib.ModelTheory.Encoding
@@ -7241,6 +7243,7 @@ public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.CountableCover
 public import Mathlib.SetTheory.Cardinal.Defs
+public import Mathlib.SetTheory.Cardinal.DirectLimit
 public import Mathlib.SetTheory.Cardinal.Divisibility
 public import Mathlib.SetTheory.Cardinal.ENNReal
 public import Mathlib.SetTheory.Cardinal.ENat
