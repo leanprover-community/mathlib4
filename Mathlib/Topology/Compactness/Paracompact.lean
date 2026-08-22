@@ -5,7 +5,7 @@ Authors: Reid Barton, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Option.Basic
+public import Mathlib.Order.Disjointed
 public import Mathlib.Topology.Separation.Regular
 
 /-!
@@ -321,3 +321,114 @@ instance (priority := 100) NormalSpace.of_paracompactSpace_r1Space
     exact r1_separation <| ht.not_inseparable hy <| hst.notMem_of_mem_left hx)
     with ⟨v, u, hv, hu, htv, hxu, huv⟩
   exact ⟨u, v, hu, hv, singleton_subset_iff.1 hxu, htv, huv.symm⟩
+
+/-- For a regular space `X`, TFAE:
+1. `X` is paracompact
+2. for every open cover of `X`, there is an open σ-locally finite refinement
+3. for every open cover of `X`, there is a (not necessarily open) locally finite refinement
+4. for every open cover of `X`, there is a closed locally finite refinement -/
+theorem paracompactSpace_TFAE_of_regular (X : Type v) [TopologicalSpace X] [RegularSpace X] :
+    [ ParacompactSpace X,
+      ∀ (α : Type v) (s : α → Set X), (∀ a, IsOpen (s a)) → (⋃ a, s a = univ) →
+        ∃ (β : ℕ → Type v) (t : (i : ℕ) → β i → Set X),
+          (∀ i b, IsOpen (t i b)) ∧ (⋃ (i) (b), t i b = univ) ∧
+          (∀ i, LocallyFinite (t i)) ∧ ∀ i b, ∃ a, t i b ⊆ s a,
+      ∀ (α : Type v) (s : α → Set X), (∀ a, IsOpen (s a)) → (⋃ a, s a = univ) →
+        ∃ (β : Type v) (t : β → Set X), (⋃ b, t b = univ) ∧
+          LocallyFinite t ∧ ∀ b, ∃ a, t b ⊆ s a,
+      ∀ (α : Type v) (s : α → Set X), (∀ a, IsOpen (s a)) → (⋃ a, s a = univ) →
+        ∃ (β : Type v) (t : β → Set X),
+          (∀ b, IsClosed (t b)) ∧ (⋃ b, t b = univ) ∧ LocallyFinite t ∧ ∀ b, ∃ a, t b ⊆ s a
+    ].TFAE := by
+  tfae_have 1 → 2 := by
+    intro _ α s hso hs
+    obtain ⟨β, t, hto, ht_univ, ht, hts⟩ := ParacompactSpace.locallyFinite_refinement α s hso hs
+    exact ⟨fun _ ↦ β, fun _ b ↦ t b, fun _ ↦ hto, by rwa [iUnion_const], fun _ ↦ ht, fun _ ↦ hts⟩
+  tfae_have 2 → 3 := by
+    intro h α s hso hs
+    obtain ⟨β, t, hto, ht_univ, ht, hts⟩ := h α s hso hs
+    let w n := ⋃ b, t n b
+    have hw : ⋃ i, disjointed w i = univ := by rwa [iUnion_disjointed]
+    have hwlf : LocallyFinite (disjointed w) := by
+      intro x
+      obtain ⟨n, hn⟩ := iUnion_eq_univ_iff.1 hw x
+      obtain ⟨u, hux, hu⟩ := ht n x
+      refine ⟨u ∩ w n, inter_mem hux <| (isOpen_iUnion (hto n)).mem_nhds (disjointed_subset w n hn),
+        (finite_Iic n).subset fun i hi ↦ ?_⟩
+      rw [mem_ofPred_eq, disjointed_eq_inter_compl] at hi
+      obtain ⟨y, ⟨_, hyi⟩, _, hyn⟩ := hi
+      by_contra hin
+      rw [mem_Iic, not_le] at hin
+      exact mem_iInter₂.1 hyi _ hin hyn
+    use (i : ℕ) × β i, fun p ↦ t p.1 p.2 ∩ disjointed w p.1
+    refine ⟨?_, LocallyFinite.sigma (g := fun i b ↦ t i b ∩ disjointed w i)
+      (fun i ↦ (ht i).subset fun _ ↦ inter_subset_left) (hwlf.subset fun _ ↦ ?_), ?_⟩
+    · simp_rw [iUnion_sigma, ← iUnion_inter, ← hw]
+      exact iUnion_congr fun i ↦ inter_eq_self_of_subset_right (disjointed_subset w i)
+    · rw [← iUnion_inter]
+      apply inter_subset_right
+    · intro ⟨i, b⟩
+      obtain ⟨a, ha⟩ := hts i b
+      exact ⟨a, inter_subset_left.trans ha⟩
+  tfae_have 3 → 4 := by
+    intro h α s hso hs
+    choose u hu using iUnion_eq_univ_iff.1 hs
+    have := (regularSpace_TFAE X).out 0 3 |>.1 ‹_›
+    choose v hv_nhds hv hvs using fun x ↦ this x (s (u x)) (hso (u x) |>.mem_nhds (hu x))
+    obtain ⟨β, t, ht_univ, ht, htv⟩ := h X (fun x ↦ interior (v x)) (fun _ ↦ isOpen_interior)
+      (iUnion_eq_univ_iff.2 fun x ↦ ⟨x, mem_interior_iff_mem_nhds.2 (hv_nhds x)⟩)
+    refine ⟨β, fun x ↦ closure (t x), fun _ ↦ isClosed_closure,
+      eq_univ_of_subset (iUnion_mono fun _ ↦ subset_closure) ht_univ, ht.closure, ?_⟩
+    intro b
+    obtain ⟨a, ha⟩ := htv b
+    exact ⟨u a, (closure_mono ha).trans <| (hv a).closure_interior_subset.trans <| hvs a⟩
+  tfae_have 4 → 1 := by
+    intro h
+    constructor
+    intro α s hso hs
+    obtain ⟨β, v, hvc, hv_univ, hv, hvs⟩ := h α s hso hs
+    choose w hw hvw using hv
+    simp_rw [mem_nhds_iff] at hw
+    choose w' hw'w hw'o hw' using hw
+    obtain ⟨γ, a, hac, ha_univ, ha, haw'⟩ := h X w' hw'o (iUnion_eq_univ_iff.2 fun x ↦ ⟨x, hw' x⟩)
+    let v' b := (⋃ i : { i | Disjoint (a i) (v b) }, a i)ᶜ
+    have hv' : LocallyFinite v' := by
+      intro x
+      obtain ⟨t, hxt, hat⟩ := ha x
+      choose f hf using haw'
+      have : ∀ i, { b | (a i ∩ v b).Nonempty }.Finite := fun i ↦
+        (hvw (f i)).subset fun b ⟨x, hxa, hxv⟩ ↦ ⟨x, hxv, hw'w _ (hf i hxa)⟩
+      refine ⟨t, hxt, (hat.biUnion fun i _ ↦ this i).subset ?_⟩
+      intro b ⟨y, hyv', hyt⟩
+      obtain ⟨i, hya⟩ := iUnion_eq_univ_iff.1 ha_univ y
+      refine mem_iUnion₂.2 ⟨i, ⟨y, hya, hyt⟩, not_disjoint_iff_nonempty_inter.1 fun hd ↦ ?_⟩
+      rw [mem_compl_iff, mem_iUnion] at hyv'
+      exact hyv' ⟨⟨i, hd⟩, hya⟩
+    have hv'_open : ∀ b, IsOpen (v' b) := fun b ↦ isOpen_compl_iff.2 <|
+      (ha.comp_injective Subtype.val_injective).isClosed_iUnion fun _ ↦ hac _
+    have hvv' : ∀ b, v b ⊆ v' b := by
+      intro b x hx
+      rw [mem_compl_iff, mem_iUnion]
+      intro ⟨⟨i, hi⟩, hxa⟩
+      exact hi.notMem_of_mem_right hx hxa
+    choose u hu using hvs
+    exact ⟨β, fun b ↦ s (u b) ∩ v' b, fun b ↦ (hso (u b)).inter (hv'_open b),
+      eq_univ_of_subset (iUnion_mono fun b ↦ subset_inter (hu b) (hvv' b)) hv_univ,
+      hv'.subset fun _ ↦ inter_subset_right, fun b ↦ ⟨u b, inter_subset_left⟩⟩
+  tfae_finish
+
+instance [RegularSpace X] [LindelofSpace X] : ParacompactSpace X := by
+  cases isEmpty_or_nonempty X
+  · infer_instance
+  have h := paracompactSpace_TFAE_of_regular X |>.out 0 1
+  rw [h]
+  intro α s hso hs
+  have : Nonempty α := by
+    by_contra!
+    rw [iUnion_of_empty] at hs
+    exact empty_ne_univ hs
+  obtain ⟨f, hf⟩ := isLindelof_univ.indexed_countable_subcover s hso (univ_subset_iff.2 hs)
+  refine ⟨fun _ ↦ PUnit, fun i _ ↦ s (f i), fun _ _ ↦ hso _, ?_,
+    fun _ ↦ locallyFinite_of_finite _, fun i _ ↦ ⟨f i, subset_rfl⟩⟩
+  simp_rw [iUnion_const]
+  exact eq_univ_of_univ_subset hf
