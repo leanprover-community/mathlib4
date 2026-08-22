@@ -2306,6 +2306,7 @@ public import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
 public import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 public import Mathlib.Analysis.NormedSpace.RCLike
 public import Mathlib.Analysis.NormedSpace.Real
+public import Mathlib.Analysis.Numerical.Bisection
 public import Mathlib.Analysis.ODE.Basic
 public import Mathlib.Analysis.ODE.DiscreteGronwall
 public import Mathlib.Analysis.ODE.ExistUnique
