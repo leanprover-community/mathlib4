@@ -183,14 +183,11 @@ open scoped Topology
 
 @[fun_prop]
 theorem smulLeftCLM (hf : IsVanishingOn f s) {g : E → ℂ} (hg : g.HasTemperateGrowth) :
-    IsVanishingOn (smulLeftCLM F g f) s := by
+    IsVanishingOn (TemperedDistribution.smulLeftCLM F g f) s := by
   intro u hu
   apply hf ((SchwartzMap.smulLeftCLM ℂ g) u)
   rw [SchwartzMap.smulLeftCLM_apply hg]
   exact (tsupport_smul_subset_right g u).trans hu
-
-@[deprecated (since := "2026-07-01")] alias _root_.Distribution.IsVanishingOn.smulLeftCLM :=
-  Distribution.TemperedDistribution.IsVanishingOn.smulLeftCLM
 
 open LineDeriv
 
@@ -222,11 +219,8 @@ end IsVanishingOn
 section Support
 
 theorem dsupport_smulLeftCLM_subset {g : E → ℂ} (hg : g.HasTemperateGrowth) :
-    dsupport (smulLeftCLM F g f) ⊆ dsupport f := by
+    dsupport (TemperedDistribution.smulLeftCLM F g f) ⊆ dsupport f := by
   gcongr; fun_prop
-
-@[deprecated (since := "2026-07-01")] alias _root_.Distribution.dsupport_smulLeftCLM_subset :=
-  Distribution.TemperedDistribution.dsupport_smulLeftCLM_subset
 
 open LineDeriv
 
@@ -269,11 +263,18 @@ variable
   [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
   {n : ℕ∞}
 
-variable {f : 𝓓'(Ω, F)} {s : Set E}
+variable {f : 𝓓'(Ω, F)} {T : 𝓓'^{n}(Ω, F)} {s : Set E}
 
 namespace IsVanishingOn
 
 open scoped Topology
+
+@[fun_prop]
+theorem smulLeftCLM (hT : IsVanishingOn T s) (g : E → ℝ) :
+    IsVanishingOn (Distribution.smulLeftCLM Ω F n g T) s := by
+  intro u hu
+  apply hT (TestFunction.smulLeftCLM Ω ℝ n g u)
+  exact (TestFunction.tsupport_smulLeftCLM_right g u).trans hu
 
 open LineDeriv
 
@@ -303,6 +304,23 @@ theorem _root_.Distribution.isVanishingOn_delta (x : E) :
 end IsVanishingOn
 
 section Support
+
+open Set
+
+theorem dsupport_smulLeftCLM_left (T : 𝓓'^{n}(Ω, F)) (g : E → ℝ) :
+    dsupport (Distribution.smulLeftCLM Ω F n g T) ⊆ tsupport g := by
+  rw [← disjoint_compl_left_iff_subset]
+  refine IsVanishingOn.disjoint_dsupport ?_ (isClosed_tsupport g).isOpen_compl
+  intro u hu
+  rw [Distribution.smulLeftCLM_apply_apply]
+  suffices TestFunction.smulLeftCLM Ω ℝ n g u = 0 by simp [this]
+  refine DFunLike.ext' (tsupport_eq_empty_iff.mp (Set.subset_empty_iff.mp fun x hx ↦ ?_ ))
+  exact ((TestFunction.tsupport_smulLeftCLM_right g u).trans hu) hx
+        (TestFunction.tsupport_smulLeftCLM_left g u hx)
+
+theorem dsupport_smulLeftCLM_right (T : 𝓓'^{n}(Ω, F)) (g : E → ℝ) :
+    dsupport (Distribution.smulLeftCLM Ω F n g T) ⊆ dsupport T := by
+  gcongr; fun_prop
 
 open LineDeriv
 
