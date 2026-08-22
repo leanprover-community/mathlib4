@@ -7935,6 +7935,7 @@ public import Mathlib.Topology.ContinuousMap.Interval
 public import Mathlib.Topology.ContinuousMap.Lattice
 public import Mathlib.Topology.ContinuousMap.LocallyConstant
 public import Mathlib.Topology.ContinuousMap.LocallyConvex
+public import Mathlib.Topology.ContinuousMap.NonUnitalStoneWeierstrass
 public import Mathlib.Topology.ContinuousMap.Ordered
 public import Mathlib.Topology.ContinuousMap.Periodic
 public import Mathlib.Topology.ContinuousMap.Polynomial

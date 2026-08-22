@@ -288,6 +288,10 @@ lemma _root_.Subalgebra.topologicalClosure_map [IsSemitopologicalSemiring B]
 theorem _root_.Subalgebra.topologicalClosure_coe (s : Subalgebra R A) :
     (s.topologicalClosure : Set A) = closure ↑s := rfl
 
+theorem _root_.Subalgebra.toSubmodule_topologicalClosure (s : Subalgebra R A) :
+    s.topologicalClosure.toSubmodule = s.toSubmodule.topologicalClosure :=
+  rfl
+
 /-- Under a dense continuous algebra map, a subalgebra
 whose `TopologicalClosure` is `⊤` is sent to another such submodule.
 That is, the image of a dense subalgebra under a map with dense range is dense.

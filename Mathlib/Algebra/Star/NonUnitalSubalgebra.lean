@@ -1302,3 +1302,19 @@ instance isMulCommutative_toNonUnitalSubalgebra (S : NonUnitalStarSubalgebra R A
   ‹IsMulCommutative S›
 
 end NonUnitalStarAlgebra
+
+section SeparatesPoints
+
+variable {R A α M : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
+variable [FunLike A α M]
+
+/-- A version of `Set.SeparatesPoints` for non-unital star subalgebras of a type of functions,
+used for stating the non-unital Stone-Weierstrass theorem. -/
+abbrev NonUnitalStarSubalgebra.SeparatesPoints (s : NonUnitalStarSubalgebra R A) : Prop :=
+  Set.SeparatesPoints ((⇑) '' (s : Set A))
+
+theorem NonUnitalStarSubalgebra.SeparatesPoints.mono {s t : NonUnitalStarSubalgebra R A}
+    (hst : s ≤ t) (hs : s.SeparatesPoints) : t.SeparatesPoints :=
+  Set.separatesPoints_mono (Set.image_mono hst) hs
+
+end SeparatesPoints
