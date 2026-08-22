@@ -207,8 +207,7 @@ theorem congr_apply (e : M ≃ₗ[R] M') (B : BilinForm R M) (x y : M') :
   rfl
 
 @[simp]
-theorem congr_symm (e : M ≃ₗ[R] M') : (congr e).symm = congr e.symm := by
-  rfl
+theorem congr_symm (e : M ≃ₗ[R] M') : (congr e).symm = congr e.symm := rfl
 
 @[simp]
 theorem congr_refl : congr (LinearEquiv.refl R M) = LinearEquiv.refl R _ :=

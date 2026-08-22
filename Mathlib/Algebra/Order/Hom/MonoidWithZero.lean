@@ -243,13 +243,11 @@ variable {hα : Preorder α} {hα' : MulZeroOneClass α} {hβ : Preorder β} {h�
   {hγ : Preorder γ} {hγ' : MulZeroOneClass γ}
 
 @[simp]
-theorem toMonoidWithZeroHom_eq_ofClass (f : α →*₀o β) : f.toMonoidWithZeroHom = .ofClass f := by
-  rfl
+theorem toMonoidWithZeroHom_eq_ofClass (f : α →*₀o β) : f.toMonoidWithZeroHom = .ofClass f := rfl
 
 @[simp]
 theorem ofClass_mk (f : α →*₀ β) (hf : Monotone f) :
-    .ofClass (OrderMonoidWithZeroHom.mk f hf) = f := by
-  rfl
+    .ofClass (OrderMonoidWithZeroHom.mk f hf) = f := rfl
 
 @[simp]
 lemma ofClass_comp (f : β →*₀o γ) (g : α →*₀o β) :

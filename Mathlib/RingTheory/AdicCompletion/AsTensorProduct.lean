@@ -66,8 +66,7 @@ def ofTensorProduct : AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] Adi
 
 @[simp]
 lemma ofTensorProduct_tmul (r : AdicCompletion I R) (x : M) :
-    ofTensorProduct I M (r ⊗ₜ x) = r • of I M x := by
-  rfl
+    ofTensorProduct I M (r ⊗ₜ x) = r • of I M x := rfl
 
 variable {M} in
 /-- `ofTensorProduct` is functorial in `M`. -/

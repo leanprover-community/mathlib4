@@ -142,8 +142,7 @@ def asOrderHom {n} {m} (α : Δ[n].obj m) : OrderHom (Fin (m.unop.len + 1)) (Fin
 
 lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : SimplexCategory}
     (x : (stdSimplex.{u}.obj n).obj m₁) :
-    (stdSimplex.{u}.obj n).map f x = objEquiv.symm (f.unop ≫ objEquiv x) := by
-  rfl
+    (stdSimplex.{u}.obj n).map f x = objEquiv.symm (f.unop ≫ objEquiv x) := rfl
 
 @[simp]
 lemma coe_asOrderHom_objEquiv_symm {n m : ℕ} (α : ⦋n⦌ ⟶ ⦋m⦌) :
@@ -224,8 +223,7 @@ lemma objEquiv_yonedaEquiv_id (n : ℕ) :
 lemma map_objEquiv_op_apply
     {X : SSet.{u}} {n : SimplexCategory} (x : X.obj (op n))
     {m : SimplexCategoryᵒᵖ} (y : (stdSimplex.obj n).obj m) :
-    dsimp% X.map (stdSimplex.objEquiv y).op x = (yonedaEquiv.symm x).app m y := by
-  rfl
+    dsimp% X.map (stdSimplex.objEquiv y).op x = (yonedaEquiv.symm x).app m y := rfl
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
@@ -357,8 +355,7 @@ lemma range_eq_ofSimplex {n : ℕ} (f : Δ[n] ⟶ X) :
 
 lemma yonedaEquiv_coe {A : X.Subcomplex} {n : SimplexCategory}
     (f : stdSimplex.obj n ⟶ A) :
-    (yonedaEquiv f).val = yonedaEquiv (f ≫ A.ι) := by
-  rfl
+    (yonedaEquiv f).val = yonedaEquiv (f ≫ A.ι) := rfl
 
 end Subcomplex
 

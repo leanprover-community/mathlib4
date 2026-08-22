@@ -322,8 +322,7 @@ abbrev extendCoordChange (e e' : OpenPartialHomeomorph M H) : PartialEquiv E E :
 
 variable {e e' : OpenPartialHomeomorph M H}
 
-lemma extendCoordChange_symm : (I.extendCoordChange e e').symm = I.extendCoordChange e' e := by
-  rfl
+lemma extendCoordChange_symm : (I.extendCoordChange e e').symm = I.extendCoordChange e' e := rfl
 
 lemma extendCoordChange_source :
     (I.extendCoordChange e e').source = I '' (e.symm ≫ₕ e').source := by

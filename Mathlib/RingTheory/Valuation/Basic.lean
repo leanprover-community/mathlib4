@@ -897,8 +897,7 @@ lemma orderMonoidIso_spec₀ (h : v.IsEquiv w) (a : R) :
   orderMonoidIso_spec h a
 
 theorem orderMonoidIso_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :
-    h.orderMonoidIso.symm = h'.orderMonoidIso := by
-  rfl
+    h.orderMonoidIso.symm = h'.orderMonoidIso := rfl
 
 @[simp]
 theorem orderMonoidIso_eq_refl (h : v.IsEquiv v) :

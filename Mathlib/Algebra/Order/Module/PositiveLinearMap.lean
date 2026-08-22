@@ -166,8 +166,7 @@ instance : Add (E₁ →ₚ[R] E₂) where
 
 @[simp]
 lemma toLinearMap_add (f g : E₁ →ₚ[R] E₂) :
-    (f + g).toLinearMap = f.toLinearMap + g.toLinearMap := by
-  rfl
+    (f + g).toLinearMap = f.toLinearMap + g.toLinearMap := rfl
 
 instance : IsAddApply (E₁ →ₚ[R] E₂) E₁ E₂ where
   add_apply _ _ _ := rfl
