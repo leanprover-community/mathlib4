@@ -70,155 +70,184 @@ By using `abbrev`, the category algebra inherits all module properties directly 
 the underlying direct sum. -/
 @[nolint unusedArguments]
 abbrev CategoryAlgebra (R : Type w) (C : Type u) [CommSemiring R] [Category.{v} C] [Preadditive C]
-    [Linear R C] := ⨁ (x : C × C), x.1 ⟶ x.2
+    [Linear R C] := ⨁ (x : C), ⨁ (y : C), x ⟶ y
 
 namespace CategoryAlgebra
 
-variable {R : Type w} [CommSemiring R] {C : Type u} [Category.{v} C] [Preadditive C]
+variable (R : Type w) [CommSemiring R] {C : Type u} [Category.{v} C] [Preadditive C]
   [Linear R C] [DecidableEq C]
 
 /-- The canonical inclusion of a morphism `f : a ⟶ b` into the category algebra. -/
 protected def of (x y : C) : (x ⟶ y) →ₗ[R] CategoryAlgebra R C :=
-    DirectSum.lof R (C × C) (fun x ↦ x.1 ⟶ x.2) (x, y)
+  DirectSum.lof R C _ x ∘ₗ DirectSum.lof R _ _ y
 
 /-- Two additive homomorphisms out of the category algebra are equal if they agree on
 all canonical inclusions of morphisms. -/
-@[ext 10000]
+@[ext high]
 theorem addHom_ext {γ : Type w'} [AddZeroClass γ] {f g : CategoryAlgebra R C →+ γ}
-    (h : ∀ (x y : C) (f' : x ⟶ y), f (CategoryAlgebra.of x y f') = g (CategoryAlgebra.of x y f')) :
-    f = g := DFinsupp.addHom_ext (fun x => h x.1 x.2)
+    (h : ∀ (x y : C) (f' : x ⟶ y), f (.of R x y f') = g (.of R x y f')) :
+    f = g := by
+  apply DirectSum.addHom_ext
+  intro x y
+  induction y using DirectSum.induction_on with
+  | zero => rw [map_zero, map_zero, map_zero]
+  | of y q => exact h ..
+  | add y y' hy hy' =>
+    rw [map_add, map_add, hy, hy']
+    simp
 
 /-- The canonical inclusion `of a b f` is definitionally equal to the single entry
 in the direct sum at index `(a, b)` with value `f`. -/
 theorem of_eq_single (x y : C) (f : x ⟶ y) :
-    (CategoryAlgebra.of x y f : CategoryAlgebra R C) =
-    DFinsupp.single (x,y) f := by rfl
+    (CategoryAlgebra.of R x y f : CategoryAlgebra R C) =
+    DirectSum.of _ x (DirectSum.of _ y f) :=
+    rfl
 
-/-- A helper function to define multiplication on the category algebra.
-Returns the composition of two morphisms if their intermediate objects are strictly equal,
-and `0` otherwise. -/
-def comp₀ (x y z w : C) : (x ⟶ y) →+ (z ⟶ w) →+ (x ⟶ w) :=
-  if h : y = z then
-    { toFun := fun f ↦ compHom (f ≫ eqToHom h)
-      map_add' := fun f₁ f₂ ↦ by simp
-      map_zero' := by simp }
-  else
-    0
+/-- Multiply a basis morphism `f : x ⟶ y` across the inner sum `⨁ w, y ⟶ w`. -/
+def compInner (x y : C) (f : x ⟶ y) : (⨁ w, y ⟶ w) →ₗ[R] (⨁ w, x ⟶ w) :=
+  DirectSum.toModule R C (⨁ w, x ⟶ w) (fun w ↦
+    DirectSum.lof R C (fun w' ↦ x ⟶ w') w ∘ₗ CategoryTheory.Linear.leftComp R w f)
 
-/-- `comp₀` satisfies a generalized associativity relation across composable objects. -/
-theorem comp₀_assoc (x₁ y₁ x₂ y₂ x₃ y₃ : C) (f : x₁ ⟶ y₁) (g : x₂ ⟶ y₂) (h : x₃ ⟶ y₃) :
-    ((comp₀ x₁ y₂ x₃ y₃) (((comp₀ x₁ y₁ x₂ y₂) f) g)) h =
-    ((comp₀ x₁ y₁ x₂ y₃) f) (((comp₀ x₂ y₂ x₃ y₃) g) h) := by
-  by_cases h₁₂ : y₁ = x₂ <;>
-    by_cases h₂₃ : y₂ = x₃ <;>
-    simp [comp₀, h₁₂, h₂₃, compHom, Preadditive.leftComp]
+lemma compInner_add (x y : C) (f₁ f₂ : x ⟶ y) :
+    compInner R x y (f₁ + f₂) = compInner R x y f₁ + compInner R x y f₂ := by
+  ext w g
+  rw [compInner, compInner, compInner]
+  simp
 
+lemma compInner_smul (x y : C) (r : R) (f : x ⟶ y) :
+    compInner R x y (r • f) = r • compInner R x y f := by
+  ext w g
+  rw [compInner, compInner]
+  simp
 
-/-- The multiplication on the category algebra, defined by linearly extending
-the composition of morphisms across the direct sum. -/
-def mul' : CategoryAlgebra R C →+ CategoryAlgebra R C →+ CategoryAlgebra R C :=
-  DFinsupp.sumAddHom₂ (fun x y ↦ AddMonoidHom.compr₂
-  (comp₀ x.1 x.2 y.1 y.2) (CategoryAlgebra.of x.1 y.2).toAddMonoidHom)
+/-- Multiply a basis morphism `f : x ⟶ y` with the entire category algebra. -/
+def compSingle (x y : C) (f : x ⟶ y) : CategoryAlgebra R C →ₗ[R] CategoryAlgebra R C :=
+  (DirectSum.lof R C (fun z ↦ ⨁ w, z ⟶ w) x) ∘ₗ (compInner R x y f)
+  ∘ₗ (DirectSum.component R C (fun z ↦ ⨁ w, z ⟶ w) y)
 
-instance : Mul (CategoryAlgebra R C) := ⟨fun f g => mul' f g⟩
-
-/-- Unfold lemma for the multiplication operation on the category algebra. -/
-theorem mul_def (f g : CategoryAlgebra R C) :
-    f * g = DFinsupp.sumAddHom₂ (fun x y ↦ AddMonoidHom.compr₂
-    (comp₀ x.1 x.2 y.1 y.2) (CategoryAlgebra.of x.1 y.2).toAddMonoidHom) f g := rfl
-
-instance : NonUnitalNonAssocSemiring (CategoryAlgebra R C) where
-  left_distrib := fun x y z => by simp [mul_def]
-  right_distrib := fun x y z => by simp [mul_def]
-  zero_mul := fun x => by simp [mul_def]
-  mul_zero := fun x => by simp [mul_def]
-
-/-- The product of two basis elements evaluates to their composition (via `comp₀`) included
-back into the category algebra. -/
-theorem mul_of (x₁ y₁ x₂ y₂ : C) (f : x₁ ⟶ y₁) (g : x₂ ⟶ y₂) :
-    (CategoryAlgebra.of x₁ y₁ f) * (CategoryAlgebra.of x₂ y₂ g : (CategoryAlgebra R C)) =
-    CategoryAlgebra.of x₁ y₂ (comp₀ x₁ y₁ x₂ y₂ f g) := by
-  rw [mul_def, CategoryAlgebra.of_eq_single, CategoryAlgebra.of_eq_single,
-     DFinsupp.sumAddHom₂_single]
+lemma compSingle_add (x y : C) (f₁ f₂ : x ⟶ y) :
+    compSingle R x y (f₁ + f₂) = compSingle R x y f₁ + compSingle R x y f₂ := by
+  rw [compSingle, compInner_add, LinearMap.add_comp, LinearMap.comp_add]
   rfl
 
-/-- Associativity of multiplication on the category algebra, expressed as an equality
-of trilinear maps. -/
-theorem mul_assoc' :
-    AddMonoidHom.mulLeft₃ (R := (CategoryAlgebra R C)) = AddMonoidHom.mulRight₃ := by
-  ext x₁ y₁ f x₂ y₂ g x₃ y₃ h i
-  change (((CategoryAlgebra.of x₁ y₁ f * CategoryAlgebra.of x₂ y₂ g)
-          * CategoryAlgebra.of x₃ y₃ h : CategoryAlgebra R C) i)
-          = ((CategoryAlgebra.of x₁ y₁ f * (CategoryAlgebra.of x₂ y₂ g
-          * CategoryAlgebra.of x₃ y₃ h) : CategoryAlgebra R C) i)
-  rw [mul_of, mul_of, mul_of, mul_of, comp₀_assoc]
+lemma compSingle_smul (x y : C) (r : R) (f : x ⟶ y) :
+    compSingle R x y (r • f) = r • compSingle R x y f := by
+  rw [compSingle, compInner_smul, LinearMap.smul_comp, LinearMap.comp_smul]
+  rfl
+
+/-- The full bilinear multiplication map for the category algebra. -/
+def mul' : CategoryAlgebra R C →ₗ[R] (CategoryAlgebra R C →ₗ[R] CategoryAlgebra R C) :=
+  DirectSum.toModule R C _ (fun x ↦
+    DirectSum.toModule R C _ (fun y ↦
+      { toFun := fun f ↦ compSingle R x y f
+        map_add' := fun f₁ f₂ ↦ compSingle_add R x y f₁ f₂
+        map_smul' := fun r f => compSingle_smul R x y r f }))
+
+instance : Mul (CategoryAlgebra R C) := ⟨fun f g => mul' R f g⟩
+
+lemma mul_def (x y : CategoryAlgebra R C) : x * y = mul' R x y := rfl
+
+-- Unwraps `*` back into `compSingle` when applied to a basis element on the left.
+lemma of_mul (x y : C) (f : x ⟶ y) (b : CategoryAlgebra R C) :
+    CategoryAlgebra.of R x y f * b = compSingle R x y f b := by
+  rw [mul_def, mul', CategoryAlgebra.of, LinearMap.comp_apply]
+  rw [DirectSum.toModule_lof, DirectSum.toModule_lof]
+  rfl
+
+/-- When the domain and codomain match, they compose. -/
+lemma compSingle_of_eq (x y z : C) (f : x ⟶ y) (g : y ⟶ z) :
+    compSingle R x y f (CategoryAlgebra.of R y z g) = CategoryAlgebra.of R x z (f ≫ g) := by
+  rw [compSingle, LinearMap.comp_apply, LinearMap.comp_apply]
+  have h_eval : DirectSum.component R C (fun a ↦ ⨁ b, a ⟶ b) y (CategoryAlgebra.of R y z g) =
+      DirectSum.lof R C (fun b ↦ y ⟶ b) z g :=
+    DFinsupp.single_eq_same
+  rw [h_eval, compInner, DirectSum.toModule_lof, LinearMap.comp_apply]
+  rfl
+
+/-- When the domain and codomain mismatch, the projection yields 0. -/
+lemma compSingle_of_ne {x y z w : C} (h : y ≠ z) (f : x ⟶ y) (g : z ⟶ w) :
+    compSingle R x y f (CategoryAlgebra.of R z w g) = 0 := by
+  rw [compSingle, LinearMap.comp_apply, LinearMap.comp_apply]
+  have h_eval : DirectSum.component R C (fun a ↦ ⨁ b, a ⟶ b) y (CategoryAlgebra.of R z w g) = 0 :=
+    DFinsupp.single_eq_of_ne h
+  rw [h_eval, map_zero, map_zero]
+
+lemma zero_mul' (x : CategoryAlgebra R C) : 0 * x = 0 := by
+  rw [mul_def, map_zero, LinearMap.zero_apply]
+
+lemma mul_zero' (x : CategoryAlgebra R C) : x * 0 = 0 := by
+  rw [mul_def, map_zero]
+
+/-- Multiplication satisfies a generalized associativity relation across basis morphisms. -/
+theorem of_mul_assoc (x₁ y₁ x₂ y₂ x₃ y₃ : C) (f : x₁ ⟶ y₁) (g : x₂ ⟶ y₂) (h : x₃ ⟶ y₃) :
+    (CategoryAlgebra.of R x₁ y₁ f * CategoryAlgebra.of R x₂ y₂ g) * CategoryAlgebra.of R x₃ y₃ h
+    = CategoryAlgebra.of R x₁ y₁ f
+    * (CategoryAlgebra.of R x₂ y₂ g * CategoryAlgebra.of R x₃ y₃ h) := by
+  by_cases h12 : y₁ = x₂ <;> by_cases h23 : y₂ = x₃
+  · subst h12 h23
+    rw [of_mul, of_mul, of_mul, compSingle_of_eq R, compSingle_of_eq R, compSingle_of_eq R, of_mul]
+    rw [compSingle_of_eq R, Category.assoc]
+  · subst h12
+    rw [of_mul, of_mul, of_mul, compSingle_of_ne R h23, compSingle_of_eq R, of_mul]
+    rw [compSingle_of_ne R h23, map_zero]
+  · subst h23
+    rw [of_mul, of_mul, of_mul, compSingle_of_ne R h12, zero_mul', compSingle_of_eq R]
+    rw [compSingle_of_ne R h12]
+  · rw [of_mul, of_mul, of_mul, compSingle_of_ne R h12, zero_mul', compSingle_of_ne R h23, map_zero]
+
+lemma mul_add' (x y z : CategoryAlgebra R C) : x * (y + z) = x * y + x * z := by
+  rw [mul_def, mul_def, mul_def, map_add]
+
+lemma add_mul' (x y z : CategoryAlgebra R C) : (x + y) * z = x * z + y * z := by
+  rw [mul_def, mul_def, mul_def, map_add, LinearMap.add_apply]
+
+/-- A custom induction principle to unwrap the nested direct sums of the category algebra. -/
+@[elab_as_elim]
+lemma induction {P : CategoryAlgebra R C → Prop}
+    (h_zero : P 0)
+    (h_add : ∀ a b, P a → P b → P (a + b))
+    (h_of : ∀ x y (f : x ⟶ y), P (CategoryAlgebra.of R x y f))
+    (x : CategoryAlgebra R C) : P x := by
+  refine DirectSum.induction_on x h_zero ?_ h_add
+  intro x₁ vx
+  refine DirectSum.induction_on vx ?_ (h_of x₁) ?_
+  · rw [map_zero]
+    exact h_zero
+  · intro a b ha hb
+    rw [map_add]
+    exact h_add _ _ ha hb
+
+/-- Associativity of multiplication on the entire category algebra. -/
+lemma mul_assoc' (x y z : CategoryAlgebra R C) :
+    (x * y) * z = x * (y * z) := by
+  induction x using CategoryAlgebra.induction with
+  | h_zero => rw [zero_mul', zero_mul',zero_mul']
+  | h_add _ _ h1 h2 => rw [add_mul', add_mul', add_mul', h1, h2]
+  | h_of x₁ y₁ f =>
+    induction y using CategoryAlgebra.induction with
+    | h_zero => rw [mul_zero', zero_mul', mul_zero']
+    | h_add _ _ h1 h2 => rw [add_mul', mul_add', mul_add', add_mul', h1, h2]
+    | h_of x₂ y₂ g =>
+      induction z using CategoryAlgebra.induction with
+      | h_zero => rw [mul_zero', mul_zero', mul_zero']
+      | h_add _ _ h1 h2 => rw [mul_add', mul_add', mul_add', h1, h2]
+      | h_of x₃ y₃ h => exact of_mul_assoc R x₁ y₁ x₂ y₂ x₃ y₃ f g h
 
 instance : NonUnitalSemiring (CategoryAlgebra R C) where
-  mul_assoc x y z := by
-    have h : AddMonoidHom.mulLeft₃ x y z = AddMonoidHom.mulRight₃ x y z := by
-      ext
-      simp only [mul_assoc']
-    exact h
+  zero_mul := zero_mul' R
+  mul_zero := mul_zero' R
+  left_distrib := mul_add' R
+  right_distrib  := add_mul' R
+  mul_assoc := mul_assoc' R
 
 instance : IsScalarTower R (CategoryAlgebra R C) (CategoryAlgebra R C) where
   smul_assoc r x y := by
-    refine DirectSum.induction_on x ?_ ?_ ?_
-    · rw [smul_zero, zero_smul, smul_zero]
-    · rintro ⟨x₁, y₁⟩ f
-      refine DirectSum.induction_on y ?_ ?_ ?_
-      · simp
-      · rintro ⟨x₂, y₂⟩ g
-        change (r • (CategoryAlgebra.of x₁ y₁ f : CategoryAlgebra R C))
-          * CategoryAlgebra.of x₂ y₂ g
-          = r • (CategoryAlgebra.of x₁ y₁ f * CategoryAlgebra.of x₂ y₂ g)
-        rw [← LinearMap.map_smul, mul_of, mul_of, ← LinearMap.map_smul, comp₀]
-        split_ifs with h
-        · cases h
-          congr 1
-          change ((r • f) ≫ eqToHom rfl) ≫ g = r • ((f ≫ eqToHom rfl) ≫ g)
-          rw [eqToHom_refl, Category.comp_id, Category.comp_id, smul_comp]
-        · change CategoryAlgebra.of x₁ y₂ (0 : x₁ ⟶ y₂)
-            = CategoryAlgebra.of x₁ y₂ (r • (0 : x₁ ⟶ y₂))
-          rw [smul_zero]
-      · intro x' y' hx' hy'
-        simp only [smul_add]
-        rw [hx', hy']
-    · intro x' y' hx' hy'
-      change (r • x') * y = r • (x' * y) at hx'
-      change (r • y') * y = r • (y' * y) at hy'
-      rw [smul_add]
-      change (r • x' + r • y') * y = r • ((x' + y') * y)
-      rw [add_mul, add_mul, smul_add, hx', hy']
+    rw [smul_eq_mul, smul_eq_mul, mul_def, mul_def, LinearMap.map_smul, LinearMap.smul_apply]
 
 instance : SMulCommClass R (CategoryAlgebra R C) (CategoryAlgebra R C) where
   smul_comm r x y := by
-    refine DirectSum.induction_on x ?_ ?_ ?_
-    · rw [zero_smul, smul_zero, zero_smul]
-    · rintro ⟨x₁, y₁⟩ f
-      refine DirectSum.induction_on y ?_ ?_ ?_
-      · simp
-      · rintro ⟨x₂, y₂⟩ g
-        change r • (CategoryAlgebra.of x₁ y₁ f * CategoryAlgebra.of x₂ y₂ g)
-          = CategoryAlgebra.of x₁ y₁ f * (r • (CategoryAlgebra.of x₂ y₂ g : CategoryAlgebra R C))
-        rw [← LinearMap.map_smul, mul_of, mul_of, ← LinearMap.map_smul, comp₀]
-        split_ifs with h
-        · cases h
-          congr 1
-          change r • ((f ≫ eqToHom rfl) ≫ g) = (f ≫ eqToHom rfl) ≫ (r • g)
-          rw [eqToHom_refl, Category.comp_id, comp_smul]
-        · change CategoryAlgebra.of x₁ y₂ (r • (0 : x₁ ⟶ y₂))
-            = CategoryAlgebra.of x₁ y₂ (0 : x₁ ⟶ y₂)
-          rw [smul_zero]
-      · intro x' y' hx' hy'
-        simp only [smul_add, hx', hy']
-    · intro x' y' hx' hy'
-      change r • (x' * y) = x' * (r • y) at hx'
-      change r • (y' * y) = y' * (r • y) at hy'
-      rw [← smul_assoc]
-      change (r • (x' + y')) * y = (x' + y') * (r • y)
-      rw [smul_add, add_mul, add_mul, ← hx', ← hy']
-      change (r • x' )• y + (r • y') • y = r • (x' • y) + r • (y' • y)
-      rw [smul_assoc, smul_assoc]
+    rw [smul_eq_mul, smul_eq_mul]
+    exact (LinearMap.map_smul (mul' R x) r y).symm
 
 section UniversalProperty
 
@@ -247,92 +276,81 @@ instance : CoeFun (Hom R C A) (fun _ ↦ ∀ x y : C, (x ⟶ y) →ₗ[R] A) whe
 
 variable (rep : Hom R C A)
 
+/-- A helper linear map to construct the universal extension by double-unwrapping the direct sum. -/
+def liftMap : CategoryAlgebra R C →ₗ[R] A :=
+  DirectSum.toModule R C A (fun x ↦
+    DirectSum.toModule R C A (fun y ↦ rep x y))
+
+lemma liftMap_of (x y : C) (f : x ⟶ y) :
+    liftMap R rep (CategoryAlgebra.of R x y f) = rep x y f := by
+  rw [liftMap, CategoryAlgebra.of, LinearMap.comp_apply]
+  rw [DirectSum.toModule_lof, DirectSum.toModule_lof]
+
+lemma liftMap_toFun (x : CategoryAlgebra R C) : (liftMap R rep).toFun x = liftMap R rep x := rfl
+
 /-- The universal extension of a composition-preserving family of maps
 to a global non-unital algebra homomorphism on the category algebra. -/
 def lift : CategoryAlgebra R C →ₙₐ[R] A :=
-  { DirectSum.toModule R (C × C) A (fun z ↦ rep z.1 z.2) with
+  { liftMap R rep with
     map_zero' := map_zero _
-    map_mul' := fun x y => by
-      let l := DirectSum.toModule R (C × C) A (fun z ↦ rep z.1 z.2)
-      change l (x * y) = l x * l y
-      refine DirectSum.induction_on x ?_ ?_ ?_
-      · simp
-      · rintro ⟨x₁, y₁⟩ f
-        refine DirectSum.induction_on y ?_ ?_ ?_
-        · simp
-        · rintro ⟨x₂, y₂⟩ g
-          change l ((CategoryAlgebra.of x₁ y₁ f : CategoryAlgebra R C)
-            * (CategoryAlgebra.of x₂ y₂ g : CategoryAlgebra R C))
-            = l (CategoryAlgebra.of x₁ y₁ f : CategoryAlgebra R C)
-            * l (CategoryAlgebra.of x₂ y₂ g : CategoryAlgebra R C)
-          rw [CategoryAlgebra.mul_of, CategoryAlgebra.comp₀]
-          split_ifs with h
-          · cases h
-            change l (DirectSum.lof R _ _ _ _)
-              = l (DirectSum.lof R _ _ _ _) * l (DirectSum.lof R _ _ _ _)
-            rw [DirectSum.toModule_lof, DirectSum.toModule_lof, DirectSum.toModule_lof]
-            change rep.toFun x₁ y₂ ((f ≫ eqToHom rfl) ≫ g) = rep.toFun x₁ y₁ f * rep.toFun y₁ y₂ g
-            rw [eqToHom_refl, Category.comp_id, rep.map_comp]
-          · change l (DirectSum.lof R _ _ _ _)
-              = l (DirectSum.lof R _ _ _ _) * l (DirectSum.lof R _ _ _ _)
-            rw [DirectSum.toModule_lof, DirectSum.toModule_lof, DirectSum.toModule_lof,
-                rep.map_ortho f g h]
-            change rep.toFun x₁ y₂ 0 = 0
-            exact map_zero (rep.toFun x₁ y₂)
-        · intro y' y'' hy' hy''
-          rw [mul_add, map_add, map_add, hy', hy'', mul_add]
-      · intro x' x'' hx' hx''
-        rw [add_mul, map_add, map_add, hx', hx'', add_mul] }
+    map_mul' := fun a b ↦ by
+      induction a using CategoryAlgebra.induction with
+      | h_zero => rw [zero_mul, liftMap_toFun, liftMap_toFun, map_zero, zero_mul]
+      | h_add a₁ a₂ h1 h2 =>
+        rw [liftMap_toFun, liftMap_toFun, liftMap_toFun] at h1 h2
+        rw [liftMap_toFun, liftMap_toFun, liftMap_toFun, add_mul, map_add, map_add]
+        rw [h1, h2, add_mul]
+      | h_of x₁ y₁ f =>
+        induction b using CategoryAlgebra.induction with
+        | h_zero => rw [liftMap_toFun, liftMap_toFun, liftMap_toFun, mul_zero, map_zero, mul_zero]
+        | h_add b₁ b₂ h1 h2 =>
+          rw [liftMap_toFun, liftMap_toFun, liftMap_toFun] at h1 h2
+          rw [liftMap_toFun, liftMap_toFun, liftMap_toFun]
+          rw [mul_add, map_add, h1, h2, map_add, mul_add]
+        | h_of x₂ y₂ g =>
+          by_cases h : y₁ = x₂
+          · subst h
+            rw [of_mul, liftMap_toFun, liftMap_toFun, liftMap_toFun, compSingle_of_eq R]
+            rw [liftMap_of, liftMap_of, liftMap_of, Hom.map_comp]
+          · rw [of_mul, compSingle_of_ne R h, liftMap_toFun, liftMap_toFun, liftMap_toFun]
+            rw [liftMap_of, liftMap_of, rep.map_ortho f g h, map_zero] }
 
 /-- The lift evaluates exactly to the underlying map on the canonical inclusions. -/
-@[simp]
 theorem lift_of (x y : C) (f : x ⟶ y) :
-    lift rep (CategoryAlgebra.of x y f) = rep x y f := by
-  change DirectSum.toModule R (C × C) A (fun z ↦ rep z.1 z.2)
-    (DirectSum.lof R (C × C) (fun z ↦ z.1 ⟶ z.2) (x, y) f) = _
-  rw [DirectSum.toModule_lof]
+    lift R rep (CategoryAlgebra.of R x y f) = rep x y f :=
+  liftMap_of R rep x y f
 
 /-- The uniqueness part of the universal property: any non-unital algebra homomorphism
 that agrees on the generators with `rep` must be exactly `lift rep`. -/
 theorem lift_unique (φ : CategoryAlgebra R C →ₙₐ[R] A)
-    (hφ_of : ∀ x y (f : x ⟶ y), φ (CategoryAlgebra.of x y f) = rep x y f) :
-    φ = lift rep := by
+    (hφ_of : ∀ x y (f : x ⟶ y), φ (CategoryAlgebra.of R x y f) = rep x y f) :
+    φ = lift R rep := by
   apply DFunLike.ext
   intro x
-  refine DirectSum.induction_on x ?_ ?_ ?_
-  · simp
-  · rintro ⟨x₁, y₁⟩ f
-    change φ (CategoryAlgebra.of x₁ y₁ f) = lift rep (CategoryAlgebra.of x₁ y₁ f)
-    rw [hφ_of, lift_of]
-  · intro x' y' hx' hy'
-    rw [map_add, map_add, hx', hy']
+  induction x using CategoryAlgebra.induction with
+  | h_zero => rw [map_zero, map_zero]
+  | h_add a b ha hb => rw [map_add, map_add, ha, hb]
+  | h_of x y f => rw [hφ_of, lift_of]
 
 /-- The universal property of the category algebra, expressed as an equivalence
 of types between `Hom R C A` and `CategoryAlgebra R C →ₙₐ[R] A`. -/
 def liftEquiv : Hom R C A ≃ (CategoryAlgebra R C →ₙₐ[R] A) where
-  toFun := lift
+  toFun := lift R
   invFun φ := {
-    toFun x y := (φ : CategoryAlgebra R C →ₗ[R] A).comp (CategoryAlgebra.of x y)
+    toFun := fun x y ↦ (φ : CategoryAlgebra R C →ₗ[R] A).comp (CategoryAlgebra.of R x y)
     map_comp := fun {x y z} f g ↦ by
-      change φ (CategoryAlgebra.of x z (f ≫ g)) =
-        φ (CategoryAlgebra.of x y f) * φ (CategoryAlgebra.of y z g)
-      rw [← map_mul]
-      congr 1
-      rw [CategoryAlgebra.mul_of, CategoryAlgebra.comp₀]
-      split_ifs with h
-      · cases h
-        change CategoryAlgebra.of x z (f ≫ g) = CategoryAlgebra.of x z ((f ≫ eqToHom rfl) ≫ g)
-        simp
-      · contradiction
+      rw [LinearMap.comp_apply, LinearMap.comp_apply, LinearMap.comp_apply]
+      rw [← compSingle_of_eq]
+      rw [← of_mul]
+      exact map_mul φ _ _
     map_ortho := fun {x y z w} f g h_neq ↦ by
-      change φ (CategoryAlgebra.of x y f) * φ (CategoryAlgebra.of z w g) = 0
-      rw [← map_mul, CategoryAlgebra.mul_of, CategoryAlgebra.comp₀, dite_eq_right h_neq]
-      change φ (CategoryAlgebra.of x w 0) = 0
-      simp
+      rw [LinearMap.comp_apply, LinearMap.comp_apply, ← map_zero φ]
+      rw [← compSingle_of_ne R h_neq f g, ← of_mul]
+      exact (map_mul φ _ _).symm
   }
   left_inv rep := by
     ext x y f
-    exact lift_of rep x y f
+    exact lift_of R rep x y f
   right_inv φ := by
     symm
     apply lift_unique
@@ -344,55 +362,44 @@ end UniversalProperty
 section Unital
 
 variable [Fintype C]
+
 /-- The identity element of the category algebra, defined as the sum of the identity
 morphisms of all objects. This is well-defined since `C` is `Fintype`. -/
-def one' : CategoryAlgebra R C :=  ∑ x : C, (CategoryAlgebra.of x x (𝟙 x))
+def one' : CategoryAlgebra R C := ∑ x : C, CategoryAlgebra.of R x x (𝟙 x)
 
-instance : One (CategoryAlgebra R C) := ⟨one'⟩
+instance : One (CategoryAlgebra R C) := ⟨one' R⟩
 
 /-- Unfold lemma for the identity element of the category algebra. -/
-theorem one_def : (1 : CategoryAlgebra R C) = ∑ x : C, (CategoryAlgebra.of x x (𝟙 x)) := rfl
+lemma one_def : (1 : CategoryAlgebra R C) = ∑ x : C, CategoryAlgebra.of R x x (𝟙 x) := rfl
 
 /- `CategoryAlgebra R C` for `Fintype C` is a semiring. -/
 instance : Semiring (CategoryAlgebra R C) where
-  one_mul := by
-    have h : (AddMonoidHom.mulLeft (1 : (CategoryAlgebra R C)) = (AddMonoidHom.id _)) := by
-      ext x₁ y₁ f z
-      rw [AddMonoidHom.mulLeft, one_def]
-      simp only [Finset.sum_mul]
-      rw [AddMonoidHom.coe_mk, ZeroHom.coe_mk]
-      simp only [mul_of]
-      rw [AddMonoidHom.id_apply, Finset.sum_eq_single_of_mem x₁ (Finset.mem_univ _)]
-      · rw [comp₀, dite_eq_left rfl]
-        simp only [AddMonoidHom.coe_mk]
-        rw [ZeroHom.coe_mk,compHom]
-        simp only [Preadditive.leftComp, AddMonoidHom.mk'_apply]
-        rw [eqToHom_refl]
-        simp
-      · intro x₂ _ h
-        rw [comp₀, dite_eq_right h]
-        simp only [AddMonoidHom.zero_apply]
-        rw [map_zero]
-    apply DFunLike.congr_fun (h₁ := h)
-  mul_one := by
-    have h : (AddMonoidHom.mulRight (1 : (CategoryAlgebra R C)) = (AddMonoidHom.id _)) := by
-      ext x₁ y₁ f
-      rw [AddMonoidHom.mulRight, one_def]
-      simp only [Finset.mul_sum]
-      rw [AddMonoidHom.coe_mk, ZeroHom.coe_mk]
-      simp only [mul_of]
-      rw [AddMonoidHom.id_apply, Finset.sum_eq_single_of_mem y₁ (Finset.mem_univ _)]
-      · rw [comp₀, dite_eq_left rfl]
-        simp only [AddMonoidHom.coe_mk]
-        rw [ZeroHom.coe_mk, compHom]
-        simp only [Preadditive.leftComp, AddMonoidHom.mk'_apply]
-        rw [eqToHom_refl]
-        simp
-      · intro y₂ _ h
-        rw [comp₀, dite_eq_right h.symm]
-        simp only [AddMonoidHom.zero_apply]
-        rw [map_zero]
-    apply DFunLike.congr_fun (h₁ := h)
+  one_mul := fun x ↦ by
+    induction x using CategoryAlgebra.induction with
+    | h_zero => rw [mul_zero]
+    | h_add a b ha hb => rw [mul_add, ha, hb]
+    | h_of x y f =>
+      rw [one_def, Finset.sum_mul]
+      have h_eq : CategoryAlgebra.of R x x (𝟙 x) * CategoryAlgebra.of R x y f
+                  = CategoryAlgebra.of R x y f := by
+        rw [of_mul, compSingle_of_eq R, Category.id_comp]
+      rw [Finset.sum_eq_single_of_mem x (Finset.mem_univ x)]
+      · exact h_eq
+      · intro w _ h_ne
+        rw [of_mul, compSingle_of_ne R h_ne]
+  mul_one := fun x ↦ by
+    induction x using CategoryAlgebra.induction with
+    | h_zero => rw [zero_mul]
+    | h_add a b ha hb => rw [add_mul, ha, hb]
+    | h_of x y f =>
+      rw [one_def, Finset.mul_sum]
+      have h_eq : CategoryAlgebra.of R x y f * CategoryAlgebra.of R y y (𝟙 y)
+                  = CategoryAlgebra.of R x y f := by
+        rw [of_mul, compSingle_of_eq R, Category.comp_id]
+      rw [Finset.sum_eq_single_of_mem y (Finset.mem_univ y)]
+      · exact h_eq
+      · intro w _ h_ne
+        rw [of_mul, compSingle_of_ne R h_ne.symm]
 
 /- `CategoryAlgebra R C` for `Fintype C` is a unital algebra. -/
 instance : Algebra R (CategoryAlgebra R C) where
@@ -401,22 +408,14 @@ instance : Algebra R (CategoryAlgebra R C) where
       map_one' := one_smul R 1
       map_zero' := zero_smul R 1
       map_add' := fun r s ↦ add_smul r s 1
-      map_mul' := fun r s ↦ by
-        nth_rw 1 [← mul_one 1]
-        rw [smul_mul_smul_comm] }
-  commutes' := fun r x ↦ by
-    change (r • 1) * x = x * (r • 1)
-    rw [mul_smul_one, smul_one_mul]
-  smul_def' := fun r x ↦ by
-    change r • x = (r • 1) * x
-    rw [smul_one_mul]
+      map_mul' := fun r s ↦ by rw [mul_smul, smul_mul_assoc, one_mul] }
+  commutes' := fun r x ↦ by simp
+  smul_def' := fun r x ↦ by simp
 
 section UnitalUniversalProperty
 
-variable {R C A : Type*} [CommSemiring R] [Category C] [Preadditive C] [Linear R C]
-    [Fintype C] [Semiring A] [Algebra R A] [DecidableEq C]
-
-variable (R C A)
+variable {A : Type*} [Semiring A] [Algebra R A]
+variable (C A)
 
 /-- `UnitalHom` extends `Hom` for morphisms to algebras, where the sum of the
 identities maps to `1`. -/
@@ -425,37 +424,34 @@ structure UnitalHom extends Hom R C A where
   /- Identity is mapped to identity. -/
   map_one' : ∑ x : C, toFun x x (𝟙 x) = 1
 
-variable {R C A}
+variable {C A}
 
 instance : CoeFun (UnitalHom R C A) (fun _ ↦ ∀ x y : C, (x ⟶ y) →ₗ[R] A) where
   coe rep := rep.toFun
 
+@[simp]
+lemma lift_one (rep : UnitalHom R C A) : lift R rep.toHom 1 = 1 := by
+  rw [one_def, map_sum]
+  rw [← rep.map_one']
+  apply Finset.sum_congr rfl
+  intro x _
+  rw [lift_of R rep.toHom]
 
 /-- The universal extension of a composition-preserving family of maps
 to a global algebra homomorphism on the category algebra. -/
 def unitalLift (rep : UnitalHom R C A) : CategoryAlgebra R C →ₐ[R] A :=
-  let baseLift := lift rep.toHom
-  { baseLift with
-    map_one' := by
-      change lift rep.toHom (∑ x : C, CategoryAlgebra.of x x (𝟙 x)) = 1
-      rw [map_sum]
-      simp only [lift_of]
-      exact rep.map_one'
+  { lift R rep.toHom with
+    map_one' := lift_one R rep
     commutes' := fun r ↦ by
-      change lift rep.toHom (r • 1) = algebraMap R A r
-      have h_one : lift rep.toHom 1 = 1 := by
-        change lift rep.toHom (∑ x : C, CategoryAlgebra.of x x (𝟙 x)) = 1
-        rw [map_sum]
-        simp only [lift_of]
-        exact rep.map_one'
-      rw [map_smul, h_one, Algebra.algebraMap_eq_smul_one] }
+      rw [NonUnitalAlgHom.toFun_eq_coe, Algebra.algebraMap_eq_smul_one]
+      rw [map_smul, lift_one R rep, Algebra.algebraMap_eq_smul_one] }
 
 /-- The universal property of the category algebra, expressed as an equivalence
 of types between `UnitalHom R C A` and `CategoryAlgebra R C →ₐ[R] A`. -/
 def unitalLiftEquiv : UnitalHom R C A ≃ (CategoryAlgebra R C →ₐ[R] A) where
-  toFun  := unitalLift
+  toFun  := unitalLift R
   invFun φ := {
-    toHom := liftEquiv.symm (φ : CategoryAlgebra R C →ₙₐ[R] A)
+    toHom := (liftEquiv R).symm (φ : CategoryAlgebra R C →ₙₐ[R] A)
     map_one' := by
       have h_one := φ.map_one
       rw [one_def, map_sum] at h_one
@@ -463,11 +459,11 @@ def unitalLiftEquiv : UnitalHom R C A ≃ (CategoryAlgebra R C →ₐ[R] A) wher
   }
   left_inv rep := by
     ext x y f
-    exact lift_of rep.toHom x y f
+    exact lift_of R rep.toHom x y f
   right_inv φ := by
     apply DFunLike.ext
     intro x
-    exact DFunLike.congr_fun (liftEquiv.right_inv (φ : CategoryAlgebra R C →ₙₐ[R] A)) x
+    exact DFunLike.congr_fun ((liftEquiv R).right_inv (φ : CategoryAlgebra R C →ₙₐ[R] A)) x
 
 end UnitalUniversalProperty
 end Unital
