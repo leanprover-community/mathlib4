@@ -419,7 +419,7 @@ lemma IndepFun.variance_fun_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
 
 /-- The variance of a finite sum of pairwise independent random variables is the sum of the
 variances. -/
-nonrec theorem IndepFun.variance_sum {ι : Type*} {X : ι → Ω → ℝ} {s : Finset ι}
+theorem IndepFun.variance_sum {ι : Type*} {X : ι → Ω → ℝ} {s : Finset ι}
     (hs : ∀ i ∈ s, MemLp (X i) 2 μ)
     (h : Set.Pairwise ↑s fun i j => X i ⟂ᵢ[μ] X j) :
     variance (∑ i ∈ s, X i) μ = ∑ i ∈ s, variance (X i) μ := by
