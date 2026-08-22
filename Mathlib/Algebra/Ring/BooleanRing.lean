@@ -228,11 +228,9 @@ def toBooleanAlgebra : BooleanAlgebra α :=
     compl := fun a => 1 + a
     inf_compl_le_bot := fun a =>
       show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by simp [mul_add, mul_self, add_self]
-    top_le_sup_compl := fun a => by
-      change
-        1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
-          a + (1 + a) + a * (1 + a)
-      simp [mul_add, mul_self, add_self, ← add_assoc 1 a] }
+    top_le_sup_compl := fun a =>
+      show 1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
+        a + (1 + a) + a * (1 + a) by simp [mul_add, ← add_assoc, add_comm] }
 
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.toBooleanAlgebra
 
