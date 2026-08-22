@@ -126,7 +126,7 @@ theorem prod_primeFactors_nu {d : ℕ} (hd : d ∣ s.prodPrimes) :
   rw [← s.nu_mult.map_prod_of_subset_primeFactors _ _ subset_rfl,
     Nat.prod_primeFactors_of_squarefree <| Squarefree.squarefree_of_dvd hd s.prodPrimes_squarefree]
 
-theorem nu_pos_of_dvd_prodPrimes {d : ℕ} (hd : d ∣ s.prodPrimes) : 0 < s.nu d := by
+theorem nu_pos_of_dvd_prodPrimes {d : ℕ} (hd : d ∣ s.prodPrimes) : 0 < s.nu d :=
   calc
     0 < ∏ p ∈ d.primeFactors, s.nu p := by
       apply prod_pos

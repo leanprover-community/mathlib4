@@ -117,7 +117,7 @@ variable [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] {μ : Me
 lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self [SFinite μ]
     (h : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
     (a b : ℝ) :
-    μ {x | ‖x‖ ≤ a} * μ {x | b < ‖x‖} ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2 := by
+    μ {x | ‖x‖ ≤ a} * μ {x | b < ‖x‖} ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2 :=
   calc μ {x | ‖x‖ ≤ a} * μ {x | b < ‖x‖}
   _ = (μ.prod μ) ({x | ‖x‖ ≤ a} ×ˢ {y | b < ‖y‖}) := by rw [Measure.prod_prod]
     -- This is the measure of two bands in the plane (draw a picture!)
@@ -398,7 +398,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
   -- and bound the integral on each piece.
   -- First, we bound the integral on the ball of radius `a`
   have ht_int_zero : ∫⁻ x in closedBall 0 a, .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
-      ≤ μ {x | ‖x‖ ≤ a} * .ofReal (rexp (logRatio c')) := by
+      ≤ μ {x | ‖x‖ ≤ a} * .ofReal (rexp (logRatio c')) :=
     calc ∫⁻ x in closedBall 0 a, .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
     _ ≤ ∫⁻ x in closedBall 0 a, .ofReal (rexp (C * a ^ 2)) ∂μ := by
       refine setLIntegral_mono (by fun_prop) fun x hx ↦ ?_
@@ -603,7 +603,7 @@ theorem exists_integrable_exp_sq_of_map_rotation_eq_self [IsFiniteMeasure μ]
   let μ' := cond μ .univ
   have hμ'_eq : μ' = (μ .univ)⁻¹ • μ := by simp [μ', cond]
   have hμ' : IsProbabilityMeasure μ' := cond_isProbabilityMeasure <| by simp [hμ_zero]
-  have h_rot : (μ'.prod μ').map (ContinuousLinearMap.rotation (-(π / 4))) = μ'.prod μ' := by
+  have h_rot : (μ'.prod μ').map (ContinuousLinearMap.rotation (-(π / 4))) = μ'.prod μ' :=
     calc (μ'.prod μ').map (ContinuousLinearMap.rotation (-(π / 4)))
     _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹)
         • (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) := by

@@ -168,7 +168,7 @@ open Multiset in
 include h hz in
 /-- If an integer polynomial has Mahler measure equal to 1, then all its complex roots have norm at
 most 1. -/
-lemma norm_root_le_one_of_mahlerMeasure_eq_one : ‖z‖ ≤ 1 := by
+lemma norm_root_le_one_of_mahlerMeasure_eq_one : ‖z‖ ≤ 1 :=
   calc
   ‖z‖ ≤ max 1 ‖z‖ := le_max_right 1 ‖z‖
   _   ≤ ((p.map (castRingHom ℂ)).roots.map (fun a ↦ max 1 ‖a‖)).prod :=

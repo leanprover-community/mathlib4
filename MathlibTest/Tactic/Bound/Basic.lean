@@ -29,7 +29,7 @@ end bound_only
 
 -- Calc example: A weak lower bound for `z ← z^2 + c`
 example {c z : ℝ} (cz : ‖c‖ ≤ ‖z‖) (z3 : 3 ≤ ‖z‖) :
-    2 * ‖z‖ ≤ ‖z^2 + c‖ := by
+    2 * ‖z‖ ≤ ‖z^2 + c‖ :=
   calc ‖z^2 + c‖
     _ ≥ ‖z^2‖ - ‖c‖ := by bound
     _ ≥ ‖z^2‖ - ‖z‖ := by  bound  -- gcongr works here, not for the other two
@@ -125,7 +125,7 @@ example {s : Set ℂ} (o : IsOpen s) (z) (h : z ∈ s) : ∃ r : ℝ, r > 0 := b
 example {f : ℂ → ℂ} {z w : ℂ} {s r c e : ℝ}
       (sc : ∀ {w}, ‖w - z‖ < s → ‖f w - f z‖ < e) (wz : ‖w - z‖ < s) (wr : ‖w‖ < r)
       (h : ∀ z : ℂ, ‖z‖ < r → ‖f z‖ ≤ c * ‖z‖) :
-      ‖f z‖ ≤ c * ‖w‖ + e := by
+      ‖f z‖ ≤ c * ‖w‖ + e :=
   calc ‖f z‖ = ‖f w - (f w - f z)‖ := by ring_nf
     _ ≤ ‖f w‖ + ‖f w - f z‖ := by bound
     _ ≤ c * ‖w‖+ e := by bound [h w wr, sc wz]

@@ -45,7 +45,7 @@ lemma circleIntegrable_log_norm_sub_const (r : ℝ) : CircleIntegrable (log ‖�
 If `a : ℂ` has norm smaller than one, then `circleAverage (log ‖· - a‖) 0 1` vanishes.
 -/
 @[simp]
-theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (log ‖· - a‖) 0 1 = 0 := by
+theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (log ‖· - a‖) 0 1 = 0 :=
   calc circleAverage (log ‖· - a‖) 0 1
   _ = circleAverage (log ‖1 - ·⁻¹ * a‖) 0 1 := by
     apply circleAverage_congr_sphere
@@ -61,7 +61,7 @@ theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (l
       InnerProductSpace.HarmonicOnNhd.circleAverage_eq, zero_mul, sub_zero,
       CStarRing.norm_of_mem_unitary (unitary ℂ).one_mem, log_one]
     intro x hx
-    have : ‖x * a‖ < 1 := by
+    have : ‖x * a‖ < 1 :=
       calc ‖x * a‖
       _ = ‖x‖ * ‖a‖ := by simp
       _ ≤ ‖a‖ := mul_le_of_le_one_left (norm_nonneg _) (by aesop)
@@ -77,7 +77,7 @@ theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (l
 
 -- Integral computation used in `circleAverage_log_norm_id_sub_const₁`
 private lemma circleAverage_log_norm_sub_const₁_integral :
-    ∫ x in 0..(2 * π), log (4 * sin (x / 2) ^ 2) / 2 = 0 := by
+    ∫ x in 0..(2 * π), log (4 * sin (x / 2) ^ 2) / 2 = 0 :=
   calc ∫ x in 0..(2 * π), log (4 * sin (x / 2) ^ 2) / 2
   _ = ∫ (x : ℝ) in 0..π, log (4 * sin x ^ 2) := by
     have {x : ℝ} : x / 2 = 2⁻¹ * x := by ring
@@ -203,7 +203,7 @@ Generalization of `circleAverage_log_norm_sub_const_eq_posLog`: The
 `circleAverage (log ‖· - a‖) c R` equals `log R + log⁺ (|R|⁻¹ * ‖c - a‖)`.
 -/
 theorem circleAverage_log_norm_sub_const_eq_log_radius_add_posLog (hR : R ≠ 0) :
-    circleAverage (log ‖· - a‖) c R = log R + log⁺ (R⁻¹ * ‖c - a‖) := by
+    circleAverage (log ‖· - a‖) c R = log R + log⁺ (R⁻¹ * ‖c - a‖) :=
   calc circleAverage (log ‖· - a‖) c R
   _ = circleAverage (fun z ↦ log ‖R * (z + R⁻¹ * (c - a))‖) 0 1 := by
     rw [circleAverage_eq_circleAverage_zero_one]

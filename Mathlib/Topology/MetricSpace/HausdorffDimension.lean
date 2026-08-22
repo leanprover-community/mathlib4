@@ -497,7 +497,7 @@ theorem dimH_univ : dimH (univ : Set ℝ) = 1 := by
 variable {E}
 
 /-- The Hausdorff dimension of any set in a finite-dimensional real normed space is finite. -/
-theorem dimH_lt_top (s : Set E) : dimH s < ⊤ := by calc
+theorem dimH_lt_top (s : Set E) : dimH s < ⊤ := calc
   dimH s ≤ dimH (univ : Set E) := dimH_mono (subset_univ s)
   _ = finrank ℝ E := dimH_univ_eq_finrank E
   _ < ⊤ := by simp

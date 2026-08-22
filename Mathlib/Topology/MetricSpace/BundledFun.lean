@@ -129,7 +129,7 @@ variable [AddCommMonoid R] [LinearOrder R] [AddLeftStrictMono R]
 
 protected lemma nonneg (d : PseudoMetric X R) (x y : X) : 0 ≤ d x y := by
   by_contra! H
-  have : d x x < 0 := by
+  have : d x x < 0 :=
     calc d x x ≤ d x y + d y x := d.triangle' x y x
       _ < 0 + 0 := by refine add_lt_add H (d.symm x y ▸ H)
       _ = 0 := by simp

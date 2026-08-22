@@ -88,7 +88,7 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma lintegral_nnnorm_le (f : X →ᵇ E) :
-    ∫⁻ x, ‖f x‖₊ ∂μ ≤ ‖f‖₊ * (μ Set.univ) := by
+    ∫⁻ x, ‖f x‖₊ ∂μ ≤ ‖f‖₊ * (μ Set.univ) :=
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
     _ ≤ ∫⁻ _, ‖f‖₊ ∂μ       := by gcongr; apply nnnorm_coe_le_nnnorm
     _ = ‖f‖₊ * (μ Set.univ) := by rw [lintegral_const]

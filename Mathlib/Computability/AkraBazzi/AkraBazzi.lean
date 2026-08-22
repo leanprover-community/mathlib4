@@ -305,7 +305,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
       _ =Θ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) :=
         IsTheta.symm <| IsTheta.mul (isTheta_refl _ _) <| R.isTheta_smoothingFn_sub_self i
   have h_main : (fun (n : ℕ) => q (r i n) - q (b i * n))
-      ≤ᶠ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
+      ≤ᶠ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) :=
     calc (fun (n : ℕ) => q (r i n) - q (b i * n))
       _ ≤ᶠ[atTop] fun (n : ℕ) => ‖q (r i n) - q (b i * n)‖ := by
         filter_upwards with _ using le_norm_self _
@@ -398,7 +398,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
         _ =Θ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) :=
           IsTheta.symm <| IsTheta.mul (isTheta_refl _ _) <| R.isTheta_smoothingFn_sub_self i
   have h_main : (fun (n : ℕ) => q (b i * n) - q (r i n))
-      ≤ᶠ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
+      ≤ᶠ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) :=
     calc (fun (n : ℕ) => q (b i * n) - q (r i n))
       _ ≤ᶠ[atTop] fun (n : ℕ) => ‖q (r i n) - q (b i * n)‖ := by
         filter_upwards with _; rw [norm_sub_rev]; exact le_norm_self _
@@ -652,7 +652,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
     _ = ((1 + ε n) * asympBound g a b n) := by ring
 
 /-- The **Akra-Bazzi theorem**: `T ∈ O(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
-theorem isBigO_asympBound : T =O[atTop] asympBound g a b := by
+theorem isBigO_asympBound : T =O[atTop] asympBound g a b :=
   calc T
     _ =O[atTop] (fun n => (1 - ε n) * asympBound g a b n) := by
       exact R.T_isBigO_smoothingFn_mul_asympBound
@@ -664,7 +664,7 @@ theorem isBigO_asympBound : T =O[atTop] asympBound g a b := by
     _ = asympBound g a b := by simp
 
 /-- The **Akra-Bazzi theorem**: `T ∈ Ω(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
-theorem isBigO_symm_asympBound : asympBound g a b =O[atTop] T := by
+theorem isBigO_symm_asympBound : asympBound g a b =O[atTop] T :=
   calc asympBound g a b
     _ = (fun n => 1 * asympBound g a b n) := by simp
     _ ~[atTop] (fun n => (1 + ε n) * asympBound g a b n) := by
