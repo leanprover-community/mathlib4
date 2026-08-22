@@ -38,7 +38,7 @@ namespace Affine
 
 namespace Simplex
 
-open Finset AffineSubspace EuclideanGeometry
+open Finset AffineSubspace EuclideanGeometry AffineMap
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -310,18 +310,16 @@ lemma inner_vsub_vsub_altitudeFoot_eq_height_sq [NeZero n] {i j : Fin (n + 1)} (
 the affine span of the simplex. This is the same as shifting the base towards the vertex. -/
 theorem affineSubspaceMk'_lineMap_altitudeFoot_eq_shift {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
     (i : Fin (n + 1)) (x : ℝ) :
-    AffineSubspace.mk' (AffineMap.lineMap (s.points i) (s.altitudeFoot i) x)
+    AffineSubspace.mk' (lineMap (s.points i) (s.altitudeFoot i) x)
       (s.altitude i).directionᗮ ⊓ affineSpan ℝ (Set.range s.points) =
         (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
-  have h : AffineMap.lineMap (s.points i) (s.altitudeFoot i) x ∈
-      affineSpan ℝ (Set.range s.points) := by
-    refine vadd_mem_of_mem_direction (Submodule.smul_mem _ _ ?_) (mem_affineSpan ℝ (by simp))
-    exact vsub_mem_direction (s.altitudeFoot_mem_affineSpan _) (mem_affineSpan ℝ (by simp))
+  have h : lineMap (s.points i) (s.altitudeFoot i) x ∈ affineSpan ℝ (Set.range s.points) :=
+    lineMap_mem _ (mem_affineSpan _ (by simp)) (altitudeFoot_mem_affineSpan _ _)
   apply ext_of_direction_eq
   · rw [direction_shift, direction_inf_of_mem (by simp) h, direction_mk',
       direction_altitude, direction_affineSpan, direction_affineSpan]
     exact Submodule.orthogonal_inf_orthogonal_inf_of_le <| vectorSpan_mono _ <| by simp
-  · refine ⟨AffineMap.lineMap (s.points i) (s.altitudeFoot i) x, ?_, ?_⟩
+  · refine ⟨lineMap (s.points i) (s.altitudeFoot i) x, ?_, ?_⟩
     · simpa using h
     · apply lineMap_mem_shift (by simp)
 
@@ -330,7 +328,7 @@ section with the closed interior. This is the same as the cross section between 
 and the closed interior. -/
 theorem closedInterior_inter_affineSubspaceMk'_lineMap_altitudeFoot {n : ℕ} [NeZero n]
     (s : Simplex ℝ P n) (i : Fin (n + 1)) (x : ℝ) :
-    s.closedInterior ∩ AffineSubspace.mk' (AffineMap.lineMap (s.points i) (s.altitudeFoot i) x)
+    s.closedInterior ∩ AffineSubspace.mk' (lineMap (s.points i) (s.altitudeFoot i) x)
       (s.altitude i).directionᗮ =
         s.closedInterior ∩ (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
   rw [← affineSubspaceMk'_lineMap_altitudeFoot_eq_shift, AffineSubspace.coe_inf, ← Set.inter_assoc,
