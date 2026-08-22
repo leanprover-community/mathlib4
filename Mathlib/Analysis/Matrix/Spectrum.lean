@@ -47,14 +47,6 @@ theorem spectrum_toLpLin [DecidableEq n] (p : ENNReal) :
     spectralRadius K Aᵀ = spectralRadius K A := by
   simp [spectralRadius]
 
-variable {K : Type*} [NormedField K]
-
-/-- The spectral radii of a matrix and its transpose are equal. See `Matrix.spectrum_transpose`. -/
-theorem spectralRadius_transpose [DecidableEq n] (A : Matrix n n K) :
-    spectralRadius K Aᵀ = spectralRadius K A := by
-  unfold spectralRadius
-  rw [spectrum_transpose A]
-
 namespace IsHermitian
 
 section DecidableEq

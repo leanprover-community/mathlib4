@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 
 /-!
 # Eigenvalues are characteristic polynomial roots.
