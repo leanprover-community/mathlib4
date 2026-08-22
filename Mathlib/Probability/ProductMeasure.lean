@@ -484,8 +484,6 @@ lemma infinitePi_map_eval (i : ι) :
 lemma infinitePi_map_pi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i}
     (hf : ∀ i, Measurable (f i)) :
     (infinitePi μ).map (fun x i ↦ f i (x i)) = infinitePi (fun i ↦ (μ i).map (f i)) := by
-  have (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
-    isProbabilityMeasure_map (hf i).aemeasurable
   refine eq_infinitePi _ fun s t ht ↦ ?_
   rw [map_apply (by fun_prop) (.pi s.countable_toSet fun _ _ ↦ ht _)]
   have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' ((s : Set ι).pi t) =
