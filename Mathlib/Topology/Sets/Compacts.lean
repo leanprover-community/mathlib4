@@ -46,7 +46,7 @@ instance : SetLike (Compacts α) α where
   coe := Compacts.carrier
   coe_injective s t h := by cases s; cases t; congr
 
-instance : PartialOrder (Compacts α) := .ofSetLike (Compacts α) α
+instance : PartialOrder (Compacts α) := .ofSetLike (Compacts α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Compacts α) : Set α := s
@@ -404,7 +404,7 @@ instance : SetLike (NonemptyCompacts α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
-instance : PartialOrder (NonemptyCompacts α) := .ofSetLike (NonemptyCompacts α) α
+instance : PartialOrder (NonemptyCompacts α) := .ofSetLike (NonemptyCompacts α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : NonemptyCompacts α) : Set α := s
@@ -649,7 +649,7 @@ instance : SetLike (PositiveCompacts α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
-instance : PartialOrder (PositiveCompacts α) := .ofSetLike (PositiveCompacts α) α
+instance : PartialOrder (PositiveCompacts α) := .ofSetLike (PositiveCompacts α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : PositiveCompacts α) : Set α := s
@@ -779,7 +779,7 @@ instance : SetLike (CompactOpens α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
-instance : PartialOrder (CompactOpens α) := .ofSetLike (CompactOpens α) α
+instance : PartialOrder (CompactOpens α) := .ofSetLike (CompactOpens α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : CompactOpens α) : Set α := s

@@ -352,7 +352,7 @@ instance : SetLike (Flag α) α where
     cases t
     congr
 
-instance : PartialOrder (Flag α) := .ofSetLike (Flag α) α
+instance : PartialOrder (Flag α) := .ofSetLike (Flag α)
 
 @[ext]
 theorem ext : (s : Set α) = t → s = t :=
