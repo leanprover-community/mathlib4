@@ -4926,6 +4926,7 @@ public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 public import Mathlib.GroupTheory.SpecificGroups.Dihedral
 public import Mathlib.GroupTheory.SpecificGroups.KleinFour
 public import Mathlib.GroupTheory.SpecificGroups.Quaternion
+public import Mathlib.GroupTheory.SpecificGroups.Suzuki
 public import Mathlib.GroupTheory.SpecificGroups.ZGroup
 public import Mathlib.GroupTheory.Subgroup.Center
 public import Mathlib.GroupTheory.Subgroup.Centralizer
