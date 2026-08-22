@@ -934,7 +934,9 @@ section invertible
 variable (k) in
 /-- tbd -/
 class IsHeckeInvertible (H : Subgroup G) where
+  /-- tbd -/
   degreeInv : HeckeCoset H H → k
+  /-- tbd -/
   degreeInv_mul_cancel : ∀ x, degreeInv x * x.degree = 1
 
 variable (k) in
