@@ -224,6 +224,7 @@ instance {X : C} [IsGalois X] (H : Subgroup (Aut X)) :
     rw [hx, hy])
   exact ⟨SingleObj.quotient.autMap H ⟨σ, hσ⟩, Subtype.ext_iff.2 hσ'⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isGalois_singleObjQuotient_iff_normal
     {X : C} [IsGalois X] (H : Subgroup (Aut X)) :
     IsGalois (SingleObj.quotient H) ↔ H.Normal := by
@@ -231,7 +232,31 @@ lemma isGalois_singleObjQuotient_iff_normal
   have surj : Function.Surjective (F.map (SingleObj.quotient.π H)) :=
     surjective_of_epi _
   refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
-  · sorry
+  · have : (autMapHom (SingleObj.quotient.π H)).ker = H := by
+      ext σ
+      simp only [MonoidHom.mem_ker, autMapHom_apply]
+      let x : F.obj X := Classical.arbitrary _
+      let x' := F.map (SingleObj.quotient.π H) x
+      trans F.map (autMap (SingleObj.quotient.π H) σ).hom x' = x'
+      · refine ⟨fun hσ ↦ ?_, fun hσ ↦ ?_⟩
+        · simp [hσ, Aut.one_def]
+        · ext : 1
+          exact hom_ext_of_isConnected F x' (by simpa [Aut.one_def])
+      · rw [comp_autMap_apply, map_quotientπ_eq_iff]
+        refine ⟨fun h ↦ ?_, fun hσ ↦ ?_⟩
+        · obtain ⟨σ', h₁, h₂⟩ := h
+          have : σ = σ'⁻¹ := by
+            rw [← inv_eq_iff_eq_inv]
+            ext : 1
+            refine hom_ext_of_isConnected F (σ • x) ?_
+            simp [autMulFiber_def, h₂, ← comp_apply,
+              ← F.map_comp, Aut.Aut_inv_def]
+          rw [this]
+          exact Subgroup.inv_mem H h₁
+        · refine ⟨σ⁻¹, Subgroup.inv_mem H hσ, ?_⟩
+          simp [← comp_apply, ← F.map_comp, Aut.Aut_inv_def]
+    rw [← this]
+    infer_instance
   · rw [isGalois_iff_pretransitive F]
     refine ⟨fun y₁ y₂ ↦ ?_⟩
     obtain ⟨x₁, rfl⟩ := surj y₁
