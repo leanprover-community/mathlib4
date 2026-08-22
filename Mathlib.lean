@@ -6824,6 +6824,11 @@ public import Mathlib.RingTheory.KrullDimension.PID
 public import Mathlib.RingTheory.KrullDimension.Polynomial
 public import Mathlib.RingTheory.KrullDimension.Regular
 public import Mathlib.RingTheory.KrullDimension.Zero
+public import Mathlib.RingTheory.LambdaRing.AdamsHom
+public import Mathlib.RingTheory.LambdaRing.AdamsOperations
+public import Mathlib.RingTheory.LambdaRing.KFlagExample
+public import Mathlib.RingTheory.LambdaRing.PrimeExtend
+public import Mathlib.RingTheory.LambdaRing.SymmetricFunctions
 public import Mathlib.RingTheory.Lasker
 public import Mathlib.RingTheory.LaurentSeries
 public import Mathlib.RingTheory.Length
