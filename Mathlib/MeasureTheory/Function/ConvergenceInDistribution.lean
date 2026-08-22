@@ -126,9 +126,10 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
   aemeasurable_limit := hg.measurable.comp_aemeasurable h.aemeasurable_limit
   tendsto := by
     convert! ProbabilityMeasure.tendsto_map_of_tendsto_of_continuous _ _ h.tendsto hg
-    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk, Subtype.mk.injEq]
+    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk, hg.aemeasurable, ↓reduceDIte,
+        Subtype.mk.injEq]
       rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable (h.forall_aemeasurable _)]
-    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk]
+    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk, hg.aemeasurable, ↓reduceDIte]
       congr
       rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable h.aemeasurable_limit]
 
