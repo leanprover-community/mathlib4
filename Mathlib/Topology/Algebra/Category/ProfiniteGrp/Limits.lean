@@ -55,7 +55,7 @@ def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ Finite
 /-- The diagram of finite quotients of `P` viewed in `ProfiniteGrp`. -/
 @[to_additive (attr := simps! obj map)
 /-- The diagram of finite quotients of `P` viewed in `ProfiniteAddGrp`. -/]
-def diagram (P : ProfiniteGrp.{u}) : OpenNormalSubgroup P ⥤ ProfiniteGrp.{u} :=
+abbrev diagram (P : ProfiniteGrp.{u}) : OpenNormalSubgroup P ⥤ ProfiniteGrp.{u} :=
   toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp
 
 /-- The `MonoidHom` from a profinite group `P` to the projective limit of its quotients by

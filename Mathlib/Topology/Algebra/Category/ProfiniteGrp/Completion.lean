@@ -65,7 +65,7 @@ def finiteGrpDiagram : FiniteIndexNormalSubgroup G ⥤ FiniteGrp.{u} where
 
 /-- The finite-quotient diagram viewed in `ProfiniteGrp`. -/
 @[to_additive /-- The finite-quotient diagram viewed in `ProfiniteAddGrp`. -/]
-def diagram : FiniteIndexNormalSubgroup G ⥤ ProfiniteGrp.{u} :=
+abbrev diagram : FiniteIndexNormalSubgroup G ⥤ ProfiniteGrp.{u} :=
   finiteGrpDiagram _ ⋙ forget₂ _ _
 
 /-- The profinite completion of `G` as a projective limit. -/
@@ -139,24 +139,30 @@ lemma preimage_le {f : G ⟶ GrpCat.of P} {H K : OpenNormalSubgroup P}
 /-- The induced map on finite quotients coming from a morphism to `P`. -/
 @[to_additive /-- The induced map on finite quotients coming from a morphism to `P`. -/]
 def quotientMap (f : G ⟶ GrpCat.of P) (H : OpenNormalSubgroup P) :
-    FiniteGrp.of (G ⧸ (preimage f H).toSubgroup) ⟶ FiniteGrp.of (P ⧸ H.toSubgroup) :=
+    (finiteGrpDiagram G).obj (preimage f H) ⟶ P.toFiniteQuotientFunctor.obj H :=
   FiniteGrp.ofHom <| QuotientGroup.map _ _ f.hom <| fun _ h => h
 
 /-- The universal morphism from the profinite completion to `P`. -/
 noncomputable
 def lift (f : G ⟶ GrpCat.of P) : completion G ⟶ P :=
   P.isLimitCone.lift ⟨_, {
-    app H := (limitCone (diagram G)).π.app _ ≫ (ofFiniteGrpHom <| quotientMap f H)
+    app H := (limitCone (diagram G)).π.app _ ≫
+      (forget₂ FiniteGrp ProfiniteGrp).map (quotientMap f H)
     naturality := by
       intro X Y g
-      ext ⟨x, hx⟩
-      -- TODO: `dsimp` should handle this `change`; investigate missing simp lemmas in the
-      -- `ProfiniteGrp` / `CompHausLike` API.
-      change quotientMap f Y (x <| preimage f Y) =
-        P.diagram.map g (quotientMap _ _ <| x <| preimage f X)
-      have := hx <| preimage_le (f := f) g.le |>.hom
-      obtain ⟨t, ht⟩ : ∃ g : G, QuotientGroup.mk g = x (preimage f X) :=
-        QuotientGroup.mk_surjective (x (preimage f X))
+      change (limitCone (diagram G)).π.app (preimage f Y) ≫
+          (forget₂ FiniteGrp ProfiniteGrp).map (quotientMap f Y) =
+        ((limitCone (diagram G)).π.app (preimage f X) ≫
+          (forget₂ FiniteGrp ProfiniteGrp).map (quotientMap f X)) ≫ P.diagram.map g
+      apply ConcreteCategory.hom_ext
+      intro z
+      conv_lhs => rw [ProfiniteGrp.limitCone_π_forget₂_map_apply]
+      conv_rhs =>
+        rw [CategoryTheory.comp_apply]
+        rw [ProfiniteGrp.limitCone_π_forget₂_map_apply]
+      have := z.2 <| preimage_le (f := f) g.le |>.hom
+      obtain ⟨t, ht⟩ : ∃ g : G, QuotientGroup.mk g = z.1 (preimage f X) :=
+        QuotientGroup.mk_surjective (z.1 (preimage f X))
       rw [← this, ← ht]
       have := P.cone.π.naturality g
       apply_fun fun q => q (f t) at this
