@@ -96,7 +96,7 @@ class DivisionSemiring (K : Type*) extends Semiring K, GroupWithZero K, NNRatCas
 
   Do not use directly. Instead use the `•` notation. -/
   protected nnqsmul : ℚ≥0 → K → K
-  /-- However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
+  /-- However `nnqsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
 
   Do not use this lemma directly. Use `NNRat.smul_def` instead. -/
   protected nnqsmul_def (q : ℚ≥0) (a : K) : nnqsmul q a = NNRat.cast q * a := by intros; rfl
@@ -129,7 +129,7 @@ class DivisionRing (K : Type*)
 
   Do not use directly. Instead use the `•` notation. -/
   protected nnqsmul : ℚ≥0 → K → K
-  /-- However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
+  /-- However `nnqsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
 
   Do not use this lemma directly. Use `NNRat.smul_def` instead. -/
   protected nnqsmul_def (q : ℚ≥0) (a : K) : nnqsmul q a = NNRat.cast q * a := by intros; rfl
