@@ -5,14 +5,12 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
-public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.RingTheory.Polynomial.Vieta
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # The spectral norm and the norm extension theorem
@@ -697,72 +695,8 @@ set_option allowUnsafeReducibility true
   `L/K` is an algebraic extension, then any power-multiplicative `K`-algebra norm on `L` coincides
   with the spectral norm. -/
 theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsPowMul f) :
-    f = spectralAlgNorm K L := by
-  apply eq_of_powMul_faithful f hf_pm _ spectralAlgNorm_isPowMul
-  intro x
-  let E : Type v := id K⟮x⟯
-  let : Field E := id <| show Field K⟮x⟯ by infer_instance
-  let : Module K E := id <| show Module K K⟮x⟯ by infer_instance
-  let id1 : K⟮x⟯ →ₗ[K] E := LinearMap.id
-  let id2 : E →ₗ[K] K⟮x⟯ := LinearMap.id
-  set hs_norm : RingNorm E :=
-    { toFun y := spectralNorm K L (id2 y : L)
-      map_zero' := by simp [map_zero, spectralNorm_zero, ZeroMemClass.coe_zero]
-      add_le' a b := by
-        simp only [← spectralAlgNorm_def]
-        exact map_add_le_add _ _ _
-      neg' a := by simp [map_neg, NegMemClass.coe_neg, ← spectralAlgNorm_def, map_neg_eq_map]
-      mul_le' a b := by
-        simp only [← spectralAlgNorm_def]
-        exact map_mul_le_mul _ _ _
-      eq_zero_of_map_eq_zero' a ha := by
-        simpa [id_eq, eq_mpr_eq_cast, cast_eq, LinearMap.coe_mk, ← spectralAlgNorm_def,
-          map_eq_zero_iff_eq_zero, ZeroMemClass.coe_eq_zero] using! ha }
-  let n1 : NormedRing E := RingNorm.toNormedRing hs_norm
-  let N1 : NormedSpace K E :=
-    { one_smul e := by simp [one_smul]
-      mul_smul k1 k2 e := by simp [mul_smul]
-      smul_zero e := by simp
-      smul_add k e_1 e_ := by simp [smul_add]
-      add_smul k1 k2 e := by simp [add_smul]
-      zero_smul e := by simp [zero_smul]
-      norm_smul_le k y := by
-        change (spectralAlgNorm K L (id2 (k • y) : L) : ℝ) ≤
-          ‖k‖ * spectralAlgNorm K L (id2 y : L)
-        rw [map_smul, IntermediateField.coe_smul, map_smul_eq_mul] }
-  set hf_norm : RingNorm K⟮x⟯ :=
-    { toFun y := f ((algebraMap K⟮x⟯ L) y)
-      map_zero' := map_zero _
-      add_le' a b := map_add_le_add _ _ _
-      neg' y := by simp [(algebraMap K⟮x⟯ L).map_neg y]
-      mul_le' a b := map_mul_le_mul _ _ _
-      eq_zero_of_map_eq_zero' a ha := by
-        simpa [map_eq_zero_iff_eq_zero, map_eq_zero] using! ha }
-  let n2 : NormedRing K⟮x⟯ := RingNorm.toNormedRing hf_norm
-  let N2 : NormedSpace K K⟮x⟯ :=
-    { one_smul e := by simp [one_smul]
-      mul_smul k1 k2 e := by simp [mul_smul]
-      smul_zero e := by simp
-      smul_add k e1 e2 := by simp [smul_add]
-      add_smul k1 k2 e := by simp [add_smul]
-      zero_smul e := by simp [zero_smul]
-      norm_smul_le k y := by
-        change (f ((algebraMap K⟮x⟯ L) (k • y)) : ℝ) ≤ ‖k‖ * f (algebraMap K⟮x⟯ L y)
-        have : (algebraMap (↥K⟮x⟯) L) (k • y) = k • algebraMap (↥K⟮x⟯) L y := by
-          simp [IntermediateField.algebraMap_apply]
-        rw [this, map_smul_eq_mul] }
-  have hKx_fin : FiniteDimensional K ↥K⟮x⟯ :=
-    IntermediateField.adjoin.finiteDimensional (Algebra.IsAlgebraic.isAlgebraic x).isIntegral
-  have : FiniteDimensional K E := hKx_fin
-  set Id1 : K⟮x⟯ →L[K] E := ⟨id1, id1.continuous_of_finiteDimensional⟩
-  set Id2 : E →L[K] K⟮x⟯ := ⟨id2, id2.continuous_of_finiteDimensional⟩
-  obtain ⟨C1, hC1_pos, hC1⟩ : ∃ C1 : ℝ, 0 < C1 ∧ ∀ y : K⟮x⟯, ‖id1 y‖ ≤ C1 * ‖y‖ :=
-    Id1.isBoundedLinearMap.bound
-  obtain ⟨C2, hC2_pos, hC2⟩ : ∃ C2 : ℝ, 0 < C2 ∧ ∀ y : E, ‖id2 y‖ ≤ C2 * ‖y‖ :=
-    Id2.isBoundedLinearMap.bound
-  exact ⟨ C2, C1, hC2_pos, hC1_pos,
-    forall_and.mpr ⟨fun y ↦ hC2 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩,
-      fun y ↦ hC1 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩⟩⟩
+    f = spectralAlgNorm K L :=
+  hf_pm.unique spectralAlgNorm_isPowMul
 
 /-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
   `L/K` is an algebraic extension, then any multiplicative ring norm on `L` extending the norm on
@@ -839,9 +773,7 @@ theorem spectralAlgNorm_mul (x y : L) :
 variable (K L) in
 /-- The spectral norm is a multiplicative `K`-algebra norm on `L`. -/
 def spectralMulAlgNorm : MulAlgebraNorm K L :=
-  { spectralAlgNorm K L with
-    map_one' := spectralAlgNorm_one
-    map_mul' := spectralAlgNorm_mul }
+  (spectralAlgNorm K L).toMulAlgebraNorm isPowMul_spectralNorm
 
 theorem spectralMulAlgNorm_def (x : L) : spectralMulAlgNorm K L x = spectralNorm K L x := rfl
 
