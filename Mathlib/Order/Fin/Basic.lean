@@ -406,10 +406,9 @@ def succAboveOrderEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
 theorem coe_succAboveOrderEmb (p : Fin (n + 1)) : succAboveOrderEmb p = succAbove p :=
   rfl
 
-@[simp]
 lemma range_succAboveOrderEmb {n : ℕ} (i : Fin (n + 1)) :
     Set.range (Fin.succAboveOrderEmb i) = {i}ᶜ := by
-  aesop
+  simp
 
 /-! ### Uniqueness of order isomorphisms -/
 
