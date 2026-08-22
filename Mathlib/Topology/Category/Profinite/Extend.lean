@@ -95,8 +95,7 @@ lemma functor_initial (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Initial (func
     exact ⟨⟨i⟩, ⟨StructuredArrow.homMk g h.symm⟩⟩
   · intro ⟨_, X, (f : c.pt ⟶ _)⟩ ⟨i⟩ ⟨_, (s : F.obj i ⟶ X), (w : f = c.π.app i ≫ _)⟩
       ⟨_, (s' : F.obj i ⟶ X), (w' : f = c.π.app i ≫ _)⟩
-    simp only [StructuredArrow.hom_eq_iff,
-      StructuredArrow.comp_right]
+    simp only [StructuredArrow.ext_iff, StructuredArrow.comp_right]
     refine ⟨⟨i⟩, 𝟙 _, ?_⟩
     simp only [CategoryTheory.Functor.map_id]
     rw [w] at w'
@@ -164,8 +163,7 @@ def cocone (S : Profinite) :
     app := fun i ↦ G.map i.hom
     naturality := fun _ _ f ↦ (by
       have := f.w
-      simp only [op_obj, const_obj_obj, op_map, CostructuredArrow.right_eq_id, const_obj_map,
-        Category.comp_id] at this
+      simp only [op_obj, op_map] at this
       simp [← map_comp, this]) }
 
 example : G.mapCocone c.op = (cocone G c.pt).whisker (functorOp c) := rfl
