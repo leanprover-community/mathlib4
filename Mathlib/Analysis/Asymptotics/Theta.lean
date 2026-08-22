@@ -21,7 +21,7 @@ public section
 
 open Filter
 
-open Topology
+open scoped Topology
 
 namespace Asymptotics
 
