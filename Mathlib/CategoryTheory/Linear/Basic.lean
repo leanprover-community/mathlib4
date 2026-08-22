@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Algebra.Group.Invertible.Defs
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # Linear categories
@@ -90,6 +91,15 @@ end End
 section
 
 variable {R : Type w} [Semiring R] [Linear R C]
+
+section oppositeCategory
+
+instance oppositeCategory : Linear.{w, v} R (Cᵒᵖ) where
+  homModule _ _ := Equiv.module _ (opEquiv _ _)
+  smul_comp _ _ _ _ f g := Quiver.Hom.unop_inj (comp_smul _ _ _ g.unop _ f.unop)
+  comp_smul _ _ _ f _ g := Quiver.Hom.unop_inj (smul_comp _ _ _ _ g.unop f.unop)
+
+end oppositeCategory
 
 section InducedCategory
 
