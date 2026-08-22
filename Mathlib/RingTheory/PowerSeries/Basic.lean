@@ -261,6 +261,18 @@ theorem coeff_mul_C (n : ℕ) (φ : R⟦X⟧) (a : R) : coeff n (φ * C a) = coe
 theorem coeff_C_mul (n : ℕ) (φ : R⟦X⟧) (a : R) : coeff n (C a * φ) = a * coeff n φ :=
   MvPowerSeries.coeff_C_mul _ φ a
 
+@[simp] lemma coeff_mul_natCast {φ : R⟦X⟧} {a n : ℕ} :
+    coeff n (φ * (a : R⟦X⟧)) = coeff n φ * a := coeff_mul_C _ _ _
+
+@[simp] lemma coeff_natCast_mul {φ : R⟦X⟧} {a n : ℕ} :
+    coeff n ((a : R⟦X⟧) * φ) = a * coeff n φ := coeff_C_mul _ _ _
+
+@[simp] lemma coeff_mul_ofNat {φ : R⟦X⟧} {a n : ℕ} [Nat.AtLeastTwo a] :
+    coeff n (φ * ofNat(a)) = coeff n φ * ofNat(a) := coeff_mul_C _ _ _
+
+@[simp] lemma coeff_ofNat_mul {φ : R⟦X⟧} {a n : ℕ} [Nat.AtLeastTwo a] :
+    coeff n (ofNat(a) * φ) = ofNat(a) * coeff n φ := coeff_C_mul _ _ _
+
 @[simp]
 theorem coeff_smul {S : Type*} [Semiring S] [Module R S] (n : ℕ) (φ : PowerSeries S) (a : R) :
     coeff n (a • φ) = a • coeff n φ :=
