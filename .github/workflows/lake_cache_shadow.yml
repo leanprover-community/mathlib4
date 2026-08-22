@@ -966,6 +966,10 @@ jobs:
       # Disable barrel/build-cache auto-fetch so every replay in this job is
       # attributable to the shadow bucket.
       LAKE_NO_CACHE: true
+      # Skip mathlib's post-update hook: it runs the legacy `cache get` when
+      # mathlib is updated as a dependency, which would hydrate the build
+      # dirs from the legacy cache and mask what the shadow bucket serves.
+      MATHLIB_NO_CACHE_ON_UPDATE: "1"
       EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
       MATHLIB_SHA: ${{ needs.build_and_stage.outputs.sha }}
     steps:
