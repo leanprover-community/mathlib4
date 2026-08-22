@@ -115,6 +115,20 @@ theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
       (eq_div_iff_mul_eq <| (map_ne_zero_iff _ inj).mpr hy).mp eq⟩
   exists_of_eq eq := ⟨1, by simpa using inj eq⟩ }
 
+theorem of_semifield_isLocalization
+    {R : Type*} [CommSemiring R] [IsCancelMulZero R] (S : Submonoid R)
+    (K : Type*) [hK : Semifield K] [Algebra R K] [h : IsLocalization S K] :
+    IsFractionRing R K := by
+  cases subsingleton_or_nontrivial R
+  · exact False.elim <| @not_nontrivial K (Algebra.subsingleton R K) inferInstance
+  have h₀ : 0 ∉ S := fun h => by
+    have := IsLocalization.map_units K ⟨0, h⟩
+    simp at this
+  have hS : S ≤ nonZeroDivisors R := le_nonZeroDivisors_of_noZeroDivisors h₀
+  have hS' : ∀ s ∈ S, IsRegular s := by aesop (add simp isRegular_iff_ne_zero)
+  refine IsLocalization.of_le S _ hS ?_
+  simp [map_eq_zero_iff _ <| IsLocalization.injectiveₛ K hS']
+
 variable {R K}
 
 section CommSemiring
