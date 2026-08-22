@@ -66,6 +66,13 @@ def IsCompactElement {α : Type*} [PartialOrder α] (k : α) :=
     k ≤ u →
     ∃ x ∈ s, k ≤ x
 
+/-- `⊥` in a `PartialOrder` is compact. -/
+@[simp]
+lemma isCompactElement_bot {α : Type*} [PartialOrder α] [OrderBot α] :
+    IsCompactElement (⊥ : α) := by
+  intro s _ ⟨e, he⟩ _ _ _
+  exact ⟨e, he, bot_le⟩
+
 variable {ι : Sort*} {α : Type*} [CompleteLattice α] {f : ι → α}
 
 namespace CompleteLattice
