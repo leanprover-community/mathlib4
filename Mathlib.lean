@@ -2118,6 +2118,7 @@ public import Mathlib.Analysis.LocallyConvex.WeakSpace
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Matrix.Hermitian
 public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
+public import Mathlib.Analysis.Matrix.Inertia
 public import Mathlib.Analysis.Matrix.LDL
 public import Mathlib.Analysis.Matrix.MeasurableSpace
 public import Mathlib.Analysis.Matrix.Normed
@@ -3719,6 +3720,7 @@ public import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Init
 public import Mathlib.Combinatorics.SimpleGraph.LapMatrix
 public import Mathlib.Combinatorics.SimpleGraph.LineGraph
+public import Mathlib.Combinatorics.SimpleGraph.LineGraphSignature
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Matching
 public import Mathlib.Combinatorics.SimpleGraph.Metric
