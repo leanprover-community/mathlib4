@@ -53,8 +53,6 @@ def χ₀ : E → ℝ := bumpχ (E := E)
 /-- The reference bump rescaled by `R`: equal to `1` on `ball 0 R`, supported in `ball 0 (2R)`. -/
 def bumpR (R : ℝ) (x : E) : ℝ := χ₀ (R⁻¹ • x)
 
-section Bump
-
 @[simp]
 lemma bumpR_eq_one (hR : 0 < R) {x : E} (hx : ‖x‖ ≤ R) : bumpR R x = 1 := by
   refine bumpχ.one_of_mem_closedBall ?_
@@ -82,7 +80,7 @@ lemma exists_bound_iteratedFDeriv_χ₀ (m : ℕ) :
     (bumpχ.contDiff.continuous_iteratedFDeriv (mod_cast le_top)).bounded_above_of_compact_support
       (hasCompactSupport_χ₀.iteratedFDeriv i)
   choose A hA using key
-  refine ⟨max 0 ((range (m + 1)).sup' ⟨0, by simp⟩ A), le_max_left _ _, fun i hi y ↦ ?_⟩
+  refine ⟨max 0 ((range (m + 1)).sup' ⟨0, by simp⟩ A), by grind, fun i _ y ↦ ?_⟩
   exact (hA i y).trans (le_max_of_le_right (le_sup' A (by grind)))
 
 lemma support_bumpR (hR : 0 < R) : support (bumpR R (E := E)) ⊆ closedBall (0 : E) (2 * R) := by
@@ -116,8 +114,6 @@ lemma norm_iteratedFDeriv_bumpR_le (hR : 0 < R) (n : ℕ) (x : E) :
     ContinuousMultilinearMap.norm_compContinuousLinearMap_le, norm_smul, norm_id_le]
   simp [mul_comm, abs_of_pos hR]
 
-end Bump
-
 /-- The smooth truncation of a Schwartz function `f` by the rescaled bump `bumpR R`. -/
 def truncate (R : ℝ) : 𝓢(E, F) := smulLeftCLM F (bumpR R) f
 
@@ -128,13 +124,12 @@ lemma truncate_apply (hR : 0 < R) (x : E) : truncate f R x = bumpR R x • f x :
 lemma hasCompactSupport_truncate (hR : 0 < R) : HasCompactSupport (truncate f R : E → F) := by
   suffices (truncate f R : E → F) = (bumpR R) • f by
     simpa [this] using (hasCompactSupport_bumpR hR).smul_right
-  funext x; exact truncate_apply f hR x
+  funext; simp [hR]
 
 private lemma tendsto_seminorm_truncate_sub (k n) :
-    Tendsto (fun R ↦ SchwartzMap.seminorm ℝ k n (truncate f R - f)) atTop (𝓝 0) := by
+    Tendsto (fun R ↦ (truncate f R - f).seminorm ℝ k n) atTop (𝓝 0) := by
   obtain ⟨A, hA0, hA⟩ := exists_bound_iteratedFDeriv_χ₀ (E := E) n
-  set C := (max 1 A) * ∑ i ∈ range (n + 1),
-    (n.choose i) * SchwartzMap.seminorm ℝ (k + 1) (n - i) f
+  set C := (max 1 A) * ∑ i ∈ range (n + 1), (n.choose i) * SchwartzMap.seminorm ℝ (k + 1) (n - i) f
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' (h := (C * ·⁻¹)) tendsto_const_nhds
   · simpa using tendsto_inv_atTop_zero.const_mul C
   · filter_upwards with R using apply_nonneg _ _
@@ -165,10 +160,10 @@ private lemma tendsto_seminorm_truncate_sub (k n) :
           suffices ‖iteratedFDeriv ℝ i (bumpR R · - 1) x‖ ≤ max 1 A by
             grw [this, ← le_seminorm ℝ _ _ f x, pow_succ, hxR]
             field_simp; rfl
-          rcases Nat.eq_zero_or_pos i with rfl | _
-          · grind [norm_iteratedFDeriv_zero, norm_eq_abs, bumpR_nonneg R x, bumpR_le_one]
+          rcases i.eq_zero_or_pos with rfl | _
+          · grind [norm_iteratedFDeriv_zero, norm_eq_abs, bumpR_nonneg, bumpR_le_one]
           · suffices iteratedFDeriv ℝ i (bumpR R · - 1) x = iteratedFDeriv ℝ i (bumpR R) x by
-              grw [this, norm_iteratedFDeriv_bumpR_le hR0 i x, pow_le_one₀ hRinv0 hRinv1,
+              grw [this, norm_iteratedFDeriv_bumpR_le hR0, pow_le_one₀ hRinv0 hRinv1,
                 hA i (by grind) _]
               grind
             rw [(by rfl : (bumpR R · - 1) = bumpR R - fun _ ↦ 1), iteratedFDeriv_sub_apply
