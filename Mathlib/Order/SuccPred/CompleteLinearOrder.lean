@@ -20,6 +20,15 @@ open Order Set
 
 variable {ι : Sort*} {α : Type*}
 
+section ConditionallyCompleteLattice
+variable [ConditionallyCompleteLattice α] {x : α}
+
+@[to_dual]
+theorem Order.IsSuccLimit.sSup_Iio (h : IsSuccLimit x) : sSup (Iio x) = x :=
+  h.isLUB_Iio.csSup_eq <| Set.Iio_nonempty.mpr h.not_isMin
+
+end ConditionallyCompleteLattice
+
 section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [Nonempty ι] {f : ι → α} {s : Set α} {x : α}
 
@@ -117,9 +126,6 @@ theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x 
 
 theorem Order.IsSuccPrelimit.iSup_Iio (h : IsSuccPrelimit x) : ⨆ a : Iio x, a.1 = x := by
   rw [← sSup_eq_iSup', h.sSup_Iio]
-
-theorem Order.IsSuccLimit.sSup_Iio (h : IsSuccLimit x) : sSup (Iio x) = x :=
-  h.isSuccPrelimit.sSup_Iio
 
 theorem Order.IsSuccLimit.iSup_Iio (h : IsSuccLimit x) : ⨆ a : Iio x, a.1 = x :=
   h.isSuccPrelimit.iSup_Iio
