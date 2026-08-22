@@ -121,11 +121,12 @@ TODO: clean this once https://github.com/leanprover/lean4/issues/2115 is fixed
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 
 /-- An associative but not-necessarily unital semiring. -/
-class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
+class NonUnitalSemiring (α : Type u) extends AddCommMonoid α, SemigroupWithZero α,
+    NonUnitalNonAssocSemiring α
 
 /-- A unital but not-necessarily-associative semiring. -/
-class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
-    AddCommMonoidWithOne α
+class NonAssocSemiring (α : Type u) extends AddCommMonoid α, MulZeroOneClass α,
+    AddCommMonoidWithOne α, NonUnitalNonAssocSemiring α
 
 /-- A not-necessarily-unital, not-necessarily-associative ring. -/
 class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
@@ -148,10 +149,16 @@ class Semiring (α : Type u) extends AddCommMonoid α, MonoidWithZero α, NonUni
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 
 -- Add some short-cut instances to avoid going through the less used ring type classes.
+instance [NonUnitalSemiring α] : Distrib α := inferInstance
+instance [NonAssocSemiring α] : Distrib α := inferInstance
 instance [Semiring α] : Distrib α := inferInstance
+instance [NonUnitalSemiring α] : MulZeroClass α := inferInstance
+instance [NonAssocSemiring α] : MulZeroClass α := inferInstance
 instance [Semiring α] : MulZeroClass α := inferInstance
+instance [Semiring α] : SemigroupWithZero α := inferInstance
 instance [Semiring α] : MulZeroOneClass α := inferInstance
-attribute [instance] Semiring.toAddCommMonoid Semiring.toMonoid
+instance [Semiring α] : AddCommMonoidWithOne α := inferInstance
+attribute [instance] NonAssocSemiring.toAddCommMonoid Semiring.toAddCommMonoid Semiring.toMonoid
 
 /-!
 ### Semirings
