@@ -21,6 +21,9 @@ In this file we define the following power series:
   When `d` is `0`, `PowerSeries.invOneSubPow S d` will just be `1`. When `d` is positive,
   `PowerSeries.invOneSubPow S d` will be `∑ n, Nat.choose (d - 1 + n) (d - 1)`.
 
+* `PowerSeries.unitOneSubCMulX`: given `w : R`, this is `1 - w * X` as a unit of `R⟦X⟧`; its
+  inverse is the geometric series `∑ n, wⁿ Xⁿ`.
+
 * `PowerSeries.sin`, `PowerSeries.cos`, `PowerSeries.exp` : power series for sin, cosine, and
   exponential functions.
 -/
@@ -63,6 +66,39 @@ theorem map_invUnitsSub (f : R →+* S) (u : Rˣ) :
   rfl
 
 end Ring
+
+section Geometric
+
+variable {R : Type*} [CommRing R]
+
+/-- The geometric series `∑ n, wⁿ Xⁿ` inverts `1 - w * X`.
+
+This is the one-parameter form of `PowerSeries.mk_one_mul_one_sub_eq_one`, which is the case
+`w = 1`. -/
+theorem one_sub_C_mul_X_mul_mk_pow_eq_one (w : R) : (1 - C w * X) * mk (fun n => w ^ n) = 1 := by
+  rw [sub_mul, one_mul, mul_assoc]
+  ext n
+  rw [map_sub, coeff_C_mul, coeff_mk]
+  cases n with
+  | zero => simp [coeff_zero_X_mul]
+  | succ k =>
+    rw [coeff_succ_X_mul, coeff_mk, coeff_one, if_neg (Nat.succ_ne_zero k), pow_succ]
+    ring
+
+/-- `1 - w * X` as a unit of `R⟦X⟧`, with inverse the geometric series `∑ n, wⁿ Xⁿ`. -/
+noncomputable def unitOneSubCMulX (w : R) : R⟦X⟧ˣ :=
+  ⟨1 - C w * X, mk (fun n => w ^ n), one_sub_C_mul_X_mul_mk_pow_eq_one w,
+    by rw [mul_comm]; exact one_sub_C_mul_X_mul_mk_pow_eq_one w⟩
+
+@[simp] theorem isUnit_one_sub_C_mul_X (w : R) : IsUnit (1 - C w * X) := ⟨unitOneSubCMulX w, rfl⟩
+
+/-- `(1 - w * X)⁻¹ = ∑ n, wⁿ Xⁿ`. -/
+theorem inverse_one_sub_C_mul_X (w : R) :
+    Ring.inverse (1 - C w * X) = mk (fun n => w ^ n) := by
+  rw [show (1 - C w * X) = (unitOneSubCMulX w : R⟦X⟧) from rfl, Ring.inverse_unit]
+  rfl
+
+end Geometric
 
 section invOneSubPow
 
