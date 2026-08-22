@@ -266,7 +266,7 @@ theorem IsRat.to_raw_eq {n : ℤ} {d : ℕ} [DivisionRing α] :
   | _, ⟨inv, rfl⟩ => by simp [div_eq_mul_inv]
 
 theorem IsRat.neg_to_eq {α} [DivisionRing α] {n d} :
-    {a n' d' : α} → IsRat a (.negOfNat n) d → n = n' → d = d' → a = -(n' / d')
+    {a n' d' : α} → IsRat a (.negOfNat n) d → n = n' → d = d' → a = -n' / d'
   | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
 
 theorem IsNNRat.to_eq {α} [DivisionSemiring α] {n d} :
@@ -547,7 +547,7 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
   | .isNegNNRat _ _ n d p => do
     let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) n
     let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
-    return { expr := q(-($n' / $d')), proof? := q(IsRat.neg_to_eq $p $pn' $pd') }
+    return { expr := q(-$n' / $d'), proof? := q(IsRat.neg_to_eq $p $pn' $pd') }
 
 /-- Given `Mathlib.Meta.NormNum.Result.isBool p b`, this is the type of `p`.
   Note that `BoolResult p b` is definitionally equal to `Expr`, and if you write `match b with ...`,
