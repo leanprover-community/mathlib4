@@ -108,44 +108,53 @@ lemma spectralRadius_pow_le' [Nontrivial A] (a : A) (n : ℕ) :
 
 end Algebra
 
-variable [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
 
 theorem isOpen_resolventSet (a : A) : IsOpen (ρ a) :=
   Units.isOpen.preimage (by fun_prop)
+
+open WithLp Unitization in
+theorem mem_resolventSet_of_norm_lt {a : A} {k : 𝕜} (h : ‖a‖ < ‖k‖) : k ∈ ρ a := by
+  have hk : k ≠ 0 := by grind [norm_nonneg, norm_ne_zero_iff]
+  suffices ∀ (a : WithLp 1 (Unitization 𝕜 A)), ‖a‖ < ‖k‖ → k ∈ ρ a by
+    specialize this (toLp 1 a) (by simpa [unitization_norm_inr])
+    rw [mem_resolventSet_iff, ← spectrum.notMem_iff] at this ⊢
+    contrapose this
+    replace this := spectrum_subset_quasispectrum 𝕜 a this
+    rwa [← unitizationAlgEquiv_symm_apply 𝕜, AlgEquiv.spectrum_eq, ← quasispectrum_eq_spectrum_inr]
+  intros a h
+  rw [resolventSet, Set.mem_ofPred_eq, Algebra.algebraMap_eq_smul_one]
+  let ku := Units.map (algebraMap 𝕜 (WithLp 1 (Unitization 𝕜 A))).toMonoidHom (Units.mk0 k hk)
+  have hku : ‖-a‖ < ‖(↑ku⁻¹ : WithLp 1 (Unitization 𝕜 A))‖⁻¹ := by simpa [ku] using h
+  simpa [ku, sub_eq_add_neg, Algebra.algebraMap_eq_smul_one] using (ku.add (-a) hku).isUnit
 
 @[simp]
 protected theorem isClosed (a : A) : IsClosed (σ a) :=
   (isOpen_resolventSet a).isClosed_compl
 
+@[deprecated mem_resolventSet_of_norm_lt (since := "2026-08-14")]
 theorem mem_resolventSet_of_norm_lt_mul {a : A} {k : 𝕜} (h : ‖a‖ * ‖(1 : A)‖ < ‖k‖) : k ∈ ρ a := by
-  rw [resolventSet, Set.mem_ofPred_eq, Algebra.algebraMap_eq_smul_one]
   nontriviality A
-  have hk : k ≠ 0 :=
-    ne_zero_of_norm_ne_zero ((mul_nonneg (norm_nonneg _) (norm_nonneg _)).trans_lt h).ne'
-  let ku := Units.map ↑ₐ.toMonoidHom (Units.mk0 k hk)
-  rw [← inv_inv ‖(1 : A)‖,
-    mul_inv_lt_iff₀' (inv_pos.2 <| norm_pos_iff.2 (one_ne_zero : (1 : A) ≠ 0))] at h
-  have hku : ‖-a‖ < ‖(↑ku⁻¹ : A)‖⁻¹ := by simpa [ku, norm_algebraMap] using h
-  simpa [ku, sub_eq_add_neg, Algebra.algebraMap_eq_smul_one] using (ku.add (-a) hku).isUnit
+  grw [← one_le_norm_one, mul_one] at h
+  exact mem_resolventSet_of_norm_lt h
 
-theorem mem_resolventSet_of_norm_lt [NormOneClass A] {a : A} {k : 𝕜} (h : ‖a‖ < ‖k‖) : k ∈ ρ a :=
-  mem_resolventSet_of_norm_lt_mul (by rwa [norm_one, mul_one])
+theorem norm_le_norm_of_mem {a : A} {k : 𝕜} (hk : k ∈ σ a) : ‖k‖ ≤ ‖a‖ :=
+  le_of_not_gt <| mt mem_resolventSet_of_norm_lt hk
 
+@[deprecated norm_le_norm_of_mem (since := "2026-08-14")]
 theorem norm_le_norm_mul_of_mem {a : A} {k : 𝕜} (hk : k ∈ σ a) : ‖k‖ ≤ ‖a‖ * ‖(1 : A)‖ :=
   le_of_not_gt <| mt mem_resolventSet_of_norm_lt_mul hk
 
-theorem norm_le_norm_of_mem [NormOneClass A] {a : A} {k : 𝕜} (hk : k ∈ σ a) : ‖k‖ ≤ ‖a‖ :=
-  le_of_not_gt <| mt mem_resolventSet_of_norm_lt hk
+theorem subset_closedBall_norm (a : A) : σ a ⊆ Metric.closedBall (0 : 𝕜) ‖a‖ :=
+  fun k hk => by simp [norm_le_norm_of_mem hk]
 
+@[deprecated subset_closedBall_norm (since := "2026-08-14")]
 theorem subset_closedBall_norm_mul (a : A) : σ a ⊆ Metric.closedBall (0 : 𝕜) (‖a‖ * ‖(1 : A)‖) :=
   fun k hk => by simp [norm_le_norm_mul_of_mem hk]
 
-theorem subset_closedBall_norm [NormOneClass A] (a : A) : σ a ⊆ Metric.closedBall (0 : 𝕜) ‖a‖ :=
-  fun k hk => by simp [norm_le_norm_of_mem hk]
-
 @[simp]
 theorem isBounded (a : A) : Bornology.IsBounded (σ a) :=
-  Metric.isBounded_closedBall.subset (subset_closedBall_norm_mul a)
+  Metric.isBounded_closedBall.subset (subset_closedBall_norm a)
 
 @[simp]
 protected theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (σ a) :=
@@ -210,7 +219,7 @@ section NNReal
 
 open NNReal
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] [NormOneClass A]
+variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [HasSummableGeomSeries A]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem le_nnnorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
@@ -224,7 +233,7 @@ theorem coe_le_norm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a)
 
 end NNReal
 
-theorem spectralRadius_le_nnnorm [NormOneClass A] (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ := by
+theorem spectralRadius_le_nnnorm (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ := by
   refine iSup₂_le fun k hk => ?_
   exact mod_cast norm_le_norm_of_mem hk
 
@@ -243,42 +252,34 @@ open ENNReal Polynomial
 variable (𝕜)
 
 theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
-    spectralRadius 𝕜 a ≤ (‖a ^ (n + 1)‖₊ : ℝ≥0∞) ^ (1 / (n + 1) : ℝ) *
-      (‖(1 : A)‖₊ : ℝ≥0∞) ^ (1 / (n + 1) : ℝ) := by
+    spectralRadius 𝕜 a ≤ (‖a ^ (n + 1)‖₊ : ℝ≥0∞) ^ (1 / (n + 1) : ℝ) := by
   refine iSup₂_le fun k hk => ?_
   -- apply easy direction of the spectral mapping theorem for polynomials
   have pow_mem : k ^ (n + 1) ∈ σ (a ^ (n + 1)) := by
     simpa only [one_mul, Algebra.algebraMap_eq_smul_one, one_smul, aeval_monomial, one_mul,
       eval_monomial] using subset_polynomial_aeval a (@monomial 𝕜 _ (n + 1) (1 : 𝕜)) ⟨k, hk, rfl⟩
   -- power of the norm is bounded by norm of the power
-  have nnnorm_pow_le : (↑(‖k‖₊ ^ (n + 1)) : ℝ≥0∞) ≤ ‖a ^ (n + 1)‖₊ * ‖(1 : A)‖₊ := by
+  have nnnorm_pow_le : (↑(‖k‖₊ ^ (n + 1)) : ℝ≥0∞) ≤ ‖a ^ (n + 1)‖₊ := by
     simpa only [Real.toNNReal_mul (norm_nonneg _), norm_toNNReal, nnnorm_pow k (n + 1),
-      ENNReal.coe_mul] using coe_mono (Real.toNNReal_mono (norm_le_norm_mul_of_mem pow_mem))
+      ENNReal.coe_mul] using coe_mono (Real.toNNReal_mono (norm_le_norm_of_mem pow_mem))
   -- take (n + 1)ᵗʰ roots and clean up the left-hand side
   have hn : 0 < ((n + 1 : ℕ) : ℝ) := mod_cast Nat.succ_pos'
   convert monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le
-  all_goals dsimp
-  · rw [one_div, pow_rpow_inv_natCast]
+  · simp only
+    rw [coe_pow, one_div, pow_rpow_inv_natCast]
     positivity
-  rw [Nat.cast_succ, ENNReal.coe_mul_rpow]
+  · norm_cast
+
+theorem spectralRadius_le_iInf_pow_nnnorm_pow_one_div (a : A) :
+    spectralRadius 𝕜 a ≤ ⨅ n : ℕ, (‖a ^ (n + 1)‖₊ : ℝ≥0∞) ^ (1 / (n + 1) : ℝ) :=
+  le_iInf <| spectralRadius_le_pow_nnnorm_pow_one_div 𝕜 a
 
 theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
     spectralRadius 𝕜 a ≤ atTop.liminf fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
-  refine ENNReal.le_of_forall_lt_one_mul_le fun ε hε => ?_
-  by_cases h : ε = 0
-  · simp [h]
-  simp only [ENNReal.mul_le_iff_le_inv h (hε.trans_le le_top).ne, mul_comm ε⁻¹,
-    liminf_eq_iSup_iInf_of_nat', ENNReal.iSup_mul]
-  conv_rhs => arg 1; intro i; rw [ENNReal.iInf_mul (by simp [h])]
-  rw [← ENNReal.inv_lt_inv, inv_one] at hε
-  obtain ⟨N, hN⟩ := eventually_atTop.mp
-    (ENNReal.eventually_pow_one_div_le (ENNReal.coe_ne_top : ↑‖(1 : A)‖₊ ≠ ∞) hε)
-  refine le_trans ?_ (le_iSup _ (N + 1))
-  refine le_iInf fun n => ?_
-  simp only [← add_assoc]
-  refine (spectralRadius_le_pow_nnnorm_pow_one_div 𝕜 a (n + N)).trans ?_
-  norm_cast
-  grw [hN (n + N + 1) (by lia)]
+  apply Filter.le_liminf_of_le (by isBoundedDefault)
+  filter_upwards [Ici_mem_atTop 1] with n (hn : 1 ≤ n)
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' hn
+  exact mod_cast spectralRadius_le_pow_nnnorm_pow_one_div 𝕜 a n
 
 end SpectrumCompact
 
@@ -288,14 +289,14 @@ open Filter Asymptotics Bornology
 
 open scoped Topology
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
 
 local notation "ρ" => resolventSet 𝕜
 local notation "↑ₐ" => algebraMap 𝕜 A
 
 theorem eventually_isUnit_resolvent (a : A) : ∀ᶠ z in cobounded 𝕜, IsUnit (resolvent a z) := by
   rw [atTop_basis_Ioi.cobounded_of_norm.eventually_iff]
-  exact ⟨‖a‖ * ‖(1 : A)‖, trivial, fun _ ↦ isUnit_resolvent.mp ∘ mem_resolventSet_of_norm_lt_mul⟩
+  exact ⟨‖a‖, trivial, fun _ ↦ isUnit_resolvent.mp ∘ mem_resolventSet_of_norm_lt⟩
 
 theorem resolvent_isBigO_inv (a : A) : resolvent a =O[cobounded 𝕜] Inv.inv :=
   have h : (fun z ↦ resolvent (z⁻¹ • a) (1 : 𝕜)) =O[cobounded 𝕜] (fun _ ↦ (1 : ℝ)) := by
@@ -409,16 +410,15 @@ namespace AlgHom
 
 section NormedField
 
-variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
 instance (priority := 100) [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] :
     ContinuousLinearMapClass F 𝕜 A 𝕜 :=
   { AlgHomClass.linearMapClass with
-    map_continuous := fun φ =>
-      AddMonoidHomClass.continuous_of_bound φ ‖(1 : A)‖ fun a =>
-        mul_comm ‖a‖ ‖(1 : A)‖ ▸ spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum φ _) }
+    map_continuous φ := AddMonoidHomClass.continuous_of_bound φ 1 fun _ => by
+      simpa using spectrum.norm_le_norm_of_mem (apply_mem_spectrum φ _) }
 
 /-- An algebra homomorphism into the base field, as a continuous linear map (since it is
 automatically bounded). -/
@@ -429,19 +429,20 @@ def toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : StrongDual 𝕜 A :=
 theorem coe_toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : ⇑φ.toContinuousLinearMap = φ :=
   rfl
 
+theorem norm_apply_le_self [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜]
+    (f : F) (a : A) : ‖f a‖ ≤ ‖a‖ :=
+  spectrum.norm_le_norm_of_mem (apply_mem_spectrum f _)
+
+@[deprecated norm_apply_le_self (since := "2026-08-14")]
 theorem norm_apply_le_self_mul_norm_one [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] (f : F) (a : A) :
     ‖f a‖ ≤ ‖a‖ * ‖(1 : A)‖ :=
   spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum f _)
-
-theorem norm_apply_le_self [NormOneClass A] [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜]
-    (f : F) (a : A) : ‖f a‖ ≤ ‖a‖ :=
-  spectrum.norm_le_norm_of_mem (apply_mem_spectrum f _)
 
 end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
@@ -460,7 +461,7 @@ namespace WeakDual
 
 namespace CharacterSpace
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [NormedRing A] [HasSummableGeomSeries A]
 variable [NormedAlgebra 𝕜 A]
 
 /-- The equivalence between characters and algebra homomorphisms into the base field. -/
@@ -486,7 +487,8 @@ section BoundarySpectrum
 
 local notation "σ" => spectrum
 
-variable {𝕜 A SA : Type*} [NormedRing A] [CompleteSpace A] [SetLike SA A] [SubringClass SA A]
+variable {𝕜 A SA : Type*}
+  [NormedRing A] [HasSummableGeomSeries A] [SetLike SA A] [SubringClass SA A]
 
 open Filter Set
 
@@ -525,7 +527,6 @@ lemma _root_.Subalgebra.isUnit_of_isUnit_val_of_eventually {l : Filter S} {a : S
 `x : S`, the boundary of the spectrum of `x` relative to `S` is a subset of the spectrum of
 `↑x : A` relative to `A`. -/
 lemma _root_.Subalgebra.frontier_spectrum : frontier (σ 𝕜 x) ⊆ σ 𝕜 (x : A) := by
-  have : CompleteSpace S := hS.completeSpace_coe
   intro μ hμ
   by_contra h
   rw [spectrum.notMem_iff] at h
@@ -565,7 +566,6 @@ lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
   suffices IsClopen ((σ 𝕜 (x : A))ᶜ ↓∩ (σ 𝕜 x \ σ 𝕜 (x : A))) by
     rw [← this.biUnion_connectedComponentIn (sdiff_subset_compl _ _),
       union_sdiff_cancel (spectrum.subset_subalgebra x)]
-  have : CompleteSpace S := hS.completeSpace_coe
   have h_open : IsOpen (σ 𝕜 x \ σ 𝕜 (x : A)) := by
     rw [← (spectrum.isClosed (𝕜 := 𝕜) x).closure_eq, closure_eq_interior_union_frontier,
       union_sdiff_distrib, sdiff_eq_empty.mpr (frontier_spectrum S x),
@@ -585,8 +585,7 @@ lemma Subalgebra.spectrum_isBounded_connectedComponentIn {z : 𝕜} (hz : z ∈ 
     Bornology.IsBounded (connectedComponentIn (σ 𝕜 (x : A))ᶜ z) := by
   by_cases hz' : z ∈ σ 𝕜 (x : A)
   · simp [connectedComponentIn_eq_empty (show z ∉ (σ 𝕜 (x : A))ᶜ from not_not.mpr hz')]
-  · have : CompleteSpace S := hS.completeSpace_coe
-    suffices connectedComponentIn (σ 𝕜 (x : A))ᶜ z ⊆ σ 𝕜 x from spectrum.isBounded x |>.subset this
+  · suffices connectedComponentIn (σ 𝕜 (x : A))ᶜ z ⊆ σ 𝕜 x from spectrum.isBounded x |>.subset this
     rw [spectrum_sUnion_connectedComponentIn S]
     exact subset_biUnion_of_mem (mem_sdiff_of_mem hz hz') |>.trans subset_union_right
 
@@ -708,15 +707,13 @@ lemma upperHemicontinuous_spectrum [NormedField 𝕜] [ProperSpace 𝕜]
   Suppose that `a : ℕ → A` converges to `a₀`, `x : ℕ → 𝕜` converges to `x₀`, and for all `n`,
   `x n ∈ spectrum 𝕜 (a n)`. -/
   rw [upperHemicontinuous_iff]
-  refine fun a₀ ↦ .of_sequences
-    (isCompact_closedBall 0 ((‖a₀‖ + 1) * ‖(1 : A)‖)).isSeqCompact ?_ <|
+  refine fun a₀ ↦ .of_sequences (isCompact_closedBall 0 (‖a₀‖ + 1)).isSeqCompact ?_ <|
     fun a ha x hx_mem x₀ hx ↦ ?_
   /- We must show that `spectrum 𝕜 (a n)` is eventually contained in some fixed compact set
-  (we've chosen `closedBall 0 ((‖a₀‖ + 1) * ‖(1 : A)‖)`). This follows since the spectrum of any
+  (we've chosen `closedBall 0 (‖a₀‖ + 1)`). This follows since the spectrum of any
   `b` is bounded `‖b‖ * ‖1‖` and `a` converges to `a₀`.  -/
   · filter_upwards [Metric.closedBall_mem_nhds a₀ zero_lt_one] with a ha
-    apply spectrum.subset_closedBall_norm_mul a |>.trans <| Metric.closedBall_subset_closedBall ?_
-    gcongr
+    apply spectrum.subset_closedBall_norm a |>.trans <| Metric.closedBall_subset_closedBall ?_
     apply norm_le_norm_add_norm_sub' a a₀ |>.trans
     gcongr
     simpa [dist_eq_norm] using ha
