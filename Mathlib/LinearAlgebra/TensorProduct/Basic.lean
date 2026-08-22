@@ -82,11 +82,10 @@ theorem liftAddHom_tmul (f : M →+ N →+ P)
   rfl
 
 /-- The image of an element `p` of `FreeAddMonoid (M × N)` in the `TensorProduct` is
-equal to the sum of `x ⊗ₜ y` over all the entries `(x, y)` of `p`.
--/
+equal to the sum of `x ⊗ₜ y` over all the entries `(x, y)` of `p`. -/
 lemma _root_.FreeAddMonoid.toTensorProduct (p : FreeAddMonoid (M × N)) :
     AddCon.toQuotient (c := addConGen (TensorProduct.Eqv R M N)) p =
-    (p.toList.map (fun x ↦ x.1 ⊗ₜ[R] x.2)).sum := by
+      (p.toList.map (fun x ↦ x.1 ⊗ₜ[R] x.2)).sum := by
   induction p using FreeAddMonoid.inductionOn' with
   | zero => rfl
   | of_add b a ih =>
@@ -97,14 +96,13 @@ lemma _root_.FreeAddMonoid.toTensorProduct (p : FreeAddMonoid (M × N)) :
 def lifts (x : M ⊗[R] N) : Set (FreeAddMonoid (M × N)) :=
   {p | AddCon.toQuotient (c := addConGen (TensorProduct.Eqv R M N)) p = x}
 
-lemma mem_lifts_iff (x : M ⊗[R] N) (p : FreeAddMonoid (M × N)) :
+lemma mem_lifts_iff {x : M ⊗[R] N} {p : FreeAddMonoid (M × N)} :
     p ∈ lifts x ↔ List.sum (List.map (fun x ↦ x.1 ⊗ₜ[R] x.2) p.toList) = x := by
   simp only [lifts, Set.mem_ofPred_eq, FreeAddMonoid.toTensorProduct]
   rfl
 
-/-- Every element of `M ⊗[R] N` has a lift in `FreeAddMonoid (M × N)`.
--/
-lemma nonempty_lifts (x : M ⊗[R] N) : Set.Nonempty (lifts x) := by
+/-- Every element of `M ⊗[R] N` has a lift in `FreeAddMonoid (M × N)`. -/
+lemma nonempty_lifts (x : M ⊗[R] N) : x.lifts.Nonempty := by
   existsi Quot.out x
   exact Function.surjInv_eq Quot.exists_rep x
 
@@ -121,8 +119,7 @@ respectively, then `p + q` lifts `x + y`.
 -/
 lemma lifts_add {x y : M ⊗[R] N} {p q : FreeAddMonoid (M × N)}
     (hp : p ∈ lifts x) (hq : q ∈ lifts y) : p + q ∈ lifts (x + y) := by
-  simp only [lifts, Set.mem_ofPred_eq, AddCon.coe_add]
-  rw [hp, hq]
+  simp_all [lifts]
 
 /-- If an element `p` of `FreeAddMonoid (M × N)` lifts an element `x` of `M ⊗[R] N`,
 and if `a` is an element of `R`, then the list obtained by multiplying the first entry of each
@@ -224,14 +221,12 @@ attribute [local ext high] ext
 
 @[simp]
 theorem lift_add (f g : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) : lift (f + g) = lift f + lift g := by
-  ext x y
-  exact LinearMap.congr_fun₂ rfl x y
+  ext; rfl
 
 @[simp]
 lemma lift_smul (c : R₂) (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) :
-    TensorProduct.lift (c • f) = c • TensorProduct.lift f := by
-  ext x y
-  exact LinearMap.congr_fun₂ rfl x y
+    lift (c • f) = c • lift f := by
+  ext; rfl
 
 variable (M N P₂ σ₁₂) in
 /-- Linearly constructing a semilinear map `M ⊗ N → P` given a bilinear map `M → N → P`
