@@ -877,6 +877,13 @@ protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] (hM : M �
   rw [Ne, to_map_eq_zero_iff S hM]
   exact nonZeroDivisors.ne_zero hx
 
+variable (M) in
+/-- The submonoid defining a nontrivial localization in a cancellative semiring consists of
+nonZeroDivisors. -/
+theorem le_nonZeroDivisors [IsCancelMulZero R] [Nontrivial S] : M ≤ nonZeroDivisors R :=
+  fun m hm ↦ (IsRegular.of_ne_zero fun h ↦
+  (IsLocalization.map_units S ⟨m, hm⟩).ne_zero (by simp [h])).mem_nonZeroDivisors
+
 variable {S}
 
 theorem sec_snd_ne_zero [Nontrivial R] (hM : M ≤ nonZeroDivisors R) (x : S) :
