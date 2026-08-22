@@ -58,6 +58,11 @@ public lemma index_of_injective [Nontrivial R] (hf : Injective f) :
     f.index = - finrank R (N ⧸ f.range) := by
   simpa [index_eq_finrank_sub] using ker_eq_bot.2 hf ▸ finrank_bot _ _
 
+public lemma _root_.Submodule.index_subtype [Nontrivial R] {S : Submodule R M} :
+    S.subtype.index = - finrank R (M ⧸ S) := by
+  rw [index_of_injective S.injective_subtype,
+    Submodule.quotEquivOfEq _ _ S.range_subtype |>.finrank_eq]
+
 variable [StrongRankCondition R]
 
 public lemma index_of_surjective (hf : Surjective f) :
@@ -120,6 +125,35 @@ open Submodule in
   have : FiniteDimensional k (g ∘ₗ f).ker := by rw [ker_comp]; infer_instance
   have : FiniteDimensional k (P ⧸ (g ∘ₗ f).range) := by rw [range_comp]; infer_instance
   grind [index, sum_neg_one_pow_finrank_eq_zero_of_exact_six f₀ f₁ f₂ f₃ f₄ h₀ h₁ h₂ h₃ h₄ h₅]
+
+public lemma index_domRestrict {S : Submodule k M} [FiniteDimensional k (M ⧸ S)]
+    [FiniteDimensional k f.ker] [FiniteDimensional k (N ⧸ f.range)] :
+    (f.domRestrict S).index = f.index - finrank k (M ⧸ S) := by
+  have : FiniteDimensional k (M ⧸ S.subtype.range) :=
+    Submodule.quotEquivOfEq _ _ S.range_subtype |>.symm.finiteDimensional
+  have : FiniteDimensional k S.subtype.ker :=
+    LinearEquiv.ofEq _ _ S.ker_subtype |>.symm.finiteDimensional
+  rw [domRestrict, index_comp, S.index_subtype, sub_eq_add_neg]
+
+public lemma index_codRestrict {T : Submodule k N} [FiniteDimensional k (N ⧸ T)]
+    [FiniteDimensional k f.ker] [FiniteDimensional k (N ⧸ f.range)]
+    (hf : ∀ x, f x ∈ T) :
+    (f.codRestrict T hf).index = f.index + finrank k (N ⧸ T) := by
+  suffices f.index = (f.codRestrict T hf).index - finrank k (N ⧸ T) by grind
+  have : FiniteDimensional k (N ⧸ T.subtype.range) :=
+    Submodule.quotEquivOfEq _ _ T.range_subtype |>.symm.finiteDimensional
+  have : FiniteDimensional k T.subtype.ker :=
+    LinearEquiv.ofEq _ _ T.ker_subtype |>.symm.finiteDimensional
+  have : FiniteDimensional k (T ⧸ (f.codRestrict T hf).range) :=
+    .of_injective (Submodule.mapQ _ f.range T.subtype (by rintro _ ⟨x, rfl⟩; simp)) <| by
+      rw [← LinearMap.ker_eq_bot, Submodule.mapQ]
+      refine Submodule.ker_liftQ_eq_bot _ _ _ ?_
+      rw [ker_comp]
+      rintro _ ⟨x, rfl⟩; simp)
+  have : FiniteDimensional k (f.codRestrict T hf).ker :=
+    LinearEquiv.ofEq _ _ (f.ker_codRestrict T hf) |>.symm.finiteDimensional
+  conv_lhs => rw [← f.subtype_comp_codRestrict T hf, index_comp]
+  rw [domRestrict, index_comp, S.index_subtype, sub_eq_add_neg]
 
 end DivisionRing
 
