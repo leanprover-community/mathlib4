@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
@@ -50,6 +51,7 @@ coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 
 case, `spectralRadius a = 0`. It is also possible that `spectrum 𝕜 a` be unbounded (though
 not for Banach algebras, see `spectrum.isBounded`, below).  In this case,
 `spectralRadius a = ∞`. -/
+@[wikidata Q249748]
 noncomputable def spectralRadius (𝕜 : Type*) {A : Type*} [NormedField 𝕜] [Ring A] [Algebra 𝕜 A]
     (a : A) : ℝ≥0∞ :=
   ⨆ k ∈ spectrum 𝕜 a, ‖k‖₊
@@ -282,7 +284,9 @@ end SpectrumCompact
 
 section resolvent
 
-open Filter Asymptotics Bornology Topology
+open Filter Asymptotics Bornology
+
+open scoped Topology
 
 variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
@@ -484,7 +488,9 @@ local notation "σ" => spectrum
 
 variable {𝕜 A SA : Type*} [NormedRing A] [CompleteSpace A] [SetLike SA A] [SubringClass SA A]
 
-open Topology Filter Set
+open Filter Set
+
+open scoped Topology
 
 section NormedField
 
@@ -545,10 +551,11 @@ lemma Subalgebra.frontier_subset_frontier :
     (spectrum.isClosed (x : A)).closure_eq]
   apply subset_inter (frontier_spectrum S x)
   rw [frontier_eq_closure_inter_closure]
-  exact inter_subset_right |>.trans <|
-    closure_mono <| compl_subset_compl.mpr <| spectrum.subset_subalgebra x
+  grw [inter_subset_right, spectrum.subset_subalgebra]
 
-open Set Notation
+open Set
+
+open scoped Notation
 
 /-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any `x : S`, the spectrum of `x`
 is the spectrum of `↑x : A` along with the connected components of the complement of the spectrum of
@@ -568,12 +575,8 @@ lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
   suffices h_frontier : frontier (σ 𝕜 x \ σ 𝕜 (x : A)) ⊆ frontier (σ 𝕜 (x : A)) from
     disjoint_of_subset_left h_frontier <| disjoint_compl_right.frontier_left
       (spectrum.isClosed _).isOpen_compl
-  rw [sdiff_eq_compl_inter]
-  apply (frontier_inter_subset _ _).trans
-  rw [frontier_compl]
-  apply union_subset <| inter_subset_left
-  refine inter_subset_inter_right _ ?_ |>.trans <| inter_subset_right
-  exact frontier_subset_frontier S x
+  grw [sdiff_eq_compl_inter, frontier_inter_subset, inter_subset_left, inter_subset_right,
+    frontier_compl, frontier_subset_frontier, union_self]
 
 /-- Let `S` be a closed subalgebra of a Banach algebra `A`, and let `x : S`. If `z` is in the
 spectrum of `x`, then the connected component of `z` in the complement of the spectrum of `↑x : A`
