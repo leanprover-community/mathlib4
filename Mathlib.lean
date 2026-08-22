@@ -3727,6 +3727,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Partition
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Prod
+public import Mathlib.Combinatorics.SimpleGraph.RandomWalk
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Chunk
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Energy
