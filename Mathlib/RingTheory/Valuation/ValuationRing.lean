@@ -145,13 +145,12 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
     field_simp
     simp only [← map_mul]; congr 1; linear_combination h
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
   le_trans := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
   le_antisymm := by
     rintro ⟨a⟩ ⟨b⟩ ⟨e, rfl⟩ ⟨f, hf⟩
-    by_cases hb : b = 0; · simp [hb]
+    by_cases hb : b = 0; · rw [hb, smul_zero]
     have : IsUnit e := by
       apply isUnit_of_dvd_one
       use f
