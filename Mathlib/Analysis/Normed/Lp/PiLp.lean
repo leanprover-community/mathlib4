@@ -1139,6 +1139,7 @@ section
 
 variable [Semiring 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, Module 𝕜 (β i)] [∀ i, TopologicalSpace (β i)]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `WithLp.linearEquiv` as a continuous linear equivalence. -/
 @[simps! apply symm_apply]
 def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where

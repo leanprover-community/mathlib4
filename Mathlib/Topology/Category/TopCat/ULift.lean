@@ -59,7 +59,7 @@ def uliftFunctorCompForgetIso : uliftFunctor.{v, u} ⋙ forget TopCat.{max u v} 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The `ULift` functor on categories of topological spaces is fully faithful. -/
 def uliftFunctorFullyFaithful : uliftFunctor.{v, u}.FullyFaithful where
-  preimage f := ofHom ⟨ULift.down ∘ f ∘ ULift.up, by fun_prop⟩
+  preimage f := ofHom ⟨ULift.down ∘ f ∘ ULift.up, by fun_prop [uliftFunctor]⟩
 
 instance : uliftFunctor.{v, u}.Full :=
   uliftFunctorFullyFaithful.full

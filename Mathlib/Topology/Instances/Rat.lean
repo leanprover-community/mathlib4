@@ -123,6 +123,7 @@ instance : IsTopologicalSemiring ℚ≥0 where
   toContinuousAdd := continuousAdd_induced Nonneg.coeRingHom
   toContinuousMul := continuousMul_induced Nonneg.coeRingHom
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ContinuousSub ℚ≥0 := ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 instance : OrderTopology ℚ≥0 := orderTopology_of_ordConnected (t := Set.Ici 0)
@@ -132,6 +133,7 @@ instance : ContinuousInv₀ ℚ≥0 := inferInstance
 instance : ContinuousSMul ℚ ℝ where
   continuous_smul := continuous_induced_dom.fst'.smul (M := ℝ) (X := ℝ) continuous_snd
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [TopologicalSpace R] [MulAction ℚ R] [MulAction ℚ≥0 R] [IsScalarTower ℚ≥0 ℚ R]
     [ContinuousSMul ℚ R] : ContinuousSMul ℚ≥0 R where
   continuous_smul := by

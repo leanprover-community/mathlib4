@@ -31,6 +31,7 @@ open Set Topology
 
 namespace SpectrumRestricts
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The homeomorphism `spectrum S a ≃ₜ spectrum R a` induced by `SpectrumRestricts a f`. -/
 def homeomorph {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
     [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [TopologicalSpace R]
@@ -200,6 +201,7 @@ namespace QuasispectrumRestricts
 local notation "σₙ" => quasispectrum
 open ContinuousMapZero Set
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The homeomorphism `quasispectrum S a ≃ₜ quasispectrum R a` induced by
 `QuasispectrumRestricts a f`. -/
 def homeomorph {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]

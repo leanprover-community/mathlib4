@@ -94,6 +94,7 @@ private lemma absq_le {K : Set ℍ} (hK : IsCompact K) :
   rw [Matrix.SpecialLinearGroup.coe_mul, Matrix.eta_fin_two g.val, Matrix.mul_fin_two]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The orbit map `g ↦ g • I` is a proper map `SL(2, ℝ) → ℍ`. -/
 lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ g • I := by
   refine isProperMap_iff_isCompact_preimage.mpr ⟨by fun_prop, fun K hK ↦ ?_⟩
