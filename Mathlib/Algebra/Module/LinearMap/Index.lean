@@ -6,7 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Exact.Sequence
-public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Module.LinearMap.FiniteRange
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
@@ -28,22 +28,35 @@ namespace LinearMap
 
 open Function Module
 
-variable {M N : Type*} [AddCommGroup M] [AddCommGroup N]
+variable {M N P : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
 
 section Ring
 
 variable {R : Type*} [Ring R] [Module R M] [Module R N] (f : M →ₗ[R] N)
 
+public class HasIndex : Prop where
+  finite_ker : f.ker.FG
+  finite_coker : f.range.CoFG
+
+instance (priority := 100) [f.HasIndex] : Module.Finite R f.ker := .of_fg HasIndex.finite_ker
+instance (priority := 100) [f.HasIndex] : Module.Finite R (N ⧸ f.range) := HasIndex.finite_coker
+
 /-- The index of a linear map with sign convention `index = dim ker - dim coker`.
 
-In the case that either the kernel or cokernel has infinite rank, the value is junk. -/
+This is only well behaved under the assumption `f.HasIndex`; otherwise the value is junk. -/
 public def index : ℤ := finrank R f.ker - finrank R (N ⧸ f.range)
 
 variable {f}
 
+theorem HasIndex.of_eq (f' : M →ₗ[R] N) (eq : f = f') [f'.HasIndex] : f.HasIndex := eq ▸ ‹_›
+
 public lemma index_eq_finrank_sub :
     f.index = finrank R f.ker - finrank R (N ⧸ f.range) := by
   rfl
+
+instance [Subsingleton R] : f.HasIndex where
+  finite_ker := .of_finite
+  finite_coker := inferInstance
 
 @[nontriviality] public lemma index_of_subsingleton [Subsingleton R] :
     f.index = 0 := by
@@ -79,11 +92,23 @@ set_option backward.isDefEq.respectTransparency.types false in
   have := index_of_surjective e.surjective
   lia
 
+instance [IsNoetherian R M] [Module.Finite R N] : f.HasIndex where
+  finite_ker := .of_finite
+  finite_coker := inferInstance
+
 end Ring
 
 section DivisionRing
 
-variable {k : Type*} [DivisionRing k] [Module k M] [Module k N] {f : M →ₗ[k] N}
+variable {k : Type*} [DivisionRing k] [Module k M] [Module k N] [Module k P]
+  {f : M →ₗ[k] N} {g : N →ₗ[k] P}
+
+public lemma hasIndex_iff_exists_isQuasiInverse :
+    f.HasIndex ↔ ∃ g : N →ₗ[k] M, g.IsQuasiInverse f := by
+  constructor
+  · sorry
+  · rintro ⟨g, hg⟩
+    sorry
 
 @[simp] public lemma index_neg :
     (-f).index = f.index := by
@@ -98,11 +123,13 @@ public lemma index_eq_of_finiteDimensional [FiniteDimensional k M] [FiniteDimens
   have h₃ := f.ker.finrank_quotient_add_finrank
   lia
 
+instance [f.HasIndex] [g.HasIndex] : (g ∘ₗ f).HasIndex where
+  finite_ker := by rw [ker_comp]; exact .of_finite
+  finite_coker := by rw [range_comp]; infer_instance
+
 set_option backward.isDefEq.respectTransparency.types false in
 open Submodule in
-@[simp] public lemma index_comp {P : Type*} [AddCommGroup P] [Module k P] (g : N →ₗ[k] P)
-    [FiniteDimensional k f.ker] [FiniteDimensional k g.ker]
-    [FiniteDimensional k (N ⧸ f.range)] [FiniteDimensional k (P ⧸ g.range)] :
+@[simp] public lemma index_comp [f.HasIndex] [g.HasIndex] :
     (g ∘ₗ f).index = g.index + f.index := by
   -- `0 → f.ker → (g ∘ₗ f).ker → g.ker → f.coker → (g ∘ₗ f).coker → g.coker → 0`
   have aux : f.range ≤ comap g (g ∘ₗ f).range := by rw [← map_le_iff_le_comap, range_comp]
@@ -117,8 +144,6 @@ open Submodule in
   have h₃ : Exact f₂ f₃ := by rw [exact_iff]; simp [f₂, f₃, range_comp, ker_mapQ, comap_map_eq]
   have h₄ : Exact f₃ f₄ := by rw [exact_iff]; simp [f₃, f₄, factor, ker_mapQ, range_mapQ]
   have h₅ : Surjective f₄ := factor_surjective _
-  have : FiniteDimensional k (g ∘ₗ f).ker := by rw [ker_comp]; infer_instance
-  have : FiniteDimensional k (P ⧸ (g ∘ₗ f).range) := by rw [range_comp]; infer_instance
   grind [index, sum_neg_one_pow_finrank_eq_zero_of_exact_six f₀ f₁ f₂ f₃ f₄ h₀ h₁ h₂ h₃ h₄ h₅]
 
 end DivisionRing

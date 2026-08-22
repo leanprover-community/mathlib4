@@ -172,6 +172,26 @@ theorem ker_coFG_iff_hasFiniteRange {f : V →ₗ[K] V₂} :
 alias ⟨HasNoetherianRange.quotient_ker, _⟩ := hasNoetherianRange_iff_quotient_ker
 alias ⟨_, HasFiniteRange.cofg_ker⟩ := ker_coFG_iff_hasFiniteRange
 
+variable (K V V₂) in
+/-- `LinearMap.finiteRangeAddSubgroup` is the additive subgroup of `V →ₗ[K] W` consisting of linear
+maps satisfying `LinearMap.HasNoetherianRange`. We allow ourself this slightly abusive name because
+the set of linear maps satisfying `LinearMap.HasFiniteRange` is only a subgroup over a noetherian
+ring, in which case the two notions agree. -/
+def finiteRangeAddSubgroup : AddSubgroup (V →ₗ[K] V₂) where
+  carrier := {u | u.HasNoetherianRange}
+  add_mem' hu hv := by simp_all
+  zero_mem' := by simp
+  neg_mem' hu := by simp_all
+
+lemma mem_finiteRangeAddSubgroup_iff_hasNoetherianRange {f : V →ₗ[K] V₂} :
+    f ∈ finiteRangeAddSubgroup K V V₂ ↔ f.HasNoetherianRange :=
+  Iff.rfl
+
+lemma mem_finiteRangeAddSubgroup_iff_hasFiniteRange [IsNoetherianRing K] {f : V →ₗ[K] V₂} :
+    f ∈ finiteRangeAddSubgroup K V V₂ ↔ f.HasFiniteRange := by
+  rw [mem_finiteRangeAddSubgroup_iff_hasNoetherianRange, hasNoetherianRange_iff_hasFiniteRange]
+
+
 end Ring
 
 section CommRing
@@ -196,23 +216,22 @@ linear maps satisfying `LinearMap.HasFiniteRange` is only a submodule over a noe
 in which case the two notions agree. -/
 def finiteRange : Submodule K (V →ₗ[K] V₂) where
   carrier := {u | u.HasNoetherianRange}
-  add_mem' hu hv := by simp_all
-  zero_mem' := by simp
   smul_mem' c hu := by simp_all
+  __ := finiteRangeAddSubgroup K V V₂
 
 lemma mem_finiteRange_iff_hasNoetherianRange {f : V →ₗ[K] V₂} :
     f ∈ finiteRange K V V₂ ↔ f.HasNoetherianRange :=
   Iff.rfl
 
 lemma mem_finiteRange_iff_hasFiniteRange [IsNoetherianRing K] {f : V →ₗ[K] V₂} :
-    f ∈ finiteRange K V V₂ ↔ f.HasFiniteRange := by
-  rw [mem_finiteRange_iff_hasNoetherianRange, hasNoetherianRange_iff_hasFiniteRange]
+    f ∈ finiteRange K V V₂ ↔ f.HasFiniteRange :=
+  mem_finiteRangeAddSubgroup_iff_hasFiniteRange
 
 end CommRing
 
 section Setoid
 
-variable [CommRing K]
+variable [Ring K]
   [AddCommGroup V] [Module K V]
   [AddCommGroup V₂] [Module K V₂]
   [AddCommGroup V₃] [Module K V₃]
@@ -226,10 +245,12 @@ well-behaved relation (more precisely, an additive congruence relation compatibl
 on both sides) over a noetherian ring, in which case the two notions agree.
 
 This setoid is declared as an instance in scope `LinearMap.FiniteRangeSetoid`. -/
-scoped instance setoid : Setoid (V →ₗ[K] V₂) := (LinearMap.finiteRange K V V₂).quotientRel
+scoped instance setoid : Setoid (V →ₗ[K] V₂) :=
+  QuotientAddGroup.leftRel (LinearMap.finiteRangeAddSubgroup K V V₂)
 
-lemma equiv_iff_hasNoetherianRange {u v : V →ₗ[K] V₂} : u ≈ v ↔ (u - v).HasNoetherianRange :=
-  Submodule.quotientRel_def _
+lemma equiv_iff_hasNoetherianRange {u v : V →ₗ[K] V₂} : u ≈ v ↔ (u - v).HasNoetherianRange := by
+  simp [QuotientAddGroup.leftRel_apply, neg_add_eq_sub, sub_mem_comm_iff,
+    mem_finiteRangeAddSubgroup_iff_hasNoetherianRange]
 
 lemma equiv_iff_hasFiniteRange [IsNoetherianRing K] {u v : V →ₗ[K] V₂} :
     u ≈ v ↔ (u - v).HasFiniteRange := by
@@ -303,7 +324,7 @@ end Setoid
 
 section QuasiInverse
 
-variable [CommRing K]
+variable [Ring K]
   [AddCommGroup V] [Module K V]
   [AddCommGroup V₂] [Module K V₂]
   [AddCommGroup V₃] [Module K V₃]
