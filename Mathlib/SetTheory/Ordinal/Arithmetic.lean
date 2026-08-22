@@ -1021,9 +1021,10 @@ theorem isSuccLimit_ord {c} (hc : ℵ₀ ≤ c) : IsSuccLimit (ord c) := by
     · exact hc.trans ha
     · simp
 
--- TODO: deprecate in favor of `isSuccPrelimit_type_lt_iff`
+@[deprecated "This theorem exposes `Ordinal.ToType`; inline the proof if you already have an \
+`ord.ToType` goal." (since := "2026-06-18")]
 theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.ToType := by
-  rw [← isSuccPrelimit_type_lt_iff, type_toType]
+  rw [← Ordinal.isSuccPrelimit_type_lt_iff, Ordinal.type_toType]
   exact (isSuccLimit_ord h).isSuccPrelimit
 
 instance : Nonempty (ℵ₀ : Cardinal.{u}).ord.ToType := by simp

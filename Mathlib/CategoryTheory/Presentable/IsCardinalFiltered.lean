@@ -197,11 +197,12 @@ lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
       { app a := homOfLE (hj a)
         naturality _ _ _ := rfl }⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
     IsCardinalFiltered κ.ord.ToType κ :=
   isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
-    have h : Function.Surjective (fun i ↦ (⟨f i, i, rfl⟩ : Set.range f)) := fun _ ↦ by aesop
+    have h : Function.Surjective (fun i ↦ (⟨f i, i, rfl⟩ : Set.range f)) := by
+      rintro ⟨_, i, rfl⟩
+      exact ⟨i, rfl⟩
     contrapose! hs
     rw [← hκ.out.cof_ord, ← Ordinal.cof_toType]
     refine (Order.cof_le fun j ↦ ?_).trans (Cardinal.mk_le_of_surjective h)
