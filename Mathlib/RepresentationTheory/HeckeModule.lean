@@ -8,7 +8,7 @@ module
 public import Mathlib.GroupTheory.DoubleCoset
 public import Mathlib.RepresentationTheory.Induced
 public import Mathlib.RepresentationTheory.Invariants
-public import Mathlib.LinearAlgebra.trace
+public import Mathlib.LinearAlgebra.Trace
 
 /-!
 # Induction
