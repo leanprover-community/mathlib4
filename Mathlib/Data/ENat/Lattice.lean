@@ -68,14 +68,12 @@ lemma natCast_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ�
 
 @[deprecated (since := "2026-07-17")] alias coe_iInf := natCast_iInf
 
-@[simp]
-lemma iInf_eq_top_of_isEmpty [IsEmpty ι] : ⨅ i, (f i : ℕ∞) = ⊤ :=
-  iInf_natCast_eq_top.mpr ‹_›
+lemma iInf_eq_top_of_isEmpty [IsEmpty ι] : ⨅ i, (f i : ℕ∞) = ⊤ := by
+  simp
 
-lemma iInf_eq_natCast_iff {f : ι → ℕ∞} {n : ℕ} :
-    ⨅ i, f i = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
-  by_cases! hι : IsEmpty ι
-  · simp [iInf_of_isEmpty]
+lemma iInf_eq_natCast_iff {f : ι → ℕ∞} {n : ℕ} : ⨅ i, f i = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
+  cases isEmpty_or_nonempty ι
+  · simp
   apply ciInf_eq_iff
 
 @[deprecated (since := "2026-07-17")] alias iInf_eq_coe_iff := iInf_eq_natCast_iff
