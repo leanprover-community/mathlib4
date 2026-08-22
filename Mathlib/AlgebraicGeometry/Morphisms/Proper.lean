@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
+public import Mathlib.Topology.Separation.Connected
 
 /-!
 
@@ -145,21 +146,58 @@ theorem isIntegral_appTop_of_universallyClosed (f : X ⟶ Y) [UniversallyClosed 
   rw [← IsIntegralHom.SpecMap_iff, IsIntegralHom.iff_universallyClosed_and_isAffineHom]
   exact ⟨.of_comp_surjective X.toSpecΓ _, inferInstance⟩
 
+/-- A reduced commutative Artinian ring with connected prime spectrum is a field. -/
+theorem _root_.IsArtinianRing.isField_of_isReduced_of_connectedSpace (R : Type*) [CommRing R]
+    [IsArtinianRing R] [_root_.IsReduced R] [ConnectedSpace (PrimeSpectrum R)] : IsField R := by
+  let _ : Nontrivial R := PrimeSpectrum.nonempty_iff_nontrivial.mp inferInstance
+  let _ : Subsingleton (PrimeSpectrum R) := PreconnectedSpace.trivial_of_discrete
+  exact PrimeSpectrum.subsingleton_iff_isField_of_isReduced.mp inferInstance
+
+open scoped Algebra in
+/-- A reduced integral algebra over a field with connected prime spectrum is a field. -/
+theorem _root_.isField_of_isIntegral_of_isField_of_isReduced_of_connectedSpace
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.IsIntegral R S]
+    [_root_.IsReduced S] [ConnectedSpace (PrimeSpectrum S)] (hR : IsField R) : IsField S where
+  exists_pair_ne := (PrimeSpectrum.nonempty_iff_nontrivial.mp inferInstance).exists_pair_ne
+  mul_comm := mul_comm
+  mul_inv_cancel {x} hx := by
+    let := hR.toField
+    let x' : R[x] := ⟨x, Algebra.self_mem_adjoin_singleton R x⟩
+    have hx' : x' ≠ 0 := fun h => hx (congr_arg ((↑) : R[x] → S) h)
+    have : Module.Finite R R[x] :=
+      Algebra.finite_adjoin_simple_of_isIntegral (Algebra.IsIntegral.isIntegral x)
+    have : IsArtinianRing R[x] := IsArtinianRing.of_finite R R[x]
+    have := isReduced_of_injective R[x].val Subtype.val_injective
+    have : Algebra.IsIntegral R[x] S :=
+      ⟨fun y ↦ (Algebra.IsIntegral.isIntegral (R := R) y).tower_top⟩
+    have : ConnectedSpace (PrimeSpectrum R[x]) :=
+      (Algebra.IsIntegral.comap_surjective R[x] S).connectedSpace (PrimeSpectrum.continuous_comap _)
+    let : Field R[x] := (IsArtinianRing.isField_of_isReduced_of_connectedSpace R[x]).toField
+    obtain ⟨y, rfl⟩ := RingHom.isUnit_map R[x].val.toRingHom (isUnit_iff_ne_zero.mpr hx')
+    exact ⟨y.inv, y.val_inv⟩
+
 /-- If `X` is an integral scheme that is universally closed over `Spec K`,
 then `Γ(X, ⊤)` is a field. -/
 theorem isField_of_universallyClosed (f : X ⟶ (Spec <| .of K))
-    [IsIntegral X] [UniversallyClosed f] : IsField Γ(X, ⊤) := by
+    [IsReduced X] [ConnectedSpace X] [UniversallyClosed f] : IsField Γ(X, ⊤) := by
   let F := (Scheme.ΓSpecIso _).inv ≫ f.appTop
   have : F.hom.IsIntegral := by
     apply RingHom.isIntegral_respectsIso.2 (e := (Scheme.ΓSpecIso _).symm.commRingCatIsoToRingEquiv)
     exact isIntegral_appTop_of_universallyClosed f
   algebraize [F.hom]
-  exact isField_of_isIntegral_of_isField' (Field.toIsField K)
+  have : CompactSpace X := (quasiCompact_iff_compactSpace f).mp inferInstance
+  have : UniversallyClosed (X.toSpecΓ ≫ Spec.map f.appTop) := by
+    rw [← Scheme.toSpecΓ_naturality]
+    infer_instance
+  have : UniversallyClosed X.toSpecΓ := .of_comp_of_isSeparated _ (Spec.map f.appTop)
+  have : ConnectedSpace (PrimeSpectrum Γ(X, ⊤)) :=
+    X.toSpecΓ.surjective.connectedSpace X.toSpecΓ.continuous
+  exact isField_of_isIntegral_of_isField_of_isReduced_of_connectedSpace (Field.toIsField K)
 
 /-- If `X` is an integral scheme that is universally closed and of finite type over `Spec K`,
 then `Γ(X, ⊤)` is a finite field extension over `K`. -/
 theorem finite_appTop_of_universallyClosed (f : X ⟶ (Spec <| .of K))
-    [IsIntegral X] [UniversallyClosed f] [LocallyOfFiniteType f] :
+    [IsReduced X] [ConnectedSpace X] [UniversallyClosed f] [LocallyOfFiniteType f] :
     f.appTop.hom.Finite := by
   have x : X := Nonempty.some inferInstance
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
