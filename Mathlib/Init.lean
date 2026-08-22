@@ -19,7 +19,9 @@ public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.OverlappingInstances
+public import Mathlib.Tactic.Linter.PrivateInPublic
 public import Mathlib.Tactic.Linter.PrivateModule
+public import Mathlib.Tactic.Linter.PrivateProof
 public import Mathlib.Tactic.Linter.TacticDocumentation
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
@@ -42,6 +44,7 @@ public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.MinImports
 -- This import makes the binder plicity code action available globally
 public import Mathlib.Util.CodeActions
+public import Mathlib.Util.PrivateProof
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.

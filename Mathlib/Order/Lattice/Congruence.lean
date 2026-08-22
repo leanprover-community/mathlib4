@@ -60,7 +60,6 @@ private lemma closed_interval {r : α → α → Prop}
   simpa [sup_eq_right.mpr (le_inf hab hac), sup_eq_left.mpr (inf_le_of_left_le hbd)] using
     ((h₄ (le_trans hab hbd) had).2 : r (a ⊔ b ⊓ c) (d ⊔ b ⊓ c))
 
-set_option backward.privateInPublic true in
 private lemma transitive {r : α → α → Prop}
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
@@ -79,8 +78,6 @@ private lemma transitive {r : α → α → Prop}
         simpa [sup_comm y x, sup_sup_distrib_left y x z, sup_assoc] using
           ((h₄ inf_le_sup (h₂.mp hxy)).2 : r (x ⊓ y ⊔ (y ⊔ z)) (x ⊔ y ⊔ (y ⊔ z)))))
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Alternative conditions for a lattice congruence. -/
 def mk' (r : α → α → Prop) [h₁ : Std.Refl r]
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
@@ -89,7 +86,7 @@ def mk' (r : α → α → Prop) [h₁ : Std.Refl r]
   r := r
   iseqv.refl := h₁.refl
   iseqv.symm h := by simpa [h₂, inf_comm, sup_comm, ← h₂] using h
-  iseqv.trans hxy hxz := transitive h₂ h₃ h₄ hxy hxz
+  iseqv.trans hxy hxz := private transitive h₂ h₃ h₄ hxy hxz
   inf := by
     intro w _ _ _ h1 h2
     have compatible_left_inf {x y t : α} (hh : r x y) : r (x ⊓ t) (y ⊓ t) :=

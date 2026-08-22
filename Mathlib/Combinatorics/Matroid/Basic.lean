@@ -351,13 +351,14 @@ private theorem inter_left_subset_ground (hX : X ⊆ M.E) :
 private theorem sdiff_subset_ground (hX : X ⊆ M.E) : X \ Y ⊆ M.E :=
   sdiff_subset.trans hX
 
-@[deprecated (since := "2026-06-03")] alias diff_subset_ground := sdiff_subset_ground
+@[deprecated (since := "2026-06-03")] private alias diff_subset_ground := sdiff_subset_ground
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 private theorem ground_sdiff_subset_ground : M.E \ X ⊆ M.E :=
   sdiff_subset_ground rfl.subset
 
-@[deprecated (since := "2026-06-03")] alias ground_diff_subset_ground := ground_sdiff_subset_ground
+@[deprecated (since := "2026-06-03")] private alias ground_diff_subset_ground :=
+  ground_sdiff_subset_ground
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 private theorem singleton_subset_ground (he : e ∈ M.E) : {e} ⊆ M.E :=
