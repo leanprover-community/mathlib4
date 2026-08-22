@@ -259,14 +259,11 @@ lemma range_cfcₙ_nnreal [NonUnitalClosedEmbeddingContinuousFunctionalCalculus 
   refine Set.Subset.antisymm (Set.image_mono (fun _ ↦ cfcₙ_nonneg)) ?_
   rintro _ ⟨f, hf, rfl⟩
   simp only [Set.preimage_ofPred_eq, Set.mem_ofPred_eq, Set.mem_image] at hf ⊢
-  obtain (⟨h₁, h₂, h₃⟩ | h | h | h) := by
-    simpa only [not_and_or] using
-      em (ContinuousOn f (quasispectrum ℝ a) ∧ f 0 = 0 ∧ IsSelfAdjoint a)
-  · refine ⟨f, ?_, rfl⟩
+  by_cases h : ContinuousOn f (quasispectrum ℝ a) ∧ f 0 = 0 ∧ IsSelfAdjoint a
+  · obtain ⟨h₁, h₂, h₃⟩ := h
+    refine ⟨f, ?_, rfl⟩
     rwa [cfcₙ_nonneg_iff f a] at hf
-  · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_continuousOn a h]⟩
-  · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_map_zero a h]⟩
-  · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_predicate a h]⟩
+  · exact ⟨0, by simp, by grind [cfcₙ_zero]⟩
 
 open NNReal in
 theorem cfcₙ_nnreal_mem {𝕜 : Type*} [RCLike 𝕜]
