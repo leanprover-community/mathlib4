@@ -63,33 +63,29 @@ end GrpCat
 /-- The type of morphisms in `AddGrpCat R`. -/
 @[ext]
 structure AddGrpCat.Hom (A B : AddGrpCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
 /-- The type of morphisms in `GrpCat R`. -/
 @[to_additive, ext]
 structure GrpCat.Hom (A B : GrpCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
 namespace GrpCat
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category GrpCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory GrpCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `GrpCat` back into a `MonoidHom`. -/
 @[to_additive /-- Turn a morphism in `AddGrpCat` back into an `AddMonoidHom`. -/]
@@ -279,33 +275,29 @@ end CommGrpCat
 /-- The type of morphisms in `AddCommGrpCat R`. -/
 @[ext]
 structure AddCommGrpCat.Hom (A B : AddCommGrpCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
 /-- The type of morphisms in `CommGrpCat R`. -/
 @[to_additive, ext]
 structure CommGrpCat.Hom (A B : CommGrpCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
 namespace CommGrpCat
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category CommGrpCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory CommGrpCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommGrpCat` back into a `MonoidHom`. -/
 @[to_additive /-- Turn a morphism in `AddCommGrpCat` back into an `AddMonoidHom`. -/]
