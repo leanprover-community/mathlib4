@@ -117,11 +117,8 @@ local notation "↑ₐ" => algebraMap ℂ A
 theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
     spectralRadius ℂ a = ‖a‖₊ := by
   have hconst : Tendsto (fun _n : ℕ => (‖a‖₊ : ℝ≥0∞)) atTop _ := tendsto_const_nhds
-  refine tendsto_nhds_unique ?_ hconst
-  convert!
-    (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A)).comp
-      (tendsto_pow_atTop_atTop_of_one_lt one_lt_two) using 1
-  refine funext fun n => ?_
+  refine tendsto_nhds_unique_of_forall ((pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a).comp
+      (tendsto_pow_atTop_atTop_of_one_lt one_lt_two)) hconst fun n ↦ ?_
   rw [Function.comp_apply, ha.nnnorm_pow_two_pow, ENNReal.coe_pow, ← rpow_natCast, ← rpow_mul]
   simp
 
