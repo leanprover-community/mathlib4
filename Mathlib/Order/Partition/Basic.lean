@@ -270,7 +270,7 @@ lemma mem_inf_iff {α : Type*} [Order.Frame α] {s a : α} {P Q : Partition s} :
 
 end Order
 
-variable {S : Set (Set α)} {u s t : Set α} {a b c : α} {P Q : Partition u}
+variable {S : Set (Set α)} {u u' s t : Set α} {a b c : α} {P Q : Partition u}
 
 section Set
 
@@ -323,9 +323,9 @@ end Set
 
 section Rel
 
-/-- Every partition of `s : Set α` induces a transitive, symmetric binary relation on `α`
-  whose equivalence classes are the parts of `P`. The relation is irreflexive outside `s`. -/
-def Rel (P : Partition s) (a b : α) : Prop :=
+/-- Every partition of `u : Set α` induces a transitive, symmetric binary relation on `α`
+  whose equivalence classes are the parts of `P`. The relation is irreflexive outside `u`. -/
+def Rel (P : Partition u) (a b : α) : Prop :=
   ∃ t ∈ P, a ∈ t ∧ b ∈ t
 
 lemma rel_le_iff_le : P.Rel ≤ Q.Rel ↔ P ≤ Q := by
@@ -337,6 +337,16 @@ lemma rel_le_iff_le : P.Rel ≤ Q.Rel ↔ P ≤ Q := by
     exact eq_of_mem_of_mem hT hT' hxT hxT' ▸ haT'
   obtain ⟨t', ht', htt'⟩ := h ht
   use t', ht', htt' ha, htt' hb
+
+lemma ext_rel_iff : (∀ x y, P.Rel x y ↔ Q.Rel x y) ↔ P = Q := by
+  rw [le_antisymm_iff, ← rel_le_iff_le, ← rel_le_iff_le, ← le_antisymm_iff]
+  exact ⟨fun h ↦ funext₂ fun x y ↦ iff_eq_eq ▸ h x y, fun h ↦ by simp [h]⟩
+
+lemma ext_rel (h : ∀ x y, P.Rel x y ↔ Q.Rel x y) : P = Q :=
+  ext_rel_iff.mp h
+
+@[simp, grind =]
+lemma rel_copy {h : u = u'} : (P.copy h).Rel x y ↔ P.Rel x y := by simp [Rel]
 
 lemma Rel.exists (h : P.Rel x y) : ∃ t ∈ P, x ∈ t ∧ y ∈ t := h
 
@@ -364,10 +374,12 @@ lemma rel_comm : P.Rel x y ↔ P.Rel y x := ⟨Rel.symm, Rel.symm⟩
 
 lemma Rel.trans (hxy : P.Rel x y) (hyz : P.Rel y z) : P.Rel x z := trans_of P.Rel hxy hyz
 
+@[grind →]
 lemma Rel.left_mem (h : P.Rel x y) : x ∈ u := by
   obtain ⟨t, htP, hxt, -⟩ := h
   exact subset_of_mem htP hxt
 
+@[grind →]
 lemma Rel.right_mem (h : P.Rel x y) : y ∈ u := h.symm.left_mem
 
 /-- Any element of a part is related to the representative of that part. -/
@@ -424,6 +436,49 @@ lemma rel_iff_partOf_eq_partOf (P : Partition u) :
   grind [rel_iff_partOf_eq_partOf_of_mem, Rel.left_mem, Rel.right_mem]
 
 end partOf
+
+section ofRel
+
+variable {u : Set α}
+
+/-- A transitive, symmetric binary relation `r` induces a partition of the set of elements on
+which it is reflexive. -/
+def ofRel (r : α → α → Prop) [Std.Symm r] [IsTrans α r] (u : Set α) (hu : u ⊆ {x | r x x}) :
+    Partition u where
+  parts := ({a | r · a} ∩ u) '' u
+  sSupIndep' := by
+    rintro s ⟨x, hx, rfl⟩
+    simp only [sSup_eq_sUnion, disjoint_sUnion_right, mem_sdiff, mem_image, mem_singleton_iff,
+      and_imp, forall_exists_index, forall_apply_eq_imp_iff₂, ← ne_eq]
+    exact fun y hy ↦ Not.imp_symm fun hdj ↦ by grind [trans_of r, symm_of r]
+  bot_notMem' := by
+    simp only [bot_eq_empty, mem_image, not_exists, not_and, ← ne_eq, ← nonempty_iff_ne_empty]
+    exact fun x hxu ↦ ⟨x, hu hxu, hxu⟩
+  sSup_eq' := by grind [trans_of r, symm_of r, sSup_eq_sUnion, sUnion_image, mem_iUnion]
+
+@[simp, grind =]
+lemma rel_ofRel_of_subset (r : α → α → Prop) [Std.Symm r] [IsTrans α r] (hu : u ⊆ {x | r x x}) :
+    (ofRel r u hu).Rel x y ↔ x ∈ u ∧ y ∈ u ∧ r x y := by
+  refine ⟨fun ⟨t, ht, hx, hy⟩ ↦ ?_, fun ⟨hx, hy, hxy⟩ ↦ ⟨{a | r y a} ∩ u, ?_, ⟨symm hxy, hx⟩,
+    trans_of r (symm hxy) hxy, hy⟩⟩
+  · obtain ⟨z, hzu, rfl⟩ := ht
+    grind [trans_of r, symm_of r]
+  use y, hy
+
+lemma rel_ofRel (r : α → α → Prop) [Std.Symm r] [IsTrans α r] :
+    (ofRel r {x | r x x} subset_rfl).Rel x y ↔ r x y := by
+  refine ⟨fun ⟨t, ht, hx, hy⟩ ↦ ?_, fun hxy ↦ ⟨{a | r y a}, ?_, symm hxy,
+    trans_of r (symm hxy) hxy⟩⟩
+  · obtain ⟨z, hzu, rfl⟩ := ht
+    grind [trans_of r, symm_of r]
+  use y, trans_of r (symm hxy) hxy, inter_eq_left.mpr fun z hz ↦ trans_of r (symm hz) hz
+
+@[simp]
+lemma ofRel_rel (P : Partition u) : (ofRel P.Rel u (by simp)) = P := by
+  rw [← ext_rel_iff]
+  grind
+
+end ofRel
 
 /-! ### Representative functions
 
