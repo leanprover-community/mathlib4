@@ -74,7 +74,6 @@ lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
     (H : 1 < Module.finrank ℚ K) :
     ∃ p : ℕ, p.Prime ∧ ∀ (P : Ideal 𝒪) (_ : P.IsPrime), ↑p ∈ P → ¬ Algebra.IsUnramifiedAt ℤ P := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
-  have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
   have := IsIntegralClosure.isFractionRing_of_finite_extension ℤ ℚ K 𝒪
   have := IsIntegralClosure.finite ℤ ℚ K 𝒪
   have := CharZero.of_module (R := 𝒪) K

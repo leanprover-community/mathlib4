@@ -77,7 +77,6 @@ theorem FormallySmooth.iff_injective_cotangentComplexBaseChange
     Algebra.FormallySmooth R S ↔ Function.Injective (cotangentComplexBaseChange R S P K) := by
   let f : ResidueField S →ₐ[S] K := Ideal.Quotient.liftₐ _ (Algebra.ofId _ _) h₃
   let := f.toAlgebra
-  have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
   have : IsScalarTower P (ResidueField S) K := .to₁₃₄ _ S _ _
   rw [FormallySmooth.iff_injective_cotangentComplexBaseChange_residueField P h₁ h₂,
     ← Module.FaithfullyFlat.lTensor_injective_iff_injective _ K]

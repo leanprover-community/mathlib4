@@ -118,7 +118,6 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
     let i' : ((a : α) → (F.obj ⟨Z a⟩)) ≅ (F.obj ⟨∐ Z⟩) := (Types.productIso _).symm ≪≫
       (PreservesProduct.iso F _).symm ≪≫ F.mapIso (opCoproductIsoProduct _).symm
     refine ⟨∐ Z, Sigma.desc π, inferInstance, i'.hom x, ?_⟩
-    have := preservesLimitsOfShape_of_equiv (Discrete.opposite α).symm G
     apply Concrete.isLimit_ext _ (isLimitOfPreserves G (coproductIsCoproduct Z).op)
     intro ⟨⟨a⟩⟩
     simp only [Functor.comp_obj, Functor.op_obj, Discrete.functor_obj_eq_as, Functor.mapCone_pt,

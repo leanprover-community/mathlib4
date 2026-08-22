@@ -223,7 +223,6 @@ variable {R S T} in
 lemma EssFiniteType.of_surjective (f : S →ₐ[R] T) (hf : Function.Surjective f)
     [EssFiniteType R S] : EssFiniteType R T := by
   let := f.toAlgebra
-  have : IsScalarTower R S T := .of_algebraMap_eq' f.comp_algebraMap.symm
   have : Module.Finite S T := .of_surjective (Algebra.linearMap S T) hf
   exact .comp R S T
 

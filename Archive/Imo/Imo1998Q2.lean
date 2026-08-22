@@ -229,7 +229,6 @@ theorem imo1998_q2 [Fintype J] [Fintype C] (a b k : ℕ) (hC : Fintype.card C = 
   rw [hC, hJ] at h
   -- We are now essentially done; we just need to bash `h` into exactly the right shape.
   have hl : k * ((2 * z + 1) * (2 * z + 1) - (2 * z + 1)) = k * (2 * (2 * z + 1)) * z := by
-    have : 0 < 2 * z + 1 := by aesop
     simp only [mul_comm, add_mul, one_mul, add_tsub_cancel_right]; ring
   have hr : 2 * z * z * a = 2 * z * a * z := by ring
   rw [hl, hr] at h

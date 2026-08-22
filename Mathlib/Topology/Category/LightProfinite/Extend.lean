@@ -88,8 +88,6 @@ theorem functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (func
   have := functor_initial c hc
   have : ((StructuredArrow.toCostructuredArrow toLightProfinite c.pt)).IsEquivalence :=
     (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence)
-  have : (functor c).rightOp.Final :=
-    inferInstanceAs ((opOpEquivalence ℕ).inverse ⋙ (functor c).op).Final
   exact Functor.final_comp (functor c).rightOp _
 
 section Limit

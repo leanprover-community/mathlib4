@@ -141,12 +141,6 @@ theorem isReduced_of_field :
   intro M hM
   have hy := (hx.map f).map (algebraMap _ (Localization.AtPrime M))
   generalize algebraMap _ (Localization.AtPrime M) (f x) = y at *
-  have := EssFiniteType.of_isLocalization (Localization.AtPrime M) M.primeCompl
-  have := of_isLocalization (Rₘ := Localization.AtPrime M) M.primeCompl
-  have := EssFiniteType.comp (AlgebraicClosure K) (AlgebraicClosure K ⊗[K] A)
-    (Localization.AtPrime M)
-  have := comp (AlgebraicClosure K) (AlgebraicClosure K ⊗[K] A)
-    (Localization.AtPrime M)
   let := (isField_of_isAlgClosed_of_isLocalRing (AlgebraicClosure K)
     (A := Localization.AtPrime M)).toField
   exact hy.eq_zero
@@ -208,7 +202,6 @@ theorem isSeparable : Algebra.IsSeparable K L := by
   have := finite_of_free (R := K) (S := L)
   rw [← separableClosure.eq_top_iff]
   have := of_restrictScalars K (separableClosure K L) L
-  have := EssFiniteType.of_comp K (separableClosure K L) L
   ext
   change _ ↔ _ ∈ (⊤ : Subring _)
   rw [← range_eq_top_of_isPurelyInseparable (separableClosure K L) L]

@@ -489,7 +489,6 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
     IsGaloisGroup (H.map (QuotientGroup.mk' N)) E F :=
   let : Algebra E F := (IntermediateField.inclusion h).toAlgebra
   let : SMul G F := smulOfNormal G F L N
-  have : SMulDistribClass G F L := smulDistribClass_smulOfNormal G F L N
   let := mulSemiringActionOfSmulDistribClass F L G
   have : IsScalarTower E F L := IsScalarTower.of_algebraMap_eq' rfl
   { faithful := have := (inferInstance : IsGaloisGroup (G ⧸ N) K F).faithful; inferInstance

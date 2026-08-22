@@ -619,7 +619,6 @@ theorem cos_toReal (θ : Angle) : Real.cos θ.toReal = cos θ := by
   conv_rhs => rw [← coe_toReal θ, cos_coe]
 
 theorem cos_nonneg_iff_abs_toReal_le_pi_div_two {θ : Angle} : 0 ≤ cos θ ↔ |θ.toReal| ≤ π / 2 := by
-  have : 0 < π / 2 := by positivity
   have := toReal_mem_Ioc θ
   rw [← cos_toReal, ← cos_abs]
   grind [cos_neg_of_pi_div_two_lt_of_lt, cos_nonneg_of_mem_Icc]
@@ -867,7 +866,6 @@ theorem two_zsmul_eq_iff_eq {a b : Real.Angle} (ha : a.sign ≠ 0) (h : a.sign =
     · exact h1
     · have : a.sign = (b + π).sign := by aesop
       rw [Real.Angle.sign_add_pi] at this
-      have := congr_arg (· = b.sign) this
       aesop
   · intro h
     aesop

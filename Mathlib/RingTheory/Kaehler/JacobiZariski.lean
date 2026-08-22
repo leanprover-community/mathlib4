@@ -268,7 +268,6 @@ lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
       (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
   let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
-  have : IsScalarTower Q.Ring Q.Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s => simp [MvPolynomial.algebraMap_eq, δAux_C]
   | add x₁ x₂ hx₁ hx₂ =>
@@ -290,7 +289,6 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
         (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x : _)).2 := by
   let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
-  have : IsScalarTower (Q.comp P).Ring (Q.comp P).Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s =>
     simp only [algHom_C, δAux_C, derivation_C, Derivation.map_algebraMap,

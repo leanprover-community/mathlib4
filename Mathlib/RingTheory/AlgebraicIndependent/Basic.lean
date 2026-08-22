@@ -367,9 +367,6 @@ theorem algebraicIndependent_comp_subtype {s : Set ι} :
     AlgebraicIndependent R (x ∘ (↑) : s → A) ↔
       ∀ p ∈ MvPolynomial.supported R s, aeval x p = 0 → p = 0 := by
   have : (aeval (x ∘ (↑) : s → A) : _ →ₐ[R] _) = (aeval x).comp (rename (↑)) := by ext; simp
-  have : ∀ p : MvPolynomial s R, rename ((↑) : s → ι) p = 0 ↔ p = 0 :=
-    (injective_iff_map_eq_zero' (rename ((↑) : s → ι) : MvPolynomial s R →ₐ[R] _).toRingHom).1
-      (rename_injective _ Subtype.val_injective)
   simp [algebraicIndependent_iff, supported_eq_range_rename, *]
 
 theorem algebraicIndependent_subtype {s : Set A} :
