@@ -155,6 +155,9 @@ def symm (γ : Path x y) : Path y x where
   source' := by simp
   target' := by simp
 
+/-- The reversed path is obtained by composing the original path with unit-interval symmetry. -/
+theorem symm_eq_comp (γ : Path x y) : ⇑γ.symm = ⇑γ ∘ σ := rfl
+
 @[simp]
 theorem symm_symm (γ : Path x y) : γ.symm.symm = γ := by grind
 
@@ -223,6 +226,10 @@ theorem extend_one : γ.extend 1 = y := by simp
 
 theorem extend_extends' {a b : X} (γ : Path a b) (t : (Icc 0 1 : Set ℝ)) : γ.extend t = γ t :=
   IccExtend_val _ γ t
+
+/-- Restricting `Path.extend` to the unit interval recovers the original path. -/
+theorem restrict_extend {a b : X} (γ : Path a b) :
+    γ.extend ∘ ((↑) : I → ℝ) = γ := funext fun t => extend_extends' γ t
 
 @[simp]
 theorem extend_range {a b : X} (γ : Path a b) :
