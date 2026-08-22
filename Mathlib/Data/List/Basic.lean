@@ -496,6 +496,23 @@ theorem getElem_mem_tail {k : ℕ} (l : List α) (h : k ≠ 0) (hk : k < l.lengt
     l[k]'hk ∈ l.tail := by
   cases l <;> grind
 
+theorem tail_eq_nil_iff : l.tail = [] ↔ l.length ≤ 1 := by
+  grind [length_tail, length_eq_zero_iff]
+
+theorem dropLast_eq_nil_iff : l.dropLast = [] ↔ l.length ≤ 1 := by
+  grind [length_dropLast, length_eq_zero_iff]
+
+theorem eq_of_head?_eq_of_tail_eq (hh : l₁.head? = l₂.head?) (ht : l₁.tail = l₂.tail) :
+    l₁ = l₂ := by
+  by_cases! hnil : l₁ = [] ∨ l₂ = []
+  · grind [head?_eq_none_iff]
+  · grind [cons_head_tail hnil.1, cons_head_tail hnil.2]
+
+theorem eq_of_tail_eq_of_dropLast_eq (h : 1 < l₁.length) (ht : l₁.tail = l₂.tail)
+    (hd : l₁.dropLast = l₂.dropLast) : l₁ = l₂ := by
+  have hnil : l₁.dropLast ≠ [] ∧ l₂.dropLast ≠ [] := by grind [dropLast_eq_nil_iff]
+  grind [cons_head_tail, head_dropLast hnil.1, head_dropLast hnil.2]
+
 /-! ### sublists -/
 
 attribute [refl] List.Sublist.refl
