@@ -66,7 +66,7 @@ This shortens the overall argument, as the definition of submersions has the sam
   is `C^n` (at `x`) if and only if it is continuous (at `x`) and its composition `φ ∘ f` with a
   `C^n` immersion `φ : N → P` (at `f x`) is `C^n`.
 * `IsImmersionAt.isDiffImmersionAt`: if `f` is an immersion at `x`, it is also an immersion in the
-  sense of differentials at `x`, i.e. `mfderiv% f x` is a continuous left inverse
+  sense of differentials at `x`, i.e. `mfderiv% f x` has a continuous left inverse
 * `IsImmersionAt.injective_mfderiv`: if `f` is an immersion at `x`, the differential `mfderiv% f x`
   at `x` is injective
 * `IsImmersion.isDiffImmersionAt` and `IsImmersion.injective_mfderiv`: if `f` is an immersion,
