@@ -156,12 +156,11 @@ alias isEdgeConnected_two := isEdgeConnected_two_iff_forall_preconnected
 
 /-- A graph is 2-edge-connected iff it has no bridge. -/
 theorem isEdgeConnected_two_iff_forall_not_isBridge : G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e := by
+  rw [isEdgeConnected_two_iff_forall_preconnected]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [isEdgeConnected_two_iff_forall_preconnected] at h
-    rintro ⟨x,y⟩
+  · rintro ⟨x,y⟩
     exact (isBridge_iff.mp · <| h s(x, y) x y)
-  · rw [isEdgeConnected_two_iff_forall_preconnected]
-    rintro ⟨x,y⟩
+  · rintro ⟨x,y⟩
     cases isEmpty_or_nonempty V
     · exact Preconnected.of_subsingleton
     · have hG : G.Preconnected := by
