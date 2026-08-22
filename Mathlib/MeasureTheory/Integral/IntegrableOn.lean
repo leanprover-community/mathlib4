@@ -185,7 +185,7 @@ theorem IntegrableOn.inter_of_restrict (h : IntegrableOn f s (μ.restrict t)) :
   rwa [IntegrableOn, μ.restrict_restrict_of_subset inter_subset_right] at this
 
 lemma Integrable.piecewise {f g : α → ε'} [DecidablePred (· ∈ s)]
-    (hs : MeasurableSet s) (hf : IntegrableOn f s μ) (hg : IntegrableOn g sᶜ μ) :
+    (hs : NullMeasurableSet s μ) (hf : IntegrableOn f s μ) (hg : IntegrableOn g sᶜ μ) :
     Integrable (s.piecewise f g) μ := by
   rw [IntegrableOn] at hf hg
   rw [← memLp_one_iff_integrable] at hf hg ⊢
@@ -331,21 +331,23 @@ section indicator
 -- All results in this section hold for any enormed monoid.
 variable {f : α → ε'}
 
-theorem integrable_indicator_iff (hs : MeasurableSet s) :
+theorem integrable_indicator_iff₀ (hs : NullMeasurableSet s μ) :
     Integrable (indicator s f) μ ↔ IntegrableOn f s μ := by
   simp_rw [IntegrableOn, Integrable, hasFiniteIntegral_iff_enorm,
-    enorm_indicator_eq_indicator_enorm, lintegral_indicator hs,
-    aestronglyMeasurable_indicator_iff hs]
+    enorm_indicator_eq_indicator_enorm, lintegral_indicator₀ hs,
+    aestronglyMeasurable_indicator_iff₀ hs]
 
-theorem IntegrableOn.integrable_indicator (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
-    Integrable (indicator s f) μ :=
-  (integrable_indicator_iff hs).2 h
+theorem integrable_indicator_iff (hs : MeasurableSet s) :
+    Integrable (indicator s f) μ ↔ IntegrableOn f s μ :=
+  integrable_indicator_iff₀ hs.nullMeasurableSet
 
 theorem IntegrableOn.integrable_indicator₀ (h : IntegrableOn f s μ) (hs : NullMeasurableSet s μ) :
     Integrable (indicator s f) μ :=
-  (h.congr_set_ae hs.toMeasurable_ae_eq).integrable_indicator
-    (measurableSet_toMeasurable μ s) |>.congr
-    (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq)
+  (integrable_indicator_iff₀ hs).2 h
+
+theorem IntegrableOn.integrable_indicator (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
+    Integrable (indicator s f) μ :=
+  h.integrable_indicator₀ hs.nullMeasurableSet
 
 @[fun_prop]
 theorem Integrable.indicator (h : Integrable f μ) (hs : MeasurableSet s) :
@@ -368,9 +370,10 @@ theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} 
     integrable_const_iff, isFiniteMeasure_restrict]
   exact .inr hμs
 
-theorem integrableOn_indicator_iff (hs : MeasurableSet s) :
+theorem integrableOn_indicator_iff (hs : NullMeasurableSet s μ) :
     IntegrableOn (indicator s f) t μ ↔ IntegrableOn f (s ∩ t) μ := by
-  simp_rw [IntegrableOn, integrable_indicator_iff hs, IntegrableOn, Measure.restrict_restrict hs]
+  simp_rw [IntegrableOn, integrable_indicator_iff₀ (hs.mono μ.restrict_le_self), IntegrableOn,
+    Measure.restrict_restrict₀ (hs.mono μ.restrict_le_self)]
 
 end indicator
 
