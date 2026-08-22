@@ -646,11 +646,7 @@ theorem bind_assoc (s : Computation α) (f : α → Computation β) (g : β → 
     | _, c₂, Or.inl (Eq.refl _) => rcases destruct c₂ with b | cb <;> simp
     | _, _, Or.inr ⟨s, rfl, rfl⟩ =>
       induction s using recOn with
-      | pure s =>
-        simp only [BisimO, ret_bind]; generalize f s = fs
-        induction fs using recOn with
-        | pure t => rw [ret_bind]; rcases destruct (g t) with b | cb <;> simp
-        | think => simp
+      | pure s => simp only [BisimO, ret_bind]; grind
       | think s => simpa [BisimO] using Or.inr ⟨s, rfl, rfl⟩
   · exact Or.inr ⟨s, rfl, rfl⟩
 
