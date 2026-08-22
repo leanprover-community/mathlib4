@@ -283,6 +283,32 @@ instance lift_id_inv_isIso (S : 𝒮) {a b : 𝒳} (φ : a ⟶ b) [IsIso φ] [p.
     p.IsHomLift (𝟙 S) (inv φ) :=
   (IsIso.inv_id (X := S)) ▸ (IsHomLift.inv p _ φ)
 
+lemma comp_vert {C D E : Type*} [Category* C] [Category* D]
+    [Category* E] (F : C ⥤ D) (G : D ⥤ E) {X₁ X₂ : C} {Y₁ Y₂ : D} {Z₁ Z₂ : E} (f : X₁ ⟶ X₂)
+    (g : Y₁ ⟶ Y₂) (h : Z₁ ⟶ Z₂) [F.IsHomLift g f] [G.IsHomLift h g] : (F ⋙ G).IsHomLift h f := by
+  subst_hom_lift G h g
+  subst_hom_lift F g f
+  simp [← Functor.comp_map, ← Functor.comp_obj]
+
+lemma of_functor_comp_right {C D E : Type*} [Category* C]
+    [Category* D] [Category* E] (F : C ⥤ D) (G : D ⥤ E) {X₁ X₂ : C} {Y₁ Y₂ : D} {Z₁ Z₂ : E}
+    (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (h : Z₁ ⟶ Z₂) [F.IsHomLift g f] [(F ⋙ G).IsHomLift h f] :
+    G.IsHomLift h g := by
+  subst_hom_lift F g f
+  subst_hom_lift (F ⋙ G) h f
+  simp [Functor.comp_obj]
+
+lemma comp_iff_of_isHomLift_left {C D E : Type*} [Category* C]
+    [Category* D] [Category* E] (F : C ⥤ D) (G : D ⥤ E) {X₁ X₂ : C} {Y₁ Y₂ : D} {Z₁ Z₂ : E}
+    (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (h : Z₁ ⟶ Z₂) [F.IsHomLift g f] :
+    (F ⋙ G).IsHomLift h f ↔ G.IsHomLift h g :=
+  ⟨fun _ => IsHomLift.of_functor_comp_right F G f g h,fun _ => IsHomLift.comp_vert F G f g h⟩
+
+lemma of_eq {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
+    {X Y : C} {f : X ⟶ Y} {φ : F.obj X ⟶ F.obj Y} (h : F.map f = φ) : F.IsHomLift φ f := by
+  cases h
+  simp
+
 end IsHomLift
 
 end CategoryTheory
