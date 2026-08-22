@@ -131,12 +131,12 @@ def homMk {F G : FilteredObject C I}
 @[implicit_reducible, simps]
 def isoMk {F G : FilteredObject C I}
     (iso : F.X ≅ G.X)
-    (natIso : F.filtration.diagram ≅ G.filtration.diagram)
-    (comm : ∀ (i : I), natIso.hom.app i ≫ G.filtration.ι.app i =
+    (app : ∀ (i : I), F.filtration.obj i ≅ G.filtration.obj i)
+    (comm : ∀ (i : I), (app i).hom ≫ G.filtration.ι.app i =
       F.filtration.ι.app i ≫ iso.hom := by cat_disch) :
     F ≅ G where
-  hom := homMk iso.hom (fun i ↦ natIso.hom.app i) comm
-  inv := homMk iso.inv (fun i ↦ natIso.inv.app i) (fun i ↦ by
+  hom := homMk iso.hom (fun i ↦ (app i).hom) comm
+  inv := homMk iso.inv (fun i ↦ (app i).inv) (fun i ↦ by
     rw [← cancel_mono iso.hom, Category.assoc, ← comm]
     simp)
 
