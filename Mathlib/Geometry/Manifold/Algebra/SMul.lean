@@ -295,8 +295,9 @@ instance Prod.contMDiffConstSMul [SMul Γ N] [ContMDiffConstSMul I n Γ M]
   contMDiff_const_smul γ := ContMDiff.prodMk
     (ContMDiff.const_smul contMDiff_fst γ) (ContMDiff.const_smul contMDiff_snd γ)
 
-/-- If the action by any element of `Γ` on `Γ'` is continuously differentiable and the same holds
-for all elements of `Γ'` acting on `M`, then it also holds for all elements of `Γ` acting on `M`. -/
+/-- If the action on `M` by any element of `Γ'` is continuously differentiable, and `Γ` acts on `Γ'`
+such that `Γ`, `Γ'` and `M` form a scalar tower, then the induced action on `M` by any element of
+`Γ` is continuously differentiable as well. -/
 lemma IsScalarTower.contMDiffConstSMul (Γ' : Type*) [Monoid Γ'] [SMul Γ Γ'] [MulAction Γ' M]
     [IsScalarTower Γ Γ' M] [ContMDiffConstSMul I n Γ' M] : ContMDiffConstSMul I n Γ M where
   contMDiff_const_smul γ := by
