@@ -179,7 +179,7 @@ lemma ofTensorProduct_comp_ofTensorProductInvOfPiFintype :
 /-- `ofTensorProduct` as an equiv in the case of `M = R^ι` where `ι` is finite. -/
 def ofTensorProductEquivOfPiFintype :
     AdicCompletion I R ⊗[R] (ι → R) ≃ₗ[AdicCompletion I R] AdicCompletion I (ι → R) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (ofTensorProduct I (ι → R))
     (ofTensorProductInvOfPiFintype I ι)
     (ofTensorProduct_comp_ofTensorProductInvOfPiFintype I ι)
@@ -251,13 +251,13 @@ section
 
 variable {ι : Type} (f : (ι → R) →ₗ[R] M)
 
-/- The first horizontal arrow in the top row. -/
+/-- The first horizontal arrow in the top row. -/
 private
 def lTensorKerIncl : AdicCompletion I R ⊗[R] LinearMap.ker f →ₗ[AdicCompletion I R]
     AdicCompletion I R ⊗[R] (ι → R) :=
   AlgebraTensorModule.map LinearMap.id (LinearMap.ker f).subtype
 
-/- The second horizontal arrow in the top row. -/
+/-- The second horizontal arrow in the top row. -/
 private def lTensorf :
     AdicCompletion I R ⊗[R] (ι → R) →ₗ[AdicCompletion I R] AdicCompletion I R ⊗[R] M :=
   AlgebraTensorModule.map LinearMap.id f

@@ -30,7 +30,7 @@ original set.
 
 @[expose] public section
 
-open Finset Nat Real SimpleGraph Sum3 SimpleGraph.TripartiteFromTriangles
+open Finset Nat Real SimpleGraph SimpleGraph.TripartiteFromTriangles
 open Fintype (card)
 open scoped Pointwise
 
@@ -39,7 +39,7 @@ variable {α β : Type*}
 /-! ### The Ruzsa-Szemerédi number -/
 
 section ruzsaSzemerediNumber
-variable [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] {G H : SimpleGraph α}
+variable [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] {G : SimpleGraph α}
 
 variable (α) in
 /-- The **Ruzsa-Szemerédi number** of a fintype is the maximum number of edges a locally linear
@@ -52,8 +52,9 @@ noncomputable def ruzsaSzemerediNumber : ℕ := by
   exact Nat.findGreatest (fun m ↦ ∃ (G : SimpleGraph α) (_ : DecidableRel G.Adj),
     #(G.cliqueFinset 3) = m ∧ G.LocallyLinear) ((card α).choose 3)
 
-open scoped Classical in
-lemma ruzsaSzemerediNumber_le : ruzsaSzemerediNumber α ≤ (card α).choose 3 := Nat.findGreatest_le _
+lemma ruzsaSzemerediNumber_le : ruzsaSzemerediNumber α ≤ (card α).choose 3 := by
+  classical
+  exact Nat.findGreatest_le _
 
 lemma ruzsaSzemerediNumber_spec :
     ∃ (G : SimpleGraph α) (_ : DecidableRel G.Adj),
@@ -64,7 +65,7 @@ lemma ruzsaSzemerediNumber_spec :
       #(G.cliqueFinset 3) = m ∧ G.LocallyLinear) _ _ (Nat.zero_le _)
     ⟨⊥, inferInstance, by simp, locallyLinear_bot⟩
 
-variable {m n : ℕ}
+variable {n : ℕ}
 
 lemma SimpleGraph.LocallyLinear.le_ruzsaSzemerediNumber [DecidableRel G.Adj]
     (hG : G.LocallyLinear) : #(G.cliqueFinset 3) ≤ ruzsaSzemerediNumber α := by
@@ -126,6 +127,7 @@ private def triangleIndices (s : Finset α) : Finset (α × α × α) :=
       obtain rfl := add_right_injective _ h.2.1
       rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 private lemma mem_triangleIndices :
     x ∈ triangleIndices s ↔ ∃ y, ∃ a ∈ s, (y, y + a, y + 2 * a) = x := by simp [triangleIndices]
@@ -165,7 +167,7 @@ private lemma locallyLinear (hs : ThreeAPFree (s : Set α)) :
 
 private lemma card_edgeFinset (hs : ThreeAPFree (s : Set α)) [DecidableEq α] :
     #(graph <| triangleIndices s).edgeFinset = 3 * card α * #s := by
-  haveI := noAccidental hs
+  have := noAccidental hs
   rw [(locallyLinear hs).card_edgeFinset, card_triangles, card_triangleIndices, mul_assoc]
 
 end RuzsaSzemeredi
@@ -175,7 +177,7 @@ variable (α) [Fintype α] [DecidableEq α] [CommRing α] [Fact <| IsUnit (2 : �
 lemma addRothNumber_le_ruzsaSzemerediNumber :
     card α * addRothNumber (univ : Finset α) ≤ ruzsaSzemerediNumber (Sum α (Sum α α)) := by
   obtain ⟨s, -, hscard, hs⟩ := addRothNumber_spec (univ : Finset α)
-  haveI := noAccidental hs
+  have := noAccidental hs
   rw [← hscard, ← card_triangleIndices, ← card_triangles]
   exact (locallyLinear hs).le_ruzsaSzemerediNumber
 
@@ -183,12 +185,13 @@ lemma rothNumberNat_le_ruzsaSzemerediNumberNat (n : ℕ) :
     (2 * n + 1) * rothNumberNat n ≤ ruzsaSzemerediNumberNat (6 * n + 3) := by
   let α := Fin (2 * n + 1)
   have : Nat.Coprime 2 (2 * n + 1) := by simp
-  haveI : Fact (IsUnit (2 : Fin (2 * n + 1))) := ⟨by simpa using (ZMod.unitOfCoprime 2 this).isUnit⟩
+  have : Fact (IsUnit (2 : Fin (2 * n + 1))) := ⟨by simpa
+    using! (ZMod.unitOfCoprime 2 this).isUnit⟩
   open scoped Fin.CommRing in
   calc
     (2 * n + 1) * rothNumberNat n
-    _ = Fintype.card α * addRothNumber (Iio (n : α)) := by
-      rw [Fin.addRothNumber_eq_rothNumberNat le_rfl, Fintype.card_fin]
+    _ = Fintype.card α * addRothNumber (Iio (⟨n, by lia⟩ : α)) := by
+      rw [Fin.addRothNumber_eq_rothNumberNat (by simp), Fintype.card_fin]
     _ ≤ Fintype.card α * addRothNumber (univ : Finset α) := by
       gcongr; exact subset_univ _
     _ ≤ ruzsaSzemerediNumber (Sum α (Sum α α)) := addRothNumber_le_ruzsaSzemerediNumber _

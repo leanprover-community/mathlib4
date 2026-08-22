@@ -6,15 +6,12 @@ Authors: Anne Baanen, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 module
 
 public import Mathlib.FieldTheory.RatFunc.Basic
-public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.Valuation.IsTrivialOn
-
 
 /-!
 # Generalities on the polynomial structure of rational functions
+
 * Main evaluation properties
 * Study of the X-adic valuation
 
@@ -327,7 +324,7 @@ lemma valuation_monomial_eq_valuation_X_pow (n : ℕ) {a : K} (ha : a ≠ 0) :
 Note: The condition `1 < v RatFunc.X` is typically satisfied by the valuation at infinity. -/
 theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X
      (hlt : 1 < v RatFunc.X) {p : K[X]} (hp : p ≠ 0) : v p = v RatFunc.X ^ p.natDegree := by
-  convert valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X .X hlt hp
+  convert! valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X .X hlt hp
   ext p
   nth_rw 1 [RatFunc.X, ← aeval_X_left_apply p (R := K)]
   exact (aeval_algebraMap_apply K⟮X⟯ X p).symm
@@ -361,7 +358,7 @@ open scoped WithZero
 
 open Polynomial
 
-/- We give this instance a name so that it can be locally disabled when defining `FqtInfty`.
+/-- We give this instance a name so that it can be locally disabled when defining `FqtInfty`.
 Something similar might be needed after the refactor from `Valued` to `ValuativeRel`. -/
 instance valuedRatFunc : Valued K⟮X⟯ ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 

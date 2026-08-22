@@ -6,9 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Category.ULift
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Skeletal
-public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.Logic.UnivLE
 public import Mathlib.Logic.Small.Basic
 
@@ -182,6 +180,7 @@ noncomputable def inverse : ShrinkHoms C ⥤ C where
   obj X := fromShrinkHoms X
   map {X Y} f := (equivShrink (fromShrinkHoms X ⟶ fromShrinkHoms Y)).symm f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The categorical equivalence between `C` and `ShrinkHoms C`, when `C` is locally small.
 -/
@@ -207,7 +206,10 @@ end ShrinkHoms
 
 namespace Shrink
 
-noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
+/- The priority is lower than that of `Preorder.smallCategory`: when `C` is a small preorder,
+`Shrink.{w} C` then gets its category structure from `Preorder (Shrink.{w} C)`
+(see `Mathlib/Order/Shrink.lean`), with morphisms in `Type w` rather than in `Type v`. -/
+noncomputable instance (priority := 50) [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
   inferInstanceAs (Category (InducedCategory _ (equivShrink C).symm))
 
 /-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/

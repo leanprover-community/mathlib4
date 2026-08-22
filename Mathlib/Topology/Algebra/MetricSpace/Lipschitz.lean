@@ -71,7 +71,7 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : 
   have (x) (hx : x ∈ s) : ∃ K' : ℝ≥0, ∀ y ∈ s.diff (ball x (ε x hx)),
       edist (f x) (f y) ≤ K' * edist x y := by
     let ⟨K', hK'⟩ := (hs.diff isOpen_ball).bddAbove_image
-      (f := fun y ↦ dist (f x) (f y) / dist x y) <| .div (.mono (by fun_prop) s.diff_subset)
+      (f := fun y ↦ dist (f x) (f y) / dist x y) <| .div (.mono (by fun_prop) s.sdiff_subset)
         (by fun_prop) fun y hy ↦ ((hε x hx).trans_le <| not_lt.1 <| dist_comm x y ▸ hy.2).ne'
     refine ⟨.mk (K' ⊔ 0) le_sup_right, fun y hy ↦ ?_⟩
     simp_rw [edist_nndist, ← ENNReal.coe_mul, ENNReal.coe_le_coe]

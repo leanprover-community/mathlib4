@@ -114,10 +114,10 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
 
 theorem RegularSpace.of_lift'_closure_le (h : ∀ x : X, (𝓝 x).lift' closure ≤ 𝓝 x) :
     RegularSpace X :=
-  Iff.mpr ((regularSpace_TFAE X).out 0 4) h
+  Iff.mpr ((regularSpace_TFAE X).out 1 5) h
 
 theorem RegularSpace.of_lift'_closure (h : ∀ x : X, (𝓝 x).lift' closure = 𝓝 x) : RegularSpace X :=
-  Iff.mpr ((regularSpace_TFAE X).out 0 5) h
+  Iff.mpr ((regularSpace_TFAE X).out 1 6) h
 
 theorem RegularSpace.of_hasBasis {ι : X → Sort*} {p : ∀ a, ι a → Prop} {s : ∀ a, ι a → Set X}
     (h₁ : ∀ a, (𝓝 a).HasBasis (p a) (s a)) (h₂ : ∀ a i, p a i → IsClosed (s a i)) :
@@ -126,7 +126,7 @@ theorem RegularSpace.of_hasBasis {ι : X → Sort*} {p : ∀ a, ι a → Prop} {
 
 theorem RegularSpace.of_exists_mem_nhds_isClosed_subset
     (h : ∀ (x : X), ∀ s ∈ 𝓝 x, ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s) : RegularSpace X :=
-  Iff.mpr ((regularSpace_TFAE X).out 0 3) h
+  Iff.mpr ((regularSpace_TFAE X).out 1 4) h
 
 /-- A weakly locally compact R₁ space is regular. -/
 instance (priority := 100) [WeaklyLocallyCompactSpace X] [R1Space X] : RegularSpace X :=
@@ -155,7 +155,7 @@ section
 variable [RegularSpace X] {x : X} {s : Set X}
 
 theorem disjoint_nhdsSet_nhds : Disjoint (𝓝ˢ s) (𝓝 x) ↔ x ∉ closure s := by
-  have h := (regularSpace_TFAE X).out 0 2
+  have h := (regularSpace_TFAE X).out 1 3
   exact h.mp ‹_› _ _
 
 theorem disjoint_nhds_nhdsSet : Disjoint (𝓝 x) (𝓝ˢ s) ↔ x ∉ closure s :=
@@ -168,7 +168,7 @@ instance (priority := 100) : R1Space X where
 
 theorem exists_mem_nhds_isClosed_subset {x : X} {s : Set X} (h : s ∈ 𝓝 x) :
     ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s := by
-  have h' := (regularSpace_TFAE X).out 0 3
+  have h' := (regularSpace_TFAE X).out 1 4
   exact h'.mp ‹_› _ _ h
 
 theorem closed_nhds_basis (x : X) : (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsClosed s) id :=
@@ -191,7 +191,7 @@ theorem IsCompact.exists_isOpen_closure_subset {K U : Set X} (hK : IsCompact K) 
     ∃ V, IsOpen V ∧ K ⊆ V ∧ closure V ⊆ U := by
   have hd : Disjoint (𝓝ˢ K) (𝓝ˢ Uᶜ) := by
     simpa [hK.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet,
-      ← subset_interior_iff_mem_nhdsSet] using hU
+      ← subset_interior_iff_mem_nhdsSet] using! hU
   rcases ((hasBasis_nhdsSet _).disjoint_iff (hasBasis_nhdsSet _)).1 hd
     with ⟨V, ⟨hVo, hKV⟩, W, ⟨hW, hUW⟩, hVW⟩
   refine ⟨V, hVo, hKV, Subset.trans ?_ (compl_subset_comm.1 hUW)⟩
@@ -276,7 +276,7 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [LindelofSpace X] [RegularSpace 
   have (a : X) : ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) t ∧ (a ∈ s → a ∈ n) := by
     wlog ains : a ∈ s
     · exact ⟨∅, isOpen_empty, SeparatedNhds.empty_left t |>.disjoint_closure_left, fun a ↦ ains a⟩
-    obtain ⟨n, nna, ncl, nsubkc⟩ := ((regularSpace_TFAE X).out 0 3 :).mp ‹RegularSpace X› a tᶜ <|
+    obtain ⟨n, nna, ncl, nsubkc⟩ := ((regularSpace_TFAE X).out 1 4 :).mp ‹RegularSpace X› a tᶜ <|
       t_cl.compl_mem_nhds (disjoint_left.mp st_dis ains)
     exact
       ⟨interior n,
@@ -483,6 +483,30 @@ theorem normal_exists_closure_subset [NormalSpace X] {s t : Set X} (hs : IsClose
     (compl_subset_comm.1 htt')⟩
   exact fun x hxs hxt => hs't'.le_bot ⟨hxs, hxt⟩
 
+theorem exists_mem_nhdsSet_isClosed_subset [NormalSpace X] {u s : Set X} (h : s ∈ 𝓝ˢ u)
+    (hu : IsClosed u) : ∃ t ∈ 𝓝ˢ u, IsClosed t ∧ t ⊆ s := by
+  obtain ⟨o, ho_open, huo, hos⟩ := mem_nhdsSet_iff_exists.mp h
+  obtain ⟨v, hv_open, huv, hcvo⟩ := normal_exists_closure_subset hu ho_open huo
+  refine ⟨closure v, ?_, isClosed_closure, hcvo.trans hos⟩
+  exact mem_of_superset (mem_nhdsSet_iff_exists.mpr ⟨v, hv_open, huv, subset_rfl⟩) subset_closure
+
+theorem closed_nhdsSet_basis [NormalSpace X] (u : Set X) (hu : IsClosed u) : (𝓝ˢ u).HasBasis
+    (fun s : Set X ↦ s ∈ 𝓝ˢ u ∧ IsClosed s) id := by
+  refine hasBasis_self.2 fun _ ht ↦ exists_mem_nhdsSet_isClosed_subset ht hu
+
+theorem lift'_nhdsSet_closure [NormalSpace X] (u : Set X) (hu : IsClosed u) :
+    (𝓝ˢ u).lift' closure = 𝓝ˢ u :=
+  (closed_nhdsSet_basis u hu).lift'_closure_eq_self fun _ ↦ And.right
+
+theorem Filter.HasBasis.nhdsSet_closure [NormalSpace X] {ι : Sort*} {u : Set X} {p : ι → Prop}
+    {s : ι → Set X} (hu : IsClosed u) (h : (𝓝ˢ u).HasBasis p s) :
+    (𝓝ˢ u).HasBasis p fun i ↦ closure (s i) :=
+  lift'_nhdsSet_closure u hu ▸ h.lift'_closure
+
+theorem hasBasis_nhdsSet_closure [NormalSpace X] (u : Set X) (hu : IsClosed u) :
+    (𝓝ˢ u).HasBasis (fun s => s ∈ 𝓝ˢ u) closure :=
+  (𝓝ˢ u).basis_sets.nhdsSet_closure hu
+
 /-- If the codomain of a closed embedding is a normal space, then so is the domain. -/
 protected theorem Topology.IsClosedEmbedding.normalSpace [TopologicalSpace Y] [NormalSpace Y]
     {f : X → Y} (hf : IsClosedEmbedding f) : NormalSpace X where
@@ -571,10 +595,10 @@ instance (priority := 100) CompletelyNormalSpace.toNormalSpace
   normal s t hs ht hd := separatedNhds_iff_disjoint.2 <|
     completely_normal (by rwa [hs.closure_eq]) (by rwa [ht.closure_eq])
 
-theorem Topology.IsEmbedding.completelyNormalSpace [TopologicalSpace Y] [CompletelyNormalSpace Y]
-    {e : X → Y} (he : IsEmbedding e) : CompletelyNormalSpace X := by
+theorem Topology.IsInducing.completelyNormalSpace [TopologicalSpace Y] [CompletelyNormalSpace Y]
+    {e : X → Y} (he : IsInducing e) : CompletelyNormalSpace X := by
   refine ⟨fun s t hd₁ hd₂ => ?_⟩
-  simp only [he.isInducing.nhdsSet_eq_comap]
+  simp only [he.nhdsSet_eq_comap]
   refine disjoint_comap (completely_normal ?_ ?_)
   · rwa [← subset_compl_iff_disjoint_left, image_subset_iff, preimage_compl,
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_left]
@@ -641,10 +665,8 @@ class T5Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, Comple
 
 theorem Topology.IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y}
     (he : IsEmbedding e) : T5Space X where
-  __ := he.t1Space
-  completely_normal := by
-    have := he.completelyNormalSpace
-    exact completely_normal
+  toCompletelyNormalSpace := he.completelyNormalSpace
+  toT1Space := he.t1Space
 
 protected theorem Homeomorph.t5Space [TopologicalSpace Y] [T5Space X] (h : X ≃ₜ Y) : T5Space Y :=
   h.symm.isClosedEmbedding.t5Space
@@ -690,7 +712,7 @@ open SeparationQuotient
 /-- The `SeparationQuotient` of a completely normal R₀ space is a T₅ space. -/
 instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) where
   t1 := by
-    rwa [((t1Space_TFAE (SeparationQuotient X)).out 1 0 :), SeparationQuotient.t1Space_iff]
+    rwa [((t1Space_TFAE (SeparationQuotient X)).out 2 1 :), SeparationQuotient.t1Space_iff]
   completely_normal s t hd₁ hd₂ := by
     rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
     apply completely_normal <;> rw [← preimage_mk_closure]
@@ -761,10 +783,10 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
   rw [ConnectedComponents.coe_ne_coe] at ne
   have h := connectedComponent_disjoint ne
   -- write ↑b as the intersection of all clopen subsets containing it
-  rw [connectedComponent_eq_iInter_isClopen b, disjoint_iff_inter_eq_empty] at h
+  rw [connectedComponent_eq_iInter_isClopen b] at h
   -- Now we show that this can be reduced to some clopen containing `↑b` being disjoint to `↑a`
   obtain ⟨U, V, hU, ha, hb, rfl⟩ : ∃ (U : Set X) (V : Set (ConnectedComponents X)),
-      IsClopen U ∧ connectedComponent a ∩ U = ∅ ∧ connectedComponent b ⊆ U ∧ (↑) ⁻¹' V = U := by
+    IsClopen U ∧ Disjoint (connectedComponent a) U ∧ connectedComponent b ⊆ U ∧ (↑) ⁻¹' V = U := by
     have h :=
       (isClosed_connectedComponent (α := X)).isCompact.elim_finite_subfamily_closed
         _ (fun s : { s : Set X // IsClopen s ∧ b ∈ s } => s.2.1.1) h
@@ -776,4 +798,4 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
       (connectedComponents_preimage_image U).symm ▸ hU.biUnion_connectedComponent_eq⟩
   rw [ConnectedComponents.isQuotientMap_coe.isClopen_preimage] at hU
   refine ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, ?_, hb mem_connectedComponent, disjoint_compl_left⟩
-  exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
+  exact fun h ↦ Set.disjoint_left.mp ha mem_connectedComponent h

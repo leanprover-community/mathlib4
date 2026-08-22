@@ -95,11 +95,44 @@ file used by the library's own linters.
   Other subcommands to automate git-related actions may be added in the future.
 
 **Analyzing Mathlib's import structure**
+- `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
+  calls `lake exe pole --loc --to <target>` to compute the longest
+  pole to a given target module, and then feeds this into
+  `lake exe unused` to analyze transitively unused imports.
+  Generates `unused.md` containing a markdown table showing the unused imports,
+  and suggests `lake exe graph` commands to visualize the largest "rectangles" of unused imports.
+
 - `topological_sort.py`
   Prints Mathlib modules in topological (import-DAG) order. By default leaves come last
   (roots first); use `--reverse` for leaves first. If filenames or module names are
   provided on stdin, outputs only those modules in topological order.
   Usage: `python3 scripts/topological_sort.py [--reverse]`
+
+**CI debugging tools**
+- `find-ci-errors.sh`
+  Searches through recent failed CI workflow runs to find open PRs whose current CI
+  contains a specific error string. Useful for diagnosing widespread CI issues affecting
+  multiple PRs (e.g., infrastructure problems, toolchain bugs).
+
+  **Usage:**
+  ```bash
+  # Find all PRs currently failing with a specific error
+  ./scripts/find-ci-errors.sh "Error parsing args: cannot parse arguments"
+
+  # Find PRs and automatically add please-merge-master label to trigger rebuilds
+  ./scripts/find-ci-errors.sh --please-merge-master "cannot parse arguments"
+  ```
+
+  **Options:**
+  - `--please-merge-master`: Adds the `please-merge-master` label to all matching PRs,
+    except those with the `merge-conflict` label.
+
+  **Notes:**
+  - Downloads CI logs to `/tmp/gh-run-*.log` (cached to avoid re-downloading)
+  - Checks up to 200 recent failed runs
+  - Only reports PRs whose current CI status is failing (ignores PRs fixed by retries)
+
+  **Requirements:** `gh` (GitHub CLI) installed and authenticated, `jq` for JSON parsing.
 
 **Backward-compatibility `set_option` migration tools**
 
@@ -203,6 +236,17 @@ to module `Foo.Bar` (no `srcDir` indirection).
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
 - `yaml_check.py`, `check-yaml.lean`
   Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
+- `export_crossrefs.lean`
+  Exports a JSON dictionary of every declaration tagged with `@[wikidata]`, `@[stacks]`, or
+  `@[kerodon]` (declaration name, source file, line number, and the cross-reference ids).
+  It runs as a Lean command over the fully-imported `Mathlib` environment (like `#stacks_tags`),
+  so it is invoked with `lake env lean scripts/export_crossrefs.lean` rather than `lake exe`.
+  The output path defaults to `crossrefs.json` (override with `CROSSREFS_OUT`); the embedded
+  mathlib commit SHA is read from `CROSSREFS_COMMIT`. The
+  [`export_crossrefs.yml`](../.github/workflows/export_crossrefs.yml) workflow runs this after every
+  successful master build and publishes the result to the
+  [`crossref-exports`](https://github.com/leanprover-community/crossref-exports) repository
+  (committing only when the entries actually change).
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
 - `auto_commit.sh` runs a command and creates a commit with the result. The commit message format
