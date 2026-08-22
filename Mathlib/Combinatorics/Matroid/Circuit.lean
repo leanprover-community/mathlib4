@@ -51,7 +51,7 @@ These make the useful statement `e ∈ M.fundCircuit e I ⊆ insert e I` true un
 
 @[expose] public section
 
-variable {α : Type*} {M : Matroid α} {C C' I X Y R : Set α} {e f x y : α}
+variable {α : Type*} {M : Matroid α} {C C' I X Y R : Set α} {e f x : α}
 
 open Set
 
