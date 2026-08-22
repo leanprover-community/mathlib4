@@ -67,6 +67,22 @@ structure IsTree : Prop extends
 
 variable {G G'}
 
+theorem isAcyclic_iff_forall_not_isCycle : G.IsAcyclic ↔ ∀ ⦃v⦄ (c : G.Walk v v), ¬c.IsCycle :=
+  .rfl
+
+theorem isAcyclic_iff_forall_not_isCircuit :
+    G.IsAcyclic ↔ ∀ ⦃v⦄ (c : G.Walk v v), ¬c.IsCircuit := by
+  classical
+  exact ⟨fun h v c hc ↦ h c.cycleBypass hc.isCycle_cycleBypass, fun h v c hc ↦ h c hc.isCircuit⟩
+
+theorem not_isAcyclic_iff_exists_isCycle :
+    ¬G.IsAcyclic ↔ ∃ (v : V) (c : G.Walk v v), c.IsCycle := by
+  simp [isAcyclic_iff_forall_not_isCycle]
+
+theorem not_isAcyclic_iff_exists_isCircuit :
+    ¬G.IsAcyclic ↔ ∃ (v : V) (c : G.Walk v v), c.IsCircuit := by
+  simp [isAcyclic_iff_forall_not_isCircuit]
+
 @[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
 
 /-- A graph that has an injective homomorphism to an acyclic graph is acyclic. -/
@@ -103,6 +119,22 @@ lemma IsAcyclic.subgraph (h : G.IsAcyclic) (H : G.Subgraph) : H.coe.IsAcyclic :=
 /-- A spanning subgraph of an acyclic graph is acyclic. -/
 lemma IsAcyclic.anti {G' : SimpleGraph V} (hsub : G ≤ G') (h : G'.IsAcyclic) : G.IsAcyclic :=
   h.comap ⟨_, fun h ↦ hsub h⟩ Function.injective_id
+
+/-- In a non-acyclic graph with finitely-many edges there exists a longest circuit. -/
+theorem exists_isCircuit_forall_isCircuit_length_le_length [Finite G.edgeSet] (h : ¬G.IsAcyclic) :
+    ∃ (v : V) (p : G.Walk v v), p.IsCircuit ∧
+      ∀ v' (p' : G.Walk v' v'), p'.IsCircuit → p'.length ≤ p.length := by
+  have ⟨v₀, p₀, hp₀⟩ := not_isAcyclic_iff_exists_isCircuit.mp h
+  grind [IsCircuit.isTrail, G.exists_isTrail_forall_length_le_of_pred
+    (fun u v p hp ↦ ∃ h : u = v, (h ▸ p).IsCircuit) ⟨v₀, v₀, _, hp₀.isTrail, rfl, hp₀⟩]
+
+/-- In a non-acyclic graph with finitely-many edges there exists a longest cycle. -/
+theorem exists_isCycle_forall_isCycle_length_le_length [Finite G.edgeSet] (h : ¬G.IsAcyclic) :
+    ∃ (v : V) (p : G.Walk v v), p.IsCycle ∧
+      ∀ v' (p' : G.Walk v' v'), p'.IsCycle → p'.length ≤ p.length := by
+  have ⟨v₀, p₀, hp₀⟩ := not_isAcyclic_iff_exists_isCycle.mp h
+  grind [IsCycle.isCircuit, IsCircuit.isTrail, G.exists_isTrail_forall_length_le_of_pred
+    (fun u v p hp ↦ ∃ h : u = v, (h ▸ p).IsCycle) ⟨v₀, v₀, _, hp₀.isTrail, rfl, hp₀⟩]
 
 private lemma Walk.exists_mem_contains_edges_of_directed (Hs : Set <| SimpleGraph V)
     (hHs : Hs.Nonempty) (h_dir : DirectedOn (· ≤ ·) Hs) {u v : V} (p : (sSup Hs).Walk u v) :
