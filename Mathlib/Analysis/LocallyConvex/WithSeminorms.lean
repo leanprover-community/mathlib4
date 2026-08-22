@@ -62,7 +62,6 @@ seminorm, locally convex
 
 @[expose] public section
 
-
 open NormedField Set Seminorm TopologicalSpace Filter List Bornology
 
 open NNReal Pointwise Topology Uniformity
@@ -289,7 +288,7 @@ structure WithSeminorms (p : SeminormFamily 𝕜 E ι) [topology : TopologicalSp
 
 variable (𝕜 E) in
 /-- A topological vector space `E` is **normable** over `𝕜` if its topology is induced by
-*some* `𝕜`-seminorm.
+*some* `𝕜`-seminorm. Note that this does not imply that the space is Hausdorff.
 To endow such a space with a normed space structure with the same topology, use:
 ```
   let : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
@@ -567,6 +566,13 @@ instance {E : ι → Type*} [Finite ι] [∀ i, AddCommGroup (E i)] [∀ i, Modu
   let A i : SeminormedAddCommGroup (E i) := IsNormableSpace.toSeminormedAddCommGroup 𝕜 (E i)
   let B i : NormedSpace 𝕜 (E i) := IsNormableSpace.toNormedSpace 𝕜 (E i)
   let : Fintype ι := Fintype.ofFinite ι
+  infer_instance
+
+include 𝕜 in
+/-- A normable space is metrizable. Not an instance as the field of scalars can not be guessed
+by typeclass inference. -/
+theorem IsNormableSpace.toPseudoMetrizableSpace : PseudoMetrizableSpace E := by
+  let : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
   infer_instance
 
 end NormedSpace
