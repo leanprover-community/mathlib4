@@ -15,6 +15,8 @@ public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.PresentedGroup
 public import Mathlib.GroupTheory.QuotientGroup.Basic
 public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.SetTheory.Cardinal.NatCard
+
 
 /-!
 # Finitely Presented Groups
@@ -143,16 +145,34 @@ theorem exists_mulEquiv_presentedGroup [hg : IsFinitelyPresented G] :
 /-- A free group with a finite number of generators is finitely presented. -/
 @[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
 ]
-instance [Finite α] : IsFinitelyPresented (FreeGroup α) := by
-  have ⟨n, _, f, hf_surj, hf_inj⟩ := Finite.exists_equiv_fin α
-  refine ⟨n, FreeGroup.map f, FreeGroup.map_surjective hf_surj.surjective, ?_⟩
-  · rw [(FreeGroup.map f).ker_eq_bot (FreeGroup.map_injective hf_inj.injective)]
-    exact .bot
-
 instance [Finite α] (s : Set (FreeGroup α)) [Finite s] :
     IsFinitelyPresented (PresentedGroup s) :=
   of_surjective (PresentedGroup.mk s) (PresentedGroup.mk_surjective s)
     ⟨s, ‹_›, (QuotientGroup.ker_mk' (Subgroup.normalClosure s)).symm⟩
+
+/-- A group is finitely presented if there exists a `Set G` such that the canonical inclusion map
+is surjective and the kernel is finitely generated as a normal subgroup. -/
+@[to_additive /-- An additive group is finitely presented if there exists a `Set G` such that the
+canonical inclusion map is surjective and the kernel is finitely generated as a normal additive
+subgroup. -/]
+theorem iff_hom_surj_set_G :
+    IsFinitelyPresented G ↔
+      ∃ (S : Set G) (_ : S.Finite),
+        Function.Surjective (FreeGroup.lift (Subtype.val : S → G)) ∧
+        ((FreeGroup.lift (Subtype.val : S → G)).ker).IsNormalClosureFG := by
+  constructor
+  · rintro ⟨n, φ, hsurj, hker⟩
+    let ψ := FreeGroup.map fun i ↦ (⟨_, ⟨i, rfl⟩⟩ : Set.range (φ ∘ FreeGroup.of))
+    have ψ_surj : Function.Surjective ψ := by
+      apply FreeGroup.map_surjective; rintro ⟨_, ⟨a, rfl⟩⟩; exact ⟨a, rfl⟩
+    have hcomp : φ = (FreeGroup.lift Subtype.val).comp ψ := by
+      ext a; simp [ψ]
+    refine ⟨_, Set.finite_range _, Function.Surjective.of_comp <| hcomp ▸ hsurj, ?_⟩
+    simpa [ψ_surj, ← MonoidHom.comap_ker, hcomp, Subgroup.map_comap_eq_self_of_surjective]
+    using hker.map (hf := ψ_surj)
+  · rintro ⟨S, hS, hsurj, hker⟩
+    haveI : Finite S := hS
+    apply of_surjective _ hsurj hker
 
 /-- `Multiplicative ℤ` is finitely presented. -/
 instance : IsFinitelyPresented (Multiplicative ℤ) :=
