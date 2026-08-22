@@ -86,7 +86,7 @@ section Units
 def Nonneg.unitsHomeomorphPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
     [IsStrictOrderedRing R] [PosMulReflectLT R]
     [TopologicalSpace R] [ContinuousInv₀ R] :
-    { r : R // 0 ≤ r }ˣ ≃ₜ { r : R // 0 < r } where
+    (Nonneg R)ˣ ≃ₜ { r : R // 0 < r } where
   __ := Nonneg.unitsEquivPos R
   continuous_toFun := by
     rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
