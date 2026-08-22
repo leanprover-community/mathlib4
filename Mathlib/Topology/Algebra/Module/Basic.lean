@@ -154,9 +154,10 @@ variable [ContinuousAdd M]
 
 /-- The (topological-space) closure of a submodule of a topological `R`-module `M` is itself
 a submodule. -/
-def Submodule.topologicalClosure (s : Submodule R M) : Submodule R M :=
-  { s.toAddSubmonoid.topologicalClosure with
-    smul_mem' := s.mapsTo_smul_closure }
+def Submodule.topologicalClosure : ClosureOperator (Submodule R M) := .mk₂
+  (fun s ↦ { s.toAddSubmonoid.topologicalClosure with smul_mem' := s.mapsTo_smul_closure })
+  (fun _ ↦ subset_closure)
+  (fun _ _ h ↦ closure_minimal h isClosed_closure)
 
 @[simp, norm_cast]
 theorem Submodule.topologicalClosure_coe (s : Submodule R M) :
