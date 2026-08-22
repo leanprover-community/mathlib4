@@ -64,7 +64,7 @@ instance [Inhabited α] : Inhabited (RelSeries r) where
 instance [Nonempty α] : Nonempty (RelSeries r) :=
   Nonempty.map (singleton r) inferInstance
 
-variable {r}
+variable {r} (p : RelSeries r)
 
 @[ext (iff := false)]
 lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
@@ -81,6 +81,13 @@ lemma rel_of_lt [r.IsTrans] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i 
 lemma rel_or_eq_of_le [r.IsTrans] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
     x i ~[r] x j ∨ x i = x j :=
   (Fin.lt_or_eq_of_le h).imp (x.rel_of_lt ·) (by rw [·])
+
+theorem toFun_injective [r.IsIrrefl] [r.IsTrans] : Function.Injective p := by
+  refine fun i j heq ↦ le_antisymm ?_ ?_ <;>
+    exact Fin.not_lt.mp (r.irrefl _ <| heq ▸ p.rel_of_lt ·)
+
+theorem length_lt_fintypeCard [Fintype α] [r.IsIrrefl] [r.IsTrans] : p.length < Fintype.card α := by
+  simpa [Nat.add_one_le_iff] using Fintype.card_le_of_injective p p.toFun_injective
 
 /--
 Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `r` induces a relation
@@ -112,6 +119,9 @@ lemma isChain_toList (x : RelSeries r) : x.toList.IsChain (· ~[r] ·) := by
 
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| List.mem_ofFn.mpr ⟨_, rfl⟩
+
+theorem nodup_toList [r.IsIrrefl] [r.IsTrans] : p.toList.Nodup :=
+  List.nodup_ofFn_ofInjective p.toFun_injective
 
 /-- Every nonempty list satisfying the chain condition gives a relation series -/
 @[simps]
@@ -842,15 +852,25 @@ lemma SetRel.IsWellFounded.inv_of_finiteDimensional [r.FiniteDimensional] :
 lemma SetRel.IsWellFounded.of_finiteDimensional [r.FiniteDimensional] : r.IsWellFounded :=
   .inv_of_finiteDimensional r.inv
 
+instance [Finite α] [r.IsIrrefl] [r.IsTrans] : Finite (RelSeries r) := by
+  have := Fintype.ofFinite α
+  apply Finite.of_injective (β := (l : Fin _) × (Fin (l + 1) → α))
+    fun p ↦ ⟨⟨_, p.length_lt_fintypeCard⟩, p⟩
+  rintro ⟨⟩ ⟨⟩ ⟨⟩
+  rfl
+
+instance [Infinite α] : Infinite (RelSeries r) :=
+  .of_injective _ <| Function.LeftInverse.injective RelSeries.head_singleton
+
+instance [Finite α] [Nonempty α] [r.IsIrrefl] [r.IsTrans] : r.FiniteDimensional := by
+  refine r.not_infiniteDimensional_iff.mp fun h ↦ ?_
+  have := Fintype.ofFinite α
+  have ⟨s, hs⟩ := h.exists_relSeries_with_length <| Fintype.card α
+  simpa [hs] using s.length_lt_fintypeCard
+
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
   SetRel.FiniteDimensional {(a, b) : γ × γ | a < b}
-
-instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] :
-    FiniteDimensionalOrder γ where
-  exists_longest_relSeries := ⟨.singleton _ default, fun x ↦ by
-    by_contra! r
-    exact (x.step ⟨0, by lia⟩).ne <| Subsingleton.elim _ _⟩
 
 /-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
 abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
@@ -1073,12 +1093,8 @@ section Fintype
 
 variable [Fintype α]
 
-lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α := by
-  by_contra! h
-  obtain ⟨i, j, hn, he⟩ := Fintype.exists_ne_map_eq_of_card_lt s (by rw [Fintype.card_fin]; lia)
-  wlog hl : i < j generalizing i j
-  · exact this j i hn.symm he.symm (by lia)
-  exact absurd he (s.strictMono hl).ne
+lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α :=
+  s.length_lt_fintypeCard
 
 instance [DecidableLT α] : Fintype (LTSeries α) where
   elems := Finset.univ.map (injStrictMono (Fintype.card α))

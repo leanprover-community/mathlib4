@@ -6274,6 +6274,7 @@ public import Mathlib.Order.RelClasses
 public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.RelSeries
+public import Mathlib.Order.RelSeries.Lemmas
 public import Mathlib.Order.Restriction
 public import Mathlib.Order.SaddlePoint
 public import Mathlib.Order.ScottContinuity
