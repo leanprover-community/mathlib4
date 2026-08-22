@@ -156,6 +156,14 @@ theorem Gamma1_in_Gamma0 (N : ℕ) : Gamma1 N ≤ Gamma0 N := by
   simp only [Gamma0_mem, Gamma1_mem] at *
   exact HA.2.2
 
+theorem Gamma_in_Gamma1 (N : ℕ) : Gamma N ≤ Gamma1 N := by
+  intro x HA
+  simp only [Gamma_mem, Gamma1_mem] at *
+  tauto
+
+theorem Gamma_in_Gamma0 (N : ℕ) : Gamma N ≤ Gamma0 N :=
+  (Gamma_in_Gamma1 N).trans (Gamma1_in_Gamma0 N)
+
 section CongruenceSubgroups
 
 /-- A congruence subgroup is a subgroup of `SL(2, ℤ)` which contains some `Gamma N` for some
