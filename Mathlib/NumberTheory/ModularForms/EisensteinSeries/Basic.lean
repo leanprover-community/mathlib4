@@ -50,9 +50,9 @@ def E {k : ℕ} (hk : 3 ≤ k) : ModularForm 𝒮ℒ k :=
   ((1 / 2 : ℂ) • eisensteinSeriesMF (mod_cast hk) 0).copy _ rfl Gamma_one_coe_eq_SL.symm
 
 /-- The normalised level 1 Eisenstein series of weight 4. -/
-abbrev E₄ : ModularForm 𝒮ℒ 4 := E (by norm_num : 3 ≤ 4)
+abbrev E₄ : ModularForm 𝒮ℒ 4 := E (by simp : 3 ≤ 4)
 
 /-- The normalised level 1 Eisenstein series of weight 6. -/
-abbrev E₆ : ModularForm 𝒮ℒ 6 := E (by norm_num : 3 ≤ 6)
+abbrev E₆ : ModularForm 𝒮ℒ 6 := E (by simp : 3 ≤ 6)
 
 end ModularForm

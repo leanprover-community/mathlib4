@@ -247,7 +247,7 @@ theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {
     · have : (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)).HasTemperateGrowth := by
         fun_prop
       exact this.1.continuous.aestronglyMeasurable
-    · rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by norm_num) (by norm_num)]
+    · rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by simp) (by simp)]
       suffices h : ∫⁻ a : E, ENNReal.ofReal ‖(1 + ‖a‖ ^ 2) ^ (-s)‖ < ⊤ from by
         norm_cast
         simp_rw [ofReal_norm] at h
@@ -298,7 +298,7 @@ theorem MemSobolev.fourierMultiplierCLM_of_bounded {s : ℝ} {f : 𝓢'(E, F)}
 theorem MemSobolev.mono {s s' : ℝ} (h : s' ≤ s) {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f) :
     MemSobolev s' 2 f := by
   have h' : (s' - s) / 2 ≤ 0 := by
-    rw [div_le_iff₀ (by norm_num)]
+    rw [div_le_iff₀ (by simp)]
     simp [h]
   have hs : s' = (s' - s) + s := by ring
   rw [hs, ← memSobolev_besselPotential_iff]

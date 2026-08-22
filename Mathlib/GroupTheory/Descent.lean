@@ -152,7 +152,7 @@ theorem CommGroup.fg_of_descent' {G : Type*} [CommGroup G] {h : G → ℝ} {C : 
     Group.FG G := by
   have H₃' x : 4 * h x - (h 1 + C) ≤ h (x ^ 2) := by grind [pow_two, div_self']
   have H₂' g x : h x ≤ 2 * h (g * x) + (2 * h g⁻¹ + C) := by grind [mul_inv_cancel_comm]
-  exact fg_of_descent (b := 4) (by norm_num) (by norm_num) H₁ H₂' H₃'
+  exact fg_of_descent (b := 4) (by simp) (by norm_num) H₁ H₂' H₃'
 
 /--
 If `M` is a monoid and `n : ℕ`, `h : M → ℝ` satisfy
@@ -213,6 +213,6 @@ theorem CommGroup.finite_torsion_of_descent' {G : Type*} [CommGroup G] {h : G �
     (H : ∀ x y, |h (x * y) + h (x / y) - 2 * (h x + h y)| ≤ C) [Northcott h] :
     Finite (torsion G) := by
   have H' x : 4 * h x - (h 1 + C) ≤ h (x ^ 2) := by grind [pow_two, div_self']
-  exact finite_torsion_of_descent (b := 4) (by norm_num) H'
+  exact finite_torsion_of_descent (b := 4) (by simp) H'
 
 end

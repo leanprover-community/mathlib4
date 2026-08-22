@@ -611,7 +611,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- (It may also need the positivity extensions in https://github.com/leanprover-community/mathlib4/pull/3907.)
       rw [show 3 = 1 + 1 + 1 from rfl]
       repeat rw [Finset.sum_range_succ]
-      norm_num [Nat.factorial]
+      simp [Nat.factorial]
       nlinarith
     _ < 1 / (1 - x) := by rw [lt_div_iff₀] <;> nlinarith
 

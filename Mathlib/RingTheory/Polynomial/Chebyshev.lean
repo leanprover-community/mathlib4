@@ -173,7 +173,7 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
       Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, neg_mul, neg_neg, ih2,
       Int.negOnePow_def 2]
     norm_cast
-    norm_num
+    simp
     ring
   | neg_add_one n ih1 ih2 =>
     simp only [T_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1, neg_mul,
@@ -346,14 +346,14 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
       Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,
       Int.negOnePow_def 2]
     norm_cast
-    norm_num
+    simp
     ring
   | neg_add_one n ih1 ih2 =>
     simp only [U_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
       Int.cast_neg, Int.cast_natCast, Int.negOnePow_neg, neg_mul, ih2, Int.cast_add, Int.cast_one,
       Int.cast_sub, sub_add_cancel, Int.negOnePow_sub, Int.negOnePow_add]
     norm_cast
-    norm_num
+    simp
     ring
 
 theorem U_eval_zero (n : ℤ) :
@@ -603,7 +603,7 @@ theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
       Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, neg_mul, neg_neg, ih2,
       Int.negOnePow_def 2]
     norm_cast
-    norm_num
+    simp
     ring
   | neg_add_one n ih1 ih2 =>
     simp only [C_sub_one, eval_sub, eval_mul, eval_X, mul_neg, mul_one, ih1, neg_mul,
@@ -712,14 +712,14 @@ theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := 
       Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,
       Int.negOnePow_def 2]
     norm_cast
-    norm_num
+    simp
     ring
   | neg_add_one n ih1 ih2 =>
     simp only [S_sub_one, eval_sub, eval_mul, eval_X, mul_neg, ih1,
       Int.cast_neg, Int.cast_natCast, Int.negOnePow_neg, neg_mul, ih2, Int.cast_add, Int.cast_one,
       Int.cast_sub, sub_add_cancel, Int.negOnePow_sub, Int.negOnePow_add]
     norm_cast
-    norm_num
+    simp
     ring
 
 theorem S_comp_two_mul_X (n : ℤ) : (S R n).comp (2 * X) = U R n := by

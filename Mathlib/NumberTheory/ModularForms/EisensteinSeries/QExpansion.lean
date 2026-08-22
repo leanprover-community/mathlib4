@@ -113,7 +113,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_cexp (k : ℕ) :
     simp only [Asymptotics.isBigO_iff, norm_one, norm_pow, Real.norm_natCast, eventually_atTop]
     exact ⟨1, 1, fun b hb ↦ by norm_cast; simp [hb]⟩
   simpa using summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp k 1 (p := 1)
-    (by norm_num) h0
+    (by simp) h0
 
 lemma differentiableAt_iteratedDerivWithin_cexp (n a : ℕ) {s : Set ℂ} (hs : IsOpen s)
     {r : ℂ} (hr : r ∈ s) : DifferentiableAt ℂ
@@ -192,7 +192,7 @@ lemma summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
   have he : 0 < (e * (z : ℂ)).im := by
     simpa using z.2
   apply ((summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp 0 k (p := 1)
-    (f := fun n ↦ (n ^ k : ℂ)) (by norm_num)
+    (f := fun n ↦ (n ^ k : ℂ)) (by simp)
     (by simp [← Complex.isBigO_ofReal_right, Asymptotics.isBigO_refl])).summable he).congr
   grind [ofReal_one, iteratedDerivWithin_zero, Pi.smul_apply, smul_eq_mul]
 

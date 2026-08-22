@@ -440,7 +440,7 @@ instance toOne [DecidableEq E] : One (AddGroupSeminorm E) :=
         by_cases hx : x = 0
         · rw [ite_eq_left hx, hx, zero_add, zero_add]
         · rw [ite_eq_right hx]
-          refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> norm_num
+          refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> simp
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
 
 @[simp]
@@ -626,7 +626,7 @@ instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
         by_cases hx : x = 1
         · rw [ite_eq_left hx, hx, one_mul, zero_add]
         · rw [ite_eq_right hx]
-          refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> norm_num
+          refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> simp
       inv' := fun x => by simp_rw [inv_eq_one] }⟩
 
 @[simp]

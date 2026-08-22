@@ -397,7 +397,7 @@ open Real MeasureTheory MeasureTheory.Measure ENNReal Metric
 @[simp]
 lemma volume_ball_fin_two (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
     volume (ball x r) = .ofReal r ^ 2 * .ofReal π := by
-  norm_num [InnerProductSpace.volume_ball_of_dim_even (k := 1) (by simp) x]
+  simp [InnerProductSpace.volume_ball_of_dim_even (k := 1) (by simp) x]
 
 @[simp]
 lemma volume_closedBall_fin_two (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :

@@ -468,7 +468,7 @@ theorem Circle.hasBasis_centeredArc_div_two_pow :
     (fun _ _ ↦ by positivity) (by simp) ?_
   simp_rw [div_eq_mul_inv, pow_succ, mul_inv_rev, ← mul_assoc]
   rw [← mul_zero (π * 2⁻¹)]
-  exact tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt (by norm_num))
+  exact tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt (by simp))
     |>.const_mul _
 
 theorem Circle.isOpen_centeredArc (r : ℝ) : IsOpen (centeredArc r) := by
