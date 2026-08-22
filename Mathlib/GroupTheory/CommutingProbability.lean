@@ -88,6 +88,9 @@ theorem commProb_eq_one_iff [h : Nonempty M] : commProb M = 1 ↔ IsMulCommutati
   · exact ⟨fun h ↦ ⟨⟨fun x y ↦ h (x, y)⟩⟩, fun h x ↦ mul_comm' ..⟩
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr card_ne_zero)
 
+theorem commProb_eq_one [Nonempty M] [IsMulCommutative M] : commProb M = 1 :=
+  commProb_eq_one_iff.mpr ‹_›
+
 variable (G : Type*) [Group G]
 
 theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
@@ -123,8 +126,7 @@ variable (G)
 
 theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ ≤ commProb G :=
   (inv_le_iff_one_le_mul₀ (Nat.cast_pos.mpr Finite.card_pos)).mpr
-    (le_trans (ge_of_eq (commProb_eq_one_iff.mpr (Abelianization.commGroup G).to_isCommutative))
-      (commutator G).commProb_quotient_le)
+    (commProb_eq_one.ge.trans (commutator G).commProb_quotient_le)
 
 -- Construction of group with commuting probability 1/n
 namespace DihedralGroup
