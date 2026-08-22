@@ -121,6 +121,33 @@ lemma one_notMem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
 
 end PartialOrder
 
+section SemilatticeInf
+variable [SemilatticeInf α] [One α] [IsBotOneClass α]
+
+@[to_additive]
+theorem one_inf (a : α) : 1 ⊓ a = 1 := by simp
+
+@[to_additive]
+theorem inf_one (a : α) : a ⊓ 1 = 1 := by simp
+
+end SemilatticeInf
+
+section SemilatticeSup
+variable [SemilatticeSup α] [One α] [IsBotOneClass α]
+
+@[to_additive]
+theorem one_sup (a : α) : 1 ⊔ a = a := by simp
+
+@[to_additive]
+theorem sup_one (a : α) : a ⊔ 1 = a := by simp
+
+@[to_additive (attr := simp)]
+theorem sup_eq_one {a b : α} : a ⊔ b = 1 ↔ a = 1 ∧ b = 1 :=
+  let := IsBotOneClass.toOrderBot α
+  sup_eq_bot_iff
+
+end SemilatticeSup
+
 section LinearOrder
 variable [LinearOrder α] [One α] [IsBotOneClass α]
 
@@ -136,10 +163,8 @@ theorem one_max (a : α) : max 1 a = a := by simp
 @[to_additive]
 theorem max_one (a : α) : max a 1 = a := by simp
 
-@[to_additive (attr := simp)]
-theorem max_eq_one {a b : α} : max a b = 1 ↔ a = 1 ∧ b = 1 :=
-  let := IsBotOneClass.toOrderBot α
-  max_eq_bot
+@[to_additive]
+theorem max_eq_one {a b : α} : max a b = 1 ↔ a = 1 ∧ b = 1 := sup_eq_one
 
 @[to_additive (attr := simp)]
 theorem min_eq_one {a b : α} : min a b = 1 ↔ a = 1 ∨ b = 1 :=
