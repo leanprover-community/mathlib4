@@ -202,7 +202,7 @@ section Norm
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E] (u : Circle) (v : E)
 
-@[simp] protected lemma norm_smul : ‖u • v‖ = ‖v‖ := by simp_rw [smul_def, norm_smul]
+@[simp] protected lemma norm_smul : ‖u • v‖ = ‖v‖ := by simp [smul_def, norm_smul]
 @[simp] protected lemma nnnorm_smul : ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_injective (u.norm_smul v)
 @[simp] protected lemma enorm_smul : ‖u • v‖ₑ = ‖v‖ₑ := by simp [enorm_eq_nnnorm]
 
