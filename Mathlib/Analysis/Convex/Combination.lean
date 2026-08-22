@@ -154,6 +154,11 @@ lemma Finset.centerMass_const (hw : ∑ j ∈ t, w j ≠ 0) (c : E) :
     t.centerMass w (Function.const _ c) = c := by
   simp [centerMass, ← sum_smul, hw]
 
+/-- The weighted sum of displacements from the center of mass is zero. -/
+lemma Finset.sum_smul_sub_centerMass_eq_zero (hw : ∑ i ∈ t, w i ≠ 0) :
+    ∑ i ∈ t, w i • (z i - t.centerMass w z) = 0 := by
+  simp [smul_sub, sum_sub_distrib, centerMass, ← sum_smul, hw]
+
 lemma Finset.centerMass_congr [DecidableEq ι] {t' : Finset ι} {w' : ι → R} {z' : ι → E}
     (h : ∀ i, (i ∈ t ∧ w i ≠ 0 ∨ i ∈ t' ∧ w' i ≠ 0) → i ∈ t ∩ t' ∧ w i = w' i ∧ z i = z' i) :
     t.centerMass w z = t'.centerMass w' z' := by
