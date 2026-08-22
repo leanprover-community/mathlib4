@@ -1,0 +1,130 @@
+/-
+Copyright (c) 2026 Robert Hawkins. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Robert Hawkins
+-/
+module
+
+public import Mathlib.RingTheory.HopfAlgebra.Convolution
+public import Mathlib.RingTheory.HopfAlgebra.Primitive
+
+/-!
+# Constructing Hopf algebras from algebra generators
+
+To upgrade a bialgebra to a Hopf algebra, an antipode candidate that is an anti-algebra hom
+only needs to satisfy the antipode identities on an algebra-generating set.
+
+## Main definitions
+
+* `HopfAlgebra.ofGenerators`: upgrade a bialgebra `A` to a Hopf algebra, given an anti-algebra
+  hom `S : A →ₐ[R] Aᵐᵒᵖ` satisfying the antipode identities at every element of an
+  algebra-generating set.
+* `HopfAlgebra.ofPrimitives`: the special case where the generators are primitive and `S` is
+  an additive inverse on them; such an `S` is necessarily the antipode.
+
+## References
+
+* [D. Grinberg, V. Reiner, *Hopf algebras in combinatorics*][GrinbergReiner2020]
+-/
+
+public section
+
+open Algebra Bialgebra Coalgebra LinearMap MulOpposite WithConv
+
+variable {R A : Type*} [CommSemiring R] [Semiring A] {s : Set A}
+
+namespace LinearMap
+
+variable [Bialgebra R A] {f : A →ₗ[R] A}
+
+/-- If a unital antimultiplicative map `f` is a left convolution inverse of the identity
+pointwise on an algebra-generating set, then `toConv f * toConv id = 1`. -/
+theorem convMul_id_eq_one_of_adjoin_eq_top
+    (h_one : f 1 = 1) (h_mul : ∀ x y, f (x * y) = f y * f x)
+    (adjoin_eq_top : adjoin R s = ⊤)
+    (f_convMul_id : ∀ p ∈ s,
+      (toConv f * toConv (.id : A →ₗ[R] A)) p = (1 : WithConv (A →ₗ[R] A)) p) :
+    toConv f * toConv id = 1 := by
+  ext x; refine adjoin_le
+    (S := (eqLocus (toConv f * toConv (.id : A →ₗ[R] A)).ofConv (ofConv 1)).toSubalgebra ?_
+      fun a b ha hb ↦ ?_)
+    f_convMul_id (adjoin_eq_top.ge mem_top)
+  · simp [h_one, TensorProduct.one_def]
+  let 𝓡a := ℛ R a; let 𝓡b := ℛ R b
+  simp only [mem_eqLocus, 𝓡a.convMul_apply, 𝓡b.convMul_apply, convOne_apply, id_apply] at ha hb ⊢
+  calc (toConv f * toConv (.id : A →ₗ[R] A)) (a * b)
+      _ = ∑ p ∈ 𝓡a.index, ∑ q ∈ 𝓡b.index,
+            f (𝓡b.left q) * (f (𝓡a.left p) * 𝓡a.right p) * 𝓡b.right q := by
+        simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum, h_mul, mul_assoc]
+      _ = ∑ q ∈ 𝓡b.index, f (𝓡b.left q) * algebraMap R A (counit a) * 𝓡b.right q := by
+        rw [Finset.sum_comm]; simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ha]
+      _ = algebraMap R A (counit (a * b)) := by
+        simp_rw [← commutes, mul_assoc, ← Finset.mul_sum, hb, ← map_mul, ← Bialgebra.counit_mul]
+
+/-- If a unital antimultiplicative map `f` is a right convolution inverse of the identity
+pointwise on an algebra-generating set, then `toConv id * toConv f = 1`. -/
+theorem id_convMul_eq_one_of_adjoin_eq_top
+    (h_one : f 1 = 1) (h_mul : ∀ x y, f (x * y) = f y * f x)
+    (adjoin_eq_top : adjoin R s = ⊤)
+    (id_convMul_f : ∀ p ∈ s,
+      (toConv (.id : A →ₗ[R] A) * toConv f) p = (1 : WithConv (A →ₗ[R] A)) p) :
+    toConv id * toConv f = 1 := by
+  ext x; refine adjoin_le
+    (S := (eqLocus (toConv (.id : A →ₗ[R] A) * toConv f).ofConv (ofConv 1)).toSubalgebra ?_
+      fun a b ha hb ↦ ?_)
+    id_convMul_f (adjoin_eq_top.ge mem_top)
+  · simp [h_one, TensorProduct.one_def]
+  let 𝓡a := ℛ R a; let 𝓡b := ℛ R b
+  simp only [mem_eqLocus, 𝓡a.convMul_apply, 𝓡b.convMul_apply, convOne_apply, id_apply] at ha hb ⊢
+  calc (toConv (.id : A →ₗ[R] A) * toConv f) (a * b)
+      _ = ∑ p ∈ 𝓡a.index, ∑ q ∈ 𝓡b.index,
+            𝓡a.left p * (𝓡b.left q * f (𝓡b.right q)) * f (𝓡a.right p) := by
+        simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum, h_mul, mul_assoc]
+      _ = ∑ p ∈ 𝓡a.index, 𝓡a.left p * algebraMap R A (counit b) * f (𝓡a.right p) := by
+        simp_rw [← Finset.sum_mul, ← Finset.mul_sum, hb]
+      _ = algebraMap R A (counit (a * b)) := by
+        simp_rw [← commutes, mul_assoc, ← Finset.mul_sum, ha, ← map_mul, mul_comm (counit b),
+          ← Bialgebra.counit_mul]
+
+end LinearMap
+
+namespace HopfAlgebra
+
+/-- Build a Hopf algebra structure on a bialgebra `A` from an algebra homomorphism into
+`Aᵐᵒᵖ` that is a two-sided convolution inverse of the identity at every element of an
+algebra-generating set. -/
+noncomputable abbrev ofGenerators [Bialgebra R A] (S : A →ₐ[R] Aᵐᵒᵖ)
+    (adjoin_eq_top : adjoin R s = ⊤)
+    (S_convMul_id : ∀ p ∈ s,
+      (toConv ((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) *
+        toConv (.id : A →ₗ[R] A)) p = (1 : WithConv (A →ₗ[R] A)) p)
+    (id_convMul_S : ∀ p ∈ s,
+      (toConv (.id : A →ₗ[R] A) *
+        toConv ((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)) p =
+        (1 : WithConv (A →ₗ[R] A)) p) :
+    HopfAlgebra R A :=
+  ofConvInverse ((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
+    (convMul_id_eq_one_of_adjoin_eq_top (by simp) (fun _ _ ↦ by simp) adjoin_eq_top
+      S_convMul_id)
+    (id_convMul_eq_one_of_adjoin_eq_top (by simp) (fun _ _ ↦ by simp) adjoin_eq_top
+      id_convMul_S)
+
+/-- Upgrade a bialgebra generated by primitive elements to a Hopf algebra by specifying that
+the antipode candidate is an additive inverse at each generator. -/
+noncomputable abbrev ofPrimitives [Bialgebra R A] (S : A →ₐ[R] Aᵐᵒᵖ)
+    (adjoin_eq_top : adjoin R s = ⊤) (prim : ∀ p ∈ s, IsPrimitiveElem R p)
+    (S_add_cancel : ∀ p ∈ s, unop (S p) + p = 0) : HopfAlgebra R A := by
+  refine ofGenerators S adjoin_eq_top ?_ ?_ <;> intro p hp <;>
+    simpa [convMul_apply, (prim p hp).comul_eq_tmul_add_tmul, (prim p hp).counit_eq_zero,
+      add_comm] using S_add_cancel p hp
+
+/-- An anti-algebra hom on a Hopf algebra that is an additive inverse at each element of a
+primitive algebra-generating set is the antipode. See the remark following Proposition 1.4.17
+in [GrinbergReiner2020]. -/
+theorem eq_antipodeAlgHomOp_of_primitives [HopfAlgebra R A] (S : A →ₐ[R] Aᵐᵒᵖ)
+    (adjoin_eq_top : adjoin R s = ⊤) (prim : ∀ p ∈ s, IsPrimitiveElem R p)
+    (S_add_cancel : ∀ p ∈ s, unop (S p) + p = 0) : S = antipodeAlgHomOp R A :=
+  AlgHom.ext_of_adjoin_eq_top adjoin_eq_top fun p hp ↦ unop_injective <|
+    left_neg_eq_right_neg (S_add_cancel p hp) (prim p hp).add_antipode_cancel
+
+end HopfAlgebra
