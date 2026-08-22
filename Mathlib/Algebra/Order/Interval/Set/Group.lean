@@ -12,7 +12,7 @@ public import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Logic.Pairwise
 
-/-! ### Lemmas about arithmetic operations and intervals. -/
+/-! # Lemmas about arithmetic operations and intervals. -/
 
 public section
 

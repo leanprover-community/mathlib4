@@ -9,7 +9,7 @@ public meta import Lean.Elab.Tactic.Conv.Basic
 public import Mathlib.Init
 
 /-!
-## Introduce the `apply_congr` conv mode tactic.
+# Introduce the `apply_congr` conv mode tactic.
 
 `apply_congr` will apply congruence lemmas inside `conv` mode.
 It is particularly useful when the automatically generated congruence lemmas
