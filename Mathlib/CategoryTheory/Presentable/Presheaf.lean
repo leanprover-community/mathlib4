@@ -29,6 +29,7 @@ open Opposite Limits
 
 namespace Presheaf
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] freeYonedaHomEquiv_comp in
 instance {C : Type u} [Category.{v} C] {A : Type u'} [Category.{v'} A]
     [HasColimitsOfSize.{w, w} A] [HasCoproducts.{v} A]

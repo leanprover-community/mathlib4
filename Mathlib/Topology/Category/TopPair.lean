@@ -52,7 +52,7 @@ abbrev of {A X : TopCat.{u}} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPai
 
 /-- Constructor for a topological pair (X, A) where A ⊆ X. -/
 abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} := TopPair.of (A := (TopCat.of A))
-  (X := X) ⟨{ toFun := Subtype.val }⟩ Topology.IsEmbedding.subtypeVal
+  (X := X) (TopCat.ofHom { toFun := Subtype.val }) Topology.IsEmbedding.subtypeVal
 
 /-- Constructs the topological pair `(X, ∅)` from `X : TopCat`. -/
 abbrev ofTopCat (X : TopCat.{u}) : TopPair.{u} :=
@@ -100,6 +100,8 @@ abbrev diag : TopCat.{u} ⥤ TopPair.{u} where
   obj X := TopPair.of (𝟙 X) Topology.IsEmbedding.id
   map f := TopPair.ofHom f f
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The inclusion functor is left adjoint to the projection to the first component. -/
 @[simps]
 def inclAdjProj₁ : incl ⊣ proj₁ where
@@ -113,6 +115,7 @@ def proj₁AdjDiag : proj₁ ⊣ diag where
   unit.naturality X Y f := MorphismProperty.Arrow.Hom.ext f.w (by cat_disch)
   counit.app X := 𝟙 X
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The unique morphism (X, ∅) ⟶ (X, A) that is the identity on X. -/
 abbrev j (X : TopPair.{u}) : TopPair.incl.obj X.fst ⟶ X :=
   TopPair.ofHom (𝟙 _) (TopCat.isInitialPEmpty.to _)
@@ -128,6 +131,9 @@ structure Homotopy (f g : X ⟶ Y) where
   /-- The proof that the homotopies fit into a commutative square with the maps of the pairs. -/
   w : X.map ▷ _ ≫ fst.h = snd.h ≫ Y.map := by cat_disch
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [reassoc, elementwise] Homotopy.w
 attribute [local simp] Homotopy.w Homotopy.w_apply
 
@@ -150,6 +156,7 @@ def refl (f : X ⟶ Y) : Homotopy f f where
 instance : Inhabited (Homotopy (𝟙 X) (𝟙 X)) :=
   ⟨Homotopy.refl _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a `Homotopy f₀ f₁`, we can define a `Homotopy f₁ f₀` by `TopCat.Homotopy.symm` on
 the first and second components.
 -/
@@ -166,6 +173,7 @@ theorem symm_bijective {f₀ f₁ : X ⟶ Y} :
     Function.Bijective (Homotopy.symm : Homotopy f₀ f₁ → Homotopy f₁ f₀) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given `Homotopy f₀ f₁` and `Homotopy f₁ f₂`, we can define a `Homotopy f₀ f₂` by
 `TopCat.Homotopy.trans` on the first and second components.

@@ -49,7 +49,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
     set e : (ι → R) ≃+ M := ↑bM.equivFun.symm with he
     let e' : (ι → R) →+ M := e
     have he' : Function.Surjective e' := e.surjective
-    convert (AddSubgroup.index_comap_of_surjective N.toAddSubgroup he').symm using 2
+    convert! (AddSubgroup.index_comap_of_surjective N.toAddSubgroup he').symm using 2
     rw [AddSubgroup.comap_equiv_eq_map_symm, he, hN', LinearEquiv.coe_toAddEquiv_symm,
     AddEquiv.symm_symm]
     exact Submodule.map_toAddSubgroup ..
@@ -64,7 +64,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
       intro i
       simp only [Finset.sum_apply, Pi.smul_apply, Pi.single_apply]
       split_ifs with h
-      · convert dvd_mul_left (a h.choose) (c h.choose)
+      · convert! dvd_mul_left (a h.choose) (c h.choose)
         calc ∑ x : Fin n, _ = c h.choose * if i = f h.choose then a h.choose else 0 := by
               refine Finset.sum_eq_single h.choose ?_ (by simp)
               rintro j - hj
@@ -72,8 +72,8 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
               rw [h.choose_spec] at hinj
               simp [hinj.symm]
           _ = c h.choose * a h.choose := by simp [h.choose_spec]
-      · convert dvd_refl (0 : R)
-        convert Finset.sum_const_zero with j
+      · convert! dvd_refl (0 : R)
+        convert! Finset.sum_const_zero with j
         rw [not_exists] at h
         specialize h j
         rw [eq_comm] at h
@@ -86,7 +86,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
       by_cases! hj : ∃ j, f j = i
       · calc ∑ x : Fin n, _ =
             if i = f hj.choose then (h (f hj.choose)).choose * a hj.choose else 0 := by
-              convert Finset.sum_eq_single (M := R) hj.choose ?_ ?_
+              convert! Finset.sum_eq_single (M := R) hj.choose ?_ ?_
               · simp
               · rintro j - h
                 have hinj := f.injective.ne h
@@ -102,21 +102,21 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
               congr!
               · exact hj.choose_spec.symm
               · simp [hj]
-      · convert Finset.sum_const_zero with x
+      · convert! Finset.sum_const_zero with x
         · specialize hj x
           rw [ne_comm] at hj
           simp [hj]
         · rw [← zero_dvd_iff]
-          convert h i
+          convert! h i
           simp [hj]
   simp only [hN', AddSubgroup.index_pi, apply_dite, Finset.prod_dite, Set.singleton_zero,
     Ideal.span_zero, Submodule.bot_toAddSubgroup, AddSubgroup.index_pi, AddSubgroup.index_bot,
     Finset.prod_const, Finset.univ_eq_attach, Finset.card_attach]
   rw [mul_comm]
   congr
-  · convert Finset.card_compl {x | ∃ j, f j = x} using 2
+  · convert! Finset.card_compl {x | ∃ j, f j = x} using 2
     · exact (Finset.compl_filter _).symm
-    · convert (Finset.card_image_of_injective Finset.univ f.injective).symm <;> simp
+    · convert! (Finset.card_image_of_injective Finset.univ f.injective).symm <;> simp
   · rw [Finset.attach_eq_univ]
     let f' : Fin n → { x // x ∈ Finset.filter (fun x ↦ ∃ j, f j = x) Finset.univ } :=
       fun i ↦ ⟨f i, by simp⟩
@@ -194,7 +194,7 @@ lemma submodule_toAddSubgroup_index_ne_zero_iff {N : Submodule ℤ (ι → ℤ)}
 
 lemma addSubgroup_index_ne_zero_iff {H : AddSubgroup (ι → ℤ)} :
     H.index ≠ 0 ↔ Nonempty (H ≃+ (ι → ℤ)) := by
-  convert submodule_toAddSubgroup_index_ne_zero_iff (N := AddSubgroup.toIntSubmodule H) using 1
+  convert! submodule_toAddSubgroup_index_ne_zero_iff (N := AddSubgroup.toIntSubmodule H) using 1
   exact ⟨fun ⟨e⟩ ↦ ⟨e.toIntLinearEquiv⟩, fun ⟨e⟩ ↦ ⟨e.toAddEquiv⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in

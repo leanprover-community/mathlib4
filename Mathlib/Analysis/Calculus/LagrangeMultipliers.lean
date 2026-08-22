@@ -71,7 +71,9 @@ theorem IsLocalExtrOn.exists_linear_map_of_hasStrictFDerivAt
       (LinearMap.coprodEquiv ℝ)
   rcases e.surjective Λ' with ⟨⟨Λ, Λ₀⟩, rfl⟩
   refine ⟨Λ, Λ₀, e.map_ne_zero_iff.1 h0, fun x => ?_⟩
-  convert LinearMap.congr_fun (LinearMap.range_le_ker_iff.1 hΛ') x using 1
+  convert! LinearMap.congr_fun (LinearMap.range_le_ker_iff.1 hΛ') x using 1
+    -- squeezed `simp [mul_comm]` to speed up elaboration
+
   -- squeezed `simp [mul_comm]` to speed up elaboration
   simp only [e, smul_eq_mul, LinearEquiv.trans_apply, LinearEquiv.prodCongr_apply,
     LinearEquiv.refl_apply, LinearMap.ringLmapEquivSelf_symm_apply, LinearMap.coprodEquiv_apply,
@@ -109,7 +111,7 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type*} [Fint
     {f : ι → E → ℝ} {f' : ι → StrongDual ℝ E} (hextr : IsLocalExtrOn φ {x | ∀ i, f i x = f i x₀} x₀)
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
     ∃ (Λ : ι → ℝ) (Λ₀ : ℝ), (Λ, Λ₀) ≠ 0 ∧ (∑ i, Λ i • f' i) + Λ₀ • φ' = 0 := by
-  letI := Classical.decEq ι
+  let := Classical.decEq ι
   replace hextr : IsLocalExtrOn φ {x | (fun i => f i x) = fun i => f i x₀} x₀ := by
     simpa only [funext_iff] using hextr
   rcases hextr.exists_linear_map_of_hasStrictFDerivAt (hasStrictFDerivAt_pi.2 fun i => hf' i)
@@ -117,7 +119,7 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type*} [Fint
     ⟨Λ, Λ₀, h0, hsum⟩
   rcases (LinearEquiv.piRing ℝ ℝ ι ℝ).symm.surjective Λ with ⟨Λ, rfl⟩
   refine ⟨Λ, Λ₀, ?_, ?_⟩
-  · simpa only [Ne, Prod.ext_iff, LinearEquiv.map_eq_zero_iff, Prod.fst_zero] using h0
+  · simpa only [Ne, Prod.ext_iff, LinearEquiv.map_eq_zero_iff, Prod.fst_zero] using! h0
   · ext x; simpa [mul_comm] using hsum x
 
 /-- Lagrange multipliers theorem. Let `f : ι → E → ℝ` be a finite family of functions.
@@ -138,4 +140,4 @@ theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite
   refine ⟨Option.elim' Λ₀ Λ, ?_, ?_⟩
   · simpa [add_comm] using hΛf
   · simpa only [funext_iff, not_and_or, or_comm, Option.exists, Prod.mk_eq_zero, Ne,
-      not_forall] using hΛ
+      not_forall] using! hΛ

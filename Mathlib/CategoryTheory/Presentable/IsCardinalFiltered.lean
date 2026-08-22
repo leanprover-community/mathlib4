@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 public import Mathlib.CategoryTheory.Comma.CardinalArrow
-public import Mathlib.SetTheory.Cardinal.Cofinality
+public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 
@@ -54,6 +54,14 @@ lemma hasCardinalLT_arrow_walkingParallelFamily {T : Type u}
 
 namespace IsCardinalFiltered
 
+instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (J : Type*) [Category* J] [Subsingleton J] [Nonempty J] [Quiver.IsThin J] :
+    IsCardinalFiltered J κ where
+  nonempty_cocone F _ :=
+    ⟨Cocone.mk (Classical.arbitrary _)
+      { app _ := eqToHom (by subsingleton)
+        naturality _ _ _ := by subsingleton }⟩
+
 variable {J : Type u} [Category.{v} J] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
   [IsCardinalFiltered J κ]
 
@@ -94,6 +102,11 @@ this is a choice of map `S k ⟶ max S hS` for any `k : K`. -/
 noncomputable def toMax (k : K) :
     S k ⟶ max S hS :=
   (cocone (κ := κ) (Discrete.functor S) (by simpa using hS)).ι.app ⟨k⟩
+
+include hS in
+lemma exists_max :
+    ∃ (j : J), Nonempty (∀ (k : K), S k ⟶ j) :=
+  ⟨max S hS, ⟨toMax S hS⟩⟩
 
 end max
 
@@ -184,6 +197,7 @@ lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
       { app a := homOfLE (hj a)
         naturality _ _ _ := rfl }⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
     IsCardinalFiltered κ.ord.ToType κ :=
   isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
@@ -196,6 +210,8 @@ instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
 
 open IsCardinalFiltered
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 instance isCardinalFiltered_under
     (J : Type u) [Category.{v} J] (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalFiltered J κ] (j₀ : J) : IsCardinalFiltered (Under j₀) κ where
@@ -216,6 +232,7 @@ instance isCardinalFiltered_under
               dsimp at this ⊢
               simp only [reassoc_of% this, Category.comp_id] } }⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance isCardinalFiltered_prod (J₁ : Type u) (J₂ : Type u')
     [Category.{v} J₁] [Category.{v'} J₂] (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalFiltered J₁ κ] [IsCardinalFiltered J₂ κ] :
@@ -231,6 +248,7 @@ instance isCardinalFiltered_prod (J₁ : Type u) (J₂ : Type u')
           · simpa using c₁.w f
           · simpa using c₂.w f }⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isCardinalFiltered_pi {ι : Type u'} (J : ι → Type u) [∀ i, Category.{v} (J i)]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [∀ i, IsCardinalFiltered (J i) κ] :
     IsCardinalFiltered (∀ i, J i) κ where
@@ -241,7 +259,7 @@ instance isCardinalFiltered_pi {ι : Type u'} (J : ι → Type u) [∀ i, Catego
         ι.app X i := (c i).ι.app X
         ι.naturality {X Y} f := by
           ext i
-          simpa using (c i).ι.naturality f }⟩
+          simpa using! (c i).ι.naturality f }⟩
 
 section
 
@@ -274,10 +292,11 @@ lemma isCardinalFiltered_iff_aux₂ {ι : Type w} {j : ι → J} {k : J}
   obtain ⟨l, a, b, h⟩ := isCardinalFiltered_iff_aux₁ h₁ h₂ p hι
   exact ⟨l, b, fun i ↦ by grind⟩
 
+set_option backward.defeqAttrib.useBackward true in
 variable (J κ) in
 /-- A category is `κ`-filtered iff
-1) any family of objects of cardinality `< κ` admits a map towards a common object, and
-2) any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
+1. any family of objects of cardinality `< κ` admits a map towards a common object, and
+2. any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
    `j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`.
 -/
 lemma isCardinalFiltered_iff :
@@ -298,6 +317,24 @@ lemma isCardinalFiltered_iff :
     pt := l
     ι.app i := a i ≫ b
     ι.naturality _ _ f := by simpa using hb (Arrow.mk f) }⟩
+
+/-- Same as `isCardinalFiltered_iff`, but for the second condition involving
+coequalizing morphisms, we assume that the index type `ι` is nonempty. -/
+lemma isCardinalFiltered_iff' :
+    IsCardinalFiltered J κ ↔
+      (∀ ⦃ι : Type w⦄ (j : ι → J) (_ : HasCardinalLT ι κ),
+        ∃ (k : J), ∀ (i : ι), Nonempty (j i ⟶ k)) ∧
+      ∀ ⦃ι : Type w⦄ ⦃j k : J⦄ (f : ι → (j ⟶ k)) (_ : HasCardinalLT ι κ) (_ : Nonempty ι),
+        ∃ (l : J) (a : k ⟶ l) (b : j ⟶ l), ∀ (i : ι), f i ≫ a = b := by
+  rw [isCardinalFiltered_iff]
+  refine ⟨fun h ↦ ⟨h.1, by tauto⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun ι j k f hι ↦ ?_⟩⟩
+  by_cases hι' : Nonempty ι
+  · exact h₂ f hι hι'
+  · obtain ⟨l, hl⟩ := h₁ (fun (x : ULift.{w} (Fin 2)) ↦ match x with
+      | ULift.up 0 => j
+      | ULift.up 1 => k)
+      (hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out))
+    exact ⟨l, (hl ⟨1⟩).some, (hl ⟨0⟩).some, by tauto⟩
 
 end
 
@@ -342,6 +379,7 @@ lemma IsCardinalFiltered.of_final
       exact ⟨F.obj (IsFiltered.max j' k'), b ≫ F.map (IsFiltered.rightToMax _ _),
         a ≫ F.map (IsFiltered.leftToMax _ _), by simp⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma Limits.IsTerminal.isCardinalFiltered {J : Type u} [Category.{v} J]
     {X : J} (hX : IsTerminal X) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     IsCardinalFiltered J κ where

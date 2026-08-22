@@ -62,6 +62,7 @@ def refl (f : X ⟶ Y) : P.RightHomotopy f f where
 
 variable {P}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f` and `g` are homotopic relative to a pre-path object `P`, then `g` and `f`
 are homotopic relative to `P.symm` -/
 @[simps]
@@ -84,6 +85,25 @@ noncomputable def trans {f₀ f₁ f₂ : X ⟶ Y}
 def precomp {f g : X ⟶ Y} (h : P.RightHomotopy f g) {Z : C} (i : Z ⟶ X) :
     P.RightHomotopy (i ≫ f) (i ≫ g) where
   h := i ≫ h.h
+
+set_option backward.defeqAttrib.useBackward true in
+/-- Right homotopies in a full subcategory identify to right homotopies in the
+ambient category. -/
+noncomputable def fullSubcategoryEquiv {P : ObjectProperty C} {X Y : P.FullSubcategory}
+    {Q : PrepathObject Y} {f g : X ⟶ Y} :
+    Q.RightHomotopy f g ≃ (Q.map P.ι).RightHomotopy f.hom g.hom where
+  toFun h :=
+    { h := h.h.hom
+      h₀ := by
+        dsimp
+        simp only [← h.h₀, ObjectProperty.FullSubcategory.comp_hom]
+      h₁ := by
+        dsimp
+        simp only [← h.h₁, ObjectProperty.FullSubcategory.comp_hom] }
+  invFun h :=
+    { h := P.homMk h.h
+      h₀ := by ext; exact h.h₀
+      h₁ := by ext; exact h.h₁ }
 
 end RightHomotopy
 
@@ -152,7 +172,7 @@ lemma exists_good_pathObject {f g : X ⟶ Y} (h : P.RightHomotopy f g) :
       p₁ := d.p ≫ prod.snd
       ι := P.ι ≫ d.i }, ⟨by
         rw [fibration_iff]
-        convert d.hp
+        convert! d.hp
         aesop⟩, ⟨{ h := h.h ≫ d.i }⟩⟩
 
 /-- The homotopy extension theorem: if `p : A ⟶ X` is a cofibration,
@@ -250,7 +270,6 @@ lemma equivalence [ModelCategory C] (X Y : C) [IsFibrant Y] :
   symm h := h.symm
   trans h h' := h.trans h'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma postcomp [ModelCategory C] {f g : X ⟶ Y} [IsCofibrant X] (h : RightHomotopyRel f g)
     {Z : C} (p : Y ⟶ Z) : RightHomotopyRel (f ≫ p) (g ≫ p) := by
   obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_pathObject
@@ -308,6 +327,7 @@ lemma mk_eq_mk_iff [ModelCategory C] [IsFibrant Y] (f g : X ⟶ Y) :
 
 end RightHomotopyClass
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The left homotopy in the opposite category that is deduced from a right homotopy. -/
 @[simps]
 protected def PrepathObject.RightHomotopy.op
@@ -317,6 +337,7 @@ protected def PrepathObject.RightHomotopy.op
   h₀ := Quiver.Hom.unop_inj (by simp)
   h₁ := Quiver.Hom.unop_inj (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The left homotopy that is deduced from a right homotopy in the opposite category. -/
 @[simps]
 protected def PrepathObject.RightHomotopy.unop
@@ -326,6 +347,7 @@ protected def PrepathObject.RightHomotopy.unop
   h₀ := Quiver.Hom.op_inj (by simp)
   h₁ := Quiver.Hom.op_inj (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The right homotopy in the opposite category that is deduced from a left homotopy. -/
 @[simps]
 protected def Precylinder.LeftHomotopy.op
@@ -335,6 +357,7 @@ protected def Precylinder.LeftHomotopy.op
   h₀ := Quiver.Hom.unop_inj (by simp)
   h₁ := Quiver.Hom.unop_inj (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The right homotopy that is deduced from a left homotopy in the opposite category. -/
 @[simps]
 protected def Precylinder.LeftHomotopy.unop

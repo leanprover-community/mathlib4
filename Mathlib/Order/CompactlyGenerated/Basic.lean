@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.OrderIsoNat
-public import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
 public import Mathlib.Order.Zorn
@@ -230,26 +229,16 @@ theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
   · rw [ht₂]
     exact hsc.finsetSup_mem h ht₁
 
-theorem IsSupClosedCompact.wellFoundedGT (h : IsSupClosedCompact α) :
-    WellFoundedGT α where
-  wf := by
-    refine RelEmbedding.wellFounded_iff_isEmpty.mpr ⟨fun a => ?_⟩
-    suffices sSup (Set.range a) ∈ Set.range a by
-      obtain ⟨n, hn⟩ := Set.mem_range.mp this
-      have h' : sSup (Set.range a) < a (n + 1) := by
-        change _ > _
-        simp [← hn, a.map_rel_iff]
-      apply lt_irrefl (a (n + 1))
-      apply lt_of_le_of_lt _ h'
-      apply le_sSup
-      apply Set.mem_range_self
-    apply h (Set.range a)
-    · use a 37
-      apply Set.mem_range_self
-    · rintro x ⟨m, hm⟩ y ⟨n, hn⟩
-      use m ⊔ n
-      rw [← hm, ← hn]
-      apply RelHomClass.map_sup a
+theorem IsSupClosedCompact.wellFoundedGT (h : IsSupClosedCompact α) : WellFoundedGT α := by
+  rw [wellFoundedGT_iff_monotone_chain_condition']
+  intro a
+  obtain ⟨n, hn⟩ : sSup (range a) ∈ range a := by
+    apply h _ (range_nonempty a)
+    rintro x ⟨m, rfl⟩ y ⟨n, rfl⟩
+    exact ⟨_, map_sup a m n⟩
+  refine ⟨n, fun m hm ↦ ?_⟩
+  rw [hn]
+  exact (le_sSup (mem_range_self m)).not_gt
 
 theorem isSupFiniteCompact_iff_all_elements_compact :
     IsSupFiniteCompact α ↔ ∀ k : α, IsCompactElement k := by
@@ -277,14 +266,14 @@ theorem wellFoundedGT_characterisations : List.TFAE
 
 theorem wellFoundedGT_iff_isSupFiniteCompact :
     WellFoundedGT α ↔ IsSupFiniteCompact α :=
-  (wellFoundedGT_characterisations α).out 0 1
+  (wellFoundedGT_characterisations α).out 1 2
 
 theorem isSupFiniteCompact_iff_isSupClosedCompact : IsSupFiniteCompact α ↔ IsSupClosedCompact α :=
-  (wellFoundedGT_characterisations α).out 1 2
+  (wellFoundedGT_characterisations α).out 2 3
 
 theorem isSupClosedCompact_iff_wellFoundedGT :
     IsSupClosedCompact α ↔ WellFoundedGT α :=
-  (wellFoundedGT_characterisations α).out 2 0
+  (wellFoundedGT_characterisations α).out 3 1
 
 alias ⟨_, IsSupFiniteCompact.wellFoundedGT⟩ := wellFoundedGT_iff_isSupFiniteCompact
 
@@ -301,7 +290,7 @@ theorem WellFoundedGT.finite_of_sSupIndep [WellFoundedGT α] {s : Set α}
     by_contra! contra
     obtain ⟨t, ht₁, ht₂⟩ := CompleteLattice.WellFoundedGT.isSupFiniteCompact α s
     replace contra : ∃ x : α, x ∈ s ∧ x ≠ ⊥ ∧ x ∉ t := by
-      have : (s \ (insert ⊥ t : Finset α)).Infinite := contra.diff (Finset.finite_toSet _)
+      have : (s \ (insert ⊥ t : Finset α)).Infinite := contra.sdiff (Finset.finite_toSet _)
       obtain ⟨x, hx₁, hx₂⟩ := this.nonempty
       exact ⟨x, hx₁, by simpa [not_or] using hx₂⟩
     obtain ⟨x, hx₀, hx₁, hx₂⟩ := contra
@@ -325,7 +314,7 @@ theorem WellFoundedGT.finite_of_iSupIndep [WellFoundedGT α] {ι : Type*}
 theorem WellFoundedLT.finite_of_sSupIndep [WellFoundedLT α] {s : Set α}
     (hs : sSupIndep s) : s.Finite := by
   by_contra inf
-  let e := (Infinite.diff inf <| finite_singleton ⊥).to_subtype.natEmbedding
+  let e := (Infinite.sdiff inf <| finite_singleton ⊥).to_subtype.natEmbedding
   let a n := ⨆ i ≥ n, (e i).1
   have sup_le n : (e n).1 ⊔ a (n + 1) ≤ a n := sup_le_iff.mpr ⟨le_iSup₂_of_le n le_rfl le_rfl,
     iSup₂_le fun i hi ↦ le_iSup₂_of_le i (n.le_succ.trans hi) le_rfl⟩
@@ -441,10 +430,10 @@ theorem sSupIndep_iff_finite {s : Set α} :
     intro ht
     classical
       have h' := (h (insert a t) ?_ (t.mem_insert_self a)).eq_bot
-      · rwa [Finset.coe_insert, Set.insert_diff_self_of_notMem] at h'
-        exact fun con => ((Set.mem_diff a).1 (ht con)).2 (Set.mem_singleton a)
+      · rwa [Finset.coe_insert, Set.insert_sdiff_self_of_notMem] at h'
+        exact fun con => ((Set.mem_sdiff a).1 (ht con)).2 (Set.mem_singleton a)
       · rw [Finset.coe_insert, Set.insert_subset_iff]
-        exact ⟨ha, Set.Subset.trans ht diff_subset⟩⟩
+        exact ⟨ha, Set.Subset.trans ht sdiff_subset⟩⟩
 
 lemma iSupIndep_iff_supIndep {ι : Type*} {f : ι → α} :
     iSupIndep f ↔ ∀ (s : Finset ι), s.SupIndep f := by
@@ -452,7 +441,7 @@ lemma iSupIndep_iff_supIndep {ι : Type*} {f : ι → α} :
   classical
   have hf : Set.InjOn f {i : ι | f i ≠ ⊥} := by
     by_contra! hf
-    simp_all only [Set.InjOn, ne_eq, Set.mem_setOf_eq, not_forall]
+    simp_all only [Set.InjOn, ne_eq, Set.mem_ofPred_eq, not_forall]
     obtain ⟨x₁, hx₁, x₂, hx₂, hfeq, hneq⟩ := hf
     specialize h ({x₁, x₂} : Finset ι)
     rw [Finset.supIndep_pair hneq, disjoint_iff, hfeq, inf_idem (f x₂)] at h
@@ -680,18 +669,18 @@ theorem exists_sSupIndep_disjoint_sSup_atoms (b c : α) (hbc : b ≤ c)
     exact b_inf_Sup_s.disjoint_sup_right_of_disjoint_sup_left con.symm
   · rw [Set.mem_union, Set.mem_singleton_iff] at hx
     obtain rfl | xa := eq_or_ne x a
-    · simp only [Set.mem_singleton, Set.insert_diff_of_mem, Set.union_singleton]
-      exact con.mono_right ((sSup_le_sSup Set.diff_subset).trans le_sup_right)
+    · simp only [Set.mem_singleton, Set.insert_sdiff_of_mem, Set.union_singleton]
+      exact con.mono_right ((sSup_le_sSup Set.sdiff_subset).trans le_sup_right)
     · have h : (s ∪ {a}) \ {x} = s \ {x} ∪ {a} := by
         simp only [Set.union_singleton]
-        rw [Set.insert_diff_of_notMem]
+        rw [Set.insert_sdiff_of_notMem]
         rw [Set.mem_singleton_iff]
         exact Ne.symm xa
       rw [h, sSup_union, sSup_singleton]
       apply
         (s_ind (hx.resolve_right xa)).disjoint_sup_right_of_disjoint_sup_left
           (a_dis_Sup_s.mono_right _).symm
-      rw [← sSup_insert, Set.insert_diff_singleton, Set.insert_eq_of_mem (hx.resolve_right xa)]
+      rw [← sSup_insert, Set.insert_sdiff_singleton, Set.insert_eq_of_mem (hx.resolve_right xa)]
   · rw [Set.mem_union, Set.mem_singleton_iff] at hx
     obtain hx | rfl := hx
     · exact s_atoms x hx
