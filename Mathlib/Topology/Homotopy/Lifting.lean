@@ -451,6 +451,46 @@ theorem monodromy_bijective {x y : X} (γ : Path.Homotopic.Quotient x y) :
     (cov.monodromy γ).Bijective :=
   (isIso_iff_bijective _).mp (cov.monodromyFunctor.map_isIso _)
 
+/-- If the total space of a covering map is path connected, then evaluation at a point of the
+monodromy action is surjective onto the fiber containing that point. -/
+lemma monodromy_apply_surjective {x : X} (e₀ : p ⁻¹' {x}) [PathConnectedSpace E] :
+    Surjective (fun γ : FundamentalGroup X x ↦ cov.monodromy γ e₀) := by
+  intro e₁
+  set Γ : Path.Homotopic.Quotient (e₀ : E) (e₁ : E) :=
+    Path.Homotopic.Quotient.mk (PathConnectedSpace.somePath (e₀ : E) (e₁ : E))
+  exact ⟨(Γ.map ⟨p, cov.continuous⟩).cast e₀.2.symm e₁.2.symm, cov.monodromy_eq_of_map_eq Γ rfl⟩
+
+/-- If the total space of a covering map is simply connected, then evaluation at a point of the
+monodromy action is injective. -/
+lemma monodromy_apply_injective {x : X} (e₀ : p ⁻¹' {x}) [SimplyConnectedSpace E] :
+    Injective (fun γ : FundamentalGroup X x ↦ cov.monodromy γ e₀) := by
+  intro γ δ h
+  have he₀ : p (e₀ : E) = x := e₀.2
+  have heγ : p (cov.monodromy γ e₀ : E) = x := (cov.monodromy γ e₀).2
+  have heδ : p (cov.monodromy δ e₀ : E) = x := (cov.monodromy δ e₀).2
+  have hcasts : Path.Homotopic.Quotient.cast γ he₀ heγ =
+      Path.Homotopic.Quotient.cast δ he₀ heγ := calc
+    _ = (cov.liftPathQuotient γ e₀).map ⟨p, cov.continuous⟩ := (cov.map_liftPathQuotient γ e₀).symm
+    _ = ((cov.liftPathQuotient δ e₀).cast rfl (congrArg Subtype.val h)).map ⟨p, cov.continuous⟩ :=
+      congrArg (fun Γ : Path.Homotopic.Quotient (e₀ : E) (cov.monodromy γ e₀ : E) ↦
+        Γ.map ⟨p, cov.continuous⟩) (Subsingleton.elim _ _)
+    _ = Path.Homotopic.Quotient.cast δ he₀ heγ := by
+      have : (cov.liftPathQuotient δ e₀).map ⟨p, cov.continuous⟩ =
+        Path.Homotopic.Quotient.cast δ he₀ heδ := cov.map_liftPathQuotient δ e₀
+      simp [Path.Homotopic.Quotient.map_cast, this, Path.Homotopic.Quotient.cast_cast]
+  calc
+    _ = (Path.Homotopic.Quotient.cast γ he₀ heγ).cast he₀.symm heγ.symm := by
+      rw [Path.Homotopic.Quotient.cast_cast, Path.Homotopic.Quotient.cast_rfl_rfl γ]
+    _ = _ := by
+      rw [hcasts, Path.Homotopic.Quotient.cast_cast]
+      exact Path.Homotopic.Quotient.cast_rfl_rfl δ
+
+/-- If the total space of a covering map is simply connected, then evaluation at a point gives a
+bijection from the fundamental group of the base to the fiber containing that point. -/
+lemma monodromy_apply_bijective {x : X} (e₀ : p ⁻¹' {x}) [SimplyConnectedSpace E] :
+    Bijective (fun γ : FundamentalGroup X x ↦ cov.monodromy γ e₀) :=
+  ⟨cov.monodromy_apply_injective e₀, cov.monodromy_apply_surjective e₀⟩
+
 /-- A covering map induces an injection on all Hom-sets of the fundamental groupoid,
   in particular on the fundamental group. The first part of Proposition 1.31 of [hatcher02]. -/
 lemma injective_path_homotopic_map (e₀ e₁ : E) :
