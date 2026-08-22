@@ -5,7 +5,7 @@ Authors: Oliver Butterley, Yoh Tanimoto
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.NNNorm
 public import Mathlib.MeasureTheory.Measure.Dirac
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
@@ -418,6 +418,99 @@ lemma _root_.MeasureTheory.SignedMeasure.exists_subset_lt_enorm_apply_of_lt_vari
     · exact hP.trans_le (by gcongr)
 
 end NormedAddCommGroup
+
+section ENormedAddCommGroup
+
+variable {V : Type*} [NormedAddCommGroup V]
+
+@[simp] lemma variation_zero_iff_univ (μ : VectorMeasure X V) :
+    μ.variation Set.univ = 0 ↔ μ = 0 := by
+  simp
+
+noncomputable instance : EMetricSpace (VectorMeasure X V) where
+  edist μ ν := (μ - ν).variation Set.univ
+  edist_self := by intro; simp
+  edist_comm := by
+    intro _ _
+    rw [← variation_neg]
+    simp
+  edist_triangle := by
+    intro x y z
+    simpa using Measure.le_iff.mp (variation_add_le (μ := x - y) (ν := y - z))
+      Set.univ MeasurableSet.univ
+  eq_of_edist_eq_zero {x y} h := by
+    rw [variation_zero_iff_univ] at h
+    exact eq_of_sub_eq_zero h
+
+lemma edist_eq_variation_sub (μ ν : VectorMeasure X V) :
+    edist μ ν = (μ - ν).variation Set.univ := by rfl
+
+noncomputable instance : ENormedAddCommMonoid (VectorMeasure X V) where
+  enorm μ := μ.variation Set.univ
+  continuous_enorm := by
+    have : Continuous (fun x : VectorMeasure X V ↦ edist x 0) := by continuity
+    simpa [edist_eq_variation_sub, sub_zero] using this
+  enorm_zero := by simp
+  enorm_add_le x y := by
+    simpa using Measure.le_iff.mp (variation_add_le (μ := x) (ν := y)) Set.univ MeasurableSet.univ
+  enorm_eq_zero x := variation_zero_iff_univ _
+
+end ENormedAddCommGroup
+
+section mapRangeL
+variable {V : Type*} [NormedAddCommGroup V] {W : Type*} [NormedAddCommGroup W]
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
+
+/-- Given a continuous linear map `f : M → N`, `mapRangeL` is the continuous linear map mapping the
+vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
+def mapRangeL (f : V →L[𝕜] W) : VectorMeasure X V →L[𝕜] VectorMeasure X W where
+  toFun v := v.mapRange f.toAddMonoidHom f.continuous
+  map_add' _ _ := mapRange_add f.continuous
+  map_smul' _ _ := mapRange_smul f.continuous
+  cont := by
+    apply LipschitzWith.continuous (K := ‖f‖₊)
+    -- generalize this to `continuous_of_bound` for `ENormedAddCommMonoid`
+    intro μ ν
+    rw [edist_eq_variation_sub, edist_eq_variation_sub]
+    have hsub : μ.mapRange f.toAddMonoidHom f.continuous -
+        ν.mapRange f.toAddMonoidHom f.continuous =
+        (μ - ν).mapRange f.toAddMonoidHom f.continuous := by
+      ext s
+      change f (μ s) - f (ν s) = f ((μ - ν) s)
+      simp
+    rw [hsub]
+    change ((μ - ν).mapRange f.toAddMonoidHom f.continuous).variation Set.univ ≤ _
+    -- write the lemma `variation_mapRangeₗ` and insert it here
+    have hv : ((μ - ν).mapRange f.toAddMonoidHom f.continuous).variation ≤
+        ‖f‖₊ • (μ - ν).variation := by
+      apply variation_le_of_forall_enorm_le
+      intro s hs
+      change ‖f ((μ - ν) s)‖ₑ ≤ (‖f‖₊ • (μ - ν).variation) s
+      calc
+        _ ≤ ‖f‖₊ * ‖(μ - ν) s‖ₑ := f.le_opENorm _
+        _ ≤ ‖f‖₊ * (μ - ν).variation s := by
+          gcongr
+          exact enorm_measure_le_variation _ _
+        _ = _ := by simp
+    simpa using Measure.le_iff.mp hv Set.univ MeasurableSet.univ
+
+@[simp]
+lemma mapRangeL_apply (μ : VectorMeasure X V) {f : V →L[𝕜] W} {s : Set X} :
+    μ.mapRangeL f s = f (μ s) := by
+  unfold mapRangeL
+  simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
+  rfl
+
+lemma variation_mapRangeL {W 𝕜 : Type*} [NormedAddCommGroup W] [NontriviallyNormedField 𝕜]
+    [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] (μ : VectorMeasure X V) (f : V →L[𝕜] W) :
+    (μ.mapRangeL f).variation ≤ ‖f‖₊ • μ.variation := by
+  apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+  calc
+    ‖f (μ s)‖ₑ ≤ ‖f‖₊ * ‖μ s‖ₑ := f.le_opENorm _
+    _ ≤ ‖f‖₊ * μ.variation s := by
+        gcongr; exact enorm_measure_le_variation μ s
+
+end mapRangeL
 
 section ENNReal
 
