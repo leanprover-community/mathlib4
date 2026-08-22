@@ -31,6 +31,14 @@ theorem contsAux_recurrence {gp ppred pred : Pair K} (nth_s_eq : g.s.get? n = so
     g.contsAux (n + 2) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ := by
   simp [*, contsAux, nextConts, nextDen, nextNum]
 
+theorem contsAux_recurrence! :
+    g.contsAux (n + 2) = ⟨
+      g.partDens! n * (g.contsAux (n + 1)).a + g.partNums! n * (g.contsAux n).a,
+      g.partDens! n * (g.contsAux (n + 1)).b + g.partNums! n * (g.contsAux n).b
+    ⟩ := by
+  rcases hn : g.s.get? n with _ | ⟨a, b⟩ <;>
+  simp [contsAux, partDens!, partDens, partNums!, partNums, nextConts, nextDen, nextNum, hn]
+
 theorem conts_recurrenceAux {gp ppred pred : Pair K} (nth_s_eq : g.s.get? n = some gp)
     (nth_contsAux_eq : g.contsAux n = ppred)
     (succ_nth_contsAux_eq : g.contsAux (n + 1) = pred) :
@@ -44,6 +52,14 @@ theorem conts_recurrence {gp ppred pred : Pair K} (succ_nth_s_eq : g.s.get? (n +
     g.conts (n + 2) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ :=
   contsAux_recurrence succ_nth_s_eq nth_conts_eq succ_nth_conts_eq
 
+theorem conts_recurrence! :
+    g.conts (n + 2) = ⟨
+      g.partDens! (n + 1) * (g.conts (n + 1)).a + g.partNums! (n + 1) * (g.conts n).a,
+      g.partDens! (n + 1) * (g.conts (n + 1)).b + g.partNums! (n + 1) * (g.conts n).b
+    ⟩ := by
+  rw [nth_cont_eq_succ_nth_contAux, contsAux_recurrence!]
+  rfl
+
 /-- Shows that `Aₙ = bₙ * Aₙ₋₁ + aₙ * Aₙ₋₂`. -/
 theorem nums_recurrence {gp : Pair K} {ppredA predA : K}
     (succ_nth_s_eq : g.s.get? (n + 1) = some gp) (nth_num_eq : g.nums n = ppredA)
@@ -56,6 +72,12 @@ theorem nums_recurrence {gp : Pair K} {ppredA predA : K}
     exists_conts_a_of_num succ_nth_num_eq
   rw [num_eq_conts_a, conts_recurrence succ_nth_s_eq nth_conts_eq succ_nth_conts_eq]
 
+theorem nums_recurrence! :
+    g.nums (n + 2) =
+      g.partDens! (n + 1) * g.nums (n + 1) + g.partNums! (n + 1) * g.nums n := by
+  rw [num_eq_conts_a, conts_recurrence!]
+  rfl
+
 /-- Shows that `Bₙ = bₙ * Bₙ₋₁ + aₙ * Bₙ₋₂`. -/
 theorem dens_recurrence {gp : Pair K} {ppredB predB : K}
     (succ_nth_s_eq : g.s.get? (n + 1) = some gp) (nth_den_eq : g.dens n = ppredB)
@@ -67,5 +89,11 @@ theorem dens_recurrence {gp : Pair K} {ppredB predB : K}
       ∃ conts, g.conts (n + 1) = conts ∧ conts.b = predB :=
     exists_conts_b_of_den succ_nth_den_eq
   rw [den_eq_conts_b, conts_recurrence succ_nth_s_eq nth_conts_eq succ_nth_conts_eq]
+
+theorem dens_recurrence! :
+    g.dens (n + 2) =
+      g.partDens! (n + 1) * g.dens (n + 1) + g.partNums! (n + 1) * g.dens n := by
+  rw [den_eq_conts_b, conts_recurrence!]
+  rfl
 
 end GenContFract
