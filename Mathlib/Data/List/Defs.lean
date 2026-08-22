@@ -14,7 +14,7 @@ public import Batteries.Data.List.Basic
 public import Batteries.Logic
 
 /-!
-## Definitions on lists
+# Definitions on lists
 
 This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
