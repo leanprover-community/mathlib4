@@ -1354,7 +1354,7 @@ theorem _root_.Cardinal.le_ord_iff_card_le_of_lt_aleph0 (o : Ordinal) {c : Cardi
 
 theorem mem_range_lift_of_card_le {a : Cardinal.{u}} {b : Ordinal.{max u v}}
     (h : card b ≤ Cardinal.lift.{v, u} a) : b ∈ Set.range lift.{v, u} := by
-  rw [card_le_iff, ← lift_succ, ← lift_ord] at h
+  rw [card_le_iff, ← Cardinal.lift_succ, ← lift_ord] at h
   exact mem_range_lift_of_le h.le
 
 @[simp]
