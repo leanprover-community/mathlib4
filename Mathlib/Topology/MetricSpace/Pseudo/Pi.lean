@@ -16,7 +16,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 This file constructs the infinity distance on finite products of pseudometric spaces.
 -/
 
-@[expose] public section
+public section
 
 open Bornology Filter Metric Set
 open scoped NNReal Topology

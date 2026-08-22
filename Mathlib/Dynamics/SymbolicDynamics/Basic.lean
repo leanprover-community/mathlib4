@@ -107,7 +107,7 @@ between the two viewpoints, since both may naturally want to reuse names like
 @[expose] public section
 
 noncomputable section
-open Set Topology
+open Set
 
 namespace SymbolicDynamics
 
@@ -394,7 +394,7 @@ noncomputable def fromConfig (x : G → A) (U : Finset G) : Pattern A G := by
   classical
   exact { config := fun g => if g ∈ U then x g else default,
           support := U,
-          condition := fun g hg => if_neg hg }
+          condition := fun g hg => ite_eq_right hg }
 
 /-- On the translated support, `p.mulShift v` agrees with `p.config` at the preimage.
 

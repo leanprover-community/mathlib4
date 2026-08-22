@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.Normed.Field.UnitBall
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # The circle
@@ -44,9 +45,12 @@ is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
 
 noncomputable section
 
-open Complex Function Metric ComplexConjugate
+open Complex Function Metric
+
+open scoped ComplexConjugate
 
 /-- The unit circle in `ℂ`. -/
+@[wikidata Q203425]
 def Circle : Type := Submonoid.unitSphere ℂ
 deriving TopologicalSpace
 
@@ -215,7 +219,7 @@ def fourierChar : AddChar ℝ Circle where
 
 @[inherit_doc] scoped[FourierTransform] notation "𝐞" => Real.fourierChar
 
-open FourierTransform
+open scoped FourierTransform
 
 theorem fourierChar_apply' (x : ℝ) : 𝐞 x = Circle.exp (2 * π * x) := rfl
 

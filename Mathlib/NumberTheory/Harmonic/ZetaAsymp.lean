@@ -44,7 +44,9 @@ we obtain the limit along punctured neighbourhoods of 1 in `ℂ`.
 
 @[expose] public section
 
-open Set MeasureTheory Filter Topology
+open Set MeasureTheory Filter
+
+open scoped Topology
 
 @[inherit_doc] local notation "γ" => Real.eulerMascheroniConstant
 
@@ -151,7 +153,7 @@ lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - γ) := by
   refine Tendsto.add ?_ tendsto_const_nhds
   have := (tendsto_eulerMascheroniSeq'.comp (tendsto_add_atTop_nat 1)).neg
   refine this.congr' (Eventually.of_forall (fun n ↦ ?_))
-  simp_rw [Function.comp_apply, eulerMascheroniSeq', reduceCtorEq, if_false]
+  simp_rw [Function.comp_apply, eulerMascheroniSeq', reduceCtorEq, ite_false]
   push_cast
   abel
 
@@ -410,8 +412,9 @@ end val_at_one
 
 end ZetaAsymptotics
 
-open scoped Real
-open Complex ComplexConjugate
+open Complex
+
+open scoped Real ComplexConjugate
 
 /-- Formula for `ζ 1`. Note that mathematically `ζ 1` is undefined, but our construction ascribes
 this particular value to it. -/
