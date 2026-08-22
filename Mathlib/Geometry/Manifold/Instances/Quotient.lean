@@ -58,47 +58,6 @@ instance instChartedSpaceQuotient' : ChartedSpace H (orbitRel.Quotient G M) :=
   isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
     |>.isLocalHomeomorph.chartedSpaceOfRightInverse Quotient.out_eq
 
-section PR42502
--- TODO: delete this whole section
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  (I : ModelWithCorners 𝕜 E H) {n : ℕ∞} [IsManifold I n M]
-
-variable {I} in
-omit [T2Space M] [LocallyCompactSpace M] [IsManifold I n M] in
-open IsManifold in
-lemma symm_trans_trans_mem_maximalAtlas_of_contMDiffOn {e e' : OpenPartialHomeomorph M H}
-    (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M)
-    {h : OpenPartialHomeomorph M M}
-    (hh : ContMDiffOn I I n h h.source) (hhsymm : ContMDiffOn I I n h.symm h.target) :
-    e.symm.trans (h.trans e') ∈ maximalAtlas I n H := by
-  refine (e.symm.trans (h.trans e')).mem_maximalAtlas_of_contMDiffOn ?_ ?_
-  · exact (contMDiffOn_of_mem_maximalAtlas he').comp
-      (hh.comp ((contMDiffOn_symm_of_mem_maximalAtlas he).mono fun z hz ↦ hz.1)
-        fun z hz ↦ hz.2.1)
-      fun z hz ↦ hz.2.2
-  · exact (contMDiffOn_of_mem_maximalAtlas he).comp
-      (hhsymm.comp ((contMDiffOn_symm_of_mem_maximalAtlas he').mono fun z hz ↦ hz.1.1)
-        fun z hz ↦ hz.1.2)
-      fun z hz ↦ hz.2
-
-variable {I} in
-omit [T2Space M] [LocallyCompactSpace M] [IsManifold I n M] in
-open IsManifold in
-/-- If `h` is an open partial homeomorphism of `M` that is `C^n` on its source, with `C^n`
-inverse on its target, then reading `h` through two members of the maximal atlas yields an
-element of `contDiffGroupoid n I`. -/
-lemma symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn {e e' : OpenPartialHomeomorph M H}
-    (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M)
-    {h : OpenPartialHomeomorph M M}
-    (hh : ContMDiffOn I I n h h.source) (hhsymm : ContMDiffOn I I n h.symm h.target) :
-    e.symm.trans (h.trans e') ∈ contDiffGroupoid n I := by
-  simpa [OpenPartialHomeomorph.refl_trans, OpenPartialHomeomorph.refl_symm] using
-    compatible_of_mem_maximalAtlas (subset_maximalAtlas (chartedSpaceSelf_atlas.mpr rfl))
-    (symm_trans_trans_mem_maximalAtlas_of_contMDiffOn he he' hh hhsymm)
-
-end PR42502
 
 -- TODO: if we're going to use this, it should move to a right file
 -- then we could use it for the charted space instance also
