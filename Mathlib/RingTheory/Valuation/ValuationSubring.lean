@@ -704,7 +704,7 @@ def principalUnitGroupEquiv :
       A.coe_mem_principalUnitGroup_iff.1 x.2⟩
   invFun := fun ⟨x, hx⟩ ↦
     ⟨A.unitGroupMulEquiv.symm x, by
-      rw [A.coe_mem_principalUnitGroup_iff];
+      rw [A.coe_mem_principalUnitGroup_iff]
       simpa using hx⟩
   left_inv x := by simp
   right_inv x := by ext; simp
