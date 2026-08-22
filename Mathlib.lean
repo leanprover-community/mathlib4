@@ -4954,6 +4954,7 @@ public import Mathlib.Init
 public import Mathlib.Lean.ContextInfo
 public import Mathlib.Lean.CoreM
 public import Mathlib.Lean.Elab.InfoTree
+public import Mathlib.Lean.Elab.Options
 public import Mathlib.Lean.Elab.Tactic.Basic
 public import Mathlib.Lean.Elab.Tactic.Meta
 public import Mathlib.Lean.Elab.Term
@@ -8366,6 +8367,7 @@ public import Mathlib.Util.PPOptions
 public import Mathlib.Util.ParseCommand
 public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.Qq
+public import Mathlib.Util.Scope
 public import Mathlib.Util.Simp
 public import Mathlib.Util.SleepHeartbeats
 public import Mathlib.Util.Superscript
