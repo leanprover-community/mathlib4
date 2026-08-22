@@ -49,11 +49,6 @@ protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Su
 instance Subgroup.isCyclic_zpowers [Group G] (g : G) :
     IsCyclic (Subgroup.zpowers g) :=
   (Subgroup.isCyclic_iff_exists_zpowers_eq_top _).mpr ⟨g, rfl⟩
-
-@[to_additive]
-instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α] : IsCyclic α :=
-  ⟨⟨1, fun _ => ⟨0, Subsingleton.elim _ _⟩⟩⟩
-
 @[simp]
 theorem isCyclic_multiplicative_iff [SubNegMonoid α] :
     IsCyclic (Multiplicative α) ↔ IsAddCyclic α :=
@@ -68,14 +63,6 @@ theorem isAddCyclic_additive_iff [DivInvMonoid α] : IsAddCyclic (Additive α) �
 
 instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
   isAddCyclic_additive_iff.mpr inferInstance
-
-@[to_additive]
-instance IsCyclic.isMulCommutative [Group α] [IsCyclic α] : IsMulCommutative α where
-  is_comm.comm x y :=
-    let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
-    let ⟨_, hx⟩ := hg x
-    let ⟨_, hy⟩ := hg y
-    hy ▸ hx ▸ zpow_mul_comm ..
 
 @[deprecated (since := "2026-04-09")]
 alias IsAddCyclic.commutative := IsAddCyclic.isAddCommutative
@@ -178,7 +165,8 @@ theorem isCyclic_of_prime_card {p : ℕ} [hp : Fact p.Prime]
 theorem isCyclic_of_card_dvd_prime {p : ℕ} [hp : Fact p.Prime]
     (h : Nat.card α ∣ p) : IsCyclic α := by
   rcases (Nat.dvd_prime hp.out).mp h with h | h
-  · exact @isCyclic_of_subsingleton α _ (Nat.card_eq_one_iff_unique.mp h).1
+  · have := (Nat.card_eq_one_iff_unique.mp h).1
+    exact isCyclic_of_subsingleton
   · exact isCyclic_of_prime_card h
 
 @[to_additive]
