@@ -3891,6 +3891,7 @@ public import Mathlib.Data.DFinsupp.Small
 public import Mathlib.Data.DFinsupp.Submonoid
 public import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.Data.DList.Instances
+public import Mathlib.Data.Dyadic.IsLocalization
 public import Mathlib.Data.Dyadic.OrderedRing
 public import Mathlib.Data.ENNReal.Action
 public import Mathlib.Data.ENNReal.Basic
