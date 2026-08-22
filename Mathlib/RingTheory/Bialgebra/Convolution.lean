@@ -101,7 +101,24 @@ instance : CommMonoid (WithConv <| C →ₐ[R] A) := fast_instance%
 end AlgHom
 
 namespace BialgHom
-variable [CommSemiring A] [Semiring C] [Bialgebra R A] [Bialgebra R C]
+variable [Semiring C] [Bialgebra R C]
+
+section Semiring
+variable [Semiring A] [Bialgebra R A] {g : C →ₗ[R] C} {g' : A →ₗ[R] A}
+
+/-- Pre- and post-composing the convolution by `f` agree on linear maps it intertwines. -/
+lemma convCompLeft_eq_convCompRight (f : A →ₐc[R] C) (hg : ∀ a, f (g' a) = g (f a)) :
+    f.toCoalgHom.convCompLeft (toConv g) = f.toAlgHom.convCompRight (toConv g') :=
+  WithConv.ext <| LinearMap.ext fun a ↦ (hg a).symm
+
+/-- Pre- and post-composing the convolution by `f` agree on the identity. -/
+lemma convCompLeft_id_eq_convCompRight_id (f : A →ₐc[R] C) :
+    f.toCoalgHom.convCompLeft (toConv .id) = f.toAlgHom.convCompRight (toConv .id) :=
+  f.convCompLeft_eq_convCompRight (g' := .id) fun _ ↦ rfl
+
+end Semiring
+
+variable [CommSemiring A] [Bialgebra R A]
 
 instance : One (WithConv <| C →ₐc[R] A) where
   one := toConv <| (unitBialgHom R A).comp <| counitBialgHom R C

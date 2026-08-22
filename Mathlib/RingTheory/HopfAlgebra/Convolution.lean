@@ -174,3 +174,22 @@ lemma counitAlgHom_comp_antipodeAlgHom :
   AlgHom.toLinearMap_injective <| by simp
 
 end AlgHom
+
+namespace HopfAlgebra
+
+open LinearMap
+
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+  [HopfAlgebra R A] [HopfAlgebraStruct R B]
+
+/-- Transfer the Hopf algebra axioms along a surjective bialgebra homomorphism
+intertwining the antipodes. -/
+noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
+    (map_antipode : ∀ a, f (antipode R a) = antipode R (f a)) : HopfAlgebra R B := by
+  refine .ofConvInverse (antipode R) ?_ ?_ <;>
+    refine f.toCoalgHom.convCompLeft_injective hf ?_ <;>
+    rw [map_mul, f.convCompLeft_eq_convCompRight map_antipode,
+      f.convCompLeft_id_eq_convCompRight_id, ← map_mul] <;>
+    simp only [antipode_mul_id, id_mul_antipode, map_one]
+
+end HopfAlgebra
