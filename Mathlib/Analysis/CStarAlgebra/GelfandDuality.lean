@@ -247,10 +247,9 @@ lemma norm_add_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
   commutative C⋆-algebras. -/
   let S : NonUnitalStarSubalgebra ℂ A := (adjoin ℂ {a, b}).topologicalClosure
   have hS : IsClosed (S : Set A) := (adjoin ℂ {a, b}).isClosed_topologicalClosure
-  have hcomm₁ := ha.commute_star_left hcomm
-  have hcomm₂ := hb.commute_star_right hcomm
+  replace hcomm : Set.Pairwise {a, b} Commute := by grind [Set.Pairwise]
   have : IsMulCommutative (adjoin ℂ {a, b}) :=
-    isMulCommutative_adjoin ℂ (by grind) (by grind [commute_star_comm])
+    isMulCommutative_adjoin ℂ (by grind) hcomm <| hcomm.commute_star_right (by grind)
   refine CommCStarAlgebra.norm_add_eq_max (A := S) (a := ⟨a, ?_⟩) (b := ⟨b, ?_⟩) (by ext; simpa)
   all_goals apply le_topologicalClosure; aesop
 

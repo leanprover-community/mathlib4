@@ -137,7 +137,7 @@ theorem center_eq_infi' {s : Set G} (hs : closure s = ⊤) :
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
 @[to_additive
 /-- If all the elements of a set `s` commute, then `closure s` is an additive commutative group. -/]
-theorem isMulCommutative_closure {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
+theorem isMulCommutative_closure {k : Set G} (hcomm : k.Pairwise Commute) :
     IsMulCommutative (closure k) :=
   have := closure_le_centralizer_centralizer k
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
@@ -147,7 +147,7 @@ open scoped IsMulCommutative in
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
 @[to_additive (attr := deprecated isMulCommutative_closure (since := "2026-03-10"))
 /-- If all the elements of a set `s` commute, then `closure s` is an additive commutative group. -/]
-abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
+abbrev closureCommGroupOfComm {k : Set G} (hcomm : k.Pairwise Commute) :
     CommGroup (closure k) :=
   have := isMulCommutative_closure hcomm
   inferInstance
@@ -155,7 +155,7 @@ abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x *
 @[to_additive]
 instance instIsMulCommutative_closure {S : Type*} [SetLike S G] [MulMemClass S G] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set G)) :=
-  isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+  isMulCommutative_closure fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 
 @[to_additive]
 theorem centralizer_le_normalizer (s : Set G) : centralizer s ≤ normalizer s := by

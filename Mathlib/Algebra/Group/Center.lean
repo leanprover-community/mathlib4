@@ -190,9 +190,15 @@ instance decidableMemCentralizer [∀ a : M, Decidable <| ∀ b ∈ S, b * a = a
     DecidablePred (· ∈ centralizer S) := fun _ ↦ decidable_of_iff' _ mem_centralizer_iff
 
 @[to_additive addCentralizer_addCentralizer_comm_of_comm]
-lemma centralizer_centralizer_comm_of_comm (h_comm : ∀ x ∈ S, ∀ y ∈ S, x * y = y * x) :
+lemma centralizer_centralizer_comm_of_comm (h_comm : S.Pairwise Commute) :
     ∀ x ∈ S.centralizer.centralizer, ∀ y ∈ S.centralizer.centralizer, x * y = y * x :=
-  fun _ h₁ _ h₂ ↦ h₂ _ fun _ h₃ ↦ h₁ _ fun _ h₄ ↦ h_comm _ h₄ _ h₃
+  fun _ h₁ _ h₂ ↦ h₂ _ fun a h₃ ↦ h₁ _ fun b h₄ ↦
+    (eq_or_ne b a).elim (fun h ↦ h ▸ rfl) (h_comm h₄ h₃)
+
+@[to_additive addCentralizer_addCentralizer_pairwise_commute]
+lemma centralizer_centralizer_pairwise_commute (h_comm : S.Pairwise Commute) :
+    S.centralizer.centralizer.Pairwise Commute :=
+  .of_forall₂ fun _ h₁ _ h₂ ↦ centralizer_centralizer_comm_of_comm h_comm _ h₁ _ h₂
 
 @[to_additive (attr := simp) addCentralizer_empty]
 theorem centralizer_empty : (∅ : Set M).centralizer = ⊤ := by simp [centralizer]
