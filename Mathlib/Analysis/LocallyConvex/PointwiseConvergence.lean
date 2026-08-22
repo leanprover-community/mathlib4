@@ -63,7 +63,7 @@ theorem isInducing_inducingFn : Topology.IsInducing (inducingFn σ E F) :=
   (PointwiseConvergenceCLM.isEmbedding_coeFn σ E F).isInducing
 
 lemma withSeminorms : WithSeminorms (PointwiseConvergenceCLM.seminormFamily σ E F) :=
-  let e : E ≃ (Σ _ : E, Fin 1) := .symm <| .sigmaUnique _ _
+  let e : E ≃ (Σ _ : E, Unit) := .symm <| .sigmaUnique _ _
   (isInducing_inducingFn σ E F).withSeminorms <| withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜₂ F)
     |>.congr_equiv e
 
