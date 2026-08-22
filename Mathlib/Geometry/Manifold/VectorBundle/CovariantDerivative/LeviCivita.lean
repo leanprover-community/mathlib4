@@ -49,9 +49,9 @@ connection is a `C^n` connection.
   Our construction recovers `∇ X Y` from expressions `⟪∇ X Y, Z⟫` by duality. We use a tensoriality
   argument and the musical isomorphism: the metric `g` induces a map from `(2,0)`-tensors
   (i.e., a map `T_pM × T_pM → ℝ` at each point) to `(1,1)`-tensors (i.e., a map `T_pM → (T_pM)*`
-  at each point); we apply this to the `(2,0)`-tensor `(X, Z) ↦ ∇ X Y Z`, to obtain a `(1,1)`-tensor
-  denoted `∇ Y`. This avoids the use of local frames and trivializations (which require auxiliary
-  choices and/or gluing on local constructions).
+  at each point); we apply this to the `(2,0)`-tensor `(X, Z) ↦ ⟪∇ X Y, Z⟫`, to obtain a
+  `(1,1)`-tensor denoted `∇ Y`. This avoids the use of local frames and trivializations
+  (which require auxiliary choices and/or gluing on local constructions).
 
 ## Tags
 
