@@ -161,7 +161,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
   rw [← eq_X_sub_C_of_separable_of_root_eq h_sep h_root h_splits h_roots]
   trans EuclideanDomain.gcd (?_ : E[X]) (?_ : E[X])
   · dsimp only [γ]
-    convert! (gcd_map (algebraMap F⟮γ⟯ E)).symm
+    exact (gcd_map (algebraMap F⟮γ⟯ E)).symm
   · simp only [map_comp, Polynomial.map_map, ← IsScalarTower.algebraMap_eq, Polynomial.map_sub,
       map_C, AdjoinSimple.algebraMap_gen, Polynomial.map_mul, map_X]
     congr

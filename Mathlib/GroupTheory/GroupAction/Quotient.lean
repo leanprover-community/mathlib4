@@ -174,7 +174,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
 noncomputable def orbitEquivQuotientStabilizer (b : X) : orbit G b ≃ G ⧸ stabilizer G b :=
   Equiv.symm <|
     Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer G b g, ofQuotientStabilizer_mem_orbit G b g⟩)
-      ⟨fun x y hxy => injective_ofQuotientStabilizer G b (by convert! congr_arg Subtype.val hxy),
+      ⟨fun _ _ hxy => injective_ofQuotientStabilizer G b (congr_arg Subtype.val hxy),
         fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.ext hgb⟩⟩
 
 /-- Orbit-stabilizer theorem. -/

@@ -227,7 +227,7 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
         exact List.mem_cons_of_mem _ m
       · intro h
         rw [List.getLast_cons h] at w₂
-        convert! w₂
+        exact w₂
     · exact w₁ d List.mem_cons_self
     · by_cases h' : L = []
       · rcases h' with rfl

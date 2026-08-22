@@ -801,7 +801,7 @@ theorem isConnected_setOfPred_wSameSide {s : AffineSubspace ℝ P} (x : P)
   · rw [setOfPred_wSameSide_eq_image2 hx hp, ← Set.image_prod]
     refine (isConnected_Ici.prod (isConnected_iff_connectedSpace.2 ?_)).image _
       ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
-    convert! AddTorsor.connectedSpace s.direction s
+    exact AddTorsor.connectedSpace s.direction s
 
 @[deprecated (since := "2026-07-09")]
 alias isConnected_setOf_wSameSide := isConnected_setOfPred_wSameSide
@@ -824,7 +824,7 @@ theorem isConnected_setOfPred_sSameSide {s : AffineSubspace ℝ P} {x : P} (hx :
   rw [setOfPred_sSameSide_eq_image2 hx hp, ← Set.image_prod]
   refine (isConnected_Ioi.prod (isConnected_iff_connectedSpace.2 ?_)).image _
     ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
-  convert! AddTorsor.connectedSpace s.direction s
+  exact AddTorsor.connectedSpace s.direction s
 
 @[deprecated (since := "2026-07-09")]
 alias isConnected_setOf_sSameSide := isConnected_setOfPred_sSameSide
@@ -854,7 +854,7 @@ theorem isConnected_setOfPred_wOppSide {s : AffineSubspace ℝ P} (x : P) (h : (
   · rw [setOfPred_wOppSide_eq_image2 hx hp, ← Set.image_prod]
     refine (isConnected_Iic.prod (isConnected_iff_connectedSpace.2 ?_)).image _
       ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
-    convert! AddTorsor.connectedSpace s.direction s
+    exact AddTorsor.connectedSpace s.direction s
 
 @[deprecated (since := "2026-07-09")]
 alias isConnected_setOf_wOppSide := isConnected_setOfPred_wOppSide
@@ -877,7 +877,7 @@ theorem isConnected_setOfPred_sOppSide {s : AffineSubspace ℝ P} {x : P} (hx : 
   rw [setOfPred_sOppSide_eq_image2 hx hp, ← Set.image_prod]
   refine (isConnected_Iio.prod (isConnected_iff_connectedSpace.2 ?_)).image _
     ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
-  convert! AddTorsor.connectedSpace s.direction s
+  exact AddTorsor.connectedSpace s.direction s
 
 @[deprecated (since := "2026-07-09")]
 alias isConnected_setOf_sOppSide := isConnected_setOfPred_sOppSide

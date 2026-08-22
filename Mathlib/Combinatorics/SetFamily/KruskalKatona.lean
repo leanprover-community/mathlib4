@@ -290,7 +290,7 @@ theorem iterated_kk (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : #𝒞
   | zero => simpa
   | succ _ ih =>
     refine ih h₁.shadow (kruskal_katona h₁ h₂ h₃) ?_
-    convert! h₃.shadow
+    exact h₃.shadow
 
 /-- The **Lovasz formulation of the Kruskal-Katona theorem**.
 
