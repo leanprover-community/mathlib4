@@ -877,7 +877,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
           _ ≤ ε / 2 + ε / 2 := by gcongr; simpa [mul_comm] using hδ.le
           _ = ε := ENNReal.add_halves _
     · intro i ε hε₀
-      have : (0 : ℝ≥0∞) < 2⁻¹ ^ encode i := ENNReal.pow_pos (by norm_num) _
+      have : (0 : ℝ≥0∞) < 2⁻¹ ^ encode i := ENNReal.pow_pos (by simp) _
       refine mem_iInf_of_mem (min (2⁻¹ ^ encode i) ε) <| mem_iInf_of_mem (by positivity) ?_
       simp only [and_imp, Prod.forall, ofPred_subset_ofPred, lt_min_iff, mem_principal]
       intro x y hn

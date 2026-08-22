@@ -109,7 +109,7 @@ lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
     on_goal 2 => rw [show f.natDegree = 1 by lia]
     on_goal 3 =>
       rw [← Nat.cast_one (R := R), ← Nat.cast_add, show f.natDegree = 1 by lia]
-      norm_num
+      simp
     on_goal 6 =>
       rw [← Nat.cast_one (R := R), ← Nat.cast_add]
       #adaptation_note
