@@ -79,6 +79,12 @@ instance : ContinuousMapClass C^n⟮I, M; I', M'⟯ M M' where
 nonrec def id : C^n⟮I, M; I, M⟯ :=
   ⟨id, contMDiff_id⟩
 
+@[simp]
+theorem id_apply (x : M) : (ContMDiffMap.id : C^n⟮I, M; I, M⟯) x = x := rfl
+
+@[simp]
+theorem coe_id : ⇑(ContMDiffMap.id : C^n⟮I, M; I, M⟯) = _root_.id := rfl
+
 /-- The composition of `C^n` maps, as a `C^n` map. -/
 def comp (f : C^n⟮I', M'; I'', M''⟯) (g : C^n⟮I, M; I', M'⟯) : C^n⟮I, M; I'', M''⟯ where
   val a := f (g a)
@@ -88,6 +94,10 @@ def comp (f : C^n⟮I', M'; I'', M''⟯) (g : C^n⟮I, M; I', M'⟯) : C^n⟮I, 
 theorem comp_apply (f : C^n⟮I', M'; I'', M''⟯) (g : C^n⟮I, M; I', M'⟯) (x : M) :
     f.comp g x = f (g x) :=
   rfl
+
+@[simp]
+theorem coe_comp (f : C^n⟮I', M'; I'', M''⟯) (g : C^n⟮I, M; I', M'⟯) :
+    ⇑(f.comp g) = f ∘ g := rfl
 
 instance [Inhabited M'] : Inhabited C^n⟮I, M; I', M'⟯ :=
   ⟨⟨fun _ => default, contMDiff_const⟩⟩
