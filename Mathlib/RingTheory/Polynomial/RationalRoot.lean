@@ -142,3 +142,10 @@ instance (priority := 100) instIsIntegrallyClosed : IsIntegrallyClosed A :=
 end UniqueFactorizationMonoid
 
 end RationalRootTheorem
+
+theorem IsIntegral.mem_range_ratCast_iff {α : Type*} [DivisionRing α] [CharZero α]
+    {x : α} (h : IsIntegral ℤ x) : x ∈ Set.range Rat.cast ↔ x ∈ Set.range Int.cast :=
+  IsIntegralClosure.mem_range_algebraMap ℤ h
+
+@[deprecated (since := "2026-07-17")]
+alias IsIntegral.exists_int_iff_exists_rat := IsIntegral.mem_range_ratCast_iff
