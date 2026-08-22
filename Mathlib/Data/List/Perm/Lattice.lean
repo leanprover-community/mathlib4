@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
+Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro, Rudy Peterson
 -/
 module
 
@@ -9,6 +9,7 @@ public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Lattice
 public import Mathlib.Data.List.Nodup
+public import Batteries.Data.List.Perm
 
 /-!
 # List Permutations and list lattice operations.
@@ -27,6 +28,23 @@ namespace List
 variable {α : Type*}
 
 open Perm (swap)
+
+lemma Nodup.splits {l : List α} : l.splits.Nodup :=
+  nodup_range.map_on <| by grind [length_take_of_le]
+
+lemma Nodup.splits₃Left {l : List α} : l.splits₃Left.Nodup :=
+  nodup_flatMap.mpr ⟨fun _ _ ↦ Nodup.splits.map_on <| by grind,
+    pairwise_of_forall_ne Nodup.splits <| by
+      simpa [Function.onFun, Disjoint] using by grind⟩
+
+lemma Nodup.splits₃Right {l : List α} : l.splits₃Right.Nodup :=
+  nodup_flatMap.mpr ⟨fun _ _ ↦ Nodup.splits.map_on <| by grind,
+    pairwise_of_forall_ne Nodup.splits <| by
+      simpa [Function.onFun, Disjoint] using by grind⟩
+
+lemma Perm.splits₃LeftRight (l : List α) : l.splits₃Left ~ l.splits₃Right := by
+  rw [List.perm_ext_iff_of_nodup Nodup.splits₃Left Nodup.splits₃Right]
+  grind
 
 variable [DecidableEq α]
 
