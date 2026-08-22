@@ -522,6 +522,10 @@ lemma Bundle.Trivialization.mdifferentiableOn_symm_const
     MDiff[e.baseSet] (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) :=
   fun _x hx ↦ (e.mdifferentiableAt_symm_const hx _).mdifferentiableWithinAt
 
+-- TODO: add differentiable analogous of `ContMDiffWithinAt.clm_bundle_of_apply` and friends
+-- This requires API lemmas `mdifferentiableWithinAt_iff_source`,
+-- `mdifferentiableWithinAt_extChartAt_symm_range_self` and possibly more.
+
 end OneVariable'
 
 section TwoVariables
