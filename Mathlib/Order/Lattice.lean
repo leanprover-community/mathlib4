@@ -20,6 +20,10 @@ meet-semilattices.
 Distributive lattices are lattices which satisfy any of four equivalent distributivity properties,
 of `sup` over `inf`, on the left or on the right.
 
+(Semi)modular lattices, a kind of lattice useful in algebra.
+For examples, look to the subobject lattices of abelian groups, submodules, and ideals, or consider
+any distributive lattice.
+
 ## Main declarations
 
 * `SemilatticeSup`: a type class for join semilattices
@@ -33,7 +37,20 @@ of `sup` over `inf`, on the left or on the right.
 * `Lattice.mk'`: an alternative constructor for `Lattice` via proofs that `⊔` and `⊓` are
   commutative, associative and satisfy a pair of "absorption laws".
 
+## Typeclasses
+
 * `DistribLattice`: a type class for distributive lattices.
+
+We define (semi)modularity typeclasses as Prop-valued mixins.
+
+* `IsWeakUpperModularLattice`: Weakly upper modular lattices. Lattice where `a ⊔ b` covers `a`
+  and `b` if `a` and `b` both cover `a ⊓ b`.
+* `IsWeakLowerModularLattice`: Weakly lower modular lattices. Lattice where `a` and `b` cover
+  `a ⊓ b` if `a ⊔ b` covers both `a` and `b`
+* `IsUpperModularLattice`: Upper modular lattices. Lattices where `a ⊔ b` covers `a` if `b`
+  covers `a ⊓ b`.
+* `IsLowerModularLattice`: Lower modular lattices. Lattices where `a` covers `a ⊓ b` if `a ⊔ b`
+  covers `b`.
 * `IsModularLattice`: Modular lattices. Lattices where `a ≤ c → (a ⊔ b) ⊓ c = a ⊔ (b ⊓ c)`. We
   only require an inequality because the other direction holds in all lattices.
 
@@ -482,6 +499,32 @@ as a sublattice of a powerset lattice. -/
 class DistribLattice (α) extends Lattice α where
   /-- The infimum distributes over the supremum -/
   protected le_sup_inf : ∀ x y z : α, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z
+
+/-- A weakly upper modular lattice is a lattice where `a ⊔ b` covers `a` and `b` if `a` and `b` both
+cover `a ⊓ b`. -/
+class IsWeakUpperModularLattice (α : Type*) [Lattice α] : Prop where
+/-- `a ⊔ b` covers `a` and `b` if `a` and `b` both cover `a ⊓ b`. -/
+  covBy_sup_of_inf_covBy_covBy {a b : α} : a ⊓ b ⋖ a → a ⊓ b ⋖ b → a ⋖ a ⊔ b
+
+/-- A weakly lower modular lattice is a lattice where `a` and `b` cover `a ⊓ b` if `a ⊔ b` covers
+both `a` and `b`. -/
+@[to_dual existing]
+class IsWeakLowerModularLattice (α : Type*) [Lattice α] : Prop where
+/-- `a` and `b` cover `a ⊓ b` if `a ⊔ b` covers both `a` and `b` -/
+  inf_covBy_of_covBy_covBy_sup {a b : α} : a ⋖ a ⊔ b → b ⋖ a ⊔ b → a ⊓ b ⋖ a
+
+/-- An upper modular lattice, aka semimodular lattice, is a lattice where `a ⊔ b` covers `a` and `b`
+if either `a` or `b` covers `a ⊓ b`. -/
+class IsUpperModularLattice (α : Type*) [Lattice α] : Prop where
+/-- `a ⊔ b` covers `a` and `b` if either `a` or `b` covers `a ⊓ b` -/
+  covBy_sup_of_inf_covBy {a b : α} : a ⊓ b ⋖ a → b ⋖ a ⊔ b
+
+/-- A lower modular lattice is a lattice where `a` and `b` both cover `a ⊓ b` if `a ⊔ b` covers
+either `a` or `b`. -/
+@[to_dual existing]
+class IsLowerModularLattice (α : Type*) [Lattice α] : Prop where
+/-- `a` and `b` both cover `a ⊓ b` if `a ⊔ b` covers either `a` or `b` -/
+  inf_covBy_of_covBy_sup {a b : α} : a ⋖ a ⊔ b → a ⊓ b ⋖ b
 
 /-- A modular lattice is one with a limited associativity between `⊓` and `⊔`. -/
 class IsModularLattice (α : Type*) [Lattice α] : Prop where

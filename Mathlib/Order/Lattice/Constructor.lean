@@ -19,6 +19,9 @@ using the `order` tactic to facilitate proofs. It also proves an equivalent cond
 
 public section
 
+/-- Notice that the right-hand side is equivalent to
+`∀ x y z : α, x ≤ y → x ⊓ z = y ⊓ z → x ⊔ z = y ⊔ z → x = y`, which is the assumption
+of the constructor `DistribLattice.ofEqOfInfSupEq` with an extra `x ≤ y` condition. -/
 theorem isModularLattice_iff_eq_of_le_of_inf_le_of_le_sup {α : Type*} [Lattice α] :
     IsModularLattice α ↔ ∀ x y z : α, x ≤ y → y ⊓ z ≤ x → y ≤ x ⊔ z → x = y :=
   ⟨@eq_of_le_of_inf_le_of_le_sup α _, fun h ↦
