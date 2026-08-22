@@ -39,6 +39,11 @@ name: Lake cache shadow (master)
 #                    from the cache bucket via `lake cache get` (+
 #                    `--package` for deps), run `lake build` against the
 #                    rehydrated cache, then verify with `--rehash`.
+#   downstream       Synthesize a minimal project that depends on mathlib at
+#                    the built rev, fetch mathlib + all transitive deps from
+#                    the bucket via `lake cache get --package`, and assert
+#                    zero Mathlib module rebuilds — validating that the
+#                    bucket can serve real downstream projects.
 #   report           Post a per-run summary to the `CI admins` Zulip
 #                    stream (topic `Lake cache shadow`).
 #
@@ -848,9 +853,120 @@ jobs:
           read -ra TARGETS <<< "$STAGE_TARGETS"
           lake build --no-build --rehash -v "${TARGETS[@]}"
 
+  # Downstream-consumer experiment: a minimal project that *depends on*
+  # mathlib fetches everything — mathlib itself plus the transitive deps —
+  # from the shadow bucket. The mappings were produced with mathlib as the
+  # workspace ROOT; here mathlib is a DEP, so zero rebuilt Mathlib modules
+  # proves the input hashes agree across the two workspace shapes, i.e. the
+  # bucket can serve real downstream projects.
+  downstream:
+    name: Downstream project fetch (mathlib-as-dep)
+    needs: [build_and_stage, upload]
+    # Only meaningful on full-Mathlib runs with dep caching on: the test
+    # imports Mathlib modules, so the bucket must hold the full root set.
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && (inputs.targets || 'Mathlib') == 'Mathlib' && (github.event_name != 'workflow_dispatch' || inputs.cache_deps) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      health: ${{ steps.health.outputs.health }}
+    env:
+      LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
+      LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
+      # Disable barrel/build-cache auto-fetch so every replay in this job is
+      # attributable to the shadow bucket.
+      LAKE_NO_CACHE: true
+      EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
+      MATHLIB_SHA: ${{ needs.build_and_stage.outputs.sha }}
+    steps:
+      - name: install elan
+        run: |
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      # A minimal project depending on mathlib at the rev this run built.
+      # `lake update` materializes mathlib and inherits its manifest pins for
+      # the transitive deps, exactly as a real downstream would resolve them.
+      - name: Create downstream project
+        run: |
+          mkdir downstream && cd downstream
+          printf '%s\n' "$EFFECTIVE_TOOLCHAIN" > lean-toolchain
+          cat > lakefile.toml <<EOF
+          name = "downstream"
+          defaultTargets = ["Downstream"]
+
+          [[require]]
+          name = "mathlib"
+          git = "https://github.com/leanprover-community/mathlib4"
+          rev = "$MATHLIB_SHA"
+
+          [[lean_lib]]
+          name = "Downstream"
+          EOF
+          cat > Downstream.lean <<'EOF'
+          import Mathlib.Topology.Basic
+          import Mathlib.Tactic.Ring
+
+          example (x y : Nat) : (x + y)^2 = x^2 + 2*x*y + y^2 := by ring
+          EOF
+          lake update --keep-toolchain
+
+      # Hydrate: mathlib itself from the root scope, transitive deps from
+      # their per-dep scopes — every rev comes from the downstream's own
+      # manifest (mathlib's entry is the pinned sha; the rest are inherited
+      # pins). Misses degrade to source builds, reported below.
+      - name: lake cache get (mathlib + transitive deps)
+        run: |
+          cd downstream
+          # Must mirror the slug in build_and_stage's plan step.
+          tcslug="$(printf %s "$EFFECTIVE_TOOLCHAIN" | tr -c 'A-Za-z0-9._-' '-')"
+          total=0 hits=0
+          while read -r name rev; do
+            if [[ " $DEP_SKIP " == *" $name "* ]]; then continue; fi
+            total=$((total+1))
+            if [ "$name" = mathlib ]; then
+              scope="$SHADOW_SCOPE"
+            else
+              scope="$SHADOW_SCOPE/deps/$tcslug/$name"
+            fi
+            if lake cache get --package="$name" --scope="$scope" --rev="$rev"; then
+              hits=$((hits+1))
+            else
+              echo "::warning::downstream cache miss for $name@${rev:0:12}; it will build from source"
+            fi
+          done < <(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' lake-manifest.json)
+          echo "PKG_TOTAL=$total" >> "$GITHUB_ENV"
+          echo "PKG_HITS=$hits" >> "$GITHUB_ENV"
+          echo "::notice::downstream cache: ${hits}/${total} packages fetched from shadow scope"
+
+      - name: lake build (downstream)
+        run: |
+          cd downstream
+          lake build 2>&1 | tee build.log
+
+      - name: Check downstream provenance
+        id: health
+        run: |
+          cd downstream
+          BUILT_TOTAL=$(grep -cE '^✔.*Built ' build.log || true)
+          BUILT_MATHLIB=$(grep -cE '^✔.*Built Mathlib([. ]|$)' build.log || true)
+          BUILT_SELF=$(grep -cE '^✔.*Built Downstream' build.log || true)
+          BUILT_OTHER=$((BUILT_TOTAL - BUILT_MATHLIB - BUILT_SELF))
+          if [ "$BUILT_MATHLIB" -ne 0 ]; then
+            health="❌ downstream: ${BUILT_MATHLIB} Mathlib module(s) rebuilt — as-dep input hashes diverge from as-root"
+            echo "health=${health}" >> "$GITHUB_OUTPUT"
+            echo "::error::${health}"
+            grep -E '^✔.*Built Mathlib([. ]|$)' build.log | head -20 || true
+            exit 1
+          fi
+          health="⬇️ downstream: ${PKG_HITS}/${PKG_TOTAL} pkgs fetched, 0 Mathlib modules rebuilt, ${BUILT_OTHER} other dep module(s) built (skip list: ${DEP_SKIP:-none})"
+          echo "health=${health}" >> "$GITHUB_OUTPUT"
+          echo "::notice::${health}"
+
   report:
     name: Post run summary to Zulip
-    needs: [build_and_stage, upload, consume]
+    needs: [build_and_stage, upload, consume, downstream]
     if: ${{ always() && github.repository == 'leanprover-community/mathlib4' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -861,6 +977,8 @@ jobs:
           BUILD: ${{ needs.build_and_stage.result }}
           UPLOAD: ${{ needs.upload.result }}
           CONSUME: ${{ needs.consume.result }}
+          DOWNSTREAM: ${{ needs.downstream.result }}
+          DOWNSTREAM_HEALTH: ${{ needs.downstream.outputs.health }}
           CARRYOVER: ${{ needs.upload.outputs.carryover }}
           NEW_CONTENT: ${{ needs.upload.outputs.new_content }}
           DEP_UPLOADS: ${{ needs.upload.outputs.dep_uploads }}
@@ -887,8 +1005,10 @@ jobs:
             echo "- $(emoji "$BUILD") build_and_stage: \`$BUILD\`"
             echo "- $(emoji "$UPLOAD") upload: \`$UPLOAD\`"
             echo "- $(emoji "$CONSUME") consume: \`$CONSUME\`"
+            echo "- $(emoji "$DOWNSTREAM") downstream: \`$DOWNSTREAM\`"
             echo "- ${CACHE_HEALTH:-❓ cache hits: n/a (consume skipped)}"
             echo "- ${DEP_HEALTH:-📚 deps: n/a (consume skipped)}"
+            echo "- ${DOWNSTREAM_HEALTH:-⬇️ downstream: n/a (skipped)}"
             echo "- 🔁 cache carryover: ${CARRYOVER:-n/a}"
             echo "- 📦 new content uploaded: ${NEW_CONTENT:-n/a}"
             echo "- 🗂️ dep uploads: ${DEP_UPLOADS:-n/a}"
