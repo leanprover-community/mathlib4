@@ -7712,6 +7712,7 @@ public import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 public import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
+public import Mathlib.Topology.Algebra.InfiniteSum.Operator
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
 public import Mathlib.Topology.Algebra.InfiniteSum.Real
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
