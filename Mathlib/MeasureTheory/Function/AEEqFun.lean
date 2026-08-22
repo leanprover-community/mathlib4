@@ -498,7 +498,8 @@ theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ (ae �
 theorem compQuasiMeasurePreserving_toGerm {β : Type*} [MeasurableSpace β] {f : α → β} {ν}
     (g : β →ₘ[ν] γ) (hf : Measure.QuasiMeasurePreserving f μ ν) :
     (g.compQuasiMeasurePreserving f hf).toGerm = g.toGerm.compTendsto f hf.tendsto_ae := by
-  rcases g; rfl
+  rcases g
+  exact (Germ.coe_compTendsto (Subtype.val ‹_›) _).symm
 
 @[simp]
 theorem compMeasurePreserving_toGerm {β : Type*} [MeasurableSpace β] {f : α → β} {ν}
@@ -543,7 +544,7 @@ def LiftRel (r : β → γ → Prop) (f : α →ₘ[μ] β) (g : α →ₘ[μ] �
 
 theorem liftRel_mk_mk {r : β → γ → Prop} {f : α → β} {g : α → γ} {hf hg} :
     LiftRel r (mk f hf : α →ₘ[μ] β) (mk g hg) ↔ ∀ᵐ a ∂μ, r (f a) (g a) :=
-  Iff.rfl
+  Germ.liftRel_coe
 
 theorem liftRel_iff_coeFn {r : β → γ → Prop} {f : α →ₘ[μ] β} {g : α →ₘ[μ] γ} :
     LiftRel r f g ↔ ∀ᵐ a ∂μ, r (f a) (g a) := by
@@ -557,7 +558,7 @@ instance instPreorder [Preorder β] : Preorder (α →ₘ[μ] β) :=
 
 @[simp]
 theorem mk_le_mk [Preorder β] {f g : α → β} (hf hg) : (mk f hf : α →ₘ[μ] β) ≤ mk g hg ↔ f ≤ᵐ[μ] g :=
-  Iff.rfl
+  Germ.coe_le
 
 @[simp, norm_cast]
 theorem coeFn_le [Preorder β] {f g : α →ₘ[μ] β} : (f : α → β) ≤ᵐ[μ] g ↔ f ≤ g :=
@@ -936,7 +937,7 @@ theorem lintegral_add (f g : α →ₘ[μ] ℝ≥0∞) : lintegral (f + g) = lin
   induction_on₂ f g fun f hf g _ => by simp [lintegral_add_left' hf.aemeasurable]
 
 theorem lintegral_mono {f g : α →ₘ[μ] ℝ≥0∞} : f ≤ g → lintegral f ≤ lintegral g :=
-  induction_on₂ f g fun _f _ _g _ hfg => lintegral_mono_ae hfg
+  induction_on₂ f g fun _f _ _g _ hfg => lintegral_mono_ae ((mk_le_mk _ _).1 hfg)
 
 section Abs
 

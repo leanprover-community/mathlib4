@@ -96,15 +96,15 @@ theorem coe_zero : ↑(0 : ℝ) = (0 : ℝ*) :=
 
 @[simp, norm_cast]
 theorem coe_inv (x : ℝ) : ↑x⁻¹ = (x⁻¹ : ℝ*) :=
-  rfl
+  Germ.coe_inv (fun _ => x)
 
 @[simp, norm_cast]
 theorem coe_neg (x : ℝ) : ↑(-x) = (-x : ℝ*) :=
-  rfl
+  Germ.coe_neg (fun _ => x)
 
 @[simp, norm_cast]
 theorem coe_add (x y : ℝ) : ↑(x + y) = (x + y : ℝ*) :=
-  rfl
+  Germ.coe_add (fun _ => x) (fun _ => y)
 
 @[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -113,15 +113,15 @@ theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 @[simp, norm_cast]
 theorem coe_mul (x y : ℝ) : ↑(x * y) = (x * y : ℝ*) :=
-  rfl
+  Germ.coe_mul (fun _ => x) (fun _ => y)
 
 @[simp, norm_cast]
 theorem coe_div (x y : ℝ) : ↑(x / y) = (x / y : ℝ*) :=
-  rfl
+  Germ.coe_div (fun _ => x) (fun _ => y)
 
 @[simp, norm_cast]
 theorem coe_sub (x y : ℝ) : ↑(x - y) = (x - y : ℝ*) :=
-  rfl
+  Germ.coe_sub (fun _ => x) (fun _ => y)
 
 @[simp, norm_cast]
 theorem coe_le_coe {x y : ℝ} : (x : ℝ*) ≤ y ↔ x ≤ y :=
@@ -157,8 +157,8 @@ def coeRingHom : ℝ →+*o ℝ* where
   toFun x := x
   map_zero' := rfl
   map_one' := rfl
-  map_add' _ _ := rfl
-  map_mul' _ _ := rfl
+  map_add' := coe_add
+  map_mul' := coe_mul
   monotone' _ _ := coe_le_coe.2
 
 @[simp]
@@ -178,7 +178,8 @@ theorem stdPart_coe (x : ℝ) : stdPart (x : ℝ*) = x :=
 /-- Construct a hyperreal number from a sequence of real numbers. -/
 def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
 
-theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
+theorem ofSeq_surjective : Function.Surjective ofSeq :=
+  fun f => inductionOn f (fun f => ⟨f, rfl⟩)
 
 theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n < g n :=
   Germ.coe_lt
@@ -231,15 +232,15 @@ recommended_spelling "epsilon" for "ε" in [epsilon, «termε»]
 
 @[simp]
 theorem inv_omega : ω⁻¹ = ε :=
-  rfl
+  (Germ.coe_inv _).symm
 
 @[simp]
 theorem inv_epsilon : ε⁻¹ = ω :=
-  @inv_inv _ _ ω
+  inv_eq_iff_eq_inv.2 inv_omega.symm
 
 @[simp]
 theorem epsilon_pos : 0 < ε :=
-  inv_pos_of_pos omega_pos
+  (inv_pos_of_pos omega_pos).trans_eq inv_omega
 
 @[simp]
 theorem epsilon_ne_zero : ε ≠ 0 :=
@@ -247,7 +248,7 @@ theorem epsilon_ne_zero : ε ≠ 0 :=
 
 @[simp]
 theorem epsilon_mul_omega : ε * ω = 1 :=
-  @inv_mul_cancel₀ _ _ ω omega_ne_zero
+  (mul_eq_one_iff_eq_inv₀ omega_pos.ne').2 inv_omega.symm
 
 @[simp]
 theorem archimedeanClassMk_epsilon_pos : 0 < mk ε := by
@@ -260,11 +261,14 @@ theorem archimedeanClassMk_epsilon_pos : 0 < mk ε := by
 @[simp]
 theorem tendsto_ofSeq {f : ℕ → ℝ} {lb : Filter ℝ} :
     (ofSeq f).Tendsto lb ↔ Tendsto f (hyperfilter ℕ) lb :=
-  .rfl
+  Germ.coe_tendsto
 
 theorem stdPart_map {x : ℝ*} {r : ℝ} {f : ℝ → ℝ} (hf : ContinuousAt f r)
     (hxr : x.Tendsto (𝓝 r)) : (x.map f).Tendsto (𝓝 (f r)) := by
   rcases ofSeq_surjective x with ⟨g, rfl⟩
+  unfold ofSeq
+  rw [Germ.map_coe, Germ.coe_tendsto]
+  rw [tendsto_ofSeq] at hxr
   exact hf.tendsto.comp hxr
 
 theorem stdPart_map₂ {x y : ℝ*} {r s : ℝ} {f : ℝ → ℝ → ℝ}
@@ -272,6 +276,9 @@ theorem stdPart_map₂ {x y : ℝ*} {r s : ℝ} {f : ℝ → ℝ → ℝ}
     (hf : ContinuousAt (Function.uncurry f) (r, s)) : (x.map₂ f y).Tendsto (𝓝 (f r s)) := by
   rcases ofSeq_surjective x with ⟨x, rfl⟩
   rcases ofSeq_surjective y with ⟨y, rfl⟩
+  unfold ofSeq
+  rw [Germ.map₂_coe, Germ.coe_tendsto]
+  rw [tendsto_ofSeq] at hxr hys
   exact hf.tendsto.comp (hxr.prodMk_nhds hys)
 
 theorem tendsto_iff_forall {x : ℝ*} {r : ℝ} :
