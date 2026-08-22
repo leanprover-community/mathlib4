@@ -93,13 +93,13 @@ def toModuleMonoidAlgebraMap {V W : Rep.{w} k G} (f : V ⟶ W) :
         f.hom.toLinearMap f.hom.2 r x }
 
 /-- Functorially convert a representation of `G` into a module over `k[G]`. -/
-def toModuleMonoidAlgebra : Rep.{w} k G ⥤ ModuleCat k[G] where
+def toModuleMonoidAlgebra : Rep.{w} k G ⥤ ModuleCat.{w} k[G] where
   obj V := ModuleCat.of _ V.ρ.asModule
   map f := toModuleMonoidAlgebraMap f
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Functorially convert a module over `k[G]` into a representation of `G`. -/
-def ofModuleMonoidAlgebra : ModuleCat k[G] ⥤ Rep.{w} k G where
+def ofModuleMonoidAlgebra : ModuleCat.{w} k[G] ⥤ Rep.{w} k G where
   obj M := Rep.of (Representation.ofModule M)
   map f := ofHom {
     __ := f.hom
@@ -156,7 +156,7 @@ def unitIso (V : Rep.{w} k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidA
       rfl } fun g ↦ by ext; exact unit_iso_comm ..
 
 /-- The categorical equivalence `Rep k G ≌ ModuleCat k[G]`. -/
-def equivalenceModuleMonoidAlgebra : Rep.{w} k G ≌ ModuleCat k[G] where
+def equivalenceModuleMonoidAlgebra : Rep.{w} k G ≌ ModuleCat.{w} k[G] where
   functor := toModuleMonoidAlgebra
   inverse := ofModuleMonoidAlgebra
   unitIso := NatIso.ofComponents (fun V => unitIso V) (by cat_disch)

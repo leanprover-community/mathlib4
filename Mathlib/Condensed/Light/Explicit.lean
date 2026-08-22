@@ -97,7 +97,7 @@ end LightCondMod
 namespace LightCondAb
 
 /-- A `LightCondAb` version of `LightCondensed.ofSheafLightProfinite`. -/
-noncomputable abbrev ofSheafLightProfinite (F : LightProfiniteᵒᵖ ⥤ ModuleCat ℤ)
+noncomputable abbrev ofSheafLightProfinite (F : LightProfiniteᵒᵖ ⥤ ModuleCat.{0} ℤ)
     [PreservesFiniteProducts F] (hF : EqualizerCondition F) : LightCondAb :=
   LightCondMod.ofSheafLightProfinite ℤ F hF
 

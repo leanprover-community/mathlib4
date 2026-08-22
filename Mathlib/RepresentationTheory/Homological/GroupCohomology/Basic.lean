@@ -120,7 +120,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 which calculates the group cohomology of `A`. -/
-noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
+noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat.{u} k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d A n) fun n => by
     rw [d_eq, d_eq]
@@ -155,7 +155,7 @@ def inhomogeneousCochainsIso :
 
 /-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 `n`th differential in the complex of inhomogeneous cochains. -/
-abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
+abbrev cocycles (n : ℕ) : ModuleCat.{u} k := (inhomogeneousCochains A).cycles n
 
 variable {A} in
 /-- Make an `n`-cocycle out of an element of the kernel of the `n`th differential. -/
@@ -183,7 +183,7 @@ open groupCohomology
 
 /-- The group cohomology of a `k`-linear `G`-representation `A`, as the cohomology of its complex
 of inhomogeneous cochains. -/
-def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
+def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat.{u} k :=
   (inhomogeneousCochains A).homology n
 
 /-- The natural map from `n`-cocycles to `n`th group cohomology for a `k`-linear
