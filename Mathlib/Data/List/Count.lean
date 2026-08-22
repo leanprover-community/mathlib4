@@ -62,4 +62,22 @@ theorem count_map_of_injective [BEq β] [LawfulBEq β] (l : List α) (f : α →
   unfold Function.comp
   simp only [hf.beq_eq]
 
+/-- If `x` occurs at least twice in `l`, then `x` occurs in `l.tail`. -/
+theorem mem_tail_of_two_le_count {x : α} {l : List α} (h : 2 ≤ l.count x) : x ∈ l.tail := by
+  cases l with
+  | nil => simp at h
+  | cons hd tl =>
+    have hpos : 0 < tl.count x := by grind [= count_cons_self]
+    exact count_pos_iff.mp hpos
+
+/-- If `x` occurs at least twice in `l.dropLast`, then `x` occurs at some index of `l` which is
+neither the first nor the last one. This detects a duplicate strictly inside `l`. -/
+theorem exists_pos_get_of_two_le_count_dropLast {l : List α} {x : α}
+    (h : 2 ≤ l.dropLast.count x) :
+    ∃ (i : Nat) (hi : i < l.length), 0 < i ∧ i < l.length - 1 ∧ l.get ⟨i, hi⟩ = x := by
+  obtain ⟨j, hj, hjx⟩ := getElem_of_mem (mem_tail_of_two_le_count h)
+  rw [length_tail, length_dropLast] at hj
+  refine ⟨j + 1, by omega, Nat.succ_pos _, by omega, ?_⟩
+  rw [get_eq_getElem, ← hjx, getElem_tail, getElem_dropLast]
+
 end List
