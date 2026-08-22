@@ -60,8 +60,7 @@ ring `R`. -/
 structure ContinuousLinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     (M : Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂]
     [AddCommMonoid M₂] [Module R M] [Module S M₂] extends M →ₛₗ[σ] M₂ where
-  cont : Continuous toFun := by
-    first | fun_prop | eta_expand; dsimp; fun_prop | skip
+  cont : Continuous toFun := by fun_prop_simp
 
 attribute [inherit_doc ContinuousLinearMap] ContinuousLinearMap.cont
 
@@ -736,7 +735,6 @@ section ToSpanSingleton
 variable (R₁)
 variable [ContinuousSMul R₁ M₁]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous
 linear map from `R` to `M` by taking multiples of `x`. -/
 def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where
