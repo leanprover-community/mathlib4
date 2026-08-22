@@ -46,6 +46,12 @@
   default_branch: main
   name: Formal Conjectures
   zulip-contact: Eric Wieser
+- github: https://github.com/Robby955/FormalSLT
+  default_branch: main
+  name: FormalSLT - Formal Statistical Learning Theory
+  workflows:
+    build: ci.yml
+    docs: docs.yml
 - github: https://github.com/girving/series
   default_branch: main
   name: Power Series Arithmetic
