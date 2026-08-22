@@ -4909,6 +4909,7 @@ public import Mathlib.GroupTheory.QuotientGroup.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.GroupTheory.QuotientGroup.Finite
 public import Mathlib.GroupTheory.QuotientGroup.ModEq
+public import Mathlib.GroupTheory.QuotientGroup.Simple
 public import Mathlib.GroupTheory.Rank
 public import Mathlib.GroupTheory.RegularWreathProduct
 public import Mathlib.GroupTheory.ResiduallyFinite
