@@ -13,7 +13,7 @@ public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Tactic.CrossRefAttribute
 
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Simple graphs
@@ -626,6 +626,23 @@ instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G�
     Fintype (G₁ \ G₂).edgeSet := by
   rw [edgeSet_sdiff]
   exact Set.fintypeDiff _ _
+
+variable {G} in
+theorem finite_edgeSet_iff_finite_of_support_eq_univ (h : G.support = .univ) :
+    G.edgeSet.Finite ↔ Finite V := by
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ Subtype.finite⟩
+  rw [← Set.finite_univ_iff, ← h]
+  classical
+  have : Finite G.edgeSet := hfin
+  suffices G.support = ⋃ e : G.edgeSet, e.val.toFinset by rw [this]; apply Set.finite_iUnion; simp
+  ext
+  simp [mem_support, Sym2.mem_iff_exists]
+
+variable {G} in
+theorem infinite_edgeSet_iff_infinite_of_support_eq_univ (h : G.support = .univ) :
+    G.edgeSet.Infinite ↔ Infinite V := by
+  contrapose!
+  exact finite_edgeSet_iff_finite_of_support_eq_univ h
 
 end EdgeSet
 
