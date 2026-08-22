@@ -60,6 +60,18 @@ theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 := 
 
 variable {K}
 
+/-- When a vector is in `Kᗮ`, with the inner product being real. -/
+lemma mem_orthogonal_iff_re_inner_eq_zero {y : E} :
+    y ∈ Kᗮ ↔ ∀ u ∈ K, RCLike.re ⟪u, y⟫ = 0 := by
+  simp only [mem_orthogonal]
+  refine ⟨fun hy u hu ↦ by simp [hy _ hu], fun h u hu ↦ ?_⟩
+  simpa [inner_smul_left, RCLike.conj_mul, -inner_conj_symm] using h (⟪u, y⟫ • u) (K.smul_mem _ hu)
+
+/-- When a vector is in `Kᗮ`, with the inner product being real, the other way round. -/
+lemma mem_orthogonal_iff_re_inner_eq_zero' {y : E} :
+    y ∈ Kᗮ ↔ ∀ u ∈ K, RCLike.re ⟪y, u⟫ = 0 := by
+  simp [mem_orthogonal_iff_re_inner_eq_zero, inner_re_symm]
+
 /-- A vector in `K` is orthogonal to one in `Kᗮ`. -/
 theorem inner_right_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) : ⟪u, v⟫ = 0 :=
   (K.mem_orthogonal v).1 hv u hu
