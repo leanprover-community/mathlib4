@@ -1,0 +1,144 @@
+/-
+Copyright (c) 2025 Sina Hazratpour. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sina Hazratpour, Wojciech Nawrocki
+-/
+module
+
+public import Mathlib.CategoryTheory.Functor.TwoSquare
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+
+/-!
+# Cartesian natural transformations
+
+A natural transformation between functors is cartesian if all its naturality squares are
+pullback squares.
+
+## Main results
+
+- `NatTrans.isCartesian_of_discrete` shows that any natural transformation between functors from a
+  discrete category is cartesian.
+
+- `NatTrans.isCartesian_of_isIso` shows that any natural isomorphism is cartesian.
+
+- `NatTrans.isIso_of_isCartesian_of_isIso_app_terminal` shows that a cartesian natural
+  transformation is an isomorphism if its component at a terminal object is an isomorphism.
+
+- `NatTrans.isCartesian_of_isPullback_isTerminal_from` shows that a natural transformation is
+  cartesian if all its naturality squares to the terminal object are pullback squares.
+
+- `NatTrans.IsCartesian.comp` shows that the composition of two cartesian natural transformations is
+
+### References
+
+This material is adapted from the polynomial functors project developed during the
+Trimester "Prospects of Formal Mathematics" at the Hausdorff Institute (HIM) in Bonn:
+
+https://github.com/sinhp/Poly
+
+-/
+
+@[expose] public section
+
+universe v' u' v u
+
+open CategoryTheory Limits IsPullback
+
+namespace CategoryTheory
+
+variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
+variable {K : Type*} [Category K] {D : Type*} [Category D]
+
+namespace NatTrans
+
+open Functor
+
+/-- A natural transformation is cartesian if all its naturality squares are pullbacks. -/
+def IsCartesian {F G : J ⥤ C} (α : F ⟶ G) : Prop :=
+  ∀ ⦃X Y : J⦄ (f : X ⟶ Y), IsPullback (F.map f) (α.app X) (α.app Y) (G.map f)
+
+theorem isCartesian_of_discrete {ι : Type*} {F G : Discrete ι ⥤ C}
+    (α : F ⟶ G) : IsCartesian α := by
+  rintro ⟨X⟩ ⟨Y⟩ ⟨⟨rfl : X = Y⟩⟩
+  simp only [Discrete.functor_map_id]
+  exact IsPullback.of_horiz_isIso ⟨by rw [Category.id_comp, Category.comp_id]⟩
+
+theorem isCartesian_of_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α] : IsCartesian α :=
+  fun _ _ f => IsPullback.of_vert_isIso ⟨NatTrans.naturality _ f⟩
+
+theorem isIso_of_isCartesian_of_isIso_app_terminal {F G : J ⥤ C} (α : F ⟶ G) (hα : IsCartesian α)
+    (T : J) (hT : IsTerminal T) [IsIso (α.app T)] : IsIso α :=
+  have := fun j ↦ isIso_snd_of_isIso <| hα <| hT.from j
+  NatIso.isIso_of_isIso_app _
+
+theorem isCartesian_of_isPullback_isTerminal_from {F G : J ⥤ C} (α : F ⟶ G)
+    (T : J) (hT : IsTerminal T)
+    (pb : ∀ Y, IsPullback (F.map (hT.from Y)) (α.app Y) (α.app T) (G.map (hT.from Y))) :
+    IsCartesian α := by
+  intro X Y f
+  apply IsPullback.of_right (h₁₂ := F.map (hT.from Y)) (h₂₂ := G.map (hT.from Y))
+  · simpa [← F.map_comp, ← G.map_comp] using (pb X)
+  · exact α.naturality f
+  · exact pb Y
+
+namespace IsCartesian
+
+theorem comp {F G H : J ⥤ C} {α : F ⟶ G} {β : G ⟶ H} :
+    IsCartesian α → IsCartesian β → IsCartesian (α ≫ β) :=
+  fun cα cβ _ _ f => (cα f).paste_vert (cβ f)
+
+theorem whiskerLeft {K : Type*} [Category K] {F G : J ⥤ C}
+    {α : F ⟶ G} (H : K ⥤ J) :
+  IsCartesian α → IsCartesian (whiskerLeft H α) :=
+  fun cα _ _ f => cα (H.map f)
+
+theorem whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (H : C ⥤ D)
+    [∀ (X Y : J) (f : X ⟶ Y), PreservesLimit (cospan (α.app Y) (G.map f)) H] :
+    IsCartesian α → IsCartesian (whiskerRight α H) :=
+  fun cα _ _ f => (cα f).map H
+
+theorem hcomp {K : Type*} [Category K] {F G : J ⥤ C} {M N : C ⥤ K} {α : F ⟶ G} {β : M ⟶ N}
+    [∀ (X Y : J) (f : Y ⟶ X), PreservesLimit (cospan (α.app X) (G.map f)) M] :
+    IsCartesian α → IsCartesian β → IsCartesian (α ◫ β) :=
+  fun cα cβ => by
+    have H := cα.whiskerRight M |>.comp (cβ.whiskerLeft G)
+    intro X Y f
+    specialize H f
+    simpa [Functor.comp_obj, Functor.comp_map, comp_app, whiskerRight_app, whiskerLeft_app,
+    naturality] using H
+
+open TwoSquare
+
+variable {C₁ C₂ C₃ C₄ : Type*}
+  [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄]
+  {T : C₁ ⥤ C₂} {L : C₁ ⥤ C₃} {R : C₂ ⥤ C₄} {B : C₃ ⥤ C₄}
+
+variable {C₅ C₆ C₇ C₈ : Type*}
+  [Category* C₅] [Category* C₆] [Category* C₇] [Category* C₈]
+  {T' : C₂ ⥤ C₅} {R' : C₅ ⥤ C₆} {B' : C₄ ⥤ C₆} {L'' : C₃ ⥤ C₇} {R'' : C₄ ⥤ C₈} {B'' : C₇ ⥤ C₈}
+
+theorem vComp {w : TwoSquare T L R B} {w' : TwoSquare B L'' R'' B''}
+    [∀ (X Y : C₁) (f : Y ⟶ X), PreservesLimit (cospan (w.app X) ((L ⋙ B).map f)) R''] :
+    IsCartesian w → IsCartesian w' → IsCartesian (w ≫ᵥ w') :=
+  fun cw cw' =>
+    (isCartesian_of_isIso _).comp <|
+    (cw.whiskerRight _).comp <|
+    (isCartesian_of_isIso _).comp <|
+    (cw'.whiskerLeft _).comp <|
+    (isCartesian_of_isIso _)
+
+theorem hComp {w : TwoSquare T L R B} {w' : TwoSquare T' R R' B'}
+    [∀ (X Y : C₁) (f : Y ⟶ X), PreservesLimit (cospan (w.app X) ((L ⋙ B).map f)) B'] :
+    IsCartesian w → IsCartesian w' → IsCartesian (w ≫ₕ w') :=
+  fun cw cw' =>
+    (isCartesian_of_isIso _).comp <|
+    (cw'.whiskerLeft _).comp <|
+    (isCartesian_of_isIso _).comp <|
+    (cw.whiskerRight _).comp <|
+    (isCartesian_of_isIso _)
+
+end IsCartesian
+
+end NatTrans
+
+end CategoryTheory
