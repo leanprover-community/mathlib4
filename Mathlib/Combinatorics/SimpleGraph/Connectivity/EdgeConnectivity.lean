@@ -147,10 +147,29 @@ lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e
   simp [isEdgeReachable_add_one]
 
 /-- A graph is 2-edge-connected iff it has no bridge. -/
--- TODO: This should be `G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e` after
--- https://github.com/leanprover-community/mathlib4/pull/32583
-lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
+lemma isEdgeConnected_two_iff_forall_preconnected :
+    G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
   simp [isEdgeConnected_add_one]
+
+@[deprecated (since := "2026-08-13")]
+alias isEdgeConnected_two := isEdgeConnected_two_iff_forall_preconnected
+
+/-- A graph is 2-edge-connected iff it has no bridge. -/
+theorem isEdgeConnected_two_iff_forall_not_isBridge : G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [isEdgeConnected_two_iff_forall_preconnected] at h
+    rintro ⟨x,y⟩
+    exact (isBridge_iff.mp · <| h s(x, y) x y)
+  · rw [isEdgeConnected_two_iff_forall_preconnected]
+    rintro ⟨x,y⟩
+    cases isEmpty_or_nonempty V
+    · exact Preconnected.of_subsingleton
+    · have hG : G.Preconnected := by
+        intro u v
+        by_contra huv
+        exact h s(u,v) (IsBridge.of_not_reachable huv)
+      have hG' : G.Connected := ⟨hG⟩
+      exact (hG'.connected_delete_edge_of_not_isBridge (h (s(x, y)))).preconnected
 
 lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
     ∃ w : V, G.Adj u w ∧ G.IsEdgeReachable 2 u w := by
