@@ -241,7 +241,10 @@ def main (args : List String) : IO Unit := do
       | none =>
         informIfHeadNotBuilt resolvedRepo
         pure []
-    getFiles resolvedRepo hashMap force force goodCurl decompress (unsafeScopes := unsafeScopes)
+    -- A module argument limits the run to one closure, so it must not record
+    -- the root hash for the whole build directory.
+    getFiles resolvedRepo hashMap force force goodCurl decompress hashMemo.rootHash
+      (fullRun := args.isEmpty) (unsafeScopes := unsafeScopes)
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
@@ -277,8 +280,9 @@ def main (args : List String) : IO Unit := do
   | "get-" :: args => get args (decompress := false)
   | ["pack"] => discard <| pack
   | ["pack!"] => discard <| pack (overwrite := true)
-  | ["unpack"] => unpackCache hashMap false
-  | ["unpack!"] => unpackCache hashMap true
+  -- `unpack` takes no module argument, so it always covers the whole cache.
+  | ["unpack"] => unpackCache hashMap false hashMemo.rootHash (fullRun := true)
+  | ["unpack!"] => unpackCache hashMap true hashMemo.rootHash (fullRun := true)
   | ["unstage"] => unstage
   | ["unstage!"] => unstage (overwrite := true)
   | ["clean"] =>

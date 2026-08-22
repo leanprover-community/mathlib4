@@ -1140,6 +1140,37 @@ entries, so `mathlibDepPath` is unused too. -/
 private def testDecompConfig : DecompConfig :=
   { hashToMod := ∅, force := false, isMathlibRoot := true, mathlibDepPath := "." }
 
+/-- The unpack skips a module when the dep hash in the `.ltar` header matches
+the dep hash in the `.trace` file on disk. A dep hash does not cover the
+toolchain, the lakefile or the manifest, so a toolchain bump can produce a new
+`.ltar` that carries the old dep hash. `rootHashChanged` is the check that
+catches this, because the mathlib cache hash covers all three through the root
+hash. An absent or invalid record must report a change, so that an unknown
+build directory is overwritten rather than trusted. -/
+def test_rootHashChanged : IO Unit := do
+  IO.println "rootHashChanged:"
+  let path : System.FilePath := "cache-test-roothash"
+  let a : UInt64 := 0x1234567890abcdef
+  let b : UInt64 := 0xfedcba0987654321
+  try IO.FS.removeFile path catch _ => pure ()
+
+  assertTrue "absent record reports a change" (← Cache.IO.rootHashChanged a path)
+
+  Cache.IO.writeUnpackedRootHash a path
+  assertTrue "recorded root hash reports no change"
+    !(← Cache.IO.rootHashChanged a path)
+  assertTrue "different root hash reports a change" (← Cache.IO.rootHashChanged b path)
+
+  -- A toolchain bump rewrites the record, and the next read agrees with it.
+  Cache.IO.writeUnpackedRootHash b path
+  assertTrue "rewritten root hash reports no change"
+    !(← Cache.IO.rootHashChanged b path)
+
+  IO.FS.writeFile path "not a hash\n"
+  assertTrue "invalid record reports a change" (← Cache.IO.rootHashChanged a path)
+
+  IO.FS.removeFile path
+
 /-- `finalizeDecomp` drains the decompression pipeline after the last download
 round: it harvests the in-flight leantar batch, then decompresses the pending
 files. A pipeline dropped at a round boundary leaves downloaded files
@@ -1236,6 +1267,7 @@ def runAll : IO Unit := do
   test_isCacheMissStatus
   test_isAlreadyPresentStatus
   test_expandDownloadRounds
+  test_rootHashChanged
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
 
