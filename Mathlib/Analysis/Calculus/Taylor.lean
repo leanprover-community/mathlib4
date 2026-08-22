@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
@@ -53,7 +54,7 @@ Taylor polynomial, Taylor's theorem
 
 open scoped Interval Topology Nat
 
-open Set
+open MeasureTheory Set
 
 variable {E F : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -560,3 +561,59 @@ theorem taylor_integral_remainder [NormedAddCommGroup F] [NormedSpace ℝ F]
       filter_upwards [MeasureTheory.volume.ae_ne x₀, MeasureTheory.volume.ae_ne x] with _ _ _ _
       rw [iteratedDerivWithin_succ]
       grind [derivWithin_of_mem_nhds, Icc_mem_nhds, uIcc]
+
+/-- A sharp, orientation-free norm bound for the integral Taylor remainder. -/
+theorem taylor_integral_remainder_bound [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [CompleteSpace F] (n : ℕ) {f : ℝ → F} {x x₀ C : ℝ}
+    (hf : ContDiffOn ℝ (n + 1) f (uIcc x₀ x))
+    (hC : ∀ y ∈ uIcc x₀ x,
+      ‖iteratedDerivWithin (n + 1) f (uIcc x₀ x) y‖ ≤ C) :
+    ‖f x - taylorWithinEval f n (uIcc x₀ x) x₀ x‖ ≤
+      C * |x - x₀| ^ (n + 1) / (Nat.factorial (n + 1) : ℝ) := by
+  have hC0 : 0 ≤ C :=
+    (norm_nonneg (iteratedDerivWithin (n + 1) f (uIcc x₀ x) x₀)).trans
+      (hC x₀ left_mem_uIcc)
+  have hTaylor := taylor_integral_remainder (n := n) hf
+  have hpoint : ∀ᵐ t : ℝ ∂volume.restrict (Ι x₀ x),
+      ‖(((x - t) ^ n / (Nat.factorial n : ℝ)) •
+        iteratedDerivWithin (n + 1) f (uIcc x₀ x) t)‖ ≤
+        (C / (Nat.factorial n : ℝ)) * |x - t| ^ n := by
+    rw [ae_restrict_iff' measurableSet_uIoc]
+    filter_upwards with t
+    intro ht
+    have hfac : (0 : ℝ) ≤ (Nat.factorial n : ℝ) := Nat.cast_nonneg _
+    rw [norm_smul, Real.norm_eq_abs, abs_div, abs_pow]
+    rw [abs_of_nonneg hfac]
+    have hfactorial : 0 ≤ |x - t| ^ n / (Nat.factorial n : ℝ) := by positivity
+    calc
+      |x - t| ^ n / (Nat.factorial n : ℝ) *
+          ‖iteratedDerivWithin (n + 1) f (uIcc x₀ x) t‖ ≤
+          |x - t| ^ n / (Nat.factorial n : ℝ) * C :=
+        mul_le_mul_of_nonneg_left (hC t (uIoc_subset_uIcc ht)) hfactorial
+      _ = (C / (Nat.factorial n : ℝ)) * |x - t| ^ n := by ring
+  have hbound : IntervalIntegrable
+      (fun t : ℝ => (C / (Nat.factorial n : ℝ)) * |x - t| ^ n)
+      volume x₀ x :=
+    (continuous_const.mul
+      ((continuous_const.sub continuous_id).abs.pow n)).intervalIntegrable _ _
+  have hnorm := intervalIntegral.norm_integral_le_abs_of_norm_le
+    (μ := volume) hpoint hbound
+  have hcalc :
+      abs (∫ t : ℝ in x₀..x,
+        (C / (Nat.factorial n : ℝ)) * |x - t| ^ n) =
+        C * |x - x₀| ^ (n + 1) / (Nat.factorial (n + 1) : ℝ) := by
+    rw [intervalIntegral.abs_integral_eq_abs_integral_uIoc,
+      integral_const_mul, uIoc_comm x₀ x]
+    simp_rw [abs_sub_comm x]
+    rw [integral_pow_abs_sub_uIoc (a := x) (b := x₀) n]
+    rw [abs_mul, abs_of_nonneg (div_nonneg hC0 (Nat.cast_nonneg _)),
+      abs_of_nonneg (by positivity)]
+    rw [Nat.factorial_succ, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
+    field_simp
+  calc
+    ‖f x - taylorWithinEval f n (uIcc x₀ x) x₀ x‖ =
+        ‖∫ t in x₀..x, ((x - t) ^ n / (Nat.factorial n : ℝ)) •
+          iteratedDerivWithin (n + 1) f (uIcc x₀ x) t‖ := congrArg norm hTaylor
+    _ ≤ abs (∫ t : ℝ in x₀..x,
+        (C / (Nat.factorial n : ℝ)) * |x - t| ^ n) := hnorm
+    _ = C * |x - x₀| ^ (n + 1) / (Nat.factorial (n + 1) : ℝ) := hcalc
