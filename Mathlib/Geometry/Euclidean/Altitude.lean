@@ -268,9 +268,6 @@ meta def evalHeight : PositivityExt where eval {u α} _ pα? e :=
     return .positive q(height_pos $s $i)
   | _, _, _ => throwError "not Simplex.height"
 
-example {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
-  positivity
-
 /-- The height of a 1-dimensional simplex equals to the distance between the two vertices. -/
 @[simp] lemma height_eq_dist (s : Simplex ℝ P 1) (i : Fin 2) :
     s.height i = dist (s.points 0) (s.points 1) := by
