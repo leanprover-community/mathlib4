@@ -205,11 +205,8 @@ theorem tendstoInMeasure_of_tendsto_ae_of_measurable_edist [IsFiniteMeasure μ]
   refine fun ε hε => ENNReal.tendsto_atTop_zero.mpr fun δ hδ => ?_
   by_cases hδi : δ = ∞
   · simp only [hδi, imp_true_iff, le_top, exists_const]
-  lift δ to ℝ≥0 using hδi
-  rw [gt_iff_lt, ENNReal.coe_pos, ← NNReal.coe_pos] at hδ
   obtain ⟨t, _, ht, hunif⟩ :=
     tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist' hf hfg hδ
-  rw [ENNReal.ofReal_coe_nnreal] at ht
   rw [EMetric.tendstoUniformlyOn_iff] at hunif
   obtain ⟨N, hN⟩ := eventually_atTop.1 (hunif ε hε)
   refine ⟨N, fun n hn => ?_⟩
@@ -474,7 +471,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm [NormedAddCommGroup E]
 theorem tendstoInMeasure_of_tendsto_Lp [NormedAddCommGroup E] [hp : Fact (1 ≤ p)]
     {f : ι → Lp E p μ} {g : Lp E p μ}
     {l : Filter ι} (hfg : Tendsto f l (𝓝 g)) : TendstoInMeasure μ (fun n => f n) l g :=
-  tendstoInMeasure_of_tendsto_eLpNorm (zero_lt_one.trans_le hp.elim).ne.symm
+  tendstoInMeasure_of_tendsto_eLpNorm (zero_lt_one.trans_le hp.elim).ne'
     (fun _ => Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _)
     ((Lp.tendsto_Lp_iff_tendsto_eLpNorm' _ _).mp hfg)
 
