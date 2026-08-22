@@ -123,7 +123,7 @@ lemma not_isOfFinOrder_of_isMulTorsionFree [IsMulTorsionFree G] (ha : a ≠ 1) :
     ¬ IsOfFinOrder a := by
   rw [isOfFinOrder_iff_pow_eq_one]
   rintro ⟨n, hn, han⟩
-  exact ha <| pow_left_injective hn.ne' <| by simpa using han
+  simp [ha, hn.ne'] at han
 
 @[to_additive]
 lemma IsOfFinOrder.eq_one' [IsMulTorsionFree G] {a : G} (ha : IsOfFinOrder a) :
@@ -897,18 +897,18 @@ theorem IsOfFinOrder.mul (hx : IsOfFinOrder x) (hy : IsOfFinOrder y) : IsOfFinOr
 
 end CommMonoid
 
-section CommGroup
-variable [CommGroup G]
+section Group
+variable [Group G]
 
 @[to_additive]
 lemma isMulTorsionFree_iff_not_isOfFinOrder :
     IsMulTorsionFree G ↔ ∀ ⦃a : G⦄, a ≠ 1 → ¬ IsOfFinOrder a where
   mp _ _ := not_isOfFinOrder_of_isMulTorsionFree
   mpr hG := by
-    refine ⟨fun n hn a b hab ↦ ?_⟩
+    refine ⟨fun n hn a b (h : Commute a b) hab ↦ ?_⟩
     rw [← div_eq_one] at hab ⊢
-    simp only [← div_pow, isOfFinOrder_iff_pow_eq_one] at hab hG
-    exact of_not_not fun hab' ↦ hG hab' ⟨n, hn.bot_lt, hab⟩
+    contrapose! hG
+    exact ⟨a / b, hG, isOfFinOrder_iff_pow_eq_one.mpr ⟨n, hn.pos, (h.div_pow n).trans hab⟩⟩
 
 @[to_additive]
 alias ⟨_, IsMulTorsionFree.of_not_isOfFinOrder⟩ := isMulTorsionFree_iff_not_isOfFinOrder
@@ -918,10 +918,6 @@ lemma not_isMulTorsionFree_iff_isOfFinOrder :
     ¬ IsMulTorsionFree G ↔ ∃ a ≠ (1 : G), IsOfFinOrder a := by
   simp [isMulTorsionFree_iff_not_isOfFinOrder]
 
-@[to_additive (attr := simp)]
-lemma zpowers_mabs [LinearOrder G] [IsOrderedMonoid G] (g : G) : zpowers |g|ₘ = zpowers g := by
-  rcases mabs_cases g with h | h <;> simp only [h, zpowers_inv]
-
 @[to_additive]
 lemma IsMulTorsionFree.orderOf_le_one [IsMulTorsionFree G] (g : G) :
     orderOf g ≤ 1 := by
@@ -929,6 +925,16 @@ lemma IsMulTorsionFree.orderOf_le_one [IsMulTorsionFree G] (g : G) :
   · simp
   · rw [ne_eq, ← isOfFinOrder_iff_eq_one, ← orderOf_eq_zero_iff] at ha
     simp [ha]
+
+end Group
+
+section CommGroup
+
+variable [CommGroup G]
+
+@[to_additive (attr := simp)]
+lemma zpowers_mabs [LinearOrder G] [IsOrderedMonoid G] (g : G) : zpowers |g|ₘ = zpowers g := by
+  rcases mabs_cases g with h | h <;> simp only [h, zpowers_inv]
 
 end CommGroup
 

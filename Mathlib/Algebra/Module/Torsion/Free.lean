@@ -122,9 +122,15 @@ variable [CharZero R]
 
 variable (R M) in
 include R in
-lemma IsAddTorsionFree.of_isTorsionFree : IsAddTorsionFree M where
+lemma HasUniqueDiv.of_isTorsionFree : HasUniqueDiv M where
   nsmul_right_injective n hn := by
     simp_rw [← Nat.cast_smul_eq_nsmul R]; apply smul_right_injective; simpa
+
+variable (R M) in
+include R in
+lemma IsAddTorsionFree.of_isTorsionFree : IsAddTorsionFree M :=
+  letI := HasUniqueDiv.of_isTorsionFree R M
+  inferInstance
 
 /-- A characteristic zero domain is torsion-free. -/
 instance (priority := 100) IsAddTorsionFree.of_isDomain_charZero : IsAddTorsionFree R :=

@@ -478,10 +478,10 @@ instance Multiplicative.commGroup [AddCommGroup α] : CommGroup (Multiplicative 
   { Multiplicative.group, Multiplicative.commMonoid with }
 
 instance [Monoid α] [IsMulTorsionFree α] : IsAddTorsionFree (Additive α) where
-  nsmul_right_injective _ := pow_left_injective (M := α)
+  nsmul_right_injective := IsMulTorsionFree.pow_left_injective (M := α)
 
 instance [AddMonoid α] [IsAddTorsionFree α] : IsMulTorsionFree (Multiplicative α) where
-  pow_left_injective _ := nsmul_right_injective (M := α)
+  pow_left_injective := IsAddTorsionFree.nsmul_right_injective (M := α)
 
 /-- If `α` has some multiplicative structure and coerces to a function,
 then `Additive α` should also coerce to the same function.

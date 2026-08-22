@@ -220,7 +220,7 @@ have the same length, and in fact they have to agree. -/
 @[to_additive /-- Free additive groups are torsion free, i.e., scalar multiplication by every
 non-zero element `n : ℕ` is injective. See the instance for free groups for an overview over the
 proof. -/]
-instance : IsMulTorsionFree (FreeGroup α) where
+instance : HasUniqueRoots (FreeGroup α) where
   pow_left_injective n hn x y heq := by
     classical
     let f (a : FreeGroup α) (n : ℕ) : ℕ :=

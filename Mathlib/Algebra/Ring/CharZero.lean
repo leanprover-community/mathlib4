@@ -80,7 +80,7 @@ variable [Semiring R] [CharZero R]
 variable [IsCancelMulZero R]
 
 /-- A characteristic zero domain is torsion-free. -/
-instance (priority := 100) IsAddTorsionFree.of_isCancelMulZero_charZero : IsAddTorsionFree R where
+instance (priority := 100) : HasUniqueDiv R where
   nsmul_right_injective n hn a b hab := by simpa [hn] using hab
 
 end Semiring
