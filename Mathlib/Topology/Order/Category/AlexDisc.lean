@@ -50,12 +50,12 @@ instance forgetToTop_faithful : (forget₂ AlexDisc TopCat).Faithful where
 
 /-- Construct a bundled `AlexDisc` from the underlying topological space. -/
 abbrev of (X : Type*) [TopologicalSpace X] [AlexandrovDiscrete X] : AlexDisc where
-  toTopCat := TopCat.of X
+  toTopCat := ↧X
 
 lemma coe_of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] : ↥(of α) = α := rfl
 
 @[simp] lemma forgetToTop_of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] :
-    (forget₂ AlexDisc TopCat).obj (of α) = TopCat.of α := rfl
+    (forget₂ AlexDisc TopCat).obj (of α) = ↧α := rfl
 
 @[simp] lemma coe_forgetToTop (X : AlexDisc) : ↥((forget₂ _ TopCat).obj X) = X := rfl
 

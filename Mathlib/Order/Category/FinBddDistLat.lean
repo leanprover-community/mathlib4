@@ -44,6 +44,11 @@ attribute [instance] FinBddDistLat.isFintype
 abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLat where
   carrier := α
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `FinBddDistLat.of X` as `↧X`. -/
+@[app_delab FinBddDistLat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 /-- Construct a bundled `FinBddDistLat` from a `Nonempty` `Fintype` `DistribLattice`. -/
 abbrev of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLat where
   carrier := α
@@ -158,11 +163,11 @@ instance : Inhabited FinBddDistLat :=
   ⟨of PUnit⟩
 
 instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddDistLat.ofHom f.hom
 
 instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := ConcreteCategory.ofHom (OrderHomClass.toOrderHom f.hom)
 
 /-- Constructs an equivalence between finite distributive lattices from an order isomorphism

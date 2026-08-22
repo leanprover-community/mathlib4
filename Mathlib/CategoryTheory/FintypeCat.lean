@@ -36,6 +36,11 @@ namespace FintypeCat
 abbrev of (X : Type*) [Finite X] : FintypeCat :=
   ⟨X, inferInstance⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `FintypeCat.of X` as `↧X`. -/
+@[app_delab FintypeCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance instCoeSort : CoeSort FintypeCat Type* :=
   ⟨fun X ↦ X.obj⟩
 

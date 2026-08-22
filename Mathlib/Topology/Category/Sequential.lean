@@ -34,7 +34,7 @@ structure Sequential where
 namespace Sequential
 
 instance : Inhabited Sequential.{u} :=
-  ⟨{ toTop := TopCat.of (ULift (Fin 37)) }⟩
+  ⟨{ toTop := ↧(ULift (Fin 37)) }⟩
 
 instance : CoeSort Sequential Type* :=
   ⟨fun X => X.toTop⟩
@@ -51,7 +51,7 @@ variable (X : Type u) [TopologicalSpace X] [SequentialSpace X]
 
 /-- Constructor for objects of the category `Sequential`. -/
 abbrev of : Sequential.{u} where
-  toTop := TopCat.of X
+  toTop := ↧X
   is_sequential := ‹_›
 
 /-- The fully faithful embedding of `Sequential` in `TopCat`. -/

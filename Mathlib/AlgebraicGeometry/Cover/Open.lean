@@ -206,7 +206,7 @@ noncomputable
 def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R)
     (hs : Ideal.span (Set.range s) = ⊤) : (Spec R).AffineOpenCover where
   I₀ := ι
-  X i := .of (Localization.Away (s i))
+  X i := ↧(Localization.Away (s i))
   f i := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away (s i))))
   idx x := by
     have : ∃ i, s i ∉ x.asIdeal := by

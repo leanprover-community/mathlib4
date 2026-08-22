@@ -111,7 +111,7 @@ theorem hom_ext {X Y : UniformSpaceCat} {f g : X ⟶ Y} (h : (f : X → Y) = g) 
 /-- The forgetful functor from uniform spaces to topological spaces. -/
 instance hasForgetToTop : HasForget₂ UniformSpaceCat.{u} TopCat.{u} where
   forget₂ :=
-    { obj := fun X => TopCat.of X
+    { obj := fun X => ↧X
       map := fun f => TopCat.ofHom
         { toFun := f
           continuous_toFun := f.hom.property.continuous } }

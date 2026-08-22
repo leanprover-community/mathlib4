@@ -45,6 +45,11 @@ attribute [instance] BddDistLat.isBoundedOrder
 abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat where
   carrier := α
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BddDistLat.of X` as `↧X`. -/
+@[app_delab BddDistLat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
@@ -159,18 +164,18 @@ instance : Inhabited BddDistLat :=
 
 /-- Turn a `BddDistLat` into a `BddLat` by forgetting it is distributive. -/
 def toBddLat (X : BddDistLat) : BddLat :=
-  .of X
+  ↧X
 
 @[simp]
 theorem coe_toBddLat (X : BddDistLat) : ↥X.toBddLat = ↥X :=
   rfl
 
 instance hasForgetToDistLat : HasForget₂ BddDistLat DistLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := DistLat.ofHom f.hom.toLatticeHom
 
 instance hasForgetToBddLat : HasForget₂ BddDistLat BddLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddLat.ofHom f.hom
 
 theorem forget_bddLat_lat_eq_forget_distLat_lat :

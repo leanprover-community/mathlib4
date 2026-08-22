@@ -516,15 +516,15 @@ example : (forget₂ CommMonCat MonCat).ReflectsIsomorphisms := inferInstance
 /-- The equivalence between `AddMonCat` and `MonCat`. -/
 @[simps]
 def AddMonCat.equivalence : AddMonCat ≌ MonCat where
-  functor := { obj X := .of (Multiplicative X), map f := MonCat.ofHom f.hom.toMultiplicative }
-  inverse := { obj X := .of (Additive X), map f := ofHom f.hom.toAdditive }
+  functor := { obj X := ↧(Multiplicative X), map f := MonCat.ofHom f.hom.toMultiplicative }
+  inverse := { obj X := ↧(Additive X), map f := ofHom f.hom.toAdditive }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
 /-- The equivalence between `AddCommMonCat` and `CommMonCat`. -/
 @[simps]
 def AddCommMonCat.equivalence : AddCommMonCat ≌ CommMonCat where
-  functor := { obj X := .of (Multiplicative X), map f := CommMonCat.ofHom f.hom.toMultiplicative }
-  inverse := { obj X := .of (Additive X), map f := ofHom f.hom.toAdditive }
+  functor := { obj X := ↧(Multiplicative X), map f := CommMonCat.ofHom f.hom.toMultiplicative }
+  inverse := { obj X := ↧(Additive X), map f := ofHom f.hom.toAdditive }
   unitIso := Iso.refl _
   counitIso := Iso.refl _

@@ -46,7 +46,7 @@ abbrev CompHaus := CompHausLike (fun _ ↦ True)
 namespace CompHaus
 
 instance : Inhabited CompHaus :=
-  ⟨{ toTop := TopCat.of PEmpty, prop := trivial}⟩
+  ⟨{ toTop := ↧PEmpty, prop := trivial}⟩
 
 instance : CoeSort CompHaus Type* :=
   ⟨fun X => X.toTop⟩

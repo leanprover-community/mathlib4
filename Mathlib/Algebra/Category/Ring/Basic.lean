@@ -40,10 +40,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `SemiRingCat.of R` being printed as `{ carrier := R, semiring := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `SemiRingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ carrier := R, semiring := ... }` by `delabStructureInstance`. -/
 @[app_delab SemiRingCat.of]
-meta def SemiRingCat.delabOf : Delab := delabApp
+meta def SemiRingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -205,10 +205,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `RingCat.of R` being printed as `{ carrier := R, ring := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `RingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ carrier := R, ring := ... }` by `delabStructureInstance`. -/
 @[app_delab RingCat.of]
-meta def RingCat.delabOf : Delab := delabApp
+meta def RingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -379,10 +379,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `CommSemiRingCat.of R` being printed as `{ carrier := R, commSemiring := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `CommSemiRingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ carrier := R, commSemiring := ... }` by `delabStructureInstance`. -/
 @[app_delab CommSemiRingCat.of]
-meta def CommSemiRingCat.delabOf : Delab := delabApp
+meta def CommSemiRingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -551,10 +551,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `CommRingCat.of R` being printed as `{ carrier := R, commRing := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `CommRingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ carrier := R, commRing := ... }` by `delabStructureInstance`. -/
 @[app_delab CommRingCat.of]
-meta def CommRingCat.delabOf : Delab := delabApp
+meta def CommRingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 

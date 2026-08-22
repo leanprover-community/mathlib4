@@ -116,7 +116,7 @@ theorem leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
 realising each open set as a topological space itself.
 -/
 def toTopCat (X : TopCat.{u}) : Opens X ⥤ TopCat where
-  obj U := TopCat.of U
+  obj U := ↧U
   map i := TopCat.ofHom ⟨fun x ↦ ⟨x.1, i.le x.2⟩,
     IsEmbedding.subtypeVal.continuous_iff.2 continuous_induced_dom⟩
 

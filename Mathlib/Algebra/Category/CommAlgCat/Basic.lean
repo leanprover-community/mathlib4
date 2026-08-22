@@ -128,7 +128,7 @@ instance : CommRing ((forget (CommAlgCat R)).obj A) := inferInstanceAs <| CommRi
 instance : Algebra R ((forget (CommAlgCat R)).obj A) := inferInstanceAs <| Algebra R A
 
 instance hasForgetToCommRingCat : HasForget₂ (CommAlgCat.{v} R) CommRingCat.{v} where
-  forget₂.obj A := .of A
+  forget₂.obj A := ↧A
   forget₂.map f := CommRingCat.ofHom f.hom.toRingHom
 
 instance hasForgetToAlgCat : HasForget₂ (CommAlgCat.{v} R) (AlgCat.{v} R) where
@@ -211,8 +211,8 @@ def commAlgCatEquivUnder (R : CommRingCat) : CommAlgCat R ≌ Under R where
 
 -- TODO: Generalize to `UnivLE.{u, v}` once `commAlgCatEquivUnder` is generalized.
 instance : HasColimits (CommAlgCat.{u} R) :=
-  Adjunction.has_colimits_of_equivalence (commAlgCatEquivUnder (.of R)).functor
+  Adjunction.has_colimits_of_equivalence (commAlgCatEquivUnder ↧R).functor
 
 -- TODO: Generalize to `UnivLE.{u, v}` once `commAlgCatEquivUnder` is generalized.
 instance : HasLimits (CommAlgCat.{u} R) :=
-  Adjunction.has_limits_of_equivalence (commAlgCatEquivUnder (.of R)).functor
+  Adjunction.has_limits_of_equivalence (commAlgCatEquivUnder ↧R).functor
