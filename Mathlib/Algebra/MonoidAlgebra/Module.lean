@@ -13,6 +13,7 @@ public import Mathlib.Algebra.MonoidAlgebra.Lift
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Finsupp.Supported
 
+import all Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
@@ -64,13 +65,13 @@ variable [Semiring R] [Semiring S] [Module R S] {s t : Set M} {x : S[M]}
 @[to_additive (dont_translate := R)]
 instance : Module R S[M] := fast_instance% coeffAddEquiv.module _
 
-@[to_additive]
+@[to_additive (dont_translate := R)]
 instance instIsTorsionFree [IsTorsionFree R S] : IsTorsionFree R S[M] :=
   coeffAddEquiv.moduleIsTorsionFree _
 
 variable (R) in
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/
-@[to_additive (attr := simps! apply symm_apply)
+@[to_additive (dont_translate := R) (attr := simps! apply symm_apply)
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/]
 def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S := coeffAddEquiv.linearEquiv _
 
@@ -176,7 +177,7 @@ def supportedEquivFinsupp (s : Set M) : supported R S s ≃ₗ[R] s →₀ S :=
     invFun x := ⟨.ofCoeff x.1, x.2⟩
     left_inv _ := rfl
     right_inv _ := rfl
-    map_add' _ _ := rfl
+    map_add' _ _ := by exact rfl
     map_smul' _ _ := rfl }
    ≪≫ₗ Finsupp.supportedEquivFinsupp s
 
