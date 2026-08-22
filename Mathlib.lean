@@ -7810,6 +7810,7 @@ public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.Ring.Compact
 public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Algebra.Ring.TwoSidedIdeal
 public import Mathlib.Topology.Algebra.Semigroup
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
