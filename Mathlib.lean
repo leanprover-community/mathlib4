@@ -8365,6 +8365,7 @@ public import Mathlib.Util.Notation3
 public import Mathlib.Util.PPOptions
 public import Mathlib.Util.ParseCommand
 public import Mathlib.Util.PrintSorries
+public import Mathlib.Util.PrivateProof
 public import Mathlib.Util.Qq
 public import Mathlib.Util.Simp
 public import Mathlib.Util.SleepHeartbeats

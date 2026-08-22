@@ -591,15 +591,12 @@ to get a graph `H'` that doesn't contain `G`.
 than `G`.
 -/
 
-set_option backward.privateInPublic true in
 private lemma aux (hH : H ≠ ⊥) {G' : G.Subgraph} :
     Nonempty (H ≃g G'.coe) → G'.edgeSet.Nonempty := by
   obtain ⟨e, he⟩ := edgeSet_nonempty.2 hH
   rw [← Subgraph.image_coe_edgeSet_coe]
   exact fun ⟨f⟩ ↦ Set.Nonempty.image _ ⟨_, f.map_mem_edgeSet_iff.2 he⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- `G.killCopies H` is a subgraph of `G` where an *arbitrary* edge was removed from each copy of
 `H` in `G`. By construction, it doesn't contain `H` (unless `H` had no edges) and has at most the
 number of copies of `H` edges less than `G`. See `free_killCopies` and
@@ -608,7 +605,8 @@ noncomputable irreducible_def killCopies (G : SimpleGraph V) (H : SimpleGraph W)
     SimpleGraph V := by
   classical exact
   if hH : H = ⊥ then G
-  else G.deleteEdges <| ⋃ (G' : G.Subgraph) (hG' : Nonempty (H ≃g G'.coe)), {(aux hH hG').some}
+  else G.deleteEdges <|
+    ⋃ (G' : G.Subgraph) (hG' : Nonempty (H ≃g G'.coe)), {(private aux hH hG' :).some}
 
 /-- Removing an edge from `G` for each subgraph isomorphic to `H` results in a subgraph of `G`. -/
 lemma killCopies_le_left : G.killCopies H ≤ G := by
