@@ -27,7 +27,7 @@ namespace List
 variable (α : Type*) [Finite α] (n : ℕ)
 
 lemma finite_length_eq : {l : List α | l.length = n}.Finite :=
-  inferInstanceAs <| Finite <| Vector α n
+  inferInstanceAs <| Finite (Vector α n)
 
 lemma finite_length_lt : {l : List α | l.length < n}.Finite := by
   convert! (Finset.range n).finite_toSet.biUnion fun i _ ↦ finite_length_eq α i; ext; simp
