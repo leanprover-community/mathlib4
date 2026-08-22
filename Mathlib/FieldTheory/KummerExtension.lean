@@ -259,7 +259,6 @@ theorem X_pow_sub_C_irreducible_iff_of_odd {n : ℕ} (hn : Odd n) {a : K} :
   ⟨fun e _ ↦ pow_ne_of_irreducible_X_pow_sub_C e,
     fun H ↦ X_pow_sub_C_irreducible_of_odd hn fun p hp hpn ↦ (H p hpn hp.ne_one)⟩
 
--- TODO: generalize to `p = 2`
 theorem X_pow_sub_C_irreducible_of_prime_pow_of_ne_two
     {p : ℕ} (hp : p.Prime) (hp' : p ≠ 2) (n : ℕ) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ (p ^ n) - C a) := by
