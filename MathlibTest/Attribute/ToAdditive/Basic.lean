@@ -1072,3 +1072,62 @@ structure addStruct' (G : Type*) [AddGroup G] where
 structure mulStruct' (G : Type*) [Group G] where
 
 end ExistingDeclDocstring
+
+section errors
+
+abbrev FakeMul (α : Type) := Mul α
+
+variable {α : Type}
+/--
+error: @[to_additive] failed to add declaration `instFakeAddOfAddGroup`.
+  The translated value does not have the translated type.
+The value
+  fun {α} [AddGroup α] => { add := fun x1 x2 => x1 + x2 }
+has type
+  {α : Type} → [AddGroup α] → Add α
+but is expected to have type
+  {α : Type} → [AddGroup α] → FakeMul α
+
+For help, see the docstring of `to_additive`, section `Troubleshooting`.
+-/
+#guard_msgs in
+@[to_additive]
+instance [Group α] : FakeMul α := ⟨(· * ·)⟩
+
+/--
+error: @[to_additive] failed to add declaration `instAddOfAddGroup_mathlibTest`.
+  The translated value is not type correct.
+Application type mismatch: The argument
+  inst✝
+has type
+  AddGroup α
+but is expected to have type
+  Group α
+in the application
+  @instFakeMulOfGroup α inst✝
+
+For help, see the docstring of `to_additive`, section `Troubleshooting`.
+-/
+#guard_msgs in
+@[to_additive]
+instance [Group α] : Mul α := ⟨(· * ·)⟩
+
+/--
+error: @[to_additive] failed to add declaration `fakeAdd_rfl`.
+  The translated type is not type correct.
+Application type mismatch: The argument
+  inst✝
+has type
+  FakeMul α
+but is expected to have type
+  Add α
+in the application
+  @instHAdd α inst✝
+
+For help, see the docstring of `to_additive`, section `Troubleshooting`.
+-/
+#guard_msgs in
+@[to_additive]
+theorem fakeMul_rfl [FakeMul α] (a b : α) : a * b = a * b := rfl
+
+end errors
