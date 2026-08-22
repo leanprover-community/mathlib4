@@ -15,7 +15,7 @@ public import Mathlib.LinearAlgebra.Determinant
 This file gives the proof of Gershgorin's circle theorem `eigenvalue_mem_ball` on the eigenvalues
 of matrices and some applications.
 
-## Reference
+## References
 
 * https://en.wikipedia.org/wiki/Gershgorin_circle_theorem
 -/
