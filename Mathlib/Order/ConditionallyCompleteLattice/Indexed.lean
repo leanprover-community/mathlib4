@@ -491,15 +491,23 @@ theorem ciSup_eq_top_of_top_mem [OrderTop α] {f : ι → α} (hs : ⊤ ∈ rang
 
 variable [WellFoundedLT α]
 
-theorem ciInf_mem [Nonempty ι] (f : ι → α) : iInf f ∈ range f :=
+theorem exists_eq_iInf [Nonempty ι] (f : ι → α) : ∃ i, f i = ⨅ i, f i :=
   csInf_mem (range_nonempty f)
+
+@[deprecated exists_eq_iInf (since := "2026-08-16")]
+theorem ciInf_mem [Nonempty ι] (f : ι → α) : iInf f ∈ range f :=
+  exists_eq_iInf f
+
+theorem exists_eq_iInf₂ {κ : ι → Sort*} [Nonempty ι] [∀ i, Nonempty (κ i)] (f : (i : ι) → κ i → α) :
+    ∃ i j, f i j = ⨅ (i) (j), f i j :=
+  exists_eq_iInf _ |>.imp fun _ hi ↦ exists_eq_iInf _ |>.imp fun _ hj ↦ hj.trans hi
 
 lemma ciInf_eq_iff [Nonempty ι] (f : ι → α) (n : α) :
     ⨅ i, (f i) = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
   have : OrderBot α := WellFoundedLT.toOrderBot α
   constructor
   · rintro rfl
-    exact ⟨ciInf_mem f, ciInf_le (OrderBot.bddBelow ..)⟩
+    exact ⟨exists_eq_iInf f, ciInf_le (OrderBot.bddBelow ..)⟩
   · rintro ⟨⟨i, rfl⟩, h⟩
     exact le_antisymm (ciInf_le (OrderBot.bddBelow ..) _) (le_ciInf h)
 
