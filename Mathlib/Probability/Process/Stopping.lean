@@ -8,6 +8,7 @@ module
 public import Mathlib.Probability.Process.Adapted
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 
 /-!
 # Stopping times, stopped processes and stopped values
