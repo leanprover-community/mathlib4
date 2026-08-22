@@ -92,9 +92,10 @@ fact in `T'` is satisfied:
 4. **Building the `≤`-graph**: Same as for preorders.
 5. **Growing the `≤`-graph with `≮`-facts**: Same as for preorders.
 6. **Finding contradictions using `≠`-facts**.
-   We identify strongly connected components in the `≤`-graph using a standard algorithm. For each
-   fact `x ≠ y`, we check whether `x` and `y` belong to the same component. If they do, then `x = y`
-   is provable, contradicting `x ≠ y`.
+
+We identify strongly connected components in the `≤`-graph using a standard algorithm. For each
+fact `x ≠ y`, we check whether `x` and `y` belong to the same component. If they do, then `x = y` is
+provable, contradicting `x ≠ y`.
 
 #### Why is this a decision procedure?
 Assume that a set `T` of facts is contradictory. We must show that the described algorithm can

@@ -23,8 +23,10 @@ basic facts about them.
   to a filtration `f` if at each point in time `i`, `u` restricted to `Set.Iic i × Ω` is strongly
   measurable with respect to the product `MeasurableSpace` structure where the σ-algebra used for
   `Ω` is `f i`.
+
 We also provide the following variants, which use `MeasureTheory.StronglyMeasurable` instead
 of `Measurable`:
+
 * `MeasureTheory.StronglyAdapted`
 * `MeasureTheory.IsStronglyProgressive`
 

@@ -30,8 +30,8 @@ The integral against vector measures is defined through the extension process de
 `Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
 1. Define the integral of the indicator of a set. This is `cbmApplyMeasure B μ s x = B x (μ s)`.
-  `cbmApplyMeasure B μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
-  (defined in the file `Mathlib/MeasureTheory/Integral/SetToL1.lean`) with respect to the set `s`.
+   `cbmApplyMeasure B μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
+   (defined in the file `Mathlib/MeasureTheory/Integral/SetToL1.lean`) with respect to the set `s`.
 
 2. Define the integral on integrable functions `f` as `setToFun (...) f`.
 
