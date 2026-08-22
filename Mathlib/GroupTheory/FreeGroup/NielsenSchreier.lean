@@ -312,6 +312,19 @@ end IsFreeGroupoid
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Nielsen-Schreier theorem: a subgroup of a free group is free. -/
-instance subgroupIsFreeOfIsFree {G : Type u} [Group G] [IsFreeGroup G] (H : Subgroup G) :
+instance subgroupIsFreeGroupOfIsFreeGroup {G : Type u} [Group G] [IsFreeGroup G] (H : Subgroup G) :
     IsFreeGroup H :=
   IsFreeGroup.ofMulEquiv (endMulEquivSubgroup H)
+
+@[deprecated (since := "2026-08-11")]
+alias subgroupIsFreeOfIsFree := subgroupIsFreeGroupOfIsFreeGroup
+
+/-- The Nielsen-Schreier theorem: an additive subgroup of an additive free group is free. -/
+instance addSubgroupIsFreeAddGroupOfIsFreeAddGroup {G : Type u} [AddGroup G] [IsFreeAddGroup G]
+    (H : AddSubgroup G) : IsFreeAddGroup H := by
+  obtain ⟨_, ⟨⟨f⟩⟩⟩ := ‹IsFreeAddGroup G›
+  have := IsFreeGroup.ofMulEquiv <| freeGroupEquivMultiplicative.trans f.toMultiplicative.symm
+  obtain ⟨β, ⟨⟨g⟩⟩⟩ := subgroupIsFreeGroupOfIsFreeGroup H.toSubgroup
+  exact ⟨β, ⟨⟨g.trans freeGroupEquivMultiplicative |>.toAdditiveLeft⟩⟩⟩
+
+attribute [to_additive existing] subgroupIsFreeGroupOfIsFreeGroup
