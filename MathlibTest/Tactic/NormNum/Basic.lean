@@ -747,6 +747,12 @@ example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
 -- This used to be 10^40000000, but Lean's non-GMP multiplication is
 -- asymptotically slower than the GMP implementation.
 -- It would be great to fix that, and restore this test.
+-- `norm_num` runs simp's simprocs, so `Nat.reducePow` reports the skipped evaluation here,
+-- exactly as a bare `simp` on this goal would.
+/--
+warning: exponent 400000 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+-/
+#guard_msgs in
 example : 10^400000 = 10^400000 := by norm_num
 
 theorem large1 {α} [Ring α] : 2^(2^2000) + (2*2) - 2^(2^2000) = (4 : α) := by
