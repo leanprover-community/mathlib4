@@ -21,6 +21,7 @@ Theorems that require decidability hypotheses are in the namespace `Decidable`.
 Classical versions are in the namespace `Classical`.
 -/
 
+-- Let#s break the cache.
 @[expose] public section
 
 open Function
