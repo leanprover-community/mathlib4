@@ -37,8 +37,6 @@ variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 -- type as `\bbW`
 local notation "𝕎" => WittVector p
 
-noncomputable section
-
 -- Porting note: `ghost_calc` failure: the manual instances had to be added.
 /-- The composition of Frobenius and Verschiebung is multiplication by `p`. -/
 theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p := by
@@ -229,7 +227,5 @@ theorem iterate_verschiebung_iterate_frobenius (x : 𝕎 R) (n : ℕ) :
     rw [iterate_succ_apply', ih, pow_succ, comp_apply, verschiebung_frobenius, mul_assoc]
 
 end CharP
-
-end
 
 end WittVector

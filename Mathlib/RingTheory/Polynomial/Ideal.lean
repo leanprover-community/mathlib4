@@ -15,8 +15,6 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 public section
 
-noncomputable section
-
 open Polynomial
 
 open Finset

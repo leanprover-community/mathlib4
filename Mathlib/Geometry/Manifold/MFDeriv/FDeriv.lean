@@ -18,8 +18,6 @@ this and related statements.
 
 public section
 
-noncomputable section
-
 open scoped Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
