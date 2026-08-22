@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Analytic.ChangeOrigin
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.RingTheory.Nilpotent.Exp
 
 /-!
 # Exponential in a Banach algebra
@@ -220,6 +221,15 @@ theorem exp_mem
 
 variable (𝕂)
 
+theorem exp_eq_finset_sum_of_isNilpotent {x : 𝔸} (ha : IsNilpotent x) :
+    exp 𝕂 x = ∑ i ∈ Finset.range (nilpotencyClass x), (i ! : 𝕂)⁻¹ • x ^ i := by
+  rw [exp_eq_tsum]
+  apply tsum_eq_sum
+  intro _ hb
+  rw [Finset.mem_range, not_lt] at hb
+  rw [← Nat.sub_add_cancel hb, pow_add, pow_nilpotencyClass ha]
+  norm_num
+
 @[aesop safe apply]
 theorem _root_.IsSelfAdjoint.exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : IsSelfAdjoint x) : IsSelfAdjoint (exp x) :=
@@ -262,6 +272,22 @@ theorem exp_eq_tsum_div [CharZero 𝔸] : exp = fun x : 𝔸 => ∑' n : ℕ, x 
   rw [exp_eq_expSeries_sum ℚ]
   ext x
   exact expSeries_sum_eq_div x
+
+variable (𝕂)
+
+theorem exp_eq_finset_sum_div_of_isNilpotent {x : 𝔸} (ha : IsNilpotent x) :
+    exp 𝕂 x = ∑ i ∈ Finset.range (nilpotencyClass x), x ^ i / i ! := by
+  rw [exp_eq_finset_sum_of_isNilpotent 𝕂 ha]
+  congr! 1
+  exact expSeries_apply_eq (𝕂 := 𝕂) x _ ▸ expSeries_apply_eq_div x _
+
+lemma exp_eq_isNilpotent_exp [CharZero 𝔸] [IsScalarTower ℚ 𝕂 𝔸] {x : 𝔸} (ha : IsNilpotent x) :
+    exp 𝕂 x = IsNilpotent.exp x := by
+  rw [exp_eq_finset_sum_of_isNilpotent 𝕂 ha]
+  congr
+  ext
+  rw [← Rat.cast_inv_nat]
+  apply Rat.cast_smul_eq_qsmul
 
 end TopologicalDivisionAlgebra
 
