@@ -8026,6 +8026,7 @@ public import Mathlib.Topology.FiberBundle.Trivialization
 public import Mathlib.Topology.FiberPartition
 public import Mathlib.Topology.Filter
 public import Mathlib.Topology.GDelta.Basic
+public import Mathlib.Topology.GDelta.CompletelyMetrizable
 public import Mathlib.Topology.GDelta.MetrizableSpace
 public import Mathlib.Topology.Germ
 public import Mathlib.Topology.Gluing
