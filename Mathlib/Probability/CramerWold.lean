@@ -47,4 +47,6 @@ theorem tendstoInDistribution_iff_tendstoInDistribution_inner
     refine (h t).tendsto_charFun 1 |>.congr fun n ↦ ?_
     rw [charFun_map_eq_charFun_map_inner_one (hX n)]
 
+alias ⟨_, TendstoInDistribution.of_inner⟩ := tendstoInDistribution_iff_tendstoInDistribution_inner
+
 end
