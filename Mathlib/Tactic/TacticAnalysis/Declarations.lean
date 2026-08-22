@@ -223,6 +223,24 @@ def omegaToLia :=
   terminalReplacement "omega" "lia" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| lia))
     (reportSuccess := true) (reportFailure := false)
 
+/-- Suggest `rwa` for `rw` followed by `assumption`. -/
+register_option linter.tacticAnalysis.rwaSuggestion : Bool := {
+  defValue := true
+}
+@[tacticAnalysis linter.tacticAnalysis.rwaSuggestion,
+  inherit_doc linter.tacticAnalysis.rwaSuggestion]
+def Mathlib.TacticAnalysis.rwaSuggestion : TacticAnalysis.Config where
+  run seq := do
+    for (first, second) in seq.toList.zip seq.toList.tail do
+      match first.tacI.stx, second.tacI.stx with
+      | `(tactic| rw $rws:rwRuleSeq $[$loc:location]?), `(tactic| assumption) => do
+        if let some start := first.tacI.stx.getPos? then
+        if let some stop := second.tacI.stx.getTailPos? then
+          let span := Syntax.setInfo (SourceInfo.synthetic start stop) first.tacI.stx
+          Elab.Command.liftCoreM <|
+            Tactic.TryThis.addSuggestion span (← `(tactic| rwa $rws:rwRuleSeq $[$loc:location]?))
+      | _, _ => pure ()
+
 /-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/
 register_option linter.tacticAnalysis.rwMerge : Bool := {
   defValue := false
