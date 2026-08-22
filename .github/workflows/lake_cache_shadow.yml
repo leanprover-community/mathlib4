@@ -243,6 +243,18 @@ jobs:
           mkdir -p "$HOME/.cache/mathlib/"
           mkdir -p _work
 
+      # The runners are ephemeral, so this is defensive hygiene rather than a
+      # leak fix (these paths live outside the pr-branch checkout, beyond
+      # `git clean`'s reach, so they would go stale if a workspace were ever
+      # reused). The `df` line is the useful part: the run needs a few GB of
+      # headroom (build dirs + artifact cache + ~1 GB staging), and some
+      # runner hosts carry a lot of baseline disk usage.
+      - name: Clean workspace leftovers & log disk headroom
+        shell: bash -euo pipefail {0}
+        run: |
+          rm -rf lake-cache-staging tools-branch
+          echo "disk headroom: $(df -h --output=avail,pcent . | tail -1 | xargs) on $(hostname)"
+
       # Plan this run's hydration and dep caching:
       #   * generate the Lake cache-services file (public read endpoints)
       #     that later `lake cache get` steps use via LAKE_CONFIG;
