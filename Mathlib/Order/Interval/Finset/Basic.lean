@@ -670,22 +670,40 @@ section sectL
 lemma uIcc_map_sectL [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
     [DecidableLE (α × β)] (a b : α) (c : β) :
     (uIcc a b).map (.sectL _ c) = uIcc (a, c) (b, c) := by
-  aesop (add safe forward [le_antisymm])
+  ext ⟨x, y⟩
+  exact ⟨by simp_all, by simp_all [le_antisymm (a := y) (b := c)]⟩
 
 variable [Preorder α] [PartialOrder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
   [DecidableLE (α × β)] (a b : α) (c : β)
 
 lemma Icc_map_sectL : (Icc a b).map (.sectL _ c) = Icc (a, c) (b, c) := by
-  aesop (add safe forward [le_antisymm])
+  ext ⟨x, y⟩
+  exact ⟨by simp_all, by simp_all [le_antisymm (a := y) (b := c)]⟩
 
 lemma Ioc_map_sectL : (Ioc a b).map (.sectL _ c) = Ioc (a, c) (b, c) := by
-  aesop (add safe forward [le_antisymm, le_of_lt])
+  ext ⟨x, y⟩
+  refine ⟨by simp_all, ?_⟩
+  simp only [mem_Ioc, Prod.mk_lt_mk, Prod.mk_le_mk]
+  intro ⟨h, _⟩
+  have := le_of_lt (a := c) (b := y)
+  cases h <;> simp_all [le_antisymm (a := y) (b := c)]
 
 lemma Ico_map_sectL : (Ico a b).map (.sectL _ c) = Ico (a, c) (b, c) := by
-  aesop (add safe forward [le_antisymm, le_of_lt])
+  ext ⟨x, y⟩
+  refine ⟨by simp_all, ?_⟩
+  simp only [mem_Ico, Prod.mk_lt_mk, Prod.mk_le_mk]
+  intro ⟨_, h⟩
+  have := le_of_lt (a := y) (b := c)
+  cases h <;> simp_all [le_antisymm (a := y) (b := c)]
 
 lemma Ioo_map_sectL : (Ioo a b).map (.sectL _ c) = Ioo (a, c) (b, c) := by
-  aesop (add safe forward [le_antisymm, le_of_lt])
+  ext ⟨x, y⟩
+  refine ⟨by simp_all, ?_⟩
+  simp only [mem_Ioo, Prod.mk_lt_mk]
+  intro ⟨h1, h2⟩
+  have := le_of_lt (a := y) (b := c)
+  have := le_of_lt (a := c) (b := y)
+  cases h1 <;> cases h2 <;> simp_all [le_antisymm (a := y) (b := c)]
 
 end sectL
 
@@ -694,22 +712,40 @@ section sectR
 lemma uIcc_map_sectR [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
     [DecidableLE (α × β)] (c : α) (a b : β) :
     (uIcc a b).map (.sectR c _) = uIcc (c, a) (c, b) := by
-  aesop (add safe forward [le_antisymm])
+  ext ⟨x, y⟩
+  exact ⟨by simp_all, by simp_all [le_antisymm (a := x) (b := c)]⟩
 
 variable [PartialOrder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
   [DecidableLE (α × β)] (c : α) (a b : β)
 
 lemma Icc_map_sectR : (Icc a b).map (.sectR c _) = Icc (c, a) (c, b) := by
-  aesop (add safe forward [le_antisymm])
+  ext ⟨x, y⟩
+  exact ⟨by simp_all, by simp_all [le_antisymm (a := x) (b := c)]⟩
 
 lemma Ioc_map_sectR : (Ioc a b).map (.sectR c _) = Ioc (c, a) (c, b) := by
-  aesop (add safe forward [le_antisymm, le_of_lt])
+  ext ⟨x, y⟩
+  refine ⟨by simp_all, ?_⟩
+  simp only [mem_Ioc, Prod.mk_lt_mk, Prod.mk_le_mk]
+  intro ⟨h, _⟩
+  have := le_of_lt (a := c) (b := x)
+  cases h <;> simp_all [le_antisymm (a := x) (b := c)]
 
 lemma Ico_map_sectR : (Ico a b).map (.sectR c _) = Ico (c, a) (c, b) := by
-  aesop (add safe forward [le_antisymm, le_of_lt])
+  ext ⟨x, y⟩
+  refine ⟨by simp_all, ?_⟩
+  simp only [mem_Ico, Prod.mk_lt_mk, Prod.mk_le_mk]
+  intro ⟨_, h⟩
+  have := le_of_lt (a := x) (b := c)
+  cases h <;> simp_all [le_antisymm (a := x) (b := c)]
 
 lemma Ioo_map_sectR : (Ioo a b).map (.sectR c _) = Ioo (c, a) (c, b) := by
-  aesop (add safe forward [le_antisymm, le_of_lt])
+  ext ⟨x, y⟩
+  refine ⟨by simp_all, ?_⟩
+  simp only [mem_Ioo, Prod.mk_lt_mk]
+  intro ⟨h1, h2⟩
+  have := le_of_lt (a := x) (b := c)
+  have := le_of_lt (a := c) (b := x)
+  cases h1 <;> cases h2 <;> simp_all [le_antisymm (a := x) (b := c)]
 
 end sectR
 

@@ -171,11 +171,13 @@ theorem image_sInter_subset (S : Set (Set α)) (f : α → β) : f '' ⋂₀ S �
 
 theorem image2_sInter_right_subset (t : Set α) (S : Set (Set β)) (f : α → β → γ) :
     image2 f t (⋂₀ S) ⊆ ⋂ s ∈ S, image2 f t s := by
-  aesop
+  simp only [subset_iInter_iff, image2_subset_iff]
+  exact fun s hs a ha b h ↦ ⟨a, ha, b, h s hs, rfl⟩
 
 theorem image2_sInter_left_subset (S : Set (Set α)) (t : Set β) (f : α → β → γ) :
     image2 f (⋂₀ S) t ⊆ ⋂ s ∈ S, image2 f s t := by
-  aesop
+  simp only [subset_iInter_iff, image2_subset_iff]
+  exact fun s hs a h b hb ↦ ⟨a, h s hs, b, hb, rfl⟩
 
 /-! ### `restrictPreimage` -/
 
@@ -398,7 +400,8 @@ theorem preimage_iUnion₂ {f : α → β} {s : ∀ i, κ i → Set β} :
 theorem image_sUnion {f : α → β} {s : Set (Set α)} : (f '' ⋃₀ s) = ⋃₀ (image f '' s) := by
   ext
   simp only [Set.mem_iUnion, Set.sUnion_image]
-  grind
+  exact ⟨ fun ⟨a, ⟨t, ht, ha⟩, hab⟩ ↦ ⟨t, ht, a, ha, hab⟩ ,
+          fun ⟨t, ht, a, ha, hab⟩ ↦ ⟨a, ⟨t, ht, ha⟩, hab⟩ ⟩
 
 @[simp]
 theorem preimage_sUnion {f : α → β} {s : Set (Set β)} : f ⁻¹' ⋃₀ s = ⋃ t ∈ s, f ⁻¹' t := by
@@ -527,11 +530,18 @@ theorem image2_iUnion_right (s : Set α) (t : ι → Set β) :
 
 theorem image2_sUnion_left (S : Set (Set α)) (t : Set β) :
     image2 f (⋃₀ S) t = ⋃ s ∈ S, image2 f s t := by
-  aesop
+  ext
+  simp only [mem_iUnion]
+  exact ⟨ fun ⟨a, ⟨t, ht, ha⟩, b, hb, hab⟩ ↦ ⟨t, ht, a, ha, b, hb, hab⟩ ,
+          fun ⟨t, ht, a, ha, b, hb, hab⟩ ↦ ⟨a, ⟨t, ht, ha⟩, b, hb, hab⟩ ⟩
 
 theorem image2_sUnion_right (s : Set α) (T : Set (Set β)) :
     image2 f s (⋃₀ T) = ⋃ t ∈ T, image2 f s t := by
-  aesop
+  ext
+  simp only [mem_iUnion]
+  exact ⟨ fun ⟨a, ha, b, ⟨t, ht, hb⟩, hab⟩ ↦ ⟨t, ht, a, ha, b, hb, hab⟩ ,
+          fun ⟨t, ht, a, ha, b, hb, hab⟩ ↦ ⟨a, ha, b, ⟨t, ht, hb⟩, hab⟩ ⟩
+
 
 theorem image2_iUnion₂_left (s : ∀ i, κ i → Set α) (t : Set β) :
     image2 f (⋃ (i) (j), s i j) t = ⋃ (i) (j), image2 f (s i j) t := by simp_rw [image2_iUnion_left]
