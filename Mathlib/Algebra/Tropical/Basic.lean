@@ -125,11 +125,9 @@ theorem trop_eq_iff_eq_untrop {x : R} {y} : trop x = y ↔ x = untrop y :=
 theorem untrop_eq_iff_eq_trop {x} {y : R} : untrop x = y ↔ x = trop y :=
   tropEquiv.symm.eq_symm_apply.symm
 
-theorem injective_trop : Function.Injective (trop : R → Tropical R) :=
-  tropEquiv.injective
+@[deprecated (since := "2026-08-06")] alias injective_trop := trop_injective
 
-theorem injective_untrop : Function.Injective (untrop : Tropical R → R) :=
-  tropEquiv.symm.injective
+@[deprecated (since := "2026-08-06")] alias injective_untrop := untrop_injective
 
 theorem surjective_trop : Function.Surjective (trop : R → Tropical R) :=
   tropEquiv.surjective
@@ -146,7 +144,7 @@ as a term of `Tropical R` via `trop x`. -/
 def tropRec {F : Tropical R → Sort v} (h : ∀ X, F (trop X)) : ∀ X, F X := fun X => h (untrop X)
 
 instance [DecidableEq R] : DecidableEq (Tropical R) := fun _ _ =>
-  decidable_of_iff _ injective_untrop.eq_iff
+  decidable_of_iff _ untrop_injective.eq_iff
 
 section Order
 
@@ -240,9 +238,7 @@ theorem untrop_add (x y : Tropical R) : untrop (x + y) = min (untrop x) (untrop 
 theorem trop_min (x y : R) : trop (min x y) = trop x + trop y :=
   rfl
 
-@[simp]
-theorem trop_inf (x y : R) : trop (x ⊓ y) = trop x + trop y :=
-  rfl
+@[deprecated (since := "2026-08-06")] alias trop_inf := trop_min
 
 theorem trop_add_def (x y : Tropical R) : x + y = trop (min (untrop x) (untrop y)) :=
   rfl
@@ -261,26 +257,21 @@ instance instLinearOrderTropical : LinearOrder (Tropical R) :=
       simp only [untrop_add, min_def, untrop_le_iff]; split_ifs <;> simp) }
 
 @[simp]
-theorem untrop_sup (x y : Tropical R) : untrop (x ⊔ y) = untrop x ⊔ untrop y :=
-  rfl
-
-@[simp]
 theorem untrop_max (x y : Tropical R) : untrop (max x y) = max (untrop x) (untrop y) :=
   rfl
+
+@[deprecated (since := "2026-08-06")] alias untrop_sup := untrop_max
 
 @[simp]
 theorem min_eq_add : (min : Tropical R → Tropical R → Tropical R) = (· + ·) :=
   rfl
 
-@[simp]
-theorem inf_eq_add : ((· ⊓ ·) : Tropical R → Tropical R → Tropical R) = (· + ·) :=
-  rfl
+@[deprecated (since := "2026-08-06")] alias inf_eq_add := min_eq_add
 
 theorem trop_max_def (x y : Tropical R) : max x y = trop (max (untrop x) (untrop y)) :=
   rfl
 
-theorem trop_sup_def (x y : Tropical R) : x ⊔ y = trop (untrop x ⊔ untrop y) :=
-  rfl
+@[deprecated (since := "2026-08-06")] alias trop_sup_def := trop_max_def
 
 @[simp]
 theorem add_eq_left ⦃x y : Tropical R⦄ (h : x ≤ y) : x + y = x :=
