@@ -37,7 +37,7 @@ Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` 
 
 -/
 
-@[expose] public section
+public section
 
 /-- Set / lattice complement -/
 @[notation_class]
