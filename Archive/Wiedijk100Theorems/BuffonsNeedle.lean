@@ -195,13 +195,11 @@ lemma buffon_integral :
       ∫ (θ : ℝ) in Set.Icc 0 π,
       ∫ (_ : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1 := by
   simp_rw [N, Function.comp_apply]
-  rw [
-    ← MeasureTheory.integral_map hBₘ.aemeasurable
+  rw [← MeasureTheory.integral_map hBₘ.aemeasurable
       (stronglyMeasurable_needleCrossesIndicator l).aestronglyMeasurable,
     hB, ProbabilityTheory.cond, MeasureTheory.integral_smul_measure, volume_needleSpace d hd,
     ← ENNReal.ofReal_inv_of_pos (mul_pos hd Real.pi_pos),
-    ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul,
-  ]
+    ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul]
   refine mul_eq_mul_left_iff.mpr (Or.inl ?_)
   have : MeasureTheory.IntegrableOn (needleCrossesIndicator l)
       (Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π) := by
