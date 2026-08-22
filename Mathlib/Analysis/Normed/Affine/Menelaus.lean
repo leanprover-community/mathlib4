@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 /-!
 # Menelaus' theorem.
 
-This file proves of Menelaus' theorem in a `NormedAddTorsor`.
+This file proves Menelaus' theorem in a `NormedAddTorsor`.
 
 ## References
 
@@ -36,7 +36,7 @@ theorem prod_dist_eq_prod_dist_of_mem_line_of_collinear {t : Triangle 𝕜 P} {p
     ∏ i, dist (t.points (i + 1)) (p i) = ∏ i, dist (p i) (t.points (i + 2)) := by
   simp_rw [mem_affineSpan_pair_iff_exists_lineMap_eq] at hp
   choose r hr using hp
-  have h:= (t.prod_eq_neg_prod_one_sub_iff_collinear_iff_of_lineMap hr).mpr hcol
+  have h := (t.prod_eq_neg_prod_one_sub_iff_collinear_of_lineMap hr).mpr hcol
   simp_rw [← hr, dist_lineMap_right, dist_left_lineMap, Finset.prod_mul_distrib, ← norm_prod]
   rw [h, norm_neg]
 

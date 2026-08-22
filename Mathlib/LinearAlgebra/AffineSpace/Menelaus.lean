@@ -148,7 +148,7 @@ theorem collinear_of_lineMap_of_prod_eq_neg_prod_one_sub {t : Triangle k P} {r :
     · exact t.aux_menelaus_inv hr2 hp h_prod_eq
 
 /-- **Menelaus' theorem**, full affine-parameter version. -/
-theorem prod_eq_neg_prod_one_sub_iff_collinear_iff_of_lineMap {t : Triangle k P} {r : Fin 3 → k}
+theorem prod_eq_neg_prod_one_sub_iff_collinear_of_lineMap {t : Triangle k P} {r : Fin 3 → k}
     {p : Fin 3 → P}
     (hp : ∀ i : Fin 3, AffineMap.lineMap (t.points (i + 1)) (t.points (i + 2)) (r i) = p i) :
     ∏ i, r i = - ∏ i, (1 - r i) ↔ Collinear k {p 0, p 1, p 2} := by
