@@ -4014,6 +4014,7 @@ public import Mathlib.Data.Finsupp.Lex
 public import Mathlib.Data.Finsupp.MonomialOrder
 public import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Data.Finsupp.NatCard
 public import Mathlib.Data.Finsupp.NeLocus
 public import Mathlib.Data.Finsupp.Notation
 public import Mathlib.Data.Finsupp.Option
