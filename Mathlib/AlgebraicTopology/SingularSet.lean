@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.TopologicalSimplex
-public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.Functor.KanExtension.RestrictedYoneda
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Category.TopCat.ULift
 
@@ -66,36 +66,41 @@ noncomputable def TopCat.toSSetObjEquiv (X : TopCat.{u}) (n : SimplexCategoryᵒ
 the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
 
 It is left adjoint to `TopCat.toSSet`, as witnessed by `sSetTopAdj`. -/
+@[no_expose]
 noncomputable def SSet.toTop : SSet.{u} ⥤ TopCat.{u} :=
   stdSimplex.{u}.leftKanExtension SimplexCategory.toTop
 
 /-- The geometric realization of a simplicial set. -/
 scoped[Simplicial] notation "|" X "|" => SSet.toTop.obj X
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Geometric realization is left adjoint to the singular simplicial set construction. -/
+@[no_expose]
 noncomputable def sSetTopAdj : SSet.toTop.{u} ⊣ TopCat.toSSet.{u} :=
-  Presheaf.uliftYonedaAdjunction
-    (SSet.stdSimplex.{u}.leftKanExtension SimplexCategory.toTop)
-    (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop)
+  (Presheaf.restrictedULiftYonedaAdjunction.{0}
+    (uliftYoneda.{u}.leftKanExtensionUnit SimplexCategory.toTop.{u}) :)
 
 instance : SSet.toTop.{u}.IsLeftAdjoint := sSetTopAdj.isLeftAdjoint
 instance : TopCat.toSSet.{u}.IsRightAdjoint := sSetTopAdj.isRightAdjoint
 
 /-- The geometric realization of the representable simplicial sets agree
   with the usual topological simplices. -/
+@[no_expose]
 noncomputable def SSet.toTopSimplex :
     SSet.stdSimplex.{u} ⋙ SSet.toTop ≅ SimplexCategory.toTop :=
-  Presheaf.isExtensionAlongULiftYoneda _
+  (asIso (uliftYoneda.{u}.leftKanExtensionUnit SimplexCategory.toTop.{u})).symm
 
 instance : SSet.toTop.{u}.IsLeftKanExtension SSet.toTopSimplex.inv :=
   inferInstanceAs (Functor.IsLeftKanExtension _
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop.{u}))
 
-lemma sSetTopAdj_unit_app_app_down (S : SSet) (m : SimplexCategoryᵒᵖ) (a : S.obj m) :
-    ((sSetTopAdj.unit.app S).app m a).down =
+lemma sSetTopAdj_unit_app_app_down (S : SSet.{u}) (m : SimplexCategoryᵒᵖ) (a : S.obj m) :
+    ((sSetTopAdj.{u}.unit.app S).app m a).down =
       SSet.toTopSimplex.inv.app _ ≫ SSet.toTop.map (SSet.yonedaEquiv.symm a) := by
-  cat_disch
+  have : SSet.toTop.IsLeftKanExtension (uliftYoneda.{u}.leftKanExtensionUnit
+      SimplexCategory.toTop.{u}) :=
+    inferInstanceAs (SSet.toTop.{u}.IsLeftKanExtension SSet.toTopSimplex.inv)
+  exact ULift.up_injective (Presheaf.restrictedULiftYonedaAdjunction_unit_app_app.{0}
+    ((uliftYoneda.{u}.leftKanExtensionUnit SimplexCategory.toTop.{u})) S a)
 
 /-- The singular simplicial set of a totally disconnected space is the constant simplicial set. -/
 noncomputable def TopCat.toSSetIsoConst (X : TopCat.{u}) [TotallyDisconnectedSpace X] :
