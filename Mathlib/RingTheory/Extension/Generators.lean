@@ -17,10 +17,10 @@ public import Mathlib.RingTheory.Extension.Basic
 
 ## Main definition
 
-- `Algebra.Generators`: A family of generators of an `R`-algebra `S` consists of
-  1. `ι`: The type of variables.
-  2. `val : ι → S`: The assignment of each variable to a value.
-  3. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
+- `Algebra.Generators`: Given a type `ι` of variables, a family of generators of an `R`-algebra
+  `S` consists of
+  1. `val : ι → S`: The assignment of each variable to a value.
+  2. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
      write `R[X]` for `R[ι]`.
 
 - `Algebra.Generators.Hom`: Given a commuting square
@@ -38,15 +38,6 @@ public import Mathlib.RingTheory.Extension.Basic
 - `Algebra.Generators.mvPolynomial`: The canonical `R`-generators of the polynomial algebra
   `MvPolynomial ι R`, indexed by `ι` via the variables `X`.
 
-## TODOs
-
-Currently, Lean does not see through the `ι` field of terms of `Generators R S` obtained
-from constructions, e.g. composition. This causes fragile and cumbersome proofs, because
-`simp` and `rw` often don't work properly. `Generators R S` (and `Presentation R S`, etc.) should
-be refactored in a way that makes these equalities reducibly def-eq, for example
-by unbundling the `ι` field or making the field globally reducible in constructions using
-unification hints.
-
 -/
 
 @[expose] public section
@@ -57,10 +48,9 @@ open TensorProduct MvPolynomial
 
 variable (R : Type u) (S : Type v) (ι : Type w) [CommRing R] [CommRing S] [Algebra R S]
 
-/-- A family of generators of an `R`-algebra `S` consists of
-1. `ι`: The type of variables.
-2. `val : ι → S`: The assignment of each variable to a value in `S`.
-3. `σ`: A section of `R[X] → S`. -/
+/-- Given a type `ι` of variables, a family of generators of an `R`-algebra `S` consists of
+1. `val : ι → S`: The assignment of each variable to a value in `S`.
+2. `σ`: A section of `R[X] → S`, where we write `R[X]` for `R[ι]`. -/
 structure Algebra.Generators where
   /-- The assignment of each variable to a value in `S`. -/
   val : ι → S
