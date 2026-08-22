@@ -118,6 +118,13 @@
   default_branch: master
   name: SciLean - Scientific Computing
   zulip-contact: Tomas Skrivan
+- github: https://github.com/lean-dojo/TorchLean
+  default_branch: main
+  name: TorchLean
+  zulip-contact: Robert Joseph George
+  workflows:
+    build: ci.yml
+    docs: blueprint.yml
 - github: https://github.com/teorth/analysis
   default_branch: main
   name: Tao's Analysis I
