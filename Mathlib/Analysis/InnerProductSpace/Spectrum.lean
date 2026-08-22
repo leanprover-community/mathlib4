@@ -346,6 +346,27 @@ theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finr
   intro a
   rw [smul_smul, mul_comm, ofLp_toLp]
 
+/-- **Cross-term identity.** The matrix entry of a perturbation `S - T` between the
+`i`-th eigenvector of `T` and the `j`-th eigenvector of `S` is the eigenvalue
+difference times the overlap of the two eigenvectors.  This is the seed of every
+Davis–Kahan-style subspace perturbation bound. -/
+theorem inner_eigenvectorBasis_map_sub_eigenvectorBasis {S : E →ₗ[𝕜] E}
+    (hT : T.IsSymmetric) (hS : S.IsSymmetric) (hn : Module.finrank 𝕜 E = n) (i j : Fin n) :
+    ⟪hT.eigenvectorBasis hn i, (S - T) (hS.eigenvectorBasis hn j)⟫
+      = ((hS.eigenvalues hn j - hT.eigenvalues hn i : ℝ) : 𝕜)
+          * ⟪hT.eigenvectorBasis hn i, hS.eigenvectorBasis hn j⟫ := by
+  have hSterm : ⟪hT.eigenvectorBasis hn i, S (hS.eigenvectorBasis hn j)⟫
+      = ((hS.eigenvalues hn j : ℝ) : 𝕜)
+          * ⟪hT.eigenvectorBasis hn i, hS.eigenvectorBasis hn j⟫ := by
+    rw [hS.apply_eigenvectorBasis, inner_smul_right]
+  have hTterm : ⟪hT.eigenvectorBasis hn i, T (hS.eigenvectorBasis hn j)⟫
+      = ((hT.eigenvalues hn i : ℝ) : 𝕜)
+          * ⟪hT.eigenvectorBasis hn i, hS.eigenvectorBasis hn j⟫ := by
+    rw [← hT (hT.eigenvectorBasis hn i) (hS.eigenvectorBasis hn j),
+      hT.apply_eigenvectorBasis, inner_smul_left, RCLike.conj_ofReal]
+  rw [LinearMap.sub_apply, inner_sub_right, hSterm, hTterm, RCLike.ofReal_sub]
+  ring
+
 theorem toMatrix_eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     letI b := (hT.eigenvectorBasis hn).toBasis
     T.toMatrix b b = Matrix.diagonal (RCLike.ofReal ∘ hT.eigenvalues hn) := by
