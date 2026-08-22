@@ -4644,6 +4644,8 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 public import Mathlib.Geometry.Convex.Hull
 public import Mathlib.Geometry.Convex.Set
+public import Mathlib.Geometry.Curves.Basic
+public import Mathlib.Geometry.Curves.FrenetFrame
 public import Mathlib.Geometry.Convex.Star
 public import Mathlib.Geometry.Diffeology.Basic
 public import Mathlib.Geometry.Euclidean.Altitude
