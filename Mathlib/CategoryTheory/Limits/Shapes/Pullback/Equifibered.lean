@@ -77,11 +77,6 @@ theorem Equifibered.of_discrete {F G : Discrete ι ⥤ C} (α : F ⟶ G) : Equif
   simp only [Discrete.functor_map_id]
   exact IsPullback.of_horiz_isIso ⟨by rw [Category.id_comp, Category.comp_id]⟩
 
-@[deprecated (since := "2026-01-23")]
-alias _root_.CategoryTheory.mapPair_equifibered := Equifibered.of_discrete
-
-@[deprecated (since := "2026-01-23")] alias equifibered_of_discrete := Equifibered.of_discrete
-
 /-- A natural transformation is co-equifibered if every commutative square of the following form is
 a pushout.
 ```

@@ -29,7 +29,7 @@ public section
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
+open CategoryTheory CategoryTheory.Limits TopologicalSpace
 
 universe v u
 
