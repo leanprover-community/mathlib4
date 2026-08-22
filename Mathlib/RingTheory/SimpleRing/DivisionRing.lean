@@ -9,11 +9,11 @@ public import Mathlib.Algebra.Category.ModuleCat.Simple
 public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
+# Simple modules over division rings
 
-## Simple modules over division rings
 This file contains some results about simple modules over division rings.
 
-# Main results
+## Main results
 
 * `DivisionRing.nonempty_linearEquiv_of_isSimpleModule` : There is an unique simple module over
   a division ring, up to isomorphism.

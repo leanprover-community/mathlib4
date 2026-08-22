@@ -18,7 +18,7 @@ of modules from `R` to `S`.
 If `S` is a flat `R`-algebra, the same holds for kernels,
 see `Mathlib.RingTheory.Flat.IsBaseChange`.
 
-# Main Results
+## Main results
 
 For `S` an `R`-algebra, consider the following commutative diagram with exact rows,
 `M₁` `M₂` `M₃` `R`-modules, `N₁` `N₂` `N₃` `S`-modules,
