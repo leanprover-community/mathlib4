@@ -154,7 +154,7 @@ theorem id_comp (f : r →r s) : (RelHom.id s).comp f = f := rfl
 protected def swap (f : r →r s) : swap r →r swap s :=
   ⟨f, f.map_rel⟩
 
-/-- `Equiv` variant of `RelHom.swap`. -/
+/-- `RelHom.swap` as an `Equiv`. -/
 @[simps]
 protected def swapEquiv : (r →r s) ≃ (swap r →r swap s) where
   toFun := RelHom.swap
@@ -301,7 +301,7 @@ theorem refl_trans (f : r ↪r s) : .trans (.refl r) f = f := rfl
 protected def swap (f : r ↪r s) : swap r ↪r swap s :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
 
-/-- `Equiv` variant of `RelEmbedding.swap` -/
+/-- `RelEmbedding.swap` as an `Equiv` -/
 @[simps]
 def swapEquiv : (r ↪r s) ≃ (swap r ↪r swap s) where
   toFun := RelEmbedding.swap
@@ -705,7 +705,7 @@ protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : �
 protected def swap (f : r ≃r s) : swap r ≃r swap s :=
   ⟨f, f.map_rel_iff⟩
 
-/-- `Equiv` variant of `RelIso.swap`. -/
+/-- `RelIso.swap` as an `Equiv`. -/
 @[simps]
 def swapEquiv : (r ≃r s) ≃ (swap r ≃r swap s) where
   toFun := RelIso.swap
@@ -716,7 +716,7 @@ def swapEquiv : (r ≃r s) ≃ (swap r ≃r swap s) where
 protected def compl (f : r ≃r s) : rᶜ ≃r sᶜ :=
   ⟨f, f.map_rel_iff.not⟩
 
-/-- `Equiv` variant of `RelIso.compl`. -/
+/-- `RelIso.compl` as an `Equiv`. -/
 @[simps!]
 def complEquiv : (r ≃r s) ≃ (rᶜ ≃r sᶜ) where
   toFun := RelIso.compl
