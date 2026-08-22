@@ -178,6 +178,36 @@ instance Comp.ToFormat : ToFormat Comp :=
 
 /-! ### Control -/
 
+/--
+`Origin` records which of `linarith`'s original hypotheses a derived fact was computed from,
+as a deduplicated list of indices into the list of hypotheses `linarith` was called with.
+
+This is what allows `linarith?` to report a `linarith only [...]` suggestion: the oracle returns
+indices into the preprocessed fact list, and the origins map those back to nameable hypotheses.
+
+A fact that is logically unconditional does not necessarily get the empty origin. Preprocessors
+that manufacture facts by scanning the hypothesis list -- `natToInt` adding `0 ≤ (↑n : ℤ)`, or
+`nlinarith` adding `0 ≤ x ^ 2` -- tag them with the hypotheses they were found in, since such a
+fact is regenerated from whatever hypotheses survive rather than being assumed. This
+over-approximates: a suggestion needs only one of those hypotheses to regenerate the fact, but
+gets all of them, and greedy minimization in `linarith?` drops the rest.
+-/
+abbrev Origin : Type := List Nat
+
+/-- The union of two origins. -/
+def Origin.union (o₁ o₂ : Origin) : Origin := (o₁ ++ o₂).eraseDups
+
+/--
+A proof term handled by `linarith`, tagged with the hypotheses it was derived from.
+See `Linarith.Origin`.
+-/
+structure TaggedProof : Type where
+  /-- The proof term. -/
+  proof : Expr
+  /-- The indices of the original hypotheses the proof was derived from. -/
+  origin : Origin
+  deriving Inhabited
+
 /-- Metadata about preprocessors, for trace output. -/
 structure PreprocessorBase : Type where
   /-- The name of the preprocessor, populated automatically, to create linkable trace messages. -/
@@ -190,6 +220,10 @@ A preprocessor transforms a proof of a proposition into a proof of a different p
 The return type is `List Expr`, since some preprocessing steps may create multiple new hypotheses,
 and some may remove a hypothesis from the list.
 A "no-op" preprocessor should return its input as a singleton list.
+
+Note that a `Preprocessor` does not mention `TaggedProof`: since it acts on one hypothesis at a
+time, every proof it produces is derived from that hypothesis alone, and `Preprocessor.globalize`
+propagates the origin for it.
 -/
 structure Preprocessor : Type extends PreprocessorBase where
   /-- Replace a hypothesis by a list of hypotheses. These expressions are the proof terms. -/
@@ -199,19 +233,24 @@ structure Preprocessor : Type extends PreprocessorBase where
 Some preprocessors need to examine the full list of hypotheses instead of working item by item.
 As with `Preprocessor`, the input to a `GlobalPreprocessor` is replaced by, not added to, its
 output.
+
+A `GlobalPreprocessor` is responsible for tagging each fact it produces with the origins of the
+facts it was derived from; see `Linarith.Origin`. For porting a preprocessor written against the old
+`List Expr → MetaM (List Expr)` interface, `Linarith.untagged` will lift it, at the cost of much
+coarser `linarith?` suggestions.
 -/
 structure GlobalPreprocessor : Type extends PreprocessorBase where
   /-- Replace the collection of all hypotheses with new hypotheses.
-  These expressions are proof terms. -/
-  transform : List Expr → MetaM (List Expr)
+  These expressions are proof terms, tagged with their origins. -/
+  transform : List TaggedProof → MetaM (List TaggedProof)
 
 /--
 Some preprocessors perform branching case splits. A `Branch` is used to track one of these case
 splits. The first component, an `MVarId`, is the goal corresponding to this branch of the split,
-given as a metavariable. The `List Expr` component is the list of hypotheses for `linarith`
-in this branch.
+given as a metavariable. The `List TaggedProof` component is the list of hypotheses for `linarith`
+in this branch, each tagged with its origin.
 -/
-@[expose] def Branch : Type := MVarId × List Expr
+@[expose] def Branch : Type := MVarId × List TaggedProof
 
 /--
 Some preprocessors perform branching case splits.
@@ -223,14 +262,16 @@ metavariable.
 structure GlobalBranchingPreprocessor : Type extends PreprocessorBase where
   /-- Given a goal, and a list of hypotheses,
   produce a list of pairs (consisting of a goal and list of hypotheses). -/
-  transform : MVarId → List Expr → MetaM (List Branch)
+  transform : MVarId → List TaggedProof → MetaM (List Branch)
 
 /--
-A `Preprocessor` lifts to a `GlobalPreprocessor` by folding it over the input list.
+A `Preprocessor` lifts to a `GlobalPreprocessor` by folding it over the input list. Each output fact
+inherits the origin of the input it was derived from.
 -/
 def Preprocessor.globalize (pp : Preprocessor) : GlobalPreprocessor where
   __ := pp
-  transform := List.foldrM (fun e ret => do return (← pp.transform e) ++ ret) []
+  transform := List.foldrM (fun f ret => do
+    return ((← pp.transform f.proof).map (⟨·, f.origin⟩)) ++ ret) []
 
 /--
 A `GlobalPreprocessor` lifts to a `GlobalBranchingPreprocessor` by producing only one branch.
@@ -240,18 +281,33 @@ def GlobalPreprocessor.branching (pp : GlobalPreprocessor) : GlobalBranchingPrep
   transform := fun g l => do return [⟨g, ← pp.transform l⟩]
 
 /--
+`untagged transform` lifts a provenance-unaware transform to one on `TaggedProof`s, attributing
+every output to the union of the origins of every input.
+
+This is sound but very coarse: it makes `linarith?` attribute the whole certificate to every
+hypothesis the preprocessor saw. It exists so that out-of-tree preprocessors written against the
+old `List Expr → MetaM (List Expr)` interface keep working; new code should thread `TaggedProof`
+through properly. In particular, never lift a transform that is, or may be, the identity -- that
+would make every fact depend on every hypothesis.
+-/
+def untagged (transform : List Expr → MetaM (List Expr)) :
+    List TaggedProof → MetaM (List TaggedProof) := fun l => do
+  let o := l.foldl (fun o f => o.union f.origin) []
+  return (← transform (l.map (·.proof))).map (⟨·, o⟩)
+
+/--
 `process pp l` runs `pp.transform` on `l` and returns the result,
 tracing the result if `trace.linarith` is on.
 -/
 def GlobalBranchingPreprocessor.process (pp : GlobalBranchingPreprocessor)
-    (g : MVarId) (l : List Expr) : MetaM (List Branch) := g.withContext do
+    (g : MVarId) (l : List TaggedProof) : MetaM (List Branch) := g.withContext do
   withTraceNode `linarith (fun _ =>
       return m!"{.ofConstName pp.name}: {pp.description}") do
     let branches ← pp.transform g l
     if branches.length > 1 then
       trace[linarith] "Preprocessing: {pp.name} has branched, with branches:"
     for ⟨goal, hyps⟩ in branches do
-      trace[linarith] (← goal.withContext <| linarithGetProofsMessage hyps)
+      trace[linarith] (← goal.withContext <| linarithGetProofsMessage (hyps.map (·.proof)))
     return branches
 
 instance PreprocessorToGlobalBranchingPreprocessor :
