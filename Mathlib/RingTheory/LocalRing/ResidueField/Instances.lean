@@ -99,4 +99,9 @@ instance [Module.Finite R k] : Module.Finite (ResidueField R) k := .of_equiv_equ
     rw [← eq_maximalIdeal (Algebra.ker_algebraMap_isMaximal_of_isIntegral R k), RingHom.ker]))
   (RingEquiv.quotientBot k) (by ext; rfl)
 
+instance [Algebra.IsIntegral R k] : IsLocalHom (algebraMap R k) := by
+  apply ((local_hom_TFAE (algebraMap R k)).out 0 4).mpr
+  rw [maximalIdeal_eq_bot]
+  exact eq_maximalIdeal (Algebra.ker_algebraMap_isMaximal_of_isIntegral R k)
+
 end IsLocalRing
