@@ -104,14 +104,26 @@ lemma LocallyFiniteSupport.locallyFinite_support [Zero Y] (f : X → Y) (h : Loc
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) :=
   (LocallyFiniteSupport.iff_locallyFinite_support f).mpr h
 
+/--
+If the support of `f : X → Y` is finite in a neighbourhood of every point of a compact set `W`,
+then it meets `W` in a finite set.
+-/
+lemma _root_.IsCompact.finite_inter_support [Zero Y] {W : Set X} {f : X → Y} (hW : IsCompact W)
+    (h : ∀ z ∈ W, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)) :
+    (W ∩ f.support).Finite := by
+  choose! V hV hVfin using h
+  obtain ⟨t, htW, htcover⟩ := hW.elim_nhds_subcover V hV
+  refine Set.Finite.subset (t.finite_toSet.biUnion fun z hz ↦ hVfin z (htW z hz)) ?_
+  rintro x ⟨hxW, hxf⟩
+  have hx : x ∈ ⋃ z ∈ t, V z := htcover hxW
+  simp only [Set.mem_iUnion, exists_prop] at hx
+  obtain ⟨z, hz, hxz⟩ := hx
+  exact Set.mem_biUnion hz ⟨hxz, hxf⟩
+
 lemma LocallyFiniteSupport.finite_inter_support_of_isCompact {W : Set X}
    [Zero Y] {f : X → Y} (h : LocallyFiniteSupport f)
-   (hW : IsCompact W) : (W ∩ f.support).Finite := by
-  have := LocallyFinite.finite_nonempty_inter_compact
-    (LocallyFiniteSupport.locallyFinite_support f h) hW
-  have lem {α : Type u_1} (s t : Set α) : {i : s | ({↑i} ∩ t).Nonempty} = (t ∩ s) := by aesop
-  rw [← lem f.support W]
-  exact Finite.image Subtype.val this
+   (hW : IsCompact W) : (W ∩ f.support).Finite :=
+  hW.finite_inter_support fun z _ ↦ h z
 
 lemma Function.locallyFinsupp.locallyFiniteSupport [Zero Y] (f : locallyFinsupp X Y) :
     LocallyFiniteSupport f.toFun :=
@@ -248,14 +260,12 @@ theorem closedSupport [T1Space X] [Zero Y] (D : locallyFinsuppWithin U Y)
   · simp_all
 
 /--
-If `X` is T2 and if `U` is compact, then the support of a function with locally finite support
-within `U` is finite.
+If `U` is compact, then the support of a function with locally finite support within `U` is finite.
 -/
-theorem finiteSupport [T2Space X] [Zero Y] (D : locallyFinsuppWithin U Y)
-    (hU : IsCompact U) :
-    Set.Finite D.support :=
-  (hU.of_isClosed_subset (D.closedSupport hU.isClosed)
-    D.supportWithinDomain).finite D.discreteSupport
+theorem finiteSupport [Zero Y] (D : locallyFinsuppWithin U Y) (hU : IsCompact U) :
+    Set.Finite D.support := by
+  simpa [Set.inter_eq_self_of_subset_right D.supportWithinDomain] using
+    hU.finite_inter_support D.supportLocallyFiniteWithinDomain
 
 /-!
 ## Lattice ordered group structure
@@ -317,9 +327,6 @@ def mk_of_mem_addSubmonoid [AddMonoid Y] (f : X → Y)
     (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
-instance [AddMonoid Y] : Zero (locallyFinsuppWithin U Y) where
-  zero := mk_of_mem_addSubmonoid 0 <| zero_mem _
-
 instance [AddMonoid Y] : Add (locallyFinsuppWithin U Y) where
   add D₁ D₂ := mk_of_mem_addSubmonoid (D₁ + D₂) <| add_mem D₁.memAddSubmonoid D₂.memAddSubmonoid
 
@@ -344,7 +351,7 @@ instance [AddGroup Y] : Sub (locallyFinsuppWithin U Y) where
 instance [AddGroup Y] : SMul ℤ (locallyFinsuppWithin U Y) where
   smul n D := mk_of_mem_addSubgroup (n • D) <| zsmul_mem D.memAddSubgroup n
 
-@[simp] lemma coe_zero [AddMonoid Y] :
+@[simp] lemma coe_zero [Zero Y] :
     ((0 : locallyFinsuppWithin U Y) : X → Y) = 0 := rfl
 @[simp] lemma coe_add [AddMonoid Y] (D₁ D₂ : locallyFinsuppWithin U Y) :
     (↑(D₁ + D₂) : X → Y) = D₁ + D₂ := rfl
@@ -397,6 +404,81 @@ its negative.
 instance [AddCommGroup Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
   Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+
+variable (Y) in
+/--
+`supported Y U s` is the additive subgroup of those functions with locally finite support
+within `U` whose support is contained in `s`.
+
+This is the analogue of `Finsupp.supported`, which cannot be used here: it is a `Submodule` of
+`α →₀ M` and so requires a semiring acting on a commutative `M`, whereas `Y` is an arbitrary
+additive group.
+-/
+def supported [AddGroup Y] (U s : Set X) : AddSubgroup (locallyFinsuppWithin U Y) where
+  carrier := {D | D.support ⊆ s}
+  zero_mem' := by simp
+  add_mem' ha hb := (support_add _ _).trans (Set.union_subset ha hb)
+  neg_mem' ha := by simpa [support_neg] using ha
+
+@[simp] lemma mem_supported [AddGroup Y] {s : Set X} {D : locallyFinsuppWithin U Y} :
+    D ∈ supported Y U s ↔ D.support ⊆ s := Iff.rfl
+
+section Single
+
+variable [DecidableEq X] {s : Set X} (p : X)
+
+lemma support_single_subset [Zero Y] (y : Y) : (single p y).support ⊆ {p} := by
+  intro x hx
+  by_contra hxp
+  rw [Set.mem_singleton_iff] at hxp
+  simp [mem_support, single_apply, hxp] at hx
+
+@[simp] lemma single_add [AddMonoid Y] (y z : Y) :
+    single p (y + z) = single p y + single p z := by
+  ext x
+  simp only [single_apply, coe_add, Pi.add_apply]
+  split_ifs <;> simp
+
+/--
+`single p` as an additive monoid homomorphism.
+-/
+@[simps] noncomputable def singleAddHom [AddMonoid Y] : Y →+ locallyFinsupp X Y where
+  toFun := single p
+  map_zero' := single_zero
+  map_add' := single_add p
+
+@[simp] lemma single_neg [AddGroup Y] (y : Y) : single p (-y) = -single p y :=
+  map_neg (singleAddHom p) y
+
+@[simp] lemma single_sub [AddGroup Y] (y z : Y) :
+    single p (y - z) = single p y - single p z :=
+  map_sub (singleAddHom p) y z
+
+@[simp] lemma nsmul_single [AddMonoid Y] (n : ℕ) (y : Y) :
+    n • single p y = single p (n • y) :=
+  (map_nsmul (singleAddHom p) n y).symm
+
+@[simp] lemma zsmul_single [AddGroup Y] (n : ℤ) (y : Y) :
+    n • single p y = single p (n • y) :=
+  (map_zsmul (singleAddHom p) n y).symm
+
+/--
+Adding `single p y` with `p ∈ s` to a function supported in `s` keeps the support in `s`.
+-/
+lemma support_add_single_subset [AddMonoid Y] {D : locallyFinsupp X Y} (h : D.support ⊆ s)
+    {p : X} (hp : p ∈ s) {y : Y} : (D + single p y).support ⊆ s :=
+  (support_add _ _).trans <| Set.union_subset h <|
+    (support_single_subset p y).trans (Set.singleton_subset_iff.2 hp)
+
+/--
+Subtracting `single p y` with `p ∈ s` from a function supported in `s` keeps the support in `s`.
+-/
+lemma support_sub_single_subset [AddGroup Y] {D : locallyFinsupp X Y} (h : D.support ⊆ s)
+    {p : X} (hp : p ∈ s) {y : Y} : (D - single p y).support ⊆ s :=
+  (support_sub _ _).trans <| Set.union_subset h <|
+    (support_single_subset p y).trans (Set.singleton_subset_iff.2 hp)
+
+end Single
 
 instance [LE Y] [Zero Y] : LE (locallyFinsuppWithin U Y) where
   le := fun D₁ D₂ ↦ (D₁ : X → Y) ≤ D₂
@@ -627,7 +709,7 @@ noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
   toFun D := D.restrict h
   map_zero' := by
     ext x
-    simp [restrict_apply]
+    simp
   map_add' D₁ D₂ := by
     ext x
     by_cases hx : x ∈ V
