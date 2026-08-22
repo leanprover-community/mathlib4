@@ -182,6 +182,19 @@ lemma analyticOrderAt_congr (hfg : f =ᶠ[𝓝 z₀] g) :
   · rw [analyticOrderAt_of_not_analyticAt hf,
       analyticOrderAt_of_not_analyticAt fun hg ↦ hf <| hg.congr hfg.symm]
 
+/-- The order of a constant function is `⊤` if the constant is zero and `0` otherwise. -/
+theorem analyticOrderAt_const (z₀ : 𝕜) (e : E) [Decidable (e = 0)] :
+    analyticOrderAt (fun _ ↦ e) z₀ = if e = 0 then ⊤ else (0 : WithTop ℕ) := by
+  split_ifs with he
+  · exact  analyticOrderAt_eq_top.mpr (by simp [he])
+  · exact analyticAt_const.analyticOrderAt_eq_natCast.mpr ⟨(fun _ ↦ e), (by fun_prop), (by simpa)⟩
+
+theorem analyticOrderNatAt_const (z₀ : 𝕜) (e : E) :
+    analyticOrderNatAt (fun _ ↦ e) z₀ = 0 := by
+  classical
+  simp [analyticOrderNatAt, analyticOrderAt_const]
+  split_ifs with he <;> rfl
+
 @[simp] lemma analyticOrderAt_id : analyticOrderAt (𝕜 := 𝕜) id 0 = 1 :=
   analyticAt_id.analyticOrderAt_eq_natCast.mpr ⟨fun _ ↦ 1, by fun_prop, by simp, by simp⟩
 
