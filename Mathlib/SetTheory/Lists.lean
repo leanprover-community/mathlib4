@@ -228,7 +228,7 @@ theorem to_ofList (l : List (Lists α)) : toList (ofList l) = l := by simp [ofLi
 
 set_option backward.isDefEq.respectTransparency false in
 theorem of_toList : ∀ {l : Lists α}, IsList l → ofList (toList l) = l
-  | ⟨true, l⟩, _ => by simp_all [ofList, of']
+  | ⟨true, l⟩, _ => by simp [ofList, of']
 
 instance : Inhabited (Lists α) :=
   ⟨of' Lists'.nil⟩

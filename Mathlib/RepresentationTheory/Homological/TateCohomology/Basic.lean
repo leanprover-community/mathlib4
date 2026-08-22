@@ -66,7 +66,7 @@ def Rep.tateNorm : (inhomogeneousChains M).X 0 ⟶ (inhomogeneousCochains M).X 0
 lemma Rep.tateNorm_eq :
     M.tateNorm = ModuleCat.ofHom (Finsupp.lsum R fun _ ↦ LinearMap.pi fun _ ↦ M.ρ.norm) := by
   ext
-  simp_all [tateNorm, chainsIso₀, cochainsIso₀, Unique.eq_default]
+  simp [tateNorm, chainsIso₀, cochainsIso₀, Unique.eq_default]
 
 @[reassoc (attr := simp), elementwise]
 lemma Rep.norm_comp_d_eq_zero : M.norm.toModuleCatHom ≫ d₀₁ M = 0 := by

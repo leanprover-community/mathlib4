@@ -504,7 +504,7 @@ lemma addVal_eq_iff_associated (x y : R) :
     rw [h]
     exact Associates.mk_eq_mk_iff_associated.mp rfl
   · rintro ⟨u, rfl⟩
-    simp_all
+    simp
 
 variable (R)
 

@@ -1032,7 +1032,7 @@ theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 e
   exact Nat.sub_lt (NeZero.pos n) (val_pos.mpr h)
 
 theorem val_neg_of_ne_zero {n : ℕ} [nz : NeZero n] (a : ZMod n) [na : NeZero a] :
-    (-a).val = n - a.val := by simp_all [neg_val a, na.out]
+    (-a).val = n - a.val := by simp [neg_val a, na.out]
 
 theorem val_sub {n : ℕ} [NeZero n] {a b : ZMod n} (h : b.val ≤ a.val) :
     (a - b).val = a.val - b.val := by

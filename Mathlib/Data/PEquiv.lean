@@ -113,7 +113,7 @@ protected def trans (f : α ≃. β) (g : β ≃. γ) :
     α ≃. γ where
   toFun a := (f a).bind g
   invFun a := (g.symm a).bind f.symm
-  inv a b := by simp_all [and_comm, eq_some_iff f, eq_some_iff g, bind_eq_some_iff]
+  inv a b := by simp [and_comm, eq_some_iff f, eq_some_iff g, bind_eq_some_iff]
 
 @[simp]
 theorem refl_apply (a : α) : PEquiv.refl α a = some a :=
