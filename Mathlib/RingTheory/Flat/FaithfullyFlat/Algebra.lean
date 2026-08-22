@@ -6,6 +6,7 @@ Authors: Christian Merten, Yi Song, Sihan Su
 module
 
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
@@ -67,6 +68,12 @@ lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B
     ((IsLocalRing.local_hom_TFAE (algebraMap A B)).out 1 3).mp ‹_›
   rw [eqt, top_le_iff, Submodule.restrictScalars_eq_top_iff] at this
   exact Ideal.IsPrime.ne_top' this
+
+instance [Module.Flat A B] (p : Ideal A) (q : Ideal B) [p.IsPrime] [q.IsPrime] [q.LiesOver p]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q] :
+    Module.FaithfullyFlat (Localization.AtPrime p) (Localization.AtPrime q) :=
+  Module.FaithfullyFlat.of_flat_of_isLocalHom
 
 instance Module.FaithfullyFlat.of_isIntegral_of_isDomain [IsDomain B] [Module.Flat A B]
     [Algebra.IsIntegral A B] [FaithfulSMul A B] :
