@@ -66,12 +66,12 @@ section FloorSemiring
 variable {α R : Type*} [MeasurableSpace α] [Semiring R] [LinearOrder R] [FloorSemiring R]
   [TopologicalSpace R] [OrderTopology R] [MeasurableSpace R] [OpensMeasurableSpace R] {f : α → R}
 
-theorem Nat.measurable_floor [IsStrictOrderedRing R] : Measurable (Nat.floor : R → ℕ) :=
+theorem Nat.measurable_floor : Measurable (Nat.floor : R → ℕ) :=
   measurable_to_countable fun n => by
     rcases eq_or_ne ⌊n⌋₊ 0 with h | h <;> simp [h, Nat.preimage_floor_of_ne_zero, -floor_eq_zero]
 
 @[fun_prop]
-theorem Measurable.nat_floor [IsStrictOrderedRing R] (hf : Measurable f) :
+theorem Measurable.nat_floor (hf : Measurable f) :
     Measurable fun x => ⌊f x⌋₊ :=
   Nat.measurable_floor.comp hf
 
