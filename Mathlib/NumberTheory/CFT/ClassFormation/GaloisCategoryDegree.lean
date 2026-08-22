@@ -73,6 +73,16 @@ lemma deg_eq_card_fiber (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] (X : C) :
     simp only [deg] at hX hY
     simp [deg, card_fiber_eq_add_of_isColimit _ hb, hX, hY]
 
+lemma deg_neq_zero_of_not_isInitial {X : C} (hX : IsInitial X → False) :
+    deg X ≠ 0 := by
+  let F := getFiberFunctor C
+  rw [deg_eq_card_fiber F]
+  exact non_zero_card_fiber_of_not_initial F X hX
+
+lemma deg_neq_zero_of_isConnected (X : C) [PreGaloisCategory.IsConnected X] :
+    deg X ≠ 0 :=
+  deg_neq_zero_of_not_isInitial IsConnected.notInitial
+
 lemma congr_deg_of_iso {X Y : C} (e : X ≅ Y) : deg X = deg Y := by
   let F := getFiberFunctor C
   simp only [deg_eq_card_fiber F]
@@ -161,6 +171,39 @@ lemma degMap_eq_card_range_overMap
   have := isGaloisCover_of_comp f g fg
   rw [← natCard_aut_overMk]
   exact Nat.card_congr (Aut.overMapEquiv f g fg).toEquiv
+
+variable {Y X : C} [PreGaloisCategory.IsConnected Y]
+    [PreGaloisCategory.IsConnected X] (f : Y ⟶ X)
+
+lemma test {X Y : Type*} [Finite X] [Finite Y] (f : X → Y)
+    (h : Nat.card X = Nat.card Y)
+    (hf : Function.Surjective f) :
+    Function.Injective f :=
+  ((Nat.bijective_iff_surjective_and_card f).2 ⟨hf, h⟩).injective
+
+lemma isIso_iff_degMap_eq_one {Y X : C}
+    [PreGaloisCategory.IsConnected X] (f : Y ⟶ X) :
+    IsIso f ↔ degMap f = 1 := by
+  have hX := deg_neq_zero_of_isConnected X
+  refine ⟨fun _ ↦ mul_left_injective₀ hX ?_, fun hf ↦ ?_⟩
+  · simp [degMap_mul_deg f, congr_deg_of_iso (asIso f)]
+  · let F := getFiberFunctor C
+    have hY : deg Y = deg X := by simp [← degMap_mul_deg f, hf]
+    have : Nonempty (F.obj Y) := by
+      by_contra!
+      exact hX (by rw [← hY, deg_eq_card_fiber F, Nat.card_of_isEmpty])
+    simp only [deg_eq_card_fiber F] at hY
+    have := epi_of_nonempty_of_isConnected F f
+    have : Mono f :=
+      F.mono_of_mono_map (ConcreteCategory.mono_of_injective _
+        (((Nat.bijective_iff_surjective_and_card _).2
+          ⟨surjective_of_epi ((forget _).map (F.map f)), hY⟩).injective))
+    apply isIso_of_mono_of_epi
+
+instance {X : C} [PreGaloisCategory.IsConnected X] (f : X ⟶ X) : IsIso f := by
+  rw [isIso_iff_degMap_eq_one]
+  exact mul_left_injective₀ (deg_neq_zero_of_isConnected X)
+    (by simpa using degMap_mul_deg f)
 
 end GaloisCategory
 

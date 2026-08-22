@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryAut
+public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryDegree
 
 /-!
 # ...
@@ -19,6 +20,10 @@ public import Mathlib.NumberTheory.CFT.ClassFormation.GaloisCategoryAut
 universe w
 
 namespace CategoryTheory
+
+-- to be moved
+instance {Y X : FintypeCat.{w}} (f : Y ⟶ X) [Epi f] : Epi f.hom :=
+  inferInstanceAs (Epi ((forget _).map f))
 
 open Limits PreGaloisCategory
 
@@ -128,6 +133,10 @@ noncomputable def desc : quotient H ⟶ Y :=
 lemma fac : π H ≫ desc H f hf = f :=
   (SingleObj.quotient.isColimit H).fac ..
 
+include hf in
+lemma exists_desc : ∃ (f' : quotient H ⟶ Y), π H ≫ f' = f :=
+  ⟨desc H f hf, by simp⟩
+
 end
 
 end quotient
@@ -217,13 +226,31 @@ instance {X : C} [IsGalois X] (H : Subgroup (Aut X)) :
 
 lemma isGalois_singleObjQuotient_iff_normal
     {X : C} [IsGalois X] (H : Subgroup (Aut X)) :
-    IsGalois (SingleObj.quotient H) ↔ H.Normal := sorry
+    IsGalois (SingleObj.quotient H) ↔ H.Normal := by
+  let F := getFiberFunctor C
+  have surj : Function.Surjective (F.map (SingleObj.quotient.π H)) :=
+    surjective_of_epi _
+  refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
+  · sorry
+  · rw [isGalois_iff_pretransitive F]
+    refine ⟨fun y₁ y₂ ↦ ?_⟩
+    obtain ⟨x₁, rfl⟩ := surj y₁
+    obtain ⟨x₂, rfl⟩ := surj y₂
+    obtain ⟨σ, hσ⟩ := MulAction.exists_smul_eq (Aut X) x₁ x₂
+    rw [autMulFiber_def] at hσ
+    obtain ⟨ψ, hψ⟩ :=
+      SingleObj.quotient.exists_desc H (σ.hom ≫ SingleObj.quotient.π H) (fun h mem ↦ by
+        rw [← cancel_epi σ.inv, σ.inv_hom_id_assoc]
+        have := SingleObj.quotient.w (H := H) ⟨σ * h * σ⁻¹,
+          Subgroup.Normal.conj_mem inferInstance _ mem _⟩
+        dsimp at this
+        rw [Aut.Aut_mul_def, Aut.Aut_mul_def] at this
+        simpa [Iso.trans] using! this)
+    refine ⟨asIso ψ, ?_⟩
+    rw [autMulFiber_def _ (asIso ψ), asIso_hom, ← ConcreteCategory.comp_apply,
+      ← Functor.map_comp, hψ, Functor.map_comp, ConcreteCategory.comp_apply, hσ]
 
 section
-
--- to be moved
-instance {Y X : FintypeCat.{w}} (f : Y ⟶ X) [Epi f] : Epi f.hom :=
-  inferInstanceAs (Epi ((forget _).map f))
 
 variable {Y X : C} [PreGaloisCategory.IsGalois Y] [PreGaloisCategory.IsConnected X] (f : Y ⟶ X)
 
