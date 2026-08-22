@@ -91,16 +91,27 @@ lemma coe_neg (f : H) : ⇑(-f) = -f := (coeCLM 𝕜).map_neg (M₂ := X → V) 
 @[simp]
 lemma coe_smul (f : H) (c : 𝕜) : ⇑(c • f) = c • f := (coeCLM 𝕜).map_smul ..
 
+variable (H) in
+/-- Point evaluation `fun f ↦ f x`. -/
+def eval (x : X) : H →L[𝕜] V := .proj x ∘L coeCLM 𝕜
+
+lemma eval_def (x : X) : eval H x = .proj x ∘L coeCLM 𝕜 := by rfl
+
 @[simp]
-lemma continuous_eval (x : X) : Continuous (fun (f : H) ↦ f x) := by
-  simp_rw [← coeCLM_apply]
-  fun_prop
+lemma eval_apply (x : X) (f : H) : eval H x f = f x := by rfl
+
+lemma continuous_eval_const (x : X) : Continuous (fun (f : H) ↦ f x) := (eval H x).continuous
+
+@[deprecated (since := "2026-08-19")]
+alias continuous_eval := continuous_eval_const
 
 variable (H) [CompleteSpace H] [CompleteSpace V]
 
-/-- The kernel functions of a reproducing kernel Hilbert space are the adjoint of
-the point evaluation. -/
-def kerFun (x : X) : V →L[𝕜] H := (.proj x ∘L coeCLM 𝕜).adjoint
+/-- The kernel functions of a reproducing kernel Hilbert space are the adjoint of the point
+evaluation. -/
+def kerFun (x : X) : V →L[𝕜] H := (eval H x).adjoint
+
+lemma kerFun_eq_adjoint_eval (x : X) : kerFun H x = (eval H x).adjoint := by rfl
 
 /-- The kernel of a reproducing kernel Hilbert space is a matrix of entries given by the
 kernel functions. -/
@@ -141,12 +152,56 @@ lemma norm_kernel_eq_norm_kerFun_sq (x) : ‖kernel H x x‖ = ‖kerFun H x‖ 
 lemma norm_kerFun_eq_sqrt_norm_kernel (x) : ‖kerFun H x‖ = √‖kernel H x x‖ := by
   rw [norm_kernel_eq_norm_kerFun_sq, Real.sqrt_sq (norm_nonneg _)]
 
+lemma norm_kerFun_sub_kerFun_sq (x y : X) :
+    ‖kerFun H x - kerFun H y‖^2 = ‖kernel H x x - kernel H y x - kernel H x y + kernel H y y‖ := by
+  rw [sq, ← ContinuousLinearMap.norm_adjoint_comp_self]
+  simp [← kernel_apply, ← sub_add]
+
+lemma norm_kerFun_sub_kerFun (x y : X) :
+    ‖kerFun H x - kerFun H y‖ = √‖kernel H x x - kernel H y x - kernel H x y + kernel H y y‖ := by
+  rw [← norm_kerFun_sub_kerFun_sq, Real.sqrt_sq (norm_nonneg _)]
+
 lemma norm_kernel_le (x y) : ‖kernel H x y‖ ≤ √‖kernel H x x‖ * √‖kernel H y y‖ := by
   grw [kernel_apply, opNorm_comp_le]
   simp [norm_kerFun_eq_sqrt_norm_kernel]
 
 lemma norm_kernel_sq_le (x y) : ‖kernel H x y‖ ^ 2 ≤ ‖kernel H x x‖ * ‖kernel H y y‖ := by
   grw [norm_kernel_le]; simp [mul_pow]
+
+section continuous
+
+variable [TopologicalSpace X]
+
+instance instContinuousEvalConst : ContinuousEvalConst H X V where
+  continuous_eval_const := continuous_eval_const
+
+/-- An RKHS has a continuous kernel when the kernel is jointly continuous in its two arguments. -/
+class ContinuousKernel : Prop where
+  continuous_kernel : Continuous fun p : X × X => kernel H p.1 p.2
+
+theorem continuous_kerFun [ContinuousKernel H] : Continuous (kerFun H) := by
+  rw [continuous_iff_continuousAt]
+  intro x
+  rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero]
+  simp_rw [norm_kerFun_sub_kerFun]
+  refine Tendsto.comp (y:=(𝓝 0)) (by simpa using ((Real.continuous_sqrt).tendsto 0)) ?_
+  have hK : Continuous fun p : X × X => kernel H p.1 p.2 :=
+    ContinuousKernel.continuous_kernel (H := H)
+  have h1 : Continuous (fun y ↦ kernel H x x) := continuous_const (X:=X)
+  have h2 : Continuous (fun y ↦ kernel H y x) := hK.comp (continuous_id.prodMk continuous_const)
+  have h3 : Continuous (fun y ↦ kernel H x y) := hK.comp (continuous_const.prodMk continuous_id)
+  have h4 : Continuous (fun y ↦ kernel H y y) := hK.comp (continuous_id.prodMk continuous_id)
+  simpa using (h4 |>.sub h3 |>.sub h2 |>.add h1).norm.tendsto x
+
+theorem continuous_eval' [ContinuousKernel H] : Continuous fun x : X => eval H x := by
+  simp_rw +singlePass [← adjoint_adjoint (eval H _), ← kerFun_eq_adjoint_eval]
+  exact ContinuousLinearMap.adjoint.continuous.comp (continuous_kerFun H)
+
+instance instContinuousEval [ContinuousKernel H] : ContinuousEval H X V where
+  continuous_eval := isBoundedBilinearMap_apply.continuous.comp
+    (((continuous_eval' H).comp continuous_snd).prodMk continuous_fst)
+
+end continuous
 
 variable {H} in
 /-- The evaluation of an element `f` of a reproducing kernel Hilbert space at a point `x` is
@@ -343,7 +398,7 @@ is the original positive semidefinite matrix.
 theorem kernel_ofKernel : kernel (OfKernel K) = K := by
   ext x y v
   refine ext_inner_right 𝕜 fun w ↦ ?_
-  simp [kernel, adjoint_inner_left, -inner_kerFun, -kerFun_inner,
+  simp [kernel, eval, adjoint_inner_left, -inner_kerFun, -kerFun_inner,
     coeCLM, OfKernel.kerFun, inner_H₀_def, RKHS.kerFun]
 
 section Equiv
