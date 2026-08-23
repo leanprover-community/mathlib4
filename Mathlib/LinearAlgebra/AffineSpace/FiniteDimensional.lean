@@ -12,8 +12,8 @@ public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
-import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 import Mathlib.RingTheory.Finiteness.Prod
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
@@ -167,6 +167,16 @@ theorem AffineIndependent.vectorSpan_eq_top_of_card_eq_finrank_add_one [FiniteDi
     [Fintype ι] {p : ι → P} (hi : AffineIndependent k p) (hc : Fintype.card ι = finrank k V + 1) :
     vectorSpan k (Set.range p) = ⊤ :=
   Submodule.eq_top_of_finrank_eq <| hi.finrank_vectorSpan hc
+
+namespace Affine.Simplex
+
+/-- A convenience instance for use when restricting to the affine subspace spanned by the vertices
+of a simplex. -/
+scoped instance fact_finrank_direction_affineSpan_eq {n : ℕ} {s : Simplex k P n} :
+    Fact (finrank k (affineSpan k (Set.range s.points)).direction = n) :=
+  ⟨by rw [direction_affineSpan]; exact s.independent.finrank_vectorSpan (Fintype.card_fin _)⟩
+
+end Affine.Simplex
 
 variable (k)
 

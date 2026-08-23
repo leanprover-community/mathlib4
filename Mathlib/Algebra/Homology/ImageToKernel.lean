@@ -122,8 +122,6 @@ theorem imageToKernel_comp_hom_inv_comp [HasEqualizers V] [HasImages V] {Z : V} 
   ext
   simp
 
-open ZeroObject
-
 /-- `imageToKernel` for `A --0--> B --g--> C`, where `g` is a mono is itself an epi
 (i.e. the sequence is exact at `B`).
 -/
