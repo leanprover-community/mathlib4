@@ -11,6 +11,7 @@ public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.NormDet
 
 /-!
@@ -47,9 +48,9 @@ cartan matrix, lie algebra, dynkin diagram
 
 @[expose] public section
 
-namespace CartanMatrix
-
 open Matrix
+
+namespace CartanMatrix
 
 /-! ### Exceptional Cartan matrices -/
 
@@ -465,5 +466,78 @@ structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι]
   offDiag_nonpos : ∀ i j, i ≠ j → M i j ≤ 0
   zero_comm : ∀ i j, M i j = 0 ↔ M j i = 0
   exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef
+
+-- TODO Drop this lemma when refactoring proofs
+lemma Matrix.PosDef.mul_comm_of_diagonal_mul
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {A : Matrix ι ι ℤ} {d : ι → ℤ}
+    (hG : (diagonal d * A).PosDef) (i j : ι) :
+    d i * A i j = d j * A j i := by
+  have h : (diagonal d * A)ᵀ = diagonal d * A := by
+    rw [← conjTranspose_eq_transpose_of_trivial]; exact hG.isHermitian.eq
+  simpa [diagonal_mul] using (congr_fun₂ h i j).symm
+
+namespace Matrix.IsFiniteCartan
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ} (hM : M.IsFiniteCartan)
+include hM
+
+lemma det_ne_zero :
+    M.det ≠ 0 := by
+  -- TODO Improve this proof
+  obtain ⟨d, hd_pos, hG⟩ := hM.exists_posDef
+  have hdet : (Matrix.diagonal d * M).det ≠ 0 := by
+    intro h
+    obtain ⟨v, hv, hv₀⟩ := Matrix.exists_mulVec_eq_zero_iff.mpr h
+    have := hG.dotProduct_mulVec_pos hv
+    rw [star_trivial, hv₀] at this
+    simp at this
+  rw [Matrix.det_mul] at hdet
+  exact fun h ↦ hdet (by rw [h, mul_zero])
+
+protected lemma isUnit_map (k : Type*) [Field k] [CharZero k] :
+    IsUnit <| M.map (Int.cast : ℤ → k) := by
+  suffices IsUnit <| (Int.castRingHom k).mapMatrix M by simpa
+  rw [Matrix.isUnit_iff_isUnit_det, ← RingHom.map_det]
+  simpa using hM.det_ne_zero
+
+protected lemma transpose :
+    Mᵀ.IsFiniteCartan := by
+  -- TODO Improve this proof
+  obtain ⟨d, hd_pos, hG⟩ := hM.exists_posDef
+  set C : ℤ := ∏ j, d j with hC
+  set d' : ι → ℤ := fun i ↦ ∏ j ∈ Finset.univ.erase i, d j with hd'
+  have hd'_pos : ∀ i, 0 < d' i := fun i ↦ Finset.prod_pos fun j _ ↦ hd_pos j
+  have hCpos : 0 < C := Finset.prod_pos fun j _ ↦ hd_pos j
+  have hCd : ∀ i, d i * d' i = C := fun i ↦ Finset.mul_prod_erase _ _ (Finset.mem_univ i)
+  have hsymmM := hG.mul_comm_of_diagonal_mul
+  have hsymm : ∀ i j, d' i * M j i = d' j * M i j := fun i j ↦ by
+    refine mul_left_cancel₀ (a := d i * d j) (mul_pos (hd_pos i) (hd_pos j)).ne' ?_
+    linear_combination (d j * M j i) * hCd i - (d i * M i j) * hCd j - C * hsymmM i j
+  refine { diag := fun i ↦ by simpa using hM.diag i
+           offDiag_nonpos := fun i j hij ↦ by simpa using hM.offDiag_nonpos j i hij.symm
+           zero_comm := fun i j ↦ by simpa using hM.zero_comm j i
+           exists_posDef := ⟨d', hd'_pos, ?_⟩ }
+  rw [Matrix.posDef_iff_dotProduct_mulVec]
+  refine ⟨?_, fun x hx ↦ ?_⟩
+  · ext i j
+    simpa [Matrix.diagonal_mul] using (hsymm i j).symm
+  · have hy0 : (fun i ↦ d' i * x i) ≠ 0 := by
+      intro h
+      refine hx (funext fun i ↦ ?_)
+      have := congr_fun h i
+      simpa [(hd'_pos i).ne'] using this
+    have hpos := hG.dotProduct_mulVec_pos hy0
+    rw [star_trivial] at hpos
+    have key : (fun i ↦ d' i * x i) ⬝ᵥ (Matrix.diagonal d * M) *ᵥ (fun i ↦ d' i * x i)
+        = C * (x ⬝ᵥ (Matrix.diagonal d' * Mᵀ) *ᵥ x) := by
+      simp only [dotProduct, Matrix.mulVec, Matrix.diagonal_mul, Matrix.transpose_apply,
+        Finset.mul_sum]
+      exact Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ by
+        linear_combination (M i j * d' j * x i * x j) * hCd i - (C * x i * x j) * hsymm i j
+    rw [key] at hpos
+    rw [star_trivial]
+    exact (mul_pos_iff_of_pos_left hCpos).mp hpos
+
+end Matrix.IsFiniteCartan
 
 end

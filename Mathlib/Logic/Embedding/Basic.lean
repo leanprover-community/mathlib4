@@ -133,7 +133,7 @@ theorem coe_refl (α : Sort*) : ⇑(Embedding.refl α) = id := rfl
 protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
   ⟨g ∘ f, g.injective.comp f.injective⟩
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : ⇑(f.trans g) = ⇑g ∘ ⇑f := rfl
 
 @[simp]

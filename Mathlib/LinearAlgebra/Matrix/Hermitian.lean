@@ -302,6 +302,11 @@ lemma IsHermitian.commute_iff [Fintype n] {A B : Matrix n n α}
     (hA : A.IsHermitian) (hB : B.IsHermitian) : Commute A B ↔ (A * B).IsHermitian :=
   hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint
 
+lemma IsHermitian.star_dotProduct_mulVec_comm [Fintype n] {A : Matrix n n α}
+    (hA : A.IsHermitian) (x y : n → α) :
+    star (star x ⬝ᵥ A *ᵥ y) = star y ⬝ᵥ A *ᵥ x := by
+  rw [star_dotProduct, star_star, star_mulVec, hA.eq, ← dotProduct_mulVec]
+
 end NonUnitalSemiring
 
 section NonAssocSemiring
