@@ -322,9 +322,8 @@ theorem linfty_opNorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖
 @[simp]
 theorem linfty_opNNNorm_blockDiagonal [DecidableEq l] (M : l → Matrix m n α) :
     ‖blockDiagonal M‖₊ = ‖M‖₊ := by
-  simp_rw [Pi.nnnorm_def, linfty_opNNNorm_def, ← Finset.univ_product_univ,
+  simp [Pi.nnnorm_def, linfty_opNNNorm_def, ← Finset.univ_product_univ,
     Finset.sup_product_right, Finset.sum_product, blockDiagonal_apply, apply_ite]
-  simp
 
 @[simp]
 theorem linfty_opNorm_blockDiagonal [DecidableEq l] (M : l → Matrix m n α) :
