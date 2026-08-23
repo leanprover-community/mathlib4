@@ -29,7 +29,9 @@ Furthermore, we have the following results:
 
 public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 variable {α X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter X}
   {s t s₁ s₂ t₁ t₂ : Set X} {x : X}
