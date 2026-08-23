@@ -13,7 +13,9 @@ public import Mathlib.Topology.ContinuousOn
 
 public section
 
-open Set Filter Function Topology Filter
+open Set Filter Function Filter
+
+open scoped Topology
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
   {f g : α → β} {s s' t : Set α} {x : α}
@@ -24,7 +26,7 @@ theorem continuousWithinAt_update_same [DecidableEq α] {y : β} :
     ContinuousWithinAt (update f x y) s x ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
   calc
     ContinuousWithinAt (update f x y) s x ↔ Tendsto (update f x y) (𝓝[s \ {x}] x) (𝓝 y) := by
-    { rw [← continuousWithinAt_diff_self, ContinuousWithinAt, update_self] }
+    { rw [← continuousWithinAt_sdiff_self, ContinuousWithinAt, update_self] }
     _ ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
       tendsto_congr' <| eventually_nhdsWithin_iff.2 <| Eventually.of_forall
         fun _ hz => update_of_ne hz.2 ..
@@ -32,7 +34,7 @@ theorem continuousWithinAt_update_same [DecidableEq α] {y : β} :
 @[simp]
 theorem continuousAt_update_same [DecidableEq α] {y : β} :
     ContinuousAt (Function.update f x y) x ↔ Tendsto f (𝓝[≠] x) (𝓝 y) := by
-  rw [← continuousWithinAt_univ, continuousWithinAt_update_same, compl_eq_univ_diff]
+  rw [← continuousWithinAt_univ, continuousWithinAt_update_same, compl_eq_univ_sdiff]
 
 theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a)]
     (hpf : ∀ a ∈ s ∩ frontier { a | p a },
@@ -48,7 +50,7 @@ theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a
   · rw [← inter_univ s, ← union_compl_self { a | p a }, inter_union_distrib_left] at hx ⊢
     rcases hx with hx | hx
     · apply ContinuousWithinAt.union
-      · exact (hf x hx).congr (fun y hy => if_pos hy.2) (if_pos hx.2)
+      · exact (hf x hx).congr (fun y hy => ite_eq_left hy.2) (ite_eq_left hx.2)
       · have : x ∉ closure { a | p a }ᶜ := fun h => hx' ⟨subset_closure hx.2, by
           rwa [closure_compl] at h⟩
         exact continuousWithinAt_of_notMem_closure fun h =>
@@ -58,7 +60,7 @@ theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a
           hx' ⟨h, fun h' : x ∈ interior { a | p a } => hx.2 (interior_subset h')⟩
         exact continuousWithinAt_of_notMem_closure fun h =>
           this (closure_inter_subset_inter_closure _ _ h).2
-      · exact (hg x hx).congr (fun y hy => if_neg hy.2) (if_neg hx.2)
+      · exact (hg x hx).congr (fun y hy => ite_eq_right hy.2) (ite_eq_right hx.2)
 
 theorem ContinuousOn.piecewise' [∀ a, Decidable (a ∈ t)]
     (hpf : ∀ a ∈ s ∩ frontier t, Tendsto f (𝓝[s ∩ t] a) (𝓝 (piecewise t f g a)))
@@ -134,7 +136,7 @@ theorem IsOpen.ite' (hs : IsOpen s) (hs' : IsOpen s')
     (ht : ∀ x ∈ frontier t, x ∈ s ↔ x ∈ s') : IsOpen (t.ite s s') := by
   classical
     simp only [isOpen_iff_continuous_mem, Set.ite] at *
-    convert
+    convert!
       continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn using 2
     rename_i x
     by_cases hx : x ∈ t <;> simp [hx]

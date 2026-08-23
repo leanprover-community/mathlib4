@@ -20,19 +20,18 @@ public section
 
 open Filter
 
-open Topology
+open scoped Topology
 
 namespace Asymptotics
 
 
 variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
-  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {G'' : Type*} {R : Type*}
-  {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
+  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*}
+  {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
-  [SeminormedRing R']
+  [NormedAddCommGroup E''] [NormedAddCommGroup F'']
 
 variable [NormedField 𝕜] [NormedField 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
@@ -284,7 +283,7 @@ theorem isTheta_of_div_tendsto_nhds_ne_zero {c : 𝕜} {f g : α → 𝕜}
     f =Θ[l] g := by
   refine ⟨isBigO_of_div_tendsto_nhds_of_ne_zero h hc,
     isBigO_of_div_tendsto_nhds_of_ne_zero ?_ (inv_ne_zero hc)⟩
-  convert h.inv₀ hc using 1
+  convert! h.inv₀ hc using 1
   ext
   simp
 

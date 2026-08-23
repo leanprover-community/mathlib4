@@ -52,8 +52,6 @@ namespace CategoryTheory
 
 namespace Bicategory
 
-open Bicategory
-
 variable {B : Type u} [Bicategory.{w, v} B]
 
 namespace Adjunction
@@ -174,6 +172,7 @@ variable {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁
   {l₂ : c ⟶ d} {r₂ : d ⟶ c} (adj₂ : l₂ ⊣ r₂)
   {f : a ⟶ c} {g : b ⟶ d}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mateEquiv_id_comp_right (φ : f ≫ 𝟙 _ ≫ l₂ ⟶ l₁ ≫ g) :
     mateEquiv adj₁ ((Adjunction.id _).comp adj₂) φ =
       mateEquiv adj₁ adj₂ (f ◁ (λ_ l₂).inv ≫ φ) ≫ (ρ_ _).inv ≫ (α_ _ _ _).hom := by
@@ -182,6 +181,7 @@ lemma mateEquiv_id_comp_right (φ : f ≫ 𝟙 _ ≫ l₂ ⟶ l₁ ≫ g) :
   dsimp
   bicategory
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mateEquiv_comp_id_right (φ : f ≫ l₂ ≫ 𝟙 d ⟶ l₁ ≫ g) :
     mateEquiv adj₁ (adj₂.comp (Adjunction.id _)) φ =
       mateEquiv adj₁ adj₂ ((ρ_ _).inv ≫ (α_ _ _ _).hom ≫ φ) ≫ g ◁ (λ_ r₂).inv := by
@@ -267,6 +267,7 @@ def rightAdjointSquare.hcomp (α : r₁ ≫ g ⟶ h ≫ r₂) (β : r₃ ≫ h �
     (r₃ ≫ r₁) ≫ g ⟶ k ≫ (r₄ ≫ r₂) :=
   (α_ _ _ _).hom ≫ r₃ ◁ α ≫ (α_ _ _ _).inv ≫ β ▷ r₂ ≫ (α_ _ _ _).hom
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The mates equivalence commutes with horizontal composition of squares. -/
 theorem mateEquiv_hcomp (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : h ≫ l₄ ⟶ l₃ ≫ k) :
     (mateEquiv (adj₁.comp adj₃) (adj₂.comp adj₄)) (leftAdjointSquare.hcomp α β) =

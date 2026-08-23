@@ -33,7 +33,7 @@ open scoped Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
-variable {α β γ δ : Type*} {ι : Sort y} {s t u : Set α}
+variable {α β : Type*} {s : Set α}
 
 section PseudoMetricSpace
 
@@ -116,16 +116,10 @@ theorem measurable_edist_left : Measurable fun y ↦ edist y x := by fun_prop
 theorem measurable_infEDist {s : Set α} : Measurable fun x => infEDist x s :=
   continuous_infEDist.measurable
 
-@[deprecated (since := "2026-01-08")]
-alias measurable_infEdist := measurable_infEDist
-
 @[fun_prop]
 protected theorem Measurable.infEDist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infEDist (f x) s :=
   measurable_infEDist.comp hf
-
-@[deprecated (since := "2026-01-08")]
-alias Measurable.infEdist := Measurable.infEDist
 
 /-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed
 thickenings converges to the measure of its closure as `r` tends to `0`. -/
@@ -141,7 +135,7 @@ theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
     apply Tendsto.congr' _ tendsto_const_nhds
     filter_upwards [self_mem_nhdsWithin (α := ℝ)] with _ hr
     rw [cthickening_of_nonpos hr]
-  convert B.sup A
+  convert! B.sup A
   exact (nhdsLE_sup_nhdsGT 0).symm
 
 /-- If a closed set has a closed thickening with finite measure, then the measure of its closed
@@ -149,7 +143,7 @@ theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
 theorem tendsto_measure_cthickening_of_isClosed {μ : Measure α} {s : Set α}
     (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) (h's : IsClosed s) :
     Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ s)) := by
-  convert tendsto_measure_cthickening hs
+  convert! tendsto_measure_cthickening hs
   exact h's.closure_eq.symm
 
 /-- If a set has a thickening with finite measure, then the measures of its `r`-thickenings
@@ -166,7 +160,7 @@ theorem tendsto_measure_thickening {μ : Measure α} {s : Set α}
 theorem tendsto_measure_thickening_of_isClosed {μ : Measure α} {s : Set α}
     (hs : ∃ R > 0, μ (thickening R s) ≠ ∞) (h's : IsClosed s) :
     Tendsto (fun r => μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ s)) := by
-  convert tendsto_measure_thickening hs
+  convert! tendsto_measure_thickening hs
   exact h's.closure_eq.symm
 
 variable [SecondCountableTopology α]
@@ -201,7 +195,7 @@ theorem exists_borelSpace_of_countablyGenerated_of_separatesPoints (α : Type*)
     [m : MeasurableSpace α] [CountablyGenerated α] [SeparatesPoints α] :
     ∃ _ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ BorelSpace α := by
   rcases measurableEquiv_nat_bool_of_countablyGenerated α with ⟨s, ⟨f⟩⟩
-  letI := induced f inferInstance
+  let := induced f inferInstance
   let F := f.toEquiv.toHomeomorphOfIsInducing <| .induced _
   exact ⟨inferInstance, F.secondCountableTopology, F.symm.t4Space,
     f.measurableEmbedding.borelSpace F.isInducing⟩

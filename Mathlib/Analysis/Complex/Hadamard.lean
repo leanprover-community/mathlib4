@@ -61,7 +61,9 @@ We then use a limit argument to cover the case when either of the sides are `0`.
 @[expose] public section
 
 
-open Set Filter Function Complex Topology
+open Set Filter Function Complex
+
+open scoped Topology
 
 namespace Complex
 namespace HadamardThreeLines
@@ -147,6 +149,7 @@ lemma norm_lt_sSupNormIm_eps (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
 
 variable [NormedSpace ℂ E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- When the function `f` is bounded above on a vertical strip, then so is `F`. -/
 lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) :
@@ -227,7 +230,7 @@ theorem norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip (f : ℂ → E
   rw [eventually_inf_principal]
   apply Eventually.of_forall
   intro x hx
-  simpa using (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
+  simpa using! (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
     ((le_of_lt (lt_add_one BF)).trans (Real.add_one_le_exp BF))
 
 end invInterpStrip
@@ -251,12 +254,12 @@ noncomputable def interpStrip (z : ℂ) : ℂ :=
 /-- Rewrite for `InterpStrip` when `0 < sSupNormIm f 0` and `0 < sSupNormIm f 1`. -/
 lemma interpStrip_eq_of_pos (z : ℂ) (h0 : 0 < sSupNormIm f 0) (h1 : 0 < sSupNormIm f 1) :
     interpStrip f z = sSupNormIm f 0 ^ (1 - z) * sSupNormIm f 1 ^ z := by
-  simp only [ne_of_gt h0, ne_of_gt h1, interpStrip, if_false, or_false]
+  simp only [ne_of_gt h0, ne_of_gt h1, interpStrip, ite_false, or_false]
 
 /-- Rewrite for `InterpStrip` when `0 = sSupNormIm f 0` or `0 = sSupNormIm f 1`. -/
 lemma interpStrip_eq_of_zero (z : ℂ) (h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0) :
     interpStrip f z = 0 :=
-  if_pos h
+  ite_eq_left h
 
 /-- Rewrite for `InterpStrip` on the open vertical strip. -/
 lemma interpStrip_eq_of_mem_verticalStrip (z : ℂ) (hz : z ∈ verticalStrip 0 1) :
@@ -426,7 +429,7 @@ lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
   · simp only [tendsto_const_nhds_iff]
   -- Proof that we can let epsilon tend to zero.
   · rw [interpStrip_eq_of_mem_verticalStrip _ _ hz]
-    convert ContinuousWithinAt.tendsto _ using 2
+    convert! ContinuousWithinAt.tendsto _ using 2
     · simp only [ofReal_zero, zero_add]
     · simp_rw [← ofReal_add]
       have : ∀ x ∈ Ioi 0, (x + sSupNormIm f 0) ^ (1 - z.re) * (x + sSupNormIm f 1) ^ z.re

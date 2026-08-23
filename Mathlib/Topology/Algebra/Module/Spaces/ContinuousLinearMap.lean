@@ -5,7 +5,9 @@ Authors: Anatole Dedecker, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Module.Spaces.UniformConvergenceCLM
+public import Mathlib.Topology.Algebra.Algebra.Equiv
 
 /-!
 # Topology of bounded convergence on the space of continuous linear map
@@ -298,14 +300,17 @@ theorem map_smulₛₗ₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (c : R) (x
     f (c • x) y = σ₁₃ c • f x y := by rw [f.map_smulₛₗ, smul_apply]
 
 /-- Send a continuous sesquilinear map to an abstract sesquilinear map (forgetting continuity). -/
-def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
-  (coeLMₛₗ σ₂₃).comp L.toLinearMap
+@[simps -isSimp apply]
+def toLinearMap₁₂ : (E →SL[σ₁₃] F →SL[σ₂₃] G) →ₗ[𝕜₃] E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G where
+  toFun L := (coeLMₛₗ σ₂₃).comp L.toLinearMap
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
-@[simp] lemma toLinearMap₁₂_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
+@[simp] lemma toLinearMap₁₂_apply_apply_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
     L.toLinearMap₁₂ v w = L v w := rfl
 
 lemma toLinearMap₁₂_injective :
-    (toLinearMap₁₂ (E := E) (F := F) (G := G) (σ₁₃ := σ₁₃) (σ₂₃ := σ₂₃)).Injective := by
+    (toLinearMap₁₂ (E := E) (F := F) (G := G) (σ₁₃ := σ₁₃) (σ₂₃ := σ₂₃) : _ → _).Injective := by
   simp [Function.Injective, LinearMap.ext_iff, ← ContinuousLinearMap.ext_iff]
 
 lemma toLinearMap₁₂_inj (L₁ L₂ : E →SL[σ₁₃] F →SL[σ₂₃] G) :
@@ -382,7 +387,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem isUniformEmbedding_restrictScalars :
     IsUniformEmbedding (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) := by
   rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
-  convert isUniformEmbedding_toUniformOnFun using 4 with s
+  convert! isUniformEmbedding_toUniformOnFun using 4 with s
   exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
 
 theorem uniformContinuous_restrictScalars :

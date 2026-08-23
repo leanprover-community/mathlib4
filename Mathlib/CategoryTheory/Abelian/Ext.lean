@@ -49,6 +49,9 @@ open ZeroObject
 
 variable {R C}
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a chain complex `X` and an object `Y`, this is the cochain complex
 which in degree `i` consists of the module of morphisms `X.X i ⟶ Y`. -/
 @[simps! X d]
@@ -79,7 +82,6 @@ lemma isZero_Ext_succ_of_projective (X Y : C) [Projective X] (n : ℕ) :
   refine IsZero.of_iso ?_ ((ProjectiveResolution.self X).isoExt (n + 1) Y)
   rw [← HomologicalComplex.exactAt_iff_isZero_homology, HomologicalComplex.exactAt_iff]
   refine ShortComplex.exact_of_isZero_X₂ _ ?_
-  dsimp
   rw [IsZero.iff_id_eq_zero]
   ext (x : _ ⟶ _)
   obtain rfl : x = 0 := (HomologicalComplex.isZero_single_obj_X
