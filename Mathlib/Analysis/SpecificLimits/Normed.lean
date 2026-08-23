@@ -277,6 +277,19 @@ lemma summable_geometric_of_norm_lt_one {K : Type*} [NormedRing K] [HasSummableG
     {x : K} (h : ‖x‖ < 1) : Summable (fun n ↦ x ^ n) :=
   HasSummableGeomSeries.summable_geometric_of_norm_lt_one x h
 
+/-- A closed subring has summable geometric series when the ambient ring does. -/
+instance {S R : Type*} [NormedRing R] [SetLike S R] [SubringClass S R] [HasSummableGeomSeries R]
+    (s : S) [hs : IsClosed (s : Set R)] : HasSummableGeomSeries s where
+  summable_geometric_of_norm_lt_one x hx := by
+    obtain ⟨L, hL⟩ := summable_geometric_of_norm_lt_one (x := (x : R)) hx
+    simp only [← SubmonoidClass.coe_pow] at hL
+    lift L to s using hs.mem_of_tendsto hL.tendsto_sum_nat <| .of_forall fun _ ↦ by
+      simp only [← AddSubmonoidClass.coe_finsetSum, Subtype.coe_prop]
+    apply HasSum.summable (a := L)
+    rw [← Topology.IsEmbedding.subtypeVal.isInducing.hasSum_iff (g := AddSubmonoidClass.subtype s)]
+    simpa [Function.comp_def] using hL
+
+/-- A complete normed ring has summable geometric series. -/
 instance {R : Type*} [NormedRing R] [CompleteSpace R] : HasSummableGeomSeries R := by
   constructor
   intro x hx
