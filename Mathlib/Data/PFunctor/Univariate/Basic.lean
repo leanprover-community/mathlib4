@@ -72,7 +72,10 @@ theorem Obj.rec_mk {motive : P α → Sort*}
     {mk : ∀ a b, motive (.mk a b)} (a : P.A) (b : P.B a → α) :
     Obj.rec mk (.mk a b) = mk a b := rfl
 
+/-- Extract the "shape" of a `x : P α` as `x.fst : P.A`. -/
 @[implicit_reducible] def Obj.fst (x : P α) : P.A := x.1
+/-- Extract the underlying value of type `α` associated to an object `x : P α`
+at an index `i : P.B x.fst`. -/
 @[implicit_reducible] def Obj.snd (x : P α) : P.B x.fst → α := x.2
 
 @[simp] theorem Obj.fst_mk (a : P.A) (f : P.B a → α) : Obj.fst (.mk a f) = a := rfl
