@@ -266,7 +266,7 @@ theorem quasispectrum.nonempty [Nontrivial R] (a : A) : (quasispectrum R a).None
 instance quasispectrum.instZero [Nontrivial R] (a : A) : Zero (quasispectrum R a) where
   zero := ⟨0, quasispectrum.zero_mem R a⟩
 
-lemma quasispectrum.zero_eq_nonunits [Nontrivial R] :
+lemma quasispectrum.zero_eq_nonunits :
     quasispectrum R (0 : A) = nonunits R := by
   simp [quasispectrum, nonunits]
 
