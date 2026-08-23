@@ -740,7 +740,7 @@ variable {A : Type*} [Ring A]
 lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : spectralRadius ℝ a ≤ t) :
     SpectrumRestricts a ContinuousMap.realToNNReal ↔
       spectralRadius ℝ (algebraMap ℝ A t - a) ≤ t := by
-  simp only [spectrum.spectralRadius_eq_of_unital] at ht ⊢
+  simp only [spectralRadius_eq_of_unital] at ht ⊢
   have : spectrum ℝ a ⊆ Set.Icc (-t) t := by
     intro x hx
     rw [Set.mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← coe_nnnorm, NNReal.coe_le_coe,

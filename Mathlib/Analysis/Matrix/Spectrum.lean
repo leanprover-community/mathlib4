@@ -46,7 +46,7 @@ theorem spectrum_toLpLin [DecidableEq n] (p : ENNReal) :
     (A : Matrix n n K) :
     spectralRadius K Aᵀ = spectralRadius K A := by
   classical
-  simp [spectrum.spectralRadius_eq_of_unital]
+  simp [spectralRadius_eq_of_unital]
 
 namespace IsHermitian
 
