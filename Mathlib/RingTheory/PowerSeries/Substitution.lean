@@ -378,6 +378,44 @@ theorem le_order_subst_right' {f φ : PowerSeries R} (hf : f.constantCoeff = 0)
 
 end
 
+section TruncLem
+
+variable {a : τ → PowerSeries R} (n : ℕ) {x : τ → ℕ}
+
+lemma _root_.MvPowerSeries.HasSubst.trunc_lt (ha : MvPowerSeries.HasSubst a) (hx : ∀ i, n < x i) :
+    MvPowerSeries.HasSubst (fun i => (PowerSeries.trunc (x i) (a i) : PowerSeries R)) where
+  const_coeff s := by
+    rw [← constantCoeff_eq, Polynomial.constantCoeff_coe, coeff_trunc, ite_eq_left
+      (by linarith [hx s])]
+    simp [ha.const_coeff s, constantCoeff]
+  coeff_zero d :=
+    Set.Finite.subset (ha.coeff_zero d) fun s hs => by
+      by_contra! hc
+      simp only [← coeff_def rfl, Polynomial.coeff_coe, ne_eq, Set.mem_ofPred_eq] at hc hs
+      simp [coeff_trunc, hc] at hs
+
+theorem trunc_subst_trunc (ha : MvPowerSeries.HasSubst a) (hx : ∀ i, n < x i) :
+    coeff n (f.subst a) = coeff n (f.subst (fun i => trunc (x i) (a i))) := by
+  classical
+  rw [coeff, MvPowerSeries.coeff_subst ha, MvPowerSeries.coeff_subst
+    (MvPowerSeries.HasSubst.trunc_lt n ha hx), finsum_congr]
+  intro d
+  simp_rw [Finsupp.prod, MvPowerSeries.coeff_prod, ← coeff_def rfl, coeff_pow]
+  congr! 5 with l hl i hi t ht j hj
+  refine (coeff_coe_trunc_of_lt ?_).symm
+  calc
+    _ ≤ (Finset.range (d i)).sum ⇑t := Finset.single_le_sum_of_canonicallyOrdered hj
+    _ ≤ (d.support.sum ⇑l) () := by
+      have : (l i) ≤ (d.support.sum ⇑l) := Finset.single_le_sum_of_canonicallyOrdered hi
+      exact (Finset.mem_finsuppAntidiag.mp ht).1 ▸ (this ())
+    _ < _ := by simp [(Finset.mem_finsuppAntidiag.mp hl).1, hx]
+
+theorem trunc_subst_trunc_add_one {a : τ → PowerSeries R} (ha : MvPowerSeries.HasSubst a) (n : ℕ) :
+    coeff n (f.subst a) = coeff n (f.subst (fun i => trunc (n + 1) (a i))) :=
+  trunc_subst_trunc _ ha fun _ ↦ lt_add_one n
+
+end TruncLem
+
 theorem HasSubst.comp
     {a : PowerSeries S} (ha : HasSubst a) {b : MvPowerSeries υ T} (hb : HasSubst b) :
     HasSubst (substAlgHom hb a) :=
@@ -531,7 +569,7 @@ lemma subst_substInv_right :
         Fin.ext_iff, @eq_comm _ m]
     obtain ⟨Q, hQ⟩ := this.trans (sub_dvd_pow_sub_pow _ _ m)
     simp [substInv, sub_eq_iff_eq_add.mp hQ, coeff_X_pow_mul']
-  · simp [HasSubst, X, zero_pow_eq, C, substInvFun]
+  · simp [HasSubst, zero_pow_eq, C, substInvFun, ← constantCoeff_eq]
   · simp [HasSubst, ← constantCoeff.eq_def, substInvFun, substInv]
 
 @[simp]
