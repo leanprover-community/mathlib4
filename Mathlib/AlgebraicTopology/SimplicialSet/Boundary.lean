@@ -30,7 +30,9 @@ a morphism `Δ[n] ⟶ ∂Δ[n]`.
 
 universe u
 
-open CategoryTheory MonoidalCategory Simplicial Opposite
+open CategoryTheory MonoidalCategory Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
