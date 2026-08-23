@@ -146,7 +146,7 @@ theorem tendsto_nhds_top {m : α → ℝ≥0∞} {f : Filter α} (h : ∀ n : �
 
 theorem tendsto_nat_nhds_top : Tendsto (fun n : ℕ => ↑n) atTop (𝓝 ∞) :=
   tendsto_nhds_top fun n =>
-    mem_atTop_sets.2 ⟨n + 1, fun _m hm => mem_ofPred.2 <| Nat.cast_lt.2 <| Nat.lt_of_succ_le hm⟩
+    mem_atTop_sets.2 ⟨n + 1, fun _m hm => mem_ofPred.mpr <| Nat.cast_lt.2 <| Nat.lt_of_succ_le hm⟩
 
 @[simp, norm_cast]
 theorem tendsto_coe_nhds_top {f : α → ℝ≥0} {l : Filter α} :

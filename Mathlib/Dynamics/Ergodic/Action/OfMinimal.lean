@@ -70,7 +70,7 @@ alias aeconst_of_dense_setOf_preimage_vadd_ae := aeconst_of_dense_setOfPred_prei
 @[to_additive]
 theorem aeconst_of_dense_setOfPred_preimage_smul_eq (hsm : NullMeasurableSet s μ)
     (hd : Dense {g : M | (g • ·) ⁻¹' s = s}) : EventuallyConst s (ae μ) :=
-  aeconst_of_dense_setOfPred_preimage_smul_ae hsm <| hd.mono fun _ h ↦ mem_ofPred.2 <| .of_eq h
+  aeconst_of_dense_setOfPred_preimage_smul_ae hsm <| hd.mono fun _ h ↦ mem_ofPred.mpr (.of_eq h)
 
 @[deprecated (since := "2026-07-09")]
 alias aeconst_of_dense_setOf_preimage_smul_eq := aeconst_of_dense_setOfPred_preimage_smul_eq
