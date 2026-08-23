@@ -43,13 +43,15 @@ In lemma names,
 * `⋂₀`: `Set.sInter`
 -/
 
+set_option linter.style.longFile 1700
+
 @[expose] public section
 
 open Function Set
 
 universe u
 
-variable {α β γ δ : Type*} {ι ι' ι₂ : Sort*} {κ κ₁ κ₂ : ι → Sort*} {κ' : ι' → Sort*}
+variable {α β γ : Type*} {ι ι' ι₂ : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
 
 namespace Set
 
@@ -269,6 +271,32 @@ theorem iInter_ofPred (P : ι → α → Prop) : ⋂ i, { x : α | P i x } = { x
   exact mem_iInter
 
 @[deprecated (since := "2026-07-09")] alias iInter_setOf := iInter_ofPred
+
+theorem forall_mem_iUnion {p : α → Prop} {f : ι → Set α} :
+    (∀ x ∈ ⋃ i, f i, p x) ↔ (∀ i, ∀ x ∈ f i, p x) := by
+  simp_rw [mem_iUnion, forall_exists_index]
+  apply forall_comm
+
+theorem exists_mem_iUnion {p : α → Prop} {f : ι → Set α} :
+    (∃ x ∈ ⋃ i, f i, p x) ↔ (∃ i, ∃ x ∈ f i, p x) := by
+  grind [mem_iUnion]
+
+theorem forall_mem_iUnion₂ {p : α → Prop} {f : (i : ι) → κ i → Set α} :
+    (∀ x ∈ ⋃ (i) (j), f i j, p x) ↔ (∀ i j, ∀ x ∈ f i j, p x) := by
+  simp_rw [forall_mem_iUnion]
+
+theorem exists_mem_iUnion₂ {p : α → Prop} {f : (i : ι) → κ i → Set α} :
+    (∃ x ∈ ⋃ (i) (j), f i j, p x) ↔ (∃ i j, ∃ x ∈ f i j, p x) := by
+  simp_rw [exists_mem_iUnion]
+
+theorem forall_mem_biUnion {p : α → Prop} {f : ι → Set α} {q : ι → Prop} :
+    (∀ x ∈ ⋃ (i : ι) (_ : q i), f i, p x) ↔ (∀ i, q i → ∀ x ∈ f i, p x) :=
+  forall_mem_iUnion₂
+
+theorem exists_mem_biUnion {p : α → Prop} {f : (i : ι) → Set α} {q : ι → Prop} :
+    (∃ x ∈ ⋃ (i : ι) (_ : q i), f i, p x) ↔ (∃ i, q i ∧ ∃ x ∈ f i, p x) := by
+  rw [exists_mem_iUnion₂]
+  simp_rw [exists_prop]
 
 theorem iUnion_congr_of_surjective {f : ι → Set α} {g : ι₂ → Set α} (h : ι → ι₂) (h1 : Surjective h)
     (h2 : ∀ x, g (h x) = f x) : ⋃ x, f x = ⋃ y, g y :=
