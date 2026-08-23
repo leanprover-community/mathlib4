@@ -107,14 +107,14 @@ theorem cycleGraph_indepNum_eq_one : (cycleGraph 1)ᶜ.cliqueNum = 1 := by
     simp_all
   ext x
   simp only [Set.mem_ofPred_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ 
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨s,h⟩ := h
     rw [isNIndepSet_iff] at h
     have : s.card ≤ 1 := card_finset_fin_le s
-    have : s.card = 0 ∨ s.card = 1 := Nat.le_one_iff_eq_zero_or_eq_one.mp this 
+    have : s.card = 0 ∨ s.card = 1 := Nat.le_one_iff_eq_zero_or_eq_one.mp this
     grind
   · rcases h with h|h
-    · rw [h] ; use ∅
+    · rw [h]; use ∅
       simp [isNIndepSet_iff]
     · rw [h]
       use {0}
