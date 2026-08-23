@@ -57,7 +57,7 @@ variable {P}
 /-- Make an element of `P α` from a "shape" `a : P.A` and a family of elements `f : P.B a → α`.
 
 Important: You should use `PFunctor.Obj.mk` instead of the anonymous constructor `⟨_, _⟩` to avoid abuse
-of the definitional equality between `P.Obj α` and `Σ x : P.A, P.B x → α`. -/
+of the definitional equality between `P α` and `Σ x : P.A, P.B x → α`. -/
 @[implicit_reducible, match_pattern]
 def Obj.mk (a : P.A) (f : P.B a → α) : P α := ⟨a, f⟩
 
