@@ -180,7 +180,6 @@ lemma coeff_one_Xzero : F.Xzero.coeff 1 = 1 := by
     simp [hd₁]
   · exact HasSubst.X_zero
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Xzero_subst_Xzero : F.Xzero.subst F.Xzero = F.Xzero := by
   calc
@@ -198,7 +197,8 @@ lemma Xzero_subst_Xzero : F.Xzero.subst F.Xzero = F.Xzero := by
     _ = _ := by
       have : ![0, 0] = (0 : Fin 2 → PowerSeries R) := by
         ext x : 1; fin_cases x <;> rfl
-      simp [F.assoc', this, subst_zero_of_constantCoeff_zero F.zero_constantCoeff,
+      rw [F.assoc'] <;>
+      simp [this, subst_zero_of_constantCoeff_zero F.zero_constantCoeff,
         PowerSeries.HasSubst.X', PowerSeries.HasSubst]
 
 lemma Xzero_eq_X : F.Xzero = PowerSeries.X := by
@@ -232,7 +232,6 @@ lemma coeff_one_zeroX : F.zeroX.coeff 1 = 1 := by
     simp [hd₁]
   · exact HasSubst.zero_X
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma zeroX_subst_zeroX : F.zeroX.subst F.zeroX = F.zeroX := by
   calc
@@ -249,7 +248,8 @@ lemma zeroX_subst_zeroX : F.zeroX.subst F.zeroX = F.zeroX := by
       · exact HasSubst.zero_X
     _ = _ := by
       have : ![0, 0] = (0 : Fin 2 → PowerSeries R) := by ext x : 1; fin_cases x <;> rfl
-      simp [← F.assoc', this, subst_zero_of_constantCoeff_zero F.zero_constantCoeff,
+      rw [← F.assoc'] <;>
+      simp [this, subst_zero_of_constantCoeff_zero F.zero_constantCoeff,
         PowerSeries.HasSubst.X', PowerSeries.HasSubst]
 
 lemma zeroX_eq_X : F.zeroX = PowerSeries.X := by
