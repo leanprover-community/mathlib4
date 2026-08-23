@@ -10,3 +10,6 @@
 scripts/.rm_set_option_progress.jsonl
 # Artifacts from using the devcontainer setup
 .devcontainer/devcontainer-lock.json
+
+# Output of scripts/export_crossrefs.lean
+/crossrefs.json

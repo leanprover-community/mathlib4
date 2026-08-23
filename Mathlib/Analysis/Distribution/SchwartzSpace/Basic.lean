@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Distribution.TemperateGrowth
-public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.MeasureTheory.Function.L2Space
 public import Mathlib.Tactic.FunProp
@@ -16,7 +15,7 @@ public import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Normed.Lp.SmoothApprox
-import Mathlib.Tactic.MoveAdd
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 
 /-!
@@ -732,7 +731,7 @@ end bilin
 section smul
 
 variable (F) in
-open Classical in
+open scoped Classical in
 /-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on Schwartz space,
 where `g` is a function of temperate growth. -/
 def smulLeftCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
@@ -1093,7 +1092,7 @@ section Integration
 /-! ### Integration -/
 
 
-open Real Complex Filter MeasureTheory MeasureTheory.Measure Module
+open Real Filter MeasureTheory MeasureTheory.Measure Module
 
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
@@ -1201,6 +1200,15 @@ def toBoundedContinuousFunctionCLM : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
 theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
     toBoundedContinuousFunctionCLM 𝕜 E F f x = f x :=
   rfl
+
+theorem toBoundedContinuousFunctionCLM_injective :
+    Function.Injective (toBoundedContinuousFunctionCLM .. : 𝓢(E, F) →L[𝕜] E →ᵇ F) :=
+  fun _ _ h ↦ DFunLike.ext _ _ fun x ↦ DFunLike.congr_fun h x
+
+instance : T3Space 𝓢(E, F) :=
+  suffices T2Space 𝓢(E, F) from inferInstance
+  .of_injective_continuous (toBoundedContinuousFunctionCLM_injective ℝ ..)
+    (ContinuousLinearMap.continuous _)
 
 end BoundedContinuousFunction
 
@@ -1312,6 +1320,10 @@ theorem memLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac
 def toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
     Lp F p μ := (f.memLp p μ).toLp
 
+instance instCoeToLp {p : ℝ≥0∞} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
+    Coe 𝓢(E, F) (Lp F p μ) where
+  coe := (SchwartzMap.toLp · p μ)
+
 theorem coeFn_toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : f.toLp p μ =ᵐ[μ] f := (f.memLp p μ).coeFn_toLp
 
@@ -1374,7 +1386,7 @@ theorem denseRange_toLpCLM [FiniteDimensional ℝ E] [BorelSpace E] {p : ℝ≥0
   refine (mem_closure_iff_nhds_basis Metric.nhds_basis_closedBall).2 fun ε hε ↦ ?_
   obtain ⟨g, hg₁, hg₂, hg₃⟩ := MemLp.exist_eLpNorm_sub_le hp hp'.out (Lp.memLp f) hε
   use (hg₁.toSchwartzMap hg₂).toLp p μ
-  have : (f : E → F) - ((hg₁.toSchwartzMap hg₂).toLp p μ : E → F) =ᶠ[ae μ] (f : E → F) - g := by
+  have : (f : E → F) - ((hg₁.toSchwartzMap hg₂).toLp p μ : E → F) =ᵐ[μ] (f : E → F) - g := by
     filter_upwards [(hg₁.toSchwartzMap hg₂).coeFn_toLp p μ]
     simp
   simp only [Set.mem_range, toLpCLM_apply, exists_apply_eq_apply, Metric.mem_closedBall', true_and,

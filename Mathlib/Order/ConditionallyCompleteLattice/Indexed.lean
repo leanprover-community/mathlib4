@@ -23,7 +23,7 @@ assert_not_exists Multiset
 
 open Function OrderDual Set
 
-variable {α β γ : Type*} {ι : Sort*}
+variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 section
 
@@ -33,9 +33,8 @@ Extension of `iSup` and `iInf` from a preorder `α` to `WithTop α` and `WithBot
 
 variable [Preorder α]
 
-@[simp]
-theorem WithTop.iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
-    ⨅ i, f i = ⊤ := by rw [iInf, range_eq_empty, WithTop.sInf_empty]
+theorem WithTop.iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) : ⨅ i, f i = ⊤ := by
+  simp
 
 @[norm_cast]
 theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelow (range f)) :
@@ -47,9 +46,7 @@ theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)
     ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
   rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp, Function.comp_def]
 
-@[simp]
-theorem WithBot.ciSup_empty [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
-    ⨆ i, f i = ⊥ :=
+theorem WithBot.ciSup_empty [IsEmpty ι] [SupSet α] (f : ι → WithBot α) : ⨆ i, f i = ⊥ :=
   WithTop.iInf_empty (α := αᵒᵈ) _
 
 @[norm_cast]
@@ -88,22 +85,16 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {a b : α}
 
+@[to_dual]
 theorem isLUB_ciSup [Nonempty ι] {f : ι → α} (H : BddAbove (range f)) :
     IsLUB (range f) (⨆ i, f i) :=
   isLUB_csSup (range_nonempty f) H
 
+@[to_dual]
 theorem isLUB_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) (Hne : s.Nonempty) :
     IsLUB (f '' s) (⨆ i : s, f i) := by
   rw [← sSup_image']
   exact isLUB_csSup (Hne.image _) H
-
-theorem isGLB_ciInf [Nonempty ι] {f : ι → α} (H : BddBelow (range f)) :
-    IsGLB (range f) (⨅ i, f i) :=
-  isGLB_csInf (range_nonempty f) H
-
-theorem isGLB_ciInf_set {f : β → α} {s : Set β} (H : BddBelow (f '' s)) (Hne : s.Nonempty) :
-    IsGLB (f '' s) (⨅ i : s, f i) :=
-  isLUB_ciSup_set (α := αᵒᵈ) H Hne
 
 theorem ciSup_le_iff [Nonempty ι] {f : ι → α} {a : α} (hf : BddAbove (range f)) :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
@@ -136,8 +127,14 @@ theorem IsGLB.ciInf_set_eq {s : Set β} {f : β → α} (H : IsGLB (f '' s) a) (
   IsGLB.csInf_eq (image_eq_range f s ▸ H) (image_eq_range f s ▸ Hne.image f)
 
 /-- The indexed supremum of a function is bounded above by a uniform bound -/
+@[to_dual le_ciInf /-- The indexed infimum of a function is bounded below by a uniform bound -/]
 theorem ciSup_le [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, f x ≤ c) : iSup f ≤ c :=
   csSup_le (range_nonempty f) (by rwa [forall_mem_range])
+
+@[to_dual le_ciInf₂]
+theorem ciSup₂_le [Nonempty ι] [∀ i, Nonempty (κ i)] {f : ∀ i, κ i → α}
+    (h : ∀ i j, f i j ≤ a) : ⨆ (i) (j), f i j ≤ a :=
+  ciSup_le fun i ↦ ciSup_le <| h i
 
 /-- The indexed supremum of a function is bounded below by the value taken at one point -/
 theorem le_ciSup {f : ι → α} (H : BddAbove (range f)) (c : ι) : f c ≤ iSup f :=
@@ -188,10 +185,6 @@ theorem ciInf_mono {f g : ι → α} (B : BddBelow (range f)) (H : ∀ x, f x �
 theorem ciInf_inf_eq {f g : ι → α} (Hf : BddBelow <| range f) (Hg : BddBelow <| range g) :
     ⨅ x, f x ⊓ g x = (⨅ x, f x) ⊓ (⨅ x, g x) :=
   ciSup_sup_eq (α := αᵒᵈ) Hf Hg
-
-/-- The indexed minimum of a function is bounded below by a uniform lower bound -/
-theorem le_ciInf [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, c ≤ f x) : c ≤ iInf f :=
-  ciSup_le (α := αᵒᵈ) H
 
 /-- The indexed infimum of a function is bounded above by the value taken at one point -/
 theorem ciInf_le {f : ι → α} (H : BddBelow (range f)) (c : ι) : iInf f ≤ f c :=
@@ -380,6 +373,26 @@ lemma ciInf_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α
     ⨅ i ∈ (f '' s), g i = ⨅ x ∈ s, g (f x) :=
   ciSup_image (α := αᵒᵈ) hf hg'
 
+theorem le_ciSup_ciSup_eq_left {b : β} {f : ∀ x : β, x = b → α} :
+    f b rfl ≤ ⨆ x, ⨆ h : x = b, f x h := by
+  refine le_ciSup₂ (f := f) ⟨f b rfl, ?_⟩ b rfl
+  rintro a ⟨_, ⟨b, rfl⟩, ⟨rfl, rfl⟩⟩
+  rfl
+
+theorem ciInf_ciInf_eq_left_le {b : β} {f : ∀ x : β, x = b → α} :
+    ⨅ x, ⨅ h : x = b, f x h ≤ f b rfl :=
+  le_ciSup_ciSup_eq_left (α := αᵒᵈ)
+
+theorem le_ciSup_ciSup_eq_right {b : β} {f : ∀ x : β, b = x → α} :
+    f b rfl ≤ ⨆ x, ⨆ h : b = x, f x h := by
+  refine le_ciSup₂ ⟨f b rfl, ?_⟩ b rfl
+  rintro a ⟨_, ⟨b, rfl⟩, ⟨rfl, rfl⟩⟩
+  rfl
+
+theorem ciInf_ciInf_eq_right_le {b : β} {f : ∀ x : β, b = x → α} :
+    ⨅ x, ⨅ h : b = x, f x h ≤ f b rfl :=
+  le_ciSup_ciSup_eq_right (α := αᵒᵈ)
+
 /-- Note that equality need not hold: consider `ι := Bool, p := (·), α := ℤ, f := fun _ ↦ -1`,
 then the LHS is `-1` but the RHS is `-1 ⊔ sSup ∅ = -1 ⊔ 0 = 0`. -/
 theorem ciSup_exists_le {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih ≤ ⨆ (i) (h), f ⟨i, h⟩ := by
@@ -430,6 +443,12 @@ When `iInf f < a`, there is an element `i` such that `f i < a`.
 -/
 theorem exists_lt_of_ciInf_lt [Nonempty ι] {f : ι → α} (h : iInf f < a) : ∃ i, f i < a :=
   exists_lt_of_lt_ciSup (α := αᵒᵈ) h
+
+@[to_dual exists_lt_of_ciInf₂_lt]
+theorem exists_lt_of_lt_ciSup₂ [Nonempty ι] [∀ i, Nonempty (κ i)]
+    {f : ∀ i, κ i → α} (h : a < ⨆ (i) (j), f i j) : ∃ i j, a < f i j := by
+  contrapose! h
+  exact ciSup₂_le h
 
 theorem lt_ciSup_iff [Nonempty ι] {f : ι → α} (hb : BddAbove (range f)) :
     a < iSup f ↔ ∃ i, a < f i := by
@@ -505,9 +524,8 @@ section ConditionallyCompleteLinearOrderBot
 
 variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {a : α}
 
-@[simp]
 theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
-  rw [iSup_of_empty', csSup_empty]
+  simp
 
 theorem ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
   ciSup_of_empty f
@@ -531,6 +549,9 @@ theorem ciSup_le_iff' {f : ι → α} (h : BddAbove (range f)) {a : α} :
 theorem ciSup_le' {f : ι → α} {a : α} (h : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
   csSup_le' <| forall_mem_range.2 h
 
+theorem ciSup₂_le' {f : ∀ i, κ i → α} (h : ∀ i j, f i j ≤ a) : ⨆ (i) (j), f i j ≤ a :=
+  ciSup_le' fun i ↦ ciSup_le' <| h i
+
 @[simp]
 theorem ciSup_bot : ⨆ _ : ι, (⊥ : α) = ⊥ := le_bot_iff.mp (ciSup_le' fun _ ↦ bot_le)
 
@@ -543,6 +564,11 @@ theorem exists_lt_of_lt_ciSup' {f : ι → α} {a : α} (h : a < ⨆ i, f i) : �
   contrapose! h
   exact ciSup_le' h
 
+theorem exists_lt_of_lt_ciSup₂' {f : ∀ i, κ i → α} (h : a < ⨆ (i) (j), f i j) :
+    ∃ i j, a < f i j := by
+  contrapose! h
+  exact ciSup₂_le' h
+
 theorem ciSup_mono_of_forall_exists' {ι'} {f : ι → α} {g : ι' → α} (hg : BddAbove <| range g)
     (h : ∀ i, ∃ i', f i ≤ g i') : ⨆ i, f i ≤ ⨆ i', g i' :=
   ciSup_le' fun i ↦ h i |>.elim <| le_ciSup_of_le hg
@@ -552,6 +578,16 @@ theorem ciSup_mono_of_forall_exists' {ι'} {f : ι → α} {g : ι' → α} (hg 
 theorem ciSup_exists {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih = ⨆ (i) (h), f ⟨i, h⟩ := by
   refine le_antisymm ciSup_exists_le <| ciSup_le' fun i ↦ ciSup_le' fun hi ↦ ?_
   simp [show Exists p from ⟨i, hi⟩]
+
+@[simp]
+theorem ciSup_ciSup_eq_left {b : β} {f : ∀ x : β, x = b → α} :
+    ⨆ x, ⨆ h : x = b, f x h = f b rfl :=
+  le_antisymm (ciSup_le' fun _ ↦ ciSup_le' (· ▸ le_rfl)) le_ciSup_ciSup_eq_left
+
+@[simp]
+theorem ciSup_ciSup_eq_right {b : β} {f : ∀ x : β, b = x → α} :
+    ⨆ x, ⨆ h : b = x, f x h = f b rfl :=
+  le_antisymm (ciSup_le' fun _ ↦ ciSup_le' (· ▸ le_refl (f b rfl))) le_ciSup_ciSup_eq_right
 
 lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
     ⨆ (h : p ∨ q), f h = (⨆ h : p, f (.inl h)) ⊔ ⨆ h : q, f (.inr h) := by
@@ -578,7 +614,7 @@ theorem l_ciSup (gc : GaloisConnection l u) {f : ι → α} (hf : BddAbove (rang
 
 theorem l_ciSup_set (gc : GaloisConnection l u) {s : Set γ} {f : γ → α} (hf : BddAbove (f '' s))
     (hne : s.Nonempty) : l (⨆ i : s, f i) = ⨆ i : s, l (f i) := by
-  haveI := hne.to_subtype
+  have := hne.to_subtype
   rw [image_eq_range] at hf
   exact gc.l_ciSup hf
 

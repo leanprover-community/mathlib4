@@ -43,7 +43,7 @@ Prove lemmas relating exposed sets and points to the intrinsic frontier.
 
 @[expose] public section
 
-open Affine Set
+open Set
 
 section PreorderSemiring
 
@@ -139,7 +139,6 @@ protected theorem inter [IsOrderedRing 𝕜] [ContinuousAdd 𝕜] {A B C : Set E
 
 theorem sInter [IsOrderedRing 𝕜] [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
     (hAF : ∀ B ∈ F, IsExposed 𝕜 A B) : IsExposed 𝕜 A (⋂₀ F) := by
-  classical
   induction F using Finset.induction with
   | empty => exfalso; exact Finset.not_nonempty_empty hF
   | insert C F _ hF' =>
