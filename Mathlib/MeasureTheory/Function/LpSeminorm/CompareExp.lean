@@ -263,13 +263,27 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm {p q r : ℝ≥0∞} (hf : AEStr
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
 `fun x => b (f x) (g x)`. -/
 theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm {p q r : ℝ≥0∞} (hf : AEStronglyMeasurable f μ)
-    (hg : AEStronglyMeasurable g μ) (b : E → F → G) (c : ℝ≥0)
+    (hg : AEStronglyMeasurable g μ) (b : E → F → G) (c : ℝ≥0∞)
     (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖ₑ ≤ c * ‖f x‖ₑ * ‖g x‖ₑ) [hpqr : HolderTriple p q r] :
-    eLpNorm (fun x => b (f x) (g x)) r μ ≤ c * eLpNorm f p μ * eLpNorm g q μ :=
-  eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf hg b c <| by
+    eLpNorm (fun x => b (f x) (g x)) r μ ≤ c * eLpNorm f p μ * eLpNorm g q μ := by
+  by_cases hc : c = ∞
+  · by_cases hr : r = 0
+    · simp [hr, eLpNorm_exponent_zero]
+    by_cases hfg : eLpNorm f p μ * eLpNorm g q μ = 0
+    · rw [hc, mul_assoc, ENNReal.top_mul', if_pos hfg, nonpos_iff_eq_zero]
+      apply eLpNorm_eq_zero_of_ae_zero
+      rcases mul_eq_zero.mp hfg with hf0 | hg0
+      · have hp : p ≠ 0 := ((pos_iff_ne_zero.mpr hr).trans_le (HolderTriple.le p q r)).ne'
+        filter_upwards [h, (eLpNorm_eq_zero_iff hf hp).mp hf0] with x hx hfx
+        simpa [hfx] using hx
+      · have hq : q ≠ 0 := ((pos_iff_ne_zero.mpr hr).trans_le (HolderTriple.le q p r)).ne'
+        filter_upwards [h, (eLpNorm_eq_zero_iff hg hq).mp hg0] with x hx hgx
+        simpa [hgx] using hx
+    · simp [hc, mul_assoc, hfg]
+  · lift c to ℝ≥0 using hc
+    apply eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf hg b c
     filter_upwards [h] with x hx
-    simp_rw [enorm_eq_nnnorm] at hx
-    exact_mod_cast hx
+    rwa [← ENNReal.coe_le_coe, ← enorm_eq_nnnorm]
 
 open NNReal in
 theorem MemLp.of_bilin {p q r : ℝ≥0∞} {f : α → E} {g : α → F} (b : E → F → G) (c : ℝ≥0)
