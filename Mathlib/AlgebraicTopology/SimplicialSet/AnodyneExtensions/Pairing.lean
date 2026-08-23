@@ -146,7 +146,7 @@ variable {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom 
 
 /-- Given an isomorphism `Y ≅ X` of simplicial sets, a pairing `P` of a subcomplex
 `A` of `X`, this is a pairing for a subcomplex `B` of `Y` if `A.preimage e.hom = B`. -/
-@[simps I II]
+@[implicit_reducible, simps I II]
 def ofIso : B.Pairing where
   I := Subcomplex.N.orderIsoOfIso e hA ⁻¹' P.I
   II := Subcomplex.N.orderIsoOfIso e hA ⁻¹' P.II
@@ -165,7 +165,6 @@ unif_hint {X : SSet.{u}} {A : X.Subcomplex} (P : A.Pairing)
     {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom = B) where
   ⊢ (P.ofIso e hA).II ≟ (N.orderIsoOfIso e hA) ⁻¹' P.II
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma ofIso_p (x : P.II) :
     dsimp% (P.ofIso e hA).p ⟨(Subcomplex.N.orderIsoOfIso e hA).symm x, by simp⟩ =
@@ -175,8 +174,6 @@ lemma ofIso_p (x : P.II) :
   change e'.symm (P.p ⟨e' (e'.symm x), _⟩) = e'.symm (P.p x)
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma ofIso_ancestralRel_iff (x y : P.II) :
     (P.ofIso e hA).AncestralRel
       ⟨(Subcomplex.N.orderIsoOfIso e hA).symm x, by simp⟩
@@ -184,7 +181,6 @@ lemma ofIso_ancestralRel_iff (x y : P.II) :
     P.AncestralRel x y :=
   and_congr (not_congr (by aesop)) (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 instance [P.IsProper] : (P.ofIso e hA).IsProper where
   isUniquelyCodimOneFace := by
     rintro ⟨x, hx⟩
@@ -202,7 +198,6 @@ instance [P.IsRegular] : (P.ofIso e hA).IsRegular where
     refine hP.false ⟨fun n ↦ ⟨_, (f n).2⟩, fun n ↦ ?_⟩
     simpa [← P.ofIso_ancestralRel_iff e hA] using hf n
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ofIso_index (x : P.II) {d : ℕ} (hd : x.1.dim = d) [P.IsProper] :
     ((P.ofIso e hA).isUniquelyCodimOneFace ⟨(N.orderIsoOfIso e hA).symm x, by simp⟩).index hd =

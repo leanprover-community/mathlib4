@@ -137,7 +137,7 @@ instance : Nonempty (Subfunctor F) :=
   inferInstance
 
 /-- The subfunctor as a functor. -/
-@[simps obj map]
+@[implicit_reducible, simps obj map]
 def toFunctor : C ⥤ Type w where
   obj U := G.obj U
   map i := ↾fun x => ⟨F.map i x, G.map i x.prop⟩
