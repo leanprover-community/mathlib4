@@ -15,13 +15,15 @@ import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Data.Multiset.Fintype
 
 /-!
-# Chebyshev's sum inequality
+# Chebyshev's sum inequality and Abel's inequality
 
-This file proves the Chebyshev sum inequality.
+This file proves the Chebyshev sum inequality, as well as Abel's inequality.
 
 Chebyshev's inequality states `(∑ i ∈ s, f i) * (∑ i ∈ s, g i) ≤ #s * ∑ i ∈ s, f i * g i`
 when `f g : ι → α` monovary, and the reverse inequality when `f` and `g` antivary.
 
+Abel's inequality controls a weighted sum of a sequence `f` multiplied by an antitone nonnegative
+sequence `g` in terms of the partial sums of `f`.
 
 ## Main declarations
 
