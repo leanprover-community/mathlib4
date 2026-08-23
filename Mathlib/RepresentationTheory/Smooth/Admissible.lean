@@ -74,7 +74,7 @@ lemma isAdmissible_injective {f : IntertwiningMap σ ρ}
   rw [isAdmissible_iff']
   intro H
   have : FiniteDimensional k (HeckeModule₁ H ρ) := inferInstance
-  have : Function.Injective (IntertwiningMap.llcomp (ind H.subtype (trivial k H k)) σ ρ f) := by
+  have : Function.Injective (IntertwiningMap.llcomp (ofMulAction k G (G ⧸ H.1)) σ ρ f) := by
     intro _ _ h_eq
     apply IntertwiningMap.ext
     apply Function.Injective.injective_linearMapComp_left h_inj
@@ -171,9 +171,9 @@ lemma IsIrreducible.finiteDimensional_intertwiningMap_self :
   let H := ρ.stabilizer v
   have : FiniteDimensional k (HeckeModule₁ H ρ) :=
     (isAdmissible_iff' ρ).mp inferInstance ⟨H, IsSmooth.smooth v⟩
-  let f := HeckeModule₁.invariantsMk H (ρ := ρ) ⟨v, (fun h ↦ by simp [mem_stabilizer.mp h.2])⟩
+  let f := HeckeModule₁.invariantsEquiv H (ρ := ρ) ⟨v, (fun h ↦ by simp [mem_stabilizer.mp h.2])⟩
   have hf : f ≠ 0 := by
-    have hfeq : f (cosetVectorMk k 1 H) = v := by
+    have hfeq : f (cosetVector k (1 : G)) = v := by
       simp [f]
     by_contra
     have : v = 0 := by

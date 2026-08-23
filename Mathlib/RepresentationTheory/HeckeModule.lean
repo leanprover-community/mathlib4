@@ -54,7 +54,7 @@ abbrev cosetVector (x : G ⧸ H) : k[G ⧸ H] := .single x 1
 
 @[simp]
 lemma cosetVector_mem_eq (h : H) :
-    cosetVector k h = cosetVector k ((1 : G) : G⧸ H) := by
+    cosetVector k h = cosetVector k ((1 : G) : G ⧸ H) := by
   congr 1
   simp [QuotientGroup.eq]
 
@@ -93,7 +93,7 @@ def HeckeModule₁.invariantsEquiv :
   right_inv _ := by ext; simp [basis_constr_apply_cosetVector]
 
 @[simp]
-lemma HeckeModule₁.invariantsEquiv_apply_apply (g : G) (v : invariants (ρ.comp H.subtype)) :
+lemma HeckeModule₁.invariantsEquiv_apply (g : G) (v : invariants (ρ.comp H.subtype)) :
     invariantsEquiv H ρ v (cosetVector k (g : G)) = ρ g v := by
   simp [invariantsEquiv, basis_constr_apply_cosetVector]
 
