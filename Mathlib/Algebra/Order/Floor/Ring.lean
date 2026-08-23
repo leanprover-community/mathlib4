@@ -118,9 +118,6 @@ variable [Ring R] [LinearOrder R] [FloorRing R] {z : ℤ} {a b : R}
 
 section floor
 
-@[deprecated floor_lt (since := "2025-12-26")]
-theorem floor_le_sub_one_iff : ⌊a⌋ ≤ z - 1 ↔ a < z := by rw [← floor_lt, le_sub_one_iff]
-
 @[simp]
 theorem floor_le_neg_one_iff : ⌊a⌋ ≤ -1 ↔ a < 0 := by
   simpa using floor_le_iff (z := -1)
@@ -256,7 +253,7 @@ theorem floor_lt_self_iff {a : R} : ⌊a⌋ < a ↔ a ∉ range Int.cast :=
   (floor_le a).lt_iff_ne.trans <| (floor_eq_self_iff_mem _).not
 
 section LinearOrderedRing
-variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a b : R}
+variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a : R}
 
 theorem mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : R) : ⌊a * n⌋ / n = ⌊a⌋ := by
   refine eq_of_forall_le_iff fun m ↦ ?_
@@ -285,7 +282,7 @@ theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊n * a
 end LinearOrderedRing
 
 section LinearOrderedField
-variable {k : Type*} [Field k] [LinearOrder k] [IsOrderedRing k] [FloorRing k] {a b : k}
+variable {k : Type*} [Field k] [LinearOrder k] [IsOrderedRing k] [FloorRing k] {a : k}
 
 theorem floor_div_cast_of_nonneg {n : ℤ} (hn : 0 ≤ n) (a : k) : ⌊a / n⌋ = ⌊a⌋ / n := by
   obtain rfl | hn := hn.eq_or_lt
@@ -577,9 +574,6 @@ end fract
 /-! #### Ceil -/
 
 section ceil
-
-@[deprecated lt_ceil (since := "2025-12-26")]
-theorem add_one_le_ceil_iff : z + 1 ≤ ⌈a⌉ ↔ (z : R) < a := by rw [← lt_ceil, add_one_le_iff]
 
 @[simp]
 theorem one_le_ceil_iff : 1 ≤ ⌈a⌉ ↔ 0 < a := by
@@ -916,3 +910,17 @@ theorem subsingleton_floorRing {R} [Ring R] [LinearOrder R] : Subsingleton (Floo
     funext fun a => (H₁.gc_coe_floor.u_unique H₂.gc_coe_floor) fun _ => rfl
   have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil_coe.l_unique H₂.gc_ceil_coe) fun _ => rfl
   cases H₁; cases H₂; congr
+
+namespace Mathlib.Meta.Positivity
+
+open Lean.Meta Qq
+
+/-- Extension for the `positivity` tactic: `Int.fract` is always nonnegative. -/
+@[positivity Int.fract _]
+meta def evalIntFract : PositivityExt where eval {_u} (_α _zα pα?) e :=
+  match pα? with | none => pure .none | some pα' => do
+  let ~q(@Int.fract _ (_) (_) (_) $a) := e | throwError "not Int.fract"
+  let pa' ← mkAppM ``Int.fract_nonneg #[a]
+  pure (.nonnegative (pα := pα') pa')
+
+end Mathlib.Meta.Positivity

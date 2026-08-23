@@ -29,12 +29,12 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Topology Interval Filter ENNReal MeasureTheory
 
-variable {α β ε ε' E F : Type*} {mα : MeasurableSpace α}
+variable {α β ε ε' E : Type*} {mα : MeasurableSpace α}
 
 section
 
 variable [TopologicalSpace β] [ENorm ε] [TopologicalSpace ε]
-  {l l' : Filter α} {f g : α → β} {μ ν : Measure α}
+  {l l' : Filter α} {f : α → β} {μ : Measure α}
 
 /-- A function `f` is strongly measurable at a filter `l` w.r.t. a measure `μ` if it is
 ae strongly measurable w.r.t. `μ.restrict s` for some `s ∈ l`. -/
@@ -470,7 +470,7 @@ theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥
   refine memLp_one_iff_integrable.mp ?_
   have hμ_restrict_univ : (μ.restrict s) Set.univ < ∞ := by
     simpa only [Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply, lt_top_iff_ne_top]
-  haveI hμ_finite : IsFiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩
+  have hμ_finite : IsFiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩
   exact ((Lp.memLp _).restrict s).mono_exponent hp
 
 theorem Integrable.lintegral_lt_top {f : α → ℝ} (hf : Integrable f μ) :
@@ -482,6 +482,33 @@ theorem Integrable.lintegral_lt_top {f : α → ℝ} (hf : Integrable f μ) :
 theorem IntegrableOn.setLIntegral_lt_top {f : α → ℝ} {s : Set α} (hf : IntegrableOn f s μ) :
     (∫⁻ x in s, ENNReal.ofReal (f x) ∂μ) < ∞ :=
   Integrable.lintegral_lt_top hf
+
+section RCLike
+
+variable {𝕜 : Type*} [RCLike 𝕜]
+
+theorem IntegrableOn.iff_ofReal {f : α → ℝ} :
+    IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : 𝕜)) s μ :=
+  Integrable.iff_ofReal
+
+theorem IntegrableOn.ofReal {f : α → ℝ} (hf : IntegrableOn f s μ) :
+    IntegrableOn (fun x ↦ (f x : 𝕜)) s μ :=
+  Integrable.ofReal hf
+
+theorem IntegrableOn.re_im_iff {f : α → 𝕜} :
+    IntegrableOn (fun x ↦ RCLike.re (f x)) s μ ∧
+      IntegrableOn (fun x ↦ RCLike.im (f x)) s μ ↔ IntegrableOn f s μ :=
+  Integrable.re_im_iff
+
+theorem IntegrableOn.re {f : α → 𝕜} (hf : IntegrableOn f s μ) :
+    IntegrableOn (fun x ↦ RCLike.re (f x)) s μ :=
+  Integrable.re hf
+
+theorem IntegrableOn.im {f : α → 𝕜} (hf : IntegrableOn f s μ) :
+    IntegrableOn (fun x ↦ RCLike.im (f x)) s μ :=
+  Integrable.im hf
+
+end RCLike
 
 theorem _root_.ContinuousLinearMap.integrableOn_comp {E H 𝕜 𝕜' : Type*}
     [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
@@ -749,7 +776,7 @@ theorem ContinuousOn.aestronglyMeasurable_of_isSeparable [TopologicalSpace α]
     [PseudoMetrizableSpace β] {f : α → β} {s : Set α} {μ : Measure α} (hf : ContinuousOn f s)
     (hs : MeasurableSet s) (h's : TopologicalSpace.IsSeparable s) :
     AEStronglyMeasurable f (μ.restrict s) := by
-  letI := pseudoMetrizableSpacePseudoMetric α
+  let := pseudoMetrizableSpacePseudoMetric α
   borelize β
   rw [aestronglyMeasurable_iff_aemeasurable_separable]
   refine ⟨hf.aemeasurable hs, f '' s, hf.isSeparable_image h's, ?_⟩
@@ -768,7 +795,7 @@ theorem ContinuousOn.aestronglyMeasurable [TopologicalSpace α] [TopologicalSpac
         mem_of_superset (self_mem_ae_restrict hs) (subset_preimage_image _ _)⟩
   cases h.out
   · rw [image_eq_range]
-    exact isSeparable_range <| continuousOn_iff_continuous_restrict.1 hf
+    exact isSeparable_range <| continuousOn_iff_continuous_domRestrict.1 hf
   · exact .of_separableSpace _
 
 /-- A function which is continuous on a compact set `s` is almost everywhere strongly measurable
@@ -850,7 +877,7 @@ theorem ContinuousOn.stronglyMeasurableAtFilter_nhdsWithin {α β : Type*} [Meas
 /-! ### Lemmas about adding and removing interval boundaries
 
 The primed lemmas take explicit arguments about the measure being finite at the endpoint, while
-the unprimed ones use `[NoAtoms μ]`.
+the unprimed ones use `[NullSingletonClass μ]`.
 -/
 
 
@@ -908,7 +935,7 @@ theorem integrableOn_Iic_iff_integrableOn_Iio'
     IntegrableOn f (Iic b) μ ↔ IntegrableOn f (Iio b) μ := by
   rw [← Iio_union_right, integrableOn_union, eq_true (integrableOn_singleton hb'), and_true]
 
-variable [NoAtoms μ]
+variable [NullSingletonClass μ]
 
 theorem integrableOn_Icc_iff_integrableOn_Ioc (ha : ‖f a‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ioc a b) μ :=
