@@ -116,26 +116,25 @@ greatest prime factors. -/
 lemma maxPrimeFac_mul {m n : ℕ} (hm : m ≠ 0) (hn : n ≠ 0) :
     maxPrimeFac (m * n) = max (maxPrimeFac m) (maxPrimeFac n) := by
   obtain rfl | hm_lt : m = 1 ∨ 1 < m := by lia
-  · have hle : 1 ≤ maxPrimeFac n := by
+  · have hle : 1 ≤ n.maxPrimeFac := by
       obtain rfl | hn_lt : n = 1 ∨ 1 < n := by lia
       · simp
       · exact (prime_maxPrimeFac_of_one_lt n hn_lt).one_lt.le
     simp [hle]
   obtain rfl | hn_lt : n = 1 ∨ 1 < n := by lia
-  · have hle : 1 ≤ maxPrimeFac m := (prime_maxPrimeFac_of_one_lt m hm_lt).one_lt.le
+  · have hle : 1 ≤ m.maxPrimeFac := (prime_maxPrimeFac_of_one_lt m hm_lt).one_lt.le
     simp [hle]
-  have hmn_lt : 1 < m * n := Nat.one_lt_mul_iff.mpr
-    ⟨zero_lt_of_lt hm_lt, zero_lt_of_lt hn_lt, Or.inl hm_lt⟩
+  have hmn_lt : 1 < m * n := lt_of_lt_of_le hm_lt (Nat.le_mul_of_pos_right m (by lia))
   apply le_antisymm
-  · have hp : Prime (maxPrimeFac (m * n)) := prime_maxPrimeFac_of_one_lt (m * n) hmn_lt
+  · have hp : Prime (m * n).maxPrimeFac := prime_maxPrimeFac_of_one_lt (m * n) hmn_lt
     rcases hp.dvd_mul.mp maxPrimeFac_dvd with hpm | hpn
     · exact (le_maxPrimeFac hm hp hpm).trans (le_max_left _ _)
     · exact (le_maxPrimeFac hn hp hpn).trans (le_max_right _ _)
   · apply max_le
-    · have hp : Prime (maxPrimeFac m) := prime_maxPrimeFac_of_one_lt m hm_lt
+    · have hp : Prime m.maxPrimeFac := prime_maxPrimeFac_of_one_lt m hm_lt
       apply le_maxPrimeFac (mul_ne_zero hm hn) hp
       exact dvd_mul_of_dvd_left maxPrimeFac_dvd n
-    · have hp : Prime (maxPrimeFac n) := prime_maxPrimeFac_of_one_lt n hn_lt
+    · have hp : Prime n.maxPrimeFac := prime_maxPrimeFac_of_one_lt n hn_lt
       apply le_maxPrimeFac (mul_ne_zero hm hn) hp
       exact dvd_mul_of_dvd_right maxPrimeFac_dvd m
 
@@ -177,11 +176,9 @@ lemma maxPrimeFac_eq_sSup {n : ℕ} (hn_one : n ≠ 1) :
   · exact ((isLUB_maxPrimeFac hn).csSup_eq ⟨_, (isGreatest_maxPrimeFac hn).1⟩).symm
 
 @[simp]
-lemma one_lt_maxPrimeFac_iff (n : ℕ) : 1 < maxPrimeFac n ↔ 1 < n := by
-  rcases lt_trichotomy n 1 with hn | rfl | hn
-  · simp only [lt_one_iff] at hn
-    simp [hn]
-  · simp
-  · simpa [hn] using (prime_maxPrimeFac_of_one_lt n hn).one_lt
+lemma one_lt_maxPrimeFac_iff : ∀ {n : ℕ}, 1 < maxPrimeFac n ↔ 1 < n
+  | 0 => by simp
+  | 1 => by simp
+  | n + 2 => by simpa using (prime_maxPrimeFac_of_one_lt (n + 2) <| by lia).one_lt
 
 end Nat
