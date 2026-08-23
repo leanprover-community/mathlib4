@@ -189,7 +189,8 @@ instance : IsClosedUnderIsomorphisms (isHomotopyInvariant.{u} C c) where
     simp only [← cancel_epi ((e.hom.homₚ _).app _), ← NatTrans.naturality,
       map_eq_of_homotopy _ F _]⟩
 
-/-- The `MorphismProperty` on a morphism in `TopPair` required for the morphism to be an isomorphism by excision. -/
+/-- The `MorphismProperty` on a morphism in `TopPair` required for the morphism to be an isomorphism
+by excision. -/
 def excisionCondition : MorphismProperty TopPair.{u} := fun V X g ↦
   Topology.IsEmbedding (Hom.fst g) ∧
   Set.range (Hom.fst g ∘ V.map) = Set.range (Hom.fst g) ∩ Set.range X.map ∧
