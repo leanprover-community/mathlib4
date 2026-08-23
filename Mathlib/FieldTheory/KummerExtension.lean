@@ -105,6 +105,14 @@ theorem X_pow_mul_sub_C_irreducible
     Irreducible (X ^ (n * m) - C a) := by
   simpa [pow_mul] using irreducible_comp hm (by simpa using hn)
 
+theorem norm_root_X_pow_sub_C {n : ℕ} {a : K} (hn : n ≠ 0) :
+    Algebra.norm K (root (X ^ n - C a)) = (-1) ^ n * -a := by
+  rw [← AdjoinRoot.powerBasis_gen (X_pow_sub_C_ne_zero (Nat.pos_of_ne_zero hn) a),
+    Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly, AdjoinRoot.powerBasis_dim,
+    minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a hn),
+    natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow,
+    ite_eq_right hn.symm, zero_sub]
+
 theorem X_pow_two_pow_sub_C_irreducible_of_isSquare_neg_one
     (n : ℕ) {a : K} (hi : IsSquare (-1 : K)) (ha : ∀ b : K, b ^ 2 ≠ a) :
     Irreducible (X ^ 2 ^ n - C a) := by
@@ -118,13 +126,9 @@ theorem X_pow_two_pow_sub_C_irreducible_of_isSquare_neg_one
     apply X_pow_sub_C_irreducible_of_prime Nat.prime_two
     intro b hb
     apply ha (i ^ (2 ^ k + 1) * Algebra.norm K b)
-    rw [mul_pow, ← map_pow, hb, ← AdjoinRoot.powerBasis_gen ih.ne_zero,
-      Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly, AdjoinRoot.powerBasis_dim,
-      minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a (Nat.two_pow_pos _).ne'),
-      natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow,
-      ite_eq_right (Nat.two_pow_pos _).ne, zero_sub, pow_right_comm, pow_two, ← hi,
-      pow_succ', neg_one_mul, neg_mul, ← mul_assoc, mul_neg, neg_neg, ← pow_two,
-      pow_right_comm, neg_one_sq, one_pow, one_mul]
+    rw [mul_pow, ← map_pow, hb, norm_root_X_pow_sub_C (Nat.two_pow_pos k).ne',
+      pow_right_comm, pow_two, ← hi, pow_succ, mul_neg_one, neg_mul,
+      ← mul_assoc, mul_neg, neg_neg, ← pow_two, pow_right_comm, neg_one_sq, one_pow, one_mul]
 
 theorem X_pow_two_pow_sub_C_irreducible
     (n : ℕ) {a : K} (ha : ∀ b : K, b ^ 2 ≠ a) (h4 : ∀ b : K, -4 * b ^ 4 ≠ a) :
@@ -148,17 +152,12 @@ theorem X_pow_two_pow_sub_C_irreducible
       rw [pow_succ]
       apply X_pow_mul_sub_C_irreducible irred
       have := Fact.mk irred
-      have hbb : Algebra.norm K b ^ 2 = -a := by
-        rw [← map_pow, hb, ← AdjoinRoot.powerBasis_gen ih.ne_zero,
-          Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly, AdjoinRoot.powerBasis_dim,
-          minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a (Nat.two_pow_pos _).ne'),
-          natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow,
-          ite_eq_right (Nat.two_pow_pos _).ne, zero_sub, pow_succ', pow_mul,
-          neg_one_sq, one_pow, one_mul]
       apply X_pow_two_pow_sub_C_irreducible_of_isSquare_neg_one
       · refine ⟨of _ (Algebra.norm K b) / root (X ^ 2 - C a), ?_⟩
-        rw [← pow_two, div_pow, ← map_pow, hbb, root_X_pow_sub_C_pow,
-          map_neg, neg_div, ← map_div₀, div_self (by simpa using (ha 0).symm), map_one]
+        rw [← pow_two, div_pow, ← map_pow, ← map_pow, hb,
+          norm_root_X_pow_sub_C (Nat.two_pow_pos _).ne', Nat.pow_add_one, pow_mul',
+          neg_one_sq, one_pow, one_mul, root_X_pow_sub_C_pow, map_neg, neg_div,
+          ← map_div₀, div_self (by simpa using (ha 0).symm), map_one]
       intro c hc
       let bas : Module.Basis (Fin 2) K (AdjoinRoot (X ^ 2 - C a)) :=
         (AdjoinRoot.powerBasis (X_pow_sub_C_ne_zero Nat.two_pos a)).basis.reindex
@@ -224,12 +223,9 @@ theorem X_pow_sub_C_irreducible
     apply ha p hp (dvd_mul_right _ _) ((-1) ^ (2 ^ k * m + 1) * Algebra.norm K b)
     have h0 : 2 ^ k * m ≠ 0 := Nat.mul_ne_zero (Nat.two_pow_pos k).ne'
       fun h => Nat.not_odd_zero (h ▸ (Nat.odd_mul.1 hm).2)
-    rw [mul_pow, pow_right_comm, ← map_pow, hb, ← AdjoinRoot.powerBasis_gen irred.ne_zero,
-      Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly, AdjoinRoot.powerBasis_dim,
-      minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a h0),
-      natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow, ite_eq_right h0.symm,
-      zero_sub, (Nat.odd_mul.mp hm).1.neg_pow, one_pow, pow_succ, mul_neg_one, neg_mul,
-      ← mul_assoc, mul_neg, neg_neg, ← pow_two, pow_right_comm, neg_one_sq, one_pow, one_mul]
+    rw [mul_pow, pow_right_comm, (Nat.odd_mul.mp hm).1.neg_pow, one_pow, pow_succ, mul_neg_one,
+      ← map_pow, hb, norm_root_X_pow_sub_C h0, neg_mul, ← mul_assoc, mul_neg, neg_neg, ← pow_two,
+      pow_right_comm, neg_one_sq, one_pow, one_mul]
 
 theorem X_pow_sub_C_irreducible_of_odd
     {n : ℕ} (hn : Odd n) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :
