@@ -37,7 +37,7 @@ section Dense
 
 open Metric
 
-/-- Let `G` be a group with a left-invariant pseudometric. If a subgroup `H` is `ε`-dense for
+/-- Let `G` be a seminormed group. If a subgroup `H` is `ε`-dense for
 some `ε < 1`, that is `infDist g H ≤ ε * ‖g‖` for every `g : G`, then `H` is
 dense. This is [BGR, Prop 1.1.4./2][bosch-guntzer-remmert]. -/
 @[to_additive]
