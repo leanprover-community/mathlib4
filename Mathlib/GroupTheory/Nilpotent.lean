@@ -1036,12 +1036,47 @@ lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass {a : ℕ}
   · intros i j hi hj
     refine (upperCentralSeries.StrictMonoOn G).injOn ?_ ?_ <;> grind
 
+@[to_additive] private def iterComm (H : Subgroup G) (n : ℕ) : Subgroup G := (⁅·, ⊤⁆)^[n] H
+
+@[to_additive] private lemma iterComm_zero (H : Subgroup G) : H.iterComm 0 = H := rfl
+
+@[to_additive] private lemma iterComm_succ_eq (H : Subgroup G) (n : ℕ) :
+    H.iterComm (n + 1) = ⁅H.iterComm n, ⊤⁆ := Function.iterate_succ_apply' ..
+
+@[to_additive] private lemma iterComm_le_of_normal (H : Subgroup G) [hH : H.Normal] (n : ℕ) :
+    H.iterComm n ≤ H := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    exact le_trans (H.iterComm_succ_eq n ▸ commutator_mono ih le_rfl) <| H.commutator_le_left ⊤
+
+@[to_additive] private lemma iterComm_le_lowerCentralSeries_top (H : Subgroup G) (n : ℕ) :
+    H.iterComm n ≤ (⊤ : Subgroup G).lowerCentralSeries n := by
+  induction n with
+  | zero => exact le_top
+  | succ n ih => exact (H.iterComm_succ_eq n) ▸ commutator_mono ih le_rfl
+
+@[to_additive] private lemma exists_iterComm_eq_bot [hG : Group.IsNilpotent G] (H : Subgroup G) :
+    ∃ n, H.iterComm n = ⊥ := ⟨Group.nilpotencyClass G, eq_bot_iff.mpr <|
+  (lowerCentralSeries_nilpotencyClass (G := G)) ▸ H.iterComm_le_lowerCentralSeries_top _⟩
+
 end Subgroup
+
+@[to_additive] theorem Group.IsNilpotent.inf_center_ne_bot_of_normal [Group.IsNilpotent G]
+    {H : Subgroup G} [H.Normal] (hH : H ≠ ⊥) : H ⊓ center G ≠ ⊥ := by
+  classical
+  have : H.iterComm (Nat.find H.exists_iterComm_eq_bot - 1) ≠ ⊥ :=
+    Nat.find_min H.exists_iterComm_eq_bot <| by simpa [H.iterComm_zero] using hH
+  refine ne_bot_of_le_ne_bot this <| le_inf (H.iterComm_le_of_normal _) ?_
+  rw [←commutator_top_right_eq_bot_iff_le_center, ←H.iterComm_succ_eq]
+  convert Nat.find_spec H.exists_iterComm_eq_bot
+  have : 0 < Nat.find H.exists_iterComm_eq_bot := by simpa [H.iterComm_zero]
+  grind
 
 variable (G) in
 @[to_additive]
 theorem Group.IsNilpotent.center_ne_bot [Nontrivial G] [IsNilpotent G] : center G ≠ ⊥ :=
-  .symm <| by simpa using mt (upperCentralSeries.eq_top zero_ne_one) <| by simp
+  top_inf_eq (center G) ▸ inf_center_ne_bot_of_normal top_ne_bot
 
 section Prod
 
@@ -1256,6 +1291,14 @@ theorem Group.isNilpotent_of_finite_tfae :
 
 instance [IsNilpotent G] {p : ℕ} [Fact p.Prime] {P : Sylow p G} : P.Normal :=
   isNilpotent_of_finite_tfae.out 1 4 rfl rfl |>.mp ‹_› p ‹_› P
+
+lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [Fact p.Prime]
+    (hp : p ∣ Nat.card G) : p ∣ Nat.card (center G) := by
+  obtain P : Sylow p G := Classical.arbitrary ..
+  refine dvd_trans ?_ <| (↑P ⊓ center G).card_dvd_of_le inf_le_right
+  have hnt := inf_center_ne_bot_of_normal <| P.ne_bot_of_dvd_card hp
+  have hPGrp : IsPGroup p (P ⊓ center G : Subgroup G) := P.isPGroup'.to_inf_left
+  grind [one_lt_card_iff_ne_bot, hPGrp.card_eq_or_dvd]
 
 end WithFiniteGroup
 
