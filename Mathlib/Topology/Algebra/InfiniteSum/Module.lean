@@ -6,7 +6,7 @@ Authors: Heather Macbeth, Yury Kudryashov, Frédéric Dupuis
 module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-! # Infinite sums in topological vector spaces -/
 
