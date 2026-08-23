@@ -63,7 +63,7 @@ def Obj.mk (a : P.A) (f : P.B a → α) : P α := ⟨a, f⟩
 
 /-- To prove a theorem about `t : P.Obj α` it suffices to
 prove it for `P.Obj.mk a f` for all possible values of `a` and `f`. -/
-@[implicit_reducible, elab_as_elim, induction_eliminator, cases_eliminator, match_pattern]
+@[implicit_reducible, elab_as_elim, induction_eliminator, cases_eliminator]
 def Obj.rec {motive : P α → Sort*} (mk : ∀ a f, motive (.mk a f)) : ∀ t, motive t :=
   fun t => mk t.1 t.2
 
