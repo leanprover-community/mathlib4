@@ -103,8 +103,6 @@ theorem isEmpty_iff : IsEmpty α ↔ α → False :=
 
 namespace IsEmpty
 
-open Function
-
 /-- Eliminate out of a type that `IsEmpty` (using projection notation). -/
 @[elab_as_elim]
 protected def elim (_ : IsEmpty α) {p : α → Sort v} (a : α) : p a :=

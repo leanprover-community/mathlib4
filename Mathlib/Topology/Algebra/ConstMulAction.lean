@@ -180,6 +180,17 @@ theorem isClosed_setOfPred_map_smul {N : Type*} (α β) [SMul M α] [SMul N β]
 
 end SMul
 
+section SMulZeroClass
+
+variable [TopologicalSpace α] [Zero α] [SMulZeroClass M α] [ContinuousConstSMul M α]
+
+protected theorem Filter.Tendsto.const_smul_zero {g : β → α} {l : Filter β}
+    (c : M) (hg : Tendsto g l (𝓝 0)) :
+    Tendsto (fun x ↦ c • g x) l (𝓝 0) :=
+  smul_zero c (A := α) ▸ hg.const_smul c
+
+end SMulZeroClass
+
 section Monoid
 
 variable [TopologicalSpace α]
@@ -231,6 +242,10 @@ theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ 
 @[to_additive (attr := simps!)]
 def Homeomorph.smul (γ : G) : α ≃ₜ α where
   toEquiv := MulAction.toPerm γ
+
+@[to_additive]
+lemma Homeomorph.smul_symm {g : G} : (Homeomorph.smul (α := α) g).symm = Homeomorph.smul g⁻¹ :=
+  Homeomorph.ext_iff.mpr <| smul_symm_apply g
 
 /-- The homeomorphism given by affine-addition by an element of an additive group `Γ` acting on
   `T` is a homeomorphism from `T` to itself. -/
