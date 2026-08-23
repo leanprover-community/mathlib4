@@ -189,14 +189,19 @@ instance : IsClosedUnderIsomorphisms (isHomotopyInvariant.{u} C c) where
     simp only [← cancel_epi ((e.hom.homₚ _).app _), ← NatTrans.naturality,
       map_eq_of_homotopy _ F _]⟩
 
+/-- The `MorphismProperty` on a morphism in `TopPair` required for the morphism to be an isomorphism by excision. -/
+def excisionCondition : MorphismProperty TopPair.{u} := fun V X g ↦
+  Topology.IsEmbedding (Hom.fst g) ∧
+  Set.range (Hom.fst g ∘ V.map) = Set.range (Hom.fst g) ∩ Set.range X.map ∧
+  closure (Set.range (Hom.fst g))ᶜ ⊆ interior (Set.range X.map)
+
 set_option linter.unusedVariables false in
 /-- A `HomologyPretheory` has the excision-isomorphism, if cutting out a sufficiently nice subspace
 `U` from a space `X` yields an isomorphism `Hₚ i X ≅ Hₚ i (X \ U)`. -/
 @[mk_iff]
 class HasExcisionIso where
-  isIso_of_closure_interior_of_isCompl ⦃X U V : TopPair⦄ (f : U ⟶ X) (g : V ⟶ X)
-      (hf : IsEmbedding f) (hg : IsEmbedding g) (hcompl : TopPair.IsCompl f g)
-      (hU : closure (Set.range (Hom.fst f)) ⊆ interior (Set.range X.map)) (i : ι) :
+  isIso_of_closure_interior_of_isCompl ⦃X V : TopPair⦄ (g : V ⟶ X)
+      (h : excisionCondition g) (i : ι) :
       IsIso ((HP.Hₚ i).map g)
 
 export HasExcisionIso (isIso_of_closure_interior_of_isCompl)
@@ -210,9 +215,9 @@ abbrev hasExcisionIso : ObjectProperty (HomologyPretheory.{u} C c) :=
 lemma hasExcisionIso_iff' : hasExcisionIso C c HP ↔ HP.HasExcisionIso := .rfl
 
 instance : IsClosedUnderIsomorphisms (hasExcisionIso.{u} C c) where
-  of_iso e hHP := { isIso_of_closure_interior_of_isCompl _ _ _ _ _ hf hg hcompl hU _ :=
-    (NatIso.isIso_map_iff ((hₚFunctor _).mapIso e) _).mp (hHP.isIso_of_closure_interior_of_isCompl _
-      _ hf hg hcompl hU _) }
+  of_iso e hHP := { isIso_of_closure_interior_of_isCompl _ _ _ h _ :=
+    (NatIso.isIso_map_iff
+      ((hₚFunctor _).mapIso e) _).mp (hHP.isIso_of_closure_interior_of_isCompl _ h _) }
 
 /-- A `HomologyPretheory` is additive if its homology functor preserves coproducts. -/
 class IsAdditive where
