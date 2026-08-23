@@ -11,6 +11,7 @@ public import Mathlib.GroupTheory.Perm.Cycle.Basic
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Positivity
 
+import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Data.Multiset.Fintype
 
 /-!
@@ -27,6 +28,9 @@ when `f g : ι → α` monovary, and the reverse inequality when `f` and `g` ant
 * `MonovaryOn.sum_mul_sum_le_card_mul_sum`: Chebyshev's inequality.
 * `AntivaryOn.card_mul_sum_le_sum_mul_sum`: Chebyshev's inequality, dual version.
 * `sq_sum_le_card_mul_sum_sq`: Special case of Chebyshev's inequality when `f = g`.
+* `Finset.sum_mul_le_sum_mul_of_sum_range_le`, `Finset.sum_mul_le_mul_of_sum_range_le`,
+  `Finset.mul_le_sum_mul_of_le_sum_range`, `Finset.abs_sum_mul_le_mul_of_abs_sum_range_le`:
+  **Abel's inequality** and its one-sided and absolute-value forms.
 
 ## Implementation notes
 
@@ -184,3 +188,77 @@ theorem sum_div_card_sq_le_sum_sq_div_card :
     ← mul_assoc]
   gcongr
   exact sq_sum_le_card_mul_sum_sq
+
+namespace Finset
+
+variable {R : Type*} {f c g : ℕ → R} {M m : R} {n : ℕ}
+
+section IsOrderedRing
+variable [CommRing R] [PartialOrder R] [IsOrderedRing R]
+
+/-- **Abel's inequality** (comparison form): if the partial sums of `f` are dominated by those of
+`c` up to `n`, and `g` is nonnegative and antitone, then the `g`-weighted sum of `f` is dominated by
+that of `c`. -/
+theorem sum_mul_le_sum_mul_of_sum_range_le
+    (hfc : ∀ k ≤ n, ∑ i ∈ range k, f i ≤ ∑ i ∈ range k, c i) (hg₀ : 0 ≤ g) (hg : Antitone g) :
+    ∑ i ∈ range n, f i * g i ≤ ∑ i ∈ range n, c i * g i := by
+  rw [← sub_nonneg, ← sum_sub_distrib]
+  have (k) (hk : k ≤ n) : 0 ≤ ∑ i ∈ range k, (c i - f i) := by simpa [sub_nonneg] using hfc k hk
+  calc
+    _ = g (n - 1) * 0 - 0 := by simp
+    _ ≤ _ := by
+      simp_rw [← sub_mul, mul_comm _ (g _), ← smul_eq_mul, sum_range_by_parts g _ n, smul_eq_mul]
+      gcongr
+      · simpa using hg₀ (n - 1)
+      · grind
+      · grind [sum_nonpos, mul_nonpos_of_nonpos_of_nonneg, sub_nonpos.2 (hg (Nat.le_succ _))]
+
+/-- **Abel's inequality** (one-sided upper form): if every partial sum of `f` up to `n` is at most
+`M`, and `g` is nonnegative and antitone, then `∑ i ∈ range n, f i * g i ≤ M * g 0`. -/
+theorem sum_mul_le_mul_of_sum_range_le
+    (hf : ∀ k ≤ n, ∑ i ∈ range k, f i ≤ M) (hg₀ : 0 ≤ g) (hg : Antitone g) :
+    ∑ i ∈ range n, f i * g i ≤ M * g 0 := by
+  have hM : 0 ≤ M := by simpa using hf 0 n.zero_le
+  refine (sum_mul_le_sum_mul_of_sum_range_le (c := fun i ↦ if i = 0 then M else 0)
+    (fun k hk ↦ ?_) hg₀ hg).trans ?_
+  · rw [sum_ite_eq']
+    split_ifs with h
+    · exact hf k hk
+    · simp only [mem_range, not_lt, Nat.le_zero] at h; subst h; simp
+  · simp_rw [ite_mul, zero_mul]
+    rw [sum_ite_eq']
+    split_ifs with h
+    · simp
+    · exact mul_nonneg hM (hg₀ 0)
+
+/-- **Abel's inequality** (one-sided lower form): if every partial sum of `f` up to `n` is at least
+`m`, and `g` is nonnegative and antitone, then `m * g 0 ≤ ∑ i ∈ range n, f i * g i`. -/
+theorem mul_le_sum_mul_of_le_sum_range
+    (hf : ∀ k ≤ n, m ≤ ∑ i ∈ range k, f i) (hg₀ : 0 ≤ g) (hg : Antitone g) :
+    m * g 0 ≤ ∑ i ∈ range n, f i * g i := by
+  have hm : m ≤ 0 := by simpa using hf 0 n.zero_le
+  refine le_trans ?_ (sum_mul_le_sum_mul_of_sum_range_le (f := fun i ↦ if i = 0 then m else 0)
+    (c := f) (fun k hk ↦ ?_) hg₀ hg)
+  · simp_rw [ite_mul, zero_mul]
+    rw [sum_ite_eq']
+    split_ifs with h
+    · simp
+    · exact mul_nonpos_of_nonpos_of_nonneg hm (hg₀ 0)
+  · rw [sum_ite_eq']
+    split_ifs with h
+    · exact hf k hk
+    · simp only [mem_range, not_lt, Nat.le_zero] at h; subst h; simp
+
+end IsOrderedRing
+
+/-- **Abel's inequality**: if every partial sum of `f` up to `n` has absolute value at most `M`, and
+`g` is nonnegative and antitone, then `|∑ i ∈ range n, f i * g i| ≤ M * g 0`. -/
+theorem abs_sum_mul_le_mul_of_abs_sum_range_le [CommRing R] [LinearOrder R] [IsOrderedRing R]
+    (hf : ∀ k ≤ n, |∑ i ∈ range k, f i| ≤ M) (hg₀ : 0 ≤ g) (hg : Antitone g) :
+    |∑ i ∈ range n, f i * g i| ≤ M * g 0 := by
+  rw [abs_le]
+  refine ⟨?_, sum_mul_le_mul_of_sum_range_le (fun k hk ↦ (abs_le.1 (hf k hk)).2) hg₀ hg⟩
+  have := mul_le_sum_mul_of_le_sum_range (m := -M) (fun k hk ↦ (abs_le.1 (hf k hk)).1) hg₀ hg
+  rwa [neg_mul] at this
+
+end Finset
