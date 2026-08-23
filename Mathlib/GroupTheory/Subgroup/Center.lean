@@ -125,13 +125,12 @@ protected theorem center_pi {η : Type*} {G : η → Type*} [Π i, Group (G i)] 
 section Normalizer
 
 @[to_additive]
-instance instNormalCenter : (center G).Normal :=
-  ⟨fun a ha b ↦ by simpa [mem_center_iff.mp ha b]⟩
-
-@[to_additive]
 lemma normal_of_le_center {G : Type*} [Group G] {H : Subgroup G}
     (hH : H ≤ Subgroup.center G) : H.Normal :=
-  ⟨fun a ha b => by simpa [mem_center_iff.mp (hH ha) b]⟩
+  ⟨fun a ha b ↦ by simpa [mem_center_iff.mp (hH ha) b]⟩
+
+@[to_additive]
+instance instNormalCenter : (center G).Normal := (center G).normal_of_le_center le_rfl
 
 @[to_additive]
 theorem center_le_normalizer (s : Set G) : center G ≤ normalizer s := by
