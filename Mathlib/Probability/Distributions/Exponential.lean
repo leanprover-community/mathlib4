@@ -356,9 +356,7 @@ lemma measure_Ioi_expMeasure (hr : 0 < r) {x : ℝ} (hx : 0 ≤ x) :
 
 /-- The memoryless property of the exponential distribution: `P(X > s + t | X > s) = P(X > t)`. -/
 lemma memoryless_expMeasure (hr : 0 < r) {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) :
-    (expMeasure r) {x | x > s + t} * ((expMeasure r) {x | x > s})⁻¹ =
-      (expMeasure r) {x | x > t} := by
-  change (expMeasure r) (Ioi (s + t)) * ((expMeasure r) (Ioi s))⁻¹ = (expMeasure r) (Ioi t)
+    expMeasure r (Ioi (s + t)) * (expMeasure r (Ioi s))⁻¹ = expMeasure r (Ioi t) := by
   rw [measure_Ioi_expMeasure hr (add_nonneg hs ht),
     measure_Ioi_expMeasure hr hs,
     measure_Ioi_expMeasure hr ht,
