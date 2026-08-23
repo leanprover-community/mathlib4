@@ -84,3 +84,75 @@ lemma genLTOne₀_isGreatest : IsGreatest {x : Γ | x ∈ s ∧ x < 1} s.genLTOn
     _ = s.genLTOne₀ := zpow_one _
 
 end SubgroupWithZero
+
+section WithZeroMulInt
+
+open scoped WithZero
+
+variable {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] {g : G₀}
+
+/-- A nonzero element `g` of a group with zero induces `ℤᵐ⁰ →*₀ G₀`, sending `WithZero.exp k` to
+`g ^ k`. This is the `WithZero`-free way of naming the powers of `g`: no `WithZero G₀ˣ` appears. -/
+noncomputable def zpowersHom₀ (hg : g ≠ 0) : ℤᵐ⁰ →*₀ G₀ :=
+  WithZero.lift' ((Units.coeHom G₀).comp (zpowersHom G₀ˣ (Units.mk0 g hg)))
+
+@[simp]
+lemma zpowersHom₀_exp (hg : g ≠ 0) (k : ℤ) : zpowersHom₀ hg (WithZero.exp k) = g ^ k := by
+  simp [zpowersHom₀, WithZero.exp, WithZero.lift']
+
+@[simp]
+lemma zpowersHom₀_zero (hg : g ≠ 0) : zpowersHom₀ hg 0 = 0 := map_zero _
+
+lemma zpowersHom₀_strictMono (hg₀ : 0 < g) (hg₁ : g < 1) :
+    StrictMono (zpowersHom₀ (g := g⁻¹) (inv_ne_zero hg₀.ne')) := by
+  intro x y hxy
+  induction x using WithZero.expRecOn with
+  | zero =>
+    induction y using WithZero.expRecOn with
+    | zero => exact absurd hxy (lt_irrefl _)
+    | exp l =>
+      rw [zpowersHom₀_zero, zpowersHom₀_exp]
+      exact zero_lt_iff.2 (zpow_ne_zero _ (inv_ne_zero hg₀.ne'))
+  | exp k =>
+    induction y using WithZero.expRecOn with
+    | zero => exact absurd hxy (by simp)
+    | exp l =>
+      rw [zpowersHom₀_exp, zpowersHom₀_exp, inv_zpow, inv_zpow, inv_lt_inv₀
+        (zero_lt_iff.2 (zpow_ne_zero _ hg₀.ne')) (zero_lt_iff.2 (zpow_ne_zero _ hg₀.ne'))]
+      exact zpow_lt_zpow_right_of_lt_one₀ hg₀ hg₁ (by simpa using hxy)
+
+lemma zpowersHom₀_surjective (hg₀ : 0 < g) (hgen : SubgroupWithZero.zpowers₀ g = ⊤) :
+    Function.Surjective (zpowersHom₀ (g := g⁻¹) (inv_ne_zero hg₀.ne')) := by
+  intro x
+  rcases (SubgroupWithZero.mem_zpowers₀_iff (g := g) (x := x)).1
+    (hgen ▸ SubgroupWithZero.mem_top x) with rfl | ⟨n, rfl⟩
+  · exact ⟨0, by simp⟩
+  · exact ⟨WithZero.exp (-n), by simp⟩
+
+/-- If `g` generates `G₀` and `0 < g < 1`, then `ℤᵐ⁰` is order-isomorphic to `G₀`, sending
+`WithZero.exp k` to `g ^ (-k)`. The construction never mentions `WithZero G₀ˣ`. -/
+noncomputable def withZeroMulIntOrderIso (hg₀ : 0 < g) (hg₁ : g < 1)
+    (hgen : SubgroupWithZero.zpowers₀ g = ⊤) : ℤᵐ⁰ ≃*o G₀ where
+  __ := MulEquiv.ofBijective (zpowersHom₀ (g := g⁻¹) (inv_ne_zero hg₀.ne')).toMonoidHom
+    ⟨(zpowersHom₀_strictMono hg₀ hg₁).injective, zpowersHom₀_surjective hg₀ hgen⟩
+  map_le_map_iff' := (zpowersHom₀_strictMono hg₀ hg₁).le_iff_le
+
+@[simp]
+lemma withZeroMulIntOrderIso_exp (hg₀ : 0 < g) (hg₁ : g < 1)
+    (hgen : SubgroupWithZero.zpowers₀ g = ⊤) (k : ℤ) :
+    withZeroMulIntOrderIso hg₀ hg₁ hgen (WithZero.exp k) = g ^ (-k) := by
+  change zpowersHom₀ (g := g⁻¹) (inv_ne_zero hg₀.ne') (WithZero.exp k) = g ^ (-k)
+  rw [zpowersHom₀_exp, inv_zpow, ← zpow_neg]
+
+/-- The order isomorphism `G₀ ≃*o ℤᵐ⁰` attached to a generator `g` with `0 < g < 1`. -/
+noncomputable def orderIsoWithZeroMulInt (hg₀ : 0 < g) (hg₁ : g < 1)
+    (hgen : SubgroupWithZero.zpowers₀ g = ⊤) : G₀ ≃*o ℤᵐ⁰ :=
+  (withZeroMulIntOrderIso hg₀ hg₁ hgen).symm
+
+/-- Not a `simp` lemma: `map_zpow₀` puts the left-hand side out of simp-normal form. -/
+lemma orderIsoWithZeroMulInt_zpow (hg₀ : 0 < g) (hg₁ : g < 1)
+    (hgen : SubgroupWithZero.zpowers₀ g = ⊤) (k : ℤ) :
+    orderIsoWithZeroMulInt hg₀ hg₁ hgen (g ^ k) = WithZero.exp (-k) := by
+  rw [orderIsoWithZeroMulInt, OrderMonoidIso.symm_apply_eq, withZeroMulIntOrderIso_exp, neg_neg]
+
+end WithZeroMulInt

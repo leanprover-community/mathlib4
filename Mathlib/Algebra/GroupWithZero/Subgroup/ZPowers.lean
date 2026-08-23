@@ -106,4 +106,15 @@ lemma coe_zpowers₀ (g : G₀) :
   ext x
   simp [mem_zpowers₀_iff, eq_comm]
 
+/-- If `x : s` generates `s` in the ambient group, its powers exhaust `s`. -/
+lemma zpowers₀_coe_eq_top {s : SubgroupWithZero G₀} (x : s) (h : zpowers₀ (x : G₀) = s) :
+    zpowers₀ x = ⊤ := by
+  ext y
+  simp only [mem_top, iff_true]
+  have hy : (y : G₀) ∈ zpowers₀ (x : G₀) := by rw [h]; exact y.2
+  rw [mem_zpowers₀_iff] at hy ⊢
+  rcases hy with hy | ⟨n, hn⟩
+  · exact .inl (Subtype.ext (by simpa using hy))
+  · exact .inr ⟨n, Subtype.ext hn⟩
+
 end SubgroupWithZero

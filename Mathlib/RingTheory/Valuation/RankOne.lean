@@ -176,27 +176,19 @@ def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
 /-- If a valuation has rank at most one and is non trivial,
 then it has rank one -/
 @[instance_reducible]
-def rankOne_of_nontrivial (H : Nontrivial (valueGroup₀ (.ofClass v))ˣ) : RankOne v where
+def rankOne_of_nontrivial (H : Nontrivial (valueGroup (.ofClass v))) : RankOne v where
   exists_val_nontrivial := by
     by_contra! H'
     rw [nontrivial_iff_exists_ne 1] at H
     obtain ⟨x, hx⟩ := H
-    obtain ⟨k, hk⟩ := rangeRestrict_surjective _ x.val
-    have h0 : v k ≠ 0 := by
-      apply_fun Subtype.val at hk
-      simp only [coe_rangeRestrict, MonoidWithZeroHom.coe_ofClass] at hk
-      simp [hk]
-    have h1 : v k ≠ 1 := by
-      apply_fun Subtype.val at hk
-      simp only [coe_rangeRestrict, MonoidWithZeroHom.coe_ofClass] at hk
-      apply_fun Units.val at hx using
-          Units.val_injective (α := (MonoidWithZeroHom.ofClass v).valueGroup₀)
-      intro h
-      exact hx (Subtype.ext (by simp [← hk, h]))
+    obtain ⟨k, hk⟩ := rangeRestrict_surjective (.ofClass v) ⟨((x : Γ₀ˣ) : Γ₀), x.2⟩
+    have hvk : v k = ((x : Γ₀ˣ) : Γ₀) := congrArg Subtype.val hk
+    have h0 : v k ≠ 0 := by rw [hvk]; exact (x : Γ₀ˣ).ne_zero
+    have h1 : v k ≠ 1 := fun h ↦ hx (Subtype.ext (Units.ext (hvk ▸ h)))
     exact h1 (H' k h0)
 
 theorem exists_val_lt {K : Type*} [DivisionRing K] (v : Valuation K Γ₀) [RankLeOne v] :
-    Subsingleton ((valueGroup₀ (.ofClass v))ˣ) ∨
+    Subsingleton (valueGroup (.ofClass v)) ∨
       ∀ {γ : ℝ≥0} (_ : γ ≠ 0), ∃ (x : K), x ≠ 0 ∧ (RankLeOne.hom' v) (v.restrict x) < γ := by
   simp only [ne_eq, or_iff_not_imp_left, not_subsingleton_iff_nontrivial]
   exact fun H ↦ (rankOne_of_nontrivial v H).exists_val_lt

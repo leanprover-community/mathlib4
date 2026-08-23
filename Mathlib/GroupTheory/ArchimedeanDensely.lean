@@ -545,6 +545,23 @@ instance : LocallyFiniteOrder (Multiplicative X) :=
 instance : LocallyFiniteOrder (Additive X) :=
   OrderIso.locallyFiniteOrder (⟨Additive.toMul, by simp⟩ : Additive X ≃o X)
 
+/-- A nontrivial cyclic linearly ordered commutative group is locally finite: it is
+order-isomorphic to `Multiplicative ℤ`. -/
+-- See note [reducible non-instances]
+noncomputable abbrev LinearOrderedCommGroup.locallyFiniteOrderOfIsCyclic {G : Type*}
+    [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] [IsCyclic G] :
+    LocallyFiniteOrder G :=
+  LocallyFiniteOrder.ofOrderIsoClass
+    (LinearOrderedCommGroup.isCyclic_iff_nonempty_equiv_int.1 ‹_›).some
+
+/-- If the units of a linearly ordered group with zero are cyclic and nontrivial — that is, if it
+is cyclic with zero — then those units are locally finite. -/
+-- See note [reducible non-instances]
+noncomputable abbrev LinearOrderedCommGroupWithZero.locallyFiniteOrderUnitsOfIsCyclic
+    {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] [IsCyclic G₀ˣ] :
+    LocallyFiniteOrder G₀ˣ :=
+  LinearOrderedCommGroup.locallyFiniteOrderOfIsCyclic
+
 noncomputable
 instance [Monoid X] : LocallyFiniteOrder (Units X) :=
   OrderEmbedding.locallyFiniteOrder (⟨⟨Units.val, Units.val_injective⟩, by simp⟩ : Units X ↪o X)

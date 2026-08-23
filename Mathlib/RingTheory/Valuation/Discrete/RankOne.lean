@@ -37,47 +37,29 @@ section LinearOrderedCommGroupWithZero
 
 variable (v : Valuation R Γ) [hv : v.IsRankOneDiscrete]
 
-/-- The value group with zero, as `WithZero` of its group of units.
+lemma generator₀_pos : 0 < hv.generator₀ :=
+  Subtype.coe_lt_coe.1 (by simp [coe_generator₀, zero_lt_iff, (generator v).ne_zero])
 
-Since `valueGroup₀` is now a `SetLike` subobject of `Γ` rather than a `WithZero`, this is the
-bridge that lets the `WithZero`-shaped constructions below still apply. -/
-noncomputable def valueGroup₀OrderIsoWithZeroUnits :
-    valueGroup₀ (.ofClass v) ≃*o WithZero ↥(valueGroup (.ofClass v)) :=
-  OrderMonoidIso.withZeroUnits.symm.trans
-    (SubgroupWithZero.unitsOrderMonoidIso (valueGroup₀ (.ofClass v))).withZero
+lemma generator₀_lt_one : hv.generator₀ < 1 := by
+  rw [← Subtype.coe_lt_coe]
+  simpa [coe_generator₀, ← Units.val_lt_val] using hv.generator_lt_one
 
-omit hv in
-@[simp]
-lemma valueGroup₀OrderIsoWithZeroUnits_symm_coe (u : ↥(valueGroup (.ofClass v))) :
-    (valueGroup₀OrderIsoWithZeroUnits v).symm (u : WithZero ↥(valueGroup (.ofClass v))) =
-      ⟨((u : Γˣ) : Γ), u.2⟩ := rfl
+lemma generator₀_zpowers₀_eq_top :
+    SubgroupWithZero.zpowers₀ hv.generator₀ = ⊤ :=
+  SubgroupWithZero.zpowers₀_coe_eq_top _ (by
+    rw [coe_generator₀]; exact generator_zpowers₀_eq_valueGroup₀ v)
 
 /-- An order-preserving isomorphism between the `valueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
 TODO: rename this into lowerCamelCase. -/
-@[simps!]
 noncomputable def valueGroup₀_equiv_withZeroMulInt : valueGroup₀ (.ofClass v) ≃*o ℤᵐ⁰ :=
-  (valueGroup₀OrderIsoWithZeroUnits v).trans <| {
-  __ := MulEquiv.withZero (intEquivOfZPowersEqTop _
-    (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)).symm
-  map_le_map_iff' {x y} := by
-    rw [(WithZero.map'_strictMono (MulEquiv.strictMono_symm (mulintEquivOfZPowersEqTop_strictMono
-    (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)
-    (Left.one_lt_inv_iff.mpr hv.generator'_lt_one)))).le_iff_le] }
+  orderIsoWithZeroMulInt (generator₀_pos v) (generator₀_lt_one v) (generator₀_zpowers₀_eq_top v)
 
 lemma valueGroup₀_equiv_withZeroMulInt_apply_zero :
-    valueGroup₀_equiv_withZeroMulInt v 0 = 0 := by simp
+    valueGroup₀_equiv_withZeroMulInt v 0 = 0 := map_zero _
 
 lemma valueGroup₀_equiv_withZeroMulInt_apply_zpow (k : ℤ) :
-    valueGroup₀_equiv_withZeroMulInt v (hv.generator₀ ^ k) = WithZero.exp (- k) := by
-  have key : valueGroup₀OrderIsoWithZeroUnits v hv.generator₀ =
-      (hv.generator' : WithZero ↥(valueGroup (.ofClass v))) := by
-    conv_rhs => rw [← (valueGroup₀OrderIsoWithZeroUnits v).apply_symm_apply
-      (hv.generator' : WithZero ↥(valueGroup (.ofClass v)))]
-    rw [valueGroup₀OrderIsoWithZeroUnits_symm_coe]
-    rfl
-  simp [valueGroup₀_equiv_withZeroMulInt, key, WithZero.exp,
-    ← mulintEquivOfZPowersEqTop_symm_apply_zpow
-      (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)]
+    valueGroup₀_equiv_withZeroMulInt v (hv.generator₀ ^ k) = WithZero.exp (- k) :=
+  orderIsoWithZeroMulInt_zpow _ _ _ k
 
 lemma valueGroup₀_equiv_withZeroMulInt_strictMono :
     StrictMono (valueGroup₀_equiv_withZeroMulInt v) :=

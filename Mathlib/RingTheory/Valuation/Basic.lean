@@ -517,21 +517,14 @@ lemma restrict_eq_zero_iff {x : R} : v.restrict x = 0 ↔ v x = 0 := by
 lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
   simp [restrict_def, rangeRestrict_eq_one_iff]
 
-lemma exists_div_eq_of_unit (γ : (valueGroup₀ (.ofClass v))ˣ) :
-    ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
-  have hγ0 : ((γ.1 : valueGroup₀ (.ofClass v)) : Γ₀) ≠ 0 := by
-    rw [ne_eq, ZeroMemClass.coe_eq_zero]
-    exact γ.ne_zero
-  obtain h | ⟨a, ha, x, hax⟩ := (mem_valueGroup₀_iff_of_comm _).mp γ.1.2
-  · exact absurd h hγ0
-  simp only [MonoidWithZeroHom.coe_ofClass] at ha hax
-  have hx : v x ≠ 0 := by rw [← hax]; exact mul_ne_zero ha hγ0
-  refine ⟨x, a, zero_lt_iff.2 hx, zero_lt_iff.2 ha, ?_⟩
-  have ha0 : v.restrict a ≠ 0 := by simpa using ha
-  rw [div_eq_iff ha0]
-  refine Subtype.ext ?_
-  change v x = ((γ.1 : valueGroup₀ (.ofClass v)) : Γ₀) * v a
-  rw [← hax, mul_comm]
+/-- Every element of the value group with zero is a ratio of two values. No nonvanishing
+hypotheses are needed: for `γ = 0` take `r = 0` and `s = 1`. -/
+lemma exists_div_eq (γ : valueGroup₀ (.ofClass v)) :
+    ∃ r s, v.restrict r / v.restrict s = γ := by
+  obtain ⟨s, r, rfl⟩ := valueGroup₀.exists_mk (.ofClass v) γ
+  refine ⟨r, s, ?_⟩
+  rw [← Subtype.coe_inj, coe_mk, ← SubmonoidWithZeroClass.subtype_apply, map_div₀]
+  simp [Valuation.coe_restrict, div_eq_mul_inv, mul_comm]
 
 lemma IsEquiv.restrict {Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀']
     {w : Valuation R Γ₀'} (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by

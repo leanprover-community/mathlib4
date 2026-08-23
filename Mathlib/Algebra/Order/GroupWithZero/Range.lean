@@ -43,10 +43,15 @@ end valueGroup₀
 
 `valueGroup f` is by definition `(valueGroup₀ f).units`, but instance search does not unfold it,
 so the transfers are declared explicitly. The canonical form for a non-degeneracy or cyclicity
-hypothesis is the with-zero one, `(valueGroup₀ f)ˣ` resp. `IsCyclicWithZero (valueGroup₀ f)`. -/
+hypothesis is `valueGroup f`; the with-zero forms are derived from it. -/
 
-instance [Nontrivial (valueGroup₀ f)ˣ] : Nontrivial (valueGroup f) :=
-  SubgroupWithZero.nontrivial_units_subgroup (valueGroup₀ f)
+instance [Nontrivial (valueGroup f)] : Nontrivial (valueGroup₀ f)ˣ := by
+  have : Nontrivial ↥(valueGroup₀ f).units := by rw [units_valueGroup₀]; infer_instance
+  exact (SubgroupWithZero.unitsMulEquiv (valueGroup₀ f)).symm.toEquiv.injective.nontrivial
+
+instance [Subsingleton (valueGroup f)] : Subsingleton (valueGroup₀ f)ˣ := by
+  have : Subsingleton ↥(valueGroup₀ f).units := by rw [units_valueGroup₀]; infer_instance
+  exact (SubgroupWithZero.unitsMulEquiv (valueGroup₀ f)).toEquiv.subsingleton
 
 instance [IsCyclicWithZero (valueGroup₀ f)] : IsCyclic (valueGroup f) :=
   SubgroupWithZero.isCyclic_units (valueGroup₀ f)

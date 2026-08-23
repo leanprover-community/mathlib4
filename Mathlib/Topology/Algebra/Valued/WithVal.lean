@@ -502,7 +502,14 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
   intro γ
-  obtain ⟨r, s, hr₀, hs₀, hr⟩ := exists_div_eq_of_unit Valued.v γ
+  obtain ⟨r, s, hr⟩ := exists_div_eq Valued.v γ.1
+  have hγ : Valued.v.restrict r / Valued.v.restrict s ≠ 0 := hr ▸ γ.ne_zero
+  have hr₀ : 0 < Valued.v r := by
+    rw [← Valuation.restrict_pos_iff, zero_lt_iff]
+    exact fun h ↦ hγ (by simp [h])
+  have hs₀ : 0 < Valued.v s := by
+    rw [← Valuation.restrict_pos_iff, zero_lt_iff]
+    exact fun h ↦ hγ (by simp [h])
   use .mk0 ((instValued v).v.restrict ((WithVal.equiv v).symm r) /
     (instValued v).v.restrict ((WithVal.equiv v).symm s)) (by
     simp [Valuation.restrict_def, rangeRestrict_eq_zero_iff, (eq_zero h (r := r)).ne, ← hv,
@@ -527,7 +534,14 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
   intro γ
-  obtain ⟨r, s, hr₀, hs₀, hr⟩ := exists_div_eq_of_unit Valued.v γ
+  obtain ⟨r, s, hr⟩ := exists_div_eq Valued.v γ.1
+  have hγ : Valued.v.restrict r / Valued.v.restrict s ≠ 0 := hr ▸ γ.ne_zero
+  have hr₀ : 0 < Valued.v r := by
+    rw [← Valuation.restrict_pos_iff, zero_lt_iff]
+    exact fun h ↦ hγ (by simp [h])
+  have hs₀ : 0 < Valued.v s := by
+    rw [← Valuation.restrict_pos_iff, zero_lt_iff]
+    exact fun h ↦ hγ (by simp [h])
   have h' : w.restrict.IsEquiv v.restrict := h.restrict
   use .mk0 ((Valued.v.restrict ((WithVal.equiv v) r)) /
     (Valued.v.restrict ((WithVal.equiv v) s))) (by

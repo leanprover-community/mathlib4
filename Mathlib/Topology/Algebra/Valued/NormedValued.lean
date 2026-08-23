@@ -83,8 +83,10 @@ def toValued : Valued K ℝ≥0 :=
             apply not_le.mpr hx
             apply le_of_eq
             rw [eq_comm]
+            have : Subsingleton ((valueGroup₀ (.ofClass (valuation (K := K))))ˣ) :=
+              inferInstance
             simpa only [Units.ext_iff, hx0.unit_spec, Units.val_one,
-              Submonoid.mk_eq_one] using! H.elim hx0.unit 1
+              Submonoid.mk_eq_one] using! Subsingleton.elim hx0.unit 1
         · obtain ⟨x, hx, hxy⟩ := H (γ := ⟨ε, le_of_lt hε⟩) (pos_iff_ne_zero.mp hε)
           use Units.mk0 (valuation.restrict x) (by simp [Valuation.restrict_def, hx])
           intro y hy
