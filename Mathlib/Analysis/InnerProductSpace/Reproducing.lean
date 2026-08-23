@@ -172,27 +172,45 @@ variable [TopologicalSpace X]
 instance instContinuousEvalConst : ContinuousEvalConst H X V where
   continuous_eval_const := continuous_eval_const
 
+theorem continuous_kerFun_iff :
+    Continuous (fun p : X × X => kernel H p.1 p.2) ↔ Continuous (kerFun H) := by
+  constructor
+  · rintro hK
+    rw [continuous_iff_continuousAt]
+    intro x
+    rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero]
+    simp_rw [norm_kerFun_sub_kerFun]
+    refine Tendsto.comp (y:=(𝓝 0)) (by simpa using ((Real.continuous_sqrt).tendsto 0)) ?_
+    have h1 : Continuous (fun y ↦ kernel H x x) := continuous_const (X:=X)
+    have h2 : Continuous (fun y ↦ kernel H y x) := hK.comp (continuous_id.prodMk continuous_const)
+    have h3 : Continuous (fun y ↦ kernel H x y) := hK.comp (continuous_const.prodMk continuous_id)
+    have h4 : Continuous (fun y ↦ kernel H y y) := hK.comp (continuous_id.prodMk continuous_id)
+    simpa using (h4 |>.sub h3 |>.sub h2 |>.add h1).norm.tendsto x
+  · rintro _
+    dsimp only [kernel, Matrix.of_apply]
+    fun_prop
+
+theorem continuous_eval_iff : Continuous (fun x : X => eval H x) ↔ Continuous (kerFun H) := by
+  constructor
+  · rintro hE
+    rw [continuous_iff_continuousAt] at ⊢ hE
+    intro x
+    simp_rw [Metric.continuousAt_iff'] at ⊢ hE
+    simp_rw [kerFun_eq_adjoint_eval, LinearIsometryEquiv.dist_map]
+    exact hE x
+  · rintro hK
+    simp_rw +singlePass [← adjoint_adjoint (eval H _), ← kerFun_eq_adjoint_eval]
+    exact ContinuousLinearMap.adjoint.continuous.comp hK
+
 /-- An RKHS has a continuous kernel when the kernel is jointly continuous in its two arguments. -/
 class ContinuousKernel : Prop where
   continuous_kernel : Continuous fun p : X × X => kernel H p.1 p.2
 
-theorem continuous_kerFun [ContinuousKernel H] : Continuous (kerFun H) := by
-  rw [continuous_iff_continuousAt]
-  intro x
-  rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero]
-  simp_rw [norm_kerFun_sub_kerFun]
-  refine Tendsto.comp (y:=(𝓝 0)) (by simpa using ((Real.continuous_sqrt).tendsto 0)) ?_
-  have hK : Continuous fun p : X × X => kernel H p.1 p.2 :=
-    ContinuousKernel.continuous_kernel (H := H)
-  have h1 : Continuous (fun y ↦ kernel H x x) := continuous_const (X:=X)
-  have h2 : Continuous (fun y ↦ kernel H y x) := hK.comp (continuous_id.prodMk continuous_const)
-  have h3 : Continuous (fun y ↦ kernel H x y) := hK.comp (continuous_const.prodMk continuous_id)
-  have h4 : Continuous (fun y ↦ kernel H y y) := hK.comp (continuous_id.prodMk continuous_id)
-  simpa using (h4 |>.sub h3 |>.sub h2 |>.add h1).norm.tendsto x
+theorem continuous_kerFun [ContinuousKernel H] : Continuous (kerFun H) :=
+  (continuous_kerFun_iff H).mp ContinuousKernel.continuous_kernel
 
-theorem continuous_eval' [ContinuousKernel H] : Continuous fun x : X => eval H x := by
-  simp_rw +singlePass [← adjoint_adjoint (eval H _), ← kerFun_eq_adjoint_eval]
-  exact ContinuousLinearMap.adjoint.continuous.comp (continuous_kerFun H)
+theorem continuous_eval' [ContinuousKernel H] : Continuous fun x : X => eval H x :=
+  (continuous_eval_iff H).mpr ((continuous_kerFun_iff H).mp ContinuousKernel.continuous_kernel)
 
 instance instContinuousEval [ContinuousKernel H] : ContinuousEval H X V where
   continuous_eval := isBoundedBilinearMap_apply.continuous.comp
