@@ -218,18 +218,13 @@ theorem sum_mul_le_sum_mul_of_sum_range_le
 theorem sum_mul_le_mul_of_sum_range_le
     (hf : ∀ k ≤ n, ∑ i ∈ range k, f i ≤ M) (hg₀ : 0 ≤ g) (hg : Antitone g) :
     ∑ i ∈ range n, f i * g i ≤ M * g 0 := by
-  have hM : 0 ≤ M := by simpa using hf 0 n.zero_le
+  have : 0 ≤ M := by simpa using hf 0 n.zero_le
   refine (sum_mul_le_sum_mul_of_sum_range_le (c := fun i ↦ if i = 0 then M else 0)
     (fun k hk ↦ ?_) hg₀ hg).trans ?_
   · rw [sum_ite_eq']
-    split_ifs with h
-    · exact hf k hk
-    · simp only [mem_range, not_lt, Nat.le_zero] at h; subst h; simp
-  · simp_rw [ite_mul, zero_mul]
-    rw [sum_ite_eq']
-    split_ifs with h
-    · simp
-    · exact mul_nonneg hM (hg₀ 0)
+    split_ifs <;> simp_all
+  · simp_rw [ite_mul, zero_mul, sum_ite_eq']
+    split_ifs <;> simp [mul_nonneg this (hg₀ 0)]
 
 /-- **Abel's inequality** (one-sided lower form): if every partial sum of `f` up to `n` is at least
 `m`, and `g` is nonnegative and antitone, then `m * g 0 ≤ ∑ i ∈ range n, f i * g i`. -/
@@ -239,15 +234,10 @@ theorem mul_le_sum_mul_of_le_sum_range
   have hm : m ≤ 0 := by simpa using hf 0 n.zero_le
   refine le_trans ?_ (sum_mul_le_sum_mul_of_sum_range_le (f := fun i ↦ if i = 0 then m else 0)
     (c := f) (fun k hk ↦ ?_) hg₀ hg)
-  · simp_rw [ite_mul, zero_mul]
-    rw [sum_ite_eq']
-    split_ifs with h
-    · simp
-    · exact mul_nonpos_of_nonpos_of_nonneg hm (hg₀ 0)
+  · simp_rw [ite_mul, zero_mul, sum_ite_eq']
+    split_ifs <;> simp [mul_nonpos_of_nonpos_of_nonneg hm (hg₀ 0)]
   · rw [sum_ite_eq']
-    split_ifs with h
-    · exact hf k hk
-    · simp only [mem_range, not_lt, Nat.le_zero] at h; subst h; simp
+    split_ifs <;> simp_all
 
 end IsOrderedRing
 
@@ -258,7 +248,7 @@ theorem abs_sum_mul_le_mul_of_abs_sum_range_le [CommRing R] [LinearOrder R] [IsO
     |∑ i ∈ range n, f i * g i| ≤ M * g 0 := by
   rw [abs_le]
   refine ⟨?_, sum_mul_le_mul_of_sum_range_le (fun k hk ↦ (abs_le.1 (hf k hk)).2) hg₀ hg⟩
-  have := mul_le_sum_mul_of_le_sum_range (m := -M) (fun k hk ↦ (abs_le.1 (hf k hk)).1) hg₀ hg
-  rwa [neg_mul] at this
+  simpa [neg_mul] using
+    mul_le_sum_mul_of_le_sum_range (m := -M) (fun k hk ↦ (abs_le.1 (hf k hk)).1) hg₀ hg
 
 end Finset
