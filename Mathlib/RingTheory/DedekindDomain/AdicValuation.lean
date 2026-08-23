@@ -608,7 +608,7 @@ structure adicCompletion where
 
 namespace adicCompletion
 
-open UniformSpace MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀ Filter Topology Valuation
+open UniformSpace MonoidWithZeroHom MonoidWithZeroHom.valueGroup₀ Filter Topology Valuation
 
 /-- `adicCompletion.toCompletion` and `adicCompletion.ofCompletion` as an equivalence. -/
 @[simps]

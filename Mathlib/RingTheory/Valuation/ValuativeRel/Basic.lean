@@ -1039,7 +1039,7 @@ lemma uniformizer_inv_le_iff [IsDiscrete R] [IsNontrivial R] {a : ValueGroupWith
 variable {R Γ : Type*} [Ring R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ]
   (v : Valuation R Γ)
 
-open MonoidWithZeroHom ValueGroup₀
+open MonoidWithZeroHom valueGroup₀
 
 namespace ValueGroupWithZero
 
@@ -1224,7 +1224,7 @@ class ValuativeExtension (A B : Type*) [CommSemiring A] [Semiring B] [ValuativeR
 
 namespace ValuativeExtension
 
-open ValuativeRel ValueGroupWithZero MonoidWithZeroHom ValueGroup₀
+open ValuativeRel ValueGroupWithZero MonoidWithZeroHom valueGroup₀
 
 variable {A B : Type*}
 

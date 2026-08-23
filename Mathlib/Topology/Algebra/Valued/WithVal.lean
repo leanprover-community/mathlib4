@@ -393,11 +393,11 @@ instance [NumberField R] : NumberField (WithVal v) where
 
 end Field
 
-section ValueGroup₀
+section valueGroup₀
 
 variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom MonoidWithZeroHom.valueGroup₀
 
 theorem range_valued_v_eq : Set.range (Valued.v (R := WithVal v)) = Set.range v := by
   ext x
@@ -452,7 +452,7 @@ lemma strictMono_valueGroupOrderIso₀ :
 lemma strictMono_valueGroupOrderIso₀_symm :
     StrictMono (WithVal.valueGroupOrderIso₀ v).symm := fun _ _ h ↦ h
 
-end ValueGroup₀
+end valueGroup₀
 
 end WithVal
 
@@ -494,7 +494,7 @@ theorem IsEquiv.orderRingIso_apply (h : v.IsEquiv w) (x : WithVal v) :
 theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
     h.orderRingIso.symm x = toVal v x.ofVal := rfl
 
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom MonoidWithZeroHom.valueGroup₀
 
 theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : v.IsEquiv w) : UniformContinuous (WithVal.equiv v) := by

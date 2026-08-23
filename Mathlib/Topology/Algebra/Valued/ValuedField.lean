@@ -85,7 +85,7 @@ theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠
 
 end InversionEstimate
 
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀ Valued
+open MonoidWithZeroHom MonoidWithZeroHom.valueGroup₀ Valued
 
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
 [BouAC, VI.5.1 middle of Proposition 1] -/
@@ -303,7 +303,7 @@ theorem extension_extends (x : K) : extension (x : hat K) = v.restrict x := by
   rw [← Completion.isDenseInducing_coe.nhds_eq_comap]
   exact Valued.continuous_valuation.continuousAt
 
-open MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom.valueGroup₀
 
 /-- the extension of a valuation on a division ring to its completion. -/
 noncomputable def extensionValuation : Valuation (hat K) Γ₀ where

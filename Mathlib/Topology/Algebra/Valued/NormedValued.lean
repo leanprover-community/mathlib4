@@ -55,7 +55,7 @@ def valuation : Valuation K ℝ≥0 where
 @[simp]
 theorem valuation_apply (x : K) : valuation x = ‖x‖₊ := rfl
 
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom MonoidWithZeroHom.valueGroup₀
 
 /-- The valuation of a normed field has rank at most one -/
 instance : RankLeOne (valuation (K := K)) where

@@ -34,7 +34,7 @@ The canonical way to introduce the topological structure from a chosen valuation
 public section
 
 open scoped Topology Uniformity
-open Set Filter Valuation ValuativeRel MonoidWithZeroHom ValueGroup₀ ValueGroupWithZero
+open Set Filter Valuation ValuativeRel MonoidWithZeroHom valueGroup₀ ValueGroupWithZero
 
 noncomputable section
 

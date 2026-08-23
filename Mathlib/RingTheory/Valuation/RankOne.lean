@@ -36,7 +36,7 @@ valuation, rank one
 
 noncomputable section
 
-open Function Multiplicative MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+open Function Multiplicative MonoidWithZeroHom MonoidWithZeroHom.valueGroup₀
 
 open scoped NNReal
 

@@ -22,7 +22,7 @@ namespace MonoidWithZeroHom
 
 variable {A B : Type*} [MonoidWithZero A] [LinearOrderedCommGroupWithZero B] {f : A →*₀ B}
 
-namespace ValueGroup₀
+namespace valueGroup₀
 
 lemma coe_unit_ne_zero (a : (valueGroup₀ f)ˣ) : (a.1 : B) ≠ 0 :=
   ZeroMemClass.coe_eq_zero.not.2 a.ne_zero
@@ -37,7 +37,7 @@ theorem mk_le_mk_iff (f : A →*₀ B) (hr₁ : f r₁ ≠ 0) (hr₂ : f r₂ �
   rw [← Subtype.coe_le_coe, coe_mk, coe_mk, inv_mul_eq_div, inv_mul_eq_div,
     div_le_div_iff₀ (zero_lt_iff.2 hr₁) (zero_lt_iff.2 hr₂), map_mul, map_mul]
 
-end ValueGroup₀
+end valueGroup₀
 
 /-! ### Bridging the with-zero hypotheses to the `Subgroup Bˣ` API
 

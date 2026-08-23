@@ -28,7 +28,7 @@ should take this into consideration.
 @[expose] public section
 
 open scoped Topology uniformity
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀ Set Valuation
+open MonoidWithZeroHom MonoidWithZeroHom.valueGroup₀ Set Valuation
 
 noncomputable section
 

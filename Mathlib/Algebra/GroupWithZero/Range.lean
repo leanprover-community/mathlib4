@@ -12,10 +12,10 @@ public import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
 
 Given a `MonoidWithZeroHom` `f : A → B` whose codomain `B` is a group with zero, we define
 `MonoidWithZeroHom.valueGroup₀ f` as the smallest `SubgroupWithZero` of `B` containing the range
-of `f`, and `MonoidWithZeroHom.ValueGroup₀ f` as the corresponding type. For example, if `A = ℕ`
+of `f`, and `MonoidWithZeroHom.valueGroup₀ f` as the corresponding type. For example, if `A = ℕ`
 and `f` is the natural cast to `B` where `B` is
-* `ℝ≥0`, then `ValueGroup₀ f` is the set of nonnegative rationals;
-* `WithZero ℤ`, then `ValueGroup₀ f = {0, 1}`.
+* `ℝ≥0`, then `valueGroup₀ f` is the set of nonnegative rationals;
+* `WithZero ℤ`, then `valueGroup₀ f = {0, 1}`.
 
 `MonoidWithZeroHom.valueGroup f` is the corresponding subgroup of `Bˣ`, obtained by taking units.
 
@@ -252,7 +252,7 @@ theorem mem_valueGroup_iff_of_comm' {y : Bˣ} :
   rw [mem_valueGroup_iff_of_comm]
   exact ⟨fun ⟨a, ha, x, hax⟩ ↦ ⟨a, ha, x, by aesop, hax⟩, fun ⟨a, ha, x, hx, hax⟩ ↦ ⟨a, ha, x, hax⟩⟩
 
-namespace ValueGroup₀
+namespace valueGroup₀
 
 variable {r₁ s₁ r₂ s₂ : A}
 
@@ -289,7 +289,7 @@ theorem exists_mk (x : valueGroup₀ f) : ∃ r s, x = mk f r s := by
   · refine ⟨a, r, ?_⟩
     rw [Subtype.ext_iff, coe_mk, ← har, ← mul_assoc, inv_mul_cancel₀ ha, one_mul]
 
-end ValueGroup₀
+end valueGroup₀
 
 end CommGroupWithZero
 

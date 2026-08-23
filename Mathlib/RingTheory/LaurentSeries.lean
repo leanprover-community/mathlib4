@@ -800,7 +800,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
       simp
 
 open scoped Topology
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom MonoidWithZeroHom.valueGroup₀
 
 /-- The main result showing that the Cauchy filter tends to the `Cauchy.limit` -/
 theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
@@ -889,7 +889,7 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤᵐ⁰ˣ) :
       ← PowerSeries.coe_sub, ← coe_algebraMap, adicValued_apply, valuation_of_algebraMap]
     exact hP
 
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom MonoidWithZeroHom.valueGroup₀
 
 theorem coe_range_dense : DenseRange ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [denseRange_iff_closure_range]
@@ -924,7 +924,7 @@ lemma exists_ratFunc_eq_v (x : K⸨X⸩) : ∃ f : K⟮X⟯, Valued.v f = Valued
   rw [zpow_neg, map_inv₀, map_zpow₀, v_def, valuation_X_eq_neg_one, ← exp_zsmul, ← exp_neg]
   simp [exp_log, hx]
 
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom MonoidWithZeroHom.valueGroup₀
 
 theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [isUniformInducing_iff, Filter.comap]
