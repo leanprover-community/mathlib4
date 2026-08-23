@@ -233,7 +233,7 @@ theorem sum_mul_le_mul_of_sum_range_le
 theorem mul_le_sum_mul_of_le_sum_range
     (hf : ∀ k ≤ n, m ≤ ∑ i ∈ range k, f i) (hg₀ : 0 ≤ g) (hg : Antitone g) :
     m * g 0 ≤ ∑ i ∈ range n, f i * g i := by
-  have hm : m ≤ 0 := by simpa using hf 0 n.zero_le
+  have : m ≤ 0 := by simpa using hf 0 n.zero_le
   refine le_trans ?_ (sum_mul_le_sum_mul_of_sum_range_le (f := fun i ↦ if i = 0 then m else 0)
     (c := f) (fun k hk ↦ ?_) hg₀ hg)
   · simp_rw [ite_mul, zero_mul, sum_ite_eq']
