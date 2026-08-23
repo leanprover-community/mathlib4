@@ -101,6 +101,25 @@ theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected :=
 theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
   (pathGraph_connected n).mono pathGraph_le_cycleGraph
 
+theorem cycleGraph_indepNum_eq_one : (cycleGraph 1)ᶜ.cliqueNum = 1 := by
+  simp only [cliqueNum_compl, cycleGraph, indepNum]
+  suffices h : {n | ∃ s, (⊥ : SimpleGraph <| Fin 1).IsNIndepSet n s} = {0,1} by
+    simp_all
+  ext x
+  simp only [Set.mem_ofPred_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ 
+  · obtain ⟨s,h⟩ := h
+    rw [isNIndepSet_iff] at h
+    have : s.card ≤ 1 := card_finset_fin_le s
+    have : s.card = 0 ∨ s.card = 1 := Nat.le_one_iff_eq_zero_or_eq_one.mp this 
+    grind
+  · rcases h with h|h
+    · rw [h] ; use ∅
+      simp [isNIndepSet_iff]
+    · rw [h]
+      use {0}
+      simp [isNIndepSet_iff]
+
 section cycle
 
 set_option backward.privateInPublic true in
@@ -198,25 +217,6 @@ lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
       simp_rw [this]
       have := IsPath.mk' <| (support_tail_of_not_nil _ hp₁.not_nil) ▸ hp₁.support_nodup
       exact hlen ▸ (isPath_iff_injective_get_support _ |>.mp this)
-
-theorem cycleGraph_indepNum_eq_one : (cycleGraph 1)ᶜ.cliqueNum = 1 := by
-  simp only [cliqueNum_compl, cycleGraph, indepNum]
-  suffices h : {n | ∃ s, (⊥ : SimpleGraph <| Fin 1).IsNIndepSet n s} = {0,1} by
-    simp_all
-  ext x
-  simp only [Set.mem_ofPred_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ 
-  · obtain ⟨s,h⟩ := h
-    rw [isNIndepSet_iff] at h
-    have : s.card ≤ 1 := card_finset_fin_le s
-    have : s.card = 0 ∨ s.card = 1 := Nat.le_one_iff_eq_zero_or_eq_one.mp this 
-    grind
-  · rcases h with h|h
-    · rw [h] ; use ∅
-      simp [isNIndepSet_iff]
-    · rw [h]
-      use {0}
-      simp [isNIndepSet_iff]
 
 end IsContained
 
