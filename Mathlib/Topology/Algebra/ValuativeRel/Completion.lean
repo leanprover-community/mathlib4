@@ -69,16 +69,13 @@ theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
   refine lt_of_eq_of_lt ?_ (mul_inv_lt_of_lt_mul₀ (lt_of_lt_of_le h (min_le_left _ _)) :
     v (x - y) * (v y * v y)⁻¹ < ↑γ)
   nth_rw 1 [← veq, mul_inv_rev, mul_comm, mul_assoc, mul_comm]
-  clear veq
-  simp_all [← map_inv₀, ← map_mul, mul_sub, sub_mul, v.map_sub_swap]
+  simp [← map_inv₀, ← map_mul, mul_sub, sub_mul, v.map_sub_swap, x_ne, y_ne]
 
 theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠ 0) (hs : s ≠ 0)
     (h : v (x - y) < min ((v s / v r) * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) * v r < v s := by
-  have hr' : 0 < v r := by simp [zero_lt_iff, hr]
-  let γ : Γ₀ˣ := .mk0 (v s / v r) (by simp [hs, hr])
-  calc
-    v (x⁻¹ - y⁻¹) * v r < γ * v r := by gcongr; exact Valuation.inversion_estimate v y_ne h
-    _ = v s := div_mul_cancel₀ _ (by simpa)
+  refine (?_ : _ < _).trans_eq <| div_mul_cancel₀ (a := v s) (b := v r) (by simpa using hr)
+  grw [Valuation.inversion_estimate v (x := x) y_ne (γ := (.mk0 (v s / v r) (by simp_all))) h]
+  <;> simp [zero_lt_iff, hr]
 
 end InversionEstimate
 
@@ -114,26 +111,17 @@ open WithZeroTopology
 variable [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) [v.Compatible]
 
 theorem continuous_restrict : Continuous (v.restrict : K → (ValueGroup₀ (.ofClass v))) := by
-  rw [continuous_iff_continuousAt]
-  intro x
-  rcases eq_or_ne x 0 with (rfl | h)
-  · rw [continuousAt_def', map_zero, WithZeroTopology.tendsto_zero]
-    intro γ hγ
-    apply Filter.eventually_of_mem (U := {x | v.restrict x < γ})
-    · rw [v.mem_nhds_zero_iff]
-      use Units.mk0 γ hγ
-      simp
-    · tauto
-  · have v_ne : (v.restrict x : ValueGroup₀ (.ofClass v)) ≠ 0 := (Valuation.ne_zero_iff _).mpr h
-    rw [continuousAt_def', WithZeroTopology.tendsto_of_ne_zero v_ne]
-    simp_rw [v.restrict_inj]
-    apply v.locally_const
-    simpa [restrict₀_apply] using v_ne
+  refine continuous_iff_continuousAt.2 fun x ↦ (eq_or_ne x 0).casesOn ?_ fun h ↦ ?_
+  · rintro rfl
+    rw [continuousAt_def', map_zero, WithZeroTopology.tendsto_zero]
+    exact fun γ hγ ↦ Filter.eventually_of_mem (U := {x | v.restrict x < γ}) (v.mem_nhds_zero_iff
+      _|>.2 ⟨Units.mk0 γ hγ, by simp⟩) (by tauto)
+  · rw [continuousAt_def', WithZeroTopology.tendsto_of_ne_zero (v.restrict.ne_zero_iff.2 h)]
+    have := v.locally_const (by simpa using v.restrict.ne_zero_iff.2 h)
+    exact Filter.eventually_of_mem (by simpa using this) (by simp)
 
 theorem continuous_valuation_of_surjective (hsurj : Function.Surjective v) :
-    Continuous v := by
-  rw [continuous_iff_continuousAt]
-  intro x
+    Continuous v := continuous_iff_continuousAt.2 fun x ↦ by
   rcases eq_or_ne x 0 with (rfl | h)
   · rw [continuousAt_def', map_zero, WithZeroTopology.tendsto_zero]
     intro γ hγ
@@ -143,13 +131,13 @@ theorem continuous_valuation_of_surjective (hsurj : Function.Surjective v) :
     simp only [Units.val_mk0, ofPred_subset_ofPred, ← v.restrict_def, Valuation.restrict_lt_iff, hx,
       imp_self, implies_true]
   · have h0 : v x ≠ 0 := (Valuation.ne_zero_iff _).mpr h
+    -- same patter as last proof, maybe split out?
     rw [continuousAt_def', WithZeroTopology.tendsto_of_ne_zero h0]
     exact v.locally_const (by simpa using h0)
 
 lemma valuation_isClosedMap :
     IsClosedMap (v.restrict : K → (ValueGroup₀ (.ofClass v))) := by
-  refine IsClosedMap.of_nonempty ?_
-  intro U hU hU'
+  refine IsClosedMap.of_nonempty fun U hU hU' ↦ ?_
   simp only [← isOpen_compl_iff, isOpen_iff_mem_nhds, mem_compl_iff, v.mem_nhds_iff,
     subset_compl_comm, compl_ofPred, not_lt] at hU
   simp only [isClosed_iff, mem_image, map_eq_zero, exists_eq_right, ne_eq, image_subset_iff]
@@ -175,26 +163,21 @@ namespace IsValuativeTopology
 instance (priority := 100) [IsUniformAddGroup K] : CompletableTopField K where
   __ := (inferInstance : T0Space K)
   nice F hF h0 := by
-    have : ∃ γ₀ : (ValueGroup₀ (.ofClass (valuation K)))ˣ, ∃ M ∈ F,
+    obtain ⟨γ₀, M₀, M₀_in, H₀⟩ : ∃ γ₀ : (ValueGroup₀ (.ofClass (valuation K)))ˣ, ∃ M ∈ F,
         ∀ x ∈ M, (γ₀.1) ≤ (valuation K).restrict x := by
       rcases inf_eq_bot_iff.mp h0 with ⟨U, U_in, M, M_in, H⟩
       rcases ((valuation K).mem_nhds_zero_iff _).mp U_in with ⟨γ₀, hU⟩
-      refine ⟨γ₀, M, M_in, fun x xM ↦ le_of_not_gt (fun hyp ↦ ?_)⟩
-      have : x ∈ U ∩ M := ⟨hU hyp, xM⟩
-      rwa [H] at this
-    rcases this with ⟨γ₀, M₀, M₀_in, H₀⟩
+      exact ⟨γ₀, M, M_in, fun x xM ↦ le_of_not_gt (fun hyp ↦ Set.mem_empty_iff_false x|>.1 <| H ▸
+        ⟨mem_of_subset_of_mem hU hyp, ‹_›⟩)⟩
     rw [(valuation K).cauchy_iff] at hF ⊢
     refine ⟨hF.1.map _, fun γ ↦ ?_⟩
     rcases hF.2 (min (γ * γ₀ * γ₀) γ₀) with ⟨M₁, M₁_in, H₁⟩
-    refine ⟨(fun x : K => x⁻¹) '' (M₀ ∩ M₁), ?_, ?_⟩
-    · rw [mem_map]
-      exact mem_of_superset (inter_mem M₀_in M₁_in) (subset_preimage_image _ _)
-    · rintro _ ⟨x, ⟨x_in₀, x_in₁⟩, rfl⟩ _ ⟨y, ⟨_, y_in₁⟩, rfl⟩
-      apply inversion_estimate
-      · refine (valuation K).restrict.ne_zero_iff.mp fun h ↦ ?_
-        simpa [h] using H₀ x x_in₀
-      · refine lt_of_lt_of_le (H₁ x x_in₁ y y_in₁) ?_
-        grw [Units.min_val, mul_assoc, Units.val_mul, Units.val_mul, H₀ x x_in₀]
+    refine ⟨(fun x : K => x⁻¹) '' (M₀ ∩ M₁), by simp_all [-Filter.map_inv], ?_⟩
+    rintro _ ⟨x, ⟨x_in₀, x_in₁⟩, rfl⟩ _ ⟨y, ⟨_, y_in₁⟩, rfl⟩
+    refine inversion_estimate _ ((valuation K).restrict.ne_zero_iff.mp fun h ↦ ?_) ?_
+    · simpa [h] using H₀ x x_in₀
+    · refine lt_of_lt_of_le (H₁ x x_in₁ y y_in₁) ?_
+      grw [Units.min_val, mul_assoc, Units.val_mul, Units.val_mul, H₀ x x_in₀]
 
 end IsValuativeTopology
 
@@ -217,8 +200,7 @@ theorem extensionFun_extends (x : K) : v.extensionFun (x : Completion K) = v.res
 variable [IsUniformAddGroup K]
 
 theorem continuous_extensionFun : Continuous v.extensionFun := by
-  refine Completion.isDenseInducing_coe.continuous_extend ?_
-  intro x₀
+  refine Completion.isDenseInducing_coe.continuous_extend fun x₀ ↦ ?_
   rcases eq_or_ne x₀ 0 with (rfl | h)
   · refine ⟨0, ?_⟩
     rw [← Completion.coe_zero, ← Completion.isDenseInducing_coe.isInducing.nhds_eq_comap]
@@ -267,15 +249,8 @@ theorem continuous_extensionFun : Continuous v.extensionFun := by
     have : (v.restrict (a * z₀⁻¹)) = 1 := by
       rw [v.restrict_def, ValueGroup₀.restrict₀_eq_one_iff]
       apply hV
-      have : (z₀⁻¹ : K) = (z₀ : Completion K)⁻¹ :=
-        map_inv₀ (G₀ := K) (G₀' := Completion K) Completion.coeRingHom z₀
-      rw [Completion.coe_mul, this, ha, hz₀, mul_inv, mul_comm y₀⁻¹, ← mul_assoc, mul_assoc y,
-        mul_inv_cancel₀ h, mul_one]
-      tauto
-    calc
-      v.restrict a = v.restrict (a * z₀⁻¹ * z₀) := by rw [mul_assoc, inv_mul_cancel₀ z₀_ne, mul_one]
-      _ = v.restrict (a * z₀⁻¹) * v.restrict z₀ := Valuation.map_mul _ _ _
-      _ = v.restrict z₀ := by rw [this, one_mul]
+      grind [Completion.coe_mul, Completion.coe_inv z₀]
+    rw [← one_mul (v.restrict z₀), ← this, ← map_mul, mul_assoc, inv_mul_cancel₀ z₀_ne, mul_one]
 
 /-- the extension of a valuation on a division ring to its completion. -/
 noncomputable def extension : Valuation (Completion K) Γ₀ where
