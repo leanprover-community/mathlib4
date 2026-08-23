@@ -57,6 +57,8 @@ This file introduces these notions and records the basic consequences of inverti
 
 @[expose] public section
 
+open PowerSeries HasSubst
+
 variable {R : Type*} [CommRing R] {F G : FormalGroup R}
 
 variable (F G) in
@@ -90,24 +92,21 @@ structure FormalGroupIso where
 
 @[simp]
 lemma FormalGroupIso.toHom_subst_invHom {α : FormalGroupIso F G} :
-    α.toHom.toPowerSeries.subst α.invHom.toPowerSeries = PowerSeries.X :=
-  (PowerSeries.subst_comp_eq_id_iff
-    (PowerSeries.HasSubst.of_constantCoeff_zero' α.invHom.zero_constantCoeff)
-    (PowerSeries.HasSubst.of_constantCoeff_zero' α.toHom.zero_constantCoeff)).mp α.left_inv
+    α.toHom.toPowerSeries.subst α.invHom.toPowerSeries = X :=
+  (subst_comp_eq_id_iff (.of_constantCoeff_zero' α.invHom.zero_constantCoeff)
+    (.of_constantCoeff_zero' α.toHom.zero_constantCoeff)).mp α.left_inv
 
 @[simp]
 lemma FormalGroupIso.invHom_subst_toHom {α : FormalGroupIso F G} :
     α.invHom.toPowerSeries.subst α.toHom.toPowerSeries = PowerSeries.X :=
-  (PowerSeries.subst_comp_eq_id_iff
-    (PowerSeries.HasSubst.of_constantCoeff_zero' α.toHom.zero_constantCoeff)
-    (PowerSeries.HasSubst.of_constantCoeff_zero' α.invHom.zero_constantCoeff)).mp α.right_inv
+  (subst_comp_eq_id_iff (.of_constantCoeff_zero' α.toHom.zero_constantCoeff)
+    (.of_constantCoeff_zero' α.invHom.zero_constantCoeff)).mp α.right_inv
 
 /-- An isomorphism $α(X) : F (X, Y) → G (X, Y)$, $α(X) = a_1 X + a_2 X ^ 2 + ⋯$
 is called strict isomorphism if $a_1 = 1$. -/
 class FormalGroupIso.IsStrict (α : FormalGroupIso F G) : Prop where
   coeff_one : α.toHom.toPowerSeries.coeff 1 = 1
 
-open PowerSeries HasSubst in
 theorem FormalGroupIso.ext_iff' {α β : FormalGroupIso F G} :
     α = β ↔ α.toHom = β.toHom := by
   rw [FormalGroupIso.ext_iff, and_iff_left_iff_imp]
@@ -133,8 +132,7 @@ lemma _root_.PowerSeries.eval₂_subst [UniformSpace R] [DiscreteUniformity R] {
     (ha : HasEval a) {g : PowerSeries R} (hg : HasSubst g) (f : PowerSeries R) :
     eval₂ (algebraMap R S) a (f.subst g) =
       eval₂ (algebraMap R S) (eval₂ (algebraMap R S) a g) f := by
-  rw [subst_def, eval₂, MvPowerSeries.eval₂_subst hg.const (hasEval ha)]
-  rfl
+  simp [subst_def, eval₂, MvPowerSeries.eval₂_subst hg.const (hasEval ha)]
 
 namespace FormalGroupHom
 
@@ -181,26 +179,18 @@ lemma hasSum_applyPoint (x : F.Point S) :
 lemma applyPoint_add (x y : F.Point S) :
     φ.applyPoint (x + y) = φ.applyPoint x + φ.applyPoint y := Subtype.ext <| by
   have he : MvPowerSeries.HasEval ![x.val, y.val] := F.hasEval_point x y
-  have hF : MvPowerSeries.HasSubst (fun _ : Unit ↦ (F.toPowerSeries : MvPowerSeries (Fin 2) R)) :=
-    MvPowerSeries.hasSubst_of_constantCoeff_zero fun _ ↦ F.zero_constantCoeff
   have hG : MvPowerSeries.HasSubst (fun i : Fin 2 ↦ φ.toPowerSeries.toMvPowerSeries i) :=
     MvPowerSeries.HasSubst.toMvPowerSeries φ.zero_constantCoeff
-  have key (i : Fin 2) : MvPowerSeries.eval₂ (algebraMap R S) ![x.val, y.val]
-      (φ.toPowerSeries.toMvPowerSeries i) =
-        eval₂ (algebraMap R S) (![x.val, y.val] i) φ.toPowerSeries := by
-    rw [toMvPowerSeries_eq_subst, subst_def, MvPowerSeries.eval₂_subst
-      (MvPowerSeries.hasSubst_of_constantCoeff_zero fun _ ↦ by simp) he, eval₂]
-    simp
   calc
     _ = (φ.toPowerSeries.subst F.toPowerSeries).eval₂ _ ![x.val, y.val] := by
-      rw [applyPoint_eq_eval₂, eval₂, subst_def, MvPowerSeries.eval₂_subst hF he]
-      congr 1 with _
-      rw [FormalGroup.add_eq_eval₂]
+      rw [applyPoint_eq_eval₂, eval₂, subst_def, MvPowerSeries.eval₂_subst
+        (of_constantCoeff_zero F.zero_constantCoeff).const he, FormalGroup.add_eq_eval₂]
     _ = (φ.applyPoint x + φ.applyPoint y).val := by
       rw [φ.hom, MvPowerSeries.eval₂_subst hG he, FormalGroup.add_eq_eval₂]
       congr 1 with i
-      rw [key i]
-      fin_cases i <;> simp
+      fin_cases i <;>
+      simp [toMvPowerSeries_eq_subst, subst_def, MvPowerSeries.eval₂_subst
+        (of_constantCoeff_zero _).const he, eval₂]
 
 /-- A homomorphism of formal group laws, as an additive monoid homomorphism on points. -/
 @[simps! apply]
