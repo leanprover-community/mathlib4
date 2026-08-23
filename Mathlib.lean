@@ -6689,6 +6689,7 @@ public import Mathlib.RingTheory.Flat.Tensor
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.FormalGroup.AddInv
 public import Mathlib.RingTheory.FormalGroup.Basic
+public import Mathlib.RingTheory.FormalGroup.Hom
 public import Mathlib.RingTheory.FractionalIdeal.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Extended
 public import Mathlib.RingTheory.FractionalIdeal.Inverse

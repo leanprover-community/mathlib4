@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.PowerSeries.Substitution
 public import Mathlib.Tactic.Ring.NamePowerVars
-public import Mathlib.RingTheory.MvPowerSeries.Equiv
 
 /-! # Formal group laws over commutative ring
 

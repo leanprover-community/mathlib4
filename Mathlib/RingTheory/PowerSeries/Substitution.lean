@@ -325,16 +325,6 @@ theorem subst_X (ha : HasSubst a) :
     subst a (X : R⟦X⟧) = a := by
   rw [← coe_substAlgHom ha, substAlgHom_X]
 
-/-- Given a power series `f`, if substition `f` into any power series is identity, then `f = X`. -/
-theorem subst_eq_id_iff_eq_X (f : PowerSeries R) (hf : HasSubst f) :
-    subst f = id ↔ f = X := by
-  constructor
-  · intro h
-    rw [← PowerSeries.subst_X hf (R := R), h, id_eq]
-  · intro h
-    funext
-    simp [h]
-
 omit [Algebra R S] in
 theorem map_subst {a : MvPowerSeries τ R} (ha : HasSubst a) {h : R →+* S} (f : PowerSeries R) :
     (f.subst a).map h = (f.map h).subst (a.map h) :=
@@ -438,6 +428,29 @@ theorem subst_comp_subst (ha : HasSubst a) (hb : HasSubst b) :
 theorem subst_comp_subst_apply (ha : HasSubst a) (hb : HasSubst b) (f : PowerSeries R) :
     subst b (subst a f) = subst (subst b a) f :=
   congr_fun (subst_comp_subst ha hb) f
+
+/-- Given a power series `f`, if substition `f` into any power series is identity, then `f = X`. -/
+theorem subst_eq_id_iff_eq_X {f : PowerSeries R} (hf : HasSubst f) :
+    subst f = id ↔ f = X := by
+  constructor
+  · intro h
+    rw [← PowerSeries.subst_X hf (R := R), h, id_eq]
+  · intro h
+    funext
+    simp [h]
+
+theorem subst_comp_eq_id_iff {f g : PowerSeries R} (hf : HasSubst f)
+    (hg : HasSubst g) : subst f ∘ subst g = id ↔
+    subst f g = X := by
+  constructor
+  · intro h
+    rw [subst_comp_subst hg hf] at h
+    rw [←subst_X hg (R := R), subst_comp_subst_apply hg hf, h]
+    simp
+  · intro h
+    rw [subst_comp_subst hg hf, h]
+    funext x
+    simp
 
 lemma rescale_eq (r : R) (f : PowerSeries R) :
     rescale r f = MvPowerSeries.rescale (fun _ ↦ r) f := by
