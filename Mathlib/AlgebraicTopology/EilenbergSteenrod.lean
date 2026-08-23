@@ -98,12 +98,18 @@ instance : Category (HomologyPretheory.{u} C c) where
 variable {HP HP' : HomologyPretheory.{u} C c}
 
 -- TODO: generate this with `@[to_app]`
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma Hom.iso_comm_app (f : HP ⟶ HP') (i : ι) (X : TopCat.{u}) :
     (HP.iso i).hom.app X ≫ (f.homₚ i).app (ofTopCat X) = (f.hom i).app X ≫ (HP'.iso i).hom.app X :=
   congr($(f.iso_comm _).app _)
 
 -- TODO: generate this with `@[to_app]`
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma Hom.w_app (f : HP ⟶ HP') (i j : ι) (X : TopPair.{u}) :
     (HP.δ i j).app X ≫ (f.hom j).app X.left = (f.homₚ i).app X ≫ (HP'.δ i j).app X :=
@@ -114,6 +120,9 @@ lemma iso_homₚ_inv_hom (f : HP ⟶ HP') (i : ι) :
     (HP.iso i).hom ≫ incl.whiskerLeft (f.homₚ i) ≫ (HP'.iso i).inv = f.hom i := by simp
 
 -- TODO: generate this with `@[to_app]`
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma iso_homₚ_inv_hom_app (f : HP ⟶ HP') (i : ι) (X : TopCat.{u}) :
     (HP.iso i).hom.app X ≫ (f.homₚ i).app (ofTopCat X) ≫ (HP'.iso i).inv.app X = (f.hom i).app X :=
@@ -156,7 +165,7 @@ instance (f : HP ⟶ HP') [IsIso f] (i : ι) : IsIso (f.hom i) :=
 abbrev hIsoOfIso (e : HP ≅ HP') (i : ι) : HP.H i ≅ HP'.H i :=
   (HP.iso i) ≪≫ incl.isoWhiskerLeft ((hₚFunctor i).mapIso e) ≪≫ (HP'.iso i).symm
 
-variable (HP HP' : HomologyPretheory.{u} C c)
+variable (HP : HomologyPretheory.{u} C c)
 
 /-- A `HomologyPretheory` is homotopy-invariant if its homology functor `Hₚ` takes homotopic maps to
 the same map in homology -/

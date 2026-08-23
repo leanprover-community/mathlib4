@@ -9,7 +9,6 @@ public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConverge
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
-import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Holomorphicity of Eisenstein series
@@ -23,7 +22,9 @@ public section
 
 noncomputable section
 
-open UpperHalfPlane Filter Function Complex Manifold CongruenceSubgroup
+open UpperHalfPlane Filter Function Complex CongruenceSubgroup
+
+open scoped Manifold
 
 namespace EisensteinSeries
 

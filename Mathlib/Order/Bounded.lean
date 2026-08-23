@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Order.RelClasses
 public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Order.Bounds.Defs
 
 /-!
 # Bounded and unbounded sets
+
 We prove miscellaneous lemmas about bounded and unbounded sets. Many of these are just variations on
 the same ideas, or similar results with a few minor differences. The file is divided into these
 different general ideas.

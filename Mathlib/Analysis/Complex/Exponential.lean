@@ -91,6 +91,7 @@ namespace Complex
 
 variable (x y : ℂ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
@@ -106,6 +107,7 @@ theorem exp_zero : exp 0 = 1 := by
       simp only [sum_range_succ, pow_succ]
       simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exp_add : exp (x + y) = exp x * exp y := by
   have hj : ∀ j : ℕ, (∑ m ∈ range j, (x + y) ^ m / m.factorial) =
         ∑ i ∈ range j, ∑ k ∈ range (i + 1), x ^ k / k.factorial *
@@ -692,10 +694,10 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
 @[positivity Real.exp _]
-meta def evalExp : PositivityExt where eval {u α} _ pα? e := do
+meta def evalExp : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.exp $a) =>
-    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(Real.exp_pos $a))
   | _, _, _ => throwError "not Real.exp"

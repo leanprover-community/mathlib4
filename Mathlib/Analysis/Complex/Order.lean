@@ -142,10 +142,10 @@ alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
 /-- Extension for the `positivity` tactic: `Complex.ofReal` is positive/nonnegative/nonzero if its
 input is. -/
 @[positivity Complex.ofReal _, Complex.ofReal _]
-meta def evalComplexOfReal : PositivityExt where eval {u α} _ pα? e := do
+meta def evalComplexOfReal : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>
-    let some _ := pα? | pure .none
     assumeInstancesCommute
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa => return .positive q(ofReal_pos $pa)

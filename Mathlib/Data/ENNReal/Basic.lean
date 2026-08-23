@@ -175,7 +175,7 @@ noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }�
 
 noncomputable instance : DivInvMonoid ℝ≥0∞ where
 
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0} {n : ℕ}
+variable {a b c : ℝ≥0∞} {r p q : ℝ≥0} {n : ℕ}
 
 instance : IsOrderedMonoid ℝ≥0∞ where
   mul_le_mul_left _ _ := mul_le_mul_left
@@ -190,6 +190,12 @@ instance : Inhabited ℝ≥0∞ := ⟨0⟩
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0∞) : C x :=
   WithTop.recTopCoe top coe x
+
+@[simp] lemma recTopCoe_top {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) :
+    recTopCoe top coe ∞ = top := rfl
+
+@[simp] lemma recTopCoe_ofNNReal {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0) :
+    recTopCoe top coe x = coe x := rfl
 
 instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.canLift
 
@@ -363,17 +369,13 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
 
 @[simp] theorem zero_lt_top : 0 < ∞ := coe_lt_top
 
-@[simp, norm_cast] theorem coe_le_coe : (↑r : ℝ≥0∞) ≤ ↑q ↔ r ≤ q := WithTop.coe_le_coe
+@[simp, norm_cast, gcongr] theorem coe_le_coe : (↑r : ℝ≥0∞) ≤ ↑q ↔ r ≤ q := WithTop.coe_le_coe
 
-@[simp, norm_cast] theorem coe_lt_coe : (↑r : ℝ≥0∞) < ↑q ↔ r < q := WithTop.coe_lt_coe
+@[simp, norm_cast, gcongr] theorem coe_lt_coe : (↑r : ℝ≥0∞) < ↑q ↔ r < q := WithTop.coe_lt_coe
 
--- Needed until `@[gcongr]` accepts iff statements
-alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
-attribute [gcongr] ENNReal.coe_le_coe_of_le
+@[deprecated (since := "2026-08-04")] alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
 
--- Needed until `@[gcongr]` accepts iff statements
-alias ⟨_, coe_lt_coe_of_lt⟩ := coe_lt_coe
-attribute [gcongr] ENNReal.coe_lt_coe_of_lt
+@[deprecated (since := "2026-08-04")] alias ⟨_, coe_lt_coe_of_lt⟩ := coe_lt_coe
 
 theorem coe_mono : Monotone ofNNReal := fun _ _ => coe_le_coe.2
 
@@ -737,12 +739,12 @@ unsafe instance : Repr ℝ≥0∞ where
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
 @[positivity ENNReal.toReal _]
-meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(ENNReal.toReal $a) =>
     assertInstancesCommute
@@ -751,8 +753,8 @@ meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα pα? e := do
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/
 @[positivity ENNReal.ofNNReal _]
-meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofNNReal $a) =>
     assertInstancesCommute

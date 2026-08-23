@@ -72,7 +72,7 @@ theorem UniformSpace.ofDist_aux (ε : ℝ) (hε : 0 < ε) : ∃ δ > (0 : ℝ), 
   ⟨ε / 2, half_pos hε, fun _x hx _y hy => add_halves ε ▸ add_lt_add hx hy⟩
 
 /-- Construct a uniform structure from a distance function and metric space axioms -/
-@[implicit_reducible]
+@[instance_reducible]
 def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist x x = 0)
     (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z) : UniformSpace α :=
@@ -99,7 +99,7 @@ abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀
     fun z => ⟨dist z z, forall_eq.2 <| forall_eq.2 le_rfl⟩
 
 /-- The distance function (given an ambient metric space on `α`), which returns
-  a nonnegative real number `dist x y` given `x y : α`. -/
+a real number `dist x y` given `x y : α`. This type class does not enforce non-negativity. -/
 @[ext]
 class Dist (α : Type*) where
   /-- Distance between two points -/
@@ -180,7 +180,7 @@ instance (priority := 200) PseudoMetricSpace.toEDist : EDist α :=
 /-- Construct a pseudo-metric space structure whose underlying topological space structure
 (definitionally) agrees which a pre-existing topology which is compatible with a given distance
 function. -/
-@[implicit_reducible]
+@[instance_reducible]
 def PseudoMetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z)
@@ -254,14 +254,14 @@ theorem dist_nonneg {x y : α} : 0 ≤ dist x y :=
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
 @[positivity Dist.dist _ _]
-meta def evalDist : PositivityExt where eval {u α} _zα pα? e := do
+meta def evalDist : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Dist.dist $β $inst $a $b) =>
-    let some _ := pα? | pure .none
     let _inst ← synthInstanceQ q(PseudoMetricSpace $β)
     assertInstancesCommute
     pure (.nonnegative q(dist_nonneg))
@@ -624,7 +624,7 @@ theorem forall_of_forall_mem_ball (p : α → Prop) (x : α)
 
 theorem isBounded_iff {s : Set α} :
     IsBounded s ↔ ∃ C : ℝ, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → dist x y ≤ C := by
-  rw [isBounded_def, ← Filter.mem_sets, @PseudoMetricSpace.cobounded_sets α, mem_setOf_eq,
+  rw [isBounded_def, ← Filter.mem_sets, @PseudoMetricSpace.cobounded_sets α, mem_ofPred_eq,
     compl_compl]
 
 lemma boundedSpace_iff : BoundedSpace α ↔ ∃ C, ∀ a b : α, dist a b ≤ C := by
@@ -722,7 +722,7 @@ protected theorem mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β 
     rcases exists_between ε₀ with ⟨ε', hε'⟩
     rcases hf ε' hε'.1 with ⟨i, hi, H⟩
     exact ⟨i, hi, fun x (hx : _ ≤ _) => hε <| lt_of_le_of_lt (le_trans hx H) hε'.2⟩
-  · exact fun ⟨i, hi, H⟩ => ⟨f i, hf₀ i hi, fun x (hx : _ < _) => H (mem_setOf.2 hx.le)⟩
+  · exact fun ⟨i, hi, H⟩ => ⟨f i, hf₀ i hi, fun x (hx : _ < _) => H (mem_ofPred.2 hx.le)⟩
 
 /-- Constant size closed neighborhoods of the diagonal form a basis
 of the uniformity filter. -/
@@ -939,7 +939,7 @@ iff the distances between distinct points are uniformly bounded away from zero. 
 protected lemma uniformSpace_eq_bot :
     ‹PseudoMetricSpace α›.toUniformSpace = ⊥ ↔
       ∃ r : ℝ, 0 < r ∧ Pairwise (r ≤ dist · · : α → α → Prop) := by
-  simp only [uniformity_basis_dist.uniformSpace_eq_bot, mem_setOf_eq, not_lt]
+  simp only [uniformity_basis_dist.uniformSpace_eq_bot, mem_ofPred_eq, not_lt]
 
 end Metric
 
@@ -995,25 +995,16 @@ theorem Metric.eball_ofReal {x : α} {ε : ℝ} : eball x (.ofReal ε) = ball x 
   simp only [mem_eball, mem_ball, edist_dist]
   exact ENNReal.ofReal_lt_ofReal_iff_of_nonneg dist_nonneg
 
-@[deprecated (since := "2026-01-24")]
-alias Metric.emetric_ball := Metric.eball_ofReal
-
 /-- Balls defined using the distance or the edistance coincide -/
 @[simp]
 theorem Metric.eball_coe {x : α} {ε : ℝ≥0} : eball x ε = ball x ε := by
   rw [← eball_ofReal]
   simp
 
-@[deprecated (since := "2026-01-24")]
-alias Metric.emetric_ball_nnreal := Metric.eball_coe
-
 /-- Closed balls defined using the distance or the edistance coincide -/
 theorem Metric.closedEBall_ofReal {x : α} {ε : ℝ} (h : 0 ≤ ε) :
     closedEBall x (.ofReal ε) = closedBall x ε := by
   ext y; simp [edist_le_ofReal h]
-
-@[deprecated (since := "2026-01-24")]
-alias Metric.emetric_closedBall := Metric.closedEBall_ofReal
 
 /-- Closed balls defined using the distance or the edistance coincide -/
 @[simp]
@@ -1021,15 +1012,9 @@ theorem Metric.closedEBall_coe {x : α} {ε : ℝ≥0} :
     closedEBall x ε = closedBall x ε := by
   rw [← closedEBall_ofReal ε.coe_nonneg, ENNReal.ofReal_coe_nnreal]
 
-@[deprecated (since := "2026-01-24")]
-alias Metric.emetric_closedBall_nnreal := Metric.closedEBall_coe
-
 @[simp]
 theorem Metric.eball_top (x : α) : eball x ⊤ = univ :=
   eq_univ_of_forall fun _ => edist_lt_top _ _
-
-@[deprecated (since := "2026-01-24")]
-alias Metric.emetric_ball_top := Metric.eball_top
 
 /-- Build a new pseudometric space from an old one where the bundled uniform structure is provably
 (but typically non-definitionaly) equal to some given uniform structure.
@@ -1076,7 +1061,9 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {X : Type*} [e : PseudoEMetr
     (dist : X → X → ℝ) (dist_nonneg : ∀ x y, 0 ≤ dist x y)
     (h : ∀ x y, edist x y = .ofReal (dist x y)) : PseudoMetricSpace X where
   dist := dist
-  dist_self x := by simpa [h, (dist_nonneg _ _).ge_iff_eq', -edist_self] using edist_self x
+  dist_self x := by
+    refine le_antisymm ?_ (dist_nonneg x x)
+    rw [← ENNReal.zero_eq_ofReal, ← h x x, edist_self]
   dist_comm x y := by simpa [h, dist_nonneg] using edist_comm x y
   dist_triangle x y z := by
     simpa [h, dist_nonneg, add_nonneg, ← ENNReal.ofReal_add] using edist_triangle x y z
@@ -1105,7 +1092,7 @@ abbrev PseudoMetricSpace.replaceBornology {α} [B : Bornology α] (m : PseudoMet
   { m with
     toBornology := B
     cobounded_sets := Set.ext <| compl_surjective.forall.2 fun s =>
-        (H s).trans <| by rw [isBounded_iff, mem_setOf_eq, compl_compl] }
+        (H s).trans <| by rw [isBounded_iff, mem_ofPred_eq, compl_compl] }
 
 theorem PseudoMetricSpace.replaceBornology_eq {α} [m : PseudoMetricSpace α] [B : Bornology α]
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :
@@ -1215,7 +1202,7 @@ theorem tendsto_iff_dist_tendsto_zero {f : β → α} {x : Filter β} {a : α} :
 
 namespace Metric
 
-variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
+variable {x y : α} {ε : ℝ} {s : Set α}
 
 /-- If `f` is a positive radius tending to zero, then the sets of pairs with distance less than
 `f i` form a basis of the uniformity. -/

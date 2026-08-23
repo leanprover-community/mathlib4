@@ -17,7 +17,7 @@ public import Mathlib.Order.Interval.Finset.Defs
 
 public section
 
-variable {ι ι' α β γ : Type*}
+variable {ι α β γ : Type*}
 
 open Set
 
@@ -31,7 +31,7 @@ theorem atTop_finset_eq_iInf : (atTop : Filter (Finset α)) = ⨅ x : α, 𝓟 (
   refine
     le_iInf fun s =>
       le_principal_iff.2 <| mem_iInf_of_iInter s.finite_toSet (fun i => mem_principal_self _) ?_
-  simp only [subset_def, mem_iInter, SetCoe.forall, mem_Ici, Finset.le_iff_subset,
+  simp only [subset_def, mem_iInter, SetCoe.forall, mem_Ici,
     Finset.mem_singleton, Finset.subset_iff, forall_eq]
   exact fun t => id
 
