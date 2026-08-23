@@ -199,147 +199,29 @@ lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
       have := IsPath.mk' <| (support_tail_of_not_nil _ hp₁.not_nil) ▸ hp₁.support_nodup
       exact hlen ▸ (isPath_iff_injective_get_support _ |>.mp this)
 
-/-
 
-theorem cycles {k : ℕ} : (cycleGraph <| 2 * k + 1)ᶜ.cliqueNum = k + 1 := by
--/
 
-#check indepNum
-  #check cycleGraph
-  #check Fin.isEmpty'
-  #check uniqueOfSubsingleton
+#check Set.Iio
 
-  #check Set.Iio
-example {P : ℕ → Prop} : ∃ i, P i → ∀(n: ℕ), n = 0 ∨ n = 1 → P 0 ∨ P 1 := by
-  aesop?
 theorem cycleGraph_one_indepNum : (cycleGraph 1)ᶜ.cliqueNum = 1 := by{
   simp only [cliqueNum_compl, cycleGraph, indepNum]
-  have thee : ∀(s : Finset (Fin 1)) , s = ∅ ∨ s = {0} := by
-    intro s
+  suffices h : {n | ∃ s, (⊥ : SimpleGraph <| Fin 1).IsNIndepSet n s} = {0,1} by
+    simp_all
+  ext x
+  simp only [Set.mem_ofPred_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ 
+  · obtain ⟨s,h⟩ := h
+    rw [isNIndepSet_iff] at h
     have : s.card ≤ 1 := card_finset_fin_le s
     have : s.card = 0 ∨ s.card = 1 := Nat.le_one_iff_eq_zero_or_eq_one.mp this 
-    grind [Finset.card_eq_zero, Finset.card_eq_one]
-  have the2 (n : ℕ): (∃ s , (⊥ :SimpleGraph (Fin 1)).IsNIndepSet n s )→  (⊥ :SimpleGraph (Fin 1)).IsNIndepSet n ∅ ∨ (⊥ :SimpleGraph (Fin 1)).IsNIndepSet n {0} := by
-    intro h
-    aesop
-    rcases thee w with t|t
-    aesop
-    aesop
-  have {n : ℕ}: (∃ s, (⊥ :SimpleGraph (Fin 1)).IsNIndepSet n s) ↔ (n= 0 ∨ n = 1) := by{
-    constructor
-    · intro h'
-      obtain ⟨s,h'⟩ := h'
-      have : s = {0} ∨ s = ∅ := by {
-        have : s.card ≤ 1 := card_finset_fin_le s
-        have : s.card = 0 ∨ s.card = 1 := Nat.le_one_iff_eq_zero_or_eq_one.mp this 
-        grind [Finset.card_eq_zero, Finset.card_eq_one]
-      }
-      rcases this with this|this
-      · rw [this] at h'
-        have := h'.2
-        simp at this
-        grind
-      · grind [isNIndepSet_iff]
-    · intro h'
-      rcases h' with h'|h'
-      · use ∅
-        rw [h'] ; simp [isNIndepSet_iff]
-      · use {0}
-        rw [h'] ; simp [isNIndepSet_iff]
+    grind
+  · rcases h with h|h
+    · rw [h] ; use ∅
+      simp [isNIndepSet_iff]
+    · rw [h]
+      use {0}
+      simp [isNIndepSet_iff]
 }
-  simp_all only
-  have : {n | n = 0 ∨ n = 1} = {0,1} := by
-    aesop
-  rw [this]
-  simp
-}
-#check cycleGraph_one_indepNum
-
-theorem cycles {k : ℕ} (hk : k ≥ 1) : (cycleGraph <| 2 * k + 1)ᶜ.cliqueNum = k + 1 := by
-  induction k
-  sorry
-  have : {n | ∃ s, (⊥ : SimpleGraph <| Fin 1).IsNIndepSet n s} = {0} := by
-    ext x
-    constructor
-    intro h
-    simp at h
-    rcases h with ⟨s,h⟩
-    simp
-    sorry
-
-
-  have t22223 : ∀(s : Finset (Fin 1)) , s = {0} ∨ s = ∅ := by
-    intro s
-    #check Fin.forall_fin_one
-    have : s.card ≤ 1 := by{
-      exact card_finset_fin_le s
-
-    }
-    #check Finset.card_eq_one
-    have : s.card = 0 ∨ s.card = 1 := by
-      exact Nat.le_one_iff_eq_zero_or_eq_one.mp this 
-    rw [Finset.card_eq_one,Finset.card_eq_zero] at this
-    rcases this with this|this
-    right ; assumption
-    left 
-    obtain ⟨a,this⟩ := this
-    cases  a ; expose_names
-    simp at isLt
-    simp_all
-
-     
-  --have tttttt : ∀(n : ℕ) ( , ((⊥ : SimpleGraph (Fin 1)).IsNIndepSet n s)
-  simp_all
-  have {α : Type} : ((⊥ : SimpleGraph (α)).IsNIndepSet 0 ∅)  := by
-  {
-    rw [isNIndepSet_iff]
-    constructor
-    simp
-    exact Finset.card_empty
-  }
-  have this2 {n : ℕ} (s : Finset (Fin 1) ) :  (⊥ : SimpleGraph <| Fin 1 ).IsNIndepSet (s.card) s  := by
-    constructor
-   -- intro h
-    unfold IsIndepSet
-    intro  ; simp
-    have : s.card < 1 := by
-      simp_all only [Finset.card_empty, Order.lt_one_iff]
-    rfl
-
-   
-
-
-  rw [SimpleGraph.cycleGraph_one_eq_bot]
-  unfold indepNum
-  have {n : ℕ}: (∃ s, ( (⊥ : SimpleGraph (Fin 1)).IsNIndepSet n s)) ↔ n = 0 := by
-    constructor
-    intro h
-    obtain ⟨s,h⟩ := h
-    have := h.card_eq
-    have this2 := h.isIndepSet 
-    unfold IsIndepSet at this2
-    have helper : (⊥ : SimpleGraph (Fin 1)) = (⊤ : SimpleGraph (Fin 1)) := by {
-      ext v w
-      simp?
-      #check Fin
-      exact Subsingleton.elim v w
-    }
-
-    simp at this2
-
-    sorry
-    intro h
-    rw [h]
-    use ∅
-    constructor
-    unfold IsIndepSet
-    have : ∀(u v), ¬(⊥ : SimpleGraph (Fin 1)).Adj u v := by
-      intro u v
-      exact (disjoint_edge ⊥).mp fun ⦃x⦄ a a_1 => a
-
-    simp only [Finset.coe_empty, Set.pairwise_empty] 
-    exact Finset.card_empty
-  sorry
 
 end IsContained
 
