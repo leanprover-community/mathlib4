@@ -59,11 +59,11 @@ assert_not_exists Module.Basis
 
 noncomputable section
 
-open Set Function MeasurableSpace Topology Filter ENNReal NNReal
+open Set Function MeasurableSpace Filter ENNReal
 
 open Filter hiding map
 
-variable {α β γ δ : Type*} {ι : Sort*}
+variable {α β δ : Type*} {ι : Sort*}
 
 namespace MeasureTheory
 
@@ -398,7 +398,7 @@ function. We define this property, called `AEMeasurable f μ`. It's properties a
 -/
 
 
-variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ ν : Measure α}
+variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ : Measure α}
 
 /-- A function is almost everywhere measurable if it coincides almost everywhere with a measurable
 function.
