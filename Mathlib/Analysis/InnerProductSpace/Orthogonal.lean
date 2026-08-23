@@ -60,16 +60,19 @@ theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 := 
 
 variable {K}
 
-/-- When a vector is in `Kᗮ`, with the inner product being real. -/
-lemma mem_orthogonal_iff_re_inner_eq_zero {y : E} :
-    y ∈ Kᗮ ↔ ∀ u ∈ K, RCLike.re ⟪u, y⟫ = 0 := by
-  simp only [mem_orthogonal]
-  refine ⟨fun hy u hu ↦ by simp [hy _ hu], fun h u hu ↦ ?_⟩
-  simpa [inner_smul_left, RCLike.conj_mul, -inner_conj_symm] using h (⟪u, y⟫ • u) (K.smul_mem _ hu)
+/-- `v ∈ Kᗮ` if and only if `re ⟪u, v⟫ = 0` for all `u ∈ K`; it suffices to check only the
+real part of the inner product is zero. -/
+lemma mem_orthogonal_iff_re_inner_eq_zero {v : E} :
+    v ∈ Kᗮ ↔ ∀ u ∈ K, RCLike.re ⟪u, v⟫ = 0 := by
+  rw [mem_orthogonal]
+  refine ⟨by simp +contextual, fun h u hu ↦ ?_⟩
+  simpa [inner_smul_left, RCLike.conj_mul, -inner_conj_symm] using h (⟪u, v⟫ • u) (K.smul_mem _ hu)
 
-/-- When a vector is in `Kᗮ`, with the inner product being real, the other way round. -/
-lemma mem_orthogonal_iff_re_inner_eq_zero' {y : E} :
-    y ∈ Kᗮ ↔ ∀ u ∈ K, RCLike.re ⟪y, u⟫ = 0 := by
+/-- `v ∈ Kᗮ` if and only if `re ⟪u, v⟫ = 0` for all `u ∈ K`; it suffices to check only the
+real part of the inner product is zero. Variation of `mem_orthogonal_iff_re_inner_eq_zero` with
+the inner product reversed. -/
+lemma mem_orthogonal_iff_re_inner_eq_zero' {v : E} :
+    v ∈ Kᗮ ↔ ∀ u ∈ K, RCLike.re ⟪v, u⟫ = 0 := by
   simp [mem_orthogonal_iff_re_inner_eq_zero, inner_re_symm]
 
 /-- A vector in `K` is orthogonal to one in `Kᗮ`. -/
