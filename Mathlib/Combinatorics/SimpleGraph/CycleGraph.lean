@@ -199,11 +199,7 @@ lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
       have := IsPath.mk' <| (support_tail_of_not_nil _ hp₁.not_nil) ▸ hp₁.support_nodup
       exact hlen ▸ (isPath_iff_injective_get_support _ |>.mp this)
 
-
-
-#check Set.Iio
-
-theorem cycleGraph_one_indepNum : (cycleGraph 1)ᶜ.cliqueNum = 1 := by{
+theorem cycleGraph_indepNum_eq_one : (cycleGraph 1)ᶜ.cliqueNum = 1 := by{
   simp only [cliqueNum_compl, cycleGraph, indepNum]
   suffices h : {n | ∃ s, (⊥ : SimpleGraph <| Fin 1).IsNIndepSet n s} = {0,1} by
     simp_all
