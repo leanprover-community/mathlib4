@@ -15,7 +15,7 @@ This module defines a `norm_num` extension for `Nat.sqrt`.
 
 public meta section
 
-namespace Tactic
+namespace Mathlib.Meta
 
 namespace NormNum
 
@@ -56,4 +56,4 @@ def evalNatSqrt : NormNumExt where eval {_ _} e := do
 
 end NormNum
 
-end Tactic
+end Mathlib.Meta

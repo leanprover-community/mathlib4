@@ -189,7 +189,6 @@ theorem ofMatrix_rel [DecidableEq n] {c : RingCon (Matrix n n R)} {x y : R} :
 @[simp] theorem ofMatrix_matrix [DecidableEq n] [Nonempty n] (c : RingCon R) :
     ofMatrix (matrix n c) = c := by
   ext x y
-  classical
   constructor
   · intro h
     inhabit n
@@ -210,7 +209,6 @@ congruence relation `!![⊤,⊤;⊤,(· ≡ · [PMOD 4])]` is a ring congruence 
 theorem matrix_ofMatrix [DecidableEq n] (c : RingCon (Matrix n n R)) :
     matrix n (ofMatrix c) = c := by
   ext x y
-  classical
   constructor
   · intro h
     rw [matrix_eq_sum_single x, matrix_eq_sum_single y]

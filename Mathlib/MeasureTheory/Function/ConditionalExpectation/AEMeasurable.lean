@@ -96,11 +96,11 @@ variable {F 𝕜}
 
 theorem mem_lpMeasSubgroup_iff_aestronglyMeasurable {m m0 : MeasurableSpace α} {μ : Measure α}
     {f : Lp F p μ} : f ∈ lpMeasSubgroup F m p μ ↔ AEStronglyMeasurable[m] f μ := by
-  rw [← AddSubgroup.mem_carrier, lpMeasSubgroup, Set.mem_setOf_eq]
+  rw [← AddSubgroup.mem_carrier, lpMeasSubgroup, Set.mem_ofPred_eq]
 
 theorem mem_lpMeas_iff_aestronglyMeasurable {m m0 : MeasurableSpace α} {μ : Measure α}
     {f : Lp F p μ} : f ∈ lpMeas F 𝕜 m p μ ↔ AEStronglyMeasurable[m] f μ := by
-  rw [← SetLike.mem_coe, ← Submodule.mem_carrier, lpMeas, Set.mem_setOf_eq]
+  rw [← SetLike.mem_coe, ← Submodule.mem_carrier, lpMeas, Set.mem_ofPred_eq]
 
 theorem lpMeas.aestronglyMeasurable {m _ : MeasurableSpace α} {μ : Measure α}
     (f : lpMeas F 𝕜 m p μ) : AEStronglyMeasurable[m] (f : α → F) μ :=
@@ -301,7 +301,7 @@ instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
 theorem isComplete_aestronglyMeasurable [hp : Fact (1 ≤ p)] [CompleteSpace F] (hm : m ≤ m0) :
     IsComplete {f : Lp F p μ | AEStronglyMeasurable[m] f μ} := by
   rw [← completeSpace_coe_iff_isComplete]
-  haveI : Fact (m ≤ m0) := ⟨hm⟩
+  have : Fact (m ≤ m0) := ⟨hm⟩
   change CompleteSpace (lpMeasSubgroup F m p μ)
   infer_instance
 
