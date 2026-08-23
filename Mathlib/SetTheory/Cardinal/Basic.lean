@@ -877,21 +877,27 @@ theorem mk_strictMono [Finite α] : StrictMono (α := Set α) (mk ∘ (↑)) :=
 theorem mk_strictMonoOn : StrictMonoOn (mk ∘ (↑)) {s : Set α | s.Finite} :=
   fun _ _ _ ↦ card_lt_card_of_right_finite
 
-theorem le_mk_diff_add_mk (S T : Set α) : #S ≤ #(S \ T : Set α) + #T :=
-  (mk_le_mk_of_subset <| subset_diff_union _ _).trans <| mk_union_le _ _
+theorem le_mk_sdiff_add_mk (S T : Set α) : #S ≤ #(S \ T : Set α) + #T :=
+  (mk_le_mk_of_subset <| subset_sdiff_union _ _).trans <| mk_union_le _ _
 
-theorem mk_diff_add_mk {S T : Set α} (h : T ⊆ S) : #(S \ T : Set α) + #T = #S := by
-  refine (mk_union_of_disjoint <| ?_).symm.trans <| by rw [diff_union_of_subset h]
+@[deprecated (since := "2026-06-03")] alias le_mk_diff_add_mk := le_mk_sdiff_add_mk
+
+theorem mk_sdiff_add_mk {S T : Set α} (h : T ⊆ S) : #(S \ T : Set α) + #T = #S := by
+  refine (mk_union_of_disjoint <| ?_).symm.trans <| by rw [sdiff_union_of_subset h]
   exact disjoint_sdiff_self_left
 
-lemma diff_nonempty_of_mk_lt_mk {S T : Set α} (h : #S < #T) : (T \ S).Nonempty := by
+@[deprecated (since := "2026-06-03")] alias mk_diff_add_mk := mk_sdiff_add_mk
+
+lemma sdiff_nonempty_of_mk_lt_mk {S T : Set α} (h : #S < #T) : (T \ S).Nonempty := by
   rw [← mk_set_ne_zero_iff]
   intro h'
-  exact h.not_ge ((le_mk_diff_add_mk T S).trans (by simp [h']))
+  exact h.not_ge ((le_mk_sdiff_add_mk T S).trans (by simp [h']))
+
+@[deprecated (since := "2026-06-03")] alias diff_nonempty_of_mk_lt_mk := sdiff_nonempty_of_mk_lt_mk
 
 lemma compl_nonempty_of_mk_lt_mk {S : Set α} (h : #S < #α) : Sᶜ.Nonempty := by
   rw [← mk_univ (α := α)] at h
-  simpa [Set.compl_eq_univ_diff] using diff_nonempty_of_mk_lt_mk h
+  simpa [Set.compl_eq_univ_sdiff] using sdiff_nonempty_of_mk_lt_mk h
 
 theorem mk_union_le_aleph0 {α} {P Q : Set α} :
     #(P ∪ Q : Set α) ≤ ℵ₀ ↔ #P ≤ ℵ₀ ∧ #Q ≤ ℵ₀ := by

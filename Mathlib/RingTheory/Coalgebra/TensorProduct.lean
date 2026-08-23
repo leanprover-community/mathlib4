@@ -8,8 +8,7 @@ module
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Coalgebra.Equiv
 
-meta import Mathlib.RingTheory.Coalgebra.CoassocSimps
-
+import Mathlib.RingTheory.Coalgebra.CoassocSimps
 import Mathlib.Algebra.Algebra.Bilinear
 
 /-!

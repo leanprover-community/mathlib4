@@ -146,7 +146,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
             exact hw.symm
   counitIso :=
     NatIso.ofComponents
-      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
+      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) rfl)
       fun {X Y} f ↦ Pointed.Hom.ext <| funext fun a ↦ by
         obtain _ | ⟨a, ha⟩ := a
         · exact f.map_point.symm

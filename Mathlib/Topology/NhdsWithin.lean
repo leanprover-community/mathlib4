@@ -93,14 +93,18 @@ theorem mem_nhdsWithin_iff_exists_mem_nhds_inter {t : Set α} {a : α} {s : Set 
     t ∈ 𝓝[s] a ↔ ∃ u ∈ 𝓝 a, u ∩ s ⊆ t :=
   (nhdsWithin_hasBasis (𝓝 a).basis_sets s).mem_iff
 
-theorem diff_mem_nhdsWithin_compl {x : α} {s : Set α} (hs : s ∈ 𝓝 x) (t : Set α) :
+theorem sdiff_mem_nhdsWithin_compl {x : α} {s : Set α} (hs : s ∈ 𝓝 x) (t : Set α) :
     s \ t ∈ 𝓝[tᶜ] x :=
-  diff_mem_inf_principal_compl hs t
+  sdiff_mem_inf_principal_compl hs t
 
-theorem diff_mem_nhdsWithin_diff {x : α} {s t : Set α} (hs : s ∈ 𝓝[t] x) (t' : Set α) :
+@[deprecated (since := "2026-06-03")] alias diff_mem_nhdsWithin_compl := sdiff_mem_nhdsWithin_compl
+
+theorem sdiff_mem_nhdsWithin_sdiff {x : α} {s t : Set α} (hs : s ∈ 𝓝[t] x) (t' : Set α) :
     s \ t' ∈ 𝓝[t \ t'] x := by
-  rw [nhdsWithin, diff_eq, diff_eq, ← inf_principal, ← inf_assoc]
+  rw [nhdsWithin, sdiff_eq, sdiff_eq, ← inf_principal, ← inf_assoc]
   exact inter_mem_inf hs (mem_principal_self _)
+
+@[deprecated (since := "2026-06-03")] alias diff_mem_nhdsWithin_diff := sdiff_mem_nhdsWithin_sdiff
 
 theorem nhds_of_nhdsWithin_of_nhds {s t : Set α} {a : α} (h1 : s ∈ 𝓝 a) (h2 : t ∈ 𝓝[s] a) :
     t ∈ 𝓝 a := by

@@ -92,7 +92,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulZeroOneClas
 
 instance : FunLike (α →*₀o β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr

@@ -710,20 +710,20 @@ theorem liminf_compl : (liminf u f)ᶜ = limsup (compl ∘ u) f := by
   simp only [limsup_eq_iInf_iSup, compl_iInf, compl_iSup, liminf_eq_iSup_iInf, Function.comp_apply]
 
 theorem limsup_sdiff (a : α) : limsup u f \ a = limsup (fun b => u b \ a) f := by
-  simp only [limsup_eq_iInf_iSup, sdiff_eq]
+  simp only [limsup_eq_iInf_iSup, _root_.sdiff_eq]
   rw [biInf_inf (⟨univ, univ_mem⟩ : ∃ i : Set β, i ∈ f)]
   simp_rw [inf_comm, inf_iSup₂_eq, inf_comm]
 
 theorem liminf_sdiff [NeBot f] (a : α) : liminf u f \ a = liminf (fun b => u b \ a) f := by
-  simp only [sdiff_eq, inf_comm _ aᶜ, inf_liminf]
+  simp only [_root_.sdiff_eq, inf_comm _ aᶜ, inf_liminf]
 
 theorem sdiff_limsup [NeBot f] (a : α) : a \ limsup u f = liminf (fun b => a \ u b) f := by
   rw [← compl_inj_iff]
-  simp only [sdiff_eq, liminf_compl, comp_def, compl_inf, compl_compl, sup_limsup]
+  simp only [_root_.sdiff_eq, liminf_compl, comp_def, compl_inf, compl_compl, sup_limsup]
 
 theorem sdiff_liminf (a : α) : a \ liminf u f = limsup (fun b => a \ u b) f := by
   rw [← compl_inj_iff]
-  simp only [sdiff_eq, limsup_compl, comp_def, compl_inf, compl_compl, sup_liminf]
+  simp only [_root_.sdiff_eq, limsup_compl, comp_def, compl_inf, compl_compl, sup_liminf]
 
 end CompleteBooleanAlgebra
 

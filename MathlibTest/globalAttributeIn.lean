@@ -13,6 +13,7 @@ import Mathlib.Tactic.Linter.GlobalAttributeIn
 class Dummy where
   field : True
 
+set_option linter.defProp false in
 @[reducible] def dummyInst : Dummy := ⟨True.intro⟩
 
 /--

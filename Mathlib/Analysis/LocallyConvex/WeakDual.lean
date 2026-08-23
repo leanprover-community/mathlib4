@@ -179,7 +179,6 @@ theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜]
 
 variable [AddCommGroup F] [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Weak Representation Theorem: Every continuous functional on `E` endowed with
 the `σ(E, F; B)`-topology is of the form `x ↦ B(x, y)` for some `y : F`. -/
 theorem dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := fun f ↦ by
@@ -212,14 +211,12 @@ section Topology
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem LinearMap.weakBilin_withSeminorms (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     WithSeminorms (LinearMap.toSeminormFamily B : F → Seminorm 𝕜 (WeakBilin B)) :=
   let e : F ≃ (Σ _ : F, Fin 1) := .symm <| .sigmaUnique _ _
   withSeminorms_induced (withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜 𝕜))
     (LinearMap.ltoFun 𝕜 F 𝕜 𝕜 ∘ₗ B : (WeakBilin B) →ₗ[𝕜] (F → 𝕜)) |>.congr_equiv e
 
-set_option backward.isDefEq.respectTransparency false in
 theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     (𝓝 (0 : WeakBilin B)).HasBasis (· ∈ B.toSeminormFamily.basisSets) _root_.id :=
   LinearMap.weakBilin_withSeminorms B |>.hasBasis
@@ -231,7 +228,6 @@ section LocallyConvex
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
 variable [NormedSpace ℝ 𝕜] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 
-set_option backward.isDefEq.respectTransparency false in
 instance WeakBilin.locallyConvexSpace {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} :
     LocallyConvexSpace ℝ (WeakBilin B) :=
   B.weakBilin_withSeminorms.toLocallyConvexSpace

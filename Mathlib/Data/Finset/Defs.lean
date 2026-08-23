@@ -100,7 +100,7 @@ instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
 /-- Convert a finset to a set in the natural way. -/
 instance : SetLike (Finset α) α where
   coe s := {a | a ∈ s.1}
-  coe_injective' s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
+  coe_injective s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
 
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
   Iff.rfl

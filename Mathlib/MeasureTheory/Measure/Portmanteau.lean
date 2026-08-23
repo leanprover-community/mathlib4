@@ -404,7 +404,7 @@ theorem exists_null_frontier_thickening (μ : Measure Ω) [SFinite μ] (s : Set 
     fun r ↦ isClosed_frontier.measurableSet
   have disjs := Metric.frontier_thickening_disjoint s
   have key := Measure.countable_meas_pos_of_disjoint_iUnion (μ := μ) mbles disjs
-  have aux := measure_diff_null (s := Ioo a b) (Set.Countable.measure_zero key volume)
+  have aux := measure_sdiff_null (s := Ioo a b) (Set.Countable.measure_zero key volume)
   have len_pos : 0 < ENNReal.ofReal (b - a) := by simp only [hab, ENNReal.ofReal_pos, sub_pos]
   rw [← Real.volume_Ioo, ← aux] at len_pos
   simpa [Set.Nonempty] using nonempty_of_measure_ne_zero len_pos.ne'

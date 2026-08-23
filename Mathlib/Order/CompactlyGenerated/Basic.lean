@@ -301,7 +301,7 @@ theorem WellFoundedGT.finite_of_sSupIndep [WellFoundedGT α] {s : Set α}
     by_contra! contra
     obtain ⟨t, ht₁, ht₂⟩ := CompleteLattice.WellFoundedGT.isSupFiniteCompact α s
     replace contra : ∃ x : α, x ∈ s ∧ x ≠ ⊥ ∧ x ∉ t := by
-      have : (s \ (insert ⊥ t : Finset α)).Infinite := contra.diff (Finset.finite_toSet _)
+      have : (s \ (insert ⊥ t : Finset α)).Infinite := contra.sdiff (Finset.finite_toSet _)
       obtain ⟨x, hx₁, hx₂⟩ := this.nonempty
       exact ⟨x, hx₁, by simpa [not_or] using hx₂⟩
     obtain ⟨x, hx₀, hx₁, hx₂⟩ := contra
@@ -325,7 +325,7 @@ theorem WellFoundedGT.finite_of_iSupIndep [WellFoundedGT α] {ι : Type*}
 theorem WellFoundedLT.finite_of_sSupIndep [WellFoundedLT α] {s : Set α}
     (hs : sSupIndep s) : s.Finite := by
   by_contra inf
-  let e := (Infinite.diff inf <| finite_singleton ⊥).to_subtype.natEmbedding
+  let e := (Infinite.sdiff inf <| finite_singleton ⊥).to_subtype.natEmbedding
   let a n := ⨆ i ≥ n, (e i).1
   have sup_le n : (e n).1 ⊔ a (n + 1) ≤ a n := sup_le_iff.mpr ⟨le_iSup₂_of_le n le_rfl le_rfl,
     iSup₂_le fun i hi ↦ le_iSup₂_of_le i (n.le_succ.trans hi) le_rfl⟩
@@ -441,10 +441,10 @@ theorem sSupIndep_iff_finite {s : Set α} :
     intro ht
     classical
       have h' := (h (insert a t) ?_ (t.mem_insert_self a)).eq_bot
-      · rwa [Finset.coe_insert, Set.insert_diff_self_of_notMem] at h'
-        exact fun con => ((Set.mem_diff a).1 (ht con)).2 (Set.mem_singleton a)
+      · rwa [Finset.coe_insert, Set.insert_sdiff_self_of_notMem] at h'
+        exact fun con => ((Set.mem_sdiff a).1 (ht con)).2 (Set.mem_singleton a)
       · rw [Finset.coe_insert, Set.insert_subset_iff]
-        exact ⟨ha, Set.Subset.trans ht diff_subset⟩⟩
+        exact ⟨ha, Set.Subset.trans ht sdiff_subset⟩⟩
 
 lemma iSupIndep_iff_supIndep {ι : Type*} {f : ι → α} :
     iSupIndep f ↔ ∀ (s : Finset ι), s.SupIndep f := by
@@ -680,18 +680,18 @@ theorem exists_sSupIndep_disjoint_sSup_atoms (b c : α) (hbc : b ≤ c)
     exact b_inf_Sup_s.disjoint_sup_right_of_disjoint_sup_left con.symm
   · rw [Set.mem_union, Set.mem_singleton_iff] at hx
     obtain rfl | xa := eq_or_ne x a
-    · simp only [Set.mem_singleton, Set.insert_diff_of_mem, Set.union_singleton]
-      exact con.mono_right ((sSup_le_sSup Set.diff_subset).trans le_sup_right)
+    · simp only [Set.mem_singleton, Set.insert_sdiff_of_mem, Set.union_singleton]
+      exact con.mono_right ((sSup_le_sSup Set.sdiff_subset).trans le_sup_right)
     · have h : (s ∪ {a}) \ {x} = s \ {x} ∪ {a} := by
         simp only [Set.union_singleton]
-        rw [Set.insert_diff_of_notMem]
+        rw [Set.insert_sdiff_of_notMem]
         rw [Set.mem_singleton_iff]
         exact Ne.symm xa
       rw [h, sSup_union, sSup_singleton]
       apply
         (s_ind (hx.resolve_right xa)).disjoint_sup_right_of_disjoint_sup_left
           (a_dis_Sup_s.mono_right _).symm
-      rw [← sSup_insert, Set.insert_diff_singleton, Set.insert_eq_of_mem (hx.resolve_right xa)]
+      rw [← sSup_insert, Set.insert_sdiff_singleton, Set.insert_eq_of_mem (hx.resolve_right xa)]
   · rw [Set.mem_union, Set.mem_singleton_iff] at hx
     obtain hx | rfl := hx
     · exact s_atoms x hx

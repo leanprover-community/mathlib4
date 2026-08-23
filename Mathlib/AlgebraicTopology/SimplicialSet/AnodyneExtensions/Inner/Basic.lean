@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jack McKoen
+Authors: Jack McKoen, Joël Riou
 -/
 module
 
@@ -96,5 +96,67 @@ lemma innerAnodyneExtensions_eq_retracts_transfiniteCompositionsOfShape :
       (coproducts.{u} innerHornInclusions.{u}).pushouts ℕ).retracts := by
   rw [innerAnodyneExtensions_eq_llp_rlp,
     SmallObject.llp_rlp_of_isCardinalForSmallObjectArgument_aleph0]
+
+/-- In the category of simplicial sets, a strong *inner* anodyne extension is a morphism
+which belongs to the closure of *inner* horn inclusions by pushouts, coproducts,
+transfinite compositions (but not by retracts). We define this class here
+by saying that `f : X ⟶ Y` is a strong inner anodyne extension if `f` is a monomorphism
+and there exists a regular, *inner* pairing (in the sense of Moss) for the subcomplex
+`Subcomplex.range f` of `Y`. -/
+def strongInnerAnodyneExtensions : MorphismProperty SSet.{u} :=
+  fun _ _ f ↦ Mono f ∧ ∃ (P : (Subcomplex.range f).Pairing) (_ : P.IsRegular), P.IsInner
+
+lemma strongInnerAnodyneExtensions.mono {X Y : SSet.{u}} {f : X ⟶ Y}
+    (hf : strongInnerAnodyneExtensions f) : Mono f := hf.1
+
+lemma strongInnerAnodyneExtensions_le_strongAnodyneExtensions :
+    strongInnerAnodyneExtensions.{u} ≤ strongAnodyneExtensions :=
+  fun _ _ _ ⟨_, P, _, _⟩ ↦ ⟨inferInstance, P, inferInstance⟩
+
+lemma Subcomplex.Pairing.strongInnerAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
+    (P : A.Pairing) [h₁ : P.IsRegular] [h₂ : P.IsInner] :
+    strongInnerAnodyneExtensions A.ι :=
+  ⟨inferInstance, Pairing.ofIso P (Iso.refl _)
+    (by simp only [Iso.refl_hom, preimage_id, Subfunctor.range_ι]), inferInstance, inferInstance⟩
+
+lemma strongInnerAnodyneExtensions_ι_iff {X : SSet.{u}} (A : X.Subcomplex) :
+    strongInnerAnodyneExtensions A.ι ↔ ∃ (P : A.Pairing) (_ : P.IsRegular), P.IsInner :=
+  ⟨fun hA ↦ by
+    obtain ⟨_, P, _, ⟨_, rfl⟩⟩ :
+        ∃ (B : X.Subcomplex) (P : B.Pairing) (h : P.IsRegular), P.IsInner ∧ B = A := by
+      obtain ⟨_, P₁, _, P₂⟩ := hA
+      exact ⟨_, P₁, inferInstance, ⟨P₂, by simp⟩⟩
+    exact ⟨P, ⟨inferInstance, inferInstance⟩⟩,
+  fun ⟨P, ⟨_, _⟩⟩ ↦ P.strongInnerAnodyneExtensions⟩
+
+lemma Subcomplex.Pairing.innerAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
+    (P : A.Pairing) [P.IsRegular] [P.IsInner] :
+    innerAnodyneExtensions A.ι :=
+  transfiniteCompositionsOfShape_le _ _ _
+    ⟨P.rankFunction.relativeCellComplex.toTransfiniteCompositionOfShape, fun j hj ↦ by
+      refine (?_ : (_ : MorphismProperty _) ≤ _ ) _
+        (P.rankFunction.relativeCellComplex.attachCells j hj).pushouts_coproducts
+      simp only [pushouts_le_iff, coproducts_le_iff]
+      rintro _ _ _ ⟨c⟩
+      have h0 := Fin.pos_iff_ne_zero.mpr (IsInner.ne_zero c.s rfl)
+      have hn := Fin.lt_last_iff_ne_last.mpr (IsInner.ne_last c.s rfl)
+      have : NeZero c.dim := ⟨by grind⟩
+      exact .horn_ι h0 hn⟩
+
+instance : strongInnerAnodyneExtensions.{u}.RespectsIso where
+  precomp e _ f hf := by
+    obtain ⟨_, P, hP, hP'⟩ := hf
+    refine ⟨inferInstance, P.ofIso (Iso.refl _) ?_, inferInstance, inferInstance⟩
+    simp [Subcomplex.range_comp, Subcomplex.range_eq_top e, Subcomplex.image_top]
+  postcomp e _ f hf := by
+    obtain ⟨_, P, hP, hP'⟩ := hf
+    refine ⟨inferInstance, P.ofIso (asIso e).symm ?_, inferInstance, inferInstance⟩
+    simp [Subcomplex.preimage_inv, Subcomplex.range_comp]
+
+lemma strongInnerAnodyneExtensions_le_innerAnodyneExtensions :
+    strongInnerAnodyneExtensions.{u} ≤ innerAnodyneExtensions := by
+  rintro X Y f ⟨_, P, _, _⟩
+  rw [← Subfunctor.toRange_ι f]
+  exact comp_mem _ _ _ (.of_isIso _) P.innerAnodyneExtensions
 
 end SSet

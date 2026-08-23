@@ -43,7 +43,7 @@ functions. `comapₗ` is an auxiliary definition and most lemmas deal with comap
 def comapₗ [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Measure β →ₗ[ℝ≥0∞] Measure α :=
   if hf : Injective f ∧ ∀ s, MeasurableSet s → MeasurableSet (f '' s) then
     liftLinear (OuterMeasure.comap f) fun μ s hs t => by
-      simp only [OuterMeasure.comap_apply, image_inter hf.1, image_diff hf.1]
+      simp only [OuterMeasure.comap_apply, image_inter hf.1, image_sdiff hf.1]
       apply le_toOuterMeasure_caratheodory
       exact hf.2 s hs
   else 0
@@ -62,8 +62,8 @@ Note that if `f` is not injective, this definition assigns `Set.univ` measure ze
 def comap [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure β) : Measure α :=
   if hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ then
     (OuterMeasure.comap f μ.toOuterMeasure).toMeasure fun s hs t => by
-      simp only [OuterMeasure.comap_apply, image_inter hf.1, image_diff hf.1]
-      exact (measure_inter_add_diff₀ _ (hf.2 s hs)).symm
+      simp only [OuterMeasure.comap_apply, image_inter hf.1, image_sdiff hf.1]
+      exact (measure_inter_add_sdiff₀ _ (hf.2 s hs)).symm
   else 0
 
 variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
@@ -113,13 +113,13 @@ theorem ae_eq_image_of_ae_eq_comap (f : α → β) (μ : Measure β) (hfi : Inje
   rw [EventuallyEq, ae_iff] at hst ⊢
   have h_eq_α : { a : α | ¬s a = t a } = s \ t ∪ t \ s := by
     ext1 x
-    simp only [eq_iff_iff, mem_setOf_eq, mem_union, mem_diff]
+    simp only [eq_iff_iff, mem_setOf_eq, mem_union, Set.mem_sdiff]
     tauto
   have h_eq_β : { a : β | ¬(f '' s) a = (f '' t) a } = f '' s \ f '' t ∪ f '' t \ f '' s := by
     ext1 x
-    simp only [eq_iff_iff, mem_setOf_eq, mem_union, mem_diff]
+    simp only [eq_iff_iff, mem_setOf_eq, mem_union, Set.mem_sdiff]
     tauto
-  rw [← Set.image_diff hfi, ← Set.image_diff hfi, ← Set.image_union] at h_eq_β
+  rw [← Set.image_sdiff hfi, ← Set.image_sdiff hfi, ← Set.image_union] at h_eq_β
   rw [h_eq_β]
   rw [h_eq_α] at hst
   exact measure_image_eq_zero_of_comap_eq_zero f μ hfi hf hst

@@ -70,7 +70,7 @@ instance (x : X) : Inhabited (OpenNhds x) :=
 
 instance opensNhds.instFunLike : FunLike (U ⟶ V) U.1 V.1 where
   coe f := Set.inclusion f.le
-  coe_injective' := by rintro ⟨⟨_⟩⟩ _ _; congr!
+  coe_injective := by rintro ⟨⟨_⟩⟩ _ _; congr!
 
 @[simp] lemma apply_mk (f : U ⟶ V) (y : X) (hy) : f ⟨y, hy⟩ = ⟨y, f.le hy⟩ := rfl
 

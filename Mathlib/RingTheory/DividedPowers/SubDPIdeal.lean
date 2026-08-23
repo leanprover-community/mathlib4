@@ -232,7 +232,7 @@ def mk' {J : Ideal A} (hJ : hI.IsSubDPIdeal J) : hI.SubDPIdeal := ⟨J, hJ.1, hJ
 
 instance : SetLike (SubDPIdeal hI) A where
   coe s := s.carrier
-  coe_injective' p q h := by
+  coe_injective p q h := by
     rw [SetLike.coe_set_eq] at h
     cases p; cases q; congr
 

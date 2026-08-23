@@ -194,7 +194,8 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Height.totalWeight` is positive for number fields. -/
 @[positivity Height.totalWeight _]
-meta def evalHeightTotalWeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalHeightTotalWeight : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Height.totalWeight $K $KF $KA) =>
     -- Check whether there is a `NumberField` instance for `$K` around.

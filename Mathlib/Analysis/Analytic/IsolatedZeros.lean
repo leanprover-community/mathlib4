@@ -347,7 +347,7 @@ theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x))
     (hs : s ∈ codiscreteWithin (f '' U)) :
     f ⁻¹' s ∈ codiscreteWithin U := by
-  simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_diff] at *
+  simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_sdiff] at *
   intro x hx
   apply mem_of_superset ((hfU x hx).preimage_of_nhdsNE (h₂f x hx) (hs (f x) (by tauto)))
   grind

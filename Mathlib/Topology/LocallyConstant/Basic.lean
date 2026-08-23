@@ -213,7 +213,7 @@ instance [Inhabited Y] : Inhabited (LocallyConstant X Y) :=
 
 instance : FunLike (LocallyConstant X Y) X Y where
   coe := LocallyConstant.toFun
-  coe_injective' := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
+  coe_injective := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
 
 /-- See Note [custom simps projections]. -/
 def Simps.apply (f : LocallyConstant X Y) : X → Y := f
@@ -446,7 +446,7 @@ variable {R : Type*} [One R] {U : Set X} (f : LocallyConstant X R)
 noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
   isLocallyConstant := fun s => by
-    rw [mulIndicator_preimage, Set.ite, Set.diff_eq]
+    rw [mulIndicator_preimage, Set.ite, Set.sdiff_eq]
     exact ((f.2 s).inter hU.isOpen).union ((IsLocallyConstant.const 1 s).inter hU.compl.isOpen)
 
 variable (a : X)

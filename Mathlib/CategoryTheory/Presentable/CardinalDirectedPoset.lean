@@ -14,8 +14,13 @@ public import Mathlib.Order.Category.PartOrdEmb
 
 Given a regular cardinal `κ : Cardinal.{u}`, we define the
 category `CardinalFilteredPoset κ` of `κ`-directed partially ordered
-types (with order embeddings as morphisms). We shall show that it is
-a `κ`-accessible category (TODO @joelriou).
+types (with order embeddings as morphisms), and we show that it is
+a `κ`-accessible category.
+
+If `κ ≤ κ'` where `κ'` is also a regular cardinal, we characterize
+the `κ'`-presentable objects of `CardinalFilteredPoset κ` as
+the objects `J` such that the underlying type `J.obj` has
+cardinality `< κ'`.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -105,6 +110,13 @@ abbrev of (J : PartOrdEmb.{u}) [IsCardinalFiltered J κ] : CardinalFilteredPoset
   obj := J
   property := inferInstance
 
+lemma Hom.injective {J₁ J₂ : CardinalFilteredPoset κ} (f : J₁ ⟶ J₂) :
+    Function.Injective f := f.hom.injective
+
+lemma Hom.le_iff_le {J₁ J₂ : CardinalFilteredPoset κ} (f : J₁ ⟶ J₂) (x₁ x₂ : J₁.obj) :
+    f x₁ ≤ f x₂ ↔ x₁ ≤ x₂ :=
+  f.hom.hom.le_iff_le
+
 instance (J : CardinalFilteredPoset κ) : IsCardinalFiltered J.obj κ := J.property
 
 instance (J : CardinalFilteredPoset κ) : IsFiltered J.obj :=
@@ -169,6 +181,77 @@ noncomputable def isColimitCoconeOfPredicateSet
     (PartOrdEmb.isColimitOfPredicateSet P hP)
 
 end
+
+variable (κ) in
+/-- The property of posets in `CardinalFilteredPoset κ` that are
+of cardinality `< κ` and have terminal object. -/
+def hasCardinalLTWithTerminal : ObjectProperty (CardinalFilteredPoset κ) :=
+  fun J ↦ HasCardinalLT J.obj κ ∧ HasTerminal J.obj
+
+instance : ObjectProperty.EssentiallySmall.{u} (hasCardinalLTWithTerminal κ) where
+  exists_small_le' := by
+    obtain ⟨X, hX⟩ : ∃ (X : Type u), Cardinal.mk X = κ := ⟨κ.ord.ToType, by simp⟩
+    let α : Type u := Σ (S : Set X) (_ : PartialOrder S),
+      ULift.{u} (PLift (IsCardinalFiltered S κ))
+    let (a : α) : PartialOrder a.1 := a.2.1
+    let ι (a : α) : CardinalFilteredPoset κ :=
+      { obj := .of a.1
+        property := a.2.2.down.down }
+    refine ⟨.ofObj ι, inferInstance, fun J ⟨hJ, _⟩ ↦ ?_⟩
+    obtain ⟨f⟩ : Cardinal.mk J.obj ≤ Cardinal.mk X := by
+      simpa [hX] using ((hasCardinalLT_iff_cardinal_mk_lt _ _).1 hJ).le
+    let e := Equiv.ofInjective _ f.injective
+    letI : PartialOrder (Set.range f) := PartialOrder.lift _ e.symm.injective
+    let e' : Set.range f ≃o J.obj := { toEquiv := e.symm, map_rel_iff' := by rfl }
+    exact ⟨_, ⟨⟨Set.range f, inferInstance,
+      ⟨⟨IsCardinalFiltered.of_equivalence κ e'.symm.equivalence⟩⟩⟩⟩,
+        ⟨CardinalFilteredPoset.ι.preimageIso (PartOrdEmb.Iso.mk (by exact e'.symm))⟩⟩
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalFilteredPoset κ)
+    {κ' : Cardinal.{u}} [Fact κ'.IsRegular] (hJ : HasCardinalLT J.obj κ') (h : κ ≤ κ') :
+    IsCardinalPresentable J κ' where
+  preservesColimitOfShape A _ _ := ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨by
+  · have := isFiltered_of_isCardinalFiltered A κ'
+    have := IsCardinalFiltered.of_le A h
+    replace hc := isColimitOfPreserves (forget _) hc
+    refine Types.FilteredColimit.isColimitOf' _ _ (fun f ↦ ?_) (fun j f g h ↦ ?_)
+    · dsimp at f
+      choose j g hg using fun (x : J.obj) ↦ Types.jointly_surjective_of_isColimit hc (f x)
+      let m := IsCardinalFiltered.max j hJ
+      let φ (x : J.obj) : (F.obj m).obj := F.map (IsCardinalFiltered.toMax j hJ x) (g x)
+      have hφ (x : J.obj) : f x = c.ι.app _ (φ x) := by
+        dsimp [φ]
+        rw [← hg, ← ConcreteCategory.comp_apply, c.w]
+        rfl
+      refine ⟨m,
+        ObjectProperty.homMk (PartOrdEmb.ofHom
+          { toFun := φ
+            inj' x y h := Hom.injective f (by simpa [hφ])
+            map_rel_iff' {x y} := ?_ }), ?_⟩
+      · simp [← Hom.le_iff_le f, hφ]
+      · dsimp
+        ext x
+        trans c.ι.app (j x) (g x)
+        · exact (hg x).symm
+        · exact (ConcreteCategory.congr_hom (c.w (IsCardinalFiltered.toMax j hJ x)).symm (g x))
+    · choose k a hk using fun (x : J.obj) ↦
+        (Types.FilteredColimit.isColimit_eq_iff' hc _ _).1 (ConcreteCategory.congr_hom h x)
+      dsimp at f g h k a hk ⊢
+      obtain ⟨l, b, c, hl⟩ : ∃ (l : A) (c : j ⟶ l) (b : ∀ x, k x ⟶ l),
+          ∀ x, a x ≫ b x = c := by
+        let φ (x : J.obj) : j ⟶ IsCardinalFiltered.max k hJ :=
+          a x ≫ IsCardinalFiltered.toMax k hJ x
+        exact ⟨IsCardinalFiltered.coeq φ hJ,
+          IsCardinalFiltered.toCoeq φ hJ,
+          fun x ↦ IsCardinalFiltered.toMax k hJ x ≫ IsCardinalFiltered.coeqHom φ hJ,
+          fun x ↦ by simpa [φ] using IsCardinalFiltered.coeq_condition φ hJ x⟩
+      refine ⟨l, b, ?_⟩
+      ext x
+      simpa only [← hl x, Functor.map_comp, ObjectProperty.FullSubcategory.comp_hom,
+        PartOrdEmb.hom_comp, RelEmbedding.coe_trans, Function.comp_apply]
+          using! congr_arg _ (hk x)⟩⟩⟩
 
 section
 
@@ -240,7 +323,111 @@ noncomputable def isColimitCoconeWithTop : IsColimit (coconeWithTop J κ') :=
     | some a => exact ⟨_, propSetWithTop_pair _ a, by aesop⟩
     | none => exact ⟨_, propSetWithTop_pair _ (Classical.arbitrary _), by aesop⟩)
 
+variable {κ'} in
+protected lemma isCardinalPresentable_iff (h : κ ≤ κ') :
+    IsCardinalPresentable J κ' ↔ HasCardinalLT J.obj κ' := by
+  refine ⟨fun _ ↦ ?_, fun hJ ↦ isCardinalPresentable_of_hasCardinalLT_of_le _ hJ h⟩
+  obtain ⟨X, f, hf⟩ :=
+    IsCardinalPresentable.exists_hom_of_isColimit κ' (isColimitCoconeWithTop J κ')
+      (ObjectProperty.homMk (PartOrdEmb.ofHom WithTop.coeOrderHom))
+  replace hf : OrderEmbedding.subtype X.1 ∘ f = WithTop.coeOrderHom := by
+    ext x
+    exact ConcreteCategory.congr_hom hf x
+  refine X.2.1.of_injective f (Function.Injective.of_comp
+    (f := OrderEmbedding.subtype X.1) ?_)
+  dsimp at hf ⊢
+  rw [hf]
+  exact WithTop.coe_injective
+
 end
+
+protected lemma isCardinalPresentable_iff' (J : CardinalFilteredPoset κ) :
+    IsCardinalPresentable J κ ↔ HasCardinalLT J.obj κ :=
+  CardinalFilteredPoset.isCardinalPresentable_iff _ (le_refl _)
+
+section
+
+variable (J : CardinalFilteredPoset κ)
+
+/-- Given `J : CardinalFilteredPoset κ`, this is the predicate
+on `Set J.obj` that is satisfied by subsets that are of
+cardinality `< κ` and have a terminal object. -/
+def PropSet (S : Set J.obj) : Prop :=
+  HasCardinalLT S κ ∧ HasTerminal S
+
+instance (S : Subtype J.PropSet) : HasTerminal S := S.prop.2
+
+instance (S : Subtype J.PropSet) : IsCardinalFiltered S κ :=
+  isCardinalFiltered_of_hasTerminal _ _
+
+variable {J} in
+lemma propSet_singleton (j : J.obj) : J.PropSet {j} :=
+  ⟨hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out), by
+    let : OrderTop ({j} : Set J.obj) := { top := ⟨j, rfl⟩, le_top := by simp }
+    exact isTerminalTop.hasTerminal⟩
+
+instance : IsCardinalFiltered (Subtype J.PropSet) κ :=
+  isCardinalFiltered_preorder _ _ (fun K α hK ↦ by
+    rw [← hasCardinalLT_iff_cardinal_mk_lt] at hK
+    let t (k : K) : (α k).val := ⊤_ _
+    let m := IsCardinalFiltered.max (fun k ↦ (t k).val) hK
+    let S : Set J.obj := (⋃ (k : K), α k) ∪ {m}
+    let : OrderTop S :=
+      { top := ⟨m, by simp [S]⟩
+        le_top := by
+          rintro ⟨s, hs⟩
+          simp only [Set.union_singleton, Set.mem_insert_iff, Set.mem_iUnion, S] at hs
+          obtain rfl | ⟨k, hs⟩ := hs
+          · simp
+          · simp only [Subtype.mk_le_mk]
+            exact leOfHom ((by exact terminal.from (C := (α k).val) ⟨_, hs⟩) ≫
+              IsCardinalFiltered.toMax _ hK k) }
+    refine ⟨⟨S, ?_, isTerminalTop.hasTerminal⟩, fun k ↦ ?_⟩
+    · have hκ : Cardinal.aleph0 ≤ κ :=  Cardinal.IsRegular.aleph0_le Fact.out
+      exact hasCardinalLT_union hκ (hasCardinalLT_iUnion _ hK (fun k ↦ (α k).2.1))
+        (hasCardinalLT_of_finite _ _ hκ)
+    · simp only [← Subtype.coe_le_coe, Set.le_eq_subset]
+      exact subset_trans (Set.subset_iUnion_of_subset k (subset_refl _)) Set.subset_union_left )
+
+instance : IsFiltered (Subtype J.PropSet) := isFiltered_of_isCardinalFiltered _ κ
+
+instance : IsDirectedOrder (Subtype J.PropSet) :=
+  IsFiltered.isDirectedOrder _
+
+instance : Nonempty (Subtype J.PropSet) :=
+  IsFiltered.nonempty
+
+/-- For any object `J : CardinalFilteredPoset κ`, this is a colimit
+cocone exhibiting `J` as the colimit of its subsets
+that are of cardinality `< κ` and have a terminal object. -/
+abbrev cocone : Cocone (functorOfPredicateSet J.PropSet) :=
+  coconeOfPredicateSet J.PropSet
+
+/-- Any object `J : CardinalFilteredPoset κ` is a colimit
+of its subsets that are of cardinality `< κ` and have a terminal object. -/
+noncomputable def isColimitCocone (J : CardinalFilteredPoset κ) :
+    IsColimit (cocone J) :=
+  isColimitCoconeOfPredicateSet _ (fun a ↦ ⟨_, propSet_singleton a, by simp⟩)
+
+end
+
+variable (κ) in
+lemma isCardinalFilteredGenerator_hasCardinalLTWithTerminal :
+    (hasCardinalLTWithTerminal κ).IsCardinalFilteredGenerator κ where
+  le_isCardinalPresentable := by
+    rintro J ⟨_, _⟩
+    rwa [isCardinalPresentable_iff, J.isCardinalPresentable_iff']
+  exists_colimitsOfShape J :=
+    ⟨_, inferInstance, inferInstance, ⟨{
+      diag := _
+      ι := _
+      isColimit := isColimitCocone J
+      prop_diag_obj j := j.prop }⟩⟩
+
+instance : IsCardinalAccessibleCategory (CardinalFilteredPoset κ) κ where
+  exists_generator :=
+    ⟨hasCardinalLTWithTerminal κ, inferInstance,
+      isCardinalFilteredGenerator_hasCardinalLTWithTerminal κ⟩
 
 end CardinalFilteredPoset
 

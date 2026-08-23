@@ -147,7 +147,7 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
   rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
-  simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
+  simpa only [mem_sdiff, mem_setOf_eq, not_lt] using antisymm_iff
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val

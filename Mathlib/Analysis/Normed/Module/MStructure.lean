@@ -121,18 +121,14 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
             have :=
               add_le_add_left (norm_le_insert' (R • x) (R • P • R • x)) (2 • ‖(1 - R) • P • R • x‖)
             simpa only [mul_smul, sub_smul, one_smul] using this
-      rw [ge_iff_le] at e1
-      nth_rewrite 2 [← add_zero ‖R • x‖] at e1
-      rw [add_le_add_iff_left, two_smul, ← two_mul] at e1
-      rw [le_antisymm_iff]
-      refine ⟨?_, norm_nonneg _⟩
-      rwa [← mul_zero (2 : ℝ), mul_le_mul_iff_right₀ (show (0 : ℝ) < 2 by simp)] at e1
+      rw [two_smul] at e1
+      nlinarith [e1, norm_nonneg ((P * R) • x - (R * P * R) • x)]
   have QP_eq_QPQ : Q * P = Q * P * Q := by
-    have e1 : P * (1 - Q) = P * (1 - Q) - (Q * P - Q * P * Q) :=
+    have e1 : Q * P - Q * P * Q = 0 := by
       calc
-        P * (1 - Q) = (1 - Q) * P * (1 - Q) := by rw [PR_eq_RPR (1 - Q) h₂.Lcomplement]
-        _ = P * (1 - Q) - (Q * P - Q * P * Q) := by noncomm_ring
-    rwa [eq_sub_iff_add_eq, add_eq_left, sub_eq_zero] at e1
+        Q * P - Q * P * Q = P * (1 - Q) - (1 - Q) * P * (1 - Q) := by noncomm_ring
+        _ = 0 := sub_eq_zero.mpr (PR_eq_RPR (1 - Q) h₂.Lcomplement)
+    simpa [sub_eq_zero] using e1
   change P * Q = Q * P
   rw [QP_eq_QPQ, PR_eq_RPR Q h₂]
 

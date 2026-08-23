@@ -98,7 +98,7 @@ nonrec def inr : β →*₀o WithZero (αˣ ×ₗ βˣ) where
 as their product. -/
 @[simps!]
 nonrec def fst : WithZero (αˣ ×ₗ βˣ) →*₀o α where
-  __ := (fst α β).comp (WithZero.map' (toLexMulEquiv ..).symm.toMonoidHom)
+  __ := (fst α β).comp (WithZero.map' (toLexMulEquiv (αˣ × βˣ)).symm.toMonoidHom)
   monotone' := by
     -- this can't rely on `Monotone.comp` since `ofLex` is not monotone
     intro x y

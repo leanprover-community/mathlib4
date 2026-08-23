@@ -61,7 +61,7 @@ end convert_to
 
 example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
     prime (n + n + 1) := by
-  convert h
+  convert! h
   · guard_target = (HAdd.hAdd : Nat → Nat → Nat) = HMul.hMul
     exact test_sorry
   · guard_target = n = 2
@@ -69,15 +69,7 @@ example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
 
 example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
     prime (n + n + 1) := by
-  convert (config := .unfoldSameFun) h
-  guard_target = n + n = 2 * n
-  exact test_sorry
-
--- `convert! (config := .unfoldSameFun)` does the same thing as `convert (config := .unfoldSameFun)`
--- (at least for now)
-example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
-    prime (n + n + 1) := by
-  convert! (config := .unfoldSameFun) h
+  convert h
   guard_target = n + n = 2 * n
   exact test_sorry
 

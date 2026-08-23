@@ -26,6 +26,7 @@ modeq, congruence, mod, MOD, modulo, integers
 
 
 /-- `a ≡ b [ZMOD n]` when `a % n = b % n`. -/
+@[wikidata Q3773677]
 def Int.ModEq (n a b : ℤ) :=
   a % n = b % n
 

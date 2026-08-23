@@ -49,7 +49,7 @@ variable {n : ℕ∞} {s : Set E}
 
 instance : FunLike (ContDiffSupportedOn 𝕜 E F n s) E F where
   coe := Subtype.val
-  coe_injective' := Subtype.coe_injective
+  coe_injective := Subtype.coe_injective
 
 @[simp]
 lemma coe_mk (f : E → F) (h) : (⟨f, h⟩ : ContDiffSupportedOn 𝕜 E F n s) = f := rfl

@@ -267,14 +267,20 @@ theorem hasFDerivWithinAt_insert [T1Space E] {y : E} :
 alias ⟨_, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
 
 @[simp]
-theorem hasFDerivWithinAt_diff_singleton_self :
+theorem hasFDerivWithinAt_sdiff_singleton_self :
     HasFDerivWithinAt f f' (s \ {x}) x ↔ HasFDerivWithinAt f f' s x := by
-  rw [← hasFDerivWithinAt_insert_self, insert_diff_singleton, hasFDerivWithinAt_insert_self]
+  rw [← hasFDerivWithinAt_insert_self, insert_sdiff_singleton, hasFDerivWithinAt_insert_self]
+
+@[deprecated (since := "2026-06-03")]
+alias hasFDerivWithinAt_diff_singleton_self := hasFDerivWithinAt_sdiff_singleton_self
 
 @[simp]
-theorem hasFDerivWithinAt_diff_singleton [T1Space E] (y : E) :
+theorem hasFDerivWithinAt_sdiff_singleton [T1Space E] (y : E) :
     HasFDerivWithinAt f f' (s \ {y}) x ↔ HasFDerivWithinAt f f' s x := by
-  rw [← hasFDerivWithinAt_insert, insert_diff_singleton, hasFDerivWithinAt_insert]
+  rw [← hasFDerivWithinAt_insert, insert_sdiff_singleton, hasFDerivWithinAt_insert]
+
+@[deprecated (since := "2026-06-03")]
+alias hasFDerivWithinAt_diff_singleton := hasFDerivWithinAt_sdiff_singleton
 
 @[simp]
 protected theorem HasFDerivWithinAt.empty : HasFDerivWithinAt f f' ∅ x := by
@@ -362,7 +368,7 @@ as this statement is empty. -/
 theorem HasFDerivWithinAt.of_not_accPt (h : ¬AccPt x (𝓟 s)) :
     HasFDerivWithinAt f f' s x := by
   rw [accPt_principal_iff_nhdsWithin, not_neBot] at h
-  rw [← hasFDerivWithinAt_diff_singleton_self, hasFDerivWithinAt_iff_isLittleOTVS, h]
+  rw [← hasFDerivWithinAt_sdiff_singleton_self, hasFDerivWithinAt_iff_isLittleOTVS, h]
   exact .bot
 
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,

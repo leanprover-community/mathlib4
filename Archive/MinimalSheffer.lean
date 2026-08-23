@@ -121,7 +121,7 @@ lemma sup_le (h₁ : a ≤ c) (h₂ : b ≤ c) : aᶜ | bᶜ ≤ c := by
   rw [h₂]
   have l1 := (abba (aᶜ | (b | c)) (b | c | c)).symm
   rw [comm _ (aᶜ | _), ← le_def] at l1
-  convert! l1 using 1
+  convert l1
   have l2 := veroff (b | c) c a
   rw [comm _ a, ← h₁, comm, comm _ aᶜ] at l2
   nth_rw 1 [l2, comm (b | c) c, comm b, veroff]

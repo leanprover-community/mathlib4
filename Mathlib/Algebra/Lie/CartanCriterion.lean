@@ -68,6 +68,7 @@ lemma exists_polynomial_eval_sub_aux
   rw [← (algebraMap R K).map_sub, ← (algebraMap R K).map_sub, ← map_sub, ← map_sub, heq]
 
 variable [AddCommGroup M] [LieRingModule L M]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- An auxiliary lemma used to prove `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero`
 which proves the same result except without the algebraically closed assumption. -/

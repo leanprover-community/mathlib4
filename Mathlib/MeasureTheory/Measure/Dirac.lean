@@ -351,10 +351,10 @@ variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 lemma ae_mem_finset_iff : (∀ᵐ a ∂μ, a ∈ s) ↔ μ = ∑ a ∈ s, μ {a} • .dirac a where
   mp hμ := by
     ext t ht
-    rw [← measure_diff_null (s := t) hμ]
+    rw [← measure_sdiff_null (s := t) hμ]
     dsimp
     classical
-    rw [Set.diff_compl, ← (s : Set α).biUnion_of_singleton]
+    rw [Set.sdiff_compl, ← (s : Set α).biUnion_of_singleton]
     simp_rw [Finset.mem_coe, Set.inter_iUnion]
     rw [measure_biUnion_finset (fun i hi j hj hij ↦ .inter_left' _ <| .inter_right' _ ?_)
       (by measurability)]

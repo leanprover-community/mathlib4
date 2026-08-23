@@ -92,7 +92,7 @@ variable (p) in
   cases nonempty_fintype V
   simp only [binomialRandom, measurableEmbedding_edgeSet.comap_apply, Set.image_singleton,
     edgeSet_subset_compl_diagSet, setBernoulli_singleton, Set.toFinite]
-  rw [Set.ncard_diff (by simp)]
+  rw [Set.ncard_sdiff (by simp)]
   congr!
   rw [Nat.card_eq_fintype_card, ← Sym2.card_diagSet_compl, Fintype.card_eq_nat_card,
     ← Nat.card_coe_set_eq]

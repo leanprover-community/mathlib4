@@ -193,7 +193,7 @@ lemma valueMonoid_eq_valueGroup' : (valueMonoid f : Set Bˣ) = valueGroup f := b
 
 lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
   ext x
-  simp only [mem_diff, mem_range, mem_singleton_iff, ← valueMonoid_eq_valueGroup' f, mem_image,
+  simp only [mem_sdiff, mem_range, mem_singleton_iff, ← valueMonoid_eq_valueGroup' f, mem_image,
     SetLike.mem_coe, mem_valueMonoid_iff, mem_preimage, mem_range]
   constructor
   · rintro ⟨y, hy, rfl⟩

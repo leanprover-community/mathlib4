@@ -35,6 +35,7 @@ namespace CategoryTheory.Limits
 
 universe t w w' v u
 
+set_option linter.checkUnivs false in
 /-- The shape of a multiequalizer diagram. It involves two types `L` and `R`,
 and two maps `R → L`. -/
 @[nolint checkUnivs]
@@ -58,6 +59,7 @@ def MulticospanShape.prod (ι : Type w) : MulticospanShape where
   fst := _root_.Prod.fst
   snd := _root_.Prod.snd
 
+set_option linter.checkUnivs false in
 /-- The shape of a multicoequalizer diagram. It involves two types `L` and `R`,
 and two maps `L → R`. -/
 @[nolint checkUnivs]

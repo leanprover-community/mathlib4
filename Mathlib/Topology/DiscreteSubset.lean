@@ -203,7 +203,7 @@ def Filter.codiscreteWithin (S : Set X) : Filter X := ⨆ x ∈ S, 𝓝[S \ {x}]
 lemma mem_codiscreteWithin {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, Disjoint (𝓝[≠] x) (𝓟 (T \ S)) := by
   simp only [codiscreteWithin, mem_iSup, mem_nhdsWithin, disjoint_principal_right, subset_def,
-    mem_diff, mem_inter_iff, mem_compl_iff]
+    Set.mem_sdiff, mem_inter_iff, mem_compl_iff]
   congr! 7 with x - u y
   tauto
 
@@ -212,7 +212,7 @@ A set `s` is codiscrete within `U` iff `s ∪ Uᶜ` is a punctured neighborhood 
 -/
 theorem mem_codiscreteWithin_iff_forall_mem_nhdsNE {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, S ∪ Tᶜ ∈ 𝓝[≠] x := by
-  simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_diff]
+  simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_sdiff]
 
 lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
@@ -238,7 +238,7 @@ theorem isDiscrete_of_codiscreteWithin {U s : Set X} (h : sᶜ ∈ Filter.codisc
     IsDiscrete (s ∩ U) := by
   rw [(by simp : ((s ∩ U) : Set X) = ((sᶜ ∪ Uᶜ)ᶜ : Set X)), isDiscrete_iff_nhdsNE]
   simp_rw [← Filter.mem_iff_inf_principal_compl]
-  simp_all [← Set.compl_diff, mem_codiscreteWithin]
+  simp_all [← Set.compl_sdiff, mem_codiscreteWithin]
 
 /-- Helper lemma for `codiscreteWithin_iff_locallyFiniteComplementWithin`: A set `s` is
 `codiscreteWithin U` iff every point `z ∈ U` has a punctured neighborhood that does not intersect
@@ -278,8 +278,8 @@ theorem nhdsNE_of_nhdsNE_sdiff_finite {X : Type*} [TopologicalSpace X] [T1Space 
   obtain ⟨t, ht, h₁ts, h₂ts⟩ := hU
   use t \ (s \ {x})
   constructor
-  · rw [← isClosed_compl_iff, compl_diff]
-    exact s.toFinite.diff.isClosed.union (isClosed_compl_iff.2 ht)
+  · rw [← isClosed_compl_iff, compl_sdiff]
+    exact s.toFinite.sdiff.isClosed.union (isClosed_compl_iff.2 ht)
   · tauto_set
 
 /-- In a T1Space, a set `s` is codiscreteWithin `U` iff it has locally finite complement within `U`.
@@ -334,7 +334,7 @@ def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X := codiscreteW
 
 lemma mem_codiscrete {S : Set X} :
     S ∈ codiscrete X ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 Sᶜ) := by
-  simp [codiscrete, mem_codiscreteWithin, compl_eq_univ_diff]
+  simp [codiscrete, mem_codiscreteWithin, compl_eq_univ_sdiff]
 
 lemma mem_codiscrete_accPt {S : Set X} :
     S ∈ codiscrete X ↔ ∀ x, ¬AccPt x (𝓟 Sᶜ) := by
@@ -355,7 +355,7 @@ lemma codiscreteWithin_le_codiscrete_inf_principal (s : Set X) :
 theorem Topology.IsEmbedding.image_mem_codiscreteWithin {f : X → Y} (hf : IsEmbedding f)
     {s t : Set X} : f '' s ∈ codiscreteWithin (f '' t) ↔ s ∈ codiscreteWithin t := by
   simp only [mem_codiscreteWithin_accPt, forall_mem_image, accPt_principal_iff_clusterPt,
-    ← hf.mapClusterPt_iff, MapClusterPt, map_principal, image_diff hf.injective, image_singleton]
+    ← hf.mapClusterPt_iff, MapClusterPt, map_principal, image_sdiff hf.injective, image_singleton]
 
 theorem Topology.IsEmbedding.image_mem_codiscreteWithin_range {f : X → Y} (hf : IsEmbedding f)
     {s : Set X} : f '' s ∈ codiscreteWithin (range f) ↔ s ∈ codiscrete X := by
@@ -367,7 +367,7 @@ lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
 
 @[simp]
 theorem codiscreteWithin_eq_bot_iff {S : Set X} : codiscreteWithin S = ⊥ ↔ IsDiscrete S := by
-  simp [isDiscrete_iff_nhdsNE, codiscreteWithin, ← nhdsWithin_inter', Set.diff_eq, inter_comm]
+  simp [isDiscrete_iff_nhdsNE, codiscreteWithin, ← nhdsWithin_inter', Set.sdiff_eq, inter_comm]
 
 section T1Space
 
@@ -393,16 +393,19 @@ namespace IsCompact
 
 variable {K : Set X}
 
-theorem finite_diff_of_mem_codiscreteWithin (hK : IsCompact K) (hs : s ∈ codiscreteWithin K) :
+theorem finite_sdiff_of_mem_codiscreteWithin (hK : IsCompact K) (hs : s ∈ codiscreteWithin K) :
     (K \ s).Finite := by
   rw [mem_codiscreteWithin_accPt] at hs
   contrapose! hs
   exact Set.Infinite.exists_accPt_of_subset_isCompact hs hK (sep_subset _ _)
 
+@[deprecated (since := "2026-06-03")]
+alias finite_diff_of_mem_codiscreteWithin := finite_sdiff_of_mem_codiscreteWithin
+
 theorem cofinite_inf_le_codiscreteWithin (hK : IsCompact K) :
     cofinite ⊓ 𝓟 K ≤ codiscreteWithin K := by
   intro s hs
-  simpa [mem_inf_principal, compl_setOf] using! hK.finite_diff_of_mem_codiscreteWithin hs
+  simpa [mem_inf_principal, compl_setOf] using! hK.finite_sdiff_of_mem_codiscreteWithin hs
 
 theorem codiscreteWithin_eq [T1Space X] (hK : IsCompact K) :
     codiscreteWithin K = cofinite ⊓ 𝓟 K := by

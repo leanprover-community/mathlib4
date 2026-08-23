@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 # Parametrized adjunctions and limits
 
 Given bifunctors `F : C₁ ⥤ C₂ ⥤ C₃`, `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` and
-a paremetrized adjunction `adj₂ : F ⊣₂ G`, we show that for any `X₃ : C₃`,
+a parametrized adjunction `adj₂ : F ⊣₂ G`, we show that for any `X₃ : C₃`,
 the functor `G.flip.obj X₃ : C₁ᵒᵖ ⥤ C₃` preserves limits of shape `J`
 if for any `X₂ : C₂`, the functor `F.flip.obj X₂ : C₁ ⥤ C₃`
 preserves colimits of shape `Jᵒᵖ`.

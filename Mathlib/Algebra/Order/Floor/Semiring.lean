@@ -15,7 +15,7 @@ This file contains basic results on the natural-valued floor and ceiling functio
 
 ## TODO
 
-`LinearOrderedSemiring` can be relaxed to `OrderedSemiring` in many lemmas.
+`LinearOrder` can be relaxed to `PartialOrder` in many lemmas.
 
 ## Tags
 

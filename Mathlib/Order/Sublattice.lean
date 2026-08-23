@@ -42,7 +42,7 @@ variable {L M : Sublattice α} {f : LatticeHom α β} {s t : Set α} {a b : α}
 
 instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
-  coe_injective' L M h := by cases L; congr
+  coe_injective L M h := by cases L; congr
 
 instance : PartialOrder (Sublattice α) := .ofSetLike (Sublattice α) α
 

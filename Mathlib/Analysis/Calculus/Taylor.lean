@@ -152,7 +152,7 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
         ((k ! : ℝ)⁻¹ * (x - y) ^ k) • iteratedDerivWithin (k + 1) f s y) t y := by
   replace hf :
     HasDerivWithinAt (iteratedDerivWithin (k + 1) f s) (iteratedDerivWithin (k + 2) f s y) t y := by
-    convert! (hf.mono_of_mem_nhdsWithin hs).hasDerivWithinAt using 1
+    convert (hf.mono_of_mem_nhdsWithin hs).hasDerivWithinAt
     rw [iteratedDerivWithin_succ]
     exact (derivWithin_of_mem_nhdsWithin hs ht hf).symm
   have : HasDerivWithinAt (fun t => ((k + 1 : ℝ) * k !)⁻¹ * (x - t) ^ (k + 1))
@@ -284,7 +284,7 @@ theorem Real.taylor_tendsto {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set �
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :
     Filter.Tendsto (fun x ↦ (f x - taylorWithinEval f n s x₀ x) / (x - x₀) ^ n)
       (𝓝[s] x₀) (𝓝 0) := by
-  convert! _root_.taylor_tendsto hs hx₀s hf using 2 with x
+  convert _root_.taylor_tendsto hs hx₀s hf with x
   simp [div_eq_inv_mul]
 
 

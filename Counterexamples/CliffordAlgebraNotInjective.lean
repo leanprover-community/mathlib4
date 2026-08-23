@@ -234,7 +234,7 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
   dsimp only [gen]
   simp_rw [← map_smul, ← map_sub, ← Submodule.Quotient.mk_smul _ (_ : K),
     ← Submodule.Quotient.mk_sub]
-  convert! LinearMap.map_zero _ using 2
+  convert LinearMap.map_zero _
   rw [Submodule.Quotient.mk_eq_zero]
   simp +decide [sub_zero]
 

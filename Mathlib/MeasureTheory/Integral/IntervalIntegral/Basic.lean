@@ -863,7 +863,7 @@ open ContinuousLinearMap
 theorem _root_.ContinuousLinearMap.intervalIntegral_apply {a b : ℝ} {φ : ℝ → F →L[𝕜] E}
     (hφ : IntervalIntegrable φ μ a b) (v : F) :
     (∫ x in a..b, φ x ∂μ) v = ∫ x in a..b, φ x v ∂μ := by
-  simp_rw [intervalIntegral_eq_integral_uIoc, ← integral_apply hφ.def' v, coe_smul', Pi.smul_apply]
+  simp_rw [intervalIntegral_eq_integral_uIoc, ← integral_apply hφ.def' v, smul_apply]
 
 variable [NormedSpace ℝ F] [CompleteSpace F]
 
@@ -872,6 +872,19 @@ theorem _root_.ContinuousLinearMap.intervalIntegral_comp_comm [CompleteSpace E] 
   simp_rw [intervalIntegral, L.integral_comp_comm hf.1, L.integral_comp_comm hf.2, L.map_sub]
 
 end ContinuousLinearMap
+
+section LinearIsometry
+
+variable {a b : ℝ} {μ : Measure ℝ} {f : ℝ → E} [RCLike 𝕜]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+
+variable [NormedSpace ℝ F] [CompleteSpace E] [CompleteSpace F]
+
+theorem _root_.LinearIsometry.intervalIntegral_comp_comm (L : E →ₗᵢ[𝕜] F) (f : ℝ → E) :
+    ∫ x in a..b, L (f x) ∂μ = L (∫ x in a..b, f x ∂μ) := by
+  simp_rw [intervalIntegral, L.integral_comp_comm, L.map_sub]
+
+end LinearIsometry
 
 section RCLike
 
@@ -884,6 +897,10 @@ theorem intervalIntegral_re (hf : IntervalIntegrable f μ a b) :
 theorem intervalIntegral_im (hf : IntervalIntegrable f μ a b) :
     ∫ x in a..b, RCLike.im (f x) ∂μ = RCLike.im (∫ x in a..b, f x ∂μ) :=
   RCLike.imCLM.intervalIntegral_comp_comm hf
+
+open scoped ComplexConjugate in
+theorem intervalIntegral_conj : ∫ x in a..b, conj (f x) ∂μ = conj (∫ x in a..b, f x ∂μ) :=
+  RCLike.conjLIE.toLinearIsometry.intervalIntegral_comp_comm f
 
 end RCLike
 

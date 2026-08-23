@@ -45,6 +45,19 @@ Note: This linter can be disabled with `set_option linter.translateGenerateName 
 @[to_additive AddCommGroup.foo]
 lemma _root_.CommGroup.foo {g h : G} : g * h = h * g := mul_comm g h
 
+#guard_msgs in
+@[to_additive _root_.AddCommGroup.bar]
+lemma _root_.CommGroup.Bar.foo {g h : G} : g * h = h * g := mul_comm g h
+#guard_msgs(drop info) in #check AddCommGroup.bar
+
+#guard_msgs in
+@[to_additive _root_.fooz]
+lemma _root_.CommGroup.Bar.bar {g h : G} : g * h = h * g := mul_comm g h
+/-- info: fooz.{u_1} {G : Type u_1} [AddCommGroup G] {g h : G} : g + h = h + g -/
+#guard_msgs in #check fooz
+/-- error: Unknown constant `AddCommGroup._root_.fooz` -/
+#guard_msgs in #check AddCommGroup._root_.fooz -- this name was previously generated, due to a bug
+
 end
 
 @[to_additive bar0]
@@ -129,6 +142,7 @@ def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
 @[to_additive bar4_test]
 lemma foo4_test {α β : Type u} : @foo4 α β = @my_has_pow α β := rfl
 
+set_option linter.defProp false in
 @[to_additive bar5]
 def foo5 {α} [my_has_pow α ℕ] [my_has_pow ℕ ℤ] : True := True.intro
 
@@ -291,6 +305,7 @@ attribute [to_additive add_some_def] some_def
 
 run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
 
+set_option linter.defProp false in
 set_option linter.unusedVariables false in
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
@@ -898,6 +913,7 @@ def monoidAlgebraFoo₂ {k G : Type} [Inhabited k] : MonoidAlgebra k G × Nat :=
   (⟨fun _ ↦ default⟩, 2)
 
 -- Proofs in types aren't abstracted:
+set_option linter.defProp false in
 @[to_additive]
 def abstractMul : Function.const _ True (id Nat.zero_lt_one) := trivial
 

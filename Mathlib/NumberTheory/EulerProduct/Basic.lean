@@ -132,7 +132,7 @@ lemma norm_tsum_factoredNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0
   refine ⟨N, fun s hs ↦ ?_⟩
   have := hN _ <| factoredNumbers_compl hs
   rwa [← hsum.tsum_subtype_add_tsum_subtype_compl (factoredNumbers s),
-    add_sub_cancel_left, tsum_eq_tsum_diff_singleton (factoredNumbers s)ᶜ hf₀]
+    add_sub_cancel_left, tsum_eq_tsum_sdiff_singleton (factoredNumbers s)ᶜ hf₀]
 
 -- Versions of the three lemmas above for `smoothNumbers N`
 

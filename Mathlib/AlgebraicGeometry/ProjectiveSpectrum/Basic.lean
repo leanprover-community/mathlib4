@@ -144,11 +144,7 @@ def basicOpenToSpec : (basicOpen 𝒜 f).toScheme ⟶ Spec (.of <| Away 𝒜 f) 
 lemma basicOpenToSpec_app_top :
     (basicOpenToSpec 𝒜 f).app ⊤ = (Scheme.ΓSpecIso _).hom ≫ awayToSection 𝒜 f ≫
       (basicOpen 𝒜 f).topIso.inv := by
-  rw [basicOpenToSpec]
-  simp only [Scheme.Hom.comp_base, TopologicalSpace.Opens.map_comp_obj,
-    TopologicalSpace.Opens.map_top, Scheme.Hom.comp_app, Scheme.Opens.topIso_inv, eqToHom_op]
-  erw [Scheme.Hom.comp_app]
-  simp
+  simp [basicOpenToSpec, Scheme.Opens.toSpecΓ_appTop]
 
 /-- The structure map `Proj A ⟶ Spec A₀`. -/
 noncomputable

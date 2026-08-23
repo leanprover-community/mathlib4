@@ -211,7 +211,7 @@ lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
   suffices IsConnected (((σ ℂ a)ᶜ ∩ {z | 0 ≤ z.im}) ∪ (σ ℂ a)ᶜ ∩ {z | z.im ≤ 0}) by
     rw [← Set.inter_union_distrib_left, ← Set.setOf_or] at this
     rw [← Set.inter_univ (σ ℂ a)ᶜ]
-    convert! this using 2
+    convert this
     exact Eq.symm <| Set.eq_univ_of_forall (fun z ↦ le_total 0 z.im)
   refine IsConnected.union ?nonempty ?upper ?lower
   case nonempty =>

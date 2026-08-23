@@ -191,7 +191,7 @@ class OneHomClass (F : Type*) (M N : outParam Type*) [One M] [One N] [FunLike F 
 @[to_additive]
 instance OneHom.funLike : FunLike (OneHom M N) M N where
   coe := OneHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_additive]
 instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
@@ -312,7 +312,7 @@ class MulHomClass (F : Type*) (M N : outParam Type*) [Mul M] [Mul N] [FunLike F 
 @[to_additive]
 instance MulHom.funLike : FunLike (M →ₙ* N) M N where
   coe := MulHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 /-- `MulHom` is a type of multiplication-preserving homomorphisms -/
 @[to_additive /-- `AddHom` is a type of addition-preserving homomorphisms -/]
@@ -382,11 +382,11 @@ class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOne M] [MulOne N]
 @[to_additive]
 instance MonoidHom.instFunLike : FunLike (M →* N) M N where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 @[to_additive]

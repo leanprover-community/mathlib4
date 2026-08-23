@@ -153,7 +153,7 @@ elab "#count_heartbeats " approx:(&"approximately ")? "in" ppLine cmd:command : 
       let m : TSyntax `num := quote max'
       Command.liftCoreM <| MetaM.run' do
         Lean.Meta.Tactic.TryThis.addSuggestion (← getRef)
-          (← set_option hygiene false in `(command| set_option maxHeartbeats $m in $cmd))
+          (← (set_option hygiene false in `(command| set_option maxHeartbeats $m in $cmd)))
 
 set_option linter.style.maxHeartbeats false in
 /--

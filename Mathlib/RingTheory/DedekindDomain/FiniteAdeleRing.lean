@@ -101,7 +101,7 @@ instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
 
 instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
   coe a := a.1
-  coe_injective' _ _ := Subtype.ext
+  coe_injective _ _ := Subtype.ext
 
 namespace FiniteAdeleRing
 

@@ -106,12 +106,18 @@ instance : Compl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 @[simp, grind =, push]
 theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
 
-theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
+theorem sdiff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
+
+@[deprecated (since := "2026-06-03")] alias diff_eq := sdiff_eq
 
 @[simp, grind =, push]
-theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
+theorem mem_sdiff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
 
-theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
+@[deprecated (since := "2026-06-03")] alias mem_diff := mem_sdiff
+
+theorem mem_sdiff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
+
+@[deprecated (since := "2026-06-03")] alias mem_diff_of_mem := mem_sdiff_of_mem
 
 /-- The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`,
   is the set of `x : α` such that `f x ∈ s`. -/

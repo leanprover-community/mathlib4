@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 module
 
-public meta import Mathlib.Data.Int.ModEq
 public import Mathlib.Data.Int.ModEq
 public import Mathlib.Tactic.HaveI
 
@@ -15,7 +14,7 @@ The `mod_cases` tactic does case disjunction on `e % n`, where `e : ℤ` or `e :
 to yield `n` new subgoals corresponding to the possible values of `e` modulo `n`.
 -/
 
-public meta section
+public section
 
 namespace Mathlib.Tactic.ModCases
 open Lean Meta Elab Tactic Term Qq
@@ -66,7 +65,7 @@ and the `a ≡ b (mod n) → p` case becomes a subgoal.
 Proves an expression of the form `OnModCases n a b p` where `n` and `b` are raw nat literals
 and `b ≤ n`. Returns the list of subgoals `?gi : a ≡ i [ZMOD n] → p`.
 -/
-partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (p : Q(Sort u)) :
+meta partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (p : Q(Sort u)) :
     MetaM (Q(OnModCases $n $a $b $p) × List MVarId) := do
   if n.natLit! ≤ b.natLit! then
     haveI' : $b =Q $n := ⟨⟩
@@ -82,7 +81,7 @@ partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (
 /--
 Int case of `mod_cases h : e % n`.
 -/
-def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℤ)) (n : ℕ) : TacticM Unit := do
+meta def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℤ)) (n : ℕ) : TacticM Unit := do
   let ⟨u, p, g⟩ ← inferTypeQ (.mvar (← getMainGoal))
   have lit : Q(ℕ) := mkRawNatLit n
   have p₁ : Nat.ble 1 $lit =Q true := ⟨⟩
@@ -142,7 +141,7 @@ and the `a ≡ b (mod n) → p` case becomes a subgoal.
 Proves an expression of the form `OnModCases n a b p` where `n` and `b` are raw nat literals
 and `b ≤ n`. Returns the list of subgoals `?gi : a ≡ i [MOD n] → p`.
 -/
-partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℕ)) (b : Q(ℕ)) (p : Q(Sort u)) :
+meta partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℕ)) (b : Q(ℕ)) (p : Q(Sort u)) :
     MetaM (Q(OnModCases $n $a $b $p) × List MVarId) := do
   if n.natLit! ≤ b.natLit! then
     have : $b =Q $n := ⟨⟩
@@ -157,7 +156,7 @@ partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℕ)) (b : Q(ℕ)) (
 /--
 Nat case of `mod_cases h : e % n`.
 -/
-def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℕ)) (n : ℕ) : TacticM Unit := do
+meta def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℕ)) (n : ℕ) : TacticM Unit := do
   let ⟨u, p, g⟩ ← inferTypeQ (.mvar (← getMainGoal))
   have lit : Q(ℕ) := mkRawNatLit n
   let p₁ : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)

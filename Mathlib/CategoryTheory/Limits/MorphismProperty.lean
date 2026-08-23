@@ -296,8 +296,11 @@ instance (priority := 900) hasPullbacks [HasPullbacks T] [P.IsStableUnderComposi
     [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] : HasPullbacks (P.Over ⊤ X) :=
   CostructuredArrow.hasPullbacks _ _
 
-variable [HasPullbacks T] [P.IsStableUnderComposition] [P.ContainsIdentities]
+variable [HasPullbacks T] [P.IsMultiplicative]
   [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
+
+instance hasFiniteLimits : HasFiniteLimits (P.Over ⊤ X) :=
+  hasFiniteLimits_of_hasTerminal_and_pullbacks
 
 noncomputable instance : CreatesFiniteLimits (Over.forget P ⊤ X) :=
   createsFiniteLimitsOfCreatesTerminalAndPullbacks _

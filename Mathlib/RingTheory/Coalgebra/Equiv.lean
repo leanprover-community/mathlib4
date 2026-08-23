@@ -98,7 +98,7 @@ instance : EquivLike (A ≃ₗc[R] B) A B where
 
 instance : FunLike (A ≃ₗc[R] B) A B where
   coe := DFunLike.coe
-  coe_injective' := DFunLike.coe_injective
+  coe_injective := DFunLike.coe_injective
 
 instance : CoalgEquivClass (A ≃ₗc[R] B) R A B where
   map_add := (·.map_add')

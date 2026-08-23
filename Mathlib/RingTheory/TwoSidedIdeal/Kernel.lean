@@ -19,8 +19,6 @@ We put this in a separate file so that we could import it in
 
 @[expose] public section
 
-assert_not_exists Finset
-
 namespace TwoSidedIdeal
 
 section ker

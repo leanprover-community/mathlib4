@@ -212,7 +212,7 @@ instance IsStarNormal.instNonUnitalIsometricContinuousFunctionalCalculus :
     rw [← norm_inr (𝕜 := ℂ), ← inrNonUnitalStarAlgHom_apply, ← NonUnitalStarAlgHom.comp_apply,
       inr_comp_cfcₙHom_eq_cfcₙAux a, cfcₙAux]
     simp only [NonUnitalStarAlgHom.comp_assoc, NonUnitalStarAlgHom.comp_apply,
-      toContinuousMapHom_apply, NonUnitalStarAlgHom.coe_coe]
+      NonUnitalStarAlgHom.coe_coe]
     rw [norm_cfcHom (a : Unitization ℂ A), StarAlgEquiv.norm_map]
     rfl
 

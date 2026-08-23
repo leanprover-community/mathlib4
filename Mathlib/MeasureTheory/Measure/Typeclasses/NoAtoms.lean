@@ -81,7 +81,7 @@ theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NoAtoms μ
   s.finite_toSet.measure_zero μ
 
 theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ] s :=
-  union_ae_eq_right.2 <| measure_mono_null diff_subset (measure_singleton _)
+  union_ae_eq_right.2 <| measure_mono_null sdiff_subset (measure_singleton _)
 
 /-
 If a set has positive measure under an atomless measure, then it has an accumulation point.

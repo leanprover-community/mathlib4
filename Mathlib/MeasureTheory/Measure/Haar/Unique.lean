@@ -594,10 +594,10 @@ lemma measure_isMulInvariant_eq_smul_of_isCompact_closure_of_innerRegularCompact
   have st : s ⊆ t := (IsClosed.closure_subset_iff t_closed).mp hf
   have A : ν (t \ s) ≤ μ' (t \ s) := by
     apply smul_measure_isMulInvariant_le_of_isCompact_closure _ _ (t_closed.measurableSet.diff hs)
-    exact t_comp.closure_of_subset diff_subset
+    exact t_comp.closure_of_subset sdiff_subset
   have B : μ' t = ν t :=
     measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport _ _ f_cont f_comp
-  rwa [measure_diff st hs.nullMeasurableSet, measure_diff st hs.nullMeasurableSet, ← B,
+  rwa [measure_sdiff st hs.nullMeasurableSet, measure_sdiff st hs.nullMeasurableSet, ← B,
     ENNReal.sub_le_sub_iff_left] at A
   · exact measure_mono st
   · exact t_comp.measure_lt_top.ne

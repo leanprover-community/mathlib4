@@ -5,10 +5,10 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.GaloisField
-public import Mathlib.RingTheory.SimpleModule.Basic
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 public import Mathlib.Algebra.CharP.CharAndCard
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 /-!
 # Factorization of cyclotomic polynomials over finite fields

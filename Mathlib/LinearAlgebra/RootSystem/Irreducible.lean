@@ -122,7 +122,6 @@ lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
     · exact LinearMap.mem_ker.mp (invtRootSubmodule.le_ker_coroot' q hk htQ)
   exact P.eq_zero_iff_forall_coroot'_eq_zero.mpr h_ker
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSimpleModule_weylGroupRootRep_iff [Nontrivial M] :
     IsSimpleModule R[P.weylGroup] P.weylGroupRootRep.asModule ↔
     ∀ (q : Submodule R M), (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤ := by
@@ -160,7 +159,6 @@ instance [P.IsIrreducible] : P.flip.IsIrreducible where
   eq_top_of_invtSubmodule_reflection := IsIrreducible.eq_top_of_invtSubmodule_coreflection (P := P)
   eq_top_of_invtSubmodule_coreflection := IsIrreducible.eq_top_of_invtSubmodule_reflection (P := P)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSimpleModule_weylGroupRootRep [P.IsIrreducible] :
     IsSimpleModule R[P.weylGroup] P.weylGroupRootRep.asModule :=
   have := IsIrreducible.nontrivial P

@@ -64,7 +64,7 @@ lemma toFun_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.t
 
 instance : FunLike (IntertwiningMap ρ σ) V W where
   coe f := f.toFun
-  coe_injective' := toFun_injective ρ σ
+  coe_injective := toFun_injective ρ σ
 
 instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
   map_add f := f.map_add
@@ -498,7 +498,7 @@ noncomputable def equivAlgEnd :
     IntertwiningMap ρ ρ ≃ₐ[A] Module.End A[G] ρ.asModule :=
   AlgEquiv.ofLinearEquiv
     (equivLinearMapAsModule ρ ρ)
-    (by rfl)
+    rfl
     (by intro f g; rfl)
 
 theorem isIntertwiningMap_of_mem_center (g : G) (hg : g ∈ Submonoid.center G) :

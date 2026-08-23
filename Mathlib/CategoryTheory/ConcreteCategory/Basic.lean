@@ -105,7 +105,7 @@ instance {X Y : C} : CoeFun (X ⟶ Y) (fun _ ↦ ToType X → ToType Y) where
 abbrev instFunLike {X Y : C} :
     FunLike (X ⟶ Y) (ToType X) (ToType Y) where
   coe f := f
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rw [← ofHom_hom f, ← ofHom_hom g]
     simp_all
 

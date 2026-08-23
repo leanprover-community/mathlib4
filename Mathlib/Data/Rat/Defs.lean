@@ -263,10 +263,7 @@ theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
 instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
   ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
 
--- Will be subsumed by `Int.coe_inj` after we have defined
--- `LinearOrderedField ℚ` (which implies characteristic zero).
-theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
-  ⟨congr_arg num, congr_arg _⟩
+@[deprecated (since := "2026-06-06")] alias coe_int_inj := intCast_inj
 
 end Casts
 

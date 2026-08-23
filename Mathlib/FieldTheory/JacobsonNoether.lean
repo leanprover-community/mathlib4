@@ -83,6 +83,8 @@ lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
     exact ha hn
   exact ⟨n, ⟨Nat.one_le_iff_ne_zero.mpr nzero, hn⟩⟩
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- If `D` is a purely inseparable extension of `k` of characteristic `p`,
   then for every element `a` of `D \ k`, there exists a natural number `m`
   greater than 0 such that `(a * x - x * a) ^ n = 0` (as linear maps) for
@@ -95,7 +97,7 @@ lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
   have inter : (ad k D a)^[p ^ m] = 0 := by
     ext x
     rw [ad_eq_lmul_left_sub_lmul_right, ← Module.End.pow_apply, Pi.sub_apply,
-      sub_pow_expChar_pow_of_commute p m (commute_mulLeft_right a a), sub_apply,
+      sub_pow_expChar_pow_of_commute p m (commute_mulLeft_right a a), LinearMap.sub_apply,
       pow_mulLeft, mulLeft_apply, pow_mulRight, mulRight_apply, Pi.zero_apply,
       Subring.mem_center_iff.1 hm.2 x]
     exact sub_eq_zero_of_eq rfl

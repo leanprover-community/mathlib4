@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Matrices
@@ -50,6 +51,7 @@ universe u u' v w
 
 /-- `Matrix m n R` is the type of matrices with entries in `R`, whose rows are indexed by `m`
 and whose columns are indexed by `n`. -/
+@[wikidata Q44337]
 def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
   m → n → α
 

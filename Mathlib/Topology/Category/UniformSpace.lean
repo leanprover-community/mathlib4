@@ -59,7 +59,7 @@ instance : LargeCategory.{u} UniformSpaceCat.{u} where
 instance instFunLike (X Y : UniformSpaceCat) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
-  coe_injective' _ _ h := Subtype.ext h
+  coe_injective _ _ h := Subtype.ext h
 
 instance : ConcreteCategory UniformSpaceCat ({ f : · → · // UniformContinuous f }) where
   hom f := f.hom'
@@ -162,7 +162,7 @@ instance category : LargeCategory CpltSepUniformSpace :=
 instance instFunLike (X Y : CpltSepUniformSpace) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
-  coe_injective' _ _ h := Subtype.ext h
+  coe_injective _ _ h := Subtype.ext h
 
 /-- The concrete category instance on `CpltSepUniformSpace`. -/
 instance concreteCategory : ConcreteCategory CpltSepUniformSpace

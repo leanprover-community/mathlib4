@@ -370,7 +370,7 @@ instance : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_add m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
   lineDerivOp_left_add x y f := by
     ext u
-    simp [lineDerivOp_left_add, UniformConvergenceCLM.add_apply, add_comm]
+    simp [lineDerivOp_left_add, add_comm]
 
 instance : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
@@ -438,8 +438,7 @@ theorem laplacian_eq_sum [Fintype ι] (b : OrthonormalBasis ι ℝ E) (f : 𝓢'
 @[simp]
 theorem laplacian_apply_apply (f : 𝓢'(E, F)) (u : 𝓢(E, ℂ)) : (Δ f) u = f (Δ u) := by
   simp [laplacian_eq_sum (stdOrthonormalBasis ℝ E),
-    SchwartzMap.laplacian_eq_sum (stdOrthonormalBasis ℝ E),
-    UniformConvergenceCLM.sum_apply, map_neg, neg_neg]
+    SchwartzMap.laplacian_eq_sum (stdOrthonormalBasis ℝ E), map_neg, neg_neg]
 
 variable [MeasurableSpace E] [BorelSpace E]
 

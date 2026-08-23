@@ -197,7 +197,7 @@ theorem prod_mem {ι : Type*} {f : ι → α} {s : Finset ι}
     (I : Ideal α) {i : ι} (hi : i ∈ s) (hfi : f i ∈ I) :
     ∏ i ∈ s, f i ∈ I := by
   classical
-  rw [Finset.prod_eq_prod_diff_singleton_mul hi]
+  rw [Finset.prod_eq_prod_sdiff_singleton_mul hi]
   exact Ideal.mul_mem_left _ _ hfi
 
 lemma span_single_eq_top {ι : Type*} [DecidableEq ι] [Finite ι] (R : ι → Type*)

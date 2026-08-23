@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.FunProp.Attr
 public import Mathlib.Tactic.Measurability
 
@@ -266,7 +267,7 @@ theorem measurableSet_insert {a : α} {s : Set α} :
   classical
   exact ⟨fun h =>
     if ha : a ∈ s then by rwa [← insert_eq_of_mem ha]
-    else insert_diff_self_of_notMem ha ▸ h.diff (.singleton _),
+    else insert_sdiff_self_of_notMem ha ▸ h.diff (.singleton _),
     fun h => h.insert a⟩
 
 theorem Set.Subsingleton.measurableSet {s : Set α} (hs : s.Subsingleton) : MeasurableSet s :=
@@ -468,9 +469,9 @@ theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
   change GenerateMeasurable (⋃₀ _) _ ↔ _
   simp [← setOf_exists]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
     MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s := by
+  unfold iSup
   simp only [measurableSet_sSup, exists_range_iff]
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
@@ -489,7 +490,7 @@ end MeasurableSpace
 
 /-- A function `f` between measurable spaces is measurable if the preimage of every
   measurable set is measurable. -/
-@[fun_prop]
+@[fun_prop, wikidata Q516776]
 def Measurable [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop :=
   ∀ ⦃t : Set β⦄, MeasurableSet t → MeasurableSet (f ⁻¹' t)
 

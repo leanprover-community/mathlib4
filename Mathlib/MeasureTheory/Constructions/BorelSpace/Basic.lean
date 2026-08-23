@@ -515,7 +515,7 @@ theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j 
     rw [hu]
     exact u_open.measurableSet.inter hs
   · rcases _root_.continuousOn_iff'.1 hg t ht with ⟨u, u_open, hu⟩
-    rw [diff_eq_compl_inter, inter_comm, hu]
+    rw [sdiff_eq_compl_inter, inter_comm, hu]
     exact u_open.measurableSet.inter hs.compl
 
 @[to_additive]

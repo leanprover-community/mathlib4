@@ -10,6 +10,7 @@ public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Perm.ViaEmbedding
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.SetTheory.Cardinal.Order
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Solvable Groups
@@ -102,7 +103,7 @@ variable (G)
 
 /-- A group `G` is solvable if its derived series is eventually trivial. We use this definition
   because it's the most convenient one to work with. -/
-@[mk_iff isSolvable_def]
+@[mk_iff isSolvable_def, wikidata Q759832]
 class IsSolvable : Prop where
   /-- A group `G` is solvable if its derived series is eventually trivial. -/
   solvable : ∃ n : ℕ, derivedSeries G n = ⊥

@@ -91,7 +91,7 @@ private lemma maxIncSequencesTo_lt {i j : α} (hij : i < j) (hfij : f i < f j) :
     exact (hti.2 hx).trans_lt hij
   refine ⟨insert j t, ?_, ?_, ?_⟩
   next =>
-    convert! hti.insert j using 1
+    convert hti.insert j
     next => simp
     next => rw [max_eq_left hij.le]
   next =>

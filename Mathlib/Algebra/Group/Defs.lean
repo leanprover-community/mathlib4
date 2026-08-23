@@ -1276,7 +1276,7 @@ class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
 /-- A commutative group is a group with commutative `(*)`. -/
 -- There is intentionally no `IsMulCommutative` for `CommGroup` instance for performance reasons.
-@[to_additive]
+@[to_additive (attr := wikidata Q181296)]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 
 section CommGroup

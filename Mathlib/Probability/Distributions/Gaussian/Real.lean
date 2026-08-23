@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.Moments.MGFAnalytic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Gaussian distributions over ℝ
@@ -216,6 +217,7 @@ end GaussianPDF
 section GaussianReal
 
 /-- A Gaussian distribution on `ℝ` with mean `μ` and variance `v`. -/
+@[wikidata Q133871]
 noncomputable
 def gaussianReal (μ : ℝ) (v : ℝ≥0) : Measure ℝ :=
   if v = 0 then Measure.dirac μ else volume.withDensity (gaussianPDF μ v)

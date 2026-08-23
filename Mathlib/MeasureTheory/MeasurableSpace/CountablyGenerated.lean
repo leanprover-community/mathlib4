@@ -460,7 +460,7 @@ section MeasurableMemPartition
 lemma measurableSet_succ_memPartition (t : ℕ → Set α) (n : ℕ) {s : Set α}
     (hs : s ∈ memPartition t n) :
     MeasurableSet[generateFrom (memPartition t (n + 1))] s := by
-  rw [← diff_union_inter s (t n)]
+  rw [← sdiff_union_inter s (t n)]
   refine MeasurableSet.union ?_ ?_ <;>
     · refine measurableSet_generateFrom ?_
       rw [memPartition_succ]
@@ -482,16 +482,16 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
       classical
       refine ⟨(memPartition t n).toFinset \ S, ?_, ?_⟩
       · simp only [Finset.coe_sdiff, coe_toFinset]
-        exact diff_subset
+        exact sdiff_subset
       · simp only [Finset.coe_sdiff, coe_toFinset]
         refine (IsCompl.eq_compl ⟨?_, ?_⟩).symm
         · refine Set.disjoint_sUnion_right.mpr fun u huS => ?_
           refine Set.disjoint_sUnion_left.mpr fun v huV => ?_
-          refine disjoint_memPartition t n (mem_of_mem_diff huV) (hS_subset huS) ?_
-          exact ne_of_mem_of_not_mem huS (notMem_of_mem_diff huV) |>.symm
+          refine disjoint_memPartition t n (mem_of_mem_sdiff huV) (hS_subset huS) ?_
+          exact ne_of_mem_of_not_mem huS (notMem_of_mem_sdiff huV) |>.symm
         · rw [codisjoint_iff]
           simp only [sup_eq_union, top_eq_univ]
-          rw [← sUnion_memPartition t n, union_comm, ← sUnion_union, union_diff_cancel hS_subset]
+          rw [← sUnion_memPartition t n, union_comm, ← sUnion_union, union_sdiff_cancel hS_subset]
     | iUnion f _ h =>
       choose S hS_subset hS_eq using h
       have : Fintype (⋃ n, (S n : Set (Set α))) := by

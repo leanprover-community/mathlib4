@@ -226,7 +226,7 @@ abbrev HomSubtype (X Y : DifferentialObject S C) :=
 instance (X Y : DifferentialObject S C) :
     FunLike (HomSubtype S C X Y) (CC X.obj) (CC Y.obj) where
   coe f := f.1
-  coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
+  coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
 instance concreteCategoryOfDifferentialObjects :
     ConcreteCategory (DifferentialObject S C) (HomSubtype S C) where

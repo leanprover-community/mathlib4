@@ -77,7 +77,7 @@ lemma toPointedCone_injective : Injective ((↑) : ProperCone R E → PointedCon
 -- TODO: add `ConvexConeClass` that extends `SetLike` and replace the below instance
 instance : SetLike (ProperCone R E) E where
   coe C := C.carrier
-  coe_injective' _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
+  coe_injective _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
 
 instance : PartialOrder (ProperCone R E) := .ofSetLike (ProperCone R E) E
 

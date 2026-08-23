@@ -85,7 +85,7 @@ abbrev HomSubtype (X Y : Bipointed) :=
 
 instance (X Y : Bipointed) : FunLike (HomSubtype X Y) X Y where
   coe f := f
-  coe_injective' _ _ := Subtype.ext
+  coe_injective _ _ := Subtype.ext
 
 instance hasForget : ConcreteCategory Bipointed HomSubtype where
   hom f := ⟨f.1, ⟨f.2, f.3⟩⟩

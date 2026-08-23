@@ -464,13 +464,8 @@ theorem zigzag_of_eqvGen_colimitTypeRel {F : C ⥤ D} {d : D} {f₁ f₂ : Σ X,
     left; fconstructor
     exact StructuredArrow.homMk f
   | refl => fconstructor
-  | symm x y _ ih =>
-    apply zigzag_symmetric
-    exact ih
-  | trans x y z _ _ ih₁ ih₂ =>
-    apply Relation.ReflTransGen.trans
-    · exact ih₁
-    · exact ih₂
+  | symm x y _ ih => exact ih.symm
+  | trans x y z _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 
 end Final
 
@@ -944,6 +939,24 @@ lemma initial_fromPUnit_of_isInitial (hc : Limits.IsInitial c) : (fromPUnit c).I
     letI : Subsingleton (CostructuredArrow (fromPUnit c) c') :=
       ⟨fun i j ↦ CostructuredArrow.obj_ext _ _ (by cat_disch) (hc.hom_ext _ _)⟩
     infer_instance
+
+instance [HasTerminal C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
+    [PreservesLimit (Functor.empty.{0} C) F] : F.Final :=
+  have : (fromPUnit.{0} (⊤_ C)).Final := final_fromPUnit_of_isTerminal terminalIsTerminal
+  have : (fromPUnit.{0} (F.obj (⊤_ C))).Final := final_fromPUnit_of_isTerminal
+    (terminalIsTerminal.isTerminalObj F (⊤_ C))
+  have : ((fromPUnit.{0} (⊤_ C)) ⋙ F).Final := final_of_natIso (F := fromPUnit.{0} (F.obj (⊤_ C)))
+    (Discrete.natIso (fun _ => Iso.refl _))
+  final_of_final_comp (fromPUnit.{0} (⊤_ C)) F
+
+instance [HasInitial C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
+    [PreservesColimit (Functor.empty.{0} C) F] : F.Initial :=
+  have : (fromPUnit.{0} (⊥_ C)).Initial := initial_fromPUnit_of_isInitial initialIsInitial
+  have : (fromPUnit.{0} (F.obj (⊥_ C))).Initial := initial_fromPUnit_of_isInitial
+    (initialIsInitial.isInitialObj F (⊥_ C))
+  have : ((fromPUnit.{0} (⊥_ C)) ⋙ F).Initial := initial_of_natIso
+    (F := fromPUnit.{0} (F.obj (⊥_ C))) (Discrete.natIso (fun _ => Iso.refl _))
+  initial_of_initial_comp (fromPUnit.{0} (⊥_ C)) F
 
 end
 

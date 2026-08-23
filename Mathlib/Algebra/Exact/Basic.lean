@@ -564,6 +564,14 @@ lemma injective_range_liftQ_of_exact (h : Function.Exact f g) :
     Function.Injective ((range f).liftQ g (h · |>.mpr)) := by
   simpa only [← LinearMap.ker_eq_bot, ker_eq_bot_range_liftQ_iff, exact_iff] using h
 
+lemma surjective_iff_eq_zero_of_exact (h : Function.Exact f g) :
+    Function.Surjective f ↔ g = 0 := by
+  rw [← LinearMap.ker_eq_top, h.linearMap_ker_eq, LinearMap.range_eq_top]
+
+lemma injective_iff_eq_zero_of_exact (h : Function.Exact f g) :
+    Function.Injective g ↔ f = 0 := by
+  rw [← LinearMap.ker_eq_bot, h.linearMap_ker_eq, LinearMap.range_eq_bot]
+
 end LinearMap
 
 /-- The linear equivalence `(N ⧸ LinearMap.range f) ≃ₗ[A] P` associated to

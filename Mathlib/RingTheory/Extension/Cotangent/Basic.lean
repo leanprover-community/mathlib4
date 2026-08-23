@@ -68,6 +68,12 @@ def cotangentComplex : P.Cotangent →ₗ[S] P.CotangentSpace :=
 lemma cotangentComplex_mk (x) : P.cotangentComplex (.mk x) = 1 ⊗ₜ .D _ _ x :=
   rfl
 
+lemma Cotangent.mk_C_mem_ker_cotangentComplex {σ : Type*} (G : Generators R S σ)
+    {r : R} (hr : C r ∈ G.ker) :
+    Extension.Cotangent.mk ⟨C r, hr⟩ ∈ G.toExtension.cotangentComplex.ker := by
+  have : D R G.toExtension.Ring (C r) = 0 := Derivation.map_algebraMap ..
+  simp [this]
+
 section baseChange
 
 variable {A : Type*} [CommRing A] [Algebra S A] [Algebra P.Ring A] [IsScalarTower P.Ring S A]
@@ -434,6 +440,11 @@ def H1Cotangent.equiv {P₁ P₂ : Extension R S} (f₁ : P₁.Hom P₂) (f₂ :
     show (map f₁ ∘ₗ map f₂) x = LinearMap.id (R := S) x by
     rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ (f₁.comp f₂),
       Extension.H1Cotangent.map_comp]; rfl
+
+omit [IsScalarTower R S S'] in
+lemma Cotangent.map_comp_h1Cotangentι (f : P.Hom P') :
+    Cotangent.map f ∘ₗ P.h1Cotangentι =
+      P'.h1Cotangentι.restrictScalars S ∘ₗ H1Cotangent.map f := rfl
 
 end Extension
 

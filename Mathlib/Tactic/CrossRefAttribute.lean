@@ -224,9 +224,9 @@ initialize Lean.registerBuiltinAttribute {
   name := `stacksTag
   descr := "Apply a Stacks or Kerodon project tag to a theorem."
   add := fun decl stx _attrKind => do
-    let (db, tag, comment) := ← match stx with
-      | `(attr| stacks $tag $[$comment]?) => return (Database.stacks, tag, comment)
-      | `(attr| kerodon $tag $[$comment]?) => return (Database.kerodon, tag, comment)
+    let (db, tag, comment) ← match stx with
+      | `(attr| stacks $tag $[$comment]?) => pure (Database.stacks, tag, comment)
+      | `(attr| kerodon $tag $[$comment]?) => pure (Database.kerodon, tag, comment)
       | _ => throwUnsupportedSyntax
     addCrossRefDoc db decl (← tag.getStacksTag) ((comment.map (·.getString)).getD "")
   -- docstrings are immutable once an asynchronous elaboration task has been started
@@ -247,8 +247,8 @@ initialize Lean.registerBuiltinAttribute {
   name := `wikidataTag
   descr := "Apply a Wikidata identifier to a declaration."
   add := fun decl stx _attrKind => do
-    let (id, comment) := ← match stx with
-      | `(attr| wikidata $id $[$comment]?) => return (id, comment)
+    let (id, comment) ← match stx with
+      | `(attr| wikidata $id $[$comment]?) => pure (id, comment)
       | _ => throwUnsupportedSyntax
     addCrossRefDoc .wikidata decl (← id.getWikidataId) ((comment.map (·.getString)).getD "")
   -- docstrings are immutable once an asynchronous elaboration task has been started

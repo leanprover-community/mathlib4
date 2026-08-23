@@ -118,7 +118,7 @@ lemma mem_image_comap_basicOpen (f : A) (x) :
     rw [Ideal.span_empty]
     exact { __ := (RingEquiv.quotientBot A).symm, __ := Algebra.ofId _ _ }
   rw [← IsNilpotent.map_iff e.injective, AlgEquiv.commutes,
-    ← mem_image_comap_zeroLocus_sdiff f ∅ x, zeroLocus_empty, ← Set.compl_eq_univ_diff,
+    ← mem_image_comap_zeroLocus_sdiff f ∅ x, zeroLocus_empty, ← Set.compl_eq_univ_sdiff,
     basicOpen_eq_zeroLocus_compl]
 
 /-- Let `A` be an `R`-algebra. If `A ⧸ I` is finite free over `R`,

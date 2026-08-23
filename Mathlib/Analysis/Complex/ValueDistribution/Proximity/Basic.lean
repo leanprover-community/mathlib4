@@ -152,6 +152,14 @@ theorem proximity_nonneg {a : WithTop E} :
     proximity (fun _ ↦ c) ⊤ r = log⁺ ‖c‖ := by
   simp [proximity, circleAverage_const]
 
+/--
+If `f` is continuous, then so is its proximitiy function at `⊤`.
+-/
+@[fun_prop] theorem continuous_proximity_top (hf : Continuous f) :
+    Continuous (proximity f ⊤) := by
+  simp only [proximity, reduceDIte]
+  fun_prop
+
 /-!
 ## Behaviour under Arithmetic Operations
 -/

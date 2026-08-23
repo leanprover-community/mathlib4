@@ -102,7 +102,7 @@ theorem isCaratheodory_ofFunction_of_mem (hC : IsSetSemiring C) (m : AddContent 
     rw [← iUnion_inter]
     exact Set.inter_subset_inter_left _ hf_subset
   · apply le_trans <| (OuterMeasure.ofFunction m addContent_empty).mono
-      <| (iUnion_diff s f) ▸ diff_subset_diff_left hf_subset
+      <| (iUnion_sdiff s f) ▸ sdiff_subset_sdiff_left hf_subset
     simp only [OuterMeasure.measureOf_eq_coe, A]
     apply le_trans <| measure_iUnion_le (μ := OuterMeasure.ofFunction m addContent_empty)
       (fun i ↦ f i \ s)

@@ -57,7 +57,7 @@ structure Fun (X Y : Type*) where
 
 instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
   coe f x := f.toFun x
-  coe_injective' _ := by aesop
+  coe_injective _ := by aesop
 
 initialize_simps_projections Fun (toFun → apply)
 

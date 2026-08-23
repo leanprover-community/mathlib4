@@ -371,11 +371,13 @@ theorem nonempty_of_not_subset (h : ¬s ⊆ t) : (s \ t).Nonempty :=
 theorem nonempty_of_ssubset (ht : s ⊂ t) : (t \ s).Nonempty :=
   nonempty_of_not_subset ht.2
 
-theorem Nonempty.of_diff (h : (s \ t).Nonempty) : s.Nonempty :=
+theorem Nonempty.of_sdiff (h : (s \ t).Nonempty) : s.Nonempty :=
   h.imp fun _ => And.left
 
+@[deprecated (since := "2026-06-03")] alias Nonempty.of_diff := Nonempty.of_sdiff
+
 theorem nonempty_of_ssubset' (ht : s ⊂ t) : t.Nonempty :=
-  (nonempty_of_ssubset ht).of_diff
+  (nonempty_of_ssubset ht).of_sdiff
 
 theorem Nonempty.inl (hs : s.Nonempty) : (s ∪ t).Nonempty :=
   hs.imp fun _ => Or.inl

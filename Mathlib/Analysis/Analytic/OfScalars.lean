@@ -240,7 +240,7 @@ theorem ofScalars_radius_eq_of_tendsto [NormOneClass E] {r : NNReal} (hr : r ≠
   suffices Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r⁻¹) by
     convert! ofScalars_radius_eq_inv_of_tendsto E c (inv_ne_zero hr) this
     simp
-  convert! hc.inv₀ (NNReal.coe_ne_zero.mpr hr) using 1
+  convert hc.inv₀ (NNReal.coe_ne_zero.mpr hr)
   simp
 
 /-- The ratio test stating that if `‖c n.succ‖ / ‖c n‖` tends to zero, the radius is unbounded.

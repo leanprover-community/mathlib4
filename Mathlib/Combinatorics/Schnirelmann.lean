@@ -166,9 +166,12 @@ lemma schnirelmannDensity_congr' {B : Set ℕ} [DecidablePred (· ∈ B)]
   schnirelmannDensity_congr' (by aesop)
 
 /-- The Schnirelmann density is unaffected by removing `0`. -/
-lemma schnirelmannDensity_diff_singleton_zero [DecidablePred (· ∈ A \ {0})] :
+lemma schnirelmannDensity_sdiff_singleton_zero [DecidablePred (· ∈ A \ {0})] :
     schnirelmannDensity (A \ {0}) = schnirelmannDensity A :=
   schnirelmannDensity_congr' (by aesop)
+
+@[deprecated (since := "2026-06-03")]
+alias schnirelmannDensity_diff_singleton_zero := schnirelmannDensity_sdiff_singleton_zero
 
 lemma schnirelmannDensity_congr {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A = B) :
     schnirelmannDensity A = schnirelmannDensity B :=

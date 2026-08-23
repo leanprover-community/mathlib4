@@ -498,11 +498,9 @@ theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} 
     have hperm : l ~ l' := List.perm_of_nodup_nodup_toFinset_eq hn hn' h.symm
     refine ⟨?_, ?_, ?_⟩
     · exact fun _ h => hc' _ (hperm.subset h)
-    · have := List.Perm.pairwise_iff (@Disjoint.symmetric _) hperm
-      rwa [this]
+    · rwa [hperm.pairwise_iff symm]
     · rw [← hp', hperm.symm.prod_eq']
-      refine hd'.imp ?_
-      exact Disjoint.commute
+      exact hd'.imp Disjoint.commute
   · rintro ⟨hc, hd, hp⟩
     refine List.toFinset_eq_of_perm _ _ ?_
     refine list_cycles_perm_list_cycles ?_ hc' hc hd' hd
@@ -670,7 +668,7 @@ theorem Disjoint.cycleFactorsFinset_mul_eq_union {f g : Perm α} (h : Disjoint f
   rw [cycleFactorsFinset_eq_finset]
   refine ⟨?_, ?_, ?_⟩
   · simp [or_imp, mem_cycleFactorsFinset_iff, forall_comm]
-  · rw [coe_union, Set.pairwise_union_of_symmetric Disjoint.symmetric]
+  · rw [coe_union, Set.pairwise_union_of_symm]
     exact
       ⟨cycleFactorsFinset_pairwise_disjoint _, cycleFactorsFinset_pairwise_disjoint _,
         fun x hx y hy _ =>

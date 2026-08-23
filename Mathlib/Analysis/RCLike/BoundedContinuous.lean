@@ -32,7 +32,7 @@ theorem restrict_toContinuousMap_eq_toContinuousMapStar_restrict
     (ofRealAm.compLeftContinuous ℝ continuous_ofReal) := by
   ext g
   simp only [Subalgebra.mem_map, Subalgebra.mem_comap, Subalgebra.mem_restrictScalars,
-    StarSubalgebra.mem_toSubalgebra, toContinuousMapₐ_apply, StarSubalgebra.mem_map]
+    StarSubalgebra.mem_toSubalgebra, StarSubalgebra.mem_map]
   constructor
   · intro ⟨x, hxA, hxg⟩
     use (@ofRealAm 𝕜 _).compLeftContinuousBounded ℝ lipschitzWith_ofReal x, hxA

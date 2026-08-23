@@ -97,7 +97,7 @@ lemma setBernoulli_singleton_of_not_subset {s : Set ι} (p : I) (hs : ¬ s ⊆ u
 /-- `setBer(u, p)` only gives mass to families of sets contained in `u`. -/
 lemma setBernoulli_apply_eq_apply_subsets (u : Set ι) (p : I) (S : Set (Set ι)) :
     setBer(u, p) S = setBer(u, p) { s ∈ S | s ⊆ u} := by
-  apply (measure_eq_measure_of_null_diff (by grind) ?_).symm
+  apply (measure_eq_measure_of_null_sdiff (by grind) ?_).symm
   exact Measure.mono_null (by grind) setBernoulli_ae_subset
 
 lemma map_ncard_setBernoulli_apply (u : Set ι) (p : I) (s : Set ℕ) :
@@ -120,7 +120,7 @@ variable (p) in
         simp +contextual [ite_add_ite, mt (@hsu _), ← ENNReal.coe_add]
     _ = toNNReal p ^ s.ncard * toNNReal (σ p) ^ (↑u \ s).ncard := by
       simp [Finset.prod_ite, ← Set.ncard_coe_finset, Set.setOf_and,
-        Set.inter_eq_right.2 hsu, ← Set.compl_setOf, Set.diff_eq_compl_inter, Set.inter_comm]
+        Set.inter_eq_right.2 hsu, ← Set.compl_setOf, Set.sdiff_eq_compl_inter, Set.inter_comm]
 
 @[simp]
 lemma setBernoulli_real_singleton (p : I) (hsu : s ⊆ u) (hu : u.Finite) :
@@ -139,7 +139,7 @@ lemma map_ncard_setBernoulli_real_singleton {u : Set ι} (hu : u.Finite) (p : I)
   have h1 s (hs : s ∈ this.toFinset) :
       setBer(u, p).real {s} = p ^ k * (1 - p) ^ (u.ncard - k) := by
     simp only [Set.mem_singleton_iff, Set.Finite.mem_toFinset, Set.mem_setOf_eq] at hs
-    rw [setBernoulli_real_singleton _ hs.1 hu, Set.ncard_diff' hs.1 hu, hs.2]
+    rw [setBernoulli_real_singleton _ hs.1 hu, Set.ncard_sdiff' hs.1 hu, hs.2]
   rw [Finset.sum_congr rfl h1, Finset.sum_const, nsmul_eq_mul, mul_assoc,
     ← Set.ncard_eq_toFinset_card _ _]
   simp [Set.ncard_powerset_ncard, hu]

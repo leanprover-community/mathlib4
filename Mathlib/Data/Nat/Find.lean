@@ -29,6 +29,7 @@ private def lbp (m n : ℕ) : Prop :=
 
 variable [DecidablePred p] (H : ∃ n, p n)
 
+set_option linter.defProp false in
 set_option backward.privateInPublic true in
 private def wf_lbp : WellFounded (@lbp p) :=
   ⟨let ⟨n, pn⟩ := H

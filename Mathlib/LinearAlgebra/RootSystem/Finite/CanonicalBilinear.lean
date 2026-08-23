@@ -221,6 +221,11 @@ def RootFormIn : LinearMap.BilinForm S (P.rootSpan S) :=
   ∑ i, (P.coroot'In S i).smulRight (P.coroot'In S i)
 
 omit [Module S N] [IsScalarTower S R N] in
+lemma rootFormIn_isSymm :
+    (P.RootFormIn S).IsSymm := by
+  simp [LinearMap.isSymm_def, mul_comm, RootFormIn]
+
+omit [Module S N] [IsScalarTower S R N] in
 @[simp]
 lemma algebraMap_rootFormIn (x y : P.rootSpan S) :
     (algebraMap S R) (P.RootFormIn S x y) = P.RootForm x y := by

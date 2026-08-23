@@ -379,11 +379,11 @@ It returns the list of `MVarId`s, beginning with the ones that initially involve
 metavariables followed by the rest.
 -/
 def tryRfl (mvs : List MVarId) : MetaM (List MVarId) := do
-  let (yesMV, noMV) := ← mvs.partitionM fun mv =>
+  let (yesMV, noMV) ← mvs.partitionM fun mv =>
                           return hasExprMVar (← instantiateMVars (← mv.getDecl).type)
-  let tried_rfl := ← noMV.mapM fun g => g.applyConst ``rfl <|> return [g]
-  let assignable := ← yesMV.mapM fun g => do
-    let tgt := ← instantiateMVars (← g.getDecl).type
+  let tried_rfl ← noMV.mapM fun g => g.applyConst ``rfl <|> return [g]
+  let assignable ← yesMV.mapM fun g => do
+    let tgt ← instantiateMVars (← g.getDecl).type
     match tgt.eq? with
       | some (_, lhs, rhs) =>
         if (isMVar rhs && (! hasExprMVar lhs)) ||
@@ -407,9 +407,9 @@ lemma and returns two lists: the left-over goals of all the applications, follow
 concatenation of the previous `static` list, followed by the newly discovered goals outside of the
 scope of `compute_degree`. -/
 def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId)) := do
-  let (can_progress, curr_static) := ← mvs.partitionM fun mv => do
+  let (can_progress, curr_static) ← mvs.partitionM fun mv => do
     return dispatchLemma (twoHeadsArgs (← mv.getType'')) != ``id
-  let progress := ← can_progress.mapM fun mv => do
+  let progress ← can_progress.mapM fun mv => do
     let lem := dispatchLemma <| twoHeadsArgs (← mv.getType'')
     mv.applyConst <| lem
   return (progress.flatten, static ++ curr_static)

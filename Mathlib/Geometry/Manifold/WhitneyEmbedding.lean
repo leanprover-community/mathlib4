@@ -89,7 +89,7 @@ theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
   convert! hasMFDerivAt_unique this _
   refine (hasMFDerivAt_extChartAt (f.mem_chartAt_ind_source x hx)).congr_of_eventuallyEq ?_
   refine (f.eventuallyEq_one x hx).mono fun y hy => ?_
-  simp only [L, embeddingPiTangent_coe, ContinuousLinearMap.coe_comp', (· ∘ ·),
+  simp only [L, embeddingPiTangent_coe, ContinuousLinearMap.coe_comp, (· ∘ ·),
     ContinuousLinearMap.coe_fst', ContinuousLinearMap.proj_apply]
   rw [hy, Pi.one_apply, one_smul]
 
