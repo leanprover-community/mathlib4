@@ -423,22 +423,22 @@ section subRKHS
 
 variable (H₀ : Submodule 𝕜 H) [CompleteSpace H₀]
 
-instance instSubRKHS : RKHS 𝕜 H₀ X V where
+instance instRKHSSubmodule : RKHS 𝕜 H₀ X V where
   coeCLM := (coeCLM 𝕜).comp H₀.subtypeL
   coeCLM_injective := coeCLM_injective.comp H₀.subtype_injective
 
-lemma kerFun_subRKHS (x : X) :
+lemma kerFun_submodule (x : X) :
     kerFun H₀ x = H₀.orthogonalProjectionOnto.comp (kerFun H x) := by
   ext1
   refine ext_inner_right 𝕜 fun v ↦ ?_
   simp
   rfl
 
-lemma kernel_subRKHS (x y : X) :
+lemma kernel_submodule (x y : X) :
     kernel H₀ x y = (kerFun H x).adjoint ∘L (H₀.starProjection.comp (kerFun H y)) := by
   ext
   refine ext_inner_right 𝕜 ?_
-  simp [kernel_apply, kerFun_subRKHS, Submodule.adjoint_orthogonalProjectionOnto]
+  simp [kernel_apply, kerFun_submodule, Submodule.adjoint_orthogonalProjectionOnto]
 
 end subRKHS
 
