@@ -157,17 +157,10 @@ alias isEdgeConnected_two := isEdgeConnected_two_iff_forall_preconnected
 /-- A graph is 2-edge-connected iff it has no bridge. -/
 theorem isEdgeConnected_two_iff_forall_not_isBridge : G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e := by
   rw [isEdgeConnected_two_iff_forall_preconnected]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rintro ⟨x, y⟩
-    exact (isBridge_iff.mp · <| h s(x, y) x y)
-  · rintro ⟨x, y⟩
-    nontriviality V
-    have hG : G.Preconnected := by
-      intro u v
-      by_contra huv
-      exact h s(u, v) (.of_not_reachable huv)
-    have hG' : G.Connected := ⟨hG⟩
-    exact (hG'.connected_delete_edge_of_not_isBridge (h (s(x, y)))).preconnected
+  refine ⟨fun h ↦ Sym2.ind (h _ · · |> ·), fun h ↦ Sym2.ind fun x y ↦ ?_⟩
+  nontriviality V
+  have hG' : G.Connected := ⟨(Not.imp_symm .of_not_reachable <| h s(·, ·))⟩
+  exact (hG'.connected_delete_edge_of_not_isBridge (h (s(x, y)))).preconnected
 
 lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
     ∃ w : V, G.Adj u w ∧ G.IsEdgeReachable 2 u w := by
