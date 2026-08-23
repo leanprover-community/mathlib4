@@ -1062,6 +1062,7 @@ lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass {a : ℕ}
 
 end Subgroup
 
+/-- Any nontrivial normal subgroup of a nilpotent group intersects the center nontrivially. -/
 @[to_additive] theorem Group.IsNilpotent.inf_center_ne_bot_of_normal [Group.IsNilpotent G]
     {H : Subgroup G} [H.Normal] (hH : H ≠ ⊥) : H ⊓ center G ≠ ⊥ := by
   classical
@@ -1292,6 +1293,8 @@ theorem Group.isNilpotent_of_finite_tfae :
 instance [IsNilpotent G] {p : ℕ} [Fact p.Prime] {P : Sylow p G} : P.Normal :=
   isNilpotent_of_finite_tfae.out 1 4 rfl rfl |>.mp ‹_› p ‹_› P
 
+/-- An extension of `Group.IsNilpotent.center_ne_bot` for finite nilpotent groups: every prime
+diving `Nat.card G` divides the cardinality of the center. -/
 lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [Fact p.Prime]
     (hp : p ∣ Nat.card G) : p ∣ Nat.card (center G) := by
   obtain P : Sylow p G := Classical.arbitrary ..
@@ -1301,13 +1304,14 @@ lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [Fact p.
   grind [one_lt_card_iff_ne_bot, hPGrp.card_eq_or_dvd]
 
 private lemma Group.IsNilpotent.exists_normal_card_eq_prime [IsNilpotent G] {p : ℕ} [Fact p.Prime]
-    (hp : p ∣ Nat.card G) : ∃ H : Subgroup G, H.Normal ∧ Nat.card H = p := by
+    (hp : p ∣ Nat.card G) : ∃ H : Subgroup G, Nat.card H = p ∧ H.Normal := by
   obtain P : Sylow p G := Classical.arbitrary ..
   have : ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ ⊥ ≤ H ∧ H ≤ center G :=
     Sylow.exists_subgroup_card_pow_prime_le_le Fact.out (by simp)
       (by simpa using prime_dvd_card_center hp) bot_le
   grind [normal_of_le_center]
 
+/-- A finite nilpotent group has normal subgroups of every possible order. -/
 theorem Group.IsNilpotent.exists_normal_of_dvd_card [IsNilpotent G] {n : ℕ} (hn : n ≠ 0)
     (hcard : n ∣ Nat.card G) : ∃ H : Subgroup G, Nat.card H = n ∧ H.Normal := by
   induction hm : Nat.card G using Nat.strong_induction_on generalizing n G with | h m ih =>
@@ -1316,8 +1320,8 @@ theorem Group.IsNilpotent.exists_normal_of_dvd_card [IsNilpotent G] {n : ℕ} (h
   · exact ⟨⊥, by simp [hn'], normal_bot⟩
   · obtain ⟨p, hp, a, rfl⟩ : ∃ p, p.Prime ∧ p ∣ n := by grind [n.ne_one_iff_exists_prime_dvd]
     have : Fact p.Prime := ⟨hp⟩
-    obtain ⟨N, hN, hNcard⟩ := exists_normal_card_eq_prime (Dvd.dvd.trans ⟨a, rfl⟩ hcard)
-    obtain ⟨K, hK, hKcard⟩ : ∃ K : Subgroup (G ⧸ N), Nat.card K = a ∧ K.Normal := by
+    obtain ⟨N, hNcard, hN⟩ := exists_normal_card_eq_prime (Dvd.dvd.trans ⟨a, rfl⟩ hcard)
+    obtain ⟨K, hKcard, hK⟩ : ∃ K : Subgroup (G ⧸ N), Nat.card K = a ∧ K.Normal := by
       refine ih (Nat.card (G ⧸ N)) ?_ (Nat.ne_zero_of_mul_ne_zero_right hn) ?_ rfl
       · rw [N.card_eq_card_quotient_mul_card_subgroup]
         apply lt_mul_right (by simp) (hNcard ▸ hp.one_lt)
@@ -1326,7 +1330,7 @@ theorem Group.IsNilpotent.exists_normal_of_dvd_card [IsNilpotent G] {n : ℕ} (h
     refine ⟨K.comap (QuotientGroup.mk' N), ?_, normal_comap ..⟩
     convert ← QuotientGroup.card_preimage_mk N K
     · simp
-    · exact hK
+    · exact hKcard
 
 end WithFiniteGroup
 
