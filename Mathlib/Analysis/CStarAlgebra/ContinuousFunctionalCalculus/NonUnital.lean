@@ -477,7 +477,7 @@ lemma cfcₙ_comp (g f : R → R) (a : A)
   have sp_eq :
       σₙ R (cfcₙHom (show p a from ha) ⟨ContinuousMap.mk _ hf.domRestrict, hf0⟩) =
         f '' (σₙ R a) := by
-    rw [cfcₙHom_map_quasispectrum (by exact ha) _]
+    rw [cfcₙHom_map_quasispectrum ha _]
     ext
     simp
   rw [cfcₙ_apply .., cfcₙ_apply f a,

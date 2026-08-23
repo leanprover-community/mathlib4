@@ -570,8 +570,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
       (f.commutes r).symm.trans congr(f ($(MvPolynomial.finSuccEquiv_comp_C_eq_C n) r)).symm
     let f'' : (MvPolynomial (Fin n) R)[X] →ₐ[MvPolynomial (Fin n) R] S :=
       ⟨f'.toRingHom, fun _ ↦ rfl⟩
-    have : Algebra.WeaklyQuasiFiniteAt (MvPolynomial (Fin n) R) p := by
-      exact .of_restrictScalars R _ _
+    have : Algebra.WeaklyQuasiFiniteAt (MvPolynomial (Fin n) R) p := .of_restrictScalars R _ _
     have := ZariskisMainProperty.of_algHom_polynomial p f''
       (RingHom.Finite.comp hf (MvPolynomial.finSuccEquiv R n).symm.toRingEquiv.finite)
     choose r hrp hr m hm using zariskisMainProperty_iff.mp this

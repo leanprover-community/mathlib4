@@ -160,7 +160,7 @@ theorem coe_jacobson_quotient (I : Ideal R) [I.IsTwoSided] :
 
 theorem jacobson_quotient_of_le {I : Ideal R} [I.IsTwoSided] (le : I ≤ jacobson R) :
     jacobson (R ⧸ I) = Submodule.map (Ideal.Quotient.mk I).toSemilinearMap (jacobson R) :=
-  .symm <| Module.map_jacobson_of_ker_le (by exact Ideal.Quotient.mk_surjective) <| by
+  .symm <| Module.map_jacobson_of_ker_le Ideal.Quotient.mk_surjective <| by
     rwa [← I.ker_mkQ] at le
 
 theorem jacobson_le_of_eq_bot {I : Ideal R} [I.IsTwoSided] (h : jacobson (R ⧸ I) = ⊥) :

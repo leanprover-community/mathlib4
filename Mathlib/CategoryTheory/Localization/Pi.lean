@@ -87,7 +87,7 @@ instance {J : Type} [Finite J] {C : Type u₁} {D : Type u₂} [Category.{v₁} 
   have : CatCommSq E.functor L₁ L₂ E'.functor :=
     ⟨(Functor.rightUnitor _).symm ≪≫ isoWhiskerLeft _ E'.counitIso.symm ≪≫
       Functor.associator _ _ _≪≫ isoWhiskerLeft _ ((Functor.associator _ _ _).symm ≪≫
-      isoWhiskerRight (by exact Iso.refl _) _) ≪≫ (Functor.associator _ _ _).symm ≪≫
+      isoWhiskerRight (Iso.refl _) _) ≪≫ (Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight ((Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight E.unitIso.symm L₁) _ ≪≫ isoWhiskerRight L₁.leftUnitor _⟩
   refine Functor.IsLocalization.of_equivalences L₁

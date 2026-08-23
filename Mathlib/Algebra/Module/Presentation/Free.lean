@@ -74,7 +74,7 @@ noncomputable def presentationFinsupp (G : Type w₀) :
   R := PEmpty.{w₁ + 1}
   relation := by rintro ⟨⟩
   toSolution := Relations.solutionFinsupp _
-  toIsPresentation := by exact Relations.solutionFinsupp_isPresentation _
+  toIsPresentation := Relations.solutionFinsupp_isPresentation _
 
 set_option backward.defeqAttrib.useBackward true in
 lemma free_iff_exists_presentation :

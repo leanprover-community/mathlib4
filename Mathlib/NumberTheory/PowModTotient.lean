@@ -32,8 +32,7 @@ public section
 namespace Nat
 
 lemma pow_totient_mod_eq_one {x n : ℕ} (hn : 1 < n) (h : x.Coprime n) :
-    (x ^ φ n) % n = 1 := by
-  exact mod_eq_of_modEq (ModEq.pow_totient h) hn
+    (x ^ φ n) % n = 1 := mod_eq_of_modEq (ModEq.pow_totient h) hn
 
 lemma pow_add_totient_mod_eq {x k n : ℕ} (hn : 1 < n) (h : x.Coprime n) :
     (x ^ (k + φ n)) % n = (x ^ k) % n := by
