@@ -205,7 +205,6 @@ instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
     rw [h₁, F.map_comp, F.map_comp, F.map_id, h₂, zero_comp, comp_zero]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance [F.IsTriangulated] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by

@@ -41,8 +41,8 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
 
 universe u v w x y z u' v' w' y'
 
-variable {R : Type u} {K : Type u'} {M : Type v} {V : Type v'} {M₂ : Type w} {V₂ : Type w'}
-variable {M₃ : Type y} {V₃ : Type y'} {M₄ : Type z} {ι : Type x}
+variable {R : Type u} {M : Type v} {M₂ : Type w}
+variable {M₃ : Type y} {M₄ : Type z} {ι : Type x}
 variable {M₅ M₆ : Type*}
 
 section Prod

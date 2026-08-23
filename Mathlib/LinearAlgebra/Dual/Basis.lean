@@ -41,7 +41,7 @@ noncomputable section
 namespace Module.Basis
 
 universe u v w uR uM uK uV uι
-variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
+variable {R : Type uR} {M : Type uM} {V : Type uV} {ι : Type uι}
 
 section CommSemiring
 
