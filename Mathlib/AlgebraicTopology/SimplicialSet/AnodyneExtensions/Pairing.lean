@@ -198,7 +198,6 @@ instance [P.IsRegular] : (P.ofIso e hA).IsRegular where
     refine hP.false ⟨fun n ↦ ⟨_, (f n).2⟩, fun n ↦ ?_⟩
     simpa [← P.ofIso_ancestralRel_iff e hA] using hf n
 
-@[simp]
 lemma ofIso_index (x : P.II) {d : ℕ} (hd : x.1.dim = d) [P.IsProper] :
     ((P.ofIso e hA).isUniquelyCodimOneFace ⟨(N.orderIsoOfIso e hA).symm x, by simp⟩).index hd =
       (isUniquelyCodimOneFace P x).index hd := by
