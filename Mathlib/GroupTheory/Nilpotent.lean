@@ -1300,6 +1300,34 @@ lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [Fact p.
   have hPGrp : IsPGroup p (P ⊓ center G : Subgroup G) := P.isPGroup'.to_inf_left
   grind [one_lt_card_iff_ne_bot, hPGrp.card_eq_or_dvd]
 
+private lemma Group.IsNilpotent.exists_normal_card_eq_prime [IsNilpotent G] {p : ℕ} [Fact p.Prime]
+    (hp : p ∣ Nat.card G) : ∃ H : Subgroup G, H.Normal ∧ Nat.card H = p := by
+  obtain P : Sylow p G := Classical.arbitrary ..
+  have : ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ ⊥ ≤ H ∧ H ≤ center G :=
+    Sylow.exists_subgroup_card_pow_prime_le_le Fact.out (by simp)
+      (by simpa using prime_dvd_card_center hp) bot_le
+  grind [normal_of_le_center]
+
+theorem Group.IsNilpotent.exists_normal_of_dvd_card [IsNilpotent G] {n : ℕ} (hn : n ≠ 0)
+    (hcard : n ∣ Nat.card G) : ∃ H : Subgroup G, Nat.card H = n ∧ H.Normal := by
+  induction hm : Nat.card G using Nat.strong_induction_on generalizing n G with | h m ih =>
+  subst m
+  by_cases hn' : n = 1
+  · exact ⟨⊥, by simp [hn'], normal_bot⟩
+  · obtain ⟨p, hp, a, rfl⟩ : ∃ p, p.Prime ∧ p ∣ n := by grind [n.ne_one_iff_exists_prime_dvd]
+    have : Fact p.Prime := ⟨hp⟩
+    obtain ⟨N, hN, hNcard⟩ := exists_normal_card_eq_prime (Dvd.dvd.trans ⟨a, rfl⟩ hcard)
+    obtain ⟨K, hK, hKcard⟩ : ∃ K : Subgroup (G ⧸ N), Nat.card K = a ∧ K.Normal := by
+      refine ih (Nat.card (G ⧸ N)) ?_ (Nat.ne_zero_of_mul_ne_zero_right hn) ?_ rfl
+      · rw [N.card_eq_card_quotient_mul_card_subgroup]
+        apply lt_mul_right (by simp) (hNcard ▸ hp.one_lt)
+      · apply Nat.dvd_of_mul_dvd_mul_right hp.pos
+        rwa [←hNcard, ←N.card_eq_card_quotient_mul_card_subgroup, hNcard, mul_comm]
+    refine ⟨K.comap (QuotientGroup.mk' N), ?_, normal_comap ..⟩
+    convert ← QuotientGroup.card_preimage_mk N K
+    · simp
+    · exact hK
+
 end WithFiniteGroup
 
 open Group
