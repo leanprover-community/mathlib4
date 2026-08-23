@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Edison Xu. All rights reserved.
+Copyright (c) 2026 Edison Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Edison Xu
+Authors: Jiedong Jiang, Edison Xie
 -/
 module
 
@@ -42,17 +42,10 @@ namespace SubgroupWithZero
 def units (s : SubgroupWithZero G₀) : Subgroup G₀ˣ where
   carrier := {u : G₀ˣ | (u : G₀) ∈ s}
   one_mem' := one_mem s
-  mul_mem' {u v} hu hv := by
-    change ((u : G₀ˣ) : G₀) ∈ s at hu
-    change ((v : G₀ˣ) : G₀) ∈ s at hv
-    change ((u * v : G₀ˣ) : G₀) ∈ s
-    rw [Units.val_mul]
-    exact mul_mem hu hv
-  inv_mem' {u} hu := by
-    change ((u : G₀ˣ) : G₀) ∈ s at hu
-    change ((u⁻¹ : G₀ˣ) : G₀) ∈ s
-    rw [Units.val_inv_eq_inv_val]
-    exact inv_mem hu
+  mul_mem' {u v} (hu : (u : G₀) ∈ s) (hv : (v : G₀) ∈ s) :=
+    show ((u * v : G₀ˣ) : G₀) ∈ s from (Units.val_mul u v).symm ▸ mul_mem hu hv
+  inv_mem' {u} (hu : (u : G₀) ∈ s) :=
+    show ((u⁻¹ : G₀ˣ) : G₀) ∈ s from (Units.val_inv_eq_inv_val u).symm ▸ inv_mem hu
 
 @[simp]
 theorem mem_units {s : SubgroupWithZero G₀} {u : G₀ˣ} : u ∈ s.units ↔ (u : G₀) ∈ s := Iff.rfl
@@ -152,57 +145,46 @@ theorem units_eq_bot {s : SubgroupWithZero G₀} : s.units = ⊥ ↔ s = ⊥ := 
   rw [← units_bot]
   exact unitsOrderIso.injective.eq_iff
 
-/-! ### Non-degeneracy
+/-! ### Non-degeneracy -/
 
-`⊥ = {0, 1}`, so `Nontrivial ↥s` holds for *every* subgroup with zero and is useless as a
-non-degeneracy hypothesis: there is no analogue of `Subgroup.nontrivial_iff_ne_bot`.
-`Nontrivial (↥s)ˣ` is the right condition. -/
-
-theorem eq_bot_iff_forall {s : SubgroupWithZero G₀} : s = ⊥ ↔ ∀ x ∈ s, x = 0 ∨ x = 1 := by
-  rw [eq_bot_iff]
+theorem eq_bot_iff {s : SubgroupWithZero G₀} : s = ⊥ ↔ ∀ x ∈ s, x = 0 ∨ x = 1 := by
+  rw [_root_.eq_bot_iff]
   exact ⟨fun h _ hx ↦ mem_bot.1 (h hx), fun h _ hx ↦ mem_bot.2 (h _ hx)⟩
 
-theorem ne_bot_iff_exists {s : SubgroupWithZero G₀} : s ≠ ⊥ ↔ ∃ x ∈ s, x ≠ 0 ∧ x ≠ 1 := by
-  simp [eq_bot_iff_forall, not_or]
+theorem ne_bot_iff {s : SubgroupWithZero G₀} : s ≠ ⊥ ↔ ∃ x ∈ s, x ≠ 0 ∧ x ≠ 1 := by
+  simp [eq_bot_iff, not_or]
 
-/-- **The non-degeneracy criterion.** Note that `Nontrivial ↥s` is *not* equivalent to `s ≠ ⊥`:
-it holds for every `s`, since `⊥ = {0, 1}`. -/
+/-- A subgroup with zero is nondegenerate exactly when its group of units is nontrivial. -/
 @[simp]
-theorem nontrivial_units_iff_ne_bot {s : SubgroupWithZero G₀} : Nontrivial (↥s)ˣ ↔ s ≠ ⊥ := by
-  rw [ne_bot_iff_exists]
+theorem nontrivial_units_iff_ne_bot {s : SubgroupWithZero G₀} : Nontrivial sˣ ↔ s ≠ ⊥ := by
+  rw [ne_bot_iff]
   constructor
   · rintro ⟨u, w, huw⟩
     rcases eq_or_ne u 1 with rfl | hu
-    · refine ⟨((w : ↥s) : G₀), (w : ↥s).2, ZeroMemClass.coe_eq_zero.not.2 w.ne_zero, ?_⟩
+    · refine ⟨((w : s) : G₀), (w : s).2, ZeroMemClass.coe_eq_zero.not.2 w.ne_zero, ?_⟩
       exact OneMemClass.coe_eq_one.not.2 fun h ↦ huw.symm (Units.ext (by simpa using h))
-    · refine ⟨((u : ↥s) : G₀), (u : ↥s).2, ZeroMemClass.coe_eq_zero.not.2 u.ne_zero, ?_⟩
+    · refine ⟨((u : s) : G₀), (u : s).2, ZeroMemClass.coe_eq_zero.not.2 u.ne_zero, ?_⟩
       exact OneMemClass.coe_eq_one.not.2 fun h ↦ hu (Units.ext (by simpa using h))
   · rintro ⟨x, hx, hx0, hx1⟩
-    refine ⟨Units.mk0 (⟨x, hx⟩ : ↥s) (fun h ↦ hx0 (ZeroMemClass.coe_eq_zero.2 h)), 1, ?_⟩
+    refine ⟨Units.mk0 (⟨x, hx⟩ : s) (fun h ↦ hx0 (ZeroMemClass.coe_eq_zero.2 h)), 1, ?_⟩
     intro h
     rw [Units.ext_iff] at h
     exact hx1 (congrArg Subtype.val h)
 
-/-- The units of the *subtype* `↥s` versus the subgroup of units `s.units`. These are not
-definitionally equal, so this equivalence is what lets statements about `(↥s)ˣ` reach the
-`Subgroup G₀ˣ` API. -/
-def unitsMulEquiv (s : SubgroupWithZero G₀) : (↥s)ˣ ≃* ↥s.units where
-  toFun u := ⟨Units.mk0 ((u : ↥s) : G₀) (ZeroMemClass.coe_eq_zero.not.2 u.ne_zero), (u : ↥s).2⟩
-  invFun w := Units.mk0 (⟨((w : G₀ˣ) : G₀), w.2⟩ : ↥s)
+/-- The group of units of `s`, as a type, is isomorphic to the subgroup of units `s.units`. -/
+def unitsMulEquiv (s : SubgroupWithZero G₀) : sˣ ≃* s.units where
+  toFun u := ⟨Units.mk0 ((u : s) : G₀) (ZeroMemClass.coe_eq_zero.not.2 u.ne_zero), (u : s).2⟩
+  invFun w := Units.mk0 (⟨((w : G₀ˣ) : G₀), w.2⟩ : s)
     fun h ↦ (w : G₀ˣ).ne_zero (congrArg Subtype.val h)
   left_inv _ := by ext; rfl
   right_inv _ := by ext; rfl
   map_mul' _ _ := by ext; rfl
 
-instance nontrivial_units_subgroup (s : SubgroupWithZero G₀) [Nontrivial (↥s)ˣ] :
-    Nontrivial ↥s.units :=
+instance nontrivial_units_subgroup (s : SubgroupWithZero G₀) [Nontrivial sˣ] :
+    Nontrivial s.units :=
   (unitsMulEquiv s).toEquiv.injective.nontrivial
 
-/-- Taking units turns the closure of `k` into the `Subgroup` closure of the preimage of `k`.
-
-This is the hook through which the whole `Subgroup.closure` API — `closure_induction`,
-`mem_closure_iff`, `zpowers`, `IsCyclic`, … — transfers to subgroups with zero. -/
-@[simp]
+/-- Taking units turns the closure of `k` into the `Subgroup` closure of the preimage of `k`. -/
 theorem units_closure (k : Set G₀) :
     (closure k).units = Subgroup.closure (Units.val ⁻¹' k) := by
   refine le_antisymm ?_ ((Subgroup.closure_le _).2 fun u hu ↦ subset_closure hu)

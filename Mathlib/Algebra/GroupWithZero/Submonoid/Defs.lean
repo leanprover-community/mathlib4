@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Edison Xu. All rights reserved.
+Copyright (c) 2026 Edison Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Edison Xu
+Authors: Jiedong Jiang, Edison Xie
 -/
 module
 
@@ -18,19 +18,11 @@ This file defines bundled submonoids with zero: subsets of a monoid with zero `M
 ## Main definitions
 
 * `SubmonoidWithZeroClass S M₀`: the typeclass saying that `S` is a type of subsets of `M₀`
-  containing `0` and `1` and closed under `(*)`. It is the conjunction of `SubmonoidClass` and
-  `ZeroMemClass`, and is what powers the `MulZeroOneClass` / `MonoidWithZero` /
-  `CommMonoidWithZero` instances on the coercion to `Sort`.
+  containing `0` and `1` and closed under `(*)`.
 * `SubmonoidWithZero M₀`: the type of bundled submonoids with zero of `M₀`.
 * `SubmonoidWithZeroClass.subtype`: the natural `M₀ →*₀ M₀` inclusion of a submonoid with zero.
 
 ## Implementation notes
-
-There is no additive analogue of a monoid with zero, so nothing in this file is tagged
-`@[to_additive]`.
-
-Note that `SubmonoidWithZero M₀` does not require `MonoidWithZero M₀`, only the weaker
-`MulZeroOneClass M₀`, matching `Submonoid`'s use of `MulOneClass`.
 
 Beware that the bottom element of the (not yet defined) lattice of submonoids with zero is
 `{0, 1}` rather than `{1}`: every submonoid with zero contains both.
@@ -148,8 +140,16 @@ theorem toSubmonoid_injective :
     rw [coe_toSubmonoid, coe_toSubmonoid] at this
     exact SetLike.ext'_iff.2 this
 
+@[mono]
+theorem toSubmonoid_strictMono :
+    StrictMono (toSubmonoid : SubmonoidWithZero M₀ → Submonoid M₀) := fun _ _ ↦ id
+
+@[mono]
+theorem toSubmonoid_mono : Monotone (toSubmonoid : SubmonoidWithZero M₀ → Submonoid M₀) :=
+  toSubmonoid_strictMono.monotone
+
 @[simp]
-theorem toSubmonoid_le_toSubmonoid {s t : SubmonoidWithZero M₀} :
+theorem toSubmonoid_le {s t : SubmonoidWithZero M₀} :
     s.toSubmonoid ≤ t.toSubmonoid ↔ s ≤ t := Iff.rfl
 
 @[simp]
@@ -181,21 +181,19 @@ namespace MonoidWithZeroHom
 
 variable {A B : Type*} [MulZeroOneClass A] [MulZeroOneClass B]
 
-/-- The range of a monoid with zero hom, as a submonoid with zero of the codomain.
-
-This is `MonoidHom.mrange` upgraded: the range of a `→*₀` always contains `0`. -/
-def mrange₀ (f : A →*₀ B) : SubmonoidWithZero B where
+/-- The range of a monoid with zero hom, as a submonoid with zero of the codomain. -/
+def mrange (f : A →*₀ B) : SubmonoidWithZero B where
   carrier := Set.range f
   zero_mem' := ⟨0, map_zero f⟩
   one_mem' := ⟨1, map_one f⟩
   mul_mem' := by rintro _ _ ⟨a, rfl⟩ ⟨b, rfl⟩; exact ⟨a * b, map_mul f a b⟩
 
 @[simp, norm_cast]
-lemma coe_mrange₀ (f : A →*₀ B) : (mrange₀ f : Set B) = Set.range f := rfl
+lemma coe_mrange (f : A →*₀ B) : (mrange f : Set B) = Set.range f := rfl
 
 @[simp]
-lemma mem_mrange₀ {f : A →*₀ B} {b : B} : b ∈ mrange₀ f ↔ ∃ a, f a = b := Iff.rfl
+lemma mem_mrange {f : A →*₀ B} {b : B} : b ∈ mrange f ↔ ∃ a, f a = b := Iff.rfl
 
-lemma apply_mem_mrange₀ (f : A →*₀ B) (a : A) : f a ∈ mrange₀ f := ⟨a, rfl⟩
+lemma apply_mem_mrange (f : A →*₀ B) (a : A) : f a ∈ mrange f := ⟨a, rfl⟩
 
 end MonoidWithZeroHom

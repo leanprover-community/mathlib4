@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Edison Xu. All rights reserved.
+Copyright (c) 2026 Edison Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Edison Xu
+Authors: Jiedong Jiang, Edison Xie
 -/
 module
 
@@ -19,8 +19,8 @@ that topology at a priority high enough to beat `instTopologicalSpaceSubtype`.
 
 **This deliberately overrides the subspace topology, because the two genuinely differ.**
 
-`SubgroupWithZero` is `SetLike`, so `↥s` is a subtype of the ambient `Γ₀`; once `Γ₀` carries the
-`WithZeroTopology`, `instTopologicalSpaceSubtype` applies to `↥s` at the default priority and
+`SubgroupWithZero` is `SetLike`, so `s` is a subtype of the ambient `Γ₀`; once `Γ₀` carries the
+`WithZeroTopology`, `instTopologicalSpaceSubtype` applies to `s` at the default priority and
 would silently win over `WithZeroTopology.topologicalSpace`, which is scoped at priority 100.
 That would be the wrong topology.
 

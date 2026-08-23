@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Antoine Chambert-Loir and Filippo Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Filippo A. E. Nuccio, Edison Xu
+Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Filippo A. E. Nuccio, Edison Xie
 -/
 module
 
@@ -176,9 +176,9 @@ section DomainGroupWithZero
 variable [GroupWithZero A] [GroupWithZero B] (f : A →*₀ B)
 
 /-- When the domain is a group with zero, the range of `f` is closed under inverses, so
-`MonoidWithZeroHom.mrange₀ f` upgrades to a subgroup with zero. -/
+`MonoidWithZeroHom.mrange f` upgrades to a subgroup with zero. -/
 def rangeSubgroupWithZero : SubgroupWithZero B where
-  __ := mrange₀ f
+  __ := mrange f
   inv_mem' := by rintro _ ⟨a, rfl⟩; exact ⟨a⁻¹, map_inv₀ f a⟩
 
 @[simp]
@@ -196,7 +196,7 @@ lemma valueGroup₀_eq_rangeSubgroupWithZero : valueGroup₀ f = rangeSubgroupWi
 
 /-- When the domain is a group with zero, the value group with zero and the range agree as
 submonoids with zero. -/
-lemma toSubmonoidWithZero_valueGroup₀ : (valueGroup₀ f).toSubmonoidWithZero = mrange₀ f :=
+lemma toSubmonoidWithZero_valueGroup₀ : (valueGroup₀ f).toSubmonoidWithZero = mrange f :=
   SetLike.ext' (coe_valueGroup₀_eq_range f)
 
 lemma valueGroup_eq_range : Units.val '' (valueGroup f) = range f \ {0} := by

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio, Edison Xu
+Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio, Edison Xie
 -/
 module
 

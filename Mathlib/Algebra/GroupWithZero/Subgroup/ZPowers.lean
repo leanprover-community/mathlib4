@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Edison Xu. All rights reserved.
+Copyright (c) 2026 Edison Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Edison Xu
+Authors: Jiedong Jiang, Edison Xie
 -/
 module
 
@@ -61,7 +61,7 @@ lemma zpowers₀_inv (g : G₀) : zpowers₀ g⁻¹ = zpowers₀ g :=
 `0` or `1`. -/
 @[simp]
 lemma zpowers₀_eq_bot : zpowers₀ g = ⊥ ↔ g = 0 ∨ g = 1 := by
-  rw [eq_bot_iff, zpowers₀_le, mem_bot]
+  rw [_root_.eq_bot_iff, zpowers₀_le, mem_bot]
 
 @[simp] lemma zpowers₀_zero : zpowers₀ (0 : G₀) = ⊥ := zpowers₀_eq_bot.2 (.inl rfl)
 @[simp] lemma zpowers₀_one : zpowers₀ (1 : G₀) = ⊥ := zpowers₀_eq_bot.2 (.inr rfl)

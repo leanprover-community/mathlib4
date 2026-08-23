@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Edison Xu. All rights reserved.
+Copyright (c) 2026 Edison Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Edison Xu
+Authors: Jiedong Jiang, Edison Xie
 -/
 module
 
@@ -17,16 +17,12 @@ file provides its distinguished generator `s.genLTOne₀`, the one that is `< 1`
 
 ## Implementation notes
 
-The non-degeneracy hypothesis is `[Nontrivial (↥s)ˣ]`, **not** `[Nontrivial ↥s]`: the latter
-holds for every subgroup with zero, since `⊥ = {0, 1}`. See
-`SubgroupWithZero.nontrivial_units_iff_ne_bot`.
+The non-degeneracy hypothesis is `[Nontrivial sˣ]`, not `[Nontrivial s]`: the latter holds for
+every subgroup with zero, since `⊥ = {0, 1}`.
 
 The extra conjunct `0 < g` in `exists_generator_lt_one₀` is not redundant. In a
 `LinearOrderedCommGroupWithZero` one has `0 < 1`, so `g < 1` no longer implies `g ≠ 0`, and
 `zpowers₀ 0 = ⊥`.
-
-Statements are native — they mention only `Γ`, never `Γˣ` — while the proofs transport through
-`SubgroupWithZero.units` into the `Subgroup` API.
 
 ## Tags
 subgroup with zero, cyclic, generator
@@ -39,7 +35,7 @@ noncomputable section
 namespace SubgroupWithZero
 
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
-variable (s : SubgroupWithZero Γ) [Nontrivial (↥s)ˣ] [IsCyclicWithZero ↥s]
+variable (s : SubgroupWithZero Γ) [Nontrivial sˣ] [IsCyclicWithZero s]
 
 /-- With-zero analogue of `LinearOrderedCommGroup.Subgroup.exists_generator_lt_one`.
 
@@ -69,8 +65,7 @@ lemma genLTOne₀_zpowers₀_eq : zpowers₀ s.genLTOne₀ = s := s.exists_gener
 
 lemma genLTOne₀_mem : s.genLTOne₀ ∈ s := s.genLTOne₀_zpowers₀_eq.le (mem_zpowers₀ _)
 
-/-- The generator is the greatest element of `s` that is `< 1`. This is the bridge to the
-order-theoretic notion of discreteness used by `ValuativeRel.IsDiscrete`. -/
+/-- The generator is the greatest element of `s` that is `< 1`. -/
 lemma genLTOne₀_isGreatest : IsGreatest {x : Γ | x ∈ s ∧ x < 1} s.genLTOne₀ := by
   refine ⟨⟨s.genLTOne₀_mem, s.genLTOne₀_lt_one⟩, ?_⟩
   rintro x ⟨hxs, hx1⟩

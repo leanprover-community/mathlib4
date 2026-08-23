@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Edison Xu. All rights reserved.
+Copyright (c) 2026 Edison Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Edison Xu
+Authors: Jiedong Jiang, Edison Xie
 -/
 module
 
@@ -17,25 +17,13 @@ and `1`, closed under multiplication, and closed under inversion.
 ## Main definitions
 
 * `SubgroupWithZeroClass S G₀`: the typeclass saying that `S` is a type of subsets of `G₀` that
-  are subgroups with zero. It is the conjunction of `SubmonoidWithZeroClass` and `InvMemClass`,
-  and powers the `GroupWithZero` / `CommGroupWithZero` instances on the coercion to `Sort`.
+  are subgroups with zero.
 * `SubgroupWithZero G₀`: the type of bundled subgroups with zero of `G₀`.
 
 ## Implementation notes
 
-A subgroup with zero is implemented as a submonoid with zero which is closed under `⁻¹`. The
-closure condition is stated unconditionally, as for `Subfield`: the case `x = 0` is harmless
-because `0⁻¹ = 0` and `0` belongs to every submonoid with zero.
-
-`SubgroupWithZeroClass` extends `InvMemClass` rather than asserting the existence of inverses,
-which is what lets `SubgroupWithZeroClass.toSubgroupClass` inherit `Inv`, `Div`, `Pow ℤ`,
-`div_mem` and `zpow_mem` on the coercion to `Sort` with every transport argument `rfl`.
-
 Beware that the bottom element of the (not yet defined) lattice of subgroups with zero is
-`{0, 1}` rather than `{1}`. In particular `Nontrivial ↥s` holds for *every* subgroup with zero
-`s` and is useless as a non-degeneracy hypothesis; use `Nontrivial (↥s)ˣ` instead.
-
-There is no additive analogue of a group with zero, so nothing here is tagged `@[to_additive]`.
+`{0, 1}` rather than `{1}`.
 
 ## Tags
 subgroup with zero

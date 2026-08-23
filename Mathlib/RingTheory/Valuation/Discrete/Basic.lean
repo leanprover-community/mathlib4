@@ -149,9 +149,8 @@ instance : IsCyclic <| valueGroup (.ofClass v) := by
   exact isCyclic_zpowers (generator v)
 
 instance : IsCyclicWithZero (ValueGroup₀ (.ofClass v)) :=
-  (SubgroupWithZero.unitsMulEquiv (valueGroup₀ (.ofClass v))).isCyclic.mpr
-    (by rw [units_valueGroup₀]; infer_instance)
-
+  @IsCyclicWithZero.mk _ _ ((SubgroupWithZero.unitsMulEquiv (valueGroup₀ (.ofClass v))).isCyclic.mpr
+    (by rw [units_valueGroup₀]; infer_instance))
 
 instance : v.IsNontrivial := by
   apply IsNontrivial.mk

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Edison Xu. All rights reserved.
+Copyright (c) 2026 Edison Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Edison Xu
+Authors: Jiedong Jiang, Edison Xie
 -/
 module
 
@@ -85,14 +85,14 @@ namespace SubgroupWithZero
 
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 
-/-- The units of `↥s`, as an ordered group, are the subgroup of units `s.units`. -/
-def unitsOrderMonoidIso (s : SubgroupWithZero Γ) : (↥s)ˣ ≃*o ↥s.units where
+/-- The units of `s`, as an ordered group, are the subgroup of units `s.units`. -/
+def unitsOrderMonoidIso (s : SubgroupWithZero Γ) : sˣ ≃*o s.units where
   __ := unitsMulEquiv s
   map_le_map_iff' := Iff.rfl
 
 /-- Equal subgroups with zero give order-isomorphic (and multiplicatively isomorphic) types. -/
 @[simps!]
-def orderIsoOfEq {s t : SubgroupWithZero Γ} (h : s = t) : ↥s ≃*o ↥t where
+def orderIsoOfEq {s t : SubgroupWithZero Γ} (h : s = t) : s ≃*o t where
   toFun x := ⟨x.1, h ▸ x.2⟩
   invFun x := ⟨x.1, h.symm ▸ x.2⟩
   left_inv _ := rfl
