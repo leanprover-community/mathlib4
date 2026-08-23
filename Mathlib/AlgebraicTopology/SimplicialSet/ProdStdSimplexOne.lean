@@ -22,7 +22,7 @@ of `Δ[p] ⊗ Δ[1]`.
 
 universe u
 
-open CategoryTheory MonoidalCategory CartesianMonoidalCategory Opposite
+open CategoryTheory MonoidalCategory Opposite CartesianMonoidalCategory
 
 open scoped Simplicial
 
