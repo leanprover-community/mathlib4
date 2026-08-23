@@ -137,15 +137,15 @@ theorem X_pow_two_pow_sub_C_irreducible
     cases n with
     | zero => simpa using irred
     | succ k =>
-      rw [pow_succ']
-      by_contra nirred
-      apply nirred
-      apply X_pow_mul_sub_C_irreducible ih
-      have := Fact.mk ih
-      apply X_pow_sub_C_irreducible_of_prime Nat.prime_two
-      intro b hb
-      apply nirred
-      rw [mul_comm]
+      by_cases hsq : ∀ b, b ^ 2 ≠ root (X ^ 2 ^ (k + 1) - C a)
+      · rw [pow_succ']
+        apply X_pow_mul_sub_C_irreducible ih
+        have := Fact.mk ih
+        apply X_pow_sub_C_irreducible_of_prime Nat.prime_two
+        exact hsq
+      simp_rw [not_forall, not_ne_iff] at hsq
+      obtain ⟨b, hb⟩ := hsq
+      rw [pow_succ]
       apply X_pow_mul_sub_C_irreducible irred
       have := Fact.mk irred
       have hbb : Algebra.norm K b ^ 2 = -a := by
