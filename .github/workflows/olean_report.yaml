@@ -20,6 +20,9 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
+
 jobs:
   report:
     name: Prepare olean report
