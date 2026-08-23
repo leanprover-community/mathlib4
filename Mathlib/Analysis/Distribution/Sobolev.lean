@@ -250,12 +250,12 @@ theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {
     unfold MemLp
     rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by norm_num) (by norm_num) hmeas]
     suffices h : ∫⁻ a : E, ENNReal.ofReal ‖(1 + ‖a‖ ^ 2) ^ (-s)‖
-        ∂(volume : Measure E) < ⊤ from by
+        ∂(volume : Measure E) < ⊤ by
       norm_cast
       simp_rw [ofReal_norm] at h
       simp_rw [← enorm_pow]
       convert h
-      · exact BorelSpace.measurable_eq.trans BorelSpace.measurable_eq.symm
+      · rfl
       · rw [← Real.rpow_mul_natCast (by positivity)]
         simp
     apply ((integrable_rpow_neg_one_add_norm_sq hs).congr _).lintegral_lt_top
