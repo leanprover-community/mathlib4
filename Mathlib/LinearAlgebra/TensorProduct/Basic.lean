@@ -6,6 +6,8 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Tactic.Abel
 
 /-!
 # Universal property of the tensor product
@@ -24,21 +26,18 @@ bilinear, tensor, tensor product
 
 section Semiring
 
-variable {R R₂ R₃ R' R'' : Type*}
-variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃] [Monoid R'] [Semiring R'']
+variable {R R₂ R₃ R' : Type*}
+variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃] [Monoid R']
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
 variable {A M N P Q S : Type*}
-variable {M₂ M₃ N₂ N₃ P' P₂ P₃ Q' Q₂ Q₃ : Type*}
+variable {P₂ P₃ : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [AddCommMonoid S]
-variable [AddCommMonoid P'] [AddCommMonoid Q']
-variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Q₂]
-variable [AddCommMonoid M₃] [AddCommMonoid N₃] [AddCommMonoid P₃] [AddCommMonoid Q₃]
+variable [AddCommMonoid P₂]
+variable [AddCommMonoid P₃]
 variable [DistribMulAction R' M]
-variable [Module R'' M]
 variable [Module R M] [Module R N] [Module R S]
-variable [Module R P'] [Module R Q']
-variable [Module R₂ M₂] [Module R₂ N₂] [Module R₂ P₂] [Module R₂ Q₂]
-variable [Module R₃ M₃] [Module R₃ N₃] [Module R₃ P₃] [Module R₃ Q₃]
+variable [Module R₂ P₂]
+variable [Module R₃ P₃]
 
 variable (M N)
 
@@ -263,7 +262,7 @@ variable (R M N)
 
 /-- The tensor product of modules is commutative, up to linear equivalence. -/
 protected def comm : M ⊗[R] N ≃ₗ[R] N ⊗[R] M :=
-  LinearEquiv.ofLinear (lift (mk R N M).flip) (lift (mk R M N).flip) (ext' fun _ _ => rfl)
+  LinearEquiv.ofLinearMap (lift (mk R N M).flip) (lift (mk R M N).flip) (ext' fun _ _ => rfl)
     (ext' fun _ _ => rfl)
 
 @[simp]
@@ -330,8 +329,8 @@ def mapOfCompatibleSMul : M ⊗[A] N →ₗ[S] M ⊗[R] N where
 @[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R A S M N (m ⊗ₜ n) = m ⊗ₜ n :=
   rfl
 
-/- The map `mapOfCompatibleSMul` is surjective. Its kernel is characterized by the Lemma
-`TensorProduct.ker_mapOfCompatibleSMul`. -/
+/-- The map `mapOfCompatibleSMul` is surjective. Its kernel is characterized by the Lemma
+`TensorProduct.AlgebraTensorModule.ker_mapOfCompatibleSMul`. -/
 theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R A S M N) :=
   fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
     fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
@@ -361,9 +360,9 @@ end Semiring
 section Ring
 
 variable {R : Type*} [CommSemiring R]
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*}
-variable [AddCommGroup M] [AddCommMonoid N] [AddCommGroup P] [AddCommMonoid Q]
-variable [Module R M] [Module R N] [Module R P] [Module R Q]
+variable {M : Type*} {N : Type*} {P : Type*} {S : Type*}
+variable [AddCommGroup M] [AddCommMonoid N] [AddCommGroup P]
+variable [Module R M] [Module R N] [Module R P]
 
 namespace TensorProduct
 

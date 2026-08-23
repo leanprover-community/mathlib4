@@ -91,7 +91,7 @@ def jacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 @[inherit_doc]
 scoped[NumberTheorySymbols] notation "J(" a " | " b ")" => jacobiSym a b
 
-open NumberTheorySymbols
+open scoped NumberTheorySymbols
 
 /-!
 ### Properties of the Jacobi symbol
@@ -347,7 +347,7 @@ theorem even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
   obtain ⟨a, rfl⟩ := Int.dvd_of_emod_eq_zero ha2
   rw [Int.mul_ediv_cancel_left _ (by decide), jacobiSym.mul_left,
     jacobiSym.at_two (Nat.odd_iff.mpr hb2), ZMod.χ₈_nat_eq_if_mod_eight,
-    if_neg (Nat.mod_two_ne_zero.mpr hb2)]
+    ite_eq_right (Nat.mod_two_ne_zero.mpr hb2)]
   grind
 
 end jacobiSym
@@ -501,7 +501,9 @@ We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 -- i.e. needs to be used publicly.
 set_option backward.privateInPublic true
 
-open NumberTheorySymbols jacobiSym
+open jacobiSym
+
+open scoped NumberTheorySymbols
 
 /-- Computes `J(a | b)` (or `-J(a | b)` if `flip` is set to `true`) given assumptions, by reducing
 `a` to odd by repeated division and then using quadratic reciprocity to swap `a`, `b`. -/
@@ -584,7 +586,7 @@ set_option backward.privateInPublic.warn false in
       Int.emod_two_ne_zero.mp ha2, one_left, one_mul]
   · rw [hb1, one_right]
   · rw [mod_left, hab, zero_left (lt_of_le_of_ne (Nat.pos_of_ne_zero hb0) (Ne.symm hb1))]
-  · rw [fastJacobiSymAux.eq_jacobiSym, if_neg Bool.false_ne_true, mod_left a b,
+  · rw [fastJacobiSymAux.eq_jacobiSym, ite_eq_right Bool.false_ne_true, mod_left a b,
       Int.natAbs_of_nonneg (a.emod_nonneg (mod_cast hb0))]
     · exact Nat.mod_two_ne_zero.mp hb2
     · exact lt_of_le_of_ne (Nat.one_le_iff_ne_zero.mpr hb0) (Ne.symm hb1)

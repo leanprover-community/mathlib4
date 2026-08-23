@@ -16,14 +16,13 @@ import Mathlib.Tactic.NormDet
 # Cartan matrices
 
 This file defines Cartan matrices for simple Lie algebras, both the exceptional types
-(E₆, E₇, E₈, F₄, G₂) and the classical infinite families (A, B, C, D).
+(E₆, E₇, E₈, F₄, G₂) and the classical infinite families (A, B, C, D), as well as the
+generalized Eₙ family obtained by continuing the E-type Dynkin diagram.
 
 ## Main definitions
 
-### Exceptional types
-* `CartanMatrix.E₆` : The Cartan matrix of type E₆
-* `CartanMatrix.E₇` : The Cartan matrix of type E₇
-* `CartanMatrix.E₈` : The Cartan matrix of type E₈
+### Exceptional types and the E family
+* `CartanMatrix.E` : The Cartan matrix of type Eₙ
 * `CartanMatrix.F₄` : The Cartan matrix of type F₄
 * `CartanMatrix.G₂` : The Cartan matrix of type G₂
 
@@ -51,35 +50,57 @@ open Matrix
 
 /-! ### Exceptional Cartan matrices -/
 
-/-- The Cartan matrix of type E₆. See [bourbaki1968] plate V, page 277. -/
-def E₆ : Matrix (Fin 6) (Fin 6) ℤ :=
-  !![ 2,  0, -1,  0,  0,  0;
-      0,  2,  0, -1,  0,  0;
-     -1,  0,  2, -1,  0,  0;
-      0, -1, -1,  2, -1,  0;
-      0,  0,  0, -1,  2, -1;
-      0,  0,  0,  0, -1,  2]
+/-- The generalized Cartan matrix of type Eₙ, extending E₆, E₇, E₈ by the same Dynkin-diagram
+pattern. -/
+def E (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
+  .of fun i j =>
+    if i = j then 2
+    else if (i.val = 0 ∧ j.val = 2) ∨ (j.val = 0 ∧ i.val = 2) ∨
+      (i.val = 1 ∧ j.val = 3) ∨ (j.val = 1 ∧ i.val = 3) ∨
+      (2 ≤ i.val ∧ i.val + 1 = j.val) ∨ (2 ≤ j.val ∧ j.val + 1 = i.val)
+    then -1 else 0
 
-/-- The Cartan matrix of type E₇. See [bourbaki1968] plate VI, page 281. -/
-def E₇ : Matrix (Fin 7) (Fin 7) ℤ :=
-  !![ 2,  0, -1,  0,  0,  0,  0;
-      0,  2,  0, -1,  0,  0,  0;
-     -1,  0,  2, -1,  0,  0,  0;
-      0, -1, -1,  2, -1,  0,  0;
-      0,  0,  0, -1,  2, -1,  0;
-      0,  0,  0,  0, -1,  2, -1;
-      0,  0,  0,  0,  0, -1,  2]
+/-- `E 6` is the Cartan matrix of type E₆. See [bourbaki1968] plate V, page 277. -/
+lemma E_six_eq :
+    E 6 = !![ 2,  0, -1,  0,  0,  0;
+              0,  2,  0, -1,  0,  0;
+             -1,  0,  2, -1,  0,  0;
+              0, -1, -1,  2, -1,  0;
+              0,  0,  0, -1,  2, -1;
+              0,  0,  0,  0, -1,  2] := by decide
 
-/-- The Cartan matrix of type E₈. See [bourbaki1968] plate VII, page 285. -/
-def E₈ : Matrix (Fin 8) (Fin 8) ℤ :=
-  !![ 2,  0, -1,  0,  0,  0,  0,  0;
-      0,  2,  0, -1,  0,  0,  0,  0;
-     -1,  0,  2, -1,  0,  0,  0,  0;
-      0, -1, -1,  2, -1,  0,  0,  0;
-      0,  0,  0, -1,  2, -1,  0,  0;
-      0,  0,  0,  0, -1,  2, -1,  0;
-      0,  0,  0,  0,  0, -1,  2, -1;
-      0,  0,  0,  0,  0,  0, -1,  2]
+/-- Deprecated alias for `E 6`. -/
+@[deprecated "Use `E 6` instead" (since := "2026-07-29")]
+abbrev E₆ : Matrix (Fin 6) (Fin 6) ℤ := E 6
+
+/-- `E 7` is the Cartan matrix of type E₇. See [bourbaki1968] plate VI, page 281. -/
+lemma E_seven_eq :
+    E 7 = !![ 2,  0, -1,  0,  0,  0,  0;
+              0,  2,  0, -1,  0,  0,  0;
+             -1,  0,  2, -1,  0,  0,  0;
+              0, -1, -1,  2, -1,  0,  0;
+              0,  0,  0, -1,  2, -1,  0;
+              0,  0,  0,  0, -1,  2, -1;
+              0,  0,  0,  0,  0, -1,  2] := by decide
+
+/-- Deprecated alias for `E 7`. -/
+@[deprecated "Use `E 7` instead" (since := "2026-07-29")]
+abbrev E₇ : Matrix (Fin 7) (Fin 7) ℤ := E 7
+
+/-- `E 8` is the Cartan matrix of type E₈. See [bourbaki1968] plate VII, page 285. -/
+lemma E_eight_eq :
+    E 8 = !![ 2,  0, -1,  0,  0,  0,  0,  0;
+              0,  2,  0, -1,  0,  0,  0,  0;
+             -1,  0,  2, -1,  0,  0,  0,  0;
+              0, -1, -1,  2, -1,  0,  0,  0;
+              0,  0,  0, -1,  2, -1,  0,  0;
+              0,  0,  0,  0, -1,  2, -1,  0;
+              0,  0,  0,  0,  0, -1,  2, -1;
+              0,  0,  0,  0,  0,  0, -1,  2] := by decide
+
+/-- Deprecated alias for `E 8`. -/
+@[deprecated "Use `E 8` instead" (since := "2026-07-29")]
+abbrev E₈ : Matrix (Fin 8) (Fin 8) ℤ := E 8
 
 /-- The Cartan matrix of type F₄. See [bourbaki1968] plate VIII, page 288. -/
 def F₄ : Matrix (Fin 4) (Fin 4) ℤ :=
@@ -144,16 +165,16 @@ variable (n : ℕ)
 @[simp] theorem D_diag (i : Fin n) : D n i i = 2 := by simp [D, Matrix.of_apply]
 
 theorem A_apply_le_zero_of_ne (i j : Fin n) (h : i ≠ j) : A n i j ≤ 0 := by
-  simp only [A, Matrix.of_apply]; split_ifs <;> omega
+  simp only [A, Matrix.of_apply]; split_ifs <;> lia
 
 theorem B_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : B n i j ≤ 0 := by
-  simp only [B, Matrix.of_apply]; split_ifs <;> omega
+  simp only [B, Matrix.of_apply]; split_ifs <;> lia
 
 theorem C_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : C n i j ≤ 0 := by
-  simp only [C, Matrix.of_apply]; split_ifs <;> omega
+  simp only [C, Matrix.of_apply]; split_ifs <;> lia
 
 theorem D_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : D n i j ≤ 0 := by
-  simp only [D, Matrix.of_apply]; split_ifs <;> omega
+  simp only [D, Matrix.of_apply]; split_ifs <;> lia
 
 /-! ### Transpose properties -/
 
@@ -214,11 +235,17 @@ theorem D_four : D 4 = !![ 2, -1,  0,  0;
 
 /-! ### Exceptional matrix diagonal entries -/
 
-@[simp] theorem E₆_diag (i : Fin 6) : E₆ i i = 2 := by fin_cases i <;> decide
+@[simp] theorem E_diag (n : ℕ) (i : Fin n) : E n i i = 2 := by
+  simp [E]
 
-@[simp] theorem E₇_diag (i : Fin 7) : E₇ i i = 2 := by fin_cases i <;> decide
+@[deprecated "Use `E_diag` instead" (since := "2026-08-11")]
+theorem E₆_diag (i : Fin 6) : E 6 i i = 2 := E_diag 6 i
 
-@[simp] theorem E₈_diag (i : Fin 8) : E₈ i i = 2 := by fin_cases i <;> decide
+@[deprecated "Use `E_diag` instead" (since := "2026-08-11")]
+theorem E₇_diag (i : Fin 7) : E 7 i i = 2 := E_diag 7 i
+
+@[deprecated "Use `E_diag` instead" (since := "2026-08-11")]
+theorem E₈_diag (i : Fin 8) : E 8 i i = 2 := E_diag 8 i
 
 @[simp] theorem F₄_diag (i : Fin 4) : F₄ i i = 2 := by fin_cases i <;> decide
 
@@ -227,14 +254,21 @@ theorem D_four : D 4 = !![ 2, -1,  0,  0;
 
 /-! ### Exceptional matrix off-diagonal entries -/
 
-theorem E₆_off_diag_nonpos (i j : Fin 6) (h : i ≠ j) : E₆ i j ≤ 0 := by
-  fin_cases i <;> fin_cases j <;> simp_all [E₆]
+theorem E_off_diag_nonpos (n : ℕ) (i j : Fin n) (h : i ≠ j) : E n i j ≤ 0 := by
+  simp only [E, of_apply]
+  split_ifs <;> lia
 
-theorem E₇_off_diag_nonpos (i j : Fin 7) (h : i ≠ j) : E₇ i j ≤ 0 := by
-  fin_cases i <;> fin_cases j <;> simp_all [E₇]
+@[deprecated "Use `E_off_diag_nonpos` instead" (since := "2026-08-11")]
+theorem E₆_off_diag_nonpos (i j : Fin 6) (h : i ≠ j) : E 6 i j ≤ 0 :=
+  E_off_diag_nonpos 6 i j h
 
-theorem E₈_off_diag_nonpos (i j : Fin 8) (h : i ≠ j) : E₈ i j ≤ 0 := by
-  fin_cases i <;> fin_cases j <;> simp_all [E₈]
+@[deprecated "Use `E_off_diag_nonpos` instead" (since := "2026-08-11")]
+theorem E₇_off_diag_nonpos (i j : Fin 7) (h : i ≠ j) : E 7 i j ≤ 0 :=
+  E_off_diag_nonpos 7 i j h
+
+@[deprecated "Use `E_off_diag_nonpos` instead" (since := "2026-08-11")]
+theorem E₈_off_diag_nonpos (i j : Fin 8) (h : i ≠ j) : E 8 i j ≤ 0 :=
+  E_off_diag_nonpos 8 i j h
 
 theorem F₄_off_diag_nonpos (i j : Fin 4) (h : i ≠ j) : F₄ i j ≤ 0 := by
   fin_cases i <;> fin_cases j <;> simp_all [F₄]
@@ -244,13 +278,30 @@ theorem G₂_off_diag_nonpos (i j : Fin 2) (h : i ≠ j) : G₂ i j ≤ 0 := by
 
 /-! ### Exceptional matrix transpose properties -/
 
-@[simp] theorem E₆_transpose : E₆.transpose = E₆ := by decide
-@[simp] theorem E₇_transpose : E₇.transpose = E₇ := by decide
-@[simp] theorem E₈_transpose : E₈.transpose = E₈ := by decide
+@[simp] theorem E_transpose (n : ℕ) : (E n).transpose = E n := by
+  ext i j
+  simp only [E, transpose_apply, of_apply]
+  grind
 
-theorem E₆_isSymm : E₆.IsSymm := E₆_transpose
-theorem E₇_isSymm : E₇.IsSymm := E₇_transpose
-theorem E₈_isSymm : E₈.IsSymm := E₈_transpose
+theorem E_isSymm (n : ℕ) : (E n).IsSymm := E_transpose n
+
+@[deprecated "Use `E_transpose` instead" (since := "2026-08-11")]
+theorem E₆_transpose : (E 6).transpose = E 6 := E_transpose 6
+
+@[deprecated "Use `E_transpose` instead" (since := "2026-08-11")]
+theorem E₇_transpose : (E 7).transpose = E 7 := E_transpose 7
+
+@[deprecated "Use `E_transpose` instead" (since := "2026-08-11")]
+theorem E₈_transpose : (E 8).transpose = E 8 := E_transpose 8
+
+@[deprecated "Use `E_isSymm` instead" (since := "2026-08-11")]
+theorem E₆_isSymm : (E 6).IsSymm := E_isSymm 6
+
+@[deprecated "Use `E_isSymm` instead" (since := "2026-08-11")]
+theorem E₇_isSymm : (E 7).IsSymm := E_isSymm 7
+
+@[deprecated "Use `E_isSymm` instead" (since := "2026-08-11")]
+theorem E₈_isSymm : (E 8).IsSymm := E_isSymm 8
 
 /-! ### Exceptional matrix determinants -/
 
@@ -258,16 +309,91 @@ theorem G₂_det : G₂.det = 1 := by decide
 
 theorem F₄_det : F₄.det = 1 := by decide
 
+/-- Append a new node to the end of a path-like Dynkin diagram: `M` occupies the top-left block
+and the new node (index `Fin.last`) is joined to the previous final node by a `-1` edge. -/
+private def extendPath {n : ℕ} (M : Matrix (Fin n) (Fin n) ℤ) :
+    Matrix (Fin n.succ) (Fin n.succ) ℤ :=
+  letI tailLink := fun i : Fin n ↦ if i.val + 1 = n then -1 else 0
+  fun i j ↦
+    Fin.lastCases (Fin.lastCases 2 tailLink j)
+      (fun i ↦ Fin.lastCases (tailLink i) (fun j ↦ M i j) j) i
+
+private theorem extendPath_tail {n : ℕ} (M : Matrix (Fin n) (Fin n) ℤ) :
+    (extendPath M).submatrix Fin.castSucc Fin.castSucc = M := by
+  ext i j
+  simp [extendPath]
+
+private theorem extendPath_minor {n : ℕ} (M : Matrix (Fin n.succ) (Fin n.succ) ℤ) :
+    ((extendPath M).submatrix Fin.castSucc (Fin.succAbove (Fin.castSucc (Fin.last n)))).det =
+      -(M.submatrix Fin.castSucc Fin.castSucc).det := by
+  let B := (extendPath M).submatrix Fin.castSucc (Fin.succAbove (Fin.castSucc (Fin.last n)))
+  have hlast : B (Fin.last n) (Fin.last n) = -1 := by simp [B, extendPath]
+  have hzero (i : Fin n) : B i.castSucc (Fin.last n) = 0 := by simp [B, extendPath]; grind
+  have hminor : B.submatrix Fin.castSucc Fin.castSucc = M.submatrix Fin.castSucc Fin.castSucc := by
+    ext; simp [B, extendPath]
+  change B.det = _
+  simp [Matrix.det_succ_column B (Fin.last n), Fin.sum_univ_castSucc, hlast, hzero, hminor]
+
+private theorem extendPath_det {n : ℕ} (M : Matrix (Fin n.succ) (Fin n.succ) ℤ) :
+    (extendPath M).det = 2 * M.det - (M.submatrix Fin.castSucc Fin.castSucc).det := by
+  rw [Matrix.det_succ_row (extendPath M) (Fin.last _), Fin.sum_univ_castSucc]
+  simp only [extendPath, extendPath_tail, Fin.lastCases_last, Fin.lastCases_castSucc,
+    Fin.val_last, Fin.val_castSucc, Fin.succAbove_last]
+  rw [Finset.sum_eq_single_of_mem (Fin.last n) (Finset.mem_univ _)]
+  · rw [ite_eq_left (by rfl), extendPath_minor, Fin.val_last, Odd.neg_one_pow ⟨n, by ring⟩,
+      Even.neg_one_pow ⟨n + 1, rfl⟩]
+    ring
+  · intro b _ hb
+    rw [ite_eq_right (fun h => hb (Fin.ext (by rw [Fin.val_last]; lia)))]
+    ring
+
+private theorem E_succ (n : ℕ) (hn : 4 ≤ n) :
+    E (n + 1) = extendPath (E n) := by
+  ext i j
+  refine Fin.lastCases ?_ (fun i ↦ Fin.lastCases ?_ (fun j ↦ ?_) j) i
+  · refine Fin.lastCases ?_ (fun j ↦ ?_) j
+    · simp [E, extendPath]
+    · simp only [E, of_apply, extendPath, Fin.lastCases_last, Fin.lastCases_castSucc,
+        Fin.val_last, Fin.val_castSucc]
+      grind
+  · simp only [E, of_apply, extendPath, Fin.lastCases_last, Fin.lastCases_castSucc,
+      Fin.val_last, Fin.val_castSucc]
+    grind
+  · simp only [E, of_apply, extendPath, Fin.lastCases_castSucc, Fin.val_castSucc,
+      Fin.castSucc_inj]
+
+theorem det_E_add_two (n : ℕ) (hn : 4 ≤ n) :
+    (E (n + 2)).det = 2 * (E (n + 1)).det - (E n).det := by
+  have htail : (E (n + 1)).submatrix Fin.castSucc Fin.castSucc = E n := by
+    rw [E_succ n hn, extendPath_tail]
+  rw [E_succ (n + 1) (by lia), extendPath_det, htail]
+
+/-- The determinant of `E n` is `9 - n` for `n ≥ 3`. -/
+theorem E_det {n : ℕ} (hn : 3 ≤ n) : (E n).det = 9 - n := by
+  rcases eq_or_ne n 3 with rfl | hn; · decide
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' (show 4 ≤ n by lia)
+  induction n using Nat.twoStepInduction with
+  | zero => decide
+  | one =>
+    have : E 5 =
+      !![ 2,  0, -1,  0,  0;
+          0,  2,  0, -1,  0;
+         -1,  0,  2, -1,  0;
+          0, -1, -1,  2, -1;
+          0,  0,  0, -1,  2] := by decide
+    simp [this, norm_det]
+  | more n hn hn1 => rw [det_E_add_two (n + 4) (by lia)]; grind
+
 /-! The determinants of E₆, E₇, E₈ are 3, 2, 1 respectively. -/
 
-theorem E₆_det : E₆.det = 3 := by
-  simp only [E₆, norm_det]
+theorem E₆_det : (E 6).det = 3 := by
+  simp only [E_six_eq, norm_det]
 
-theorem E₇_det : E₇.det = 2 := by
-  simp only [E₇, norm_det]
+theorem E₇_det : (E 7).det = 2 := by
+  simp only [E_seven_eq, norm_det]
 
-theorem E₈_det : E₈.det = 1 := by
-  simp only [E₈, norm_det]
+theorem E₈_det : (E 8).det = 1 := by
+  simp only [E_eight_eq, norm_det]
 
 /-- A Cartan matrix is simply laced if its off-diagonal entries are all `0` or `-1`. -/
 def _root_.Matrix.IsSimplyLaced {ι : Type*} (A : Matrix ι ι ℤ) : Prop :=
@@ -304,17 +430,19 @@ theorem isSimplyLaced_D (n : ℕ) : IsSimplyLaced (D n) := by
   simp only [D, of_apply]
   grind
 
-set_option backward.isDefEq.respectTransparency.types false in
-theorem isSimplyLaced_E₆ : IsSimplyLaced E₆ := by
-  rw [Matrix.isSimplyLaced_iff_of_linearOrder E₆ E₆_isSymm]; decide
+theorem isSimplyLaced_E (n : ℕ) : IsSimplyLaced (E n) := by
+  intro i j h
+  simp only [E, of_apply]
+  split_ifs <;> simp_all
 
-set_option backward.isDefEq.respectTransparency.types false in
-theorem isSimplyLaced_E₇ : IsSimplyLaced E₇ := by
-  rw [Matrix.isSimplyLaced_iff_of_linearOrder E₇ E₇_isSymm]; decide
+@[deprecated "Use `isSimplyLaced_E` instead" (since := "2026-08-11")]
+theorem isSimplyLaced_E₆ : IsSimplyLaced (E 6) := isSimplyLaced_E 6
 
-set_option backward.isDefEq.respectTransparency.types false in
-theorem isSimplyLaced_E₈ : IsSimplyLaced E₈ := by
-  rw [Matrix.isSimplyLaced_iff_of_linearOrder E₈ E₈_isSymm]; decide
+@[deprecated "Use `isSimplyLaced_E` instead" (since := "2026-08-11")]
+theorem isSimplyLaced_E₇ : IsSimplyLaced (E 7) := isSimplyLaced_E 7
+
+@[deprecated "Use `isSimplyLaced_E` instead" (since := "2026-08-11")]
+theorem isSimplyLaced_E₈ : IsSimplyLaced (E 8) := isSimplyLaced_E 8
 
 /-! The Cartan matrices F₄ and G₂ are not simply laced because they contain
 off-diagonal entries that are neither 0 nor -1. -/

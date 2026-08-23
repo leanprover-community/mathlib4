@@ -33,7 +33,9 @@ topological space
 
 @[expose] public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 universe u v
 
@@ -237,7 +239,7 @@ theorem limUnder_of_not_tendsto [hX : Nonempty X] {f : Filter α} {g : α → X}
     (h : ¬ ∃ x, Tendsto g f (𝓝 x)) :
     limUnder f g = Classical.choice hX := by
   simp_rw [Tendsto] at h
-  simp_rw [limUnder, lim, Classical.epsilon, Classical.strongIndefiniteDescription, dif_neg h]
+  simp_rw [limUnder, lim, Classical.epsilon, Classical.strongIndefiniteDescription, dite_eq_right h]
 
 end lim
 
