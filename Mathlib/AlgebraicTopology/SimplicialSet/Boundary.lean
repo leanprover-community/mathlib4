@@ -28,7 +28,9 @@ a morphism `Δ[n] ⟶ ∂Δ[n]`.
 
 universe u
 
-open CategoryTheory Simplicial Opposite
+open CategoryTheory Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
