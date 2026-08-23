@@ -65,13 +65,12 @@ namespace Asymptotics
 
 
 variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
-  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {E''' : Type*}
+  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*}
   {R : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
   [NormedAddCommGroup E''] [NormedAddCommGroup F''] [SeminormedRing R]
-  [SeminormedAddGroup E''']
 
 variable {S : Type*} [NormedRing S] [NormMulClass S]
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
@@ -115,8 +114,12 @@ theorem isBigO_iff_isBigOWith : f =O[l] g ↔ ∃ c : ℝ, IsBigOWith c l f g :=
 theorem isBigO_iff : f =O[l] g ↔ ∃ c : ℝ, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by
   simp only [IsBigO_def, IsBigOWith_def]
 
+section SeminormedAddGroup
+
+variable {F : Type*} [SeminormedAddGroup F] {g : α → F}
+
 /-- Definition of `IsBigO` in terms of filters, with a positive constant. -/
-theorem isBigO_iff' {g : α → E'''} :
+theorem isBigO_iff' :
     f =O[l] g ↔ ∃ c > 0, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by
   refine ⟨fun h => ?mp, fun h => ?mpr⟩
   case mp =>
@@ -133,7 +136,7 @@ theorem isBigO_iff' {g : α → E'''} :
     exact ⟨c, hc⟩
 
 /-- Definition of `IsBigO` in terms of filters, with the constant in the lower bound. -/
-theorem isBigO_iff'' {g : α → E'''} :
+theorem isBigO_iff'' :
     f =O[l] g ↔ ∃ c > 0, ∀ᶠ x in l, c * ‖f x‖ ≤ ‖g x‖ := by
   refine ⟨fun h => ?mp, fun h => ?mpr⟩
   case mp =>
@@ -148,6 +151,8 @@ theorem isBigO_iff'' {g : α → E'''} :
     refine ⟨c⁻¹, ⟨by positivity, ?_⟩⟩
     filter_upwards [hc] with x hx
     rwa [← inv_inv c, inv_mul_le_iff₀ (by positivity)] at hx
+
+end SeminormedAddGroup
 
 theorem IsBigO.of_bound (c : ℝ) (h : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖) : f =O[l] g :=
   isBigO_iff.2 ⟨c, h⟩
