@@ -9,12 +9,7 @@ public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.Analysis.InnerProductSpace.GramMatrix
 import Mathlib.Analysis.InnerProductSpace.Positive
-<<<<<<< HEAD
-import Mathlib.Topology.Algebra.Module.Equiv
-=======
 import Mathlib.Algebra.Order.Star.Real
->>>>>>> master
-
 /-!
 
 # Inner product space structure on tensor product spaces
