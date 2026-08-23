@@ -601,7 +601,7 @@ private lemma exists_ball_forall_le_norm_circleMap_sub {R : ℝ} {c w : ℂ}
   rw [← dist_eq_norm]
   exact ⟨by linarith, by linarith⟩
 
-omit [CompleteSpace E]
+omit [CompleteSpace E] in
 /--
 **Derivative of Cauchy-type integrals**: if `f` is circle integrable and `w` does not lie on the
 circle, then for every `n : ℤ` the Cauchy-type integral
@@ -661,6 +661,7 @@ theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w :
     exact ((h₁.smul_const (f (circleMap c R θ))).const_smul (circleMap 0 R θ * I)).congr_deriv
       (by module)
 
+omit [CompleteSpace E] in
 /--
 **Derivative of the Cauchy integral**: if `f` is circle integrable and `w` does not lie on the
 circle, then the Cauchy-type integral `fun w ↦ ∮ z in C(c, R), (z - w)⁻¹ • f z` has derivative
