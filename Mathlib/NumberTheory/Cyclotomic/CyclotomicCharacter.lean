@@ -278,7 +278,7 @@ theorem toFun_apply :
     cyclotomicCharacter.toFun p g =
       PadicInt.ofIntSeq _ (PadicInt.isCauSeq_padicNorm_of_pow_dvd_sub
         (aux g <| p ^ ·) _ fun i ↦ pow_dvd_aux_pow_sub_aux_pow g p i.le_succ) :=
-  dif_pos fun _ ↦ HasEnoughRootsOfUnity.exists_primitiveRoot _ _
+  dite_eq_left fun _ ↦ HasEnoughRootsOfUnity.exists_primitiveRoot _ _
 
 open modularCyclotomicCharacter in
 theorem toZModPow_toFun (n : ℕ) :
@@ -312,13 +312,13 @@ noncomputable def cyclotomicCharacter (p : ℕ) [Fact p.Prime] :
       · have _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
         refine PadicInt.ext_of_toZModPow.mp fun n ↦ ?_
         simp [cyclotomicCharacter.toZModPow_toFun]
-      · simp [cyclotomicCharacter.toFun, dif_neg H]
+      · simp [cyclotomicCharacter.toFun, dite_eq_right H]
     map_mul' f g := by
       by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i)
       · have _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
         refine PadicInt.ext_of_toZModPow.mp fun n ↦ ?_
         simp [cyclotomicCharacter.toZModPow_toFun]
-      · simp [cyclotomicCharacter.toFun, dif_neg H] }
+      · simp [cyclotomicCharacter.toFun, dite_eq_right H] }
 
 theorem cyclotomicCharacter.spec (p : ℕ) [Fact p.Prime] {n : ℕ}
     [∀ i, HasEnoughRootsOfUnity L (p ^ i)] (g : L ≃+* L) (t : L) (ht : t ^ p ^ n = 1) :
@@ -337,7 +337,7 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
     (K L : Type*) [Field K] [Field L] [Algebra K L] :
     Continuous ((cyclotomicCharacter L p).comp (MulSemiringAction.toRingAut Gal(L/K) L)) := by
   by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i); swap
-  · simp only [cyclotomicCharacter, cyclotomicCharacter.toFun, dif_neg H, MonoidHom.coe_comp]
+  · simp only [cyclotomicCharacter, cyclotomicCharacter.toFun, dite_eq_right H, MonoidHom.coe_comp]
     exact continuous_const (y := 1)
   have _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
   choose ζ hζ using H

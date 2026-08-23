@@ -5,7 +5,7 @@ Authors: Pierre-Alexandre Bazin
 -/
 module
 
-public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 
 /-!
 # The lattice of seminorms is not distributive

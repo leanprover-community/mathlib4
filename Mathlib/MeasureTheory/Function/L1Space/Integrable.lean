@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Function.L1Space.HasFiniteIntegral
 public import Mathlib.MeasureTheory.Function.LpOrder
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Integrable functions
@@ -40,13 +41,13 @@ integrable
 
 noncomputable section
 
-open EMetric ENNReal Filter MeasureTheory NNReal Set TopologicalSpace
+open ENNReal Filter MeasureTheory NNReal Set TopologicalSpace
 
 open scoped Topology
 
-variable {α β γ δ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
+variable {α β γ δ ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
 variable [NormedAddCommGroup β] [NormedAddCommGroup γ]
-  [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε'] [ENorm ε'']
+  [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε']
 
 namespace MeasureTheory
 
@@ -54,7 +55,7 @@ namespace MeasureTheory
 
 /-- `Integrable f μ` means that `f` is measurable and that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.
   `Integrable f` means `Integrable f volume`. -/
-@[fun_prop]
+@[fun_prop, wikidata Q3153745]
 def Integrable {α} {_ : MeasurableSpace α} (f : α → ε)
     (μ : Measure α := by volume_tac) : Prop :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ
@@ -1135,6 +1136,10 @@ theorem Integrable.im (hf : Integrable f μ) : Integrable (fun x => RCLike.im (f
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact hf.im
 
+lemma Integrable.iff_ofReal {f : α → ℝ} :
+    Integrable f μ ↔ Integrable (fun x ↦ (f x : 𝕜)) μ :=
+  ⟨fun hf ↦ hf.ofReal, fun hf ↦ by simpa using hf.re⟩
+
 end RCLike
 
 section Trim
@@ -1158,8 +1163,7 @@ end Trim
 
 section SigmaFinite
 
-variable {E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E]
-  {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+variable {m0 : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem integrable_of_forall_fin_meas_le' {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (C : ℝ≥0∞) (hC : C < ∞) {f : α → ε} (hf_meas : AEStronglyMeasurable f μ)

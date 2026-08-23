@@ -79,7 +79,7 @@ theorem eLpNorm_add_le' (hfg : AEStronglyMeasurable (f + g) μ) (p : ℝ≥0∞)
       eLpNorm_eq_eLpNorm' hp (h'p.trans ENNReal.one_lt_top).ne hg]
     convert! eLpNorm'_add_le_of_le_one hf ENNReal.toReal_nonneg _
     · have : p ∈ Set.Ioo (0 : ℝ≥0∞) 1 := ⟨hp.bot_lt, h'p⟩
-      simp only [LpAddConst, if_pos this]
+      simp only [LpAddConst, ite_eq_left this]
     · simpa using ENNReal.toReal_mono ENNReal.one_ne_top h'p.le
   · simpa [LpAddConst_of_one_le h'p] using eLpNorm_add_le hfg h'p
 

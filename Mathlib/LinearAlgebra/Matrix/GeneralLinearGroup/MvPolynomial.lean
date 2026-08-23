@@ -16,7 +16,7 @@ infinite field `k` are equal if their evaluations agree at every invertible matr
 uses that the set of invertible matrices is Zariski-dense in `Matrix m m k`.
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 

@@ -38,8 +38,8 @@ noncomputable section
 
 open scoped NNReal ENNReal
 
-variable {α ε ε' E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {f : α → E}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] [ENorm ε] [ENorm ε']
+variable {α ε E : Type*} {m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {f : α → E}
+  [NormedAddCommGroup E] [ENorm ε]
 
 namespace MeasureTheory
 
@@ -91,7 +91,7 @@ def eLpNorm [TopologicalSpace ε] {_ : MeasurableSpace α}
   if p = 0 then 0 else if p = ∞ then eLpNormEssSup f μ else eLpNorm' f (ENNReal.toReal p) μ
   else ∞
 
-variable {μ ν : Measure α}
+variable {μ : Measure α}
 
 theorem eLpNorm_of_not_aestronglyMeasurable [TopologicalSpace ε]
     {f : α → ε} {p : ℝ≥0∞} (h : ¬ AEStronglyMeasurable f μ) :

@@ -491,7 +491,7 @@ theorem integral_eq_lintegral_pos_part_sub_lintegral_neg_part {f : α → ℝ} (
     apply NNReal.eq
     simp only [Real.coe_toNNReal', coe_nnnorm, nnnorm_neg]
     rw [Real.norm_of_nonpos (min_le_right _ _), ← max_neg_neg, neg_zero]
-  rw [eq₁, eq₂, integral, dif_pos, dif_pos]
+  rw [eq₁, eq₂, integral, dite_eq_left, dite_eq_left]
   exact L1.integral_eq_norm_posPart_sub _
 
 theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f)
@@ -1337,7 +1337,7 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
   · have : μ Set.univ = ∞ := by
       by_contra hμ'
       exact hμ (IsFiniteMeasure.mk <| lt_top_iff_ne_top.2 hμ')
-    rw [this, ENNReal.mul_top', if_neg, ENNReal.top_mul', if_neg]
+    rw [this, ENNReal.mul_top', ite_eq_right, ENNReal.top_mul', ite_eq_right]
     · exact le_top
     · simp [hr]
     · simp

@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
@@ -50,6 +51,7 @@ coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 
 case, `spectralRadius a = 0`. It is also possible that `spectrum 𝕜 a` be unbounded (though
 not for Banach algebras, see `spectrum.isBounded`, below).  In this case,
 `spectralRadius a = ∞`. -/
+@[wikidata Q249748]
 noncomputable def spectralRadius (𝕜 : Type*) {A : Type*} [NormedField 𝕜] [Ring A] [Algebra 𝕜 A]
     (a : A) : ℝ≥0∞ :=
   ⨆ k ∈ spectrum 𝕜 a, ‖k‖₊
@@ -282,7 +284,9 @@ end SpectrumCompact
 
 section resolvent
 
-open Filter Asymptotics Bornology Topology
+open Filter Asymptotics Bornology
+
+open scoped Topology
 
 variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
@@ -484,7 +488,9 @@ local notation "σ" => spectrum
 
 variable {𝕜 A SA : Type*} [NormedRing A] [CompleteSpace A] [SetLike SA A] [SubringClass SA A]
 
-open Topology Filter Set
+open Filter Set
+
+open scoped Topology
 
 section NormedField
 
@@ -547,7 +553,9 @@ lemma Subalgebra.frontier_subset_frontier :
   rw [frontier_eq_closure_inter_closure]
   grw [inter_subset_right, spectrum.subset_subalgebra]
 
-open Set Notation
+open Set
+
+open scoped Notation
 
 /-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any `x : S`, the spectrum of `x`
 is the spectrum of `↑x : A` along with the connected components of the complement of the spectrum of

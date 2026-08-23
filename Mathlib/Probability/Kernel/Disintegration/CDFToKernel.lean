@@ -49,7 +49,7 @@ Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
 
 @[expose] public section
 
-open MeasureTheory Set Filter TopologicalSpace
+open MeasureTheory Set Filter
 
 open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 
