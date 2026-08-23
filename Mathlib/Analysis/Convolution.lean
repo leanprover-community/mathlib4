@@ -534,9 +534,9 @@ section IsAddLeftInvariant
 variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsNegInvariant μ] [IsAddLeftInvariant μ]
 
 omit [NormedSpace ℝ F] in
-lemma lintegral_enorm_convolution_integrand_le_enorm_mul_eLpNorm_mul_eLpNorm {p q : ENNReal}
-    [hpq : p.HolderConjugate q] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (x₀ : G) : ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
+lemma lintegral_enorm_convolution_le {p q r : ENNReal}
+    [hpq : p.HolderTriple q r] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
+    (x₀ : G) : eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) r μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
   rw [← eLpNorm_comp_measurePreserving hg (μ.measurePreserving_sub_left x₀),
     ← eLpNorm_one_eq_lintegral_enorm]
   exact eLpNorm_le_eLpNorm_mul_eLpNorm'_of_enorm hf
