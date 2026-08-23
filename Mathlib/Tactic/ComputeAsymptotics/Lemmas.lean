@@ -32,7 +32,9 @@ We also use lemmas from other files:
 
 public section
 
-open Filter Topology Asymptotics
+open Filter Asymptotics
+
+open scoped Topology
 
 namespace Tactic.ComputeAsymptotics
 
