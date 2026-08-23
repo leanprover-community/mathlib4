@@ -36,7 +36,7 @@ noncomputable section
 
 open Filter Set Valuation MonoidWithZeroHom
 
-open scoped NNReal
+open scoped NNReal Topology
 
 section
 
@@ -63,41 +63,27 @@ instance : RankLeOne (valuation (K := K)) where
   hom' := embedding
   strictMono' := embedding_strictMono
 
+/-- The neighbourhoods of `0` in a nonarchimedean normed field `K` have a basis given by the
+open balls of the valuation `NormedField.valuation`. -/
+theorem hasBasis_nhds_zero :
+    (𝓝 (0 : K)).HasBasis (fun _ ↦ True)
+      fun γ : (ValueGroup₀ (.ofClass (valuation (K := K))))ˣ ↦
+        { x | valuation.restrict x < γ } := by
+  refine Metric.nhds_basis_ball.to_hasBasis (fun ε hε ↦ ?_) fun γ _ ↦ ?_
+  · obtain ⟨γ, hγ⟩ := Real.exists_forall_lt_of_strictMono
+      (embedding_strictMono (f := .ofClass (valuation (K := K)))) hε
+    exact ⟨γ, trivial, fun x hx ↦ mem_ball_zero_iff.2 (by simpa using hγ _ hx)⟩
+  · refine ⟨(embedding γ.1 : ℝ≥0), ?_, fun x hx ↦ ?_⟩
+    · exact NNReal.coe_pos.mpr <| embedding_strictMono.lt_iff_lt.mpr γ.zero_lt
+    · simpa [restrict_lt_iff_lt_embedding] using! mem_ball_zero_iff.1 hx
+
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 @[instance_reducible]
 def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
     (inferInstance : IsUniformAddGroup K) with
     v := valuation
-    is_topological_valuation := fun U => by
-      rw [Metric.mem_nhds_iff]
-      refine ⟨?_, ?_⟩
-      · rintro ⟨ε, hε, h⟩
-        rcases RankLeOne.exists_val_lt (valuation (K := K)) with H | H
-        · use Units.mk0 (valuation.restrict 1) (by simp)
-          intro x hx
-          simp only [Units.val_mk0, mem_ofPred_eq, map_one] at hx
-          by_cases hx0 : x = 0
-          · exact h (hx0 ▸ Metric.mem_ball_self hε)
-          · exfalso
-            rw [← (valuation (K := K)).restrict.zero_iff, ← ne_eq, ← isUnit_iff_ne_zero] at hx0
-            apply not_le.mpr hx
-            apply le_of_eq
-            rw [eq_comm]
-            simpa only [Units.ext_iff, hx0.unit_spec, Units.val_one,
-              Submonoid.mk_eq_one] using! H.elim hx0.unit 1
-        · obtain ⟨x, hx, hxy⟩ := H (γ := ⟨ε, le_of_lt hε⟩) (pos_iff_ne_zero.mp hε)
-          use Units.mk0 (valuation.restrict x) (by simp [Valuation.restrict_def, hx])
-          intro y hy
-          apply h
-          simp only [Metric.mem_ball, dist_zero_right]
-          simp only [Units.val_mk0, mem_ofPred_eq, restrict_lt_iff, ← NNReal.coe_lt_coe] at hy
-          apply lt_trans hy
-          simpa [RankLeOne.hom', valuation.restrict_def] using! hxy
-      · rintro ⟨ε, hε⟩
-        refine ⟨(embedding ε.1 : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
-        · exact NNReal.coe_pos.mpr <| embedding_strictMono.lt_iff_lt.mpr ε.zero_lt
-        · simpa [restrict_lt_iff_lt_embedding] using! (mem_ball_zero_iff.mp hx) }
+    is_topological_valuation := fun s ↦ by simpa only [true_and] using hasBasis_nhds_zero.mem_iff }
 
 instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where
