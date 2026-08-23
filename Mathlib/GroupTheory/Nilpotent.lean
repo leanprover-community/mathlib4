@@ -1198,6 +1198,24 @@ theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondi
     apply map_injective_of_ker_le (mk' (center G)) hkh le_top
     exact (ih H' hH').trans (symm (map_top_of_surjective _ hsur))
 
+theorem IsNilpotent.commute_of_orderOf_coprime {G : Type*} [Group G] [Group.IsNilpotent G]
+    {x y : G} (h : (orderOf x).Coprime (orderOf y)) : Commute x y := by
+  refine nilpotent_center_quotient_ind
+    (P := fun G _ _ => ∀ x y : G, (orderOf x).Coprime (orderOf y) → Commute x y) G ?_ ?_ x y h
+  · simp_rw [commute_iff_eq]
+    subsingleton
+  · clear! G
+    intro G _ _ ih x y h
+    have hcomm : ∀ g : G, Commute g ⁅x, y⁆ := by
+      simp_rw [commute_iff_eq, ←mem_center_iff, ←QuotientGroup.eq_one_iff, ←QuotientGroup.mk'_apply,
+        map_commutatorElement, commutatorElement_eq_one_iff_commute]
+      apply ih _ _ <| h.of_dvd ?_ ?_ <;> apply orderOf_map_dvd
+    rw [←commutatorElement_eq_one_iff_commute, ←orderOf_eq_one_iff, ←Nat.dvd_one, ←h.gcd_eq_one,
+      Nat.dvd_gcd_iff, orderOf_dvd_iff_pow_eq_one, orderOf_dvd_iff_pow_eq_one,
+      commutatorElement_pow_left_of_commute (hcomm x),
+      commutatorElement_pow_right_of_commute (hcomm y)]
+    simp
+
 end Group
 
 end WithGroup
