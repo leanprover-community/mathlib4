@@ -14,7 +14,7 @@ public import Mathlib.Data.Int.WithZero
 
 ## Main Definitions and Results
 * `Valuation.IsRankOneDiscrete.valueGroup₀_equiv_withZeroMulInt` : the order-preserving isomorphism
-  between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
+  between the `valueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
 * `Valuation.IsRankOneDiscrete.rankOne` : a discrete valuation has rank one.
 
 ## Tags
@@ -39,10 +39,10 @@ variable (v : Valuation R Γ) [hv : v.IsRankOneDiscrete]
 
 /-- The value group with zero, as `WithZero` of its group of units.
 
-Since `ValueGroup₀` is now a `SetLike` subobject of `Γ` rather than a `WithZero`, this is the
+Since `valueGroup₀` is now a `SetLike` subobject of `Γ` rather than a `WithZero`, this is the
 bridge that lets the `WithZero`-shaped constructions below still apply. -/
 noncomputable def valueGroup₀OrderIsoWithZeroUnits :
-    ValueGroup₀ (.ofClass v) ≃*o WithZero ↥(valueGroup (.ofClass v)) :=
+    valueGroup₀ (.ofClass v) ≃*o WithZero ↥(valueGroup (.ofClass v)) :=
   OrderMonoidIso.withZeroUnits.symm.trans
     (SubgroupWithZero.unitsOrderMonoidIso (valueGroup₀ (.ofClass v))).withZero
 
@@ -52,10 +52,10 @@ lemma valueGroup₀OrderIsoWithZeroUnits_symm_coe (u : ↥(valueGroup (.ofClass 
     (valueGroup₀OrderIsoWithZeroUnits v).symm (u : WithZero ↥(valueGroup (.ofClass v))) =
       ⟨((u : Γˣ) : Γ), u.2⟩ := rfl
 
-/-- An order-preserving isomorphism between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
+/-- An order-preserving isomorphism between the `valueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
 TODO: rename this into lowerCamelCase. -/
 @[simps!]
-noncomputable def valueGroup₀_equiv_withZeroMulInt : ValueGroup₀ (.ofClass v) ≃*o ℤᵐ⁰ :=
+noncomputable def valueGroup₀_equiv_withZeroMulInt : valueGroup₀ (.ofClass v) ≃*o ℤᵐ⁰ :=
   (valueGroup₀OrderIsoWithZeroUnits v).trans <| {
   __ := MulEquiv.withZero (intEquivOfZPowersEqTop _
     (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)).symm

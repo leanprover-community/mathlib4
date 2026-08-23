@@ -59,8 +59,8 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 /-- The valuation of a normed field has rank at most one -/
 instance : RankLeOne (valuation (K := K)) where
-  hom' := embedding
-  strictMono' := embedding_strictMono
+  hom' := SubmonoidWithZeroClass.subtype _
+  strictMono' := (SubmonoidWithZeroClass.subtype_strictMono _)
 
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 @[instance_reducible]
@@ -94,14 +94,15 @@ def toValued : Valued K ℝ≥0 :=
           apply lt_trans hy
           simpa [RankLeOne.hom', valuation.restrict_def] using! hxy
       · rintro ⟨ε, hε⟩
-        refine ⟨(embedding ε.1 : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
-        · exact NNReal.coe_pos.mpr <| embedding_strictMono.lt_iff_lt.mpr ε.zero_lt
-        · simpa [restrict_lt_iff_lt_embedding] using! (mem_ball_zero_iff.mp hx) }
+        refine ⟨((ε.1 : valueGroup₀ (.ofClass (valuation (K := K)))) : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
+        · exact NNReal.coe_pos.mpr <|
+            (SubmonoidWithZeroClass.subtype_strictMono _).lt_iff_lt.mpr ε.zero_lt
+        · simpa [restrict_lt_iff_lt_coe] using! (mem_ball_zero_iff.mp hx) }
 
 instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where
-  hom' := ValueGroup₀.embedding
-  strictMono' := ValueGroup₀.embedding_strictMono
+  hom' := SubmonoidWithZeroClass.subtype _
+  strictMono' := SubmonoidWithZeroClass.subtype_strictMono _
   exists_val_nontrivial := (exists_one_lt_norm K).imp fun x h ↦ by
     have h' : x ≠ 0 := norm_eq_zero.not.mp (h.gt.trans' (by simp)).ne'
     simp [valuation_apply, ← NNReal.coe_inj, h.ne', h']

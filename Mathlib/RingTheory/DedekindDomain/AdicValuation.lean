@@ -682,20 +682,17 @@ def valueGroupEquiv :
 @[simp] theorem coe_valueGroupEquiv (a : valueGroup (.ofClass (valuation K v))) :
     ((valueGroupEquiv K v a : _) : ℤᵐ⁰ˣ) = a := rfl
 
-/-- The order-preserving multiplicative equivalence between the `ValueGroup₀` of the completion's
+/-- The order-preserving multiplicative equivalence between the `valueGroup₀` of the completion's
 valuation, pulled back along `equiv`, and that of the completion.
 
 Both are the *same* subgroup with zero of `ℤᵐ⁰`, so this is just a retagging. -/
 noncomputable def valueGroupOrderIso :
-    ValueGroup₀ (.ofClass (valuation K v)) ≃*o
-      ValueGroup₀ (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) :=
+    valueGroup₀ (.ofClass (valuation K v)) ≃*o
+      valueGroup₀ (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) :=
   SubgroupWithZero.orderIsoOfEq (valueGroup₀_eq K v)
 
-@[simp] theorem coe_valueGroupOrderIso (g : ValueGroup₀ (.ofClass (valuation K v))) :
+@[simp] theorem coe_valueGroupOrderIso (g : valueGroup₀ (.ofClass (valuation K v))) :
     ((valueGroupOrderIso K v g : _) : ℤᵐ⁰) = (g : ℤᵐ⁰) := rfl
-
-theorem embedding_valueGroupOrderIso (g : ValueGroup₀ (.ofClass (valuation K v))) :
-    embedding (valueGroupOrderIso K v g) = embedding g := rfl
 
 theorem valueGroupOrderIso_restrict (x : adicCompletion K v) :
     valueGroupOrderIso K v ((valuation K v).restrict x) =

@@ -12,12 +12,8 @@ public import Mathlib.Algebra.Order.GroupWithZero.Subgroup
 /-! # The range of a MonoidWithZeroHom
 
 Given a `MonoidWithZeroHom` `f : A → B` whose codomain `B` is a `LinearOrderedCommGroupWithZero`,
-we provide some order properties of the `MonoidWithZeroHom.ValueGroup₀` as defined in
+we provide some order properties of `MonoidWithZeroHom.valueGroup₀` as defined in
 `Mathlib.Algebra.GroupWithZero.Range`.
-
-The `LinearOrderedCommGroupWithZero (ValueGroup₀ f)` instance itself is supplied generically by
-`SubgroupWithZeroClass.toLinearOrderedCommGroupWithZero`, since `ValueGroup₀ f` is a
-`SetLike` subobject of `B`.
 -/
 
 @[expose] public section
@@ -28,23 +24,10 @@ variable {A B : Type*} [MonoidWithZero A] [LinearOrderedCommGroupWithZero B] {f 
 
 namespace ValueGroup₀
 
-lemma embedding_strictMono : StrictMono (embedding (f := f)) :=
-  SubmonoidWithZeroClass.subtype_strictMono _
+lemma coe_unit_ne_zero (a : (valueGroup₀ f)ˣ) : (a.1 : B) ≠ 0 :=
+  ZeroMemClass.coe_eq_zero.not.2 a.ne_zero
 
-lemma embedding_monotone : Monotone (embedding (f := f)) := embedding_strictMono.monotone
-
-lemma embedding_le_embedding {a b : ValueGroup₀ f} : embedding a ≤ embedding b ↔ a ≤ b :=
-  embedding_strictMono.le_iff_le
-
-lemma embedding_lt_embedding {a b : ValueGroup₀ f} : embedding a < embedding b ↔ a < b :=
-  embedding_strictMono.lt_iff_lt
-
-lemma embedding_unit_ne_zero (a : (ValueGroup₀ f)ˣ) : embedding a.1 ≠ 0 := by
-  rw [embedding_apply, ne_eq, ZeroMemClass.coe_eq_zero]
-  exact a.ne_zero
-
-lemma embedding_unit_pos (a : (ValueGroup₀ f)ˣ) : 0 < embedding a.1 :=
-  zero_lt_iff.2 (embedding_unit_ne_zero a)
+lemma coe_unit_pos (a : (valueGroup₀ f)ˣ) : 0 < (a.1 : B) := zero_lt_iff.2 (coe_unit_ne_zero a)
 
 variable {r₁ s₁ r₂ s₂ : A}
 
@@ -59,13 +42,13 @@ end ValueGroup₀
 /-! ### Bridging the with-zero hypotheses to the `Subgroup Bˣ` API
 
 `valueGroup f` is by definition `(valueGroup₀ f).units`, but instance search does not unfold it,
-so the transfers are declared explicitly. This is what lets downstream statements be phrased in
-`ValueGroup₀ f` while their proofs still use the `Subgroup` API. -/
+so the transfers are declared explicitly. The canonical form for a non-degeneracy or cyclicity
+hypothesis is the with-zero one, `(valueGroup₀ f)ˣ` resp. `IsCyclicWithZero (valueGroup₀ f)`. -/
 
-instance [Nontrivial (ValueGroup₀ f)ˣ] : Nontrivial ↥(valueGroup f) :=
+instance [Nontrivial (valueGroup₀ f)ˣ] : Nontrivial (valueGroup f) :=
   SubgroupWithZero.nontrivial_units_subgroup (valueGroup₀ f)
 
-instance [IsCyclicWithZero (ValueGroup₀ f)] : IsCyclic ↥(valueGroup f) :=
+instance [IsCyclicWithZero (valueGroup₀ f)] : IsCyclic (valueGroup f) :=
   SubgroupWithZero.isCyclic_units (valueGroup₀ f)
 
 end MonoidWithZeroHom

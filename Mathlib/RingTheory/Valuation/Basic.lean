@@ -464,23 +464,20 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 /-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
 @[implicit_reducible]
-def restrict : Valuation R (ValueGroup₀ (.ofClass v)) where
-  __ := restrict₀ (.ofClass v)
+def restrict : Valuation R (valueGroup₀ (.ofClass v)) where
+  __ := rangeRestrict (.ofClass v)
   map_add_le_max' x y := Subtype.coe_le_coe.1 (v.map_add_le_max' x y)
 
-lemma restrict_def (x : R) : v.restrict x = restrict₀ (.ofClass v) x := rfl
+lemma restrict_def (x : R) : v.restrict x = rangeRestrict (.ofClass v) x := rfl
 
 @[simp]
-lemma coe_restrict (x : R) : ((v.restrict x : ValueGroup₀ (.ofClass v)) : Γ₀) = v x := rfl
+lemma coe_restrict (x : R) : ((v.restrict x : valueGroup₀ (.ofClass v)) : Γ₀) = v x := rfl
 
-lemma embedding_restrict (x : R) : embedding (v.restrict x) = v x :=
-  embedding_restrict₀ x
+lemma restrict_lt_iff_lt_coe {x : R} {g : valueGroup₀ (.ofClass v)} :
+    v.restrict x < g ↔ v x < (g : Γ₀) := Subtype.coe_lt_coe.symm
 
-lemma restrict_lt_iff_lt_embedding {x : R} {g : ValueGroup₀ (.ofClass v)} :
-    v.restrict x < g ↔ v x < embedding g := Subtype.coe_lt_coe.symm
-
-lemma restrict_le_iff_le_embedding {x : R} {g : ValueGroup₀ (.ofClass v)} :
-    v.restrict x ≤ g ↔ v x ≤ embedding g := Subtype.coe_le_coe.symm
+lemma restrict_le_iff_le_coe {x : R} {g : valueGroup₀ (.ofClass v)} :
+    v.restrict x ≤ g ↔ v x ≤ (g : Γ₀) := Subtype.coe_le_coe.symm
 
 lemma restrict_eq_mk (x : R) : v.restrict x = ValueGroup₀.mk (.ofClass v) 1 x := by
   refine Subtype.ext ?_
@@ -492,11 +489,11 @@ lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := Subtype.coe_lt_
 
 @[simp]
 lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
-  rw [restrict_lt_iff_lt_embedding, embedding_restrict]
+  rw [restrict_lt_iff_lt_coe, coe_restrict]
 
 @[simp]
 lemma restrict_le_iff {x y : R} : v.restrict x ≤ v.restrict y ↔ v x ≤ v y := by
-  rw [restrict_le_iff_le_embedding, embedding_restrict]
+  rw [restrict_le_iff_le_coe, coe_restrict]
 
 @[simp]
 lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y :=
@@ -506,23 +503,23 @@ theorem isEquiv_restrict : v.IsEquiv v.restrict := fun _ _ ↦ v.restrict_le_iff
 
 @[simp]
 lemma restrict_lt_one_iff {x : R} : v.restrict x < 1 ↔ v x < 1 := by
-  rw [restrict_lt_iff_lt_embedding, map_one]
+  rw [restrict_lt_iff_lt_coe, OneMemClass.coe_one]
 
 @[simp]
 lemma restrict_le_one_iff {x : R} : v.restrict x ≤ 1 ↔ v x ≤ 1 := by
-  rw [restrict_le_iff_le_embedding, map_one]
+  rw [restrict_le_iff_le_coe, OneMemClass.coe_one]
 
 @[simp]
 lemma restrict_eq_zero_iff {x : R} : v.restrict x = 0 ↔ v x = 0 := by
-  simp [restrict_def, restrict₀_eq_zero_iff]
+  simp [restrict_def, rangeRestrict_eq_zero_iff]
 
 @[simp]
 lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
-  simp [restrict_def, restrict₀_eq_one_iff]
+  simp [restrict_def, rangeRestrict_eq_one_iff]
 
-lemma exists_div_eq_of_unit (γ : (ValueGroup₀ (.ofClass v))ˣ) :
+lemma exists_div_eq_of_unit (γ : (valueGroup₀ (.ofClass v))ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
-  have hγ0 : ((γ.1 : ValueGroup₀ (.ofClass v)) : Γ₀) ≠ 0 := by
+  have hγ0 : ((γ.1 : valueGroup₀ (.ofClass v)) : Γ₀) ≠ 0 := by
     rw [ne_eq, ZeroMemClass.coe_eq_zero]
     exact γ.ne_zero
   obtain h | ⟨a, ha, x, hax⟩ := (mem_valueGroup₀_iff_of_comm _).mp γ.1.2
@@ -533,7 +530,7 @@ lemma exists_div_eq_of_unit (γ : (ValueGroup₀ (.ofClass v))ˣ) :
   have ha0 : v.restrict a ≠ 0 := by simpa using ha
   rw [div_eq_iff ha0]
   refine Subtype.ext ?_
-  change v x = ((γ.1 : ValueGroup₀ (.ofClass v)) : Γ₀) * v a
+  change v x = ((γ.1 : valueGroup₀ (.ofClass v)) : Γ₀) * v a
   rw [← hax, mul_comm]
 
 lemma IsEquiv.restrict {Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀']
@@ -590,12 +587,12 @@ lemma not_isNontrivial_one [IsDomain R] [DecidablePred fun x : R ↦ x = 0] :
 
 /-- The non-degeneracy hypothesis for a value group with zero.
 
-Note that `Nontrivial (ValueGroup₀ (.ofClass v))` is *not* the right statement: it holds for every
+Note that `Nontrivial (valueGroup₀ (.ofClass v))` is *not* the right statement: it holds for every
 valuation, since `⊥ = {0, 1}` for subgroups with zero. -/
 instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
-    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.ValueGroup₀ (.ofClass v))ˣ := by
+    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueGroup₀ (.ofClass v))ˣ := by
   obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
-  refine ⟨Units.mk0 (MonoidWithZeroHom.ValueGroup₀.restrict₀ (.ofClass v) x) (by simpa using h0),
+  refine ⟨Units.mk0 (MonoidWithZeroHom.rangeRestrict (.ofClass v) x) (by simpa using h0),
     1, ?_⟩
   simp only [ne_eq, Units.ext_iff, Units.val_mk0, Units.val_one]
   simpa using h1
@@ -833,10 +830,10 @@ theorem mk_le_mk_iff_of_isEquiv (h : v.IsEquiv w) (r₁ s₁ r₂ s₂ : R) :
     ValueGroup₀.mk_le_mk_iff _ (h.ofClass_eq_zero.ne.1 hr₁) (h.ofClass_eq_zero.ne.1 hr₂)]
   simpa only [MonoidWithZeroHom.coe_ofClass] using h.le_iff_le
 
-/-- An equivalence of valuations `v.IsEquiv w` induces a map `ValueGroup₀ v → ValueGroup₀ w`,
+/-- An equivalence of valuations `v.IsEquiv w` induces a map `valueGroup₀ v → valueGroup₀ w`,
 sending the ratio `(v r)⁻¹ * v s` to `(w r)⁻¹ * w s`. -/
-noncomputable def valueGroup₀Fun (_h : v.IsEquiv w) (x : ValueGroup₀ (.ofClass v)) :
-    ValueGroup₀ (.ofClass w) :=
+noncomputable def valueGroup₀Fun (_h : v.IsEquiv w) (x : valueGroup₀ (.ofClass v)) :
+    valueGroup₀ (.ofClass w) :=
   ValueGroup₀.mk (.ofClass w) (ValueGroup₀.exists_mk _ x).choose
     (ValueGroup₀.exists_mk _ x).choose_spec.choose
 
@@ -849,14 +846,14 @@ theorem valueGroup₀Fun_mk (h : v.IsEquiv w) (r s : R) :
 
 @[simp]
 theorem valueGroup₀Fun_zero (h : v.IsEquiv w) : valueGroup₀Fun h 0 = 0 := by
-  have h0 : (0 : ValueGroup₀ (.ofClass v)) = ValueGroup₀.mk (.ofClass v) 0 0 :=
+  have h0 : (0 : valueGroup₀ (.ofClass v)) = ValueGroup₀.mk (.ofClass v) 0 0 :=
     Subtype.ext (by simp)
   rw [h0, valueGroup₀Fun_mk]
   exact Subtype.ext (by simp)
 
-/-- The isomorphism between the `ValueGroup₀`'s of two equivalent valuations. -/
+/-- The isomorphism between the `valueGroup₀`'s of two equivalent valuations. -/
 noncomputable def orderMonoidIso (h : v.IsEquiv w) :
-    ValueGroup₀ (.ofClass v) ≃*o ValueGroup₀ (.ofClass w) where
+    valueGroup₀ (.ofClass v) ≃*o valueGroup₀ (.ofClass w) where
   toFun := valueGroup₀Fun h
   invFun := valueGroup₀Fun h.symm
   map_mul' x y := by
@@ -883,7 +880,7 @@ theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
   exact valueGroup₀Fun_mk h 1 a
 
 lemma orderMonoidIso_spec₀ (h : v.IsEquiv w) (a : R) :
-    h.orderMonoidIso (restrict₀ (.ofClass v) a) = restrict₀ (.ofClass w) a :=
+    h.orderMonoidIso (rangeRestrict (.ofClass v) a) = rangeRestrict (.ofClass w) a :=
   orderMonoidIso_spec h a
 
 theorem orderMonoidIso_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :

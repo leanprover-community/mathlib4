@@ -70,12 +70,12 @@ theorem uniformContinuous_algebraMap_liesOver :
     (IsValuativeTopology.hasBasis_nhds_zero _)]
   intro γL _
   /-
-  `ValueGroup₀ (w.valuation L)` <-------->  `ℤᵐ⁰` <--------> `ValueGroup₀ (v.valuation K)`
+  `valueGroup₀ (w.valuation L)` <-------->  `ℤᵐ⁰` <--------> `valueGroup₀ (v.valuation K)`
             ^                                                         ^
             |                                                         |
             |                                                         |
             v                                                         v
-  `ValueGroup₀ (WithVal.valuation _)`             `ValueGroup₀ (WithVal.valuation _)`
+  `valueGroup₀ (WithVal.valuation _)`             `valueGroup₀ (WithVal.valuation _)`
             ^                                                         ^
             |                                                         |
             |                                                         |
@@ -99,12 +99,13 @@ theorem uniformContinuous_algebraMap_liesOver :
   intro x hx
   rcases eq_or_ne x 0 with rfl | hx₀; · simp
   rw [σvV.lt_symm_apply, σK.lt_symm_apply, σv.lt_symm_apply,
-    ValuativeRel.ValueGroupWithZero.orderMonoidIso_valuation_eq_restrict₀,
+    ValuativeRel.ValueGroupWithZero.orderMonoidIso_valuation_eq_rangeRestrict,
     ← Valuation.restrict_def, WithVal.valueGroupOrderIso₀_restrict,
     valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (v.valuation_surjective K),
     ← log_lt_log (by simp_all) (by simp)] at hx
   rw [← σwV.strictMono.lt_iff_lt, ← σL.strictMono.lt_iff_lt,
-    ValuativeRel.ValueGroupWithZero.orderMonoidIso_valuation_eq_restrict₀, ← Valuation.restrict_def,
+    ValuativeRel.ValueGroupWithZero.orderMonoidIso_valuation_eq_rangeRestrict,
+    ← Valuation.restrict_def,
     WithVal.valueGroupOrderIso₀_restrict, ← σw.strictMono.lt_iff_lt,
     valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (w.valuation_surjective L),
     WithVal.algebraMap_left_apply, WithVal.algebraMap_right_apply, ← valuation_liesOver L v,

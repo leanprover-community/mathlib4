@@ -413,11 +413,11 @@ theorem valueGroup_eq : valueGroup (.ofClass (Valued.v (R := WithVal v))) =
     valueGroup (.ofClass v) := by
   rw [← units_valueGroup₀, ← units_valueGroup₀, valueGroup₀_eq]
 
-/-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
+/-- The order-preserving, multiplicative equivalence between the `valueGroup₀` of the valuation
 on `WithVal v` and the valuation `v`. Both are the *same* subgroup with zero of `Γ₀`, so this is
 just a retagging. -/
-def valueGroupOrderIso₀ : ValueGroup₀ (.ofClass (Valued.v (R := WithVal v))) ≃*o
-    ValueGroup₀ (.ofClass v) :=
+def valueGroupOrderIso₀ : valueGroup₀ (.ofClass (Valued.v (R := WithVal v))) ≃*o
+    valueGroup₀ (.ofClass v) :=
   SubgroupWithZero.orderIsoOfEq (valueGroup₀_eq v)
 
 /-- The multiplicative equivalence between the `valueGroup` of the valuation on `WithVal v`
@@ -435,8 +435,8 @@ theorem strictMono_valueGroupEquiv_symm : StrictMono (valueGroupEquiv v).symm :=
   fun _ _ _ ↦ by simpa
 
 @[simp]
-lemma coe_valueGroupOrderIso₀ (x : ValueGroup₀ (.ofClass (Valued.v (R := WithVal v)))) :
-    ((valueGroupOrderIso₀ v x : ValueGroup₀ (.ofClass v)) : Γ₀) = (x : Γ₀) := rfl
+lemma coe_valueGroupOrderIso₀ (x : valueGroup₀ (.ofClass (Valued.v (R := WithVal v)))) :
+    ((valueGroupOrderIso₀ v x : valueGroup₀ (.ofClass v)) : Γ₀) = (x : Γ₀) := rfl
 
 lemma valueGroupOrderIso₀_restrict (b : WithVal v) :
     valueGroupOrderIso₀ v ((WithVal.valuation v).restrict b) = v.restrict b.ofVal :=
@@ -505,7 +505,7 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := exists_div_eq_of_unit Valued.v γ
   use .mk0 ((instValued v).v.restrict ((WithVal.equiv v).symm r) /
     (instValued v).v.restrict ((WithVal.equiv v).symm s)) (by
-    simp [Valuation.restrict_def, restrict₀_eq_zero_iff, (eq_zero h (r := r)).ne, ← hv,
+    simp [Valuation.restrict_def, rangeRestrict_eq_zero_iff, (eq_zero h (r := r)).ne, ← hv,
       (eq_zero h (r := s)).ne, hr₀.ne', hs₀.ne'])
   intro x hx
   let y := (WithVal.equiv v) x
@@ -531,7 +531,7 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   have h' : w.restrict.IsEquiv v.restrict := h.restrict
   use .mk0 ((Valued.v.restrict ((WithVal.equiv v) r)) /
     (Valued.v.restrict ((WithVal.equiv v) s))) (by
-    simp only [equiv_apply, restrict_def, ne_eq, div_eq_zero_iff, restrict₀_eq_zero_iff, hv,
+    simp only [equiv_apply, restrict_def, ne_eq, div_eq_zero_iff, rangeRestrict_eq_zero_iff, hv,
       MonoidWithZeroHom.coe_ofClass, not_or, (eq_zero h (r := r.ofVal)).ne,
       (eq_zero h (r := s.ofVal)).ne]
     exact ⟨hr₀.ne', hs₀.ne'⟩)
@@ -602,13 +602,13 @@ theorem exists_div_eq_of_surjective {K : Type*} [DivisionRing K] {Γ₀ : Type*}
 
 theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
-    (γ : (ValueGroup₀ (.ofClass v))ˣ) :
+    (γ : (valueGroup₀ (.ofClass v))ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
-  obtain ⟨r, hr⟩ := ValueGroup₀.restrict₀_surjective (.ofClass v) γ
+  obtain ⟨r, hr⟩ := rangeRestrict_surjective (.ofClass v) γ
   exact ⟨r, 1, by
     simp only [map_one, zero_lt_one, restrict_def, hr, div_one, and_self, and_true]
     rw [← map_zero v]
-    simpa [← hr] using embedding_strictMono (zero_lt_iff.mpr γ.ne_zero)⟩
+    simpa [← hr] using (SubmonoidWithZeroClass.subtype_strictMono _) (zero_lt_iff.mpr γ.ne_zero)⟩
 
 open UniformSpace.Completion in
 theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
