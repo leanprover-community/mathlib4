@@ -237,7 +237,7 @@ theorem mul_le_sum_mul_of_le_sum_range
   refine le_trans ?_ (sum_mul_le_sum_mul_of_sum_range_le (f := fun i ↦ if i = 0 then m else 0)
     (c := f) (fun k hk ↦ ?_) hg₀ hg)
   · simp_rw [ite_mul, zero_mul, sum_ite_eq']
-    split_ifs <;> simp [mul_nonpos_of_nonpos_of_nonneg hm (hg₀ 0)]
+    split_ifs <;> simp [mul_nonpos_of_nonpos_of_nonneg this (hg₀ 0)]
   · rw [sum_ite_eq']
     split_ifs <;> simp_all
 
