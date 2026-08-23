@@ -429,13 +429,13 @@ variable (𝕜) in
 /-- The kernel generated from a function `f : X → V` with the rank-one operators `⟪f y, •⟫ f x` as
 its entries. -/
 def outerKernel (f : X → V) : Matrix X X (V →L[𝕜] V) :=
-  Matrix.of fun x y ↦ InnerProductSpace.rankOne 𝕜 (f x) (f y)
+  Matrix.of fun x y ↦ rankOne 𝕜 (f x) (f y)
 
 omit [CompleteSpace V] in
 variable (𝕜) in
 @[simp]
 lemma outerKernel_apply (f : X → V) (x y) :
-    (outerKernel 𝕜 f) x y = InnerProductSpace.rankOne 𝕜 (f x) (f y) :=
+    (outerKernel 𝕜 f) x y = rankOne 𝕜 (f x) (f y) :=
   coe_inj.mp rfl
 
 omit [CompleteSpace V] in
@@ -446,8 +446,8 @@ lemma outerKernel_zero : outerKernel 𝕜 (0 : X → V) = 0 := by
 
 omit [CompleteSpace V] in
 variable (𝕜) in
-lemma outerKernel_inner (f : X → V) (x₁ x₂ : X) (v₁ v₂ : V) :
-    ⟪outerKernel 𝕜 f x₂ x₁ v₁, v₂⟫_𝕜 = conj ⟪f x₁, v₁⟫_𝕜 * ⟪f x₂, v₂⟫_𝕜 := by
+lemma outerKernel_inner (f : X → V) (x y : X) (v u : V) :
+    ⟪outerKernel 𝕜 f y x v, u⟫_𝕜 = conj ⟪f x, v⟫_𝕜 * ⟪f y, u⟫_𝕜 := by
   simp [inner_smul_left]
 
 variable (𝕜) in
@@ -455,8 +455,7 @@ lemma posSemidef_outerKernel (f : X → V) : (outerKernel 𝕜 f).PosSemidef := 
   rw [posSemidef_iff_re_sum_kernel']
   refine ⟨?_, fun x ↦ ?_⟩
   · ext
-    simp_rw [Matrix.conjTranspose_apply, outerKernel_apply, star_eq_adjoint,
-      InnerProductSpace.adjoint_rankOne]
+    simp [star_eq_adjoint, adjoint_rankOne]
   · simp_rw [outerKernel_apply, rankOne_apply, inner_smul_left, Finsupp.sum, ← Finset.mul_sum,
       ← Finset.sum_mul, ← map_sum, RCLike.conj_mul]
     simp
