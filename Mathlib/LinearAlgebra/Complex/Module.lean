@@ -215,7 +215,7 @@ instance (priority := 900) StarModule.complexToReal {E : Type*} [AddCommGroup E]
 
 namespace Complex
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 /-- Linear map version of the real part function, from `ℂ` to `ℝ`. -/
 def reLm : ℂ →ₗ[ℝ] ℝ where

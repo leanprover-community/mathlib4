@@ -34,7 +34,9 @@ public section
 
 open Set Filter TopologicalSpace
 
-open Topology OnePoint
+open OnePoint
+
+open scoped Topology
 
 local notation "ℚ∞" => OnePoint ℚ
 
