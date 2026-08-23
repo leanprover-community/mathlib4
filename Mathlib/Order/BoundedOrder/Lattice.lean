@@ -146,5 +146,5 @@ theorem WellFoundedLT.induction_bot {α} [LT α] [Bot α] [WellFoundedLT α]
     {a : α} {C : α → Prop} (ih : ∀ b, b ≠ ⊥ → C b → ∃ c < b, C c) :
     C a → C ⊥ :=
   (wellFounded_lt.apply a).induction_bot' ih
-  
+
 end WellFounded
