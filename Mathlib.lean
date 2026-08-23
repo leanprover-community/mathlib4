@@ -1215,6 +1215,7 @@ public import Mathlib.Algebra.Prime.Lemmas
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.QuadraticAlgebra.Discr
+public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
 public import Mathlib.Algebra.QuadraticAlgebra.NormDeterminant
 public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Algebra.Quandle
@@ -2720,6 +2721,7 @@ public import Mathlib.CategoryTheory.Filtered.Flat
 public import Mathlib.CategoryTheory.Filtered.Grothendieck
 public import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Filtered.Small
+public import Mathlib.CategoryTheory.Filtration.Basic
 public import Mathlib.CategoryTheory.FinCategory.AsType
 public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.FintypeCat
@@ -3476,6 +3478,11 @@ public import Mathlib.CategoryTheory.Sites.SheafHom
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 public import Mathlib.CategoryTheory.Sites.Sheafification
 public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.CategoryTheory.Sites.Sieves.Basic
+public import Mathlib.CategoryTheory.Sites.Sieves.Functoriality
+public import Mathlib.CategoryTheory.Sites.Sieves.Presheaf
+public import Mathlib.CategoryTheory.Sites.Sieves.Presieve
+public import Mathlib.CategoryTheory.Sites.Sieves.Shrink
 public import Mathlib.CategoryTheory.Sites.Spaces
 public import Mathlib.CategoryTheory.Sites.Subcanonical
 public import Mathlib.CategoryTheory.Sites.SubcanonicalOver
@@ -4709,6 +4716,7 @@ public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.GroupLieAlgebra
 public import Mathlib.Geometry.Manifold.HasGroupoid
 public import Mathlib.Geometry.Manifold.Immersion
+public import Mathlib.Geometry.Manifold.ImmersionDiff
 public import Mathlib.Geometry.Manifold.Instances.Icc
 public import Mathlib.Geometry.Manifold.Instances.Quotient
 public import Mathlib.Geometry.Manifold.Instances.Real
@@ -4748,6 +4756,7 @@ public import Mathlib.Geometry.Manifold.Submersion
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.LeviCivita
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
@@ -5098,6 +5107,7 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
+public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
