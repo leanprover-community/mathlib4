@@ -13,11 +13,11 @@ public import Mathlib.MeasureTheory.Integral.CircleIntegral
 In this file we restate theorems about derivatives of integrals depending on parameters for circle
 integrals `∮ z in C(c, R), F x z`. These are direct analogues of the corresponding results for
 interval integrals, but these take hypotheses on the circle as a set in `ℂ` instead of on the
-interval `[[0, 2 * π]]`.
+interval `Set.uIoc 0 (2 * π)`.
 
 One notable difference: some of the assumptions for interval integrals which only require properties
 to hold almost everywhere have been changed so that they must hold everywhere on the circle. This
-means they are slighly less general, but we suspect they will be easier to use in practice. In the
+means they are slightly less general, but we suspect they will be easier to use in practice. In the
 worst case, users can always fall back to interval integrals.
 -/
 
@@ -103,7 +103,7 @@ theorem hasFDerivAt_circleIntegral_of_dominated_of_fderiv_le
     (bound := fun θ ↦ |R| * bound (circleMap c R θ)) hs
     (hF_meas.mono fun _ hx ↦ aestronglyMeasurable_deriv_circleMap_smul hx)
     ((circleIntegrable_iff R).mp hF_int) (aestronglyMeasurable_deriv_circleMap_smul hF'_meas)
-    (.of_forall fun θ _ x hx =>
+    (.of_forall fun θ _ x hx ↦
       norm_deriv_circleMap_smul_le (h_bound _ (circleMap_mem_sphere' c R θ) x hx))
     (bound_integrable.const_mul _)
     (.of_forall fun θ _ x hx ↦ (h_diff _ (circleMap_mem_sphere' c R θ) x hx).const_smul _)
