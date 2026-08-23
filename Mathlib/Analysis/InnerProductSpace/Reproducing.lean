@@ -419,7 +419,7 @@ theorem coe_equiv (h : kernel H = kernel H') (f : H) : ⇑(equiv h f) = f := by
 
 end Equiv
 
-section subRKHS
+section RKHSSubmodule
 
 variable (H₀ : Submodule 𝕜 H) [CompleteSpace H₀]
 
@@ -440,6 +440,6 @@ lemma kernel_submodule (x y : X) :
   refine ext_inner_right 𝕜 ?_
   simp [kernel_apply, kerFun_submodule, Submodule.adjoint_orthogonalProjectionOnto]
 
-end subRKHS
+end RKHSSubmodule
 
 end RKHS
