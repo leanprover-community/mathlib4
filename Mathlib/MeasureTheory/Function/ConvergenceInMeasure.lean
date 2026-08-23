@@ -299,7 +299,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
     refine fun x hx => EMetric.tendsto_atTop.mpr fun ε hε => ?_
     rw [hs, limsup_eq_iInf_iSup_of_nat] at hx
     simp only [S, Set.iSup_eq_iUnion, Set.iInf_eq_iInter, Set.compl_iInter, Set.compl_iUnion,
-      Set.mem_iUnion, Set.mem_iInter, Set.mem_compl_iff, Set.mem_ofPred_eq, not_le] at hx
+      Set.mem_iUnion, Set.mem_iInter, Set.mem_compl_iff, Set.mem_ofPred, not_le] at hx
     obtain ⟨N, hNx⟩ := hx
     obtain ⟨k, hk_lt_ε⟩ := h_lt_ε_real ε hε
     refine ⟨max N (k - 1), fun n hn_ge => lt_of_le_of_lt ?_ hk_lt_ε⟩
@@ -315,7 +315,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
     exact le_trans hNx.le h_inv_n_le_k
   rw [ae_iff]
   refine ⟨ExistsSeqTendstoAe.seqTendstoAeSeq_strictMono hfg, measure_mono_null (fun x => ?_) hμs⟩
-  rw [Set.mem_ofPred_eq, ← @Classical.not_not (x ∈ s), not_imp_not]
+  rw [Set.mem_ofPred, ← @Classical.not_not (x ∈ s), not_imp_not]
   exact h_tendsto x
 
 theorem TendstoInMeasure.exists_seq_tendstoInMeasure_atTop {u : Filter ι} [NeBot u]

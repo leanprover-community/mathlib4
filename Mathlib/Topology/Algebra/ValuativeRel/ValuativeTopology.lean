@@ -277,7 +277,7 @@ section Discrete
 lemma discreteTopology_of_forall_map_eq_one (h : ∀ x : R, x ≠ 0 → v x = 1) :
     DiscreteTopology R := by
   simp only [discreteTopology_iff_isOpen_singleton_zero, isOpen_iff_mem_nhds, mem_singleton_iff,
-    forall_eq, v.mem_nhds_zero_iff, subset_singleton_iff, mem_ofPred_eq]
+    forall_eq, v.mem_nhds_zero_iff, subset_singleton_iff, mem_ofPred]
   use 1
   contrapose! h
   obtain ⟨x, hx, hx'⟩ := h
@@ -336,7 +336,7 @@ theorem isClosed_closedBall (r : ValueGroup₀ (.ofClass v)) :
     IsClosed {x | v.restrict x ≤ r} := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
-  simp only [mem_compl_iff, mem_ofPred_eq, not_le] at hx
+  simp only [mem_compl_iff, mem_ofPred, not_le] at hx
   rw [v.mem_nhds_iff]
   have hx' : v.restrict x ≠ 0 := hx.ne_zero
   exact ⟨Units.mk0 _ hx', fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v.restrict x y ▸

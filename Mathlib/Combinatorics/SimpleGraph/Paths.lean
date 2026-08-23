@@ -429,7 +429,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
   induction p generalizing n m with
   | nil => simp_all
   | @cons v w u h p ihp =>
-    simp only [length_cons, Set.mem_ofPred_eq] at hn hm hnm
+    simp only [length_cons, Set.mem_ofPred] at hn hm hnm
     by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
     · lia
     · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
@@ -476,7 +476,7 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
     rw [cons_isPath_iff]
     refine ⟨ih (by
       intro n hn m hm hnm
-      simp only [Set.mem_ofPred_eq] at hn hm
+      simp only [Set.mem_ofPred] at hn hm
       have := hinj
         (by rw [length_cons]; lia : n + 1 ≤ (q.cons h).length)
         (by rw [length_cons]; lia : m + 1 ≤ (q.cons h).length)
@@ -528,11 +528,11 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
     Set.InjOn p.getVert {i |  i ≤ p.length - 1} := by
   intro n hn m hm hnm
-  simp only [Set.mem_ofPred_eq] at *
+  simp only [Set.mem_ofPred] at *
   have := hpc.three_le_length
   have : p.length - n = p.length - m := Walk.length_reverse _ ▸ hpc.reverse.getVert_injOn
-    (by simp only [Walk.length_reverse, Set.mem_ofPred_eq]; lia)
-    (by simp only [Walk.length_reverse, Set.mem_ofPred_eq]; lia)
+    (by simp only [Walk.length_reverse, Set.mem_ofPred]; lia)
+    (by simp only [Walk.length_reverse, Set.mem_ofPred]; lia)
     (by simp [Walk.getVert_reverse, show p.length - (p.length - n) = n by lia, hnm,
       show p.length - (p.length - m) = m by lia])
   lia
@@ -548,8 +548,8 @@ lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) 
   refine ⟨?_, by aesop⟩
   rw [or_iff_not_imp_left]
   intro h hi
-  exact hpc.getVert_injOn (by simp only [Set.mem_ofPred_eq]; lia)
-    (by simp only [Set.mem_ofPred_eq]; lia) (h.symm ▸ (Walk.getVert_length p).symm)
+  exact hpc.getVert_injOn (by simp only [Set.mem_ofPred]; lia)
+    (by simp only [Set.mem_ofPred]; lia) (h.symm ▸ (Walk.getVert_length p).symm)
 
 lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
@@ -559,8 +559,8 @@ lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc
   · rw [p.getVert_of_length_le (by lia : p.length ≤ i + 1),
       hpc.getVert_endpoint_iff (by lia)] at h'
     lia
-  have := hpc.getVert_injOn' (by simp only [Set.mem_ofPred_eq, Nat.sub_le_iff_le_add]; lia)
-    (by simp only [Set.mem_ofPred_eq]; lia) h'
+  have := hpc.getVert_injOn' (by simp only [Set.mem_ofPred, Nat.sub_le_iff_le_add]; lia)
+    (by simp only [Set.mem_ofPred]; lia) h'
   lia
 
 theorem isCycle_iff_isPath_tail_and_le_length {p : G.Walk u u} :

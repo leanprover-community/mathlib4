@@ -80,7 +80,7 @@ theorem mem_ofPred {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
 
 @[deprecated (since := "2026-07-09")] alias mem_setOf_eq := mem_ofPred
 @[deprecated (since := "2026-07-09")] alias mem_setOf := mem_ofPred
-@[deprecated (since := "2026-08-12")] alias mem_ofPred_eq := mem_ofPred
+@[deprecated (since := "2026-08-12")] alias mem_ofPred := mem_ofPred
 
 grind_pattern mem_ofPred => x ∈ Set.ofPred p
 

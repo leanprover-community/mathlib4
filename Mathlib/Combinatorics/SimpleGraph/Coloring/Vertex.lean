@@ -343,7 +343,7 @@ theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔
   obtain ⟨m, hm⟩ := this
   rw [hm.chromaticNumber_eq_sInf, Nat.cast_le] at h
   have := Nat.sInf_mem (⟨m, hm⟩ : {n' | G.Colorable n'}.Nonempty)
-  rw [Set.mem_ofPred_eq] at this
+  rw [Set.mem_ofPred] at this
   exact this.mono h
 
 /-- If the chromatic number of `G` is `n + 1`, then `G` is colorable in no fewer than `n + 1`
@@ -400,7 +400,7 @@ theorem chromaticNumber_le_of_forall_imp {V' : Type*} {G' : SimpleGraph V'}
     (h : ∀ n, G'.Colorable n → G.Colorable n) :
     G.chromaticNumber ≤ G'.chromaticNumber := by
   rw [chromaticNumber, chromaticNumber]
-  simp only [Set.mem_ofPred_eq, le_iInf_iff]
+  simp only [Set.mem_ofPred, le_iInf_iff]
   intro m hc
   have := h _ hc
   rw [← chromaticNumber_le_iff_colorable] at this
@@ -424,7 +424,7 @@ lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     classical
     exact Nat.notMem_of_lt_sInf ((Nat.sub_one_lt_of_lt <| card_pos_iff.2 ⟨i⟩).trans_le h)
       ⟨G.recolorOfEquiv (equivOfCardEq <| by simp) D⟩
-  · simp only [chromaticNumber, Set.mem_ofPred_eq, le_iInf_iff, Nat.cast_le]
+  · simp only [chromaticNumber, Set.mem_ofPred, le_iInf_iff, Nat.cast_le]
     rintro i ⟨C⟩
     contrapose! h
     refine ⟨G.recolorOfCardLE (by simpa using h.le) C, fun hC ↦ ?_⟩

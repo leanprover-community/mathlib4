@@ -266,7 +266,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     push Not at hi'
     exact Subtype.coe_injective.ne_iff.mp (hi'.trans' z0).ne'
   · intro i
-    simp only [Set.mem_Icc, Finset.mem_coe, exists_prop, Set.mem_ofPred_eq, and_imp]
+    simp only [Set.mem_Icc, Finset.mem_coe, exists_prop, Set.mem_ofPred, and_imp]
     -- we get the `c` from the cover that covers our arbitrary `i` with its set
     obtain ⟨c, hc⟩ := i.val.prop
     intro hzi hi1
@@ -277,9 +277,9 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     -- and this `c` is either less than or greater than (or equal to) the threshold element
     simp only [MonoidWithZeroHom.coe_ofClass] at hc
     split_ifs at hj' with hcj
-    · simp only [Set.mem_ofPred_eq, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
+    · simp only [Set.mem_ofPred, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
       simp [hcj, le_antisymm hj' hzi]
-    · simp only [Set.mem_ofPred_eq] at hj'
+    · simp only [Set.mem_ofPred] at hj'
       rw [dite_eq_right hcj]
       simp [← hj', hc]
 

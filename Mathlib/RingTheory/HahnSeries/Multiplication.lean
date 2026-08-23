@@ -186,7 +186,7 @@ instance instSMul : SMul R⟦Γ⟧ (HahnModule Γ' R V) where
             { a : Γ' | (VAddAntidiagonal a (Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support
               ((of R).symm y).isPWO_support a)).Nonempty } := by
           intro a ha
-          simp only [Set.mem_ofPred_eq]
+          simp only [Set.mem_ofPred]
           contrapose! ha
           simp [ha]
         (isPWO_support_vaddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support).mono h }
@@ -346,7 +346,7 @@ theorem support_smul_subset_vadd_support' [MulZeroClass R] [SMulWithZero R V] {x
     ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support := by
   refine Set.Subset.trans (fun x hx => ?_) (support_vaddAntidiagonal_subset_vadd
     fun a ↦ Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support ((of R).symm y).isPWO_support a)
-  simp only [Set.mem_ofPred_eq]
+  simp only [Set.mem_ofPred]
   contrapose! hx
   simp [coeff_smul, hx]
 
@@ -670,7 +670,7 @@ def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCance
     intro x y hx hy
     obtain (_ | _) := subsingleton_or_nontrivial R
     · simp
-    · simp_all only [Set.mem_ofPred_eq, orderTop_self_sub_one_pos_iff]
+    · simp_all only [Set.mem_ofPred, orderTop_self_sub_one_pos_iff]
       have h1 : x.val.leadingCoeff * y.val.leadingCoeff = 1 := by rw [hx.2, hy.2, mul_one]
       constructor
       · rw [Units.val_mul, orderTop_mul_of_ne_zero (by simp [h1]), hx.1, hy.1, add_zero]

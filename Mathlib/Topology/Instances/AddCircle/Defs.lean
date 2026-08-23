@@ -171,7 +171,7 @@ theorem toIcoMod_eventuallyEq_toIocMod (hx : ¬x ≡ a [PMOD p]) :
   refine IsOpen.mem_nhds ?_ ?_
   · rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
     exact isOpen_iUnion fun i => isOpen_Ioo
-  · rwa [mem_ofPred_eq, ← not_modEq_iff_toIcoMod_eq_toIocMod hp, AddCommGroup.modEq_comm]
+  · rwa [mem_ofPred, ← not_modEq_iff_toIcoMod_eq_toIocMod hp, AddCommGroup.modEq_comm]
 
 theorem continuousAt_toIcoMod (hx : ¬x ≡ a [PMOD p]) : ContinuousAt (toIcoMod hp a) x :=
   continuousAt_id.sub <| tendsto_nhds_of_eventually_eq <|

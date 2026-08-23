@@ -113,7 +113,7 @@ theorem bliminf_true (f : Filter β) (u : β → α) : (bliminf u f fun _ => Tru
 
 lemma blimsup_eq_limsup {f : Filter β} {u : β → α} {p : β → Prop} :
     blimsup u f p = limsup u (f ⊓ 𝓟 {x | p x}) := by
-  simp only [blimsup_eq, limsup_eq, eventually_inf_principal, mem_ofPred_eq]
+  simp only [blimsup_eq, limsup_eq, eventually_inf_principal, mem_ofPred]
 
 lemma bliminf_eq_liminf {f : Filter β} {u : β → α} {p : β → Prop} :
     bliminf u f p = liminf u (f ⊓ 𝓟 {x | p x}) :=
@@ -296,7 +296,7 @@ theorem HasBasis.liminf_eq_sSup_iUnion_iInter {ι ι' : Type*} {f : ι → α} {
   simp_rw [liminf_eq, hv.eventually_iff]
   congr 1
   ext x
-  simp only [mem_ofPred_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
+  simp only [mem_ofPred, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
     exists_prop]
 
 theorem HasBasis.liminf_eq_sSup_univ_of_empty {f : ι → α} {v : Filter ι}
@@ -448,7 +448,7 @@ lemma HasBasis.blimsup_eq_iInf_iSup {p : ι → Prop} {s : ι → Set β} {f : F
     (hf : f.HasBasis p s) {q : β → Prop} :
     blimsup u f q = ⨅ (i) (_ : p i), ⨆ a ∈ s i, ⨆ (_ : q a), u a := by
   simp only [blimsup_eq_limsup, (hf.inf_principal _).limsup_eq_iInf_iSup, mem_inter_iff, iSup_and,
-    mem_ofPred_eq]
+    mem_ofPred]
 
 theorem blimsup_eq_iInf_biSup {f : Filter β} {p : β → Prop} {u : β → α} :
     blimsup u f p = ⨅ s ∈ f, ⨆ (b) (_ : p b ∧ b ∈ s), u b := by
@@ -640,7 +640,7 @@ variable [CompleteDistribLattice α] {f : Filter β} {p q : β → Prop} {u : β
 lemma limsup_sup_filter {g} : limsup u (f ⊔ g) = limsup u f ⊔ limsup u g := by
   refine le_antisymm ?_
     (sup_le (limsup_le_limsup_of_le le_sup_left) (limsup_le_limsup_of_le le_sup_right))
-  simp_rw [limsup_eq, sInf_sup_eq, sup_sInf_eq, mem_ofPred_eq, le_iInf₂_iff]
+  simp_rw [limsup_eq, sInf_sup_eq, sup_sInf_eq, mem_ofPred, le_iInf₂_iff]
   intro a ha b hb
   exact sInf_le ⟨ha.mono fun _ h ↦ h.trans le_sup_left, hb.mono fun _ h ↦ h.trans le_sup_right⟩
 
@@ -744,7 +744,7 @@ theorem cofinite.blimsup_set_eq :
   simp only [blimsup_eq, eventually_cofinite, not_forall, sInf_eq_sInter, exists_prop]
   ext x
   refine ⟨fun h => ?_, fun hx t h => ?_⟩ <;> contrapose h
-  · simp only [mem_sInter, mem_ofPred_eq, not_forall, exists_prop]
+  · simp only [mem_sInter, mem_ofPred, not_forall, exists_prop]
     exact ⟨{x}ᶜ, by simpa using h, by simp⟩
   · exact hx.mono fun i hi => ⟨hi.1, fun hit => h (hit hi.2)⟩
 
@@ -1014,7 +1014,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
       · have : j = liminfReparam f s p j := by simp only [m, liminfReparam, hj, ite_true]
         conv_lhs => rw [this]
         apply subset_iUnion _ j
-      · simp only [m, mem_ofPred_eq, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
+      · simp only [m, mem_ofPred, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
         simp only [hj, empty_subset]
     · apply iUnion_subset (fun j ↦ ?_)
       exact subset_iUnion (fun (k : Subtype p) ↦ (⋂ (i : s k), Iic (f i))) (liminfReparam f s p j)

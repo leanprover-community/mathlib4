@@ -693,7 +693,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
       -- move to a lemma?
       intro z hz
       rw [mem_ball, dist_zero_left, dist_eq, Complex.norm_of_nonneg hx₀] at hz
-      rw [mem_ofPred_eq]
+      rw [mem_ofPred]
       contrapose! hz
       calc
         x₀ ≤ x₀ - z.re := (le_sub_self_iff _).2 hz

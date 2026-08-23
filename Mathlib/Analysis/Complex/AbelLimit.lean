@@ -67,7 +67,7 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
   simp only [eventually_iff, mem_nhdsWithin]
   refine ⟨Set.Ioo 0 2, isOpen_Ioo, by simp, fun x hx ↦ ?_⟩
   push _ ∈ _ at hx
-  simp only [Set.mem_ofPred_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_real,
+  simp only [Set.mem_ofPred, stolzSet, ← ofReal_one, ← ofReal_sub, norm_real,
     norm_of_nonneg hx.1.1.le, norm_of_nonneg <| (sub_pos.mpr hx.2).le]
   exact ⟨hx.2, lt_mul_left (sub_pos.mpr hx.2) hM⟩
 
@@ -100,8 +100,8 @@ lemma stolzCone_subset_stolzSet_aux {s : ℝ} (hs : 0 < s) :
     ∃ M ε, 0 < M ∧ 0 < ε ∧ {z : ℂ | 1 - ε < z.re} ∩ stolzCone s ⊆ stolzSet M := by
   peel stolzCone_subset_stolzSet_aux' s with M ε hM hε H
   rintro z ⟨hzl, hzr⟩
-  rw [Set.mem_ofPred_eq, sub_lt_comm, ← one_re, ← sub_re] at hzl
-  rw [stolzCone, Set.mem_ofPred_eq, ← one_re, ← sub_re] at hzr
+  rw [Set.mem_ofPred, sub_lt_comm, ← one_re, ← sub_re] at hzl
+  rw [stolzCone, Set.mem_ofPred, ← one_re, ← sub_re] at hzr
   replace H :=
     H (1 - z).re z.im ((mul_pos_iff_of_pos_left hs).mp <| (abs_nonneg z.im).trans_lt hzr) hzl hzr
   have h : z.im ^ 2 = (1 - z).im ^ 2 := by
@@ -116,7 +116,7 @@ lemma nhdsWithin_stolzCone_le_nhdsWithin_stolzSet {s : ℝ} (hs : 0 < s) :
   use M
   rw [nhdsWithin_le_iff, mem_nhdsWithin]
   refine ⟨{w | 1 - ε < w.re}, isOpen_lt continuous_const continuous_re, ?_, H⟩
-  simp only [Set.mem_ofPred_eq, one_re, sub_lt_self_iff, hε]
+  simp only [Set.mem_ofPred, one_re, sub_lt_self_iff, hε]
 
 end StolzSet
 

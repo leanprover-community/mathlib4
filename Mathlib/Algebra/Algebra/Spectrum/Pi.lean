@@ -89,7 +89,7 @@ lemma Pi.quasispectrum_eq [Nonempty ι] [CommSemiring R] [∀ i, NonUnitalRing (
     [∀ i, Module R (κ i)] (a : ∀ i, κ i) :
     quasispectrum R a = ⋃ i, quasispectrum R (a i) := by
   ext r
-  simp only [quasispectrum, Set.mem_ofPred_eq, Set.mem_iUnion]
+  simp only [quasispectrum, Set.mem_ofPred, Set.mem_iUnion]
   by_cases hr : IsUnit r
   · lift r to Rˣ using hr with r' hr'
     simp [isQuasiregular_pi_iff]
@@ -100,7 +100,7 @@ lemma Prod.quasispectrum_eq [CommSemiring R] [NonUnitalRing A] [NonUnitalRing B]
     quasispectrum R (⟨a, b⟩ : A × B) = quasispectrum R a ∪ quasispectrum R b := by
   apply compl_injective
   ext r
-  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_ofPred_eq, not_forall, not_not,
+  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_ofPred, not_forall, not_not,
     Set.mem_union]
   by_cases hr : IsUnit r
   · lift r to Rˣ using hr with r' hr'

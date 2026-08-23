@@ -204,7 +204,7 @@ theorem tendsto_indicator_ge (f : α → β) (x : α) :
     Tendsto (fun M : ℕ => { x | (M : ℝ) ≤ ‖f x‖₊ }.indicator f x) atTop (𝓝 0) := by
   refine tendsto_atTop_of_eventually_const (i₀ := Nat.ceil (‖f x‖₊ : ℝ) + 1) fun n hn => ?_
   rw [Set.indicator_of_notMem]
-  simp only [not_le, Set.mem_ofPred_eq]
+  simp only [not_le, Set.mem_ofPred]
   refine lt_of_le_of_lt (Nat.le_ceil _) ?_
   refine lt_of_lt_of_le (lt_add_one _) ?_
   norm_cast
@@ -257,7 +257,7 @@ theorem MemLp.integral_indicator_norm_ge_nonneg_le (hf : MemLp f 1 μ) {ε : ℝ
   refine ⟨M, hM_pos, (le_of_eq ?_).trans hfM⟩
   refine lintegral_congr_ae ?_
   filter_upwards [hf.1.ae_eq_mk] with x hx
-  simp only [Set.indicator_apply, coe_nnnorm, Set.mem_ofPred_eq, hx.symm]
+  simp only [Set.indicator_apply, coe_nnnorm, Set.mem_ofPred, hx.symm]
 
 theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ)
     (hmeas : StronglyMeasurable f) :
@@ -270,7 +270,7 @@ theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ)
       have : { x : α | (eLpNormEssSup f μ + 1).toReal ≤ ‖f x‖ } ⊆
           { x : α | eLpNormEssSup f μ < ‖f x‖₊ } := by
         intro x hx
-        rw [Set.mem_ofPred_eq, ← toReal_lt_toReal hbdd.ne coe_lt_top.ne, coe_toReal, coe_nnnorm]
+        rw [Set.mem_ofPred, ← toReal_lt_toReal hbdd.ne coe_lt_top.ne, coe_toReal, coe_nnnorm]
         refine lt_of_lt_of_le ?_ hx
         rw [toReal_lt_toReal hbdd.ne]
         · exact lt_add_right hbdd.ne one_ne_zero
@@ -311,11 +311,11 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) (hmeas : Strongly
   by_cases hx : x ∈ { x : α | M ^ (1 / p.toReal) ≤ ‖f x‖₊ }
   · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.enorm_of_nonneg (by positivity),
       ← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm]
-    rw [Set.mem_ofPred_eq]
+    rw [Set.mem_ofPred]
     rwa [← hiff]
   · rw [Set.indicator_of_notMem hx, Set.indicator_of_notMem]
     · simp [toReal_pos hp_ne_zero hp_ne_top]
-    · rw [Set.mem_ofPred_eq]
+    · rw [Set.mem_ofPred]
       rwa [← hiff]
 
 /-- This lemma implies that a single function is uniformly integrable (in the probability sense). -/
@@ -615,7 +615,7 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
       · refine (Disjoint.inf_right' _ ?_).inf_left' _
         rw [disjoint_iff_inf_le]
         rintro x ⟨hx₁, hx₂⟩
-        rw [Set.mem_ofPred_eq] at hx₁ hx₂
+        rw [Set.mem_ofPred] at hx₁ hx₂
         exact False.elim (hx₂.ne (eq_of_le_of_not_lt hx₁ (not_lt.2 hx₂.le)).symm)
     _ ≤ eLpNorm (Set.indicator { x | C ≤ ‖f i x‖₊ } (f i)) p μ +
         (C : ℝ≥0∞) * μ s ^ (1 / ENNReal.toReal p) := by
