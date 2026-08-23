@@ -126,7 +126,7 @@ section Unital
 
 variable [Ring A] [Algebra 𝕜 A]
 
-lemma spectralRadius_eq_of_unital (a : A) :
+lemma _root_.spectralRadius_eq_of_unital (a : A) :
     spectralRadius 𝕜 a = ⨆ k ∈ spectrum 𝕜 a, (‖k‖₊ : ℝ≥0∞) := by
   simp [spectralRadius, quasispectrum_eq_spectrum_union_zero, iSup_or, iSup_sup_eq]
 
