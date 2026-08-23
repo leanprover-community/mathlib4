@@ -539,7 +539,7 @@ lemma lintegral_enorm_convolution_le {p q r : ENNReal}
     (x₀ : G) : eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) r μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
   rw [← eLpNorm_comp_measurePreserving hg (μ.measurePreserving_sub_left x₀),
     ← eLpNorm_one_eq_lintegral_enorm]
-  exact eLpNorm_le_eLpNorm_mul_eLpNorm'_of_enorm hf
+  exact eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm hf
     (hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_left μ x₀)) (L ·) ‖L‖₊
     (.of_forall fun _ ↦ L.le_opENorm₂ ..)
 
