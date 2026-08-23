@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.ENat.Basic
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+public import Mathlib.Data.ENat.Monoid
 
 /-!
 # Unique factorization of natural numbers

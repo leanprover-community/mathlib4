@@ -220,7 +220,7 @@ end LT
 
 section Preorder
 
-variable [Preorder α] {s t : Set α} {a : α}
+variable [Preorder α] {s t : Set α}
 
 protected nonrec theorem IsWF.union (hs : IsWF s) (ht : IsWF t) : IsWF (s ∪ t) := hs.union ht
 
@@ -230,7 +230,7 @@ end Preorder
 
 section Preorder
 
-variable [Preorder α] {s t : Set α} {a : α}
+variable [Preorder α] {s : Set α}
 
 theorem isWF_iff_no_descending_seq :
     IsWF s ↔ ∀ f : ℕ → α, StrictAnti f → ¬∀ n, f n ∈ s :=
