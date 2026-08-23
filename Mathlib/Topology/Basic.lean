@@ -32,7 +32,9 @@ topological space
 
 @[expose] public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 universe u v
 

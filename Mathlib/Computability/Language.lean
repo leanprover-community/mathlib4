@@ -53,7 +53,9 @@ with respect to other language operations.
 @[expose] public section
 
 
-open List Set Computability
+open List Set
+
+open scoped Computability
 
 universe v
 
