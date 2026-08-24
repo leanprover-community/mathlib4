@@ -93,7 +93,7 @@ theorem borel_eq_iSup_comap_eval :
   let V := Set.sUnion '' {f : Set (Set Y) | f.Finite ∧ f ⊆ countableBasis Y}
   have hV : IsTopologicalBasis V := (isBasis_countableBasis Y).finite_sUnion
   have cV : V.Countable :=
-    (Set.countable_setOf_finite_subset (countable_countableBasis Y)).image _
+    (Set.countable_ofPred_finite_subset (countable_countableBasis Y)).image _
   -- Because `Y` is regular, we have `U = ⋃_{v ∈ V, closure v ⊆ U} v`.
   -- For any continuous `f` such that `f '' K ⊆ U`, because `K` is compact, `f '' K` is compact.
   -- Because the set `{v ∈ V, closure v ⊆ U}` is a directed set of open sets that covers `f '' K`,
