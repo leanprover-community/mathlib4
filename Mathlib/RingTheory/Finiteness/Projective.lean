@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Finiteness.Cardinality
 
 -/
 
-@[expose] public section
+public section
 
 open Function (Surjective)
 
@@ -21,10 +21,8 @@ namespace Module
 
 namespace Finite
 
-open Submodule Set
-
-variable {R M N : Type*}
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable {R M : Type*}
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable (R M) in
 theorem exists_comp_eq_id_of_projective [Module.Finite R M] [Projective R M] :

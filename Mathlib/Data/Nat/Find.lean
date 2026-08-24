@@ -7,13 +7,13 @@ module
 
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Tactic.Push
-public import Batteries.WF
+public import Batteries.Tactic.Init
 
 /-!
 # `Nat.find` and `Nat.findGreatest`
 -/
 
-@[expose] public section
+public section
 
 variable {m n k : ℕ} {p q : ℕ → Prop}
 
@@ -26,9 +26,8 @@ section Find
 private def lbp (m n : ℕ) : Prop :=
   m = n + 1 ∧ ∀ k ≤ n, ¬p k
 
-variable [DecidablePred p] (H : ∃ n, p n)
-
-private def wf_lbp : WellFounded (@lbp p) :=
+set_option backward.privateInPublic true in
+private theorem wf_lbp (H : ∃ n, p n) : WellFounded (@lbp p) :=
   ⟨let ⟨n, pn⟩ := H
     suffices ∀ m k, n ≤ k + m → Acc lbp k from fun _ => this _ _ (Nat.le_add_left _ _)
     fun m =>
@@ -42,6 +41,10 @@ private def wf_lbp : WellFounded (@lbp p) :=
         match y, r with
         | _, ⟨rfl, _a⟩ => IH _ (by rw [Nat.add_right_comm]; exact kn)⟩⟩
 
+variable [DecidablePred p] (H : ∃ n, p n)
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Find the smallest `n` satisfying `p n`. Returns a subtype. -/
 protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
   @WellFounded.fix _ (fun k => (∀ n < k, ¬p n) → { n // p n ∧ ∀ m < n, ¬p m }) lbp (wf_lbp H)
@@ -161,6 +164,7 @@ section FindGreatest
 
 /-- `Nat.findGreatest P n` is the largest `i ≤ n` such that `P i` holds, or `0` if no such `i`
 exists -/
+@[expose]
 def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
   | 0 => 0
   | n + 1 => if P (n + 1) then n + 1 else Nat.findGreatest P n
@@ -204,7 +208,7 @@ lemma findGreatest_eq_zero_iff : Nat.findGreatest P k = 0 ↔ ∀ ⦃n⦄, 0 < n
   simp [findGreatest_eq_iff]
 
 @[simp] lemma findGreatest_pos : 0 < Nat.findGreatest P k ↔ ∃ n, 0 < n ∧ n ≤ k ∧ P n := by
-  rw [Nat.pos_iff_ne_zero, Ne, findGreatest_eq_zero_iff]; push_neg; rfl
+  rw [Nat.pos_iff_ne_zero, Ne, findGreatest_eq_zero_iff]; push Not; rfl
 
 lemma findGreatest_spec (hmb : m ≤ n) (hm : P m) : P (Nat.findGreatest P n) := by
   by_cases h : Nat.findGreatest P n = 0

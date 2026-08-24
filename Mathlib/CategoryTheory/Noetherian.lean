@@ -24,17 +24,14 @@ it is shown that any nonzero Artinian object has a simple subobject.
 The Jordan-Hölder theorem, following https://stacks.math.columbia.edu/tag/0FCK.
 -/
 
-@[expose] public section
+public section
 
 
 namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-@[deprecated (since := "2025-07-11")] alias NoetherianObject := IsNoetherianObject
-@[deprecated (since := "2025-07-11")] alias ArtinianObject := IsArtinianObject
-
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 /-- A category is Noetherian if it is essentially small and all objects are Noetherian. -/
 class Noetherian : Prop extends EssentiallySmall C where
@@ -47,7 +44,5 @@ class Artinian : Prop extends EssentiallySmall C where
   isArtinianObject : ∀ X : C, IsArtinianObject X
 
 attribute [instance] Artinian.isArtinianObject
-
-open Subobject
 
 end CategoryTheory

@@ -13,14 +13,12 @@ public import Mathlib.Algebra.Polynomial.Eval.Defs
 
 This file concerns evaluating polynomials where the map is `algebraMap`
 
-TODO: merge with parts of `Algebra/Polynomial/AlgebraMap.lean`?
+TODO: merge with parts of `Mathlib/Algebra/Polynomial/AlgebraMap.lean`?
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
-
-open Finset AddMonoidAlgebra
 
 open Polynomial
 
@@ -28,7 +26,7 @@ namespace Polynomial
 
 universe u v w y
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type u} {S : Type v} {a : R} {n : ℕ}
 
 section CommSemiring
 

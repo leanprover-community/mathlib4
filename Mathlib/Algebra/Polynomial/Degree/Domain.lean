@@ -16,11 +16,9 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 * `Polynomial.instDomain`: `R[X]` is a domain if `R` is
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
-
-open Finsupp Finset
 
 open Polynomial
 
@@ -28,20 +26,20 @@ namespace Polynomial
 
 universe u v
 
-variable {R : Type u} {S : Type v} {a b c d : R} {n m : ℕ}
+variable {R : Type u} {S : Type v} {a : R} {n : ℕ}
 
 section Semiring
 
 variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
 
-lemma natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree := by
+lemma natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p * q).natDegree = p.natDegree + q.natDegree := by
   rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree (mul_ne_zero hp hq),
     Nat.cast_add, ← degree_eq_natDegree hp, ← degree_eq_natDegree hq, degree_mul]
 
 omit [NoZeroDivisors R] in
 variable (p) in
-lemma natDegree_smul {S : Type*} [Zero S] [SMulZeroClass S R] [NoZeroSMulDivisors S R] {a : S}
-    (ha : a ≠ 0) : (a • p).natDegree = p.natDegree := by
+lemma natDegree_smul {S : Type*} [Semiring S] [IsDomain S] [Module S R] [Module.IsTorsionFree S R]
+    {a : S} (ha : a ≠ 0) : (a • p).natDegree = p.natDegree := by
   by_cases hp : p = 0
   · simp only [hp, smul_zero]
   · apply natDegree_eq_of_le_of_coeff_ne_zero
@@ -52,7 +50,6 @@ lemma natDegree_smul {S : Type*} [Zero S] [SMulZeroClass S R] [NoZeroSMulDivisor
 
 @[simp]
 lemma natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p := by
-  classical
   obtain rfl | hp := eq_or_ne p 0
   · obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
   exact natDegree_pow' <| by

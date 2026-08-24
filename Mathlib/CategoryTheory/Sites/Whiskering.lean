@@ -6,8 +6,10 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
+# Whiskering sheaves by a functor
 
 In this file we construct the functor `Sheaf J A ⥤ Sheaf J B` between sheaf categories
 obtained by composition with a functor `F : A ⥤ B`.
@@ -27,7 +29,7 @@ Given a natural transformation `η : F ⟶ G`, we obtain a natural transformatio
 
 namespace CategoryTheory
 
-open CategoryTheory.Limits Functor
+open CategoryTheory.Limits CategoryTheory.Functor
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -35,7 +37,6 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {A : Type u₂} [Category.{v₂} A]
 variable {B : Type u₃} [Category.{v₃} B]
 variable (J : GrothendieckTopology C)
-variable {U : C} (R : Presieve U)
 variable (F G H : A ⥤ B) (η : F ⟶ G) (γ : G ⟶ H)
 
 /-- Describes the property of a functor to "preserve sheaves". -/
@@ -46,12 +47,11 @@ class GrothendieckTopology.HasSheafCompose : Prop where
 variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
 
 /-- Composing a functor which `HasSheafCompose`, yields a functor between sheaf categories. -/
-@[simps]
-def sheafCompose : Sheaf J A ⥤ Sheaf J B where
-  obj G := ⟨G.val ⋙ F, GrothendieckTopology.HasSheafCompose.isSheaf G.val G.2⟩
-  map η := ⟨whiskerRight η.val _⟩
-  map_id _ := Sheaf.Hom.ext <| whiskerRight_id _
-  map_comp _ _ := Sheaf.Hom.ext <| whiskerRight_comp _ _ _
+@[simps! obj_obj map_hom]
+def sheafCompose : Sheaf J A ⥤ Sheaf J B :=
+  ObjectProperty.lift _
+    (sheafToPresheaf _ _ ⋙ (Functor.whiskeringRight _ _ _).obj F)
+      (fun P ↦ GrothendieckTopology.HasSheafCompose.isSheaf _ P.property)
 
 instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Faithful from inferInstance
@@ -59,11 +59,24 @@ instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
 instance [F.Faithful] [F.Full] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Full :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Full from inferInstance
 
+variable {F} in
+/-- If `F : A ⥤ B` is fully faithful, then `sheafCompose J F ⋙ sheafToPresheaf J B` is fully
+faithful. -/
+def fullyFaithfulSheafComposeCompSheafToPresheaf (hF : F.FullyFaithful) :
+    (sheafCompose J F ⋙ sheafToPresheaf J B).FullyFaithful :=
+  (fullyFaithfulSheafToPresheaf J A).comp (hF.whiskeringRight Cᵒᵖ)
+
 instance [F.Faithful] : (sheafCompose J F).Faithful :=
   Functor.Faithful.of_comp (sheafCompose J F) (sheafToPresheaf _ _)
 
 instance [F.Full] [F.Faithful] : (sheafCompose J F).Full :=
   Functor.Full.of_comp_faithful (sheafCompose J F) (sheafToPresheaf _ _)
+
+variable {F} in
+/-- If `F : A ⥤ B` is fully faithful, then `sheafCompose J F` is fully faithful. -/
+def fullyFaithfulSheafCompose (hF : F.FullyFaithful) :
+    (sheafCompose J F).FullyFaithful :=
+  (fullyFaithfulSheafComposeCompSheafToPresheaf J hF).ofCompFaithful
 
 instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms where
   reflects {G₁ G₂} f _ := by
@@ -74,6 +87,7 @@ instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms wher
 
 variable {F G}
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 If `η : F ⟶ G` is a natural transformation then we obtain a morphism of functors
 `sheafCompose J F ⟶ sheafCompose J G` by whiskering with `η` on the level of presheaves.
@@ -93,6 +107,7 @@ namespace GrothendieckTopology.Cover
 variable (F G) {J}
 variable (P : Cᵒᵖ ⥤ A) {X : C} (S : J.Cover X)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The multicospan associated to a cover `S : J.Cover X` and a presheaf of the form `P ⋙ F`
 is isomorphic to the composition of the multicospan associated to `S` and `P`,
 composed with `F`. -/
@@ -107,13 +122,15 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
       rintro (a | b) (a | b) (f | f | f)
       all_goals cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Mapping the multifork associated to a cover `S : J.Cover X` and a presheaf `P` with
 respect to a functor `F` is isomorphic (upto a natural isomorphism of the underlying functors)
 to the multifork associated to `S` and `P ⋙ F`. -/
 def mapMultifork :
     F.mapCone (S.multifork P) ≅
-      (Limits.Cones.postcompose (S.multicospanComp F P).hom).obj (S.multifork (P ⋙ F)) :=
-  Cones.ext (Iso.refl _)
+      (Limits.Cone.postcompose (S.multicospanComp F P).hom).obj (S.multifork (P ⋙ F)) :=
+  Cone.ext (Iso.refl _)
 
 end GrothendieckTopology.Cover
 
@@ -147,7 +164,7 @@ variable {J}
 
 lemma Sheaf.isSeparated {FA : A → A → Type*} {CA : A → Type*}
     [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] [J.HasSheafCompose (forget A)]
-    (F : Sheaf J A) : Presheaf.IsSeparated J F.val := by
+    (F : Sheaf J A) : Presheaf.IsSeparated J F.obj := by
   rintro X S hS x y h
   exact (((isSheaf_iff_isSheaf_of_type _ _).1
     ((sheafCompose J (forget A)).obj F).2).isSeparated S hS).ext (fun _ _ hf => h _ _ hf)
@@ -157,5 +174,14 @@ lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} {FA : A → A → Type*} 
     [J.HasSheafCompose (forget A)] (hF : Presheaf.IsSheaf J F) :
     Presheaf.IsSeparated J F :=
   Sheaf.isSeparated ⟨F, hF⟩
+
+variable {FA : A → A → Type*} {CA : A → Type v₂} [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)]
+  [ConcreteCategory A FA]
+
+instance [(forget A).IsCorepresentable] : J.HasSheafCompose (forget A) where
+  isSheaf P hP := by
+    rw [isSheaf_iff_isSheaf_of_type]
+    exact Presieve.isSheaf_iso J (Functor.isoWhiskerLeft P (forget A).coreprW)
+      (hP (forget A).coreprX)
 
 end CategoryTheory

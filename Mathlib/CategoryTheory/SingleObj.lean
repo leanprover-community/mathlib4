@@ -195,6 +195,7 @@ namespace MulEquiv
 
 variable {M : Type u} {N : Type v} [Monoid M] [Monoid N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reinterpret a monoid isomorphism `f : M ≃* N` as an equivalence `SingleObj M ≌ SingleObj N`. -/
 @[simps!]
 def toSingleObjEquiv (e : M ≃* N) : SingleObj M ≌ SingleObj N where
@@ -238,14 +239,15 @@ open CategoryTheory
 /-- The fully faithful functor from `MonCat` to `Cat`. -/
 def toCat : MonCat ⥤ Cat where
   obj x := Cat.of (SingleObj x)
-  map {x y} f := SingleObj.mapHom x y f.hom
+  map {x y} f := (SingleObj.mapHom x y f.hom).toCatHom
 
 instance toCat_full : toCat.Full where
   map_surjective y :=
-    let ⟨x, h⟩ := (SingleObj.mapHom _ _).surjective y
-    ⟨ofHom x, h⟩
+    let ⟨x, h⟩ := (SingleObj.mapHom _ _).surjective y.toFunctor
+    ⟨ofHom x, Cat.Hom.ext h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance toCat_faithful : toCat.Faithful where
-  map_injective h := MonCat.hom_ext <| by rwa [toCat, (SingleObj.mapHom _ _).apply_eq_iff_eq] at h
+  map_injective h := MonCat.hom_ext <| by simpa [toCat] using congr(($h).toFunctor)
 
 end MonCat

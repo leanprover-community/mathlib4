@@ -54,7 +54,7 @@ needed.
 
 noncomputable section
 
-open Bornology Function Set Topology
+open Bornology Function Set Topology Metric
 open scoped ENNReal NNReal
 
 section Defs
@@ -89,7 +89,7 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 
 instance funLike : FunLike (α →ᵈ β) α β where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 instance toDilationClass : DilationClass (α →ᵈ β) α β where
   edist_eq' f := edist_eq' f
@@ -128,7 +128,7 @@ theorem copy_eq_self (f : α →ᵈ β) {f' : α → β} (h : f' = f) : f.copy f
 
 variable [FunLike F α β]
 
-open Classical in
+open scoped Classical in
 /-- The ratio of a dilation `f`. If the ratio is undefined (i.e., the distance between any two
 points in `α` is either zero or infinity), then we choose one as the ratio. -/
 def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=
@@ -136,11 +136,11 @@ def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=
 
 theorem ratio_of_trivial [DilationClass F α β] (f : F)
     (h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞) : ratio f = 1 :=
-  if_pos h
+  ite_eq_left h
 
 @[nontriviality]
 theorem ratio_of_subsingleton [Subsingleton α] [DilationClass F α β] (f : F) : ratio f = 1 :=
-  if_pos fun x y ↦ by simp [Subsingleton.elim x y]
+  ite_eq_left fun x y ↦ by simp [Subsingleton.elim x y]
 
 theorem ratio_ne_zero [DilationClass F α β] (f : F) : ratio f ≠ 0 := by
   rw [ratio]; split_ifs
@@ -233,7 +233,7 @@ theorem mk_coe_of_dist_eq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] 
 
 end Setup
 
-section PseudoEmetricDilation
+section PseudoEMetricDilation
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 variable [FunLike F α β] [DilationClass F α β]
@@ -243,7 +243,7 @@ variable (f : F)
 @[simps]
 def _root_.Isometry.toDilation (f : α → β) (hf : Isometry f) : α →ᵈ β where
   toFun := f
-  edist_eq' := ⟨1, one_ne_zero, by simpa using hf⟩
+  edist_eq' := ⟨1, one_ne_zero, by simpa using! hf⟩
 
 @[simp]
 lemma _root_.Isometry.toDilation_ratio {f : α → β} {hf : Isometry f} : ratio hf.toDilation = 1 := by
@@ -279,7 +279,7 @@ protected theorem coe_id : ⇑(Dilation.id α) = id :=
 
 theorem ratio_id : ratio (Dilation.id α) = 1 := by
   by_cases! h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
-  · rw [ratio, if_pos h]
+  · rw [ratio, ite_eq_left h]
   · rcases h with ⟨x, y, hne⟩
     refine (ratio_unique hne.1 hne.2 ?_).symm
     simp
@@ -382,24 +382,24 @@ theorem toContinuous : Continuous (f : α → β) :=
   (lipschitz f).continuous
 
 /-- Dilations scale the diameter by `ratio f` in pseudoemetric spaces. -/
-theorem ediam_image (s : Set α) : EMetric.diam ((f : α → β) '' s) = ratio f * EMetric.diam s := by
+theorem ediam_image (s : Set α) : ediam ((f : α → β) '' s) = ratio f * ediam s := by
   refine ((lipschitz f).ediam_image_le s).antisymm ?_
   apply ENNReal.mul_le_of_le_div'
   rw [div_eq_mul_inv, mul_comm, ← ENNReal.coe_inv]
   exacts [(antilipschitz f).le_mul_ediam_image s, ratio_ne_zero f]
 
 /-- A dilation scales the diameter of the range by `ratio f`. -/
-theorem ediam_range : EMetric.diam (range (f : α → β)) = ratio f * EMetric.diam (univ : Set α) := by
+theorem ediam_range : ediam (range (f : α → β)) = ratio f * ediam (univ : Set α) := by
   rw [← image_univ]; exact ediam_image f univ
 
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
-theorem mapsTo_emetric_ball (x : α) (r : ℝ≥0∞) :
-    MapsTo (f : α → β) (EMetric.ball x r) (EMetric.ball (f x) (ratio f * r)) :=
-  fun y (hy : _ < r) ↦ by rw [EMetric.mem_ball, edist_eq f y x]; gcongr <;> simp [ratio_ne_zero, *]
+theorem mapsTo_eball (x : α) (r : ℝ≥0∞) :
+    MapsTo (f : α → β) (Metric.eball x r) (Metric.eball (f x) (ratio f * r)) :=
+  fun y (hy : _ < r) ↦ by rw [Metric.mem_eball, edist_eq f y x]; gcongr <;> simp [ratio_ne_zero, *]
 
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
-theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
-    MapsTo (f : α → β) (EMetric.closedBall x r') (EMetric.closedBall (f x) (ratio f * r')) :=
+theorem mapsTo_closedEBall (x : α) (r' : ℝ≥0∞) :
+    MapsTo (f : α → β) (Metric.closedEBall x r') (Metric.closedEBall (f x) (ratio f * r')) :=
   fun y hy => (edist_eq f y x).trans_le <| by gcongr; exact hy
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
@@ -410,9 +410,9 @@ theorem comp_continuous_iff {γ} [TopologicalSpace γ] {g : γ → α} :
     Continuous ((f : α → β) ∘ g) ↔ Continuous g :=
   (Dilation.isUniformInducing f).isInducing.continuous_iff.symm
 
-end PseudoEmetricDilation
+end PseudoEMetricDilation
 
-section EmetricDilation
+section EMetricDilation
 
 variable [EMetricSpace α]
 variable [FunLike F α β]
@@ -432,7 +432,7 @@ lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α
     IsClosedEmbedding f :=
   (antilipschitz f).isClosedEmbedding (lipschitz f).uniformContinuous
 
-end EmetricDilation
+end EMetricDilation
 
 /-- Ratio of the composition `g.comp f` of two dilations is the product of their ratios. We assume
 that the domain `α` of `f` is a nontrivial metric space, otherwise
@@ -450,10 +450,10 @@ section PseudoMetricDilation
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β] [DilationClass F α β] (f : F)
 
 /-- A dilation scales the diameter by `ratio f` in pseudometric spaces. -/
-theorem diam_image (s : Set α) : Metric.diam ((f : α → β) '' s) = ratio f * Metric.diam s := by
-  simp [Metric.diam, ediam_image, ENNReal.toReal_mul]
+theorem diam_image (s : Set α) : diam ((f : α → β) '' s) = ratio f * diam s := by
+  simp [diam, ediam_image, ENNReal.toReal_mul]
 
-theorem diam_range : Metric.diam (range (f : α → β)) = ratio f * Metric.diam (univ : Set α) := by
+theorem diam_range : diam (range (f : α → β)) = ratio f * diam (univ : Set α) := by
   rw [← image_univ, diam_image]
 
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/

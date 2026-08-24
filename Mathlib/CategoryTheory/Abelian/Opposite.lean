@@ -22,7 +22,7 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-variable (C : Type*) [Category C] [Abelian C]
+variable (C : Type*) [Category* C] [Abelian C]
 
 instance : Abelian Cᵒᵖ :=
   { normalMonoOfMono f := ⟨normalMonoOfNormalEpiUnop _ (normalEpiOfEpi f.unop)⟩
@@ -119,7 +119,7 @@ theorem cokernel.π_unop :
 def cokernelUnopUnop : cokernel g.unop ≅ (kernel g).unop :=
   (cokernelUnopOp g).unop.symm
 
-/-- The opposite of the image of `g.unop` is the image of `g.` -/
+/-- The opposite of the image of `g.unop` is the image of `g`. -/
 def imageUnopOp : Opposite.op (image g.unop) ≅ image g :=
   (Abelian.imageIsoImage _).op ≪≫
     (cokernelOpOp _).symm ≪≫

@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Order.Lattice
-public import Mathlib.Order.PartialSups
 
 /-!
 # Continuity of `partialSups`
@@ -15,7 +14,7 @@ In this file we prove that `partialSups` of a sequence of continuous functions i
 as well as versions for `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, and `ContinuousOn`.
 -/
 
-@[expose] public section
+public section
 
 open Filter
 open scoped Topology

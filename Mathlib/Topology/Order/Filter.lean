@@ -15,10 +15,10 @@ In this file we prove that `𝓝 (f x)` tends to `𝓝 Filter.atTop` provided th
 `Filter.atTop`, and similarly for `Filter.atBot`.
 -/
 
-@[expose] public section
+public section
 
 
-open Topology
+open scoped Topology
 
 namespace Filter
 

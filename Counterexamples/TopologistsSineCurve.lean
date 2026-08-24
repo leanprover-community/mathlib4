@@ -3,8 +3,10 @@ Copyright (c) 2025 Daniele Bolla. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniele Bolla, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
-import Mathlib.Topology.Connected.PathConnected
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+public import Mathlib.Topology.Connected.PathConnected
 
 /-!
 # The "topologist's sine curve" is connected but not path-connected
@@ -22,19 +24,21 @@ similar result has also been independently formalized by Vlad Tsyrklevich
 (https://leanprover.zulipchat.com/#narrow/channel/113489-new-members/topic/golf.20request.3A.20Topologist's.20sine.20curve).
 -/
 
+@[expose] public section
+
 open Topology Filter Set Real
 
 namespace TopologistsSineCurve
 
 /-- The topologist's sine curve, i.e. the graph of `y = sin (x⁻¹)` for `0 < x`. -/
-def S : Set (ℝ × ℝ) := (fun x ↦ (x, sin x⁻¹)) '' Ioi 0
+noncomputable def S : Set (ℝ × ℝ) := (fun x ↦ (x, sin x⁻¹)) '' Ioi 0
 
 /-- The vertical line segment `{ (0, y) | -1 ≤ y ≤ 1 }`, which is the set of limit points of `S`
 not contained in `S` itself. -/
 def Z : Set (ℝ × ℝ) := (fun y ↦ (0, y)) '' Icc (-1) 1
 
 /-- The union of `S` and `Z` (which we will show is the closure of `S`). -/
-def T : Set (ℝ × ℝ) := S ∪ Z
+noncomputable def T : Set (ℝ × ℝ) := S ∪ Z
 
 /-- A sequence of `x`-values tending to 0 at which the sine curve has a given `y`-coordinate. -/
 noncomputable def xSeq (y : ℝ) (k : ℕ) := 1 / (arcsin y + (k + 1) * (2 * π))
@@ -55,6 +59,7 @@ lemma xSeq_tendsto (y : ℝ) : Tendsto (xSeq y) atTop (𝓝 0) := by
 /-!
 ## `T` is closed
 -/
+
 /-- The closure of the topologist's sine curve `S` is the set `T`. -/
 lemma closure_S : closure S = T := by
   ext ⟨x, y⟩
@@ -81,7 +86,7 @@ lemma closure_S : closure S = T := by
       have : ContinuousAt (fun x ↦ sin x⁻¹) x :=
         continuous_sin.continuousAt.comp <| continuousAt_inv₀ h.ne'
       refine tendsto_nhds_unique ?_ hf_lim.2
-      convert this.tendsto.comp hf_lim.1 with n
+      convert! this.tendsto.comp hf_lim.1 with n
       obtain ⟨y, hy⟩ := hf_mem n
       simp [← hy.2]
   · -- Show that every `p ∈ T` is the limit of a sequence in `S`.
@@ -100,12 +105,13 @@ lemma isClosed_T : IsClosed T := by simpa only [← closure_S] using isClosed_cl
 /-!
 ## `T` is connected
 -/
+
 /-- `T` is connected, being the closure of the set `S` (which is obviously connected since it
 is a continuous image of the positive real line). -/
 theorem isConnected_T : IsConnected T := by
   rw [← closure_S]
   refine (isConnected_Ioi.image _ <| continuousOn_id.prodMk ?_).closure
-  exact continuous_sin.comp_continuousOn <| continuousOn_inv₀.mono fun _ hx ↦ hx.ne'
+  fun_prop (discharger := grind)
 
 /-!
 ## `T` is not path-connected
@@ -128,7 +134,7 @@ private lemma exists_unitInterval_gt {t₀ : unitInterval} (ht₀ : t₀ < 1) {�
   let s₁ := min (s₀ + δ / 2) 1
   have h_s₀_delta_pos : 0 ≤ s₀ + δ / 2 := add_nonneg t₀.2.1 (by positivity)
   have hs₁ : 0 ≤ s₁ := le_min h_s₀_delta_pos zero_le_one
-  have hs₁': s₁ ≤ 1 := min_le_right ..
+  have hs₁' : s₁ ≤ 1 := min_le_right ..
   refine ⟨⟨s₁, hs₁, hs₁'⟩, lt_min ((lt_add_iff_pos_right _).mpr (half_pos hδ)) ht₀, ?_⟩
   have h_le : s₁ ≤ s₀ + δ / 2 := min_le_left _ _
   have h_ge : s₀ ≤ s₁ := le_min (by linarith) t₀.2.2
@@ -163,14 +169,14 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
   let t₀ : unitInterval := sSup {t | (p t).1 = 0}
   have h_pt₀_x : (p t₀).1 = 0 :=
     (isClosed_singleton.preimage xcoord_pathContinuous).sSup_mem ⟨0, by aesop⟩
-  obtain ⟨δ , hδ, ht⟩ : ∃ δ, 0 < δ ∧ ∀ t, dist t t₀ < δ → dist (p t) (p t₀) < 1 :=
+  obtain ⟨δ, hδ, ht⟩ : ∃ δ, 0 < δ ∧ ∀ t, dist t t₀ < δ → dist (p t) (p t₀) < 1 :=
     Metric.eventually_nhds_iff.mp <| Metric.tendsto_nhds.mp (p.continuousAt t₀) _ one_pos
   -- **Step 2**:
   -- Choose a time t₁ in (t₀, t₀ + δ) and let `a = x(p(t₁))`. Using the fact that every
   -- connected subset of `ℝ` is an interval, we have `[0, a] ⊂ x(p([t0, t1]))`.
   obtain ⟨t₁, ht₁⟩ : ∃ t₁, t₀ < t₁ ∧ dist t₀ t₁ < δ := by
     refine exists_unitInterval_gt (lt_of_le_of_ne (unitInterval.le_one t₀) fun ht₀' ↦ ?_) hδ
-    have w_x_path : (p 1).1 = 1 := by simp [w]
+    have w_x_path : (p 1).1 = 1 := by rw [Path.target p, w]
     have x_eq_zero : (p 1).1 = 0 := by rwa [ht₀'] at h_pt₀_x
     linarith
   let a := (p t₁).1
@@ -179,7 +185,7 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
       refine (h_pathConn.somePath_mem t₁).elim id fun ⟨y, hy⟩ ↦ ?_
       have : (p t₁).1 = 0 := by simp only [p, ← hy.2]
       exact ((show t₁ ≤ t₀ from le_sSup this).not_gt ht₁.1).elim
-    simpa only [a, ← hx_eq] using hxI
+    simpa only [a, ← hx_eq] using! hxI
   have intervalAZeroSubOfT₀T₁Xcoord : Icc 0 a ⊆ (fun t ↦ (p t).1) '' Icc t₀ t₁ :=
     (isPreconnected_Icc.image _ <| xcoord_pathContinuous.continuousOn).Icc_subset
       (show 0 ∈ (fun t ↦ (p t).1) '' Icc t₀ t₁ from ⟨t₀, ⟨le_rfl, ht₁.1.le⟩, ‹_›⟩)

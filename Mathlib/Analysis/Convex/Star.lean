@@ -39,13 +39,11 @@ Concretely, the empty set is star-convex at every point.
 
 ## TODO
 
-Balanced sets are star-convex.
-
 The closure of a star-convex set is star-convex.
 
-Star-convex sets are contractible.
-
 A nonempty open star-convex set in `ℝ^n` is diffeomorphic to the entire space.
+
+Replace with `Convexity.IsStarConvexSet`.
 -/
 
 @[expose] public section
@@ -156,7 +154,7 @@ variable [Module 𝕜 E] [Module 𝕜 F] {x y z : E} {s : Set E}
 
 theorem StarConvex.mem [ZeroLEOneClass 𝕜] (hs : StarConvex 𝕜 x s) (h : s.Nonempty) : x ∈ s := by
   obtain ⟨y, hy⟩ := h
-  convert hs hy zero_le_one le_rfl (add_zero 1)
+  convert! hs hy zero_le_one le_rfl (add_zero 1)
   rw [one_smul, zero_smul, add_zero]
 
 theorem starConvex_iff_forall_pos (hx : x ∈ s) : StarConvex 𝕜 x s ↔
@@ -369,7 +367,7 @@ variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E
 lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
   refine (starConvex_iff_forall_pos <| by simp [h.not_ge]).mpr fun z hz a b ha hb hab ↦ ?_
   rw [mem_compl_iff, mem_Iic] at hz ⊢
-  contrapose! hz
+  contrapose hz
   refine (lt_of_smul_lt_smul_of_nonneg_left ?_ hb.le).le
   calc
     b • z ≤ (a + b) • x - a • y := by rwa [le_sub_iff_add_le', hab, one_smul]

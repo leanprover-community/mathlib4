@@ -78,8 +78,6 @@ theorem isTotallyReal_iff_ofRingEquiv (f : F ≃+* K) : IsTotallyReal F ↔ IsTo
 theorem isTotallyReal_top_iff : IsTotallyReal (⊤ : Subfield K) ↔ IsTotallyReal K :=
   isTotallyReal_iff_ofRingEquiv Subfield.topEquiv
 
-@[deprecated (since := "2025-05-19")] alias IsTotally.of_algebra := IsTotallyReal.of_algebra
-
 instance [IsTotallyReal K] [CharZero K] (F : IntermediateField ℚ K) [Algebra.IsAlgebraic F K] :
     IsTotallyReal F :=
   IsTotallyReal.of_algebra F K

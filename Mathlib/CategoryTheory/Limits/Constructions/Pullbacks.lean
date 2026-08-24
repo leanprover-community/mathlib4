@@ -5,18 +5,16 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Constructing pullbacks from binary products and equalizers
 
-If a category as binary products and equalizers, then it has pullbacks.
-Also, if a category has binary coproducts and coequalizers, then it has pushouts
+If a category has binary products and equalizers, then it has pullbacks.
+Also, if a category has binary coproducts and coequalizers, then it has pushouts.
 -/
 
-@[expose] public section
+public section
 
 
 universe v u
@@ -45,7 +43,7 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
             exact PullbackCone.condition _)
           (by simp [π₁, e]) (by simp [π₂, e]) fun s m h₁ h₂ => by
           ext
-          · dsimp; simpa using h₁
+          · simpa using h₁
           · simpa using h₂ }
 
 section
@@ -61,6 +59,7 @@ theorem hasPullbacks_of_hasBinaryProducts_of_hasEqualizers (C : Type u) [Categor
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the coproduct `Y ⨿ Z` and the coequalizer of `f ≫ ι₁` and `g ≫ ι₂` exist, then the
 pushout of `f` and `g` exists: It is given by composing the inclusions with the coequalizer. -/
 theorem hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair {C : Type u}

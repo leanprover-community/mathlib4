@@ -25,7 +25,7 @@ complementary embedding `e'`.)
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits ZeroObject
 
@@ -35,7 +35,7 @@ namespace HomologicalComplex
 
 section
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L : HomologicalComplex C c') (e' : K ≅ L) (φ : K ⟶ L) (e : c.Embedding c')
 
 /-- If `K : HomologicalComplex C c'`, then `K.IsStrictlySupported e` holds for
@@ -86,9 +86,7 @@ variable {K L} in
 lemma isSupported_iff_of_quasiIso [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
     [QuasiIso φ] :
     K.IsSupported e ↔ L.IsSupported e := by
-  simp only [isSupported_iff]
-  exact forall_congr' (fun i' ↦ forall_congr'
-    (fun hi' ↦ exactAt_iff_of_quasiIsoAt φ _))
+  simp [isSupported_iff, exactAt_iff_of_quasiIsoAt φ]
 
 instance [K.IsStrictlySupported e] : K.IsSupported e where
   exactAt i' hi' := by
@@ -151,15 +149,23 @@ end
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D]
+variable {C D : Type*} [Category* C] [Category* D] [HasZeroMorphisms C] [HasZeroMorphisms D]
   (K : HomologicalComplex C c') (F : C ⥤ D) [F.PreservesZeroMorphisms] (e : c.Embedding c')
 
+set_option backward.defeqAttrib.useBackward true in
 instance map_isStrictlySupported [K.IsStrictlySupported e] :
     ((F.mapHomologicalComplex c').obj K).IsStrictlySupported e where
   isZero i' hi' := by
     rw [IsZero.iff_id_eq_zero]
     dsimp
     rw [← F.map_id, (K.isZero_X_of_isStrictlySupported e i' hi').eq_of_src (𝟙 _) 0, F.map_zero]
+
+lemma isStrictlySupported_mapHomologicalComplex_obj_iff [F.Faithful] :
+    ((F.mapHomologicalComplex c').obj K).IsStrictlySupported e ↔ K.IsStrictlySupported e := by
+  refine ⟨fun _ ↦ ⟨fun i' hi' ↦ ?_⟩, fun _ ↦ inferInstance⟩
+  rw [IsZero.iff_id_eq_zero]
+  exact F.map_injective ((isZero_X_of_isStrictlySupported
+    ((F.mapHomologicalComplex c').obj K) e i' hi').eq_of_src _ _)
 
 end
 

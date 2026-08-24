@@ -6,7 +6,7 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Subspace
-public import Mathlib.Analysis.NormedSpace.Normalize
+public import Mathlib.Analysis.Normed.Module.Normalize
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
 /-!
@@ -28,7 +28,7 @@ noncomputable section
 
 open Real Set
 
-open RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 namespace InnerProductGeometry
 
@@ -37,6 +37,7 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] {x y : V}
 /-- The undirected angle between two vectors. If either vector is 0,
 this is π/2. See `Orientation.oangle` for the corresponding oriented angle
 definition. -/
+@[wikidata Q11352]
 def angle (x y : V) : ℝ :=
   Real.arccos (⟪x, y⟫ / (‖x‖ * ‖y‖))
 
@@ -276,13 +277,8 @@ theorem norm_sub_eq_add_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y �
 if and only the angle between the two vectors is 0. -/
 theorem norm_add_eq_add_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ‖x + y‖ = ‖x‖ + ‖y‖ ↔ angle x y = 0 := by
-  refine ⟨fun h => ?_, norm_add_eq_add_norm_of_angle_eq_zero⟩
-  rw [← inner_eq_mul_norm_iff_angle_eq_zero hx hy]
-  obtain ⟨hxy₁, hxy₂⟩ := norm_nonneg (x + y), add_nonneg (norm_nonneg x) (norm_nonneg y)
-  rw [← sq_eq_sq₀ hxy₁ hxy₂, norm_add_pow_two_real] at h
-  calc
-    ⟪x, y⟫ = ((‖x‖ + ‖y‖) ^ 2 - ‖x‖ ^ 2 - ‖y‖ ^ 2) / 2 := by linarith
-    _ = ‖x‖ * ‖y‖ := by ring
+  refine ⟨?_, norm_add_eq_add_norm_of_angle_eq_zero⟩
+  grind [inner_eq_mul_norm_iff_angle_eq_zero hx hy, norm_add_pow_two_real]
 
 /-- The norm of the difference of two non-zero vectors equals the absolute value
 of the difference of their norms if and only the angle between the two vectors is 0. -/
@@ -333,7 +329,11 @@ theorem sin_eq_one_iff_angle_eq_pi_div_two : sin (angle x y) = 1 ↔ angle x y =
   rw [← cos_eq_zero_iff_angle_eq_pi_div_two, ← abs_eq_zero, abs_cos_eq_sqrt_one_sub_sin_sq, h]
   simp
 
-/-- The angle between normalized vector and other vector is equal to the angle
+/-- If the angle between two vectors of equal norm is equal to 0, then the vectors are equal. -/
+lemma eq_of_angle_eq_zero_of_norm_eq {x y : V} (hxy : angle x y = 0) (h : ‖x‖ = ‖y‖) : x = y := by
+  grind [angle_eq_zero_iff, norm_smul, Real.norm_eq_abs, norm_ne_zero_iff, abs, one_smul]
+
+/-- The angle between a normalized vector and another vector is equal to the angle
 between the original vectors. -/
 @[simp]
 lemma angle_normalize_left (x y : V) :
@@ -342,7 +342,7 @@ lemma angle_normalize_left (x y : V) :
   · simp [hx]
   · rw [NormedSpace.normalize, angle_smul_left_of_pos _ _ (by positivity)]
 
-/-- The angle between a vector and normalized other vector is equal to the angle
+/-- The angle between a vector and another normalized vector is equal to the angle
 between the original vectors. -/
 @[simp]
 lemma angle_normalize_right (x y : V) :

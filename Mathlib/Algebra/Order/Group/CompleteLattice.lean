@@ -12,9 +12,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 # Distributivity of group operations over supremum/infimum
 -/
 
-@[expose] public section
+public section
 
-open Function Set
+open Set
 
 variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G] [Nonempty ι] {f : ι → G}
 

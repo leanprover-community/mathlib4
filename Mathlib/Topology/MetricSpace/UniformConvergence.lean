@@ -41,11 +41,12 @@ There are a few advantages of equipping this space with this metric structure.
   `α` is compact, `C(α, β)`, relative to their underlying bare functions.
 -/
 
-@[expose] public section
+public section
 
 variable {α β γ : Type*} [PseudoEMetricSpace γ]
-open scoped UniformConvergence NNReal ENNReal
-open Filter Topology Uniformity
+open Filter
+
+open scoped UniformConvergence NNReal ENNReal Topology Uniformity
 
 namespace UniformFun
 
@@ -139,10 +140,10 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ β) :=
       cases isEmpty_or_nonempty α
       · simp [edist_def]
       have : BddAbove <| .range fun x ↦ dist (toFun f x) (toFun g x) := by
-        use (EMetric.diam (.univ : Set β)).toReal
+        use (Metric.ediam (.univ : Set β)).toReal
         simp +contextual [mem_upperBounds, eq_comm (a := dist _ _), ← edist_dist,
           ← ENNReal.ofReal_le_iff_le_toReal BoundedSpace.bounded_univ.ediam_ne_top,
-          EMetric.edist_le_diam_of_mem]
+          Metric.edist_le_ediam_of_mem]
       exact ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ by simp [edist_def, ciSup_le_iff this]
 
 lemma dist_def [BoundedSpace β] (f g : α →ᵤ β) :
@@ -157,8 +158,8 @@ noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ β) where
   bounded_univ := by
     rw [Metric.isBounded_iff_ediam_ne_top, ← lt_top_iff_ne_top]
     refine lt_of_le_of_lt ?_ <| BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
-    simp only [EMetric.diam_le_iff, Set.mem_univ, edist_le, forall_const]
-    exact fun f g x ↦ EMetric.edist_le_diam_of_mem (Set.mem_univ _) (Set.mem_univ _)
+    simp only [Metric.ediam_le_iff, Set.mem_univ, edist_le, forall_const]
+    exact fun f g x ↦ Metric.edist_le_ediam_of_mem (Set.mem_univ _) (Set.mem_univ _)
 
 noncomputable instance {β : Type*} [MetricSpace β] [BoundedSpace β] : MetricSpace (α →ᵤ β) :=
   .ofT0PseudoMetricSpace _
@@ -215,14 +216,14 @@ lemma edist_def' [Finite 𝔖] (f g : α →ᵤ[𝔖] β) :
 
 lemma edist_eq_restrict_sUnion [Finite 𝔖] {f g : α →ᵤ[𝔖] β} :
     edist f g = edist
-      (UniformFun.ofFun ((⋃₀ 𝔖).restrict (toFun 𝔖 f)))
-      (UniformFun.ofFun ((⋃₀ 𝔖).restrict (toFun 𝔖 g))) :=
+      (UniformFun.ofFun ((⋃₀ 𝔖).domRestrict (toFun 𝔖 f)))
+      (UniformFun.ofFun ((⋃₀ 𝔖).domRestrict (toFun 𝔖 g))) :=
   iSup_subtype'
 
 lemma edist_eq_pi_restrict [Fintype 𝔖] {f g : α →ᵤ[𝔖] β} :
     edist f g = edist
-      (fun s : 𝔖 ↦ UniformFun.ofFun ((s : Set α).restrict (toFun 𝔖 f)))
-      (fun s : 𝔖 ↦ UniformFun.ofFun ((s : Set α).restrict (toFun 𝔖 g))) := by
+      (fun s : 𝔖 ↦ UniformFun.ofFun ((s : Set α).domRestrict (toFun 𝔖 f)))
+      (fun s : 𝔖 ↦ UniformFun.ofFun ((s : Set α).domRestrict (toFun 𝔖 g))) := by
   simp_rw [edist_def', iSup_subtype', edist_pi_def, Finset.sup_univ_eq_iSup]
   rfl
 
@@ -239,7 +240,7 @@ noncomputable instance : PseudoEMetricSpace (α →ᵤ[𝔖] β) where
     let _ := Fintype.ofFinite 𝔖;
     simp_rw [← isUniformInducing_pi_restrict.comap_uniformity,
       PseudoEMetricSpace.uniformity_edist, comap_iInf, comap_principal, edist_eq_pi_restrict,
-      Set.preimage_setOf_eq]
+      Set.preimage_ofPred_eq]
 
 lemma edist_le {f g : α →ᵤ[𝔖] β} {C : ℝ≥0∞} :
     edist f g ≤ C ↔ ∀ x ∈ ⋃₀ 𝔖, edist (toFun 𝔖 f x) (toFun 𝔖 g x) ≤ C := by
@@ -273,11 +274,11 @@ lemma lipschitzWith_one_ofFun_toFun' [Finite 𝔗] (h : ⋃₀ 𝔖 ⊆ ⋃₀ �
   lipschitzWith_iff.mpr fun _x hx ↦ lipschitzWith_eval (h hx)
 
 lemma lipschitzWith_restrict (s : Set α) (hs : s ∈ 𝔖) :
-    LipschitzWith 1 (UniformFun.ofFun ∘ s.restrict ∘ toFun 𝔖 : (α →ᵤ[𝔖] β) → (s →ᵤ β)) :=
+    LipschitzWith 1 (UniformFun.ofFun ∘ s.domRestrict ∘ toFun 𝔖 : (α →ᵤ[𝔖] β) → (s →ᵤ β)) :=
   UniformFun.lipschitzWith_iff.mpr fun x ↦ lipschitzWith_eval ⟨s, hs, x.2⟩
 
 lemma isometry_restrict (s : Set α) :
-    Isometry (UniformFun.ofFun ∘ s.restrict ∘ toFun {s} : (α →ᵤ[{s}] β) → (s →ᵤ β)) := by
+    Isometry (UniformFun.ofFun ∘ s.domRestrict ∘ toFun {s} : (α →ᵤ[{s}] β) → (s →ᵤ β)) := by
   simp [Isometry, edist_def, UniformFun.edist_def, iSup_subtype]
 
 end EMetric
@@ -294,16 +295,16 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ[𝔖] β
       cases isEmpty_or_nonempty (⋃₀ 𝔖)
       · simp_all [edist_def]
       have : BddAbove (.range fun x : ⋃₀ 𝔖 ↦ dist (toFun 𝔖 f x) (toFun 𝔖 g x)) := by
-        use (EMetric.diam (.univ : Set β)).toReal
+        use (Metric.ediam (.univ : Set β)).toReal
         simp +contextual [mem_upperBounds, eq_comm (a := dist _ _), ← edist_dist,
           ← ENNReal.ofReal_le_iff_le_toReal BoundedSpace.bounded_univ.ediam_ne_top,
-          EMetric.edist_le_diam_of_mem]
+          Metric.edist_le_ediam_of_mem]
       refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
       simp [edist_def, ciSup_le_iff this]
 
 noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ[𝔖] β) where
   bounded_univ := by
-    convert lipschitzWith_one_ofFun_toFun (𝔖 := 𝔖) (β := β) |>.isBounded_image (.all Set.univ)
+    convert! lipschitzWith_one_ofFun_toFun (𝔖 := 𝔖) (β := β) |>.isBounded_image (.all Set.univ)
     ext f
     simp only [Set.mem_univ, Function.comp_apply, Set.image_univ, Set.mem_range, true_iff]
     exact ⟨UniformFun.ofFun (toFun 𝔖 f), by simp⟩
@@ -311,13 +312,13 @@ noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ[𝔖] β) whe
 lemma edist_continuousRestrict [TopologicalSpace α] {f g : α →ᵤ[𝔖] β}
     [CompactSpace (⋃₀ 𝔖)] (hf : ContinuousOn (toFun 𝔖 f) (⋃₀ 𝔖))
     (hg : ContinuousOn (toFun 𝔖 g) (⋃₀ 𝔖)) :
-    edist (⟨_, hf.restrict⟩ : C(⋃₀ 𝔖, β)) ⟨_, hg.restrict⟩ = edist f g := by
+    edist (⟨_, hf.domRestrict⟩ : C(⋃₀ 𝔖, β)) ⟨_, hg.domRestrict⟩ = edist f g := by
   simp [ContinuousMap.edist_eq_iSup, iSup_subtype, edist_def]
 
 lemma edist_continuousRestrict_of_singleton [TopologicalSpace α] {s : Set α}
     {f g : α →ᵤ[{s}] β} [CompactSpace s] (hf : ContinuousOn (toFun {s} f) s)
     (hg : ContinuousOn (toFun {s} g) s) :
-    edist (⟨_, hf.restrict⟩ : C(s, β)) ⟨_, hg.restrict⟩ = edist f g := by
+    edist (⟨_, hf.domRestrict⟩ : C(s, β)) ⟨_, hg.domRestrict⟩ = edist f g := by
   simp [ContinuousMap.edist_eq_iSup, iSup_subtype, edist_def]
 
 end Metric

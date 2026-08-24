@@ -5,27 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Types
-public import Mathlib.CategoryTheory.Sites.CartesianClosed
-public import Mathlib.CategoryTheory.Sites.Equivalence
-public import Mathlib.Condensed.Light.Basic
-public import Mathlib.Condensed.Light.Instances
-/-!
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Data.EReal.Inv
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.MetricSpace.Bounded
 
-# Light condensed sets form a Cartesian closed category
--/
-
-@[expose] public section
-
-universe u
-
-noncomputable section
-
-open CategoryTheory
-
-variable {C : Type u} [SmallCategory C]
-
-instance : CartesianMonoidalCategory (LightCondSet.{u}) :=
-  inferInstanceAs (CartesianMonoidalCategory (Sheaf _ _))
-
-instance : CartesianClosed (LightCondSet.{u}) := inferInstanceAs (CartesianClosed (Sheaf _ _))
+deprecated_module (since := "2026-04-08")

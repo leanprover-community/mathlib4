@@ -34,14 +34,14 @@ This file concerns bases on dual vector spaces.
 
 @[expose] public section
 
-open Module Dual Submodule LinearMap Function
+open Module Submodule LinearMap Function
 
 noncomputable section
 
 namespace Module.Basis
 
 universe u v w uR uM uK uV uι
-variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
+variable {R : Type uR} {M : Type uM} {V : Type uV} {ι : Type uι}
 
 section CommSemiring
 
@@ -103,11 +103,9 @@ theorem toDual_inj (m : M) (a : b.toDual m = 0) : m = 0 :=
 theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
   ker_eq_bot'.mpr b.toDual_inj
 
-theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
-  refine eq_top_iff'.2 fun f => ?_
-  refine ⟨Finsupp.linearCombination R b (Finsupp.equivFunOnFinite.symm fun i => f (b i)),
-    b.ext fun i => ?_⟩
-  rw [b.toDual_eq_repr _ i, repr_linearCombination b, Finsupp.equivFunOnFinite_symm_apply_toFun]
+theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ :=
+  eq_top_iff'.2 fun f => ⟨Finsupp.linearCombination R b <|
+    Finsupp.equivFunOnFinite.symm fun i => f (b i), b.ext fun i => by simp⟩
 
 omit [DecidableEq ι] in
 @[simp]
@@ -137,7 +135,7 @@ def dualBasis : Basis ι R (Dual R M) :=
 -- We use `j = i` to match `Basis.repr_self`
 theorem dualBasis_apply_self (i j : ι) : b.dualBasis i (b j) =
     if j = i then 1 else 0 := by
-  convert b.toDual_apply i j using 2
+  convert! b.toDual_apply i j using 2
   rw [@eq_comm _ j i]
 
 theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
@@ -145,7 +143,7 @@ theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
   cases nonempty_fintype ι
   rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype, LinearMap.sum_apply]
   · simp_rw [LinearMap.smul_apply, smul_eq_mul, dualBasis_apply_self, mul_boole,
-      Finset.sum_ite_eq, if_pos (Finset.mem_univ i)]
+      Finset.sum_ite_eq, ite_eq_left (Finset.mem_univ i)]
   · intro
     rw [zero_smul]
 
@@ -199,7 +197,7 @@ omit [DecidableEq ι]
 @[simp]
 theorem linearCombination_coord [Finite ι] (b : Basis ι R M) (f : ι →₀ R) (i : ι) :
     Finsupp.linearCombination R b.coord f (b i) = f i := by
-  haveI := Classical.decEq ι
+  have := Classical.decEq ι
   rw [← coe_dualBasis, linearCombination_dualBasis]
 
 end CommSemiring
@@ -230,7 +228,7 @@ end DualBases
 
 namespace Module.DualBases
 
-open LinearMap Function
+open LinearMap
 
 variable {R M ι : Type*}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
@@ -240,7 +238,7 @@ variable {e : ι → M} {ε : ι → Dual R M}
 def coeffs (h : DualBases e ε) (m : M) : ι →₀ R where
   toFun i := ε i m
   support := (h.finite m).toFinset
-  mem_support_toFun i := by rw [Set.Finite.mem_toFinset, Set.mem_setOf_eq]
+  mem_support_toFun i := by rw [Set.Finite.mem_toFinset, Set.mem_ofPred_eq]
 
 @[simp]
 theorem coeffs_apply (h : DualBases e ε) (m : M) (i : ι) : h.coeffs m i = ε i m :=
@@ -271,7 +269,7 @@ theorem coeffs_lc (l : ι →₀ R) : h.coeffs (DualBases.lc e l) = l := by
   ext i
   rw [h.coeffs_apply, h.dual_lc]
 
-/-- For any m : M n, \sum_{p ∈ Q n} (ε p m) • e p = m -/
+/-- For any `m : M n`, $\sum_{p ∈ Q n} (ε p m) • e p = m$ -/
 @[simp]
 theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := h.total <| by simp [h.dual_lc]
 

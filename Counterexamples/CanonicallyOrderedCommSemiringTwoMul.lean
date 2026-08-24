@@ -3,10 +3,13 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Ring.Subsemiring.Order
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Algebra.Ring.Subsemiring.Order
+public import Mathlib.Data.ZMod.Basic
 
 /-!
+# A canonically ordered commutative semiring where multiplication by 2 is not injective
 
 A canonically ordered commutative semiring with two different elements `a` and `b` such that
 `a ≠ b` and `2 * a = 2 * b`.  Thus, multiplication by a fixed non-zero element of a canonically
@@ -23,7 +26,7 @@ Reference:
 https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/canonically_ordered.20pathology
 -/
 
-
+@[expose] public section
 
 namespace Counterexample
 
@@ -205,7 +208,7 @@ instance : CanonicallyOrderedAdd L where
   le_self_add := le_self_add
 
 instance : NoZeroDivisors L where
-  eq_zero_or_eq_zero_of_mul_eq_zero := @(eq_zero_or_eq_zero_of_mul_eq_zero)
+  eq_zero_or_eq_zero_of_mul_eq_zero := @eq_zero_or_eq_zero_of_mul_eq_zero
 
 /-- The elements `(1,0)` and `(1,1)` of `L` are different, but their doubles coincide.
 -/

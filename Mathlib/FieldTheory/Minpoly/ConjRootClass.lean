@@ -16,8 +16,8 @@ the relation `IsConjRoot K`.
 
 @[expose] public section
 
-variable (K L S : Type*) [Field K] [Field L] [Field S]
-variable [Algebra K L] [Algebra K S] [Algebra L S] [IsScalarTower K L S]
+variable (K L : Type*) [Field K] [Field L]
+variable [Algebra K L]
 
 /-- `ConjRootClass K L` is the quotient of `L` by the relation `IsConjRoot K`. -/
 def ConjRootClass := Quotient (α := L) (IsConjRoot.setoid K L)
@@ -87,7 +87,7 @@ instance : InvolutiveNeg (ConjRootClass K L) where
   neg_neg c := by induction c; rw [mk_neg, mk_neg, neg_neg]
 
 @[simp]
-theorem carrier_neg (c : ConjRootClass K L) : carrier (- c) = - carrier c := by
+theorem carrier_neg (c : ConjRootClass K L) : carrier (-c) = - carrier c := by
   ext
   simp [mem_carrier, ← mk_neg, neg_eq_iff_eq_neg]
 

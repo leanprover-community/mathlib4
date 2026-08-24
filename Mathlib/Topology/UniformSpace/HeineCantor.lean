@@ -23,9 +23,11 @@ public import Mathlib.Topology.UniformSpace.Equicontinuity
 uniform space, uniform continuity, compact space
 -/
 
-@[expose] public section
+public section
 
-open Uniformity Topology Filter UniformSpace Set
+open Filter UniformSpace Set
+
+open scoped Uniformity Topology
 
 variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 
@@ -48,7 +50,7 @@ theorem IsCompact.uniformContinuousOn_of_continuous {s : Set α} {f : α → β}
     (hf : ContinuousOn f s) : UniformContinuousOn f s := by
   rw [uniformContinuousOn_iff_restrict]
   rw [isCompact_iff_compactSpace] at hs
-  rw [continuousOn_iff_continuous_restrict] at hf
+  rw [continuousOn_iff_continuous_domRestrict] at hf
   exact CompactSpace.uniformContinuous_of_continuous hf
 
 /-- If `s` is compact and `f` is continuous at all points of `s`, then `f` is
@@ -124,7 +126,7 @@ lemma IsCompact.mem_uniformity_of_prod
     exact ⟨v, v_mem, fun p hp x hx ↦ hv p hp x (ht't hx)⟩
   · intro t t' ⟨v, v_mem, hv⟩ ⟨v', v'_mem, hv'⟩
     refine ⟨v ∩ v', inter_mem v_mem v'_mem, fun p hp x hx ↦ ?_⟩
-    rcases hx with h'x|h'x
+    rcases hx with h'x | h'x
     · exact hv p hp.1 x h'x
     · exact hv' p hp.2 x h'x
   · rcases comp_symm_of_uniformity hu with ⟨u', u'_mem, u'_symm, hu'⟩

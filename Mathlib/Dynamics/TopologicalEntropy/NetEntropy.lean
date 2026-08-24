@@ -9,6 +9,7 @@ public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 /-!
 # Topological entropy via nets
+
 We implement Bowen-Dinaburg's definitions of the topological entropy, via nets.
 
 The major design decisions are the same as in
@@ -33,7 +34,7 @@ Instead of defining a new notion of topological entropy, we prove that
 - `IsDynNetIn`: property that dynamical balls centered on a subset `s` of `F` are disjoint.
 - `netMaxcard`: maximal cardinality of a dynamical net. Takes values in `ℕ∞`.
 - `netEntropyInfEntourage`/`netEntropyEntourage`: exponential growth of `netMaxcard`. The former is
-defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
+  defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
 
 ## Implementation notes
 As when using covers, there are two competing definitions `netEntropyInfEntourage` and
@@ -42,7 +43,7 @@ we chose the `limsup` definition as the default.
 
 ## Main results
 - `coverEntropy_eq_iSup_netEntropyEntourage`: equality between the notions of topological entropy
-defined with covers and with nets. Has a variant for `coverEntropyInf`.
+  defined with covers and with nets. Has a variant for `coverEntropyInf`.
 
 ## Tags
 net, entropy
@@ -53,8 +54,9 @@ Get versions of the topological entropy on (pseudo-e)metric spaces.
 
 @[expose] public section
 
-open Set Uniformity UniformSpace
-open scoped SetRel
+open Set UniformSpace
+
+open scoped Uniformity SetRel
 
 namespace Dynamics
 
@@ -83,15 +85,12 @@ lemma isDynNetIn_singleton (T : X → X) (U : SetRel X X) (n : ℕ) (h : x ∈ F
 /-- Given an entourage `U` and a time `n`, a dynamical net has a smaller cardinality than
   a dynamical cover. This lemma is the first of two key results to compare two versions of
   topological entropy: with cover and with nets, the second being `coverMincard_le_netMaxcard`. -/
-lemma IsDynNetIn.card_le_card_of_isDynCoverOf [U.IsSymm] {s t : Finset X}
+lemma IsDynNetIn.card_le_card_of_isDynCoverOf {s t : Finset X}
     (hs : IsDynNetIn T F U n s) (ht : IsDynCoverOf T F U n t) :
     s.card ≤ t.card := by
-  have (x : X) (x_s : x ∈ s) : ∃ z ∈ t, x ∈ ball z (dynEntourage T U n) := by
-    specialize ht (hs.1 x_s)
-    simp only [mem_iUnion, exists_prop] at ht
-    exact ht
+  have (x : X) (x_s : x ∈ s) : ∃ z ∈ t, z ∈ ball x (dynEntourage T U n) := by
+    simpa using! ht (hs.1 x_s)
   choose! F s_t using this
-  simp only [mem_ball_symmetry] at s_t
   apply Finset.card_le_card_of_injOn F fun x x_s ↦ (s_t x x_s).1
   exact fun x x_s y y_s Fx_Fy ↦
     PairwiseDisjoint.elim_set hs.2 x_s y_s (F x) (s_t x x_s).2 (Fx_Fy ▸ (s_t y y_s).2)
@@ -119,32 +118,32 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
     netMaxcard T F U n < ⊤ ↔
     ∃ s : Finset X, IsDynNetIn T F U n s ∧ (s.card : ℕ∞) = netMaxcard T F U n := by
   apply Iff.intro <;> intro h
-  · obtain ⟨k, k_max⟩ := WithTop.ne_top_iff_exists.1 h.ne
+  · obtain ⟨k, k_max⟩ := ENat.ne_top_iff_exists.mp h.ne
     rw [← k_max]
-    simp only [ENat.some_eq_coe, Nat.cast_inj]
+    simp only [Nat.cast_inj]
     -- The criterion we want to use is `Nat.sSup_mem`. We rewrite `netMaxcard` with an `sSup`,
     -- then check its `BddAbove` and `Nonempty` hypotheses.
     have : netMaxcard T F U n
-      = sSup (WithTop.some '' (Finset.card '' {s : Finset X | IsDynNetIn T F U n s})) := by
+      = sSup (WithTop.some '' Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       rw [netMaxcard, ← image_comp, sSup_image]
-      simp only [mem_setOf_eq, ENat.some_eq_coe, Function.comp_apply]
+      simp only [mem_ofPred_eq, ENat.some_eq_natCast, Function.comp_apply]
+      exact biSup_congr (fun _ _ ↦ rfl)
     rw [this] at k_max
     have h_bdda : BddAbove (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       refine ⟨k, mem_upperBounds.2 ?_⟩
-      simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+      simp only [mem_image, mem_ofPred_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
       intro s h
-      rw [← WithTop.coe_le_coe, k_max]
+      rw [← ENat.natCast_le_natCast, k_max]
       apply le_sSup
-      simp only [ENat.some_eq_coe, mem_image, mem_setOf_eq, Nat.cast_inj, exists_eq_right]
-      exact Filter.frequently_principal.mp fun a ↦ a h rfl
+      exact Filter.frequently_principal.mp fun a ↦ a (by simpa using ⟨_, h, rfl⟩) rfl
     have h_nemp : (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}).Nonempty := by
       refine ⟨0, ?_⟩
-      simp only [mem_image, mem_setOf_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]
+      simp only [mem_image, mem_ofPred_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]
       exact isDynNetIn_empty
-    rw [← WithTop.coe_sSup' h_bdda, ENat.some_eq_coe, Nat.cast_inj] at k_max
+    rw [← WithTop.coe_sSup' h_bdda] at k_max
     have key := Nat.sSup_mem h_nemp h_bdda
-    rw [← k_max, mem_image] at key
-    simp only [mem_setOf_eq] at key
+    rw [← Nat.cast_inj.mp k_max, mem_image] at key
+    simp only [mem_ofPred_eq] at key
     exact key
   · obtain ⟨s, _, s_card⟩ := h
     rw [← s_card]
@@ -171,7 +170,7 @@ lemma netMaxcard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ
 
 lemma one_le_netMaxcard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     1 ≤ netMaxcard T F U n ↔ F.Nonempty := by
-  rw [ENat.one_le_iff_ne_zero, nonempty_iff_ne_empty]
+  rw [Order.one_le_iff_ne_zero, nonempty_iff_ne_empty]
   exact not_iff_not.2 (netMaxcard_eq_zero_iff T F U n)
 
 lemma netMaxcard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) : netMaxcard T F U 0 = 1 := by
@@ -195,18 +194,18 @@ lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
   apply Iff.intro <;> intro h
   · intro k
     rw [netMaxcard, iSup_subtype', iSup_eq_top] at h
-    specialize h k (ENat.coe_lt_top k)
+    specialize h k (ENat.natCast_lt_top k)
     simp only [Nat.cast_lt, Subtype.exists, exists_prop] at h
     obtain ⟨s, s_net, s_k⟩ := h
     exact ⟨s, s_net, s_k.le⟩
-  · refine WithTop.eq_top_iff_forall_gt.2 fun k ↦ ?_
+  · refine ENat.eq_top_iff_forall_gt.mpr fun k ↦ ?_
     specialize h (k + 1)
     obtain ⟨s, s_net, s_card⟩ := h
     apply s_net.card_le_netMaxcard.trans_lt'
-    rw [ENat.some_eq_coe, Nat.cast_lt]
+    rw [Nat.cast_lt]
     exact (lt_add_one k).trans_le s_card
 
-lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) [U.IsSymm] (n : ℕ) :
+lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) (n : ℕ) :
     netMaxcard T F U n ≤ coverMincard T F U n := by
   rcases eq_top_or_lt_top (coverMincard T F U n) with h | h
   · exact h ▸ le_top
@@ -229,6 +228,7 @@ lemma coverMincard_le_netMaxcard (T : X → X) (F : Set X) [U.IsRefl] [U.IsSymm]
   --  We have to check that `s` is a cover for `dynEntourage T F (U ○ U) n`.
   -- If `s` is not a cover, then we can add to `s` a point `x` which is not covered
   -- and get a new net. This contradicts the maximality of `s`.
+  rw [IsDynCoverOf, isCover_iff_subset_iUnion_ball]
   by_contra h
   obtain ⟨x, x_F, x_uncov⟩ := not_subset.1 h
   simp only [Finset.mem_coe, mem_iUnion, exists_prop, not_exists, not_and] at x_uncov
@@ -304,7 +304,7 @@ lemma netEntropyEntourage_univ (T : X → X) {F : Set X} (h : F.Nonempty) :
   rw [← expGrowthSup_const one_ne_zero one_ne_top, netEntropyEntourage]
   simp only [netMaxcard_univ T h, ENat.toENNReal_one]
 
-lemma netEntropyInfEntourage_le_coverEntropyInfEntourage (T : X → X) (F : Set X) [U.IsSymm] :
+lemma netEntropyInfEntourage_le_coverEntropyInfEntourage (T : X → X) (F : Set X) :
     netEntropyInfEntourage T F U ≤ coverEntropyInfEntourage T F U :=
   expGrowthInf_monotone fun n ↦ ENat.toENNReal_mono (netMaxcard_le_coverMincard T F n)
 
@@ -313,7 +313,7 @@ lemma coverEntropyInfEntourage_le_netEntropyInfEntourage (T : X → X) (F : Set 
     coverEntropyInfEntourage T F (U ○ U) ≤ netEntropyInfEntourage T F U :=
   expGrowthInf_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_le_netMaxcard T F n)
 
-lemma netEntropyEntourage_le_coverEntropyEntourage (T : X → X) (F : Set X) [U.IsSymm] :
+lemma netEntropyEntourage_le_coverEntropyEntourage (T : X → X) (F : Set X) :
     netEntropyEntourage T F U ≤ coverEntropyEntourage T F U :=
   expGrowthSup_monotone fun n ↦ ENat.toENNReal_mono (netMaxcard_le_coverMincard T F n)
 
@@ -333,7 +333,7 @@ theorem coverEntropyInf_eq_iSup_netEntropyInfEntourage :
     coverEntropyInf T F = ⨆ U ∈ 𝓤 X, netEntropyInfEntourage T F U := by
   apply le_antisymm <;> refine iSup₂_le fun U U_uni ↦ ?_
   · obtain ⟨V, V_uni, V_symm, V_U⟩ := comp_symm_mem_uniformity_sets U_uni
-    have := SetRel.id_subset_iff.1 <| refl_le_uniformity V_uni
+    have := isRefl_of_mem_uniformity V_uni
     apply (coverEntropyInfEntourage_antitone T F V_U).trans (le_iSup₂_of_le V V_uni _)
     exact coverEntropyInfEntourage_le_netEntropyInfEntourage T F
   · apply (netEntropyInfEntourage_antitone T F SetRel.symmetrize_subset_self).trans
@@ -349,7 +349,7 @@ theorem coverEntropy_eq_iSup_netEntropyEntourage :
   apply le_antisymm <;> refine iSup₂_le fun U U_uni ↦ ?_
   · obtain ⟨V, V_uni, V_symm, V_comp_U⟩ := comp_symm_mem_uniformity_sets U_uni
     apply (coverEntropyEntourage_antitone T F V_comp_U).trans (le_iSup₂_of_le V V_uni _)
-    have := SetRel.id_subset_iff.1 <| refl_le_uniformity V_uni
+    have := isRefl_of_mem_uniformity V_uni
     exact coverEntropyEntourage_le_netEntropyEntourage T F
   · apply (netEntropyEntourage_antitone T F SetRel.symmetrize_subset_self).trans
     apply (le_iSup₂ (SetRel.symmetrize U) (symmetrize_mem_uniformity U_uni)).trans'

@@ -29,7 +29,7 @@ algebra and `B, C` nontrivial, then both `B` and `C` are central algebras.
 Central Algebras, Central Simple Algebras, Noncommutative Algebra
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

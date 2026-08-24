@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # Archimedean groups
@@ -33,7 +34,7 @@ The result is also used in `Topology.Instances.Real` as an ingredient in the cla
 subgroups of `ℝ`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
@@ -84,14 +85,14 @@ theorem Subgroup.exists_isLeast_one_lt {H : Subgroup G} (hbot : H ≠ ⊥) {a : 
     exact ⟨n, _, (@mabs_mem_iff (Subgroup G) G _ _).2 hgH, hn⟩
   classical rcases Nat.findX this with ⟨n, ⟨x, hxH, hnx, hxn⟩, hmin⟩
   by_contra hxmin
-  simp only [IsLeast, not_and, mem_setOf_eq, mem_lowerBounds, not_exists, not_forall,
+  simp only [IsLeast, not_and, mem_ofPred_eq, mem_lowerBounds, not_exists, not_forall,
     not_le] at hxmin
   rcases hxmin x ⟨hxH, (one_le_pow_of_one_le'  h₀.le _).trans_lt hnx⟩ with ⟨y, ⟨hyH, hy₀⟩, hxy⟩
   obtain ⟨m, hm, hya⟩ := hex y hy₀
   rcases lt_or_ge m n with hmn | hnm
   · exact hmin m hmn ⟨y, hyH, hm, hya⟩
   · refine disjoint_left.1 hd (div_mem hxH hyH) ⟨one_lt_div'.2 hxy, div_lt_iff_lt_mul'.2 ?_⟩
-    calc x ≤ a^ (n + 1) := hxn
+    calc x ≤ a ^ (n + 1) := hxn
     _ ≤ a ^ (m + 1) := by grw [hnm]; exact h₀.le
     _ = a ^ m * a := pow_succ _ _
     _ < y * a := by gcongr

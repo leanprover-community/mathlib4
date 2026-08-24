@@ -29,7 +29,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
 namespace CategoryTheory
 
-open MonoidalCategory ComonObj Functor
+open MonoidalCategory ComonObj
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory.{v₁} C]
 
@@ -67,23 +67,21 @@ def trivial : CommComon C := mk (𝟙_ C)
 instance : Inhabited (CommComon C) :=
   ⟨trivial C⟩
 
-variable {M : CommComon C}
-
 instance : Category (CommComon C) :=
-  InducedCategory.category CommComon.toComon
+  inferInstanceAs (Category (InducedCategory _ CommComon.toComon))
 
 @[simp]
-theorem id_hom (A : CommComon C) : Comon.Hom.hom (𝟙 A) = 𝟙 A.X :=
+theorem id_hom (A : CommComon C) : Comon.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=
   rfl
 
 @[simp]
 theorem comp_hom {R S T : CommComon C} (f : R ⟶ S) (g : S ⟶ T) :
-    Comon.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
+    Comon.Hom.hom (f ≫ g).hom = f.hom.hom ≫ g.hom.hom :=
   rfl
 
 @[ext]
-lemma hom_ext {A B : CommComon C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
-  Comon.Hom.ext h
+lemma hom_ext {A B : CommComon C} (f g : A ⟶ B) (h : f.hom.hom = g.hom.hom) : f = g :=
+  InducedCategory.hom_ext (Comon.Hom.ext h)
 
 section
 
@@ -97,5 +95,12 @@ def forget₂Comon : CommComon C ⥤ Comon C :=
 end
 
 end CommComon
+
+instance {C : Type*} [Category* C] [MonoidalCategory C] [SymmetricCategory C]
+    (A B : C) [ComonObj A] [ComonObj B]
+    [IsCommComonObj A] [IsCommComonObj B] : IsCommComonObj (A ⊗ B) where
+  comul_comm := by
+    rw [Comon.tensorObj_comul, Category.assoc, SymmetricCategory.tensorμ_braid_swap]
+    simp
 
 end CategoryTheory

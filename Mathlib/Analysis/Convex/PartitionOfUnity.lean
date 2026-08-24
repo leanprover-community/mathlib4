@@ -26,12 +26,12 @@ assumes that local functions `g` are constants.
 partition of unity
 -/
 
-@[expose] public section
+public section
 
 
 open Set Function
 
-open Topology
+open scoped Topology
 
 variable {ι X E : Type*} [TopologicalSpace X] [AddCommGroup E] [Module ℝ E]
 

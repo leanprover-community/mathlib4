@@ -43,8 +43,7 @@ variable [∀ j, Decidable (j ∈ s)]
 
 -- TODO: fix this in norm_cast
 @[norm_cast move]
-lemma piecewise_coe [∀ j, Decidable (j ∈ (s : Set ι))] :
-    (s : Set ι).piecewise f g = s.piecewise f g := by
+lemma piecewise_coe : (s : Set ι).piecewise f g = s.piecewise f g := by
   ext
   congr
 
@@ -56,8 +55,6 @@ lemma piecewise_eq_of_mem {i : ι} (hi : i ∈ s) : s.piecewise f g i = f i := b
 lemma piecewise_eq_of_notMem {i : ι} (hi : i ∉ s) : s.piecewise f g i = g i := by
   simp [piecewise, hi]
 
-@[deprecated (since := "2025-05-23")] alias piecewise_eq_of_not_mem := piecewise_eq_of_notMem
-
 lemma piecewise_congr {f f' g g' : ∀ i, π i} (hf : ∀ i ∈ s, f i = f' i)
     (hg : ∀ i ∉ s, g i = g' i) : s.piecewise f g = s.piecewise f' g' :=
   funext fun i => if_ctx_congr Iff.rfl (hf i) (hg i)
@@ -68,7 +65,7 @@ lemma piecewise_insert_of_ne [DecidableEq ι] {i j : ι} [∀ i, Decidable (i �
 
 lemma piecewise_insert [DecidableEq ι] (j : ι) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g = update (s.piecewise f g) j (f j) := by
-  classical simp only [← piecewise_coe, ← Set.piecewise_insert]
+  simp only [← piecewise_coe, ← Set.piecewise_insert]
   ext
   congr
   simp
@@ -121,9 +118,6 @@ lemma update_piecewise_of_notMem [DecidableEq ι] {i : ι} (hi : i ∉ s) (v : �
   refine s.piecewise_congr (fun j hj => update_of_ne ?_ ..) fun _ _ => rfl
   exact fun h => hi (h ▸ hj)
 
-@[deprecated (since := "2025-05-23")]
-alias update_piecewise_of_not_mem := update_piecewise_of_notMem
-
 lemma piecewise_same : s.piecewise f f = f := by
   ext i
   by_cases h : i ∈ s <;> simp [h]
@@ -154,7 +148,7 @@ variable {π : ι → Type*} {t : Set ι} {t' : ∀ i, Set (π i)} {f g f' g' h 
 
 lemma piecewise_mem_set_pi (hf : f ∈ Set.pi t t') (hg : g ∈ Set.pi t t') :
     s.piecewise f g ∈ Set.pi t t' := by
-  classical rw [← piecewise_coe]; exact Set.piecewise_mem_pi (↑s) hf hg
+  rw [← piecewise_coe]; exact Set.piecewise_mem_pi (↑s) hf hg
 
 variable [∀ i, Preorder (π i)]
 

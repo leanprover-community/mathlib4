@@ -17,7 +17,7 @@ In this file we prove two lemmas about `Finite` and `Set`s.
 finiteness, finite sets
 -/
 
-@[expose] public section
+public section
 
 
 open Set

@@ -5,8 +5,14 @@ Authors: P. Michael Kielstra
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Field
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+public import Mathlib.MeasureTheory.Covering.Besicovitch
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
 # The trapezoidal rule
@@ -24,11 +30,14 @@ bound.
 
 @[expose] public section
 
-open MeasureTheory intervalIntegral Interval Finset HasDerivWithinAt Set
+open MeasureTheory intervalIntegral Finset HasDerivWithinAt Set
+
+open scoped Interval
 
 /-- Integration of `f` from `a` to `b` using the trapezoidal rule with `N+1` total evaluations of
 `f`.  (Note the off-by-one problem here: `N` counts the number of trapezoids, not the number of
 evaluations.) -/
+@[wikidata Q833293]
 noncomputable def trapezoidal_integral (f : ℝ → ℝ) (N : ℕ) (a b : ℝ) : ℝ :=
   ((b - a) / N) * ((f a + f b) / 2 + ∑ k ∈ range (N - 1), f (a + (k + 1) * (b - a) / N))
 
@@ -118,7 +127,6 @@ the general error bound later on. -/
 private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_b : a < b)
     (h_df : DifferentiableOn ℝ f (Icc a b))
     (h_ddf : DifferentiableOn ℝ (derivWithin f (Icc a b)) (Icc a b))
-    (h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f (Icc a b)) volume a b)
     (fpp_bound : ∀ x, |iteratedDerivWithin 2 f (Icc a b) x| ≤ ζ) :
     |trapezoidal_error f 1 a b| ≤ (b - a) ^ 3 * ζ / 12 := by
   rw [mul_div_assoc, mul_comm]
@@ -127,7 +135,7 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
   let dg (t : ℝ) := (1 / 2) * (f a + f t) + ((t - a) / 2) * (derivWithin f (Icc a b) t) - f t
   let ddg (t : ℝ) := ((t - a) / 2) * (iteratedDerivWithin 2 f (Icc a b) t)
   -- Compute g' by applying standard derivative identities.
-  have h_dg (y : ℝ) (hy: y ∈ Icc a b) : HasDerivWithinAt g (dg y) (Icc a b) y := by
+  have h_dg (y : ℝ) (hy : y ∈ Icc a b) : HasDerivWithinAt g (dg y) (Icc a b) y := by
     unfold g trapezoidal_error trapezoidal_integral
     simp only [Nat.cast_one, div_one, tsub_self, Finset.range_zero, sum_empty, add_zero]
     simp_rw [← mul_comm_div]
@@ -139,11 +147,11 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
     · exact h_df.continuousOn.stronglyMeasurableAtFilter_nhdsWithin measurableSet_Icc y
     · exact h_df.continuousOn.continuousWithinAt hy
   -- Compute g'', once again applying standard derivative identities.
-  have h_ddg (y : ℝ) (hx: y ∈ Icc a b) : HasDerivWithinAt dg (ddg y) (Icc a b) y := by
+  have h_ddg (y : ℝ) (hx : y ∈ Icc a b) : HasDerivWithinAt dg (ddg y) (Icc a b) y := by
     -- The eventual expression for g'' has several terms that cancel, which we have to undo here
     -- so that the various HasDerivWithinAt theorems will have everything they need.
     let dfaky := derivWithin f (Icc a b) y
-    rw [(by ring: ddg y = (1 / 2) * dfaky + ((1 / 2) * dfaky + ddg y) - dfaky)]
+    rw [(by ring : ddg y = (1 / 2) * dfaky + ((1 / 2) * dfaky + ddg y) - dfaky)]
     refine fun_sub (fun_add (const_mul _ (const_add _ (h_df y hx).hasDerivWithinAt))
       (fun_mul (div_const (sub_const _ (hasDerivWithinAt_id _ _)) _) ?_))
       (h_df y hx).hasDerivWithinAt
@@ -155,26 +163,20 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
     simp_rw [pow_one, ddg, abs_mul, abs_div, abs_two]
     grw [fpp_bound x, abs_of_nonneg (sub_nonneg.mpr hx.1), div_mul_comm]
   have key {φ φ' : ℝ → ℝ} (h : ∀ x ∈ Icc a b, HasDerivWithinAt φ (φ' x) (Icc a b) x) (h0 : φ a = 0)
-      {c : ℝ} {n : ℕ} (h_bound : ∀ t ∈ Icc a b, |φ' t| ≤ c * (t - a) ^ n)
-      (hφ' : IntervalIntegrable φ' volume a b) :
+      {c : ℝ} {n : ℕ} (h_bound : ∀ t ∈ Icc a b, |φ' t| ≤ c * (t - a) ^ n) :
       ∀ t ∈ Icc a b, |φ t| ≤ c / (n + 1) * (t - a) ^ (n + 1) := by
     intro t ht
-    have hs : Icc a t ⊆ Icc a b := Icc_subset_Icc_right ht.2
-    have hs' : Ioo a t ⊆ Ioo a b := Ioo_subset_Ioo_right ht.2
-    have hs'' : uIcc a t ⊆ uIcc a b := by rwa [uIcc_of_lt a_lt_b, uIcc_of_le ht.1]
-    replace hφ' := hφ'.mono hs'' le_rfl
-    have key := integral_eq_sub_of_hasDerivAt_of_le (f := φ) (f' := φ') ht.1
-      (fun x hx ↦ (h x (hs hx)).continuousWithinAt.mono hs)
-      (fun x hx ↦ (h x (hs (mem_Icc_of_Ioo hx))).hasDerivAt (Icc_mem_nhds_iff.mpr (hs' hx))) hφ'
-    rw [h0, sub_zero] at key
-    grw [← key, abs_integral_le_integral_abs ht.1, integral_mono_on ht.1 hφ'.abs
-      (Continuous.intervalIntegrable (by fun_prop) a t) fun x hx ↦ h_bound x (hs hx),
-      integral_comp_sub_right (c * · ^ n), ← mul_div_right_comm, mul_div_assoc]
-    simp
-  have bound_dg := key h_ddg (by ring) bound_ddg (h_ddf_integrable.continuousOn_mul (by fun_prop))
-  have bound_g := key h_dg (trapezoidal_error_eq f 1 a) bound_dg
-    (ContinuousOn.intervalIntegrable_of_Icc a_lt_b.le fun x hx ↦ (h_ddg x hx).continuousWithinAt)
-  exact (bound_g b ⟨a_lt_b.le, le_rfl⟩).trans_eq (by ring_nf)
+    have hB (x) : HasDerivAt (fun y ↦ c / (n + 1) * (y - a) ^ (n + 1)) (c * (x - a) ^ n) x := by
+      convert!
+        (hasDerivAt_const x (c / (n + 1))).mul
+          (((hasDerivAt_id x).sub (hasDerivAt_const x a)).pow (n + 1)) using 1
+      simp [sub_eq_add_neg, field]
+    simpa [Real.norm_eq_abs, h0] using image_norm_le_of_norm_deriv_right_le_deriv_boundary
+      (fun x hx ↦ (h x hx).continuousWithinAt)
+      (fun x hx ↦ by grind [Icc_mem_nhdsGE_of_mem, mono_of_mem_nhdsWithin])
+      (by simp [h0]) hB (fun x hx ↦ h_bound x (Ico_subset_Icc_self hx)) ht
+  exact (key h_dg (trapezoidal_error_eq f 1 a) (key h_ddg (by ring) bound_ddg) b
+    ⟨a_lt_b.le, le_rfl⟩).trans_eq (by ring_nf)
 
 /-- The hard part of the trapezoidal rule error bound: proving it in the case of a non-empty closed
 interval with ordered endpoints. This lemma is used in the proof of the general error bound later
@@ -182,7 +184,6 @@ on. -/
 private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_b : a < b)
     (h_df : DifferentiableOn ℝ f (Icc a b))
     (h_ddf : DifferentiableOn ℝ (derivWithin f (Icc a b)) (Icc a b))
-    (h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f (Icc a b)) volume a b)
     (fpp_bound : ∀ x, |iteratedDerivWithin 2 f (Icc a b) x| ≤ ζ)
     {N : ℕ} (N_nonzero : 0 < N) :
     |trapezoidal_error f N a b| ≤ (b - a) ^ 3 * ζ / (12 * N ^ 2) := by
@@ -191,7 +192,7 @@ private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ
   have h0 : ∀ k : ℕ, ak (k + 1) - ak k = h := by simp [ak, ← sub_mul]
   have hab : 0 < b - a := sub_pos.mpr a_lt_b
   have hpos : 0 < h := by positivity
-  have hb : b = a + N * h := by unfold h; field
+  have hb : b = a + N * h := by field
   rw [hb, ← sum_trapezoidal_error_adjacent_intervals N_nonzero
     (hb ▸ h_df.continuousOn.intervalIntegrable_of_Icc a_lt_b.le)]
   grw [abs_sum_le_sum_abs]
@@ -200,7 +201,7 @@ private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ
     calc
       _ ≤ ∑ k ∈ range N, ζ / 12 * h ^ 3 := sum_le_sum this
       _ = N * (ζ / 12 * h ^ 3)          := by simp [sum_const]
-      _ = _                             := by unfold h; push_cast; field
+      _ = _                             := by push_cast; field
   intro k hk
   rw [Finset.mem_range] at hk
   have h1 : a ≤ ak k := by simp only [ak, le_add_iff_nonneg_right]; positivity
@@ -223,32 +224,29 @@ private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ
     · rw [iteratedDerivWithin_succ, derivWithin_zero_of_notMem_closure
         (by rwa [closure_Icc]), abs_zero]
       exact (abs_nonneg _).trans (fpp_bound 0)
-  refine (trapezoidal_error_le_of_lt' (ζ := ζ) h4 (h_df.mono h3) ?_ ?_ h7).trans_eq ?_
+  refine (trapezoidal_error_le_of_lt' (ζ := ζ) h4 (h_df.mono h3) ?_ h7).trans_eq ?_
   · refine h_ddf.congr_mono (fun x hx ↦ ?_) h3
     exact derivWithin_subset h3 (uniqueDiffOn_Icc h4 x hx) (h_df x (h3 hx))
-  · exact (h_ddf_integrable.mono_set (by rwa [Set.uIcc_of_lt h4, Set.uIcc_of_lt a_lt_b])).congr
-      (h6.mono (Set.uIoc_subset_uIcc.trans_eq (Set.uIcc_of_lt h4)))
   · rw [h0, mul_div_assoc, mul_comm]
 
 /-- The standard error bound for trapezoidal integration on the general interval `[[a, b]]`. -/
 theorem trapezoidal_error_le {f : ℝ → ℝ} {a b : ℝ}
     (h_df : DifferentiableOn ℝ f [[a, b]])
-    (h_ddf : DifferentiableOn ℝ (derivWithin f [[a, b]]) [[a, b]])
-    (h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f [[a, b]]) volume a b) {ζ : ℝ}
+    (h_ddf : DifferentiableOn ℝ (derivWithin f [[a, b]]) [[a, b]]) {ζ : ℝ}
     (fpp_bound : ∀ x, |iteratedDerivWithin 2 f [[a, b]] x| ≤ ζ) {N : ℕ} (N_nonzero : 0 < N) :
     |trapezoidal_error f N a b| ≤ |b - a| ^ 3 * ζ / (12 * N ^ 2) := by
   rcases lt_trichotomy a b with h_lt | h_eq | h_gt
   -- Standard case: a < b
   · rw [uIcc_of_lt h_lt] at *
     rw [abs_of_pos (sub_pos.mpr h_lt)]
-    exact trapezoidal_error_le_of_lt h_lt h_df h_ddf h_ddf_integrable fpp_bound N_nonzero
+    exact trapezoidal_error_le_of_lt h_lt h_df h_ddf fpp_bound N_nonzero
   -- Trivial case: a = b
   · simp [h_eq]
   -- Slightly trickier case: a > b (requires flipping the direction and sign of the true and
   -- approximate integrals)
   · rw [uIcc_of_gt h_gt] at *
     rw [abs_of_neg (sub_neg.mpr h_gt), neg_sub, trapezoidal_error_symm f N_nonzero a b, abs_neg]
-    exact trapezoidal_error_le_of_lt h_gt h_df h_ddf h_ddf_integrable.symm fpp_bound N_nonzero
+    exact trapezoidal_error_le_of_lt h_gt h_df h_ddf fpp_bound N_nonzero
 
 /-- The error bound for trapezoidal integration in the slightly weaker, but very common, case where
 `f` is `C^2`. -/
@@ -257,15 +255,11 @@ theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContD
     (N_nonzero : 0 < N) : |trapezoidal_error f N a b| ≤ |b - a| ^ 3 * ζ / (12 * N ^ 2) := by
   -- This use of rcases slightly duplicates effort from the proof of trapezoidal_error_le, but doing
   -- it any other way that I can think of would be worse.
-  rcases eq_or_ne a b with h_eq | h_neq
+  rcases eq_or_ne a b with h_eq | h_ne
   · simp [h_eq]
   -- Once we have a ≠ b, all the necessary assumptions on f follow pretty quickly from its being
   -- C^2.
-  have ud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (inf_lt_sup.mpr h_neq)
-  have h_df : DifferentiableOn ℝ f [[a, b]] := ContDiffOn.differentiableOn h_f_c2 one_le_two
   have h_ddf : DifferentiableOn ℝ (derivWithin f [[a, b]]) [[a, b]] := by
     rw [← iteratedDerivWithin_one]
-    exact ContDiffOn.differentiableOn_iteratedDerivWithin h_f_c2 (by norm_cast) ud
-  have h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f [[a, b]]) volume a b :=
-    (ContDiffOn.continuousOn_iteratedDerivWithin h_f_c2 (le_refl 2) ud).intervalIntegrable
-  exact trapezoidal_error_le h_df h_ddf h_ddf_integrable fpp_bound N_nonzero
+    exact h_f_c2.differentiableOn_iteratedDerivWithin (by norm_cast) (uniqueDiffOn_uIcc h_ne)
+  exact trapezoidal_error_le (h_f_c2.differentiableOn two_ne_zero) h_ddf fpp_bound N_nonzero

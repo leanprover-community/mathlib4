@@ -6,12 +6,12 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
@@ -31,7 +31,7 @@ For the definition of `nilradical`, see `Mathlib/RingTheory/Nilpotent/Lemmas.lea
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -43,6 +43,14 @@ theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   obtain ⟨n, hn⟩ := h
   use n
   rw [neg_pow, hn, mul_zero]
+
+theorem not_isNilpotent_neg_one [Ring R] [Nontrivial R] : ¬ IsNilpotent (-1 : R) := by
+  intro h
+  simpa [not_isNilpotent_one] using h.neg
+
+theorem neg_one_pow_ne_zero [Ring R] [Nontrivial R] (n : ℕ) : (-1 : R) ^ n ≠ 0 := by
+  intro h
+  exact not_isNilpotent_neg_one ⟨n, h⟩
 
 @[simp]
 theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
@@ -111,14 +119,14 @@ theorem Prime.isRadical [CommMonoidWithZero R] {y : R} (hy : Prime y) : IsRadica
 
 theorem zero_isRadical_iff [MonoidWithZero R] : IsRadical (0 : R) ↔ IsReduced R := by
   simp_rw [isReduced_iff, IsNilpotent, exists_imp, ← zero_dvd_iff]
-  exact forall_swap
+  exact forall_comm
 
 theorem isReduced_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
     IsReduced R ↔ ∀ x : R, x ^ k = 0 → x = 0 := by
   simp_rw [← zero_isRadical_iff, isRadical_iff_pow_one_lt k hk, zero_dvd_iff]
 
-theorem IsRadical.of_dvd [CancelCommMonoidWithZero R] {x y : R} (hy : IsRadical y) (h0 : y ≠ 0)
-    (hxy : x ∣ y) : IsRadical x := (isRadical_iff_pow_one_lt 2 one_lt_two).2 <| by
+theorem IsRadical.of_dvd [CommMonoidWithZero R] [IsCancelMulZero R] {x y : R} (hy : IsRadical y)
+    (h0 : y ≠ 0) (hxy : x ∣ y) : IsRadical x := (isRadical_iff_pow_one_lt 2 one_lt_two).2 <| by
   obtain ⟨z, rfl⟩ := hxy
   refine fun w dvd ↦ ((mul_dvd_mul_iff_right <| right_ne_zero_of_mul h0).mp <| hy 2 _ ?_)
   rw [mul_pow]
@@ -172,10 +180,10 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
     (hf : ∀ b, IsNilpotent (f b)) (h_comm : ∀ i j, Commute (f i) (f j)) :
     IsNilpotent (finsum f) := by
   classical
-  by_cases h : Set.Finite f.support
-  · rw [finsum_def, dif_pos h]
+  by_cases h : HasFiniteSupport f
+  · rw [finsum_def, dite_eq_left h]
     exact Commute.isNilpotent_sum (fun b _ ↦ hf b) (fun _ _ _ _ ↦ h_comm _ _)
-  · simp only [finsum_def, dif_neg h, IsNilpotent.zero]
+  · simp only [finsum_def, dite_eq_right h, IsNilpotent.zero]
 
 protected lemma isNilpotent_mul_right_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsRight R) :
     IsNilpotent (x * y) ↔ IsNilpotent x := by
@@ -210,7 +218,7 @@ end Commute
 
 section CommSemiring
 
-variable [CommSemiring R] {x y : R}
+variable [CommSemiring R]
 
 lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) :
@@ -223,19 +231,3 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
   Commute.isNilpotent_finsum hf fun _ _ ↦ Commute.all _ _
 
 end CommSemiring
-
-lemma NoZeroSMulDivisors.isReduced (R M : Type*)
-    [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Nontrivial M] [NoZeroSMulDivisors R M] :
-    IsReduced R := by
-  refine ⟨fun x ⟨k, hk⟩ ↦ ?_⟩
-  induction k with
-  | zero =>
-    rw [pow_zero] at hk
-    exact eq_zero_of_zero_eq_one hk.symm x
-  | succ k ih =>
-    obtain ⟨m : M, hm : m ≠ 0⟩ := exists_ne (0 : M)
-    have : x ^ (k + 1) • m = 0 := by simp only [hk, zero_smul]
-    rw [pow_succ', mul_smul] at this
-    rcases eq_zero_or_eq_zero_of_smul_eq_zero this with rfl | hx
-    · rfl
-    · exact ih <| (eq_zero_or_eq_zero_of_smul_eq_zero hx).resolve_right hm

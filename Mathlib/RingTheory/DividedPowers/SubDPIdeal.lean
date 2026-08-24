@@ -95,21 +95,23 @@ theorem self : IsSubDPIdeal hI I where
   isSubideal := le_rfl
   dpow_mem _ hn _ ha := hI.dpow_mem hn ha
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The divided power structure on a sub-dp-ideal. -/
 def dividedPowers {J : Ideal A} (hJ : IsSubDPIdeal hI J) [∀ x, Decidable (x ∈ J)] :
     DividedPowers J where
   dpow n x        := if x ∈ J then hI.dpow n x else 0
-  dpow_null hx    := by simp [if_neg hx]
-  dpow_zero hx    := by simp [if_pos hx, hI.dpow_zero (hJ.isSubideal hx)]
-  dpow_one hx     := by simp [if_pos hx, hI.dpow_one (hJ.isSubideal hx)]
-  dpow_mem hn hx  := by simp [if_pos hx, hJ.dpow_mem _ hn hx]
-  dpow_add hx hy  := by simp_rw [if_pos hx, if_pos hy, if_pos (Ideal.add_mem J hx hy),
-    hI.dpow_add (hJ.isSubideal hx) (hJ.isSubideal hy)]
+  dpow_null hx    := by simp [ite_eq_right hx]
+  dpow_zero hx    := by simp [ite_eq_left hx, hI.dpow_zero (hJ.isSubideal hx)]
+  dpow_one hx     := by simp [ite_eq_left hx, hI.dpow_one (hJ.isSubideal hx)]
+  dpow_mem hn hx  := by simp [ite_eq_left hx, hJ.dpow_mem _ hn hx]
+  dpow_add hx hy  := by
+    simp_rw [ite_eq_left hx, ite_eq_left hy, ite_eq_left (Ideal.add_mem J hx hy),
+      hI.dpow_add (hJ.isSubideal hx) (hJ.isSubideal hy)]
   dpow_mul hx     := by
-    simp [if_pos hx, if_pos (mul_mem_left J _ hx), hI.dpow_mul (hJ.isSubideal hx)]
-  mul_dpow hx     := by simp [if_pos hx, hI.mul_dpow (hJ.isSubideal hx)]
+    simp [ite_eq_left hx, ite_eq_left (mul_mem_left J _ hx), hI.dpow_mul (hJ.isSubideal hx)]
+  mul_dpow hx     := by simp [ite_eq_left hx, hI.mul_dpow (hJ.isSubideal hx)]
   dpow_comp hn hx := by
-    simp [if_pos hx, if_pos (hJ.dpow_mem _ hn hx), hI.dpow_comp hn (hJ.isSubideal hx)]
+    simp [ite_eq_left hx, ite_eq_left (hJ.dpow_mem _ hn hx), hI.dpow_comp hn (hJ.isSubideal hx)]
 
 variable {J : Ideal A} (hJ : IsSubDPIdeal hI J) [∀ x, Decidable (x ∈ J)]
 
@@ -117,7 +119,7 @@ lemma dpow_eq (n : ℕ) (a : A) :
     (IsSubDPIdeal.dividedPowers hI hJ).dpow n a = if a ∈ J then hI.dpow n a else 0 := rfl
 
 lemma dpow_eq_of_mem {n : ℕ} {a : A} (ha : a ∈ J) :
-    (IsSubDPIdeal.dividedPowers hI hJ).dpow n a = hI.dpow n a := by rw [dpow_eq, if_pos ha]
+    (IsSubDPIdeal.dividedPowers hI hJ).dpow n a = hI.dpow n a := by rw [dpow_eq, ite_eq_left ha]
 
 theorem isDPMorphism (hJ : IsSubDPIdeal hI J) :
     (IsSubDPIdeal.dividedPowers hI hJ).IsDPMorphism hI (RingHom.id A) := by
@@ -231,9 +233,11 @@ def mk' {J : Ideal A} (hJ : hI.IsSubDPIdeal J) : hI.SubDPIdeal := ⟨J, hJ.1, hJ
 
 instance : SetLike (SubDPIdeal hI) A where
   coe s := s.carrier
-  coe_injective' p q h := by
+  coe_injective p q h := by
     rw [SetLike.coe_set_eq] at h
     cases p; cases q; congr
+
+instance : PartialOrder (SubDPIdeal hI) := .ofSetLike (SubDPIdeal hI) A
 
 /-- The coercion from `SubDPIdeal` to `Ideal`. -/
 @[coe]
@@ -246,6 +250,7 @@ theorem coe_def (J : SubDPIdeal hI) : J.toIdeal = J.carrier := rfl
 @[simp]
 theorem memCarrier {s : SubDPIdeal hI} {x : A} : x ∈ s.carrier ↔ x ∈ s := Iff.rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma toIsSubDPIdeal (J : SubDPIdeal hI) : IsSubDPIdeal hI J.carrier where
   isSubideal := J.isSubideal
   dpow_mem   := J.dpow_mem
@@ -257,7 +262,7 @@ See [P. Berthelot, *Cohomologie cristalline des schémas de caractéristique $p$
 (Proposition 1.6.1 (i))][Berthelot-1974] -/
 def prod (J : Ideal A) : SubDPIdeal hI where
   carrier := I • J
-  isSubideal := mul_le_right
+  isSubideal := mul_le_left
   dpow_mem m hm x hx := by
     induction hx using Submodule.smul_induction_on' generalizing m with
     | smul a ha b hb =>
@@ -265,7 +270,7 @@ def prod (J : Ideal A) : SubDPIdeal hI where
       exact Submodule.mul_mem_mul (J.pow_mem_of_mem hb m (zero_lt_iff.mpr hm))
         (hI.dpow_mem hm ha)
     | add x hx y hy hx' hy' =>
-      rw [hI.dpow_add' (mul_le_right hx) (mul_le_right hy)]
+      rw [hI.dpow_add' (mul_le_left hx) (mul_le_left hy)]
       apply Submodule.sum_mem (I • J)
       intro k _
       by_cases hk0 : k = 0
@@ -341,11 +346,11 @@ instance : SupSet (SubDPIdeal hI) :=
 
 theorem sSup_carrier_def (S : Set (SubDPIdeal hI)) : (sSup S).carrier = sSup ((toIdeal) '' S) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CompleteLattice (SubDPIdeal hI) := by
   refine Function.Injective.completeLattice (fun J : SubDPIdeal hI ↦ (J : Set.Iic I))
-    (fun J J' h ↦ by simpa only [SubDPIdeal.ext_iff, Subtype.mk.injEq] using h) (fun J J' ↦ by rfl)
-    (fun J J' ↦ by rfl)
-    (fun S ↦ ?_) (fun S ↦ ?_) rfl rfl
+    (fun J J' h ↦ by simpa only [SubDPIdeal.ext_iff, Subtype.mk.injEq] using h)
+    .rfl .rfl (fun J J' ↦ by rfl) (fun J J' ↦ by rfl) (fun S ↦ ?_) (fun S ↦ ?_) rfl rfl
   · conv_rhs => rw [iSup]
     rw [Subtype.ext_iff, Set.Iic.coe_sSup]
     dsimp only
@@ -364,7 +369,7 @@ instance : CompleteLattice (SubDPIdeal hI) := by
     apply iInf_congr (fun J ↦ ?_)
     by_cases hJ : J ∈ S
     · rw [ciInf_pos hJ, ciInf_pos hJ]; rfl
-    · simp [hJ, iInf_neg, le_top, inf_of_le_left, Set.Iic.coe_top, le_refl]; rfl
+    · simp [hJ, iInf_neg, le_top, inf_of_le_left, Set.Iic.coe_top]; rfl
 
 end CompleteLattice
 
@@ -426,7 +431,7 @@ theorem span_carrier_eq_dpow_span {S : Set A} (hS : S ⊆ I) :
   · rw [le_iInf₂_iff]
     intro K hK
     have : S ≤ K := by
-      simp only [Set.mem_insert_iff, Set.mem_setOf_eq] at hK
+      simp only [Set.mem_insert_iff, Set.mem_ofPred_eq] at hK
       rcases hK with rfl | hKS
       exacts [hS, hKS]
     rw [span_le]
@@ -489,7 +494,7 @@ def dpEqualizer : Ideal A where
 theorem mem_dpEqualizer_iff {x : A} :
     x ∈ dpEqualizer hI hI' ↔ x ∈ I ∧ ∀ n : ℕ, hI.dpow n x = hI'.dpow n x := by
   simp [dpEqualizer, Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk,
-    Set.mem_setOf_eq]
+    Set.mem_ofPred_eq]
 
 theorem dpEqualizer_is_dp_ideal_left :
     DividedPowers.IsSubDPIdeal hI (dpEqualizer hI hI') :=
@@ -511,6 +516,7 @@ theorem le_equalizer_of_isDPMorphism {B : Type*} [CommSemiring B] (f : A →+* B
   rintro b ⟨a, ha, rfl⟩
   exact ⟨hI_le_K (mem_map_of_mem f ha), fun n ↦ by rw [hIK.2 a ha, hIK'.2 a ha]⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If there is a divided power structure on `I⬝(A/J)` such that the quotient map is
 a dp-morphism, then `J ⊓ I` is a sub-dp-ideal of `I`. -/
 def subDPIdeal_inf_of_quot {A : Type*} [CommRing A] {I : Ideal A} {hI : DividedPowers I}
@@ -560,7 +566,7 @@ theorem dpow_apply' (hIf : IsSubDPIdeal hI (RingHom.ker f ⊓ I)) {n : ℕ} {a :
   classical
   simp only [dpow, Function.extend_def]
   have h : ∃ (a_1 : I), f ↑a_1 = f a := by use ⟨a, ha⟩
-  rw [dif_pos h, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker]
+  rw [dite_eq_left h, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker]
   apply (hI.isSubDPIdeal_inf_iff.mp hIf) (Submodule.coe_mem _) ha
   rw [RingHom.mem_ker, map_sub, sub_eq_zero, h.choose_spec]
 
@@ -572,7 +578,7 @@ noncomputable def dividedPowers : DividedPowers J where
   dpow := dpow hI f
   dpow_null n {x} hx' := by
     classical
-    rw [dpow, Function.extend_def, dif_neg, Pi.zero_apply]
+    rw [dpow, Function.extend_def, dite_eq_right, Pi.zero_apply]
     rintro ⟨⟨a, ha⟩, rfl⟩
     exact (hIJ ▸ hx') (apply_coe_mem_map f I ⟨a, ha⟩)
   dpow_zero {x} hx := by
@@ -631,12 +637,15 @@ variable {J : Ideal A} (hIJ : IsSubDPIdeal hI (J ⊓ I))
 noncomputable def dpow (J : Ideal A) : ℕ → A ⧸ J → A ⧸ J :=
   DividedPowers.Quotient.OfSurjective.dpow hI (Ideal.Quotient.mk J)
 
+set_option backward.privateInPublic true in
 private theorem isSubDPIdeal_aux (hIJ : IsSubDPIdeal hI (J ⊓ I)) :
     IsSubDPIdeal hI (RingHom.ker (Ideal.Quotient.mk J) ⊓ I) := by
   simpa [Ideal.mk_ker] using hIJ
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- When `I ⊓ J` is a sub-dp-ideal of `I`, this is the divided power structure on the ideal
- `I(A⧸J)` of the quotient. -/
+`I(A⧸J)` of the quotient. -/
 noncomputable def dividedPowers : DividedPowers (I.map (Ideal.Quotient.mk J)) :=
   DividedPowers.Quotient.OfSurjective.dividedPowers
     hI Ideal.Quotient.mk_surjective (refl _) (isSubDPIdeal_aux hI hIJ)

@@ -23,13 +23,13 @@ accessible category, any object is presentable.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
 namespace CategoryTheory
 
-open Limits
+open Limits Opposite
 
 section
 
@@ -54,6 +54,21 @@ instance [IsCardinalLocallyPresentable C κ] : IsCardinalAccessibleCategory C κ
 
 example (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ] :
     ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C κ) := inferInstance
+
+section Finite
+
+open Cardinal
+attribute [local instance] fact_isRegular_aleph0
+
+/-- A category is locally finitely presentable if it is locally `ℵ₀`-presentable. -/
+abbrev IsLocallyFinitelyPresentable :=
+  IsCardinalLocallyPresentable.{w} C ℵ₀
+
+/-- A category is finitely accessible if it is `ℵ₀`-accessible. -/
+abbrev IsFinitelyAccessibleCategory :=
+  IsCardinalAccessibleCategory.{w} C ℵ₀
+
+end Finite
 
 end
 
@@ -88,5 +103,23 @@ instance [IsAccessibleCategory.{w} C] (X : C) : IsPresentable.{w} X := by
 example [IsLocallyPresentable.{w} C] (X : C) : IsPresentable.{w} X := inferInstance
 
 end
+
+lemma ObjectProperty.le_isCardinalPresentable
+    {C : Type u} [Category.{v} C] [IsAccessibleCategory.{w} C]
+    (P : ObjectProperty C) [ObjectProperty.EssentiallySmall.{w} P] :
+    ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular),
+      P ≤ isCardinalPresentable C κ' := by
+  obtain ⟨Q, hQ, h₁, h₂⟩ := EssentiallySmall.exists_small_le.{w} P
+  choose κ hκ' hκ using fun (X : Subtype Q) ↦
+    Functor.IsAccessible.exists_cardinal (coyoneda.obj (op X.val))
+  obtain ⟨κ', h₃, h₄⟩ := HasCardinalLT.exists_regular_cardinal_forall
+    (fun i ↦ (κ i).ord.ToType)
+  have : Fact κ'.IsRegular := ⟨h₃⟩
+  refine ⟨κ', inferInstance, h₂.trans ((isoClosure_le_iff _ _).2 ?_)⟩
+  intro X hX
+  have := h₄ ⟨X, hX⟩
+  simp only [hasCardinalLT_iff_cardinal_mk_lt, Cardinal.mk_toType,
+    Cardinal.card_ord] at this
+  exact isCardinalPresentable_monotone C this.le _ (hκ ⟨X, hX⟩)
 
 end CategoryTheory

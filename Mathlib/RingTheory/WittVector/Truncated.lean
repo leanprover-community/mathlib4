@@ -100,7 +100,7 @@ def out (x : TruncatedWittVector p n R) : 𝕎 R :=
 
 @[simp]
 theorem coeff_out (x : TruncatedWittVector p n R) (i : Fin n) : x.out.coeff i = x.coeff i := by
-  rw [out]; dsimp only; rw [dif_pos i.is_lt, Fin.eta]
+  rw [out]; dsimp only; rw [dite_eq_left i.is_lt, Fin.eta]
 
 theorem out_injective : Injective (@out p n R _) := by
   intro x y h
@@ -197,7 +197,7 @@ end TruncatedWittVector
 /-- A macro tactic used to prove that `truncateFun` respects ring operations. -/
 macro (name := witt_truncateFun_tac) "witt_truncateFun_tac" : tactic =>
   `(tactic|
-    { show _ = WittVector.truncateFun n _
+    { change _ = WittVector.truncateFun n _
       apply TruncatedWittVector.out_injective
       iterate rw [WittVector.out_truncateFun]
       first
@@ -435,11 +435,11 @@ to a ring hom `S → 𝕎 R`.
 `lift` defines the universal property of `𝕎 R` as the inverse limit of `TruncatedWittVector n`.
 -/
 def lift : S →+* 𝕎 R := by
-  refine {  toFun := liftFun f
-            map_zero' := ?_
-            map_one' := ?_
-            map_add' := ?_
-            map_mul' := ?_ } <;>
+  refine { toFun := liftFun f
+           map_zero' := ?_
+           map_one' := ?_
+           map_add' := ?_
+           map_mul' := ?_ } <;>
   ( intros
     rw [← sub_eq_zero, ← Ideal.mem_bot, ← iInf_ker_truncate, Ideal.mem_iInf]
     simp [RingHom.mem_ker, f_compat])

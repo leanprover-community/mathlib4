@@ -17,9 +17,7 @@ public import Mathlib.Order.Interval.Finset.Nat
 This file proves lemmas about `∏ x ∈ Ixx a b, f x` and `∑ x ∈ Ixx a b, f x`.
 -/
 
-@[expose] public section
-
-open Order
+public section
 
 variable {α M : Type*} [CommMonoid M] {f : α → M} {a b : α}
 
@@ -34,57 +32,33 @@ variable [LocallyFiniteOrder α]
 lemma mul_prod_Ico_eq_prod_Icc (h : a ≤ b) : f b * ∏ x ∈ Ico a b, f x = ∏ x ∈ Icc a b, f x := by
   rw [Icc_eq_cons_Ico h, prod_cons]
 
-@[deprecated (since := "2025-05-03")] alias right_mul_prod_Ico := mul_prod_Ico_eq_prod_Icc
-@[deprecated (since := "2025-05-03")] alias right_add_sum_Ico := add_sum_Ico_eq_sum_Icc
-
 @[to_additive]
 lemma prod_Ico_mul_eq_prod_Icc (h : a ≤ b) : (∏ x ∈ Ico a b, f x) * f b = ∏ x ∈ Icc a b, f x := by
   rw [mul_comm, mul_prod_Ico_eq_prod_Icc h]
-
-@[deprecated (since := "2025-05-03")] alias prod_Ico_mul_right := prod_Ico_mul_eq_prod_Icc
-@[deprecated (since := "2025-05-03")] alias sum_Ico_add_right := sum_Ico_add_eq_sum_Icc
 
 @[to_additive]
 lemma mul_prod_Ioc_eq_prod_Icc (h : a ≤ b) : f a * ∏ x ∈ Ioc a b, f x = ∏ x ∈ Icc a b, f x := by
   rw [Icc_eq_cons_Ioc h, prod_cons]
 
-@[deprecated (since := "2025-05-03")] alias left_mul_prod_Ioc := mul_prod_Ioc_eq_prod_Icc
-@[deprecated (since := "2025-05-03")] alias left_add_sum_Ioc := add_sum_Ioc_eq_sum_Icc
-
 @[to_additive]
 lemma prod_Ioc_mul_eq_prod_Icc (h : a ≤ b) : (∏ x ∈ Ioc a b, f x) * f a = ∏ x ∈ Icc a b, f x := by
   rw [mul_comm, mul_prod_Ioc_eq_prod_Icc h]
-
-@[deprecated (since := "2025-05-03")] alias prod_Ioc_mul_left := prod_Ioc_mul_eq_prod_Icc
-@[deprecated (since := "2025-05-03")] alias sum_Ioc_add_left := sum_Ioc_add_eq_sum_Icc
 
 @[to_additive]
 lemma mul_prod_Ioo_eq_prod_Ico (h : a < b) : f a * ∏ x ∈ Ioo a b, f x = ∏ x ∈ Ico a b, f x := by
   rw [Ico_eq_cons_Ioo h, prod_cons]
 
-@[deprecated (since := "2025-05-03")] alias left_mul_prod_Ioo := mul_prod_Ioo_eq_prod_Ico
-@[deprecated (since := "2025-05-03")] alias left_add_sum_Ioo := add_sum_Ioo_eq_sum_Ico
-
 @[to_additive]
 lemma prod_Ioo_mul_eq_prod_Ico (h : a < b) : (∏ x ∈ Ioo a b, f x) * f a = ∏ x ∈ Ico a b, f x := by
   rw [mul_comm, mul_prod_Ioo_eq_prod_Ico h]
-
-@[deprecated (since := "2025-05-03")] alias prod_Ioo_mul_left := prod_Ioo_mul_eq_prod_Ico
-@[deprecated (since := "2025-05-03")] alias sum_Ioo_add_left := sum_Ioo_add_eq_sum_Ico
 
 @[to_additive]
 lemma mul_prod_Ioo_eq_prod_Ioc (h : a < b) : f b * ∏ x ∈ Ioo a b, f x = ∏ x ∈ Ioc a b, f x := by
   rw [Ioc_eq_cons_Ioo h, prod_cons]
 
-@[deprecated (since := "2025-05-03")] alias right_mul_prod_Ioo := mul_prod_Ioo_eq_prod_Ioc
-@[deprecated (since := "2025-05-03")] alias right_add_sum_Ioo := add_sum_Ioo_eq_sum_Ioc
-
 @[to_additive]
 lemma prod_Ioo_mul_eq_prod_Ioc (h : a < b) : (∏ x ∈ Ioo a b, f x) * f b = ∏ x ∈ Ioc a b, f x := by
   rw [mul_comm, mul_prod_Ioo_eq_prod_Ioc h]
-
-@[deprecated (since := "2025-05-03")] alias prod_Ioo_mul_right := prod_Ioo_mul_eq_prod_Ioc
-@[deprecated (since := "2025-05-03")] alias sum_Ioo_add_right := sum_Ioo_add_eq_sum_Ioc
 
 variable [AddMonoidWithOne α] [SuccAddOrder α]
 
@@ -103,15 +77,9 @@ variable [LocallyFiniteOrderTop α]
 lemma mul_prod_Ioi_eq_prod_Ici (a : α) : f a * ∏ x ∈ Ioi a, f x = ∏ x ∈ Ici a, f x := by
   rw [Ici_eq_cons_Ioi, prod_cons]
 
-@[deprecated (since := "2025-05-03")] alias left_mul_prod_Ioi := mul_prod_Ioi_eq_prod_Ici
-@[deprecated (since := "2025-05-03")] alias left_add_sum_Ioi := add_sum_Ioi_eq_sum_Ici
-
 @[to_additive]
 lemma prod_Ioi_mul_eq_prod_Ici (a : α) : (∏ x ∈ Ioi a, f x) * f a = ∏ x ∈ Ici a, f x := by
   rw [mul_comm, mul_prod_Ioi_eq_prod_Ici]
-
-@[deprecated (since := "2025-05-03")] alias prod_Ioi_mul_left := prod_Ioi_mul_eq_prod_Ici
-@[deprecated (since := "2025-05-03")] alias sum_Ioi_add_left := sum_Ioi_add_eq_sum_Ici
 
 end LocallyFiniteOrderTop
 
@@ -122,15 +90,9 @@ variable [LocallyFiniteOrderBot α]
 lemma mul_prod_Iio_eq_prod_Iic (a : α) : f a * ∏ x ∈ Iio a, f x = ∏ x ∈ Iic a, f x := by
   rw [Iic_eq_cons_Iio, prod_cons]
 
-@[deprecated (since := "2025-05-03")] alias right_mul_prod_Iio := mul_prod_Iio_eq_prod_Iic
-@[deprecated (since := "2025-05-03")] alias right_add_sum_Iio := add_sum_Iio_eq_sum_Iic
-
 @[to_additive]
 lemma prod_Iio_mul_eq_prod_Iic (a : α) : (∏ x ∈ Iio a, f x) * f a = ∏ x ∈ Iic a, f x := by
   rw [mul_comm, mul_prod_Iio_eq_prod_Iic]
-
-@[deprecated (since := "2025-05-03")] alias prod_Iio_mul_right := prod_Iio_mul_eq_prod_Iic
-@[deprecated (since := "2025-05-03")] alias sum_Iio_add_right := sum_Iio_add_eq_sum_Iic
 
 end LocallyFiniteOrderBot
 
@@ -149,6 +111,33 @@ lemma prod_Ico_mul_eq_prod_Ico_add_one (hab : a ≤ b) (f : α → M) :
 
 end LocallyFiniteOrder
 
+section LocallyFiniteOrderBot
+variable [LocallyFiniteOrderBot α]
+
+@[to_additive (dont_translate := α)]
+lemma prod_Iio_add_one_comm [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
+    (a : α) (f : α → M) : ∏ i < a + 1, f i = f a * (∏ i < a, f i) := by
+  simp [Iio_add_one_eq_Iic, ← Iio_insert, Finset.prod_insert]
+
+@[to_additive (dont_translate := α) (attr := simp)]
+lemma prod_Iio_add_one [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
+    (a : α) (f : α → M) : ∏ i < a + 1, f i = (∏ i < a, f i) * f a := by
+  simp_rw [prod_Iio_add_one_comm, mul_comm]
+
+@[to_additive (dont_translate := α)]
+lemma prod_Iic_add_one_comm [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
+    (a : α) (f : α → M) : ∏ i ≤ a + 1, f i = f (a + 1) * (∏ i ≤ a, f i) := by
+  simp only [← Iio_insert, mem_Iio, lt_self_iff_false, not_false_eq_true, prod_insert,
+    prod_Iio_add_one_comm]
+
+@[to_additive (dont_translate := α) (attr := simp)]
+lemma prod_Iic_add_one [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
+    (a : α) (f : α → M) : ∏ i ≤ a + 1, f i = (∏ i ≤ a, f i) * f (a + 1) := by
+  simp_rw [prod_Iic_add_one_comm, mul_comm]
+
+end LocallyFiniteOrderBot
+
+section LocallyFiniteOrderTopBot
 variable [Fintype α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
 
 @[to_additive]
@@ -159,8 +148,11 @@ lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag (f : α → α → M) :
   rw [prod_sigma', prod_sigma']
   refine prod_nbij' (fun i ↦ ⟨i.2, i.1⟩) (fun i ↦ ⟨i.2, i.1⟩) ?_ ?_ ?_ ?_ ?_ <;> simp
 
+end LocallyFiniteOrderTopBot
+
 end LinearOrder
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a sequence of finite sets `s₀ ⊆ s₁ ⊆ s₂ ⋯`, the product of `gᵢ` over `i ∈ sₙ` is equal
 to `∏_{i ∈ s₀} gᵢ` * `∏_{j < n, i ∈ sⱼ₊₁ \ sⱼ} gᵢ`. -/
 @[to_additive /-- Given a sequence of finite sets `s₀ ⊆ s₁ ⊆ s₂ ⋯`, the sum of `gᵢ` over `i ∈ sₙ` is
@@ -174,6 +166,6 @@ lemma prod_eq_prod_range_sdiff
   congrm (∏ x ∈ ?_, g x) * ∏ k ∈ range n, ∏ x ∈ s (k + 1) \ ?_, g x
   · simp
   · change (Iic k).sup (s ∘ id) = s k
-    rw [← comp_sup_eq_sup_comp_of_nonempty hs nonempty_Iic, sup_Iic]
+    rw [← apply_sup_eq_sup_comp_of_nonempty hs nonempty_Iic, sup_Iic]
 
 end Finset

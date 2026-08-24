@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 # Lemmas about subtraction in an unbundled canonically ordered monoids
 -/
 
-@[expose] public section
+public section
 
 -- These are about *unbundled* canonically ordered monoids
 assert_not_exists IsOrderedMonoid
@@ -56,7 +56,7 @@ theorem lt_of_tsub_lt_tsub_right_of_le (h : c ≤ b) (h2 : a - c < b - c) : a < 
   exact h2.false
 
 theorem tsub_add_tsub_cancel (hab : b ≤ a) (hcb : c ≤ b) : a - b + (b - c) = a - c := by
-  convert tsub_add_cancel_of_le (tsub_le_tsub_right hab c) using 2
+  convert! tsub_add_cancel_of_le (tsub_le_tsub_right hab c) using 2
   rw [tsub_tsub, add_tsub_cancel_of_le hcb]
 
 theorem tsub_tsub_tsub_cancel_right (h : c ≤ b) : a - c - (b - c) = a - b := by
@@ -131,7 +131,7 @@ protected theorem lt_tsub_iff_left_of_le (hc : AddLECancellable c) (h : c ≤ b)
 
 protected theorem tsub_inj_right (hab : AddLECancellable (a - b)) (h₁ : b ≤ a) (h₂ : c ≤ a)
     (h₃ : a - b = a - c) : b = c := by
-  rw [← hab.inj]
+  rw [← hab.inj_right]
   rw [tsub_add_cancel_of_le h₁, h₃, tsub_add_cancel_of_le h₂]
 
 protected theorem lt_of_tsub_lt_tsub_left_of_le [AddLeftReflectLT α]

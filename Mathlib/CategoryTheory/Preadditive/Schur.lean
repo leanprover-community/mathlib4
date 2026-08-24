@@ -13,6 +13,7 @@ public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 /-!
 # Schur's lemma
+
 We first prove the part of Schur's Lemma that holds in any preadditive category with kernels,
 that any nonzero morphism between simple objects
 is an isomorphism.
@@ -30,7 +31,7 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 variable [Preadditive C]
 
 -- See also `epi_of_nonzero_to_simple`, which does not require `Preadditive C`.
@@ -63,11 +64,11 @@ the endomorphisms of a simple object form a division ring. -/
 noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) where
   inv f := if h : f = 0 then 0 else haveI := isIso_of_hom_simple h; inv f
   exists_pair_ne := ⟨𝟙 X, 0, id_nonzero _⟩
-  inv_zero := dif_pos rfl
+  inv_zero := dite_eq_left rfl
   mul_inv_cancel f hf := by
     dsimp
-    rw [dif_neg hf]
-    haveI := isIso_of_hom_simple hf
+    rw [dite_eq_right hf]
+    have := isIso_of_hom_simple hf
     exact IsIso.inv_hom_id f
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
@@ -134,9 +135,10 @@ theorem endomorphism_simple_eq_smul_id {X : C} [Simple X] [FiniteDimensional �
 /-- Endomorphisms of a simple object form a field if they are finite dimensional.
 This can't be an instance as `𝕜` would be undetermined.
 -/
+@[instance_reducible]
 noncomputable def fieldEndOfFiniteDimensional (X : C) [Simple X] [I : FiniteDimensional 𝕜 (X ⟶ X)] :
     Field (End X) := by
-  classical exact
+  exact
     { (inferInstance : DivisionRing (End X)) with
       mul_comm := fun f g => by
         obtain ⟨c, rfl⟩ := endomorphism_simple_eq_smul_id 𝕜 f
@@ -153,11 +155,11 @@ for the refinements when we know whether or not the simples are isomorphic.
 -/
 theorem finrank_hom_simple_simple_le_one (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)] [Simple X]
     [Simple Y] : finrank 𝕜 (X ⟶ Y) ≤ 1 := by
-  obtain (h|h) := subsingleton_or_nontrivial (X ⟶ Y)
+  obtain (h | h) := subsingleton_or_nontrivial (X ⟶ Y)
   · rw [finrank_zero_of_subsingleton]
     exact zero_le_one
   · obtain ⟨f, nz⟩ := (nontrivial_iff_exists_ne 0).mp h
-    haveI fi := (isIso_iff_nonzero f).mpr nz
+    have fi := (isIso_iff_nonzero f).mpr nz
     refine finrank_le_one f ?_
     intro g
     obtain ⟨c, w⟩ := endomorphism_simple_eq_smul_id 𝕜 (g ≫ inv f)

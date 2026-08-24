@@ -53,6 +53,8 @@ theorem LinearMap.BilinForm.isSkewAdjoint_bracket {f g : Module.End R M}
   change IsAdjointPair B B (f * g - g * f) (-(f * g - g * f)); rw [neg_sub]
   exact hfg.sub hgf
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- Given an `R`-module `M`, equipped with a bilinear form, the skew-adjoint endomorphisms form a
 Lie subalgebra of the Lie algebra of endomorphisms. -/
 def skewAdjointLieSubalgebra : LieSubalgebra R (Module.End R M) :=
@@ -87,11 +89,13 @@ section SkewAdjointMatrices
 
 open scoped Matrix
 
-variable {R : Type u} {n : Type w} [CommRing R] [DecidableEq n] [Fintype n]
+variable {R : Type u} {n : Type w} [CommRing R] [Fintype n]
 variable (J : Matrix n n R)
 
 theorem Matrix.lie_transpose (A B : Matrix n n R) : ⁅A, B⁆ᵀ = ⁅Bᵀ, Aᵀ⁆ :=
   show (A * B - B * A)ᵀ = Bᵀ * Aᵀ - Aᵀ * Bᵀ by simp
+
+variable [DecidableEq n]
 
 theorem Matrix.isSkewAdjoint_bracket {A B : Matrix n n R} (hA : A ∈ skewAdjointMatricesSubmodule J)
     (hB : B ∈ skewAdjointMatricesSubmodule J) : ⁅A, B⁆ ∈ skewAdjointMatricesSubmodule J := by
@@ -103,6 +107,8 @@ theorem Matrix.isSkewAdjoint_bracket {A B : Matrix n n R} (hA : A ∈ skewAdjoin
     LieRing.of_associative_ring_bracket, sub_mul, mul_assoc, mul_assoc, hA, hB, ← mul_assoc,
     ← mul_assoc, hA, hB]
   noncomm_ring
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The Lie subalgebra of skew-adjoint square matrices corresponding to a square matrix `J`. -/
 def skewAdjointMatricesLieSubalgebra : LieSubalgebra R (Matrix n n R) :=
@@ -139,7 +145,7 @@ def skewAdjointMatricesLieSubalgebraEquivTranspose {m : Type w} [DecidableEq m] 
   LieEquiv.ofSubalgebras _ _ e.toLieEquiv <| by
     ext A
     suffices J.IsSkewAdjoint (e.symm A) ↔ (e J).IsSkewAdjoint A by
-      simpa [- LieSubalgebra.mem_map, LieSubalgebra.mem_map_submodule]
+      simpa [-LieSubalgebra.mem_map, LieSubalgebra.mem_map_submodule]
     simp only [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair, ← h,
       ← Function.Injective.eq_iff e.injective, map_mul, AlgEquiv.apply_symm_apply, map_neg]
 

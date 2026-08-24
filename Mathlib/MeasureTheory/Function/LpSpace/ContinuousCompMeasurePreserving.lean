@@ -23,7 +23,7 @@ defined on `MeasureTheory.Lp E p ν × {f : C(X, Y) // MeasurePreserving f μ ν
 Finally, we provide dot notation convenience lemmas.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set MeasureTheory
 open scoped ENNReal Topology symmDiff
@@ -52,7 +52,8 @@ theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
       compMeasurePreserving gf.2.1 gf.2.2 gf.1 := by
   have hp₀ : p ≠ 0 := (one_pos.trans_le Fact.out).ne'
   refine continuous_prod_of_dense_continuous_lipschitzWith _ 1
-    (MeasureTheory.Lp.simpleFunc.dense hp) ?_ fun f ↦ (isometry_compMeasurePreserving f.2).lipschitz
+    (MeasureTheory.Lp.simpleFunc.dense hp) ?_ fun f ↦
+      (isometry_compMeasurePreserving f.2).lipschitzWith
   intro f hf
   lift f to Lp.simpleFunc E p ν using hf
   induction f using Lp.simpleFunc.induction hp₀ hp with
@@ -80,7 +81,7 @@ theorem Filter.Tendsto.compMeasurePreservingLp {α : Type*} {l : Filter α}
   replace hg : Tendsto (fun a ↦ ⟨g a, hgm a⟩ : α → {g : C(X, Y) // MeasurePreserving g μ ν})
       l (𝓝 ⟨g₀, hgm₀⟩) :=
     tendsto_subtype_rng.2 hg
-  convert this.comp (hf.prodMk_nhds hg)
+  convert! this.comp (hf.prodMk_nhds hg)
 
 variable {Z : Type*} [TopologicalSpace Z] {f : Z → Lp E p ν} {g : Z → C(X, Y)} {s : Set Z} {z : Z}
 

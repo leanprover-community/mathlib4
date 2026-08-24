@@ -19,7 +19,7 @@ This file is very similar to `Mathlib/Data/Finset/NAry.lean`, `Mathlib/Order/Fil
 `Mathlib/Data/Option/NAry.lean`. Please keep them in sync.
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -52,10 +52,10 @@ theorem image_subset_image2_right (ha : a ∈ s) : f a '' t ⊆ image2 f s t :=
   forall_mem_image.2 fun _ => mem_image2_of_mem ha
 
 lemma forall_mem_image2 {p : γ → Prop} :
-    (∀ z ∈ image2 f s t, p z) ↔ ∀ x ∈ s, ∀ y ∈ t, p (f x y) := by aesop
+    (∀ z ∈ image2 f s t, p z) ↔ ∀ x ∈ s, ∀ y ∈ t, p (f x y) := by grind
 
 lemma exists_mem_image2 {p : γ → Prop} :
-    (∃ z ∈ image2 f s t, p z) ↔ ∃ x ∈ s, ∃ y ∈ t, p (f x y) := by aesop
+    (∃ z ∈ image2 f s t, p z) ↔ ∃ x ∈ s, ∃ y ∈ t, p (f x y) := by grind
 
 @[simp]
 theorem image2_subset_iff {u : Set γ} : image2 f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=
@@ -65,7 +65,7 @@ theorem image2_subset_iff_left : image2 f s t ⊆ u ↔ ∀ a ∈ s, (fun b => f
   simp_rw [image2_subset_iff, image_subset_iff, subset_def, mem_preimage]
 
 theorem image2_subset_iff_right : image2 f s t ⊆ u ↔ ∀ b ∈ t, (fun a => f a b) '' s ⊆ u := by
-  simp_rw [image2_subset_iff, image_subset_iff, subset_def, mem_preimage, @forall₂_swap α]
+  simp_rw [image2_subset_iff, image_subset_iff, subset_def, mem_preimage, @forall₂_comm α]
 
 variable (f)
 
@@ -78,6 +78,7 @@ lemma image_prod : (fun x : α × β ↦ f x.1 x.2) '' s ×ˢ t = image2 f s t :
 
 @[simp] lemma image2_mk_eq_prod : image2 Prod.mk s t = s ×ˢ t := ext <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma image2_curry (f : α × β → γ) (s : Set α) (t : Set β) :
     image2 (fun a b ↦ f (a, b)) s t = f '' s ×ˢ t := by
@@ -139,15 +140,19 @@ theorem image2_inter_subset_left : image2 f (s ∩ s') t ⊆ image2 f s t ∩ im
 theorem image2_inter_subset_right : image2 f s (t ∩ t') ⊆ image2 f s t ∩ image2 f s t' :=
   Monotone.map_inf_le (fun _ _ ↦ image2_subset_left) t t'
 
-theorem subset_image2_diff_left :
+theorem subset_image2_sdiff_left :
     image2 f s t \ image2 f s' t ⊆ image2 f (s \ s') t := by
   rintro - ⟨⟨a, ha, b, hb, rfl⟩, h⟩
   exact ⟨_, ⟨ha, fun ha' ↦ h ⟨_, ha', _, hb, rfl⟩⟩, _, hb, rfl⟩
 
-theorem subset_image2_diff_right :
+@[deprecated (since := "2026-06-03")] alias subset_image2_diff_left := subset_image2_sdiff_left
+
+theorem subset_image2_sdiff_right :
     image2 f s t \ image2 f s t' ⊆ image2 f s (t \ t') := by
   rintro - ⟨⟨a, ha, b, hb, rfl⟩, h⟩
   exact ⟨_, ha, _, ⟨hb, fun hb' ↦ h ⟨_, ha, _, hb', rfl⟩⟩, rfl⟩
+
+@[deprecated (since := "2026-06-03")] alias subset_image2_diff_right := subset_image2_sdiff_right
 
 @[simp]
 theorem image2_singleton_left : image2 f {a} t = f a '' t :=
@@ -311,21 +316,16 @@ lemma image2_right_identity {f : α → β → α} {b : β} (h : ∀ a, f a b = 
 theorem image2_inter_union_subset_union :
     image2 f (s ∩ s') (t ∪ t') ⊆ image2 f s t ∪ image2 f s' t' := by
   rw [image2_union_right]
-  exact
-    union_subset_union (image2_subset_right inter_subset_left)
-      (image2_subset_right inter_subset_right)
+  nth_grw 1 [inter_subset_left, inter_subset_right]
 
 theorem image2_union_inter_subset_union :
     image2 f (s ∪ s') (t ∩ t') ⊆ image2 f s t ∪ image2 f s' t' := by
   rw [image2_union_left]
-  exact
-    union_subset_union (image2_subset_left inter_subset_left)
-      (image2_subset_left inter_subset_right)
+  nth_grw 1 [inter_subset_left, inter_subset_right]
 
 theorem image2_inter_union_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
     image2 f (s ∩ t) (s ∪ t) ⊆ image2 f s t := by
-  rw [inter_comm]
-  exact image2_inter_union_subset_union.trans (union_subset (image2_comm hf).subset Subset.rfl)
+  grw [inter_comm, image2_inter_union_subset_union, image2_comm hf, union_self]
 
 theorem image2_union_inter_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
     image2 f (s ∪ t) (s ∩ t) ⊆ image2 f s t := by

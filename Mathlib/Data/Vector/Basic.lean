@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Data.Vector.Defs
 public import Mathlib.Data.List.Nodup
-public import Mathlib.Data.List.OfFn
 public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Batteries.Data.Fin.Lemmas
+public import Mathlib.Data.Fin.SuccPred
 
 /-!
 # Additional theorems and definitions about the `Vector` type
@@ -28,8 +29,6 @@ namespace List.Vector
 
 @[inherit_doc]
 infixr:67 " ::ᵥ " => Vector.cons
-
-attribute [simp] head_cons tail_cons
 
 instance [Inhabited α] : Inhabited (Vector α n) :=
   ⟨ofFn default⟩
@@ -144,6 +143,7 @@ theorem get_eq_get_toList (v : Vector α n) (i : Fin n) :
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
   apply List.getElem_replicate
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem get_map {β : Type*} (v : Vector α n) (f : α → β) (i : Fin n) :
     (v.map f).get i = f (v.get i) := by
@@ -233,8 +233,7 @@ theorem map_id {n : ℕ} (v : Vector α n) : Vector.map id v = v :=
   Vector.eq _ _ (by simp only [List.map_id, Vector.toList_map])
 
 theorem nodup_iff_injective_get {v : Vector α n} : v.toList.Nodup ↔ Function.Injective v.get := by
-  obtain ⟨l, hl⟩ := v
-  subst hl
+  obtain ⟨l, rfl⟩ := v
   exact List.nodup_iff_injective_get
 
 theorem head?_toList : ∀ v : Vector α n.succ, (toList v).head? = some (head v)
@@ -249,6 +248,7 @@ to the `List.reverse` after retrieving a vector's `toList`. -/
 theorem toList_reverse {v : Vector α n} : v.reverse.toList = v.toList.reverse :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem reverse_reverse {v : Vector α n} : v.reverse.reverse = v := by
   cases v
@@ -282,15 +282,12 @@ def last (v : Vector α (n + 1)) : α :=
 theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `last` element of a vector is the `head` of the `reverse` vector. -/
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
   rw [← get_zero, last_def, get_eq_get_toList, get_eq_get_toList]
   simp_rw [toList_reverse]
-  rw [List.get_eq_getElem, List.get_eq_getElem, ← Option.some_inj, Fin.cast, Fin.cast,
-    ← List.getElem?_eq_getElem, ← List.getElem?_eq_getElem, List.getElem?_reverse]
-  · congr
-    simp
-  · simp
+  simp
 
 section Scan
 
@@ -306,9 +303,10 @@ def scanl : Vector β (n + 1) :=
 
 /-- Providing an empty vector to `scanl` gives the starting value `b : β`. -/
 @[simp]
-theorem scanl_nil : scanl f b nil = b ::ᵥ nil :=
-  rfl
+theorem scanl_nil : scanl f b nil = b ::ᵥ nil := by
+  ext; simp [scanl, get]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The recursive step of `scanl` splits a vector `x ::ᵥ v : Vector α (n + 1)`
 into the provided starting value `b : β` and the recursed `scanl`
 `f b x : β` as the starting value.
@@ -316,7 +314,8 @@ into the provided starting value `b : β` and the recursed `scanl`
 This lemma is the `cons` version of `scanl_get`.
 -/
 @[simp]
-theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := rfl
+theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := by
+  apply Vector.eq; simp [scanl]
 
 /-- The underlying `List` of a `Vector` after a `scanl` is the `List.scanl`
 of the underlying `List` of the original `Vector`.
@@ -371,7 +370,7 @@ theorem scanl_get (i : Fin n) :
   | succ n hn =>
     rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine Fin.cases ?_ ?_ i
-    · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
+    · simp
     · intro i'
       simp only [hn, Fin.castSucc_succ, get_cons_succ]
 
@@ -519,7 +518,7 @@ def casesOn₃ {motive : ∀ {n}, Vector α n → Vector β n → Vector γ n �
 
 /-- Cast a vector to an array. -/
 def toArray : Vector α n → Array α
-  | ⟨xs, _⟩ => cast (by rfl) xs.toArray
+  | ⟨xs, _⟩ => xs.toArray
 
 section InsertIdx
 
@@ -544,9 +543,7 @@ theorem eraseIdx_insertIdx_self {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
   Subtype.ext (List.eraseIdx_insertIdx_self ..)
 
-@[deprecated (since := "2025-06-17")]
-alias eraseIdx_insertIdx := eraseIdx_insertIdx_self
-
+set_option backward.isDefEq.respectTransparency false in
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
     ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},
@@ -592,10 +589,12 @@ theorem toList_set (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList = v.toList.set i a :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem get_set_same (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).get i = a := by
   cases v; cases i; simp [Vector.set, get_eq_get_toList]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
     (v.set i a).get j = v.get j := by
   cases v; cases i; cases j
@@ -655,6 +654,7 @@ protected theorem traverse_def (f : α → F β) (x : α) :
     ∀ xs : Vector α n, (x ::ᵥ xs).traverse f = cons <$> f x <*> xs.traverse f := by
   rintro ⟨xs, rfl⟩; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure : _ → Id _) = pure x := by
   rintro ⟨x, rfl⟩; dsimp [Vector.traverse, cast]
   induction x with | nil => rfl | cons x xs IH => simp! [IH]
@@ -680,6 +680,7 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
     rw [Vector.traverse_def, ih]
     simp [functor_norm, Function.comp_def]
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = pure (map f x) := by
   rintro ⟨x, rfl⟩
@@ -703,6 +704,7 @@ instance : Traversable.{u} (flip Vector n) where
   traverse := @Vector.traverse n
   map {α β} := @Vector.map.{u, u} α β n
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LawfulTraversable.{u} (flip Vector n) where
   id_traverse := @Vector.id_traverse n
   comp_traverse := Vector.comp_traverse
@@ -731,6 +733,7 @@ theorem get_append_cons_succ {i : Fin (n + m)} {h} :
     get (x ::ᵥ xs ++ ys) ⟨i+1, h⟩ = get (xs ++ ys) i :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem append_nil : xs ++ (nil : Vector α 0) = xs := by
   cases xs; simp only [append_def, append_nil]
@@ -742,7 +745,6 @@ variable (ys : Vector β n)
 @[simp]
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
     get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
-  clear * - v₁ v₂
   induction v₁, v₂ using inductionOn₂ with
   | nil =>
     exact Fin.elim0 i

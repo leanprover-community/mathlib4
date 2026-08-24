@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.RingTheory.Ideal.Defs
-public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # The lattice of ideals in a ring
@@ -19,22 +20,22 @@ Some basic results on lattice operations on ideals: `⊥`, `⊤`, `⊔`, `⊓`.
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {α : Type u}
 
-open Set Function
+open Set
 
-open Pointwise
+open scoped Pointwise
 
 section Semiring
 
 namespace Ideal
 
-variable [Semiring α] (I : Ideal α) {a b : α}
+variable [Semiring α] (I : Ideal α) {a : α}
 
 instance (priority := low) : IsTwoSided (⊥ : Ideal α) :=
   ⟨fun _ h ↦ by rw [h, zero_mul]; exact zero_mem _⟩

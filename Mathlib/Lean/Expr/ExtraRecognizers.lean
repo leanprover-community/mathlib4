@@ -5,14 +5,14 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Set.Operations
+public import Mathlib.Data.Set.CoeSort
 
 /-!
 # Additional Expr recognizers needing theory imports
 
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.Expr
 

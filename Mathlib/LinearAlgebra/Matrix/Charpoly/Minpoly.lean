@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.PowerBasis
 This also includes some miscellaneous results about `minpoly` on matrices.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

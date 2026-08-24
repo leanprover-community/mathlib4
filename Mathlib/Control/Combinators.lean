@@ -24,7 +24,3 @@ respectively. -/
 def condM {m : Type → Type} [Monad m] {α : Type} (mbool : m Bool) (tm fm : m α) : m α := do
   let b ← mbool
   cond b tm fm
-
-namespace Monad
-
-end Monad

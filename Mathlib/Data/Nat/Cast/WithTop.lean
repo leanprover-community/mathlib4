@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
@@ -15,7 +14,7 @@ An orphaned lemma about casting from `ℕ` to `WithBot ℕ`,
 exiled here during the port to minimize imports of `Algebra.Order.Ring.Rat`.
 -/
 
-@[expose] public section
+public section
 
 instance : WellFoundedRelation (WithTop ℕ) where
   rel := (· < ·)

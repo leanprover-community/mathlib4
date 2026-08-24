@@ -7,9 +7,9 @@ module
 
 public import Qq
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
-public import Mathlib.Tactic.TypeStar
-public import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToDual
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-!
 # Notation classes for lattice operations
@@ -18,7 +18,7 @@ In this file we introduce typeclasses and definitions for lattice operations.
 
 ## Main definitions
 
-* `HasCompl`: type class for the `ᶜ` notation
+* `Compl`: type class for the `ᶜ` notation
 * `Top`: type class for the `⊤` notation
 * `Bot`: type class for the `⊥` notation
 
@@ -41,14 +41,16 @@ Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` 
 
 /-- Set / lattice complement -/
 @[notation_class]
-class HasCompl (α : Type*) where
+class Compl (α : Type*) where
   /-- Set / lattice complement -/
   compl : α → α
 
-export HasCompl (compl)
+export Compl (compl)
 
 @[inherit_doc]
 postfix:1024 "ᶜ" => compl
+
+initialize_simps_projections Compl
 
 /-! ### `Sup` and `Inf` -/
 
@@ -105,44 +107,55 @@ private meta def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u →
 
 /-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
-meta def delabSup : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
-  let_expr f@Max.max α inst _ _ := ← getExpr | failure
-  have u := f.constLevels![0]!
-  if ← hasLinearOrder u α q(Max) q($(linearOrderToMax u)) inst then
-    failure -- use the default delaborator
-  let x ← withNaryArg 2 delab
-  let y ← withNaryArg 3 delab
-  let stx ← `($x ⊔ $y)
-  annotateGoToSyntaxDef stx
+meta def delabSup : Delab :=
+  whenNotPPOption getPPExplicit <|
+  whenPPOption getPPNotation <|
+  withOverApp 4 do
+    let_expr f@Max.max α inst _ _ := ← getExpr | failure
+    have u := f.constLevels![0]!
+    if ← hasLinearOrder u α q(Max) q($(linearOrderToMax u)) inst then
+      failure -- use the default delaborator
+    let x ← withNaryArg 2 delab
+    let y ← withNaryArg 3 delab
+    let stx ← `($x ⊔ $y)
+    annotateGoToSyntaxDef stx
 
 /-- Delaborate `min x y` into `x ⊓ y` if the type is not a linear order. -/
 @[delab app.Min.min]
-meta def delabInf : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
-  let_expr f@Min.min α inst _ _ := ← getExpr | failure
-  have u := f.constLevels![0]!
-  if ← hasLinearOrder u α q(Min) q($(linearOrderToMin u)) inst then
-    failure -- use the default delaborator
-  let x ← withNaryArg 2 delab
-  let y ← withNaryArg 3 delab
-  let stx ← `($x ⊓ $y)
-  annotateGoToSyntaxDef stx
+meta def delabInf : Delab :=
+  whenNotPPOption getPPExplicit <|
+  whenPPOption getPPNotation <|
+  withOverApp 4 do
+    let_expr f@Min.min α inst _ _ := ← getExpr | failure
+    have u := f.constLevels![0]!
+    if ← hasLinearOrder u α q(Min) q($(linearOrderToMin u)) inst then
+      failure -- use the default delaborator
+    let x ← withNaryArg 2 delab
+    let y ← withNaryArg 3 delab
+    let stx ← `($x ⊓ $y)
+    annotateGoToSyntaxDef stx
 
 end Mathlib.Meta
 
 /-- Syntax typeclass for Heyting implication `⇨`. -/
-@[notation_class]
+@[notation_class, to_dual SDiff]
 class HImp (α : Type*) where
   /-- Heyting implication `⇨` -/
   himp : α → α → α
 
+set_option linter.translateOverwrite false in
+attribute [to_dual existing (reorder := 3 4) sdiff] HImp.himp
+set_option linter.translateOverwrite false in
+attribute [to_dual existing (reorder := himp (1 2))] HImp.mk
+
 /-- Syntax typeclass for Heyting negation `￢`.
 
-The difference between `HasCompl` and `HNot` is that the former belongs to Heyting algebras,
+The difference between `Compl` and `HNot` is that the former belongs to Heyting algebras,
 while the latter belongs to co-Heyting algebras. They are both pseudo-complements, but `compl`
 underestimates while `HNot` overestimates. In Boolean algebras, they are equal.
 See `hnot_eq_compl`.
 -/
-@[notation_class]
+@[notation_class, to_dual Compl]
 class HNot (α : Type*) where
   /-- Heyting negation `￢` -/
   hnot : α → α
@@ -157,6 +170,8 @@ infixr:60 " ⇨ " => himp
 /-- Heyting negation -/
 prefix:72 "￢" => hnot
 
+initialize_simps_projections HImp
+initialize_simps_projections HNot
 
 /-- Typeclass for the `⊤` (`\top`) notation -/
 @[notation_class, ext]
@@ -181,3 +196,19 @@ instance (priority := 100) top_nonempty (α : Type*) [Top α] : Nonempty α :=
   ⟨⊤⟩
 
 attribute [match_pattern] Bot.bot Top.top
+
+recommended_spelling "compl" for "ᶜ" in [Compl.compl, «term_ᶜ»]
+recommended_spelling "himp" for "⇨" in [HImp.himp, «term_⇨_»]
+recommended_spelling "hnot" for "￢" in [HNot.hnot, «term￢_»]
+recommended_spelling "top" for "⊤" in [Top.top, «term⊤»]
+recommended_spelling "bot" for "⊥" in [Bot.bot, «term⊥»]
+
+recommended_spelling "sup" for "⊔" in [«term_⊔_»]
+recommended_spelling "inf" for "⊓" in [«term_⊓_»]
+
+recommended_spelling "max" for "max" in [Max.max]
+recommended_spelling "min" for "min" in [Min.min]
+/-- `⊔` is the preferred notation for `max` when the type is not linearly ordered. -/
+recommended_spelling "sup" for "⊔" in [Max.max]
+/-- `⊓` is the preferred notation for `min` when the type is not linearly ordered. -/
+recommended_spelling "inf" for "⊓" in [Min.min]

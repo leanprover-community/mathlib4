@@ -16,9 +16,7 @@ Basic results concerning `PartialSups` which follow with minimal assumptions bey
 the `PartialSup` is defined over a `SuccAddOrder`.
 -/
 
-@[expose] public section
-
-open Finset
+public section
 
 variable {α ι : Type*} [SemilatticeSup α] [LinearOrder ι]
 

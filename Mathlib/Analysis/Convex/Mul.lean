@@ -21,7 +21,7 @@ As corollaries, we also prove that `x ↦ x ^ n` is convex
 * `convexOn_zpow`: over $(0, +∞)$ For `n : ℤ`.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -147,7 +147,7 @@ lemma ConcaveOn.mul_convexOn' (hf : ConcaveOn 𝕜 s f) (hg : ConvexOn 𝕜 s g)
 
 lemma ConvexOn.pow (hf : ConvexOn 𝕜 s f) (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x) :
     ∀ n, ConvexOn 𝕜 s (f ^ n)
-  | 0 => by simpa using convexOn_const 1 hf.1
+  | 0 => by simpa using! convexOn_const 1 hf.1
   | n + 1 => by
     rw [pow_succ']
     exact hf.mul (hf.pow hf₀ _) hf₀ (fun x hx ↦ pow_nonneg (hf₀ hx) _) <|

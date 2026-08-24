@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.RingTheory.MatrixPolynomialAlgebra
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -116,7 +117,7 @@ lemma charmatrix_fromBlocks :
     charmatrix (fromBlocks M₁₁ M₁₂ M₂₁ M₂₂) =
       fromBlocks (charmatrix M₁₁) (- M₁₂.map C) (- M₂₁.map C) (charmatrix M₂₂) := by
   simp only [charmatrix]
-  ext (i|i) (j|j) : 2 <;> simp [diagonal]
+  ext (i | i) (j | j) : 2 <;> simp [diagonal]
 
 -- TODO: importing block triangular here is somewhat expensive, if more lemmas about it are added
 -- to this file, it may be worth extracting things out to Charpoly/Block.lean
@@ -129,6 +130,7 @@ lemma charmatrix_blockTriangular_iff {α : Type*} [Preorder α] {M : Matrix n n 
 alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmatrix_blockTriangular_iff
 
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$. -/
+@[wikidata Q849705]
 def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
 
@@ -158,7 +160,7 @@ theorem charpoly_natCast (k : ℕ) :
   simp [charpoly]
 
 theorem charpoly_ofNat (k : ℕ) [k.AtLeastTwo] :
-    charpoly (ofNat(k) : Matrix n n R) = (X - ofNat(k)) ^ Fintype.card n:=
+    charpoly (ofNat(k) : Matrix n n R) = (X - ofNat(k)) ^ Fintype.card n :=
   charpoly_natCast _
 
 @[simp]
@@ -196,9 +198,12 @@ lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h :
     M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by
   simp only [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
 
-lemma charpoly_of_upperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.BlockTriangular id) :
+lemma charpoly_of_isUpperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.IsUpperTriangular) :
     M.charpoly = ∏ i : n, (X - C (M i i)) := by
-  simp [charpoly, det_of_upperTriangular h.charmatrix]
+  simp [charpoly, det_of_isUpperTriangular h.charmatrix]
+
+@[deprecated (since := "2026-07-30")]
+alias charpoly_of_upperTriangular := charpoly_of_isUpperTriangular
 
 -- This proof follows http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 /-- The **Cayley-Hamilton Theorem**, that the characteristic polynomial of a matrix,
@@ -230,6 +235,7 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- Thus we have $χ_M(M) = 0$, which is the desired result.
   exact h
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 A version of `Matrix.charpoly_mul_comm` for rectangular matrices.
 See also `Matrix.charpoly_mul_comm_of_le` which has just `(A * B).charpoly` as the LHS.
@@ -275,17 +281,19 @@ theorem charpoly_vecMulVec (u v : n → R) :
     rw [vecMulVec_eq (ι := Unit), charpoly_mul_comm_of_le (n := Unit) _ _ h, charpoly, charmatrix]
     simp [-Matrix.map_mul, mul_sub, ← pow_succ, h, dotProduct_comm, smul_eq_C_mul]
 
+@[simp]
 theorem charpoly_units_conj (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
-    (M.val * N * M⁻¹.val).charpoly = N.charpoly := by
+    (M.val * N * M.val⁻¹).charpoly = N.charpoly := by
   rw [Matrix.charpoly_mul_comm, ← mul_assoc]
   simp
 
+@[simp]
 theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
-    (M⁻¹.val * N * M.val).charpoly = N.charpoly :=
-  charpoly_units_conj M⁻¹ N
+    (M.val⁻¹ * N * M.val).charpoly = N.charpoly := by
+  simpa using charpoly_units_conj M⁻¹ N
 
 theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
-    (M - scalar n μ).charpoly  = M.charpoly.comp (X + C μ) := by
+    (M - scalar n μ).charpoly = M.charpoly.comp (X + C μ) := by
   simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]
   congr! with σ _ i _
   by_cases hi : σ i = i <;> simp [hi]

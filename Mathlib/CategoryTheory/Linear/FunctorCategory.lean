@@ -23,7 +23,7 @@ namespace CategoryTheory
 open CategoryTheory.Limits Linear
 
 variable {R : Type*} [Semiring R]
-variable {C D : Type*} [Category C] [Category D] [Preadditive D] [Linear R D]
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive D] [Linear R D]
 
 instance functorCategoryLinear : Linear R (C ⥤ D) where
   homModule F G :=

@@ -5,7 +5,6 @@ Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Data.ULift
@@ -62,10 +61,11 @@ open Opposite
 variable {X : Type u} [Preorder X]
 
 /-- Express an inequality as a morphism in the corresponding preorder category. -/
+@[to_dual self]
 def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
 
-@[inherit_doc homOfLE]
+@[inherit_doc homOfLE, to_dual self]
 abbrev _root_.LE.le.hom := @homOfLE
 
 @[simp]
@@ -81,8 +81,7 @@ theorem homOfLE_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
 theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 
-@[nolint defLemma, inherit_doc leOfHom]
-abbrev _root_.Quiver.Hom.le := @leOfHom
+alias _root_.Quiver.Hom.le := leOfHom
 
 @[simp]
 theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
@@ -91,6 +90,12 @@ theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
 lemma homOfLE_isIso_of_eq {x y : X} (h : x ≤ y) (heq : x = y) :
     IsIso (homOfLE h) :=
   ⟨homOfLE (le_of_eq heq.symm), by simp⟩
+
+lemma isIso_homOfLE {x y : X} (h : x = y) :
+    IsIso (homOfLE (by rw [h]) : x ⟶ y) := by
+  subst h
+  change IsIso (𝟙 _)
+  infer_instance
 
 @[simp, reassoc]
 lemma homOfLE_comp_eqToHom {a b c : X} (hab : a ≤ b) (hbc : b = c) :
@@ -119,12 +124,9 @@ def opHomOfLE {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
 theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
   h.unop.le
 
+@[to_dual uniqueFromBot]
 instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) where
   default := homOfLE le_top
-  uniq := fun a => by rfl
-
-instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where
-  default := homOfLE bot_le
   uniq := fun a => by rfl
 
 variable (X) in
@@ -150,6 +152,7 @@ open CategoryTheory
 variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
 /-- A monotone function between preorders induces a functor between the associated categories. -/
+@[implicit_reducible]
 def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
   obj := f
   map g := CategoryTheory.homOfLE (h g.le)
@@ -179,7 +182,7 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 namespace CategoryTheory.Functor
 
 /-- A functor between preorder categories is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
 
 /-- A functor `X ⥤ Y` between preorder categories as an `OrderHom`. -/

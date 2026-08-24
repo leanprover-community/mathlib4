@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Ring.NegOnePow
 In this file, we collect various formulas about determinant of matrices.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -22,6 +22,7 @@ namespace Matrix
 
 variable {R : Type*} [CommRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `M` be a `(n+1) × n` matrix whose row sums to zero. Then all the matrices obtained by
 deleting one row have the same determinant up to a sign. -/
 theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det {n : ℕ}
@@ -47,11 +48,12 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det {n : ℕ}
       · replace hv := congr_fun hv b
         rw [Fin.sum_univ_succAbove _ i.succ, Pi.add_apply, Finset.sum_apply] at hv
         rwa [h, Fin.succAbove_castSucc_self, neg_eq_iff_add_eq_zero, add_comm]
-      · obtain h|h := ne_iff_lt_or_gt.mp h
+      · obtain h | h := ne_iff_lt_or_gt.mp h
         · rw [Fin.succAbove_castSucc_of_lt _ _ h,
             Fin.succAbove_of_succ_le _ _ (Fin.succ_lt_succ_iff.mpr h).le]
         · rw [Fin.succAbove_succ_of_lt _ _ h, Fin.succAbove_castSucc_of_le _ _ h.le]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `M` be a `(n+1) × n` matrix whose column sums to zero. Then all the matrices obtained by
 deleting one column have the same determinant up to a sign. -/
 theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det' {n : ℕ}
@@ -64,6 +66,7 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det' {n : ℕ}
   ext
   simp_rw [Finset.sum_apply, transpose_apply, hv, Pi.zero_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `M` be a `(n+1) × (n+1)` matrix. Assume that all columns, but the `j₀`-column, sums to zero.
 Then its determinant is, up to sign, the sum of the `j₀`-column times the determinant of the
 matrix obtained by deleting any row and the `j₀`-column. -/
@@ -73,7 +76,7 @@ theorem det_eq_sum_column_mul_submatrix_succAbove_succAbove_det {n : ℕ}
     M.det = (-1) ^ (i₀ + j₀ : ℕ) *
       (∑ i, M i j₀) * (M.submatrix (Fin.succAbove i₀) (Fin.succAbove j₀)).det := by
   rw [← one_smul R M.det, ← Matrix.det_updateRow_sum _ i₀ (fun _ ↦ 1), Matrix.det_succ_row _ i₀]
-  simp only [updateRow_apply, if_true, one_smul, submatrix_updateRow_succAbove, Finset.sum_apply]
+  simp only [updateRow_apply, ite_true, one_smul, submatrix_updateRow_succAbove, Finset.sum_apply]
   rw [Fintype.sum_eq_add_sum_subtype_ne _ j₀]
   conv_lhs =>
     enter [2, 2, i]

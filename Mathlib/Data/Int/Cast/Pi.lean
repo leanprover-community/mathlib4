@@ -5,10 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Batteries.Tactic.Alias
 public import Mathlib.Data.Int.Notation
-public import Mathlib.Tactic.TypeStar
-public import Mathlib.Util.AssertExists
 public import Mathlib.Tactic.Push.Attr
 
 /-!
@@ -21,7 +18,7 @@ This file provides a (pointwise) cast from `ℤ` to function types.
 * `Pi.instIntCast`: map `n : ℤ` to the constant function `n : ∀ i, π i`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedMonoid RingHom
 

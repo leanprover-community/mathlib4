@@ -18,11 +18,9 @@ public import Mathlib.Algebra.Prime.Defs
   by mapping it to another integral domain and checking for irreducibility there.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
-
-open Finset AddMonoidAlgebra
 
 open Polynomial
 
@@ -30,7 +28,7 @@ namespace Polynomial
 
 universe u v w y
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type u} {S : Type v} {a b : R}
 
 section
 variable [CommRing R] [IsDomain R] [CommRing S] [IsDomain S] (φ : R →+* S)

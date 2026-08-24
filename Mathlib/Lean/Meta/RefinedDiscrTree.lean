@@ -9,6 +9,8 @@ public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 
 /-!
+# Refined discrimination trees
+
 A discrimination tree for the purpose of unifying local expressions with library results.
 
 This data structure is based on `Lean.Meta.DiscrTree` and `Lean.Meta.LazyDiscrTree`,
@@ -119,15 +121,13 @@ def findImportMatches
   setNGen ngen
   let _ : Inhabited (IO.Ref (Option (RefinedDiscrTree α))) := ⟨← IO.mkRef none⟩
   let ref := EnvExtension.getState ext (← getEnv)
-  -- empty the reference `ref`, so that the reference count stays 1
-  let importTree? ← ref.modifyGet fun tree? => (tree?, none)
-  let importTree ← importTree?.getDM do
+  let importTree ← (← ref.get).getDM do
     profileitM Exception  "RefinedDiscrTree import initialization" (← getOptions) <|
       withTheReader Core.Context withTreeCtx <|
         createImportedDiscrTree cNGen (← getEnv) addEntry constantsPerTask capacityPerTask
   let (importCandidates, importTree) ← getMatch importTree ty false false
   ref.set (some importTree)
-  MonadExcept.ofExcept importCandidates
+  return importCandidates
 
 /-- Returns candidates from this module that match the expression. -/
 def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr) : MetaM (MatchResult α) := do
@@ -135,7 +135,7 @@ def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr) : MetaM (M
     let discrTree ← moduleRef.ref.get
     let (localCandidates, localTree) ← getMatch discrTree ty false false
     moduleRef.ref.set localTree
-    MonadExcept.ofExcept localCandidates
+    return localCandidates
 
 /--
 `findMatches` combines `findImportMatches` and `findModuleMatches`.

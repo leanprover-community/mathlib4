@@ -30,7 +30,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace Functor
 
@@ -140,7 +140,7 @@ def ofSequence : F ⟶ G where
     | succ k hk =>
         intro i j hk'
         obtain rfl : j = i + k + 1 := by lia
-        simp only [← homOfLE_comp (show i ≤ i + k by omega) (show i + k ≤ i + k + 1 by omega),
+        simp only [← homOfLE_comp (show i ≤ i + k by lia) (show i + k ≤ i + k + 1 by lia),
           Functor.map_comp, assoc, naturality, reassoc_of% (hk rfl)]
 
 end NatTrans
@@ -160,6 +160,7 @@ example : (ofOpSequence f).map (homOfLE (show 0 ≤ 3 by lia)).op = (f 2 ≫ f 1
 example : (ofOpSequence f).map (homOfLE (show 3 ≤ 7 by lia)).op =
     ((f 6 ≫ f 5) ≫ f 4) ≫ f 3 := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma ofOpSequence_map_homOfLE_succ (n : ℕ) :
     (ofOpSequence f).map (homOfLE (Nat.le_add_right n 1)).op = f n := by

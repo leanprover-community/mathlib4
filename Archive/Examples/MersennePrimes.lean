@@ -10,7 +10,7 @@ import Mathlib.NumberTheory.LucasLehmer
 
 We run some Lucas-Lehmer tests to prove the first Mersenne primes are prime.
 
-See the discussion at the end of [Mathlib/NumberTheory/LucasLehmer.lean]
+See the discussion at the end of `Mathlib/NumberTheory/LucasLehmer.lean`
 for ideas about extending this to larger Mersenne primes.
 -/
 

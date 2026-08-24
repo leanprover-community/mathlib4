@@ -25,6 +25,7 @@ variable [NonUnitalNonAssocRing R]
 
 /-- For additive subgroups `S` and `T` of a ring, the product of `S` and `T` as submonoids
 is automatically a subgroup, which we define as the product of `S` and `T` as subgroups. -/
+@[instance_reducible]
 protected def mul : Mul (AddSubgroup R) where
   mul M N :=
   { __ := M.toAddSubmonoid * N.toAddSubmonoid

@@ -47,6 +47,8 @@ instance : CoeSort (CommAlgCat R) (Type v) := ⟨carrier⟩
 attribute [coe] carrier
 
 variable (R) in
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `CommAlgCat R`. -/
 abbrev of (X : Type v) [CommRing X] [Algebra R X] : CommAlgCat.{v} R := ⟨X⟩
@@ -61,11 +63,15 @@ structure Hom (A B : CommAlgCat.{v} R) where
   /-- The underlying algebra map. -/
   hom' : A →ₐ[R] B
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category (CommAlgCat.{v} R) where
   Hom A B := Hom A B
   id A := ⟨AlgHom.id R A⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (CommAlgCat.{v} R) (· →ₐ[R] ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -114,7 +120,8 @@ instance : Inhabited (CommAlgCat R) := ⟨of R R⟩
 
 lemma forget_obj (A : CommAlgCat.{v} R) : (forget (CommAlgCat.{v} R)).obj A = A := rfl
 
-lemma forget_map (f : A ⟶ B) : (forget (CommAlgCat.{v} R)).map f = f := rfl
+@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-03-06")]
+lemma forget_map (f : A ⟶ B) : (forget (CommAlgCat.{v} R)).map f = (f : _ → _) := rfl
 
 instance : CommRing ((forget (CommAlgCat R)).obj A) := inferInstanceAs <| CommRing A
 
@@ -156,8 +163,6 @@ def algEquivOfIso (i : A ≅ B) : A ≃ₐ[R] B where
   invFun := i.inv
   left_inv x := by simp
   right_inv x := by simp
-
-@[deprecated (since := "2025-08-22")] alias ofIso := algEquivOfIso
 
 /-- Algebra equivalences between `Algebra`s are the same as isomorphisms in `CommAlgCat`. -/
 @[simps]

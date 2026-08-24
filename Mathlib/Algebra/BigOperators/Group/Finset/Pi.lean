@@ -14,13 +14,11 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 
 variable {ι β : Type*}
-
-open Fin Function
 
 namespace Finset
 

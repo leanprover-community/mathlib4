@@ -19,13 +19,14 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Basic
   point is in the source / target).
 -/
 
-@[expose] public section
+public section
 
-open Function Set Filter Topology
+open Function Set Filter
 
-variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
-  [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y] [TopologicalSpace Y']
-  [TopologicalSpace Z] [TopologicalSpace Z']
+open scoped Topology
+
+variable {X : Type*} {Y : Type*} {Z : Type*}
+  [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 namespace OpenPartialHomeomorph
 

@@ -29,7 +29,7 @@ namespace HomRel
 
 open CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] (homRel : HomRel C)
+variable {C D : Type*} [Category* C] [Category* D] (homRel : HomRel C)
 
 /-- Given `homRel : HomRel C` and `W : MorphismProperty C`, this is the property
 that whenever `homRel f g`, then the morphisms `f` and `g` are sent to the
@@ -48,7 +48,7 @@ open Localization
 
 section
 
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 
 /-- If `L' : Quotient homRel ⥤ D` satisfies the strict universal property of the
 localization, then `Quotient.functor homRel ⋙ L'` also satisfies it. -/
@@ -61,13 +61,13 @@ def strictUniversalPropertyFixedTarget (L' : Quotient homRel ⥤ D)
     univ.lift (CategoryTheory.Quotient.lift _ F
         (fun _ _ f g hfg ↦ (h hfg).map_eq_of_isInvertedBy _ hF)) (by
       rintro K L ⟨f⟩ hf
-      exact hF _ (by simpa [hW] using hf))
+      exact hF _ (by simpa [hW] using! hf))
   fac F hF := by rw [Functor.assoc, univ.fac, Quotient.lift_spec]
   uniq F₁ F₂ h := univ.uniq _ _ (Quotient.lift_unique' _ _ _ h)
 
 variable (E) in
 /-- If `homRel : HomRel C` satisfies `homRel.FactorsThroughLocalization W` and
-that the class of morphisms `W` induces a class of morphism `W'` on the quotient category,
+that the class of morphisms `W` induces a class of morphisms `W'` on the quotient category,
 then `Quotient.functor homRel ⋙ W'.Q` satisfies the universal property of the
 localization. This is used in `HomRel.FactorsThroughLocalization.isLocalizedEquivalence`
 in order to show that as a localizer morphism, the quotient functor induces an
@@ -81,7 +81,7 @@ end
 
 include h in
 /-- If `homRel : HomRel C` satisfies `homRel.FactorsThroughLocalization W` and
-that the class of morphisms `W` induces a class of morphism `W'` on the quotient category,
+that the class of morphisms `W` induces a class of morphisms `W'` on the quotient category,
 then the localizer morphism given by the functor `Quotient.functor HomRel : C ⥤ Quotient homRel`
 induces equivalences on localized categories. -/
 lemma isLocalizedEquivalence :

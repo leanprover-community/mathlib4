@@ -6,7 +6,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 module
 
 public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Asymptotics.Basic
 /-!
 # Asymptotic statements about the operator norm
 
@@ -14,7 +14,7 @@ This file contains lemmas about how operator norm on continuous linear maps inte
 
 -/
 
-@[expose] public section
+public section
 
 open Asymptotics
 

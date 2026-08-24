@@ -5,7 +5,7 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.SetToL1
+public import Mathlib.MeasureTheory.Integral.SetToL1.L1
 
 /-!
 # Bochner integral
@@ -21,7 +21,7 @@ and corresponding API.
 The Bochner integral is defined through the extension process described in the file
 `Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
-1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s * x`.
+1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s • x`.
   `weightedSMul μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
   (defined in the file `Mathlib/MeasureTheory/Integral/SetToL1.lean`) with respect to the set `s`.
 
@@ -42,12 +42,9 @@ The Bochner integral is defined through the extension process described in the f
 * `α →₁[μ] E` : functions in L1 space, i.e., equivalence classes of integrable functions (defined in
                 `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
 * `α →₁ₛ[μ] E` : simple functions in L1 space, i.e., equivalence classes of integrable simple
-                 functions (defined in `Mathlib/MeasureTheory/Function/SimpleFuncDense`)
+                 functions (defined in `Mathlib/MeasureTheory/Function/SimpleFuncDenseLp.lean`)
 
-We also define notations for integral on a set, which are described in the file
-`Mathlib/MeasureTheory/Integral/SetIntegral.lean`.
-
-Note : `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
+Note: `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
 
 ## Tags
 
@@ -115,7 +112,7 @@ theorem weightedSMul_union' (s t : Set α) (ht : MeasurableSet t) (hs_finite : �
     (ht_finite : μ t ≠ ∞) (hdisj : Disjoint s t) :
     (weightedSMul μ (s ∪ t) : F →L[ℝ] F) = weightedSMul μ s + weightedSMul μ t := by
   ext1 x
-  simp_rw [add_apply, weightedSMul_apply, measureReal_union hdisj ht,add_smul]
+  simp_rw [add_apply, weightedSMul_apply, measureReal_union hdisj ht, add_smul]
 
 @[nolint unusedArguments]
 theorem weightedSMul_union (s t : Set α) (_hs : MeasurableSet s) (ht : MeasurableSet t)
@@ -142,7 +139,7 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
 
 theorem weightedSMul_nonneg [PartialOrder F] [IsOrderedModule ℝ F]
     (s : Set α) (x : F) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
-  simp only [weightedSMul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
+  simp only [weightedSMul, _root_.id, coe_id', smul_apply]
   exact smul_nonneg toReal_nonneg hx
 
 end WeightedSMul
@@ -183,7 +180,7 @@ section Integral
 ### The Bochner integral of simple functions
 
 Define the Bochner integral of simple functions of the type `α →ₛ β` where `β` is a normed group,
-and prove basic property of this integral.
+and prove basic properties of this integral.
 -/
 
 
@@ -229,6 +226,7 @@ theorem integral_const {m : MeasurableSpace α} (μ : Measure α) (y : F) :
       integral_eq_sum_of_subset <| (filter_subset _ _).trans (range_const_subset _ _)
     _ = μ.real univ • y := by simp [Set.preimage]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ : Measure α) {s : Set α}
     (hs : MeasurableSet s) : (piecewise s hs f 0).integral μ = f.integral (μ.restrict s) := by
@@ -336,7 +334,7 @@ lemma integral_nonneg {f : α →ₛ F} (hf : 0 ≤ᵐ[μ] f) :
   · suffices μ (f ⁻¹' {f y}) = 0 by simp [this, measureReal_def]
     rw [← nonpos_iff_eq_zero]
     refine le_of_le_of_eq (measure_mono fun x hx ↦ ?_) (ae_iff.mp hf)
-    simp only [Set.mem_preimage, mem_singleton_iff, mem_setOf_eq] at hx ⊢
+    simp only [Set.mem_preimage, mem_singleton_iff, mem_ofPred_eq] at hx ⊢
     exact hx ▸ hy
 
 lemma integral_mono {f g : α →ₛ F} (h : f ≤ᵐ[μ] g) (hf : Integrable f μ) (hg : Integrable g μ) :
@@ -356,8 +354,7 @@ lemma integral_mono_measure {ν} {f : α →ₛ F} (hf : 0 ≤ᵐ[ν] f) (hμν 
     · simp [← hx]
     simp only [measureReal_def]
     gcongr
-    · exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
-    · exact hμν _
+    exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
   · suffices ν (f ⁻¹' {f x}) = 0 by
       have A : μ (f ⁻¹' {f x}) = 0 := by simpa using (hμν _ |>.trans_eq this)
       simp [measureReal_def, A, this]
@@ -472,7 +469,7 @@ theorem posPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
   have ae_eq : ∀ᵐ a ∂μ, toSimpleFunc (posPart f) a = max ((toSimpleFunc f) a) 0 := by
     filter_upwards [toSimpleFunc_eq_toFun (posPart f), Lp.coeFn_posPart (f : α →₁[μ] ℝ),
       toSimpleFunc_eq_toFun f] with _ _ h₂ h₃
-    convert h₂ using 1
+    convert! h₂ using 1
     rw [h₃]
   refine ae_eq.mono fun a h => ?_
   rw [h, eq]
@@ -514,7 +511,7 @@ end SimpleFuncIntegral
 
 end SimpleFunc
 
-open SimpleFunc
+open L1.SimpleFunc
 
 local notation "Integral" => @integralCLM α E _ _ _ _ _ μ _
 

@@ -66,14 +66,18 @@ Using the Kuratowski embedding, we get a canonical map `toGHSpace` mapping any n
 compact type to `GHSpace`. -/
 section GHSpace
 
+set_option backward.privateInPublic true in
 /-- Equivalence relation identifying two nonempty compact sets which are isometric -/
 private def IsometryRel (x : NonemptyCompacts ℓ_infty_ℝ) (y : NonemptyCompacts ℓ_infty_ℝ) : Prop :=
   Nonempty (x ≃ᵢ y)
 
+set_option backward.privateInPublic true in
 /-- This is indeed an equivalence relation -/
 private theorem equivalence_isometryRel : Equivalence IsometryRel :=
   ⟨fun _ => Nonempty.intro (IsometryEquiv.refl _), fun ⟨e⟩ => ⟨e.symm⟩, fun ⟨e⟩ ⟨f⟩ => ⟨e.trans f⟩⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- setoid instance identifying two isometric nonempty compact subspaces of ℓ^∞(ℝ) -/
 instance IsometryRel.setoid : Setoid (NonemptyCompacts ℓ_infty_ℝ) :=
   Setoid.mk IsometryRel equivalence_isometryRel
@@ -132,6 +136,7 @@ theorem GHSpace.toGHSpace_rep (p : GHSpace) : toGHSpace p.Rep = p := by
   rw [← eq_toGHSpace]
   exact Quot.out_eq p
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two nonempty compact spaces have the same image in `GHSpace` if and only if they are
 isometric. -/
 theorem toGHSpace_eq_toGHSpace_iff_isometryEquiv {X : Type u} [MetricSpace X] [CompactSpace X]
@@ -185,15 +190,13 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
     in `ℓ^∞(ℝ)` and therefore bounded below by the Gromov-Hausdorff-distance. However, `γ` is not
     separable in general. We restrict to the union of the images of `X` and `Y` in `γ`, which is
     separable and therefore embeddable in `ℓ^∞(ℝ)`. -/
-  rcases exists_mem_of_nonempty X with ⟨xX, _⟩
   let s : Set γ := range Φ ∪ range Ψ
-  let Φ' : X → Subtype s := fun y => ⟨Φ y, mem_union_left _ (mem_range_self _)⟩
-  let Ψ' : Y → Subtype s := fun y => ⟨Ψ y, mem_union_right _ (mem_range_self _)⟩
+  let Φ' : X → s := fun y => ⟨Φ y, mem_union_left _ (mem_range_self _)⟩
+  let Ψ' : Y → s := fun y => ⟨Ψ y, mem_union_right _ (mem_range_self _)⟩
   have IΦ' : Isometry Φ' := fun x y => ha x y
   have IΨ' : Isometry Ψ' := fun x y => hb x y
   have : IsCompact s := (isCompact_range ha.continuous).union (isCompact_range hb.continuous)
-  let _ : MetricSpace (Subtype s) := by infer_instance
-  have : CompactSpace (Subtype s) := ⟨isCompact_iff_isCompact_univ.1 ‹IsCompact s›⟩
+  have : CompactSpace s := ⟨isCompact_iff_isCompact_univ.1 ‹IsCompact s›⟩
   have ΦΦ' : Φ = Subtype.val ∘ Φ' := rfl
   have ΨΨ' : Ψ = Subtype.val ∘ Ψ' := rfl
   have : hausdorffDist (range Φ) (range Ψ) = hausdorffDist (range Φ') (range Ψ') := by
@@ -201,7 +204,7 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
     exact hausdorffDist_image isometry_subtype_coe
   rw [this]
   -- Embed `s` in `ℓ^∞(ℝ)` through its Kuratowski embedding
-  let F := kuratowskiEmbedding (Subtype s)
+  let F := kuratowskiEmbedding s
   have : hausdorffDist (F '' range Φ') (F '' range Ψ') = hausdorffDist (range Φ') (range Ψ') :=
     hausdorffDist_image (kuratowskiEmbedding.isometry _)
   rw [← this]
@@ -222,7 +225,7 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
     rw [eq_toGHSpace_iff]
     exact ⟨fun x => F (Ψ' x), (kuratowskiEmbedding.isometry _).comp IΨ', range_comp _ _⟩
   refine csInf_le ⟨0, ?_⟩ ?_
-  · simp only [lowerBounds, mem_image, mem_prod, mem_setOf_eq, Prod.exists, and_imp,
+  · simp only [lowerBounds, mem_image, mem_prod, mem_ofPred_eq, Prod.exists, and_imp,
       forall_exists_index]
     intro t _ _ _ _ ht
     rw [← ht]
@@ -255,13 +258,13 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     rcases eq_toGHSpace_iff.1 hp with ⟨Φ, ⟨Φisom, Φrange⟩⟩
     rcases eq_toGHSpace_iff.1 hq with ⟨Ψ, ⟨Ψisom, Ψrange⟩⟩
     have I : diam (range Φ ∪ range Ψ) ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by
-      rcases exists_mem_of_nonempty X with ⟨xX, _⟩
+      have xX : X := default
       have : ∃ y ∈ range Ψ, dist (Φ xX) y < diam (univ : Set X) + 1 + diam (univ : Set Y) := by
         rw [Ψrange]
         have : Φ xX ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
         exact
           exists_dist_lt_of_hausdorffDist_lt this bound
-            (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty
+            (hausdorffEDist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty
               p.isCompact.isBounded q.isCompact.isBounded)
       rcases this with ⟨y, hy, dy⟩
       rcases mem_range.1 hy with ⟨z, hzy⟩
@@ -285,7 +288,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     -- check that the induced "distance" is a candidate
     have Fgood : F ∈ candidates X Y := by
       simp only [F, candidates, forall_const,
-        dist_eq_zero, Set.mem_setOf_eq]
+        dist_eq_zero, Set.mem_ofPred_eq]
       repeat' constructor
       · exact fun x y =>
           calc
@@ -317,7 +320,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
       intro x
       have : f (inl x) ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
       rcases exists_dist_lt_of_hausdorffDist_lt this hr
-          (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty p.isCompact.isBounded
+          (hausdorffEDist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty p.isCompact.isBounded
             q.isCompact.isBounded) with
         ⟨z, zq, hz⟩
       have : z ∈ range Ψ := by rwa [← Ψrange] at zq
@@ -332,7 +335,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
       intro y
       have : f (inr y) ∈ (q : Set _) := Ψrange ▸ (mem_range_self _)
       rcases exists_dist_lt_of_hausdorffDist_lt' this hr
-          (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty p.isCompact.isBounded
+          (hausdorffEDist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty p.isCompact.isBounded
             q.isCompact.isBounded) with
         ⟨z, zq, hz⟩
       have : z ∈ range Φ := by rwa [← Φrange] at zq
@@ -394,7 +397,7 @@ instance : MetricSpace GHSpace where
     refine le_antisymm ?_ ?_
     · apply csInf_le
       · exact ⟨0, by rintro b ⟨⟨u, v⟩, -, rfl⟩; exact hausdorffDist_nonneg⟩
-      · simp only [mem_image, mem_prod, mem_setOf_eq, Prod.exists]
+      · simp only [mem_image, mem_prod, mem_ofPred_eq, Prod.exists]
         exists y, y
         simpa only [and_self_iff, hausdorffDist_self_zero, eq_self_iff_true, and_true]
     · apply le_csInf
@@ -409,10 +412,8 @@ instance : MetricSpace GHSpace where
               hausdorffDist (p.1 : Set ℓ_infty_ℝ) p.2) ∘
             Prod.swap ''
           { a | ⟦a⟧ = x } ×ˢ { b | ⟦b⟧ = y } := by
-      funext
-      simp only [comp_apply, Prod.fst_swap, Prod.snd_swap]
-      congr
-      simp only [hausdorffDist_comm]
+      ext
+      simp only [comp_apply, Prod.fst_swap, Prod.snd_swap, hausdorffDist_comm]
     simp only [dist, A, image_comp, image_swap_prod]
   eq_of_dist_eq_zero {x} {y} hxy := by
     /- To show that two spaces at zero distance are isometric,
@@ -427,7 +428,7 @@ instance : MetricSpace GHSpace where
       apply (IsClosed.hausdorffDist_zero_iff_eq _ _ _).1 DΦΨ.symm
       · exact hΦ.isClosed
       · exact hΨ.isClosed
-      · exact hausdorffEdist_ne_top_of_nonempty_of_bounded (range_nonempty _) (range_nonempty _)
+      · exact hausdorffEDist_ne_top_of_nonempty_of_bounded (range_nonempty _) (range_nonempty _)
           hΦ.isBounded hΨ.isBounded
     have T : (range Ψ ≃ᵢ y.Rep) = (range Φ ≃ᵢ y.Rep) := by rw [this]
     have eΨ := cast T Ψisom.isometryEquivOnRange.symm
@@ -464,7 +465,7 @@ instance : MetricSpace GHSpace where
               (range (toGlueL hΦ hΨ ∘ optimalGHInjr X Y)) +
             hausdorffDist (range (toGlueL hΦ hΨ ∘ optimalGHInjr X Y))
               (range (toGlueR hΦ hΨ ∘ optimalGHInjr Y Z)) := by
-        refine hausdorffDist_triangle <| hausdorffEdist_ne_top_of_nonempty_of_bounded
+        refine hausdorffDist_triangle <| hausdorffEDist_ne_top_of_nonempty_of_bounded
           (range_nonempty _) (range_nonempty _) ?_ ?_
         · exact (isCompact_range (Isometry.continuous
             ((toGlueL_isometry hΦ hΨ).comp (isometry_optimalGHInjl X Y)))).isBounded
@@ -538,7 +539,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
     (hs : ∀ x : X, ∃ y ∈ s, dist x y ≤ ε₁) (hs' : ∀ x : Y, ∃ y : s, dist x (Φ y) ≤ ε₃)
     (H : ∀ x y : s, |dist x y - dist (Φ x) (Φ y)| ≤ ε₂) : ghDist X Y ≤ ε₁ + ε₂ / 2 + ε₃ := by
   refine le_of_forall_pos_le_add fun δ δ0 => ?_
-  rcases exists_mem_of_nonempty X with ⟨xX, _⟩
+  obtain ⟨xX⟩ := ‹Nonempty X›
   rcases hs xX with ⟨xs, hxs, Dxs⟩
   have sne : s.Nonempty := ⟨xs, hxs⟩
   let _ : Nonempty s := sne.to_subtype
@@ -569,14 +570,14 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
       hausdorffDist (range Fl) (Fl '' s) + hausdorffDist (Fl '' s) (range Fr) :=
     have B : IsBounded (range Fl) := (isCompact_range Il.continuous).isBounded
     hausdorffDist_triangle
-      (hausdorffEdist_ne_top_of_nonempty_of_bounded (range_nonempty _) (sne.image _) B
+      (hausdorffEDist_ne_top_of_nonempty_of_bounded (range_nonempty _) (sne.image _) B
         (B.subset (image_subset_range _ _)))
   have :
     hausdorffDist (Fl '' s) (range Fr) ≤
       hausdorffDist (Fl '' s) (Fr '' range Φ) + hausdorffDist (Fr '' range Φ) (range Fr) :=
     have B : IsBounded (range Fr) := (isCompact_range Ir.continuous).isBounded
     hausdorffDist_triangle'
-      (hausdorffEdist_ne_top_of_nonempty_of_bounded ((range_nonempty _).image _) (range_nonempty _)
+      (hausdorffEDist_ne_top_of_nonempty_of_bounded ((range_nonempty _).image _) (range_nonempty _)
         (B.subset (image_subset_range _ _)) B)
   have : hausdorffDist (range Fl) (Fl '' s) ≤ ε₁ := by
     rw [← image_univ, hausdorffDist_image Il]
@@ -595,10 +596,10 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
       rcases mem_range.1 y_in_s' with ⟨x, xy⟩
       use Fl x, mem_image_of_mem _ x.2
       rw [← yx', ← xy, dist_comm]
-      exact le_of_eq (glueDist_glued_points (Z := s) (@Subtype.val X s) Φ (ε₂ / 2 + δ) x)
+      exact le_of_eq (glueDist_glued_points (Z := s) Subtype.val Φ (ε₂ / 2 + δ) x)
   have : hausdorffDist (Fr '' range Φ) (range Fr) ≤ ε₃ := by
     rw [← @image_univ _ _ Fr, hausdorffDist_image Ir]
-    rcases exists_mem_of_nonempty Y with ⟨xY, _⟩
+    obtain ⟨xY⟩ := ‹Nonempty Y›
     rcases hs' xY with ⟨xs', Dxs'⟩
     have : 0 ≤ ε₃ := le_trans dist_nonneg Dxs'
     refine hausdorffDist_le_of_mem_dist this
@@ -610,6 +611,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
 
 end --section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Gromov-Hausdorff space is second countable. -/
 instance : SecondCountableTopology GHSpace := by
   refine secondCountable_of_countable_discretization fun δ δpos => ?_
@@ -712,7 +714,13 @@ instance : SecondCountableTopology GHSpace := by
           _ ≤ 1 := le_of_lt (abs_sub_lt_one_of_floor_eq_floor this)
       calc
         |dist x y - dist (Ψ x) (Ψ y)|
-        _ = ε * (ε⁻¹ * |dist x y - dist (Ψ x) (Ψ y)|) := by grind
+        _ = ε * (ε⁻¹ * |dist x y - dist (Ψ x) (Ψ y)|) := by
+            #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+            (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed
+            this goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+            problem in the new canonicalizer; a minimization would help. The original proof was:
+            `grind` -/
+            field_simp
         _ ≤ ε * 1 := by gcongr
         _ = ε := mul_one _
   calc
@@ -753,7 +761,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       use ∅, 0, bot_le, this.some
       exact fun hp' => (hp hp').elim
     · rcases hcov _ (Set.not_notMem.1 hp) n with ⟨s, ⟨scard, scover⟩⟩
-      rcases Cardinal.lt_aleph0.1 (lt_of_le_of_lt scard (Cardinal.nat_lt_aleph0 _)) with ⟨N, hN⟩
+      rcases Cardinal.lt_aleph0.1 (scard.trans_lt Cardinal.natCast_lt_aleph0) with ⟨N, hN⟩
       rw [hN, Nat.cast_le] at scard
       have : #s = #(Fin N) := by rw [hN, Cardinal.mk_fin]
       obtain ⟨E⟩ := Quotient.exact this
@@ -925,6 +933,7 @@ def auxGluing (n : ℕ) : AuxGluingStruct (X n) :=
         toGlueR Y.isom (isometry_optimalGHInjl (X n) (X (n + 1))) ∘ optimalGHInjr (X n) (X (n + 1))
       isom := (toGlueR_isometry _ _).comp (isometry_optimalGHInjr (X n) (X (n + 1))) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Gromov-Hausdorff space is complete. -/
 instance : CompleteSpace GHSpace := by
   set d := fun n : ℕ ↦ ((1 : ℝ) / 2) ^ n
@@ -998,7 +1007,7 @@ instance : CompleteSpace GHSpace := by
     rw [Function.comp_apply, NonemptyCompacts.toGHSpace, ← (u n).toGHSpace_rep,
       toGHSpace_eq_toGHSpace_iff_isometryEquiv]
     constructor
-    convert (isom n).isometryEquivOnRange.symm
+    convert! (isom n).isometryEquivOnRange.symm
   -- the images of `X3 n` in the Gromov-Hausdorff space converge to the image of `L`
   -- so the images of `u n` converge to the image of `L` as well
   use L.toGHSpace

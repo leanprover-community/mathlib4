@@ -54,19 +54,19 @@ variable {ι : Sort*} {S T : Sublocale X} {s : Set X} {f : ι → X} {a b : X}
 
 instance instSetLike : SetLike (Sublocale X) X where
   coe x := x.carrier
-  coe_injective' s1 s2 h := by cases s1; congr
+  coe_injective s1 s2 h := by cases s1; congr
+
+instance : PartialOrder (Sublocale X) := .ofSetLike (Sublocale X) X
 
 @[simp] lemma mem_carrier : a ∈ S.carrier ↔ a ∈ S := .rfl
 
 @[simp] lemma mem_mk (carrier : Set X) (sInf_mem' himp_mem') :
     a ∈ mk carrier sInf_mem' himp_mem' ↔ a ∈ carrier := .rfl
 
-@[simp] lemma mk_le_mk (carrier₁ carrier₂ : Set X) (sInf_mem'₁ sInf_mem'₂ himp_mem'₁ himp_mem'₂) :
+@[simp, gcongr]
+lemma mk_le_mk (carrier₁ carrier₂ : Set X) (sInf_mem'₁ sInf_mem'₂ himp_mem'₁ himp_mem'₂) :
     mk carrier₁ sInf_mem'₁ himp_mem'₁ ≤ mk carrier₂ sInf_mem'₂ himp_mem'₂ ↔ carrier₁ ⊆ carrier₂ :=
   .rfl
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.Sublocale.mk_le_mk⟩ := mk_le_mk
 
 initialize_simps_projections Sublocale (carrier → coe, as_prefix coe)
 
@@ -108,18 +108,20 @@ instance carrier.instCompleteLattice : CompleteLattice S where
 
 instance carrier.instHeytingAlgebra : HeytingAlgebra S where
   le_himp_iff a b c := by simp [← Subtype.coe_le_coe, ← @Sublocale.coe_inf, himp]
-  compl a :=  a ⇨ ⊥
+  compl a := a ⇨ ⊥
   himp_bot _ := rfl
 
 instance carrier.instFrame : Order.Frame S where
   __ := carrier.instHeytingAlgebra
   __ := carrier.instCompleteLattice
 
+set_option backward.privateInPublic true in
 /-- See `Sublocale.restrict` for the public-facing version. -/
 private def restrictAux (S : Sublocale X) (a : X) : S := sInf {s : S | a ≤ s}
 
 private lemma le_restrictAux : a ≤ S.restrictAux a := by simp +contextual [restrictAux]
 
+set_option backward.privateInPublic true in
 /-- See `Sublocale.giRestrict` for the public-facing version. -/
 private def giAux (S : Sublocale X) : GaloisInsertion S.restrictAux Subtype.val where
   choice x hx := ⟨x, by
@@ -156,6 +158,8 @@ def restrict (S : Sublocale X) : FrameHom X S where
     rw [← Subtype.coe_le_coe, S.giAux.gc.u_top]
     simp [restrictAux, sInf]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The restriction corresponding to a sublocale forms a Galois insertion with the forgetful map
 from the sublocale to the original locale. -/
 def giRestrict (S : Sublocale X) : GaloisInsertion S.restrict Subtype.val := S.giAux
@@ -199,11 +203,8 @@ def toSublocale (n : Nucleus X) : Sublocale X where
 @[simp]
 lemma mem_toSublocale {n : Nucleus X} {x : X} : x ∈ n.toSublocale ↔ ∃ y, n y = x := .rfl
 
-@[simp] lemma toSublocale_le_toSublocale {m n : Nucleus X} :
+@[simp, gcongr] lemma toSublocale_le_toSublocale {m n : Nucleus X} :
     m.toSublocale ≤ n.toSublocale ↔ n ≤ m := by simp [← SetLike.coe_subset_coe]
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.Nucleus.toSublocale_le_toSublocale⟩ := toSublocale_le_toSublocale
 
 @[simp] lemma restrict_toSublocale (n : Nucleus X) (x : X) :
     n.toSublocale.restrict x = ⟨n x, x, rfl⟩ := by
@@ -229,10 +230,8 @@ lemma nucleusIsoSublocale.symm_eq_toNucleus :
 instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) :=
   nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
 
-instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
+set_option backward.isDefEq.respectTransparency false in
+instance Sublocale.instCoframe : Order.Coframe (Sublocale X) := .ofMinimalAxioms {
   iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus,
     nucleusIsoSublocale.symm_eq_toNucleus, nucleusIsoSublocale.symm.map_sup,
-    nucleusIsoSublocale.symm.map_sInf, sup_iInf_eq, nucleusIsoSublocale.symm.map_iInf]
-
-instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
-  .ofMinimalAxioms instCoframeMinimalAxioms
+    nucleusIsoSublocale.symm.map_sInf, sup_iInf_eq, nucleusIsoSublocale.symm.map_iInf] }

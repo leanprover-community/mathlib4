@@ -11,16 +11,16 @@ public import Mathlib.Analysis.Calculus.FDeriv.Basic
 # The derivative of the scalar restriction of a linear map
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
+see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 the scalar restriction of a linear map.
 -/
 
-@[expose] public section
+public section
 
 
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
+open Filter ContinuousLinearMap Set
 
 noncomputable section
 
@@ -43,24 +43,24 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace �
 variable [IsScalarTower 𝕜 𝕜' F]
 variable {f : E → F} {f' : E →L[𝕜'] F} {s : Set E} {x : E}
 
+theorem HasFDerivAtFilter.restrictScalars {L} (h : HasFDerivAtFilter f f' L) :
+    HasFDerivAtFilter f (f'.restrictScalars 𝕜) L :=
+  .of_isLittleO h.isLittleO
+
 @[fun_prop]
 theorem HasStrictFDerivAt.restrictScalars (h : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt f (f'.restrictScalars 𝕜) x :=
-  .of_isLittleO h.isLittleO
-
-theorem HasFDerivAtFilter.restrictScalars {L} (h : HasFDerivAtFilter f f' x L) :
-    HasFDerivAtFilter f (f'.restrictScalars 𝕜) x L :=
-  .of_isLittleO h.isLittleO
+  HasFDerivAtFilter.restrictScalars 𝕜 h
 
 @[fun_prop]
 theorem HasFDerivAt.restrictScalars (h : HasFDerivAt f f' x) :
     HasFDerivAt f (f'.restrictScalars 𝕜) x :=
-  .of_isLittleO h.isLittleO
+  HasFDerivAtFilter.restrictScalars 𝕜 h
 
 @[fun_prop]
 theorem HasFDerivWithinAt.restrictScalars (h : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt f (f'.restrictScalars 𝕜) s x :=
-  .of_isLittleO h.isLittleO
+  HasFDerivAtFilter.restrictScalars 𝕜 h
 
 @[fun_prop]
 theorem DifferentiableAt.restrictScalars (h : DifferentiableAt 𝕜' f x) : DifferentiableAt 𝕜 f x :=

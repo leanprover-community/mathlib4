@@ -8,7 +8,6 @@ module
 public import Mathlib.Init
 public meta import Lean.Elab.Exception
 public meta import Batteries.Lean.NameMapAttribute
-public meta import Batteries.Tactic.Lint
 
 /-!
 # `@[notation_class]` attribute for `@[simps]`
@@ -16,8 +15,7 @@ public meta import Batteries.Tactic.Lint
 This declares the `@[notation_class]` attribute, which is used to give smarter default projections
 for `@[simps]`.
 
-We put this in a separate file so that we can already tag some declarations with this attribute
-in the file where we declare `@[simps]`. For further documentation, see `Tactic.Simps.Basic`.
+For further documentation, see `Tactic.Simps.Basic`.
 -/
 
 public meta section

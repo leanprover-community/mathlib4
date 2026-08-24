@@ -44,9 +44,9 @@ Mapping `fun ε x => x * Real.exp (- (ε * x * x))`. By composition, it can be u
 functions into bounded functions.
 -/
 noncomputable
-def mulExpNegMulSq (ε x : ℝ) := x * exp (- (ε * x * x))
+def mulExpNegMulSq (ε x : ℝ) := x * exp (-(ε * x * x))
 
-theorem mulExpNegSq_apply (ε x : ℝ) : mulExpNegMulSq ε x = x * exp (- (ε * x * x)) := rfl
+theorem mulExpNegSq_apply (ε x : ℝ) : mulExpNegMulSq ε x = x * exp (-(ε * x * x)) := rfl
 
 theorem neg_mulExpNegMulSq_neg (ε x : ℝ) : - mulExpNegMulSq ε (-x) = mulExpNegMulSq ε x := by
   simp [mulExpNegMulSq]
@@ -84,21 +84,21 @@ theorem differentiableAt_mulExpNegMulSq (y : ℝ) :
 
 theorem hasDerivAt_mulExpNegMulSq (y : ℝ) :
     HasDerivAt (mulExpNegMulSq ε)
-    (exp (- (ε * y * y)) + y * (exp (- (ε * y * y)) * (-2 * ε * y))) y := by
-  nth_rw 1 [← one_mul (exp (- (ε * y * y)))]
+    (exp (-(ε * y * y)) + y * (exp (-(ε * y * y)) * (-2 * ε * y))) y := by
+  nth_rw 1 [← one_mul (exp (-(ε * y * y)))]
   apply HasDerivAt.mul (hasDerivAt_id' y)
   apply HasDerivAt.exp (HasDerivAt.congr_deriv (HasDerivAt.neg
     (HasDerivAt.mul (HasDerivAt.const_mul ε (hasDerivAt_id' y)) (hasDerivAt_id' y))) (by ring))
 
 theorem deriv_mulExpNegMulSq (y : ℝ) : deriv (mulExpNegMulSq ε) y =
-    exp (- (ε * y * y)) + y * (exp (- (ε * y * y)) * (-2 * ε * y)) :=
+    exp (-(ε * y * y)) + y * (exp (-(ε * y * y)) * (-2 * ε * y)) :=
   HasDerivAt.deriv (hasDerivAt_mulExpNegMulSq y)
 
 theorem norm_deriv_mulExpNegMulSq_le_one (hε : 0 < ε) (x : ℝ) :
     ‖deriv (mulExpNegMulSq ε) x‖ ≤ 1 := by
   rw [norm_eq_abs, deriv_mulExpNegMulSq]
-  have heq : exp (- (ε * x * x)) + x * (exp (- (ε * x * x)) * (-2 * ε * x))
-      = exp (- (ε * x * x)) * (1 -2 * (ε * x * x)) := by ring
+  have heq : exp (-(ε * x * x)) + x * (exp (-(ε * x * x)) * (-2 * ε * x))
+      = exp (-(ε * x * x)) * (1 - 2 * (ε * x * x)) := by ring
   rw [heq, abs_mul, abs_exp]
   set y := ε * x * x with hy
   have hynonneg : 0 ≤ y := by

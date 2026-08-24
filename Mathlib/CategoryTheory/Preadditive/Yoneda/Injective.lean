@@ -11,10 +11,12 @@ public import Mathlib.Algebra.Category.Grp.EpiMono
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
+# Injective objects
+
 An object is injective iff the preadditive yoneda functor on it preserves epimorphisms.
 -/
 
-@[expose] public section
+public section
 
 
 universe v u

@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 (Using the pointwise monoidal structure on the functor category.)
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -25,7 +25,7 @@ open CategoryTheory.MonoidalCategory
 
 namespace CategoryTheory.Monoidal
 
-variable {C D : Type*} [Groupoid C] [Category D] [MonoidalCategory D]
+variable {C D : Type*} [Groupoid C] [Category* D] [MonoidalCategory D]
 
 instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual F where
   rightDual :=

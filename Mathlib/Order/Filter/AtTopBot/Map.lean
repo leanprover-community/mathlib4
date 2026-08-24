@@ -14,11 +14,11 @@ public import Mathlib.Order.Interval.Set.OrderIso
 # Map and comap of `Filter.atTop` and `Filter.atBot`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
-variable {ι ι' α β γ : Type*}
+variable {α β γ : Type*}
 
 open Set
 

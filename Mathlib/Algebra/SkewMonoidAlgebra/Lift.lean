@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.Algebra.Equiv
+
 /-!
 # Lemmas about different kinds of "lifts" to `SkewMonoidAlgebra`.
 -/
@@ -40,7 +41,7 @@ variable (k G A)
 /-- Any monoid homomorphism `G →* A` can be lifted to an algebra homomorphism
   `SkewMonoidAlgebra k G →ₐ[k] A`. -/
 def lift : (G →* A) ≃ (AlgHom k (SkewMonoidAlgebra k G) A) where
-  invFun f := (f : SkewMonoidAlgebra k G →* A).comp  (of k G)
+  invFun f := (f : SkewMonoidAlgebra k G →* A).comp (of k G)
   toFun F := by
     apply liftNCAlgHom (Algebra.ofId k A) F
     simp_rw [show ∀ (g : G) (r : k), g • r = r by
@@ -82,7 +83,7 @@ theorem lift_unique' (F : AlgHom k (SkewMonoidAlgebra k G) A) :
 /-- Decomposition of a `k`-algebra homomorphism from `SkewMonoidAlgebra k G` by
   its values on `F (single a 1)`. -/
 theorem lift_unique (F : AlgHom k (SkewMonoidAlgebra k G) A)
-    (f : SkewMonoidAlgebra k G) : F f  = f.sum fun a b ↦ b • F (single a 1) := by
+    (f : SkewMonoidAlgebra k G) : F f = f.sum fun a b ↦ b • F (single a 1) := by
   conv_lhs =>
     rw [lift_unique' F]
     simp [lift_apply]
@@ -107,22 +108,17 @@ variable [AddCommMonoid k]
 /-- Given `f : G ≃ H`, we can map `l : SkewMonoidAlgebra k G` to
 `equivMapDomain f l : SkewMonoidAlgebra k H` (computably) by mapping the support forwards
 and the function backwards. -/
+@[simps]
 def equivMapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) : SkewMonoidAlgebra k H where
-  toFinsupp := ⟨l.support.map f.toEmbedding, fun a ↦ l.coeff (f.symm a), by simp⟩
+  coeff := l.coeff.equivMapDomain f
 
-@[simp]
-theorem coeff_equivMapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) (b : H) :
-    (equivMapDomain f l).coeff b = l.coeff (f.symm b) :=
-  rfl
-
-lemma toFinsupp_equivMapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) :
-    (equivMapDomain f l).toFinsupp = Finsupp.equivMapDomain f l.toFinsupp := rfl
+@[deprecated (since := "2026-07-06")] alias toFinsupp_equivMapDomain := coeff_equivMapDomain
 
 theorem equivMapDomain_eq_mapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) :
     equivMapDomain f l = mapDomain f l := by
-  apply toFinsupp_injective
+  apply coeff_injective
   ext x
-  simp_rw [toFinsupp_equivMapDomain, Finsupp.equivMapDomain_apply, toFinsupp_mapDomain,
+  simp_rw [coeff_equivMapDomain, Finsupp.equivMapDomain_apply, coeff_mapDomain,
     Finsupp.mapDomain_equiv_apply]
 
 theorem equivMapDomain_trans {G' G'' : Type*} (f : G ≃ G') (g : G' ≃ G'')
@@ -137,9 +133,8 @@ theorem equivMapDomain_refl (l : SkewMonoidAlgebra k G) : equivMapDomain (Equiv.
 @[simp]
 theorem equivMapDomain_single (f : G ≃ H) (a : G) (b : k) :
     equivMapDomain f (single a b) = single (f a) b := by
-  classical
-  apply toFinsupp_injective
-  simp_rw [toFinsupp_equivMapDomain, single, Finsupp.equivMapDomain_single]
+  apply coeff_injective
+  simp_rw [coeff_equivMapDomain, single, Finsupp.equivMapDomain_single]
 
 end equivMapDomain
 
@@ -147,6 +142,7 @@ section domCongr
 
 variable {A : Type*}
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given `AddCommMonoid A` and `e : G ≃ H`, `domCongr e` is the corresponding `Equiv` between
 `SkewMonoidAlgebra A G` and `SkewMonoidAlgebra A H`. -/
 @[simps apply]
@@ -173,8 +169,8 @@ variable [Monoid G] [Monoid H] [Semiring A] [CommSemiring k] [Algebra k A] [MulS
   [MulSemiringAction H A] [SMulCommClass G k A] [SMulCommClass H k A]
 
 /-- If `e : G ≃* H` is a multiplicative equivalence between two monoids and
- ` ∀ (a : G) (x : A), a • x = (e a) • x`, then `SkewMonoidAlgebra.domCongr e` is an
-  algebra equivalence between their skew monoid algebras. -/
+` ∀ (a : G) (x : A), a • x = (e a) • x`, then `SkewMonoidAlgebra.domCongr e` is an
+algebra equivalence between their skew monoid algebras. -/
 def domCongrAlg {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
     SkewMonoidAlgebra A G ≃ₐ[k] SkewMonoidAlgebra A H :=
   AlgEquiv.ofLinearEquiv
@@ -200,12 +196,13 @@ theorem domCongrAlg_toAlgHom {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x =
   equivMapDomain_single ..
 
 theorem domCongr_refl :
-    domCongrAlg k A  (e := MulEquiv.refl G) (fun _ _ ↦ rfl) = AlgEquiv.refl := by
+    domCongrAlg k A (e := MulEquiv.refl G) (fun _ _ ↦ rfl) = AlgEquiv.refl := by
   apply AlgEquiv.ext
   aesop
 
 @[simp] theorem domCongr_symm {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
-    (domCongrAlg k A he).symm = domCongrAlg _ _ (fun a x ↦ by rw [he, MulEquiv.apply_symm_apply]) :=
+    (domCongrAlg k A he).symm =
+      domCongrAlg (e := e.symm) _ _ (fun a x ↦ by rw [he, MulEquiv.apply_symm_apply]) :=
   rfl
 
 end domCongr
@@ -217,6 +214,7 @@ variable [Semiring k] [Monoid G] [MulSemiringAction G k]
 variable {V : Type*} [AddCommMonoid V] [Module k V] [Module (SkewMonoidAlgebra k G) V]
   [IsScalarTower k (SkewMonoidAlgebra k G) V]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- A submodule over `k` which is stable under scalar multiplication by elements of `G` is a
 submodule over `SkewMonoidAlgebra k G` -/
 def submoduleOfSmulMem (W : Submodule k V) (h : ∀ (g : G) (v : V), v ∈ W → of k G g • v ∈ W) :

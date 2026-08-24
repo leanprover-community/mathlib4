@@ -30,7 +30,7 @@ immersions can be used to deduce these assumptions in the general case.
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 universe v v₁ v₂ u
 
@@ -151,8 +151,12 @@ def Cover.copy [P.RespectsIso] {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P))
       intro i
       exact 𝒰.map_prop _
 
+-- `respectTransparency false` is needed for `simps!`.
+-- Consider making implicit-reducible:
+-- `Precoverage.ZeroHypercover.bind`, `Cover.mkOfCovers`, `coverOfIso`
+set_option backward.isDefEq.respectTransparency false in
 /-- The pushforward of a cover along an isomorphism. -/
-@[simps! I₀ X f]
+@[simps! I₀ X f, implicit_reducible]
 def Cover.pushforwardIso [P.RespectsIso] [P.ContainsIdentities] [P.IsStableUnderComposition]
     {X Y : Scheme.{u}} (𝒰 : Cover.{v} (precoverage P) X) (f : X ⟶ Y) [IsIso f] :
     Cover.{v} (precoverage P) Y :=
@@ -168,10 +172,7 @@ nonrec def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : Y 
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ⟨some <| 𝒰.idx x, 𝒰.covers x⟩, ?_⟩
-    rintro (i|i) <;> simp [hf, 𝒰.map_prop]
-
-@[deprecated (since := "2025-10-02")]
-alias Cover.pullbackCover := Precoverage.ZeroHypercover.pullback₁
+    rintro (i | i) <;> simp [hf, 𝒰.map_prop]
 
 /-- The family of morphisms from the pullback cover to the original cover. -/
 def Cover.pullbackHom [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
@@ -184,9 +185,6 @@ lemma Cover.pullbackHom_map [P.IsStableUnderBaseChange] [IsJointlySurjectivePres
     {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X)
     [∀ (x : 𝒰.I₀), HasPullback f (𝒰.f x)] (i) :
     𝒰.pullbackHom f i ≫ 𝒰.f i = (𝒰.pullback₁ f).f i ≫ f := pullback.condition.symm
-
-@[deprecated (since := "2025-10-02")]
-alias Cover.pullbackCover' := Precoverage.ZeroHypercover.pullback₂
 
 /--
 An affine cover of `X` consists of a jointly surjective family of maps into `X` from
@@ -208,15 +206,6 @@ structure AffineCover (P : MorphismProperty Scheme.{u}) (S : Scheme.{u}) where
   covers (x : S) : x ∈ Set.range (f (idx x))
   /-- the component maps satisfy `P` -/
   map_prop (j : I₀) : P (f j) := by infer_instance
-
-@[deprecated (since := "2025-09-19")]
-alias AffineCover.J := AffineCover.I₀
-
-@[deprecated (since := "2025-09-19")]
-alias AffineCover.obj := AffineCover.X
-
-@[deprecated (since := "2025-09-19")]
-alias AffineCover.map := AffineCover.f
 
 /-- The cover associated to an affine cover. -/
 @[simps]
@@ -247,62 +236,14 @@ instance : Precoverage.Small.{u} (precoverage P) where
 
 section category
 
--- TODO: replace this by `ZeroHypercover.Hom`
 /--
 A morphism between covers `𝒰 ⟶ 𝒱` indicates that `𝒰` is a refinement of `𝒱`.
 Since covers of schemes are indexed, the definition also involves a map on the
 indexing types.
+This is implemented as an `abbrev` for `CategoryTheory.Precoverage.ZeroHypercover.Hom`.
 -/
-@[ext]
-structure Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} (precoverage P) X) where
-  /-- The map on indexing types associated to a morphism of covers. -/
-  idx : 𝒰.I₀ → 𝒱.I₀
-  /-- The morphism between open subsets associated to a morphism of covers. -/
-  app (j : 𝒰.I₀) : 𝒰.X j ⟶ 𝒱.X (idx j)
-  app_prop (j : 𝒰.I₀) : P (app j) := by infer_instance
-  w (j : 𝒰.I₀) : app j ≫ 𝒱.f _ = 𝒰.f _ := by cat_disch
-
-attribute [reassoc (attr := simp)] Cover.Hom.w
-
-/-- The identity morphism in the category of covers of a scheme. -/
-def Cover.Hom.id [P.ContainsIdentities] {X : Scheme.{u}} (𝒰 : Cover.{v} (precoverage P) X) :
-    𝒰.Hom 𝒰 where
-  idx j := j
-  app _ := 𝟙 _
-  app_prop _ := P.id_mem _
-
-/-- The composition of two morphisms in the category of covers of a scheme. -/
-def Cover.Hom.comp [P.IsStableUnderComposition] {X : Scheme.{u}}
-    {𝒰 𝒱 𝒲 : Cover.{v} (precoverage P) X} (f : 𝒰.Hom 𝒱) (g : 𝒱.Hom 𝒲) : 𝒰.Hom 𝒲 where
-  idx j := g.idx <| f.idx j
-  app _ := f.app _ ≫ g.app _
-  app_prop _ := P.comp_mem _ _ (f.app_prop _) (g.app_prop _)
-
-instance Cover.category [P.IsMultiplicative] {X : Scheme.{u}} :
-    Category (Cover.{v} (precoverage P) X) where
-  Hom 𝒰 𝒱 := 𝒰.Hom 𝒱
-  id := Cover.Hom.id
-  comp f g := f.comp g
-
-variable [P.IsMultiplicative]
-
-@[simp]
-lemma Cover.id_idx_apply {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (j : 𝒰.I₀) :
-    (𝟙 𝒰 : 𝒰 ⟶ 𝒰).idx j = j := rfl
-
-@[simp]
-lemma Cover.id_app {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (j : 𝒰.I₀) :
-    (𝟙 𝒰 : 𝒰 ⟶ 𝒰).app j = 𝟙 _ := rfl
-
-@[simp]
-lemma Cover.comp_idx_apply {X : Scheme.{u}} {𝒰 𝒱 𝒲 : X.Cover (precoverage P)}
-    (f : 𝒰 ⟶ 𝒱) (g : 𝒱 ⟶ 𝒲) (j : 𝒰.I₀) :
-    (f ≫ g).idx j = g.idx (f.idx j) := rfl
-
-@[simp]
-lemma Cover.comp_app {X : Scheme.{u}} {𝒰 𝒱 𝒲 : X.Cover (precoverage P)}
-    (f : 𝒰 ⟶ 𝒱) (g : 𝒱 ⟶ 𝒲) (j : 𝒰.I₀) :
-    (f ≫ g).app j = f.app j ≫ g.app _ := rfl
+abbrev Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} K X) :=
+  Precoverage.ZeroHypercover.Hom K 𝒰 𝒱
 
 end category
 

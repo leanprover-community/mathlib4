@@ -21,7 +21,9 @@ normalized Moore complex and the alternating face map complex of a simplicial ob
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
-  CategoryTheory.Preadditive Simplicial DoldKan
+  CategoryTheory.Preadditive
+
+open scoped Simplicial DoldKan
 
 noncomputable section
 
@@ -29,7 +31,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] (X : SimplicialObject C)
+variable {C : Type*} [Category* C] [Preadditive C] (X : SimplicialObject C)
 
 /-- Inductive construction of homotopies from `P q` to `𝟙 _` -/
 noncomputable def homotopyPToId : ∀ q : ℕ, Homotopy (P q : K[X] ⟶ _) (𝟙 _)
@@ -47,6 +49,7 @@ noncomputable def homotopyPToId : ∀ q : ℕ, Homotopy (P q : K[X] ⟶ _) (𝟙
 def homotopyQToZero (q : ℕ) : Homotopy (Q q : K[X] ⟶ _) 0 :=
   Homotopy.equivSubZero.toFun (homotopyPToId X q).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem homotopyPToId_eventually_constant {q n : ℕ} (hqn : n < q) :
     ((homotopyPToId X (q + 1)).hom n (n + 1) : X _⦋n⦌ ⟶ X _⦋n + 1⦌) =
       (homotopyPToId X q).hom n (n + 1) := by
@@ -75,7 +78,7 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
 /-- The inclusion of the Moore complex in the alternating face map complex
 is a homotopy equivalence -/
 @[simps]
-def homotopyEquivNormalizedMooreComplexAlternatingFaceMapComplex {A : Type*} [Category A]
+def homotopyEquivNormalizedMooreComplexAlternatingFaceMapComplex {A : Type*} [Category* A]
     [Abelian A] {Y : SimplicialObject A} :
     HomotopyEquiv ((normalizedMooreComplex A).obj Y) ((alternatingFaceMapComplex A).obj Y) where
   hom := inclusionOfMooreComplexMap Y

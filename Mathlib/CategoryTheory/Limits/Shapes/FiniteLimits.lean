@@ -6,10 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.FinCategory.AsType
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback  -- shake: keep (`example`)
 public import Mathlib.Data.Fintype.Option
 
 /-!
@@ -18,7 +17,7 @@ public import Mathlib.Data.Fintype.Option
 A typeclass for categories with all finite (co)limits.
 -/
 
-@[expose] public section
+public section
 
 
 universe w' w v' u' v u
@@ -31,7 +30,7 @@ namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]
 
--- We can't just made this an `abbreviation`
+-- We can't just made this an `abbrev`
 -- because of https://github.com/leanprover-community/lean/issues/429
 /-- A category has all finite limits if every functor `J ⥤ C` with a `FinCategory J`
 instance and `J : Type` has a limit.
@@ -73,7 +72,7 @@ theorem hasFiniteLimits_of_hasFiniteLimits_of_size
     (h : ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), HasLimitsOfShape J C) :
     HasFiniteLimits C where
   out := fun J hJ hhJ => by
-    haveI := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
+    have := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
     have l : @Equivalence J (ULiftHom (ULift J)) hJ
                           (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=
       @ULiftHomULiftCategory.equiv J hJ
@@ -117,7 +116,7 @@ theorem hasFiniteColimits_of_hasFiniteColimits_of_size
     (h : ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), HasColimitsOfShape J C) :
     HasFiniteColimits C where
   out := fun J hJ hhJ => by
-    haveI := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
+    have := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
     have l : @Equivalence J (ULiftHom (ULift J)) hJ
                            (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=
       @ULiftHomULiftCategory.equiv J hJ
@@ -213,7 +212,7 @@ instance finCategoryWidePullback [Fintype J] : FinCategory (WidePullbackShape J)
 instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) where
   fintypeHom := WidePushoutShape.fintypeHom
 
--- We can't just made this an `abbreviation`
+-- We can't just made this an `abbrev`
 -- because of https://github.com/leanprover-community/lean/issues/429
 /-- A category `HasFiniteWidePullbacks` if it has all limits of shape `WidePullbackShape J` for
 finite `J`, i.e. if it has a wide pullback for every finite collection of morphisms with the same
@@ -224,7 +223,7 @@ class HasFiniteWidePullbacks : Prop where
 
 instance hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWidePullbacks C] :
     HasLimitsOfShape (WidePullbackShape J) C := by
-  haveI := @HasFiniteWidePullbacks.out C _ _ J
+  have := @HasFiniteWidePullbacks.out C _ _ J
   infer_instance
 
 /-- A category `HasFiniteWidePushouts` if it has all colimits of shape `WidePushoutShape J` for
@@ -236,7 +235,7 @@ class HasFiniteWidePushouts : Prop where
 
 instance hasColimitsOfShape_widePushoutShape (J : Type) [Finite J] [HasFiniteWidePushouts C] :
     HasColimitsOfShape (WidePushoutShape J) C := by
-  haveI := @HasFiniteWidePushouts.out C _ _ J
+  have := @HasFiniteWidePushouts.out C _ _ J
   infer_instance
 
 /-- Finite wide pullbacks are finite limits, so if `C` has all finite limits,

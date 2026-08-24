@@ -7,13 +7,14 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Data.Set.Lattice.Disjoint
 public import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Interaction of big operators with indicator functions
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 

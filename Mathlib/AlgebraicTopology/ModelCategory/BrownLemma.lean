@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # The factorization lemma by K. S. Brown
@@ -35,7 +36,7 @@ open CategoryTheory Limits MorphismProperty
 
 namespace HomotopicalAlgebra
 
-variable {C : Type*} [Category C] [ModelCategory C]
+variable {C : Type*} [Category* C] [ModelCategory C]
   {X Y : C} (f : X ⟶ Y)
 
 /-- Given a morphism `f : X ⟶ Y` in a model category,
@@ -64,6 +65,7 @@ instance [WeakEquivalence f] : WeakEquivalence h.i :=
 instance : WeakEquivalence h.s :=
   weakEquivalence_of_postcomp_of_fac h.s_p
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The term in `CofibrantBrownFactorization f` that is deduced from
 a factorization of `coprod.desc f (𝟙 Y) : X ⨿ Y ⟶ Y`
 as a cofibration followed by a trivial fibration. -/

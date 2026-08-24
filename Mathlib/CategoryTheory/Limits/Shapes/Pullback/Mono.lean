@@ -36,7 +36,7 @@ universe w v₁ v₂ v u u₂
 
 namespace CategoryTheory.Limits
 
-open WalkingSpan.Hom WalkingCospan.Hom WidePullbackShape.Hom WidePushoutShape.Hom PullbackCone
+open WalkingSpan.Hom WalkingCospan.Hom WidePullbackShape.Hom WidePushoutShape.Hom
 
 variable {C : Type u} [Category.{v} C] {W X Y Z : C}
 
@@ -79,6 +79,7 @@ theorem mono_of_isLimitMkIdId (f : X ⟶ Y) (t : IsLimit (mk (𝟙 X) (𝟙 X) r
     rcases PullbackCone.IsLimit.lift' t _ _ eq with ⟨_, rfl, rfl⟩
     rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `f` and `g` are two morphisms with a common codomain and `s` is a limit cone over the
 diagram formed by `f` and `g`. Suppose `f` and `g` both factor through a monomorphism `h` via
 `x` and `y`, respectively.  Then `s` is also a limit cone over the diagram formed by `x` and `y`. -/
@@ -131,7 +132,7 @@ instance pullback.snd_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullba
   PullbackCone.mono_snd_of_is_pullback_of_mono (limit.isLimit _)
 
 /-- The map `X ×[Z] Y ⟶ X × Y` is mono. -/
-instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+instance mono_pullback_to_prod {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasPullback f g] [HasBinaryProduct X Y] :
     Mono (prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨fun {W} i₁ i₂ h => by
@@ -160,10 +161,11 @@ variable (f : X ⟶ Z) (i : Z ⟶ W) [Mono i]
 instance hasPullback_of_right_factors_mono : HasPullback i (f ≫ i) := by
   simpa only [Category.id_comp] using hasPullback_of_comp_mono (𝟙 Z) f i
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance pullback_snd_iso_of_right_factors_mono :
     IsIso (pullback.snd i (f ≫ i)) := by
   have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono (𝟙 _) f i⟩ WalkingCospan.right
-  convert (congrArg IsIso (show _ ≫ pullback.snd (𝟙 Z) f = _ from this)).mp inferInstance
+  convert! (congrArg IsIso (show _ ≫ pullback.snd (𝟙 Z) f = _ from this)).mp inferInstance
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
 
@@ -172,18 +174,17 @@ attribute [local instance] hasPullback_of_right_iso
 instance hasPullback_of_left_factors_mono : HasPullback (f ≫ i) i := by
   simpa only [Category.id_comp] using hasPullback_of_comp_mono f (𝟙 Z) i
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance pullback_snd_iso_of_left_factors_mono :
     IsIso (pullback.fst (f ≫ i) i) := by
   have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono f (𝟙 _) i⟩ WalkingCospan.left
-  convert (congrArg IsIso (show _ ≫ pullback.fst f (𝟙 Z) = _ from this)).mp inferInstance
+  convert! (congrArg IsIso (show _ ≫ pullback.fst f (𝟙 Z) = _ from this)).mp inferInstance
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
 
 end
 
 section
-
-open WalkingCospan
 
 variable (f : X ⟶ Y) [Mono f]
 
@@ -253,6 +254,7 @@ theorem epi_of_isColimitMkIdId (f : X ⟶ Y)
     rcases PushoutCocone.IsColimit.desc' t _ _ eq with ⟨_, rfl, rfl⟩
     rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `f` and `g` are two morphisms with a common domain and `s` is a colimit cocone over the
 diagram formed by `f` and `g`. Suppose `f` and `g` both factor through an epimorphism `h` via
 `x` and `y`, respectively. Then `s` is also a colimit cocone over the diagram formed by `x` and
@@ -307,8 +309,9 @@ instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout 
     Epi (pushout.inr _ _ : Z ⟶ pushout f g) :=
   PushoutCocone.epi_inr_of_is_pushout_of_epi (colimit.isColimit _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `X ⨿ Y ⟶ X ⨿[Z] Y` is epi. -/
-instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
+instance epi_coprod_to_pushout {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
     [HasPushout f g] [HasBinaryCoproduct Y Z] :
     Epi (coprod.desc (pushout.inl f g) (pushout.inr f g)) :=
   ⟨fun {W} i₁ i₂ h => by
@@ -319,7 +322,7 @@ instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y
 /-- The pushout of `f, g` is also the pullback of `h ≫ f, h ≫ g` for any epi `h`. -/
 noncomputable def pushoutIsPushoutOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h]
     [HasPushout f g] : IsColimit (PushoutCocone.mk (pushout.inl f g) (pushout.inr f g)
-    (show (h ≫ f) ≫ pushout.inl f g = (h ≫ g) ≫ pushout.inr f g from by
+    (show (h ≫ f) ≫ pushout.inl f g = (h ≫ g) ≫ pushout.inr f g by
     simp only [Category.assoc]; rw [cancel_epi]; exact pushout.condition)) :=
   PushoutCocone.isColimitOfEpiComp f g h _ (colimit.isColimit (span f g))
 
@@ -336,11 +339,15 @@ variable (f : X ⟶ Z) (h : W ⟶ X) [Epi h]
 instance hasPushout_of_right_factors_epi : HasPushout h (h ≫ f) := by
   simpa only [Category.comp_id] using hasPushout_of_epi_comp (𝟙 X) f h
 
+set_option backward.isDefEq.respectTransparency false in
 instance pushout_inr_iso_of_right_factors_epi :
     IsIso (pushout.inr _ _ : _ ⟶ pushout h (h ≫ f)) := by
-  convert (congrArg IsIso (show pushout.inr _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
-    ⟨_, pushoutIsPushoutOfEpiComp (𝟙 _) f h⟩ WalkingSpan.right)).mp
-    inferInstance
+  convert!
+    (congrArg IsIso
+          (show pushout.inr _ _ ≫ _ = _ from
+            colimit.isoColimitCocone_ι_inv ⟨_, pushoutIsPushoutOfEpiComp (𝟙 _) f h⟩
+              WalkingSpan.right)).mp
+      inferInstance
   · apply (Category.comp_id _).symm
   · apply (Category.comp_id _).symm
 
@@ -349,19 +356,21 @@ attribute [local instance] hasPushout_of_right_iso
 instance hasPushout_of_left_factors_epi (f : X ⟶ Y) : HasPushout (h ≫ f) h := by
   simpa only [Category.comp_id] using hasPushout_of_epi_comp f (𝟙 X) h
 
+set_option backward.isDefEq.respectTransparency false in
 instance pushout_inl_iso_of_left_factors_epi (f : X ⟶ Y) :
     IsIso (pushout.inl _ _ : _ ⟶ pushout (h ≫ f) h) := by
-  convert (congrArg IsIso (show pushout.inl _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
-    ⟨_, pushoutIsPushoutOfEpiComp f (𝟙 _) h⟩ WalkingSpan.left)).mp
-        inferInstance
+  convert!
+    (congrArg IsIso
+          (show pushout.inl _ _ ≫ _ = _ from
+            colimit.isoColimitCocone_ι_inv ⟨_, pushoutIsPushoutOfEpiComp f (𝟙 _) h⟩
+              WalkingSpan.left)).mp
+      inferInstance
   · exact (Category.comp_id _).symm
   · exact (Category.comp_id _).symm
 
 end
 
 section
-
-open WalkingSpan
 
 variable (f : X ⟶ Y) [Epi f]
 

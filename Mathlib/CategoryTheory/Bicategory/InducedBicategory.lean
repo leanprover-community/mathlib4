@@ -22,7 +22,7 @@ of 1-morphisms as well. However, this needs more thought. If one tries the naive
 replacing the map `F` below with a "functor" (between `CategoryStruct`s), one runs into the issue
 that `map_comp` and `map_id` might not be definitional equalities (which they should be in
 practice). Hence one needs to carefully carry these around, or specify `F` in a way that ensures
-they are def-eqs, perhaps constructing it from specified `MorhpismProperty`s.
+they are def-eqs, perhaps constructing it from specified `MorphismProperty`s.
 -/
 
 @[expose] public section
@@ -55,12 +55,16 @@ structure Hom (X Y : InducedBicategory C F) where
   /-- The morphism in `C` underlying the morphism in `InducedBicategory C F`. -/
   hom : F X ⟶ F Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simps id_hom comp_hom]
 instance categoryStruct : CategoryStruct (InducedBicategory C F) where
   Hom X Y := Hom X Y
   id X := ⟨𝟙 (F X)⟩
   comp u v := ⟨u.hom ≫ v.hom⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Synonym for `Hom.mk` which makes unification easier. -/
 abbrev mkHom {X Y : InducedBicategory C F} (f : F X ⟶ F Y) : X ⟶ Y :=
   ⟨f⟩

@@ -21,7 +21,7 @@ The result requires `α` to be countable or `β` to be a countably generated mea
 
 -/
 
-@[expose] public section
+public section
 
 open ProbabilityTheory MeasureTheory
 

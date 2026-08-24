@@ -14,11 +14,11 @@ public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 -/
 
-@[expose] public section
+public section
 
 namespace SpectrumRestricts
 
-open NNReal ENNReal
+open NNReal
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
 
@@ -57,7 +57,7 @@ end SpectrumRestricts
 
 namespace QuasispectrumRestricts
 
-open NNReal ENNReal
+open NNReal
 local notation "σₙ" => quasispectrum
 
 variable {A : Type*} [NonUnitalRing A]

@@ -141,14 +141,8 @@ theorem ofRat_mul (x y : β) :
 theorem ofRat_injective : Function.Injective (ofRat : β → Cauchy abv) := fun x y h => by
   simpa [ofRat, mk_eq, ← const_sub, const_limZero, sub_eq_zero] using h
 
-private theorem zero_def : 0 = mk (abv := abv) 0 :=
-  rfl
-
-private theorem one_def : 1 = mk (abv := abv) 1 :=
-  rfl
-
 instance Cauchy.ring : Ring (Cauchy abv) := fast_instance%
-  Function.Surjective.ring mk Quotient.mk'_surjective zero_def.symm one_def.symm
+  Function.Surjective.ring mk Quotient.mk'_surjective rfl rfl
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -176,7 +170,7 @@ variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
-  Function.Surjective.commRing mk Quotient.mk'_surjective zero_def.symm one_def.symm
+  Function.Surjective.commRing mk Quotient.mk'_surjective rfl rfl
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -194,7 +188,7 @@ instance instRatCast : RatCast (Cauchy abv) where ratCast q := ofRat q
 @[simp, norm_cast] lemma ofRat_nnratCast (q : ℚ≥0) : ofRat (q : β) = (q : Cauchy abv) := rfl
 @[simp, norm_cast] lemma ofRat_ratCast (q : ℚ) : ofRat (q : β) = (q : Cauchy abv) := rfl
 
-open Classical in
+open scoped Classical in
 noncomputable instance : Inv (Cauchy abv) :=
   ⟨fun x =>
     (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
@@ -210,16 +204,16 @@ noncomputable instance : Inv (Cauchy abv) :=
         rw [← mul_one (mk (inv f hf)), ← Ig', ← mul_assoc, If, mul_assoc, Ig', mul_one]⟩
 
 theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
-  congr_arg mk <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
+  congr_arg mk <| by rw [dite_eq_left] <;> [rfl; exact zero_limZero]
 
 @[simp]
 theorem inv_mk {f} (hf) : (mk (abv := abv) f)⁻¹ = mk (inv f hf) :=
-  congr_arg mk <| by rw [dif_neg]
+  congr_arg mk <| by rw [dite_eq_right]
 
-theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
+theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h ↦
   have : LimZero (1 - 0 : CauSeq _ abv) := Setoid.symm h
   have : LimZero (1 : CauSeq _ abv) := by simpa
-  by apply one_ne_zero <| const_limZero.1 this
+  one_ne_zero <| const_limZero.1 this
 
 theorem zero_ne_one : (0 : (Cauchy abv)) ≠ 1 := fun h => cau_seq_zero_ne_one <| mk_eq.1 h
 

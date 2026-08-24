@@ -7,6 +7,8 @@ module
 
 public import Batteries.Data.List.Perm
 public import Mathlib.Tactic.Common
+public import Batteries.Data.List.Lemmas
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Counting in lists
@@ -15,7 +17,7 @@ This file proves basic properties of `List.countP` and `List.count`, which count
 elements of a list satisfying a predicate and equal to a given element respectively.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Monoid Set.range
 
@@ -37,8 +39,7 @@ theorem count_lt_length_iff {a : α} : l.count a < l.length ↔ ∃ b ∈ l, b �
 
 lemma countP_erase (p : α → Bool) (l : List α) (a : α) :
     countP p (l.erase a) = countP p l - if a ∈ l ∧ p a then 1 else 0 := by
-  rw [countP_eq_length_filter, countP_eq_length_filter, ← erase_filter, length_erase]
-  aesop
+  grind [countP_eq_length_filter]
 
 lemma count_diff (a : α) (l₁ : List α) :
     ∀ l₂, count a (l₁.diff l₂) = count a l₁ - count a l₂

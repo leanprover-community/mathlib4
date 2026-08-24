@@ -20,7 +20,7 @@ to subtraction on a general semiring. For example, we can't rely on existing cas
 to `↑a - 1`, the other factor is `0` anyway.
 -/
 
-@[expose] public section
+public section
 
 
 open Nat
@@ -31,7 +31,7 @@ namespace Nat
 
 section Ring
 
-variable [Ring S] (a b : ℕ)
+variable [Ring S] (a : ℕ)
 
 /-- Convenience lemma. The `a - 1` is not using truncated subtraction, as opposed to the definition
 of `Nat.descFactorial` as a natural. -/

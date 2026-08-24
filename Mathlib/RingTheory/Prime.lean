@@ -13,15 +13,16 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Prime elements in rings
+
 This file contains lemmas about prime elements of commutative rings.
 -/
 
-@[expose] public section
+public section
 
 
 section CancelCommMonoidWithZero
 
-variable {R : Type*} [CancelCommMonoidWithZero R]
+variable {R : Type*} [CommMonoidWithZero R] [IsCancelMulZero R]
 
 open Finset
 

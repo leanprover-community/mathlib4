@@ -28,17 +28,16 @@ Isabelle formalization.
 measure-preserving map, measure
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory.Measure Function Set
 open scoped ENNReal
 
-variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
-  [MeasurableSpace δ]
+variable {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 
 namespace MeasureTheory
 
-variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
+variable {μa : Measure α} {μb : Measure β} {μc : Measure γ}
 
 /-- `f` is a measure-preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
 and `map f μa = μb`. -/
@@ -58,6 +57,12 @@ protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
 
 protected theorem aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb) : AEMeasurable f μa :=
   hf.1.aemeasurable
+
+protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (hf' : Measurable f')
+    (h : f =ᵐ[μa] f') : MeasurePreserving f' μa μb := by
+  refine ⟨hf', ?_⟩
+  rw [Measure.map_congr h.symm]
+  exact hf.map_eq
 
 @[nontriviality]
 theorem of_isEmpty [IsEmpty β] (f : α → β) (μa : Measure α) (μb : Measure β) :
@@ -116,13 +121,13 @@ protected theorem trans {e : α ≃ᵐ β} {e' : β ≃ᵐ γ}
 protected theorem comp_left_iff {g : α → β} {e : β ≃ᵐ γ} (h : MeasurePreserving e μb μc) :
     MeasurePreserving (e ∘ g) μa μc ↔ MeasurePreserving g μa μb := by
   refine ⟨fun hg => ?_, fun hg => h.comp hg⟩
-  convert (MeasurePreserving.symm e h).comp hg
+  convert! (MeasurePreserving.symm e h).comp hg
   simp [← Function.comp_assoc e.symm e g]
 
 protected theorem comp_right_iff {g : α → β} {e : γ ≃ᵐ α} (h : MeasurePreserving e μc μa) :
     MeasurePreserving (g ∘ e) μc μb ↔ MeasurePreserving g μa μb := by
   refine ⟨fun hg => ?_, fun hg => hg.comp h⟩
-  convert hg.comp (MeasurePreserving.symm e h)
+  convert! hg.comp (MeasurePreserving.symm e h)
   simp [Function.comp_assoc g e e.symm]
 
 protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb) [SigmaFinite μb] :
@@ -197,7 +202,7 @@ lemma measure_symmDiff_preimage_iterate_le
   | zero => simp
   | succ n ih =>
     simp only [add_smul, one_smul]
-    grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)]
+    grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n + 1] ⁻¹' s)]
     replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
       hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
     rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]

@@ -9,6 +9,7 @@ public import Mathlib.Logic.Equiv.Option
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Conjugate
 public import Mathlib.Tactic.Lift
+public import Mathlib.Data.Int.Notation
 
 /-!
 # Equivalence between types
@@ -17,8 +18,9 @@ In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/
 a lot of equivalences between various types and operations on these equivalences.
 
 More definitions of this kind can be found in other files.
-E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
-`Group`, `Module`, etc.
+E.g., `Mathlib/Algebra/Group/TransferInstance.lean` does it for `Group`,
+`Mathlib/Algebra/Module/TransferInstance.lean` does it for `Module`, and similar files exist for
+other algebraic type classes.
 
 ## Tags
 
@@ -32,7 +34,7 @@ universe u v w z
 open Function
 
 -- Unless required to be `Type*`, all variables in this file are `Sort*`
-variable {α α₁ α₂ β β₁ β₂ γ δ : Sort*}
+variable {α α₁ α₂ β β₁ β₂ γ : Sort*}
 
 namespace Equiv
 
@@ -95,12 +97,7 @@ theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr e
 theorem Perm.subtypeCongr.trans :
     (ep.subtypeCongr en).trans (ep'.subtypeCongr en')
     = Perm.subtypeCongr (ep.trans ep') (en.trans en') := by
-  ext x
-  by_cases h : p x
-  · have : p (ep ⟨x, h⟩) := Subtype.property _
-    simp [h, this]
-  · have : ¬p (en ⟨x, h⟩) := Subtype.property (en _)
-    simp [h, this]
+  grind [eq_def, coe_trans]
 
 end subtypeCongr
 
@@ -114,7 +111,8 @@ is naturally equivalent to the type of functions `{a // ¬ p a} → β`. -/
 @[simps]
 def subtypePreimage : { x : α → β // x ∘ Subtype.val = x₀ } ≃ ({ a // ¬p a } → β) where
   toFun (x : { x : α → β // x ∘ Subtype.val = x₀ }) a := (x : α → β) a
-  invFun x := ⟨fun a => if h : p a then x₀ ⟨a, h⟩ else x ⟨a, h⟩, funext fun ⟨_, h⟩ => dif_pos h⟩
+  invFun x :=
+    ⟨fun a => if h : p a then x₀ ⟨a, h⟩ else x ⟨a, h⟩, funext fun ⟨_, h⟩ => dite_eq_left h⟩
   left_inv := fun ⟨x, hx⟩ =>
     Subtype.val_injective <|
       funext fun a => by
@@ -126,15 +124,15 @@ def subtypePreimage : { x : α → β // x ∘ Subtype.val = x₀ } ≃ ({ a // 
     funext fun ⟨a, h⟩ =>
       show dite (p a) _ _ = _ by
         dsimp only
-        rw [dif_neg h]
+        rw [dite_eq_right h]
 
 theorem subtypePreimage_symm_apply_coe_pos (x : { a // ¬p a } → β) (a : α) (h : p a) :
     ((subtypePreimage p x₀).symm x : α → β) a = x₀ ⟨a, h⟩ :=
-  dif_pos h
+  dite_eq_left h
 
 theorem subtypePreimage_symm_apply_coe_neg (x : { a // ¬p a } → β) (a : α) (h : ¬p a) :
     ((subtypePreimage p x₀).symm x : α → β) a = x ⟨a, h⟩ :=
-  dif_neg h
+  dite_eq_right h
 
 end subtypePreimage
 
@@ -186,7 +184,7 @@ end
 
 section prodCongr
 
-variable {α₁ α₂ β₁ β₂ : Type*} (e : α₁ → β₁ ≃ β₂)
+variable (e : α₁ → β₁ ≃ β₂)
 
 -- See also `Equiv.ofPreimageEquiv`.
 /-- A family of equivalences between fibers gives an equivalence between domains. -/
@@ -443,7 +441,8 @@ def sigmaSubtype {α : Type*} {β : α → Type*} (a : α) :
 
 
 section
-attribute [local simp] Trans.trans sigmaAssoc subtypeSigmaEquiv uniqueSigma eqRec_eq_cast
+attribute [local simp] Trans.trans sigmaAssoc subtypeEquiv subtypeSigmaEquiv uniqueSigma
+  eqRec_eq_cast
 
 /-- A subtype of a dependent triple which pins down both bases is equivalent to the
 respective fiber. -/
@@ -456,7 +455,7 @@ def sigmaSigmaSubtype {α : Type*} {β : α → Type*} {γ : (a : α) → β a �
     (sigmaAssoc γ).symm fun s ↦ by simp [sigmaAssoc]
   _ ≃ _ := subtypeSigmaEquiv _ _
   _ ≃ _ := uniqueSigma (fun ab ↦ γ (Sigma.fst <| Subtype.val ab) (Sigma.snd <| Subtype.val ab))
-  _ ≃ γ a b := Equiv.cast <| by rw [← show ⟨⟨a, b⟩, h⟩ = uniq.default from uniq.uniq _]
+  _ ≃ γ a b := Equiv.cast <| by rw [← uniq.uniq ⟨⟨a, b⟩, h⟩]
 
 @[simp]
 lemma sigmaSigmaSubtype_symm_apply {α : Type*} {β : α → Type*} {γ : (a : α) → β a → Type*}
@@ -529,12 +528,12 @@ theorem subtypeEquivCodomain_symm_apply (f : { x' // x' ≠ x } → Y) (y : Y) (
 
 theorem subtypeEquivCodomain_symm_apply_eq (f : { x' // x' ≠ x } → Y) (y : Y) :
     ((subtypeEquivCodomain f).symm y : X → Y) x = y :=
-  dif_neg (not_not.mpr rfl)
+  dite_eq_right (not_not.mpr rfl)
 
 theorem subtypeEquivCodomain_symm_apply_ne
     (f : { x' // x' ≠ x } → Y) (y : Y) (x' : X) (h : x' ≠ x) :
     ((subtypeEquivCodomain f).symm y : X → Y) x' = f ⟨x', h⟩ :=
-  dif_pos h
+  dite_eq_left h
 
 end subtypeEquivCodomain
 
@@ -594,8 +593,11 @@ def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) {s₁ : Setoid α} 
   invFun a :=
     Quotient.liftOn a (fun a => (⟨⟦a.1⟧, (hp₂ _).1 a.2⟩ : { x // p₂ x })) fun _ _ hab =>
       Subtype.ext (Quotient.sound ((h _ _).1 hab))
-  left_inv := by exact fun ⟨a, ha⟩ => Quotient.inductionOn a (fun b hb => rfl) ha
-  right_inv a := by exact Quotient.inductionOn a fun ⟨a, ha⟩ => rfl
+  left_inv a := by
+    obtain ⟨a, ha⟩ := a
+    induction a using Quotient.inductionOn
+    rfl
+  right_inv a := by induction a using Quotient.inductionOn; rfl
 
 @[simp]
 theorem subtypeQuotientEquivQuotientSubtype_mk (p₁ : α → Prop)
@@ -648,7 +650,7 @@ theorem swap_apply_def (a b x : α) : swap a b x = if x = a then b else if x = b
 
 @[simp]
 theorem swap_apply_left (a b : α) : swap a b a = b :=
-  if_pos rfl
+  ite_eq_left rfl
 
 @[simp]
 theorem swap_apply_right (a b : α) : swap a b b = a := by
@@ -823,7 +825,7 @@ around it in the case where `a` is of the form `e.symm b`, so we can use `g b` i
 @[simp]
 lemma piCongrLeft'_symm_apply_apply (P : α → Sort*) (e : α ≃ β) (g : ∀ b, P (e.symm b)) (b : β) :
     (piCongrLeft' P e).symm g (e.symm b) = g b := by
-  rw [piCongrLeft'_symm_apply, ← heq_iff_eq, eqRec_heq_iff_heq]
+  rw [piCongrLeft'_symm_apply, ← heq_iff_eq, eqRec_heq_iff]
   exact congr_arg_heq _ (e.apply_symm_apply _)
 
 @[simp]

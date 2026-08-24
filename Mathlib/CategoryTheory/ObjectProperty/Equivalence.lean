@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.Order.BooleanAlgebra.Defs
 
 /-!
 # Equivalence of full subcategories
@@ -39,14 +39,20 @@ lemma isEquivalence_ιOfLE_iff : (ιOfLE h).IsEquivalence ↔ Q ≤ P.isoClosure
 
 instance : (ιOfLE P.le_isoClosure).IsEquivalence := by rw [isEquivalence_ιOfLE_iff]
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
-/-- The equivalence between the fullsubcategory `⊤` of a category `C` and `C` itself. -/
+/-- The equivalence between the full subcategory `⊤` of a category `C` and `C` itself. -/
 @[simps]
 def topEquivalence : ObjectProperty.FullSubcategory (C := C) ⊤ ≌ C where
   functor := ObjectProperty.ι _
   inverse := ObjectProperty.lift _ (𝟭 _) (by simp)
   unitIso := Iso.refl _
   counitIso := Iso.refl _
+  functor_unitIso_comp := by cat_disch
+
+lemma isEquivalence_ι (h : P = ⊤) : P.ι.IsEquivalence := by
+  rw [h]
+  exact (topEquivalence C).isEquivalence_functor
 
 end CategoryTheory.ObjectProperty
 
@@ -69,6 +75,7 @@ def congrFullSubcategory [Q.IsClosedUnderIsomorphisms] (h : Q.inverseImage e.fun
     (P.ι.isoWhiskerLeft e.unitIso)
   counitIso := (Q.fullyFaithfulι.whiskeringRight _).preimageIso
     (Q.ι.isoWhiskerLeft e.counitIso)
-  functor_unitIso_comp X := e.functor_unit_comp X.obj
+  functor_unitIso_comp X :=
+    ObjectProperty.hom_ext _ (e.functor_unit_comp X.obj)
 
 end CategoryTheory.Equivalence

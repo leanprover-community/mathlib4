@@ -14,22 +14,21 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 This file contains theorems relevant to big operators over `Finset.NatAntidiagonal`.
 -/
 
-@[expose] public section
+public section
 
-variable {M N : Type*} [CommMonoid M] [AddCommMonoid N]
+variable {M : Type*} [CommMonoid M]
 
 namespace Finset
 
+open HasAntidiagonal
+
 namespace Nat
 
+@[to_additive]
 theorem prod_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → M} :
     (∏ p ∈ antidiagonal (n + 1), f p)
       = f (0, n + 1) * ∏ p ∈ antidiagonal n, f (p.1 + 1, p.2) := by
   rw [antidiagonal_succ, prod_cons, prod_map]; rfl
-
-theorem sum_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → N} :
-    (∑ p ∈ antidiagonal (n + 1), f p) = f (0, n + 1) + ∑ p ∈ antidiagonal n, f (p.1 + 1, p.2) :=
-  @prod_antidiagonal_succ (Multiplicative N) _ _ _
 
 @[to_additive]
 theorem prod_antidiagonal_swap {n : ℕ} {f : ℕ × ℕ → M} :
@@ -37,14 +36,11 @@ theorem prod_antidiagonal_swap {n : ℕ} {f : ℕ × ℕ → M} :
   conv_lhs => rw [← map_swap_antidiagonal, Finset.prod_map]
   rfl
 
+@[to_additive]
 theorem prod_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → M} : (∏ p ∈ antidiagonal (n + 1), f p) =
     f (n + 1, 0) * ∏ p ∈ antidiagonal n, f (p.1, p.2 + 1) := by
   rw [← prod_antidiagonal_swap, prod_antidiagonal_succ, ← prod_antidiagonal_swap]
   rfl
-
-theorem sum_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → N} :
-    (∑ p ∈ antidiagonal (n + 1), f p) = f (n + 1, 0) + ∑ p ∈ antidiagonal n, f (p.1, p.2 + 1) :=
-  @prod_antidiagonal_succ' (Multiplicative N) _ _ _
 
 @[to_additive]
 theorem prod_antidiagonal_subst {n : ℕ} {f : ℕ × ℕ → ℕ → M} :

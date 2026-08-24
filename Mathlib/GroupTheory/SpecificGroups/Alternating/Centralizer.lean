@@ -35,7 +35,7 @@ Deduce the formula for the cardinality of the centralizers
 and conjugacy classes in `alternatingGroup α`.
 -/
 
-@[expose] public section
+public section
 
 open Equiv Finset Function MulAction
 
@@ -107,13 +107,13 @@ theorem card_of_cycleType (m : Multiset ℕ) :
       else 0 := by
   split_ifs with hm
   · -- m is an even cycle_type
-    rw [← Finset.card_map, map_subtype_of_cycleType, if_pos hm.2,
-      Equiv.Perm.card_of_cycleType α m, if_pos hm.1, mul_assoc]
+    rw [← Finset.card_map, map_subtype_of_cycleType, ite_eq_left hm.2,
+      Equiv.Perm.card_of_cycleType α m, ite_eq_left hm.1, mul_assoc]
   · -- m does not correspond to a permutation, or to an odd one,
     rw [← Finset.card_map, map_subtype_of_cycleType]
     rw [apply_ite Finset.card, Finset.card_empty]
     split_ifs with hm'
-    · rw [Equiv.Perm.card_of_cycleType, if_neg]
+    · rw [Equiv.Perm.card_of_cycleType, ite_eq_right]
       obtain hm | hm := not_and_or.mp hm
       · exact hm
       · contradiction
@@ -177,7 +177,7 @@ theorem count_le_one_of_centralizer_le_alternating
   have hk_cT : k.val.cycleType = Multiset.replicate k.val.cycleType.card 2 := by
     rw [Multiset.eq_replicate_card, ← pow_prime_eq_one_iff, ← Subgroup.coe_pow,
       ← Subgroup.coe_one, Subtype.coe_inj, hk, ← map_pow]
-    convert MonoidHom.map_one _
+    convert! MonoidHom.map_one _
     rw [← Subtype.coe_inj]
     apply Equiv.swap_mul_self
   rw [sign_of_cycleType, hk_cT]
@@ -185,7 +185,7 @@ theorem count_le_one_of_centralizer_le_alternating
     even_two, Even.mul_left, Even.neg_pow, one_pow, one_mul]
   apply Odd.neg_one_pow
   apply odd_of_centralizer_le_alternatingGroup h
-  have this : (k : Perm α).cycleType.card * 2 = (k : Perm α).support.card := by
+  have : (k : Perm α).cycleType.card * 2 = (k : Perm α).support.card := by
     rw [← sum_cycleType, hk_cT]
     simp
   have that : Multiset.card (k : Perm α).cycleType = (c : Perm α).support.card := by
@@ -210,7 +210,7 @@ theorem OnCycleFactors.kerParam_range_eq_centralizer_of_count_le_one
   ext c : 2
   rw [← Multiset.nodup_iff_count_le_one, cycleType_def,
     Multiset.nodup_map_iff_inj_on (cycleFactorsFinset g).nodup] at h_count
-  exact h_count _ (by simp) _ c.prop ((mem_range_toPermHom_iff).mp (by simp) c)
+  exact h_count _ (by simp) _ c.prop (mem_range_toPermHom_iff.mp (by simp) c)
 
 /-- The centralizer of a permutation is contained in the alternating group if and only if
 its cycles have odd length, with at most one of each, and there is at most one fixed point. -/
@@ -228,12 +228,12 @@ theorem centralizer_le_alternating_iff :
     rw [← kerParam_range_eq_centralizer_of_count_le_one h_count] at hx
     obtain ⟨⟨y, uv⟩, rfl⟩ := MonoidHom.mem_range.mp hx
     rw [mem_alternatingGroup, sign_kerParam_apply_apply (g := g) y uv]
-    convert mul_one _
+    convert! mul_one _
     · apply Finset.prod_eq_one
       rintro ⟨c, hc⟩ _
       obtain ⟨k, hk⟩ := (uv _).prop
       rw [← hk, map_zpow]
-      convert one_zpow k
+      convert! one_zpow k
       rw [IsCycle.sign, Odd.neg_one_pow, neg_neg]
       · apply h_odd
         rw [cycleType_def, Multiset.mem_map]
@@ -246,7 +246,7 @@ theorem centralizer_le_alternating_iff :
 
 namespace IsThreeCycle
 
-variable (h5 : 5 ≤ Fintype.card α) {g : alternatingGroup α} (hg : IsThreeCycle (g : Perm α))
+variable (h5 : 5 ≤ Nat.card α) {g : alternatingGroup α} (hg : IsThreeCycle (g : Perm α))
 
 include h5 hg
 
@@ -276,7 +276,7 @@ theorem alternatingGroup.commutator_perm_le :
   simp [map_commutatorElement, commutatorElement_eq_one_iff_commute, Commute.all]
 
 /-- If `n ≥ 5`, then the alternating group on `n` letters is perfect -/
-theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Fintype.card α) :
+theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Nat.card α) :
     commutator (alternatingGroup α) = ⊤ := by
   suffices closure {b : alternatingGroup α | (b : Perm α).IsThreeCycle} = ⊤ by
     rw [eq_top_iff, ← this, Subgroup.closure_le]
@@ -286,13 +286,13 @@ theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Fintype.card α) :
   exact Subgroup.closure_closure_coe_preimage
 
 /-- If `n ≥ 5`, then the alternating group on `n` letters is perfect (subgroup version) -/
-theorem commutator_alternatingGroup_eq_self (h5 : 5 ≤ Fintype.card α) :
+theorem commutator_alternatingGroup_eq_self (h5 : 5 ≤ Nat.card α) :
     ⁅alternatingGroup α, alternatingGroup α⁆ = alternatingGroup α := by
   rw [← Subgroup.map_subtype_commutator, commutator_alternatingGroup_eq_top h5,
     ← MonoidHom.range_eq_map, Subgroup.range_subtype]
 
 /-- The commutator subgroup of the permutation group is the alternating group -/
-theorem alternatingGroup.commutator_perm_eq (h5 : 5 ≤ Fintype.card α) :
+theorem alternatingGroup.commutator_perm_eq (h5 : 5 ≤ Nat.card α) :
     commutator (Perm α) = alternatingGroup α := by
   apply le_antisymm alternatingGroup.commutator_perm_le
   rw [← commutator_alternatingGroup_eq_self h5]

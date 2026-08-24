@@ -21,22 +21,22 @@ The category `ReflQuiv` of (bundled) reflexive quivers, and the free/forgetful a
 namespace CategoryTheory
 universe v u v₁ v₂ u₁ u₂
 
+set_option linter.checkUnivs false in
 /-- Category of refl quivers. -/
-@[nolint checkUnivs]
 def ReflQuiv :=
-  Bundled ReflQuiver.{v + 1, u}
+  Bundled ReflQuiver.{v, u}
 
 namespace ReflQuiv
 
 instance : CoeSort ReflQuiv (Type u) where coe := Bundled.α
 
-instance (C : ReflQuiv.{v, u}) : ReflQuiver.{v + 1, u} C := C.str
+instance (C : ReflQuiv.{v, u}) : ReflQuiver.{v, u} C := C.str
 
 /-- The underlying quiver of a reflexive quiver -/
 def toQuiv (C : ReflQuiv.{v, u}) : Quiv.{v, u} := Quiv.of C.α
 
 /-- Construct a bundled `ReflQuiv` from the underlying type and the typeclass. -/
-def of (C : Type u) [ReflQuiver.{v + 1} C] : ReflQuiv.{v, u} := Bundled.of C
+def of (C : Type u) [ReflQuiver.{v} C] : ReflQuiv.{v, u} := Bundled.of C
 
 instance : Inhabited ReflQuiv := ⟨ReflQuiv.of (Discrete default)⟩
 
@@ -70,14 +70,14 @@ lemma comp_map {X Y Z : ReflQuiv} (f : X ⟶ Y) (g : Y ⟶ Z) {x y : X} (a : x �
 @[simps]
 def forget : Cat.{v, u} ⥤ ReflQuiv.{v, u} where
   obj C := ReflQuiv.of C
-  map F := F.toReflPrefunctor
+  map F := F.toFunctor.toReflPrefunctor
 
 theorem forget_faithful {C D : Cat.{v, u}} (F G : C ⥤ D)
-    (hyp : forget.map F = forget.map G) : F = G := by
+    (hyp : forget.map F.toCatHom = forget.map G.toCatHom) : F = G := by
   cases F; cases G; cases hyp; rfl
 
 instance forget.Faithful : Functor.Faithful (forget) where
-  map_injective := fun hyp ↦ forget_faithful _ _ hyp
+  map_injective := fun hyp ↦ Cat.Hom.ext <| forget_faithful _ _ hyp
 
 /-- The forgetful functor from categories to quivers. -/
 @[simps]
@@ -94,6 +94,7 @@ instance forgetToQuiv.Faithful : Functor.Faithful forgetToQuiv where
 
 theorem forget_forgetToQuiv : forget ⋙ forgetToQuiv = Quiv.forget := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An isomorphism of quivers lifts to an isomorphism of reflexive quivers given a suitable
 compatibility with the identities. -/
 def isoOfQuivIso {V W : Type u} [ReflQuiver V] [ReflQuiver W]
@@ -149,6 +150,7 @@ namespace FreeRefl
 
 variable {V}
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Category (FreeRefl V) :=
   inferInstanceAs (Category (Quotient _))
 
@@ -211,8 +213,8 @@ lemma hom_induction {motive : ∀ {x y : FreeRefl V} (_ : x ⟶ y), Prop}
     induction y using induction with | _ y
     obtain ⟨f, rfl⟩ := (quotientFunctor _).map_surjective f
     induction f with
-    | nil => simpa using id x
-    | cons _ f h => simpa using comp_homMk _ f h
+    | nil => simpa using! id x
+    | cons _ f h => simpa using! comp_homMk _ f h
 
 open MorphismProperty in
 lemma multiplicativeClosure_morphismPropertyHomMk :
@@ -236,8 +238,9 @@ lemma morphismProperty_eq_top {W : MorphismProperty (FreeRefl V)}
 
 section
 
-variable {D : Type*} [Category D] (F : V ⥤rq D)
+variable {D : Type*} [Category* D] (F : V ⥤rq D)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructor for functors from `FreeRefl`.
 (See also `lift'` for which the data is unbundled.) -/
 def lift : FreeRefl V ⥤ D :=
@@ -256,7 +259,7 @@ end
 
 section
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
   (obj : V → D) (map : ∀ {v w : V}, (v ⟶ w) → (obj v ⟶ obj w))
   (map_id : ∀ (v : V), map (𝟙rq v) = 𝟙 _)
 
@@ -278,12 +281,12 @@ end
 
 /-- This is a specialization of `Quotient.lift_unique'` rather than `Quotient.lift_unique`, hence
 the prime in the name. -/
-theorem lift_unique' {V} [ReflQuiver V] {D} [Category D] (F₁ F₂ : FreeRefl V ⥤ D)
+theorem lift_unique' {V} [ReflQuiver V] {D} [Category* D] (F₁ F₂ : FreeRefl V ⥤ D)
     (h : quotientFunctor V ⋙ F₁ = quotientFunctor V ⋙ F₂) :
     F₁ = F₂ :=
   Quotient.lift_unique' (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V)) _ _ h
 
-lemma functor_ext {D : Type*} [Category D]
+lemma functor_ext {D : Type*} [Category* D]
     {F G : FreeRefl V ⥤ D} (h₁ : ∀ v, F.obj (mk v) = G.obj (mk v))
     (h₂ : ∀ {v w : V} (f : v ⟶ w), F.map (homMk f) =
       eqToHom (h₁ v) ≫ G.map (homMk f) ≫ eqToHom (h₁ w).symm) : F = G :=
@@ -294,9 +297,11 @@ lemma quotientFunctor_map_id (V) [ReflQuiver V] (X : V) :
     (FreeRefl.quotientFunctor V).map (𝟙rq X).toPath = 𝟙 _ :=
   Quotient.sound _ .mk
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (V : Type*) [ReflQuiver V] [Unique V] : Unique (FreeRefl V) :=
   inferInstanceAs (Unique (Quotient _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (V : Type*) [ReflQuiver V] [Unique V]
     [∀ (x y : V), Unique (x ⟶ y)] (x y : FreeRefl V) :
     Unique (x ⟶ y) where
@@ -309,6 +314,14 @@ instance (V : Type*) [ReflQuiver V] [Unique V]
       obtain rfl := Subsingleton.elim g (𝟙rq _)
       simp [h]
 
+instance (V : Type*) [ReflQuiver V] [Unique V]
+    [∀ (x y : V), Subsingleton (x ⟶ y)] (x y : FreeRefl V) :
+    Subsingleton (x ⟶ y) :=
+  letI (x y : V) : Unique (x ⟶ y) := by
+    obtain rfl : x = y := by subsingleton
+    exact (unique_iff_subsingleton_and_nonempty _ |>.mpr ⟨inferInstance, ⟨𝟙rq _⟩⟩).some
+  inferInstance
+
 end FreeRefl
 
 /-- Given a refl quiver `V`, this is the refl functor `V ⥤rq FreeRefl V` which
@@ -318,10 +331,11 @@ def toFreeRefl : V ⥤rq FreeRefl V where
   obj := .mk
   map := FreeRefl.homMk
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.toReflPrefunctor in
 variable {V} in
 /-- Constructor for functors from `FreeRefl`. -/
-lemma FreeRefl.lift_spec {D : Type*} [Category D] (F : V ⥤rq D) :
+lemma FreeRefl.lift_spec {D : Type*} [Category* D] (F : V ⥤rq D) :
     Cat.toFreeRefl V ⋙rq (Cat.FreeRefl.lift F).toReflPrefunctor = F :=
   ReflPrefunctor.ext (fun v ↦ by simp) (by simp)
 
@@ -340,36 +354,39 @@ lemma freeReflMap_map {v w : V} (f : v ⟶ w) :
     (freeReflMap F).map (FreeRefl.homMk f) = FreeRefl.homMk (F.map f) := rfl
 
 theorem freeReflMap_naturality
-    {V W : Type*} [ReflQuiver.{v₁ + 1} V] [ReflQuiver.{v₂ + 1} W] (F : V ⥤rq W) :
+    {V W : Type*} [ReflQuiver.{v₁} V] [ReflQuiver.{v₂} W] (F : V ⥤rq W) :
     FreeRefl.quotientFunctor V ⋙ freeReflMap F =
     freeMap F.toPrefunctor ⋙ FreeRefl.quotientFunctor W :=
   Paths.ext_functor rfl (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor sending a reflexive quiver to the free category it generates, a quotient of
 its path category -/
 @[simps]
 def freeRefl : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
   obj V := Cat.of (FreeRefl V)
-  map F := freeReflMap F
-  map_id X := FreeRefl.functor_ext (by simp) (by simp)
-  map_comp {X Y Z} f g := FreeRefl.functor_ext (by simp) (by simp)
+  map F := (freeReflMap F).toCatHom
+  map_id X := by ext1; exact FreeRefl.functor_ext (by simp) (by simp)
+  map_comp {X Y Z} f g := by ext1; exact FreeRefl.functor_ext (by simp) (by simp)
 
 /-- We will make use of the natural quotient map from the free category on the underlying
 quiver of a refl quiver to the free category on the reflexive quiver. -/
 def freeReflNatTrans : ReflQuiv.forgetToQuiv ⋙ Cat.free ⟶ freeRefl where
-  app V := FreeRefl.quotientFunctor V
-  naturality v w f := Paths.ext_functor (V := Quiv.of v) (by cat_disch) (by cat_disch)
+  app V := (FreeRefl.quotientFunctor V).toCatHom
+  naturality v w f := by
+    ext1; exact Paths.ext_functor (V := Quiv.of v) (by cat_disch) (by cat_disch)
 
 end Cat
 
 namespace ReflQuiv
-open Category Functor
+open Category
 
 namespace adj
 
 variable {V W : Type*} [ReflQuiver W] [ReflQuiver V]
-  {C D : Type*} [Category C] [Category D]
+  {C D : Type*} [Category* C] [Category* D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a reflexive quiver `V` and a category `C`, this is the bijection
 between functors `Cat.FreeRefl V ⥤ C` and refl functors `V ⥤rq C`. -/
 @[simps]
@@ -379,6 +396,7 @@ def homEquiv : (Cat.FreeRefl V ⥤ C) ≃ V ⥤rq C where
   left_inv F := Cat.FreeRefl.functor_ext (by cat_disch) (by cat_disch)
   right_inv := Cat.FreeRefl.lift_spec
 
+set_option backward.defeqAttrib.useBackward true in
 lemma homEquiv_naturality_left_symm (F : V ⥤rq W) (G : W ⥤rq C) :
     homEquiv.symm (F ⋙rq G) = Cat.freeReflMap F ⋙ homEquiv.symm G :=
   Cat.FreeRefl.functor_ext (by simp) (by simp)
@@ -394,31 +412,33 @@ to a reflexive quiver.
 -/
 def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
   Adjunction.mkOfHomEquiv
-    { homEquiv _ _ := adj.homEquiv
-      homEquiv_naturality_left_symm _ _ := adj.homEquiv_naturality_left_symm _ _
+    { homEquiv _ _ := (Cat.Hom.equivFunctor ..).trans adj.homEquiv
+      homEquiv_naturality_left_symm _ _ := by ext1; exact adj.homEquiv_naturality_left_symm _ _
       homEquiv_naturality_right _ _ := adj.homEquiv_naturality_right _ _ }
 
 @[simp]
 lemma adj_unit_app (V) [ReflQuiver V] :
     adj.unit.app (ReflQuiv.of V) = Cat.toFreeRefl V := rfl
 
-lemma adj_counit_app (D : Type*) [Category D] :
-    adj.counit.app (Cat.of D) = Cat.FreeRefl.lift (𝟭rq D) := rfl
+lemma adj_counit_app (D : Type u) [Category.{max u v} D] :
+    adj.counit.app (Cat.of D) = (Cat.FreeRefl.lift (𝟭rq D)).toCatHom := rfl
 
 variable {V : Type*} [ReflQuiver V]
-  {C : Type*} [Category C]
+  {C : Type*} [Category* C]
 
-lemma adj_homEquiv (V : Type u) [ReflQuiver.{max u v + 1} V] (C : Type u) [Category.{max u v} C] :
-    (adj).homEquiv (.of V) (.of C) = adj.homEquiv := by
+lemma adj_homEquiv (V : Type u) [ReflQuiver.{max u v} V] (C : Type u) [Category.{max u v} C] :
+    (adj).homEquiv (.of V) (.of C) = (Cat.Hom.equivFunctor _ _).trans adj.homEquiv := by
   ext F
   apply Adjunction.homEquiv_unit
 
-lemma adj.unit.map_app_eq (V : Type u) [ReflQuiver.{max u v + 1} V] :
+lemma adj.unit.map_app_eq (V : Type u) [ReflQuiver.{max u v} V] :
     (adj.unit.app (.of V)).toPrefunctor = Quiv.adj.unit.app (.of V) ⋙q
       (Cat.FreeRefl.quotientFunctor V).toPrefunctor := rfl
 
-lemma adj.counit.comp_app_eq (C : Type u) [Category C] :
-    Cat.FreeRefl.quotientFunctor C ⋙ adj.counit.app (.of C) =
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+lemma adj.counit.comp_app_eq (C : Type u) [Category.{max u v} C] :
+    Cat.FreeRefl.quotientFunctor C ⋙ (adj.counit.app (.of C)).toFunctor =
       pathComposition _ :=
   Paths.ext_functor rfl (fun _ _ f ↦ by
     dsimp

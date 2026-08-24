@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+# Prepare build
+lake clean
+rm -f .lake/packages/batteries/.lake/build/bin/runLinter
+
+# Run build
+LAKE_OVERRIDE_LEAN=true \
+  LEAN="$BENCH_DIR/build/fake-root/bin/lean" \
+  WRAPPER_OUT="$OUTPUT_FILE" \
+  WRAPPER_PREFIX="$BENCH_DIR/build/fake-root" \
+  "$BENCH_DIR/measure.py" -t build -d -a -o "$OUTPUT_FILE" -- \
+  lakeprof record lake build --no-cache
+
+# Analyze lakeprof data
+"$BENCH_DIR/build/lakeprof_measurements.py" "$OUTPUT_FILE"
+python3 "$BENCH_DIR/build/lakeprof_report_upload.py"

@@ -30,15 +30,15 @@ from the other possible lemmas, but we will want there to be a single set of lem
 situations.
 -/
 
-@[expose] public section
+public section
 
-open Bornology Function Metric Set
+open Function Metric Set
 open scoped Pointwise
 
 variable {α ι : Type*}
 
 section NormedOrderedGroup
-variable [NormedCommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s : Set α}
+variable [NormedCommGroup α] [Preorder α] [IsOrderedMonoid α] {s : Set α}
 
 @[to_additive IsUpperSet.thickening]
 protected theorem IsUpperSet.thickening' (hs : IsUpperSet s) (ε : ℝ) :
@@ -133,7 +133,7 @@ lemma dist_mono_left_pi : MonotoneOn (dist · y) (Ici y) := by
   grw [hy i] -- TODO(gcongr): we would like `grw [hy]` to work here
 
 lemma dist_mono_right_pi : MonotoneOn (dist x) (Ici x) := by
-  simpa only [dist_comm _ x] using dist_mono_left_pi (y := x)
+  simpa only [dist_comm] using dist_mono_left_pi (y := x)
 
 lemma dist_anti_left_pi : AntitoneOn (dist · y) (Iic y) := by
   refine fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ ?_)
@@ -212,7 +212,7 @@ protected lemma IsClosed.lowerClosure_pi (hs : IsClosed s) (hs' : BddAbove s) :
   cases nonempty_fintype ι
   refine IsSeqClosed.isClosed fun f x hf hx ↦ ?_
   choose g hg hfg using hf
-  haveI : BoundedGENhdsClass ℝ := by infer_instance
+  have : BoundedGENhdsClass ℝ := by infer_instance
   obtain ⟨a, ha⟩ := hx.bddBelow_range
   obtain ⟨b, hb, φ, hφ, hbf⟩ := tendsto_subseq_of_bounded (hs'.isBounded_inter bddBelow_Ici) fun n ↦
     ⟨hg n, (ha <| mem_range_self _).trans <| hfg _⟩

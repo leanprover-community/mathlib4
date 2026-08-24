@@ -23,7 +23,7 @@ under the additional assumption `[TotalComplexShapeSymmetry c₁ c₂ c]`.
 
 open CategoryTheory Limits
 
-variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
+variable {C₁ C₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
 
 namespace HomologicalComplex
 

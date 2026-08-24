@@ -15,7 +15,7 @@ public import Mathlib.Order.Filter.Bases.Basic
 
 assert_not_exists Set.Finite
 
-@[expose] public section
+public section
 
 open Set Filter Function
 
@@ -73,7 +73,7 @@ theorem mem_lift_sets (hg : Monotone g) {s : Set β} : s ∈ f.lift g ↔ ∃ t 
 
 theorem sInter_lift_sets (hg : Monotone g) :
     ⋂₀ { s | s ∈ f.lift g } = ⋂ s ∈ f, ⋂₀ { t | t ∈ g s } := by
-  simp only [sInter_eq_biInter, mem_setOf_eq, mem_lift_sets hg, iInter_exists,
+  simp only [sInter_eq_biInter, mem_ofPred_eq, mem_lift_sets hg, iInter_exists,
     iInter_and, @iInter_comm _ (Set β)]
 
 theorem mem_lift {s : Set β} {t : Set α} (ht : t ∈ f) (hs : s ∈ g t) : s ∈ f.lift g :=
@@ -195,7 +195,7 @@ theorem lift_iInf_of_map_univ {f : ι → Filter α} {g : Set α → Filter β}
     (hg : ∀ s t, g (s ∩ t) = g s ⊓ g t) (hg' : g univ = ⊤) :
     (iInf f).lift g = ⨅ i, (f i).lift g := by
   cases isEmpty_or_nonempty ι
-  · simp [iInf_of_empty, hg']
+  · simp [hg']
   · exact lift_iInf hg
 
 end lift
@@ -351,7 +351,7 @@ variable {f : Filter α}
 theorem prod_def {f : Filter α} {g : Filter β} :
     f ×ˢ g = f.lift fun s => g.lift' fun t => s ×ˢ t := by
   simpa only [Filter.lift', Filter.lift, (f.basis_sets.prod g.basis_sets).eq_biInf,
-    iInf_prod, iInf_and] using iInf_congr fun i => iInf_comm
+    iInf_prod, iInf_and] using! iInf_congr fun i => iInf_comm
 
 alias mem_prod_same_iff := mem_prod_self_iff
 

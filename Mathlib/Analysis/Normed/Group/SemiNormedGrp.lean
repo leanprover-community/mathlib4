@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Constructions
 public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-public import Mathlib.CategoryTheory.Elementwise
 
 /-!
 # The category of seminormed groups
@@ -177,7 +177,7 @@ instance Hom.neg {M N : SemiNormedGrp} : Neg (M ⟶ N) where
   neg f := ofHom (- f.hom)
 
 @[simp]
-theorem hom_neg {V W : SemiNormedGrp} (f : V ⟶ W) : (-f).hom = - f.hom :=
+theorem hom_neg {V W : SemiNormedGrp} (f : V ⟶ W) : (-f).hom = -f.hom :=
   rfl
 
 instance Hom.sub {M N : SemiNormedGrp} : Sub (M ⟶ N) where
@@ -239,7 +239,7 @@ instance : LargeCategory.{u} SemiNormedGrp₁ where
 instance instFunLike (X Y : SemiNormedGrp₁) :
     FunLike { f : NormedAddGroupHom X Y // f.NormNoninc } X Y where
   coe f := f.1.toFun
-  coe_injective' _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
+  coe_injective _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
 
 instance : ConcreteCategory SemiNormedGrp₁
     fun X Y => { f : NormedAddGroupHom X Y // f.NormNoninc } where

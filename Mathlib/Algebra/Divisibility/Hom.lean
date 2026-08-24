@@ -21,7 +21,7 @@ public import Mathlib.Algebra.Group.Hom.Defs
 divisibility, divides
 -/
 
-@[expose] public section
+public section
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 

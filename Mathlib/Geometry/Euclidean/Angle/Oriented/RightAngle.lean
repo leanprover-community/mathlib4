@@ -16,7 +16,7 @@ degenerate) right-angled triangles in real inner product spaces and Euclidean af
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -460,7 +460,7 @@ theorem oangle_add_right_smul_rotation_pi_div_two {x : V} (h : x ≠ 0) (r : ℝ
       (-o).oangle_add_right_eq_arctan_of_oangle_eq_pi_div_two ha, norm_smul,
       LinearIsometryEquiv.norm_map, mul_div_assoc, div_self (norm_ne_zero_iff.2 h), mul_one,
       Real.norm_eq_abs, abs_of_neg hr, Real.arctan_neg, Real.Angle.coe_neg, neg_neg]
-  · rw [zero_smul, add_zero, oangle_self, Real.arctan_zero, Real.Angle.coe_zero]
+  · simp
   · have ha : o.oangle x (r • o.rotation (π / 2 : ℝ) x) = (π / 2 : ℝ) := by
       rw [o.oangle_smul_right_of_pos _ _ hr, o.oangle_rotation_self_right h]
     rw [o.oangle_add_right_eq_arctan_of_oangle_eq_pi_div_two ha, norm_smul,
@@ -601,15 +601,7 @@ lemma oangle_eq_oangle_rev_of_two_zsmul_eq_of_angle_eq_pi_div_two {p₁ p₂ p�
     (h₄₅₆ : ∠ p₄ p₅ p₆ = π / 2) : ∡ p₂ p₃ p₁ = ∡ p₄ p₆ p₅ := by
   refine (Real.Angle.two_zsmul_eq_iff_eq_of_abs_toReal_lt_pi_div_two
     (abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two h₁₂₃) ?_).1 h
-  rw [oangle_rev]
-  suffices |(∡ p₅ p₆ p₄).toReal| < π / 2 by
-    convert this using 1
-    nth_rw 2 [← abs_neg]
-    congr
-    rw [Real.Angle.toReal_neg_eq_neg_toReal_iff]
-    intro hc
-    simp only [hc, Real.Angle.toReal_pi, abs_of_pos Real.pi_pos] at this
-    linarith [Real.pi_pos]
+  rw [oangle_rev, Real.Angle.abs_toReal_neg]
   exact abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two h₄₅₆
 
 /-- The cosine of an angle in a right-angled triangle as a ratio of sides. -/

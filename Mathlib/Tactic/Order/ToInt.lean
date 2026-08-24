@@ -5,10 +5,12 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Batteries.Data.List.Pairwise
-public meta import Mathlib.Tactic.Order.CollectFacts
-public meta import Batteries.Tactic.GeneralizeProofs
+public import Batteries.Data.List.Pairwise
+public import Batteries.Tactic.GeneralizeProofs
+public import Mathlib.Tactic.Order.CollectFacts
+public meta import Mathlib.Util.AtomM
 public meta import Mathlib.Util.Qq
+public meta import Std.Data.HashMap.AdditionalOperations
 
 /-!
 # Translating linear orders to ℤ
@@ -59,7 +61,7 @@ theorem exists_translation : ∃ tr : Fin n → ℤ, ∀ i j, val i ≤ val j �
   · contrapose! h
     exact lt_of_le_of_ne (by simpa using (this hj.choose hi.choose (by simpa)))
       (fun h ↦ h_eq (h.symm))
-  · simpa using this hi.choose hj.choose (by apply lt_of_le_of_ne h; contrapose! h_eq; simp [h_eq])
+  · simpa using this hi.choose hj.choose (by apply lt_of_le_of_ne h; contrapose h_eq; simp [h_eq])
 
 /-- Auxiliary definition used by the `order` tactic to transfer facts in a linear order to `ℤ`. -/
 noncomputable def toInt (k : Fin n) : ℤ :=
@@ -87,11 +89,11 @@ theorem toInt_nlt_toInt : ¬toInt val i < toInt val j ↔ ¬val i < val j := by
 
 theorem toInt_sup_toInt_eq_toInt :
     toInt val i ⊔ toInt val j = toInt val k ↔ val i ⊔ val j = val k := by
-  simp [le_antisymm_iff, sup_le_iff, le_sup_iff, toInt_le_toInt]
+  simp [le_antisymm_iff, toInt_le_toInt]
 
 theorem toInt_inf_toInt_eq_toInt :
     toInt val i ⊓ toInt val j = toInt val k ↔ val i ⊓ val j = val k := by
-  simp [le_antisymm_iff, inf_le_iff, le_inf_iff, toInt_le_toInt]
+  simp [le_antisymm_iff, toInt_le_toInt]
 
 open Lean Meta Qq
 

@@ -15,9 +15,11 @@ theorem whiskerLeft_hom_inv (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
   rw [← Bicategory.whiskerLeft_comp, Iso.hom_inv_id, Bicategory.whiskerLeft_id]
 
 example {a b c : Cat} (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) (X : a) :
-    η.hom.app (f.obj X) ≫ η.inv.app (f.obj X) = 𝟙 ((f ≫ g).obj X) :=
+    η.hom.toNatTrans.app (f.toFunctor.obj X) ≫ η.inv.toNatTrans.app (f.toFunctor.obj X) =
+      𝟙 ((f ≫ g).toFunctor.obj X) :=
   whiskerLeft_hom_inv_app f η X
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_app]
 theorem pentagon_hom_hom_inv_inv_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     (α_ f (g ≫ h) i).hom ≫ f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv =
@@ -26,7 +28,8 @@ theorem pentagon_hom_hom_inv_inv_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (
 
 example {a b c d e : Cat} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) (X : a) : True := by
   have hyp := pentagon_hom_hom_inv_inv_hom_app f g h i X
-  guard_hyp hyp : 𝟙 (i.obj (h.obj (g.obj (f.obj X)))) = i.map (𝟙 (h.obj (g.obj (f.obj X))))
+  guard_hyp hyp : 𝟙 (i.toFunctor.obj (h.toFunctor.obj (g.toFunctor.obj (f.toFunctor.obj X)))) =
+    i.toFunctor.map (𝟙 (h.toFunctor.obj (g.toFunctor.obj (f.toFunctor.obj X))))
   trivial
 
 @[to_app]
@@ -35,7 +38,7 @@ theorem testThm {C : Type*} [Bicategory C] (F : PrelaxFunctor B C) {a b : B} {f 
 
 example {B : Type u_1} [Bicategory B] (F : PrelaxFunctor B Cat)
     {a b : B} {f g : a ⟶ b} (η : f ⟶ g) (X : ↑(F.obj a)) :
-    (F.map₂ η).app X ≫ (F.map₂ (𝟙 g)).app X = (F.map₂ η).app X :=
+    (F.map₂ η).toNatTrans.app X ≫ (F.map₂ (𝟙 g)).toNatTrans.app X = (F.map₂ η).toNatTrans.app X :=
   testThm_app F η X
 
 end CategoryTheory.ToAppTest

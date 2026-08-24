@@ -31,8 +31,7 @@ preserving condition is relaxed to quasi-measure-preserving.
 
 -/
 
-@[expose] public section
-
+public section
 
 open Set Function Filter MeasureTheory MeasureTheory.Measure
 
@@ -71,8 +70,6 @@ theorem ae_mem_or_ae_notMem (hf : PreErgodic f μ) (hsm : MeasurableSet s) (hs :
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.1 <| hf.aeconst_set hsm hs
 
-@[deprecated (since := "2025-05-24")] alias ae_mem_or_ae_nmem := ae_mem_or_ae_notMem
-
 /-- On a probability space, the (pre)ergodicity condition is a zero-one law. -/
 theorem prob_eq_zero_or_one [IsProbabilityMeasure μ] (hf : PreErgodic f μ) (hs : MeasurableSet s)
     (hs' : f ⁻¹' s = s) : μ s = 0 ∨ μ s = 1 := by
@@ -86,7 +83,7 @@ theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞
   aeconst_set _s hs hfs := (hf.aeconst_set hs hfs).anti <| ae_smul_measure_le _
 
 theorem zero_measure (f : α → α) : @PreErgodic α m f 0 where
-  aeconst_set _ _ _ := by simp
+  aeconst_set _ _ _ := EventuallyConst.bot.anti ae_zero.le
 
 end PreErgodic
 
@@ -100,9 +97,6 @@ theorem preErgodic_of_preErgodic_semiconj (hg : MeasurePreserving g μ μ') (hf 
     rw [← hg.aeconst_preimage hs₀.nullMeasurableSet]
     apply hf.aeconst_set (hg.measurable hs₀)
     rw [← preimage_comp, h_comm.comp_eq, preimage_comp, hs₁]
-
-@[deprecated (since := "2025-11-19")]
-alias preErgodic_of_preErgodic_conjugate := preErgodic_of_preErgodic_semiconj
 
 theorem ergodic_of_ergodic_semiconj (hg : MeasurePreserving g μ μ') (hf : Ergodic f μ)
     {f' : β → β} (hf' : Measurable f') (h_comm : Semiconj g f f') : Ergodic f' μ' :=
@@ -147,8 +141,6 @@ theorem ae_mem_or_ae_notMem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.mp <| hf.aeconst_set₀ hsm hs
 
-@[deprecated (since := "2025-05-24")] alias ae_mem_or_ae_nmem₀ := ae_mem_or_ae_notMem₀
-
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : QuasiErgodic f μ) (c : R) : QuasiErgodic f (c • μ) :=
   ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
@@ -184,7 +176,7 @@ theorem ae_empty_or_univ_of_ae_le_preimage' (hf : Ergodic f μ) (hs : NullMeasur
 theorem ae_empty_or_univ_of_image_ae_le' (hf : Ergodic f μ) (hs : NullMeasurableSet s μ)
     (hs' : f '' s ≤ᵐ[μ] s) (h_fin : μ s ≠ ∞) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ := by
   replace hs' : s ≤ᵐ[μ] f ⁻¹' s :=
-    (HasSubset.Subset.eventuallyLE (subset_preimage_image f s)).trans
+    (LE.le.eventuallyLE (subset_preimage_image f s)).trans
       (hf.quasiMeasurePreserving.preimage_mono_ae hs')
   exact ae_empty_or_univ_of_ae_le_preimage' hf hs hs' h_fin
 

@@ -6,7 +6,7 @@ Authors: Joseph Hua
 module
 
 public import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
-public import Mathlib.CategoryTheory.Category.Grpd
+public import Mathlib.CategoryTheory.Groupoid.Grpd.Basic
 public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Localization.Predicate
 
@@ -93,10 +93,32 @@ lemma of_obj_bijective : Function.Bijective (of C).obj where
   left _ _ h := by cases h; rfl
   right X := ⟨X.as.as, rfl⟩
 
+/-- Induction principle for proving a property for all the morphisms
+in the free groupoid of a category `C`: it suffices to prove the property
+for morphisms coming from the category `C`, and that the property is
+stable under inverses and composition. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+lemma hom_rec {motive : ∀ ⦃x y : FreeGroupoid C⦄ (_ : x ⟶ y), Prop}
+    (homMk : ∀ ⦃x y : C⦄ (f : x ⟶ y), motive (homMk f))
+    (inv : ∀ ⦃x y : FreeGroupoid C⦄ (f : x ⟶ y), motive f → motive (inv f))
+    (comp : ∀ ⦃x y z : FreeGroupoid C⦄ (f : x ⟶ y) (g : y ⟶ z),
+      motive f → motive g → motive (f ≫ g))
+    {x y : FreeGroupoid C} (f : x ⟶ y) :
+    motive f := by
+  induction x with | _ x
+  induction y with | _ y
+  obtain ⟨f, rfl⟩ := (Quotient.functor (FreeGroupoid.homRel C)).map_surjective f
+  induction f with
+  | of_map f => exact homMk f
+  | inv_of_map f => simpa using! inv _ (homMk f)
+  | id x => simpa using! homMk (𝟙 x)
+  | comp _ _ hf hg => simpa using! comp _ _ hf hg
+
 section UniversalProperty
 
 variable {G : Type u₁} [Groupoid.{v₁} G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The lift of a functor from `C` to a groupoid to a functor from
 `FreeGroupoid C` to the groupoid -/
 def lift (φ : C ⥤ G) : FreeGroupoid C ⥤ G :=
@@ -106,6 +128,7 @@ def lift (φ : C ⥤ G) : FreeGroupoid C ⥤ G :=
         Prefunctor.congr_hom (Quiver.FreeGroupoid.lift_spec φ.toPrefunctor) f
       induction r <;> cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lift_spec (φ : C ⥤ G) : of C ⋙ lift φ = φ :=
   Functor.toPrefunctor_injective (by
     change Quiver.FreeGroupoid.of C ⋙q
@@ -117,6 +140,8 @@ theorem lift_spec (φ : C ⥤ G) : of C ⋙ lift φ = φ :=
 lemma lift_obj_mk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) (X : C) :
     (lift φ).obj (mk X) = φ.obj X := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma lift_map_homMk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) {X Y : C} (f : X ⟶ Y) :
     (lift φ).map (homMk f) = φ.map f := by
@@ -127,6 +152,11 @@ theorem lift_unique (φ : C ⥤ G) (Φ : FreeGroupoid C ⥤ G) (hΦ : of C ⋙ �
   apply Quotient.lift_unique
   apply Quiver.FreeGroupoid.lift_unique
   exact congr_arg Functor.toPrefunctor hΦ
+
+lemma lift_unique' {Φ Φ' : FreeGroupoid C ⥤ G} (h : of C ⋙ Φ = of C ⋙ Φ') : Φ = Φ' := by
+  trans lift (of C ⋙ Φ')
+  · exact lift_unique _ _ h
+  · exact (lift_unique _ _ rfl).symm
 
 theorem lift_id_comp_of : lift (𝟭 G) ⋙ of G = 𝟭 _ := by
   rw [lift_unique (of G) (lift (𝟭 G) ⋙ of G) (by rw [← Functor.assoc, lift_spec, Functor.id_comp])]
@@ -200,7 +230,7 @@ theorem map_id : map (𝟭 C) = 𝟭 (FreeGroupoid C) := by
   symm; apply lift_unique; rfl
 
 /-- The functor induced by a composition is the composition of the functors they induce. -/
-def mapComp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') ≅ map φ ⋙ map φ':=
+def mapComp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') ≅ map φ ⋙ map φ' :=
   liftNatIso _ _ (Iso.refl _)
 
 @[simp]
@@ -255,25 +285,26 @@ namespace Grpd
 
 open FreeGroupoid
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free groupoid construction on a category as a functor. -/
 def free : Cat.{u, u} ⥤ Grpd.{u, u} where
   obj C := Grpd.of <| FreeGroupoid C
-  map {C D} F := map F
-  map_id C := by simp [Grpd.id_eq_id, map_id, Cat.id_eq_id]
-  map_comp F G := by simp [Grpd.comp_eq_comp, map_comp, Cat.comp_eq_comp]
+  map {C D} F := map F.toFunctor
+  map_id C := by simp [map_id, id_eq_id]
+  map_comp F G := by simp [Grpd.comp_eq_comp, map_comp]
 
 @[simp]
 lemma free_obj (C : Cat.{u, u}) : free.obj C = FreeGroupoid C :=
   rfl
 
 @[simp]
-lemma free_map {C D : Cat.{u, u}} (F : C ⟶ D) : free.map F = map F :=
+lemma free_map {C D : Cat.{u, u}} (F : C ⟶ D) : free.map F = map F.toFunctor :=
   rfl
 
 /-- The free-forgetful adjunction between `Grpd` and `Cat`. -/
 def freeForgetAdjunction : free ⊣ Grpd.forgetToCat :=
   Adjunction.mkOfHomEquiv
-    { homEquiv _ _ := FreeGroupoid.functorEquiv
+    { homEquiv _ _ := FreeGroupoid.functorEquiv.trans (Functor.equivCatHom _ _)
       homEquiv_naturality_left_symm _ _ := (FreeGroupoid.map_comp_lift _ _).symm
       homEquiv_naturality_right _ _ := rfl }
 
@@ -281,17 +312,17 @@ variable {C : Type u} [Category.{u} C] {D : Type u} [Groupoid.{u} D]
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_apply (F : FreeGroupoid C ⥤ D) :
-    freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D) F = FreeGroupoid.of C ⋙ F :=
+    (freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D) F).toFunctor = FreeGroupoid.of C ⋙ F :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_symm_apply (F : C ⥤ D) :
-    (freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D)).symm F = map F ⋙ lift (𝟭 D) :=
+    (freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D)).symm F.toCatHom = map F ⋙ lift (𝟭 D) :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_unit_app :
-    freeForgetAdjunction.unit.app (Cat.of C) = FreeGroupoid.of C :=
+    (freeForgetAdjunction.unit.app (Cat.of C)).toFunctor = FreeGroupoid.of C :=
   rfl
 
 @[simp]

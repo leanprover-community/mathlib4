@@ -110,6 +110,7 @@ namespace ValuativeCriterion.Existence
 
 open IsLocalRing
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 01KE]
 lemma specializingMap (H : ValuativeCriterion.Existence f) :
     SpecializingMap f := by
@@ -140,12 +141,13 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
 instance {R S : CommRingCat} (e : R ≅ S) : IsLocalHom e.hom.hom :=
   isLocalHom_of_isIso _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
     ValuativeCriterion.Existence f := by
   rintro ⟨R, K, i₁, i₂, ⟨w⟩⟩
-  haveI : IsDomain (CommRingCat.of R) := ‹_›
-  haveI : ValuationRing (CommRingCat.of R) := ‹_›
-  letI : Field (CommRingCat.of K) := ‹_›
+  have : IsDomain (CommRingCat.of R) := ‹_›
+  have : ValuationRing (CommRingCat.of R) := ‹_›
+  let : Field (CommRingCat.of K) := ‹_›
   replace H := H (pullback.snd i₂ f) i₂ (pullback.fst i₂ f) (.of_hasPullback i₂ f)
   let lft := pullback.lift (Spec.map (CommRingCat.ofHom (algebraMap R K))) i₁ w.symm
   obtain ⟨x, h₁, h₂⟩ := @H (lft (closedPoint _)) _ (specializes_closedPoint (R := R) _)
@@ -196,7 +198,7 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
 
 instance stableUnderBaseChange : ValuativeCriterion.Existence.IsStableUnderBaseChange := by
   constructor
-  intro Y' X X' Y  Y'_to_Y f X'_to_X f' hP hf commSq
+  intro Y' X X' Y Y'_to_Y f X'_to_X f' hP hf commSq
   let commSq' : ValuativeCommSq f :=
   { R := commSq.R
     K := commSq.K
@@ -243,7 +245,7 @@ section Uniqueness
 @[stacks 01L0]
 lemma IsSeparated.of_valuativeCriterion [QuasiSeparated f]
     (hf : ValuativeCriterion.Uniqueness f) : IsSeparated f where
-  diagonal_isClosedImmersion := by
+  isClosedImmersion_diagonal := by
     suffices h : ValuativeCriterion.Existence (pullback.diagonal f) by
       have := UniversallyClosed.of_valuativeCriterion (pullback.diagonal f) h
       exact .of_isPreimmersion _ (pullback.diagonal f).isClosedMap.isClosed_range
@@ -267,6 +269,7 @@ lemma IsSeparated.of_valuativeCriterion [QuasiSeparated f]
       · simp only [Category.assoc, pullback.diagonal_snd, Category.comp_id]
         exact congrArg CommSq.LiftStruct.l h₁₂
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 01KZ]
 lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Uniqueness f := by
   intro S
@@ -321,6 +324,7 @@ lemma IsSeparated.eq_valuativeCriterion :
 
 end Uniqueness
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The **valuative criterion** for proper morphisms. -/
 @[stacks 0BX5]
 lemma IsProper.eq_valuativeCriterion :

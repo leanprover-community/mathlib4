@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Group.Multiset
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Data.Vector.Basic
-public import Mathlib.Logic.Nontrivial.Basic
 public import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -161,10 +160,12 @@ instance decidableMem [DecidableEq α] (a : α) (s : Sym α n) : Decidable (a �
 theorem mem_mk (a : α) (s : Multiset α) (h : Multiset.card s = n) : a ∈ mk s h ↔ a ∈ s :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma «forall» {p : Sym α n → Prop} :
     (∀ s : Sym α n, p s) ↔ ∀ (s : Multiset α) (hs : Multiset.card s = n), p (Sym.mk s hs) := by
   simp [Sym]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma «exists» {p : Sym α n → Prop} :
     (∃ s : Sym α n, p s) ↔ ∃ (s : Multiset α) (hs : Multiset.card s = n), p (Sym.mk s hs) := by
   simp [Sym]
@@ -172,8 +173,6 @@ lemma «exists» {p : Sym α n → Prop} :
 @[simp]
 theorem notMem_nil (a : α) : a ∉ (nil : Sym α 0) :=
   Multiset.notMem_zero a
-
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 @[simp]
 theorem mem_cons : a ∈ b ::ₛ s ↔ a = b ∨ a ∈ s :=
@@ -243,7 +242,7 @@ def symEquivSym' {α : Type*} {n : ℕ} : Sym α n ≃ Sym' α n :=
   Equiv.subtypeQuotientEquivQuotientSubtype _ _ (fun _ => by rfl) fun _ _ => by rfl
 
 theorem cons_equiv_eq_equiv_cons (α : Type*) (n : ℕ) (a : α) (s : Sym α n) :
-    (a::symEquivSym' s) = symEquivSym' (a ::ₛ s) := by
+    (a :: symEquivSym' s) = symEquivSym' (a ::ₛ s) := by
   rcases s with ⟨⟨l⟩, _⟩
   rfl
 
@@ -278,6 +277,7 @@ theorem val_replicate : (replicate n a).val = Multiset.replicate n a := by
 theorem mem_replicate : b ∈ replicate n a ↔ n ≠ 0 ∧ b = a :=
   Multiset.mem_replicate
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_replicate_iff : s = replicate n a ↔ ∀ b ∈ s, b = a := by
   rw [Subtype.ext_iff, val_replicate, Multiset.eq_replicate]
   exact and_iff_right s.2
@@ -347,11 +347,13 @@ theorem mem_map {n : ℕ} {f : α → β} {b : β} {l : Sym α n} :
     b ∈ Sym.map f l ↔ ∃ a, a ∈ l ∧ f a = b :=
   Multiset.mem_map
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Note: `Sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `Sym.map_congr` -/
 @[simp]
 theorem map_id' {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α => x) s = s := by
   ext; simp only [map, Multiset.map_id', ← val_eq_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_id {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map id s = s := by
   ext; simp only [map, id_eq, Multiset.map_id', ← val_eq_coe]
 
@@ -461,6 +463,7 @@ theorem append_inj_right (s : Sym α n) {t t' : Sym α n'} : s.append t = s.appe
 theorem append_inj_left {s s' : Sym α n} (t : Sym α n') : s.append t = s'.append t ↔ s = s' :=
   Subtype.ext_iff.trans <| (add_left_inj _).trans Subtype.ext_iff.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem append_comm (s : Sym α n') (s' : Sym α n') :
     s.append s' = Sym.cast (add_comm _ _) (s'.append s) := by
   simp [append, add_comm]
@@ -472,6 +475,7 @@ theorem coe_append (s : Sym α n) (s' : Sym α n') : (s.append s' : Multiset α)
 theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈ s' :=
   Multiset.mem_add
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `a ↦ {a}` as an equivalence between `α` and `Sym α 1`. -/
 @[simps apply]
 def oneEquiv : α ≃ Sym α 1 where
@@ -529,8 +533,8 @@ theorem fill_filterNe [DecidableEq α] (a : α) (m : Sym α n) :
       ext b; dsimp
       rw [count_add, count_filter, Sym.coe_replicate, count_replicate]
       obtain rfl | h := eq_or_ne a b
-      · rw [if_pos rfl, if_neg (not_not.2 rfl), zero_add]
-      · rw [if_pos h, if_neg h, add_zero])
+      · rw [ite_eq_left rfl, ite_eq_right (not_not.2 rfl), zero_add]
+      · rw [ite_eq_left h, ite_eq_right h, add_zero])
 
 theorem filter_ne_fill
     [DecidableEq α] (a : α) (m : Σ i : Fin (n + 1), Sym α (n - i)) (h : a ∉ m.2) :
@@ -548,9 +552,6 @@ theorem count_coe_fill_self_of_notMem [DecidableEq α] {a : α} {i : Fin (n + 1)
     (hx : a ∉ s) :
     count a (fill a i s : Multiset α) = i := by
   simp [coe_fill, coe_replicate, hx]
-
-@[deprecated (since := "2025-05-23")]
-alias count_coe_fill_self_of_not_mem := count_coe_fill_self_of_notMem
 
 theorem count_coe_fill_of_ne [DecidableEq α] {a x : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
     (hx : x ≠ a) :
@@ -583,7 +584,7 @@ def encode [DecidableEq α] (s : Sym (Option α) n.succ) : Sym (Option α) n ⊕
 @[simp]
 theorem encode_of_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h : none ∈ s) :
     encode s = Sum.inl (s.erase none h) :=
-  dif_pos h
+  dite_eq_left h
 
 @[simp]
 theorem encode_of_none_notMem [DecidableEq α] (s : Sym (Option α) n.succ) (h : none ∉ s) :
@@ -591,10 +592,7 @@ theorem encode_of_none_notMem [DecidableEq α] (s : Sym (Option α) n.succ) (h :
       Sum.inr
         (s.attach.map fun o =>
           o.1.get <| Option.ne_none_iff_isSome.1 <| ne_of_mem_of_not_mem o.2 h) :=
-  dif_neg h
-
-@[deprecated (since := "2025-05-23")]
-alias encode_of_not_none_mem := encode_of_none_notMem
+  dite_eq_right h
 
 /-- Inverse of `Sym_option_succ_equiv.decode`. -/
 def decode : Sym (Option α) n ⊕ Sym α n.succ → Sym (Option α) n.succ
@@ -615,7 +613,7 @@ theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (en
   · simp [h]
   · simp only [decode, h, not_false_iff, encode_of_none_notMem, Embedding.some_apply, map_map,
       comp_apply, Option.some_get]
-    convert s.attach_map_coe
+    convert! s.attach_map_coe
 
 @[simp]
 theorem encode_decode [DecidableEq α] (s : Sym (Option α) n ⊕ Sym α n.succ) :

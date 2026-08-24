@@ -43,6 +43,8 @@ section LeftExtension
 
 open LeftExtension
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- For an adjunction `f ⊣ u`, `u` is an absolute left Kan extension of the identity along `f`.
 The unit of this Kan extension is given by the unit of the adjunction. -/
 def Adjunction.isAbsoluteLeftKan {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
@@ -74,8 +76,10 @@ def Adjunction.isAbsoluteLeftKan {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
       _ = _ := by
         rw [hτ]; dsimp only [StructuredArrow.homMk_right]
 
-/-- A left Kan extension of the identity along `f` such that `f` commutes with is a right adjoint
-to `f`. The unit of this adjoint is given by the unit of the Kan extension. -/
+set_option backward.isDefEq.respectTransparency.types false in
+/-- A left Kan extension `t` of the identity along `f` that commutes with `f`, in the sense that
+`t.whisker f` is a left Kan extension, is a right adjoint to `f`. The unit of this adjoint is
+given by the unit of the Kan extension. -/
 def LeftExtension.IsKan.adjunction {f : a ⟶ b} {t : LeftExtension f (𝟙 a)}
     (H : IsKan t) (H' : IsKan (t.whisker f)) :
       f ⊣ t.extension :=
@@ -98,8 +102,8 @@ def LeftExtension.IsKan.adjunction {f : a ⟶ b} {t : LeftExtension f (𝟙 a)}
         _ = _ := by
           rw [← leftZigzag, Hε]; bicategory }
 
-/-- For an adjunction `f ⊣ u`, `u` is a left Kan extension of the identity along `f`.
-The unit of this Kan extension is given by the unit of the adjunction. -/
+/-- An absolute left Kan extension of the identity along `f` is a right adjoint to `f`.
+The unit of this adjunction is given by the unit of the Kan extension. -/
 def LeftExtension.IsAbsKan.adjunction {f : a ⟶ b} (t : LeftExtension f (𝟙 a)) (H : IsAbsKan t) :
     f ⊣ t.extension :=
   H.isKan.adjunction (H f)
@@ -123,6 +127,8 @@ section LeftLift
 
 open LeftLift
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- For an adjunction `f ⊣ u`, `f` is an absolute left Kan lift of the identity along `u`.
 The unit of this Kan lift is given by the unit of the adjunction. -/
 def Adjunction.isAbsoluteLeftKanLift {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
@@ -153,8 +159,10 @@ def Adjunction.isAbsoluteLeftKanLift {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u)
         _ = _ := by
           rw [hτ]; dsimp only [StructuredArrow.homMk_right]
 
-/-- A left Kan lift of the identity along `u` such that `u` commutes with is a left adjoint
-to `u`. The unit of this adjoint is given by the unit of the Kan lift. -/
+set_option backward.isDefEq.respectTransparency.types false in
+/-- A left Kan lift `t` of the identity along `u` that commutes with `u`, in the sense that
+`t.whisker u` is a left Kan lift, is a left adjoint to `u`. The unit of this adjoint is given by
+the unit of the Kan lift. -/
 def LeftLift.IsKan.adjunction {u : b ⟶ a} {t : LeftLift u (𝟙 a)}
     (H : IsKan t) (H' : IsKan (t.whisker u)) :
       t.lift ⊣ u :=
@@ -177,8 +185,8 @@ def LeftLift.IsKan.adjunction {u : b ⟶ a} {t : LeftLift u (𝟙 a)}
           rw [← rightZigzag, Hε]; bicategory
     right_triangle := Hε }
 
-/-- For an adjunction `f ⊣ u`, `f` is a left Kan lift of the identity along `u`.
-The unit of this Kan lift is given by the unit of the adjunction. -/
+/-- An absolute left Kan lift of the identity along `u` is a left adjoint to `u`.
+The unit of this adjunction is given by the unit of the Kan lift. -/
 def LeftLift.IsAbsKan.adjunction {u : b ⟶ a} (t : LeftLift u (𝟙 a)) (H : IsAbsKan t) :
     t.lift ⊣ u :=
   H.isKan.adjunction (H u)
@@ -200,6 +208,8 @@ end LeftLift
 
 namespace LeftExtension
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- A left adjoint commutes with a left Kan extension. -/
 def isKanOfWhiskerLeftAdjoint
     {f : a ⟶ b} {g : a ⟶ c} {t : LeftExtension f g} (H : LeftExtension.IsKan t)
@@ -234,7 +244,7 @@ def isKanOfWhiskerLeftAdjoint
           bicategory) <| by
     intro s' τ₀'
     let τ' : t.extension ≫ h ⟶ s'.extension := τ₀'.right
-    have Hτ' : t.unit ▷ h ⊗≫ f ◁ τ' = s'.unit := by simpa [bicategoricalComp] using τ₀'.w.symm
+    have Hτ' : t.unit ▷ h ⊗≫ f ◁ τ' = s'.unit := by simpa [bicategoricalComp] using τ₀'.w
     ext
     apply (H' _).hom_ext
     dsimp only [StructuredArrow.homMk_right]

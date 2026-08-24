@@ -33,8 +33,6 @@ to `Mathlib/Algebra/Group/Even.lean`.
 
 assert_not_exists DenselyOrdered IsOrderedRing
 
-open MulOpposite
-
 variable {F α β : Type*}
 
 section Monoid
@@ -50,8 +48,30 @@ end Monoid
 
 @[simp] lemma IsSquare.zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
 
+section AddMonoidWithOne
+variable [AddMonoidWithOne α]
+
+@[simp] lemma even_two : Even (2 : α) := ⟨1, by rw [one_add_one_eq_two]⟩
+
+end AddMonoidWithOne
+
+section Distrib
+variable [Add α] [Mul α] {a : α}
+
+@[simp] lemma Even.mul_left [LeftDistribClass α] (ha : Even a) (b : α) : Even (b * a) := by
+  rcases ha with ⟨k, rfl⟩
+  use b * k
+  rw [mul_add]
+
+@[simp] lemma Even.mul_right [RightDistribClass α] (ha : Even a) (b : α) : Even (a * b) := by
+  rcases ha with ⟨k, rfl⟩
+  use k * b
+  rw [add_mul]
+
+end Distrib
+
 section Semiring
-variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
+variable [Semiring α] [Semiring β] {a b : α} {n : ℕ}
 
 lemma even_iff_exists_two_mul : Even a ↔ ∃ b, a = 2 * b := by simp [even_iff_exists_two_nsmul]
 
@@ -69,11 +89,6 @@ lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
   ext x
   simp [eq_comm, two_mul, Even]
 
-@[simp] lemma even_two : Even (2 : α) := ⟨1, by rw [one_add_one_eq_two]⟩
-
-@[simp] lemma Even.mul_left (ha : Even a) (b) : Even (b * a) := ha.map (AddMonoidHom.mulLeft _)
-
-@[simp] lemma Even.mul_right (ha : Even a) (b) : Even (a * b) := ha.map (AddMonoidHom.mulRight _)
 
 lemma even_two_mul (a : α) : Even (2 * a) := ⟨a, two_mul _⟩
 
@@ -178,7 +193,7 @@ lemma Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
 end Monoid
 
 section Ring
-variable [Ring α] {a b : α} {n : ℕ}
+variable [Ring α] {a b : α}
 
 lemma even_neg_two : Even (-2 : α) := by simp only [even_neg, even_two]
 
@@ -201,6 +216,38 @@ lemma Even.sub_odd (ha : Even a) (hb : Odd b) : Odd (a - b) := by
 lemma Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
   rw [sub_eq_add_neg]; exact ha.add_odd hb.neg
 
+@[simp]
+lemma even_add_one : Even (a + 1) ↔ Odd a :=
+  ⟨(by convert! ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+
+@[simp]
+lemma even_sub_one : Even (a - 1) ↔ Odd a :=
+  ⟨(by convert! ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+
+@[simp]
+lemma even_add_two : Even (a + 2) ↔ Even a :=
+  ⟨(by convert! ·.sub even_two; rw [eq_sub_iff_add_eq]), (·.add even_two)⟩
+
+@[simp]
+lemma even_sub_two : Even (a - 2) ↔ Even a :=
+  ⟨(by convert! ·.add even_two; rw [sub_add_cancel]), (·.sub even_two)⟩
+
+@[simp]
+lemma odd_add_one : Odd (a + 1) ↔ Even a :=
+  ⟨(by convert! ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+
+@[simp]
+lemma odd_sub_one : Odd (a - 1) ↔ Even a :=
+  ⟨(by convert! ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+
+@[simp]
+lemma odd_add_two : Odd (a + 2) ↔ Odd a := by
+  rw [← one_add_one_eq_two, ← add_assoc, odd_add_one, even_add_one]
+
+@[simp]
+lemma odd_sub_two : Odd (a - 2) ↔ Odd a := by
+  rw [← odd_add_two (a := a - 2), add_comm_sub, sub_self, add_zero]
+
 end Ring
 
 namespace Nat
@@ -221,14 +268,14 @@ lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by grind
 
 lemma _root_.Odd.not_two_dvd_nat (h : Odd n) : ¬(2 ∣ n) := by grind
 
-lemma even_xor_odd (n : ℕ) : Xor' (Even n) (Odd n) := by grind
+lemma even_xor_odd (n : ℕ) : Xor (Even n) (Odd n) := by grind
 
 lemma even_or_odd (n : ℕ) : Even n ∨ Odd n := (even_xor_odd n).or
 
 lemma even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [← two_mul, exists_or, Odd, Even] using even_or_odd n
 
-lemma even_xor_odd' (n : ℕ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
+lemma even_xor_odd' (n : ℕ) : ∃ k, Xor (n = 2 * k) (n = 2 * k + 1) := by
   obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := even_or_odd n <;>
   · use k
     grind
@@ -289,6 +336,15 @@ lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by grind
 lemma two_dvd_mul_add_one (k : ℕ) : 2 ∣ k * (k + 1) :=
   even_iff_two_dvd.mp (even_mul_succ_self k)
 
+lemma two_dvd_mul_sub_one (k : ℕ) : 2 ∣ k * (k - 1) := by
+  rcases k with rfl | k; · simp
+  simpa [mul_comm (k + 1)] using k.two_dvd_mul_add_one
+
+lemma eight_dvd_sq_sub_one_of_odd {k : ℕ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
+  obtain ⟨m, rfl⟩ := hk
+  obtain ⟨c, hc⟩ := two_dvd_mul_add_one m
+  exact ⟨c, by grind⟩
+
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, parity_simps]
@@ -308,12 +364,8 @@ variable {α : Type*} {f : α → α} {n : ℕ}
 lemma iterate_two_mul (hf : Involutive f) (n : ℕ) : f^[2 * n] = id := by
   rw [iterate_mul, involutive_iff_iter_2_eq_id.1 hf, iterate_id]
 
-@[deprecated (since := "2025-10-28")] alias iterate_bit0 := iterate_two_mul
-
 lemma iterate_two_mul_add_one (hf : Involutive f) (n : ℕ) : f^[2 * n + 1] = f := by
   rw [iterate_succ, hf.iterate_two_mul, id_comp]
-
-@[deprecated (since := "2025-10-28")] alias iterate_bit1 := iterate_two_mul_add_one
 
 lemma iterate_even (hf : Involutive f) (hn : Even n) : f^[n] = id := by
   obtain ⟨m, rfl⟩ := hn
@@ -339,8 +391,8 @@ variable {R : Type*} [Monoid R] [HasDistribNeg R] {m n : ℕ}
 
 lemma neg_one_pow_eq_ite : (-1 : R) ^ n = if Even n then 1 else (-1) := by
   cases even_or_odd n with
-  | inl h => rw [h.neg_one_pow, if_pos h]
-  | inr h => rw [h.neg_one_pow, if_neg (by simpa using h)]
+  | inl h => rw [h.neg_one_pow, ite_eq_left h]
+  | inr h => rw [h.neg_one_pow, ite_eq_right (by simpa using h)]
 
 lemma neg_one_pow_congr (h : Even m ↔ Even n) : (-1 : R) ^ m = (-1) ^ n := by
   simp [h, neg_one_pow_eq_ite]

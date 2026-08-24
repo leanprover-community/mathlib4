@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.Setoid.Partition.Card
 public import Mathlib.GroupTheory.GroupAction.Blocks
 public import Mathlib.GroupTheory.GroupAction.Transitive
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Primitive actions
@@ -68,9 +69,9 @@ public import Mathlib.GroupTheory.GroupAction.Transitive
 
 -/
 
-@[expose] public section
+public section
 
-open Pointwise
+open scoped Pointwise
 
 namespace MulAction
 
@@ -137,7 +138,7 @@ theorem isTrivialBlock_of_card_le_two
 
 variable [Group G] [MulAction G X]
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 /-- If the action is pretransitive, then the trivial blocks condition implies preprimitivity
 (based condition) -/
@@ -181,14 +182,6 @@ theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a �
         rw [← IsTrivialBlock.smul_iff g]
         exact H ⟨b, hb, hg⟩ (hB.translate g) }
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddAction.IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
-  AddAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
-  IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
-
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) -/
 @[to_additive
@@ -223,7 +216,7 @@ theorem isPreprimitive_congr (hφ : Function.Surjective φ) (hf : Function.Bijec
   · intro _
     apply IsPreprimitive.of_surjective hf.surjective
   · intro _
-    haveI := (isPretransitive_congr hφ hf).mpr toIsPretransitive
+    have := (isPretransitive_congr hφ hf).mpr toIsPretransitive
     exact {
       isTrivialBlock_of_isBlock {B} hB := by
         rw [← Set.preimage_image_eq B hf.injective]
@@ -236,7 +229,7 @@ section Stabilizer
 
 variable (G : Type*) [Group G] {X : Type*} [MulAction G X]
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 /-- A pretransitive action on a nontrivial type is preprimitive iff
 the set of blocks containing a given element is a simple order -/
@@ -339,7 +332,7 @@ theorem of_card_lt [Finite Y] [IsPretransitive H Y] [IsPreprimitive G X]
   -- we need Set.Subsingleton B ↔ Set.ncard B ≤ 1
   suffices Set.ncard B < 2 by simpa [Nat.lt_succ_iff] using this
   -- We reduce to proving that (Set.range f).ncard ≤ (orbit N B).ncard
-  apply lt_of_mul_lt_mul_right (lt_of_le_of_lt _ hf') (zero_le _)
+  apply lt_of_mul_lt_mul_right' (hf'.trans_le' _)
   simp only [← hB.ncard_block_mul_ncard_orbit_eq hB']
   apply Nat.mul_le_mul_left
   -- We reduce to proving that (Set.range f ∩ g • B).ncard ≤ 1 for every g
@@ -402,13 +395,6 @@ theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
     obtain ⟨x, hx⟩ := hA
     obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G x a
     use g, x
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddAction.IsPreprimitive.exists_mem_vadd_and_not_mem_vadd :=
-  AddAction.IsPreprimitive.exists_mem_vadd_and_notMem_vadd
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias exists_mem_smul_and_not_mem_smul := exists_mem_smul_and_notMem_smul
 
 end IsPreprimitive
 

@@ -12,7 +12,8 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
@@ -82,6 +83,7 @@ class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
   -- note we cannot put this in the `extends` clause
   [toDecidableEq : DecidableEq K]
 
+attribute [instance_reducible] RCLike.toPartialOrder RCLike.toDecidableEq
 scoped[ComplexOrder] attribute [instance 100] RCLike.toPartialOrder
 attribute [instance 100] RCLike.toDecidableEq
 
@@ -94,7 +96,7 @@ namespace RCLike
 /-- Coercion from `ℝ` to an `RCLike` field. -/
 @[coe] abbrev ofReal : ℝ → K := Algebra.cast
 
-/- The priority must be set at 900 to ensure that coercions are tried in the right order.
+/-- The priority must be set at 900 to ensure that coercions are tried in the right order.
 See Note [coercion into rings], or `Mathlib/Data/Nat/Cast/Basic.lean` for more details. -/
 noncomputable instance (priority := 900) algebraMapCoe : CoeTC ℝ K :=
   ⟨ofReal⟩
@@ -144,9 +146,6 @@ theorem ofReal_zero : ((0 : ℝ) : K) = 0 :=
 @[rclike_simps]
 theorem zero_re : re (0 : K) = (0 : ℝ) :=
   map_zero re
-
-@[deprecated (since := "2025-05-29")]
-alias zero_re' := zero_re
 
 @[rclike_simps]
 theorem zero_im : im (0 : K) = (0 : ℝ) :=
@@ -224,8 +223,16 @@ theorem re_ofReal_mul (r : ℝ) (z : K) : re (↑r * z) = r * re z := by
   simp only [mul_re, ofReal_im, zero_mul, ofReal_re, sub_zero]
 
 @[rclike_simps]
+theorem re_mul_ofReal (z : K) (r : ℝ) : re (z * ↑r) = re z * r := by
+  rw [mul_comm, re_ofReal_mul, mul_comm]
+
+@[rclike_simps]
 theorem im_ofReal_mul (r : ℝ) (z : K) : im (↑r * z) = r * im z := by
   simp only [add_zero, ofReal_im, zero_mul, ofReal_re, mul_im]
+
+@[rclike_simps]
+theorem im_mul_ofReal (z : K) (r : ℝ) : im (z * ↑r) = im z * r := by
+  rw [mul_comm, im_ofReal_mul, mul_comm]
 
 @[rclike_simps]
 theorem smul_re (r : ℝ) (z : K) : re (r • z) = r * re z := by
@@ -359,23 +366,24 @@ theorem is_real_TFAE (z : K) :
   tfae_have 5 → 1 := fun hz => by rwa [isSelfAdjoint_iff] at hz
   tfae_finish
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
   calc
-    _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_TFAE z).out 0 1
+    _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_TFAE z).out 1 2
     _ ↔ _                    := by simp only [eq_comm]
 
 theorem conj_eq_iff_re {z : K} : conj z = z ↔ (re z : K) = z :=
-  (is_real_TFAE z).out 0 2
+  (is_real_TFAE z).out 1 3
 
 theorem conj_eq_iff_im {z : K} : conj z = z ↔ im z = 0 :=
-  (is_real_TFAE z).out 0 3
+  (is_real_TFAE z).out 1 4
 
 @[simp]
 theorem star_def : (Star.star : K → K) = conj :=
   rfl
 
 lemma im_eq_zero_iff_isSelfAdjoint {x : K} : im x = 0 ↔ IsSelfAdjoint x :=
-  is_real_TFAE x |>.out 3 4
+  is_real_TFAE x |>.out 4 5
 
 lemma re_eq_ofReal_of_isSelfAdjoint {x : K} {y : ℝ} (hx : IsSelfAdjoint x) :
     re x = y ↔ x = y := by
@@ -569,9 +577,6 @@ instance : StarModule ℝ K where
 theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
   map_natCast (algebraMap ℝ K) n
 
-@[rclike_simps, norm_cast]
-lemma ofReal_nnratCast (q : ℚ≥0) : ((q : ℝ) : K) = q := map_nnratCast (algebraMap ℝ K) _
-
 @[simp, rclike_simps]
 theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofReal_re]
 
@@ -607,6 +612,16 @@ theorem intCast_re (n : ℤ) : re (n : K) = n := by rw [← ofReal_intCast, ofRe
 theorem intCast_im (n : ℤ) : im (n : K) = 0 := by rw [← ofReal_intCast, ofReal_im]
 
 @[rclike_simps, norm_cast]
+theorem ofReal_nnratCast (n : ℚ≥0) : ((n : ℝ) : K) = n :=
+  map_nnratCast _ n
+
+@[simp, rclike_simps]
+theorem nnratCast_re (q : ℚ≥0) : re (q : K) = q := by rw [← ofReal_nnratCast, ofReal_re]
+
+@[simp, rclike_simps, norm_cast]
+theorem nnratCast_im (q : ℚ≥0) : im (q : K) = 0 := by rw [← ofReal_nnratCast, ofReal_im]
+
+@[rclike_simps, norm_cast]
 theorem ofReal_ratCast (n : ℚ) : ((n : ℝ) : K) = n :=
   map_ratCast _ n
 
@@ -615,6 +630,20 @@ theorem ratCast_re (q : ℚ) : re (q : K) = q := by rw [← ofReal_ratCast, ofRe
 
 @[simp, rclike_simps, norm_cast]
 theorem ratCast_im (q : ℚ) : im (q : K) = 0 := by rw [← ofReal_ratCast, ofReal_im]
+
+open OfScientific (ofScientific)
+
+@[rclike_simps, norm_cast]
+theorem ofReal_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    ((ofScientific m s e : ℝ) : K) = ofScientific m s e := ofReal_nnratCast _
+
+@[simp, rclike_simps]
+theorem ofScientific_re (m : ℕ) (s : Bool) (e : ℕ) :
+    re (ofScientific m s e : K) = ofScientific m s e := by rw [← ofReal_ofScientific, ofReal_re]
+
+@[simp, rclike_simps, norm_cast]
+theorem ofScientific_im (m : ℕ) (s : Bool) (e : ℕ) :
+    im (ofScientific m s e : K) = 0 := by rw [← ofReal_ofScientific, ofReal_im]
 
 /-! ### Norm -/
 
@@ -644,7 +673,7 @@ lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
   rw [← ofReal_nnratCast]; exact norm_of_nonneg q.cast_nonneg
 
 @[simp, rclike_simps, norm_cast]
-lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]; rfl
 
 variable (K) in
 lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
@@ -653,24 +682,6 @@ lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : �
 variable (K) in
 lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
     ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
-
-section NormedField
-variable [NormedField E] [CharZero E] [NormedSpace K E]
-include K
-
-variable (K) in
-lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
-
-variable (K) in
-lemma nnnorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
-
-@[bound]
-lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=
-  Finset.le_expect_of_subadditive norm_zero norm_add_le fun _ _ ↦ by rw [norm_nnqsmul K]
-
-end NormedField
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
@@ -703,8 +714,6 @@ theorem im_eq_zero_of_le {a : K} (h : ‖a‖ ≤ re a) : im a = 0 := by
 theorem re_eq_self_of_le {a : K} (h : ‖a‖ ≤ re a) : (re a : K) = a := by
   rw [← conj_eq_iff_re, conj_eq_iff_im, im_eq_zero_of_le h]
 
-open IsAbsoluteValue
-
 theorem abs_re_div_norm_le_one (z : K) : |re z / ‖z‖| ≤ 1 := by
   rw [abs_div, abs_norm]
   exact div_le_one_of_le₀ (abs_re_le_norm _) (norm_nonneg _)
@@ -716,6 +725,9 @@ theorem abs_im_div_norm_le_one (z : K) : |im z / ‖z‖| ≤ 1 := by
 theorem norm_I_of_ne_zero (hI : (I : K) ≠ 0) : ‖(I : K)‖ = 1 := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,
     I_mul_I_of_nonzero hI, norm_neg, norm_one]
+
+theorem norm_I : ‖(I : K)‖ = if (I : K) = 0 then 0 else 1 := by
+  grind [norm_I_of_ne_zero, norm_eq_zero]
 
 theorem re_eq_norm_of_mul_conj (x : K) : re (x * conj x) = ‖x * conj x‖ := by
   rw [mul_conj, ← ofReal_pow]; simp [-map_pow]
@@ -752,7 +764,22 @@ theorem isCauSeq_norm {f : ℕ → K} (hf : IsCauSeq norm f) : IsCauSeq abs (nor
   let ⟨i, hi⟩ := hf ε ε0
   ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
+lemma I_mem_skewAdjoint : I ∈ skewAdjoint K := by simp [skewAdjoint.mem_iff]
+
 end RCLike
+
+section
+variable {A : Type*} [AddCommGroup A] [StarAddMonoid A] [Module K A] [StarModule K A] {a : A}
+
+open RCLike
+
+lemma IsSelfAdjoint.I_smul_mem_skewAdjoint (h : IsSelfAdjoint a) :
+    (I : K) • a ∈ skewAdjoint A := h.smul_mem_skewAdjoint I_mem_skewAdjoint
+
+lemma IsSelfAdjoint.I_smul_of_mem_skewAdjoint (h : a ∈ skewAdjoint A) :
+    IsSelfAdjoint ((I : K) • a) := isSelfAdjoint_smul_of_mem_skewAdjoint I_mem_skewAdjoint h
+
+end
 
 section Instances
 
@@ -779,6 +806,24 @@ noncomputable instance Real.instRCLike : RCLike ℝ where
 end Instances
 
 namespace RCLike
+
+section NormedField
+variable [NormedField E] [CharZero E] [NormedSpace K E]
+include K
+
+variable (K) in
+lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
+  simpa [NNRat.cast_smul_eq_nnqsmul] using! norm_smul (q : K) x
+
+variable (K) in
+lemma nnnorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
+  simpa [NNRat.cast_smul_eq_nnqsmul] using! nnnorm_smul (q : K) x
+
+@[bound]
+lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=
+  Finset.le_expect_of_subadditive norm_zero norm_add_le fun _ _ ↦ by rw [norm_nnqsmul K]
+
+end NormedField
 
 section Order
 
@@ -923,7 +968,7 @@ lemma toPosMulReflectLT : PosMulReflectLT K where
     rintro ⟨x, hx⟩ y z hyz
     dsimp at *
     rw [RCLike.le_iff_re_im, map_zero, map_zero, eq_comm] at hx
-    obtain ⟨r, rfl⟩ := ((is_real_TFAE x).out 3 1).1 hx.2
+    obtain ⟨r, rfl⟩ := ((is_real_TFAE x).out 4 2).1 hx.2
     simp only [RCLike.lt_iff_re_im (K := K), mul_re, ofReal_re, ofReal_im, zero_mul, sub_zero,
       mul_im, add_zero, mul_eq_mul_left_iff] at hyz ⊢
     refine ⟨lt_of_mul_lt_mul_of_nonneg_left hyz.1 <| by simpa using hx, hyz.2.resolve_right ?_⟩
@@ -969,6 +1014,10 @@ lemma instPosMulReflectLE : PosMulReflectLE K where
 
 scoped[ComplexOrder] attribute [instance] RCLike.instPosMulReflectLE
 
+lemma instMulPosReflectLE : MulPosReflectLE K := PosMulReflectLE.toMulPosReflectLE
+
+scoped[ComplexOrder] attribute [instance] RCLike.instMulPosReflectLE
+
 end Order
 
 section CleanupLemmas
@@ -1006,7 +1055,7 @@ end CleanupLemmas
 section LinearMaps
 
 /-- The real part in an `RCLike` field, as a linear map. -/
-def reLm : K →ₗ[ℝ] ℝ :=
+noncomputable def reLm : K →ₗ[ℝ] ℝ :=
   { re with map_smul' := smul_re }
 
 @[simp, rclike_simps]
@@ -1032,7 +1081,7 @@ theorem continuous_re : Continuous (re : K → ℝ) :=
   reCLM.continuous
 
 /-- The imaginary part in an `RCLike` field, as a linear map. -/
-def imLm : K →ₗ[ℝ] ℝ :=
+noncomputable def imLm : K →ₗ[ℝ] ℝ :=
   { im with map_smul' := smul_im }
 
 @[simp, rclike_simps]
@@ -1096,13 +1145,20 @@ instance (priority := 100) : ContinuousStar K :=
 theorem continuous_conj : Continuous (conj : K → K) :=
   continuous_star
 
-/-- The `ℝ → K` coercion, as a linear map -/
+/-- The `ℝ → K` coercion, as an algebra map. -/
 noncomputable def ofRealAm : ℝ →ₐ[ℝ] K :=
   Algebra.ofId ℝ K
 
 @[simp, rclike_simps]
 theorem ofRealAm_coe : (ofRealAm : ℝ → K) = ofReal :=
   rfl
+
+variable (K) in
+/-- The `ℝ → K` coercion, as a ⋆-algebra map. -/
+noncomputable def ofRealStarAlgHom : ℝ →⋆ₐ[ℝ] K := .ofId ℝ K
+
+@[simp] theorem coe_ofRealStarAlgHom : (ofRealStarAlgHom K : ℝ → K) = ofReal := rfl
+@[simp] lemma toAlgHom_ofRealStarAlgHom : (ofRealStarAlgHom K).toAlgHom = ofRealAm := rfl
 
 /-- The ℝ → K coercion, as a linear isometry -/
 noncomputable def ofRealLI : ℝ →ₗᵢ[ℝ] K where
@@ -1150,6 +1206,28 @@ lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
   _ = ‖im (x - y)‖ₑ := by rw [map_sub im x y]
   _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
 
+/-- The canonical map between `RCLike` types. It maps `x : 𝕜` to `re x + im x * I`. -/
+@[simps] def map (𝕜 𝕜' : Type*) [RCLike 𝕜] [RCLike 𝕜'] : 𝕜 →L[ℝ] 𝕜' where
+  toFun x := re x + im x * (I : 𝕜')
+  map_add' _ _ := by simp only [map_add, add_mul]; ring
+  map_smul' _ _ := by simp [real_smul_eq_coe_mul, mul_assoc]
+
+@[simp] theorem map_same_eq_id : map K K = .id ℝ K := by ext; simp
+
+@[simp] theorem map_to_real : map K ℝ = reCLM := by
+  ext; simp only [map_apply, I, mul_zero, add_zero]; rfl
+
+@[simp] theorem map_from_real : map ℝ K = ofRealCLM := by ext; simp
+
+open scoped ComplexOrder in
+lemma instOrderClosedTopology : OrderClosedTopology K where
+  isClosed_le' := by
+    conv in _ ≤ _ => rw [RCLike.le_iff_re_im]
+    simp_rw [Set.ofPred_and]
+    refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> fun_prop
+
+scoped[ComplexOrder] attribute [instance] RCLike.instOrderClosedTopology
+
 end LinearMaps
 
 /-!
@@ -1178,7 +1256,7 @@ def realRingEquiv (h : I = (0 : K)) : K ≃+* ℝ where
 @[simps]
 noncomputable def realLinearIsometryEquiv (h : I = (0 : K)) : K ≃ₗᵢ[ℝ] ℝ where
   map_smul' := smul_re
-  norm_map' z := by rw [← re_add_im z]; simp [- re_add_im, h]
+  norm_map' z := by rw [← re_add_im z]; simp [-re_add_im, h]
   __ := realRingEquiv h
 
 end CaseSpecific
@@ -1189,7 +1267,7 @@ lemma norm_le_im_iff_eq_I_mul_norm {z : K} :
   · simp [h, im_eq_zero]
   · have : (I : K) ≠ 0 := fun _ ↦ by simp_all
     rw [← mul_right_inj' (neg_ne_zero.mpr this)]
-    convert norm_le_re_iff_eq_norm (z := -I * z) using 2
+    convert! norm_le_re_iff_eq_norm (z := -I * z) using 2
     all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_nonzero this, norm_I_of_ne_zero this]
 
 lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :
@@ -1221,6 +1299,7 @@ instance (priority := 100) (𝕜 : Type*) [h : RCLike 𝕜] : IsRCLikeNormedFiel
 
 /-- A copy of an `RCLike` field in which the `NormedField` field is adjusted to be become defeq
 to a propeq one. -/
+@[instance_reducible]
 noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (hk : NormedField 𝕜)
     (h'' : hk = h.toNormedField) : RCLike 𝕜 where
   __ := hk
@@ -1264,9 +1343,43 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
 
 /-- Given a normed field `𝕜` satisfying `IsRCLikeNormedField 𝕜`, build an associated `RCLike 𝕜`
 structure on `𝕜` which is definitionally compatible with the given normed field structure. -/
+@[instance_reducible]
 noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
     [hk : NormedField 𝕜] [h : IsRCLikeNormedField 𝕜] : RCLike 𝕜 := by
   choose p hp using h.out
   exact p.copy_of_normedField hk hp
 
 end
+
+namespace LinearIsometryEquiv
+variable {𝕜 V W G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup V] [Module 𝕜 V]
+  [SeminormedAddCommGroup W] [NormedSpace 𝕜 W] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+
+/-- Left scalar multiplication of a unit with norm one and a linear isometric equivalence,
+as a linear isometric equivalence. -/
+instance : SMul (unitary 𝕜) (V ≃ₗᵢ[𝕜] W) where smul α e :=
+  { __ := Unitary.toUnits α • e.toLinearEquiv
+    norm_map' _ := by simp [norm_smul] }
+
+@[simp] theorem smul_apply (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) (x : V) :
+    (α • e) x = (α : 𝕜) • e x := rfl
+
+theorem symm_smul_apply (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) (x : W) :
+    (α • e).symm x = (↑α⁻¹ : 𝕜) • e.symm x := rfl
+
+@[simp] theorem symm_units_smul (e : G ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
+    (α • e).symm = α⁻¹ • e.symm := by ext; simp [symm_smul_apply]
+
+@[simp] theorem toLinearEquiv_smul (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
+    (α • e).toLinearEquiv = Unitary.toUnits α • e.toLinearEquiv := rfl
+
+@[simp] theorem toContinuousLinearEquiv_smul (e : G ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
+    (α • e).toContinuousLinearEquiv = Unitary.toUnits α • e.toContinuousLinearEquiv := rfl
+
+theorem smul_trans (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗᵢ[𝕜] W) :
+    (α • e).trans f = α • (e.trans f) := by ext; simp
+
+theorem trans_smul (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗᵢ[𝕜] W) :
+    e.trans (α • f) = α • (e.trans f) := by ext; simp
+
+end LinearIsometryEquiv

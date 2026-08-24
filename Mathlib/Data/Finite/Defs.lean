@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.Set
-public import Mathlib.Util.AssertExists
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Definition of the `Finite` typeclass
@@ -215,6 +214,8 @@ theorem not_infinite {s : Set α} : ¬s.Infinite ↔ s.Finite :=
 
 alias ⟨_, Finite.not_infinite⟩ := not_infinite
 
+@[simp] lemma Infinite.not_finite {s : Set α} (hs : s.Infinite) : ¬ s.Finite := hs
+
 attribute [simp] Finite.not_infinite
 
 /-- See also `finite_or_infinite`, `fintypeOrInfinite`. -/
@@ -233,7 +234,7 @@ namespace Set
 
 /-! ### Infinite sets -/
 
-variable {s t : Set α}
+variable {s : Set α}
 
 theorem infinite_coe_iff {s : Set α} : Infinite s ↔ s.Infinite :=
   not_finite_iff_infinite.symm.trans finite_coe_iff.not

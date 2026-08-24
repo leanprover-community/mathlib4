@@ -22,7 +22,7 @@ absolute value is compatible with the Euclidean domain structure on its domain.
   mapping negative `x` to `-x`, is Euclidean.
 -/
 
-@[expose] public section
+public section
 
 @[inherit_doc]
 local infixl:50 " ≺ " => EuclideanDomain.r
@@ -66,7 +66,7 @@ open Int
 -- TODO: generalize to `LinearOrderedEuclideanDomain`s if we ever get a definition of those
 /-- `abs : ℤ → ℤ` is a Euclidean absolute value -/
 protected theorem abs_isEuclidean : IsEuclidean (AbsoluteValue.abs : AbsoluteValue ℤ ℤ) :=
-  {  map_lt_map_iff' := fun {x y} =>
+  { map_lt_map_iff' := fun {x y} =>
        show abs x < abs y ↔ natAbs x < natAbs y by rw [abs_eq_natAbs, abs_eq_natAbs, ofNat_lt] }
 
 end Int

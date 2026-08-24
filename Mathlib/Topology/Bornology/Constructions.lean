@@ -16,7 +16,7 @@ In this file we define `Bornology` and `BoundedSpace` instances on `α × β`, `
 on these types.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Bornology Function

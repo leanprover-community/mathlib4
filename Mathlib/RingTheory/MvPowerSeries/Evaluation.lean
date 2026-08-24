@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.MvPowerSeries.PiTopology
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
@@ -24,7 +23,7 @@ consisting of ideals.
 
 Given `φ : R →+* S`, `a : σ → S`, and `f : MvPowerSeries σ R`,
 `MvPowerSeries.eval₂ f φ a` is the evaluation of the multivariate power series `f` at `a`.
-It `f` is (the coercion of) a polynomial, it coincides with the evaluation of that polynomial.
+If `f` is (the coercion of) a polynomial, it coincides with the evaluation of that polynomial.
 Otherwise, it is defined by density from polynomials;
 its values are irrelevant unless `φ` is continuous and `a` satisfies two conditions
 bundled in `MvPowerSeries.HasEval a` :
@@ -46,7 +45,7 @@ Under `Continuous φ` and `HasEval a`, the following lemmas furnish the properti
 
 namespace MvPowerSeries
 
-open Topology
+open scoped Topology
 
 open Filter MvPolynomial RingHom Set TopologicalSpace UniformSpace
 
@@ -117,6 +116,10 @@ theorem mem_hasEvalIdeal_iff {a : σ → S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
   simp [hasEvalIdeal]
 
+theorem HasEval.pow (x : σ → S) (ha : HasEval x) {p : ℕ} (hp : 0 < p) :
+    HasEval (x ^ p) :=
+  mem_hasEvalIdeal_iff.mp <| Ideal.pow_mem_of_mem hasEvalIdeal ha p hp
+
 end
 
 /- ## Construction of an evaluation morphism for power series -/
@@ -131,8 +134,9 @@ variable {S : Type*} [CommRing S] [UniformSpace S]
 variable {φ : R →+* S}
 
 -- We endow MvPowerSeries σ R with the product uniform structure
+set_option backward.privateInPublic true in
 private instance : UniformSpace (MvPolynomial σ R) :=
-  comap toMvPowerSeries (Pi.uniformSpace _)
+  comap toMvPowerSeries inferInstance
 
 /-- The induced uniform structure of MvPolynomial σ R is an additive group uniform structure -/
 private instance [IsUniformAddGroup R] : IsUniformAddGroup (MvPolynomial σ R) :=
@@ -148,7 +152,7 @@ theorem _root_.MvPolynomial.toMvPowerSeries_isDenseInducing :
 
 variable {a : σ → S}
 
-/- The evaluation map on multivariate polynomials is uniformly continuous
+/-- The evaluation map on multivariate polynomials is uniformly continuous
 for the uniform structure induced by that on multivariate power series. -/
 theorem _root_.MvPolynomial.toMvPowerSeries_uniformContinuous
     [IsUniformAddGroup R] [IsUniformAddGroup S] [IsLinearTopology S S]
@@ -184,7 +188,7 @@ theorem _root_.MvPolynomial.toMvPowerSeries_uniformContinuous
   · exact Ideal.mul_mem_right _ _ (hp d hd)
   · apply Ideal.mul_mem_left
     simp only [mem_Iic, D, Finsupp.le_iff] at hd
-    push_neg at hd
+    push Not at hd
     rcases hd with ⟨s, hs', hs⟩
     exact I.prod_mem hs' (I.pow_mem_of_pow_mem (Nat.sInf_mem (hn_ne s)) hs)
 
@@ -202,7 +206,7 @@ noncomputable def eval₂ (f : MvPowerSeries σ R) : S :=
 theorem eval₂_coe (f : MvPolynomial σ R) :
     MvPowerSeries.eval₂ φ a f = MvPolynomial.eval₂ φ a f := by
   have : ∃ p : MvPolynomial σ R, (p : MvPowerSeries σ R) = f := ⟨f, rfl⟩
-  rw [eval₂, dif_pos this]
+  rw [eval₂, dite_eq_left this]
   congr
   rw [← MvPolynomial.coe_inj, this.choose_spec]
 
@@ -264,7 +268,7 @@ theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : MvPowerSeries
     (fun (d : σ →₀ ℕ) ↦ φ (coeff d f) * (d.prod fun s e => (a s) ^ e))
     (MvPowerSeries.eval₂ φ a f) := by
   rw [← coe_eval₂Hom hφ ha, eval₂Hom_eq_extend hφ ha]
-  convert (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (?_) with d
+  convert! (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (?_) with d
   · simp only [Function.comp_apply, coe_eval₂Hom, ← MvPolynomial.coe_monomial,
       eval₂_coe, eval₂_monomial]
   · rw [coe_eval₂Hom]; exact continuous_eval₂ hφ ha

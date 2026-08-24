@@ -21,14 +21,14 @@ In this file we prove a few versions of the shrinking lemma for coverings by bal
 shrinking lemma, metric space
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
 
 open Set Metric
 
-open Topology
+open scoped Topology
 
 variable {α : Type u} {ι : Type v} [MetricSpace α] [ProperSpace α] {c : ι → α}
 variable {s : Set α}
