@@ -127,7 +127,7 @@ abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
   refine .ofConvInverse (antipode R) ?_ ?_ <;>
     refine f.toCoalgHom.convCompLeft_injective hf ?_ <;>
     rw [map_mul, f.convCompLeft_eq_convCompRight map_antipode,
-      f.convCompLeft_id_eq_convCompRight_id, ← map_mul] <;>
+      f.convCompLeft_eq_convCompRight (g := .id) (g' := .id) fun _ ↦ rfl, ← map_mul] <;>
     simp only [LinearMap.antipode_mul_id, LinearMap.id_mul_antipode, map_one]
 
 end HopfAlgebra

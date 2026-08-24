@@ -110,10 +110,6 @@ lemma convCompLeft_eq_convCompRight (h : Function.Semiconj f g' g) :
     f.toCoalgHom.convCompLeft (toConv g) = f.toAlgHom.convCompRight (toConv g') :=
   WithConv.ext <| LinearMap.ext fun a ↦ by simpa [BialgHom.toCoalgHom_apply] using (h a).symm
 
-lemma convCompLeft_id_eq_convCompRight_id :
-    f.toCoalgHom.convCompLeft (toConv .id) = f.toAlgHom.convCompRight (toConv .id) :=
-  f.convCompLeft_eq_convCompRight (g' := .id) fun _ ↦ rfl
-
 end Semiring
 
 variable [CommSemiring A] [Semiring C] [Bialgebra R A] [Bialgebra R C]
