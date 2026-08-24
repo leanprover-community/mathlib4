@@ -10,7 +10,7 @@ import Mathlib
 # Export cross-reference data as JSON
 
 Elaborating this file writes a JSON file listing every Mathlib declaration tagged with
-`@[wikidata ...]`, `@[stacks ...]`, `@[kerodon ...]`, `@[lmfdb ...]` or `@[dlmf ...]` together
+`@[wikidata ...]`, `@[stacks ...]`, `@[kerodon ...]`, `@[lmfdb ...]`, or `@[dlmf ...]` together
 with its source file, line number, and the referenced identifiers.
 
 The cross-references are read from the ambient environment (like the `#stacks_tags` command), so
