@@ -185,8 +185,8 @@ section EqRel
 
 theorem dist_congr_right {α : Type u} [PseudoMetricSpace α] {x y z : α} (h : dist x y = 0) :
     dist x z = dist y z := by
-  have : edist x y = 0 := by rw [edist_dist, h, ENNReal.ofReal_zero]
-  rw [dist_edist, dist_edist, edist_congr_right this]
+  rw [← sub_eq_zero, ← abs_nonpos_iff]
+  exact (abs_dist_sub_le ..).trans_eq h
 
 theorem dist_congr_left {α : Type u} [PseudoMetricSpace α] {x y z : α} (h : dist x y = 0) :
     dist z x = dist z y := by
