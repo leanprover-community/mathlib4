@@ -223,16 +223,25 @@ instance convCommRing : CommRing (WithConv (C →ₗ[R] A)) where
 end CommRing
 end LinearMap
 
+variable [Semiring A] [Algebra R A] [AddCommMonoid C] [Module R C] [Coalgebra R C]
+
+namespace LinearMap
+
+@[simp] lemma algHom_comp_convOne [Semiring B] [Algebra R B] (h : A →ₐ[R] B) :
+    h.toLinearMap ∘ₗ (1 : WithConv (C →ₗ[R] A)).ofConv = (1 : WithConv (C →ₗ[R] B)).ofConv := by
+  ext; simp
+
+@[simp] lemma convOne_comp_coalgHom [AddCommMonoid B] [Module R B] [Coalgebra R B]
+    (h : B →ₗc[R] C) :
+    (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ (h : B →ₗ[R] C) = (1 : WithConv (B →ₗ[R] A)).ofConv := by
+  ext; simp
+
+end LinearMap
+
 open LinearMap
 
 namespace AlgHom
-variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-  [AddCommMonoid C] [Module R C] [Coalgebra R C]
-
-/-- Post-composition by an algebra homomorphism preserves the convolution unit. -/
-@[simp] lemma _root_.LinearMap.algHom_comp_convOne (h : A →ₐ[R] B) :
-    h.toLinearMap ∘ₗ (1 : WithConv (C →ₗ[R] A)).ofConv = (1 : WithConv (C →ₗ[R] B)).ofConv := by
-  ext; simp
+variable [Semiring B] [Algebra R B]
 
 /-- Post-composition by an algebra homomorphism, as a homomorphism of convolution algebras. -/
 @[simps]
@@ -244,7 +253,6 @@ def convCompRight (h : A →ₐ[R] B) : WithConv (C →ₗ[R] A) →ₐ[R] WithC
   map_add' f g := WithConv.ext (by ext; simp)
   commutes' r := WithConv.ext (by ext; simp)
 
-/-- Post-composition by an injective algebra homomorphism is injective on convolutions. -/
 lemma convCompRight_injective {h : A →ₐ[R] B} (hh : Function.Injective h) :
     Function.Injective (convCompRight h (C := C)) := fun _ _ e ↦
   WithConv.ext <| (LinearMap.cancel_left hh).1 congr(($e).ofConv)
@@ -252,13 +260,7 @@ lemma convCompRight_injective {h : A →ₐ[R] B} (hh : Function.Injective h) :
 end AlgHom
 
 namespace CoalgHom
-variable [Semiring A] [Algebra R A] [AddCommMonoid B] [Module R B] [Coalgebra R B]
-  [AddCommMonoid C] [Module R C] [Coalgebra R C]
-
-/-- Pre-composition by a coalgebra homomorphism preserves the convolution unit. -/
-@[simp] lemma _root_.LinearMap.convOne_comp_coalgHom (h : B →ₗc[R] C) :
-    (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ (h : B →ₗ[R] C) = (1 : WithConv (B →ₗ[R] A)).ofConv := by
-  ext; simp
+variable [AddCommMonoid B] [Module R B] [Coalgebra R B]
 
 /-- Pre-composition by a coalgebra homomorphism, as a homomorphism of convolution algebras. -/
 @[simps]
@@ -270,7 +272,6 @@ def convCompLeft (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →ₐ[R] WithC
   map_add' f g := WithConv.ext (by ext; simp)
   commutes' r := WithConv.ext (by ext; simp)
 
-/-- Pre-composition by a surjective coalgebra homomorphism is injective on convolutions. -/
 lemma convCompLeft_injective {h : B →ₗc[R] C} (hh : Function.Surjective h) :
     Function.Injective (convCompLeft h (A := A)) := fun _ _ e ↦
   WithConv.ext <| (cancel_right hh).1 congr(($e).ofConv)

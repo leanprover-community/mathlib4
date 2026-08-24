@@ -184,7 +184,7 @@ variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
 
 /-- Transfer the Hopf algebra axioms along a surjective bialgebra homomorphism
 intertwining the antipodes. -/
-noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
+abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
     (map_antipode : ∀ a, f (antipode R a) = antipode R (f a)) : HopfAlgebra R B := by
   refine .ofConvInverse (antipode R) ?_ ?_ <;>
     refine f.toCoalgHom.convCompLeft_injective hf ?_ <;>

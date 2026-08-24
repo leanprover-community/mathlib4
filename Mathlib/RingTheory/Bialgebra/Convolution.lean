@@ -104,15 +104,14 @@ namespace BialgHom
 variable [Semiring C] [Bialgebra R C]
 
 section Semiring
-variable [Semiring A] [Bialgebra R A] {g : C →ₗ[R] C} {g' : A →ₗ[R] A}
+variable [Semiring A] [Bialgebra R A] (f : A →ₐc[R] C)
 
-/-- Pre- and post-composing the convolution by `f` agree on linear maps it intertwines. -/
-lemma convCompLeft_eq_convCompRight (f : A →ₐc[R] C) (hg : ∀ a, f (g' a) = g (f a)) :
+lemma convCompLeft_eq_convCompRight {g : C →ₗ[R] C} {g' : A →ₗ[R] A}
+    (hg : ∀ a, f (g' a) = g (f a)) :
     f.toCoalgHom.convCompLeft (toConv g) = f.toAlgHom.convCompRight (toConv g') :=
   WithConv.ext <| LinearMap.ext fun a ↦ (hg a).symm
 
-/-- Pre- and post-composing the convolution by `f` agree on the identity. -/
-lemma convCompLeft_id_eq_convCompRight_id (f : A →ₐc[R] C) :
+lemma convCompLeft_id_eq_convCompRight_id :
     f.toCoalgHom.convCompLeft (toConv .id) = f.toAlgHom.convCompRight (toConv .id) :=
   f.convCompLeft_eq_convCompRight (g' := .id) fun _ ↦ rfl
 
