@@ -181,8 +181,6 @@ lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤
     (↑ₕf) z = (↑ₕf) z' := by
   simp [ofComplex_apply_of_im_nonpos, hz, hz']
 
-/-- If a function `f : ℍ → α` is invariant under the translation `τ ↦ h +ᵥ τ` of `ℍ`, then its
-extension `f ∘ ofComplex` to all of `ℂ` is periodic with period `h`. -/
 theorem periodic_comp_ofComplex {f : ℍ → ℂ} {h : ℝ} (hf : ∀ τ : ℍ, f (h +ᵥ τ) = f τ) :
     Periodic (f ∘ ofComplex) h := by
   intro w
