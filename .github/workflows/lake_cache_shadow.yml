@@ -51,9 +51,10 @@ name: Lake cache shadow (master)
 #     analysis/leanprover-lean4-v4.34.0-rc2/_latest.txt
 #     analysis/leanprover-lean4-v4.34.0-rc2/<mathlib-sha>.txt
 #
-#   `lake cache get --scope=S --rev=R` reads `revisions/S/R.jsonl`, which maps
-#   input hashes to artifacts. Lake then downloads the `artifacts/S/<hash>.art`
-#   files that the map names.
+#   `lake cache get --scope=<SCOPE> --rev=<REV>` reads
+#   `revisions/<SCOPE>/<REV>.jsonl`, which maps input hashes to artifacts.
+#   Lake then downloads the `artifacts/<SCOPE>/<content-hash>.art` files that
+#   the map names.
 #
 #   Lake does not know the `analysis/` prefix; this workflow owns it.
 #   `_latest.txt` holds the mathlib sha of the previous run on the toolchain,
