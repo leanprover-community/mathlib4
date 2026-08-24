@@ -43,8 +43,8 @@ noncomputable def eTVDist (μ ν : VectorMeasure 𝓧 M) : ℝ≥0∞ := (μ - �
 lemma eTVDist_eq_iSup_finPartition_enorm :
     eTVDist μ ν = ⨆ P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧))),
       ∑ x ∈ P.parts, ‖μ x - ν x‖ₑ := by
-  simp [eTVDist, VectorMeasure.variation, preVariation, ennrealPreVariation,
-    VectorMeasure.ennrealToMeasure_apply .univ, preVariationFun]
+  simp [eTVDist, variation, preVariation, ennrealPreVariation,
+    ennrealToMeasure_apply .univ, preVariationFun]
 
 @[simp]
 lemma eTVDist_self (μ : VectorMeasure 𝓧 M) : eTVDist μ μ = 0 := by simp [eTVDist]
@@ -54,13 +54,13 @@ lemma eTVDist_eq_zero_iff (μ ν : VectorMeasure 𝓧 M) : eTVDist μ ν = 0 ↔
   simp [eTVDist, sub_eq_zero]
 
 lemma eTVDist_comm (μ ν : VectorMeasure 𝓧 M) : eTVDist μ ν = eTVDist ν μ := by
-  rw [eTVDist, eTVDist, ← neg_sub, VectorMeasure.variation_neg]
+  rw [eTVDist, eTVDist, ← neg_sub, variation_neg]
 
 lemma eTVDist_triangle (μ ν ξ : VectorMeasure 𝓧 M) :
     eTVDist μ ξ ≤ eTVDist μ ν + eTVDist ν ξ := by
   calc eTVDist μ ξ
   _ = ((μ - ν) + (ν - ξ)).variation Set.univ := by simp [eTVDist]
-  _ ≤ eTVDist μ ν + eTVDist ν ξ := VectorMeasure.variation_add_le _
+  _ ≤ eTVDist μ ν + eTVDist ν ξ := variation_add_le _
 
 @[simp]
 lemma eTVDist_zero_right (μ : VectorMeasure 𝓧 M) : eTVDist μ 0 = μ.variation Set.univ := by
@@ -75,10 +75,9 @@ lemma eTVDist_eq_eTVDist_sub_zero : eTVDist μ ν = eTVDist (μ - ν) 0 := by si
 lemma eTVDist_restrict_add_compl {s : Set 𝓧} (hs : MeasurableSet s) :
     eTVDist (μ.restrict s) (ν.restrict s) + eTVDist (μ.restrict sᶜ) (ν.restrict sᶜ) =
       eTVDist μ ν := by
-  simp_rw [eTVDist, ← VectorMeasure.restrict_sub, VectorMeasure.variation_restrict hs,
-    VectorMeasure.variation_restrict hs.compl]
-  simp only [MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter]
-  simp [← measure_union disjoint_compl_right hs.compl]
+  simp [eTVDist, ← restrict_sub, variation_restrict hs, variation_restrict hs.compl,
+    MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter,
+    ← measure_union disjoint_compl_right hs.compl]
 
 end VectorMeasure
 
