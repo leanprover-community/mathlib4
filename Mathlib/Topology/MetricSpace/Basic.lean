@@ -210,6 +210,19 @@ instance SeparationQuotient.instMetricSpace {α : Type u} [PseudoMetricSpace α]
   EMetricSpace.toMetricSpaceOfDist dist (surjective_mk.forall₂.2 fun _ _ ↦ dist_nonneg) <|
     surjective_mk.forall₂.2 edist_dist
 
+theorem nndist_congr_right {α : Type u} [PseudoMetricSpace α] {x y z : α}
+    (h : nndist x y = 0) : nndist x z = nndist y z := by
+  apply NNReal.eq
+  exact dist_congr_right (congrArg ((↑·) : ℝ≥0 → ℝ) h)
+
+theorem nndist_congr_left {α : Type u} [PseudoMetricSpace α] {x y z : α}
+    (h : nndist x y = 0) : nndist z x = nndist z y := by
+  simp [nndist_comm, nndist_congr_right h]
+
+theorem nndist_congr {α : Type u} [PseudoMetricSpace α] {w x y z : α}
+    (hl : nndist w x = 0) (hr : nndist y z = 0) : nndist w y = nndist x z :=
+  (nndist_congr_right hl).trans (nndist_congr_left hr)
+
 end EqRel
 
 namespace PseudoEMetricSpace
