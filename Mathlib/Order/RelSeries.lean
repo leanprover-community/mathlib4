@@ -868,6 +868,11 @@ instance [Finite α] [Nonempty α] [r.IsIrrefl] [r.IsTrans] : r.FiniteDimensiona
   have ⟨s, hs⟩ := h.exists_relSeries_with_length <| Fintype.card α
   simpa [hs] using s.length_lt_fintypeCard
 
+theorem SetRel.infinite_of_infiniteDimensional [r.IsIrrefl] [r.IsTrans] [r.InfiniteDimensional] :
+    Infinite α :=
+  have : Nonempty α := ⟨RelSeries.withLength r 0 0⟩
+  ⟨fun _ ↦ not_finiteDimensional_iff.mpr ‹_› inferInstance⟩
+
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
   SetRel.FiniteDimensional {(a, b) : γ × γ | a < b}
