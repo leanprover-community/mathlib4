@@ -92,6 +92,16 @@ public register_option linter.style.native : Bool := {
   descr := "enable the native-evaluation linter"
 }
 
+/-- Deprecated in favor of `linter.style.native`. -/
+public register_option linter.style.nativeDecide : Bool := {
+  defValue := false
+  descr := "deprecated: use the `linter.style.native` option instead"
+  deprecation? := some {
+    since := "2026-08-24"
+    text? := "use the `linter.style.native` option instead"
+  }
+}
+
 /-- The option `linter.style.maxHeartbeats` of the deprecated syntax linter flags usages of
 `set_option <name-containing-maxHeartbeats> n in cmd` that do not add a comment explaining
 the reason for the modification of the `maxHeartbeats`.
