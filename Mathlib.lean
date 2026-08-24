@@ -1678,12 +1678,16 @@ public import Mathlib.Analysis.Analytic.Uniqueness
 public import Mathlib.Analysis.Analytic.WithLp
 public import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.AperiodicOrder.Delone.Basic
+public import Mathlib.Analysis.Asymptotics.Arith
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.Asymptotics.Basic
 public import Mathlib.Analysis.Asymptotics.Completion
 public import Mathlib.Analysis.Asymptotics.Defs
 public import Mathlib.Analysis.Asymptotics.ExpGrowth
 public import Mathlib.Analysis.Asymptotics.Lemmas
 public import Mathlib.Analysis.Asymptotics.LinearGrowth
+public import Mathlib.Analysis.Asymptotics.Prod
+public import Mathlib.Analysis.Asymptotics.Ring
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 public import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 public import Mathlib.Analysis.Asymptotics.TVS
@@ -2721,6 +2725,7 @@ public import Mathlib.CategoryTheory.Filtered.Flat
 public import Mathlib.CategoryTheory.Filtered.Grothendieck
 public import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Filtered.Small
+public import Mathlib.CategoryTheory.Filtration.Basic
 public import Mathlib.CategoryTheory.FinCategory.AsType
 public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.FintypeCat
@@ -3477,6 +3482,11 @@ public import Mathlib.CategoryTheory.Sites.SheafHom
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 public import Mathlib.CategoryTheory.Sites.Sheafification
 public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.CategoryTheory.Sites.Sieves.Basic
+public import Mathlib.CategoryTheory.Sites.Sieves.Functoriality
+public import Mathlib.CategoryTheory.Sites.Sieves.Presheaf
+public import Mathlib.CategoryTheory.Sites.Sieves.Presieve
+public import Mathlib.CategoryTheory.Sites.Sieves.Shrink
 public import Mathlib.CategoryTheory.Sites.Spaces
 public import Mathlib.CategoryTheory.Sites.Subcanonical
 public import Mathlib.CategoryTheory.Sites.SubcanonicalOver
@@ -5105,6 +5115,7 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
+public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
