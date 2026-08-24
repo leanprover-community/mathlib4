@@ -1284,7 +1284,7 @@ lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [hp : Fa
 theorem Group.IsNilpotent.exists_normal_of_dvd_card [IsNilpotent G] {n : ℕ}
     (hcard : n ∣ Nat.card G) : ∃ H : Subgroup G, Nat.card H = n ∧ H.Normal := by
   by_cases hn : n = 0
-  · refine ⟨⊤, ?_, inferInstance⟩
+  · refine ⟨⊤, ?_, normal_top⟩
     simp_all
   · induction hm : Nat.card G using Nat.strong_induction_on generalizing n G with | h m ih =>
     subst m
@@ -1292,7 +1292,6 @@ theorem Group.IsNilpotent.exists_normal_of_dvd_card [IsNilpotent G] {n : ℕ}
     · exact ⟨⊥, by simp [hn'], normal_bot⟩
     · obtain ⟨p, hp, hdvd⟩ : ∃ p, p.Prime ∧ p ∣ n := by grind [n.ne_one_iff_exists_prime_dvd]
       obtain ⟨N, hNcard, hN⟩ : ∃ N : Subgroup G, Nat.card N = p ∧ N.Normal := by
-        obtain P : Sylow p G := Classical.arbitrary ..
         have : ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ ⊥ ≤ H ∧ H ≤ center G := by
           refine Sylow.exists_subgroup_card_pow_prime_le_le hp (by simp) ?_ bot_le
           simpa using prime_dvd_card_center (hp := ⟨hp⟩) (hdvd.trans hcard)
