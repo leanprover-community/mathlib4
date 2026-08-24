@@ -56,10 +56,6 @@ instance : HopfAlgebraStruct R (A ⧸ I) where
 lemma antipode_mk (a : A) :
     antipode R (Ideal.Quotient.mk I a) = Ideal.Quotient.mk I (antipode R a) := rfl
 
-lemma antipode_comp_mkₐ :
-    antipode R ∘ₗ (Ideal.Quotient.mkₐ R I).toLinearMap =
-      (Ideal.Quotient.mkₐ R I).toLinearMap ∘ₗ antipode R := by ext; simp
-
 end HopfAlgebraStruct
 
 variable [HopfAlgebra R A] (I : Ideal A) [I.IsTwoSided] [I.IsHopfIdeal R]

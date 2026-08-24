@@ -108,7 +108,7 @@ variable [Semiring A] [Bialgebra R A] (f : A →ₐc[R] C) {g : C →ₗ[R] C} {
 
 lemma convCompLeft_eq_convCompRight (h : Function.Semiconj f g' g) :
     f.toCoalgHom.convCompLeft (toConv g) = f.toAlgHom.convCompRight (toConv g') :=
-  WithConv.ext <| LinearMap.ext fun a ↦ (h a).symm
+  WithConv.ext <| LinearMap.ext fun a ↦ by simpa [BialgHom.toCoalgHom_apply] using (h a).symm
 
 lemma convCompLeft_id_eq_convCompRight_id :
     f.toCoalgHom.convCompLeft (toConv .id) = f.toAlgHom.convCompRight (toConv .id) :=

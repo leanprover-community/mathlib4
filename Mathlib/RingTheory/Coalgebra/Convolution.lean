@@ -30,6 +30,10 @@ f * g = f g
 ```
 diagrammatically, where `μ` stands for multiplication and `δ` for comultiplication.
 
+This construction is functorial: post-composition by an algebra homomorphism
+(`AlgHom.convCompRight`) and pre-composition by a coalgebra homomorphism (`CoalgHom.convCompLeft`)
+are homomorphisms of convolution algebras.
+
 ## Implementation notes
 
 Because there is a global multiplication instance on `Module.End R A` (defined as composition),
@@ -272,6 +276,6 @@ def convCompLeft (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →ₐ[R] WithC
 
 lemma convCompLeft_injective {h : B →ₗc[R] C} (hh : Function.Surjective h) :
     Function.Injective (convCompLeft h (A := A)) := fun _ _ e ↦
-  WithConv.ext <| (cancel_right hh).1 congr(($e).ofConv)
+  WithConv.ext <| (LinearMap.cancel_right hh).1 congr(($e).ofConv)
 
 end CoalgHom
