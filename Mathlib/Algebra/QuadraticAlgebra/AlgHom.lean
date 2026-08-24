@@ -6,26 +6,24 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
-public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.Nonsingular
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # Algebra maps between quadratic algebras
 
 An `R`-algebra homomorphism `f : QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra R a' b'` is
 determined by the image of `ω`, and its matrix in the bases `1, ω` is
-`!![1, (f ω).re; 0, (f ω).im]`. Its
-determinant `(f ω).im` governs everything: `f` is injective exactly when `(f ω).im` is regular,
-bijective exactly when it is a unit, and an injective `f` preserves the trace, the conjugation and
-the norm.
+`!![1, (f ω).re; 0, (f ω).im]`. Its determinant `(f ω).im` governs everything: `f` is injective
+exactly when `(f ω).im` is regular, bijective exactly when it is a unit, and an injective
+`f` preserves the trace, the conjugation and the norm.
 
 ## Main results
 
 * `QuadraticAlgebra.isRegular_im_omega_iff_injective`: `f` is injective iff `(f ω).im` is regular.
 * `QuadraticAlgebra.isUnit_im_omega_iff_bijective`: `f` is bijective iff `(f ω).im` is a unit.
-* `QuadraticAlgebra.trace_algHom`, `QuadraticAlgebra.algHom_star`,
-  `QuadraticAlgebra.norm_algHom`: an injective algebra homomorphism preserves the trace, the
-  conjugation and the norm.
+* `QuadraticAlgebra.trace_algHom`, `QuadraticAlgebra.algHom_star`, `QuadraticAlgebra.norm_algHom`:
+  an injective algebra homomorphism preserves the trace, the conjugation and the norm.
 * `QuadraticAlgebra.isUnit_im_omega_of_algEquiv`: for an algebra isomorphism, `(e ω).im` is a unit.
 -/
 
@@ -38,9 +36,8 @@ variable {R : Type*} [CommRing R] {a b a' b' : R}
 
 private theorem smul_omega_sub_eq :
     (trace (f ω) - b) • f ω = algebraMap R _ (norm (f ω)) + a • 1 := by
-  rw [sub_smul, ← sub_neg_eq_add, sub_eq_sub_iff_sub_eq_sub, ← sq_eq_trace_smul_sub_norm,
-    sub_neg_eq_add, ← map_pow, sq, omega_mul_omega_eq_add, map_add, map_smul, map_smul, map_one,
-    add_comm]
+  rw [sub_smul, ← sub_neg_eq_add, sub_eq_sub_iff_sub_eq_sub, ← sq_eq_trace_smul_sub_norm]
+  grind [omega_pow_two_eq_add, map_smul, _=_ map_pow]
 
 /-- The matrix of an algebra homomorphism `f` between quadratic algebras in the bases `1, ω` is
 `[1, (f ω).re; 0, (f ω).im]` since `f 1 = 1`. In particular, its determinant is `(f ω).im`,
@@ -56,18 +53,20 @@ theorem det_toMatrix_algHom :
     (f.toLinearMap.toMatrix (basis a b) (basis a' b')).det = (f ω).im := by
   simp [toMatrix_algHom, Matrix.det_fin_two]
 
+private theorem mulVec_toMatrix_comp_eq :
+    (f.toLinearMap.toMatrix (basis a b) (basis a' b')).mulVec ∘ (basis a b).equivFun =
+      (basis a' b').equivFun ∘ f :=
+  funext fun x ↦ LinearMap.toMatrix_mulVec_repr (basis a b) (basis a' b') f.toLinearMap x
+
 /-- An algebra homomorphism `f` between quadratic algebras is injective exactly when `(f ω).im` is
 regular, that being the determinant of `f` in the bases `1, ω`, see `det_toMatrix_algHom`. -/
 theorem isRegular_im_omega_iff_injective :
     IsRegular (f ω).im ↔ Function.Injective f := by
-  have h : (f.toLinearMap.toMatrix (basis a b) (basis a' b')).mulVec ∘ (basis a b).equivFun =
-      (basis a' b').equivFun ∘ f :=
-    funext fun x ↦ LinearMap.toMatrix_mulVec_repr (basis a b) (basis a' b') f.toLinearMap x
   rw [← det_toMatrix_algHom, isRegular_iff_mem_nonZeroDivisors,
     ← Matrix.nonsingular_iff_det_mem_nonZeroDivisors, ← Matrix.isLeftRegular_iff_nonsingular,
     Matrix.isLeftRegular_iff_mulVec_injective,
     ← Function.Injective.of_comp_iff' _ (basis a b).equivFun.bijective,
-    ← (basis a' b').equivFun.injective.of_comp_iff, h]
+    ← (basis a' b').equivFun.injective.of_comp_iff, mulVec_toMatrix_comp_eq]
 
 /-- An algebra homomorphism `f` between quadratic algebras is bijective exactly when `(f ω).im` is
 a unit, the injective case being `isRegular_im_omega_iff_injective`. -/
@@ -76,12 +75,9 @@ theorem isUnit_im_omega_iff_bijective :
   suffices Function.Surjective f ↔ IsUnit (f ω).im by
     rw [Function.Bijective, ← isRegular_im_omega_iff_injective, this, iff_and_self]
     exact fun h ↦ IsUnit.isRegular h
-  have h : (f.toLinearMap.toMatrix (basis a b) (basis a' b')).mulVec ∘ (basis a b).equivFun =
-      (basis a' b').equivFun ∘ f :=
-    funext fun x ↦ LinearMap.toMatrix_mulVec_repr (basis a b) (basis a' b') f.toLinearMap x
   rw [← det_toMatrix_algHom, ← Matrix.isUnit_iff_isUnit_det, ← Matrix.mulVec_surjective_iff_isUnit,
     ← Function.Surjective.of_comp_iff' (basis a' b').equivFun.bijective,
-    ← (basis a b).equivFun.surjective.of_comp_iff, h]
+    ← (basis a b).equivFun.surjective.of_comp_iff, mulVec_toMatrix_comp_eq]
 
 /-- Any `R`-algebra isomorphism between quadratic algebras sends `ω` to an element
 whose imaginary part is a unit. -/

@@ -78,6 +78,10 @@ theorem omega_mul_omega_eq_add :
     (ω : QuadraticAlgebra R a b) * ω = a • 1 + b • ω := by
   ext <;> simp
 
+theorem omega_pow_two_eq_add :
+    ω ^ 2 = a • (1 : QuadraticAlgebra R a b) + b • ω := by
+  rw [sq , omega_mul_omega_eq_add]
+
 theorem omega_mul_omega_eq_algebraMap :
     (ω : QuadraticAlgebra R a b) * ω = algebraMap R _ a + algebraMap R _ b * ω := by
   simp [omega_mul_omega_eq_add, Algebra.algebraMap_eq_smul_one]
