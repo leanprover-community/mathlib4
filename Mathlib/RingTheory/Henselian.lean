@@ -206,6 +206,7 @@ theorem HenselianLocalRing.exists_isRoot {R : Type*} [CommRing R] [HenselianLoca
 
 /-- Equivalent ways of expressing the Henselian property for a local ring. The last two items are
 the variants of the second and third one in which the polynomial is *not* assumed to be monic. -/
+@[stacks 04GG]
 theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
     TFAE
       [HenselianLocalRing R,
