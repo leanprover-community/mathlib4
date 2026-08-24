@@ -1036,30 +1036,6 @@ lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass {a : ℕ}
   · intros i j hi hj
     refine (upperCentralSeries.StrictMonoOn G).injOn ?_ ?_ <;> grind
 
-@[to_additive] private def iterComm (H : Subgroup G) (n : ℕ) : Subgroup G := (⁅·, ⊤⁆)^[n] H
-
-@[to_additive] private lemma iterComm_zero (H : Subgroup G) : H.iterComm 0 = H := rfl
-
-@[to_additive] private lemma iterComm_succ_eq (H : Subgroup G) (n : ℕ) :
-    H.iterComm (n + 1) = ⁅H.iterComm n, ⊤⁆ := Function.iterate_succ_apply' ..
-
-@[to_additive] private lemma iterComm_le_of_normal (H : Subgroup G) [hH : H.Normal] (n : ℕ) :
-    H.iterComm n ≤ H := by
-  induction n with
-  | zero => rfl
-  | succ n ih =>
-    exact le_trans (H.iterComm_succ_eq n ▸ commutator_mono ih le_rfl) <| H.commutator_le_left ⊤
-
-@[to_additive] private lemma iterComm_le_lowerCentralSeries_top (H : Subgroup G) (n : ℕ) :
-    H.iterComm n ≤ (⊤ : Subgroup G).lowerCentralSeries n := by
-  induction n with
-  | zero => exact le_top
-  | succ n ih => exact (H.iterComm_succ_eq n) ▸ commutator_mono ih le_rfl
-
-@[to_additive] private lemma exists_iterComm_eq_bot [hG : Group.IsNilpotent G] (H : Subgroup G) :
-    ∃ n, H.iterComm n = ⊥ := ⟨Group.nilpotencyClass G, eq_bot_iff.mpr <|
-  (lowerCentralSeries_nilpotencyClass (G := G)) ▸ H.iterComm_le_lowerCentralSeries_top _⟩
-
 end Subgroup
 
 /-- Any nontrivial normal subgroup of a nilpotent group intersects the center nontrivially. -/
@@ -1072,13 +1048,13 @@ end Subgroup
     exact ⟨Nat.find key - 1, by grind [Nat.find_min key]⟩
   obtain ⟨k, k_min, k_spec⟩ := hk
   refine ne_bot_of_le_ne_bot k_min (le_inf inf_le_left ?_)
-  rw [← commutator_top_right_eq_bot_iff_le_center, eq_bot_iff, ← k_spec]
+  rw [← commutator_top_right_eq_bot_iff_le_center, eq_bot_iff, ← k_spec, lowerCentralSeries_succ]
   exact le_inf ((commutator_le_left _ _).trans inf_le_left) (commutator_mono inf_le_right le_rfl)
 
 variable (G) in
 @[to_additive]
-theorem Group.IsNilpotent.center_ne_bot [Nontrivial G] [IsNilpotent G] : center G ≠ ⊥ :=
-  top_inf_eq (center G) ▸ inf_center_ne_bot_of_normal top_ne_bot
+theorem Group.IsNilpotent.center_ne_bot [Nontrivial G] [IsNilpotent G] : center G ≠ ⊥ := by
+  simpa using inf_center_ne_bot_of_normal top_ne_bot
 
 section Prod
 
@@ -1296,42 +1272,42 @@ instance [IsNilpotent G] {p : ℕ} [Fact p.Prime] {P : Sylow p G} : P.Normal :=
 
 /-- An extension of `Group.IsNilpotent.center_ne_bot` for finite nilpotent groups: every prime
 diving `Nat.card G` divides the cardinality of the center. -/
-lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [Fact p.Prime]
-    (hp : p ∣ Nat.card G) : p ∣ Nat.card (center G) := by
+lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [hp : Fact p.Prime]
+    (hcard : p ∣ Nat.card G) : p ∣ Nat.card (center G) := by
   obtain P : Sylow p G := Classical.arbitrary ..
   refine dvd_trans ?_ <| (↑P ⊓ center G).card_dvd_of_le inf_le_right
-  have hnt := inf_center_ne_bot_of_normal <| P.ne_bot_of_dvd_card hp
+  have hnt := inf_center_ne_bot_of_normal <| P.ne_bot_of_dvd_card hcard
   have hPGrp : IsPGroup p (P ⊓ center G : Subgroup G) := P.isPGroup'.to_inf_left
   grind [one_lt_card_iff_ne_bot, hPGrp.card_eq_or_dvd]
 
-private lemma Group.IsNilpotent.exists_normal_card_eq_prime [IsNilpotent G] {p : ℕ} [Fact p.Prime]
-    (hp : p ∣ Nat.card G) : ∃ H : Subgroup G, Nat.card H = p ∧ H.Normal := by
-  obtain P : Sylow p G := Classical.arbitrary ..
-  have : ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ ⊥ ≤ H ∧ H ≤ center G :=
-    Sylow.exists_subgroup_card_pow_prime_le_le Fact.out (by simp)
-      (by simpa using prime_dvd_card_center hp) bot_le
-  grind [normal_of_le_center]
-
 /-- A finite nilpotent group has normal subgroups of every possible order. -/
-theorem Group.IsNilpotent.exists_normal_of_dvd_card [IsNilpotent G] {n : ℕ} (hn : n ≠ 0)
+theorem Group.IsNilpotent.exists_normal_of_dvd_card [IsNilpotent G] {n : ℕ}
     (hcard : n ∣ Nat.card G) : ∃ H : Subgroup G, Nat.card H = n ∧ H.Normal := by
-  induction hm : Nat.card G using Nat.strong_induction_on generalizing n G with | h m ih =>
-  subst m
-  by_cases hn' : n = 1
-  · exact ⟨⊥, by simp [hn'], normal_bot⟩
-  · obtain ⟨p, hp, a, rfl⟩ : ∃ p, p.Prime ∧ p ∣ n := by grind [n.ne_one_iff_exists_prime_dvd]
-    have : Fact p.Prime := ⟨hp⟩
-    obtain ⟨N, hNcard, hN⟩ := exists_normal_card_eq_prime (Dvd.dvd.trans ⟨a, rfl⟩ hcard)
-    obtain ⟨K, hKcard, hK⟩ : ∃ K : Subgroup (G ⧸ N), Nat.card K = a ∧ K.Normal := by
-      refine ih (Nat.card (G ⧸ N)) ?_ (Nat.ne_zero_of_mul_ne_zero_right hn) ?_ rfl
-      · rw [N.card_eq_card_quotient_mul_card_subgroup]
-        apply lt_mul_right (by simp) (hNcard ▸ hp.one_lt)
-      · apply Nat.dvd_of_mul_dvd_mul_right hp.pos
-        rwa [←hNcard, ←N.card_eq_card_quotient_mul_card_subgroup, hNcard, mul_comm]
-    refine ⟨K.comap (QuotientGroup.mk' N), ?_, normal_comap ..⟩
-    convert ← QuotientGroup.card_preimage_mk N K
-    · simp
-    · exact hKcard
+  by_cases hn : n = 0
+  · refine ⟨⊤, ?_, inferInstance⟩
+    simp_all
+  · induction hm : Nat.card G using Nat.strong_induction_on generalizing n G with | h m ih =>
+    subst m
+    by_cases hn' : n = 1
+    · exact ⟨⊥, by simp [hn'], normal_bot⟩
+    · obtain ⟨p, hp, hdvd⟩ : ∃ p, p.Prime ∧ p ∣ n := by grind [n.ne_one_iff_exists_prime_dvd]
+      obtain ⟨N, hNcard, hN⟩ : ∃ N : Subgroup G, Nat.card N = p ∧ N.Normal := by
+        obtain P : Sylow p G := Classical.arbitrary ..
+        have : ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ ⊥ ≤ H ∧ H ≤ center G := by
+          refine Sylow.exists_subgroup_card_pow_prime_le_le hp (by simp) ?_ bot_le
+          simpa using prime_dvd_card_center (hp := ⟨hp⟩) (hdvd.trans hcard)
+        grind [normal_of_le_center]
+      obtain ⟨a, rfl⟩ := hdvd
+      obtain ⟨K, hKcard, hK⟩ : ∃ K : Subgroup (G ⧸ N), Nat.card K = a ∧ K.Normal := by
+        refine ih (Nat.card (G ⧸ N)) ?_ ?_ (Nat.ne_zero_of_mul_ne_zero_right hn) rfl
+        · rw [N.card_eq_card_quotient_mul_card_subgroup]
+          exact lt_mul_right (by simp) (hNcard ▸ hp.one_lt)
+        · apply Nat.dvd_of_mul_dvd_mul_right hp.pos
+          rwa [←hNcard, ←N.card_eq_card_quotient_mul_card_subgroup, hNcard, mul_comm]
+      refine ⟨K.comap (QuotientGroup.mk' N), ?_, normal_comap ..⟩
+      convert ← QuotientGroup.card_preimage_mk N K
+      · simp
+      · exact hKcard
 
 end WithFiniteGroup
 
