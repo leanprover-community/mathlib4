@@ -68,7 +68,7 @@ instance isRankLeOne :
   .of_compatible_mulArchimedean valuation
 
 /-- The valuative relation on a nontrivially normed nonarchimedean field is nontrivial. -/
-theorem isNontrivial {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
+instance isNontrivial {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     letI := toValuativeRel (K := K)
     IsNontrivial K :=
   letI := toValuativeRel (K := K)
@@ -79,8 +79,7 @@ end NormedField
 
 -- When a field is nonarchimedean normed, one inherits a valuative relation inducing its topology.
 -- Scoped instances to avoid a typeclass loop or non-defeq topology or norms.
-scoped[NormedField] attribute [instance] NormedField.toValuativeRel NormedField.isValuativeTopology
-  NormedField.valuation_compatible NormedField.isRankLeOne NormedField.isNontrivial
+scoped[NormedField] attribute [instance] NormedField.toValuativeRel
 
 end NormedField
 
@@ -181,7 +180,7 @@ def toNormedField : NormedField L where
   __ := e.absoluteValue.toNormedField
   toMetricSpace := e.absoluteValue.toNormedField.toMetricSpace.replaceUniformity e.uniformity_eq
 
-theorem isUltrametricDist_toNormedField :
+instance isUltrametricDist_toNormedField :
     letI := e.toNormedField
     IsUltrametricDist L :=
   letI := e.toNormedField
@@ -230,9 +229,6 @@ variable {L : Type*} [Field L] [ValuativeRel L] [IsRankLeOne L] [UniformSpace L]
 
 protected theorem isNonarchimedean_norm : IsNonarchimedean ((‖·‖) : L → ℝ) :=
   (IsRankLeOne.nonempty (R := L)).some.isNonarchimedean_absoluteValue
-
-instance : IsUltrametricDist L :=
-  (IsRankLeOne.nonempty (R := L)).some.isUltrametricDist_toNormedField
 
 namespace toNormedField
 
