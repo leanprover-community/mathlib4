@@ -508,14 +508,11 @@ variable (I I') in
 in charts around `g x`, `inTangentCoordinates I I' f g ϕ x₀ x` is a coordinate change of
 this continuous linear map that makes sense from charts around `f x₀` to charts around `g x₀`
 by composing it with appropriate coordinate changes.
-Note that the type of `ϕ` is more accurately
-`Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)`.
-We are unfolding `TangentSpace` in this type so that Lean recognizes that the type of `ϕ` doesn't
-actually depend on `f` or `g`.
 
 This is the underlying function of the trivializations of the hom of (pullbacks of) tangent spaces.
 -/
-def inTangentCoordinates (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E') : N → N → E →L[𝕜] E' :=
+def inTangentCoordinates (f : N → M) (g : N → M')
+    (ϕ : Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)) : N → N → E →L[𝕜] E' :=
   fun x₀ x => inCoordinates E (TangentSpace I) E' (TangentSpace I') (f x₀) (f x) (g x₀) (g x) (ϕ x)
 
 theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N → E →L[𝕜] E') (x₀ : N) :
@@ -527,7 +524,8 @@ theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N �
 postcomposing it with suitable coordinate changes. For a concrete version expressing the
 change of coordinates as derivatives of extended charts,
 see `inTangentCoordinates_eq_mfderiv_comp`. -/
-theorem inTangentCoordinates_eq (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E') {x₀ x : N}
+theorem inTangentCoordinates_eq (f : N → M) (g : N → M')
+    (ϕ : Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)) {x₀ x : N}
     (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
     inTangentCoordinates I I' f g ϕ x₀ x =
       (tangentBundleCore I' M').coordChange (achart H' (g x)) (achart H' (g x₀)) (g x) ∘L

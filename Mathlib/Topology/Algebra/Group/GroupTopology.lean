@@ -23,7 +23,9 @@ The additive version `AddGroupTopology α` and corresponding results are provide
 
 @[expose] public section
 
-open Set TopologicalSpace Function Topology
+open Set TopologicalSpace Function
+
+open scoped Topology
 
 universe u v w x
 
