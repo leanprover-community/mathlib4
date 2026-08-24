@@ -18,14 +18,12 @@ namespace Dyadic
 
 section Lemmas
 
--- Some of these lemmas are high priority then the generic ring lemmas so that the `simpNF` is happy
-
 @[simp] theorem toRat_one : toRat 1 = 1 := rfl
 
 @[simp] protected theorem natCast_zero : (Nat.cast 0 : Dyadic) = 0 := rfl
 @[simp] protected theorem natCast_one : (Nat.cast 1 : Dyadic) = 1 := rfl
 
-@[simp high, norm_cast]
+@[norm_cast]
 protected theorem natCast_add (a b : ℕ) : (Nat.cast (a + b) : Dyadic) = a + b := by
   simp [← Dyadic.toRat_inj]
 
@@ -33,14 +31,14 @@ protected theorem natCast_add (a b : ℕ) : (Nat.cast (a + b) : Dyadic) = a + b 
 
 @[simp] protected theorem intCast_one : (Int.cast 1 : Dyadic) = 1 := rfl
 
-@[simp high, norm_cast]
+@[norm_cast]
 protected theorem intCast_add (a b : ℤ) : (Int.cast (a + b) : Dyadic) = a + b := by
   simp [← Dyadic.toRat_inj]
 
 @[simp, norm_cast]
 theorem intCast_natCast (n : ℕ) : (Int.cast n : Dyadic) = n := rfl
 
-@[simp high, norm_cast]
+@[norm_cast]
 protected theorem intCast_neg (a : Int) : ((-a : Int) : Dyadic) = -(a : Dyadic) := by
   simp [← Dyadic.toRat_inj]
 
@@ -64,7 +62,7 @@ instance : CommRing Dyadic where
   add_zero := Dyadic.add_zero
   nsmul n x := n * x
   nsmul_zero := by simp [· • ·, SMul.smul]
-  nsmul_succ := by simp [· • ·, SMul.smul, Dyadic.add_mul, Dyadic.one_mul]
+  nsmul_succ := by simp [· • ·, SMul.smul, Dyadic.add_mul, Dyadic.one_mul, Dyadic.natCast_add]
   add_comm := Dyadic.add_comm
   mul_assoc := Dyadic.mul_assoc
   one_mul := Dyadic.one_mul
@@ -76,11 +74,11 @@ instance : CommRing Dyadic where
   left_distrib := Dyadic.mul_add
   right_distrib := Dyadic.add_mul
   natCast_zero := Dyadic.natCast_zero
-  natCast_succ := by simp
+  natCast_succ := by simp [Dyadic.natCast_add]
   zsmul n x := n * x
   sub_eq_add_neg _ _ := rfl
   zsmul_zero' := by simp [· • ·, SMul.smul]
-  zsmul_succ' := by simp [· • ·, SMul.smul, Dyadic.add_mul, Dyadic.one_mul]
+  zsmul_succ' := by simp [· • ·, SMul.smul, Dyadic.add_mul, Dyadic.one_mul, Dyadic.intCast_add]
   zsmul_neg' := by
     intro n a
     change (Int.negSucc n : ℤ) * a = -(n.succ * a)
