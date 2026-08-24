@@ -30,10 +30,10 @@ returning `n` when the factor list is empty. This is a single rule rather than t
 choices, and it is what `List.getLastD` with default `n` computes. The characterization
 `maxPrimeFac_eq_self_iff : maxPrimeFac n = n ↔ n ≤ 1 ∨ n.Prime` follows from it.
 
-Choosing `maxPrimeFac 1 = 0` instead would make the `IsLUB` result below and
-`maxPrimeFac_eq_sSup` hold unconditionally, since no prime divides `1` and both
-`IsLUB ∅ 0` and `sSup ∅ = 0` hold in `ℕ`. That would cost `maxPrimeFac 1 ∣ 1`, and
-divisibility is the more useful of the two laws, so it is not taken.
+Choosing `maxPrimeFac 1 = 0` instead would allow the `IsLUB` result below to extend to all
+nonzero inputs and would make `maxPrimeFac_eq_sSup` hold unconditionally, since no prime
+divides `1` and both `IsLUB ∅ 0` and `sSup ∅ = 0` hold in `ℕ`. That would cost
+`maxPrimeFac 1 ∣ 1`, and divisibility is the more useful of the two laws, so it is not taken.
 
 At `n = 0` the value does agree with `maxPrimeFac_eq_sSup`, but only because `ℕ`
 totalizes `sSup`: the prime divisors of zero are unbounded, so their supremum is `0` by
