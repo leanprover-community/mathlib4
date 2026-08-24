@@ -726,11 +726,11 @@ theorem congrL_tmul (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) (x : E) (y : G) :
     congrL f g (x ⊗ₜ y) = f x ⊗ₜ g y :=
   rfl
 
-@[simp]
 theorem congrL_symm_tmul (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) (x : F) (y : H) :
     (congrL f g).symm (x ⊗ₜ y) = f.symm x ⊗ₜ g.symm y :=
   rfl
 
+@[simp]
 theorem congrL_symm (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) :
     (congrL f g).symm = congrL f.symm g.symm :=
   rfl
