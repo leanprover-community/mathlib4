@@ -46,7 +46,9 @@ is not representable as a Stieltjes measure.
 
 noncomputable section
 
-open Set Filter Function ENNReal NNReal Topology MeasureTheory
+open Set Filter Function ENNReal NNReal MeasureTheory
+
+open scoped Topology
 
 open ENNReal (ofReal)
 
@@ -275,7 +277,7 @@ lemma length_eq [Nonempty R] (s : Set R) :
   simp [length]
 
 lemma length_eq_of_isEmpty [IsEmpty R] (s : Set R) : f.length s = 0 := by
-  simp only [length, if_pos]
+  simp only [length, ite_eq_left]
 
 @[simp]
 theorem length_empty : f.length ∅ = 0 := by
@@ -416,7 +418,8 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
       rintro x hx
       simp only [Iotop, htq', ↓reduceIte, mem_Ioc]
       exact ⟨(A hx).1, htq' _⟩
-    have : (𝓝[>] q').NeBot := by simp [Filter.neBot_iff, nhdsGT_eq_bot_iff, htq', not_covBy]
+    have : (𝓝[>] q').NeBot := by
+      simp [Filter.neBot_iff, nhdsGT_eq_bot_iff, htq', not_covBy_of_denselyOrdered]
     have : ContinuousWithinAt (fun r => ofReal (f r - f p)) (Ioi q') q' := by
       apply ENNReal.continuous_ofReal.continuousAt.comp_continuousWithinAt
       refine ContinuousWithinAt.sub ?_ continuousWithinAt_const

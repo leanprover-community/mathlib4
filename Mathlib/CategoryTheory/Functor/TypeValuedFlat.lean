@@ -63,7 +63,6 @@ namespace FunctorToTypes
 variable (F : C ⥤ Type w) {X : C} (x : F.obj X)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : C ⥤ Type w`, an object `X : C` and `x : F.obj X`,
 this is the subfunctor of the functor `Over.forget X ⋙ F : Over X ⥤ Type w`
 which sends an object of `Over X` corresponding to a morphism `f : Y ⟶ X`
