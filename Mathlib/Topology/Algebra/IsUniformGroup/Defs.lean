@@ -5,8 +5,8 @@ Authors: Patrick Massot, Johannes Hölzl, Anatole Dedecker
 -/
 module
 
+public import Mathlib.Topology.Algebra.Group.Neighborhood
 public import Mathlib.Topology.UniformSpace.Basic
-public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Uniform structure on topological groups
