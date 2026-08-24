@@ -143,6 +143,14 @@ theorem isFiniteMeasure_withDensity {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a 
   { measure_univ_lt_top := by
       rwa [withDensity_apply _ MeasurableSet.univ, Measure.restrict_univ, lt_top_iff_ne_top] }
 
+lemma isFiniteMeasure_withDensity_iff (f : α → ℝ≥0∞) :
+    IsFiniteMeasure (μ.withDensity f) ↔ ∫⁻ a, f a ∂μ ≠ ∞ := by
+  refine ⟨fun h ↦ ?_, isFiniteMeasure_withDensity⟩
+  have := withDensity_apply (μ := μ) f .univ
+  rw [setLIntegral_univ] at this
+  rw [← this]
+  exact measure_ne_top _ _
+
 theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) :
     μ.withDensity f ≪ μ := by
   refine AbsolutelyContinuous.mk fun s hs₁ hs₂ => ?_

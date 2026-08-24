@@ -75,8 +75,7 @@ lemma eTVDist_eq_iSup_finPartition_abs :
         ∑ p ∈ P.parts, ‖μ.real p - ν.real p‖ₑ := by
   rw [eTVDist, VectorMeasure.eTVDist_eq_iSup_finPartition_enorm]
   simp only [Measure.toSignedMeasure_apply]
-  congr with P
-  congr with s
+  congrm ⨆ P, ∑ s ∈ _, ?_
   simp [s.2]
 
 @[simp]
@@ -114,9 +113,7 @@ lemma eTVDist_of_ge (hμν : ν ≤ μ) : eTVDist μ ν = μ Set.univ - ν Set.u
   calc eTVDist μ ν
   _ = eTVDist (μ - ν) 0 := by
     simp only [eTVDist_eq_iSup_finPartition_abs, measureReal_zero, Pi.zero_apply, sub_zero]
-    congr with P
-    congr with s
-    congr 1
+    congrm ⨆ P, ∑ s ∈ _, ‖?_‖ₑ
     simp only [Measure.real]
     rw [Measure.sub_apply s.2 hμν, ENNReal.toReal_sub_of_le (hμν s) (by simp)]
   _ = (μ - ν) Set.univ := by simp
@@ -128,7 +125,7 @@ lemma eTVDist_of_le (hμν : μ ≤ ν) : eTVDist μ ν = ν Set.univ - μ Set.u
 lemma eTVDist_le_add : eTVDist μ ν ≤ μ Set.univ + ν Set.univ := by
   calc eTVDist μ ν
   _ ≤ eTVDist μ 0 + eTVDist 0 ν := eTVDist_triangle _ _ _
-  _ = μ Set.univ + ν Set.univ := by simp [eTVDist_zero_right, eTVDist_zero_left]
+  _ = μ Set.univ + ν Set.univ := by simp
 
 end ETVDist
 
@@ -192,7 +189,7 @@ lemma tvDist_of_le (hμν : μ ≤ ν) : tvDist μ ν = ν.real Set.univ - μ.re
 lemma tvDist_le_add : tvDist μ ν ≤ μ.real Set.univ + ν.real Set.univ := by
   calc tvDist μ ν
   _ ≤ tvDist μ 0 + tvDist 0 ν := tvDist_triangle _ _ _
-  _ = μ.real Set.univ + ν.real Set.univ := by simp [tvDist_zero_right, tvDist_zero_left]
+  _ = μ.real Set.univ + ν.real Set.univ := by simp
 
 end TVDist
 
