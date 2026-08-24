@@ -763,7 +763,7 @@ end CochainComplex
 namespace HomologicalComplex
 
 variable {C ι : Type*} [Category* C] [Preadditive C] {c : ComplexShape ι}
-  {K L : HomologicalComplex C c} {f g : K ⟶ L}
+  {K L : HomologicalComplex C c}
 
 variable (φ ψ : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i]
 

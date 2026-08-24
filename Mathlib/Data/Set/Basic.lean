@@ -1145,7 +1145,7 @@ noncomputable instance decidableEq : DecidableEq (Set α) := Classical.typeDecid
 
 end Set
 
-variable {α : Type*} {s t u : Set α}
+variable {α : Type*} {s : Set α}
 
 namespace Equiv
 
