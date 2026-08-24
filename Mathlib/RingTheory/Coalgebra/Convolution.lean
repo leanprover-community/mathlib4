@@ -30,10 +30,6 @@ f * g = f g
 ```
 diagrammatically, where `μ` stands for multiplication and `δ` for comultiplication.
 
-This construction is functorial: post-composition by an algebra homomorphism
-(`AlgHom.convCompRight`) and pre-composition by a coalgebra homomorphism (`CoalgHom.convCompLeft`)
-are homomorphisms of convolution algebras.
-
 ## Implementation notes
 
 Because there is a global multiplication instance on `Module.End R A` (defined as composition),
