@@ -20,18 +20,34 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
-URL for the per-SHA marker blob: `{container}/m/{repo}/{sha}`, where `repo` is
-lowercased via `normalizeRepo` so the path is case-insensitive in the GitHub
-owner/repo name.
+Blob path of the per-SHA marker under a container base: `m/{repo}/{sha}`,
+where `normalizeRepo` lowercases `repo` so the path is case-insensitive
+in the GitHub owner/repo name.
 
 The marker is uploaded by `put-staged` as the last step when an upload is
-SHA-scoped (`MATHLIB_CACHE_REPO_SCOPE` set). Its presence at this URL
+SHA-scoped (`MATHLIB_CACHE_REPO_SCOPE` set). Its presence at this path
 indicates that the full `.ltar` upload completed for this commit, and lets
 `cache query` discover cached commits with a cheap HEAD probe rather than
 a blob-listing call.
 -/
+def markerPath (repo sha : String) : String :=
+  s!"m/{normalizeRepo repo}/{sha}"
+
+/--
+Upload-side URL for the per-SHA marker blob. Writes authenticate against
+Azure and address it directly; read probes build their URL from
+`Container.getURL` instead (see `probeContainerForSHA`).
+-/
 def markerURL (container : Container) (repo sha : String) : String :=
-  s!"{container.azureURL}/m/{normalizeRepo repo}/{sha}"
+  s!"{container.azureURL}/{markerPath repo sha}"
+
+/--
+Read-side URL for the per-SHA marker blob: probes follow the read base
+(`Container.getURL`), unlike `markerURL`, which addresses Azure directly for
+writes.
+-/
+def markerReadURL (container : Container) (repo sha : String) : IO String := do
+  return s!"{← container.getURL}/{markerPath repo sha}"
 
 /--
 Upload a tiny marker blob to `/m/{repo}/{sha}` in the given container. The

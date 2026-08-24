@@ -5,7 +5,6 @@ Authors: Zikang Yu
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Ordinal
 public import Mathlib.SetTheory.Ordinal.FixedPointApproximants
 public import Mathlib.Topology.DerivedSet
 
