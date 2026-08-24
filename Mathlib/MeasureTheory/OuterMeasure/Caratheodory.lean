@@ -73,7 +73,7 @@ theorem isCaratheodory_compl : IsCaratheodory m s₁ → IsCaratheodory m s₁�
 
 /-- A Carathéodory-measurable set and its complement add up to the measure of the whole space. -/
 theorem IsCaratheodory.measure_add_compl (h : m.IsCaratheodory s) : m s + m sᶜ = m univ := by
-  simpa [Set.sdiff_eq] using (h univ).symm
+  simpa [sdiff_eq] using (h univ).symm
 
 @[simp]
 theorem isCaratheodory_compl_iff : IsCaratheodory m sᶜ ↔ IsCaratheodory m s :=
