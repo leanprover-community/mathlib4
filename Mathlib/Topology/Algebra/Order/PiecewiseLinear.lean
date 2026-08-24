@@ -54,7 +54,7 @@ noncomputable def gridIdx (x : ℤ → K) (t : K) : ℤ := sSup {n : ℤ | x n �
 theorem gridIdx_eq_of_mem_Ico {x : ℤ → K} (hx : StrictMono x)
     {n : ℤ} {t : K} (ht : t ∈ Ico (x n) (x (n + 1))) :
     gridIdx x t = n := by
-  have hub : ∀ m, x m ≤ t → m ≤ n := fun m hm =>
+  have hub (m : ℤ) (hm : x m ≤ t) : m ≤ n :=
     Int.lt_add_one_iff.mp (hx.lt_iff_lt.mp (hm.trans_lt ht.2))
   exact le_antisymm (csSup_le ⟨n, ht.1⟩ hub) (le_csSup ⟨n, hub⟩ ht.1)
 
@@ -71,7 +71,7 @@ theorem gridIdx_mem_Ico [NoMaxOrder K] {x : ℤ → K}
     ⟨N, fun n hn => not_lt.mp fun hlt => not_lt.mpr hn (ht'.trans_le (hN n hlt.le))⟩
   refine ⟨Int.csSup_mem hne hba, lt_of_not_ge fun h => ?_⟩
   have : gridIdx x t + 1 ≤ gridIdx x t := le_csSup hba h
-  omega
+  lia
 
 end GridIdx
 
@@ -102,19 +102,20 @@ theorem continuousOn_Icc_of_grid {E : Type*} [TopologicalSpace E] {x : ℤ → K
     (hf : ∀ n ∈ Ico a b, ContinuousOn f (Icc (x n) (x (n + 1)))) :
     ContinuousOn f (Icc (x a) (x b)) := by
   rcases eq_or_lt_of_le hab with rfl | hlt
-  · simp [continuousOn_singleton]
-  haveI : Finite (Ico a b : Set ℤ) := (finite_Ico a b).to_subtype
+  · simp
   refine (LocallyFinite.continuousOn_iUnion (g := f) (locallyFinite_of_finite _)
     (fun _ => isClosed_Icc) fun n : Ico a b => hf n.val n.2).mono
     fun t ht => mem_iUnion.mpr ?_
   set S := {n : ℤ | a ≤ n ∧ n + 1 ≤ b ∧ x n ≤ t}
-  have hbdd : BddAbove S := ⟨b - 1, fun _ hn => by have := hn.2.1; omega⟩
+  have hbdd : BddAbove S := ⟨b - 1, fun _ hn => by have := hn.2.1; lia⟩
   obtain ⟨h1, h2, h3⟩ := Int.csSup_mem (s := S) ⟨a, le_rfl, hlt, ht.1⟩ hbdd
-  refine ⟨⟨sSup S, h1, by omega⟩, h3, ?_⟩
+  refine ⟨⟨sSup S, h1, by lia⟩, h3, ?_⟩
   rcases h2.lt_or_eq with _ | heq
   · exact not_lt.mp fun hgt => by
-      have := le_csSup hbdd (show sSup S + 1 ∈ S from ⟨by omega, by omega, hgt.le⟩); omega
-  · rw [heq]; exact ht.2
+      have := le_csSup hbdd (by grind : sSup S + 1 ∈ S)
+      lia
+  · rw [heq]
+    exact ht.2
 
 end Grid
 
@@ -170,7 +171,8 @@ theorem continuous_piecewiseLinear_ofValues (hx : StrictMono x)
       (fun n => (x (n + 1) - x n)⁻¹ • (y (n + 1) - y n))) := by
   refine continuous_piecewiseLinear hx h_atTop h_atBot fun n => ?_
   have hne : x (n + 1) - x n ≠ 0 := sub_ne_zero.mpr (hx (lt_add_one n)).ne'
-  rw [smul_inv_smul₀ hne]; abel
+  rw [smul_inv_smul₀ hne]
+  abel
 
 end Continuity
 
@@ -190,11 +192,13 @@ theorem hasDerivWithinAt_piecewiseLinear (hx : StrictMono x)
     HasDerivWithinAt (piecewiseLinear x y c) (c (gridIdx x t)) (Ici t) t := by
   obtain ⟨h1, h2⟩ := gridIdx_mem_Ico h_atTop h_atBot t
   set n := gridIdx x t
-  exact hasDerivWithinAt_Ioi_iff_Ici.mp
-    (((hasDerivAt_id t).sub_const (x n) |>.smul_const (c n)
-      |>.const_add (y n)).hasDerivWithinAt.congr_of_eventuallyEq (by
-        filter_upwards [Ioo_mem_nhdsGT h2] with s hs
-        exact piecewiseLinear_eq_on_Ico hx ⟨h1.trans hs.1.le, hs.2⟩)
-      (by simp [piecewiseLinear, n]) |>.congr_deriv (one_smul _ _))
+  apply hasDerivWithinAt_Ioi_iff_Ici.mp
+  have hderiv : HasDerivAt (fun s => y n + (s - x n) • c n) (c n) t := by
+    simpa only [one_smul] using
+      ((hasDerivAt_id t).sub_const (x n) |>.smul_const (c n) |>.const_add (y n))
+  apply hderiv.hasDerivWithinAt.congr_of_eventuallyEq
+  · filter_upwards [Ioo_mem_nhdsGT h2] with s hs
+    exact piecewiseLinear_eq_on_Ico hx ⟨h1.trans hs.1.le, hs.2⟩
+  · simp [piecewiseLinear, n]
 
 end Deriv
