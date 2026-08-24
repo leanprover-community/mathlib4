@@ -78,26 +78,6 @@ lemma maxPrimeFac_le_iff (hn : 1 < n) :
     n.maxPrimeFac ≤ m ↔ ∀ p, p.Prime → p ∣ n → p ≤ m := by
   simp [isLUB_le_iff <| isLUB_maxPrimeFac hn, upperBounds]
 
-/-- The greatest prime factor of a prime is the prime itself. -/
-@[simp]
-lemma Prime.maxPrimeFac_eq_self (hp : p.Prime) : maxPrimeFac p = p := by
-  apply le_antisymm
-  · exact Nat.le_of_dvd hp.pos maxPrimeFac_dvd
-  · exact le_maxPrimeFac hp.ne_zero hp (dvd_refl p)
-
-/-- The fixed points of `maxPrimeFac` are zero, one, and the primes. -/
-@[simp]
-lemma maxPrimeFac_eq_self_iff : maxPrimeFac n = n ↔ n ≤ 1 ∨ n.Prime where
-  mp h := by
-    by_cases hn : n ≤ 1
-    · exact Or.inl hn
-    · exact Or.inr <| h ▸ prime_maxPrimeFac_of_one_lt (lt_of_not_ge hn)
-  mpr := by
-    rintro (hn | hn)
-    · obtain rfl | rfl : n = 0 ∨ n = 1 := by lia
-      all_goals simp
-    · exact hn.maxPrimeFac_eq_self
-
 @[simp]
 lemma one_le_maxPrimeFac_iff : ∀ {n : ℕ}, 1 ≤ maxPrimeFac n ↔ 1 ≤ n
   | 0 | 1 => by simp
@@ -130,6 +110,26 @@ lemma maxPrimeFac_pow : ∀ {k : ℕ}, k ≠ 0 → ∀ n, maxPrimeFac (n ^ k) = 
   | k + 2, _, n + 1 => by
     rw [pow_succ, maxPrimeFac_mul (pow_ne_zero _ (by lia)) (by lia), maxPrimeFac_pow (by lia)]
     simp
+
+/-- The greatest prime factor of a prime is the prime itself. -/
+@[simp]
+lemma Prime.maxPrimeFac_eq_self (hp : p.Prime) : maxPrimeFac p = p := by
+  apply le_antisymm
+  · exact Nat.le_of_dvd hp.pos maxPrimeFac_dvd
+  · exact le_maxPrimeFac hp.ne_zero hp (dvd_refl p)
+
+/-- The fixed points of `maxPrimeFac` are zero, one, and the primes. -/
+@[simp]
+lemma maxPrimeFac_eq_self_iff : maxPrimeFac n = n ↔ n ≤ 1 ∨ n.Prime where
+  mp h := by
+    by_cases hn : n ≤ 1
+    · exact Or.inl hn
+    · exact Or.inr <| h ▸ prime_maxPrimeFac_of_one_lt (lt_of_not_ge hn)
+  mpr := by
+    rintro (hn | hn)
+    · obtain rfl | rfl : n = 0 ∨ n = 1 := by lia
+      all_goals simp
+    · exact hn.maxPrimeFac_eq_self
 
 /-- The greatest prime factor of a natural number is at most that number. -/
 lemma maxPrimeFac_le : ∀ {n : ℕ}, maxPrimeFac n ≤ n
