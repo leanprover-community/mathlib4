@@ -104,12 +104,11 @@ namespace BialgHom
 variable [Semiring C] [Bialgebra R C]
 
 section Semiring
-variable [Semiring A] [Bialgebra R A] (f : A →ₐc[R] C)
+variable [Semiring A] [Bialgebra R A] (f : A →ₐc[R] C) {g : C →ₗ[R] C} {g' : A →ₗ[R] A}
 
-lemma convCompLeft_eq_convCompRight {g : C →ₗ[R] C} {g' : A →ₗ[R] A}
-    (hg : ∀ a, f (g' a) = g (f a)) :
+lemma convCompLeft_eq_convCompRight (h : Function.Semiconj f g' g) :
     f.toCoalgHom.convCompLeft (toConv g) = f.toAlgHom.convCompRight (toConv g') :=
-  WithConv.ext <| LinearMap.ext fun a ↦ (hg a).symm
+  WithConv.ext <| LinearMap.ext fun a ↦ (h a).symm
 
 lemma convCompLeft_id_eq_convCompRight_id :
     f.toCoalgHom.convCompLeft (toConv .id) = f.toAlgHom.convCompRight (toConv .id) :=
