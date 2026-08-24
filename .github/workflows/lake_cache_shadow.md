@@ -144,6 +144,16 @@ baseline.
 
 ## Scope qualifiers
 
+Lake requires `--scope` or `--repo` on every put and get against a custom
+endpoint; there is no unscoped form. A scope also bounds where a content hash
+is trusted, because Lake does not use cryptographically secure hashes and
+prefixes uploads to avoid clashes. Each package therefore gets its own
+namespace for its artifacts and its revision files, and the root scope stays
+for mathlib alone. `--repo=<owner>/<package>` would give a scope of that shape,
+and Lake would add the toolchain and the platform to it. It has no place for
+the pin hash, so the pipeline passes the whole string to `--scope`, which Lake
+uses verbatim.
+
 Two qualifiers extend a dependency scope, because the revision alone is not
 exact.
 
