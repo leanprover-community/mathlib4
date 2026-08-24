@@ -75,21 +75,50 @@ def replaceWithLDecls (stx : Syntax) : SetMReplaceM Syntax :=
         newMVars := s.newMVars.push mvar.mvarId! }
       return fvar
 
-/--
-The `setm` tactic matches a pattern containing named holes to the goal or a hypothesis, and creates
-named local declarations for the matched holes with their assigned expressions as values. It can be
-used to give a name to a complicated subexpression appearing in the goal or a hypothesis.
+/-- `setm patt` matches `patt`, a term containing named holes (like `?a`) to the goal, and creates
+named local declarations for the matched holes with their assigned expressions as values. Moreover,
+it will replace the matches with their new names. This tactic can be used to give a name to a
+complicated subexpression appearing in the goal or a hypothesis.
 
-* `setm patt`, where `patt` is a term containing named holes (like `?a`) will match `patt` to the
-  current goal and create local declarations assigning the hole names to their inferred value.
-  Moreover, it will replace the matches with their new names.
-* `setm patt using h` is like `setm patt`, except that `patt` is matched with the local hypothesis
-  `h` instead.
-* `setm patt (using h)? at loc` is like the above, except that it also rewrites by the
-  newly-introduced local declarations at the locations `loc`.
+* `setm patt using h` matches `patt` with the local hypothesis named `h` instead of the main goal.
+* `setm patt at loc` also rewrites by the newly-introduced local declarations at the location(s)
+  `loc`.
 
 Examples:
+```lean
+example : ∃ n, n = 2 ^ 10 - 1 := by
+  setm ∃ _, _ = ?a
+  /-
+  a := 2 ^ 10 - 1
+  ⊢ ∃ n, n = a
+  -/
+  exact .intro a rfl
+```
 
+`using h` matches against `h` instead of the goal:
+```lean
+example (h : 1 + 2 = 3) : ∃ n, n = 2 := by
+  setm _ + ?a = _ using h
+  /-
+  a := 2
+  h : 1 + a = 3
+  ⊢ ∃ n, n = 2
+  -/
+  exact .intro a rfl
+```
+
+`at h₂` rewrites `h₂` so that it uses `a`:
+```lean
+example (h₁ : 1 + 2 = 3) (h₂ : 2 + 2 = 4) : ∃ n, n = 2 := by
+  setm _ + ?a = _ using h₁ at h₂
+  /-
+  a : Nat := 2
+  h₁ : 1 + a = 3
+  h₂ : a + a = 4
+  ⊢ ∃ n, n = 2
+  -/
+  exact .intro a rfl
+```
 -/
 syntax (name := setM) "setm " term (" using " ident)? (Parser.Tactic.location)? : tactic
 
