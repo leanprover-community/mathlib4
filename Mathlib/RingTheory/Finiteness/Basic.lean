@@ -219,7 +219,7 @@ end Submodule
 
 section ModuleAndAlgebra
 
-variable (R A B M N : Type*)
+variable (R A M N : Type*)
 
 namespace Module
 
