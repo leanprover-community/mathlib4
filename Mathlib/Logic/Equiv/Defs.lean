@@ -9,10 +9,8 @@ public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Subtype
 public import Mathlib.Logic.Unique
-public import Mathlib.Tactic.Simps.Basic
-public import Mathlib.Tactic.Substs
+public import Mathlib.Tactic.Simps
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Equivalence between types
@@ -66,7 +64,7 @@ universe u v w z
 variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. -/
-structure Equiv (α : Sort*) (β : Sort _) where
+structure Equiv (α β : Sort*) where
   /-- The forward map of an equivalence.
 
   Do NOT use directly. Use the coercion instead. -/
@@ -116,7 +114,7 @@ lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
 
 /-- The map `(r ≃ s) → (r → s)` is injective. -/
 theorem coe_fn_injective : @Function.Injective (α ≃ β) (α → β) (fun e => e) :=
-  DFunLike.coe_injective'
+  DFunLike.coe_injective
 
 protected theorem coe_inj {e₁ e₂ : α ≃ β} : (e₁ : α → β) = e₂ ↔ e₁ = e₂ :=
   @DFunLike.coe_fn_eq _ _ _ _ e₁ e₂
@@ -143,7 +141,7 @@ protected theorem Perm.congr_fun {f g : Equiv.Perm α} (h : f = g) (x : α) : f 
 instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 
 /-- Inverse of an equivalence `e : α ≃ β`. -/
-@[symm]
+@[symm, implicit_reducible]
 protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
 
 /-- See Note [custom simps projection] -/
@@ -271,14 +269,15 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
     e ∘ (e : α ≃ β).symm = id :=
   (e : α ≃ β).self_comp_symm
 
-@[simp, grind =] theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
+theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
     (f.trans g).symm a = f.symm (g.symm a) := rfl
+
+@[simp, grind =]
+theorem symm_trans (f : α ≃ β) (g : β ≃ γ) : (f.trans g).symm = g.symm.trans f.symm := rfl
 
 theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
 
 theorem apply_eq_iff_eq (f : α ≃ β) {x y : α} : f x = f y ↔ x = y := EquivLike.apply_eq_iff_eq f
-
-theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y ↔ x = f.symm y := by grind
 
 @[simp] theorem cast_apply {α β} (h : α = β) (x : α) : Equiv.cast h x = cast h x := rfl
 
@@ -288,7 +287,7 @@ theorem cast_symm {α β} (h : α = β) : Equiv.cast h.symm = (Equiv.cast h).sym
 
 theorem cast_trans {α β γ} (h : α = β) (h2 : β = γ) :
     Equiv.cast (h.trans h2) = (Equiv.cast h).trans (Equiv.cast h2) :=
-  ext fun x => by substs h h2; rfl
+  ext fun x => by subst h h2; rfl
 
 theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ a ≍ b := by
   subst h; simp
@@ -296,6 +295,10 @@ theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a
 theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y := by grind
 
 theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x := by grind
+
+@[deprecated eq_symm_apply (since := "2026-07-26")]
+theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y ↔ x = f.symm y :=
+  f.eq_symm_apply.symm
 
 @[simp, grind =] theorem symm_symm (e : α ≃ β) : e.symm.symm = e := rfl
 
@@ -821,6 +824,9 @@ noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β whe
   right_inv := rightInverse_surjInv _
 
 @[simp] lemma coe_ofBijective (f : α → β) (hf : Bijective f) : ⇑(ofBijective f hf) = f := rfl
+
+@[simp] lemma ofBijective_coe {f : α ≃ β} :
+    Equiv.ofBijective f f.bijective = f := Equiv.ext (congrFun rfl)
 
 lemma ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
     f ((ofBijective f hf).symm x) = x :=

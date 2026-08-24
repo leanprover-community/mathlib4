@@ -8,6 +8,7 @@ module
 public import Mathlib.Init
 /-!
 # The `existsi` tactic
+
 This file defines the `existsi` tactic: its purpose is to instantiate existential quantifiers.
 Internally, it applies the `refine` tactic.
 -/

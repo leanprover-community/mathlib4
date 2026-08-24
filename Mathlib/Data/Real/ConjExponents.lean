@@ -152,7 +152,7 @@ theorem sub_one_pos : 0 < p - 1 := sub_pos.2 h.lt
 theorem sub_one_ne_zero : p - 1 ≠ 0 := h.sub_one_pos.ne'
 
 theorem conjugate_eq : q = p / (p - 1) := by
-  convert inv_inv q ▸ congr($(h.symm.inv_sub_inv_eq_inv.symm)⁻¹) using 1
+  convert! inv_inv q ▸ congr($(h.symm.inv_sub_inv_eq_inv.symm)⁻¹) using 1
   field [h.ne_zero]
 
 lemma conjExponent_eq : conjExponent p = q := h.conjugate_eq.symm
@@ -506,6 +506,10 @@ lemma toReal_iff (hp : 1 < p.toReal) :
 lemma toReal (hp : 1 < p.toReal) [HolderConjugate p q] :
     p.toReal.HolderConjugate q.toReal :=
   toReal_iff hp |>.mpr ‹_›
+
+lemma toReal_of_ne_top (hp : p ≠ ∞) (hq : q ≠ ∞) [HolderConjugate p q] :
+    p.toReal.HolderConjugate q.toReal :=
+  toReal ((toReal_lt_toReal one_ne_top hp).mpr ((lt_top_iff_one_lt q p).mp hq.lt_top))
 
 lemma of_toNNReal (h : NNReal.HolderConjugate p.toNNReal q.toNNReal) :
     HolderConjugate p q :=

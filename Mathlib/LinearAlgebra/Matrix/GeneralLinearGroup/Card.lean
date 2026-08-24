@@ -8,6 +8,7 @@ module
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Rank
+public import Mathlib.LinearAlgebra.Matrix.Basis
 /-!
 # Cardinal of the general linear group over finite rings
 
@@ -55,7 +56,7 @@ theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
             simp only [SetLike.coe_sort_coe, finrank_span_eq_card s.2, card_fin]
             rw [Module.card_eq_pow_finrank (K := K)]
       simp [card_congr (equiv_linearIndependent k), sum_congr _ _ this, ih (Nat.le_of_succ_le hk),
-        mul_comm, Fin.prod_univ_succAbove _ (Fin.last k)]
+        mul_comm, Fin.prod_univ_succAbove _ (Fin.last k), -Set.fintypeCard_eq_ncard]
 
 end LinearIndependent
 
