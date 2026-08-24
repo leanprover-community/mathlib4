@@ -176,8 +176,7 @@ elab_rules : tactic
           withRef loc <| withLocation (expandLocation loc) (rewrite ∘ some) (rewrite none)
             (fun goal ↦ throwTacticEx `setm goal "Rewriting failed")
       let unassignedMVars ← (newMVars ++ newPatMVars).filterM (notM ·.isAssigned)
-      if ← logUnassignedUsingErrorInfos unassignedMVars then
-        throwAbortTactic
+      logUnassignedAndAbort unassignedMVars
       if newMVars.isEmpty then
         logWarningAt origPat m!"No holes (`?n`, `?_`) were present in the `setm` pattern. \
           This means `setm` has no effect."
