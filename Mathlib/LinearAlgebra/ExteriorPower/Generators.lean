@@ -73,32 +73,6 @@ lemma span_ιMulti_embedding_of_span_eq_top (hg : Submodule.span R (Set.range g)
     obtain ⟨i, j, hx, hij⟩ := hx
     exact AlternatingMap.map_eq_zero_of_eq  _ _ (hij := hij) (by simp [hx])
 
--- to be moved
-set_option backward.isDefEq.respectTransparency.types false in
-lemma _root_.Equiv.Perm.exists_orderEmbedding_of_finite
-    {α β : Type*} [LinearOrder α] [LinearOrder β] [Finite α]
-    (x : α ↪ β) : ∃ (σ : Equiv.Perm α) (f : α ↪o β), x ∘ σ = f := by
-  have := Fintype.ofFinite α
-  have e : (⊤ : Finset α) ≃o Finset.map x ⊤ :=
-    ((⊤ : Finset α).orderIsoOfFin rfl).symm.trans ((Finset.map x ⊤).orderIsoOfFin (by simp))
-  let f : α ↪o β :=
-    { toFun a := e ⟨a, by simp⟩
-      inj' _ _ h := by
-        simpa only [← Subtype.ext_iff, EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq] using h
-      map_rel_iff'  := by simp }
-  have he (i : α) : ∃ (j : α), x j = e ⟨i, by simp⟩ := by
-    simpa only [Finset.mem_map, Finset.top_eq_univ, Finset.mem_univ, true_and]
-      using (e ⟨i, by simp⟩).2
-  let g : α → α := fun i ↦ (he i).choose
-  have hg (i : α) : x (g i) = e ⟨i, by simp⟩ := (he i).choose_spec
-  have fac : x ∘ g = f := by aesop
-  refine ⟨Equiv.ofBijective g ⟨?_, fun a ↦ ?_⟩, f, fac⟩
-  · refine Function.Injective.of_comp (f := x) ?_
-    simpa [fac] using RelEmbedding.injective f
-  · refine ⟨(e.symm ⟨x a, by simp⟩).1, x.injective ?_⟩
-    rw [dsimp% (congr_fun fac (e.symm ⟨x a, by simp⟩).1)]
-    simp [f]
-
 lemma span_ιMulti_orderEmbedding_of_span_eq_top [LinearOrder ι]
     (hg : Submodule.span R (Set.range g) = ⊤) (n : ℕ) :
     Submodule.span R (Set.range (fun (x : Fin n ↪o ι) ↦ ιMulti R _ (g ∘ x))) = ⊤ := by
