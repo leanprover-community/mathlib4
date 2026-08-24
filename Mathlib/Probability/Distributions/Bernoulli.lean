@@ -225,7 +225,7 @@ lemma HasLaw.integrable_comp_bernoulliMeasure {E : Type*} [NormedAddCommGroup E]
 
 lemma HasLaw.integrable_bernoulliMeasure [NormedAddCommGroup X] [MeasurableSingletonClass X]
     {f : Ω → X} (hf : HasLaw f Ber(x, y, p) P) :
-    Integrable f  P := hf.integrable_comp_bernoulliMeasure id
+    Integrable f P := hf.integrable_comp_bernoulliMeasure id
 
 /-- The constant indicator of a set follows a Bernoulli distribution. -/
 theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M]

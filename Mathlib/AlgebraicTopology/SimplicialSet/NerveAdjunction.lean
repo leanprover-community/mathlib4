@@ -40,8 +40,10 @@ that it fails to preserve infinite products.
 
 universe u
 
-open CategoryTheory Nerve Simplicial SimplicialObject.Truncated
+open CategoryTheory Nerve SimplicialObject.Truncated
   SimplexCategory.Truncated Opposite Limits
+
+open scoped Simplicial
 
 namespace SSet
 
