@@ -360,7 +360,7 @@ lemma isMulCommutative_anti [LE S] [IsConcreteLE S M] {s t : S} (h : s ≤ t) [I
 instance [SemilatticeInf S] [IsConcreteLE S M] {s t : S} [IsMulCommutative t] :
     IsMulCommutative ↥(s ⊓ t) := isMulCommutative_anti inf_le_right
 
-instance foo [SemilatticeInf S] [IsConcreteLE S M] {s t : S} [IsMulCommutative s] :
+instance [SemilatticeInf S] [IsConcreteLE S M] {s t : S} [IsMulCommutative s] :
     IsMulCommutative ↥(s ⊓ t) := isMulCommutative_anti inf_le_left
 
 end IsMulCommutative
