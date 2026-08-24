@@ -290,7 +290,6 @@ GeneralLinearGroup.det : GL n R →* Rˣ, induced by the inclusion toGL. -/
 noncomputable def toGLKerEquiv :
     SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker :=
   (MonoidHom.ofInjective toGL_injective).trans (MulEquiv.subgroupCongr toGL_range)
-    (MulEquiv.subgroupCongr toGL_range)
 
 variable (S) in
 /-- `mapGL` is the map from the special linear group over `R` to the general linear group over
