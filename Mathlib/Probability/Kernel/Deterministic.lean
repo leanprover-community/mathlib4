@@ -46,25 +46,29 @@ composition is deterministic, the equation fails.
 * [Moss and Perrone, *A category-theoretic proof of the ergodic decomposition theorem*][moss2023]
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory ProbabilityTheory Set
 
 variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
-namespace ProbabilityTheory.Kernel
+namespace ProbabilityTheory
 
 /-- A kernel is deterministic if copying then applying the kernel to the two copies is the same
 as first applying the kernel then copying. -/
 class IsDeterministic (κ : Kernel α β) : Prop where
-  parallelComp_self_comp_copy : (κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ
+  parallelComp_self_comp_copy' : (κ ∥ₖ κ) ∘ₖ Kernel.copy α = Kernel.copy β ∘ₖ κ
 
-export IsDeterministic (parallelComp_self_comp_copy)
+namespace Kernel
+
+lemma parallelComp_self_comp_copy {κ : Kernel α β} [IsDeterministic κ] :
+    (κ ∥ₖ κ) ∘ₖ Kernel.copy α = Kernel.copy β ∘ₖ κ :=
+  IsDeterministic.parallelComp_self_comp_copy'
 
 instance {f : α → β} (hf : Measurable f) : IsDeterministic (deterministic f hf) where
-  parallelComp_self_comp_copy := by
+  parallelComp_self_comp_copy' := by
     simp_rw [parallelComp_comp_copy, deterministic_prod_deterministic, copy,
-      deterministic_comp_deterministic, Function.comp_def]
+      deterministic_comp_deterministic, Function.comp_def, Function.diag_def]
 
 instance : IsDeterministic (mβ := mα) (Kernel.id (α := α)) := by unfold Kernel.id; infer_instance
 
@@ -118,7 +122,7 @@ theorem IsDeterministic.exists_eq_deterministic [StandardBorelSpace β] (κ : Ke
     exact hf a
 
 /-- The equation of a Positive Markov category: if the composition of two Markov kernels `η ∘ₖ κ` is
- deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
+deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
 and `κ` independently. -/
 lemma comp_parallelComp_comp_copy {γ : Type*} [MeasurableSpace γ] {κ : Kernel α β}
     {η : Kernel β γ} [IsMarkovKernel κ] [IsMarkovKernel η] [IsDeterministic (η ∘ₖ κ)] :
@@ -172,5 +176,16 @@ lemma comp_parallelComp_comp_copy {γ : Type*} [MeasurableSpace γ] {κ : Kernel
         rw [η.comp_apply' _ _ hs.compl]
     _ = 0 := by
       rw [measure_compl hs (by simp), measure_univ h₁, h₁, tsub_self]
+
+instance (κ : Kernel α β) [IsDeterministic κ] : IsSFiniteKernel κ := by
+  by_contra hκ
+  obtain ⟨a, ha⟩ : ∃ a, 0 < (κ a) univ := by
+    by_contra! h
+    let : IsFiniteKernel κ := ⟨⟨0, by simp, h⟩⟩
+    exact hκ inferInstance
+  have h := DFunLike.congr_fun (DFunLike.congr_fun κ.parallelComp_self_comp_copy a) (univ ×ˢ univ)
+  simp only [parallelComp_of_not_isSFiniteKernel_left κ hκ, zero_comp, zero_apply,
+    copy_comp_apply_prod κ a .univ .univ, inter_self] at h
+  exact ha.ne h
 
 end ProbabilityTheory.Kernel

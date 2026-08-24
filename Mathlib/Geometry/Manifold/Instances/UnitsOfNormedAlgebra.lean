@@ -6,6 +6,7 @@ Authors: Nicolò Cavalleri, Heather Macbeth, Winston Yin
 module
 
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+public import Mathlib.Geometry.Manifold.Algebra.SMul
 
 /-!
 # Units of a normed algebra
@@ -23,6 +24,9 @@ its group of units, the general linear group GL(`𝕜`, `V`), as demonstrated by
 example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : ℕ∞ω) :
     LieGroup 𝓘(𝕜, V →L[𝕜] V) n (V →L[𝕜] V)ˣ := inferInstance
 ```
+
+We also prove that if `R` acts smoothly on a manifold, its group of units does as well;
+in particular, the general linear group `(V →L[𝕜] V)ˣ` is a Lie group acting smoothly on `V`.
 -/
 
 public section
@@ -45,6 +49,8 @@ theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
   rfl
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
+  {H : Type*} [TopologicalSpace H] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 instance : IsManifold 𝓘(𝕜, R) n Rˣ :=
   isOpenEmbedding_val.isManifold_singleton
@@ -75,7 +81,19 @@ instance : LieGroup 𝓘(𝕜, R) n Rˣ where
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_ringInverse _ _
 
+/-- If a complete normed ring `R` acts continuously differentiably on a manifold `M`, its
+submanifold of units does as well. -/
+instance contMDiffSMul [MulAction R M] [ContMDiffSMul 𝓘(𝕜, R) I n R M] :
+    ContMDiffSMul 𝓘(𝕜, R) I n Rˣ M :=
+  MulAction.contMDiffSMul_compHom (f := coeHom R) contMDiff_val
+
+/-- The general linear group `(V →L[𝕜] V)ˣ` of a Banach space `V` is a Lie group. -/
 example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : ℕ∞ω) :
     LieGroup 𝓘(𝕜, V →L[𝕜] V) n (V →L[𝕜] V)ˣ := inferInstance
+
+/-- The general linear group `(V →L[𝕜] V)ˣ` of a Banach space `V` acts smoothly on `V`. -/
+example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : ℕ∞ω) :
+    ContMDiffSMul 𝓘(𝕜, V →L[𝕜] V) 𝓘(𝕜, V) n (V →L[𝕜] V)ˣ V :=
+  inferInstance
 
 end Units

@@ -61,7 +61,7 @@ variable (D : LieDerivation R L M) {D1 D2 : LieDerivation R L M} (a b : L)
 
 instance : FunLike (LieDerivation R L M) L M where
   coe D := D.toFun
-  coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
+  coe_injective D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
 
 instance instLinearMapClass : LinearMapClass (LieDerivation R L M) R L M where
   map_add D := D.toLinearMap.map_add'
@@ -331,6 +331,8 @@ section
 
 variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- The Lie algebra morphism from Lie derivations into linear endomorphisms. -/
 def toLinearMapLieHom : LieDerivation R L L →ₗ⁅R⁆ L →ₗ[R] L where
   toFun := toLinearMap
@@ -389,7 +391,7 @@ end Inner
 
 section ExpNilpotent
 
-variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra ℚ L]
+variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [Module ℚ L]
   (D : LieDerivation R L L)
 
 /-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra

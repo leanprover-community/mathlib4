@@ -5,8 +5,8 @@ Authors: Patrick Massot, Johannes Hölzl, Anatole Dedecker
 -/
 module
 
+public import Mathlib.Topology.Algebra.Group.Neighborhood
 public import Mathlib.Topology.UniformSpace.Basic
-public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Uniform structure on topological groups
@@ -50,13 +50,15 @@ assert_not_exists Cauchy
 
 noncomputable section
 
-open Uniformity Topology Filter Pointwise
+open Topology Filter
+
+open scoped Uniformity
 
 section LeftRight
 
-open Filter Set
+open Filter
 
-variable {G Gₗ Gᵣ Hₗ Hᵣ X : Type*}
+variable {G Gₗ Gᵣ : Type*}
 
 /-- A **right-uniform additive group** is a topological additive group endowed with the associated
 right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 0` by the map
@@ -110,10 +112,7 @@ attribute [instance 10] IsLeftUniformAddGroup.toIsTopologicalAddGroup
 attribute [instance 10] IsLeftUniformGroup.toIsTopologicalGroup
 
 variable [UniformSpace Gₗ] [UniformSpace Gᵣ] [Group Gₗ] [Group Gᵣ]
-variable [UniformSpace Hₗ] [UniformSpace Hᵣ] [Group Hₗ] [Group Hᵣ]
 variable [IsLeftUniformGroup Gₗ] [IsRightUniformGroup Gᵣ]
-variable [IsLeftUniformGroup Hₗ] [IsRightUniformGroup Hᵣ]
-variable [UniformSpace X]
 
 variable (Gₗ Gᵣ)
 
@@ -193,7 +192,7 @@ attribute [to_additive] IsUniformGroup
 theorem IsUniformGroup.mk' {α} [UniformSpace α] [Group α]
     (h₁ : UniformContinuous fun p : α × α => p.1 * p.2) (h₂ : UniformContinuous fun p : α => p⁻¹) :
     IsUniformGroup α :=
-  ⟨by simpa only [div_eq_mul_inv] using
+  ⟨by simpa only [div_eq_mul_inv] using!
     h₁.comp (uniformContinuous_fst.prodMk (h₂.comp uniformContinuous_snd))⟩
 
 variable [UniformSpace α] [Group α] [IsUniformGroup α]
@@ -202,12 +201,12 @@ variable [UniformSpace α] [Group α] [IsUniformGroup α]
 theorem uniformContinuous_div : UniformContinuous fun p : α × α => p.1 / p.2 :=
   IsUniformGroup.uniformContinuous_div
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem UniformContinuous.div [UniformSpace β] {f : β → α} {g : β → α} (hf : UniformContinuous f)
     (hg : UniformContinuous g) : UniformContinuous fun x => f x / g x :=
   uniformContinuous_div.comp (hf.prodMk hg)
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem UniformContinuous.inv [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     UniformContinuous fun x => (f x)⁻¹ := by
   have : UniformContinuous fun x => 1 / f x := uniformContinuous_const.div hf
@@ -217,7 +216,7 @@ theorem UniformContinuous.inv [UniformSpace β] {f : β → α} (hf : UniformCon
 theorem uniformContinuous_inv : UniformContinuous fun x : α => x⁻¹ :=
   uniformContinuous_id.inv
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem UniformContinuous.mul [UniformSpace β] {f : β → α} {g : β → α} (hf : UniformContinuous f)
     (hg : UniformContinuous g) : UniformContinuous fun x => f x * g x := by
   have : UniformContinuous fun x => f x / (g x)⁻¹ := hf.div hg.inv
@@ -270,7 +269,7 @@ theorem Filter.Tendsto.uniformity_mul {ι : Type*} {f g : ι → α × α} {l : 
     (hf : Tendsto f l (𝓤 α)) (hg : Tendsto g l (𝓤 α)) :
     Tendsto (f * g) l (𝓤 α) :=
   have : Tendsto (fun (p : (α × α) × (α × α)) ↦ p.1 * p.2) (𝓤 α ×ˢ 𝓤 α) (𝓤 α) := by
-    simpa [UniformContinuous, uniformity_prod_eq_prod] using uniformContinuous_mul (α := α)
+    simpa [UniformContinuous, uniformity_prod_eq_prod] using! uniformContinuous_mul (α := α)
   this.comp (hf.prodMk hg)
 
 @[to_additive]
@@ -314,7 +313,7 @@ theorem Filter.Tendsto.uniformity_mul_iff_left {ι : Type*} {f g : ι → α × 
     Tendsto (f * g) l (𝓤 α) ↔ Tendsto f l (𝓤 α) :=
   ⟨fun hfg ↦ by simpa using hfg.uniformity_mul hg.uniformity_inv, fun hf ↦ hf.uniformity_mul hg⟩
 
-@[to_additive UniformContinuous.const_nsmul]
+@[to_additive (attr := fun_prop) UniformContinuous.const_nsmul]
 theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℕ, UniformContinuous fun x => f x ^ n
   | 0 => by
@@ -328,7 +327,7 @@ theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : Unif
 theorem uniformContinuous_pow_const (n : ℕ) : UniformContinuous fun x : α => x ^ n :=
   uniformContinuous_id.pow_const n
 
-@[to_additive UniformContinuous.const_zsmul]
+@[to_additive (attr := fun_prop) UniformContinuous.const_zsmul]
 theorem UniformContinuous.zpow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℤ, UniformContinuous fun x => f x ^ n
   | (n : ℕ) => by
@@ -456,7 +455,7 @@ theorem Filter.Tendsto.conj_nhds_one {ι : Type*} {l : Filter ι} {x : ι → β
   have : Tendsto (fun i ↦ (g i, x i)) l (comap Prod.snd (𝓝 1)) := by
     rwa [tendsto_comap_iff]
   -- `exact` works but is quite slow...
-  convert tendsto_conj_nhds_one.comp this
+  convert! tendsto_conj_nhds_one.comp this
 
 theorem IsUniformGroup.of_left_right : IsUniformGroup β where
   uniformContinuous_div := by
@@ -596,7 +595,7 @@ Warning: in general the right and left uniformities do not coincide and so one d
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
 `IsUniformGroup.of_compactSpace`). -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- The right uniformity on a topological additive group (as opposed to the left
 uniformity).
 
@@ -639,7 +638,7 @@ Warning: in general the right and left uniformities do not coincide and so one d
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
 `IsUniformGroup.of_compactSpace`). -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- The left uniformity on a topological additive group (as opposed to the right
 uniformity).
 
