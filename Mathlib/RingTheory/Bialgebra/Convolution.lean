@@ -101,10 +101,10 @@ instance : CommMonoid (WithConv <| C →ₐ[R] A) := fast_instance%
 end AlgHom
 
 namespace BialgHom
-variable [Semiring C] [Bialgebra R C]
 
 section Semiring
-variable [Semiring A] [Bialgebra R A] (f : A →ₐc[R] C) {g : C →ₗ[R] C} {g' : A →ₗ[R] A}
+variable [Semiring A] [Algebra R A] [Coalgebra R A] [Semiring C] [Algebra R C] [Coalgebra R C]
+  (f : A →ₐc[R] C) {g : C →ₗ[R] C} {g' : A →ₗ[R] A}
 
 lemma convCompLeft_eq_convCompRight (h : Function.Semiconj f g' g) :
     f.toCoalgHom.convCompLeft (toConv g) = f.toAlgHom.convCompRight (toConv g') :=
@@ -116,7 +116,7 @@ lemma convCompLeft_id_eq_convCompRight_id :
 
 end Semiring
 
-variable [CommSemiring A] [Bialgebra R A]
+variable [CommSemiring A] [Semiring C] [Bialgebra R A] [Bialgebra R C]
 
 instance : One (WithConv <| C →ₐc[R] A) where
   one := toConv <| (unitBialgHom R A).comp <| counitBialgHom R C
