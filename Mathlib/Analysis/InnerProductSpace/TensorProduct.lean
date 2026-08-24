@@ -776,19 +776,18 @@ lemma _root_.ContinuousLinearEquiv.toLinearEquiv_inv (f : E ≃L[𝕜] E) :
 lemma _root_.ContinuousLinearEquiv.toLinearEquiv_mul (f g : E ≃L[𝕜] E) :
     (f * g).toLinearEquiv = f * g := rfl
 
+def _root_.ContinuousLinearEquiv.toLinearEquivMonoidHom : (E ≃L[𝕜] E) →* (E ≃ₗ[𝕜] E) where
+  toFun := ContinuousLinearEquiv.toLinearEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
 lemma _root_.ContinuousLinearEquiv.toLinearEquiv_pow (f : E ≃L[𝕜] E) (n : ℕ) :
-    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n := by
-  induction n with
-  | zero => rfl
-  | succ n ih => simp_rw [pow_succ, ← ih, ContinuousLinearEquiv.toLinearEquiv_mul]
+    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
+  map_pow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
 
 lemma _root_.ContinuousLinearEquiv.toLinearEquiv_zpow (f : E ≃L[𝕜] E) (n : ℤ) :
-    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n := by
-  cases n with
-  | ofNat => simp [ContinuousLinearEquiv.toLinearEquiv_pow]
-  | negSucc n =>
-    simp_rw [zpow_negSucc, ← ContinuousLinearEquiv.toLinearEquiv_pow,
-      ContinuousLinearEquiv.toLinearEquiv_inv]
+    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
+  map_zpow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
 
 @[simp]
 theorem congrL_pow (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (n : ℕ) :
