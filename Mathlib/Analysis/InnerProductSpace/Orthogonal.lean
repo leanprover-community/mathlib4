@@ -49,12 +49,11 @@ def orthogonal : Submodule 𝕜 E where
 @[inherit_doc]
 notation:1200 K "ᗮ" => orthogonal K
 
-/-- When a vector is in `Kᗮ`. -/
+/-- `v ∈ Kᗮ` if and only if `⟪u, v⟫ = 0` for all `u ∈ K`. -/
 theorem mem_orthogonal (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪u, v⟫ = 0 :=
   Iff.rfl
 
-/-- When a vector is in `Kᗮ`, with the inner product the
-other way round. -/
+/-- `v ∈ Kᗮ` if and only if `⟪v, u⟫ = 0` for all `u ∈ K`. -/
 theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 := by
   simp_rw [mem_orthogonal, inner_eq_zero_symm]
 
@@ -429,16 +428,28 @@ lemma toSubmodule_orthogonal_eq : K.orthogonal.toSubmodule = K.toSubmodule.ortho
 @[simp]
 lemma mem_orthogonal_toSubmodule_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
 
-/-- When a vector is in `Kᗮ`. -/
+/-- `v ∈ Kᗮ` if and only if `⟪u, v⟫ = 0` for all `u ∈ K`. -/
 @[simp]
 theorem mem_orthogonal (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪u, v⟫ = 0 := Iff.rfl
 
-/-- When a vector is in `Kᗮ`, with the inner product the
-other way round. -/
+/-- `v ∈ Kᗮ` if and only if `⟪v, u⟫ = 0` for all `u ∈ K`. -/
 theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 :=
   Submodule.mem_orthogonal' K.toSubmodule v
 
 variable {K}
+
+/-- `v ∈ Kᗮ` if and only if `re ⟪u, v⟫ = 0` for all `u ∈ K`; it suffices to check only the
+real part of the inner product is zero. -/
+lemma mem_orthogonal_iff_re_inner_eq_zero {v : E} :
+    v ∈ Kᗮ ↔ ∀ u ∈ K, RCLike.re ⟪u, v⟫ = 0 :=
+  K.toSubmodule.mem_orthogonal_iff_re_inner_eq_zero
+
+/-- `v ∈ Kᗮ` if and only if `re ⟪u, v⟫ = 0` for all `u ∈ K`; it suffices to check only the
+real part of the inner product is zero. Variation of `mem_orthogonal_iff_re_inner_eq_zero` with
+the inner product reversed. -/
+lemma mem_orthogonal_iff_re_inner_eq_zero' {v : E} :
+    v ∈ Kᗮ ↔ ∀ u ∈ K, RCLike.re ⟪v, u⟫ = 0 :=
+  K.toSubmodule.mem_orthogonal_iff_re_inner_eq_zero'
 
 theorem sub_mem_orthogonal_of_inner_left {x y : E} (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x - y ∈ Kᗮ :=
   Submodule.sub_mem_orthogonal_of_inner_left h
