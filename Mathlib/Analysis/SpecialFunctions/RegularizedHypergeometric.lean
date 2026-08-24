@@ -125,11 +125,8 @@ theorem regularizedHGFunCoeff_add_one_div_self (h : regularizedHGFunCoeff a b n 
 @[simp]
 theorem regularizedHGFunCoeff_zero_neg_nat_add_one (n i : ℕ) :
     regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) = regularizedHGFunCoeff 0 {(n : ℂ) + 1} i := by
-  suffices (Gamma (-n + 1 + (i + n)))⁻¹ * (Gamma (i + n + 1))⁻¹ =
-      (Gamma (n + 1 + i))⁻¹ * (Gamma (i + 1))⁻¹ by
-    simpa [regularizedHGFunCoeff, ← Gamma_nat_eq_factorial]
-  rw [mul_comm]
-  congrm (Gamma $(by ring))⁻¹ * (Gamma $(by ring))⁻¹
+  simp [regularizedHGFunCoeff, ← Gamma_nat_eq_factorial]
+  grind
 
 private theorem multiset_prod_eq_pow_mul_multiset_prod (a : Multiset ℂ) (hn : n ≠ 0) :
     (a.map (· + (n : ℂ))).prod = n ^ a.card * (a.map (· / (n : ℂ) + 1)).prod := calc
