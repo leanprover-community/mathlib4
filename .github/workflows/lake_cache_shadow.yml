@@ -240,6 +240,10 @@ jobs:
     outputs:
       sha: ${{ steps.resolve.outputs.sha }}
       toolchain: ${{ steps.resolve.outputs.toolchain }}
+      # The scope qualifiers, so the later jobs use these values and do not
+      # derive them again.
+      tcslug: ${{ steps.plan.outputs.tcslug }}
+      pins8: ${{ steps.plan.outputs.pins8 }}
     env:
       LAKE_CACHE_DIR: .lake/cache
       LAKE_NO_CACHE: true
@@ -315,6 +319,7 @@ jobs:
       # This step writes the overrides because jq is not available inside
       # landrun.
       - name: Plan hydration & dependency caching
+        id: plan
         shell: bash -euo pipefail {0}
         env:
           LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
@@ -335,10 +340,9 @@ jobs:
           revisionEndpoint = "$LAKE_CACHE_REVISION_ENDPOINT"
           EOF
           # The two qualifiers that make a dependency scope exact. They are
-          # required for a hit. The upload,
-          # consume and downstream jobs compute them again, because they run on
-          # their own runners. A mismatch between two jobs fails nothing; it
-          # makes every fetch a miss.
+          # required for a hit. This step is the only place that derives them:
+          # the upload and consume jobs read them from this job's outputs, so
+          # the two cannot drift apart.
           #   tcslug  The toolchain, with each character outside A-Za-z0-9._-
           #           replaced by '-'. "leanprover/lean4:v4.34.0-rc2" becomes
           #           "leanprover-lean4-v4.34.0-rc2".
@@ -348,6 +352,8 @@ jobs:
           pins8="$(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' lake-manifest.json | LC_ALL=C sort | sha256sum | cut -c1-8)"
           echo "TCSLUG=$tcslug" >> "$GITHUB_ENV"
           echo "PINS8=$pins8" >> "$GITHUB_ENV"
+          echo "tcslug=$tcslug" >> "$GITHUB_OUTPUT"
+          echo "pins8=$pins8" >> "$GITHUB_OUTPUT"
           # `analysis/<tcslug>/_latest.txt` holds the mathlib sha of the
           # previous run on this toolchain. It returns 404 on a chain that has
           # never run, and that run has no warm start.
@@ -776,18 +782,18 @@ jobs:
       # step already removed the dependencies the bucket holds. The log is
       # separate from /tmp/put.log, so these artifacts stay out of the root
       # carryover analysis below.
+      # `continue-on-error` keeps a failed dependency upload from failing the
+      # run: the root upload has already succeeded, and the run still carries
+      # useful data. The summary reports the count as FAILED, and the consume
+      # job then reports the miss and the rebuild.
       - name: Upload dependency caches
         id: depupload
         continue-on-error: true
         env:
-          EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
+          TCSLUG: ${{ needs.build_and_stage.outputs.tcslug }}
+          PINS8: ${{ needs.build_and_stage.outputs.pins8 }}
         run: |
           cd pr-branch
-          # Computed again here, because this job runs on its own runner. It
-          # must match the plan step of build_and_stage. Drift raises no error;
-          # it points at a scope nothing was uploaded to.
-          tcslug="$(printf %s "$EFFECTIVE_TOOLCHAIN" | tr -c 'A-Za-z0-9._-' '-')"
-          pins8="$(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' lake-manifest.json | LC_ALL=C sort | sha256sum | cut -c1-8)"
           skipped=0
           if [ -f ../lake-cache-staging/deps/cached.txt ]; then
             skipped=$(wc -l < ../lake-cache-staging/deps/cached.txt)
@@ -803,7 +809,7 @@ jobs:
           while read -r name rev; do
             if lake cache put-staged "../lake-cache-staging/deps/$name" \
                 --service=shadow \
-                --scope="$SHADOW_SCOPE/deps/$tcslug/$pins8/$name" \
+                --scope="$SHADOW_SCOPE/deps/$TCSLUG/$PINS8/$name" \
                 --rev="$rev" 2>&1 | tee -a /tmp/dep-put.log; then
               ok=$((ok+1))
             else
@@ -835,12 +841,11 @@ jobs:
           AUTH: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
+          TCSLUG: ${{ needs.build_and_stage.outputs.tcslug }}
         run: |
-          # The slug alone here: the analysis chain is per toolchain, not per
-          # pin set. It must match the one the plan step computes.
-          slug="$(printf %s "$EFFECTIVE_TOOLCHAIN" | tr -c 'A-Za-z0-9._-' '-')"
-          base="${AUTH%/artifacts}/analysis/$slug"
+          # The slug alone keys the analysis chain, which is per toolchain and
+          # not per pin set.
+          base="${AUTH%/artifacts}/analysis/$TCSLUG"
           sha="${{ needs.build_and_stage.outputs.sha }}"
           sig=(--aws-sigv4 aws:amz:auto:s3 --user "$LAKE_CACHE_KEY")
           # grep exits 1 when it matches nothing, which pipefail would treat as
@@ -1000,20 +1005,16 @@ jobs:
       - name: lake cache get dependencies
         if: ${{ env.CACHE_DEPS == 'true' }}
         env:
-          EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
+          TCSLUG: ${{ needs.build_and_stage.outputs.tcslug }}
+          PINS8: ${{ needs.build_and_stage.outputs.pins8 }}
         run: |
           cd pr-branch
-          # Computed again here, because this job runs on its own runner. It
-          # must match the plan step of build_and_stage. Drift raises no error;
-          # it points at a scope nothing was uploaded to.
-          tcslug="$(printf %s "$EFFECTIVE_TOOLCHAIN" | tr -c 'A-Za-z0-9._-' '-')"
-          pins8="$(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' lake-manifest.json | LC_ALL=C sort | sha256sum | cut -c1-8)"
           total=0 hits=0
           while read -r name rev; do
             if [[ " $DEP_SKIP " == *" $name "* ]]; then continue; fi
             total=$((total+1))
             if lake cache get --service=shadow --package="$name" \
-                --scope="$SHADOW_SCOPE/deps/$tcslug/$pins8/$name" --rev="$rev"; then
+                --scope="$SHADOW_SCOPE/deps/$TCSLUG/$PINS8/$name" --rev="$rev"; then
               hits=$((hits+1))
             else
               echo "::warning::dep cache miss for $name@${rev:0:12}; it will build from source"
@@ -1180,12 +1181,12 @@ jobs:
       - name: lake cache get (mathlib + transitive deps)
         run: |
           cd downstream
-          # Computed again here, because this job runs on its own runner. It
-          # must match the plan step of build_and_stage. Drift raises no error;
-          # it points at a scope nothing was uploaded to.
-          # The pin hash comes from mathlib's manifest, which this workspace
-          # holds at .lake/packages/mathlib/. A real downstream cache driver
-          # reads it from the same place.
+          # This job derives the qualifiers itself, where the other jobs read
+          # them from build_and_stage. That is the point of the job: a real
+          # downstream project has no access to mathlib's CI outputs, and must
+          # arrive at the same scope from what it holds locally. The pin hash
+          # therefore comes from mathlib's manifest, which this workspace holds
+          # at .lake/packages/mathlib/.
           tcslug="$(printf %s "$EFFECTIVE_TOOLCHAIN" | tr -c 'A-Za-z0-9._-' '-')"
           pins8="$(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' .lake/packages/mathlib/lake-manifest.json | LC_ALL=C sort | sha256sum | cut -c1-8)"
           # Two manifests are in play. The pin hash above comes from
