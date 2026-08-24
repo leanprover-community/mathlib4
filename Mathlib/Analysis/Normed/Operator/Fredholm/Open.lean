@@ -33,12 +33,12 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
     [CompleteSpace E]
 
-/-- Let `T : E → F` be a Fredholm operator between two Banach spaces, and choose a `FredholmPackage`
-for `T`; that is, fix topological decompositions `E = E₁ ⊕ E₀` and `F = F₁ ⊕ F₀`, where `E₀` and
-`F₀` are finite dimensional, and such that in these decompositions we have
-$T = \begin{pmatrix} α₀ & 0 \cr 0 & 0$ with `α₀` invertible.
+/-- Let `T₀ : E → F` be a Fredholm operator between two Banach spaces, and choose a
+`FredholmPackage` for `T₀`; that is, fix topological decompositions `E = E₁ ⊕ E₀` and `F = F₁ ⊕ F₀`,
+where `E₀` and `F₀` are finite dimensional, and such that in these decompositions we have
+$T₀ = \begin{pmatrix} α₀ & 0 \cr 0 & 0$ with `α₀` invertible.
 
-Then, for $S = \begin{pmatrix} α & β \cr γ & δ$ close enough to `T` (in operator norm), we have
+Then, for $T = \begin{pmatrix} α & β \cr γ & δ$ close enough to `T₀` (in operator norm), we have
 that `α` is invertible. -/
 theorem FredholmPackage.eventually_isInvertible
     {T : E →L[𝕜] F} (pkg : T.FredholmPackage) :
@@ -50,8 +50,8 @@ theorem FredholmPackage.eventually_isInvertible
   have Φ_T_inv : (Φ T).IsInvertible := ⟨pkg.equiv, by ext; simp [Φ, pkg.eq_equiv]⟩
   exact Φ_cont.tendsto T |>.eventually Φ_T_inv.eventually
 
-/-- If `T` is a Fredholm operators between two Banach spaces, then every operator `S` close
-enough to `T` (in operator norm) is also Fredholm. -/
+/-- If `T₀` is a Fredholm operators between two Banach spaces, then every operator `T` close
+enough to `T₀` (in operator norm) is also Fredholm. -/
 protected theorem IsFredholm.eventually [CompleteSpace 𝕜]
     {T : E →L[𝕜] F} (hT : T.IsFredholm) : ∀ᶠ S in 𝓝 T, S.IsFredholm := by
   obtain ⟨pkg⟩ := hT.nonempty_fredholmPackage
