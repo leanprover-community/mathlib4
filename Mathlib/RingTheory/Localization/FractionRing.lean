@@ -210,7 +210,7 @@ protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical
           h <| eq_zero_of_fst_eq_zero (sec_spec (nonZeroDivisors A) z) h0⟩
 
 protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv A x = 1 := by
-  rw [IsFractionRing.inv, dif_neg hx, ←
+  rw [IsFractionRing.inv, dite_eq_right hx, ←
     IsUnit.mul_left_inj
       (map_units K
         ⟨(sec _ x).1,
@@ -227,7 +227,9 @@ noncomputable abbrev toField : Field K where
   __ := IsFractionRing.isDomain A
   inv := IsFractionRing.inv A
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
-  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
+  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by
+    rw [IsFractionRing.inv]
+    exact dite_eq_left rfl
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
@@ -271,11 +273,11 @@ theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors
 
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
-  haveI := (algebraMap R K).domain_nontrivial
+  have := (algebraMap R K).domain_nontrivial
   simp [nonZeroDivisors.ne_zero]
 
 theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y := by
-  haveI := (algebraMap A K).domain_nontrivial
+  have := (algebraMap A K).domain_nontrivial
   refine ⟨?_, fun hxy => by rw [hxy, mk'_self']⟩
   intro hxy
   have hy : (algebraMap A K) ↑y ≠ (0 : K) :=
@@ -491,17 +493,21 @@ noncomputable def semilinearEquivOfRingEquiv : K ≃ₛₗ[(f : A →+* B)] L :=
 { ringEquivOfRingEquiv f with
   map_smul' r x := by simp [Algebra.smul_def] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma semilinearEquivOfRingEquiv_apply (x : K) :
     (semilinearEquivOfRingEquiv K L f) x = (ringEquivOfRingEquiv f) x := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma semilinearEquivOfRingEquiv_algebraMap (a : A) :
     semilinearEquivOfRingEquiv K L f (algebraMap A K a) = algebraMap B L (f a) := by
   simp [semilinearEquivOfRingEquiv, ringEquivOfRingEquiv]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma semilinearEquivOfRingEquiv_symm_apply (x : L) :
     (semilinearEquivOfRingEquiv K L f).symm x = (ringEquivOfRingEquiv f).symm x := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma semilinearEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C] [CommRing M]
     [Algebra C M] [IsFractionRing C M] (g : B ≃+* C) :
     let : RingHomCompTriple f (g : B →+* C) (f.trans g : A →+* C) := ⟨rfl⟩
@@ -529,6 +535,7 @@ fraction rings `K ≃ₐ[R] L`. -/
 noncomputable def algEquivOfAlgEquiv : K ≃ₐ[R] L :=
   IsLocalization.algEquivOfAlgEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma algEquivOfAlgEquiv_algebraMap
     (a : A) : algEquivOfAlgEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
@@ -648,7 +655,7 @@ variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAct
 
 /-- Given a `MulSemiringAction G B`, extend the action of `G` on `B` to a `MulSemiringAction G L`
 on the fraction field `L` of `B`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def mulSemiringAction :
     MulSemiringAction G L :=
   MulSemiringAction.compHom L
@@ -685,20 +692,13 @@ of `K` in `L`. -/
 theorem fixingSubgroup_range_algebraMap :
     fixingSubgroup G (Set.range (algebraMap A B)) =
       fixingSubgroup G (Set.range (algebraMap K L)) := by
-  ext g
-  simp only [mem_fixingSubgroup_iff, Set.mem_range]
-  refine ⟨?_, ?_⟩
-  · rintro h _ ⟨x, rfl⟩
-    have {x} : g • (algebraMap A L) x = (algebraMap A L) x := by
-      rw [IsScalarTower.algebraMap_apply A B L, ← algebraMap.smul', h _ ⟨x, rfl⟩]
-    obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective A x
-    simp only [map_div₀, ← IsScalarTower.algebraMap_apply, smul_div₀', this]
-  · rintro h _ ⟨x, rfl⟩
-    apply FaithfulSMul.algebraMap_injective B L
-    rw [algebraMap.smul']
-    apply h
-    use algebraMap A K x
-    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+  simp_rw [Subgroup.ext_iff, mem_fixingSubgroup_iff, Set.forall_mem_range]
+  refine fun g ↦ ⟨fun h x ↦ ?_, fun h x ↦ FaithfulSMul.algebraMap_injective B L ?_⟩
+  · obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective A x
+    simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply A B L, smul_div₀', ← algebraMap.smul', h]
+  · simp_rw [algebraMap.smul', ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply A K L, h]
 
 end MulAction
 

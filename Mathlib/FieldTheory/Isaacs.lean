@@ -5,7 +5,6 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.FieldTheory.Normal.Basic
 public import Mathlib.FieldTheory.PrimitiveElement
 public import Mathlib.GroupTheory.CosetCover
 
@@ -38,6 +37,7 @@ open Polynomial IntermediateField
 variable {F E K : Type*} [Field F] [Field E] [Field K] [Algebra F E] [Algebra F K]
 variable [alg : Algebra.IsAlgebraic F E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem nonempty_algHom_of_exists_root (h : ∀ x : E, ∃ y : K, aeval y (minpoly F x) = 0) :
     Nonempty (E →ₐ[F] K) := by
   refine Lifts.nonempty_algHom_of_exist_lifts_finset fun S ↦ ⟨⟨adjoin F S, ?_⟩, subset_adjoin _ _⟩
@@ -62,7 +62,7 @@ theorem nonempty_algHom_of_exists_root (h : ∀ x : E, ∃ y : K, aeval y (minpo
       have ⟨ω, hω⟩ := exists_algHom_adjoin_of_splits
         (fun s hs ↦ ⟨(alg.isIntegral).1 _, splits s hs⟩) ϕ (adjoin_simple_le_iff.mpr hα)
       refine ⟨ω, β, ((DFunLike.congr_fun hω <| AdjoinSimple.gen F α).trans ?_).symm⟩
-      rw [AlgHom.comp_apply, AlgHom.comp_apply, AlgEquiv.coe_algHom,
+      rw [AlgHom.comp_apply, AlgHom.comp_apply, AlgEquiv.coe_toAlgHom,
         adjoinRootEquivAdjoin_symm_apply_gen, AdjoinRoot.liftAlgHom_root]
       rfl
   have ω : ∃ ω : Ω, ⊤ ≤ M ω := by
@@ -73,9 +73,6 @@ theorem nonempty_algHom_of_exists_root (h : ∀ x : E, ∃ y : K, aeval y (minpo
     · simp_rw [top_le_iff, Subspace.exists_eq_top_of_iUnion_eq_univ this]
   exact ((botEquiv K K').toAlgHom.restrictScalars F).comp
     (ω.choose.codRestrict K₀.toSubalgebra fun x ↦ ω.choose_spec trivial)
-
-@[deprecated (since := "2026-01-31")]
-alias nonempty_algHom_of_exist_roots := nonempty_algHom_of_exists_root
 
 theorem nonempty_algHom_of_minpoly_eq
     (h : ∀ x : E, ∃ y : K, minpoly F x = minpoly F y) :
@@ -121,8 +118,5 @@ theorem _root_.IsAlgClosure.of_exists_root
       have := Algebra.IsAlgebraic.isIntegral (K := F).1 x
       h _ (minpoly.monic this) (minpoly.irreducible this)
     Splits.of_algHom (SplittingField.splits _) σ
-
-@[deprecated (since := "2026-01-31")]
-alias _root_.IsAlgClosure.of_exist_roots := IsAlgClosure.of_exists_root
 
 end Field

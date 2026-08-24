@@ -263,6 +263,7 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
   simp [← hq_mem, IsIrreducible.eq_top_of_invtSubmodule_reflection q hq hq₀]
 
 -- TODO Derive from `LinearIndependent.injective`
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Matrix in
 lemma injective_pairingIn {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsCrystallographic]
     (b : P.Base) :
@@ -373,6 +374,21 @@ def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsRootSystem] [P₂.IsReduced]
   Equiv.mk' P P₂ (b.toWeightBasis.equiv b₂.toWeightBasis e) e' he'
 
 end Uniqueness
+
+omit [IsDomain R] [Finite ι] in
+lemma map_equiv_cartanMatrix {ι₂ M₂ N₂ : Type*} [DecidableEq ι₂]
+    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    {P₂ : RootPairing ι₂ R M₂ N₂} [P₂.IsCrystallographic]
+    (e : P.Equiv P₂) :
+    (b.map e).cartanMatrix =
+      b.cartanMatrix.reindex (b.supportMapEquiv e) (b.supportMapEquiv e) := by
+  ext ⟨i, -⟩ ⟨j, -⟩
+  apply FaithfulSMul.algebraMap_injective ℤ R
+  simp only [cartanMatrix, cartanMatrixIn_def, reindex_apply, submatrix_apply,
+    supportMapEquiv_symm_apply_coe, algebraMap_pairingIn]
+  suffices ∀ i j, P₂.pairing (e.indexEquiv i) (e.indexEquiv j) = P.pairing i j by
+    simpa using this (e.indexEquiv.symm i) (e.indexEquiv.symm j)
+  simp
 
 end IsCrystallographic
 
