@@ -5,6 +5,7 @@ Authors: Jon Bannon, Anatole Dedecker, Yongxi Lin, Patrick Massot, Oliver Nash, 
 -/
 module
 
+public import Mathlib.Algebra.Module.LinearMap.Index
 public import Mathlib.Analysis.Normed.Operator.Perturbation.StrictByFinite
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
@@ -577,6 +578,32 @@ theorem _root_.Submodule.isFredholm_projectionL_iff {p q : Submodule 𝕜 E}
   simpa [← fg_iff_finiteDimensional, -toLinearMap_projectionL, ker_projectionL] using h.finite_ker
 
 end Constructions
+
+section Index
+
+/-!
+## Specific index computations for Fredholm operators
+
+In this section, we restate for Fredholm operators some general algebraic results about
+`LinearMap.index`. Ideally we wouldn't need such a section at all, but as of August 2026
+it is easier to work with the API for `IsFredholm` than with the specific finiteness assumptions
+used, for example, in `LinearMap.index_comp`.
+
+This suggests that we may want an algebraic version of the `IsFredholm` predicate to express
+"this linear map has finite dimensional kernel and cokernel", or equivalently "this linear map
+admits a quasi-inverse". The API would then mimic that of `IsFredholm`.
+-/
+
+lemma IsFredholm.index_comp {g : F →L[𝕜] G} {f : E →L[𝕜] F}
+    (hg : IsFredholm g) (hf : IsFredholm f) :
+    (g ∘L f).index = g.index + f.index :=
+  have := hf.finite_ker
+  have := hf.finite_coker
+  have := hg.finite_ker
+  have := hg.finite_coker
+  LinearMap.index_comp _ _
+
+end Index
 
 end TVS
 end ContinuousLinearMap
