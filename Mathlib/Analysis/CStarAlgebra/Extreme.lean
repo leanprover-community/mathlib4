@@ -21,7 +21,7 @@ This file contains results on the extreme points of the closed unit ball in (uni
 
 * `CStarAlgebra.isUnital_iff`: a C⋆-algebra is unital iff the extreme points of the closed unit ball is nonempty.
 * `isStarProjection_iff_mem_extremePoints_setOfPred_nonneg_inter_unitClosedBall`: the star projections in a C⋆-algebra are exactly the extreme points of
-the nonnegative closed unit ball.
+  the nonnegative closed unit ball.
 
 ## References
 
