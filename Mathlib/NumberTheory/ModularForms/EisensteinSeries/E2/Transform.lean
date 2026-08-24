@@ -242,13 +242,7 @@ lemma E2_T_smul (z : ℍ) : E2 (T • z) = E2 z := by
 
 /-- `E2 ∘ ofComplex` has period `1`. -/
 lemma E2_periodic : Function.Periodic (E2 ∘ ofComplex) 1 := by
-  intro w
-  simp only [Function.comp_apply]
-  by_cases hw : 0 < w.im
-  · rw [ofComplex_apply_of_im_pos hw, ← E2_T_smul ⟨w, hw⟩, modular_T_smul,
-      ofComplex_apply_of_im_pos (by simpa using hw : 0 < (w + 1).im)]
-    exact congrArg E2 (coe_injective (by simp [add_comm]))
-  · simp [ofComplex_apply_of_im_nonpos, not_lt.mp hw]
+  simpa using periodic_comp_ofComplex (h := 1) fun τ ↦ by rw [← modular_T_smul, E2_T_smul]
 
 end transform
 
