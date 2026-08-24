@@ -46,13 +46,8 @@ private lemma serreDerivative_eq_smul {k' : ℤ} {κ l L : ℂ} {g F : ModularFo
     (hl : Tendsto f atImInfty (𝓝 l)) (hg1 : Tendsto g atImInfty (𝓝 1))
     (hL : L = -(κ * 12⁻¹ * l)) :
     serreDerivative κ f = L • g := by
-  -- Boundedness of `f` and nonvanishing of `g` both follow from the limit hypotheses.
   have hb := hl.isBigO_one ℝ
-  have hg : g ≠ 0 := by
-    rintro rfl
-    refine one_ne_zero
-      (tendsto_nhds_unique (f := (0 : ℍ → ℂ)) (l := atImInfty) ?_ tendsto_const_nhds)
-    exact hg1.congr fun _ ↦ by simp
+  have hg : g ≠ 0 := fun h ↦ one_ne_zero (tendsto_nhds_unique (h ▸ hg1) tendsto_const_nhds)
   obtain ⟨c, hc⟩ :=
     (finrank_eq_one_iff_of_nonzero' g hg).mp (Module.rank_eq_one_iff_finrank_eq_one.mp hrank) F
   have hfg : serreDerivative κ f = c • g := hF ▸ congrArg DFunLike.coe hc.symm
