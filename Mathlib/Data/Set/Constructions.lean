@@ -6,7 +6,7 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.Data.Finset.Insert
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Bounded
 
 /-!
 # Constructions involving sets of sets.
