@@ -770,6 +770,9 @@ end congr_congr
 theorem congrL_mul (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (f' : E ≃L[𝕜] E) (g' : G ≃L[𝕜] G) :
     congrL (f * f') (g * g') = congrL f g * congrL f' g' := congrL_trans ..
 
+lemma _root_.ContinuousLinearEquiv.toLinearEquiv_inv (f : E ≃L[𝕜] E) :
+    (f⁻¹).toLinearEquiv = f.toLinearEquiv ⁻¹ := rfl
+
 lemma _root_.ContinuousLinearEquiv.toLinearEquiv_mul (f g : E ≃L[𝕜] E) :
     (f * g).toLinearEquiv = f * g := rfl
 
@@ -778,6 +781,14 @@ lemma _root_.ContinuousLinearEquiv.toLinearEquiv_pow (f : E ≃L[𝕜] E) (n : �
   induction n with
   | zero => rfl
   | succ n ih => simp_rw [pow_succ, ← ih, ContinuousLinearEquiv.toLinearEquiv_mul]
+
+lemma _root_.ContinuousLinearEquiv.toLinearEquiv_zpow (f : E ≃L[𝕜] E) (n : ℤ) :
+    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n := by
+  cases n with
+  | ofNat => simp [ContinuousLinearEquiv.toLinearEquiv_pow]
+  | negSucc n =>
+    simp_rw [zpow_negSucc, ← ContinuousLinearEquiv.toLinearEquiv_pow,
+      ContinuousLinearEquiv.toLinearEquiv_inv]
 
 @[simp]
 theorem congrL_pow (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (n : ℕ) :
@@ -788,9 +799,8 @@ theorem congrL_pow (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (n : ℕ) :
 @[simp]
 theorem congrL_zpow (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (n : ℤ) :
     congrL f g ^ n = congrL (f ^ n) (g ^ n) := by
-  cases n with
-  | ofNat n => exact congrL_pow _ _ _
-  | negSucc n => simp_rw [zpow_negSucc, congrL_pow]; exact congrL_symm _ _
+  apply ContinuousLinearEquiv.toLinearEquiv_injective
+  simp [ContinuousLinearEquiv.toLinearEquiv_zpow]
 
 /-- Given `x, y : E ⊗ (F ⊗ G)`, `x = y` iff `⟪x, a ⊗ₜ (b ⊗ₜ c)⟫ = ⟪y, a ⊗ₜ (b ⊗ₜ c)⟫` for all
 `a, b, c`.
