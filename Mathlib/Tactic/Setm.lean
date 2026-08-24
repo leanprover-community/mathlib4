@@ -75,6 +75,23 @@ def replaceWithLDecls (stx : Syntax) : SetMReplaceM Syntax :=
         newMVars := s.newMVars.push mvar.mvarId! }
       return fvar
 
+/-- Check that `p` and `e` are reducibly definitionally equal in the context of goal `goal`, or
+throw a nicely-formatted error.
+-/
+def defeqOrError (goal : MVarId) (p e : Expr) : MetaM Unit :=
+  -- We use `withAssinableSyntheticOpaque` here as elaboration of the pattern can create
+  -- metavariables of `.syntheticOpaque` kind that could be assigned by the `isDefEq`. See the
+  -- test file for a concrete example.
+  --
+  -- TODO: `withoutProofIrrelevance` is not doing what we would expect it to do because of what
+  -- seems like a bug in Lean, see the last example in the test file and the issue mentioned there.
+  unless ← withReducible <| withoutProofIrrelevance <| withAssignableSyntheticOpaque
+      <| isDefEq p e do
+    throwTacticEx `setm goal <| MessageData.ofLazyM (es := #[p, e]) do
+      let (p, tgt) ← addPPExplicitToExposeDiff p e
+      return m!"Pattern{indentExpr p}\nis not definitionally equal \
+        to the target{indentExpr tgt}"
+
 /-- `setm patt` matches `patt`, a term containing named holes (like `?a`) to the goal, and creates
 named local declarations for the matched holes with their assigned expressions as values. Moreover,
 it will replace the matches with their new names. This tactic can be used to give a name to a
@@ -121,23 +138,6 @@ example (h₁ : 1 + 2 = 3) (h₂ : 2 + 2 = 4) : ∃ n, n = 2 := by
 ```
 -/
 syntax (name := setM) "setm " term (" using " ident)? (Parser.Tactic.location)? : tactic
-
-/-- Check that `p` and `e` are reducibly definitionally equal in the context of goal `goal`, or
-throw a nicely-formatted error.
--/
-def defeqOrError (goal : MVarId) (p e : Expr) : MetaM Unit :=
-  -- We use `withAssinableSyntheticOpaque` here as elaboration of the pattern can create
-  -- metavariables of `.syntheticOpaque` kind that could be assigned by the `isDefEq`. See the
-  -- test file for a concrete example.
-  --
-  -- TODO: `withoutProofIrrelevance` is not doing what we would expect it to do because of what
-  -- seems like a bug in Lean, see the last example in the test file and the issue mentioned there.
-  unless ← withReducible <| withoutProofIrrelevance <| withAssignableSyntheticOpaque
-      <| isDefEq p e do
-    throwTacticEx `setm goal <| MessageData.ofLazyM (es := #[p, e]) do
-      let (p, tgt) ← addPPExplicitToExposeDiff p e
-      return m!"Pattern{indentExpr p}\nis not definitionally equal \
-        to the target{indentExpr tgt}"
 
 elab_rules : tactic
 | `(tactic| setm $origPat:term $[using $usingArg]? $[$loc:location]?) =>
