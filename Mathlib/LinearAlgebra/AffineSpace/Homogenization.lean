@@ -22,8 +22,8 @@ embedding of `P` as a hyperplane not passing through the origin. This constructi
 property that every affine map defined on this hyperplane that takes values in a vector space can be
 uniquely extended to a linear map defined on the homogenization.
 
-Note that the homogenization is isomorphic to `k × V`, where `k` is the field of scalars and `V` is
-the vector space associated to `P`. However, this isomorphism is not canonical unless `P = V`
+Note that the homogenization is isomorphic to `V × k`, where `V` is the vector space associated to
+`P` and `k` is the field of scalars. However, this isomorphism is not canonical unless `P = V`
 (see `Homogenization.toProd` in this case).
 
 ## Main definitions
@@ -66,6 +66,9 @@ variable
 
 namespace Homogenization
 
+/- TODO: define the `AddCommGroup` and `Module` instances using `inferInstanceAs` once
+https://github.com/leanprover/lean4/issues/14470 is fixed -/
+
 /-- Auxiliary definition used for defining the module structure on `Homogenization`. -/
 def equivProdAux : Homogenization k P ≃ V × k :=
   .refl _
@@ -80,7 +83,7 @@ arbitrary choice made in the definition of `Homogenization`. -/
 @[nolint unusedArguments]
 instance instModule {R : Type*} [Semiring R] [Module R k] [Module R V] [IsScalarTower R k V] :
     Module R (Homogenization k P) :=
-  equivProdAux.module R
+  AddEquiv.module R ⟨equivProdAux, by intros; rfl⟩
 
 variable
   {R : Type*} [Semiring R] [Module R k] [Module R V] [IsScalarTower R k V]
@@ -337,7 +340,7 @@ theorem map_surjective {f : P1 →ᵃ[k] P2} : Function.Surjective (map f) ↔ F
 homogenizations. -/
 @[expose]
 def congr (f : P1 ≃ᵃ[k] P2) : Homogenization k P1 ≃ₗ[k] Homogenization k P2 :=
-  .ofLinear (map f) (map f.symm) (hom_ext <| by simp) (hom_ext <| by simp)
+  .ofLinearMap (map f) (map f.symm) (hom_ext <| by simp) (hom_ext <| by simp)
 
 @[simp]
 theorem coe_congr (f : P1 ≃ᵃ[k] P2) : ⇑(congr f) = map f.toAffineMap :=
