@@ -5,9 +5,11 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 module
 
+public import Mathlib.Analysis.Asymptotics.Prod
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
-public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Normed.Operator.Mul
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Bounded linear maps
@@ -56,11 +58,11 @@ artifact, really.
 
 noncomputable section
 
-open Topology
+open scoped Topology
 
 open Filter (Tendsto)
 
-open Metric ContinuousLinearMap
+open ContinuousLinearMap
 
 section Semiring
 
@@ -76,6 +78,7 @@ inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`.
 
 (We put only the typeclasses strictly necessary for the definition, although the main case of
 interest is when `𝕜` itself is a normed ring and `E, F` are normed modules.) -/
+@[wikidata Q2342396]
 structure IsBoundedLinearMap : Prop
     extends IsLinearMap 𝕜 f where
   bound : ∃ M, 0 < M ∧ ∀ x : E, ‖f x‖ ≤ M * ‖x‖
@@ -308,7 +311,7 @@ theorem ContinuousLinearMap.isBoundedLinearMap (f : E →L[𝕜] F) : IsBoundedL
 
 namespace IsBoundedLinearMap
 
-variable {f g : E → F}
+variable {f : E → F}
 
 /-- A map between normed spaces is linear and continuous if and only if it is bounded. -/
 theorem isLinearMap_and_continuous_iff_isBoundedLinearMap (f : E → F) :

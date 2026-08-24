@@ -47,7 +47,7 @@ lemma baseField_essentially_unique
     [Algebra k K] [Algebra K D] [Algebra k D] [IsScalarTower k K D]
     [IsCentral k D] :
     Function.Bijective (algebraMap k K) := by
-  haveI : IsCentral K D :=
+  have : IsCentral K D :=
   { out := fun x ↦ show x ∈ Subalgebra.center k D → _ by
       simp only [center_eq_bot, mem_bot, Set.mem_range, forall_exists_index]
       rintro x rfl

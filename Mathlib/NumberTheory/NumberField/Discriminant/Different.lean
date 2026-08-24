@@ -96,11 +96,7 @@ theorem natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow (L 𝒪' : T
   have := congr_arg Ideal.absNorm
     (differentIdeal_eq_differentIdeal_mul_differentIdeal ℤ 𝒪 𝒪')
   rwa [absNorm_differentIdeal L, map_mul, Ideal.absNorm_algebraMap,
-    absNorm_differentIdeal K, Algebra.finrank_eq_of_equiv_equiv
-      (FractionRing.algEquiv 𝒪 K).toRingEquiv (FractionRing.algEquiv 𝒪' L).toRingEquiv] at this
-  ext
-  exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv 𝒪 K)
-    (FractionRing.algEquiv 𝒪' L) _
+    absNorm_differentIdeal K, ← IsFractionRing.finrank_eq 𝒪 K 𝒪' L] at this
 
 variable (L : Type*) [Field L]
 
@@ -163,11 +159,7 @@ theorem natAbs_discr_eq_natAbs_discr_pow_mul_natAbs_discr_pow (K₁ K₂ : Inter
   rwa [differentIdeal_eq_map_differentIdeal ℤ (𝓞 L) (𝓞 K₂) (𝓞 K₁) (F₁ := K₂) (F₂ := K₁)
     (by rwa [linearDisjoint_comm]) (by rwa [sup_comm]) (by rwa [isCoprime_comm]),
     Ideal.absNorm_algebraMap, absNorm_differentIdeal K₁, h₁.finrank_right_eq_finrank h₂,
-    Algebra.finrank_eq_of_equiv_equiv (FractionRing.algEquiv _ K₁).toRingEquiv
-    (FractionRing.algEquiv _ L).toRingEquiv, h₁.finrank_left_eq_finrank h₂] at h_main
-  ext
-  exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv (𝓞 K₁) K₁)
-    (FractionRing.algEquiv (𝓞 L) L) _
+    ← IsFractionRing.finrank_eq (𝓞 K₁) K₁ (𝓞 L) L, h₁.finrank_left_eq_finrank h₂] at h_main
 
 end
 
@@ -189,9 +181,9 @@ lemma not_dvd_discr_iff_forall_liesOver [IsIntegralClosure 𝒪 ℤ K] {p : ℤ}
     exact ⟨P, hP, ⟨h₁.symm⟩, h₂⟩
   · rintro ⟨P, hP, hP', hP''⟩
     have := Ideal.absNorm_dvd_absNorm_of_le (Ideal.dvd_iff_le.mp hP'')
-    rw [absNorm_differentIdeal K, ← Ideal.natAbs_pow_inertiaDeg' p,
+    rw [absNorm_differentIdeal K, ← Ideal.natAbs_pow_inertiaDeg p,
       ← Int.natAbs_pow, Int.natAbs_dvd_natAbs] at this
-    exact (dvd_pow_self _ (Ideal.inertiaDeg'_pos ..).ne').trans this
+    exact (dvd_pow_self _ (Ideal.inertiaDeg_pos ..).ne').trans this
 
 /-- A prime `p` does not divide `discr K` if and only if `p` (as the ideal `span {p}`) is
 unramified in the ring of integers `𝒪`.

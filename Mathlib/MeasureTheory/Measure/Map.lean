@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-public import Mathlib.MeasureTheory.Measure.MeasureSpace
+public import Mathlib.MeasureTheory.Measure.Filter
 
 /-!
 # Pushforward of a measure
@@ -67,7 +67,7 @@ theorem le_liftLinear_apply {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure
     f μ.toOuterMeasure s ≤ liftLinear f hf μ s :=
   le_toMeasure_apply _ (hf μ) s
 
-open Classical in
+open scoped Classical in
 /-- The pushforward of a measure as a linear map. It is defined to be `0` if `f` is not
 a measurable function. -/
 noncomputable
@@ -77,13 +77,14 @@ def mapₗ [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Measure �
       le_toOuterMeasure_caratheodory μ _ (hf hs) (f ⁻¹' t)
   else 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mapₗ_congr {f g : α → β} (hf : Measurable f) (hg : Measurable g) (h : f =ᵐ[μ] g) :
     mapₗ f μ = mapₗ g μ := by
   ext1 s hs
-  simpa only [mapₗ, hf, hg, hs, dif_pos, liftLinear_apply, OuterMeasure.map_apply]
+  simpa only [mapₗ, hf, hg, hs, dite_eq_left, liftLinear_apply, OuterMeasure.map_apply]
     using! measure_congr (h.preimage s)
 
-open Classical in
+open scoped Classical in
 /-- The pushforward of a measure. It is defined to be `0` if `f` is not an almost everywhere
 measurable function. -/
 noncomputable
@@ -146,7 +147,7 @@ variable {f : α → β}
 
 lemma map_apply₀ {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
     (hs : NullMeasurableSet s (map f μ)) : μ.map f s = μ (f ⁻¹' s) := by
-  rw [map, dif_pos hf, mapₗ, dif_pos hf.measurable_mk] at hs ⊢
+  rw [map, dite_eq_left hf, mapₗ, dite_eq_left hf.measurable_mk] at hs ⊢
   rw [liftLinear_apply₀ _ hs, measure_congr (hf.ae_eq_mk.preimage s)]
   rfl
 

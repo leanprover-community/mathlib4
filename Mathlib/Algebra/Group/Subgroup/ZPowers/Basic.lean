@@ -109,7 +109,7 @@ theorem ofAdd_image_zmultiples_eq_zpowers_ofAdd {x : A} :
 
 namespace Subgroup
 
-variable {s : Set G} {g : G}
+variable {g : G}
 
 @[to_additive]
 instance zpowers_isMulCommutative (g : G) : IsMulCommutative (zpowers g) :=
