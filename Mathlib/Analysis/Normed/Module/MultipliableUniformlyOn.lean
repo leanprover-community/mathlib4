@@ -19,7 +19,7 @@ the form `∏' i, (1 + f i x)` for a sequence `f` of complex-valued functions.
 
 public section
 
-open Filter Function Complex Finset Topology
+open Filter Function Complex Finset
 
 variable {α ι : Type*} {s : Set α} {K : Set α} {u : ι → ℝ}
 

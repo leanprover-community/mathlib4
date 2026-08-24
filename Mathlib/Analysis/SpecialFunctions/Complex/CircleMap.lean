@@ -24,7 +24,9 @@ This file defines the circle map $θ ↦ c + R e^{θi}$, a parametrization of a 
 @[expose] public section
 noncomputable section circleMap
 
-open Complex ComplexConjugate Function Metric Real
+open Complex Function Metric Real
+
+open scoped ComplexConjugate
 
 /-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
 `c` and radius `|R|`. -/

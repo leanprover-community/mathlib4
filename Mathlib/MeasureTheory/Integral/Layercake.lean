@@ -97,7 +97,6 @@ section Layercake
 
 variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ}
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
 integrability assumptions, and a sigma-finiteness assumption.
@@ -290,7 +289,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
       exists_seq_strictMono_tendsto M
     have I : ∀ n, g =ᵐ[volume.restrict (Ioc (0 : ℝ) (u n))] 0 := by
       intro n
-      obtain ⟨s, hs, uns⟩ : ∃ s, g =ᶠ[ae (Measure.restrict volume (Ioc 0 s))] 0 ∧ u n < s :=
+      obtain ⟨s, hs, uns⟩ : ∃ s, g =ᵐ[Measure.restrict volume (Ioc 0 s)] 0 ∧ u n < s :=
         exists_lt_of_lt_csSup (Set.nonempty_of_mem zero_mem) (uM n)
       exact ae_restrict_of_ae_restrict_of_subset (Ioc_subset_Ioc_right uns.le) hs
     have : g =ᵐ[volume.restrict (⋃ n, Ioc (0 : ℝ) (u n))] 0 := (ae_restrict_iUnion_iff _ _).2 I

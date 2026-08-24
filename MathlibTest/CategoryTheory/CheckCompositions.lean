@@ -18,9 +18,9 @@ info: In composition
 the source of
   (preservesColimitIso (G ⋙ H) F).inv
 is
-  colimit (F ⋙ G ⋙ H)
+  colimit (Functor.comp.{v, v₁, v₃, u, u₁, u₃} F (G ⋙ H))
 but should be
-  colimit ((F ⋙ G) ⋙ H)
+  colimit (Functor.comp.{v, v₂, v₃, u, u₂, u₃} (F ⋙ G) H)
 -/
 #guard_msgs in
 set_option linter.unusedTactic false in

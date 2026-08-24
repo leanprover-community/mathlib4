@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Order.Group.PosPart
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Topology.DiscreteSubset
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Tactic.Peel
@@ -28,7 +27,9 @@ Throughout the present file, `X` denotes a topologically space and `U` a subset 
 
 @[expose] public section
 
-open Filter Function Set Topology
+open Filter Function Set
+
+open scoped Topology
 
 variable
   {X : Type*} [TopologicalSpace X] {U : Set X}
@@ -655,6 +656,22 @@ Present a function with with finite support as a finsum of singleton indicator f
   by_cases hz : z ∈ F.support
   · aesop
   · aesop
+
+/--
+Represent a function (of locally finite support) that in fact has finite support as a `finsum` of
+singleton indicator functions.
+-/
+@[simp] lemma sum_apply_smul_single_eq_self_on_univ [DecidableEq X] {D : locallyFinsupp X ℤ}
+    (h : D.support.Finite) :
+    ∑ z ∈ h.toFinset, single z (D z) = D := by
+  ext w
+  simp only [coe_sum, Finset.sum_apply, single_apply, Finset.sum_ite_eq]
+  set s := h.toFinset with hs
+  by_cases hw : w ∈ s
+  · simp [hw]
+  · simp only [hw, ite_false]
+    have : w ∉ support D := by simpa only [hs, Set.Finite.mem_toFinset] using hw
+    exact (notMem_support.mp this).symm
 
 /-- Restriction as a lattice morphism -/
 noncomputable def restrictLatticeHom [AddCommGroup Y] [Lattice Y] {V : Set X} (h : V ⊆ U) :
