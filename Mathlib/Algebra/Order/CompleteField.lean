@@ -18,7 +18,7 @@ This is `ConditionallyCompleteLinearOrderedField.inducedOrderRingIso`.
 Moreover this isomorphism is unique.
 
 We show all conditionally complete linear ordered fields are
-archimedean. We also construct the natural map from a `LinearOrderedField` to such a field.
+archimedean. We also construct the natural map from a linearly ordered field to such a field.
 
 ## Main definitions
 
@@ -43,7 +43,7 @@ reals, conditionally complete, ordered field, uniqueness
 
 @[expose] public section
 
-variable {F α β γ : Type*}
+variable {α β γ : Type*}
 
 noncomputable section
 
@@ -109,7 +109,7 @@ theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ →
 end DivisionRing
 
 variable (β) [IsStrictOrderedRing α] [Field β] [LinearOrder β] [IsStrictOrderedRing β]
-  {a a₁ a₂ : α} {b : β} {q : ℚ}
+  {a : α} {b : β} {q : ℚ}
 
 theorem cutMap_coe (q : ℚ) : cutMap β (q : α) = Rat.cast '' {r : ℚ | (r : β) < q} := by
   simp_rw [cutMap, Rat.cast_lt]
@@ -126,7 +126,7 @@ theorem cutMap_bddAbove (a : α) : BddAbove (cutMap β a) := by
 
 theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b := by
   refine (image_subset_iff.2 fun q hq => ?_).antisymm ?_
-  · rw [mem_setOf_eq, ← sub_lt_iff_lt_add] at hq
+  · rw [mem_ofPred_eq, ← sub_lt_iff_lt_add] at hq
     obtain ⟨q₁, hq₁q, hq₁ab⟩ := exists_rat_btwn hq
     refine ⟨q₁, by rwa [coe_mem_cutMap_iff], q - q₁, ?_, add_sub_cancel _ _⟩
     norm_cast
@@ -135,7 +135,7 @@ theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b :=
   · rintro _ ⟨_, ⟨qa, ha, rfl⟩, _, ⟨qb, hb, rfl⟩, rfl⟩
     -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
     refine ⟨qa + qb, ?_, by beta_reduce; norm_cast⟩
-    rw [mem_setOf_eq, cast_add]
+    rw [mem_ofPred_eq, cast_add]
     exact add_lt_add ha hb
 
 end CutMap
@@ -279,6 +279,7 @@ def inducedOrderRingHom : α →+*o β :=
           two_ne_zero (inducedMap_one _ _) with
     monotone' := inducedMap_mono _ _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism of ordered rings between two conditionally complete linearly ordered fields. -/
 def inducedOrderRingIso : β ≃+*o γ :=
   { inducedOrderRingHom β γ with

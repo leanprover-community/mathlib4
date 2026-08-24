@@ -168,6 +168,7 @@ map. -/
 def continuousLinearMapToWeakDual : StrongDual 𝕜 E →L[𝕜] WeakDual 𝕜 E :=
   { StrongDual.toWeakDual with }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The weak-star topology is coarser than the dual-norm topology. -/
 theorem dual_norm_topology_le_weak_dual_topology :
     (UniformSpace.toTopologicalSpace : TopologicalSpace (StrongDual 𝕜 E)) ≤
@@ -286,7 +287,7 @@ theorem polar_def (s : Set M) : polar 𝕜 s = { f : WeakDual 𝕜 M | ∀ x ∈
 /-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak star topology
 is used. -/
 theorem isClosed_polar (s : Set M) : IsClosed (polar 𝕜 s) := by
-  simp only [polar_def, setOf_forall]
+  simp only [polar_def, ofPred_forall]
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
 /-- Polar sets of neighborhoods of the origin are bounded in the weak dual. -/
@@ -343,7 +344,7 @@ lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.Metrizabl
     (fun n k ↦ gs n k) (fun n ↦ (gs_cont n).comp continuous_subtype_val)
     fun x y hxy ↦ gs_sep <| Subtype.val_injective.ne hxy
 
-variable [ProperSpace 𝕜] (K_cpt : IsCompact K)
+variable [ProperSpace 𝕜]
 
 /-- Bounded closed sets in the weak dual of a separable normed space are sequentially compact. -/
 theorem isSeqCompact_of_isBounded_of_isClosed {s : Set (WeakDual 𝕜 E)}
@@ -370,3 +371,85 @@ theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
   isSeqCompact_of_isBounded_of_isClosed 𝕜 _ (isBounded_closedBall x' r) (isClosed_closedBall x' r)
 
 end WeakDual
+
+section RCLike
+
+open RCLike
+open scoped NNReal Topology
+
+namespace WeakDual
+
+-- we shadow the variables for this section because they don't fit with the rest of the file.
+variable {α 𝕜 E F : Type*} [TopologicalSpace α] [RCLike 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+
+/-- A map into `WeakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)` over `𝕜` (with `RCLike 𝕜`) is
+continuous if the real parts of all the evaluation maps `a ↦ B (g a) y` are
+continuous for each `y : F`. -/
+theorem _root_.WeakBilin.continuous_of_continuous_eval_re (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
+    {g : α → WeakBilin B} (h : ∀ y, Continuous fun a ↦ re (B (g a) y)) :
+    Continuous g := by
+  refine WeakBilin.continuous_of_continuous_eval _ fun x ↦ ?_
+  suffices Continuous fun a ↦ (re (B (g a) x) : 𝕜) - re (B (g a) ((I : 𝕜) • x)) * I by simpa
+  fun_prop
+
+variable [TopologicalSpace F]
+
+/-- A map into `WeakDual 𝕜 F` over `𝕜` (with `RCLike 𝕜`) is continuous if the real parts of all
+the evaluation maps `a ↦ g a y` are continuous for each `y : F`. -/
+theorem continuous_of_continuous_eval_re {g : α → WeakDual 𝕜 F}
+    (h : ∀ x, Continuous fun a ↦ re (g a x)) :
+    Continuous g :=
+  WeakBilin.continuous_of_continuous_eval_re _ h
+
+variable [ContinuousConstSMul 𝕜 F] [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
+
+open StrongDual
+
+/-- The extension `StrongDual.extendRCLike` as a continuous linear equivalence between
+the weak duals. -/
+@[simps! -isSimp apply symm_apply]
+noncomputable def extendRCLikeL : WeakDual ℝ F ≃L[ℝ] WeakDual 𝕜 F where
+  toLinearEquiv := toStrongDual ≪≫ₗ extendRCLikeₗ ≪≫ₗ toWeakDual.restrictScalars ℝ
+  continuous_toFun := continuous_of_continuous_eval_re fun x ↦ by
+    simpa [extendRCLikeₗ_apply] using eval_continuous x
+  continuous_invFun :=
+    continuous_of_continuous_eval fun x ↦ RCLike.continuous_re.comp (eval_continuous x)
+
+@[simp]
+lemma toLinearEquiv_extendRCLikeL :
+    (extendRCLikeL (𝕜 := 𝕜) (F := F)).toLinearEquiv =
+      toStrongDual ≪≫ₗ extendRCLikeₗ ≪≫ₗ toWeakDual.restrictScalars ℝ := by
+  rfl
+
+lemma extendRCLikeL_apply_apply (f : WeakDual ℝ F) (x : F) :
+    extendRCLikeL (𝕜 := 𝕜) f x = f x - (I : 𝕜) • f ((I : 𝕜) • x) := by
+  rfl
+
+lemma extendRCLikeL_symm_apply_apply (f : WeakDual 𝕜 F) (x : F) :
+    extendRCLikeL.symm f x = re (f x) :=
+  rfl
+
+@[simp]
+lemma re_extendRCLikeL_apply_apply (f : WeakDual ℝ F) (x : F) :
+    re (extendRCLikeL (𝕜 := 𝕜) f x) = f x := by
+  simp [extendRCLikeL_apply_apply]
+
+@[simp]
+lemma im_extendRCLikeL_apply_apply (f : WeakDual ℝ F) (x : F) :
+    im (extendRCLikeL (𝕜 := 𝕜) f x) = - f ((I : 𝕜) • x) := by
+  simp [extendRCLikeL_apply, extendRCLikeₗ_apply]
+
+@[simp high]
+lemma toStrongDual_extendRCLikeL_apply (f : WeakDual ℝ F) :
+    (extendRCLikeL (𝕜 := 𝕜) f).toStrongDual = extendRCLikeₗ f :=
+  rfl
+
+@[simp high]
+lemma _root_.StrongDual.toWeakDual_extendRCLikeₗ_apply (f : StrongDual ℝ F) :
+    (extendRCLikeₗ f).toWeakDual = extendRCLikeL (𝕜 := 𝕜) f.toWeakDual :=
+  rfl
+
+end WeakDual
+
+end RCLike
