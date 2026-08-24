@@ -5,12 +5,11 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.MinMax
-public import Mathlib.Order.WithBot
 public import Mathlib.Tactic.Inclusion.Core.ToSet
 
 /-!
@@ -39,6 +38,10 @@ def Interval.toSet [Preorder α] (I : Interval α) : Set α := {a | I.lb ≤ a �
 
 instance [Preorder α] : ToSet (Interval α) α := ⟨Interval.toSet⟩
 
+@[simp, grind =]
+theorem Interval.mem_def [Preorder α] {x : α} {I : Interval α} :
+    x ∈ I ↔ I.lb ≤ x ∧ x ≤ I.ub := Iff.rfl
+
 /-- Apply a function to the finite endpoints of an interval. -/
 def Interval.map (I : Interval α) (f : α → β) : Interval β :=
   ⟨WithBot.map f I.lb, WithTop.map f I.ub⟩
@@ -54,14 +57,25 @@ theorem Interval.mem_map_univ [Preorder β] (f : α → β) (x : β) :
     x ∈ (Interval.univ α).map f := ⟨bot_le, le_top⟩
 
 /-- The interval whose two endpoints are `a`. -/
-def Interval.singleton (α : Type*) (a : α) : Interval α := ⟨a, a⟩
+def Interval.singleton (a : α) : Interval α := ⟨a, a⟩
 
 theorem Interval.mem_map_singleton [Preorder β] (a : α) (f : α → β) :
-    f a ∈ (Interval.singleton α a).map f :=
-  ⟨le_rfl, le_rfl⟩
+    f a ∈ (Interval.singleton a).map f := ⟨le_rfl, le_rfl⟩
 
 /-- The interval with lower endpoint `lb` and upper endpoint `ub`. -/
 def Interval.Icc (lb : WithBot α) (ub : WithTop α) : Interval α := ⟨lb, ub⟩
+
+theorem Interval.mem_map_Icc [Preorder β] (f : α → β) {lb ub : α} {x : β}
+    (hl : f lb ≤ x) (hu : x ≤ f ub) : x ∈ (Interval.Icc lb ub).map f :=
+  ⟨WithBot.coe_le_coe.mpr hl, WithTop.coe_le_coe.mpr hu⟩
+
+theorem Interval.map_lb_le [Preorder β] (f : α → β) {lb : α} {ub : WithTop α} {x : β}
+    (hx : x ∈ (Interval.Icc lb ub).map f) : f lb ≤ x :=
+  WithBot.coe_le_coe.mp hx.1
+
+theorem Interval.le_map_ub [Preorder β] (f : α → β) {lb : WithBot α} {ub : α} {x : β}
+    (hx : x ∈ (Interval.Icc lb ub).map f) : x ≤ f ub :=
+  WithTop.coe_le_coe.mp hx.2
 
 /-- The interval unbounded below with upper endpoint `ub`. -/
 def Interval.Iic (ub : WithTop α) : Interval α := ⟨⊥, ub⟩
@@ -71,24 +85,16 @@ def Interval.Ici (lb : WithBot α) : Interval α := ⟨lb, ⊤⟩
 
 theorem Interval.mem_Iic_of_le [Preorder α] {x y : α} {I : Interval α}
     (hxy : x ≤ y) (hy : y ∈ I) : x ∈ Interval.Iic I.ub := by
-  dsimp [Interval.Iic]
-  constructor
-  · exact bot_le
-  · grind [hy.2, WithTop.coe_le_coe.mpr hxy]
+  grind [Iic, bot_le, WithTop.coe_le_coe.mpr hxy]
 
 theorem Interval.mem_Ici_of_le [Preorder α] {x y : α} {I : Interval α}
     (hxy : x ≤ y) (hx : x ∈ I) : y ∈ Interval.Ici I.lb := by
-  dsimp [Interval.Ici]
-  constructor
-  · grind [hx.1, WithBot.coe_le_coe.mpr hxy]
-  · exact le_top
+  grind [Ici, le_top, WithBot.coe_le_coe.mpr hxy]
 
 theorem Interval.mem_Icc_of_le [Preorder α] {a b x : α} {I J : Interval α}
     (ha : a ∈ I) (hax : a ≤ x) (hxb : x ≤ b) (hb : b ∈ J) :
     x ∈ Interval.Icc I.lb J.ub := by
-  dsimp [Interval.Icc]
-  constructor <;> grind [ha.1, hb.2, WithBot.coe_le_coe.mpr hax,
-    WithTop.coe_le_coe.mpr hxb]
+  grind [Icc, WithBot.coe_le_coe.mpr hax, WithTop.coe_le_coe.mpr hxb]
 
 theorem Interval.mem_Iic_of_lt [Preorder α] {x y : α} {I : Interval α}
     (hxy : x < y) (hy : y ∈ I) : x ∈ Interval.Iic I.ub :=
@@ -144,8 +150,8 @@ instance [LinearOrder α] : Refine (Interval α) α where
 
 theorem Interval.map_inter [LinearOrder α] [LinearOrder β] (f : α ↪o β) (I J : Interval α) :
     (I.inter J).map f = (I.map f).inter (J.map f) := by
-  simp [Interval.inter, Interval.map, f.monotone.withBot_map.map_max,
-    f.monotone.withTop_map.map_min]
+  simp [f.monotone.withBot_map.map_max, f.monotone.withTop_map.map_min,
+    Interval.inter, Interval.map]
 
 theorem Interval.inter_mem [LinearOrder α] [LinearOrder β] (f : α ↪o β)
     {x : β} {I J : Interval α} (hxI : x ∈ I.map f) (hxJ : x ∈ J.map f) :
@@ -159,11 +165,11 @@ def Interval.hull [LinearOrder α] (I J : Interval α) : Interval α :=
 
 theorem Interval.mem_hull_left [LinearOrder α] {x : α} {I J : Interval α} (hx : x ∈ I) :
     x ∈ I.hull J := by
-  simp_all [Interval.hull, ToSet.toSet, Interval.toSet]
+  grind [Interval.hull]
 
 theorem Interval.mem_hull_right [LinearOrder α] {x : α} {I J : Interval α} (hx : x ∈ J) :
     x ∈ I.hull J := by
-  simp_all [Interval.hull, ToSet.toSet, Interval.toSet]
+  grind [Interval.hull]
 
 instance [LinearOrder α] : Coarsen (Interval α) α where
   coarsen := Interval.hull
@@ -172,8 +178,8 @@ instance [LinearOrder α] : Coarsen (Interval α) α where
 
 theorem Interval.map_hull [LinearOrder α] [LinearOrder β] (f : α ↪o β) (I J : Interval α) :
     (I.hull J).map f = (I.map f).hull (J.map f) := by
-  simp [Interval.hull, Interval.map, f.monotone.withBot_map.map_min,
-    f.monotone.withTop_map.map_max]
+  simp [f.monotone.withBot_map.map_min, f.monotone.withTop_map.map_max,
+    Interval.hull, Interval.map]
 
 theorem Interval.hull_mem_left [LinearOrder α] [LinearOrder β] (f : α ↪o β)
     {x : β} {I J : Interval α} (hx : x ∈ I.map f) : x ∈ (I.hull J).map f := by
@@ -194,24 +200,20 @@ def Interval.add [Add α] (I J : Interval α) : Interval α where
     | some a, some b => some (a + b)
     | _, _ => ⊤
 
+@[simp]
+theorem Interval.add_lb [AddZero α] (I J : Interval α) : (I.add J).lb = I.lb + J.lb := by
+  rcases I with ⟨_ | il, iu⟩ <;> rcases J with ⟨_ | jl, ju⟩ <;> rfl
+
+@[simp]
+theorem Interval.add_ub [AddZero α] (I J : Interval α) : (I.add J).ub = I.ub + J.ub := by
+  rcases I with ⟨il, _ | iu⟩ <;> rcases J with ⟨jl, _ | ju⟩ <;> rfl
+
 theorem Interval.add_mem [AddZero α] [AddCommMonoid β] [Preorder β] [IsOrderedAddMonoid β]
     (f : α →+ β) {x y : β} {I J : Interval α} (hx : x ∈ I.map f) (hy : y ∈ J.map f) :
     x + y ∈ (I.add J).map f := by
-  rcases I with ⟨il, iu⟩
-  rcases J with ⟨jl, ju⟩
   constructor
-  · rcases il with _ | il
-    · simp [Interval.add, Interval.map]
-    rcases jl with _ | jl
-    · simp [Interval.add, Interval.map]
-    apply WithBot.coe_le_coe.mpr
-    grind [add_le_add, WithBot.coe_le_coe.mp hx.1, WithBot.coe_le_coe.mp hy.1]
-  · rcases iu with _ | iu
-    · simp [Interval.add, Interval.map]
-    rcases ju with _ | ju
-    · simp [Interval.add, Interval.map]
-    apply WithTop.coe_le_coe.mpr
-    grind [add_le_add, WithTop.coe_le_coe.mp hx.2, WithTop.coe_le_coe.mp hy.2]
+  · simpa [Interval.map] using add_le_add hx.1 hy.1
+  · simpa [Interval.map] using add_le_add hx.2 hy.2
 
 /-- Negate an interval. -/
 def Interval.neg [Neg α] (I : Interval α) : Interval α where
@@ -222,18 +224,17 @@ def Interval.neg [Neg α] (I : Interval α) : Interval α where
     | some a => some (-a)
     | ⊥ => ⊤
 
-theorem Interval.neg_mem [AddGroup α] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+theorem Interval.neg_mem [AddGroup α] [AddCommGroup β] [Preorder β] [IsOrderedAddMonoid β]
     (f : α →+ β) {x : β} {I : Interval α} (hx : x ∈ I.map f) : -x ∈ I.neg.map f := by
-  rcases I with ⟨il, iu⟩
   constructor
-  · rcases iu with _ | iu
+  · rcases I with ⟨il, _ | iu⟩
     · simp [Interval.neg, Interval.map]
     apply WithBot.coe_le_coe.mpr
-    grind [neg_le_neg, WithTop.coe_le_coe.mp hx.2]
-  · rcases il with _ | il
+    simpa using neg_le_neg_iff.mpr (WithTop.coe_le_coe.mp hx.2)
+  · rcases I with ⟨_ | il, iu⟩
     · simp [Interval.neg, Interval.map]
     apply WithTop.coe_le_coe.mpr
-    grind [neg_le_neg, WithBot.coe_le_coe.mp hx.1]
+    simpa using neg_le_neg_iff.mpr (WithBot.coe_le_coe.mp hx.1)
 
 /-- Subtract one interval from another. -/
 def Interval.sub [Sub α] (I J : Interval α) : Interval α where
@@ -244,27 +245,65 @@ def Interval.sub [Sub α] (I J : Interval α) : Interval α where
     | some a, some b => some (a - b)
     | _, _ => ⊤
 
+theorem Interval.sub_eq_add_neg [AddGroup α] (I J : Interval α) : I.sub J = I.add J.neg := by
+  rcases I with ⟨_ | il, _ | iu⟩ <;>
+    rcases J with ⟨_ | jl, _ | ju⟩ <;>
+      simp [Interval.sub, Interval.add, Interval.neg, _root_.sub_eq_add_neg]
+
 theorem Interval.sub_mem [AddGroup α] [AddCommGroup β] [Preorder β] [IsOrderedAddMonoid β]
     (f : α →+ β) {x y : β} {I J : Interval α}
     (hx : x ∈ I.map f) (hy : y ∈ J.map f) : x - y ∈ (I.sub J).map f := by
-  rcases I with ⟨il, iu⟩
-  rcases J with ⟨jl, ju⟩
-  constructor
-  · rcases il with _ | il
-    · simp [Interval.sub, Interval.map]
-    rcases ju with _ | ju
-    · simp [Interval.sub, Interval.map]
-    apply WithBot.coe_le_coe.mpr
-    grind [sub_le_sub, WithBot.coe_le_coe.mp hx.1, WithTop.coe_le_coe.mp hy.2]
-  · rcases iu with _ | iu
-    · simp [Interval.sub, Interval.map]
-    rcases jl with _ | jl
-    · simp [Interval.sub, Interval.map]
-    apply WithTop.coe_le_coe.mpr
-    grind [sub_le_sub, WithTop.coe_le_coe.mp hx.2, WithBot.coe_le_coe.mp hy.1]
+  rw [_root_.sub_eq_add_neg, Interval.sub_eq_add_neg]
+  exact Interval.add_mem f hx (Interval.neg_mem f hy)
 
-/-- Check `x ≤ y` for `x ∈ I` and `y ∈ J`, returning `true` or `false` when the
-endpoints decide it and `undetermined` otherwise. -/
+/-- Check if `r x y` is false is implied by `x ∈ I` and `y ∈ J` -/
+def Interval.orderRelFalse (r : α → α → Prop) [DecidableRel r]
+    (I J : Interval α) : IntervalBool :=
+  match I.lb, J.ub with
+  | some il, some ju => if r il ju then .undetermined else .false
+  | _, _ => .undetermined
+
+theorem Interval.orderRelFalse_mem [Preorder β] {r : α → α → Prop} {s : β → β → Prop}
+    [DecidableRel r] [Trans (· ≤ ·) s s] [Trans s (· ≤ ·) s] (f : r ↪r s)
+    {x y : β} {I J : Interval α} (hx : x ∈ I.map f) (hy : y ∈ J.map f) :
+    s x y ∈ Interval.orderRelFalse r I J := by
+  rcases I with ⟨_ | il, iu⟩
+  · simp [Interval.orderRelFalse]
+  rcases J with ⟨jl, _ | ju⟩
+  · simp [Interval.orderRelFalse]
+  dsimp [Interval.orderRelFalse]
+  split_ifs with h
+  · simp
+  · exact IntervalBool.mem_false fun hxy ↦ h <| f.map_rel_iff.mp <|
+      trans (Interval.map_lb_le f hx) (trans hxy (Interval.le_map_ub f hy))
+
+/-- Check if `r x y` is implied (true or false) by `x ∈ I` and `y ∈ J`. -/
+def Interval.orderRel (r : α → α → Prop) [DecidableRel r]
+    (I J : Interval α) : IntervalBool :=
+  match I.ub, J.lb with
+  | some iu, some jl =>
+      if r iu jl then
+        .true
+      else
+        Interval.orderRelFalse r I J
+  | _, _ => Interval.orderRelFalse r I J
+
+theorem Interval.orderRel_mem [Preorder β] {r : α → α → Prop} {s : β → β → Prop}
+    [DecidableRel r] [Trans (· ≤ ·) s s] [Trans s (· ≤ ·) s] (f : r ↪r s)
+    {x y : β} {I J : Interval α} (hx : x ∈ I.map f) (hy : y ∈ J.map f) :
+    s x y ∈ Interval.orderRel r I J := by
+  have hFalse := Interval.orderRelFalse_mem f hx hy
+  rcases I with ⟨il, _ | iu⟩
+  · exact hFalse
+  rcases J with ⟨_ | jl, ju⟩
+  · exact hFalse
+  dsimp [Interval.orderRel]
+  split_ifs with h
+  · apply IntervalBool.mem_true
+    exact trans (Interval.le_map_ub f hx) <| trans (f.map_rel_iff.mpr h) (Interval.map_lb_le f hy)
+  · exact hFalse
+
+/-- Check if `x ≤ y` is implied (true or false) by `x ∈ I` and `y ∈ J` -/
 def Interval.le [LE α] [DecidableLE α] (I J : Interval α) : IntervalBool :=
   match I.ub, J.lb with
   | some iu, some jl =>
@@ -280,37 +319,10 @@ def Interval.le [LE α] [DecidableLE α] (I J : Interval α) : IntervalBool :=
 
 theorem Interval.le_mem [Preorder α] [Preorder β] [DecidableLE α] (f : α ↪o β)
     {x y : β} {I J : Interval α} (hx : x ∈ I.map f) (hy : y ∈ J.map f) :
-    (x ≤ y) ∈ I.le J := by
-  have hfallback :
-      (x ≤ y) ∈
-        (match I.lb, J.ub with
-        | some il, some ju =>
-            if il ≤ ju then IntervalBool.undetermined else IntervalBool.false
-        | _, _ => IntervalBool.undetermined) := by
-    rcases I with ⟨_ | il, iu⟩
-    · exact IntervalBool.mem_undetermined _
-    rcases J with ⟨jl, _ | ju⟩
-    · exact IntervalBool.mem_undetermined _
-    dsimp
-    split_ifs with h
-    · exact IntervalBool.mem_undetermined _
-    · apply IntervalBool.mem_false
-      intro hxy
-      apply h
-      rw [← f.le_iff_le]
-      exact (WithBot.coe_le_coe.mp hx.1).trans (hxy.trans (WithTop.coe_le_coe.mp hy.2))
-  rcases I with ⟨il, _ | iu⟩
-  · exact hfallback
-  rcases J with ⟨_ | jl, ju⟩
-  · exact hfallback
-  dsimp [Interval.le]
-  split_ifs with h
-  · apply IntervalBool.mem_true
-    grind [WithTop.coe_le_coe.mp hx.2, f.monotone h, WithBot.coe_le_coe.mp hy.1]
-  · exact hfallback
+    (x ≤ y) ∈ I.le J :=
+  Interval.orderRel_mem f hx hy
 
-/-- Check `x < y` for `x ∈ I` and `y ∈ J`, returning `true` or `false` when the endpoints
-decide it and `undetermined` otherwise. -/
+/-- Check if `x < y` is implied (true or false) by `x ∈ I` and `y ∈ J`. -/
 def Interval.lt [LT α] [DecidableLT α] (I J : Interval α) : IntervalBool :=
   match I.ub, J.lb with
   | some iu, some jl =>
@@ -326,36 +338,10 @@ def Interval.lt [LT α] [DecidableLT α] (I J : Interval α) : IntervalBool :=
 
 theorem Interval.lt_mem [Preorder α] [Preorder β] [DecidableLT α] (f : α ↪o β)
     {x y : β} {I J : Interval α} (hx : x ∈ I.map f) (hy : y ∈ J.map f) :
-    (x < y) ∈ I.lt J := by
-  have hfallback :
-      (x < y) ∈
-        (match I.lb, J.ub with
-        | some il, some ju =>
-            if il < ju then IntervalBool.undetermined else IntervalBool.false
-        | _, _ => IntervalBool.undetermined) := by
-    rcases I with ⟨_ | il, iu⟩
-    · exact IntervalBool.mem_undetermined _
-    rcases J with ⟨jl, _ | ju⟩
-    · exact IntervalBool.mem_undetermined _
-    dsimp
-    split_ifs with h
-    · exact IntervalBool.mem_undetermined _
-    · apply IntervalBool.mem_false
-      intro hxy
-      apply h
-      rw [← f.lt_iff_lt]
-      exact (WithBot.coe_le_coe.mp hx.1).trans_lt (hxy.trans_le (WithTop.coe_le_coe.mp hy.2))
-  rcases I with ⟨il, _ | iu⟩
-  · exact hfallback
-  rcases J with ⟨_ | jl, ju⟩
-  · exact hfallback
-  dsimp [Interval.lt]
-  split_ifs with h
-  · apply IntervalBool.mem_true
-    grind [WithTop.coe_le_coe.mp hx.2, f.strictMono h, WithBot.coe_le_coe.mp hy.1]
-  · exact hfallback
+    (x < y) ∈ I.lt J :=
+  Interval.orderRel_mem f.ltEmbedding hx hy
 
-/-- Return the conjunction of the two interval comparisons needed to verify equality. -/
+/-- Check if `x = y` is implied (true or false) by `x ∈ I` and `y ∈ J`. -/
 def Interval.eq [LE α] [DecidableLE α] (I J : Interval α) : IntervalBool :=
   (I.le J).and (J.le I)
 

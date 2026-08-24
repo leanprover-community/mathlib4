@@ -6,7 +6,11 @@ Authors: David Ledvinka
 module
 
 public meta import Mathlib.Tactic.Inclusion.Extension.Core.Core
-public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Extensions
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Basic
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
+public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Basic
+public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
+public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
 /-!
 # The `dyadic_interval` tactic

@@ -5,9 +5,8 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
-public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
-public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
+public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
 
 /-!
 # Basic inclusion extensions for interval_dyadic_real
@@ -17,29 +16,35 @@ This file defines basic operations for the `interval_dyadic_real` inclusion fami
 
 @[expose] public section
 
-namespace Inclusion
+open Lean Qq
 
+namespace Inclusion
 namespace IntervalDyadicReal
 
-theorem mem_iff_mem_map {x : ℝ} {I : Interval Dyadic} :
-    x ∈ I ↔ x ∈ I.map Dyadic.toReal := Iff.rfl
+/-- Construct an inclusion variable for a real expression using a dyadic interval. -/
+@[inclusionExt(_ : ℝ)]
+meta def mkRealIVar : InclusionExt :=
+  mkNDIVarExt `interval_dyadic_real
+    ⟨q(ℝ), q(Interval Dyadic), q(instToSetIntervalDyadicReal)⟩ mkBinarySplitCover
+
+@[grind =]
+theorem mem_iff_mem_map {x : ℝ} {I : Interval Dyadic} : x ∈ I ↔ x ∈ I.map Dyadic.toReal :=
+  Iff.rfl
 
 section Constants
 
 @[inclusionOp interval_dyadic_real]
-theorem natCast_mem (n : ℕ) : (n : ℝ) ∈ Interval.singleton Dyadic n := by
-  rw [mem_iff_mem_map]
-  simpa using Interval.mem_map_singleton (n : Dyadic) Dyadic.toReal
+theorem natCast_mem (n : ℕ) : (n : ℝ) ∈ Interval.singleton (n : Dyadic) := by
+  simpa [mem_iff_mem_map] using Interval.mem_map_singleton (n : Dyadic) Dyadic.toReal
 
 @[inclusionOp interval_dyadic_real]
-theorem ofNat_mem (n : ℕ) : (OfNat.ofNat n : ℝ) ∈ Interval.singleton Dyadic n := by
+theorem ofNat_mem (n : ℕ) : (OfNat.ofNat n : ℝ) ∈ Interval.singleton (n : Dyadic) := by
   rw [Semiring.toGrindSemiring_ofNat]
   exact natCast_mem n
 
 @[inclusionOp interval_dyadic_real]
-theorem intCast_mem (z : ℤ) : (z : ℝ) ∈ Interval.singleton Dyadic z := by
-  rw [mem_iff_mem_map]
-  simpa using Interval.mem_map_singleton (z : Dyadic) Dyadic.toReal
+theorem intCast_mem (z : ℤ) : (z : ℝ) ∈ Interval.singleton (z : Dyadic) := by
+  simpa [mem_iff_mem_map] using Interval.mem_map_singleton (z : Dyadic) Dyadic.toReal
 
 end Constants
 

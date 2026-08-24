@@ -21,31 +21,55 @@ construct inclusion hypotheses for the body's inclusion variables and closes the
 
 -/
 
+namespace Inclusion
+
 public meta section
 
-open Lean Meta Elab Term
-
-namespace Inclusion
+open Lean Meta
 
 initialize registerTraceClass `Tactic.inclusion
 
+/-- Given the `userName` of an `InclusionExt` and the name of the inclusion family it belongs to,
+print `[family] userName`. -/
+private def ppExtensionName (family userName : Name) : MessageData :=
+  m!"[{family}] {.ofConstName userName}"
+
+/-- Given `exts : Array InclusionExt`, print each extension in a numbered list. -/
+private def ppMatchedExts (exts : Array InclusionExt) : MessageData :=
+  m!"\n".joinSep (exts.toList.mapIdx fun i ext =>
+    m!"{i + 1}. {ppExtensionName ext.family ext.userName}")
+
+private def ppInclusionExpr (e : Expr) : InclusionM MessageData := do
+  let iVarDisplays := (← get).iVarDisplays
+  return m!"{e.replace fun e => iVarDisplays[e]?}"
+
 /-- Construct an `ExprInclusionBody` for `e`. -/
 def mkExprInclusionBody (e : Expr) : InclusionM ExprInclusionBody := do
+  withTraceNode `Tactic.inclusion
+    (fun _ => return m!"Making `ExprInclusionBody` for:\n {e}") do
   if let some iVar := (← get).iVars[e]? then
     trace[Tactic.inclusion] "Reusing inclusion variable for {e}"
     return iVar.toExprInclusionBody
   let matchedExts ← getInclusionExtMatches (← read).families e
+  trace[Tactic.inclusion]
+    "Matched inclusion extensions (in order of priority):\n{ppMatchedExts matchedExts}"
   let savedState ← saveState
-  for (family, ext) in matchedExts do
-    try
-      let body ← ext.derive e
-      recordExtraModUseFromDecl (isMeta := true) ext.declName
-      trace[Tactic.inclusion] "[{family}] {ext.userName} applied to {e}"
+  for ext in matchedExts do
+    let body? : Option ExprInclusionBody ← withTraceNode `Tactic.inclusion
+      (fun _ => do return m!"Trying {ppExtensionName ext.family ext.userName}") do
+      try
+        let body ← ext.derive e
+        recordExtraModUseFromDecl (isMeta := true) ext.declName
+        return some body
+      catch err =>
+        trace[Tactic.inclusion]
+          "Failed to apply {ppExtensionName ext.family ext.userName} to {e}: \
+            {err.toMessageData}"
+        restoreState savedState
+        return none
+    if let some body := body? then
+      trace[Tactic.inclusion] "Inclusion body:\n {← ppInclusionExpr body.inclusionBody}"
       return body
-    catch err =>
-      trace[Tactic.inclusion]
-        "Failed to apply [{family}] {ext.userName} to {e}: {err.toMessageData}"
-      restoreState savedState
   throwError "No inclusion extension applies to {e}"
 
 /-- Check that `body.proofBody` is a proof of `e ∈ body.inclusionBody` and infer its `IType`. -/
@@ -61,15 +85,17 @@ def ExprInclusionBody.inferIType (body : ExprInclusionBody) (e : Expr) : MetaM I
 def runHypothesisExts (h : Expr) : HypothesisM Unit := do
   let type ← instantiateMVars (← inferType h)
   let matchedExts ← getHypothesisExtMatches (← read).families type
-  for (family, ext) in matchedExts do
+  for ext in matchedExts do
     let saved ← saveState
     try
       ext.derive h
       recordExtraModUseFromDecl (isMeta := true) ext.declName
-      trace[Tactic.inclusion] "[{family}] {ext.userName} processed {type}"
+      trace[Tactic.inclusion]
+        "{ppExtensionName ext.family ext.userName} processed {type}"
     catch err =>
       trace[Tactic.inclusion]
-        "Failed to apply [{family}] {ext.userName} to {type}: {err.toMessageData}"
+        "Failed to apply {ppExtensionName ext.family ext.userName} to {type}: \
+          {err.toMessageData}"
       restoreState saved
 
 /-- Run hypothesis extensions on all declarations in the local context. -/
@@ -136,5 +162,7 @@ def toExprInclusion (e : Expr) : InclusionM ExprInclusion := do
   let body ← mkExprInclusionBody e
   let iType ← body.inferIType e
   HypothesisM.run <| mkExprInclusion ⟨iType, e⟩ body
+
+end
 
 end Inclusion

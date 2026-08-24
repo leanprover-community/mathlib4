@@ -53,13 +53,13 @@ initialize registerBuiltinAttribute {
 }
 
 /-- Syntax for declaring an inclusion extension using the `inclusionExt` attribute. -/
-syntax (name := inclusionExtAttr) "inclusionExt " ident " | " term,+ : attr
+syntax (name := inclusionExtAttr) "inclusionExt" term,+ : attr
 
-/-- Add the inclusion extension `declName` to `familyName` under `keys`. -/
-def addInclusionExt (familyName declName : Name) (keys : Array (Array DiscrTree.Key))
+/-- Add the inclusion extension `declName` under `keys`. -/
+def addInclusionExt (declName : Name) (keys : Array (Array DiscrTree.Key))
     (kind : AttributeKind) : AttrM Unit := do
-  let family ← getInclusionFamily familyName
   let ext ← evalDecl InclusionExt ``InclusionExt declName
+  let family ← getInclusionFamily ext.family
   family.inclusionExt.add ((keys, declName), ext) kind
 
 initialize registerBuiltinAttribute {
@@ -67,26 +67,26 @@ initialize registerBuiltinAttribute {
   descr := "adds an inclusion extension"
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
-    | `(attr| inclusionExt $familyName:ident | $es,*) => do
+    | `(attr| inclusionExt $es,*) => do
       let env ← getEnv
       ensureAttrDeclIsMeta `inclusionExt declName kind
       unless (env.getModuleIdxFor? declName).isNone do
         throwAttrDeclInImportedModule `inclusionExt declName
       if (IR.getSorryDep env declName).isSome then return
       let keys ← elabExtKeys (es.getElems.map (·.raw))
-      addInclusionExt familyName.getId declName keys kind
+      addInclusionExt declName keys kind
     | _ => throwUnsupportedSyntax
   erase := fun _ => throwError "Inclusion extensions cannot be erased by declaration"
 }
 
 /-- Syntax for declaring a hypothesis extension using the `hypothesisExt` attribute. -/
-syntax (name := hypothesisExtAttr) "hypothesisExt " ident " | " term,+ : attr
+syntax (name := hypothesisExtAttr) "hypothesisExt" term,+ : attr
 
-/-- Add the hypothesis extension `declName` to `familyName` under `keys`. -/
-def addHypothesisExt (familyName declName : Name) (keys : Array (Array DiscrTree.Key))
+/-- Add the hypothesis extension `declName` under `keys`. -/
+def addHypothesisExt (declName : Name) (keys : Array (Array DiscrTree.Key))
     (kind : AttributeKind) : AttrM Unit := do
-  let family ← getInclusionFamily familyName
   let ext ← evalDecl HypothesisExt ``HypothesisExt declName
+  let family ← getInclusionFamily ext.family
   family.hypothesisExt.add ((keys, declName), ext) kind
 
 /-- Register the `hypothesisExt` attribute. -/
@@ -95,14 +95,14 @@ initialize registerBuiltinAttribute {
   descr := "adds a hypothesis extension"
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
-    | `(attr| hypothesisExt $familyName:ident | $es,*) => do
+    | `(attr| hypothesisExt $es,*) => do
       let env ← getEnv
       ensureAttrDeclIsMeta `hypothesisExt declName kind
       unless (env.getModuleIdxFor? declName).isNone do
         throwAttrDeclInImportedModule `hypothesisExt declName
       if (IR.getSorryDep env declName).isSome then return
       let keys ← elabExtKeys (es.getElems.map (·.raw))
-      addHypothesisExt familyName.getId declName keys kind
+      addHypothesisExt declName keys kind
     | _ => throwUnsupportedSyntax
   erase := fun _ => throwError "Hypothesis extensions cannot be erased by declaration"
 }
@@ -240,10 +240,10 @@ private def addInclusionOp (theoremName familyName : Name) (priority : Nat)
   let derive := mkAppN (mkConst ``deriveInclusionOp)
     #[toExpr theoremName, toExpr hypArgs, toExpr params]
   let value := mkAppN (mkConst ``InclusionExt.mk)
-    #[toExpr extName, toExpr theoremName, derive, toExpr priority]
+    #[toExpr extName, toExpr familyName, toExpr theoremName, derive, toExpr priority]
   let decl ← mkDefinitionValInferringUnsafe extName [] (mkConst ``InclusionExt) value .opaque
   addAndCompile (.defnDecl decl) (markMeta := true)
-  addInclusionExt familyName extName #[path] kind
+  addInclusionExt extName #[path] kind
 
 /-- Syntax for registering an inclusion extension from a theorem using the `inclusionOp`
 attribute. -/
@@ -302,10 +302,10 @@ private def addHypothesisOp (theoremName familyName : Name) (priority : Nat)
   let derive := mkAppN (mkConst ``deriveHypothesisOp)
     #[toExpr theoremName, toExpr sourceIdx, toExpr hypArgs, toExpr params]
   let value := mkAppN (mkConst ``HypothesisExt.mk)
-    #[toExpr extName, toExpr theoremName, derive, toExpr priority]
+    #[toExpr extName, toExpr familyName, toExpr theoremName, derive, toExpr priority]
   let decl ← mkDefinitionValInferringUnsafe extName [] (mkConst ``HypothesisExt) value .opaque
   addAndCompile (.defnDecl decl) (markMeta := true)
-  addHypothesisExt familyName extName #[path] kind
+  addHypothesisExt extName #[path] kind
 
 /-- Syntax for registering a hypothesis extension from a theorem using the `hypothesisOp`
 attribute. -/

@@ -105,6 +105,8 @@ structure InclusionM.Context where
 structure InclusionM.State where
   /-- A map from expressions to their inclusion variables. -/
   iVars : ExprMap IVar := {}
+  /-- A map from inclusion set variables to the expressions used to display them in traces. -/
+  iVarDisplays : ExprMap Expr := {}
 
 /-- The monad used by the `inclusion` tactic during the construction of `ExprInclusion`s. -/
 abbrev InclusionM := ReaderT InclusionM.Context <| StateT InclusionM.State MetaM

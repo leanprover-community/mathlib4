@@ -25,8 +25,9 @@ attribute [inclusionOp core] IntervalBool.not_mem IntervalBool.and_mem IntervalB
 attribute [hypothesisOp core] ToSet.mem_of_eq_of_mem ToSet.mem_of_mem_of_eq
 
 /-- `HypothesisExt` for direct `ToSet` instance membership hypotheses. -/
-@[hypothesisExt core | _ ∈ _]
+@[hypothesisExt _ ∈ _]
 def instMembershipHyp : HypothesisExt where
+  family := `core
   derive h := do
     let type ← instantiateMVars (← inferType h)
     let some (expr, set, _) := toSetMem? type | failure
@@ -35,8 +36,9 @@ def instMembershipHyp : HypothesisExt where
     addInclusionHyp iVar.iExpr ⟨set, h⟩
 
 /-- `HypothesisExt` for conjunction hypotheses. -/
-@[hypothesisExt core | _ ∧ _]
+@[hypothesisExt _ ∧ _]
 def andHyp : HypothesisExt where
+  family := `core
   derive h := do
     let (``And, #[_, _]) := (← instantiateMVars (← inferType h)).getAppFnArgs | failure
     runHypothesisExts (← mkAppM ``And.left #[h])

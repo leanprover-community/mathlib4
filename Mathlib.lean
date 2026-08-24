@@ -7376,11 +7376,10 @@ public import Mathlib.Tactic.Inclusion.Extension.Core.Core
 public import Mathlib.Tactic.Inclusion.Extension.Core.Init
 public import Mathlib.Tactic.Inclusion.Extension.Interval
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Basic
-public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Extensions
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
-public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Splitting
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 public import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 public import Mathlib.Tactic.Inclusion.ExtensionAPI.Basic

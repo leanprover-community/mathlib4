@@ -64,6 +64,25 @@ private def checkIVarWellFormed (localContext : LocalContext) (iExpr : IExpr) : 
     throwError "Cannot use the `ToSet` instance for {e} because it depends on variables \
       introduced while constructing the inclusion"
 
+open PrettyPrinter Delaborator SubExpr in
+/-- Delaborate an inclusion set variable as `I[e]`. -/
+@[delab mdata.Inclusion.Internal.iVarDisplay]
+def delabIVarDisplay : Delab := do
+  let iVarDisplayExpr ← getExpr
+  let some (.letE _ _ _ _ _) := annotation? `Inclusion.Internal.iVarDisplay iVarDisplayExpr
+    | failure
+  let exprSyntax ← withMDataExpr (withLetValue delab)
+  let stx ← `($(mkIdent `I)[$exprSyntax])
+  let stx ← annotateCurPos ⟨stx.raw.rewriteBottomUp (·.setInfo .none)⟩
+  let infoStx : Term := ⟨stx.raw.setKind `Inclusion.Internal.iVarDisplay⟩
+  addDelabTermInfo (← getPos) infoStx iVarDisplayExpr (explicit := false)
+  return stx
+
+/-- Construct the expression used to display `setVar` as `I[iExpr.expr]`. -/
+private def mkIVarDisplay (iExpr : IExpr) (setVar : Expr) : Expr :=
+  mkAnnotation `Inclusion.Internal.iVarDisplay <|
+    mkLet .anonymous iExpr.iType.elemType iExpr.expr setVar (nondep := true)
+
 /-- Create and register an inclusion variable for `iExpr`. -/
 def mkIVar (iExpr : IExpr) (cover : Option Expr := none) : InclusionM IVar := do
   let ctx ← read
@@ -76,14 +95,18 @@ def mkIVar (iExpr : IExpr) (cover : Option Expr := none) : InclusionM IVar := do
   let hypVar ← mkFreshExprMVarAt ctx.localContext ctx.localInstances hypType .syntheticOpaque
   let iVar := { iExpr, setVar, hypVar, cover }
   modify fun state => { state with iVars := state.iVars.insert iVar.expr iVar }
+  if ← isTracingEnabledFor `Tactic.inclusion then
+    let iVarDisplayExpr := mkIVarDisplay iExpr setVar
+    modify fun state => {
+      state with iVarDisplays := state.iVarDisplays.insert setVar iVarDisplayExpr }
   return iVar
 
 /-- Construct an inclusion extension for making non dependently typed inclusion variables. -/
-def mkNDIVarExt (iType : IType)
+def mkNDIVarExt (family : Name) (iType : IType)
     (mkCover : InclusionM (Option Expr) := pure none)
     (priority : Nat := eval_prio low) (name : Name := by exact decl_name%) : InclusionExt where
   declName := name
-  userName := name
+  family := family
   priority := priority
   derive e := do
     let eType ← inferType e

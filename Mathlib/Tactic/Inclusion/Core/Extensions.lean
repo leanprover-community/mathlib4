@@ -24,8 +24,10 @@ namespace Inclusion
 structure InclusionExt where
   /-- Name of the declaration of the extension. -/
   declName : Name := by exact decl_name%
-  /-- User-facing name of the extension. -/
-  userName : Name := by exact decl_name%
+  /-- The family in which the extension is registered. -/
+  family : Name
+  /-- The user-facing name of the extension. -/
+  userName : Name := declName
   /-- Attempt to construct an `ExprInclusionBody` for `e`. -/
   derive (e : Expr) : InclusionM ExprInclusionBody
   /-- The priority of the extension. Extensions with higher priority are tried first. -/
@@ -36,8 +38,10 @@ declarations. -/
 structure HypothesisExt where
   /-- Name of the declaration of the extension. -/
   declName : Name := by exact decl_name%
-  /-- User-facing name of the extension. -/
-  userName : Name := by exact decl_name%
+  /-- The family in which the extension is registered. -/
+  family : Name
+  /-- The user-facing name of the extension. -/
+  userName : Name := declName
   /-- Attempt to construct inclusion hypotheses from `h`. -/
   derive (h : Expr) : HypothesisM Unit
   /-- The priority of the extension. Extensions with higher priority are tried first. -/
@@ -85,26 +89,26 @@ def getInclusionFamily (name : Name) : CoreM InclusionFamily := do
 /-- Return an array of the inclusion extensions in `families` whose `DiscrTree` key matches `e`,
 sorted in order of highest to lowest priority. -/
 def getInclusionExtMatches (families : Array Name) (e : Expr) :
-    MetaM (Array (Name × InclusionExt)) := do
+    MetaM (Array InclusionExt) := do
   let env ← getEnv
   let mut matched := #[]
   for familyName in families do
     let family ← getInclusionFamily familyName
     for ext in ← family.inclusionExt.getState env |>.getMatch e do
-      matched := matched.push (familyName, ext)
-  return matched.qsort fun (_, a) (_, b) => a.priority > b.priority
+      matched := matched.push ext
+  return matched.qsort fun a b => a.priority > b.priority
 
 /-- Return an array of the hypothesis extensions in `families` whose `DiscrTree` key matches `e`,
 sorted in order of highest to lowest priority. -/
 def getHypothesisExtMatches (families : Array Name) (e : Expr) :
-    MetaM (Array (Name × HypothesisExt)) := do
+    MetaM (Array HypothesisExt) := do
   let env ← getEnv
   let mut matched := #[]
   for familyName in families do
     let family ← getInclusionFamily familyName
     for ext in ← family.hypothesisExt.getState env |>.getMatch e do
-      matched := matched.push (familyName, ext)
-  return matched.qsort fun (_, a) (_, b) => a.priority > b.priority
+      matched := matched.push ext
+  return matched.qsort fun a b => a.priority > b.priority
 
 section InclusionParam
 

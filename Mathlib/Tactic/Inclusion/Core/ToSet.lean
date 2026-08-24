@@ -33,8 +33,8 @@ instance {Iα α : Type*} [ToSet Iα α] : Membership α Iα where
   mem s a := ToSet.toSet s a
 
 @[simp]
-lemma mem_set_iff_mem_toSet {Iα α : Type*} [ToSet Iα α] (a : α) (s : Iα) :
-  a ∈ s ↔ a ∈ (s : Set α) := Iff.rfl
+lemma mem_toSet_iff_mem {Iα α : Type*} [ToSet Iα α] (a : α) (s : Iα) :
+  a ∈ (s : Set α) ↔ a ∈ s := Iff.rfl
 
 lemma ToSet.mem_of_eq_of_mem {Iα α : Type*} [ToSet Iα α] {x y : α} {s : Iα}
     (hxy : x = y) (hy : y ∈ s) : x ∈ s := hxy ▸ hy
@@ -110,14 +110,23 @@ def IntervalBool.toPropSet : IntervalBool → Set Prop
 
 instance : ToSet IntervalBool Prop := ⟨IntervalBool.toPropSet⟩
 
-theorem IntervalBool.mem_true {p : Prop} (hp : p) : p ∈ IntervalBool.true := by
-  simpa [ToSet.toSet, IntervalBool.toPropSet] using hp
+@[simp]
+theorem IntervalBool.mem_true_iff {p : Prop} : p ∈ IntervalBool.true ↔ p := by
+  simp [← mem_toSet_iff_mem, ToSet.toSet, IntervalBool.toPropSet]
 
-theorem IntervalBool.mem_false {p : Prop} (hp : ¬p) : p ∈ IntervalBool.false := by
-  simpa [ToSet.toSet, IntervalBool.toPropSet] using hp
+@[simp]
+theorem IntervalBool.mem_false_iff {p : Prop} : p ∈ IntervalBool.false ↔ ¬p := by
+  simp [← mem_toSet_iff_mem, ToSet.toSet, IntervalBool.toPropSet]
 
+theorem IntervalBool.mem_true {p : Prop} (hp : p) : p ∈ IntervalBool.true :=
+  IntervalBool.mem_true_iff.mpr hp
+
+theorem IntervalBool.mem_false {p : Prop} (hp : ¬p) : p ∈ IntervalBool.false :=
+  IntervalBool.mem_false_iff.mpr hp
+
+@[simp]
 theorem IntervalBool.mem_undetermined (p : Prop) : p ∈ IntervalBool.undetermined := by
-  by_cases hp : p <;> simp [ToSet.toSet, IntervalBool.toPropSet, hp]
+  by_cases hp : p <;> simp [← mem_toSet_iff_mem, ToSet.toSet, IntervalBool.toPropSet, hp]
 
 /-- Negation of an `IntervalBool` value. -/
 def IntervalBool.not : IntervalBool → IntervalBool
@@ -127,7 +136,7 @@ def IntervalBool.not : IntervalBool → IntervalBool
 
 theorem IntervalBool.not_mem {p : Prop} {a : IntervalBool}
     (hp : p ∈ a) : (¬p) ∈ a.not := by
-  cases a <;> by_cases hp' : p <;> simp_all [IntervalBool.not, ToSet.toSet, IntervalBool.toPropSet]
+  cases a <;> by_cases hp' : p <;> simp_all [IntervalBool.not]
 
 /-- Conjunction of two `IntervalBool` values. -/
 def IntervalBool.and : IntervalBool → IntervalBool → IntervalBool
@@ -137,7 +146,7 @@ def IntervalBool.and : IntervalBool → IntervalBool → IntervalBool
 
 theorem IntervalBool.and_mem {p q : Prop} {a b : IntervalBool}
     (hp : p ∈ a) (hq : q ∈ b) : (p ∧ q) ∈ a.and b := by
-  cases a <;> cases b <;> simp_all [IntervalBool.and, ToSet.toSet, IntervalBool.toPropSet]
+  cases a <;> cases b <;> simp_all [IntervalBool.and]
 
 /-- Disjunction of two `IntervalBool` values. -/
 def IntervalBool.or : IntervalBool → IntervalBool → IntervalBool
@@ -148,10 +157,10 @@ def IntervalBool.or : IntervalBool → IntervalBool → IntervalBool
 theorem IntervalBool.or_mem {p q : Prop} {a b : IntervalBool}
     (hp : p ∈ a) (hq : q ∈ b) : (p ∨ q) ∈ a.or b := by
   cases a <;> cases b <;> by_cases hp' : p <;> by_cases hq' : q <;>
-    simp_all [IntervalBool.or, ToSet.toSet, IntervalBool.toPropSet]
+    simp_all [IntervalBool.or]
 
-theorem true_of_mem_intervalBool_true {p : Prop} (hp : p ∈ IntervalBool.true) : p := by
-  simpa [mem_set_iff_mem_toSet, toSet, IntervalBool.toPropSet] using hp
+theorem true_of_mem_intervalBool_true {p : Prop} (hp : p ∈ IntervalBool.true) : p :=
+  IntervalBool.mem_true_iff.mp hp
 
 theorem true_of_mem_intervalBool_eq_true {p : Prop} {b : IntervalBool} (hp : p ∈ b)
     (hb : b = IntervalBool.true) : p :=
@@ -176,10 +185,10 @@ instance : Coarsen IntervalBool Prop where
   coarsen := IntervalBool.union
   mem_coarsen_left := by
     intro p s t hp
-    cases s <;> cases t <;> simp_all [IntervalBool.union, ToSet.toSet, IntervalBool.toPropSet]
+    cases s <;> cases t <;> simp_all [IntervalBool.union]
   mem_coarsen_right := by
     intro p s t hp
-    cases s <;> cases t <;> simp_all [IntervalBool.union, ToSet.toSet, IntervalBool.toPropSet]
+    cases s <;> cases t <;> simp_all [IntervalBool.union]
 
 end IntervalBool
 
