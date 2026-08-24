@@ -105,7 +105,7 @@ theorem mem_of_models (p : T.CompleteType α) {φ : L[[α]].Sentence}
 theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈ p ↔ φ ∉ p :=
   ⟨fun hf ht => by
     have h : ¬IsSatisfiable ({φ, φ.not} : L[[α]].Theory) := by
-      rintro ⟨@⟨_, _, h, _⟩⟩
+      rintro ⟨@⟨_, _, h⟩⟩
       simp only [model_iff, mem_insert_iff, mem_singleton_iff, forall_eq_or_imp, forall_eq] at h
       exact h.2 h.1
     refine h (p.isMaximal.1.mono ?_)
@@ -156,14 +156,11 @@ theorem setOfPred_subset_eq_univ_iff (S : L[[α]].Theory) :
 
 @[deprecated (since := "2026-07-09")] alias setOf_subset_eq_univ_iff := setOfPred_subset_eq_univ_iff
 
-theorem nonempty_iff : Nonempty (T.CompleteType α) ↔ T.IsSatisfiable := by
+theorem nonempty_iff [IsNonemptyTheory T] : Nonempty (T.CompleteType α) ↔ T.IsSatisfiable := by
   rw [← isSatisfiable_onTheory_iff (lhomWithConstants_injective L α)]
   rw [nonempty_iff_univ_nonempty, nonempty_iff_ne_empty, Ne, not_iff_comm,
     ← union_empty ((L.lhomWithConstants α).onTheory T), ← setOfPred_subset_eq_empty_iff]
   simp
-
-instance instNonempty : Nonempty (CompleteType (∅ : L.Theory) α) :=
-  nonempty_iff.2 (isSatisfiable_empty L)
 
 theorem iInter_setOfPred_subset {ι : Type*} (S : ι → L[[α]].Theory) :
     ⋂ i : ι, { p : T.CompleteType α | S i ⊆ p } =
@@ -181,7 +178,7 @@ theorem toList_foldr_inf_mem {p : T.CompleteType α} {t : Finset L[[α]].Sentenc
 
 end CompleteType
 
-variable {M : Type w'} [L.Structure M] [Nonempty M] [M ⊨ T] (T)
+variable {M : Type w'} [L.Structure M] [M ⊨ T] (T)
 
 /-- The set of all formulas true at a tuple in a structure forms a complete type. -/
 def typeOf (v : α → M) : T.CompleteType α :=
@@ -224,6 +221,10 @@ lemma typesWith_top : T.typesWith (α := α) ⊤ = Set.univ :=
 
 lemma typesWith_not (φ : L[[α]].Sentence) : T.typesWith ∼φ = (T.typesWith φ)ᶜ := by
   exact Eq.symm compl_setOfPred_mem
+
+instance instNonempty : Nonempty (CompleteType (∅ : L.Theory) α) :=
+  have : L.Structure Unit := FirstOrder.Language.Inhabited.trivialStructure L
+  ⟨typeOf ∅ fun _ => ()⟩
 
 end CompleteType
 

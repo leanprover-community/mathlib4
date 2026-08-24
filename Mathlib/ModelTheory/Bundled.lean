@@ -15,7 +15,9 @@ This file bundles types together with their first-order structure.
 
 ## Main Definitions
 
-- `FirstOrder.Language.Theory.ModelType` is the type of nonempty models of a particular theory.
+- `FirstOrder.Language.Theory.ModelType` is the type of models of a particular theory.
+  Note that we allow the empty model. To assume all models of a theory are nonempty,
+  use `FirstOrder.Language.IsNonemptyTheory`.
 - `FirstOrder.Language.equivSetoid` is the isomorphism equivalence relation on bundled structures.
 
 ## TODO
@@ -69,17 +71,17 @@ variable (T : L.Theory)
 
 namespace Theory
 
-/-- The type of nonempty models of a first-order theory. -/
+/-- The type of models of a first-order theory. Note that we allow the empty model.
+To assume all models of a theory are nonempty, use `FirstOrder.Language.IsNonemptyTheory`. -/
 structure ModelType where
   /-- The underlying type for the models -/
   Carrier : Type w
   [struc : L.Structure Carrier]
   [is_model : T.Model Carrier]
-  [nonempty' : Nonempty Carrier]
 
 -- Porting note: In Lean4, other instances precedes `FirstOrder.Language.Theory.ModelType.struc`,
 -- it's issues in `ModelTheory.Satisfiability`. So, we increase these priorities.
-attribute [instance 2000] ModelType.struc ModelType.is_model ModelType.nonempty'
+attribute [instance 2000] ModelType.struc ModelType.is_model
 
 namespace ModelType
 
@@ -90,15 +92,15 @@ instance instCoeSort : CoeSort T.ModelType (Type w) :=
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. -/
-def of (M : Type w) [L.Structure M] [M ⊨ T] [Nonempty M] : T.ModelType :=
+def of (M : Type w) [L.Structure M] [M ⊨ T] : T.ModelType :=
   ⟨M⟩
 
 @[simp]
-theorem coe_of (M : Type w) [L.Structure M] [M ⊨ T] [Nonempty M] : (of T M : Type w) = M :=
+theorem coe_of (M : Type w) [L.Structure M] [M ⊨ T] : (of T M : Type w) = M :=
   rfl
 
-instance instNonempty (M : T.ModelType) : Nonempty M :=
-  inferInstance
+instance instNonempty [IsNonemptyTheory T] (M : T.ModelType) : Nonempty M :=
+  IsNonemptyTheory.nonempty M T
 
 section Inhabited
 
@@ -118,9 +120,8 @@ def equivInduced {M : ModelType.{u, v, w} T} {N : Type w'} (e : M ≃ N) :
   struc := e.inducedStructure
   is_model := @StrongHomClass.theory_model L M N _ e.inducedStructure T
     _ _ _ e.inducedStructureEquiv _
-  nonempty' := e.symm.nonempty
 
-instance of_small (M : Type w) [Nonempty M] [L.Structure M] [M ⊨ T] [h : Small.{w'} M] :
+instance of_small (M : Type w) [L.Structure M] [M ⊨ T] [h : Small.{w'} M] :
     Small.{w'} (ModelType.of T M) :=
   h
 
@@ -137,7 +138,6 @@ def ulift (M : ModelType.{u, v, w} T) : ModelType.{u, v, max w w'} T :=
 def reduct {L' : Language} (φ : L →ᴸ L') (M : (φ.onTheory T).ModelType) : T.ModelType where
   Carrier := M
   struc := φ.reduct M
-  nonempty' := M.nonempty'
   is_model := (@LHom.onTheory_model L L' M (φ.reduct M) _ φ _ T).1 M.is_model
 
 /-- When `φ` is injective, `defaultExpansion` expands a model of `T` to a model of `φ.onTheory T`
@@ -149,7 +149,6 @@ noncomputable def defaultExpansion {L' : Language} {φ : L →ᴸ L'} (h : φ.In
     (M : T.ModelType) [Inhabited M] : (φ.onTheory T).ModelType where
   Carrier := M
   struc := φ.defaultExpansion M
-  nonempty' := M.nonempty'
   is_model :=
     (@LHom.onTheory_model L L' M _ (φ.defaultExpansion M) φ (h.isExpansionOn_default M) T).2
       M.is_model
@@ -176,11 +175,11 @@ end ModelType
 variable {T}
 
 /-- Bundles `M ⊨ T` as a `T.ModelType`. -/
-def Model.bundled {M : Type w} [LM : L.Structure M] [ne : Nonempty M] (h : M ⊨ T) : T.ModelType :=
-  @ModelType.of L T M LM h ne
+def Model.bundled {M : Type w} [LM : L.Structure M] (h : M ⊨ T) : T.ModelType :=
+  @ModelType.of L T M LM h
 
 @[simp]
-theorem coe_of {M : Type w} [L.Structure M] [Nonempty M] (h : M ⊨ T) : (h.bundled : Type w) = M :=
+theorem coe_of {M : Type w} [L.Structure M] (h : M ⊨ T) : (h.bundled : Type w) = M :=
   rfl
 
 end Theory
@@ -190,7 +189,6 @@ def ElementarilyEquivalent.toModel {M : T.ModelType} {N : Type*} [LN : L.Structu
     (h : M ≅[L] N) : T.ModelType where
   Carrier := N
   struc := LN
-  nonempty' := h.nonempty
   is_model := h.theory_model
 
 /-- An elementary substructure of a bundled model as a bundled model. -/

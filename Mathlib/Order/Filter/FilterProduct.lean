@@ -42,9 +42,14 @@ local notation "β*" => Germ (φ : Filter α) β
 instance instGroupWithZero [GroupWithZero β] : GroupWithZero β* where
   __ := instDivInvMonoid
   __ := instMonoidWithZero
-  mul_inv_cancel f := inductionOn f fun f hf ↦ coe_eq.2 <| (φ.em fun y ↦ f y = 0).elim
-    (fun H ↦ (hf <| coe_eq.2 H).elim) fun H ↦ H.mono fun _ ↦ mul_inv_cancel₀
-  inv_zero := coe_eq.2 <| by simp only [Function.comp_def, inv_zero, EventuallyEq.rfl]
+  mul_inv_cancel := by
+    intro f hf
+    induction f using inductionOn with | coe f
+    rw [← coe_inv, ← coe_mul, ← coe_one, coe_eq]
+    rw [← coe_zero, ne_eq, coe_eq] at hf
+    exact ((φ.em _).resolve_left hf).mono fun _ => mul_inv_cancel₀
+  inv_zero := by
+    simp_rw [← coe_zero, ← coe_inv, Pi.inv_def, Pi.zero_def, inv_zero]
 
 instance instDivisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
   toSemiring := instSemiring
@@ -72,20 +77,23 @@ theorem coe_lt [Preorder β] {f g : α → β} : (f : β*) < g ↔ ∀* x, f x <
 theorem coe_pos [Preorder β] [Zero β] {f : α → β} : 0 < (f : β*) ↔ ∀* x, 0 < f x :=
   coe_lt
 
-theorem const_lt [Preorder β] {x y : β} : x < y → (↑x : β*) < ↑y :=
-  coe_lt.mpr ∘ liftRel_const
-
 @[simp, norm_cast]
 theorem const_lt_iff [Preorder β] {x y : β} : (↑x : β*) < ↑y ↔ x < y :=
-  coe_lt.trans liftRel_const_iff
+  coe_lt.trans Filter.eventually_const
+
+alias ⟨_, const_lt⟩ := const_lt_iff
 
 theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· < ·) := by
-  ext ⟨f⟩ ⟨g⟩
-  exact coe_lt
+  ext f g
+  induction f, g using inductionOn₂ with | coe f g
+  rw [coe_lt, liftRel_coe]
 
-instance total [LE β] [@Std.Total β (· ≤ ·)] : @Std.Total β* (· ≤ ·) :=
-  ⟨fun f g =>
-    inductionOn₂ f g fun _f _g => eventually_or.1 <| Eventually.of_forall fun _x => total_of _ _ _⟩
+instance total [LE β] [@Std.Total β (· ≤ ·)] : @Std.Total β* (· ≤ ·) where
+  total := by
+    intro a b
+    induction a, b using inductionOn₂ with | coe a b
+    rw [coe_le, coe_le]
+    exact eventually_or.1 (.of_forall fun _ => Std.Total.total _ _)
 
 open scoped Classical in
 /-- If `φ` is an ultrafilter then the ultraproduct is a linear order. -/
@@ -94,36 +102,37 @@ noncomputable instance instLinearOrder [LinearOrder β] : LinearOrder β* :=
 
 instance instIsStrictOrderedRing [Semiring β] [PartialOrder β] [IsStrictOrderedRing β] :
     IsStrictOrderedRing β* where
-  mul_lt_mul_of_pos_left x := inductionOn x fun _f hf y z ↦ inductionOn₂ y z fun _g _h hgh ↦
-    coe_lt.2 <| (coe_lt.1 hf).mp <| (coe_lt.1 hgh).mono fun _a ↦ mul_lt_mul_of_pos_left
-  mul_lt_mul_of_pos_right x := inductionOn x fun _f hf y z ↦ inductionOn₂ y z fun _g _h hgh ↦
-    coe_lt.2 <| (coe_lt.1 hf).mp <| (coe_lt.1 hgh).mono fun _a ↦ mul_lt_mul_of_pos_right
+  mul_lt_mul_of_pos_left := by
+    intro x hx y z hyz
+    induction x, y, z using inductionOn₃ with | coe x y z
+    rw [← coe_zero, coe_lt] at hx
+    rw [coe_lt] at hyz
+    rw [← coe_mul, ← coe_mul, coe_lt]
+    exact hx.mp <| hyz.mono fun _ => mul_lt_mul_of_pos_left
+  mul_lt_mul_of_pos_right := by
+    intro x hx y z hyz
+    induction x, y, z using inductionOn₃ with | coe x y z
+    rw [← coe_zero, coe_lt] at hx
+    rw [coe_lt] at hyz
+    rw [← coe_mul, ← coe_mul, coe_lt]
+    exact hx.mp <| hyz.mono fun _ => mul_lt_mul_of_pos_right
 
 theorem max_def [LinearOrder β] (x y : β*) : max x y = map₂ max x y :=
-  inductionOn₂ x y fun a b => by
-    rcases le_total (a : β*) b with h | h
-    · rw [max_eq_right h, map₂_coe, coe_eq]
-      exact h.mono fun i hi => (max_eq_right hi).symm
-    · rw [max_eq_left h, map₂_coe, coe_eq]
-      exact h.mono fun i hi => (max_eq_left hi).symm
+  rfl
 
 theorem min_def [K : LinearOrder β] (x y : β*) : min x y = map₂ min x y :=
-  inductionOn₂ x y fun a b => by
-    rcases le_total (a : β*) b with h | h
-    · rw [min_eq_left h, map₂_coe, coe_eq]
-      exact h.mono fun i hi => (min_eq_left hi).symm
-    · rw [min_eq_right h, map₂_coe, coe_eq]
-      exact h.mono fun i hi => (min_eq_right hi).symm
+  rfl
 
 theorem abs_def [AddCommGroup β] [LinearOrder β] (x : β*) :
-    |x| = map abs x :=
-  inductionOn x fun _a => rfl
+    |x| = map abs x := by
+  unfold abs
+  induction x using inductionOn with | coe x
+  rw [max_def, ← coe_neg, map₂_coe, map_coe]
+  rfl
 
-@[simp]
 theorem const_max [LinearOrder β] (x y : β) : (↑(max x y : β) : β*) = max ↑x ↑y := by
   rw [max_def, map₂_const]
 
-@[simp]
 theorem const_min [LinearOrder β] (x y : β) : (↑(min x y : β) : β*) = min ↑x ↑y := by
   rw [min_def, map₂_const]
 

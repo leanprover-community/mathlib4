@@ -48,12 +48,28 @@ variable {l : Filter α}
 instance instIsOrderedRing [Semiring β] [PartialOrder β] [IsOrderedRing β] :
     IsOrderedRing (Germ l β) where
   zero_le_one := const_le zero_le_one
-  mul_le_mul_of_nonneg_left x :=
-    inductionOn x fun _f hx y z ↦ inductionOn₂ y z fun _g _h hfg ↦ hx.mp <| hfg.mono
-      fun _a ↦ mul_le_mul_of_nonneg_left
-  mul_le_mul_of_nonneg_right x :=
-    inductionOn x fun _f hx y z ↦ inductionOn₂ y z fun _g _h hfg ↦ hx.mp <| hfg.mono
-      fun _a ↦ mul_le_mul_of_nonneg_right
+  mul_le_mul_of_nonneg_left := by
+    intro a ha b c hbc
+    by_cases h : l.NeBot
+    · induction a, b, c using inductionOn₃ with | coe a b c
+      rw [← coe_zero, coe_le] at ha
+      rw [coe_le] at hbc
+      rw [← coe_mul, ← coe_mul, coe_le]
+      exact ha.mp <| hbc.mono fun _ => mul_le_mul_of_nonneg_left
+    · simp only [le_def]
+      rw [liftRel_iff_map₂_eq_const_true]
+      exact (subsingleton_of_bot (Filter.not_neBot.1 h)).allEq _ _
+  mul_le_mul_of_nonneg_right := by
+    intro a ha b c hbc
+    by_cases h : l.NeBot
+    · induction a, b, c using inductionOn₃ with | coe a b c
+      rw [← coe_zero, coe_le] at ha
+      rw [coe_le] at hbc
+      rw [← coe_mul, ← coe_mul, coe_le]
+      exact ha.mp <| hbc.mono fun _ => mul_le_mul_of_nonneg_right
+    · simp only [le_def]
+      rw [liftRel_iff_map₂_eq_const_true]
+      exact (subsingleton_of_bot (Filter.not_neBot.1 h)).allEq _ _
 
 end Germ
 
