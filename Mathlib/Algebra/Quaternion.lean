@@ -686,7 +686,7 @@ end QuaternionAlgebra
 
 /-- Space of quaternions over a type, denoted as `ℍ[R]`.
 Implemented as a structure with four fields: `re`, `im_i`, `im_j`, and `im_k`. -/
-def Quaternion (R : Type*) [Zero R] [One R] [Neg R] :=
+abbrev Quaternion (R : Type*) [Zero R] [One R] [Neg R] :=
   QuaternionAlgebra R (-1) (0) (-1)
 
 @[inherit_doc]
@@ -709,10 +709,8 @@ theorem Quaternion.equivTuple_apply (R : Type*) [Zero R] [One R] [Neg R] (x : �
     Quaternion.equivTuple R x = ![x.re, x.imI, x.imJ, x.imK] :=
   rfl
 
-instance {R : Type*} [Zero R] [One R] [Neg R] [Subsingleton R] : Subsingleton ℍ[R] :=
-  inferInstanceAs <| Subsingleton <| ℍ[R,-1,0,-1]
-instance {R : Type*} [Zero R] [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] :=
-  inferInstanceAs <| Nontrivial <| ℍ[R,-1,0,-1]
+instance {R : Type*} [Zero R] [One R] [Neg R] [Subsingleton R] : Subsingleton ℍ[R] := inferInstance
+instance {R : Type*} [Zero R] [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] := inferInstance
 
 namespace Quaternion
 
@@ -723,37 +721,19 @@ variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
 
 instance : CoeTC R ℍ[R] := ⟨coe⟩
 
-instance [SMul S R] : SMul S ℍ[R] := inferInstanceAs <| SMul S ℍ[R,-1,0,-1]
-
-instance instRing : Ring ℍ[R] where
-  nsmul := letI := Quaternion.instSMul (S := ℕ) (R := R); (· • ·)
-  zsmul := letI := Quaternion.instSMul (S := ℤ) (R := R); (· • ·)
-  __ : Ring ℍ[R] := inferInstanceAs <| Ring ℍ[R,-1,0,-1]
-
-instance : Inhabited ℍ[R] := inferInstanceAs <| Inhabited ℍ[R,-1,0,-1]
-
+instance [SMul S R] : SMul S ℍ[R] := inferInstance
+instance instRing : Ring ℍ[R] := inferInstance
+instance : Inhabited ℍ[R] := inferInstance
 instance [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower S T ℍ[R] :=
-  inferInstanceAs <| IsScalarTower S T ℍ[R,-1,0,-1]
-
-instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] :=
-  inferInstanceAs <| SMulCommClass S T ℍ[R,-1,0,-1]
-
-instance [Monoid S] [MulAction S R] : MulAction S ℍ[R] :=
-  inferInstanceAs <| MulAction S ℍ[R,-1,0,-1]
-
-instance [Semiring S] [DistribMulAction S R] : DistribMulAction S ℍ[R] :=
-  inferInstanceAs <| DistribMulAction S ℍ[R,-1,0,-1]
-
-instance [Semiring S] [Module S R] : Module S ℍ[R] :=
-  inferInstanceAs <| Module S ℍ[R,-1,0,-1]
-
-protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
-  inferInstanceAs <| Algebra S ℍ[R,-1,0,-1]
-
-instance : Star ℍ[R] := inferInstanceAs <| Star ℍ[R,-1,0,-1]
-instance : StarRing ℍ[R] := inferInstanceAs <| StarRing ℍ[R,-1,0,-1]
-set_option backward.isDefEq.respectTransparency.types false in
-instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,0,-1]) a
+  inferInstance
+instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] := inferInstance
+instance [Monoid S] [MulAction S R] : MulAction S ℍ[R] := inferInstance
+instance [Semiring S] [DistribMulAction S R] : DistribMulAction S ℍ[R] := inferInstance
+instance [Semiring S] [Module S R] : Module S ℍ[R] := inferInstance
+protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] := inferInstance
+instance : Star ℍ[R] := inferInstance
+instance : StarRing ℍ[R] := inferInstance
+instance : IsStarNormal a := inferInstance
 
 @[ext]
 theorem ext : a.re = b.re → a.imI = b.imI → a.imJ = b.imJ → a.imK = b.imK → a = b :=
@@ -967,8 +947,8 @@ theorem algebraMap_injective : (algebraMap R ℍ[R] : _ → _).Injective :=
 theorem smul_coe : x • (y : ℍ[R]) = ↑(x * y) :=
   QuaternionAlgebra.smul_coe x y
 
-instance : Module.Finite R ℍ[R] := inferInstanceAs <| Module.Finite R ℍ[R,-1,0,-1]
-instance : Module.Free R ℍ[R] := inferInstanceAs <| Module.Free R ℍ[R,-1,0,-1]
+instance : Module.Finite R ℍ[R] := inferInstance
+instance : Module.Free R ℍ[R] := inferInstance
 
 theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R] = 4 :=
   QuaternionAlgebra.rank_eq_four _ _ _
@@ -1133,8 +1113,7 @@ theorem normSq_nonneg : 0 ≤ normSq a := by
 theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
   normSq_nonneg.ge_iff_eq'.trans normSq_eq_zero
 
-instance instNontrivial : Nontrivial ℍ[R] where
-  exists_pair_ne := ⟨0, 1, mt (congr_arg QuaternionAlgebra.re) zero_ne_one⟩
+instance instNontrivial : Nontrivial ℍ[R] := inferInstance
 
 instance : NoZeroDivisors ℍ[R] where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab :=
