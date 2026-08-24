@@ -5,13 +5,13 @@ Authors: Johan Commelin, Jiedong Jiang, Fangming Li, Christian Merten
 -/
 module
 
+public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Topology.Constructible
 public import Mathlib.Topology.Order.GenerateFromLattice
-public import Mathlib.Topology.Spectral.Basic
-public import Mathlib.Topology.WithTopology
-public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Topology.Sober
+public import Mathlib.Topology.Spectral.Basic
 public import Mathlib.Topology.Spectral.Prespectral
+public import Mathlib.Topology.WithTopology
 
 /-!
 # Constructible topology
@@ -51,12 +51,12 @@ abbrev WithConstructibleTopology (X : Type*) [TopologicalSpace X] : Type _ :=
   WithTopology X (constructibleTopology X)
 
 open TopologicalSpace Topology
+open scoped Topology
 
 variable (X) in
 @[simp]
 lemma empty_mem_constructibleTopologySubbasis : ∅ ∈ constructibleTopologySubbasis X :=
   Or.intro_left _ ⟨isOpen_empty, isCompact_empty⟩
-open scoped Topology
 
 lemma WithConstructibleTopology.isOpen_iff {s : Set (WithConstructibleTopology X)} :
     IsOpen s ↔ IsOpen[constructibleTopology X] (WithTopology.toTopology _ ⁻¹' s) :=
