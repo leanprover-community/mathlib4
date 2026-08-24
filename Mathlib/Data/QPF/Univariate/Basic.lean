@@ -153,14 +153,15 @@ theorem recF_eq {α : Type _} (g : F α → α) (x : q.P.W) :
   rfl
 
 theorem recF_eq' {α : Type _} (g : F α → α) (a : q.P.A) (f : q.P.B a → q.P.W) :
-    recF g ⟨a, f⟩ = g (abs (q.P.map (recF g) (.mk a f))) :=
+    recF g (.mk (.mk a f)) = g (abs (q.P.map (recF g) (.mk a f))) :=
   rfl
 
 /-- two trees are equivalent if their F-abstractions are -/
 inductive Wequiv : q.P.W → q.P.W → Prop
-  | ind (a : q.P.A) (f f' : q.P.B a → q.P.W) : (∀ x, Wequiv (f x) (f' x)) → Wequiv ⟨a, f⟩ ⟨a, f'⟩
+  | ind (a : q.P.A) (f f' : q.P.B a → q.P.W) :
+      (∀ x, Wequiv (f x) (f' x)) → Wequiv (.mk (.mk a f)) (.mk (.mk a f'))
   | abs (a : q.P.A) (f : q.P.B a → q.P.W) (a' : q.P.A) (f' : q.P.B a' → q.P.W) :
-      abs (.mk a f) = abs (.mk a' f') → Wequiv ⟨a, f⟩ ⟨a', f'⟩
+      abs (.mk a f) = abs (.mk a' f') → Wequiv (.mk (.mk a f)) (.mk (.mk a' f'))
   | trans (u v w : q.P.W) : Wequiv u v → Wequiv v w → Wequiv u w
 
 /-- `recF` is insensitive to the representation -/
@@ -194,10 +195,10 @@ def Wrepr : q.P.W → q.P.W :=
   recF (PFunctor.W.mk ∘ repr)
 
 theorem Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
-  induction x with | _ a f ih
-  apply Wequiv.trans (v := PFunctor.W.mk (q.P.map Wrepr (.mk a f)))
+  induction x with | mk p ih
+  apply Wequiv.trans (v := PFunctor.W.mk (q.P.map Wrepr p))
   · apply Wequiv.abs'
-    have : Wrepr ⟨a, f⟩ = PFunctor.W.mk (repr (abs (q.P.map Wrepr (.mk a f)))) := rfl
+    have : Wrepr (.mk p) = PFunctor.W.mk (repr (abs (q.P.map Wrepr p))) := rfl
     rw [this, PFunctor.W.dest_mk, abs_repr]
     rfl
   apply Wequiv.ind; exact ih
@@ -231,7 +232,6 @@ def Fix.mk (x : F (Fix F)) : Fix F :=
 def Fix.dest : Fix F → F (Fix F) :=
   Fix.rec (Functor.map Fix.mk)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Fix.rec_eq {α : Type _} (g : F α → α) (x : F (Fix F)) :
     Fix.rec g (Fix.mk x) = g (Fix.rec g <$> x) := by
   have : recF g ∘ fixToW = Fix.rec g := by
@@ -249,8 +249,8 @@ theorem Fix.rec_eq {α : Type _} (g : F α → α) (x : F (Fix F)) :
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Fix.ind_aux (a : q.P.A) (f : q.P.B a → q.P.W) :
-    Fix.mk (abs (.mk a fun x => ⟦f x⟧)) = ⟦⟨a, f⟩⟧ := by
-  have : Fix.mk (abs (.mk a fun x => ⟦f x⟧)) = ⟦Wrepr ⟨a, f⟩⟧ := by
+    Fix.mk (abs (.mk a fun x => ⟦f x⟧)) = ⟦.mk (.mk a f)⟧ := by
+  have : Fix.mk (abs (.mk a fun x => ⟦f x⟧)) = ⟦Wrepr (.mk (.mk a f))⟧ := by
     apply Quot.sound; apply Wequiv.abs'
     rw [PFunctor.W.dest_mk, abs_map, abs_repr, ← abs_map, PFunctor.map_eq]
     simp only [Wrepr, recF_eq, PFunctor.W.dest_mk, abs_repr, Function.comp]
@@ -264,8 +264,9 @@ theorem Fix.ind_rec {α : Type u} (g₁ g₂ : Fix F → α)
     (h : ∀ x : F (Fix F), g₁ <$> x = g₂ <$> x → g₁ (Fix.mk x) = g₂ (Fix.mk x)) :
     ∀ x, g₁ x = g₂ x := by
   rintro ⟨x⟩
-  induction x with | _ a f ih
-  change g₁ ⟦⟨a, f⟩⟧ = g₂ ⟦⟨a, f⟩⟧
+  induction x with | mk p ih
+  cases p with | mk a f
+  change g₁ ⟦.mk (.mk a f)⟧ = g₂ ⟦.mk (.mk a f)⟧
   rw [← Fix.ind_aux a f]; apply h
   rw [← abs_map, ← abs_map, PFunctor.map_eq, PFunctor.map_eq]
   congr 2 with x
@@ -296,8 +297,9 @@ theorem Fix.dest_mk (x : F (Fix F)) : Fix.dest (Fix.mk x) = x := by
 
 theorem Fix.ind (p : Fix F → Prop) (h : ∀ x : F (Fix F), Liftp p x → p (Fix.mk x)) : ∀ x, p x := by
   rintro ⟨x⟩
-  induction x with | _ a f ih
-  change p ⟦⟨a, f⟩⟧
+  induction x with | mk x ih
+  cases x with | mk a f
+  change p ⟦.mk (.mk a f)⟧
   rw [← Fix.ind_aux a f]
   apply h
   rw [liftp_iff]
@@ -414,7 +416,6 @@ theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
     rw [h _ _ r'xy]
   right; exact rxy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Cofix.bisim (r : Cofix F → Cofix F → Prop)
     (h : ∀ x y, r x y → Liftr r (Cofix.dest x) (Cofix.dest y)) : ∀ x y, r x y → x = y := by
   apply Cofix.bisim_rel
