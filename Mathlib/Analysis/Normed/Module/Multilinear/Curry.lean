@@ -553,8 +553,8 @@ multilinear map with variables indexed by `ι` taking values in the space of con
 maps with variables indexed by `ι'`. -/
 def currySum (f : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G') :
     ContinuousMultilinearMap 𝕜 (fun _ : ι => G) (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G') :=
-  MultilinearMap.mkContinuousMultilinear (MultilinearMap.currySumEquiv f.toMultilinearMap) ‖f‖
-    fun m m' => by simpa [mul_assoc] using f.le_opNorm (Sum.elim m m')
+  MultilinearMap.mkContinuousMultilinear (MultilinearMap.currySum f.toMultilinearMap) ‖f‖
+    fun m m' => by simpa [Fintype.prod_sum_type, mul_assoc] using f.le_opNorm (Sum.elim m m')
 
 @[simp]
 theorem currySum_apply (f : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G') (m : ι → G)
