@@ -626,7 +626,7 @@ of their languages on `U`. -/
 lemma languageOn_union {X Y : Set (G → A)} (U : Finset G) :
     LanguageOn (X ∪ Y) U = LanguageOn X U ∪ LanguageOn Y U := by
   ext p
-  simp only [LanguageOn, mem_union, mem_setOf_eq]
+  simp only [LanguageOn, mem_union, mem_ofPred_eq]
   grind
 
 /-- The language of a subshift `Y` on a finite shape `U`. -/
