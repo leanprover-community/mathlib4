@@ -122,17 +122,13 @@ lemma eTVDist_withDensity_self_eq_lintegral {f : 𝓧 → ℝ≥0∞} (hf : Meas
 
 lemma tvDist_eq_integral_abs_rnDeriv_of_ac (hμν : μ ≪ ν) :
     tvDist μ ν = ∫ x, |1 - (μ.rnDeriv ν x).toReal| ∂ν := by
-  have : tvDist μ ν = tvDist (ν.withDensity (μ.rnDeriv ν)) ν := by
-    congr
-    rw [Measure.withDensity_rnDeriv_eq _ _ hμν]
-  rw [this, tvDist_withDensity_self_eq_integral (by fun_prop)]
+  conv_lhs => rw! [← μ.withDensity_rnDeriv_eq ν hμν,
+    tvDist_withDensity_self_eq_integral (by fun_prop)]
 
 lemma eTVDist_eq_lintegral_enorm_rnDeriv_of_ac (hμν : μ ≪ ν) :
     eTVDist μ ν = ∫⁻ x, ‖1 - (μ.rnDeriv ν x).toReal‖ₑ ∂ν := by
-  have : eTVDist μ ν = eTVDist (ν.withDensity (μ.rnDeriv ν)) ν := by
-    congr
-    rw [Measure.withDensity_rnDeriv_eq _ _ hμν]
-  rw [this, eTVDist_withDensity_self_eq_lintegral (by fun_prop)]
+  conv_lhs => rw! [← μ.withDensity_rnDeriv_eq ν hμν,
+    eTVDist_withDensity_self_eq_lintegral (by fun_prop)]
 
 lemma tvDist_add_of_ac_of_mutuallySingular {μ' : Measure 𝓧} [IsFiniteMeasure μ']
     (hμν : μ ≪ ν) (hμ'ν : μ' ⟂ₘ ν) :
