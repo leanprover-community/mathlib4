@@ -496,8 +496,8 @@ theorem iUnion_range_eq_sUnion (C : Set (Set α)) {f : ∀ s : C, ι → s.1}
     refine ⟨_, ⟨y, rfl⟩, ⟨s, hs⟩, ?_⟩
     exact congr_arg Subtype.val hy
 
-theorem iUnion_range_eq_iUnion (C : ι → Set α) {f : ∀ x : ι, ι' → C x}
-    (hf : ∀ x : ι, Surjective (f x)) : ⋃ y : ι', range (fun x : ι => (f x y).val) = ⋃ x, C x := by
+theorem iUnion_range_eq_iUnion (C : ι → Set α) {f : ∀ x : ι, ι₂ → C x}
+    (hf : ∀ x : ι, Surjective (f x)) : ⋃ y : ι₂, range (fun x : ι => (f x y).val) = ⋃ x, C x := by
   ext x; rw [mem_iUnion, mem_iUnion]; constructor
   · rintro ⟨y, i, rfl⟩
     exact ⟨i, (f i y).2⟩
