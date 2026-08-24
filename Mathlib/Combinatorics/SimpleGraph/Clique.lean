@@ -751,7 +751,7 @@ lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
 variable (G) in
 @[simp]
 theorem cliqueNum_of_isEmpty [IsEmpty α] : G.cliqueNum = 0 :=
-  Nat.le_zero.mp <| csSup_le' fun n ⟨s, h⟩ ↦ by simpa [s.eq_empty_of_isEmpty] using h.card_eq.symm
+  Nat.le_zero.mp <| csSup_le' fun n ⟨s, h⟩ ↦ by simp [s.eq_empty_of_isEmpty, ← h.card_eq]
 
 variable (G) in
 theorem cliqueNum_le_natCard [Finite α] : G.cliqueNum ≤ Nat.card α :=
