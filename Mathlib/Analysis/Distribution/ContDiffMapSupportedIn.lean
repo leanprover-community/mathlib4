@@ -110,7 +110,7 @@ functions with support in a compact set `K`. -/
 scoped[Distributions] notation "𝓓_{" K "}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F ⊤ K
 
-open Distributions
+open scoped Distributions
 
 /-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of bundled `n`-times
 continuously differentiable functions with support in the compact set `K`. -/
