@@ -36,7 +36,7 @@ section Definitions
 
 /-- A configuration of a cellular automaton
 assigns a state in `SingleCellState` to each cell. -/
-@[expose] public def Configuration := G → SingleCellState
+public abbrev Configuration := G → SingleCellState
 
 /-- The group action of `G` on configurations coming from its action on itself. -/
 public instance ConfigIsGSet :
@@ -165,7 +165,7 @@ section EmptyWorld
 The local update rule if all the neighborhood
 is `emptyState` gives the new cell as also `emptyState`.
 -/
-public def emptyWorldProperty
+public abbrev emptyWorldProperty
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
   (emptyState : SingleCellState) : Prop :=
   A.localUpdateRule (fun _ => emptyState) = emptyState
@@ -228,7 +228,7 @@ private lemma stepN_smul
 /-- The value at one cell influences another cell at a later time.
 This is whether one is in the "light-cone" of another.
 -/
-public def influencesAtT
+public abbrev influencesAtT
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
   (timestep : ℕ) (cell1 cell2 : G) :=
   ∃ (word : List (A.neighborhood)) (_hword : word.length = timestep),
@@ -256,7 +256,7 @@ This definition includes the degenerate case of
 after_t_steps = 0 and shifts_by = 1,
 which is every configuration.
 -/
-public def isGlider
+public abbrev isGlider
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
   (config : Configuration (G := G) (SingleCellState := SingleCellState))
   (shifts_by : G) (after_t_steps : ℕ) : Prop :=
@@ -269,7 +269,7 @@ However for this it is not including the
 degenerate case, so that this Prop
 is not trivially true for every configuration.
 -/
-public def isExistentialGlider
+public abbrev isExistentialGlider
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
   (config : Configuration (G := G) (SingleCellState := SingleCellState)) : Prop :=
   ∃ (shifts_by : G) (after_t_steps : ℕ) (_after_t_steps_pos : after_t_steps > 0),
@@ -329,7 +329,7 @@ public lemma gliderSameOrbitExistential
 /-- A still life is expressed as a glider that
 returns to itself with no shift and does so immediately with
 just one time step. -/
-public def isStillLife
+public abbrev isStillLife
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
   (config : Configuration (G := G) (SingleCellState := SingleCellState)) : Prop :=
   isGlider A config 1 1
@@ -353,7 +353,7 @@ returns to itself with no shift and does so with some `periodicity`.
 This includes the degenerate case of zero periodicity,
 in which every configuration is an oscillator according to this
 definition. -/
-public def isOscillator
+public abbrev isOscillator
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
   (config : Configuration (G := G) (SingleCellState := SingleCellState))
   (periodicity : ℕ) : Prop :=
@@ -363,7 +363,7 @@ public def isOscillator
 how many steps it takes to return.
 However to make this proposition nontrivial and not
 always true for every `config`, periodicity must be positive here. -/
-public def isExistentialOscillator
+public abbrev isExistentialOscillator
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
   (config : Configuration (G := G) (SingleCellState := SingleCellState)) : Prop :=
   ∃ (periodicity : ℕ) (_periodicity_pos : periodicity > 0), A.isOscillator config periodicity
@@ -710,14 +710,14 @@ private def count_true
   (f : α -> Bool) : ℕ :=
   ∑ a, (f a).toNat
 
-private def z2_nbhrs : Finset (Multiplicative (ℤ × ℤ)) :=
+private abbrev z2_nbhrs : Finset (Multiplicative (ℤ × ℤ)) :=
   {
     (-1,-1),(-1,0),(-1,1),
     (0,-1),(0,0),(0,1),
     (1,-1),(1,0),(1,1)
   }
 
-private def z2_origin : z2_nbhrs :=
+private abbrev z2_origin : z2_nbhrs :=
   ⟨(0,0), Finset.mem_insert_of_mem (Finset.mem_insert_of_mem (Finset.mem_insert_of_mem
     (Finset.mem_insert_of_mem (Finset.mem_insert_self _ _))))⟩
 
@@ -752,7 +752,7 @@ public def ConwayLife
     )
   )
 
-private def ConwayLifeTypical := ConwayLife
+private abbrev ConwayLifeTypical := ConwayLife
   (fun alive_nbhrs => alive_nbhrs = 3)
   (fun alive_nbhrs => alive_nbhrs < 3 ∨ alive_nbhrs > 5)
 
