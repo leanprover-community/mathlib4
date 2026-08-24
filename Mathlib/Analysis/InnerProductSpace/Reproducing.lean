@@ -456,8 +456,8 @@ lemma posSemidef_outerKernel (f : X → V) : (outerKernel 𝕜 f).PosSemidef := 
   refine ⟨?_, fun x ↦ ?_⟩
   · ext
     simp [star_eq_adjoint, adjoint_rankOne]
-  · simp_rw [outerKernel_apply, rankOne_apply, inner_smul_left, Finsupp.sum, ← Finset.mul_sum,
-      ← Finset.sum_mul, ← map_sum, RCLike.conj_mul]
+  · simp_rw [outerKernel_apply, rankOne_apply, inner_smul_left, ← Finsupp.mul_sum,
+      ← Finsupp.sum_mul, ← map_finsuppSum, RCLike.conj_mul]
     simp
 
 instance (f : X → V) : Fact (outerKernel 𝕜 f).PosSemidef := by
