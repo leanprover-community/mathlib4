@@ -618,7 +618,7 @@ def LanguageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
 
 /-- The language of a union of two sets of configurations on a finite shape `U` is the union
 of their languages on `U`. -/
-lemma union_morphism_LanguageOn {X Y : Set (G → A)} (U : Finset G) :
+lemma languageOn_union {X Y : Set (G → A)} (U : Finset G) :
     LanguageOn (X ∪ Y) U = LanguageOn X U ∪ LanguageOn Y U := by
   ext p
   simp only [LanguageOn, mem_union, mem_setOf_eq]
