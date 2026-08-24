@@ -684,7 +684,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) :
     IsImmersionAt I I n (Subtype.val : s → M) ⟨x, hx⟩ := by
   use PUnit, by infer_instance, by infer_instance
-  apply Manifold.IsImmersionAtOfComplement.of_opens
+  apply IsImmersionAtOfComplement.of_opens
 
 /-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/
 protected lemma _root_.ModelWithCorners.isImmersionAt {n : ℕ} {x : H} :
