@@ -555,7 +555,7 @@ end DyckWord
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: `p.firstReturn` is positive if `p` is nonzero. -/
 @[positivity DyckWord.firstReturn _]

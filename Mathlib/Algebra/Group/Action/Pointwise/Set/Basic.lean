@@ -57,7 +57,7 @@ lemma smul_set_pi_of_isUnit {M ι : Type*} {α : ι → Type*} [Monoid M] [∀ i
   exact smul_set_pi c I s
 
 section Mul
-variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable {ι : Sort*} [Mul α] {s t u : Set α} {a b : α}
 
 @[to_additive] lemma smul_set_subset_mul : a ∈ s → a • t ⊆ s * t := image_subset_image2_right
 
