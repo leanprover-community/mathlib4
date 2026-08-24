@@ -243,12 +243,21 @@ lemma id_mapExactFunctor [HasExt.{w} C] {X Y : C} {n : ℕ}
     (α : Ext X Y n) :
     α.mapExactFunctor (𝟭 C) = α := sorry
 
+open CategoryTheory.Functor in
+attribute [local instance] HasDerivedCategory.standard in
 lemma comp_mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] [HasExt.{w''} E] {X Y : C} {n : ℕ}
     (α : Ext X Y n) (F : C ⥤ D) (G : D ⥤ E) [F.Additive] [G.Additive]
     [PreservesFiniteLimits F] [PreservesFiniteColimits F]
     [PreservesFiniteLimits G] [PreservesFiniteColimits G] :
     α.mapExactFunctor (F ⋙ G) = (α.mapExactFunctor F).mapExactFunctor G := by
-  sorry
+  ext
+  simp only [mapExactFunctor_hom]
+  rw [← α.hom.map_naturality_1 (Functor.mapDerivedCategoryCompIso F G), ShiftedHom.comp_map]
+  simp only [ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀,
+    ShiftedHom.map, Functor.map_comp, Category.assoc]
+  simp [mapDerivedCategorySingleFunctor_inv_app_comp_mapDerivedCategoryCompIso_inv_app_assoc,
+    commShiftIso_hom_naturality_assoc, ← Functor.map_comp,
+    mapDerivedCategoryCompIso_hom_app_comp_mapDerivedCategorySingleFunctor_hom_app]
 
 lemma mapExactFunctor_comp_mk₀_natTransApp
     [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ}

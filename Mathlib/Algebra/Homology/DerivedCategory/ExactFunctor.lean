@@ -21,13 +21,15 @@ abelian categories, then there is an induced triangulated functor
 
 assert_not_exists TwoSidedIdeal
 
-universe w₁ w₂ v₁ v₂ u₁ u₂
+universe w₁ w₂ w₃
 
 open CategoryTheory Category Limits
 
-variable {C₁ : Type u₁} [Category.{v₁} C₁] [Abelian C₁] [HasDerivedCategory.{w₁} C₁]
-  {C₂ : Type u₂} [Category.{v₂} C₂] [Abelian C₂] [HasDerivedCategory.{w₂} C₂]
+variable {C₁ : Type*} [Category* C₁] [Abelian C₁] [HasDerivedCategory.{w₁} C₁]
+  {C₂ : Type*} [Category* C₂] [Abelian C₂] [HasDerivedCategory.{w₂} C₂]
+  {C₃ : Type*} [Category* C₃] [Abelian C₃] [HasDerivedCategory.{w₃} C₃]
   (F : C₁ ⥤ C₂) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
+  (G : C₂ ⥤ C₃) [G.Additive] [PreservesFiniteLimits G] [PreservesFiniteColimits G]
 
 namespace CategoryTheory.Functor
 
@@ -116,9 +118,8 @@ noncomputable def mapDerivedCategorySingleFunctor (n : ℤ) :
       isoWhiskerRight (HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) n) _ ≪≫
         associator .. ≪≫ (isoWhiskerLeft _ (DerivedCategory.singleFunctorIsoCompQ C₂ n)).symm
 
-variable (R : Type*) [Ring R] [CategoryTheory.Linear R C₁] [CategoryTheory.Linear R C₂]
-
-instance [F.Linear R] : F.mapDerivedCategory.Linear R := by
+instance (R : Type*) [Ring R] [CategoryTheory.Linear R C₁] [CategoryTheory.Linear R C₂]
+    [F.Linear R] : F.mapDerivedCategory.Linear R := by
   rw [← Localization.functor_linear_iff DerivedCategory.Qh (HomotopyCategory.quasiIso C₁
     (ComplexShape.up ℤ)) R ((F.mapHomotopyCategory (ComplexShape.up ℤ)).comp DerivedCategory.Qh)]
   infer_instance
@@ -144,5 +145,73 @@ lemma mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app 
   simp [Functor.mapDerivedCategorySingleFunctor, Functor.mapCochainComplexSingleFunctor,
     CochainComplex.singleFunctor, CochainComplex.singleFunctors,
     DerivedCategory.singleFunctorIsoCompQ]
+
+noncomputable instance :
+    Localization.Lifting DerivedCategory.Q
+      (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ))
+    (F.mapHomologicalComplex _ ⋙ G.mapHomologicalComplex _ ⋙ DerivedCategory.Q)
+    (F.mapDerivedCategory ⋙ G.mapDerivedCategory) where
+  iso :=
+    (associator _ _ _).symm ≪≫ isoWhiskerRight F.mapDerivedCategoryFactors _ ≪≫
+    associator _ _ _ ≪≫ isoWhiskerLeft _ G.mapDerivedCategoryFactors
+
+@[no_expose]
+noncomputable def mapDerivedCategoryCompIso :
+    F.mapDerivedCategory ⋙ G.mapDerivedCategory ≅ (F ⋙ G).mapDerivedCategory :=
+  Localization.liftNatIso DerivedCategory.Q
+      (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ))
+      (F.mapHomologicalComplex _ ⋙ G.mapHomologicalComplex _ ⋙ DerivedCategory.Q)
+      ((F ⋙ G).mapHomologicalComplex _ ⋙ DerivedCategory.Q)
+      (F.mapDerivedCategory ⋙ G.mapDerivedCategory)
+      (F ⋙ G).mapDerivedCategory
+      ((associator _ _ _).symm ≪≫
+        isoWhiskerRight (mapHomologicalComplexCompIso (Iso.refl (F ⋙ G)) (.up ℤ)) _)
+
+lemma mapDerivedCategoryCompIso_hom_app_Q_obj (X : CochainComplex C₁ ℤ) :
+    (mapDerivedCategoryCompIso F G).hom.app (DerivedCategory.Q.obj X) =
+    G.mapDerivedCategory.map (F.mapDerivedCategoryFactors.hom.app X) ≫
+    G.mapDerivedCategoryFactors.hom.app ((F.mapHomologicalComplex _).obj X) ≫
+      DerivedCategory.Q.map ((mapHomologicalComplexCompIso
+        (Iso.refl (F ⋙ G)) (ComplexShape.up ℤ)).hom.app X) ≫
+          (F ⋙ G).mapDerivedCategoryFactors.inv.app X :=
+  (Localization.liftNatTrans_app ..).trans (by simp [Localization.Lifting.iso])
+
+instance : NatTrans.CommShift (mapDerivedCategoryCompIso F G).hom ℤ := sorry
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+@[reassoc]
+lemma mapDerivedCategoryCompIso_hom_app_comp_mapDerivedCategorySingleFunctor_hom_app (X : C₁) :
+    (mapDerivedCategoryCompIso F G).hom.app ((DerivedCategory.singleFunctor C₁ 0).obj X) ≫
+    ((F ⋙ G).mapDerivedCategorySingleFunctor 0).hom.app X =
+    G.mapDerivedCategory.map ((F.mapDerivedCategorySingleFunctor 0).hom.app X) ≫
+    (G.mapDerivedCategorySingleFunctor 0).hom.app (F.obj X) := by
+  have := DerivedCategory.singleFunctorIsoCompQ C₁ 0
+  rw [← NatTrans.naturality_1 _ ((DerivedCategory.singleFunctorIsoCompQ C₁ 0).symm.app X)]
+  dsimp
+  rw [mapDerivedCategoryCompIso_hom_app_Q_obj]
+  dsimp [DerivedCategory.singleFunctorIsoCompQ, mapDerivedCategorySingleFunctor]
+  simp only [map_id, assoc, id_comp]
+  erw [Functor.map_id, Functor.map_id]
+  rw [Category.id_comp]
+  rw [Category.id_comp]
+  erw [Category.comp_id]
+  erw [Category.comp_id]
+  erw [Category.comp_id]
+  simp only [Iso.inv_hom_id_app_assoc, map_comp, assoc]
+  congr 1
+  -- requires a compatibility of `singleMapHomologicalComplex` with the composition of functors
+  sorry
+
+@[reassoc]
+lemma mapDerivedCategorySingleFunctor_inv_app_comp_mapDerivedCategoryCompIso_inv_app (X : C₁) :
+    ((F ⋙ G).mapDerivedCategorySingleFunctor 0).inv.app X ≫
+    (mapDerivedCategoryCompIso F G).inv.app ((DerivedCategory.singleFunctor C₁ 0).obj X) =
+    (G.mapDerivedCategorySingleFunctor 0).inv.app (F.obj X) ≫
+    G.mapDerivedCategory.map ((F.mapDerivedCategorySingleFunctor 0).inv.app X) := by
+  rw [← cancel_epi ((G.mapDerivedCategorySingleFunctor 0).hom.app (F.obj X)),
+    ← cancel_epi (G.mapDerivedCategory.map ((F.mapDerivedCategorySingleFunctor 0).hom.app X))]
+  simp [← mapDerivedCategoryCompIso_hom_app_comp_mapDerivedCategorySingleFunctor_hom_app_assoc,
+    ← Functor.map_comp]
 
 end CategoryTheory.Functor
