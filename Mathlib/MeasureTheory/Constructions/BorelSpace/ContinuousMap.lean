@@ -48,9 +48,9 @@ open MeasurableSpace TopologicalSpace
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
-instance ContinuousMap.measurableSpace : MeasurableSpace C(X, Y) := borel _
+instance : MeasurableSpace C(X, Y) := borel _
 
-instance ContinuousMap.borelSpace : BorelSpace C(X, Y) where
+instance : BorelSpace C(X, Y) where
   measurable_eq := rfl
 
 /-- The coarsest sigma-algebra over `C(X, Y)` making the evaluation maps `f ↦ f x` is
