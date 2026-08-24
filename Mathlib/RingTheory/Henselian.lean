@@ -119,41 +119,6 @@ instance (priority := 100) Field.henselian (K : Type*) [Field K] : HenselianLoca
     simp only [(maximalIdeal K).eq_bot_of_prime, Ideal.mem_bot] at h₁ ⊢
     exact ⟨a₀, h₁, sub_self _⟩
 
-theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
-    TFAE
-      [HenselianLocalRing R,
-        ∀ f : R[X], f.Monic → ∀ a₀ : ResidueField R, aeval a₀ f = 0 →
-          aeval a₀ (derivative f) ≠ 0 → ∃ a : R, f.IsRoot a ∧ residue R a = a₀,
-        ∀ {K : Type u} [Field K],
-          ∀ (φ : R →+* K), Surjective φ → ∀ f : R[X], f.Monic → ∀ a₀ : K,
-            f.eval₂ φ a₀ = 0 → f.derivative.eval₂ φ a₀ ≠ 0 → ∃ a : R, f.IsRoot a ∧ φ a = a₀] := by
-  tfae_have 3 → 2
-  | H => H (residue R) Ideal.Quotient.mk_surjective
-  tfae_have 2 → 1
-  | H => by
-    constructor
-    intro f hf a₀ h₁ h₂
-    specialize H f hf (residue R a₀)
-    have aux := flip mem_nonunits_iff.mp h₂
-    simp only [aeval_def, ResidueField.algebraMap_eq, eval₂_at_apply, ←
-      Ideal.Quotient.eq_zero_iff_mem, ← IsLocalRing.mem_maximalIdeal] at H h₁ aux
-    obtain ⟨a, ha₁, ha₂⟩ := H h₁ aux
-    refine ⟨a, ha₁, ?_⟩
-    rw [← Ideal.Quotient.eq_zero_iff_mem]
-    rwa [← sub_eq_zero, ← map_sub] at ha₂
-  tfae_have 1 → 3
-  | hR, K, _K, φ, hφ, f, hf, a₀, h₁, h₂ => by
-    obtain ⟨a₀, rfl⟩ := hφ a₀
-    have H := HenselianLocalRing.is_henselian f hf a₀
-    simp only [← ker_eq_maximalIdeal φ hφ, eval₂_at_apply, RingHom.mem_ker] at H h₁ h₂
-    obtain ⟨a, ha₁, ha₂⟩ := H h₁ (by
-      contrapose h₂
-      rwa [← mem_nonunits_iff, ← mem_maximalIdeal, ← ker_eq_maximalIdeal φ hφ,
-        RingHom.mem_ker] at h₂)
-    refine ⟨a, ha₁, ?_⟩
-    rwa [φ.map_sub, sub_eq_zero] at ha₂
-  tfae_finish
-
 instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
     HenselianRing R (maximalIdeal R) where
   jac := by
@@ -169,11 +134,12 @@ instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
     exact not_isUnit_zero
 
 /-- **Hensel's lemma** for a ring that is Henselian at an ideal `I`: a simple root modulo `I` of an
-arbitrary polynomial lifts to an honest root. Contrary to `HenselianRing.is_henselian`, the
-polynomial `f` is not assumed to be monic. -/
+arbitrary polynomial lifts to a root in `R`.
+
+Contrary to `HenselianRing.is_henselian`, the polynomial `f` is not assumed to be monic. -/
 theorem HenselianRing.exists_isRoot {R : Type*} [CommRing R] {I : Ideal R} [HenselianRing R I]
     {f : R[X]} {a₀ : R} (h₁ : f.eval a₀ ∈ I)
-    (h₂ : IsUnit (Ideal.Quotient.mk I (f.derivative.eval a₀))) :
+      (h₂ : IsUnit (Ideal.Quotient.mk I (f.derivative.eval a₀))) :
     ∃ a, f.IsRoot a ∧ a - a₀ ∈ I := by
   /- The reduction to the monic case goes as follows: after translating `a₀` to `0` and rescaling by
   `c₀ = f.eval a₀ ∈ I`, one obtains a polynomial `G` with `G ≡ 1 + c₁ * X` modulo `I`, where
@@ -185,7 +151,7 @@ theorem HenselianRing.exists_isRoot {R : Type*} [CommRing R] {I : Ideal R} [Hens
   have := isLocalHom_of_le_jacobson_bot I (HenselianRing.jac (R := R) (I := I))
   set φ := Ideal.Quotient.mk I
   set c₀ := f.eval a₀ with hc₀
-  set c₁ := f.derivative.eval a₀ with hc₁
+  set c₁ := f.derivative.eval a₀ with hc
   have hc₁ : IsUnit c₁ := IsUnit.of_map φ _ h₂
   have key : ∀ (p : R[X]) (x : R), φ (p.eval x) = (p.map φ).eval (φ x) := fun p x => by
     rw [eval_map, eval₂_at_apply]
@@ -209,23 +175,20 @@ theorem HenselianRing.exists_isRoot {R : Type*} [CommRing R] {I : Ideal R} [Hens
       simpa [coeff_map, coeff_one, coeff_C_mul, coeff_X] using Ideal.Quotient.eq_zero_iff_mem.mpr h
   -- `G` has constant coefficient `1`, so its reverse `P` is monic; modulo `I` it is
   -- `X ^ M * (X + c₁)`, which has `-c₁` as a simple root
-  obtain ⟨M, hM⟩ : ∃ M, G.natDegree = M + 1 := by
-    use G.natDegree - 1
+  have hM : G.natDegree = G.natDegree - 1 + 1 := by
     simp [le_natDegree_of_ne_zero, hG1, IsUnit.ne_zero hc₁]
   set P := G.reverse with hP
   have hPmonic : P.Monic := by
     rw [Monic, hP, reverse_leadingCoeff, trailingCoeff_eq_coeff_zero (hG0 ▸ one_ne_zero), hG0]
-  have hPmap : P.map φ = X ^ M * (X + C (φ c₁)) := by
+  have hPmap : P.map φ = X ^ (G.natDegree - 1) * (X + C (φ c₁)) := by
     rw [hP, Polynomial.reverse, map_reflect, hGmap, hM, ← C_1, ← pow_one X, reflect_add, reflect_C,
-      reflect_C_mul_X_pow, revAt_le (by omega)]
-    simp [pow_succ]
+      reflect_C_mul_X_pow, revAt_le (Nat.le_add_left 1 _)]
+    simp
     ring
   obtain ⟨t, htroot, htI⟩ := HenselianRing.is_henselian P hPmonic (-c₁)
-    (Ideal.Quotient.eq_zero_iff_mem.1 (by rw [key, hPmap]; simp))
-    (by
-    rw [key, ← derivative_map, hPmap]
-    simpa [derivative_mul] using (h₂.neg.pow M))
-  let _ : Invertible t := (IsUnit.of_map φ _ ((Ideal.Quotient.eq.2 htI) ▸ hc₁.neg.map _)).invertible
+    (Ideal.Quotient.eq_zero_iff_mem.mp (by rw [key, hPmap]; simp))
+    (by rw [key, ← derivative_map, hPmap]; simpa [derivative_mul] using (h₂.neg.pow _))
+  let : Invertible t := (IsUnit.of_map φ _ ((Ideal.Quotient.eq.2 htI) ▸ hc₁.neg.map _)).invertible
   have hGroot : G.eval (⅟t) = 0 := by
     have h := eval₂_reflect_eq_zero_iff (RingHom.id R) (⅟t) G.natDegree G le_rfl
     rw [invOf_invOf, show reflect G.natDegree G = P from rfl] at h
@@ -234,13 +197,61 @@ theorem HenselianRing.exists_isRoot {R : Type*} [CommRing R] {I : Ideal R} [Hens
   simp [IsRoot, ← hGeval, hGroot, mul_zero, Ideal.mul_mem_right, h₁]
 
 /-- **Hensel's lemma** for a Henselian local ring: a simple root in the residue field of an
-arbitrary polynomial lifts to an honest root. Contrary to `HenselianLocalRing.is_henselian`, the
-polynomial `f` is not assumed to be monic. -/
+arbitrary polynomial lifts to a root in `R`.
+
+Contrary to `HenselianLocalRing.is_henselian`, the polynomial `f` is not assumed to be monic. -/
 theorem HenselianLocalRing.exists_isRoot {R : Type*} [CommRing R] [HenselianLocalRing R]
-    {f : R[X]} {a₀ : R} (h₁ : f.eval a₀ ∈ maximalIdeal R)
-    (h₂ : IsUnit (f.derivative.eval a₀)) :
-    ∃ a, f.IsRoot a ∧ a - a₀ ∈ maximalIdeal R :=
-  HenselianRing.exists_isRoot h₁ (h₂.map _)
+    {f : R[X]} {a₀ : R} (h₁ : f.eval a₀ ∈ maximalIdeal R) (h₂ : IsUnit (f.derivative.eval a₀)) :
+    ∃ a, f.IsRoot a ∧ a - a₀ ∈ maximalIdeal R := HenselianRing.exists_isRoot h₁ (h₂.map _)
+
+/-- Equivalent ways of expressing the Henselian property for a local ring. The last two items are
+the variants of the second and third one in which the polynomial is *not* assumed to be monic. -/
+theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
+    TFAE
+      [HenselianLocalRing R,
+        ∀ f : R[X], f.Monic → ∀ a₀, f.aeval a₀ = 0 →
+          (derivative f).aeval a₀ ≠ 0 → ∃ a, f.IsRoot a ∧ residue R a = a₀,
+        ∀ {K : Type u} [Field K], ∀ (φ : R →+* K), Surjective φ →
+          ∀ f : R[X], f.Monic → ∀ a₀, f.eval₂ φ a₀ = 0 → f.derivative.eval₂ φ a₀ ≠ 0 →
+            ∃ a : R, f.IsRoot a ∧ φ a = a₀,
+        ∀ f a₀, f.aeval a₀ = 0 → (derivative f).aeval a₀ ≠ 0 → ∃ a, f.IsRoot a ∧ residue R a = a₀,
+        ∀ {K : Type u} [Field K], ∀ (φ : R →+* K), Surjective φ →
+          ∀ (f : R[X]) (a₀ : K), f.eval₂ φ a₀ = 0 → f.derivative.eval₂ φ a₀ ≠ 0 →
+            ∃ a : R, f.IsRoot a ∧ φ a = a₀] := by
+  tfae_have 3 → 2
+  | H => H (residue R) Ideal.Quotient.mk_surjective
+  tfae_have 2 → 1
+  | H => by
+    constructor
+    intro f hf a₀ h₁ h₂
+    specialize H f hf (residue R a₀)
+    have aux := flip mem_nonunits_iff.mp h₂
+    simp only [aeval_def, ResidueField.algebraMap_eq, eval₂_at_apply, ←
+      Ideal.Quotient.eq_zero_iff_mem, ← IsLocalRing.mem_maximalIdeal] at H h₁ aux
+    obtain ⟨a, ha₁, ha₂⟩ := H h₁ aux
+    refine ⟨a, ha₁, ?_⟩
+    rw [← Ideal.Quotient.eq_zero_iff_mem]
+    rwa [← sub_eq_zero, ← map_sub] at ha₂
+  tfae_have 5 → 3
+  | H, K, _K, φ, hφ, f, _, a₀ => H φ hφ f a₀
+  tfae_have 5 → 4
+  | H => H (residue R) Ideal.Quotient.mk_surjective
+  tfae_have 4 → 2
+  | H, f, _ => H f
+  tfae_have 1 → 5
+  | hR, K, _K, φ, hφ, f, a₀, h₁, h₂ => by
+    obtain ⟨a₀, rfl⟩ := hφ a₀
+    have H : f.eval a₀ ∈ maximalIdeal R → IsUnit (f.derivative.eval a₀) →
+        ∃ a : R, f.IsRoot a ∧ a - a₀ ∈ maximalIdeal R :=
+      fun h₁ h₂ => HenselianLocalRing.exists_isRoot h₁ h₂
+    simp only [← ker_eq_maximalIdeal φ hφ, eval₂_at_apply, RingHom.mem_ker] at H h₁ h₂
+    obtain ⟨a, ha₁, ha₂⟩ := H h₁ (by
+      contrapose h₂
+      rwa [← mem_nonunits_iff, ← mem_maximalIdeal, ← ker_eq_maximalIdeal φ hφ,
+        RingHom.mem_ker] at h₂)
+    refine ⟨a, ha₁, ?_⟩
+    rwa [φ.map_sub, sub_eq_zero] at ha₂
+  tfae_finish
 
 -- see Note [lower instance priority]
 /-- A ring `R` that is `I`-adically complete is Henselian at `I`. -/
