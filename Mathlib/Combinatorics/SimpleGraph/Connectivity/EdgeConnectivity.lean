@@ -159,8 +159,8 @@ theorem isEdgeConnected_two_iff_forall_not_isBridge : G.IsEdgeConnected 2 ↔ �
   rw [isEdgeConnected_two_iff_forall_preconnected]
   refine ⟨fun h ↦ Sym2.ind (h _ · · |> ·), fun h ↦ Sym2.ind fun x y ↦ ?_⟩
   nontriviality V
-  have hG' : G.Connected := ⟨(Not.imp_symm .of_not_reachable <| h s(·, ·))⟩
-  exact (hG'.connected_delete_edge_of_not_isBridge (h (s(x, y)))).preconnected
+  have : G.Connected := ⟨(Not.imp_symm .of_not_reachable <| h s(·, ·))⟩
+  exact (this.connected_delete_edge_of_not_isBridge (h (s(x, y)))).preconnected
 
 lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
     ∃ w : V, G.Adj u w ∧ G.IsEdgeReachable 2 u w := by
