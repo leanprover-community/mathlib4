@@ -624,7 +624,7 @@ def LanguageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
 /-- The language of an intersection is contained in the intersection of the languages.
 Equality does not hold in general: a pattern may arise from distinct configurations
 `x ∈ X` and `y ∈ Y` with no common configuration in `X ∩ Y` realising it. -/
-lemma inter_subset_LanguageOn (X Y : Set (G → A)) (U : Finset G) :
+lemma languageOn_inter_subset (X Y : Set (G → A)) (U : Finset G) :
     LanguageOn (X ∩ Y) U ⊆ LanguageOn X U ∩ LanguageOn Y U := by
   rintro p ⟨x, ⟨hxX, hxY⟩, hp⟩
   exact ⟨⟨x, hxX, hp⟩, ⟨x, hxY, hp⟩⟩
