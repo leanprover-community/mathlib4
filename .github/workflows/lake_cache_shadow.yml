@@ -59,6 +59,25 @@ name: Lake cache shadow (master)
 #   `_latest.txt` holds the mathlib sha of the previous run on the toolchain,
 #   and `<sha>.txt` holds the artifact hashes that run uploaded.
 #
+# What a full cache hit requires:
+#   Four things are necessary. Without any one of them a fetch returns
+#   mappings that do not match, and the modules rebuild:
+#     * The lakefile patch, which lets the workspace write to Lake's artifact
+#       cache at all.
+#     * The export build of each dependency, with its `--packages` overrides.
+#       Lake's `-o` records the root package only, and the overrides make the
+#       exported input hashes match this workspace.
+#     * The two scope qualifiers, the toolchain slug and the pin hash.
+#       Without them one revision file holds the mappings of another
+#       toolchain or another pin set.
+#     * One `lake cache get`, `stage` and `put-staged` call per package.
+#       Lake has no workspace-wide form of these against a custom endpoint.
+#
+#   Everything else is speed. The probe and the plan files, the root and the
+#   dependency warm starts, the legacy fallback and the `--rev` arguments
+#   decide only how much this run compiles and uploads. A run without them
+#   writes the same keys with the same content, and takes longer.
+#
 # Dependency caching:
 #   Lake's `-o` records the mappings of the workspace root only. To obtain the
 #   mappings of a dependency, the pipeline loads that dependency as the root
@@ -282,7 +301,8 @@ jobs:
           rm -rf lake-cache-staging tools-branch
           echo "disk headroom: $(df -h --output=avail,pcent . | tail -1 | xargs) on $(hostname)"
 
-      # Plan the hydration and the dependency caching of this run:
+      # Plan the hydration and the dependency caching of this run. The plan
+      # is an optimization: it decides what this run can skip.
       #   * Write the Lake services file that the `lake cache get` steps read
       #     through LAKE_CONFIG.
       #   * Resolve the analysis-chain pointer of this toolchain. A warm chain
@@ -313,7 +333,8 @@ jobs:
           artifactEndpoint = "$LAKE_CACHE_ARTIFACT_ENDPOINT"
           revisionEndpoint = "$LAKE_CACHE_REVISION_ENDPOINT"
           EOF
-          # The two qualifiers that make a dependency scope exact. The upload,
+          # The two qualifiers that make a dependency scope exact. They are
+          # required for a hit. The upload,
           # consume and downstream jobs compute them again, because they run on
           # their own runners. A mismatch between two jobs fails nothing; it
           # makes every fetch a miss.
@@ -426,7 +447,8 @@ jobs:
           cd pr-branch
           lake env
 
-      # The bootstrap fallback. A pinned run normally hydrates from the shadow
+      # The bootstrap fallback, an optimization for a cold chain. A pinned run
+      # normally hydrates from the shadow
       # scope, in the warm-start steps below. The legacy cache covers the case
       # they cannot: a cold analysis chain, which is a fresh toolchain
       # generation on the repo pin. An override run never uses it, because the
@@ -477,7 +499,8 @@ jobs:
           awk '/^package mathlib where/,/^$/' lakefile.lean
           echo "::endgroup::"
 
-      # The primary root hydration. It seeds Lake's artifact cache from the
+      # The primary root hydration, an optimization. It seeds Lake's artifact
+      # cache from the
       # previous run on this toolchain, at the pointer the plan step resolved.
       # The incremental build below then compiles the churn since that run. On
       # a cold chain a pinned run uses the legacy fallback above, and an
@@ -495,8 +518,8 @@ jobs:
           lake cache get --service=shadow --scope="$SHADOW_SCOPE" --rev="$CHAIN_PREV" \
             || echo "::warning::warm start from rev ${CHAIN_PREV:0:12} failed; proceeding without it"
 
-      # The primary dependency hydration. It fetches the dependencies the
-      # bucket serves, and the main build replays them. The step is skipped
+      # The primary dependency hydration, an optimization. It fetches the
+      # dependencies the bucket serves, and the main build replays them. The step is skipped
       # only when the legacy fallback already hydrated everything, on a pinned
       # run with a cold chain. A dependency the plan step found missing builds
       # from source below, and the export step then records it.
@@ -547,8 +570,9 @@ jobs:
           echo "mappings entries: $(wc -l < .lake/outputs.jsonl)"
           head -3 .lake/outputs.jsonl
 
-      # Export the mappings of the dependencies the bucket does not hold. See
-      # "Dependency caching" at the top of this file. The incremental build
+      # Export the mappings of the dependencies the bucket does not hold. This
+      # step is required for a dependency to hit at all; see "What a full
+      # cache hit requires" at the top of this file. The incremental build
       # above put every dependency artifact in the shared local cache, so
       # these loads replay instead of compiling, as long as the input hashes
       # of the two workspace shapes agree. A disagreement appears as compile
