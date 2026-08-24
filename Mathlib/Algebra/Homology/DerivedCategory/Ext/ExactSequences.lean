@@ -45,6 +45,7 @@ lemma hom_comp_singleFunctor_map_shift [HasDerivedCategory.{w'} C]
 
 variable {X : C} {S : ShortComplex C} (hS : S.ShortExact)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply
     [HasDerivedCategory.{w'} C] {X : C} {n₀ : ℕ} (x : Ext X S.X₃ n₀)
     {n₁ : ℕ} (h : n₀ + 1 = n₁) :
@@ -57,6 +58,7 @@ lemma preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply
 
 variable (X)
 
+set_option backward.defeqAttrib.useBackward true in
 include hS in
 /-- Alternative formulation of `covariant_sequence_exact₂` -/
 lemma covariant_sequence_exact₂' (n : ℕ) :
@@ -66,7 +68,7 @@ lemma covariant_sequence_exact₂' (n : ℕ) :
         dsimp
         simp only [comp_assoc_of_third_deg_zero, mk₀_comp_mk₀, ShortComplex.zero, mk₀_zero,
           comp_zero])).Exact := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₂ _
     (hS.singleTriangle_distinguished) n
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
@@ -78,6 +80,7 @@ section
 
 variable (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Alternative formulation of `covariant_sequence_exact₃` -/
 lemma covariant_sequence_exact₃' :
     (ShortComplex.mk (AddCommGrpCat.ofHom ((mk₀ S.g).postcomp X (add_zero n₀)))
@@ -86,7 +89,7 @@ lemma covariant_sequence_exact₃' :
         dsimp
         simp only [comp_assoc_of_second_deg_zero, ShortComplex.ShortExact.comp_extClass,
           comp_zero])).Exact := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₃ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by lia)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
@@ -96,6 +99,7 @@ lemma covariant_sequence_exact₃' :
   · ext x
     exact preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply hS x h
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Alternative formulation of `covariant_sequence_exact₁` -/
 lemma covariant_sequence_exact₁' :
     (ShortComplex.mk
@@ -105,7 +109,7 @@ lemma covariant_sequence_exact₁' :
         dsimp
         simp only [comp_assoc_of_third_deg_zero, ShortComplex.ShortExact.extClass_comp,
           comp_zero])).Exact := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₁ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by lia)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
@@ -182,6 +186,7 @@ lemma singleFunctor_map_comp_hom [HasDerivedCategory.{w'} C]
       ((mk₀ f).comp x (zero_add n)).hom := by
   simp only [comp_hom, mk₀_hom, ShiftedHom.mk₀_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma preadditiveYoneda_homologySequenceδ_singleTriangle_apply
     [HasDerivedCategory.{w'} C] {Y : C} {n₀ : ℕ} (x : Ext S.X₁ Y n₀)
     {n₁ : ℕ} (h : 1 + n₀ = n₁) :
@@ -192,6 +197,7 @@ lemma preadditiveYoneda_homologySequenceδ_singleTriangle_apply
     comp_hom, hS.extClass_hom, ShiftedHom.comp]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 include hS in
 /-- Alternative formulation of `contravariant_sequence_exact₂` -/
 lemma contravariant_sequence_exact₂' (n : ℕ) :
@@ -200,7 +206,7 @@ lemma contravariant_sequence_exact₂' (n : ℕ) :
         ext
         dsimp
         simp only [mk₀_comp_mk₀_assoc, ShortComplex.zero, mk₀_zero, zero_comp])).Exact := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₂ _
     (op_distinguished _ hS.singleTriangle_distinguished) n
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
@@ -212,6 +218,7 @@ section
 
 variable (n₀ n₁ : ℕ) (h : 1 + n₀ = n₁)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Alternative formulation of `contravariant_sequence_exact₁` -/
 lemma contravariant_sequence_exact₁' :
     (ShortComplex.mk (AddCommGrpCat.ofHom (((mk₀ S.f).precomp Y (zero_add n₀))))
@@ -219,7 +226,7 @@ lemma contravariant_sequence_exact₁' :
         ext
         dsimp
         simp only [ShortComplex.ShortExact.extClass_comp_assoc])).Exact := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₃ _
     (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by lia)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
@@ -228,6 +235,7 @@ lemma contravariant_sequence_exact₁' :
   · ext; apply singleFunctor_map_comp_hom (C := C)
   · ext; dsimp; apply preadditiveYoneda_homologySequenceδ_singleTriangle_apply
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Alternative formulation of `contravariant_sequence_exact₃` -/
 lemma contravariant_sequence_exact₃' :
     (ShortComplex.mk (AddCommGrpCat.ofHom (hS.extClass.precomp Y h))
@@ -235,7 +243,7 @@ lemma contravariant_sequence_exact₃' :
         ext
         dsimp
         simp only [ShortComplex.ShortExact.comp_extClass_assoc])).Exact := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₁ _
     (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by lia)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢

@@ -63,6 +63,7 @@ the canonical comonoid structure on the underlying object.
   { hom := .mk' (𝟙 _)
     inv := .mk' (𝟙 _) }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 The category of comonoid objects in a Cartesian monoidal category is equivalent

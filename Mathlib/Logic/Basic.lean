@@ -5,9 +5,9 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
+public import Mathlib.Lean.Meta.Simp
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
-
 public import Mathlib.Tactic.Attr.Register
 
 /-!
@@ -27,6 +27,75 @@ open Function
 
 section Miscellany
 
+section CommSimproc
+
+open Lean Meta Simp
+
+theorem eq_comm_eq {α : Sort*} (a b : α) : (a = b) = (b = a) := by rw [@eq_comm _ a b]
+theorem iff_comm_eq (a b : Prop) : (a ↔ b) = (b ↔ a) := by rw [@iff_comm a b]
+
+/-- On a goal of the form of `x = y`, also try to simplify `y = x`.
+
+If simplifying `y = x` gives `y' = x'` then this simproc returns `x' = y'` (so that the use of
+commutativity is transparent), otherwise it returns the result of simplifying `y = x` unmodified.
+-/
+simproc_decl eqComm (_ = _) := fun e => do
+  let_expr Eq _ x y := e | return .continue
+  let symmExpr ← mkEq y x
+  let r ← withoutTheorems #[`eqComm,
+    -- These theorems would cause an infinite loop:
+    ``eq_comm, ``Bool.not_eq_eq_eq_not, `inv_eq_iff_eq_inv, `eq_inv_mul_iff_mul_eq,
+    `eq_mul_inv_iff_mul_eq, `neg_eq_iff_eq_neg, `Function.Involutive.eq_iff,
+    `vadd_eq_iff_eq_neg_vadd, `Equiv.eq_symm_apply,
+    -- These theorems aren't commute-resistant (they turn an equality into a non-equality in a
+    -- non-commutative way.)
+    ``beq_iff_eq, ``funext_iff, ``eq_iff_iff, `Prod.swap_eq_iff_eq_swap, ``left_eq_dite_iff,
+    ``right_eq_dite_iff] do
+    withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting equality: {e}") <| simp symmExpr
+  -- If no actual progress happened (modulo commutativity), return early.
+  match_expr r.expr with
+  | Eq _ y' x' =>
+    if (y' == y && x' == x) || (y' == x && x' == y) then do
+      return .continue none
+  | _ => pure ()
+  let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``eq_comm_eq #[x, y] } r
+  -- If we started with `x = y`, and the result of simplifying `y = x` was `y' = x'`, then we want
+  -- to end up with `x' = y'`.
+  match_expr r.expr with
+  | Eq _ y' x' =>
+    return .visit (← symmR.mkEqTrans
+      { expr := ← mkEq x' y', proof? := ← mkAppM ``eq_comm_eq #[y', x'] })
+  | _ => return .done symmR
+
+/-- On a goal of the form of `x ↔ y`, also try to simplify `y ↔ x`.
+
+If simplifying `y ↔ x` gives `y' ↔ x'` then this simproc returns `x' ↔ y'` (so that the use of
+commutativity is transparent), otherwise it returns the result of simplifying `y ↔ x` unmodified.
+-/
+simproc_decl iffComm (_ ↔ _) := fun e => do
+  let_expr Iff x y := e | return .continue
+  let symmExpr := .app (.app (.const ``Iff []) y) x
+  let r ← withoutTheorems #[`iffComm,
+      -- These theorems would cause an infinite loop:
+      ``Iff.comm,
+      -- These theorems aren't commute-resistant (they turn an iff into a non-iff in a
+      -- non-commutative way).
+      ``and_congr_left_iff, ``and_congr_right_iff,  ``iff_def, ``iff_def',
+      ``iff_iff_implies_and_implies, ``Bool.coe_iff_coe] do
+    withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting iff: {e}") <| simp symmExpr
+  -- If no actual progress happened (modulo commutativity), return early.
+  if r.expr == symmExpr || r.expr == e then return .continue
+  let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``iff_comm_eq #[x, y] } r
+  -- If we started with `x ↔ y`, and the result of simplifying `y ↔ x` was `y' ↔ x'`, then we want
+  -- to end up with `x' ↔ y'`.
+  match_expr r.expr with
+  | Iff y' x' =>
+    return .visit (← symmR.mkEqTrans
+      { expr := .app (.app (.const ``Iff []) x') y', proof? := ← mkAppM ``iff_comm_eq #[y', x'] })
+  | _ => return .done symmR
+
+end CommSimproc
+
 -- attribute [refl] HEq.refl -- FIXME This is still rejected after https://github.com/leanprover-community/mathlib4/pull/857
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
@@ -41,6 +110,11 @@ instance (priority := 10) decidableEq_of_subsingleton [Subsingleton α] : Decida
 
 instance [Subsingleton α] (p : α → Prop) : Subsingleton (Subtype p) :=
   ⟨fun ⟨x, _⟩ ⟨y, _⟩ ↦ by cases Subsingleton.elim x y; rfl⟩
+
+theorem Subtype.subsingleton_iff {p : α → Prop} :
+    Subsingleton (Subtype p) ↔ ∀ a b, p a → p b → a = b :=
+  ⟨fun _ a b ha hb ↦ congr_arg val (Subsingleton.elim ⟨a, ha⟩ ⟨b, hb⟩),
+   fun h ↦ ⟨fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ Subtype.ext (h a b ha hb)⟩⟩
 
 theorem congr_heq {α β γ : Sort _} {f : α → γ} {g : β → γ} {x : α} {y : β}
     (h₁ : f ≍ g) (h₂ : x ≍ y) : f x = g y := by
@@ -123,9 +197,6 @@ section Propositional
 /-! ### Declarations about `implies` -/
 
 alias Iff.imp := imp_congr
-
-@[deprecated (since := "2026-01-30")] alias imp_iff_right_iff := Classical.imp_iff_right_iff
-@[deprecated (since := "2026-01-30")] alias and_or_imp := Classical.and_or_imp
 
 /-- Provide modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mt {a b : Prop} : (a → b) → ¬b → ¬a := mt
@@ -289,10 +360,6 @@ theorem imp_iff_or_not {b a : Prop} : b → a ↔ a ∨ ¬b :=
 
 theorem not_imp_not : ¬a → ¬b ↔ b → a := open scoped Classical in Decidable.not_imp_not
 
-@[deprecated Classical.imp_and_neg_imp_iff (since := "2026-01-30")]
-theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q :=
-  Classical.imp_and_neg_imp_iff p
-
 /-- Provide the reverse of modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mtr : (¬a → ¬b) → b → a := not_imp_not.mp
 
@@ -316,8 +383,6 @@ theorem imp_or {a b c : Prop} : a → b ∨ c ↔ (a → b) ∨ (a → c) :=
 
 theorem imp_or' {a : Sort*} {b c : Prop} : a → b ∨ c ↔ (a → b) ∨ (a → c) :=
   open scoped Classical in Decidable.imp_or'
-
-@[deprecated (since := "2026-01-30")] alias not_imp := Classical.not_imp
 
 theorem peirce (a b : Prop) : ((a → b) → a) → a := open scoped Classical in Decidable.peirce _ _
 
@@ -411,7 +476,7 @@ theorem congr_fun_congr_arg {α β γ : Sort*} (f : α → β → γ) {a a' : α
 
 theorem rec_heq_of_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β}
     (e : a = b) (h : x ≍ y) : e ▸ x ≍ y :=
-  eqRec_heq_iff_heq.mpr h
+  eqRec_heq_iff.mpr h
 
 @[simp]
 theorem cast_heq_iff_heq {α β γ : Sort _} (e : α = β) (a : α) (c : γ) :
@@ -643,7 +708,7 @@ theorem exists_iff_of_forall {p : Prop} {q : p → Prop} (h : ∀ h, q h) : (∃
 theorem exists_prop_of_false {p : Prop} {q : p → Prop} : ¬p → ¬∃ h' : p, q h' :=
   mt Exists.fst
 
-/- See `IsEmpty.exists_iff` for the `False` version of `exists_true_left`. -/
+/-! See `IsEmpty.exists_iff` for the `False` version of `exists_true_left`. -/
 
 theorem forall_prop_congr {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔ q' h) (hp : p ↔ p') :
     (∀ h, q h) ↔ ∀ h : p', q' (hp.2 h) :=
@@ -664,7 +729,7 @@ lemma eq_true_intro {a : Prop} (h : a) : a = True := propext (iff_true_intro h)
 lemma eq_false_intro {a : Prop} (h : ¬a) : a = False := propext (iff_false_intro h)
 
 -- FIXME: `alias` creates `def Iff.eq := propext` instead of `lemma Iff.eq := propext`
-@[nolint defLemma] alias Iff.eq := propext
+alias Iff.eq := propext
 
 lemma iff_eq_eq {a b : Prop} : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_iff⟩
 
@@ -695,15 +760,15 @@ noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 variable {α : Sort*}
 
 /-- Any predicate `p` is decidable classically. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def decPred (p : α → Prop) : DecidablePred p := by infer_instance
 
 /-- Any relation `p` is decidable classically. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def decRel (p : α → α → Prop) : DecidableRel p := by infer_instance
 
 /-- Any type `α` has decidable equality classically. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def decEq (α : Sort*) : DecidableEq α := by infer_instance
 
 /-- Construct a function from a default value `H0`, and a function to use if there exists a value
@@ -835,8 +900,9 @@ theorem eq_ite_iff : a = ite P b c ↔ P ∧ a = b ∨ ¬P ∧ a = c :=
   eq_comm.trans <| ite_eq_iff.trans <| (Iff.rfl.and eq_comm).or (Iff.rfl.and eq_comm)
 
 theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
-  ⟨fun he ↦ ⟨fun h ↦ (dif_pos h).symm.trans he, fun h ↦ (dif_neg h).symm.trans he⟩, fun he ↦
-    (em P).elim (fun h ↦ (dif_pos h).trans <| he.1 h) fun h ↦ (dif_neg h).trans <| he.2 h⟩
+  ⟨fun he ↦ ⟨fun h ↦ (dite_eq_left h).symm.trans he, fun h ↦ (dite_eq_right h).symm.trans he⟩,
+    fun he ↦ (em P).elim (fun h ↦ (dite_eq_left h).trans <| he.1 h) fun h ↦
+      (dite_eq_right h).trans <| he.2 h⟩
 
 theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := dite_eq_iff'
 
@@ -879,10 +945,10 @@ protected theorem Ne.ite_ne_right_iff (h : a ≠ b) : ite P a b ≠ b ↔ P :=
 variable (P Q a b)
 
 theorem dite_eq_or_eq : (∃ h, dite P A B = A h) ∨ ∃ h, dite P A B = B h :=
-  if h : _ then .inl ⟨h, dif_pos h⟩ else .inr ⟨h, dif_neg h⟩
+  if h : _ then .inl ⟨h, dite_eq_left h⟩ else .inr ⟨h, dite_eq_right h⟩
 
 theorem ite_eq_or_eq : ite P a b = a ∨ ite P a b = b :=
-  if h : _ then .inl (if_pos h) else .inr (if_neg h)
+  if h : _ then .inl (ite_eq_left h) else .inr (ite_eq_right h)
 
 /-- A two-argument function applied to two `dite`s is a `dite` of that two-argument function
 applied to each of the branches. -/
@@ -1009,6 +1075,7 @@ theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
   funext x y
   exact h x y
 
+set_option linter.overlappingInstances false in
 theorem lawful_beq_subsingleton {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     [@LawfulBEq α inst1] [@LawfulBEq α inst2] :
     inst1 = inst2 := by

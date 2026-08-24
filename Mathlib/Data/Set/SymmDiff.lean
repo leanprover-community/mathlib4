@@ -21,11 +21,13 @@ variable {α : Type u} {a : α} {s t u v : Set α}
 
 open scoped symmDiff
 
-@[grind =] theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s :=
-  Iff.rfl
+@[grind =] theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := .rfl
 
-protected theorem symmDiff_def (s t : Set α) : s ∆ t = s \ t ∪ t \ s :=
-  rfl
+protected theorem symmDiff_def (s t : Set α) : s ∆ t = s \ t ∪ t \ s := rfl
+
+@[simp] theorem mem_bihimp_iff : a ∈ s ⇔ t ↔ (a ∈ s ↔ a ∈ t) := by simp [bihimp, iff_def']
+
+protected theorem bihimp_def : s ⇔ t = (s ∪ tᶜ) ∩ (t ∪ sᶜ) := bihimp_eq ..
 
 theorem symmDiff_subset_union : s ∆ t ⊆ s ∪ t :=
   @symmDiff_le_sup (Set α) _ _ _

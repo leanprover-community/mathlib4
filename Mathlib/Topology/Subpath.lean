@@ -39,20 +39,20 @@ namespace Path
 -/
 
 @[deprecated (since := "2026-03-20")]
-alias subpathAux := Icc.convexCombo
+alias subpathAux := Icc.convexComb
 
 @[deprecated (since := "2026-03-20")]
-alias subpathAux_zero := Icc.convexCombo_zero
+alias subpathAux_zero := Icc.convexComb_zero
 
 @[deprecated (since := "2026-03-20")]
-alias subpathAux_one := Icc.convexCombo_one
+alias subpathAux_one := Icc.convexComb_one
 
 @[deprecated (since := "2026-03-20")]
-alias subpathAux_continuous := Icc.continuous_convexCombo_prod
+alias subpathAux_continuous := Icc.continuous_convexComb_prod
 
 /-- The subpath of `γ` from `t₀` to `t₁`. -/
 def subpath (γ : Path a b) (t₀ t₁ : I) : Path (γ t₀) (γ t₁) where
-  toFun := γ ∘ Icc.convexCombo t₀ t₁
+  toFun := γ ∘ Icc.convexComb t₀ t₁
   source' := by simp
   target' := by simp
 
@@ -62,7 +62,7 @@ theorem symm_subpath (γ : Path a b) (t₀ t₁ : I) : symm (γ.subpath t₀ t�
   ext s
   simp [subpath]
 
-lemma range_subpathAux (t₀ t₁ : I) : range (Icc.convexCombo t₀ t₁) = uIcc t₀ t₁ := by
+lemma range_subpathAux (t₀ t₁ : I) : range (Icc.convexComb t₀ t₁) = uIcc t₀ t₁ := by
   rw [range_eq_iff]
   constructor
   · intro s
@@ -106,7 +106,7 @@ the uncurried function which maps `(t₀, t₁, s)` to `γ.subpath t₀ t₁ s` 
 @[continuity]
 theorem subpath_continuous_family (γ : Path a b) :
     Continuous (fun x => γ.subpath x.1 x.2.1 x.2.2 : I × I × I → X) :=
-  Continuous.comp' (map_continuous γ) Set.Icc.continuous_convexCombo_prod
+  Continuous.comp' (map_continuous γ) Set.Icc.continuous_convexComb_prod
 
 namespace Homotopy
 
@@ -114,15 +114,15 @@ namespace Homotopy
 copy of `Path.refl`. -/
 def subpathTransSubpathRefl (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
     ((γ.subpath t₀ t₁).trans (γ.subpath t₁ t₂)) ((γ.subpath t₀ t₂).trans (Path.refl _)) where
-  toFun x := ((γ.subpath t₀ (Icc.convexCombo t₁ t₂ x.1)).trans (γ.subpath _ t₂)) x.2
+  toFun x := ((γ.subpath t₀ (Icc.convexComb t₁ t₂ x.1)).trans (γ.subpath _ t₂)) x.2
   continuous_toFun := by
-    let γ₁ (t : I) := γ.subpath t₀ (Icc.convexCombo t₁ t₂ t)
-    let γ₂ (t : I) := γ.subpath (Icc.convexCombo t₁ t₂ t) t₂
+    let γ₁ (t : I) := γ.subpath t₀ (Icc.convexComb t₁ t₂ t)
+    let γ₂ (t : I) := γ.subpath (Icc.convexComb t₁ t₂ t) t₂
     refine Path.trans_continuous_family γ₁ ?_ γ₂ ?_ <;>
     refine γ.subpath_continuous_family.comp (.prodMk ?_ <| .prodMk ?_ ?_) <;>
     fun_prop
-  map_zero_left _ := by rw [Icc.convexCombo_zero, coe_toContinuousMap]
-  map_one_left _ := by rw [Icc.convexCombo_one, subpath_self, coe_toContinuousMap]
+  map_zero_left _ := by rw [Icc.convexComb_zero, coe_toContinuousMap]
+  map_one_left _ := by rw [Icc.convexComb_one, subpath_self, coe_toContinuousMap]
   prop' _ _ hx := by
     rcases hx with rfl | rfl <;>
     simp
@@ -157,7 +157,6 @@ lemma concat_succ (p : Fin (n + 2) → X) (F) :
   rw [concat, dfoldl_succ_last]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Concatenating the constant path at `x` with itself just yields the constant path at `x`. -/
 @[simp]
 theorem concat_refl (n : ℕ) (x : X) :
@@ -166,7 +165,7 @@ theorem concat_refl (n : ℕ) (x : X) :
   | zero => rw [concat_zero]
   | succ _ _ =>
     rw [concat_succ]
-    convert refl_trans_refl
+    convert! refl_trans_refl
 
 namespace Homotopy
 
