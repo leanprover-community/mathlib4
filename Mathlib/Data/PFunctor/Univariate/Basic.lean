@@ -115,8 +115,11 @@ instance : LawfulFunctor (Obj.{v} P) where
   id_map x := P.id_map x
   comp_map f g x := P.map_map f g x |>.symm
 
-/-- Re-export existing definition of W-types and adapt it to a packaged definition of polynomial
-functor. -/
+/-- For a polynomial functor `P`, `W P` is its initial algebra,
+meaning it comes equipped with a map `W.mk : P (W P) → W P`,
+and that it is *universal* in having this map, in that given any other type
+`α` and any other map `f : P α → α` there exists a unique map `W.rec f : W P → α`
+such that `W.rec f ∘ W.mk = f ∘ P.map (W.rec f)`. -/
 def W : Type (max uA uB) :=
   WType P.B
 
@@ -125,27 +128,47 @@ value `a : P.A` such that `P.B a` is empty to yield a finite tree. -/
 
 variable {P}
 
-/-- The root element of a W tree -/
-def W.head : W P → P.A
-  | ⟨a, _f⟩ => a
-
-/-- The children of the root of a W tree -/
-def W.children : ∀ x : W P, P.B (W.head x) → W P
-  | ⟨_a, f⟩ => f
+/-- The constructor for W-types -/
+@[match_pattern]
+def W.mk : P (W P) → W P := fun x => ⟨x.fst, x.snd⟩
 
 /-- The destructor for W-types -/
-def W.dest : W P → P (W P)
-  | ⟨a, f⟩ => ⟨a, f⟩
+@[implicit_reducible]
+def W.dest : W P → P (W P) := fun x => .mk x.1 x.2
 
-/-- The constructor for W-types -/
-def W.mk : P (W P) → W P
-  | ⟨a, f⟩ => ⟨a, f⟩
+/-- The root element of a W tree -/
+@[implicit_reducible]
+def W.head : W P → P.A := fun x => x.dest.fst
+
+/-- The children of the root of a W tree -/
+@[implicit_reducible]
+def W.children : ∀ x : W P, P.B (W.head x) → W P := fun x => x.dest.snd
+
+/-- Given a type `α` and a map `f : P α → α`, `W.rec f : W P → α` is the induced map out of the
+initial algebra for `P`. -/
+def W.rec {α : Type*} (f : P α → α) : W P → α
+  | W.mk (.mk a c) => f (.mk a fun x => W.rec f (c x))
+
+@[induction_eliminator, elab_as_elim]
+theorem W.induction {motive : W P → Prop} (mk : ∀ p, (∀ a, motive (p.snd a)) → motive (.mk p)) :
+    ∀ t, motive t :=
+  WType.rec fun a f ih => mk (.mk a f) ih
+
+@[cases_eliminator, elab_as_elim]
+theorem W.casesOn {motive : W P → Prop} (t : W P)
+    (mk : ∀ p, motive (.mk p)) : motive t :=
+  W.induction (fun p _ => mk p) t
+
+@[simp] theorem W.dest_mk (p : P (W P)) : W.dest (W.mk p) = p := rfl
+@[simp] theorem W.mk_dest (p : W P) : W.mk (W.dest p) = p := by cases p; rfl
+@[simp] theorem W.head_mk (p : P (W P)) : W.head (W.mk p) = p.fst := rfl
+@[simp] theorem W.children_mk (p : P (W P)) : W.children (W.mk p) = p.snd := rfl
+@[simp] theorem W.fst_dest (p : W P) : (W.dest p).fst = p.head := rfl
+@[simp] theorem W.snd_dest (p : W P) : (W.dest p).snd = p.children := rfl
 
 @[simp]
-theorem W.dest_mk (p : P (W P)) : W.dest (W.mk p) = p := by cases p; rfl
-
-@[simp]
-theorem W.mk_dest (p : W P) : W.mk (W.dest p) = p := by cases p; rfl
+theorem W.rec_mk {α : Type*} (f : P α → α) (p : P (W P)) :
+    W.rec f (W.mk p) = f (P.map (W.rec f) p) := rfl
 
 variable (P)
 
