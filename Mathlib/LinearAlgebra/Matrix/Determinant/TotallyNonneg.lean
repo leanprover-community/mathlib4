@@ -26,6 +26,8 @@ This file defines totally nonnegative matrices and provides basic API for them.
 - `Matrix.IsTotallyNonneg.one`: the identity matrix is totally nonnegative.
 - `Matrix.IsTotallyNonneg.smul`: a nonnegative scalar multiple of a totally nonnegative matrix
   is totally nonnegative.
+- `Matrix.IsTotallyNonneg.transpose`: the transpose of a totally nonnegative matrix is totally
+  nonnegative.
 -/
 public section
 
@@ -48,6 +50,13 @@ lemma IsTotallyNonneg.nonneg (hM : M.IsTotallyNonneg) (i j : ι) : 0 ≤ M i j :
   have hrows : StrictMono ![i] := fun _ _ _ ↦ by lia
   have hcols : StrictMono ![j] := fun _ _ _ ↦ by lia
   grind [det_unique, submatrix_apply, const_fin1_eq, hM hrows hcols]
+
+protected lemma IsTotallyNonneg.transpose (hM : M.IsTotallyNonneg) :
+    Mᵀ.IsTotallyNonneg := fun _ _ _ hrows hcols ↦ by
+  simp [← transpose_submatrix, hM hcols hrows]
+
+@[simp] theorem isTotallyNonneg_transpose_iff :
+    Mᵀ.IsTotallyNonneg ↔ M.IsTotallyNonneg := ⟨(·.transpose), (·.transpose)⟩
 
 variable [IsStrictOrderedRing R]
 
