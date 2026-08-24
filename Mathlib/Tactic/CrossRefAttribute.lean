@@ -235,8 +235,7 @@ def dlmfIdFn : ParserFn := fun c s =>
     ParserState.mkError s "dlmf id"
   else
     if !(c.extract i s.pos).toList.all
-      (fun c => c ∈ ['i', 'v', 'x', 'l', 'c', 'd', 'm'] || c ∈ ['E', 'F', 'T']
-        || c.isDigit || c == '.' || c == '_') then
+      (fun c => c ∈ ['i', 'v', 'x', 'l', 'c', 'd', 'm', 'E', 'F', 'T', '.', '_'] || c.isDigit) then
       ParserState.mkUnexpectedError s
         "DLMF references must consist only of roman numerals, the letters E/T/F, digits, \
          periods, and underscores."
