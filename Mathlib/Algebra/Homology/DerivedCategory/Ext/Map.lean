@@ -250,7 +250,7 @@ lemma comp_mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] [HasExt.{w''} E] {X Y 
     α.mapExactFunctor (F ⋙ G) = (α.mapExactFunctor F).mapExactFunctor G := by
   sorry
 
-lemma mapExactFunctor_comp_mk₉_natTransApp
+lemma mapExactFunctor_comp_mk₀_natTransApp
     [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ}
     (α : Ext X Y n) {F G : C ⥤ D} [F.Additive] [G.Additive]
     [PreservesFiniteLimits F] [PreservesFiniteColimits F]

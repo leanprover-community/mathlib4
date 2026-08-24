@@ -45,14 +45,14 @@ noncomputable def extEquiv (adj : F ⊣ G) {X : C} {Y : D} {n : ℕ} :
   left_inv e := by
     dsimp
     rw [Ext.mapExactFunctor_comp, Ext.comp_assoc _ _ _ _ (add_zero n) (by lia),
-      ← Ext.comp_mapExactFunctor, Ext.mapExactFunctor_comp_mk₉_natTransApp,
+      ← Ext.comp_mapExactFunctor, Ext.mapExactFunctor_comp_mk₀_natTransApp,
       Ext.id_mapExactFunctor, Ext.mapExactFunctor_mk₀,
       ← Ext.comp_assoc _ _ _ (zero_add 0) (by lia) (by lia),
       Ext.mk₀_comp_mk₀, adj.left_triangle_components, Ext.mk₀_id_comp]
   right_inv e := by
     dsimp
     rw [Ext.mapExactFunctor_comp, ← Ext.comp_assoc _ _ _ (zero_add n) (by lia) (by lia),
-      ← Ext.comp_mapExactFunctor, ← Ext.mapExactFunctor_comp_mk₉_natTransApp,
+      ← Ext.comp_mapExactFunctor, ← Ext.mapExactFunctor_comp_mk₀_natTransApp,
       Ext.id_mapExactFunctor, Ext.comp_assoc _ _ _ _ (add_zero 0) (by lia),
       Ext.mapExactFunctor_mk₀, Ext.mk₀_comp_mk₀, adj.right_triangle_components]
     simp
@@ -84,7 +84,7 @@ lemma extEquiv_naturality_left (adj : F ⊣ G) {X₁ X₂ : C} {Y : D} {a b : �
   rw [extEquiv_apply, extEquiv_apply, Ext.mapExactFunctor_comp,
     ← Ext.comp_mapExactFunctor,
     ← Ext.comp_assoc _ _ _ (zero_add a) (by lia) (by lia),
-    ← Ext.mapExactFunctor_comp_mk₉_natTransApp]
+    ← Ext.mapExactFunctor_comp_mk₀_natTransApp]
   simp
 
 lemma extEquiv_naturality_left₀ (adj : F ⊣ G) {X₁ X₂ : C} {Y : D}
