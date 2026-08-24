@@ -6,6 +6,7 @@ Authors: Jon Bannon, Anatole Dedecker, Yongxi Lin, Patrick Massot, Oliver Nash, 
 module
 
 public import Mathlib.Analysis.Normed.Operator.Perturbation.StrictByFinite
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
 /-!
 # Fredholm operators between topological vector spaces

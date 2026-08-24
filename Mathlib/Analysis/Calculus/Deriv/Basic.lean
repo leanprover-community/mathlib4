@@ -153,10 +153,10 @@ If the derivative exists (i.e., `∃ f', HasDerivAt f f' x`), then
 def deriv (f : 𝕜 → F) (x : 𝕜) :=
   fderiv 𝕜 f x 1
 
-variable {f f₀ f₁ : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
+variable {f : 𝕜 → F}
+variable {f' : F}
 variable {x : 𝕜}
-variable {s t : Set 𝕜}
+variable {s : Set 𝕜}
 variable {L : Filter (𝕜 × 𝕜)}
 
 section
@@ -657,6 +657,46 @@ theorem Filter.EventuallyEq.nhdsNE_deriv (h : f₁ =ᶠ[𝓝[≠] x] f) : deriv 
   rw [Filter.EventuallyEq, ← eventually_nhdsNE_eventually_nhds_iff] at *
   filter_upwards [h] with y hy
   apply Filter.EventuallyEq.deriv hy
+
+/--
+If two functions agree on a codiscrete subset of `s`, then so do their derivatives within any
+subset `t` of `s`.
+-/
+theorem Filter.EventuallyEq.codiscreteWithin_derivWithin'
+    (h : f₁ =ᶠ[codiscreteWithin s] f) (ht : t ⊆ s) :
+    derivWithin f₁ t =ᶠ[codiscreteWithin s] derivWithin f t := by
+  filter_upwards [h.codiscreteWithin_fderivWithin' (𝕜 := 𝕜) ht] with y hy
+  simp [derivWithin, hy]
+
+/--
+If two functions agree on a codiscrete subset of `s`, then so do their derivatives within `s`.
+-/
+theorem Filter.EventuallyEq.codiscreteWithin_derivWithin
+    (h : f₁ =ᶠ[codiscreteWithin s] f) :
+    derivWithin f₁ s =ᶠ[codiscreteWithin s] derivWithin f s :=
+  h.codiscreteWithin_derivWithin' Subset.rfl
+
+/--
+If two functions agree on a codiscrete subset of an open set `s`, then so do their derivatives.
+-/
+theorem Filter.EventuallyEq.codiscreteWithin_deriv (h : f₁ =ᶠ[codiscreteWithin s] f)
+    (hs : IsOpen s) :
+    deriv f₁ =ᶠ[codiscreteWithin s] deriv f := by
+  filter_upwards [h.codiscreteWithin_fderiv (𝕜 := 𝕜) hs] with y hy
+  simp_rw [deriv, hy]
+
+/-- If two functions agree on a codiscrete subset of `𝕜`, then so do their derivatives within
+any subset `s` of `𝕜`. -/
+theorem Filter.EventuallyEq.codiscrete_derivWithin
+    (h : f₁ =ᶠ[codiscrete 𝕜] f) :
+    derivWithin f₁ s =ᶠ[codiscrete 𝕜] derivWithin f s :=
+  h.codiscreteWithin_derivWithin' <| subset_univ _
+
+/-- If two functions agree on a codiscrete subset of `𝕜`, then so do their derivatives. -/
+theorem Filter.EventuallyEq.codiscrete_deriv
+    (h : f₁ =ᶠ[codiscrete 𝕜] f) :
+    deriv f₁ =ᶠ[codiscrete 𝕜] deriv f :=
+  h.codiscreteWithin_deriv isOpen_univ
 
 end congr
 

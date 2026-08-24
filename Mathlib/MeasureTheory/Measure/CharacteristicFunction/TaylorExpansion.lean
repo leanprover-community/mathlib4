@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
 import Mathlib.Probability.Notation
+public import Mathlib.Probability.Notation
 
 /-!
 # Taylor expansion of the characteristic function
@@ -30,8 +31,9 @@ characteristic function, Taylor expansion
 public section
 
 
-open ProbabilityTheory Complex Set VectorFourier
-open scoped Nat RealInnerProductSpace Topology
+open Complex Set VectorFourier
+
+open scoped ProbabilityTheory Nat RealInnerProductSpace Topology
 
 namespace MeasureTheory
 
