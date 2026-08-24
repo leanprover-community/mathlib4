@@ -156,10 +156,10 @@ instance convNonUnitalRing : NonUnitalRing (WithConv (C →ₗ[R] A)) where
 end NonUnitalRing
 
 section Semiring
-variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [AddCommMonoid C] [Module R C]
+variable [Semiring A] [Algebra R A] [AddCommMonoid C] [Module R C]
 
 section CoalgebraStruct
-variable [CoalgebraStruct R C]
+variable [CoalgebraStruct R C] [Semiring B] [Algebra R B]
 
 lemma algHom_comp_convMul_distrib (h : A →ₐ B) (f g : WithConv (C →ₗ[R] A)) :
     h.toLinearMap.comp (f * g).ofConv =
@@ -177,6 +177,15 @@ lemma convOne_def : (1 : WithConv (C →ₗ[R] A)) = toConv (Algebra.linearMap R
 
 @[simp] lemma convOne_apply (c : C) :
     (1 : WithConv (C →ₗ[R] A)) c = algebraMap R A (counit (R := R) c) := rfl
+
+@[simp] lemma algHom_comp_convOne [Semiring B] [Algebra R B] (h : A →ₐ[R] B) :
+    h.toLinearMap ∘ₗ (1 : WithConv (C →ₗ[R] A)).ofConv = (1 : WithConv (C →ₗ[R] B)).ofConv := by
+  ext; simp
+
+@[simp] lemma convOne_comp_coalgHom [AddCommMonoid B] [Module R B] [Coalgebra R B]
+    (h : B →ₗc[R] C) :
+    (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ (h : B →ₗ[R] C) = (1 : WithConv (B →ₗ[R] A)).ofConv := by
+  ext; simp
 
 /-- Convolution semiring structure on linear maps from a coalgebra to an algebra. -/
 instance convSemiring : Semiring (WithConv (C →ₗ[R] A)) where
@@ -223,22 +232,9 @@ instance convCommRing : CommRing (WithConv (C →ₗ[R] A)) where
 end CommRing
 end LinearMap
 
-variable [Semiring A] [Algebra R A] [AddCommMonoid C] [Module R C] [Coalgebra R C]
-
-namespace LinearMap
-
-@[simp] lemma algHom_comp_convOne [Semiring B] [Algebra R B] (h : A →ₐ[R] B) :
-    h.toLinearMap ∘ₗ (1 : WithConv (C →ₗ[R] A)).ofConv = (1 : WithConv (C →ₗ[R] B)).ofConv := by
-  ext; simp
-
-@[simp] lemma convOne_comp_coalgHom [AddCommMonoid B] [Module R B] [Coalgebra R B]
-    (h : B →ₗc[R] C) :
-    (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ (h : B →ₗ[R] C) = (1 : WithConv (B →ₗ[R] A)).ofConv := by
-  ext; simp
-
-end LinearMap
-
 open LinearMap
+
+variable [Semiring A] [Algebra R A] [AddCommMonoid C] [Module R C] [Coalgebra R C]
 
 namespace AlgHom
 variable [Semiring B] [Algebra R B]
