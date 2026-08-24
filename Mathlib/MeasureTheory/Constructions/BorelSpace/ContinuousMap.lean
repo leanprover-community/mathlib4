@@ -68,7 +68,7 @@ lemma ContinuousMap.measurable_eval [MeasurableSpace Y] [BorelSpace Y] (x : X) :
   exact comap_measurable _
 
 variable [SecondCountableTopology X] [SecondCountableTopology Y]
-  [LocallyCompactSpace X] [RegularSpace Y] [MeasurableSpace Y] [BorelSpace Y]
+  [LocallyCompactSpace X] [RegularSpace Y] [mY : MeasurableSpace Y] [BorelSpace Y]
 
 namespace ContinuousMap
 
@@ -147,13 +147,14 @@ theorem borel_eq_iSup_comap_eval :
   exact comap_measurable _
 
 lemma measurableSpace_eq_iSup_comap_eval :
-    measurableSpace = ⨆ a : X, (inferInstance : MeasurableSpace Y).comap fun b ↦ b a := by
+    (inferInstance : MeasurableSpace C(X, Y)) = ⨆ a : X, mY.comap fun b ↦ b a := by
   simp_rw [BorelSpace.measurable_eq, borel_eq_iSup_comap_eval]
 
 /-- A function `g : Z → C(X, Y)` is measurable if and only if,
 for all `x : X`, `z ↦ g z x` is measurable. -/
 lemma measurable_iff_eval {Z : Type*} [MeasurableSpace Z] {g : Z → C(X, Y)} :
     Measurable g ↔ ∀ (x : X), Measurable fun a ↦ g a x := by
+  change @Measurable _ _ _ inferInstance g ↔ _
   rw [measurableSpace_eq_iSup_comap_eval]
   simp_rw [measurable_iff_comap_le, comap_iSup, iSup_le_iff, comap_comp, Function.comp_def]
 
