@@ -28,6 +28,8 @@ independent of the theory of quadratic fields.
   it is squarefree.
 * `Int.isFundamentalDiscr_four_mul`: `4m` is a fundamental discriminant if and only if `m` is
   squarefree and `m ≡ 2, 3 mod 4`.
+* `Int.isFundamentalDiscr_iff_forall_prime`: the characterization uniform in the prime `p`, where
+  the clause singling out `p = 2` in the definition disappears.
 -/
 
 @[expose] public section
@@ -69,6 +71,20 @@ theorem isFundamentalDiscr_iff_squarefree {D : ℤ} :
     simp +contextual only [Int.mul_ediv_cancel_left d four_ne_zero]
     grind [isFundamentalDiscr_def]
   · grind [isFundamentalDiscr_def]
+
+/-- Prime-by-prime characterisation of fundamental discriminants, uniform in `p`. Unlike the
+definition, which singles out `p = 2`, the second clause is the same for every prime. -/
+theorem isFundamentalDiscr_iff_forall_prime {D : ℤ} :
+    IsFundamentalDiscr D ↔ (D % 4 = 0 ∨ D % 4 = 1) ∧
+      ∀ p : ℕ, p.Prime → ¬ ∃ e : ℤ, D = (p : ℤ) ^ 2 * e ∧ (e % 4 = 0 ∨ e % 4 = 1) := by
+  rw [Nat.forall_prime_iff_two_and_odd, isFundamentalDiscr_def]
+  simp only [Int.dvd_iff_emod_eq_zero, not_exists, ne_eq, Nat.cast_ofNat, reducePow,
+    not_and, not_or, and_congr_right_iff]
+  refine fun h₁ _ ↦ forall_congr' fun p ↦ imp_congr_right fun _ ↦ imp_congr_right fun hp ↦ ?_
+  rw [← Int.dvd_iff_emod_eq_zero, dvd_def, not_exists]
+  refine forall_congr' fun x ↦ imp_congr_right fun hD ↦ (iff_false_left not_false).mpr ?_
+  rw [hD, Int.mul_emod, Int.sq_emod_four, Int.odd_iff.mp hp.natCast, one_mul, Int.emod_emod] at h₁
+  rwa [not_and_or, not_not, not_not]
 
 theorem isFundamentalDiscr_four_mul_add_one {m : ℤ} :
     IsFundamentalDiscr (4 * m + 1) ↔ Squarefree (4 * m + 1) := by
