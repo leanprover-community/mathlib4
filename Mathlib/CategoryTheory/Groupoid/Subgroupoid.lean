@@ -6,10 +6,9 @@ Authors: Rémi Bottinelli, Junyan Xu
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Defs
-public import Mathlib.CategoryTheory.Groupoid.VertexGroup
 public import Mathlib.CategoryTheory.Groupoid.Basic
-public import Mathlib.CategoryTheory.Groupoid
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.CategoryTheory.Groupoid.VertexGroup
+public import Mathlib.Data.Set.Lattice.Indexed
 
 /-!
 # Subgroupoid
@@ -382,10 +381,10 @@ by taking preimages.
 -/
 def comap (S : Subgroupoid D) : Subgroupoid C where
   arrows c d := {f : c ⟶ d | φ.map f ∈ S.arrows (φ.obj c) (φ.obj d)}
-  inv hp := by rw [mem_setOf, inv_eq_inv, φ.map_inv, ← inv_eq_inv]; exact S.inv hp
+  inv hp := by rw [mem_ofPred, inv_eq_inv, φ.map_inv, ← inv_eq_inv]; exact S.inv hp
   mul := by
     intros
-    simp only [mem_setOf, Functor.map_comp]
+    simp only [mem_ofPred, Functor.map_comp]
     apply S.mul <;> assumption
 
 @[gcongr]
@@ -393,9 +392,9 @@ theorem comap_mono (S T : Subgroupoid D) : S ≤ T → comap φ S ≤ comap φ T
   @ST ⟨_, _, _⟩
 
 theorem isNormal_comap {S : Subgroupoid D} (Sn : IsNormal S) : IsNormal (comap φ S) where
-  wide c := by rw [comap, mem_setOf, Functor.map_id]; apply Sn.wide
+  wide c := by rw [comap, mem_ofPred, Functor.map_id]; apply Sn.wide
   conj f γ hγ := by
-    simp_rw [inv_eq_inv f, comap, mem_setOf, Functor.map_comp, Functor.map_inv, ← inv_eq_inv]
+    simp_rw [inv_eq_inv f, comap, mem_ofPred, Functor.map_comp, Functor.map_inv, ← inv_eq_inv]
     exact Sn.conj _ hγ
 
 @[simp]

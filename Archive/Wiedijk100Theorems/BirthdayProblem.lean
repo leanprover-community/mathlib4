@@ -50,7 +50,7 @@ theorem birthday_measure :
     trans ‖Fin 23 ↪ Fin 365‖
     · rw [← Fintype.card_coe]
       apply Fintype.card_congr
-      rw [Set.Finite.coeSort_toFinset, Set.coe_setOf]
+      rw [Set.Finite.coeSort_toFinset, Set.coe_ofPred]
       exact Equiv.subtypeInjectiveEquivEmbedding _ _
     · rw [Fintype.card_embedding_eq, Fintype.card_fin, Fintype.card_fin]
       rfl
