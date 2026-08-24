@@ -204,14 +204,12 @@ theorem HenselianLocalRing.exists_isRoot {R : Type*} [CommRing R] [HenselianLoca
     {f : R[X]} {a₀ : R} (h₁ : f.eval a₀ ∈ maximalIdeal R) (h₂ : IsUnit (f.derivative.eval a₀)) :
     ∃ a, f.IsRoot a ∧ a - a₀ ∈ maximalIdeal R := HenselianRing.exists_isRoot h₁ (h₂.map _)
 
-/-- Equivalent ways of expressing the Henselian property for a local ring. The last two items are
-the variants of the second and third one in which the polynomial is *not* assumed to be monic. -/
 @[stacks 04GG]
 theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
     TFAE
       [HenselianLocalRing R,
-        ∀ f : R[X], f.Monic → ∀ a₀, f.aeval a₀ = 0 →
-          (derivative f).aeval a₀ ≠ 0 → ∃ a, f.IsRoot a ∧ residue R a = a₀,
+        ∀ f : R[X], f.Monic → ∀ a₀ : ResidueField R, aeval a₀ f = 0 →
+          aeval a₀ (derivative f) ≠ 0 → ∃ a : R, f.IsRoot a ∧ residue R a = a₀,
         ∀ {K : Type u} [Field K], ∀ (φ : R →+* K), Surjective φ →
           ∀ f : R[X], f.Monic → ∀ a₀, f.eval₂ φ a₀ = 0 → f.derivative.eval₂ φ a₀ ≠ 0 →
             ∃ a : R, f.IsRoot a ∧ φ a = a₀,
