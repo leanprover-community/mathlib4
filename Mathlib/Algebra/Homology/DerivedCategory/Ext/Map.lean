@@ -238,10 +238,17 @@ lemma mapExactFunctor_extClass [HasExt.{w} C] [HasExt.{w'} D] {S : ShortComplex 
   rw [Ext.mapExactFunctor_hom, hS.extClass_hom]
   exact (hS.mapShiftedHom_singleδ' F).trans (hS.map_of_exact F).extClass_hom.symm
 
+open CategoryTheory.Functor in
+attribute [local instance] HasDerivedCategory.standard in
 @[simp]
 lemma id_mapExactFunctor [HasExt.{w} C] {X Y : C} {n : ℕ}
     (α : Ext X Y n) :
-    α.mapExactFunctor (𝟭 C) = α := sorry
+    α.mapExactFunctor (𝟭 C) = α := by
+  ext
+  rw [mapExactFunctor_hom, ← α.hom.map_naturality_2 (Functor.mapDerivedCategoryIdIso C)]
+  simp [ShiftedHom.id_map, ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀,
+    mapDerivedCategoryIdIso_hom_app_singleFunctor_obj, ← Functor.map_comp,
+    mapDerivedCategoryIdIso_inv_app_singleFunctor_obj]
 
 open CategoryTheory.Functor in
 attribute [local instance] HasDerivedCategory.standard in

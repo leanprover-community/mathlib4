@@ -155,6 +155,25 @@ noncomputable instance :
     (associator _ _ _).symm ≪≫ isoWhiskerRight F.mapDerivedCategoryFactors _ ≪≫
     associator _ _ _ ≪≫ isoWhiskerLeft _ G.mapDerivedCategoryFactors
 
+variable (C₁) in
+@[no_expose]
+noncomputable def mapDerivedCategoryIdIso : (𝟭 C₁).mapDerivedCategory ≅ 𝟭 _ :=
+  sorry
+
+instance : NatTrans.CommShift (mapDerivedCategoryIdIso C₁).hom ℤ := sorry
+
+lemma mapDerivedCategoryIdIso_hom_app_singleFunctor_obj (X : C₁) :
+    (mapDerivedCategoryIdIso C₁).hom.app ((DerivedCategory.singleFunctor C₁ 0).obj X) =
+    ((𝟭 C₁).mapDerivedCategorySingleFunctor 0).hom.app X := by
+  sorry
+
+lemma mapDerivedCategoryIdIso_inv_app_singleFunctor_obj (X : C₁) :
+    (mapDerivedCategoryIdIso C₁).inv.app ((DerivedCategory.singleFunctor C₁ 0).obj X) =
+    ((𝟭 C₁).mapDerivedCategorySingleFunctor 0).inv.app X := by
+  rw [← cancel_epi ((mapDerivedCategoryIdIso C₁).hom.app _), Iso.hom_inv_id_app,
+    mapDerivedCategoryIdIso_hom_app_singleFunctor_obj]
+  simp
+
 @[no_expose]
 noncomputable def mapDerivedCategoryCompIso :
     F.mapDerivedCategory ⋙ G.mapDerivedCategory ≅ (F ⋙ G).mapDerivedCategory :=
