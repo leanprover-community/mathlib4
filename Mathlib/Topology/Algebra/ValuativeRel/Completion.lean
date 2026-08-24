@@ -442,12 +442,26 @@ noncomputable instance UniformSpace.Completion.valuativeRel : ValuativeRel (Comp
 instance Valuation.extension.compatible' :
     (ValuativeRel.valuation K).extension.Compatible := Valuation.Compatible.ofValuation _
 
+@[simp]
+theorem UniformSpace.Completion.vle_iff_vle {x y : K} :
+    (x : Completion K) ≤ᵥ (y : Completion K) ↔ x ≤ᵥ y :=
+  calc
+    _ ↔ (valuation K).extension x ≤ (valuation K).extension y := vle_iff_le _
+    _ ↔ valuation K x ≤ valuation K y := by simp
+    _ ↔ x ≤ᵥ y := (vle_iff_le _).symm
+
+@[simp]
+theorem UniformSpace.Completion.extension_veq_extension_iff {x y : K} :
+    (x : Completion K) =ᵥ (y : Completion K) ↔ x =ᵥ y :=
+  Iff.and vle_iff_vle vle_iff_vle
+
+@[simp]
+theorem UniformSpace.Completion.extension_vlt_extension_iff {x y : K} :
+    (x : Completion K) <ᵥ (y : Completion K) ↔ x <ᵥ y :=
+  Iff.not vle_iff_vle
+
 instance UniformSpace.Completion.valuativeExtension : ValuativeExtension K (Completion K) where
-  vle_iff_vle x y := by
-    calc
-      _ ↔ (valuation K).extension x ≤ (valuation K).extension y := vle_iff_le _
-      _ ↔ valuation K x ≤ valuation K y := by simp
-      _ ↔ x ≤ᵥ y := (vle_iff_le _).symm
+  vle_iff_vle _ _ := vle_iff_vle
 
 variable {Γ₀ Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀]
   [LinearOrderedCommGroupWithZero Γ₀'] (v : Valuation K Γ₀) [v.Compatible]
@@ -457,7 +471,6 @@ instance UniformSpace.Completion.isValuativeTopology : IsValuativeTopology (Comp
   IsValuativeTopology.of_mem_nhds_zero_iff_vle (valuation K).extension fun {s} ↦ by
     simpa only [true_and] using (valuation K).extension_hasBasis_nhds_zero.mem_iff
 
-@[simp]
 theorem Valuation.extension.isEquiv : v.extension.IsEquiv v'.extension := by
   have h := v.closure_image_coe_le
   rw [show {(x, y) : K × K | v x ≤ v y} = {(x, y) : K × K | v' x ≤ v' y} from
@@ -466,7 +479,7 @@ theorem Valuation.extension.isEquiv : v.extension.IsEquiv v'.extension := by
 
 instance Valuation.extension.compatible : v.extension.Compatible := by
   apply IsEquiv.compatible (v₁ := (valuation K).extension)
-  simp
+  exact Valuation.extension.isEquiv _ _
 
 lemma extension_surjective_iff :
     Function.Surjective (v.extension : Completion K → Γ₀) ↔
