@@ -80,7 +80,8 @@ end MeasureTheory.Measure
 
 namespace ProbabilityTheory.Kernel
 
-lemma withDensity_comp {η : Kernel 𝓨 𝓩} [IsSFiniteKernel η] {f : 𝓧 → ℝ≥0∞} (hf : Measurable f) :
+lemma withDensity_comp_left {η : Kernel 𝓨 𝓩} [IsSFiniteKernel η]
+    {f : 𝓧 → ℝ≥0∞} (hf : Measurable f) :
     (η ∘ₖ κ).withDensity (fun a _ ↦ f a) = η ∘ₖ (κ.withDensity (fun a _ ↦ f a)) := by
   ext a s hs
   rw [Kernel.withDensity_apply _ (by fun_prop), Kernel.comp_apply, Kernel.comp_apply]
@@ -88,6 +89,13 @@ lemma withDensity_comp {η : Kernel 𝓨 𝓩} [IsSFiniteKernel η] {f : 𝓧 �
   simp only [withDensity_const, Measure.smul_apply, smul_eq_mul]
   rw [lintegral_withDensity _ (by fun_prop) _ (η.measurable_coe hs),
     Measure.bind_apply hs (Kernel.aemeasurable _), lintegral_const_mul _ (η.measurable_coe hs)]
+
+lemma withDensity_comp_right {η : Kernel 𝓨 𝓩} [IsSFiniteKernel η]
+    {f : 𝓩 → ℝ≥0∞} (hf : Measurable f) :
+    (η ∘ₖ κ).withDensity (fun _ z ↦ f z) = (η.withDensity (fun _ z ↦ f z)) ∘ₖ κ := by
+  ext a s hs
+  rw [Kernel.withDensity_apply _ (by fun_prop), Kernel.comp_apply, Kernel.comp_apply,
+    Measure.withDensity_comp (by fun_prop), Measure.bind_apply hs (by fun_prop)]
 
 lemma sectR_withDensity {η : Kernel (𝓧 × 𝓨) 𝓩} [IsSFiniteKernel η] {g : 𝓧 × 𝓨 → 𝓩 → ℝ≥0∞}
     (hg : Measurable (Function.uncurry g)) (a : 𝓧) :
