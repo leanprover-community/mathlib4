@@ -43,7 +43,7 @@ open LinearMap Submodule Module
 
 namespace LinearMap
 
-variable {K V V' V₂ V₂' V₃ : Type*}
+variable {K V V₂ V₃ : Type*}
 
 section Semiring
 
@@ -238,9 +238,13 @@ lemma equiv_iff_hasFiniteRange [IsNoetherianRing K] {u v : V →ₗ[K] V₂} :
 lemma equiv_zero_iff_hasNoetherianRange {u : V →ₗ[K] V₂} : u ≈ 0 ↔ u.HasNoetherianRange := by
   simp [equiv_iff_hasNoetherianRange]
 
+alias ⟨_, _root_.LinearMap.HasNoetherianRange.equiv_zero⟩ := equiv_zero_iff_hasNoetherianRange
+
 lemma equiv_zero_iff_hasFiniteRange [IsNoetherianRing K] {u : V →ₗ[K] V₂} :
     u ≈ 0 ↔ u.HasFiniteRange := by
   simp [equiv_iff_hasFiniteRange]
+
+alias ⟨_, _root_.LinearMap.HasFiniteRange.equiv_zero⟩ := equiv_zero_iff_hasFiniteRange
 
 lemma equiv_iff_isNoetherian_quotient_eqLocus {u v : V →ₗ[K] V₂} :
     u ≈ v ↔ IsNoetherian K (V ⧸ eqLocus u v) := by
@@ -339,6 +343,10 @@ lemma IsLeftQuasiInverse.equiv {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V�
 
 lemma IsRightQuasiInverse.equiv {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
     (h : u.IsRightQuasiInverse v) : v ∘ₗ u ≈ .id := h
+
+lemma _root_.LinearEquiv.isQuasiInverse (e : V ≃ₗ[K] V₂) :
+    e.symm.IsQuasiInverse e := by
+  simp [IsQuasiInverse, IsLeftQuasiInverse, IsRightQuasiInverse]
 
 @[symm]
 lemma IsQuasiInverse.symm {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}

@@ -68,7 +68,6 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [Finita
   rw [mem_sieves_iff_contains_colimit_cofan] at h
   obtain ⟨α, _, Y, π, h, h'⟩ := h
   let y : (a : α) → (F.obj ⟨Y a⟩) := fun a ↦ (h' a).choose
-  let _ : Fintype α := Fintype.ofFinite _
   let ht := (Types.productLimitCone (fun a ↦ F.obj ⟨Y a⟩)).isLimit
   let ht' := (Functor.Initial.isLimitWhiskerEquiv (Discrete.opposite α).inverse
     (Cocone.op (Cofan.mk X π))).symm h.some.op
@@ -116,7 +115,6 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
     obtain ⟨α, _, Z, π, h, h'⟩ := h
     rw [mem_sieves_iff_hasEffectiveEpi]
     let x : (a : α) → (F.obj ⟨Z a⟩) := fun a ↦ (h' a).choose
-    let _ : Fintype α := Fintype.ofFinite _
     let i' : ((a : α) → (F.obj ⟨Z a⟩)) ≅ (F.obj ⟨∐ Z⟩) := (Types.productIso _).symm ≪≫
       (PreservesProduct.iso F _).symm ≪≫ F.mapIso (opCoproductIsoProduct _).symm
     refine ⟨∐ Z, Sigma.desc π, inferInstance, i'.hom x, ?_⟩

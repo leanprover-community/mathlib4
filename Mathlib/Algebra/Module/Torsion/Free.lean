@@ -138,7 +138,7 @@ lemma Module.isTorsionFree_nat_iff_isAddTorsionFree : IsTorsionFree ℕ M ↔ Is
 end AddCommMonoid
 
 section AddCommGroup
-variable [CharZero R] [IsDomain R] [AddCommGroup M] [Module R M] {m : M}
+variable [CharZero R] [IsDomain R] [AddCommGroup M] [Module R M]
 
 instance [IsAddTorsionFree M] : IsTorsionFree ℤ M where
   isSMulRegular n hn := zsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)

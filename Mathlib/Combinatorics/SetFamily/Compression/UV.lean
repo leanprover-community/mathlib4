@@ -84,7 +84,7 @@ def compress (u v a : α) : α :=
 
 theorem compress_of_disjoint_of_le (hua : Disjoint u a) (hva : v ≤ a) :
     compress u v a = (a ⊔ u) \ v :=
-  if_pos ⟨hua, hva⟩
+  ite_eq_left ⟨hua, hva⟩
 
 theorem compress_of_disjoint_of_le' (hva : Disjoint v a) (hua : u ≤ a) :
     compress u v ((a ⊔ v) \ u) = a := by
