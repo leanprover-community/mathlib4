@@ -281,7 +281,6 @@ end Rotate
 section Shift
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `(mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧')`. -/
 noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧') where
   hom := lift _ (n.negOnePow • (fst φ).shift n) ((snd φ).shift n) (by
