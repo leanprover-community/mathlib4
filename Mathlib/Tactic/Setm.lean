@@ -122,10 +122,16 @@ example (h₁ : 1 + 2 = 3) (h₂ : 2 + 2 = 4) : ∃ n, n = 2 := by
 -/
 syntax (name := setM) "setm " term (" using " ident)? (Parser.Tactic.location)? : tactic
 
+/-- Check that `p` and `e` are reducibly definitionally equal in the context of goal `goal`, or
+throw a nicely-formatted error.
+-/
 def defeqOrError (goal : MVarId) (p e : Expr) : MetaM Unit :=
   -- We use `withAssinableSyntheticOpaque` here as elaboration of the pattern can create
   -- metavariables of `.syntheticOpaque` kind that could be assigned by the `isDefEq`. See the
   -- test file for a concrete example.
+  --
+  -- TODO: `withoutProofIrrelevance` is not doing what we would expect it to do because of what
+  -- seems like a bug in Lean, see the last example in the test file and the issue mentioned there.
   unless ← withReducible <| withoutProofIrrelevance <| withAssignableSyntheticOpaque
       <| isDefEq p e do
     throwTacticEx `setm goal <| MessageData.ofLazyM (es := #[p, e]) do
