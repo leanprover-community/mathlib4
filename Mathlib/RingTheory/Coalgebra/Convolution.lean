@@ -242,7 +242,7 @@ namespace AlgHom
 variable [Semiring B] [Algebra R B]
 
 /-- Post-composition by an algebra homomorphism, as a homomorphism of convolution algebras. -/
-@[simps]
+@[expose, simps]
 def convCompRight (h : A →ₐ[R] B) : WithConv (C →ₗ[R] A) →ₐ[R] WithConv (C →ₗ[R] B) where
   toFun f := toConv (h.toLinearMap.comp f.ofConv)
   map_one' := WithConv.ext (algHom_comp_convOne h)
@@ -261,7 +261,7 @@ namespace CoalgHom
 variable [AddCommMonoid B] [Module R B] [Coalgebra R B]
 
 /-- Pre-composition by a coalgebra homomorphism, as a homomorphism of convolution algebras. -/
-@[simps]
+@[expose, simps]
 def convCompLeft (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →ₐ[R] WithConv (B →ₗ[R] A) where
   toFun f := toConv (f.ofConv.comp (h : B →ₗ[R] C))
   map_one' := WithConv.ext (convOne_comp_coalgHom h)
