@@ -57,7 +57,7 @@ def maxPrimeFac (n : ℕ) : ℕ := n.primeFactorsList.getLastD n
 @[simp] lemma maxPrimeFac_zero : maxPrimeFac 0 = 0 := by simp [maxPrimeFac]
 @[simp] lemma maxPrimeFac_one : maxPrimeFac 1 = 1 := by simp [maxPrimeFac]
 
-lemma prime_maxPrimeFac_of_one_lt {n : ℕ} (h : 1 < n) : Prime n.maxPrimeFac := by
+lemma prime_maxPrimeFac_of_one_lt {n : ℕ} (h : 1 < n) : n.maxPrimeFac.Prime := by
   have : n.primeFactorsList ≠ [] := by simp; lia
   simpa [maxPrimeFac, List.getLast?_eq_getLast_of_ne_nil this]
     using prime_of_mem_primeFactorsList <| List.getLast_mem _
