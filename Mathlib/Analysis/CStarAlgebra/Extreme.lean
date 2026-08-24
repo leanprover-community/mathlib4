@@ -19,9 +19,10 @@ This file contains results on the extreme points of the closed unit ball in (uni
 
 ## Main results
 
-* `CStarAlgebra.isUnital_iff`: a C⋆-algebra is unital iff the extreme points of the closed unit ball is nonempty.
-* `isStarProjection_iff_mem_extremePoints_setOfPred_nonneg_inter_unitClosedBall`: the star projections in a C⋆-algebra are exactly the extreme points of
-  the nonnegative closed unit ball.
+* `CStarAlgebra.isUnital_iff`: a C⋆-algebra is unital iff the extreme points of the closed unit ball
+  is nonempty.
+* `isStarProjection_iff_mem_extremePoints_setOfPred_nonneg_inter_unitClosedBall`: the star
+  projections in a C⋆-algebra are exactly the extreme points of the nonnegative closed unit ball.
 
 ## References
 
@@ -126,7 +127,7 @@ theorem star_self_conjugate_eq_self_of_mem_extremePoints_unitClosedBall {a : A}
       _ = ‖cfcₙ (fun x : ℝ ↦ 2 * x - x * x) (abs a)‖ := by
         rw [cfcₙ_sub _ _, cfcₙ_const_mul _ _, cfcₙ_mul _ _, cfcₙ_id' ℝ (abs a)]
       _ ≤ _ := norm_cfcₙ_le fun x hx ↦ by
-        have := x.le_norm_self.trans (by grw [quasispectrum.norm_le_norm_of_mem _ hx, norm_abs, ha])
+        have := x.le_norm_self.trans (by grw [quasispectrum.norm_le_norm_of_mem hx, norm_abs, ha])
         rw [Real.norm_of_nonneg] <;> nlinarith [quasispectrum_nonneg_of_nonneg _ (by simp) _ hx]
 
 attribute [local grind .] IsSelfAdjoint.star_mul_self IsIdempotentElem IsSelfAdjoint.mul_star_self
