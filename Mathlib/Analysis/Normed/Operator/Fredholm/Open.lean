@@ -13,6 +13,14 @@ public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 In this file, we show that the set of Fredholm operators between two Banach spaces is open
 (for the operator norm) in the space of continuous linear maps.
+
+## TODO
+
+We can strengthen this statement in two ways:
+- the index is continuous (i.e. locally constant) on the set of Fredholm operators (WIP)
+- for any choice of a quasi-inverse `S₀` to a Fredholm operator `T₀`, there is a function
+`φ : (E →L[𝕜] F) → (F →L[𝕜] E)` which is analytic on a neighborhood of `T₀`, such that `φ(T₀) = S₀`
+and `φ(T)` is a quasi-inverse of `T` for every `T` in a neighborhood of `T₀`.
 -/
 
 @[expose] public noncomputable section
