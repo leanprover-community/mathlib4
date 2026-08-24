@@ -45,8 +45,7 @@ theorem finsuppLEquivDirectSum_single (i : ι) (m : M) :
 
 @[simp]
 theorem finsuppLEquivDirectSum_apply (m : ι →₀ M) (i : ι) :
-    finsuppLEquivDirectSum R M ι m i = m i := by
-  rfl
+    finsuppLEquivDirectSum R M ι m i = m i := rfl
 
 @[simp]
 theorem finsuppLEquivDirectSum_symm_lof (i : ι) (m : M) :

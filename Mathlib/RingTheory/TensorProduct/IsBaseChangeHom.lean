@@ -117,8 +117,7 @@ noncomputable def linearMapLeftRightHom {α : M →ₗ[R] P} (j : IsBaseChange S
 
 theorem linearMapLeftRightHom_apply
     {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) (p : P) :
-    linearMapLeftRightHom j β f p = ((liftBaseChangeEquiv S) (β ∘ₗ f)) (j.equiv.symm p) := by
-  rfl
+    linearMapLeftRightHom j β f p = ((liftBaseChangeEquiv S) (β ∘ₗ f)) (j.equiv.symm p) := rfl
 
 @[simp] theorem linearMapLeftRightHom_comp_apply
     {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) (m : M) :
@@ -158,8 +157,7 @@ noncomputable def endHom {α : M →ₗ[R] P} (j : IsBaseChange S α) :
 
 theorem endHom_apply
     {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) (p : P) :
-    endHom j f p = ((liftBaseChangeEquiv S) (α ∘ₗ f)) (j.equiv.symm p) := by
-  rfl
+    endHom j f p = ((liftBaseChangeEquiv S) (α ∘ₗ f)) (j.equiv.symm p) := rfl
 
 theorem endHom_comp_apply
     {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) (m : M) :

@@ -280,8 +280,7 @@ theorem symm_trans_apply (e₁ : B ≃A[R] A) (e₂ : C ≃A[R] B) (a : A) :
   rfl
 
 theorem comp_coe (e₁ : A ≃A[R] B) (e₂ : B ≃A[R] C) :
-    e₂.toAlgHom.comp e₁.toAlgHom = e₁.trans e₂ := by
-  rfl
+    e₂.toAlgHom.comp e₁.toAlgHom = e₁.trans e₂ := rfl
 
 @[simp high]
 theorem coe_comp_coe_symm (e : A ≃A[R] B) :

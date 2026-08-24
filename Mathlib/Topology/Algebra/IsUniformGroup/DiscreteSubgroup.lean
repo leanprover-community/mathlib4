@@ -45,8 +45,7 @@ lemma Subgroup.subgroupOfContinuousMulEquivOfLe_symm_apply
 
 @[to_additive (attr := simp)]
 lemma Subgroup.subgroupOfContinuousMulEquivOfLe_toMulEquiv {H K : Subgroup G} (hHK : H ≤ K) :
-    (subgroupOfContinuousMulEquivOfLe hHK : H.subgroupOf K ≃* H) = subgroupOfEquivOfLe hHK := by
-  rfl
+    (subgroupOfContinuousMulEquivOfLe hHK : H.subgroupOf K ≃* H) = subgroupOfEquivOfLe hHK := rfl
 
 variable [IsTopologicalGroup G] [T2Space G]
 
