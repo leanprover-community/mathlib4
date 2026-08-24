@@ -64,9 +64,9 @@ theorem isCaratheodory_empty : IsCaratheodory m ∅ := by simp [IsCaratheodory, 
 
 /-- Sets with zero outer measure are Carathéodory-measurable. -/
 lemma isCaratheodory_of_measure_eq_zero (h : m s = 0) : m.IsCaratheodory s := by
-  rw [isCaratheodory_iff_le']; intro t
-  simpa [measure_mono_null inter_subset_left h] using
-    (measure_mono (Set.sdiff_subset : t \ s ⊆ t) : m (t \ s) ≤ m t)
+  rw [isCaratheodory_iff_le']
+  intro t
+  simp [measure_mono_null inter_subset_left h, measure_mono sdiff_subset]
 
 theorem isCaratheodory_compl : IsCaratheodory m s₁ → IsCaratheodory m s₁ᶜ := by
   simp [IsCaratheodory, sdiff_eq, add_comm]
