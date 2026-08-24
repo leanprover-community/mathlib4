@@ -186,7 +186,7 @@ variable [HasFiniteProducts C]
 
 /-- Given `U : FormalCoproduct C`, this is the simplicial object
 in `FormalCoproduct C` which sends `⦋n⦌` to `U.power (Fin (n + 1))`. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def cech (U : FormalCoproduct.{w} C) :
     SimplicialObject (FormalCoproduct.{w} C) where
   obj n := U.power (ToType n.unop)

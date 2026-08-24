@@ -123,7 +123,7 @@ lemma basis_apply (n : Fin 2) :
     CoordinateRing.basis W' n = (AdjoinRoot.powerBasis' monic_polynomial).gen ^ (n : ℕ) := by
   classical
   nontriviality R
-  rw [CoordinateRing.basis, Or.by_cases, dif_neg <| not_subsingleton R, Basis.reindex_apply,
+  rw [CoordinateRing.basis, Or.by_cases, dite_eq_right <| not_subsingleton R, Basis.reindex_apply,
     PowerBasis.basis_eq_pow, finCongr_symm_apply, Fin.val_cast]
 
 @[simp]
@@ -282,8 +282,6 @@ lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W' x (C y) = XYIdeal W' x (linePolyn
   C_simp
   ring1
 
--- Non-terminal simp, used to be field_simp
-set_option linter.flexible false in
 lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
@@ -412,7 +410,7 @@ lemma norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • (1 : W'.Coordinate
   simp_rw [Algebra.norm_eq_matrix_det <| CoordinateRing.basis W', Matrix.det_fin_two,
     Algebra.leftMulMatrix_eq_repr_mul, basis_zero, mul_one, basis_one, smul_basis_mul_Y, map_add,
     Finsupp.add_apply, map_smul, Finsupp.smul_apply, ← basis_zero, ← basis_one,
-    Basis.repr_self_apply, if_pos, one_ne_zero, if_false, smul_eq_mul]
+    Basis.repr_self_apply, ite_eq_left, one_ne_zero, ite_false, smul_eq_mul]
   ring1
 
 lemma coe_norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • 1 + q • mk W' Y) =
@@ -677,12 +675,12 @@ lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
 lemma add_some {x₁ x₂ y₁ y₂ : F} (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) {h₁ : W.Nonsingular x₁ y₁}
     {h₂ : W.Nonsingular x₂ y₂} :
     some _ _ h₁ + some _ _ h₂ = some _ _ (nonsingular_add h₁ h₂ hxy) := by
-  simp only [add_def, add, dif_neg hxy]
+  simp only [add_def, add, dite_eq_right hxy]
 
 @[simp]
 lemma add_of_Y_eq {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) : some _ _ h₁ + some _ _ h₂ = 0 := by
-  simpa only [add_def, add] using dif_pos ⟨hx, hy⟩
+  simpa only [add_def, add] using dite_eq_left ⟨hx, hy⟩
 
 -- Removing `@[simp]`, because `hy` causes a maximum recursion depth error in the simpNF linter.
 lemma add_self_of_Y_eq {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ = W.negY x₁ y₁) :
@@ -719,6 +717,33 @@ lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
     (hx : x₁ ≠ x₂) :
     some _ _ h₁ + some _ _ h₂ = -some _ _ (nonsingular_negAdd h₁ h₂ fun hxy => hx hxy.left) :=
   add_of_X_ne hx
+
+/-- A nonzero affine `2`-torsion point `some x y h` of `W` (that is, `P + P = 0`) has `X`-coordinate
+a root of `W.twoTorsionPolynomial`. -/
+theorem isRoot_twoTorsionPolynomial_of_add_self {x y : F} (h : W.Nonsingular x y)
+    (hP : some x y h + some x y h = 0) : W.twoTorsionPolynomial.toPoly.IsRoot x := by
+  rw [IsRoot.def, eval_toPoly_twoTorsionPolynomial, b₂, b₄, b₆]
+  have hy : y = W.negY x y := by
+    by_contra hne
+    rw [add_self_of_Y_ne hne] at hP
+    exact some_ne_zero _ hP
+  grind [h.left, negY, equation_iff]
+
+/-- `x` is a root of the `2`-torsion polynomial of a Weierstrass curve of characteristic
+different from `2` with nonzero discriminant if and only if it is the `X`-coordinate of a nonzero
+affine `2`-torsion point. -/
+theorem isRoot_twoTorsionPolynomial_iff (h2 : NeZero (2 : F)) (hΔ : W.Δ ≠ 0) (x : F) :
+    W.twoTorsionPolynomial.toPoly.IsRoot x ↔
+      ∃ y, ∃ h : W.Nonsingular x y, some x y h + some x y h = 0 := by
+  constructor
+  · intro hroot
+    rw [IsRoot.def, eval_toPoly_twoTorsionPolynomial, b₂, b₄, b₆] at hroot
+    set y := (-W.a₁ * x - W.a₃) / 2
+    have heq : W.Equation x y := by grind [NeZero.out, equation_iff]
+    refine ⟨y, (equation_iff_nonsingular_of_Δ_ne_zero hΔ).mp heq, add_self_of_Y_eq ?_⟩
+    grind [negY]
+  · rintro ⟨y, hns, hP⟩
+    exact isRoot_twoTorsionPolynomial_of_add_self hns hP
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The group homomorphism mapping a nonsingular affine point `(x, y)` of a Weierstrass curve `W` to

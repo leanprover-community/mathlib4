@@ -38,8 +38,8 @@ noncomputable section
 
 open scoped NNReal ENNReal
 
-variable {α ε ε' E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {f : α → E}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] [ENorm ε] [ENorm ε']
+variable {α ε E : Type*} {m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {f : α → E}
+  [NormedAddCommGroup E] [ENorm ε]
 
 namespace MeasureTheory
 
@@ -86,7 +86,7 @@ def eLpNorm {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
   if p = 0 then 0 else if p = ∞ then eLpNormEssSup f μ else eLpNorm' f (ENNReal.toReal p) μ
 
-variable {μ ν : Measure α}
+variable {μ : Measure α}
 
 theorem eLpNorm_eq_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} :
     eLpNorm f p μ = eLpNorm' f (ENNReal.toReal p) μ := by simp [eLpNorm, hp_ne_zero, hp_ne_top]
