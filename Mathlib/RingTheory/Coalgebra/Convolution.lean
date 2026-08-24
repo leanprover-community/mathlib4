@@ -255,6 +255,11 @@ lemma convCompRight_injective {h : A →ₐ[R] B} (hh : Function.Injective h) :
     Function.Injective (convCompRight h (C := C)) := fun _ _ e ↦
   WithConv.ext <| (LinearMap.cancel_left hh).1 congr(($e).ofConv)
 
+@[simp] lemma convCompRight_id : (AlgHom.id R A).convCompRight (C := C) = AlgHom.id R _ := rfl
+
+lemma convCompRight_comp {D : Type*} [Semiring D] [Algebra R D] (h₁ : B →ₐ[R] D) (h₂ : A →ₐ[R] B) :
+    (h₁.comp h₂).convCompRight (C := C) = h₁.convCompRight.comp h₂.convCompRight := rfl
+
 end AlgHom
 
 namespace CoalgHom
@@ -273,5 +278,15 @@ def convCompLeft (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →ₐ[R] WithC
 lemma convCompLeft_injective {h : B →ₗc[R] C} (hh : Function.Surjective h) :
     Function.Injective (convCompLeft h (A := A)) := fun _ _ e ↦
   WithConv.ext <| (LinearMap.cancel_right hh).1 congr(($e).ofConv)
+
+@[simp] lemma convCompLeft_id : (CoalgHom.id R C).convCompLeft (A := A) = AlgHom.id R _ := rfl
+
+lemma convCompLeft_comp {D : Type*} [AddCommMonoid D] [Module R D] [Coalgebra R D]
+    (h₁ : B →ₗc[R] C) (h₂ : D →ₗc[R] B) :
+    (h₁.comp h₂).convCompLeft (A := A) = h₂.convCompLeft.comp h₁.convCompLeft := rfl
+
+lemma convCompLeft_comp_convCompRight {D : Type*} [Semiring D] [Algebra R D] (h : B →ₗc[R] C)
+    (φ : A →ₐ[R] D) : h.convCompLeft.comp φ.convCompRight = φ.convCompRight.comp h.convCompLeft :=
+  rfl
 
 end CoalgHom
