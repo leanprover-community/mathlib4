@@ -16,10 +16,13 @@ It equips it with the Borel structure inherited from the ambient subtype, which 
 `Circle`-valued functions (such as the additive characters `Real.fourierChar` and `Real.probChar`)
 measurable.
 
-See `Mathlib/MeasureTheory/Group/AddCircle.lean` for the additive circle `ℝ / ℤ`.
+Unlike `Circle`, the additive circle `ℝ / ℤ` obtains its `MeasurableSpace` and `BorelSpace`
+instances from the general `QuotientAddGroup` instances (in
+`Mathlib.MeasureTheory.MeasurableSpace.Constructions` and
+`Mathlib.MeasureTheory.Constructions.Polish.Basic` respectively).
 -/
 
-@[expose] public section
+public section
 
 namespace Circle
 
