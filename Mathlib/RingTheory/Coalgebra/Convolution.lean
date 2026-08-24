@@ -159,16 +159,7 @@ section Semiring
 variable [Semiring A] [Algebra R A] [AddCommMonoid C] [Module R C]
 
 section CoalgebraStruct
-variable [CoalgebraStruct R C] [Semiring B] [Algebra R B]
-
-lemma algHom_comp_convMul_distrib (h : A →ₐ B) (f g : WithConv (C →ₗ[R] A)) :
-    h.toLinearMap.comp (f * g).ofConv =
-      (toConv (h.toLinearMap.comp f.ofConv) * toConv (h.toLinearMap.comp g.ofConv)).ofConv := by
-  simp [convMul_def, map_comp, ← comp_assoc, AlgHom.comp_mul']
-
-end CoalgebraStruct
-
-variable [Coalgebra R C]
+variable [CoalgebraStruct R C]
 
 /-- Convolution unit on linear maps from a coalgebra to an algebra. -/
 instance convOne : One (WithConv (C →ₗ[R] A)) where one := toConv (Algebra.linearMap R A ∘ₗ counit)
@@ -178,14 +169,25 @@ lemma convOne_def : (1 : WithConv (C →ₗ[R] A)) = toConv (Algebra.linearMap R
 @[simp] lemma convOne_apply (c : C) :
     (1 : WithConv (C →ₗ[R] A)) c = algebraMap R A (counit (R := R) c) := rfl
 
-@[simp] lemma algHom_comp_convOne [Semiring B] [Algebra R B] (h : A →ₐ[R] B) :
-    h.toLinearMap ∘ₗ (1 : WithConv (C →ₗ[R] A)).ofConv = (1 : WithConv (C →ₗ[R] B)).ofConv := by
-  ext; simp
-
-@[simp] lemma convOne_comp_coalgHom [AddCommMonoid B] [Module R B] [Coalgebra R B]
+@[simp] lemma convOne_comp_coalgHom [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
     (h : B →ₗc[R] C) :
     (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ (h : B →ₗ[R] C) = (1 : WithConv (B →ₗ[R] A)).ofConv := by
   ext; simp
+
+variable [Semiring B] [Algebra R B]
+
+lemma algHom_comp_convMul_distrib (h : A →ₐ B) (f g : WithConv (C →ₗ[R] A)) :
+    h.toLinearMap.comp (f * g).ofConv =
+      (toConv (h.toLinearMap.comp f.ofConv) * toConv (h.toLinearMap.comp g.ofConv)).ofConv := by
+  simp [convMul_def, map_comp, ← comp_assoc, AlgHom.comp_mul']
+
+@[simp] lemma algHom_comp_convOne (h : A →ₐ[R] B) :
+    h.toLinearMap ∘ₗ (1 : WithConv (C →ₗ[R] A)).ofConv = (1 : WithConv (C →ₗ[R] B)).ofConv := by
+  ext; simp
+
+end CoalgebraStruct
+
+variable [Coalgebra R C]
 
 /-- Convolution semiring structure on linear maps from a coalgebra to an algebra. -/
 instance convSemiring : Semiring (WithConv (C →ₗ[R] A)) where
