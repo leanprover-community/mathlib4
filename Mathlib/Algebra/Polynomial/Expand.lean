@@ -3,8 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.RingTheory.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.RingDivision
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
@@ -16,6 +20,8 @@ import Mathlib.RingTheory.Polynomial.Basic
 * `Polynomial.contract p f`: the opposite of `expand`, so it sends `∑ aₙ xⁿᵖ` to `∑ aₙ xⁿ`.
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -41,8 +47,9 @@ variable {R}
 
 theorem expand_eq_comp_X_pow {f : R[X]} : expand R p f = f.comp (X ^ p) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem expand_eq_sum {f : R[X]} : expand R p f = f.sum fun e a => C a * (X ^ p) ^ e := by
-  simp [expand, eval₂]
+  simp [expand, eval₂_eq_sum]
 
 @[simp]
 theorem expand_C (r : R) : expand R p (C r) = C r :=
@@ -86,24 +93,24 @@ theorem coeff_expand {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
   simp only [expand_eq_sum]
   simp_rw [coeff_sum, ← pow_mul, C_mul_X_pow_eq_monomial, coeff_monomial, sum]
   split_ifs with h
-  · rw [Finset.sum_eq_single (n / p), Nat.mul_div_cancel' h, if_pos rfl]
+  · rw [Finset.sum_eq_single (n / p), Nat.mul_div_cancel' h, ite_eq_left rfl]
     · intro b _ hb2
-      rw [if_neg]
+      rw [ite_eq_right]
       intro hb3
       apply hb2
       rw [← hb3, Nat.mul_div_cancel_left b hp]
     · intro hn
-      rw [not_mem_support_iff.1 hn]
+      rw [notMem_support_iff.1 hn]
       split_ifs <;> rfl
   · rw [Finset.sum_eq_zero]
     intro k _
-    rw [if_neg]
+    rw [ite_eq_right]
     exact fun hkn => h ⟨k, hkn.symm⟩
 
 @[simp]
 theorem coeff_expand_mul {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
     (expand R p f).coeff (n * p) = f.coeff n := by
-  rw [coeff_expand hp, if_pos (dvd_mul_left _ _), Nat.mul_div_cancel _ hp]
+  rw [coeff_expand hp, ite_eq_left (dvd_mul_left _ _), Nat.mul_div_cancel _ hp]
 
 @[simp]
 theorem coeff_expand_mul' {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
@@ -131,19 +138,18 @@ theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.nat
   by_cases hf : f = 0
   · rw [hf, map_zero, natDegree_zero, zero_mul]
   have hf1 : expand R p f ≠ 0 := mt (expand_eq_zero hp).1 hf
-  rw [← WithBot.coe_eq_coe]
-  convert (degree_eq_natDegree hf1).symm -- Porting note: was `rw [degree_eq_natDegree hf1]`
-  symm
+  rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree hf1]
   refine le_antisymm ((degree_le_iff_coeff_zero _ _).2 fun n hn => ?_) ?_
   · rw [coeff_expand hp]
     split_ifs with hpn
     · rw [coeff_eq_zero_of_natDegree_lt]
       contrapose! hn
-      erw [WithBot.coe_le_coe, ← Nat.div_mul_cancel hpn]
+      norm_cast
+      rw [← Nat.div_mul_cancel hpn]
       exact Nat.mul_le_mul_right p hn
     · rfl
   · refine le_degree_of_ne_zero ?_
-    erw [coeff_expand_mul hp, ← leadingCoeff]
+    rw [coeff_expand_mul hp, ← leadingCoeff]
     exact mt leadingCoeff_eq_zero.1 hf
 
 theorem leadingCoeff_expand {p : ℕ} {f : R[X]} (hp : 0 < p) :
@@ -180,14 +186,14 @@ noncomputable def contract (p : ℕ) (f : R[X]) : R[X] :=
 
 theorem coeff_contract {p : ℕ} (hp : p ≠ 0) (f : R[X]) (n : ℕ) :
     (contract p f).coeff n = f.coeff (n * p) := by
-  simp only [contract, coeff_monomial, sum_ite_eq', finset_sum_coeff, mem_range, not_lt,
+  simp only [contract, coeff_monomial, sum_ite_eq', finsetSum_coeff, mem_range, not_lt,
     ite_eq_left_iff]
   intro hn
   apply (coeff_eq_zero_of_natDegree_lt _).symm
   calc
     f.natDegree < f.natDegree + 1 := Nat.lt_succ_self _
     _ ≤ n * 1 := by simpa only [mul_one] using hn
-    _ ≤ n * p := mul_le_mul_of_nonneg_left (show 1 ≤ p from hp.bot_lt) (zero_le n)
+    _ ≤ n * p := by gcongr; exact hp.bot_lt
 
 theorem map_contract {p : ℕ} (hp : p ≠ 0) {f : R →+* S} {q : R[X]} :
     (q.contract p).map f = (q.map f).contract p := ext fun n ↦ by
@@ -200,6 +206,34 @@ theorem contract_expand {f : R[X]} (hp : p ≠ 0) : contract p (expand R p f) = 
 theorem contract_one {f : R[X]} : contract 1 f = f :=
   ext fun n ↦ by rw [coeff_contract one_ne_zero, mul_one]
 
+@[simp] theorem contract_C (r : R) : contract p (C r) = C r := by simp [contract]
+
+theorem contract_add {p : ℕ} (hp : p ≠ 0) (f g : R[X]) :
+    contract p (f + g) = contract p f + contract p g := by
+  ext; simp_rw [coeff_add, coeff_contract hp, coeff_add]
+
+theorem contract_mul_expand {p : ℕ} (hp : p ≠ 0) (f g : R[X]) :
+    contract p (f * expand R p g) = contract p f * g := by
+  ext n
+  rw [coeff_contract hp, coeff_mul, coeff_mul, ← sum_subset
+    (s₁ := (antidiagonal n).image fun x ↦ (x.1 * p, x.2 * p)), sum_image]
+  · simp_rw [coeff_expand_mul hp.bot_lt, coeff_contract hp]
+  · intro x hx y hy eq; simpa only [Prod.ext_iff, Nat.mul_right_cancel_iff hp.bot_lt] using eq
+  · simp_rw [subset_iff, mem_image, mem_antidiagonal]; rintro _ ⟨x, rfl, rfl⟩; simp_rw [add_mul]
+  simp_rw [mem_image, mem_antidiagonal]
+  intro ⟨x, y⟩ eq nex
+  by_cases h : p ∣ y
+  · obtain ⟨x, rfl⟩ : p ∣ x := (Nat.dvd_add_iff_left h).mpr (eq ▸ dvd_mul_left p n)
+    obtain ⟨y, rfl⟩ := h
+    refine (nex ⟨⟨x, y⟩, (Nat.mul_right_cancel_iff hp.bot_lt).mp ?_, by simp_rw [mul_comm]⟩).elim
+    rw [← eq, mul_comm, mul_add]
+  · rw [coeff_expand hp.bot_lt, ite_eq_right h, mul_zero]
+
+@[simp] theorem isCoprime_expand {f g : R[X]} {p : ℕ} (hp : p ≠ 0) :
+    IsCoprime (expand R p f) (expand R p g) ↔ IsCoprime f g :=
+  ⟨fun ⟨a, b, eq⟩ ↦ ⟨contract p a, contract p b, by
+    simp_rw [← contract_mul_expand hp, ← contract_add hp, eq, ← C_1, contract_C]⟩, (·.map _)⟩
+
 section ExpChar
 
 theorem expand_contract [CharP R p] [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0)
@@ -208,11 +242,11 @@ theorem expand_contract [CharP R p] [NoZeroDivisors R] {f : R[X]} (hf : Polynomi
   rw [coeff_expand hp.bot_lt, coeff_contract hp]
   split_ifs with h
   · rw [Nat.div_mul_cancel h]
-  · cases' n with n
+  · rcases n with - | n
     · exact absurd (dvd_zero p) h
     have := coeff_derivative f n
     rw [hf, coeff_zero, zero_eq_mul] at this
-    cases' this with h'
+    rcases this with h' | _
     · rw [h']
     rename_i _ _ _ h'
     rw [← Nat.cast_succ, CharP.cast_eq_zero_iff R p] at h'
@@ -224,23 +258,24 @@ theorem expand_contract' [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivati
     expand R p (contract p f) = f := by
   obtain _ | @⟨_, hprime, hchar⟩ := ‹ExpChar R p›
   · rw [expand_one, contract_one]
-  · haveI := Fact.mk hchar; exact expand_contract p hf hprime.ne_zero
+  · have := Fact.mk hchar; exact expand_contract p hf hprime.ne_zero
 
-theorem expand_char (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
+theorem map_frobenius_expand (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
   refine f.induction_on' (fun a b ha hb => ?_) fun n a => ?_
   · rw [map_add, Polynomial.map_add, ha, hb, add_pow_expChar]
   · rw [expand_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, ← C_mul_X_pow_eq_monomial,
       mul_pow, ← C.map_pow, frobenius_def]
     ring
 
-theorem map_expand_pow_char (f : R[X]) (n : ℕ) :
-    map (frobenius R p ^ n) (expand R (p ^ n) f) = f ^ p ^ n := by
+theorem map_iterateFrobenius_expand (f : R[X]) (n : ℕ) :
+    map (iterateFrobenius R p n) (expand R (p ^ n) f) = f ^ p ^ n := by
   induction n with
-  | zero => simp [RingHom.one_def]
-  | succ _ n_ih =>
+  | zero => simp
+  | succ k n_ih =>
     symm
-    rw [pow_succ, pow_mul, ← n_ih, ← expand_char, pow_succ', RingHom.mul_def, ← map_map, mul_comm,
-      expand_mul, ← map_expand]
+    conv_lhs => rw [pow_succ, pow_mul, ← n_ih]
+    simp_rw [← map_frobenius_expand p, pow_succ', add_comm k, iterateFrobenius_add,
+      ← map_map, ← map_expand, ← expand_mul, iterateFrobenius_one]
 
 end ExpChar
 
@@ -272,11 +307,8 @@ variable (R : Type u) [CommRing R] [IsDomain R]
 theorem isLocalHom_expand {p : ℕ} (hp : 0 < p) : IsLocalHom (expand R p) := by
   refine ⟨fun f hf1 => ?_⟩
   have hf2 := eq_C_of_degree_eq_zero (degree_eq_zero_of_isUnit hf1)
-  rw [coeff_expand hp, if_pos (dvd_zero _), p.zero_div] at hf2
+  rw [coeff_expand hp, ite_eq_left (dvd_zero _), p.zero_div] at hf2
   rw [hf2, isUnit_C] at hf1; rw [expand_eq_C hp] at hf2; rwa [hf2, isUnit_C]
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_expand := isLocalHom_expand
 
 variable {R}
 

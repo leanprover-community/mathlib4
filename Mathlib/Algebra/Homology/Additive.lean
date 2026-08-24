@@ -3,8 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.Single
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Homology.Single
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Homology is an additive functor
@@ -14,6 +17,8 @@ and `homologyFunctor` is additive.
 
 -/
 
+@[expose] public section
+
 
 universe v u
 
@@ -21,10 +26,10 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits HomologicalCom
 
 variable {ι : Type*}
 variable {V : Type u} [Category.{v} V] [Preadditive V]
-variable {W : Type*} [Category W] [Preadditive W]
-variable {W₁ W₂ : Type*} [Category W₁] [Category W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂]
-variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
-variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
+variable {W : Type*} [Category* W] [Preadditive W]
+variable {W₁ W₂ : Type*} [Category* W₁] [Category* W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂]
+variable {c : ComplexShape ι} {C D : HomologicalComplex V c}
+variable (f : C ⟶ D) (i : ι)
 
 namespace HomologicalComplex
 
@@ -76,19 +81,9 @@ theorem zsmul_f_apply (n : ℤ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f
 
 instance : AddCommGroup (C ⟶ D) :=
   Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
-    (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch)
 
--- Porting note: proofs had to be provided here, otherwise Lean tries to apply
--- `Preadditive.add_comp/comp_add` to `HomologicalComplex V c`
 instance : Preadditive (HomologicalComplex V c) where
-  add_comp _ _ _ f f' g := by
-    ext
-    simp only [comp_f, add_f_apply]
-    rw [Preadditive.add_comp]
-  comp_add _ _ _ f g g' := by
-    ext
-    simp only [comp_f, add_f_apply]
-    rw [Preadditive.comp_add]
 
 /-- The `i`-th component of a chain map, as an additive map from chain maps to morphisms. -/
 @[simps!]
@@ -104,18 +99,17 @@ namespace CategoryTheory
 /-- An additive functor induces a functor between homological complexes.
 This is sometimes called the "prolongation".
 -/
-@[simps]
+@[simps, implicit_reducible]
 def Functor.mapHomologicalComplex (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (c : ComplexShape ι) :
     HomologicalComplex W₁ c ⥤ HomologicalComplex W₂ c where
   obj C :=
-    { X := fun i => F.obj (C.X i)
-      d := fun i j => F.map (C.d i j)
-      shape := fun i j w => by
-        dsimp only
+    { X i := F.obj (C.X i)
+      d i j := F.map (C.d i j)
+      shape i j w := by
         rw [C.shape _ _ w, F.map_zero]
       d_comp_d' := fun i j k _ _ => by rw [← F.map_comp, C.d_comp_d, F.map_zero] }
   map f :=
-    { f := fun i => F.map (f.f i)
+    { f i := F.map (f.f i)
       comm' := fun i j _ => by
         dsimp
         rw [← F.map_comp, ← F.map_comp, f.comm] }
@@ -140,11 +134,26 @@ instance Functor.mapHomologicalComplex_reflects_iso (F : W₁ ⥤ W₂) [F.Prese
     ReflectsIsomorphisms (F.mapHomologicalComplex c) :=
   ⟨fun f => by
     intro
-    haveI : ∀ n : ι, IsIso (F.map (f.f n)) := fun n =>
+    have : ∀ n : ι, IsIso (F.map (f.f n)) := fun n =>
         ((HomologicalComplex.eval W₂ c n).mapIso
           (asIso ((F.mapHomologicalComplex c).map f))).isIso_hom
-    haveI := fun n => isIso_of_reflects_iso (f.f n) F
+    have := fun n => isIso_of_reflects_iso (f.f n) F
     exact HomologicalComplex.Hom.isIso_of_components f⟩
+
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] :
+    (F.mapHomologicalComplex c).Faithful where
+  map_injective {K L} f₁ f₂ h := by
+    ext
+    exact F.map_injective ((HomologicalComplex.eval W c _).congr_map h)
+
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] [F.Full] :
+    (F.mapHomologicalComplex c).Full where
+  map_surjective {X Y} f := ⟨
+    { f n := F.preimage (f.f n)
+      comm' i j _ := by
+        apply F.map_injective
+        simp only [Functor.map_comp, Functor.map_preimage]
+        exact f.comm i j }, by cat_disch⟩
 
 variable {W₁}
 
@@ -160,7 +169,7 @@ def NatTrans.mapHomologicalComplex {F G : W₁ ⥤ W₂}
 @[simp]
 theorem NatTrans.mapHomologicalComplex_id
     (c : ComplexShape ι) (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] :
-    NatTrans.mapHomologicalComplex (𝟙 F) c = 𝟙 (F.mapHomologicalComplex c) := by aesop_cat
+    NatTrans.mapHomologicalComplex (𝟙 F) c = 𝟙 (F.mapHomologicalComplex c) := by cat_disch
 
 @[simp]
 theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ ⥤ W₂}
@@ -168,15 +177,15 @@ theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ 
     (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomologicalComplex (α ≫ β) c =
       NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c := by
-  aesop_cat
+  cat_disch
 
-@[reassoc (attr := simp 1100)]
+@[reassoc]
 theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : W₁ ⥤ W₂}
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
     (α : F ⟶ G) {C D : HomologicalComplex W₁ c} (f : C ⟶ D) :
     (F.mapHomologicalComplex c).map f ≫ (NatTrans.mapHomologicalComplex α c).app D =
       (NatTrans.mapHomologicalComplex α c).app C ≫ (G.mapHomologicalComplex c).map f := by
-  aesop_cat
+  simp
 
 /-- A natural isomorphism between functors induces a natural isomorphism
 between those functors applied to homological complexes.
@@ -192,10 +201,20 @@ def NatIso.mapHomologicalComplex {F G : W₁ ⥤ W₂} [F.PreservesZeroMorphisms
   inv_hom_id := by simp only [← NatTrans.mapHomologicalComplex_comp, α.inv_hom_id,
     NatTrans.mapHomologicalComplex_id]
 
+/-- If additive functors are related by an isomorphism `F ⋙ G ≅ H`, this is
+the corresponding isomorphism for the induced functors on categories
+of homological complexes. -/
+@[simps!]
+def Functor.mapHomologicalComplexCompIso {W' : Type*} [Category W'] [Preadditive W']
+    {F : V ⥤ W} {G : W ⥤ W'} {H : V ⥤ W'} (e : F ⋙ G ≅ H)
+    [F.Additive] [G.Additive] [H.Additive] (c : ComplexShape ι) :
+    F.mapHomologicalComplex c ⋙ G.mapHomologicalComplex c ≅ H.mapHomologicalComplex c :=
+  NatIso.mapHomologicalComplex e c
+
 /-- An equivalence of categories induces an equivalences between the respective categories
 of homological complex.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def Equivalence.mapHomologicalComplex (e : W₁ ≌ W₂) [e.functor.PreservesZeroMorphisms]
     (c : ComplexShape ι) :
     HomologicalComplex W₁ c ≌ HomologicalComplex W₂ c where
@@ -216,11 +235,8 @@ theorem map_chain_complex_of (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (X :
     (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
     (F.mapHomologicalComplex _).obj (ChainComplex.of X d sq) =
       ChainComplex.of (fun n => F.obj (X n)) (fun n => F.map (d n)) fun n => by
-        rw [← F.map_comp, sq n, Functor.map_zero] := by
-  refine HomologicalComplex.ext rfl ?_
-  rintro i j (rfl : j + 1 = i)
-  simp only [CategoryTheory.Functor.mapHomologicalComplex_obj_d, of_d, eqToHom_refl, comp_id,
-    id_comp]
+        rw [← F.map_comp, sq n, Functor.map_zero] :=
+  HomologicalComplex.ext rfl (by cat_disch)
 
 end ChainComplex
 
@@ -228,9 +244,9 @@ variable [HasZeroObject W₁] [HasZeroObject W₂]
 
 namespace HomologicalComplex
 
-instance (W : Type*) [Category W] [Preadditive W] [HasZeroObject W] [DecidableEq ι] (j : ι) :
+instance (W : Type*) [Category* W] [Preadditive W] [HasZeroObject W] [DecidableEq ι] (j : ι) :
     (single W c j).Additive where
-  map_add {_ _ f g} := by ext; simp [single]
+  map_add {_ _ f g} := by ext; simp [single_map_f_self]
 
 variable (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
     (c : ComplexShape ι) [DecidableEq ι]
@@ -248,14 +264,14 @@ noncomputable def singleMapHomologicalComplex (j : ι) :
           ext i
           dsimp
           split_ifs with h
-          · simp [h]
+          · simp
           · rw [zero_comp, ← F.map_id,
               (isZero_single_obj_X c j X _ h).eq_of_src (𝟙 _) 0, F.map_zero]
         inv_hom_id := by
           ext i
           dsimp
           split_ifs with h
-          · simp [h]
+          · simp
           · apply (isZero_single_obj_X c j _ _ h).eq_of_src })
     fun f => by
       ext i

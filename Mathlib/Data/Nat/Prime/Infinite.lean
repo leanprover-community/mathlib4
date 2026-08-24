@@ -3,18 +3,22 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Order.Bounds.Basic
+module
+
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Order.Bounds.Basic
 
 /-!
 ## Notable Theorems
 
 - `Nat.exists_infinite_primes`: Euclid's theorem that there exist infinitely many prime numbers.
-  This also appears as `Nat.not_bddAbove_setOf_prime` and `Nat.infinite_setOf_prime` (the latter
-  in `Data.Nat.PrimeFin`).
+  This also appears as `Nat.not_bddAbove_setOfPred_prime` and `Nat.infinite_setOfPred_prime`
+  (the latter in `Data.Nat.PrimeFin`).
 
 -/
+
+public section
 
 open Bool Subtype
 
@@ -38,11 +42,13 @@ theorem exists_infinite_primes (n : ℕ) : ∃ p, n ≤ p ∧ Prime p :=
   ⟨p, np, pp⟩
 
 /-- A version of `Nat.exists_infinite_primes` using the `BddAbove` predicate. -/
-theorem not_bddAbove_setOf_prime : ¬BddAbove { p | Prime p } := by
+theorem not_bddAbove_setOfPred_prime : ¬BddAbove { p | Prime p } := by
   rw [not_bddAbove_iff]
   intro n
   obtain ⟨p, hi, hp⟩ := exists_infinite_primes n.succ
   exact ⟨p, hp, hi⟩
+
+@[deprecated (since := "2026-07-09")] alias not_bddAbove_setOf_prime := not_bddAbove_setOfPred_prime
 
 end Infinite
 

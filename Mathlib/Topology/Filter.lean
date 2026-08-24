@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.Separation.Basic
+module
+
+public import Mathlib.Order.Filter.Lift
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # Topology on the set of filters on a type
@@ -31,6 +33,8 @@ This topology has the following important properties.
 filter, topological space
 -/
 
+public section
+
 
 open Set Filter TopologicalSpace
 
@@ -49,8 +53,10 @@ instance : TopologicalSpace (Filter α) :=
 theorem isOpen_Iic_principal {s : Set α} : IsOpen (Iic (𝓟 s)) :=
   GenerateOpen.basic _ (mem_range_self _)
 
-theorem isOpen_setOf_mem {s : Set α} : IsOpen { l : Filter α | s ∈ l } := by
+theorem isOpen_setOfPred_mem {s : Set α} : IsOpen { l : Filter α | s ∈ l } := by
   simpa only [Iic_principal] using isOpen_Iic_principal
+
+@[deprecated (since := "2026-07-09")] alias isOpen_setOf_mem := isOpen_setOfPred_mem
 
 theorem isTopologicalBasis_Iic_principal :
     IsTopologicalBasis (range (Iic ∘ 𝓟 : Set α → Set (Filter α))) :=
@@ -67,7 +73,7 @@ theorem isOpen_iff {s : Set (Filter α)} : IsOpen s ↔ ∃ T : Set (Set α), s 
 
 theorem nhds_eq (l : Filter α) : 𝓝 l = l.lift' (Iic ∘ 𝓟) :=
   nhds_generateFrom.trans <| by
-    simp only [mem_setOf_eq, @and_comm (l ∈ _), iInf_and, iInf_range, Filter.lift', Filter.lift,
+    simp only [mem_ofPred_eq, @and_comm (l ∈ _), iInf_and, iInf_range, Filter.lift', Filter.lift,
       (· ∘ ·), mem_Iic, le_principal_iff]
 
 theorem nhds_eq' (l : Filter α) : 𝓝 l = l.lift' fun s => { l' | s ∈ l' } := by
@@ -75,7 +81,7 @@ theorem nhds_eq' (l : Filter α) : 𝓝 l = l.lift' fun s => { l' | s ∈ l' } :
 
 protected theorem tendsto_nhds {la : Filter α} {lb : Filter β} {f : α → Filter β} :
     Tendsto f la (𝓝 lb) ↔ ∀ s ∈ lb, ∀ᶠ a in la, s ∈ f a := by
-  simp only [nhds_eq', tendsto_lift', mem_setOf_eq]
+  simp only [nhds_eq', tendsto_lift', mem_ofPred_eq]
 
 protected theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
     HasBasis (𝓝 l) p fun i => Iic (𝓟 (s i)) := by
@@ -119,20 +125,20 @@ theorem nhds_pure (x : α) : 𝓝 (pure x : Filter α) = 𝓟 {⊥, pure x} := b
   rw [← principal_singleton, nhds_principal, principal_singleton, Iic_pure]
 
 @[simp]
-theorem nhds_iInf (f : ι → Filter α) : 𝓝 (⨅ i, f i) = ⨅ i, 𝓝 (f i) := by
+protected theorem nhds_iInf (f : ι → Filter α) : 𝓝 (⨅ i, f i) = ⨅ i, 𝓝 (f i) := by
   simp only [nhds_eq]
   apply lift'_iInf_of_map_univ <;> simp
 
 @[simp]
-theorem nhds_inf (l₁ l₂ : Filter α) : 𝓝 (l₁ ⊓ l₂) = 𝓝 l₁ ⊓ 𝓝 l₂ := by
-  simpa only [iInf_bool_eq] using nhds_iInf fun b => cond b l₁ l₂
+protected theorem nhds_inf (l₁ l₂ : Filter α) : 𝓝 (l₁ ⊓ l₂) = 𝓝 l₁ ⊓ 𝓝 l₂ := by
+  simpa only [iInf_bool_eq] using! Filter.nhds_iInf fun b => cond b l₁ l₂
 
 theorem monotone_nhds : Monotone (𝓝 : Filter α → Filter (Filter α)) :=
-  Monotone.of_map_inf nhds_inf
+  Monotone.of_map_inf Filter.nhds_inf
 
 theorem sInter_nhds (l : Filter α) : ⋂₀ { s | s ∈ 𝓝 l } = Iic l := by
   simp_rw [nhds_eq, Function.comp_def, sInter_lift'_sets monotone_principal.Iic, Iic,
-    le_principal_iff, ← setOf_forall, ← Filter.le_def]
+    le_principal_iff, ← ofPred_forall, ← Filter.le_def]
 
 @[simp]
 theorem nhds_mono {l₁ l₂ : Filter α} : 𝓝 l₁ ≤ 𝓝 l₂ ↔ l₁ ≤ l₂ := by
@@ -164,7 +170,7 @@ instance : T0Space (Filter α) :=
     (specializes_iff_le.1 h.symm.specializes)⟩
 
 theorem nhds_atTop [Preorder α] : 𝓝 atTop = ⨅ x : α, 𝓟 (Iic (𝓟 (Ici x))) := by
-  simp only [atTop, nhds_iInf, nhds_principal]
+  simp only [atTop, Filter.nhds_iInf, nhds_principal]
 
 protected theorem tendsto_nhds_atTop_iff [Preorder β] {l : Filter α} {f : α → Filter β} :
     Tendsto f l (𝓝 atTop) ↔ ∀ y, ∀ᶠ a in l, Ici y ∈ f a := by
@@ -187,10 +193,8 @@ theorem isInducing_nhds : IsInducing (𝓝 : X → Filter X) :=
   isInducing_iff_nhds.2 fun x =>
     (nhds_def' _).trans <| by
       simp +contextual only [nhds_nhds, comap_iInf, comap_principal,
-        Iic_principal, preimage_setOf_eq, ← mem_interior_iff_mem_nhds, setOf_mem_eq,
+        Iic_principal, preimage_ofPred_eq, ← mem_interior_iff_mem_nhds, ofPred_mem_eq,
         IsOpen.interior_eq]
-
-@[deprecated (since := "2024-10-28")] alias inducing_nhds := isInducing_nhds
 
 @[continuity]
 theorem continuous_nhds : Continuous (𝓝 : X → Filter X) :=

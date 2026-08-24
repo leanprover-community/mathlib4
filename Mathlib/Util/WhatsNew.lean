@@ -3,17 +3,21 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 
 /-!
 Defines a command wrapper that prints the changes the command makes to the
 environment.
 
 ```
-whatsnew in
+#whats_new in
 theorem foo : 42 = 6 * 7 := rfl
 ```
 -/
+
+public meta section
 
 open Lean Elab Command
 
@@ -25,7 +29,7 @@ private def throwUnknownId (id : Name) : CommandElabM Unit :=
 private def levelParamsToMessageData (levelParams : List Name) : MessageData :=
   match levelParams with
   | []    => ""
-  | u::us => Id.run <| do
+  | u::us => Id.run do
     let mut m := m!".\{{u}"
     for u in us do
       m := m ++ ", " ++ toMessageData u
@@ -85,11 +89,15 @@ private def printIdCore (id : Name) : ConstantInfo → CoreM MessageData
 def diffExtension (old new : Environment)
     (ext : PersistentEnvExtension EnvExtensionEntry EnvExtensionEntry EnvExtensionState) :
     CoreM (Option MessageData) := unsafe do
-  let oldSt := ext.toEnvExtension.getState old
-  let newSt := ext.toEnvExtension.getState new
+  let mut asyncMode := ext.toEnvExtension.asyncMode
+  if asyncMode matches .async .. then
+    -- allow for diffing async extensions by bumping mode to sync
+    asyncMode := .sync
+  let oldSt := ext.toEnvExtension.getState (asyncMode := asyncMode) old
+  let newSt := ext.toEnvExtension.getState (asyncMode := asyncMode) new
   if ptrAddrUnsafe oldSt == ptrAddrUnsafe newSt then return none
-  let oldEntries := ext.exportEntriesFn oldSt.state
-  let newEntries := ext.exportEntriesFn newSt.state
+  let oldEntries := (ext.exportEntriesFn (← getEnv) oldSt.state).private
+  let newEntries := (ext.exportEntriesFn (← getEnv) newSt.state).private
   pure m!"-- {ext.name} extension: {(newEntries.size - oldEntries.size : Int)} new entries"
 
 def whatsNew (old new : Environment) : CoreM MessageData := do
@@ -100,21 +108,28 @@ def whatsNew (old new : Environment) : CoreM MessageData := do
       diffs := diffs.push (← printIdCore c i)
 
   for ext in ← persistentEnvExtensionsRef.get do
-    if let some diff := ← diffExtension old new ext then
+    if let some diff ← diffExtension old new ext then
       diffs := diffs.push diff
 
   if diffs.isEmpty then return "no new constants"
 
   pure <| MessageData.joinSep diffs.toList "\n\n"
 
-/-- `whatsnew in $command` executes the command and then prints the
+/-- `#whats_new in` executes the following command and then prints the
 declarations that were added to the environment. -/
-elab "whatsnew " "in" ppLine cmd:command : command => do
+elab "#whats_new " "in" ppLine cmd:command : command => do
   let oldEnv ← getEnv
   try
     elabCommand cmd
   finally
     let newEnv ← getEnv
     logInfo (← liftCoreM <| whatsNew oldEnv newEnv)
+
+/-- `#whats_new in` executes the following command and then prints the
+declarations that were added to the environment. -/
+macro (name := oldStx) "whatsnew " "in" ppLine cmd:command : command =>
+  `(command| #whats_new in $cmd)
+
+deprecated_syntax oldStx "use `#whats_new` instead of `whatsnew`" (since := "2026-08-07")
 
 end Mathlib.WhatsNew

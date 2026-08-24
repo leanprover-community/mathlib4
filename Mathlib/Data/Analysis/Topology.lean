@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Analysis.Filter
-import Mathlib.Topology.Bases
-import Mathlib.Topology.LocallyFinite
+module
+
+public import Mathlib.Data.Analysis.Filter
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.LocallyFinite
 
 /-!
 # Computational realization of topological spaces (experimental)
@@ -20,12 +22,14 @@ This file provides infrastructure to compute with topological spaces.
 * `Compact.Realizer`: Realization of the compactness of a set.
 -/
 
+@[expose] public section
+
 
 open Set
 
 open Filter hiding Realizer
 
-open Topology
+open scoped Topology
 
 /-- A `Ctop α σ` is a realization of a topology (basis) on `α`,
   represented by a type `σ` together with operations for the top element and
@@ -57,7 +61,6 @@ variable (F : Ctop α σ)
 instance : CoeFun (Ctop α σ) fun _ ↦ σ → Set α :=
   ⟨Ctop.f⟩
 
--- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem coe_mk (f T h₁ I h₂ h₃ a) : (@Ctop.mk α σ f T h₁ I h₂ h₃) a = f a := rfl
 
 /-- Map a Ctop to an equivalent representation type. -/
@@ -77,6 +80,7 @@ theorem ofEquiv_val (E : σ ≃ τ) (F : Ctop α σ) (a : τ) : F.ofEquiv E a = 
 end
 
 /-- Every `Ctop` is a topological space. -/
+@[instance_reducible]
 def toTopsp (F : Ctop α σ) : TopologicalSpace α := TopologicalSpace.generateFrom (Set.range F.f)
 
 theorem toTopsp_isTopologicalBasis (F : Ctop α σ) :
@@ -131,7 +135,7 @@ theorem isClosed_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} :
     F.isOpen_iff.trans <|
       forall_congr' fun a ↦
         show (a ∉ s → ∃ b : F.σ, a ∈ F.F b ∧ ∀ z ∈ F.F b, z ∉ s) ↔ _ by
-          haveI := Classical.propDecidable; rw [not_imp_comm]
+          have := Classical.propDecidable; rw [not_imp_comm]
           simp [not_exists, not_and, not_forall, and_comm]
 
 theorem mem_interior_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} {a : α} :

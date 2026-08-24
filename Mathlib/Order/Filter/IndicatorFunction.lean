@@ -3,8 +3,13 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Order.Filter.AtTopBot
+module
+
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Order.CompleteLattice.Finset
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Filter.AtTopBot.Defs
+public import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Indicator function and filters
@@ -15,13 +20,15 @@ Properties of additive and multiplicative indicator functions involving `=ᶠ` a
 indicator, characteristic, filter
 -/
 
-variable {α β M E : Type*}
+public section
+
+variable {α β M : Type*}
 
 open Set Filter
 
 section One
 
-variable [One M] {s t : Set α} {f g : α → M} {a : α} {l : Filter α}
+variable [One M] {s t : Set α} {f g : α → M} {l : Filter α}
 
 @[to_additive]
 theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] t) :
@@ -29,24 +36,24 @@ theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] 
   (eventually_inf_principal.1 hf).mp <| hs.mem_iff.mono fun x hst hfg =>
     by_cases
       (fun hxs : x ∈ s => by simp only [*, hst.1 hxs, mulIndicator_of_mem])
-      (fun hxs => by simp only [mulIndicator_of_not_mem, hxs, mt hst.2 hxs, not_false_eq_true])
+      (fun hxs => by simp only [mulIndicator_of_notMem, hxs, mt hst.2 hxs, not_false_eq_true])
 
 end One
 
 section Monoid
 
-variable [Monoid M] {s t : Set α} {f g : α → M} {a : α} {l : Filter α}
+variable [Monoid M] {s t : Set α} {f : α → M} {a : α} {l : Filter α}
 
 @[to_additive]
 theorem mulIndicator_union_eventuallyEq (h : ∀ᶠ a in l, a ∉ s ∩ t) :
     mulIndicator (s ∪ t) f =ᶠ[l] mulIndicator s f * mulIndicator t f :=
-  h.mono fun _a ha => mulIndicator_union_of_not_mem_inter ha _
+  h.mono fun _a ha => mulIndicator_union_of_notMem_inter ha _
 
 end Monoid
 
 section Order
 
-variable [One β] [Preorder β] {s t : Set α} {f g : α → β} {a : α} {l : Filter α}
+variable [One β] [Preorder β] {s : Set α} {f g : α → β} {l : Filter α}
 
 @[to_additive]
 theorem mulIndicator_eventuallyLE_mulIndicator (h : f ≤ᶠ[l ⊓ 𝓟 s] g) :

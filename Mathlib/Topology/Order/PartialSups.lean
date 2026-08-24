@@ -3,8 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.Lattice
-import Mathlib.Order.PartialSups
+module
+
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Continuity of `partialSups`
@@ -12,6 +13,8 @@ import Mathlib.Order.PartialSups
 In this file we prove that `partialSups` of a sequence of continuous functions is continuous
 as well as versions for `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, and `ContinuousOn`.
 -/
+
+public section
 
 open Filter
 open scoped Topology
@@ -30,7 +33,7 @@ protected lemma partialSups (hf : ∀ k ≤ n, Tendsto (f k) l (𝓝 (g k))) :
 
 protected lemma partialSups_apply (hf : ∀ k ≤ n, Tendsto (f k) l (𝓝 (g k))) :
     Tendsto (fun a ↦ partialSups (f · a) n) l (𝓝 (partialSups g n)) := by
-  simpa only [← partialSups_apply] using Tendsto.partialSups hf
+  simpa only [← Pi.partialSups_apply] using Tendsto.partialSups hf
 
 end Filter.Tendsto
 
@@ -42,7 +45,7 @@ protected lemma ContinuousAt.partialSups_apply (hf : ∀ k ≤ n, ContinuousAt (
 
 protected lemma ContinuousAt.partialSups (hf : ∀ k ≤ n, ContinuousAt (f k) x) :
     ContinuousAt (partialSups f n) x := by
-  simpa only [← partialSups_apply] using ContinuousAt.partialSups_apply hf
+  simpa only [← Pi.partialSups_apply] using ContinuousAt.partialSups_apply hf
 
 protected lemma ContinuousWithinAt.partialSups_apply (hf : ∀ k ≤ n, ContinuousWithinAt (f k) s x) :
     ContinuousWithinAt (fun a ↦ partialSups (f · a) n) s x :=
@@ -50,7 +53,7 @@ protected lemma ContinuousWithinAt.partialSups_apply (hf : ∀ k ≤ n, Continuo
 
 protected lemma ContinuousWithinAt.partialSups (hf : ∀ k ≤ n, ContinuousWithinAt (f k) s x) :
     ContinuousWithinAt (partialSups f n) s x := by
-  simpa only [← partialSups_apply] using ContinuousWithinAt.partialSups_apply hf
+  simpa only [← Pi.partialSups_apply] using ContinuousWithinAt.partialSups_apply hf
 
 protected lemma ContinuousOn.partialSups_apply (hf : ∀ k ≤ n, ContinuousOn (f k) s) :
     ContinuousOn (fun a ↦ partialSups (f · a) n) s := fun x hx ↦

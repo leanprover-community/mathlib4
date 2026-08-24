@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Archive.Examples.IfNormalization.Statement
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Data.List.AList
 import Mathlib.Tactic.Recall
 
@@ -15,8 +13,8 @@ import Mathlib.Tactic.Recall
 See `Statement.lean` for background.
 -/
 
-macro "◾" : tactic => `(tactic| aesop)
-macro "◾" : term => `(term| by aesop)
+local macro "◾" : tactic => `(tactic| aesop)
+local macro "◾" : term => `(term| by aesop)
 
 namespace IfExpr
 
@@ -25,8 +23,6 @@ We add some local simp lemmas so we can unfold the definitions of the normalizat
 -/
 attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
   List.disjoint
-
-attribute [local simp] apply_ite ite_eq_iff'
 
 variable {b : Bool} {f : ℕ → Bool} {i : ℕ} {t e : IfExpr}
 
@@ -50,8 +46,10 @@ We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we kno
   | var _ => 1
   | .ite i t e => 2 * normSize i + max (normSize t) (normSize e) + 1
 
+set_option linter.flexible false in
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Normalizes the expression at the same time as assigning all variables in
-`e` to the literal booleans given by `l` -/
+`e` to the literal Booleans given by `l` -/
 def normalize (l : AList (fun _ : ℕ => Bool)) :
     (e : IfExpr) → { e' : IfExpr //
         (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) id))
@@ -73,7 +71,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
       ⟨if t' = e' then t' else .ite (var v) t' e', by
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · -- eval = eval
-          simp? says simp only [apply_ite, eval_ite_var, ite_eq_iff']
+          simp only [apply_ite, eval_ite_var, ite_eq_iff']
           cases hfv : f v
           · simp_all
             congr

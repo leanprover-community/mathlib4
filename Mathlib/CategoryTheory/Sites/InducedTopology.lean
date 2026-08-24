@@ -1,150 +1,138 @@
 /-
-Copyright (c) 2021 Andrew Yang. All rights reserved.
+Copyright (c) 2026 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
+Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Sites.DenseSubsite
+module
+
+public import Mathlib.CategoryTheory.Sites.Canonical
+public import Mathlib.CategoryTheory.Sites.CoverPreserving
 
 /-!
-# Induced Topology
+# Induced topologies
 
-We say that a functor `G : C ⥤ (D, K)` is locally dense if for each covering sieve `T` in `D` of
-some `X : C`, `T ∩ mor(C)` generates a covering sieve of `X` in `D`. A locally dense fully faithful
-functor then induces a topology on `C` via `{ T ∩ mor(C) | T ∈ K }`. Note that this is equal to
-the collection of sieves on `C` whose image generates a covering sieve. This construction would
-make `C` both cover-lifting and cover-preserving.
+In this file we study various topologies induced by a functor. Let `F : C ⥤ D` be a functor,
+`J` a Grothendieck topology on `C` and `K` a Grothendieck topology on `D`.
 
-Some typical examples are full and cover-dense functors (for example the functor from a basis of a
-topological space `X` into `Opens X`). The functor `Over X ⥤ C` is also locally dense, and the
-induced topology can then be used to construct the big sites associated to a scheme.
+- `CategoryTheory.Functor.inducedTopology F K`: The finest topology on `C` making `F` continuous.
+- `CategoryTheory.Functor.restrictedTopology F K`: The coarsest topology on `C` containing
+  all sieves whose image generate a covering sieve of `K`. In general, this does not make `F` cover
+  preserving.
 
-Given a fully faithful cover-dense functor `G : C ⥤ (D, K)` between small sites, we then have
-`Sheaf (H.inducedTopology) A ≌ Sheaf K A`. This is known as the comparison lemma.
+## TODOs
+
+- Define the finest topology on the codomain making a functor cocontinuous
+  (@chrisflav).
 
 ## References
 
-* [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.2.
-* https://ncatlab.org/nlab/show/dense+sub-site
-* https://ncatlab.org/nlab/show/comparison+lemma
-
+- [SGA4, III, 3][sga-4-tome-1]
 -/
+
+@[expose] public section
+
+universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-universe v u
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E]
 
-open Limits Opposite Presieve CategoryTheory
-
-variable {C : Type*} [Category C] {D : Type*} [Category D] (G : C ⥤ D)
-variable {J : GrothendieckTopology C} (K : GrothendieckTopology D)
-variable (A : Type v) [Category.{u} A]
+variable {F : C ⥤ D} {J : GrothendieckTopology C} {K : GrothendieckTopology D}
 
 namespace Functor
 
--- variables (A) [full G] [faithful G]
-/-- We say that a functor `C ⥤ D` into a site is "locally dense" if
-for each covering sieve `T` in `D`, `T ∩ mor(C)` generates a covering sieve in `D`.
+/--
+The induced topology by a topology on `D` along a functor `F : C ⥤ D` is the finest
+topology on `C` making `F` continuous.
+[SGA4, III, 3.1][sga-4-tome-1]
 -/
-class LocallyCoverDense : Prop where
-  functorPushforward_functorPullback_mem :
-    ∀ ⦃X : C⦄ (T : K (G.obj X)), (T.val.functorPullback G).functorPushforward G ∈ K (G.obj X)
+def inducedTopology (F : C ⥤ D) (K : GrothendieckTopology D) :
+    GrothendieckTopology C :=
+  Sheaf.finestTopology <| Set.range fun G : Sheaf K (Type max u₁ v₁ u₂ v₂) ↦ F.op ⋙ G.obj
 
-variable [G.LocallyCoverDense K]
-
-theorem pushforward_cover_iff_cover_pullback [G.Full] [G.Faithful] {X : C} (S : Sieve X) :
-    K _ (S.functorPushforward G) ↔ ∃ T : K (G.obj X), T.val.functorPullback G = S := by
-  constructor
-  · intro hS
-    exact ⟨⟨_, hS⟩, (Sieve.fullyFaithfulFunctorGaloisCoinsertion G X).u_l_eq S⟩
-  · rintro ⟨T, rfl⟩
-    exact LocallyCoverDense.functorPushforward_functorPullback_mem T
-
-variable [G.IsLocallyFull K] [G.IsLocallyFaithful K]
-
-/-- If a functor `G : C ⥤ (D, K)` is fully faithful and locally dense,
-then the set `{ T ∩ mor(C) | T ∈ K }` is a grothendieck topology of `C`.
--/
-@[simps]
-def inducedTopology : GrothendieckTopology C where
-  sieves _ S := K _ (S.functorPushforward G)
-  top_mem' X := by
-    change K _ _
-    rw [Sieve.functorPushforward_top]
-    exact K.top_mem _
-  pullback_stable' X Y S iYX hS := by
-    apply K.transitive (LocallyCoverDense.functorPushforward_functorPullback_mem
-      ⟨_, K.pullback_stable (G.map iYX) hS⟩)
-    rintro Z _ ⟨U, iUY, iZU, ⟨W, iWX, iUW, hiWX, e₁⟩, rfl⟩
-    rw [Sieve.pullback_comp]
-    apply K.pullback_stable
-    clear iZU Z
-    apply K.transitive (G.functorPushforward_imageSieve_mem _ iUW)
-    rintro Z _ ⟨U₁, iU₁U, iZU₁, ⟨iU₁W, e₂⟩, rfl⟩
-    rw [Sieve.pullback_comp]
-    apply K.pullback_stable
-    clear iZU₁ Z
-    apply K.superset_covering ?_ (G.functorPushforward_equalizer_mem _
-      (iU₁U ≫ iUY ≫ iYX) (iU₁W ≫ iWX) (by simp [e₁, e₂]))
-    rintro Z _ ⟨U₂, iU₂U₁, iZU₂, e₃ : _ = _, rfl⟩
-    refine ⟨_, iU₂U₁ ≫ iU₁U ≫ iUY, iZU₂, ?_, by simp⟩
-    simpa [e₃] using S.downward_closed hiWX (iU₂U₁ ≫ iU₁W)
-  transitive' X S hS S' H' := by
-    apply K.transitive hS
-    rintro Y _ ⟨Z, g, i, hg, rfl⟩
-    rw [Sieve.pullback_comp]
-    apply K.pullback_stable i
-    refine K.superset_covering ?_ (H' hg)
-    rintro W _ ⟨Z', g', i', hg, rfl⟩
-    refine ⟨Z', g' ≫ g , i', hg, ?_⟩
-    simp
+instance : F.IsContinuous (F.inducedTopology K) K where
+  op_comp_isSheaf_of_types G := by
+    apply Sheaf.sheaf_for_finestTopology
+    use G
 
 @[simp]
-lemma mem_inducedTopology_sieves_iff {X : C} (S : Sieve X) :
-    S ∈ (G.inducedTopology K) X ↔ (S.functorPushforward G) ∈ K (G.obj X) :=
-  Iff.rfl
+lemma le_inducedTopology_iff {J : GrothendieckTopology C} :
+    J ≤ F.inducedTopology K ↔ F.IsContinuous J K := by
+  refine ⟨fun h ↦ ⟨fun G ↦ ?_⟩, fun h ↦ ?_⟩
+  · apply Presieve.isSheaf_of_le _ h
+    exact Functor.op_comp_isSheaf_of_types F (F.inducedTopology K) K G
+  · apply Sheaf.le_finestTopology
+    rintro _ ⟨P, rfl⟩
+    exact Functor.op_comp_isSheaf_of_types F J K P
 
-/-- `G` is cover-lifting wrt the induced topology. -/
-instance inducedTopology_isCocontinuous : G.IsCocontinuous (G.inducedTopology K) K :=
-  ⟨@fun _ S hS => LocallyCoverDense.functorPushforward_functorPullback_mem ⟨S, hS⟩⟩
+/-- [SGA4, III, Proposition 3.2][sga-4-tome-1] -/
+lemma mem_inducedTopology_iff [LocallySmall.{max u₁ v₁ u₂ v₂} C] (X : C) (S : Sieve X)
+    (G : (Cᵒᵖ ⥤ Type max u₁ v₁ u₂ v₂) ⥤ (Dᵒᵖ ⥤ Type max u₁ v₁ u₂ v₂))
+    (adj : G ⊣ (Functor.whiskeringLeft _ _ _).obj F.op) :
+    S ∈ F.inducedTopology K X ↔
+      ∀ ⦃Y : C⦄ (f : Y ⟶ X),
+        K.W (G.map (Sieve.shrinkFunctor.{max u₁ v₁ u₂ v₂} (S.pullback f)).ι) := by
+  refine ⟨?_, ?_⟩
+  · intro hS Y f
+    apply Functor.W_map_of_adjunction_of_isContinuous (F.inducedTopology K) K _ G adj
+    refine Sieve.W_shrinkFunctor_ι_of_mem (F.inducedTopology K) (Sieve.pullback f S) ?_
+    exact GrothendieckTopology.pullback_stable (F.inducedTopology K) f hS
+  · intro H
+    apply Sheaf.mem_finestTopology_of_forall_isSheafFor
+    rintro - ⟨P, rfl⟩ Y f
+    dsimp
+    rw [Presieve.isSheafFor_iff_bijective_shrinkFunctor_ι_comp]
+    exact (adj.map_comp_bijective_iff _ _).mp (H f _ P.property)
 
-/-- `G` is cover-preserving wrt the induced topology. -/
-theorem inducedTopology_coverPreserving : CoverPreserving (G.inducedTopology K) K G :=
-  ⟨@fun _ _ hS => hS⟩
+lemma induced_induced_le (G : D ⥤ E) (J : GrothendieckTopology E) :
+    F.inducedTopology (G.inducedTopology J) ≤ (F ⋙ G).inducedTopology J := by
+  rw [le_inducedTopology_iff]
+  exact Functor.isContinuous_comp _ _ _ (G.inducedTopology J) _
 
-instance (priority := 900) locallyCoverDense_of_isCoverDense [G.IsCoverDense K] :
-    G.LocallyCoverDense K where
-  functorPushforward_functorPullback_mem _ _ :=
-    IsCoverDense.functorPullback_pushforward_covering _
+lemma inducedTopology_eq_of_iso {F G : C ⥤ D} (e : F ≅ G) :
+    F.inducedTopology K = G.inducedTopology K := by
+  refine le_antisymm ?_ ?_ <;> rw [le_inducedTopology_iff]
+  · apply Functor.isContinuous_of_iso e
+  · apply Functor.isContinuous_of_iso e.symm
 
-instance (priority := 900) [G.IsCoverDense K] : G.IsDenseSubsite (G.inducedTopology K) K where
-  functorPushforward_mem_iff := Iff.rfl
+/-- The coarsest topology containing all sieves whose image under `F` generates a covering sieve
+of `K`. -/
+def restrictedTopology (F : C ⥤ D) (K : GrothendieckTopology D) : GrothendieckTopology C :=
+  Precoverage.toGrothendieck (Precoverage.comap F K.toPrecoverage)
 
-@[deprecated (since := "2024-07-23")]
-alias inducedTopologyOfIsCoverDense := inducedTopology
+lemma mem_restrictedTopology_of_functorPushforward_mem {X : C} {S : Sieve X}
+    (hS : S.functorPushforward F ∈ K _) :
+    S ∈ F.restrictedTopology K X := by
+  rw [← Sieve.generate_sieve S]
+  apply Precoverage.generate_mem_toGrothendieck
+  simpa [GrothendieckTopology.mem_toPrecoverage_iff, Sieve.generate_map_eq_functorPushforward]
 
-variable (J)
+lemma inducedTopology_le_restrictedTopology : F.inducedTopology K ≤ F.restrictedTopology K :=
+  fun _ _ hS ↦ mem_restrictedTopology_of_functorPushforward_mem <|
+    (CoverPreserving.of_isContinuous F _ _).cover_preserve hS
 
-instance over_forget_locallyCoverDense (X : C) : (Over.forget X).LocallyCoverDense J where
-  functorPushforward_functorPullback_mem Y T := by
-    convert T.property
-    ext Z f
-    constructor
-    · rintro ⟨_, _, g', hg, rfl⟩
-      exact T.val.downward_closed hg g'
-    · intro hf
-      exact ⟨Over.mk (f ≫ Y.hom), Over.homMk f, 𝟙 _, hf, (Category.id_comp _).symm⟩
-
-/-- Cover-dense functors induces an equivalence of categories of sheaves.
-
-This is known as the comparison lemma. It requires that the sites are small and the value category
-is complete.
+/--
+If `F` is continuous with the restricted topology, the restricted topology agrees with the
+induced topology. This holds for example if `G` is locally faithful, locally full and cover dense.
 -/
-noncomputable def sheafInducedTopologyEquivOfIsCoverDense
-    [G.IsCoverDense K] [∀ (X : Dᵒᵖ), HasLimitsOfShape (StructuredArrow X G.op) A] :
-    Sheaf (G.inducedTopology K) A ≌ Sheaf K A :=
-  Functor.IsDenseSubsite.sheafEquiv G
-    (G.inducedTopology K) K A
+lemma restrictedTopology_eq_inducedTopology [F.IsContinuous (F.restrictedTopology K) K] :
+    F.restrictedTopology K = F.inducedTopology K := by
+  refine le_antisymm ?_ inducedTopology_le_restrictedTopology
+  rw [le_inducedTopology_iff]
+  infer_instance
+
+/-- Variant of `Functor.restrictedTopology_eq_inducedTopology` that is sometimes easier to use. -/
+lemma restrictedTopology_eq_inducedTopology_of_isContinuous [F.IsContinuous J K]
+    (h : F.restrictedTopology K = J) : F.inducedTopology K = J := by
+  subst h
+  rw [restrictedTopology_eq_inducedTopology]
 
 end Functor
+
+lemma Precoverage.toGrothendieck_comap_le_restrictedTopology (K : Precoverage D) :
+    (K.comap F).toGrothendieck ≤ F.restrictedTopology K.toGrothendieck := by
+  rw [Functor.restrictedTopology]
+  grw [← K.le_toPrecoverage_toGrothendieck]
 
 end CategoryTheory

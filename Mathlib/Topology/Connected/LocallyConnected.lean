@@ -3,7 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Connected.Basic
+module
+
+public import Mathlib.Topology.Connected.Basic
+public import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Locally connected topological spaces
@@ -14,32 +17,34 @@ of connected (not necessarily open) sets --- but in a non-trivial way, so we cho
 and prove the equivalence later in `locallyConnectedSpace_iff_connected_basis`.
 -/
 
+public section
+
 open Set Topology
 
 universe u v
 
-variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*} [TopologicalSpace α]
-  {s t u v : Set α}
+variable {α : Type u} {β : Type v} {ι : Type*} {X : ι → Type*} [TopologicalSpace α]
+  {s t : Set α}
 
 section LocallyConnectedSpace
 
 /-- A topological space is **locally connected** if each neighborhood filter admits a basis
 of connected *open* sets. Note that it is equivalent to each point having a basis of connected
-(non necessarily open) sets but in a non-trivial way, so we choose this definition and prove the
+(not necessarily open) sets but in a non-trivial way, so we choose this definition and prove the
 equivalence later in `locallyConnectedSpace_iff_connected_basis`. -/
 class LocallyConnectedSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- Open connected neighborhoods form a basis of the neighborhoods filter. -/
   open_connected_basis : ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id
 
-theorem locallyConnectedSpace_iff_open_connected_basis :
+theorem locallyConnectedSpace_iff_hasBasis_isOpen_isConnected :
     LocallyConnectedSpace α ↔
       ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id :=
   ⟨@LocallyConnectedSpace.open_connected_basis _ _, LocallyConnectedSpace.mk⟩
 
-theorem locallyConnectedSpace_iff_open_connected_subsets :
+theorem locallyConnectedSpace_iff_subsets_isOpen_isConnected :
     LocallyConnectedSpace α ↔
       ∀ x, ∀ U ∈ 𝓝 x, ∃ V : Set α, V ⊆ U ∧ IsOpen V ∧ x ∈ V ∧ IsConnected V := by
-  simp_rw [locallyConnectedSpace_iff_open_connected_basis]
+  simp_rw [locallyConnectedSpace_iff_hasBasis_isOpen_isConnected]
   refine forall_congr' fun _ => ?_
   constructor
   · intro h U hU
@@ -52,7 +57,7 @@ theorem locallyConnectedSpace_iff_open_connected_subsets :
 /-- A space with discrete topology is a locally connected space. -/
 instance (priority := 100) DiscreteTopology.toLocallyConnectedSpace (α) [TopologicalSpace α]
     [DiscreteTopology α] : LocallyConnectedSpace α :=
-  locallyConnectedSpace_iff_open_connected_subsets.2 fun x _U hU =>
+  locallyConnectedSpace_iff_subsets_isOpen_isConnected.2 fun x _U hU =>
     ⟨{x}, singleton_subset_iff.2 <| mem_of_mem_nhds hU, isOpen_discrete _, rfl,
       isConnected_singleton⟩
 
@@ -85,7 +90,7 @@ theorem locallyConnectedSpace_iff_connectedComponentIn_open :
   · intro h
     exact fun F hF x _ => hF.connectedComponentIn
   · intro h
-    rw [locallyConnectedSpace_iff_open_connected_subsets]
+    rw [locallyConnectedSpace_iff_subsets_isOpen_isConnected]
     refine fun x U hU =>
         ⟨connectedComponentIn (interior U) x,
           (connectedComponentIn_subset _ _).trans interior_subset, h _ isOpen_interior x ?_,
@@ -95,7 +100,7 @@ theorem locallyConnectedSpace_iff_connectedComponentIn_open :
 theorem locallyConnectedSpace_iff_connected_subsets :
     LocallyConnectedSpace α ↔ ∀ (x : α), ∀ U ∈ 𝓝 x, ∃ V ∈ 𝓝 x, IsPreconnected V ∧ V ⊆ U := by
   constructor
-  · rw [locallyConnectedSpace_iff_open_connected_subsets]
+  · rw [locallyConnectedSpace_iff_subsets_isOpen_isConnected]
     intro h x U hxU
     rcases h x U hxU with ⟨V, hVU, hV₁, hxV, hV₂⟩
     exact ⟨V, hV₁.mem_nhds hxV, hV₂.isPreconnected, hVU⟩
@@ -120,20 +125,124 @@ theorem locallyConnectedSpace_of_connected_bases {ι : Type*} (b : α → ι →
       (fun i hi => ⟨b x i, ⟨(hbasis x).mem_of_mem hi, hconnected x i hi⟩, subset_rfl⟩) fun s hs =>
       ⟨(hbasis x).index s hs.1, ⟨(hbasis x).property_index hs.1, (hbasis x).set_index_subset hs.1⟩⟩
 
-theorem IsOpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] [TopologicalSpace β]
+theorem TopologicalSpace.IsTopologicalBasis.isOpen_isPreconnected [LocallyConnectedSpace α] :
+    TopologicalSpace.IsTopologicalBasis {s : Set α | IsOpen s ∧ IsPreconnected s} :=
+  .of_hasBasis_nhds fun x =>
+    (LocallyConnectedSpace.open_connected_basis x).congr
+      (by grind [IsConnected, Set.Nonempty])
+      (fun _ _ => rfl)
+
+theorem locallyConnectedSpace_iff_isTopologicalBasis_isOpen_isPreconnected :
+    LocallyConnectedSpace α ↔
+      TopologicalSpace.IsTopologicalBasis {s : Set α | IsOpen s ∧ IsPreconnected s} where
+  mp _ := .isOpen_isPreconnected
+  mpr h := ⟨fun _ => h.nhds_hasBasis.congr (by grind [IsConnected, Set.Nonempty]) (fun _ _ => rfl)⟩
+
+lemma Topology.IsOpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] [TopologicalSpace β]
     {f : β → α} (h : IsOpenEmbedding f) : LocallyConnectedSpace β := by
   refine locallyConnectedSpace_of_connected_bases (fun _ s ↦ f ⁻¹' s)
     (fun x s ↦ (IsOpen s ∧ f x ∈ s ∧ IsConnected s) ∧ s ⊆ range f) (fun x ↦ ?_)
-    (fun x s hxs ↦ hxs.1.2.2.isPreconnected.preimage_of_isOpenMap h.inj h.isOpenMap hxs.2)
+    (fun x s hxs ↦ hxs.1.2.2.isPreconnected.preimage_of_isOpenMap h.injective h.isOpenMap hxs.2)
   rw [h.nhds_eq_comap]
   exact LocallyConnectedSpace.open_connected_basis (f x) |>.restrict_subset
     (h.isOpen_range.mem_nhds <| mem_range_self _) |>.comap _
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.locallyConnectedSpace := IsOpenEmbedding.locallyConnectedSpace
-
 theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU : IsOpen U) :
     LocallyConnectedSpace U :=
   hU.isOpenEmbedding_subtypeVal.locallyConnectedSpace
+
+/-- Any topology coinduced by a locally connected topology is locally connected. -/
+theorem Topology.IsCoinducing.locallyConnectedSpace [LocallyConnectedSpace α]
+    [TopologicalSpace β] {f : α → β} (hf : IsCoinducing f) : LocallyConnectedSpace β := by
+  refine locallyConnectedSpace_iff_connectedComponentIn_open.2 fun F hF y _ ↦ ?_
+  rw [← hf.isOpen_preimage, hf.continuous.continuousOn.preimage_connectedComponentIn]
+  exact isOpen_biUnion fun x _ ↦ (hF.preimage hf.continuous).connectedComponentIn
+
+/-- If a space is locally connected, the topology of its connected components is discrete. -/
+instance [LocallyConnectedSpace α] : DiscreteTopology <| ConnectedComponents α := by
+  refine discreteTopology_iff_isOpen_singleton.mpr fun c ↦ ?_
+  obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe c
+  simp [← ConnectedComponents.isQuotientMap_coe.isOpen_preimage,
+    connectedComponents_preimage_singleton, isOpen_connectedComponent]
+
+/-- A locally connected compact space has finitely many connected components. -/
+instance [LocallyConnectedSpace α] [CompactSpace α] : Finite <| ConnectedComponents α :=
+  finite_of_compact_of_discrete
+
+/-- The product of two locally connected spaces is locally connected. -/
+instance Prod.locallyConnectedSpace [TopologicalSpace β] [LocallyConnectedSpace α]
+    [LocallyConnectedSpace β] : LocallyConnectedSpace (α × β) := by
+  rw [locallyConnectedSpace_iff_connected_subsets]
+  rintro ⟨x, y⟩ U hU
+  obtain ⟨u, hu, v, hv, huv⟩ := mem_nhds_prod_iff.mp hU
+  exact ⟨connectedComponentIn u x ×ˢ connectedComponentIn v y,
+    prod_mem_nhds (connectedComponentIn_mem_nhds hu) (connectedComponentIn_mem_nhds hv),
+    isPreconnected_connectedComponentIn.prod isPreconnected_connectedComponentIn,
+    (prod_mono (connectedComponentIn_subset _ _) (connectedComponentIn_subset _ _)).trans huv⟩
+
+/-- If each `X i` is locally connected and all but finitely many are preconnected, then
+`∀ i, X i` is locally connected. -/
+theorem Pi.locallyConnectedSpace_of_finite_not_preconnectedSpace [∀ i, TopologicalSpace (X i)]
+    [∀ i, LocallyConnectedSpace (X i)] (hfinite : {i | ¬PreconnectedSpace (X i)}.Finite) :
+    LocallyConnectedSpace (∀ i, X i) := by
+  refine locallyConnectedSpace_iff_connected_subsets.2 fun x U hU ↦ ?_
+  rw [nhds_pi, Filter.mem_pi] at hU
+  obtain ⟨J, hJ, t, ht, htU⟩ := hU
+  let K := J ∪ {i | ¬PreconnectedSpace (X i)}
+  refine ⟨K.pi fun i ↦ connectedComponentIn (t i) (x i),
+    set_pi_mem_nhds (hJ.union hfinite) fun i _ ↦ connectedComponentIn_mem_nhds (ht i), ?_,
+    fun f hf ↦ htU fun i hiJ ↦ connectedComponentIn_subset _ _ (hf i (mem_union_left _ hiJ))⟩
+  classical
+  rw [← univ_pi_piecewise_univ]
+  refine isPreconnected_univ_pi fun i ↦ ?_
+  by_cases hi : i ∈ K
+  · rw [piecewise_eq_of_mem _ _ _ hi]
+    exact isPreconnected_connectedComponentIn
+  · rw [piecewise_eq_of_notMem _ _ _ hi]
+    have : PreconnectedSpace (X i) := not_not.mp (not_or.1 hi).2
+    exact isPreconnected_univ
+
+/-- A finite product of locally connected spaces is locally connected. -/
+instance Pi.locallyConnectedSpace_of_finite [Finite ι] [∀ i, TopologicalSpace (X i)]
+    [∀ i, LocallyConnectedSpace (X i)] : LocallyConnectedSpace (∀ i, X i) :=
+  locallyConnectedSpace_of_finite_not_preconnectedSpace (toFinite _)
+
+/-- A product of preconnected, locally connected spaces is locally connected. Note that an
+arbitrary product of locally connected spaces need not be locally connected, so the
+preconnectedness assumption cannot be dropped entirely (though it can be dropped for finitely
+many factors, see `Pi.locallyConnectedSpace_of_finite_not_preconnectedSpace`). -/
+instance Pi.locallyConnectedSpace [∀ i, TopologicalSpace (X i)]
+    [∀ i, LocallyConnectedSpace (X i)] [∀ i, PreconnectedSpace (X i)] :
+    LocallyConnectedSpace (∀ i, X i) :=
+  locallyConnectedSpace_of_finite_not_preconnectedSpace
+    (finite_empty.subset fun _ hi ↦ hi inferInstance)
+
+/-- A product of spaces is locally connected iff it is empty, or every factor is locally
+connected and all but finitely many factors are preconnected. -/
+theorem Pi.locallyConnectedSpace_iff [∀ i, TopologicalSpace (X i)] :
+    LocallyConnectedSpace (∀ i, X i) ↔
+      IsEmpty (∀ i, X i) ∨
+        (∀ i, LocallyConnectedSpace (X i)) ∧ {i | ¬PreconnectedSpace (X i)}.Finite := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rcases isEmpty_or_nonempty (∀ i, X i) with he | hne
+    · exact .inl he
+    obtain ⟨x⟩ := hne
+    classical
+    have : ∀ i, Nonempty (X i) := Classical.nonempty_pi.mp ⟨x⟩
+    refine .inr ⟨fun i ↦ ((isOpenMap_eval i).isQuotientMap (continuous_apply i)
+      (Function.surjective_eval i)).locallyConnectedSpace, ?_⟩
+    have hVn : connectedComponent x ∈ 𝓝 x :=
+      isOpen_connectedComponent.mem_nhds mem_connectedComponent
+    rw [nhds_pi, Filter.mem_pi] at hVn
+    obtain ⟨J, hJ, t, ht, htV⟩ := hVn
+    refine hJ.subset fun i hi ↦ by_contra fun hiJ ↦ hi ?_
+    suffices himg : Function.eval i '' connectedComponent x = univ from
+      ⟨himg ▸ isPreconnected_connectedComponent.image _ (continuous_apply i).continuousOn⟩
+    refine (subset_univ _).antisymm fun z _ ↦ ⟨Function.update x i z, htV fun j hj ↦ ?_, by simp⟩
+    rw [Function.update_of_ne (ne_of_mem_of_not_mem hj hiJ)]
+    exact mem_of_mem_nhds (ht j)
+  · rintro (he | ⟨hloc, hfin⟩)
+    · exact ⟨he.elim⟩
+    · exact locallyConnectedSpace_of_finite_not_preconnectedSpace hfin
 
 end LocallyConnectedSpace

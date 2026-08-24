@@ -3,10 +3,14 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Normed.Module.Completion
-import Mathlib.Analysis.NormedSpace.Extr
-import Mathlib.Topology.Order.ExtrClosure
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Extr
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.Topology.Order.ExtrClosure
 
 /-!
 # Maximum modulus principle
@@ -57,13 +61,13 @@ its values on the frontier of the set. All these lemmas assume that `E` is a non
 this section `f g : E → F` are functions that are complex differentiable on a bounded set `s` and
 are continuous on its closure. We prove the following theorems.
 
-- `Complex.exists_mem_frontier_isMaxOn_norm`: If `E` is a finite dimensional space and `s` is a
+- `Complex.exists_mem_frontier_isMaxOn_norm`: If `E` is a finite-dimensional space and `s` is a
   nonempty bounded set, then there exists a point `z ∈ frontier s` such that `(‖f ·‖)` takes it
   maximum value on `closure s` at `z`.
 
 - `Complex.norm_le_of_forall_mem_frontier_norm_le`: if `‖f z‖ ≤ C` for all `z ∈ frontier s`, then
-  `‖f z‖ ≤ C` for all `z ∈ s`; note that this theorem does not require `E` to be a finite
-  dimensional space.
+  `‖f z‖ ≤ C` for all `z ∈ s`; note that this theorem does not require `E` to be a
+  finite-dimensional space.
 
 - `Complex.eqOn_closure_of_eqOn_frontier`: if `f x = g x` on the frontier of `s`, then `f x = g x`
   on `closure s`;
@@ -76,8 +80,10 @@ are continuous on its closure. We prove the following theorems.
 maximum modulus principle, complex analysis
 -/
 
+public section
 
-open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap Bornology
+
+open TopologicalSpace Metric Set Filter Function AffineMap Bornology
 
 open scoped Topology Filter NNReal Real
 
@@ -127,12 +133,13 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     refine ((continuousOn_id.sub continuousOn_const).inv₀ ?_).smul (hd.continuousOn_ball.mono hsub)
     exact fun ζ hζ => sub_ne_zero.2 (ne_of_mem_sphere hζ hr.ne')
   · show ∀ ζ ∈ sphere z r, ‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r
-    rintro ζ (hζ : abs (ζ - z) = r)
-    rw [le_div_iff₀ hr, norm_smul, norm_inv, norm_eq_abs, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
+    rintro ζ hζ
+    rw [le_div_iff₀ hr, norm_smul, norm_inv, mem_sphere_iff_norm.1 hζ, mul_comm,
+      mul_inv_cancel_left₀ hr.ne']
     exact hz (hsub hζ)
   show ‖(w - z)⁻¹ • f w‖ < ‖f z‖ / r
-  rw [norm_smul, norm_inv, norm_eq_abs, ← div_eq_inv_mul]
-  exact (div_lt_div_right hr).2 hw_lt
+  rw [norm_smul, norm_inv, ← div_eq_inv_mul, ← dist_eq_norm]
+  exact (div_lt_div_iff_of_pos_right hr).2 hw_lt
 
 /-!
 Now we drop the assumption `CompleteSpace F` by embedding `F` into its completion.
@@ -210,12 +217,15 @@ theorem norm_eventually_eq_of_isLocalMax {f : E → F} {c : E}
         (hr <| closure_ball_subset_closedBall hx).1.differentiableWithinAt) fun x hx =>
       (hr <| ball_subset_closedBall hx).2⟩
 
-theorem isOpen_setOf_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
+theorem isOpen_setOfPred_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
     (hd : DifferentiableOn ℂ f s) : IsOpen {z | s ∈ 𝓝 z ∧ IsMaxOn (norm ∘ f) s z} := by
   refine isOpen_iff_mem_nhds.2 fun z hz => (eventually_eventually_nhds.2 hz.1).and ?_
   replace hd : ∀ᶠ w in 𝓝 z, DifferentiableAt ℂ f w := hd.eventually_differentiableAt hz.1
   exact (norm_eventually_eq_of_isLocalMax hd <| hz.2.isLocalMax hz.1).mono fun x hx y hy =>
     le_trans (hz.2 hy).out hx.ge
+
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_mem_nhds_and_isMaxOn_norm := isOpen_setOfPred_mem_nhds_and_isMaxOn_norm
 
 /-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
 complex normed space. Let `f : E → F` be a function that is complex differentiable on `U`. Suppose
@@ -227,8 +237,8 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
   have hV : ∀ x ∈ V, ‖f x‖ = ‖f c‖ := fun x hx => le_antisymm (hm hx.1) (hx.2 hcU)
   suffices U ⊆ V from fun x hx => hV x (this hx)
   have hVo : IsOpen V := by
-    simpa only [ho.mem_nhds_iff, setOf_and, setOf_mem_eq]
-      using isOpen_setOf_mem_nhds_and_isMaxOn_norm hd
+    simpa only [ho.mem_nhds_iff, ofPred_and, ofPred_mem_eq]
+      using isOpen_setOfPred_mem_nhds_and_isMaxOn_norm hd
   have hVne : (U ∩ V).Nonempty := ⟨c, hcU, hcU, hm⟩
   set W := U ∩ {z | ‖f z‖ ≠ ‖f c‖}
   have hWo : IsOpen W := hd.continuousOn.norm.isOpen_inter_preimage ho isOpen_ne
@@ -312,6 +322,30 @@ theorem eqOn_closedBall_of_isMaxOn_norm {f : E → F} {z : E} {r : ℝ}
     EqOn f (const E (f z)) (closedBall z r) := fun _x hx =>
   eq_of_isMaxOn_of_ball_subset hd hz <| ball_subset_ball hx
 
+/-- If `f` is differentiable on the open unit ball `{z : ℂ | ‖z‖ < 1}`, and `‖f‖` attains a maximum
+in this open ball, then `f` is constant. -/
+lemma eq_const_of_exists_max {f : E → F} {b : ℝ} (h_an : DifferentiableOn ℂ f (ball 0 b))
+    {v : E} (hv : v ∈ ball 0 b) (hv_max : IsMaxOn (norm ∘ f) (ball 0 b) v) :
+    Set.EqOn f (Function.const E (f v)) (ball 0 b) :=
+  Complex.eqOn_of_isPreconnected_of_isMaxOn_norm (convex_ball 0 b).isPreconnected
+    isOpen_ball h_an hv hv_max
+
+/-- If `f` is a function differentiable on the open unit ball, and there exists an `r < 1` such that
+any value of `‖f‖` on the open ball is bounded above by some value on the closed ball of radius `r`,
+then `f` is constant. -/
+lemma eq_const_of_exists_le [ProperSpace E] {f : E → F} {r b : ℝ}
+    (h_an : DifferentiableOn ℂ f (ball 0 b)) (hr_nn : 0 ≤ r) (hr_lt : r < b)
+    (hr : ∀ z, z ∈ (ball 0 b) → ∃ w, w ∈ closedBall 0 r ∧ ‖f z‖ ≤ ‖f w‖) :
+    Set.EqOn f (Function.const E (f 0)) (ball 0 b) := by
+  obtain ⟨x, hx_mem, hx_max⟩ := isCompact_closedBall (0 : E) r |>.exists_isMaxOn
+    (nonempty_closedBall.mpr hr_nn)
+    (h_an.continuousOn.mono <| closedBall_subset_ball hr_lt).norm
+  suffices Set.EqOn f (Function.const E (f x)) (ball 0 b) by
+    rwa [this (mem_ball_self (hr_nn.trans_lt hr_lt))]
+  apply eq_const_of_exists_max h_an (closedBall_subset_ball hr_lt hx_mem) (fun z hz ↦ ?_)
+  obtain ⟨w, hw, hw'⟩ := hr z hz
+  exact hw'.trans (hx_max hw)
+
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable in a neighborhood of `c`
 and the norm `‖f z‖` has a local maximum at `c`, then `f` is locally constant in a neighborhood
 of `c`. -/
@@ -356,7 +390,7 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
   obtain ⟨w, hwU, hle⟩ : ∃ w ∈ closure U, IsMaxOn (norm ∘ f) (closure U) w :=
     hc.exists_isMaxOn hne.closure hd.continuousOn.norm
   rw [closure_eq_interior_union_frontier, mem_union] at hwU
-  cases' hwU with hwU hwU; rotate_left; · exact ⟨w, hwU, hle⟩
+  rcases hwU with hwU | hwU; rotate_left; · exact ⟨w, hwU, hle⟩
   have : interior U ≠ univ := ne_top_of_le_ne_top hc.ne_univ interior_subset_closure
   rcases exists_mem_frontier_infDist_compl_eq_dist hwU this with ⟨z, hzU, hzw⟩
   refine ⟨z, frontier_interior_subset hzU, fun x hx => (hle hx).out.trans_eq ?_⟩
@@ -370,8 +404,8 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
     (hd : DiffContOnCl ℂ f U) {C : ℝ} (hC : ∀ z ∈ frontier U, ‖f z‖ ≤ C) {z : E}
     (hz : z ∈ closure U) : ‖f z‖ ≤ C := by
   rw [closure_eq_self_union_frontier, union_comm, mem_union] at hz
-  cases' hz with hz hz; · exact hC z hz
-  /- In case of a finite dimensional domain, one can just apply
+  rcases hz with hz | hz; · exact hC z hz
+  /- In case of a finite-dimensional domain, one can just apply
     `Complex.exists_mem_frontier_isMaxOn_norm`. To make it work in any Banach space, we restrict
     the function to a line first. -/
   rcases exists_ne z with ⟨w, hne⟩
@@ -392,7 +426,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
 theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounded U)
     (hf : DiffContOnCl ℂ f U) (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) :
     EqOn f g (closure U) := by
-  suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0 by simpa [sub_eq_zero] using H
+  suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0 by simpa [sub_eq_zero] using! H
   refine fun z hz => norm_le_of_forall_mem_frontier_norm_le hU (hf.sub hg) (fun w hw => ?_) hz
   simp [hfg hw]
 

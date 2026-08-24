@@ -3,8 +3,9 @@ Copyright (c) 2022 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Instances.NNReal
+module
+
+public import Mathlib.Analysis.Normed.Group.Uniform
 
 /-!
 # Further lemmas about normed groups
@@ -18,8 +19,12 @@ This file contains further lemmas about normed groups, requiring heavier imports
 
 -/
 
+public section
+
 variable {E : Type*} [SeminormedAddCommGroup E]
-open NNReal Topology
+open NNReal
+
+open scoped Topology
 
 theorem eventually_nnnorm_sub_lt (x₀ : E) {ε : ℝ≥0} (ε_pos : 0 < ε) :
     ∀ᶠ x in 𝓝 x₀, ‖x - x₀‖₊ < ε :=

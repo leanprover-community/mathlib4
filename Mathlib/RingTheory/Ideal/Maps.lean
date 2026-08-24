@@ -3,7 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.Ideal.Operations
+module
+
+public import Mathlib.Data.DFinsupp.Module
+public import Mathlib.Order.KrullDimension
+public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Maps on modules and ideals
@@ -12,12 +16,14 @@ Main definitions include `Ideal.map`, `Ideal.comap`, `RingHom.ker`, `Module.anni
 and `Submodule.annihilator`.
 -/
 
-assert_not_exists Basis -- See `RingTheory.Ideal.Basis`
-assert_not_exists Submodule.hasQuotient -- See `RingTheory.Ideal.QuotientOperations`
+@[expose] public section
+
+assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
+  Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
 
 universe u v w x
 
-open Pointwise
+open scoped Pointwise
 
 namespace Ideal
 
@@ -53,10 +59,13 @@ theorem coe_comap [RingHomClass F R S] (I : Ideal S) : (comap f I : Set R) = f �
 
 lemma comap_coe [RingHomClass F R S] (I : Ideal S) : I.comap (f : R →+* S) = I.comap f := rfl
 
+lemma map_coe [RingHomClass F R S] (I : Ideal R) : I.map (f : R →+* S) = I.map f := rfl
+
 variable {f}
 
+@[gcongr]
 theorem map_mono (h : I ≤ J) : map f I ≤ map f J :=
-  span_mono <| Set.image_subset _ h
+  span_mono <| Set.image_mono h
 
 theorem mem_map_of_mem (f : F) {I : Ideal R} {x : R} (h : x ∈ I) : f x ∈ map f I :=
   subset_span ⟨x, h, rfl⟩
@@ -71,6 +80,7 @@ theorem map_le_iff_le_comap [RingHomClass F R S] : map f I ≤ K ↔ I ≤ comap
 theorem mem_comap [RingHomClass F R S] {x} : x ∈ comap f K ↔ f x ∈ K :=
   Iff.rfl
 
+@[gcongr]
 theorem comap_mono [RingHomClass F R S] (h : K ≤ L) : comap f K ≤ comap f L :=
   Set.preimage_mono fun _ hx => h hx
 
@@ -78,6 +88,13 @@ variable (f)
 
 theorem comap_ne_top [RingHomClass F R S] (hK : K ≠ ⊤) : comap f K ≠ ⊤ :=
   (ne_top_iff_one _).2 <| by rw [mem_comap, map_one]; exact (ne_top_iff_one _).1 hK
+
+lemma exists_ideal_comap_le_prime {S} [CommSemiring S] [FunLike F R S] [RingHomClass F R S]
+    {f : F} (P : Ideal R) [P.IsPrime] (I : Ideal S) (le : I.comap f ≤ P) :
+    ∃ Q ≥ I, Q.IsPrime ∧ Q.comap f ≤ P :=
+  have ⟨Q, hQ, hIQ, disj⟩ := I.exists_le_prime_disjoint (P.primeCompl.map f) <|
+    Set.disjoint_left.mpr fun _ ↦ by rintro hI ⟨r, hp, rfl⟩; exact hp (le hI)
+  ⟨Q, hIQ, hQ, fun r hp' ↦ of_not_not fun hp ↦ Set.disjoint_left.mp disj hp' ⟨_, hp, rfl⟩⟩
 
 variable {G : Type*} [FunLike G S R]
 
@@ -100,7 +117,17 @@ theorem map_le_comap_of_inverse [RingHomClass G S R] (g : G) (I : Ideal R)
     I.map f ≤ I.comap g :=
   map_le_comap_of_inv_on _ _ _ <| h.leftInvOn _
 
+theorem eq_bot_of_comap_eq_bot' {f : R →+* S} (hf : Function.Surjective f)
+    {I : Ideal S} (h : I.comap f = ⊥) :
+    I = ⊥ := by
+  ext x
+  obtain ⟨y, hy⟩ := hf x
+  aesop (add norm [Submodule.eq_bot_iff])
+
 variable [RingHomClass F R S]
+
+instance (priority := low) [K.IsTwoSided] : (comap f K).IsTwoSided :=
+  ⟨fun b ha ↦ by rw [mem_comap, map_mul]; exact mul_mem_right _ _ ha⟩
 
 /-- The `Ideal` version of `Set.preimage_subset_image_of_inverse`. -/
 theorem comap_le_map_of_inverse (g : G) (I : Ideal S) (h : Function.LeftInverse g f) :
@@ -123,8 +150,18 @@ theorem comap_id : I.comap (RingHom.id R) = I :=
   Ideal.ext fun _ => Iff.rfl
 
 @[simp]
+lemma comap_idₐ {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (I : Ideal S) :
+    Ideal.comap (AlgHom.id R S) I = I :=
+  I.comap_id
+
+@[simp]
 theorem map_id : I.map (RingHom.id R) = I :=
   (gc_map_comap (RingHom.id R)).l_unique GaloisConnection.id comap_id
+
+@[simp]
+lemma map_idₐ {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (I : Ideal S) :
+    Ideal.map (AlgHom.id R S) I = I :=
+  I.map_id
 
 theorem comap_comap {T : Type*} [Semiring T] {I : Ideal T} (f : R →+* S) (g : S →+* T) :
     (I.comap g).comap f = I.comap (g.comp f) :=
@@ -145,7 +182,7 @@ lemma map_mapₐ {R A B C : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [
     (I.map f).map g = I.map (g.comp f) :=
   I.map_map f.toRingHom g.toRingHom
 
-theorem map_span (f : F) (s : Set R) : map f (span s) = span (f '' s) := by
+theorem map_span (s : Set R) : map f (span s) = span (f '' s) := by
   refine (Submodule.span_eq_of_le _ ?_ ?_).symm
   · rintro _ ⟨x, hx, rfl⟩; exact mem_map_of_mem f (subset_span hx)
   · rw [map_le_iff_le_comap, span_le, coe_comap, ← Set.image_subset_iff]
@@ -205,6 +242,10 @@ theorem map_iSup (K : ι → Ideal R) : (iSup K).map f = ⨆ i, (K i).map f :=
 theorem comap_iInf (K : ι → Ideal S) : (iInf K).comap f = ⨅ i, (K i).comap f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).u_iInf
 
+theorem comap_finsetInf {ι : Type*} (s : Finset ι) (K : ι → Ideal S) :
+    (s.inf K).comap f = s.inf fun i ↦ (K i).comap f := by
+  simp [Finset.inf_eq_iInf, comap_iInf]
+
 theorem map_sSup (s : Set (Ideal R)) : (sSup s).map f = ⨆ I ∈ s, (I : Ideal R).map f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).l_sSup
 
@@ -214,7 +255,7 @@ theorem comap_sInf (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ s, (I : Id
 theorem comap_sInf' (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ comap f '' s, I :=
   _root_.trans (comap_sInf f s) (by rw [iInf_image])
 
-/-- Variant of `Ideal.IsPrime.comap` where ideal is explicit rather than implicit.  -/
+/-- Variant of `Ideal.IsPrime.comap` where ideal is explicit rather than implicit. -/
 theorem comap_isPrime [H : IsPrime K] : IsPrime (comap f K) :=
   H.comap f
 
@@ -248,24 +289,23 @@ theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra
     congrArg _ <| Eq.trans (Ideal.smul_eq_mul _ _) (Ideal.mul_top _)
 
 @[simp]
-theorem coe_restrictScalars {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
-    (I : Ideal S) : (I.restrictScalars R : Set S) = ↑I :=
+theorem coe_restrictScalars {R S : Type*} [Semiring R] [Semiring S] [Module R S]
+    [IsScalarTower R S S] (I : Ideal S) : (I.restrictScalars R : Set S) = ↑I :=
   rfl
 
 /-- The smallest `S`-submodule that contains all `x ∈ I * y ∈ J`
 is also the smallest `R`-submodule that does so. -/
 @[simp]
-theorem restrictScalars_mul {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
-    (I J : Ideal S) : (I * J).restrictScalars R = I.restrictScalars R * J.restrictScalars R :=
-  le_antisymm
-    (fun _ hx =>
-      Submodule.mul_induction_on hx (fun _ hx _ hy => Submodule.mul_mem_mul hx hy) fun _ _ =>
-        Submodule.add_mem _)
-    (Submodule.mul_le.mpr fun _ hx _ hy => Ideal.mul_mem_mul hx hy)
+theorem restrictScalars_mul {R S : Type*} [Semiring R] [Semiring S] [Module R S]
+    [IsScalarTower R S S] (I J : Ideal S) :
+    (I * J).restrictScalars R = I.restrictScalars R * J.restrictScalars R :=
+  rfl
 
 section Surjective
 
-section variable (hf : Function.Surjective f)
+section
+
+variable (hf : Function.Surjective f)
 include hf
 
 open Function
@@ -314,6 +354,9 @@ theorem mem_map_iff_of_surjective {I : Ideal R} {y} : y ∈ map f I ↔ ∃ x, x
 theorem le_map_of_comap_le_of_surjective : comap f K ≤ I → K ≤ map f I := fun h =>
   map_comap_of_surjective f hf K ▸ map_mono h
 
+theorem map_eq_image_of_surjective : map f I = ⇑f '' ↑I := by
+  grind [Ideal.mem_map_iff_of_surjective f hf, SetLike.mem_coe]
+
 end
 
 theorem map_comap_eq_self_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
@@ -324,7 +367,91 @@ theorem map_eq_submodule_map (f : R →+* S) [h : RingHomSurjective f] (I : Idea
     I.map f = Submodule.map f.toSemilinearMap I :=
   Submodule.ext fun _ => mem_map_iff_of_surjective f h.1
 
+instance (priority := low) (f : R →+* S) [RingHomSurjective f] (I : Ideal R) [I.IsTwoSided] :
+    (I.map f).IsTwoSided where
+  mul_mem_of_left b ha := by
+    rw [map_eq_submodule_map] at ha ⊢
+    obtain ⟨a, ha, rfl⟩ := ha
+    obtain ⟨b, rfl⟩ := f.surjective b
+    rw [RingHom.coe_toSemilinearMap, ← map_mul]
+    exact ⟨_, I.mul_mem_right _ ha, rfl⟩
+
+open Function in
+theorem IsMaximal.comap_piEvalRingHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
+    {i : ι} {I : Ideal (R i)} (h : I.IsMaximal) : (I.comap <| Pi.evalRingHom R i).IsMaximal := by
+  refine isMaximal_iff.mpr ⟨I.ne_top_iff_one.mp h.ne_top, fun J x le hxI hxJ ↦ ?_⟩
+  have ⟨r, y, hy, eq⟩ := h.exists_inv hxI
+  classical
+  convert!
+    J.add_mem (J.mul_mem_left (update 0 i r) hxJ) (b := update 1 i y)
+      (le <| by apply update_self i y 1 ▸ hy)
+  ext j
+  obtain rfl | ne := eq_or_ne j i
+  · simpa [eq_comm] using eq
+  · simp [update_of_ne ne]
+
+theorem comap_le_comap_iff_of_surjective (hf : Function.Surjective f) (I J : Ideal S) :
+    comap f I ≤ comap f J ↔ I ≤ J :=
+  ⟨fun h => (map_comap_of_surjective f hf I).symm.le.trans (map_le_of_le_comap h), fun h =>
+    le_comap_of_map_le ((map_comap_of_surjective f hf I).le.trans h)⟩
+
+/-- The map on ideals induced by a surjective map preserves inclusion. -/
+@[simps]
+def orderEmbeddingOfSurjective (hf : Function.Surjective f) : Ideal S ↪o Ideal R where
+  toFun := comap f
+  inj' _ _ eq := SetLike.ext' (Set.preimage_injective.mpr hf <| SetLike.ext'_iff.mp eq)
+  map_rel_iff' := comap_le_comap_iff_of_surjective _ hf ..
+
+theorem map_eq_top_or_isMaximal_of_surjective (hf : Function.Surjective f) {I : Ideal R}
+    (H : IsMaximal I) : map f I = ⊤ ∨ IsMaximal (map f I) :=
+  or_iff_not_imp_left.2 fun ne_top ↦ ⟨⟨ne_top, fun _J hJ ↦ comap_injective_of_surjective f hf <|
+    H.1.2 _ (le_comap_map.trans_lt <| (orderEmbeddingOfSurjective f hf).strictMono hJ)⟩⟩
+
 end Surjective
+
+section Pi
+
+variable {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
+
+theorem map_evalRingHom_pi {I : Π i, Ideal (R i)} (i : ι) :
+    (pi I).map (Pi.evalRingHom R i) = I i := by
+  ext r
+  rw [mem_map_iff_of_surjective (Pi.evalRingHom R i) (Function.surjective_eval _)]
+  classical refine ⟨?_, fun hr ↦ ⟨_, single_mem_pi hr, by simp⟩⟩
+  rintro ⟨r, hr, rfl⟩
+  exact hr i
+
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
+/-- Ideals in a finite direct product semiring `Πᵢ Rᵢ` are identified with tuples of ideals
+in the individual semirings, in an order-preserving way.
+
+(Note that this is not in general true for infinite direct products:
+If infinitely many of the `Rᵢ` are nontrivial, then there exists an ideal of `Πᵢ Rᵢ` that
+is not of the form `Πᵢ Iᵢ`, namely the ideal of finitely supported elements of `Πᵢ Rᵢ`
+(it is also not a principal ideal).) -/
+@[simps!] def piOrderIso [Finite ι] : Ideal (Π i, R i) ≃o Π i, Ideal (R i) := .symm
+  { toFun := pi
+    invFun I i := I.map (Pi.evalRingHom R i)
+    left_inv _ := funext map_evalRingHom_pi
+    right_inv I := by
+      ext r
+      simp_rw [mem_pi, mem_map_iff_of_surjective (Pi.evalRingHom R _) (Function.surjective_eval _)]
+      refine ⟨(fun ⟨r', hr'⟩ ↦ ?_) ∘ Classical.skolem.mp, fun hr i ↦ ⟨r, hr, rfl⟩⟩
+      have := Fintype.ofFinite ι
+      classical rw [show r = ∑ i, Pi.single i 1 * r' i from funext fun i ↦ by
+        rw [← (hr' _).2, Finset.sum_apply, Fintype.sum_eq_single i fun j ne ↦ by simp [ne]]; simp]
+      exact sum_mem fun i _ ↦ I.mul_mem_left _ (hr' i).1
+    map_rel_iff' := pi_le_pi_iff }
+
+instance [Finite ι] [∀ i, IsPrincipalIdealRing (R i)] : IsPrincipalIdealRing (Π i, R i) where
+  principal I := by
+    rw [← piOrderIso.symm_apply_apply I]
+    exact ⟨_, congr(pi $(funext fun i ↦
+      (Submodule.IsPrincipal.span_singleton_generator _).symm)).trans pi_span⟩
+
+end Pi
 
 section Injective
 
@@ -356,7 +483,7 @@ theorem comap_of_equiv {I : Ideal R} (f : R ≃+* S) :
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f I = comap f.symm I`. -/
 theorem map_comap_of_equiv {I : Ideal R} (f : R ≃+* S) : I.map (f : R →+* S) = I.comap f.symm :=
   le_antisymm (Ideal.map_le_comap_of_inverse _ _ _ (Equiv.left_inv' _))
-      (Ideal.comap_le_map_of_inverse _ _ _ (Equiv.right_inv' _))
+    (Ideal.comap_le_map_of_inverse _ _ _ (Equiv.right_inv' _))
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `comap f.symm I = map f I`. -/
 @[simp]
@@ -368,14 +495,87 @@ theorem comap_symm {I : Ideal R} (f : R ≃+* S) : I.comap f.symm = I.map f :=
 theorem map_symm {I : Ideal S} (f : R ≃+* S) : I.map f.symm = I.comap f :=
   map_comap_of_equiv (RingEquiv.symm f)
 
+@[simp]
+theorem symm_apply_mem_of_equiv_iff {I : Ideal R} {f : R ≃+* S} {y : S} :
+    f.symm y ∈ I ↔ y ∈ I.map f := by
+  rw [← comap_symm, mem_comap]
+
+@[simp]
+theorem apply_mem_of_equiv_iff {I : Ideal R} {f : R ≃+* S} {x : R} :
+    f x ∈ I.map f ↔ x ∈ I := by
+  rw [← comap_symm, Ideal.mem_comap, f.symm_apply_apply]
+
 theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
     {I : Ideal R} (y : S) : y ∈ map e I ↔ ∃ x ∈ I, e x = y := by
   constructor
   · intro h
-    simp_rw [show map e I = _ from map_comap_of_equiv (e : R ≃+* S)] at h
-    exact ⟨(e : R ≃+* S).symm y, h, (e : R ≃+* S).apply_symm_apply y⟩
+    simp_rw [show map e I = _ from map_comap_of_equiv (RingEquivClass.toRingEquiv e : R ≃+* S)] at h
+    exact ⟨(EquivLike.toEquiv e).symm y, h, (EquivLike.toEquiv e).apply_symm_apply y⟩
   · rintro ⟨x, hx, rfl⟩
     exact mem_map_of_mem e hx
+
+lemma map_primeCompl_comap_of_surjective (hf : Function.Surjective f) (p : Ideal S) [p.IsPrime] :
+    Submonoid.map f (p.comap f).primeCompl = p.primeCompl := by
+  rw [SetLike.ext_iff, hf.forall]
+  grind [Submonoid.mem_map, mem_primeCompl_iff, mem_comap]
+
+lemma _root_.RingEquiv.map_primeCompl_comap_eq (e : R ≃+* S) (p : Ideal S) [p.IsPrime] :
+    (p.comap e).primeCompl.map e = p.primeCompl :=
+  p.map_primeCompl_comap_of_surjective e e.surjective
+
+section Bijective
+
+variable (hf : Function.Bijective f) {I : Ideal R} {K : Ideal S}
+include hf
+
+/-- Special case of the correspondence theorem for isomorphic rings -/
+def relIsoOfBijective : Ideal S ≃o Ideal R where
+  toFun := comap f
+  invFun := map f
+  left_inv := map_comap_of_surjective _ hf.2
+  right_inv J :=
+    le_antisymm
+      (fun _ h ↦ have ⟨y, hy, eq⟩ := (mem_map_iff_of_surjective _ hf.2).mp h; hf.1 eq ▸ hy)
+      le_comap_map
+  map_rel_iff' {_ _} := by
+    refine ⟨fun h ↦ ?_, comap_mono⟩
+    have := map_mono (f := f) h
+    simpa only [Equiv.coe_fn_mk, map_comap_of_surjective f hf.2] using this
+
+theorem comap_le_iff_le_map : comap f K ≤ I ↔ K ≤ map f I :=
+  ⟨fun h => le_map_of_comap_le_of_surjective f hf.right h, fun h =>
+    (relIsoOfBijective f hf).right_inv I ▸ comap_mono h⟩
+
+theorem map_eq_top_of_bijective : I.map f = ⊤ ↔ I = ⊤ := by
+  rw [eq_top_iff, ← comap_le_iff_le_map f hf, comap_top, top_le_iff]
+
+theorem comap_map_of_bijective : (I.map f).comap f = I :=
+  le_antisymm ((comap_le_iff_le_map f hf).mpr fun _ ↦ id) le_comap_map
+
+theorem isMaximal_map_iff_of_bijective : IsMaximal (map f I) ↔ IsMaximal I := by
+  simpa only [isMaximal_def] using! (relIsoOfBijective _ hf).symm.isCoatom_iff _
+
+theorem isMaximal_comap_iff_of_bijective : IsMaximal (comap f K) ↔ IsMaximal K := by
+  simpa only [isMaximal_def] using! (relIsoOfBijective _ hf).isCoatom_iff _
+
+alias ⟨_, IsMaximal.map_bijective⟩ := isMaximal_map_iff_of_bijective
+alias ⟨_, IsMaximal.comap_bijective⟩ := isMaximal_comap_iff_of_bijective
+
+/-- A ring isomorphism sends a maximal ideal to a maximal ideal. -/
+instance map_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
+    {p : Ideal R} [hp : p.IsMaximal] : (map e p).IsMaximal :=
+  hp.map_bijective e (EquivLike.bijective e)
+
+/-- The pullback of a maximal ideal under a ring isomorphism is a maximal ideal. -/
+instance comap_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
+    {p : Ideal S} [hp : p.IsMaximal] : (comap e p).IsMaximal :=
+  hp.comap_bijective e (EquivLike.bijective e)
+
+theorem isMaximal_iff_of_bijective : (⊥ : Ideal R).IsMaximal ↔ (⊥ : Ideal S).IsMaximal :=
+  ⟨fun h ↦ map_bot (f := f) ▸ h.map_bijective f hf, fun h ↦ have e := RingEquiv.ofBijective f hf
+    map_bot (f := e.symm) ▸ h.map_bijective _ e.symm.bijective⟩
+
+end Bijective
 
 end Semiring
 
@@ -396,6 +596,15 @@ theorem comap_map_of_surjective (hf : Function.Surjective f) (I : Ideal R) :
           add_sub_cancel s r⟩)
     (sup_le (map_le_iff_le_comap.1 le_rfl) (comap_mono bot_le))
 
+theorem coheight_comap_of_surjective (hf : Function.Surjective f) (I : Ideal S) :
+    Order.coheight (I.comap f) = Order.coheight I := by
+  let φ := orderEmbeddingOfSurjective f hf
+  refine (Order.coheight_eq_of_strictMono φ φ.strictMono (fun J K h ↦ ⟨K.map f, ?_, ?_⟩) I).symm
+  · rw [← J.map_comap_of_surjective f hf]
+    apply lt_of_le_not_ge (map_mono h.le)
+    simpa [map_le_iff_le_comap, φ] using h.not_ge
+  · exact (K.comap_map_of_surjective f hf).trans (sup_of_le_left ((comap_mono bot_le).trans h.le))
+
 /-- Correspondence theorem -/
 def relIsoOfSurjective (hf : Function.Surjective f) :
     Ideal S ≃o { p : Ideal R // comap f ⊥ ≤ p } where
@@ -403,27 +612,15 @@ def relIsoOfSurjective (hf : Function.Surjective f) :
   invFun I := map f I.1
   left_inv J := map_comap_of_surjective f hf J
   right_inv I :=
-    Subtype.eq <|
+    Subtype.ext <|
       show comap f (map f I.1) = I.1 from
         (comap_map_of_surjective f hf I).symm ▸ le_antisymm (sup_le le_rfl I.2) le_sup_left
   map_rel_iff' {I1 I2} :=
     ⟨fun H => map_comap_of_surjective f hf I1 ▸ map_comap_of_surjective f hf I2 ▸ map_mono H,
       comap_mono⟩
 
-/-- The map on ideals induced by a surjective map preserves inclusion. -/
-def orderEmbeddingOfSurjective (hf : Function.Surjective f) : Ideal S ↪o Ideal R :=
-  (relIsoOfSurjective f hf).toRelEmbedding.trans (Subtype.relEmbedding (fun x y => x ≤ y) _)
-
-theorem map_eq_top_or_isMaximal_of_surjective (hf : Function.Surjective f) {I : Ideal R}
-    (H : IsMaximal I) : map f I = ⊤ ∨ IsMaximal (map f I) := by
-  refine or_iff_not_imp_left.2 fun ne_top => ⟨⟨fun h => ne_top h, fun J hJ => ?_⟩⟩
-  · refine
-      (relIsoOfSurjective f hf).injective
-        (Subtype.ext_iff.2 (Eq.trans (H.1.2 (comap f J) (lt_of_le_of_ne ?_ ?_)) comap_top.symm))
-    · exact map_le_iff_le_comap.1 (le_of_lt hJ)
-    · exact fun h => hJ.right (le_map_of_comap_le_of_surjective f hf (le_of_eq h.symm))
-
-theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S} [H : IsMaximal K]:
+-- May not hold if `R` is a semiring: consider `ℕ →+* ZMod 2`.
+theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S} [H : IsMaximal K] :
     IsMaximal (comap f K) := by
   refine ⟨⟨comap_ne_top _ H.1.1, fun J hJ => ?_⟩⟩
   suffices map f J = ⊤ by
@@ -438,89 +635,37 @@ theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S}
   rw [comap_map_of_surjective _ hf, sup_eq_left]
   exact le_trans (comap_mono bot_le) (le_of_lt hJ)
 
-/-- The pullback of a maximal ideal under a ring isomorphism is a maximal ideal. -/
-instance comap_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
-    {p : Ideal S} [p.IsMaximal] : (comap e p).IsMaximal :=
-  comap_isMaximal_of_surjective e (EquivLike.surjective e)
-
-theorem comap_le_comap_iff_of_surjective (hf : Function.Surjective f) (I J : Ideal S) :
-    comap f I ≤ comap f J ↔ I ≤ J :=
-  ⟨fun h => (map_comap_of_surjective f hf I).symm.le.trans (map_le_of_le_comap h), fun h =>
-    le_comap_of_map_le ((map_comap_of_surjective f hf I).le.trans h)⟩
-
 end Surjective
 
-
-section Bijective
-
-/-- Special case of the correspondence theorem for isomorphic rings -/
-def relIsoOfBijective (hf : Function.Bijective f) : Ideal S ≃o Ideal R where
-  toFun := comap f
-  invFun := map f
-  left_inv := (relIsoOfSurjective f hf.right).left_inv
-  right_inv J :=
-    Subtype.ext_iff.1
-      ((relIsoOfSurjective f hf.right).right_inv ⟨J, comap_bot_le_of_injective f hf.left⟩)
-  map_rel_iff' {_ _} := (relIsoOfSurjective f hf.right).map_rel_iff'
-
-theorem comap_le_iff_le_map (hf : Function.Bijective f) {I : Ideal R} {K : Ideal S} :
-    comap f K ≤ I ↔ K ≤ map f I :=
-  ⟨fun h => le_map_of_comap_le_of_surjective f hf.right h, fun h =>
-    (relIsoOfBijective f hf).right_inv I ▸ comap_mono h⟩
-
-lemma comap_map_of_bijective (hf : Function.Bijective f) {I : Ideal R} :
-    (I.map f).comap f = I :=
-  le_antisymm ((comap_le_iff_le_map f hf).mpr fun _ ↦ id) le_comap_map
-
-theorem map.isMaximal (hf : Function.Bijective f) {I : Ideal R} (H : IsMaximal I) :
-    IsMaximal (map f I) := by
-  refine
-    or_iff_not_imp_left.1 (map_eq_top_or_isMaximal_of_surjective f hf.right H) fun h => H.1.1 ?_
-  calc
-    I = comap f (map f I) := ((relIsoOfBijective f hf).right_inv I).symm
-    _ = comap f ⊤ := by rw [h]
-    _ = ⊤ := by rw [comap_top]
-
-/-- A ring isomorphism sends a maximal ideal to a maximal ideal. -/
-instance map_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
-    {p : Ideal R} [hp : p.IsMaximal] : (map e p).IsMaximal :=
-  map.isMaximal e (EquivLike.bijective e) hp
-
-end Bijective
-
-theorem RingEquiv.bot_maximal_iff (e : R ≃+* S) :
-    (⊥ : Ideal R).IsMaximal ↔ (⊥ : Ideal S).IsMaximal :=
-  ⟨fun h => map_bot (f := e.toRingHom) ▸ map.isMaximal e.toRingHom e.bijective h, fun h =>
-    map_bot (f := e.symm.toRingHom) ▸ map.isMaximal e.symm.toRingHom e.symm.bijective h⟩
 
 end Ring
 
 section CommRing
 
-variable {F : Type*} [CommRing R] [CommRing S]
+variable {F : Type*} [CommSemiring R] [CommSemiring S]
 variable [FunLike F R S] [rc : RingHomClass F R S]
 variable (f : F)
-variable {I J : Ideal R} {K L : Ideal S}
-variable (I J K L)
+variable (I J : Ideal R) (K L : Ideal S)
 
-theorem map_mul : map f (I * J) = map f I * map f J :=
+protected theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S]
+    (f : F) (I J : Ideal R) :
+    map f (I * J) = map f I * map f J :=
   le_antisymm
     (map_le_iff_le_comap.2 <|
       mul_le.2 fun r hri s hsj =>
         show (f (r * s)) ∈ map f I * map f J by
-          rw [_root_.map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
-    (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <|
-      Set.iUnion₂_subset fun _ ⟨r, hri, hfri⟩ =>
-        Set.iUnion₂_subset fun _ ⟨s, hsj, hfsj⟩ =>
-          Set.singleton_subset_iff.2 <|
-            hfri ▸ hfsj ▸ by rw [← _root_.map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
+          rw [map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
+    (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <| by
+      rintro _ ⟨_, ⟨r, hri, rfl⟩, _, ⟨s, hsj, rfl⟩, rfl⟩
+      simp_rw [← map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
 
-/-- The pushforward `Ideal.map` as a monoid-with-zero homomorphism. -/
+/-- The pushforward `Ideal.map` as a (semi)ring homomorphism. -/
 @[simps]
-def mapHom : Ideal R →*₀ Ideal S where
+def mapHom : Ideal R →+* Ideal S where
   toFun := map f
-  map_mul' I J := Ideal.map_mul f I J
-  map_one' := by simp only [one_eq_top]; exact Ideal.map_top f
+  map_mul' := Ideal.map_mul f
+  map_one' := by simp only [one_eq_top, Ideal.map_top f]
+  map_add' I J := Ideal.map_sup f I J
   map_zero' := Ideal.map_bot
 
 protected theorem map_pow (n : ℕ) : map f (I ^ n) = map f I ^ n :=
@@ -543,15 +688,43 @@ theorem map_radical_le : map f (radical I) ≤ radical (map f I) :=
 
 theorem le_comap_mul : comap f K * comap f L ≤ comap f (K * L) :=
   map_le_iff_le_comap.1 <|
-    (map_mul f (comap f K) (comap f L)).symm ▸
+    (Ideal.map_mul f (comap f K) (comap f L)).symm ▸
       mul_mono (map_le_iff_le_comap.2 <| le_rfl) (map_le_iff_le_comap.2 <| le_rfl)
 
 theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
-  induction' n with n n_ih
-  · rw [pow_zero, pow_zero, Ideal.one_eq_top, Ideal.one_eq_top]
+  induction n with
+  | zero =>
+    rw [pow_zero, pow_zero, Ideal.one_eq_top, Ideal.one_eq_top]
     exact rfl.le
-  · rw [pow_succ, pow_succ]
+  | succ n n_ih =>
+    rw [pow_succ, pow_succ]
     exact (Ideal.mul_mono_left n_ih).trans (Ideal.le_comap_mul f)
+
+lemma disjoint_map_primeCompl_iff_comap_le {S : Type*} [Semiring S] {f : R →+* S}
+    {p : Ideal R} {I : Ideal S} [p.IsPrime] :
+    Disjoint (I : Set S) (p.primeCompl.map f) ↔ I.comap f ≤ p :=
+  (@Set.disjoint_image_right _ _ f p.primeCompl I).trans disjoint_compl_right_iff
+
+/-- For a prime ideal `p` of `R`, `p` extended to `S` and
+restricted back to `R` is `p` if and only if `p` is the restriction of a prime in `S`. -/
+lemma comap_map_eq_self_iff_of_isPrime {S : Type*} [CommSemiring S] {f : R →+* S}
+    (p : Ideal R) [p.IsPrime] :
+    (p.map f).comap f = p ↔ (∃ (q : Ideal S), q.IsPrime ∧ q.comap f = p) := by
+  refine ⟨fun hp ↦ ?_, ?_⟩
+  · obtain ⟨q, hq₁, hq₂, hq₃⟩ := Ideal.exists_le_prime_disjoint _ _
+      (disjoint_map_primeCompl_iff_comap_le.mpr hp.le)
+    exact ⟨q, hq₁, le_antisymm (disjoint_map_primeCompl_iff_comap_le.mp hq₃)
+      (map_le_iff_le_comap.mp hq₂)⟩
+  · rintro ⟨q, hq, rfl⟩
+    simp
+
+/--
+For a maximal ideal `p` of `R`, `p` extended to `S` and restricted back to `R` is `p` if
+its image in `S` is not equal to `⊤`.
+-/
+theorem comap_map_eq_self_of_isMaximal (f : R →+* S) {p : Ideal R} [hP' : p.IsMaximal]
+    (hP : Ideal.map f p ≠ ⊤) : (map f p).comap f = p :=
+  (IsCoatom.le_iff_eq hP'.out (comap_ne_top _ hP)).mp <| le_comap_map
 
 end CommRing
 
@@ -573,6 +746,8 @@ variable (f : F) (g : G)
 def ker : Ideal R :=
   Ideal.comap f ⊥
 
+instance (priority := low) : (ker f).IsTwoSided := inferInstanceAs (Ideal.comap f ⊥).IsTwoSided
+
 variable {f} in
 /-- An element is in the kernel if and only if it maps to zero. -/
 @[simp] theorem mem_ker {r} : r ∈ ker f ↔ f r = 0 := by rw [ker, Ideal.mem_comap, Submodule.mem_bot]
@@ -583,25 +758,43 @@ theorem ker_eq : (ker f : Set R) = Set.preimage f {0} :=
 theorem ker_eq_comap_bot (f : F) : ker f = Ideal.comap f ⊥ :=
   rfl
 
-theorem comap_ker (f : S →+* R) (g : T →+* S) : f.ker.comap g = ker (f.comp g) := by
+theorem comap_ker (f : S →+* R) (g : T →+* S) : (ker f).comap g = ker (f.comp g) := by
   rw [RingHom.ker_eq_comap_bot, Ideal.comap_comap, RingHom.ker_eq_comap_bot]
 
 /-- If the target is not the zero ring, then one is not in the kernel. -/
-theorem not_one_mem_ker [Nontrivial S] (f : F) : (1 : R) ∉ ker f := by
+theorem one_notMem_ker [Nontrivial S] (f : F) : (1 : R) ∉ ker f := by
   rw [mem_ker, map_one]
   exact one_ne_zero
 
 theorem ker_ne_top [Nontrivial S] (f : F) : ker f ≠ ⊤ :=
-  (Ideal.ne_top_iff_one _).mpr <| not_one_mem_ker f
+  (Ideal.ne_top_iff_one _).mpr <| one_notMem_ker f
+
+lemma ker_eq_top_of_subsingleton [Subsingleton S] (f : F) : ker f = ⊤ :=
+  eq_top_iff.mpr fun _ _ ↦ Subsingleton.elim _ _
 
 lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
-    (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by
+    (φ : ∀ i, S →+* R i) : ker (RingHom.pi φ) = ⨅ i, ker (φ i) := by
   ext x
-  simp [mem_ker, Ideal.mem_iInf, funext_iff]
+  simp [mem_ker, funext_iff]
 
 @[simp]
 theorem ker_rangeSRestrict (f : R →+* S) : ker f.rangeSRestrict = ker f :=
   Ideal.ext fun _ ↦ Subtype.ext_iff
+
+@[simp]
+theorem ker_coe_equiv (f : R ≃+* S) : ker (f : R →+* S) = ⊥ := by
+  ext; simp
+
+theorem ker_coe_toRingHom : ker (f : R →+* S) = ker f := rfl
+
+@[simp]
+theorem ker_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S] (f : F') :
+    ker f = ⊥ := by
+  ext; simp
+
+lemma ker_equiv_comp (f : R →+* S) (e : S ≃+* T) :
+    ker (e.toRingHom.comp f) = RingHom.ker f := by
+  rw [← RingHom.comap_ker, RingEquiv.toRingHom_eq_coe, RingHom.ker_coe_equiv, RingHom.ker]
 
 end Semiring
 
@@ -616,13 +809,15 @@ theorem injective_iff_ker_eq_bot : Function.Injective f ↔ ker f = ⊥ := by
 theorem ker_eq_bot_iff_eq_zero : ker f = ⊥ ↔ ∀ x, f x = 0 → x = 0 := by
   rw [← injective_iff_map_eq_zero f, injective_iff_ker_eq_bot]
 
-@[simp]
-theorem ker_coe_equiv (f : R ≃+* S) : ker (f : R →+* S) = ⊥ := by
-  simpa only [← injective_iff_ker_eq_bot] using EquivLike.injective f
+lemma ker_comp_of_injective [Semiring T] (g : T →+* R) {f : R →+* S} (hf : Function.Injective f) :
+    ker (f.comp g) = RingHom.ker g := by
+  rw [← RingHom.comap_ker, (injective_iff_ker_eq_bot f).mp hf, RingHom.ker]
 
-@[simp]
-theorem ker_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S] (f : F') : ker f = ⊥ := by
-  simpa only [← injective_iff_ker_eq_bot] using EquivLike.injective f
+/-- Synonym for `RingHom.ker_coe_equiv`, but given an algebra equivalence. -/
+@[simp] theorem _root_.AlgHom.ker_coe_equiv {R A B : Type*} [CommSemiring R] [Semiring A]
+    [Semiring B] [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
+    RingHom.ker (e : A →+* B) = ⊥ :=
+  RingHom.ker_coe_equiv (e.toRingEquiv)
 
 end Ring
 
@@ -639,28 +834,17 @@ theorem ker_rangeRestrict (f : R →+* S) : ker f.rangeRestrict = ker f :=
 end RingRing
 
 /-- The kernel of a homomorphism to a domain is a prime ideal. -/
-theorem ker_isPrime {F : Type*} [Ring R] [Ring S] [IsDomain S]
+theorem ker_isPrime {F : Type*} [Semiring R] [Semiring S] [IsDomain S]
     [FunLike F R S] [RingHomClass F R S] (f : F) :
     (ker f).IsPrime :=
-  ⟨by
-    rw [Ne, Ideal.eq_top_iff_one]
-    exact not_one_mem_ker f,
-   fun {x y} => by
-    simpa only [mem_ker, map_mul] using @eq_zero_or_eq_zero_of_mul_eq_zero S _ _ _ _ _⟩
+  inferInstanceAs (Ideal.comap f ⊥).IsPrime
 
-/-- The kernel of a homomorphism to a field is a maximal ideal. -/
-theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [Field K]
+/-- The kernel of a homomorphism to a division ring is a maximal ideal. -/
+theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [DivisionRing K]
     [FunLike F R K] [RingHomClass F R K] (f : F)
-    (hf : Function.Surjective f) : (ker f).IsMaximal := by
-  refine
-    Ideal.isMaximal_iff.mpr
-      ⟨fun h1 => one_ne_zero' K <| map_one f ▸ mem_ker.mp h1, fun J x hJ hxf hxJ => ?_⟩
-  obtain ⟨y, hy⟩ := hf (f x)⁻¹
-  have H : 1 = y * x - (y * x - 1) := (sub_sub_cancel _ _).symm
-  rw [H]
-  refine J.sub_mem (J.mul_mem_left _ hxJ) (hJ ?_)
-  rw [mem_ker]
-  simp only [hy, map_sub, map_one, map_mul, inv_mul_cancel₀ (mt mem_ker.mpr hxf :), sub_self]
+    (hf : Function.Surjective f) : (ker f).IsMaximal :=
+  have := Ideal.bot_isMaximal (K := K)
+  Ideal.comap_isMaximal_of_surjective _ hf
 
 end RingHom
 
@@ -678,6 +862,13 @@ def Module.annihilator : Ideal R := RingHom.ker (Module.toAddMonoidEnd R M)
 theorem Module.mem_annihilator {r} : r ∈ Module.annihilator R M ↔ ∀ m : M, r • m = 0 :=
   ⟨fun h ↦ (congr($h ·)), (AddMonoidHom.ext ·)⟩
 
+lemma Module.mem_annihilator_iff_lsmul_eq_zero {R : Type*} [CommSemiring R]
+    [Module R M] {r : R} : r ∈ Module.annihilator R M ↔ LinearMap.lsmul R M r = 0 := by
+  simp [Module.mem_annihilator, LinearMap.ext_iff]
+
+instance (priority := low) : (Module.annihilator R M).IsTwoSided :=
+  inferInstanceAs (RingHom.ker _).IsTwoSided
+
 theorem LinearMap.annihilator_le_of_injective (f : M →ₗ[R] M') (hf : Function.Injective f) :
     Module.annihilator R M' ≤ Module.annihilator R M := fun x h ↦ by
   rw [Module.mem_annihilator] at h ⊢; exact fun m ↦ hf (by rw [map_smul, h, f.map_zero])
@@ -691,6 +882,60 @@ theorem LinearMap.annihilator_le_of_surjective (f : M →ₗ[R] M')
 theorem LinearEquiv.annihilator_eq (e : M ≃ₗ[R] M') :
     Module.annihilator R M = Module.annihilator R M' :=
   (e.annihilator_le_of_surjective e.surjective).antisymm (e.annihilator_le_of_injective e.injective)
+
+theorem Module.comap_annihilator {R₀} [CommSemiring R₀] [Module R₀ M]
+    [Algebra R₀ R] [IsScalarTower R₀ R M] :
+    (Module.annihilator R M).comap (algebraMap R₀ R) = Module.annihilator R₀ M := by
+  ext x
+  simp [mem_annihilator]
+
+lemma Module.annihilator_eq_bot {R M} [Ring R] [AddCommGroup M] [Module R M] :
+    Module.annihilator R M = ⊥ ↔ FaithfulSMul R M := by
+  rw [← le_bot_iff]
+  refine ⟨fun H ↦ ⟨fun {r s} H' ↦ ?_⟩, fun ⟨H⟩ {a} ha ↦ ?_⟩
+  · rw [← sub_eq_zero]
+    exact H (Module.mem_annihilator (r := r - s).mpr
+      (by simp only [sub_smul, H', sub_self, implies_true]))
+  · exact @H a 0 (by simp [Module.mem_annihilator.mp ha])
+
+theorem Module.annihilator_eq_top_iff : annihilator R M = ⊤ ↔ Subsingleton M :=
+  ⟨fun h ↦ ⟨fun m m' ↦ by
+      rw [← one_smul R m, ← one_smul R m']
+      simp_rw [mem_annihilator.mp (h ▸ Submodule.mem_top)]⟩,
+    fun _ ↦ top_le_iff.mp fun _ _ ↦ mem_annihilator.mpr fun _ ↦ Subsingleton.elim _ _⟩
+
+theorem Module.annihilator_prod : annihilator R (M × M') = annihilator R M ⊓ annihilator R M' := by
+  ext
+  simp_rw [Ideal.mem_inf, mem_annihilator,
+    Prod.forall, Prod.smul_mk, Prod.mk_eq_zero, forall_and_left, ← forall_and_right]
+
+theorem Module.annihilator_finsupp {ι : Type*} [Nonempty ι] :
+    annihilator R (ι →₀ M) = annihilator R M := by
+  ext r; simp_rw [mem_annihilator]
+  constructor <;> intro h
+  · refine Nonempty.elim ‹_› fun i : ι ↦ ?_
+    simpa using fun m ↦ congr($(h (Finsupp.single i m)) i)
+  · intro m; ext i; exact h _
+
+section
+
+variable {ι : Type*} {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+
+theorem Module.annihilator_dfinsupp : annihilator R (Π₀ i, M i) = ⨅ i, annihilator R (M i) := by
+  ext r; simp only [mem_annihilator, Ideal.mem_iInf]
+  constructor <;> intro h
+  · intro i m
+    classical simpa using DFunLike.congr_fun (h (DFinsupp.single i m)) i
+  · intro m; ext i; exact h i _
+
+theorem Module.annihilator_pi : annihilator R (Π i, M i) = ⨅ i, annihilator R (M i) := by
+  ext r; simp only [mem_annihilator, Ideal.mem_iInf]
+  constructor <;> intro h
+  · intro i m
+    classical simpa using congr_fun (h (Pi.single i m)) i
+  · intro m; ext i; exact h i _
+
+end
 
 namespace Submodule
 
@@ -709,11 +954,8 @@ theorem mem_annihilator {r} : r ∈ N.annihilator ↔ ∀ n ∈ N, r • n = (0 
 theorem annihilator_bot : (⊥ : Submodule R M).annihilator = ⊤ :=
   top_le_iff.mp fun _ _ ↦ mem_annihilator.mpr fun _ ↦ by rintro rfl; rw [smul_zero]
 
-theorem annihilator_eq_top_iff : N.annihilator = ⊤ ↔ N = ⊥ :=
-  ⟨fun H ↦
-    eq_bot_iff.2 fun (n : M) hn =>
-      (mem_bot R).2 <| one_smul R n ▸ mem_annihilator.1 ((Ideal.eq_top_iff_one _).1 H) n hn,
-    fun H ↦ H.symm ▸ annihilator_bot⟩
+theorem annihilator_eq_top_iff : N.annihilator = ⊤ ↔ N = ⊥ := by
+  rw [annihilator, Module.annihilator_eq_top_iff, Submodule.subsingleton_iff_eq_bot]
 
 theorem annihilator_mono (h : N ≤ P) : P.annihilator ≤ N.annihilator := fun _ hrp =>
   mem_annihilator.2 fun n hn => mem_annihilator.1 hrp n <| h hn
@@ -721,9 +963,24 @@ theorem annihilator_mono (h : N ≤ P) : P.annihilator ≤ N.annihilator := fun 
 theorem annihilator_iSup (ι : Sort w) (f : ι → Submodule R M) :
     annihilator (⨆ i, f i) = ⨅ i, annihilator (f i) :=
   le_antisymm (le_iInf fun _ => annihilator_mono <| le_iSup _ _) fun r H =>
-    mem_annihilator.2 fun n hn ↦ iSup_induction f (C := (r • · = 0)) hn
+    mem_annihilator.2 fun n hn ↦ iSup_induction f (motive := (r • · = 0)) hn
       (fun i ↦ mem_annihilator.1 <| (mem_iInf _).mp H i) (smul_zero _)
       fun m₁ m₂ h₁ h₂ ↦ by simp_rw [smul_add, h₁, h₂, add_zero]
+
+theorem annihilator_sup (N P : Submodule R M) :
+    (N ⊔ P).annihilator = N.annihilator ⊓ P.annihilator := by
+  rw [← sSup_pair, sSup_eq_iSup, iSup_subtype', annihilator_iSup, ← iInf_pair, iInf_subtype']
+
+theorem le_annihilator_iff {N : Submodule R M} {I : Ideal R} : I ≤ annihilator N ↔ I • N = ⊥ := by
+  simp_rw [← le_bot_iff, smul_le, SetLike.le_def, mem_annihilator]; rfl
+
+@[simp]
+theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=
+  eq_bot_iff.2 (smul_le.2 fun _ => mem_annihilator.1)
+
+@[simp]
+theorem annihilator_mul (I : Ideal R) : annihilator I * I = ⊥ :=
+  annihilator_smul I
 
 end Submodule
 
@@ -755,16 +1012,27 @@ theorem mem_annihilator_span (s : Set M) (r : R) :
 theorem mem_annihilator_span_singleton (g : M) (r : R) :
     r ∈ (Submodule.span R ({g} : Set M)).annihilator ↔ r • g = 0 := by simp [mem_annihilator_span]
 
-@[simp]
-theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=
-  eq_bot_iff.2 (smul_le.2 fun _ => mem_annihilator.1)
+open LinearMap in
+theorem annihilator_span (s : Set M) :
+    (Submodule.span R s).annihilator = ⨅ g : s, ker (toSpanSingleton R M g.1) := by
+  ext; simp [mem_annihilator_span]
 
-@[simp]
-theorem annihilator_mul (I : Ideal R) : annihilator I * I = ⊥ :=
-  annihilator_smul I
+open LinearMap in
+theorem annihilator_span_singleton (g : M) :
+    (Submodule.span R {g}).annihilator = ker (toSpanSingleton R M g) := by
+  simp [annihilator_span]
 
 @[simp]
 theorem mul_annihilator (I : Ideal R) : I * annihilator I = ⊥ := by rw [mul_comm, annihilator_mul]
+
+theorem restrictScalars_map_smul_eq {S M : Type*}
+    [CommSemiring S] [Algebra S R]
+    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower S R M]
+    (I : Ideal S) (N : Submodule R M) :
+    ((I.map (algebraMap S R)) • N).restrictScalars S = I • N.restrictScalars S := by
+  have := N.restrictScalars_image_smul_eq (I : Set S)
+  rw [coe_set_smul] at this
+  rw [Ideal.map, span_smul_eq, ← this]
 
 end Submodule
 
@@ -787,11 +1055,22 @@ theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun 
 /-- A ring isomorphism sends a prime ideal to a prime ideal. -/
 instance map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S]
     (f : F') {I : Ideal R} [IsPrime I] : IsPrime (map f I) := by
-  have h : I.map f = I.map ((f : R ≃+* S) : R →+* S) := rfl
-  rw [h, map_comap_of_equiv (f : R ≃+* S)]
-  exact Ideal.IsPrime.comap (RingEquiv.symm (f : R ≃+* S))
+  have h : I.map f = I.map ((RingEquivClass.toRingEquiv f : R ≃+* S) : R →+* S) := rfl
+  rw [h, map_comap_of_equiv (RingEquivClass.toRingEquiv f : R ≃+* S)]
+  exact Ideal.IsPrime.comap (RingEquivClass.toRingEquiv f : R ≃+* S).symm
+
+theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injective f) :
+    I.map f = ⊥ ↔ I = ⊥ := by
+  simp [map, ← map_zero f, -map_zero, hf.eq_iff, I.eq_bot_iff]
 
 end Semiring
+
+open scoped Pointwise in
+lemma map_pointwise_smul {R S : Type*} [CommSemiring R] [CommSemiring S]
+    (r : R) (I : Ideal R) (f : R →+* S) :
+    Ideal.map f (r • I) = f r • I.map f := by
+  rw [← Submodule.ideal_span_singleton_smul, smul_eq_mul, Ideal.map_mul, Ideal.map_span,
+    Set.image_singleton, ← smul_eq_mul, Submodule.ideal_span_singleton_smul]
 
 section Ring
 
@@ -805,12 +1084,12 @@ theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
     (∀ J ∈ A, RingHom.ker f ≤ J) → map f (sInf A) = sInf (map f '' A) := by
   refine fun h => le_antisymm (le_sInf ?_) ?_
   · intro j hj y hy
-    cases' (mem_map_iff_of_surjective f hf).1 hy with x hx
-    cases' (Set.mem_image _ _ _).mp hj with J hJ
+    obtain ⟨x, hx⟩ := (mem_map_iff_of_surjective f hf).1 hy
+    obtain ⟨J, hJ⟩ := (Set.mem_image _ _ _).mp hj
     rw [← hJ.right, ← hx.right]
     exact mem_map_of_mem f (sInf_le_of_le hJ.left (le_of_eq rfl) hx.left)
   · intro y hy
-    cases' hf y with x hx
+    obtain ⟨x, hx⟩ := hf y
     refine hx ▸ mem_map_of_mem f ?_
     have : ∀ I ∈ A, y ∈ map f I := by simpa using hy
     rw [Submodule.mem_sInf]
@@ -828,24 +1107,31 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
     rw [comap_map_of_surjective _ hf, comap_top] at h
     exact h ▸ sup_le (le_of_eq rfl) hk
   · refine fun hxy => (hf x).recOn fun a ha => (hf y).recOn fun b hb => ?_
-    rw [← ha, ← hb, ← _root_.map_mul f, mem_map_iff_of_surjective _ hf] at hxy
+    rw [← ha, ← hb, ← map_mul f, mem_map_iff_of_surjective _ hf] at hxy
     rcases hxy with ⟨c, hc, hc'⟩
     rw [← sub_eq_zero, ← map_sub] at hc'
     have : a * b ∈ I := by
-      convert I.sub_mem hc (hk (hc' : c - a * b ∈ RingHom.ker f)) using 1
+      convert! I.sub_mem hc (hk (hc' : c - a * b ∈ RingHom.ker f)) using 1
       abel
     exact
       (H.mem_or_mem this).imp (fun h => ha ▸ mem_map_of_mem f h) fun h => hb ▸ mem_map_of_mem f h
 
-theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injective f) :
-    I.map f = ⊥ ↔ I = ⊥ := by
-  rw [map_eq_bot_iff_le_ker, (RingHom.injective_iff_ker_eq_bot f).mp hf, le_bot_iff]
+lemma IsMaximal.map_of_surjective_of_ker_le {f : F} (hf : Function.Surjective f) {m : Ideal R}
+    [m.IsMaximal] (hk : RingHom.ker f ≤ m) : (m.map f).IsMaximal := by
+  refine m.map_eq_top_or_isMaximal_of_surjective f hf ‹_› |>.resolve_left fun h => ?_
+  apply congr_arg (comap f) at h
+  rw [comap_map_of_surjective _ hf, comap_top, ← RingHom.ker_eq_comap_bot, sup_of_le_left hk] at h
+  exact IsMaximal.ne_top ‹_› h
 
 end Ring
 
 section CommRing
 
 variable [CommRing R] [CommRing S]
+
+theorem map_ne_bot_of_ne_bot {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    [FaithfulSMul R S] {I : Ideal R} (h : I ≠ ⊥) : map (algebraMap R S) I ≠ ⊥ :=
+  (map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S)).mp.mt h
 
 theorem map_eq_iff_sup_ker_eq_of_surjective {I J : Ideal R} (f : R →+* S)
     (hf : Function.Surjective f) : map f I = map f J ↔ I ⊔ RingHom.ker f = J ⊔ RingHom.ker f := by
@@ -856,14 +1142,15 @@ theorem map_radical_of_surjective {f : R →+* S} (hf : Function.Surjective f) {
     (h : RingHom.ker f ≤ I) : map f I.radical = (map f I).radical := by
   rw [radical_eq_sInf, radical_eq_sInf]
   have : ∀ J ∈ {J : Ideal R | I ≤ J ∧ J.IsPrime}, RingHom.ker f ≤ J := fun J hJ => h.trans hJ.left
-  convert map_sInf hf this
-  refine funext fun j => propext ⟨?_, ?_⟩
+  convert! map_sInf hf this
+  ext j
+  constructor
   · rintro ⟨hj, hj'⟩
-    haveI : j.IsPrime := hj'
+    have : j.IsPrime := hj'
     exact
       ⟨comap f j, ⟨⟨map_le_iff_le_comap.1 hj, comap_isPrime f j⟩, map_comap_of_surjective f hf j⟩⟩
   · rintro ⟨J, ⟨hJ, hJ'⟩⟩
-    haveI : J.IsPrime := hJ.right
+    have : J.IsPrime := hJ.right
     exact ⟨hJ' ▸ map_mono hJ.left, hJ' ▸ map_isPrime_of_surjective hf (le_trans h hJ.left)⟩
 
 end CommRing
@@ -902,7 +1189,7 @@ theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g
 /-- `liftOfRightInverse f hf g hg` is the unique ring homomorphism `φ`
 
 * such that `φ.comp f = g` (`RingHom.liftOfRightInverse_comp`),
-* where `f : A →+* B` has a right_inverse `f_inv` (`hf`),
+* where `f : A →+* B` has a right inverse `f_inv` (`hf`),
 * and `g : B →+* C` satisfies `hg : f.ker ≤ g.ker`.
 
 See `RingHom.eq_liftOfRightInverse` for the uniqueness lemma.
@@ -923,7 +1210,7 @@ def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
   invFun φ := ⟨φ.comp f, fun x hx => mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
   left_inv g := by
     ext
-    simp only [comp_apply, liftOfRightInverseAux_comp_apply, Subtype.coe_mk]
+    simp only [comp_apply, liftOfRightInverseAux_comp_apply]
   right_inv φ := by
     ext b
     simp [liftOfRightInverseAux, hf b]
@@ -951,14 +1238,46 @@ theorem eq_liftOfRightInverse (hf : Function.RightInverse f_inv f) (g : A →+* 
   simp_rw [← hh]
   exact ((f.liftOfRightInverse f_inv hf).apply_symm_apply _).symm
 
+theorem liftOfSurjective_comp_apply (hf : Function.Surjective f)
+    (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) (x : A) :
+    (f.liftOfSurjective hf) g (f x) = (g : A →+* C) x :=
+  RingHom.liftOfRightInverse_comp_apply f _ _ g x
+
+theorem liftOfSurjective_comp (hf : Function.Surjective f)
+    (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) :
+    ((f.liftOfSurjective hf) g).comp f = (g : A →+* C) :=
+  RingHom.liftOfRightInverse_comp f _ _ g
+
+theorem eq_liftOfSurjective (hf : Function.Surjective f) (g : A →+* C)
+    (hg : RingHom.ker f ≤ RingHom.ker g) (h : B →+* C) (hh : h.comp f = g) :
+    h = f.liftOfSurjective hf ⟨g, hg⟩ :=
+  RingHom.eq_liftOfRightInverse f _ _ g _ _ hh
+
 end RingHom
+
+/-- Any ring isomorphism induces an order isomorphism of ideals. -/
+@[simps apply]
+def RingEquiv.idealComapOrderIso {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) :
+    Ideal S ≃o Ideal R where
+  toFun I := I.comap e
+  invFun I := I.map e
+  left_inv I := I.map_comap_of_surjective _ e.surjective
+  right_inv I := I.comap_map_of_bijective _ e.bijective
+  map_rel_iff' := by
+    simp [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective _ e.surjective]
+
+@[simp]
+lemma RingEquiv.idealComapOrderIso_symm_apply
+    {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) (I : Ideal R) :
+    e.idealComapOrderIso.symm I = I.map e :=
+  rfl
 
 namespace AlgHom
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
 
-lemma coe_ker : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
+lemma ker_coe : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
 
 lemma coe_ideal_map (I : Ideal A) :
     Ideal.map f I = Ideal.map (f : A →+* B) I := rfl
@@ -979,20 +1298,52 @@ def idealMap (I : Ideal R) : I →ₗ[R] I.map (algebraMap R S) :=
   (Algebra.linearMap R S).restrict (q := (I.map (algebraMap R S)).restrictScalars R)
     (fun _ ↦ Ideal.mem_map_of_mem _)
 
+@[simp]
+lemma idealMap_mul (I : Ideal R) (x y : I) :
+    idealMap S I (x * y) = idealMap S I x * idealMap S I y := by
+  ext
+  simp
+
 end Algebra
 
-namespace NoZeroSMulDivisors
+@[simp]
+theorem FaithfulSMul.ker_algebraMap_eq_bot (R A : Type*) [CommSemiring R] [Semiring A]
+    [Algebra R A] [FaithfulSMul R A] : RingHom.ker (algebraMap R A) = ⊥ := by
+  ext; simp
 
-theorem of_ker_algebraMap_eq_bot (R A : Type*) [CommRing R] [Semiring A] [Algebra R A]
-    [NoZeroDivisors A] (h : RingHom.ker (algebraMap R A) = ⊥) : NoZeroSMulDivisors R A :=
-  of_algebraMap_injective ((RingHom.injective_iff_ker_eq_bot _).mpr h)
+section PrincipalIdeal
 
-theorem ker_algebraMap_eq_bot (R A : Type*) [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
-    [NoZeroSMulDivisors R A] : RingHom.ker (algebraMap R A) = ⊥ :=
-  (RingHom.injective_iff_ker_eq_bot _).mp (algebraMap_injective R A)
+instance {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) (I : Ideal R) [I.IsPrincipal] :
+    (I.map f).IsPrincipal := by
+  obtain ⟨x, rfl⟩ := Submodule.IsPrincipal.principal I
+  exact ⟨f x, by
+    rw [← Ideal.span, ← Set.image_singleton, Ideal.map_span, Set.image_singleton,
+      Ideal.submodule_span_eq]⟩
 
-theorem iff_ker_algebraMap_eq_bot {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [Algebra R A] :
-    NoZeroSMulDivisors R A ↔ RingHom.ker (algebraMap R A) = ⊥ :=
-  iff_algebraMap_injective.trans (RingHom.injective_iff_ker_eq_bot (algebraMap R A))
+end PrincipalIdeal
 
-end NoZeroSMulDivisors
+lemma RingHom.ker_evalRingHom {ι : Type*} [DecidableEq ι] (R : ι → Type*)
+    [∀ i, CommRing (R i)] (i : ι) :
+    RingHom.ker (Pi.evalRingHom R i) = Ideal.span {1 - Pi.single i 1} := by
+  refine le_antisymm (fun x hx ↦ ?_) (by simp [Ideal.span_le])
+  simp only [RingHom.mem_ker, Pi.evalRingHom_apply] at hx
+  rw [Ideal.mem_span_singleton]
+  use x + Pi.single i 1
+  simp [mul_add, sub_mul, one_mul, ← Pi.single_mul_left, hx]
+
+lemma Ideal.exists_of_comap_eq_ker_sup {A B : Type*} [Ring A] [Ring B] (f : A →+* B)
+    (surj : Function.Surjective f) {I : Ideal B} {J : Ideal A}
+    (eq : I.comap f = RingHom.ker f ⊔ J) {x : B} (hx : x ∈ I) : ∃ y ∈ J, f y = x := by
+  rcases surj x with ⟨x', hx'⟩
+  rw [← hx', ← Ideal.mem_comap, eq] at hx
+  rcases Submodule.mem_sup.mp hx with ⟨y, hy, z, hz, hyz⟩
+  use z, hz
+  simpa [← hx', ← hyz, ← RingHom.mem_ker] using hy
+
+lemma Ideal.eq_map_of_comap_eq_ker_sup {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
+    (surj : Function.Surjective f) {I : Ideal B} {J : Ideal A}
+    (eq : I.comap f = RingHom.ker f ⊔ J) : I = J.map f := by
+  refine le_antisymm (fun x hx ↦ ?_)
+    (Ideal.map_le_iff_le_comap.mpr (le_of_le_of_eq le_sup_right eq.symm))
+  rcases Ideal.exists_of_comap_eq_ker_sup _ surj eq hx with ⟨y, mem, hy⟩
+  simpa [← hy] using Ideal.mem_map_of_mem _ mem

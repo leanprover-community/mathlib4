@@ -3,11 +3,12 @@ Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Analysis.Convex.Hull
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Topology.Bornology.Absorbs
+module
 
+public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.MulAction
+public import Mathlib.Topology.Bornology.Absorbs
 /-!
 # Local convexity
 
@@ -28,6 +29,12 @@ For a module over a normed ring:
   `s`.
 * `Balanced`: A set `s` is balanced if `a • s ⊆ s` for all `a` of norm less than `1`.
 
+## Main Results
+* `Absorbent.submodule_eq_top` shows that when the base field is nontrivially normed, an absorbent
+  submodule is actually the whole space. As an application, we show in
+  `Absorbent.subset_image_iff_surjective` that a linear function is surjective if and only if its
+  image contains an absorbent set.
+
 ## References
 
 * [H. H. Schaefer, *Topological Vector Spaces*][schaefer1966]
@@ -37,12 +44,14 @@ For a module over a normed ring:
 absorbent, balanced, locally convex, LCTVS
 -/
 
+@[expose] public section
+
+assert_not_exists NormedSpace
 
 open Set
+open scoped Pointwise Topology
 
-open Pointwise Topology
-
-variable {𝕜 𝕝 E : Type*} {ι : Sort*} {κ : ι → Sort*}
+variable {𝕜 𝕝 E F : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 section SeminormedRing
 
@@ -51,13 +60,11 @@ variable [SeminormedRing 𝕜]
 section SMul
 
 variable [SMul 𝕜 E] {s A B : Set E}
-variable (𝕜)
 
+variable (𝕜) in
 /-- A set `A` is balanced if `a • A` is contained in `A` whenever `a` has norm at most `1`. -/
 def Balanced (A : Set E) :=
   ∀ a : 𝕜, ‖a‖ ≤ 1 → a • A ⊆ A
-
-variable {𝕜}
 
 lemma absorbs_iff_norm : Absorbs 𝕜 A B ↔ ∃ r, ∀ c : 𝕜, r ≤ ‖c‖ → B ⊆ c • A :=
   Filter.atTop_basis.cobounded_of_norm.eventually_iff.trans <| by simp only [true_and]; rfl
@@ -105,6 +112,11 @@ theorem balanced_iInter₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced �
     Balanced 𝕜 (⋂ (i) (j), f i j) :=
   balanced_iInter fun _ => balanced_iInter <| h _
 
+theorem Balanced.mulActionHom_preimage [SMul 𝕜 F] {s : Set F} (hs : Balanced 𝕜 s)
+    (f : E →[𝕜] F) : Balanced 𝕜 (f ⁻¹' s) := fun a ha x ⟨y,⟨hy₁,hy₂⟩⟩ => by
+  rw [mem_preimage, ← hy₂, map_smul]
+  exact hs a ha (smul_mem_smul_set hy₁)
+
 variable [SMul 𝕝 E] [SMulCommClass 𝕜 𝕝 E]
 
 theorem Balanced.smul (a : 𝕝) (hs : Balanced 𝕜 s) : Balanced 𝕜 (a • s) := fun _b hb =>
@@ -147,22 +159,22 @@ section NormedDivisionRing
 
 variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
-theorem absorbs_iff_eventually_nhdsWithin_zero :
+theorem absorbs_iff_eventually_nhdsNE_zero :
     Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝[≠] 0, MapsTo (c • ·) t s := by
   rw [absorbs_iff_eventually_cobounded_mapsTo, ← Filter.inv_cobounded₀]; rfl
 
-alias ⟨Absorbs.eventually_nhdsWithin_zero, _⟩ := absorbs_iff_eventually_nhdsWithin_zero
+alias ⟨Absorbs.eventually_nhdsNE_zero, _⟩ := absorbs_iff_eventually_nhdsNE_zero
 
-theorem absorbent_iff_eventually_nhdsWithin_zero :
+theorem absorbent_iff_eventually_nhdsNE_zero :
     Absorbent 𝕜 s ↔ ∀ x : E, ∀ᶠ c : 𝕜 in 𝓝[≠] 0, c • x ∈ s :=
-  forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_nhdsWithin_zero, mapsTo_singleton]
+  forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_nhdsNE_zero, mapsTo_singleton]
 
-alias ⟨Absorbent.eventually_nhdsWithin_zero, _⟩ := absorbent_iff_eventually_nhdsWithin_zero
+alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsNE_zero
 
 theorem absorbs_iff_eventually_nhds_zero (h₀ : 0 ∈ s) :
     Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s := by
-  rw [← nhdsWithin_compl_singleton_sup_pure, Filter.eventually_sup, Filter.eventually_pure,
-    ← absorbs_iff_eventually_nhdsWithin_zero, and_iff_left]
+  rw [← nhdsNE_sup_pure, Filter.eventually_sup, Filter.eventually_pure,
+    ← absorbs_iff_eventually_nhdsNE_zero, and_iff_left]
   intro x _
   simpa only [zero_smul]
 
@@ -170,15 +182,11 @@ theorem Absorbs.eventually_nhds_zero (h : Absorbs 𝕜 s t) (h₀ : 0 ∈ s) :
     ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s :=
   (absorbs_iff_eventually_nhds_zero h₀).1 h
 
-end NormedDivisionRing
-
-section NormedField
-
-variable [NormedField 𝕜] [NormedRing 𝕝] [NormedSpace 𝕜 𝕝] [AddCommGroup E] [Module 𝕜 E]
-  [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E] {s A : Set E} {x : E} {a b : 𝕜}
+variable [NormedRing 𝕝] [Module 𝕜 𝕝] [NormSMulClass 𝕜 𝕝] [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
+  {a b : 𝕜} {x : E}
 
 /-- Scalar multiplication (by possibly different types) of a balanced set is monotone. -/
-theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖a‖ ≤ ‖b‖) : a • s ⊆ b • s := by
+theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} (h : ‖a‖ ≤ ‖b‖) : a • s ⊆ b • s := by
   obtain rfl | hb := eq_or_ne b 0
   · rw [norm_zero, norm_le_zero_iff] at h
     simp only [h, ← image_smul, zero_smul, Subset.rfl]
@@ -188,7 +196,7 @@ theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖
         rw [norm_smul, norm_inv, ← div_eq_inv_mul]
         exact div_le_one_of_le₀ h (norm_nonneg _)
 
-theorem Balanced.smul_mem_mono [SMulCommClass 𝕝 𝕜 E] (hs : Balanced 𝕝 s) {a : 𝕜} {b : 𝕝}
+theorem Balanced.smul_mem_mono [SMulCommClass 𝕝 𝕜 E] (hs : Balanced 𝕝 s) {b : 𝕝}
     (ha : a • x ∈ s) (hba : ‖b‖ ≤ ‖a‖) : b • x ∈ s := by
   rcases eq_or_ne a 0 with rfl | ha₀
   · simp_all
@@ -199,30 +207,33 @@ theorem Balanced.smul_mem_mono [SMulCommClass 𝕝 𝕜 E] (hs : Balanced 𝕝 s
         exact div_le_one_of_le₀ hba (norm_nonneg _)
       (a⁻¹ • b) • a • x = b • x := by rw [smul_comm, smul_assoc, smul_inv_smul₀ ha₀]
 
-theorem Balanced.subset_smul (hA : Balanced 𝕜 A) (ha : 1 ≤ ‖a‖) : A ⊆ a • A := by
-  rw [← @norm_one 𝕜] at ha; simpa using hA.smul_mono ha
+theorem Balanced.subset_smul (hs : Balanced 𝕜 s) (ha : 1 ≤ ‖a‖) : s ⊆ a • s := by
+  rw [← @norm_one 𝕜] at ha; simpa using hs.smul_mono ha
 
-theorem Balanced.smul_congr (hs : Balanced 𝕜 A) (h : ‖a‖ = ‖b‖) : a • A = b • A :=
+theorem Balanced.smul_congr (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a • s = b • s :=
   (hs.smul_mono h.le).antisymm (hs.smul_mono h.ge)
 
-theorem Balanced.smul_eq (hA : Balanced 𝕜 A) (ha : ‖a‖ = 1) : a • A = A :=
-  (hA _ ha.le).antisymm <| hA.subset_smul ha.ge
+theorem Balanced.smul_eq (hs : Balanced 𝕜 s) (ha : ‖a‖ = 1) : a • s = s :=
+  (hs _ ha.le).antisymm <| hs.subset_smul ha.ge
 
 /-- A balanced set absorbs itself. -/
-theorem Balanced.absorbs_self (hA : Balanced 𝕜 A) : Absorbs 𝕜 A A :=
-  .of_norm ⟨1, fun _ => hA.subset_smul⟩
+theorem Balanced.absorbs_self (hs : Balanced 𝕜 s) : Absorbs 𝕜 s s :=
+  .of_norm ⟨1, fun _ => hs.subset_smul⟩
+
+end NormedDivisionRing
+
+section NormedField
+
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s A : Set E} {x : E} {a b : 𝕜}
 
 theorem Balanced.smul_mem_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a • x ∈ s ↔ b • x ∈ s :=
   ⟨(hs.smul_mem_mono · h.ge), (hs.smul_mem_mono · h.le)⟩
-
-@[deprecated (since := "2024-02-02")] alias Balanced.mem_smul_iff := Balanced.smul_mem_iff
 
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
 /-- Every neighbourhood of the origin is absorbent. -/
 theorem absorbent_nhds_zero (hA : A ∈ 𝓝 (0 : E)) : Absorbent 𝕜 A :=
-  absorbent_iff_inv_smul.2 fun x ↦ Filter.tendsto_inv₀_cobounded.smul tendsto_const_nhds <| by
-    rwa [zero_smul]
+  absorbent_iff_inv_smul.2 fun _ ↦ Filter.tendsto_inv₀_cobounded.zero_smul_const _ hA
 
 /-- The union of `{0}` with the interior of a balanced set is balanced. -/
 theorem Balanced.zero_insert_interior (hA : Balanced 𝕜 A) :
@@ -234,10 +245,6 @@ theorem Balanced.zero_insert_interior (hA : Balanced 𝕜 A) :
   · rw [← image_smul, image_insert_eq, smul_zero]
     apply insert_subset_insert
     exact ((isOpenMap_smul₀ h).mapsTo_interior <| hA.smul_mem ha).image_subset
-
-@[deprecated Balanced.zero_insert_interior (since := "2024-02-03")]
-theorem balanced_zero_union_interior (hA : Balanced 𝕜 A) : Balanced 𝕜 ((0 : Set E) ∪ interior A) :=
-  hA.zero_insert_interior
 
 /-- The interior of a balanced set is balanced if it contains the origin. -/
 protected theorem Balanced.interior (hA : Balanced 𝕜 A) (h : (0 : E) ∈ interior A) :
@@ -255,21 +262,37 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
-@[deprecated Absorbent.zero_mem (since := "2024-02-02")]
-theorem Absorbent.zero_mem' (hs : Absorbent 𝕜 s) : (0 : E) ∈ s := hs.zero_mem
-
-variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
-
-protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
-  suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s } by
+variable [PartialOrder 𝕜] in
+protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull 𝕜 s) := by
+  suffices Convex 𝕜 { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull 𝕜 s } by
     rw [balanced_iff_smul_mem] at hs ⊢
     refine fun a ha x hx => convexHull_min ?_ this hx a ha
-    exact fun y hy a ha => subset_convexHull ℝ s (hs ha hy)
+    exact fun y hy a ha => subset_convexHull 𝕜 s (hs ha hy)
   intro x hx y hy u v hu hv huv a ha
-  simp only [smul_add, ← smul_comm]
-  exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
+  rw [smul_add, ← smul_comm u, ← smul_comm v]
+  exact convex_convexHull 𝕜 s (hx a ha) (hy a ha) hu hv huv
 
-@[deprecated (since := "2024-02-02")] alias balanced_convexHull_of_balanced := Balanced.convexHull
+variable {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E]
+
+theorem Absorbent.eq_univ_of_smulMemClass {V : S} (hV : Absorbent 𝕜 (V : Set E)) :
+    (V : Set E) = univ := by
+  rw [eq_univ_iff_forall]
+  intro x
+  obtain ⟨c, hc, hc'⟩ :=
+    ((absorbent_iff_eventually_nhdsNE_zero.mp hV x).and eventually_mem_nhdsWithin).exists
+  rw [← inv_smul_smul₀ hc' x]
+  exact SMulMemClass.smul_mem c⁻¹ hc
+
+theorem Absorbent.submodule_eq_top {V : Submodule 𝕜 E} (hV : Absorbent 𝕜 (V : Set E)) :
+    V = ⊤ := (StrictMono.apply_eq_top_iff (α := Submodule 𝕜 E) (β := Set E) (fun _ _ a_1 ↦ a_1)).mp
+  hV.eq_univ_of_smulMemClass
+
+variable {F 𝕜₂ : Type*} [Semiring 𝕜₂] {σ : 𝕜₂ →+* 𝕜}
+variable [AddCommGroup F] [Module 𝕜₂ F]
+
+theorem Absorbent.subset_range_iff_surjective [RingHomSurjective σ] {f : F →ₛₗ[σ] E} {s : Set E}
+    (hs_abs : Absorbent 𝕜 s) : s ⊆ f.range ↔ (⇑f).Surjective :=
+  ⟨fun hs_sub ↦ LinearMap.range_eq_top.mp ((hs_abs.mono hs_sub).submodule_eq_top), fun h a _ ↦ h a⟩
 
 end NontriviallyNormedField
 
@@ -283,5 +306,9 @@ theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x�
   rw [show a = -((1 - a) / 2) + (a - -1) / 2 by ring, add_smul, neg_smul, ← smul_neg]
   exact hs (h hx) hx (div_nonneg (sub_nonneg_of_le ha.2) zero_le_two)
     (div_nonneg (sub_nonneg_of_le ha.1) zero_le_two) (by ring)
+
+theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
+  starConvex_zero_iff.2 fun _ hx a ha₀ ha₁ =>
+    hs _ (by rwa [Real.norm_of_nonneg ha₀]) (smul_mem_smul_set hx)
 
 end Real

@@ -3,16 +3,19 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.Submodule.Ker
-import Mathlib.Algebra.Module.Submodule.RestrictScalars
-import Mathlib.Algebra.Module.ULift
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Int.CharZero
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.Submodule.Ker
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Algebra.Module.ULift
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Int.CharZero
+
+import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Further basic results about `Algebra`.
@@ -20,11 +23,15 @@ import Mathlib.Data.Int.CharZero
 This file could usefully be split further.
 -/
 
+@[expose] public section
+
 universe u v w u₁ v₁
+
+open Function Module
 
 namespace Algebra
 
-variable {R : Type u} {A : Type w}
+variable {R A M : Type*}
 
 section Semiring
 
@@ -34,11 +41,12 @@ variable [Semiring A] [Algebra R A]
 section PUnit
 
 instance _root_.PUnit.algebra : Algebra R PUnit.{v + 1} where
-  toFun _ := PUnit.unit
-  map_one' := rfl
-  map_mul' _ _ := rfl
-  map_zero' := rfl
-  map_add' _ _ := rfl
+  algebraMap :=
+  { toFun _ := PUnit.unit
+    map_one' := rfl
+    map_mul' _ _ := rfl
+    map_zero' := rfl
+    map_add' _ _ := rfl }
   commutes' _ _ := rfl
   smul_def' _ _ := rfl
 
@@ -51,9 +59,10 @@ end PUnit
 section ULift
 
 instance _root_.ULift.algebra : Algebra R (ULift A) :=
-  { ULift.module',
-    (ULift.ringEquiv : ULift A ≃+* A).symm.toRingHom.comp (algebraMap R A) with
-    toFun := fun r => ULift.up (algebraMap R A r)
+  { ULift.module' with
+    algebraMap :=
+    { (ULift.ringEquiv : ULift A ≃+* A).symm.toRingHom.comp (algebraMap R A) with
+      toFun := fun r => ULift.up (algebraMap R A r) }
     commutes' := fun r x => ULift.down_injective <| Algebra.commutes r x.down
     smul_def' := fun r x => ULift.down_injective <| Algebra.smul_def' r x.down }
 
@@ -65,53 +74,75 @@ theorem _root_.ULift.algebraMap_eq (r : R) :
 theorem _root_.ULift.down_algebraMap (r : R) : (algebraMap R (ULift A) r).down = algebraMap R A r :=
   rfl
 
+variable (R A) in
+/-- If `A` is an `R`-algebra, it is also a `ULift R`-algebra. In particular, `Ulift A` is a
+`ULift R` algebra. This is not an instance, because it causes a non-reducible diamond in the case
+where `A = Ulift R`. -/
+@[instance_reducible]
+def _root_.ULift.algebra' : Algebra (ULift.{u} R) A where
+  __ := ULift.module
+  algebraMap := (algebraMap R A).comp ULift.ringEquiv.toRingHom
+  commutes' _ _ := Algebra.commutes ..
+  smul_def' _ _ := Algebra.smul_def' ..
+
+attribute [local instance] ULift.algebra' in
+/-- This references the `ULift.algebra'` instance. -/
+@[simp]
+lemma _root_.ULift.algebraMap_apply' (r : ULift R) :
+    algebraMap (ULift R) A r = algebraMap R A r.down := rfl
+
 end ULift
 
+section SubsemiringAlgebra
+
+variable {C : Type*} [SetLike C R] [SubsemiringClass C R]
+
 /-- Algebra over a subsemiring. This builds upon `Subsemiring.module`. -/
-instance ofSubsemiring (S : Subsemiring R) : Algebra S A where
-  toRingHom := (algebraMap R A).comp S.subtype
-  smul := (· • ·)
+instance (priority := 900) ofSubsemiring (S : C) : Algebra S A where
+  algebraMap := (algebraMap R A).comp (Subsemiring.subtype <| .ofClass S)
   commutes' r x := Algebra.commutes (r : R) x
   smul_def' r x := Algebra.smul_def (r : R) x
 
 theorem algebraMap_ofSubsemiring (S : Subsemiring R) :
-    (algebraMap S R : S →+* R) = Subsemiring.subtype S :=
+    (algebraMap S R : S →+* R) = S.subtype :=
   rfl
 
-theorem coe_algebraMap_ofSubsemiring (S : Subsemiring R) : (algebraMap S R : S → R) = Subtype.val :=
+theorem coe_algebraMap_ofSubsemiring (S : C) : (algebraMap S R : S → R) = Subtype.val :=
   rfl
 
-theorem algebraMap_ofSubsemiring_apply (S : Subsemiring R) (x : S) : algebraMap S R x = x :=
+theorem algebraMap_ofSubsemiring_apply (S : C) (x : S) : algebraMap S R x = x :=
   rfl
-
-/-- Algebra over a subring. This builds upon `Subring.module`. -/
-instance ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
-    Algebra S A where -- Porting note: don't use `toSubsemiring` because of a timeout
-  toRingHom := (algebraMap R A).comp S.subtype
-  smul := (· • ·)
-  commutes' r x := Algebra.commutes (r : R) x
-  smul_def' r x := Algebra.smul_def (r : R) x
 
 theorem algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
-    (algebraMap S R : S →+* R) = Subring.subtype S :=
+    (algebraMap S R : S →+* R) = S.subtype :=
   rfl
 
-theorem coe_algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
-    (algebraMap S R : S → R) = Subtype.val :=
-  rfl
-
-theorem algebraMap_ofSubring_apply {R : Type*} [CommRing R] (S : Subring R) (x : S) :
-    algebraMap S R x = x :=
-  rfl
+end SubsemiringAlgebra
 
 /-- Explicit characterization of the submonoid map in the case of an algebra.
 `S` is made explicit to help with type inference -/
 def algebraMapSubmonoid (S : Type*) [Semiring S] [Algebra R S] (M : Submonoid R) : Submonoid S :=
   M.map (algebraMap R S)
 
-theorem mem_algebraMapSubmonoid_of_mem {S : Type*} [Semiring S] [Algebra R S] {M : Submonoid R}
+variable {S : Type*} [Semiring S] [Algebra R S]
+
+theorem mem_algebraMapSubmonoid_of_mem {M : Submonoid R}
     (x : M) : algebraMap R S x ∈ algebraMapSubmonoid S M :=
   Set.mem_image_of_mem (algebraMap R S) x.2
+
+@[simp]
+lemma algebraMapSubmonoid_self (M : Submonoid R) : Algebra.algebraMapSubmonoid R M = M :=
+  Submonoid.map_id M
+
+@[simp]
+lemma algebraMapSubmonoid_powers (r : R) :
+    Algebra.algebraMapSubmonoid S (.powers r) = Submonoid.powers (algebraMap R S r) := by
+  simp [Algebra.algebraMapSubmonoid]
+
+lemma algebraMapSubmonoid_isUnit_le :
+    algebraMapSubmonoid S (IsUnit.submonoid R) ≤ IsUnit.submonoid S := by
+  rintro x ⟨y, hy, rfl⟩
+  exact hy.map _
 
 end Semiring
 
@@ -133,17 +164,31 @@ end CommSemiring
 
 section Ring
 
-variable [CommRing R]
-variable (R)
-
 /-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
 See note [reducible non-instances]. -/
-abbrev semiringToRing [Semiring A] [Algebra R A] : Ring A :=
+abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
     intCast := fun z => algebraMap R A z
     intCast_ofNat := fun z => by simp only [Int.cast_natCast, map_natCast]
     intCast_negSucc := fun z => by simp }
+
+/-- The `CommRing` structure on a `CommSemiring` induced by a ring morphism from a `CommRing`. -/
+abbrev _root_.RingHom.commSemiringToCommRing {R A : Type*} [CommRing R] [CommSemiring A]
+    (φ : R →+* A) : CommRing A :=
+  let _ : Algebra R A := RingHom.toAlgebra φ
+  { __ := Algebra.semiringToRing R
+    mul_comm := CommMonoid.mul_comm }
+
+instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
+  algebraMap :=
+  { toFun := Subtype.val
+    map_one' := rfl
+    map_mul' _ _ := rfl
+    map_zero' := rfl
+    map_add' _ _ := rfl }
+  commutes' r x := (Subring.mem_center_iff.1 r.2 x).symm
+  smul_def' _ _ := rfl
 
 end Ring
 
@@ -171,31 +216,31 @@ theorem algebraMap_end_apply (a : R) (m : M) : algebraMap R (End S M) a m = a �
   rfl
 
 @[simp]
-theorem ker_algebraMap_end (K : Type u) (V : Type v) [Field K] [AddCommGroup V] [Module K V] (a : K)
-    (ha : a ≠ 0) : LinearMap.ker ((algebraMap K (End K V)) a) = ⊥ :=
+theorem ker_algebraMap_end (K : Type u) (V : Type v) [Semifield K] [AddCommMonoid V] [Module K V]
+    (a : K) (ha : a ≠ 0) : LinearMap.ker ((algebraMap K (End K V)) a) = ⊥ :=
   LinearMap.ker_smul _ _ ha
 
 section
 
 variable {R M}
 
-theorem End_algebraMap_isUnit_inv_apply_eq_iff {x : R}
+theorem End.algebraMap_isUnit_inv_apply_eq_iff {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
-    (↑(h.unit⁻¹) : Module.End S M) m = m' ↔ m = x • m' :=
-  { mp := fun H => ((congr_arg h.unit H).symm.trans (End_isUnit_apply_inv_apply_of_isUnit h _)).symm
-    mpr := fun H =>
-      H.symm ▸ by
-        apply_fun ⇑h.unit.val using ((Module.End_isUnit_iff _).mp h).injective
-        simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m') }
+    (↑(h.unit⁻¹) : Module.End S M) m = m' ↔ m = x • m' where
+  mp H := H ▸ (isUnit_apply_inv_apply_of_isUnit h m).symm
+  mpr H := by
+    apply_fun ⇑h.unit.val using ((isUnit_iff _).mp h).injective
+    rw [H]
+    simpa using Module.End.isUnit_apply_inv_apply_of_isUnit h (x • m')
 
-theorem End_algebraMap_isUnit_inv_apply_eq_iff' {x : R}
+theorem End.algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
-    m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' :=
-  { mp := fun H => ((congr_arg h.unit H).trans (End_isUnit_apply_inv_apply_of_isUnit h _)).symm
-    mpr := fun H =>
-      H.symm ▸ by
-        apply_fun (↑h.unit : M → M) using ((Module.End_isUnit_iff _).mp h).injective
-        simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm }
+    m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' where
+  mp H := H ▸ (isUnit_apply_inv_apply_of_isUnit h m).symm
+  mpr H := by
+    apply_fun (↑h.unit : M → M) using ((isUnit_iff _).mp h).injective
+    rw [H]
+    simpa using isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
 
 end
 
@@ -229,10 +274,15 @@ variable {R : Type*} [Semiring R]
 instance (priority := 99) Semiring.toNatAlgebra : Algebra ℕ R where
   commutes' := Nat.cast_commute
   smul_def' _ _ := nsmul_eq_mul _ _
-  toRingHom := Nat.castRingHom R
+  algebraMap := Nat.castRingHom R
 
 instance nat_algebra_subsingleton : Subsingleton (Algebra ℕ R) :=
   ⟨fun P Q => by ext; simp⟩
+
+@[simp]
+lemma algebraMap_comp_natCast (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
+    algebraMap R A ∘ Nat.cast = Nat.cast := by
+  ext; simp
 
 end Nat
 
@@ -247,7 +297,7 @@ variable (R : Type*) [Ring R]
 instance (priority := 99) Ring.toIntAlgebra : Algebra ℤ R where
   commutes' := Int.cast_commute
   smul_def' _ _ := zsmul_eq_mul _ _
-  toRingHom := Int.castRingHom R
+  algebraMap := Int.castRingHom R
 
 /-- A special case of `eq_intCast'` that happens to be true definitionally -/
 @[simp]
@@ -259,61 +309,92 @@ variable {R}
 instance int_algebra_subsingleton : Subsingleton (Algebra ℤ R) :=
   ⟨fun P Q => Algebra.algebra_ext P Q <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
 
+@[simp]
+lemma algebraMap_comp_intCast (R A : Type*) [CommRing R] [Ring A] [Algebra R A] :
+    algebraMap R A ∘ Int.cast = Int.cast := by
+  ext; simp
+
 end Int
 
-namespace NoZeroSMulDivisors
+section FaithfulSMul
 
-variable {R A : Type*}
+theorem _root_.NeZero.of_faithfulSMul (R A : Type*) [Semiring R] [Semiring A] [Module R A]
+    [IsScalarTower R A A] [FaithfulSMul R A] (n : ℕ) [NeZero (n : R)] :
+    NeZero (n : A) :=
+  NeZero.nat_of_injective (f := ringHomEquivModuleIsScalarTower.symm ⟨_, ‹_›⟩) <|
+    (faithfulSMul_iff_injective_smul_one R A).mp ‹_›
 
-open Algebra
+variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 
-/-- If `algebraMap R A` is injective and `A` has no zero divisors,
-`R`-multiples in `A` are zero only if one of the factors is zero.
+lemma faithfulSMul_iff_algebraMap_injective : FaithfulSMul R A ↔ Injective (algebraMap R A) := by
+  rw [faithfulSMul_iff_injective_smul_one, Algebra.algebraMap_eq_smul_one']
 
-Cannot be an instance because there is no `Injective (algebraMap R A)` typeclass.
--/
-theorem of_algebraMap_injective [CommSemiring R] [Semiring A] [Algebra R A] [NoZeroDivisors A]
-    (h : Function.Injective (algebraMap R A)) : NoZeroSMulDivisors R A :=
-  ⟨fun hcx => (mul_eq_zero.mp ((smul_def _ _).symm.trans hcx)).imp_left
-    (map_eq_zero_iff (algebraMap R A) h).mp⟩
+variable [FaithfulSMul R A]
 
-variable (R A)
+namespace FaithfulSMul
 
-theorem algebraMap_injective [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
-    [NoZeroSMulDivisors R A] : Function.Injective (algebraMap R A) := by
-  simpa only [algebraMap_eq_smul_one'] using smul_left_injective R one_ne_zero
+lemma algebraMap_injective : Injective (algebraMap R A) :=
+  (faithfulSMul_iff_algebraMap_injective R A).mp inferInstance
 
 @[simp]
-lemma algebraMap_eq_zero_iff [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
-    [NoZeroSMulDivisors R A] {r : R} : algebraMap R A r = 0 ↔ r = 0 :=
-  map_eq_zero_iff _ <| algebraMap_injective R A
+lemma algebraMap_eq_zero_iff {r : R} : algebraMap R A r = 0 ↔ r = 0 :=
+  map_eq_zero_iff (algebraMap R A) <| algebraMap_injective R A
 
 @[simp]
-lemma algebraMap_eq_one_iff [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
-    [NoZeroSMulDivisors R A] {r : R} : algebraMap R A r = 1 ↔ r = 1 :=
-  map_eq_one_iff _ <| algebraMap_injective R A
+lemma algebraMap_eq_one_iff {r : R} : algebraMap R A r = 1 ↔ r = 1 :=
+  map_eq_one_iff _ <| FaithfulSMul.algebraMap_injective R A
 
-theorem _root_.NeZero.of_noZeroSMulDivisors (n : ℕ) [CommRing R] [NeZero (n : R)] [Ring A]
-    [Nontrivial A] [Algebra R A] [NoZeroSMulDivisors R A] : NeZero (n : A) :=
-  NeZero.nat_of_injective <| NoZeroSMulDivisors.algebraMap_injective R A
+end FaithfulSMul
 
-variable {R A}
+/-- If `R` embeds faithfully into `A` and `G` satisfies `SMulDistribClass G R A`, then
+the `SMul` of `G` on `R` extends to a `MulSemiringAction`. -/
+@[implicit_reducible]
+noncomputable def mulSemiringActionOfSmulDistribClass (G : Type*) [Monoid G]
+    [MulSemiringAction G A] [SMul G R] [SMulDistribClass G R A] :
+    MulSemiringAction G R where
+  one_smul _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', one_smul]
+  smul_zero _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', map_zero, smul_zero]
+  mul_smul _ _ _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', algebraMap.smul', algebraMap.smul', mul_smul]
+  smul_add _ _ _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', map_add, smul_add, ← algebraMap.smul', ← algebraMap.smul', ← map_add]
+  smul_one _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', map_one, smul_one]
+  smul_mul _ _ _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', map_mul, map_mul, algebraMap.smul', algebraMap.smul',
+      MulSemiringAction.smul_mul]
 
-theorem iff_algebraMap_injective [CommRing R] [Ring A] [IsDomain A] [Algebra R A] :
-    NoZeroSMulDivisors R A ↔ Function.Injective (algebraMap R A) :=
-  ⟨@NoZeroSMulDivisors.algebraMap_injective R A _ _ _ _, NoZeroSMulDivisors.of_algebraMap_injective⟩
+namespace algebraMap
 
--- see note [lower instance priority]
-instance (priority := 100) CharZero.noZeroSMulDivisors_nat [Semiring R] [NoZeroDivisors R]
-    [CharZero R] : NoZeroSMulDivisors ℕ R :=
-  NoZeroSMulDivisors.of_algebraMap_injective <| (algebraMap ℕ R).injective_nat
+@[norm_cast, simp]
+theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
+  (FaithfulSMul.algebraMap_injective _ _).eq_iff
 
--- see note [lower instance priority]
-instance (priority := 100) CharZero.noZeroSMulDivisors_int [Ring R] [NoZeroDivisors R]
-    [CharZero R] : NoZeroSMulDivisors ℤ R :=
-  NoZeroSMulDivisors.of_algebraMap_injective <| (algebraMap ℤ R).injective_int
+@[norm_cast]
+theorem coe_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
+  FaithfulSMul.algebraMap_eq_zero_iff _ _
 
-end NoZeroSMulDivisors
+end algebraMap
+
+lemma Algebra.charZero_of_charZero [CharZero R] : CharZero A :=
+  have := algebraMap_comp_natCast R A
+  ⟨this ▸ (FaithfulSMul.algebraMap_injective R A).comp CharZero.cast_injective⟩
+
+instance [CharZero R] : FaithfulSMul ℕ R := by
+  simpa only [faithfulSMul_iff_algebraMap_injective] using (algebraMap ℕ R).injective_nat
+
+instance (R : Type*) [Ring R] [CharZero R] : FaithfulSMul ℤ R := by
+  simpa only [faithfulSMul_iff_algebraMap_injective] using (algebraMap ℤ R).injective_int
+
+end FaithfulSMul
 
 section IsScalarTower
 
@@ -328,72 +409,82 @@ theorem algebra_compatible_smul (r : R) (m : M) : r • m = (algebraMap R A) r �
 theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 
-theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
-    [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
-    [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M := by
-  refine ⟨fun {r m} h => ?_⟩
-  rw [algebra_compatible_smul A r m] at h
-  rcases smul_eq_zero.1 h with H | H
-  · have : Function.Injective (algebraMap R A) :=
-      NoZeroSMulDivisors.iff_algebraMap_injective.1 inferInstance
-    left
-    exact (injective_iff_map_eq_zero _).1 this _ H
-  · right
-    exact H
+lemma isSMulRegular_algebraMap_iff {r : R} :
+    IsSMulRegular M (algebraMap R A r) ↔ IsSMulRegular M r :=
+  (Equiv.refl M).isSMulRegular_congr (algebraMap_smul A r)
 
 variable {A}
 
 -- see Note [lower instance priority]
--- priority manually adjusted in #11980, as it is a very common path
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980, as it is a very common path
 instance (priority := 120) IsScalarTower.to_smulCommClass : SMulCommClass R A M :=
   ⟨fun r a m => by
     rw [algebra_compatible_smul A r (a • m), smul_smul, Algebra.commutes, mul_smul, ←
       algebra_compatible_smul]⟩
 
 -- see Note [lower instance priority]
--- priority manually adjusted in #11980, as it is a very common path
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980, as it is a very common path
 instance (priority := 110) IsScalarTower.to_smulCommClass' : SMulCommClass A R M :=
   SMulCommClass.symm _ _ _
 
--- see Note [lower instance priority]
-instance (priority := 200) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semiring A]
+/-- This has high priority because it is almost always the right instance when it applies. -/
+instance (priority := high) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semiring A]
     [Algebra R A] : SMulCommClass R A A :=
   IsScalarTower.to_smulCommClass
+
+-- see Note [lower instance priority]
+instance (priority := 100) {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
+    [Algebra R A] [Algebra S A] :
+    SMulCommClass R S A where
+  smul_comm r s a := by
+    rw [Algebra.smul_def, mul_smul_comm, ← Algebra.smul_def]
 
 theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a • m :=
   smul_comm _ _ _
 
-namespace LinearMap
-
-variable (R)
-
--- Porting note (#11215): TODO: generalize to `CompatibleSMul`
-/-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
-a commutative semiring `R` and `M` a module over `R`. -/
-def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]
-    [CommSemiring A] [Algebra R A] : (M →ₗ[R] A) →ₗ[A] M → A where
-  toFun f := f.toFun
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-end LinearMap
-
 end IsScalarTower
 
-/-! TODO: The following lemmas no longer involve `Algebra` at all, and could be moved closer
-to `Algebra/Module/Submodule.lean`. Currently this is tricky because `ker`, `range`, `⊤`, and `⊥`
-are all defined in `LinearAlgebra/Basic.lean`. -/
+section FaithfulSMul
+variable (R S A M : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [FaithfulSMul R A]
 
-section Module
+lemma NoZeroDivisors.of_faithfulSMul [NoZeroDivisors A] : NoZeroDivisors R :=
+  (FaithfulSMul.algebraMap_injective R A).noZeroDivisors _ (by simp) (by simp)
 
-variable (R : Type*) {S M N : Type*} [Semiring R] [Semiring S] [SMul R S]
-variable [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
-variable [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
+lemma IsCancelMulZero.of_faithfulSMul [IsCancelMulZero A] : IsCancelMulZero R :=
+  (FaithfulSMul.algebraMap_injective R A).isCancelMulZero _ (by simp) (by simp)
 
-@[simp]
-theorem LinearMap.ker_restrictScalars (f : M →ₗ[S] N) :
-    LinearMap.ker (f.restrictScalars R) = f.ker.restrictScalars R :=
-  rfl
+lemma IsDomain.of_faithfulSMul [IsDomain A] : IsDomain R :=
+  (FaithfulSMul.algebraMap_injective R A).isDomain
+
+lemma Module.IsTorsionFree.of_faithfulSMul [Semiring S] [Module S R] [Module S A]
+    [IsScalarTower S R A] [IsTorsionFree S A] : IsTorsionFree S R :=
+  (FaithfulSMul.algebraMap_injective R A).moduleIsTorsionFree _
+    (by simp [Algebra.algebraMap_eq_smul_one])
+
+lemma Module.IsTorsionFree.trans_faithfulSMul [Nontrivial R] [IsCancelMulZero A] [AddCommMonoid M]
+    [Module A M] [Module R M] [IsTorsionFree A M] [IsScalarTower R A M] : IsTorsionFree R M :=
+  .comap (algebraMap R A) (fun r hr ↦ .of_ne_zero <| by simpa using hr.ne_zero) (by simp)
+
+-- see Note [lower instance priority]
+instance (priority := 100) FaithfulSMul.to_isTorsionFree [Nontrivial R] [IsCancelMulZero A] :
+    IsTorsionFree R A := .trans_faithfulSMul R A A
+
+end FaithfulSMul
+
+namespace Module
+variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+
+instance (priority := 101) IsTorsionFree.to_faithfulSMul [IsCancelMulZero R] [Nontrivial A]
+    [IsTorsionFree R A] : FaithfulSMul R A where
+  eq_of_smul_eq_smul h := smul_left_injective _ one_ne_zero <| h 1
+
+variable [IsDomain R] [IsDomain A]
+
+lemma isTorsionFree_iff_faithfulSMul : IsTorsionFree R A ↔ FaithfulSMul R A :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+lemma isTorsionFree_iff_algebraMap_injective : IsTorsionFree R A ↔ Injective (algebraMap R A) := by
+  rw [isTorsionFree_iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective]
 
 end Module
 
@@ -431,15 +522,15 @@ variable {F E : Type*} [CommSemiring F] [Semiring E] [Algebra F E] (b : F →ₗ
 
 /-- If `E` is an `F`-algebra, and there exists an injective `F`-linear map from `F` to `E`,
 then the algebra map from `F` to `E` is also injective. -/
-theorem injective_algebraMap_of_linearMap (hb : Function.Injective b) :
-    Function.Injective (algebraMap F E) := fun x y e ↦ hb <| by
+theorem injective_algebraMap_of_linearMap (hb : Injective b) :
+    Injective (algebraMap F E) := fun x y e ↦ hb <| by
   rw [← mul_one x, ← mul_one y, ← smul_eq_mul, ← smul_eq_mul,
     map_smul, map_smul, Algebra.smul_def, Algebra.smul_def, e]
 
 /-- If `E` is an `F`-algebra, and there exists a surjective `F`-linear map from `F` to `E`,
 then the algebra map from `F` to `E` is also surjective. -/
-theorem surjective_algebraMap_of_linearMap (hb : Function.Surjective b) :
-    Function.Surjective (algebraMap F E) := fun x ↦ by
+theorem surjective_algebraMap_of_linearMap (hb : Surjective b) :
+    Surjective (algebraMap F E) := fun x ↦ by
   obtain ⟨x, rfl⟩ := hb x
   obtain ⟨y, hy⟩ := hb (b 1 * b 1)
   refine ⟨x * y, ?_⟩
@@ -455,14 +546,14 @@ then the algebra map from `F` to `E` is also bijective.
 NOTE: The same result can also be obtained if there are two `F`-linear maps from `F` to `E`,
 one is injective, the other one is surjective. In this case, use
 `injective_algebraMap_of_linearMap` and `surjective_algebraMap_of_linearMap` separately. -/
-theorem bijective_algebraMap_of_linearMap (hb : Function.Bijective b) :
-    Function.Bijective (algebraMap F E) :=
+theorem bijective_algebraMap_of_linearMap (hb : Bijective b) :
+    Bijective (algebraMap F E) :=
   ⟨injective_algebraMap_of_linearMap b hb.1, surjective_algebraMap_of_linearMap b hb.2⟩
 
 /-- If `E` is an `F`-algebra, there exists an `F`-linear isomorphism from `F` to `E` (namely,
 `E` is a free `F`-module of rank one), then the algebra map from `F` to `E` is bijective. -/
 theorem bijective_algebraMap_of_linearEquiv (b : F ≃ₗ[F] E) :
-    Function.Bijective (algebraMap F E) :=
+    Bijective (algebraMap F E) :=
   bijective_algebraMap_of_linearMap _ b.bijective
 
 end algebraMap
@@ -474,27 +565,25 @@ variable {M N} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S M] [Is
 variable [Module R N] [Module S N] [IsScalarTower R S N]
 
 /-- If `R →+* S` is surjective, then `S`-linear maps between modules are exactly `R`-linear maps. -/
-def LinearMap.extendScalarsOfSurjectiveEquiv (h : Function.Surjective (algebraMap R S)) :
+def LinearMap.extendScalarsOfSurjectiveEquiv (h : Surjective (algebraMap R S)) :
     (M →ₗ[R] N) ≃ₗ[R] (M →ₗ[S] N) where
   toFun f := { __ := f, map_smul' := fun r x ↦ by obtain ⟨r, rfl⟩ := h r; simp }
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := f.restrictScalars S
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- If `R →+* S` is surjective, then `R`-linear maps are also `S`-linear. -/
-abbrev LinearMap.extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+abbrev LinearMap.extendScalarsOfSurjective (h : Surjective (algebraMap R S))
     (l : M →ₗ[R] N) : M →ₗ[S] N :=
   extendScalarsOfSurjectiveEquiv h l
 
 /-- If `R →+* S` is surjective, then `R`-linear isomorphisms are also `S`-linear. -/
-def LinearEquiv.extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+def LinearEquiv.extendScalarsOfSurjective (h : Surjective (algebraMap R S))
     (f : M ≃ₗ[R] N) : M ≃ₗ[S] N where
   __ := f
   map_smul' r x := by obtain ⟨r, rfl⟩ := h r; simp
 
-variable (h : Function.Surjective (algebraMap R S))
+variable (h : Surjective (algebraMap R S))
 
 @[simp]
 lemma LinearMap.extendScalarsOfSurjective_apply (l : M →ₗ[R] N) (x) :

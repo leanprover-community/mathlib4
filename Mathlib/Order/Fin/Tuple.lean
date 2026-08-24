@@ -3,23 +3,27 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Logic.Equiv.Fin
-import Mathlib.Order.Fin.Basic
-import Mathlib.Order.PiLex
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.PiLex
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Order properties on tuples
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
 open Function Set
 
 namespace Fin
-variable {m n : ℕ} {α : Fin (n + 1) → Type*} (x : α 0) (q : ∀ i, α i) (p : ∀ i : Fin n, α i.succ)
-  (i : Fin n) (y : α i.succ) (z : α 0)
+variable {n : ℕ} {α : Fin (n + 1) → Type*} (x : α 0) (q : ∀ i, α i) (p : ∀ i : Fin n, α i.succ)
+  (i : Fin n) (y : α i.succ)
 
 lemma pi_lex_lt_cons_cons {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ}
     (s : ∀ {i : Fin n.succ}, α i → α i → Prop) :
@@ -41,30 +45,77 @@ lemma preimage_insertNth_Icc_of_mem {i : Fin (n + 1)} {x : α i} {q₁ q₂ : �
     i.insertNth x ⁻¹' Icc q₁ q₂ = Icc (fun j ↦ q₁ (i.succAbove j)) fun j ↦ q₂ (i.succAbove j) :=
   Set.ext fun p ↦ by simp only [mem_preimage, insertNth_mem_Icc, hx, true_and]
 
-lemma preimage_insertNth_Icc_of_not_mem {i : Fin (n + 1)} {x : α i} {q₁ q₂ : ∀ j, α j}
+lemma preimage_insertNth_Icc_of_notMem {i : Fin (n + 1)} {x : α i} {q₁ q₂ : ∀ j, α j}
     (hx : x ∉ Icc (q₁ i) (q₂ i)) : i.insertNth x ⁻¹' Icc q₁ q₂ = ∅ :=
   Set.ext fun p ↦ by
     simp only [mem_preimage, insertNth_mem_Icc, hx, false_and, mem_empty_iff_false]
 
 end Fin
 
-open Set Fin Matrix Function
+open Fin Matrix
 
 variable {α : Type*}
 
+open scoped Relator in
 lemma liftFun_vecCons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} {a : α} :
     ((· < ·) ⇒ r) (vecCons a f) (vecCons a f) ↔ r a (f 0) ∧ ((· < ·) ⇒ r) f f := by
   simp only [liftFun_iff_succ r, forall_iff_succ, cons_val_succ, cons_val_zero, ← succ_castSucc,
     castSucc_zero]
 
-variable [Preorder α] {n : ℕ} {f : Fin (n + 1) → α} {a : α}
+open scoped Relator in
+lemma Fin.liftFun_cons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin n → α} {a : α} :
+    ((· < ·) ⇒ r) (cons a f) (cons a f) ↔ (∀ i, r a (f i)) ∧ ((· < ·) ⇒ r) f f := by
+  match n with
+  | 0 => simp [Relator.LiftFun]
+  | n + 1 =>
+    apply (liftFun_vecCons r).trans
+    simp only [forall_iff_succ, and_congr_left_iff, iff_self_and]
+    intro h r0 i
+    exact _root_.trans r0 (h (by grind))
+
+variable [Preorder α] {n : ℕ}
+
+lemma Fin.strictMono_insertNth_iff (q : Fin (n + 1)) (x : α) (f : Fin n → α) :
+    StrictMono (q.insertNth x f) ↔
+      StrictMono f ∧ (∀ i, i.castSucc < q → f i < x) ∧ (∀ i, q ≤ i.castSucc → x < f i) := by
+  refine ⟨fun h ↦ ⟨fun a b hab ↦ ?_, ⟨fun i hlt ↦ ?_, fun i hlt ↦ ?_⟩⟩, ?_⟩
+  · simpa [hab] using h (a := q.succAbove a) (b := q.succAbove b)
+  · have : q.succAbove i < q := by simp [succAbove_of_castSucc_lt, hlt]
+    simpa using h this
+  · have : q < q.succAbove i := by simp [succAbove_of_le_castSucc, hlt, ← le_castSucc_iff]
+    simpa using h this
+  · rintro ⟨h, hlt, hgt⟩ a b hab
+    cases a using succAboveCases q <;> cases b using succAboveCases q
+    · simp at hab
+    · rename_i j
+      have : q ≤ j.castSucc := by simpa [lt_succAbove_iff_le_castSucc] using hab
+      simpa using hgt _ this
+    · rename_i j
+      have : j.castSucc < q := by simpa [succAbove_lt_iff_castSucc_lt] using hab
+      simpa using hlt _ this
+    · simpa using h <| (strictMono_succAbove _).lt_iff_lt.mp hab
+
+lemma Fin.strictMono_cons {f : Fin n → α} {a : α} :
+    StrictMono (Fin.cons a f) ↔ (∀ j, a < f j) ∧ StrictMono f :=
+  liftFun_cons (· < ·)
+
+@[simp] lemma Fin.strictMono_cons_zero_succ {f : Fin n → Fin (n + 1)} :
+    StrictMono (Fin.cons 0 f) ↔ f = Fin.succ := by
+  refine ⟨fun h ↦ funext fun i ↦ ?_, fun h ↦ by simp [h, strictMono_id]⟩
+  have key (g : Fin (n + 1) → Fin (n + 1)) (hg : StrictMono g) : g = id := by
+    -- Import restrictions prevent us using `StrictMono.eq_id`: hence this manual proof.
+    refine funext fun x ↦ le_antisymm ?_ (hg.id_le x)
+    simpa using ((Fin.rev_strictAnti.comp_strictMono hg).comp Fin.rev_strictAnti).id_le (Fin.rev x)
+  simpa using congrFun (key _ h) i.succ
+
+variable {f : Fin (n + 1) → α} {a : α}
 
 @[simp] lemma strictMono_vecCons : StrictMono (vecCons a f) ↔ a < f 0 ∧ StrictMono f :=
   liftFun_vecCons (· < ·)
 
 @[simp]
 lemma monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f := by
-  simpa only [monotone_iff_forall_lt] using @liftFun_vecCons α n (· ≤ ·) _ f a
+  simpa only [monotone_iff_forall_lt] using! @liftFun_vecCons α n (· ≤ ·) _ f a
 
 @[simp] lemma monotone_vecEmpty : Monotone ![a]
   | ⟨0, _⟩, ⟨0, _⟩, _ => le_refl _
@@ -86,6 +137,9 @@ lemma monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f := 
 
 lemma StrictMono.vecCons (hf : StrictMono f) (ha : a < f 0) : StrictMono (vecCons a f) :=
   strictMono_vecCons.2 ⟨ha, hf⟩
+
+lemma StrictMono.removeNth (hf : StrictMono f) (i : Fin (n + 1)) : StrictMono (i.removeNth f) :=
+  hf.comp (Fin.strictMono_succAbove i)
 
 lemma StrictAnti.vecCons (hf : StrictAnti f) (ha : f 0 < a) : StrictAnti (vecCons a f) :=
   strictAnti_vecCons.2 ⟨ha, hf⟩
@@ -144,6 +198,7 @@ def insertNthOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] (p : Fin (
   toEquiv := insertNthEquiv α p
   map_rel_iff' := by simp [Pi.le_def, Prod.le_def, p.forall_iff_succAbove]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma insertNthOrderIso_zero (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] :
     insertNthOrderIso α 0 = consOrderIso α := by ext; simp [insertNthOrderIso]
 
@@ -153,14 +208,6 @@ not a definitional equality. -/
     insertNthOrderIso (fun _ ↦ α) (last n) = snocOrderIso (fun _ ↦ α) := by ext; simp
 
 end Fin
-
-/-- Order isomorphism between `Π j : Fin (n + 1), α j` and
-`α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
-@[deprecated Fin.insertNthOrderIso (since := "2024-07-12")]
-def OrderIso.piFinSuccAboveIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)]
-    (i : Fin (n + 1)) : (∀ j, α j) ≃o α i × ∀ j, α (i.succAbove j) where
-  toEquiv := (Fin.insertNthEquiv α i).symm
-  map_rel_iff' := Iff.symm i.forall_iff_succAbove
 
 /-- `Fin.succAbove` as an order isomorphism between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/
 def finSuccAboveOrderIso (p : Fin (n + 1)) : Fin n ≃o { x : Fin (n + 1) // x ≠ p } where
@@ -173,8 +220,7 @@ lemma finSuccAboveOrderIso_apply (p : Fin (n + 1)) (i : Fin n) :
 lemma finSuccAboveOrderIso_symm_apply_last (x : { x : Fin (n + 1) // x ≠ Fin.last n }) :
     (finSuccAboveOrderIso (Fin.last n)).symm x = Fin.castLT x.1 (Fin.val_lt_last x.2) := by
   rw [← Option.some_inj]
-  simpa [finSuccAboveOrderIso, finSuccAboveEquiv, OrderIso.symm]
-    using finSuccEquiv'_last_apply x.property
+  simp [finSuccAboveOrderIso, finSuccAboveEquiv, OrderIso.symm]
 
 lemma finSuccAboveOrderIso_symm_apply_ne_last {p : Fin (n + 1)} (h : p ≠ Fin.last n)
     (x : { x : Fin (n + 1) // x ≠ p }) :

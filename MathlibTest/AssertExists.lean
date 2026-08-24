@@ -1,4 +1,4 @@
-import Mathlib.Util.AssertExists
+import Lean.Elab.AssertExists
 
 /-- info: No assertions made. -/
 #guard_msgs in
@@ -22,7 +22,12 @@ info:
 
 #check_assertions!
 
-/-- warning: the module 'Lean.Elab.Command' is (transitively) imported -/
+/--
+warning: the module 'Lean.Elab.Command' is (transitively) imported via
+Lean.Elab.Command,
+  which is imported by Lean.Elab.AssertExists,
+  which is imported by this file.
+-/
 #guard_msgs in
 assert_not_imported
   Mathlib.Tactic.Common
@@ -51,3 +56,21 @@ warning:
 -/
 #guard_msgs in
 #check_assertions!
+/--
+error: Declaration Lean.Elab.Command.elabAssertNotExists is not allowed to be imported by this file.
+It is defined in Lean.Elab.AssertExists,
+  which is imported by this file.
+
+These invariants are maintained by `assert_not_exists` statements, and exist in order to ensure that "complicated" parts of the library are not accidentally introduced as dependencies of "simple" parts of the library.
+---
+error: Declaration Lean.Elab.Command.elabAssertNotImported is not allowed to be imported by this file.
+It is defined in Lean.Elab.AssertExists,
+  which is imported by this file.
+
+These invariants are maintained by `assert_not_exists` statements, and exist in order to ensure that "complicated" parts of the library are not accidentally introduced as dependencies of "simple" parts of the library.
+-/
+#guard_msgs in
+assert_not_exists
+  Lean.Elab.Command.elabAssertNotExists
+  Lean.Elab.Command.elabAssertNotImported
+  I_do_not_exist

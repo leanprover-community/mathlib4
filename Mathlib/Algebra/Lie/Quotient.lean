@@ -3,9 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Submodule
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.LinearAlgebra.Isomorphisms
+module
+
+public import Mathlib.Algebra.Lie.Ideal
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Quotients of Lie algebras and Lie modules
@@ -27,6 +30,8 @@ is a statement and proof of the universal property of these quotients.
 lie algebra, quotient
 -/
 
+@[expose] public section
+
 
 universe u v w w₁ w₂
 
@@ -43,7 +48,7 @@ instance : HasQuotient M (LieSubmodule R L M) :=
 
 namespace Quotient
 
-variable {N I}
+variable {N}
 
 instance addCommGroup : AddCommGroup (M ⧸ N) :=
   Submodule.Quotient.addCommGroup _
@@ -63,12 +68,11 @@ instance isCentralScalar {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsSca
 instance inhabited : Inhabited (M ⧸ N) :=
   ⟨0⟩
 
-/-- Map sending an element of `M` to the corresponding element of `M/N`, when `N` is a
-lie_submodule of the lie_module `N`. -/
+/-- Map sending an element of `M` to the corresponding element of `M ⧸ N`, when `N` is a
+Lie submodule of the Lie module `M`. -/
 abbrev mk : M → M ⧸ N :=
   Submodule.Quotient.mk
 
--- Porting note: added to replace `mk_eq_zero` as simp lemma.
 @[simp]
 theorem mk_eq_zero' {m : M} : mk (N := N) m = 0 ↔ m ∈ N :=
   Submodule.Quotient.mk_eq_zero N.toSubmodule
@@ -84,6 +88,8 @@ def lieSubmoduleInvariant : L →ₗ[R] Submodule.compatibleMaps N.toSubmodule N
   LinearMap.codRestrict _ (LieModule.toEnd R L M) fun _ _ => N.lie_mem
 
 variable (N)
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- Given a Lie module `M` over a Lie algebra `L`, together with a Lie submodule `N ⊆ M`, there
 is a natural Lie algebra morphism from `L` to the linear endomorphism of the quotient `M/N`. -/
@@ -124,28 +130,28 @@ theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L �
   rfl
 
 instance lieQuotientLieRing : LieRing (L ⧸ I) where
-  add_lie := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+  add_lie x' y' z' := by
+    induction x', y', z' using Quotient.inductionOn₃' with | _ x y z
     repeat'
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply add_lie
-  lie_add := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+  lie_add x' y' z' := by
+    induction x', y', z' using Quotient.inductionOn₃' with | _ x y z
     repeat'
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply lie_add
-  lie_self := by
-    intro x'; refine Quotient.inductionOn' x' ?_; intro x
+  lie_self x' := by
+    induction x' using Quotient.inductionOn' with | _ x
     rw [is_quotient_mk, ← mk_bracket]
     apply congr_arg; apply lie_self
-  leibniz_lie := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+  leibniz_lie x' y' z' := by
+    induction x', y', z' using Quotient.inductionOn₃' with | _ x y z
     repeat'
       first
       | rw [is_quotient_mk]
@@ -154,8 +160,8 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
     apply congr_arg; apply leibniz_lie
 
 instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
-  lie_smul := by
-    intro t x' y'; refine Quotient.inductionOn₂' x' y' ?_; intro x y
+  lie_smul t x' y' := by
+    induction x', y' using Quotient.inductionOn₂' with | _ x y
     repeat'
       first
       | rw [is_quotient_mk]
@@ -174,12 +180,12 @@ def mk' : M →ₗ⁅R,L⁆ M ⧸ N :=
 theorem surjective_mk' : Function.Surjective (mk' N) := Quot.mk_surjective
 
 @[simp]
-theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by simp [LieModuleHom.range_eq_top]
+theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by
+  simp [LieModuleHom.range_eq_top]
 
 instance isNoetherian [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
   inferInstanceAs (IsNoetherian R (M ⧸ (N : Submodule R M)))
 
--- Porting note: LHS simplifies @[simp]
 theorem mk_eq_zero {m : M} : mk' N m = 0 ↔ m ∈ N :=
   Submodule.Quotient.mk_eq_zero N.toSubmodule
 
@@ -212,15 +218,18 @@ variable {R L L' : Type*}
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
 variable (f : L →ₗ⁅R⁆ L')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The first isomorphism theorem for morphisms of Lie algebras. -/
 @[simps]
 noncomputable def quotKerEquivRange : (L ⧸ f.ker) ≃ₗ⁅R⁆ f.range :=
   { (f : L →ₗ[R] L').quotKerEquivRange with
     toFun := (f : L →ₗ[R] L').quotKerEquivRange
     map_lie' := by
-      rintro ⟨x⟩ ⟨y⟩
-      rw [← SetLike.coe_eq_coe, LieSubalgebra.coe_bracket]
-      simp only [Submodule.Quotient.quot_mk_eq_mk, LinearMap.quotKerEquivRange_apply_mk, ←
-        LieSubmodule.Quotient.mk_bracket, coe_toLinearMap, map_lie] }
+      intro x y
+      induction x using Submodule.Quotient.induction_on
+      induction y using Submodule.Quotient.induction_on
+      rw [← SetLike.coe_eq_coe, LieSubalgebra.coe_bracket f.range]
+      simp only [← LieSubmodule.Quotient.mk_bracket, LinearMap.quotKerEquivRange_apply_mk,
+        coe_toLinearMap, map_lie] }
 
 end LieHom

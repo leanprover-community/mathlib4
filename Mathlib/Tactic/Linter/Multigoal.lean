@@ -3,13 +3,16 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
+module
+
+public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Parser.Term
 
 /-!
-#  The "multiGoal" linter
+# The "multiGoal" linter
 
 The "multiGoal" linter emits a warning where there is more than a single goal in scope.
 There is an exception: a tactic that closes *all* remaining goals is allowed.
@@ -37,12 +40,14 @@ TODO:
   Maybe revisit usages of `on_goal` and also nested `induction` and `cases`.
 -/
 
-open Lean Elab
+meta section
+
+open Lean Elab Linter
 
 namespace Mathlib.Linter
 
 /-- The "multiGoal" linter emits a warning when there are multiple active goals. -/
-register_option linter.style.multiGoal : Bool := {
+public register_option linter.style.multiGoal : Bool := {
   defValue := false
   descr := "enable the multiGoal linter"
 }
@@ -61,7 +66,7 @@ There is some overlap in scope between `ignoreBranch` and `exclusions`.
 
 Tactic combinators like `repeat` or `try` are a mix of both.
 -/
-abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofList [
+abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
     -- structuring a proof
     ``Lean.Parser.Term.cdot,
     ``cdot,
@@ -78,6 +83,18 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofList [
     ``Lean.Parser.Tactic.«tacticNext_=>_»,
     ``Lean.Parser.Tactic.tacticSeq1Indented,
     ``Lean.Parser.Tactic.tacticSeq,
+    `focus,
+    ``Lean.Parser.Tactic.focus,
+    -- grind interactive mode
+    ``Lean.Parser.Tactic.Grind.grindSeq1Indented,
+    ``Lean.Parser.Tactic.Grind.grindSeq,
+    ``Lean.Parser.Tactic.Grind.«grind·_»,
+    ``Lean.Parser.Tactic.Grind.grindSeqBracketed,
+    ``Lean.Parser.Tactic.Grind.«grind_<;>_»,
+    ``Lean.Parser.Tactic.Grind.skip,
+    ``Lean.Parser.Tactic.Grind.focus,
+    ``Lean.Parser.Tactic.Grind.next,
+    ``Lean.Parser.Tactic.Grind.cases,
     -- re-ordering goals
     `Batteries.Tactic.tacticSwap,
     ``Lean.Parser.Tactic.rotateLeft,
@@ -112,37 +129,47 @@ Reasons for ignoring these tactics include
 
 There is some overlap in scope between `exclusions` and `ignoreBranch`.
 -/
-abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofList [
+abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofArray #[
     ``Lean.Parser.Tactic.Conv.conv,
     `Mathlib.Tactic.Conv.convLHS,
     `Mathlib.Tactic.Conv.convRHS,
     ``Lean.Parser.Tactic.first,
+    ``Lean.Parser.Tactic.tacticRepeat_,
     ``Lean.Parser.Tactic.repeat',
     ``Lean.Parser.Tactic.tacticIterate____,
     ``Lean.Parser.Tactic.anyGoals,
     ``Lean.Parser.Tactic.allGoals,
-    ``Lean.Parser.Tactic.focus,
     ``Lean.Parser.Tactic.failIfSuccess,
+    ``Lean.Parser.Tactic.Grind.anyGoals,
+    ``Lean.Parser.Tactic.Grind.allGoals,
+    ``Lean.Parser.Tactic.Grind.first,
+    ``Lean.Parser.Tactic.Grind.failIfSuccess,
+    ``Lean.Parser.Tactic.Grind.grindRepeat_,
     `Mathlib.Tactic.successIfFailWithMsg
   ]
 
 /-- `getManyGoals t` returns the syntax nodes of the `InfoTree` `t` corresponding to tactic calls
 which
-* leave at least one goal that was not present before it ran;
+* leave at least one goal that was present before it ran
+  (with the exception of tactics that leave the sole goal unchanged);
 * are not excluded through `exclusions` or `ignoreBranch`;
 
-together with the total number of goals.
+together with the number of goals before the tactic,
+the number of goals after the tactic, and the number of unaffected goals.
 -/
 partial
-def getManyGoals : InfoTree → Array (Syntax × Nat)
+def getManyGoals : InfoTree → Array (Syntax × Nat × Nat × Nat)
   | .node info args =>
     let kargs := (args.map getManyGoals).toArray.flatten
     if let .ofTacticInfo info := info then
-      if ignoreBranch.contains info.stx.getKind then #[] else
-      if let .original .. := info.stx.getHeadInfo then
-        let newGoals := info.goalsAfter.filter (info.goalsBefore.contains ·)
-        if newGoals.length != 0 && !exclusions.contains info.stx.getKind then
-          kargs.push (info.stx, newGoals.length)
+      if ignoreBranch.contains info.stx.getKind then #[]
+      -- Ideal case: one goal, and it might or might not be closed.
+      else if info.goalsBefore.length == 1 && info.goalsAfter.length ≤ 1 then kargs
+      else if let .original .. := info.stx.getHeadInfo then
+        let backgroundGoals := info.goalsAfter.filter (info.goalsBefore.contains ·)
+        if backgroundGoals.length != 0 && !exclusions.contains info.stx.getKind then
+          kargs.push (info.stx,
+                      info.goalsBefore.length, info.goalsAfter.length, backgroundGoals.length)
         else kargs
       else kargs
     else kargs
@@ -151,17 +178,21 @@ def getManyGoals : InfoTree → Array (Syntax × Nat)
 
 @[inherit_doc Mathlib.Linter.linter.style.multiGoal]
 def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
-    unless Linter.getLinterValue linter.style.multiGoal (← getOptions) do
+    unless getLinterValue linter.style.multiGoal (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return
     let trees ← getInfoTrees
-    for t in trees.toArray do
-      for (s, n) in getManyGoals t do
-        Linter.logLint linter.style.multiGoal s
-          m!"There are {n+1} unclosed goals before '{s}' and \
-            at least one remaining goal afterwards.\n\
-            Please focus on the current goal, for instance using `·` (typed as \"\\.\")."
+    for t in trees do
+      for (s, before, after, n) in getManyGoals t do
+        let goals (k : Nat) := if k == 1 then f!"1 goal" else f!"{k} goals"
+        let fmt ← Command.liftCoreM
+          try PrettyPrinter.ppTactic ⟨s⟩ catch _ => pure f!"(failed to pretty print)"
+        Linter.logLint linter.style.multiGoal s m!"\
+          The following tactic starts with {goals before} and ends with {goals after}, \
+          {n} of which {if n == 1 then "is" else "are"} not operated on.\
+          {indentD fmt}\n\
+          Please focus on the current goal, for instance using `·` (typed as \"\\.\")."
 
 initialize addLinter multiGoalLinter
 

@@ -3,11 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Logic.Function.Conjugate
-import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Order.OrdContinuous
-import Mathlib.Order.RelIso.Group
+module
+
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Algebra.Order.Group.End
+public import Mathlib.Logic.Function.Conjugate
+public import Mathlib.Order.Bounds.OrderIso
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Semiconjugate by `sSup`
@@ -30,6 +32,8 @@ homeomorphisms of the circle, so in order to apply results from this file one ha
 homeomorphisms to the real line first.
 -/
 
+@[expose] public section
+
 -- Guard against import creep
 assert_not_exists Finset
 
@@ -43,7 +47,7 @@ a right adjoint, then this right adjoint is unique. -/
 def IsOrderRightAdjoint [Preorder α] [Preorder β] (f : α → β) (g : β → α) :=
   ∀ y, IsLUB { x | f x ≤ y } (g y)
 
-theorem isOrderRightAdjoint_sSup [CompleteLattice α] [Preorder β] (f : α → β) :
+theorem isOrderRightAdjoint_sSup [CompleteSemilatticeSup α] [Preorder β] (f : α → β) :
     IsOrderRightAdjoint f fun y => sSup { x | f x ≤ y } := fun _ => isLUB_sSup _
 
 theorem isOrderRightAdjoint_csSup [ConditionallyCompleteLattice α] [Preorder β] (f : α → β)
@@ -84,8 +88,8 @@ theorem Semiconj.symm_adjoint [PartialOrder α] [Preorder β] {fa : α ≃o α} 
     (h : Function.Semiconj g fa fb) {g' : β → α} (hg' : IsOrderRightAdjoint g g') :
     Function.Semiconj g' fb fa := by
   refine fun y => (hg' _).unique ?_
-  rw [← fa.surjective.image_preimage { x | g x ≤ fb y }, preimage_setOf_eq]
-  simp only [h.eq, fb.le_iff_le, fa.leftOrdContinuous (hg' _)]
+  rw [← fa.surjective.image_preimage { x | g x ≤ fb y }, preimage_ofPred_eq]
+  simp only [h.eq, fb.le_iff_le, fa.isLUB_image'.mpr (hg' _)]
 
 variable {G : Type*}
 
@@ -93,7 +97,7 @@ theorem semiconj_of_isLUB [PartialOrder α] [Group G] (f₁ f₂ : G →* α ≃
     (H : ∀ x, IsLUB (range fun g' => (f₁ g')⁻¹ (f₂ g' x)) (h x)) (g : G) :
     Function.Semiconj h (f₂ g) (f₁ g) := by
   refine fun y => (H _).unique ?_
-  have := (f₁ g).leftOrdContinuous (H y)
+  have := (f₁ g).isLUB_image'.mpr (H y)
   rw [← range_comp, ← (Equiv.mulRight g).surjective.range_comp _] at this
   simpa [comp_def] using this
 

@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.ProdComparison
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving binary products
@@ -15,6 +17,8 @@ to concrete binary fans.
 In particular, we show that `ProdComparison G X Y` is an isomorphism iff `G` preserves
 the product of `X` and `Y`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -33,6 +37,7 @@ section
 
 variable {P X Y Z : C} (f : P ⟶ X) (g : P ⟶ Y)
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The map of a binary fan is a limit iff the fork consisting of the mapped morphisms is a limit. This
 essentially lets us commute `BinaryFan.mk` with `Functor.mapCone`.
@@ -41,18 +46,18 @@ def isLimitMapConeBinaryFanEquiv :
     IsLimit (G.mapCone (BinaryFan.mk f g)) ≃ IsLimit (BinaryFan.mk (G.map f) (G.map g)) :=
   (IsLimit.postcomposeHomEquiv (diagramIsoPair _) _).symm.trans
     (IsLimit.equivIsoLimit
-      (Cones.ext (Iso.refl _)
+      (Cone.ext (Iso.refl _)
         (by rintro (_ | _) <;> simp)))
 
 /-- The property of preserving products expressed in terms of binary fans. -/
 def mapIsLimitOfPreservesOfIsLimit [PreservesLimit (pair X Y) G] (l : IsLimit (BinaryFan.mk f g)) :
     IsLimit (BinaryFan.mk (G.map f) (G.map g)) :=
-  isLimitMapConeBinaryFanEquiv G f g (PreservesLimit.preserves l)
+  isLimitMapConeBinaryFanEquiv G f g (isLimitOfPreserves G l)
 
 /-- The property of reflecting products expressed in terms of binary fans. -/
 def isLimitOfReflectsOfMapIsLimit [ReflectsLimit (pair X Y) G]
     (l : IsLimit (BinaryFan.mk (G.map f) (G.map g))) : IsLimit (BinaryFan.mk f g) :=
-  ReflectsLimit.reflects ((isLimitMapConeBinaryFanEquiv G f g).symm l)
+  isLimitOfReflects G ((isLimitMapConeBinaryFanEquiv G f g).symm l)
 
 variable (X Y)
 variable [HasBinaryProduct X Y]
@@ -64,14 +69,18 @@ def isLimitOfHasBinaryProductOfPreservesLimit [PreservesLimit (pair X Y) G] :
     IsLimit (BinaryFan.mk (G.map (Limits.prod.fst : X ⨯ Y ⟶ X)) (G.map Limits.prod.snd)) :=
   mapIsLimitOfPreservesOfIsLimit G _ _ (prodIsProd X Y)
 
+instance [PreservesLimit (pair X Y) G] :
+    HasBinaryProduct (G.obj X) (G.obj Y) :=
+  ⟨_, isLimitOfHasBinaryProductOfPreservesLimit G X Y⟩
+
 variable [HasBinaryProduct (G.obj X) (G.obj Y)]
 
 /-- If the product comparison map for `G` at `(X,Y)` is an isomorphism, then `G` preserves the
 pair of `(X,Y)`.
 -/
-def PreservesLimitPair.ofIsoProdComparison [i : IsIso (prodComparison G X Y)] :
+lemma PreservesLimitPair.of_iso_prod_comparison [i : IsIso (prodComparison G X Y)] :
     PreservesLimit (pair X Y) G := by
-  apply preservesLimitOfPreservesLimitCone (prodIsProd X Y)
+  apply preservesLimit_of_preserves_limit_cone (prodIsProd X Y)
   apply (isLimitMapConeBinaryFanEquiv _ _ _).symm _
   refine @IsLimit.ofPointIso _ _ _ _ _ _ _ (limit.isLimit (pair (G.obj X) (G.obj Y))) ?_
   apply i
@@ -104,12 +113,26 @@ instance : IsIso (prodComparison G X Y) := by
   rw [← PreservesLimitPair.iso_hom]
   infer_instance
 
+/-- If the product comparison maps of `G` at every pair `(X,Y)` is an
+isomorphism, then `G` preserves binary products. -/
+lemma preservesBinaryProducts_of_isIso_prodComparison
+    [HasBinaryProducts C] [HasBinaryProducts D]
+    [i : ∀ {X Y : C}, IsIso (prodComparison G X Y)] :
+    PreservesLimitsOfShape (Discrete WalkingPair) G where
+  preservesLimit := by
+    intro K
+    have : PreservesLimit (pair (K.obj ⟨WalkingPair.left⟩) (K.obj ⟨WalkingPair.right⟩)) G :=
+      PreservesLimitPair.of_iso_prod_comparison ..
+    apply preservesLimit_of_iso_diagram G (diagramIsoPair K).symm
+
 end
 
 section
 
-variable {P X Y Z : C} (f : X ⟶ P) (g : Y ⟶ P)
+variable {P X Y : C} (f : X ⟶ P) (g : Y ⟶ P)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The map of a binary cofan is a colimit iff
 the cofork consisting of the mapped morphisms is a colimit.
 This essentially lets us commute `BinaryCofan.mk` with `Functor.mapCocone`.
@@ -119,18 +142,18 @@ def isColimitMapCoconeBinaryCofanEquiv :
     ≃ IsColimit (BinaryCofan.mk (G.map f) (G.map g)) :=
   (IsColimit.precomposeHomEquiv (diagramIsoPair _).symm _).symm.trans
     (IsColimit.equivIsoColimit
-      (Cocones.ext (Iso.refl _)
+      (Cocone.ext (Iso.refl _)
         (by rintro (_ | _) <;> simp)))
 
 /-- The property of preserving coproducts expressed in terms of binary cofans. -/
 def mapIsColimitOfPreservesOfIsColimit [PreservesColimit (pair X Y) G]
     (l : IsColimit (BinaryCofan.mk f g)) : IsColimit (BinaryCofan.mk (G.map f) (G.map g)) :=
-  isColimitMapCoconeBinaryCofanEquiv G f g (PreservesColimit.preserves l)
+  isColimitMapCoconeBinaryCofanEquiv G f g (isColimitOfPreserves G l)
 
 /-- The property of reflecting coproducts expressed in terms of binary cofans. -/
 def isColimitOfReflectsOfMapIsColimit [ReflectsColimit (pair X Y) G]
     (l : IsColimit (BinaryCofan.mk (G.map f) (G.map g))) : IsColimit (BinaryCofan.mk f g) :=
-  ReflectsColimit.reflects ((isColimitMapCoconeBinaryCofanEquiv G f g).symm l)
+  isColimitOfReflects G ((isColimitMapCoconeBinaryCofanEquiv G f g).symm l)
 
 variable (X Y)
 variable [HasBinaryCoproduct X Y]
@@ -148,9 +171,9 @@ variable [HasBinaryCoproduct (G.obj X) (G.obj Y)]
 /-- If the coproduct comparison map for `G` at `(X,Y)` is an isomorphism, then `G` preserves the
 pair of `(X,Y)`.
 -/
-def PreservesColimitPair.ofIsoCoprodComparison [i : IsIso (coprodComparison G X Y)] :
+lemma PreservesColimitPair.of_iso_coprod_comparison [i : IsIso (coprodComparison G X Y)] :
     PreservesColimit (pair X Y) G := by
-  apply preservesColimitOfPreservesColimitCocone (coprodIsCoprod X Y)
+  apply preservesColimit_of_preserves_colimit_cocone (coprodIsCoprod X Y)
   apply (isColimitMapCoconeBinaryCofanEquiv _ _ _).symm _
   refine @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (pair (G.obj X) (G.obj Y))) ?_
   apply i
@@ -172,6 +195,18 @@ theorem PreservesColimitPair.iso_hom :
 instance : IsIso (coprodComparison G X Y) := by
   rw [← PreservesColimitPair.iso_hom]
   infer_instance
+
+/-- If the coproduct comparison maps of `G` at every pair `(X,Y)` is an
+isomorphism, then `G` preserves binary coproducts. -/
+lemma preservesBinaryCoproducts_of_isIso_coprodComparison
+    [HasBinaryCoproducts C] [HasBinaryCoproducts D]
+    [i : ∀ {X Y : C}, IsIso (coprodComparison G X Y)] :
+    PreservesColimitsOfShape (Discrete WalkingPair) G where
+  preservesColimit := by
+    intro K
+    have : PreservesColimit (pair (K.obj ⟨WalkingPair.left⟩) (K.obj ⟨WalkingPair.right⟩)) G :=
+      PreservesColimitPair.of_iso_coprod_comparison ..
+    apply preservesColimit_of_iso_diagram G (diagramIsoPair K).symm
 
 end
 

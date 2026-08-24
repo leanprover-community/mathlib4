@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
-import Mathlib.Algebra.Ring.Subring.Basic
+module
+
+public import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
+public import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
 
@@ -14,30 +16,30 @@ For every ring `R`, we construct an equivalence between subrings of `R` and that
 
 -/
 
+@[expose] public section
+
 namespace Subring
 
-variable {ι : Sort*} {R : Type*} [Ring R]
+variable {ι : Sort*} {R : Type*} [NonAssocRing R]
 
 /-- Pull a subring back to an opposite subring along `MulOpposite.unop` -/
-@[simps toSubsemiring]
+@[simps! coe toSubsemiring]
 protected def op (S : Subring R) : Subring Rᵐᵒᵖ where
   toSubsemiring := S.toSubsemiring.op
-  neg_mem' {x} hx := neg_mem (show x.unop ∈ S from hx)
+  neg_mem' := by simp
 
-@[simp, norm_cast]
-theorem op_coe (S : Subring R) : S.op = MulOpposite.unop ⁻¹' (S : Set R) := rfl
+attribute [norm_cast] coe_op
 
 @[simp]
 theorem mem_op {x : Rᵐᵒᵖ} {S : Subring R} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
 /-- Pull an opposite subring back to a subring along `MulOpposite.op` -/
-@[simps toSubsemiring]
+@[simps! coe toSubsemiring]
 protected def unop (S : Subring Rᵐᵒᵖ) : Subring R where
   toSubsemiring := S.toSubsemiring.unop
-  neg_mem' {x} hx := neg_mem (show MulOpposite.op x ∈ S from hx)
+  neg_mem' := by simp
 
-@[simp, norm_cast]
-theorem unop_coe (S : Subring Rᵐᵒᵖ) : S.unop = MulOpposite.op ⁻¹' (S : Set Rᵐᵒᵖ) := rfl
+attribute [norm_cast] coe_unop
 
 @[simp]
 theorem mem_unop {x : R} {S : Subring Rᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
@@ -135,7 +137,7 @@ theorem unop_iInf (S : ι → Subring Rᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S i)
   opEquiv.symm.map_iInf _
 
 theorem op_closure (s : Set R) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, unop_coe]
+  simp_rw [closure, op_sInf, Set.preimage_ofPred_eq, coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 

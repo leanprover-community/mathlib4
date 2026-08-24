@@ -3,10 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yury Kudryashov
 -/
-import Mathlib.Tactic.TFAE
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.Maps.OpenQuotient
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Order.UpperLower.Closure
+public import Mathlib.Order.UpperLower.Fibration
+public import Mathlib.Tactic.TFAE
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Inseparable points in a topological space
@@ -24,7 +27,7 @@ In this file we prove basic properties of the following notions defined elsewher
 
 We also prove various basic properties of the relation `Inseparable`.
 
-## Notations
+## Notation
 
 - `x ⤳ y`: notation for `Specializes x y`;
 - `x ~ᵢ y` is used as a local notation for `Inseparable x y`;
@@ -35,11 +38,13 @@ We also prove various basic properties of the relation `Inseparable`.
 topological space, separation setoid
 -/
 
+@[expose] public section
 
-open Set Filter Function Topology List
 
-variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y]
-  [TopologicalSpace Z] [∀ i, TopologicalSpace (π i)] {x y z : X} {s : Set X} {f g : X → Y}
+open Set Filter Function Topology
+
+variable {X Y Z α ι : Type*} {A : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y]
+  [TopologicalSpace Z] [∀ i, TopologicalSpace (A i)] {x y z : X} {s : Set X} {f g : X → Y}
 
 /-!
 ### `Specializes` relation
@@ -48,10 +53,10 @@ variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [Topolog
 /-- A collection of equivalent definitions of `x ⤳ y`. The public API is given by `iff` lemmas
 below. -/
 theorem specializes_TFAE (x y : X) :
-    TFAE [x ⤳ y,
+    List.TFAE [x ⤳ y,
       pure x ≤ 𝓝 y,
-      ∀ s : Set X , IsOpen s → y ∈ s → x ∈ s,
-      ∀ s : Set X , IsClosed s → x ∈ s → y ∈ s,
+      ∀ s : Set X, IsOpen s → y ∈ s → x ∈ s,
+      ∀ s : Set X, IsClosed s → x ∈ s → y ∈ s,
       y ∈ closure ({ x } : Set X),
       closure ({ y } : Set X) ⊆ closure { x },
       ClusterPt y (pure x)] := by
@@ -76,7 +81,7 @@ theorem Specializes.not_disjoint (h : x ⤳ y) : ¬Disjoint (𝓝 x) (𝓝 y) :=
   absurd (hd.mono_right h) <| by simp [NeBot.ne']
 
 theorem specializes_iff_pure : x ⤳ y ↔ pure x ≤ 𝓝 y :=
-  (specializes_TFAE x y).out 0 1
+  (specializes_TFAE x y).out 1 2
 
 alias ⟨Specializes.nhds_le_nhds, _⟩ := specializes_iff_nhds
 
@@ -86,7 +91,14 @@ theorem ker_nhds_eq_specializes : (𝓝 x).ker = {y | y ⤳ x} := by
   ext; simp [specializes_iff_pure, le_def]
 
 theorem specializes_iff_forall_open : x ⤳ y ↔ ∀ s : Set X, IsOpen s → y ∈ s → x ∈ s :=
-  (specializes_TFAE x y).out 0 2
+  (specializes_TFAE x y).out 1 3
+
+omit [TopologicalSpace X] in
+theorem Tendsto.specializes {l : Filter X} {y : Y} (h : Tendsto g l (𝓝 y)) (hl : ∀ x, f x ⤳ g x) :
+    Tendsto f l (𝓝 y) := by
+  simp_all only [specializes_iff_forall_open, tendsto_nhds]
+  refine fun s ho hy => mem_of_superset (h s ho hy) fun x hx => ?_
+  exact mem_preimage.2 (hl x s ho (mem_preimage.1 hx))
 
 theorem Specializes.mem_open (h : x ⤳ y) (hs : IsOpen s) (hy : y ∈ s) : x ∈ s :=
   specializes_iff_forall_open.1 h s hs hy
@@ -95,7 +107,7 @@ theorem IsOpen.not_specializes (hs : IsOpen s) (hx : x ∉ s) (hy : y ∈ s) : �
   hx <| h.mem_open hs hy
 
 theorem specializes_iff_forall_closed : x ⤳ y ↔ ∀ s : Set X, IsClosed s → x ∈ s → y ∈ s :=
-  (specializes_TFAE x y).out 0 3
+  (specializes_TFAE x y).out 1 4
 
 theorem Specializes.mem_closed (h : x ⤳ y) (hs : IsClosed s) (hx : x ∈ s) : y ∈ s :=
   specializes_iff_forall_closed.1 h s hs hx
@@ -104,17 +116,17 @@ theorem IsClosed.not_specializes (hs : IsClosed s) (hx : x ∈ s) (hy : y ∉ s)
   hy <| h.mem_closed hs hx
 
 theorem specializes_iff_mem_closure : x ⤳ y ↔ y ∈ closure ({x} : Set X) :=
-  (specializes_TFAE x y).out 0 4
+  (specializes_TFAE x y).out 1 5
 
 alias ⟨Specializes.mem_closure, _⟩ := specializes_iff_mem_closure
 
 theorem specializes_iff_closure_subset : x ⤳ y ↔ closure ({y} : Set X) ⊆ closure {x} :=
-  (specializes_TFAE x y).out 0 5
+  (specializes_TFAE x y).out 1 6
 
 alias ⟨Specializes.closure_subset, _⟩ := specializes_iff_closure_subset
 
 theorem specializes_iff_clusterPt : x ⤳ y ↔ ClusterPt y (pure x) :=
-  (specializes_TFAE x y).out 0 6
+  (specializes_TFAE x y).out 1 7
 
 theorem Filter.HasBasis.specializes_iff {ι} {p : ι → Prop} {s : ι → Set X}
     (h : (𝓝 y).HasBasis p s) : x ⤳ y ↔ ∀ i, p i → x ∈ s i :=
@@ -142,18 +154,28 @@ theorem specializes_of_nhdsWithin (h₁ : 𝓝[s] x ≤ 𝓝[s] y) (h₂ : x ∈
       _ ≤ 𝓝[s] y := h₁
       _ ≤ 𝓝 y := inf_le_left
 
-theorem Specializes.map_of_continuousAt (h : x ⤳ y) (hy : ContinuousAt f y) : f x ⤳ f y :=
-  specializes_iff_pure.2 fun _s hs =>
-    mem_pure.2 <| mem_preimage.1 <| mem_of_mem_nhds <| hy.mono_left h hs
+theorem Specializes.map_of_continuousWithinAt {s : Set X} (h : x ⤳ y)
+    (hf : ContinuousWithinAt f s y) (hx : x ∈ s) : f x ⤳ f y := by
+  rw [specializes_iff_pure] at h ⊢
+  calc pure (f x)
+    _ = map f (pure x) := (map_pure f x).symm
+    _ ≤ map f (𝓝 y ⊓ 𝓟 s) := map_mono (le_inf h ((pure_le_principal x).mpr hx))
+    _ = map f (𝓝[s] y) := rfl
+    _ ≤ _ := hf.tendsto
+
+theorem Specializes.map_of_continuousOn {s : Set X} (h : x ⤳ y)
+    (hf : ContinuousOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x ⤳ f y :=
+  h.map_of_continuousWithinAt (hf.continuousWithinAt hy) hx
+
+theorem Specializes.map_of_continuousAt (h : x ⤳ y) (hf : ContinuousAt f y) : f x ⤳ f y :=
+  h.map_of_continuousWithinAt hf.continuousWithinAt (mem_univ x)
 
 theorem Specializes.map (h : x ⤳ y) (hf : Continuous f) : f x ⤳ f y :=
   h.map_of_continuousAt hf.continuousAt
 
-theorem IsInducing.specializes_iff (hf : IsInducing f) : f x ⤳ f y ↔ x ⤳ y := by
+theorem Topology.IsInducing.specializes_iff (hf : IsInducing f) : f x ⤳ f y ↔ x ⤳ y := by
   simp only [specializes_iff_mem_closure, hf.closure_eq_preimage_closure_image, image_singleton,
     mem_preimage]
-
-@[deprecated (since := "2024-10-28")] alias Inducing.specializes_iff := IsInducing.specializes_iff
 
 theorem subtype_specializes_iff {p : X → Prop} (x y : Subtype p) : x ⤳ y ↔ (x : X) ⤳ y :=
   IsInducing.subtypeVal.specializes_iff.symm
@@ -170,17 +192,17 @@ theorem Specializes.fst {a b : X × Y} (h : a ⤳ b) : a.1 ⤳ b.1 := (specializ
 theorem Specializes.snd {a b : X × Y} (h : a ⤳ b) : a.2 ⤳ b.2 := (specializes_prod.1 h).2
 
 @[simp]
-theorem specializes_pi {f g : ∀ i, π i} : f ⤳ g ↔ ∀ i, f i ⤳ g i := by
+theorem specializes_pi {f g : ∀ i, A i} : f ⤳ g ↔ ∀ i, f i ⤳ g i := by
   simp only [Specializes, nhds_pi, pi_le_pi]
 
 theorem not_specializes_iff_exists_open : ¬x ⤳ y ↔ ∃ S : Set X, IsOpen S ∧ y ∈ S ∧ x ∉ S := by
   rw [specializes_iff_forall_open]
-  push_neg
+  push Not
   rfl
 
 theorem not_specializes_iff_exists_closed : ¬x ⤳ y ↔ ∃ S : Set X, IsClosed S ∧ x ∈ S ∧ y ∉ S := by
   rw [specializes_iff_forall_closed]
-  push_neg
+  push Not
   rfl
 
 theorem IsOpen.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] (hs : IsOpen s)
@@ -196,6 +218,17 @@ theorem IsClosed.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] 
     (hf : Continuous f) (hg : Continuous g) (hspec : ∀ x, g x ⤳ f x) :
     Continuous (s.piecewise f g) := by
   simpa only [piecewise_compl] using hs.isOpen_compl.continuous_piecewise_of_specializes hg hf hspec
+
+theorem Specializes.clusterPt {f : Filter X} (h : x ⤳ y) (hx : ClusterPt x f) :
+    ClusterPt y f :=
+  Filter.NeBot.mono hx <| inf_le_inf_right _ h
+
+theorem IsCompact.of_subset_of_specializes {s t : Set X} (hs : IsCompact s) (hts : t ⊆ s)
+    (h : ∀ x ∈ s, ∃ y ∈ t, x ⤳ y) : IsCompact t := by
+  intro f _ hf
+  obtain ⟨x, hxs, hxf⟩ := hs <| hf.trans <| Filter.monotone_principal hts
+  obtain ⟨y, hyt, hxy⟩ := h x hxs
+  exact ⟨y, hyt, hxy.clusterPt hxf⟩
 
 attribute [local instance] specializationPreorder
 
@@ -340,7 +373,7 @@ alias StableUnderSpecialization.image := SpecializingMap.stableUnderSpecializati
 
 lemma specializingMap_iff_stableUnderSpecialization_image_singleton :
     SpecializingMap f ↔ ∀ x, StableUnderSpecialization (f '' closure {x}) := by
-  simpa only [closure_singleton_eq_Iic] using Relation.fibration_iff_isLowerSet_image_Iic
+  simpa only [closure_singleton_eq_Iic] using! Relation.fibration_iff_isLowerSet_image_Iic
 
 lemma specializingMap_iff_stableUnderSpecialization_image :
     SpecializingMap f ↔ ∀ s, StableUnderSpecialization s → StableUnderSpecialization (f '' s) :=
@@ -348,7 +381,7 @@ lemma specializingMap_iff_stableUnderSpecialization_image :
 
 lemma specializingMap_iff_closure_singleton (hf : Continuous f) :
     SpecializingMap f ↔ ∀ x, f '' closure {x} = closure {f x} := by
-  simpa only [closure_singleton_eq_Iic] using
+  simpa only [closure_singleton_eq_Iic] using!
     Relation.fibration_iff_image_Iic hf.specialization_monotone
 
 lemma specializingMap_iff_isClosed_image_closure_singleton (hf : Continuous f) :
@@ -358,31 +391,30 @@ lemma specializingMap_iff_isClosed_image_closure_singleton (hf : Continuous f) :
   rw [(specializingMap_iff_closure_singleton hf).mp h x]
   exact isClosed_closure
 
+lemma SpecializingMap.comp {f : X → Y} {g : Y → Z}
+    (hf : SpecializingMap f) (hg : SpecializingMap g) :
+    SpecializingMap (g ∘ f) := by
+  simp only [specializingMap_iff_stableUnderSpecialization_image, Set.image_comp] at *
+  exact fun s h ↦ hg _ (hf _ h)
+
 lemma IsClosedMap.specializingMap (hf : IsClosedMap f) : SpecializingMap f :=
   specializingMap_iff_stableUnderSpecialization_image_singleton.mpr <|
     fun _ ↦ (hf _ isClosed_closure).stableUnderSpecialization
 
-lemma IsInducing.specializingMap (hf : IsInducing f)
+lemma Topology.IsInducing.specializingMap (hf : IsInducing f)
     (h : StableUnderSpecialization (range f)) : SpecializingMap f := by
-  intros x y e
+  intro x y e
   obtain ⟨y, rfl⟩ := h e ⟨x, rfl⟩
   exact ⟨_, hf.specializes_iff.mp e, rfl⟩
 
-@[deprecated (since := "2024-10-28")] alias Inducing.specializingMap := IsInducing.specializingMap
-
-lemma IsInducing.generalizingMap (hf : IsInducing f)
+lemma Topology.IsInducing.generalizingMap (hf : IsInducing f)
     (h : StableUnderGeneralization (range f)) : GeneralizingMap f := by
-  intros x y e
+  intro x y e
   obtain ⟨y, rfl⟩ := h e ⟨x, rfl⟩
   exact ⟨_, hf.specializes_iff.mp e, rfl⟩
 
-@[deprecated (since := "2024-10-28")] alias Inducing.generalizingMap := IsInducing.generalizingMap
-
-lemma IsOpenEmbedding.generalizingMap (hf : IsOpenEmbedding f) : GeneralizingMap f :=
+lemma Topology.IsOpenEmbedding.generalizingMap (hf : IsOpenEmbedding f) : GeneralizingMap f :=
   hf.isInducing.generalizingMap hf.isOpen_range.stableUnderGeneralization
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.generalizingMap := IsOpenEmbedding.generalizingMap
 
 lemma SpecializingMap.stableUnderSpecialization_range (h : SpecializingMap f) :
     StableUnderSpecialization (range f) :=
@@ -401,6 +433,12 @@ alias StableUnderGeneralization.image := GeneralizingMap.stableUnderGeneralizati
 lemma GeneralizingMap.stableUnderGeneralization_range (h : GeneralizingMap f) :
     StableUnderGeneralization (range f) :=
   @image_univ _ _ f ▸ stableUnderGeneralization_univ.image h
+
+lemma GeneralizingMap.comp {f : X → Y} {g : Y → Z}
+    (hf : GeneralizingMap f) (hg : GeneralizingMap g) :
+    GeneralizingMap (g ∘ f) := by
+  simp only [GeneralizingMap_iff_stableUnderGeneralization_image, Set.image_comp] at *
+  exact fun s h ↦ hg _ (hf _ h)
 
 /-!
 ### `Inseparable` relation
@@ -421,15 +459,15 @@ theorem Inseparable.specializes' (h : x ~ᵢ y) : y ⤳ x := h.ge
 theorem Specializes.antisymm (h₁ : x ⤳ y) (h₂ : y ⤳ x) : x ~ᵢ y :=
   le_antisymm h₁ h₂
 
-theorem inseparable_iff_forall_open : (x ~ᵢ y) ↔ ∀ s : Set X, IsOpen s → (x ∈ s ↔ y ∈ s) := by
+theorem inseparable_iff_forall_isOpen : (x ~ᵢ y) ↔ ∀ s : Set X, IsOpen s → (x ∈ s ↔ y ∈ s) := by
   simp only [inseparable_iff_specializes_and, specializes_iff_forall_open, ← forall_and, ← iff_def,
     Iff.comm]
 
 theorem not_inseparable_iff_exists_open :
-    ¬(x ~ᵢ y) ↔ ∃ s : Set X, IsOpen s ∧ Xor' (x ∈ s) (y ∈ s) := by
-  simp [inseparable_iff_forall_open, ← xor_iff_not_iff]
+    ¬(x ~ᵢ y) ↔ ∃ s : Set X, IsOpen s ∧ Xor (x ∈ s) (y ∈ s) := by
+  simp [inseparable_iff_forall_isOpen, ← xor_iff_not_iff]
 
-theorem inseparable_iff_forall_closed : (x ~ᵢ y) ↔ ∀ s : Set X, IsClosed s → (x ∈ s ↔ y ∈ s) := by
+theorem inseparable_iff_forall_isClosed : (x ~ᵢ y) ↔ ∀ s : Set X, IsClosed s → (x ∈ s ↔ y ∈ s) := by
   simp only [inseparable_iff_specializes_and, specializes_iff_forall_closed, ← forall_and, ←
     iff_def]
 
@@ -444,24 +482,22 @@ theorem inseparable_iff_closure_eq : (x ~ᵢ y) ↔ closure ({x} : Set X) = clos
 theorem inseparable_of_nhdsWithin_eq (hx : x ∈ s) (hy : y ∈ s) (h : 𝓝[s] x = 𝓝[s] y) : x ~ᵢ y :=
   (specializes_of_nhdsWithin h.le hx).antisymm (specializes_of_nhdsWithin h.ge hy)
 
-theorem IsInducing.inseparable_iff (hf : IsInducing f) : (f x ~ᵢ f y) ↔ (x ~ᵢ y) := by
+theorem Topology.IsInducing.inseparable_iff (hf : IsInducing f) : (f x ~ᵢ f y) ↔ (x ~ᵢ y) := by
   simp only [inseparable_iff_specializes_and, hf.specializes_iff]
-
-@[deprecated (since := "2024-10-28")] alias Inducing.inseparable_iff := IsInducing.inseparable_iff
 
 theorem subtype_inseparable_iff {p : X → Prop} (x y : Subtype p) : (x ~ᵢ y) ↔ ((x : X) ~ᵢ y) :=
   IsInducing.subtypeVal.inseparable_iff.symm
 
 @[simp] theorem inseparable_prod {x₁ x₂ : X} {y₁ y₂ : Y} :
     ((x₁, y₁) ~ᵢ (x₂, y₂)) ↔ (x₁ ~ᵢ x₂) ∧ (y₁ ~ᵢ y₂) := by
-  simp only [Inseparable, nhds_prod_eq, prod_inj]
+  simp only [Inseparable, nhds_prod_eq, Filter.prod_inj]
 
 theorem Inseparable.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : x₁ ~ᵢ x₂) (hy : y₁ ~ᵢ y₂) :
     (x₁, y₁) ~ᵢ (x₂, y₂) :=
   inseparable_prod.2 ⟨hx, hy⟩
 
 @[simp]
-theorem inseparable_pi {f g : ∀ i, π i} : (f ~ᵢ g) ↔ ∀ i, f i ~ᵢ g i := by
+theorem inseparable_pi {f g : ∀ i, A i} : (f ~ᵢ g) ↔ ∀ i, f i ~ᵢ g i := by
   simp only [Inseparable, nhds_pi, funext_iff, pi_inj]
 
 namespace Inseparable
@@ -485,14 +521,24 @@ nonrec theorem trans (h₁ : x ~ᵢ y) (h₂ : y ~ᵢ z) : x ~ᵢ z := h₁.tran
 theorem nhds_eq (h : x ~ᵢ y) : 𝓝 x = 𝓝 y := h
 
 theorem mem_open_iff (h : x ~ᵢ y) (hs : IsOpen s) : x ∈ s ↔ y ∈ s :=
-  inseparable_iff_forall_open.1 h s hs
+  inseparable_iff_forall_isOpen.1 h s hs
 
 theorem mem_closed_iff (h : x ~ᵢ y) (hs : IsClosed s) : x ∈ s ↔ y ∈ s :=
-  inseparable_iff_forall_closed.1 h s hs
+  inseparable_iff_forall_isClosed.1 h s hs
+
+theorem map_of_continuousWithinAt {s t : Set X} (h : x ~ᵢ y)
+    (hfx : ContinuousWithinAt f s x) (hfy : ContinuousWithinAt f t y)
+    (hx : x ∈ t) (hy : y ∈ s) : f x ~ᵢ f y :=
+  (h.specializes.map_of_continuousWithinAt hfy hx).antisymm
+    (h.specializes'.map_of_continuousWithinAt hfx hy)
+
+theorem map_of_continuousOn {s : Set X} (h : x ~ᵢ y)
+    (hf : ContinuousOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x ~ᵢ f y :=
+  h.map_of_continuousWithinAt (hf.continuousWithinAt hx) (hf.continuousWithinAt hy) hx hy
 
 theorem map_of_continuousAt (h : x ~ᵢ y) (hx : ContinuousAt f x) (hy : ContinuousAt f y) :
     f x ~ᵢ f y :=
-  (h.specializes.map_of_continuousAt hy).antisymm (h.specializes'.map_of_continuousAt hx)
+  h.map_of_continuousWithinAt hx.continuousWithinAt hy.continuousWithinAt (mem_univ x) (mem_univ y)
 
 theorem map (h : x ~ᵢ y) (hf : Continuous f) : f x ~ᵢ f y :=
   h.map_of_continuousAt hf.continuousAt hf.continuousAt
@@ -511,12 +557,10 @@ theorem IsOpen.not_inseparable (hs : IsOpen s) (hx : x ∈ s) (hy : y ∉ s) : �
 In this section we define the quotient of a topological space by the `Inseparable` relation.
 -/
 
+variable (X) in
+instance : TopologicalSpace (SeparationQuotient X) :=
+  inferInstanceAs <| TopologicalSpace (Quotient _)
 
-variable (X)
-
-instance : TopologicalSpace (SeparationQuotient X) := instTopologicalSpaceQuotient
-
-variable {X}
 variable {t : Set (SeparationQuotient X)}
 
 namespace SeparationQuotient
@@ -527,9 +571,6 @@ def mk : X → SeparationQuotient X := Quotient.mk''
 theorem isQuotientMap_mk : IsQuotientMap (mk : X → SeparationQuotient X) :=
   isQuotientMap_quot_mk
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_mk := isQuotientMap_mk
-
 @[fun_prop, continuity]
 theorem continuous_mk : Continuous (mk : X → SeparationQuotient X) :=
   continuous_quot_mk
@@ -537,6 +578,12 @@ theorem continuous_mk : Continuous (mk : X → SeparationQuotient X) :=
 @[simp]
 theorem mk_eq_mk : mk x = mk y ↔ (x ~ᵢ y) :=
   Quotient.eq''
+
+protected theorem «forall» {P : SeparationQuotient X → Prop} : (∀ x, P x) ↔ ∀ x, P (.mk x) :=
+  Quotient.forall
+
+protected theorem «exists» {P : SeparationQuotient X → Prop} : (∃ x, P x) ↔ ∃ x, P (.mk x) :=
+  Quotient.exists
 
 theorem surjective_mk : Surjective (mk : X → SeparationQuotient X) :=
   Quot.mk_surjective
@@ -554,11 +601,34 @@ instance [Inhabited X] : Inhabited (SeparationQuotient X) :=
 instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
+@[simp]
+theorem inseparableSetoid_eq_top_iff [TopologicalSpace α] :
+    inseparableSetoid α = ⊤ ↔ IndiscreteTopology α :=
+  Setoid.eq_top_iff.trans TopologicalSpace.indiscrete_iff_forall_inseparable.symm
+
+theorem subsingleton_iff [TopologicalSpace α] :
+    Subsingleton (SeparationQuotient α) ↔ IndiscreteTopology α :=
+  Quotient.subsingleton_iff.trans inseparableSetoid_eq_top_iff
+
+instance [TopologicalSpace α] [IndiscreteTopology α] : Subsingleton (SeparationQuotient α) :=
+  subsingleton_iff.2 ‹_›
+
+instance [TopologicalSpace α] [IndiscreteTopology α] {p : α → Prop} :
+    IndiscreteTopology (Subtype p) := by
+  simp [TopologicalSpace.indiscrete_iff_forall_inseparable, subtype_inseparable_iff]
+
+theorem nontrivial_iff [TopologicalSpace α] :
+    Nontrivial (SeparationQuotient α) ↔ NontrivialTopology α := by
+  simpa [not_subsingleton_iff_nontrivial] using subsingleton_iff.not
+
+instance [TopologicalSpace α] [NontrivialTopology α] : Nontrivial (SeparationQuotient α) :=
+  nontrivial_iff.2 ‹_›
+
 @[to_additive] instance [One X] : One (SeparationQuotient X) := ⟨mk 1⟩
 
 @[to_additive (attr := simp)] theorem mk_one [One X] : mk (1 : X) = 1 := rfl
 
-theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
+theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' mk '' s = s := by
   refine Subset.antisymm ?_ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_open_iff hs).1 hys
@@ -569,7 +639,7 @@ theorem isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs =
 theorem isOpenQuotientMap_mk : IsOpenQuotientMap (mk : X → SeparationQuotient X) :=
   ⟨surjective_mk, continuous_mk, isOpenMap_mk⟩
 
-theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := by
+theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' mk '' s = s := by
   refine Subset.antisymm ?_ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_closed_iff hs).1 hys
@@ -577,8 +647,6 @@ theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := 
 theorem isInducing_mk : IsInducing (mk : X → SeparationQuotient X) :=
   ⟨le_antisymm (continuous_iff_le_induced.1 continuous_mk) fun s hs =>
       ⟨mk '' s, isOpenMap_mk s hs, preimage_image_mk_open hs⟩⟩
-
-@[deprecated (since := "2024-10-28")] alias inducing_mk := isInducing_mk
 
 theorem isClosedMap_mk : IsClosedMap (mk : X → SeparationQuotient X) :=
   isInducing_mk.isClosedMap <| by rw [range_mk]; exact isClosed_univ
@@ -591,6 +659,8 @@ theorem comap_mk_nhds_mk : comap mk (𝓝 (mk x)) = 𝓝 x :=
 theorem comap_mk_nhdsSet_image : comap mk (𝓝ˢ (mk '' s)) = 𝓝ˢ s :=
   (isInducing_mk.nhdsSet_eq_comap _).symm
 
+/-- Push-forward of the neighborhood of a point along the projection to the separation quotient
+is the neighborhood of its equivalence class. -/
 theorem map_mk_nhds : map mk (𝓝 x) = 𝓝 (mk x) := by
   rw [← comap_mk_nhds_mk, map_comap_of_surjective surjective_mk]
 
@@ -624,9 +694,6 @@ theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
 /-- The map `(x, y) ↦ (mk x, mk y)` is a quotient map. -/
 theorem isQuotientMap_prodMap_mk : IsQuotientMap (Prod.map mk mk : X × Y → _) :=
   (isOpenQuotientMap_mk.prodMap isOpenQuotientMap_mk).isQuotientMap
-
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_prodMap_mk := isQuotientMap_prodMap_mk
 
 /-- Lift a map `f : X → α` such that `Inseparable x y → f x = f y` to a map
 `SeparationQuotient X → α`. -/
@@ -669,9 +736,12 @@ theorem continuousOn_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {s : Set (Sep
   simp only [ContinuousOn, surjective_mk.forall, continuousWithinAt_lift, mem_preimage]
 
 @[simp]
-theorem continuous_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
+theorem continuous_lift_iff {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
     Continuous (lift f hf) ↔ Continuous f := by
-  simp only [continuous_iff_continuousOn_univ, continuousOn_lift, preimage_univ]
+  simp only [← continuousOn_univ, continuousOn_lift, preimage_univ]
+
+alias ⟨_, continuous_lift⟩ := continuous_lift_iff
+attribute [fun_prop] continuous_lift
 
 /-- Lift a map `f : X → Y → α` such that `Inseparable a b → Inseparable c d → f a c = f b d` to a
 map `SeparationQuotient X → SeparationQuotient Y → α`. -/
@@ -722,7 +792,7 @@ theorem continuousOn_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) �
 @[simp]
 theorem continuous_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d} :
     Continuous (uncurry <| lift₂ f hf) ↔ Continuous (uncurry f) := by
-  simp only [continuous_iff_continuousOn_univ, continuousOn_lift₂, preimage_univ]
+  simp only [← continuousOn_univ, continuousOn_lift₂, preimage_univ]
 
 end SeparationQuotient
 

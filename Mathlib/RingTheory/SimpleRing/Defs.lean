@@ -3,9 +3,10 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.Order.Atoms
+public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+public import Mathlib.Order.Atoms
 
 /-! # Simple rings
 
@@ -17,9 +18,13 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 
 -/
 
+public section
+
 
 /--
 A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `⊤`.
 -/
-class IsSimpleRing (R : Type*) [NonUnitalNonAssocRing R] : Prop where
+@[mk_iff] class IsSimpleRing (R : Type*) [NonUnitalNonAssocRing R] : Prop where
   simple : IsSimpleOrder (TwoSidedIdeal R)
+
+attribute [instance] IsSimpleRing.simple

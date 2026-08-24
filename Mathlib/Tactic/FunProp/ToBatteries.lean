@@ -3,11 +3,15 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 
 /-!
 ## `funProp` missing function from standard library
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean Meta
@@ -20,11 +24,11 @@ def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bo
   if a.size > b.size then
     return false
   let mut i := 0
-  for j in [0:b.size] do
+  for h' : j in [0:b.size] do
     if i = a.size then
       break
 
-    if a[i]! = b[j]! then
+    if a[i]! = b[j] then
       i := i+1
 
   if i = a.size then
@@ -32,27 +36,14 @@ def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bo
   else
     return false
 
-private def letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
-    MetaM α :=
-  lambdaLetTelescope e fun xs b ↦ do
-    if let .some i ← xs.findIdxM? (fun x ↦ do pure ¬(← x.fvarId!.isLetVar)) then
-      k xs[0:i] (← mkLambdaFVars xs[i:] b)
-    else
-      k xs b
-
-/-- Telescope consuming only let bindings -/
-def letTelescope {α n} [MonadControlT MetaM n] [Monad n] (e : Expr)
-    (k : Array Expr → Expr → n α) : n α :=
-  map2MetaM (fun k => letTelescopeImpl e k) k
-
 /--
-  Swaps bvars indices `i` and `j`
+Swaps bvars indices `i` and `j`
 
-  NOTE: the indices `i` and `j` do not correspond to the `n` in `bvar n`. Rather
-  they behave like indices in `Expr.lowerLooseBVars`, `Expr.liftLooseBVars`, etc.
+NOTE: the indices `i` and `j` do not correspond to the `n` in `bvar n`. Rather
+they behave like indices in `Expr.lowerLooseBVars`, `Expr.liftLooseBVars`, etc.
 
-  TODO: This has to have a better implementation, but I'm still beyond confused with how bvar
-  indices work
+TODO: This has to have a better implementation, but I'm still beyond confused with how bvar
+indices work
 -/
 def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
 
@@ -68,12 +59,11 @@ def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
 For `#[x₁, .., xₙ]` create `(x₁, .., xₙ)`.
 -/
 def mkProdElem (xs : Array Expr) : MetaM Expr := do
-  match xs.size with
+  match h : xs.size with
   | 0 => return default
-  | 1 => return xs[0]!
-  | _ =>
-    let n := xs.size
-    xs[0:n-1].foldrM (init := xs[n-1]!) fun x p => mkAppM ``Prod.mk #[x,p]
+  | 1 => return xs[0]
+  | n + 1 =>
+    xs[0:n].foldrM (init := xs[n]) fun x p => mkAppM ``Prod.mk #[x,p]
 
 /--
 For `(x₀, .., xₙ₋₁)` return `xᵢ` but as a product projection.
@@ -93,7 +83,7 @@ def mkProdProj (x : Expr) (i : Nat) (n : Nat) : MetaM Expr := do
   | 0, _ => mkAppM ``Prod.fst #[x]
   | i'+1, n'+1 => mkProdProj (← withTransparency .all <| mkAppM ``Prod.snd #[x]) i' n'
 
-/-- For an element of a product type(of size`n`) `xs` create an array of all possible projections
+/-- For an element of a product type (of size `n`) `xs` create an array of all possible projections
 i.e. `#[xs.1, xs.2.1, xs.2.2.1, ..., xs.2..2]` -/
 def mkProdSplitElem (xs : Expr) (n : Nat) : MetaM (Array Expr) :=
   (Array.range n)
@@ -135,7 +125,7 @@ private def betaThroughLetAux (f : Expr) (args : List Expr) : Expr :=
   match f, args with
   | f, [] => f
   | .lam _ _ b _, a :: as => (betaThroughLetAux (b.instantiate1 a) as)
-  | .letE n t v b _, args => .letE n t v (betaThroughLetAux b args) false
+  | .letE n t v b nondep, args => .letE n t v (betaThroughLetAux b args) nondep
   | .mdata _ b, args => betaThroughLetAux b args
   | f, args => mkAppN f args.toArray
 

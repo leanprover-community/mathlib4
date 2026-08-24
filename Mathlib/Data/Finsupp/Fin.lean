@@ -3,7 +3,9 @@ Copyright (c) 2021 Ivan Sadofschi Costa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ivan Sadofschi Costa
 -/
-import Mathlib.Data.Finsupp.Defs
+module
+
+public import Mathlib.Data.Finsupp.Single
 
 /-!
 # `cons` and `tail` for maps `Fin n →₀ M`
@@ -17,6 +19,9 @@ In this context, we prove some usual properties of `tail` and `cons`, analogous 
 `Data.Fin.Tuple.Basic`.
 -/
 
+@[expose] public section
+
+open Function
 
 noncomputable section
 
@@ -41,12 +46,17 @@ theorem cons_zero : cons y s 0 = y :=
 
 @[simp]
 theorem cons_succ : cons y s i.succ = s i :=
-  -- Porting note: was Fin.cons_succ _ _ _
   rfl
 
 @[simp]
 theorem tail_cons : tail (cons y s) = s :=
   ext fun k => by simp only [tail_apply, cons_succ]
+
+@[simp]
+theorem tail_update_zero : tail (update t 0 y) = tail t := by simp [tail]
+
+@[simp]
+theorem tail_update_succ : tail (update t i.succ y) = update (tail t) i y := by ext; simp [tail]
 
 @[simp]
 theorem cons_tail : cons (t 0) (tail t) = t := by
@@ -55,22 +65,25 @@ theorem cons_tail : cons (t 0) (tail t) = t := by
   · rw [c_a, cons_zero]
   · rw [← Fin.succ_pred a c_a, cons_succ, ← tail_apply]
 
+lemma cons_zero_eq_single_zero : cons y (0 : Fin n →₀ M) = single 0 y := by
+  ext j
+  cases j using Fin.cases <;> simp
+
+lemma cons_zero_single_eq_single_succ : cons 0 (single i y) = single i.succ y := by
+  ext j
+  cases j using Fin.cases <;> simp [single_apply]
+
 @[simp]
-theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by
-  ext a
-  by_cases c : a = 0
-  · simp [c]
-  · rw [← Fin.succ_pred a c, cons_succ]
-    simp
+theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by simp [cons_zero_eq_single_zero]
 
 variable {s} {y}
 
 theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
-  contrapose! h with c
+  contrapose h with c
   rw [← cons_zero y s, c, Finsupp.coe_zero, Pi.zero_apply]
 
 theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
-  contrapose! h with c
+  contrapose h with c
   ext a
   simp [← cons_succ a y s, c]
 
@@ -85,5 +98,22 @@ lemma cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb
   apply (Fin.eq_zero_or_eq_succ i).imp id (Exists.imp _)
   rintro i rfl
   simpa [Finsupp.mem_support_iff] using hi
+
+variable (y) in
+lemma cons_right_injective : Injective (Finsupp.cons y : (Fin n →₀ M) → Fin (n + 1) →₀ M) :=
+  (equivFunOnFinite.symm.injective.comp ((Fin.cons_right_injective _).comp DFunLike.coe_injective))
+
+/-- As a binary function, `Finsupp.cons` is injective. -/
+theorem cons_injective2 : Function.Injective2 (cons (n := n) (M := M)) := by
+  refine fun x₀ y₀ x y h ↦ ?_
+  have := DFunLike.congr_fun h 0
+  simp only [cons_zero] at this
+  exact ⟨this, cons_right_injective y₀ (this ▸ h)⟩
+
+lemma cons_eq_single_zero_iff {x : M} : s.cons x = single 0 y ↔ s = 0 ∧ x = y := by
+  rw [← cons_zero_eq_single_zero, cons_injective2.eq_iff, and_comm]
+
+lemma cons_eq_single_succ_iff {x : M} : s.cons x = single i.succ y ↔ s = single i y ∧ x = 0 := by
+  rw [← cons_zero_single_eq_single_succ, cons_injective2.eq_iff, and_comm]
 
 end Finsupp

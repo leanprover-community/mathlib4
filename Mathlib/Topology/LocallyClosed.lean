@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Constructions
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Topology.Constructions
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Locally closed sets
@@ -25,11 +27,12 @@ import Mathlib.Tactic.TFAE
 
 -/
 
+public section
+
+open Set Topology
+open scoped Set.Notation
+
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X} {f : X → Y}
-
-open scoped Topology Set.Notation
-
-open Set
 
 lemma subset_coborder :
     s ⊆ coborder s := by
@@ -38,7 +41,7 @@ lemma subset_coborder :
 
 lemma coborder_inter_closure :
     coborder s ∩ closure s = s := by
-  rw [coborder, ← diff_eq_compl_inter, diff_diff_right_self, inter_eq_right]
+  rw [coborder, ← sdiff_eq_compl_inter, sdiff_sdiff_right_self, inter_eq_right]
   exact subset_closure
 
 lemma closure_inter_coborder :
@@ -47,12 +50,12 @@ lemma closure_inter_coborder :
 
 lemma coborder_eq_union_frontier_compl :
     coborder s = s ∪ (frontier s)ᶜ := by
-  rw [coborder, compl_eq_comm, compl_union, compl_compl, ← diff_eq_compl_inter,
-    ← union_diff_right, union_comm, ← closure_eq_self_union_frontier]
+  rw [coborder, compl_eq_comm, compl_union, compl_compl, ← sdiff_eq_compl_inter,
+    ← union_sdiff_right, union_comm, ← closure_eq_self_union_frontier]
 
 lemma coborder_eq_univ_iff :
     coborder s = univ ↔ IsClosed s := by
-  simp [coborder, diff_eq_empty, closure_subset_iff_isClosed]
+  simp [coborder, sdiff_eq_empty, closure_subset_iff_isClosed]
 
 alias ⟨_, IsClosed.coborder_eq⟩ := coborder_eq_univ_iff
 
@@ -76,14 +79,14 @@ alias ⟨_, IsOpen.coborder_eq⟩ := coborder_eq_compl_frontier_iff
 
 lemma IsOpenMap.coborder_preimage_subset (hf : IsOpenMap f) (s : Set Y) :
     coborder (f ⁻¹' s) ⊆ f ⁻¹' (coborder s) := by
-  rw [coborder, coborder, preimage_compl, preimage_diff, compl_subset_compl]
-  apply diff_subset_diff_left
+  rw [coborder, coborder, preimage_compl, preimage_sdiff, compl_subset_compl]
+  apply sdiff_subset_sdiff_left
   exact hf.preimage_closure_subset_closure_preimage
 
 lemma Continuous.preimage_coborder_subset (hf : Continuous f) (s : Set Y) :
     f ⁻¹' (coborder s) ⊆ coborder (f ⁻¹' s) := by
-  rw [coborder, coborder, preimage_compl, preimage_diff, compl_subset_compl]
-  apply diff_subset_diff_left
+  rw [coborder, coborder, preimage_compl, preimage_sdiff, compl_subset_compl]
+  apply sdiff_subset_sdiff_left
   exact hf.closure_preimage_subset s
 
 lemma coborder_preimage (hf : IsOpenMap f) (hf' : Continuous f) (s : Set Y) :
@@ -91,12 +94,9 @@ lemma coborder_preimage (hf : IsOpenMap f) (hf' : Continuous f) (s : Set Y) :
   (hf.coborder_preimage_subset s).antisymm (hf'.preimage_coborder_subset s)
 
 protected
-lemma IsOpenEmbedding.coborder_preimage (hf : IsOpenEmbedding f) (s : Set Y) :
-    coborder (f ⁻¹' s) = f ⁻¹' (coborder s) :=
+lemma Topology.IsOpenEmbedding.coborder_preimage (hf : IsOpenEmbedding f) (s : Set Y) :
+    coborder (f ⁻¹' s) = f ⁻¹' coborder s :=
   coborder_preimage hf.isOpenMap hf.continuous s
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.coborder_preimage := IsOpenEmbedding.coborder_preimage
 
 lemma isClosed_preimage_val_coborder :
     IsClosed (coborder s ↓∩ s) := by
@@ -115,7 +115,7 @@ lemma IsLocallyClosed.preimage {s : Set Y} (hs : IsLocallyClosed s)
   exact ⟨_, _, hU.preimage hf, hZ.preimage hf, preimage_inter⟩
 
 nonrec
-lemma IsInducing.isLocallyClosed_iff {s : Set X}
+lemma Topology.IsInducing.isLocallyClosed_iff {s : Set X}
     {f : X → Y} (hf : IsInducing f) :
     IsLocallyClosed s ↔ ∃ s' : Set Y, IsLocallyClosed s' ∧ f ⁻¹' s' = s := by
   simp_rw [IsLocallyClosed, hf.isOpen_iff, hf.isClosed_iff]
@@ -125,17 +125,11 @@ lemma IsInducing.isLocallyClosed_iff {s : Set X}
   · rintro ⟨_, ⟨U, Z, hU, hZ, rfl⟩, rfl⟩
     exact ⟨_, _, ⟨U, hU, rfl⟩, ⟨Z, hZ, rfl⟩, rfl⟩
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.isLocallyClosed_iff := IsInducing.isLocallyClosed_iff
-
-lemma IsEmbedding.isLocallyClosed_iff {s : Set X}
+lemma Topology.IsEmbedding.isLocallyClosed_iff {s : Set X}
     {f : X → Y} (hf : IsEmbedding f) :
     IsLocallyClosed s ↔ ∃ s' : Set Y, IsLocallyClosed s' ∧ s' ∩ range f = f '' s := by
   simp_rw [hf.isInducing.isLocallyClosed_iff,
-    ← (image_injective.mpr hf.inj).eq_iff, image_preimage_eq_inter_range]
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isLocallyClosed_iff := IsEmbedding.isLocallyClosed_iff
+    ← (image_injective.mpr hf.injective).eq_iff, image_preimage_eq_inter_range]
 
 lemma IsLocallyClosed.image {s : Set X} (hs : IsLocallyClosed s)
     {f : X → Y} (hf : IsInducing f) (hf' : IsLocallyClosed (range f)) :
@@ -186,16 +180,17 @@ lemma isLocallyClosed_tfae (s : Set X) :
     · exact (subset_iUnion₂ _ _ <| hxU x ·)
   tfae_have 5 → 1
   | H => by
-    convert H.isLocallyClosed.image IsInducing.subtypeVal
-      (by simpa using isClosed_closure.isLocallyClosed)
+    convert!
+      H.isLocallyClosed.image IsInducing.subtypeVal
+        (by simpa using isClosed_closure.isLocallyClosed)
     simpa using subset_closure
   tfae_finish
 
 lemma isLocallyClosed_iff_isOpen_coborder : IsLocallyClosed s ↔ IsOpen (coborder s) :=
-  (isLocallyClosed_tfae s).out 0 1
+  (isLocallyClosed_tfae s).out 1 2
 
 alias ⟨IsLocallyClosed.isOpen_coborder, _⟩ := isLocallyClosed_iff_isOpen_coborder
 
 lemma IsLocallyClosed.isOpen_preimage_val_closure (hs : IsLocallyClosed s) :
     IsOpen (closure s ↓∩ s) :=
-  ((isLocallyClosed_tfae s).out 0 4).mp hs
+  ((isLocallyClosed_tfae s).out 1 5).mp hs

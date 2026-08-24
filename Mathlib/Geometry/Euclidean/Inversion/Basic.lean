@@ -3,18 +3,20 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Inversion in an affine space
 
 In this file we define inversion in a sphere in an affine space. This map sends each point `x` to
 the point `y` such that `y -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c)`, where `c` and `R` are the center
-and the radius the sphere.
+and the radius of the sphere.
 
-In many applications, it is convenient to assume that the inversions swaps the center and the point
+In many applications, it is convenient to assume that the inversion swaps the center and the point
 at infinity. In order to stay in the original affine space, we define the map so that it sends
 center to itself.
 
@@ -22,9 +24,11 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 `EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist`.
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open Metric Function AffineMap Set AffineSubspace
+open Metric Function AffineMap Set
 open scoped Topology
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
@@ -40,7 +44,6 @@ sphere. -/
 def inversion (c : P) (R : ℝ) (x : P) : P :=
   (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c
 
-#adaptation_note /-- nightly-2024-03-16: added to replace simp [inversion] -/
 theorem inversion_def :
     inversion = fun (c : P) (R : ℝ) (x : P) => (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c :=
   rfl
@@ -92,12 +95,11 @@ theorem dist_inversion_center (c x : P) (R : ℝ) : dist (inversion c R x) c = R
   rcases eq_or_ne x c with (rfl | hx)
   · simp
   have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  -- was `field_simp [inversion, norm_smul, abs_div, ← dist_eq_norm_vsub, sq, mul_assoc]`,
-  -- but really slow. Replaced by `simp only ...` to speed up.
-  -- TODO(#15486): reinstate `field_simp` once it is faster.
-  simp (disch := field_simp_discharge) only [inversion, sq, mul_div_assoc', div_mul_eq_mul_div,
-    div_div, dist_vadd_left, norm_smul, norm_div, norm_mul, Real.norm_eq_abs, abs_mul_abs_self,
-    abs_dist, ← dist_eq_norm_vsub, mul_assoc, eq_div_iff, div_eq_iff]
+  simp only [inversion]
+  field_simp
+  simp only [sq, dist_vadd_left, norm_smul, norm_div, norm_mul, Real.norm_eq_abs, abs_mul_abs_self,
+    abs_dist, ← dist_eq_norm_vsub]
+  field
 
 /-- Distance from the center of an inversion to the image of a point under the inversion. This
 formula accidentally works for `x = c`. -/
@@ -163,12 +165,7 @@ theorem dist_inversion_mul_dist_center_eq (hx : x ≠ c) (hy : y ≠ c) :
   have hy' : inversion c R y ≠ c := by simp [*]
   conv in dist _ y => rw [← inversion_inversion c hR y]
   rw [dist_inversion_inversion hx hy', dist_inversion_center]
-  have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  -- used to be `field_simp`, but was really slow; replaced by `simp only ...` to speed up
-  -- TODO(#15486): reinstate `field_simp` once it is faster.
-  simp (disch := field_simp_discharge) only [mul_div_assoc', div_div_eq_mul_div, div_mul_eq_mul_div,
-    div_eq_iff]
-  ring
+  field [dist_ne_zero.2 hx]
 
 /-!
 ### Ptolemy's inequality
@@ -185,7 +182,7 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
   · rw [dist_self, zero_mul, zero_add]
   rcases eq_or_ne c a with (rfl | hc)
   · rw [dist_self, zero_mul]
-    apply_rules [add_nonneg, mul_nonneg, dist_nonneg]
+    positivity
   rcases eq_or_ne d a with (rfl | hd)
   · rw [dist_self, mul_zero, add_zero, dist_comm d, dist_comm d, mul_comm]
   /- Otherwise, we apply the triangle inequality to `EuclideanGeometry.inversion a 1 b`,
@@ -194,8 +191,8 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
   rw [dist_inversion_inversion hb hd, dist_inversion_inversion hb hc,
     dist_inversion_inversion hc hd, one_pow] at H
   rw [← dist_pos] at hb hc hd
-  rw [← div_le_div_right (mul_pos hb (mul_pos hc hd))]
-  convert H using 1 <;> (field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring)
+  rw [← div_le_div_iff_of_pos_right (mul_pos hb (mul_pos hc hd))]
+  convert! H using 1 <;> simp [field, dist_comm a]; ring
 
 end EuclideanGeometry
 
@@ -232,3 +229,23 @@ protected theorem Continuous.inversion (hc : Continuous c) (hR : Continuous R) (
     (hne : ∀ a, x a ≠ c a) : Continuous (fun a ↦ inversion (c a) (R a) (x a)) :=
   continuous_iff_continuousAt.2 fun _ ↦
     hc.continuousAt.inversion hR.continuousAt hx.continuousAt (hne _)
+
+namespace EuclideanGeometry
+
+open Filter in
+/-- The inversion of a point tends to infinity  as it approaches the center of an inversion. -/
+theorem tendsto_inversion_nhdsNE_center_cobounded {c : P} {R : ℝ} (hR : R ≠ 0) :
+    Tendsto (inversion c R) (𝓝[≠] c) (Bornology.cobounded P) := by
+  rw [← tendsto_dist_left_atTop_iff c]
+  have hdist : Tendsto (dist c) (𝓝[≠] c) (𝓝[>] (0 : ℝ)) := by
+    rw [tendsto_nhdsWithin_iff]
+    refine ⟨tendsto_nhdsWithin_of_tendsto_nhds ?_, eventually_nhdsWithin_of_forall ?_⟩
+    · rw [← dist_self c]
+      exact ContinuousAt.tendsto <| by fun_prop
+    · aesop
+  have hratio : Tendsto (fun x : P ↦ dist c (inversion c R x)) (𝓝[≠] c) atTop := by
+    simp_rw [dist_center_inversion, div_eq_mul_inv]
+    exact hdist.inv_tendsto_nhdsGT_zero.const_mul_atTop <| by rwa [sq_pos_iff]
+  simpa using hratio
+
+end EuclideanGeometry

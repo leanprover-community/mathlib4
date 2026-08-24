@@ -3,8 +3,10 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Decomposition.RadonNikodym
-import Mathlib.Probability.ConditionalProbability
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+public import Mathlib.Probability.ConditionalProbability
 
 /-!
 # s-finite measures can be written as `withDensity` of a finite measure
@@ -22,12 +24,10 @@ Our definition of `MeasureTheory.Measure.toFinite` ensures some extra properties
 
 ## Main definitions
 
-In these definitions and the results below, `μ` is an s-finite measure (`SFinite μ`).
+In this definition and the results below, `μ` is an s-finite measure (`SFinite μ`).
 
 * `MeasureTheory.Measure.toFinite`: a finite measure with `μ ≪ μ.toFinite` and `μ.toFinite ≪ μ`.
   If `μ ≠ 0`, this is a probability measure.
-* `MeasureTheory.Measure.densityToFinite` (deprecated, use `MeasureTheory.Measure.rnDeriv`):
-  the Radon-Nikodym derivative of `μ.toFinite` with respect to `μ`.
 
 ## Main statements
 
@@ -36,6 +36,8 @@ In these definitions and the results below, `μ` is an s-finite measure (`SFinit
 * `ae_toFinite`: `ae μ.toFinite = ae μ`.
 
 -/
+
+@[expose] public section
 
 open Set
 open scoped ENNReal ProbabilityTheory
@@ -50,8 +52,10 @@ noncomputable def Measure.toFiniteAux (μ : Measure α) [SFinite μ] : Measure �
   if IsFiniteMeasure μ then μ else (exists_isFiniteMeasure_absolutelyContinuous μ).choose
 
 /-- A finite measure obtained from an s-finite measure `μ`, such that
-`μ = μ.toFinite.withDensity μ.densityToFinite` (see `withDensity_densitytoFinite`).
-If `μ` is non-zero, this is a probability measure. -/
+`μ = μ.toFinite.withDensity (μ.rnDeriv μ.toFinite)`
+(see `MeasureTheory.Measure.withDensity_rnDeriv_eq` along with
+`MeasureTheory.absolutelyContinuous_toFinite`). If `μ` is non-zero, then `μ.toFinite` is a
+probability measure. -/
 noncomputable def Measure.toFinite (μ : Measure α) [SFinite μ] : Measure α :=
   μ.toFiniteAux[|univ]
 
@@ -86,7 +90,7 @@ lemma toFinite_eq_zero_iff [SFinite μ] : μ.toFinite = 0 ↔ μ = 0 := by
 lemma toFinite_zero : Measure.toFinite (0 : Measure α) = 0 := by simp
 
 lemma toFinite_eq_self [IsProbabilityMeasure μ] : μ.toFinite = μ := by
-  rw [Measure.toFinite, Measure.toFiniteAux, if_pos, ProbabilityTheory.cond_univ]
+  rw [Measure.toFinite, Measure.toFiniteAux, ite_eq_left, ProbabilityTheory.cond_univ]
   infer_instance
 
 instance [SFinite μ] : IsFiniteMeasure μ.toFinite := by
@@ -104,46 +108,8 @@ lemma sfiniteSeq_absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] (n
     sfiniteSeq μ n ≪ μ.toFinite :=
   (sfiniteSeq_le μ n).absolutelyContinuous.trans (absolutelyContinuous_toFinite μ)
 
-@[deprecated (since := "2024-10-11")]
-alias sFiniteSeq_absolutelyContinuous_toFinite := sfiniteSeq_absolutelyContinuous_toFinite
-
 lemma toFinite_absolutelyContinuous (μ : Measure α) [SFinite μ] : μ.toFinite ≪ μ :=
   Measure.ae_le_iff_absolutelyContinuous.mp ae_toFinite.le
-
-/-- A measurable function such that `μ.toFinite.withDensity μ.densityToFinite = μ`.
-See `withDensity_densitytoFinite`. -/
-@[deprecated rnDeriv (since := "2024-10-04")]
-noncomputable def Measure.densityToFinite (μ : Measure α) [SFinite μ] (a : α) : ℝ≥0∞ :=
-  μ.rnDeriv μ.toFinite a
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-10-04")]
-lemma densityToFinite_def (μ : Measure α) [SFinite μ] :
-    μ.densityToFinite = μ.rnDeriv μ.toFinite :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated Measure.measurable_rnDeriv (since := "2024-10-04")]
-lemma measurable_densityToFinite (μ : Measure α) [SFinite μ] : Measurable μ.densityToFinite :=
-  Measure.measurable_rnDeriv _ _
-
-set_option linter.deprecated false in
-@[deprecated Measure.withDensity_rnDeriv_eq (since := "2024-10-04")]
-theorem withDensity_densitytoFinite (μ : Measure α) [SFinite μ] :
-    μ.toFinite.withDensity μ.densityToFinite = μ :=
-  Measure.withDensity_rnDeriv_eq _ _ (absolutelyContinuous_toFinite _)
-
-set_option linter.deprecated false in
-@[deprecated Measure.rnDeriv_lt_top (since := "2024-10-04")]
-lemma densityToFinite_ae_lt_top (μ : Measure α) [SigmaFinite μ] :
-    ∀ᵐ x ∂μ, μ.densityToFinite x < ∞ :=
-  (absolutelyContinuous_toFinite μ).ae_le <| Measure.rnDeriv_lt_top _ _
-
-set_option linter.deprecated false in
-@[deprecated Measure.rnDeriv_ne_top (since := "2024-10-04")]
-lemma densityToFinite_ae_ne_top (μ : Measure α) [SigmaFinite μ] :
-    ∀ᵐ x ∂μ, μ.densityToFinite x ≠ ∞ :=
-  (densityToFinite_ae_lt_top μ).mono (fun _ hx ↦ hx.ne)
 
 lemma restrict_compl_sigmaFiniteSet [SFinite μ] :
     μ.restrict μ.sigmaFiniteSetᶜ = ∞ • μ.toFinite.restrict μ.sigmaFiniteSetᶜ := by

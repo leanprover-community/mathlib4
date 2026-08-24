@@ -3,7 +3,10 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Tactic.Push
 
 /-!
 # `lrat_proof` command
@@ -39,7 +42,9 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 
-open Lean hiding Literal HashMap
+@[expose] public meta section
+
+open Lean hiding Literal
 open Std (HashMap)
 
 namespace Sat
@@ -69,7 +74,10 @@ instance : ToExpr Literal where
 /-- A clause is a list of literals, thought of as a disjunction like `a ∨ b ∨ ¬c`. -/
 def Clause := List Literal
 
+/-- The empty clause -/
 def Clause.nil : Clause := []
+
+/-- Append a literal to a clause. -/
 def Clause.cons : Literal → Clause → Clause := List.cons
 
 /-- A formula is a list of clauses, thought of as a conjunction like `(a ∨ b) ∧ c ∧ (¬c ∨ ¬d)`. -/
@@ -107,6 +115,7 @@ all literals in the clause are falsified. -/
 def Valuation.satisfies (v : Valuation) : Clause → Prop
   | [] => False
   | l::c => v.neg l → v.satisfies c
+termination_by structural ps => ps
 
 /-- `v.satisfies_fmla f` asserts that formula `f` is satisfied by the valuation.
 A formula is satisfied if all clauses in it are satisfied. -/
@@ -141,14 +150,16 @@ match l with
 This is used to introduce assumptions about the first `n` values of `v` during reification. -/
 def Valuation.implies (v : Valuation) (p : Prop) : List Prop → Nat → Prop
   | [], _ => p
-  | a::as, n => (v n ↔ a) → v.implies p as (n+1)
+  | a::as, n => (v n ↔ a) → v.implies p as (n + 1)
+termination_by structural ps => ps
 
 /-- `Valuation.mk [a, b, c]` is a valuation which is `a` at 0, `b` at 1 and `c` at 2, and false
 everywhere else. -/
 def Valuation.mk : List Prop → Valuation
   | [], _ => False
   | a::_, 0 => a
-  | _::as, n+1 => mk as n
+  | _::as, n + 1 => mk as n
+termination_by structural ps => ps
 
 /-- The fundamental relationship between `mk` and `implies`:
 `(mk ps).implies p ps 0` is equivalent to `p`. -/
@@ -163,7 +174,7 @@ theorem Valuation.mk_implies {p} {as ps} (as₁) : as = List.reverseAux as₁ ps
       ∀ bs, mk (as₁.reverseAux bs) n' ↔ mk bs n from this 0 _ rfl (a::as)
     induction as₁ with
     | nil => simp
-    | cons b as₁ ih => simpa using fun n bs ↦ ih (n+1) _ (Nat.succ_add ..) _
+    | cons b as₁ ih => simpa using! fun n bs ↦ ih (n + 1) _ (Nat.succ_add ..) _
 
 /-- Asserts that `¬⟦f⟧_v` implies `p`. -/
 structure Fmla.reify (v : Valuation) (f : Fmla) (p : Prop) : Prop where
@@ -255,7 +266,7 @@ partial def buildConj (arr : Array (Array Int)) (start stop : Nat) : Expr :=
 /-- Constructs the proofs of `⊢ ctx.proof c` for each clause `c` in `ctx`.
 The proofs are stashed in a `HashMap` keyed on the clause ID. -/
 partial def buildClauses (arr : Array (Array Int)) (ctx : Expr) (start stop : Nat)
-  (f p : Expr) (accum : Nat × HashMap Nat Clause) : Nat × HashMap Nat Clause :=
+    (f p : Expr) (accum : Nat × HashMap Nat Clause) : Nat × HashMap Nat Clause :=
   match stop - start with
   | 0 => panic! "empty"
   | 1 =>
@@ -315,7 +326,7 @@ structure LClause where
      * If all clauses are falsified, then we are done: `hc v hv hx hy : False`.
 -/
 partial def buildProofStep (db : HashMap Nat Clause)
-  (ns pf : Array Int) (ctx clause : Expr) : Except String Expr := Id.run do
+    (ns pf : Array Int) (ctx clause : Expr) : Except String Expr := Id.run do
   let mut lams := #[]
   let mut args := #[]
   let mut gctx : HashMap Nat LClause := {}
@@ -390,7 +401,7 @@ inductive LRATStep
   * `steps`: The input LRAT proof trace
 -/
 partial def buildProof (arr : Array (Array Int)) (ctx ctx' : Expr)
-  (steps : Array LRATStep) : MetaM Expr := do
+    (steps : Array LRATStep) : MetaM Expr := do
   let p := mkApp (mkConst ``Sat.Fmla.subsumes_self) ctx
   let mut db := (buildClauses arr ctx 0 arr.size ctx' p default).2
   for step in steps do
@@ -433,15 +444,15 @@ partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := I
     pr := mkLambda `h default ty pr
   pr := mkLambda `v default (mkConst ``Sat.Valuation) pr
   let mut e := e.lowerLooseBVars (nvars+1) (nvars+1)
-  let cons := mkApp (mkConst ``List.cons [levelZero]) (mkSort levelZero)
-  let nil := mkApp (mkConst ``List.nil [levelZero]) (mkSort levelZero)
+  let cons := mkApp (mkConst ``List.cons [.zero]) (mkSort .zero)
+  let nil := mkApp (mkConst ``List.nil [.zero]) (mkSort .zero)
   let rec mkPS depth e
   | 0 => e
-  | n+1 => mkPS (depth+1) (mkApp2 cons (mkBVar depth) e) n
+  | n + 1 => mkPS (depth+1) (mkApp2 cons (mkBVar depth) e) n
   pr := mkApp5 (mkConst ``Sat.Fmla.refute) e (mkPS 0 nil nvars) ctx proof pr
   for _ in [0:nvars] do
-    e := mkForall `a default (mkSort levelZero) e
-    pr := mkLambda `a default (mkSort levelZero) pr
+    e := mkForall `a default (mkSort .zero) e
+    pr := mkLambda `a default (mkSort .zero) pr
   pure (e, pr)
 where
   /-- The `v` variable under the `a1 ... an, v, h1 ... hn` context -/
@@ -545,11 +556,11 @@ but not the reification theorem. Returns:
   * `proof`: A proof of `ctx.proof []`
 -/
 def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr × Expr) := do
-  let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs cnf.mkIterator
+  let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs ⟨_, cnf.startPos⟩
     | throwError "parse CNF failed"
   if arr.isEmpty then throwError "empty CNF"
   let ctx' := buildConj arr 0 arr.size
-  let ctxName ← mkAuxName (name ++ `ctx) 1
+  let ctxName ← mkAuxDeclName (name ++ `ctx)
   addDecl <| Declaration.defnDecl {
     name := ctxName
     levelParams := []
@@ -559,10 +570,10 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
     safety      := DefinitionSafety.safe
   }
   let ctx := mkConst ctxName
-  let Parsec.ParseResult.success _ steps := Parser.parseLRAT lrat.mkIterator
+  let Parsec.ParseResult.success _ steps := Parser.parseLRAT ⟨_, lrat.startPos⟩
     | throwError "parse LRAT failed"
   let proof ← buildProof arr ctx ctx' steps
-  let declName ← mkAuxName (name ++ `proof) 1
+  let declName ← mkAuxDeclName (name ++ `proof)
   addDecl <| Declaration.thmDecl {
     name := declName
     levelParams := []
@@ -615,8 +626,7 @@ elab "lrat_proof " n:(ident <|> "example")
     let lrat ← unsafe evalTerm String (mkConst ``String) lrat
     let go := do
       fromLRAT cnf lrat name
-      withSaveInfoContext do
-        Term.addTermInfo' n (mkConst name) (isBinder := true)
+      addTermInfo' n (← mkConstWithLevelParams name) (isBinder := true) |>.run'
     if n.1.isIdent then go else withoutModifyingEnv go
 
 lrat_proof example

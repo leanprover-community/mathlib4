@@ -3,8 +3,13 @@ Copyright (c) 2023 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Analysis.BoundedVariation
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Constant speed
@@ -37,12 +42,14 @@ as a composite `φ ∘ (variationOnFromTo f s a)`, where `φ` has unit speed and
 arc-length, parameterization
 -/
 
+@[expose] public section
+
 
 open scoped NNReal ENNReal
 
-open Set MeasureTheory
+open Set
 
-variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
+variable {α : Type*} [LinearOrder α] {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpace E]
 variable (f : ℝ → E) (s : Set ℝ) (l : ℝ≥0)
 
 /-- `f` has constant speed `l` on `s` if the variation of `f` on `s ∩ Icc x y` is equal to
@@ -110,7 +117,7 @@ theorem HasConstantSpeedOnWith.union {t : Set ℝ} (hfs : HasConstantSpeedOnWith
         exacts [Or.inl ⟨ws, zw, hs.2 ws⟩, Or.inr ⟨wt, ht.2 wt, wy⟩]
       · rintro (⟨ws, zw, wx⟩ | ⟨wt, xw, wy⟩)
         exacts [⟨Or.inl ws, zw, wx.trans (ht.2 yt)⟩, ⟨Or.inr wt, (hs.2 zs).trans xw, wy⟩]
-    rw [this, @eVariationOn.union _ _ _ _ f _ _ x, hfs zs hs.1 (hs.2 zs), hft ht.1 yt (ht.2 yt)]
+    rw [this, eVariationOn.union (f := f) (x := x), hfs zs hs.1 (hs.2 zs), hft ht.1 yt (ht.2 yt)]
     · have q := ENNReal.ofReal_add (mul_nonneg l.prop (sub_nonneg.mpr (hs.2 zs)))
         (mul_nonneg l.prop (sub_nonneg.mpr (ht.2 yt)))
       simp only [NNReal.val_eq_coe] at q
@@ -149,19 +156,16 @@ theorem hasConstantSpeedOnWith_zero_iff :
   dsimp [HasConstantSpeedOnWith]
   simp only [zero_mul, ENNReal.ofReal_zero, ← eVariationOn.eq_zero_iff]
   constructor
-  · by_contra!
-    obtain ⟨h, hfs⟩ := this
+  · by_contra! ⟨h, hfs⟩
     simp_rw [ne_eq, eVariationOn.eq_zero_iff] at hfs h
-    push_neg at hfs
+    push Not at hfs
     obtain ⟨x, xs, y, ys, hxy⟩ := hfs
     rcases le_total x y with (xy | yx)
     · exact hxy (h xs ys x ⟨xs, le_rfl, xy⟩ y ⟨ys, xy, le_rfl⟩)
     · rw [edist_comm] at hxy
       exact hxy (h ys xs y ⟨ys, le_rfl, yx⟩ x ⟨xs, yx, le_rfl⟩)
   · rintro h x _ y _
-    refine le_antisymm ?_ zero_le'
-    rw [← h]
-    exact eVariationOn.mono f inter_subset_left
+    simpa [h] using eVariationOn.mono (s := s) f inter_subset_left
 
 theorem HasConstantSpeedOnWith.ratio {l' : ℝ≥0} (hl' : l' ≠ 0) {φ : ℝ → ℝ} (φm : MonotoneOn φ s)
     (hfφ : HasConstantSpeedOnWith (f ∘ φ) s l) (hf : HasConstantSpeedOnWith f (φ '' s) l') ⦃x : ℝ⦄
@@ -198,8 +202,8 @@ monotonically maps `s` onto `t`, then `φ` is just a translation (on `s`).
 theorem unique_unit_speed {φ : ℝ → ℝ} (φm : MonotoneOn φ s) (hfφ : HasUnitSpeedOn (f ∘ φ) s)
     (hf : HasUnitSpeedOn f (φ '' s)) ⦃x : ℝ⦄ (xs : x ∈ s) : EqOn φ (fun y => y - x + φ x) s := by
   dsimp only [HasUnitSpeedOn] at hf hfφ
-  convert HasConstantSpeedOnWith.ratio one_ne_zero φm hfφ hf xs using 3
-  norm_num
+  convert HasConstantSpeedOnWith.ratio one_ne_zero φm hfφ hf xs
+  simp
 
 /-- If both `f` and `f ∘ φ` have unit speed (on `Icc 0 t` and `Icc 0 s` respectively)
 and `φ` monotonically maps `Icc 0 s` onto `Icc 0 t`, then `φ` is the identity on `Icc 0 s`
@@ -209,7 +213,7 @@ theorem unique_unit_speed_on_Icc_zero {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) 
     (hfφ : HasUnitSpeedOn (f ∘ φ) (Icc 0 s)) (hf : HasUnitSpeedOn f (Icc 0 t)) :
     EqOn φ id (Icc 0 s) := by
   rw [← φst] at hf
-  convert unique_unit_speed φm hfφ hf ⟨le_rfl, hs⟩ using 1
+  convert unique_unit_speed φm hfφ hf ⟨le_rfl, hs⟩
   have : φ 0 = 0 := by
     have hm : 0 ∈ φ '' Icc 0 s := by simp only [φst, ht, mem_Icc, le_refl, and_self]
     obtain ⟨x, xs, hx⟩ := hm
@@ -231,7 +235,7 @@ theorem edist_naturalParameterization_eq_zero {f : α → E} {s : Set α}
     (hf : LocallyBoundedVariationOn f s) {a : α} (as : a ∈ s) {b : α} (bs : b ∈ s) :
     edist (naturalParameterization f s a (variationOnFromTo f s a b)) (f b) = 0 := by
   dsimp only [naturalParameterization]
-  haveI : Nonempty α := ⟨a⟩
+  have : Nonempty α := ⟨a⟩
   obtain ⟨cs, hc⟩ := Function.invFunOn_pos (b := variationOnFromTo f s a b) ⟨b, bs, rfl⟩
   rw [variationOnFromTo.eq_left_iff hf as cs bs] at hc
   apply variationOnFromTo.edist_zero_of_eq_zero hf cs bs hc
@@ -251,7 +255,7 @@ theorem has_unit_speed_naturalParameterization (f : α → E) {s : Set α}
     rw [←
       eVariationOn.comp_inter_Icc_eq_of_monotoneOn (naturalParameterization f s a) _
         (variationOnFromTo.monotoneOn hf as) bs cs]
-    rw [@eVariationOn.eq_of_edist_zero_on _ _ _ _ _ f]
+    rw [eVariationOn.eq_of_edist_zero_on (f' := f)]
     · rw [variationOnFromTo.eq_of_le _ _ bc, ENNReal.ofReal_toReal (hf b c bs cs)]
     · rintro x ⟨xs, _, _⟩
       exact edist_naturalParameterization_eq_zero hf as xs

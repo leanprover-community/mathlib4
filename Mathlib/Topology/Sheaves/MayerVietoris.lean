@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
-import Mathlib.CategoryTheory.Sites.Spaces
+public import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
+public import Mathlib.CategoryTheory.Sites.Spaces
 
 /-!
 # Mayer-Vietoris squares
@@ -20,6 +21,8 @@ U ⊓ V --->   U
 ```
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -46,14 +49,14 @@ noncomputable def mayerVietorisSquare' (sq : Square (Opens T))
       all_goals intros; apply Subsingleton.elim))
     (fun x hx ↦ by
       rw [h₄] at hx
-      obtain (hx|hx) := hx
+      obtain (hx | hx) := hx
       · exact ⟨_, _, ⟨Sieve.ofArrows_mk _ _ WalkingPair.left, hx⟩⟩
       · exact ⟨_, _, ⟨Sieve.ofArrows_mk _ _ WalkingPair.right, hx⟩⟩)
 
 /-- The Mayer-Vietoris square attached to two open subsets
 of a topological space. -/
 @[simps!]
-noncomputable def mayerVietorisSquare (U V : Opens T):
+noncomputable def mayerVietorisSquare (U V : Opens T) :
     (Opens.grothendieckTopology T).MayerVietorisSquare :=
   mayerVietorisSquare'
     { X₁ := U ⊓ V

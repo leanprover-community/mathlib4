@@ -3,9 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Batteries.Data.List.Pairwise
-import Batteries.Data.List.Perm
-import Mathlib.Data.List.Basic
+module
+
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Basic
+public import Batteries.Tactic.Trans
+public import Mathlib.Data.List.Perm.Basic
 
 /-!
 # List Sub-permutations
@@ -17,18 +20,23 @@ This file develops theory about the `List.Subperm` relation.
 The notation `<+~` is used for sub-permutations.
 -/
 
+public section
+
 open Nat
 
 namespace List
-variable {α β : Type*} {l l₁ l₂ : List α} {a : α}
-
-open Perm
+variable {α : Type*} {l l₁ l₂ : List α} {a : α}
 
 section Subperm
 
 attribute [trans] Subperm.trans
 
 end Subperm
+
+/-- See also `List.subperm_ext_iff`. -/
+lemma subperm_iff_count [DecidableEq α] : l₁ <+~ l₂ ↔ ∀ a, count a l₁ ≤ count a l₂ :=
+  subperm_ext_iff.trans <| forall_congr' fun a ↦ by
+    by_cases ha : a ∈ l₁ <;> simp [ha, count_eq_zero_of_not_mem]
 
 lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
   refine ⟨?_, fun ⟨l, h₁, h₂⟩ ↦ h₂.subperm.trans h₁.subperm⟩
@@ -48,30 +56,26 @@ lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons_self _
 
 protected alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 
-theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (h₁ : a ∉ l₁) (h₂ : a ∈ l₂)
-    (s : l₁ <+~ l₂) : a :: l₁ <+~ l₂ := by
-  rcases s with ⟨l, p, s⟩
-  induction s generalizing l₁ with
-  | slnil => cases h₂
-  | @cons r₁ r₂ b s' ih =>
-    simp? at h₂ says simp only [mem_cons] at h₂
-    cases' h₂ with e m
-    · subst b
-      exact ⟨a :: r₁, p.cons a, s'.cons₂ _⟩
-    · rcases ih d₁ h₁ m p with ⟨t, p', s'⟩
-      exact ⟨t, p', s'.cons _⟩
-  | @cons₂ r₁ r₂ b _ ih =>
-    have bm : b ∈ l₁ := p.subset <| mem_cons_self _ _
-    have am : a ∈ r₂ := by
-      simp only [find?, mem_cons] at h₂
-      exact h₂.resolve_left fun e => h₁ <| e.symm ▸ bm
-    rcases append_of_mem bm with ⟨t₁, t₂, rfl⟩
-    have st : t₁ ++ t₂ <+ t₁ ++ b :: t₂ := by simp
-    rcases ih (d₁.sublist st) (mt (fun x => st.subset x) h₁) am
-        (Perm.cons_inv <| p.trans perm_middle) with
-      ⟨t, p', s'⟩
-    exact
-      ⟨b :: t, (p'.cons b).trans <| (swap _ _ _).trans (perm_middle.symm.cons a), s'.cons₂ _⟩
+theorem Subperm.append {l₁ l₂ r₁ r₂ : List α} :
+    l₁ <+~ l₂ → r₁ <+~ r₂ → (l₁ ++ r₁) <+~ (l₂ ++ r₂)
+  | ⟨l, hl_perm, hl_sub⟩, ⟨r, hr_perm, hr_sub⟩ =>
+    ⟨l ++ r, hl_perm.append hr_perm, hl_sub.append hr_sub⟩
+
+theorem map_subperm_map_iff {α β} {l₁ l₂ : List α} {f : α → β} (hf : Function.Injective f) :
+    (l₁.map f) <+~ (l₂.map f) ↔ l₁ <+~ l₂ where
+  mpr a := by
+    obtain ⟨l, hl_perm, hl_sub⟩ := a
+    exact ⟨l.map f, hl_perm.map f, hl_sub.map f⟩
+  mp a := by
+    obtain ⟨w, ⟨perm, sublist⟩⟩ := a
+    obtain ⟨x, ⟨sublistₓ, mapₓ⟩⟩ := sublist_map_iff.mp sublist
+    use x
+    constructor
+    · rw [mapₓ] at perm
+      exact (map_perm_map_iff hf).mp perm
+    · exact sublistₓ
+
+alias ⟨_, Subperm.map⟩ := map_subperm_map_iff
 
 protected theorem Nodup.subperm (d : Nodup l₁) (H : l₁ ⊆ l₂) : l₁ <+~ l₂ :=
   subperm_of_subset d H

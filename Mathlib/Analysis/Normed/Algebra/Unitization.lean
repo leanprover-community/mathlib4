@@ -3,9 +3,10 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Algebra.Algebra.Unitization
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+public import Mathlib.Algebra.Algebra.Unitization
+public import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Unitization norms
@@ -57,6 +58,8 @@ viewing `Unitization 𝕜 A` as `𝕜 × A`) by means of forgetful inheritance. 
 bornology.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -138,7 +141,7 @@ theorem nnnorm_def (x : Unitization 𝕜 A) : ‖x‖₊ = ‖splitMul 𝕜 A x�
 /-- This is often the more useful lemma to rewrite the norm as opposed to `Unitization.norm_def`. -/
 theorem norm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖ = ‖x.fst‖ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖ := by
-  rw [norm_def, splitMul_apply, Prod.norm_def, sup_eq_max]
+  rw [norm_def, splitMul_apply, Prod.norm_def]
 
 /-- This is often the more useful lemma to rewrite the norm as opposed to
 `Unitization.nnnorm_def`. -/
@@ -152,7 +155,7 @@ theorem lipschitzWith_addEquiv :
   refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => ?_
   rw [norm_eq_sup, Prod.norm_def]
   refine max_le ?_ ?_
-  · rw [sup_eq_max, mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
+  · rw [mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
     exact le_max_of_le_left ((le_add_of_nonneg_left (norm_nonneg _)).trans_eq (two_mul _).symm)
   · nontriviality A
     rw [two_mul]
@@ -211,15 +214,15 @@ instance instBornology : Bornology (Unitization 𝕜 A) :=
 theorem isUniformEmbedding_addEquiv {𝕜} [NontriviallyNormedField 𝕜] :
     IsUniformEmbedding (addEquiv 𝕜 A) where
   comap_uniformity := rfl
-  inj := (addEquiv 𝕜 A).injective
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_addEquiv := isUniformEmbedding_addEquiv
+  injective := (addEquiv 𝕜 A).injective
 
 /-- `Unitization 𝕜 A` is complete whenever `𝕜` and `A` are also. -/
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (Unitization 𝕜 A) :=
   uniformEquivProd.completeSpace_iff.2 .prod
+
+instance instT2Space : T2Space (Unitization 𝕜 A) :=
+  Unitization.uniformEquivProd.symm.toHomeomorph.t2Space
 
 /-- Pull back the metric structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`, but replace the bornology and the uniformity so
@@ -232,16 +235,13 @@ noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A) where
   dist_eq := normedRingAux.dist_eq
-  norm_mul := normedRingAux.norm_mul
+  norm_mul_le := normedRingAux.norm_mul_le
   norm := normedRingAux.norm
 
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
-  norm_smul_le k x := by
-    rw [norm_def, map_smul]
-    -- Note: this used to be `rw [norm_smul, ← norm_def]` before #8386
-    exact (norm_smul k (splitMul 𝕜 A x)).le
+  norm_smul_le k x := by rw [norm_def, map_smul, norm_smul, ← norm_def]
 
 instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
   norm_one := by simpa only [norm_eq_sup, fst_one, norm_one, snd_one, map_one, map_zero,
@@ -266,10 +266,30 @@ lemma dist_inr (a b : A) : dist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A
 lemma nndist_inr (a b : A) : nndist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A) = nndist a b :=
   isometry_inr.nndist_eq a b
 
-/- These examples verify that the bornology and uniformity (hence also the topology) are the
+/-! These examples verify that the bornology and uniformity (hence also the topology) are the
 correct ones. -/
 example : (instNormedRing (𝕜 := 𝕜) (A := A)).toMetricSpace = instMetricSpace := rfl
 example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toBornology = instBornology := rfl
 example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toUniformSpace = instUniformSpace := rfl
+
+section
+
+variable {𝕜 A : Type*} [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
+
+protected theorem uniformContinuous_fst : UniformContinuous (fun x : Unitization 𝕜 A ↦ x.fst) :=
+  uniformContinuous_fst.comp Unitization.uniformEquivProd.uniformContinuous
+
+protected theorem uniformContinuous_snd : UniformContinuous (fun x : Unitization 𝕜 A ↦ x.snd) :=
+  uniformContinuous_snd.comp Unitization.uniformEquivProd.uniformContinuous
+
+@[fun_prop]
+protected theorem continuous_fst : Continuous (fun x : Unitization 𝕜 A ↦ x.fst) :=
+  Unitization.uniformContinuous_fst.continuous
+
+@[fun_prop]
+protected theorem continuous_snd : Continuous (fun x : Unitization 𝕜 A ↦ x.snd) :=
+  Unitization.uniformContinuous_snd.continuous
+
+end
 
 end Unitization

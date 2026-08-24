@@ -3,8 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
 # Preservation of zero objects and zero morphisms
@@ -21,6 +23,8 @@ We provide the following results:
 * functors which preserve initial or terminal objects preserve zero morphisms.
 
 -/
+
+@[expose] public section
 
 
 universe v u v₁ v₂ v₃ u₁ u₂ u₃
@@ -70,13 +74,13 @@ instance (priority := 100) preservesZeroMorphisms_of_isLeftAdjoint (F : C ⥤ D)
   map_zero X Y := by
     let adj := Adjunction.ofIsLeftAdjoint F
     calc
-      F.map (0 : X ⟶ Y) = F.map 0 ≫ F.map (adj.unit.app Y) ≫ adj.counit.app (F.obj Y) := ?_
+      dsimp% F.map (0 : X ⟶ Y) = F.map 0 ≫ F.map (adj.unit.app Y) ≫ adj.counit.app (F.obj Y) := ?_
       _ = F.map 0 ≫ F.map ((rightAdjoint F).map (0 : F.obj X ⟶ _)) ≫ adj.counit.app (F.obj Y) := ?_
       _ = 0 := ?_
     · rw [Adjunction.left_triangle_components]
       exact (Category.comp_id _).symm
     · simp only [← Category.assoc, ← F.map_comp, zero_comp]
-    · simp only [Adjunction.counit_naturality, comp_zero]
+    · simp
 
 instance (priority := 100) preservesZeroMorphisms_of_isRightAdjoint (G : C ⥤ D) [IsRightAdjoint G] :
     PreservesZeroMorphisms G where
@@ -88,7 +92,7 @@ instance (priority := 100) preservesZeroMorphisms_of_isRightAdjoint (G : C ⥤ D
       _ = 0 := ?_
     · rw [Adjunction.right_triangle_components_assoc]
     · simp only [← G.map_comp, comp_zero]
-    · simp only [id_obj, comp_obj, Adjunction.unit_naturality_assoc, zero_comp]
+    · simp only [id_obj, Adjunction.unit_naturality_assoc, zero_comp]
 
 instance (priority := 100) preservesZeroMorphisms_of_full (F : C ⥤ D) [Full F] :
     PreservesZeroMorphisms F where
@@ -114,6 +118,17 @@ instance (F : C ⥤ D ⥤ E) [∀ X, (F.obj X).PreservesZeroMorphisms] :
 
 instance (F : C ⥤ D ⥤ E) [F.PreservesZeroMorphisms] (Y : D) :
     (F.flip.obj Y).PreservesZeroMorphisms where
+
+omit [HasZeroMorphisms C] in
+@[simp] lemma whiskerRight_zero {F G : C ⥤ D} (H : D ⥤ E) [H.PreservesZeroMorphisms] :
+    whiskerRight (0 : F ⟶ G) H = 0 := by cat_disch
+
+omit [HasZeroMorphisms C] in
+lemma FullyFaithful.preservesZeroMorphisms (F : C ⥤ D) (hF : F.FullyFaithful) :
+    letI : HasZeroMorphisms C := hF.hasZeroMorphisms
+    F.PreservesZeroMorphisms :=
+  letI : HasZeroMorphisms C := hF.hasZeroMorphisms
+  ⟨fun _ _ ↦ hF.map_preimage _⟩
 
 end ZeroMorphisms
 
@@ -157,15 +172,15 @@ instance (priority := 100) preservesZeroMorphisms_of_preserves_terminal_object
 variable (F)
 
 /-- Preserving zero morphisms implies preserving terminal objects. -/
-def preservesTerminalObjectOfPreservesZeroMorphisms [PreservesZeroMorphisms F] :
-    PreservesLimit (Functor.empty C) F :=
-  preservesTerminalOfIso F <|
+lemma preservesTerminalObject_of_preservesZeroMorphisms [PreservesZeroMorphisms F] :
+    PreservesLimit (Functor.empty.{0} C) F :=
+  preservesTerminal_of_iso F <|
     F.mapIso HasZeroObject.zeroIsoTerminal.symm ≪≫ mapZeroObject F ≪≫ HasZeroObject.zeroIsoTerminal
 
 /-- Preserving zero morphisms implies preserving terminal objects. -/
-def preservesInitialObjectOfPreservesZeroMorphisms [PreservesZeroMorphisms F] :
-    PreservesColimit (Functor.empty C) F :=
-  preservesInitialOfIso F <|
+lemma preservesInitialObject_of_preservesZeroMorphisms [PreservesZeroMorphisms F] :
+    PreservesColimit (Functor.empty.{0} C) F :=
+  preservesInitial_of_iso F <|
     HasZeroObject.zeroIsoInitial.symm ≪≫
       (mapZeroObject F).symm ≪≫ (F.mapIso HasZeroObject.zeroIsoInitial.symm).symm
 
@@ -174,27 +189,29 @@ end ZeroObject
 section
 
 variable [HasZeroObject D] [HasZeroMorphisms D]
-  (G : C ⥤ D) (hG : IsZero G) (J : Type*) [Category J]
+  (G : C ⥤ D) (hG : IsZero G) (J : Type*) [Category* J]
+
+include hG
 
 /-- A zero functor preserves limits. -/
-def preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G where
-  preservesLimit {K} := ⟨fun _ => by
+lemma preservesLimitsOfShape_of_isZero : PreservesLimitsOfShape J G where
+  preservesLimit {K} := ⟨fun _ => ⟨by
     rw [Functor.isZero_iff] at hG
-    exact IsLimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩
+    exact IsLimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩⟩
 
 /-- A zero functor preserves colimits. -/
-def preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G where
-  preservesColimit {K} := ⟨fun _ => by
+lemma preservesColimitsOfShape_of_isZero : PreservesColimitsOfShape J G where
+  preservesColimit {K} := ⟨fun _ => ⟨by
     rw [Functor.isZero_iff] at hG
-    exact IsColimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩
+    exact IsColimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩⟩
 
 /-- A zero functor preserves limits. -/
-def preservesLimitsOfSizeOfIsZero : PreservesLimitsOfSize.{v, u} G where
-  preservesLimitsOfShape := G.preservesLimitsOfShapeOfIsZero hG _
+lemma preservesLimitsOfSize_of_isZero : PreservesLimitsOfSize.{v, u} G where
+  preservesLimitsOfShape := G.preservesLimitsOfShape_of_isZero hG _
 
 /-- A zero functor preserves colimits. -/
-def preservesColimitsOfSizeOfIsZero : PreservesColimitsOfSize.{v, u} G where
-  preservesColimitsOfShape := G.preservesColimitsOfShapeOfIsZero hG _
+lemma preservesColimitsOfSize_of_isZero : PreservesColimitsOfSize.{v, u} G where
+  preservesColimitsOfShape := G.preservesColimitsOfShape_of_isZero hG _
 
 end
 

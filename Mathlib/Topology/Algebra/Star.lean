@@ -3,10 +3,11 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Star.Pi
-import Mathlib.Algebra.Star.Prod
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.ContinuousMap.Defs
+module
+
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Continuity of `star`
@@ -15,7 +16,11 @@ This file defines the `ContinuousStar` typeclass, along with instances on `Pi`, 
 `MulOpposite`, and `Units`.
 -/
 
-open Filter Topology
+@[expose] public section
+
+open Filter
+
+open scoped Topology
 
 /-- Basic hypothesis to talk about a topological space with a continuous `star` operator. -/
 class ContinuousStar (R : Type*) [TopologicalSpace R] [Star R] : Prop where
@@ -75,7 +80,7 @@ variable {R S ι : Type*}
 
 instance [Star R] [Star S] [TopologicalSpace R] [TopologicalSpace S] [ContinuousStar R]
     [ContinuousStar S] : ContinuousStar (R × S) :=
-  ⟨(continuous_star.comp continuous_fst).prod_mk (continuous_star.comp continuous_snd)⟩
+  ⟨(continuous_star.comp continuous_fst).prodMk (continuous_star.comp continuous_snd)⟩
 
 instance {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Star (C i)]
     [∀ i, ContinuousStar (C i)] : ContinuousStar (∀ i, C i) where

@@ -3,8 +3,10 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Rat.Init
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Rat.Init
 
 /-!
 # Division (semi)rings and (semi)fields
@@ -43,14 +45,14 @@ a `GroupWithZero` lemma instead.
 field, division ring, skew field, skew-field, skewfield
 -/
 
+@[expose] public section
+
 assert_not_imported Mathlib.Tactic.Common
 
 -- `NeZero` theory should not be needed in the basic algebraic hierarchy
 assert_not_imported Mathlib.Algebra.NeZero
 
-assert_not_exists MonoidHom
-
-open Function Set
+assert_not_exists MonoidHom Set
 
 universe u
 
@@ -172,6 +174,7 @@ See also note [forgetful inheritance].
 
 If the field has positive characteristic `p`, our division by zero convention forces
 `ratCast (1 / p) = 1 / 0 = 0`. -/
+@[stacks 09FD "first part"]
 class Field (K : Type u) extends CommRing K, DivisionRing K
 
 -- see Note [lower instance priority]
@@ -188,8 +191,6 @@ lemma smul_def (q : ℚ≥0) (a : K) : q • a = q * a := DivisionSemiring.nnqsm
 variable (K)
 
 @[simp] lemma smul_one_eq_cast (q : ℚ≥0) : q • (1 : K) = q := by rw [NNRat.smul_def, mul_one]
-
-@[deprecated (since := "2024-05-03")] alias smul_one_eq_coe := smul_one_eq_cast
 
 end NNRat
 
@@ -208,8 +209,6 @@ theorem smul_def (a : ℚ) (x : K) : a • x = ↑a * x := DivisionRing.qsmul_de
 @[simp]
 theorem smul_one_eq_cast (A : Type*) [DivisionRing A] (m : ℚ) : m • (1 : A) = ↑m := by
   rw [Rat.smul_def, mul_one]
-
-@[deprecated (since := "2024-05-03")] alias smul_one_eq_coe := smul_one_eq_cast
 
 end Rat
 

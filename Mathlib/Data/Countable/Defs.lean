@@ -3,10 +3,13 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Bool.Basic
-import Mathlib.Data.Subtype
-import Mathlib.Tactic.MkIffOfInductiveProp
+module
+
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.Data.Subtype
+public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Countable and uncountable types
@@ -21,6 +24,8 @@ This file also provides a few instances of these typeclasses.
 More instances can be found in other files.
 -/
 
+public section
+
 open Function
 
 universe u v
@@ -32,7 +37,7 @@ variable {α : Sort u} {β : Sort v}
 -/
 
 /-- A type `α` is countable if there exists an injective map `α → ℕ`. -/
-@[mk_iff countable_iff_exists_injective]
+@[mk_iff countable_iff_exists_injective, wikidata Q66707394]
 class Countable (α : Sort u) : Prop where
   /-- A type `α` is countable if there exists an injective map `α → ℕ`. -/
   exists_injective_nat' : ∃ f : α → ℕ, Injective f
@@ -109,7 +114,7 @@ instance (priority := 500) Quotient.countable [Countable α] {r : α → α → 
   Quot.mk_surjective.countable
 
 instance (priority := 500) [Countable α] {s : Setoid α} : Countable (Quotient s) :=
-  (inferInstance : Countable (@Quot α _))
+  inferInstanceAs <| Countable (@Quot α _)
 
 /-!
 ### Uncountable types
@@ -121,9 +126,11 @@ class Uncountable (α : Sort*) : Prop where
   /-- A type `α` is uncountable if it is not countable. -/
   not_countable : ¬Countable α
 
+@[push]
 lemma not_uncountable_iff : ¬Uncountable α ↔ Countable α := by
   rw [uncountable_iff_not_countable, not_not]
 
+@[push]
 lemma not_countable_iff : ¬Countable α ↔ Uncountable α := (uncountable_iff_not_countable α).symm
 
 @[simp]

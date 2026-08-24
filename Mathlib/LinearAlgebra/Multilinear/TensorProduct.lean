@@ -3,14 +3,16 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Multilinear.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Constructions relating multilinear maps and tensor products.
 -/
 
-suppress_compilation
+@[expose] public section
 
 namespace MultilinearMap
 
@@ -40,21 +42,26 @@ def domCoprodDep (a : MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁)
   toFun v := a (fun i₁ ↦ v (.inl i₁)) ⊗ₜ b (fun i₂ ↦ v (.inr i₂))
   map_update_add' := by
     rintro _ _ (_ | _) _ _
-    · letI := Classical.decEq ι₁; simp
-    · letI := Classical.decEq ι₂; simp
+    · let := Classical.decEq ι₁; simp
+    · let := Classical.decEq ι₂; simp
   map_update_smul' := by
     rintro _ m (i₁ | i₂) p q
-    · letI := Classical.decEq ι₁; simp
-    · letI := Classical.decEq ι₂; simp
+    · let := Classical.decEq ι₁; simp
+    · let := Classical.decEq ι₂; simp
 
 /-- A more bundled version of `MultilinearMap.domCoprodDep`, as a linear map
 from the tensor product of spaces of multilinear maps. -/
 def domCoprodDep' :
-    MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁ ⊗[R]
-      MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂ →ₗ[R]
+    MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁ ⊗[R] MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂ →ₗ[R]
         MultilinearMap R N (N₁ ⊗[R] N₂) :=
   TensorProduct.lift (LinearMap.mk₂ R domCoprodDep
     (by aesop) (by aesop) (by aesop) (by aesop))
+
+@[simp]
+theorem domCoprodDep'_apply (a : MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁)
+    (b : MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂) :
+    domCoprodDep' (a ⊗ₜ b) = domCoprodDep a b := by
+  rfl
 
 end
 
@@ -70,8 +77,8 @@ is not a `MultilinearMap`.
 
 While this can be generalized to work for dependent `Π i : ι₁, N'₁ i` instead of `ι₁ → N`, doing so
 introduces `Sum.elim N'₁ N'₂` types in the result which are difficult to work with and not defeq
-to the simple case defined here. See [this zulip thread](
-https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there.20code.20for.20X.3F/topic/Instances.20on.20.60sum.2Eelim.20A.20B.20i.60/near/218484619).
+to the simple case defined here. See
+[this zulip thread](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there.20code.20for.20X.3F/topic/Instances.20on.20.60sum.2Eelim.20A.20B.20i.60/near/218484619).
 -/
 @[simps! apply]
 def domCoprod (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
@@ -84,8 +91,7 @@ def domCoprod (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
 def domCoprod' :
     MultilinearMap R (fun _ : ι₁ => N) N₁ ⊗[R] MultilinearMap R (fun _ : ι₂ => N) N₂ →ₗ[R]
       MultilinearMap R (fun _ : ι₁ ⊕ ι₂ => N) (N₁ ⊗[R] N₂) :=
-  TensorProduct.lift <|
-    LinearMap.mk₂ R domCoprod (by aesop) (by aesop) (by aesop) (by aesop)
+  domCoprodDep' (R := R) (N := fun (_ : ι₁ ⊕ ι₂) ↦ N)
 
 @[simp]
 theorem domCoprod'_apply (a : MultilinearMap R (fun _ : ι₁ => N) N₁)

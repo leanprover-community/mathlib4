@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Chain
-import Mathlib.Order.Minimal
+module
+
+public import Mathlib.Order.CompleteLattice.Chain
+public import Mathlib.Order.Minimal
 
 /-!
 # Zorn's lemmas
@@ -59,9 +61,11 @@ Originally ported from Isabelle/HOL. The
 Fleuriot, Tobias Nipkow, Christian Sternagel.
 -/
 
+public section
+
 open Set
 
-variable {α β : Type*} {r : α → α → Prop} {c : Set α}
+variable {α : Type*} {r : α → α → Prop} {c : Set α}
 
 /-- Local notation for the relation being considered. -/
 local infixl:50 " ≺ " => r
@@ -118,10 +122,6 @@ theorem zorn_le₀ (s : Set α) (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∃
 theorem zorn_le_nonempty₀ (s : Set α)
     (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) (x : α) (hxs : x ∈ s) :
     ∃ m, x ≤ m ∧ Maximal (· ∈ s) m := by
-  -- Porting note: the first three lines replace the following two lines in mathlib3.
-  -- The mathlib3 `rcases` supports holes for proof obligations, this is not yet implemented in 4.
-  -- rcases zorn_preorder₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_ with ⟨m, ⟨hms, hxm⟩, hm⟩
-  -- · exact ⟨m, hms, hxm, fun z hzs hmz => hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
   have H := zorn_le₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_
   · rcases H with ⟨m, ⟨hms, hxm⟩, hm⟩
     exact ⟨m, hxm, hms, fun z hzs hmz => @hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
@@ -132,7 +132,7 @@ theorem zorn_le_nonempty₀ (s : Set α)
 
 theorem zorn_le_nonempty_Ici₀ (a : α)
     (ih : ∀ c ⊆ Ici a, IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub, ∀ z ∈ c, z ≤ ub) (x : α) (hax : a ≤ x) :
-    ∃ m, x ≤ m ∧ IsMax m   := by
+    ∃ m, x ≤ m ∧ IsMax m := by
   let ⟨m, hxm, ham, hm⟩ := zorn_le_nonempty₀ (Ici a) (fun c hca hc y hy ↦ ?_) x hax
   · exact ⟨m, hxm, fun z hmz => hm (ham.trans hmz) hmz⟩
   · have ⟨ub, hub⟩ := ih c hca hc y hy
@@ -161,10 +161,6 @@ theorem zorn_superset_nonempty (S : Set (Set α))
 /-- Every chain is contained in a maximal chain. This generalizes Hausdorff's maximality principle.
 -/
 theorem IsChain.exists_maxChain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M ∧ c ⊆ M := by
-  -- Porting note: the first three lines replace the following two lines in mathlib3.
-  -- The mathlib3 `obtain` supports holes for proof obligations, this is not yet implemented in 4.
-  -- obtain ⟨M, ⟨_, hM₀⟩, hM₁, hM₂⟩ :=
-  --   zorn_subset_nonempty { s | c ⊆ s ∧ IsChain r s } _ c ⟨Subset.rfl, hc⟩
   have H := zorn_subset_nonempty { s | c ⊆ s ∧ IsChain r s } ?_ c ⟨Subset.rfl, hc⟩
   · obtain ⟨M, hcM, hM⟩ := H
     exact ⟨M, ⟨hM.prop.2, fun d hd hMd ↦ hM.eq_of_subset ⟨hcM.trans hMd, hd⟩ hMd⟩, hcM⟩
@@ -175,6 +171,26 @@ theorem IsChain.exists_maxChain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M �
   rintro y ⟨sy, hsy, hysy⟩ z ⟨sz, hsz, hzsz⟩ hyz
   obtain rfl | hsseq := eq_or_ne sy sz
   · exact (hcs₀ hsy).right hysy hzsz hyz
-  cases' hcs₁ hsy hsz hsseq with h h
+  rcases hcs₁ hsy hsz hsseq with h | h
   · exact (hcs₀ hsz).right (h hysy) hzsz hyz
   · exact (hcs₀ hsy).right hysy (h hzsz) hyz
+
+/-! ### Flags -/
+
+namespace Flag
+
+variable [Preorder α] {c : Set α} {s : Flag α} {a b : α}
+
+lemma _root_.IsChain.exists_subset_flag (hc : IsChain (· ≤ ·) c) : ∃ s : Flag α, c ⊆ s :=
+  let ⟨s, hs, hcs⟩ := hc.exists_maxChain; ⟨ofIsMaxChain s hs, hcs⟩
+
+lemma exists_mem (a : α) : ∃ s : Flag α, a ∈ s :=
+  let ⟨s, hs⟩ := Set.subsingleton_singleton (a := a).isChain.exists_subset_flag
+  ⟨s, hs rfl⟩
+
+lemma exists_mem_mem (hab : a ≤ b) : ∃ s : Flag α, a ∈ s ∧ b ∈ s := by
+  simpa [Set.insert_subset_iff] using (IsChain.pair hab).exists_subset_flag
+
+instance : Nonempty (Flag α) := ⟨.ofIsMaxChain _ maxChain_spec⟩
+
+end Flag
