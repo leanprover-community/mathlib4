@@ -745,15 +745,15 @@ lemma toLinearMap_congrL (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) : (congrL f g
   ext; simp
 
 @[simp]
-theorem congrL_refl_refl : congrL (.refl 𝕜 E) (.refl 𝕜 G) = .refl 𝕜 _ :=
-  ContinuousLinearEquiv.toLinearEquiv_injective <| (by simp [congrL]; rfl)
+theorem congrL_refl_refl : congrL (.refl 𝕜 E) (.refl 𝕜 G) = .refl 𝕜 _ := by
+  ext; simp [congrL]
 
 section congr_congr
 variable {F₂ H₂ : Type*} [NormedAddCommGroup F₂] [InnerProductSpace 𝕜 F₂] [NormedAddCommGroup H₂]
   [InnerProductSpace 𝕜 H₂] (f₂ : F ≃L[𝕜] F₂) (g₂ : H ≃L[𝕜] H₂) (f₁ : E ≃L[𝕜] F) (g₁ : G ≃L[𝕜] H)
 
-theorem congrL_trans : congrL (f₁.trans f₂) (g₁.trans g₂) = (congrL f₁ g₁).trans (congrL f₂ g₂) :=
-  ContinuousLinearEquiv.toLinearEquiv_injective <| (by ext; simp [congrL, map_map])
+theorem congrL_trans : congrL (f₁.trans f₂) (g₁.trans g₂) = (congrL f₁ g₁).trans (congrL f₂ g₂) := by
+  ext; simp [congrL, map_map]
 
 theorem congrL_congr (x : E ⊗[𝕜] G) :
     congrL f₂ g₂ (congrL f₁ g₁ x) = congrL (f₁.trans f₂) (g₁.trans g₂) x :=
