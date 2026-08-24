@@ -169,8 +169,8 @@ lemma convOne_def : (1 : WithConv (C →ₗ[R] A)) = toConv (Algebra.linearMap R
 @[simp] lemma convOne_apply (c : C) :
     (1 : WithConv (C →ₗ[R] A)) c = algebraMap R A (counit (R := R) c) := rfl
 
-@[simp] lemma convOne_comp_coalgHom [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
-    (h : B →ₗc[R] C) :
+@[simp]
+lemma convOne_comp_coalgHom [AddCommMonoid B] [Module R B] [CoalgebraStruct R B] (h : B →ₗc[R] C) :
     (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ (h : B →ₗ[R] C) = (1 : WithConv (B →ₗ[R] A)).ofConv := by
   ext; simp
 
