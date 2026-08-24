@@ -5,8 +5,11 @@ Authors: Christopher Hoskin, Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Data.Set.Lattice.Bounded
+public import Mathlib.Order.Antisymmetrization
+public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.UpperLower.Basic
+
+import Mathlib.Data.Set.Lattice.Bounded
 
 /-!
 # Sets closed under directed suprema
