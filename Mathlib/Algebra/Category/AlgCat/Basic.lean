@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.Algebra.Category.Ring.Basic
@@ -21,7 +20,7 @@ associating to a type the free `R`-algebra on that type is left adjoint to the f
 
 @[expose] public section
 
-open CategoryTheory Limits
+open CategoryTheory
 
 universe v u
 
