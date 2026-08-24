@@ -247,7 +247,7 @@ instance : Mul (A →ₗc[R] A) where mul := comp
 instance : Pow (A →ₗc[R] A) Nat where
   pow f n := npowRec n f |>.copy f^[n] (Nat.rec rfl (fun _ => congrArg (· ∘ f)) n)
 
-@[simps! -isSimp toSemigroup_toMul_mul toOne_one]
+@[simps! -isSimp toMul_mul toOne_one]
 instance End : Monoid (A →ₗc[R] A) where
   mul_assoc _ _ _ := rfl
   one_mul _ := ext fun _ => rfl

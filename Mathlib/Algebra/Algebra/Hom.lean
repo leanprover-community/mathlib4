@@ -336,7 +336,7 @@ instance : Pow (A →ₐ[R] A) Nat where
     { __ := f.toRingHom ^ n
       commutes' r := Nat.rec rfl (fun n ih => (congrArg f^[n] (f.commutes r)).trans ih) n }
 
-@[simps! -isSimp toSemigroup_toMul_mul toOne_one]
+@[simps! -isSimp toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
   mul_assoc _ _ _ := rfl
   one_mul _ := rfl
