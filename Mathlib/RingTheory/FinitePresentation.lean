@@ -132,7 +132,7 @@ theorem iff :
   · rintro ⟨n, f, hf⟩
     exact ⟨n, RingHom.ker f.toRingHom, Ideal.quotientKerAlgEquivOfSurjective hf.1, hf.2⟩
   · rintro ⟨n, I, e, hfg⟩
-    letI := (FinitePresentation.mvPolynomial_aux R _).quotient hfg
+    let := (FinitePresentation.mvPolynomial_aux R _).quotient hfg
     exact equiv e
 
 /-- An algebra is finitely presented if and only if it is a quotient of a polynomial ring whose
@@ -147,12 +147,12 @@ theorem iff_quotient_mvPolynomial' :
     refine
       ⟨ULift (Fin n), inferInstance, f.comp ulift_var.toAlgHom, hfs.comp ulift_var.surjective,
         Ideal.fg_ker_comp _ _ ?_ hfk ulift_var.surjective⟩
-    simpa using Submodule.fg_bot
+    simpa using! Submodule.fg_bot
   · rintro ⟨ι, hfintype, f, hf⟩
     have equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
     use Fintype.card ι, f.comp equiv.symm, hf.1.comp (AlgEquiv.symm equiv).surjective
     refine Ideal.fg_ker_comp (S := MvPolynomial ι R) (A := A) _ f ?_ hf.2 equiv.symm.surjective
-    simpa using Submodule.fg_bot
+    simpa using! Submodule.fg_bot
 
 universe v in
 /-- If `A` is a finitely presented `R`-algebra, then `MvPolynomial (Fin n) A` is finitely presented
@@ -161,7 +161,6 @@ theorem mvPolynomial_of_finitePresentation [FinitePresentation R A] (ι : Type v
     FinitePresentation R (MvPolynomial ι A) := by
   have hfp : FinitePresentation R A := inferInstance
   rw [iff_quotient_mvPolynomial'] at hfp ⊢
-  classical
   -- Make universe level `v` explicit so it matches that of `ι`
   obtain ⟨(ι' : Type v), _, f, hf_surj, hf_ker⟩ := hfp
   let g := (MvPolynomial.mapAlgHom f).comp (MvPolynomial.sumAlgEquiv R ι ι').toAlgHom
@@ -183,7 +182,7 @@ theorem trans [Algebra A B] [IsScalarTower R A B] [FinitePresentation R A]
     [FinitePresentation A B] : FinitePresentation R B := by
   have hfpB : FinitePresentation A B := inferInstance
   obtain ⟨n, I, e, hfg⟩ := iff.1 hfpB
-  letI : FinitePresentation R (MvPolynomial (Fin n) A ⧸ I) :=
+  let : FinitePresentation R (MvPolynomial (Fin n) A ⧸ I) :=
     (mvPolynomial_of_finitePresentation _).quotient hfg
   exact equiv (e.restrictScalars R)
 
@@ -212,8 +211,8 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
     FinitePresentation.{w₂, w₃} A B := by
   classical
   obtain ⟨n, f, hf, s, hs⟩ := FinitePresentation.out (R := R) (A := B)
-  letI RX := MvPolynomial (Fin n) R
-  letI AX := MvPolynomial (Fin n) A
+  let RX := MvPolynomial (Fin n) R
+  let AX := MvPolynomial (Fin n) A
   refine ⟨n, MvPolynomial.aeval (f ∘ X), ?_, ?_⟩
   · rw [← AlgHom.range_eq_top, ← Algebra.adjoin_range_eq_range_aeval,
       Set.range_comp f MvPolynomial.X, eq_top_iff, ← @adjoin_adjoin_of_tower R A B,
@@ -230,7 +229,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       apply Subalgebra.restrictScalars_injective R
       rw [← adjoin_restrictScalars, adjoin_range_X, Subalgebra.restrictScalars_top,
         Subalgebra.restrictScalars_top]
-    letI g : t → AX := fun x => MvPolynomial.C (x : A) - map (algebraMap R A) (t' x)
+    let g : t → AX := fun x => MvPolynomial.C (x : A) - map (algebraMap R A) (t' x)
     refine ⟨s.image (map (algebraMap R A)) ∪ t.attach.image g, ?_⟩
     rw [Finset.coe_union, Finset.coe_image, Finset.coe_image, Finset.attach_eq_univ,
       Finset.coe_univ, Set.image_univ]
@@ -373,7 +372,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
 theorem ker_fG_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
     [FinitePresentation R A] [FinitePresentation R B] : (RingHom.ker f.toRingHom).FG := by
   obtain ⟨n, g, hg, _⟩ := FinitePresentation.out (R := R) (A := A)
-  convert (ker_fg_of_mvPolynomial (f.comp g) (hf.comp hg)).map g.toRingHom
+  convert! (ker_fg_of_mvPolynomial (f.comp g) (hf.comp hg)).map g.toRingHom
   simp_rw [RingHom.ker_eq_comap_bot, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom]
   rw [← Ideal.comap_comap, Ideal.map_comap_of_surjective (g : MvPolynomial (Fin n) R →+* A) hg]
 
@@ -475,7 +474,7 @@ lemma polynomial_induction
       P R S f → Q S T g → Q R T (g.comp f))
     {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) (hf : f.FinitePresentation) :
     Q R S f := by
-  letI := f.toAlgebra
+  let := f.toAlgebra
   obtain ⟨n, g, hg, hg'⟩ := hf
   let g' := g.toRingHom
   change Surjective g' at hg
@@ -488,18 +487,18 @@ lemma polynomial_induction
   | zero =>
     refine fg_ker _ _ _ (hg.comp (MvPolynomial.C_surjective (Fin 0))) ?_
     rw [← comap_ker]
-    convert hg'.map (MvPolynomial.isEmptyRingEquiv R (Fin 0)).toRingHom using 1
-    simp only [RingEquiv.toRingHom_eq_coe]
+    convert! hg'.map (MvPolynomial.isEmptyRingEquiv R (Fin 0)).toRingHom using 1
+    simp only [RingEquiv.toRingHom_eq_coe, ← MvPolynomial.isEmptyRingEquiv_symm_toRingHom]
     exact Ideal.comap_symm (MvPolynomial.isEmptyRingEquiv R (Fin 0))
   | succ n IH =>
     let e : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] MvPolynomial (Fin n) R[X] :=
       (MvPolynomial.renameEquiv R (finSuccEquiv n)).trans (MvPolynomial.optionEquivRight R (Fin n))
     have he : (ker (g'.comp <| RingHomClass.toRingHom e.symm)).FG := by
       rw [← RingHom.comap_ker]
-      convert hg'.map e.toAlgHom.toRingHom using 1
+      convert! hg'.map e.toAlgHom.toRingHom using 1
       exact Ideal.comap_symm e.toRingEquiv
     have := IH (R := R[X]) (S := S) (g'.comp e.symm) (hg.comp e.symm.surjective) he
-    convert comp _ _ _ _ _ (polynomial _) this using 1
+    convert! comp _ _ _ _ _ (polynomial _) this using 1
     rw [comp_assoc, comp_assoc]
     congr 1 with r
     simp [e]
@@ -544,7 +543,7 @@ theorem comp_surjective {f : A →ₐ[R] B} {g : B →ₐ[R] C} (hf : f.FinitePr
 theorem of_surjective (f : A →ₐ[R] B) (hf : Surjective f) (hker : (RingHom.ker f.toRingHom).FG) :
     f.FinitePresentation := by
   -- Porting note: added `convert`
-  convert RingHom.FinitePresentation.of_surjective f hf hker
+  convert! RingHom.FinitePresentation.of_surjective f hf hker
 
 theorem of_finiteType [IsNoetherianRing A] {f : A →ₐ[R] B} : f.FiniteType ↔ f.FinitePresentation :=
   RingHom.FinitePresentation.of_finiteType

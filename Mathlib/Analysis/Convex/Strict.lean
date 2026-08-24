@@ -244,7 +244,7 @@ end continuous_add
 section ContinuousSMul
 
 variable [Field 𝕝] [Module 𝕝 E] [ContinuousConstSMul 𝕝 E]
-  [LinearMap.CompatibleSMul E E 𝕜 𝕝] {s : Set E} {x : E}
+  [LinearMap.CompatibleSMul E E 𝕜 𝕝] {s : Set E}
 
 theorem StrictConvex.smul (hs : StrictConvex 𝕜 s) (c : 𝕝) : StrictConvex 𝕜 (c • s) := by
   obtain rfl | hc := eq_or_ne c 0
@@ -361,7 +361,7 @@ theorem strictConvex_iff_div :
         ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → (a / (a + b)) • x + (b / (a + b)) • y ∈ interior s :=
   ⟨fun h x hx y hy hxy a b ha hb ↦ h hx hy hxy (by positivity) (by positivity) (by field),
     fun h x hx y hy hxy a b ha hb hab ↦ by
-    convert h hx hy hxy ha hb <;> rw [hab, div_one]⟩
+    convert! h hx hy hxy ha hb <;> rw [hab, div_one]⟩
 
 theorem StrictConvex.mem_smul_of_zero_mem (hs : StrictConvex 𝕜 s) (zero_mem : (0 : E) ∈ s)
     (hx : x ∈ s) (hx₀ : x ≠ 0) {t : 𝕜} (ht : 1 < t) : x ∈ t • interior s := by

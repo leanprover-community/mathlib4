@@ -38,13 +38,13 @@ example : True := .intro
 example : True := .intro
 
 /-- error: <input>:1:3: Stacks tags must be exactly 4 characters -/
-#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "A05"
+#guard_msgs in #parse Mathlib.CrossRef.stacksTagFn => "A05"
 
 /-- error: <input>:1:4: Stacks tags must consist only of digits and uppercase letters. -/
-#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "A05b"
+#guard_msgs in #parse Mathlib.CrossRef.stacksTagFn => "A05b"
 
 /-- info: 0BD5 -/
-#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "0BD5"
+#guard_msgs in #parse Mathlib.CrossRef.stacksTagFn => "0BD5"
 
 /--
 info:
@@ -63,15 +63,78 @@ True
 
 /--
 info:
-[Stacks Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration 'X.tagged'. (Also a comment)
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration 'X.tagged'. (Also a comment)
 True
 -/
 #guard_msgs in
 #kerodon_tags!
 
+namespace W
+
+@[wikidata Q12345 "A Wikidata comment"]
+theorem wikiTagged : True := .intro
+
+end W
+
+/-- info: some ([Wikidata Q12345](https://www.wikidata.org/wiki/Q12345) (A Wikidata comment)) -/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `W.wikiTagged}"
+
+/--
+info:
+[Wikidata Q12345](https://www.wikidata.org/wiki/Q12345) corresponds to declaration 'W.wikiTagged'. (A Wikidata comment)
+-/
+#guard_msgs in
+#wikidata_tags
+
+/-- error: <input>:1:5: Wikidata ids must consist of the letter Q followed by digits. -/
+#guard_msgs in #parse Mathlib.CrossRef.wikidataIdFn => "Q12X3"
+
+/-- error: <input>:1:6: Wikidata ids must start with the letter Q followed by one or more digits. -/
+#guard_msgs in #parse Mathlib.CrossRef.wikidataIdFn => "P12345"
+
+/-- info: Q42 -/
+#guard_msgs in #parse Mathlib.CrossRef.wikidataIdFn => "Q42"
+
+namespace LMFDB
+
+@[lmfdb group.abelian "A vacuous comment"]
+theorem IsAbelian : 1 + 1 = 2 := by
+  rfl
+
+/--
+info: some ([LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) (A vacuous comment))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `LMFDB.IsAbelian}"
+
+/--
+error: <input>:1:9: LMFDB ids must consist only of lowercase letters, digits, periods, and underscores.
+-/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "LMFDB.tag"
+
+/-- info: lmfdb.tag_99 -/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "lmfdb.tag_99"
+
+/--
+error: <input>:1:5: LMFDB ids must consist only of lowercase letters, digits, periods, and underscores.
+-/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "LMFDB&tag"
+
+/--
+info:
+[LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) corresponds to declaration 'IsAbelian'. (A vacuous comment)
+-/
+#guard_msgs in
+#lmfdb_tags
+
+end LMFDB
+
 section errors
 
-open Lean Parser Mathlib.StacksTag
+open Lean Parser Mathlib.CrossRef
 
 def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
   let ictx := mkInputContext input "<input>"
