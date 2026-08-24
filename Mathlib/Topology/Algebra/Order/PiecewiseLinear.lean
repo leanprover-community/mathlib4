@@ -194,7 +194,7 @@ theorem hasDerivWithinAt_piecewiseLinear (hx : StrictMono x)
   set n := gridIdx x t
   apply hasDerivWithinAt_Ioi_iff_Ici.mp
   have hderiv : HasDerivAt (fun s => y n + (s - x n) • c n) (c n) t := by
-    simpa only [one_smul] using
+    simpa only [id_eq, one_smul] using
       ((hasDerivAt_id t).sub_const (x n) |>.smul_const (c n) |>.const_add (y n))
   apply hderiv.hasDerivWithinAt.congr_of_eventuallyEq
   · filter_upwards [Ioo_mem_nhdsGT h2] with s hs

@@ -31,6 +31,7 @@ open Function ENNReal NNReal Set
 noncomputable section
 
 /-- The type of extended real numbers `[-∞, ∞]`, constructed as `WithBot (WithTop ℝ)`. -/
+@[wikidata Q2039387]
 def EReal := WithBot (WithTop ℝ)
 deriving Nontrivial,
   Zero, One, AddMonoid, AddCommMonoid, AddCommMonoidWithOne, CharZero,
@@ -191,13 +192,13 @@ protected theorem mul_comm (x y : EReal) : x * y = y * x := by
   rw [← coe_mul, ← coe_mul, mul_comm]
 
 protected theorem one_mul : ∀ x : EReal, 1 * x = x
-  | ⊤ => if_pos one_pos
-  | ⊥ => if_pos one_pos
+  | ⊤ => ite_eq_left one_pos
+  | ⊥ => ite_eq_left one_pos
   | (x : ℝ) => congr_arg Real.toEReal (one_mul x)
 
 protected theorem zero_mul : ∀ x : EReal, 0 * x = 0
-  | ⊤ => (if_neg (lt_irrefl _)).trans (if_pos rfl)
-  | ⊥ => (if_neg (lt_irrefl _)).trans (if_pos rfl)
+  | ⊤ => (ite_eq_right (lt_irrefl _)).trans (ite_eq_left rfl)
+  | ⊥ => (ite_eq_right (lt_irrefl _)).trans (ite_eq_left rfl)
   | (x : ℝ) => congr_arg Real.toEReal (zero_mul x)
 
 instance : MulZeroOneClass EReal where
@@ -641,7 +642,7 @@ theorem coe_ennreal_ne_one {x : ℝ≥0∞} : (x : EReal) ≠ 1 ↔ x ≠ 1 :=
   coe_ennreal_eq_one.not
 
 theorem coe_ennreal_nonneg (x : ℝ≥0∞) : (0 : EReal) ≤ x :=
-  coe_ennreal_le_coe_ennreal_iff.2 (zero_le x)
+  coe_ennreal_le_coe_ennreal_iff.2 zero_le
 
 @[simp] theorem range_coe_ennreal : range ((↑) : ℝ≥0∞ → EReal) = Set.Ici 0 :=
   Subset.antisymm (range_subset_iff.2 coe_ennreal_nonneg) fun x => match x with
@@ -674,7 +675,7 @@ private theorem coe_ennreal_top_mul (x : ℝ≥0) : ((⊤ * x : ℝ≥0∞) : ER
   rcases eq_or_ne x 0 with (rfl | h0)
   · simp
   · rw [ENNReal.top_mul (ENNReal.coe_ne_zero.2 h0)]
-    exact Eq.symm <| if_pos <| NNReal.coe_pos.2 h0.bot_lt
+    exact Eq.symm <| ite_eq_left <| NNReal.coe_pos.2 h0.bot_lt
 
 @[simp, norm_cast]
 theorem coe_ennreal_mul : ∀ x y : ℝ≥0∞, ((x * y : ℝ≥0∞) : EReal) = (x : EReal) * y
@@ -700,7 +701,7 @@ noncomputable def toENNReal (x : EReal) : ℝ≥0∞ :=
 
 @[simp]
 lemma toENNReal_of_ne_top {x : EReal} (hx : x ≠ ⊤) : x.toENNReal = ENNReal.ofReal x.toReal :=
-  if_neg hx
+  ite_eq_right hx
 
 @[simp]
 lemma toENNReal_eq_top_iff {x : EReal} : x.toENNReal = ⊤ ↔ x = ⊤ := by
@@ -712,7 +713,7 @@ lemma toENNReal_ne_top_iff {x : EReal} : x.toENNReal ≠ ⊤ ↔ x ≠ ⊤ := to
 
 @[simp]
 lemma toENNReal_of_nonpos {x : EReal} (hx : x ≤ 0) : x.toENNReal = 0 := by
-  rw [toENNReal, if_neg (fun h ↦ ?_)]
+  rw [toENNReal, ite_eq_right (fun h ↦ ?_)]
   · exact ENNReal.ofReal_of_nonpos (toReal_nonpos hx)
   · exact zero_ne_top <| top_le_iff.mp <| h ▸ hx
 
@@ -733,9 +734,9 @@ lemma toENNReal_pos_iff {x : EReal} : 0 < x.toENNReal ↔ 0 < x := by
 lemma coe_toENNReal {x : EReal} (hx : 0 ≤ x) : (x.toENNReal : EReal) = x := by
   rw [toENNReal]
   by_cases h_top : x = ⊤
-  · rw [if_pos h_top, h_top]
+  · rw [ite_eq_left h_top, h_top]
     rfl
-  rw [if_neg h_top]
+  rw [ite_eq_right h_top]
   simp only [coe_ennreal_ofReal, hx, toReal_nonneg, max_eq_left]
   exact coe_toReal h_top fun _ ↦ by simp_all only [le_bot_iff, zero_ne_bot]
 
@@ -748,7 +749,7 @@ lemma coe_toENNReal_eq_max {x : EReal} : x.toENNReal = max 0 x := by
 lemma toENNReal_coe {x : ℝ≥0∞} : (x : EReal).toENNReal = x := by
   by_cases h_top : x = ⊤
   · rw [h_top, coe_ennreal_top, toENNReal_top]
-  rwa [toENNReal, if_neg _, toReal_coe_ennreal, ENNReal.ofReal_toReal_eq_iff]
+  rwa [toENNReal, ite_eq_right _, toReal_coe_ennreal, ENNReal.ofReal_toReal_eq_iff]
   simp [h_top]
 
 @[simp] lemma real_coe_toENNReal (x : ℝ) : (x : EReal).toENNReal = ENNReal.ofReal x := rfl
@@ -849,11 +850,12 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: cast from `ℝ` to `EReal`. -/
 @[positivity Real.toEReal _]
-meta def evalRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealToEReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(EReal), ~q(Real.toEReal $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure (.positive q(EReal.coe_pos.2 $pa))
     | .nonnegative pa => pure (.nonnegative q(EReal.coe_nonneg.2 $pa))
@@ -863,11 +865,12 @@ meta def evalRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `EReal`. -/
 @[positivity ENNReal.toEReal _]
-meta def evalENNRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealToEReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(EReal), ~q(ENNReal.toEReal $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure (.positive q(EReal.coe_ennreal_pos.2 $pa))
     | .nonzero pa => pure (.positive q(EReal.coe_ennreal_pos_iff_ne_zero.2 $pa))
@@ -880,11 +883,12 @@ We prove that `EReal.toReal x` is nonnegative whenever `x` is nonnegative.
 Since `EReal.toReal ⊤ = 0`, we cannot prove a stronger statement,
 at least without relying on a tactic like `finiteness`. -/
 @[positivity EReal.toReal _]
-meta def evalERealToReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalERealToReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(Real), ~q(EReal.toReal $a) =>
     assertInstancesCommute
-    match (← core q(inferInstance) q(inferInstance) a).toNonneg with
+    match (← core q(inferInstance) (some q(inferInstance)) a).toNonneg with
     | .some pa => pure (.nonnegative q(EReal.toReal_nonneg $pa))
     | _ => pure .none
   | _, _, _ => throwError "not EReal.toReal"
@@ -896,13 +900,14 @@ and it is nonnegative otherwise.
 We cannot deduce any corollaries from `x ≠ 0`, since `EReal.toENNReal x = 0` for `x < 0`.
 -/
 @[positivity EReal.toENNReal _]
-meta def evalERealToENNReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalERealToENNReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ENNReal), ~q(EReal.toENNReal $a) =>
     assertInstancesCommute
-    match ← core q(inferInstance) q(inferInstance) a with
+    match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa => pure (.positive q(EReal.toENNReal_pos_iff.2 $pa))
-    | _ => pure (.nonnegative q(zero_le $e))
+    | _ => pure (.nonnegative q(zero_le (a := $e)))
   | _, _, _ => throwError "not EReal.toENNReal"
 
 end Mathlib.Meta.Positivity

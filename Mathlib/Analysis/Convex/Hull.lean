@@ -26,7 +26,7 @@ while the impact on writing code is minimal as `convexHull 𝕜 s` is automatica
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {𝕜 E F : Type*}
 
@@ -52,6 +52,7 @@ theorem subset_convexHull : s ⊆ convexHull 𝕜 s :=
 
 theorem convex_convexHull : Convex 𝕜 (convexHull 𝕜 s) := (convexHull 𝕜).isClosed_closure s
 
+set_option backward.isDefEq.respectTransparency false in
 theorem convexHull_eq_iInter : convexHull 𝕜 s = ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t := by
   simp [convexHull, iInter_subtype, iInter_and]
 
@@ -145,7 +146,7 @@ theorem Convex.convex_remove_iff_notMem_convexHull_remove {s : Set E} (hs : Conv
     exact convex_convexHull 𝕜 _
   exact
     Subset.antisymm (subset_convexHull 𝕜 _) fun y hy =>
-      ⟨convexHull_min diff_subset hs hy, by
+      ⟨convexHull_min sdiff_subset hs hy, by
         rintro (rfl : y = x)
         exact hx hy⟩
 

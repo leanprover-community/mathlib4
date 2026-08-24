@@ -171,7 +171,7 @@ end existential
 open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for `∉`. -/
-@[app_delab Not] def delab_not_in := whenPPOption Lean.getPPNotation do
+@[app_delab Not] def delabNotIn := whenPPOption Lean.getPPNotation do
   let #[f] := (← SubExpr.getExpr).getAppArgs | failure
   guard <| f.isAppOfArity ``Membership.mem 5
   let stx₁ ← SubExpr.withAppArg <| SubExpr.withNaryArg 3 delab

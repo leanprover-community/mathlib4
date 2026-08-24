@@ -36,7 +36,7 @@ uniform convergence, bounded convergence
 
 @[expose] public section
 
-open Bornology Filter Function Set Topology ContinuousLinearMap
+open Filter Function Set Topology ContinuousLinearMap
 open scoped UniformConvergence Uniformity
 
 section CompactSets
@@ -52,7 +52,7 @@ variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField �
 variable (E F σ) in
 /-- The topology of compact convergence on `E →L[𝕜] F`. -/
 abbrev CompactConvergenceCLM [TopologicalSpace E] [TopologicalSpace F] :=
-  UniformConvergenceCLM σ F {(S : Set E) | IsCompact S}
+  UniformConvergenceCLM σ F {S : Set E | IsCompact S}
 
 @[inherit_doc]
 scoped[CompactConvergenceCLM]
@@ -65,11 +65,11 @@ notation:25 E " →L_c[" R "] " F => CompactConvergenceCLM (RingHom.id R) E F
 namespace CompactConvergenceCLM
 
 instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
-    [UniformSpace E] [IsUniformAddGroup E] [TopologicalSpace F] [IsTopologicalAddGroup F]
+    [TopologicalSpace E] [IsTopologicalAddGroup E] [TopologicalSpace F] [IsTopologicalAddGroup F]
     [ContinuousSMul 𝕜₁ E] [ContinuousSMul 𝕜₂ F] :
     ContinuousSMul 𝕜₂ (E →SL_c[σ] F) :=
   UniformConvergenceCLM.continuousSMul σ F { S | IsCompact S }
-    (fun _ hs => hs.totallyBounded.isVonNBounded 𝕜₁)
+    (fun _ hs => hs.isVonNBounded 𝕜₁)
 
 instance instContinuousEvalConst [TopologicalSpace E] [TopologicalSpace F]
     [IsTopologicalAddGroup F] : ContinuousEvalConst (E →SL_c[σ] F) E F :=
@@ -111,12 +111,6 @@ def ContinuousLinearMap.precompCompactConvergenceCLM [IsTopologicalAddGroup G]
     [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) : (F →SL_c[τ] G) →L[𝕜₃] E →SL_c[ρ] G :=
   L.precompUniformConvergenceCLM G _ _ (fun _ hs ↦ hs.image L.continuous)
 
-@[deprecated (since := "2026-01-27")]
-alias precomp_compactConvergenceCLM := precompCompactConvergenceCLM
-
-@[deprecated (since := "2026-01-27")]
-alias precomp_compactConvergenceCLM_apply := precompCompactConvergenceCLM_apply
-
 variable (E) in
 /-- Specialization of `ContinuousLinearMap.postcomp_uniformConvergenceCLM` to compact
 convergence. -/
@@ -126,12 +120,112 @@ def ContinuousLinearMap.postcompCompactConvergenceCLM [IsTopologicalAddGroup F]
     (L : F →SL[τ] G) : (E →SL_c[σ] F) →SL[τ] E →SL_c[ρ] G :=
   L.postcompUniformConvergenceCLM _
 
-@[deprecated (since := "2026-01-27")]
-alias postcomp_compactConvergenceCLM := postcompCompactConvergenceCLM
-
-@[deprecated (since := "2026-01-27")]
-alias postcomp_compactConvergenceCLM_apply := postcompCompactConvergenceCLM_apply
-
 end comp
+
+/-! ### Continuous linear equivalences -/
+
+section Pi
+
+open scoped CompactConvergenceCLM
+
+variable [TopologicalSpace E] {ι : Type*} (F : ι → Type*)
+  [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜₁ (F i)] [∀ i, TopologicalSpace (F i)]
+  [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜₁ (F i)]
+
+variable (𝕜₁ E) in
+/-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
+`Π i, E →L_c[𝕜] F i` and `E →L_c[𝕜] Π i, F i`. -/
+def CompactConvergenceCLM.piEquivL :
+    (Π i, E →L_c[𝕜₁] F i) ≃L[𝕜₁] (E →L_c[𝕜₁] Π i, F i) where
+  toFun F := ContinuousLinearMap.pi F
+  invFun f i := (ContinuousLinearMap.proj i).comp f
+  __ := UniformConvergenceCLM.piEquivL _ _ _
+
+@[simp]
+lemma CompactConvergenceCLM.piEquivL_apply
+    (T : Π i, E →L_c[𝕜₁] F i) (e : E) (i : ι) :
+    piEquivL 𝕜₁ E F T e i = T i e :=
+  rfl
+
+@[simp]
+lemma CompactConvergenceCLM.piEquivL_symm_apply
+    (T : E →L_c[𝕜₁] Π i, F i) (e : E) (i : ι) :
+    (piEquivL 𝕜₁ E F).symm T i e = T e i :=
+  rfl
+
+end Pi
+
+namespace ContinuousLinearEquiv
+
+open scoped CompactConvergenceCLM
+
+section Semilinear
+
+variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
+  {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
+  [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
+  [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
+  [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
+  [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]
+  [ContinuousConstSMul 𝕜₃ G] [ContinuousConstSMul 𝕜₄ H]
+  {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
+  {σ₃₄ : 𝕜₃ →+* 𝕜₄} {σ₄₃ : 𝕜₄ →+* 𝕜₃} {σ₂₄ : 𝕜₂ →+* 𝕜₄} {σ₁₄ : 𝕜 →+* 𝕜₄} [RingHomInvPair σ₁₂ σ₂₁]
+  [RingHomInvPair σ₂₁ σ₁₂] [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
+  [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+  [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
+
+/-- A pair of continuous (semi)linear equivalences generates a (semi)linear equivalence between the
+spaces of continuous (semi)linear maps. This version is for the type alias
+`CompactConvergenceCLM`. -/
+def compactConvergenceCLMCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) :
+    (E →SL_c[σ₁₄] H) ≃SL[σ₄₃] (F →SL_c[σ₂₃] G) :=
+  ContinuousLinearEquiv.uniformConvergenceCLMCongrSL e₁₂ e₄₃ _ _ fun s ↦ by
+    simp [← e₁₂.toHomeomorph.isCompact_preimage]
+
+@[simp]
+lemma compactConvergenceCLMCongrSL_apply (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
+    (φ : E →SL_c[σ₁₄] H) (f : F) :
+    compactConvergenceCLMCongrSL e₁₂ e₄₃ φ f = e₄₃ (φ (e₁₂.symm f)) :=
+  rfl
+
+@[simp]
+lemma compactConvergenceCLMCongrSL_symm_apply (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
+    (φ : F →SL_c[σ₂₃] G) (e : E) :
+    (compactConvergenceCLMCongrSL e₁₂ e₄₃).symm φ e = e₄₃.symm (φ (e₁₂ e)) :=
+  rfl
+
+end Semilinear
+
+section Linear
+
+variable {𝕜 : Type*} {E : Type*} {F : Type*} {G : Type*} {H : Type*}
+  [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
+  [NormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H]
+  [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
+  [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]
+  [ContinuousConstSMul 𝕜 G] [ContinuousConstSMul 𝕜 H]
+
+/-- A pair of continuous linear equivalences generates a continuous linear equivalence between
+the spaces of continuous linear maps. This version is for the type alias
+`CompactConvergenceCLM`. -/
+def compactConvergenceCLMCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) :
+    (E →L_c[𝕜] H) ≃L[𝕜] (F →L_c[𝕜] G) :=
+  e₁.compactConvergenceCLMCongrSL e₂
+
+@[simp]
+lemma compactConvergenceCLMCongr_apply (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G)
+    (φ : E →L_c[𝕜] H) (f : F) :
+    compactConvergenceCLMCongr e₁ e₂ φ f = e₂ (φ (e₁.symm f)) :=
+  rfl
+
+@[simp]
+lemma compactConvergenceCLMCongr_symm_apply (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G)
+    (φ : F →L_c[𝕜] G) (e : E) :
+    (compactConvergenceCLMCongr e₁ e₂).symm φ e = e₂.symm (φ (e₁ e)) :=
+  rfl
+
+end Linear
+
+end ContinuousLinearEquiv
 
 end CompactSets

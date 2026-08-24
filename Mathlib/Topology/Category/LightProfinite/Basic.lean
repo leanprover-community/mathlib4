@@ -99,7 +99,7 @@ def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toLightProfiniteFullyFaithful : toLightProfinite.FullyFaithful where
-  preimage f := InducedCategory.homMk (TypeCat.ofHom (f.hom.hom.1))
+  preimage f := InducedCategory.homMk (↾(f.hom.hom.1))
   map_preimage _ := rfl
   preimage_map _ := rfl
 
@@ -224,12 +224,12 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
         ext x
         dsimp [g, LocallyConstant.ofIsClopen]
         rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, hom_ofHom, ContinuousMap.coe_mk,
-          Function.comp_apply, if_neg]
+          Function.comp_apply, ite_eq_right]
         refine mt (fun α => hVU α) ?_
         simp [U, C]
       apply_fun fun e => (e y).down at H
       dsimp [g, LocallyConstant.ofIsClopen] at H
-      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
+      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, ite_eq_left hyV] at H
       exact top_ne_bot H
   · rw [← CategoryTheory.ofHom_epi_iff_surjective]
     apply (forget LightProfinite).epi_of_epi_map
@@ -321,6 +321,7 @@ def lightDiagramToLightProfinite : LightDiagram.{u} ⥤ LightProfinite.{u} where
   obj X := LightProfinite.of X.cone.pt
   map f := InducedCategory.homMk f.hom.hom
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of categories `LightProfinite ≌ LightDiagram` -/
 noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiagram.{u} where
@@ -335,7 +336,7 @@ noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiag
       apply InducedCategory.hom_ext
       simp only [Functor.map_comp, Functor.map_preimage]
       simp)
-  functor_unitIso_comp _ := by simpa using lightDiagramToProfinite.preimage_id
+  functor_unitIso_comp _ := by simpa using! lightDiagramToProfinite.preimage_id
 
 instance : lightProfiniteToLightDiagram.IsEquivalence :=
   show LightProfinite.equivDiagram.functor.IsEquivalence from inferInstance

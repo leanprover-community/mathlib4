@@ -38,17 +38,21 @@ jobs:
 
       - name: Mint authz token
         id: authz-token
-        uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           app-id: ${{ secrets.LPC_TEAM_CHECK_APP_ID }}
           private-key: ${{ secrets.LPC_TEAM_CHECK_PRIVATE_KEY }}
           owner: leanprover-community
 
       - name: Run splice bot action
-        uses: leanprover-community/SpliceBot/.github/actions/splice-wf-run@a463ae17022e8eb5929a208c1b136aeebcaf77e1
+        uses: leanprover-community/SpliceBot/.github/actions/splice-wf-run@d86d20efffbd18f839199fdd5ec126570f7eceda
         with:
           source_workflow: ${{ github.event.workflow_run.name }}
           push_to_fork: leanprover-community/mathlib4_copy
+          # Title the split PR so it passes check_pr_titles.yaml: scope without
+          # the Mathlib/ prefix or the .lean extension.
+          pr_title: 'chore({file_scope}): automated extraction from #{pr_number}'
+          scope_strip_prefix: 'Mathlib/'
           min_repo_permission: 'disabled'
           allow_pr_author: 'true'
           allowed_teams: |

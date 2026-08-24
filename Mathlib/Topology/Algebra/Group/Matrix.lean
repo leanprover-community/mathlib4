@@ -8,7 +8,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 public import Mathlib.Topology.Algebra.Algebra
-public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.Instances.Matrix
 
 /-!
@@ -18,7 +18,7 @@ Lemmas about the topology of matrix groups, such as `GL(n, R)` and `SL(n, R)` fo
 topological ring `R`.
 -/
 
-@[expose] public section
+public section
 
 open Matrix Topology
 

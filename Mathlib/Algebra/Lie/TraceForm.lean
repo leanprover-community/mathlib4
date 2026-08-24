@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Lie.InvariantForm
 public import Mathlib.Algebra.Lie.Weights.Cartan
 public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 public import Mathlib.LinearAlgebra.PID
 
 /-!
@@ -45,6 +46,8 @@ open LinearMap (trace)
 open Set Module
 
 namespace LieModule
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- A finite, free representation of a Lie algebra `L` induces a bilinear form on `L` called
 the trace form. See also `killingForm`. -/
@@ -105,6 +108,12 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   apply LinearMap.isNilpotent_trace_of_isNilpotent
   exact isNilpotent_toEnd_of_isNilpotent₂ R L M x y
 
+open scoped TensorProduct in
+@[simp] lemma traceForm_baseChange [Module.Free R M] [Module.Finite R M]
+    (A : Type*) [CommRing A] [Algebra R A] :
+    traceForm A (A ⊗[R] L) (A ⊗[R] M) = (traceForm R L M).baseChange A := by
+  ext; simp [traceForm_apply_apply, ← LinearMap.baseChange_comp, Algebra.algebraMap_eq_smul_one]
+
 variable {R L M} in
 lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
     (y : End R M) (hy : ∀ z ∈ LieHom.range φ, ⁅y, z⁆ ∈ LieHom.range φ)
@@ -118,9 +127,9 @@ lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
     obtain ⟨c : L, hbc : φ c = ⁅y, φ b⁆⟩ := hy (φ b) (LieHom.mem_range_self φ b)
     replace hbc : ⁅φ b, y⁆ = -φ c := by rw [hbc, Module.End.instLieRingModule_eq, lie_skew]
     rw [LieHom.map_lie, LinearMap.trace_lie_mul_eq, Ring.lie_def,
-      ← LieRing.of_associative_ring_bracket, ← Module.End.instLieRingModule_eq, hbc, mul_neg,
-      map_neg, neg_eq_zero, Module.End.mul_eq_comp, ← traceForm_apply_apply, h,
-      LinearMap.zero_apply, LinearMap.zero_apply]
+      ← LieRing.of_associative_ring_bracket, hbc, mul_neg, map_neg, neg_eq_zero,
+      Module.End.mul_eq_comp, ← traceForm_apply_apply, h, LinearMap.zero_apply,
+      LinearMap.zero_apply]
   | zero => simp
   | add u v _ _ hu hv => simp [add_mul, hu, hv]
   | smul t u _ hu => simp [hu]
@@ -174,12 +183,12 @@ lemma traceForm_apply_eq_zero_of_mem_lcs_of_mem_center {x y : L}
   · simpa using hy
 
 -- This is barely worth having: it usually follows from `LieModule.traceForm_eq_zero_of_isNilpotent`
-@[simp] lemma traceForm_eq_zero_of_isTrivial [IsTrivial L M] :
+lemma traceForm_eq_zero_of_isTrivial [IsTrivial L M] :
     traceForm R L M = 0 := by
   ext x y
   suffices φ x ∘ₗ φ y = 0 by simp [traceForm_apply_apply, this]
   ext m
-  simp
+  simp [trivial_lie_zero]
 
 /-- Given a bilinear form `B` on a representation `M` of a nilpotent Lie algebra `L`, if `B` is
 invariant (in the sense that the action of `L` is skew-adjoint w.r.t. `B`) then components of the
@@ -311,7 +320,7 @@ lemma isLieAbelian_of_ker_traceForm_eq_bot [Module.Free R M] [Module.Finite R M]
     (h : LinearMap.ker (traceForm R L M) = ⊥) : IsLieAbelian L := by
   simpa only [← disjoint_lowerCentralSeries_maxTrivSubmodule_iff R L L, disjoint_iff_inf_le,
     LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.toSubmodule_eq_bot, h]
-    using lowerCentralSeries_one_inf_center_le_ker_traceForm R L M
+    using! lowerCentralSeries_one_inf_center_le_ker_traceForm R L M
 
 end LieModule
 
@@ -395,7 +404,7 @@ noncomputable def killingCompl : LieIdeal R L :=
 lemma coe_killingCompl_top :
     killingCompl R L ⊤ = LinearMap.ker (killingForm R L) := by
   ext x
-  simp [LinearMap.ext_iff, LinearMap.BilinForm.IsOrtho, LieModule.traceForm_comm R L L x]
+  simp [LinearMap.ext_iff, LieModule.traceForm_comm R L L x]
 
 lemma restrict_killingForm :
     (killingForm R L).restrict I = LieModule.traceForm R I L :=

@@ -8,12 +8,13 @@ module
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Even
 public import Mathlib.Data.Int.Sqrt
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Parity of integers
 -/
 
-@[expose] public section
+public section
 
 open Nat
 

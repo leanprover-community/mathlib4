@@ -19,12 +19,10 @@ type of endomorphisms of the identity functor of `C`.
 
 -/
 
-@[expose] public section
+public section
 universe v u
 
 namespace CategoryTheory
-
-open Category
 
 variable (C : Type u) [Category.{v} C]
 

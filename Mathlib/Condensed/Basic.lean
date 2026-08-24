@@ -5,7 +5,6 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!
@@ -30,9 +29,9 @@ as we do not impose cardinality bounds, and manage universes carefully instead.
 
 -/
 
-@[expose] public section
+public section
 
-open CategoryTheory Limits
+open CategoryTheory
 
 open CategoryTheory
 

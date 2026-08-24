@@ -85,6 +85,9 @@ theorem lifts_iff_coeffs_subset_range (p : S[X]) :
     · exact ⟨0, by simp [hn]⟩
     · exact h <| coeff_mem_coeffs hn
 
+theorem mem_lifts_of_surjective (hf : Function.Surjective f) (p : S[X]) : p ∈ lifts f :=
+  (lifts_iff_coeff_lifts p).mpr fun n ↦ hf (p.coeff n)
+
 /-- If `(r : R)`, then `C (f r)` lifts. -/
 theorem C_mem_lifts (f : R →+* S) (r : R) : C (f r) ∈ lifts f :=
   ⟨C r, by
@@ -150,7 +153,7 @@ theorem exists_support_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
   let q : R[X] := ∑ k ∈ p.support, monomial k (g k)
   have hq : map f q = p := by simp_rw [q, Polynomial.map_sum, map_monomial, hg, ← as_sum_support]
   have hq' : q.support = p.support := by
-    simp_rw [Finset.ext_iff, mem_support_iff, q, finset_sum_coeff, coeff_monomial,
+    simp_rw [Finset.ext_iff, mem_support_iff, q, finsetSum_coeff, coeff_monomial,
       Finset.sum_ite_eq', ite_ne_right_iff, mem_support_iff, and_iff_left_iff_imp, not_imp_not]
     exact fun k h ↦ by rw [← hg, h, map_zero]
   exact ⟨q, hq, hq'⟩
@@ -160,6 +163,10 @@ theorem exists_degree_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
     ∃ q : R[X], map f q = p ∧ q.degree = p.degree := by
   obtain ⟨q, hq, hq'⟩ := exists_support_eq_of_mem_lifts hlifts
   exact ⟨q, hq, congrArg Finset.max hq'⟩
+
+theorem exists_natDegree_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
+    ∃ q, map f q = p ∧ q.natDegree = p.natDegree :=
+  (exists_degree_eq_of_mem_lifts hlifts).imp fun _ ↦ And.imp_right natDegree_eq_of_degree_eq
 
 @[deprecated (since := "2026-02-11")]
 alias mem_lifts_and_degree_eq := exists_degree_eq_of_mem_lifts

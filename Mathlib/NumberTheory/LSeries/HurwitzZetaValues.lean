@@ -206,19 +206,31 @@ the functional equation). -/
 theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :
     riemannZeta (2 * k) = (-1) ^ (k + 1) * (2 : ℂ) ^ (2 * k - 1)
       * (π : ℂ) ^ (2 * k) * bernoulli (2 * k) / (2 * k)! := by
-  convert congr_arg ((↑) : ℝ → ℂ) (hasSum_zeta_nat hk).tsum_eq
+  convert! congr_arg ((↑) : ℝ → ℂ) (hasSum_zeta_nat hk).tsum_eq
   · rw [← Nat.cast_two, ← Nat.cast_mul, zeta_nat_eq_tsum_of_gt_one (by lia)]
     simp [push_cast]
   · norm_cast
 
+/-- Explicit formula for `ζ (2 * k)`, for `k ∈ ℕ`, in terms of the Bernoulli number
+`bernoulli (2 * k)`. Compare `riemannZeta_two_mul_nat` which avoids a cast in an exponent
+but requires `k ≠ 0`. -/
+theorem riemannZeta_two_mul_nat' {k : ℕ} :
+    riemannZeta (2 * k) = (-1) ^ (k + 1) * (2 : ℂ) ^ (2 * k - 1 : ℤ)
+      * (π : ℂ) ^ (2 * k) * bernoulli (2 * k) / (2 * k)! := by
+  rcases eq_or_ne k 0 with rfl | hk
+  · simp [riemannZeta_zero]
+    norm_num
+  · convert riemannZeta_two_mul_nat hk
+    grind [zpow_natCast]
+
 theorem riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
-  convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_two.tsum_eq
+  convert! congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_two.tsum_eq
   · rw [← Nat.cast_two, zeta_nat_eq_tsum_of_gt_one one_lt_two]
     simp [push_cast]
   · norm_cast
 
 theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
-  convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_four.tsum_eq
+  convert! congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_four.tsum_eq
   · rw [← Nat.cast_one, show (4 : ℂ) = (4 : ℕ) by simp,
       zeta_nat_eq_tsum_of_gt_one (by simp : 1 < 4)]
     simp only [push_cast]

@@ -71,7 +71,7 @@ noncomputable def toPerfPair : M ≃ₗ[R] Dual R N :=
 include p in
 lemma _root_.Module.IsReflexive.of_isPerfPair : IsReflexive R M where
   bijective_dual_eval' := by
-    convert (p.toPerfPair.trans p.flip.toPerfPair.dualMap.symm).bijective
+    convert! (p.toPerfPair.trans p.flip.toPerfPair.dualMap.symm).bijective
     ext x f
     simp
 
@@ -109,7 +109,7 @@ lemma IsPerfPair.of_bijective (p : M →ₗ[R] N →ₗ[R] R) [IsReflexive R N] 
 end CommRing
 
 section Field
-variable [Field K] [Module K M] [Module K N] {p : M →ₗ[K] N →ₗ[K] K} {x : M} {y : N}
+variable [Field K] [Module K M] [Module K N] {p : M →ₗ[K] N →ₗ[K] K}
 
 /-- If the coefficients are a field, and one of the spaces is finite-dimensional, it is sufficient
 to check only injectivity instead of bijectivity of the bilinear pairing. -/

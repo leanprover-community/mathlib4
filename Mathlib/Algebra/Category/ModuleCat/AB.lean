@@ -18,11 +18,11 @@ and AB4\*. Further, it proves that `R` is a separator in the category of modules
 concludes that this category is Grothendieck abelian.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable (R : Type u) [Ring R]
 
