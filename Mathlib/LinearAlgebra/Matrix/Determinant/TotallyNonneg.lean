@@ -52,10 +52,10 @@ lemma IsTotallyNonneg.nonneg (hM : M.IsTotallyNonneg) (i j : ι) : 0 ≤ M i j :
   have hcols : StrictMono ![j] := fun _ _ _ ↦ by lia
   grind [det_unique, submatrix_apply, const_fin1_eq, hM hrows hcols]
 
-variable [IsStrictOrderedRing R]
+variable [IsOrderedRing R]
 
 @[simp] protected lemma IsTotallyNonneg.zero : (0 : Matrix ι ι R).IsTotallyNonneg
-  | 0 => by simp [det_fin_zero]
+  | 0 => by simp
   | n + 1 => by simp
 
 /-- A diagonal matrix with nonnegative diagonal entries is totally nonnegative. -/
@@ -63,8 +63,7 @@ protected lemma IsTotallyNonneg.diagonal [DecidableEq ι] {f : ι → R} (hf : 0
     (diagonal f).IsTotallyNonneg := by
   intro n rows cols hrows hcols
   by_cases h_range : Set.range rows = Set.range cols
-  · rw [hrows.eq_of_range_eq hcols h_range, submatrix_diagonal _ _ hcols.injective,
-        det_diagonal]
+  · rw [hrows.eq_of_range_eq hcols h_range, submatrix_diagonal _ _ hcols.injective, det_diagonal]
     exact Finset.prod_nonneg fun _ _ ↦ hf _
   · have : ¬(Set.range rows ⊆ Set.range cols) := by
       grind [hrows.injective.range_eq_range_iff_subset]
@@ -72,14 +71,13 @@ protected lemma IsTotallyNonneg.diagonal [DecidableEq ι] {f : ι → R} (hf : 0
     have : ∀ j, rows i ≠ cols j := by grind
     simp [det_eq_zero_of_row_eq_zero i, this]
 
+@[simp] lemma isTotallyNonneg_diagonal_iff [DecidableEq ι] {f : ι → R} :
+    (diagonal f).IsTotallyNonneg ↔ 0 ≤ f :=
+  ⟨fun hM i ↦ by simpa using hM.nonneg i i, .diagonal⟩
+
 @[simp] protected lemma IsTotallyNonneg.one [DecidableEq ι] :
     (1 : Matrix ι ι R).IsTotallyNonneg :=
   IsTotallyNonneg.diagonal zero_le_one
-
-/-- A constant diagonal matrix with a nonnegative diagonal value is totally nonnegative. -/
-lemma IsTotallyNonneg.diagonal_const [DecidableEq ι] {c : R} (hc : 0 ≤ c) :
-    (diagonal (fun _ : ι ↦ c)).IsTotallyNonneg :=
-  IsTotallyNonneg.diagonal fun _ ↦ hc
 
 lemma IsTotallyNonneg.smul {M : Matrix ι ι R}
     (hM : M.IsTotallyNonneg) {c : R} (hc : 0 ≤ c) :
