@@ -5,7 +5,6 @@ Authors: Joël Riou, Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Localization
 public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 public import Mathlib.CategoryTheory.Sites.PreservesSheafification
@@ -14,6 +13,7 @@ public import Mathlib.CategoryTheory.Adjunction.Whiskering
 public import Mathlib.CategoryTheory.Subfunctor.Basic
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
+public import Mathlib.CategoryTheory.Sites.Coverage
 
 /-!
 # Continuous functors between sites.
@@ -406,7 +406,6 @@ def sheafPushforwardContinuousIso [IsContinuous F' J K] :
   hom_inv_id := by ext; simp [← Functor.map_comp, ← op_comp]
   inv_hom_id := by ext; simp [← Functor.map_comp, ← op_comp]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If a continuous functor between sites is isomorphic to the identity functor,
 then the corresponding pushforward functor on sheaves identifies to the
 identity functor. -/
@@ -415,7 +414,6 @@ def sheafPushforwardContinuousId' [IsContinuous F'' J J] :
     sheafPushforwardContinuous F'' A J J ≅ 𝟭 _ :=
   sheafPushforwardContinuousIso eF'' _ _ _ ≪≫ sheafPushforwardContinuousId _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {F G} in
 /-- When we have an isomorphism `F ⋙ G ≅ FG` between continuous functors
 between sites, the composition of the pushforward functors for

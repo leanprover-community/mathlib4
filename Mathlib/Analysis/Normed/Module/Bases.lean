@@ -8,7 +8,12 @@ module
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Algebra.Order.Field.Power
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Schauder Bases and Generalized Bases
@@ -76,7 +81,9 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 
 noncomputable section
 
-open Filter Topology LinearMap Set ENNReal NNReal
+open Filter LinearMap Set ENNReal NNReal
+
+open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
@@ -179,9 +186,8 @@ theorem range_proj_eq_span (A : Finset β) :
   · rw [Submodule.span_le]
     rintro _ ⟨i, hi, rfl⟩
     use b i
-    rw [ContinuousLinearMap.coe_coe, proj_apply_basis_mem, if_pos (Finset.mem_coe.mp hi)]
+    rw [ContinuousLinearMap.coe_coe, proj_apply_basis_mem, ite_eq_left (Finset.mem_coe.mp hi)]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Composition of projections: `proj A (proj B x) = proj (A ∩ B) x`. -/
 theorem proj_comp (A B : Finset β) (x : X) : b.proj A (b.proj B x) = b.proj (A ∩ B) x := by
