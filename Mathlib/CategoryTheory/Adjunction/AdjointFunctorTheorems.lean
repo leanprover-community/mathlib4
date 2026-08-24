@@ -46,7 +46,6 @@ namespace CategoryTheory
 
 open Limits
 
-variable {J : Type v}
 variable {C : Type u} [Category.{v} C]
 
 /-- The functor `G : D ⥤ C` satisfies the *solution set condition* if for every `A : C`, there is a
