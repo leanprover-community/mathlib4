@@ -170,6 +170,14 @@ theorem W.casesOn {motive : W P → Prop} (t : W P)
 theorem W.rec_mk {α : Type*} (f : P α → α) (p : P (W P)) :
     W.rec f (W.mk p) = f (P.map (W.rec f) p) := rfl
 
+theorem W.rec_uniq {α : Type*} (f : P α → α) (m : W P → α)
+    (hm : ∀ p, m (W.mk p) = f (P.map m p)) : W.rec f = m := by
+  funext p
+  induction p with | mk p ih
+  cases p with | mk a c
+  rw [W.rec_mk, hm, P.map_eq, P.map_eq]
+  exact congrArg f (congrArg (Obj.mk a) (funext ih))
+
 variable (P)
 
 /-- `Idx` identifies a location inside the application of a polynomial functor. For `F : PFunctor`,
