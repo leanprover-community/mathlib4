@@ -117,7 +117,6 @@ lemma mker_valuation_eq_isUnitSubmonoid :
   · obtain ⟨x, h, rfl⟩ := h
     simpa [IsDiscreteValuationRing.maximalIdeal] using! h
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem associated_of_valuation_eq (x y : K)
     (h : ((maximalIdeal A).valuation K) x =
     ((maximalIdeal A).valuation K) y) : ∃ u : Aˣ, u • x = y := by
@@ -130,7 +129,7 @@ theorem associated_of_valuation_eq (x y : K)
   rw [mker_valuation_eq_isUnitSubmonoid] at this
   obtain ⟨u, h⟩ := this
   use IsUnit.unit h.1
-  simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec, h.2]
+  simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec h.1, h.2]
   field_simp
 
 theorem map_algebraMap_eq_valuationSubring : Subring.map (algebraMap A K) ⊤ =
@@ -160,7 +159,7 @@ lemma intValuation_maximalIdeal (x : A) :
   obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ
   have : (maximalIdeal A).intValuation ↑u = 1 := by simp [maximalIdeal]
   simp [(maximalIdeal A).intValuation_singleton hϖ.ne_zero
-    hϖ.maximalIdeal_eq, hϖ, this, WithZero.exp_eq_coe_ofAdd (n : ℤ)]
+    hϖ.maximalIdeal_eq, hϖ, this, ← WithZero.exp_eq_coe_ofAdd]
 
 end IsDiscreteValuationRing
 

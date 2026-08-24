@@ -5,10 +5,8 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-public import Batteries.Logic
 public import Batteries.Data.List.Basic
 public import Mathlib.Init
-import all Init.Data.Array.Basic
 
 /-! ### lookmap -/
 
@@ -30,7 +28,7 @@ private theorem lookmap.go_append (l : List α) (acc : Array α) :
     | none =>
       simp only [go_append tl _, Array.toListAppend_eq, append_assoc, Array.toList_push]
       rfl
-    | some a => rfl
+    | some a => simp
 
 @[simp, grind =]
 theorem lookmap_nil : [].lookmap f = [] :=
@@ -40,7 +38,7 @@ theorem lookmap_nil : [].lookmap f = [] :=
 theorem lookmap_cons_none {a : α} (l : List α) (h : f a = none) :
     (a :: l).lookmap f = a :: l.lookmap f := by
   simp only [lookmap, lookmap.go, Array.toListAppend_eq, nil_append]
-  rw [lookmap.go_append, h]; rfl
+  rw [lookmap.go_append, lookmap, h]; simp
 
 @[simp]
 theorem lookmap_cons_some {a b : α} (l : List α) (h : f a = some b) :
@@ -57,11 +55,11 @@ theorem lookmap_cons {a : α} {l : List α} :
 
 theorem lookmap_some : ∀ l : List α, l.lookmap some = l
   | [] => rfl
-  | _ :: _ => rfl
+  | _ :: rest => lookmap_cons_some some rest rfl
 
 theorem lookmap_none : ∀ l : List α, (l.lookmap fun _ => none) = l
   | [] => rfl
-  | a :: l => (lookmap_cons_none _ l rfl).trans (congr_arg (cons a) (lookmap_none l))
+  | a :: l => (lookmap_cons_none _ l rfl).trans (congrArg (cons a) (lookmap_none l))
 
 theorem lookmap_congr {f g : α → Option α} :
     ∀ {l : List α}, (∀ a ∈ l, f a = g a) → l.lookmap f = l.lookmap g
