@@ -53,6 +53,23 @@ theorem orthonormal_span {ι : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) :
 
 end Submodule
 
+section ClosedSubmodule
+
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
+
+/-- Induced inner product on a closed submodule. -/
+instance ClosedSubmodule.innerProductSpace (W : ClosedSubmodule 𝕜 E) : InnerProductSpace 𝕜 W :=
+  fast_instance% W.toSubmodule.innerProductSpace
+
+/-- The inner product on closed submodules is the same as on the ambient space. -/
+@[simp]
+theorem ClosedSubmodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫ = ⟪(x : E), ↑y⟫ :=
+  rfl
+
+end ClosedSubmodule
+
 /-! ### Families of mutually-orthogonal subspaces of an inner product space -/
 
 section OrthogonalFamily_Seminormed
