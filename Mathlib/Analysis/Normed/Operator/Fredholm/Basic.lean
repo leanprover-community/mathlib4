@@ -426,6 +426,10 @@ theorem _root_.Function.Bijective.isFredholm_iff (f : E →L[𝕜] F)
   simpa [isInvertible_iff_isHomeomorph, isHomeomorph_iff_isStrictMap_bijective, f_bij]
     using hf.isStrictMap
 
+theorem isInvertible_iff_isFredholm_and_bijective {f : E →L[𝕜] F} :
+    f.IsInvertible ↔ IsFredholm f ∧ Bijective f := by
+  grind [Function.Bijective.isFredholm_iff, IsInvertible.bijective]
+
 theorem _root_.Topology.IsQuotientMap.isFredholm {f : E →L[𝕜] F} (hq : IsQuotientMap f)
     (hcompl : f.ker.ClosedComplemented) (hfg : FiniteDimensional 𝕜 f.ker) :
     IsFredholm f where
