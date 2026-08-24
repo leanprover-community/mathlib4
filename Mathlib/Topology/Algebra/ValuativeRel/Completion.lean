@@ -338,23 +338,25 @@ lemma closure_image_coe_le : closure ((Prod.map (↑) (↑)) '' {(x, y) : K × K
     exact ⟨(r, s), hU, (r, s), by simpa [hvr, hvs] using h, rfl⟩
 
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
-theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
-    closure ((↑) '' { x : K | v x < (γ : Γ₀) }) =
-    { x : Completion K | v.extension x < (γ : Γ₀) } := by
+theorem closure_coe_completion_v_lt {r : Γ₀} (hr : r ≠ 0) :
+    closure ((↑) '' { x : K | v x < r }) =
+    { x : Completion K | v.extension x < r } := by
   ext x
   simp only [mem_ofPred_eq, mem_closure_iff_nhds]
-  refine ⟨fun hx ↦ (eq_or_ne x 0).casesOn (by simp +contextual) fun h ↦ ?_, fun hx t ht ↦ ?_⟩
-  · obtain ⟨r, hr, hr'⟩ := v.exists_coe_mem_extension_eq ht
-    exact ⟨r, hr, r, by simpa [← hr'] using hx, rfl⟩
-  · obtain ⟨_, hy : v.extension _ = v.extension x, r, hr : v r < (γ : Γ₀), rfl⟩ :=
-      hx _ (v.extension_locally_const h)
-    rwa [← hy, extension_apply_coe]
+  refine ⟨fun hx ↦ ?_, fun hx t ht ↦ ?_⟩
+  · rcases eq_or_ne x 0 with rfl | h
+    · simp [zero_lt_iff, hr]
+    · obtain ⟨_, hy : v.extension _ = v.extension x, y, hy' : v y < r, rfl⟩ :=
+        hx _ (v.extension_locally_const h)
+      rwa [← hy, extension_apply_coe]
+  · obtain ⟨y, hy, hy'⟩ := v.exists_coe_mem_extension_eq ht
+    exact ⟨y, hy, y, by simpa [← hy'] using hx, rfl⟩
 
 theorem closure_coe_completion_v_mul_v_lt {r s : K} (hr : r ≠ 0) (hs : s ≠ 0) :
     closure ((↑) '' { x : K | v x * v r < v s }) =
     { x : Completion K | v.extension x * v r < v s } := by
   have hrs : v s / v r ≠ 0 := by simp [hr, hs]
-  convert! v.closure_coe_completion_v_lt (γ := .mk0 _ hrs) using 3
+  convert v.closure_coe_completion_v_lt hrs using 3
   all_goals simp [← lt_div_iff₀, zero_lt_iff, hr]
 
 /-- The function underlying `Valuation.valueGroup₀_hom_extension`: it sends `v.restrict x` to
@@ -404,6 +406,34 @@ theorem embedding_valueGroup₀_equiv_extension (a : ValueGroup₀ (.ofClass v))
     embedding (v.valueGroup₀_equiv_extension a) = embedding a :=
   v.embedding_valueGroup₀_hom_extension a
 
+@[simp]
+theorem embedding_valueGroup₀_equiv_extension_symm (a : ValueGroup₀ (.ofClass v.extension)) :
+    embedding (v.valueGroup₀_equiv_extension.symm a) = embedding a := by
+  rw [← v.embedding_valueGroup₀_equiv_extension, MulEquiv.apply_symm_apply]
+
+/-- `Valuation.closure_coe_completion_v_lt`, stated for the open balls of `v.restrict`. -/
+theorem closure_coe_ball_restrict (γ : (ValueGroup₀ (.ofClass v))ˣ) :
+    closure ((↑) '' { x : K | v.restrict x < γ.1 }) =
+      { x : Completion K | v.extension x < embedding γ.1 } := by
+  rw [show { x : K | v.restrict x < γ.1 } = { x : K | v x < embedding γ.1 } from
+    Set.ext fun _ ↦ v.restrict_lt_iff_lt_embedding]
+  exact v.closure_coe_completion_v_lt (by simp)
+
+/-- The neighbourhoods of `0` in the completion of `K` have a basis given by the open balls of
+`v.extension.restrict`. This is `Valuation.hasBasis_nhds_zero` for `v.extension`, proved before
+the instance `IsValuativeTopology (Completion K)` is available. -/
+theorem extension_hasBasis_nhds_zero :
+    (𝓝 (0 : Completion K)).HasBasis (fun _ ↦ True)
+      fun γ : (ValueGroup₀ (.ofClass v.extension))ˣ ↦ { x | v.extension.restrict x < γ.1 } := by
+  have h := v.hasBasis_nhds_zero.hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
+  rw [Completion.coe_zero] at h
+  simp only [closure_coe_ball_restrict] at h
+  refine h.to_hasBasis (fun γ _ ↦ ⟨Units.mk0 (v.valueGroup₀_equiv_extension γ.1) (by simp),
+      trivial, fun x hx ↦ ?_⟩) fun γ _ ↦ ⟨Units.mk0 (v.valueGroup₀_equiv_extension.symm γ.1)
+      (by simp), trivial, fun x hx ↦ ?_⟩
+  · simpa [v.extension.restrict_lt_iff_lt_embedding] using hx
+  · exact v.extension.restrict_lt_iff_lt_embedding.2 (by simpa using hx)
+
 end Valuation
 
 section Completion
@@ -427,108 +457,16 @@ variable {Γ₀ Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀]
   [LinearOrderedCommGroupWithZero Γ₀'] (v : Valuation K Γ₀) [v.Compatible]
   (v' : Valuation K Γ₀') [v'.Compatible]
 
-
--- open ValueGroupWithZero in
--- lemma foo [Ring R] [temp : ValuativeRel R] [top : TopologicalSpace R]
---     (v : Valuation R Γ₀) [v.Compatible] (x : R) (γ : ValueGroupWithZero R) :
---     v.restrict x < (orderMonoidIso v) γ ↔ (valuation R) x < γ := sorry
-
--- open ValueGroupWithZero in
--- lemma foo_star [Ring R] [temp : ValuativeRel R] [top : TopologicalSpace R]
---     (v : Valuation R Γ₀) [v.Compatible] (x : R) (γ : (ValueGroupWithZero R)ˣ) :
---     v.restrict x < (orderMonoidIso v) γ ↔ (valuation R) x < γ := by
---   rw [foo]
-
--- open ValueGroupWithZero in
--- lemma foo_symm [Ring R] [temp : ValuativeRel R] [top : TopologicalSpace R]
---     (v : Valuation R Γ₀) [v.Compatible] (x : R) (γ : (ValueGroup₀ (.ofClass v))) :
---     v.restrict x < γ ↔ (valuation R) (x) < (orderMonoidIso v).symm γ := sorry
-
--- open ValueGroupWithZero in
--- lemma foo_symm_star [Ring R] [temp : ValuativeRel R] [top : TopologicalSpace R]
---     (v : Valuation R Γ₀) [v.Compatible] (x : R) (γ : (ValueGroup₀ (.ofClass v))ˣ) :
---     v.restrict x < γ ↔ (valuation R) (x) < (orderMonoidIso v).symm γ := by rw [foo_symm]
-
--- theorem foo' (x : Completion K) (γ : (ValueGroup₀ (.ofClass v))ˣ) :
---     v.extension.restrict x <
---     ((Units.map v.valueGroup₀_equiv_extension.toMonoidHom) γ).1 ↔
---     embedding (v.extension x) < embedding γ.1 := by
---   simp only [MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe]
---   rw [embedding_strictMono.lt_iff_lt, Valuation.restrict_def, restrict₀_apply]
---   by_cases hx0 : x = 0
---   · simp only [hx0]
---     rw [dite_eq_left (map_zero _)]
---     · simp only [valueGroup₀_equiv_extension, valueGroup₀_hom_extension,
---       MulEquiv.ofBijective_apply, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
---       rw [Valuation.restrict_def, restrict₀_apply, dite_eq_right]
---       · have hext : v.extension 0 = 0 := by rw [extension_eq_zero_iff]
---         simp [hext]
---       · simp [← v.restrict.zero_iff, v.restrict_def,
---           (restrict₀_surjective (.ofClass v) _).choose_spec]
---   · rw [dite_eq_right (by simp [hx0])]
---     · set y := (restrict₀_surjective (.ofClass v) γ).choose with hy_def
---       have hy := (restrict₀_surjective (.ofClass v) γ).choose_spec
---       apply_fun embedding at hy
---       simp only [← hy_def, embedding_restrict₀, MonoidWithZeroHom.coe_ofClass] at hy
---       simp only [MonoidWithZeroHom.coe_ofClass, extension_toFun,
---         valueGroup₀_equiv_extension, valueGroup₀_hom_extension,
---         MulEquiv.ofBijective_apply, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
---       rw [Valuation.restrict_def, restrict₀_apply, ← hy_def, dite_eq_right]
---       · simp only [MonoidWithZeroHom.coe_ofClass, extension_toFun, extension_extends,
---         Valuation.embedding_restrict, WithZero.coe_lt_coe, Subtype.mk_lt_mk,
---         ← Units.val_lt_val, Units.val_mk0]
---         convert embedding_strictMono (f := (.ofClass v)).lt_iff_lt
---       · simp only [MonoidWithZeroHom.coe_ofClass, extension_apply_coe, map_eq_zero,
---           ← ne_eq]
---         apply_fun v
---         simp [hy]
-
-instance UniformSpace.Completion.isValuativeTopology : IsValuativeTopology (Completion K) := by
-  apply IsValuativeTopology.of_zero
-  intro s
-  let v := valuation K
-  suffices HasBasis (𝓝 (0 : Completion K)) (fun _ ↦ True)
-      fun γ : (ValueGroup₀ (.ofClass v))ˣ ↦ { x | v.extension x <
-        (Units.map (ValueGroup₀.embedding (f := (.ofClass v))) γ).1 } by
-    rw [this.mem_iff]
-    simp only [extension_toFun, Units.coe_map, MonoidHom.coe_coe, true_and]
-    have (x : Completion K) (γ : (ValueGroup₀ (.ofClass v))ˣ) : v.extension.restrict x <
-        ((Units.map v.valueGroup₀_equiv_extension.toMonoidHom) γ).1 ↔
-        embedding (v.extensionFun x) < embedding γ.1 := by
-      rw [← (embedding_strictMono (f := .ofClass v.extension)).lt_iff_lt]
-      simp [extension_toFun]
-    refine ⟨fun ⟨γ, h⟩ ↦ ?_, fun ⟨γ, h⟩ ↦ ?_⟩
-    · use Units.map ((ValueGroupWithZero.orderMonoidIso v.extension).symm.toMonoidHom.comp
-        v.valueGroup₀_equiv_extension.toMonoidHom) γ
-      simp only [OrderMonoidIso.toMulEquiv_eq_coe, MulEquiv.toMonoidHom_eq_coe, Units.map_comp,
-        MonoidHom.coe_comp, Function.comp_apply, Units.coe_map, MonoidHom.coe_coe,
-        OrderMonoidIso.coe_mulEquiv, valuation_lt_symm_orderMonoidIso]
-      convert! h
-      apply this
-    · use Units.map (v.valueGroup₀_equiv_extension.symm.toMonoidHom.comp
-        (ValueGroupWithZero.orderMonoidIso v.extension)) γ
-      simp only [← this]
-      simp only [MulEquiv.toMonoidHom_eq_coe, Units.map_comp, MonoidHom.coe_comp,
-        Function.comp_apply, Units.coe_map, MonoidHom.coe_coe, MulEquiv.apply_symm_apply,
-        restrict_lt_orderMonoidIso]
-      convert! h
-  simp_rw [← closure_coe_completion_v_lt, Units.coe_map]
-  convert! v.hasBasis_nhds_zero.hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
-  simp [Valuation.restrict_lt_iff_lt_embedding]
+instance UniformSpace.Completion.isValuativeTopology : IsValuativeTopology (Completion K) :=
+  IsValuativeTopology.of_mem_nhds_zero_iff_vle (valuation K).extension fun {s} ↦ by
+    simpa only [true_and] using (valuation K).extension_hasBasis_nhds_zero.mem_iff
 
 @[simp]
-theorem Valuation.extension.isEquiv_iff :
-    v.extension.IsEquiv v'.extension := by
-  intro x y
-  calc
-    _ ↔ (x, y) ∈ closure ((Prod.map (↑) (↑)) '' {(x, y) : K × K | v x ≤ v y}) := by
-      simp [closure_image_coe_le]
-    _ ↔ (x, y) ∈ closure ((Prod.map (↑) (↑)) '' {(x, y) : K × K | v' x ≤ v' y}) := by
-      rw [iff_iff_eq]
-      congr
-      ext
-      simpa using isEquiv v v' _ _
-    _ ↔ _ := by simp [closure_image_coe_le]
+theorem Valuation.extension.isEquiv : v.extension.IsEquiv v'.extension := by
+  have h := v.closure_image_coe_le
+  rw [show {(x, y) : K × K | v x ≤ v y} = {(x, y) : K × K | v' x ≤ v' y} from
+    Set.ext fun ⟨_, _⟩ ↦ ValuativeRel.isEquiv v v' _ _, v'.closure_image_coe_le] at h
+  exact fun x y ↦ (Set.ext_iff.1 h (x, y)).symm
 
 instance Valuation.extension.compatible : v.extension.Compatible := by
   apply IsEquiv.compatible (v₁ := (valuation K).extension)
