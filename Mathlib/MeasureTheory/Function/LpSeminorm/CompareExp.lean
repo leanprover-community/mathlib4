@@ -273,17 +273,16 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm {p q r : ℝ≥0∞} (hf : AEStr
     · rw [hc, mul_assoc, ENNReal.top_mul', if_pos hfg, nonpos_iff_eq_zero]
       apply eLpNorm_eq_zero_of_ae_zero
       rcases mul_eq_zero.mp hfg with hf0 | hg0
-      · have hp : p ≠ 0 := ((pos_iff_ne_zero.mpr hr).trans_le (HolderTriple.le p q r)).ne'
+      · have hp : p ≠ 0 := ne_bot_of_le_ne_bot hr (HolderTriple.le p q r)
         filter_upwards [h, (eLpNorm_eq_zero_iff hf hp).mp hf0] with x hx hfx
         simpa [hfx] using hx
-      · have hq : q ≠ 0 := ((pos_iff_ne_zero.mpr hr).trans_le (HolderTriple.le q p r)).ne'
+      · have hq : q ≠ 0 := ne_bot_of_le_ne_bot hr (HolderTriple.le q p r)
         filter_upwards [h, (eLpNorm_eq_zero_iff hg hq).mp hg0] with x hx hgx
         simpa [hgx] using hx
     · simp [hc, mul_assoc, hfg]
   · lift c to ℝ≥0 using hc
     apply eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf hg b c
-    filter_upwards [h] with x hx
-    rwa [← ENNReal.coe_le_coe, ← enorm_eq_nnnorm]
+    simpa only [enorm_eq_nnnorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using h
 
 open NNReal in
 theorem MemLp.of_bilin {p q r : ℝ≥0∞} {f : α → E} {g : α → F} (b : E → F → G) (c : ℝ≥0)
