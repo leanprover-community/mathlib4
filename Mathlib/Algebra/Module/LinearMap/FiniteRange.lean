@@ -450,7 +450,7 @@ lemma IsRightQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[
   hw
 
 /-- If `v` is left quasi-invertible and we know a right quasi-inverse `w` for `v ∘ₗ u`, then
-we can builf a right quasi-inverse `w ∘ₗ v` for `u`. -/
+we can build a right quasi-inverse `w ∘ₗ v` for `u`. -/
 lemma IsRightQuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
     {v' : V₃ →ₗ[K] V₂} {w : V₃ →ₗ[K] V} (hv : v'.IsLeftQuasiInverse v)
     (hw : w.IsRightQuasiInverse (v ∘ₗ u)) :
