@@ -52,11 +52,11 @@ lemma IsTotallyNonneg.nonneg (hM : M.IsTotallyNonneg) (i j : ι) : 0 ≤ M i j :
   grind [det_unique, submatrix_apply, const_fin1_eq, hM hrows hcols]
 
 protected lemma IsTotallyNonneg.transpose (hM : M.IsTotallyNonneg) :
-    M.transpose.IsTotallyNonneg := fun _ _ _ hrows hcols ↦ by
-  simp [← transpose_submatrix, det_transpose, hM hcols hrows]
+    Mᵀ.IsTotallyNonneg := fun _ _ _ hrows hcols ↦ by
+  simp [← transpose_submatrix, hM hcols hrows]
 
 @[simp] theorem isTotallyNonneg_transpose_iff :
-    M.transpose.IsTotallyNonneg ↔ M.IsTotallyNonneg := ⟨(·.transpose), (·.transpose)⟩
+    Mᵀ.IsTotallyNonneg ↔ M.IsTotallyNonneg := ⟨(·.transpose), (·.transpose)⟩
 
 variable [IsStrictOrderedRing R]
 
