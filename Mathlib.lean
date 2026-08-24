@@ -4434,7 +4434,11 @@ public import Mathlib.Data.Set.Image
 public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Data.Set.Insert
 public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Bounded
+public import Mathlib.Data.Set.Lattice.Disjoint
 public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.Set.Lattice.Indexed
+public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Data.Set.List
 public import Mathlib.Data.Set.MemPartition
 public import Mathlib.Data.Set.Monotone
