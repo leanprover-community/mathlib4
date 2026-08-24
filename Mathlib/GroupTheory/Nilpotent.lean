@@ -1066,13 +1066,14 @@ end Subgroup
 @[to_additive] theorem Group.IsNilpotent.inf_center_ne_bot_of_normal [Group.IsNilpotent G]
     {H : Subgroup G} [H.Normal] (hH : H ≠ ⊥) : H ⊓ center G ≠ ⊥ := by
   classical
-  have : H.iterComm (Nat.find H.exists_iterComm_eq_bot - 1) ≠ ⊥ :=
-    Nat.find_min H.exists_iterComm_eq_bot <| by simpa [H.iterComm_zero] using hH
-  refine ne_bot_of_le_ne_bot this <| le_inf (H.iterComm_le_of_normal _) ?_
-  rw [←commutator_top_right_eq_bot_iff_le_center, ←H.iterComm_succ_eq]
-  convert Nat.find_spec H.exists_iterComm_eq_bot
-  have : 0 < Nat.find H.exists_iterComm_eq_bot := by simpa [H.iterComm_zero]
-  grind
+  have hk : ∃ n, H ⊓ lowerCentralSeries ⊤ n ≠ ⊥ ∧ H ⊓ lowerCentralSeries ⊤ (n + 1) = ⊥ := by
+    have : H ⊓ lowerCentralSeries ⊤ 0 ≠ ⊥ := by simpa
+    have key : ∃ k, H ⊓ lowerCentralSeries ⊤ k = ⊥ := ⟨nilpotencyClass G, by simp⟩
+    exact ⟨Nat.find key - 1, by grind [Nat.find_min key]⟩
+  obtain ⟨k, k_min, k_spec⟩ := hk
+  refine ne_bot_of_le_ne_bot k_min (le_inf inf_le_left ?_)
+  rw [← commutator_top_right_eq_bot_iff_le_center, eq_bot_iff, ← k_spec]
+  exact le_inf ((commutator_le_left _ _).trans inf_le_left) (commutator_mono inf_le_right le_rfl)
 
 variable (G) in
 @[to_additive]
