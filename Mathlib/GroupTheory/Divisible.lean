@@ -133,7 +133,7 @@ noncomputable def rootableByOfPowLeftSurj
   root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose
   root_zero _ := by exact dite_eq_left rfl
   root_cancel a hn := by
-    dsimp only
+    beta_reduce
     rw [dite_eq_right hn]
     exact (H hn a).choose_spec
 

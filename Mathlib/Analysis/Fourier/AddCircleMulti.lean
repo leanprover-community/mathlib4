@@ -120,7 +120,7 @@ theorem mFourierSubalgebra_separatesPoints : (mFourierSubalgebra d).SeparatesPoi
   rw [Ne, funext_iff, not_forall] at hxy
   obtain ⟨i, hi⟩ := hxy
   refine ⟨_, ⟨mFourier (Pi.single i 1), subset_adjoin ⟨Pi.single i 1, rfl⟩, rfl⟩, ?_⟩
-  dsimp only
+  beta_reduce
   rw [mFourier_single, mFourier_single, fourier_one, fourier_one, Ne, Subtype.coe_inj]
   contrapose hi
   exact AddCircle.injective_toCircle one_ne_zero hi

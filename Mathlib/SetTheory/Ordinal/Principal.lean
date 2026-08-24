@@ -403,7 +403,7 @@ theorem isPrincipal_mul_iff_mul_left_eq :
     · exact op_eq_self_of_isPrincipal hao (isNormal_mul_right ha₀) h
         (isSuccLimit_of_isPrincipal_mul ho h)
   · rcases eq_or_ne a 0 with (rfl | ha)
-    · dsimp only; rwa [zero_mul]
+    · beta_reduce; rwa [zero_mul]
     rw [← pos_iff_ne_zero] at ha
     rw [← h a ha hao]
     exact (isNormal_mul_right ha).strictMono hbo
@@ -414,7 +414,7 @@ alias principal_mul_iff_mul_left_eq := isPrincipal_mul_iff_mul_left_eq
 theorem isPrincipal_mul_omega0 : IsPrincipal (· * ·) ω := fun a b ha hb =>
   match a, b, lt_omega0.1 ha, lt_omega0.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
-    dsimp only; rw [← natCast_mul]
+    beta_reduce; rw [← natCast_mul]
     apply natCast_lt_omega0
 
 @[deprecated (since := "2026-03-17")]
@@ -461,7 +461,7 @@ theorem isPrincipal_add_of_isPrincipal_mul_opow (hb : 1 < b) (ho : IsPrincipal (
     IsPrincipal (· + ·) o := by
   intro x y hx hy
   have := ho ((opow_lt_opow_iff_right hb).2 hx) ((opow_lt_opow_iff_right hb).2 hy)
-  dsimp only at *
+  beta_reduce at *
   rwa [← opow_add, opow_lt_opow_iff_right hb] at this
 
 @[deprecated (since := "2026-03-17")]

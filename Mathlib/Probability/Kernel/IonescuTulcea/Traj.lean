@@ -387,7 +387,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   -- the integral of `χₙ` from time `k` is non-increasing.
   have anti_lma k x : Antitone fun n ↦ lmarginalPartialTraj κ k (a n) (χ n) x := by
     intro m n hmn
-    simp only
+    beta_reduce
     rw [← lma_inv k ((a n).max (a m)) n (le_max_left _ _),
       ← lma_inv k ((a n).max (a m)) m (le_max_right _ _)]
     exact lmarginalPartialTraj_mono _ _ (χ_anti hmn) _

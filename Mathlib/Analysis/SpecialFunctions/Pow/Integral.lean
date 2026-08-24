@@ -122,7 +122,7 @@ lemma integrableOn_ball_of_norm_le_rpow (hd : 1 ≤ Module.finrank ℝ E) {f : E
       · simp [hr]
     apply IntegrableOn.congr_fun (h_rpow.const_mul C) ?_ measurableSet_Ioo
     intro y ⟨hy, _⟩
-    simp only
+    beta_reduce
     move_mul [C]
     rw [← Real.rpow_natCast y (Module.finrank ℝ E - 1), ← Real.rpow_add hy]
     congr

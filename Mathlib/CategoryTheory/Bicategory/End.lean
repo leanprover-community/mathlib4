@@ -47,7 +47,7 @@ instance (X : C) : MonoidalCategory (X ⟶ X) where
   rightUnitor f := ρ_ f
   tensorHom_comp_tensorHom := by
     intros
-    dsimp only
+    beta_reduce
     rw [Bicategory.whiskerLeft_comp, Bicategory.comp_whiskerRight, Category.assoc, Category.assoc,
       Bicategory.whisker_exchange_assoc]
 

@@ -1289,7 +1289,7 @@ theorem tendsto_setToFun_of_dominated_convergence (hT : DominatedFinMeasAdditive
   refine lintegral_congr_ae ?_
   rw [← Integrable.toL1_sub]
   refine ((fs_int n).sub f_int).coeFn_toL1.mono fun x hx => ?_
-  dsimp only
+  beta_reduce
   rw [hx, ofReal_norm, Pi.sub_apply]
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/

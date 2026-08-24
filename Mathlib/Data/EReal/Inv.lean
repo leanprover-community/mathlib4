@@ -429,7 +429,7 @@ lemma div_le_div_right_of_nonpos (h : c ≤ 0) (h' : a ≤ b) : b / c ≤ a / c 
 
 lemma strictAnti_div_right_of_neg (h : b < 0) (h' : b ≠ ⊥) : StrictAnti fun a ↦ a / b := by
   intro a a' a_lt_a'
-  simp only
+  beta_reduce
   apply lt_of_le_of_ne <| div_le_div_right_of_nonpos (le_of_lt h) (le_of_lt a_lt_a')
   intro hyp
   apply ne_of_lt a_lt_a'

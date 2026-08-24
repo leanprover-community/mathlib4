@@ -138,7 +138,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
         intro i i'
         have subi : ({i} : Finset ι) ⊆ {i, i'} := by simp
         have subi' : ({i'} : Finset ι) ⊆ {i, i'} := by simp
-        simp only
+        beta_reduce
         rw [← hu (CategoryTheory.homOfLE subi).op, ← hu (CategoryTheory.homOfLE subi').op]
         let uii' := u (Opposite.op ({i, i'} : Finset ι))
         exact fun h => Subtype.mk_eq_mk.mp (uii'.property.1 h)

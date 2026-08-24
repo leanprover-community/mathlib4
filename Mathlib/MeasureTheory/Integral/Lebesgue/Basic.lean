@@ -470,12 +470,12 @@ theorem setLIntegral_measure_zero (s : Set α) (f : α → ℝ≥0∞) (hs' : μ
 -- TODO: Need a better way of rewriting inside of an integral
 theorem lintegral_rw₁ {f f' : α → β} (h : f =ᵐ[μ] f') (g : β → ℝ≥0∞) :
     ∫⁻ a, g (f a) ∂μ = ∫⁻ a, g (f' a) ∂μ :=
-  lintegral_congr_ae <| h.mono fun a h => by dsimp only; rw [h]
+  lintegral_congr_ae <| h.mono fun a h => by beta_reduce; rw [h]
 
 -- TODO: Need a better way of rewriting inside of an integral
 theorem lintegral_rw₂ {f₁ f₁' : α → β} {f₂ f₂' : α → γ} (h₁ : f₁ =ᵐ[μ] f₁') (h₂ : f₂ =ᵐ[μ] f₂')
     (g : β → γ → ℝ≥0∞) : ∫⁻ a, g (f₁ a) (f₂ a) ∂μ = ∫⁻ a, g (f₁' a) (f₂' a) ∂μ :=
-  lintegral_congr_ae <| h₁.mp <| h₂.mono fun _ h₂ h₁ => by dsimp only; rw [h₁, h₂]
+  lintegral_congr_ae <| h₁.mp <| h₂.mono fun _ h₂ h₁ => by beta_reduce; rw [h₁, h₂]
 
 theorem lintegral_indicator_le (f : α → ℝ≥0∞) (s : Set α) :
     ∫⁻ a, s.indicator f a ∂μ ≤ ∫⁻ a in s, f a ∂μ := by

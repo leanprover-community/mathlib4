@@ -129,7 +129,7 @@ lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [IsDomain R] [IsTorsi
     · ring_nf
   simp only [h₄] at h₁
   apply smul_right_injective _ (r := lsq j) (RootPairing.IsAnisotropic.rootForm_root_ne_zero j)
-  simp only
+  beta_reduce
   convert! h₁ using 1
   · module
   · module
