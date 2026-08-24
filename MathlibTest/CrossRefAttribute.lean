@@ -146,7 +146,7 @@ run_cmd
   Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `DLMF.test}"
 
 /--
-error: <input>:1:6: DLMF references must consist only of roman numerals, the letters E/T/F, digits, periods, and underscores.
+error: <input>:1:6: DLMF references must consist only of (lowercase) roman numerals, the letters E/T/F, digits, periods, and underscores.
 -/
 #guard_msgs in #parse Mathlib.CrossRef.dlmfIdFn => "random*string"
 
