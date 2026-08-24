@@ -133,7 +133,6 @@ that `N_{L/K}(x) = 1`, and a generator `g` of `Gal(L/K)`, there exists `y : Lˣ`
 such that `y/g y = x`. -/
 theorem exists_div_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers g) {x : L}
     (hx : Algebra.norm K x = 1) : ∃ y : Lˣ, y / g y = x := by
-  classical
   suffices H : ∀ x, Algebra.norm K x = 1 → ∃ y : Lˣ, g y / y = x by
     have hxinv : Algebra.norm K x⁻¹ = 1 := by simp [Algebra.norm_inv, hx]
     obtain ⟨y, hy⟩ := H _ hxinv

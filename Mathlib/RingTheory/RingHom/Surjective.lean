@@ -47,7 +47,6 @@ theorem surjective_respectsIso : RespectsIso surjective := by
 
 theorem surjective_isStableUnderBaseChange : IsStableUnderBaseChange surjective := by
   refine IsStableUnderBaseChange.mk surjective_respectsIso ?_
-  classical
   introv h x
   induction x with
   | zero => exact ⟨0, map_zero _⟩
@@ -70,7 +69,7 @@ theorem surjective_localizationPreserves :
 theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R e H
   rw [← Set.range_eq_univ, Set.eq_univ_iff_forall]
-  letI := f.toAlgebra
+  let := f.toAlgebra
   intro x
   apply Submodule.mem_of_span_eq_top_of_smul_pow_mem
     (LinearMap.range (Algebra.linearMap R S)) s e

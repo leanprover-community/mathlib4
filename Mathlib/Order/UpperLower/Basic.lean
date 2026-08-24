@@ -170,12 +170,16 @@ theorem Set.antitone_mem : Antitone (· ∈ s) ↔ IsLowerSet s :=
   forall_comm
 
 @[simp]
-theorem isUpperSet_setOf : IsUpperSet { a | p a } ↔ Monotone p :=
+theorem isUpperSet_setOfPred : IsUpperSet { a | p a } ↔ Monotone p :=
   Iff.rfl
 
+@[deprecated (since := "2026-07-09")] alias isUpperSet_setOf := isUpperSet_setOfPred
+
 @[simp]
-theorem isLowerSet_setOf : IsLowerSet { a | p a } ↔ Antitone p :=
+theorem isLowerSet_setOfPred : IsLowerSet { a | p a } ↔ Antitone p :=
   forall_comm
+
+@[deprecated (since := "2026-07-09")] alias isLowerSet_setOf := isLowerSet_setOfPred
 
 @[to_dual]
 lemma IsUpperSet.upperBounds_subset (hs : IsUpperSet s) : s.Nonempty → upperBounds s ⊆ s :=

@@ -247,6 +247,7 @@ theorem invOf_sym [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) 
     ⅟(sym a) = sym (⅟a) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring αˢʸᵐ :=
   { SymAlg.addCommMonoid with
     zero_mul := fun _ => by

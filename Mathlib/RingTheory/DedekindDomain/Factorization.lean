@@ -5,9 +5,10 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.RingTheory.RamificationInertia.Basic
 public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.RingTheory.RamificationInertia.Ramification
 
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
@@ -66,7 +67,6 @@ variable {R : Type*} [CommRing R] {K : Type*} [Field K] [Algebra R K] [IsFractio
 
 variable [IsDedekindDomain R] (v : HeightOneSpectrum R)
 
-open scoped Classical in
 /-- Given a maximal ideal `v` and an ideal `I` of `R`, `maxPowDividing` returns the maximal
   power of `v` dividing `I`. -/
 def IsDedekindDomain.HeightOneSpectrum.maxPowDividing (I : Ideal R) : Ideal R :=
@@ -77,7 +77,6 @@ theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
     {I : Ideal R} (hI : I ≠ 0) :
     maxPowDividing v I =
       v.asIdeal ^ Multiset.count v.asIdeal (normalizedFactors I) := by
-  classical
   rw [maxPowDividing, factors_mk _ hI, count_some (irreducible_mk.mpr v.irreducible),
     ← Multiset.count_map_eq_count' _ _ Subtype.val_injective, map_subtype_coe_factors',
     factors_eq_normalizedFactors, ← Multiset.count_map_eq_count' _ _ (mk_injective (M := Ideal R))]
@@ -85,14 +84,13 @@ theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
 /-- Only finitely many maximal ideals of `R` divide a given nonzero ideal. -/
 theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     {v : HeightOneSpectrum R | v.asIdeal ∣ I}.Finite := by
-  rw [← Set.finite_coe_iff, Set.coe_setOf]
-  haveI h_fin := fintypeSubtypeDvd I hI
+  rw [← Set.finite_coe_iff, Set.coe_ofPred]
+  have h_fin := fintypeSubtypeDvd I hI
   refine
     Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) ?_
   intro v w hvw
   exact Subtype.coe_injective (HeightOneSpectrum.ext (by simpa using hvw))
 
-open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that the
   multiplicity of `v` in the factorization of `I`, denoted `val_v(I)`, is nonzero. -/
 theorem Associates.finite_factors {I : Ideal R} (hI : I ≠ 0) :
@@ -108,7 +106,6 @@ theorem Associates.finite_factors {I : Ideal R} (hI : I ≠ 0) :
 
 namespace Ideal
 
-open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
   `v^(val_v(I))` is not the unit ideal. -/
 @[fun_prop]
@@ -126,7 +123,6 @@ theorem hasFiniteMulSupport {I : Ideal R} (hI : I ≠ 0) :
 
 @[deprecated (since := "2026-03-03")] alias finite_mulSupport := hasFiniteMulSupport
 
-open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^(val_v(I))`, regarded as a fractional ideal, is not `(1)`. -/
 @[fun_prop]
@@ -139,7 +135,6 @@ theorem hasFiniteMulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
 
 @[deprecated (since := "2026-03-03")] alias finite_mulSupport_coe := hasFiniteMulSupport_coe
 
-open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^-(val_v(I))` is not the unit ideal. -/
 @[fun_prop]
@@ -152,11 +147,11 @@ theorem hasFiniteMulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
 
 @[deprecated (since := "2026-03-03")] alias finite_mulSupport_inv := hasFiniteMulSupport_inv
 
-open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, `v^(val_v(I) + 1)` does not divide `∏_v v^(val_v(I))`. -/
 theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
     ¬v.asIdeal ^ ((Associates.mk v.asIdeal).count (Associates.mk I).factors + 1) ∣
         ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I := by
+  classical
   have hf := hasFiniteMulSupport hI
   have h_ne_zero : v.maxPowDividing I ≠ 0 := pow_ne_zero _ v.ne_bot
   rw [← mul_finprod_cond_ne v hf, pow_add, pow_one, finprod_cond_ne _ _ hf]
@@ -183,7 +178,6 @@ theorem Associates.finprod_ne_zero (I : Ideal R) :
 
 namespace Ideal
 
-open scoped Classical in
 /-- The multiplicity of `v` in `∏_v v^(val_v(I))` equals `val_v(I)`. -/
 theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).count
     (Associates.mk (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I)).factors =
@@ -203,7 +197,6 @@ theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).c
 theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
     ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I = I := by
   rw [← associated_iff_eq, ← Associates.mk_eq_mk_iff_associated]
-  classical
   apply Associates.eq_of_eq_counts
   · apply Associates.finprod_ne_zero I
   · apply Associates.mk_ne_zero.mpr hI
@@ -214,12 +207,14 @@ theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
   apply Ideal.finprod_count
     ⟨J, Ideal.isPrime_of_prime (irreducible_iff_prime.mp hv), Irreducible.ne_zero hv⟩ I hI
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ideal `I` equals the inf `⨅_v v^(val_v(I))`. -/
 theorem iInf_maxPowDividing_eq {I : Ideal R} (h0 : I ≠ 0) :
     ⨅ i : HeightOneSpectrum R, i.maxPowDividing I = I := by
   nth_rw 2 [← Ideal.finprod_heightOneSpectrum_factorization h0]
   classical
-  rw [finprod_def, dif_pos (Ideal.hasFiniteMulSupport h0), Ideal.prod_eq_iInf_of_pairwise_isCoprime]
+  rw [finprod_def, dite_eq_left (Ideal.hasFiniteMulSupport h0),
+    Ideal.prod_eq_iInf_of_pairwise_isCoprime]
   · ext x
     constructor
     · aesop
@@ -231,7 +226,6 @@ theorem iInf_maxPowDividing_eq {I : Ideal R} (h0 : I ≠ 0) :
 
 variable (K)
 
-open scoped Classical in
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`, when both sides are regarded as fractional
 ideals of `R`. -/
 theorem finprod_heightOneSpectrum_factorization_coe {I : Ideal R} (hI : I ≠ 0) :
@@ -251,7 +245,6 @@ namespace FractionalIdeal
 open Int IsLocalization
 
 open Ideal in
-open scoped Classical in
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
 `I = a⁻¹J`, then `I` is equal to the product `∏_v v^(val_v(J) - val_v(a))`. -/
 theorem finprod_heightOneSpectrum_factorization {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
@@ -271,7 +264,6 @@ theorem finprod_heightOneSpectrum_factorization {I : FractionalIdeal R⁰ K} (hI
   intro v
   rw [← zpow_add₀ ((@coeIdeal_ne_zero R _ K _ _ _ _).mpr v.ne_bot), sub_eq_add_neg]
 
-open scoped Classical in
 /-- For a nonzero `k = r/s ∈ K`, the fractional ideal `(k)` is equal to the product
 `∏_v v^(val_v(r) - val_v(s))`. -/
 theorem finprod_heightOneSpectrum_factorization_principal_fraction {n : R} (hn : n ≠ 0) (d : ↥R⁰) :
@@ -323,7 +315,7 @@ def count (I : FractionalIdeal R⁰ K) : ℤ :=
         (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ)
 
 /-- `val_v(0) = 0`. -/
-lemma count_zero : count K v (0 : FractionalIdeal R⁰ K) = 0 := by simp only [count, dif_pos]
+lemma count_zero : count K v (0 : FractionalIdeal R⁰ K) = 0 := by simp only [count, dite_eq_left]
 
 open Classical in
 lemma count_ne_zero {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) :
@@ -331,7 +323,7 @@ lemma count_ne_zero {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) :
       (choose (choose_spec (exists_eq_spanSingleton_mul I)))).factors -
       (Associates.mk v.asIdeal).count
         (Associates.mk (Ideal.span {choose (exists_eq_spanSingleton_mul I)})).factors : ℤ) := by
-  simp only [count, dif_neg hI]
+  simp only [count, dite_eq_right hI]
 
 open Classical in
 /-- `val_v(I)` does not depend on the choice of `a` and `J` used to represent `I`. -/
@@ -360,7 +352,7 @@ theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     exact Associates.irreducible_mk.mpr v.irreducible
   rw [h_a₁J₁, ← div_spanSingleton, ← div_spanSingleton, div_eq_div_iff h_a₁' h_a',
     ← coeIdeal_span_singleton, ← coeIdeal_span_singleton, ← coeIdeal_mul, ← coeIdeal_mul] at h_aJ
-  rw [count, dif_neg hI, sub_eq_sub_iff_add_eq_add, ← natCast_add, ← natCast_add, natCast_inj,
+  rw [count, dite_eq_right hI, sub_eq_sub_iff_add_eq_add, ← natCast_add, ← natCast_add, natCast_inj,
     ← Associates.count_mul _ _ hv, ← Associates.count_mul _ _ hv, Associates.mk_mul_mk,
     Associates.mk_mul_mk, coeIdeal_injective h_aJ]
   · rw [ne_eq, Associates.mk_eq_zero]; exact h_J_ne_zero
@@ -372,7 +364,6 @@ theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
 /-- For nonzero `I, I'`, `val_v(I*I') = val_v(I) + val_v(I')`. -/
 theorem count_mul {I I' : FractionalIdeal R⁰ K} (hI : I ≠ 0) (hI' : I' ≠ 0) :
     count K v (I * I') = count K v I + count K v I' := by
-  classical
   have hv : Irreducible (Associates.mk v.asIdeal) := by apply v.associates_irreducible
   obtain ⟨a, J, ha, haJ⟩ := exists_eq_spanSingleton_mul I
   have ha_ne_zero : Associates.mk (Ideal.span {a} : Ideal R) ≠ 0 := by
@@ -431,8 +422,8 @@ theorem count_pow (n : ℕ) (I : FractionalIdeal R⁰ K) :
     classical rw [pow_succ, count_mul']
     by_cases hI : I = 0
     · have h_neg : ¬(I ^ n ≠ 0 ∧ I ≠ 0) := by order
-      rw [if_neg h_neg, hI, count_zero, mul_zero]
-    · rw [if_pos (And.intro (pow_ne_zero n hI) hI), h, Nat.cast_add,
+      rw [ite_eq_right h_neg, hI, count_zero, mul_zero]
+    · rw [ite_eq_left (And.intro (pow_ne_zero n hI) hI), h, Nat.cast_add,
         Nat.cast_one]
       ring
 
@@ -443,7 +434,7 @@ theorem count_self : count K v (v.asIdeal : FractionalIdeal R⁰ K) = 1 := by
       spanSingleton R⁰ ((algebraMap R K) 1)⁻¹ * ↑v.asIdeal := by
     rw [(algebraMap R K).map_one, inv_one, spanSingleton_one, one_mul]
   have hv_irred : Irreducible (Associates.mk v.asIdeal) := by apply v.associates_irreducible
-  classical rw [count_well_defined K v hv h_self, Associates.count_self hv_irred,
+  rw [count_well_defined K v hv h_self, Associates.count_self hv_irred,
     Ideal.span_singleton_one, ← Ideal.one_eq_top, Associates.mk_one, Associates.factors_one,
     Associates.count_zero hv_irred, ofNat_zero, sub_zero, ofNat_one]
 
@@ -491,7 +482,6 @@ theorem count_maximal_coprime {w : HeightOneSpectrum R} (hw : w ≠ v) :
     coeIdeal_ne_zero.mpr w.ne_bot
   have hv : Irreducible (Associates.mk v.asIdeal) := by apply v.associates_irreducible
   have hw' : Irreducible (Associates.mk w.asIdeal) := by apply w.associates_irreducible
-  classical
   rw [count_well_defined K v hw_ne_zero hw_fact, Ideal.span_singleton_one, ← Ideal.one_eq_top,
     Associates.mk_one, Associates.factors_one, Associates.count_zero hv, ofNat_zero, sub_zero,
     natCast_eq_zero, ← pow_one (Associates.mk w.asIdeal), Associates.factors_prime_pow hw',
@@ -516,8 +506,8 @@ theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
   · intro I I' hI hI'
     classical
     by_cases h : I ≠ 0 ∧ I' ≠ 0
-    · rw [count_mul' K v, if_pos h, hI, hI', add_zero]
-    · rw [count_mul' K v, if_neg h]
+    · rw [count_mul' K v, ite_eq_left h, hI, hI', add_zero]
+    · rw [count_mul' K v, ite_eq_right h]
   · intro w hw
     rw [count_zpow, count_maximal_coprime K v hw, mul_zero]
 
@@ -528,6 +518,7 @@ theorem count_finsuppProd (exps : HeightOneSpectrum R →₀ ℤ) :
       exps.mem_support_iff, ne_eq, ite_not, ite_eq_right_iff, @eq_comm ℤ 0, imp_self]
   · exact fun v hv ↦ zpow_ne_zero _ (coeIdeal_ne_zero.mpr v.ne_bot)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `exps` is finitely supported, then `val_v(∏_w w^{exps w}) = exps v`. -/
 theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
     (h_exps : ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, exps v = 0) :
@@ -541,7 +532,6 @@ theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
     rw [mem_mulSupport, h, zpow_zero] at hv
     exact hv (Eq.refl 1)
 
-open scoped Classical in
 theorem count_coe {J : Ideal R} (hJ : J ≠ 0) :
     count K v J = (Associates.mk v.asIdeal).count (Associates.mk J).factors := by
   rw [count_well_defined K (J := J) (a := 1), Ideal.span_singleton_one, sub_eq_self,
@@ -577,7 +567,6 @@ theorem finprod_heightOneSpectrum_factorization' {I : FractionalIdeal R⁰ K} (h
 
 variable {K}
 
-open scoped Classical in
 /-- If `I ≠ 0`, then `val_v(I) = 0` for all but finitely many maximal ideals of `R`. -/
 theorem finite_factors' {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     {J : Ideal R} (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :
@@ -594,11 +583,11 @@ theorem finite_factors' {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     intro v hv
     have hv_irred : Irreducible v.asIdeal := v.irreducible
     by_contra h_notMem
-    rw [mem_union, mem_setOf_eq, mem_setOf_eq] at h_notMem
+    rw [mem_union, mem_ofPred_eq, mem_ofPred_eq] at h_notMem
     push Not at h_notMem
     rw [← Associates.count_ne_zero_iff_dvd ha_ne_zero hv_irred, not_not,
       ← Associates.count_ne_zero_iff_dvd hJ_ne_zero hv_irred, not_not] at h_notMem
-    rw [mem_setOf_eq, h_notMem.1, h_notMem.2, sub_self] at hv
+    rw [mem_ofPred_eq, h_notMem.1, h_notMem.2, sub_self] at hv
     exact hv (Eq.refl 0)
   exact Finite.subset (Finite.union (Ideal.finite_factors (ideal_factor_ne_zero hI haJ))
     (Ideal.finite_factors (constant_factor_ne_zero hI haJ))) h_subset
@@ -608,7 +597,7 @@ open Classical in
 theorem finite_factors (I : FractionalIdeal R⁰ K) :
     ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, count K v I = 0 := by
   by_cases hI : I = 0
-  · simp only [hI, count_zero, Filter.eventually_cofinite, not_true_eq_false, setOf_false,
+  · simp only [hI, count_zero, Filter.eventually_cofinite, not_true_eq_false, ofPred_false,
       finite_empty]
   · convert! finite_factors' hI (choose_spec (choose_spec (exists_eq_spanSingleton_mul I))).2
     rw [count_ne_zero K _ hI]
@@ -643,7 +632,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   choose! a ha ha' using fun p hps ↦ SetLike.exists_of_lt (this p hps)
   obtain ⟨K, hK⟩ : J ∣ Ideal.span {∑ p ∈ s, a p} := by
     rw [Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem]
-    exact sum_mem fun p hp ↦ Ideal.mul_le_right (ha p hp)
+    exact sum_mem fun p hp ↦ Ideal.mul_le_left (ha p hp)
   refine ⟨_, _, hK.symm, ?_⟩
   by_contra H
   obtain ⟨p, hp, h⟩ := Ideal.exists_le_maximal _ H
@@ -722,7 +711,7 @@ def divMod (c b a : FractionalIdeal R⁰ K) : K :=
 lemma divMod_spec
     {a b c : FractionalIdeal R⁰ K} (hac : a ≤ c) (ha : a ≠ 0) (hb : b ≠ 0) :
     a + spanSingleton R⁰ (c.divMod b a) * b = c := by
-  rw [divMod, dif_pos ⟨hac, ha, hb⟩]
+  rw [divMod, dite_eq_left ⟨hac, ha, hb⟩]
   exact (IsDedekindDomain.exists_add_spanSingleton_mul_eq hac ha hb).choose_spec
 
 @[simp]
@@ -812,15 +801,14 @@ section primesOver
 variable {S : Type*} [CommRing S] [Algebra S R] [Algebra.IsIntegral S R] [IsDomain S]
   [Module.IsTorsionFree S R]
 
-open IsDedekindDomain Ideal.IsDedekindDomain HeightOneSpectrum
+open IsDedekindDomain Ideal.IsDedekindDomain
 
 /--
 If `p` is a maximal ideal, then the lift of `p` in an extension is the product of the primes
 over `p` to the power the ramification index.
 -/
 theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp : p ≠ 0) :
-    map (algebraMap S R) p = ∏ P ∈ p.primesOver R, P ^ P.ramificationIdx' S := by
-  classical
+    map (algebraMap S R) p = ∏ P ∈ p.primesOver R, P ^ P.ramificationIdx S := by
   have h : map (algebraMap S R) p ≠ 0 := map_ne_bot_of_ne_bot hp
   rw [← finprod_heightOneSpectrum_factorization (I := p.map (algebraMap S R)) h]
   let hF : Fintype {v : HeightOneSpectrum R | v.asIdeal ∣ map (algebraMap S R) p} :=
@@ -831,7 +819,7 @@ theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp :
   · let _ : Fintype {v : HeightOneSpectrum R // v.asIdeal ∣ map (algebraMap S R) p} := hF
     refine Fintype.prod_equiv (equivPrimesOver _ hp) _ _ fun ⟨v, _⟩ ↦ ?_
     have : v.asIdeal.LiesOver p := by rwa [Ideal.liesOver_iff_dvd_map v.2.ne_top]
-    simp [maxPowDividing_eq_pow_multiset_count _ h, ramificationIdx'_eq_factors_count p v h]
+    simp [maxPowDividing_eq_pow_multiset_count _ h, ramificationIdx_eq_factors_count p v h]
   · intro v hv
     simpa [maxPowDividing, Function.mem_mulSupport, IsPrime.ne_top _,
       Associates.count_ne_zero_iff_dvd h (irreducible v)] using hv
@@ -873,7 +861,6 @@ lemma count_normalizedFactors_eq_multiplicity :
 as `multiplicity p.asIdeal I`. -/
 lemma maxPowDividing_eq_pow_multiplicity :
     p.maxPowDividing I = p.asIdeal ^ multiplicity p.asIdeal I := by
-  classical
   rw [maxPowDividing_eq_pow_multiset_count _ hI, count_normalizedFactors_eq_multiplicity hI]
 
 /-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
