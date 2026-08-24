@@ -159,6 +159,10 @@ info:
 #guard_msgs in
 #pibase_tags topology
 
+-- The `topology` topic token is non-reserved: `topology` must remain usable as an identifier
+-- (it appears as one throughout Mathlib, e.g. `AlgebraicGeometry.ProEt.topology`).
+example (topology : Nat) : Nat := topology
+
 /-- error: <input>:1:3: π-Base ids must have exactly six digits after P/S/T. -/
 #guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "P42"
 

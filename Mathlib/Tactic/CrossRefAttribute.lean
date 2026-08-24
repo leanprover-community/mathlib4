@@ -42,7 +42,7 @@ inductive PiBaseTopic where
 namespace PiBaseTopic
 
 /-- The string such that `https://{topic.urlSubdomain}.pi-base.org` is the base url of the π-Base
-project identfied by this topic. -/
+project identified by this topic. -/
 def urlSubdomain : PiBaseTopic → String
   | topology => "topology"
 
@@ -432,7 +432,7 @@ initialize Lean.registerBuiltinAttribute {
 - `topology`
 
 This list will be expanded in the future. -/
-syntax pibaseTopic := "topology"
+syntax pibaseTopic := &"topology"
 
 /-- Get the `PiBaseTopic` from a syntax key. -/
 def getPiBaseTopic? : TSyntax ``pibaseTopic → Option PiBaseTopic
@@ -550,13 +550,14 @@ or declaration type (for definitions, structures, instances, etc.) after each su
 elab (name := lmfdbTags) "#lmfdb_tags" tk:("!")? : command =>
   traceCrossRefs .lmfdb (tk.isSome)
 
-/-- The `#pibase_tags topic` command retrieves all declarations that have the `pibase` attribute.
+/-- The `#pibase_tags topic` command retrieves all declarations that have the `pibase` attribute
+with the given topic.
 
 For each found declaration, it prints a line
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
-The variant `#pibase_tags!` also adds the theorem statement (for theorems)
+The variant `#pibase_tags! topic` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
 elab (name := pibaseTags) "#pibase_tags" tk:("!")? ppSpace topic:pibaseTopic : command => do
