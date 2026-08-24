@@ -88,7 +88,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Submonoid M} (hS : D
 @[to_additive]
 theorem mem_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : M} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val]
 
 @[to_additive]
@@ -277,7 +277,7 @@ theorem closure_induction_left
   obtain ⟨l, rfl⟩ := h
   induction l using FreeMonoid.inductionOn' with
   | one => exact one
-  | mul_of x y ih =>
+  | of_mul x y ih =>
     simp only [map_mul, FreeMonoid.lift_eval_of]
     refine mul_left _ x.prop (FreeMonoid.lift Subtype.val y) _ (ih ?_)
     simp only [closure_eq_mrange, mem_mrange, exists_apply_eq_apply]
@@ -361,8 +361,12 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
     simp only [coe_one, coe_mul, SubmonoidClass.coe_pow]
     rw [← pow_succ, Nat.sub_add_cancel hpos, ← pow_mul, mul_comm, pow_mul, hx, one_pow]
   zpow z x := x ^ z.natMod n
-  zpow_zero' z := by simp only [Int.natMod, Int.zero_emod, Int.toNat_zero, pow_zero]
-  zpow_neg' m x := Subtype.ext <| by
+  zpow_zero' z := by
+    simp_rw [HPow.hPow, Pow.pow]
+    simp only [Int.natMod, Int.zero_emod, Int.toNat_zero, pow_zero]
+  zpow_neg' m x := by
+    change x ^ (Int.natMod _ n) = (x ^ (Int.natMod _ n)) ^ (n - 1)
+    ext
     obtain ⟨_, k, rfl⟩ := x
     simp only [← pow_mul, Int.natMod, SubmonoidClass.coe_pow]
     rw [Int.negSucc_eq, ← Int.natCast_succ, ← Int.add_mul_emod_self_right (b := (m + 1 : ℕ))]
@@ -372,6 +376,7 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
     rw [mul_comm, pow_mul, ← pow_eq_pow_mod _ hx, mul_comm k, mul_assoc, pow_mul _ (_ % _),
       ← pow_eq_pow_mod _ hx, pow_mul, pow_mul]
   zpow_succ' m x := Subtype.ext <| by
+    simp_rw [HPow.hPow, Pow.pow]
     obtain ⟨_, k, rfl⟩ := x
     simp only [← pow_mul, Int.natMod, SubmonoidClass.coe_pow, coe_mul]
     norm_cast

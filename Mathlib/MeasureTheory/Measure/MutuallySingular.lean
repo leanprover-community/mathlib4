@@ -53,7 +53,9 @@ theorem mk {s t : Set α} (hs : μ s = 0) (ht : ν t = 0) (hst : univ ⊆ s ∪ 
   exact subset_toMeasurable _ _ hxs
 
 /-- A set such that `μ h.nullSet = 0` and `ν h.nullSetᶜ = 0`. -/
-def nullSet (h : μ ⟂ₘ ν) : Set α := h.choose
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def nullSet (h : μ ⟂ₘ ν) : Set α := h.choose
 
 lemma measurableSet_nullSet (h : μ ⟂ₘ ν) : MeasurableSet h.nullSet := h.choose_spec.1
 
@@ -280,10 +282,10 @@ lemma mutuallySingular_tfae : List.TFAE
   tfae_finish
 
 lemma mutuallySingular_iff_disjoint : μ ⟂ₘ ν ↔ Disjoint μ ν :=
-  mutuallySingular_tfae.out 0 1
+  mutuallySingular_tfae.out 1 2
 
 lemma mutuallySingular_iff_disjoint_ae : μ ⟂ₘ ν ↔ Disjoint (ae μ) (ae ν) :=
-  mutuallySingular_tfae.out 0 2
+  mutuallySingular_tfae.out 1 3
 
 end Measure
 

@@ -20,7 +20,9 @@ derivative, differentiable, Fréchet, calculus
 
 public section
 
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
+open Filter Asymptotics ContinuousLinearMap Set
+
+open scoped Topology
 
 noncomputable section
 
@@ -29,7 +31,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
-variable {f f₀ f₁ g : E → F}
+variable {f f₀ f₁ : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable {x : E}
 variable {s t : Set E}
@@ -260,6 +262,47 @@ theorem Filter.EventuallyEq.fderiv_eq (h : f₁ =ᶠ[𝓝 x] f) : fderiv 𝕜 f�
 
 protected theorem Filter.EventuallyEq.fderiv (h : f₁ =ᶠ[𝓝 x] f) : fderiv 𝕜 f₁ =ᶠ[𝓝 x] fderiv 𝕜 f :=
   h.eventuallyEq_nhds.mono fun _ h => h.fderiv_eq
+
+/-- If two functions agree on a codiscrete subset of `s`, then so do their derivatives within
+any subset `t` of `s`. -/
+theorem Filter.EventuallyEq.codiscreteWithin_fderivWithin'
+    (h : f₁ =ᶠ[codiscreteWithin s] f) (ht : t ⊆ s) :
+    fderivWithin 𝕜 f₁ t =ᶠ[codiscreteWithin s] fderivWithin 𝕜 f t := by
+  filter_upwards [h, self_mem_codiscreteWithin s] with x hx hxs
+  have hsx : f₁ =ᶠ[𝓝[s] x] f := by
+    rw [← insert_sdiff_self_of_mem hxs, nhdsWithin_insert, EventuallyEq,
+      eventually_sup, eventually_pure]
+    exact ⟨hx, eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsWithin.1 h x hxs⟩
+  exact (hsx.filter_mono <| nhdsWithin_mono x ht).fderivWithin_eq hx
+
+/-- If two functions agree on a codiscrete subset of `s`, then so do their derivatives
+within `s`. -/
+theorem Filter.EventuallyEq.codiscreteWithin_fderivWithin
+    (h : f₁ =ᶠ[codiscreteWithin s] f) :
+    fderivWithin 𝕜 f₁ s =ᶠ[codiscreteWithin s] fderivWithin 𝕜 f s :=
+  h.codiscreteWithin_fderivWithin' Subset.rfl
+
+/-- If two functions agree on a codiscrete subset of an open set `s`, then so do their
+derivatives. -/
+theorem Filter.EventuallyEq.codiscreteWithin_fderiv
+    (h : f₁ =ᶠ[codiscreteWithin s] f) (hs : IsOpen s) :
+    fderiv 𝕜 f₁ =ᶠ[codiscreteWithin s] fderiv 𝕜 f := by
+  filter_upwards [h.codiscreteWithin_fderivWithin (𝕜 := 𝕜), self_mem_codiscreteWithin s]
+  intro x hx hxs
+  simp_all [fderivWithin_of_isOpen]
+
+/-- If two functions agree on a codiscrete subset of `E`, then so do their derivatives within
+any subset `s` of `E`. -/
+theorem Filter.EventuallyEq.codiscrete_fderivWithin
+    (h : f₁ =ᶠ[codiscrete E] f) :
+    fderivWithin 𝕜 f₁ s =ᶠ[codiscrete E] fderivWithin 𝕜 f s :=
+  h.codiscreteWithin_fderivWithin' <| subset_univ _
+
+/-- If two functions agree on a codiscrete subset of `E`, then so do their derivatives. -/
+theorem Filter.EventuallyEq.codiscrete_fderiv
+    (h : f₁ =ᶠ[codiscrete E] f) :
+    fderiv 𝕜 f₁ =ᶠ[codiscrete E] fderiv 𝕜 f :=
+  h.codiscreteWithin_fderiv isOpen_univ
 
 end congr
 

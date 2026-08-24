@@ -15,7 +15,7 @@ public import Mathlib.Order.Filter.Germ.Basic
 For each of the following structures we prove that if `β` has this structure, then so does
 `Germ l β`:
 
-* `OrderedCancelCommMonoid` and `OrderedCancelAddCommMonoid`.
+* `IsOrderedCancelMonoid` and `IsOrderedCancelAddMonoid`.
 
 ## Tags
 

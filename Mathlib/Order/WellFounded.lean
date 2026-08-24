@@ -61,11 +61,7 @@ variable {r r' : α → α → Prop}
 
 protected theorem asymm (h : WellFounded r) : Std.Asymm r := ⟨h.asymmetric⟩
 
-@[deprecated (since := "2026-01-07")] protected alias isAsymm := WellFounded.asymm
-
 protected theorem irrefl (h : WellFounded r) : Std.Irrefl r := @Std.Asymm.irrefl α r h.asymm
-
-@[deprecated (since := "2026-01-07")] protected alias isIrrefl := WellFounded.irrefl
 
 instance [WellFoundedRelation α] : Std.Asymm (α := α) WellFoundedRelation.rel :=
   WellFoundedRelation.wf.asymm
@@ -94,6 +90,21 @@ theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
     Acc.recOn (H.apply a) (fun x _ IH =>
         not_imp_not.1 fun hne hx => hne <| ⟨x, hx, fun y hy hyx => hne <| IH y hyx hy⟩)
       ha
+
+theorem not_rightTotal (wf : WellFounded r) [Nonempty α] : ¬ Relator.RightTotal r := by
+  intro h
+  obtain ⟨a, -, ha⟩ := wf.has_min Set.univ Set.univ_nonempty
+  obtain ⟨b, hba⟩ := h a
+  specialize ha b (Set.mem_univ b)
+  contradiction
+
+theorem not_leftTotal (wf : WellFounded (Function.swap r)) [Nonempty α] :
+    ¬ Relator.LeftTotal r := by
+  intro h
+  obtain ⟨a, -, ha⟩ := wf.has_min Set.univ Set.univ_nonempty
+  obtain ⟨b, hab⟩ := h a
+  specialize ha b (Set.mem_univ b)
+  contradiction
 
 /-- A minimal element of a nonempty set in a well-founded order.
 
@@ -359,7 +370,7 @@ theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFound
 end Induction
 
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := instance_reducible)
 /-- A nonempty linear order with well-founded `>` has a top element. -/]
 noncomputable def WellFoundedLT.toOrderBot (α) [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where

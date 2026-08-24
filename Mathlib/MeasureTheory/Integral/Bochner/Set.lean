@@ -494,7 +494,7 @@ theorem setIntegral_neg_eq_setIntegral_nonpos [PartialOrder E] {f : X → E}
     (hf : AEStronglyMeasurable f μ) :
     ∫ x in {x | f x < 0}, f x ∂μ = ∫ x in {x | f x ≤ 0}, f x ∂μ := by
   have h_union : {x | f x ≤ 0} = {x | f x < 0} ∪ {x | f x = 0} := by
-    simp_rw [le_iff_lt_or_eq, setOf_or]
+    simp_rw [le_iff_lt_or_eq, ofPred_or]
   rw [h_union]
   have B : NullMeasurableSet {x | f x = 0} μ :=
     hf.nullMeasurableSet_eq_fun aestronglyMeasurable_zero
@@ -519,10 +519,10 @@ theorem integral_norm_eq_pos_sub_neg {f : X → ℝ} (hfi : Integrable f μ) :
       rw [← integral_neg]
       refine setIntegral_congr_fun₀ h_meas.compl fun x hx => ?_
       rw [Real.norm_eq_abs, abs_eq_neg_self.mpr _]
-      rw [Set.mem_compl_iff, Set.notMem_setOf_iff] at hx
+      rw [Set.mem_compl_iff, Set.notMem_ofPred_iff] at hx
       linarith
     _ = ∫ x in {x | 0 ≤ f x}, f x ∂μ - ∫ x in {x | f x ≤ 0}, f x ∂μ := by
-      rw [← setIntegral_neg_eq_setIntegral_nonpos hfi.1, compl_setOf]; simp only [not_le]
+      rw [← setIntegral_neg_eq_setIntegral_nonpos hfi.1, compl_ofPred]; simp only [not_le]
 
 theorem setIntegral_const [CompleteSpace E] (c : E) : ∫ _ in s, c ∂μ = μ.real s • c := by
   rw [integral_const, measureReal_restrict_apply_univ]
@@ -588,7 +588,7 @@ theorem setIntegral_map_equiv {Y} [MeasurableSpace Y] (e : X ≃ᵐ Y) (f : Y �
 theorem norm_setIntegral_le_of_norm_le_const_ae {C : ℝ} (hs : μ s < ∞)
     (hC : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) : ‖∫ x in s, f x ∂μ‖ ≤ C * μ.real s := by
   rw [← Measure.restrict_apply_univ] at *
-  haveI : IsFiniteMeasure (μ.restrict s) := ⟨hs⟩
+  have : IsFiniteMeasure (μ.restrict s) := ⟨hs⟩
   simpa using norm_integral_le_of_norm_le_const hC
 
 theorem norm_setIntegral_le_of_norm_le_const_ae' {C : ℝ} (hs : μ s < ∞)
@@ -666,7 +666,7 @@ theorem setIntegral_trim {X} {m m0 : MeasurableSpace X} {μ : Measure X} (hm : m
 /-! ### Lemmas about adding and removing interval boundaries
 
 The primed lemmas take explicit arguments about the endpoint having zero measure, while the
-unprimed ones use `[NoAtoms μ]`.
+unprimed ones use `[NullSingletonClass μ]`.
 -/
 
 section PartialOrder
@@ -701,7 +701,7 @@ theorem integral_Ici_eq_integral_Ioi' (hx : μ {x} = 0) :
     ∫ t in Ici x, f t ∂μ = ∫ t in Ioi x, f t ∂μ :=
   setIntegral_congr_set (Ioi_ae_eq_Ici' hx).symm
 
-variable [NoAtoms μ]
+variable [NullSingletonClass μ]
 
 theorem integral_Icc_eq_integral_Ioc : ∫ t in Icc x y, f t ∂μ = ∫ t in Ioc x y, f t ∂μ :=
   integral_Icc_eq_integral_Ioc' <| measure_singleton x
@@ -885,6 +885,23 @@ lemma integral_le_measure {f : X → ℝ} {s : Set X}
   · intro x hx
     simpa [g] using h's x hx
 
+lemma setIntegral_mono_of_nonneg {g : X → ℝ} (hf : ∀ x ∈ s, 0 ≤ f x)
+    (h : ∀ x ∈ s, f x ≤ g x) (hg : IntegrableOn g s μ) :
+    ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
+  by_cases h'f : AEStronglyMeasurable f (μ.restrict s); swap
+  · rw [integral_non_aestronglyMeasurable h'f]
+    apply integral_nonneg_of_ae
+    apply (ae_restrict_iff₀ ?_).2
+    · filter_upwards with x hx using (hf x hx).trans (h x hx)
+    · exact nullMeasurableSet_le aemeasurable_const hg.aemeasurable
+  refine integral_mono_of_nonneg ?_ hg ?_
+  · apply (ae_restrict_iff₀ ?_).2
+    · filter_upwards with x hx using hf x hx
+    · exact nullMeasurableSet_le aemeasurable_const h'f.aemeasurable
+  · apply (ae_restrict_iff₀ ?_).2
+    · filter_upwards with x hx using h x hx
+    · exact nullMeasurableSet_le h'f.aemeasurable hg.aemeasurable
+
 end Nonneg
 
 section IntegrableUnion
@@ -993,7 +1010,7 @@ theorem LpToLpRestrictCLM_coeFn [Fact (1 ≤ p)] (s : Set X) (f : Lp F p μ) :
 @[continuity]
 theorem continuous_setIntegral [NormedSpace ℝ E] (s : Set X) :
     Continuous fun f : X →₁[μ] E => ∫ x in s, f x ∂μ := by
-  haveI : Fact ((1 : ℝ≥0∞) ≤ 1) := ⟨le_rfl⟩
+  have : Fact ((1 : ℝ≥0∞) ≤ 1) := ⟨le_rfl⟩
   have h_comp :
     (fun f : X →₁[μ] E => ∫ x in s, f x ∂μ) =
       integral (μ.restrict s) ∘ fun f => LpToLpRestrictCLM X E ℝ μ 1 s f := by
