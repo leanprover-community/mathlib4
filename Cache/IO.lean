@@ -38,6 +38,7 @@ def isPartOfMathlibCache (mod : Name) : Bool := #[
   `ProofWidgets,
   `Archive,
   `Counterexamples,
+  `Wanted,
   `MathlibTest,
   -- Allow PRs to upload oleans for Reap for testing.
   `Requests,
@@ -68,9 +69,31 @@ initialize CACHEDIR : FilePath ← do
       | some path => return path / ".cache" / "mathlib"
       | none => pure ⟨".cache"⟩
 
-/-- Target file path for `curl` configurations -/
+/--
+A tag unique to this `cache` process, mixed into the names of every temporary file it writes into
+`CACHEDIR`.
+
+`CACHEDIR` is shared by design: it defaults to one directory per user
+(`~/.cache/mathlib`), so every checkout, worktree, and CI job on a machine pools its
+downloads there. Two `cache` runs can therefore be in flight in it at once, and until
+they were tagged they wrote each other's files — one run's `curl.cfg` overwritten by the
+other's before curl read it (so it fetched the wrong list, then reported the files it was
+actually asked for as missing and rebuilt them), and, worse, two curls writing one
+`<hash>.ltar.part` and renaming the interleaved result into place, leaving a corrupt
+`.ltar` that every later run would find, trust, and fail to decompress.
+-/
+initialize PROCTAG : String ← toString <$> IO.Process.getPID
+
+/-- Target file path for `curl` configurations. One per process; see `PROCTAG`. -/
 def CURLCFG :=
-  IO.CACHEDIR / "curl.cfg"
+  IO.CACHEDIR / s!"curl-{PROCTAG}.cfg"
+
+/--
+Suffix for a download still in flight, before it is renamed to `<hash>.ltar`. One per process; see
+`PROCTAG`.
+-/
+def PARTSUFFIX :=
+  s!".{PROCTAG}.part"
 
 /-- curl version at https://github.com/leanprover-community/static-curl -/
 def CURLVERSION :=

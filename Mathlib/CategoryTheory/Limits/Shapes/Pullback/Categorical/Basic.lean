@@ -656,7 +656,6 @@ def precomposeObjComp (U : X ⥤ Y) (V : Y ⥤ Z) :
       (Functor.associator _ _ _)
       (Functor.associator _ _ _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma precompose_map_whiskerLeft (U : X ⥤ Y) {V W : Y ⥤ Z} (α : V ⟶ W) :
     (precompose F G).map (whiskerLeft U α) =
@@ -665,7 +664,6 @@ lemma precompose_map_whiskerLeft (U : X ⥤ Y) {V W : Y ⥤ Z} (α : V ⟶ W) :
       (precomposeObjComp F G U W).inv := by
   ext <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma precompose_map_whiskerRight {U V : X ⥤ Y} (α : U ⟶ V) (W : Y ⥤ Z) :
     (precompose F G).map (whiskerRight α W) =
@@ -674,7 +672,6 @@ lemma precompose_map_whiskerRight {U V : X ⥤ Y} (α : U ⟶ V) (W : Y ⥤ Z) :
       (precomposeObjComp F G V W).inv := by
   ext <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma precompose_map_associator {T : Type u₇} [Category.{v₇} T]
     (U : X ⥤ Y) (V : Y ⥤ Z) (W : Z ⥤ T) :
@@ -686,7 +683,6 @@ lemma precompose_map_associator {T : Type u₇} [Category.{v₇} T]
       (precomposeObjComp F G _ _).inv := by
   ext <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma precompose_map_leftUnitor (U : X ⥤ Y) :
     (precompose F G).map U.leftUnitor.hom =
@@ -695,7 +691,6 @@ lemma precompose_map_leftUnitor (U : X ⥤ Y) :
       (Functor.rightUnitor _).hom := by
   ext <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma precompose_map_rightUnitor (U : X ⥤ Y) :
     (precompose F G).map U.rightUnitor.hom =
@@ -749,7 +744,6 @@ lemma precomposeObjTransformObjSquare_iso_hom_naturality₂
       whiskerLeft (transform Y |>.obj ψ) (precompose F₁ G₁ |>.map α) := by
   ext <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The square `precomposeObjTransformOBjSquare` respects identities. -/
 lemma precomposeObjTransformObjSquare_iso_hom_id
@@ -761,7 +755,6 @@ lemma precomposeObjTransformObjSquare_iso_hom_id
       (Functor.leftUnitor _).hom ≫ (Functor.rightUnitor _).inv := by
   ext <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The square `precomposeTransformSquare` respects compositions. -/
 lemma precomposeObjTransformObjSquare_iso_hom_comp
@@ -806,7 +799,6 @@ instance transformObjPrecomposeObjSquare
 -- Compare the next 3 lemmas with the components of a strong natural transform
 -- of pseudofunctors
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The square `transformObjPrecomposeObjSquare` is itself natural. -/
 lemma transformObjPrecomposeObjSquare_iso_hom_naturality₂
@@ -818,7 +810,6 @@ lemma transformObjPrecomposeObjSquare_iso_hom_naturality₂
       whiskerLeft (precompose F G |>.obj U) (transform X |>.map η) := by
   ext <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The square `transformObjPrecomposeObjSquare` respects identities. -/
 lemma transformObjPrecomposeObjSquare_iso_hom_id
@@ -832,7 +823,6 @@ lemma transformObjPrecomposeObjSquare_iso_hom_id
       (precompose F G |>.obj U).rightUnitor.inv := by
   ext <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The square `transformPrecomposeSquare` respects compositions. -/
 lemma transformPrecomposeObjSquare_iso_hom_comp
