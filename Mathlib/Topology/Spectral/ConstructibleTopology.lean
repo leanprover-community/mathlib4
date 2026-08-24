@@ -5,13 +5,13 @@ Authors: Johan Commelin, Jiedong Jiang, Fangming Li, Christian Merten
 -/
 module
 
-public import Mathlib.Topology.WithTopology
-public import Mathlib.Topology.JacobsonSpace
 public import Mathlib.Data.Set.Card
-public import Mathlib.Topology.Constructible
 public import Mathlib.Tactic.Bound.Init
+public import Mathlib.Topology.Constructible
+public import Mathlib.Topology.JacobsonSpace
 public import Mathlib.Topology.Sober
 public import Mathlib.Topology.Spectral.Prespectral
+public import Mathlib.Topology.WithTopology
 
 /-!
 # Constructible topology
