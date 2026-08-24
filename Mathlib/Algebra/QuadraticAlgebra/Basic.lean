@@ -25,6 +25,8 @@ Let `R` be a commutative ring. We define:
   map, respectively isomorphism (when `u` is a unit), induced by the change of generator
   `ω ↦ u • ω + k`
 
+* `QuadraticAlgebra.baseChange`: the `R`-algebra map induced by a base change `R → S`
+
 We prove:
 
 * `QuadraticAlgebra.isUnit_iff_norm_isUnit`:
@@ -83,6 +85,10 @@ theorem omega_mul_omega_eq_algebraMap :
   simp [omega_mul_omega_eq_add, Algebra.algebraMap_eq_smul_one]
 
 @[simp]
+theorem basis_apply_one : (basis a b) 1 = ω := by
+  ext <;> simp [basis]
+
+@[simp]
 theorem omega_mul_mk (x y : R) : (ω : QuadraticAlgebra R a b) * ⟨x, y⟩ = ⟨a * y, x + b * y⟩ := by
   ext <;> simp
 
@@ -93,6 +99,10 @@ theorem omega_mul_algebraMap_mul_mk (n x y : R) :
 
 theorem mk_eq_add_smul_omega (x y : R) :
     (⟨x, y⟩ : QuadraticAlgebra R a b) = algebraMap _ _ x + y • ω := by
+  ext <;> simp
+
+/-- Decomposition of an element of a quadratic algebra in the basis `(1, ω)`. -/
+theorem re_smul_add_im_smul (x : QuadraticAlgebra R a b) : x.re • 1 + x.im • ω = x := by
   ext <;> simp
 
 variable {A : Type*} [Ring A] [Algebra R A]
@@ -221,6 +231,10 @@ theorem norm_one : norm (1 : QuadraticAlgebra R a b) = 1 := by simp [norm]
 @[simp]
 theorem norm_algebraMap (r : R) : norm (algebraMap R (QuadraticAlgebra R a b) r) = r ^ 2 := by
   simp [norm_def, pow_two]
+
+theorem norm_smul (r : R) (z : QuadraticAlgebra R a b) :
+    norm (r • z) = r ^ 2 * norm z := by
+  rw [Algebra.smul_def, map_mul, norm_algebraMap]
 
 @[simp]
 theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
@@ -437,6 +451,50 @@ def changeGeneratorEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
 @[deprecated (since := "2026-08-14")] alias mapEquiv := changeGeneratorEquiv
 
 end changeGenerator
+
+section baseChange
+
+variable {R S : Type*} (S)
+
+section CommSemiring
+
+variable [CommSemiring R] [CommRing S] [Algebra R S] (a b : R)
+
+/-- The `R`-algebra map between quadratic algebras induced by the base change `R → S`,
+sending `ω` to `ω`. -/
+@[simps!]
+def baseChange :
+    QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b) :=
+  lift ⟨omega, by ext <;> simp [Algebra.algebraMap_eq_smul_one]⟩
+
+theorem baseChange_omega :
+    baseChange S a b ω = ω := by
+  ext <;> simp
+
+theorem baseChange_injective [FaithfulSMul R S] :
+    Function.Injective (baseChange S a b) := by
+  intro _ _ h
+  simp only [QuadraticAlgebra.ext_iff, re_baseChange_apply, ← Algebra.algebraMap_eq_smul_one,
+    algebraMap.coe_inj, im_baseChange_apply] at h
+  exact QuadraticAlgebra.ext_iff.mpr h
+
+end CommSemiring
+
+section CommRing
+
+variable [CommRing R] [CommRing S] [Algebra R S] (a b : R)
+
+theorem norm_baseChange (x : QuadraticAlgebra R a b) :
+    norm (baseChange S a b x) = algebraMap R S (norm x) := by
+  simp [norm_def, Algebra.smul_def]
+
+theorem trace_baseChange (x : QuadraticAlgebra R a b) :
+    trace (baseChange S a b x) = algebraMap R S (trace x) := by
+  simp [trace_def, Algebra.smul_def, map_ofNat]
+
+end CommRing
+
+end baseChange
 
 section field
 
