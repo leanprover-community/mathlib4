@@ -626,7 +626,7 @@ variable {𝕜 G G'}
 theorem curryFinFinset_apply (hk : #s = k) (hl : #sᶜ = l) (f : G [×n]→L[𝕜] G')
     (mk : Fin k → G) (ml : Fin l → G) : curryFinFinset 𝕜 G G' hk hl f mk ml =
       f fun i => Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i) :=
-  congr_arg f (by aesop)
+  rfl
 
 @[simp]
 theorem curryFinFinset_symm_apply (hk : #s = k) (hl : #sᶜ = l)
