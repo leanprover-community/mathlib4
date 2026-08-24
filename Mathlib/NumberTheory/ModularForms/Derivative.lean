@@ -273,15 +273,14 @@ private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} (hF : MDiff F) 
     _ = M / (π * z.im) := by ring
 
 /-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity
-tends to `0` at infinity. This is a Cauchy estimate: differentiating loses a factor
-of `1 / z.im`. -/
+tends to `0` at infinity. Uses Cauchy estimate. -/
 theorem isZeroAtImInfty_normalizedDerivOfComplex {F : ℍ → ℂ} (hF : MDiff F)
     (hb : IsBoundedAtImInfty F) : IsZeroAtImInfty (D F) := by
   rw [isBoundedAtImInfty_iff] at hb
   obtain ⟨M, A, hMA⟩ := hb
   rw [isZeroAtImInfty_iff]
   intro ε hε
-  refine ⟨max (2 * A) (M / (π * ε)), fun z hz => ?_⟩
+  refine ⟨max (2 * A) (M / (π * ε)), fun z hz ↦ ?_⟩
   obtain ⟨hzA, hzε⟩ := max_le_iff.mp hz
   have hM : 0 ≤ M := (norm_nonneg _).trans (hMA z (by linarith [z.im_pos]))
   refine (norm_normalizedDerivOfComplex_le hF fun w hw ↦ hMA w (by linarith)).trans ?_

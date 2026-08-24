@@ -117,8 +117,8 @@ theorem hasSum_qExpansion_E2 :
 
 /-- `E2` tends to `1` at `i∞`. -/
 theorem tendsto_E2_atImInfty : Tendsto E2 atImInfty (𝓝 1) :=
-  tendsto_atImInfty_of_hasSum_qExpansion one_pos fun τ ↦ by
-    simpa only [Function.Periodic.qParam, ofReal_one, div_one] using hasSum_qExpansion_E2 (z := τ)
+  tendsto_atImInfty_of_hasSum_qExpansion one_pos fun z ↦ by
+    simpa only [Function.Periodic.qParam, ofReal_one, div_one] using hasSum_qExpansion_E2 (z := z)
 
 /-- `E2` is bounded at `i∞`. -/
 theorem isBoundedAtImInfty_E2 : IsBoundedAtImInfty E2 :=

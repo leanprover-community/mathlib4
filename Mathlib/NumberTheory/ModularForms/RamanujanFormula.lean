@@ -21,6 +21,11 @@ We prove Ramanujan's formulas for derivatives of the normalised Eisenstein serie
 - `Derivative.normalizedDerivOfComplex_E₂` : `D E₂ = (E₂² - E₄) / 12`
 - `Derivative.normalizedDerivOfComplex_E₄` : `D E₄ = (E₂ E₄ - E₆) / 3`
 - `Derivative.normalizedDerivOfComplex_E₆` : `D E₆ = (E₂ E₆ - E₄²) / 2`
+
+## Proof Strategy
+
+Proof uses dimension formula of modular forms of level 1, and the (Serre derivative) identities
+are obtained by showing that the limit of both sides at `i∞` agree.
 -/
 
 open UpperHalfPlane hiding I
@@ -36,15 +41,15 @@ the Serre derivative `∂_κ f` of a bounded holomorphic `f` with limit `l` at `
 of weight-`k'` forms has rank one with a generator `g` tending to `1` at `i∞`, then
 `∂_κ f = -(κ / 12) l • g`. -/
 private lemma serreDerivative_eq_smul {k' : ℤ} {κ l L : ℂ} {g F : ModularForm 𝒮ℒ k'}
-    {f g' : ℍ → ℂ} (hF : ⇑F = serreDerivative κ f)
-    (hrank : Module.rank ℂ (ModularForm 𝒮ℒ k') = 1) (hg : g ≠ 0) (hG : ⇑g = g') (hf : MDiff f)
+    {f : ℍ → ℂ} (hF : ⇑F = serreDerivative κ f)
+    (hrank : Module.rank ℂ (ModularForm 𝒮ℒ k') = 1) (hg : g ≠ 0) (hf : MDiff f)
     (hb : IsBoundedAtImInfty f) (hl : Tendsto f atImInfty (𝓝 l))
-    (hg1 : Tendsto g' atImInfty (𝓝 1)) (hL : L = -(κ * 12⁻¹ * l)) :
-    serreDerivative κ f = L • g' := by
+    (hg1 : Tendsto g atImInfty (𝓝 1)) (hL : L = -(κ * 12⁻¹ * l)) :
+    serreDerivative κ f = L • g := by
   obtain ⟨c, hc⟩ :=
     (finrank_eq_one_iff_of_nonzero' g hg).mp (Module.rank_eq_one_iff_finrank_eq_one.mp hrank) F
-  have hfg : serreDerivative κ f = c • g' := hG ▸ hF ▸ congrArg DFunLike.coe hc.symm
-  have hlim : Tendsto (c • g') atImInfty (𝓝 (-(κ * 12⁻¹ * l))) := hfg ▸ by
+  have hfg : serreDerivative κ f = c • g := hF ▸ congrArg DFunLike.coe hc.symm
+  have hlim : Tendsto (c • ⇑g) atImInfty (𝓝 (-(κ * 12⁻¹ * l))) := hfg ▸ by
     simpa using (isZeroAtImInfty_normalizedDerivOfComplex hf hb).sub
       ((tendsto_E2_atImInfty.const_mul (κ * 12⁻¹)).mul hl)
   rw [hfg, hL, ← tendsto_nhds_unique (hg1.const_mul c) hlim, mul_one]
@@ -52,17 +57,19 @@ private lemma serreDerivative_eq_smul {k' : ℤ} {κ l L : ℂ} {g F : ModularFo
 /-- **Ramanujan's formula for `E₄`**: `∂₄ E₄ = -E₆ / 3`. -/
 theorem serreDerivative_E₄ : serreDerivative 4 E₄ = (-3⁻¹ : ℂ) • E₆ :=
   serreDerivative_eq_smul (F := serreDerivativeMF 4 E₄) rfl levelOne_weight_six_rank_one
-    (E_ne_zero (by norm_num) ⟨3, rfl⟩) rfl E₄.holo' (ModularFormClass.bdd_at_infty E₄)
+    (E_ne_zero (by norm_num) ⟨3, rfl⟩) E₄.holo' (ModularFormClass.bdd_at_infty E₄)
     tendsto_E₄_atImInfty tendsto_E₆_atImInfty (by norm_num)
 
 /-- **Ramanujan's formula for `E₆`**: `∂₆ E₆ = -E₄² / 2`. -/
 theorem serreDerivative_E₆ : serreDerivative 6 E₆ = (-2⁻¹ : ℂ) • E₄ ^ 2 :=
-  serreDerivative_eq_smul (F := serreDerivativeMF 6 E₆) (g := E₄.pow 2) rfl
+  coe_pow E₄ 2 ▸ serreDerivative_eq_smul (F := serreDerivativeMF 6 E₆) (g := E₄.pow 2) rfl
     (by simpa [Nat.ModEq] using dimension_level_one 8 ⟨4, rfl⟩)
     (DFunLike.ne_iff.mpr <| (DFunLike.ne_iff.mp <| E_ne_zero (by norm_num) ⟨2, rfl⟩).imp
       fun z hz ↦ by simpa only [coe_pow, Pi.pow_apply, zero_apply] using pow_ne_zero 2 hz)
-    (coe_pow E₄ 2) E₆.holo' (ModularFormClass.bdd_at_infty E₆) tendsto_E₆_atImInfty
-    (one_pow (M := ℂ) 2 ▸ tendsto_E₄_atImInfty.pow 2) (by norm_num)
+    E₆.holo' (ModularFormClass.bdd_at_infty E₆) tendsto_E₆_atImInfty
+    (((one_pow (M := ℂ) 2) ▸ tendsto_E₄_atImInfty.pow 2).congr
+      fun z ↦ by simp only [coe_pow, Pi.pow_apply])
+    (by norm_num)
 
 /-- The normalized derivative of the modular defect `D2 γ` is `-(γ₁₀)² / denom γ ²`. -/
 lemma normalizedDerivOfComplex_D2 (γ : SL(2, ℤ)) :
@@ -110,7 +117,7 @@ def serreDerivativeOneE2 : ModularForm 𝒮ℒ 4 where
 /-- **Ramanujan's formula for `E₂`**: `∂₁ E₂ = -E₄ / 12`. -/
 theorem serreDerivative_E₂ : serreDerivative 1 E2 = (-12⁻¹ : ℂ) • E₄ :=
   serreDerivative_eq_smul (F := serreDerivativeOneE2) rfl levelOne_weight_four_rank_one
-    (E_ne_zero (by norm_num) ⟨2, rfl⟩) rfl E2_mdifferentiable isBoundedAtImInfty_E2
+    (E_ne_zero (by norm_num) ⟨2, rfl⟩) E2_mdifferentiable isBoundedAtImInfty_E2
     tendsto_E2_atImInfty tendsto_E₄_atImInfty (by norm_num)
 
 /-! ### Ramanujan's formulas in terms of `D` -/
