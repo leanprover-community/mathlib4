@@ -53,7 +53,8 @@ notation:1200 K "ᗮ" => orthogonal K
 theorem mem_orthogonal (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪u, v⟫ = 0 :=
   Iff.rfl
 
-/-- `v ∈ Kᗮ` if and only if `⟪v, u⟫ = 0` for all `u ∈ K`. -/
+/-- `v ∈ Kᗮ` if and only if `⟪v, u⟫ = 0` for all `u ∈ K`.
+Variation of `mem_orthogonal` with the inner product reversed. -/
 theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 := by
   simp_rw [mem_orthogonal, inner_eq_zero_symm]
 
@@ -431,7 +432,8 @@ lemma mem_orthogonal_toSubmodule_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v �
 @[simp]
 theorem mem_orthogonal (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪u, v⟫ = 0 := Iff.rfl
 
-/-- `v ∈ Kᗮ` if and only if `⟪v, u⟫ = 0` for all `u ∈ K`. -/
+/-- `v ∈ Kᗮ` if and only if `⟪v, u⟫ = 0` for all `u ∈ K`.
+Variation of `mem_orthogonal` with the inner product reversed. -/
 theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 :=
   Submodule.mem_orthogonal' K.toSubmodule v
 
