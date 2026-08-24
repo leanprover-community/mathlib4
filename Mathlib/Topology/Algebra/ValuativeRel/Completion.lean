@@ -224,8 +224,7 @@ theorem exists_eventually_map_eq {x₀ : Completion K} (hx₀ : x₀ ≠ 0) :
   refine ⟨z₀, hz₀, Filter.mem_of_superset (Filter.preimage_mem_comap
     ((hW.preimage (continuous_id.mul continuous_const)).mem_nhds hz₀')) fun x hx ↦
     (mul_inv_eq_one₀ (v.ne_zero_iff.2 hz₀)).1 ?_⟩
-  rw [← map_inv₀, ← map_mul, ← hW₁, Completion.coe_mul, ← Completion.coe_inv]
-  exact hx
+  rwa [← map_inv₀, ← map_mul, ← hW₁, Completion.coe_mul, ← Completion.coe_inv]
 
 theorem continuous_extensionFun : Continuous v.extensionFun := by
   refine Completion.isDenseInducing_coe.continuous_extend fun x₀ ↦ ?_
