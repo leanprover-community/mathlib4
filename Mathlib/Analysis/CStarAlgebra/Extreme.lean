@@ -109,8 +109,8 @@ theorem star_self_conjugate_eq_self_of_mem_extremePoints_unitClosedBall {a : A}
   suffices a * abs a = a by rw [mul_assoc, ← abs_mul_abs, ← mul_assoc, this, this]
   obtain ⟨ha, h⟩ := mem_extremePoints_iff_left.mp ha
   simp only [mem_closedBall, dist_zero_right] at ha h
-  /- Using the extremity of `a`, it suffices to show that `2 • |a| - |a| * |a|` is in the
-  closed unit ball since `2⁻¹ • (2 • |a| - |a| * |a|) + 2⁻¹ • (a * |a|) = a`
+  /- Using the extremity of `a`, it suffices to show that `2 • a - a * |a|` is in the
+  closed unit ball since `2⁻¹ • (2 • a - a * |a|) + 2⁻¹ • (a * |a|) = a`
   (and clearly `a * |a|` is in the closed unit ball since `a` is). -/
   refine @h _ ?_ ((2 : ℝ) • a - a * abs a) ?_ ⟨2⁻¹, 2⁻¹, by simp [smul_sub, ← two_mul]⟩
   · grw [norm_mul_le, norm_abs, ha, one_mul, ha]
