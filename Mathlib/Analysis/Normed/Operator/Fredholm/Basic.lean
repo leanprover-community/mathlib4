@@ -402,15 +402,15 @@ theorem _root_.Function.Injective.isFredholm_iff (f : E →L[𝕜] F)
     fun ⟨hf, h_cofg⟩ ↦ hf.isFredholm h_cofg⟩
   simpa [isEmbedding_iff_isStrictMap_injective, f_inj] using hf.isStrictMap
 
-theorem _root_.Submodule.isFredholm_subtypeL {p : Submodule 𝕜 E}
-    (hp : IsClosed (p : Set E)) [p.CoFG] :
-    IsFredholm p.subtypeL :=
-  (IsClosedEmbedding.subtypeVal hp).isFredholm (by simpa)
-
 theorem _root_.Submodule.isFredholm_subtypeL_iff {p : Submodule 𝕜 E} :
     IsFredholm p.subtypeL ↔ IsClosed (p : Set E) ∧ p.CoFG := by
   simp [p.subtype_injective.isFredholm_iff p.subtypeL, isClosedEmbedding_iff,
     IsEmbedding.subtypeVal]
+
+theorem _root_.Submodule.isFredholm_subtypeL {p : Submodule 𝕜 E}
+    (hp : IsClosed (p : Set E)) [p.CoFG] :
+    IsFredholm p.subtypeL :=
+  isFredholm_subtypeL_iff.mpr ⟨hp, inferInstance⟩
 
 theorem _root_.ContinuousLinearEquiv.isFredholm (e : E ≃L[𝕜] F) :
     IsFredholm (e : E →L[𝕜] F) :=
@@ -431,6 +431,10 @@ theorem _root_.Function.Bijective.isFredholm_iff (f : E →L[𝕜] F)
   simpa [isInvertible_iff_isHomeomorph, isHomeomorph_iff_isStrictMap_bijective, f_bij]
     using hf.isStrictMap
 
+theorem isInvertible_iff_isFredholm_and_bijective {f : E →L[𝕜] F} :
+    f.IsInvertible ↔ IsFredholm f ∧ Bijective f := by
+  grind [Function.Bijective.isFredholm_iff, IsInvertible.bijective]
+
 theorem _root_.Topology.IsQuotientMap.isFredholm {f : E →L[𝕜] F} (hq : IsQuotientMap f)
     (hcompl : f.ker.ClosedComplemented) (hfg : FiniteDimensional 𝕜 f.ker) :
     IsFredholm f where
@@ -450,11 +454,6 @@ theorem _root_.Function.Surjective.isFredholm_iff (f : E →L[𝕜] F) (f_surj :
     fun ⟨h_quot, h_comp, h_fin⟩ ↦ h_quot.isFredholm h_comp h_fin⟩
   simpa [isQuotientMap_iff_isStrictMap_surjective, f_surj] using hf.isStrictMap
 
-theorem _root_.Submodule.isFredholm_mkQL {p : Submodule 𝕜 E} (hcompl : p.ClosedComplemented)
-    [FiniteDimensional 𝕜 p] :
-    IsFredholm p.mkQL :=
-  p.isQuotientMap_mkQL.isFredholm (by simpa) (by rwa [toLinearMap_mkQL, ker_mkQ])
-
 theorem _root_.Submodule.isFredholm_mkQL_iff {p : Submodule 𝕜 E} :
     IsFredholm p.mkQL ↔ p.ClosedComplemented ∧ FiniteDimensional 𝕜 p := by
   -- Technical note: we go through `Submodule.FG` because otherwise we have to rewrite types,
@@ -462,6 +461,11 @@ theorem _root_.Submodule.isFredholm_mkQL_iff {p : Submodule 𝕜 E} :
   rw [p.mkQ_surjective.isFredholm_iff p.mkQL, ← fg_iff_finiteDimensional,
     ← fg_iff_finiteDimensional]
   simp [isQuotientMap_mkQ]
+
+theorem _root_.Submodule.isFredholm_mkQL {p : Submodule 𝕜 E} (hcompl : p.ClosedComplemented)
+    [FiniteDimensional 𝕜 p] :
+    IsFredholm p.mkQL :=
+  isFredholm_mkQL_iff.mpr ⟨hcompl, inferInstance⟩
 
 theorem _root_.Submodule.isFredholm_projectionOntoL [ContinuousSub E] {p q : Submodule 𝕜 E}
     (hcompl : IsTopCompl p q)
