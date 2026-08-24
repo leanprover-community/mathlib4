@@ -5,157 +5,11 @@ name: Lake cache shadow (master)
 # of it. It writes to an isolated `mathlib4-master-shadow` scope, so no other
 # consumer reads what it produces.
 #
-# Required repository configuration:
-#   Secrets:
-#     LAKE_CACHE_KEY                         — SigV4 credential for the cache
-#                                              bucket, as `<ACCESS_KEY_ID>:<SECRET_ACCESS_KEY>`
-#                                              (curl `--user`; region is `auto`).
-#     ZULIP_API_KEY                          — Zulip bot key for the `report` job.
-#   Variables:
-#     # The authenticated S3 endpoint. The `upload` job PUTs to it.
-#     LAKE_CACHE_ARTIFACT_ENDPOINT           — e.g. https://<acct>.r2.cloudflarestorage.com/<bucket>/<prefix>/artifacts
-#     LAKE_CACHE_REVISION_ENDPOINT           — e.g. https://<acct>.r2.cloudflarestorage.com/<bucket>/<prefix>/revisions
-#     # The public read endpoint, for anonymous GETs. On R2 this is a
-#     # different host than the S3 API endpoint above.
-#     LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/artifacts
-#     LAKE_CACHE_REVISION_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/revisions
-#     # Optional. It sets the toolchain override for every run. The dispatch
-#     # input takes precedence. Leave it unset to run on the repo pin.
-#     LAKE_SHADOW_TOOLCHAIN_OVERRIDE         — e.g. leanprover/lean4-pr-releases:pr-release-14301
-#
-# Jobs:
-#   build_and_stage  Builds mathlib and its dependencies with Lake's artifact
-#                    cache. Stages the root package's outputs, and the
-#                    mappings of each dependency the bucket does not hold.
-#   upload           Pushes the staged files to the bucket with `lake cache
-#                    put-staged`: once for the root scope, then once per
-#                    dependency scope. Records a manifest under
-#                    analysis/<toolchain-slug>/ and reports the carryover.
-#   consume          Fetches the root and dependency outputs into a fresh
-#                    checkout with `lake cache get`, builds against them, and
-#                    verifies the result with `--rehash`.
-#   downstream       Creates a small project that depends on mathlib, fetches
-#                    mathlib and every transitive dependency from the bucket,
-#                    and requires zero Mathlib rebuilds.
-#   report           Posts a summary of the run to Zulip.
-#
-# Bucket layout:
-#   The pipeline writes everything to one bucket, addressed by scope. A run
-#   with SHADOW_SCOPE=mathlib4-master-shadow, toolchain slug
-#   `leanprover-lean4-v4.34.0-rc2` and pin hash `2d10dd67` writes these keys:
-#
-#     revisions/mathlib4-master-shadow/<mathlib-sha>.jsonl
-#     artifacts/mathlib4-master-shadow/<content-hash>.art
-#     revisions/mathlib4-master-shadow/deps/leanprover-lean4-v4.34.0-rc2/2d10dd67/batteries/<batteries-rev>.jsonl
-#     artifacts/mathlib4-master-shadow/deps/leanprover-lean4-v4.34.0-rc2/2d10dd67/batteries/<content-hash>.art
-#     analysis/leanprover-lean4-v4.34.0-rc2/_latest.txt
-#     analysis/leanprover-lean4-v4.34.0-rc2/<mathlib-sha>.txt
-#
-#   `lake cache get --scope=<SCOPE> --rev=<REV>` reads
-#   `revisions/<SCOPE>/<REV>.jsonl`, which maps input hashes to artifacts.
-#   Lake then downloads the `artifacts/<SCOPE>/<content-hash>.art` files that
-#   the map names.
-#
-#   Lake does not know the `analysis/` prefix; this workflow owns it.
-#   `_latest.txt` holds the mathlib sha of the previous run on the toolchain,
-#   and `<sha>.txt` holds the artifact hashes that run uploaded.
-#
-# What a full cache hit requires:
-#   Four things are necessary. Without any one of them a fetch returns
-#   mappings that do not match, and the modules rebuild:
-#     * The lakefile patch, which lets the workspace write to Lake's artifact
-#       cache at all.
-#     * The export build of each dependency, with its `--packages` overrides.
-#       Lake's `-o` records the root package only, and the overrides make the
-#       exported input hashes match this workspace.
-#     * The two scope qualifiers, the toolchain slug and the pin hash.
-#       Without them one revision file holds the mappings of another
-#       toolchain or another pin set.
-#     * One `lake cache get`, `stage` and `put-staged` call per package.
-#       Lake has no workspace-wide form of these against a custom endpoint.
-#
-#   Everything else is speed. The probe and the plan files, the root and the
-#   dependency warm starts, the legacy fallback and the `--rev` arguments
-#   decide only how much this run compiles and uploads. A run without them
-#   writes the same keys with the same content, and takes longer.
-#
-# Dependency caching:
-#   Lake's `-o` records the mappings of the workspace root only. To obtain the
-#   mappings of a dependency, the pipeline loads that dependency as the root
-#   of its own workspace: `lake -d .lake/packages/<dep> build -o`. The
-#   `--packages` overrides pin its own dependencies to this workspace's
-#   checkouts. Without them the dependency resolves the revisions in its own
-#   manifest, and the mappings never match this workspace's input hashes.
-#
-#   Each dependency uploads to the scope
-#     <SHADOW_SCOPE>/deps/<toolchain-slug>/<pins-hash>/<dep>
-#   under its own revision from lake-manifest.json. Two qualifiers extend the
-#   key, because the revision alone is not exact:
-#     toolchain slug  A dependency revision lives for months, so many
-#                     toolchains build it.
-#     pins hash       The input hashes of a dependency cover the artifacts of
-#                     its upstreams. A partial bump of the manifest, of
-#                     batteries alone for example, changes the correct
-#                     mappings for aesop but not the revision of aesop.
-#
-#   The plan step skips a dependency whose revision file is already in the
-#   bucket. Uploads therefore happen on a manifest bump or a toolchain bump,
-#   and both of those re-key every dependency. The `consume` job fetches each
-#   dependency with `lake cache get --package=<dep> --rev=<manifest-rev>`, and
-#   a run that skips legacy hydration warm starts with the same fetch.
-#
-#   DEP_SKIP excludes dependencies from all of this. Every per-dependency step
-#   tolerates failure. A miss, or a failed export, makes that dependency build
-#   from source, and the consume health line reports it. A toolchain older than
-#   v4.34.0-rc2 has no `cache get --package` and behaves the same way.
-#
-# Hydration and the legacy cache:
-#   A pinned run hydrates from the shadow scope. The root package warm starts
-#   from the previous run on the toolchain's analysis chain, and each
-#   dependency warm starts from its own scope. The incremental build then
-#   compiles the churn since that run.
-#
-#   The legacy cache is a bootstrap fallback. A run uses it only when the
-#   analysis chain holds no previous run, which happens on a fresh toolchain
-#   generation on the repo pin. An override run never uses it, because the
-#   legacy cache is keyed to the repo pin.
-#
-# Cache service configuration:
-#   Jobs reach the bucket through a generated Lake services file, with
-#   `LAKE_CONFIG` and `--service=shadow`. This is the supported mechanism.
-#   Lake deprecates the LAKE_CACHE_*_ENDPOINT variables, which this file uses
-#   only for plain curl probes and for the analysis uploads. Each job writes
-#   the services file itself, because each job runs on its own runner. A
-#   fetching job writes the public read endpoints:
-#
-#     [[cache.service]]
-#     name = "shadow"
-#     type = "s3"
-#     artifactEndpoint = "https://pub-<hash>.r2.dev/<prefix>/artifacts"
-#     revisionEndpoint = "https://pub-<hash>.r2.dev/<prefix>/revisions"
-#
-#   The upload job writes the same block with the authenticated S3 endpoints,
-#   and signs its requests with LAKE_CACHE_KEY.
-#
-# Toolchain override:
-#   The `toolchain_override` input, or the LAKE_SHADOW_TOOLCHAIN_OVERRIDE
-#   variable, changes the toolchain of the whole pipeline. build_and_stage
-#   resolves it into its `toolchain` output, and the later jobs stamp that
-#   output into their checkouts, so every job runs the same lake.
-#
-#   The lean of the override must behave like the repo pin. A Lake change,
-#   cherry-picked onto the lineage of the pinned release as a pr-release, is a
-#   valid example. Input hashes cover the toolchain, so all runs share one
-#   artifact scope safely.
-#
-#   The analysis chain is per toolchain, under analysis/<slug>/. A pinned run
-#   and an override run therefore warm start from their own lineage, and
-#   compare against it.
-#
-#   The first run on a toolchain misses the legacy cache and every prior root
-#   artifact, and costs one full source build of the root package. A
-#   republished pr-release tag costs the same. Dependencies already in the
-#   shadow scope for that toolchain still replay.
+# `lake_cache_shadow.md`, beside this file, documents the design: the cache
+# service configuration, the push and pull sequences, what a warm run adds,
+# the storage layout, the scope qualifiers, and what a full cache hit
+# requires. It also lists the secrets and variables the pipeline needs. The
+# comments below cover what each step does.
 
 on:
   schedule:
@@ -182,7 +36,7 @@ on:
       toolchain_override:
         description: >-
           optional Lean toolchain to run the pipeline on instead of the repo
-          pin; see the "Toolchain override" note at the top of this file.
+          pin; see the toolchain override notes in `lake_cache_shadow.md`.
           Empty falls back to the LAKE_SHADOW_TOOLCHAIN_OVERRIDE repository
           variable; the pipeline runs on the repo pin when both are empty.
         required: false
@@ -579,7 +433,7 @@ jobs:
 
       # Export the mappings of the dependencies the bucket does not hold. This
       # step is required for a dependency to hit at all; see "What a full
-      # cache hit requires" at the top of this file. The incremental build
+      # cache hit requires" in `lake_cache_shadow.md`. The incremental build
       # above put every dependency artifact in the shared local cache, so
       # these loads replay instead of compiling, as long as the input hashes
       # of the two workspace shapes agree. A disagreement appears as compile
@@ -712,7 +566,7 @@ jobs:
     env:
       # The uploads go through a generated Lake services file with the
       # authenticated S3 endpoints, and LAKE_CACHE_KEY signs them. See "Cache
-      # service configuration" above.
+      # service configuration" in `lake_cache_shadow.md`.
       LAKE_CONFIG: ${{ github.workspace }}/shadow-services.toml
     steps:
       - name: Write cache services config
@@ -720,8 +574,7 @@ jobs:
           ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
           REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
         run: |
-          # This renders the block under "Cache service configuration" at the
-          # top of this file.
+          # This renders the block documented in `lake_cache_shadow.md`.
           cat > "$LAKE_CONFIG" <<EOF
           [[cache.service]]
           name = "shadow"
@@ -778,7 +631,7 @@ jobs:
             --toolchain="${{ needs.build_and_stage.outputs.toolchain }}" 2>&1 | tee /tmp/put.log
 
       # Upload each staged dependency to its own scope, under its manifest
-      # revision. See "Dependency caching" at the top of this file. The plan
+      # revision. See `lake_cache_shadow.md`. The plan
       # step already removed the dependencies the bucket holds. The log is
       # separate from /tmp/put.log, so these artifacts stay out of the root
       # carryover analysis below.
@@ -935,8 +788,7 @@ jobs:
           ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
           REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
         run: |
-          # This renders the block under "Cache service configuration" at the
-          # top of this file.
+          # This renders the block documented in `lake_cache_shadow.md`.
           cat > "$LAKE_CONFIG" <<EOF
           [[cache.service]]
           name = "shadow"
@@ -1118,8 +970,7 @@ jobs:
           ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
           REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
         run: |
-          # This renders the block under "Cache service configuration" at the
-          # top of this file.
+          # This renders the block documented in `lake_cache_shadow.md`.
           cat > "$LAKE_CONFIG" <<EOF
           [[cache.service]]
           name = "shadow"
