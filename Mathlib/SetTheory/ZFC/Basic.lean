@@ -9,7 +9,6 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Logic.Small.Basic
 public import Mathlib.SetTheory.ZFC.PSet
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # A model of ZFC
@@ -45,7 +44,7 @@ universe u
 
 /-- The ZFC universe of sets consists of the type of pre-sets,
   quotiented by extensional equivalence. -/
-@[pp_with_univ, use_set_notation_for_order, wikidata Q191849]
+@[pp_with_univ, use_set_notation_for_order]
 def ZFSet : Type (u + 1) :=
   Quotient PSet.setoid.{u}
 
