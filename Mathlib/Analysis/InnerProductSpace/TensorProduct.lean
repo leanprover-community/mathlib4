@@ -746,6 +746,11 @@ lemma toLinearMap_congrL (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) : (congrL f g
   ext; simp
 
 @[simp]
+lemma toLinearEquiv_congrL (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) :
+    (congrL f g).toLinearEquiv = congr f g := by
+  ext; simp [congrL, congr]
+
+@[simp]
 theorem congrL_refl_refl : congrL (.refl 𝕜 E) (.refl 𝕜 G) = .refl 𝕜 _ := by
   ext; simp [congrL]
 
