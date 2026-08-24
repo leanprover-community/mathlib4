@@ -158,11 +158,10 @@ elab_rules : tactic
           defeqOrError origGoal pat (← goal.getType)
           replaceMainGoal [← goal.replaceTargetDefEq pat]
       if let some loc := loc then
-        -- TODO: more robust implementation with `kabstract` and `withReverted`
-        -- Write as reusable API
         for fvar in holes.values do
           let some expr ← fvar.getValue? | continue
           let rewrite (loc : Option FVarId) :=
+            -- TODO: this kabstract rewriting could possibly be made into a reusable API
             liftMetaTactic fun goal ↦ do
               let tgt ← loc.elim goal.getType (·.getType)
               let tgt ← withReducible (kabstract (← instantiateMVars tgt) (← instantiateMVars expr))
