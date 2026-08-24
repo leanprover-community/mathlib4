@@ -52,7 +52,7 @@ assert_not_exists Ring
 
 open Function
 
-variable {G G₀ A M M₀ N₀ R α : Type*}
+variable {G G₀ A M₀ N₀ R α : Type*}
 
 section GroupWithZero
 variable [GroupWithZero G₀] [MulAction G₀ α] {a : G₀}
@@ -69,7 +69,7 @@ protected lemma MulAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : 
 end GroupWithZero
 
 section DistribMulAction
-variable [Group G] [Monoid M] [AddMonoid A]
+variable [Group G] [AddMonoid A]
 variable (A)
 
 /-- Each element of the group defines an additive monoid isomorphism.
