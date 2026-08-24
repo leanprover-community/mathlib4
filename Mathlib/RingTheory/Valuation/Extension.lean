@@ -230,6 +230,7 @@ variable {ΓR ΓA : Type*}
     [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
     (vR : Valuation R ΓR) (vA : Valuation A ΓA) [vR.HasExtension vA]
 
+/-- The map of valuation groups induced by a valuation extension. -/
 noncomputable def mapValueGroup₀ :
     (MonoidWithZeroHom.ValueGroup₀ (.ofClass vR : R →*₀ ΓR)) →*₀
       (MonoidWithZeroHom.ValueGroup₀ (.ofClass vA : A →*₀ ΓA)) := by
