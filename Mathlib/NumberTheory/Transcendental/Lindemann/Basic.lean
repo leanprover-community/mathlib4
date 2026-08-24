@@ -84,7 +84,7 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   -- Let `k` be the product of the leading coefficients of the `p j` (i.e., `P.leadingCoeff`).
   let k : ℤ := ∏ j, (p j).leadingCoeff
   have k0 : k ≠ 0 := prod_ne_zero_iff.mpr fun j _hj => leadingCoeff_ne_zero.mpr (p0' j)
-  have sz_h₁ (j) : (p j).leadingCoeff ∣ k := dvd_prod_of_mem _ (mem_univ _)
+  have sz_h (j) : (p j).leadingCoeff ∣ k := dvd_prod_of_mem _ (mem_univ _)
   -- Now there exists a constant `c : ℝ`, such that for each prime `p > |P₀|` we have `nₚ : ℤ` and
   -- `gₚ : ℤ[X]` such that
   -- * `p` does not divide `nₚ`
@@ -115,16 +115,12 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   obtain ⟨n, hn, gp, hgp, hc⟩ := hc' q (by order) prime_q
   replace hgp : gp.natDegree ≤ P.natDegree * q := by rw [mul_comm]; exact hgp.trans tsub_le_self
   clear hc'
-  -- In the splitting field `K`, each `p j` has as many roots as its degree.
-  have sz_h₂ := fun j => (splits_p j).natDegree_eq_card_roots.symm
-  simp_rw [natDegree_map_eq_of_injective (algebraMap ℤ K).injective_int] at sz_h₂
   let t := P.natDegree * q
   -- Now `k` is a positive integer such that for every `j`,
   -- `k ^ t * ∑ u ∈ (p j).aroots K, gp u` is an integer.
   -- Let `sz` be the vector such that `sz j` is that corresponding integer.
   choose sz hsz using fun j ↦
-    sum_map_aroots_aeval_mem_range_algebraMap (p j) k t gp (sz_h₁ j) hgp
-      (algebraMap ℤ K).injective_int (sz_h₂ j)
+    pow_smul_sum_map_aroots_aeval_mem_range_algebraMap (p j) gp k t (sz_h j) hgp (splits_p j)
   replace hsz : k ^ t • ∑ j, w' j • (((p j).aroots K).map fun x => gp.aeval x).sum =
       algebraMap ℤ K (∑ j, w' j • sz j) := by
     simp_rw [smul_sum, smul_comm (k ^ t), ← hsz, map_sum, map_zsmul]
@@ -217,6 +213,7 @@ theorem algebraicIndependent_exp (u : ι → integralClosure ℚ ℂ) (hu : Line
   simp_rw [MvPolynomial.aeval_def, MvPolynomial.eval₂_eq, ← Algebra.smul_def, ← exp_nsmul,
     ← exp_sum] at hp
   norm_cast at hp
+  apply AddMonoidAlgebra.ext
   apply linearIndependent_iff.mp (linearIndependent_exp (fun e ↦ ∑ i ∈ e.support, e i • u i) _)
   exacts [hp, hu]
 
@@ -245,8 +242,8 @@ theorem transcendental_pi : Transcendental ℤ Real.pi := by
   · intro i; fin_cases i
     · have isAlgebraic_pi := h.extendScalars (algebraMap ℤ ℚ).injective_int
       have isIntegral_pi : IsIntegral ℚ (Real.pi : ℂ) := by
-        simpa only [coe_algebraMap] using isAlgebraic_pi.isIntegral.algebraMap
-      exact isIntegral_pi.mul Complex.isIntegral_rat_I
+        simpa only [coe_algebraMap] using isAlgebraic_pi.isIntegral.algebraMap (B := ℂ)
+      exact isIntegral_pi.mul (Complex.isIntegral_I ℚ)
     · exact isIntegral_zero
   · intro i j; fin_cases i, j <;> simp [Real.pi_ne_zero]
   · intro i; fin_cases i <;> exact isIntegral_one
