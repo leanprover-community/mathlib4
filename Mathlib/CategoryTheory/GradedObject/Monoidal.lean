@@ -326,7 +326,7 @@ abbrev _root_.CategoryTheory.GradedObject.HasLeftTensor₃ObjExt (j : I) := Pres
   (Discrete.functor fun (i : { i : (I × I × I) | i.1 + i.2.1 + i.2.2 = j }) ↦
     (((mapTrifunctor (bifunctorComp₂₃ (curriedTensor C)
       (curriedTensor C)) I I I).obj X₁).obj X₂).obj X₃ i)
-   ((curriedTensor C).obj Z)
+    ((curriedTensor C).obj Z)
 
 variable {X₁ X₂ X₃}
 variable [HasTensor X₂ X₃] [HasTensor X₁ (tensorObj X₂ X₃)]

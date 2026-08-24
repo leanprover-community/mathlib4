@@ -21,12 +21,15 @@ public section
 
 universe u
 
-open CategoryTheory Limits MonoidalCategory Simplicial Opposite
+open CategoryTheory Limits MonoidalCategory Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
 variable {X₁ X₂ X₃ X₄ : SSet.{u}}
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (X₁ X₂) in
 lemma iSup_subcomplexOfSimplex_prod_eq_top :
     ⨆ (x₁ : X₁.N) (x₂ : X₂.N),

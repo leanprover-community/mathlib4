@@ -50,11 +50,12 @@ lemma IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop
     (hf : P f) (x : X) (y : Y) (h : f x = g y) :
     ∃ a : ↑(pullback f g), pullback.snd f g a = y := by
   let iso := pullbackSymmetry f g
-  haveI : HasPullback g f := hasPullback_symmetry f g
+  have : HasPullback g f := hasPullback_symmetry f g
   obtain ⟨a, ha⟩ := exists_preimage_fst_triplet_of_prop hf y x h.symm
   use (pullbackSymmetry f g).inv a
   rwa [← Scheme.Hom.comp_apply, pullbackSymmetry_inv_comp_snd]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsJointlySurjectivePreserving @IsOpenImmersion where
   exists_preimage_fst_triplet_of_prop {X Y S f g} _ hg x y h := by
     rw [← show _ = (pullback.fst _ _ : pullback f g ⟶ _).base from

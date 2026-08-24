@@ -13,7 +13,7 @@ public import Batteries.Tactic.Init
 # `Nat.find` and `Nat.findGreatest`
 -/
 
-@[expose] public section
+public section
 
 variable {m n k : ℕ} {p q : ℕ → Prop}
 
@@ -23,15 +23,11 @@ section Find
 
 /-! ### `Nat.find` -/
 
-set_option backward.privateInPublic true in
 private def lbp (m n : ℕ) : Prop :=
   m = n + 1 ∧ ∀ k ≤ n, ¬p k
 
-variable [DecidablePred p] (H : ∃ n, p n)
-
-set_option linter.defProp false in
 set_option backward.privateInPublic true in
-private def wf_lbp : WellFounded (@lbp p) :=
+private theorem wf_lbp (H : ∃ n, p n) : WellFounded (@lbp p) :=
   ⟨let ⟨n, pn⟩ := H
     suffices ∀ m k, n ≤ k + m → Acc lbp k from fun _ => this _ _ (Nat.le_add_left _ _)
     fun m =>
@@ -44,6 +40,8 @@ private def wf_lbp : WellFounded (@lbp p) :=
       ⟨_, fun y r =>
         match y, r with
         | _, ⟨rfl, _a⟩ => IH _ (by rw [Nat.add_right_comm]; exact kn)⟩⟩
+
+variable [DecidablePred p] (H : ∃ n, p n)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -166,6 +164,7 @@ section FindGreatest
 
 /-- `Nat.findGreatest P n` is the largest `i ≤ n` such that `P i` holds, or `0` if no such `i`
 exists -/
+@[expose]
 def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
   | 0 => 0
   | n + 1 => if P (n + 1) then n + 1 else Nat.findGreatest P n

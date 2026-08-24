@@ -45,7 +45,6 @@ variable {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Modu
 
 include hi hj hij
 
-set_option backward.privateInPublic true in
 private lemma restrict_aux : Bijective (p.compl₁₂ i j) := by
   refine ⟨LinearMap.ker_eq_bot.mp <| eq_bot_iff.mpr fun m hm ↦ ?_, fun f ↦ ?_⟩
   · replace hm : i m ∈ j.range.dualAnnihilator.map (p.toPerfPair.symm : Dual R N →ₗ[R] M) := by
@@ -84,7 +83,7 @@ variable {S M' N' : Type*}
   [AddCommGroup M'] [Module S M'] [AddCommGroup N'] [Module S N']
   (i : M' →ₗ[S] M) (j : N' →ₗ[S] N)
 
-set_option backward.privateInPublic true in
+set_option backward.isDefEq.respectTransparency false in
 private lemma restrictScalars_injective_aux
     (hi : Injective i)
     (hN : span R (LinearMap.range j : Set N) = ⊤)
@@ -108,7 +107,7 @@ private lemma restrictScalars_injective_aux
   ext n
   simpa using hx n
 
-set_option backward.privateInPublic true in
+set_option backward.isDefEq.respectTransparency false in
 private lemma restrictScalars_surjective_aux
     (h : ∀ g : Module.Dual S N', ∃ m,
       (p.toPerfPair (i m)).restrictScalars S ∘ₗ j = Algebra.linearMap S R ∘ₗ g)
@@ -165,7 +164,7 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
   have : IsReflexive L N := .of_isPerfPair p.flip
   obtain ⟨v, hv₁, hv₂, hv₃⟩ := exists_linearIndependent L (M' : Set M)
   rw [hM] at hv₂
-  let b : Basis _ L M := Basis.mk hv₃ <| by rw [← hv₂, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  let b : Basis _ L M := Basis.mk hv₃ <| by rw [← hv₂, Subtype.range_coe_subtype, Set.ofPred_mem_eq]
   have : Fintype v := Set.Finite.fintype <| Module.Finite.finite_basis b
   set v' : v → M' := fun i ↦ ⟨i, hv₁ (Subtype.coe_prop i)⟩
   have hv' : LinearIndependent K v' := by
@@ -185,7 +184,8 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
   refine le_antisymm (Submodule.span_le.mpr hv₁) fun m hm ↦ ?_
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := exists_linearIndependent L (N' : Set N)
   rw [hN] at hw₂
-  let bN : Basis _ L N := Basis.mk hw₃ <| by rw [← hw₂, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  let bN : Basis _ L N := Basis.mk hw₃ <| by
+    rw [← hw₂, Subtype.range_coe_subtype, Set.ofPred_mem_eq]
   have : Fintype w := Set.Finite.fintype <| Module.Finite.finite_basis bN
   have e : v ≃ w := Fintype.equivOfCardEq <| by rw [← Module.finrank_eq_card_basis b,
     ← Module.finrank_eq_card_basis bN, Module.finrank_of_isPerfPair p]

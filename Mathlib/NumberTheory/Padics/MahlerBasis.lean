@@ -348,6 +348,7 @@ lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[
   simpa [mahlerSeries_apply_nat (fwdDiff_tendsto_zero f) le_rfl]
     using shift_eq_sum_fwdDiff_iter 1 f n 0
 
+set_option backward.isDefEq.respectTransparency false in
 variable (E) in
 /--
 The isometric equivalence from `C(ℤ_[p], E)` to the space of sequences in `E` tending to `0` given
