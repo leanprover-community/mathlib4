@@ -38,14 +38,15 @@ set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
-universe t t' w w' u u' v v'
+universe t t' w w' w''
 
 namespace CategoryTheory
 
 open Limits Abelian
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
-variable {D : Type u'} [Category.{v'} D] [Abelian D]
+variable {C : Type*} [Category* C] [Abelian C]
+variable {D : Type*} [Category* D] [Abelian D]
+variable {E : Type*} [Category* E] [Abelian E]
 
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
@@ -236,6 +237,26 @@ lemma mapExactFunctor_extClass [HasExt.{w} C] [HasExt.{w'} D] {S : ShortComplex 
   ext
   rw [Ext.mapExactFunctor_hom, hS.extClass_hom]
   exact (hS.mapShiftedHom_singleδ' F).trans (hS.map_of_exact F).extClass_hom.symm
+
+@[simp]
+lemma id_mapExactFunctor [HasExt.{w} C] {X Y : C} {n : ℕ}
+    (α : Ext X Y n) :
+    α.mapExactFunctor (𝟭 C) = α := sorry
+
+lemma comp_mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] [HasExt.{w''} E] {X Y : C} {n : ℕ}
+    (α : Ext X Y n) (F : C ⥤ D) (G : D ⥤ E) [F.Additive] [G.Additive]
+    [PreservesFiniteLimits F] [PreservesFiniteColimits F]
+    [PreservesFiniteLimits G] [PreservesFiniteColimits G] :
+    α.mapExactFunctor (F ⋙ G) = (α.mapExactFunctor F).mapExactFunctor G := by
+  sorry
+
+lemma mapExactFunctor_comp_mk₉_natTransApp
+    [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ}
+    (α : Ext X Y n) {F G : C ⥤ D} [F.Additive] [G.Additive]
+    [PreservesFiniteLimits F] [PreservesFiniteColimits F]
+    [PreservesFiniteLimits G] [PreservesFiniteColimits G] (τ : F ⟶ G) :
+    (α.mapExactFunctor F).comp (Ext.mk₀ (τ.app Y)) (add_zero n) =
+      ((Ext.mk₀ (τ.app X))).comp (α.mapExactFunctor G) (zero_add n) := sorry
 
 end Abelian.Ext
 
