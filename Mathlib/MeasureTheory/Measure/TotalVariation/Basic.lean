@@ -89,13 +89,13 @@ lemma tvDist_withDensity_self_eq_integral {f : 𝓧 → ℝ≥0∞} (hf : Measur
     congr 1
     · refine setIntegral_congr_fun (measurableSet_le hf measurable_const) fun x hx ↦ ?_
       rw [abs_of_nonneg]
-      simp only [Set.mem_setOf_eq, sub_nonneg] at hx ⊢
+      simp only [Set.mem_ofPred_eq, sub_nonneg] at hx ⊢
       exact ENNReal.toReal_le_of_le_ofReal (by simp) (by simp [hx])
     · refine setIntegral_congr_ae (measurableSet_le hf measurable_const).compl ?_
       filter_upwards [hf_top] with x hx_top hx
       rw [abs_of_nonpos]
       · simp
-      · simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_le] at hx
+      · simp only [Set.mem_compl_iff, Set.mem_ofPred_eq, not_le] at hx
         simp only [tsub_le_iff_right, zero_add]
         rw [← ENNReal.toReal_one]
         gcongr
