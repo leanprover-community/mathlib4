@@ -5,6 +5,7 @@ Authors: Sam van Gool
 -/
 module
 
+public import Mathlib.Data.Set.Lattice.Disjoint
 public import Mathlib.Order.PrimeIdeal
 public import Mathlib.Order.Zorn
 

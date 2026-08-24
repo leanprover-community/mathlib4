@@ -62,7 +62,7 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 * Affine maps are Freiman homomorphisms.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field Ideal TwoSidedIdeal
 
