@@ -192,7 +192,7 @@ instance countableInter_ofCountableUnion (l : Set (Set α)) (h₁ h₂) :
 
 @[simp]
 theorem mem_ofCountableUnion {l : Set (Set α)} {hunion hmono s} :
-    s ∈ ofCountableUnion l hunion hmono ↔ l sᶜ :=
+    s ∈ ofCountableUnion l hunion hmono ↔ sᶜ ∈ l :=
   Iff.rfl
 
 end Filter
@@ -262,8 +262,7 @@ inductive CountableGenerateSets : Set α → Prop
 set_option backward.isDefEq.respectTransparency false in
 /-- `Filter.countableGenerate g` is the greatest `countableInterFilter` containing `g`. -/
 def countableGenerate : Filter α :=
-  ofCountableInter (CountableGenerateSets g) (fun _ => CountableGenerateSets.sInter) fun _ _ =>
-    CountableGenerateSets.superset
+  ofCountableInter {s | CountableGenerateSets g s} (fun _ ↦ .sInter) fun _ _ ↦ .superset
 deriving CountableInterFilter
 
 variable {g}

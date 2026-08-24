@@ -27,7 +27,7 @@ assert_not_exists Ring
 
 open Function
 
-variable {ι α β M N G k R : Type*}
+variable {ι α β M N G k : Type*}
 
 namespace Finset
 
@@ -188,6 +188,15 @@ theorem prod_anti_set_of_le_one'
 theorem prod_le_univ_prod_of_one_le' [MulLeftMono N] [Fintype ι] {s : Finset ι} (w : ∀ x, 1 ≤ f x) :
     ∏ x ∈ s, f x ≤ ∏ x, f x :=
   prod_le_prod_of_subset_of_one_le' (subset_univ s) fun a _ _ ↦ w a
+
+@[to_additive sum_le_sum_of_injOn]
+theorem prod_le_prod_of_injOn' [DecidableEq α] [MulLeftMono N]
+    {g : α → N} {s : Finset ι} {t : Finset α} (e : ι → α) (he : Set.InjOn e s)
+    (ht : image e s ⊆ t) (h : ∀ i ∈ s, f i ≤ g (e i))
+    (hg : ∀ a ∈ t, a ∉ image e s → 1 ≤ g a) :
+    ∏ i ∈ s, f i ≤ ∏ a ∈ t, g a := by
+  refine le_trans ?_ <| prod_le_prod_of_subset_of_one_le' ht hg
+  grw [prod_image he, prod_le_prod' h]
 
 @[to_additive sum_eq_zero_iff_of_nonneg]
 theorem prod_eq_one_iff_of_one_le' {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
@@ -472,6 +481,36 @@ lemma one_lt_prod_iff {ι M : Type*} [CommMonoid M] [PartialOrder M] [Canonicall
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   Finset.one_lt_prod_iff_of_one_le <| fun _ _ => one_le
 
+/-- In a canonically-ordered monoid, if `S'` is contained in `(S.erase d) ∪ {d'}` and
+`f d' < f d` for some `d ∈ S`, then the product of `f` over `S'` is strictly less than over `S`. -/
+@[to_additive /-- In a canonically-ordered additive monoid, if `S'` is contained in
+`(S.erase d) ∪ {d'}` and `f d' < f d` for some `d ∈ S`, then the sum of `f` over `S'` is
+strictly less than over `S`. -/]
+lemma prod_lt_prod_of_subset_erase_union_singleton {ι M : Type*} [DecidableEq ι] [CommMonoid M]
+    [PartialOrder M] [CanonicallyOrderedMul M] [MulLeftStrictMono M] {S S' : Finset ι} {f : ι → M}
+    {d d' : ι} (hd_mem : d ∈ S) (hS' : S' ⊆ S.erase d ∪ {d'}) (hlt : f d' < f d) :
+    ∏ x ∈ S', f x < ∏ x ∈ S, f x := by
+  have hd_not : d ∉ S' := fun hd ↦ (Finset.mem_union.mp (hS' hd)).elim
+    (fun h ↦ (Finset.mem_erase.mp h).1 rfl)
+    (fun h ↦ hlt.ne' (congrArg f (Finset.mem_singleton.mp h)))
+  by_cases hd'S : d' ∈ S
+  · calc ∏ x ∈ S', f x
+        ≤ ∏ x ∈ S.erase d, f x := Finset.prod_le_prod_of_subset' (fun x hx ↦
+          Finset.mem_erase.mpr ⟨fun h ↦ hd_not (h ▸ hx),
+            match Finset.mem_union.mp (hS' hx) with
+            | .inl h => Finset.mem_of_mem_erase h
+            | .inr h => Finset.mem_singleton.mp h ▸ hd'S⟩)
+      _ < (∏ x ∈ S.erase d, f x) * f d :=
+          lt_mul_of_one_lt_right' _ (one_le.trans_lt hlt)
+      _ = ∏ x ∈ S, f x := Finset.prod_erase_mul S f hd_mem
+  · calc ∏ x ∈ S', f x
+        ≤ ∏ x ∈ S.erase d ∪ {d'}, f x := Finset.prod_le_prod_of_subset' hS'
+      _ = (∏ x ∈ S.erase d, f x) * f d' := by
+          rw [Finset.prod_union (Finset.disjoint_singleton_right.mpr
+            (fun h ↦ hd'S (Finset.mem_of_mem_erase h))), Finset.prod_singleton]
+      _ < (∏ x ∈ S.erase d, f x) * f d := mul_lt_mul_right hlt _
+      _ = ∏ x ∈ S, f x := Finset.prod_erase_mul S f hd_mem
+
 end CanonicallyOrderedMul
 
 section OrderedCancelCommMonoid
@@ -572,7 +611,7 @@ end OrderedCancelCommMonoid
 
 section LinearOrderedCancelCommMonoid
 
-variable [CommMonoid M] [LinearOrder M] {f g : ι → M} {s t : Finset ι}
+variable [CommMonoid M] [LinearOrder M] {f g : ι → M} {s : Finset ι}
 
 @[to_additive exists_lt_of_sum_lt]
 theorem exists_lt_of_prod_lt' [MulLeftMono M] (Hlt : ∏ i ∈ s, f i < ∏ i ∈ s, g i) :

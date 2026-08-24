@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
@@ -185,9 +185,12 @@ theorem FiniteMultiplicity.not_iff_forall : ¬FiniteMultiplicity a b ↔ ∀ n :
       (by simpa [FiniteMultiplicity] using h),
     by simp [FiniteMultiplicity]; tauto⟩
 
-theorem FiniteMultiplicity.not_unit (h : FiniteMultiplicity a b) : ¬IsUnit a :=
+theorem FiniteMultiplicity.not_isUnit (h : FiniteMultiplicity a b) : ¬IsUnit a :=
   let ⟨n, hn⟩ := h
   hn ∘ IsUnit.dvd ∘ IsUnit.pow (n + 1)
+
+@[deprecated (since := "2026-08-02")]
+alias FiniteMultiplicity.not_unit := FiniteMultiplicity.not_isUnit
 
 theorem FiniteMultiplicity.mul_left {c : α} :
     FiniteMultiplicity a (b * c) → FiniteMultiplicity a b := fun ⟨n, hn⟩ =>
@@ -214,7 +217,7 @@ theorem not_pow_dvd_of_emultiplicity_lt {m : ℕ} (hm : emultiplicity a b < m) :
     ¬a ^ m ∣ b := fun nh => by
   unfold emultiplicity at hm
   split at hm
-  · simp only [cast_lt, find_lt_iff] at hm
+  · simp only [ENat.natCast_lt_natCast, find_lt_iff] at hm
     obtain ⟨n, hn1, hn2⟩ := hm
     exact hn2 ((pow_dvd_pow _ hn1).trans nh)
   · simp at hm
@@ -290,7 +293,7 @@ theorem emultiplicity_eq_ofNat {a b n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 theorem FiniteMultiplicity.not_of_isUnit_left (b : α) (ha : IsUnit a) : ¬FiniteMultiplicity a b :=
-  (·.not_unit ha)
+  (·.not_isUnit ha)
 
 theorem FiniteMultiplicity.not_of_one_left (b : α) : ¬ FiniteMultiplicity 1 b := by simp
 
@@ -351,7 +354,7 @@ theorem emultiplicity_le_emultiplicity_iff {c d : β} :
       obtain ⟨w, h_1⟩ := h_1
       split
       next h_2 =>
-        simp_all only [cast_le, le_find_iff, lt_find_iff, Decidable.not_not, le_refl,
+        simp_all only [ENat.natCast_le_natCast, le_find_iff, lt_find_iff, Decidable.not_not, le_rfl,
           not_true_eq_false, not_false_eq_true, implies_true]
       next h_2 => simp_all only [not_exists, Decidable.not_not, le_top]
     next h_1 =>
@@ -667,7 +670,7 @@ theorem multiplicity_self {a : α} : multiplicity a a = 1 := by
     simp only [sq, mul_assoc, mul_eq_mul_left_iff] at hv
     obtain hv | rfl := hv
     · have : IsUnit a := .of_mul_eq_one v hv.symm
-      simpa [this] using ha.not_unit
+      simpa [this] using ha.not_isUnit
     · simpa using ha.ne_zero
   · simp [ha]
 
@@ -706,13 +709,13 @@ theorem Finset.emultiplicity_prod {β : Type*} {p : α} (hp : Prime p) (s : Fins
   induction s using Finset.induction with
   | empty =>
     simp only [Finset.sum_empty, Finset.prod_empty]
-    exact emultiplicity_of_one_right hp.not_unit
+    exact emultiplicity_of_one_right hp.not_isUnit
   | insert a s has ih => simpa [has, ← ih] using emultiplicity_mul hp
 
 theorem emultiplicity_pow {p a : α} (hp : Prime p) {k : ℕ} :
     emultiplicity p (a ^ k) = k * emultiplicity p a := by
   induction k with
-  | zero => simp [emultiplicity_of_one_right hp.not_unit]
+  | zero => simp [emultiplicity_of_one_right hp.not_isUnit]
   | succ k hk => simp [pow_succ, emultiplicity_mul hp, hk, add_mul]
 
 protected theorem FiniteMultiplicity.multiplicity_pow {p a : α} (hp : Prime p)
@@ -733,11 +736,11 @@ theorem multiplicity_pow_self {p : α} (h0 : p ≠ 0) (hu : ¬IsUnit p) (n : ℕ
 
 theorem emultiplicity_pow_self_of_prime {p : α} (hp : Prime p) (n : ℕ) :
     emultiplicity p (p ^ n) = n :=
-  emultiplicity_pow_self hp.ne_zero hp.not_unit n
+  emultiplicity_pow_self hp.ne_zero hp.not_isUnit n
 
 theorem multiplicity_pow_self_of_prime {p : α} (hp : Prime p) (n : ℕ) :
     multiplicity p (p ^ n) = n :=
-  multiplicity_pow_self hp.ne_zero hp.not_unit n
+  multiplicity_pow_self hp.ne_zero hp.not_isUnit n
 
 end CancelCommMonoidWithZero
 

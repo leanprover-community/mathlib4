@@ -10,6 +10,7 @@ public import Mathlib.Data.Finsupp.MonomialOrder
 public import Mathlib.Data.Finsupp.WellFounded
 public import Mathlib.Data.List.TFAE
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-! # Degree, leading coefficient and leading term of polynomials with respect to a monomial order
 
@@ -162,9 +163,12 @@ theorem ne_zero_of_degree_ne_zero {f : MvPolynomial σ R} (h : m.degree f ≠ 0)
   exact h m.degree_zero
 
 @[simp, nontriviality]
-theorem degree_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
+theorem degree_of_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
     m.degree f = 0 := by
   rw [Subsingleton.eq_zero f, degree_zero]
+
+@[deprecated (since := "2026-08-16")]
+alias degree_subsingleton := degree_of_subsingleton
 
 @[simp]
 theorem leadingCoeff_zero : m.leadingCoeff (0 : MvPolynomial σ R) = 0 := by
@@ -193,7 +197,7 @@ theorem degree_X [Nontrivial R] {s : σ} :
     m.degree (X s : MvPolynomial σ R) = Finsupp.single s 1 := by
   classical
   change m.degree (monomial (Finsupp.single s 1) (1 : R)) = _
-  rw [degree_monomial, if_neg one_ne_zero]
+  rw [degree_monomial, ite_eq_right one_ne_zero]
 
 @[simp] theorem degree_one : m.degree (1 : MvPolynomial σ R) = 0 := by
   nontriviality R
@@ -320,7 +324,7 @@ theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
   classical
   by_cases hd : d = 0
   · simp [hd]
-  · rw [coeff_C, if_neg (Ne.symm hd)]
+  · rw [coeff_C, ite_eq_right (Ne.symm hd)]
     apply coeff_eq_zero_of_lt (m := m)
     rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, EmbeddingLike.map_eq_zero_iff]
     exact ⟨bot_le, hd⟩
@@ -573,12 +577,40 @@ theorem leadingCoeff_pow_of_pow_leadingCoeff_ne_zero {f : MvPolynomial σ R} {n 
     m.leadingCoeff (f ^ n) = m.leadingCoeff f ^ n := by
   rw [leadingCoeff, degree_pow_of_pow_leadingCoeff_ne_zero hf, coeff_pow_nsmul_degree]
 
+/-- Leading term of powers -/
+theorem leadingTerm_pow_of_pow_leadingCoeff_ne_zero {f : MvPolynomial σ R} {n : ℕ}
+    (hf : m.leadingCoeff f ^ n ≠ 0) :
+    m.leadingTerm (f ^ n) = m.leadingTerm f ^ n := by
+  simp [leadingTerm, hf, degree_pow_of_pow_leadingCoeff_ne_zero,
+    leadingCoeff_pow_of_pow_leadingCoeff_ne_zero, monomial_pow]
+
 protected theorem Monic.pow {f : MvPolynomial σ R} {n : ℕ} (hf : m.Monic f) :
     m.Monic (f ^ n) := by
   nontriviality R
   rw [Monic, leadingCoeff_pow_of_pow_leadingCoeff_ne_zero, hf.leadingCoeff_eq_one, one_pow]
   rw [hf.leadingCoeff_eq_one, one_pow]
   exact one_ne_zero
+
+/-- Monomial degree of powers (when the leading term is not nilpotent) -/
+theorem degree_pow_of_not_isNilpotent {f : MvPolynomial σ R} (n : ℕ)
+    (h : ¬IsNilpotent (m.leadingCoeff f)) :
+    m.degree (f ^ n) = n • m.degree f := by
+  apply degree_pow_of_pow_leadingCoeff_ne_zero
+  contrapose! h
+  exact IsNilpotent.mk _ n h
+
+/-- Leading coefficient of powers (when the leading term is not nilpotent) -/
+theorem leadingCoeff_pow_of_not_isNilpotent {f : MvPolynomial σ R} (n : ℕ)
+    (h : ¬IsNilpotent (m.leadingCoeff f)) :
+    m.leadingCoeff (f ^ n) = m.leadingCoeff f ^ n := by
+  rw [leadingCoeff, degree_pow_of_not_isNilpotent n h, coeff_pow_nsmul_degree]
+
+/-- Leading term of powers (when the leading term is not nilpotent) -/
+theorem leadingTerm_pow_of_not_isNilpotent {f : MvPolynomial σ R} (n : ℕ)
+    (h : ¬IsNilpotent (m.leadingCoeff f)) :
+    m.leadingTerm (f ^ n) = m.leadingTerm f ^ n := by
+  simp [leadingTerm, degree_pow_of_not_isNilpotent n h, leadingCoeff_pow_of_not_isNilpotent n h,
+    monomial_pow]
 
 /-- Monomial degree of powers (in a reduced ring) -/
 theorem degree_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
@@ -588,15 +620,18 @@ theorem degree_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
     by_cases hn : n = 0
     · rw [hn, pow_zero, degree_one]
     · rw [zero_pow hn, degree_zero]
-  apply degree_pow_of_pow_leadingCoeff_ne_zero
-  apply pow_ne_zero
-  rw [leadingCoeff_ne_zero_iff]
-  exact hf
+  refine degree_pow_of_not_isNilpotent n ?_
+  rwa [isNilpotent_iff_eq_zero, leadingCoeff_eq_zero_iff]
 
 /-- Leading coefficient of powers (in a reduced ring) -/
 theorem leadingCoeff_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
     m.leadingCoeff (f ^ n) = m.leadingCoeff f ^ n := by
   rw [leadingCoeff, degree_pow, coeff_pow_nsmul_degree]
+
+/-- Leading term of powers (in a reduced ring) -/
+theorem leadingTerm_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
+    m.leadingTerm (f ^ n) = m.leadingTerm f ^ n := by
+  simp [leadingTerm, degree_pow, leadingCoeff_pow, monomial_pow]
 
 theorem degree_smul_le {r : R} {f : MvPolynomial σ R} :
     m.degree (r • f) ≼[m] m.degree f := by
@@ -719,6 +754,15 @@ lemma leadingTerm_eq_zero_iff (p : MvPolynomial σ R) : m.leadingTerm p = 0 ↔ 
 lemma leadingTerm_zero : m.leadingTerm (0 : MvPolynomial σ R) = 0 := by
   rw [leadingTerm_eq_zero_iff]
 
+@[simp]
+lemma leadingTerm_one : m.leadingTerm (1 : MvPolynomial σ R) = 1 := by
+  simp [leadingTerm]
+
+@[simp]
+lemma leadingTerm_of_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
+    m.leadingTerm f = f := by
+  simp [leadingTerm, (m.degree_eq_zero_iff.mp degree_of_subsingleton).symm]
+
 /--
 The set of leading terms of non-zero polynomials within a set `B` is equal to the set of
 leading terms of all polynomials within `B`, excluding zero.
@@ -763,6 +807,10 @@ lemma leadingTerm_monomial (s : σ →₀ ℕ) (c : R) :
     m.leadingTerm (monomial s c) = monomial s c := by
   classical
   by_cases h : c = 0 <;> simp [leadingTerm, degree_monomial, h]
+
+@[simp]
+lemma leadingTerm_X {s : σ} : m.leadingTerm (X s : MvPolynomial σ R) = X s := by
+  simp [X]
 
 @[simp]
 lemma degree_leadingTerm_mul [NoZeroDivisors R] (p q : MvPolynomial σ R) :
@@ -816,12 +864,66 @@ lemma leadingTerm_eq_leadingTerm_iff {p q : MvPolynomial σ R} :
   rw [leadingTerm, leadingTerm, monomial_eq_monomial_iff]
   aesop
 
+/-- Multiplicativity of leading terms -/
+theorem leadingTerm_mul_of_mul_leadingCoeff_ne_zero {f g : MvPolynomial σ R}
+    (hfg : m.leadingCoeff f * m.leadingCoeff g ≠ 0) :
+    m.leadingTerm (f * g) = m.leadingTerm f * m.leadingTerm g := by
+  simp [leadingTerm, hfg, leadingCoeff_mul_of_mul_leadingCoeff_ne_zero,
+    degree_mul_of_mul_leadingCoeff_ne_zero]
+
+theorem leadingTerm_mul_of_left_mem_nonZeroDivisors {f g : MvPolynomial σ R}
+    (hf : m.leadingCoeff f ∈ R⁰) :
+    m.leadingTerm (f * g) = m.leadingTerm f * m.leadingTerm g := by
+  by_cases hg : g = 0
+  · simp [hg]
+  · simp [leadingTerm, hf, hg, leadingCoeff_mul_of_left_mem_nonZeroDivisors,
+      degree_mul_of_left_mem_nonZeroDivisors]
+
+theorem leadingTerm_mul_of_right_mem_nonZeroDivisors {f g : MvPolynomial σ R}
+    (hg : m.leadingCoeff g ∈ R⁰) :
+    m.leadingTerm (f * g) = m.leadingTerm f * m.leadingTerm g := by
+  by_cases hf : f = 0
+  · simp [hf]
+  · simp [leadingTerm, hf, hg, leadingCoeff_mul_of_right_mem_nonZeroDivisors,
+      degree_mul_of_right_mem_nonZeroDivisors]
+
+theorem leadingTerm_mul_of_isRegular_left {f g : MvPolynomial σ R}
+    (hf : IsRegular (m.leadingCoeff f)) :
+    m.leadingTerm (f * g) = m.leadingTerm f * m.leadingTerm g := by
+  by_cases hg : g = 0
+  · simp [hg]
+  · simp [leadingTerm, hf, hg, leadingCoeff_mul_of_isRegular_left, degree_mul_of_isRegular_left]
+
+theorem leadingTerm_mul_of_isRegular_right {f g : MvPolynomial σ R}
+    (hg : IsRegular (m.leadingCoeff g)) :
+    m.leadingTerm (f * g) = m.leadingTerm f * m.leadingTerm g := by
+  by_cases hf : f = 0
+  · simp [hf]
+  · simp [leadingTerm, hf, hg, leadingCoeff_mul_of_isRegular_right, degree_mul_of_isRegular_right]
+
 @[simp]
 theorem leadingTerm_mul [NoZeroDivisors R] (p q : MvPolynomial σ R) :
     m.leadingTerm (p * q) = m.leadingTerm p * m.leadingTerm q := by
   by_cases! h0 : p * q = 0
   · simp [h0, zero_eq_mul.mp]
   simp [leadingTerm, m.degree_mul' h0]
+
+theorem leadingTerm_prod_of_mem_nonZeroDivisors {ι : Type*}
+    {P : ι → MvPolynomial σ R} {s : Finset ι}
+    (H : ∀ i ∈ s, m.leadingCoeff (P i) ∈ R⁰) :
+    m.leadingTerm (∏ i ∈ s, P i) = ∏ i ∈ s, m.leadingTerm (P i) := by
+  simp [leadingTerm, degree_prod_of_mem_nonZeroDivisors H, monomial_sum_prod,
+    leadingCoeff_prod_of_mem_nonZeroDivisors H]
+
+-- TODO : it suffices that all leading coefficients but one are regular
+theorem leadingTerm_prod_of_regular {ι : Type*}
+    {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.leadingCoeff (P i))) :
+    m.leadingTerm (∏ i ∈ s, P i) = ∏ i ∈ s, m.leadingTerm (P i) := by
+  simp [leadingTerm, degree_prod_of_regular H, leadingCoeff_prod_of_regular H, monomial_sum_prod]
+
+theorem leadingTerm_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
+    m.leadingTerm (f + g) = m.leadingTerm f := by
+  simp [leadingTerm, h, degree_add_of_lt, leadingCoeff_add_of_lt]
 
 @[simp, nontriviality]
 lemma monic_of_subsingleton [Subsingleton R] (p : MvPolynomial σ R) :
@@ -1094,6 +1196,11 @@ theorem leadingCoeff_neg {f : MvPolynomial σ R} :
     m.leadingCoeff (-f) = - m.leadingCoeff f := by
   simp only [leadingCoeff, degree_neg, coeff_neg]
 
+@[simp]
+theorem leadingTerm_neg {f : MvPolynomial σ R} :
+    m.leadingTerm (-f) = - m.leadingTerm f := by
+  simp [leadingTerm]
+
 theorem degree_sub_le {f g : MvPolynomial σ R} :
     m.toSyn (m.degree (f - g)) ≤ m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
   rw [sub_eq_add_neg]
@@ -1111,6 +1218,10 @@ theorem leadingCoeff_sub_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] 
   rw [sub_eq_add_neg]
   apply leadingCoeff_add_of_lt
   simp only [degree_neg, h]
+
+theorem leadingTerm_sub_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
+    m.leadingTerm (f - g) = m.leadingTerm f := by
+  simp [leadingTerm, h, degree_sub_of_lt, leadingCoeff_sub_of_lt]
 
 theorem degree_sub_leadingTerm_le (f : MvPolynomial σ R) :
     m.degree (f - m.leadingTerm f) ≼[m] m.degree f := by
@@ -1209,7 +1320,7 @@ lemma sPolynomial_monomial_mul [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R
   have hm1 := (monomial_eq_zero (s := d₁)).not.mpr hc1
   have hm2 := (monomial_eq_zero (s := d₂)).not.mpr hc2
   simp_rw [m.degree_mul hm1 hp1, m.degree_mul hm2 hp2,
-    mul_sub, ← mul_assoc _ _ p₁, ← mul_assoc _ _ p₂, monomial_mul,
+    mul_sub, ← mul_assoc _ _ p₁, ← mul_assoc _ _ p₂, monomial_mul_monomial,
     m.leadingCoeff_mul, m.leadingCoeff_monomial,
     degree_monomial, hc1, hc2, reduceIte, mul_right_comm, mul_comm c₂ c₁]
   rw [tsub_add_tsub_cancel (sup_le_sup (self_le_add_left _ _) (self_le_add_left _ _)) (by simp),
