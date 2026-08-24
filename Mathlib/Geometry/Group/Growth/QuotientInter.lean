@@ -43,7 +43,7 @@ lemma card_pow_quotient_mul_pow_inter_subgroup_le :
     _ ≤ #(((A ^ m).image π).image φ * {x ∈ A ^ n | x ∈ H}) := by
       rw [Finset.card_mul_iff.2]
       simp only [Set.InjOn, coe_image, coe_pow, coe_filter, Set.mem_prod, Set.mem_image,
-        exists_exists_and_eq_and, Set.mem_setOf_eq, and_imp, forall_exists_index, Prod.forall,
+        exists_exists_and_eq_and, Set.mem_ofPred_eq, and_imp, forall_exists_index, Prod.forall,
         Prod.mk.injEq]
       rintro _ a₁ b₁ hb₁ rfl - ha₁ _ a₂ b₂ hb₂ rfl - ha₂ hab
       have hπa₁ : π a₁ = 1 := (QuotientGroup.eq_one_iff _).2 ha₁

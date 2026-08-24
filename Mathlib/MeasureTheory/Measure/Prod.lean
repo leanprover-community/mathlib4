@@ -57,7 +57,7 @@ product measure, Tonelli's theorem, Fubini-Tonelli theorem
 
 noncomputable section
 
-open Topology ENNReal MeasureTheory Set Function Real ENNReal MeasurableSpace MeasureTheory.Measure
+open ENNReal MeasureTheory Set Function Real ENNReal MeasurableSpace MeasureTheory.Measure
 
 open TopologicalSpace hiding generateFrom
 
@@ -763,7 +763,7 @@ theorem prodAssoc_prod [SFinite τ] :
     isPiSystem_measurableSet isPiSystem_prod ((sfiniteSeq μ i.1.1)).toFiniteSpanningSetsIn
     ((sfiniteSeq ν i.1.2).toFiniteSpanningSetsIn.prod (sfiniteSeq τ i.2).toFiniteSpanningSetsIn)
       ?_).symm
-  rintro s hs _ ⟨t, ht, u, hu, rfl⟩; rw [mem_setOf_eq] at hs ht hu
+  rintro s hs _ ⟨t, ht, u, hu, rfl⟩; rw [mem_ofPred_eq] at hs ht hu
   simp_rw [map_apply (MeasurableEquiv.measurable _) (hs.prod (ht.prod hu)),
     MeasurableEquiv.prodAssoc, MeasurableEquiv.coe_mk, Equiv.prod_assoc_preimage, prod_prod,
     mul_assoc]
@@ -850,8 +850,6 @@ lemma prod_smul_left {μ : Measure α} {R : Type*} [SMul R ℝ≥0∞] [IsScalar
   simp
 
 end Measure
-
-open Measure
 
 namespace MeasurePreserving
 

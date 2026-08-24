@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.OuterMeasure.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # The “almost everywhere” filter of co-null sets.
@@ -44,6 +45,7 @@ namespace MeasureTheory
 variable {α β F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F α] {μ : F} {s t : Set α}
 
 /-- The “almost everywhere” filter of co-null sets. -/
+@[wikidata Q1139334]
 def ae (μ : F) : Filter α :=
   .ofCountableUnion (μ · = 0) (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
     measure_mono_null hs ht
@@ -138,7 +140,7 @@ theorem ae_le_of_ae_lt {β : Type*} [Preorder β] {f g : α → β} (h : ∀ᵐ 
 
 @[simp]
 theorem ae_eq_empty : s =ᵐ[μ] (∅ : Set α) ↔ μ s = 0 :=
-  eventuallyEq_empty.trans <| by simp only [ae_iff, Classical.not_not, setOf_mem_eq]
+  eventuallyEq_empty.trans <| by simp only [ae_iff, Classical.not_not, ofPred_mem_eq]
 
 -- The priority should be higher than `eventuallyEq_univ`.
 @[simp high]
@@ -259,7 +261,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s : Set α} :
     s.mulIndicator f =ᵐ[μ] 1 ↔ μ (s ∩ f.mulSupport) = 0 := by
-  simp [EventuallyEq, eventually_iff, ae, compl_setOf]; rfl
+  simp [EventuallyEq, eventually_iff, ae, compl_ofPred]; rfl
 
 /-- If `s ⊆ t` modulo a set of measure `0`, then `μ s ≤ μ t`. -/
 @[mono]
