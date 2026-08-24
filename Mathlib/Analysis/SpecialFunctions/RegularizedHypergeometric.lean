@@ -125,8 +125,11 @@ theorem regularizedHGFunCoeff_add_one_div_self (h : regularizedHGFunCoeff a b n 
 @[simp]
 theorem regularizedHGFunCoeff_zero_neg_nat_add_one (n i : ℕ) :
     regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) = regularizedHGFunCoeff 0 {(n : ℂ) + 1} i := by
-  simp [regularizedHGFunCoeff, ← Gamma_nat_eq_factorial]
-  ring_nf
+  suffices (Gamma (-n + 1 + (i + n)))⁻¹ * (Gamma (i + n + 1))⁻¹ =
+      (Gamma (n + 1 + i))⁻¹ * (Gamma (i + 1))⁻¹ by
+    simpa [regularizedHGFunCoeff, ← Gamma_nat_eq_factorial]
+  rw [mul_comm]
+  congrm (Gamma $(by ring))⁻¹ * (Gamma $(by ring))⁻¹
 
 private theorem multiset_prod_eq_pow_mul_multiset_prod (a : Multiset ℂ) (hn : n ≠ 0) :
     (a.map (· + (n : ℂ))).prod = n ^ a.card * (a.map (· / (n : ℂ) + 1)).prod := calc
@@ -307,18 +310,17 @@ theorem analyticOnNhd_regularizedHGFun_of_card_eq_add_one (h : a.card = b.card +
 theorem analyticAt_regularizedHGFun_of_card_eq_add_one (h : a.card = b.card + 1) {z : ℂ}
     (hz : ‖z‖ < 1) :
     AnalyticAt ℂ (regularizedHGFun a b) z := by
-  apply (analyticOnNhd_regularizedHGFun_of_card_eq_add_one h)
+  apply analyticOnNhd_regularizedHGFun_of_card_eq_add_one h
   rwa [Metric.mem_eball, edist_zero_right, ← ofReal_norm, ENNReal.ofReal_lt_one]
 
 theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (z : ℂ) :
-    regularizedHGFun 0 {-(n : ℂ) + 1} z = z ^ n * regularizedHGFun 0 {(n : ℂ) + 1} z := by
-  unfold regularizedHGFun FormalMultilinearSeries.sum
-  conv_lhs =>
-    rw [← ((regularizedHGFunSeries 0 {-(n : ℂ) + 1}).summable (by simp)).sum_add_tsum_nat_add n]
-  suffices ∑ i ∈ Finset.range n, z ^ i * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} i +
-      ∑' i, z ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) =
-      z ^ n * ∑' i, z ^ i * regularizedHGFunCoeff 0 {(n : ℂ) + 1} i by simpa
+    regularizedHGFun 0 {-(n : ℂ) + 1} z = z ^ n * regularizedHGFun 0 {(n : ℂ) + 1} z :=
   calc
+    _ = ∑ i ∈ Finset.range n, z ^ i * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} i +
+        ∑' i, z ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
+      rw [regularizedHGFun, FormalMultilinearSeries.sum,
+        ← ((regularizedHGFunSeries 0 {-(n : ℂ) + 1}).summable (by simp)).sum_add_tsum_nat_add n]
+      simp
     _ = 0 + ∑' i, z ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
       congrm $(Finset.sum_eq_zero fun i hi ↦ mul_eq_zero_of_right _ ?_) + _
       refine regularizedHGFunCoeff_eq_zero_right _ _ _ (n - i - 1) ?_
@@ -329,7 +331,8 @@ theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (z : ℂ) :
       simp_rw [zero_add, ← tsum_mul_left]
       congr with i
       ring
-    _ = _ := by simp
+    _ = _ := by
+      simp [regularizedHGFun, FormalMultilinearSeries.sum]
 
 section ZeroZero
 
