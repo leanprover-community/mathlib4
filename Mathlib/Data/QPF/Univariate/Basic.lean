@@ -109,8 +109,6 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : F α) :
     rw [← abs_map, h₀]
     rfl
 
--- TODO: fix defeq abuse with `Sigma.snd`
-set_option backward.isDefEq.respectTransparency false in
 theorem liftp_iff' {α : Type u} (p : α → Prop) (x : F α) :
     Liftp p x ↔ ∃ u : q.P α, abs u = x ∧ ∀ i, p (u.snd i) := by
   rw [liftp_iff]
