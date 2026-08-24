@@ -707,7 +707,9 @@ theorem coeFn_nonneg (f : Lp.simpleFunc G p μ) : (0 : α → G) ≤ᵐ[μ] f �
 theorem exists_simpleFunc_nonneg_ae_eq {f : Lp.simpleFunc G p μ} (hf : 0 ≤ f) :
     ∃ f' : α →ₛ G, 0 ≤ f' ∧ f =ᵐ[μ] f' := by
   rcases f with ⟨⟨f, hp⟩, g, (rfl : _ = f)⟩
-  change 0 ≤ᵐ[μ] g at hf
+  rw [← Subtype.coe_le_coe, AddSubgroup.coe_zero,
+    ← Subtype.coe_le_coe, AddSubgroup.coe_zero,
+    AEEqFun.zero_def, AEEqFun.mk_le_mk] at hf
   classical
   refine ⟨g.map ({x : G | 0 ≤ x}.piecewise id 0), fun x ↦ ?_, (AEEqFun.coeFn_mk _ _).trans ?_⟩
   · simpa using! Set.indicator_apply_nonneg id

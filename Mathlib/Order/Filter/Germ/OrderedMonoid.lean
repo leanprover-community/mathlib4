@@ -31,19 +31,51 @@ variable {α : Type*} {β : Type*} {l : Filter α}
 @[to_additive]
 instance instIsOrderedMonoid [CommMonoid β] [Preorder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (Germ l β) where
-  mul_le_mul_left f g := inductionOn₂ f g fun _ _ H h ↦ inductionOn h fun _ ↦ H.mono
-    fun _ H ↦ by dsimp; gcongr
+  mul_le_mul_left := by
+    intro a b hab c
+    by_cases h : l.NeBot
+    · induction a, b, c using inductionOn₃ with | coe a b c
+      rw [coe_le] at hab
+      rw [← coe_mul, ← coe_mul, coe_le]
+      exact hab.mono fun x hx => mul_le_mul_left hx (c x)
+    · simp only [le_def]
+      rw [liftRel_iff_map₂_eq_const_true]
+      exact (subsingleton_of_bot (Filter.not_neBot.1 h)).allEq _ _
 
 @[to_additive]
 instance instIsOrderedCancelMonoid [CommMonoid β] [Preorder β] [IsOrderedCancelMonoid β] :
     IsOrderedCancelMonoid (Germ l β) where
-  le_of_mul_le_mul_left f g h := inductionOn₃ f g h fun _ _ _ H ↦ H.mono
-    fun _ ↦ le_of_mul_le_mul_left'
+  le_of_mul_le_mul_left := by
+    intro u v w hvw
+    by_cases h : l.NeBot
+    · induction u, v, w using inductionOn₃ with | coe u v w
+      rw [← coe_mul, ← coe_mul, coe_le] at hvw
+      rw [coe_le]
+      exact hvw.mono fun x hx => le_of_mul_le_mul_left' hx
+    · simp only [le_def]
+      rw [liftRel_iff_map₂_eq_const_true]
+      exact (subsingleton_of_bot (Filter.not_neBot.1 h)).allEq _ _
 
 @[to_additive]
 instance instCanonicallyOrderedMul [Mul β] [LE β] [CanonicallyOrderedMul β] :
     CanonicallyOrderedMul (Germ l β) where
-  le_mul_self x y := inductionOn₂ x y fun _ _ ↦ Eventually.of_forall fun _ ↦ le_mul_self
-  le_self_mul x y := inductionOn₂ x y fun _ _ ↦ Eventually.of_forall fun _ ↦ le_self_mul
+  le_mul_self := by
+    intro x y
+    by_cases h : l.NeBot
+    · induction x, y using inductionOn₂ with | coe x y
+      rw [← coe_mul, coe_le]
+      exact .of_forall fun _ => le_mul_self
+    · simp only [le_def]
+      rw [liftRel_iff_map₂_eq_const_true]
+      exact (subsingleton_of_bot (Filter.not_neBot.1 h)).allEq _ _
+  le_self_mul := by
+    intro x y
+    by_cases h : l.NeBot
+    · induction x, y using inductionOn₂ with | coe x y
+      rw [← coe_mul, coe_le]
+      exact .of_forall fun _ => le_self_mul
+    · simp only [le_def]
+      rw [liftRel_iff_map₂_eq_const_true]
+      exact (subsingleton_of_bot (Filter.not_neBot.1 h)).allEq _ _
 
 end Filter.Germ
