@@ -32,7 +32,7 @@ continuous.
 
 When `E` is a normed space, this gets us the equivalence of norms in finite dimension.
 
-## Main results :
+## Main results
 
 * `LinearMap.continuous_iff_isClosed_ker` : a linear form is continuous if and only if its kernel
   is closed.
