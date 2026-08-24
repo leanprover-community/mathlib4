@@ -1678,12 +1678,16 @@ public import Mathlib.Analysis.Analytic.Uniqueness
 public import Mathlib.Analysis.Analytic.WithLp
 public import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.AperiodicOrder.Delone.Basic
+public import Mathlib.Analysis.Asymptotics.Arith
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.Asymptotics.Basic
 public import Mathlib.Analysis.Asymptotics.Completion
 public import Mathlib.Analysis.Asymptotics.Defs
 public import Mathlib.Analysis.Asymptotics.ExpGrowth
 public import Mathlib.Analysis.Asymptotics.Lemmas
 public import Mathlib.Analysis.Asymptotics.LinearGrowth
+public import Mathlib.Analysis.Asymptotics.Prod
+public import Mathlib.Analysis.Asymptotics.Ring
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 public import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 public import Mathlib.Analysis.Asymptotics.TVS
