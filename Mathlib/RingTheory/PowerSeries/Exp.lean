@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.RingTheory.PowerSeries.Derivative
+public import Mathlib.RingTheory.PowerSeries.Inverse
 
 /-!
 # Exponential Power Series
@@ -109,7 +110,7 @@ theorem isUnit_exp (A : Type*) [Ring A] [Algebra ℚ A] : IsUnit (exp A) :=
 
 @[simp]
 theorem order_exp (A : Type*) [Ring A] [Algebra ℚ A] [Nontrivial A] : (exp A).order = 0 :=
-  order_zero_of_unit (isUnit_exp A)
+  order_zero_of_isUnit (isUnit_exp A)
 
 
 open RingHom

@@ -135,6 +135,11 @@ theorem gram_eq_conjTranspose_mul {ι : Type*} [Fintype ι] (b : OrthonormalBasi
   simp [mul_apply, b.repr_apply_apply, b.sum_inner_mul_inner]
 
 omit [Finite n] in
+@[simp]
+lemma gram_eq_one_iff_orthonormal [DecidableEq n] {v : n → E} : gram 𝕜 v = 1 ↔ Orthonormal 𝕜 v := by
+  simp [← Matrix.ext_iff, orthonormal_iff_ite, Matrix.one_apply]
+
+omit [Finite n] in
 /-- Inequality `‖f x‖ ≤ ‖f‖ * ‖x‖` lifted to Gram matrices. -/
 theorem posSemidef_opNorm_smul_gram_sub_gram {F} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
     (v : n → E) (f : E →L[𝕜] F) : (‖f‖ ^ 2 • gram 𝕜 v - gram 𝕜 (f ∘ v)).PosSemidef := by

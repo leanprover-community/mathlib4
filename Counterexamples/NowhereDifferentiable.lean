@@ -3,8 +3,10 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Analysis.Real.Pi.Bounds
-import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
+module
+
+public import Mathlib.Analysis.Real.Pi.Bounds
+public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 
 /-!
 # Weierstrass function: a function that is continuous everywhere but differentiable nowhere
@@ -29,6 +31,8 @@ which is the original bound given by Karl Weierstrass. There is a better bound $
 
 -/
 
+@[expose] public section
+
 namespace NowhereDifferentiable
 open Real Topology Filter
 
@@ -39,8 +43,7 @@ For real parameter $a$ and $b$, define the Weierstrass function as
 $$f(x) = \sum_{n=0}^\infty a^n \cos (b^n\pi x)$$
 -/
 
-noncomputable
-def weierstrass (a b x : ℝ) := ∑' n, a ^ n * cos (b ^ n * π * x)
+noncomputable def weierstrass (a b x : ℝ) := ∑' n, a ^ n * cos (b ^ n * π * x)
 
 /-!
 ### Continuity
@@ -76,8 +79,8 @@ theorem uniformContinuous_weierstrass {a : ℝ} (ha : a ∈ Set.Ioo 0 1) (b : �
 
 To show that Weierstrass function $f(x)$ is not differentiable at any $x$, we choose a sequence
 $\{x_m\}$ such that, as $m\to\infty$
- - $\{x_m\}$ converges to $x$
- - The slope $(f(x_m) - f(x)) / (x_m - x)$ grows unbounded,
+- $\{x_m\}$ converges to $x$
+- The slope $(f(x_m) - f(x)) / (x_m - x)$ grows unbounded,
    which means the derivative $f'(x)$ cannot exist.
 -/
 
