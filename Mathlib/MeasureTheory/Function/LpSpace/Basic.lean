@@ -682,7 +682,7 @@ lemma MeasureTheory.MemLp.continuousLinearMap_comp [NontriviallyNormedField 𝕜
     [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {f : α → E}
     (h_Lp : MemLp f p μ) (L : E →L[𝕜] F) :
     MemLp (fun x ↦ L (f x)) p μ :=
-  LipschitzWith.comp_memLp L.lipschitz (by simp) h_Lp
+  LipschitzWith.comp_memLp L.lipschitzWith (by simp) h_Lp
 
 namespace LipschitzWith
 
@@ -741,7 +741,7 @@ variable {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ]
 
 /-- Composing `f : Lp` with `L : E →L[𝕜] F`. -/
 def compLp (L : E →SL[σ] F) (f : Lp E p μ) : Lp F p μ :=
-  L.lipschitz.compLp (map_zero L) f
+  L.lipschitzWith.compLp (map_zero L) f
 
 theorem coeFn_compLp (L : E →SL[σ] F) (f : Lp E p μ) : ∀ᵐ a ∂μ, (L.compLp f) a = L (f a) :=
   LipschitzWith.coeFn_compLp _ _ _

@@ -49,7 +49,9 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open Topology Filter Set
+open Filter Set
+
+open scoped Topology
 
 namespace Complex
 
@@ -84,8 +86,6 @@ theorem continuous_cosh : Continuous cosh := by
 end Complex
 
 namespace Real
-
-variable {x y z : ℝ}
 
 @[continuity, fun_prop]
 theorem continuous_sin : Continuous sin :=
