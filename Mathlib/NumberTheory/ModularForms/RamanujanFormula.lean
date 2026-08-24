@@ -41,7 +41,7 @@ the Serre derivative `∂_κ f` of a bounded holomorphic `f` with limit `l` at `
 of weight-`k'` forms has rank one with a generator `g` tending to `1` at `i∞`, then
 `∂_κ f = -(κ / 12) l • g`. -/
 private lemma serreDerivative_eq_smul {k' : ℤ} {κ l L : ℂ} {g F : ModularForm 𝒮ℒ k'}
-    {f : ℍ → ℂ} (hF : ⇑F = serreDerivative κ f)
+    {f : ℍ → ℂ} (hF : F = serreDerivative κ f)
     (hrank : Module.rank ℂ (ModularForm 𝒮ℒ k') = 1) (hg : g ≠ 0) (hf : MDiff f)
     (hb : IsBoundedAtImInfty f) (hl : Tendsto f atImInfty (𝓝 l))
     (hg1 : Tendsto g atImInfty (𝓝 1)) (hL : L = -(κ * 12⁻¹ * l)) :
@@ -62,14 +62,14 @@ theorem serreDerivative_E₄ : serreDerivative 4 E₄ = (-3⁻¹ : ℂ) • E₆
 
 /-- **Ramanujan's formula for `E₆`**: `∂₆ E₆ = -E₄² / 2`. -/
 theorem serreDerivative_E₆ : serreDerivative 6 E₆ = (-2⁻¹ : ℂ) • E₄ ^ 2 :=
+  have hne : E₄.pow 2 ≠ 0 := DFunLike.ne_iff.mpr <|
+    (DFunLike.ne_iff.mp <| E_ne_zero (by norm_num) ⟨2, rfl⟩).imp
+      fun z hz ↦ by simpa only [coe_pow, Pi.pow_apply, zero_apply] using pow_ne_zero 2 hz
+  have hlim : Tendsto (fun z ↦ E₄ z ^ 2) atImInfty (𝓝 1) :=
+    ((one_pow (M := ℂ) 2) ▸ tendsto_E₄_atImInfty.pow 2).congr fun z ↦ by simp
   coe_pow E₄ 2 ▸ serreDerivative_eq_smul (F := serreDerivativeMF 6 E₆) (g := E₄.pow 2) rfl
-    (by simpa [Nat.ModEq] using dimension_level_one 8 ⟨4, rfl⟩)
-    (DFunLike.ne_iff.mpr <| (DFunLike.ne_iff.mp <| E_ne_zero (by norm_num) ⟨2, rfl⟩).imp
-      fun z hz ↦ by simpa only [coe_pow, Pi.pow_apply, zero_apply] using pow_ne_zero 2 hz)
-    E₆.holo' (ModularFormClass.bdd_at_infty E₆) tendsto_E₆_atImInfty
-    (((one_pow (M := ℂ) 2) ▸ tendsto_E₄_atImInfty.pow 2).congr
-      fun z ↦ by simp only [coe_pow, Pi.pow_apply])
-    (by norm_num)
+    (by simpa [Nat.ModEq] using dimension_level_one 8 ⟨4, rfl⟩) hne
+    E₆.holo' (ModularFormClass.bdd_at_infty E₆) tendsto_E₆_atImInfty hlim (by norm_num)
 
 /-- The normalized derivative of the modular defect `D2 γ` is `-(γ₁₀)² / denom γ ²`. -/
 lemma normalizedDerivOfComplex_D2 (γ : SL(2, ℤ)) :
@@ -89,21 +89,34 @@ is invariant under the weight-4 slash action of `SL(2, ℤ)`. -/
 lemma serreDerivativeOne_E2_slash (γ : SL(2, ℤ)) :
     serreDerivative 1 E2 ∣[(4 : ℤ)] γ = serreDerivative 1 E2 := by
   have hD2 : MDiff (D2 γ) := mdifferentiable_const.div (mdifferentiable_denom _) (denom_ne_zero _)
-  have hDslash : D (E2 ∣[(2 : ℤ)] γ) = D E2 - (1 / (2 * riemannZeta 2)) • D (D2 γ) := by
-    rw [E2_slash_action, normalizedDerivOfComplex_sub _ _ E2_mdifferentiable (hD2.const_smul _),
-      normalizedDerivOfComplex_smul _ _ hD2]
+  -- One can apply slash-equivariance of Serre derivative after rewriting in terms of `∂₂`
+  have h₁₂ : serreDerivative 1 E2 = serreDerivative 2 E2 + (12⁻¹ : ℂ) • (E2 * E2) := by
+    ext z
+    simp only [serreDerivative_apply, Pi.add_apply, Pi.smul_apply, Pi.mul_apply, smul_eq_mul]
+    ring
+  have hslash : serreDerivative 1 E2 ∣[(4 : ℤ)] γ =
+      serreDerivative 2 (E2 ∣[(2 : ℤ)] γ) +
+        (12⁻¹ : ℂ) • ((E2 ∣[(2 : ℤ)] γ) * (E2 ∣[(2 : ℤ)] γ)) := by
+    have heq : serreDerivative 2 E2 ∣[(4 : ℤ)] γ = serreDerivative 2 (E2 ∣[(2 : ℤ)] γ) := by
+      have h := serreDerivative_slash_equivariant (k := 2) E2_mdifferentiable (γ := γ)
+      push_cast at h
+      exact h
+    rw [h₁₂, SlashAction.add_slash, SL_smul_slash, heq, show (4 : ℤ) = 2 + 2 from rfl,
+      mul_slash_SL2]
+  -- Derivative of `D2`
+  have hDD2 : D (D2 γ) = (1 / (24 * riemannZeta 2)) • (D2 γ * D2 γ) := by
+    rw [normalizedDerivOfComplex_D2, riemannZeta_two]
+    ext z
+    simp only [Pi.smul_apply, Pi.mul_apply, smul_eq_mul, EisensteinSeries.D2]
+    field_simp [denom_ne_zero, Complex.ofReal_ne_zero.mpr Real.pi_ne_zero]
+    linear_combination -24 * (γ 1 0 : ℂ) ^ 2 * I_sq
+  -- Substitute `E₂ ∣[2] γ = E₂ - (2 ζ(2))⁻¹ • D2 γ` and expand `∂₂` by linearity
+  rw [hslash, E2_slash_action, serreDerivative_sub _ _ _ E2_mdifferentiable (hD2.const_smul _),
+    serreDerivative_smul _ _ _ hD2]
   ext z
-  have key : (serreDerivative 1 E2 ∣[(4 : ℤ)] γ) z = D E2 z - 1 / (2 * riemannZeta 2) *
-      (-(γ 1 0 : ℂ) ^ 2 / denom γ z ^ 2) + 2 * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) *
-      (E2 ∣[(2 : ℤ)] γ) z - 12⁻¹ * ((E2 ∣[(2 : ℤ)] γ) z * (E2 ∣[(2 : ℤ)] γ) z) := by
-    grind [ModularForm.SL_slash_apply, serreDerivative_apply, Pi.mul_apply, Pi.sub_apply,
-      Pi.smul_apply, smul_eq_mul, normalizedDerivOfComplex_D2, show (2 : ℤ) + 2 = 4 by norm_num,
-      congrFun (ModularForm.mul_slash_SL2 2 2 γ E2 E2) z, congrFun hDslash z,
-      congrFun (normalizedDerivOfComplex_SL_slash (k := 2) (γ := γ) E2_mdifferentiable) z]
-  rw [key, serreDerivative_apply, congrFun (E2_slash_action γ) z]
-  simp only [Pi.sub_apply, Pi.smul_apply, smul_eq_mul, EisensteinSeries.D2, riemannZeta_two]
-  field_simp [denom_ne_zero, Complex.ofReal_ne_zero.mpr Real.pi_ne_zero]
-  linear_combination (24 * (γ 1 0 : ℂ) * π * denom γ z * E2 z - 72 * (γ 1 0 : ℂ) ^ 2 * I) * I_sq
+  simp only [hDD2, serreDerivative_apply, Pi.add_apply, Pi.sub_apply, Pi.smul_apply, Pi.mul_apply,
+    smul_eq_mul]
+  ring
 
 /-- The weight-1 Serre derivative of `E₂`, packaged as a modular form of weight `4`. -/
 def serreDerivativeOneE2 : ModularForm 𝒮ℒ 4 where
