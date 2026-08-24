@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.List.Monad
-public import Mathlib.Logic.OpClass
 public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Common
 public import Batteries.Data.List.Lemmas
@@ -57,8 +56,10 @@ instance : Std.Associative (α := List α) Append.append where
 
 theorem singleton_injective : Injective fun a : α => [a] := fun _ _ h => (cons_eq_cons.1 h).1
 
-theorem set_of_mem_cons (l : List α) (a : α) : { x | x ∈ a :: l } = insert a { x | x ∈ l } :=
+theorem setOfPred_mem_cons (l : List α) (a : α) : { x | x ∈ a :: l } = insert a { x | x ∈ l } :=
   Set.ext fun _ => mem_cons
+
+@[deprecated (since := "2026-07-13")] alias set_of_mem_cons := setOfPred_mem_cons
 
 /-! ### mem -/
 
@@ -136,7 +137,7 @@ instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
 instance [DecidableEq α] : LawfulSingleton α (List α) :=
   { insert_empty_eq := fun x =>
-      show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg not_mem_nil }
+      show (if x ∈ ([] : List α) then [] else [x]) = [x] from ite_eq_right not_mem_nil }
 
 theorem singleton_eq (x : α) : ({x} : List α) = [x] :=
   rfl
@@ -358,10 +359,6 @@ theorem getLastI_eq_getLast?_getD [Inhabited α] : ∀ l : List α, l.getLastI =
   | [_, _, _] => rfl
   | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast?_getD (c :: l)]
 
-@[deprecated getLastI_eq_getLast?_getD (since := "2026-01-05")]
-theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.getD default :=
-  getLastI_eq_getLast?_getD
-
 theorem getLast?_append_cons :
     ∀ (l₁ : List α) (a : α) (l₂ : List α), getLast? (l₁ ++ a :: l₂) = getLast? (a :: l₂)
   | [], _, _ => rfl
@@ -400,10 +397,6 @@ theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
 
 theorem head!_eq_head?_getD [Inhabited α] (l : List α) : head! l = (head? l).getD default := by
   cases l <;> rfl
-
-@[deprecated head!_eq_head?_getD (since := "2026-01-05")]
-theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).getD default :=
-  head!_eq_head?_getD l
 
 theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
 
@@ -603,6 +596,10 @@ theorem idxOf_getLast {l : List α} (hl : l ≠ []) (hl' : l.getLast hl ∉ l.dr
   Nat.le_antisymm (Nat.le_pred_of_lt <| l.idxOf_lt_length_of_mem <| getLast_mem hl) <| by
     contrapose hl'
     rwa [mem_dropLast_iff_idxOf_lt <| getLast_mem hl, ← Nat.not_le]
+
+theorem idxOf_tail_of_head_ne {a : α} (hl : l ≠ []) (ha : l.head hl ≠ a) :
+    l.tail.idxOf a = l.idxOf a - 1 := by
+  induction l <;> simp_all
 
 end IndexOf
 
@@ -928,7 +925,11 @@ theorem filter_singleton {a : α} : [a].filter p = bif p a then [a] else [] :=
 
 theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
-  induction l <;> simp [*, filter]; rfl
+  induction l with
+  | nil => rfl
+  | cons a l ih =>
+    simp [filter, ih]
+    cases p a <;> rfl
 
 @[simp]
 theorem filter_subset_self (l : List α) : filter p l ⊆ l :=
@@ -1007,7 +1008,7 @@ theorem length_erase_add_one {a : α} {l : List α} (h : a ∈ l) :
 
 theorem map_erase [BEq β] [LawfulBEq β] {f : α → β} (finj : Injective f) {a : α} (l : List α) :
     map f (l.erase a) = (map f l).erase (f a) := by
-  have this : (a == ·) = (f a == f ·) := by ext b; simp [finj.eq_iff]
+  have : (a == ·) = (f a == f ·) := by ext b; simp [finj.eq_iff]
   rw [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]; rfl
 
 theorem map_foldl_erase [BEq β] [LawfulBEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :

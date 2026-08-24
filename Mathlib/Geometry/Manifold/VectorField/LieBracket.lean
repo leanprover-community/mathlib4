@@ -10,7 +10,6 @@ public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorField.Pullback
-import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Lie brackets of vector fields on manifolds
@@ -49,9 +48,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {H'' : Type*} [TopologicalSpace H''] {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
-  {I'' : ModelWithCorners 𝕜 E'' H''}
-  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   {f : M → M'} {s t : Set M} {x x₀ : M}
 
 namespace VectorField
@@ -327,6 +323,7 @@ lemma mfderiv_extChartAt_inverse_comp_mfderivWithin_extChartAT_symm (Y : Tangent
     mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' (mem_extChartAt_source x)]
   exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (x W) in
 private lemma mfderiv_extChart_inverse_comp_aux :
     letI φ := extChartAt I x
@@ -470,6 +467,7 @@ lemma mlieBracket_add_right (hW : MDiffAt (T% W) x) (hW₁ : MDiffAt (T% W₁) x
   simp only [← mlieBracketWithin_univ] at hW hW₁ ⊢
   exact mlieBracketWithin_add_right hW hW₁ (uniqueMDiffWithinAt_univ _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mlieBracketWithin_of_mem_nhdsWithin (st : t ∈ 𝓝[s] x) (hs : UniqueMDiffAt[s] x)
     (hV : MDiffAt[t] (T% V) x) (hW : MDiffAt[t] (T% W) x) :
     mlieBracketWithin I V W s x = mlieBracketWithin I V W t x := by
@@ -920,6 +918,7 @@ section Leibniz
 
 variable [IsManifold I (minSmoothness 𝕜 3) M] [CompleteSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lie bracket of vector fields in manifolds satisfies the Leibniz identity
 `[U, [V, W]] = [[U, V], W] + [V, [U, W]]` (also called Jacobi identity). -/
 theorem leibniz_identity_mlieBracketWithin_apply
