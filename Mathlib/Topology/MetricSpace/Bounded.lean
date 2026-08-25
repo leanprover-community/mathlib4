@@ -13,7 +13,7 @@ public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
-## Boundedness in (pseudo)-metric spaces
+# Boundedness in (pseudo)-metric spaces
 
 This file contains one definition, and various results on boundedness in pseudo-metric spaces.
 * `Metric.diam s` : The `iSup` of the distances of members of `s`.
@@ -43,7 +43,7 @@ open scoped ENNReal Uniformity Topology Pointwise
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {X ι : Type*}
+variable {α : Type u} {β : Type v} {ι : Type*}
 
 section UniformSpace
 variable [UniformSpace α] [Preorder α] [CompactIccSpace α]

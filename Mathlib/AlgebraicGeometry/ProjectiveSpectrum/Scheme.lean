@@ -165,7 +165,7 @@ open Ideal
 -- So for any `x` in `Proj| (pbo f)`, we need some point in `Spec A⁰_f`, i.e. a prime ideal,
 -- and we need this correspondence to be continuous in their Zariski topology.
 variable {𝒜}
-variable {f : A} {m : ℕ} (x : Proj| (pbo f))
+variable {f : A} (x : Proj| (pbo f))
 
 /--
 For any `x` in `Proj| (pbo f)`, the corresponding ideal in `Spec A⁰_f`. This fact that this ideal
