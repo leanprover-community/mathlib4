@@ -100,10 +100,10 @@ structure NonarchAddGroupSeminorm (G : Type*) [AddGroup G] extends ZeroHom G ℝ
 /-- A norm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is subadditive
 and such that `f (-x) = f x` and `f x = 0 → x = 0` for all `x`. -/
 structure AddGroupNorm (G : Type*) [AddGroup G] extends AddGroupSeminorm G where
-  /-- If the image under the seminorm is zero, then the argument is zero. -/
+  /-- If the image under the norm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
 
-/-- A seminorm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
+/-- A norm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
 and such that `f x⁻¹ = f x` and `f x = 0 → x = 1` for all `x`. -/
 @[to_additive]
 structure GroupNorm (G : Type*) [Group G] extends GroupSeminorm G where
