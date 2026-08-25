@@ -13,7 +13,7 @@ public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Tactic.CrossRefAttribute
 
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Disjoint
 
 /-!
 # Simple graphs
