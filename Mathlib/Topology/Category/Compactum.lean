@@ -30,7 +30,7 @@ https://ncatlab.org/nlab/show/monad
 This file proves the equivalence between the category of *compact Hausdorff topological spaces*
 and the category of algebras for the *ultrafilter monad*.
 
-## Notation:
+## Notation
 
 Here are the main objects introduced in this file.
 - `Compactum` is the type of compacta, which we define as algebras for the ultrafilter monad.
