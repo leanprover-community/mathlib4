@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Algebra.Order.GroupWithZero.Cyclic
 public import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
 public import Mathlib.Data.Int.Interval
 public import Mathlib.GroupTheory.Archimedean
@@ -296,7 +297,7 @@ lemma LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered [Nontrivial G] :
 
 /-- A cyclic linearly ordered commutative group is mul-archimedean. -/
 @[to_additive /-- A cyclic linearly ordered additive commutative group is archimedean. -/]
-lemma MulArchimedean.of_isCyclic {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+instance MulArchimedean.of_isCyclic {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
     [IsCyclic G] : MulArchimedean G := by
   obtain ⟨g, hg⟩ := IsCyclic.exists_zpow_surjective (G := G)
   -- replace `g` by whichever of `g`, `g⁻¹` is `> 1`, unless `G` is trivial
@@ -325,15 +326,32 @@ lemma MulArchimedean.of_isCyclic {G : Type*} [CommGroup G] [LinearOrder G] [IsOr
     _ ≤ b * (a.toNat : ℤ) := by
         exact mul_le_mul_of_nonneg_right hb (Int.natCast_nonneg _)
 
+/-- A nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
+cyclic with zero exactly when it is not densely ordered. With-zero analogue of
+`LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered`. -/
+lemma LinearOrderedCommGroupWithZero.isCyclicWithZero_iff_not_denselyOrdered (G : Type*)
+    [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
+    IsCyclicWithZero G ↔ ¬ DenselyOrdered G := by
+  rw [isCyclicWithZero_iff_isCyclic_units, LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered,
+    denselyOrdered_units_iff]
+
+/-- The generator hypothesis of `orderIsoWithZeroMulInt` is equivalent to not being densely
+ordered. -/
+lemma LinearOrderedCommGroupWithZero.exists_generator_lt_one₀_iff_not_denselyOrdered (G : Type*)
+    [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
+    (∃ g : G, 0 < g ∧ g < 1 ∧ SubgroupWithZero.zpowers₀ g = ⊤) ↔ ¬ DenselyOrdered G := by
+  rw [← isCyclicWithZero_iff_not_denselyOrdered]
+  exact ⟨fun ⟨g, _, _, hg⟩ ↦ isCyclicWithZero_iff_exists_zpowers₀_eq_top.2 ⟨g, hg⟩,
+    fun h ↦ @exists_generator_lt_one₀ G _ _ h⟩
+
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. -/
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
     [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
     Nonempty (G ≃*o ℤᵐ⁰) ∨ DenselyOrdered G := by
-  rw [← denselyOrdered_units_iff]
-  refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp_left ?_
-  intro ⟨f⟩
-  exact ⟨OrderMonoidIso.withZeroUnits.symm.trans f.withZero⟩
+  refine (em (DenselyOrdered G)).symm.imp_left fun h ↦ ?_
+  obtain ⟨g, hg₀, hg₁, hgen⟩ := (exists_generator_lt_one₀_iff_not_denselyOrdered G).2 h
+  exact ⟨orderIsoWithZeroMulInt hg₀ hg₁ hgen⟩
 
 open WithZero in
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
@@ -608,7 +626,7 @@ end DenselyOrdered
 /-- A group with zero whose group of units is cyclic is mul-archimedean.
 
 `MulArchimedean` is therefore never needed as a hypothesis alongside cyclicity. -/
-lemma MulArchimedean.of_isCyclic_units {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀]
+instance MulArchimedean.of_isCyclic_units {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀]
     [IsCyclic G₀ˣ] : MulArchimedean G₀ :=
   Units.mulArchimedean_iff.mp MulArchimedean.of_isCyclic
 
@@ -617,8 +635,6 @@ lemma MulArchimedean.of_isCyclic_units {G₀ : Type*} [LinearOrderedCommGroupWit
 Note that `MulArchimedean` is not a hypothesis: cyclicity supplies it. -/
 lemma nonempty_orderIso_withZeroMulInt_of_isCyclic_units {G₀ : Type*}
     [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] [IsCyclic G₀ˣ] :
-    Nonempty (G₀ ≃*o ℤᵐ⁰) := by
-  have : MulArchimedean G₀ˣ := MulArchimedean.of_isCyclic
-  have : MulArchimedean G₀ := MulArchimedean.of_isCyclic_units
-  rw [LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered, ← denselyOrdered_units_iff]
-  exact (LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered (G := G₀ˣ)).1 ‹_›
+    Nonempty (G₀ ≃*o ℤᵐ⁰) :=
+  (LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered G₀).resolve_right
+    ((LinearOrderedCommGroupWithZero.isCyclicWithZero_iff_not_denselyOrdered G₀).1 inferInstance)

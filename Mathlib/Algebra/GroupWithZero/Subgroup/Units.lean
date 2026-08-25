@@ -198,4 +198,14 @@ theorem closure_eq_withZero (k : Set G₀) :
     closure k = (Subgroup.closure (Units.val ⁻¹' k)).withZero := by
   rw [← units_closure, withZero_units]
 
+/-- As a set, the closure of `k` is `0` together with the `Subgroup` closure of the units in `k`. -/
+theorem coe_closure (k : Set G₀) :
+    (closure k : Set G₀) =
+      insert 0 (Units.val '' (Subgroup.closure (Units.val ⁻¹' k) : Set G₀ˣ)) := by
+  rw [closure_eq_withZero, Subgroup.coe_withZero]
+
+theorem mem_closure_iff {k : Set G₀} {x : G₀} :
+    x ∈ closure k ↔ x = 0 ∨ ∃ u ∈ Subgroup.closure (Units.val ⁻¹' k), (u : G₀) = x := by
+  rw [closure_eq_withZero, Subgroup.mem_withZero]
+
 end SubgroupWithZero

@@ -67,35 +67,29 @@ lemma zpowers₀_eq_bot : zpowers₀ g = ⊥ ↔ g = 0 ∨ g = 1 := by
 @[simp] lemma zpowers₀_one : zpowers₀ (1 : G₀) = ⊥ := zpowers₀_eq_bot.2 (.inr rfl)
 
 /-- Taking units turns `zpowers₀` into `Subgroup.zpowers`. Every `Subgroup.zpowers` fact
-transfers through this. -/
+transfers through this. The `simp`-normal form has the generator as a unit; see
+`units_zpowers₀_of_ne_zero` for a nonzero element of `G₀`. -/
 @[simp]
-lemma units_zpowers₀ (hg : g ≠ 0) :
-    (zpowers₀ g).units = Subgroup.zpowers (Units.mk0 g hg) := by
+lemma units_zpowers₀ (u : G₀ˣ) : (zpowers₀ (u : G₀)).units = Subgroup.zpowers u := by
   rw [zpowers₀, units_closure, Subgroup.zpowers_eq_closure]
   congr 1
-  ext u
+  ext v
   simp [Units.ext_iff]
 
+lemma units_zpowers₀_of_ne_zero (hg : g ≠ 0) :
+    (zpowers₀ g).units = Subgroup.zpowers (Units.mk0 g hg) := by
+  rw [← units_zpowers₀ (Units.mk0 g hg), Units.val_mk0]
+
+/-- `zpowers₀ g` is `0` together with the integer powers of `g`. Compare `mem_closure_iff`: for
+`g ≠ 0` the units of `zpowers₀ g` are `Subgroup.zpowers (Units.mk0 g hg)`. -/
 lemma mem_zpowers₀_iff : x ∈ zpowers₀ g ↔ x = 0 ∨ ∃ n : ℤ, g ^ n = x := by
   rcases eq_or_ne g 0 with rfl | hg
   · rw [zpowers₀_zero, mem_bot]
-    constructor
-    · rintro (rfl | rfl)
-      · exact .inl rfl
-      · exact .inr ⟨0, by simp⟩
-    · rintro (rfl | ⟨n, rfl⟩)
-      · exact .inl rfl
-      · rw [zero_zpow_eq]; split_ifs <;> simp
-  rcases eq_or_ne x 0 with rfl | hx
-  · simp [zero_mem]
-  refine ⟨fun h ↦ .inr ?_, ?_⟩
-  · have : Units.mk0 x hx ∈ (zpowers₀ g).units := h
-    rw [units_zpowers₀ hg, Subgroup.mem_zpowers_iff] at this
-    obtain ⟨n, hn⟩ := this
-    exact ⟨n, by simpa [Units.ext_iff] using congrArg Units.val hn⟩
-  · rintro (rfl | ⟨n, rfl⟩)
-    · exact zero_mem _
-    · exact zpow_mem_zpowers₀ g n
+    refine ⟨fun h ↦ h.imp_right fun h ↦ ⟨0, by simp [h]⟩, fun h ↦ h.elim .inl fun ⟨n, hn⟩ ↦ ?_⟩
+    rw [← hn, zero_zpow_eq]; split_ifs <;> simp
+  · rw [← withZero_units (zpowers₀ g), units_zpowers₀_of_ne_zero hg, Subgroup.mem_withZero]
+    simp only [Subgroup.mem_zpowers_iff, exists_exists_eq_and, Units.val_zpow_eq_zpow_val,
+      Units.val_mk0]
 
 lemma mem_zpowers₀_iff_of_ne_zero (hx : x ≠ 0) :
     x ∈ zpowers₀ g ↔ ∃ n : ℤ, g ^ n = x := by simp [mem_zpowers₀_iff, hx]

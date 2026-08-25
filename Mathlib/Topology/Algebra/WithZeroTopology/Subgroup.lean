@@ -13,7 +13,9 @@ public import Mathlib.Topology.Algebra.WithZeroTopology
 
 A subgroup with zero of a `LinearOrderedCommGroupWithZero` is itself a
 `LinearOrderedCommGroupWithZero`, and so carries its own `WithZeroTopology`. This file declares
-that topology at a priority high enough to beat `instTopologicalSpaceSubtype`.
+that topology, **as a scoped instance** (activate it with `open WithZeroTopology`, exactly as for
+`WithZeroTopology.topologicalSpace` itself), at a priority high enough to beat
+`instTopologicalSpaceSubtype`. Nothing in this file is active outside that scope.
 
 ## Implementation notes
 
@@ -32,11 +34,42 @@ lexicographic order `(-1, 0) < (0, n)` for every `n`, so
 contains `exp (0, m)` for `m < -n`.
 
 The `WithZeroTopology` is the one that matters for valuation theory — it is what makes
-`Valued.continuous_valuation` and the `Valued` neighbourhood bases say what they are meant to say
-— so it is the one declared here.
-
-Like `WithZeroTopology.topologicalSpace` itself, this is a scoped instance: activate it with
+`Valued.continuous_valuation`, `Valued.extension` and the `Valued` neighbourhood bases say what
+they are meant to say — so it is the one declared here. Every consumer lives under
 `open WithZeroTopology`.
+
+### Why a priority override, and what it costs
+
+Mathlib has no other instance that gives a subtype a topology other than the induced one by
+raising its priority. Whenever a type is meant to carry a topology different from the "obvious"
+one, the library reaches for one of three devices instead:
+
+* a new structure, as for `Units` (`instTopologicalSpaceUnits` is induced along
+  `Units.embedProduct`, and `Mˣ` is not a subtype, so nothing competes with it);
+* a type synonym, as for `WithLp`, `WithVal` and `Opens.CompleteCopy`;
+* bundling the topology into a richer class with a compatibility field, as `Valued` extends
+  `UniformSpace` — see Note [forgetful inheritance].
+
+None of these fits a `SubgroupWithZero`. The point of `valueGroup₀ v` being a subobject is that
+membership, order and multiplication are inherited from `Γ₀` on the nose; wrapping it in a fresh
+type would forfeit exactly that, and `Valued` bundles the topology of the *ring*, not of its value
+group. So this file uses the only remaining device — a scoped instance at priority 2000 — and
+keeps it scoped so that nothing changes for users who never open `WithZeroTopology`.
+
+The price is real and should be kept in mind:
+
+* Inside the scope, `s` gets this topology whatever topology `Γ₀` happens to carry; the instance
+  does not look at the ambient one. The inclusion `Subtype.val : s → Γ₀` is *not* continuous in
+  general (the counterexample above is one), so `continuous_subtype_val`,
+  `Topology.IsInducing.subtypeVal` and `fun_prop` do not apply to it there.
+* The instance only ever fires on `↥s` for a `SetLike` subobject `s` of a
+  `LinearOrderedCommGroupWithZero`. In particular it never touches `ℝ≥0` or `ℚ≥0`: those are
+  plain subtypes `{r // 0 ≤ r}` of `ℝ` and `ℚ` (neither of which is a
+  `LinearOrderedCommGroupWithZero`), and even under `open WithZeroTopology` they keep their metric
+  topologies, since `WithZeroTopology.topologicalSpace` sits at priority 100. That is as it
+  should be — the `WithZeroTopology` isolates every nonzero point, so it is not the topology real
+  analysis on `ℝ≥0` wants — while an `ℝ≥0`-valued valuation still gets the `WithZeroTopology` on
+  its *value group* `valueGroup₀ v ≤ ℝ≥0`, which is what `Valued.continuous_valuation` is about.
 -/
 
 @[expose] public section

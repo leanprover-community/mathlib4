@@ -92,7 +92,7 @@ theorem isCyclicWithZero_iff_exists_zpowers₀_eq_top :
     obtain ⟨u, hu⟩ := (isCyclic_iff_exists_zpowers_eq_top (α := G₀ˣ)).1 h.toIsCyclic
     refine ⟨(u : G₀), ?_⟩
     rw [← SubgroupWithZero.withZero_units (SubgroupWithZero.zpowers₀ (u : G₀)),
-      SubgroupWithZero.units_zpowers₀ u.ne_zero, Units.mk0_val, hu]
+      SubgroupWithZero.units_zpowers₀, hu]
     exact SubgroupWithZero.withZero_units ⊤
   · rintro ⟨g, hg⟩
     rcases eq_or_ne g 0 with rfl | hg0
@@ -105,4 +105,4 @@ theorem isCyclicWithZero_iff_exists_zpowers₀_eq_top :
       exact @IsCyclicWithZero.mk _ _ isCyclic_of_subsingleton
     · refine @IsCyclicWithZero.mk _ _
         ((isCyclic_iff_exists_zpowers_eq_top (α := G₀ˣ)).2 ⟨Units.mk0 g hg0, ?_⟩)
-      rw [← SubgroupWithZero.units_zpowers₀ hg0, hg, SubgroupWithZero.units_top]
+      rw [← SubgroupWithZero.units_zpowers₀_of_ne_zero hg0, hg, SubgroupWithZero.units_top]
