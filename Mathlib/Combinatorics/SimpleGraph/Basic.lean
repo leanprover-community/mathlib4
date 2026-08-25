@@ -934,6 +934,17 @@ theorem commonNeighbors_subset_neighborSet_right (v w : V) :
     G.commonNeighbors v w ⊆ G.neighborSet w :=
   Set.inter_subset_right
 
+variable {G} in
+theorem Adj.commonNeighbors_ssubset_neighborSet_left (h : G.Adj u v) :
+    G.commonNeighbors u v ⊂ G.neighborSet u :=
+  Set.ssubset_iff_exists.mpr
+    ⟨G.commonNeighbors_subset_neighborSet_left u v, v, h, G.notMem_commonNeighbors_right u v⟩
+
+variable {G} in
+theorem Adj.commonNeighbors_ssubset_neighborSet_right (h : G.Adj u v) :
+    G.commonNeighbors u v ⊂ G.neighborSet v :=
+  G.commonNeighbors_symm u v ▸ h.symm.commonNeighbors_ssubset_neighborSet_left
+
 instance decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :
     DecidablePred (· ∈ G.commonNeighbors v w) :=
   inferInstanceAs <| DecidablePred fun u => u ∈ G.neighborSet v ∧ u ∈ G.neighborSet w

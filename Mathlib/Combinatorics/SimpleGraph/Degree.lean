@@ -383,4 +383,20 @@ theorem le_minEDegree_induce_of_support_subset (h : G.support ⊆ s) :
 
 end Induce
 
+theorem encard_commonNeighbors_le_edegree_left : (G.commonNeighbors u v).encard ≤ G.edegree u := by
+  grw [commonNeighbors_subset_neighborSet_left, encard_neighborSet]
+
+theorem encard_commonNeighbors_le_edegree_right : (G.commonNeighbors u v).encard ≤ G.edegree v := by
+  grw [commonNeighbors_subset_neighborSet_right, encard_neighborSet]
+
+variable {G u v} in
+theorem Adj.encard_commonNeighbors_lt_edegree_left (hadj : G.Adj u v)
+    (hfin : (G.commonNeighbors u v).Finite) : (G.commonNeighbors u v).encard < G.edegree u :=
+  hfin.encard_lt_encard hadj.commonNeighbors_ssubset_neighborSet_left
+
+variable {G u v} in
+theorem Adj.encard_commonNeighbors_lt_edegree_right (hadj : G.Adj u v)
+    (hfin : (G.commonNeighbors u v).Finite) : (G.commonNeighbors u v).encard < G.edegree v :=
+  hfin.encard_lt_encard hadj.commonNeighbors_ssubset_neighborSet_right
+
 end SimpleGraph
