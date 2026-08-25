@@ -8,7 +8,7 @@ module
 public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
-### Lattice of group topologies
+# Lattice of group topologies
 
 We define a type class `GroupTopology α` which endows a group `α` with a topology such that all
 group operations are continuous.
@@ -23,7 +23,9 @@ The additive version `AddGroupTopology α` and corresponding results are provide
 
 @[expose] public section
 
-open Set TopologicalSpace Function Topology
+open Set TopologicalSpace Function
+
+open scoped Topology
 
 universe u v w x
 
