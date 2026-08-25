@@ -621,6 +621,14 @@ This is the set of all finite patterns obtained by restricting some configuratio
 def LanguageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
   { p | ∃ x ∈ X, Pattern.fromConfig x U = p }
 
+/-- The language of a union of two sets of configurations on a finite shape `U` is the union
+of their languages on `U`. -/
+lemma languageOn_union {X Y : Set (G → A)} (U : Finset G) :
+    LanguageOn (X ∪ Y) U = LanguageOn X U ∪ LanguageOn Y U := by
+  ext p
+  simp only [LanguageOn, mem_union, mem_ofPred_eq]
+  grind
+
 /-- The language of an intersection is contained in the intersection of the languages.
 Equality does not hold in general: a pattern may arise from distinct configurations
 `x ∈ X` and `y ∈ Y` with no common configuration in `X ∩ Y` realising it. -/
