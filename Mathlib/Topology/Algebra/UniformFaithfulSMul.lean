@@ -9,10 +9,11 @@ public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 public import Mathlib.Topology.Algebra.UniformField
 
 /-!
-# Faithful Scalar Multiplication Induces Faithful Scalar Multiplication on Completion
+# Faithfulness of Scalar Multiplication on Completions
 
-If the `R`-scalar multiplication on a field `K` is faithful, then its canonical
-induced `R`-scalar multiplication on `Completion K` is also faithful.
+Given a field `K` with an `R`-scalar multiplication, if the scalar action of `R` on `K`
+is faithful, then the canonical induced scalar action of `R` on the completion of `K`
+is also faithful.
 -/
 
 @[expose] public section
