@@ -9,77 +9,7 @@ public import Mathlib.Tactic.Algebra.Basic
 public import Mathlib.Tactic.Module
 public meta import Mathlib.Tactic.Ring.RingNF
 
-/-! # `module_nf` tactic
-
-This file provides the `module_nf` tactic, a normalization companion to the `match_scalars` and
-`module` tactics. It rewrites linear combinations appearing at targeted locations into a normal
-form, with the scalars of common terms collected and normalized using `ring_nf`.
-
-The rewriting is performed by `Mathlib.Tactic.Module.eval` and reuses the same parsing
-infrastructure as `match_scalars`. Nested module expressions are rewritten using `AtomM.recurse` and
-the scalar ring of the normalized expression is inferred jointly across targeted locations or
-specified explicitly.
--/
-
-public meta section
-
-open Lean hiding Module
-open Qq Parser.Tactic Elab.Tactic Meta
-
-namespace Mathlib.Tactic.ModuleNF
-
-/-- Infer the scalar ring over which the scalar rings appearing in `es` should be normalized.
-
-This is similar to `Mathlib.Tactic.Algebra.inferBase` which infers a base using the ring / field
-structure of the ambient type. -/
-def inferBase (es : Array Expr) : MetaM (Σ u : Level, Q(Type u)) := do
-  let rings := (← es.toList.mapM Algebra.collectScalarRings).flatten
-  let rings ← rings.eraseDups.mapM getLevelQ'
-  match rings with
-  | [] => return ⟨0, q(ℕ)⟩
-  | r :: rs => rs.foldlM Algebra.pickLargerRing r
-
-/-- Infer a common base scalar ring across all locations targeted by `loc`.
-
-The locations read are exactly those that `transformAtNondepPropLocation` rewrites when the
-tactic runs, so the inferred ring reflects the rewrite set. -/
-def inferBaseAtLocation (loc : Location) : TacticM (Σ u : Level, Q(Type u)) :=
-  withMainContext do
-    inferBase (← (← mapNondepPropLocation loc (fun fvarId => fvarId.getType) getMainTarget).mapM
-      (whnf ·))
-
-/-- Rewrite `e`, an expression in some `AddCommMonoid`, into `module`'s internal normal form using
-`Mathlib.Tactic.Module.eval`. -/
-def evalExpr (base : Σ u : Level, Q(Type u)) (postCtx : Simp.Context) (e : Expr) :
-    AtomM Simp.Result := do
-  let e ← withReducible <| whnf e
-  -- An expression that is not an application must necessarily be an atom.
-  -- `Module.eval` also checks for atoms, but this check avoids instance search and `Module.parse`.
-  guard e.isApp
-  let ⟨_, M, e⟩ ← inferTypeQ' e
-  let iM : Q(AddCommMonoid $M) ← synthInstanceQ q(AddCommMonoid $M)
-  Mathlib.Tactic.Module.eval iM base postCtx e
-
-/-- The `Simp.Context` used by `ModuleNF.cleanup`. -/
-def cleanupCtx : MetaM Simp.Context := do
-  let thms ← [``one_smul, ``zero_smul, ``add_zero, ``zero_add, ``mul_one,
-    ``one_mul, ``neg_one_smul, ``algebraMap_smul].foldlM (·.addConst ·) ({} : SimpTheorems)
-  Simp.mkContext { failIfUnchanged := false }
-    (simpTheorems := #[thms]) (congrTheorems := ← getSimpCongrTheorems)
-
-/-- Clean up a rewritten expression with the `cleanupCtx` lemmas. -/
-def cleanup (ctx : Simp.Context) (r : Simp.Result) : MetaM Simp.Result := do
-  r.mkEqTrans (← Simp.main r.expr ctx (methods := Simp.mkDefaultMethodsCore {})).1
-
-/-- Run the `module_nf` rewrite on the expression `e` -/
-def moduleNFCore (s : IO.Ref AtomM.State) (base : Σ u : Level, Q(Type u)) (e : Expr) :
-    ReaderT Simp.Context MetaM Simp.Result := do
-  let postCtx ← read
-  let cleanCtx ← cleanupCtx
-  AtomM.recurse s { red := .instances } (wellBehavedDischarge := true) (evalExpr base postCtx)
-    (cleanup cleanCtx) e
-
-/-- A normalization tactic for module expressions.
+/-! # `module_nf` - a normalization tactic for module expressions.
 
 `module_nf` rewrites every linear combination `a • x + ... + b • y` appearing at the targeted
 locations into a normal form, collecting the scalars of common terms and normalizing them with
@@ -166,6 +96,103 @@ example [AddCommGroup M] (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
 The scalar rings can be aligned by specifying `ℤ` explicitly:
 
 ```
+example [AddCommGroup M] (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
+    P (x + x) ∧ P ((2 : ℤ) • x) := by
+  module_nf with ℤ
+  exact ⟨h, h⟩
+```
+
+## Implementation notes
+
+The rewriting is performed by `Mathlib.Tactic.Module.eval` and reuses the same parsing
+infrastructure as `match_scalars`. Nested module expressions are rewritten using `AtomM.recurse` and
+the scalar ring of the normalized expression is inferred jointly across targeted locations or
+specified explicitly.
+-/
+
+public meta section
+
+open Lean hiding Module
+open Qq Parser.Tactic Elab.Tactic Meta
+
+namespace Mathlib.Tactic.ModuleNF
+
+/-- Infer the scalar ring over which the scalar rings appearing in `es` should be normalized.
+
+This is similar to `Mathlib.Tactic.Algebra.inferBase` which infers a base using the ring / field
+structure of the ambient type. -/
+def inferBase (es : Array Expr) : MetaM (Σ u : Level, Q(Type u)) := do
+  let rings := (← es.toList.mapM Algebra.collectScalarRings).flatten
+  let rings ← rings.eraseDups.mapM getLevelQ'
+  match rings with
+  | [] => return ⟨0, q(ℕ)⟩
+  | r :: rs => rs.foldlM Algebra.pickLargerRing r
+
+/-- Infer a common base scalar ring across all locations targeted by `loc`.
+
+The locations read are exactly those that `transformAtNondepPropLocation` rewrites when the
+tactic runs, so the inferred ring reflects the rewrite set. -/
+def inferBaseAtLocation (loc : Location) : TacticM (Σ u : Level, Q(Type u)) :=
+  withMainContext do
+    inferBase (← (← mapNondepPropLocation loc (fun fvarId => fvarId.getType) getMainTarget).mapM
+      (whnf ·))
+
+/-- Rewrite `e`, an expression in some `AddCommMonoid`, into `module`'s internal normal form using
+`Mathlib.Tactic.Module.eval`. -/
+def evalExpr (base : Σ u : Level, Q(Type u)) (postCtx : Simp.Context) (e : Expr) :
+    AtomM Simp.Result := do
+  let e ← withReducible <| whnf e
+  -- An expression that is not an application must necessarily be an atom.
+  -- `Module.eval` also checks for atoms, but this check avoids instance search and `Module.parse`.
+  guard e.isApp
+  let ⟨_, M, e⟩ ← inferTypeQ' e
+  let iM : Q(AddCommMonoid $M) ← synthInstanceQ q(AddCommMonoid $M)
+  Mathlib.Tactic.Module.eval iM base postCtx e
+
+/-- The `Simp.Context` used by `ModuleNF.cleanup`. -/
+def cleanupCtx : MetaM Simp.Context := do
+  let thms ← [``one_smul, ``zero_smul, ``add_zero, ``zero_add, ``mul_one,
+    ``one_mul, ``neg_one_smul, ``algebraMap_smul].foldlM (·.addConst ·) ({} : SimpTheorems)
+  Simp.mkContext { failIfUnchanged := false }
+    (simpTheorems := #[thms]) (congrTheorems := ← getSimpCongrTheorems)
+
+/-- Clean up a rewritten expression with the `cleanupCtx` lemmas. -/
+def cleanup (ctx : Simp.Context) (r : Simp.Result) : MetaM Simp.Result := do
+  r.mkEqTrans (← Simp.main r.expr ctx (methods := Simp.mkDefaultMethodsCore {})).1
+
+/-- Run the `module_nf` rewrite on the expression `e` -/
+def moduleNFCore (s : IO.Ref AtomM.State) (base : Σ u : Level, Q(Type u)) (e : Expr) :
+    ReaderT Simp.Context MetaM Simp.Result := do
+  let postCtx ← read
+  let cleanCtx ← cleanupCtx
+  AtomM.recurse s { red := .instances } (wellBehavedDischarge := true) (evalExpr base postCtx)
+    (cleanup cleanCtx) e
+
+/-- `module_nf` normalizes the goal, by rewriting every linear combination `a • x + ... + b • y`
+into a normal form, collecting the scalars of common terms and normalizing them with `ring_nf`. If
+the goal is an equality and the two sides have the same normal form, `module_nf` closes the goal.
+Otherwise the rewritten goal is left open, and `module_nf` can be used non-terminally.
+
+Like `match_scalars` and `module`, linear combinations are parsed from `+`, `-`, `•` and `0`, other
+subexpressions (including variables) are atoms, and the scalars are interpreted in the largest
+scalar ring encountered, and subtraction requires a ring (see `match_scalars` for the requirements
+on scalar types).
+
+* `module_nf at loc` rewrites at the location(s) `loc`.
+* `module_nf with R` uses `R` as the common ring of scalars.
+
+Examples:
+
+```lean
+example [AddCommMonoid M] [CommSemiring R] [Module R M] (a b : R) (x : M) :
+    a • x + b • x = (a + b) • x := by
+  module_nf
+
+example [AddCommMonoid M] [CommSemiring R] [Module R M] (a b : R) (x : M)
+    (h : a • x + b • x = 0) : (b + a) • x = 0 := by
+  module_nf at h ⊢
+  exact h
+
 example [AddCommGroup M] (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
     P (x + x) ∧ P ((2 : ℤ) • x) := by
   module_nf with ℤ
