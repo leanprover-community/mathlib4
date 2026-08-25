@@ -209,20 +209,20 @@ theorem selfAdjoint.val_re_map_spectrum (a : selfAdjoint A) :
 lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
     IsConnected (σ ℂ a)ᶜ := by
   suffices IsConnected (((σ ℂ a)ᶜ ∩ {z | 0 ≤ z.im}) ∪ (σ ℂ a)ᶜ ∩ {z | z.im ≤ 0}) by
-    rw [← Set.inter_union_distrib_left, ← Set.setOf_or] at this
+    rw [← Set.inter_union_distrib_left, ← Set.ofPred_or] at this
     rw [← Set.inter_univ (σ ℂ a)ᶜ]
     convert this
     exact Eq.symm <| Set.eq_univ_of_forall (fun z ↦ le_total 0 z.im)
   refine IsConnected.union ?nonempty ?upper ?lower
   case nonempty =>
     have := Filter.NeBot.nonempty_of_mem inferInstance <| Filter.mem_map.mp <|
-      Complex.isometry_ofReal.antilipschitz.tendsto_cobounded (spectrum.isBounded a |>.compl)
+      Complex.isometry_ofReal.antilipschitzWith.tendsto_cobounded (spectrum.isBounded a |>.compl)
     exact this.image Complex.ofReal |>.mono <| by simp
   case' upper => apply Complex.isConnected_of_upperHalfPlane ?_ <| Set.inter_subset_right
   case' lower => apply Complex.isConnected_of_lowerHalfPlane ?_ <| Set.inter_subset_right
   all_goals
     refine Set.subset_inter (fun z hz hz' ↦ ?_) (fun _ ↦ by simpa using le_of_lt)
-    rw [Set.mem_setOf_eq, ha.im_eq_zero_of_mem_spectrum hz'] at hz
+    rw [Set.mem_ofPred_eq, ha.im_eq_zero_of_mem_spectrum hz'] at hz
     simp_all
 
 namespace StarSubalgebra
@@ -278,7 +278,7 @@ lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
     suffices this : spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s by
       rwa [(hs.map ψ).spectralRadius_eq_nnnorm, hs.spectralRadius_eq_nnnorm, coe_le_coe]
         at this
-    exact iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset ψ s)
+    exact iSup_le_iSup_of_subset (NonUnitalAlgHom.quasispectrum_apply_subset ψ s)
   simpa [nnnorm_inr] using h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (φ : A →⋆ₙₐ[ℂ] B))) a
 
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
@@ -317,7 +317,7 @@ end
 
 namespace WeakDual
 
-open ContinuousMap Complex
+open Complex
 
 open scoped ComplexStarModule
 

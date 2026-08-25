@@ -32,7 +32,7 @@ flat extension of an integral domain.
 
 -/
 
-@[expose] public section
+public section
 
 section
 

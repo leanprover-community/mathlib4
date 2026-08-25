@@ -103,7 +103,7 @@ theorem ae_eventually_measure_pos [SecondCountableTopology α] :
   have h : v.FineSubfamilyOn f s := by
     intro x hx ε εpos
     rw [hs] at hx
-    simp only [frequently_filterAt_iff, gt_iff_lt, mem_setOf_eq] at hx
+    simp only [frequently_filterAt_iff, gt_iff_lt, mem_ofPred_eq] at hx
     rcases hx ε εpos with ⟨a, a_sets, ax, μa⟩
     exact ⟨a, ⟨a_sets, μa⟩, ax⟩
   refine le_antisymm ?_ bot_le
@@ -183,7 +183,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
         refine v.measure_le_of_frequently_le ρ smul_absolutelyContinuous _ ?_
         intro x hx
         rw [hs] at hx
-        simp only [mem_inter_iff, not_lt, not_eventually, mem_setOf_eq] at hx
+        simp only [mem_inter_iff, not_lt, not_eventually, mem_ofPred_eq] at hx
         exact hx.1
       _ ≤ (ε : ℝ≥0∞)⁻¹ * ρ o := by gcongr; apply inter_subset_right
       _ = 0 := by rw [ρo, mul_zero]
@@ -239,13 +239,13 @@ theorem ae_tendsto_div : ∀ᵐ x ∂μ, ∃ c, Tendsto (fun a => ρ a / μ a) (
     lift d to ℝ≥0 using I d hd
     apply v.null_of_frequently_le_of_frequently_ge hρ (ENNReal.coe_lt_coe.1 hcd)
     · simp only [and_imp, exists_prop, not_frequently, not_and, not_lt, not_le, not_eventually,
-        mem_setOf_eq, mem_compl_iff, not_forall]
+        mem_ofPred_eq, mem_compl_iff, not_forall]
       intro x h1x _
       apply h1x.mono fun a ha => ?_
       refine (ENNReal.div_le_iff_le_mul ?_ (Or.inr (bot_le.trans_lt ha).ne')).1 ha.le
       simp only [ENNReal.coe_ne_top, Ne, or_true, not_false_iff]
     · simp only [and_imp, exists_prop, not_frequently, not_and, not_lt, not_le, not_eventually,
-        mem_setOf_eq, mem_compl_iff, not_forall]
+        mem_ofPred_eq, mem_compl_iff, not_forall]
       intro x _ h2x
       apply h2x.mono fun a ha => ?_
       exact ENNReal.mul_le_of_le_div ha.le
@@ -479,7 +479,7 @@ theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
     · apply v.mul_measure_le_of_subset_lt_limRatioMeas hρ
       intro y hy
       have : v.limRatioMeas hρ y = ∞ := hy.1
-      simp only [this, ENNReal.coe_lt_top, mem_setOf_eq]
+      simp only [this, ENNReal.coe_lt_top, mem_ofPred_eq]
     · simp only [(zero_lt_one.trans_le hq).ne', true_or, ENNReal.coe_eq_zero, Ne,
         not_false_iff]
   have B : Tendsto (fun q : ℝ≥0 => (q : ℝ≥0∞)⁻¹ * ρ s) atTop (𝓝 (∞⁻¹ * ρ s)) := by
@@ -502,7 +502,7 @@ theorem measure_limRatioMeas_zero : ρ (v.limRatioMeas hρ ⁻¹' {0}) = 0 := by
     apply v.measure_le_mul_of_subset_limRatioMeas_lt hρ
     intro y hy
     have : v.limRatioMeas hρ y = 0 := hy.1
-    simp only [this, mem_setOf_eq, hq, ENNReal.coe_pos]
+    simp only [this, mem_ofPred_eq, hq, ENNReal.coe_pos]
   have B : Tendsto (fun q : ℝ≥0 => (q : ℝ≥0∞) * μ s) (𝓝[>] (0 : ℝ≥0)) (𝓝 ((0 : ℝ≥0) * μ s)) := by
     apply ENNReal.Tendsto.mul_const _ (Or.inr μs)
     rw [ENNReal.tendsto_coe]

@@ -221,7 +221,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
   -- The two polynomials agree on all `x` of the form `x = y + y⁻¹`.
   apply @Set.Infinite.mono _ { x : K | ∃ y, x = y + y⁻¹ ∧ y ≠ 0 }
   · rintro _ ⟨x, rfl, hx⟩
-    simp only [eval_X, eval_pow, Set.mem_setOf_eq, ZMod.cast_one', add_pow_char,
+    simp only [eval_X, eval_pow, Set.mem_ofPred_eq, ZMod.cast_one', add_pow_char,
       dickson_one_one_eval_add_inv _ _ (mul_inv_cancel₀ hx), ZMod.castHom_apply]
   -- Now we need to show that the set of such `x` is infinite.
   -- If the set is finite, then we will show that `K` is also finite.
@@ -247,7 +247,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
       classical
         convert! (φ.roots ∪ {0}).toFinset.finite_toSet using 1
         ext1 y
-        simp only [φ, Multiset.mem_toFinset, Set.mem_setOf_eq, Finset.mem_coe, Multiset.mem_union,
+        simp only [φ, Multiset.mem_toFinset, Set.mem_ofPred_eq, Finset.mem_coe, Multiset.mem_union,
           mem_roots hφ, IsRoot, eval_add, eval_sub, eval_pow, eval_mul, eval_X, eval_C, eval_one,
           Multiset.mem_singleton]
         by_cases hy : y = 0
@@ -259,7 +259,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     -- Finally, we prove the claim that our finite union of finite sets covers all of `K`.
     apply (Set.eq_univ_of_forall _).symm
     intro x
-    simp only [exists_prop, Set.mem_iUnion, Ne, Set.mem_setOf_eq]
+    simp only [exists_prop, Set.mem_iUnion, Ne, Set.mem_ofPred_eq]
     by_cases hx : x = 0
     · simp only [hx, and_true, inv_zero, or_true]
       exact ⟨_, 1, rfl, one_ne_zero⟩
