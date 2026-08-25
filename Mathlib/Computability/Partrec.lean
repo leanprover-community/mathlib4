@@ -58,7 +58,7 @@ variable (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom)
 
 /-- Find the smallest `n` satisfying `p n`, where all `p k` for `k < n` are defined as false.
 Returns a subtype. -/
-@[no_expose] def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=
+def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=
   suffices ∀ k, (∀ n < k, false ∈ p n) → { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } from
     this 0 fun _ => (Nat.not_lt_zero _).elim
   @WellFounded.fix _ _ (lbp p) (wf_lbp p H)
