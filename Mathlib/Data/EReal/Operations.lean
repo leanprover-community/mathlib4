@@ -189,6 +189,12 @@ lemma add_ne_top_iff_ne_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ �
 @[deprecated (since := "2026-07-02")] alias add_ne_top_iff_of_ne_bot_of_ne_top :=
   add_ne_top_iff_ne_top_left
 
+@[simp] lemma add_coe_eq_top_iff {x : EReal} {y : ℝ} : x + y = ⊤ ↔ x = ⊤ := by
+  simp [add_eq_top_iff_eq_top_left]
+
+@[simp] lemma coe_add_eq_top_iff {x : ℝ} {y : EReal} : x + y = ⊤ ↔ y = ⊤ := by
+  simp [add_eq_top_iff_eq_top_right]
+
 /-! ### Negation -/
 
 /-- negation on `EReal` -/
