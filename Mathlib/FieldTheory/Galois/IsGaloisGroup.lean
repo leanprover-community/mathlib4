@@ -208,13 +208,11 @@ with `A` integrally closed, then the fixing subgroup of the image of `A` in `B` 
 for `B / A`. -/
 theorem of_isScalarTower [Finite G] (R B A : Type*) [CommRing R] [CommRing B] [CommRing A]
     [IsDomain B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
-    [FaithfulSMul R A] [FaithfulSMul A B] [MulSemiringAction G B] [h : IsGaloisGroup G R B]
-    [IsIntegrallyClosed A] :
+    [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G R B] [IsIntegrallyClosed A] :
     IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap A B))) A B := by
+  let R := (algebraMap R A).range
   have : IsDomain A := IsDomain.of_faithfulSMul A B
-  have : IsDomain R := IsDomain.of_faithfulSMul R A
-  have : FaithfulSMul R B := FaithfulSMul.trans R A B
-  have := h.isInvariant.isIntegral
+  have := Algebra.IsInvariant.isIntegral R B G
   have : Algebra.IsIntegral A B := .tower_top R
   let F := FractionRing A
   let K := FractionRing R
