@@ -189,13 +189,15 @@ theorem congr (hf : AbsolutelyContinuousOnInterval f a b)
   exact Finset.sum_congr rfl fun i hi ↦ by rw [hfg (hnI.1 i hi).1, hfg (hnI.1 i hi).2]
 
 @[refl, simp]
-theorem refl : AbsolutelyContinuousOnInterval f a a := by
+protected theorem refl (f : ℝ → X) (a : ℝ) : AbsolutelyContinuousOnInterval f a a := by
   apply tendsto_nhds_of_eventually_eq
   rw [eventually_inf_principal]
   filter_upwards with (n, I) hnI
   refine Finset.sum_eq_zero fun i hi ↦ ?_
   obtain ⟨h₁, h₂⟩ := hnI.1 i hi
   simp_all
+
+protected theorem rfl : AbsolutelyContinuousOnInterval f a a := .refl f a
 
 variable {f g : ℝ → F}
 
