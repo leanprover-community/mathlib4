@@ -47,22 +47,15 @@ variable {M : Type*} [TopologicalSpace M]
 discontinuous group action. -/
 @[to_additive]
 instance instChartedSpaceQuotient : ChartedSpace H (orbitRel.Quotient G M) :=
-  isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
-    |>.isLocalHomeomorph.chartedSpace Quotient.mk_surjective
+  isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.chartedSpace Quotient.mk_surjective
 
 /-
 TODO: decide which of this instances to keep
 benefit of this second option: we can use x.out and delete the right inverse choice
 -/
 instance instChartedSpaceQuotient' : ChartedSpace H (orbitRel.Quotient G M) :=
-  isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
-    |>.isLocalHomeomorph.chartedSpaceOfRightInverse Quotient.out_eq
-
-
--- TODO: if we're going to use this, it should move to a right file
--- then we could use it for the charted space instance also
-lemma quotient_IsLocalHomeomorph : IsLocalHomeomorph (Quotient.mk (orbitRel G M)) :=
-  isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap.isLocalHomeomorph
+  isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.chartedSpaceOfRightInverse
+    Quotient.out_eq
 
 
 section πinv
@@ -76,14 +69,16 @@ variable (x : orbitRel.Quotient G M)
 
 /-- A choice of local section of the quotient map `M → orbitRel.Quotient G M` around `x`. -/
 abbrev πinv : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
-  quotient_IsLocalHomeomorph.localInverseAt (Y := orbitRel.Quotient G M) x.out
+  isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt
+    (Y := orbitRel.Quotient G M) x.out
 
 variable {x} in
 /-- If `g • m` is in the target of `πinv x`, then `πinv x ⟦m⟧` is just `g • m`. -/
 lemma πinv_mk_eq_smul {g : G} {m : M} (hm : g • m ∈ (πinv x).target) :
     πinv x ⟦m⟧ = g • m := by
   rw [← orbitRel.Quotient.quotient_smul_eq (g := g),
-    ← quotient_IsLocalHomeomorph.localInverseAt_symm, (πinv x).right_inv hm]
+    ← isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt_symm,
+    (πinv x).right_inv hm]
 
 /-- On the open set `(g • ·) ⁻¹' (πinv y).target`, the section comparison
 `(πinv x).symm.trans (πinv y)` is the action of `g`. -/
@@ -91,7 +86,8 @@ lemma smul_eqOn (y : orbitRel.Quotient G M) (g : G) :
     ((g • ·) ⁻¹' (πinv y).target).EqOn ((πinv x).symm.trans (πinv y)) (g • ·) := by
   intro m hm
   simpa only [OpenPartialHomeomorph.coe_trans, Function.comp_apply,
-    quotient_IsLocalHomeomorph.localInverseAt_symm] using πinv_mk_eq_smul hm
+    isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt_symm]
+    using πinv_mk_eq_smul hm
 
 variable {x} in
 /-- If `⟦m⟧` is in the target of `πinv x`, then there is some `g ∈ G` such that
@@ -99,8 +95,8 @@ variable {x} in
 -/
 lemma exists_smul_mem_πinv_target (m : M) (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ (πinv x).source) :
     ∃ g : G, g • m ∈ (πinv x).target := by
-  obtain ⟨g, hg⟩ := orbitRel_apply.mp
-    (Quotient.exact (quotient_IsLocalHomeomorph.apply_localInverseAt_of_mem hm))
+  obtain ⟨g, hg⟩ := orbitRel_apply.mp (Quotient.exact
+    (isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.apply_localInverseAt_of_mem hm))
   exact ⟨g, by simpa [hg] using (πinv x).map_source hm⟩
 
 end πinv
@@ -137,7 +133,7 @@ lemma quotientTransitionMap_locally_smul {h : H} (hh : h ∈ (quotientTransition
     Set.mem_preimage] at hh
   obtain ⟨_, ⟨_, hmid⟩, _⟩ := hh
   obtain ⟨g, hg⟩ := exists_smul_mem_πinv_target ((chartAt H x.out).symm h)
-    (by rwa [quotient_IsLocalHomeomorph.localInverseAt_symm] at hmid)
+    (by rwa [isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt_symm] at hmid)
   exact ⟨g, hg, quotientTransitionMap_eqOn_smul x y g⟩
 
 end quotientTransitionMap
