@@ -224,13 +224,13 @@ theorem coe_maxDegree_eq_maxEDegree [Fintype V] (G : SimpleGraph V) [DecidableRe
   · simp
   rw [maxEDegree_eq_iSup, maxDegree, ← Finset.coe_max' <| by simp, Finset.max'_eq_sup',
     Finset.sup'_image, Finset.sup'_univ_eq_ciSup]
-  simpa [← coe_degree_eq_edegree] using ENat.coe_iSup <| Set.finite_range _ |>.bddAbove
+  simpa [← coe_degree_eq_edegree] using ENat.natCast_iSup <| Set.finite_range _ |>.bddAbove
 
 theorem coe_minDegree_eq_minEDegree [Nonempty V] [Fintype V] (G : SimpleGraph V)
     [DecidableRel G.Adj] : G.minDegree = G.minEDegree := by
   rw [minEDegree_eq_iInf, minDegree, ← Finset.coe_min' <| by simp, Finset.min'_eq_inf',
     Finset.inf'_image, Finset.inf'_univ_eq_ciInf]
-  simpa [← coe_degree_eq_edegree] using! ENat.coe_iInf
+  simpa [← coe_degree_eq_edegree] using! ENat.natCast_iInf
 
 variable {G} in
 theorem maxEDegree_eq_coe_iff [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj] {n : ℕ} :
