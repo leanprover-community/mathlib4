@@ -47,13 +47,6 @@ variable {M : Type*} [TopologicalSpace M]
 discontinuous group action. -/
 @[to_additive]
 instance instChartedSpaceQuotient : ChartedSpace H (orbitRel.Quotient G M) :=
-  isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.chartedSpace Quotient.mk_surjective
-
-/-
-TODO: decide which of this instances to keep
-benefit of this second option: we can use x.out and delete the right inverse choice
--/
-instance instChartedSpaceQuotient' : ChartedSpace H (orbitRel.Quotient G M) :=
   isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.chartedSpaceOfRightInverse
     Quotient.out_eq
 
