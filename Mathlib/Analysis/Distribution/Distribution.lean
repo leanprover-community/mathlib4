@@ -356,15 +356,12 @@ theorem ofFun_neg {f : E → F} {μ : Measure E} :
 @[simp]
 theorem ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) :
     ofFun Ω (c • f) μ n = c • ofFun Ω f μ n := by
+  ext φ
   by_cases hf : LocallyIntegrableOn f Ω μ
-  · ext φ
-    rw [ofFun_apply (hf.smul c), smul_apply, ofFun_apply hf, ← integral_smul]
+  · rw [ofFun_apply (hf.smul c), smul_apply, ofFun_apply hf, ← integral_smul]
     refine integral_congr_ae (ae_of_all _ fun x ↦ ?_)
     simp [smul_comm c]
-  · rcases eq_or_ne c 0 with rfl | hc
-    · simp
-    · have hcf : ¬ LocallyIntegrableOn (c • f) Ω μ := by aesop
-      rw [ofFun_eq_zero hf, ofFun_eq_zero hcf, smul_zero]
+  · grind [zero_smul, locallyIntegrableOn_smul_iff, smul_zero]
 
 variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
 
