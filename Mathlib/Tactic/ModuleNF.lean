@@ -160,7 +160,10 @@ def cleanupCtx : MetaM Simp.Context := do
 def cleanup (ctx : Simp.Context) (r : Simp.Result) : MetaM Simp.Result := do
   r.mkEqTrans (← Simp.main r.expr ctx (methods := Simp.mkDefaultMethodsCore {})).1
 
-/-- Run the `module_nf` rewrite on the expression `e` -/
+/-- Run the `module_nf` rewrite on the expression `e`.
+
+`s` is a reference to the `AtomM` state, shared between all locations visited by a single
+`module_nf` call. This ensures they normalize with a consistent atom ordering. -/
 def moduleNFCore (s : IO.Ref AtomM.State) (base : Σ u : Level, Q(Type u)) (e : Expr) :
     ReaderT Simp.Context MetaM Simp.Result := do
   let postCtx ← read
