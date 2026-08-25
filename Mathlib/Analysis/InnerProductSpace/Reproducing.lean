@@ -27,6 +27,11 @@ positive semidefinite matrices.
 - `RKHS.OfKernel`: RKHS constructed from a positive semidefinite matrix.
 - `RKHS.kernel_ofKernel`: The kernel of the constructed RKHS is equal to the matrix, this is
     essentially Moore's theorem.
+- `RKHS.subRKHS`: the closed subspace of an RKHS is again an RKHS.
+- `RKHS.kerFun_subRKHS`: the kernel functions of the subRKHS are an orthogonal projection of the
+  kernel functions of the full RKHS.
+- `RKHS.kernel_subRKHS`: the kernel of the subRKHS is formed by composing the adjoint of the kernel
+  function of the full RKHS with a star projection acting on the kernel function of the full RKHS.
 - `RKHS.outerKernel`: the kernel generated from a function `f : X → V` with the rank-one operators
   `⟪f x, •⟫ f y` as its entries.
 
@@ -41,8 +46,9 @@ positive semidefinite matrices.
 
 public noncomputable section
 
-open ContinuousLinearMap InnerProductSpace Submodule ComplexConjugate Filter
-open scoped Topology
+open ContinuousLinearMap InnerProductSpace Submodule Filter
+
+open scoped ComplexConjugate Topology
 
 /--
 A reproducing kernel Hilbert space is a Hilbert space with an
@@ -423,6 +429,32 @@ theorem coe_equiv (h : kernel H = kernel H') (f : H) : ⇑(equiv h f) = f := by
 
 end Equiv
 
+section RKHSSubmodule
+
+variable (H₀ : Submodule 𝕜 H) [CompleteSpace H₀]
+
+instance instRKHSSubmodule : RKHS 𝕜 H₀ X V where
+  coeCLM := (coeCLM 𝕜).comp H₀.subtypeL
+  coeCLM_injective := coeCLM_injective.comp H₀.subtype_injective
+
+omit [CompleteSpace H] [CompleteSpace V] [CompleteSpace H₀] in
+@[simp]
+lemma coe_coe (f : H₀) : ⇑(f : H) = f := rfl
+
+lemma kerFun_submodule (x : X) :
+    kerFun H₀ x = H₀.orthogonalProjectionOnto.comp (kerFun H x) := by
+  ext1
+  refine ext_inner_right 𝕜 fun v ↦ ?_
+  simp
+
+lemma kernel_submodule (x y : X) :
+    kernel H₀ x y = (kerFun H x).adjoint ∘L (H₀.starProjection.comp (kerFun H y)) := by
+  ext
+  refine ext_inner_right 𝕜 ?_
+  simp [kernel_apply, kerFun_submodule, Submodule.adjoint_orthogonalProjectionOnto]
+
+end RKHSSubmodule
+
 section outerKernel
 
 variable (𝕜) in
@@ -456,7 +488,7 @@ lemma posSemidef_outerKernel (f : X → V) : (outerKernel 𝕜 f).PosSemidef := 
   refine ⟨?_, fun x ↦ ?_⟩
   · ext
     simp [star_eq_adjoint, adjoint_rankOne]
-  · simp [inner_smul_left, ← Finsupp.mul_sum, ← Finsupp.sum_mul, 
+  · simp [inner_smul_left, ← Finsupp.mul_sum, ← Finsupp.sum_mul,
       ← map_finsuppSum, RCLike.conj_mul, -inner_conj_symm]
 
 instance (f : X → V) : Fact (outerKernel 𝕜 f).PosSemidef := by
