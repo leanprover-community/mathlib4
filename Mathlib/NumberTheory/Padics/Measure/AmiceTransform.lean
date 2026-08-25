@@ -13,45 +13,52 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Module
 /-!
 # The Amice transform
 
-We identify the measures on `ℤ_[p]` with the power series ring `ℤ_[p]⟦X⟧`.
+We identify the measures on `ℤ_[p]` with the power series ring `ℤ_[p]⟦X⟧`, by sending a measure `μ`
+to the power series with `n`-th coefficient `μ (mahler n)`.
+
+More suggestively, this is the series `∫ a : ℤ_[p], (1 + X) ^ a dμ`.
+
+## References
+
+* [P. Colmez, *Fonctions d'une variable p-adique*][colmez2010], section II.2
+
 -/
 
 public noncomputable section
 
 open scoped AbstractMeasure
 
+open Submodule
+
 variable {p : ℕ} [Fact p.Prime]
 
-section prelim
+section Preliminaries
 
 variable {R : Type*} [NormedCommRing R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
-  [IsBoundedSMul ℤ_[p] R] [IsTopologicalRing R]
+  [IsBoundedSMul ℤ_[p] R]
 
-theorem dense_span_mahler : Dense (Submodule.span R
-      (Set.range fun n ↦ (mahler n : C(ℤ_[p], ℤ_[p])) • (1 : C(ℤ_[p], R))) : Set C(ℤ_[p], R)) := by
+theorem dense_span_mahler : Dense (span R
+      (.range fun n ↦ (mahler n : C(ℤ_[p], ℤ_[p])) • (1 : C(ℤ_[p], R))) : Set C(ℤ_[p], R)) := by
   refine fun f ↦ mem_closure_of_tendsto (PadicInt.hasSum_mahler _) ?_
   refine .of_forall fun s ↦ Submodule.sum_mem _ fun c _ ↦ ?_
-  simp only [Submodule.span_range_eq_iSup]
-  apply Submodule.mem_iSup_of_mem (i := c)
-  rw [Submodule.mem_span_singleton]
+  simp only [span_range_eq_iSup]
+  apply mem_iSup_of_mem (i := c)
+  rw [mem_span_singleton]
   use (fwdDiff 1)^[c] f 0
   ext x
   simp [PadicInt.mahlerTerm]
 
-lemma ext_mahler (μ : D(ℤ_[p], R)) (hμ : ∀ n, μ ((mahler n : C(ℤ_[p], ℤ_[p])) • 1) = 0) :
-    μ = 0 := by
-  revert μ
-  simp only [AbstractMeasure.toCLMEquiv.toEquiv.forall_congr_left, LinearEquiv.coe_symm_toEquiv,
-    AbstractMeasure.coe_symm_toCLMEquiv, EmbeddingLike.map_eq_zero_iff]
-  intro ψ hψ
+lemma AbstractMeasure.ext_mahler {μ : D(ℤ_[p], R)}
+    (hμ : ∀ n, μ ((mahler n : C(ℤ_[p], ℤ_[p])) • 1) = 0) : μ = 0 := by
   apply ContinuousLinearMap.ext_on dense_span_mahler
   rintro _ ⟨n, rfl⟩
-  simp_all
+  apply hμ
 
-end prelim
+end Preliminaries
 
+namespace AbstractMeasure
 
-section defs
+section Definitions
 
 variable {R : Type*} [CommRing R] [TopologicalSpace R]
   [Algebra ℤ_[p] R] [ContinuousSMul ℤ_[p] R] [IsTopologicalRing R]
@@ -66,12 +73,12 @@ def amiceTransform : D(ℤ_[p], R) →ₗ[R] PowerSeries R where
   map_smul' r μ := by ext; simp
 
 lemma coeff_amiceTransform (μ : D(ℤ_[p], R)) (n : ℕ) :
-    (amiceTransform μ).coeff n = μ ((mahler n : C(ℤ_[p], ℤ_[p])) • (1 : C(ℤ_[p], R))) := by
+    μ.amiceTransform.coeff n = μ ((mahler n : C(ℤ_[p], ℤ_[p])) • (1 : C(ℤ_[p], R))) := by
   simp [amiceTransform]
 
-end defs
+end Definitions
 
-section injectivity
+section Injectivity
 
 variable {R : Type*} [NormedCommRing R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
   [IsBoundedSMul ℤ_[p] R] [IsTopologicalRing R]
@@ -82,9 +89,9 @@ lemma injective_amiceTransform : Function.Injective (amiceTransform : D(ℤ_[p],
   apply ext_mahler
   simp_all [PowerSeries.ext_iff, coeff_amiceTransform]
 
-end injectivity
+end Injectivity
 
-section inverse
+section Inverse
 
 private lemma invTransformSummable (F : PowerSeries ℤ_[p]) (f : C(ℤ_[p], ℤ_[p])) :
     Summable fun i ↦ PadicInt.mahlerEquiv ℤ_[p] f i * F.coeff i := by
@@ -156,9 +163,11 @@ def amiceTransformEquiv : D(ℤ_[p], ℤ_[p]) ≃ₗ[ℤ_[p]] PowerSeries ℤ_[p
   (rfl)
 
 lemma coeff_amiceTransformEquiv (μ : D(ℤ_[p], ℤ_[p])) (n : ℕ) :
-    (amiceTransformEquiv μ).coeff n = μ (mahler n : C(ℤ_[p], ℤ_[p])) := by
+    μ.amiceTransformEquiv.coeff n = μ (mahler n : C(ℤ_[p], ℤ_[p])) := by
   simp [coeff_amiceTransform]
 
-end inverse
+end Inverse
+
+end AbstractMeasure
 
 end
