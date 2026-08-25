@@ -135,7 +135,7 @@ theorem continuous_valuation_of_surjective (hsurj : Function.Surjective v) : Con
 theorem continuous_restrict : Continuous (v.restrict : K → (ValueGroup₀ (.ofClass v))) :=
   continuous_valuation_of_surjective v.restrict (restrict₀_surjective _)
 
-lemma valuation_isClosedMap :
+lemma isClosedMap_restrict :
     IsClosedMap (v.restrict : K → (ValueGroup₀ (.ofClass v))) := by
   refine IsClosedMap.of_nonempty fun U hU hU' ↦ ?_
   simp only [← isOpen_compl_iff, isOpen_iff_mem_nhds, mem_compl_iff, v.mem_nhds_iff,
@@ -160,7 +160,7 @@ variable [Field K] [ValuativeRel K] [UniformSpace K] [IsValuativeTopology K]
 namespace IsValuativeTopology
 
 /-- A valued field is completable. -/
-instance (priority := 100) [IsUniformAddGroup K] : CompletableTopField K where
+instance (priority := 100) completableTopField [IsUniformAddGroup K] : CompletableTopField K where
   __ := (inferInstance : T0Space K)
   nice F hF h0 := by
     obtain ⟨γ₀, M₀, M₀_in, H₀⟩ : ∃ γ₀ : (ValueGroup₀ (.ofClass (valuation K)))ˣ, ∃ M ∈ F,
@@ -266,9 +266,6 @@ noncomputable def extension : Valuation (Completion K) Γ₀ where
 
 lemma extension_def (x : Completion K) : v.extension x =
     embedding (v.extensionFun x) := rfl
-
-lemma extension_ofClass_apply {x : Completion K} :
-    (MonoidWithZeroHom.ofClass v.extension) x = embedding (v.extensionFun x) := rfl
 
 @[simp]
 lemma extension_apply_coe (x : K) :
@@ -413,7 +410,7 @@ theorem closure_image_coe_ofPred_restrict_lt (γ : (ValueGroup₀ (.ofClass v))�
 /-- The neighbourhoods of `0` in the completion of `K` have a basis given by the open balls of
 `v.extension.restrict`. This is `Valuation.hasBasis_nhds_zero` for `v.extension`, proved before
 the instance `IsValuativeTopology (Completion K)` is available. -/
-theorem extension_hasBasis_nhds_zero :
+theorem hasBasis_nhds_coe_zero :
     (𝓝 (0 : Completion K)).HasBasis (fun _ ↦ True)
       fun γ : (ValueGroup₀ (.ofClass v.extension))ˣ ↦ { x | v.extension.restrict x < γ.1 } := by
   have h := v.hasBasis_nhds_zero.hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
@@ -469,7 +466,7 @@ variable {Γ₀ Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 instance UniformSpace.Completion.isValuativeTopology : IsValuativeTopology (Completion K) :=
   IsValuativeTopology.of_mem_nhds_zero_iff_vle (valuation K).extension fun {s} ↦ by
-    simpa only [true_and] using (valuation K).extension_hasBasis_nhds_zero.mem_iff
+    simpa only [true_and] using (valuation K).hasBasis_nhds_coe_zero.mem_iff
 
 namespace Valuation
 
