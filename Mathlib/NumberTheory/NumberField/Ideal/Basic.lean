@@ -91,6 +91,11 @@ theorem Ideal.rootsOfUnityMapQuot_injective (n : ℕ) [NeZero n] (hI₁ : absNor
   refine hμ.not_coprime_norm_of_mk_eq_one hI₁ ht' h ?_
   exact Nat.dvd_one.mp (hI₂ ▸ Nat.gcd_dvd_gcd_of_dvd_right (absNorm I) ht)
 
+theorem Ideal.rootsOfUnityMapQuot_inj (n : ℕ) [NeZero n] (hI₁ : absNorm I ≠ 1)
+    (hI₂ : (absNorm I).Coprime n) {x y : rootsOfUnity n (𝓞 K)} :
+    rootsOfUnityMapQuot I n x = rootsOfUnityMapQuot I n y ↔ x = y :=
+  (rootsOfUnityMapQuot_injective n hI₁ hI₂).eq_iff
+
 theorem IsPrimitiveRoot.idealQuotient_mk {n : ℕ} [NeZero n] {ζ : (𝓞 K)} (hζ : IsPrimitiveRoot ζ n)
     (hI₁ : absNorm I ≠ 1) (hI₂ : (absNorm I).Coprime n) :
     IsPrimitiveRoot (Ideal.Quotient.mk I ζ) n := by
@@ -113,6 +118,11 @@ theorem Ideal.torsionMapQuot_injective (hI₁ : absNorm I ≠ 1)
   rw [← rootsOfUnity_eq_torsion] at hx hy
   rw [Subtype.mk_eq_mk, ← Subtype.mk_eq_mk (h := hx) (h' := hy)]
   exact rootsOfUnityMapQuot_injective (torsionOrder K) hI₁ hI₂ h
+
+theorem Ideal.torsionMapQuot_inj (hI₁ : absNorm I ≠ 1)
+    (hI₂ : (absNorm I).Coprime (torsionOrder K)) {x y : torsion K} :
+    torsionMapQuot I x = torsionMapQuot I y ↔ x = y :=
+  (torsionMapQuot_injective hI₁ hI₂).eq_iff
 
 open IntermediateField in
 /--
@@ -150,6 +160,11 @@ theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
     rwa [P.ramificationIdx_eq_one ℤ, lt_self_iff_false] at this
   refine lt_of_lt_of_le ?_ <| ramificationIdx_below_le (P.under (𝓞 F)) P
   rwa [IsCyclotomicExtension.Rat.ramificationIdx_eq_of_prime p F, Nat.lt_sub_iff_add_lt']
+
+theorem Ideal.torsionMapQuot_inj' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
+    (hP₁ : Algebra.IsUnramifiedAt ℤ P) (hP₂ : 2 < absNorm (under ℤ P)) {x y : torsion K} :
+    P.torsionMapQuot x = P.torsionMapQuot y ↔ x = y :=
+  (torsionMapQuot_injective' hP₁ hP₂).eq_iff
 
 /--
 If the norm of the (nonzero) prime ideal `P` is coprime with the order of the torsion of `K`, then
