@@ -25,16 +25,14 @@ instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddCommGroup E] [Module �
 
 /-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `s` is equal to its
 norm in `E`. -/
-@[simp, push_cast]
+@[deprecated "use `norm_coe`" (since := "2026-08-25")]
 theorem coe_norm [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Submodule 𝕜 E}
     (x : s) : ‖x‖ = ‖(x : E)‖ :=
   rfl
 
 /-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `E` is equal to its
-norm in `s`.
-
-This is a reversed version of the `simp` lemma `Submodule.coe_norm` for use by `norm_cast`. -/
-@[deprecated "use `coe_norm`" (since := "2026-08-25")]
+norm in `s`. -/
+@[simp ←, norm_cast]
 theorem norm_coe [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Submodule 𝕜 E}
     (x : s) : ‖(x : E)‖ = ‖x‖ :=
   rfl
@@ -57,9 +55,9 @@ instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddCommGroup E] [Module �
 
 /-- If `x` is an element of a closed submodule `s` of a normed group `E`, its norm in `s` is equal
 to its norm in `E`. -/
-@[simp, push_cast]
-theorem coe_norm [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Submodule 𝕜 E}
-    (x : s) : ‖x‖ = ‖(x : E)‖ :=
+@[simp ←, norm_cast]
+theorem norm_coe [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Submodule 𝕜 E}
+    (x : s) : ‖(x : E)‖ = ‖x‖ :=
   rfl
 
 /-- A closed submodule of a normed group is also a normed group, with the restriction of the norm.
