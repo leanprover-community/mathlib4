@@ -205,6 +205,9 @@ theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = 
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
   rw [le_sup_inf_aux, add_self, mul_self, zero_add]
 
+protected theorem sup_def (a b : α) : a ⊔ b = a + b + a * b := rfl
+protected theorem inf_def (a b : α) : a ⊓ b = a * b := rfl
+
 /-- The Boolean algebra structure on a Boolean ring.
 
 The data is defined so that:
@@ -216,9 +219,6 @@ The data is defined so that:
 * `aᶜ` unfolds to `1 + a`
 * `a \ b` unfolds to `a * (1 + b)`
 -/
-protected theorem sup_def (a b : α) : a ⊔ b = a + b + a * b := rfl
-protected theorem inf_def (a b : α) : a ⊓ b = a * b := rfl
-
 @[instance_reducible]
 def toBooleanAlgebra : BooleanAlgebra α :=
   { Lattice.mk' sup_comm sup_assoc inf_comm inf_assoc sup_inf_self inf_sup_self with
