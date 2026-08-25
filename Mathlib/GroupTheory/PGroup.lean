@@ -214,7 +214,7 @@ theorem orderOf_coprime {n : ℕ} (hn : p.Coprime n) (g : G) : (orderOf g).Copri
   (hn.pow_left k).coprime_dvd_left (orderOf_dvd_of_pow_eq_one hk)
 
 /-- If `gcd(p,n) = 1`, then the `n`th power map is a bijection. -/
-@[to_additive /-- If `gcd(p,n) = 1`, then the `n`th multiplication map is a bijection. -/]
+@[to_additive /-- If `gcd(p,n) = 1`, then the multiplication by `n` is a bijection. -/]
 noncomputable def powEquiv {n : ℕ} (hn : p.Coprime n) : G ≃ G :=
   let h : ∀ g : G, (Nat.card (Subgroup.zpowers g)).Coprime n := fun g =>
     (Nat.card_zpowers g).symm ▸ hG.orderOf_coprime hn g
