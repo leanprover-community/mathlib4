@@ -1280,7 +1280,7 @@ lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [hp : Fa
   exact P.isPGroup'.to_inf_left.card_eq_or_dvd.resolve_left hnt
 
 /-- A finite nilpotent group has normal subgroups of every possible index. -/
-theorem Group.IsNilpotent.exists_normal_of_index_dvd_card [IsNilpotent G] {k : ℕ}
+theorem Group.IsNilpotent.exists_normal_index_eq_of_dvd_card [IsNilpotent G] {k : ℕ}
     (hdvd : k ∣ Nat.card G) : ∃ H : Subgroup G, H.index = k ∧ H.Normal := by
   induction hm : Nat.card G using Nat.strong_induction_on generalizing k G with | h m ih =>
   have ⟨m', hmul⟩ := hdvd
@@ -1302,10 +1302,10 @@ theorem Group.IsNilpotent.exists_normal_of_index_dvd_card [IsNilpotent G] {k : �
     simp [index_comap, normal_comap, hKcard]
 
 /-- A finite nilpotent group has normal subgroups of every possible cardinality. -/
-theorem Group.IsNilpotent.exists_normal_of_dvd_card [IsNilpotent G] {n : ℕ}
+theorem Group.IsNilpotent.exists_normal_card_eq_of_dvd_card [IsNilpotent G] {n : ℕ}
     (hdvd : n ∣ Nat.card G) : ∃ H : Subgroup G, Nat.card H = n ∧ H.Normal := by
   obtain ⟨k, hk⟩ := hdvd
-  obtain ⟨H, hind, hH⟩ := exists_normal_of_index_dvd_card (G := G) (k := k) ⟨n, by grind⟩
+  obtain ⟨H, hind, hH⟩ := exists_normal_index_eq_of_dvd_card (G := G) (k := k) ⟨n, by grind⟩
   refine ⟨H, ?_, hH⟩
   rw [←Nat.mul_left_inj (FiniteIndex.index_ne_zero (H := H)), H.card_mul_index, hk, hind]
 
