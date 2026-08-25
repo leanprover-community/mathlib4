@@ -358,7 +358,7 @@ The resulting pattern has:
 This definition does not assume left-cancellation; it only *chooses* a preimage.
 Uniqueness (and the equation `(p.mulShift v).config (v * w) = p.config w`)
 requires `[IsLeftCancelMul G]` and is proved in
-`Pattern.mulShift_config_apply_mul_left_of_mem`. -/
+`Pattern.config_mulShift_apply_mul_left_of_mem`. -/
 @[to_additive
 /-- The **shift of a finite pattern** `p` by `v` (additive form), as a bundled `Pattern`.
 
@@ -370,7 +370,7 @@ The resulting pattern has:
 This definition does not assume left-cancellation; it only *chooses* a preimage.
 Uniqueness (and the equation `(p.shift v).config (v + w) = p.config w`)
 requires `[IsLeftCancelAdd G]` and is proved in
-`Pattern.shift_config_apply_add_left_of_mem`. -/]
+`Pattern.config_shift_apply_add_left_of_mem`. -/]
 protected noncomputable def Pattern.mulShift (p : Pattern A G) (v : G) : Pattern A G := by
   classical
   refine
@@ -381,7 +381,7 @@ protected noncomputable def Pattern.mulShift (p : Pattern A G) (v : G) : Pattern
           p.config (Classical.choose ex)
         else default,
       p.support.image (v * ·),
-      fun _ hg => dif_neg hg⟩
+      fun _ hg => dite_eq_right hg⟩
 
 namespace Pattern
 /-- Extract the finite pattern given by restricting a configuration `x : G → A`
@@ -398,7 +398,7 @@ noncomputable def fromConfig (x : G → A) (U : Finset G) : Pattern A G := by
 
 open scoped Classical in
 @[to_additive (attr := simp)]
-lemma mulShift_support (p : Pattern A G) (v : G) :
+lemma support_mulShift (p : Pattern A G) (v : G) :
     (p.mulShift v).support = p.support.image (v * ·) := rfl
 
 /-- On the translated support, `(p.mulShift v).config` agrees with `p.config`
@@ -412,7 +412,7 @@ under left-multiplication by `v`. -/
 @[to_additive
   /-- On the translated support, `(p.shift v).config` agrees with `p.config`
   at the preimage. -/]
-lemma mulShift_config_apply_mul_left_of_mem [IsLeftCancelMul G]
+lemma config_mulShift_apply_mul_left_of_mem [IsLeftCancelMul G]
     (p : Pattern A G) (v w : G) (hw : w ∈ p.support) :
     (p.mulShift v).config (v * w) = p.config w := by
   classical
@@ -424,7 +424,7 @@ lemma mulShift_config_apply_mul_left_of_mem [IsLeftCancelMul G]
     simpa [Finset.mem_image] using hmem
   -- open the `if` branch as returned by the definition
   have h1 : (p.mulShift v).config (v * w) = p.config (Classical.choose ex) := by
-    simp only [Pattern.mulShift, dif_pos hmem]
+    simp only [Pattern.mulShift, dite_eq_left hmem]
   -- the chosen witness equals w by left-cancellation
   have hwv' : v * Classical.choose ex = v * w := (Classical.choose_spec ex).2
   have h_eq : Classical.choose ex = w := mul_left_cancel hwv'
@@ -499,14 +499,14 @@ lemma mulOccursInAt_eq_cylinder [IsLeftCancelMul G]
     rcases Finset.mem_image.mp hu with ⟨w, hw, rfl⟩
     -- want: x (g * w) = (p.mulShift g).config (g * w)
     have hx : x (g * w) = p.config w := H w hw
-    simpa [Pattern.mulShift_config_apply_mul_left_of_mem (p := p) (v := g) (w := w) hw] using hx
+    simpa [Pattern.config_mulShift_apply_mul_left_of_mem (p := p) (v := g) (w := w) hw] using hx
   · -- ⇐: from the cylinder, recover an occurrence
     intro H u hu
     -- H gives equality with the translated pattern on the image
     have hx : x (g * u) = (p.mulShift g).config (g * u) :=
       H (g * u) (Finset.mem_image_of_mem (g * ·) hu)
     -- rewrite the RHS by the “apply_of_mem” lemma
-    simpa [Pattern.mulShift_config_apply_mul_left_of_mem (p := p) (v := g) (w := u) hu] using hx
+    simpa [Pattern.config_mulShift_apply_mul_left_of_mem (p := p) (v := g) (w := u) hu] using hx
 end OccursInAt
 
 /-! ## Forbidden sets and subshifts -/
@@ -673,7 +673,7 @@ theorem ext {p q : Pattern A G}
     (x : G → A) {U : Finset G} {g : G} (hg : g ∈ U) : (Pattern.fromConfig x U).config g = x g := by
   classical
   change (if g ∈ U then x g else default) = x g
-  rw [if_pos hg]
+  rw [ite_eq_left hg]
 
 end Pattern
 
@@ -699,7 +699,7 @@ lemma fromConfig_mulShift
   intro h hh
   change h ∈ U.image (g * ·) at hh
   obtain ⟨u, hu, rfl⟩ := Finset.mem_image.mp hh
-  rw [Pattern.mulShift_config_apply_mul_left_of_mem _ g u hu,
+  rw [Pattern.config_mulShift_apply_mul_left_of_mem _ g u hu,
       Pattern.fromConfig_config_of_mem _ hu,
       Pattern.fromConfig_config_of_mem _ (Finset.mem_image_of_mem (g * ·) hu),
       mulShift_apply, ← mul_assoc, hg'g, one_mul]
@@ -714,7 +714,7 @@ and `g' * g = 1`, the language on a translated shape `U.image (g * ·)` is exact
 the image of `Y.languageOn U` under the pattern-shift map `p ↦ p.mulShift g`. In
 particular `Y.languageOn U` and `Y.languageOn (U.image (g * ·))` are in natural
 bijection (with inverse given by `p ↦ p.mulShift g'`). -/
-theorem MulSubshift.languageOn_image_mulShift [TopologicalSpace A]
+theorem MulSubshift.mulShift_languageOn [TopologicalSpace A]
     (Y : MulSubshift A G) (U : Finset G) (g g' : G)
     (hgg' : g * g' = 1) (hg'g : g' * g = 1) :
     (fun p : Pattern A G => p.mulShift g) '' Y.languageOn U = Y.languageOn (U.image (g * ·)) := by
