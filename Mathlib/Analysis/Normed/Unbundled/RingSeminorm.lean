@@ -400,7 +400,7 @@ def mulRingNormEquivAbsoluteValue : MulRingNorm R ≃ AbsoluteValue R ℝ where
   invFun := ofAbsoluteValue
   left_inv N := by constructor
   right_inv v := by ext1 x; simp
-#check toMulRingSeminorm
+
 lemma mulRingNormEquivAbsoluteValue_apply (N : MulRingNorm R) (x : R) :
     mulRingNormEquivAbsoluteValue N x = N x := rfl
 
