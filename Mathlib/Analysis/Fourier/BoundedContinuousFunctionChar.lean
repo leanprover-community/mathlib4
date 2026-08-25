@@ -48,7 +48,6 @@ variable {V W : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
     {e : AddChar ℝ Circle} {L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ}
     {he : Continuous e} {hL : Continuous fun p : V × W ↦ L p.1 p.2}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bounded continuous mapping `fun v ↦ e (L v w)` from `V` to `ℂ`. -/
 noncomputable def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) (w : W) :
     V →ᵇ ℂ where
