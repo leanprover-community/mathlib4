@@ -345,12 +345,11 @@ protected def liftOn₂ {φ} (d₁ d₂ : ManyOneDegree) (f : Set ℕ → Set �
       · assumption
       · rfl)
 
-@[simp]
 protected theorem liftOn₂_eq {φ} (p q : Set ℕ) (f : Set ℕ → Set ℕ → φ)
     (h : ∀ p₁ p₂ q₁ q₂, ManyOneEquiv (· ∈ p₁) (· ∈ p₂) → ManyOneEquiv (· ∈ q₁) (· ∈ q₂) →
       f p₁ q₁ = f p₂ q₂) :
     (of p).liftOn₂ (of q) f h = f p q :=
-  h _ _ _ _ toNat_manyOneEquiv toNat_manyOneEquiv
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
