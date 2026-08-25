@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Complexification.Basic
 public import Mathlib.Analysis.InnerProductSpace.TensorProduct
 
-/-! Tensor product description of complexifications
+/-! # Tensor product description of complexifications
 
 The complexification space of a real space `E` is equivalent to `ℂ ⊗[ℝ] E` (see
 `Complexification.toTensor`.) And so the complexification of a tensor product is the tensor product
@@ -68,7 +68,7 @@ lemma ContinuousLinearMap.arrowCongr_toTensor_toComplexification {F : Type*} [No
   ext; simp [smul_tmul', ← add_tmul]
 
 variable (𝕜) in
-/-- The complexication of a basis, given by `b.complexification i = (b i, 0)`. -/
+/-- The complexification of a basis, given by `b.complexification i = (b i, 0)`. -/
 @[expose] noncomputable def Module.Basis.complexification {ι} (b : Module.Basis ι ℝ E) :
     Module.Basis ι ℂ (Complexification 𝕜 E) := (b.baseChange ℂ).map toTensor.symm
 
@@ -77,7 +77,7 @@ variable (𝕜) in
 
 @[simp] lemma Module.Basis.complexification_repr_apply {ι} (b : Module.Basis ι ℝ E) (v) :
     (b.complexification 𝕜).repr v = (b.baseChange ℂ).repr (1 ⊗ₜ[ℝ] v.re) +
-      (b.baseChange ℂ).repr (Complex.I ⊗ₜ[ℝ] v.im)  := by simp [Module.Basis.complexification]
+      (b.baseChange ℂ).repr (Complex.I ⊗ₜ[ℝ] v.im) := by simp [Module.Basis.complexification]
 
 /-- Complexifying `ℝ`-tensor products of real spaces is equivalent to `ℂ`-tensor products
 of the complexification of each of those spaces. -/

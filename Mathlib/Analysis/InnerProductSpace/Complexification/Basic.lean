@@ -260,6 +260,13 @@ def realLinearIsometryEquivComplex : Complexification ℝ ℝ ≃ₗᵢ[ℂ] ℂ
   left_inv _ := by simp
   right_inv _ := by simp
 
+@[simp] lemma realLinearIsometryEquivComplex_apply (v : Complexification ℝ ℝ) :
+    realLinearIsometryEquivComplex v = v.re + v.im * Complex.I := by
+  rfl
+
+@[simp] lemma realLinearIsometryEquivComplex_symm_apply (z : ℂ) :
+    realLinearIsometryEquivComplex.symm z = .mk ℝ z.re z.im := by
+  rfl
 /-- Complexification of a submodule, i.e., `(a, b) ∈ K.complexification ↔ a ∈ K ∧ b ∈ K`. -/
 @[expose]
 def _root_.Submodule.complexification (K : Submodule 𝕜 E) : Submodule ℂ (Complexification 𝕜 E) where
@@ -403,13 +410,9 @@ lemma isometry_toComplexification : Isometry (toComplexification (𝕜 := 𝕜) 
 @[simp] lemma range_toComplexification (T : E →L[𝕜] F) :
    T.toComplexification.range = T.range.complexification := by
   ext x
-  simp only [LinearMap.mem_range, coe_coe, toComplexification_apply_apply, Complexification.ext_iff,
-    re_mk, im_mk, Submodule.complexification, Submodule.mem_mk, AddSubmonoid.mem_mk,
-    AddSubsemigroup.mem_mk, Set.mem_inter_iff, Set.mem_ofPred_eq]
-  refine ⟨fun ⟨y, hy⟩ ↦ ?_, ?_⟩
-  · simp [← hy.1, ← hy.2]
-  simp only [and_imp, forall_exists_index]
-  exact fun y hy z hz ↦ ⟨.mk 𝕜 y z, by simp [hy, hz]⟩
+  simp only [LinearMap.mem_range, coe_coe, toComplexification_apply_apply,
+    Complexification.ext_iff, re_mk, im_mk, Submodule.mem_complexification]
+  exact ⟨by grind, fun ⟨⟨y, hy⟩, ⟨z, hz⟩⟩ ↦ ⟨.mk 𝕜 y z, by simp [hy, hz]⟩⟩
 
 /-- Conjugation of a complexified operator given by `T ↦ conj ∘ T ∘ conj`.
 
