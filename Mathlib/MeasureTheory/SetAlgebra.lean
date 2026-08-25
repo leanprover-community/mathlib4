@@ -105,7 +105,7 @@ section generateSetAlgebra
 
 /-- `GenerateSetAlgebra 𝒜` is the predicate of being in the smallest algebra of sets
 containing `𝒜`. See `generateSetAlgebra` for the set version. -/
-inductive GenerateSetAlgebra {α : Type*} (𝒜 : Set (Set α)) : Set α → Prop
+private inductive GenerateSetAlgebra {α : Type*} (𝒜 : Set (Set α)) : Set α → Prop
   | base (s : Set α) (s_mem : s ∈ 𝒜) : GenerateSetAlgebra 𝒜 s
   | empty : GenerateSetAlgebra 𝒜 ∅
   | compl (s : Set α) (hs : GenerateSetAlgebra 𝒜 s) : GenerateSetAlgebra 𝒜 sᶜ

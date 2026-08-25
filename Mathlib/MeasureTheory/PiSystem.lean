@@ -232,13 +232,14 @@ end Order
 
 /-- Given a collection `S` of subsets of `α`, then `GeneratePiSystem S` is the predicate of
 being in the smallest π-system containing `S`. See `generatePiSystem` for the set version. -/
-inductive GeneratePiSystem (S : Set (Set α)) : Set α → Prop
+private inductive GeneratePiSystem (S : Set (Set α)) : Set α → Prop
   | base {s : Set α} (h_s : s ∈ S) : GeneratePiSystem S s
   | inter {s t : Set α} (h_s : GeneratePiSystem S s) (h_t : GeneratePiSystem S t)
     (h_nonempty : (s ∩ t).Nonempty) : GeneratePiSystem S (s ∩ t)
 
 /-- Given a collection `S` of subsets of `α`, then `generatePiSystem S` is the smallest
 π-system containing `S`. -/
+@[no_expose]
 def generatePiSystem (S : Set (Set α)) : Set (Set α) := {s | GeneratePiSystem S s}
 
 theorem isPiSystem_generatePiSystem (S : Set (Set α)) : IsPiSystem (generatePiSystem S) :=

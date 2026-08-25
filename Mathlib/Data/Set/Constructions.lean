@@ -40,7 +40,7 @@ namespace FiniteInter
 
 /-- The property of belonging to the smallest set of sets containing `S` which is closed under
 finite intersections. -/
-inductive MemFiniteInterClosure : Set α → Prop
+private inductive MemFiniteInterClosure : Set α → Prop
   | basic {s} : s ∈ S → MemFiniteInterClosure s
   | univ : MemFiniteInterClosure Set.univ
   | inter {s t} : MemFiniteInterClosure s → MemFiniteInterClosure t →

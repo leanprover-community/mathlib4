@@ -74,13 +74,14 @@ theorem mem_add (T : Subspace K V) (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw 
 /-- The span of a set of points in a projective space is defined inductively to be the set of points
 which contains the original set, and contains all points determined by the (nonzero) sum of two
 nonzero vectors, each of which determine points in the span. -/
-inductive MemSpan (S : Set (ℙ K V)) : ℙ K V → Prop
+private inductive MemSpan (S : Set (ℙ K V)) : ℙ K V → Prop
   | of_mem (x : ℙ K V) (hx : x ∈ S) : MemSpan S x
   | add (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0) :
       MemSpan S (Projectivization.mk K v hv) →
       MemSpan S (Projectivization.mk K w hw) → MemSpan S (Projectivization.mk K (v + w) hvw)
 
 /-- The span of a set of points in projective space is a subspace. -/
+@[no_expose]
 def span (S : Set (ℙ K V)) : Subspace K V where
   carrier := {x | MemSpan S x}
   mem_add' v w hv hw hvw := .add v w hv hw hvw
