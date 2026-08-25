@@ -43,7 +43,7 @@ private theorem wf_lbp (H : ∃ n, p n) : WellFounded (@lbp p) :=
 variable [DecidablePred p] (H : ∃ n, p n)
 
 /-- Find the smallest `n` satisfying `p n`. Returns a subtype. -/
-@[no_expose] protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
+protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
   @WellFounded.fix _ (fun k => (∀ n < k, ¬p n) → { n // p n ∧ ∀ m < n, ¬p m }) lbp (wf_lbp H)
     (fun m IH al =>
       if pm : p m then ⟨m, pm, al⟩
