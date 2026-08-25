@@ -23,10 +23,12 @@ normed group
 @[expose] public section
 
 
-variable {𝓕 α ι κ E F G : Type*}
+variable {𝓕 α ι E F G : Type*}
 
 open Filter Function Metric Bornology
-open ENNReal Filter NNReal Uniformity Pointwise Topology
+open ENNReal Filter NNReal Pointwise
+
+open scoped Uniformity Topology
 
 section SeminormedGroup
 

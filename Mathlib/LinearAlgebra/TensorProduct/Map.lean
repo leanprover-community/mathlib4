@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.Algebra.Module.Shrink
 
 /-!
 # Tensor products and linear maps
@@ -713,7 +714,7 @@ end Semiring
 section Ring
 
 variable {R : Type*} [CommSemiring R]
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*}
+variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 variable [AddCommGroup M] [AddCommMonoid N] [AddCommGroup P] [AddCommMonoid Q]
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
 

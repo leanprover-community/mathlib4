@@ -76,7 +76,7 @@ assert_not_exists Finset
 
 open Set Filter
 
-variable {α β γ : Type*} {ι ι' : Sort*}
+variable {α β : Type*} {ι ι' : Sort*}
 
 /-- A filter basis `B` on a type `α` is a nonempty collection of sets of `α`
 such that the intersection of two elements of this collection contains some element
