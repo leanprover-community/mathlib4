@@ -86,9 +86,7 @@ theorem HasOrthogonalProjection.comap [K.HasOrthogonalProjection] {E' : Type*}
   exists_orthogonal v := by
     obtain ⟨w, hw1, hw2⟩ := HasOrthogonalProjection.exists_orthogonal (K := K) (f v)
     obtain ⟨u, rfl⟩ := h hw1
-    refine ⟨u, by simpa using hw1, ?_⟩
-    simp only [← comap_orthogonal, mem_comap, LinearIsometry.coe_toLinearMap, map_sub]
-    exact SetLike.mem_of_subset (Submodule.orthogonal_le (by simp)) hw2
+    exact ⟨u, by simpa using hw1, by simpa [← comap_orthogonal_of_le h] using hw2⟩
 
 instance : (⊤ : Submodule 𝕜 E).HasOrthogonalProjection := ⟨fun v ↦ ⟨v, trivial, by simp⟩⟩
 

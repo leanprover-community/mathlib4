@@ -103,8 +103,8 @@ theorem vadd_mem_shift {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (c : P) (
   simpa [shift_eq ⟨p, hp⟩] using hp
 
 theorem lineMap_mem_shift {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (c : P) (r : k) :
-    AffineMap.lineMap c p r ∈ s.shift c r := by
-  rw [← AffineMap.lineMap_apply_one_sub, AffineMap.lineMap_apply]
+    lineMap c p r ∈ s.shift c r := by
+  rw [← lineMap_apply_one_sub, lineMap_apply]
   exact vadd_mem_shift hp c r
 
 /-- Consider a point `A` with barycentric coordinates associated to a collection of points `P`.
