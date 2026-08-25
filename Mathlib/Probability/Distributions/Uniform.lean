@@ -236,13 +236,10 @@ theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (
 
 theorem uniformOfFinset_apply_of_notMem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
-  Set.ext
-    (by
-      let ⟨a, ha⟩ := hs
-      simp [mem_support_iff])
+theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s := by
+  ext a
+  simp [mem_support_iff]
 
 theorem mem_support_uniformOfFinset_iff (a : α) : a ∈ (uniformOfFinset s hs).support ↔ a ∈ s := by
   simp

@@ -6,7 +6,7 @@ Authors: Edison Xie
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.RepresentationTheory.Rep.Iso
+public import Mathlib.RepresentationTheory.Rep.Basic
 /-!
 # Restriction of representations
 

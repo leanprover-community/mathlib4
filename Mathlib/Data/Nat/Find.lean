@@ -13,7 +13,7 @@ public import Batteries.Tactic.Init
 # `Nat.find` and `Nat.findGreatest`
 -/
 
-@[expose] public section
+public section
 
 variable {m n k : ℕ} {p q : ℕ → Prop}
 
@@ -161,6 +161,7 @@ section FindGreatest
 
 /-- `Nat.findGreatest P n` is the largest `i ≤ n` such that `P i` holds, or `0` if no such `i`
 exists -/
+@[expose]
 def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
   | 0 => 0
   | n + 1 => if P (n + 1) then n + 1 else Nat.findGreatest P n

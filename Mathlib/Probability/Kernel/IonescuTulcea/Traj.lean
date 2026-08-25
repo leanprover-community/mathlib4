@@ -594,7 +594,6 @@ theorem traj_eq_prod (a : ℕ) :
     all_goals fun_prop
   all_goals fun_prop
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem traj_map_updateFinset {n : ℕ} (x : Π i : Iic n, X i) :
     (traj κ n x).map (updateFinset · (Iic n) x) = traj κ n x := by
   nth_rw 2 [traj_eq_prod]
@@ -767,7 +766,6 @@ def trajMeasure (μ₀ : Measure (X 0)) (κ : (n : ℕ) → Kernel (Π i : Iic n
 
 variable {μ₀ : Measure (X 0)} [IsProbabilityMeasure μ₀]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsProbabilityMeasure (trajMeasure μ₀ κ) := by
   rw [trajMeasure]
   have : IsProbabilityMeasure (μ₀.map (MeasurableEquiv.piUnique ((fun i : Iic 0 ↦ X i))).symm) :=

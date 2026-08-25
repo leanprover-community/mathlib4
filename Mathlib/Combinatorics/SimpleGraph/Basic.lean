@@ -13,7 +13,7 @@ public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Tactic.CrossRefAttribute
 
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Disjoint
 
 /-!
 # Simple graphs
@@ -100,7 +100,6 @@ structure SimpleGraph (V : Type u) where
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for simple graphs using a symmetric irreflexive Boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :

@@ -263,7 +263,9 @@ end specialversions
 
 section limit
 
-open Filter Topology abelSummationProof intervalIntegral
+open Filter intervalIntegral
+
+open scoped Topology
 
 theorem locallyIntegrableOn_mul_sum_Icc {m : ℕ} (ha : 0 ≤ a) {g : ℝ → 𝕜}
     (hg : LocallyIntegrableOn g (Set.Ici a)) :
@@ -323,7 +325,7 @@ end limit
 
 section summable
 
-open Filter abelSummationProof
+open Filter
 
 private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
     (h_bdd : (fun n : ℕ ↦ ‖f n‖ * ∑ k ∈ Icc 0 n, ‖c k‖) =O[atTop] fun _ ↦ (1 : ℝ))

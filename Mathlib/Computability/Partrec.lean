@@ -29,7 +29,7 @@ least natural number `n` for which `f n = 0`, or diverges if such `n` doesn't ex
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
-@[expose] public section
+public section
 
 open List (Vector)
 open Encodable Denumerable Part
@@ -127,6 +127,7 @@ theorem rfind_zero_none (p : ℕ →. Bool) (p0 : p 0 = Part.none) : rfind p = P
 
 /-- Find the smallest `n` satisfying `f n`, where all `f k` for `k < n` are defined as false.
 Returns a `Part`. -/
+@[expose]
 def rfindOpt {α} (f : ℕ → Option α) : Part α :=
   (rfind fun n => (f n).isSome).bind fun n => f n
 
@@ -226,20 +227,23 @@ end Partrec
 end Nat
 
 /-- Partially recursive partial functions `α → σ` between `Primcodable` types -/
+@[expose]
 def Partrec {α σ} [Primcodable α] [Primcodable σ] (f : α →. σ) :=
   Nat.Partrec fun n => Part.bind (decode (α := α) n) fun a => (f a).map encode
 
 /-- Partially recursive partial functions `α → β → σ` between `Primcodable` types -/
+@[expose]
 def Partrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f : α → β →. σ) :=
   Partrec fun p : α × β => f p.1 p.2
 
 /-- Computable functions `α → σ` between `Primcodable` types:
   a function is computable if and only if it is partially recursive (as a partial function) -/
-@[wikidata Q1148456]
+@[expose, wikidata Q1148456]
 def Computable {α σ} [Primcodable α] [Primcodable σ] (f : α → σ) :=
   Partrec (f : α →. σ)
 
 /-- Computable functions `α → β → σ` between `Primcodable` types -/
+@[expose]
 def Computable₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f : α → β → σ) :=
   Computable fun p : α × β => f p.1 p.2
 
