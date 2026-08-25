@@ -8,7 +8,10 @@ no other consumer reads what it produces.
 The pipeline caches the root package, mathlib, and every git dependency in
 mathlib's manifest. In the examples below, `<DEP>` is one dependency, `<R-DEP>`
 is its revision from the manifest, and `<S-DEP>` is its scope,
-`mathlib4-master-shadow/deps/<toolchain-slug>/<pin-hash>/<DEP>`. A rendered
+`mathlib4-master-shadow/deps/<toolchain-slug>/<pin-hash>/<DEP>`. The pin hash
+is a short fingerprint of the revisions that mathlib's manifest pins, and the
+toolchain slug is the toolchain with its punctuation replaced. "Scope
+qualifiers" below covers both, and says why the scope carries them. A rendered
 scope reads
 `mathlib4-master-shadow/deps/leanprover-lean4-v4.34.0-rc2/2d10dd67/batteries`.
 
