@@ -545,10 +545,10 @@ end IsPGroup
 namespace ZModModule
 variable (n : ℕ) (G : Type*) [AddCommGroup G] [Module (ZMod n) G]
 
-lemma isPAddGroup : IsPAddGroup n G := by
-  simpa [IsPAddGroup] using fun _ ↦ ⟨1, by simp [ZModModule.char_nsmul_eq_zero]⟩
+lemma isAddPGroup : IsAddPGroup n G := by
+  simpa [IsAddPGroup] using fun _ ↦ ⟨1, by simp [ZModModule.char_nsmul_eq_zero]⟩
 
 lemma isPGroup_multiplicative : IsPGroup n (Multiplicative G) :=
-  isPAddGroup n G
+  isAddPGroup n G
 
 end ZModModule
