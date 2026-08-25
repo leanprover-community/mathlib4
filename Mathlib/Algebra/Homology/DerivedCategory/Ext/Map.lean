@@ -85,8 +85,7 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
         ((F.mapDerivedCategorySingleFunctor 0).hom.app S.X₁)⟦1⟧' =
     (hS.map_of_exact F).singleδ := by
   dsimp [ShiftedHom.map, ShortComplex.ShortExact.singleδ]
-  simp only [Category.assoc,
-    DerivedCategory.map_triangleOfSESδ]
+  simp only [Category.assoc, DerivedCategory.map_triangleOfSESδ]
   generalize_proofs _ _ _ _ _ _ h1 _ _ h2
   dsimp
   rw [Functor.mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app_assoc,
