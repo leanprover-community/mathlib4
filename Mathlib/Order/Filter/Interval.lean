@@ -240,7 +240,7 @@ end PartialOrder
 
 section LinearOrder
 
-open Interval
+open scoped Interval
 
 variable [LinearOrder α]
 

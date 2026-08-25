@@ -17,7 +17,7 @@ public import Mathlib.GroupTheory.Submonoid.Center
 
 assert_not_exists MonoidWithZero Multiset
 
-variable {G : Type*} [Group G]
+variable {G H : Type*} [Group G] [Group H]
 
 namespace Subgroup
 
@@ -45,7 +45,7 @@ instance center.isMulCommutative : IsMulCommutative (center G) :=
 variable {G} in
 /-- The center of isomorphic groups are isomorphic. -/
 @[to_additive (attr := simps!) /-- The center of isomorphic additive groups are isomorphic. -/]
-def centerCongr {H} [Group H] (e : G ≃* H) : center G ≃* center H := Submonoid.centerCongr e
+def centerCongr (e : G ≃* H) : center G ≃* center H := Submonoid.centerCongr e
 
 /-- The center of a group is isomorphic to the center of its opposite. -/
 @[to_additive (attr := simps!)
@@ -61,6 +61,21 @@ theorem mem_center_iff {z : G} : z ∈ center G ↔ ∀ g, g * z = z * g := by
 
 instance decidableMemCenter (z : G) [Decidable (∀ g, g * z = z * g)] : Decidable (z ∈ center G) :=
   decidable_of_iff' _ mem_center_iff
+
+@[to_additive]
+theorem map_center_le_center {F} [FunLike F G H] [MonoidHomClass F G H] {f : F}
+    (hf : Function.Surjective f) : map f (center G) ≤ center H :=
+  Set.image_center_subset hf
+
+@[to_additive]
+theorem comap_center_le_center {F} [FunLike F G H] [MonoidHomClass F G H] {f : F}
+    (hf : Function.Injective f) : comap f (center H) ≤ center G :=
+  Set.preimage_center_subset hf
+
+@[to_additive (attr := simp)]
+theorem map_center_eq {F} [EquivLike F G H] [MulEquivClass F G H] (f : F) :
+    map f (center G) = center H :=
+  SetLike.coe_injective (Set.image_center_eq f)
 
 @[to_additive]
 instance centerCharacteristic : (center G).Characteristic := by
@@ -99,15 +114,13 @@ def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
   }
 
 @[to_additive]
-protected theorem center_prod {H : Type*} [Group H] : center (G × H) = prod (center G) (center H) :=
+protected theorem center_prod : center (G × H) = prod (center G) (center H) :=
   SetLike.coe_injective Set.center_prod
 
 @[to_additive]
 protected theorem center_pi {η : Type*} {G : η → Type*} [Π i, Group (G i)] :
     center (Π i, G i) = pi .univ fun i ↦ center (G i) :=
   SetLike.coe_injective Set.center_pi
-
-variable {H : Subgroup G}
 
 section Normalizer
 
