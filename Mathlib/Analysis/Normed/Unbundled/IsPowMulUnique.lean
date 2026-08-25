@@ -120,6 +120,11 @@ public theorem IsPowMul.unique [CompleteSpace K] {f g : AlgebraNorm K L}
       forall_and.mpr ⟨fun y ↦ hC2 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩,
         fun y ↦ hC1 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩⟩⟩
 
+/-- Uniqueness of multiplicative algebra norms over complete normed fields. -/
+public theorem MulAlgebraNorm.unique [CompleteSpace K] (f g : MulAlgebraNorm K L) : f = g := by
+  simpa [DFunLike.ext_iff] using
+    IsPowMul.unique (f := f.toAlgebraNorm) (g := g.toAlgebraNorm) f.isPowMul g.isPowMul
+
 /-- A power-multiplicative algebra norm over a complete normed field is multiplicative. -/
 @[expose]
 public def AlgebraNorm.toMulAlgebraNorm [CompleteSpace K] (f : AlgebraNorm K L)
