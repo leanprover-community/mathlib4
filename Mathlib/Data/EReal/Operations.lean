@@ -76,22 +76,21 @@ theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
   · exact top_add_coe _
   · exact top_add_top
 
-/-- For any extended real number `x`, the sum of `⊤` and `x` is equal to `⊤`
-if and only if `x` is not `⊥`. -/
-theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
-  constructor <;> intro h
-  · rintro rfl
-    rw [add_bot] at h
-    exact bot_ne_top h
-  · cases x with
-    | bot => contradiction
-    | top => rfl
-    | coe r => exact top_add_of_ne_bot h
-
 /-- For any extended real number `x` which is not `⊥`, the sum of `x` and `⊤` is equal to `⊤`. -/
 @[simp]
 theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
   rw [add_comm, top_add_of_ne_bot h]
+
+@[grind =]
+theorem add_eq_top_iff {x y : EReal} : x + y = ⊤ ↔ (x = ⊤ ∧ y ≠ ⊥) ∨ (x ≠ ⊥ ∧ y = ⊤) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · cases x <;> cases y <;> simp_all [← coe_add]
+  · obtain ⟨rfl, h⟩ | ⟨h, rfl⟩ := h <;> simp [h]
+
+/-- For any extended real number `x`, the sum of `⊤` and `x` is equal to `⊤`
+if and only if `x` is not `⊥`. -/
+theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
+  simp +contextual [add_eq_top_iff]
 
 /-- For any extended real number `x`, the sum of `x` and `⊤` is equal to `⊤`
 if and only if `x` is not `⊥`. -/
@@ -163,12 +162,6 @@ assumptions. -/
 theorem add_lt_add_of_lt_of_le {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hz : z ≠ ⊥)
     (ht : t ≠ ⊤) : x + z < y + t :=
   add_lt_add_of_lt_of_le' h h' (ne_bot_of_le_ne_bot hz h') fun ht' => (ht ht').elim
-
-@[grind =]
-lemma add_eq_top_iff {x y : EReal} : x + y = ⊤ ↔ (x = ⊤ ∧ y ≠ ⊥) ∨ (x ≠ ⊥ ∧ y = ⊤) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · cases x <;> cases y <;> simp_all [← coe_add]
-  · obtain ⟨rfl, h⟩ | ⟨h, rfl⟩ := h <;> simp [h]
 
 theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤ :=
   add_lt_add hx.lt_top hy.lt_top
