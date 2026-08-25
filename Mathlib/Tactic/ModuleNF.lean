@@ -28,7 +28,10 @@ open Qq Parser.Tactic Elab.Tactic Meta
 
 namespace Mathlib.Tactic.ModuleNF
 
-/-- Infer the scalar ring over which the scalar rings appearing in `es` should be normalized. -/
+/-- Infer the scalar ring over which the scalar rings appearing in `es` should be normalized.
+
+This is similar to `Mathlib.Tactic.Algebra.inferBase` which infers a base using the ring / field
+structure of the ambient type. -/
 def inferBase (es : Array Expr) : MetaM (Σ u : Level, Q(Type u)) := do
   let rings := (← es.toList.mapM Algebra.collectScalarRings).flatten
   let rings ← rings.eraseDups.mapM getLevelQ'
