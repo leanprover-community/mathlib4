@@ -170,6 +170,10 @@ instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S wher
 
 theorem toFun_eq_coe (p : MulAlgebraNorm R S) : p.toFun = p := rfl
 
+@[simp]
+theorem toMulRingNorm_apply (p : MulAlgebraNorm R S) (x : S) : p.toMulRingNorm x = p x :=
+  rfl
+
 @[ext]
 theorem ext {p q : MulAlgebraNorm R S} : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
