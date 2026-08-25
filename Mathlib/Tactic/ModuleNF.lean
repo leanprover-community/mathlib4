@@ -206,7 +206,7 @@ syntax (name := moduleNF) "module_nf" (" with " term)? (location)? : tactic
 
 elab_rules : tactic
   | `(tactic| module_nf $[with $R:term]? $[$loc:location]?) => withMainContext do
-    let loc := (loc.map expandLocation).getD (.targets #[] true)
+    let loc := expandOptLocation (mkOptionalNode loc)
     let base ← match R with
       | some R => do
         let ⟨u, B⟩ ← getLevelQ' (← elabTerm R none)

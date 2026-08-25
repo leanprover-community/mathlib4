@@ -66,7 +66,7 @@ example (h : True) : True := by
 
 /-- Collect the types at each location visited by `mapNondepPropLocation`. -/
 elab "collect_nondep_prop" loc:(location)? : tactic => do
-  let loc := (loc.map expandLocation).getD (.targets #[] true)
+  let loc := expandOptLocation (mkOptionalNode loc)
   let tys ← mapNondepPropLocation loc (fun fvarId => fvarId.getType) getMainTarget
   logInfo m!"collected: {tys}"
 
