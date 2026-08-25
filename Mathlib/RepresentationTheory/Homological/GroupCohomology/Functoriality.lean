@@ -176,28 +176,12 @@ theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
 `f : G →* H` and `φ : res f A ⟶ B`. If `f` is the trivial morphism,
 the induced morphism is zero in group cohomology in nonzero degrees. -/
 lemma map_eq_zero (n : ℕ) [NeZero n] (hf : f = 1) : map f φ n = 0 := by
-  /- The proof proceeds by showing that `map f φ n` factors
-  through the cohomology of the trivial group with values in
-  the invariants of `B` under `G`. -/
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (NeZero.ne n)
-  let a : G →* PUnit.{u + 1} := 1
-  let b : PUnit.{u + 1} →* H := 1
-  let C := Rep.trivial k PUnit.{u + 1} B.ρ.invariants
-  let α : res b A ⟶ Rep.trivial k PUnit.{u + 1} C :=
-    Rep.ofHom
-      { toLinearMap :=
-          LinearMap.codRestrict B.ρ.invariants φ.hom.toLinearMap (fun a g ↦ by
-            simpa [hf] using ((φ.hom.isIntertwining) g a).symm)
-        isIntertwining' g := by aesop }
-  let β : res a C ⟶ B :=
-    Rep.ofHom
-      { toLinearMap := B.ρ.invariants.subtype
-        isIntertwining' g := by ext x; exact (x.property g).symm }
-  obtain rfl : f = b.comp a := by aesop
-  have : map a β (n + 1) = 0 :=
+  obtain rfl : f = (1 : PUnit.{u + 1} →* H).comp (1 : G →* PUnit.{u + 1}) := by simpa using hf
+  have : map (1 : G →* PUnit.{u + 1}) (A := res 1 A) φ (n + 1) = 0 :=
     (isZero_groupCohomology_succ_of_subsingleton _ _).eq_of_src ..
-  rw [show φ = (resFunctor a).map α ≫ β from rfl, map_comp, this, Limits.comp_zero]
-
+  rw [show φ = (resFunctor (1 : G →* PUnit.{u + 1})).map (𝟙 (res 1 A)) ≫ φ from rfl,
+    map_comp, this, Limits.comp_zero]
 
 /-- The isomorphism between cohomology groups induced by a group isomorphism `e : G ≃* H` and a
 isomorphism between representations (restricted by `e`). -/
@@ -381,8 +365,8 @@ lemma H1π_comp_map :
 
 @[simp]
 theorem map₁_one (φ : res 1 A ⟶ B) :
-    map 1 φ 1 = 0 := by
-  simp [← cancel_epi (H1π _)]
+    map 1 φ 1 = 0 :=
+  map_eq_zero _ _ _ rfl
 
 section InfRes
 
