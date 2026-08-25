@@ -134,7 +134,7 @@ theorem continuous_valuation_of_surjective (hsurj : Function.Surjective v) : Con
   refine continuous_iff_continuousAt.2 fun x ↦ (eq_or_ne x 0).casesOn ?_ fun h ↦
     continuousAt_valuation_of_ne_zero _ (v.ne_zero_iff.2 h)
   rintro rfl
-  rw [continuousAt, map_zero, WithZeroTopology.tendsto_zero]
+  rw [ContinuousAt, map_zero, WithZeroTopology.tendsto_zero]
   exact fun γ hγ ↦ (hsurj γ).choose_spec ▸ eventually_lt_nhds_zero v <| (hsurj γ).choose_spec ▸ hγ
 
 theorem continuous_restrict : Continuous (v.restrict : K → (ValueGroup₀ (.ofClass v))) :=
