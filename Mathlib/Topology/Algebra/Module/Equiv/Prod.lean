@@ -8,7 +8,7 @@ module
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
-# Continuous linear equivalences
+# Continuous linear equivalences on products of topological modules
 
 
 ## Notation
@@ -22,7 +22,6 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 * `prodProdProdComm`: `LinearEquiv.prodProdProdComm` as a continuous linear equivalence.
 * `prodUnique`: `Equiv.uniqueProd` as a continuous linear equivalence.
 
-## Main Results
 -/
 
 @[expose] public section

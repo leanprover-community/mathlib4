@@ -8,7 +8,7 @@ module
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
-# Continuous linear equivalences
+# Continuous linear equivalences involving submodules
 
 ## Notation
 Continuous semilinear / linear / star-linear equivalences between topological modules are denoted
@@ -21,7 +21,6 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 * `ofSubmodule'`: `ofSubmodule` but with `comap` on the left instead of `map` on the right.
 * `Submodule.topContEquiv`: `Submodule.topEquiv` as a continuous linear equivalence.
 
-## Main Results
 -/
 
 @[expose] public section

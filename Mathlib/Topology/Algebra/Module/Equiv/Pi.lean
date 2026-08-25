@@ -10,7 +10,7 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
-# Continuous linear equivalences
+# Continuous linear equivalences on (dependent) product types
 
 ## Notation
 Continuous semilinear / linear / star-linear equivalences between topological modules are denoted
@@ -24,7 +24,6 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 * `Fin.consEquivL`: `Fin.consEquiv` as a continuous linear equivalence.
 * `ContinuousLinearMap.finCons`: `Fin.cons` in the codomain of continuous linear maps.
 
-## Main Results
 -/
 
 @[expose] public section
