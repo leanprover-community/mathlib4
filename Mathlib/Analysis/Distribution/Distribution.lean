@@ -312,6 +312,12 @@ theorem ofFun_eq_zero {f : E → F} {μ : Measure E}
     (hf : ¬ LocallyIntegrableOn f Ω μ) : ofFun Ω f μ n = 0 :=
   TestFunction.integralAgainstBilinCLM_eq_zero hf
 
+open Classical in
+@[grind =]
+theorem ofFun_apply_eq_ite {f : E → F} {μ : Measure E} {φ : 𝓓^{n}(Ω, ℝ)} :
+    ofFun Ω f μ n φ = if LocallyIntegrableOn f Ω μ then ∫ x, φ x • f x ∂μ else 0 := by
+  grind [ofFun_eq_zero, ofFun_apply]
+
 @[simp, grind =]
 theorem ofFun_zero {μ : Measure E} : ofFun Ω (0 : E → F) μ n = 0 := by
   have h0 : LocallyIntegrableOn (0 : E → F) Ω μ := locallyIntegrableOn_zero
