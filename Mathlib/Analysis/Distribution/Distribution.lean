@@ -312,7 +312,7 @@ theorem ofFun_eq_zero {f : E → F} {μ : Measure E}
     (hf : ¬ LocallyIntegrableOn f Ω μ) : ofFun Ω f μ n = 0 :=
   TestFunction.integralAgainstBilinCLM_eq_zero hf
 
-@[simp]
+@[simp, grind =]
 theorem ofFun_zero {μ : Measure E} : ofFun Ω (0 : E → F) μ n = 0 := by
   have h0 : LocallyIntegrableOn (0 : E → F) Ω μ := locallyIntegrableOn_zero
   ext; simp [ofFun_apply h0]
