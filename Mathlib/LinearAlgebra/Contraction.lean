@@ -112,7 +112,6 @@ theorem map_dualTensorHom (f : Module.Dual R M) (p : P) (g : Module.Dual R N) (q
   simp only [compr₂ₛₗ_apply, mk_apply, map_tmul, dualTensorHom_apply, dualDistrib_apply,
     ← smul_tmul_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (p : P) :
     dualTensorHom R N P (g ⊗ₜ[R] p) ∘ₗ dualTensorHom R M N (f ⊗ₜ[R] n) =
@@ -121,7 +120,6 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
   simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, map_smul, LinearMap.smul_apply]
   rw [smul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- As a matrix, `dualTensorHom` evaluated on a basis element of `M* ⊗ N` is a matrix with a
 single one and zeros elsewhere -/
 theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Finite n] [DecidableEq m]
@@ -168,7 +166,7 @@ attribute [-ext] AlgebraTensorModule.curry_injective in
 provides this equivalence in return for a basis of `M`. -/
 -- We manually create simp-lemmas because `@[simps]` generates a malformed lemma
 noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N :=
-  LinearEquiv.ofLinear (dualTensorHom R M N)
+  LinearEquiv.ofLinearMap (dualTensorHom R M N)
     (∑ i, TensorProduct.mk R _ N (b.dualBasis i) ∘ₗ (LinearMap.applyₗ (R := R) (b i)))
     (by
       ext f m
@@ -446,7 +444,7 @@ isomorphism `R ⊗ R ≃ R`.
 @[simps!]
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
-  refine LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) ?_ ?_
+  refine LinearEquiv.ofLinearMap (dualDistrib R M N) (dualDistribInvOfBasis b c) ?_ ?_
   · exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
   · exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
 

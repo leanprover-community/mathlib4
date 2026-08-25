@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jeremy Avigad
 module
 
 public import Mathlib.Algebra.Group.Pi.Basic
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Order.Filter.Defs
 public import Mathlib.Tactic.ToFun
 
@@ -260,6 +260,7 @@ theorem NeBot.ne {f : Filter α} (hf : NeBot f) : f ≠ ⊥ := hf.ne'
 @[simp, push]
 theorem not_neBot {f : Filter α} : ¬f.NeBot ↔ f = ⊥ := neBot_iff.not_left
 
+@[gcongr]
 theorem NeBot.mono {f g : Filter α} (hf : NeBot f) (hg : f ≤ g) : NeBot g :=
   ⟨ne_bot_of_le_ne_bot hf.1 hg⟩
 
@@ -268,6 +269,9 @@ theorem neBot_of_le {f g : Filter α} [hf : NeBot f] (hg : f ≤ g) : NeBot g :=
 
 @[simp] theorem sup_neBot {f g : Filter α} : NeBot (f ⊔ g) ↔ NeBot f ∨ NeBot g := by
   simp only [neBot_iff, not_and_or, Ne, sup_eq_bot_iff]
+
+instance neBot_sup_of_left {f g : Filter α} [f.NeBot] : NeBot (f ⊔ g) := by simp [*]
+instance neBot_sup_of_right {f g : Filter α} [g.NeBot] : NeBot (f ⊔ g) := by simp [*]
 
 theorem not_disjoint_self_iff : ¬Disjoint f f ↔ f.NeBot := by rw [disjoint_self, neBot_iff]
 
@@ -528,7 +532,7 @@ theorem iInf_neBot_of_directed {f : ι → Filter α} [hn : Nonempty α] (hd : D
     (hb : ∀ i, NeBot (f i)) : NeBot (iInf f) := by
   cases isEmpty_or_nonempty ι
   · constructor
-    simp [iInf_of_empty f, top_ne_bot]
+    simp [top_ne_bot]
   · exact iInf_neBot_of_directed' hd hb
 
 theorem sInf_neBot_of_directed' {s : Set (Filter α)} (hne : s.Nonempty) (hd : DirectedOn (· ≥ ·) s)
@@ -593,7 +597,7 @@ theorem mem_inf_principal' {f : Filter α} {s t : Set α} : s ∈ f ⊓ 𝓟 t �
     ← (isCompl_principal (t ∩ sᶜ)).le_right_iff, compl_inter, compl_compl]
 
 lemma mem_inf_principal {f : Filter α} {s t : Set α} : s ∈ f ⊓ 𝓟 t ↔ { x | x ∈ t → x ∈ s } ∈ f := by
-  simp only [mem_inf_principal', imp_iff_not_or, setOf_or, compl_def, setOf_mem_eq]
+  simp only [mem_inf_principal', imp_iff_not_or, ofPred_or, compl_def, ofPred_mem_eq]
 
 lemma iSup_inf_principal (f : ι → Filter α) (s : Set α) : ⨆ i, f i ⊓ 𝓟 s = (⨆ i, f i) ⊓ 𝓟 s := by
   ext
@@ -632,7 +636,7 @@ theorem eventually_mem_set {s : Set α} {l : Filter α} : (∀ᶠ x in l, x ∈ 
 
 protected theorem ext' {f₁ f₂ : Filter α}
     (h : ∀ p : α → Prop, (∀ᶠ x in f₁, p x) ↔ ∀ᶠ x in f₂, p x) : f₁ = f₂ :=
-  Filter.ext <| Set.setOf_bijective.surjective.forall.mpr h
+  Filter.ext <| Set.ofPred_bijective.surjective.forall.mpr h
 
 theorem Eventually.filter_mono {f₁ f₂ : Filter α} (h : f₁ ≤ f₂) {p : α → Prop}
     (hp : ∀ᶠ x in f₂, p x) : ∀ᶠ x in f₁, p x :=
@@ -811,7 +815,7 @@ theorem frequently_iff_forall_eventually_exists_and {p : α → Prop} {f : Filte
 theorem frequently_iff {f : Filter α} {P : α → Prop} :
     (∃ᶠ x in f, P x) ↔ ∀ {U}, U ∈ f → ∃ x ∈ U, P x := by
   simp only [frequently_iff_forall_eventually_exists_and, @and_comm (P _),
-    Set.setOf_bijective.surjective.forall, Filter.Eventually, mem_setOf]
+    Set.ofPred_bijective.surjective.forall, Filter.Eventually, mem_ofPred]
 
 @[simp, push]
 theorem not_eventually {p : α → Prop} {f : Filter α} : (¬∀ᶠ x in f, p x) ↔ ∃ᶠ x in f, ¬p x := by
@@ -911,7 +915,7 @@ lemma skolem {ι : Type*} {α : ι → Type*} [∀ i, Nonempty (α i)]
   refine ⟨fun H ↦ ?_, fun ⟨b, hb⟩ ↦ hb.mp (.of_forall fun x a ↦ ⟨_, a⟩)⟩
   refine ⟨fun i ↦ if h : ∃ b, P i b then h.choose else Nonempty.some inferInstance, ?_⟩
   filter_upwards [H] with i hi
-  exact dif_pos hi ▸ hi.choose_spec
+  exact dite_eq_left hi ▸ hi.choose_spec
 
 /-!
 ### Relation “eventually equal”
@@ -1279,7 +1283,7 @@ theorem LE.le.eventuallyLE {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s
 
 @[deprecated (since := "2026-03-16")] alias HasSubset.Subset.eventuallyLE := LE.le.eventuallyLE
 
-variable {α β : Type*} {F : Filter α} {G : Filter β}
+variable {α : Type*}
 
 namespace Filter
 

@@ -234,7 +234,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma range_toFiniteMeasure :
     range toFiniteMeasure = {μ : FiniteMeasure Ω | μ.mass = 1} := by
   ext μ
-  simp only [mem_range, mem_setOf_eq]
+  simp only [mem_range, mem_ofPred_eq]
   refine ⟨fun ⟨ν, hν⟩ ↦ by simp [← hν], fun h ↦ ?_⟩
   refine ⟨⟨μ, isProbabilityMeasure_iff_real.2 (by simpa using! h)⟩, ?_⟩
   ext s hs
@@ -263,7 +263,7 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
   apply Measurable.measure_of_isPiSystem_of_isProbabilityMeasure generateFrom_prod.symm
     isPiSystem_prod _
-  simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
+  simp only [mem_image2, mem_ofPred_eq, forall_exists_index, and_imp]
   intro _ u Hu v Hv Heq
   simp_rw [← Heq, Measure.prod_prod]
   apply Measurable.mul
@@ -463,7 +463,7 @@ theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize 
   obtain rfl | h := eq_or_ne μ 0
   · simp
   have mass_nonzero : μ.mass ≠ 0 := by rwa [μ.mass_nonzero_iff]
-  simp only [normalize, dif_neg mass_nonzero]
+  simp only [normalize, dite_eq_right mass_nonzero]
   simp [mul_inv_cancel_left₀ mass_nonzero, coeFn_def]
 
 theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeasure := by

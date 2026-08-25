@@ -55,7 +55,7 @@ theorem isHermitian_adjMatrix [NonAssocSemiring R] [StarRing R] : (G.adjMatrix R
 theorem degree_eq_sum_if_adj {R : Type*} [AddCommMonoidWithOne R] (i : V) :
     (G.degree i : R) = ∑ j : V, if G.Adj i j then 1 else 0 := by
   unfold degree neighborFinset neighborSet
-  rw [sum_boole, Set.toFinset_setOf]
+  rw [sum_boole, Set.toFinset_ofPred]
 
 variable [DecidableEq V]
 

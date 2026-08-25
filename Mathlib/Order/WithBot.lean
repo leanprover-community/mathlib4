@@ -75,6 +75,12 @@ theorem bot_ne_coe : ⊥ ≠ (a : WithBot α) :=
 theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
   nofun
 
+@[to_dual]
+theorem eq_bot_of_isEmpty [IsEmpty α] {a : WithBot α} : a = ⊥ :=
+  match a with
+  | ⊥ => rfl
+  | (a : α) => IsEmpty.elim ‹_› a
+
 /-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries. -/
 @[to_dual
 /-- Specialization of `Option.getD` to values in `WithTop α` that respects API boundaries. -/]
@@ -425,9 +431,23 @@ theorem coe_le_iff : a ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b := by simp [le_if
 @[to_dual coe_le_iff]
 theorem le_coe_iff : x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b := by simp [le_iff_forall]
 
+@[to_dual (attr := simp)]
+theorem isMax_coe_iff : IsMax (a : WithBot α) ↔ IsMax a := by
+  simp [IsMax, WithBot.forall]
+
 @[to_dual]
 protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α) :=
-  fun x ↦ by cases x <;> simp; simpa using @h _
+  isMax_coe_iff.mpr h
+
+@[to_dual (attr := simp)]
+theorem not_isMax_top [Nonempty α] : ¬IsMax (⊥ : WithBot α) := by
+  intro h
+  have ⟨a⟩ := ‹Nonempty α›
+  exact WithBot.not_coe_le_bot a <| h bot_le
+
+@[to_dual]
+theorem isMax_iff [Nonempty α] {x : WithBot α} : IsMax x ↔ ∃ y : α, x = y ∧ IsMax y := by
+  cases x <;> simp
 
 @[to_dual (attr := simp) untop_le_iff]
 lemma le_unbot_iff (hx : x ≠ ⊥) : a ≤ unbot x hx ↔ a ≤ x := by lift x to α using hx; simp
@@ -572,6 +592,9 @@ theorem le_coe_unbotD (x : WithBot α) (b : α) : x ≤ x.unbotD b := by cases x
 
 @[to_dual (attr := simp) coe_top_lt]
 theorem lt_coe_bot [OrderBot α] : x < (⊥ : α) ↔ x = ⊥ := by cases x <;> simp
+
+@[to_dual (attr := simp) le_coe_top]
+theorem coe_bot_le [OrderBot α] : (⊥ : α) ≤ x ↔ x ≠ ⊥ := by cases x <;> simp
 
 @[to_dual eq_top_iff_forall_gt]
 lemma eq_bot_iff_forall_lt : x = ⊥ ↔ ∀ b : α, x < b := by

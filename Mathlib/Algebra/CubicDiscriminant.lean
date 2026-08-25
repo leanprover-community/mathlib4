@@ -64,7 +64,7 @@ instance [Zero R] : Zero (Cubic R) :=
 
 section Basic
 
-variable {P Q : Cubic R} {a b c d a' b' c' d' : R} [Semiring R]
+variable {P Q : Cubic R} {a b c d : R} [Semiring R]
 
 /-- Convert a cubic polynomial to a polynomial. -/
 def toPoly (P : Cubic R) : R[X] :=

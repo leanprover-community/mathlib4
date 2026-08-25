@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Ring.Synonym
 public import Mathlib.Order.Hom.Lex
 public import Mathlib.Order.PiLex
 public import Mathlib.RingTheory.HahnSeries.Multiplication
+public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 
 /-!
 
@@ -57,9 +58,9 @@ instance : LinearOrder (Lex R⟦Γ⟧) where
       let v := {i : Γ | (ofLex a).coeff i ≠ (ofLex b).coeff i}
       have hvu : v ⊆ u := by
         intro i h
-        rw [Set.mem_union, Set.mem_setOf_eq, Set.mem_setOf_eq]
+        rw [Set.mem_union, Set.mem_ofPred_eq, Set.mem_ofPred_eq]
         contrapose! h
-        rw [Set.notMem_setOf_iff, not_not, h.1, h.2]
+        rw [Set.notMem_ofPred_iff, not_not, h.1, h.2]
       have hv : v.IsWF :=
         ((ofLex a).isPWO_support'.isWF.union (ofLex b).isPWO_support'.isWF).subset hvu
       let i := hv.min hab

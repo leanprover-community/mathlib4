@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.LocalRing.Length
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.Unramified.LocalRing
+public import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 # Ramification index
@@ -57,12 +58,12 @@ noncomputable def ramificationIdx : ℕ :=
 theorem ramificationIdx_def [q.IsPrime] :
     letI Sq := Localization.AtPrime q
     q.ramificationIdx R = (Module.length Sq (Sq ⧸ (q.under R).map (algebraMap R Sq))).toNat :=
-  dif_pos _
+  dite_eq_left _
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_def := ramificationIdx_def
 
 theorem ramificationIdx_of_not_isPrime (hq : ¬ q.IsPrime) : q.ramificationIdx R = 0 :=
-  dif_neg hq
+  dite_eq_right hq
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_of_not_isPrime :=
   ramificationIdx_of_not_isPrime
@@ -94,7 +95,7 @@ theorem ramificationIdx_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
   let Sq := Localization.AtPrime q
   let : Algebra Rp Sq := Localization.AtPrime.algebraOfLiesOver p q
   have : Algebra.EssFiniteType Rp Sq := Algebra.EssFiniteType.of_comp R Rp Sq
-  rw [ramificationIdx_def, ENat.toNat_eq_iff_eq_coe, Nat.cast_one, Module.length_eq_one_iff,
+  rw [ramificationIdx_def, ENat.toNat_eq_iff_eq_natCast, Nat.cast_one, Module.length_eq_one_iff,
     isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def, IsLocalRing.isMaximal_iff,
     IsScalarTower.algebraMap_eq R Rp Sq, ← map_map, Localization.AtPrime.map_eq_maximalIdeal]
   exact Algebra.FormallyUnramified.map_maximalIdeal
@@ -106,7 +107,7 @@ theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
     [Algebra.IsIntegral R S] [PerfectField (q.under R).ResidueField] :
     q.ramificationIdx R = 1 ↔ Algebra.IsUnramifiedAt R q := by
   refine ⟨fun h ↦ ?_, fun _ ↦ ramificationIdx_eq_one q R⟩
-  rw [ramificationIdx_def, ENat.toNat_eq_iff_eq_coe, Nat.cast_one, Module.length_eq_one_iff,
+  rw [ramificationIdx_def, ENat.toNat_eq_iff_eq_natCast, Nat.cast_one, Module.length_eq_one_iff,
     isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def, IsLocalRing.isMaximal_iff] at h
   let p := q.under R
   let Rp := Localization.AtPrime p
@@ -152,7 +153,7 @@ theorem ramificationIdx'_eq_ramificationIdx' [IsDedekindDomain S]
   rw [map_map, ← IsScalarTower.algebraMap_eq, Ideal.map_mul, Ideal.map_pow,
     map_eq_top_of_not_le (Localization.AtPrime q) hqI, mul_top, AtPrime.map_eq_maximalIdeal] at h
   have hSq := isDiscreteValuationRing_of_dedekind_domain S hq' (Localization.AtPrime q)
-  rw [ramificationIdx_eq p q, h, hSq.length_quotient_pow_maximalIdeal, ENat.toNat_coe]
+  rw [ramificationIdx_eq p q, h, hSq.length_quotient_pow_maximalIdeal, ENat.toNat_natCast]
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_eq_ramificationIdx'' :=
   ramificationIdx'_eq_ramificationIdx'
