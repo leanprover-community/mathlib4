@@ -38,22 +38,24 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   -- Start of proof of theorem 4.22 (Jacobson, p. 281).
   -- Assume v is not identically zero.
   by_contra! v0
-  -- This implies we have a similar sum `w + ∑ j, w' j • ∑ u ∈ (p j).aroots ℂ, exp u = 0` where
-  -- `w` and `w' j` are integers, `w ≠ 0`, and `p j` are integral polynomials with nonzero constant
-  -- coefficients.
-  obtain ⟨w, w0, m, p, p0, w', h⟩ := linearIndependent_exp_aux expMonoidHom u hu u_inj v hv v0 h
+  -- This implies we have a similar sum `w + ∑ p, w' p • ∑ u ∈ p.aroots ℂ, exp u = 0` where
+  -- `w` and `w' p` are integers, `w ≠ 0`, and the `p` in the support of `w'` are integral
+  -- polynomials with nonzero constant coefficients.
+  obtain ⟨w, w0, w'', p0, h⟩ := linearIndependent_exp_aux expMonoidHom u hu u_inj v hv v0 h
   simp_rw [expMonoidHom_apply, toAdd_ofAdd] at h
+  let p : w''.support → ℤ[X] := Subtype.val
+  let w' := w'' ∘ p
   -- Note that none of the `p j` are zero.
-  have p0' : ∀ j, p j ≠ 0 := by intro j h; simpa [h] using p0 j
+  have p0' : ∀ j, p j ≠ 0 := by intro ⟨_, hp⟩ rfl; simpa using p0 _ hp
   -- And the sum is not trivial. (Otherwise `w = 0`.)
-  have m0 : m ≠ 0 := by
-    rintro rfl; rw [Fin.sum_univ_zero, add_zero, Int.cast_eq_zero] at h
+  have I : Nonempty w''.support := by
+    rw [Finset.nonempty_coe_sort, Finsupp.support_nonempty_iff]
+    rintro rfl; rw [Finsupp.sum_zero_index, add_zero, Int.cast_eq_zero] at h
     exact w0 h
-  have I : Nonempty (Fin m) := Fin.pos_iff_nonempty.mp (Nat.pos_of_ne_zero m0)
   -- Let `P` be the product of the `p j`, which has a nonzero constant coefficient as well.
-  let P := ∏ j : Fin m, p j
+  let P := ∏ j, p j
   have P0 : P.eval 0 ≠ 0 := by
-    dsimp only [P]; rw [eval_prod, prod_ne_zero_iff]; exact fun j _hj => p0 j
+    dsimp only [P]; rw [eval_prod, prod_ne_zero_iff]; exact fun ⟨p, hp⟩ _ => p0 p hp
   have P0' : P ≠ 0 := by intro h; simp [h] at P0
   have mem_aroots {j x} (hx : x ∈ (p j).aroots ℂ) : x ∈ P.aroots ℂ := by
     rw [mem_aroots', Polynomial.map_ne_zero_iff (algebraMap ℤ ℂ).injective_int] at hx ⊢
@@ -79,6 +81,8 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   have aroots_K_eq_aroots_ℂ (j) (f : ℂ → ℂ) :
       (((p j).aroots K).map fun x => f (algebraMap K ℂ x)) = (((p j).aroots ℂ).map f) := by
     rw [← (splits_p j).map_aroots_algebraMap (B := ℂ), Multiset.map_map, Function.comp_def]
+  replace h : ↑w + ∑ j, w' j • (((p j).aroots ℂ).map exp).sum = 0 := by
+    rwa [Finsupp.sum, ← Finset.sum_coe_sort] at h
   simp_rw [← aroots_K_eq_aroots_ℂ] at h
   -- The following roughly matches Jacobson, p. 286.
   -- Let `k` be the product of the leading coefficients of the `p j` (i.e., `P.leadingCoeff`).

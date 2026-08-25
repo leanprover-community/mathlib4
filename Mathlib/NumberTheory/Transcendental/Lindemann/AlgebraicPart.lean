@@ -340,15 +340,13 @@ theorem linearIndependent_exp_aux_aroots_rat {F K S : Type*}
     (w : ℤ) (w' : ConjRootClass F K →₀ ℤ) (hw' : w' 0 = 0)
     (h : (w + w'.sum fun c wc ↦ wc • ∑ x ∈ c.carrier,
       φ.comp (algebraMap K S).toAddMonoidHom.toMultiplicative (.ofAdd x)) = 0) :
-    ∃ (n : ℕ) (p : Fin n → F[X]) (_hp : ∀ j, (p j).eval 0 ≠ 0)
-      (w' : Fin n → ℤ),
-        (w + ∑ j, w' j • (((p j).aroots S).map fun x => φ (.ofAdd x)).sum) = 0 := by
-  let q := w'.support
-  let c : Fin q.card → ConjRootClass F K := fun j => q.equivFin.symm j
-  have hc : ∀ j, c j ∈ q := fun j => Finset.coe_mem _
-  refine ⟨q.card, fun j => (c j).minpoly, ?_, fun j => w' (c j), ?_⟩
-  · intro j; specialize hc j
-    suffices ((c j).minpoly.map (algebraMap F K)).eval (algebraMap F K 0) ≠ 0 by
+    ∃ (w' : F[X] →₀ ℤ), (∀ p ∈ w'.support, p.eval 0 ≠ 0) ∧
+      w + w'.sum (fun p c ↦ c • ((p.aroots S).map fun x => φ (.ofAdd x)).sum) = 0 := by
+  refine ⟨w'.mapDomain ConjRootClass.minpoly, ?_, ?_⟩
+  · intro p hp
+    classical
+    obtain ⟨c, hc, rfl⟩ := Finset.mem_image.mp (Finsupp.mapDomain_support hp)
+    suffices (c.minpoly.map (algebraMap F K)).eval (algebraMap F K 0) ≠ 0 by
       rwa [eval_map_algebraMap, aeval_algebraMap_apply, _root_.map_ne_zero] at this
     rw [RingHom.map_zero, ConjRootClass.minpoly.map_eq_prod, eval_prod, prod_ne_zero_iff]
     intro a ha
@@ -356,35 +354,32 @@ theorem linearIndependent_exp_aux_aroots_rat {F K S : Type*}
     rintro rfl
     rw [Set.mem_toFinset, ConjRootClass.mem_carrier, ConjRootClass.mk_zero] at ha
     rw [← ha] at hc
-    simp [q, hw'] at hc
-  rw [← h, add_right_inj]
-  change ∑ j, ((fun c : q => w' c.1 • ((c.1.minpoly.aroots S).map (φ <| .ofAdd ·)).sum) ·) _ = _
-  -- Porting note: were `rw [Equiv.sum_comp q.equivFin.symm, sum_coe_sort]`
-  rw [Equiv.sum_comp q.equivFin.symm,
-    sum_coe_sort _ (fun c ↦ w' c • ((c.minpoly.aroots S).map (φ <| .ofAdd ·)).sum)]
-  refine sum_congr rfl fun c _hc => ?_
-  rw [← c.splits_minpoly.map_aroots_algebraMap, c.aroots_minpoly_eq_carrier_val]
-  simp
+    simp [hw'] at hc
+  · rw [← h, add_right_inj, Finsupp.sum_mapDomain_index (by simp) (by simp [add_mul])]
+    refine sum_congr rfl fun c _hc => ?_
+    dsimp
+    rw [← c.splits_minpoly.map_aroots_algebraMap, c.aroots_minpoly_eq_carrier_val]
+    simp
 
 theorem linearIndependent_exp_aux_aroots_int (R : Type*) {F S : Type*}
     [CommRing R] [Nontrivial R] [Field F] [Algebra R F] [IsFractionRing R F]
     [CommRing S] [IsDomain S] [Algebra R S] [Algebra F S] [IsScalarTower R F S]
     (f : S → S)
-    (w : ℤ) (n : ℕ) (p : Fin n → F[X]) (hp : ∀ j, (p j).eval 0 ≠ 0)
-    (w' : Fin n → ℤ) (h : w + ∑ j, w' j • (((p j).aroots S).map f).sum = 0) :
-    ∃ (p : Fin n → R[X]) (_hp : ∀ j, (p j).eval 0 ≠ 0)
-      (w' : Fin n → ℤ), w + ∑ j, w' j • (((p j).aroots S).map f).sum = 0 := by
-  choose b hb hbp using
-    fun j ↦ IsLocalization.integerNormalization_spec (nonZeroDivisors R) (p j)
-  refine ⟨fun i => IsLocalization.integerNormalization (nonZeroDivisors R) (p i), ?_, w', ?_⟩
-  · intro j
-    suffices aeval (algebraMap R F 0)
-        (IsLocalization.integerNormalization (nonZeroDivisors R) (p j)) ≠ 0 by
+    (w : ℤ) (w' : F[X] →₀ ℤ) (hw' : ∀ p ∈ w'.support, p.eval 0 ≠ 0)
+    (h : w + w'.sum (fun p c ↦ c • ((p.aroots S).map f).sum) = 0) :
+    ∃ (w' : R[X] →₀ ℤ), (∀ p ∈ w'.support, p.eval 0 ≠ 0) ∧
+      w + w'.sum (fun p c ↦ c • ((p.aroots S).map f).sum) = 0 := by
+  choose b hb hbp using IsLocalization.integerNormalization_spec (nonZeroDivisors R) (S := F)
+  refine ⟨w'.mapDomain (IsLocalization.integerNormalization (nonZeroDivisors R)), ?_, ?_⟩
+  · intro p hp
+    suffices aeval (algebraMap R F 0) p ≠ 0 by
       rwa [aeval_algebraMap_apply, map_ne_zero_iff _ (IsFractionRing.injective R F)] at this
+    classical
+    obtain ⟨q, hq, rfl⟩ := Finset.mem_image.mp (Finsupp.mapDomain_support hp)
     have : IsCancelMulZero R := .of_faithfulSMul R F
     rw [map_zero, ← eval_map_algebraMap, hbp, eval_smul, smul_ne_zero_iff]
-    exact ⟨nonZeroDivisors.ne_zero (hb _), hp j⟩
-  · rw [← h, add_right_inj]
+    exact ⟨nonZeroDivisors.ne_zero (hb _), hw' q hq⟩
+  · rw [← h, add_right_inj, Finsupp.sum_mapDomain_index (by simp) (by simp [add_mul])]
     refine sum_congr rfl fun j _hj => congrArg _ (congrArg _ (Multiset.map_congr ?_ fun _ _ => rfl))
     change roots _ = roots _
     rw [IsScalarTower.algebraMap_eq R F S, ← Polynomial.map_map, hbp,
@@ -399,9 +394,8 @@ public theorem linearIndependent_exp_aux {S : Type*}
     (u : ι → S) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → S) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
     (h : ∑ i, v i * φ (.ofAdd <| u i) = 0) :
-    ∃ (w : ℤ) (_w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℤ[X]) (_p0 : ∀ j, (p j).eval 0 ≠ 0)
-      (w' : Fin n → ℤ),
-        w + ∑ j, w' j • (((p j).aroots S).map (φ <| .ofAdd ·)).sum = 0 := by
+    ∃ (w : ℤ), w ≠ 0 ∧ ∃ (w' : ℤ[X] →₀ ℤ), (∀ p ∈ w'.support, p.eval 0 ≠ 0) ∧
+      w + w'.sum (fun p c ↦ c • ((p.aroots S).map (φ <| .ofAdd ·)).sum) = 0 := by
   classical
   let s := univ.image u ∪ univ.image v
   have hs : ∀ x ∈ s, IsIntegral ℚ x := by simp [s, or_imp, forall_and, hu, hv]
@@ -436,5 +430,5 @@ public theorem linearIndependent_exp_aux {S : Type*}
   obtain ⟨f, f0, hf⟩ := linearIndependent_exp_aux2_1 _ f f0 hf
   obtain ⟨w, w0, w', hw', h⟩ := linearIndependent_exp_aux2_2 _ f f0 hf
   obtain ⟨w, w0, w', hw', h⟩ := linearIndependent_exp_aux_int ℤ _ w w0 w' hw' h
-  obtain ⟨n, p, hp, w', h⟩ := linearIndependent_exp_aux_aroots_rat _ w w' hw' h
-  exact ⟨w, w0, n, linearIndependent_exp_aux_aroots_int ℤ _ w n p hp w' h⟩
+  obtain ⟨w', hw', h⟩ := linearIndependent_exp_aux_aroots_rat _ w w' hw' h
+  exact ⟨w, w0, linearIndependent_exp_aux_aroots_int ℤ _ w w' hw' h⟩
