@@ -42,7 +42,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits Opposite SimplexCategory
 
-open Simplicial
+open scoped Simplicial
 
 universe u
 
