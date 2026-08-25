@@ -325,9 +325,9 @@ theorem ofFun_zero {μ : Measure E} : ofFun Ω (0 : E → F) μ n = 0 := by
 
 theorem ofFun_congr_ae {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict Ω] f') :
     ofFun Ω f μ n = ofFun Ω f' μ n := by
+  ext φ
   by_cases hf : LocallyIntegrableOn f Ω μ
   · have hf' : LocallyIntegrableOn f' Ω μ := hf.congr h
-    ext φ
     rw [ofFun_apply hf, ofFun_apply hf']
     have h' : ∀ x ∉ Ω, φ x • f x = 0 ∧ φ x • f' x = 0 := fun x hx ↦ by simp [φ.zero_on_compl hx]
     obtain ⟨h₁, h₂⟩ := forall₂_and.mp h'
