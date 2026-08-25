@@ -39,6 +39,15 @@ def inferBase (es : Array Expr) : MetaM (Σ u : Level, Q(Type u)) := do
   | [] => return ⟨0, q(ℕ)⟩
   | r :: rs => rs.foldlM Algebra.pickLargerRing r
 
+/-- Infer a common base scalar ring across all locations targeted by `loc`.
+
+The locations read are exactly those that `transformAtNondepPropLocation` rewrites when the
+tactic runs, so the inferred ring reflects the rewrite set. -/
+def inferBaseAtLocation (loc : Location) : TacticM (Σ u : Level, Q(Type u)) :=
+  withMainContext do
+    inferBase (← (← mapNondepPropLocation loc (fun fvarId => fvarId.getType) getMainTarget).mapM
+      (whnf ·))
+
 /-- Rewrite `e`, an expression in some `AddCommMonoid`, into `module`'s internal normal form using
 `Mathlib.Tactic.Module.eval`. -/
 def evalExpr (base : Σ u : Level, Q(Type u)) (postCtx : Simp.Context) (e : Expr) :
@@ -69,15 +78,6 @@ def moduleNFCore (s : IO.Ref AtomM.State) (base : Σ u : Level, Q(Type u)) (e : 
   let cleanCtx ← cleanupCtx
   AtomM.recurse s { red := .instances } (wellBehavedDischarge := true) (evalExpr base postCtx)
     (cleanup cleanCtx) e
-
-/-- Infer a common base scalar ring across all locations targeted by `loc`.
-
-The locations read are exactly those that `transformAtNondepPropLocation` rewrites when the
-tactic runs, so the inferred ring reflects the rewrite set. -/
-def inferBaseAtLocation (loc : Location) : TacticM (Σ u : Level, Q(Type u)) :=
-  withMainContext do
-    inferBase (← (← mapNondepPropLocation loc (fun fvarId => fvarId.getType) getMainTarget).mapM
-      (whnf ·))
 
 /-- A normalization tactic for module expressions.
 
