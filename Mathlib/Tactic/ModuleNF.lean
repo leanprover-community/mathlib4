@@ -44,6 +44,8 @@ def inferBase (es : Array Expr) : MetaM (Σ u : Level, Q(Type u)) := do
 def evalExpr (base : Σ u : Level, Q(Type u)) (postCtx : Simp.Context) (e : Expr) :
     AtomM Simp.Result := do
   let e ← withReducible <| whnf e
+  -- An expression that is not an application must necessarily be an atom.
+  -- `Module.eval` also checks for atoms, but this check avoids instance search and `Module.parse`.
   guard e.isApp
   let ⟨_, M, e⟩ ← inferTypeQ' e
   let iM : Q(AddCommMonoid $M) ← synthInstanceQ q(AddCommMonoid $M)
