@@ -467,20 +467,18 @@ theorem _root_.Submodule.isFredholm_mkQL {p : Submodule 𝕜 E} (hcompl : p.Clos
     IsFredholm p.mkQL :=
   isFredholm_mkQL_iff.mpr ⟨hcompl, inferInstance⟩
 
-theorem _root_.Submodule.isFredholm_projectionOntoL [ContinuousSub E] {p q : Submodule 𝕜 E}
-    (hcompl : IsTopCompl p q)
-    [FiniteDimensional 𝕜 q] :
-    IsFredholm (p.projectionOntoL q hcompl) :=
-  isQuotientMap_projectionOntoL hcompl |>.isFredholm
-    (by simpa using hcompl.symm.closedComplemented)
-    (by rwa [ker_projectionOntoL])
-
 theorem _root_.Submodule.isFredholm_projectionOntoL_iff [ContinuousSub E] {p q : Submodule 𝕜 E}
     (hcompl : IsTopCompl p q) :
     IsFredholm (p.projectionOntoL q hcompl) ↔ FiniteDimensional 𝕜 q := by
   rw [(projectionOntoL_surjective hcompl).isFredholm_iff _, ← fg_iff_finiteDimensional,
     ← fg_iff_finiteDimensional]
   simp [isQuotientMap_projectionOnto hcompl, hcompl.symm.closedComplemented]
+
+theorem _root_.Submodule.isFredholm_projectionOntoL [ContinuousSub E] {p q : Submodule 𝕜 E}
+    (hcompl : IsTopCompl p q)
+    [FiniteDimensional 𝕜 q] :
+    IsFredholm (p.projectionOntoL q hcompl) :=
+  isFredholm_projectionOntoL_iff hcompl |>.mpr inferInstance
 
 theorem _root_.FredholmDecomposition.isFredholm_proj [ContinuousSub E]
     (dec : FredholmDecomposition 𝕜 E) :
@@ -575,6 +573,18 @@ theorem _root_.Submodule.isFredholm_projectionL_iff {p q : Submodule 𝕜 E}
     IsFredholm (p.projectionL q hcompl) ↔ FiniteDimensional 𝕜 q := by
   refine ⟨fun h ↦ ?_, fun _ ↦ isFredholm_projectionL hcompl⟩
   simpa [← fg_iff_finiteDimensional, -toLinearMap_projectionL, ker_projectionL] using h.finite_ker
+
+open ContinuousLinearMap in
+theorem IsIdempotentElem.isFredholm_iff {f : E →L[𝕜] E} (hf : IsIdempotentElem f) :
+    IsFredholm f ↔ FiniteDimensional 𝕜 f.ker := by
+  conv_lhs => rw [hf.eq_projectionL]
+  rw [isFredholm_projectionL_iff]
+
+open ContinuousLinearMap in
+theorem IsIdempotentElem.isFredholm {f : E →L[𝕜] E} (hf : IsIdempotentElem f)
+    [FiniteDimensional 𝕜 f.ker] :
+    IsFredholm f :=
+  hf.isFredholm_iff.mpr inferInstance
 
 end Constructions
 
