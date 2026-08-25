@@ -10,21 +10,22 @@ public import Mathlib.LinearAlgebra.Matrix.Nonsingular
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
-# Algebra maps between quadratic algebras
+# Algebra homomorphisms between quadratic algebras
 
 An `R`-algebra homomorphism `f : QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra R a' b'` is
-determined by the image of `ω`, and its matrix in the bases `1, ω` is
-`!![1, (f ω).re; 0, (f ω).im]`. Its determinant `(f ω).im` governs everything: `f` is injective
-exactly when `(f ω).im` is regular, bijective exactly when it is a unit, and an injective
-`f` preserves the trace, the conjugation and the norm.
+determined by the image of `ω`, and its matrix in the bases `1, ω` is `[1, (f ω).re; 0, (f ω).im]`.
+Furthermore `f` is injective exactly when `(f ω).im` is regular, bijective exactly when it is
+a unit. Finally, an injective `f` preserves the trace and the norm, and commutes with conjugation.
 
 ## Main results
 
+* `QuadraticAlgebra.toMatrix_algHom`, `QuadraticAlgebra.det_toMatrix_algHom`: the matrix of `f` in
+  the bases `1, ω` is `[1, (f ω).re; 0, (f ω).im]`, whose determinant is `(f ω).im`.
 * `QuadraticAlgebra.isRegular_im_omega_iff_injective`: `f` is injective iff `(f ω).im` is regular.
 * `QuadraticAlgebra.isUnit_im_omega_iff_bijective`: `f` is bijective iff `(f ω).im` is a unit.
-* `QuadraticAlgebra.trace_algHom`, `QuadraticAlgebra.algHom_star`, `QuadraticAlgebra.norm_algHom`:
-  an injective algebra homomorphism preserves the trace, the conjugation and the norm.
 * `QuadraticAlgebra.isUnit_im_omega_of_algEquiv`: for an algebra isomorphism, `(e ω).im` is a unit.
+* `QuadraticAlgebra.trace_algHom`, `QuadraticAlgebra.algHom_star`, `QuadraticAlgebra.norm_algHom`:
+  an injective algebra homomorphism preserves the trace and the norm, and commutes with conjugation.
 -/
 
 @[expose] public section
@@ -59,7 +60,7 @@ private theorem mulVec_toMatrix_comp_eq :
   funext fun x ↦ LinearMap.toMatrix_mulVec_repr (basis a b) (basis a' b') f.toLinearMap x
 
 /-- An algebra homomorphism `f` between quadratic algebras is injective exactly when `(f ω).im` is
-regular, that being the determinant of `f` in the bases `1, ω`, see `det_toMatrix_algHom`. -/
+regular, which is the determinant of `f` in the bases `1, ω`, see `det_toMatrix_algHom`. -/
 theorem isRegular_im_omega_iff_injective :
     IsRegular (f ω).im ↔ Function.Injective f := by
   rw [← det_toMatrix_algHom, isRegular_iff_mem_nonZeroDivisors,
