@@ -530,8 +530,7 @@ lemma unbotA_lt_iff [Nonempty α] (hx : x ≠ ⊥) : x.unbotA < a ↔ x < a := b
 
 @[to_dual forall_lt_top]
 theorem forall_bot_lt {p : WithBot α → Prop} : (∀ a, ⊥ < a → p a) ↔ (∀ a : α, p a) := by
-  simp_rw [WithBot.bot_lt_iff_ne_bot]
-  exact forall_ne_bot
+  simp [WithBot.bot_lt_iff_ne_bot, forall_ne_bot]
 
 end LT
 
