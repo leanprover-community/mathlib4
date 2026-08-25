@@ -32,6 +32,7 @@ resulting object is `NormGroup G` with `dist g h = ‖g⁻¹ * h‖`.
 
 ## Implementation notes
 
+* The API in this file is modelled on the length API for Coxeter groups (`CoxeterSystem.length`).
 * The definition of `wordLength` uses `sInf` as `InfSet ℕ` already uses `Nat.find`, saving us from
   having to rewrite `classical`. The junk value `0` on `∅` is never reached because every group
   element has at least one word representing it. It uses `@[no_expose]` as it has no useful defeqs.
