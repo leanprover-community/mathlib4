@@ -1198,7 +1198,7 @@ theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondi
     apply map_injective_of_ker_le (mk' (center G)) hkh le_top
     exact (ih H' hH').trans (symm (map_top_of_surjective _ hsur))
 
-theorem IsNilpotent.commute_of_orderOf_coprime {G : Type*} [Group G] [Group.IsNilpotent G]
+theorem IsNilpotent.commute_of_orderOf_coprime [Group.IsNilpotent G]
     {x y : G} (h : (orderOf x).Coprime (orderOf y)) : Commute x y := by
   refine nilpotent_center_quotient_ind
     (P := fun G _ _ => ∀ x y : G, (orderOf x).Coprime (orderOf y) → Commute x y) G ?_ ?_ x y h
