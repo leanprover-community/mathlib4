@@ -31,42 +31,8 @@ public section
 namespace Affine.Simplex
 variable {V P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V]
-variable [MetricSpace P] [NormedAddTorsor V P]
+variable [MetricSpace P] [NormedAddTorsor V P] [MeasurableSpace P] [BorelSpace P]
 variable {n : ℕ}
-
-/-- Through a point on the altitude of a simplex, draw the perpendicular plane and restrict it to
-the affine span of the simplex. This is the same as shifting the base towards the vertex. -/
-public theorem affineSubspaceMk'_lineMap_altitudeFoot_eq_shift (s : Simplex ℝ P (n + 1))
-    (i : Fin (n + 2)) (x : ℝ) :
-    AffineSubspace.mk' (AffineMap.lineMap (s.points i) (s.altitudeFoot i) x)
-      (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ ⊓ affineSpan ℝ (Set.range s.points) =
-      (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
-  have h : AffineMap.lineMap (s.points i) (s.altitudeFoot i) x ∈
-      affineSpan ℝ (Set.range s.points) := by
-    refine vadd_mem_of_mem_direction (smul_mem _ _ ?_) (mem_affineSpan ℝ (by simp))
-    exact vsub_mem_direction (s.altitudeFoot_mem_affineSpan _) (mem_affineSpan ℝ (by simp))
-  apply ext_of_direction_eq
-  · rw [AffineSubspace.direction_shift, AffineSubspace.direction_inf_of_mem (by simp) h,
-      AffineSubspace.direction_mk', ← vectorSpan_pair, ← direction_affineSpan,
-      affineSpan_pair_altitudeFoot_eq_altitude, direction_altitude, direction_affineSpan,
-      direction_affineSpan]
-    exact orthogonal_inf_orthogonal_inf_of_le <| vectorSpan_mono _ <| by simp
-  · refine ⟨AffineMap.lineMap (s.points i) (s.altitudeFoot i) x, ?_, ?_⟩
-    · simpa using h
-    · apply lineMap_mem_shift (by simp)
-
-/-- Through a point on the altitude of a simplex, draw the perpendicular plane and find the cross
-section with the closed interior. This is the same as the cross section between the shifted base
-and the closed interior. -/
-public theorem closedInterior_inter_affineSubspaceMk'_lineMap_altitudeFoot
-    (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) (x : ℝ) :
-    s.closedInterior ∩ AffineSubspace.mk' (AffineMap.lineMap (s.points i) (s.altitudeFoot i) x)
-      (ℝ ∙ (s.altitudeFoot i -ᵥ s.points i))ᗮ =
-      s.closedInterior ∩ (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
-  rw [← affineSubspaceMk'_lineMap_altitudeFoot_eq_shift, AffineSubspace.coe_inf, ← Set.inter_assoc,
-    Set.inter_right_comm, Set.inter_eq_left.mpr closedInterior_subset_affineSpan]
-
-variable [MeasurableSpace P] [BorelSpace P]
 
 theorem measurableSet_closedInterior (s : Simplex ℝ P n) : MeasurableSet s.closedInterior :=
   s.isClosed_closedInterior.measurableSet
@@ -108,7 +74,8 @@ theorem euclideanHausdorffMeasure_closedInterior (s : Simplex ℝ P (n + 1)) (i 
   rw [EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral' (s.points i) haltitude0
     s.measurableSet_closedInterior haltitudeMem closedInterior_subset_affineSpan, ← ofReal_norm,
     ← dist_eq_norm_vsub', ← height, Nat.sub_eq_of_eq_add hn]
-  simp_rw [← AffineMap.lineMap_apply,
+  simp_rw [← AffineMap.lineMap_apply, ← vectorSpan_pair, ← direction_affineSpan,
+    affineSpan_pair_altitudeFoot_eq_altitude,
     closedInterior_inter_affineSubspaceMk'_lineMap_altitudeFoot s i]
   rw [← setLIntegral_eq_of_support_subset (cross_section_support s i),
     lintegral_congr_ae (measure_cross_section s i)]
