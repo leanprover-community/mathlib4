@@ -39,7 +39,7 @@ def inferBase (es : Array Expr) : MetaM (Σ u : Level, Q(Type u)) := do
   | [] => return ⟨0, q(ℕ)⟩
   | r :: rs => rs.foldlM Algebra.pickLargerRing r
 
-/-- Rewrite `e`, an expression in some `AddCommMonoid`, into `module_nf` normal form using
+/-- Rewrite `e`, an expression in some `AddCommMonoid`, into `module`'s internal normal form using
 `Mathlib.Tactic.Module.eval`. -/
 def evalExpr (base : Σ u : Level, Q(Type u)) (postCtx : Simp.Context) (e : Expr) :
     AtomM Simp.Result := do
