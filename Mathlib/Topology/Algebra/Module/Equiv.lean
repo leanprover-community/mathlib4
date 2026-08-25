@@ -1235,4 +1235,25 @@ theorem _root_.LinearEquiv.isHomeomorph_iff (e : M ≃ₛₗ[σ] M₁) :
 
 end IsHomeomorph
 
+lemma toLinearEquiv_inv (f : V ≃L[R] V) :
+    (f⁻¹).toLinearEquiv = f.toLinearEquiv ⁻¹ := rfl
+
+lemma toLinearEquiv_mul (f g : V ≃L[R] V) :
+    (f * g).toLinearEquiv = f * g := rfl
+
+/-- `ContinuousLinearEquiv.toLinearEquiv` as a multiplicative monoid homomorphism `MonoidHom`. -/
+@[simps]
+def toLinearEquivMonoidHom : (V ≃L[R] V) →* (V ≃ₗ[R] V) where
+  toFun := ContinuousLinearEquiv.toLinearEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+lemma toLinearEquiv_pow (f : V ≃L[R] V) (n : ℕ) :
+    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
+  map_pow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
+
+lemma toLinearEquiv_zpow (f : V ≃L[R] V) (n : ℤ) :
+    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
+  map_zpow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
+
 end ContinuousLinearEquiv

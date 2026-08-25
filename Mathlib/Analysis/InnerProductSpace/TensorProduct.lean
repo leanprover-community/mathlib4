@@ -767,27 +767,6 @@ end congr_congr
 theorem congrL_mul (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (f' : E ≃L[𝕜] E) (g' : G ≃L[𝕜] G) :
     congrL (f * f') (g * g') = congrL f g * congrL f' g' := congrL_trans ..
 
-lemma _root_.ContinuousLinearEquiv.toLinearEquiv_inv (f : E ≃L[𝕜] E) :
-    (f⁻¹).toLinearEquiv = f.toLinearEquiv ⁻¹ := rfl
-
-lemma _root_.ContinuousLinearEquiv.toLinearEquiv_mul (f g : E ≃L[𝕜] E) :
-    (f * g).toLinearEquiv = f * g := rfl
-
-/-- `ContinuousLinearEquiv.toLinearEquiv` as a multiplicative monoid homomorphism `MonoidHom`. -/
-@[simps]
-def _root_.ContinuousLinearEquiv.toLinearEquivMonoidHom : (E ≃L[𝕜] E) →* (E ≃ₗ[𝕜] E) where
-  toFun := ContinuousLinearEquiv.toLinearEquiv
-  map_one' := rfl
-  map_mul' _ _ := rfl
-
-lemma _root_.ContinuousLinearEquiv.toLinearEquiv_pow (f : E ≃L[𝕜] E) (n : ℕ) :
-    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
-  map_pow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
-
-lemma _root_.ContinuousLinearEquiv.toLinearEquiv_zpow (f : E ≃L[𝕜] E) (n : ℤ) :
-    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
-  map_zpow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
-
 @[simp]
 theorem congrL_pow (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (n : ℕ) :
     congrL f g ^ n = congrL (f ^ n) (g ^ n) := by
