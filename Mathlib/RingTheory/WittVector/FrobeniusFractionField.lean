@@ -131,7 +131,7 @@ theorem succNthVal_spec' (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k)
     Polynomial.eval_pow, succNthDefiningPoly, Polynomial.eval_mul, Polynomial.eval_add,
     Polynomial.eval_sub, Polynomial.IsRoot.def]
     at this
-  convert this using 1
+  convert! this using 1
   ring
 
 end IsAlgClosed
@@ -194,6 +194,7 @@ theorem frobeniusRotation_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠
   apply solution_nonzero p ha₁ ha₂
   simpa [← h, frobeniusRotation, frobeniusRotationCoeff] using WittVector.zero_coeff p k 0
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) :
     frobenius (frobeniusRotation p ha₁ ha₂) * a₁ = frobeniusRotation p ha₁ ha₂ * a₂ := by
   ext n
@@ -207,7 +208,7 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
       succNthVal_spec' p n a₁ a₂ (fun i : Fin (n + 1) => frobeniusRotationCoeff p ha₁ ha₂ i.val)
         ha₁ ha₂
     simp only [frobeniusRotationCoeff, Fin.val_zero] at this
-    convert this using 3; clear this
+    convert! this using 3; clear this
     apply TruncatedWittVector.ext
     intro i
     simp only [WittVector.coeff_truncateFun, WittVector.coeff_frobenius_charP]
@@ -236,7 +237,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
       (IsFractionRing.injective (𝕎 k) (FractionRing (𝕎 k))).ne hq'''
   rw [zpow_sub₀ (FractionRing.p_nonzero p k)]
   simp [field, FractionRing.p_nonzero p k]
-  convert congr_arg (fun x => algebraMap (𝕎 k) (FractionRing (𝕎 k)) x) key using 1
+  convert! congr_arg (fun x => algebraMap (𝕎 k) (FractionRing (𝕎 k)) x) key using 1
   · simp only [map_mul]
   · simp only [map_mul]
 

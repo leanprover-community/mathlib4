@@ -41,6 +41,7 @@ noncomputable def I : CochainComplex C ℤ where
   X n := Injective.under (K.X n)
   d _ _ := 0
 
+set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : Injective ((I K).X n) := by
   dsimp
   infer_instance

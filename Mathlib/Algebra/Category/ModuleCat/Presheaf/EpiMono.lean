@@ -16,7 +16,7 @@ in the category of presheaves of modules.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v₁ u₁ u
 

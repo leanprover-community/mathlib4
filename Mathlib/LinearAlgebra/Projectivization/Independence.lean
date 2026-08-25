@@ -25,12 +25,11 @@ ambient vector space. Similarly for the definition of dependence.
 
 ## Future Work
 
-- Define collinearity in projective space.
 - Prove the axioms of a projective geometry are satisfied by the dependence relation.
 - Define projective linear subspaces.
 -/
 
-@[expose] public section
+public section
 
 open scoped LinearAlgebra.Projectivization
 
@@ -50,10 +49,10 @@ theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivizatio
   refine ⟨?_, fun h => ?_⟩
   · rintro ⟨ff, hff, hh⟩
     choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)
-    convert hh.units_smul a
+    convert! hh.units_smul a
     ext i
     exact (ha i).symm
-  · convert Independent.mk _ _ h
+  · convert! Independent.mk _ _ h
     · simp only [mk_rep, Function.comp_apply]
     · intro i
       apply rep_nonzero
@@ -83,10 +82,10 @@ theorem dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.
   · rintro ⟨ff, hff, hh1⟩
     contrapose hh1
     choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)
-    convert hh1.units_smul a⁻¹
+    convert! hh1.units_smul a⁻¹
     ext i
     simp only [← ha, inv_smul_smul, Pi.smul_apply', Pi.inv_apply, Function.comp_apply]
-  · convert Dependent.mk _ _ h
+  · convert! Dependent.mk _ _ h
     · simp only [mk_rep, Function.comp_apply]
     · exact fun i => rep_nonzero (f i)
 
@@ -111,5 +110,12 @@ theorem dependent_pair_iff_eq (u v : ℙ K V) : Dependent ![u, v] ↔ u = v := b
 @[simp]
 theorem independent_pair_iff_ne (u v : ℙ K V) : Independent ![u, v] ↔ u ≠ v := by
   rw [independent_iff_not_dependent, dependent_pair_iff_eq u v]
+
+/-- Two points are independent if and only if their underlying vectors are linearly independent. -/
+lemma independent_mk_iff_LinearIndependent {u v : V} (hu : u ≠ 0) (hv : v ≠ 0) :
+    Independent ![mk K u hu, mk K v hv] ↔ LinearIndependent K ![u, v] := by
+  rw [independent_pair_iff_ne, ne_eq, mk_eq_mk_iff' K u v hu hv, linearIndependent_fin2]
+  simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
+  exact ⟨fun h ↦ ⟨hv, fun a ha ↦ h ⟨a, ha⟩⟩, fun ⟨_, h⟩ ⟨a, ha⟩ ↦ h a ha⟩
 
 end Projectivization

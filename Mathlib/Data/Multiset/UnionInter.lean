@@ -29,7 +29,7 @@ assert_not_exists Monoid
 
 universe v
 
-open List Subtype Nat Function
+open List Nat Function
 
 variable {α : Type*} {β : Type v} {γ : Type*}
 
@@ -99,11 +99,11 @@ instance : Inter (Multiset α) := ⟨inter⟩
 
 @[simp]
 lemma cons_inter_of_pos (s : Multiset α) : a ∈ t → (a ::ₘ s) ∩ t = a ::ₘ s ∩ t.erase a :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_pos _ h
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_mem _ h
 
 @[simp]
 lemma cons_inter_of_neg (s : Multiset α) : a ∉ t → (a ::ₘ s) ∩ t = s ∩ t :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_neg _ h
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_not_mem _ h
 
 lemma inter_le_left : s ∩ t ≤ s :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => bagInter_sublist_left.subperm
@@ -225,8 +225,8 @@ theorem replicate_inter (n : ℕ) (x : α) (s : Multiset α) :
   ext y
   rw [count_inter, count_replicate, count_replicate]
   by_cases h : x = y
-  · simp only [h, if_true]
-  · simp only [h, if_false, Nat.zero_min]
+  · simp only [h, ite_true]
+  · simp only [h, ite_false, Nat.zero_min]
 
 @[simp]
 theorem inter_replicate (s : Multiset α) (n : ℕ) (x : α) :

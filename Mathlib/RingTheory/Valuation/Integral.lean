@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Valuation.ValuationRing
 The ring of integers is integrally closed inside the original ring.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w

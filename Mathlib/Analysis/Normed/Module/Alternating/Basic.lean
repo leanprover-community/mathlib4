@@ -24,7 +24,7 @@ Most proofs just invoke the corresponding fact about continuous multilinear maps
 noncomputable section
 
 open scoped NNReal
-open Finset Metric
+open Finset
 
 /-!
 ### Type variables
@@ -470,7 +470,7 @@ def fderivCompContinuousLinearMap (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜]
     trans ∑ i, f fun j ↦ Function.update (fun _ ↦ g) i dg j (v j)
     · simp
     · rw [← Finset.sum_add_sum_compl {a, b}, Finset.sum_pair hne, Finset.sum_eq_zero, add_zero]
-      · convert f.map_add_swap _ hne with i
+      · convert! f.map_add_swap _ hne with i
         rcases eq_or_ne i a with rfl | hia
         · simp [heq, hne, hne.symm]
         · rcases eq_or_ne i b with rfl | hib
@@ -615,7 +615,7 @@ section Norm
 (and not just a `SeminormedAddCommGroup`). -/
 
 universe u wE wF v
-variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {ι : Type v}
+variable {𝕜 : Type u} {E : Type wE} {F : Type wF} {ι : Type v}
   [Fintype ι]
   [NontriviallyNormedField 𝕜]
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]

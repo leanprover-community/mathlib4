@@ -36,7 +36,7 @@ Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian modu
 
 -/
 
-@[expose] public section
+public section
 
 /-- `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module,
 implemented as the well-foundedness of submodule inclusion. -/

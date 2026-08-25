@@ -21,7 +21,7 @@ This file defines prestructures and quotients of first-order structures.
   `Quotient s`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace FirstOrder

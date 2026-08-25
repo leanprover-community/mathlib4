@@ -31,7 +31,7 @@ assert_not_exists Ideal TwoSidedIdeal
 open QuotientAddGroup Set ZMod
 open scoped IsMulCommutative
 
-variable (n : ℕ) {A R : Type*} [AddGroup A] [Ring R]
+variable (n : ℕ) {A : Type*} [AddGroup A]
 
 namespace Int
 
@@ -144,7 +144,7 @@ instance minimalPeriod_pos [Finite <| orbit (zpowers a) b] :
     NeZero <| minimalPeriod (a • ·) b :=
   ⟨by
     cases nonempty_fintype (orbit (zpowers a) b)
-    haveI : Nonempty (orbit (zpowers a) b) := (nonempty_orbit b).to_subtype
+    have : Nonempty (orbit (zpowers a) b) := (nonempty_orbit b).to_subtype
     rw [minimalPeriod_eq_card]
     exact Fintype.card_ne_zero⟩
 
@@ -167,7 +167,7 @@ variable {a}
 @[to_additive (attr := simp)]
 lemma finite_zpowers : (zpowers a : Set α).Finite ↔ IsOfFinOrder a := by
   simp only [← orderOf_pos_iff, ← Nat.card_zpowers, Nat.card_pos_iff, ← SetLike.coe_sort_coe,
-    nonempty_coe_sort, Nat.card_pos_iff, Set.finite_coe_iff, Subgroup.coe_nonempty, true_and]
+    nonempty_coe_sort, Nat.card_pos_iff, Set.finite_coe_iff, OneMemClass.coe_nonempty, true_and]
 
 @[to_additive (attr := simp)]
 lemma infinite_zpowers : (zpowers a : Set α).Infinite ↔ ¬IsOfFinOrder a := finite_zpowers.not
@@ -194,7 +194,7 @@ lemma quotientEquivSigmaZMod_symm_apply (q : orbitRel.Quotient (zpowers g) (G �
 
 lemma quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H)) (k : ℤ) :
     quotientEquivSigmaZMod H g (g ^ k • q.out) = ⟨q, k⟩ := by
-  rw [apply_eq_iff_eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
+  rw [← eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
     zpow_smul_mod_minimalPeriod]
 
 set_option backward.isDefEq.respectTransparency false in

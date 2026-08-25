@@ -26,10 +26,10 @@ constructions quicker to implement.
 
 -/
 
-@[expose] public section
+public section
 
 
-variable {R S : Type*}
+variable {R : Type*}
 
 open Tropical
 

@@ -29,13 +29,13 @@ choose to use these convenience lemmas. This encourages good hygiene in the deve
 synonyms.
 -/
 
-@[expose] public section
+public section
 
 open NNReal
 
 section Uniformity
 
-open Uniformity
+open scoped Uniformity
 
 variable {α β : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 variable {K₁ K₂ : ℝ≥0} {f : α → β}

@@ -16,13 +16,13 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 group action
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero MonoidHom
 
 open Function (Injective Surjective)
 
-variable {M α β γ : Type*}
+variable {α β γ : Type*}
 
 section
 

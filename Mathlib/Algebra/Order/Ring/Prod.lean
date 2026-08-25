@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Ring.Prod
 # Products of ordered rings
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

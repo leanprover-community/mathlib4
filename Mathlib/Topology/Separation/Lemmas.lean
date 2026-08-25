@@ -13,7 +13,7 @@ public import Mathlib.Topology.Separation.Profinite
 # Further separation lemmas
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*}
 

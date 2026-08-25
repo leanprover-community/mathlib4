@@ -8,19 +8,19 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.CategoryTheory.Abelian.Exact
 
-/-!  # Short Exact Sequences in Abelian Categories
+/-! # Short Exact Sequences in Abelian Categories
 
 This file contains lemmas about short exact sequences in abelian categories.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.ShortExact
 
 universe v₁ v₂ u₁ u₂
 
-open CategoryTheory Limits Preadditive Functor
+open CategoryTheory Limits Preadditive CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C] [Abelian C]
 variable {D : Type u₂} [Category.{v₂} D] [Abelian D]

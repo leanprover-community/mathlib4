@@ -27,7 +27,7 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 group action
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 
