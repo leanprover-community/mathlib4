@@ -1211,6 +1211,7 @@ public import Mathlib.Algebra.Polynomial.UnitTrinomial
 public import Mathlib.Algebra.PresentedMonoid.Basic
 public import Mathlib.Algebra.Prime.Defs
 public import Mathlib.Algebra.Prime.Lemmas
+public import Mathlib.Algebra.QuadraticAlgebra.AlgHom
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.QuadraticAlgebra.Discr
@@ -6347,6 +6348,7 @@ public import Mathlib.Probability.Combinatorics.BinomialRandomGraph.Defs
 public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.ConditionalExpectation
 public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.CramerWold
 public import Mathlib.Probability.Decision.BayesEstimator
 public import Mathlib.Probability.Decision.Risk.Basic
 public import Mathlib.Probability.Decision.Risk.Countable
