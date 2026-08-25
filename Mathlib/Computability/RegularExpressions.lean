@@ -26,7 +26,7 @@ See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Regul
 
 open List Set
 
-open Computability
+open scoped Computability
 
 universe u
 
