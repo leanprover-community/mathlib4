@@ -208,14 +208,11 @@ theorem variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
   have := integral_of_hasLaw_binomial hX
   rw [hX.integral_eq] at this
   simp only [hX.variance_eq, variance_eq_integral aemeasurable_id, id_eq, this,
-    integral_map_cast_binomial,
-    show .Iic n = (Finset.Iio 0).disjUnion (Finset.range (n + 1)) (by simp) by grind,
-    Finset.sum_disjUnion, Finset.sum_range_succ']
+    integral_map_cast_binomial, ← n.range_succ_eq_Iic, Finset.sum_range_succ']
   match n with
   | 0 => norm_num
   | 1 =>
-    simp only [isMin_iff_eq_bot, Nat.bot_eq_zero, IsMin.finsetIio_eq, Finset.range_one,
-    Nat.cast_add, Finset.sum_singleton, Nat.choose_self, Nat.choose_succ_self_right]
+    simp only [Finset.range_one, Finset.sum_singleton, Nat.choose_self, Nat.choose_succ_self_right]
     ring
   | n + 2 =>
     calc
@@ -232,24 +229,21 @@ theorem variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
             (1 - p) ^ (n + 1 - x) * (p * (n + 2)) ^ 2 +
           (1 - p.val) ^ (n + 2) * (p * (n + 2)) ^ 2) := by
         rw [← add_assoc, ← Finset.sum_sub_distrib, ← Finset.sum_add_distrib]
-        congr
-        ext
-        rw [mul_add, mul_sub]
-        ring
+        field_simp
       _ = ∑ x ∈ Finset.range (n + 2), (n + 1).choose x * (x + 1) * (n + 2) * p.val ^ (x + 1) *
             (1 - p) ^ (n + 1 - x) -
           ∑ x ∈ Finset.range (n + 2), (n + 1).choose x * (n + 2) * p.val ^ (x + 1) *
             (1 - p) ^ (n + 1 - x) * (2 * p * (n + 2)) +
           ∑ x ∈ Finset.range (n + 3), (n + 2).choose x * p.val ^ x * (1 - p) ^ (n + 2 - x) *
             (p * (n + 2)) ^ 2 := by
-        congrm ?_ - ?_ + ?_
-        any_goals
-          congr
-          ext
-          norm_cast
-          rw [← Nat.add_one_mul_choose_eq]
-          group
-        simp [Finset.sum_range_succ' (n := n + 2)]
+        congrm ?_ + ?_
+        · congr
+          all_goals
+            ext
+            norm_cast
+            rw [← Nat.add_one_mul_choose_eq]
+            group
+        · simp [Finset.sum_range_succ']
       _ = ∑ x ∈ Finset.range (n + 2), (n + 1).choose x * x * p.val ^ (x + 1) *
             (1 - p) ^ (n + 1 - x) * (n + 2) +
           ∑ x ∈ Finset.range (n + 2), (n + 1).choose x * p.val ^ x *
@@ -257,11 +251,9 @@ theorem variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
           ∑ x ∈ Finset.range (n + 2), (n + 1).choose x * p.val ^ x *
             (1 - p) ^ (n + 1 - x) * (2 * p * (n + 2) * p * (n + 2)) +
           (p * (n + 2)) ^ 2 := by
-        congrm ?_ - ?_ + ?_
-        · simp_rw [← Finset.sum_add_distrib, pow_add]
-          group
-        · simp_rw [pow_add]
-          group
+        simp_rw [← Finset.sum_add_distrib, pow_add]
+        congrm ?_ + ?_
+        · group
         · rw [← Finset.sum_mul, mul_left_eq_self₀]
           grind [add_pow p.val (1 - p) (n + 2), one_pow]
       _ = ∑ x ∈ Finset.range (n + 1), n.choose x * p.val ^ (x + 2) *
@@ -272,29 +264,14 @@ theorem variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
           simp_rw [Finset.sum_range_succ', ← Nat.add_one_mul_choose_eq]
           grind
         all_goals
-          have := add_pow p.val (1 - p) (n + 1)
-          simp only [add_sub_cancel, one_pow] at this
           rw [← Finset.sum_mul, mul_left_eq_self₀]
-          left
-          nth_rw 2 [this]
-          congr
-          ext
-          group
+          grind [add_pow p.val (1 - p) (n + 1), add_sub_cancel, one_pow]
       _ = (∑ x ∈ Finset.range (n + 1), n.choose x * p.val ^ x *
             (1 - p) ^ (n + 1 - (x + 1))) * (p * p * (n + 2) * (n + 1)) +
           (1 - p * (n + 2)) * p * (n + 2) := by
-        rw [Finset.sum_mul, add_sub_assoc, add_assoc]
-        congr <;> grind
+        grind [Finset.sum_mul]
       _ = p.val * p * (n + 2) * (n + 1) + (1 - p * (n + 2)) * p * (n + 2) := by
-        congrm ?_ + _
-        have := add_pow p.val (1 - p) n
-        simp only [add_sub_cancel, one_pow] at this
-        rw [mul_left_eq_self₀]
-        left
-        nth_rw 2 [this]
-        congr
-        ext
-        grind
+        grind [add_pow p.val (1 - p) n, add_sub_cancel, one_pow]
       _ = _ := by
         grind
 
