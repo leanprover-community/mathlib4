@@ -740,8 +740,13 @@ private lemma finite_cliqueNum_bddAbove [Finite α] : BddAbove {n | ∃ s, G.IsN
   exact Finset.card_le_card (Finset.subset_univ s)
 
 lemma IsClique.card_le_cliqueNum [Finite α] {t : Finset α} {tc : G.IsClique t} :
-    #t ≤ G.cliqueNum := by
-  exact le_csSup G.finite_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
+    #t ≤ G.cliqueNum :=
+  le_csSup G.finite_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
+
+variable (G) in
+theorem cliqueNum_ne_zero_of_finite [Nonempty α] [Finite α] : G.cliqueNum ≠ 0 := by
+  refine (Nat.not_succ_le_zero 0 <| le_of_le_of_eq ?_ ·)
+  exact IsClique.card_le_cliqueNum (t := {Classical.arbitrary α}) (tc := by simp)
 
 lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
   by_cases h : BddAbove {n | ∃ s, G.IsNClique n s}
@@ -775,6 +780,25 @@ theorem cliqueNum_top : (⊤ : SimpleGraph α).cliqueNum = Nat.card α := by
     apply Set.Infinite.Nat.sSup_eq_zero
     rw [Set.eq_univ_of_forall (Finset.exists_card_eq · |>.imp fun _ hn ↦ ⟨.top _, hn⟩)]
     exact Set.infinite_univ
+
+variable (α) in
+@[simp]
+theorem cliqueNum_bot [Nonempty α] [Finite α] : (⊥ : SimpleGraph α).cliqueNum = 1 := by
+  refine le_antisymm (csSup_le' fun n ⟨s, h⟩ ↦ ?_) (cliqueNum_ne_zero_of_finite ⊥).pos
+  by_contra!
+  have ⟨a, ha, b, hb, hne⟩ := s.one_lt_card.mp <| this.trans_eq h.card_eq.symm
+  exact h.isClique ha hb hne
+
+@[simp]
+theorem cliqueNum_eq_natCard [Finite α] : G.cliqueNum = Nat.card α ↔ G = ⊤ := by
+  refine ⟨fun h ↦ ?_, (· ▸ cliqueNum_top α)⟩
+  have ⟨s, hs⟩ := G.exists_isNClique_cliqueNum
+  suffices s = @Set.univ α from isClique_univ.mp <| this ▸ hs.isClique
+  simp [Set.eq_univ_iff_ncard, h, hs.card_eq]
+
+theorem eq_top_of_enatCard_le_cliqueNum (h : ENat.card α ≤ G.cliqueNum) : G = ⊤ := by
+  have := ENat.card_lt_top.mp <| h.trans_lt <| ENat.natCast_lt_top _
+  simpa [ENat.card_eq_coe_natCard] using cliqueNum_le_enatCard G |>.antisymm h
 
 theorem cliqueNum_induce_le [Finite α] (s : Set α) :
     (G.induce s).cliqueNum ≤ G.cliqueNum := by
