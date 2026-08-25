@@ -46,13 +46,12 @@ private lemma serreDerivative_eq_smul {k' : ℤ} {κ l L : ℂ} {g F : ModularFo
     (hl : Tendsto f atImInfty (𝓝 l)) (hg1 : Tendsto g atImInfty (𝓝 1))
     (hL : L = -(κ * 12⁻¹ * l)) :
     serreDerivative κ f = L • g := by
-  have hb := hl.isBigO_one ℝ
   have hg : g ≠ 0 := fun h ↦ one_ne_zero (tendsto_nhds_unique (h ▸ hg1) tendsto_const_nhds)
   obtain ⟨c, hc⟩ :=
     (finrank_eq_one_iff_of_nonzero' g hg).mp (Module.rank_eq_one_iff_finrank_eq_one.mp hrank) F
   have hfg : serreDerivative κ f = c • g := hF ▸ congrArg DFunLike.coe hc.symm
   have hlim : Tendsto (c • ⇑g) atImInfty (𝓝 (-(κ * 12⁻¹ * l))) := hfg ▸ by
-    simpa using (isZeroAtImInfty_normalizedDerivOfComplex hf hb).sub
+    simpa using (isZeroAtImInfty_normalizedDerivOfComplex hf (hl.isBigO_one ℝ)).sub
       ((tendsto_E2_atImInfty.const_mul (κ * 12⁻¹)).mul hl)
   rw [hfg, hL, ← tendsto_nhds_unique (hg1.const_mul c) hlim, mul_one]
 
@@ -95,10 +94,9 @@ lemma serreDerivativeOne_E2_slash (γ : SL(2, ℤ)) :
   have hslash : serreDerivative 1 E2 ∣[(4 : ℤ)] γ =
       serreDerivative 2 (E2 ∣[(2 : ℤ)] γ) +
         (12⁻¹ : ℂ) • ((E2 ∣[(2 : ℤ)] γ) * (E2 ∣[(2 : ℤ)] γ)) := by
-    have heq : serreDerivative 2 E2 ∣[(4 : ℤ)] γ = serreDerivative 2 (E2 ∣[(2 : ℤ)] γ) := by
+   have heq : serreDerivative 2 E2 ∣[(4 : ℤ)] γ = serreDerivative 2 (E2 ∣[(2 : ℤ)] γ) := by
       have h := serreDerivative_slash_equivariant (k := 2) E2_mdifferentiable (γ := γ)
-      push_cast at h
-      exact h
+      grind
     rw [h₁₂, SlashAction.add_slash, SL_smul_slash, heq, show (4 : ℤ) = 2 + 2 from rfl,
       mul_slash_SL2]
   -- Derivative of `D2`
