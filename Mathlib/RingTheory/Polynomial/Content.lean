@@ -78,6 +78,13 @@ theorem _root_.Irreducible.isPrimitive [NoZeroDivisors R]
 theorem isPrimitive_iff_ne_zero {F : Type*} [Field F] (p : F[X]) : p.IsPrimitive ↔ p ≠ 0 :=
   ⟨IsPrimitive.ne_zero, fun h _ hrp ↦ .mk0 _ fun hr ↦ ne_zero_of_dvd_ne_zero h hrp <| hr ▸ C_0⟩
 
+theorem isPrimitive_iff_isUnit_of_natDegree_eq_zero {p : R[X]} (hdeg : p.natDegree = 0) :
+    IsPrimitive p ↔ IsUnit p := by
+  refine ⟨?_, fun hp ↦ isPrimitive_of_dvd isPrimitive_one (isUnit_iff_dvd_one.mp hp)⟩
+  intro hp
+  rw [eq_C_of_natDegree_eq_zero hdeg] at hp ⊢
+  exact isUnit_C.mpr (hp _ dvd_rfl)
+
 end Primitive
 
 variable {R : Type*} [CommRing R]
