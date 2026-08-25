@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Field.GeomSum
 public import Mathlib.Data.NNReal.Basic
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset -- for `Finset.sq_sum_div_le_sum_sq_div`
 
 /-!
 # IMO 1982 Q3
