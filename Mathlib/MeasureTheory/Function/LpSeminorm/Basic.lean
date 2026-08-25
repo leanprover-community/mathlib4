@@ -55,7 +55,7 @@ theorem lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top [TopologicalSpace ε]
 
 theorem eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top [TopologicalSpace ε]
     {f : α → ε} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) (hf : AEStronglyMeasurable f μ) :
-    eLpNorm f p μ < ∞ ↔ ∫⁻ a, (‖f a‖ₑ) ^ p.toReal ∂μ < ∞ :=
+    eLpNorm f p μ < ∞ ↔ ∫⁻ a, ‖f a‖ₑ ^ p.toReal ∂μ < ∞ :=
   ⟨lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_ne_zero hp_ne_top, by
     intro h
     have hp' := ENNReal.toReal_pos hp_ne_zero hp_ne_top
