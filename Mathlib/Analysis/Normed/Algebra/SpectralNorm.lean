@@ -39,22 +39,6 @@ section matrices
 
 open scoped Matrix.Norms.Operator
 
--- #43016
-theorem Matrix.linfty_opNNNorm_blockDiagonal
-    {R m n o : Type*} [SeminormedAddCommGroup R]
-    [DecidableEq o] [Fintype m] [Fintype n] [Fintype o] (M : o → Matrix m n R) :
-    ‖blockDiagonal M‖₊ = ‖M‖₊ := by
-  simp_rw [Pi.nnnorm_def, linfty_opNNNorm_def, ← Finset.univ_product_univ,
-    Finset.sup_product_right, Finset.sum_product, blockDiagonal_apply, apply_ite]
-  simp
-
--- ##43016
-theorem Matrix.linfty_opNorm_blockDiagonal
-    {R m n o : Type*} [SeminormedAddCommGroup R]
-    [DecidableEq o] [Fintype m] [Fintype n] [Fintype o] (M : o → Matrix m n R) :
-    ‖blockDiagonal M‖ = ‖M‖ :=
-  congr_arg ((↑) : NNReal → Real) <| linfty_opNNNorm_blockDiagonal M
-
 -- waiting on spectral radius (also look into futher golfing)
 open Filter Topology in
 private theorem Matrix.spectralRadiusLim_conj_le {R m n : Type*}
