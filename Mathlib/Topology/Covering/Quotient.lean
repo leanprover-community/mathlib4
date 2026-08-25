@@ -155,16 +155,13 @@ end IsQuotientCoveringMap
 
 namespace Topology.IsQuotientMap
 
-variable {f G} (hf : IsQuotientMap f)
-include hf
-
 section MulAction
 
 open Bundle
 
 variable [ContinuousConstSMul G E]
-variable (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂)
-include hfG
+variable {f G} (hf : IsQuotientMap f) (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂)
+include hf hfG
 
 /-- If a group `G` acts on a space `E` and `U` is an open subset disjoint from all other
 `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
