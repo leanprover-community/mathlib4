@@ -197,14 +197,10 @@ theorem ker_projectionOntoL (h : IsTopCompl p q) :
     (p.projectionOntoL q h).ker = q := by
   simp
 
-theorem isQuotientMap_projectionOnto (h : IsTopCompl p q) :
-    IsQuotientMap (p.projectionOnto q h.isCompl) :=
-  .of_inverse continuous_subtype_val (p.projectionOntoL q h).continuous
-    (projectionOntoL_apply_left h)
-
 theorem isQuotientMap_projectionOntoL (h : IsTopCompl p q) :
     IsQuotientMap (p.projectionOntoL q h) :=
-  isQuotientMap_projectionOnto h
+  .of_inverse continuous_subtype_val (p.projectionOntoL q h).continuous
+    (projectionOntoL_apply_left h)
 
 end projectionOnto
 

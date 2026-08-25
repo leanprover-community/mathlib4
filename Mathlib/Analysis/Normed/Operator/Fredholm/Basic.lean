@@ -467,7 +467,7 @@ theorem _root_.Submodule.isFredholm_projectionOntoL_iff [ContinuousSub E] {p q :
     IsFredholm (p.projectionOntoL q hcompl) ↔ FiniteDimensional 𝕜 q := by
   rw [(projectionOntoL_surjective hcompl).isFredholm_iff _, ← fg_iff_finiteDimensional,
     ← fg_iff_finiteDimensional]
-  simp [isQuotientMap_projectionOnto hcompl, hcompl.symm.closedComplemented]
+  simp [-coe_projectionOntoL, isQuotientMap_projectionOntoL hcompl, hcompl.symm.closedComplemented]
 
 theorem _root_.Submodule.isFredholm_projectionOntoL [ContinuousSub E] {p q : Submodule 𝕜 E}
     (hcompl : IsTopCompl p q)
