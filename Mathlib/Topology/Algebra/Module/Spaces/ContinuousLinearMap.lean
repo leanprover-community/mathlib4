@@ -470,8 +470,9 @@ def prodL : ((E →L[𝕜] F) × (E →L[𝕜] G)) ≃L[S] (E →L[𝕜] F × G)
 end Prod
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+  [TopologicalSpace E]
 
+variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] in
 /-- `ContinuousLinearMap.toSpanSingleton` as a continuous linear equivalence. -/
 @[simps!]
 def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
@@ -479,6 +480,22 @@ def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
   continuous_toFun := continuous_of_continuous_uncurry _ <|
     continuous_snd.smul continuous_fst
   continuous_invFun := continuous_eval_const 1
+
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+  [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
+
+variable (𝕜 E F) in
+/-- `smulRight` as a partly continuous trilinear map.
+This is the bundled continuous version of `smulRightₗ`. -/
+@[simps! apply_apply_apply] def smulRightₗ' : StrongDual 𝕜 E →ₗ[𝕜] (F →L[𝕜] E →L[𝕜] F) where
+  toFun c := (c.precomp F) ∘SL toSpanSingletonCLE.toContinuousLinearMap
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+@[simp] lemma smulRightₗ'_apply_apply (c : StrongDual 𝕜 E) (x) :
+    c.smulRightₗ' 𝕜 E F x = c.smulRight x := rfl
+@[simp] lemma toLinearMap_smulRightₗ'_apply (c : StrongDual 𝕜 E) :
+    (c.smulRightₗ' 𝕜 E F).toLinearMap = c.smulRightₗ := rfl
 
 end ContinuousLinearMap
 
