@@ -48,7 +48,7 @@ open MeasurableSpace TopologicalSpace
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
-instance : MeasurableSpace C(X, Y) := borel _
+instance ContinuousMap.instMeasurableSpace : MeasurableSpace C(X, Y) := borel _
 
 instance : BorelSpace C(X, Y) where
   measurable_eq := rfl
@@ -147,14 +147,13 @@ theorem borel_eq_iSup_comap_eval :
 variable [mY : MeasurableSpace Y] [BorelSpace Y]
 
 lemma measurableSpace_eq_iSup_comap_eval :
-    (inferInstance : MeasurableSpace C(X, Y)) = ⨆ a : X, mY.comap fun b ↦ b a := by
+    instMeasurableSpace = ⨆ a : X, mY.comap fun b ↦ b a := by
   simp_rw [BorelSpace.measurable_eq, borel_eq_iSup_comap_eval]
 
 /-- A function `g : Z → C(X, Y)` is measurable if and only if,
 for all `x : X`, `z ↦ g z x` is measurable. -/
 lemma measurable_iff_eval {Z : Type*} [MeasurableSpace Z] {g : Z → C(X, Y)} :
     Measurable g ↔ ∀ (x : X), Measurable fun a ↦ g a x := by
-  change @Measurable _ _ _ inferInstance g ↔ _
   rw [measurableSpace_eq_iSup_comap_eval]
   simp_rw [measurable_iff_comap_le, comap_iSup, iSup_le_iff, comap_comp, Function.comp_def]
 
