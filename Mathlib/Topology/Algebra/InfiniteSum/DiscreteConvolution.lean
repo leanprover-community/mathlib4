@@ -303,7 +303,6 @@ section RingConvolution
 
 variable [NonUnitalNonAssocSemiring R]
 
-
 variable [Monoid M] [TopologicalSpace R]
 
 /-- The discrete convolution of two functions using multiplication to combine their values. -/
