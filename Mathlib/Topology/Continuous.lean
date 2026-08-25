@@ -60,9 +60,6 @@ theorem ContinuousAt.tendsto (h : ContinuousAt f x) :
     Tendsto f (𝓝 x) (𝓝 (f x)) :=
   h
 
-theorem continuousAt_def' : ContinuousAt f x ↔ Tendsto f (𝓝 x) (𝓝 (f x)) :=
-  Iff.rfl
-
 theorem continuousAt_def : ContinuousAt f x ↔ ∀ A ∈ 𝓝 (f x), f ⁻¹' A ∈ 𝓝 x :=
   Iff.rfl
 
