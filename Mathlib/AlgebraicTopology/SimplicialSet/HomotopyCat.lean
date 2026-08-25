@@ -41,8 +41,10 @@ composing a pair of adjunctions, which factor through the category of 2-truncate
 @[expose] public section
 
 namespace SSet
-open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
+open CategoryTheory Category Limits Functor Opposite Nerve
 open SimplexCategory.Truncated SimplicialObject.Truncated
+
+open scoped Simplicial
 
 universe v u
 

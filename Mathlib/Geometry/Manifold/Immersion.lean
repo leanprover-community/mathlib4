@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.ImmersionDiff
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 public import Mathlib.Geometry.Manifold.Diffeomorph
@@ -64,6 +65,13 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `ContMDiffAt.iff_comp_isImmersionAt` and `ContMDiff.iff_comp_isImmersion`: a function `f : M → N`
   is `C^n` (at `x`) if and only if it is continuous (at `x`) and its composition `φ ∘ f` with a
   `C^n` immersion `φ : N → P` (at `f x`) is `C^n`.
+* `IsImmersionAt.isDiffImmersionAt`: if `f` is an immersion at `x`, it is also an immersion in the
+  sense of differentials at `x`, i.e. `mfderiv% f x` has a continuous left inverse
+* `IsImmersionAt.injective_mfderiv`: if `f` is an immersion at `x`, the differential `mfderiv% f x`
+  at `x` is injective
+* `IsImmersion.isDiffImmersionAt` and `IsImmersion.injective_mfderiv`: if `f` is an immersion,
+  it is an immersion (in the sense of differentials) at every point of the domain.
+  In particular, the differential at each point is injective.
 
 ## Implementation notes
 
@@ -215,6 +223,17 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
       (domChart.extend I).target) : IsImmersionAtOfComplement F I J n f x :=
   LiftSourceTargetPropertyAt.mk_of_continuousAt hf isLocalSourceTargetProperty_immersionAtProp
     _ _ hx hfx hdomChart hcodChart ⟨equiv, hwrittenInExtend⟩
+
+/-- `f : M → N` is a `C^n` immersion at `x` if `f` is continuous at `x` and `f` looks like
+`u ↦ (u, 0)` in the preferred charts at `x` and `f x`.
+Version of `mk_of_continuousAt` specialized to the preferred charts at each point. -/
+lemma mk_of_continuousAt_of_extChartAt [IsManifold I n M] [IsManifold J n N]
+    {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : (E × F) ≃L[𝕜] E'')
+    (hwrittenInExtend : EqOn ((extChartAt J (f x)) ∘ f ∘ (extChartAt I x).symm) (equiv ∘ (·, 0))
+      (extChartAt I x).target) : IsImmersionAtOfComplement F I J n f x :=
+  mk_of_continuousAt hf equiv (chartAt H x) (chartAt G (f x))
+    (mem_chart_source H x) (mem_chart_source G (f x))
+    (IsManifold.chart_mem_maximalAtlas x) (IsManifold.chart_mem_maximalAtlas (f x)) hwrittenInExtend
 
 /-- A choice of chart on the domain `M` of an immersion `f` at `x`:
 w.r.t. this chart and the data `h.codChart` and `h.equiv`,
@@ -388,20 +407,16 @@ open IsManifold in
 /- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion at every point. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
     IsImmersionAtOfComplement PUnit I I n (Subtype.val : s → M) y := by
-  apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) (.prodUnique 𝕜 E _)
-    (chartAt H y) (chartAt H y.val) (mem_chart_source H y) (mem_chart_source H y.val)
-    (chart_mem_maximalAtlas y) (chart_mem_maximalAtlas y.val)
+  apply mk_of_continuousAt_of_extChartAt (by fun_prop) (.prodUnique 𝕜 E _)
   intro x hx
-  suffices I ((chartAt H ↑y) ((chartAt H y).symm (I.symm x))) = x by simpa +contextual
+  suffices I ((chartAt H y) ((chartAt H y).symm (I.symm x))) = x by simpa +contextual
   simp_all
 
 /-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/
 protected lemma _root_.ModelWithCorners.isImmersionAtOfComplement {n : ℕ} {x : H} :
     IsImmersionAtOfComplement PUnit I 𝓘(𝕜, E) n I x :=
-  Manifold.IsImmersionAtOfComplement.mk_of_continuousAt I.continuousAt
-    (.prodUnique _ _ _) (.refl _) (.refl _) (by simp) (by simp)
-    (IsManifold.subset_maximalAtlas (by simp)) (IsManifold.subset_maximalAtlas (by simp))
-    (by simp [Function.comp_def])
+  mk_of_continuousAt_of_extChartAt (by fun_prop) (.prodUnique ..)
+    (by simp [Function.comp_def, chartAt_self_eq])
 
 /-- Prefer using `IsImmersionAtOfComplement.continuousAt` instead -/
 theorem continuousOn (h : IsImmersionAtOfComplement F I J n f x) :
@@ -516,6 +531,38 @@ lemma comp_diffeomorph
     · have : Φ.symm.symm ⁻¹' Φ.symm ⁻¹' h.codChart.source = h.codChart.source := by ext; simp
       simpa [this] using contMDiffOn_of_mem_maximalAtlas h.codChart_mem_maximalAtlas
     · simpa using contMDiffOn_symm_of_mem_maximalAtlas h.codChart_mem_maximalAtlas
+
+/-- If `f` is an immersion at `x`, then `mfderiv f x` has a continuous left inverse. -/
+lemma isDiffImmersionAt (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0) :
+    IsDiffImmersionAt I J f x := by
+  have hn' : 1 ≤ n := ENat.one_le_iff_ne_zero_withTop.mpr hn
+  suffices IsDiffImmersionAt I 𝓘(𝕜, E'') ((h.codChart.extend J) ∘ f) x by
+    apply IsDiffImmersionAt.of_comp (h.contMDiffAt.mdifferentiableAt hn) ?_ this
+    exact h.codChart.mdifferentiableAt_extend
+      (IsManifold.maximalAtlas_subset_of_le hn' h.codChart_mem_maximalAtlas) h.mem_codChart_source
+  -- The local representative of f in the nice charts at x, as a continuous linear map.
+  let rhs : E →L[𝕜] E'' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
+  have heq : EqOn ((h.codChart.extend J) ∘ f) (rhs ∘ (h.domChart.extend I)) h.domChart.source := by
+    intro x' hx'
+    trans ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm ∘ (h.domChart.extend I)) x'
+    · simp [h.domChart.left_inv hx']
+    · exact h.writtenInCharts ((h.domChart.extend I).map_source' (by simpa))
+  suffices IsDiffImmersionAt I 𝓘(𝕜, E'') (rhs ∘ (h.domChart.extend I)) x from
+    this.congr
+      (Filter.eventually_of_mem (h.domChart.open_source.mem_nhds h.mem_domChart_source) heq)
+  apply IsDiffImmersionAt.comp (I' := 𝓘(𝕜, E))
+  · apply h.equiv.isDiffImmersionAt.comp
+    dsimp
+    rw [isDiffImmersionAt_iff, mfderiv_eq_fderiv, ContinuousLinearMap.fderiv]
+    exact ContinuousLinearMap.HasLeftInverse.inl
+  · exact IsDiffImmersionAt.of_mfderiv_isInvertible <| isInvertible_mfderiv_extend
+      (IsManifold.maximalAtlas_subset_of_le hn' h.domChart_mem_maximalAtlas)
+      (by simp [h.mem_domChart_source])
+
+/-- An immersion at `x` has injective differential. -/
+lemma injective_mfderiv (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0) :
+    Injective (mfderiv% f x) :=
+  (h.isDiffImmersionAt hn).mfderiv_injective
 
 end IsImmersionAtOfComplement
 
@@ -677,7 +724,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) :
     IsImmersionAt I I n (Subtype.val : s → M) ⟨x, hx⟩ := by
   use PUnit, by infer_instance, by infer_instance
-  apply Manifold.IsImmersionAtOfComplement.of_opens
+  apply IsImmersionAtOfComplement.of_opens
 
 /-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/
 protected lemma _root_.ModelWithCorners.isImmersionAt {n : ℕ} {x : H} :
@@ -718,6 +765,14 @@ lemma comp_diffeomorph
     IsImmersionAt I J n (Φ ∘ f) x := by
   use h.complement, by infer_instance, by infer_instance
   exact h.isImmersionAtOfComplement_complement.comp_diffeomorph Φ
+
+/-- If `f` is an immersion at `x`, then `mfderiv f x` has a continuous left inverse. -/
+lemma isDiffImmersionAt (h : IsImmersionAt I J n f x) (hn : n ≠ 0) : IsDiffImmersionAt I J f x :=
+  h.isImmersionAtOfComplement_complement.isDiffImmersionAt hn
+
+/-- An immersion at `x` has injective differential. -/
+lemma injective_mfderiv (h : IsImmersionAt I J n f x) (hn : n ≠ 0) : Injective (mfderiv% f x) :=
+    h.isImmersionAtOfComplement_complement.injective_mfderiv hn
 
 end IsImmersionAt
 
@@ -800,9 +855,7 @@ open IsManifold in
 /-- The identity map is an immersion with complement `PUnit`. -/
 protected lemma id [IsManifold I n M] : IsImmersionOfComplement PUnit I I n (@id M) := by
   intro x
-  apply IsImmersionAtOfComplement.mk_of_continuousAt (continuousAt_id) (.prodUnique 𝕜 E _)
-    (chartAt H x) (chartAt H x) (mem_chart_source H x) (mem_chart_source H x)
-    (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x)
+  apply IsImmersionAtOfComplement.mk_of_continuousAt_of_extChartAt continuousAt_id (.prodUnique ..)
   intro y hy
   have : I ((chartAt H x) ((chartAt H x).symm (I.symm y))) = y := by
     rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
@@ -832,9 +885,7 @@ lemma sumInl {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
     [IsManifold I n M] [IsManifold I n M'] :
     IsImmersionOfComplement Unit I I n (@Sum.inl M M') := by
   intro x
-  apply IsImmersionAtOfComplement.mk_of_continuousAt (equiv := (.prodUnique 𝕜 E _))
-    (by fun_prop) _ _ (mem_chart_source H x) (mem_chart_source H (Sum.inl x))
-    (IsManifold.chart_mem_maximalAtlas x) (IsManifold.chart_mem_maximalAtlas (Sum.inl x))
+  apply IsImmersionAtOfComplement.mk_of_continuousAt_of_extChartAt (by fun_prop) (.prodUnique ..)
   intro y hy
   have : I ((chartAt H x) ((chartAt H x).symm (I.symm y))) = y := by
     rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
@@ -860,6 +911,16 @@ lemma _root_.ContMDiff.iff_comp_isImmersionOfComplement {f : M → N} {φ : N �
   refine ⟨fun h ↦ ⟨h.continuous, hφ.contMDiff.comp h⟩, fun ⟨h, h'⟩ x ↦ ?_⟩
   rw [ContMDiffAt.iff_comp_isImmersionAtOfComplement (hφ (f x))]
   exact ⟨h.continuousAt, h' x⟩
+
+/-- If `f` is an immersion, each differential `mfderiv f x` has a continuous left inverse. -/
+lemma isDiffImmersionAt (h : IsImmersionOfComplement F I J n f) (hn : n ≠ 0) (x : M) :
+    IsDiffImmersionAt I J f x :=
+  (h x).isDiffImmersionAt hn
+
+/-- An immersion has injective differential at each point. -/
+lemma injective_mfderiv (h : IsImmersionOfComplement F I J n f) (hn : n ≠ 0) (x : M) :
+    Injective (mfderiv% f x) :=
+  (h x).injective_mfderiv hn
 
 end IsImmersionOfComplement
 
@@ -945,6 +1006,16 @@ lemma comp_diffeomorph {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [I
     IsImmersion I J n (Φ ∘ f) := by
   use h.complement, by infer_instance, by infer_instance
   exact h.isImmersionOfComplement_complement.comp_diffeomorph Φ
+
+/-- If `f` is an immersion, each differential `mfderiv f x` has a continuous left inverse. -/
+lemma isDiffImmersionAt (h : IsImmersion I J n f) (hn : n ≠ 0) (x : M) :
+    IsDiffImmersionAt I J f x :=
+  (h.isImmersionOfComplement_complement x).isDiffImmersionAt hn
+
+/-- An immersion has injective differential at each point. -/
+lemma injective_mfderiv (h : IsImmersion I J n f) (hn : n ≠ 0) (x : M) :
+    Injective (mfderiv% f x) :=
+  (h.isImmersionOfComplement_complement x).injective_mfderiv hn
 
 end IsImmersion
 

@@ -22,7 +22,9 @@ This file contains further lemmas about normed groups, requiring heavier imports
 public section
 
 variable {E : Type*} [SeminormedAddCommGroup E]
-open NNReal Topology
+open NNReal
+
+open scoped Topology
 
 theorem eventually_nnnorm_sub_lt (x₀ : E) {ε : ℝ≥0} (ε_pos : 0 < ε) :
     ∀ᶠ x in 𝓝 x₀, ‖x - x₀‖₊ < ε :=
