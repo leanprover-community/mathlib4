@@ -209,11 +209,9 @@ instance [Monoid G] : HasExt.{u} (Rep.{u} k G) := hasExt_of_enoughProjectives _
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ModuleCat.of k (Abelian.Ext (Rep.trivial k G k) A n) :=
-  isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫ by
-    have := (Rep.barResolution k G).extEquivCohomologyClass.{u} (Y := A) (n := n)
-    have := ModuleCat.of k (Abelian.Ext (Rep.trivial k G k) A n)
-    sorry
-    --(Rep.barResolution.extIso k G A n).symm
+  isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫ (by
+      sorry) ≪≫
+    (Rep.barResolution k G).extLinearEquivCohomologyClass.{u}.symm.toModuleIso
 
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Hⁿ(Hom(P, A))`, where `P` is any projective resolution of `k` as a trivial `k`-linear
@@ -225,8 +223,10 @@ def groupCohomologyIso [Group G] (A : Rep k G) (n : ℕ)
 
 lemma isZero_groupCohomology_succ_of_subsingleton
     [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :
-    Limits.IsZero (groupCohomology A (n + 1)) :=
-  sorry--(isZero_Ext_succ_of_projective (Rep.trivial k G k) A n).of_iso <| groupCohomologyIsoExt _ _
+    Limits.IsZero (groupCohomology A (n + 1)) := by
+  refine Limits.IsZero.of_iso ?_ (groupCohomologyIsoExt A (n + 1))
+  rw [ModuleCat.isZero_iff_subsingleton]
+  apply Abelian.Ext.subsingleton_of_projective
 
 lemma isZero_groupCohomology_of_neZero_of_subsingleton
     [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) [NeZero n] :

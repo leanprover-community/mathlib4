@@ -37,7 +37,7 @@ variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 namespace CochainComplex
 
-variable (K L : CochainComplex C ℤ) (n m p : ℤ)
+variable (R : Type*) [Ring R] (K L : CochainComplex C ℤ) (n m p : ℤ)
 
 namespace HomComplex
 
@@ -77,6 +77,14 @@ def mk (x : Cocycle K L n) : CohomologyClass K L n :=
 lemma mk_surjective : Function.Surjective (mk : Cocycle K L n → _) :=
   Quotient.mk_surjective
 
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+lemma rec {motive : CohomologyClass K L n → Prop}
+    (mk : ∀ (x : Cocycle K L n), motive (mk x))
+    (x : CohomologyClass K L n) :
+    motive x := by
+  obtain ⟨x, rfl⟩ := x.mk_surjective
+  exact mk x
+
 variable (K L n) in
 @[simp]
 lemma mk_zero :
@@ -97,6 +105,9 @@ lemma mk_neg (x : Cocycle K L n) :
 lemma mk_eq_zero_iff (x : Cocycle K L n) :
     mk x = 0 ↔ x ∈ coboundaries K L n :=
   QuotientAddGroup.eq_zero_iff x
+
+lemma mk_eq_mk_iff (x y : Cocycle K L n) :
+    mk x = mk y ↔ (x - y) ∈ coboundaries K L n := sorry
 
 variable (K L n) in
 /-- The projection map `Cocycle K L n →+ CohomologyClass K L n`. -/
@@ -170,6 +181,35 @@ noncomputable def homAddEquiv :
       ((HomotopyCategory.quotient C _).obj K ⟶ (HomotopyCategory.quotient C _).obj (L⟦n⟧)) :=
   AddEquiv.ofBijective toHom (toHom_bijective _ _ _)
 
+section
+
+variable [Linear R C]
+
+instance : SMul R (CohomologyClass K L n) where
+  smul r := CohomologyClass.descAddMonoidHom
+    ((CohomologyClass.mkAddMonoidHom K L n).comp (AddMonoidHom.smul r)) (fun z hz' ↦ by
+      simp only [AddMonoidHom.coe_smul', AddMonoidHom.mem_ker, AddMonoidHom.coe_comp,
+        Function.comp_apply, DistribSMul.toAddMonoidHom_apply, CohomologyClass.mkAddMonoidHom_apply,
+        CohomologyClass.mk_eq_zero_iff]
+      rw [mem_coboundaries_iff _ (n - 1) (by simp)] at hz' ⊢
+      obtain ⟨α, hα⟩ := hz'
+      exact ⟨r • α, by simp [hα]⟩)
+
+variable {R} in
+lemma mk_smul (r : R) (x : Cocycle K L n) : mk (r • x) = r • mk x := rfl
+
+instance : Module R (CohomologyClass K L n) where
+  mul_smul r s x := by induction x; simp [← mk_smul, smul_smul]
+  one_smul x := by induction x; simp [← mk_smul]
+  smul_add r x y := by induction x; induction y; simp [← mk_smul, ← mk_add]
+  zero_smul x := by induction x; simp [← mk_smul]
+  smul_zero r := by
+    nth_rw 1 [← mk_zero]
+    rw [← mk_smul, smul_zero, mk_zero]
+  add_smul r s x := by induction x; simp [← mk_smul, add_smul]
+
+end
+
 end CohomologyClass
 
 set_option backward.defeqAttrib.useBackward true in
@@ -214,6 +254,9 @@ noncomputable def leftHomologyData :
 noncomputable def homologyAddEquiv :
     (HomComplex K L).homology n ≃+ CohomologyClass K L n :=
   (leftHomologyData K L n).homologyIso.addCommGroupIsoToAddEquiv
+
+def homologyLinearEquiv [Linear R C] :
+    (linearHomComplex R K L).homology n ≃ₗ[R] HomComplex.CohomologyClass K L n := sorry
 
 end HomComplex
 

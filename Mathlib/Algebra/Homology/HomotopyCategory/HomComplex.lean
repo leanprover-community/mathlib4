@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Ring.NegOnePow
@@ -561,7 +562,7 @@ open HomComplex
 
 /-- The cochain complex of homomorphisms between two cochain complexes `F` and `G`.
 In degree `n : ℤ`, it consists of the abelian group `HomComplex.Cochain F G n`. -/
-@[simps! X d_hom_apply]
+@[implicit_reducible, simps! X d_hom_apply]
 def HomComplex : CochainComplex AddCommGrpCat ℤ where
   X i := AddCommGrpCat.of (Cochain F G i)
   d i j := AddCommGrpCat.ofHom (δ_hom ℤ F G i j)
@@ -823,7 +824,6 @@ def single {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) :
       then (K.XIsoOfEq h.1).inv ≫ f ≫ (L.XIsoOfEq h.2).hom
       else 0)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma single_v {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (hpq : p + n = q) :
     (single f n).v p q hpq = f := by
@@ -948,5 +948,16 @@ lemma δ_map : δ n m (z.map Φ) = (δ n m z).map Φ := by
 end
 
 end HomComplex
+
+variable (R) in
+/-- The cochain complex of homomorphisms between two cochain complexes `F` and `G`
+in a `R`-linear category. In degree `n : ℤ`, it consists of the `R`-module
+`HomComplex.Cochain F G n`. -/
+@[simps! X d_hom_apply]
+def linearHomComplex : CochainComplex (ModuleCat R) ℤ where
+  X i := ModuleCat.of R (Cochain F G i)
+  d i j := ModuleCat.ofHom (δ_hom R F G i j)
+  shape _ _ hij := by ext; simp [δ_shape _ _ hij]
+  d_comp_d' _ _ _ _ _ := by ext; simp [δ_δ]
 
 end CochainComplex
