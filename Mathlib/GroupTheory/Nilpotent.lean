@@ -1279,33 +1279,35 @@ lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [hp : Fa
   have hnt := mt (eq_bot_iff_card _).mpr (inf_center_ne_bot_of_normal (P.ne_bot_of_dvd_card hcard))
   exact P.isPGroup'.to_inf_left.card_eq_or_dvd.resolve_left hnt
 
-/-- A finite nilpotent group has normal subgroups of every possible order. -/
-theorem Group.IsNilpotent.exists_normal_of_dvd_card [IsNilpotent G] {n : ℕ}
-    (hcard : n ∣ Nat.card G) : ∃ H : Subgroup G, Nat.card H = n ∧ H.Normal := by
-  by_cases hn : n = 0
-  · refine ⟨⊤, ?_, normal_top⟩
-    simp_all
-  · induction hm : Nat.card G using Nat.strong_induction_on generalizing n G with | h m ih =>
-    subst m
-    by_cases hn' : n = 1
-    · exact ⟨⊥, by simp [hn'], normal_bot⟩
-    · obtain ⟨p, hp, hdvd⟩ : ∃ p, p.Prime ∧ p ∣ n := by grind [n.ne_one_iff_exists_prime_dvd]
-      obtain ⟨N, hNcard, hN⟩ : ∃ N : Subgroup G, Nat.card N = p ∧ N.Normal := by
-        have : ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ ⊥ ≤ H ∧ H ≤ center G := by
-          refine Sylow.exists_subgroup_card_pow_prime_le_le hp (by simp) ?_ bot_le
-          simpa using prime_dvd_card_center (hp := ⟨hp⟩) (hdvd.trans hcard)
+/-- A finite nilpotent group has normal subgroups of every possible index. -/
+theorem Group.IsNilpotent.exists_normal_of_index_dvd_card [IsNilpotent G] {k : ℕ}
+    (hdvd : k ∣ Nat.card G) : ∃ H : Subgroup G, H.index = k ∧ H.Normal := by
+  induction hm : Nat.card G using Nat.strong_induction_on generalizing k G with | h m ih =>
+  have ⟨m', hmul⟩ := hdvd
+  by_cases hm1 : m' = 1
+  · refine ⟨⊥, by simp [hmul, hm1], normal_bot⟩
+  · obtain ⟨p, hp, m'', rfl⟩ : ∃ p, p.Prime ∧ p ∣ m' := m'.ne_one_iff_exists_prime_dvd.mp hm1
+    obtain ⟨N, hNcard, hN⟩ : ∃ N : Subgroup G, Nat.card N = p ∧ N.Normal := by
+      suffices ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ ⊥ ≤ H ∧ H ≤ center G by
         grind [normal_of_le_center]
-      obtain ⟨a, rfl⟩ := hdvd
-      obtain ⟨K, hKcard, hK⟩ : ∃ K : Subgroup (G ⧸ N), Nat.card K = a ∧ K.Normal := by
-        refine ih (Nat.card (G ⧸ N)) ?_ ?_ (Nat.ne_zero_of_mul_ne_zero_right hn) rfl
-        · rw [N.card_eq_card_quotient_mul_card_subgroup]
-          exact lt_mul_right (by simp) (hNcard ▸ hp.one_lt)
-        · apply Nat.dvd_of_mul_dvd_mul_right hp.pos
-          rwa [←hNcard, ←N.card_eq_card_quotient_mul_card_subgroup, hNcard, mul_comm]
-      refine ⟨K.comap (QuotientGroup.mk' N), ?_, normal_comap ..⟩
-      convert ← QuotientGroup.card_preimage_mk N K
-      · simp
-      · exact hKcard
+      refine Sylow.exists_subgroup_card_pow_prime_le_le hp (by simp) ?_ bot_le
+      exact prime_dvd_card_center (hp := ⟨by simpa⟩) ⟨k * m'', by grind⟩
+    obtain ⟨K, hKcard, hK⟩ : ∃ K : Subgroup (G ⧸ N), K.index = k ∧ K.Normal := by
+      refine ih (Nat.card (G ⧸ N)) ?_ ?_ rfl
+      · rw [←hm, N.card_eq_card_quotient_mul_card_subgroup, hNcard]
+        exact lt_mul_right Nat.card_pos hp.one_lt
+      · refine ⟨m'', Nat.eq_of_mul_eq_mul_right hp.pos ?_⟩
+        grind [N.card_eq_card_quotient_mul_card_subgroup]
+    use K.comap (QuotientGroup.mk' N)
+    simp [index_comap, normal_comap, hKcard]
+
+/-- A finite nilpotent group has normal subgroups of every possible cardinality. -/
+theorem Group.IsNilpotent.exists_normal_of_dvd_card [IsNilpotent G] {n : ℕ}
+    (hdvd : n ∣ Nat.card G) : ∃ H : Subgroup G, Nat.card H = n ∧ H.Normal := by
+  obtain ⟨k, hk⟩ := hdvd
+  obtain ⟨H, hind, hH⟩ := exists_normal_of_index_dvd_card (G := G) (k := k) ⟨n, by grind⟩
+  refine ⟨H, ?_, hH⟩
+  rw [←Nat.mul_left_inj (FiniteIndex.index_ne_zero (H := H)), H.card_mul_index, hk, hind]
 
 end WithFiniteGroup
 
