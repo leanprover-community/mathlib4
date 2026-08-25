@@ -25,6 +25,7 @@ sign: `List (ι × Bool)`. The evaluation map is then given by `Group.Generators
 
 ## Implementation notes
 
+* The API in this file is modelled on the word API for Coxeter groups (`CoxeterSystem.wordProd`).
 * `List (ι × Bool)` is the canonical way to write words which evaluate to `FreeGroup` elements
   through `FreeGroup.mk`.
 
