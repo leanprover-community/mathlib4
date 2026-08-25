@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Sébastien Gouëzel, Yury Kudryashov, Dylan MacKenzie
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Algebra.BigOperators.Module
 public import Mathlib.Algebra.Order.Field.Power
 public import Mathlib.Analysis.Asymptotics.Lemmas
@@ -267,22 +268,126 @@ theorem AbsoluteValue.tendsto_div_one_add_pow_nhds_zero {v : AbsoluteValue R S} 
 
 /-! ### Geometric series -/
 
-/-- A normed ring has summable geometric series if, for all `ξ` of norm `< 1`, the geometric series
-`∑ ξ ^ n` converges. This holds both in complete normed rings and in normed fields, providing a
-convenient abstraction of these two classes to avoid repeating the same proofs. -/
-class HasSummableGeomSeries (K : Type*) [NormedRing K] : Prop where
-  summable_geometric_of_norm_lt_one : ∀ (ξ : K), ‖ξ‖ < 1 → Summable (fun n ↦ ξ ^ n)
+/-- A non-unital normed ring has summable geometric series if, for all `ξ` of norm `< 1`, the
+geometric series `∑' n, ξ ^ (n + 1)` converges. This holds both in non-unital complete normed rings
+and in normed fields, providing a convenient abstraction of these two classes to avoid repeating
+the same proofs. -/
+@[mk_iff hasSummableGeomSeries_iff_summable_iterate_mul]
+class HasSummableGeomSeries (K : Type*) [NonUnitalNormedRing K] : Prop where
+  summable_geometric_of_norm_lt_one : ∀ (ξ : K), ‖ξ‖ < 1 → Summable (fun n ↦ (· * ξ)^[n] ξ)
+  --summable_geometric_of_norm_lt_one : ∀ (ξ : K), ‖ξ‖ < 1 → Summable (fun n ↦ ξ ^ n)
+
+private lemma _root_.pow_succ_eq_iterate_mul {M : Type*} [Monoid M] (x : M) (n : ℕ) :
+    x ^ (n + 1) = (· * x)^[n] x := by
+  induction n <;> simp [_root_.pow_succ', mul_assoc]
+
+private lemma _root_.iterate_mul_succ' {G : Type*} [Semigroup G] (x : G)
+    (n : ℕ) : (· * x)^[n + 1] x = x * (· * x)^[n] x := by
+  induction n with
+  | zero => simp
+  | succ n ih => rw [iterate_succ_apply' _ n, ← mul_assoc, ← ih, iterate_succ_apply']
+
+lemma summable_geometric_iterate_of_norm_lt_one {K : Type*} [NonUnitalNormedRing K]
+    [HasSummableGeomSeries K] {x : K} (h : ‖x‖ < 1) :
+    Summable (fun n ↦ (· * x)^[n] x) :=
+  HasSummableGeomSeries.summable_geometric_of_norm_lt_one x h
+
+lemma hasSummableGeomSeries_iff_summable_pow {K : Type*} [NormedRing K] :
+    HasSummableGeomSeries K ↔ ∀ (ξ : K), ‖ξ‖ < 1 → Summable (fun n ↦ ξ ^ n) := by
+  simp only [hasSummableGeomSeries_iff_summable_iterate_mul, ← pow_succ_eq_iterate_mul,
+    summable_nat_add_iff 1]
+
+alias ⟨_, HasSummableGeomSeries.of_summable_pow⟩ := hasSummableGeomSeries_iff_summable_pow
 
 lemma summable_geometric_of_norm_lt_one {K : Type*} [NormedRing K] [HasSummableGeomSeries K]
     {x : K} (h : ‖x‖ < 1) : Summable (fun n ↦ x ^ n) :=
-  HasSummableGeomSeries.summable_geometric_of_norm_lt_one x h
+  hasSummableGeomSeries_iff_summable_pow.mp inferInstance _ h
 
 instance {R : Type*} [NormedRing R] [CompleteSpace R] : HasSummableGeomSeries R := by
-  constructor
-  intro x hx
+  refine .of_summable_pow fun x hx ↦ ?_
   have h1 : Summable fun n : ℕ ↦ ‖x‖ ^ n := summable_geometric_of_lt_one (norm_nonneg _) hx
   exact h1.of_norm_bounded_eventually_nat (eventually_norm_pow_le x)
 
+section NonUnitalNormedRing
+
+variable {R : Type*} [NonUnitalNormedRing R]
+
+protected theorem Summable.add_geom_series_mul_self {x : R}
+    (h : Summable (fun n ↦ (· * x)^[n] x)) :
+    x + (∑' i : ℕ, (· * x)^[i] x) * x = (∑' i : ℕ, (· * x)^[i] x) := by
+  rw [← h.tsum_mul_right, h.tsum_eq_zero_add]
+  simp [Function.iterate_succ_apply']
+
+protected theorem Summable.add_self_mul_geom_series {x : R}
+    (h : Summable (fun n ↦ (· * x)^[n] x)) :
+    x + x * (∑' i : ℕ, (· * x)^[i] x) = (∑' i : ℕ, (· * x)^[i] x) := by
+  rw [← h.tsum_mul_left, h.tsum_eq_zero_add]
+  simp [iterate_mul_succ']
+
+theorem summable_iterate_mul_iff_isQuasiregular {x : R} (h : ‖x‖ < 1) :
+    Summable (fun n ↦ (· * x)^[n] x) ↔ IsQuasiregular (-x) := by
+  rw [isQuasiregular_iff]
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · refine ⟨∑' i : ℕ, (· * x)^[i] x, ?_, ?_⟩
+    · simpa [← sub_eq_add_neg, sub_sub] using sub_eq_zero.mpr h.add_self_mul_geom_series.symm
+    · rw [mul_neg]
+      convert sub_eq_zero.mpr h.add_geom_series_mul_self.symm
+      abel
+  · rintro ⟨s, hs, hs'⟩
+    rw [neg_mul] at hs
+    have hxy : x * s = s - x := by grind
+    have hnorm (n : ℕ) : ‖(· * x)^[n] x‖ ≤ ‖x‖ ^ (n + 1) := by
+      induction n with
+      | zero => simp
+      | succ n ih => grw [iterate_succ_apply', pow_succ, norm_mul_le, ih]
+    have hsum : Summable (‖(· * x)^[·] x‖) :=
+      .of_nonneg_of_le (by intro; positivity) hnorm <| by
+        simpa [pow_succ] using (summable_geometric_of_lt_one (norm_nonneg x) h).mul_right ‖x‖
+    apply HasSum.summable (a := s)
+    rw [hasSum_iff_tendsto_nat_of_summable_norm hsum, ← tendsto_sub_nhds_zero_iff]
+    have key (n : ℕ) :
+        (∑ i ∈ range (n + 1), (· * x)^[i] x) - s = x * ((∑ i ∈ range n, (· * x)^[i] x) - s) := by
+      rw [sum_range_succ', mul_sub, hxy, mul_sum]
+      simp only [iterate_mul_succ', iterate_zero_apply, sub_sub_eq_add_sub]
+    suffices ∀ n : ℕ, ‖(∑ i ∈ range n, (· * x)^[i] x) - s‖ ≤ ‖x‖ ^ n * ‖s‖ from
+      squeeze_zero_norm this <| by
+        simpa using (tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg x) h).mul_const ‖s‖
+    intro n
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      rw [key n, pow_succ, mul_comm (‖x‖ ^ n), mul_assoc]
+      exact (norm_mul_le _ _).trans (by gcongr)
+
+theorem hasSummableGeomSeries_iff_isQuasiregular :
+    HasSummableGeomSeries R ↔ ∀ ⦃x : R⦄, ‖x‖ < 1 → IsQuasiregular (-x) := by
+  rw [hasSummableGeomSeries_iff_summable_iterate_mul]
+  congr!
+  exact summable_iterate_mul_iff_isQuasiregular ‹_›
+
+theorem hasSummableGeomSeries_iff_isUnit {R : Type*} [NormedRing R] :
+    HasSummableGeomSeries R ↔ ∀ ⦃x : R⦄, ‖x‖ < 1 → IsUnit (1 - x) := by
+  simp_rw [hasSummableGeomSeries_iff_isQuasiregular, isQuasiregular_iff_isUnit, sub_eq_add_neg]
+
+ #exit
+
+theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : (1 - x) * ∑' i : ℕ, x ^ i = 1 :=
+  (summable_geometric_of_norm_lt_one h).one_sub_mul_tsum_pow
+
+theorem geom_series_succ (x : R) (h : ‖x‖ < 1) : ∑' i : ℕ, x ^ (i + 1) = ∑' i : ℕ, x ^ i - 1 := by
+  rw [eq_sub_iff_add_eq, (summable_geometric_of_norm_lt_one h).tsum_eq_zero_add,
+    pow_zero, add_comm]
+
+theorem geom_series_mul_shift (x : R) (h : ‖x‖ < 1) :
+    x * ∑' i : ℕ, x ^ i = ∑' i : ℕ, x ^ (i + 1) := by
+  simp_rw [← (summable_geometric_of_norm_lt_one h).tsum_mul_left, ← _root_.pow_succ']
+
+theorem geom_series_mul_one_add (x : R) (h : ‖x‖ < 1) :
+    (1 + x) * ∑' i : ℕ, x ^ i = 2 * ∑' i : ℕ, x ^ i - 1 := by
+  rw [add_mul, one_mul, geom_series_mul_shift x h, geom_series_succ x h, two_mul, add_sub_assoc]
+
+end NonUnitalNormedRing
+#exit
 section HasSummableGeometricSeries
 
 variable {R : Type*} [NormedRing R]
