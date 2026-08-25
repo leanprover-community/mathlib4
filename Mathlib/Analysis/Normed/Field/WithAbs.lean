@@ -119,32 +119,36 @@ structure on `L_w` satisfying both `IsScalarTower K K_v L_w` and `ContinuousSMul
 see `AbsoluteValue.Completion.algebraMap_eq` and `AbsoluteValue.Completion.algebra_eq`. -/
 @[instance_reducible]
 noncomputable def algebraOfLiesOver : Algebra v.Completion w.Completion :=
-  (WithAbs.isometry_map v w).mapRingHom.toAlgebra
+  (UniformSpace.Completion.mapRingHom (WithAbs.map v w (algebraMap K L))
+    (WithAbs.isometry_map v w).continuous).toAlgebra
 
 instance : letI := algebraOfLiesOver v w
     IsScalarTower K v.Completion w.Completion :=
   let := algebraOfLiesOver v w
-  IsScalarTower.of_algebraMap_eq fun x ↦
-    ((WithAbs.isometry_map v w).mapRingHom_coe (WithAbs.toAbs v x)).symm
+  IsScalarTower.of_algebraMap_eq fun x ↦ (UniformSpace.Completion.mapRingHom_coe
+    (WithAbs.isometry_map v w).continuous (WithAbs.toAbs v x)).symm
 
 instance : letI := algebraOfLiesOver v w
     ContinuousSMul v.Completion w.Completion :=
   let := algebraOfLiesOver v w
   continuousSMul_of_algebraMap v.Completion w.Completion
-    (WithAbs.isometry_map v w).isometry_mapRingHom.continuous
+    (UniformSpace.Completion.isometry_mapRingHom (WithAbs.isometry_map v w)).continuous
 
 variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
   [ContinuousSMul v.Completion w.Completion]
 
 open UniformSpace.Completion in
-theorem algebraMap_eq : algebraMap v.Completion w.Completion = (isometry_map v w).mapRingHom := by
+theorem algebraMap_eq : algebraMap v.Completion w.Completion =
+    UniformSpace.Completion.mapRingHom (WithAbs.map v w (algebraMap K L))
+      (WithAbs.isometry_map v w).continuous := by
   refine DFunLike.ext' (extension_unique ?_ ?_ ?_).symm
   · exact (uniformContinuous_coe (WithAbs w)).comp (isometry_map v w).uniformContinuous
   · exact uniformContinuous_addMonoidHom_of_continuous (continuous_algebraMap _ _)
   · exact fun _ ↦ IsScalarTower.algebraMap_apply ..
 
 theorem algebraMap_apply (x : v.Completion) :
-    algebraMap v.Completion w.Completion x = (isometry_map v w).mapRingHom x := by
+    algebraMap v.Completion w.Completion x = UniformSpace.Completion.mapRingHom
+      (WithAbs.map v w (algebraMap K L)) (WithAbs.isometry_map v w).continuous x := by
   rw [algebraMap_eq]
 
 theorem algebra_eq : ‹_› = algebraOfLiesOver v w :=
