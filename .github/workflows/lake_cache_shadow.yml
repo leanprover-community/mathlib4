@@ -97,7 +97,7 @@ jobs:
       # The scope qualifiers, so the later jobs use these values and do not
       # derive them again.
       tcslug: ${{ steps.plan.outputs.tcslug }}
-      pins8: ${{ steps.plan.outputs.pins8 }}
+      pins: ${{ steps.plan.outputs.pins }}
     env:
       LAKE_CACHE_DIR: .lake/cache
       LAKE_NO_CACHE: true
@@ -200,14 +200,62 @@ jobs:
           #   tcslug  The toolchain, with each character outside A-Za-z0-9._-
           #           replaced by '-'. "leanprover/lean4:v4.34.0-rc2" becomes
           #           "leanprover-lean4-v4.34.0-rc2".
-          #   pins8   8 hex characters over the sorted "<name> <rev>" git
-          #           entries of the manifest, for example "2d10dd67".
+          #   pins    One hash per dependency, over the pins of that
+          #           dependency's transitive upstreams. A dependency with no
+          #           upstream gets the constant "noup".
           tcslug="$(printf %s "$(cat lean-toolchain)" | tr -c 'A-Za-z0-9._-' '-')"
-          pins8="$(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' lake-manifest.json | LC_ALL=C sort | sha256sum | cut -c1-8)"
+          # The input hashes of a dependency cover the artifacts of its
+          # upstreams, so its scope must change when an upstream pin changes.
+          # A hash of the whole manifest would do that, but it would also
+          # re-key every dependency whose upstreams did not move, and mathlib
+          # bumps a dependency about every other day. This hashes the upstream
+          # closure of each dependency instead. Where the closure is unknown,
+          # because a manifest is missing or names a package this workspace
+          # does not pin, the whole manifest is hashed for that dependency:
+          # that over-keys, which costs an upload, where under-keying would
+          # cost a silent miss.
+          pins="$(python3 - <<'PY'
+          import hashlib, json, pathlib, sys
+          root = sys.argv[1] if len(sys.argv) > 1 else "lake-manifest.json"
+          pins = {q["name"]: q["rev"] for q in json.load(open(root))["packages"]
+                  if q.get("type") == "git"}
+          def h(lines):
+              return hashlib.sha256("\n".join(sorted(lines)).encode()).hexdigest()[:8]
+          whole = h(f"{n} {r}" for n, r in pins.items())
+          def direct(name):
+              mf = pathlib.Path(".lake/packages") / name / "lake-manifest.json"
+              if not mf.exists():
+                  return None
+              return [q["name"] for q in json.load(open(mf)).get("packages", [])
+                      if q.get("type") == "git"]
+          out = {}
+          for name in pins:
+              closure, queue, known = set(), [name], True
+              while queue and known:
+                  ds = direct(queue.pop())
+                  if ds is None:
+                      known = False
+                      break
+                  for d in ds:
+                      if d not in pins:
+                          known = False
+                          break
+                      if d not in closure:
+                          closure.add(d)
+                          queue.append(d)
+              if not known:
+                  out[name] = whole
+              elif closure:
+                  out[name] = h(f"{d} {pins[d]}" for d in closure)
+              else:
+                  out[name] = "noup"
+          print(json.dumps(out, sort_keys=True, separators=(",", ":")))
+          PY
+          )"
           echo "TCSLUG=$tcslug" >> "$GITHUB_ENV"
-          echo "PINS8=$pins8" >> "$GITHUB_ENV"
           echo "tcslug=$tcslug" >> "$GITHUB_OUTPUT"
-          echo "pins8=$pins8" >> "$GITHUB_OUTPUT"
+          echo "pins=$pins" >> "$GITHUB_OUTPUT"
+          echo "::notice::upstream pin hashes: $pins"
           # `analysis/<tcslug>/_latest.txt` holds the mathlib sha of the
           # previous run on this toolchain. It returns 404 on a chain that has
           # never run, and that run has no warm start.
@@ -226,19 +274,21 @@ jobs:
             exit 0
           fi
           # Each dependency goes into one of two plan files, which both hold
-          # "<name> <rev>" per line. cached.txt lists what the bucket serves,
-          # and the warm start reads it. stage.txt lists what this run must
-          # build, export and upload.
+          # "<name> <rev> <pin-hash>" per line. cached.txt lists what the
+          # bucket serves, and the warm start reads it. stage.txt lists what
+          # this run must build, export and upload. The hash travels with the
+          # name, so the later steps and the upload job do not derive it again.
           while read -r name rev; do
             if [[ " $DEP_SKIP " == *" $name "* ]]; then
               echo "::notice::dep $name: on the skip list; not cached"
               continue
             fi
-            url="$LAKE_CACHE_REVISION_ENDPOINT/$SHADOW_SCOPE/deps/$tcslug/$pins8/$name/$rev.jsonl"
+            ph="$(jq -r --arg d "$name" '.[$d]' <<< "$pins")"
+            url="$LAKE_CACHE_REVISION_ENDPOINT/$SHADOW_SCOPE/deps/$tcslug/$ph/$name/$rev.jsonl"
             if curl -fsS -o /dev/null "$url" 2>/dev/null; then
-              echo "$name $rev" >> .lake/dep-plan/cached.txt
+              echo "$name $rev $ph" >> .lake/dep-plan/cached.txt
             else
-              echo "$name $rev" >> .lake/dep-plan/stage.txt
+              echo "$name $rev $ph" >> .lake/dep-plan/stage.txt
               # The overrides for the export build of this dependency. They
               # rewrite every other workspace package as a path entry into this
               # checkout, so the standalone load resolves the upstreams to
@@ -395,15 +445,16 @@ jobs:
             echo "::notice::no cached deps to warm start"
             exit 0
           fi
-          # TCSLUG and PINS8 arrive from the plan step through $GITHUB_ENV.
+          # TCSLUG arrives from the plan step through $GITHUB_ENV, and the
+          # third column of cached.txt is that dependency's upstream pin hash.
           # For batteries the scope below is
           #   mathlib4-master-shadow/deps/leanprover-lean4-v4.34.0-rc2/2d10dd67/batteries
           # and `--rev` is the manifest revision of batteries. The lookup is
           # exact, so a miss returns at once and does not walk `--max-revs`
           # ancestors.
-          while read -r name rev; do
+          while read -r name rev ph; do
             lake cache get --service=shadow --package="$name" \
-              --scope="$SHADOW_SCOPE/deps/$TCSLUG/$PINS8/$name" --rev="$rev" \
+              --scope="$SHADOW_SCOPE/deps/$TCSLUG/$ph/$name" --rev="$rev" \
               || echo "::warning::dep warm start failed for $name@${rev:0:12}; it will build from source"
           done < .lake/dep-plan/cached.txt
 
@@ -467,7 +518,7 @@ jobs:
           # The upload job pushes this file to
           # revisions/<dep scope>/<dep rev>.jsonl, and the .ltar files it
           # names to artifacts/<dep scope>/.
-          while read -r name rev; do
+          while read -r name _ _; do
             echo "::group::export $name"
             if lake -d ".lake/packages/$name" build \
                 --packages="$PWD/.lake/dep-plan/$name-overrides.json" \
@@ -513,13 +564,13 @@ jobs:
           lake cache stage .lake/outputs.jsonl ../lake-cache-staging
           mkdir -p ../lake-cache-staging/deps
           cp .lake/dep-plan/cached.txt ../lake-cache-staging/deps/cached.txt
-          while read -r name rev; do
+          while read -r name rev ph; do
             # A dependency whose export failed has no mappings file, but
             # stage.txt still lists it. Skip it instead of staging a part of
             # it.
             [ -f ".lake/dep-outputs/$name.jsonl" ] || continue
             lake cache stage ".lake/dep-outputs/$name.jsonl" "../lake-cache-staging/deps/$name"
-            echo "$name $rev" >> ../lake-cache-staging/deps/manifest.txt
+            echo "$name $rev $ph" >> ../lake-cache-staging/deps/manifest.txt
           done < .lake/dep-plan/stage.txt
           du -sh ../lake-cache-staging | awk '{print "staging total:", $1}'
           du -sh ../lake-cache-staging/deps | awk '{print "deps staging total:", $1}'
@@ -644,7 +695,6 @@ jobs:
         continue-on-error: true
         env:
           TCSLUG: ${{ needs.build_and_stage.outputs.tcslug }}
-          PINS8: ${{ needs.build_and_stage.outputs.pins8 }}
         run: |
           cd pr-branch
           skipped=0
@@ -659,10 +709,11 @@ jobs:
           fi
           ok=0 fail=0
           : > /tmp/dep-put.log
-          while read -r name rev; do
+          # The third column is the upstream pin hash the plan step derived.
+          while read -r name rev ph; do
             if lake cache put-staged "../lake-cache-staging/deps/$name" \
                 --service=shadow \
-                --scope="$SHADOW_SCOPE/deps/$TCSLUG/$PINS8/$name" \
+                --scope="$SHADOW_SCOPE/deps/$TCSLUG/$ph/$name" \
                 --rev="$rev" 2>&1 | tee -a /tmp/dep-put.log; then
               ok=$((ok+1))
             else
@@ -858,15 +909,18 @@ jobs:
         if: ${{ env.CACHE_DEPS == 'true' }}
         env:
           TCSLUG: ${{ needs.build_and_stage.outputs.tcslug }}
-          PINS8: ${{ needs.build_and_stage.outputs.pins8 }}
+          PINS: ${{ needs.build_and_stage.outputs.pins }}
         run: |
           cd pr-branch
+          # PINS maps each dependency to the hash of its upstream pins, as the
+          # plan step derived it.
           total=0 hits=0
           while read -r name rev; do
             if [[ " $DEP_SKIP " == *" $name "* ]]; then continue; fi
             total=$((total+1))
+            ph="$(jq -r --arg d "$name" '.[$d]' <<< "$PINS")"
             if lake cache get --service=shadow --package="$name" \
-                --scope="$SHADOW_SCOPE/deps/$TCSLUG/$PINS8/$name" --rev="$rev"; then
+                --scope="$SHADOW_SCOPE/deps/$TCSLUG/$ph/$name" --rev="$rev"; then
               hits=$((hits+1))
             else
               echo "::warning::dep cache miss for $name@${rev:0:12}; it will build from source"
@@ -1035,11 +1089,50 @@ jobs:
           # This job derives the qualifiers itself, where the other jobs read
           # them from build_and_stage. That is the point of the job: a real
           # downstream project has no access to mathlib's CI outputs, and must
-          # arrive at the same scope from what it holds locally. The pin hash
-          # therefore comes from mathlib's manifest, which this workspace holds
-          # at .lake/packages/mathlib/.
+          # arrive at the same scope from what it holds locally. The derivation
+          # below is therefore a copy of the plan step's, rooted at mathlib's
+          # manifest, which this workspace holds at .lake/packages/mathlib/.
+          # The dependency manifests sit at .lake/packages/<name>/ in both
+          # workspaces, so the rest of the computation is identical.
           tcslug="$(printf %s "$EFFECTIVE_TOOLCHAIN" | tr -c 'A-Za-z0-9._-' '-')"
-          pins8="$(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' .lake/packages/mathlib/lake-manifest.json | LC_ALL=C sort | sha256sum | cut -c1-8)"
+          pins="$(python3 - .lake/packages/mathlib/lake-manifest.json <<'PY'
+          import hashlib, json, pathlib, sys
+          root = sys.argv[1] if len(sys.argv) > 1 else "lake-manifest.json"
+          pins = {q["name"]: q["rev"] for q in json.load(open(root))["packages"]
+                  if q.get("type") == "git"}
+          def h(lines):
+              return hashlib.sha256("\n".join(sorted(lines)).encode()).hexdigest()[:8]
+          whole = h(f"{n} {r}" for n, r in pins.items())
+          def direct(name):
+              mf = pathlib.Path(".lake/packages") / name / "lake-manifest.json"
+              if not mf.exists():
+                  return None
+              return [q["name"] for q in json.load(open(mf)).get("packages", [])
+                      if q.get("type") == "git"]
+          out = {}
+          for name in pins:
+              closure, queue, known = set(), [name], True
+              while queue and known:
+                  ds = direct(queue.pop())
+                  if ds is None:
+                      known = False
+                      break
+                  for d in ds:
+                      if d not in pins:
+                          known = False
+                          break
+                      if d not in closure:
+                          closure.add(d)
+                          queue.append(d)
+              if not known:
+                  out[name] = whole
+              elif closure:
+                  out[name] = h(f"{d} {pins[d]}" for d in closure)
+              else:
+                  out[name] = "noup"
+          print(json.dumps(out, sort_keys=True, separators=(",", ":")))
+          PY
+          )"
           # Two manifests are in play. The pin hash above comes from
           # mathlib's, and the loop below reads the downstream project's, which
           # lists mathlib and the 8 dependencies it inherited. mathlib
@@ -1052,7 +1145,7 @@ jobs:
             if [ "$name" = mathlib ]; then
               scope="$SHADOW_SCOPE"
             else
-              scope="$SHADOW_SCOPE/deps/$tcslug/$pins8/$name"
+              scope="$SHADOW_SCOPE/deps/$tcslug/$(jq -r --arg d "$name" '.[$d]' <<< "$pins")/$name"
             fi
             if lake cache get --service=shadow --package="$name" --scope="$scope" --rev="$rev"; then
               hits=$((hits+1))

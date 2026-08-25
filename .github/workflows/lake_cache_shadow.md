@@ -9,7 +9,8 @@ The pipeline caches the root package, mathlib, and every git dependency in
 mathlib's manifest. In the examples below, `<DEP>` is one dependency, `<R-DEP>`
 is its revision from the manifest, and `<S-DEP>` is its scope,
 `mathlib4-master-shadow/deps/<toolchain-slug>/<pin-hash>/<DEP>`. The pin hash
-is a short fingerprint of the revisions that mathlib's manifest pins, and the
+is a short fingerprint of the revisions that mathlib pins for that
+dependency's upstreams, and the
 toolchain slug is the toolchain with its punctuation replaced. "Scope
 qualifiers" below covers both, and says why the scope carries them. A rendered
 scope reads
@@ -163,11 +164,17 @@ exact.
 - The toolchain slug separates the toolchains that build one long-lived
   revision. It is the toolchain with each character outside `A-Za-z0-9._-`
   replaced by `-`.
-- The pin hash separates the manifest generations. The input hashes of a
-  dependency cover the artifacts of its upstreams, so a bump of batteries alone
-  changes the correct mappings for aesop but not the revision of aesop. The
-  hash is 8 hex characters over the sorted `<name> <rev>` git entries of
-  mathlib's manifest.
+- The pin hash separates the versions of the upstreams a dependency was built
+  against. The input hashes of a dependency cover the artifacts of its
+  upstreams, so a bump of batteries alone changes the correct mappings for
+  aesop but not the revision of aesop. The hash is 8 hex characters over the
+  sorted `<name> <rev>` entries of that dependency's transitive upstreams, as
+  mathlib's manifest pins them. A dependency with no upstream, which is six of
+  the eight today, gets the constant `noup` and never re-keys on another
+  dependency's bump. Where the closure is unknown, because a manifest is
+  missing or names a package this workspace does not pin, the whole manifest is
+  hashed instead: that over-keys, which costs an upload, where under-keying
+  would cost a silent miss.
 
 `build_and_stage` derives both and publishes them as job outputs. The `upload`
 and `consume` jobs read them from there.
@@ -188,12 +195,10 @@ What that means in practice:
   so a run that only moves mathlib finds every dependency in place. This is the
   steady state, and it uploads no dependency at all.
 - A toolchain bump changes the slug, so every dependency gets a new scope.
-- A dependency bump changes two things: the revision of that dependency, and
-  the pin hash. The pin hash covers the whole manifest, so a bump of one
-  dependency re-keys all of them, and the run rebuilds and re-uploads every
-  dependency. Only the bumped dependency, and any dependency that has it
-  upstream, holds different content. A hash over each dependency's own upstream
-  closure would re-key only those, and leave the rest in place.
+- A dependency bump changes the revision of that dependency, and the pin hash
+  of every dependency that has it upstream. A bump of batteries therefore
+  re-keys batteries, through its revision, and aesop, through its pin hash. The
+  other six keep their keys and their content in the bucket.
 
 Every job runs on Linux, so the scope carries no platform segment. A pipeline
 that built on more than one platform would need one, because the artifacts of a
