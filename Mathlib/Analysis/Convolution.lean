@@ -534,11 +534,10 @@ section IsAddLeftInvariant
 variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsNegInvariant μ] [IsAddLeftInvariant μ]
 
 omit [NormedSpace ℝ F] in
-lemma lintegral_enorm_convolution_le {p q r : ENNReal}
-    [hpq : p.HolderTriple q r] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (x₀ : G) : eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) r μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
-  rw [← eLpNorm_comp_measurePreserving hg (μ.measurePreserving_sub_left x₀),
-    ← eLpNorm_one_eq_lintegral_enorm]
+lemma lintegral_enorm_convolution_le {p q r : ENNReal} [hpq : p.HolderTriple q r]
+    (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x₀ : G) :
+    eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) r μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
+  rw [← eLpNorm_comp_measurePreserving hg (μ.measurePreserving_sub_left x₀)]
   exact eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm hf
     (hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_left μ x₀)) (L ·) ‖L‖₊
     (.of_forall fun _ ↦ L.le_opENorm₂ ..)
@@ -549,19 +548,20 @@ convolution of `f` and `g` exists everywhere. -/
 theorem ConvolutionExists.of_memLp_memLp [IsAddRightInvariant μ] {p q : ENNReal}
     [hpq : p.HolderConjugate q] (hfp : MemLp f p μ) (hgq : MemLp g q μ) :
     ConvolutionExists f g L μ := by
-  refine fun x ↦
-    ⟨hfp.aestronglyMeasurable.convolution_integrand_snd L hgq.aestronglyMeasurable x, ?_⟩
-  apply lt_of_le_of_lt (lintegral_enorm_convolution_integrand_le_enorm_mul_eLpNorm_mul_eLpNorm L
-    hfp.aestronglyMeasurable hgq.aestronglyMeasurable x (hpq := hpq))
-  finiteness
+  intro x
+  refine memLp_one_iff_integrable.mp ⟨?_, ?_⟩
+  · exact hfp.aestronglyMeasurable.convolution_integrand_snd L hgq.aestronglyMeasurable x
+  · exact (lintegral_enorm_convolution_le L hfp.aestronglyMeasurable
+      hgq.aestronglyMeasurable x).trans_lt (by finiteness)
 
 /-- If `p` and `q` are Hölder conjugates, then the convolution of `f` and `g` is bounded everywhere
 by `‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ`. -/
 theorem enorm_convolution_le {p q : ENNReal}
     [hpq : p.HolderConjugate q] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (x₀ : G) : ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
-  (enorm_integral_le_lintegral_enorm _).trans <|
-    lintegral_enorm_convolution_integrand_le_enorm_mul_eLpNorm_mul_eLpNorm L hf hg x₀
+  calc ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ := enorm_integral_le_lintegral_enorm _
+    _ = eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) 1 μ := eLpNorm_one_eq_lintegral_enorm.symm
+    _ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := lintegral_enorm_convolution_le L hf hg x₀
 
 end IsAddLeftInvariant
 
