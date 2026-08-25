@@ -1276,9 +1276,8 @@ lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [hp : Fa
     (hcard : p ∣ Nat.card G) : p ∣ Nat.card (center G) := by
   obtain P : Sylow p G := Classical.arbitrary ..
   refine dvd_trans ?_ <| (↑P ⊓ center G).card_dvd_of_le inf_le_right
-  have hnt := inf_center_ne_bot_of_normal <| P.ne_bot_of_dvd_card hcard
-  have hPGrp : IsPGroup p (P ⊓ center G : Subgroup G) := P.isPGroup'.to_inf_left
-  grind [one_lt_card_iff_ne_bot, hPGrp.card_eq_or_dvd]
+  have hnt := mt (eq_bot_iff_card _).mpr (inf_center_ne_bot_of_normal (P.ne_bot_of_dvd_card hcard))
+  exact P.isPGroup'.to_inf_left.card_eq_or_dvd.resolve_left hnt
 
 /-- A finite nilpotent group has normal subgroups of every possible order. -/
 theorem Group.IsNilpotent.exists_normal_of_dvd_card [IsNilpotent G] {n : ℕ}
