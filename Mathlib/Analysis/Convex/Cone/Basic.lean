@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Cone.Closure
 public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Order.Module
 public import Mathlib.Topology.Order.DenselyOrdered
 
@@ -44,7 +45,7 @@ The next steps are:
 
 @[expose] public section
 
-open ContinuousLinearMap Filter Function Set
+open ContinuousLinearMap Function Set
 
 variable {𝕜 R E F G : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
 variable [AddCommMonoid E] [TopologicalSpace E] [Module R E]
@@ -76,7 +77,9 @@ lemma toPointedCone_injective : Injective ((↑) : ProperCone R E → PointedCon
 -- TODO: add `ConvexConeClass` that extends `SetLike` and replace the below instance
 instance : SetLike (ProperCone R E) E where
   coe C := C.carrier
-  coe_injective' _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
+  coe_injective _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
+
+instance : PartialOrder (ProperCone R E) := .ofSetLike (ProperCone R E) E
 
 @[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 
@@ -157,21 +160,10 @@ end ProperCone
 ### Topological properties of convex cones
 
 This section proves topological results about convex cones.
-
-#### TODO
-
-This result generalises to G-submodules.
 -/
 
 namespace ConvexCone
-variable [Semifield 𝕜] [LinearOrder 𝕜] [Module 𝕜 E] {s : Set E}
-
--- FIXME: This is necessary for the proof below but triggers the `unusedSectionVars` linter.
--- variable [IsStrictOrderedRing 𝕜] [IsTopologicalAddGroup M] in
-/-- This is true essentially by `Submodule.span_eq_iUnion_nat`, except that `Submodule` currently
-doesn't support that use case. See
-https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/G-submodules/with/514426583 -/
-proof_wanted isOpen_hull (hs : IsOpen s) : IsOpen (hull 𝕜 s : Set E)
+variable [Semifield 𝕜] [LinearOrder 𝕜] [Module 𝕜 E]
 
 variable [TopologicalSpace 𝕜] [OrderTopology 𝕜] [DenselyOrdered 𝕜] [NoMaxOrder 𝕜]
   [ContinuousSMul 𝕜 E] {C : ConvexCone 𝕜 E}

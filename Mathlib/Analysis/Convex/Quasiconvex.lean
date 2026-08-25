@@ -97,13 +97,13 @@ variable {s : Set E} {f : E → β} {g : β → γ}
 theorem QuasiconvexOn.monotone_comp
     (hg : Monotone g) (hf : QuasiconvexOn 𝕜 s f) :
     QuasiconvexOn 𝕜 s (g ∘ f) := fun c x hx y hy ↦ by
-  simp only [Function.comp_apply, mem_setOf_eq] at hx hy
+  simp only [Function.comp_apply, mem_ofPred_eq] at hx hy
   intro a b ha hb hab
-  simp only [Function.comp_apply, mem_setOf_eq]
+  simp only [Function.comp_apply, mem_ofPred_eq]
   wlog h : f x ≤ f y
   · grind
   specialize hf (f y) ⟨hx.1, h⟩ ⟨hy.1, le_rfl⟩ ha hb hab
-  simp only [mem_setOf_eq] at hf
+  simp only [mem_ofPred_eq] at hf
   exact ⟨hf.1, le_trans (hg hf.2) hy.2⟩
 
 theorem QuasiconvexOn.antitone_comp (hg : Antitone g) (hf : QuasiconvexOn 𝕜 s f) :
@@ -221,7 +221,7 @@ theorem quasilinearOn_iff_mem_uIcc : QuasilinearOn 𝕜 s f ↔ Convex 𝕜 s �
 
 theorem QuasiconvexOn.convex_lt (hf : QuasiconvexOn 𝕜 s f) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) := by
-  refine fun x hx y hy a b ha hb hab => ?_
+  intro x hx y hy a b ha hb hab
   have h := hf _ ⟨hx.1, le_max_left _ _⟩ ⟨hy.1, le_max_right _ _⟩ ha hb hab
   exact ⟨h.1, h.2.trans_lt <| max_lt hx.2 hy.2⟩
 

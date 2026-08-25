@@ -13,7 +13,7 @@ public import Mathlib.Topology.Sets.Compacts
 In this file we prove that a locally compact regular topological space has Baire property.
 -/
 
-@[expose] public section
+public section
 
 open TopologicalSpace Set
 
@@ -46,7 +46,7 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace : BaireSpac
     refine ⟨fun n ↦ ?_, fun n ↦ (hK_next n _).trans inter_subset_left, hK₀⟩
     exact subset_closure.trans <| (hK_next _ _).trans <|
       inter_subset_right.trans interior_subset
-  -- Prove that ̀`⋂ n : ℕ, closure (K n)` is inside `U ∩ ⋂ n : ℕ, f n`.
+  -- Prove that `⋂ n : ℕ, closure (K n)` is inside `U ∩ ⋂ n : ℕ, f n`.
   have hK_subset : (⋂ n, closure (K n) : Set X) ⊆ U ∩ ⋂ n, f n := fun x hx ↦ by
     simp only [mem_iInter, mem_inter_iff] at hx ⊢
     exact ⟨hKU <| hx 0, fun n ↦ hKf n <| hx (n + 1)⟩
@@ -59,14 +59,15 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace : BaireSpac
   exact hK_nonempty.mono hK_subset
 
 /-- A Gδ subset of a locally compact R₁ space is Baire. -/
-theorem IsGδ.of_t2Space_locallyCompactSpace (hG : IsGδ s) : BaireSpace s := by
-  have : BaireSpace (closure s) := by
-    convert BaireSpace.of_t2Space_locallyCompactSpace using 1
-    · infer_instance
-    · exact isClosed_closure.locallyCompactSpace
+theorem IsGδ.baireSpace_of_t2Space_locallyCompactSpace (hG : IsGδ s) : BaireSpace s := by
+  have : LocallyCompactSpace (closure s) := isClosed_closure.locallyCompactSpace
+  have : BaireSpace (closure s) := .of_t2Space_locallyCompactSpace
   have : BaireSpace ((↑) ⁻¹' s : Set (closure s)) :=
-    (isGδ_induced continuous_subtype_val hG).baireSpace_of_dense
+    (hG.preimage continuous_subtype_val).baireSpace_of_dense
     (by simp [Subtype.dense_iff, inter_eq_right.mpr subset_closure])
   have h_homeo : Homeomorph ((↑) ⁻¹' s : Set (closure s)) s := ⟨⟨fun x => ⟨x, x.2⟩,
     fun x => ⟨⟨x, subset_closure x.2⟩, x.2⟩, by grind, by grind⟩, by fun_prop, by fun_prop⟩
   exact h_homeo.baireSpace
+
+@[deprecated (since := "2026-06-04")]
+alias IsGδ.of_t2Space_locallyCompactSpace := IsGδ.baireSpace_of_t2Space_locallyCompactSpace

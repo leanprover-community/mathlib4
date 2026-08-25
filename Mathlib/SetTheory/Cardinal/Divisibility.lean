@@ -30,7 +30,7 @@ cancellative `CommMonoidWithZero`.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Cardinal
@@ -51,8 +51,8 @@ theorem isUnit_iff : IsUnit a ↔ a = 1 := by
   obtain ⟨t, ht⟩ := h 1
   rw [eq_comm, mul_eq_one_iff_of_one_le] at ht
   · exact ht.1
-  · exact one_le_iff_ne_zero.mpr ha
-  · apply one_le_iff_ne_zero.mpr
+  · exact Cardinal.one_le_iff_ne_zero.mpr ha
+  · apply Cardinal.one_le_iff_ne_zero.mpr
     intro h
     rw [h, mul_zero] at ht
     exact zero_ne_one ht
@@ -61,10 +61,10 @@ instance : Unique Cardinal.{u}ˣ where
   default := 1
   uniq a := Units.val_eq_one.mp <| isUnit_iff.mp a.isUnit
 
-theorem le_of_dvd : ∀ {a b : Cardinal}, b ≠ 0 → a ∣ b → a ≤ b
-  | a, x, b0, ⟨b, hab⟩ => by
-    simpa only [hab, mul_one] using
-      mul_le_mul_right (one_le_iff_ne_zero.2 fun h : b = 0 => b0 (by rwa [h, mul_zero] at hab)) a
+theorem le_of_dvd {a b : Cardinal} (hb : b ≠ 0) (hdiv : a ∣ b) : a ≤ b := by
+  obtain ⟨b, rfl⟩ := hdiv
+  apply le_mul_right
+  simp_all
 
 theorem dvd_of_le_of_aleph0_le (ha : a ≠ 0) (h : a ≤ b) (hb : ℵ₀ ≤ b) : a ∣ b :=
   ⟨b, (mul_eq_right hb h ha).symm⟩
@@ -83,7 +83,7 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
     all_goals rwa [mul_comm]
   left
   have habc := le_of_dvd hz hbc
-  rwa [mul_eq_max' <| ha.trans <| habc, max_def', if_pos h] at hbc
+  rwa [mul_eq_max' <| ha.trans <| habc, max_def', ite_eq_left h] at hbc
 
 theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
   rw [irreducible_iff, not_and_or]

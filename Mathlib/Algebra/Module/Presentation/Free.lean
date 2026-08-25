@@ -76,13 +76,13 @@ noncomputable def presentationFinsupp (G : Type w₀) :
   toSolution := Relations.solutionFinsupp _
   toIsPresentation := by exact Relations.solutionFinsupp_isPresentation _
 
+set_option backward.defeqAttrib.useBackward true in
 lemma free_iff_exists_presentation :
     Free A M ↔ ∃ (p : Presentation.{v, w₁} A M), IsEmpty p.R := by
   constructor
   · rw [free_def.{_, _, v}]
     rintro ⟨G, ⟨⟨e⟩⟩⟩
-    exact ⟨(presentationFinsupp A G).ofLinearEquiv e.symm,
-      by dsimp; infer_instance⟩
+    exact ⟨(presentationFinsupp A G).ofLinearEquiv e.symm, by dsimp; infer_instance⟩
   · rintro ⟨p, h⟩
     exact p.toIsPresentation.free
 

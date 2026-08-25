@@ -99,15 +99,6 @@ lemma le_nonZeroDivisors_iff_isRegular {S : Submonoid R} :
   simp_rw [nonZeroDivisors, le_inf_iff, le_nonZeroDivisorsLeft_iff_isLeftRegular,
     le_nonZeroDivisorsRight_iff_isRightRegular, isRegular_iff, forall_and]
 
-@[deprecated (since := "2025-07-16")]
-alias isLeftRegular_iff_mem_nonZeroDivisorsRight := isLeftRegular_iff_mem_nonZeroDivisorsLeft
-
-@[deprecated (since := "2025-07-16")]
-alias isRightRegular_iff_mem_nonZeroDivisorsLeft := isRightRegular_iff_mem_nonZeroDivisorsRight
-
-@[deprecated (since := "2025-07-16")]
-alias le_nonZeroDivisors_iff_isRightRegular := le_nonZeroDivisorsRight_iff_isRightRegular
-
 lemma mul_cancel_left_mem_nonZeroDivisorsLeft (hr : r ∈ nonZeroDivisorsLeft R) :
     r * x = r * y ↔ x = y :=
   ⟨(isLeftRegular_iff_mem_nonZeroDivisorsLeft.mpr hr ·), congr_arg (r * ·)⟩

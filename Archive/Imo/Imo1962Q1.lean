@@ -3,7 +3,9 @@ Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
-import Mathlib.Data.Nat.Digits.Lemmas
+module
+
+public import Mathlib.Data.Nat.Digits.Lemmas
 
 /-!
 # IMO 1962 Q1
@@ -20,6 +22,7 @@ we define the problem as a predicate, and then prove a particular number is the 
 of a set satisfying it.
 -/
 
+@[expose] public section
 
 namespace Imo1962Q1
 
@@ -105,9 +108,7 @@ lemma case_more_digits {c n : ℕ} (hc : (digits 10 c).length ≥ 6) (hpp : Prob
 Now we combine these cases to show that 153846 is the smallest solution.
 -/
 
-lemma satisfied_by_153846 : ProblemPredicate 153846 := by
-  norm_num [ProblemPredicate]
-  decide
+lemma satisfied_by_153846 : ProblemPredicate 153846 := by simp +decide [ProblemPredicate]
 
 lemma no_smaller_solutions (n : ℕ) (hn : ProblemPredicate n) : n ≥ 153846 := by
   have ⟨c, hcn⟩ := without_digits hn

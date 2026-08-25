@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
 # The `arctan` function.
@@ -37,7 +38,7 @@ theorem tan_add
       (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
     tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) := by
   simpa only [← Complex.ofReal_inj, Complex.ofReal_sub, Complex.ofReal_add, Complex.ofReal_div,
-    Complex.ofReal_mul, Complex.ofReal_tan] using
+    Complex.ofReal_mul, Complex.ofReal_tan] using!
     @Complex.tan_add (x : ℂ) (y : ℂ) (by convert h <;> norm_cast)
 
 theorem tan_add'
@@ -50,7 +51,7 @@ theorem tan_sub {x y : ℝ}
       (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
     tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) := by
   simpa only [← Complex.ofReal_inj, Complex.ofReal_sub, Complex.ofReal_add, Complex.ofReal_div,
-    Complex.ofReal_mul, Complex.ofReal_tan] using
+    Complex.ofReal_mul, Complex.ofReal_tan] using!
     @Complex.tan_sub (x : ℂ) (y : ℂ) (by convert h <;> norm_cast)
 
 theorem tan_sub' {x y : ℝ}
@@ -73,11 +74,11 @@ theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} := by
 
 @[continuity]
 theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
-  continuousOn_iff_continuous_restrict.1 continuousOn_tan
+  continuousOn_iff_continuous_domRestrict.1 continuousOn_tan
 
 theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   refine ContinuousOn.mono continuousOn_tan fun x => ?_
-  simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne]
+  simp only [and_imp, mem_Ioo, mem_ofPred_eq, Ne]
   rw [cos_eq_zero_iff]
   rintro hx_gt hx_lt ⟨r, hxr_eq⟩
   rcases le_or_gt 0 r with h | h
@@ -169,15 +170,8 @@ theorem arctan_strictMono : StrictMono arctan := tanOrderIso.symm.strictMono
 @[gcongr]
 theorem arctan_mono : Monotone arctan := arctan_strictMono.monotone
 
-@[deprecated arctan_strictMono (since := "2025-10-20")]
-lemma arctan_lt_arctan (hxy : x < y) : arctan x < arctan y := arctan_strictMono hxy
-
 @[simp]
 theorem arctan_lt_arctan_iff : arctan x < arctan y ↔ x < y := arctan_strictMono.lt_iff_lt
-
-@[deprecated arctan_mono (since := "2025-10-20")]
-lemma arctan_le_arctan (hxy : x ≤ y) : arctan x ≤ arctan y :=
-  arctan_strictMono.monotone hxy
 
 @[simp]
 theorem arctan_le_arctan_iff : arctan x ≤ arctan y ↔ x ≤ y := arctan_strictMono.le_iff_le
@@ -192,10 +186,10 @@ theorem arctan_eq_zero_iff : arctan x = 0 ↔ x = 0 :=
   .trans (by rw [arctan_zero]) arctan_injective.eq_iff
 
 theorem tendsto_arctan_atTop : Tendsto arctan atTop (𝓝[<] (π / 2)) :=
-  tendsto_Ioo_atTop.mp tanOrderIso.symm.tendsto_atTop
+  tendsto_Ioo_atTop (by simp) |>.mp tanOrderIso.symm.tendsto_atTop
 
 theorem tendsto_arctan_atBot : Tendsto arctan atBot (𝓝[>] (-(π / 2))) :=
-  tendsto_Ioo_atBot.mp tanOrderIso.symm.tendsto_atBot
+  tendsto_Ioo_atBot (by simp) |>.mp tanOrderIso.symm.tendsto_atBot
 
 theorem arctan_eq_of_tan_eq (h : tan x = y) (hx : x ∈ Ioo (-(π / 2)) (π / 2)) :
     arctan y = x :=
@@ -262,8 +256,7 @@ theorem arccos_eq_arctan (h : 0 < x) : arccos x = arctan (√(1 - x ^ 2) / x) :=
 
 theorem arctan_inv_of_pos (h : 0 < x) : arctan x⁻¹ = π / 2 - arctan x := by
   rw [← arctan_tan (x := _ - _), tan_pi_div_two_sub, tan_arctan]
-  · norm_num
-    exact (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
+  · simpa using (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
   · rw [sub_lt_self_iff, ← arctan_zero]
     exact tanOrderIso.symm.strictMono h
 
@@ -402,25 +395,32 @@ theorem coe_tanPartialHomeomorph_symm : ⇑tanPartialHomeomorph.symm = arctan :=
 end Real
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for `Real.arctan`. -/
 @[positivity Real.arctan _]
-meta def evalRealArctan : PositivityExt where eval {u α} z p e := do
+meta def evalRealArctan : PositivityExt where eval {u α} z p e :=
+  match p with | none => pure .none | some p => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.arctan $a) =>
     let ra ← core z p a
-    assumeInstancesCommute
     match ra with
-    | .positive pa => return .positive q(Real.arctan_pos.mpr $pa)
-    | .nonnegative na => return .nonnegative q(Real.arctan_nonneg.mpr $na)
-    | .nonzero na => return .nonzero q(mt Real.arctan_eq_zero_iff.mp $na)
+    | .positive pa =>
+      assumeInstancesCommute
+      return .positive q(Real.arctan_pos.mpr $pa)
+    | .nonnegative na =>
+      assumeInstancesCommute
+      return .nonnegative q(Real.arctan_nonneg.mpr $na)
+    | .nonzero na =>
+      assumeInstancesCommute
+      return .nonzero q(mt Real.arctan_eq_zero_iff.mp $na)
     | .none => return .none
   | _ => throwError "not Real.arctan"
 
 /-- Extension for `Real.cos (Real.arctan _)`. -/
 @[positivity Real.cos (Real.arctan _)]
-meta def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
+meta def evalRealCosArctan : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.cos (Real.arctan $a)) =>
     assumeInstancesCommute
@@ -429,14 +429,20 @@ meta def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for `Real.sin (Real.arctan _)`. -/
 @[positivity Real.sin (Real.arctan _)]
-meta def evalRealSinArctan : PositivityExt where eval {u α} z p e := do
+meta def evalRealSinArctan : PositivityExt where eval {u α} z p e :=
+  match p with | none => pure .none | some p => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.sin (Real.arctan $a)) =>
-    assumeInstancesCommute
     match ← core z p a with
-    | .positive pa => return .positive q(Real.sin_arctan_pos.mpr $pa)
-    | .nonnegative na => return .nonnegative q(Real.sin_arctan_nonneg.mpr $na)
-    | .nonzero na => return .nonzero q(mt Real.sin_arctan_eq_zero.mp $na)
+    | .positive pa =>
+      assumeInstancesCommute
+      return .positive q(Real.sin_arctan_pos.mpr $pa)
+    | .nonnegative na =>
+      assumeInstancesCommute
+      return .nonnegative q(Real.sin_arctan_nonneg.mpr $na)
+    | .nonzero na =>
+      assumeInstancesCommute
+      return .nonzero q(mt Real.sin_arctan_eq_zero.mp $na)
     | .none => return .none
   | _ => throwError "not Real.sin (Real.arctan _)"
 

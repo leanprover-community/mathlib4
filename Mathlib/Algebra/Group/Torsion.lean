@@ -15,7 +15,7 @@ This file proves lemmas about torsion-free monoids.
 A monoid `M` is *torsion-free* if `n • · : M → M` is injective for all non-zero natural numbers `n`.
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -51,12 +51,6 @@ lemma pow_eq_one_iff : a ^ n = 1 ↔ a = 1 ∨ n = 0 := by
 @[to_additive nsmul_eq_zero_iff_left]
 lemma pow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by simp [*]
 
-@[deprecated (since := "2025-10-19")]
-alias IsAddTorsionFree.nsmul_eq_zero_iff' := nsmul_eq_zero_iff_left
-
-@[deprecated (since := "2025-10-19")]
-alias IsMulTorsionFree.pow_eq_one_iff' := pow_eq_one_iff_right
-
 /-- See `sq_eq_one_iff` for a version that holds in rings. -/
 @[to_additive two_nsmul_eq_zero]
 lemma sq_eq_one : a ^ 2 = 1 ↔ a = 1 := pow_eq_one_iff_left (by lia)
@@ -69,8 +63,8 @@ variable [Group G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
 @[to_additive zsmul_right_injective]
 lemma zpow_left_injective : ∀ {n : ℤ}, n ≠ 0 → Injective fun a : G ↦ a ^ n
   | (n + 1 : ℕ), _ => by
-    simpa [← Int.natCast_one, ← Int.natCast_add] using pow_left_injective n.succ_ne_zero
-  | .negSucc n, _ => by simpa using inv_injective.comp (pow_left_injective n.succ_ne_zero)
+    simpa [← Int.natCast_one, ← Int.natCast_add] using! pow_left_injective n.succ_ne_zero
+  | .negSucc n, _ => by simpa using! inv_injective.comp (pow_left_injective n.succ_ne_zero)
 
 @[to_additive zsmul_right_inj]
 lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injective hn).eq_iff

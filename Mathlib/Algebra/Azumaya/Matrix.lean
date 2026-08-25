@@ -20,7 +20,7 @@ is an Azumaya algebra where `R` is a commutative ring.
 
 -/
 
-@[expose] public section
+public section
 open scoped TensorProduct
 
 variable (R n : Type*) [CommSemiring R] [Fintype n] [DecidableEq n]
@@ -37,7 +37,7 @@ abbrev AlgHom.mulLeftRightMatrix_inv :
   toFun f := ∑ ⟨⟨i, j⟩, k, l⟩ : (n × n) × n × n,
     f (single j k 1) i l • (single i j 1) ⊗ₜ[R] op (single k l 1)
   map_add' f1 f2 := by simp [add_smul, Finset.sum_add_distrib]
-  map_smul' r f := by simp [SemigroupAction.mul_smul, Finset.smul_sum]
+  map_smul' r f := by simp [mul_smul, Finset.smul_sum]
 
 lemma AlgHom.mulLeftRightMatrix.inv_comp :
     (AlgHom.mulLeftRightMatrix_inv R n).comp

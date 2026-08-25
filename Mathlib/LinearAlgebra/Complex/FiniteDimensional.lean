@@ -18,7 +18,7 @@ This file contains the `FiniteDimensional ℝ ℂ` instance, as well as some res
 (`finrank` and `Module.rank`).
 -/
 
-@[expose] public section
+public section
 
 open Module
 
@@ -44,7 +44,7 @@ theorem finrank_real_complex_fact : Fact (finrank ℝ ℂ = 2) :=
 
 end Complex
 
-instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
+instance (priority := 500) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
     [Module ℂ E] [FiniteDimensional ℂ E] : FiniteDimensional ℝ E :=
   FiniteDimensional.trans ℝ ℂ E
 
@@ -76,6 +76,6 @@ lemma Complex.rank_rat_complex : Module.rank ℚ ℂ = continuum := by
 /-- `ℂ` and `ℝ` are isomorphic as vector spaces over `ℚ`, or equivalently,
 as additive groups. -/
 theorem Complex.nonempty_linearEquiv_real : Nonempty (ℂ ≃ₗ[ℚ] ℝ) :=
-  LinearEquiv.nonempty_equiv_iff_rank_eq.mpr <| by simp
+  Module.nonempty_linearEquiv_iff_rank_eq.mpr <| by simp
 
 end Rational

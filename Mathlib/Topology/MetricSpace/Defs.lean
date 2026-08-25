@@ -16,15 +16,27 @@ Many definitions and theorems expected on metric spaces are already introduced o
 topological spaces. This includes open and closed sets, compactness, completeness, continuity
 and uniform continuity.
 
-TODO (anyone): Add "Main results" section.
+## Main definitions
+
+* `MetricSpace α`: A pseudometric space with the guarantee `dist x y = 0 → x = y`.
+* `MetricSpace.ofDistTopology`: Construct a metric space from a compatible topology and distance.
+* `MetricSpace.replaceUniformity`, `MetricSpace.replaceTopology`,
+  `MetricSpace.replaceBornology`: Tools to construct a metric space on a type with a pre-existing
+  uniformity, topology, or bornology in such a way that the definitional equalities for these
+  structures are preserved; these are essential to avoid type class synthesis issues.
+
+## Main results
+
+* `dist_eq_zero`, `dist_pos`, `eq_of_forall_dist_le`, `eq_of_nndist_eq_zero`: core
+  characterizations of equality via distance.
 
 ## Implementation notes
 A lot of elementary properties don't require `eq_of_dist_eq_zero`, hence are stated and proven
-for `PseudoMetricSpace`s in `PseudoMetric.lean`.
+for `PseudoMetricSpace`s in `Mathlib/Topology/MetricSpace/Pseudo/Defs.lean`.
 
 ## Tags
 
-metric, pseudo_metric, dist
+metric, pseudometric space, dist
 -/
 
 @[expose] public section
@@ -36,7 +48,7 @@ open scoped NNReal Uniformity
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {X ι : Type*}
+variable {α : Type u} {β : Type v} {X : Type*}
 variable [PseudoMetricSpace α]
 
 /-- A metric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
@@ -54,6 +66,7 @@ This e.g. ensures that we do not get a diamond when doing
 `[MetricSpace α] [MetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
 See Note [forgetful inheritance]. -/
+@[wikidata Q180953]
 class MetricSpace (α : Type u) : Type u extends PseudoMetricSpace α where
   eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y
 
@@ -66,6 +79,7 @@ theorem MetricSpace.ext {α : Type*} {m m' : MetricSpace α} (h : m.toDist = m'.
 /-- Construct a metric space structure whose underlying topological space structure
 (definitionally) agrees which a pre-existing topology which is compatible with a given distance
 function. -/
+@[instance_reducible]
 def MetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z)
@@ -115,7 +129,7 @@ theorem zero_eq_nndist {x y : γ} : 0 = nndist x y ↔ x = y := by
 
 namespace Metric
 
-variable {x : γ} {s : Set γ}
+variable {x : γ}
 
 @[simp] theorem closedBall_zero : closedBall x 0 = {x} := Set.ext fun _ => dist_le_zero
 

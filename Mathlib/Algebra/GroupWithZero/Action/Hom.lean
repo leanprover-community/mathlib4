@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Group.Hom.Instances
 
 /-! # Zero-related `•` instances on group-like morphisms -/
 
-@[expose] public section
+public section
 
 variable {M N A B C : Type*}
 

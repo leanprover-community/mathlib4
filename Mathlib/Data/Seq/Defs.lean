@@ -33,7 +33,7 @@ functions defined in this file.
 
 There are also a number of operations and predicates on sequences mirroring those on lists:
 `Seq.map`, `Seq.zip`, `Seq.zipWith`, `Seq.unzip`, `Seq.fold`, `Seq.update`, `Seq.drop`,
-`Seq.splitAt`, `Seq.append`, `Seq.join`, `Seq.enum`, `Seq.Pairwire`,
+`Seq.splitAt`, `Seq.append`, `Seq.join`, `Seq.enum`, `Seq.Pairwise`,
 as well as a cases principle `Seq.recOn` which allows one to reason about
 sequences by cases (`nil` and `cons`).
 
@@ -159,6 +159,7 @@ theorem cons_left_injective (s : Seq α) : Function.Injective fun x => cons x s 
 theorem cons_right_injective (x : α) : Function.Injective (cons x) :=
   cons_injective2.right _
 
+@[simp]
 theorem cons_eq_cons {x x' : α} {s s' : Seq α} :
     (cons x s = cons x' s') ↔ (x = x' ∧ s = s') := by
   constructor
@@ -207,9 +208,7 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
 theorem destruct_eq_none {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
   rcases f0 : get? s 0 <;> intro h
-  · apply Subtype.ext
-    funext n
-    induction n with | zero => exact f0 | succ n IH => exact s.2 IH
+  · exact get?_zero_eq_none.mp f0
   · contradiction
 
 theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s = cons a s' := by
@@ -308,6 +307,7 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
     rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
     exact IH (Corec.f f o).2
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
@@ -322,11 +322,13 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) :
   rw [Stream'.corec'_eq, Stream'.tail_cons]
   dsimp [Corec.f]; rw [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem corec_nil (f : β → Option (α × β)) (b : β)
     (h : f b = .none) : corec f b = nil := by
   apply destruct_eq_none
   simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem corec_cons {f : β → Option (α × β)} {b : β} {x : α} {s : β}
     (h : f b = .some (x, s)) : corec f b = cons x (corec f s) := by
   apply destruct_eq_cons
@@ -457,7 +459,7 @@ def Terminates (s : Seq α) : Prop :=
 def length (s : Seq α) (h : s.Terminates) : ℕ :=
   Nat.find h
 
-open Classical in
+open scoped Classical in
 /-- The `ENat`-valued length of a sequence. For non-terminating sequences, it is `⊤`. -/
 noncomputable def length' (s : Seq α) : ℕ∞ :=
   if h : s.Terminates then s.length h else ⊤

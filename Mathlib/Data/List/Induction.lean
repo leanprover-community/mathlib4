@@ -5,7 +5,9 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-public import Mathlib.Data.List.Basic
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
+public import Mathlib.Util.CompileInductive
 
 /-! ### Induction principles for lists -/
 
@@ -19,32 +21,39 @@ namespace List
 for `l ++ [a]` if it holds for `l`, then it holds for all lists. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 @[elab_as_elim]
-def reverseRecOn {motive : List α → Sort*} (l : List α) (nil : motive [])
-    (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) : motive l :=
-  match h : reverse l with
-  | [] => cast (congr_arg motive <| by simpa using congr(reverse $h.symm)) <|
-      nil
-  | head :: tail =>
-    cast (congr_arg motive <| by simpa using congr(reverse $h.symm)) <|
-      append_singleton _ head <| reverseRecOn (reverse tail) nil append_singleton
-termination_by l.length
-decreasing_by
-  simp_wf
-  rw [← length_reverse (as := l), h, length_cons]
-  simp
+def reverseRec {motive : List α → Sort*} (nil : motive [])
+    (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) : ∀ l, motive l
+  | [] => nil
+  | a :: l => (dropLast_concat_getLast (cons_ne_nil a l)) ▸
+    append_singleton _ _ ((a :: l).dropLast.reverseRec nil append_singleton)
+  termination_by l => l.length
 
 @[simp]
+theorem reverseRec_nil {motive : List α → Sort*} (nil : motive [])
+    (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
+    [].reverseRec nil append_singleton = nil := by grind [reverseRec]
+
+@[simp]
+theorem reverseRec_concat {motive : List α → Sort*} (x : α) (xs : List α) (nil : motive [])
+    (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
+    (xs ++ [x]).reverseRec nil append_singleton =
+    append_singleton xs x (xs.reverseRec nil append_singleton) := by
+  grind [reverseRec, cases List]
+
+/-- Like `reverseRec`, but with the list parameter placed first. -/
+@[elab_as_elim]
+abbrev reverseRecOn {motive : List α → Sort*} (l : List α) (nil : motive [])
+    (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) : motive l :=
+  reverseRec nil append_singleton l
+
 theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
-    reverseRecOn [] nil append_singleton = nil := reverseRecOn.eq_1 ..
+    reverseRecOn [] nil append_singleton = nil := by simp
 
--- `unusedHavesSuffices` is getting confused by the unfolding of `reverseRecOn`
-@[simp, nolint unusedHavesSuffices]
 theorem reverseRecOn_concat {motive : List α → Sort*} (x : α) (xs : List α) (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
-    reverseRecOn (motive := motive) (xs ++ [x]) nil append_singleton =
-      append_singleton _ _ (reverseRecOn (motive := motive) xs nil append_singleton) := by
-  grind [reverseRecOn]
+    (xs ++ [x]).reverseRecOn nil append_singleton =
+      append_singleton xs x (reverseRecOn xs nil append_singleton) := by simp
 
 /-- Bidirectional induction principle for lists: if a property holds for the empty list, the
 singleton list, and `a :: (l ++ [b])` from `l`, then it holds for all lists. This can be used to
@@ -57,17 +66,16 @@ def bidirectionalRec {motive : List α → Sort*} (nil : motive []) (singleton :
   | [] => nil
   | [a] => singleton a
   | a :: b :: l =>
-    let l' := dropLast (b :: l)
-    let b' := getLast (b :: l) (cons_ne_nil _ _)
-    cast (by rw [← dropLast_append_getLast (cons_ne_nil b l)]) <|
-      cons_append a l' b' (bidirectionalRec nil singleton cons_append l')
+    (dropLast_concat_getLast (cons_ne_nil b l)) ▸
+    cons_append a ((b :: l).dropLast) ((b :: l).getLast (cons_ne_nil _ _))
+    ((b :: l).dropLast.bidirectionalRec nil singleton cons_append)
 termination_by l => l.length
 
 @[simp]
 theorem bidirectionalRec_nil {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) :
-    bidirectionalRec nil singleton cons_append [] = nil := bidirectionalRec.eq_1 ..
+    bidirectionalRec nil singleton cons_append [] = nil := by grind [bidirectionalRec]
 
 
 @[simp]
@@ -75,7 +83,7 @@ theorem bidirectionalRec_singleton {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) (a : α) :
     bidirectionalRec nil singleton cons_append [a] = singleton a := by
-  simp [bidirectionalRec]
+  grind [bidirectionalRec]
 
 @[simp]
 theorem bidirectionalRec_cons_append {motive : List α → Sort*}
@@ -84,8 +92,7 @@ theorem bidirectionalRec_cons_append {motive : List α → Sort*}
     (a : α) (l : List α) (b : α) :
     bidirectionalRec nil singleton cons_append (a :: (l ++ [b])) =
       cons_append a l b (bidirectionalRec nil singleton cons_append l) := by
-  conv_lhs => unfold bidirectionalRec
-  cases l with grind
+  grind [bidirectionalRec, cases List]
 
 /-- Like `bidirectionalRec`, but with the list parameter placed first. -/
 @[elab_as_elim]

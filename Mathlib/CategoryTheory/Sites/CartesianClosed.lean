@@ -17,7 +17,7 @@ public import Mathlib.CategoryTheory.Sites.Sheafification
 (chosen) finite products, and there exists a sheafification functor.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -28,6 +28,5 @@ variable {C : Type*} [Category* C] (J : GrothendieckTopology C) (A : Type*) [Cat
 instance [HasSheafify J A] [CartesianMonoidalCategory A] [MonoidalClosed (Cᵒᵖ ⥤ A)] :
     MonoidalClosed (Sheaf J A) :=
   cartesianClosedOfReflective' (sheafToPresheaf _ _) {
-    obj F := ⟨F.obj, (isSheaf_of_iso_iff F.2.choose_spec.some).1 (Sheaf.cond _)⟩
-    map f := ⟨f.hom⟩
-  } (Iso.refl _)
+    obj F := ⟨F.obj, (isSheaf_of_iso_iff F.2.choose_spec.some).1 F.2.choose.property⟩
+    map f := ⟨f.hom⟩ } (Iso.refl _)

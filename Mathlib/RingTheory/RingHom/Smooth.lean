@@ -40,6 +40,12 @@ lemma formallySmooth_algebraMap [Algebra R S] :
     (algebraMap R S).FormallySmooth ↔ Algebra.FormallySmooth R S := by
   rw [FormallySmooth, toAlgebra_algebraMap]
 
+/-- Composition of formally smooth ring homomorphisms is formally smooth. -/
+lemma FormallySmooth.comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
+    (hf : f.FormallySmooth) (hg : g.FormallySmooth) : (g.comp f).FormallySmooth := by
+  algebraize [f, g, g.comp f]
+  exact Algebra.FormallySmooth.comp R S T
+
 lemma FormallySmooth.of_bijective {f : R →+* S} (hf : Function.Bijective f) :
     f.FormallySmooth := by
   algebraize [f]
@@ -48,10 +54,8 @@ lemma FormallySmooth.of_bijective {f : R →+* S} (hf : Function.Bijective f) :
 lemma FormallySmooth.holdsForLocalizationAway : HoldsForLocalizationAway @FormallySmooth :=
   fun _ _ _ _ _ r _ ↦ formallySmooth_algebraMap.mpr <| .of_isLocalization (.powers r)
 
-lemma FormallySmooth.stableUnderComposition : StableUnderComposition @FormallySmooth := by
-  intro R S T _ _ _ f g hf hg
-  algebraize [f, g, g.comp f]
-  exact .comp R S T
+lemma FormallySmooth.stableUnderComposition : StableUnderComposition @FormallySmooth :=
+  fun _ _ _ _ _ _ _ _ hf hg ↦ hf.comp hg
 
 lemma FormallySmooth.respectsIso : RespectsIso @FormallySmooth :=
   stableUnderComposition.respectsIso fun e ↦ holdsForLocalizationAway.of_bijective _ _ e.bijective
@@ -87,6 +91,14 @@ namespace Smooth
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
+lemma formallySmooth {f : R →+* S} (hf : f.Smooth) : f.FormallySmooth := by
+  rw [smooth_def] at hf
+  exact hf.1
+
+lemma finitePresentation {f : R →+* S} (hf : f.Smooth) : f.FinitePresentation := by
+  rw [smooth_def] at hf
+  exact hf.2
+
 /-- Composition of smooth ring homomorphisms is smooth. -/
 lemma comp {f : R →+* S} {g : S →+* T} (hf : f.Smooth) (hg : g.Smooth) : (g.comp f).Smooth := by
   algebraize [f, g, g.comp f]
@@ -96,8 +108,9 @@ lemma stableUnderComposition : StableUnderComposition Smooth :=
   fun _ _ _ _ _ _ _ _ ↦ RingHom.Smooth.comp
 
 lemma isStableUnderBaseChange : IsStableUnderBaseChange Smooth := by
-  convert RingHom.FormallySmooth.isStableUnderBaseChange.and
-    RingHom.finitePresentation_isStableUnderBaseChange
+  convert!
+    RingHom.FormallySmooth.isStableUnderBaseChange.and
+      RingHom.finitePresentation_isStableUnderBaseChange
   rw [smooth_def]
 
 lemma holdsForLocalizationAway : HoldsForLocalizationAway Smooth := by
@@ -137,5 +150,8 @@ lemma propertyIsLocal : PropertyIsLocal Smooth where
   StableUnderCompositionWithLocalizationAwayTarget :=
     (stableUnderComposition.stableUnderCompositionWithLocalizationAway
       holdsForLocalizationAway).right
+
+lemma respectsIso : RespectsIso Smooth :=
+  propertyIsLocal.respectsIso
 
 end RingHom.Smooth

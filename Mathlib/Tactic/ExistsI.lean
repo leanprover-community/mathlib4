@@ -8,6 +8,7 @@ module
 public import Mathlib.Init
 /-!
 # The `existsi` tactic
+
 This file defines the `existsi` tactic: its purpose is to instantiate existential quantifiers.
 Internally, it applies the `refine` tactic.
 -/
@@ -17,8 +18,10 @@ public meta section
 namespace Mathlib.Tactic
 
 /--
-`existsi e₁, e₂, ⋯` applies the tactic `refine ⟨e₁, e₂, ⋯, ?_⟩`. It's purpose is to instantiate
-existential quantifiers.
+`existsi e₁, e₂, ⋯` instantiates existential quantifiers in the main goal by using `e₁`, `e₂`, ...
+as witnesses. `existsi e₁, e₂, ⋯` is equivalent to `refine ⟨e₁, e₂, ⋯, ?_⟩`.
+
+See also `exists`: `exists e₁, e₂, ⋯` is equivalent to `existsi e₁, e₂, ⋯; try trivial`.
 
 Examples:
 

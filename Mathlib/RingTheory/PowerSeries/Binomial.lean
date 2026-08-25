@@ -11,6 +11,7 @@ public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Binomial Power Series
+
 We introduce formal power series of the form `(1 + X) ^ r`, where `r` is an element of a
 commutative binomial ring `R`.
 
@@ -32,7 +33,7 @@ commutative binomial ring `R`.
 
 @[expose] public section
 
-open Finset BigOperators
+open Finset
 
 suppress_compilation
 

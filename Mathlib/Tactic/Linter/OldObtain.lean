@@ -43,13 +43,14 @@ from mathlib: in summary,
 - the syntax `obtain foo : type := proof` is slightly shorter;
   particularly so when the first tactic of the proof is `exact`
 - when using the old syntax as `obtain foo : type; · proof`, there is an intermediate state with
-multiple goals right before the focusing dot. This can be confusing.
-(This gets amplified with the in-flight "multiple goal linter", which seems generally desired ---
-for many reasons, including teachability. Granted, the linter could be tweaked to not lint in this
-case... but by now, the "old" syntax is not clearly better.)
+  multiple goals right before the focusing dot. This can be confusing.
+  (This gets amplified with the in-flight "multiple goal linter", which seems generally desired ---
+  for many reasons, including teachability. Granted, the linter could be tweaked to not lint in this
+  case... but by now, the "old" syntax is not clearly better.)
 - the old syntax *could* be slightly nicer when deferring goals: however, this is rare.
-In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
-could also be used, as was in fact clearer. -/
+  In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
+  could also be used, as was in fact clearer.
+-/
 
 meta section
 

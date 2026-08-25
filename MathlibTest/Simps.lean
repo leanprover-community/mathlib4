@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Tactic.Simps.Basic
+import Mathlib.Algebra.Notation.Defs
+import Mathlib.Tactic.Simps
 import Mathlib.Lean.Exception
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.Prod.Basic
@@ -9,6 +10,7 @@ import Mathlib.Tactic.Common
 -- set_option trace.simps.verbose true
 -- set_option pp.universes true
 set_option autoImplicit true
+set_option backward.defeqAttrib.useBackward true
 
 open Lean Meta Elab Term Command Simps
 
@@ -29,7 +31,7 @@ initialize_simps_projections Foo1 (Projone → toNat, two → toBool, three → 
 
 run_cmd liftTermElabM do
   let env ← getEnv
-  let state := ((Simps.structureExt.getState env).find? `Foo1).get!
+  let state := (Simps.structureExt.find? env `Foo1).get!
   guard <| state.1 == []
   guard <| state.2.map (·.1) == #[`toNat, `toBool, `coe, `four, `five]
   liftMetaM <| guard (← isDefEq (state.2[0]!.2) (← elabTerm (← `(Foo1.Projone)) none))
@@ -60,7 +62,7 @@ initialize_simps_projections Foo2
 def Foo2.foo2 : Foo2 Nat := ⟨(0, 0)⟩
 
 -- run_cmd do
---   logInfo m!"{Simps.structureExt.getState (← getEnv) |>.find? `Foo2 |>.get!}"
+--   logInfo m!"{Simps.structureExt.find? (← getEnv) `Foo2 |>.get!}"
 
 structure Left (α : Type _) extends Foo2 α where
   moreData1 : Nat
@@ -75,7 +77,7 @@ initialize_simps_projections Right (elim → newProjection, -otherData, +toFoo2)
 
 run_cmd liftTermElabM do
   let env ← getEnv
-  let state := ((Simps.structureExt.getState env).find? `Right).get!
+  let state := (Simps.structureExt.find? env `Right).get!
   -- logInfo m!"{state}"
   guard <| state.1 == [`u, `v]
   guard <| state.2.map (·.1) == #[`toFoo2, `otherData, `newProjection]
@@ -354,29 +356,43 @@ run_cmd liftTermElabM do
     #[`specify.specify4_snd_snd, `specify.specify4_snd]
   guard <| simpsAttr.getParam? env `specify.specify5 ==
     #[`specify.specify5_fst, `specify.specify5_snd]
-  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("fst_fst", .missing)]
---     "Invalid simp lemma specify.specify1_fst_fst.
--- Projection fst doesn't exist, because target is not a structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("foo_fst", .missing)]
---     "Invalid simp lemma specify.specify1_foo_fst. Structure prod does not have projection foo.
--- The known projections are:
---   [fst, snd]
--- You can also see this information by running
---   `initialize_simps_projections? prod`.
--- Note: these projection names might not correspond to the projection names of the structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("snd_bar", .missing)]
---     "Invalid simp lemma specify.specify1_snd_bar. Structure prod does not have projection bar.
--- The known projections are:
---   [fst, snd]
--- You can also see this information by running
---   `initialize_simps_projections? prod`.
--- Note: these projection names might not correspond to the projection names of the structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify5 { rhsMd := .default, simpRhs := true }
-    [("snd_snd", .missing)]
---     "Invalid simp lemma specify.specify5_snd_snd.
--- The given definition is not a constructor application:
---   Classical.choice specify.specify5._proof_1"
 
+/--
+error: Invalid simp lemma failure1_fst_bar.
+Projection bar doesn't exist, because target Nat is not a structure.
+-/
+#guard_msgs in
+@[simps fst_bar] def failure1 : ℕ × ℕ × ℕ := (1, 2, 3)
+
+/--
+error: Invalid simp lemma failure2_foo_fst. Structure Prod does not have projection foo.
+The known projections are:
+  [fst, snd]
+You can also see this information by running
+  `initialize_simps_projections? Prod`.
+Note: these projection names might be customly defined for `simps`, and could differ from the projection names of the structure.
+-/
+#guard_msgs in
+@[simps foo_fst] def failure2 : ℕ × ℕ × ℕ := (1, 2, 3)
+
+/--
+error: Invalid simp lemma failure3_snd_bar. Structure Prod does not have projection bar.
+The known projections are:
+  [fst, snd]
+You can also see this information by running
+  `initialize_simps_projections? Prod`.
+Note: these projection names might be customly defined for `simps`, and could differ from the projection names of the structure.
+-/
+#guard_msgs in
+@[simps snd_bar] def failure3 : ℕ × ℕ × ℕ := (1, 2, 3)
+
+/--
+error: Invalid simp lemma specify5_snd_snd.
+The given definition is not a constructor application:
+  Classical.choice specify.specify5._proof_1
+-/
+#guard_msgs in
+@[simps! snd_snd] noncomputable def specify5 : ℕ × ℕ × ℕ := (1, Classical.choice ⟨(2, 3)⟩)
 
 /- We also eta-reduce if we explicitly specify the projection. -/
 attribute [simps extra] test
@@ -586,7 +602,7 @@ end BSemigroup
 class ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
-@[simps!] def bar : ExtendingStuff ℕ :=
+@[simps!, instance_reducible] def bar : ExtendingStuff ℕ :=
   { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
@@ -599,7 +615,7 @@ end
 class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
-@[simps!] def new_bar : new_ExtendingStuff ℕ :=
+@[simps!, instance_reducible] def new_bar : new_ExtendingStuff ℕ :=
   { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
@@ -833,6 +849,76 @@ example {α β γ δ : Type _} (x : α) (e₁ : α ≃ β) (e₂ : γ ≃ δ) (z
 
 end PrefixProjectionNames
 
+namespace DsimpLhs
+
+structure Functor where
+  obj : Type → Type
+  map {X Y : Type} (f : X → Y) : obj X → obj Y
+
+structure NatIso (F G : Functor) where
+  app (X : Type) : Equiv (F.obj X) (G.obj X)
+  naturality {X Y : Type} (f : X → Y) : G.map f ∘ app X = app Y ∘ F.map f
+
+def NatIso.refl (F : Functor) : NatIso F F where
+  app X := Equiv.refl _
+  naturality := by simp
+
+abbrev Functor.const (X : Type) : Functor where
+  obj _ := X
+  map _ := id
+
+abbrev Functor.id : Functor where
+  obj X := X
+  map f := f
+
+abbrev Functor.comp (F G : Functor) : Functor where
+  obj X := G.obj (F.obj X)
+  map f := G.map (F.map f)
+
+@[simps!]
+def iso (X : Type) : NatIso (Functor.id.comp (.const X)) (.const X) := NatIso.refl _
+
+set_option pp.explicit true in
+/-- info: DsimpLhs.iso_app_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) :
+  @Eq ((Functor.id.comp (Functor.const X)).obj X✝)
+    (@DFunLike.coe (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
+      ((Functor.id.comp (Functor.const X)).obj X✝) (fun x => (Functor.id.comp (Functor.const X)).obj X✝)
+      (@EquivLike.toFunLike
+        (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
+        ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝)
+        (@Equiv.instEquivLike ((Functor.id.comp (Functor.const X)).obj X✝)
+          ((Functor.id.comp (Functor.const X)).obj X✝)))
+      (@NatIso.app (Functor.id.comp (Functor.const X)) (Functor.const X) (iso X) X✝) a)
+    a -/
+#guard_msgs in
+#check iso_app_apply
+
+@[simps! +dsimpLhs]
+def iso' (X : Type) : NatIso (Functor.id.comp (.const X)) (.const X) := NatIso.refl _
+
+set_option pp.explicit true in
+/-- info: DsimpLhs.iso'_app_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) :
+  @Eq ((Functor.id.comp (Functor.const X)).obj X✝)
+    (@DFunLike.coe (Equiv X X) X (fun x => X)
+      (@EquivLike.toFunLike
+        (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
+        ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝)
+        (@Equiv.instEquivLike ((Functor.id.comp (Functor.const X)).obj X✝)
+          ((Functor.id.comp (Functor.const X)).obj X✝)))
+      (@NatIso.app (Functor.id.comp (Functor.const X)) (Functor.const X) (iso' X) X✝) a)
+    a -/
+#guard_msgs in
+#check iso'_app_apply
+
+example (n : Nat) : (iso Nat).app Nat n = n := by
+  dsimp only
+  fail_if_success simp
+  rfl
+
+example (n : Nat) : (iso' Nat).app Nat n = n := by
+  simp
+
+end DsimpLhs
 
 -- test transparency setting
 structure SetPlus (α : Type) where
@@ -906,6 +992,7 @@ instance has_PropClass (n : ℕ) : PropClass n := ⟨trivial⟩
 structure NeedsPropClass (n : ℕ) [PropClass n] where
   (t : True)
 
+set_option linter.defProp false in
 @[simps] def test_PropClass : NeedsPropClass 1 :=
   { t := trivial }
 
@@ -1176,6 +1263,7 @@ initialize_simps_projections AddHomPlus2 (-myMul, myMul_toFun_toFun → mul)
 
 attribute [ext] Equiv'
 
+set_option warn.classDefReducibility false in
 @[simps]
 def thing (h : Bool ≃ (Bool ≃ Bool)) : AddHomPlus2 (fun _ : ℕ ↦ Bool) :=
   { myMul :=
@@ -1271,3 +1359,34 @@ example : foo.1 = 2 := by
   rfl
 
 end Grind
+
+def MyNat := Nat
+
+def MyNat.zero : MyNat := Nat.zero
+
+structure MyNatStruct where
+  n : MyNat
+
+@[simps]
+def zero : MyNatStruct where
+  n := MyNat.zero
+
+-- Verify that the equality type is not reduced from `MyNat` to `Nat`:
+set_option pp.explicit true in
+/-- info: zero_n : @Eq MyNat zero.n MyNat.zero -/
+#guard_msgs in
+#check zero_n
+
+section SMul
+/-! Check that we have initialized `simps` correctly for `smul`/`vadd`. -/
+@[simps] instance smul_bool : SMul Bool Bool where
+  smul _ b := b
+
+example (b₁ b₂ : Bool) : b₁ • b₂ = b₂ := by simp
+
+@[simps] instance vadd_bool : VAdd Bool Bool where
+  vadd b _ := b
+
+example (b₁ b₂ : Bool) : b₁ +ᵥ b₂ = b₁ := by simp
+
+end SMul

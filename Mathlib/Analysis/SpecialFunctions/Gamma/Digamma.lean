@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Meromorphic.Complex
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 
+
 /-!
 # The digamma function
 
@@ -47,7 +48,7 @@ theorem digamma_one : digamma 1 = - Real.eulerMascheroniConstant := by
 
 theorem digamma_one_half : digamma (1 / 2) = - 2 * log 2 - Real.eulerMascheroniConstant := by
   rw [digamma_def, logDeriv_apply, hasDerivAt_Gamma_one_half.deriv, add_comm, Gamma_one_half_eq,
-    neg_mul, ← mul_neg, neg_add',  Real.sqrt_eq_rpow, ofReal_cpow Real.pi_nonneg]
+    neg_mul, ← mul_neg, neg_add', Real.sqrt_eq_rpow, ofReal_cpow Real.pi_nonneg]
   simp
 
 theorem digamma_apply_add_one (s : ℂ) (hs : ∀ m : ℕ, s ≠ - m) :
@@ -56,6 +57,7 @@ theorem digamma_apply_add_one (s : ℂ) (hs : ∀ m : ℕ, s ≠ - m) :
   rw [digamma_def, logDeriv_apply, logDeriv_apply, deriv_Gamma_add_one s hs0, Gamma_add_one s hs0,
     add_div, div_mul_cancel_right₀ (Gamma_ne_zero hs), mul_div_mul_left _ _ hs0, add_comm]
 
+@[fun_prop]
 theorem meromorphic_digamma : Meromorphic digamma :=
   Meromorphic.Gamma.logDeriv
 

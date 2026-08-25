@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Util.Qq
 
 /-!
 ## `norm_num` plugin for `^`.
@@ -49,6 +50,7 @@ theorem IsNatPowT.trans {p : Prop} {b' c' : ℕ} (h1 : IsNatPowT p a b c)
 
 theorem IsNatPowT.bit0 : IsNatPowT (Nat.pow a b = c) a (nat_lit 2 * b) (Nat.mul c c) :=
   ⟨fun h1 => by simp [two_mul, pow_add, ← h1]⟩
+
 theorem IsNatPowT.bit1 :
     IsNatPowT (Nat.pow a b = c) a (nat_lit 2 * b + nat_lit 1) (Nat.mul c (Nat.mul c a)) :=
   ⟨fun h1 => by simp [two_mul, pow_add, mul_assoc, ← h1]⟩
@@ -136,7 +138,7 @@ partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) :
     have : $a =Q .negOfNat $a' := ⟨⟩
     let b' := b.natLit!
     have b₀ : Q(ℕ) := mkRawNatLit (b' >>> 1)
-    let ⟨c₀, p⟩ := ← evalNatPow a' b₀
+    let ⟨c₀, p⟩ ← evalNatPow a' b₀
     let c' := c₀.natLit!
     if b' &&& 1 == 0 then
       have c : Q(ℕ) := mkRawNatLit (c' * c')
