@@ -154,7 +154,7 @@ instance isManifold_quotient_of_contMDiffSMul [ContMDiffConstSMul I n G M] :
     rw [(πinv x).trans_symm_eq_symm_trans_symm, (chartAt H x.out).symm.trans_assoc,
       ← (πinv x).symm.trans_assoc]
     apply StructureGroupoid.locality
-    intro h hh
+    intro _ hh
     obtain ⟨g0, hg0, hg0'⟩ := quotientTransitionMap_locally_smul x y hh
     have hto : IsOpen ((chartAt H x.out).symm.source ∩
         (chartAt H x.out).symm ⁻¹' ((g0 • ·) ⁻¹' (πinv y).target)) :=
@@ -168,7 +168,7 @@ instance isManifold_quotient_of_contMDiffSMul [ContMDiffConstSMul I n G M] :
       exact (ContMDiffConstSMul.contMDiff_const_smul g0).contMDiffOn
     · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
       exact (ContMDiffConstSMul.contMDiff_const_smul g0⁻¹).contMDiffOn
-    · rintro h' ⟨⟨hQ1, _, hQ4⟩, _, hcert⟩
+    · intro h' ⟨⟨hQ1, _, hQ4⟩, _, hcert⟩
       exact ⟨hQ1, Set.mem_univ _, by simpa [← smul_eqOn x y g0 hcert] using hQ4⟩
 
 end MulAction
