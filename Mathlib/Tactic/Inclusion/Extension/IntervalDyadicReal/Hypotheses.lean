@@ -5,7 +5,8 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Basic
+public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 
 /-!
 # Hypothesis operations for dyadic real intervals

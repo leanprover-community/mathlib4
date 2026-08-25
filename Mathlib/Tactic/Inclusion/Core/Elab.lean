@@ -6,7 +6,6 @@ Authors: David Ledvinka
 module
 
 public meta import Mathlib.Tactic.Inclusion.Core.Core
-meta import Lean.Elab.ConfigEval
 
 /-!
 # Elaboration of the `inclusion` tactic

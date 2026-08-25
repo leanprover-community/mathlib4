@@ -6,7 +6,6 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.Init
-public meta import Lean.Meta.Basic
 
 /-!
 # Datatypes for the `inclusion` tactic

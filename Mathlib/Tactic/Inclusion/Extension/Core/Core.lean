@@ -5,7 +5,6 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Tactic.Inclusion.Core.ToSet
 public meta import Mathlib.Tactic.Inclusion.Extension.Core.Init
 public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 

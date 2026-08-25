@@ -5,7 +5,8 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.Core.Elab
+public meta import Mathlib.Lean.Meta.Basic
+public meta import Mathlib.Tactic.Inclusion.Core.Inclusion
 
 /-!
 # Basic API for `inclusion` extensions

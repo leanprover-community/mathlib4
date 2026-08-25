@@ -6,7 +6,6 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Basic
-public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!

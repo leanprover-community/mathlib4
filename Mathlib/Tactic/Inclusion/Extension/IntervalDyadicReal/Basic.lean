@@ -6,7 +6,6 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
-public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
 
 /-!
 # Basic inclusion extensions for interval_dyadic_real

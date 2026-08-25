@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
-public meta import Qq
 
 /-!
 # Binary splitting of dyadic real intervals

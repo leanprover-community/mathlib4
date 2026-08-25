@@ -7,7 +7,6 @@ module
 
 public meta import Mathlib.Tactic.Inclusion.Core.Expr
 public meta import Mathlib.Tactic.Inclusion.Core.Extensions
-public meta import Mathlib.Lean.Meta.Basic
 
 /-!
 # Constructing inclusions
