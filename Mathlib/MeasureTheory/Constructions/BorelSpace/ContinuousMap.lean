@@ -53,22 +53,20 @@ instance : MeasurableSpace C(X, Y) := borel _
 instance : BorelSpace C(X, Y) where
   measurable_eq := rfl
 
+lemma ContinuousMap.measurable_eval [MeasurableSpace Y] [BorelSpace Y] (x : X) :
+    Measurable (fun f : C(X, Y) ↦ f x) :=
+  Continuous.measurable (by fun_prop)
+
 /-- The coarsest sigma-algebra over `C(X, Y)` making the evaluation maps `f ↦ f x` is
 smaller than the Borel sigma-algebra coming from the compact-open topology. -/
-lemma ContinuousMap.iSup_comap_le_borel [MeasurableSpace Y] [BorelSpace Y] :
+lemma ContinuousMap.iSup_comap_le_borel :
     ⨆ x : X, (borel Y).comap (fun f ↦ f x) ≤ borel C(X, Y) := by
-  refine iSup_le fun x ↦ ?_
-  rw [← measurable_iff_comap_le, ← BorelSpace.measurable_eq, ← BorelSpace.measurable_eq]
-  exact Continuous.measurable (by fun_prop)
-
-lemma ContinuousMap.measurable_eval [MeasurableSpace Y] [BorelSpace Y] (x : X) :
-    Measurable (fun f : C(X, Y) ↦ f x) := by
-  refine .le iSup_comap_le_borel <| .le (le_iSup _ x) ?_
-  rw [← BorelSpace.measurable_eq]
-  exact comap_measurable _
+  borelize Y
+  simp_rw [iSup_le_iff, ← measurable_iff_comap_le]
+  exact ContinuousMap.measurable_eval
 
 variable [SecondCountableTopology X] [SecondCountableTopology Y]
-  [LocallyCompactSpace X] [RegularSpace Y] [mY : MeasurableSpace Y] [BorelSpace Y]
+  [LocallyCompactSpace X] [RegularSpace Y]
 
 namespace ContinuousMap
 
@@ -81,7 +79,8 @@ theorem borel_eq_iSup_comap_eval :
   refine le_antisymm ?_ iSup_comap_le_borel
   -- Denote `M(K, U)` the set of functions `f` such that `Set.MapsTo f K U`. These form a
   -- basis for the compact-open topology when `K` is compact and `U` is open.
-  -- Because `C(X, Y)` is second-countable, it suffices to prove that those sets are measurable.
+  -- Because `C(X, Y)` is second-countable, it suffices to prove that those sets are measurable
+  -- for the coarsest sigma-algebra that makes the maps `f ↦ f x` measurable for all `x : X`.
   -- Let therefore `K` be a compact set of `X` and `U` an open set of `Y`.
   rw [borel_eq_generateFrom_of_subbasis compactOpen_eq]
   apply generateFrom_le
@@ -101,14 +100,14 @@ theorem borel_eq_iSup_comap_eval :
   have (f : C(X, Y)) (hf : K.MapsTo f U) : ∃ v ∈ V, closure v ⊆ U ∧ K.MapsTo f (closure v) := by
     simp_rw [Set.mapsTo_iff_image_subset] at hf ⊢
     rw [hV.open_eq_sUnion_of_closure_subset hU] at hf
-    obtain ⟨b, ⟨hb1, hb2⟩, hb3⟩ : ∃ b ∈ {v | v ∈ V ∧ closure v ⊆ U}, f '' K ⊆ b := by
+    obtain ⟨b, ⟨hb1, hb2⟩, hb3⟩ : ∃ b, (b ∈ V ∧ closure b ⊆ U) ∧ f '' K ⊆ b := by
       refine (hK.image f.continuous).elim_directedOn_cover _
         (fun v hv ↦ hV.isOpen hv.1) hf ?_ ?_
       · rintro - ⟨⟨f, ⟨hf1, hf2⟩, rfl⟩, hf3⟩ - ⟨⟨g, ⟨hg1, hg2⟩, rfl⟩, hg3⟩
         exact ⟨⋃₀ (f ∪ g), ⟨⟨f ∪ g, ⟨hf1.union hg1, by grind⟩, rfl⟩,
           by simp_all [Set.sUnion_union]⟩, by grind, by grind⟩
-      obtain ⟨v, ⟨hv1, hv2⟩, hv3⟩ := hV.nhds_basis_closure x |>.mem_iff.1 <| hU.mem_nhds hx
-      exact ⟨v, hv2, hv3⟩
+      · obtain ⟨v, ⟨hv1, hv2⟩, hv3⟩ := hV.nhds_basis_closure x |>.mem_iff.1 <| hU.mem_nhds hx
+        exact ⟨v, hv2, hv3⟩
     exact ⟨b, hb1, hb2, hb3.trans subset_closure⟩
   -- Therefore, we obtain that
   -- `M(K, U) = ⋃_{u ∈ V, closure u ⊆ U}, M(K, closure u)`.
@@ -127,10 +126,8 @@ theorem borel_eq_iSup_comap_eval :
   -- `f '' K ⊆ closure v` is the same as `f '' Q ⊆ closure v`.
   have : {f : C(X, Y) | K.MapsTo f (closure v)} = {f : C(X, Y) | Q.MapsTo f (closure v)} := by
     ext f
-    refine ⟨fun h ↦ h.mono_left hQ, fun h x hx ↦ ?_⟩
-    obtain ⟨u, hu1, hu2⟩ := mem_closure_iff_seq_limit.1 <| dQ hx
-    exact isClosed_closure.mem_of_tendsto ((f.continuous.tendsto x).comp hu2)
-      (.of_forall fun n ↦ h (hu1 n))
+    refine ⟨fun h ↦ h.mono_left hQ, fun h ↦ ?_⟩
+    simpa using h.closure f.continuous |>.mono_left dQ
   -- We can write `M(Q, closure v) = ⋂ q ∈ Q, (fun f ↦ f q) ⁻¹' (closure v)`.
   have : {f : C(X, Y) | K.MapsTo f (closure v)} = ⋂ q ∈ Q, (fun f ↦ f q) ⁻¹' (closure v) := by
     ext f
@@ -142,9 +139,12 @@ theorem borel_eq_iSup_comap_eval :
   -- for any `q ∈ Q`, `fun f ↦ f q` is measurable for the product σ-algebra.
   -- The latter is the coarsest σ-algebra which makes the maps `fun f ↦ f x` measurable,
   -- so we are done.
+  borelize Y
   refine .biInter cQ fun q hq ↦ .preimage measurableSet_closure (.le (le_iSup _ q) ?_)
   rw [BorelSpace.measurable_eq (α := Y)]
   exact comap_measurable _
+
+variable [mY : MeasurableSpace Y] [BorelSpace Y]
 
 lemma measurableSpace_eq_iSup_comap_eval :
     (inferInstance : MeasurableSpace C(X, Y)) = ⨆ a : X, mY.comap fun b ↦ b a := by
@@ -161,6 +161,8 @@ lemma measurable_iff_eval {Z : Type*} [MeasurableSpace Z] {g : Z → C(X, Y)} :
 end ContinuousMap
 
 namespace MeasurableEquiv
+
+variable [MeasurableSpace Y] [BorelSpace Y]
 
 variable (X Y) in
 /-- A measurable equivalence between `{f : X → Y // Continuous f}` and `C(X, Y)`. -/
