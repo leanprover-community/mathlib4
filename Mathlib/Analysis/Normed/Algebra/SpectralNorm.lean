@@ -296,8 +296,7 @@ end spectralNorm
 
 section spectralAlgNorm
 
--- todo: drop nontrivially
-variable (K : Type*) [NontriviallyNormedField K] (L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
+variable (K : Type*) [NormedField K] (L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
 
 open Algebra.IsAlgebraic in
 noncomputable def spectralAlgNorm' : AlgebraNorm K L where
@@ -327,6 +326,9 @@ variable (K L) in
 /-- The spectral norm is a multiplicative `K`-algebra norm on `L`. -/
 noncomputable def spectralMulAlgNorm' [CompleteSpace K] : MulAlgebraNorm K L :=
   (spectralAlgNorm' K L).toMulAlgebraNorm isPowMul_spectralAlgNorm'
+#check MulRingNorm.mulRingNormEquivAbsoluteValue
+def spectralAbsoluteValue' [CompleteSpace K] : AbsoluteValue L ℝ :=
+  (spectralMulAlgNorm' K L).toMulRingNorm.toAbsoluteValue
 
 end spectralAlgNorm
 
