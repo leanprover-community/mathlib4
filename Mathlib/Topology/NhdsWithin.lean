@@ -122,11 +122,9 @@ theorem mem_nhdsWithin_iff_eventuallyEqSet {s t : Set α} {x : α} :
 @[deprecated (since := "2026-08-14")]
 alias mem_nhdsWithin_iff_eventuallyEq := mem_nhdsWithin_iff_eventuallyEqSet
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_nhdsWithin_inter_self {s t : Set α} {x : α} : t ∈ 𝓝[s ∩ t] x :=
   mem_nhdsWithin_iff_eventuallyEqSet.mpr <| by simp [inter_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_nhdsWithin_self_inter {s t : Set α} {x : α} : s ∈ 𝓝[s ∩ t] x :=
   mem_nhdsWithin_iff_eventuallyEqSet.mpr <| by simp [inter_comm s t, inter_assoc]
 

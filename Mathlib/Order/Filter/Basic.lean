@@ -939,6 +939,12 @@ theorem eventuallyEqSet_iff {s t : Set α} {l : Filter α} : s =ᶠ[l] t ↔ ∀
 
 alias ⟨EventuallyEqSet.mem_iff, Eventually.set_eq⟩ := eventuallyEqSet_iff
 
+theorem eventuallyEqSet_empty {s : Set α} {l : Filter α} :
+    s =ᶠ[l] ∅ ↔ ∀ᶠ x in l, x ∉ s := by
+  simp [EventuallyEqSet, EventuallyEq]
+
+@[deprecated (since := "2026-08-14")] alias eventuallyEq_empty := eventuallyEqSet_empty
+
 @[simp]
 theorem eventuallyEqSet_univ {s : Set α} {l : Filter α} : s =ᶠ[l] univ ↔ s ∈ l := by
   simp [eventuallyEqSet_iff]
@@ -1083,6 +1089,9 @@ lemma symm (h : s =ᶠ[l] t) : t =ᶠ[l] s := EventuallyEq.symm h
 @[trans]
 protected lemma trans (h : s =ᶠ[l] t) (h' : t =ᶠ[l] u) : s =ᶠ[l] u := EventuallyEq.trans h h'
 
+instance {l : Filter α} : IsTrans (Set α) (· =ᶠ[l] ·) where
+  trans _ _ _ := .trans
+
 lemma congr_left (h : s =ᶠ[l] t) : s =ᶠ[l] u ↔ t =ᶠ[l] u := ⟨h.symm.trans, h.trans⟩
 
 lemma congr_right (h : t =ᶠ[l] u) : s =ᶠ[l] t ↔ s =ᶠ[l] u := ⟨(·.trans h), (·.trans h.symm)⟩
@@ -1093,14 +1102,14 @@ lemma superset (h : s =ᶠ[l] t) : t ≤ᶠ[l] s := Eventually.mono h fun _ ↦ 
 
 @[gcongr]
 lemma inter (h : s =ᶠ[l] t) {s' t' : Set α} (h' : s' =ᶠ[l] t') : s ∩ s' =ᶠ[l] t ∩ t' :=
-  EventuallyEq.comp₂ h (· ∧ ·) h'
+  h.comp₂ (· ∧ ·) h'
 
 @[gcongr]
 lemma union (h : s =ᶠ[l] t) {s' t' : Set α} (h' : s' =ᶠ[l] t') : s ∪ s' =ᶠ[l] t ∪ t' :=
-  EventuallyEq.comp₂ h (· ∨ ·) h'
+  h.comp₂ (· ∨ ·) h'
 
 @[gcongr]
-lemma compl (h : s =ᶠ[l] t) : sᶜ =ᶠ[l] tᶜ := EventuallyEq.fun_comp h Not
+lemma compl (h : s =ᶠ[l] t) : sᶜ =ᶠ[l] tᶜ := h.fun_comp Not
 
 @[gcongr]
 lemma diff (h : s =ᶠ[l] t) {s' t' : Set α} (h' : s' =ᶠ[l] t') : s \ s' =ᶠ[l] t \ t' :=
@@ -1122,15 +1131,6 @@ end EventuallyEqSet
 
 lemma eventuallyEqSet_comm {s t : Set α} {l : Filter α} : s =ᶠ[l] t ↔ t =ᶠ[l] s :=
   ⟨.symm, .symm⟩
-
-instance {l : Filter α} : IsTrans (Set α) (· =ᶠ[l] ·) where
-  trans _ _ _ := .trans
-
-theorem eventuallyEqSet_empty {s : Set α} {l : Filter α} :
-    s =ᶠ[l] ∅ ↔ ∀ᶠ x in l, x ∉ s := by
-  simp [EventuallyEqSet, EventuallyEq]
-
-@[deprecated (since := "2026-08-14")] alias eventuallyEq_empty := eventuallyEqSet_empty
 
 theorem inter_eventuallyEqSet_left {s t : Set α} {l : Filter α} :
     s ∩ t =ᶠ[l] s ↔ ∀ᶠ x in l, x ∈ s → x ∈ t := by
@@ -1271,10 +1271,12 @@ protected lemma refl (l : Filter α) (s : Set α) : s ≤ᶠ[l] s := EventuallyL
 
 protected lemma rfl : s ≤ᶠ[l] s := .refl l s
 
-lemma of_subset (h : s ⊆ t) : s ≤ᶠ[l] t := Eventually.of_forall fun _ ↦ @h _
-
 @[trans]
 lemma trans (h : s ≤ᶠ[l] t) (h' : t ≤ᶠ[l] u) : s ≤ᶠ[l] u := EventuallyLE.trans h h'
+
+instance {l : Filter α} :
+    Trans ((· ≤ᶠ[l] ·) : Set α → Set α → Prop) (· ≤ᶠ[l] ·) (· ≤ᶠ[l] ·) where
+  trans := .trans
 
 lemma antisymm (h : s ≤ᶠ[l] t) (h' : t ≤ᶠ[l] s) : s =ᶠ[l] t := EventuallyLE.antisymm h h'
 
@@ -1315,15 +1317,10 @@ theorem eventuallySubset_iff_inf_principal_le {s t : Set α} {l : Filter α} :
 @[deprecated (since := "2026-08-14")]
 alias set_eventuallyLE_iff_inf_principal_le := eventuallySubset_iff_inf_principal_le
 
-instance {l : Filter α} :
-    Trans ((· ≤ᶠ[l] ·) : Set α → Set α → Prop) (· ≤ᶠ[l] ·) (· ≤ᶠ[l] ·) where
-  trans := EventuallySubset.trans
-
 theorem eventuallySubset_antisymm_iff {s t : Set α} {l : Filter α} :
     s =ᶠ[l] t ↔ s ≤ᶠ[l] t ∧ t ≤ᶠ[l] s :=
   eventuallyLE_antisymm_iff
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eventuallyEqSet_iff_inf_principal {s t : Set α} {l : Filter α} :
     s =ᶠ[l] t ↔ l ⊓ 𝓟 s = l ⊓ 𝓟 t := by
   simp only [eventuallySubset_antisymm_iff, le_antisymm_iff, eventuallySubset_iff_inf_principal_le]
@@ -1370,10 +1367,12 @@ theorem Set.EqOn.eventuallyEq_of_mem {α β} {s : Set α} {l : Filter α} {f g :
 lemma LE.le.eventuallySubset {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s ≤ᶠ[l] t :=
   .of_forall h
 
-theorem LE.le.eventuallyLE {α} {l : Filter α} {s t : Set α} (h : s ≤ t) : s ≤ᶠ[l] t :=
-  .of_forall h
+lemma LE.le.eventuallyLE {α β : Type*} [LE β] {l : Filter α} {f g : α → β} (h : f ≤ g) :
+    f ≤ᶠ[l] g := .of_forall h
 
-alias Filter.EventuallyLE.of_subset := LE.le.eventuallySubset
+@[deprecated (since := "2026-03-16")] alias HasSubset.Subset.eventuallyLE := LE.le.eventuallySubset
+
+alias Filter.EventuallySubset.of_subset := LE.le.eventuallySubset
 alias Filter.EventuallyLE.of_le := LE.le.eventuallyLE
 
 variable {α : Type*}

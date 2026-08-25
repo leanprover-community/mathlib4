@@ -81,47 +81,51 @@ open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator printing `Filter.EventuallyEq (MeasureTheory.ae μ) f g` as `f =ᵐ[μ] g`. -/
 @[app_delab Filter.EventuallyEq]
-meta def delabAEEventuallyEq : Delab := whenPPOption Lean.getPPNotation do
-  let e ← SubExpr.getExpr
-  guard <| e.isAppOfArity ``Filter.EventuallyEq 5
-  guard <| (e.getArg! 2).isAppOfArity ``MeasureTheory.ae 5
-  let μ ← SubExpr.withNaryArg 2 <| SubExpr.withNaryArg 4 delab
-  let f ← SubExpr.withNaryArg 3 delab
-  let g ← SubExpr.withNaryArg 4 delab
-  `($f =ᵐ[$μ] $g)
+meta def delabAEEventuallyEq : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption Lean.getPPNotation do
+    let e ← SubExpr.getExpr
+    guard <| e.isAppOfArity ``Filter.EventuallyEq 5
+    guard <| (e.getArg! 2).isAppOfArity ``MeasureTheory.ae 5
+    let μ ← SubExpr.withNaryArg 2 <| SubExpr.withNaryArg 4 delab
+    let f ← SubExpr.withNaryArg 3 delab
+    let g ← SubExpr.withNaryArg 4 delab
+    `($f =ᵐ[$μ] $g)
 
 /-- Delaborator printing `Filter.EventuallyEqSet (MeasureTheory.ae μ) s t` as `s =ᵐ[μ] t`. -/
 @[app_delab Filter.EventuallyEqSet]
-meta def delabAEEventuallyEqSet : Delab := whenPPOption Lean.getPPNotation do
-  let e ← SubExpr.getExpr
-  guard <| e.isAppOfArity ``Filter.EventuallyEqSet 4
-  guard <| (e.getArg! 1).isAppOfArity ``MeasureTheory.ae 5
-  let μ ← SubExpr.withNaryArg 1 <| SubExpr.withNaryArg 4 delab
-  let s ← SubExpr.withNaryArg 2 delab
-  let t ← SubExpr.withNaryArg 3 delab
-  `($s =ᵐ[$μ] $t)
+meta def delabAEEventuallyEqSet : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption Lean.getPPNotation do
+    let e ← SubExpr.getExpr
+    guard <| e.isAppOfArity ``Filter.EventuallyEqSet 4
+    guard <| (e.getArg! 1).isAppOfArity ``MeasureTheory.ae 5
+    let μ ← SubExpr.withNaryArg 1 <| SubExpr.withNaryArg 4 delab
+    let s ← SubExpr.withNaryArg 2 delab
+    let t ← SubExpr.withNaryArg 3 delab
+    `($s =ᵐ[$μ] $t)
 
 /-- Delaborator printing `Filter.EventuallyLE (MeasureTheory.ae μ) f g` as `f ≤ᵐ[μ] g`. -/
 @[app_delab Filter.EventuallyLE]
-meta def delabAEEventuallyLE : Delab := whenPPOption Lean.getPPNotation do
-  let e ← SubExpr.getExpr
-  guard <| e.isAppOfArity ``Filter.EventuallyLE 6
-  guard <| (e.getArg! 3).isAppOfArity ``MeasureTheory.ae 5
-  let μ ← SubExpr.withNaryArg 3 <| SubExpr.withNaryArg 4 delab
-  let f ← SubExpr.withNaryArg 4 delab
-  let g ← SubExpr.withNaryArg 5 delab
-  `($f ≤ᵐ[$μ] $g)
+meta def delabAEEventuallyLE : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption Lean.getPPNotation do
+    let e ← SubExpr.getExpr
+    guard <| e.isAppOfArity ``Filter.EventuallyLE 6
+    guard <| (e.getArg! 3).isAppOfArity ``MeasureTheory.ae 5
+    let μ ← SubExpr.withNaryArg 3 <| SubExpr.withNaryArg 4 delab
+    let f ← SubExpr.withNaryArg 4 delab
+    let g ← SubExpr.withNaryArg 5 delab
+    `($f ≤ᵐ[$μ] $g)
 
 /-- Delaborator printing `Filter.EventuallySubset (MeasureTheory.ae μ) s t` as `s ≤ᵐ[μ] t`. -/
 @[app_delab Filter.EventuallySubset]
-meta def delabAEEventuallySubset : Delab := whenPPOption Lean.getPPNotation do
-  let e ← SubExpr.getExpr
-  guard <| e.isAppOfArity ``Filter.EventuallySubset 4
-  guard <| (e.getArg! 1).isAppOfArity ``MeasureTheory.ae 5
-  let s ← SubExpr.withNaryArg 2 delab
-  let t ← SubExpr.withNaryArg 3 delab
-  let μ ← SubExpr.withNaryArg 1 <| SubExpr.withNaryArg 4 delab
-  `($s ≤ᵐ[$μ] $t)
+meta def delabAEEventuallySubset : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption Lean.getPPNotation do
+    let e ← SubExpr.getExpr
+    guard <| e.isAppOfArity ``Filter.EventuallySubset 4
+    guard <| (e.getArg! 1).isAppOfArity ``MeasureTheory.ae 5
+    let μ ← SubExpr.withNaryArg 1 <| SubExpr.withNaryArg 4 delab
+    let s ← SubExpr.withNaryArg 2 delab
+    let t ← SubExpr.withNaryArg 3 delab
+    `($s ≤ᵐ[$μ] $t)
 
 end delaborators
 
@@ -211,12 +215,10 @@ theorem ae_le_set_union {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ
     s ∪ s' ≤ᵐ[μ] t ∪ t' :=
   h.union h'
 
-set_option backward.isDefEq.respectTransparency false in
 theorem union_ae_eq_right : s ∪ t =ᵐ[μ] t ↔ μ (s \ t) = 0 := by
   simp [eventuallySubset_antisymm_iff, ae_le_set, union_sdiff_right,
     sdiff_eq_empty.2 Set.subset_union_right]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sdiff_ae_eq_self : s \ t =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
   simp [eventuallySubset_antisymm_iff, ae_le_set]
 
@@ -227,7 +229,6 @@ theorem sdiff_null_ae_eq_self (ht : μ t = 0) : s \ t =ᵐ[μ] s :=
 
 @[deprecated (since := "2026-06-03")] alias diff_null_ae_eq_self := sdiff_null_ae_eq_self
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_set {s t : Set α} : s =ᵐ[μ] t ↔ μ (s \ t) = 0 ∧ μ (t \ s) = 0 := by
   simp [eventuallySubset_antisymm_iff, ae_le_set]
 
@@ -236,12 +237,10 @@ open scoped symmDiff in
 theorem measure_symmDiff_eq_zero_iff {s t : Set α} : μ (s ∆ t) = 0 ↔ s =ᵐ[μ] t := by
   simp [ae_eq_set, symmDiff_def]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ae_eq_set_compl_compl {s t : Set α} : sᶜ =ᵐ[μ] tᶜ ↔ s =ᵐ[μ] t := by
   simp only [← measure_symmDiff_eq_zero_iff, compl_symmDiff_compl]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_set_compl {s t : Set α} : sᶜ =ᵐ[μ] t ↔ s =ᵐ[μ] tᶜ := by
   rw [← ae_eq_set_compl_compl, compl_compl]
 
@@ -264,32 +263,31 @@ theorem ae_eq_set_symmDiff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ]
     s ∆ s' =ᵐ[μ] t ∆ t' :=
   h.symmDiff h'
 
-set_option backward.isDefEq.respectTransparency false in
 theorem union_ae_eq_univ_of_ae_eq_univ_left (h : s =ᵐ[μ] univ) : s ∪ t =ᵐ[μ] univ :=
-  (ae_eq_set_union h EventuallyEq.rfl).trans <| by rw [univ_union]
+  (ae_eq_set_union h .rfl).trans <| by rw [univ_union]
 
 theorem union_ae_eq_univ_of_ae_eq_univ_right (h : t =ᵐ[μ] univ) : s ∪ t =ᵐ[μ] univ :=
-  (ae_eq_set_union EventuallyEq.rfl h).trans <| by rw [union_univ]
+  (ae_eq_set_union .rfl h).trans <| by rw [union_univ]
 
 theorem union_ae_eq_right_of_ae_eq_empty (h : s =ᵐ[μ] ∅) : s ∪ t =ᵐ[μ] t :=
-  (ae_eq_set_union h EventuallyEq.rfl).trans <| by rw [empty_union]
+  (ae_eq_set_union h .rfl).trans <| by rw [empty_union]
 
 theorem union_ae_eq_left_of_ae_eq_empty (h : t =ᵐ[μ] ∅) : s ∪ t =ᵐ[μ] s :=
-  (ae_eq_set_union EventuallyEq.rfl h).trans <| by rw [union_empty]
+  (ae_eq_set_union .rfl h).trans <| by rw [union_empty]
 
 theorem inter_ae_eq_right_of_ae_eq_univ (h : s =ᵐ[μ] univ) : s ∩ t =ᵐ[μ] t :=
-  (ae_eq_set_inter h EventuallyEq.rfl).trans <| by rw [univ_inter]
+  (ae_eq_set_inter h .rfl).trans <| by rw [univ_inter]
 
 theorem inter_ae_eq_left_of_ae_eq_univ (h : t =ᵐ[μ] univ) : s ∩ t =ᵐ[μ] s :=
-  (ae_eq_set_inter EventuallyEq.rfl h).trans <| by rw [inter_univ]
+  (ae_eq_set_inter .rfl h).trans <| by rw [inter_univ]
 
 theorem inter_ae_eq_empty_of_ae_eq_empty_left (h : s =ᵐ[μ] ∅) :
     s ∩ t =ᵐ[μ] ∅ :=
-  (ae_eq_set_inter h EventuallyEq.rfl).trans <| by rw [empty_inter]
+  (ae_eq_set_inter h .rfl).trans <| by rw [empty_inter]
 
 theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] ∅) :
     s ∩ t =ᵐ[μ] ∅ :=
-  (ae_eq_set_inter EventuallyEq.rfl h).trans <| by rw [inter_empty]
+  (ae_eq_set_inter .rfl h).trans <| by rw [inter_empty]
 
 theorem ae_eq_set_biInter {s : Set β} (hs : s.Countable) {t t' : β → Set α}
     (h : ∀ b ∈ s, t b =ᵐ[μ] t' b) :

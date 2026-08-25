@@ -260,8 +260,7 @@ theorem measure_sdiff_le_iff_le_add (hs : NullMeasurableSet s μ) (hst : s ⊆ t
 alias measure_diff_le_iff_le_add := measure_sdiff_le_iff_le_add
 
 theorem measure_eq_measure_of_null_sdiff (hst : s ⊆ t) (h_nullsdiff : μ (t \ s) = 0) :
-    μ s = μ t := measure_congr <|
-      EventuallyLE.antisymm (LE.le.eventuallyLE hst) (ae_le_set.mpr h_nullsdiff)
+    μ s = μ t := measure_congr <| hst.eventuallySubset.antisymm (ae_le_set.mpr h_nullsdiff)
 
 @[deprecated (since := "2026-06-03")]
 alias measure_eq_measure_of_null_diff := measure_eq_measure_of_null_sdiff
@@ -332,7 +331,7 @@ theorem ae_eq_of_ae_subset_of_measure_ge (h₁ : s ≤ᵐ[μ] t) (h₂ : μ t �
 /-- If `s ⊆ t`, `μ t ≤ μ s`, `μ t ≠ ∞`, and `s` is measurable, then `s =ᵐ[μ] t`. -/
 theorem ae_eq_of_subset_of_measure_ge (h₁ : s ⊆ t) (h₂ : μ t ≤ μ s) (hsm : NullMeasurableSet s μ)
     (ht : μ t ≠ ∞) : s =ᵐ[μ] t :=
-  ae_eq_of_ae_subset_of_measure_ge h₁.eventuallyLE h₂ hsm ht
+  ae_eq_of_ae_subset_of_measure_ge h₁.eventuallySubset h₂ hsm ht
 
 theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → Set α} {t : ι → Set α}
     (hsub : ∀ i, s i ⊆ t i) (h_le : ∀ i, μ (t i) ≤ μ (s i)) : μ (⋃ i, s i) = μ (⋃ i, t i) := by
@@ -359,7 +358,7 @@ theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → S
   calc
     μ (⋃ b, t b) ≤ μ (⋃ b, M (t b)) := measure_mono (iUnion_mono fun b => subset_toMeasurable _ _)
     _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) :=
-      measure_congr (.symm <| .countable_iUnion H)
+      measure_congr <| .symm <| .countable_iUnion H
     _ ≤ μ (M (⋃ b, s b)) := measure_mono (iUnion_subset fun b => inter_subset_right)
     _ = μ (⋃ b, s b) := measure_toMeasurable _
 

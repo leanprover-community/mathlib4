@@ -305,16 +305,16 @@ def EventuallyLE [LE β] (l : Filter α) (f g : α → β) : Prop :=
 /-- Two sets `s` and `t` are *eventually equal* along a filter `l` if the set of `x` such that
 `x ∈ s ↔ x ∈ t` belongs to `l`.
 
-This is definitionally `(· ∈ s) =ᶠ[l] (· ∈ t)`, but it is a separate definition to avoid simp
-unfolding membership of concrete sets. -/
+This is definitionally `(· ∈ s) =ᶠ[l] (· ∈ t)`, but it is a separate definition (rather than an
+abbreviation) to avoid simp unfolding membership of concrete sets. -/
 def EventuallyEqSet (l : Filter α) (s t : Set α) : Prop :=
   EventuallyEq l (fun x => x ∈ s) (fun x => x ∈ t)
 
 /-- A set `s` is *eventually contained* in a set `t` along a filter `l` if the set of `x` such that
 `x ∈ s → x ∈ t` belongs to `l`.
 
-This is definitionally `(· ∈ s) ≤ᶠ[l] (· ∈ t)`, but it is a separate definition to avoid simp
-unfolding membership of concrete sets. -/
+This is definitionally `(· ∈ s) ≤ᶠ[l] (· ∈ t)`, but it is a separate definition (rather than an
+abbreviation) to avoid simp unfolding membership of concrete sets. -/
 def EventuallySubset (l : Filter α) (s t : Set α) : Prop :=
   EventuallyLE l (fun x => x ∈ s) (fun x => x ∈ t)
 
@@ -334,7 +334,8 @@ open Lean Elab Term Meta in
 /-- Elaborate the left-hand side `x` of an `x =ᶠ[l] y` / `x ≤ᶠ[l] y` on its own, dispatching on
 whether its type is a `Set`. If the type is not yet known (e.g. `x` is the `_` of a `calc` step),
 consult the right-hand side `y` instead. Returns the elaborated sides turned back into syntax
-together with whether they should be interpreted as sets. -/
+together with whether they should be interpreted as sets. If `y` is not consulted, it is returned
+unelaborated. -/
 meta def elabEventuallyRelSides (x y : Term) : TermElabM (Term × Term × Bool) := do
   -- Elaborate a side on its own, and return its type in whnf together with the elaborated term
   -- turned back into syntax.
@@ -342,13 +343,11 @@ meta def elabEventuallyRelSides (x y : Term) : TermElabM (Term × Term × Bool) 
     let e ← elabTerm e none
     return (← whnfR (← instantiateMVars (← inferType e)), ← exprToSyntax e)
   let (tyx, x) ← elabSide x
-  let mut y := y
-  let mut isSet := tyx.isAppOfArity ``Set 1
-  if !isSet && tyx.getAppFn.isMVar then
-    let (tyy, y') ← elabSide y
-    y := y'
-    isSet := tyy.isAppOfArity ``Set 1
-  return (x, y, isSet)
+  if tyx.getAppFn.isMVar then
+    let (tyy, y) ← elabSide y
+    return (x, y, tyy.isAppOfArity ``Set 1)
+  else
+    return (x, y, tyx.isAppOfArity ``Set 1)
 
 open Lean Elab Term in
 /-- Elaborator for `x =ᶠ[l] y`, dispatching on the type of `x` (or of `y` if the type of `x` is not

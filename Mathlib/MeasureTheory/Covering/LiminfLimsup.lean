@@ -168,8 +168,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : �
     exact max_le_max (le_refl 0) hi
   simp_rw [← cthickening_max_zero (r₁ _), ← cthickening_max_zero (r₂ _)]
   rcases le_or_gt 1 M with hM' | hM'
-  · apply LE.le.eventuallyLE
-    refine mono_blimsup' (hMr.mono fun i hi _ => cthickening_mono ?_ (s i))
+  · refine .of_subset <| mono_blimsup' <| hMr.mono fun i hi _ => cthickening_mono ?_ (s i)
     exact (le_mul_of_one_le_left (hRp i) hM').trans hi
   · simp only [← @cthickening_closure _ _ _ (s _)]
     have hs : ∀ i, IsClosed (closure (s i)) := fun i => isClosed_closure
