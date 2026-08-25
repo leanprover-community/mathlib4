@@ -74,7 +74,7 @@ theorem mem_eraseIdx_of_two_le_count {x : α} {l : List α} {i : Nat} (h : 2 ≤
     x ∈ l.eraseIdx i := by
   induction l generalizing i with
   | nil => simp at h
-  | cons hd tl ih => cases i <;> grind [eraseIdx_cons_succ, count_pos_iff]
+  | cons hd tl ih => cases i <;> grind
 
 /-- If `x` occurs at least twice in `l.dropLast`, then `x` occurs at some index of `l` which is
 neither the first nor the last one. This detects a duplicate strictly inside `l`. -/
