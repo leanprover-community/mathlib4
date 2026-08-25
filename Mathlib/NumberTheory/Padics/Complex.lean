@@ -64,18 +64,18 @@ theorem coe_eq : (Coe.coe : ℚ_[p] → PadicAlgCl p) = algebraMap ℚ_[p] (Padi
 
 /-- `PadicAlgCl p` is a normed field, where the norm is the `p`-adic norm, that is, the
 spectral norm induced by the `p`-adic norm on `ℚ_[p]`. -/
-instance normedField : NormedField (PadicAlgCl p) := spectralNorm'.normedField ℚ_[p] (PadicAlgCl p)
+instance normedField : NormedField (PadicAlgCl p) := spectralNorm.normedField ℚ_[p] (PadicAlgCl p)
 
 /-- The norm on `PadicAlgCl p` is nonarchimedean. -/
 theorem isNonarchimedean : IsNonarchimedean (norm : PadicAlgCl p → ℝ) :=
-  isNonarchimedean_spectralNorm' (K := ℚ_[p]) (L := PadicAlgCl p)
+  isNonarchimedean_spectralNorm (K := ℚ_[p]) (L := PadicAlgCl p)
 
 /-- `PadicAlgCl p` is a normed algebra over `ℚ_[p]`. -/
-instance normedAlgebra : NormedAlgebra ℚ_[p] (PadicAlgCl p) := spectralNorm'.normedAlgebra _ _
+instance normedAlgebra : NormedAlgebra ℚ_[p] (PadicAlgCl p) := spectralNorm.normedAlgebra _ _
 
 /-- The norm on `PadicAlgCl p` is the spectral norm induced by the `p`-adic norm on `ℚ_[p]`. -/
 @[simp]
-theorem spectralNorm_eq (x : PadicAlgCl p) : spectralNorm' ℚ_[p] (PadicAlgCl p) x = ‖x‖ := rfl
+theorem spectralNorm_eq (x : PadicAlgCl p) : spectralNorm ℚ_[p] (PadicAlgCl p) x = ‖x‖ := rfl
 
 /-- The norm on `PadicAlgCl p` extends the `p`-adic norm on `ℚ_[p]`. -/
 theorem norm_extends (x : ℚ_[p]) : ‖(x : PadicAlgCl p)‖ = ‖x‖ := by

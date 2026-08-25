@@ -97,9 +97,9 @@ theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L where
         _ ≤ max ‖z‖ ‖z'‖ := by
           simpa [norm_neg, sub_eq_add_neg] using (IsUltrametricDist.norm_add_le_max z (- z'))
         _ ≤ ‖x - y‖ := by
-          simp only [NormedAlgebra.norm_eq_spectralNorm' K, hσ, sup_le_iff]
+          simp only [NormedAlgebra.norm_eq_spectralNorm K, hσ, sup_le_iff]
           rw [← AlgEquiv.restrictScalars_apply K,
-              ← spectralNorm'_eq_of_equiv (σ.symm.restrictScalars K)]
+              ← spectralNorm_eq_of_equiv (σ.symm.restrictScalars K)]
           simp [z]
         _ < ‖x - (z' + y)‖ := by
           apply kr (z' + y)
@@ -118,11 +118,11 @@ instance of_completeSpace [Algebra.IsAlgebraic K L] : IsKrasner K L where
   krasner' {x} {y} xsep sp yint kr := by
     -- Reduce to the case `L = algebraic closure of K` to apply the previous lemma.
     let C := AlgebraicClosure K
-    let : NontriviallyNormedField C := spectralNorm'.nontriviallyNormedField K C
-    let : NormedAlgebra K C := spectralNorm'.normedAlgebra K C
+    let : NontriviallyNormedField C := spectralNorm.nontriviallyNormedField K C
+    let : NormedAlgebra K C := spectralNorm.normedAlgebra K C
     let iL : L →ₐ[K] C := IsAlgClosed.lift
     algebraize [iL.toRingHom]
-    let : NormedAlgebra L C := spectralNorm'.normedAlgebra' K L C
+    let : NormedAlgebra L C := spectralNorm.normedAlgebra' K L C
     let := IsKrasner.of_completeSpace_of_normal K C
     -- The norm on `L` is compatible with the norm on the algebraic closure of `K`,
     -- this gives the result.
