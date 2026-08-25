@@ -1235,9 +1235,11 @@ theorem _root_.LinearEquiv.isHomeomorph_iff (e : M ≃ₛₗ[σ] M₁) :
 
 end IsHomeomorph
 
+@[simp]
 lemma toLinearEquiv_inv (f : V ≃L[R] V) :
     (f⁻¹).toLinearEquiv = f.toLinearEquiv ⁻¹ := rfl
 
+@[simp]
 lemma toLinearEquiv_mul (f g : V ≃L[R] V) :
     (f * g).toLinearEquiv = f * g := rfl
 
