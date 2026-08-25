@@ -294,7 +294,7 @@ noncomputable def dualTensorHomEquiv : Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N
     (dualTensorHomEquiv R M N).symm (dualTensorHom R M N x) = x :=
   (dualTensorHomEquiv R M N).symm_apply_apply _
 
-@[simp] lemma dualTensorHom_dualTensorHomEquiv_symm(x : M →ₗ[R] N) :
+@[simp] lemma dualTensorHom_dualTensorHomEquiv_symm (x : M →ₗ[R] N) :
     dualTensorHom R M N ((dualTensorHomEquiv R M N).symm x) = x :=
   (dualTensorHomEquiv R M N).apply_symm_apply _
 
@@ -468,7 +468,8 @@ theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : 
 /-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` given bases for `M` and `N`.
 It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`. -/
-@[simps!, deprecated dualDistribEquiv (since := "2026-07-07")]
+@[simps! (attr := deprecated dualDistribEquiv (since := "2026-07-07")),
+  deprecated dualDistribEquiv (since := "2026-07-07")]
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
   refine LinearEquiv.ofLinearMap (dualDistrib R M N) (dualDistribInvOfBasis b c) ?_ ?_
