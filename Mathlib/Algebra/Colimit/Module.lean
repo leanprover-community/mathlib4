@@ -36,8 +36,6 @@ noncomputable section -- needed for `deriving`
 
 variable {R : Type*} [Semiring R] {ι : Type*} [Preorder ι] {G : ι → Type*}
 
-open Submodule
-
 namespace Module
 
 alias DirectedSystem.map_self := DirectedSystem.map_self'
@@ -211,7 +209,7 @@ family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` in
 -/
 def congr (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i) :
     DirectLimit G f ≃ₗ[R] DirectLimit G' f' :=
-  LinearEquiv.ofLinear (map (e ·) he)
+  LinearEquiv.ofLinearMap (map (e ·) he)
     (map (fun i ↦ (e i).symm) fun i j h ↦ by
       rw [toLinearMap_symm_comp_eq, ← comp_assoc, he i, comp_assoc, comp_coe, symm_trans_self,
         refl_toLinearMap, comp_id])
@@ -242,7 +240,7 @@ open _root_.DirectLimit
 /-- The direct limit constructed as a quotient of the direct sum is isomorphic to
 the direct limit constructed as a quotient of the disjoint union. -/
 def linearEquiv : DirectLimit G f ≃ₗ[R] _root_.DirectLimit G f :=
-  .ofLinear
+  .ofLinearMap
     (lift _ _ _ _ (Module.of _ _ _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
     (Module.lift _ _ _ _ (of _ _ _ _) fun _ _ _ _ ↦ of_f ..)
     (by ext; simp)
@@ -425,14 +423,12 @@ def congr (e : (i : ι) → G i ≃+ G' i)
       simp [← eq1])
     (by simp [map_comp]) (by simp [map_comp])
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma congr_apply_of (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G i) :
     congr e he (of G f i g) = of G' f' i (e i g) :=
   map_apply_of _ he _
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma congr_symm_apply_of (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G' i) :
