@@ -290,11 +290,11 @@ noncomputable def dualTensorHomEquiv : Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N
 @[simp] lemma dualTensorHomEquiv_apply (f : Dual R M) (m : M) (n : N) :
     dualTensorHomEquiv R M N (f ⊗ₜ n) m = f m • n := rfl
 
-@[simp] lemma dualTensorHomEquiv_symm_cancel_left (x : Dual R M ⊗[R] N) :
+@[simp] lemma dualTensorHomEquiv_symm_dualTensorHom (x : Dual R M ⊗[R] N) :
     (dualTensorHomEquiv R M N).symm (dualTensorHom R M N x) = x :=
   (dualTensorHomEquiv R M N).symm_apply_apply _
 
-@[simp] lemma dualTensorHomEquiv_symm_cancel_right (x : M →ₗ[R] N) :
+@[simp] lemma dualTensorHom_dualTensorHomEquiv_symm(x : M →ₗ[R] N) :
     dualTensorHom R M N ((dualTensorHomEquiv R M N).symm x) = x :=
   (dualTensorHomEquiv R M N).apply_symm_apply _
 
