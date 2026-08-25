@@ -143,14 +143,11 @@ lemma quotientTransitionMap_locally_smul {h : H} (hh : h ∈ (quotientTransition
 end quotientTransitionMap
 
 
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   (I : ModelWithCorners 𝕜 E H) {n : ℕ∞} [IsManifold I n M]
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
-  [TopologicalSpace H'] (J : ModelWithCorners 𝕜 E' H') [TopologicalSpace G] [ChartedSpace H' G]
 
-theorem isManifold_quotient_of_contMDiffSMul [ContMDiffSMul J I n G M] :
+instance isManifold_quotient_of_contMDiffSMul [ContMDiffConstSMul I n G M] :
     IsManifold  I n (orbitRel.Quotient G M) where
   compatible := by
     rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
@@ -168,19 +165,11 @@ theorem isManifold_quotient_of_contMDiffSMul [ContMDiffSMul J I n G M] :
       (IsManifold.chart_mem_maximalAtlas x.out) (IsManifold.chart_mem_maximalAtlas y.out) ?_ ?_)
       hto (hg0'.mono Set.inter_subset_right).symm ?_
     · rw [Homeomorph.toOpenPartialHomeomorph_apply]
-      exact (ContMDiffSMul.contMDiff_const_smul (I := J) g0).contMDiffOn
+      exact (ContMDiffConstSMul.contMDiff_const_smul g0).contMDiffOn
     · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
-      exact (ContMDiffSMul.contMDiff_const_smul (I := J) g0⁻¹).contMDiffOn
+      exact (ContMDiffConstSMul.contMDiff_const_smul g0⁻¹).contMDiffOn
     · rintro h' ⟨⟨hQ1, _, hQ4⟩, _, hcert⟩
       exact ⟨hQ1, Set.mem_univ _, by simpa [← smul_eqOn x y g0 hcert] using hQ4⟩
-
-open scoped Manifold
-
-set_option warn.classDefReducibility false -- TODO: how to fix this?
-
-attribute [local instance] ChartedSpace.of_discreteTopology
-instance [DiscreteTopology G] [ContMDiffSMul 𝓘(𝕜, PUnit) I n G M] :
-    IsManifold I n (orbitRel.Quotient G M) := isManifold_quotient_of_contMDiffSMul I 𝓘(𝕜, PUnit)
 
 end MulAction
 
