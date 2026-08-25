@@ -23,6 +23,8 @@ of the vector measure associated to the bounded variation function `fg`.
 
 ## Main results
 
+We denote by `f⁻ x` the left limit of `f` at `x`, and by `f⁺ x` its right limit.
+
 * `vectorMeasure_bilinear_comp_eq` states that `d(fg) = g⁺ df + f⁻ dg`, for a general pairing
   function
 * `setIntegral_Icc_leftLim_vectorMeasure_eq_sub` gives the equality
