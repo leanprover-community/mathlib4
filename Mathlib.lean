@@ -2462,7 +2462,6 @@ public import Mathlib.Analysis.SumOverResidueClass
 public import Mathlib.Analysis.VonNeumannAlgebra.Basic
 public import Mathlib.Basic.Denumerable
 public import Mathlib.Basic.ExistsUnique
-public import Mathlib.Basic.IsEmpty
 public import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Basic.IsEmpty.Defs
 public import Mathlib.Basic.Logic.Basic
