@@ -487,14 +487,14 @@ variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 variable (𝕜 E F) in
 /-- `smulRight` as a partly continuous trilinear map.
 This is the bundled continuous version of `smulRightₗ`. -/
-@[simps! apply_apply] def smulRightₗ' : StrongDual 𝕜 E →ₗ[𝕜] (F →L[𝕜] E →L[𝕜] F) where
+@[simps! apply_apply_apply] def smulRightₗ' : StrongDual 𝕜 E →ₗ[𝕜] (F →L[𝕜] E →L[𝕜] F) where
   toFun c := (c.precomp F) ∘SL toSpanSingletonCLE.toContinuousLinearMap
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
-@[simp] lemma smulRightₗ'_apply (c : StrongDual 𝕜 E) (x) :
+@[simp] lemma smulRightₗ'_apply_apply (c : StrongDual 𝕜 E) (x) :
     c.smulRightₗ' 𝕜 E F x = c.smulRight x := rfl
-@[simp] lemma toLinearMap_smulRightₗ' (c : StrongDual 𝕜 E) :
+@[simp] lemma toLinearMap_smulRightₗ'_apply (c : StrongDual 𝕜 E) :
     (c.smulRightₗ' 𝕜 E F).toLinearMap = c.smulRightₗ := rfl
 
 end ContinuousLinearMap
