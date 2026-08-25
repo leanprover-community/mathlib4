@@ -6,8 +6,10 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Computability.PartrecCode
-public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.NormNum
+public import Mathlib.Data.Nat.Hyperoperation
+
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.Ring.RingNF
 
 /-!
 # Ackermann function
@@ -98,6 +100,18 @@ theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
     calc 2 * 3
       _ ≤ 2 * 2 ^ 3 := by simp
       _ ≤ 2 * 2 ^ (n + 3) := by gcongr <;> lia
+
+theorem ack_eq_hyperoperation (m n : ℕ) : ack m n = hyperoperation m 2 (n + 3) - 3 := by
+  induction m generalizing n with
+  | zero => simp
+  | succ m ih =>
+    induction n with
+    | zero => rw [ack, ih, hyperoperation, hyperoperation_two_two_eq_four]
+    | succ n hn =>
+      rw [ack, ih, hyperoperation, hn, Nat.sub_add_cancel]
+      trans hyperoperation (m + 1) 2 2
+      · norm_num [hyperoperation_two_two_eq_four]
+      · apply hyperoperation_mono_second_third <;> lia
 
 theorem ack_pos : ∀ m n, 0 < ack m n
   | 0, n => by simp
