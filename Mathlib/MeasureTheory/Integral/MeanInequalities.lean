@@ -130,7 +130,7 @@ theorem lintegral_rpow_funMulInvSnorm_eq_one {p : ℝ} (hp0_lt : 0 < p) {f : α 
   rw [lintegral_mul_const', ENNReal.mul_inv_cancel hf_nonzero hf_top]
   rwa [inv_ne_top]
 
-private theorem lintegral_mul_eq_lintegral_funMulInvSnorm_mul_funMulInvSnorm_mul_Lp_mul_Lq (p q : ℝ)
+private theorem lintegral_mul_eq_lintegral_funMulInvSnorm_mul_funMulInvSnorm_mul_Lp_mul_Lq {p q : ℝ}
     {f g : α → ℝ≥0∞} (hf_nontop : ∫⁻ a, f a ^ p ∂μ ≠ ⊤) (hg_nontop : ∫⁻ a, g a ^ q ∂μ ≠ ⊤)
     (hf_nonzero : ∫⁻ a, f a ^ p ∂μ ≠ 0) (hg_nonzero : ∫⁻ a, g a ^ q ∂μ ≠ 0) :
     ∫⁻ a, (f * g) a ∂μ = (∫⁻ a, (funMulInvSnorm f p μ * funMulInvSnorm g q μ) a ∂μ) *
@@ -149,8 +149,8 @@ theorem lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_ne_top {p q : ℝ} (hpq : p.Hol
     (hg_nontop : ∫⁻ a, g a ^ q ∂μ ≠ ⊤) (hf_nonzero : ∫⁻ a, f a ^ p ∂μ ≠ 0)
     (hg_nonzero : ∫⁻ a, g a ^ q ∂μ ≠ 0) :
     ∫⁻ a, (f * g) a ∂μ ≤ (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) * (∫⁻ a, g a ^ q ∂μ) ^ (1 / q) := by
-  rw [lintegral_mul_eq_lintegral_funMulInvSnorm_mul_funMulInvSnorm_mul_Lp_mul_Lq
-      p q hf_nontop hg_nontop hf_nonzero hg_nonzero]
+  rw [lintegral_mul_eq_lintegral_funMulInvSnorm_mul_funMulInvSnorm_mul_Lp_mul_Lq hf_nontop hg_nontop
+      hf_nonzero hg_nonzero]
   apply mul_le_of_le_one_left'
   have hf1 := lintegral_rpow_funMulInvSnorm_eq_one hpq.pos hf_nonzero hf_nontop
   have hg1 := lintegral_rpow_funMulInvSnorm_eq_one hpq.symm.pos hg_nonzero hg_nontop
@@ -163,8 +163,8 @@ theorem lintegral_mul_eq_Lp_mul_Lq_iff_of_ne_zero_of_ne_top {p q : ℝ} (hpq : p
     (hf_nonzero : ∫⁻ a, f a ^ p ∂μ ≠ 0) (hg_nonzero : ∫⁻ a, g a ^ q ∂μ ≠ 0) :
     ∫⁻ a, (f * g) a ∂μ = (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) * (∫⁻ a, g a ^ q ∂μ) ^ (1 / q) ↔
       (∫⁻ a, f a ^ p ∂μ)⁻¹ • f ^ p =ᵐ[μ] (∫⁻ a, g a ^ q ∂μ)⁻¹ • g ^ q := by
-  rw [lintegral_mul_eq_lintegral_funMulInvSnorm_mul_funMulInvSnorm_mul_Lp_mul_Lq
-      p q hf_nontop hg_nontop hf_nonzero hg_nonzero]
+  rw [lintegral_mul_eq_lintegral_funMulInvSnorm_mul_funMulInvSnorm_mul_Lp_mul_Lq hf_nontop hg_nontop
+      hf_nonzero hg_nonzero]
   have hf0 := rpow_eq_zero_iff_of_pos hpq.one_div_pos |>.not.mpr hf_nonzero
   have hg0 := rpow_eq_zero_iff_of_pos hpq.symm.one_div_pos |>.not.mpr hg_nonzero
   have hftop : (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) ≠ ⊤ := rpow_ne_top_of_ne_zero hf_nonzero hf_nontop
