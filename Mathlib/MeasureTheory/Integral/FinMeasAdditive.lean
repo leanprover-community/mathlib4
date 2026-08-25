@@ -322,6 +322,18 @@ theorem setToSimpleFunc_eq_sum_filter [DecidablePred fun x ↦ x ≠ (0 : F)]
   rw [hx0]
   exact map_zero _
 
+/-- The `setToSimpleFunc` is equal to a sum over any set that includes `f.range` (except `0`). -/
+theorem setToSimpleFunc_eq_sum_of_subset [DecidablePred fun x : F => x ≠ 0]
+    (T : Set α → F →L[ℝ] F') (hT : T ∅ = 0) {f : α →ₛ F} {s : Finset F}
+    (hs : {x ∈ f.range | x ≠ 0} ⊆ s) :
+    setToSimpleFunc T f = ∑ x ∈ s, T (f ⁻¹' {x}) x := by
+  rw [setToSimpleFunc_eq_sum_filter, Finset.sum_subset hs]
+  rintro x - hx; rw [Finset.mem_filter, not_and_or, Ne, Classical.not_not] at hx
+  rcases hx.symm with (rfl | hx)
+  · simp
+  rw [SimpleFunc.mem_range] at hx
+  rw [preimage_eq_empty] <;> simp [Set.disjoint_singleton_left, hx, hT]
+
 theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAdditive μ T) {f : α →ₛ G}
     (hf : Integrable f μ) {g : G → F} (hg : g 0 = 0) :
     (f.map g).setToSimpleFunc T = ∑ x ∈ f.range, T (f ⁻¹' {x}) (g x) := by
@@ -382,7 +394,7 @@ theorem setToSimpleFunc_congr (T : Set α → E →L[ℝ] F)
   refine fun x y hxy => h_zero _ ((measurableSet_fiber f x).inter (measurableSet_fiber g y)) ?_
   rw [EventuallyEq, ae_iff] at h
   refine measure_mono_null (fun z => ?_) h
-  simp_rw [Set.mem_inter_iff, Set.mem_setOf_eq, Set.mem_preimage, Set.mem_singleton_iff]
+  simp_rw [Set.mem_inter_iff, Set.mem_ofPred_eq, Set.mem_preimage, Set.mem_singleton_iff]
   intro h
   rwa [h.1, h.2]
 
@@ -594,7 +606,7 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
       setToSimpleFunc_zero_apply]
   simp_rw [setToSimpleFunc]
   obtain rfl | hs_univ := eq_or_ne s univ
-  · haveI hα := hs_empty.to_type
+  · have hα := hs_empty.to_type
     simp [← Function.const_def]
   rw [range_indicator hs hs_empty hs_univ]
   by_cases hx0 : x = 0

@@ -219,7 +219,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
     (hKN : K ≤ N) :
     ∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N} ≤ ENNReal.ofReal (𝔼[X] + 1) := by
   let ρ : Measure ℝ := Measure.map X ℙ
-  haveI : IsProbabilityMeasure ρ := Measure.isProbabilityMeasure_map hint.aemeasurable
+  have : IsProbabilityMeasure ρ := Measure.isProbabilityMeasure_map hint.aemeasurable
   have A : ∑ j ∈ range K, ∫ _ in j..N, (1 : ℝ) ∂ρ ≤ 𝔼[X] + 1 :=
     calc
       ∑ j ∈ range K, ∫ _ in j..N, (1 : ℝ) ∂ρ =
@@ -301,7 +301,7 @@ theorem tsum_prob_mem_Ioi_lt_top {X : Ω → ℝ} (hint : Integrable X) (hnonneg
         obtain ⟨N, hN⟩ : ∃ N : ℕ, X ω ≤ N := exists_nat_ge (X ω)
         exact Set.mem_iUnion.2 ⟨N, hω, hN⟩
       · simp +contextual only [Set.mem_Ioc, Set.mem_Ioi,
-          Set.iUnion_subset_iff, Set.setOf_subset_setOf, imp_true_iff]
+          Set.iUnion_subset_iff, Set.ofPred_subset_ofPred, imp_true_iff]
     rw [this]
     apply tendsto_measure_iUnion_atTop
     intro m n hmn x hx
@@ -650,7 +650,6 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
       Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹ • (∑ i ∈ range n, φ (X i ω))) atTop (𝓝 μ[φ ∘ (X 0)]) := by
   -- this follows from the one-dimensional version when `φ` takes a single value, and is then
   -- extended to the general case by linearity.
-  classical
   refine SimpleFunc.induction (motive := fun ψ ↦ ∀ᵐ ω ∂μ,
     Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹ • (∑ i ∈ range n, ψ (X i ω))) atTop (𝓝 μ[ψ ∘ (X 0)])) ?_ ?_ φ
   · intro c s hs

@@ -30,7 +30,7 @@ immersions can be used to deduce these assumptions in the general case.
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 universe v v₁ v₂ u
 
@@ -151,8 +151,12 @@ def Cover.copy [P.RespectsIso] {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P))
       intro i
       exact 𝒰.map_prop _
 
+-- `respectTransparency false` is needed for `simps!`.
+-- Consider making implicit-reducible:
+-- `Precoverage.ZeroHypercover.bind`, `Cover.mkOfCovers`, `coverOfIso`
+set_option backward.isDefEq.respectTransparency false in
 /-- The pushforward of a cover along an isomorphism. -/
-@[simps! I₀ X f]
+@[simps! I₀ X f, implicit_reducible]
 def Cover.pushforwardIso [P.RespectsIso] [P.ContainsIdentities] [P.IsStableUnderComposition]
     {X Y : Scheme.{u}} (𝒰 : Cover.{v} (precoverage P) X) (f : X ⟶ Y) [IsIso f] :
     Cover.{v} (precoverage P) Y :=
@@ -240,24 +244,6 @@ This is implemented as an `abbrev` for `CategoryTheory.Precoverage.ZeroHypercove
 -/
 abbrev Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} K X) :=
   Precoverage.ZeroHypercover.Hom K 𝒰 𝒱
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.idx := PreZeroHypercover.Hom.s₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.app := PreZeroHypercover.Hom.h₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.w := PreZeroHypercover.Hom.w₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.id := PreZeroHypercover.Hom.id
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.comp := PreZeroHypercover.Hom.comp
-
-@[deprecated (since := "2026-01-13")] alias Cover.id_idx_apply := PreZeroHypercover.id_s₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.id_app := PreZeroHypercover.id_h₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.comp_idx_apply := PreZeroHypercover.comp_s₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.comp_app := PreZeroHypercover.comp_h₀
 
 end category
 

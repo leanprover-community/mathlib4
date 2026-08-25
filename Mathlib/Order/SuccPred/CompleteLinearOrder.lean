@@ -79,10 +79,9 @@ lemma IsGLB.exists_of_nonempty_of_not_isPredPrelimit
     (hf : IsGLB (range f) x) (hx : ¬ IsPredPrelimit x) : ∃ i, f i = x :=
   hf.exists_of_nonempty_of_not_isPredLimit <| mt IsPredLimit.isPredPrelimit hx
 
-open Classical in
 /-- Every conditionally complete linear order with well-founded `<` is a successor order, by setting
 the successor of an element to be the infimum of all larger elements. -/
-@[implicit_reducible, deprecated SuccOrder.ofLinearWellFoundedLT (since := "2026-04-12")]
+@[instance_reducible, deprecated SuccOrder.ofLinearWellFoundedLT (since := "2026-04-12")]
 noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α] :
     SuccOrder α := .ofLinearWellFoundedLT _
 
@@ -166,45 +165,65 @@ lemma exists_eq_iInf_of_not_isPredPrelimit (hf : ¬ IsPredPrelimit (⨅ i, f i))
     ∃ i, f i = ⨅ i, f i :=
   sInf_mem_of_not_isPredPrelimit hf
 
-@[to_dual lt_sInf_iff_of_not_isPredPrelimit]
+/-- Similar to `sSup_lt_iff` but with a weaker RHS, as it does not require a uniform bound. -/
+@[to_dual lt_sInf_iff_of_not_isPredPrelimit
+/-- Similar to `lt_sInf_iff` but with a weaker RHS, as it does not require a uniform bound. -/]
 theorem sSup_lt_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
     sSup s < x ↔ ∀ a ∈ s, a < x := by
   have ⟨y, hy⟩ := not_isSuccPrelimit_iff.mp h
   simp_rw [← hy.le_iff_lt_left]
   exact sSup_le_iff
 
-@[to_dual lt_iInf_iff_of_not_isPredPrelimit]
+/-- Similar to `iSup_lt_iff` but with a weaker RHS, as it does not require a uniform bound. -/
+@[to_dual lt_iInf_iff_of_not_isPredPrelimit
+/-- Similar to `lt_iInf_iff` but with a weaker RHS, as it does not require a uniform bound. -/]
 theorem iSup_lt_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
     ⨆ i, f i < x ↔ ∀ i, f i < x :=
   sSup_lt_iff_of_not_isSuccPrelimit h |>.trans forall_mem_range
 
-@[to_dual sInf_le_iff_of_not_isPredPrelimit]
+/-- Similar to `le_sSup_iff_forall_lt` but with a stronger RHS, as it requires a uniform bound. -/
+@[to_dual sInf_le_iff_of_not_isPredPrelimit
+/-- Similar to `sInf_le_iff_forall_lt` but with a stronger RHS, as it requires a uniform bound. -/]
 theorem le_sSup_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
     x ≤ sSup s ↔ ∃ a ∈ s, x ≤ a := by
   simpa using sSup_lt_iff_of_not_isSuccPrelimit h |>.not
 
-@[to_dual iInf_le_iff_of_not_isPredPrelimit]
+/-- Similar to `le_iSup_iff_forall_lt` but with a stronger RHS, as it requires a uniform bound. -/
+@[to_dual iInf_le_iff_of_not_isPredPrelimit
+/-- Similar to `iInf_le_iff_forall_lt` but with a stronger RHS, as it requires a uniform bound. -/]
 theorem le_iSup_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
     x ≤ ⨆ i, f i ↔ ∃ i, x ≤ f i :=
   le_sSup_iff_of_not_isSuccPrelimit h |>.trans exists_range_iff
 
-@[to_dual lt_sInf_iff]
+/-- Similar to `sSup_lt_iff` but with a stronger RHS, as it requires a strict inequality. -/
+@[to_dual lt_sInf_iff
+/-- Similar to `lt_sInf_iff` but with a stronger RHS, as it requires a strict inequality. -/]
 theorem Order.IsSuccPrelimit.sSup_lt_iff (h : IsSuccPrelimit x) :
     sSup s < x ↔ ∃ a < x, ∀ b ∈ s, b < a := by
   simp_rw [_root_.sSup_lt_iff, mem_upperBounds]
   grind [lt_iff_exists_lt]
 
-@[to_dual lt_iInf_iff]
+/-- Similar to `iSup_lt_iff` but with a stronger RHS, as it requires a strict inequality. -/
+@[to_dual lt_iInf_iff
+/-- Similar to `lt_iInf_iff` but with a stronger RHS, as it requires a strict inequality. -/]
 theorem Order.IsSuccPrelimit.iSup_lt_iff (h : IsSuccPrelimit x) :
     ⨆ i, f i < x ↔ ∃ a < x, ∀ i, f i < a :=
   h.sSup_lt_iff.trans <| exists_congr fun _ ↦ and_congr_right fun _ ↦ forall_mem_range
 
-@[to_dual sInf_le_iff]
+/-- Similar to `le_sSup_iff_forall_lt` but with a weaker RHS, as it requires a non-strict
+inequality. -/
+@[to_dual sInf_le_iff
+/-- Similar to `sInf_le_iff_forall_lt` but with a weaker RHS, as it requires a non-strict
+inequality. -/]
 theorem Order.IsSuccPrelimit.le_sSup_iff (h : IsSuccPrelimit x) :
     x ≤ sSup s ↔ IsCofinalFor (Iio x) s := by
   simpa [IsCofinalFor] using h.sSup_lt_iff.not
 
-@[to_dual iInf_le_iff]
+/-- Similar to `le_iSup_iff_forall_lt` but with a weaker RHS, as it requires a non-strict
+inequality. -/
+@[to_dual iInf_le_iff
+/-- Similar to `iInf_le_iff_forall_lt` but with a weaker RHS, as it requires a non-strict
+inequality. -/]
 theorem Order.IsSuccPrelimit.le_iSup_iff (h : IsSuccPrelimit x) :
     x ≤ ⨆ i, f i ↔ ∀ a < x, ∃ i, a ≤ f i :=
   h.le_sSup_iff.trans <| forall₂_congr fun _ _ ↦ exists_range_iff
