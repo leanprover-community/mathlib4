@@ -524,8 +524,8 @@ at a given vector.
 
 See `applyₗ` for the linear version. -/
 @[simps apply_apply] def _root_.ContinuousLinearMap.applyₗ'
-    [ContinuousSMul 𝕜 E] [IsTopologicalAddGroup F]
-    [ContinuousSMul 𝕜₂ F] : E →ₛₗ[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F where
+    [ContinuousSMul 𝕜 E] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F] :
+    E →ₛₗ[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F where
   toFun x :=
     { toFun f := f x
       map_add' _ _ := rfl
@@ -586,7 +586,7 @@ at a given vector.
 
 See `applyₗ'` for the semilinear version. -/
 @[simps! apply_apply] def _root_.ContinuousLinearMap.applyₗ [ContinuousSMul 𝕜 E]
-    [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] :
+    [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] :
     E →ₗ[𝕜] (E →L[𝕜] F) →L[𝕜] F := applyₗ' F (.id 𝕜)
 
 end Linear
