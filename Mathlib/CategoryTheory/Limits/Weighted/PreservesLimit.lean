@@ -38,7 +38,6 @@ variable [HasColimitsOfShape K (Type w)]
   {c : Cocone G} (hc : IsColimit ((hasWeightedLimit.{w} F).ι.mapCocone c))
   (s : Cone (G.op ⋙ weightedLimFlipObj'.{w} F))
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Functor.weightedLimFlipObj'.preservesLimit'` -/
 private noncomputable def π (j : J) : c.pt.obj.obj j → (s.pt ⟶ F.obj j) :=

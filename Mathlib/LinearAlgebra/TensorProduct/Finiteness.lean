@@ -48,7 +48,7 @@ variable {R M N : Type*}
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 
-variable {M₁ M₂ : Submodule R M} {N₁ N₂ : Submodule R N}
+variable {M₁ : Submodule R M} {N₁ : Submodule R N}
 
 namespace TensorProduct
 

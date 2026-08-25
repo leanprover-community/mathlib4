@@ -329,7 +329,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps -isSimp toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
@@ -522,7 +522,7 @@ end Algebra
 
 namespace MulSemiringAction
 
-variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {M : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
 /-- Each element of the monoid defines an algebra homomorphism.

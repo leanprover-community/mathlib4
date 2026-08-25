@@ -30,7 +30,7 @@ open Multiset Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type*}
 
 namespace Finset
 
@@ -102,8 +102,7 @@ end Finset
 
 namespace List
 
-variable [DecidableEq α] {l l' : List α} {a : α} {f : α → β}
-  {s : Finset α} {t : Set β} {t' : Finset β}
+variable [DecidableEq α] {l l' : List α} {a : α} {s : Finset α}
 
 /-- `toFinset l` removes duplicates from the list `l` to produce a finset. -/
 def toFinset (l : List α) : Finset α :=
