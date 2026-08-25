@@ -94,9 +94,8 @@ lemma serreDerivativeOne_E2_slash (γ : SL(2, ℤ)) :
   have hslash : serreDerivative 1 E2 ∣[(4 : ℤ)] γ =
       serreDerivative 2 (E2 ∣[(2 : ℤ)] γ) +
         (12⁻¹ : ℂ) • ((E2 ∣[(2 : ℤ)] γ) * (E2 ∣[(2 : ℤ)] γ)) := by
-   have heq : serreDerivative 2 E2 ∣[(4 : ℤ)] γ = serreDerivative 2 (E2 ∣[(2 : ℤ)] γ) := by
-      have h := serreDerivative_slash_equivariant (k := 2) E2_mdifferentiable (γ := γ)
-      grind
+    have heq : serreDerivative 2 E2 ∣[(4 : ℤ)] γ = serreDerivative 2 (E2 ∣[(2 : ℤ)] γ) := by
+        grind [serreDerivative_slash_equivariant (k := 2) E2_mdifferentiable (γ := γ)]
     rw [h₁₂, SlashAction.add_slash, SL_smul_slash, heq, show (4 : ℤ) = 2 + 2 from rfl,
       mul_slash_SL2]
   -- Derivative of `D2`
