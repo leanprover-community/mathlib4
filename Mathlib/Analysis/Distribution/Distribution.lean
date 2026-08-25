@@ -334,8 +334,7 @@ theorem ofFun_congr_ae {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict
     rw [← setIntegral_eq_integral_of_ae_compl_eq_zero (.of_forall h₁),
       ← setIntegral_eq_integral_of_ae_compl_eq_zero (.of_forall h₂)]
     refine integral_congr_ae <| ae_eq_rfl.smul h
-  · have hf' : ¬ LocallyIntegrableOn f' Ω μ := fun c ↦ hf (c.congr h.symm)
-    rw [ofFun_eq_zero hf, ofFun_eq_zero hf']
+  · grind [locallyIntegrableOn_congr]
 
 @[simp]
 theorem ofFun_add {f g : E → F} {μ : Measure E}
