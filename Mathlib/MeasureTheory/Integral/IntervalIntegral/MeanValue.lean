@@ -119,19 +119,28 @@ theorem exists_eq_const_mul_intervalIntegral_of_nonneg_of_antitoneOn
   have hsub : Ι a b ⊆ Icc a b := uIcc_of_le hab ▸ uIoc_subset_uIcc
   have hf_nonneg x (hx : x ∈ Icc a b) : 0 ≤ f x := hf.trans (hf_mon.mapsTo_Icc hx).1
   let H := fun r ↦ ∫ x in a..b, ({x | r ≤ f x}.indicator g) x
+  -- The region under the graph of `f` is null measurable because `f` is antitone
+  have hmeas : NullMeasurableSet {p : ℝ × ℝ | p.2 ≤ f p.1}
+      ((volume.restrict (uIoc a b)).prod (volume.restrict (uIoc 0 (f a)))) :=
+    nullMeasurableSet_le measurable_snd.aemeasurable
+      (aemeasurable_restrict_of_antitoneOn measurableSet_uIoc (hf_mon.mono hsub)).comp_fst
+  have : IsFiniteMeasure (volume.restrict (uIoc 0 (f a))) := Real.isFiniteMeasure_restrict_Ioc _ _
   have h_int : Integrable ({p : ℝ × ℝ | p.2 ≤ f p.1}.indicator fun p ↦ g p.1)
-      ((volume.restrict (uIoc a b)).prod (volume.restrict (uIoc 0 (f a)))) := by
-    simpa only [Function.comp_apply, mul_one] using
-      (hg.def'.mul_prod (intervalIntegrable_const (c := 1)).def').indicator₀
-        (nullMeasurableSet_le measurable_snd.aemeasurable
-          (aemeasurable_restrict_of_antitoneOn measurableSet_uIoc (hf_mon.mono hsub)).comp_fst)
+      ((volume.restrict (uIoc a b)).prod (volume.restrict (uIoc 0 (f a)))) :=
+    (hg.def'.comp_fst _).indicator₀ hmeas
+  -- Layer cake representation of `f x * g x`, valid for every `x` in the interval
+  have hlayer : ∀ x ∈ Ι a b, f x * g x = ∫ r in 0..f a, ({y | r ≤ f y}.indicator g) x := by
+    intro x hx
+    have hfx : f x ∈ Icc 0 (f a) :=
+      ⟨hf_nonneg x (hsub hx), (hf_mon.mapsTo_Icc (hsub hx)).2⟩
+    simpa [Set.indicator_apply] using
+      (intervalIntegral.integral_indicator (μ := volume) (f := fun _ ↦ g x) hfx).symm
   have hfub : ∫ x in a..b, f x * g x = ∫ r in 0..f a, H r := by
-    rw [intervalIntegral.integral_congr_ae_restrict <|
-      ae_restrict_of_forall_mem measurableSet_uIoc fun x hx ↦ by
-      simpa using (intervalIntegral.integral_indicator (μ := volume) (f := fun _ ↦ g x)
-        ⟨hf_nonneg x (hsub hx), (hf_mon.mapsTo_Icc (hsub hx)).2⟩).symm]
-    apply intervalIntegral_intervalIntegral_swap
-    rwa [IntegrableOn, Measure.volume_eq_prod ℝ ℝ, ← Measure.prod_restrict]
+    rw [intervalIntegral.integral_congr_ae_restrict
+      (ae_restrict_of_forall_mem measurableSet_uIoc hlayer)]
+    refine intervalIntegral_intervalIntegral_swap ?_
+    rw [IntegrableOn, Measure.volume_eq_prod ℝ ℝ, ← Measure.prod_restrict]
+    exact h_int
   -- The case `f a = 0` is trivial because then `f` is zero on the whole interval
   rcases (hf_nonneg a ⟨le_rfl, hab⟩).eq_or_lt with hfa | hfa
   · exact ⟨a, ⟨le_rfl, hab⟩, by simpa [hfa.symm] using hfub⟩
@@ -185,17 +194,21 @@ theorem exists_eq_const_mul_intervalIntegral_of_nonneg_of_monotoneOn
   refine ⟨-ξ, by grind, ?_⟩
   simpa using (intervalIntegral.integral_comp_neg (fun x ↦ f (-x) * g (-x))).trans hξ
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {g : ℝ → E}
 
 /-- An inequality version of the second mean value theorem for interval integrals
-for Banach-space-valued functions. -/
+for vector-valued functions with a nonnegative antitone weight. -/
 theorem exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_antitoneOn
     (hab : a ≤ b) (hf : 0 ≤ f b) (hf_mon : AntitoneOn f (Icc a b))
     (hg : IntervalIntegrable g volume a b) : ∃ ξ ∈ Icc a b,
     ‖∫ x in a..b, f x • g x‖ ≤ f a * ‖∫ x in a..ξ, g x‖ := by
-  -- Reduce to the scalar-valued theorem by applying a linear functional witnessing the norm
   have hfa := hf.trans (hf_mon.mapsTo_Icc ⟨le_rfl, hab⟩).1
+  -- If `E` is not complete, every Bochner integral below vanishes and the claim is trivial
+  by_cases hE : CompleteSpace E
+  swap
+  · exact ⟨a, ⟨le_rfl, hab⟩, by simp [intervalIntegral, integral_of_not_completeSpace hE]⟩
+  -- Reduce to the scalar-valued theorem by applying a linear functional witnessing the norm
   obtain ⟨L, hL_norm, hLI⟩ := exists_dual_vector'' ℝ (∫ x in a..b, f x • g x)
   obtain ⟨ξ, hξ, hξ_eq⟩ :=
     exists_eq_const_mul_intervalIntegral_of_nonneg_of_antitoneOn hab hf hf_mon
@@ -215,7 +228,9 @@ theorem exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_antitoneOn
       ((le_abs_self _).trans <| by simpa using
         (L.le_of_opNorm_le hL_norm (∫ x in a..ξ, g x))) hfa
 
-/-- Monotone variant of `exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_antitoneOn` -/
+/-- An inequality version of the second mean value theorem for interval integrals
+for vector-valued functions with a nonnegative monotone weight.
+Monotone variant of `exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_antitoneOn`. -/
 theorem exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_monotoneOn
     (hab : a ≤ b) (hf : 0 ≤ f a) (hf_mon : MonotoneOn f (Icc a b))
     (hg : IntervalIntegrable g volume a b) : ∃ ξ ∈ Icc a b,
