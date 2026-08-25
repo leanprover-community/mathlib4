@@ -10,7 +10,9 @@ public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Topology.UniformSpace.Matrix
+public import Mathlib.Topology.Instances.Matrix
 
 /-!
 # Lemmas about the matrix exponential
@@ -67,7 +69,7 @@ open scoped Matrix
 
 open NormedSpace -- For `exp`.
 
-variable {m n : Type*} {n' : m → Type*} {𝔸 : Type*}
+variable {m n : Type*} {n' : m → Type*} {α 𝔸 : Type*}
 
 namespace Matrix
 
@@ -97,6 +99,11 @@ theorem exp_conjTranspose [StarRing 𝔸] [ContinuousStar 𝔸] (A : Matrix m m 
 theorem IsHermitian.exp [StarRing 𝔸] [ContinuousStar 𝔸] {A : Matrix m m 𝔸} (h : A.IsHermitian) :
     (exp A).IsHermitian :=
   (exp_conjTranspose _).symm.trans <| congr_arg _ h
+
+theorem BlockTriangular.exp [LinearOrder α] [Algebra ℚ 𝔸] {M : Matrix m m 𝔸} {b : m → α}
+    (hM : BlockTriangular M b) :
+    (exp M).BlockTriangular b :=
+  exp_mem (s := blockTriangularSubalgebra ℚ _ b) isClosed_setOfPred_blockTriangular hM
 
 end Ring
 
@@ -129,7 +136,7 @@ open scoped Function in -- required for scoped `on` notation
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise (Commute on f)) :
     exp (∑ i ∈ s, f i) =
-      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp :=
+      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.forall₂ hi hj).exp :=
   open scoped Norms.Operator in exp_sum_of_commute s f h
 
 set_option backward.isDefEq.respectTransparency false in

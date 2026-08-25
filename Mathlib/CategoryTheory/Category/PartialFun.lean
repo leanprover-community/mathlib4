@@ -50,11 +50,13 @@ instance : Inhabited PartialFun.{u} :=
   ⟨PartialFun.of PUnit⟩
 
 -- TODO: wrap morphisms in this category into a one-field `PFun.Hom` structure
+set_option backward.isDefEq.respectTransparency.types false in
 instance largeCategory : LargeCategory.{u} PartialFun where
   Hom X Y := PFun X Y
   id X := PFun.id X
   comp f g := g.comp f
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructs a partial function isomorphism between types from an equivalence between them. -/
 @[simps]
 def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
@@ -99,6 +101,7 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
     rintro rfl
     refine ⟨fun h => hc.symm <| g.map_point ▸ congr_arg g.toFun h, hc.symm⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
 pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
@@ -111,7 +114,7 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
       map := fun f => ⟨Option.elim' none fun a => (f a).toOption, rfl⟩
       map_id := fun X => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => (by
         dsimp [CategoryStruct.id]
-        convert Part.some_toOption a)
+        convert! Part.some_toOption a)
       map_comp := fun f g => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
         dsimp [CategoryStruct.comp]
         rw [Part.bind_toOption g (f a), Option.elim'_eq_elim] }
@@ -135,7 +138,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
           refine (Part.mem_bind_iff.trans ?_).trans PFun.mem_toSubtype_iff.symm
           obtain ⟨b | b, hb⟩ := b
           · exact (hb rfl).elim
-          · simp only [partialFunToPointed_obj, ne_eq, Part.mem_some_iff, elim'_some]
+          · simp only [ne_eq, Part.mem_some_iff]
             classical
             refine ⟨fun ⟨w, hw, h⟩ ↦ ?_, fun h ↦ ⟨b, Part.mem_toOption.mp h.symm, rfl⟩⟩
             rw [Subtype.ext_iff] at h
@@ -145,7 +148,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
             exact hw.symm
   counitIso :=
     NatIso.ofComponents
-      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
+      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) rfl)
       fun {X Y} f ↦ Pointed.Hom.ext <| funext fun a ↦ by
         obtain _ | ⟨a, ha⟩ := a
         · exact f.map_point.symm
@@ -157,6 +160,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
     · simp
       rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just
 adding a point. -/
@@ -172,5 +176,5 @@ noncomputable def typeToPartialFunIsoPartialFunToPointed :
     fun f =>
     Pointed.Hom.ext <|
       funext fun a => Option.recOn a rfl fun a => by
-        convert Part.some_toOption _
-        simpa using (Part.get_eq_iff_mem (by trivial)).mp rfl
+        convert! Part.some_toOption _
+        simpa using! (Part.get_eq_iff_mem (by trivial)).mp rfl

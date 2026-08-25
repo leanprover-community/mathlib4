@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Control.Combinators
 public import Mathlib.Data.Option.Defs
-public import Mathlib.Logic.IsEmpty.Basic
 public import Mathlib.Logic.Relator
 public import Mathlib.Util.CompileInductive
 public import Aesop
 public import Batteries.Tactic.Lint.Simp
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.IsEmpty.Defs
 
 /-!
 # Option of a type
@@ -47,11 +48,7 @@ theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
 
 theorem mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃ x ∈ o, f x = y := by simp
 
--- The simpNF linter says that the LHS can be simplified via `Option.mem_def`.
--- However this is a higher priority lemma.
--- It seems the side condition `H` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {o : Option α} :
     f a ∈ o.map f ↔ a ∈ o := by
   aesop
@@ -149,21 +146,6 @@ end pmap
 @[simp]
 theorem seq_some {α β} {a : α} {f : α → β} : some f <*> some a = some (f a) :=
   rfl
-
-set_option linter.deprecated false in
-@[deprecated "Use `Option.get` with proof of `isSome`." (since := "2026-01-05")]
-theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
-  | some _, _ => rfl
-
-set_option linter.deprecated false in
-@[deprecated "Use `Option.getD`." (since := "2026-01-05")]
-theorem iget_of_mem [Inhabited α] {a : α} : ∀ {o : Option α}, a ∈ o → o.iget = a
-  | _, rfl => rfl
-
-set_option linter.deprecated false in
-@[deprecated "Use `Option.getD` directly." (since := "2026-01-05")]
-theorem getD_default_eq_iget [Inhabited α] (o : Option α) :
-    o.getD default = o.iget := by cases o <;> rfl
 
 @[simp, grind =]
 theorem failure_eq_none {α} : failure = (none : Option α) := rfl

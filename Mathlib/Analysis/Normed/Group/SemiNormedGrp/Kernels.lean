@@ -36,6 +36,7 @@ namespace SemiNormedGrp₁
 
 noncomputable section
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
 def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
   Cofork.ofπ
@@ -107,7 +108,7 @@ instance hasLimit_parallelPair {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) :
     Nonempty.intro
       { cone := fork f g
         isLimit :=
-          have this := fun (c : Fork f g) =>
+          have := fun (c : Fork f g) =>
             show NormedAddGroupHom.compHom (f - g).hom c.ι.hom = 0 by
               rw [hom_sub, map_sub, AddMonoidHom.sub_apply, sub_eq_zero]
               exact congr_arg Hom.hom c.condition
@@ -193,7 +194,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem comp_explicitCokernelπ {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
     f ≫ explicitCokernelπ f = 0 := by
-  convert (cokernelCocone f).w WalkingParallelPairHom.left
+  convert! (cokernelCocone f).w WalkingParallelPairHom.left
   simp
 
 @[simp]
@@ -211,12 +212,14 @@ theorem explicitCokernelπ_desc_apply {X Y Z : SemiNormedGrp.{u}} {f : X ⟶ Y} 
     {cond : f ≫ g = 0} (x : Y) : explicitCokernelDesc cond (explicitCokernelπ f x) = g x :=
   show (explicitCokernelπ f ≫ explicitCokernelDesc cond) x = g x by rw [explicitCokernelπ_desc]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 theorem explicitCokernelDesc_unique {X Y Z : SemiNormedGrp.{u}} {f : X ⟶ Y} {g : Y ⟶ Z}
     (w : f ≫ g = 0) (e : explicitCokernel f ⟶ Z) (he : explicitCokernelπ f ≫ e = g) :
     e = explicitCokernelDesc w := by
   apply (isColimitCokernelCocone f).uniq (Cofork.ofπ g (by simp [w]))
   rintro (_ | _)
-  · convert w.symm
+  · convert! w.symm
     simp
   · exact he
 

@@ -15,6 +15,7 @@ When `C` is a monoidal category, the limit functor `lim : (J ⥤ C) ⥤ C` is la
 i.e. there are morphisms
 * `(𝟙_ C) → limit (𝟙_ (J ⥤ C))`
 * `limit F ⊗ limit G ⟶ limit (F ⊗ G)`
+
 satisfying the laws of a lax monoidal functor.
 
 ## TODO
@@ -36,6 +37,7 @@ variable {J : Type w} [SmallCategory J] {C : Type u} [Category.{v} C] [HasLimits
 
 open Functor.LaxMonoidal
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : (lim (J := J) (C := C)).LaxMonoidal :=
   Functor.LaxMonoidal.ofTensorHom
@@ -90,6 +92,9 @@ instance : (lim (J := J) (C := C)).LaxMonoidal :=
       erw [limit.lift_π]
       rw [whiskerLeft_id, Category.id_comp]))
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma lim_ε_π (j : J) : ε (lim (J := J) (C := C)) ≫ limit.π _ j = 𝟙 _ :=
   limit.lift_π _ _

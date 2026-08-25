@@ -129,10 +129,9 @@ instance : Mono (coequalizer.desc f pullback.condition) := by
     infer_instance
   -- We precompose with the epimorphism `g₁ ≫ pullback.snd e k₁`, and finish
   rw [← cancel_epi (g₁ ≫ pullback.snd e k₁)]
-  convert coequalizer.condition (pullback.fst f f) (pullback.snd f f) using 1
+  convert! coequalizer.condition (pullback.fst f f) (pullback.snd f f) using 1
   all_goals cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 In a regular category, every morphism `f : X ⟶ Y` factors as `e ≫ m`, where `e` is the projection
 map to the coequalizer of the kernel pair of `f`, and `m` is the canonical map from that
@@ -154,7 +153,6 @@ and `m` a monomorphism.
 instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
   has_fac f := ⟨strongEpiMonoFactorisation f⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a regular category, every extremal epimorphism is a regular epimorphism. -/
 noncomputable def regularEpiOfExtremalEpi [h : ExtremalEpi f] : RegularEpi f :=
   have := h.isIso (strongEpiMonoFactorisation f).e (strongEpiMonoFactorisation f).m (by simp)
