@@ -376,6 +376,7 @@ section MulRingNorm_equiv_AbsoluteValue
 
 variable {R : Type*} [Ring R] [Nontrivial R]
 
+/-- A multiplicative ring norm defines an absolute value. -/
 @[simps]
 def toAbsoluteValue (N : MulRingNorm R) : AbsoluteValue R ℝ where
   toFun := N.toFun
@@ -384,6 +385,7 @@ def toAbsoluteValue (N : MulRingNorm R) : AbsoluteValue R ℝ where
   eq_zero' x := ⟨N.eq_zero_of_map_eq_zero' x, fun h ↦ h ▸ N.map_zero'⟩
   add_le' := N.add_le'
 
+/-- An absolute value defines a multiplicative ring norm. -/
 @[simps]
 def ofAbsoluteValue (v : AbsoluteValue R ℝ) : MulRingNorm R where
   toFun := v.toFun
