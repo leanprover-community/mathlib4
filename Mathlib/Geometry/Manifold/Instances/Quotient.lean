@@ -148,7 +148,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   (I : ModelWithCorners 𝕜 E H) {n : ℕ∞} [IsManifold I n M]
 
 instance isManifold_quotient_of_contMDiffSMul [ContMDiffConstSMul I n G M] :
-    IsManifold  I n (orbitRel.Quotient G M) where
+    IsManifold I n (orbitRel.Quotient G M) where
   compatible := by
     rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
     rw [(πinv x).trans_symm_eq_symm_trans_symm, (chartAt H x.out).symm.trans_assoc,
