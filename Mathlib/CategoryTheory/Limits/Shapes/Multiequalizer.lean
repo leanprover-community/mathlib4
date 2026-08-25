@@ -162,6 +162,7 @@ def functorExt {C : Type*} [Category* C] {F G : WalkingMulticospan J ⥤ C}
   NatIso.ofComponents (fun j ↦ match j with | .left i => left i | .right i => right i) <| by
     rintro _ _ ⟨_⟩ <;> simp [wl, wr]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma functor_ext {C : Type*} [Category* C] {F G : WalkingMulticospan J ⥤ C}
     (left : ∀ i, F.obj (.left i) = G.obj (.left i))
     (right : ∀ i, F.obj (.right i) = G.obj (.right i))
@@ -541,6 +542,7 @@ theorem app_right_eq_ι_comp_snd (b) :
 theorem hom_comp_ι (K₁ K₂ : Multifork I) (f : K₁ ⟶ K₂) (j : J.L) : f.hom ≫ K₂.ι j = K₁.ι j :=
   f.w _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Construct a multifork using a collection `ι` of morphisms. -/
 @[simps]
@@ -739,6 +741,7 @@ def ofPiForkFunctor :
     { hom := f.hom
       w := by rintro (_ | _) <;> simp }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The category of multiforks is equivalent to the category of forks over `∏ᶜ I.left ⇉ ∏ᶜ I.right`.
 It then follows from `CategoryTheory.IsLimit.ofPreservesConeTerminal` (or `reflects`) that it
@@ -859,7 +862,6 @@ def ofπ {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
 theorem condition (a) : I.fst a ≫ K.π (J.fst a) = I.snd a ≫ K.π (J.snd a) := by
   rw [← K.snd_app_right, ← K.fst_app_right]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This definition provides a convenient way to show that a multicofork is a colimit. -/
 @[simps]
 def IsColimit.mk (desc : ∀ E : Multicofork I, K.pt ⟶ E.pt)
@@ -999,6 +1001,7 @@ noncomputable def ofSigmaCoforkFunctor :
     { hom := f.hom
       w := by rintro (_ | _) <;> simp }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 The category of multicoforks is equivalent to the category of coforks over `∐ I.left ⇉ ∐ I.right`.
@@ -1244,6 +1247,7 @@ def toLinearOrder : MultispanIndex (.ofLinearOrder ι) C where
   fst j := I.fst j.1
   snd j := I.snd j.1
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a linearly ordered type `ι` and `I : MultispanIndex (.prod ι) C`,
 this is the isomorphism of functors between

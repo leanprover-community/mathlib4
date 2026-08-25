@@ -11,7 +11,7 @@ public import Mathlib.FieldTheory.Fixed
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
 public import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.TensorProduct.Finite
-
+public import Mathlib.SetTheory.Cardinal.Subfield
 
 /-!
 # Adjoining Elements to Fields
@@ -264,7 +264,7 @@ section AdjoinRank
 
 open Module Module
 
-variable {K L : IntermediateField F E}
+variable {K : IntermediateField F E}
 
 @[simp]
 theorem rank_eq_one_iff : Module.rank F K = 1 ↔ K = ⊥ := by
@@ -554,6 +554,18 @@ theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irr
   contrapose hi
   rwa [hi, mul_zero] at key
 
+instance : Algebra.IsAlgebraic K (⊥ : IntermediateField K L) where
+  isAlgebraic := by
+    intro ⟨x, hx⟩
+    obtain ⟨c, rfl⟩ := hx
+    exact isAlgebraic_algebraMap c
+
+instance : Algebra.IsAlgebraic (⊤ : IntermediateField K L) L where
+  isAlgebraic := by
+    intro x
+    let xt : (⊤ : IntermediateField K L) := ⟨x, mem_top⟩
+    exact isAlgebraic_algebraMap xt
+
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
 theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
@@ -581,6 +593,24 @@ theorem finiteDimensional_adjoin {S : Set L} [Finite S] (hS : ∀ x ∈ S, IsInt
   have (x : S) := adjoin.finiteDimensional (hS x.1 x.2)
   exact finiteDimensional_iSup_of_finite
 
+/-- If `x` generates `L` over `K` (i.e., `K⟮x⟯ = ⊤`) and is integral over `K`, then `x`
+defines a `PowerBasis` for `L` over `K`. See `PowerBasis.ofAdjoinEqTop` for a version with
+`Algebra.adjoin`. -/
+noncomputable def _root_.PowerBasis.ofAdjoinSimpleEqTop {x : L} (h : IsIntegral K x)
+    (hgen : K⟮x⟯ = ⊤) : PowerBasis K L :=
+  (adjoin.powerBasis h).map ((IntermediateField.equivOfEq hgen).trans IntermediateField.topEquiv)
+
+@[simp]
+lemma _root_.PowerBasis.ofAdjoinSimpleEqTop_gen {x : L} (h : IsIntegral K x)
+    (hgen : K⟮x⟯ = ⊤) : (PowerBasis.ofAdjoinSimpleEqTop h hgen).gen = x := by
+  simp [PowerBasis.ofAdjoinSimpleEqTop]
+
+@[simp]
+lemma _root_.PowerBasis.ofAdjoinSimpleEqTop_dim {x : L} (h : IsIntegral K x)
+    (hgen : K⟮x⟯ = ⊤) :
+    (PowerBasis.ofAdjoinSimpleEqTop h hgen).dim = (minpoly K x).natDegree := by
+  simp [PowerBasis.ofAdjoinSimpleEqTop]
+
 end PowerBasis
 
 /-- Algebra homomorphism `F⟮α⟯ →ₐ[F] K` are in bijection with the set of roots
@@ -598,7 +628,7 @@ lemma algHomAdjoinIntegralEquiv_symm_apply_gen (h : IsIntegral F α)
     rw [adjoin.powerBasis_gen, minpoly_gen]; exact (mem_aroots.mp x.2).2
 
 /-- Fintype of algebra homomorphism `F⟮α⟯ →ₐ[F] K` -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype (F⟮α⟯ →ₐ[F] K) :=
   PowerBasis.AlgHom.fintype (adjoin.powerBasis h)
 

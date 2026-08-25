@@ -95,6 +95,9 @@ theorem length_nil {u : V} : (nil : G.Walk u u).length = 0 := rfl
 theorem length_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).length = p.length + 1 := rfl
 
+theorem _root_.SimpleGraph.Adj.length_toWalk (h : G.Adj u v) : h.toWalk.length = 1 := by
+  simp
+
 theorem eq_of_length_eq_zero {u v : V} : ∀ {p : G.Walk u v}, p.length = 0 → u = v
   | nil, _ => rfl
 
@@ -125,12 +128,18 @@ def darts {u v : V} : G.Walk u v → List G.Dart
 This is defined to be the list of edges underlying `SimpleGraph.Walk.darts`. -/
 def edges {u v : V} (p : G.Walk u v) : List (Sym2 V) := p.darts.map Dart.edge
 
+theorem edges_eq_map_darts (p : G.Walk u v) : p.edges = p.darts.map Dart.edge :=
+  rfl
+
 @[simp]
 theorem support_nil {u : V} : (nil : G.Walk u u).support = [u] := rfl
 
 @[simp, grind =]
 theorem support_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).support = u :: p.support := rfl
+
+theorem _root_.SimpleGraph.Adj.support_toWalk (h : G.Adj u v) : h.toWalk.support = [u, v] :=
+  rfl
 
 @[simp]
 theorem support_ne_nil {u v : V} (p : G.Walk u v) : p.support ≠ [] := by cases p <;> simp
@@ -222,6 +231,9 @@ theorem darts_nil {u : V} : (nil : G.Walk u u).darts = [] := rfl
 theorem darts_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).darts = ⟨(u, v), h⟩ :: p.darts := rfl
 
+theorem _root_.SimpleGraph.Adj.darts_toWalk (h : G.Adj u v) : h.toWalk.darts = [⟨(u, v), h⟩] :=
+  rfl
+
 theorem cons_map_snd_darts {u v : V} (p : G.Walk u v) : (u :: p.darts.map (·.snd)) = p.support := by
   induction p <;> simp [*]
 
@@ -242,6 +254,9 @@ theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
 theorem edges_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).edges = s(u, v) :: p.edges := rfl
 
+theorem _root_.SimpleGraph.Adj.edges_toWalk (h : G.Adj u v) : h.toWalk.edges = [s(u, v)] :=
+  rfl
+
 @[simp, grind =]
 theorem length_support {u v : V} (p : G.Walk u v) : p.support.length = p.length + 1 := by
   induction p <;> simp [*]
@@ -252,6 +267,16 @@ theorem length_darts {u v : V} (p : G.Walk u v) : p.darts.length = p.length := b
 
 @[simp, grind =]
 theorem length_edges {u v : V} (p : G.Walk u v) : p.edges.length = p.length := by simp [edges]
+
+/-- Use `edge_getElem_darts` to rewrite in the reverse direction. -/
+theorem getElem_edges_eq_edge_getElem_darts {p : G.Walk u v} {i : ℕ} (h : i < p.edges.length) :
+    p.edges[i] = (p.darts[i]'(by grind)).edge :=
+  List.getElem_map ..
+
+/-- Use `getElem_edges_eq_edge_getElem_darts` to rewrite in the reverse direction. -/
+theorem edge_getElem_darts {p : G.Walk u v} {i : ℕ} (h : i < p.darts.length) :
+    p.darts[i].edge = p.edges[i]'(by grind) := by
+  rw [getElem_edges_eq_edge_getElem_darts]
 
 @[simp]
 theorem fst_darts_getElem {p : G.Walk u v} {i : ℕ} (hi : i < p.darts.length) :
@@ -354,6 +379,7 @@ instance (p : G.Walk v w) : Decidable p.Nil :=
   | nil => isTrue .nil
   | cons _ _ => isFalse nofun
 
+@[grind .]
 protected lemma Nil.eq {p : G.Walk v w} : p.Nil → v = w | .nil => rfl
 
 lemma not_nil_of_ne {p : G.Walk v w} : v ≠ w → ¬ p.Nil := mt Nil.eq
@@ -369,7 +395,7 @@ lemma darts_eq_nil {p : G.Walk v w} : p.darts = [] ↔ p.Nil := by
 lemma edges_eq_nil {p : G.Walk v w} : p.edges = [] ↔ p.Nil := by
   cases p <;> simp
 
-@[simp]
+@[simp, grind .]
 theorem length_eq_zero_iff {p : G.Walk u v} : p.length = 0 ↔ p.Nil := by
   cases p <;> simp
 
@@ -463,6 +489,7 @@ theorem ofSupport_cons_cons {l : List V} (hchain : u :: v :: l |>.IsChain G.Adj)
       .cons hchain.rel (.ofSupport (v :: l) (l.cons_ne_nil v) hchain.of_cons) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain G.Adj) :
     (ofSupport l hne hchain).support = l := by
@@ -485,10 +512,11 @@ def ofDarts (l : List G.Dart) (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
   | d₁ :: d₂ :: l =>
     .cons (hchain.rel ▸ d₁.adj) <| ofDarts (d₂ :: l) (l.cons_ne_nil d₂) hchain.of_cons
 
-variable (G) in
 @[simp]
-theorem ofDarts_singleton (d : G.Dart) :
-    ofDarts [d] ([].cons_ne_nil d) (.singleton d) = .cons d.adj .nil :=
+theorem ofDarts_singleton (d : G.Dart) : ofDarts [d] (by simp) (by simp) = .cons d.adj .nil :=
+  rfl
+
+theorem ofDarts_singleton' (d : G.Dart) : ofDarts [d] (by simp) (by simp) = d.adj.toWalk :=
   rfl
 
 @[simp]
@@ -498,6 +526,7 @@ theorem ofDarts_cons_cons {d₁ d₂ : G.Dart} {l : List G.Dart}
       .cons (hchain.rel ▸ d₁.adj) (ofDarts (d₂ :: l) (l.cons_ne_nil d₂) hchain.of_cons) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem darts_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
     (ofDarts l hne hchain).darts = l := by

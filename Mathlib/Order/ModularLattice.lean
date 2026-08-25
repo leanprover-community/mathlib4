@@ -220,6 +220,7 @@ theorem wellFounded_gt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ
   wellFounded_lt_exact_sequence (α := αᵒᵈ) (β := γᵒᵈ) (γ := βᵒᵈ)
     K g₁ g₂ f₁ f₂ gi.dual gci.dual hg hf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The diamond isomorphism between the closed intervals `[a ⊓ b, a]` and `[b, a ⊔ b]` -/
 @[simps]
 def infIccOrderIsoIccSup (a b : α) : Icc (a ⊓ b) a ≃o Icc b (a ⊔ b) where
@@ -250,10 +251,10 @@ def infIccOrderIsoIccSup' (a b : α) : Icc (a ⊓ b) b ≃o Icc a (a ⊔ b) :=
     OrderIso.setCongr _ _ (by rw [sup_comm])
 
 theorem inf_strictMonoOn_Icc_sup {a b : α} : StrictMonoOn (fun c => a ⊓ c) (Icc b (a ⊔ b)) :=
-  StrictMono.of_restrict (infIccOrderIsoIccSup a b).symm.strictMono
+  StrictMono.of_domRestrict (infIccOrderIsoIccSup a b).symm.strictMono
 
 theorem sup_strictMonoOn_Icc_inf {a b : α} : StrictMonoOn (fun c => c ⊔ b) (Icc (a ⊓ b) a) :=
-  StrictMono.of_restrict (infIccOrderIsoIccSup a b).strictMono
+  StrictMono.of_domRestrict (infIccOrderIsoIccSup a b).strictMono
 
 /-- The diamond isomorphism between the open intervals `(a ⊓ b, a)` and `(b, a ⊔ b)`. -/
 @[simps]
@@ -429,7 +430,7 @@ instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) where
   exists_isCompl := fun ⟨x, hx⟩ => by
     simp_rw [Set.Ici.isCompl_iff]
     obtain ⟨y, rfl, hcodisjoint⟩ := exists_inf_eq_and_codisjoint hx
-    exact ⟨⟨y, inf_le_right⟩, rfl, hcodisjoint⟩
+    exact ⟨⟨y, inf_le_right⟩, hcodisjoint, rfl⟩
 
 /-- A disjoint element can be enlarged to a complementary element. -/
 @[to_dual /-- A codisjoint element can be shrunk to a complementary element. -/]

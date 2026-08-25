@@ -98,7 +98,7 @@ theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n 
 theorem insert_self_properDivisors (h : n ≠ 0) : insert n (properDivisors n) = divisors n := by
   rw [divisors, properDivisors,
     ← Finset.insert_Ico_right_eq_Ico_add_one (one_le_iff_ne_zero.2 h),
-    Finset.filter_insert, if_pos (dvd_refl n)]
+    Finset.filter_insert, ite_eq_left (dvd_refl n)]
 
 theorem cons_self_properDivisors (h : n ≠ 0) :
     cons n (properDivisors n) self_notMem_properDivisors = divisors n := by
@@ -361,6 +361,7 @@ theorem image_snd_divisorsAntidiagonal : (divisorsAntidiagonal n).image Prod.snd
   rw [← map_swap_divisorsAntidiagonal, map_eq_image, image_image]
   exact image_fst_divisorsAntidiagonal
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_div_right_divisors :
     n.divisors.map ⟨fun d => (d, n / d), fun _ _ => congr_arg Prod.fst⟩ =
       n.divisorsAntidiagonal := by
@@ -374,6 +375,7 @@ theorem map_div_right_divisors :
   · rintro ⟨rfl, hn⟩
     exact ⟨⟨dvd_mul_right _ _, hn⟩, Nat.mul_div_cancel_left _ (left_ne_zero_of_mul hn).bot_lt⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_div_left_divisors :
     n.divisors.map ⟨fun d => (n / d, d), fun _ _ => congr_arg Prod.snd⟩ =
       n.divisorsAntidiagonal := by

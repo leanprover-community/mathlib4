@@ -270,6 +270,7 @@ def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤
   map {F G} η :=
     { app H := ObjectProperty.homMk (((Functor.whiskeringRight C D E).map η.hom).app H.obj) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
 @[simps! obj_obj_obj obj_map map_app]
@@ -280,6 +281,7 @@ def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E)
   map {F G} η :=
     { app H := ObjectProperty.homMk (((Functor.whiskeringLeft C D E).map η.hom).app H.obj) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
 @[simps! obj_obj_obj obj_map map_app]

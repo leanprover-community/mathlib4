@@ -5,7 +5,7 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Topology.Instances.Discrete
 public import Mathlib.Order.Interval.Set.WithBotTop
 public import Mathlib.Order.Filter.Pointwise
@@ -56,7 +56,7 @@ theorem mem_nhds_iff {x : ℕ∞} {s : Set ℕ∞} (hx : x ≠ ⊤) : s ∈ 𝓝
   simp [hx]
 
 theorem mem_nhds_natCast_iff (n : ℕ) {s : Set ℕ∞} : s ∈ 𝓝 (n : ℕ∞) ↔ (n : ℕ∞) ∈ s :=
-  mem_nhds_iff (coe_ne_top _)
+  mem_nhds_iff (natCast_ne_top _)
 
 theorem tendsto_nhds_top_iff_natCast_lt {α : Type*} {l : Filter α} {f : α → ℕ∞} :
     Tendsto f l (𝓝 ⊤) ↔ ∀ n : ℕ, ∀ᶠ a in l, n < f a := by
@@ -83,7 +83,7 @@ instance : ContinuousMul ℕ∞ where
       · simp only [ContinuousAt, Function.uncurry, mul_top ha.ne']
         refine tendsto_nhds_top_mono continuousAt_snd ?_
         filter_upwards [continuousAt_fst (lt_mem_nhds ha)] with (x, y) (hx : 0 < x)
-        exact le_mul_of_one_le_left' (Order.one_le_iff_pos.2 hx)
+        exact ENat.self_le_mul_left _ hx.ne'
     continuous_iff_continuousAt.2 <| Prod.forall.2 fun
       | (a : ℕ∞), ⊤ => key a
       | ⊤, (b : ℕ∞) =>

@@ -41,7 +41,6 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 open AffineZariskiSite
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a morphism `f : X ⟶ Y`, this is the presheaf of integral closure of `Y` in `X`. -/
 def normalizationDiagram : Y.Opensᵒᵖ ⥤ CommRingCat where
   obj U :=
@@ -155,6 +154,7 @@ def toNormalization : X ⟶ f.normalization :=
   rw [← Spec.map_comp_assoc]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ι_toNormalization (U : Y.affineOpens) :
@@ -179,6 +179,7 @@ lemma ι_fromNormalization (U : Y.affineOpens) :
       Spec.map (f.normalizationDiagramMap.app (.op U.1)) ≫ U.2.fromSpec :=
   colimit.ι_desc _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma fromNormalization_preimage (U : Y.affineOpens) :
     f.fromNormalization ⁻¹ᵁ U = (f.normalizationOpenCover.f U).opensRange := by
   simpa using! f.normalizationGlueData.toBase_preimage_eq_opensRange_ι U
@@ -211,6 +212,7 @@ instance : IsIntegralHom f.fromNormalization := by
   rw [← cancel_mono U.2.fromSpec]
   simp [IsAffineOpen.isoSpec_hom, e, ι_fromNormalization]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The sections of the relative normalization on the preimage of an affine open is isomorphic to
 the integral closure. -/
 noncomputable
@@ -340,6 +342,7 @@ instance : IsDominant f.toNormalization := by
   rw [IdealSheafData.support_bot, Scheme.Hom.support_ker, TopologicalSpace.Closeds.coe_top] at this
   exact ⟨dense_iff_closure_eq.mpr this⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[stacks 0AXN]
 instance [IsReduced X] : IsReduced f.normalization :=

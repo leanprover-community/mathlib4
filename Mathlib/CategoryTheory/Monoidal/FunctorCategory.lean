@@ -167,6 +167,7 @@ open CategoryTheory.BraidedCategory
 
 variable [BraidedCategory.{v₂} D]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- When `C` is any category, and `D` is a braided monoidal category,
 the natural pointwise monoidal structure on the functor category `C ⥤ D`
 is also braided.
@@ -223,6 +224,7 @@ instance {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCate
     [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 instance Functor.Monoidal.whiskeringLeft

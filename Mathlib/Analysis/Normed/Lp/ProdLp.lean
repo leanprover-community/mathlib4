@@ -50,7 +50,9 @@ the only remaining results are about `Lipschitz` and `Antilipschitz`.
 
 @[expose] public section
 
-open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
+open Real Set Filter Bornology NNReal ENNReal
+
+open scoped Uniformity
 
 noncomputable section
 
@@ -184,12 +186,12 @@ variable {p α β}
 theorem prod_edist_eq_card (f g : WithLp 0 (α × β)) :
     edist f g =
       (if edist f.fst g.fst = 0 then 0 else 1) + (if edist f.snd g.snd = 0 then 0 else 1) := by
-  convert! if_pos rfl
+  convert! ite_eq_left rfl
 
 theorem prod_edist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     edist f g = (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
-  (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
+  (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
 theorem prod_edist_eq_sup (f g : WithLp ∞ (α × β)) :
     edist f g = edist f.fst g.fst ⊔ edist f.snd g.snd := rfl
@@ -249,12 +251,12 @@ variable {p α β}
 
 theorem prod_dist_eq_card (f g : WithLp 0 (α × β)) : dist f g =
     (if dist f.fst g.fst = 0 then 0 else 1) + (if dist f.snd g.snd = 0 then 0 else 1) := by
-  convert! if_pos rfl
+  convert! ite_eq_left rfl
 
 theorem prod_dist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     dist f g = (dist f.fst g.fst ^ p.toReal + dist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
-  (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
+  (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
 theorem prod_dist_eq_sup (f g : WithLp ∞ (α × β)) :
     dist f g = dist f.fst g.fst ⊔ dist f.snd g.snd := rfl
@@ -285,14 +287,14 @@ variable {p α β}
 @[simp]
 theorem prod_norm_eq_card (f : WithLp 0 (α × β)) :
     ‖f‖ = (if ‖f.fst‖ = 0 then 0 else 1) + (if ‖f.snd‖ = 0 then 0 else 1) := by
-  convert! if_pos rfl
+  convert! ite_eq_left rfl
 
 theorem prod_norm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := rfl
 
 theorem prod_norm_eq_add (hp : 0 < p.toReal) (f : WithLp p (α × β)) :
     ‖f‖ = (‖f.fst‖ ^ p.toReal + ‖f.snd‖ ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
-  (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
+  (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
 end Norm
 
@@ -769,6 +771,7 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
 
 section L1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem prod_norm_eq_of_L1 (x : WithLp 1 (α × β)) :
     ‖x‖ = ‖x.fst‖ + ‖x.snd‖ := by
   simp [prod_norm_eq_add]
@@ -789,6 +792,7 @@ theorem prod_nndist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     push_cast
     exact prod_dist_eq_of_L1 _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem prod_edist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     edist x y = edist x.fst y.fst + edist x.snd y.snd := by
   simp [prod_edist_eq_add]

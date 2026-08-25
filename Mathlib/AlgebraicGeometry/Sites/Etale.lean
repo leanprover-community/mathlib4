@@ -50,6 +50,7 @@ category of schemes étale over `X` induced from the étale topology on `Scheme.
 def smallEtaleTopology (X : Scheme.{u}) : GrothendieckTopology X.Etale :=
   X.smallGrothendieckTopology (P := @Etale)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The pretopology generating the small étale site. -/
 def smallEtalePretopology (X : Scheme.{u}) : Pretopology X.Etale :=
   X.smallPretopology (Q := @Etale) (P := @Etale)

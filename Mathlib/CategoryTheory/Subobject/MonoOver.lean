@@ -234,7 +234,6 @@ def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
   Classical.choice <| HasStrongEpiMonoFactorisations.has_fac (Sigma.desc fun i ↦ (F.obj i).arrow)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If a category `C` has strong epi-mono factorization, for any `Y : C` and functor
 `F : J ⥤ MonoOver Y`, there is a cocone under F. -/
 def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
@@ -244,7 +243,6 @@ def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
     (strongEpiMonoFactorisationSigmaDesc F).e)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
     CommSq (Sigma.desc fun i ↦ (c.ι.app i).hom.left) (strongEpiMonoFactorisationSigmaDesc F).e
       c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where
@@ -351,6 +349,7 @@ theorem map_obj_left (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g : 
 theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).arrow = g.arrow ≫ f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance full_map (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
   map_surjective {g h} e := by
     refine ⟨homMk e.hom.left ?_, rfl⟩

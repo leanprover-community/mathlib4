@@ -108,7 +108,7 @@ instance : (epiWithInjectiveKernel (C := C)).IsStableUnderRetracts where
     let r' : Retract (kernel f') (kernel f) :=
       { i := kernel.map _ _ r.i.left r.i.right (Arrow.w r.i).symm
         r := kernel.map _ _ r.r.left r.r.right (Arrow.w r.r).symm
-        retract := by ext; simp [dsimp% r.left.retract] }
+        retract := by ext; simp }
     exact ⟨inferInstance, r'.injective⟩
 
 lemma epiWithInjectiveKernel.hasLiftingProperty

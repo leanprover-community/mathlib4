@@ -6,7 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Integration with respect to the product measure
@@ -442,7 +442,7 @@ theorem continuous_integral_integral :
   of the right-hand side is integrable. -/
 theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
     ∫ z, f z ∂μ.prod ν = ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
-  by_cases hE : CompleteSpace E; swap; · simp only [integral, dif_neg hE]
+  by_cases hE : CompleteSpace E; swap; · simp only [integral, dite_eq_right hE]
   revert f
   apply Integrable.induction
   · intro c s hs h2s
@@ -556,7 +556,7 @@ section ContinuousLinearMap
 
 variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
   [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
-  [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G}
+  [NormedAddCommGroup G] [NormedSpace ℝ G]
   {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
   {L : E × F →L[ℝ] G}
 

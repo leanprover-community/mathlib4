@@ -32,7 +32,7 @@ open Set Function
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u} {β : Type v} {ι : Sort w}
 
 namespace Set
 
@@ -61,7 +61,7 @@ lemma toFinset_iUnion [Fintype β] [DecidableEq α] (f : β → Set α)
 
 /-- A union of sets with `Fintype` structure over a set with `Fintype` structure has a `Fintype`
 structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 def fintypeBiUnion [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
     (H : ∀ i ∈ s, Fintype (t i)) : Fintype (⋃ x ∈ s, t x) :=
   haveI : ∀ i : toFinset s, Fintype (t i) := fun i => H i (mem_toFinset.1 i.2)
@@ -114,7 +114,7 @@ instance finite_biUnion' {ι : Type*} (s : Set ι) [Finite s] (t : ι → Set α
 -/
 instance finite_biUnion'' {ι : Type*} (p : ι → Prop) [h : Finite { x | p x }] (t : ι → Set α)
     [∀ i, Finite (t i)] : Finite (⋃ (x) (_ : p x), t x) :=
-  @Finite.Set.finite_biUnion' _ _ (setOf p) h t _
+  @Finite.Set.finite_biUnion' _ _ (Set.ofPred p) h t _
 
 instance finite_iInter {ι : Sort*} [Nonempty ι] (t : ι → Set α) [∀ i, Finite (t i)] :
     Finite (⋂ i, t i) :=
@@ -380,7 +380,7 @@ theorem _root_.iInf_iSup_eq_of_finite {ι : Sort v} {κ : ι → Sort w} [Order.
   intro ι κ _ f
   induction ι using Finite.induction_empty_option with
   | of_equiv e h => simp [← e.iInf_comp, ← e.piCongrLeft κ |>.iSup_comp, h]
-  | h_empty => simp [iInf_of_empty, iSup_const]
+  | h_empty => simp [iSup_const]
   | h_option h =>
     simp only [iInf_option, h, ← (Equiv.piOptionEquivProd (β := κ)).symm.iSup_comp,
       Equiv.piOptionEquivProd_symm_apply, iSup_prod, ← inf_iSup_eq, ← iSup_inf_eq]

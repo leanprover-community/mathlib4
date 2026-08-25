@@ -73,6 +73,7 @@ lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
 
 instance instFiniteIndexGamma [NeZero N] : (Gamma N).FiniteIndex := Subgroup.finiteIndex_ker _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The congruence subgroup of `SL(2, ℤ)` of matrices whose lower left-hand entry reduces to zero
 modulo `N`. -/
 def Gamma0 : Subgroup SL(2, ℤ) where
@@ -80,7 +81,7 @@ def Gamma0 : Subgroup SL(2, ℤ) where
   one_mem' := by simp
   mul_mem' {a} {b} ha hb := by
     have h := (Matrix.two_mul_expl a.1 b.1).2.2.1
-    simp only [coe_mul, Set.mem_setOf_eq] at *
+    simp only [coe_mul, Set.mem_ofPred_eq] at *
     simp [h, ha, hb]
   inv_mem' {a} ha := by
     simpa [SL2_inv_expl a] using ha
@@ -309,6 +310,7 @@ lemma finiteIndex_conjGL (g : GL (Fin 2) ℚ) : (conjGL ⊤ (g.map <| Rat.castHo
 lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
     (toConjAct (g.map (Rat.castHom ℝ)) • 𝒮ℒ).IsArithmetic := by
   constructor
+  simp_rw [Subgroup.Commensurable, Subgroup.isFiniteRelIndex_iff_relIndex_ne_zero]
   rw [MonoidHom.range_eq_map]
   constructor
   · rw [← Subgroup.relIndex_comap, Subgroup.relIndex_top_right]
@@ -321,7 +323,7 @@ lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
 lemma _root_.Subgroup.IsArithmetic.conj (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic]
     (g : GL (Fin 2) ℚ) :
     (toConjAct (g.map (Rat.castHom ℝ)) • 𝒢).IsArithmetic :=
-  ⟨(Subgroup.IsArithmetic.is_commensurable.conj _).trans
+  ⟨(Subgroup.IsArithmetic.is_commensurable.smul _).trans
     (isArithmetic_conj_SL2Z g).is_commensurable⟩
 
 /-- If `Γ` is a congruence subgroup, then so is `g⁻¹ Γ g ∩ SL(2, ℤ)` for any `g ∈ GL(2, ℚ)`. -/

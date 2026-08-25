@@ -133,7 +133,9 @@ lemma exists_mem_irreducibleComponents_subset_of_isIrreducible (s : Set X) (hs :
 
 /-- A maximal irreducible set that contains a given point. -/
 @[stacks 004W "(4)"]
-def irreducibleComponent (x : X) : Set X :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def irreducibleComponent (x : X) : Set X :=
   Classical.choose (exists_preirreducible {x} isPreirreducible_singleton)
 
 theorem irreducibleComponent_property (x : X) :
@@ -311,8 +313,8 @@ theorem isIrreducible_iff_sUnion_isClosed :
     IsIrreducible s ↔
       ∀ t : Finset (Set X), (∀ z ∈ t, IsClosed z) → (s ⊆ ⋃₀ ↑t) → ∃ z ∈ t, s ⊆ z := by
   simp only [isIrreducible_iff_sInter]
-  refine ((@compl_involutive (Set X) _).toPerm _).finsetCongr.forall_congr fun {t} => ?_
-  simp_rw [Equiv.finsetCongr_apply, Finset.forall_mem_map, Finset.mem_map, Finset.coe_map,
+  refine (Equiv.Finset.congr ((@compl_involutive (Set X) _).toPerm _)).forall_congr fun {t} => ?_
+  simp_rw [Equiv.Finset.congr_apply, Finset.forall_mem_map, Finset.mem_map, Finset.coe_map,
     sUnion_image, Equiv.coe_toEmbedding, Function.Involutive.coe_toPerm, isClosed_compl_iff,
     exists_exists_and_eq_and]
   refine forall_congr' fun _ => Iff.trans ?_ not_imp_not
@@ -337,7 +339,7 @@ theorem isPreirreducible_iff_subset_closure_inter_open (S : Set X) :
   · intro a b ha hb ⟨p, pS, pa⟩ bS
     by_contra! h0
     suffices p ∉ closure (S ∩ b) from this <| (h b hb bS) pS
-    simp only [closure, mem_sInter, mem_setOf_eq, and_imp, not_forall, exists_prop]
+    simp only [closure, mem_sInter, mem_ofPred_eq, and_imp, not_forall, exists_prop]
     use aᶜ
     grind [isClosed_compl_iff, subset_compl_iff_disjoint_left, disjoint_iff_inter_eq_empty]
 
