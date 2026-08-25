@@ -232,18 +232,15 @@ theorem coe_minDegree_eq_minEDegree [Nonempty V] [Fintype V] (G : SimpleGraph V)
     Finset.inf'_image, Finset.inf'_univ_eq_ciInf]
   simpa [← coe_degree_eq_edegree] using! ENat.natCast_iInf
 
-variable {G} in
-theorem maxEDegree_eq_coe_iff [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj] {n : ℕ} :
+theorem maxEDegree_eq_coe_iff [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj] {n : ℕ} :
     G.maxEDegree = n ↔ G.maxDegree = n := by
   simp [← coe_maxDegree_eq_maxEDegree]
 
-variable {G} in
-theorem minEDegree_eq_coe_iff [Nonempty V] [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj]
+theorem minEDegree_eq_coe_iff [Nonempty V] [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
     {n : ℕ} : G.minEDegree = n ↔ G.minDegree = n := by
   simp [← coe_minDegree_eq_minEDegree]
 
-variable {G} in
-theorem minEDegree_eq_coe_iff_of_neZero [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj] {n : ℕ}
+theorem minEDegree_eq_coe_iff_of_neZero [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj] {n : ℕ}
     [NeZero n] : G.minEDegree = n ↔ G.minDegree = n := by
   cases isEmpty_or_nonempty V
   · simpa using NeZero.ne' n
@@ -302,8 +299,7 @@ theorem minEDegree_le_card [Nonempty V] (G : SimpleGraph V) : G.minEDegree ≤ E
   have ⟨v⟩ := ‹Nonempty V›
   grw [G.minEDegree_le_edegree v, edegree_le_card]
 
-variable {G} in
-theorem maxEDegree_lt_card_of_ne_top [Nonempty V] (G : SimpleGraph V) (h : G.maxEDegree ≠ ⊤) :
+theorem maxEDegree_lt_card_of_ne_top [Nonempty V] {G : SimpleGraph V} (h : G.maxEDegree ≠ ⊤) :
     G.maxEDegree < ENat.card V := by
   have ⟨v, hv⟩ := G.exists_edegree_eq_maxEDegree h
   rw [← hv] at h ⊢
