@@ -26,14 +26,19 @@ instance : LinearOrder Dyadic where
   toDecidableLE := Dyadic.instDecidableLE
 
 instance : AddCommGroup Dyadic where
-  nsmul := nsmulRec
-  zsmul := zsmulRec
+  nsmul := (· * ·)
+  zsmul := (· * ·)
   add_zero := Dyadic.add_zero
   zero_add := Dyadic.zero_add
   add_assoc := Dyadic.add_assoc
   sub_eq_add_neg _ _ := rfl
   neg_add_cancel := Dyadic.neg_add_cancel
   add_comm := Dyadic.add_comm
+  nsmul_zero := by grind
+  nsmul_succ := by grind
+  zsmul_zero' := by grind
+  zsmul_succ' := by grind
+  zsmul_neg' := by grind
 
 namespace Dyadic
 
