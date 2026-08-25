@@ -93,13 +93,10 @@ public register_option linter.style.native : Bool := {
 }
 
 /-- Deprecated in favor of `linter.style.native`. -/
+@[deprecated linter.style.native (since := "2026-08-24")]
 public register_option linter.style.nativeDecide : Bool := {
   defValue := false
   descr := "deprecated: use the `linter.style.native` option instead"
-  deprecation? := some {
-    since := "2026-08-24"
-    text? := "use the `linter.style.native` option instead"
-  }
 }
 
 /-- The option `linter.style.maxHeartbeats` of the deprecated syntax linter flags usages of
