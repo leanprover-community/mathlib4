@@ -97,10 +97,8 @@ theorem prod_image [DecidableEq ι] {s : Finset κ} {g : κ → ι} :
   fold_image
 
 @[to_additive]
-lemma prod_attach (s : Finset ι) (f : ι → M) : ∏ x ∈ s.attach, f x = ∏ x ∈ s, f x := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons i s hi h => simp [h]
+lemma prod_attach (s : Finset ι) (f : ι → M) : ∏ x ∈ s.attach, f x = ∏ x ∈ s, f x :=
+  congrArg Multiset.prod (Multiset.attach_map_val' s.1 f)
 
 @[to_additive (attr := congr)]
 theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod f = s₂.prod g := by
