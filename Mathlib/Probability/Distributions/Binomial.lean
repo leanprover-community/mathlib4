@@ -233,7 +233,7 @@ theorem variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
       _ = ∑ x ∈ Finset.range (n + 2), (n + 1).choose x * (x + 1) * (n + 2) * p.val ^ (x + 1) *
             (1 - p) ^ (n + 1 - x) -
           ∑ x ∈ Finset.range (n + 2), (n + 1).choose x * (n + 2) * p.val ^ (x + 1) *
-            (1 - p) ^ (n + 1 - x) * (2 * p * (n + 2)) +
+            (1 - p) ^ (n + 1 - x) * 2 * p * (n + 2) +
           ∑ x ∈ Finset.range (n + 3), (n + 2).choose x * p.val ^ x * (1 - p) ^ (n + 2 - x) *
             (p * (n + 2)) ^ 2 := by
         congrm ?_ + ?_
