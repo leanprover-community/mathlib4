@@ -18,6 +18,7 @@ public import Mathlib.Topology.Algebra.Module.Simple
 public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 public import Mathlib.Topology.Maps.Strict.Basic
+public import Lean.Meta.Tactic.Rfl
 
 /-!
 # Finite-dimensional topological vector spaces over complete fields
@@ -31,7 +32,7 @@ continuous.
 
 When `E` is a normed space, this gets us the equivalence of norms in finite dimension.
 
-## Main results :
+## Main results
 
 * `LinearMap.continuous_iff_isClosed_ker` : a linear form is continuous if and only if its kernel
   is closed.

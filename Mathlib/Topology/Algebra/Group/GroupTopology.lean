@@ -8,7 +8,7 @@ module
 public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
-### Lattice of group topologies
+# Lattice of group topologies
 
 We define a type class `GroupTopology α` which endows a group `α` with a topology such that all
 group operations are continuous.
@@ -23,11 +23,13 @@ The additive version `AddGroupTopology α` and corresponding results are provide
 
 @[expose] public section
 
-open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
+open Set TopologicalSpace Function
+
+open scoped Topology
 
 universe u v w x
 
-variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
+variable {α : Type u} {β : Type v}
 
 /-- A group topology on a group `α` is a topology for which multiplication and inversion
 are continuous. -/

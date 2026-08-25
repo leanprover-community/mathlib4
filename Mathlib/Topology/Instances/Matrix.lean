@@ -16,7 +16,7 @@ public import Mathlib.Topology.Algebra.Star
 
 This file is a place to collect topological results about matrices.
 
-## Main definitions:
+## Main definitions
 
 * `Matrix.topologicalRing`: square matrices form a topological ring
 

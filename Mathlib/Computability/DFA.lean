@@ -51,7 +51,7 @@ Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and a
 
 universe u v
 
-open Computability
+open scoped Computability
 
 /-- A DFA is a set of states (`σ`), a transition function from state to state labelled by the
   alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`). -/
@@ -262,7 +262,6 @@ theorem accepts_reindex (g : σ ≃ σ') : (reindex g M).accepts = M.accepts := 
   ext x
   simp [mem_accepts]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comap_reindex (f : α' → α) (g : σ ≃ σ') :
     (reindex g M).comap f = reindex g (M.comap f) := by
   simp [comap, reindex]
