@@ -23,8 +23,8 @@ means that a function `g : Z → C(X, Y)` is measurable if and only if, for all 
 
 ## Main definition
 
-* `MeasurableEquiv.continuousMap X Y`: A measurable equivalence between
-  `{f : X → Y // Continuous f}` and `C(X, Y)`.
+* `MeasurableEquiv.continuousMapToFun X Y`: A measurable equivalence between
+  `C(X, Y)` and `{f : X → Y // Continuous f}`.
 
 ## Main statements
 
@@ -164,29 +164,29 @@ namespace MeasurableEquiv
 variable [MeasurableSpace Y] [BorelSpace Y]
 
 variable (X Y) in
-/-- A measurable equivalence between `{f : X → Y // Continuous f}` and `C(X, Y)`. -/
-def continuousMap : {f : X → Y // Continuous f} ≃ᵐ C(X, Y) where
-  toFun f := ⟨f.1, f.2⟩
-  invFun f := ⟨f, f.continuous⟩
+/-- A measurable equivalence between `C(X, Y)` and `{f : X → Y // Continuous f}`. -/
+def continuousMapToFun : C(X, Y) ≃ᵐ {f : X → Y // Continuous f} where
+  toFun f := ⟨f, f.continuous⟩
+  invFun f := ⟨f.1, f.2⟩
   left_inv f := rfl
   right_inv f := rfl
   measurable_toFun :=
-    ContinuousMap.measurable_iff_eval.2 fun x ↦ by simpa using measurable_subtype_coe.eval
-  measurable_invFun :=
     .subtype_mk (measurable_pi_lambda _ fun _ ↦ Continuous.measurable (by fun_prop))
+  measurable_invFun :=
+    ContinuousMap.measurable_iff_eval.2 fun x ↦ by simpa using measurable_subtype_coe.eval
 
 @[simp]
-lemma continuousMap_apply (f : {g : X → Y // Continuous g}) :
-    continuousMap X Y f = ⟨f.1, f.2⟩ := rfl
+lemma continuousMapToFun_apply (f : C(X, Y)) :
+    continuousMapToFun X Y f = ⟨f, f.continuous⟩ := rfl
 
 @[simp]
-lemma symm_continuousMap_apply (f : C(X, Y)) :
-    (continuousMap X Y).symm f = ⟨f, f.continuous⟩ := rfl
+lemma symm_continuousMapToFun_apply (f : {g : X → Y // Continuous g}) :
+    (continuousMapToFun X Y).symm f = ⟨f.1, f.2⟩ := rfl
 
-lemma continuousMap_apply_apply (f : {g : X → Y // Continuous g}) (x : X) :
-    continuousMap X Y f x = f.1 x := rfl
+lemma continuousMapToFun_apply_apply (f : C(X, Y)) (x : X) :
+    (continuousMapToFun X Y f).1 x = f x := rfl
 
-lemma symm_continuousMap_apply_apply (f : C(X, Y)) (x : X) :
-    ((continuousMap X Y).symm f).1 x = f x := rfl
+lemma symm_continuousMapToFun_apply_apply (f : {g : X → Y // Continuous g}) (x : X) :
+    (continuousMapToFun X Y).symm f x = f.1 x := rfl
 
 end MeasurableEquiv
