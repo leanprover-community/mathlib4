@@ -156,7 +156,20 @@ theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
 theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b) :
     (s.cons a ha).erase b = (s.erase b).cons a fun h => ha <| erase_subset _ _ h := by grind
 
-@[simp] theorem insert_erase (h : a ∈ s) : insert a (s.erase a) = s := by
+@[simp] theorem insert_erase_eq_insert : insert a (s.erase a) = insert a s := by
+  ext x
+  simp only [mem_insert, mem_erase]
+  constructor
+  · rintro (rfl | ⟨-, hx⟩)
+    · exact Or.inl rfl
+    · exact Or.inr hx
+  · rintro (rfl | hx)
+    · exact Or.inl rfl
+    · by_cases ha : x = a
+      · exact Or.inl ha
+      · exact Or.inr ⟨ha, hx⟩
+
+theorem insert_erase (h : a ∈ s) : insert a (s.erase a) = s := by
   ext x
   simp only [mem_insert, mem_erase]
   constructor
