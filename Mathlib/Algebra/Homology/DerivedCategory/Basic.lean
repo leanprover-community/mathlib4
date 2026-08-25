@@ -270,6 +270,7 @@ def singleFunctorsPostcompQIso :
 def singleFunctorIsoCompQ (n : ℤ) :
     singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q := Iso.refl _
 
+/-- The isomorphism `singleFunctor C n ≅ HomotopyCategory.singleFunctor C n ⋙ Qh`. -/
 def singleFunctorIsoCompQh (n : ℤ) :
     singleFunctor C n ≅ HomotopyCategory.singleFunctor C n ⋙ Qh :=
   (SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostcompQhIso C)
