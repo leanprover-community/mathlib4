@@ -6,7 +6,7 @@ Authors: Moritz Doll, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Topology.Algebra.Equicontinuity
 public import Mathlib.Topology.MetricSpace.Equicontinuity
@@ -309,8 +309,8 @@ theorem WithSeminorms.isTopologicalAddGroup (hp : WithSeminorms p) : IsTopologic
   rw [hp.withSeminorms_eq]
   exact AddGroupFilterBasis.isTopologicalAddGroup _
 
-@[deprecated (since := "2026-08-17")] alias WithSeminorms.topologicalAddGroup :=
-  WithSeminorms.isTopologicalAddGroup
+@[deprecated (since := "2026-08-21")]
+alias WithSeminorms.topologicalAddGroup := WithSeminorms.isTopologicalAddGroup
 
 variable (𝕜 E) in
 /-- A polynormable space is a topological additive group.
@@ -482,7 +482,7 @@ theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf [IsTopological
     WithSeminorms p ↔
       t = ⨅ i, (p i).toSeminormedAddCommGroup.toUniformSpace.toTopologicalSpace := by
   rw [p.withSeminorms_iff_nhds_eq_iInf,
-    IsTopologicalAddGroup.ext_iff inferInstance (topologicalAddGroup_iInf fun i => inferInstance),
+    IsTopologicalAddGroup.ext_iff inferInstance (isTopologicalAddGroup_iInf fun i => inferInstance),
     nhds_iInf]
   congrm _ = ⨅ i, ?_
   exact @comap_norm_nhds_zero _ (p i).toSeminormedAddGroup
@@ -824,7 +824,6 @@ namespace WithSeminorms
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [SeminormedRing 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
-variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 /-- Two families of seminorms `p` and `q` on the same space generate the same topology
 if each `p i` is bounded by some `C • Finset.sup s q` and vice-versa.
@@ -1025,7 +1024,7 @@ theorem LinearMap.withSeminorms_induced {q : SeminormFamily 𝕜₂ F ι}
     WithSeminorms (topology := induced f inferInstance) (q.comp f) := by
   have := hq.isTopologicalAddGroup
   let _ : TopologicalSpace E := induced f inferInstance
-  have : IsTopologicalAddGroup E := topologicalAddGroup_induced f
+  have : IsTopologicalAddGroup E := isTopologicalAddGroup_induced f
   rw [(q.comp f).withSeminorms_iff_nhds_eq_iInf, nhds_induced, map_zero,
     q.withSeminorms_iff_nhds_eq_iInf.mp hq, Filter.comap_iInf]
   refine iInf_congr fun i => ?_
@@ -1084,7 +1083,7 @@ theorem withSeminorms_iInf {κ : ι → Type*}
     WithSeminorms (topology := ⨅ i, t i) (SeminormFamily.sigma p) := by
   have : ∀ i, @IsTopologicalAddGroup E (t i) _ :=
     fun i ↦ @WithSeminorms.isTopologicalAddGroup _ _ _ _ _ _ (t i) _ (hp i)
-  have : @IsTopologicalAddGroup E (⨅ i, t i) _ := topologicalAddGroup_iInf inferInstance
+  have : @IsTopologicalAddGroup E (⨅ i, t i) _ := isTopologicalAddGroup_iInf inferInstance
   simp_rw [@SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _ _ _ _ _ _ _ (_)] at hp ⊢
   rw [iInf_sigma]
   exact iInf_congr hp
