@@ -6,7 +6,7 @@ Authors: Jiedong Jiang
 module
 
 public import Mathlib.Analysis.Normed.Algebra.Ultra
-public import Mathlib.Analysis.Normed.Algebra.SpectralNorm
+public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.FieldTheory.Minpoly.IsConjRoot
 public import Mathlib.FieldTheory.SeparableDegree
 

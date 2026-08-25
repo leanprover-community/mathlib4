@@ -416,10 +416,102 @@ noncomputable def spectralNorm.normedAlgebra' (K E L : Type*) [NormedField K]
     simp [Algebra.smul_def]
     simp [NormedAlgebra.norm_eq_spectralNorm K, spectralNorm_algebraMap]
 
+open scoped Matrix.Norms.Operator in
+theorem foo {α β γ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ] [Fintype α] [Fintype β]
+    (M N : Matrix α β γ) : ‖M + N‖ ≤ Fintype.card β * max ‖M‖ ‖N‖ := by
+  simp_rw [Matrix.linfty_opNorm_def]
+  set RM := Finset.univ.sup fun i ↦ ∑ j, ‖M i j‖₊
+  set RN := Finset.univ.sup fun i ↦ ∑ j, ‖N i j‖₊
+  have key i j : ‖(M + N) i j‖₊ ≤ max RM RN := by
+    grw [Matrix.add_apply, IsUltrametricDist.nnnorm_add_le_max]
+    apply max_le_max
+    · exact Finset.le_sup_of_le (Finset.mem_univ i)
+        (Finset.single_le_sum (fun j hj ↦ zero_le (a := ‖M i j‖₊)) (Finset.mem_univ j))
+    · exact Finset.le_sup_of_le (Finset.mem_univ i)
+        (Finset.single_le_sum (fun j hj ↦ zero_le (a := ‖N i j‖₊)) (Finset.mem_univ j))
+  grw [key, Finset.sum_const, Finset.card_univ, nsmul_eq_mul, Finset.sup_const_le]
+  simp
+
+open scoped Matrix.Norms.Operator in
+theorem foobar {α β γ κ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ] [Fintype α] [Fintype β]
+    (M : κ → Matrix α β γ) (s : Finset κ) (B : ℝ) (hB : 0 ≤ B) (hM : ∀ i ∈ s, ‖M i‖ ≤ B) :
+    ‖∑ k ∈ s, M k‖ ≤ Fintype.card β * B := by
+  let B : NNReal := ⟨B, hB⟩
+  simp_rw [Matrix.linfty_opNorm_def]
+  have key i j : ‖(∑ k ∈ s, M k) i j‖₊ ≤ B := by
+    grw [Matrix.sum_apply]
+    suffices ∀ k ∈ s, ‖M k i j‖₊ ≤ B from
+      IsUltrametricDist.norm_sum_le_of_forall_le_of_nonneg hB this
+    intro k hk
+    have hM : ‖M k‖₊ ≤ B := hM k hk
+    refine .trans ?_ hM
+    rw [Matrix.linfty_opNNNorm_def]
+    refine Finset.le_sup_of_le (Finset.mem_univ i) ?_
+    exact Finset.single_le_sum (f := fun j ↦ ‖M k i j‖₊) (fun _ _ ↦ zero_le) (Finset.mem_univ j)
+  grw [key, Finset.sum_const, Finset.card_univ, nsmul_eq_mul, Finset.sup_const_le]
+  simp
+  rfl
+
+open scoped Matrix.Norms.Operator Topology in
+open Filter in
+theorem isNonarchimedean_spectralRadiusLimNorm {K L : Type*} [NormedField K] [Field L] [Algebra K L]
+    [IsUltrametricDist K] [FiniteDimensional K L] :
+    IsNonarchimedean (spectralRadiusLimNorm K L) := by
+  intro x y
+  let T := Algebra.leftMulMatrix (Module.finBasis K L)
+  let M := max (spectralRadiusLim (T x)) (spectralRadiusLim (T y))
+  change spectralRadiusLim (T (x + y)) ≤ M
+  apply le_of_forall_pos_le_add
+  intro ε hε
+  obtain ⟨Cx, hCx0, hCx⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T x ^ n‖ ≤ C * (M + ε) ^ n := by
+    obtain ⟨C, hC0, hC⟩ := exists_le_spectralRadiusLim (T x) ε hε
+    refine ⟨C, hC0, fun n ↦ (hC n).trans ?_⟩
+    gcongr
+    apply le_max_left
+  obtain ⟨Cy, hCy0, hCy⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T y ^ n‖ ≤ C * (M + ε) ^ n := by
+    obtain ⟨C, hC0, hC⟩ := exists_le_spectralRadiusLim (T y) ε hε
+    refine ⟨C, hC0, fun n ↦ (hC n).trans ?_⟩
+    gcongr
+    apply le_max_right
+  let C := Cx * Cy * Module.finrank K L
+  have : 0 < Module.finrank K L := Module.finrank_pos
+  have key n : ‖T (x + y) ^ n‖ ≤ C * (M + ε) ^ n := by
+    grw [map_add, ((Commute.all x y).map T).add_pow]
+    grw [foobar _ _ (Cx * Cy * (M + ε) ^ n) (by positivity)]
+    simp
+    grind
+    intro k hk
+    rw [Finset.mem_range_succ_iff] at hk
+    have key : (n.choose k : Matrix (Fin (Module.finrank K L)) (Fin (Module.finrank K L)) K)
+      = algebraMap K _ (n.choose k) := by
+      simp only [map_natCast]
+    rw [← nsmul_eq_mul', nsmul_eq_mul, key, ← Algebra.smul_def]
+    grw [norm_smul_le, ← nsmul_one, IsUltrametricDist.norm_nsmul_le, norm_one, one_mul,
+      norm_mul_le, hCx, hCy, mul_mul_mul_comm, ← pow_add, Nat.add_sub_cancel' hk]
+  replace key (n : ℕ) (hn : n ≠ 0) : ‖T (x + y) ^ n‖ ^ (n⁻¹ : ℝ) ≤
+      C ^ (n⁻¹ : ℝ) * (M + ε) := by
+    specialize key n
+    rwa [← pow_le_pow_iff_left₀ (by positivity) (by positivity) hn, mul_pow,
+      ← Real.rpow_mul_natCast (by positivity), ← Real.rpow_mul_natCast (by positivity),
+      inv_mul_cancel₀ (by simpa), Real.rpow_one, Real.rpow_one]
+  suffices ∀ C > (0 : ℝ), Tendsto (fun n : ℕ ↦ C ^ (n : ℝ)⁻¹) atTop (𝓝 1) by
+    refine le_of_tendsto_of_tendsto (tendsto_spectralRadiusLim (T (x + y)))
+      (by simpa using (this C (by positivity)).mul_const _)
+        (eventually_atTop.mpr ⟨1, fun n hn ↦ key n (by grind)⟩)
+  intro C hC
+  rw [← C.rpow_zero]
+  exact (C.continuous_const_rpow hC.ne').continuousAt.tendsto.comp tendsto_inv_atTop_nhds_zero_nat
+
+open IntermediateField in
 theorem isNonarchimedean_spectralNorm {K L : Type*} [NormedField K] [Field L] [Algebra K L]
     [IsUltrametricDist K] [Algebra.IsAlgebraic K L] : IsNonarchimedean (spectralNorm K L) := by
   rw [IsNonarchimedean]
   intro x y
-  sorry
+  have : FiniteDimensional K K⟮x, y⟯ := finiteDimensional_adjoin_pair
+    (Algebra.IsIntegral.isIntegral x) (Algebra.IsIntegral.isIntegral y)
+  rw [spectralNorm_eq_of_mem K⟮x, y⟯ x (AdjoinPair.gen₁ K x y) rfl,
+    spectralNorm_eq_of_mem K⟮x, y⟯ y (AdjoinPair.gen₂ K x y) rfl,
+    spectralNorm_eq_of_mem K⟮x, y⟯ (x + y) (AdjoinPair.gen₁ K x y + AdjoinPair.gen₂ K x y) rfl]
+  apply isNonarchimedean_spectralRadiusLimNorm
 
 end
