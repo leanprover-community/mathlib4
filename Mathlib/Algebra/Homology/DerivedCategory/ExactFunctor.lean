@@ -63,6 +63,7 @@ noncomputable def mapDerivedCategoryFactorsh :
       F.mapHomotopyCategory (ComplexShape.up ℤ) ⋙ DerivedCategory.Qh :=
   F.mapHomologicalComplexUpToQuasiIsoFactorsh _
 
+
 lemma mapDerivedCategoryFactorsh_hom_app (K : CochainComplex C₁ ℤ) :
     F.mapDerivedCategoryFactorsh.hom.app ((HomotopyCategory.quotient _ _).obj K) =
       F.mapDerivedCategory.map ((DerivedCategory.quotientCompQhIso C₁).hom.app K) ≫

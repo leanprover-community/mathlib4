@@ -87,8 +87,7 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
     (hS.map_of_exact F).singleδ := by
   dsimp [ShiftedHom.map, ShortComplex.ShortExact.singleδ]
   simp only [Functor.map_comp, Category.assoc, Functor.commShiftIso_hom_naturality,
-    DerivedCategory.map_triangleOfSESδ, singleFunctorsPostcompQIso_hom_hom,
-    singleFunctorsPostcompQIso_inv_hom]
+    DerivedCategory.map_triangleOfSESδ]
   generalize_proofs _ _ _ _ _ _ h1 _ _ h2
   dsimp [CochainComplex.singleFunctors]
   rw [Functor.map_id, Category.id_comp,
