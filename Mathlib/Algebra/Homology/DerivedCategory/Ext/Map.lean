@@ -90,8 +90,7 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
   generalize_proofs _ _ _ _ _ _ h1 _ _ h2
   dsimp
   rw [Functor.mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app_assoc,
-    Iso.inv_hom_id_app_assoc,
-    ← Functor.map_comp,
+    Iso.inv_hom_id_app_assoc, ← Functor.map_comp,
     F.mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app,
     dsimp% triangleOfSESδ_naturality h1 h2
       (S.mapNatTrans (F.mapCochainComplexSingleFunctor 0).hom),
