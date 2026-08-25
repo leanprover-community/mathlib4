@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Geometry.Manifold.Algebra.SMul
-public import Mathlib.Geometry.Manifold.LocalDiffeomorph
 
 /-!
 # Quotients of manifolds
