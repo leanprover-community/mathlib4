@@ -172,6 +172,33 @@ exact.
 `build_and_stage` derives both and publishes them as job outputs. The `upload`
 and `consume` jobs read them from there.
 
+## What identifies a dependency entry
+
+A dependency's entry in the bucket is its revision file, at
+
+    revisions/<prefix>/deps/<toolchain-slug>/<pin-hash>/<DEP>/<R-DEP>.jsonl
+
+so four things identify it: the dependency, its revision, the toolchain, and
+the pin set of mathlib's manifest. A change to any one of them names a key that
+holds nothing, and the next run exports and uploads that dependency again.
+
+What that means in practice:
+
+- A mathlib commit changes nothing. No dependency entry mentions mathlib's sha,
+  so a run that only moves mathlib finds every dependency in place. This is the
+  steady state, and it uploads no dependency at all.
+- A toolchain bump changes the slug, so every dependency gets a new scope.
+- A dependency bump changes two things: the revision of that dependency, and
+  the pin hash. The pin hash covers the whole manifest, so a bump of one
+  dependency re-keys all of them, and the run rebuilds and re-uploads every
+  dependency. Only the bumped dependency, and any dependency that has it
+  upstream, holds different content. A hash over each dependency's own upstream
+  closure would re-key only those, and leave the rest in place.
+
+Every job runs on Linux, so the scope carries no platform segment. A pipeline
+that built on more than one platform would need one, because the artifacts of a
+package that is not platform-independent differ between them.
+
 ## What a full cache hit requires
 
 Four things are necessary. Without any one of them a fetch returns mappings
