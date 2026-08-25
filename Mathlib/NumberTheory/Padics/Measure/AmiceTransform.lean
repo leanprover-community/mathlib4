@@ -26,7 +26,7 @@ More suggestively, this is the series `∫ a : ℤ_[p], (1 + X) ^ a dμ`.
 
 public noncomputable section
 
-open scoped AbstractMeasure
+open scoped AbstractMeasure PowerSeries
 
 open Submodule
 
@@ -37,22 +37,11 @@ section Preliminaries
 variable {R : Type*} [NormedCommRing R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
   [IsBoundedSMul ℤ_[p] R]
 
-theorem dense_span_mahler : Dense (span R
-      (.range fun n ↦ (mahler n : C(ℤ_[p], ℤ_[p])) • (1 : C(ℤ_[p], R))) : Set C(ℤ_[p], R)) := by
-  refine fun f ↦ mem_closure_of_tendsto (PadicInt.hasSum_mahler _) ?_
-  refine .of_forall fun s ↦ Submodule.sum_mem _ fun c _ ↦ ?_
-  simp only [span_range_eq_iSup]
-  apply mem_iSup_of_mem (i := c)
-  rw [mem_span_singleton]
-  use (fwdDiff 1)^[c] f 0
-  ext x
-  simp [PadicInt.mahlerTerm]
-
+/-- Reformulation of `PadicInt.ext_mahler` in terms of the type synonym `D(ℤ_[p], R)`. -/
 lemma AbstractMeasure.ext_mahler {μ : D(ℤ_[p], R)}
     (hμ : ∀ n, μ ((mahler n : C(ℤ_[p], ℤ_[p])) • 1) = 0) : μ = 0 := by
-  apply ContinuousLinearMap.ext_on dense_span_mahler
-  rintro _ ⟨n, rfl⟩
-  apply hμ
+  obtain ⟨b, rfl⟩ := toCLMEquiv.symm.surjective μ
+  simpa using PadicInt.ext_mahler (by simpa using hμ)
 
 end Preliminaries
 
@@ -67,7 +56,7 @@ variable {R : Type*} [CommRing R] [TopologicalSpace R]
 The Amice transform, sending a measure `μ` on `ℤ_[p]` to the power series with `n`-th
 coefficient `μ (mahler n)`. More suggestively, this is the series `∫ a : ℤ_[p], (1 + X) ^ a dμ`.
 -/
-def amiceTransform : D(ℤ_[p], R) →ₗ[R] PowerSeries R where
+def amiceTransform : D(ℤ_[p], R) →ₗ[R] R⟦X⟧ where
   toFun μ := .mk fun n ↦ μ ((mahler n : C(ℤ_[p], ℤ_[p])) • (1 : C(ℤ_[p], R)))
   map_add' μ ν := by ext; simp
   map_smul' r μ := by ext; simp
@@ -81,7 +70,7 @@ end Definitions
 section Injectivity
 
 variable {R : Type*} [NormedCommRing R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
-  [IsBoundedSMul ℤ_[p] R] [IsTopologicalRing R]
+  [IsBoundedSMul ℤ_[p] R]
 
 lemma injective_amiceTransform : Function.Injective (amiceTransform : D(ℤ_[p], R) → _) := by
   rw [injective_iff_map_eq_zero]
@@ -93,7 +82,7 @@ end Injectivity
 
 section Inverse
 
-private lemma invTransformSummable (F : PowerSeries ℤ_[p]) (f : C(ℤ_[p], ℤ_[p])) :
+private lemma invTransformSummable (F : ℤ_[p]⟦X⟧) (f : C(ℤ_[p], ℤ_[p])) :
     Summable fun i ↦ PadicInt.mahlerEquiv ℤ_[p] f i * F.coeff i := by
   apply NonarchimedeanAddGroup.summable_of_tendsto_cofinite_zero
   rw [tendsto_zero_iff_norm_tendsto_zero, ← Filter.cocompact_eq_cofinite]
@@ -104,7 +93,7 @@ private lemma invTransformSummable (F : PowerSeries ℤ_[p]) (f : C(ℤ_[p], ℤ
   · rw [← tendsto_zero_iff_norm_tendsto_zero]
     exact ZeroAtInftyContinuousMap.zero_at_infty' _
 
-private def invTransformₗ (F : PowerSeries ℤ_[p]) : C(ℤ_[p], ℤ_[p]) →ₗ[ℤ_[p]] ℤ_[p] where
+private def invTransformₗ (F : ℤ_[p]⟦X⟧) : C(ℤ_[p], ℤ_[p]) →ₗ[ℤ_[p]] ℤ_[p] where
   toFun f := ∑' i, PadicInt.mahlerEquiv ℤ_[p] f i * F.coeff i
   map_add' f g := by
     simp only [map_add, ZeroAtInftyContinuousMap.coe_add, Pi.add_apply, add_mul]
@@ -120,46 +109,39 @@ private def invTransformₗ (F : PowerSeries ℤ_[p]) : C(ℤ_[p], ℤ_[p]) →�
 The inverse of the Amice transform, sending a power series `F` to the unique measure that sends
 `mahler n` to the `n`-th coefficient of `F`.
 -/
-def invTransform (F : PowerSeries ℤ_[p]) : D(ℤ_[p], ℤ_[p]) :=
+def invTransform (F : ℤ_[p]⟦X⟧) : D(ℤ_[p], ℤ_[p]) :=
   AbstractMeasure.toCLMEquiv.symm <| (invTransformₗ F).mkContinuous 1 <| by
     intro f
-    simp only [invTransformₗ, LinearMap.coe_mk, AddHom.coe_mk, one_mul]
     apply IsUltrametricDist.norm_tsum_le_of_forall_le
     intro i
-    grw [norm_mul, (F.coeff i).norm_le_one, mul_one]
-    have := (PadicInt.mahlerEquiv ℤ_[p]).norm_map f
-    -- looks like `ZeroAtInftyContinuousMap.norm_coe_le_norm` is missing
-    rw [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm] at this
-    have := (BoundedContinuousFunction.norm_coe_le_norm _ (x := i)).trans_eq this
-    rw [ZeroAtInftyContinuousMap.toBCF_apply] at this
-    grw [this, ContinuousMap.norm_le]
-    · exact ContinuousMap.norm_coe_le_norm _
-    · positivity
+    grw [norm_mul, (F.coeff i).norm_le_one, mul_one, one_mul, ← ge_iff_le]
+    calc ‖f‖ = ‖PadicInt.mahlerEquiv ℤ_[p] f‖ := by rw [← (PadicInt.mahlerEquiv ℤ_[p]).norm_map]
+      _ = ‖(PadicInt.mahlerEquiv ℤ_[p] f).toBCF‖ := by
+        rw [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm]
+      _ ≥ _ := BoundedContinuousFunction.norm_coe_le_norm ..
 
-lemma invTransform_apply (F : PowerSeries ℤ_[p]) (f : C(ℤ_[p], ℤ_[p])) :
+lemma invTransform_apply (F : ℤ_[p]⟦X⟧) (f : C(ℤ_[p], ℤ_[p])) :
     invTransform F f = ∑' i, PadicInt.mahlerEquiv ℤ_[p] f i * F.coeff i := by
-  simp only [invTransform, AbstractMeasure.coe_symm_toCLMEquiv]
-  rfl
+  simp [invTransform, invTransformₗ]
 
-lemma amiceTransform_invTransform (F : PowerSeries ℤ_[p]) :
+lemma amiceTransform_invTransform (F : ℤ_[p]⟦X⟧) :
     amiceTransform (invTransform F) = F := by
   ext n
   have (i : ℕ) : (fwdDiff 1)^[i] (fun x : ℤ_[p] ↦ mahler n x) 0 = if i = n then 1 else 0 := by
-    convert fwdDiff_iter_choose_zero n i
-    simp [fwdDiff_iter_eq_sum_shift, mahler_natCast_eq]
+    simp [← fwdDiff_iter_choose_zero n i, fwdDiff_iter_eq_sum_shift, mahler_natCast_eq]
   simp [coeff_amiceTransform, invTransform_apply, PadicInt.mahlerEquiv_apply, this]
 
 /--
 The Amice transform bundled as a linear equivalence.
 -/
-def amiceTransformEquiv : D(ℤ_[p], ℤ_[p]) ≃ₗ[ℤ_[p]] PowerSeries ℤ_[p] where
+def amiceTransformEquiv : D(ℤ_[p], ℤ_[p]) ≃ₗ[ℤ_[p]] ℤ_[p]⟦X⟧ where
   __ := amiceTransform
   invFun := invTransform
   right_inv := amiceTransform_invTransform
   left_inv μ := by simp [← injective_amiceTransform.eq_iff, amiceTransform_invTransform]
 
 @[simp] lemma amiceTransformEquiv_apply (μ : D(ℤ_[p], ℤ_[p])) :
-    amiceTransformEquiv μ = amiceTransform μ :=
+    μ.amiceTransformEquiv = μ.amiceTransform :=
   (rfl)
 
 lemma coeff_amiceTransformEquiv (μ : D(ℤ_[p], ℤ_[p])) (n : ℕ) :
