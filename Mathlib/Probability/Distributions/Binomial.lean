@@ -269,7 +269,8 @@ theorem variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
       _ = (∑ x ∈ Finset.range (n + 1), n.choose x * p.val ^ x *
             (1 - p) ^ (n + 1 - (x + 1))) * (p * p * (n + 2) * (n + 1)) +
           (1 - p * (n + 2)) * p * (n + 2) := by
-        grind [Finset.sum_mul]
+        rw [Finset.sum_mul]
+        grind
       _ = p.val * p * (n + 2) * (n + 1) + (1 - p * (n + 2)) * p * (n + 2) := by
         grind [add_pow p.val (1 - p) n, add_sub_cancel, one_pow]
       _ = _ := by
