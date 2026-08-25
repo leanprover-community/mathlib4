@@ -12,9 +12,9 @@ public import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
 /-!
 # Product of vector measures
 
-Given two vector measures, we define their product `μ.prod ν B` as the vector measure associating
-to a measurable set `s` the mass `B (μ s) (ν s)`, if such a measure exists. We show that it
-exists when either `μ` or `ν` has finite variation.
+Given two vector measures, we define their product `μ.prod ν B` as the vector measure assigning
+to a measurable product `s × t` the mass `B (μ s) (ν t)`, if such a vector measure exists.
+We show that it exists when either `μ` or `ν` has finite variation.
 
 When both measures have finite variation, we prove stronger results, notably versions
 of the Fubini theorem. We give general versions for arbitrary pairing functions, and
