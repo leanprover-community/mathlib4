@@ -208,8 +208,7 @@ instance : IsAbsoluteValue (padicNorm p) where
 of the norms of `q` and `r`. -/
 theorem add_eq_max_of_ne {q r : ℚ} (hne : padicNorm p q ≠ padicNorm p r) :
     padicNorm p (q + r) = max (padicNorm p q) (padicNorm p r) :=
-  IsNonarchimedean.add_eq_max_of_ne (f := IsAbsoluteValue.toAbsoluteValue (padicNorm p))
-    (fun _ _ ↦ padicNorm.nonarchimedean) hne
+  IsNonarchimedean.add_eq_max_of_ne (fun a ↦ by simp) (fun _ _ ↦ padicNorm.nonarchimedean) hne
 
 theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z ≤ (p : ℚ) ^ (-n : ℤ) := by
   unfold padicNorm; split_ifs with hz
