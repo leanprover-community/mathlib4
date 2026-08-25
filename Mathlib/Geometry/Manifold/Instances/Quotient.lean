@@ -50,7 +50,6 @@ instance instChartedSpaceQuotient : ChartedSpace H (orbitRel.Quotient G M) :=
   isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.chartedSpaceOfRightInverse
     Quotient.out_eq
 
-
 section πinv
 /-
 TODO:
@@ -94,7 +93,6 @@ lemma exists_smul_mem_πinv_target (m : M) (hm : (⟦m⟧ : orbitRel.Quotient G 
 
 end πinv
 
-
 section quotientTransitionMap
 
 variable (x y : orbitRel.Quotient G M)
@@ -130,7 +128,6 @@ lemma quotientTransitionMap_locally_smul {h : H} (hh : h ∈ (quotientTransition
   exact ⟨g, hg, quotientTransitionMap_eqOn_smul x y g⟩
 
 end quotientTransitionMap
-
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
