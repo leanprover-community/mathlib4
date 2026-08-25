@@ -316,7 +316,7 @@ theorem _root_.LipschitzOnWith.comp_absolutelyContinuousOnInterval
     (h : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (f ∘ g) a b := by
   apply squeeze_zero' ?_ ?_ (by simpa using Tendsto.const_mul (K : ℝ) h)
-  · exact Filter.Eventually.of_forall <| fun _ ↦ Finset.sum_nonneg fun _ _ ↦ dist_nonneg
+  · exact .of_forall fun _ ↦ by positivity
   rw [eventually_inf_principal]
   filter_upwards with (n, I) hnI
   rw [Finset.mul_sum]
