@@ -160,8 +160,57 @@ jobs:
           rm -rf lake-cache-staging tools-branch
           echo "disk headroom: $(df -h --output=avail,pcent . | tail -1 | xargs) on $(hostname)"
 
+      - name: install elan
+        shell: bash -euo pipefail {0}
+        run: |
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      # `elan which` below does not install a toolchain the repo does not pin.
+      # The uninstall forces a fresh download: elan skips a toolchain that is
+      # already present, and a pr-release tag is republished under the same
+      # name.
+      - name: Install override toolchain
+        if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
+        shell: bash -euo pipefail {0}
+        run: |
+          elan toolchain uninstall "$TOOLCHAIN_OVERRIDE" || true
+          elan toolchain install "$TOOLCHAIN_OVERRIDE"
+
+      - name: set toolchain directory
+        shell: bash -euo pipefail {0}
+        run: |
+          cd pr-branch
+          LAKE_PATH=$(elan which lake)
+          TOOLCHAIN_DIR=$(dirname "$(dirname "$LAKE_PATH")")
+          echo "TOOLCHAIN_DIR=$TOOLCHAIN_DIR" >> "$GITHUB_ENV"
+
+      - name: set LEAN_SRC_PATH
+        shell: bash -euo pipefail {0}
+        run: |
+          cd pr-branch
+          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake"
+          PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
+          for pkg in $PACKAGE_NAMES; do
+            if [[ "$pkg" =~ ^[A-Za-z0-9_-]+$ ]]; then
+              LEAN_SRC_PATH="$LEAN_SRC_PATH:.lake/packages/$pkg"
+            fi
+          done
+          echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
+
+      - name: download dependencies
+        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake env
+
       # Plan the hydration and the dependency caching of this run. The plan
-      # is an optimization: it decides what this run can skip.
+      # itself is an optimization: it decides what this run can skip. It has to
+      # run after `lake env`, because it reads the manifest of each dependency
+      # to derive that dependency's upstream closure, and `lake env` is what
+      # materializes the dependency checkouts.
       #   * Write the Lake services file that the `lake cache get` steps read
       #     through LAKE_CONFIG.
       #   * Resolve the analysis-chain pointer of this toolchain. A warm chain
@@ -245,6 +294,8 @@ jobs:
                           queue.append(d)
               if not known:
                   out[name] = whole
+                  print(f"::warning::{name}: upstream closure unknown; "
+                        "keyed by the whole manifest", file=sys.stderr)
               elif closure:
                   out[name] = h(f"{d} {pins[d]}" for d in closure)
               else:
@@ -311,52 +362,6 @@ jobs:
             fi
           done < <(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' lake-manifest.json)
           echo "::notice::deps already cached: $(wc -l < .lake/dep-plan/cached.txt), to stage: $(wc -l < .lake/dep-plan/stage.txt)"
-
-      - name: install elan
-        shell: bash -euo pipefail {0}
-        run: |
-          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
-          chmod +x elan-init.sh
-          ./elan-init.sh -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
-
-      # `elan which` below does not install a toolchain the repo does not pin.
-      # The uninstall forces a fresh download: elan skips a toolchain that is
-      # already present, and a pr-release tag is republished under the same
-      # name.
-      - name: Install override toolchain
-        if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
-        shell: bash -euo pipefail {0}
-        run: |
-          elan toolchain uninstall "$TOOLCHAIN_OVERRIDE" || true
-          elan toolchain install "$TOOLCHAIN_OVERRIDE"
-
-      - name: set toolchain directory
-        shell: bash -euo pipefail {0}
-        run: |
-          cd pr-branch
-          LAKE_PATH=$(elan which lake)
-          TOOLCHAIN_DIR=$(dirname "$(dirname "$LAKE_PATH")")
-          echo "TOOLCHAIN_DIR=$TOOLCHAIN_DIR" >> "$GITHUB_ENV"
-
-      - name: set LEAN_SRC_PATH
-        shell: bash -euo pipefail {0}
-        run: |
-          cd pr-branch
-          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake"
-          PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
-          for pkg in $PACKAGE_NAMES; do
-            if [[ "$pkg" =~ ^[A-Za-z0-9_-]+$ ]]; then
-              LEAN_SRC_PATH="$LEAN_SRC_PATH:.lake/packages/$pkg"
-            fi
-          done
-          echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
-
-      - name: download dependencies
-        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
-        run: |
-          cd pr-branch
-          lake env
 
       # The bootstrap fallback, an optimization for a cold chain. A pinned run
       # normally hydrates from the shadow
@@ -1126,6 +1131,8 @@ jobs:
                           queue.append(d)
               if not known:
                   out[name] = whole
+                  print(f"::warning::{name}: upstream closure unknown; "
+                        "keyed by the whole manifest", file=sys.stderr)
               elif closure:
                   out[name] = h(f"{d} {pins[d]}" for d in closure)
               else:
