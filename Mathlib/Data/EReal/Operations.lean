@@ -171,11 +171,11 @@ lemma add_ne_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y ≠ ⊤
 
 lemma add_ne_top_iff_ne_top₂ {x y : EReal} (hx : x ≠ ⊥) (hy : y ≠ ⊥) :
     x + y ≠ ⊤ ↔ x ≠ ⊤ ∧ y ≠ ⊤ := by
-  grind only [= add_eq_top_iff]
+  simp [add_eq_top_iff, *]
 
 lemma add_eq_top_iff_eq_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
     x + y = ⊤ ↔ x = ⊤ := by
-  grind only [= add_eq_top_iff]
+  simp [add_eq_top_iff, *]
 
 lemma add_ne_top_iff_ne_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
     x + y ≠ ⊤ ↔ x ≠ ⊤ := add_eq_top_iff_eq_top_left hy hy' |>.ne
