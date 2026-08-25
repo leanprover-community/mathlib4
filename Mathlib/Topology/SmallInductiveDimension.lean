@@ -216,7 +216,8 @@ theorem smallInductiveDimension_real : smallInductiveDimension ℝ = 1 := by
     rw [frontier_Ioo (by simp [ab]), hasSmallInductiveDimensionLT_one_iff]
     simp only [isClopen_discrete, ofPred_true]
     exact discreteTopology_iff_isTopologicalBasis_univ.mp inferInstance
-  · rw [hasSmallInductiveDimensionLT_one_iff]
+  · -- TODO: adopt this once #40901 lands
+    rw [hasSmallInductiveDimensionLT_one_iff]
     have eq : {s : Set ℝ | IsClopen s} = {∅, univ} := by
       ext
       simp [isClopen_iff]
