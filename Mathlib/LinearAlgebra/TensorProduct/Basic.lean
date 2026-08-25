@@ -354,10 +354,10 @@ def equivOfCompatibleSMul [CompatibleSMul A R M N] : M ⊗[A] N ≃ₗ[S] M ⊗[
 
 variable (S' : Type*) [CommSemiring S'] [Module S' M] [SMulCommClass R S' M] [SMulCommClass A S' M]
 
-lemma mapOfCompatibleSMul_same :
+lemma toAddHom_mapOfCompatibleSMul_eq :
     (mapOfCompatibleSMul R A S M N).toAddHom = (mapOfCompatibleSMul R A S' M N).toAddHom := rfl
 
-lemma mapOfCompatibleSMul_ker_same (x : M ⊗[A] N) :
+lemma mem_ker_mapOfCompatibleSMul_iff (x : M ⊗[A] N) :
     x ∈ (mapOfCompatibleSMul R A S M N).ker ↔ x ∈ (mapOfCompatibleSMul R A S' M N).ker :=
   Iff.of_eq rfl
 
